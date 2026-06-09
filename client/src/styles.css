@@ -41,3 +41,105 @@ select {
   background: #fff9ec;
   box-shadow: 0 28px 72px rgba(55, 42, 34, 0.22);
 }
+
+.entry-screen {
+  display: grid;
+  gap: 18px;
+  align-content: center;
+  min-height: calc(100vh - 112px);
+}
+
+.entry-screen h1 {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 34px;
+  line-height: 1.1;
+}
+
+.entry-screen__preview {
+  display: grid;
+  place-items: center;
+  min-height: 110px;
+}
+
+.field {
+  display: grid;
+  gap: 8px;
+  color: #29211e;
+  font-weight: 800;
+}
+
+.field input,
+.field textarea,
+.field select {
+  width: 100%;
+  border: 2px solid rgba(41, 33, 30, 0.22);
+  border-radius: 8px;
+  padding: 12px 14px;
+  background: #fffaf1;
+  color: #29211e;
+}
+
+.choice-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.choice,
+.primary-button {
+  border: 2px solid #2f2926;
+  border-radius: 999px;
+  padding: 10px 14px;
+  background: #fffaf1;
+  color: #29211e;
+  font-weight: 900;
+  box-shadow: 0 4px 0 rgba(41, 33, 30, 0.18);
+}
+
+.choice--selected,
+.primary-button {
+  background: #d87579;
+  color: #fffaf1;
+}
+
+.primary-button:disabled {
+  opacity: 0.45;
+}
+
+.pixel-avatar {
+  position: relative;
+  width: 30px;
+  height: 34px;
+  image-rendering: pixelated;
+}
+
+.pixel-avatar__head,
+.pixel-avatar__body {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 2px solid #2f2926;
+}
+
+.pixel-avatar__head {
+  top: 0;
+  width: 18px;
+  height: 16px;
+  background: #f1c3a4;
+}
+
+.pixel-avatar__body {
+  bottom: 0;
+  width: 24px;
+  height: 20px;
+  background: #d87579;
+}
+
+.pixel-avatar--leaf .pixel-avatar__body { background: #617d58; }
+.pixel-avatar--sky .pixel-avatar__body { background: #5e9fb7; }
+.pixel-avatar--gold .pixel-avatar__body { background: #c9983f; }
+.pixel-avatar--soil .pixel-avatar__body { background: #9b7353; }
+.pixel-avatar--suit .pixel-avatar__head { box-shadow: 0 -6px 0 #2f2926; }
+.pixel-avatar--dress .pixel-avatar__body { border-radius: 2px 2px 10px 10px; }
+.pixel-avatar--hanbok .pixel-avatar__body { box-shadow: inset 8px 0 0 rgba(255,255,255,0.35); }
