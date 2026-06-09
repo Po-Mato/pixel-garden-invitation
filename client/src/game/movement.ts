@@ -1,6 +1,6 @@
 import type { Direction } from "@wedding-game/shared";
-import { clampToWorld, isBlocked } from "./geometry";
-import type { GardenWorld, Point } from "./world";
+import { clampToWorld } from "./geometry";
+import type { GardenWorld, Point, Rect } from "./world";
 
 export type MoveInput = {
   current: Point;
@@ -9,8 +9,6 @@ export type MoveInput = {
   speed: number;
   world: GardenWorld;
 };
-
-const COLLISION_STEP_PX = 8;
 
 function isFinitePoint(point: Point): boolean {
   return Number.isFinite(point.x) && Number.isFinite(point.y);
@@ -28,20 +26,40 @@ function safeCurrentPosition(input: MoveInput): Point {
   return { x: input.world.bounds.x, y: input.world.bounds.y };
 }
 
-function crossesBlockedRect(from: Point, to: Point, world: GardenWorld): boolean {
+function segmentIntersectsRect(from: Point, to: Point, rect: Rect): boolean {
   const dx = to.x - from.x;
   const dy = to.y - from.y;
-  const distance = Math.hypot(dx, dy);
-  const steps = Math.max(1, Math.ceil(distance / COLLISION_STEP_PX));
+  let enter = 0;
+  let exit = 1;
 
-  for (let step = 1; step <= steps; step += 1) {
-    const progress = step / steps;
-    if (isBlocked({ x: from.x + dx * progress, y: from.y + dy * progress }, world)) {
-      return true;
+  const axes = [
+    { start: from.x, delta: dx, min: rect.x, max: rect.x + rect.width },
+    { start: from.y, delta: dy, min: rect.y, max: rect.y + rect.height }
+  ];
+
+  for (const axis of axes) {
+    if (axis.delta === 0) {
+      if (axis.start < axis.min || axis.start > axis.max) {
+        return false;
+      }
+      continue;
+    }
+
+    const first = (axis.min - axis.start) / axis.delta;
+    const second = (axis.max - axis.start) / axis.delta;
+    enter = Math.max(enter, Math.min(first, second));
+    exit = Math.min(exit, Math.max(first, second));
+
+    if (enter > exit) {
+      return false;
     }
   }
 
-  return false;
+  return true;
+}
+
+function crossesBlockedRect(from: Point, to: Point, world: GardenWorld): boolean {
+  return world.blocked.some((rect) => segmentIntersectsRect(from, to, rect));
 }
 
 export function computeNextPosition(input: MoveInput): Point {

@@ -39,6 +39,22 @@ describe("movement", () => {
       speed: 120,
       world: gardenWorld
     })).toEqual(gardenWorld.spawn);
+
+    expect(computeNextPosition({
+      current: { x: -10, y: 900 },
+      target: { x: 100, y: 100 },
+      deltaMs: Number.POSITIVE_INFINITY,
+      speed: 120,
+      world: gardenWorld
+    })).toEqual({ x: 0, y: 720 });
+
+    expect(computeNextPosition({
+      current: { x: -10, y: 900 },
+      target: { x: 100, y: 100 },
+      deltaMs: 100,
+      speed: Number.NaN,
+      world: gardenWorld
+    })).toEqual({ x: 0, y: 720 });
   });
 
   it("does not tunnel through blocked rectangles on large movement steps", () => {
@@ -49,6 +65,16 @@ describe("movement", () => {
       speed: 100,
       world: gardenWorld
     })).toEqual({ x: 120, y: 96 });
+  });
+
+  it("does not miss diagonal paths that clip a blocked rectangle between samples", () => {
+    expect(computeNextPosition({
+      current: { x: 130, y: 68.5 },
+      target: { x: 190.5, y: 8 },
+      deltaMs: 1000,
+      speed: 120,
+      world: gardenWorld
+    })).toEqual({ x: 130, y: 68.5 });
   });
 
   it("returns a direction from a joystick vector", () => {
