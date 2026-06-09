@@ -225,7 +225,7 @@ Create `shared/package.json`:
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "devDependencies": {
-    "vitest": "^1.6.0"
+    "vitest": "^4.1.8"
   }
 }
 ```
@@ -615,7 +615,7 @@ Create `client/package.json`:
     "@types/react-dom": "^18.3.0",
     "jsdom": "^24.1.0",
     "typescript": "^5.5.0",
-    "vitest": "^1.6.0"
+    "vitest": "^4.1.8"
   }
 }
 ```
@@ -2037,7 +2037,7 @@ Create `worker/package.json`:
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20240620.0",
     "typescript": "^5.5.0",
-    "vitest": "^1.6.0",
+    "vitest": "^4.1.8",
     "wrangler": "^3.62.0"
   }
 }
