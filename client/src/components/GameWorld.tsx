@@ -65,7 +65,9 @@ export function GameWorld({ profile }: GameWorldProps) {
           </button>
         ))}
       </div>
-      {activeSpotId ? <SpotModal spotId={activeSpotId} onClose={() => setActiveSpotId(null)} /> : null}
+      {activeSpotId ? (
+        <SpotModal spotId={activeSpotId} nickname={profile.nickname} onClose={() => setActiveSpotId(null)} />
+      ) : null}
     </section>
   );
 }

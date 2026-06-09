@@ -325,3 +325,41 @@ select {
     padding: 18px;
   }
 }
+
+.form-stack {
+  display: grid;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.field textarea {
+  min-height: 90px;
+  resize: vertical;
+}
+
+.form-status {
+  margin: 8px 0 0;
+  color: #617d58;
+  font-weight: 800;
+}
+
+.form-status--error {
+  color: #b94444;
+}
+
+.guestbook-list {
+  display: grid;
+  gap: 10px;
+  margin: 14px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.guestbook-list li {
+  display: grid;
+  gap: 3px;
+  padding: 10px;
+  border: 1px solid rgba(41, 33, 30, 0.16);
+  border-radius: 8px;
+  background: rgba(255, 250, 241, 0.7);
+}
