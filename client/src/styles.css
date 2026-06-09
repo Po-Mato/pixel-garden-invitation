@@ -100,7 +100,7 @@ select {
 .choice--selected,
 .primary-button {
   background: #d87579;
-  color: #fffaf1;
+  color: #29211e;
 }
 
 .primary-button:disabled {

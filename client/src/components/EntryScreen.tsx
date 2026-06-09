@@ -49,6 +49,7 @@ export function EntryScreen({ onEnter }: EntryScreenProps) {
           <button
             key={option.value}
             type="button"
+            aria-pressed={avatar === option.value}
             className={avatar === option.value ? "choice choice--selected" : "choice"}
             onClick={() => setAvatar(option.value)}
           >
@@ -61,6 +62,7 @@ export function EntryScreen({ onEnter }: EntryScreenProps) {
           <button
             key={option.value}
             type="button"
+            aria-pressed={color === option.value}
             className={color === option.value ? "choice choice--selected" : "choice"}
             onClick={() => setColor(option.value)}
           >
