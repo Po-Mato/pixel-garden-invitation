@@ -6,6 +6,23 @@ afterEach(() => {
   cleanup();
 });
 
+function pressTabWithBrowserFallback(targetIfUntrapped: HTMLElement, shiftKey = false) {
+  const event = new KeyboardEvent("keydown", {
+    bubbles: true,
+    cancelable: true,
+    key: "Tab",
+    shiftKey
+  });
+
+  document.dispatchEvent(event);
+
+  if (!event.defaultPrevented) {
+    targetIfUntrapped.focus();
+  }
+
+  return event;
+}
+
 describe("GameWorld", () => {
   const profile = { nickname: "하객1", avatar: "classic", color: "rose" } as const;
 
@@ -48,6 +65,27 @@ describe("GameWorld", () => {
     fireEvent.keyDown(document, { key: "Escape" });
 
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  });
+
+  it("traps Tab and Shift+Tab focus inside the spot modal", () => {
+    render(<GameWorld profile={profile} />);
+    fireEvent.click(screen.getByRole("button", { name: "예식 보기" }));
+
+    const closeButton = screen.getByRole("button", { name: "닫기" });
+    const underlyingAction = screen.getByRole("button", { name: "길 찾기" });
+
+    expect(closeButton).toHaveFocus();
+
+    const tabEvent = pressTabWithBrowserFallback(underlyingAction);
+
+    expect(tabEvent.defaultPrevented).toBe(true);
+    expect(closeButton).toHaveFocus();
+
+    const shiftTabEvent = pressTabWithBrowserFallback(underlyingAction, true);
+
+    expect(shiftTabEvent.defaultPrevented).toBe(true);
+    expect(closeButton).toHaveFocus();
+    expect(underlyingAction).not.toHaveFocus();
   });
 
   it("renders spots inside a scalable logical map stage", () => {
