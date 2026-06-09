@@ -1,0 +1,22 @@
+{
+  "name": "wedding-game-invitation",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "workspaces": [
+    "shared",
+    "client",
+    "worker"
+  ],
+  "scripts": {
+    "dev": "npm run dev -w client",
+    "dev:worker": "npm run dev -w worker",
+    "build": "npm run build -w shared && npm run build -w client && npm run build -w worker",
+    "test": "npm run test -w shared && npm run test -w client && npm run test -w worker",
+    "typecheck": "npm run typecheck -w shared && npm run typecheck -w client && npm run typecheck -w worker"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "typescript": "^5.5.0"
+  }
+}
