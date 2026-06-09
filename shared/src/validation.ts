@@ -36,6 +36,7 @@ export function parseClientMessage(value: unknown): ClientMessage | null {
 
   if (value.type === "move") {
     if (typeof value.x !== "number" || typeof value.y !== "number") return null;
+    if (!Number.isFinite(value.x) || !Number.isFinite(value.y)) return null;
     if (!directions.has(value.direction as Direction)) return null;
     if (typeof value.moving !== "boolean") return null;
     if (typeof value.seq !== "number" || !Number.isInteger(value.seq)) return null;

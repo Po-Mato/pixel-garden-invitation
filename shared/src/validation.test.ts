@@ -35,6 +35,43 @@ describe("parseClientMessage", () => {
     });
   });
 
+  it("accepts a valid move message", () => {
+    expect(parseClientMessage({
+      type: "move",
+      x: 48,
+      y: 72,
+      direction: "down",
+      moving: true,
+      seq: 7
+    })).toEqual({
+      type: "move",
+      x: 48,
+      y: 72,
+      direction: "down",
+      moving: true,
+      seq: 7
+    });
+  });
+
+  it("rejects non-finite move coordinates", () => {
+    expect(parseClientMessage({
+      type: "move",
+      x: Infinity,
+      y: 72,
+      direction: "down",
+      moving: true,
+      seq: 7
+    })).toBeNull();
+    expect(parseClientMessage({
+      type: "move",
+      x: 48,
+      y: NaN,
+      direction: "down",
+      moving: true,
+      seq: 7
+    })).toBeNull();
+  });
+
   it("rejects malformed messages", () => {
     expect(parseClientMessage({ type: "move", x: "bad" })).toBeNull();
     expect(parseClientMessage({ type: "unknown" })).toBeNull();
