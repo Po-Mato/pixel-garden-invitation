@@ -1,0 +1,16 @@
+name = "wedding-game-invitation"
+main = "src/index.ts"
+compatibility_date = "2026-06-09"
+
+[[durable_objects.bindings]]
+name = "GARDEN_ROOM"
+class_name = "GardenRoom"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["GardenRoom"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "wedding-game-invitation"
+database_id = "00000000-0000-0000-0000-000000000000"
