@@ -15,6 +15,12 @@ export default {
       return handleApiRequest(request, env.DB, clientKey);
     }
 
+    const roomMatch = url.pathname.match(/^\/rooms\/([^/]+)$/);
+    if (roomMatch) {
+      const id = env.GARDEN_ROOM.idFromName(roomMatch[1]);
+      return env.GARDEN_ROOM.get(id).fetch(request);
+    }
+
     return new Response("Wedding game worker is running", {
       headers: { "content-type": "text/plain; charset=utf-8" }
     });
