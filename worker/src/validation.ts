@@ -21,10 +21,11 @@ export function parseRsvpPayload(value: unknown): RsvpPayload | null {
   const guestName = sanitizeText(value.guestName, 30);
   const note = sanitizeText(value.note ?? "", 160);
   const attendance = value.attendance;
-  const partySize = Number(value.partySize);
+  const partySize = value.partySize;
 
   if (!guestName) return null;
   if (attendance !== "yes" && attendance !== "no" && attendance !== "unsure") return null;
+  if (typeof partySize !== "number") return null;
   if (!Number.isInteger(partySize) || partySize < 1 || partySize > 10) return null;
 
   return { guestName, attendance, partySize, note };

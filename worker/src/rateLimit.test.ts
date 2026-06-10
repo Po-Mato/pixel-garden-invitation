@@ -14,4 +14,19 @@ describe("MemoryRateLimiter", () => {
     limiter.allow("a", 100);
     expect(limiter.allow("a", 200)).toBe(false);
   });
+
+  it.each([
+    { limit: 0, windowMs: 1000 },
+    { limit: -1, windowMs: 1000 },
+    { limit: 1.5, windowMs: 1000 },
+    { limit: Number.NaN, windowMs: 1000 },
+    { limit: Number.POSITIVE_INFINITY, windowMs: 1000 },
+    { limit: 2, windowMs: 0 },
+    { limit: 2, windowMs: -1 },
+    { limit: 2, windowMs: 1.5 },
+    { limit: 2, windowMs: Number.NaN },
+    { limit: 2, windowMs: Number.POSITIVE_INFINITY },
+  ])("rejects invalid options %#", (options) => {
+    expect(() => new MemoryRateLimiter(options)).toThrow(RangeError);
+  });
 });

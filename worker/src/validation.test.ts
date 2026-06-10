@@ -21,6 +21,16 @@ describe("parseRsvpPayload", () => {
   it("rejects invalid RSVP data", () => {
     expect(parseRsvpPayload({ guestName: "", attendance: "bad", partySize: 99 })).toBeNull();
   });
+
+  it.each([true, [2], "2", null])("rejects non-number party size %j", (partySize) => {
+    expect(
+      parseRsvpPayload({
+        guestName: "이승재",
+        attendance: "yes",
+        partySize,
+      }),
+    ).toBeNull();
+  });
 });
 
 describe("parseGuestbookPayload", () => {
