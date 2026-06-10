@@ -11,14 +11,26 @@ export function RsvpForm({ onSubmit }: RsvpFormProps) {
   const [partySize, setPartySize] = useState(1);
   const [note, setNote] = useState("");
   const [status, setStatus] = useState<"idle" | "submitting" | "sent" | "error">("idle");
+  const [errorMessage, setErrorMessage] = useState("");
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const trimmedGuestName = guestName.trim();
+    const trimmedNote = note.trim();
+
+    if (!trimmedGuestName) {
+      setErrorMessage("이름을 입력해 주세요.");
+      setStatus("error");
+      return;
+    }
+
     setStatus("submitting");
+    setErrorMessage("");
     try {
-      await onSubmit({ guestName: guestName.trim(), attendance, partySize, note: note.trim() });
+      await onSubmit({ guestName: trimmedGuestName, attendance, partySize, note: trimmedNote });
       setStatus("sent");
     } catch {
+      setErrorMessage("전송에 실패했습니다. 다시 시도해 주세요.");
       setStatus("error");
     }
   }
@@ -54,8 +66,16 @@ export function RsvpForm({ onSubmit }: RsvpFormProps) {
       <button className="primary-button" type="submit" disabled={status === "submitting"}>
         참석 답변 보내기
       </button>
-      {status === "sent" && <p className="form-status">답변을 받았습니다.</p>}
-      {status === "error" && <p className="form-status form-status--error">전송에 실패했습니다. 다시 시도해 주세요.</p>}
+      {status === "sent" && (
+        <p className="form-status" role="status">
+          답변을 받았습니다.
+        </p>
+      )}
+      {status === "error" && (
+        <p className="form-status form-status--error" role="alert">
+          {errorMessage}
+        </p>
+      )}
     </form>
   );
 }

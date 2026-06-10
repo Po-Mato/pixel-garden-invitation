@@ -22,8 +22,14 @@ export type GuestbookMessage = {
 const apiBase = import.meta.env.VITE_WORKER_URL ?? "";
 const invitationId = import.meta.env.VITE_INVITATION_ID ?? "sample-garden";
 
+function buildApiUrl(base: string, path: string) {
+  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+  const normalizedBase = base.replace(/\/+$/, "");
+  return `${normalizedBase}${normalizedPath}`;
+}
+
 async function postJson(path: string, body: unknown): Promise<void> {
-  const response = await fetch(`${apiBase}${path}`, {
+  const response = await fetch(buildApiUrl(apiBase, path), {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify(body)
