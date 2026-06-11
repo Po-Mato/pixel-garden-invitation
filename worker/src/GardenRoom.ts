@@ -91,6 +91,11 @@ export class GardenRoom {
     }
 
     if (parsed.type === "join") {
+      if (this.sockets.has(socket)) {
+        socket.send(encode({ type: "error", code: "bad_message" }));
+        return;
+      }
+
       const guestId = `guest_${crypto.randomUUID()}`;
       const guest = createGuestSnapshot(guestId, parsed, Date.now());
       this.guests.set(guestId, guest);
@@ -137,10 +142,22 @@ export class GardenRoom {
 
   private broadcast(message: ServerMessage, except?: WebSocket): void {
     const payload = encode(message);
-    for (const { socket } of this.sockets.values()) {
-      if (socket !== except) {
-        socket.send(payload);
+    const failedSockets: WebSocket[] = [];
+
+    for (const { socket } of [...this.sockets.values()]) {
+      if (socket === except) {
+        continue;
       }
+
+      try {
+        socket.send(payload);
+      } catch {
+        failedSockets.push(socket);
+      }
+    }
+
+    for (const socket of failedSockets) {
+      this.disconnect(socket);
     }
   }
 
