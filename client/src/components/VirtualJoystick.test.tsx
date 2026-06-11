@@ -69,4 +69,31 @@ describe("VirtualJoystick", () => {
 
     expect(onVectorChange).toHaveBeenCalledWith({ x: -0.93, y: 0 });
   });
+
+  it("supports keyboard movement without trapping normal navigation", () => {
+    const onVectorChange = vi.fn();
+    render(<VirtualJoystick onVectorChange={onVectorChange} />);
+
+    const control = screen.getByLabelText("가상 조이스틱");
+    expect(control).toHaveAttribute("tabindex", "0");
+
+    const tabEvent = new KeyboardEvent("keydown", {
+      bubbles: true,
+      cancelable: true,
+      key: "Tab"
+    });
+    control.dispatchEvent(tabEvent);
+
+    expect(tabEvent.defaultPrevented).toBe(false);
+    expect(onVectorChange).not.toHaveBeenCalled();
+
+    control.focus();
+    expect(control).toHaveFocus();
+
+    fireEvent.keyDown(control, { key: "ArrowRight" });
+    expect(onVectorChange).toHaveBeenLastCalledWith({ x: 1, y: 0 });
+
+    fireEvent.keyUp(control, { key: "ArrowRight" });
+    expect(onVectorChange).toHaveBeenLastCalledWith({ x: 0, y: 0 });
+  });
 });

@@ -1,4 +1,4 @@
-import { useRef, useState, type PointerEvent } from "react";
+import { useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
 
 type Point = { x: number; y: number };
 
@@ -29,9 +29,34 @@ function normalize(dx: number, dy: number): Point {
   };
 }
 
+function vectorFromKey(key: string): Point | null {
+  if (key === "ArrowUp") {
+    return { x: 0, y: -1 };
+  }
+
+  if (key === "ArrowDown") {
+    return { x: 0, y: 1 };
+  }
+
+  if (key === "ArrowLeft") {
+    return { x: -1, y: 0 };
+  }
+
+  if (key === "ArrowRight") {
+    return { x: 1, y: 0 };
+  }
+
+  return null;
+}
+
 export function VirtualJoystick({ onVectorChange }: VirtualJoystickProps) {
   const activePointerIdRef = useRef<number | null>(null);
   const [thumbOffset, setThumbOffset] = useState<Point>(zeroVector);
+
+  function applyVector(vector: Point) {
+    setThumbOffset({ x: vector.x * radius, y: vector.y * radius });
+    onVectorChange(vector);
+  }
 
   function updateVector(event: PointerEvent<HTMLDivElement>) {
     const rect = event.currentTarget.getBoundingClientRect();
@@ -39,8 +64,7 @@ export function VirtualJoystick({ onVectorChange }: VirtualJoystickProps) {
     const centerY = rect.top + rect.height / 2;
     const vector = normalize(event.clientX - centerX, event.clientY - centerY);
 
-    setThumbOffset({ x: vector.x * radius, y: vector.y * radius });
-    onVectorChange(vector);
+    applyVector(vector);
   }
 
   function resetVector(event: PointerEvent<HTMLDivElement>) {
@@ -50,8 +74,27 @@ export function VirtualJoystick({ onVectorChange }: VirtualJoystickProps) {
 
     activePointerIdRef.current = null;
     event.currentTarget.releasePointerCapture(event.pointerId);
-    setThumbOffset(zeroVector);
-    onVectorChange(zeroVector);
+    applyVector(zeroVector);
+  }
+
+  function handleKeyDown(event: KeyboardEvent<HTMLDivElement>) {
+    const vector = vectorFromKey(event.key);
+
+    if (!vector) {
+      return;
+    }
+
+    event.preventDefault();
+    applyVector(vector);
+  }
+
+  function handleKeyUp(event: KeyboardEvent<HTMLDivElement>) {
+    if (!vectorFromKey(event.key)) {
+      return;
+    }
+
+    event.preventDefault();
+    applyVector(zeroVector);
   }
 
   return (
@@ -59,6 +102,8 @@ export function VirtualJoystick({ onVectorChange }: VirtualJoystickProps) {
       className="virtual-joystick"
       role="application"
       aria-label="가상 조이스틱"
+      aria-keyshortcuts="ArrowUp ArrowDown ArrowLeft ArrowRight"
+      tabIndex={0}
       onPointerDown={(event) => {
         activePointerIdRef.current = event.pointerId;
         event.currentTarget.setPointerCapture(event.pointerId);
@@ -73,6 +118,8 @@ export function VirtualJoystick({ onVectorChange }: VirtualJoystickProps) {
       }}
       onPointerUp={resetVector}
       onPointerCancel={resetVector}
+      onKeyDown={handleKeyDown}
+      onKeyUp={handleKeyUp}
     >
       <span style={{ transform: `translate(${thumbOffset.x}px, ${thumbOffset.y}px)` }} />
     </div>

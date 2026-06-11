@@ -186,4 +186,19 @@ describe("GameWorld", () => {
     expect(player.style.top).toBe("72.22222222222221%");
     expect(pendingAnimationFrameCount()).toBe(0);
   });
+
+  it("moves the player from joystick input", () => {
+    render(<GameWorld profile={profile} />);
+    const joystick = screen.getByLabelText("가상 조이스틱");
+    const player = screen.getByLabelText("하객1");
+
+    fireEvent.keyDown(joystick, { key: "ArrowRight" });
+    advanceAnimation(0);
+    advanceAnimation(1000);
+
+    expect(player.style.left).toBe("80.76923076923077%");
+    expect(player.style.top).toBe("72.22222222222221%");
+
+    fireEvent.keyUp(joystick, { key: "ArrowRight" });
+  });
 });

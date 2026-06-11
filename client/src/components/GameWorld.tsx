@@ -189,14 +189,16 @@ export function GameWorld({ profile }: GameWorldProps) {
           </div>
         </div>
       </div>
-      <div className="world-actions" aria-label="초대장 바로가기">
-        {invitationContent.spots.map((spot) => (
-          <button key={spot.id} type="button" onClick={() => setActiveSpotId(spot.id)}>
-            {spot.actionLabel}
-          </button>
-        ))}
+      <div className="world-controls">
+        <VirtualJoystick onVectorChange={handleJoystickVectorChange} />
+        <div className="world-actions" aria-label="초대장 바로가기">
+          {invitationContent.spots.map((spot) => (
+            <button key={spot.id} type="button" onClick={() => setActiveSpotId(spot.id)}>
+              {spot.actionLabel}
+            </button>
+          ))}
+        </div>
       </div>
-      <VirtualJoystick onVectorChange={handleJoystickVectorChange} />
       {activeSpotId ? (
         <SpotModal spotId={activeSpotId} nickname={profile.nickname} onClose={() => setActiveSpotId(null)} />
       ) : null}
