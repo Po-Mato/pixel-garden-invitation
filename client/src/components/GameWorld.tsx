@@ -11,8 +11,11 @@ type GameWorldProps = {
 };
 
 const speed = 120;
+const arrivalDistance = 0.5;
+const progressDistance = 0.01;
 
 const toPercent = (value: number, total: number) => `${(value / total) * 100}%`;
+const distanceBetween = (first: Point, second: Point) => Math.hypot(first.x - second.x, first.y - second.y);
 
 export function GameWorld({ profile }: GameWorldProps) {
   const [activeSpotId, setActiveSpotId] = useState<SpotId | null>(null);
@@ -20,9 +23,16 @@ export function GameWorld({ profile }: GameWorldProps) {
   const [target, setTarget] = useState<Point | null>(null);
   const [remoteGuests] = useState<RoomGuest[]>([]);
   const [realtimeStatus] = useState<"offline" | "connecting" | "online">("offline");
+  const positionRef = useRef<Point>(gardenWorld.spawn);
   const lastFrameRef = useRef<number | null>(null);
 
   useEffect(() => {
+    if (!target) {
+      lastFrameRef.current = null;
+      return;
+    }
+
+    const movementTarget = target;
     let frame = 0;
 
     function tick(now: number) {
@@ -33,22 +43,24 @@ export function GameWorld({ profile }: GameWorldProps) {
       const deltaMs = now - lastFrameRef.current;
       lastFrameRef.current = now;
 
-      if (target) {
-        setPosition((current) => {
-          const next = computeNextPosition({
-            current,
-            target,
-            deltaMs,
-            speed,
-            world: gardenWorld
-          });
+      const current = positionRef.current;
+      const next = computeNextPosition({
+        current,
+        target: movementTarget,
+        deltaMs,
+        speed,
+        world: gardenWorld
+      });
+      const reachedTarget = distanceBetween(next, movementTarget) <= arrivalDistance;
+      const madeNoProgress = deltaMs > 0 && distanceBetween(current, next) <= progressDistance;
+      const nextPosition = reachedTarget ? movementTarget : next;
 
-          if (next.x === target.x && next.y === target.y) {
-            setTarget(null);
-          }
+      positionRef.current = nextPosition;
+      setPosition(nextPosition);
 
-          return next;
-        });
+      if (reachedTarget || madeNoProgress) {
+        setTarget(null);
+        return;
       }
 
       frame = requestAnimationFrame(tick);

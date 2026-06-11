@@ -1,10 +1,64 @@
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { GameWorld } from "./GameWorld";
+
+let animationFrames = new Map<number, FrameRequestCallback>();
+let nextAnimationFrameId = 1;
+
+beforeEach(() => {
+  animationFrames = new Map();
+  nextAnimationFrameId = 1;
+
+  vi.stubGlobal(
+    "requestAnimationFrame",
+    vi.fn((callback: FrameRequestCallback) => {
+      const id = nextAnimationFrameId;
+      nextAnimationFrameId += 1;
+      animationFrames.set(id, callback);
+      return id;
+    })
+  );
+  vi.stubGlobal(
+    "cancelAnimationFrame",
+    vi.fn((id: number) => {
+      animationFrames.delete(id);
+    })
+  );
+});
 
 afterEach(() => {
   cleanup();
+  vi.restoreAllMocks();
+  vi.unstubAllGlobals();
+  animationFrames.clear();
 });
+
+function advanceAnimation(now: number) {
+  const callbacks = [...animationFrames.values()];
+  animationFrames.clear();
+
+  act(() => {
+    callbacks.forEach((callback) => callback(now));
+  });
+}
+
+function pendingAnimationFrameCount() {
+  return animationFrames.size;
+}
+
+function mockMapRect(map: HTMLElement) {
+  vi.spyOn(map, "getBoundingClientRect").mockReturnValue({
+    x: 10,
+    y: 20,
+    left: 10,
+    top: 20,
+    right: 400,
+    bottom: 740,
+    width: 390,
+    height: 720,
+    toJSON: () => ({})
+  } as DOMRect);
+}
 
 function pressTabWithBrowserFallback(targetIfUntrapped: HTMLElement, shiftKey = false) {
   const event = new KeyboardEvent("keydown", {
@@ -105,9 +159,31 @@ describe("GameWorld", () => {
   it("moves the player when the map is clicked", () => {
     render(<GameWorld profile={{ nickname: "하객1", avatar: "classic", color: "rose" }} />);
     const map = screen.getByLabelText("정원 지도");
+    mockMapRect(map);
+    const player = screen.getByLabelText("하객1");
+    const initialTop = player.style.top;
 
-    fireEvent.click(map, { clientX: 250, clientY: 300 });
+    fireEvent.click(map, { clientX: 205, clientY: 420 });
+    advanceAnimation(0);
+    advanceAnimation(1000);
 
-    expect(screen.getByLabelText("하객1")).toBeInTheDocument();
+    expect(player.style.left).toBe("50%");
+    expect(player.style.top).toBe("55.55555555555556%");
+    expect(player.style.top).not.toBe(initialTop);
+  });
+
+  it("stops moving when the target is blocked", () => {
+    render(<GameWorld profile={profile} />);
+    const map = screen.getByLabelText("정원 지도");
+    mockMapRect(map);
+    const player = screen.getByLabelText("하객1");
+
+    fireEvent.click(map, { clientX: 284, clientY: 600 });
+    advanceAnimation(0);
+    advanceAnimation(1000);
+
+    expect(player.style.left).toBe("50%");
+    expect(player.style.top).toBe("72.22222222222221%");
+    expect(pendingAnimationFrameCount()).toBe(0);
   });
 });
