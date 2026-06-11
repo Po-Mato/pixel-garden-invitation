@@ -10,7 +10,7 @@ const radius = 30;
 const zeroVector: Point = { x: 0, y: 0 };
 
 function roundToTwo(value: number) {
-  return Math.round(value * 100) / 100;
+  return Number(value.toFixed(2));
 }
 
 function normalize(dx: number, dy: number): Point {
