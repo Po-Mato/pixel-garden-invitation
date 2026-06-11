@@ -13,9 +13,13 @@ const toPercent = (value: number, total: number) => `${(value / total) * 100}%`;
 
 export function GameWorld({ profile }: GameWorldProps) {
   const [activeSpotId, setActiveSpotId] = useState<SpotId | null>(null);
+  const [realtimeStatus] = useState<"offline" | "connecting" | "online">("offline");
 
   return (
     <section className="game-world" aria-label="정원 월드">
+      <div className={`realtime-pill realtime-pill--${realtimeStatus}`}>
+        {realtimeStatus === "online" ? "실시간 정원" : "오프라인 정원"}
+      </div>
       <div className="world-map">
         <div
           className="world-map__stage"
