@@ -385,3 +385,24 @@ select {
   background: #617d58;
   color: #fffaf1;
 }
+
+.virtual-joystick {
+  position: absolute;
+  left: 18px;
+  bottom: 18px;
+  width: 78px;
+  height: 78px;
+  border: 2px solid rgba(44, 37, 34, 0.72);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.52);
+  touch-action: none;
+  display: grid;
+  place-items: center;
+}
+
+.virtual-joystick span {
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  background: rgba(44, 37, 34, 0.55);
+}

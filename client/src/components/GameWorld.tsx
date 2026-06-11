@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState, type MouseEvent } from "react";
 import { invitationContent, type RoomGuest, type SpotId } from "@wedding-game/shared";
-import { computeNextPosition } from "../game/movement";
+import { computeNextPosition, directionFromVector } from "../game/movement";
 import { gardenWorld, type Point } from "../game/world";
 import type { EntryProfile } from "./EntryScreen";
 import { PixelAvatar } from "./PixelAvatar";
 import { SpotModal } from "./SpotModal";
+import { VirtualJoystick } from "./VirtualJoystick";
 
 type GameWorldProps = {
   profile: EntryProfile;
@@ -13,26 +14,33 @@ type GameWorldProps = {
 const speed = 120;
 const arrivalDistance = 0.5;
 const progressDistance = 0.01;
+const joystickDeadZone = 0.05;
+const joystickTargetDistance = 120;
 
 const toPercent = (value: number, total: number) => `${(value / total) * 100}%`;
 const distanceBetween = (first: Point, second: Point) => Math.hypot(first.x - second.x, first.y - second.y);
+const hasJoystickMovement = (vector: Point) => Math.hypot(vector.x, vector.y) > joystickDeadZone;
 
 export function GameWorld({ profile }: GameWorldProps) {
   const [activeSpotId, setActiveSpotId] = useState<SpotId | null>(null);
   const [position, setPosition] = useState<Point>(gardenWorld.spawn);
   const [target, setTarget] = useState<Point | null>(null);
+  const [joystickVector, setJoystickVector] = useState<Point>({ x: 0, y: 0 });
   const [remoteGuests] = useState<RoomGuest[]>([]);
   const [realtimeStatus] = useState<"offline" | "connecting" | "online">("offline");
   const positionRef = useRef<Point>(gardenWorld.spawn);
   const lastFrameRef = useRef<number | null>(null);
 
   useEffect(() => {
-    if (!target) {
+    const hasJoystickInput = hasJoystickMovement(joystickVector);
+
+    if (!target && !hasJoystickInput) {
       lastFrameRef.current = null;
       return;
     }
 
     const movementTarget = target;
+    const movementVector = joystickVector;
     let frame = 0;
 
     function tick(now: number) {
@@ -44,6 +52,30 @@ export function GameWorld({ profile }: GameWorldProps) {
       lastFrameRef.current = now;
 
       const current = positionRef.current;
+
+      if (hasJoystickMovement(movementVector)) {
+        const next = computeNextPosition({
+          current,
+          target: {
+            x: current.x + movementVector.x * joystickTargetDistance,
+            y: current.y + movementVector.y * joystickTargetDistance
+          },
+          deltaMs,
+          speed,
+          world: gardenWorld
+        });
+
+        positionRef.current = next;
+        setPosition(next);
+        frame = requestAnimationFrame(tick);
+        return;
+      }
+
+      if (!movementTarget) {
+        lastFrameRef.current = null;
+        return;
+      }
+
       const next = computeNextPosition({
         current,
         target: movementTarget,
@@ -69,7 +101,7 @@ export function GameWorld({ profile }: GameWorldProps) {
     frame = requestAnimationFrame(tick);
 
     return () => cancelAnimationFrame(frame);
-  }, [target]);
+  }, [target, joystickVector]);
 
   function handleMapClick(event: MouseEvent<HTMLDivElement>) {
     const rect = event.currentTarget.getBoundingClientRect();
@@ -79,6 +111,15 @@ export function GameWorld({ profile }: GameWorldProps) {
     const y = gardenWorld.bounds.y + ((event.clientY - rect.top) / height) * gardenWorld.bounds.height;
 
     setTarget({ x, y });
+  }
+
+  function handleJoystickVectorChange(vector: Point) {
+    setJoystickVector(vector);
+
+    if (hasJoystickMovement(vector)) {
+      setTarget(null);
+      directionFromVector(vector);
+    }
   }
 
   return (
@@ -155,6 +196,7 @@ export function GameWorld({ profile }: GameWorldProps) {
           </button>
         ))}
       </div>
+      <VirtualJoystick onVectorChange={handleJoystickVectorChange} />
       {activeSpotId ? (
         <SpotModal spotId={activeSpotId} nickname={profile.nickname} onClose={() => setActiveSpotId(null)} />
       ) : null}
