@@ -1,6 +1,7 @@
-import { useState } from "react";
-import { invitationContent, type SpotId } from "@wedding-game/shared";
-import { gardenWorld } from "../game/world";
+import { useEffect, useRef, useState, type MouseEvent } from "react";
+import { invitationContent, type RoomGuest, type SpotId } from "@wedding-game/shared";
+import { computeNextPosition } from "../game/movement";
+import { gardenWorld, type Point } from "../game/world";
 import type { EntryProfile } from "./EntryScreen";
 import { PixelAvatar } from "./PixelAvatar";
 import { SpotModal } from "./SpotModal";
@@ -9,11 +10,64 @@ type GameWorldProps = {
   profile: EntryProfile;
 };
 
+const speed = 120;
+
 const toPercent = (value: number, total: number) => `${(value / total) * 100}%`;
 
 export function GameWorld({ profile }: GameWorldProps) {
   const [activeSpotId, setActiveSpotId] = useState<SpotId | null>(null);
+  const [position, setPosition] = useState<Point>(gardenWorld.spawn);
+  const [target, setTarget] = useState<Point | null>(null);
+  const [remoteGuests] = useState<RoomGuest[]>([]);
   const [realtimeStatus] = useState<"offline" | "connecting" | "online">("offline");
+  const lastFrameRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    let frame = 0;
+
+    function tick(now: number) {
+      if (lastFrameRef.current === null) {
+        lastFrameRef.current = now;
+      }
+
+      const deltaMs = now - lastFrameRef.current;
+      lastFrameRef.current = now;
+
+      if (target) {
+        setPosition((current) => {
+          const next = computeNextPosition({
+            current,
+            target,
+            deltaMs,
+            speed,
+            world: gardenWorld
+          });
+
+          if (next.x === target.x && next.y === target.y) {
+            setTarget(null);
+          }
+
+          return next;
+        });
+      }
+
+      frame = requestAnimationFrame(tick);
+    }
+
+    frame = requestAnimationFrame(tick);
+
+    return () => cancelAnimationFrame(frame);
+  }, [target]);
+
+  function handleMapClick(event: MouseEvent<HTMLDivElement>) {
+    const rect = event.currentTarget.getBoundingClientRect();
+    const width = rect.width || gardenWorld.bounds.width;
+    const height = rect.height || gardenWorld.bounds.height;
+    const x = gardenWorld.bounds.x + ((event.clientX - rect.left) / width) * gardenWorld.bounds.width;
+    const y = gardenWorld.bounds.y + ((event.clientY - rect.top) / height) * gardenWorld.bounds.height;
+
+    setTarget({ x, y });
+  }
 
   return (
     <section className="game-world" aria-label="정원 월드">
@@ -23,8 +77,10 @@ export function GameWorld({ profile }: GameWorldProps) {
       <div className="world-map">
         <div
           className="world-map__stage"
+          aria-label="정원 지도"
           data-logical-width={gardenWorld.bounds.width}
           data-logical-height={gardenWorld.bounds.height}
+          onClick={handleMapClick}
         >
           <div className="world-path world-path--vertical" />
           <div className="world-path world-path--middle" />
@@ -43,18 +99,36 @@ export function GameWorld({ profile }: GameWorldProps) {
                   width: toPercent(spot.width, gardenWorld.bounds.width),
                   height: toPercent(spot.height, gardenWorld.bounds.height)
                 }}
-                onClick={() => setActiveSpotId(spot.id)}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  setActiveSpotId(spot.id);
+                }}
               >
                 <span>{spot.label}</span>
                 <small>{content?.actionLabel ?? "보기"}</small>
               </button>
             );
           })}
+          {remoteGuests.map((guest) => (
+            <div
+              key={guest.guestId}
+              className="world-player player player--remote"
+              aria-label={guest.nickname}
+              style={{
+                left: toPercent(guest.x, gardenWorld.bounds.width),
+                top: toPercent(guest.y, gardenWorld.bounds.height)
+              }}
+            >
+              <PixelAvatar avatar={guest.avatar} color={guest.color} label={`${guest.nickname} 캐릭터`} />
+              <span>{guest.nickname}</span>
+            </div>
+          ))}
           <div
-            className="world-player"
+            className="world-player player"
+            aria-label={profile.nickname}
             style={{
-              left: toPercent(gardenWorld.spawn.x, gardenWorld.bounds.width),
-              top: toPercent(gardenWorld.spawn.y, gardenWorld.bounds.height)
+              left: toPercent(position.x, gardenWorld.bounds.width),
+              top: toPercent(position.y, gardenWorld.bounds.height)
             }}
           >
             <PixelAvatar avatar={profile.avatar} color={profile.color} label={`${profile.nickname} 캐릭터`} />

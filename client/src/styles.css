@@ -247,6 +247,10 @@ select {
   text-shadow: 0 1px 0 #fffaf1;
 }
 
+.player--remote {
+  opacity: 0.82;
+}
+
 .world-actions {
   display: flex;
   gap: 8px;

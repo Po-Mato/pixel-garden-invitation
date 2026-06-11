@@ -101,4 +101,13 @@ describe("GameWorld", () => {
     expect(rsvpSpot.style.left).not.toBe("274px");
     expect(rsvpSpot.style.width).not.toBe("82px");
   });
+
+  it("moves the player when the map is clicked", () => {
+    render(<GameWorld profile={{ nickname: "하객1", avatar: "classic", color: "rose" }} />);
+    const map = screen.getByLabelText("정원 지도");
+
+    fireEvent.click(map, { clientX: 250, clientY: 300 });
+
+    expect(screen.getByLabelText("하객1")).toBeInTheDocument();
+  });
 });
