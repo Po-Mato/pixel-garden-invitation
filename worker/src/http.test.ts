@@ -4,6 +4,7 @@ import { handleApiRequest } from "./http";
 
 type CreateDbOptions = {
   invitation?: { id: string } | null;
+  guestbookRows?: Array<{ id: string; nickname: string; message: string; is_hidden: number; created_at: string }>;
   selectError?: Error;
   writeError?: Error;
 };
@@ -11,12 +12,20 @@ type CreateDbOptions = {
 function createDb(options: CreateDbOptions = {}) {
   const invitation = options.invitation === undefined ? { id: "sample-garden" } : options.invitation;
   const selectFirst = vi.fn();
+  const all = vi.fn();
   const run = vi.fn();
+  let guestbookListSql = "";
 
   if (options.selectError) {
     selectFirst.mockRejectedValue(options.selectError);
+    all.mockRejectedValue(options.selectError);
   } else {
     selectFirst.mockResolvedValue(invitation);
+    all.mockImplementation(() => ({
+      results: guestbookListSql.match(/is_hidden\s*=\s*0/i)
+        ? (options.guestbookRows ?? []).filter((row) => row.is_hidden === 0)
+        : (options.guestbookRows ?? [])
+    }));
   }
 
   if (options.writeError) {
@@ -26,16 +35,22 @@ function createDb(options: CreateDbOptions = {}) {
   }
 
   const selectBind = vi.fn(() => ({ first: selectFirst }));
+  const guestbookListBind = vi.fn(() => ({ all }));
   const bind = vi.fn(() => ({ run }));
   const prepare = vi.fn((sql: string) => {
     if (sql.includes("SELECT id FROM invitations")) {
       return { bind: selectBind };
     }
 
+    if (sql.includes("FROM guestbook_messages") && sql.includes("SELECT")) {
+      guestbookListSql = sql;
+      return { bind: guestbookListBind };
+    }
+
     return { bind };
   });
 
-  return { db: { prepare } as unknown as D1Database, prepare, selectBind, selectFirst, bind, run };
+  return { db: { prepare } as unknown as D1Database, prepare, selectBind, selectFirst, guestbookListBind, all, bind, run };
 }
 
 function rsvpRequest(invitationId = "sample-garden") {
@@ -132,6 +147,64 @@ describe("handleApiRequest", () => {
       "축하합니다"
     );
     expect(run).toHaveBeenCalled();
+  });
+
+  it("lists visible guestbook messages newest-first", async () => {
+    const { db, prepare, guestbookListBind } = createDb({
+      guestbookRows: [
+        {
+          id: "guestbook_new",
+          nickname: "하객2",
+          message: "새 축하",
+          is_hidden: 0,
+          created_at: "2026-06-12T00:00:00.000Z"
+        },
+        {
+          id: "guestbook_old",
+          nickname: "하객1",
+          message: "오래된 축하",
+          is_hidden: 0,
+          created_at: "2026-06-11T00:00:00.000Z"
+        },
+        {
+          id: "guestbook_hidden",
+          nickname: "숨김",
+          message: "숨겨진 축하",
+          is_hidden: 1,
+          created_at: "2026-06-13T00:00:00.000Z"
+        }
+      ]
+    });
+
+    const response = await handleApiRequest(
+      new Request("https://worker.test/api/invitations/sample-garden/guestbook", {
+        method: "GET"
+      }),
+      db,
+      "guestbook-list-client"
+    );
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get("access-control-allow-origin")).toBe("*");
+    expect(prepare).toHaveBeenCalledWith(expect.stringMatching(/is_hidden\s*=\s*0/i));
+    expect(prepare).toHaveBeenCalledWith(expect.stringMatching(/ORDER BY created_at DESC/i));
+    expect(guestbookListBind).toHaveBeenCalledWith("sample-garden");
+    await expect(response.json()).resolves.toEqual({
+      messages: [
+        {
+          id: "guestbook_new",
+          nickname: "하객2",
+          message: "새 축하",
+          createdAt: "2026-06-12T00:00:00.000Z"
+        },
+        {
+          id: "guestbook_old",
+          nickname: "하객1",
+          message: "오래된 축하",
+          createdAt: "2026-06-11T00:00:00.000Z"
+        }
+      ]
+    });
   });
 
   it("rejects malformed guestbook submissions", async () => {

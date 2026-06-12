@@ -7,6 +7,13 @@ type HandleApiRequestOptions = {
   limiter?: WriteLimiter;
 };
 
+type GuestbookRow = {
+  id: string;
+  nickname: string;
+  message: string;
+  created_at: string;
+};
+
 function createWriteLimiter(): MemoryRateLimiter {
   return new MemoryRateLimiter({ limit: 10, windowMs: 60_000 });
 }
@@ -64,10 +71,6 @@ export async function handleApiRequest(
     return new Response(null, { status: 204, headers: corsHeaders });
   }
 
-  if (request.method !== "POST") {
-    return json({ error: "method_not_allowed" }, 405);
-  }
-
   const url = new URL(request.url);
   const match = url.pathname.match(/^\/api\/invitations\/([^/]+)\/(rsvps|guestbook)$/);
   if (!match) {
@@ -75,6 +78,39 @@ export async function handleApiRequest(
   }
 
   const [, invitationId, resource] = match;
+  if (request.method === "GET" && resource === "guestbook") {
+    try {
+      if (!(await invitationExists(db, invitationId))) {
+        return json({ error: "not_found" }, 404);
+      }
+
+      const result = await db
+        .prepare(
+          `SELECT id, nickname, message, created_at
+           FROM guestbook_messages
+           WHERE invitation_id = ? AND is_hidden = 0
+           ORDER BY created_at DESC`
+        )
+        .bind(invitationId)
+        .all<GuestbookRow>();
+
+      return json({
+        messages: (result.results ?? []).map((row) => ({
+          id: row.id,
+          nickname: row.nickname,
+          message: row.message,
+          createdAt: row.created_at
+        }))
+      });
+    } catch {
+      return json({ error: "internal_error" }, 500);
+    }
+  }
+
+  if (request.method !== "POST") {
+    return json({ error: "method_not_allowed" }, 405);
+  }
+
   const body = await readJson(request);
 
   if (resource === "rsvps") {

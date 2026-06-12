@@ -1,5 +1,12 @@
+import { useEffect, useState } from "react";
 import { invitationContent, type SpotId } from "@wedding-game/shared";
-import { submitGuestbook, submitRsvp } from "../api/weddingApi";
+import {
+  fetchGuestbookMessages,
+  submitGuestbook,
+  submitRsvp,
+  type GuestbookMessage,
+  type GuestbookPayload
+} from "../api/weddingApi";
 import { BottomSheet } from "./BottomSheet";
 import { GuestbookPanel } from "./GuestbookPanel";
 import { RsvpForm } from "./RsvpForm";
@@ -12,6 +19,40 @@ type SpotModalProps = {
 
 export function SpotModal({ spotId, nickname, onClose }: SpotModalProps) {
   const spot = invitationContent.spots.find((item) => item.id === spotId);
+  const [guestbookMessages, setGuestbookMessages] = useState<GuestbookMessage[]>([]);
+
+  useEffect(() => {
+    if (spotId !== "guestbook") {
+      return;
+    }
+
+    let active = true;
+    fetchGuestbookMessages()
+      .then((messages) => {
+        if (active) {
+          setGuestbookMessages(messages);
+        }
+      })
+      .catch(() => {
+        if (active) {
+          setGuestbookMessages([]);
+        }
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [spotId]);
+
+  async function handleGuestbookSubmit(payload: GuestbookPayload): Promise<void> {
+    await submitGuestbook(payload);
+
+    try {
+      setGuestbookMessages(await fetchGuestbookMessages());
+    } catch {
+      // Submission succeeded; keep the existing success path even if refresh fails.
+    }
+  }
 
   if (!spot) {
     return null;
@@ -21,7 +62,9 @@ export function SpotModal({ spotId, nickname, onClose }: SpotModalProps) {
     <BottomSheet title={spot.title} onClose={onClose}>
       <p>{spot.body}</p>
       {spotId === "rsvp" && <RsvpForm onSubmit={submitRsvp} />}
-      {spotId === "guestbook" && <GuestbookPanel nickname={nickname} messages={[]} onSubmit={submitGuestbook} />}
+      {spotId === "guestbook" && (
+        <GuestbookPanel nickname={nickname} messages={guestbookMessages} onSubmit={handleGuestbookSubmit} />
+      )}
     </BottomSheet>
   );
 }

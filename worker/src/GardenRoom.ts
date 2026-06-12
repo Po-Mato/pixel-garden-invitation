@@ -9,10 +9,12 @@ import {
 type GuestSocket = {
   guestId: string;
   socket: WebSocket;
+  lastMoveAt: number;
 };
 
 const spawn = { x: 195, y: 520 };
 const bounds = { minX: 0, maxX: 390, minY: 0, maxY: 720 };
+const moveThrottleMs = 100;
 
 export function createGuestSnapshot(
   guestId: string,
@@ -99,7 +101,7 @@ export class GardenRoom {
       const guestId = `guest_${crypto.randomUUID()}`;
       const guest = createGuestSnapshot(guestId, parsed, Date.now());
       this.guests.set(guestId, guest);
-      this.sockets.set(socket, { guestId, socket });
+      this.sockets.set(socket, { guestId, socket, lastMoveAt: Number.NEGATIVE_INFINITY });
       socket.send(encode({ type: "welcome", guestId, guests: [...this.guests.values()] }));
       this.broadcast({ type: "guest_joined", guest }, socket);
       return;
@@ -115,6 +117,12 @@ export class GardenRoom {
       const guest = this.guests.get(current.guestId);
       if (!guest) return;
 
+      const now = Date.now();
+      if (now - current.lastMoveAt < moveThrottleMs) {
+        return;
+      }
+
+      current.lastMoveAt = now;
       const position = {
         x: clampNumber(parsed.x, bounds.minX, bounds.maxX),
         y: clampNumber(parsed.y, bounds.minY, bounds.maxY),
@@ -122,7 +130,7 @@ export class GardenRoom {
         moving: parsed.moving,
         seq: parsed.seq
       };
-      this.guests.set(current.guestId, { ...guest, ...position, lastSeenAt: Date.now() });
+      this.guests.set(current.guestId, { ...guest, ...position, lastSeenAt: now });
       this.broadcast({ type: "guest_moved", guestId: current.guestId, position }, socket);
       return;
     }

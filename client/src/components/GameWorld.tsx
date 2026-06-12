@@ -1,7 +1,8 @@
-import { useEffect, useRef, useState, type MouseEvent } from "react";
-import { invitationContent, type RoomGuest, type SpotId } from "@wedding-game/shared";
+import { useCallback, useEffect, useRef, useState, type MouseEvent } from "react";
+import { invitationContent, type ClientMessage, type Direction, type RoomGuest, type SpotId } from "@wedding-game/shared";
 import { computeNextPosition, directionFromVector } from "../game/movement";
 import { gardenWorld, type Point } from "../game/world";
+import { connectRealtime, createMoveThrottle, getRoomUrl } from "../realtime/realtimeClient";
 import type { EntryProfile } from "./EntryScreen";
 import { PixelAvatar } from "./PixelAvatar";
 import { SpotModal } from "./SpotModal";
@@ -16,20 +17,187 @@ const arrivalDistance = 0.5;
 const progressDistance = 0.01;
 const joystickDeadZone = 0.05;
 const joystickTargetDistance = 120;
+const realtimeMoveIntervalMs = 100;
 
 const toPercent = (value: number, total: number) => `${(value / total) * 100}%`;
 const distanceBetween = (first: Point, second: Point) => Math.hypot(first.x - second.x, first.y - second.y);
 const hasJoystickMovement = (vector: Point) => Math.hypot(vector.x, vector.y) > joystickDeadZone;
+type RealtimeStatus = "offline" | "connecting" | "online";
+type MoveMessage = Extract<ClientMessage, { type: "move" }>;
+type RealtimeConnection = ReturnType<typeof connectRealtime>;
+
+function withoutCurrentGuest(guests: RoomGuest[], currentGuestId: string | null): RoomGuest[] {
+  return currentGuestId ? guests.filter((guest) => guest.guestId !== currentGuestId) : guests;
+}
+
+function upsertGuest(guests: RoomGuest[], guest: RoomGuest, currentGuestId: string | null): RoomGuest[] {
+  if (guest.guestId === currentGuestId) {
+    return guests;
+  }
+
+  const existingIndex = guests.findIndex((candidate) => candidate.guestId === guest.guestId);
+  if (existingIndex === -1) {
+    return [...guests, guest];
+  }
+
+  return guests.map((candidate, index) => (index === existingIndex ? guest : candidate));
+}
+
+function moveGuest(guests: RoomGuest[], guestId: string, position: MoveMessage): RoomGuest[] {
+  return guests.map((guest) =>
+    guest.guestId === guestId
+      ? {
+          ...guest,
+          x: position.x,
+          y: position.y,
+          direction: position.direction,
+          moving: position.moving,
+          seq: position.seq
+        }
+      : guest
+  );
+}
+
+function realtimeStatusText(status: RealtimeStatus) {
+  if (status === "online") return "실시간 정원";
+  if (status === "connecting") return "실시간 연결 중";
+  return "오프라인 정원";
+}
 
 export function GameWorld({ profile }: GameWorldProps) {
   const [activeSpotId, setActiveSpotId] = useState<SpotId | null>(null);
   const [position, setPosition] = useState<Point>(gardenWorld.spawn);
   const [target, setTarget] = useState<Point | null>(null);
   const [joystickVector, setJoystickVector] = useState<Point>({ x: 0, y: 0 });
-  const [remoteGuests] = useState<RoomGuest[]>([]);
-  const [realtimeStatus] = useState<"offline" | "connecting" | "online">("offline");
+  const [remoteGuests, setRemoteGuests] = useState<RoomGuest[]>([]);
+  const [realtimeStatus, setRealtimeStatus] = useState<RealtimeStatus>("offline");
   const positionRef = useRef<Point>(gardenWorld.spawn);
   const lastFrameRef = useRef<number | null>(null);
+  const connectionRef = useRef<RealtimeConnection | null>(null);
+  const currentGuestIdRef = useRef<string | null>(null);
+  const directionRef = useRef<Direction>("down");
+  const moveSeqRef = useRef(0);
+  const moveThrottleRef = useRef<((message: MoveMessage, now: number) => void) | null>(null);
+  const joystickWasMovingRef = useRef(false);
+
+  const sendRealtimeMove = useCallback((nextPosition: Point, moving: boolean, direction: Direction, now: number) => {
+    const throttle = moveThrottleRef.current;
+    if (!throttle) {
+      return;
+    }
+
+    throttle(
+      {
+        type: "move",
+        x: nextPosition.x,
+        y: nextPosition.y,
+        direction,
+        moving,
+        seq: moveSeqRef.current + 1
+      },
+      now
+    );
+  }, []);
+
+  useEffect(() => {
+    const workerUrl = import.meta.env.VITE_WORKER_URL;
+    if (!workerUrl) {
+      setRealtimeStatus("offline");
+      setRemoteGuests([]);
+      return;
+    }
+
+    let active = true;
+    let connection: RealtimeConnection;
+
+    currentGuestIdRef.current = null;
+    moveSeqRef.current = 0;
+    setRemoteGuests([]);
+    setRealtimeStatus("connecting");
+
+    try {
+      connection = connectRealtime(
+        getRoomUrl(workerUrl, import.meta.env.VITE_INVITATION_ID ?? "sample-garden"),
+        {
+          type: "join",
+          nickname: profile.nickname,
+          avatar: profile.avatar,
+          color: profile.color
+        },
+        {
+          onOpen: () => {
+            if (active) {
+              setRealtimeStatus("online");
+            }
+          },
+          onClose: () => {
+            if (!active) {
+              return;
+            }
+
+            connectionRef.current = null;
+            moveThrottleRef.current = null;
+            currentGuestIdRef.current = null;
+            setRemoteGuests([]);
+            setRealtimeStatus("offline");
+          },
+          onMessage: (message) => {
+            if (!active) {
+              return;
+            }
+
+            if (message.type === "welcome") {
+              currentGuestIdRef.current = message.guestId;
+              setRemoteGuests(withoutCurrentGuest(message.guests, message.guestId));
+              return;
+            }
+
+            if (message.type === "guest_joined") {
+              setRemoteGuests((guests) => upsertGuest(guests, message.guest, currentGuestIdRef.current));
+              return;
+            }
+
+            if (message.type === "guest_moved") {
+              if (message.guestId === currentGuestIdRef.current) {
+                return;
+              }
+
+              setRemoteGuests((guests) => moveGuest(guests, message.guestId, { type: "move", ...message.position }));
+              return;
+            }
+
+            if (message.type === "guest_left") {
+              setRemoteGuests((guests) => guests.filter((guest) => guest.guestId !== message.guestId));
+              return;
+            }
+
+            if (message.type === "room_state") {
+              setRemoteGuests(withoutCurrentGuest(message.guests, currentGuestIdRef.current));
+            }
+          }
+        }
+      );
+    } catch {
+      setRealtimeStatus("offline");
+      return;
+    }
+
+    connectionRef.current = connection;
+    moveThrottleRef.current = createMoveThrottle((message) => {
+      moveSeqRef.current = message.seq;
+      connection.send(message);
+    }, realtimeMoveIntervalMs);
+
+    return () => {
+      active = false;
+      if (connectionRef.current === connection) {
+        connectionRef.current = null;
+      }
+      moveThrottleRef.current = null;
+      currentGuestIdRef.current = null;
+      connection.close();
+    };
+  }, [profile.avatar, profile.color, profile.nickname]);
 
   useEffect(() => {
     const hasJoystickInput = hasJoystickMovement(joystickVector);
@@ -54,6 +222,7 @@ export function GameWorld({ profile }: GameWorldProps) {
       const current = positionRef.current;
 
       if (hasJoystickMovement(movementVector)) {
+        const direction = directionFromVector(movementVector);
         const next = computeNextPosition({
           current,
           target: {
@@ -65,8 +234,10 @@ export function GameWorld({ profile }: GameWorldProps) {
           world: gardenWorld
         });
 
+        directionRef.current = direction;
         positionRef.current = next;
         setPosition(next);
+        sendRealtimeMove(next, true, direction, now);
         frame = requestAnimationFrame(tick);
         return;
       }
@@ -76,6 +247,10 @@ export function GameWorld({ profile }: GameWorldProps) {
         return;
       }
 
+      const direction = directionFromVector({
+        x: movementTarget.x - current.x,
+        y: movementTarget.y - current.y
+      });
       const next = computeNextPosition({
         current,
         target: movementTarget,
@@ -87,8 +262,10 @@ export function GameWorld({ profile }: GameWorldProps) {
       const madeNoProgress = deltaMs > 0 && distanceBetween(current, next) <= progressDistance;
       const nextPosition = reachedTarget ? movementTarget : next;
 
+      directionRef.current = direction;
       positionRef.current = nextPosition;
       setPosition(nextPosition);
+      sendRealtimeMove(nextPosition, !(reachedTarget || madeNoProgress), direction, now);
 
       if (reachedTarget || madeNoProgress) {
         setTarget(null);
@@ -101,7 +278,7 @@ export function GameWorld({ profile }: GameWorldProps) {
     frame = requestAnimationFrame(tick);
 
     return () => cancelAnimationFrame(frame);
-  }, [target, joystickVector]);
+  }, [target, joystickVector, sendRealtimeMove]);
 
   function handleMapClick(event: MouseEvent<HTMLDivElement>) {
     const rect = event.currentTarget.getBoundingClientRect();
@@ -109,23 +286,41 @@ export function GameWorld({ profile }: GameWorldProps) {
     const height = rect.height || gardenWorld.bounds.height;
     const x = gardenWorld.bounds.x + ((event.clientX - rect.left) / width) * gardenWorld.bounds.width;
     const y = gardenWorld.bounds.y + ((event.clientY - rect.top) / height) * gardenWorld.bounds.height;
+    const nextTarget = { x, y };
 
-    setTarget({ x, y });
+    if (distanceBetween(positionRef.current, nextTarget) > arrivalDistance) {
+      directionRef.current = directionFromVector({
+        x: nextTarget.x - positionRef.current.x,
+        y: nextTarget.y - positionRef.current.y
+      });
+    }
+
+    setTarget(nextTarget);
   }
 
   function handleJoystickVectorChange(vector: Point) {
+    const wasMoving = joystickWasMovingRef.current;
+    const isMoving = hasJoystickMovement(vector);
+
     setJoystickVector(vector);
 
-    if (hasJoystickMovement(vector)) {
+    if (isMoving) {
+      joystickWasMovingRef.current = true;
       setTarget(null);
-      directionFromVector(vector);
+      directionRef.current = directionFromVector(vector);
+      return;
+    }
+
+    joystickWasMovingRef.current = false;
+    if (wasMoving) {
+      sendRealtimeMove(positionRef.current, false, directionRef.current, performance.now());
     }
   }
 
   return (
     <section className="game-world" aria-label="정원 월드">
       <div className={`realtime-pill realtime-pill--${realtimeStatus}`}>
-        {realtimeStatus === "online" ? "실시간 정원" : "오프라인 정원"}
+        {realtimeStatusText(realtimeStatus)}
       </div>
       <div className="world-map">
         <div

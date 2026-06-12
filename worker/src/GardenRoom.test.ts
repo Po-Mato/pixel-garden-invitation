@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import type { RoomGuest } from "@wedding-game/shared";
 import { createGuestSnapshot, GardenRoom, removeGuest } from "./GardenRoom";
 
@@ -36,6 +36,21 @@ function joinMessage(nickname: string): string {
     color: "rose"
   });
 }
+
+function moveMessage(seq: number, x: number): string {
+  return JSON.stringify({
+    type: "move",
+    x,
+    y: 520,
+    direction: "right",
+    moving: true,
+    seq
+  });
+}
+
+afterEach(() => {
+  vi.restoreAllMocks();
+});
 
 describe("GardenRoom helpers", () => {
   it("creates a room guest snapshot", () => {
@@ -99,5 +114,34 @@ describe("GardenRoom socket behavior", () => {
     const remaining = room.sockets.get(asWebSocket(joining));
     expect(remaining).toBeDefined();
     expect(remaining ? room.guests.has(remaining.guestId) : false).toBe(true);
+  });
+
+  it("throttles move broadcasts and state updates per socket", () => {
+    const nowSpy = vi.spyOn(Date, "now").mockReturnValue(1000);
+    const room = createRoom();
+    const moving = new TestSocket();
+    const watching = new TestSocket();
+
+    room.handleMessage(asWebSocket(moving), joinMessage("moving"));
+    room.handleMessage(asWebSocket(watching), joinMessage("watching"));
+    watching.sent.length = 0;
+
+    nowSpy.mockReturnValue(2000);
+    room.handleMessage(asWebSocket(moving), moveMessage(1, 200));
+
+    nowSpy.mockReturnValue(2050);
+    room.handleMessage(asWebSocket(moving), moveMessage(2, 220));
+
+    const movingGuestId = room.sockets.get(asWebSocket(moving))?.guestId;
+    expect(watching.sent.map((payload) => JSON.parse(payload)).filter((message) => message.type === "guest_moved")).toHaveLength(1);
+    expect(movingGuestId ? room.guests.get(movingGuestId)?.x : undefined).toBe(200);
+
+    nowSpy.mockReturnValue(2100);
+    room.handleMessage(asWebSocket(moving), moveMessage(3, 240));
+
+    const moveBroadcasts = watching.sent.map((payload) => JSON.parse(payload)).filter((message) => message.type === "guest_moved");
+    expect(moveBroadcasts).toHaveLength(2);
+    expect(moveBroadcasts.map((message) => message.position.seq)).toEqual([1, 3]);
+    expect(movingGuestId ? room.guests.get(movingGuestId)?.x : undefined).toBe(240);
   });
 });
