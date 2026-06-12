@@ -11,6 +11,7 @@
   "scripts": {
     "dev": "npm run dev -w client",
     "dev:worker": "npm run dev -w worker",
+    "db:migrate:local": "npm exec -w worker wrangler -- d1 migrations apply wedding-game-invitation --local",
     "build": "npm run build -w shared && npm run build -w client && npm run build -w worker",
     "test": "npm run test -w shared && npm run test -w client && npm run test -w worker",
     "typecheck": "npm run typecheck -w shared && npm run typecheck -w client && npm run typecheck -w worker"

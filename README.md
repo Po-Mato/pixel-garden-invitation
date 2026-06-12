@@ -31,6 +31,7 @@ npm run dev
 Run the Cloudflare Worker locally:
 
 ```bash
+npm run db:migrate:local
 npm run dev:worker
 ```
 
@@ -55,5 +56,5 @@ npm run build
 - Before enabling Pages deployment, configure the GitHub repository variable `VITE_WORKER_URL` with the deployed Worker origin, for example `https://wedding-game-invitation.example.workers.dev`. The workflow also reads the optional repository variable `VITE_INVITATION_ID`; if it is not set, the client build uses `sample-garden`.
 - The example invitation ID, `sample-garden`, is inserted by `worker/migrations/0001_init.sql`.
 - Deploy the Worker separately with Wrangler after creating a real D1 database and replacing the placeholder `database_id` in `worker/wrangler.toml`.
-- Apply D1 migrations before using RSVP or guestbook writes so the `invitations`, `rsvps`, `guestbook_messages`, and `moderation_events` tables exist.
+- Apply D1 migrations before using RSVP or guestbook writes so the `invitations`, `rsvps`, `guestbook_messages`, and `moderation_events` tables exist. For local development, run `npm run db:migrate:local`.
 - Do not commit Cloudflare account IDs, generated credentials, `.dev.vars`, or other local secret files.
