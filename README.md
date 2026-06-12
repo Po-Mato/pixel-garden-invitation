@@ -10,10 +10,15 @@ Install dependencies from the repository root:
 npm install
 ```
 
-Create local environment files from the examples:
+Create the local client environment file from the example:
 
 ```bash
 cp client/.env.example client/.env.local
+```
+
+The Worker currently uses Wrangler bindings from `worker/wrangler.toml` and does not require local secret variables. `worker/.dev.vars.example` documents this; copying it is optional and only needed if local-only Worker secrets are added later.
+
+```bash
 cp worker/.dev.vars.example worker/.dev.vars
 ```
 
@@ -47,7 +52,8 @@ npm run build
 ## Deployment Notes
 
 - GitHub Pages deployment is configured in `.github/workflows/pages.yml`. On pushes to `main` or manual dispatch, it installs dependencies, runs tests, builds the workspace, uploads `client/dist`, and deploys it with GitHub Pages.
-- Set `VITE_WORKER_URL` to the deployed Worker origin and `VITE_INVITATION_ID` to the invitation ID used by the client build. The example ID, `sample-garden`, is inserted by `worker/migrations/0001_init.sql`.
+- Before enabling Pages deployment, configure the GitHub repository variable `VITE_WORKER_URL` with the deployed Worker origin, for example `https://wedding-game-invitation.example.workers.dev`. The workflow also reads the optional repository variable `VITE_INVITATION_ID`; if it is not set, the client build uses `sample-garden`.
+- The example invitation ID, `sample-garden`, is inserted by `worker/migrations/0001_init.sql`.
 - Deploy the Worker separately with Wrangler after creating a real D1 database and replacing the placeholder `database_id` in `worker/wrangler.toml`.
 - Apply D1 migrations before using RSVP or guestbook writes so the `invitations`, `rsvps`, `guestbook_messages`, and `moderation_events` tables exist.
 - Do not commit Cloudflare account IDs, generated credentials, `.dev.vars`, or other local secret files.

@@ -1,1 +1,2 @@
-ADMIN_TOKEN=change-this-local-token
+# No local Worker secrets are required right now.
+# D1 and Durable Object bindings are configured in wrangler.toml.

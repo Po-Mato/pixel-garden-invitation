@@ -26,6 +26,9 @@ jobs:
       - run: npm ci
       - run: npm run test
       - run: npm run build
+        env:
+          VITE_WORKER_URL: ${{ vars.VITE_WORKER_URL || 'https://wedding-game-invitation.example.workers.dev' }}
+          VITE_INVITATION_ID: ${{ vars.VITE_INVITATION_ID || 'sample-garden' }}
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
