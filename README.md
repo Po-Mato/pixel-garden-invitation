@@ -16,6 +16,8 @@ Create the local client environment file from the example:
 cp client/.env.example client/.env.local
 ```
 
+The example points the client at the local Wrangler Worker URL, `http://127.0.0.1:8787`.
+
 The Worker currently uses Wrangler bindings from `worker/wrangler.toml` and does not require local secret variables. `worker/.dev.vars.example` documents this; copying it is optional and only needed if local-only Worker secrets are added later.
 
 ```bash
