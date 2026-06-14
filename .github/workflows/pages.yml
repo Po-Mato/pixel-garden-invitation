@@ -19,17 +19,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.29.2
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
-      - run: npm ci
-      - run: npm run test
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm test
       - name: Verify Pages build environment
         run: test -n "$VITE_WORKER_URL"
         env:
           VITE_WORKER_URL: ${{ vars.VITE_WORKER_URL }}
-      - run: npm run build
+      - run: pnpm build
         env:
           VITE_WORKER_URL: ${{ vars.VITE_WORKER_URL }}
           VITE_INVITATION_ID: ${{ vars.VITE_INVITATION_ID || 'sample-garden' }}

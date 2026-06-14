@@ -3,21 +3,27 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "workspaces": [
-    "shared",
-    "client",
-    "worker"
-  ],
+  "packageManager": "pnpm@10.29.2",
   "scripts": {
-    "dev": "npm run dev -w client",
-    "dev:worker": "npm run dev -w worker",
-    "db:migrate:local": "npm exec -w worker wrangler -- d1 migrations apply wedding-game-invitation --local",
-    "build": "npm run build -w shared && npm run build -w client && npm run build -w worker",
-    "test": "npm run test -w shared && npm run test -w client && npm run test -w worker",
-    "typecheck": "npm run typecheck -w shared && npm run typecheck -w client && npm run typecheck -w worker"
+    "dev": "pnpm --filter @wedding-game/client dev",
+    "dev:worker": "pnpm --filter @wedding-game/worker dev",
+    "db:migrate:local": "pnpm --filter @wedding-game/worker exec wrangler d1 migrations apply wedding-game-invitation --local",
+    "build": "pnpm --filter @wedding-game/shared build && pnpm --filter @wedding-game/client build && pnpm --filter @wedding-game/worker build",
+    "test": "pnpm --filter @wedding-game/shared test && pnpm --filter @wedding-game/client test && pnpm --filter @wedding-game/worker test",
+    "typecheck": "pnpm --filter @wedding-game/shared typecheck && pnpm --filter @wedding-game/client typecheck && pnpm --filter @wedding-game/worker typecheck"
   },
   "devDependencies": {
     "@types/node": "^20.14.0",
     "typescript": "^5.5.0"
+  },
+  "pnpm": {
+    "overrides": {
+      "esbuild": "^0.28.1"
+    },
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "sharp",
+      "workerd"
+    ]
   }
 }
