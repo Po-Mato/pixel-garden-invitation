@@ -13,4 +13,4 @@ new_sqlite_classes = ["GardenRoom"]
 [[d1_databases]]
 binding = "DB"
 database_name = "wedding-game-invitation"
-database_id = "00000000-0000-0000-0000-000000000000"
+database_id = "c3f7e2aa-e0b9-4373-bb25-e2e973f17649"
