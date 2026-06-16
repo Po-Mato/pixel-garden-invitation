@@ -18,7 +18,7 @@ export type GardenWorld = {
 
 export const gardenWorld: GardenWorld = {
   bounds: { x: 0, y: 0, width: 390, height: 720 },
-  spawn: { x: 195, y: 520 },
+  spawn: { x: 195, y: 525 },
   blocked: [
     { x: 150, y: 48, width: 90, height: 82 },
     { x: 34, y: 154, width: 82, height: 70 },

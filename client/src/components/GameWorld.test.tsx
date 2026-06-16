@@ -223,7 +223,7 @@ describe("GameWorld", () => {
     expect(rsvpSpot.style.width).not.toBe("82px");
   });
 
-  it("moves the player when the map is clicked", () => {
+  it("moves the player one tile at a time when the map is clicked", () => {
     render(<GameWorld profile={{ nickname: "하객1", avatar: "classic", color: "rose" }} />);
     const map = screen.getByLabelText("정원 지도");
     mockMapRect(map);
@@ -232,11 +232,15 @@ describe("GameWorld", () => {
 
     fireEvent.click(map, { clientX: 205, clientY: 420 });
     advanceAnimation(0);
-    advanceAnimation(1000);
 
     expect(player.style.left).toBe("50%");
-    expect(player.style.top).toBe("55.55555555555556%");
+    expect(player.style.top).toBe("68.75%");
     expect(player.style.top).not.toBe(initialTop);
+
+    advanceAnimation(150);
+
+    expect(player.style.left).toBe("50%");
+    expect(player.style.top).toBe("64.58333333333334%");
   });
 
   it("stops moving when the target is blocked", () => {
@@ -247,24 +251,31 @@ describe("GameWorld", () => {
 
     fireEvent.click(map, { clientX: 284, clientY: 600 });
     advanceAnimation(0);
-    advanceAnimation(1000);
+    advanceAnimation(150);
+    advanceAnimation(300);
+    advanceAnimation(450);
+    advanceAnimation(600);
 
-    expect(player.style.left).toBe("50%");
-    expect(player.style.top).toBe("72.22222222222221%");
+    expect(player.style.left).toBe("73.07692307692307%");
+    expect(player.style.top).toBe("77.08333333333334%");
     expect(pendingAnimationFrameCount()).toBe(0);
   });
 
-  it("moves the player from joystick input", () => {
+  it("moves the player from joystick input one tile at a time", () => {
     render(<GameWorld profile={profile} />);
     const joystick = screen.getByLabelText("가상 조이스틱");
     const player = screen.getByLabelText("하객1");
 
     fireEvent.keyDown(joystick, { key: "ArrowRight" });
     advanceAnimation(0);
-    advanceAnimation(1000);
 
-    expect(player.style.left).toBe("80.76923076923077%");
-    expect(player.style.top).toBe("72.22222222222221%");
+    expect(player.style.left).toBe("57.692307692307686%");
+    expect(player.style.top).toBe("72.91666666666666%");
+
+    advanceAnimation(150);
+
+    expect(player.style.left).toBe("65.38461538461539%");
+    expect(player.style.top).toBe("72.91666666666666%");
 
     fireEvent.keyUp(joystick, { key: "ArrowRight" });
   });

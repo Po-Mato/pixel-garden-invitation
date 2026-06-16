@@ -1,8 +1,47 @@
 import { describe, expect, it } from "vitest";
-import { computeNextPosition, directionFromVector } from "./movement";
+import {
+  computeNextGridPosition,
+  computeNextPosition,
+  directionFromVector,
+  directionTowardPoint,
+  snapToGrid
+} from "./movement";
 import { gardenWorld } from "./world";
 
 describe("movement", () => {
+  it("snaps positions to the 30px tile grid", () => {
+    expect(snapToGrid({ x: 196, y: 520 }, gardenWorld)).toEqual({ x: 195, y: 525 });
+    expect(snapToGrid({ x: -10, y: 900 }, gardenWorld)).toEqual({ x: 15, y: 705 });
+  });
+
+  it("moves exactly one tile in a cardinal direction", () => {
+    expect(computeNextGridPosition({
+      current: { x: 195, y: 525 },
+      direction: "right",
+      world: gardenWorld
+    })).toEqual({ x: 225, y: 525 });
+
+    expect(computeNextGridPosition({
+      current: { x: 195, y: 525 },
+      direction: "up",
+      world: gardenWorld
+    })).toEqual({ x: 195, y: 495 });
+  });
+
+  it("keeps grid movement out of blocked tiles", () => {
+    expect(computeNextGridPosition({
+      current: { x: 135, y: 75 },
+      direction: "right",
+      world: gardenWorld
+    })).toEqual({ x: 135, y: 75 });
+  });
+
+  it("chooses a cardinal direction toward a grid target", () => {
+    expect(directionTowardPoint({ x: 195, y: 525 }, { x: 195, y: 405 })).toBe("up");
+    expect(directionTowardPoint({ x: 195, y: 525 }, { x: 285, y: 525 })).toBe("right");
+    expect(directionTowardPoint({ x: 195, y: 525 }, { x: 195, y: 525 })).toBeNull();
+  });
+
   it("moves toward a target with a fixed speed", () => {
     expect(computeNextPosition({
       current: { x: 100, y: 100 },

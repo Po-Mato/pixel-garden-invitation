@@ -44,7 +44,7 @@ describe("VirtualJoystick", () => {
     expect(onVectorChange).toHaveBeenLastCalledWith({ x: 0, y: 0 });
   });
 
-  it("rounds normalized movement with toFixed semantics", () => {
+  it("snaps fractional pointer positions to a cardinal direction", () => {
     const onVectorChange = vi.fn();
     vi.stubGlobal("PointerEvent", MockPointerEvent);
     render(<VirtualJoystick onVectorChange={onVectorChange} />);
@@ -67,7 +67,33 @@ describe("VirtualJoystick", () => {
     fireEvent.pointerDown(control, { clientX: 51, clientY: 100, pointerId: 1 });
     fireEvent.pointerMove(control, { clientX: 23, clientY: 100, pointerId: 1 });
 
-    expect(onVectorChange).toHaveBeenCalledWith({ x: -0.93, y: 0 });
+    expect(onVectorChange).toHaveBeenCalledWith({ x: -1, y: 0 });
+  });
+
+  it("snaps pointer movement to a single cardinal direction", () => {
+    const onVectorChange = vi.fn();
+    vi.stubGlobal("PointerEvent", MockPointerEvent);
+    render(<VirtualJoystick onVectorChange={onVectorChange} />);
+
+    const control = screen.getByLabelText("가상 조이스틱");
+    vi.spyOn(control, "getBoundingClientRect").mockReturnValue({
+      x: 61,
+      y: 61,
+      left: 61,
+      top: 61,
+      right: 139,
+      bottom: 139,
+      width: 78,
+      height: 78,
+      toJSON: () => ({})
+    } as DOMRect);
+    control.setPointerCapture = vi.fn();
+    control.releasePointerCapture = vi.fn();
+
+    fireEvent.pointerDown(control, { clientX: 100, clientY: 100, pointerId: 1 });
+    fireEvent.pointerMove(control, { clientX: 116, clientY: 132, pointerId: 1 });
+
+    expect(onVectorChange).toHaveBeenLastCalledWith({ x: 0, y: 1 });
   });
 
   it("supports keyboard movement without trapping normal navigation", () => {

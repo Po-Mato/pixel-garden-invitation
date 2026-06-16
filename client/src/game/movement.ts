@@ -1,5 +1,5 @@
 import type { Direction } from "@wedding-game/shared";
-import { clampToWorld } from "./geometry";
+import { clampToWorld, isBlocked } from "./geometry";
 import type { GardenWorld, Point, Rect } from "./world";
 
 export type MoveInput = {
@@ -9,6 +9,15 @@ export type MoveInput = {
   speed: number;
   world: GardenWorld;
 };
+
+export type GridMoveInput = {
+  current: Point;
+  direction: Direction;
+  world: GardenWorld;
+  tileSize?: number;
+};
+
+export const gridTileSize = 30;
 
 function isFinitePoint(point: Point): boolean {
   return Number.isFinite(point.x) && Number.isFinite(point.y);
@@ -24,6 +33,68 @@ function safeCurrentPosition(input: MoveInput): Point {
   }
 
   return { x: input.world.bounds.x, y: input.world.bounds.y };
+}
+
+function nearestTileCenter(value: number, min: number, max: number, tileSize: number): number {
+  const firstCenter = min + tileSize / 2;
+  const lastCenter = max - tileSize / 2;
+  const tileIndex = Math.round((value - firstCenter) / tileSize);
+
+  return Math.min(lastCenter, Math.max(firstCenter, firstCenter + tileIndex * tileSize));
+}
+
+export function snapToGrid(point: Point, world: GardenWorld, tileSize = gridTileSize): Point {
+  const fallback = isFinitePoint(point) ? point : world.spawn;
+  const bounds = world.bounds;
+
+  return {
+    x: nearestTileCenter(fallback.x, bounds.x, bounds.x + bounds.width, tileSize),
+    y: nearestTileCenter(fallback.y, bounds.y, bounds.y + bounds.height, tileSize)
+  };
+}
+
+function directionOffset(direction: Direction, tileSize: number): Point {
+  if (direction === "up") {
+    return { x: 0, y: -tileSize };
+  }
+
+  if (direction === "down") {
+    return { x: 0, y: tileSize };
+  }
+
+  if (direction === "left") {
+    return { x: -tileSize, y: 0 };
+  }
+
+  return { x: tileSize, y: 0 };
+}
+
+export function computeNextGridPosition(input: GridMoveInput): Point {
+  const tileSize = input.tileSize ?? gridTileSize;
+  const current = snapToGrid(input.current, input.world, tileSize);
+  const offset = directionOffset(input.direction, tileSize);
+  const next = snapToGrid({ x: current.x + offset.x, y: current.y + offset.y }, input.world, tileSize);
+
+  if (isBlocked(next, input.world)) {
+    return current;
+  }
+
+  return next;
+}
+
+export function directionTowardPoint(current: Point, target: Point): Direction | null {
+  const dx = target.x - current.x;
+  const dy = target.y - current.y;
+
+  if (dx === 0 && dy === 0) {
+    return null;
+  }
+
+  if (Math.abs(dx) >= Math.abs(dy) && dx !== 0) {
+    return dx > 0 ? "right" : "left";
+  }
+
+  return dy > 0 ? "down" : "up";
 }
 
 function segmentIntersectsRect(from: Point, to: Point, rect: Rect): boolean {

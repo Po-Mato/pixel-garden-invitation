@@ -9,10 +9,6 @@ type VirtualJoystickProps = {
 const radius = 30;
 const zeroVector: Point = { x: 0, y: 0 };
 
-function roundToTwo(value: number) {
-  return Number(value.toFixed(2));
-}
-
 function normalize(dx: number, dy: number): Point {
   const distance = Math.hypot(dx, dy);
 
@@ -20,13 +16,11 @@ function normalize(dx: number, dy: number): Point {
     return zeroVector;
   }
 
-  const clampedDistance = Math.min(distance, radius);
-  const scale = clampedDistance / distance;
+  if (Math.abs(dx) >= Math.abs(dy)) {
+    return { x: dx >= 0 ? 1 : -1, y: 0 };
+  }
 
-  return {
-    x: roundToTwo((dx * scale) / radius),
-    y: roundToTwo((dy * scale) / radius)
-  };
+  return { x: 0, y: dy >= 0 ? 1 : -1 };
 }
 
 function vectorFromKey(key: string): Point | null {

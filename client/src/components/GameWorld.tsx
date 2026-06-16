@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState, type MouseEvent } from "react";
 import { invitationContent, type ClientMessage, type Direction, type RoomGuest, type SpotId } from "@wedding-game/shared";
-import { computeNextPosition, directionFromVector } from "../game/movement";
+import { computeNextGridPosition, directionFromVector, directionTowardPoint, snapToGrid } from "../game/movement";
 import { gardenWorld, type Point } from "../game/world";
 import { connectRealtime, createMoveThrottle, getRoomUrl } from "../realtime/realtimeClient";
 import type { EntryProfile } from "./EntryScreen";
@@ -12,16 +12,13 @@ type GameWorldProps = {
   profile: EntryProfile;
 };
 
-const speed = 120;
-const arrivalDistance = 0.5;
-const progressDistance = 0.01;
 const joystickDeadZone = 0.05;
-const joystickTargetDistance = 120;
+const gridStepIntervalMs = 150;
 const realtimeMoveIntervalMs = 100;
 
 const toPercent = (value: number, total: number) => `${(value / total) * 100}%`;
-const distanceBetween = (first: Point, second: Point) => Math.hypot(first.x - second.x, first.y - second.y);
 const hasJoystickMovement = (vector: Point) => Math.hypot(vector.x, vector.y) > joystickDeadZone;
+const samePoint = (first: Point, second: Point) => first.x === second.x && first.y === second.y;
 type RealtimeStatus = "offline" | "connecting" | "online";
 type MoveMessage = Extract<ClientMessage, { type: "move" }>;
 type RealtimeConnection = ReturnType<typeof connectRealtime>;
@@ -72,7 +69,7 @@ export function GameWorld({ profile }: GameWorldProps) {
   const [remoteGuests, setRemoteGuests] = useState<RoomGuest[]>([]);
   const [realtimeStatus, setRealtimeStatus] = useState<RealtimeStatus>("offline");
   const positionRef = useRef<Point>(gardenWorld.spawn);
-  const lastFrameRef = useRef<number | null>(null);
+  const lastStepRef = useRef<number | null>(null);
   const connectionRef = useRef<RealtimeConnection | null>(null);
   const currentGuestIdRef = useRef<string | null>(null);
   const directionRef = useRef<Direction>("down");
@@ -203,7 +200,7 @@ export function GameWorld({ profile }: GameWorldProps) {
     const hasJoystickInput = hasJoystickMovement(joystickVector);
 
     if (!target && !hasJoystickInput) {
-      lastFrameRef.current = null;
+      lastStepRef.current = null;
       return;
     }
 
@@ -212,63 +209,55 @@ export function GameWorld({ profile }: GameWorldProps) {
     let frame = 0;
 
     function tick(now: number) {
-      if (lastFrameRef.current === null) {
-        lastFrameRef.current = now;
+      if (lastStepRef.current === null) {
+        lastStepRef.current = now - gridStepIntervalMs;
       }
 
-      const deltaMs = now - lastFrameRef.current;
-      lastFrameRef.current = now;
-
-      const current = positionRef.current;
-
-      if (hasJoystickMovement(movementVector)) {
-        const direction = directionFromVector(movementVector);
-        const next = computeNextPosition({
-          current,
-          target: {
-            x: current.x + movementVector.x * joystickTargetDistance,
-            y: current.y + movementVector.y * joystickTargetDistance
-          },
-          deltaMs,
-          speed,
-          world: gardenWorld
-        });
-
-        directionRef.current = direction;
-        positionRef.current = next;
-        setPosition(next);
-        sendRealtimeMove(next, true, direction, now);
+      if (now - lastStepRef.current < gridStepIntervalMs) {
         frame = requestAnimationFrame(tick);
         return;
       }
 
-      if (!movementTarget) {
-        lastFrameRef.current = null;
+      lastStepRef.current = now;
+
+      const current = positionRef.current;
+      const hasDirectionalInput = hasJoystickMovement(movementVector);
+      const direction = hasDirectionalInput
+        ? directionFromVector(movementVector)
+        : movementTarget
+          ? directionTowardPoint(current, movementTarget)
+          : null;
+
+      if (!direction) {
+        lastStepRef.current = null;
+        setTarget(null);
         return;
       }
 
-      const direction = directionFromVector({
-        x: movementTarget.x - current.x,
-        y: movementTarget.y - current.y
-      });
-      const next = computeNextPosition({
+      const next = computeNextGridPosition({
         current,
-        target: movementTarget,
-        deltaMs,
-        speed,
+        direction,
         world: gardenWorld
       });
-      const reachedTarget = distanceBetween(next, movementTarget) <= arrivalDistance;
-      const madeNoProgress = deltaMs > 0 && distanceBetween(current, next) <= progressDistance;
-      const nextPosition = reachedTarget ? movementTarget : next;
+      const didMove = !samePoint(current, next);
+      const reachedTarget = movementTarget ? samePoint(next, movementTarget) : false;
 
       directionRef.current = direction;
-      positionRef.current = nextPosition;
-      setPosition(nextPosition);
-      sendRealtimeMove(nextPosition, !(reachedTarget || madeNoProgress), direction, now);
 
-      if (reachedTarget || madeNoProgress) {
+      if (!didMove) {
+        sendRealtimeMove(current, false, direction, now);
         setTarget(null);
+        lastStepRef.current = null;
+        return;
+      }
+
+      positionRef.current = next;
+      setPosition(next);
+      sendRealtimeMove(next, hasDirectionalInput || !reachedTarget, direction, now);
+
+      if (reachedTarget) {
+        setTarget(null);
+        lastStepRef.current = null;
         return;
       }
 
@@ -286,13 +275,11 @@ export function GameWorld({ profile }: GameWorldProps) {
     const height = rect.height || gardenWorld.bounds.height;
     const x = gardenWorld.bounds.x + ((event.clientX - rect.left) / width) * gardenWorld.bounds.width;
     const y = gardenWorld.bounds.y + ((event.clientY - rect.top) / height) * gardenWorld.bounds.height;
-    const nextTarget = { x, y };
+    const nextTarget = snapToGrid({ x, y }, gardenWorld);
 
-    if (distanceBetween(positionRef.current, nextTarget) > arrivalDistance) {
-      directionRef.current = directionFromVector({
-        x: nextTarget.x - positionRef.current.x,
-        y: nextTarget.y - positionRef.current.y
-      });
+    const direction = directionTowardPoint(positionRef.current, nextTarget);
+    if (direction) {
+      directionRef.current = direction;
     }
 
     setTarget(nextTarget);
@@ -307,6 +294,7 @@ export function GameWorld({ profile }: GameWorldProps) {
     if (isMoving) {
       joystickWasMovingRef.current = true;
       setTarget(null);
+      lastStepRef.current = null;
       directionRef.current = directionFromVector(vector);
       return;
     }
