@@ -1,7 +1,11 @@
-import { render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { defaultCharacterAppearance } from "@wedding-game/shared";
-import { expect, it } from "vitest";
+import { afterEach, expect, it, vi } from "vitest";
 import { CharacterSprite } from "./CharacterSprite";
+
+afterEach(() => {
+  cleanup();
+});
 
 it("renders layers in stable back-to-front order", () => {
   const appearance = {
@@ -37,4 +41,28 @@ it("uses the two-frame idle class only when facing down and stopped", () => {
 
   rerender(<CharacterSprite appearance={defaultCharacterAppearance} direction="left" moving={false} label="캐릭터" />);
   expect(screen.getByLabelText("캐릭터")).not.toHaveClass("character-sprite--idle-front");
+});
+
+it("hides only a failed layer and keeps sibling layers", () => {
+  const errorSpy = vi.spyOn(console, "error").mockImplementation(() => undefined);
+  render(
+    <CharacterSprite
+      appearance={defaultCharacterAppearance}
+      direction="down"
+      moving={false}
+      label="캐릭터"
+    />
+  );
+
+  const sprite = screen.getByLabelText("캐릭터");
+  const failedLayer = sprite.querySelector('[data-character-layer="back-hair"]');
+  const failedImage = failedLayer?.querySelector("img");
+  expect(failedImage).toBeInTheDocument();
+
+  fireEvent.error(failedImage as HTMLImageElement);
+
+  expect(sprite.querySelector('[data-character-layer="back-hair"]')).not.toBeInTheDocument();
+  expect(sprite.querySelector('[data-character-layer="base"]')).toBeInTheDocument();
+  expect(sprite.querySelector('[data-character-layer="outfit"]')).toBeInTheDocument();
+  errorSpy.mockRestore();
 });

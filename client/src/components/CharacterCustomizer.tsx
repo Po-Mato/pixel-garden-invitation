@@ -298,6 +298,18 @@ export function CharacterCustomizer({ value, onChange }: Props) {
                 />
               ))}
             </div>
+            <h3>헤어 컬러</h3>
+            <div className="customizer-options customizer-options--swatches">
+              {options.hairColors.map((color) => (
+                <SwatchOption
+                  key={color.id}
+                  color={hairSwatches[color.id]}
+                  label={color.label}
+                  selected={value.hairColor === color.id}
+                  onSelect={() => onChange(updateAppearance(value, { hairColor: color.id }))}
+                />
+              ))}
+            </div>
           </>
         ) : null}
 

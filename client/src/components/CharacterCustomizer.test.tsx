@@ -15,6 +15,13 @@ it("shows the large live preview and category tabs", () => {
   expect(screen.getByRole("tab", { name: "액세서리" })).toBeInTheDocument();
 });
 
+it("exposes selected tab and text-labelled color choices", () => {
+  render(<CharacterCustomizer value={defaultCharacterAppearance} onChange={vi.fn()} />);
+  expect(screen.getByRole("tablist", { name: "캐릭터 꾸미기" })).toBeInTheDocument();
+  expect(screen.getByRole("tab", { name: "헤어" })).toHaveAttribute("aria-selected", "true");
+  expect(screen.getByRole("button", { name: "짙은 갈색" })).toHaveTextContent("짙은 갈색");
+});
+
 it("changes the preview from an image option tile", () => {
   const onChange = vi.fn();
   render(<CharacterCustomizer value={defaultCharacterAppearance} onChange={onChange} />);

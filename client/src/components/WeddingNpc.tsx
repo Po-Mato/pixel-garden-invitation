@@ -21,6 +21,9 @@ export function WeddingNpc({ id, label, onSelect }: Props) {
     >
       <span
         className={`wedding-npc__sprite wedding-npc__sprite--${id}`}
+        style={{
+          backgroundImage: `url("${import.meta.env.BASE_URL}characters/generated/npc/${id}__idle.png")`
+        }}
         aria-hidden="true"
       />
       <span className="wedding-npc__label">{label}</span>
