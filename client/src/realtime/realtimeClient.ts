@@ -1,10 +1,13 @@
-import type { AvatarColor, AvatarType, ClientMessage, Direction, ServerMessage } from "@wedding-game/shared";
+import {
+  parseCharacterAppearance,
+  type ClientMessage,
+  type Direction,
+  type ServerMessage
+} from "@wedding-game/shared";
 
 type MoveMessage = Extract<ClientMessage, { type: "move" }>;
 type JoinMessage = Extract<ClientMessage, { type: "join" }>;
 
-const avatarTypes = new Set<AvatarType>(["classic", "suit", "dress", "hanbok"]);
-const avatarColors = new Set<AvatarColor>(["rose", "leaf", "sky", "gold", "soil"]);
 const directions = new Set<Direction>(["up", "down", "left", "right"]);
 const serverErrorCodes = new Set<Extract<ServerMessage, { type: "error" }>["code"]>([
   "bad_message",
@@ -68,11 +71,11 @@ function isPositionState(value: unknown) {
 
 function isRoomGuest(value: unknown) {
   if (!isRecord(value) || !isPositionState(value)) return false;
+  const appearance = parseCharacterAppearance(value.appearance);
   return (
     typeof value.guestId === "string" &&
     typeof value.nickname === "string" &&
-    avatarTypes.has(value.avatar as AvatarType) &&
-    avatarColors.has(value.color as AvatarColor) &&
+    appearance !== null &&
     typeof value.lastSeenAt === "number" &&
     Number.isFinite(value.lastSeenAt)
   );

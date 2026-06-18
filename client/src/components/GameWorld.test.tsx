@@ -1,4 +1,5 @@
 import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { defaultCharacterAppearance, getDefaultAppearance } from "@wedding-game/shared";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { GameWorld } from "./GameWorld";
 
@@ -115,8 +116,7 @@ function serverGuest(overrides: Partial<Record<string, unknown>> = {}) {
   return {
     guestId: "guest_remote",
     nickname: "하객2",
-    avatar: "classic",
-    color: "leaf",
+    appearance: getDefaultAppearance("masculine"),
     x: 39,
     y: 72,
     direction: "down",
@@ -145,7 +145,7 @@ function pressTabWithBrowserFallback(targetIfUntrapped: HTMLElement, shiftKey = 
 }
 
 describe("GameWorld", () => {
-  const profile = { nickname: "하객1", avatar: "classic", color: "rose" } as const;
+  const profile = { nickname: "하객1", appearance: defaultCharacterAppearance };
 
   it("renders all MVP spots", () => {
     render(<GameWorld profile={profile} />);
@@ -224,7 +224,7 @@ describe("GameWorld", () => {
   });
 
   it("moves the player one tile at a time when the map is clicked", () => {
-    render(<GameWorld profile={{ nickname: "하객1", avatar: "classic", color: "rose" }} />);
+    render(<GameWorld profile={profile} />);
     const map = screen.getByLabelText("정원 지도");
     mockMapRect(map);
     const player = screen.getByLabelText("하객1");
@@ -328,9 +328,10 @@ describe("GameWorld", () => {
     expect(JSON.parse(MockWebSocket.instances[0].sentMessages[0])).toEqual({
       type: "join",
       nickname: "하객1",
-      avatar: "classic",
-      color: "rose"
+      appearance: defaultCharacterAppearance
     });
+    expect(JSON.parse(MockWebSocket.instances[0].sentMessages[0])).not.toHaveProperty("avatar");
+    expect(JSON.parse(MockWebSocket.instances[0].sentMessages[0])).not.toHaveProperty("color");
 
     act(() =>
       MockWebSocket.instances[0].emitJson({
@@ -341,6 +342,10 @@ describe("GameWorld", () => {
     );
 
     expect(screen.getByLabelText("하객2")).toBeInTheDocument();
+    const remoteSprite = screen.getByLabelText("하객2 캐릭터");
+    expect(remoteSprite.querySelector('[data-character-layer="base"]')).toHaveStyle({
+      backgroundImage: expect.stringContaining("base/masculine__skin-02-fair__walk.png")
+    });
     expect(screen.queryByLabelText("서버의 나")).not.toBeInTheDocument();
 
     act(() =>
@@ -403,5 +408,25 @@ describe("GameWorld", () => {
     expect(moves).toHaveLength(2);
     expect(moves.map((message) => message.seq)).toEqual([1, 2]);
     expect(moves.every((message) => message.direction === "up" && message.moving === true)).toBe(true);
+  });
+
+  it("renders local layers and advances the walk frame once per tile", () => {
+    render(<GameWorld profile={profile} />);
+    const joystick = screen.getByLabelText("가상 조이스틱");
+    const sprite = screen.getByLabelText("하객1 캐릭터");
+    const baseLayer = sprite.querySelector('[data-character-layer="base"]');
+
+    expect(baseLayer).toBeInTheDocument();
+    expect(sprite).toHaveClass("character-sprite--idle-front");
+
+    fireEvent.keyDown(joystick, { key: "ArrowRight" });
+    advanceAnimation(0);
+
+    expect(sprite).not.toHaveClass("character-sprite--idle-front");
+    expect(baseLayer).toHaveStyle({ backgroundPosition: "-96px -144px" });
+
+    fireEvent.keyUp(joystick, { key: "ArrowRight" });
+
+    expect(baseLayer).toHaveStyle({ backgroundPosition: "-48px -144px" });
   });
 });

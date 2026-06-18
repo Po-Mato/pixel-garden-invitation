@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { defaultCharacterAppearance } from "@wedding-game/shared";
 import { connectRealtime, createMoveThrottle, getRoomUrl } from "./realtimeClient";
 
 type MockListener = (event: Event) => void;
@@ -37,8 +38,7 @@ class MockWebSocket {
 const joinMessage = {
   type: "join",
   nickname: "하객1",
-  avatar: "classic",
-  color: "rose"
+  appearance: defaultCharacterAppearance
 } as const;
 
 describe("getRoomUrl", () => {
@@ -111,6 +111,39 @@ describe("connectRealtime", () => {
       "message",
       new MessageEvent("message", {
         data: JSON.stringify({ type: "welcome", guestId: 123, guests: [] })
+      })
+    );
+
+    expect(onMessage).toHaveBeenCalledWith({ type: "error", code: "bad_message" });
+  });
+
+  it("rejects room guests with invalid appearances", () => {
+    const onMessage = vi.fn();
+    connectRealtime("wss://worker.example.com/rooms/sample-garden", joinMessage, {
+      onOpen: vi.fn(),
+      onClose: vi.fn(),
+      onMessage
+    });
+
+    const socket = MockWebSocket.instances[0];
+    socket.emit(
+      "message",
+      new MessageEvent("message", {
+        data: JSON.stringify({
+          type: "welcome",
+          guestId: "guest_self",
+          guests: [{
+            guestId: "guest_remote",
+            nickname: "하객2",
+            appearance: { family: "bad" },
+            x: 39,
+            y: 72,
+            direction: "down",
+            moving: false,
+            seq: 0,
+            lastSeenAt: 1000
+          }]
+        })
       })
     );
 

@@ -4,7 +4,7 @@ import { computeNextGridPosition, directionFromVector, directionTowardPoint, sna
 import { gardenWorld, type Point } from "../game/world";
 import { connectRealtime, createMoveThrottle, getRoomUrl } from "../realtime/realtimeClient";
 import type { EntryProfile } from "./EntryScreen";
-import { PixelAvatar } from "./PixelAvatar";
+import { CharacterSprite } from "./CharacterSprite";
 import { SpotModal } from "./SpotModal";
 import { VirtualJoystick } from "./VirtualJoystick";
 
@@ -66,6 +66,9 @@ export function GameWorld({ profile }: GameWorldProps) {
   const [position, setPosition] = useState<Point>(gardenWorld.spawn);
   const [target, setTarget] = useState<Point | null>(null);
   const [joystickVector, setJoystickVector] = useState<Point>({ x: 0, y: 0 });
+  const [direction, setDirection] = useState<Direction>("down");
+  const [moving, setMoving] = useState(false);
+  const [stepFrame, setStepFrame] = useState(1);
   const [remoteGuests, setRemoteGuests] = useState<RoomGuest[]>([]);
   const [realtimeStatus, setRealtimeStatus] = useState<RealtimeStatus>("offline");
   const positionRef = useRef<Point>(gardenWorld.spawn);
@@ -118,8 +121,7 @@ export function GameWorld({ profile }: GameWorldProps) {
         {
           type: "join",
           nickname: profile.nickname,
-          avatar: profile.avatar,
-          color: profile.color
+          appearance: profile.appearance
         },
         {
           onOpen: () => {
@@ -194,7 +196,7 @@ export function GameWorld({ profile }: GameWorldProps) {
       currentGuestIdRef.current = null;
       connection.close();
     };
-  }, [profile.avatar, profile.color, profile.nickname]);
+  }, [profile.appearance, profile.nickname]);
 
   useEffect(() => {
     const hasJoystickInput = hasJoystickMovement(joystickVector);
@@ -229,6 +231,8 @@ export function GameWorld({ profile }: GameWorldProps) {
           : null;
 
       if (!direction) {
+        setMoving(false);
+        setStepFrame(1);
         lastStepRef.current = null;
         setTarget(null);
         return;
@@ -243,8 +247,11 @@ export function GameWorld({ profile }: GameWorldProps) {
       const reachedTarget = movementTarget ? samePoint(next, movementTarget) : false;
 
       directionRef.current = direction;
+      setDirection(direction);
 
       if (!didMove) {
+        setMoving(false);
+        setStepFrame(1);
         sendRealtimeMove(current, false, direction, now);
         setTarget(null);
         lastStepRef.current = null;
@@ -253,9 +260,13 @@ export function GameWorld({ profile }: GameWorldProps) {
 
       positionRef.current = next;
       setPosition(next);
+      setMoving(true);
+      setStepFrame((currentFrame) => (currentFrame + 1) % 3);
       sendRealtimeMove(next, hasDirectionalInput || !reachedTarget, direction, now);
 
       if (reachedTarget) {
+        setMoving(false);
+        setStepFrame(1);
         setTarget(null);
         lastStepRef.current = null;
         return;
@@ -301,6 +312,8 @@ export function GameWorld({ profile }: GameWorldProps) {
 
     joystickWasMovingRef.current = false;
     if (wasMoving) {
+      setMoving(false);
+      setStepFrame(1);
       sendRealtimeMove(positionRef.current, false, directionRef.current, performance.now());
     }
   }
@@ -355,7 +368,13 @@ export function GameWorld({ profile }: GameWorldProps) {
                 top: toPercent(guest.y, gardenWorld.bounds.height)
               }}
             >
-              <PixelAvatar avatar={guest.avatar} color={guest.color} label={`${guest.nickname} 캐릭터`} />
+              <CharacterSprite
+                appearance={guest.appearance}
+                direction={guest.direction}
+                moving={guest.moving}
+                stepFrame={guest.seq % 3}
+                label={`${guest.nickname} 캐릭터`}
+              />
               <span>{guest.nickname}</span>
             </div>
           ))}
@@ -367,7 +386,13 @@ export function GameWorld({ profile }: GameWorldProps) {
               top: toPercent(position.y, gardenWorld.bounds.height)
             }}
           >
-            <PixelAvatar avatar={profile.avatar} color={profile.color} label={`${profile.nickname} 캐릭터`} />
+            <CharacterSprite
+              appearance={profile.appearance}
+              direction={direction}
+              moving={moving}
+              stepFrame={stepFrame}
+              label={`${profile.nickname} 캐릭터`}
+            />
             <span>{profile.nickname}</span>
           </div>
         </div>
