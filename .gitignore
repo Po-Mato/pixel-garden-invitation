@@ -4,6 +4,7 @@ dist/
 .wrangler/
 .dev.vars
 client/dist/
+client/public/characters/generated/
 worker/dist/
 coverage/
 *.local
