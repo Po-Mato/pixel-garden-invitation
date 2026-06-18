@@ -13,9 +13,9 @@
     "@wedding-game/shared": "file:../shared"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20240620.0",
+    "@cloudflare/workers-types": "^4.20260617.1",
     "typescript": "^5.5.0",
     "vitest": "^4.1.8",
-    "wrangler": "^4.99.0"
+    "wrangler": "^4.102.0"
   }
 }
