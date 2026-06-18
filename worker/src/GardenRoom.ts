@@ -12,7 +12,7 @@ type GuestSocket = {
   lastMoveAt: number;
 };
 
-const spawn = { x: 195, y: 520 };
+const spawn = { x: 195, y: 525 };
 const bounds = { minX: 0, maxX: 390, minY: 0, maxY: 720 };
 const moveThrottleMs = 100;
 
@@ -24,8 +24,7 @@ export function createGuestSnapshot(
   return {
     guestId,
     nickname: message.nickname,
-    avatar: message.avatar,
-    color: message.color,
+    appearance: message.appearance,
     x: spawn.x,
     y: spawn.y,
     direction: "down",

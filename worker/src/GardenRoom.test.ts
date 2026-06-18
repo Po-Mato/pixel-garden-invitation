@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import type { RoomGuest } from "@wedding-game/shared";
+import { defaultCharacterAppearance, type RoomGuest } from "@wedding-game/shared";
 import { createGuestSnapshot, GardenRoom, removeGuest } from "./GardenRoom";
 
 type GardenRoomHarness = {
@@ -32,8 +32,7 @@ function joinMessage(nickname: string): string {
   return JSON.stringify({
     type: "join",
     nickname,
-    avatar: "classic",
-    color: "rose"
+    appearance: defaultCharacterAppearance
   });
 }
 
@@ -57,15 +56,13 @@ describe("GardenRoom helpers", () => {
     expect(createGuestSnapshot("guest_1", {
       type: "join",
       nickname: "하객1",
-      avatar: "classic",
-      color: "rose"
+      appearance: defaultCharacterAppearance
     }, 1000)).toMatchObject({
       guestId: "guest_1",
       nickname: "하객1",
-      avatar: "classic",
-      color: "rose",
+      appearance: defaultCharacterAppearance,
       x: 195,
-      y: 520,
+      y: 525,
       direction: "down",
       moving: false,
       seq: 0,
@@ -77,8 +74,7 @@ describe("GardenRoom helpers", () => {
     const guests = new Map([["guest_1", createGuestSnapshot("guest_1", {
       type: "join",
       nickname: "하객1",
-      avatar: "classic",
-      color: "rose"
+      appearance: defaultCharacterAppearance
     }, 1000)]]);
     removeGuest(guests, "guest_1");
     expect(guests.size).toBe(0);
@@ -86,6 +82,18 @@ describe("GardenRoom helpers", () => {
 });
 
 describe("GardenRoom socket behavior", () => {
+  it("broadcasts appearance without legacy avatar fields", () => {
+    const room = createRoom();
+    const socket = new TestSocket();
+
+    room.handleMessage(asWebSocket(socket), joinMessage("하객1"));
+
+    const welcome = JSON.parse(socket.sent[0]);
+    expect(welcome.guests[0].appearance).toEqual(defaultCharacterAppearance);
+    expect(welcome.guests[0]).not.toHaveProperty("avatar");
+    expect(welcome.guests[0]).not.toHaveProperty("color");
+  });
+
   it("does not orphan a guest when the same socket joins twice", () => {
     const room = createRoom();
     const socket = new TestSocket();
