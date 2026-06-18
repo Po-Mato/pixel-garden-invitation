@@ -1,4 +1,5 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { defaultCharacterAppearance } from "@wedding-game/shared";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { EntryScreen } from "./EntryScreen";
 
@@ -30,46 +31,31 @@ describe("EntryScreen", () => {
 
     expect(onEnter).toHaveBeenCalledWith({
       nickname: "하객2",
-      avatar: "classic",
-      color: "rose"
+      appearance: defaultCharacterAppearance
     });
   });
 
-  it("submits nickname, avatar, and color", () => {
+  it("submits nickname and customized appearance", () => {
     const onEnter = vi.fn();
     render(<EntryScreen onEnter={onEnter} />);
 
     fireEvent.change(screen.getByLabelText("닉네임"), { target: { value: "하객1" } });
-    fireEvent.click(screen.getByRole("button", { name: "드레스" }));
-    fireEvent.click(screen.getByRole("button", { name: "하늘" }));
+    fireEvent.click(screen.getByRole("tab", { name: "헤어" }));
+    fireEvent.click(screen.getByRole("button", { name: "롱 스트레이트" }));
     fireEvent.click(screen.getByRole("button", { name: "정원 입장" }));
 
     expect(onEnter).toHaveBeenCalledWith({
       nickname: "하객1",
-      avatar: "dress",
-      color: "sky"
+      appearance: {
+        ...defaultCharacterAppearance,
+        hairStyle: "feminine-long-straight"
+      }
     });
   });
 
-  it("exposes selected choice state", () => {
+  it("exposes the character customizer", () => {
     render(<EntryScreen onEnter={vi.fn()} />);
-
-    const classic = screen.getByRole("button", { name: "클래식" });
-    const dress = screen.getByRole("button", { name: "드레스" });
-    const rose = screen.getByRole("button", { name: "장미" });
-    const sky = screen.getByRole("button", { name: "하늘" });
-
-    expect(classic).toHaveAttribute("aria-pressed", "true");
-    expect(dress).toHaveAttribute("aria-pressed", "false");
-    expect(rose).toHaveAttribute("aria-pressed", "true");
-    expect(sky).toHaveAttribute("aria-pressed", "false");
-
-    fireEvent.click(dress);
-    fireEvent.click(sky);
-
-    expect(classic).toHaveAttribute("aria-pressed", "false");
-    expect(dress).toHaveAttribute("aria-pressed", "true");
-    expect(rose).toHaveAttribute("aria-pressed", "false");
-    expect(sky).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByRole("tablist", { name: "캐릭터 꾸미기" })).toBeInTheDocument();
+    expect(screen.getByLabelText("선택한 하객 캐릭터")).toBeInTheDocument();
   });
 });
