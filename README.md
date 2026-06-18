@@ -45,6 +45,20 @@ pnpm typecheck
 pnpm build
 ```
 
+## Character Assets
+
+Source pixel sheets live in `character-assets/source`.
+Generate palette variants before local development or production builds:
+
+```bash
+pnpm characters:generate
+```
+
+The generated files in `client/public/characters/generated` are ignored and rebuilt in CI.
+Catalog IDs and compatibility rules live in `shared/character-catalog.json`.
+Use `node scripts/author-character-source-assets.mjs` to reproduce the checked-in marker sheets and
+`node scripts/render-character-contact-sheet.mjs /tmp/pixel-character-contact-sheet.png` for visual QA.
+
 ## Architecture
 
 - `shared` contains shared TypeScript contracts, protocol types, invitation content, and validation helpers.
