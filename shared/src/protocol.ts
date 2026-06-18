@@ -1,12 +1,11 @@
-export type AvatarType = "classic" | "suit" | "dress" | "hanbok";
-export type AvatarColor = "rose" | "leaf" | "sky" | "gold" | "soil";
+import type { CharacterAppearance } from "./characterCatalog";
+
 export type Direction = "up" | "down" | "left" | "right";
 
 export type GuestProfile = {
   guestId: string;
   nickname: string;
-  avatar: AvatarType;
-  color: AvatarColor;
+  appearance: CharacterAppearance;
 };
 
 export type PositionState = {
@@ -22,7 +21,7 @@ export type RoomGuest = GuestProfile & PositionState & {
 };
 
 export type ClientMessage =
-  | { type: "join"; nickname: string; avatar: AvatarType; color: AvatarColor }
+  | { type: "join"; nickname: string; appearance: CharacterAppearance }
   | { type: "move"; x: number; y: number; direction: Direction; moving: boolean; seq: number }
   | { type: "ping" }
   | { type: "leave" };

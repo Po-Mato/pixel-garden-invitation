@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { defaultCharacterAppearance } from "./characterCatalog";
 import { clampNumber, parseClientMessage, sanitizeText } from "./validation";
 
 describe("sanitizeText", () => {
@@ -21,18 +22,25 @@ describe("clampNumber", () => {
 });
 
 describe("parseClientMessage", () => {
-  it("accepts a valid join message", () => {
+  it("accepts a valid appearance join", () => {
+    expect(parseClientMessage({
+      type: "join",
+      nickname: "민지",
+      appearance: defaultCharacterAppearance
+    })).toEqual({
+      type: "join",
+      nickname: "민지",
+      appearance: defaultCharacterAppearance
+    });
+  });
+
+  it("rejects the legacy avatar join shape", () => {
     expect(parseClientMessage({
       type: "join",
       nickname: "민지",
       avatar: "classic",
       color: "rose"
-    })).toEqual({
-      type: "join",
-      nickname: "민지",
-      avatar: "classic",
-      color: "rose"
-    });
+    })).toBeNull();
   });
 
   it("accepts a valid move message", () => {

@@ -1,7 +1,6 @@
-import type { AvatarColor, AvatarType, ClientMessage, Direction } from "./protocol";
+import { parseCharacterAppearance } from "./characterCatalog";
+import type { ClientMessage, Direction } from "./protocol";
 
-const avatarTypes = new Set<AvatarType>(["classic", "suit", "dress", "hanbok"]);
-const avatarColors = new Set<AvatarColor>(["rose", "leaf", "sky", "gold", "soil"]);
 const directions = new Set<Direction>(["up", "down", "left", "right"]);
 
 export function sanitizeText(value: unknown, maxLength: number): string {
@@ -23,15 +22,9 @@ export function parseClientMessage(value: unknown): ClientMessage | null {
 
   if (value.type === "join") {
     const nickname = sanitizeText(value.nickname, 16);
-    if (!nickname) return null;
-    if (!avatarTypes.has(value.avatar as AvatarType)) return null;
-    if (!avatarColors.has(value.color as AvatarColor)) return null;
-    return {
-      type: "join",
-      nickname,
-      avatar: value.avatar as AvatarType,
-      color: value.color as AvatarColor
-    };
+    const appearance = parseCharacterAppearance(value.appearance);
+    if (!nickname || !appearance) return null;
+    return { type: "join", nickname, appearance };
   }
 
   if (value.type === "move") {
