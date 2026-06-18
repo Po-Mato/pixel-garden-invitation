@@ -1,0 +1,80 @@
+{
+  "version": 1,
+  "skinTones": [
+    { "id": "skin-01-light", "label": "라이트" },
+    { "id": "skin-02-fair", "label": "페어" },
+    { "id": "skin-03-medium", "label": "미디엄" },
+    { "id": "skin-04-tan", "label": "탄" },
+    { "id": "skin-05-deep", "label": "딥" }
+  ],
+  "hairColors": [
+    { "id": "black", "label": "검정" },
+    { "id": "dark-brown", "label": "짙은 갈색" },
+    { "id": "brown", "label": "갈색" },
+    { "id": "light-brown", "label": "밝은 갈색" },
+    { "id": "gray", "label": "회색" },
+    { "id": "platinum", "label": "백금색" }
+  ],
+  "hairStyles": [
+    { "id": "masculine-side-part", "family": "masculine", "label": "단정한 가르마" },
+    { "id": "masculine-comma", "family": "masculine", "label": "소프트 쉼표머리" },
+    { "id": "masculine-short-crop", "family": "masculine", "label": "쇼트 크롭" },
+    { "id": "masculine-textured-fringe", "family": "masculine", "label": "텍스처 프린지" },
+    { "id": "masculine-swept-back", "family": "masculine", "label": "미디엄 올백" },
+    { "id": "masculine-wavy-medium", "family": "masculine", "label": "웨이브 미디엄" },
+    { "id": "masculine-low-ponytail", "family": "masculine", "label": "로우 포니테일" },
+    { "id": "masculine-natural-curl", "family": "masculine", "label": "내추럴 컬" },
+    { "id": "feminine-long-wave", "family": "feminine", "label": "롱 웨이브" },
+    { "id": "feminine-long-straight", "family": "feminine", "label": "롱 스트레이트" },
+    { "id": "feminine-low-bun", "family": "feminine", "label": "로우 번" },
+    { "id": "feminine-half-up-wave", "family": "feminine", "label": "하프업 웨이브" },
+    { "id": "feminine-medium-bob", "family": "feminine", "label": "미디엄 보브" },
+    { "id": "feminine-short-bob", "family": "feminine", "label": "쇼트 보브" },
+    { "id": "feminine-braided-ponytail", "family": "feminine", "label": "브레이드 포니테일" },
+    { "id": "feminine-natural-curl", "family": "feminine", "label": "내추럴 컬" }
+  ],
+  "outfits": [
+    { "id": "masculine-classic-suit", "family": "masculine", "label": "클래식 수트", "palettes": ["navy", "charcoal", "sage", "burgundy"] },
+    { "id": "masculine-slim-suit", "family": "masculine", "label": "슬림 수트", "palettes": ["midnight-blue", "graphite", "muted-blue", "plum"] },
+    { "id": "masculine-blazer-slacks", "family": "masculine", "label": "블레이저와 슬랙스", "palettes": ["navy-beige", "brown-cream", "sage-charcoal", "blue-gray"] },
+    { "id": "masculine-knit-jacket", "family": "masculine", "label": "포멀 니트 재킷", "palettes": ["oat-charcoal", "forest-navy", "dusty-blue", "wine-gray"] },
+    { "id": "masculine-formal-hanbok", "family": "masculine", "label": "남성 한복", "palettes": ["navy-ivory", "sage-cream", "plum-gray", "blue-silver"] },
+    { "id": "feminine-midi-dress", "family": "feminine", "label": "미디 하객 원피스", "palettes": ["dusty-rose", "muted-blue", "sage", "plum"] },
+    { "id": "feminine-long-dress", "family": "feminine", "label": "롱 하객 원피스", "palettes": ["wine", "navy", "forest", "mauve"] },
+    { "id": "feminine-blouse-skirt", "family": "feminine", "label": "블라우스와 스커트", "palettes": ["cream-rose", "ivory-navy", "sky-gray", "sage-brown"] },
+    { "id": "feminine-jacket-slacks", "family": "feminine", "label": "재킷과 슬랙스", "palettes": ["beige-brown", "navy-cream", "gray-blue", "sage-charcoal"] },
+    { "id": "feminine-formal-hanbok", "family": "feminine", "label": "여성 한복", "palettes": ["rose-cream", "jade-ivory", "plum-pink", "blue-lilac"] }
+  ],
+  "accessories": [
+    { "id": "glasses-round-gold", "slot": "face", "layer": "face", "label": "골드 원형 안경" },
+    { "id": "glasses-square-black", "slot": "face", "layer": "face", "label": "블랙 사각 안경" },
+    { "id": "earrings-pearl", "slot": "jewelry", "layer": "jewelry", "label": "진주 귀걸이" },
+    { "id": "earrings-drop", "slot": "jewelry", "layer": "jewelry", "label": "드롭 귀걸이" },
+    { "id": "necklace-simple", "slot": "jewelry", "layer": "jewelry", "label": "심플 목걸이" },
+    { "id": "tie-silk", "slot": "neckwear", "layer": "neckwear", "label": "실크 넥타이" },
+    { "id": "bow-tie-velvet", "slot": "neckwear", "layer": "neckwear", "label": "벨벳 보타이" },
+    { "id": "brooch-floral", "slot": "neckwear", "layer": "neckwear", "label": "플라워 브로치" },
+    { "id": "handbag-formal", "slot": "carry", "layer": "carry", "label": "포멀 핸드백" },
+    { "id": "shoulder-bag-structured", "slot": "carry", "layer": "back-accessory", "label": "미니 숄더백" }
+  ],
+  "defaults": {
+    "masculine": {
+      "skinTone": "skin-02-fair",
+      "hairStyle": "masculine-side-part",
+      "hairColor": "dark-brown",
+      "outfit": "masculine-classic-suit",
+      "outfitPalette": "navy"
+    },
+    "feminine": {
+      "skinTone": "skin-02-fair",
+      "hairStyle": "feminine-long-wave",
+      "hairColor": "dark-brown",
+      "outfit": "feminine-midi-dress",
+      "outfitPalette": "dusty-rose"
+    }
+  },
+  "npcs": [
+    { "id": "groom", "label": "신랑 이서준" },
+    { "id": "bride", "label": "신부 김하린" }
+  ]
+}
