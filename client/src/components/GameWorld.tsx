@@ -7,6 +7,7 @@ import type { EntryProfile } from "./EntryScreen";
 import { CharacterSprite } from "./CharacterSprite";
 import { SpotModal } from "./SpotModal";
 import { VirtualJoystick } from "./VirtualJoystick";
+import { WeddingNpc } from "./WeddingNpc";
 
 type GameWorldProps = {
   profile: EntryProfile;
@@ -376,6 +377,22 @@ export function GameWorld({ profile }: GameWorldProps) {
                 label={`${guest.nickname} 캐릭터`}
               />
               <span>{guest.nickname}</span>
+            </div>
+          ))}
+          {gardenWorld.npcs.map((npc) => (
+            <div
+              key={npc.id}
+              className="world-npc"
+              style={{
+                left: toPercent(npc.x, gardenWorld.bounds.width),
+                top: toPercent(npc.y, gardenWorld.bounds.height)
+              }}
+            >
+              <WeddingNpc
+                id={npc.id}
+                label={npc.label}
+                onSelect={() => setActiveSpotId("couple")}
+              />
             </div>
           ))}
           <div

@@ -9,11 +9,19 @@ export type WorldSpot = Rect & {
   actionRadius: number;
 };
 
+export type WorldNpc = {
+  id: "groom" | "bride";
+  label: string;
+  x: number;
+  y: number;
+};
+
 export type GardenWorld = {
   bounds: Rect;
   spawn: Point;
   blocked: Rect[];
   spots: WorldSpot[];
+  npcs: WorldNpc[];
 };
 
 export const gardenWorld: GardenWorld = {
@@ -36,5 +44,9 @@ export const gardenWorld: GardenWorld = {
     { id: "guestbook", label: "방명록", x: 274, y: 332, width: 82, height: 70, actionRadius: 58 },
     { id: "directions", label: "오시는 길", x: 34, y: 580, width: 82, height: 70, actionRadius: 58 },
     { id: "rsvp", label: "RSVP", x: 274, y: 580, width: 82, height: 70, actionRadius: 58 }
+  ],
+  npcs: [
+    { id: "groom", label: "신랑 이서준", x: 255, y: 255 },
+    { id: "bride", label: "신부 김하린", x: 315, y: 255 }
   ]
 };

@@ -158,6 +158,18 @@ describe("GameWorld", () => {
     expect(screen.getByText("스토리")).toBeInTheDocument();
   });
 
+  it("renders exclusive bride and groom npc characters", () => {
+    render(<GameWorld profile={profile} />);
+    expect(screen.getByRole("button", { name: "신랑 이서준 소개 보기" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "신부 김하린 소개 보기" })).toBeInTheDocument();
+  });
+
+  it("opens the couple panel when an npc is selected", () => {
+    render(<GameWorld profile={profile} />);
+    fireEvent.click(screen.getByRole("button", { name: "신부 김하린 소개 보기" }));
+    expect(screen.getByRole("dialog")).toHaveTextContent("신랑신부 정원");
+  });
+
   it("opens a spot modal from an action button", () => {
     render(<GameWorld profile={profile} />);
     fireEvent.click(screen.getByRole("button", { name: "예식 보기" }));
