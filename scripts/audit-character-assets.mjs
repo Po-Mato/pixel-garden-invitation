@@ -3,9 +3,10 @@ import * as path from "node:path";
 import { fileURLToPath } from "node:url";
 import Sharp from "sharp";
 import {
-  alphaDifference,
+  collectStyleComparisonFailures,
+  combinedAlpha,
   inspectSheet,
-  silhouetteHash
+  rawRgba as readRawRgba
 } from "./lib/characterAssetAudit.mjs";
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -48,6 +49,14 @@ function fail(file, message) {
   failures.push(`${displayFile(file)}: ${message}`);
 }
 
+function normalizeAuditError(error) {
+  const message = error instanceof Error ? error.message : String(error);
+  if (/^Input file is missing:/i.test(message)) {
+    return "input file is missing";
+  }
+  return message.split(`${root}${path.sep}`).join("");
+}
+
 function wants(group) {
   return scope === "all" || scope === group;
 }
@@ -57,23 +66,7 @@ function familyMatches(item) {
 }
 
 async function rawRgba(file) {
-  const data = await Sharp(file).ensureAlpha().raw().toBuffer();
-  return Buffer.from(data);
-}
-
-function combinedAlpha(layers) {
-  if (layers.length === 0) return Buffer.alloc(0);
-  const length = layers[0].length;
-
-  if (layers.some((layer) => layer.length !== length)) {
-    throw new Error("Layer RGBA buffers must have equal lengths");
-  }
-
-  const combined = Buffer.alloc(length);
-  for (let offset = 0; offset < length; offset += 4) {
-    combined[offset + 3] = layers.some((layer) => layer[offset + 3] !== 0) ? 255 : 0;
-  }
-  return combined;
+  return readRawRgba(file, Sharp);
 }
 
 async function auditSheet(
@@ -171,7 +164,7 @@ async function auditSheet(
       }
     }
   } catch (error) {
-    fail(file, error instanceof Error ? error.message : String(error));
+    fail(file, normalizeAuditError(error));
   }
 }
 
@@ -182,42 +175,21 @@ async function auditDistinctStyles(styles, minimumAlphaDifference) {
   for (const style of styles) {
     try {
       const layers = await Promise.all(style.files.map(rawRgba));
-      const alpha = combinedAlpha(layers);
+      const image = combinedAlpha(layers);
       loaded.push({
         ...style,
-        alpha,
-        hash: silhouetteHash(alpha)
+        image
       });
     } catch (error) {
-      fail(
-        style.files,
-        error instanceof Error ? error.message : String(error)
-      );
+      fail(style.files, normalizeAuditError(error));
     }
   }
 
-  for (let firstIndex = 0; firstIndex < loaded.length; firstIndex += 1) {
-    for (let secondIndex = firstIndex + 1; secondIndex < loaded.length; secondIndex += 1) {
-      const first = loaded[firstIndex];
-      const second = loaded[secondIndex];
-      if (first.family !== second.family) continue;
-
-      if (first.hash === second.hash) {
-        fail(
-          first.files,
-          `${first.id} duplicates the silhouette of ${second.id} within ${first.family}`
-        );
-      }
-
-      const difference = alphaDifference(first.alpha, second.alpha);
-      if (difference < minimumAlphaDifference) {
-        fail(
-          first.files,
-          `${first.id} and ${second.id} alpha difference ${difference.toFixed(4)} ` +
-            `is below ${minimumAlphaDifference} within ${first.family}`
-        );
-      }
-    }
+  for (const comparisonFailure of collectStyleComparisonFailures(
+    loaded,
+    minimumAlphaDifference
+  )) {
+    fail(comparisonFailure.files, normalizeAuditError(comparisonFailure.message));
   }
 }
 

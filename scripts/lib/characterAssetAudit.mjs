@@ -7,11 +7,50 @@ function requireRgba(data, label) {
   }
 }
 
+function requireImage(image, label) {
+  if (
+    !Number.isInteger(image.width) ||
+    !Number.isInteger(image.height) ||
+    image.width < 0 ||
+    image.height < 0
+  ) {
+    throw new Error(`${label} must include valid width and height`);
+  }
+  requireRgba(image.data, `${label} data`);
+
+  const expectedLength = image.width * image.height * 4;
+  if (image.data.length !== expectedLength) {
+    throw new Error(
+      `${label} data length ${image.data.length} does not match ` +
+        `${image.width}x${image.height} RGBA dimensions`
+    );
+  }
+}
+
+function requireSameDimensions(first, second, label) {
+  requireImage(first, `${label} first image`);
+  requireImage(second, `${label} second image`);
+
+  if (first.width !== second.width || first.height !== second.height) {
+    throw new Error(
+      `${label} must have identical dimensions; received ` +
+        `${first.width}x${first.height} and ${second.width}x${second.height}`
+    );
+  }
+}
+
 function rgbaKey(data, offset) {
   return `${data[offset]},${data[offset + 1]},${data[offset + 2]},${data[offset + 3]}`;
 }
 
 function pixelsDiffer(data, firstOffset, secondOffset) {
+  const firstTransparent = data[firstOffset + 3] === 0;
+  const secondTransparent = data[secondOffset + 3] === 0;
+
+  if (firstTransparent || secondTransparent) {
+    return firstTransparent !== secondTransparent;
+  }
+
   return (
     data[firstOffset] !== data[secondOffset] ||
     data[firstOffset + 1] !== data[secondOffset + 1] ||
@@ -47,6 +86,84 @@ export function alphaDifference(first, second) {
   }
 
   return changed / (first.length / 4);
+}
+
+export async function rawRgba(file, imageFactory = sharp) {
+  const { data, info } = await imageFactory(file)
+    .ensureAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+
+  return {
+    width: info.width,
+    height: info.height,
+    data: Buffer.from(data)
+  };
+}
+
+export function combinedAlpha(layers) {
+  if (layers.length === 0) {
+    return { width: 0, height: 0, data: Buffer.alloc(0) };
+  }
+
+  const first = layers[0];
+  requireImage(first, "Layer 1");
+  for (let index = 1; index < layers.length; index += 1) {
+    requireSameDimensions(first, layers[index], "Layers");
+  }
+
+  const data = Buffer.alloc(first.data.length);
+  for (let offset = 0; offset < data.length; offset += 4) {
+    data[offset + 3] = layers.some((layer) => layer.data[offset + 3] !== 0) ? 255 : 0;
+  }
+
+  return { width: first.width, height: first.height, data };
+}
+
+export function collectStyleComparisonFailures(styles, minimumAlphaDifference) {
+  const failures = [];
+
+  for (let firstIndex = 0; firstIndex < styles.length; firstIndex += 1) {
+    for (let secondIndex = firstIndex + 1; secondIndex < styles.length; secondIndex += 1) {
+      const first = styles[firstIndex];
+      const second = styles[secondIndex];
+      if (first.family !== second.family) continue;
+
+      try {
+        requireSameDimensions(first.image, second.image, "Style images");
+        const firstHash = silhouetteHash(first.image.data);
+        const secondHash = silhouetteHash(second.image.data);
+
+        if (firstHash === secondHash) {
+          failures.push({
+            files: first.files,
+            message:
+              `${first.id} duplicates the silhouette of ${second.id} ` +
+              `within ${first.family}`
+          });
+        }
+
+        const difference = alphaDifference(first.image.data, second.image.data);
+        if (difference < minimumAlphaDifference) {
+          failures.push({
+            files: first.files,
+            message:
+              `${first.id} and ${second.id} alpha difference ${difference.toFixed(4)} ` +
+              `is below ${minimumAlphaDifference} within ${first.family}`
+          });
+        }
+      } catch (error) {
+        failures.push({
+          files: first.files,
+          message:
+            `${first.id} and ${second.id}: ` +
+            (error instanceof Error ? error.message : String(error))
+        });
+      }
+    }
+  }
+
+  return failures;
 }
 
 export async function inspectSheet(
