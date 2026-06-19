@@ -1,0 +1,33 @@
+{
+  "frame": {
+    "width": 48,
+    "height": 72,
+    "footBottomMin": 66,
+    "footBottomMax": 70,
+    "footBottomSpreadMax": 1
+  },
+  "npc": {
+    "minimumOpaquePixelsPerFrame": 850,
+    "minimumUniqueOpaqueColors": 20,
+    "minimumColorTransitionsPerFrame": 110
+  },
+  "base": {
+    "minimumOpaquePixelsPerFrame": 650,
+    "minimumUniqueOpaqueColors": 8,
+    "minimumColorTransitionsPerFrame": 90
+  },
+  "hair": {
+    "minimumOpaquePixelsPerOccupiedFrame": 55,
+    "minimumUniqueOpaqueColors": 5,
+    "minimumAlphaDifferenceBetweenStyles": 0.01
+  },
+  "outfit": {
+    "minimumOpaquePixelsPerFrame": 260,
+    "minimumUniqueOpaqueColors": 7,
+    "minimumAlphaDifferenceBetweenStyles": 0.015
+  },
+  "accessory": {
+    "minimumOpaquePixelsPerOccupiedFrame": 4,
+    "minimumUniqueOpaqueColors": 2
+  }
+}
