@@ -1,0 +1,98 @@
+:root {
+  color: #241812;
+  background: #eee8df;
+  font-family: system-ui, sans-serif;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; }
+
+header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  padding: 10px;
+  background: #fff;
+  border-bottom: 1px solid #b9aa99;
+}
+
+button,
+select,
+input { min-height: 36px; }
+
+main {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr) 180px;
+  gap: 12px;
+  padding: 12px;
+}
+
+aside {
+  min-width: 0;
+  padding: 10px;
+  background: #fff;
+  border: 1px solid #b9aa99;
+}
+
+#palette {
+  display: grid;
+  grid-template-columns: repeat(4, 32px);
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+#palette button {
+  width: 32px;
+  height: 32px;
+  min-height: 32px;
+  border: 2px solid #6a584b;
+}
+
+#reference {
+  display: block;
+  width: 100%;
+  margin-top: 10px;
+}
+
+#canvas-shell {
+  min-width: 0;
+  overflow: auto;
+  padding: 12px;
+  background-color: #fff;
+  background-image:
+    linear-gradient(45deg, #ddd 25%, transparent 25%),
+    linear-gradient(-45deg, #ddd 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #ddd 75%),
+    linear-gradient(-45deg, transparent 75%, #ddd 75%);
+  background-position: 0 0, 0 8px, 8px -8px, -8px 0;
+  background-size: 16px 16px;
+}
+
+#editor-canvas,
+#actual-size,
+#reference { image-rendering: pixelated; }
+
+#editor-canvas {
+  display: block;
+  width: 768px;
+  height: 1152px;
+  cursor: crosshair;
+}
+
+#actual-size {
+  display: block;
+  width: 48px;
+  height: 72px;
+  background: repeating-conic-gradient(#ddd 0 25%, #fff 0 50%) 0 / 8px 8px;
+}
+
+#status {
+  display: block;
+  margin-top: 10px;
+  white-space: pre-wrap;
+}
+
+@media (max-width: 900px) {
+  main { grid-template-columns: 1fr; }
+}
