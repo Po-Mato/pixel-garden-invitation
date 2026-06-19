@@ -49,6 +49,11 @@ aside {
   border: 2px solid #6a584b;
 }
 
+#palette button[aria-pressed="true"] {
+  outline: 3px solid #d04f78;
+  outline-offset: 1px;
+}
+
 #reference {
   display: block;
   width: 100%;

@@ -1,8 +1,13 @@
 import {
   applyPixel,
   clonePixels,
+  frameAvailability,
   frameOffset,
-  mirrorFrameHorizontally
+  isFrameWithinImage,
+  mirrorFrameHorizontally,
+  recordHistoryMutation,
+  selectPaletteColor,
+  shouldUseDownloadFallback
 } from "./editor-core.mjs";
 
 const FRAME_WIDTH = 48;
@@ -30,8 +35,12 @@ const frameColumn = document.querySelector("#frame-column");
 const frameRow = document.querySelector("#frame-row");
 const canvas = document.querySelector("#editor-canvas");
 const actual = document.querySelector("#actual-size");
+const paletteRoot = document.querySelector("#palette");
+const pencilButton = document.querySelector("#pencil");
+const eraserButton = document.querySelector("#eraser");
+const status = document.querySelector("#status");
 const context = canvas.getContext("2d", { willReadFrequently: true });
-const actualContext = actual.getContext("2d");
+const actualContext = actual.getContext("2d", { willReadFrequently: true });
 const history = [];
 const future = [];
 let fileName = "character.png";
@@ -53,16 +62,38 @@ function selectedFrame() {
   return { ...origin, width: FRAME_WIDTH, height: FRAME_HEIGHT };
 }
 
+function setStatus(message) {
+  status.value = message;
+}
+
+function invalidFrameMessage() {
+  return `Selected frame is outside the loaded ${width}x${height} image. Choose an enabled column and row.`;
+}
+
+function setTool(nextErasing) {
+  erasing = nextErasing;
+  pencilButton.setAttribute("aria-pressed", String(!erasing));
+  eraserButton.setAttribute("aria-pressed", String(erasing));
+}
+
+function updatePaletteSelection() {
+  for (const button of paletteRoot.querySelectorAll("button")) {
+    button.setAttribute("aria-pressed", String(button.dataset.color === selectedColor));
+  }
+}
+
 function renderPalette() {
-  const root = document.querySelector("#palette");
-  root.replaceChildren(...palettes[assetClass.value].map((color) => {
+  paletteRoot.replaceChildren(...palettes[assetClass.value].map((color) => {
     const button = document.createElement("button");
     button.type = "button";
     button.title = color;
+    button.dataset.color = color;
     button.style.background = color;
+    button.setAttribute("aria-pressed", String(color === selectedColor));
     button.addEventListener("click", () => {
       selectedColor = color;
-      erasing = false;
+      setTool(false);
+      updatePaletteSelection();
     });
     return button;
   }));
@@ -78,17 +109,38 @@ function hexToRgba(hex) {
   ];
 }
 
+function clearPreviews() {
+  canvas.width = FRAME_WIDTH * ZOOM;
+  canvas.height = FRAME_HEIGHT * ZOOM;
+  context.clearRect(0, 0, canvas.width, canvas.height);
+  actualContext.clearRect(0, 0, FRAME_WIDTH, FRAME_HEIGHT);
+}
+
+function updateFrameControls() {
+  if (!pixels) return;
+  const availability = frameAvailability(width, height, FRAME_WIDTH, FRAME_HEIGHT);
+  for (const option of frameColumn.options) {
+    option.disabled = !availability.columns[Number(option.value)];
+  }
+  for (const option of frameRow.options) {
+    option.disabled = !availability.rows[Number(option.value)];
+  }
+}
+
 function redraw() {
   if (!pixels) return;
-  const image = new ImageData(clonePixels(pixels), width, height);
   const frame = selectedFrame();
+  clearPreviews();
+  if (!isFrameWithinImage(width, height, frame)) {
+    setStatus(invalidFrameMessage());
+    return;
+  }
+
+  const image = new ImageData(clonePixels(pixels), width, height);
   const scratch = new OffscreenCanvas(width, height);
   scratch.getContext("2d").putImageData(image, 0, 0);
 
-  canvas.width = FRAME_WIDTH * ZOOM;
-  canvas.height = FRAME_HEIGHT * ZOOM;
   context.imageSmoothingEnabled = false;
-  context.clearRect(0, 0, canvas.width, canvas.height);
   context.drawImage(
     scratch,
     frame.x, frame.y, frame.width, frame.height,
@@ -96,7 +148,6 @@ function redraw() {
   );
 
   actualContext.imageSmoothingEnabled = false;
-  actualContext.clearRect(0, 0, FRAME_WIDTH, FRAME_HEIGHT);
   actualContext.drawImage(
     scratch,
     frame.x, frame.y, frame.width, frame.height,
@@ -111,18 +162,22 @@ function redraw() {
       context.strokeRect(0, y * ZOOM, canvas.width, 1);
     }
   }
+  setStatus(`${fileName}\n${width}x${height}`);
 }
 
 function paint(event) {
   if (!pixels) return;
+  const frame = selectedFrame();
+  if (!isFrameWithinImage(width, height, frame)) {
+    setStatus(invalidFrameMessage());
+    return;
+  }
   const bounds = canvas.getBoundingClientRect();
   const x = Math.floor((event.clientX - bounds.left) / ZOOM);
   const y = Math.floor((event.clientY - bounds.top) / ZOOM);
   if (x < 0 || y < 0 || x >= FRAME_WIDTH || y >= FRAME_HEIGHT) return;
-  const frame = selectedFrame();
   if (!strokeStarted) {
-    history.push(clonePixels(pixels));
-    future.length = 0;
+    recordHistoryMutation(history, future, pixels);
     strokeStarted = true;
   }
   applyPixel(
@@ -148,6 +203,7 @@ fileInput.addEventListener("change", async () => {
   pixels = scratchContext.getImageData(0, 0, width, height).data;
   history.length = 0;
   future.length = 0;
+  updateFrameControls();
   redraw();
 });
 
@@ -170,13 +226,17 @@ canvas.addEventListener("pointercancel", () => {
 });
 frameColumn.addEventListener("change", redraw);
 frameRow.addEventListener("change", redraw);
-assetClass.addEventListener("change", renderPalette);
+assetClass.addEventListener("change", () => {
+  selectedColor = selectPaletteColor(palettes[assetClass.value]);
+  setTool(false);
+  renderPalette();
+});
 document.querySelector("#show-guides").addEventListener("change", redraw);
 document.querySelector("#show-reference").addEventListener("change", (event) => {
   document.querySelector("#reference").hidden = !event.currentTarget.checked;
 });
-document.querySelector("#pencil").addEventListener("click", () => { erasing = false; });
-document.querySelector("#eraser").addEventListener("click", () => { erasing = true; });
+pencilButton.addEventListener("click", () => { setTool(false); });
+eraserButton.addEventListener("click", () => { setTool(true); });
 document.querySelector("#undo").addEventListener("click", () => {
   if (!history.length || !pixels) return;
   future.push(clonePixels(pixels));
@@ -191,30 +251,62 @@ document.querySelector("#redo").addEventListener("click", () => {
 });
 document.querySelector("#mirror").addEventListener("click", () => {
   if (!pixels) return;
-  history.push(clonePixels(pixels));
-  mirrorFrameHorizontally(pixels, width, height, selectedFrame());
-  redraw();
-});
-document.querySelector("#export").addEventListener("click", async () => {
-  if (!pixels) return;
-  const output = new OffscreenCanvas(width, height);
-  output.getContext("2d").putImageData(new ImageData(clonePixels(pixels), width, height), 0, 0);
-  const blob = await output.convertToBlob({ type: "image/png" });
-  if ("showSaveFilePicker" in window) {
-    const handle = await window.showSaveFilePicker({
-      suggestedName: fileName,
-      types: [{ description: "PNG image", accept: { "image/png": [".png"] } }]
-    });
-    const writable = await handle.createWritable();
-    await writable.write(blob);
-    await writable.close();
+  const frame = selectedFrame();
+  if (!isFrameWithinImage(width, height, frame)) {
+    setStatus(invalidFrameMessage());
     return;
   }
+  recordHistoryMutation(history, future, pixels);
+  mirrorFrameHorizontally(pixels, width, height, frame);
+  redraw();
+});
+
+function downloadBlob(blob) {
   const link = document.createElement("a");
   link.download = fileName;
   link.href = URL.createObjectURL(blob);
   link.click();
   URL.revokeObjectURL(link.href);
+}
+
+document.querySelector("#export").addEventListener("click", async () => {
+  if (!pixels) return;
+  let pickerPromise = null;
+  if ("showSaveFilePicker" in window) {
+    try {
+      pickerPromise = window.showSaveFilePicker({
+        suggestedName: fileName,
+        types: [{ description: "PNG image", accept: { "image/png": [".png"] } }]
+      });
+    } catch (error) {
+      if (!shouldUseDownloadFallback(error)) return;
+    }
+  }
+
+  let handle = null;
+  if (pickerPromise) {
+    try {
+      handle = await pickerPromise;
+    } catch (error) {
+      if (!shouldUseDownloadFallback(error)) return;
+    }
+  }
+
+  const output = new OffscreenCanvas(width, height);
+  output.getContext("2d").putImageData(new ImageData(clonePixels(pixels), width, height), 0, 0);
+  const blob = await output.convertToBlob({ type: "image/png" });
+  if (handle) {
+    try {
+      const writable = await handle.createWritable();
+      await writable.write(blob);
+      await writable.close();
+      return;
+    } catch (error) {
+      if (!shouldUseDownloadFallback(error)) return;
+    }
+  }
+  downloadBlob(blob);
 });
 
+setTool(false);
 renderPalette();
