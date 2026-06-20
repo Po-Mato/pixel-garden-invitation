@@ -116,6 +116,11 @@ for (const npc of catalog.npcs) {
     `npc/${npc.id}__idle.png`,
     { width: 96, height: 72 }
   );
+  await copyFixed(
+    join(sourceRoot, "npc", `${npc.id}-walk.png`),
+    `npc/${npc.id}__walk.png`,
+    { width: 144, height: 288 }
+  );
 }
 
 console.log(`Generated ${outputs.size} character assets`);
