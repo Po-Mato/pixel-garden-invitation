@@ -1,4 +1,5 @@
-import { mkdir, readFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import sharp from "sharp";
@@ -14,8 +15,64 @@ const directions = [
   { id: "up", row: 3 }
 ];
 
-const option = (name, fallback) =>
-  process.argv.find((argument) => argument.startsWith(`--${name}=`))?.split("=")[1] ?? fallback;
+export function parseArguments(arguments_) {
+  let mode;
+  let output;
+  let outputSource;
+
+  const assign = (name, value) => {
+    if (!value || value.startsWith("--")) {
+      throw new Error(`Missing value for --${name}`);
+    }
+    if (name === "mode") {
+      if (mode !== undefined) throw new Error("Duplicate argument: --mode");
+      mode = value;
+      return;
+    }
+    if (output !== undefined) throw new Error("Duplicate argument: --output");
+    output = value;
+    outputSource = "option";
+  };
+
+  for (let index = 0; index < arguments_.length; index += 1) {
+    const argument = arguments_[index];
+    if (argument === "--" && index === 0) {
+      continue;
+    }
+    if (argument === "--mode" || argument === "--output") {
+      const name = argument.slice(2);
+      assign(name, arguments_[index + 1]);
+      index += 1;
+      continue;
+    }
+    if (argument.startsWith("--mode=")) {
+      assign("mode", argument.slice("--mode=".length));
+      continue;
+    }
+    if (argument.startsWith("--output=")) {
+      assign("output", argument.slice("--output=".length));
+      continue;
+    }
+    if (argument.startsWith("--")) {
+      throw new Error(`Unknown argument: ${argument}`);
+    }
+    if (output !== undefined) {
+      if (outputSource === "option") throw new Error("Duplicate output argument");
+      throw new Error(`Unexpected positional argument: ${argument}`);
+    }
+    output = argument;
+    outputSource = "positional";
+  }
+
+  const resolvedMode = mode ?? "catalog";
+  if (!new Set(["couple", "catalog"]).has(resolvedMode)) {
+    throw new Error(`Unknown contact-sheet mode: ${resolvedMode}`);
+  }
+  return {
+    mode: resolvedMode,
+    output: output ?? "/tmp/pixel-character-contact-sheet.png"
+  };
+}
 
 export async function frame(relative, column, row) {
   return sharp(join(generatedRoot, relative))
@@ -61,13 +118,13 @@ function defaultLayers(family, skinTone, hairStyle, hairColor, outfit, outfitPal
   ];
 }
 
-async function directionalFrames(layers) {
-  return Promise.all(
-    directions.map(async (direction) => ({
-      direction: direction.id,
-      image: await composeLayers(layers, 1, direction.row)
-    }))
-  );
+function directionalFrames(layers) {
+  return directions.map((direction) => ({
+    direction: direction.id,
+    layers,
+    column: 1,
+    row: direction.row
+  }));
 }
 
 export async function coupleSamples() {
@@ -102,7 +159,7 @@ export async function catalogSamples() {
     for (const color of catalog.hairColors) {
       samples.push({
         label: `${hair.id} / ${color.id}`,
-        frames: await directionalFrames(defaultLayers(
+        frames: directionalFrames(defaultLayers(
           hair.family,
           defaults.skinTone,
           hair.id,
@@ -119,7 +176,7 @@ export async function catalogSamples() {
     for (const palette of outfit.palettes) {
       samples.push({
         label: `${outfit.id} / ${palette}`,
-        frames: await directionalFrames(defaultLayers(
+        frames: directionalFrames(defaultLayers(
           outfit.family,
           defaults.skinTone,
           defaults.hairStyle,
@@ -137,14 +194,16 @@ export async function catalogSamples() {
       label: `skin / ${skin.id}`,
       frames: [{
         direction: "down",
-        image: await composeLayers(defaultLayers(
+        layers: defaultLayers(
           "feminine",
           skin.id,
           defaults.hairStyle,
           defaults.hairColor,
           defaults.outfit,
           defaults.outfitPalette
-        ), 1, 0)
+        ),
+        column: 1,
+        row: 0
       }]
     });
   }
@@ -165,7 +224,9 @@ export async function catalogSamples() {
       label: `accessory / ${accessory.id}`,
       frames: [{
         direction: "down",
-        image: await composeLayers(layers, 1, 0)
+        layers,
+        column: 1,
+        row: 0
       }]
     });
   }
@@ -175,7 +236,9 @@ export async function catalogSamples() {
       label: `npc / ${npc.id}`,
       frames: [{
         direction: "idle",
-        image: await frame(`npc/${npc.id}__idle.png`, 0, 0)
+        relative: `npc/${npc.id}__idle.png`,
+        column: 0,
+        row: 0
       }]
     });
   }
@@ -263,51 +326,45 @@ async function renderCouple(samples, output) {
     .toFile(output);
 }
 
-async function renderCatalog(samples, output) {
+async function renderCatalogFrame(sampleFrame) {
+  if (sampleFrame.relative) {
+    return frame(sampleFrame.relative, sampleFrame.column, sampleFrame.row);
+  }
+  return composeLayers(sampleFrame.layers, sampleFrame.column, sampleFrame.row);
+}
+
+async function renderCatalogTile(sample, output, checker) {
   const tileWidth = 404;
   const tileHeight = 198;
-  const columns = 3;
-  const rows = Math.ceil(samples.length / columns);
-  const checker = await checkerboard(96, 144, 8);
   const composites = [];
 
-  for (let index = 0; index < samples.length; index += 1) {
-    const sample = samples[index];
-    const column = index % columns;
-    const row = Math.floor(index / columns);
-    const tileLeft = column * tileWidth;
-    const tileTop = row * tileHeight;
-    composites.push({
-      input: await label(sample.label, tileWidth - 8),
-      left: tileLeft + 4,
-      top: tileTop + 4
-    });
-
-    for (let frameIndex = 0; frameIndex < sample.frames.length; frameIndex += 1) {
-      const sampleFrame = sample.frames[frameIndex];
-      const frameLeft = tileLeft + 4 + frameIndex * 100;
-      const frameTop = tileTop + 50;
-      const scaled = await sharp(sampleFrame.image)
-        .resize(96, 144, { kernel: "nearest" })
-        .png()
-        .toBuffer();
-      composites.push(
-        {
-          input: await label(sampleFrame.direction, 96),
-          left: frameLeft,
-          top: tileTop + 28
-        },
-        { input: checker, left: frameLeft, top: frameTop },
-        { input: scaled, left: frameLeft, top: frameTop }
-      );
-    }
+  composites.push({
+    input: await label(sample.label, tileWidth - 8),
+    left: 4,
+    top: 4
+  });
+  for (let frameIndex = 0; frameIndex < sample.frames.length; frameIndex += 1) {
+    const sampleFrame = sample.frames[frameIndex];
+    const frameLeft = 4 + frameIndex * 100;
+    const scaled = await sharp(await renderCatalogFrame(sampleFrame))
+      .resize(96, 144, { kernel: "nearest" })
+      .png()
+      .toBuffer();
+    composites.push(
+      {
+        input: await label(sampleFrame.direction, 96),
+        left: frameLeft,
+        top: 28
+      },
+      { input: checker, left: frameLeft, top: 50 },
+      { input: scaled, left: frameLeft, top: 50 }
+    );
   }
 
-  await mkdir(dirname(output), { recursive: true });
   await sharp({
     create: {
-      width: columns * tileWidth,
-      height: rows * tileHeight,
+      width: tileWidth,
+      height: tileHeight,
       channels: 4,
       background: sheetBackground
     }
@@ -317,12 +374,71 @@ async function renderCatalog(samples, output) {
     .toFile(output);
 }
 
-async function main() {
-  const mode = option("mode", "catalog");
-  const output = resolve(option("output", "/tmp/pixel-character-contact-sheet.png"));
-  if (!new Set(["couple", "catalog"]).has(mode)) {
-    throw new Error(`Unknown contact-sheet mode: ${mode}`);
+async function renderCatalog(samples, output) {
+  const tileWidth = 404;
+  const tileHeight = 198;
+  const columns = 3;
+  const rows = Math.ceil(samples.length / columns);
+  const checker = await checkerboard(96, 144, 8);
+  const temporaryDirectory = await mkdtemp(join(tmpdir(), "character-contact-sheet-"));
+  const previousConcurrency = sharp.concurrency();
+  const rowPaths = [];
+
+  sharp.concurrency(2);
+  try {
+    for (let row = 0; row < rows; row += 1) {
+      const tilePaths = [];
+      const rowComposites = [];
+      for (let column = 0; column < columns; column += 1) {
+        const index = row * columns + column;
+        if (index >= samples.length) break;
+        const tilePath = join(temporaryDirectory, `tile-${index}.png`);
+        await renderCatalogTile(samples[index], tilePath, checker);
+        tilePaths.push(tilePath);
+        rowComposites.push({ input: tilePath, left: column * tileWidth, top: 0 });
+      }
+
+      const rowPath = join(temporaryDirectory, `row-${row}.png`);
+      await sharp({
+        create: {
+          width: columns * tileWidth,
+          height: tileHeight,
+          channels: 4,
+          background: sheetBackground
+        }
+      })
+        .composite(rowComposites)
+        .png({ compressionLevel: 9 })
+        .toFile(rowPath);
+      rowPaths.push(rowPath);
+      await Promise.all(tilePaths.map((tilePath) => rm(tilePath)));
+    }
+
+    await mkdir(dirname(output), { recursive: true });
+    await sharp({
+      create: {
+        width: columns * tileWidth,
+        height: rows * tileHeight,
+        channels: 4,
+        background: sheetBackground
+      }
+    })
+      .composite(rowPaths.map((rowPath, row) => ({
+        input: rowPath,
+        left: 0,
+        top: row * tileHeight
+      })))
+      .png({ compressionLevel: 9 })
+      .toFile(output);
+  } finally {
+    await rm(temporaryDirectory, { recursive: true, force: true });
+    sharp.concurrency(previousConcurrency);
   }
+}
+
+async function main() {
+  const { mode, output: outputArgument } = parseArguments(process.argv.slice(2));
+  const output = resolve(outputArgument);
 
   const samples = mode === "couple" ? await coupleSamples() : await catalogSamples();
   if (mode === "couple") {

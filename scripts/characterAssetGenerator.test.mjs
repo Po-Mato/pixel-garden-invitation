@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { execFile } from "node:child_process";
-import { mkdtemp, rm } from "node:fs/promises";
+import { cp, mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import test from "node:test";
@@ -51,6 +51,30 @@ test("generator emits idle and four-direction walk sheets for every npc", async 
   assert.match(stdout, /Generated 266 character assets/);
 });
 
+test("generator validates a late npc walk source before replacing existing output", async () => {
+  const dir = await mkdtemp(join(tmpdir(), "character-assets-preflight-"));
+  const sourceRoot = join(dir, "source");
+  const outputRoot = join(dir, "generated");
+  const marker = join(outputRoot, "existing.txt");
+  try {
+    await cp(join(root, "character-assets/source"), sourceRoot, { recursive: true });
+    await sharp({
+      create: { width: 1, height: 1, channels: 4, background: "#00000000" }
+    }).png().toFile(join(sourceRoot, "npc/bride-walk.png"));
+    await mkdir(outputRoot, { recursive: true });
+    await writeFile(marker, "keep existing output");
+
+    const { generateCharacterAssets } = await import("./generate-character-assets.mjs");
+    await assert.rejects(
+      () => generateCharacterAssets({ sourceRoot, outputRoot }),
+      /bride-walk\.png must be 144x288; received 1x1/
+    );
+    assert.equal(await readFile(marker, "utf8"), "keep existing output");
+  } finally {
+    await rm(dir, { recursive: true });
+  }
+});
+
 test("contact-sheet frame extracts a 48x72 cell at the requested column and row", async () => {
   const { frame } = await import("./render-character-contact-sheet.mjs");
   const relative = "npc/groom__walk.png";
@@ -69,6 +93,64 @@ test("contact-sheet labels escape XML-sensitive characters", async () => {
 
   assert.match(svg, /groom &amp; bride &lt;forever&gt;/);
   assert.doesNotMatch(svg, /groom & bride <forever>/);
+});
+
+test("contact-sheet parser accepts equals, spaced, and legacy positional forms", async () => {
+  const { parseArguments } = await import("./render-character-contact-sheet.mjs");
+
+  assert.deepEqual(
+    parseArguments(["--mode=couple", "--output=review=one.png"]),
+    { mode: "couple", output: "review=one.png" }
+  );
+  assert.deepEqual(
+    parseArguments(["--mode", "couple", "--output", "review two.png"]),
+    { mode: "couple", output: "review two.png" }
+  );
+  assert.deepEqual(
+    parseArguments(["legacy=review.png"]),
+    { mode: "catalog", output: "legacy=review.png" }
+  );
+  assert.deepEqual(
+    parseArguments(["--", "--mode", "couple", "--output", "pnpm-review.png"]),
+    { mode: "couple", output: "pnpm-review.png" }
+  );
+});
+
+test("contact-sheet parser rejects unknown arguments", async () => {
+  const { parseArguments } = await import("./render-character-contact-sheet.mjs");
+
+  assert.throws(
+    () => parseArguments(["--format=webp"]),
+    /Unknown argument: --format=webp/
+  );
+  assert.throws(
+    () => parseArguments(["one.png", "two.png"]),
+    /Unexpected positional argument: two.png/
+  );
+});
+
+test("contact-sheet parser rejects duplicate arguments", async () => {
+  const { parseArguments } = await import("./render-character-contact-sheet.mjs");
+
+  assert.throws(
+    () => parseArguments(["--mode=couple", "--mode", "catalog"]),
+    /Duplicate argument: --mode/
+  );
+  assert.throws(
+    () => parseArguments(["--output=one.png", "two.png"]),
+    /Duplicate output argument/
+  );
+});
+
+test("contact-sheet parser rejects missing values", async () => {
+  const { parseArguments } = await import("./render-character-contact-sheet.mjs");
+
+  assert.throws(() => parseArguments(["--mode"]), /Missing value for --mode/);
+  assert.throws(() => parseArguments(["--output="]), /Missing value for --output/);
+  assert.throws(
+    () => parseArguments(["--mode", "--output=review.png"]),
+    /Missing value for --mode/
+  );
 });
 
 test("couple samples include idle and every walk frame in all four directions", async () => {
@@ -117,6 +199,18 @@ test("catalog samples preserve every variant and add four directions to hair and
   }
 });
 
+test("catalog samples defer frame decoding instead of retaining image buffers", async () => {
+  const { catalogSamples } = await import("./render-character-contact-sheet.mjs");
+  const samples = await catalogSamples();
+
+  for (const sample of samples) {
+    for (const sampleFrame of sample.frames) {
+      assert.equal(Buffer.isBuffer(sampleFrame.image), false);
+      assert.ok(sampleFrame.relative || sampleFrame.layers);
+    }
+  }
+});
+
 test("contact-sheet CLI rejects an unknown mode", async () => {
   const dir = await mkdtemp(join(tmpdir(), "character-contact-sheet-"));
   try {
@@ -157,6 +251,75 @@ test("couple mode renders every labeled row with enlarged and actual-size room",
       { width: metadata.width, height: metadata.height },
       { width: 832, height: 3444 }
     );
+  } finally {
+    await rm(dir, { recursive: true });
+  }
+});
+
+test("couple actual-size crop preserves source pixels, checker transparency, and edge padding", async () => {
+  const dir = await mkdtemp(join(tmpdir(), "character-contact-sheet-"));
+  const output = join(dir, "couple.png");
+  try {
+    await execFileAsync(
+      process.execPath,
+      [
+        join(root, "scripts/render-character-contact-sheet.mjs"),
+        "--mode",
+        "couple",
+        "--output",
+        output
+      ],
+      { cwd: dir }
+    );
+
+    const source = await sharp(
+      join(root, "client/public/characters/generated/npc/groom__idle.png")
+    )
+      .extract({ left: 0, top: 0, width: 48, height: 72 })
+      .ensureAlpha()
+      .raw()
+      .toBuffer();
+    const actual = await sharp(output)
+      .extract({ left: 648, top: 162, width: 48, height: 72 })
+      .ensureAlpha()
+      .raw()
+      .toBuffer();
+    const checkerColors = [
+      [0xff, 0xfa, 0xf2, 0xff],
+      [0xde, 0xd5, 0xc9, 0xff]
+    ];
+
+    for (let y = 0; y < 72; y += 1) {
+      for (let x = 0; x < 48; x += 1) {
+        const offset = (y * 48 + x) * 4;
+        const expected = source[offset + 3] === 0
+          ? checkerColors[(Math.floor(x / 4) + Math.floor(y / 4)) % 2]
+          : [...source.subarray(offset, offset + 4)];
+        assert.deepEqual(
+          [...actual.subarray(offset, offset + 4)],
+          expected,
+          `unexpected actual-size pixel at ${x},${y}`
+        );
+      }
+    }
+
+    const padded = await sharp(output)
+      .extract({ left: 647, top: 161, width: 50, height: 74 })
+      .ensureAlpha()
+      .raw()
+      .toBuffer();
+    const sheetPixel = [0xf4, 0xef, 0xe7, 0xff];
+    for (let x = 0; x < 50; x += 1) {
+      assert.deepEqual([...padded.subarray(x * 4, x * 4 + 4)], sheetPixel);
+      const bottom = ((73 * 50) + x) * 4;
+      assert.deepEqual([...padded.subarray(bottom, bottom + 4)], sheetPixel);
+    }
+    for (let y = 0; y < 74; y += 1) {
+      const left = y * 50 * 4;
+      const right = (y * 50 + 49) * 4;
+      assert.deepEqual([...padded.subarray(left, left + 4)], sheetPixel);
+      assert.deepEqual([...padded.subarray(right, right + 4)], sheetPixel);
+    }
   } finally {
     await rm(dir, { recursive: true });
   }
