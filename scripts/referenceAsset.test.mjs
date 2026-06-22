@@ -2,11 +2,15 @@ import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { existsSync } from "node:fs";
 import { readFile } from "node:fs/promises";
+import { join } from "node:path";
 import test from "node:test";
+import { fileURLToPath } from "node:url";
 import sharp from "sharp";
 
 const imageUrl = new URL("../character-assets/reference/approved-couple.png", import.meta.url);
 const metadataUrl = new URL("../character-assets/reference/approved-couple.json", import.meta.url);
+const sourceLockUrl = new URL("../character-assets/reference/couple-source-lock.json", import.meta.url);
+const root = fileURLToPath(new URL("..", import.meta.url));
 
 const approvedMetadata = {
   sourceSessionId: "019eabf9-3872-7d40-9d46-157edc38abc5",
@@ -39,4 +43,26 @@ test("approved couple reference matches its recorded provenance and image proper
   assert.equal(imageMetadata.width, approvedMetadata.width);
   assert.equal(imageMetadata.height, approvedMetadata.height);
   assert.equal(metadata.sourceSessionId, "019eabf9-3872-7d40-9d46-157edc38abc5");
+});
+
+test("couple source sprites are locked to the approved art direction", async () => {
+  assert.ok(existsSync(sourceLockUrl), "couple source lock metadata is missing");
+
+  const lock = JSON.parse(await readFile(sourceLockUrl, "utf8"));
+  assert.equal(lock.sourceSessionId, approvedMetadata.sourceSessionId);
+  assert.equal(lock.approvedReferenceSha256, approvedMetadata.sha256);
+  assert.equal(lock.artDirection, approvedMetadata.artDirection);
+  assert.equal(lock.proportion, approvedMetadata.proportion);
+  assert.equal(lock.face, approvedMetadata.face);
+  assert.equal(
+    lock.lockPolicy,
+    "Bride and groom source sprites must preserve the approved ornate romantic fashion reference; do not replace with simplified block art."
+  );
+
+  for (const [relative, expectedSha] of Object.entries(lock.sourceSha256)) {
+    const file = join(root, relative);
+    assert.ok(existsSync(file), `${relative} is missing`);
+    const actualSha = createHash("sha256").update(await readFile(file)).digest("hex");
+    assert.equal(actualSha, expectedSha, `${relative} no longer matches the locked couple art source`);
+  }
 });

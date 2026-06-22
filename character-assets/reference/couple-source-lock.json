@@ -1,0 +1,14 @@
+{
+  "sourceSessionId": "019eabf9-3872-7d40-9d46-157edc38abc5",
+  "approvedReferenceSha256": "2b15858e5e16a7210181b79cbf94aa1041df3bc5cb255a76f41a36c1d553458a",
+  "artDirection": "ornate romantic fashion pixel art",
+  "proportion": "A2 balanced compact",
+  "face": "F1 clear and refined",
+  "lockPolicy": "Bride and groom source sprites must preserve the approved ornate romantic fashion reference; do not replace with simplified block art.",
+  "sourceSha256": {
+    "character-assets/source/npc/groom-idle.png": "93f647284685b9b731e7068fb3ab149fb0214da300ad5b628fed2f4680947792",
+    "character-assets/source/npc/groom-walk.png": "b60a3da714f15e7e62d8b6eaec431d0dd7008af538f431fe7887fa5ecbd850e2",
+    "character-assets/source/npc/bride-idle.png": "a45ac4d4b56908a69ce7c0decb42d7856dcab827674b7436ece8fe5f6dc393d4",
+    "character-assets/source/npc/bride-walk.png": "3176526cc1814fe1d3938099abcd086f311d80a56b9eb2bed01735b6c5c64db3"
+  }
+}

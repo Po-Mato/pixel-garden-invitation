@@ -256,7 +256,7 @@ test("couple mode renders every labeled row with enlarged and actual-size room",
   }
 });
 
-test("couple actual-size crop preserves source pixels, checker transparency, and edge padding", async () => {
+test("couple actual-size crop preserves rendered source pixels, checker transparency, and edge padding", async () => {
   const dir = await mkdtemp(join(tmpdir(), "character-contact-sheet-"));
   const output = join(dir, "couple.png");
   try {
@@ -278,7 +278,6 @@ test("couple actual-size crop preserves source pixels, checker transparency, and
       .extract({ left: 0, top: 0, width: 96, height: 144 })
       .resize(48, 72, { kernel: "nearest" })
       .ensureAlpha()
-      .raw()
       .toBuffer();
     const actual = await sharp(output)
       .extract({ left: 648, top: 162, width: 48, height: 72 })
@@ -289,16 +288,30 @@ test("couple actual-size crop preserves source pixels, checker transparency, and
       [0xff, 0xfa, 0xf2, 0xff],
       [0xde, 0xd5, 0xc9, 0xff]
     ];
+    const checker = Buffer.alloc(48 * 72 * 4);
 
     for (let y = 0; y < 72; y += 1) {
       for (let x = 0; x < 48; x += 1) {
         const offset = (y * 48 + x) * 4;
-        const expected = source[offset + 3] === 0
-          ? checkerColors[(Math.floor(x / 4) + Math.floor(y / 4)) % 2]
-          : [...source.subarray(offset, offset + 4)];
+        const color = checkerColors[(Math.floor(x / 4) + Math.floor(y / 4)) % 2];
+        checker.set(color, offset);
+      }
+    }
+
+    const expected = await sharp(checker, {
+      raw: { width: 48, height: 72, channels: 4 }
+    })
+      .composite([{ input: source }])
+      .ensureAlpha()
+      .raw()
+      .toBuffer();
+
+    for (let y = 0; y < 72; y += 1) {
+      for (let x = 0; x < 48; x += 1) {
+        const offset = (y * 48 + x) * 4;
         assert.deepEqual(
           [...actual.subarray(offset, offset + 4)],
-          expected,
+          [...expected.subarray(offset, offset + 4)],
           `unexpected actual-size pixel at ${x},${y}`
         );
       }
