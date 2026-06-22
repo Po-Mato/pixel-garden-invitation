@@ -48,16 +48,21 @@ pnpm build
 ## Character Assets
 
 Source pixel sheets live in `character-assets/source`.
-Generate palette variants before local development or production builds:
+Character source sheets are hand-authored PNGs. Do not generate character geometry from code.
+
+Use the local editor and review tools:
 
 ```bash
+pnpm characters:editor
+pnpm characters:audit
 pnpm characters:generate
+pnpm characters:contact-sheet -- --mode=catalog --output=/tmp/character-catalog.png
 ```
+
+The editor runs only on `127.0.0.1:41731`. Palette generation may recolor exact marker pixels, but it must not create body, face, hair, outfit, or NPC geometry.
 
 The generated files in `client/public/characters/generated` are ignored and rebuilt in CI.
 Catalog IDs and compatibility rules live in `shared/character-catalog.json`.
-Use `node scripts/author-character-source-assets.mjs` to reproduce the checked-in marker sheets and
-`node scripts/render-character-contact-sheet.mjs /tmp/pixel-character-contact-sheet.png` for visual QA.
 
 ## Architecture
 

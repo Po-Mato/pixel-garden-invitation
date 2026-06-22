@@ -9,12 +9,12 @@
     "dev:worker": "pnpm --filter @wedding-game/worker dev",
     "db:migrate:local": "pnpm --filter @wedding-game/worker exec wrangler d1 migrations apply wedding-game-invitation --local",
     "characters:generate": "node scripts/generate-character-assets.mjs",
-    "characters:editor": "node scripts/serve-character-editor.mjs",
     "characters:audit": "node scripts/audit-character-assets.mjs",
     "characters:contact-sheet": "node scripts/render-character-contact-sheet.mjs",
+    "characters:editor": "node scripts/serve-character-editor.mjs",
     "characters:test": "node --test scripts/referenceAsset.test.mjs scripts/characterAssetGenerator.test.mjs scripts/characterAssetAudit.test.mjs tools/character-pixel-editor/editor-core.test.mjs",
-    "build": "pnpm characters:generate && pnpm --filter @wedding-game/shared build && pnpm --filter @wedding-game/client build && pnpm --filter @wedding-game/worker build",
-    "test": "pnpm characters:test && pnpm characters:generate && pnpm --filter @wedding-game/shared test && pnpm --filter @wedding-game/client test && pnpm --filter @wedding-game/worker test",
+    "build": "pnpm characters:audit && pnpm characters:generate && pnpm --filter @wedding-game/shared build && pnpm --filter @wedding-game/client build && pnpm --filter @wedding-game/worker build",
+    "test": "pnpm characters:test && pnpm characters:audit && pnpm characters:generate && pnpm --filter @wedding-game/shared test && pnpm --filter @wedding-game/client test && pnpm --filter @wedding-game/worker test",
     "typecheck": "pnpm --filter @wedding-game/shared typecheck && pnpm --filter @wedding-game/client typecheck && pnpm --filter @wedding-game/worker typecheck"
   },
   "devDependencies": {
