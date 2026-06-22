@@ -4,11 +4,13 @@
   "artDirection": "ornate romantic fashion pixel art",
   "proportion": "A2 balanced compact",
   "face": "F1 clear and refined",
+  "idlePose": "standing portrait pose from the approved upper-row reference",
+  "walkPose": "compact gameplay walking pose from the approved lower-row reference",
   "lockPolicy": "Bride and groom source sprites must preserve the approved ornate romantic fashion reference; do not replace with simplified block art.",
   "sourceSha256": {
-    "character-assets/source/npc/groom-idle.png": "93f647284685b9b731e7068fb3ab149fb0214da300ad5b628fed2f4680947792",
+    "character-assets/source/npc/groom-idle.png": "60a1b9857d7bc73467f107cb14bd9f8e87c9ad6ae468889ed07ff41160b371b7",
     "character-assets/source/npc/groom-walk.png": "b60a3da714f15e7e62d8b6eaec431d0dd7008af538f431fe7887fa5ecbd850e2",
-    "character-assets/source/npc/bride-idle.png": "a45ac4d4b56908a69ce7c0decb42d7856dcab827674b7436ece8fe5f6dc393d4",
+    "character-assets/source/npc/bride-idle.png": "766d9cb37d09b0a2cd816d09192f80343166e9025fac09bd64e0338c818bbccd",
     "character-assets/source/npc/bride-walk.png": "3176526cc1814fe1d3938099abcd086f311d80a56b9eb2bed01735b6c5c64db3"
   }
 }

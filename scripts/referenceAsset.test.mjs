@@ -54,6 +54,8 @@ test("couple source sprites are locked to the approved art direction", async () 
   assert.equal(lock.artDirection, approvedMetadata.artDirection);
   assert.equal(lock.proportion, approvedMetadata.proportion);
   assert.equal(lock.face, approvedMetadata.face);
+  assert.equal(lock.idlePose, "standing portrait pose from the approved upper-row reference");
+  assert.equal(lock.walkPose, "compact gameplay walking pose from the approved lower-row reference");
   assert.equal(
     lock.lockPolicy,
     "Bride and groom source sprites must preserve the approved ornate romantic fashion reference; do not replace with simplified block art."

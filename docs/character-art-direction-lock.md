@@ -13,6 +13,8 @@ Fixed direction:
 - Art direction: ornate romantic fashion pixel art.
 - Proportion: A2 balanced compact.
 - Face: F1 clear and refined.
+- Idle pose: standing portrait pose from the approved upper-row reference. The garden NPCs must read as standing for a posed wedding portrait, not mid-walk.
+- Walk pose: compact gameplay walking pose from the approved lower-row reference. Walking posture belongs only in `*-walk.png`.
 - Groom: layered dark hair, black fitted tuxedo, satin lapels, white shirt, bow tie, boutonniere, polished shoes.
 - Bride: waist-length dark-brown waves, pearl/floral headpiece, ivory lace gown, bouquet, layered skirt/train detail.
 
