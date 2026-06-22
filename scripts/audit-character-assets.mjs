@@ -73,12 +73,16 @@ async function auditSheet(
   file,
   expectedDimensions,
   classRules,
-  { requireEveryFrame = false, footBaseline = null } = {}
+  {
+    requireEveryFrame = false,
+    footBaseline = null,
+    frameDimensions = rules.frame
+  } = {}
 ) {
   try {
     const inspection = await inspectSheet(file, {
-      frameWidth: rules.frame.width,
-      frameHeight: rules.frame.height
+      frameWidth: frameDimensions.width,
+      frameHeight: frameDimensions.height
     });
 
     if (
@@ -199,18 +203,30 @@ function groupLine(group) {
 
 if (wants("couple")) {
   groupLine("couple");
+  const npcFrame = { width: 96, height: 144 };
+  const npcFootBaseline = {
+    footBottomMin: 132,
+    footBottomMax: 140,
+    footBottomSpreadMax: 2
+  };
+  const npcRules = {
+    ...rules.npc,
+    minimumOpaquePixelsPerFrame: rules.npc.minimumOpaquePixelsPerFrame * 2,
+    minimumColorTransitionsPerFrame: rules.npc.minimumColorTransitionsPerFrame + 70
+  };
+
   for (const npc of catalog.npcs) {
     await auditSheet(
       path.join(source, "npc", `${npc.id}-idle.png`),
-      { width: 96, height: 72 },
-      rules.npc,
-      { requireEveryFrame: true, footBaseline: rules.frame }
+      { width: 192, height: 144 },
+      npcRules,
+      { requireEveryFrame: true, footBaseline: npcFootBaseline, frameDimensions: npcFrame }
     );
     await auditSheet(
       path.join(source, "npc", `${npc.id}-walk.png`),
-      { width: 144, height: 288 },
-      rules.npc,
-      { requireEveryFrame: true, footBaseline: rules.frame }
+      { width: 288, height: 576 },
+      npcRules,
+      { requireEveryFrame: true, footBaseline: npcFootBaseline, frameDimensions: npcFrame }
     );
   }
 }

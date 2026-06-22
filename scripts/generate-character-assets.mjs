@@ -11,6 +11,8 @@ const outfitConfig = JSON.parse(await readFile(join(root, "character-assets/pale
 const defaultSourceRoot = join(root, "character-assets/source");
 const defaultOutputRoot = join(root, "client/public/characters/generated");
 const fixedPixelColors = ["#251812", "#fff4dc", "#b75d65", "#d47777"];
+const npcIdleDimensions = { width: 192, height: 144 };
+const npcWalkDimensions = { width: 288, height: 576 };
 
 function paletteFromArray(values) {
   return Object.fromEntries(outfitConfig.markers.map((marker, index) => [marker, values[index]]));
@@ -61,11 +63,11 @@ async function prevalidateSources(sourceRoot) {
   for (const npc of catalog.npcs) {
     await requireFile(
       join(sourceRoot, "npc", `${npc.id}-idle.png`),
-      { width: 96, height: 72 }
+      npcIdleDimensions
     );
     await requireFile(
       join(sourceRoot, "npc", `${npc.id}-walk.png`),
-      { width: 144, height: 288 }
+      npcWalkDimensions
     );
   }
 }

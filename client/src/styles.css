@@ -520,11 +520,12 @@ select {
 
 .wedding-npc__sprite {
   display: block;
-  width: 48px;
-  height: 72px;
+  width: var(--npc-display-width, 48px);
+  height: var(--npc-display-height, 72px);
   background-position: 0 0;
   background-repeat: no-repeat;
-  image-rendering: pixelated;
+  background-size: var(--npc-sheet-display-width, 96px) var(--npc-sheet-display-height, 72px);
+  image-rendering: auto;
   animation: character-blink 2.8s steps(1, end) infinite;
   filter: drop-shadow(3px 3px 0 rgba(36, 24, 18, 0.35));
 }

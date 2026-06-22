@@ -14,6 +14,9 @@ const directions = [
   { id: "right", row: 2 },
   { id: "up", row: 3 }
 ];
+const guestFrame = { width: 48, height: 72 };
+const npcFrame = { width: 96, height: 144 };
+const npcDisplayFrame = { width: 48, height: 72 };
 
 export function parseArguments(arguments_) {
   let mode;
@@ -74,13 +77,13 @@ export function parseArguments(arguments_) {
   };
 }
 
-export async function frame(relative, column, row) {
+export async function frame(relative, column, row, dimensions = guestFrame) {
   return sharp(join(generatedRoot, relative))
     .extract({
-      left: column * 48,
-      top: row * 72,
-      width: 48,
-      height: 72
+      left: column * dimensions.width,
+      top: row * dimensions.height,
+      width: dimensions.width,
+      height: dimensions.height
     })
     .png()
     .toBuffer();
@@ -102,7 +105,7 @@ export async function label(text, width) {
 async function composeLayers(layers, column, row) {
   const buffers = await Promise.all(layers.map((layer) => frame(layer, column, row)));
   return sharp({
-    create: { width: 48, height: 72, channels: 4, background: "#00000000" }
+    create: { width: guestFrame.width, height: guestFrame.height, channels: 4, background: "#00000000" }
   })
     .composite(buffers.map((input) => ({ input })))
     .png()
@@ -133,8 +136,8 @@ export async function coupleSamples() {
     samples.push({
       label: `${npc.id} / idle`,
       frames: [
-        await frame(`npc/${npc.id}__idle.png`, 0, 0),
-        await frame(`npc/${npc.id}__idle.png`, 1, 0)
+        await frame(`npc/${npc.id}__idle.png`, 0, 0, npcFrame),
+        await frame(`npc/${npc.id}__idle.png`, 1, 0, npcFrame)
       ]
     });
     for (const direction of directions) {
@@ -142,7 +145,7 @@ export async function coupleSamples() {
         label: `${npc.id} / ${direction.id}`,
         frames: await Promise.all(
           [0, 1, 2].map((column) =>
-            frame(`npc/${npc.id}__walk.png`, column, direction.row)
+            frame(`npc/${npc.id}__walk.png`, column, direction.row, npcFrame)
           )
         )
       });
@@ -277,9 +280,9 @@ async function renderCouple(samples, output) {
   const rowHeight = labelHeight + labelGap + spriteHeight;
   const height = margin * 2 + samples.length * rowHeight + (samples.length - 1) * rowGap;
   const actualStart = 648;
-  const actualTopOffset = (spriteHeight - 72) / 2;
+  const actualTopOffset = (spriteHeight - npcDisplayFrame.height) / 2;
   const enlargedChecker = await checkerboard(192, 288, 16);
-  const actualChecker = await checkerboard(48, 72, 4);
+  const actualChecker = await checkerboard(npcDisplayFrame.width, npcDisplayFrame.height, 4);
   const composites = [];
 
   for (let row = 0; row < samples.length; row += 1) {
@@ -287,7 +290,7 @@ async function renderCouple(samples, output) {
     const rowTop = margin + row * (rowHeight + rowGap);
     const spriteTop = rowTop + labelHeight + labelGap;
     composites.push({
-      input: await label(`${sample.label} | 4x enlarged + 1x actual`, width - margin * 2),
+      input: await label(`${sample.label} | 2x enlarged + display-size actual`, width - margin * 2),
       left: margin,
       top: rowTop
     });
@@ -305,9 +308,13 @@ async function renderCouple(samples, output) {
 
       const actualLeft = actualStart + index * 56;
       const actualTop = spriteTop + actualTopOffset;
+      const actual = await sharp(sample.frames[index])
+        .resize(npcDisplayFrame.width, npcDisplayFrame.height, { kernel: "nearest" })
+        .png()
+        .toBuffer();
       composites.push(
         { input: actualChecker, left: actualLeft, top: actualTop },
-        { input: sample.frames[index], left: actualLeft, top: actualTop }
+        { input: actual, left: actualLeft, top: actualTop }
       );
     }
   }
@@ -328,7 +335,8 @@ async function renderCouple(samples, output) {
 
 async function renderCatalogFrame(sampleFrame) {
   if (sampleFrame.relative) {
-    return frame(sampleFrame.relative, sampleFrame.column, sampleFrame.row);
+    const dimensions = sampleFrame.relative.startsWith("npc/") ? npcFrame : guestFrame;
+    return frame(sampleFrame.relative, sampleFrame.column, sampleFrame.row, dimensions);
   }
   return composeLayers(sampleFrame.layers, sampleFrame.column, sampleFrame.row);
 }

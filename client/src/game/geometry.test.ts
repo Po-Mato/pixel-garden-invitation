@@ -16,4 +16,12 @@ describe("world geometry", () => {
     expect(getNearbySpot({ x: 200, y: 114 }, gardenWorld)?.id).toBe("wedding-info");
     expect(getNearbySpot({ x: 210, y: 340 }, gardenWorld)).toBeNull();
   });
+
+  it("keeps bride and groom npc labels readable on the mobile stage", () => {
+    const [leftNpc, rightNpc] = [...gardenWorld.npcs].sort((first, second) => first.x - second.x);
+
+    expect(rightNpc.x - leftNpc.x).toBeGreaterThanOrEqual(92);
+    expect(leftNpc.x - 42).toBeGreaterThanOrEqual(gardenWorld.bounds.x);
+    expect(rightNpc.x + 42).toBeLessThanOrEqual(gardenWorld.bounds.width);
+  });
 });

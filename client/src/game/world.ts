@@ -46,7 +46,7 @@ export const gardenWorld: GardenWorld = {
     { id: "rsvp", label: "RSVP", x: 274, y: 580, width: 82, height: 70, actionRadius: 58 }
   ],
   npcs: [
-    { id: "groom", label: "신랑 이서준", x: 255, y: 255 },
-    { id: "bride", label: "신부 김하린", x: 315, y: 255 }
+    { id: "groom", label: "신랑 이서준", x: 235, y: 255 },
+    { id: "bride", label: "신부 김하린", x: 335, y: 255 }
   ]
 };

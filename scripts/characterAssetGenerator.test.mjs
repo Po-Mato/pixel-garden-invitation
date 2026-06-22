@@ -14,16 +14,16 @@ const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 
 test("npc source contract includes idle and four-direction walk sheets", async () => {
   await assert.doesNotReject(() =>
-    validateDimensions("character-assets/source/npc/groom-idle.png", { width: 96, height: 72 })
+    validateDimensions("character-assets/source/npc/groom-idle.png", { width: 192, height: 144 })
   );
   await assert.doesNotReject(() =>
-    validateDimensions("character-assets/source/npc/groom-walk.png", { width: 144, height: 288 })
+    validateDimensions("character-assets/source/npc/groom-walk.png", { width: 288, height: 576 })
   );
   await assert.doesNotReject(() =>
-    validateDimensions("character-assets/source/npc/bride-idle.png", { width: 96, height: 72 })
+    validateDimensions("character-assets/source/npc/bride-idle.png", { width: 192, height: 144 })
   );
   await assert.doesNotReject(() =>
-    validateDimensions("character-assets/source/npc/bride-walk.png", { width: 144, height: 288 })
+    validateDimensions("character-assets/source/npc/bride-walk.png", { width: 288, height: 576 })
   );
 });
 
@@ -38,13 +38,13 @@ test("generator emits idle and four-direction walk sheets for every npc", async 
     await assert.doesNotReject(() =>
       validateDimensions(
         join(root, `client/public/characters/generated/npc/${id}__idle.png`),
-        { width: 96, height: 72 }
+        { width: 192, height: 144 }
       )
     );
     await assert.doesNotReject(() =>
       validateDimensions(
         join(root, `client/public/characters/generated/npc/${id}__walk.png`),
-        { width: 144, height: 288 }
+        { width: 288, height: 576 }
       )
     );
   }
@@ -67,7 +67,7 @@ test("generator validates a late npc walk source before replacing existing outpu
     const { generateCharacterAssets } = await import("./generate-character-assets.mjs");
     await assert.rejects(
       () => generateCharacterAssets({ sourceRoot, outputRoot }),
-      /bride-walk\.png must be 144x288; received 1x1/
+      /bride-walk\.png must be 288x576; received 1x1/
     );
     assert.equal(await readFile(marker, "utf8"), "keep existing output");
   } finally {
@@ -75,12 +75,12 @@ test("generator validates a late npc walk source before replacing existing outpu
   }
 });
 
-test("contact-sheet frame extracts a 48x72 cell at the requested column and row", async () => {
+test("contact-sheet frame extracts a 96x144 npc cell at the requested column and row", async () => {
   const { frame } = await import("./render-character-contact-sheet.mjs");
   const relative = "npc/groom__walk.png";
-  const actual = await sharp(await frame(relative, 2, 3)).raw().toBuffer();
+  const actual = await sharp(await frame(relative, 2, 3, { width: 96, height: 144 })).raw().toBuffer();
   const expected = await sharp(join(root, "client/public/characters/generated", relative))
-    .extract({ left: 96, top: 216, width: 48, height: 72 })
+    .extract({ left: 192, top: 432, width: 96, height: 144 })
     .raw()
     .toBuffer();
 
@@ -177,7 +177,7 @@ test("couple samples include idle and every walk frame in all four directions", 
       const metadata = await sharp(image).metadata();
       assert.deepEqual(
         { width: metadata.width, height: metadata.height },
-        { width: 48, height: 72 }
+        { width: 96, height: 144 }
       );
     }
   }
@@ -275,7 +275,8 @@ test("couple actual-size crop preserves source pixels, checker transparency, and
     const source = await sharp(
       join(root, "client/public/characters/generated/npc/groom__idle.png")
     )
-      .extract({ left: 0, top: 0, width: 48, height: 72 })
+      .extract({ left: 0, top: 0, width: 96, height: 144 })
+      .resize(48, 72, { kernel: "nearest" })
       .ensureAlpha()
       .raw()
       .toBuffer();
