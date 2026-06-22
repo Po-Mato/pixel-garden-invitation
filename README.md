@@ -30,6 +30,8 @@ Run the Vite client:
 pnpm dev
 ```
 
+`pnpm dev` regenerates the ignored character palette assets before starting Vite so a clean checkout has the required sprite files.
+
 Run the Cloudflare Worker locally:
 
 ```bash
@@ -49,6 +51,7 @@ pnpm build
 
 Source pixel sheets live in `character-assets/source`.
 Character source sheets are hand-authored PNGs. Do not generate character geometry from code.
+Generated palette variants are ignored under `client/public/characters/generated`, so run `pnpm characters:generate` after a clean checkout when you need the static sprite files outside `pnpm dev`, `pnpm test`, or `pnpm build`.
 
 Use the local editor and review tools:
 
@@ -59,7 +62,7 @@ pnpm characters:generate
 pnpm characters:contact-sheet -- --mode=catalog --output=/tmp/character-catalog.png
 ```
 
-The editor runs only on `127.0.0.1:41731`. Palette generation may recolor exact marker pixels, but it must not create body, face, hair, outfit, or NPC geometry.
+The editor runs only on `127.0.0.1:41731`. Palette generation only recolors exact marker pixels and copies fixed authored sheets into ignored public assets; it must not create body, face, hair, outfit, accessory, or NPC geometry.
 
 The generated files in `client/public/characters/generated` are ignored and rebuilt in CI.
 Catalog IDs and compatibility rules live in `shared/character-catalog.json`.
