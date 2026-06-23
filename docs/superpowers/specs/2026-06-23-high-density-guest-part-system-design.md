@@ -1,107 +1,110 @@
-# High-Density Guest Part System Design
+# 고밀도 하객 파츠 시스템 설계
 
-Date: 2026-06-23  
-Project root: `/Users/sjlee/Documents/New project 5`  
-Status: Approach A selected; implementation pending written-spec review
+작성일: 2026-06-23  
+프로젝트 루트: `/Users/sjlee/Documents/New project 5`  
+상태: A안 확정, 작성된 설계 검토 후 구현 예정
 
-## Goal
+## 목표
 
-Replace the current low-density guest character assets with a high-density, swappable part system that can produce attractive wedding guest characters at the same perceived quality level as the approved bride/groom direction.
+현재 저밀도 하객 캐릭터 에셋을 고밀도 교체형 파츠 시스템으로 전환한다.
 
-This design addresses two separate failures:
+이번 설계는 두 가지 문제를 동시에 해결한다.
 
-1. The current guest art is still visually weak. It passes technical checks but does not meet the desired beauty/detail bar.
-2. The customization system composes layers, but the asset model is not explicit enough as a managed body-plus-parts library.
+1. 현재 하객 아트는 기술 검증은 통과해도 실제 미감 기준으로는 부족하다.
+2. 커스터마이저는 레이어 합성을 하고 있지만, “몸을 제외한 헤어/의상/악세사리 파츠 라이브러리”로 명확하게 관리되는 구조가 부족하다.
 
-The new system must make the body/base separate from all other replaceable parts:
+새 시스템은 몸/base와 나머지 스타일 파츠를 명확히 분리한다.
 
-- Base body: family, skin tone, face, hands, body anchor.
-- Hair: replaceable back/front hair parts.
-- Outfit: replaceable clothing parts.
-- Accessories: replaceable face, jewelry, neckwear, carry, and back-accessory parts.
+- 기본 몸: 패밀리, 피부색, 얼굴, 손, 발, 기준 앵커.
+- 헤어: 뒤 헤어와 앞 헤어로 분리되는 교체형 파츠.
+- 의상: 독립 교체형 의상 파츠.
+- 악세사리: 얼굴, 주얼리, 넥웨어, 소지품, 뒤쪽 악세사리 파츠.
 
-## Non-Negotiable Direction
+## 고정 방향
 
-- Guest characters move from `48x72` source frames to `96x144` high-density source frames.
-- The rendered garden footprint remains visually controlled so guests do not dominate the map.
-- The approved bride/groom art remains the master quality reference.
-- Guest quality target is at least 85% of the couple art direction.
-- Current quick-fix `48x72` guest PNG edits are not the quality baseline. They are replacement candidates.
-- Runtime code may compose, validate, palette-expand, and display authored parts. It must not procedurally draw final character geometry.
-- Body/base can be selected by family and skin tone, but all visible styling beyond the body must come from swappable part assets.
+- 하객 캐릭터 소스 프레임을 기존 `48x72`에서 `96x144` 고밀도 프레임으로 올린다.
+- 정원 화면에서 보이는 크기는 맵 밸런스를 해치지 않도록 CSS 표시 크기로 제어한다.
+- 승인된 신랑/신부 아트가 최상위 품질 기준이다.
+- 하객은 신랑/신부 아트 방향의 최소 85% 품질을 목표로 한다.
+- 직전에 만든 `48x72` 하객 보정 PNG는 품질 기준이 아니다. 다음 구현에서 대체할 대상이다.
+- 런타임 코드는 조합, 검증, 팔레트 확장, 표시만 담당한다. 최종 캐릭터 형상은 런타임에서 절차적으로 그리지 않는다.
+- 몸/base는 family와 skin tone으로 선택 가능하지만, 몸을 제외한 외형 스타일은 모두 교체형 파츠 에셋에서 온다.
 
-## Root Cause
+## 근본 원인
 
-The poor guest quality comes from trying to solve an art-density problem inside a `48x72` grid. At that size:
+하객 퀄리티가 낮은 근본 원인은 `48x72` 격자 안에서 아트 밀도 문제를 해결하려고 한 것이다.
 
-- Facial refinement collapses into dark mask-like pixels.
-- Hair silhouettes become blocky or top-heavy.
-- Suit/dress material detail cannot survive at actual garden scale.
-- Accessories are too small to read reliably.
-- Automated checks can prove dimensions and alpha differences but cannot create enough visual detail.
+`48x72`에서는 다음 문제가 반복된다.
 
-Bride/groom quality improved only after moving them to denser `96x144` NPC frames. Guests need the same density strategy, but with a part-composition architecture instead of single complete NPC sheets.
+- 얼굴 디테일이 어두운 마스크처럼 뭉개진다.
+- 헤어 실루엣이 덩어리처럼 보이거나 머리만 커 보인다.
+- 수트/드레스의 소재 디테일이 실제 정원 크기에서 살아남지 못한다.
+- 악세사리가 너무 작아 읽히지 않는다.
+- 자동 검증은 크기, 투명도, 실루엣 차이를 볼 수 있지만 “예쁘고 고급스러운가”를 보장하지 못한다.
 
-## Asset Model
+신랑/신부는 `96x144` 고밀도 NPC 프레임으로 올린 뒤 품질이 살아났다. 하객도 같은 밀도 전략이 필요하다. 단, 신랑/신부처럼 단일 완성 NPC가 아니라 base 위에 파츠를 조립하는 구조여야 한다.
 
-### Frame Contract
+## 에셋 모델
 
-Guest source parts become:
+### 프레임 규격
 
-- Walk source sheet: `288x576`, three `96x144` columns by four direction rows.
-- Idle source sheet where needed: `192x144`, two `96x144` front-facing frames.
-- Direction order: down, left, right, up.
-- Walk columns: step 0, neutral, step 2.
-- Transparent PNG, hard pixel edges, no antialiasing.
+하객 소스 파츠 규격은 다음과 같다.
 
-Generated files keep deterministic URLs under:
+- 걷기 소스 시트: `288x576`, `96x144` 프레임 3열 × 4행.
+- 필요한 경우 idle 소스 시트: `192x144`, `96x144` 정면 프레임 2개.
+- 방향 순서: down, left, right, up.
+- 걷기 열 순서: step 0, neutral, step 2.
+- 투명 PNG.
+- 선명한 픽셀 경계 유지.
+- 안티앨리어싱과 blur 금지.
+
+생성 파일은 기존처럼 아래 경로에 결정적으로 생성한다.
 
 ```text
 client/public/characters/generated/
 ```
 
-The generated guest output may either:
+하객 생성 결과물은 고밀도 `96x144`를 유지하고, 렌더러가 CSS 표시 크기를 제어하는 방식을 기본으로 한다.
 
-- remain high-density `96x144` and be rendered with CSS display scaling, or
-- be downsampled only if nearest-neighbor downsampling still passes visual QA.
+nearest-neighbor 방식의 축소는 시각 QA를 통과할 때만 예외적으로 허용한다.
 
-The preferred implementation is to keep generated guest parts at `96x144` and let the renderer decide display size.
+### 파츠 그룹
 
-### Part Groups
+관리되는 하객 파츠 라이브러리는 다음 그룹으로 구성한다.
 
-The managed guest part library has these groups:
-
-| Group | Purpose | Source path | Palette expansion |
+| 그룹 | 역할 | 소스 경로 | 팔레트 확장 |
 | --- | --- | --- | --- |
-| `base` | Body, skin, face, hands, feet, body anchor | `character-assets/source/base` | skin palettes |
-| `hair-back` | Hair behind body/outfit | `character-assets/source/hair` | hair palettes |
-| `hair-front` | Hair over face/body | `character-assets/source/hair` | hair palettes |
-| `outfit` | Clothing and shoes where applicable | `character-assets/source/outfits` | outfit palettes |
-| `accessory-face` | Glasses and face overlays | `character-assets/source/accessories` | fixed colors |
-| `accessory-jewelry` | Earrings, necklaces | `character-assets/source/accessories` | fixed colors |
-| `accessory-neckwear` | Tie, bow tie, brooch | `character-assets/source/accessories` | fixed colors |
-| `accessory-carry` | Handbags and carried items | `character-assets/source/accessories` | fixed colors |
-| `accessory-back` | Shoulder bag/back accessory | `character-assets/source/accessories` | fixed colors |
+| `base` | 몸, 피부, 얼굴, 손, 발, 기준 앵커 | `character-assets/source/base` | 피부 팔레트 |
+| `hair-back` | 몸/의상 뒤에 깔리는 헤어 | `character-assets/source/hair` | 헤어 팔레트 |
+| `hair-front` | 얼굴/몸 위에 올라오는 헤어 | `character-assets/source/hair` | 헤어 팔레트 |
+| `outfit` | 의상과 필요한 경우 신발 | `character-assets/source/outfits` | 의상 팔레트 |
+| `accessory-face` | 안경 등 얼굴 오버레이 | `character-assets/source/accessories` | 고정 색상 |
+| `accessory-jewelry` | 귀걸이, 목걸이 | `character-assets/source/accessories` | 고정 색상 |
+| `accessory-neckwear` | 넥타이, 보타이, 브로치 | `character-assets/source/accessories` | 고정 색상 |
+| `accessory-carry` | 핸드백 등 손에 드는 아이템 | `character-assets/source/accessories` | 고정 색상 |
+| `accessory-back` | 숄더백 등 뒤쪽 악세사리 | `character-assets/source/accessories` | 고정 색상 |
 
-The catalog remains the user-facing source of selectable IDs, but a new part manifest makes the asset system explicit:
+사용자에게 노출되는 선택 ID는 계속 `shared/character-catalog.json`이 담당한다.
+
+하지만 에셋 관리는 별도 매니페스트로 명확히 분리한다.
 
 ```text
 character-assets/guest-part-manifest.json
 ```
 
-The manifest records:
+매니페스트는 다음 정보를 가진다.
 
-- frame dimensions;
-- source file for each catalog ID;
-- generated file pattern;
-- layer slot;
-- compatibility constraints;
-- quality-lock metadata;
-- display scale rules.
+- 프레임 크기.
+- 각 카탈로그 ID의 소스 파일.
+- 생성 파일 패턴.
+- 레이어 슬롯.
+- 호환성 규칙.
+- 품질 lock 메타데이터.
+- 표시 크기 규칙.
 
-## Layer Composition
+## 레이어 조합 순서
 
-Back-to-front order remains:
+뒤에서 앞으로 다음 순서를 고정한다.
 
 1. `back-accessory`
 2. `back-hair`
@@ -113,157 +116,169 @@ Back-to-front order remains:
 8. `neckwear`
 9. `carry`
 
-The renderer must not hardcode URL patterns directly from the catalog alone. It should resolve layers through the guest part manifest so part files can be managed, audited, and swapped independently.
+렌더러는 카탈로그 ID만 보고 URL을 하드코딩하지 않는다.
 
-## Customizer Behavior
+반드시 `guest-part-manifest.json`을 통해 선택된 appearance를 실제 파츠 에셋 레이어로 해석한다.
 
-The customizer remains familiar to the user, but internally it becomes part-library driven.
+이렇게 해야 헤어, 의상, 악세사리 파츠를 독립적으로 교체하고 감사할 수 있다.
 
-Visible categories:
+## 커스터마이저 동작
 
-- 기본: family and skin tone.
+사용자가 보는 카테고리는 유지한다.
+
+- 기본: family, skin tone.
 - 헤어: hair style.
 - 헤어 색: hair palette.
 - 의상: outfit.
 - 의상 색: outfit palette.
 - 액세서리: face, jewelry, neckwear, carry.
 
-Each option tile must render an actual composed high-density preview, not a symbolic placeholder.
+내부 구현은 파츠 라이브러리 기반으로 바꾼다.
 
-When the user changes family:
+각 옵션 타일은 상징 아이콘이 아니라 실제 고밀도 조합 preview를 렌더링해야 한다.
 
-- body/base resets to the selected family default;
-- incompatible hair and outfit IDs reset;
-- accessories may remain only if compatible with their declared slot and layer.
+family 변경 시:
 
-When the user changes a non-body part:
+- 몸/base는 선택된 family 기본값으로 변경된다.
+- 호환되지 않는 hair/outfit ID는 reset된다.
+- 악세사리는 선언된 슬롯/레이어와 호환될 때만 유지된다.
 
-- only that part changes;
-- body/base remains stable;
-- other part selections remain stable unless compatibility rules require reset.
+몸 이외 파츠 변경 시:
 
-## Art Requirements
+- 해당 파츠만 변경된다.
+- 몸/base는 유지된다.
+- 호환성 문제가 없으면 다른 파츠 선택은 유지된다.
 
-Guest parts must be authored to match the approved couple direction:
+## 아트 요구사항
 
-- attractive, human, wedding-guest appropriate;
-- refined eyes and face contour;
-- layered hair with strand clusters and highlights;
-- clear outfit materials: satin, wool, silk, lace, knit, leather, metal;
-- readable silhouettes at actual mobile garden size;
-- no alien/mask face;
-- no square heads;
-- no recolor-only differences between different hairstyles or outfit IDs;
-- no bride-exclusive train/gown/bouquet composition;
-- no groom-exclusive boutonniere/tuxedo treatment copied into guest outfits.
+하객 파츠는 승인된 신랑/신부 방향을 따른다.
 
-The base body should be intentionally plain enough to combine with all outfits, but not low-quality. It still owns the face and body proportions.
+- 예쁘고 멋진 결혼식 하객으로 보여야 한다.
+- 사람처럼 읽혀야 하며 외계인/마스크 얼굴 금지.
+- 얼굴 윤곽, 눈, 코, 입, 블러시가 정제되어야 한다.
+- 헤어는 덩어리가 아니라 strand cluster와 highlight가 있어야 한다.
+- 의상은 소재가 구분되어야 한다: satin, wool, silk, lace, knit, leather, metal.
+- 실제 모바일 정원 크기에서도 실루엣이 읽혀야 한다.
+- 사각형 머리 금지.
+- 서로 다른 헤어스타일/의상 ID가 단순 색 변경만으로 구분되면 안 된다.
+- 신부 전용 train/gown/bouquet 구성은 하객 의상에 복사하지 않는다.
+- 신랑 전용 boutonniere/tuxedo 처리는 하객 의상에 복사하지 않는다.
 
-## Catalog Scope
+base body는 모든 의상과 조합 가능해야 하므로 과하게 튀면 안 된다.
 
-The current catalog counts remain unchanged:
+하지만 base body도 저퀄이면 안 된다. 얼굴과 비율의 품질 기준을 base가 책임진다.
 
-- two families;
-- five skin tones;
-- sixteen hairstyles;
-- six hair colors;
-- ten outfits;
-- four outfit palettes per outfit;
-- ten accessories.
+## 카탈로그 범위
 
-No new customization categories are introduced in this pass. The work is a quality and architecture upgrade, not catalog expansion.
+이번 작업에서 선택지 개수는 유지한다.
 
-## Tooling Changes
+- family 2개.
+- skin tone 5개.
+- hairstyle 16개.
+- hair color 6개.
+- outfit 10개.
+- outfit palette는 outfit당 4개.
+- accessory 10개.
 
-### Generator
+새 카테고리를 추가하지 않는다.
 
-`scripts/generate-character-assets.mjs` must support guest `96x144` part dimensions while preserving existing bride/groom NPC handling.
+이번 작업은 카탈로그 확장이 아니라 품질과 구조 업그레이드다.
 
-Required constants:
+## 툴링 변경
 
-- guest frame: `96x144`;
-- guest idle sheet: `192x144`;
-- guest walk sheet: `288x576`;
-- couple NPC frame: remains `96x144`;
-- old `48x72` output assumptions removed from guest generation and renderer tests.
+### 생성기
 
-### Audit
+`scripts/generate-character-assets.mjs`는 하객 `96x144` 파츠 규격을 지원해야 한다.
 
-The asset audit must verify:
+신랑/신부 NPC의 기존 `96x144` 처리는 유지한다.
 
-- all catalog IDs have manifest entries;
-- every manifest entry has a source file;
-- source dimensions match the high-density contract;
-- generated dimensions match the high-density contract;
-- each layer uses only allowed marker/fixed colors;
-- base/body foot baseline is stable;
-- each hairstyle has a distinct silhouette within family;
-- each outfit has a distinct silhouette within family;
-- front-hair leaves a readable face window;
-- accessory non-empty frames align to the correct body anchor;
-- generated guest output count matches catalog-derived expectations.
+필수 상수:
 
-### Contact Sheets
+- guest frame: `96x144`
+- guest idle sheet: `192x144`
+- guest walk sheet: `288x576`
+- couple NPC frame: 기존 `96x144` 유지
 
-Contact sheet tooling must include:
+기존 하객 `48x72` 전제는 생성기, 렌더러, 테스트에서 제거한다.
 
-- all hair styles in a canonical dark-brown palette;
-- all hair colors on representative styles;
-- all outfits in their palettes;
-- all accessories by slot;
-- representative full composed guests;
-- actual display-size samples and enlarged nearest-neighbor samples.
+### 감사
 
-The review sheet must make it obvious whether parts are interchangeable and aligned.
+에셋 감사는 다음을 검증해야 한다.
 
-## Renderer Changes
+- 모든 카탈로그 ID가 매니페스트 항목을 가진다.
+- 모든 매니페스트 항목이 소스 파일을 가진다.
+- 소스 크기가 고밀도 규격과 일치한다.
+- 생성 결과물 크기가 고밀도 규격과 일치한다.
+- 각 레이어가 허용된 marker/fixed color만 사용한다.
+- base/body의 발 기준선이 안정적이다.
+- family 내 각 hairstyle은 구분되는 실루엣을 가진다.
+- family 내 각 outfit은 구분되는 실루엣을 가진다.
+- front-hair는 얼굴이 읽히는 얼굴 노출 영역을 남긴다.
+- accessory의 비어 있지 않은 프레임은 몸 기준 앵커와 정렬된다.
+- 생성된 하객 결과물 개수가 카탈로그에서 계산되는 기대값과 일치한다.
 
-`CharacterSprite` must become dimension-aware:
+### 컨택트 시트
 
-- guest frame width/height are read from manifest metadata;
-- CSS variables define source frame size and display size;
-- walking frame offsets use the configured source frame size;
-- idle frame offsets use the configured idle source size;
-- layer failures hide only the failed layer, not the whole character.
+컨택트 시트는 다음을 포함해야 한다.
 
-World display target:
+- canonical dark-brown palette 기준 모든 hair style.
+- 대표 style 기준 모든 hair color.
+- 모든 outfit과 palette.
+- slot별 모든 accessory.
+- 대표 full composed guest 조합.
+- 실제 표시 크기 샘플.
+- nearest-neighbor 확대 샘플.
 
-- guests should remain visually close to the current world footprint;
-- exact CSS display size is decided during implementation after mobile QA;
-- source pixels stay high-density even if displayed smaller.
+review sheet만 봐도 파츠가 독립적으로 교체되고 정렬되는지 확인 가능해야 한다.
 
-Customizer preview target:
+## 렌더러 변경
 
-- larger than world display;
-- nearest-neighbor scaling only;
-- no blur.
+`CharacterSprite`는 dimension-aware renderer로 바뀐다.
 
-## Data Flow
+- 하객 프레임 너비/높이는 매니페스트 메타데이터에서 읽는다.
+- CSS 변수로 소스 프레임 크기와 표시 크기를 지정한다.
+- 걷기 프레임 offset은 소스 프레임 크기 기준으로 계산한다.
+- idle 프레임 offset도 idle 소스 프레임 크기 기준으로 계산한다.
+- 레이어 로드 실패 시 실패한 레이어만 숨기고 전체 캐릭터는 유지한다.
 
-1. `shared/character-catalog.json` defines selectable IDs and compatibility.
-2. `character-assets/guest-part-manifest.json` maps IDs to source/generated assets and layer slots.
-3. The generator reads catalog, palettes, and manifest.
-4. The generator creates deterministic generated PNGs.
-5. The client resolves selected `CharacterAppearance` through the manifest.
-6. `CharacterSprite` renders the resulting high-density layers.
-7. Realtime payloads remain unchanged because `CharacterAppearance` IDs do not change.
+정원 표시 목표:
 
-## Testing Strategy
+- 하객은 현재 정원 내 표시 면적과 시각적으로 비슷해야 한다.
+- 정확한 CSS 표시 크기는 구현 중 모바일 QA 후 확정한다.
+- 소스 픽셀은 고밀도를 유지한다.
 
-Use test-first implementation.
+커스터마이저 preview 목표:
 
-Required RED tests before implementation:
+- 정원 표시보다 크게 보여준다.
+- nearest-neighbor scaling만 사용한다.
+- blur 금지.
 
-- generator rejects old `144x288` guest source sheets for guest parts;
-- generator accepts `288x576` guest walk sheets and `192x144` guest idle sheets;
-- manifest must contain every body, hair, outfit, and accessory ID;
-- `resolveCharacterLayers` resolves via manifest metadata rather than hardcoded paths;
-- `getWalkFrameStyle` supports configurable `96x144` frame sizes;
-- `CharacterSprite` renders CSS variables for guest frame and display dimensions;
-- contact sheet samples decode `96x144` guest frames;
-- audit fails when two different hairstyles or outfits share a silhouette.
+## 데이터 흐름
 
-Required final verification:
+1. `shared/character-catalog.json`이 선택 가능한 ID와 호환성을 정의한다.
+2. `character-assets/guest-part-manifest.json`이 ID를 소스/생성 에셋과 레이어 슬롯으로 매핑한다.
+3. 생성기가 카탈로그, 팔레트, 매니페스트를 읽는다.
+4. 생성기가 결정적인 생성 PNG를 만든다.
+5. 클라이언트가 선택된 `CharacterAppearance`를 매니페스트를 통해 레이어로 해석한다.
+6. `CharacterSprite`가 고밀도 레이어들을 렌더링한다.
+7. 실시간 payload는 그대로 유지한다. `CharacterAppearance` ID가 바뀌지 않기 때문이다.
+
+## 테스트 전략
+
+구현은 test-first로 진행한다.
+
+구현 전에 먼저 실패해야 하는 RED 테스트:
+
+- 생성기가 기존 `144x288` 하객 소스 시트를 거부한다.
+- 생성기가 `288x576` 하객 walk sheet와 `192x144` 하객 idle sheet를 허용한다.
+- 매니페스트가 모든 body, hair, outfit, accessory ID를 포함해야 한다.
+- `resolveCharacterLayers`가 하드코딩된 경로가 아니라 매니페스트 메타데이터로 레이어를 해석해야 한다.
+- `getWalkFrameStyle`이 설정 가능한 `96x144` 프레임 크기를 지원해야 한다.
+- `CharacterSprite`가 하객 프레임/표시 크기 CSS 변수를 렌더링해야 한다.
+- 컨택트 시트가 `96x144` 하객 프레임을 해석해야 한다.
+- 감사는 서로 다른 hairstyle/outfit이 실루엣을 공유하면 실패해야 한다.
+
+최종 검증:
 
 ```bash
 pnpm characters:audit
@@ -273,49 +288,49 @@ pnpm typecheck
 pnpm build
 ```
 
-Browser verification:
+브라우저 검증:
 
-- desktop customizer;
-- `390px` mobile customizer;
-- enter garden flow;
-- movement in all directions;
-- accessory slot changes;
-- bride/groom NPCs still crisp;
-- no horizontal overflow;
-- no console error/warn;
-- generated guest appearance remains stable across reload.
+- desktop 커스터마이저.
+- `390px` mobile 커스터마이저.
+- 정원 입장 흐름.
+- 네 방향 이동.
+- accessory 슬롯 변경.
+- 신랑/신부 NPC crisp 유지.
+- horizontal overflow 없음.
+- console error/warn 없음.
+- 새로고침 후 생성된 하객 appearance 유지.
 
-## Migration Plan
+## 마이그레이션 계획
 
-1. Add manifest and tests while the old guest assets still exist.
-2. Update generator/audit/contact-sheet tooling to support high-density guest parts.
-3. Update client frame math, layer resolution, and sprite CSS for configurable dimensions.
-4. Replace guest base body source assets.
-5. Replace all hair source assets.
-6. Replace all outfit source assets.
-7. Replace all accessory source assets.
-8. Regenerate assets and contact sheets.
-9. Run full automated and browser verification.
-10. Remove or quarantine rejected low-density guest source assumptions.
+1. 기존 저밀도 하객 에셋이 남아 있는 상태에서 매니페스트와 테스트를 먼저 추가한다.
+2. 생성기, 감사, 컨택트 시트 툴링을 고밀도 하객 파츠 규격으로 수정한다.
+3. 클라이언트 프레임 계산, 레이어 해석, sprite CSS를 설정 가능한 dimension 기반으로 수정한다.
+4. guest base body 소스 에셋을 교체한다.
+5. 모든 hair 소스 에셋을 교체한다.
+6. 모든 outfit 소스 에셋을 교체한다.
+7. 모든 accessory 소스 에셋을 교체한다.
+8. 생성 에셋과 컨택트 시트를 다시 만든다.
+9. 전체 자동 검증과 브라우저 QA를 실행한다.
+10. 거부된 저밀도 하객 소스 전제를 제거하거나 격리한다.
 
-## Out of Scope
+## 범위 제외
 
-- New catalog counts.
-- New realtime protocol fields.
-- New animation states beyond existing idle/walk.
-- Changing map layout or collision rules.
-- Replacing bride/groom approved reference.
-- Runtime procedural drawing of final art.
-- AI generation at runtime.
+- 카탈로그 개수 추가.
+- 실시간 프로토콜 필드 추가.
+- 기존 idle/walk 외 animation state 추가.
+- map layout 또는 collision rule 변경.
+- 승인된 신랑/신부 reference 교체.
+- 런타임에서 최종 art를 절차적으로 그리는 방식.
+- 런타임 AI 생성.
 
-## Acceptance Criteria
+## 완료 기준
 
-This work is complete only when:
+다음을 모두 만족해야 완료로 본다.
 
-- guests no longer read as cheap, alien, or blocky at actual mobile display size;
-- hair, outfit, and accessories are managed as explicit swappable part assets;
-- body/base remains stable while non-body parts can be changed independently;
-- all selectable catalog IDs resolve through the manifest;
-- high-density generated parts render correctly in customizer and garden;
-- contact sheets show clear before/after quality improvement;
-- automated tests, typecheck, build, and browser QA pass.
+- 하객이 실제 모바일 표시 크기에서 저렴하거나 외계인 같거나 blocky하게 보이지 않는다.
+- 헤어, 의상, 악세사리가 명시적인 교체형 파츠 에셋으로 관리된다.
+- 몸/base는 유지하면서 몸 외 파츠만 독립 변경할 수 있다.
+- 모든 선택 가능한 카탈로그 ID가 매니페스트를 통해 해석된다.
+- 고밀도 생성 파츠가 커스터마이저와 정원에서 정상 렌더링된다.
+- 컨택트 시트에서 before/after 품질 차이가 명확하다.
+- 자동 테스트, typecheck, build, browser QA가 모두 통과한다.
