@@ -216,6 +216,7 @@ export function CharacterCustomizer({ value, onChange }: Props) {
             direction="down"
             moving={false}
             label="선택한 하객 캐릭터"
+            displayMode="preview"
           />
         </div>
       </div>

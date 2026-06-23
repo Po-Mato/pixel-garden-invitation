@@ -1,8 +1,11 @@
 import assert from "node:assert/strict";
-import { mkdtemp, rm } from "node:fs/promises";
+import { execFile } from "node:child_process";
+import { mkdir, mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 import test from "node:test";
+import { fileURLToPath } from "node:url";
+import { promisify } from "node:util";
 import sharp from "sharp";
 import {
   alphaDifference,
@@ -12,6 +15,9 @@ import {
   rawRgba,
   silhouetteHash
 } from "./lib/characterAssetAudit.mjs";
+
+const execFileAsync = promisify(execFile);
+const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 
 async function withTemporaryPng(width, height, data, callback) {
   const directory = await mkdtemp(join(tmpdir(), "character-asset-audit-"));
@@ -26,6 +32,51 @@ async function withTemporaryPng(width, height, data, callback) {
     await rm(directory, { recursive: true, force: true });
   }
 }
+
+async function writeBlankSheet(file, dimensions) {
+  await mkdir(dirname(file), { recursive: true });
+  await sharp({
+    create: {
+      width: dimensions.width,
+      height: dimensions.height,
+      channels: 4,
+      background: "#00000000"
+    }
+  }).png().toFile(file);
+}
+
+test("audit CLI rejects legacy low-density guest base source sheets", async () => {
+  const directory = await mkdtemp(join(tmpdir(), "character-asset-audit-cli-"));
+  const sourceRoot = join(directory, "source");
+
+  try {
+    for (const family of ["masculine", "feminine"]) {
+      await writeBlankSheet(join(sourceRoot, "base", `${family}-idle.png`), { width: 96, height: 72 });
+      await writeBlankSheet(join(sourceRoot, "base", `${family}-walk.png`), { width: 144, height: 288 });
+    }
+
+    await assert.rejects(
+      () =>
+        execFileAsync(
+          process.execPath,
+          [join(root, "scripts/audit-character-assets.mjs"), "--scope=base"],
+          {
+            cwd: root,
+            env: { ...process.env, CHARACTER_ASSET_SOURCE_ROOT: sourceRoot }
+          }
+        ),
+      (error) => {
+        assert.match(
+          error.stderr,
+          /base\/masculine-(idle|walk)\.png: .*(must be (192x144|288x576)|divisible by 96x144)/
+        );
+        return true;
+      }
+    );
+  } finally {
+    await rm(directory, { recursive: true, force: true });
+  }
+});
 
 test("inspectSheet reports frame occupancy, colors, transitions, and bounds", async () => {
   const pixels = Buffer.alloc(4 * 4 * 4);

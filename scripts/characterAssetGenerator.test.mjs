@@ -11,6 +11,39 @@ import { generateVariant, validateDimensions } from "./lib/characterAssetGenerat
 
 const execFileAsync = promisify(execFile);
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
+const catalog = JSON.parse(await readFile(join(root, "shared/character-catalog.json"), "utf8"));
+
+async function writeBlankPng(file, dimensions) {
+  await mkdir(dirname(file), { recursive: true });
+  await sharp({
+    create: {
+      width: dimensions.width,
+      height: dimensions.height,
+      channels: 4,
+      background: "#00000000"
+    }
+  }).png().toFile(file);
+}
+
+async function writeHighDensityGuestSources(sourceRoot) {
+  for (const family of ["masculine", "feminine"]) {
+    await writeBlankPng(join(sourceRoot, "base", `${family}-walk.png`), { width: 288, height: 576 });
+    await writeBlankPng(join(sourceRoot, "base", `${family}-idle.png`), { width: 192, height: 144 });
+  }
+
+  for (const hair of catalog.hairStyles) {
+    await writeBlankPng(join(sourceRoot, "hair", `${hair.id}__back-walk.png`), { width: 288, height: 576 });
+    await writeBlankPng(join(sourceRoot, "hair", `${hair.id}__front-walk.png`), { width: 288, height: 576 });
+  }
+
+  for (const outfit of catalog.outfits) {
+    await writeBlankPng(join(sourceRoot, "outfits", `${outfit.id}__walk.png`), { width: 288, height: 576 });
+  }
+
+  for (const accessory of catalog.accessories) {
+    await writeBlankPng(join(sourceRoot, "accessories", `${accessory.id}__walk.png`), { width: 288, height: 576 });
+  }
+}
 
 test("npc source contract includes idle and four-direction walk sheets", async () => {
   await assert.doesNotReject(() =>
@@ -58,6 +91,7 @@ test("generator validates a late npc walk source before replacing existing outpu
   const marker = join(outputRoot, "existing.txt");
   try {
     await cp(join(root, "character-assets/source"), sourceRoot, { recursive: true });
+    await writeHighDensityGuestSources(sourceRoot);
     await sharp({
       create: { width: 1, height: 1, channels: 4, background: "#00000000" }
     }).png().toFile(join(sourceRoot, "npc/bride-walk.png"));
@@ -75,12 +109,84 @@ test("generator validates a late npc walk source before replacing existing outpu
   }
 });
 
+test("generator rejects legacy low-density guest sources before replacing existing output", async () => {
+  const dir = await mkdtemp(join(tmpdir(), "character-assets-preflight-"));
+  const sourceRoot = join(dir, "source");
+  const outputRoot = join(dir, "generated");
+  const marker = join(outputRoot, "existing.txt");
+  try {
+    await cp(join(root, "character-assets/source"), sourceRoot, { recursive: true });
+    await writeBlankPng(join(sourceRoot, "base/masculine-walk.png"), { width: 144, height: 288 });
+    await mkdir(outputRoot, { recursive: true });
+    await writeFile(marker, "keep existing output");
+
+    const { generateCharacterAssets } = await import("./generate-character-assets.mjs");
+    await assert.rejects(
+      () => generateCharacterAssets({ sourceRoot, outputRoot }),
+      /masculine-walk\.png must be 288x576; received 144x288/
+    );
+    assert.equal(await readFile(marker, "utf8"), "keep existing output");
+  } finally {
+    await rm(dir, { recursive: true });
+  }
+});
+
+test("generator accepts high-density guest sources and emits high-density generated sheets", async () => {
+  const dir = await mkdtemp(join(tmpdir(), "character-assets-high-density-"));
+  const sourceRoot = join(dir, "source");
+  const outputRoot = join(dir, "generated");
+  try {
+    await cp(join(root, "character-assets/source"), sourceRoot, { recursive: true });
+    await writeHighDensityGuestSources(sourceRoot);
+
+    const { generateCharacterAssets } = await import("./generate-character-assets.mjs");
+    const outputCount = await generateCharacterAssets({ sourceRoot, outputRoot });
+
+    assert.equal(outputCount, 266);
+    await assert.doesNotReject(() =>
+      validateDimensions(join(outputRoot, "base/feminine__skin-02-fair__walk.png"), { width: 288, height: 576 })
+    );
+    await assert.doesNotReject(() =>
+      validateDimensions(join(outputRoot, "base/feminine__skin-02-fair__idle.png"), { width: 192, height: 144 })
+    );
+    await assert.doesNotReject(() =>
+      validateDimensions(join(outputRoot, "hair/feminine-long-wave__dark-brown__front-walk.png"), {
+        width: 288,
+        height: 576
+      })
+    );
+    await assert.doesNotReject(() =>
+      validateDimensions(join(outputRoot, "outfits/feminine-midi-dress__dusty-rose__walk.png"), {
+        width: 288,
+        height: 576
+      })
+    );
+    await assert.doesNotReject(() =>
+      validateDimensions(join(outputRoot, "accessories/glasses-round-gold__walk.png"), { width: 288, height: 576 })
+    );
+  } finally {
+    await rm(dir, { recursive: true });
+  }
+});
+
 test("contact-sheet frame extracts a 96x144 npc cell at the requested column and row", async () => {
   const { frame } = await import("./render-character-contact-sheet.mjs");
   const relative = "npc/groom__walk.png";
   const actual = await sharp(await frame(relative, 2, 3, { width: 96, height: 144 })).raw().toBuffer();
   const expected = await sharp(join(root, "client/public/characters/generated", relative))
     .extract({ left: 192, top: 432, width: 96, height: 144 })
+    .raw()
+    .toBuffer();
+
+  assert.deepEqual(actual, expected);
+});
+
+test("contact-sheet frame extracts a 96x144 guest cell by default", async () => {
+  const { frame } = await import("./render-character-contact-sheet.mjs");
+  const relative = "base/feminine__skin-02-fair__walk.png";
+  const actual = await sharp(await frame(relative, 1, 0)).raw().toBuffer();
+  const expected = await sharp(join(root, "client/public/characters/generated", relative))
+    .extract({ left: 96, top: 0, width: 96, height: 144 })
     .raw()
     .toBuffer();
 
@@ -360,11 +466,11 @@ test("catalog is the default mode and renders every existing variant card", asyn
   }
 });
 
-test("validateDimensions accepts 144x288 walk sheets", async () => {
+test("validateDimensions accepts 288x576 walk sheets", async () => {
   const dir = await mkdtemp(join(tmpdir(), "character-assets-"));
   const file = join(dir, "walk.png");
-  await sharp({ create: { width: 144, height: 288, channels: 4, background: "#ff00ffff" } }).png().toFile(file);
-  await assert.doesNotReject(() => validateDimensions(file, { width: 144, height: 288 }));
+  await sharp({ create: { width: 288, height: 576, channels: 4, background: "#ff00ffff" } }).png().toFile(file);
+  await assert.doesNotReject(() => validateDimensions(file, { width: 288, height: 576 }));
   await rm(dir, { recursive: true });
 });
 

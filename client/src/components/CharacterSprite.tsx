@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { useState, type CSSProperties } from "react";
 import {
   defaultCharacterAppearance,
   parseCharacterAppearance,
   type CharacterAppearance,
   type Direction
 } from "@wedding-game/shared";
-import { resolveCharacterLayers } from "../character/assets";
+import { resolveCharacterLayers, type CharacterDisplayMode } from "../character/assets";
 import { getWalkFrameStyle } from "../character/frame";
 
 type Props = {
@@ -14,14 +14,32 @@ type Props = {
   moving: boolean;
   stepFrame?: number;
   label?: string;
+  displayMode?: CharacterDisplayMode;
 };
 
-export function CharacterSprite({ appearance, direction, moving, stepFrame = 1, label }: Props) {
+export function CharacterSprite({
+  appearance,
+  direction,
+  moving,
+  stepFrame = 1,
+  label,
+  displayMode = "world"
+}: Props) {
   const [failedUrls, setFailedUrls] = useState<Set<string>>(() => new Set());
   const safeAppearance = parseCharacterAppearance(appearance) ?? defaultCharacterAppearance;
-  const frame = getWalkFrameStyle(direction, moving ? stepFrame : 1);
   const useFrontIdle = !moving && direction === "down";
   const layers = resolveCharacterLayers(safeAppearance);
+  const sourceSize = layers[0].sourceSize;
+  const displaySize = layers[0].displaySize[displayMode];
+  const frame = getWalkFrameStyle(direction, moving ? stepFrame : 1, sourceSize);
+  const spriteStyle = {
+    "--character-source-width": `${sourceSize.width}px`,
+    "--character-source-height": `${sourceSize.height}px`,
+    "--character-display-width": `${displaySize.width}px`,
+    "--character-display-height": `${displaySize.height}px`,
+    "--character-display-scale-x": String(displaySize.width / sourceSize.width),
+    "--character-display-scale-y": String(displaySize.height / sourceSize.height)
+  } as CSSProperties;
   const markFailed = (url: string) => {
     if (import.meta.env.DEV) {
       console.error(`Character asset failed: ${url}`);
@@ -38,6 +56,7 @@ export function CharacterSprite({ appearance, direction, moving, stepFrame = 1, 
     <span
       className={`character-sprite ${useFrontIdle ? "character-sprite--idle-front" : ""}`}
       aria-label={label}
+      style={spriteStyle}
     >
       {layers.map((layer) => {
         const url = useFrontIdle && layer.idleUrl ? layer.idleUrl : layer.walkUrl;

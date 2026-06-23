@@ -3,23 +3,45 @@ import { expect, it } from "vitest";
 import { resolveCharacterLayers } from "./assets";
 
 it("resolves generated guest layer paths in render order", () => {
-  expect(resolveCharacterLayers(defaultCharacterAppearance, "./")).toEqual([
+  const layers = resolveCharacterLayers(defaultCharacterAppearance, "./");
+
+  expect(layers).toEqual([
     {
       slot: "back-hair",
-      walkUrl: "./characters/generated/hair/feminine-long-wave__dark-brown__back-walk.png"
+      walkUrl: "./characters/generated/hair/feminine-long-wave__dark-brown__back-walk.png",
+      sourceSize: { width: 96, height: 144 },
+      displaySize: {
+        world: { width: 48, height: 72 },
+        preview: { width: 96, height: 144 }
+      }
     },
     {
       slot: "base",
       walkUrl: "./characters/generated/base/feminine__skin-02-fair__walk.png",
-      idleUrl: "./characters/generated/base/feminine__skin-02-fair__idle.png"
+      idleUrl: "./characters/generated/base/feminine__skin-02-fair__idle.png",
+      sourceSize: { width: 96, height: 144 },
+      displaySize: {
+        world: { width: 48, height: 72 },
+        preview: { width: 96, height: 144 }
+      }
     },
     {
       slot: "outfit",
-      walkUrl: "./characters/generated/outfits/feminine-midi-dress__dusty-rose__walk.png"
+      walkUrl: "./characters/generated/outfits/feminine-midi-dress__dusty-rose__walk.png",
+      sourceSize: { width: 96, height: 144 },
+      displaySize: {
+        world: { width: 48, height: 72 },
+        preview: { width: 96, height: 144 }
+      }
     },
     {
       slot: "front-hair",
-      walkUrl: "./characters/generated/hair/feminine-long-wave__dark-brown__front-walk.png"
+      walkUrl: "./characters/generated/hair/feminine-long-wave__dark-brown__front-walk.png",
+      sourceSize: { width: 96, height: 144 },
+      displaySize: {
+        world: { width: 48, height: 72 },
+        preview: { width: 96, height: 144 }
+      }
     }
   ]);
 });

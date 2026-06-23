@@ -435,10 +435,10 @@ describe("GameWorld", () => {
     advanceAnimation(0);
 
     expect(sprite).not.toHaveClass("character-sprite--idle-front");
-    expect(baseLayer).toHaveStyle({ backgroundPosition: "-96px -144px" });
+    expect(baseLayer).toHaveStyle({ backgroundPosition: "-192px -288px" });
 
     fireEvent.keyUp(joystick, { key: "ArrowRight" });
 
-    expect(baseLayer).toHaveStyle({ backgroundPosition: "-48px -144px" });
+    expect(baseLayer).toHaveStyle({ backgroundPosition: "-96px -288px" });
   });
 });

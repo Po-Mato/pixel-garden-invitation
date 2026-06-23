@@ -43,6 +43,31 @@ it("uses the two-frame idle class only when facing down and stopped", () => {
   expect(screen.getByLabelText("캐릭터")).not.toHaveClass("character-sprite--idle-front");
 });
 
+it("exposes high-density source and display dimensions as CSS variables", () => {
+  render(
+    <CharacterSprite
+      appearance={defaultCharacterAppearance}
+      direction="right"
+      moving={true}
+      stepFrame={2}
+      label="고밀도 하객"
+    />
+  );
+
+  const sprite = screen.getByLabelText("고밀도 하객");
+  const baseLayer = sprite.querySelector('[data-character-layer="base"]');
+
+  expect(sprite).toHaveStyle({
+    "--character-source-width": "96px",
+    "--character-source-height": "144px",
+    "--character-display-width": "48px",
+    "--character-display-height": "72px",
+    "--character-display-scale-x": "0.5",
+    "--character-display-scale-y": "0.5"
+  });
+  expect(baseLayer).toHaveStyle({ backgroundPosition: "-192px -288px" });
+});
+
 it("hides only a failed layer and keeps sibling layers", () => {
   const errorSpy = vi.spyOn(console, "error").mockImplementation(() => undefined);
   render(

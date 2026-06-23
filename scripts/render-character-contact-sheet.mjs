@@ -6,6 +6,7 @@ import sharp from "sharp";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const catalog = JSON.parse(await readFile(join(root, "shared/character-catalog.json"), "utf8"));
+const guestPartManifest = JSON.parse(await readFile(join(root, "character-assets/guest-part-manifest.json"), "utf8"));
 const generatedRoot = join(root, "client/public/characters/generated");
 const sheetBackground = "#f4efe7";
 const directions = [
@@ -14,7 +15,7 @@ const directions = [
   { id: "right", row: 2 },
   { id: "up", row: 3 }
 ];
-const guestFrame = { width: 48, height: 72 };
+const guestFrame = guestPartManifest.frame.source;
 const npcFrame = { width: 96, height: 144 };
 const npcDisplayFrame = { width: 48, height: 72 };
 

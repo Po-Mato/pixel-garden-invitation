@@ -1,0 +1,453 @@
+{
+  "version": 1,
+  "frame": {
+    "source": { "width": 96, "height": 144 },
+    "display": {
+      "world": { "width": 48, "height": 72 },
+      "preview": { "width": 96, "height": 144 }
+    },
+    "walk": {
+      "sheet": { "width": 288, "height": 576 },
+      "columns": 3,
+      "rows": ["down", "left", "right", "up"]
+    },
+    "idle": {
+      "sheet": { "width": 192, "height": 144 },
+      "columns": 2,
+      "frames": ["open", "blink"]
+    }
+  },
+  "layerOrder": [
+    "back-accessory",
+    "back-hair",
+    "base",
+    "outfit",
+    "front-hair",
+    "face",
+    "jewelry",
+    "neckwear",
+    "carry"
+  ],
+  "parts": {
+    "base": [
+      {
+        "id": "masculine",
+        "family": "masculine",
+        "layer": "base",
+        "palette": "skin",
+        "source": {
+          "walk": "character-assets/source/base/masculine-walk.png",
+          "idle": "character-assets/source/base/masculine-idle.png"
+        },
+        "generated": {
+          "walk": "base/masculine__{skinTone}__walk.png",
+          "idle": "base/masculine__{skinTone}__idle.png"
+        }
+      },
+      {
+        "id": "feminine",
+        "family": "feminine",
+        "layer": "base",
+        "palette": "skin",
+        "source": {
+          "walk": "character-assets/source/base/feminine-walk.png",
+          "idle": "character-assets/source/base/feminine-idle.png"
+        },
+        "generated": {
+          "walk": "base/feminine__{skinTone}__walk.png",
+          "idle": "base/feminine__{skinTone}__idle.png"
+        }
+      }
+    ],
+    "hair": [
+      {
+        "id": "masculine-side-part",
+        "family": "masculine",
+        "layers": { "back": "back-hair", "front": "front-hair" },
+        "palette": "hair",
+        "source": {
+          "backWalk": "character-assets/source/hair/masculine-side-part__back-walk.png",
+          "frontWalk": "character-assets/source/hair/masculine-side-part__front-walk.png"
+        },
+        "generated": {
+          "backWalk": "hair/masculine-side-part__{hairColor}__back-walk.png",
+          "frontWalk": "hair/masculine-side-part__{hairColor}__front-walk.png"
+        }
+      },
+      {
+        "id": "masculine-comma",
+        "family": "masculine",
+        "layers": { "back": "back-hair", "front": "front-hair" },
+        "palette": "hair",
+        "source": {
+          "backWalk": "character-assets/source/hair/masculine-comma__back-walk.png",
+          "frontWalk": "character-assets/source/hair/masculine-comma__front-walk.png"
+        },
+        "generated": {
+          "backWalk": "hair/masculine-comma__{hairColor}__back-walk.png",
+          "frontWalk": "hair/masculine-comma__{hairColor}__front-walk.png"
+        }
+      },
+      {
+        "id": "masculine-short-crop",
+        "family": "masculine",
+        "layers": { "back": "back-hair", "front": "front-hair" },
+        "palette": "hair",
+        "source": {
+          "backWalk": "character-assets/source/hair/masculine-short-crop__back-walk.png",
+          "frontWalk": "character-assets/source/hair/masculine-short-crop__front-walk.png"
+        },
+        "generated": {
+          "backWalk": "hair/masculine-short-crop__{hairColor}__back-walk.png",
+          "frontWalk": "hair/masculine-short-crop__{hairColor}__front-walk.png"
+        }
+      },
+      {
+        "id": "masculine-textured-fringe",
+        "family": "masculine",
+        "layers": { "back": "back-hair", "front": "front-hair" },
+        "palette": "hair",
+        "source": {
+          "backWalk": "character-assets/source/hair/masculine-textured-fringe__back-walk.png",
+          "frontWalk": "character-assets/source/hair/masculine-textured-fringe__front-walk.png"
+        },
+        "generated": {
+          "backWalk": "hair/masculine-textured-fringe__{hairColor}__back-walk.png",
+          "frontWalk": "hair/masculine-textured-fringe__{hairColor}__front-walk.png"
+        }
+      },
+      {
+        "id": "masculine-swept-back",
+        "family": "masculine",
+        "layers": { "back": "back-hair", "front": "front-hair" },
+        "palette": "hair",
+        "source": {
+          "backWalk": "character-assets/source/hair/masculine-swept-back__back-walk.png",
+          "frontWalk": "character-assets/source/hair/masculine-swept-back__front-walk.png"
+        },
+        "generated": {
+          "backWalk": "hair/masculine-swept-back__{hairColor}__back-walk.png",
+          "frontWalk": "hair/masculine-swept-back__{hairColor}__front-walk.png"
+        }
+      },
+      {
+        "id": "masculine-wavy-medium",
+        "family": "masculine",
+        "layers": { "back": "back-hair", "front": "front-hair" },
+        "palette": "hair",
+        "source": {
+          "backWalk": "character-assets/source/hair/masculine-wavy-medium__back-walk.png",
+          "frontWalk": "character-assets/source/hair/masculine-wavy-medium__front-walk.png"
+        },
+        "generated": {
+          "backWalk": "hair/masculine-wavy-medium__{hairColor}__back-walk.png",
+          "frontWalk": "hair/masculine-wavy-medium__{hairColor}__front-walk.png"
+        }
+      },
+      {
+        "id": "masculine-low-ponytail",
+        "family": "masculine",
+        "layers": { "back": "back-hair", "front": "front-hair" },
+        "palette": "hair",
+        "source": {
+          "backWalk": "character-assets/source/hair/masculine-low-ponytail__back-walk.png",
+          "frontWalk": "character-assets/source/hair/masculine-low-ponytail__front-walk.png"
+        },
+        "generated": {
+          "backWalk": "hair/masculine-low-ponytail__{hairColor}__back-walk.png",
+          "frontWalk": "hair/masculine-low-ponytail__{hairColor}__front-walk.png"
+        }
+      },
+      {
+        "id": "masculine-natural-curl",
+        "family": "masculine",
+        "layers": { "back": "back-hair", "front": "front-hair" },
+        "palette": "hair",
+        "source": {
+          "backWalk": "character-assets/source/hair/masculine-natural-curl__back-walk.png",
+          "frontWalk": "character-assets/source/hair/masculine-natural-curl__front-walk.png"
+        },
+        "generated": {
+          "backWalk": "hair/masculine-natural-curl__{hairColor}__back-walk.png",
+          "frontWalk": "hair/masculine-natural-curl__{hairColor}__front-walk.png"
+        }
+      },
+      {
+        "id": "feminine-long-wave",
+        "family": "feminine",
+        "layers": { "back": "back-hair", "front": "front-hair" },
+        "palette": "hair",
+        "source": {
+          "backWalk": "character-assets/source/hair/feminine-long-wave__back-walk.png",
+          "frontWalk": "character-assets/source/hair/feminine-long-wave__front-walk.png"
+        },
+        "generated": {
+          "backWalk": "hair/feminine-long-wave__{hairColor}__back-walk.png",
+          "frontWalk": "hair/feminine-long-wave__{hairColor}__front-walk.png"
+        }
+      },
+      {
+        "id": "feminine-long-straight",
+        "family": "feminine",
+        "layers": { "back": "back-hair", "front": "front-hair" },
+        "palette": "hair",
+        "source": {
+          "backWalk": "character-assets/source/hair/feminine-long-straight__back-walk.png",
+          "frontWalk": "character-assets/source/hair/feminine-long-straight__front-walk.png"
+        },
+        "generated": {
+          "backWalk": "hair/feminine-long-straight__{hairColor}__back-walk.png",
+          "frontWalk": "hair/feminine-long-straight__{hairColor}__front-walk.png"
+        }
+      },
+      {
+        "id": "feminine-low-bun",
+        "family": "feminine",
+        "layers": { "back": "back-hair", "front": "front-hair" },
+        "palette": "hair",
+        "source": {
+          "backWalk": "character-assets/source/hair/feminine-low-bun__back-walk.png",
+          "frontWalk": "character-assets/source/hair/feminine-low-bun__front-walk.png"
+        },
+        "generated": {
+          "backWalk": "hair/feminine-low-bun__{hairColor}__back-walk.png",
+          "frontWalk": "hair/feminine-low-bun__{hairColor}__front-walk.png"
+        }
+      },
+      {
+        "id": "feminine-half-up-wave",
+        "family": "feminine",
+        "layers": { "back": "back-hair", "front": "front-hair" },
+        "palette": "hair",
+        "source": {
+          "backWalk": "character-assets/source/hair/feminine-half-up-wave__back-walk.png",
+          "frontWalk": "character-assets/source/hair/feminine-half-up-wave__front-walk.png"
+        },
+        "generated": {
+          "backWalk": "hair/feminine-half-up-wave__{hairColor}__back-walk.png",
+          "frontWalk": "hair/feminine-half-up-wave__{hairColor}__front-walk.png"
+        }
+      },
+      {
+        "id": "feminine-medium-bob",
+        "family": "feminine",
+        "layers": { "back": "back-hair", "front": "front-hair" },
+        "palette": "hair",
+        "source": {
+          "backWalk": "character-assets/source/hair/feminine-medium-bob__back-walk.png",
+          "frontWalk": "character-assets/source/hair/feminine-medium-bob__front-walk.png"
+        },
+        "generated": {
+          "backWalk": "hair/feminine-medium-bob__{hairColor}__back-walk.png",
+          "frontWalk": "hair/feminine-medium-bob__{hairColor}__front-walk.png"
+        }
+      },
+      {
+        "id": "feminine-short-bob",
+        "family": "feminine",
+        "layers": { "back": "back-hair", "front": "front-hair" },
+        "palette": "hair",
+        "source": {
+          "backWalk": "character-assets/source/hair/feminine-short-bob__back-walk.png",
+          "frontWalk": "character-assets/source/hair/feminine-short-bob__front-walk.png"
+        },
+        "generated": {
+          "backWalk": "hair/feminine-short-bob__{hairColor}__back-walk.png",
+          "frontWalk": "hair/feminine-short-bob__{hairColor}__front-walk.png"
+        }
+      },
+      {
+        "id": "feminine-braided-ponytail",
+        "family": "feminine",
+        "layers": { "back": "back-hair", "front": "front-hair" },
+        "palette": "hair",
+        "source": {
+          "backWalk": "character-assets/source/hair/feminine-braided-ponytail__back-walk.png",
+          "frontWalk": "character-assets/source/hair/feminine-braided-ponytail__front-walk.png"
+        },
+        "generated": {
+          "backWalk": "hair/feminine-braided-ponytail__{hairColor}__back-walk.png",
+          "frontWalk": "hair/feminine-braided-ponytail__{hairColor}__front-walk.png"
+        }
+      },
+      {
+        "id": "feminine-natural-curl",
+        "family": "feminine",
+        "layers": { "back": "back-hair", "front": "front-hair" },
+        "palette": "hair",
+        "source": {
+          "backWalk": "character-assets/source/hair/feminine-natural-curl__back-walk.png",
+          "frontWalk": "character-assets/source/hair/feminine-natural-curl__front-walk.png"
+        },
+        "generated": {
+          "backWalk": "hair/feminine-natural-curl__{hairColor}__back-walk.png",
+          "frontWalk": "hair/feminine-natural-curl__{hairColor}__front-walk.png"
+        }
+      }
+    ],
+    "outfits": [
+      {
+        "id": "masculine-classic-suit",
+        "family": "masculine",
+        "layer": "outfit",
+        "palette": "outfit",
+        "source": { "walk": "character-assets/source/outfits/masculine-classic-suit__walk.png" },
+        "generated": { "walk": "outfits/masculine-classic-suit__{outfitPalette}__walk.png" }
+      },
+      {
+        "id": "masculine-slim-suit",
+        "family": "masculine",
+        "layer": "outfit",
+        "palette": "outfit",
+        "source": { "walk": "character-assets/source/outfits/masculine-slim-suit__walk.png" },
+        "generated": { "walk": "outfits/masculine-slim-suit__{outfitPalette}__walk.png" }
+      },
+      {
+        "id": "masculine-blazer-slacks",
+        "family": "masculine",
+        "layer": "outfit",
+        "palette": "outfit",
+        "source": { "walk": "character-assets/source/outfits/masculine-blazer-slacks__walk.png" },
+        "generated": { "walk": "outfits/masculine-blazer-slacks__{outfitPalette}__walk.png" }
+      },
+      {
+        "id": "masculine-knit-jacket",
+        "family": "masculine",
+        "layer": "outfit",
+        "palette": "outfit",
+        "source": { "walk": "character-assets/source/outfits/masculine-knit-jacket__walk.png" },
+        "generated": { "walk": "outfits/masculine-knit-jacket__{outfitPalette}__walk.png" }
+      },
+      {
+        "id": "masculine-formal-hanbok",
+        "family": "masculine",
+        "layer": "outfit",
+        "palette": "outfit",
+        "source": { "walk": "character-assets/source/outfits/masculine-formal-hanbok__walk.png" },
+        "generated": { "walk": "outfits/masculine-formal-hanbok__{outfitPalette}__walk.png" }
+      },
+      {
+        "id": "feminine-midi-dress",
+        "family": "feminine",
+        "layer": "outfit",
+        "palette": "outfit",
+        "source": { "walk": "character-assets/source/outfits/feminine-midi-dress__walk.png" },
+        "generated": { "walk": "outfits/feminine-midi-dress__{outfitPalette}__walk.png" }
+      },
+      {
+        "id": "feminine-long-dress",
+        "family": "feminine",
+        "layer": "outfit",
+        "palette": "outfit",
+        "source": { "walk": "character-assets/source/outfits/feminine-long-dress__walk.png" },
+        "generated": { "walk": "outfits/feminine-long-dress__{outfitPalette}__walk.png" }
+      },
+      {
+        "id": "feminine-blouse-skirt",
+        "family": "feminine",
+        "layer": "outfit",
+        "palette": "outfit",
+        "source": { "walk": "character-assets/source/outfits/feminine-blouse-skirt__walk.png" },
+        "generated": { "walk": "outfits/feminine-blouse-skirt__{outfitPalette}__walk.png" }
+      },
+      {
+        "id": "feminine-jacket-slacks",
+        "family": "feminine",
+        "layer": "outfit",
+        "palette": "outfit",
+        "source": { "walk": "character-assets/source/outfits/feminine-jacket-slacks__walk.png" },
+        "generated": { "walk": "outfits/feminine-jacket-slacks__{outfitPalette}__walk.png" }
+      },
+      {
+        "id": "feminine-formal-hanbok",
+        "family": "feminine",
+        "layer": "outfit",
+        "palette": "outfit",
+        "source": { "walk": "character-assets/source/outfits/feminine-formal-hanbok__walk.png" },
+        "generated": { "walk": "outfits/feminine-formal-hanbok__{outfitPalette}__walk.png" }
+      }
+    ],
+    "accessories": [
+      {
+        "id": "glasses-round-gold",
+        "slot": "face",
+        "layer": "face",
+        "palette": "fixed",
+        "source": { "walk": "character-assets/source/accessories/glasses-round-gold__walk.png" },
+        "generated": { "walk": "accessories/glasses-round-gold__walk.png" }
+      },
+      {
+        "id": "glasses-square-black",
+        "slot": "face",
+        "layer": "face",
+        "palette": "fixed",
+        "source": { "walk": "character-assets/source/accessories/glasses-square-black__walk.png" },
+        "generated": { "walk": "accessories/glasses-square-black__walk.png" }
+      },
+      {
+        "id": "earrings-pearl",
+        "slot": "jewelry",
+        "layer": "jewelry",
+        "palette": "fixed",
+        "source": { "walk": "character-assets/source/accessories/earrings-pearl__walk.png" },
+        "generated": { "walk": "accessories/earrings-pearl__walk.png" }
+      },
+      {
+        "id": "earrings-drop",
+        "slot": "jewelry",
+        "layer": "jewelry",
+        "palette": "fixed",
+        "source": { "walk": "character-assets/source/accessories/earrings-drop__walk.png" },
+        "generated": { "walk": "accessories/earrings-drop__walk.png" }
+      },
+      {
+        "id": "necklace-simple",
+        "slot": "jewelry",
+        "layer": "jewelry",
+        "palette": "fixed",
+        "source": { "walk": "character-assets/source/accessories/necklace-simple__walk.png" },
+        "generated": { "walk": "accessories/necklace-simple__walk.png" }
+      },
+      {
+        "id": "tie-silk",
+        "slot": "neckwear",
+        "layer": "neckwear",
+        "palette": "fixed",
+        "source": { "walk": "character-assets/source/accessories/tie-silk__walk.png" },
+        "generated": { "walk": "accessories/tie-silk__walk.png" }
+      },
+      {
+        "id": "bow-tie-velvet",
+        "slot": "neckwear",
+        "layer": "neckwear",
+        "palette": "fixed",
+        "source": { "walk": "character-assets/source/accessories/bow-tie-velvet__walk.png" },
+        "generated": { "walk": "accessories/bow-tie-velvet__walk.png" }
+      },
+      {
+        "id": "brooch-floral",
+        "slot": "neckwear",
+        "layer": "neckwear",
+        "palette": "fixed",
+        "source": { "walk": "character-assets/source/accessories/brooch-floral__walk.png" },
+        "generated": { "walk": "accessories/brooch-floral__walk.png" }
+      },
+      {
+        "id": "handbag-formal",
+        "slot": "carry",
+        "layer": "carry",
+        "palette": "fixed",
+        "source": { "walk": "character-assets/source/accessories/handbag-formal__walk.png" },
+        "generated": { "walk": "accessories/handbag-formal__walk.png" }
+      },
+      {
+        "id": "shoulder-bag-structured",
+        "slot": "carry",
+        "layer": "back-accessory",
+        "palette": "fixed",
+        "source": { "walk": "character-assets/source/accessories/shoulder-bag-structured__walk.png" },
+        "generated": { "walk": "accessories/shoulder-bag-structured__walk.png" }
+      }
+    ]
+  }
+}

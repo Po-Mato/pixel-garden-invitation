@@ -10,9 +10,14 @@ import {
 } from "./lib/characterAssetAudit.mjs";
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
-const source = path.join(root, "character-assets/source");
+const source = process.env.CHARACTER_ASSET_SOURCE_ROOT
+  ? path.resolve(process.env.CHARACTER_ASSET_SOURCE_ROOT)
+  : path.join(root, "character-assets/source");
 const catalog = JSON.parse(
   await readFile(path.join(root, "shared/character-catalog.json"), "utf8")
+);
+const guestPartManifest = JSON.parse(
+  await readFile(path.join(root, "character-assets/guest-part-manifest.json"), "utf8")
 );
 const rules = JSON.parse(
   await readFile(path.join(root, "character-assets/quality-rules.json"), "utf8")
@@ -37,6 +42,14 @@ function parseOption(name, allowed, fallback) {
 const scope = parseOption("scope", scopes, "all");
 const family = parseOption("family", families, "all");
 const failures = [];
+const guestFrame = guestPartManifest.frame.source;
+const guestIdleDimensions = guestPartManifest.frame.idle.sheet;
+const guestWalkDimensions = guestPartManifest.frame.walk.sheet;
+const guestFootBaseline = {
+  footBottomMin: rules.frame.footBottomMin * 2,
+  footBottomMax: rules.frame.footBottomMax * 2,
+  footBottomSpreadMax: rules.frame.footBottomSpreadMax * 2
+};
 
 function displayFile(file) {
   if (Array.isArray(file)) {
@@ -238,15 +251,15 @@ if (wants("base")) {
 
     await auditSheet(
       path.join(source, "base", `${selectedFamily}-idle.png`),
-      { width: 96, height: 72 },
+      guestIdleDimensions,
       rules.base,
-      { requireEveryFrame: true, footBaseline: rules.frame }
+      { requireEveryFrame: true, footBaseline: guestFootBaseline, frameDimensions: guestFrame }
     );
     await auditSheet(
       path.join(source, "base", `${selectedFamily}-walk.png`),
-      { width: 144, height: 288 },
+      guestWalkDimensions,
       rules.base,
-      { requireEveryFrame: true, footBaseline: rules.frame }
+      { requireEveryFrame: true, footBaseline: guestFootBaseline, frameDimensions: guestFrame }
     );
   }
 }
@@ -258,13 +271,15 @@ if (wants("hair")) {
   for (const style of selectedStyles) {
     await auditSheet(
       path.join(source, "hair", `${style.id}__back-walk.png`),
-      { width: 144, height: 288 },
-      rules.hair
+      guestWalkDimensions,
+      rules.hair,
+      { frameDimensions: guestFrame }
     );
     await auditSheet(
       path.join(source, "hair", `${style.id}__front-walk.png`),
-      { width: 144, height: 288 },
-      rules.hair
+      guestWalkDimensions,
+      rules.hair,
+      { frameDimensions: guestFrame }
     );
   }
 
@@ -288,9 +303,9 @@ if (wants("outfits")) {
   for (const outfit of selectedOutfits) {
     await auditSheet(
       path.join(source, "outfits", `${outfit.id}__walk.png`),
-      { width: 144, height: 288 },
+      guestWalkDimensions,
       rules.outfit,
-      { requireEveryFrame: true }
+      { requireEveryFrame: true, frameDimensions: guestFrame }
     );
   }
 
@@ -309,8 +324,9 @@ if (wants("accessories")) {
   for (const accessory of catalog.accessories) {
     await auditSheet(
       path.join(source, "accessories", `${accessory.id}__walk.png`),
-      { width: 144, height: 288 },
-      rules.accessory
+      guestWalkDimensions,
+      rules.accessory,
+      { frameDimensions: guestFrame }
     );
   }
 }

@@ -5,12 +5,15 @@ import { generateVariant, validateDimensions } from "./lib/characterAssetGenerat
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const catalog = JSON.parse(await readFile(join(root, "shared/character-catalog.json"), "utf8"));
+const guestPartManifest = JSON.parse(await readFile(join(root, "character-assets/guest-part-manifest.json"), "utf8"));
 const skinPalettes = JSON.parse(await readFile(join(root, "character-assets/palettes/skin.json"), "utf8"));
 const hairPalettes = JSON.parse(await readFile(join(root, "character-assets/palettes/hair.json"), "utf8"));
 const outfitConfig = JSON.parse(await readFile(join(root, "character-assets/palettes/outfits.json"), "utf8"));
 const defaultSourceRoot = join(root, "character-assets/source");
 const defaultOutputRoot = join(root, "client/public/characters/generated");
 const fixedPixelColors = ["#251812", "#fff4dc", "#b75d65", "#d47777"];
+const guestIdleDimensions = guestPartManifest.frame.idle.sheet;
+const guestWalkDimensions = guestPartManifest.frame.walk.sheet;
 const npcIdleDimensions = { width: 192, height: 144 };
 const npcWalkDimensions = { width: 288, height: 576 };
 
@@ -23,40 +26,52 @@ async function requireFile(file, dimensions) {
   await validateDimensions(file, dimensions);
 }
 
+function sourcePath(sourceRoot, manifestPath) {
+  return join(sourceRoot, manifestPath.replace(/^character-assets\/source\//, ""));
+}
+
+function resolveTemplate(template, values) {
+  return template.replaceAll(/\{([^}]+)\}/g, (_match, key) => {
+    const value = values[key];
+    if (!value) throw new Error(`Missing guest part template value: ${key}`);
+    return value;
+  });
+}
+
 async function prevalidateSources(sourceRoot) {
-  for (const family of ["masculine", "feminine"]) {
+  for (const part of guestPartManifest.parts.base) {
     await requireFile(
-      join(sourceRoot, "base", `${family}-walk.png`),
-      { width: 144, height: 288 }
+      sourcePath(sourceRoot, part.source.walk),
+      guestWalkDimensions
     );
     await requireFile(
-      join(sourceRoot, "base", `${family}-idle.png`),
-      { width: 96, height: 72 }
-    );
-  }
-
-  for (const hair of catalog.hairStyles) {
-    await requireFile(
-      join(sourceRoot, "hair", `${hair.id}__back-walk.png`),
-      { width: 144, height: 288 }
-    );
-    await requireFile(
-      join(sourceRoot, "hair", `${hair.id}__front-walk.png`),
-      { width: 144, height: 288 }
+      sourcePath(sourceRoot, part.source.idle),
+      guestIdleDimensions
     );
   }
 
-  for (const outfit of catalog.outfits) {
+  for (const hair of guestPartManifest.parts.hair) {
     await requireFile(
-      join(sourceRoot, "outfits", `${outfit.id}__walk.png`),
-      { width: 144, height: 288 }
+      sourcePath(sourceRoot, hair.source.backWalk),
+      guestWalkDimensions
+    );
+    await requireFile(
+      sourcePath(sourceRoot, hair.source.frontWalk),
+      guestWalkDimensions
     );
   }
 
-  for (const accessory of catalog.accessories) {
+  for (const outfit of guestPartManifest.parts.outfits) {
     await requireFile(
-      join(sourceRoot, "accessories", `${accessory.id}__walk.png`),
-      { width: 144, height: 288 }
+      sourcePath(sourceRoot, outfit.source.walk),
+      guestWalkDimensions
+    );
+  }
+
+  for (const accessory of guestPartManifest.parts.accessories) {
+    await requireFile(
+      sourcePath(sourceRoot, accessory.source.walk),
+      guestWalkDimensions
     );
   }
 
@@ -113,58 +128,67 @@ export async function generateCharacterAssets({
 
   await rm(outputRoot, { recursive: true, force: true });
 
-  for (const family of ["masculine", "feminine"]) {
-    const walkSource = join(sourceRoot, "base", `${family}-walk.png`);
-    const idleSource = join(sourceRoot, "base", `${family}-idle.png`);
+  for (const part of guestPartManifest.parts.base) {
+    const walkSource = sourcePath(sourceRoot, part.source.walk);
+    const idleSource = sourcePath(sourceRoot, part.source.idle);
 
     for (const skin of catalog.skinTones) {
       const palette = skinPalettes[skin.id];
-      await generateVariant(walkSource, outputPath(`base/${family}__${skin.id}__walk.png`), palette, {
-        allowedFixedColors: fixedPixelColors
-      });
-      await generateVariant(idleSource, outputPath(`base/${family}__${skin.id}__idle.png`), palette, {
-        allowedFixedColors: fixedPixelColors
-      });
+      await generateVariant(
+        walkSource,
+        outputPath(resolveTemplate(part.generated.walk, { skinTone: skin.id })),
+        palette,
+        { allowedFixedColors: fixedPixelColors }
+      );
+      await generateVariant(
+        idleSource,
+        outputPath(resolveTemplate(part.generated.idle, { skinTone: skin.id })),
+        palette,
+        { allowedFixedColors: fixedPixelColors }
+      );
     }
   }
 
-  for (const hair of catalog.hairStyles) {
-    const backSource = join(sourceRoot, "hair", `${hair.id}__back-walk.png`);
-    const frontSource = join(sourceRoot, "hair", `${hair.id}__front-walk.png`);
+  for (const hair of guestPartManifest.parts.hair) {
+    const backSource = sourcePath(sourceRoot, hair.source.backWalk);
+    const frontSource = sourcePath(sourceRoot, hair.source.frontWalk);
 
     for (const color of catalog.hairColors) {
       const palette = hairPalettes[color.id];
       await generateVariant(
         backSource,
-        outputPath(`hair/${hair.id}__${color.id}__back-walk.png`),
+        outputPath(resolveTemplate(hair.generated.backWalk, { hairColor: color.id })),
         palette,
         { allowedFixedColors: ["#251812"] }
       );
       await generateVariant(
         frontSource,
-        outputPath(`hair/${hair.id}__${color.id}__front-walk.png`),
+        outputPath(resolveTemplate(hair.generated.frontWalk, { hairColor: color.id })),
         palette,
         { allowedFixedColors: ["#251812"] }
       );
     }
   }
 
-  for (const outfit of catalog.outfits) {
-    const source = join(sourceRoot, "outfits", `${outfit.id}__walk.png`);
-    for (const paletteId of outfit.palettes) {
+  for (const outfit of guestPartManifest.parts.outfits) {
+    const source = sourcePath(sourceRoot, outfit.source.walk);
+    const catalogOutfit = catalog.outfits.find((item) => item.id === outfit.id);
+    if (!catalogOutfit) throw new Error(`Missing catalog outfit for guest manifest part: ${outfit.id}`);
+
+    for (const paletteId of catalogOutfit.palettes) {
       await generateVariant(
         source,
-        outputPath(`outfits/${outfit.id}__${paletteId}__walk.png`),
+        outputPath(resolveTemplate(outfit.generated.walk, { outfitPalette: paletteId })),
         paletteFromArray(outfitConfig.palettes[paletteId]),
         { allowedFixedColors: ["#251812"] }
       );
     }
   }
 
-  for (const accessory of catalog.accessories) {
+  for (const accessory of guestPartManifest.parts.accessories) {
     await copyFixed(
-      join(sourceRoot, "accessories", `${accessory.id}__walk.png`),
-      `accessories/${accessory.id}__walk.png`
+      sourcePath(sourceRoot, accessory.source.walk),
+      accessory.generated.walk
     );
   }
 
