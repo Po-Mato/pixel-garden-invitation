@@ -2,7 +2,9 @@
 
 > **에이전트 작업자 필수 사항:** 필수 하위 스킬: `superpowers:subagent-driven-development` 권장 또는 `superpowers:executing-plans`를 사용해 이 계획을 작업 단위별로 구현한다. 단계 추적은 체크박스(`- [ ]`) 문법을 사용한다.
 
-**목표:** 하객 캐릭터를 파츠 조합형에서 완성 캐릭터 프리셋 선택형으로 전환하고, 확정된 하객 기초 이미지 톤에 맞는 8개 완성 스프라이트를 런타임/생성/감사/UI에 연결한다.
+**목표:** 하객 캐릭터를 파츠 조합형에서 완성 캐릭터 프리셋 선택형으로 전환하고, 승인된 하객 기준 이미지에서 복구한 4개 완성 스프라이트를 런타임/생성/감사/UI에 연결한다.
+
+> 2026-06-24 정정: 최초 계획은 8개 프리셋을 목표로 했으나, 사용자 검토에서 절차적 단순 도형 프리셋의 품질 하락이 확인되었다. 현재 기준은 수량 확장이 아니라 `guest-foundation-sprite-reference-v1.png`의 4명 crop을 직접 사용하는 고품질 복구다.
 
 **아키텍처:** 공유 패키지에는 `presetId` 기반의 `CharacterAppearance`와 하객 프리셋 카탈로그를 둔다. 클라이언트 렌더러는 선택된 프리셋의 완성 스프라이트 한 장만 렌더링하고, 커스터마이저는 탭형 파츠 UI 대신 완성 캐릭터 카드 그리드를 제공한다. 생성/감사 스크립트는 새 `character-assets/source/guests` 소스와 `client/public/characters/generated/guests` 결과를 기준으로 검증한다.
 
@@ -15,7 +17,7 @@
 새로 만든다:
 
 - `character-assets/guest-character-presets.json`: 하객 완성 프리셋 카탈로그와 프레임 계약.
-- `character-assets/source/guests/*.png`: 8개 완성 하객 walk/idle 소스.
+- `character-assets/source/guests/*.png`: 4개 승인 기준 하객 walk/idle 소스.
 - `shared/src/guestCharacterPresets.ts`: 프리셋 카탈로그 타입, 기본 프리셋, 파서 보조 함수.
 - `shared/src/guestCharacterPresets.test.ts`: 프리셋 카탈로그 계약 테스트.
 - `scripts/author-guest-preset-sources.mjs`: 확정 톤의 완성 하객 스프라이트 소스 생성기.
@@ -83,17 +85,13 @@ import {
 } from "./index";
 
 describe("하객 완성 캐릭터 프리셋", () => {
-  it("확정된 8개 완성 하객 프리셋을 가진다", () => {
-    expect(guestCharacterPresets).toHaveLength(8);
+  it("승인된 기준 이미지에서 복구한 4개 완성 하객 프리셋만 가진다", () => {
+    expect(guestCharacterPresets).toHaveLength(4);
     expect(guestCharacterPresets.map((preset) => preset.id)).toEqual([
       "feminine-long-wave-dress",
       "feminine-formal-hanbok",
-      "feminine-half-up-skirt",
-      "feminine-short-bob-suit",
       "masculine-navy-suit",
-      "masculine-charcoal-blazer",
-      "masculine-formal-hanbok",
-      "masculine-knit-jacket"
+      "masculine-charcoal-blazer"
     ]);
   });
 
@@ -148,7 +146,7 @@ import {
 describe("character catalog", () => {
   it("NPC와 하객 프리셋 카탈로그를 제공한다", () => {
     expect(characterCatalog.npcs.map((item) => item.id)).toEqual(["groom", "bride"]);
-    expect(characterCatalog.guestPresets).toHaveLength(8);
+    expect(characterCatalog.guestPresets).toHaveLength(4);
   });
 
   it("기본 appearance를 허용한다", () => {
@@ -1540,7 +1538,7 @@ file .superpowers/character-review/guest-preset-contact-sheet.png
 
 Expected: PNG 이미지로 확인된다. 이후 로컬 이미지 뷰어로 `.superpowers/character-review/guest-preset-contact-sheet.png`를 열어 다음을 확인한다.
 
-- 8개 프리셋 모두 얼굴이 사람답게 보인다.
+- 4개 프리셋 모두 얼굴이 사람답게 보인다.
 - 각 프리셋의 실루엣이 서로 구분된다.
 - 롱 웨이브 원피스, 여성 한복, 네이비 수트, 차콜 블레이저가 기준 이미지의 네 캐릭터 방향과 맞다.
 - 정원 표시 크기에서도 하객으로 읽힌다.
@@ -1558,6 +1556,6 @@ git commit -m "docs: lock guest character preset direction"
 - 하객 커스터마이저에서 파츠 탭이 사라지고 완성 캐릭터 카드만 표시된다.
 - 로컬 플레이어와 원격 하객 모두 완성 프리셋 스프라이트로 표시된다.
 - 구버전 appearance가 들어와도 화면이 깨지지 않고 기본 프리셋으로 정규화된다.
-- `pnpm characters:contact-sheet -- --mode=guest-presets`로 8개 완성 하객 리뷰 이미지가 생성된다.
+- `pnpm characters:contact-sheet -- --mode=guest-presets`로 4개 완성 하객 리뷰 이미지가 생성된다.
 - `pnpm characters:audit`, `pnpm characters:test`, `pnpm test`, `pnpm typecheck`, `pnpm build`, `git diff --check`가 모두 통과한다.
 - 문서와 사용자-facing 라벨은 한국어로 유지된다.

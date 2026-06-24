@@ -27,7 +27,11 @@
       "id": "feminine-long-wave-dress",
       "family": "feminine",
       "label": "롱 웨이브 하객 원피스",
-      "description": "둥근 얼굴, 롱 웨이브, 더스티 로즈 원피스의 대표 하객",
+      "description": "승인된 기준 이미지에서 복구한 롱 웨이브, 로즈 원피스, 아이보리 카디건 하객",
+      "reference": {
+        "image": "character-assets/reference/guest-foundation-sprite-reference-v1.png",
+        "crop": { "left": 82, "top": 80, "width": 330, "height": 660 }
+      },
       "source": {
         "walk": "character-assets/source/guests/feminine-long-wave-dress__walk.png",
         "idle": "character-assets/source/guests/feminine-long-wave-dress__idle.png"
@@ -41,7 +45,11 @@
       "id": "feminine-formal-hanbok",
       "family": "feminine",
       "label": "단정한 여성 한복",
-      "description": "부드러운 업스타일과 로즈/아이보리 한복 하객",
+      "description": "승인된 기준 이미지에서 복구한 업스타일, 아이보리 저고리, 로즈 한복 하객",
+      "reference": {
+        "image": "character-assets/reference/guest-foundation-sprite-reference-v1.png",
+        "crop": { "left": 575, "top": 80, "width": 315, "height": 660 }
+      },
       "source": {
         "walk": "character-assets/source/guests/feminine-formal-hanbok__walk.png",
         "idle": "character-assets/source/guests/feminine-formal-hanbok__idle.png"
@@ -52,38 +60,14 @@
       }
     },
     {
-      "id": "feminine-half-up-skirt",
-      "family": "feminine",
-      "label": "하프업 블라우스 스커트",
-      "description": "하프업 웨이브와 크림 블라우스, 네이비 스커트 하객",
-      "source": {
-        "walk": "character-assets/source/guests/feminine-half-up-skirt__walk.png",
-        "idle": "character-assets/source/guests/feminine-half-up-skirt__idle.png"
-      },
-      "generated": {
-        "walk": "guests/feminine-half-up-skirt__walk.png",
-        "idle": "guests/feminine-half-up-skirt__idle.png"
-      }
-    },
-    {
-      "id": "feminine-short-bob-suit",
-      "family": "feminine",
-      "label": "쇼트 보브 포멀 수트",
-      "description": "쇼트 보브와 베이지 재킷, 슬랙스 조합의 세련된 하객",
-      "source": {
-        "walk": "character-assets/source/guests/feminine-short-bob-suit__walk.png",
-        "idle": "character-assets/source/guests/feminine-short-bob-suit__idle.png"
-      },
-      "generated": {
-        "walk": "guests/feminine-short-bob-suit__walk.png",
-        "idle": "guests/feminine-short-bob-suit__idle.png"
-      }
-    },
-    {
       "id": "masculine-navy-suit",
       "family": "masculine",
       "label": "네이비 클래식 수트",
-      "description": "단정한 가르마와 네이비 수트의 대표 남성 하객",
+      "description": "승인된 기준 이미지에서 복구한 미디엄 헤어와 네이비 클래식 수트 하객",
+      "reference": {
+        "image": "character-assets/reference/guest-foundation-sprite-reference-v1.png",
+        "crop": { "left": 1055, "top": 85, "width": 280, "height": 650 }
+      },
       "source": {
         "walk": "character-assets/source/guests/masculine-navy-suit__walk.png",
         "idle": "character-assets/source/guests/masculine-navy-suit__idle.png"
@@ -97,7 +81,11 @@
       "id": "masculine-charcoal-blazer",
       "family": "masculine",
       "label": "차콜 블레이저",
-      "description": "텍스처 헤어와 차콜 블레이저, 베이지 슬랙스 하객",
+      "description": "승인된 기준 이미지에서 복구한 브라운 미디엄 헤어와 차콜 블레이저 하객",
+      "reference": {
+        "image": "character-assets/reference/guest-foundation-sprite-reference-v1.png",
+        "crop": { "left": 1468, "top": 80, "width": 300, "height": 660 }
+      },
       "source": {
         "walk": "character-assets/source/guests/masculine-charcoal-blazer__walk.png",
         "idle": "character-assets/source/guests/masculine-charcoal-blazer__idle.png"
@@ -105,34 +93,6 @@
       "generated": {
         "walk": "guests/masculine-charcoal-blazer__walk.png",
         "idle": "guests/masculine-charcoal-blazer__idle.png"
-      }
-    },
-    {
-      "id": "masculine-formal-hanbok",
-      "family": "masculine",
-      "label": "남성 포멀 한복",
-      "description": "웨이브 미디엄 헤어와 네이비/아이보리 한복 하객",
-      "source": {
-        "walk": "character-assets/source/guests/masculine-formal-hanbok__walk.png",
-        "idle": "character-assets/source/guests/masculine-formal-hanbok__idle.png"
-      },
-      "generated": {
-        "walk": "guests/masculine-formal-hanbok__walk.png",
-        "idle": "guests/masculine-formal-hanbok__idle.png"
-      }
-    },
-    {
-      "id": "masculine-knit-jacket",
-      "family": "masculine",
-      "label": "포멀 니트 재킷",
-      "description": "쇼트 크롭과 오트 니트 재킷, 차콜 팬츠 하객",
-      "source": {
-        "walk": "character-assets/source/guests/masculine-knit-jacket__walk.png",
-        "idle": "character-assets/source/guests/masculine-knit-jacket__idle.png"
-      },
-      "generated": {
-        "walk": "guests/masculine-knit-jacket__walk.png",
-        "idle": "guests/masculine-knit-jacket__idle.png"
       }
     }
   ]

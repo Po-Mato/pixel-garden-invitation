@@ -8,7 +8,7 @@ import {
 describe("character catalog", () => {
   it("NPC와 하객 프리셋 카탈로그를 제공한다", () => {
     expect(characterCatalog.npcs.map((item) => item.id)).toEqual(["groom", "bride"]);
-    expect(characterCatalog.guestPresets).toHaveLength(8);
+    expect(characterCatalog.guestPresets).toHaveLength(4);
   });
 
   it("기본 appearance를 허용한다", () => {

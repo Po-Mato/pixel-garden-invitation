@@ -9,18 +9,24 @@ import {
 } from "./index";
 
 describe("하객 완성 캐릭터 프리셋", () => {
-  it("확정된 8개 완성 하객 프리셋을 가진다", () => {
-    expect(guestCharacterPresets).toHaveLength(8);
+  it("승인된 기준 이미지에서 복구한 4개 완성 하객 프리셋만 가진다", () => {
+    expect(guestCharacterPresets).toHaveLength(4);
     expect(guestCharacterPresets.map((preset) => preset.id)).toEqual([
       "feminine-long-wave-dress",
       "feminine-formal-hanbok",
-      "feminine-half-up-skirt",
-      "feminine-short-bob-suit",
       "masculine-navy-suit",
-      "masculine-charcoal-blazer",
-      "masculine-formal-hanbok",
-      "masculine-knit-jacket"
+      "masculine-charcoal-blazer"
     ]);
+  });
+
+  it("각 프리셋은 승인된 하객 기준 이미지 crop 위치를 가진다", () => {
+    for (const preset of guestCharacterPresets) {
+      expect(preset.reference).toMatchObject({
+        image: "character-assets/reference/guest-foundation-sprite-reference-v1.png"
+      });
+      expect(preset.reference.crop.width).toBeGreaterThan(200);
+      expect(preset.reference.crop.height).toBeGreaterThan(500);
+    }
   });
 
   it("기존 하객 프레임 규격을 유지한다", () => {

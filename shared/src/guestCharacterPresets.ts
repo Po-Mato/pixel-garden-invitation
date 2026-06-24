@@ -30,6 +30,15 @@ export type GuestCharacterPreset = {
   family: CharacterFamily;
   label: string;
   description: string;
+  reference: {
+    image: string;
+    crop: {
+      left: number;
+      top: number;
+      width: number;
+      height: number;
+    };
+  };
   source: {
     walk: string;
     idle: string;
