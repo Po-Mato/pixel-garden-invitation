@@ -44,8 +44,23 @@ it("saves an appearance in the versioned storage key", () => {
     .toEqual(defaultCharacterAppearance);
 });
 
-it("deletes invalid saved appearance", () => {
+it("알 수 없는 appearance 객체를 기본 프리셋으로 변환해서 로드한다", () => {
   window.localStorage.setItem("pixel-garden-character-v1", JSON.stringify({ family: "bad" }));
-  expect(loadAppearance()).toBeNull();
-  expect(window.localStorage.getItem("pixel-garden-character-v1")).toBeNull();
+  expect(loadAppearance()).toEqual(defaultCharacterAppearance);
+  expect(JSON.parse(window.localStorage.getItem("pixel-garden-character-v1") ?? "null"))
+    .toEqual(defaultCharacterAppearance);
+});
+
+it("구버전 조합형 appearance를 기본 프리셋으로 변환해서 로드한다", () => {
+  window.localStorage.setItem("pixel-garden-character-v1", JSON.stringify({
+    family: "feminine",
+    skinTone: "skin-02-fair",
+    hairStyle: "feminine-long-wave",
+    hairColor: "dark-brown",
+    outfit: "feminine-midi-dress",
+    outfitPalette: "dusty-rose",
+    accessories: { face: null, jewelry: null, neckwear: null, carry: null }
+  }));
+
+  expect(loadAppearance()).toEqual(defaultCharacterAppearance);
 });

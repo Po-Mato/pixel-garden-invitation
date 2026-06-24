@@ -21,6 +21,7 @@ export function loadAppearance(): CharacterAppearance | null {
     if (!raw) return null;
     const parsed = parseCharacterAppearance(JSON.parse(raw));
     if (!parsed) storage.removeItem(storageKey);
+    storage.setItem(storageKey, JSON.stringify(parsed));
     return parsed;
   } catch {
     storage.removeItem(storageKey);

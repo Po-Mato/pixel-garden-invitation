@@ -2,6 +2,7 @@ import {
   parseCharacterAppearance,
   type ClientMessage,
   type Direction,
+  type RoomGuest,
   type ServerMessage
 } from "@wedding-game/shared";
 
@@ -69,29 +70,45 @@ function isPositionState(value: unknown) {
   );
 }
 
-function isRoomGuest(value: unknown) {
-  if (!isRecord(value) || !isPositionState(value)) return false;
+function normalizeRoomGuest(value: unknown): RoomGuest | null {
+  if (!isRecord(value) || !isPositionState(value)) return null;
   const appearance = parseCharacterAppearance(value.appearance);
-  return (
-    typeof value.guestId === "string" &&
-    typeof value.nickname === "string" &&
-    appearance !== null &&
-    typeof value.lastSeenAt === "number" &&
-    Number.isFinite(value.lastSeenAt)
-  );
+  if (
+    typeof value.guestId !== "string" ||
+    typeof value.nickname !== "string" ||
+    typeof value.lastSeenAt !== "number" ||
+    !Number.isFinite(value.lastSeenAt)
+  ) {
+    return null;
+  }
+
+  return {
+    guestId: value.guestId,
+    nickname: value.nickname,
+    appearance,
+    x: value.x,
+    y: value.y,
+    direction: value.direction as Direction,
+    moving: value.moving,
+    seq: value.seq,
+    lastSeenAt: value.lastSeenAt
+  };
 }
 
 function parseServerMessage(value: unknown): ServerMessage | null {
   if (!isRecord(value) || typeof value.type !== "string") return null;
 
   if (value.type === "welcome") {
-    if (typeof value.guestId !== "string" || !Array.isArray(value.guests) || !value.guests.every(isRoomGuest)) return null;
-    return value as ServerMessage;
+    if (typeof value.guestId !== "string" || !Array.isArray(value.guests)) return null;
+    const guests = value.guests.map(normalizeRoomGuest);
+    if (guests.some((guest) => guest === null)) return null;
+    return { type: "welcome", guestId: value.guestId, guests: guests as RoomGuest[] };
   }
 
   if (value.type === "guest_joined") {
-    if (!isRoomGuest(value.guest)) return null;
-    return value as ServerMessage;
+    const guest = normalizeRoomGuest(value.guest);
+    if (!guest) return null;
+    return { type: "guest_joined", guest };
   }
 
   if (value.type === "guest_moved") {
@@ -105,8 +122,10 @@ function parseServerMessage(value: unknown): ServerMessage | null {
   }
 
   if (value.type === "room_state") {
-    if (!Array.isArray(value.guests) || !value.guests.every(isRoomGuest)) return null;
-    return value as ServerMessage;
+    if (!Array.isArray(value.guests)) return null;
+    const guests = value.guests.map(normalizeRoomGuest);
+    if (guests.some((guest) => guest === null)) return null;
+    return { type: "room_state", guests: guests as RoomGuest[] };
   }
 
   if (value.type === "error") {

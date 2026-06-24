@@ -117,7 +117,7 @@ describe("connectRealtime", () => {
     expect(onMessage).toHaveBeenCalledWith({ type: "error", code: "bad_message" });
   });
 
-  it("rejects room guests with invalid appearances", () => {
+  it("normalizes room guests with invalid appearances to the default preset", () => {
     const onMessage = vi.fn();
     connectRealtime("wss://worker.example.com/rooms/sample-garden", joinMessage, {
       onOpen: vi.fn(),
@@ -147,6 +147,13 @@ describe("connectRealtime", () => {
       })
     );
 
-    expect(onMessage).toHaveBeenCalledWith({ type: "error", code: "bad_message" });
+    expect(onMessage).toHaveBeenCalledWith({
+      type: "welcome",
+      guestId: "guest_self",
+      guests: [expect.objectContaining({
+        guestId: "guest_remote",
+        appearance: defaultCharacterAppearance
+      })]
+    });
   });
 });
