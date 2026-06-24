@@ -89,7 +89,7 @@ test("audit CLI validates finished guest preset source sheets", async () => {
 
   assert.match(stdout, /guest-presets/);
   assert.match(stdout, /Character asset audit passed/);
-  assert.equal(guestPresetCatalog.presets.length, 4);
+  assert.equal(guestPresetCatalog.presets.length, 12);
 });
 
 test("inspectSheet reports frame occupancy, colors, transitions, and bounds", async () => {

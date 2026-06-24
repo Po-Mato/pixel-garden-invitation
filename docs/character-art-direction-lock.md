@@ -41,6 +41,7 @@ pnpm build
 
 - `character-assets/guest-character-presets.json`
 - `character-assets/reference/guest-foundation-sprite-reference-v1.png`
+- `character-assets/reference/guest-expansion-reference-v1.png`
 - `character-assets/source/guests/*`
 - `client/public/characters/generated/guests/*`
 - `.superpowers/character-review/guest-preset-contact-sheet.png`
@@ -48,13 +49,13 @@ pnpm build
 고정 규칙:
 
 - 사용자는 헤어, 의상, 액세서리를 따로 조합하지 않는다.
-- 현재 런타임 하객 프리셋은 승인된 스프라이트 기준 이미지의 4명만 사용한다.
+- 현재 런타임 하객 프리셋은 승인된 스프라이트 기준 이미지의 기존 4명과 확장 기준 이미지의 8명을 합친 12명을 사용한다.
 - 각 하객은 얼굴, 헤어, 의상, 액세서리가 함께 설계된 완성 스프라이트다.
 - `scripts/author-guest-preset-sources.mjs`는 단순 도형이나 새 procedural 캐릭터를 그리지 않는다. 기준 이미지 crop을 배경 투명화한 뒤 `96x144` 프레임으로 정렬한다.
 - 얼굴이 외계인처럼 보이거나 눌려 보이는 프리셋은 실패로 본다.
 - 머리카락이 얼굴 중앙을 큰 검은 마스크처럼 덮으면 실패로 본다.
 - 기준 이미지의 둥근 얼굴, 작고 분리된 눈, 작은 입, 웨딩 하객 포멀 의상 톤을 유지한다.
-- 하객 프리셋을 4명에서 확장하려면 먼저 같은 품질의 새 기준 이미지를 확정하고, 카탈로그에 `reference.image`와 `reference.crop`을 추가한다.
+- 하객 프리셋을 추가 확장하려면 먼저 같은 품질의 새 기준 이미지를 확정하고, 카탈로그에 `reference.image`와 `reference.crop`을 추가한다.
 - 기존 `guest-part-manifest.json`과 `base`, `hair`, `outfits`, `accessories` 소스는 레거시 자료이며 하객 런타임 품질 기준이 아니다.
 
 회귀 방지 검증:
@@ -122,8 +123,9 @@ pnpm build
 
 - `character-assets/reference/guest-foundation-concept-reference-v1.png`
 - `character-assets/reference/guest-foundation-sprite-reference-v1.png`
+- `character-assets/reference/guest-expansion-reference-v1.png`
 
-현재 구현은 스프라이트 기준 이미지의 4명 crop을 직접 사용한다. crop은 배경을 투명화한 뒤 `96x144` 완성 하객 프리셋 프레임에 맞춰 정렬한다. 이 방식은 단순 도형 재작성으로 기준 이미지의 얼굴/헤어/의상 밀도가 무너지는 문제를 막기 위한 고정 규칙이다.
+현재 구현은 스프라이트 기준 이미지의 4명 crop과 확장 기준 이미지의 8명 crop을 직접 사용한다. crop은 배경을 투명화한 뒤 `96x144` 완성 하객 프리셋 프레임에 맞춰 정렬한다. 이 방식은 단순 도형 재작성으로 기준 이미지의 얼굴/헤어/의상 밀도가 무너지는 문제를 막기 위한 고정 규칙이다.
 
 하객 재작업은 항상 완성 프리셋의 정면 얼굴과 몸 비율부터 검토한다. 얼굴, 헤어, 의상, 액세서리를 분리 검토하지 않고 하나의 완성 캐릭터로 평가한다.
 

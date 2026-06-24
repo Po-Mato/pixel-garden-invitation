@@ -100,7 +100,7 @@ test("generator emits idle and four-direction walk sheets for every npc", async 
       )
     );
   }
-  assert.match(stdout, /Generated 12 character assets/);
+  assert.match(stdout, /Generated 28 character assets/);
 });
 
 test("generator validates a late npc walk source before replacing existing output", async () => {
@@ -161,7 +161,7 @@ test("generator accepts finished guest preset sources and emits generated preset
     const { generateCharacterAssets } = await import("./generate-character-assets.mjs");
     const outputCount = await generateCharacterAssets({ sourceRoot, outputRoot });
 
-    assert.equal(outputCount, 12);
+    assert.equal(outputCount, 28);
     for (const preset of guestPresetCatalog.presets) {
       await assert.doesNotReject(() =>
         validateDimensions(join(outputRoot, preset.generated.walk), guestPresetCatalog.frame.walk.sheet)
@@ -306,7 +306,7 @@ test("guest preset samples include every preset in four directions", async () =>
   const { guestPresetSamples } = await import("./render-character-contact-sheet.mjs");
   const samples = await guestPresetSamples();
 
-  assert.equal(samples.length, 4);
+  assert.equal(samples.length, 12);
   for (const sample of samples) {
     assert.deepEqual(
       sample.frames.map((entry) => entry.direction),
@@ -466,10 +466,10 @@ test("guest presets are the default mode and render every finished preset card",
     );
     const metadata = await sharp(output).metadata();
 
-    assert.match(stdout, /Rendered 4 guest-presets samples/);
+    assert.match(stdout, /Rendered 12 guest-presets samples/);
     assert.deepEqual(
       { width: metadata.width, height: metadata.height },
-      { width: 1212, height: 396 }
+      { width: 1212, height: 792 }
     );
   } finally {
     await rm(dir, { recursive: true });

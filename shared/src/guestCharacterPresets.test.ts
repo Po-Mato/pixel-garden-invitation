@@ -9,24 +9,33 @@ import {
 } from "./index";
 
 describe("하객 완성 캐릭터 프리셋", () => {
-  it("승인된 기준 이미지에서 복구한 4개 완성 하객 프리셋만 가진다", () => {
-    expect(guestCharacterPresets).toHaveLength(4);
+  it("승인된 기준 이미지에서 복구한 12개 완성 하객 프리셋을 가진다", () => {
+    expect(guestCharacterPresets).toHaveLength(12);
     expect(guestCharacterPresets.map((preset) => preset.id)).toEqual([
       "feminine-long-wave-dress",
       "feminine-formal-hanbok",
       "masculine-navy-suit",
-      "masculine-charcoal-blazer"
+      "masculine-charcoal-blazer",
+      "feminine-sage-bolero-dress",
+      "feminine-champagne-navy-skirt",
+      "feminine-lavender-jacket-dress",
+      "feminine-teal-modern-hanbok",
+      "masculine-beige-summer-suit",
+      "masculine-charcoal-burgundy-tie",
+      "masculine-green-blazer-cream-pants",
+      "masculine-blue-modern-hanbok"
     ]);
   });
 
   it("각 프리셋은 승인된 하객 기준 이미지 crop 위치를 가진다", () => {
+    const referenceCounts = new Map<string, number>();
     for (const preset of guestCharacterPresets) {
-      expect(preset.reference).toMatchObject({
-        image: "character-assets/reference/guest-foundation-sprite-reference-v1.png"
-      });
+      referenceCounts.set(preset.reference.image, (referenceCounts.get(preset.reference.image) ?? 0) + 1);
       expect(preset.reference.crop.width).toBeGreaterThan(200);
       expect(preset.reference.crop.height).toBeGreaterThan(500);
     }
+    expect(referenceCounts.get("character-assets/reference/guest-foundation-sprite-reference-v1.png")).toBe(4);
+    expect(referenceCounts.get("character-assets/reference/guest-expansion-reference-v1.png")).toBe(8);
   });
 
   it("기존 하객 프레임 규격을 유지한다", () => {
