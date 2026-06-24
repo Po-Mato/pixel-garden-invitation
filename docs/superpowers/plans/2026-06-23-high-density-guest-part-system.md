@@ -8,6 +8,32 @@
 
 **기술 스택:** TypeScript, React 18, Vite 8, Vitest, Node.js, Sharp, node:test, pnpm.
 
+## 2026-06-24 상태 변경
+
+이 계획의 파츠 조합형 하객 시스템은 현재 런타임 기준이 아니다. 사용자 검토에서 파츠 경계 때문에 얼굴과 의상 품질이 반복적으로 무너지는 문제가 확인되어, 하객은 완성 캐릭터 프리셋 선택형으로 전환했다.
+
+현재 기준:
+
+- 설계: `docs/superpowers/specs/2026-06-24-complete-guest-character-presets-design.md`
+- 구현 계획: `docs/superpowers/plans/2026-06-24-complete-guest-character-presets.md`
+- 프리셋 카탈로그: `character-assets/guest-character-presets.json`
+- 완성 하객 소스: `character-assets/source/guests/*`
+
+`guest-part-manifest.json`과 `character-assets/source/base`, `hair`, `outfits`, `accessories`는 레거시 자료로만 유지한다.
+
+## 2026-06-24 추가 품질 패스
+
+기존 고밀도 전환은 구조적으로는 동작했지만, 하객 소스 아트가 여전히 저밀도 도형 조합처럼 보여 품질 문제가 남았다. 이번 추가 작업은 런타임 구조를 바꾸지 않고 하객 소스 파츠와 감사 기준을 재작업한다.
+
+추가 범위:
+
+- `scripts/author-guest-part-sources.mjs`를 추가해 base, hair, outfit, accessory 소스 PNG를 재생성 가능하게 한다.
+- `pnpm characters:author-guests` 스크립트를 추가한다.
+- 감사 도구에 프레임 점유 기준을 추가해 작은 캐릭터를 큰 캔버스 중앙에 넣는 회귀를 막는다.
+- `quality-rules.json`에 base/hair/outfit의 상단 점유, 높이, 하단 기준을 추가한다.
+- front-hair가 얼굴을 덮지 않도록 하객 헤어 레이어의 역할을 분리한다.
+- 리뷰 산출물은 `.superpowers/character-review/guest-art-quality-pass-2.png`로 저장한다.
+
 ---
 
 ## 파일 구조
