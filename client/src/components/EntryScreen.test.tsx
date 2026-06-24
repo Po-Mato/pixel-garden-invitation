@@ -40,22 +40,18 @@ describe("EntryScreen", () => {
     render(<EntryScreen onEnter={onEnter} />);
 
     fireEvent.change(screen.getByLabelText("닉네임"), { target: { value: "하객1" } });
-    fireEvent.click(screen.getByRole("tab", { name: "헤어" }));
-    fireEvent.click(screen.getByRole("button", { name: "롱 스트레이트" }));
+    fireEvent.click(screen.getByRole("button", { name: "네이비 클래식 수트" }));
     fireEvent.click(screen.getByRole("button", { name: "정원 입장" }));
 
     expect(onEnter).toHaveBeenCalledWith({
       nickname: "하객1",
-      appearance: {
-        ...defaultCharacterAppearance,
-        hairStyle: "feminine-long-straight"
-      }
+      appearance: { presetId: "masculine-navy-suit" }
     });
   });
 
   it("exposes the character customizer", () => {
     render(<EntryScreen onEnter={vi.fn()} />);
-    expect(screen.getByRole("tablist", { name: "캐릭터 꾸미기" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "완성 하객 캐릭터" })).toBeInTheDocument();
     expect(screen.getByLabelText("선택한 하객 캐릭터")).toBeInTheDocument();
   });
 });

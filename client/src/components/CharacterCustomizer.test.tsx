@@ -7,48 +7,29 @@ afterEach(() => {
   cleanup();
 });
 
-it("shows the large live preview and category tabs", () => {
+it("선택된 완성 하객 캐릭터 미리보기와 카드 목록을 보여준다", () => {
   render(<CharacterCustomizer value={defaultCharacterAppearance} onChange={vi.fn()} />);
   expect(screen.getByLabelText("선택한 하객 캐릭터")).toBeInTheDocument();
-  expect(screen.getByRole("tab", { name: "헤어" })).toBeInTheDocument();
-  expect(screen.getByRole("tab", { name: "의상" })).toBeInTheDocument();
-  expect(screen.getByRole("tab", { name: "액세서리" })).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "롱 웨이브 하객 원피스" })).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "네이비 클래식 수트" })).toBeInTheDocument();
+  expect(screen.queryByRole("tab", { name: "헤어" })).not.toBeInTheDocument();
+  expect(screen.queryByRole("tab", { name: "액세서리" })).not.toBeInTheDocument();
 });
 
-it("exposes selected tab and text-labelled color choices", () => {
-  render(<CharacterCustomizer value={defaultCharacterAppearance} onChange={vi.fn()} />);
-  expect(screen.getByRole("tablist", { name: "캐릭터 꾸미기" })).toBeInTheDocument();
-  expect(screen.getByRole("tab", { name: "헤어" })).toHaveAttribute("aria-selected", "true");
-  expect(screen.getByRole("button", { name: "짙은 갈색" })).toHaveTextContent("짙은 갈색");
-});
-
-it("changes the preview from an image option tile", () => {
+it("완성 캐릭터 카드를 선택하면 presetId를 변경한다", () => {
   const onChange = vi.fn();
   render(<CharacterCustomizer value={defaultCharacterAppearance} onChange={onChange} />);
-  fireEvent.click(screen.getByRole("tab", { name: "헤어" }));
-  fireEvent.click(screen.getByRole("button", { name: "롱 스트레이트" }));
+  fireEvent.click(screen.getByRole("button", { name: "네이비 클래식 수트" }));
+  expect(onChange).toHaveBeenCalledWith({ presetId: "masculine-navy-suit" });
+});
+
+it("무작위 선택과 기본 캐릭터 선택을 지원한다", () => {
+  const onChange = vi.fn();
+  render(<CharacterCustomizer value={defaultCharacterAppearance} onChange={onChange} />);
+  fireEvent.click(screen.getByRole("button", { name: "무작위 선택" }));
   expect(onChange).toHaveBeenCalledWith(expect.objectContaining({
-    hairStyle: "feminine-long-straight"
+    presetId: expect.any(String)
   }));
-});
-
-it("supports randomize and reset", () => {
-  const onChange = vi.fn();
-  render(<CharacterCustomizer value={defaultCharacterAppearance} onChange={onChange} />);
-  fireEvent.click(screen.getByRole("button", { name: "무작위 꾸미기" }));
-  expect(onChange).toHaveBeenCalled();
-  fireEvent.click(screen.getByRole("button", { name: "초기화" }));
+  fireEvent.click(screen.getByRole("button", { name: "기본 캐릭터" }));
   expect(onChange).toHaveBeenLastCalledWith(defaultCharacterAppearance);
-});
-
-it("resets incompatible choices when the family changes", () => {
-  const onChange = vi.fn();
-  render(<CharacterCustomizer value={defaultCharacterAppearance} onChange={onChange} />);
-  fireEvent.click(screen.getByRole("tab", { name: "기본" }));
-  fireEvent.click(screen.getByRole("button", { name: "남성 스타일" }));
-  expect(onChange).toHaveBeenCalledWith(expect.objectContaining({
-    family: "masculine",
-    hairStyle: "masculine-side-part",
-    outfit: "masculine-classic-suit"
-  }));
 });

@@ -32,7 +32,7 @@ export function EntryScreen({ onEnter }: EntryScreenProps) {
       <header className="entry-screen__header">
         <p>WEDDING GARDEN · 2026</p>
         <h1>서준 & 하린의 정원</h1>
-        <span>정원에 입장할 하객 캐릭터를 꾸며주세요.</span>
+        <span>정원에 입장할 완성 하객 캐릭터를 선택해주세요.</span>
       </header>
       <CharacterCustomizer value={appearance} onChange={setAppearance} />
       <label className="field">

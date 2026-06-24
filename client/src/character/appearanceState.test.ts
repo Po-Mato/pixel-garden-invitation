@@ -1,23 +1,24 @@
 import {
   defaultCharacterAppearance,
-  getDefaultAppearance,
   parseCharacterAppearance
 } from "@wedding-game/shared";
 import { expect, it } from "vitest";
-import { changeFamily, randomizeAppearance, updateAppearance } from "./appearanceState";
+import { randomizeAppearance, updateAppearance } from "./appearanceState";
 
-it("resets incompatible fields when family changes", () => {
-  expect(changeFamily(defaultCharacterAppearance, "masculine")).toEqual(getDefaultAppearance("masculine"));
+it("프리셋 ID 업데이트를 적용한다", () => {
+  expect(updateAppearance(defaultCharacterAppearance, "masculine-navy-suit")).toEqual({
+    presetId: "masculine-navy-suit"
+  });
 });
 
-it("keeps the current appearance when an update is incompatible", () => {
-  expect(updateAppearance(defaultCharacterAppearance, {
-    hairStyle: "masculine-side-part"
-  })).toEqual(defaultCharacterAppearance);
+it("알 수 없는 프리셋 ID는 현재 값을 유지한다", () => {
+  expect(updateAppearance(defaultCharacterAppearance, "missing")).toEqual(defaultCharacterAppearance);
 });
 
-it("randomizer always returns valid appearances", () => {
+it("무작위 선택은 항상 유효한 appearance를 반환한다", () => {
   for (let index = 0; index < 100; index += 1) {
-    expect(parseCharacterAppearance(randomizeAppearance(index / 100))).not.toBeNull();
+    expect(parseCharacterAppearance(randomizeAppearance(index / 100))).toEqual(expect.objectContaining({
+      presetId: expect.any(String)
+    }));
   }
 });
