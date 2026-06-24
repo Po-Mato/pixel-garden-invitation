@@ -161,6 +161,64 @@ function hairSvg(id, art) {
   `;
 }
 
+function frontHairSvg(id, art) {
+  const { hair, hairLight } = art;
+  if (id === "feminine-long-wave-dress") {
+    return `
+      <path d="M32 31 C35 19 62 18 64 31 C58 28 51 27 44 28 C38 29 35 32 32 31 Z" fill="${hair}"/>
+      <path d="M32 36 C31 46 34 56 39 63" fill="none" stroke="${hair}" stroke-width="5" stroke-linecap="round"/>
+      <path d="M64 36 C65 46 62 56 57 63" fill="none" stroke="${hair}" stroke-width="5" stroke-linecap="round"/>
+      <path d="M38 27 C45 21 55 22 62 29" fill="none" stroke="${hairLight}" stroke-width="2.5" stroke-linecap="round"/>
+    `;
+  }
+  if (id === "feminine-formal-hanbok") {
+    return `
+      <ellipse cx="48" cy="22" rx="13" ry="8" fill="${hair}"/>
+      <path d="M32 33 C34 20 62 20 64 34 C58 30 38 30 32 33 Z" fill="${hair}"/>
+      <circle cx="60" cy="22" r="3" fill="#eac3c8"/>
+    `;
+  }
+  if (id === "feminine-half-up-skirt") {
+    return `
+      <path d="M32 31 C35 19 61 18 64 32 C58 29 52 28 45 29 C39 30 35 33 32 31 Z" fill="${hair}"/>
+      <path d="M37 28 C44 21 55 22 61 30" fill="none" stroke="${hairLight}" stroke-width="3" stroke-linecap="round"/>
+      <path d="M34 39 C34 49 37 58 42 65" fill="none" stroke="${hair}" stroke-width="4" stroke-linecap="round"/>
+      <path d="M62 39 C62 49 59 58 54 65" fill="none" stroke="${hair}" stroke-width="4" stroke-linecap="round"/>
+    `;
+  }
+  if (id === "feminine-short-bob-suit") {
+    return `
+      <path d="M31 32 C33 19 63 18 65 33 C57 29 40 29 31 32 Z" fill="${hair}"/>
+      <path d="M37 28 C44 22 55 22 61 30" fill="none" stroke="${hairLight}" stroke-width="2.5" stroke-linecap="round"/>
+      <path d="M33 35 C31 42 32 49 35 54" fill="none" stroke="${hair}" stroke-width="4" stroke-linecap="round"/>
+      <path d="M63 35 C65 42 64 49 61 54" fill="none" stroke="${hair}" stroke-width="4" stroke-linecap="round"/>
+    `;
+  }
+  if (id === "masculine-navy-suit") {
+    return `
+      <path d="M32 31 C34 19 63 18 65 31 C57 27 47 28 36 33 Z" fill="${hair}"/>
+      <path d="M42 23 C49 20 57 22 63 27" fill="none" stroke="${hairLight}" stroke-width="3.5" stroke-linecap="round"/>
+      <path d="M35 31 C40 28 45 27 51 28" fill="none" stroke="${hairLight}" stroke-width="2" stroke-linecap="round"/>
+    `;
+  }
+  if (id === "masculine-charcoal-blazer") {
+    return `
+      <path d="M32 31 C34 19 62 18 65 31 C59 29 55 27 51 24 C45 28 39 30 32 31 Z" fill="${hair}"/>
+      <path d="M37 26 L43 22 L49 25 L55 22 L62 27" fill="none" stroke="${hairLight}" stroke-width="2.5" stroke-linecap="round"/>
+    `;
+  }
+  if (id === "masculine-formal-hanbok") {
+    return `
+      <path d="M31 32 C33 18 65 18 66 32 C61 29 55 28 49 28 C42 28 36 30 31 32 Z" fill="${hair}"/>
+      <path d="M36 24 C44 18 56 20 63 27" fill="none" stroke="${hairLight}" stroke-width="3.5" stroke-linecap="round"/>
+    `;
+  }
+  return `
+    <path d="M32 31 C35 20 61 19 64 31 C58 30 54 27 50 25 C45 29 39 30 32 31 Z" fill="${hair}"/>
+    <path d="M36 27 C43 21 53 21 60 28" fill="none" stroke="${hairLight}" stroke-width="2.5" stroke-linecap="round"/>
+  `;
+}
+
 function bodySvg(id, art, { step = 1 }) {
   const shoeOffset = step === 0 ? -2 : step === 2 ? 2 : 0;
   const dress = id.startsWith("feminine") && !id.includes("suit");
@@ -230,6 +288,7 @@ function svgFrame(preset, options) {
       <g transform="translate(${sideShift} 0) ${scale}">
         ${hairSvg(preset.id, art)}
         ${face}
+        ${options.direction === "up" ? "" : frontHairSvg(preset.id, art)}
         ${bodySvg(preset.id, art, options)}
         ${options.direction === "up" ? "" : accessorySvg(preset.id)}
       </g>

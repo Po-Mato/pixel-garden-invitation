@@ -11,19 +11,79 @@
     "minimumUniqueOpaqueColors": 20,
     "minimumColorTransitionsPerFrame": 110
   },
+  "guestPreset": {
+    "minimumOpaquePixelsPerFrame": 1100,
+    "minimumUniqueOpaqueColors": 8,
+    "minimumColorTransitionsPerFrame": 100,
+    "minimumBoundsHeight": 106,
+    "minimumBoundsWidth": 34,
+    "maximumBoundsTop": 18,
+    "minimumBoundsBottom": 126,
+    "maximumBoundsBottom": 143
+  },
   "base": {
     "minimumOpaquePixelsPerFrame": 650,
     "minimumUniqueOpaqueColors": 8,
-    "minimumColorTransitionsPerFrame": 90
+    "minimumColorTransitionsPerFrame": 90,
+    "minimumBoundsHeight": 122,
+    "maximumBoundsTop": 18,
+    "minimumBoundsBottom": 138,
+    "regionColorRules": [
+      {
+        "name": "base-front-face-skin",
+        "frames": [0, 1, 2],
+        "x": 35,
+        "y": 28,
+        "width": 27,
+        "height": 22,
+        "colors": ["#ff0000", "#cc0000", "#990000", "#660000"],
+        "minimumPixels": 250
+      },
+      {
+        "name": "base-front-face-dark-control",
+        "frames": [0, 1, 2],
+        "x": 35,
+        "y": 28,
+        "width": 27,
+        "height": 19,
+        "colors": ["#251812"],
+        "maximumPixels": 70
+      },
+      {
+        "name": "base-front-lower-face-skin",
+        "frames": [0, 1, 2],
+        "x": 39,
+        "y": 39,
+        "width": 19,
+        "height": 10,
+        "colors": ["#ff0000", "#cc0000", "#990000", "#660000"],
+        "minimumPixels": 165
+      }
+    ]
   },
   "hair": {
     "minimumOpaquePixelsPerOccupiedFrame": 55,
     "minimumUniqueOpaqueColors": 5,
+    "maximumBoundsTop": 18,
     "minimumAlphaDifferenceBetweenStyles": 0.01
+  },
+  "frontHair": {
+    "regionRules": [
+      {
+        "name": "front-face-guard",
+        "x": 37,
+        "y": 31,
+        "width": 22,
+        "height": 15,
+        "maximumOpaquePixels": 16
+      }
+    ]
   },
   "outfit": {
     "minimumOpaquePixelsPerFrame": 260,
     "minimumUniqueOpaqueColors": 7,
+    "minimumBoundsHeight": 86,
+    "maximumBoundsTop": 52,
     "minimumAlphaDifferenceBetweenStyles": 0.015
   },
   "accessory": {

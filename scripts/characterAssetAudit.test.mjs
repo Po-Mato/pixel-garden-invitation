@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { execFile } from "node:child_process";
-import { mkdir, mkdtemp, rm } from "node:fs/promises";
+import { cp, mkdir, mkdtemp, readFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import test from "node:test";
@@ -10,6 +10,9 @@ import sharp from "sharp";
 import {
   alphaDifference,
   collectStyleComparisonFailures,
+  collectFrameRuleFailures,
+  collectRegionColorRuleFailures,
+  collectRegionRuleFailures,
   combinedAlpha,
   inspectSheet,
   rawRgba,
@@ -18,6 +21,7 @@ import {
 
 const execFileAsync = promisify(execFile);
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
+const guestPresetCatalog = JSON.parse(await readFile(join(root, "character-assets/guest-character-presets.json"), "utf8"));
 
 async function withTemporaryPng(width, height, data, callback) {
   const directory = await mkdtemp(join(tmpdir(), "character-asset-audit-"));
@@ -45,21 +49,19 @@ async function writeBlankSheet(file, dimensions) {
   }).png().toFile(file);
 }
 
-test("audit CLI rejects legacy low-density guest base source sheets", async () => {
+test("audit CLI rejects invalid guest preset source sheets", async () => {
   const directory = await mkdtemp(join(tmpdir(), "character-asset-audit-cli-"));
   const sourceRoot = join(directory, "source");
 
   try {
-    for (const family of ["masculine", "feminine"]) {
-      await writeBlankSheet(join(sourceRoot, "base", `${family}-idle.png`), { width: 96, height: 72 });
-      await writeBlankSheet(join(sourceRoot, "base", `${family}-walk.png`), { width: 144, height: 288 });
-    }
+    await cp(join(root, "character-assets/source"), sourceRoot, { recursive: true });
+    await writeBlankSheet(join(sourceRoot, "guests", "feminine-long-wave-dress__walk.png"), { width: 144, height: 288 });
 
     await assert.rejects(
       () =>
         execFileAsync(
           process.execPath,
-          [join(root, "scripts/audit-character-assets.mjs"), "--scope=base"],
+          [join(root, "scripts/audit-character-assets.mjs"), "--scope=guest-presets"],
           {
             cwd: root,
             env: { ...process.env, CHARACTER_ASSET_SOURCE_ROOT: sourceRoot }
@@ -68,7 +70,7 @@ test("audit CLI rejects legacy low-density guest base source sheets", async () =
       (error) => {
         assert.match(
           error.stderr,
-          /base\/masculine-(idle|walk)\.png: .*(must be (192x144|288x576)|divisible by 96x144)/
+          /guests\/feminine-long-wave-dress__walk\.png: .*(must be 288x576|divisible by 96x144)/
         );
         return true;
       }
@@ -76,6 +78,18 @@ test("audit CLI rejects legacy low-density guest base source sheets", async () =
   } finally {
     await rm(directory, { recursive: true, force: true });
   }
+});
+
+test("audit CLI validates finished guest preset source sheets", async () => {
+  const { stdout } = await execFileAsync(
+    process.execPath,
+    [join(root, "scripts/audit-character-assets.mjs"), "--scope=guest-presets"],
+    { cwd: root }
+  );
+
+  assert.match(stdout, /guest-presets/);
+  assert.match(stdout, /Character asset audit passed/);
+  assert.equal(guestPresetCatalog.presets.length, 8);
 });
 
 test("inspectSheet reports frame occupancy, colors, transitions, and bounds", async () => {
@@ -294,6 +308,212 @@ test("style comparison collects malformed RGBA errors without skipping later pai
   assert.match(failures[1].message, /malformed and valid-copy.*data length 8/);
   assert.match(failures[2].message, /duplicates the silhouette/);
   assert.match(failures[3].message, /alpha difference 0\.0000/);
+});
+
+test("frame rule failures reject small centered sprites in high-density guest frames", async () => {
+  const pixels = Buffer.alloc(96 * 144 * 4);
+  const colors = [
+    [37, 24, 18, 255],
+    [255, 0, 0, 255],
+    [204, 0, 0, 255],
+    [153, 0, 0, 255],
+    [102, 0, 0, 255],
+    [255, 244, 220, 255],
+    [183, 93, 101, 255],
+    [212, 119, 119, 255]
+  ];
+
+  for (let y = 60; y <= 126; y += 1) {
+    for (let x = 35; x <= 60; x += 1) {
+      const offset = (y * 96 + x) * 4;
+      pixels.set(colors[(x + y) % colors.length], offset);
+    }
+  }
+
+  await withTemporaryPng(96, 144, pixels, async (file) => {
+    const inspection = await inspectSheet(file, { frameWidth: 96, frameHeight: 144 });
+    const failures = collectFrameRuleFailures(inspection, {
+      minimumBoundsHeight: 120,
+      minimumBoundsWidth: 40,
+      maximumBoundsTop: 22,
+      maximumBoundsBottom: 140
+    });
+
+    assert.deepEqual(
+      failures.map((failure) => failure.message),
+      [
+        "frame 1 bounds height 67 is below 120",
+        "frame 1 bounds width 26 is below 40",
+        "frame 1 bounds top 60 exceeds 22"
+      ]
+    );
+  });
+});
+
+test("frame rule failures accept full high-density guest frame occupancy", async () => {
+  const pixels = Buffer.alloc(96 * 144 * 4);
+
+  for (let y = 10; y <= 139; y += 1) {
+    const inset = y < 30 ? Math.floor((30 - y) / 3) : y > 120 ? Math.floor((y - 120) / 4) : 0;
+    for (let x = 24 + inset; x <= 72 - inset; x += 1) {
+      const offset = (y * 96 + x) * 4;
+      pixels.set([255, 0, 0, 255], offset);
+    }
+  }
+
+  await withTemporaryPng(96, 144, pixels, async (file) => {
+    const inspection = await inspectSheet(file, { frameWidth: 96, frameHeight: 144 });
+    const failures = collectFrameRuleFailures(inspection, {
+      minimumBoundsHeight: 120,
+      minimumBoundsWidth: 40,
+      maximumBoundsTop: 22,
+      maximumBoundsBottom: 140
+    });
+
+    assert.deepEqual(failures, []);
+  });
+});
+
+test("region rule failures reject front hair covering the face guard", async () => {
+  const pixels = Buffer.alloc(96 * 144 * 4);
+  for (let y = 31; y <= 45; y += 1) {
+    for (let x = 37; x <= 58; x += 1) {
+      pixels.set([37, 24, 18, 255], (y * 96 + x) * 4);
+    }
+  }
+
+  await withTemporaryPng(96, 144, pixels, async (file) => {
+    const inspection = await inspectSheet(file, { frameWidth: 96, frameHeight: 144 });
+    const failures = collectRegionRuleFailures(inspection, [{
+      name: "front-face-guard",
+      x: 37,
+      y: 31,
+      width: 22,
+      height: 15,
+      maximumOpaquePixels: 16
+    }]);
+
+    assert.deepEqual(failures.map((failure) => failure.message), [
+      "front-face-guard frame 1 has 330 opaque pixels; maximum is 16"
+    ]);
+  });
+});
+
+test("region rule failures accept forehead hair above the face guard", async () => {
+  const pixels = Buffer.alloc(96 * 144 * 4);
+  for (let y = 24; y <= 30; y += 1) {
+    for (let x = 34; x <= 62; x += 1) {
+      pixels.set([37, 24, 18, 255], (y * 96 + x) * 4);
+    }
+  }
+
+  await withTemporaryPng(96, 144, pixels, async (file) => {
+    const inspection = await inspectSheet(file, { frameWidth: 96, frameHeight: 144 });
+    const failures = collectRegionRuleFailures(inspection, [{
+      name: "front-face-guard",
+      x: 37,
+      y: 31,
+      width: 22,
+      height: 15,
+      maximumOpaquePixels: 16
+    }]);
+
+    assert.deepEqual(failures, []);
+  });
+});
+
+test("front hair quality rule protects eyes and mouth while allowing the forehead band", async () => {
+  const rules = JSON.parse(
+    await readFile(join(root, "character-assets/quality-rules.json"), "utf8")
+  );
+
+  assert.deepEqual(rules.frontHair.regionRules, [{
+    name: "front-face-guard",
+    x: 37,
+    y: 31,
+    width: 22,
+    height: 15,
+    maximumOpaquePixels: 16
+  }]);
+});
+
+test("base quality rules require a rounded lower front face", async () => {
+  const rules = JSON.parse(
+    await readFile(join(root, "character-assets/quality-rules.json"), "utf8")
+  );
+
+  assert.ok(rules.base.regionColorRules.some((rule) =>
+    rule.name === "base-front-lower-face-skin" &&
+    rule.x === 39 &&
+    rule.y === 39 &&
+    rule.width === 19 &&
+    rule.height === 10 &&
+    rule.minimumPixels === 165
+  ));
+});
+
+test("region color rule failures reject a face region without enough skin pixels", async () => {
+  const pixels = Buffer.alloc(96 * 144 * 4);
+  for (let y = 28; y < 50; y += 1) {
+    for (let x = 35; x < 62; x += 1) {
+      pixels.set([37, 24, 18, 255], (y * 96 + x) * 4);
+    }
+  }
+
+  await withTemporaryPng(96, 144, pixels, async (file) => {
+    const inspection = await inspectSheet(file, { frameWidth: 96, frameHeight: 144 });
+    const failures = collectRegionColorRuleFailures(inspection, [{
+      name: "base-front-face-skin",
+      frames: [0],
+      x: 35,
+      y: 28,
+      width: 27,
+      height: 22,
+      colors: ["#ff0000", "#cc0000", "#990000", "#660000"],
+      minimumPixels: 250
+    }]);
+
+    assert.deepEqual(failures.map((failure) => failure.message), [
+      "base-front-face-skin frame 1 has 0 matching pixels; minimum is 250"
+    ]);
+  });
+});
+
+test("region color rule failures accept a readable skin-heavy face region", async () => {
+  const pixels = Buffer.alloc(96 * 144 * 4);
+  for (let y = 28; y < 50; y += 1) {
+    for (let x = 35; x < 62; x += 1) {
+      pixels.set([255, 0, 0, 255], (y * 96 + x) * 4);
+    }
+  }
+  for (const [x, y] of [[40, 34], [55, 34], [48, 39], [47, 44], [48, 44], [49, 44]]) {
+    pixels.set([37, 24, 18, 255], (y * 96 + x) * 4);
+  }
+
+  await withTemporaryPng(96, 144, pixels, async (file) => {
+    const inspection = await inspectSheet(file, { frameWidth: 96, frameHeight: 144 });
+    const failures = collectRegionColorRuleFailures(inspection, [{
+      name: "base-front-face-skin",
+      frames: [0],
+      x: 35,
+      y: 28,
+      width: 27,
+      height: 22,
+      colors: ["#ff0000", "#cc0000", "#990000", "#660000"],
+      minimumPixels: 250
+    }, {
+      name: "base-front-face-dark-control",
+      frames: [0],
+      x: 35,
+      y: 28,
+      width: 27,
+      height: 19,
+      colors: ["#251812"],
+      maximumPixels: 42
+    }]);
+
+    assert.deepEqual(failures, []);
+  });
 });
 
 test("inspectSheet rejects dimensions not divisible by the frame size", async () => {

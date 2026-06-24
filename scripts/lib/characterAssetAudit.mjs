@@ -43,6 +43,15 @@ function rgbaKey(data, offset) {
   return `${data[offset]},${data[offset + 1]},${data[offset + 2]},${data[offset + 3]}`;
 }
 
+function normalizedHexColor(value) {
+  return value.toLowerCase();
+}
+
+function hexFromRgba(data, offset) {
+  const toHex = (channel) => channel.toString(16).padStart(2, "0");
+  return `#${toHex(data[offset])}${toHex(data[offset + 1])}${toHex(data[offset + 2])}`;
+}
+
 function pixelsDiffer(data, firstOffset, secondOffset) {
   const firstTransparent = data[firstOffset + 3] === 0;
   const secondTransparent = data[secondOffset + 3] === 0;
@@ -158,6 +167,157 @@ export function collectStyleComparisonFailures(styles, minimumAlphaDifference) {
           message:
             `${first.id} and ${second.id}: ` +
             (error instanceof Error ? error.message : String(error))
+        });
+      }
+    }
+  }
+
+  return failures;
+}
+
+export function collectFrameRuleFailures(inspection, frameRules = {}) {
+  const failures = [];
+  const checks = [
+    {
+      key: "minimumBoundsHeight",
+      message: (index, actual, expected) =>
+        `frame ${index} bounds height ${actual} is below ${expected}`,
+      measure: (bounds) => bounds.height,
+      fails: (actual, expected) => actual < expected
+    },
+    {
+      key: "minimumBoundsWidth",
+      message: (index, actual, expected) =>
+        `frame ${index} bounds width ${actual} is below ${expected}`,
+      measure: (bounds) => bounds.width,
+      fails: (actual, expected) => actual < expected
+    },
+    {
+      key: "maximumBoundsTop",
+      message: (index, actual, expected) =>
+        `frame ${index} bounds top ${actual} exceeds ${expected}`,
+      measure: (bounds) => bounds.top,
+      fails: (actual, expected) => actual > expected
+    },
+    {
+      key: "minimumBoundsBottom",
+      message: (index, actual, expected) =>
+        `frame ${index} bounds bottom ${actual} is below ${expected}`,
+      measure: (bounds) => bounds.bottom,
+      fails: (actual, expected) => actual < expected
+    },
+    {
+      key: "maximumBoundsBottom",
+      message: (index, actual, expected) =>
+        `frame ${index} bounds bottom ${actual} exceeds ${expected}`,
+      measure: (bounds) => bounds.bottom,
+      fails: (actual, expected) => actual > expected
+    }
+  ];
+
+  for (let index = 0; index < inspection.frames.length; index += 1) {
+    const frame = inspection.frames[index];
+    if (frame.opaquePixels === 0 || !frame.bounds) continue;
+
+    for (const check of checks) {
+      const expected = frameRules[check.key];
+      if (expected === undefined) continue;
+
+      const actual = check.measure(frame.bounds);
+      if (check.fails(actual, expected)) {
+        failures.push({
+          frame: index,
+          message: check.message(index + 1, actual, expected)
+        });
+      }
+    }
+  }
+
+  return failures;
+}
+
+export function collectRegionRuleFailures(inspection, regionRules = []) {
+  const failures = [];
+
+  for (let frameIndex = 0; frameIndex < inspection.frames.length; frameIndex += 1) {
+    const frame = inspection.frames[frameIndex];
+    if (frame.opaquePixels === 0) continue;
+
+    for (const rule of regionRules) {
+      let opaquePixels = 0;
+
+      for (let y = rule.y; y < rule.y + rule.height; y += 1) {
+        for (let x = rule.x; x < rule.x + rule.width; x += 1) {
+          const offset = (y * inspection.frameWidth + x) * 4 + 3;
+          if (frame.rgba[offset] !== 0) opaquePixels += 1;
+        }
+      }
+
+      if (
+        rule.maximumOpaquePixels !== undefined &&
+        opaquePixels > rule.maximumOpaquePixels
+      ) {
+        failures.push({
+          frame: frameIndex,
+          message:
+            `${rule.name} frame ${frameIndex + 1} has ${opaquePixels} opaque pixels; ` +
+            `maximum is ${rule.maximumOpaquePixels}`
+        });
+      }
+
+      if (
+        rule.minimumOpaquePixels !== undefined &&
+        opaquePixels < rule.minimumOpaquePixels
+      ) {
+        failures.push({
+          frame: frameIndex,
+          message:
+            `${rule.name} frame ${frameIndex + 1} has ${opaquePixels} opaque pixels; ` +
+            `minimum is ${rule.minimumOpaquePixels}`
+        });
+      }
+    }
+  }
+
+  return failures;
+}
+
+export function collectRegionColorRuleFailures(inspection, regionColorRules = []) {
+  const failures = [];
+
+  for (let frameIndex = 0; frameIndex < inspection.frames.length; frameIndex += 1) {
+    const frame = inspection.frames[frameIndex];
+    if (frame.opaquePixels === 0) continue;
+
+    for (const rule of regionColorRules) {
+      if (rule.frames && !rule.frames.includes(frameIndex)) continue;
+
+      const colors = new Set(rule.colors.map(normalizedHexColor));
+      let matchingPixels = 0;
+
+      for (let y = rule.y; y < rule.y + rule.height; y += 1) {
+        for (let x = rule.x; x < rule.x + rule.width; x += 1) {
+          const offset = (y * inspection.frameWidth + x) * 4;
+          if (frame.rgba[offset + 3] === 0) continue;
+          if (colors.has(hexFromRgba(frame.rgba, offset))) matchingPixels += 1;
+        }
+      }
+
+      if (rule.minimumPixels !== undefined && matchingPixels < rule.minimumPixels) {
+        failures.push({
+          frame: frameIndex,
+          message:
+            `${rule.name} frame ${frameIndex + 1} has ${matchingPixels} matching pixels; ` +
+            `minimum is ${rule.minimumPixels}`
+        });
+      }
+
+      if (rule.maximumPixels !== undefined && matchingPixels > rule.maximumPixels) {
+        failures.push({
+          frame: frameIndex,
+          message:
+            `${rule.name} frame ${frameIndex + 1} has ${matchingPixels} matching pixels; ` +
+            `maximum is ${rule.maximumPixels}`
         });
       }
     }

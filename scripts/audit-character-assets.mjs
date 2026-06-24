@@ -4,6 +4,9 @@ import { fileURLToPath } from "node:url";
 import Sharp from "sharp";
 import {
   collectStyleComparisonFailures,
+  collectFrameRuleFailures,
+  collectRegionColorRuleFailures,
+  collectRegionRuleFailures,
   combinedAlpha,
   inspectSheet,
   rawRgba as readRawRgba
@@ -16,13 +19,16 @@ const source = process.env.CHARACTER_ASSET_SOURCE_ROOT
 const catalog = JSON.parse(
   await readFile(path.join(root, "shared/character-catalog.json"), "utf8")
 );
+const guestPresetCatalog = JSON.parse(
+  await readFile(path.join(root, "character-assets/guest-character-presets.json"), "utf8")
+);
 const guestPartManifest = JSON.parse(
   await readFile(path.join(root, "character-assets/guest-part-manifest.json"), "utf8")
 );
 const rules = JSON.parse(
   await readFile(path.join(root, "character-assets/quality-rules.json"), "utf8")
 );
-const scopes = new Set(["all", "couple", "base", "hair", "outfits", "accessories"]);
+const scopes = new Set(["all", "couple", "guest-presets", "legacy-parts"]);
 const families = new Set(["all", "masculine", "feminine"]);
 
 function parseOption(name, allowed, fallback) {
@@ -42,13 +48,18 @@ function parseOption(name, allowed, fallback) {
 const scope = parseOption("scope", scopes, "all");
 const family = parseOption("family", families, "all");
 const failures = [];
-const guestFrame = guestPartManifest.frame.source;
-const guestIdleDimensions = guestPartManifest.frame.idle.sheet;
-const guestWalkDimensions = guestPartManifest.frame.walk.sheet;
+const guestFrame = guestPresetCatalog.frame.source;
+const guestIdleDimensions = guestPresetCatalog.frame.idle.sheet;
+const guestWalkDimensions = guestPresetCatalog.frame.walk.sheet;
 const guestFootBaseline = {
   footBottomMin: rules.frame.footBottomMin * 2,
   footBottomMax: rules.frame.footBottomMax * 2,
   footBottomSpreadMax: rules.frame.footBottomSpreadMax * 2
+};
+const guestPresetFootBaseline = {
+  footBottomMin: 128,
+  footBottomMax: 132,
+  footBottomSpreadMax: 2
 };
 
 function displayFile(file) {
@@ -71,11 +82,18 @@ function normalizeAuditError(error) {
 }
 
 function wants(group) {
+  if (group === "legacy-parts") {
+    return scope === "legacy-parts";
+  }
   return scope === "all" || scope === group;
 }
 
 function familyMatches(item) {
   return family === "all" || item.family === family;
+}
+
+function sourcePath(sourceRoot, manifestPath) {
+  return path.join(sourceRoot, manifestPath.replace(/^character-assets\/source\//, ""));
 }
 
 async function rawRgba(file) {
@@ -153,6 +171,24 @@ async function auditSheet(
             `requires at least ${classRules.minimumColorTransitionsPerFrame}`
         );
       }
+    }
+
+    for (const ruleFailure of collectFrameRuleFailures(inspection, classRules)) {
+      fail(file, ruleFailure.message);
+    }
+
+    for (const regionFailure of collectRegionRuleFailures(
+      inspection,
+      classRules.regionRules ?? []
+    )) {
+      fail(file, regionFailure.message);
+    }
+
+    for (const regionColorFailure of collectRegionColorRuleFailures(
+      inspection,
+      classRules.regionColorRules ?? []
+    )) {
+      fail(file, regionColorFailure.message);
     }
 
     if (footBaseline && occupiedFrames.length > 0) {
@@ -244,8 +280,26 @@ if (wants("couple")) {
   }
 }
 
-if (wants("base")) {
-  groupLine("base");
+if (wants("guest-presets")) {
+  groupLine("guest-presets");
+  for (const preset of guestPresetCatalog.presets) {
+    await auditSheet(
+      sourcePath(source, preset.source.walk),
+      guestWalkDimensions,
+      rules.guestPreset,
+      { requireEveryFrame: true, footBaseline: guestPresetFootBaseline, frameDimensions: guestFrame }
+    );
+    await auditSheet(
+      sourcePath(source, preset.source.idle),
+      guestIdleDimensions,
+      rules.guestPreset,
+      { requireEveryFrame: true, frameDimensions: guestFrame }
+    );
+  }
+}
+
+if (wants("legacy-parts")) {
+  groupLine("legacy-parts/base");
   for (const selectedFamily of ["masculine", "feminine"]) {
     if (!familyMatches({ family: selectedFamily })) continue;
 
@@ -262,10 +316,8 @@ if (wants("base")) {
       { requireEveryFrame: true, footBaseline: guestFootBaseline, frameDimensions: guestFrame }
     );
   }
-}
 
-if (wants("hair")) {
-  groupLine("hair");
+  groupLine("legacy-parts/hair");
   const selectedStyles = catalog.hairStyles.filter(familyMatches);
 
   for (const style of selectedStyles) {
@@ -278,7 +330,10 @@ if (wants("hair")) {
     await auditSheet(
       path.join(source, "hair", `${style.id}__front-walk.png`),
       guestWalkDimensions,
-      rules.hair,
+      {
+        ...rules.hair,
+        regionRules: rules.frontHair?.regionRules ?? []
+      },
       { frameDimensions: guestFrame }
     );
   }
@@ -294,10 +349,8 @@ if (wants("hair")) {
     })),
     rules.hair.minimumAlphaDifferenceBetweenStyles
   );
-}
 
-if (wants("outfits")) {
-  groupLine("outfits");
+  groupLine("legacy-parts/outfits");
   const selectedOutfits = catalog.outfits.filter(familyMatches);
 
   for (const outfit of selectedOutfits) {
@@ -317,10 +370,8 @@ if (wants("outfits")) {
     })),
     rules.outfit.minimumAlphaDifferenceBetweenStyles
   );
-}
 
-if (wants("accessories")) {
-  groupLine("accessories");
+  groupLine("legacy-parts/accessories");
   for (const accessory of catalog.accessories) {
     await auditSheet(
       path.join(source, "accessories", `${accessory.id}__walk.png`),

@@ -100,7 +100,7 @@ test("generator emits idle and four-direction walk sheets for every npc", async 
       )
     );
   }
-  assert.match(stdout, /Generated 266 character assets/);
+  assert.match(stdout, /Generated 20 character assets/);
 });
 
 test("generator validates a late npc walk source before replacing existing output", async () => {
@@ -110,7 +110,6 @@ test("generator validates a late npc walk source before replacing existing outpu
   const marker = join(outputRoot, "existing.txt");
   try {
     await cp(join(root, "character-assets/source"), sourceRoot, { recursive: true });
-    await writeHighDensityGuestSources(sourceRoot);
     await sharp({
       create: { width: 1, height: 1, channels: 4, background: "#00000000" }
     }).png().toFile(join(sourceRoot, "npc/bride-walk.png"));
@@ -128,21 +127,21 @@ test("generator validates a late npc walk source before replacing existing outpu
   }
 });
 
-test("generator rejects legacy low-density guest sources before replacing existing output", async () => {
+test("generator rejects invalid guest preset sources before replacing existing output", async () => {
   const dir = await mkdtemp(join(tmpdir(), "character-assets-preflight-"));
   const sourceRoot = join(dir, "source");
   const outputRoot = join(dir, "generated");
   const marker = join(outputRoot, "existing.txt");
   try {
     await cp(join(root, "character-assets/source"), sourceRoot, { recursive: true });
-    await writeBlankPng(join(sourceRoot, "base/masculine-walk.png"), { width: 144, height: 288 });
+    await writeBlankPng(join(sourceRoot, "guests/feminine-long-wave-dress__walk.png"), { width: 144, height: 288 });
     await mkdir(outputRoot, { recursive: true });
     await writeFile(marker, "keep existing output");
 
     const { generateCharacterAssets } = await import("./generate-character-assets.mjs");
     await assert.rejects(
       () => generateCharacterAssets({ sourceRoot, outputRoot }),
-      /masculine-walk\.png must be 288x576; received 144x288/
+      /feminine-long-wave-dress__walk\.png must be 288x576; received 144x288/
     );
     assert.equal(await readFile(marker, "utf8"), "keep existing output");
   } finally {
@@ -150,38 +149,29 @@ test("generator rejects legacy low-density guest sources before replacing existi
   }
 });
 
-test("generator accepts high-density guest sources and emits high-density generated sheets", async () => {
-  const dir = await mkdtemp(join(tmpdir(), "character-assets-high-density-"));
+test("generator accepts finished guest preset sources and emits generated preset sheets", async () => {
+  const dir = await mkdtemp(join(tmpdir(), "character-assets-guest-presets-"));
   const sourceRoot = join(dir, "source");
   const outputRoot = join(dir, "generated");
   try {
     await cp(join(root, "character-assets/source"), sourceRoot, { recursive: true });
-    await writeHighDensityGuestSources(sourceRoot);
+    const { authorGuestPresetSources } = await import("./author-guest-preset-sources.mjs");
+    await authorGuestPresetSources({ sourceRoot });
 
     const { generateCharacterAssets } = await import("./generate-character-assets.mjs");
     const outputCount = await generateCharacterAssets({ sourceRoot, outputRoot });
 
-    assert.equal(outputCount, 266);
+    assert.equal(outputCount, 20);
+    for (const preset of guestPresetCatalog.presets) {
+      await assert.doesNotReject(() =>
+        validateDimensions(join(outputRoot, preset.generated.walk), guestPresetCatalog.frame.walk.sheet)
+      );
+      await assert.doesNotReject(() =>
+        validateDimensions(join(outputRoot, preset.generated.idle), guestPresetCatalog.frame.idle.sheet)
+      );
+    }
     await assert.doesNotReject(() =>
-      validateDimensions(join(outputRoot, "base/feminine__skin-02-fair__walk.png"), { width: 288, height: 576 })
-    );
-    await assert.doesNotReject(() =>
-      validateDimensions(join(outputRoot, "base/feminine__skin-02-fair__idle.png"), { width: 192, height: 144 })
-    );
-    await assert.doesNotReject(() =>
-      validateDimensions(join(outputRoot, "hair/feminine-long-wave__dark-brown__front-walk.png"), {
-        width: 288,
-        height: 576
-      })
-    );
-    await assert.doesNotReject(() =>
-      validateDimensions(join(outputRoot, "outfits/feminine-midi-dress__dusty-rose__walk.png"), {
-        width: 288,
-        height: 576
-      })
-    );
-    await assert.doesNotReject(() =>
-      validateDimensions(join(outputRoot, "accessories/glasses-round-gold__walk.png"), { width: 288, height: 576 })
+      validateDimensions(join(outputRoot, "npc/groom__walk.png"), { width: 288, height: 576 })
     );
   } finally {
     await rm(dir, { recursive: true });
@@ -202,7 +192,7 @@ test("contact-sheet frame extracts a 96x144 npc cell at the requested column and
 
 test("contact-sheet frame extracts a 96x144 guest cell by default", async () => {
   const { frame } = await import("./render-character-contact-sheet.mjs");
-  const relative = "base/feminine__skin-02-fair__walk.png";
+  const relative = "guests/feminine-long-wave-dress__walk.png";
   const actual = await sharp(await frame(relative, 1, 0)).raw().toBuffer();
   const expected = await sharp(join(root, "client/public/characters/generated", relative))
     .extract({ left: 96, top: 0, width: 96, height: 144 })
@@ -233,7 +223,11 @@ test("contact-sheet parser accepts equals, spaced, and legacy positional forms",
   );
   assert.deepEqual(
     parseArguments(["legacy=review.png"]),
-    { mode: "catalog", output: "legacy=review.png" }
+    { mode: "guest-presets", output: "legacy=review.png" }
+  );
+  assert.deepEqual(
+    parseArguments(["--mode=guest-presets", "--output=presets.png"]),
+    { mode: "guest-presets", output: "presets.png" }
   );
   assert.deepEqual(
     parseArguments(["--", "--mode", "couple", "--output", "pnpm-review.png"]),
@@ -308,30 +302,27 @@ test("couple samples include idle and every walk frame in all four directions", 
   }
 });
 
-test("catalog samples preserve every variant and add four directions to hair and outfits", async () => {
-  const { catalogSamples } = await import("./render-character-contact-sheet.mjs");
-  const samples = await catalogSamples();
+test("guest preset samples include every preset in four directions", async () => {
+  const { guestPresetSamples } = await import("./render-character-contact-sheet.mjs");
+  const samples = await guestPresetSamples();
 
-  assert.equal(samples.length, 153);
-  for (const sample of samples.slice(0, 136)) {
+  assert.equal(samples.length, 8);
+  for (const sample of samples) {
     assert.deepEqual(
       sample.frames.map((entry) => entry.direction),
       ["down", "left", "right", "up"]
     );
   }
-  for (const sample of samples.slice(136)) {
-    assert.equal(sample.frames.length, 1);
-  }
 });
 
-test("catalog samples defer frame decoding instead of retaining image buffers", async () => {
-  const { catalogSamples } = await import("./render-character-contact-sheet.mjs");
-  const samples = await catalogSamples();
+test("guest preset samples defer frame decoding instead of retaining image buffers", async () => {
+  const { guestPresetSamples } = await import("./render-character-contact-sheet.mjs");
+  const samples = await guestPresetSamples();
 
   for (const sample of samples) {
     for (const sampleFrame of sample.frames) {
       assert.equal(Buffer.isBuffer(sampleFrame.image), false);
-      assert.ok(sampleFrame.relative || sampleFrame.layers);
+      assert.ok(sampleFrame.relative);
     }
   }
 });
@@ -464,9 +455,9 @@ test("couple actual-size crop preserves rendered source pixels, checker transpar
   }
 });
 
-test("catalog is the default mode and renders every existing variant card", async () => {
+test("guest presets are the default mode and render every finished preset card", async () => {
   const dir = await mkdtemp(join(tmpdir(), "character-contact-sheet-"));
-  const output = join(dir, "catalog.png");
+  const output = join(dir, "guest-presets.png");
   try {
     const { stdout } = await execFileAsync(
       process.execPath,
@@ -475,10 +466,10 @@ test("catalog is the default mode and renders every existing variant card", asyn
     );
     const metadata = await sharp(output).metadata();
 
-    assert.match(stdout, /Rendered 153 catalog samples/);
+    assert.match(stdout, /Rendered 8 guest-presets samples/);
     assert.deepEqual(
       { width: metadata.width, height: metadata.height },
-      { width: 1212, height: 10098 }
+      { width: 1212, height: 594 }
     );
   } finally {
     await rm(dir, { recursive: true });

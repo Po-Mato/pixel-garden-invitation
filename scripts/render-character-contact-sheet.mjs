@@ -7,6 +7,7 @@ import sharp from "sharp";
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const catalog = JSON.parse(await readFile(join(root, "shared/character-catalog.json"), "utf8"));
 const guestPartManifest = JSON.parse(await readFile(join(root, "character-assets/guest-part-manifest.json"), "utf8"));
+const guestPresetCatalog = JSON.parse(await readFile(join(root, "character-assets/guest-character-presets.json"), "utf8"));
 const generatedRoot = join(root, "client/public/characters/generated");
 const sheetBackground = "#f4efe7";
 const directions = [
@@ -68,8 +69,8 @@ export function parseArguments(arguments_) {
     outputSource = "positional";
   }
 
-  const resolvedMode = mode ?? "catalog";
-  if (!new Set(["couple", "catalog"]).has(resolvedMode)) {
+  const resolvedMode = mode ?? "guest-presets";
+  if (!new Set(["couple", "catalog", "guest-presets"]).has(resolvedMode)) {
     throw new Error(`Unknown contact-sheet mode: ${resolvedMode}`);
   }
   return {
@@ -248,6 +249,18 @@ export async function catalogSamples() {
   }
 
   return samples;
+}
+
+export async function guestPresetSamples() {
+  return guestPresetCatalog.presets.map((preset) => ({
+    label: `${preset.id} / ${preset.label}`,
+    frames: directions.map((direction) => ({
+      direction: direction.id,
+      relative: preset.generated.walk,
+      column: 1,
+      row: direction.row
+    }))
+  }));
 }
 
 async function checkerboard(width, height, squareSize) {
@@ -449,7 +462,11 @@ async function main() {
   const { mode, output: outputArgument } = parseArguments(process.argv.slice(2));
   const output = resolve(outputArgument);
 
-  const samples = mode === "couple" ? await coupleSamples() : await catalogSamples();
+  const samples = mode === "couple"
+    ? await coupleSamples()
+    : mode === "guest-presets"
+      ? await guestPresetSamples()
+      : await catalogSamples();
   if (mode === "couple") {
     await renderCouple(samples, output);
   } else {
