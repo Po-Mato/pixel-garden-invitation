@@ -26,11 +26,11 @@
     {
       "id": "feminine-long-wave-dress",
       "family": "feminine",
-      "label": "롱 웨이브 하객 원피스",
-      "description": "승인된 기준 이미지에서 복구한 롱 웨이브, 로즈 원피스, 아이보리 카디건 하객",
+      "label": "크림 롱 웨이브 원피스",
+      "description": "통합 기준 이미지에서 복구한 롱 웨이브, 크림 포멀 원피스 하객",
       "reference": {
-        "image": "character-assets/reference/guest-foundation-sprite-reference-v1.png",
-        "crop": { "left": 82, "top": 80, "width": 330, "height": 660 }
+        "image": "character-assets/reference/guest-foundation-unified-reference-v1.png",
+        "crop": { "left": 104, "top": 40, "width": 143, "height": 387 }
       },
       "source": {
         "walk": "character-assets/source/guests/feminine-long-wave-dress__walk.png",
@@ -44,11 +44,11 @@
     {
       "id": "feminine-formal-hanbok",
       "family": "feminine",
-      "label": "단정한 여성 한복",
-      "description": "승인된 기준 이미지에서 복구한 업스타일, 아이보리 저고리, 로즈 한복 하객",
+      "label": "로즈 여성 한복",
+      "description": "통합 기준 이미지에서 복구한 업스타일, 아이보리 저고리, 로즈 한복 하객",
       "reference": {
-        "image": "character-assets/reference/guest-foundation-sprite-reference-v1.png",
-        "crop": { "left": 575, "top": 80, "width": 315, "height": 660 }
+        "image": "character-assets/reference/guest-foundation-unified-reference-v1.png",
+        "crop": { "left": 84, "top": 869, "width": 178, "height": 367 }
       },
       "source": {
         "walk": "character-assets/source/guests/feminine-formal-hanbok__walk.png",
@@ -63,10 +63,10 @@
       "id": "masculine-navy-suit",
       "family": "masculine",
       "label": "네이비 클래식 수트",
-      "description": "승인된 기준 이미지에서 복구한 미디엄 헤어와 네이비 클래식 수트 하객",
+      "description": "통합 기준 이미지에서 복구한 블랙 헤어와 네이비 클래식 수트 하객",
       "reference": {
-        "image": "character-assets/reference/guest-foundation-sprite-reference-v1.png",
-        "crop": { "left": 1055, "top": 85, "width": 280, "height": 650 }
+        "image": "character-assets/reference/guest-foundation-unified-reference-v1.png",
+        "crop": { "left": 100, "top": 462, "width": 146, "height": 384 }
       },
       "source": {
         "walk": "character-assets/source/guests/masculine-navy-suit__walk.png",
@@ -80,11 +80,11 @@
     {
       "id": "masculine-charcoal-blazer",
       "family": "masculine",
-      "label": "차콜 블레이저",
-      "description": "승인된 기준 이미지에서 복구한 브라운 미디엄 헤어와 차콜 블레이저 하객",
+      "label": "차콜 클래식 수트",
+      "description": "통합 기준 이미지에서 복구한 블랙 헤어와 차콜 클래식 수트 하객",
       "reference": {
-        "image": "character-assets/reference/guest-foundation-sprite-reference-v1.png",
-        "crop": { "left": 1468, "top": 80, "width": 300, "height": 660 }
+        "image": "character-assets/reference/guest-foundation-unified-reference-v1.png",
+        "crop": { "left": 398, "top": 461, "width": 146, "height": 385 }
       },
       "source": {
         "walk": "character-assets/source/guests/masculine-charcoal-blazer__walk.png",
@@ -98,11 +98,11 @@
     {
       "id": "feminine-sage-bolero-dress",
       "family": "feminine",
-      "label": "세이지 볼레로 원피스",
-      "description": "확장 기준 이미지에서 복구한 쇼트 보브, 세이지 원피스, 크림 볼레로 하객",
+      "label": "세이지 리본 원피스",
+      "description": "통합 기준 이미지에서 복구한 업스타일, 세이지 리본 포멀 원피스 하객",
       "reference": {
-        "image": "character-assets/reference/guest-expansion-reference-v1.png",
-        "crop": { "left": 20, "top": 95, "width": 220, "height": 735 }
+        "image": "character-assets/reference/guest-foundation-unified-reference-v1.png",
+        "crop": { "left": 699, "top": 39, "width": 140, "height": 388 }
       },
       "source": {
         "walk": "character-assets/source/guests/feminine-sage-bolero-dress__walk.png",
@@ -116,11 +116,11 @@
     {
       "id": "feminine-champagne-navy-skirt",
       "family": "feminine",
-      "label": "샴페인 블라우스 네이비 스커트",
-      "description": "확장 기준 이미지에서 복구한 로우 포니테일, 샴페인 블라우스, 네이비 플리츠 스커트 하객",
+      "label": "샴페인 블라우스 스커트",
+      "description": "통합 기준 이미지에서 복구한 샴페인 리본 블라우스와 톤다운 스커트 하객",
       "reference": {
-        "image": "character-assets/reference/guest-expansion-reference-v1.png",
-        "crop": { "left": 225, "top": 90, "width": 220, "height": 735 }
+        "image": "character-assets/reference/guest-foundation-unified-reference-v1.png",
+        "crop": { "left": 700, "top": 869, "width": 144, "height": 367 }
       },
       "source": {
         "walk": "character-assets/source/guests/feminine-champagne-navy-skirt__walk.png",
@@ -134,11 +134,11 @@
     {
       "id": "feminine-lavender-jacket-dress",
       "family": "feminine",
-      "label": "라벤더 재킷 원피스",
-      "description": "확장 기준 이미지에서 복구한 롱 스트레이트 헤어, 라벤더 드레스, 아이보리 재킷 하객",
+      "label": "라벤더 쉬폰 원피스",
+      "description": "통합 기준 이미지에서 복구한 롱 웨이브, 라벤더 쉬폰 포멀 원피스 하객",
       "reference": {
-        "image": "character-assets/reference/guest-expansion-reference-v1.png",
-        "crop": { "left": 430, "top": 90, "width": 230, "height": 735 }
+        "image": "character-assets/reference/guest-foundation-unified-reference-v1.png",
+        "crop": { "left": 993, "top": 39, "width": 161, "height": 388 }
       },
       "source": {
         "walk": "character-assets/source/guests/feminine-lavender-jacket-dress__walk.png",
@@ -152,11 +152,11 @@
     {
       "id": "feminine-teal-modern-hanbok",
       "family": "feminine",
-      "label": "틸 모던 한복",
-      "description": "확장 기준 이미지에서 복구한 업스타일, 플로럴 핀, 틸 모던 한복 하객",
+      "label": "더스티 로즈 원피스",
+      "description": "통합 기준 이미지에서 복구한 롱 웨이브, 더스티 로즈 랩 원피스 하객",
       "reference": {
-        "image": "character-assets/reference/guest-expansion-reference-v1.png",
-        "crop": { "left": 635, "top": 92, "width": 240, "height": 735 }
+        "image": "character-assets/reference/guest-foundation-unified-reference-v1.png",
+        "crop": { "left": 401, "top": 39, "width": 139, "height": 388 }
       },
       "source": {
         "walk": "character-assets/source/guests/feminine-teal-modern-hanbok__walk.png",
@@ -171,10 +171,10 @@
       "id": "masculine-beige-summer-suit",
       "family": "masculine",
       "label": "베이지 썸머 수트",
-      "description": "확장 기준 이미지에서 복구한 사이드파트 헤어, 베이지 수트, 브라운 로퍼 하객",
+      "description": "통합 기준 이미지에서 복구한 브라운 헤어, 베이지 수트, 브라운 로퍼 하객",
       "reference": {
-        "image": "character-assets/reference/guest-expansion-reference-v1.png",
-        "crop": { "left": 855, "top": 90, "width": 240, "height": 735 }
+        "image": "character-assets/reference/guest-foundation-unified-reference-v1.png",
+        "crop": { "left": 693, "top": 462, "width": 144, "height": 384 }
       },
       "source": {
         "walk": "character-assets/source/guests/masculine-beige-summer-suit__walk.png",
@@ -187,12 +187,12 @@
     },
     {
       "id": "masculine-charcoal-burgundy-tie",
-      "family": "masculine",
-      "label": "차콜 버건디 타이 수트",
-      "description": "확장 기준 이미지에서 복구한 블랙 콤마 헤어, 차콜 수트, 버건디 타이 하객",
+      "family": "feminine",
+      "label": "네이비 포멀 원피스",
+      "description": "통합 기준 이미지에서 복구한 쇼트 보브, 네이비 포멀 원피스 하객",
       "reference": {
-        "image": "character-assets/reference/guest-expansion-reference-v1.png",
-        "crop": { "left": 1080, "top": 90, "width": 230, "height": 735 }
+        "image": "character-assets/reference/guest-foundation-unified-reference-v1.png",
+        "crop": { "left": 1004, "top": 869, "width": 135, "height": 368 }
       },
       "source": {
         "walk": "character-assets/source/guests/masculine-charcoal-burgundy-tie__walk.png",
@@ -207,10 +207,10 @@
       "id": "masculine-green-blazer-cream-pants",
       "family": "masculine",
       "label": "그린 블레이저 크림 팬츠",
-      "description": "확장 기준 이미지에서 복구한 브라운 헤어, 딥 그린 블레이저, 크림 팬츠 하객",
+      "description": "통합 기준 이미지에서 복구한 블랙 헤어, 딥 그린 블레이저, 크림 팬츠 하객",
       "reference": {
-        "image": "character-assets/reference/guest-expansion-reference-v1.png",
-        "crop": { "left": 1278, "top": 90, "width": 235, "height": 735 }
+        "image": "character-assets/reference/guest-foundation-unified-reference-v1.png",
+        "crop": { "left": 1001, "top": 461, "width": 146, "height": 385 }
       },
       "source": {
         "walk": "character-assets/source/guests/masculine-green-blazer-cream-pants__walk.png",
@@ -225,10 +225,10 @@
       "id": "masculine-blue-modern-hanbok",
       "family": "masculine",
       "label": "블루 모던 한복",
-      "description": "확장 기준 이미지에서 복구한 네이비 미디엄 헤어와 뮤트 블루 모던 한복 하객",
+      "description": "통합 기준 이미지에서 복구한 블랙 헤어와 뮤트 블루 모던 한복 하객",
       "reference": {
-        "image": "character-assets/reference/guest-expansion-reference-v1.png",
-        "crop": { "left": 1490, "top": 90, "width": 250, "height": 735 }
+        "image": "character-assets/reference/guest-foundation-unified-reference-v1.png",
+        "crop": { "left": 394, "top": 867, "width": 151, "height": 369 }
       },
       "source": {
         "walk": "character-assets/source/guests/masculine-blue-modern-hanbok__walk.png",

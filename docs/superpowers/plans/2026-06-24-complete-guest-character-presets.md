@@ -7,6 +7,7 @@
 > 2026-06-24 정정: 최초 계획은 8개 프리셋을 목표로 했으나, 사용자 검토에서 절차적 단순 도형 프리셋의 품질 하락이 확인되었다. 현재 기준은 수량 확장이 아니라 `guest-foundation-sprite-reference-v1.png`의 4명 crop을 직접 사용하는 고품질 복구다.
 > 2026-06-24 확장: 사용자가 새 확장 이미지를 승인해 `guest-expansion-reference-v1.png`의 8명 crop을 추가했다. 현재 프리셋 수는 기존 4명 + 신규 8명 = 12명이다.
 > 2026-06-24 레거시 정리: `guest-part-manifest.json`, `character-assets/source/base`, `hair`, `outfits`, `accessories`, `shared/src/guestPartManifest.ts`, `shared/src/guestPartManifest.test.ts`는 제거했다. 감사와 컨택트 시트는 `couple`과 `guest-presets`만 지원한다.
+> 2026-06-24 통합 기준 정리: 서로 다른 기준 이미지 crop을 섞으면 하객별 머리 크기와 몸 비율이 흔들리므로, 현재 하객 12명은 `guest-foundation-unified-reference-v1.png` 단일 이미지와 `guest-foundation-unified-proportion-guide-v1.png` 비율 검수 파일을 기준으로 고정한다.
 
 **아키텍처:** 공유 패키지에는 `presetId` 기반의 `CharacterAppearance`와 하객 프리셋 카탈로그를 둔다. 클라이언트 렌더러는 선택된 프리셋의 완성 스프라이트 한 장만 렌더링하고, 커스터마이저는 탭형 파츠 UI 대신 완성 캐릭터 카드 그리드를 제공한다. 생성/감사 스크립트는 새 `character-assets/source/guests` 소스와 `client/public/characters/generated/guests` 결과를 기준으로 검증한다.
 

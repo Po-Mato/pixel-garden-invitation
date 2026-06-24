@@ -10,7 +10,7 @@ afterEach(() => {
 it("선택된 완성 하객 캐릭터 미리보기와 카드 목록을 보여준다", () => {
   render(<CharacterCustomizer value={defaultCharacterAppearance} onChange={vi.fn()} />);
   expect(screen.getByLabelText("선택한 하객 캐릭터")).toBeInTheDocument();
-  expect(screen.getByRole("button", { name: "롱 웨이브 하객 원피스" })).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "크림 롱 웨이브 원피스" })).toBeInTheDocument();
   expect(screen.getByRole("button", { name: "네이비 클래식 수트" })).toBeInTheDocument();
   expect(screen.queryByRole("tab", { name: "헤어" })).not.toBeInTheDocument();
   expect(screen.queryByRole("tab", { name: "액세서리" })).not.toBeInTheDocument();

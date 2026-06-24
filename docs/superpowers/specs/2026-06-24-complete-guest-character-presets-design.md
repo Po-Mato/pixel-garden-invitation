@@ -4,7 +4,7 @@
 
 프로젝트 루트: `/Users/sjlee/Documents/New project 5`
 
-상태: 사용자 방향 전환 확정, 구현 후 기준 이미지 12명 프리셋으로 확장
+상태: 사용자 방향 전환 확정, 단일 통합 기준 이미지 12명 프리셋으로 재정렬
 
 ## 배경
 
@@ -14,9 +14,8 @@
 
 기준 이미지:
 
-- `character-assets/reference/guest-foundation-concept-reference-v1.png`
-- `character-assets/reference/guest-foundation-sprite-reference-v1.png`
-- `character-assets/reference/guest-expansion-reference-v1.png`
+- `character-assets/reference/guest-foundation-unified-reference-v1.png`
+- `character-assets/reference/guest-foundation-unified-proportion-guide-v1.png`
 
 ## 검토한 접근
 
@@ -36,20 +35,20 @@
 
 하객 캐릭터 시스템은 “부위별 조합”이 아니라 “완성 캐릭터 프리셋 선택”을 기준으로 동작한다.
 
-프리셋은 12개로 운영한다. 기존 4명은 확정된 기초 기준 이미지에서 복구했고, 신규 8명은 확장 기준 이미지에서 복구한다. 수량 확장은 기준 이미지 수준을 유지할 때만 허용한다.
+프리셋은 12개로 운영한다. 12명은 서로 다른 기준 이미지를 섞지 않고 단일 통합 기준 이미지에서 복구한다. 수량 확장은 같은 4x3 비율 기준과 동일한 머리/몸 비율을 유지할 때만 허용한다.
 
 초기 프리셋 방향:
 
-1. 롱 웨이브와 더스티 로즈 하객 원피스
-2. 단정한 여성 한복
+1. 크림 롱 웨이브 원피스
+2. 로즈 여성 한복
 3. 네이비 클래식 수트
-4. 차콜 블레이저와 슬랙스
-5. 세이지 볼레로 원피스
-6. 샴페인 블라우스와 네이비 스커트
-7. 라벤더 재킷 원피스
-8. 틸 모던 한복
+4. 차콜 클래식 수트
+5. 세이지 리본 원피스
+6. 샴페인 블라우스 스커트
+7. 라벤더 쉬폰 원피스
+8. 더스티 로즈 원피스
 9. 베이지 썸머 수트
-10. 차콜 버건디 타이 수트
+10. 네이비 포멀 원피스
 11. 그린 블레이저와 크림 팬츠
 12. 블루 모던 한복
 

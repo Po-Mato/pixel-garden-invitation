@@ -27,15 +27,25 @@ describe("하객 완성 캐릭터 프리셋", () => {
     ]);
   });
 
-  it("각 프리셋은 승인된 하객 기준 이미지 crop 위치를 가진다", () => {
-    const referenceCounts = new Map<string, number>();
-    for (const preset of guestCharacterPresets) {
-      referenceCounts.set(preset.reference.image, (referenceCounts.get(preset.reference.image) ?? 0) + 1);
-      expect(preset.reference.crop.width).toBeGreaterThan(200);
-      expect(preset.reference.crop.height).toBeGreaterThan(500);
-    }
-    expect(referenceCounts.get("character-assets/reference/guest-foundation-sprite-reference-v1.png")).toBe(4);
-    expect(referenceCounts.get("character-assets/reference/guest-expansion-reference-v1.png")).toBe(8);
+  it("각 프리셋은 단일 통합 기준 이미지의 4x3 셀 crop을 사용한다", () => {
+    const referenceImages = new Set(guestCharacterPresets.map((preset) => preset.reference.image));
+    expect([...referenceImages]).toEqual([
+      "character-assets/reference/guest-foundation-unified-reference-v1.png"
+    ]);
+    expect(guestCharacterPresets.map((preset) => preset.reference.crop)).toEqual([
+      { left: 104, top: 40, width: 143, height: 387 },
+      { left: 84, top: 869, width: 178, height: 367 },
+      { left: 100, top: 462, width: 146, height: 384 },
+      { left: 398, top: 461, width: 146, height: 385 },
+      { left: 699, top: 39, width: 140, height: 388 },
+      { left: 700, top: 869, width: 144, height: 367 },
+      { left: 993, top: 39, width: 161, height: 388 },
+      { left: 401, top: 39, width: 139, height: 388 },
+      { left: 693, top: 462, width: 144, height: 384 },
+      { left: 1004, top: 869, width: 135, height: 368 },
+      { left: 1001, top: 461, width: 146, height: 385 },
+      { left: 394, top: 867, width: 151, height: 369 }
+    ]);
   });
 
   it("기존 하객 프레임 규격을 유지한다", () => {
