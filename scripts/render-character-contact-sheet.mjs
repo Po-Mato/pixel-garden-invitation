@@ -6,7 +6,6 @@ import sharp from "sharp";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const catalog = JSON.parse(await readFile(join(root, "shared/character-catalog.json"), "utf8"));
-const guestPartManifest = JSON.parse(await readFile(join(root, "character-assets/guest-part-manifest.json"), "utf8"));
 const guestPresetCatalog = JSON.parse(await readFile(join(root, "character-assets/guest-character-presets.json"), "utf8"));
 const generatedRoot = join(root, "client/public/characters/generated");
 const sheetBackground = "#f4efe7";
@@ -16,7 +15,7 @@ const directions = [
   { id: "right", row: 2 },
   { id: "up", row: 3 }
 ];
-const guestFrame = guestPartManifest.frame.source;
+const guestFrame = guestPresetCatalog.frame.source;
 const npcFrame = { width: 96, height: 144 };
 const npcDisplayFrame = { width: 48, height: 72 };
 
@@ -70,7 +69,7 @@ export function parseArguments(arguments_) {
   }
 
   const resolvedMode = mode ?? "guest-presets";
-  if (!new Set(["couple", "catalog", "guest-presets"]).has(resolvedMode)) {
+  if (!new Set(["couple", "guest-presets"]).has(resolvedMode)) {
     throw new Error(`Unknown contact-sheet mode: ${resolvedMode}`);
   }
   return {
@@ -104,34 +103,6 @@ export async function label(text, width) {
   );
 }
 
-async function composeLayers(layers, column, row) {
-  const buffers = await Promise.all(layers.map((layer) => frame(layer, column, row)));
-  return sharp({
-    create: { width: guestFrame.width, height: guestFrame.height, channels: 4, background: "#00000000" }
-  })
-    .composite(buffers.map((input) => ({ input })))
-    .png()
-    .toBuffer();
-}
-
-function defaultLayers(family, skinTone, hairStyle, hairColor, outfit, outfitPalette) {
-  return [
-    `hair/${hairStyle}__${hairColor}__back-walk.png`,
-    `base/${family}__${skinTone}__walk.png`,
-    `outfits/${outfit}__${outfitPalette}__walk.png`,
-    `hair/${hairStyle}__${hairColor}__front-walk.png`
-  ];
-}
-
-function directionalFrames(layers) {
-  return directions.map((direction) => ({
-    direction: direction.id,
-    layers,
-    column: 1,
-    row: direction.row
-  }));
-}
-
 export async function coupleSamples() {
   const samples = [];
   for (const npc of catalog.npcs) {
@@ -153,101 +124,6 @@ export async function coupleSamples() {
       });
     }
   }
-  return samples;
-}
-
-export async function catalogSamples() {
-  const samples = [];
-
-  for (const hair of catalog.hairStyles) {
-    const defaults = catalog.defaults[hair.family];
-    for (const color of catalog.hairColors) {
-      samples.push({
-        label: `${hair.id} / ${color.id}`,
-        frames: directionalFrames(defaultLayers(
-          hair.family,
-          defaults.skinTone,
-          hair.id,
-          color.id,
-          defaults.outfit,
-          defaults.outfitPalette
-        ))
-      });
-    }
-  }
-
-  for (const outfit of catalog.outfits) {
-    const defaults = catalog.defaults[outfit.family];
-    for (const palette of outfit.palettes) {
-      samples.push({
-        label: `${outfit.id} / ${palette}`,
-        frames: directionalFrames(defaultLayers(
-          outfit.family,
-          defaults.skinTone,
-          defaults.hairStyle,
-          defaults.hairColor,
-          outfit.id,
-          palette
-        ))
-      });
-    }
-  }
-
-  for (const skin of catalog.skinTones) {
-    const defaults = catalog.defaults.feminine;
-    samples.push({
-      label: `skin / ${skin.id}`,
-      frames: [{
-        direction: "down",
-        layers: defaultLayers(
-          "feminine",
-          skin.id,
-          defaults.hairStyle,
-          defaults.hairColor,
-          defaults.outfit,
-          defaults.outfitPalette
-        ),
-        column: 1,
-        row: 0
-      }]
-    });
-  }
-
-  for (const accessory of catalog.accessories) {
-    const defaults = catalog.defaults.feminine;
-    const layers = defaultLayers(
-      "feminine",
-      defaults.skinTone,
-      defaults.hairStyle,
-      defaults.hairColor,
-      defaults.outfit,
-      defaults.outfitPalette
-    );
-    const accessoryLayer = `accessories/${accessory.id}__walk.png`;
-    layers.splice(accessory.layer === "back-accessory" ? 0 : layers.length, 0, accessoryLayer);
-    samples.push({
-      label: `accessory / ${accessory.id}`,
-      frames: [{
-        direction: "down",
-        layers,
-        column: 1,
-        row: 0
-      }]
-    });
-  }
-
-  for (const npc of catalog.npcs) {
-    samples.push({
-      label: `npc / ${npc.id}`,
-      frames: [{
-        direction: "idle",
-        relative: `npc/${npc.id}__idle.png`,
-        column: 0,
-        row: 0
-      }]
-    });
-  }
-
   return samples;
 }
 
@@ -348,11 +224,8 @@ async function renderCouple(samples, output) {
 }
 
 async function renderCatalogFrame(sampleFrame) {
-  if (sampleFrame.relative) {
-    const dimensions = sampleFrame.relative.startsWith("npc/") ? npcFrame : guestFrame;
-    return frame(sampleFrame.relative, sampleFrame.column, sampleFrame.row, dimensions);
-  }
-  return composeLayers(sampleFrame.layers, sampleFrame.column, sampleFrame.row);
+  const dimensions = sampleFrame.relative.startsWith("npc/") ? npcFrame : guestFrame;
+  return frame(sampleFrame.relative, sampleFrame.column, sampleFrame.row, dimensions);
 }
 
 async function renderCatalogTile(sample, output, checker) {
@@ -464,9 +337,7 @@ async function main() {
 
   const samples = mode === "couple"
     ? await coupleSamples()
-    : mode === "guest-presets"
-      ? await guestPresetSamples()
-      : await catalogSamples();
+    : await guestPresetSamples();
   if (mode === "couple") {
     await renderCouple(samples, output);
   } else {

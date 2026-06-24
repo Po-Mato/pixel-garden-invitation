@@ -104,8 +104,9 @@ type GuestCharacterPreset = {
 
 기존 파일 처리:
 
-- `character-assets/guest-part-manifest.json`은 하객 런타임의 기준에서 제외한다.
-- 기존 파츠 소스는 즉시 삭제하지 않는다. 현재 워크트리에 기존 재작업 변경이 남아 있으므로, 구현 단계에서는 새 프리셋 경로를 우선 연결하고 기존 파츠 경로는 레거시/비사용 상태로 둔다.
+- `character-assets/guest-part-manifest.json`은 삭제한다.
+- 기존 파츠 소스 `character-assets/source/base`, `hair`, `outfits`, `accessories`는 삭제한다.
+- 공유 패키지의 레거시 manifest 모듈 `shared/src/guestPartManifest.ts`와 테스트 `shared/src/guestPartManifest.test.ts`는 삭제한다.
 - `shared/character-catalog.json`의 헤어/의상/액세서리 항목은 하객 UI에서 사용하지 않는다. 최종 정리 여부는 프리셋 전환 구현과 테스트가 통과한 뒤 별도 판단한다.
 
 ## 렌더링 구조
@@ -178,7 +179,7 @@ UI 구성:
 구현 단계에서 수정해야 할 테스트:
 
 - `shared/src/characterCatalog.test.ts`: 프리셋 카탈로그와 기본 프리셋 검증
-- `shared/src/guestPartManifest.test.ts`: 하객 런타임 테스트에서 제외하고 `shared/src/guestCharacterPresets.test.ts`로 교체
+- `shared/src/guestCharacterPresets.test.ts`: 완성 프리셋 카탈로그와 기본 프리셋 검증
 - `client/src/character/assets.test.ts`: 단일 완성 프리셋 스프라이트 경로 검증
 - `client/src/components/CharacterCustomizer.test.tsx`: 탭 UI 대신 프리셋 카드 선택 검증
 - `client/src/components/CharacterSprite.test.tsx`: 단일 레이어 렌더링 검증

@@ -1,15 +1,11 @@
 import { readFile } from "node:fs/promises";
 import * as path from "node:path";
 import { fileURLToPath } from "node:url";
-import Sharp from "sharp";
 import {
-  collectStyleComparisonFailures,
   collectFrameRuleFailures,
   collectRegionColorRuleFailures,
   collectRegionRuleFailures,
-  combinedAlpha,
-  inspectSheet,
-  rawRgba as readRawRgba
+  inspectSheet
 } from "./lib/characterAssetAudit.mjs";
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -22,14 +18,10 @@ const catalog = JSON.parse(
 const guestPresetCatalog = JSON.parse(
   await readFile(path.join(root, "character-assets/guest-character-presets.json"), "utf8")
 );
-const guestPartManifest = JSON.parse(
-  await readFile(path.join(root, "character-assets/guest-part-manifest.json"), "utf8")
-);
 const rules = JSON.parse(
   await readFile(path.join(root, "character-assets/quality-rules.json"), "utf8")
 );
-const scopes = new Set(["all", "couple", "guest-presets", "legacy-parts"]);
-const families = new Set(["all", "masculine", "feminine"]);
+const scopes = new Set(["all", "couple", "guest-presets"]);
 
 function parseOption(name, allowed, fallback) {
   const prefix = `--${name}=`;
@@ -37,25 +29,17 @@ function parseOption(name, allowed, fallback) {
   const value = argument ? argument.slice(prefix.length) : fallback;
 
   if (!allowed.has(value)) {
-    throw new Error(
-      `Invalid --${name}=${value}; expected one of ${[...allowed].join(", ")}`
-    );
+    throw new Error(`Unknown ${name}: ${value}`);
   }
 
   return value;
 }
 
 const scope = parseOption("scope", scopes, "all");
-const family = parseOption("family", families, "all");
 const failures = [];
 const guestFrame = guestPresetCatalog.frame.source;
 const guestIdleDimensions = guestPresetCatalog.frame.idle.sheet;
 const guestWalkDimensions = guestPresetCatalog.frame.walk.sheet;
-const guestFootBaseline = {
-  footBottomMin: rules.frame.footBottomMin * 2,
-  footBottomMax: rules.frame.footBottomMax * 2,
-  footBottomSpreadMax: rules.frame.footBottomSpreadMax * 2
-};
 const guestPresetFootBaseline = {
   footBottomMin: 128,
   footBottomMax: 132,
@@ -82,22 +66,11 @@ function normalizeAuditError(error) {
 }
 
 function wants(group) {
-  if (group === "legacy-parts") {
-    return scope === "legacy-parts";
-  }
   return scope === "all" || scope === group;
-}
-
-function familyMatches(item) {
-  return family === "all" || item.family === family;
 }
 
 function sourcePath(sourceRoot, manifestPath) {
   return path.join(sourceRoot, manifestPath.replace(/^character-assets\/source\//, ""));
-}
-
-async function rawRgba(file) {
-  return readRawRgba(file, Sharp);
 }
 
 async function auditSheet(
@@ -221,31 +194,6 @@ async function auditSheet(
   }
 }
 
-async function auditDistinctStyles(styles, minimumAlphaDifference) {
-  if (styles.length === 0) return;
-  const loaded = [];
-
-  for (const style of styles) {
-    try {
-      const layers = await Promise.all(style.files.map(rawRgba));
-      const image = combinedAlpha(layers);
-      loaded.push({
-        ...style,
-        image
-      });
-    } catch (error) {
-      fail(style.files, normalizeAuditError(error));
-    }
-  }
-
-  for (const comparisonFailure of collectStyleComparisonFailures(
-    loaded,
-    minimumAlphaDifference
-  )) {
-    fail(comparisonFailure.files, normalizeAuditError(comparisonFailure.message));
-  }
-}
-
 function groupLine(group) {
   console.log(`Auditing character source group: ${group}`);
 }
@@ -294,90 +242,6 @@ if (wants("guest-presets")) {
       guestIdleDimensions,
       rules.guestPreset,
       { requireEveryFrame: true, frameDimensions: guestFrame }
-    );
-  }
-}
-
-if (wants("legacy-parts")) {
-  groupLine("legacy-parts/base");
-  for (const selectedFamily of ["masculine", "feminine"]) {
-    if (!familyMatches({ family: selectedFamily })) continue;
-
-    await auditSheet(
-      path.join(source, "base", `${selectedFamily}-idle.png`),
-      guestIdleDimensions,
-      rules.base,
-      { requireEveryFrame: true, footBaseline: guestFootBaseline, frameDimensions: guestFrame }
-    );
-    await auditSheet(
-      path.join(source, "base", `${selectedFamily}-walk.png`),
-      guestWalkDimensions,
-      rules.base,
-      { requireEveryFrame: true, footBaseline: guestFootBaseline, frameDimensions: guestFrame }
-    );
-  }
-
-  groupLine("legacy-parts/hair");
-  const selectedStyles = catalog.hairStyles.filter(familyMatches);
-
-  for (const style of selectedStyles) {
-    await auditSheet(
-      path.join(source, "hair", `${style.id}__back-walk.png`),
-      guestWalkDimensions,
-      rules.hair,
-      { frameDimensions: guestFrame }
-    );
-    await auditSheet(
-      path.join(source, "hair", `${style.id}__front-walk.png`),
-      guestWalkDimensions,
-      {
-        ...rules.hair,
-        regionRules: rules.frontHair?.regionRules ?? []
-      },
-      { frameDimensions: guestFrame }
-    );
-  }
-
-  await auditDistinctStyles(
-    selectedStyles.map((style) => ({
-      id: style.id,
-      family: style.family,
-      files: [
-        path.join(source, "hair", `${style.id}__back-walk.png`),
-        path.join(source, "hair", `${style.id}__front-walk.png`)
-      ]
-    })),
-    rules.hair.minimumAlphaDifferenceBetweenStyles
-  );
-
-  groupLine("legacy-parts/outfits");
-  const selectedOutfits = catalog.outfits.filter(familyMatches);
-
-  for (const outfit of selectedOutfits) {
-    await auditSheet(
-      path.join(source, "outfits", `${outfit.id}__walk.png`),
-      guestWalkDimensions,
-      rules.outfit,
-      { requireEveryFrame: true, frameDimensions: guestFrame }
-    );
-  }
-
-  await auditDistinctStyles(
-    selectedOutfits.map((outfit) => ({
-      id: outfit.id,
-      family: outfit.family,
-      files: [path.join(source, "outfits", `${outfit.id}__walk.png`)]
-    })),
-    rules.outfit.minimumAlphaDifferenceBetweenStyles
-  );
-
-  groupLine("legacy-parts/accessories");
-  for (const accessory of catalog.accessories) {
-    await auditSheet(
-      path.join(source, "accessories", `${accessory.id}__walk.png`),
-      guestWalkDimensions,
-      rules.accessory,
-      { frameDimensions: guestFrame }
     );
   }
 }

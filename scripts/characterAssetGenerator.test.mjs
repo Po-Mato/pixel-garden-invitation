@@ -11,7 +11,6 @@ import { generateVariant, validateDimensions } from "./lib/characterAssetGenerat
 
 const execFileAsync = promisify(execFile);
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
-const catalog = JSON.parse(await readFile(join(root, "shared/character-catalog.json"), "utf8"));
 const guestPresetCatalog = JSON.parse(await readFile(join(root, "character-assets/guest-character-presets.json"), "utf8"));
 
 async function writeBlankPng(file, dimensions) {
@@ -24,26 +23,6 @@ async function writeBlankPng(file, dimensions) {
       background: "#00000000"
     }
   }).png().toFile(file);
-}
-
-async function writeHighDensityGuestSources(sourceRoot) {
-  for (const family of ["masculine", "feminine"]) {
-    await writeBlankPng(join(sourceRoot, "base", `${family}-walk.png`), { width: 288, height: 576 });
-    await writeBlankPng(join(sourceRoot, "base", `${family}-idle.png`), { width: 192, height: 144 });
-  }
-
-  for (const hair of catalog.hairStyles) {
-    await writeBlankPng(join(sourceRoot, "hair", `${hair.id}__back-walk.png`), { width: 288, height: 576 });
-    await writeBlankPng(join(sourceRoot, "hair", `${hair.id}__front-walk.png`), { width: 288, height: 576 });
-  }
-
-  for (const outfit of catalog.outfits) {
-    await writeBlankPng(join(sourceRoot, "outfits", `${outfit.id}__walk.png`), { width: 288, height: 576 });
-  }
-
-  for (const accessory of catalog.accessories) {
-    await writeBlankPng(join(sourceRoot, "accessories", `${accessory.id}__walk.png`), { width: 288, height: 576 });
-  }
 }
 
 test("guest preset authoring emits finished walk and idle sources", async () => {
@@ -245,6 +224,15 @@ test("contact-sheet parser rejects unknown arguments", async () => {
   assert.throws(
     () => parseArguments(["one.png", "two.png"]),
     /Unexpected positional argument: two.png/
+  );
+});
+
+test("contact-sheet parser rejects removed catalog mode", async () => {
+  const { parseArguments } = await import("./render-character-contact-sheet.mjs");
+
+  assert.throws(
+    () => parseArguments(["--mode=catalog"]),
+    /Unknown contact-sheet mode: catalog/
   );
 });
 

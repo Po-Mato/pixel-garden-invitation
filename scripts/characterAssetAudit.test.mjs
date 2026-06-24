@@ -92,6 +92,21 @@ test("audit CLI validates finished guest preset source sheets", async () => {
   assert.equal(guestPresetCatalog.presets.length, 12);
 });
 
+test("audit CLI rejects removed legacy part scope", async () => {
+  await assert.rejects(
+    () =>
+      execFileAsync(
+        process.execPath,
+        [join(root, "scripts/audit-character-assets.mjs"), "--scope=legacy-parts"],
+        { cwd: root }
+      ),
+    (error) => {
+      assert.match(error.stderr, /Unknown scope: legacy-parts/);
+      return true;
+    }
+  );
+});
+
 test("inspectSheet reports frame occupancy, colors, transitions, and bounds", async () => {
   const pixels = Buffer.alloc(4 * 4 * 4);
   const paint = (x, y, color) => {

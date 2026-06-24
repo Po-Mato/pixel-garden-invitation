@@ -6,6 +6,7 @@
 
 > 2026-06-24 정정: 최초 계획은 8개 프리셋을 목표로 했으나, 사용자 검토에서 절차적 단순 도형 프리셋의 품질 하락이 확인되었다. 현재 기준은 수량 확장이 아니라 `guest-foundation-sprite-reference-v1.png`의 4명 crop을 직접 사용하는 고품질 복구다.
 > 2026-06-24 확장: 사용자가 새 확장 이미지를 승인해 `guest-expansion-reference-v1.png`의 8명 crop을 추가했다. 현재 프리셋 수는 기존 4명 + 신규 8명 = 12명이다.
+> 2026-06-24 레거시 정리: `guest-part-manifest.json`, `character-assets/source/base`, `hair`, `outfits`, `accessories`, `shared/src/guestPartManifest.ts`, `shared/src/guestPartManifest.test.ts`는 제거했다. 감사와 컨택트 시트는 `couple`과 `guest-presets`만 지원한다.
 
 **아키텍처:** 공유 패키지에는 `presetId` 기반의 `CharacterAppearance`와 하객 프리셋 카탈로그를 둔다. 클라이언트 렌더러는 선택된 프리셋의 완성 스프라이트 한 장만 렌더링하고, 커스터마이저는 탭형 파츠 UI 대신 완성 캐릭터 카드 그리드를 제공한다. 생성/감사 스크립트는 새 `character-assets/source/guests` 소스와 `client/public/characters/generated/guests` 결과를 기준으로 검증한다.
 
@@ -28,7 +29,6 @@
 - `shared/src/characterCatalog.ts`: `CharacterAppearance`를 `presetId` 기반으로 전환하고 구버전 appearance를 안전 변환한다.
 - `shared/src/characterCatalog.test.ts`: 구버전 파츠 조합 테스트를 프리셋 테스트로 교체한다.
 - `shared/src/index.ts`: 새 프리셋 모듈을 export하고 하객 파츠 manifest export는 런타임 사용처에서 제거한다.
-- `shared/src/guestPartManifest.ts`, `shared/src/guestPartManifest.test.ts`: 레거시 파츠 manifest가 TypeScript 컴파일과 테스트를 깨지 않도록 자체 타입으로 독립시킨다.
 - `shared/src/protocol.ts`, `shared/src/validation.ts`, `shared/src/validation.test.ts`: 새 appearance 타입과 호환성 파서를 유지한다.
 - `client/src/character/assets.ts`: 프리셋 단일 완성 레이어를 반환한다.
 - `client/src/character/assets.test.ts`: 단일 프리셋 레이어 경로를 검증한다.
@@ -43,13 +43,14 @@
 - `scripts/audit-character-assets.mjs`: 기본 감사 범위를 하객 프리셋과 커플 NPC 중심으로 전환한다.
 - `scripts/render-character-contact-sheet.mjs`: `guest-presets` 모드를 추가한다.
 - `scripts/characterAssetGenerator.test.mjs`, `scripts/characterAssetAudit.test.mjs`: 프리셋 생성/감사 계약으로 갱신한다.
-- `package.json`: `characters:author-guest-presets` 스크립트를 추가하고 필요한 경우 `characters:author-guests`는 레거시 스크립트로 남긴다.
+- `package.json`: `characters:author-guest-presets` 스크립트를 추가한다.
 - `docs/character-art-direction-lock.md`: 하객 고정 규칙을 완성 프리셋 기준으로 갱신한다.
 
-유지하되 런타임 기준에서 제외한다:
+삭제한다:
 
 - `character-assets/guest-part-manifest.json`
 - `shared/src/guestPartManifest.ts`
+- `shared/src/guestPartManifest.test.ts`
 - `character-assets/source/base/*`
 - `character-assets/source/hair/*`
 - `character-assets/source/outfits/*`
@@ -67,8 +68,6 @@
 - Modify: `shared/src/index.ts`
 - Modify: `shared/src/protocol.ts`
 - Modify: `shared/src/validation.test.ts`
-- Modify: `shared/src/guestPartManifest.ts`
-- Modify: `shared/src/guestPartManifest.test.ts`
 
 - [ ] **Step 1: 실패 테스트 작성**
 
@@ -441,87 +440,16 @@ export * from "./protocol";
 export * from "./validation";
 ```
 
-- [ ] **Step 5: 레거시 guestPartManifest 컴파일 정리**
+- [ ] **Step 5: 레거시 guestPartManifest 제거 확인**
 
-`shared/src/guestPartManifest.ts`는 런타임 export 대상에서 빠지지만 `tsconfig` include에는 남아 있으므로 자체 타입을 갖도록 수정한다. `CharacterLayerSlot`, `AccessorySlot`, `CharacterFamily`를 `characterCatalog.ts`에서 import하지 않는다.
-
-```ts
-import rawManifest from "../../character-assets/guest-part-manifest.json";
-
-export type LegacyCharacterFamily = "masculine" | "feminine";
-export type LegacyAccessorySlot = "face" | "jewelry" | "neckwear" | "carry";
-export type LegacyCharacterLayerSlot =
-  | "back-accessory"
-  | "back-hair"
-  | "base"
-  | "outfit"
-  | "front-hair"
-  | "face"
-  | "jewelry"
-  | "neckwear"
-  | "carry";
-
-export type GuestSpriteSize = {
-  width: number;
-  height: number;
-};
-
-export type GuestPartManifest = {
-  version: number;
-  frame: {
-    source: GuestSpriteSize;
-    display: {
-      world: GuestSpriteSize;
-      preview: GuestSpriteSize;
-    };
-    walk: {
-      sheet: GuestSpriteSize;
-      columns: number;
-      rows: Array<"down" | "left" | "right" | "up">;
-    };
-    idle: {
-      sheet: GuestSpriteSize;
-      columns: number;
-      frames: string[];
-    };
-  };
-  layerOrder: LegacyCharacterLayerSlot[];
-  parts: {
-    base: Array<{ id: LegacyCharacterFamily; family: LegacyCharacterFamily; layer: "base" }>;
-    hair: Array<{ id: string; family: LegacyCharacterFamily; layers: { back: "back-hair"; front: "front-hair" } }>;
-    outfits: Array<{ id: string; family: LegacyCharacterFamily; layer: "outfit" }>;
-    accessories: Array<{ id: string; slot: LegacyAccessorySlot; layer: LegacyCharacterLayerSlot }>;
-  };
-};
-
-export const guestPartManifest = rawManifest as GuestPartManifest;
-```
-
-`shared/src/guestPartManifest.test.ts`는 카탈로그 정합성 테스트를 제거하고 레거시 manifest가 보관 자료로 남아 있음을 확인하는 테스트만 유지한다.
-
-```ts
-import { describe, expect, it } from "vitest";
-import { guestPartManifest } from "./guestPartManifest";
-
-describe("legacy guest part manifest", () => {
-  it("keeps the previous high-density frame contract for archived part assets", () => {
-    expect(guestPartManifest.frame.source).toEqual({ width: 96, height: 144 });
-    expect(guestPartManifest.frame.walk.sheet).toEqual({ width: 288, height: 576 });
-    expect(guestPartManifest.frame.idle.sheet).toEqual({ width: 192, height: 144 });
-  });
-
-  it("is not the runtime guest selection contract", () => {
-    expect(guestPartManifest.parts.base.map((part) => part.id).sort()).toEqual(["feminine", "masculine"]);
-  });
-});
-```
+`shared/src/guestPartManifest.ts`, `shared/src/guestPartManifest.test.ts`, `character-assets/guest-part-manifest.json`은 삭제한다. 공유 패키지 export와 테스트 명령은 `guestCharacterPresets`만 기준으로 유지한다.
 
 - [ ] **Step 6: 공유 테스트 통과 확인**
 
 Run:
 
 ```bash
-pnpm --filter @wedding-game/shared test -- --run shared/src/guestCharacterPresets.test.ts shared/src/characterCatalog.test.ts shared/src/guestPartManifest.test.ts shared/src/validation.test.ts
+pnpm --filter @wedding-game/shared test -- --run shared/src/guestCharacterPresets.test.ts shared/src/characterCatalog.test.ts shared/src/validation.test.ts
 ```
 
 Expected: PASS.
@@ -529,7 +457,7 @@ Expected: PASS.
 - [ ] **Step 7: 커밋**
 
 ```bash
-git add character-assets/guest-character-presets.json shared/src/guestCharacterPresets.ts shared/src/guestCharacterPresets.test.ts shared/src/characterCatalog.ts shared/src/characterCatalog.test.ts shared/src/index.ts shared/src/protocol.ts shared/src/validation.test.ts shared/src/guestPartManifest.ts shared/src/guestPartManifest.test.ts
+git add character-assets/guest-character-presets.json shared/src/guestCharacterPresets.ts shared/src/guestCharacterPresets.test.ts shared/src/characterCatalog.ts shared/src/characterCatalog.test.ts shared/src/index.ts shared/src/protocol.ts shared/src/validation.test.ts
 git commit -m "feat: add guest character preset catalog"
 ```
 
@@ -879,10 +807,10 @@ test("audit CLI validates finished guest preset source sheets", async () => {
 `scripts/audit-character-assets.mjs`의 scopes를 다음으로 바꾼다.
 
 ```js
-const scopes = new Set(["all", "couple", "guest-presets", "legacy-parts"]);
+const scopes = new Set(["all", "couple", "guest-presets"]);
 ```
 
-기본 `all`은 `couple`과 `guest-presets`만 검사한다. 기존 base/hair/outfits/accessories 루프는 `wants("legacy-parts")`일 때만 실행한다.
+기본 `all`은 `couple`과 `guest-presets`만 검사한다. 기존 base/hair/outfits/accessories 루프와 `legacy-parts` 감사 모드는 제거한다.
 
 프리셋 감사 루프:
 
@@ -1508,7 +1436,7 @@ git commit -m "fix: normalize legacy guest appearances to presets"
 - 각 하객은 얼굴, 헤어, 의상, 액세서리가 함께 설계된 완성 스프라이트다.
 - 얼굴이 외계인처럼 보이거나 눌려 보이는 프리셋은 실패로 본다.
 - 기준 이미지의 둥근 얼굴, 작고 분리된 눈, 작은 입, 웨딩 하객 포멀 의상 톤을 유지한다.
-- 기존 `guest-part-manifest.json`과 base/hair/outfits/accessories 소스는 레거시 자료이며 하객 런타임 품질 기준이 아니다.
+- 기존 `guest-part-manifest.json`과 base/hair/outfits/accessories 소스는 삭제된 레거시 자료이며 하객 런타임 품질 기준이 아니다.
 ```
 
 - [ ] **Step 2: 전체 검증 실행**
