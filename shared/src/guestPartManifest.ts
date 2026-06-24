@@ -1,5 +1,17 @@
 import rawManifest from "../../character-assets/guest-part-manifest.json";
-import type { AccessorySlot, CharacterFamily, CharacterLayerSlot } from "./characterCatalog";
+
+export type LegacyCharacterFamily = "masculine" | "feminine";
+export type LegacyAccessorySlot = "face" | "jewelry" | "neckwear" | "carry";
+export type LegacyCharacterLayerSlot =
+  | "back-accessory"
+  | "back-hair"
+  | "base"
+  | "outfit"
+  | "front-hair"
+  | "face"
+  | "jewelry"
+  | "neckwear"
+  | "carry";
 
 export type GuestSpriteSize = {
   width: number;
@@ -7,14 +19,9 @@ export type GuestSpriteSize = {
 };
 
 export type GuestWalkDirection = "down" | "left" | "right" | "up";
-export type GuestPaletteKind = "skin" | "hair" | "outfit" | "fixed";
-
-type GuestGeneratedTemplate = Record<string, string>;
-type GuestSourcePath = Record<string, string>;
-
 export type GuestBasePart = {
-  id: CharacterFamily;
-  family: CharacterFamily;
+  id: LegacyCharacterFamily;
+  family: LegacyCharacterFamily;
   layer: "base";
   palette: "skin";
   source: {
@@ -29,7 +36,7 @@ export type GuestBasePart = {
 
 export type GuestHairPart = {
   id: string;
-  family: CharacterFamily;
+  family: LegacyCharacterFamily;
   layers: {
     back: "back-hair";
     front: "front-hair";
@@ -47,7 +54,7 @@ export type GuestHairPart = {
 
 export type GuestOutfitPart = {
   id: string;
-  family: CharacterFamily;
+  family: LegacyCharacterFamily;
   layer: "outfit";
   palette: "outfit";
   source: {
@@ -60,8 +67,8 @@ export type GuestOutfitPart = {
 
 export type GuestAccessoryPart = {
   id: string;
-  slot: AccessorySlot;
-  layer: CharacterLayerSlot;
+  slot: LegacyAccessorySlot;
+  layer: LegacyCharacterLayerSlot;
   palette: "fixed";
   source: {
     walk: string;
@@ -90,7 +97,7 @@ export type GuestPartManifest = {
       frames: string[];
     };
   };
-  layerOrder: CharacterLayerSlot[];
+  layerOrder: LegacyCharacterLayerSlot[];
   parts: {
     base: GuestBasePart[];
     hair: GuestHairPart[];
@@ -103,13 +110,3 @@ export type GuestPart = GuestBasePart | GuestHairPart | GuestOutfitPart | GuestA
 
 export const guestPartManifest = rawManifest as GuestPartManifest;
 export const guestLayerOrder = guestPartManifest.layerOrder;
-
-export function resolveGeneratedGuestPath(template: string, values: Record<string, string>): string {
-  return template.replaceAll(/\{([^}]+)\}/g, (_match, key: string) => {
-    const value = values[key];
-    if (!value) {
-      throw new Error(`Missing guest part template value: ${key}`);
-    }
-    return value;
-  });
-}

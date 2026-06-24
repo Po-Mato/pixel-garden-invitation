@@ -22,6 +22,7 @@ export function parseClientMessage(value: unknown): ClientMessage | null {
 
   if (value.type === "join") {
     const nickname = sanitizeText(value.nickname, 16);
+    if (!("appearance" in value)) return null;
     const appearance = parseCharacterAppearance(value.appearance);
     if (!nickname || !appearance) return null;
     return { type: "join", nickname, appearance };
