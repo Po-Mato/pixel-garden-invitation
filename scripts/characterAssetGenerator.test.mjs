@@ -12,6 +12,7 @@ import { generateVariant, validateDimensions } from "./lib/characterAssetGenerat
 const execFileAsync = promisify(execFile);
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const catalog = JSON.parse(await readFile(join(root, "shared/character-catalog.json"), "utf8"));
+const guestPresetCatalog = JSON.parse(await readFile(join(root, "character-assets/guest-character-presets.json"), "utf8"));
 
 async function writeBlankPng(file, dimensions) {
   await mkdir(dirname(file), { recursive: true });
@@ -44,6 +45,24 @@ async function writeHighDensityGuestSources(sourceRoot) {
     await writeBlankPng(join(sourceRoot, "accessories", `${accessory.id}__walk.png`), { width: 288, height: 576 });
   }
 }
+
+test("guest preset authoring emits finished walk and idle sources", async () => {
+  const dir = await mkdtemp(join(tmpdir(), "guest-preset-authoring-"));
+  try {
+    const { authorGuestPresetSources } = await import("./author-guest-preset-sources.mjs");
+    const count = await authorGuestPresetSources({ sourceRoot: join(dir, "source") });
+
+    assert.equal(count, guestPresetCatalog.presets.length * 2);
+    for (const preset of guestPresetCatalog.presets) {
+      const walk = join(dir, "source", preset.source.walk.replace(/^character-assets\/source\//, ""));
+      const idle = join(dir, "source", preset.source.idle.replace(/^character-assets\/source\//, ""));
+      await assert.doesNotReject(() => validateDimensions(walk, guestPresetCatalog.frame.walk.sheet));
+      await assert.doesNotReject(() => validateDimensions(idle, guestPresetCatalog.frame.idle.sheet));
+    }
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
+});
 
 test("npc source contract includes idle and four-direction walk sheets", async () => {
   await assert.doesNotReject(() =>
