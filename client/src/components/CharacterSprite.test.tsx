@@ -7,20 +7,10 @@ afterEach(() => {
   cleanup();
 });
 
-it("renders layers in stable back-to-front order", () => {
-  const appearance = {
-    ...defaultCharacterAppearance,
-    accessories: {
-      face: "glasses-round-gold",
-      jewelry: "earrings-pearl",
-      neckwear: "brooch-floral",
-      carry: "shoulder-bag-structured"
-    }
-  };
-
+it("완성 프리셋 단일 레이어만 렌더링한다", () => {
   render(
     <CharacterSprite
-      appearance={appearance}
+      appearance={defaultCharacterAppearance}
       direction="right"
       moving={true}
       stepFrame={2}
@@ -30,7 +20,7 @@ it("renders layers in stable back-to-front order", () => {
 
   const sprite = screen.getByLabelText("하객 캐릭터");
   expect([...sprite.querySelectorAll("[data-character-layer]")].map((node) => node.getAttribute("data-character-layer")))
-    .toEqual(["back-accessory", "back-hair", "base", "outfit", "front-hair", "face", "jewelry", "neckwear"]);
+    .toEqual(["base"]);
 });
 
 it("uses the two-frame idle class only when facing down and stopped", () => {
@@ -68,7 +58,7 @@ it("exposes high-density source and display dimensions as CSS variables", () => 
   expect(baseLayer).toHaveStyle({ backgroundPosition: "-192px -288px" });
 });
 
-it("hides only a failed layer and keeps sibling layers", () => {
+it("완성 프리셋 이미지 로드 실패 시 해당 레이어만 숨긴다", () => {
   const errorSpy = vi.spyOn(console, "error").mockImplementation(() => undefined);
   render(
     <CharacterSprite
@@ -80,14 +70,12 @@ it("hides only a failed layer and keeps sibling layers", () => {
   );
 
   const sprite = screen.getByLabelText("캐릭터");
-  const failedLayer = sprite.querySelector('[data-character-layer="back-hair"]');
+  const failedLayer = sprite.querySelector('[data-character-layer="base"]');
   const failedImage = failedLayer?.querySelector("img");
   expect(failedImage).toBeInTheDocument();
 
   fireEvent.error(failedImage as HTMLImageElement);
 
-  expect(sprite.querySelector('[data-character-layer="back-hair"]')).not.toBeInTheDocument();
-  expect(sprite.querySelector('[data-character-layer="base"]')).toBeInTheDocument();
-  expect(sprite.querySelector('[data-character-layer="outfit"]')).toBeInTheDocument();
+  expect(sprite.querySelector('[data-character-layer="base"]')).not.toBeInTheDocument();
   errorSpy.mockRestore();
 });

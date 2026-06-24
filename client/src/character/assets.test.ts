@@ -2,41 +2,14 @@ import { defaultCharacterAppearance } from "@wedding-game/shared";
 import { expect, it } from "vitest";
 import { resolveCharacterLayers } from "./assets";
 
-it("resolves generated guest layer paths in render order", () => {
+it("완성 하객 프리셋의 단일 generated 경로를 반환한다", () => {
   const layers = resolveCharacterLayers(defaultCharacterAppearance, "./");
 
   expect(layers).toEqual([
     {
-      slot: "back-hair",
-      walkUrl: "./characters/generated/hair/feminine-long-wave__dark-brown__back-walk.png",
-      sourceSize: { width: 96, height: 144 },
-      displaySize: {
-        world: { width: 48, height: 72 },
-        preview: { width: 96, height: 144 }
-      }
-    },
-    {
       slot: "base",
-      walkUrl: "./characters/generated/base/feminine__skin-02-fair__walk.png",
-      idleUrl: "./characters/generated/base/feminine__skin-02-fair__idle.png",
-      sourceSize: { width: 96, height: 144 },
-      displaySize: {
-        world: { width: 48, height: 72 },
-        preview: { width: 96, height: 144 }
-      }
-    },
-    {
-      slot: "outfit",
-      walkUrl: "./characters/generated/outfits/feminine-midi-dress__dusty-rose__walk.png",
-      sourceSize: { width: 96, height: 144 },
-      displaySize: {
-        world: { width: 48, height: 72 },
-        preview: { width: 96, height: 144 }
-      }
-    },
-    {
-      slot: "front-hair",
-      walkUrl: "./characters/generated/hair/feminine-long-wave__dark-brown__front-walk.png",
+      walkUrl: "./characters/generated/guests/feminine-long-wave-dress__walk.png",
+      idleUrl: "./characters/generated/guests/feminine-long-wave-dress__idle.png",
       sourceSize: { width: 96, height: 144 },
       displaySize: {
         world: { width: 48, height: 72 },
@@ -46,23 +19,7 @@ it("resolves generated guest layer paths in render order", () => {
   ]);
 });
 
-it("places accessories in catalog-defined layers", () => {
-  expect(resolveCharacterLayers({
-    ...defaultCharacterAppearance,
-    accessories: {
-      face: "glasses-round-gold",
-      jewelry: "earrings-pearl",
-      neckwear: "brooch-floral",
-      carry: "shoulder-bag-structured"
-    }
-  }, "./").map((layer) => layer.slot)).toEqual([
-    "back-accessory",
-    "back-hair",
-    "base",
-    "outfit",
-    "front-hair",
-    "face",
-    "jewelry",
-    "neckwear"
-  ]);
+it("알 수 없는 프리셋은 기본 프리셋 경로로 대체한다", () => {
+  expect(resolveCharacterLayers({ presetId: "missing" }, "./")[0].walkUrl)
+    .toBe("./characters/generated/guests/feminine-long-wave-dress__walk.png");
 });
