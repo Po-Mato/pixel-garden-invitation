@@ -9,6 +9,7 @@
     "dev:worker": "pnpm --filter @wedding-game/worker dev",
     "db:migrate:local": "pnpm --filter @wedding-game/worker exec wrangler d1 migrations apply wedding-game-invitation --local",
     "characters:generate": "node scripts/generate-character-assets.mjs",
+    "characters:author-guest-directions": "node scripts/author-guest-direction-sources.mjs",
     "characters:author-guest-presets": "node scripts/author-guest-preset-sources.mjs",
     "characters:audit": "node scripts/audit-character-assets.mjs",
     "characters:contact-sheet": "node scripts/render-character-contact-sheet.mjs",

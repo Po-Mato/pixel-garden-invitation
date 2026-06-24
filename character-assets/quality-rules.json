@@ -17,6 +17,7 @@
     "minimumColorTransitionsPerFrame": 100,
     "minimumBoundsHeight": 106,
     "minimumBoundsWidth": 34,
+    "minimumSideOpaquePixelsPerFrame": 900,
     "minimumSideBoundsWidth": 22,
     "maximumBoundsTop": 18,
     "minimumBoundsBottom": 126,

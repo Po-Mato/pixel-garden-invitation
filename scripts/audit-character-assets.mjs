@@ -49,6 +49,9 @@ const guestPresetWalkFrameRuleOverrides = [
   {
     rows: [1, 2],
     rules: {
+      minimumOpaquePixelsPerFrame:
+        rules.guestPreset.minimumSideOpaquePixelsPerFrame ??
+        rules.guestPreset.minimumOpaquePixelsPerFrame,
       minimumBoundsWidth:
         rules.guestPreset.minimumSideBoundsWidth ?? rules.guestPreset.minimumBoundsWidth
     }
@@ -119,13 +122,27 @@ async function auditSheet(
       );
     }
 
-    const minimumOpaquePixels =
-      classRules.minimumOpaquePixelsPerFrame ??
-      classRules.minimumOpaquePixelsPerOccupiedFrame;
+    const rulesForFrame =
+      frameRuleOverrides.length === 0
+        ? () => classRules
+        : (frame, index) => {
+            const overrides = frameRuleOverrides
+              .filter((override) =>
+                (override.frames && override.frames.includes(index)) ||
+                (override.rows && override.rows.includes(frame.row)) ||
+                (override.columns && override.columns.includes(frame.column))
+              )
+              .map((override) => override.rules);
+            return Object.assign({}, classRules, ...overrides);
+          };
     const occupiedFrames = [];
 
     for (let index = 0; index < inspection.frames.length; index += 1) {
       const frame = inspection.frames[index];
+      const frameRules = rulesForFrame(frame, index);
+      const minimumOpaquePixels =
+        frameRules.minimumOpaquePixelsPerFrame ??
+        frameRules.minimumOpaquePixelsPerOccupiedFrame;
 
       if (frame.opaquePixels === 0) {
         if (requireEveryFrame) {
@@ -145,32 +162,18 @@ async function auditSheet(
       }
 
       if (
-        classRules.minimumColorTransitionsPerFrame !== undefined &&
-        frame.colorTransitions < classRules.minimumColorTransitionsPerFrame
+        frameRules.minimumColorTransitionsPerFrame !== undefined &&
+        frame.colorTransitions < frameRules.minimumColorTransitionsPerFrame
       ) {
         fail(
           file,
           `frame ${index + 1} has ${frame.colorTransitions} color transitions; ` +
-            `requires at least ${classRules.minimumColorTransitionsPerFrame}`
+            `requires at least ${frameRules.minimumColorTransitionsPerFrame}`
         );
       }
     }
 
-    const frameRules =
-      frameRuleOverrides.length === 0
-        ? classRules
-        : (frame, index) => {
-            const overrides = frameRuleOverrides
-              .filter((override) =>
-                (override.frames && override.frames.includes(index)) ||
-                (override.rows && override.rows.includes(frame.row)) ||
-                (override.columns && override.columns.includes(frame.column))
-              )
-              .map((override) => override.rules);
-            return Object.assign({}, classRules, ...overrides);
-          };
-
-    for (const ruleFailure of collectFrameRuleFailures(inspection, frameRules)) {
+    for (const ruleFailure of collectFrameRuleFailures(inspection, rulesForFrame)) {
       fail(file, ruleFailure.message);
     }
 

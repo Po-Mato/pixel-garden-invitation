@@ -25,6 +25,8 @@ export type GuestPresetFrame = {
   };
 };
 
+export type GuestDirection = GuestPresetFrame["walk"]["rows"][number];
+
 export type GuestCharacterPreset = {
   id: string;
   family: CharacterFamily;
@@ -38,6 +40,7 @@ export type GuestCharacterPreset = {
       width: number;
       height: number;
     };
+    directions: Record<GuestDirection, string>;
   };
   source: {
     walk: string;

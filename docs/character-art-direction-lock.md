@@ -42,6 +42,7 @@ pnpm build
 - `character-assets/guest-character-presets.json`
 - `character-assets/reference/guest-foundation-unified-reference-v1.png`
 - `character-assets/reference/guest-foundation-unified-proportion-guide-v1.png`
+- `character-assets/reference/guest-directions/*/{down,left,right,up}.png`
 - `character-assets/source/guests/*`
 - `client/public/characters/generated/guests/*`
 - `.superpowers/character-review/guest-preset-contact-sheet.png`
@@ -51,8 +52,9 @@ pnpm build
 - 사용자는 헤어, 의상, 액세서리를 따로 조합하지 않는다.
 - 현재 런타임 하객 프리셋은 단일 통합 기준 이미지에서 나온 12명을 사용한다.
 - 각 하객은 얼굴, 헤어, 의상, 액세서리가 함께 설계된 완성 스프라이트다.
-- `scripts/author-guest-preset-sources.mjs`는 단순 도형이나 새 procedural 캐릭터를 그리지 않는다. 기준 이미지 crop을 배경 투명화한 뒤 `96x144` 프레임으로 정렬하고, walk 시트는 `down`, `left`, `right`, `up` 네 방향이 서로 다른 실루엣을 갖도록 파생한다.
-- `down`은 승인된 정면 crop을 유지한다. `left`와 `right`는 옆모습으로 읽히는 프로필 실루엣이어야 하며, `up`은 얼굴이 보이지 않는 뒷모습이어야 한다. 네 방향 행을 모두 같은 정면 프레임으로 복제하면 실패로 본다.
+- 하객 방향 이미지는 `character-assets/reference/guest-directions/{preset-id}/{direction}.png` 원본을 먼저 만든 뒤 픽셀화한다.
+- `scripts/author-guest-preset-sources.mjs`는 방향을 추정하거나 정면 crop에서 즉석 파생하지 않는다. `reference.directions`의 `down`, `left`, `right`, `up` PNG를 읽어 `96x144` 프레임으로 픽셀화하고 walk 시트를 조립한다.
+- `down`은 승인된 정면 방향 원본을 유지한다. `left`와 `right`는 옆모습으로 읽히는 프로필 실루엣이어야 하며, `up`은 얼굴이 보이지 않는 뒷모습이어야 한다. 네 방향 행을 모두 같은 정면 프레임으로 복제하면 실패로 본다.
 - 12명은 서로 다른 기준 이미지를 섞지 않는다. 머리 크기와 몸 비율이 흔들리면 실패로 본다.
 - 얼굴이 외계인처럼 보이거나 눌려 보이는 프리셋은 실패로 본다.
 - 머리카락이 얼굴 중앙을 큰 검은 마스크처럼 덮으면 실패로 본다.
@@ -63,6 +65,7 @@ pnpm build
 회귀 방지 검증:
 
 ```bash
+pnpm characters:author-guest-directions
 pnpm characters:author-guest-presets
 pnpm characters:audit
 pnpm characters:generate
@@ -77,7 +80,7 @@ pnpm build
 
 2026-06-24 이전의 `guest-part-manifest.json`, `shared/src/guestPartManifest.ts`, `character-assets/source/base`, `hair`, `outfits`, `accessories` 기반 조합형 시스템은 제거했다.
 
-현재 하객 런타임 기준은 완성 캐릭터 프리셋 12명이다. 하객 추가 확장은 새 기준 이미지와 `guest-character-presets.json`의 `reference.crop`을 통해서만 진행한다.
+현재 하객 런타임 기준은 완성 캐릭터 프리셋 12명이다. 하객 추가 확장은 새 기준 이미지, `guest-character-presets.json`의 `reference.crop`, 그리고 `reference.directions`의 방향별 원본 PNG를 통해서만 진행한다.
 
 ## 하객 기초 기준 이미지 고정
 
@@ -86,7 +89,7 @@ pnpm build
 - `character-assets/reference/guest-foundation-unified-reference-v1.png`
 - `character-assets/reference/guest-foundation-unified-proportion-guide-v1.png`
 
-현재 구현은 단일 통합 기준 이미지의 12명 crop을 직접 사용한다. crop은 배경을 투명화한 뒤 `96x144` 완성 하객 프리셋 프레임에 맞춰 정렬한다. walk 시트의 정면 행은 이 crop을 그대로 쓰고, 좌/우/후면 행은 같은 crop에서 파생하되 옆모습·뒷모습으로 읽히도록 변형한다. 이 방식은 서로 다른 기준 이미지가 섞여 캐릭터별 머리 크기와 몸 비율이 흔들리는 문제를 막기 위한 고정 규칙이다.
+현재 구현은 단일 통합 기준 이미지의 12명 crop에서 방향별 원본 PNG를 먼저 만든다. 이후 `author-guest-preset-sources`는 이 방향 원본을 배경 투명화, trim, 픽셀화해 `96x144` 완성 하객 프리셋 프레임에 맞춰 정렬한다. 이 방식은 서로 다른 기준 이미지가 섞여 캐릭터별 머리 크기와 몸 비율이 흔들리는 문제를 막고, 방향별 아트 교체 단위를 명확하게 하기 위한 고정 규칙이다.
 
 `guest-foundation-unified-proportion-guide-v1.png`는 비율 검수용 파일이다. 하객 기준 이미지를 교체할 때는 이 파일처럼 4x3 슬롯, 동일 머리 크기, 동일 발 기준선, 동일 정면 idle 포즈를 먼저 확인한다.
 
@@ -94,4 +97,4 @@ pnpm build
 
 ## 삭제된 하객 파츠 조합형 기록
 
-과거 `base`, `hair`, `outfits`, `accessories`를 조합하던 품질 패스와 A안 원형은 현재 실행 기준이 아니다. 해당 기록은 git 히스토리에서만 확인하고, 새 하객 작업은 완성 프리셋 기준 이미지와 `guest-character-presets.json`만 기준으로 진행한다.
+과거 `base`, `hair`, `outfits`, `accessories`를 조합하던 품질 패스와 A안 원형은 현재 실행 기준이 아니다. 해당 기록은 git 히스토리에서만 확인하고, 새 하객 작업은 완성 프리셋 기준 이미지, `guest-character-presets.json`, 방향별 원본 PNG만 기준으로 진행한다.

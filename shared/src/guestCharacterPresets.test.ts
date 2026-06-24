@@ -9,6 +9,8 @@ import {
 } from "./index";
 
 describe("하객 완성 캐릭터 프리셋", () => {
+  const directions = ["down", "left", "right", "up"] as const;
+
   it("승인된 기준 이미지에서 복구한 12개 완성 하객 프리셋을 가진다", () => {
     expect(guestCharacterPresets).toHaveLength(12);
     expect(guestCharacterPresets.map((preset) => preset.id)).toEqual([
@@ -25,6 +27,17 @@ describe("하객 완성 캐릭터 프리셋", () => {
       "masculine-green-blazer-cream-pants",
       "masculine-blue-modern-hanbok"
     ]);
+  });
+
+  it("각 프리셋은 방향별 원본 이미지 경로를 가진다", () => {
+    for (const preset of guestCharacterPresets) {
+      expect(Object.keys(preset.reference.directions)).toEqual([...directions]);
+      for (const direction of directions) {
+        expect(preset.reference.directions[direction]).toBe(
+          `character-assets/reference/guest-directions/${preset.id}/${direction}.png`
+        );
+      }
+    }
   });
 
   it("각 프리셋은 단일 통합 기준 이미지의 4x3 셀 crop을 사용한다", () => {

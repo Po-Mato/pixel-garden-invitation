@@ -12,6 +12,7 @@ import { generateVariant, validateDimensions } from "./lib/characterAssetGenerat
 const execFileAsync = promisify(execFile);
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const guestPresetCatalog = JSON.parse(await readFile(join(root, "character-assets/guest-character-presets.json"), "utf8"));
+const guestDirections = ["down", "left", "right", "up"];
 
 async function writeBlankPng(file, dimensions) {
   await mkdir(dirname(file), { recursive: true });
@@ -21,6 +22,18 @@ async function writeBlankPng(file, dimensions) {
       height: dimensions.height,
       channels: 4,
       background: "#00000000"
+    }
+  }).png().toFile(file);
+}
+
+async function writeSolidPng(file, color, dimensions = { width: 128, height: 220 }) {
+  await mkdir(dirname(file), { recursive: true });
+  await sharp({
+    create: {
+      width: dimensions.width,
+      height: dimensions.height,
+      channels: 4,
+      background: { r: color[0], g: color[1], b: color[2], alpha: 1 }
     }
   }).png().toFile(file);
 }
@@ -36,6 +49,45 @@ async function extractRawFrame(sheet, column, row, dimensions) {
     .raw()
     .toBuffer();
 }
+
+function countOpaqueColor(raw, color) {
+  let count = 0;
+  for (let offset = 0; offset < raw.length; offset += 4) {
+    if (
+      raw[offset + 3] !== 0 &&
+      raw[offset] === color[0] &&
+      raw[offset + 1] === color[1] &&
+      raw[offset + 2] === color[2]
+    ) {
+      count += 1;
+    }
+  }
+  return count;
+}
+
+test("guest direction source authoring emits four source images per preset", async () => {
+  const dir = await mkdtemp(join(tmpdir(), "guest-direction-sources-"));
+  try {
+    const { authorGuestDirectionSources } = await import("./author-guest-direction-sources.mjs");
+    const count = await authorGuestDirectionSources({
+      outputRoot: join(dir, "character-assets/reference/guest-directions")
+    });
+
+    assert.equal(count, guestPresetCatalog.presets.length * guestDirections.length);
+    for (const preset of guestPresetCatalog.presets) {
+      for (const direction of guestDirections) {
+        await assert.doesNotReject(() =>
+          validateDimensions(
+            join(dir, `character-assets/reference/guest-directions/${preset.id}/${direction}.png`),
+            { width: 192, height: 288 }
+          )
+        );
+      }
+    }
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
+});
 
 test("guest preset authoring emits finished walk and idle sources", async () => {
   const dir = await mkdtemp(join(tmpdir(), "guest-preset-authoring-"));
@@ -72,6 +124,67 @@ test("guest preset authoring emits distinct directional walk frames", async () =
       assert.notDeepEqual(right, down, `${preset.id} right frame must not reuse the front-facing down frame`);
       assert.notDeepEqual(up, down, `${preset.id} up frame must not reuse the front-facing down frame`);
       assert.notDeepEqual(right, left, `${preset.id} right frame must not reuse the left frame without mirroring`);
+    }
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
+});
+
+test("guest preset authoring builds walk rows from explicit directional source images", async () => {
+  const dir = await mkdtemp(join(tmpdir(), "guest-preset-explicit-directions-"));
+  const colors = {
+    down: [240, 48, 64],
+    left: [48, 192, 88],
+    right: [48, 104, 232],
+    up: [224, 176, 48]
+  };
+  const directions = Object.fromEntries(
+    Object.keys(colors).map((direction) => [
+      direction,
+      `character-assets/reference/guest-directions/test-preset/${direction}.png`
+    ])
+  );
+
+  try {
+    for (const [direction, color] of Object.entries(colors)) {
+      await writeSolidPng(join(dir, directions[direction]), color);
+    }
+
+    const catalog = {
+      ...guestPresetCatalog,
+      presets: [
+        {
+          id: "test-preset",
+          family: "feminine",
+          label: "방향 테스트",
+          description: "방향별 원본 PNG 테스트",
+          reference: {
+            image: "unused.png",
+            crop: { left: 0, top: 0, width: 1, height: 1 },
+            directions
+          },
+          source: {
+            walk: "character-assets/source/guests/test-preset__walk.png",
+            idle: "character-assets/source/guests/test-preset__idle.png"
+          },
+          generated: {
+            walk: "guests/test-preset__walk.png",
+            idle: "guests/test-preset__idle.png"
+          }
+        }
+      ]
+    };
+    const sourceRoot = join(dir, "character-assets/source");
+    const { authorGuestPresetSources } = await import("./author-guest-preset-sources.mjs");
+    await authorGuestPresetSources({ catalog, projectRoot: dir, sourceRoot });
+
+    const walk = join(sourceRoot, "guests/test-preset__walk.png");
+    for (let row = 0; row < guestDirections.length; row += 1) {
+      const raw = await extractRawFrame(walk, 1, row, guestPresetCatalog.frame.source);
+      assert.ok(
+        countOpaqueColor(raw, colors[guestDirections[row]]) > 1000,
+        `${guestDirections[row]} row must be built from its explicit source image`
+      );
     }
   } finally {
     await rm(dir, { recursive: true, force: true });

@@ -8,7 +8,7 @@
 > 2026-06-24 확장: 사용자가 새 확장 이미지를 승인해 `guest-expansion-reference-v1.png`의 8명 crop을 추가했다. 현재 프리셋 수는 기존 4명 + 신규 8명 = 12명이다.
 > 2026-06-24 레거시 정리: `guest-part-manifest.json`, `character-assets/source/base`, `hair`, `outfits`, `accessories`, `shared/src/guestPartManifest.ts`, `shared/src/guestPartManifest.test.ts`는 제거했다. 감사와 컨택트 시트는 `couple`과 `guest-presets`만 지원한다.
 > 2026-06-24 통합 기준 정리: 서로 다른 기준 이미지 crop을 섞으면 하객별 머리 크기와 몸 비율이 흔들리므로, 현재 하객 12명은 `guest-foundation-unified-reference-v1.png` 단일 이미지와 `guest-foundation-unified-proportion-guide-v1.png` 비율 검수 파일을 기준으로 고정한다.
-> 2026-06-24 방향 정리: 하객 walk 시트의 `down`, `left`, `right`, `up` 행은 서로 다른 방향 이미지여야 한다. `down`은 승인 정면 crop을 유지하고, `left`/`right`는 프로필 실루엣, `up`은 얼굴이 보이지 않는 뒷모습으로 파생한다. 네 방향을 모두 정면 프레임으로 복제하면 실패로 본다.
+> 2026-06-24 방향 정리: 하객 walk 시트의 `down`, `left`, `right`, `up` 행은 서로 다른 방향 이미지여야 한다. 현재 기준은 `character-assets/reference/guest-directions/{preset-id}/{direction}.png` 방향별 원본을 먼저 만들고, 이를 픽셀화해 walk/idle 시트를 조립하는 방식이다. 네 방향을 모두 정면 프레임으로 복제하거나, 시트 생성 중 정면 crop에서 즉석 파생하면 실패로 본다.
 
 **아키텍처:** 공유 패키지에는 `presetId` 기반의 `CharacterAppearance`와 하객 프리셋 카탈로그를 둔다. 클라이언트 렌더러는 선택된 프리셋의 완성 스프라이트 한 장만 렌더링하고, 커스터마이저는 탭형 파츠 UI 대신 완성 캐릭터 카드 그리드를 제공한다. 생성/감사 스크립트는 새 `character-assets/source/guests` 소스와 `client/public/characters/generated/guests` 결과를 기준으로 검증한다.
 

@@ -14,8 +14,16 @@ function sourcePath(sourceRoot, manifestPath) {
   return join(sourceRoot, manifestPath.replace(/^character-assets\/source\//, ""));
 }
 
-function projectPath(manifestPath) {
-  return join(root, manifestPath);
+function projectPath(projectRoot, manifestPath) {
+  return join(projectRoot, manifestPath);
+}
+
+function directionSourcePath(preset, direction) {
+  const manifestPath = preset.reference?.directions?.[direction];
+  if (!manifestPath) {
+    throw new Error(`${preset.id} must declare reference.directions.${direction}`);
+  }
+  return manifestPath;
 }
 
 function isFloodFillBackgroundPixel(data, index) {
@@ -67,13 +75,8 @@ function clearConnectedBackground(data, width, height) {
   }
 }
 
-async function transparentReferenceCrop(preset) {
-  if (!preset.reference?.image || !preset.reference?.crop) {
-    throw new Error(`${preset.id} must declare an approved reference image crop`);
-  }
-
-  const { data, info } = await sharp(projectPath(preset.reference.image))
-    .extract(preset.reference.crop)
+async function transparentDirectionSource(preset, direction, projectRoot) {
+  const { data, info } = await sharp(projectPath(projectRoot, directionSourcePath(preset, direction)))
     .ensureAlpha()
     .raw()
     .toBuffer({ resolveWithObject: true });
@@ -92,51 +95,6 @@ async function transparentReferenceCrop(preset) {
     .toBuffer();
 }
 
-function hexColor([red, green, blue]) {
-  return `#${[red, green, blue].map((value) => value.toString(16).padStart(2, "0")).join("")}`;
-}
-
-function shadeColor(color, amount) {
-  const numeric = Number.parseInt(color.slice(1), 16);
-  const channels = [
-    (numeric >> 16) & 255,
-    (numeric >> 8) & 255,
-    numeric & 255
-  ].map((channel) => Math.max(0, Math.min(255, channel + amount)));
-  return hexColor(channels);
-}
-
-async function sampleHairColor(frontFrame) {
-  const { data, info } = await sharp(frontFrame)
-    .ensureAlpha()
-    .raw()
-    .toBuffer({ resolveWithObject: true });
-  const candidates = [];
-
-  for (let y = 0; y < Math.min(info.height, 70); y += 1) {
-    for (let x = 0; x < info.width; x += 1) {
-      const index = (y * info.width + x) * 4;
-      const alpha = data[index + 3];
-      if (alpha < 160) continue;
-
-      const red = data[index];
-      const green = data[index + 1];
-      const blue = data[index + 2];
-      const brightness = (red + green + blue) / 3;
-      if (brightness >= 165) continue;
-      candidates.push({ red, green, blue, brightness });
-    }
-  }
-
-  if (candidates.length === 0) {
-    return "#2b211f";
-  }
-
-  candidates.sort((a, b) => a.brightness - b.brightness);
-  const selected = candidates[Math.floor(candidates.length * 0.45)];
-  return hexColor([selected.red, selected.green, selected.blue]);
-}
-
 async function blankFrame(composites) {
   return sharp({
     create: {
@@ -151,43 +109,12 @@ async function blankFrame(composites) {
     .toBuffer();
 }
 
-async function trimTransparent(buffer) {
-  return sharp(buffer)
-    .trim({ background: "#00000000", threshold: 1 })
-    .png()
-    .toBuffer();
-}
-
-async function placeTrimmedSprite(sprite, { leftShift = 0, topShift = 0 } = {}) {
-  const metadata = await sharp(sprite).metadata();
-  const left = Math.round((frame.width - metadata.width) / 2) + leftShift;
-  const top = targetFootBottom - metadata.height + 1 + topShift;
-  return { input: sprite, left, top };
-}
-
-function backHairOverlay({ preset, hairColor }) {
-  const stroke = shadeColor(hairColor, -28);
-  const highlight = shadeColor(hairColor, 30);
-  const longHair = preset.family === "feminine"
-    ? `<path d="M35 39 C33 57 38 76 48 82 C58 76 63 57 61 39 Z" fill="${hairColor}" opacity="0.84"/>`
-    : "";
-
-  return Buffer.from(
-    `<svg width="${frame.width}" height="${frame.height}" xmlns="http://www.w3.org/2000/svg">` +
-      `${longHair}` +
-      `<path d="M32 31 C32 17 39 10 48 9 C58 10 65 18 65 32 C65 46 59 56 48 57 C37 56 32 46 32 31 Z" fill="${hairColor}" stroke="${stroke}" stroke-width="2"/>` +
-      `<path d="M37 25 C42 17 49 16 58 20" fill="none" stroke="${highlight}" stroke-width="2" opacity="0.45" stroke-linecap="round"/>` +
-      `<path d="M36 37 C41 44 56 45 62 37" fill="none" stroke="${stroke}" stroke-width="2" opacity="0.42" stroke-linecap="round"/>` +
-    `</svg>`
-  );
-}
-
-async function renderFrontFrame(preset) {
-  const transparentCrop = await transparentReferenceCrop(preset);
-  const metadata = await sharp(transparentCrop).metadata();
+async function pixelizeDirectionFrame(preset, direction, projectRoot) {
+  const source = await transparentDirectionSource(preset, direction, projectRoot);
+  const metadata = await sharp(source).metadata();
   const scaledHeight = Math.min(128, frame.height);
   const scaledWidth = Math.round((metadata.width / metadata.height) * scaledHeight);
-  const resized = await sharp(transparentCrop)
+  const resized = await sharp(source)
     .resize({
       width: Math.min(scaledWidth, frame.width - 8),
       height: scaledHeight,
@@ -201,94 +128,17 @@ async function renderFrontFrame(preset) {
   const left = Math.round((frame.width - resizedMetadata.width) / 2);
   const top = targetFootBottom - resizedMetadata.height + 1;
 
-  return sharp({
-    create: {
-      width: frame.width,
-      height: frame.height,
-      channels: 4,
-      background: "#00000000"
-    }
-  })
-    .composite([{ input: resized, left, top }])
-    .png()
-    .toBuffer();
+  return blankFrame([{ input: resized, left, top }]);
 }
 
-async function renderDownFrame(frontFrame, step) {
-  const leftShift = walkStepShift[step] ?? 0;
+async function renderWalkStep(directionFrame, step) {
   return blankFrame([
     {
-      input: frontFrame,
-      left: leftShift,
+      input: directionFrame,
+      left: walkStepShift[step] ?? 0,
       top: 0
     }
   ]);
-}
-
-async function renderSideFrame(frontFrame, direction, step) {
-  const trimmed = await trimTransparent(frontFrame);
-  const metadata = await sharp(trimmed).metadata();
-  const cropWidth = Math.max(1, Math.round(metadata.width * 0.58));
-  const cropLeft = direction === "left" ? 0 : metadata.width - cropWidth;
-  const profile = await sharp(trimmed)
-    .extract({ left: cropLeft, top: 0, width: cropWidth, height: metadata.height })
-    .resize({
-      width: Math.max(1, Math.round(cropWidth * 0.96)),
-      height: metadata.height,
-      fit: "fill",
-      kernel: sharp.kernel.nearest,
-      background: "#00000000"
-    })
-    .png()
-    .toBuffer();
-  const directionShift = direction === "left" ? -8 : 8;
-  const stepShift = walkStepShift[step] ?? 0;
-
-  return blankFrame([
-    await placeTrimmedSprite(profile, {
-      leftShift: directionShift + stepShift,
-      topShift: 0
-    })
-  ]);
-}
-
-async function renderUpFrame(preset, frontFrame, step) {
-  const trimmed = await trimTransparent(frontFrame);
-  const metadata = await sharp(trimmed).metadata();
-  const backBody = await sharp(trimmed)
-    .resize({
-      width: Math.max(1, Math.round(metadata.width * 0.9)),
-      height: metadata.height,
-      fit: "fill",
-      kernel: sharp.kernel.nearest,
-      background: "#00000000"
-    })
-    .modulate({ brightness: 0.92, saturation: 0.9 })
-    .png()
-    .toBuffer();
-  const bodyComposite = await placeTrimmedSprite(backBody, {
-    leftShift: walkStepShift[step] ?? 0,
-    topShift: 0
-  });
-  const hairColor = await sampleHairColor(frontFrame);
-
-  return blankFrame([
-    bodyComposite,
-    { input: backHairOverlay({ preset, hairColor }), left: 0, top: 0 }
-  ]);
-}
-
-async function renderWalkFrame(preset, frontFrame, { direction, step }) {
-  if (direction === "down") {
-    return renderDownFrame(frontFrame, step);
-  }
-  if (direction === "left" || direction === "right") {
-    return renderSideFrame(frontFrame, direction, step);
-  }
-  if (direction === "up") {
-    return renderUpFrame(preset, frontFrame, step);
-  }
-  throw new Error(`Unknown guest preset direction: ${direction}`);
 }
 
 async function saveSheet(output, frames, width, height) {
@@ -301,17 +151,26 @@ async function saveSheet(output, frames, width, height) {
     .toFile(output);
 }
 
-export async function authorGuestPresetSources({ sourceRoot = defaultSourceRoot } = {}) {
+export async function authorGuestPresetSources({
+  sourceRoot = defaultSourceRoot,
+  catalog = presetCatalog,
+  projectRoot = root
+} = {}) {
   let count = 0;
 
-  for (const preset of presetCatalog.presets) {
-    const frontFrame = await renderFrontFrame(preset);
+  for (const preset of catalog.presets) {
+    const directionFrames = new Map();
+    for (const direction of catalog.frame.walk.rows) {
+      directionFrames.set(direction, await pixelizeDirectionFrame(preset, direction, projectRoot));
+    }
+
     const walkComposites = [];
-    for (let row = 0; row < presetCatalog.frame.walk.rows.length; row += 1) {
-      const direction = presetCatalog.frame.walk.rows[row];
-      for (let column = 0; column < presetCatalog.frame.walk.columns; column += 1) {
+    for (let row = 0; row < catalog.frame.walk.rows.length; row += 1) {
+      const direction = catalog.frame.walk.rows[row];
+      const directionFrame = directionFrames.get(direction);
+      for (let column = 0; column < catalog.frame.walk.columns; column += 1) {
         walkComposites.push({
-          input: await renderWalkFrame(preset, frontFrame, { direction, step: column }),
+          input: await renderWalkStep(directionFrame, column),
           left: column * frame.width,
           top: row * frame.height
         });
@@ -321,20 +180,21 @@ export async function authorGuestPresetSources({ sourceRoot = defaultSourceRoot 
     await saveSheet(
       sourcePath(sourceRoot, preset.source.walk),
       walkComposites,
-      presetCatalog.frame.walk.sheet.width,
-      presetCatalog.frame.walk.sheet.height
+      catalog.frame.walk.sheet.width,
+      catalog.frame.walk.sheet.height
     );
     count += 1;
 
+    const idleFrame = directionFrames.get("down");
     await saveSheet(
       sourcePath(sourceRoot, preset.source.idle),
-      Array.from({ length: presetCatalog.frame.idle.columns }, (_, column) => ({
-        input: frontFrame,
+      Array.from({ length: catalog.frame.idle.columns }, (_, column) => ({
+        input: idleFrame,
         left: column * frame.width,
         top: 0
       })),
-      presetCatalog.frame.idle.sheet.width,
-      presetCatalog.frame.idle.sheet.height
+      catalog.frame.idle.sheet.width,
+      catalog.frame.idle.sheet.height
     );
     count += 1;
   }
@@ -344,5 +204,5 @@ export async function authorGuestPresetSources({ sourceRoot = defaultSourceRoot 
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const count = await authorGuestPresetSources();
-  console.log(`Authored ${count} approved-reference guest preset source sheets`);
+  console.log(`Authored ${count} directional guest preset source sheets`);
 }
