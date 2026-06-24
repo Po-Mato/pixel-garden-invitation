@@ -218,9 +218,11 @@ export function collectFrameRuleFailures(inspection, frameRules = {}) {
   for (let index = 0; index < inspection.frames.length; index += 1) {
     const frame = inspection.frames[index];
     if (frame.opaquePixels === 0 || !frame.bounds) continue;
+    const effectiveFrameRules =
+      typeof frameRules === "function" ? frameRules(frame, index) : frameRules;
 
     for (const check of checks) {
-      const expected = frameRules[check.key];
+      const expected = effectiveFrameRules[check.key];
       if (expected === undefined) continue;
 
       const actual = check.measure(frame.bounds);

@@ -45,6 +45,15 @@ const guestPresetFootBaseline = {
   footBottomMax: 132,
   footBottomSpreadMax: 2
 };
+const guestPresetWalkFrameRuleOverrides = [
+  {
+    rows: [1, 2],
+    rules: {
+      minimumBoundsWidth:
+        rules.guestPreset.minimumSideBoundsWidth ?? rules.guestPreset.minimumBoundsWidth
+    }
+  }
+];
 
 function displayFile(file) {
   if (Array.isArray(file)) {
@@ -80,7 +89,8 @@ async function auditSheet(
   {
     requireEveryFrame = false,
     footBaseline = null,
-    frameDimensions = rules.frame
+    frameDimensions = rules.frame,
+    frameRuleOverrides = []
   } = {}
 ) {
   try {
@@ -146,7 +156,21 @@ async function auditSheet(
       }
     }
 
-    for (const ruleFailure of collectFrameRuleFailures(inspection, classRules)) {
+    const frameRules =
+      frameRuleOverrides.length === 0
+        ? classRules
+        : (frame, index) => {
+            const overrides = frameRuleOverrides
+              .filter((override) =>
+                (override.frames && override.frames.includes(index)) ||
+                (override.rows && override.rows.includes(frame.row)) ||
+                (override.columns && override.columns.includes(frame.column))
+              )
+              .map((override) => override.rules);
+            return Object.assign({}, classRules, ...overrides);
+          };
+
+    for (const ruleFailure of collectFrameRuleFailures(inspection, frameRules)) {
       fail(file, ruleFailure.message);
     }
 
@@ -235,7 +259,12 @@ if (wants("guest-presets")) {
       sourcePath(source, preset.source.walk),
       guestWalkDimensions,
       rules.guestPreset,
-      { requireEveryFrame: true, footBaseline: guestPresetFootBaseline, frameDimensions: guestFrame }
+      {
+        requireEveryFrame: true,
+        footBaseline: guestPresetFootBaseline,
+        frameDimensions: guestFrame,
+        frameRuleOverrides: guestPresetWalkFrameRuleOverrides
+      }
     );
     await auditSheet(
       sourcePath(source, preset.source.idle),

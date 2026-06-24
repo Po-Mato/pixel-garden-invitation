@@ -25,6 +25,18 @@ async function writeBlankPng(file, dimensions) {
   }).png().toFile(file);
 }
 
+async function extractRawFrame(sheet, column, row, dimensions) {
+  return sharp(sheet)
+    .extract({
+      left: column * dimensions.width,
+      top: row * dimensions.height,
+      width: dimensions.width,
+      height: dimensions.height
+    })
+    .raw()
+    .toBuffer();
+}
+
 test("guest preset authoring emits finished walk and idle sources", async () => {
   const dir = await mkdtemp(join(tmpdir(), "guest-preset-authoring-"));
   try {
@@ -37,6 +49,29 @@ test("guest preset authoring emits finished walk and idle sources", async () => 
       const idle = join(dir, "source", preset.source.idle.replace(/^character-assets\/source\//, ""));
       await assert.doesNotReject(() => validateDimensions(walk, guestPresetCatalog.frame.walk.sheet));
       await assert.doesNotReject(() => validateDimensions(idle, guestPresetCatalog.frame.idle.sheet));
+    }
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
+});
+
+test("guest preset authoring emits distinct directional walk frames", async () => {
+  const dir = await mkdtemp(join(tmpdir(), "guest-preset-directions-"));
+  try {
+    const { authorGuestPresetSources } = await import("./author-guest-preset-sources.mjs");
+    await authorGuestPresetSources({ sourceRoot: join(dir, "source") });
+
+    for (const preset of guestPresetCatalog.presets) {
+      const walk = join(dir, "source", preset.source.walk.replace(/^character-assets\/source\//, ""));
+      const down = await extractRawFrame(walk, 1, 0, guestPresetCatalog.frame.source);
+      const left = await extractRawFrame(walk, 1, 1, guestPresetCatalog.frame.source);
+      const right = await extractRawFrame(walk, 1, 2, guestPresetCatalog.frame.source);
+      const up = await extractRawFrame(walk, 1, 3, guestPresetCatalog.frame.source);
+
+      assert.notDeepEqual(left, down, `${preset.id} left frame must not reuse the front-facing down frame`);
+      assert.notDeepEqual(right, down, `${preset.id} right frame must not reuse the front-facing down frame`);
+      assert.notDeepEqual(up, down, `${preset.id} up frame must not reuse the front-facing down frame`);
+      assert.notDeepEqual(right, left, `${preset.id} right frame must not reuse the left frame without mirroring`);
     }
   } finally {
     await rm(dir, { recursive: true, force: true });
