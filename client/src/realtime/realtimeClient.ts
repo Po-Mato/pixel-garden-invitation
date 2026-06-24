@@ -86,12 +86,12 @@ function normalizeRoomGuest(value: unknown): RoomGuest | null {
     guestId: value.guestId,
     nickname: value.nickname,
     appearance,
-    x: value.x,
-    y: value.y,
+    x: value.x as number,
+    y: value.y as number,
     direction: value.direction as Direction,
-    moving: value.moving,
-    seq: value.seq,
-    lastSeenAt: value.lastSeenAt
+    moving: value.moving as boolean,
+    seq: value.seq as number,
+    lastSeenAt: value.lastSeenAt as number
   };
 }
 
