@@ -191,6 +191,116 @@ test("guest preset authoring builds walk rows from explicit directional source i
   }
 });
 
+test("guest preset authoring uses explicit walk step source images when present", async () => {
+  const dir = await mkdtemp(join(tmpdir(), "guest-preset-explicit-walk-steps-"));
+  const directions = Object.fromEntries(
+    guestDirections.map((direction) => [
+      direction,
+      `character-assets/reference/guest-directions/test-preset/${direction}.png`
+    ])
+  );
+  const fallbackColors = {
+    down: [240, 48, 64],
+    left: [48, 192, 88],
+    right: [48, 104, 232],
+    up: [224, 176, 48]
+  };
+  const stepColors = {
+    down: [
+      [240, 30, 30],
+      [200, 40, 40],
+      [160, 50, 50]
+    ],
+    left: [
+      [30, 180, 50],
+      [40, 160, 70],
+      [50, 140, 90]
+    ],
+    right: [
+      [30, 80, 230],
+      [40, 100, 210],
+      [50, 120, 190]
+    ],
+    up: [
+      [120, 40, 210],
+      [140, 50, 190],
+      [160, 60, 170]
+    ]
+  };
+
+  try {
+    for (const [direction, color] of Object.entries(fallbackColors)) {
+      await writeSolidPng(join(dir, directions[direction]), color);
+    }
+
+    const walkSourceRoot = join(dir, "character-assets/reference/guest-walk-direction-sources/v1");
+    for (const direction of guestDirections) {
+      for (let step = 0; step < 3; step += 1) {
+        await writeSolidPng(
+          join(
+            walkSourceRoot,
+            "guest-custom",
+            direction,
+            `step-${String(step + 1).padStart(2, "0")}-source.png`
+          ),
+          stepColors[direction][step],
+          { width: 640, height: 1024 }
+        );
+      }
+    }
+
+    const catalog = {
+      ...guestPresetCatalog,
+      presets: [
+        {
+          id: "test-preset",
+          family: "feminine",
+          label: "보행 테스트",
+          description: "방향별 보행 원본 PNG 테스트",
+          reference: {
+            image: "unused.png",
+            crop: { left: 0, top: 0, width: 1, height: 1 },
+            walkSourceGuest: "guest-custom",
+            directions
+          },
+          source: {
+            walk: "character-assets/source/guests/test-preset__walk.png",
+            idle: "character-assets/source/guests/test-preset__idle.png"
+          },
+          generated: {
+            walk: "guests/test-preset__walk.png",
+            idle: "guests/test-preset__idle.png"
+          }
+        }
+      ]
+    };
+    const sourceRoot = join(dir, "character-assets/source");
+    const { authorGuestPresetSources } = await import("./author-guest-preset-sources.mjs");
+    await authorGuestPresetSources({ catalog, projectRoot: dir, sourceRoot, walkSourceRoot });
+
+    const walk = join(sourceRoot, "guests/test-preset__walk.png");
+    for (let row = 0; row < guestDirections.length; row += 1) {
+      const direction = guestDirections[row];
+      for (let column = 0; column < 3; column += 1) {
+        const raw = await extractRawFrame(walk, column, row, guestPresetCatalog.frame.source);
+        assert.ok(
+          countOpaqueColor(raw, stepColors[direction][column]) > 1000,
+          `${direction} column ${column + 1} must be built from its explicit walk step source`
+        );
+      }
+    }
+
+    const idle = join(sourceRoot, "guests/test-preset__idle.png");
+    const idleRaw = await extractRawFrame(idle, 0, 0, guestPresetCatalog.frame.source);
+    assert.ok(
+      countOpaqueColor(idleRaw, stepColors.down[1]) > 1000,
+      "idle frame must use the neutral down walk step when present"
+    );
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
+});
+
 test("npc source contract includes idle and four-direction walk sheets", async () => {
   await assert.doesNotReject(() =>
     validateDimensions("character-assets/source/npc/groom-idle.png", { width: 192, height: 144 })

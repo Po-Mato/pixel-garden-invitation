@@ -59,6 +59,7 @@
           "width": 143,
           "height": 387
         },
+        "walkSourceGuest": "guest-01",
         "directions": {
           "down": "character-assets/reference/guest-directions/feminine-long-wave-dress/down.png",
           "left": "character-assets/reference/guest-directions/feminine-long-wave-dress/left.png",
@@ -88,6 +89,7 @@
           "width": 178,
           "height": 367
         },
+        "walkSourceGuest": "guest-02",
         "directions": {
           "down": "character-assets/reference/guest-directions/feminine-formal-hanbok/down.png",
           "left": "character-assets/reference/guest-directions/feminine-formal-hanbok/left.png",
@@ -117,6 +119,7 @@
           "width": 146,
           "height": 384
         },
+        "walkSourceGuest": "guest-03",
         "directions": {
           "down": "character-assets/reference/guest-directions/masculine-navy-suit/down.png",
           "left": "character-assets/reference/guest-directions/masculine-navy-suit/left.png",
@@ -146,6 +149,7 @@
           "width": 146,
           "height": 385
         },
+        "walkSourceGuest": "guest-04",
         "directions": {
           "down": "character-assets/reference/guest-directions/masculine-charcoal-blazer/down.png",
           "left": "character-assets/reference/guest-directions/masculine-charcoal-blazer/left.png",
@@ -175,6 +179,7 @@
           "width": 140,
           "height": 388
         },
+        "walkSourceGuest": "guest-05",
         "directions": {
           "down": "character-assets/reference/guest-directions/feminine-sage-bolero-dress/down.png",
           "left": "character-assets/reference/guest-directions/feminine-sage-bolero-dress/left.png",
@@ -204,6 +209,7 @@
           "width": 144,
           "height": 367
         },
+        "walkSourceGuest": "guest-06",
         "directions": {
           "down": "character-assets/reference/guest-directions/feminine-champagne-navy-skirt/down.png",
           "left": "character-assets/reference/guest-directions/feminine-champagne-navy-skirt/left.png",
@@ -233,6 +239,7 @@
           "width": 161,
           "height": 388
         },
+        "walkSourceGuest": "guest-07",
         "directions": {
           "down": "character-assets/reference/guest-directions/feminine-lavender-jacket-dress/down.png",
           "left": "character-assets/reference/guest-directions/feminine-lavender-jacket-dress/left.png",
@@ -262,6 +269,7 @@
           "width": 139,
           "height": 388
         },
+        "walkSourceGuest": "guest-08",
         "directions": {
           "down": "character-assets/reference/guest-directions/feminine-teal-modern-hanbok/down.png",
           "left": "character-assets/reference/guest-directions/feminine-teal-modern-hanbok/left.png",
@@ -291,6 +299,7 @@
           "width": 144,
           "height": 384
         },
+        "walkSourceGuest": "guest-09",
         "directions": {
           "down": "character-assets/reference/guest-directions/masculine-beige-summer-suit/down.png",
           "left": "character-assets/reference/guest-directions/masculine-beige-summer-suit/left.png",
@@ -320,6 +329,7 @@
           "width": 135,
           "height": 368
         },
+        "walkSourceGuest": "guest-10",
         "directions": {
           "down": "character-assets/reference/guest-directions/masculine-charcoal-burgundy-tie/down.png",
           "left": "character-assets/reference/guest-directions/masculine-charcoal-burgundy-tie/left.png",
@@ -349,6 +359,7 @@
           "width": 146,
           "height": 385
         },
+        "walkSourceGuest": "guest-11",
         "directions": {
           "down": "character-assets/reference/guest-directions/masculine-green-blazer-cream-pants/down.png",
           "left": "character-assets/reference/guest-directions/masculine-green-blazer-cream-pants/left.png",
@@ -378,6 +389,7 @@
           "width": 151,
           "height": 369
         },
+        "walkSourceGuest": "guest-12",
         "directions": {
           "down": "character-assets/reference/guest-directions/masculine-blue-modern-hanbok/down.png",
           "left": "character-assets/reference/guest-directions/masculine-blue-modern-hanbok/left.png",

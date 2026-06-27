@@ -11,6 +11,8 @@
 
 각 `guest-XX / direction` 단위는 3컷 보행 원안 1장과 분리된 3개 step 파일을 함께 가진다. 방향별 원안 시트는 픽셀화 전 리뷰와 재분리의 기준 파일이며, 분리 컷은 픽셀화 작업의 직접 입력으로 사용한다.
 
+`character-assets/guest-character-presets.json`의 `reference.walkSourceGuest`는 각 프리셋이 사용할 `guest-XX` 보행 원안 폴더를 명시한다. 프리셋 순서가 바뀌어도 이 값이 픽셀화 입력 매핑의 기준이다.
+
 ## 출력 목표
 
 - 최종 하객 스프라이트 프레임은 기존 프리셋 파이프라인과 같은 `96x144` 기준으로 맞춘다.
@@ -70,7 +72,7 @@ pnpm build
 ## 다음 작업 순서
 
 1. 현재 `guest-walk-*sources/v1` 원안을 기준으로 픽셀화 입력을 확정한다.
-2. 방향별 `step-01/02/03`을 `96x144` 프레임에 맞춰 픽셀 스프라이트로 변환한다.
+2. `scripts/author-guest-preset-sources.mjs`로 방향별 `step-01/02/03`을 `96x144` 프레임에 맞춰 픽셀 스프라이트로 변환한다.
 3. 기존 `character-assets/source/guests` 하객 프리셋 시트를 새 보행 컷 기준으로 갱신한다.
 4. `guest-preset-contact-sheet`와 모바일 화면 표시 크기에서 12명 전체를 함께 검토한다.
 5. 검수 통과 후 런타임 하객 프리셋에 반영한다.

@@ -55,7 +55,7 @@ pnpm build
 - 현재 런타임 하객 프리셋은 단일 통합 기준 이미지에서 나온 12명을 사용한다.
 - 각 하객은 얼굴, 헤어, 의상, 액세서리가 함께 설계된 완성 스프라이트다.
 - 하객 방향 이미지는 `character-assets/reference/guest-directions/{preset-id}/{direction}.png` 원본을 먼저 만든 뒤 픽셀화한다.
-- `scripts/author-guest-preset-sources.mjs`는 방향을 추정하거나 정면 crop에서 즉석 파생하지 않는다. `reference.directions`의 `down`, `left`, `right`, `up` PNG를 읽어 `96x144` 프레임으로 픽셀화하고 walk 시트를 조립한다.
+- `scripts/author-guest-preset-sources.mjs`는 방향을 추정하거나 정면 crop에서 즉석 파생하지 않는다. `reference.directions`의 `down`, `left`, `right`, `up` PNG와 `reference.walkSourceGuest`가 가리키는 3컷 보행 원안을 읽어 `96x144` 프레임으로 픽셀화하고 walk/idle 시트를 조립한다.
 - `down`은 승인된 정면 방향 원본을 유지한다. `left`와 `right`는 옆모습으로 읽히는 프로필 실루엣이어야 하며, `up`은 얼굴이 보이지 않는 뒷모습이어야 한다. 네 방향 행을 모두 같은 정면 프레임으로 복제하면 실패로 본다.
 - 3컷 보행 원안의 픽셀화 기준은 `docs/guest-walk-pixelization-spec.md`를 따른다.
 - 12명은 서로 다른 기준 이미지를 섞지 않는다. 머리 크기와 몸 비율이 흔들리면 실패로 본다.
