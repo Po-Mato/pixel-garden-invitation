@@ -146,6 +146,11 @@ function pressTabWithBrowserFallback(targetIfUntrapped: HTMLElement, shiftKey = 
   return event;
 }
 
+function openInvitationMenu() {
+  fireEvent.click(screen.getByRole("button", { name: "초대장 메뉴" }));
+  return screen.getByRole("dialog", { name: "초대장 바로가기" });
+}
+
 describe("GameWorld", () => {
   const profile = { nickname: "하객1", appearance: defaultCharacterAppearance };
 
@@ -159,8 +164,21 @@ describe("GameWorld", () => {
     expect(zoneTabs.getByRole("button", { name: "입구" })).toBeInTheDocument();
     expect(zoneTabs.getByRole("button", { name: "갤러리" })).toBeInTheDocument();
     expect(zoneTabs.getByRole("button", { name: "라운지" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "길 찾기" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "초대장 메뉴" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "길 찾기" })).not.toBeInTheDocument();
     expect(screen.getByLabelText("예식장 지도")).toHaveAttribute("data-zone", "ceremony");
+  });
+
+  it("opens the invitation shortcuts in a dismissible menu dialog", () => {
+    render(<GameWorld profile={profile} />);
+
+    const menu = openInvitationMenu();
+    expect(within(menu).getByRole("button", { name: "길 찾기" })).toBeInTheDocument();
+    expect(within(menu).getByRole("button", { name: "축하 쓰기" })).toBeInTheDocument();
+    expect(within(menu).getByRole("button", { name: "초대장 메뉴 닫기" })).toHaveFocus();
+
+    fireEvent.keyDown(document, { key: "Escape" });
+    expect(screen.queryByRole("dialog", { name: "초대장 바로가기" })).not.toBeInTheDocument();
   });
 
   it("renders exclusive bride and groom npc characters", () => {
@@ -177,7 +195,7 @@ describe("GameWorld", () => {
 
   it("opens a spot modal from an action button", () => {
     render(<GameWorld profile={profile} />);
-    fireEvent.click(screen.getByRole("button", { name: "예식 보기" }));
+    fireEvent.click(within(openInvitationMenu()).getByRole("button", { name: "예식 보기" }));
     expect(screen.getByRole("dialog")).toHaveTextContent("예식 안내");
   });
 
@@ -205,14 +223,14 @@ describe("GameWorld", () => {
 
   it("closes the spot modal from the close button", () => {
     render(<GameWorld profile={profile} />);
-    fireEvent.click(screen.getByRole("button", { name: "예식 보기" }));
+    fireEvent.click(within(openInvitationMenu()).getByRole("button", { name: "예식 보기" }));
     fireEvent.click(screen.getByRole("button", { name: "닫기" }));
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
 
   it("focuses the close button and closes the spot modal with Escape", () => {
     render(<GameWorld profile={profile} />);
-    fireEvent.click(screen.getByRole("button", { name: "예식 보기" }));
+    fireEvent.click(within(openInvitationMenu()).getByRole("button", { name: "예식 보기" }));
 
     expect(screen.getByRole("button", { name: "닫기" })).toHaveFocus();
 
@@ -223,10 +241,10 @@ describe("GameWorld", () => {
 
   it("traps Tab and Shift+Tab focus inside the spot modal", () => {
     render(<GameWorld profile={profile} />);
-    fireEvent.click(screen.getByRole("button", { name: "예식 보기" }));
+    fireEvent.click(within(openInvitationMenu()).getByRole("button", { name: "예식 보기" }));
 
     const closeButton = screen.getByRole("button", { name: "닫기" });
-    const underlyingAction = screen.getByRole("button", { name: "길 찾기" });
+    const underlyingAction = screen.getByRole("button", { name: "초대장 메뉴" });
 
     expect(closeButton).toHaveFocus();
 
@@ -271,7 +289,12 @@ describe("GameWorld", () => {
     expect(player.style.top).toBe("68.75%");
     expect(player.style.top).not.toBe(initialTop);
 
-    advanceAnimation(150);
+    advanceAnimation(239);
+
+    expect(player.style.left).toBe("50%");
+    expect(player.style.top).toBe("68.75%");
+
+    advanceAnimation(240);
 
     expect(player.style.left).toBe("50%");
     expect(player.style.top).toBe("64.58333333333334%");
@@ -284,7 +307,7 @@ describe("GameWorld", () => {
     const player = screen.getByLabelText("하객1");
 
     fireEvent.click(map, { clientX: 205, clientY: 120 });
-    for (const now of [0, 150, 300, 450, 600, 750, 900, 1050, 1200, 1350, 1500, 1650, 1800, 1950, 2100]) {
+    for (const now of [0, 240, 480, 720, 960, 1200, 1440, 1680, 1920, 2160, 2400, 2640, 2880, 3120]) {
       advanceAnimation(now);
     }
 
@@ -304,10 +327,21 @@ describe("GameWorld", () => {
     expect(player.style.left).toBe("57.692307692307686%");
     expect(player.style.top).toBe("72.91666666666666%");
 
-    advanceAnimation(150);
+    advanceAnimation(299);
+
+    expect(player.style.left).toBe("57.692307692307686%");
+    expect(player.style.top).toBe("72.91666666666666%");
+
+    advanceAnimation(300);
 
     expect(player.style.left).toBe("65.38461538461539%");
     expect(player.style.top).toBe("72.91666666666666%");
+
+    advanceAnimation(539);
+    expect(player.style.left).toBe("65.38461538461539%");
+
+    advanceAnimation(540);
+    expect(player.style.left).toBe("73.07692307692307%");
 
     fireEvent.keyUp(joystick, { key: "ArrowRight" });
   });
@@ -337,7 +371,7 @@ describe("GameWorld", () => {
     vi.stubGlobal("fetch", fetchMock);
 
     render(<GameWorld profile={profile} />);
-    fireEvent.click(screen.getByRole("button", { name: "축하 쓰기" }));
+    fireEvent.click(within(openInvitationMenu()).getByRole("button", { name: "축하 쓰기" }));
 
     expect(await screen.findByText("저장된 축하 메시지")).toBeInTheDocument();
     expect(fetchMock).toHaveBeenCalledWith("https://worker.test/api/invitations/sample-garden/guestbook", {
@@ -433,9 +467,8 @@ describe("GameWorld", () => {
 
     fireEvent.click(map, { clientX: 205, clientY: 300 });
     advanceAnimation(100);
-    advanceAnimation(150);
-    advanceAnimation(200);
-    advanceAnimation(250);
+    advanceAnimation(339);
+    advanceAnimation(340);
 
     const moves = socket.sentMessages.map((message) => JSON.parse(message)).filter((message) => message.type === "move");
 

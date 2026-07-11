@@ -8,6 +8,12 @@ import {
   type WorldZoneId
 } from "@wedding-game/shared";
 import { computeNextGridPosition, directionFromVector, directionTowardPoint, snapToGrid } from "../game/movement";
+import {
+  advanceTileInput,
+  createTileInputState,
+  tileInputRepeatIntervalMs,
+  type TileInputState
+} from "../game/tileInput";
 import { gardenWorld, getWorldZone, getZoneForSpot, type Point } from "../game/world";
 import { connectRealtimeWithRetry, createMoveThrottle, getRoomUrl } from "../realtime/realtimeClient";
 import type { EntryProfile } from "./EntryScreen";
@@ -22,7 +28,6 @@ type GameWorldProps = {
 };
 
 const joystickDeadZone = 0.05;
-const gridStepIntervalMs = 150;
 const realtimeMoveIntervalMs = 100;
 
 const toPercent = (value: number, total: number) => `${(value / total) * 100}%`;
@@ -76,6 +81,7 @@ function realtimeStatusText(status: RealtimeStatus) {
 export function GameWorld({ profile }: GameWorldProps) {
   const [activeZoneId, setActiveZoneId] = useState<WorldZoneId>(gardenWorld.defaultZoneId);
   const [activeSpotId, setActiveSpotId] = useState<SpotId | null>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
   const activeZone = getWorldZone(gardenWorld, activeZoneId);
   const [position, setPosition] = useState<Point>(activeZone.spawn);
   const [target, setTarget] = useState<Point | null>(null);
@@ -87,13 +93,15 @@ export function GameWorld({ profile }: GameWorldProps) {
   const [realtimeStatus, setRealtimeStatus] = useState<RealtimeStatus>("offline");
   const activeZoneIdRef = useRef<WorldZoneId>(gardenWorld.defaultZoneId);
   const positionRef = useRef<Point>(activeZone.spawn);
-  const lastStepRef = useRef<number | null>(null);
+  const targetStepAtRef = useRef<number | null>(null);
+  const tileInputStateRef = useRef<TileInputState | null>(null);
   const connectionRef = useRef<RealtimeConnection | null>(null);
   const currentGuestIdRef = useRef<string | null>(null);
   const directionRef = useRef<Direction>("down");
   const moveSeqRef = useRef(0);
   const moveThrottleRef = useRef<((message: MoveMessage, now: number) => void) | null>(null);
   const joystickWasMovingRef = useRef(false);
+  const menuCloseButtonRef = useRef<HTMLButtonElement | null>(null);
 
   const sendRealtimeMove = useCallback((nextPosition: Point, moving: boolean, direction: Direction, zoneId: WorldZoneId, now: number) => {
     const throttle = moveThrottleRef.current;
@@ -126,7 +134,8 @@ export function GameWorld({ profile }: GameWorldProps) {
     setMoving(false);
     setStepFrame(1);
     setDirection("down");
-    lastStepRef.current = null;
+    targetStepAtRef.current = null;
+    tileInputStateRef.current = null;
     joystickWasMovingRef.current = false;
     positionRef.current = nextPosition;
     setPosition(nextPosition);
@@ -153,8 +162,26 @@ export function GameWorld({ profile }: GameWorldProps) {
       moveToZone(zone.id, zone.spawn);
     }
 
+    setMenuOpen(false);
     setActiveSpotId(spotId);
   }, [activeZoneId, moveToZone]);
+
+  useEffect(() => {
+    if (!menuOpen) {
+      return;
+    }
+
+    menuCloseButtonRef.current?.focus();
+
+    function handleEscape(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setMenuOpen(false);
+      }
+    }
+
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
+  }, [menuOpen]);
 
   useEffect(() => {
     const workerUrl = import.meta.env.VITE_WORKER_URL;
@@ -277,7 +304,8 @@ export function GameWorld({ profile }: GameWorldProps) {
     const hasJoystickInput = hasJoystickMovement(joystickVector);
 
     if (!target && !hasJoystickInput) {
-      lastStepRef.current = null;
+      targetStepAtRef.current = null;
+      tileInputStateRef.current = null;
       return;
     }
 
@@ -286,17 +314,6 @@ export function GameWorld({ profile }: GameWorldProps) {
     let frame = 0;
 
     function tick(now: number) {
-      if (lastStepRef.current === null) {
-        lastStepRef.current = now - gridStepIntervalMs;
-      }
-
-      if (now - lastStepRef.current < gridStepIntervalMs) {
-        frame = requestAnimationFrame(tick);
-        return;
-      }
-
-      lastStepRef.current = now;
-
       const current = positionRef.current;
       const hasDirectionalInput = hasJoystickMovement(movementVector);
       const direction = hasDirectionalInput
@@ -308,9 +325,31 @@ export function GameWorld({ profile }: GameWorldProps) {
       if (!direction) {
         setMoving(false);
         setStepFrame(1);
-        lastStepRef.current = null;
+        targetStepAtRef.current = null;
+        tileInputStateRef.current = null;
         setTarget(null);
         return;
+      }
+
+      if (hasDirectionalInput) {
+        const inputState = tileInputStateRef.current ?? createTileInputState(direction, now);
+        const inputResult = advanceTileInput(inputState, direction, now);
+        tileInputStateRef.current = inputResult.state;
+
+        if (!inputResult.shouldStep) {
+          frame = requestAnimationFrame(tick);
+          return;
+        }
+      } else {
+        tileInputStateRef.current = null;
+        const nextStepAt = targetStepAtRef.current ?? now;
+
+        if (now < nextStepAt) {
+          frame = requestAnimationFrame(tick);
+          return;
+        }
+
+        targetStepAtRef.current = now + tileInputRepeatIntervalMs;
       }
 
       const next = computeNextGridPosition({
@@ -329,7 +368,8 @@ export function GameWorld({ profile }: GameWorldProps) {
         setStepFrame(1);
         sendRealtimeMove(current, false, direction, activeZone.id, now);
         setTarget(null);
-        lastStepRef.current = null;
+        targetStepAtRef.current = null;
+        tileInputStateRef.current = null;
         return;
       }
 
@@ -343,7 +383,7 @@ export function GameWorld({ profile }: GameWorldProps) {
         setMoving(false);
         setStepFrame(1);
         setTarget(null);
-        lastStepRef.current = null;
+        targetStepAtRef.current = null;
         return;
       }
 
@@ -369,6 +409,7 @@ export function GameWorld({ profile }: GameWorldProps) {
     }
 
     setTarget(nextTarget);
+    targetStepAtRef.current = null;
   }
 
   function handleJoystickVectorChange(vector: Point) {
@@ -380,12 +421,13 @@ export function GameWorld({ profile }: GameWorldProps) {
     if (isMoving) {
       joystickWasMovingRef.current = true;
       setTarget(null);
-      lastStepRef.current = null;
+      targetStepAtRef.current = null;
       directionRef.current = directionFromVector(vector);
       return;
     }
 
     joystickWasMovingRef.current = false;
+    tileInputStateRef.current = null;
     if (wasMoving) {
       setMoving(false);
       setStepFrame(1);
@@ -395,14 +437,16 @@ export function GameWorld({ profile }: GameWorldProps) {
 
   return (
     <section className="game-world" aria-label="모바일 청첩장 월드">
-      <div className={`realtime-pill realtime-pill--${realtimeStatus}`}>
-        {realtimeStatusText(realtimeStatus)}
-      </div>
-      <div className="world-zone-panel">
-        <div className="world-zone-summary">
-          <span>현재 구역</span>
-          <strong>{activeZone.label}</strong>
-          <small>{activeZone.subtitle}</small>
+      <header className="world-hud">
+        <div className="world-hud__status">
+          <div className="world-zone-summary">
+            <span>현재 구역</span>
+            <strong>{activeZone.label}</strong>
+            <small>{activeZone.subtitle}</small>
+          </div>
+          <div className={`realtime-pill realtime-pill--${realtimeStatus}`}>
+            {realtimeStatusText(realtimeStatus)}
+          </div>
         </div>
         <div className="world-zone-tabs" aria-label="맵 구역 이동">
           {gardenWorld.zones.map((zone) => (
@@ -416,8 +460,9 @@ export function GameWorld({ profile }: GameWorldProps) {
             </button>
           ))}
         </div>
-      </div>
-      <div className={`world-map world-map--${activeZone.id}`}>
+      </header>
+      <div className="world-map-shell">
+        <div className={`world-map world-map--${activeZone.id}`}>
         <div
           className="world-map__stage"
           aria-label={`${activeZone.label} 지도`}
@@ -532,17 +577,53 @@ export function GameWorld({ profile }: GameWorldProps) {
             <span>{profile.nickname}</span>
           </div>
         </div>
-      </div>
-      <div className="world-controls">
-        <VirtualJoystick onVectorChange={handleJoystickVectorChange} />
-        <div className="world-actions" aria-label="초대장 바로가기">
-          {invitationContent.spots.map((spot) => (
-            <button key={spot.id} type="button" onClick={() => openSpot(spot.id)}>
-              {spot.actionLabel}
+          <div className="world-control-dock">
+            <VirtualJoystick onVectorChange={handleJoystickVectorChange} />
+            <button
+              type="button"
+              className="world-menu-button"
+              aria-expanded={menuOpen}
+              onClick={() => setMenuOpen(true)}
+            >
+              <span aria-hidden="true">+</span>
+              초대장 메뉴
             </button>
-          ))}
+          </div>
         </div>
       </div>
+      {menuOpen ? (
+        <>
+          <button
+            type="button"
+            className="world-menu-backdrop"
+            aria-label="초대장 메뉴 닫기"
+            onClick={() => setMenuOpen(false)}
+          />
+          <section className="world-menu-sheet" role="dialog" aria-modal="true" aria-label="초대장 바로가기">
+            <header className="world-menu-sheet__header">
+              <div>
+                <span>WEDDING MENU</span>
+                <h2>초대장 바로가기</h2>
+              </div>
+              <button
+                ref={menuCloseButtonRef}
+                type="button"
+                aria-label="초대장 메뉴 닫기"
+                onClick={() => setMenuOpen(false)}
+              >
+                ×
+              </button>
+            </header>
+            <div className="world-menu-grid">
+              {invitationContent.spots.map((spot) => (
+                <button key={spot.id} type="button" onClick={() => openSpot(spot.id)}>
+                  {spot.actionLabel}
+                </button>
+              ))}
+            </div>
+          </section>
+        </>
+      ) : null}
       {activeSpotId ? (
         <SpotModal spotId={activeSpotId} nickname={profile.nickname} onClose={() => setActiveSpotId(null)} />
       ) : null}

@@ -30,18 +30,26 @@ describe("world geometry", () => {
 
   it("gives every zone a distinctive set of pixel decorations", () => {
     for (const zone of gardenWorld.zones) {
-      expect(zone.decorations.length).toBeGreaterThanOrEqual(12);
-      expect(new Set(zone.decorations.map((decoration) => decoration.kind)).size).toBeGreaterThanOrEqual(6);
+      expect(zone.decorations.length).toBeGreaterThanOrEqual(16);
+      expect(new Set(zone.decorations.map((decoration) => decoration.kind)).size).toBeGreaterThanOrEqual(8);
       expect(zone.decorations.every((decoration) => decoration.label.length > 0)).toBe(true);
     }
 
     const kinds = (zoneId: "entrance" | "ceremony" | "gallery" | "lounge") =>
       new Set(getWorldZone(gardenWorld, zoneId).decorations.map((decoration) => decoration.kind));
 
-    expect([...kinds("entrance")]).toEqual(expect.arrayContaining(["flower-arch", "butterfly"]));
-    expect([...kinds("ceremony")]).toEqual(expect.arrayContaining(["rose-pillar", "petal-scatter"]));
-    expect([...kinds("gallery")]).toEqual(expect.arrayContaining(["star-garland", "string-lights"]));
-    expect([...kinds("lounge")]).toEqual(expect.arrayContaining(["gift-stack", "dessert-cart"]));
+    expect([...kinds("entrance")]).toEqual(
+      expect.arrayContaining(["flower-arch", "butterfly", "lily-cluster", "ribbon-post", "flower-fence"])
+    );
+    expect([...kinds("ceremony")]).toEqual(
+      expect.arrayContaining(["rose-pillar", "petal-scatter", "aisle-bouquet", "ribbon-post"])
+    );
+    expect([...kinds("gallery")]).toEqual(
+      expect.arrayContaining(["star-garland", "string-lights", "mosaic-star", "flower-fence"])
+    );
+    expect([...kinds("lounge")]).toEqual(
+      expect.arrayContaining(["gift-stack", "dessert-cart", "tea-chair", "party-flag"])
+    );
   });
 
   it("keeps bride and groom npc labels readable on the mobile stage", () => {
@@ -62,5 +70,31 @@ describe("world geometry", () => {
 
     expect(dessertCart).toBeDefined();
     expect(dessertCart!.y).toBeGreaterThanOrEqual(lounge.spawn.y + 36 + 8);
+  });
+
+  it("keeps decorative scenery clear of cards, portals, and npc hit areas", () => {
+    const intersects = (
+      first: { x: number; y: number; width: number; height: number },
+      second: { x: number; y: number; width: number; height: number }
+    ) =>
+      first.x < second.x + second.width &&
+      first.x + first.width > second.x &&
+      first.y < second.y + second.height &&
+      first.y + first.height > second.y;
+
+    for (const zone of gardenWorld.zones) {
+      const reserved = [
+        ...zone.spots,
+        ...zone.portals,
+        ...zone.npcs.map((npc) => ({ x: npc.x - 42, y: npc.y - 45, width: 84, height: 90 }))
+      ];
+
+      for (const decoration of zone.decorations) {
+        expect(
+          reserved.some((rect) => intersects(decoration, rect)),
+          `${zone.id}/${decoration.id} overlaps an interactive element`
+        ).toBe(false);
+      }
+    }
   });
 });

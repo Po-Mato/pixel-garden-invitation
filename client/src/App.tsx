@@ -6,8 +6,8 @@ export function App() {
   const [profile, setProfile] = useState<EntryProfile | null>(null);
 
   return (
-    <main className="app-shell">
-      <section className="phone-frame">
+    <main className={`app-shell ${profile ? "app-shell--playing" : ""}`}>
+      <section className={`phone-frame ${profile ? "phone-frame--playing" : ""}`}>
         {profile ? <GameWorld profile={profile} /> : <EntryScreen onEnter={setProfile} />}
       </section>
     </main>

@@ -47,6 +47,7 @@ it("월드에서 24x36 프레임을 48x72로 두 배 확대한다", () => {
   const sprite = screen.getByLabelText("고밀도 하객");
   const baseLayer = sprite.querySelector('[data-character-layer="base"]');
 
+  expect(sprite).toHaveClass("character-sprite--world");
   expect(sprite).toHaveStyle({
     "--character-source-width": "24px",
     "--character-source-height": "36px",
@@ -69,7 +70,9 @@ it("미리보기에서는 기존 96x144 프레임을 유지한다", () => {
     />
   );
 
-  expect(screen.getByLabelText("미리보기 하객")).toHaveStyle({
+  const sprite = screen.getByLabelText("미리보기 하객");
+  expect(sprite).not.toHaveClass("character-sprite--world");
+  expect(sprite).toHaveStyle({
     "--character-source-width": "96px",
     "--character-source-height": "144px",
     "--character-display-width": "96px",
@@ -90,7 +93,9 @@ it("선택 목록 썸네일은 고해상도 원본을 48x72로 표시한다", ()
     />
   );
 
-  expect(screen.getByLabelText("목록 하객")).toHaveStyle({
+  const sprite = screen.getByLabelText("목록 하객");
+  expect(sprite).not.toHaveClass("character-sprite--world");
+  expect(sprite).toHaveStyle({
     "--character-source-width": "96px",
     "--character-source-height": "144px",
     "--character-display-width": "48px",

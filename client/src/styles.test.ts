@@ -4,22 +4,37 @@ import { describe, expect, it } from "vitest";
 const styles = readFileSync("src/styles.css", "utf8");
 
 describe("mobile world controls", () => {
-  it("uses a two-column action grid inside the fixed phone frame at every viewport", () => {
-    const baseRule = styles.match(/\.world-actions\s*{([^}]*)}/s)?.[1] ?? "";
+  it("uses a viewport-locked game shell with a flexible map", () => {
+    const gameWorldRule = styles.match(/\.game-world\s*{([^}]*)}/s)?.[1] ?? "";
+    const mapShellRule = styles.match(/\.world-map-shell\s*{([^}]*)}/s)?.[1] ?? "";
 
-    expect(baseRule).toContain("display: grid;");
-    expect(baseRule).toMatch(/grid-template-columns:\s*repeat\(2,\s*minmax\(0,\s*1fr\)\);/);
-    expect(baseRule).not.toContain("overflow-x: auto");
+    expect(styles).toContain(".app-shell--playing");
+    expect(styles).toContain("height: 100dvh;");
+    expect(gameWorldRule).toContain("height: 100%;");
+    expect(gameWorldRule).toContain("overflow: hidden;");
+    expect(mapShellRule).toContain("min-height: 0;");
+    expect(mapShellRule).toContain("flex: 1 1 auto;");
   });
 
-  it("wraps invitation actions into two columns beside the joystick", () => {
-    const mobileStart = styles.indexOf("@media (max-width: 420px)");
-    const mobileEnd = styles.indexOf("@media (prefers-reduced-motion: reduce)", mobileStart);
-    const mobileRules = styles.slice(mobileStart, mobileEnd);
+  it("overlays controls on the map and respects mobile safe areas", () => {
+    const controlRule = styles.match(/\.world-control-dock\s*{([^}]*)}/s)?.[1] ?? "";
 
-    expect(mobileRules).toMatch(/\.world-actions\s*{[^}]*display:\s*grid;/s);
-    expect(mobileRules).toMatch(/\.world-actions\s*{[^}]*grid-template-columns:\s*repeat\(2,\s*minmax\(0,\s*1fr\)\);/s);
-    expect(mobileRules).toMatch(/\.world-actions button\s*{[^}]*min-width:\s*0;/s);
+    expect(controlRule).toContain("position: absolute;");
+    expect(controlRule).toContain("pointer-events: none;");
+    expect(styles).toContain("env(safe-area-inset-bottom)");
+    expect(styles).toContain(".world-menu-sheet");
+  });
+
+  it("keeps the 390 by 720 stage proportional when short screens shrink the map", () => {
+    const mapShellRule = styles.match(/\.world-map-shell\s*{([^}]*)}/s)?.[1] ?? "";
+    const mapRule = styles.match(/\.world-map\s*{([^}]*)}/s)?.[1] ?? "";
+    const stageRule = styles.match(/\.world-map__stage\s*{([^}]*)}/s)?.[1] ?? "";
+
+    expect(mapShellRule).toContain("container-type: size;");
+    expect(mapRule).toContain("width: min(100%, calc(100cqh * 13 / 24));");
+    expect(stageRule).toContain("width: 390px;");
+    expect(stageRule).toContain("height: 720px;");
+    expect(stageRule).toContain("scale: calc(100cqw / 390px);");
   });
 });
 
@@ -41,10 +56,24 @@ describe("pixel wedding festival map", () => {
       "rose-pillar",
       "gift-stack",
       "dessert-cart",
-      "star-garland"
+      "star-garland",
+      "flower-fence",
+      "lily-cluster",
+      "ribbon-post",
+      "aisle-bouquet",
+      "mosaic-star",
+      "tea-chair",
+      "party-flag"
     ]) {
       expect(styles).toContain(`.world-decoration--${kind}`);
     }
+  });
+
+  it("builds the map from ground, edge, decoration, path, and foreground depth layers", () => {
+    expect(styles).toContain(".world-map::before");
+    expect(styles).toContain(".world-map::after");
+    expect(styles).toMatch(/\.world-decoration-layer\s*{[^}]*z-index:\s*1;/s);
+    expect(styles).toMatch(/\.world-path\s*{[^}]*z-index:\s*2;/s);
   });
 
   it("does not duplicate the whole flower arch as oversized flower blocks", () => {
@@ -61,5 +90,15 @@ describe("pixel wedding festival map", () => {
     expect(styles).toMatch(
       /@media \(prefers-reduced-motion: reduce\)[\s\S]*\.world-decoration--butterfly[\s\S]*animation:\s*none;/
     );
+  });
+});
+
+describe("world character separation", () => {
+  it("adds a crisp light rim and dark pixel shadow only to world sprites", () => {
+    const worldSpriteRule = styles.match(/\.character-sprite--world\s*{([^}]*)}/s)?.[1] ?? "";
+
+    expect(worldSpriteRule).toContain("drop-shadow(-1px 0 0");
+    expect(worldSpriteRule).toContain("drop-shadow(1px 0 0");
+    expect(worldSpriteRule).toContain("drop-shadow(2px 2px 0");
   });
 });

@@ -54,7 +54,7 @@ export function CharacterSprite({
 
   return (
     <span
-      className={`character-sprite ${useFrontIdle ? "character-sprite--idle-front" : ""}`}
+      className={`character-sprite character-sprite--${displayMode} ${useFrontIdle ? "character-sprite--idle-front" : ""}`}
       aria-label={label}
       style={spriteStyle}
     >
