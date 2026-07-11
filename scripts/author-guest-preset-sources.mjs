@@ -11,10 +11,10 @@ const frame = presetCatalog.frame.source;
 const targetFootBottom = 132;
 const walkStepShift = [-1, 0, 1];
 const minimumFrameWidthByDirection = {
-  down: 36,
-  left: 24,
-  right: 24,
-  up: 36
+  down: 46,
+  left: 30,
+  right: 30,
+  up: 46
 };
 
 function sourcePath(sourceRoot, manifestPath) {
@@ -147,13 +147,12 @@ async function pixelizeTransparentSource(source, { minimumWidth = 0 } = {}) {
   const metadata = await sharp(source).metadata();
   const scaledHeight = Math.min(128, frame.height);
   const scaledWidth = Math.round((metadata.width / metadata.height) * scaledHeight);
-  const targetWidth = Math.min(frame.width - 8, Math.max(scaledWidth, minimumWidth));
-  const fit = targetWidth > scaledWidth ? "fill" : "inside";
+  const targetWidth = Math.min(frame.width - 8, scaledWidth);
   const resized = await sharp(source)
     .resize({
       width: targetWidth,
       height: scaledHeight,
-      fit,
+      fit: "inside",
       kernel: sharp.kernel.nearest,
       background: "#00000000"
     })

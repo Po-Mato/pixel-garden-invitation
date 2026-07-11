@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { getNearbySpot, isBlocked, clampToWorld } from "./geometry";
-import { gardenWorld } from "./world";
+import { gardenWorld, getWorldZone, getZoneForSpot } from "./world";
 
 describe("world geometry", () => {
   it("clamps the player inside the world", () => {
@@ -15,6 +15,29 @@ describe("world geometry", () => {
   it("finds the nearest actionable spot", () => {
     expect(getNearbySpot({ x: 200, y: 114 }, gardenWorld)?.id).toBe("wedding-info");
     expect(getNearbySpot({ x: 210, y: 340 }, gardenWorld)).toBeNull();
+  });
+
+  it("splits invitation content into navigable map zones", () => {
+    expect(gardenWorld.zones.map((zone) => zone.id)).toEqual(["entrance", "ceremony", "gallery", "lounge"]);
+    expect(getWorldZone(gardenWorld, "lounge").spots.map((spot) => spot.id)).toEqual(["rsvp", "guestbook"]);
+    expect(getZoneForSpot(gardenWorld, "directions").id).toBe("entrance");
+    expect(getWorldZone(gardenWorld, "ceremony").portals.map((portal) => portal.to)).toEqual([
+      "entrance",
+      "gallery",
+      "lounge"
+    ]);
+  });
+
+  it("gives every zone a distinctive set of pixel decorations", () => {
+    for (const zone of gardenWorld.zones) {
+      expect(zone.decorations.length).toBeGreaterThanOrEqual(6);
+      expect(new Set(zone.decorations.map((decoration) => decoration.kind)).size).toBeGreaterThanOrEqual(3);
+      expect(zone.decorations.every((decoration) => decoration.label.length > 0)).toBe(true);
+    }
+
+    expect(new Set(gardenWorld.zones.flatMap((zone) => zone.decorations.map((decoration) => decoration.kind)))).toEqual(
+      new Set(["flower-bed", "tree", "lamp", "banner", "pond", "bench", "photo-frame", "mailbox", "table", "fountain"])
+    );
   });
 
   it("keeps bride and groom npc labels readable on the mobile stage", () => {

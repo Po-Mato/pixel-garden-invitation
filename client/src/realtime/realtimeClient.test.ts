@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { defaultCharacterAppearance } from "@wedding-game/shared";
-import { connectRealtime, createMoveThrottle, getRoomUrl } from "./realtimeClient";
+import { defaultCharacterAppearance, type WorldZoneId } from "@wedding-game/shared";
+import { connectRealtime, connectRealtimeWithRetry, createMoveThrottle, getRoomUrl } from "./realtimeClient";
 
 type MockListener = (event: Event) => void;
 
@@ -11,6 +11,7 @@ class MockWebSocket {
   readonly sentMessages: string[] = [];
   readonly listeners = new Map<string, MockListener[]>();
   readyState = MockWebSocket.OPEN;
+  closed = false;
 
   constructor(readonly url: string) {
     MockWebSocket.instances.push(this);
@@ -27,6 +28,7 @@ class MockWebSocket {
   }
 
   close() {
+    this.closed = true;
     this.emit("close");
   }
 
@@ -38,7 +40,8 @@ class MockWebSocket {
 const joinMessage = {
   type: "join",
   nickname: "하객1",
-  appearance: defaultCharacterAppearance
+  appearance: defaultCharacterAppearance,
+  zoneId: "ceremony"
 } as const;
 
 describe("getRoomUrl", () => {
@@ -66,9 +69,9 @@ describe("createMoveThrottle", () => {
   it("limits movement messages to 10fps", () => {
     const send = vi.fn();
     const throttle = createMoveThrottle(send, 100);
-    throttle({ type: "move", x: 1, y: 1, direction: "down", moving: true, seq: 1 }, 0);
-    throttle({ type: "move", x: 2, y: 2, direction: "down", moving: true, seq: 2 }, 50);
-    throttle({ type: "move", x: 3, y: 3, direction: "down", moving: true, seq: 3 }, 100);
+    throttle({ type: "move", x: 1, y: 1, direction: "down", moving: true, seq: 1, zoneId: "ceremony" }, 0);
+    throttle({ type: "move", x: 2, y: 2, direction: "down", moving: true, seq: 2, zoneId: "ceremony" }, 50);
+    throttle({ type: "move", x: 3, y: 3, direction: "down", moving: true, seq: 3, zoneId: "ceremony" }, 100);
     expect(send).toHaveBeenCalledTimes(2);
   });
 });
@@ -141,6 +144,7 @@ describe("connectRealtime", () => {
             direction: "down",
             moving: false,
             seq: 0,
+            zoneId: "gallery",
             lastSeenAt: 1000
           }]
         })
@@ -152,8 +156,156 @@ describe("connectRealtime", () => {
       guestId: "guest_self",
       guests: [expect.objectContaining({
         guestId: "guest_remote",
-        appearance: defaultCharacterAppearance
+        appearance: defaultCharacterAppearance,
+        zoneId: "gallery"
       })]
     });
+  });
+
+  it("rejects server guests from unknown zones", () => {
+    const onMessage = vi.fn();
+    connectRealtime("wss://worker.example.com/rooms/sample-garden", joinMessage, {
+      onOpen: vi.fn(),
+      onClose: vi.fn(),
+      onMessage
+    });
+
+    MockWebSocket.instances[0].emit(
+      "message",
+      new MessageEvent("message", {
+        data: JSON.stringify({
+          type: "welcome",
+          guestId: "guest_self",
+          guests: [{
+            guestId: "guest_remote",
+            nickname: "하객2",
+            appearance: defaultCharacterAppearance,
+            x: 39,
+            y: 72,
+            direction: "down",
+            moving: false,
+            seq: 0,
+            zoneId: "rooftop",
+            lastSeenAt: 1000
+          }]
+        })
+      })
+    );
+
+    expect(onMessage).toHaveBeenCalledWith({ type: "error", code: "bad_message" });
+  });
+});
+
+describe("connectRealtimeWithRetry", () => {
+  beforeEach(() => {
+    MockWebSocket.instances = [];
+    vi.useFakeTimers();
+    vi.stubGlobal("WebSocket", MockWebSocket);
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+    vi.unstubAllGlobals();
+  });
+
+  it("retries failures with bounded exponential backoff", () => {
+    const connection = connectRealtimeWithRetry(
+      "wss://worker.example.com/rooms/sample-garden",
+      () => joinMessage,
+      { onOpen: vi.fn(), onClose: vi.fn(), onMessage: vi.fn() }
+    );
+
+    expect(MockWebSocket.instances).toHaveLength(1);
+    MockWebSocket.instances[0].emit("error");
+
+    vi.advanceTimersByTime(499);
+    expect(MockWebSocket.instances).toHaveLength(1);
+    vi.advanceTimersByTime(1);
+    expect(MockWebSocket.instances).toHaveLength(2);
+
+    MockWebSocket.instances[1].emit("error");
+    vi.advanceTimersByTime(999);
+    expect(MockWebSocket.instances).toHaveLength(2);
+    vi.advanceTimersByTime(1);
+    expect(MockWebSocket.instances).toHaveLength(3);
+
+    MockWebSocket.instances[2].emit("error");
+    vi.advanceTimersByTime(2000);
+    expect(MockWebSocket.instances).toHaveLength(4);
+
+    connection.close();
+  });
+
+  it("resets the retry delay after a connection opens", () => {
+    const connection = connectRealtimeWithRetry(
+      "wss://worker.example.com/rooms/sample-garden",
+      () => joinMessage,
+      { onOpen: vi.fn(), onClose: vi.fn(), onMessage: vi.fn() }
+    );
+
+    MockWebSocket.instances[0].emit("error");
+    vi.advanceTimersByTime(500);
+    MockWebSocket.instances[1].emit("open");
+    MockWebSocket.instances[1].emit("error");
+
+    vi.advanceTimersByTime(499);
+    expect(MockWebSocket.instances).toHaveLength(2);
+    vi.advanceTimersByTime(1);
+    expect(MockWebSocket.instances).toHaveLength(3);
+
+    connection.close();
+  });
+
+  it("reads the latest join state for every reconnect attempt", () => {
+    let zoneId: WorldZoneId = joinMessage.zoneId;
+    const connection = connectRealtimeWithRetry(
+      "wss://worker.example.com/rooms/sample-garden",
+      () => ({ ...joinMessage, zoneId }),
+      { onOpen: vi.fn(), onClose: vi.fn(), onMessage: vi.fn() }
+    );
+
+    MockWebSocket.instances[0].emit("error");
+    zoneId = "lounge";
+    vi.advanceTimersByTime(500);
+    MockWebSocket.instances[1].emit("open");
+
+    expect(JSON.parse(MockWebSocket.instances[1].sentMessages[0])).toMatchObject({ zoneId: "lounge" });
+
+    connection.close();
+  });
+
+  it("does not retry after an intentional close", () => {
+    const connection = connectRealtimeWithRetry(
+      "wss://worker.example.com/rooms/sample-garden",
+      () => joinMessage,
+      { onOpen: vi.fn(), onClose: vi.fn(), onMessage: vi.fn() }
+    );
+
+    connection.close();
+    vi.advanceTimersByTime(30_000);
+
+    expect(MockWebSocket.instances).toHaveLength(1);
+  });
+
+  it("stops retrying after the room reports that it is full", () => {
+    const onMessage = vi.fn();
+    connectRealtimeWithRetry(
+      "wss://worker.example.com/rooms/sample-garden",
+      () => joinMessage,
+      { onOpen: vi.fn(), onClose: vi.fn(), onMessage }
+    );
+    const socket = MockWebSocket.instances[0];
+
+    socket.emit(
+      "message",
+      new MessageEvent("message", {
+        data: JSON.stringify({ type: "error", code: "room_full" })
+      })
+    );
+    vi.advanceTimersByTime(30_000);
+
+    expect(onMessage).toHaveBeenCalledWith({ type: "error", code: "room_full" });
+    expect(socket.closed).toBe(true);
+    expect(MockWebSocket.instances).toHaveLength(1);
   });
 });

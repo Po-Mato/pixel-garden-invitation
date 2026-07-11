@@ -3,13 +3,16 @@ import {
   type ClientMessage,
   type Direction,
   type RoomGuest,
-  type ServerMessage
+  type ServerMessage,
+  type WorldZoneId,
+  worldZoneIds
 } from "@wedding-game/shared";
 
 type MoveMessage = Extract<ClientMessage, { type: "move" }>;
 type JoinMessage = Extract<ClientMessage, { type: "join" }>;
 
 const directions = new Set<Direction>(["up", "down", "left", "right"]);
+const zones = new Set<WorldZoneId>(worldZoneIds);
 const serverErrorCodes = new Set<Extract<ServerMessage, { type: "error" }>["code"]>([
   "bad_message",
   "room_full",
@@ -20,6 +23,11 @@ export type RealtimeHandlers = {
   onOpen: () => void;
   onClose: () => void;
   onMessage: (message: ServerMessage) => void;
+};
+
+export type RealtimeRetryOptions = {
+  initialDelayMs?: number;
+  maxDelayMs?: number;
 };
 
 export function getRoomUrl(workerUrl: string, invitationId: string) {
@@ -64,6 +72,7 @@ function isPositionState(value: unknown) {
     typeof value.y === "number" &&
     Number.isFinite(value.y) &&
     directions.has(value.direction as Direction) &&
+    zones.has(value.zoneId as WorldZoneId) &&
     typeof value.moving === "boolean" &&
     typeof value.seq === "number" &&
     Number.isInteger(value.seq)
@@ -91,6 +100,7 @@ function normalizeRoomGuest(value: unknown): RoomGuest | null {
     direction: value.direction as Direction,
     moving: value.moving as boolean,
     seq: value.seq as number,
+    zoneId: value.zoneId as WorldZoneId,
     lastSeenAt: value.lastSeenAt as number
   };
 }
@@ -160,6 +170,7 @@ export function connectRealtime(url: string, join: JoinMessage, handlers: Realti
 
   socket.addEventListener("error", () => {
     notifyClose();
+    socket.close();
   });
 
   socket.addEventListener("message", (event) => {
@@ -179,6 +190,84 @@ export function connectRealtime(url: string, join: JoinMessage, handlers: Realti
     },
     close() {
       socket.close();
+    }
+  };
+}
+
+export function connectRealtimeWithRetry(
+  url: string,
+  getJoin: () => JoinMessage,
+  handlers: RealtimeHandlers,
+  options: RealtimeRetryOptions = {}
+) {
+  const initialDelayMs = options.initialDelayMs ?? 500;
+  const maxDelayMs = options.maxDelayMs ?? 8000;
+  let stopped = false;
+  let retryAttempt = 0;
+  let retryTimer: ReturnType<typeof setTimeout> | null = null;
+  let connection: ReturnType<typeof connectRealtime> | null = null;
+
+  const scheduleRetry = () => {
+    if (stopped || retryTimer !== null) return;
+    const delay = Math.min(initialDelayMs * (2 ** retryAttempt), maxDelayMs);
+    retryAttempt += 1;
+    retryTimer = setTimeout(() => {
+      retryTimer = null;
+      openConnection();
+    }, delay);
+  };
+
+  const openConnection = () => {
+    if (stopped) return;
+
+    let candidate: ReturnType<typeof connectRealtime>;
+    try {
+      candidate = connectRealtime(url, getJoin(), {
+        onOpen: () => {
+          if (stopped || connection !== candidate) return;
+          retryAttempt = 0;
+          handlers.onOpen();
+        },
+        onClose: () => {
+          if (stopped || connection !== candidate) return;
+          connection = null;
+          handlers.onClose();
+          scheduleRetry();
+        },
+        onMessage: (message) => {
+          if (stopped || connection !== candidate) return;
+
+          handlers.onMessage(message);
+          if (message.type === "error" && message.code === "room_full") {
+            stopped = true;
+            connection = null;
+            candidate.close();
+          }
+        }
+      });
+      connection = candidate;
+    } catch {
+      connection = null;
+      handlers.onClose();
+      scheduleRetry();
+    }
+  };
+
+  openConnection();
+
+  return {
+    send(message: ClientMessage) {
+      connection?.send(message);
+    },
+    close() {
+      stopped = true;
+      if (retryTimer !== null) {
+        clearTimeout(retryTimer);
+        retryTimer = null;
+      }
+      const activeConnection = connection;
+      connection = null;
+      activeConnection?.close();
     }
   };
 }

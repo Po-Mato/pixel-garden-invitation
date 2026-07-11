@@ -26,12 +26,23 @@ describe("parseClientMessage", () => {
     expect(parseClientMessage({
       type: "join",
       nickname: "민지",
-      appearance: defaultCharacterAppearance
+      appearance: defaultCharacterAppearance,
+      zoneId: "ceremony"
     })).toEqual({
       type: "join",
       nickname: "민지",
-      appearance: defaultCharacterAppearance
+      appearance: defaultCharacterAppearance,
+      zoneId: "ceremony"
     });
+  });
+
+  it("rejects an unknown join zone", () => {
+    expect(parseClientMessage({
+      type: "join",
+      nickname: "민지",
+      appearance: defaultCharacterAppearance,
+      zoneId: "rooftop"
+    })).toBeNull();
   });
 
   it("rejects the legacy avatar join shape", () => {
@@ -50,15 +61,29 @@ describe("parseClientMessage", () => {
       y: 72,
       direction: "down",
       moving: true,
-      seq: 7
+      seq: 7,
+      zoneId: "gallery"
     })).toEqual({
       type: "move",
       x: 48,
       y: 72,
       direction: "down",
       moving: true,
-      seq: 7
+      seq: 7,
+      zoneId: "gallery"
     });
+  });
+
+  it("rejects an unknown move zone", () => {
+    expect(parseClientMessage({
+      type: "move",
+      x: 48,
+      y: 72,
+      direction: "down",
+      moving: true,
+      seq: 7,
+      zoneId: "parking"
+    })).toBeNull();
   });
 
   it("rejects non-finite move coordinates", () => {

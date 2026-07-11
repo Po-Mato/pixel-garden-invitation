@@ -1,4 +1,4 @@
-import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { defaultCharacterAppearance, getDefaultAppearance } from "@wedding-game/shared";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { GameWorld } from "./GameWorld";
@@ -73,6 +73,7 @@ beforeEach(() => {
 
 afterEach(() => {
   cleanup();
+  vi.useRealTimers();
   vi.restoreAllMocks();
   vi.unstubAllEnvs();
   vi.unstubAllGlobals();
@@ -122,6 +123,7 @@ function serverGuest(overrides: Partial<Record<string, unknown>> = {}) {
     direction: "down",
     moving: false,
     seq: 0,
+    zoneId: "ceremony",
     lastSeenAt: 1000,
     ...overrides
   };
@@ -147,15 +149,18 @@ function pressTabWithBrowserFallback(targetIfUntrapped: HTMLElement, shiftKey = 
 describe("GameWorld", () => {
   const profile = { nickname: "하객1", appearance: defaultCharacterAppearance };
 
-  it("renders all MVP spots", () => {
+  it("renders the active map zone and zone travel controls", () => {
     render(<GameWorld profile={profile} />);
+    const zoneTabs = within(screen.getByLabelText("맵 구역 이동"));
+
     expect(screen.getByText("예식 안내")).toBeInTheDocument();
-    expect(screen.getByText("오시는 길")).toBeInTheDocument();
-    expect(screen.getByText("RSVP")).toBeInTheDocument();
-    expect(screen.getByText("방명록")).toBeInTheDocument();
     expect(screen.getByText("신랑신부")).toBeInTheDocument();
-    expect(screen.getByText("갤러리")).toBeInTheDocument();
     expect(screen.getByText("스토리")).toBeInTheDocument();
+    expect(zoneTabs.getByRole("button", { name: "입구" })).toBeInTheDocument();
+    expect(zoneTabs.getByRole("button", { name: "갤러리" })).toBeInTheDocument();
+    expect(zoneTabs.getByRole("button", { name: "라운지" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "길 찾기" })).toBeInTheDocument();
+    expect(screen.getByLabelText("예식장 지도")).toHaveAttribute("data-zone", "ceremony");
   });
 
   it("renders exclusive bride and groom npc characters", () => {
@@ -178,8 +183,24 @@ describe("GameWorld", () => {
 
   it("opens a spot modal from a map spot button", () => {
     render(<GameWorld profile={profile} />);
+    fireEvent.click(within(screen.getByLabelText("맵 구역 이동")).getByRole("button", { name: "갤러리" }));
     fireEvent.click(screen.getByRole("button", { name: "스토리 스토리 보기" }));
     expect(screen.getByRole("dialog")).toHaveTextContent("연애 스토리 꽃길");
+  });
+
+  it("moves between separated map zones from tabs and portals", () => {
+    render(<GameWorld profile={profile} />);
+    const zoneTabs = screen.getByLabelText("맵 구역 이동");
+
+    fireEvent.click(within(zoneTabs).getByRole("button", { name: "라운지" }));
+
+    expect(screen.getByLabelText("라운지 지도")).toHaveAttribute("data-zone", "lounge");
+    expect(screen.getByRole("button", { name: "RSVP 답변하기" })).toBeInTheDocument();
+
+    fireEvent.click(within(screen.getByLabelText("라운지 지도")).getByRole("button", { name: "예식장" }));
+
+    expect(screen.getByLabelText("예식장 지도")).toHaveAttribute("data-zone", "ceremony");
+    expect(screen.getByLabelText("하객1").style.left).toBe("73.07692307692307%");
   });
 
   it("closes the spot modal from the close button", () => {
@@ -224,20 +245,21 @@ describe("GameWorld", () => {
   it("renders spots inside a scalable logical map stage", () => {
     const { container } = render(<GameWorld profile={profile} />);
     const stage = container.querySelector(".world-map__stage");
-    const rsvpSpot = screen.getByRole("button", { name: "RSVP 답변하기" });
+    const coupleSpot = screen.getByRole("button", { name: "신랑신부 소개 보기" });
 
     expect(stage).toBeInTheDocument();
+    expect(stage).toHaveAttribute("data-zone", "ceremony");
     expect(stage).toHaveAttribute("data-logical-width", "390");
     expect(stage).toHaveAttribute("data-logical-height", "720");
-    expect(rsvpSpot.style.left).toMatch(/%$/);
-    expect(rsvpSpot.style.width).toMatch(/%$/);
-    expect(rsvpSpot.style.left).not.toBe("274px");
-    expect(rsvpSpot.style.width).not.toBe("82px");
+    expect(coupleSpot.style.left).toMatch(/%$/);
+    expect(coupleSpot.style.width).toMatch(/%$/);
+    expect(coupleSpot.style.left).not.toBe("274px");
+    expect(coupleSpot.style.width).not.toBe("82px");
   });
 
   it("moves the player one tile at a time when the map is clicked", () => {
     render(<GameWorld profile={profile} />);
-    const map = screen.getByLabelText("정원 지도");
+    const map = screen.getByLabelText("예식장 지도");
     mockMapRect(map);
     const player = screen.getByLabelText("하객1");
     const initialTop = player.style.top;
@@ -257,19 +279,17 @@ describe("GameWorld", () => {
 
   it("stops moving when the target is blocked", () => {
     render(<GameWorld profile={profile} />);
-    const map = screen.getByLabelText("정원 지도");
+    const map = screen.getByLabelText("예식장 지도");
     mockMapRect(map);
     const player = screen.getByLabelText("하객1");
 
-    fireEvent.click(map, { clientX: 284, clientY: 600 });
-    advanceAnimation(0);
-    advanceAnimation(150);
-    advanceAnimation(300);
-    advanceAnimation(450);
-    advanceAnimation(600);
+    fireEvent.click(map, { clientX: 205, clientY: 120 });
+    for (const now of [0, 150, 300, 450, 600, 750, 900, 1050, 1200, 1350, 1500, 1650, 1800, 1950, 2100]) {
+      advanceAnimation(now);
+    }
 
-    expect(player.style.left).toBe("73.07692307692307%");
-    expect(player.style.top).toBe("77.08333333333334%");
+    expect(player.style.left).toBe("50%");
+    expect(player.style.top).toBe("18.75%");
     expect(pendingAnimationFrameCount()).toBe(0);
   });
 
@@ -340,7 +360,8 @@ describe("GameWorld", () => {
     expect(JSON.parse(MockWebSocket.instances[0].sentMessages[0])).toEqual({
       type: "join",
       nickname: "하객1",
-      appearance: defaultCharacterAppearance
+      appearance: defaultCharacterAppearance,
+      zoneId: "ceremony"
     });
     expect(JSON.parse(MockWebSocket.instances[0].sentMessages[0])).not.toHaveProperty("avatar");
     expect(JSON.parse(MockWebSocket.instances[0].sentMessages[0])).not.toHaveProperty("color");
@@ -353,7 +374,7 @@ describe("GameWorld", () => {
       })
     );
 
-    expect(screen.getByLabelText("하객2")).toBeInTheDocument();
+    expect(screen.getByLabelText("하객2")).toHaveAttribute("data-remote-motion", "pixel-step-3");
     const remoteSprite = screen.getByLabelText("하객2 캐릭터");
     expect(remoteSprite.querySelector('[data-character-layer="base"]')).toHaveStyle({
       backgroundImage: expect.stringContaining("base/masculine__skin-02-fair__walk.png")
@@ -364,7 +385,7 @@ describe("GameWorld", () => {
       MockWebSocket.instances[0].emitJson({
         type: "guest_moved",
         guestId: "guest_remote",
-        position: { x: 78, y: 144, direction: "right", moving: true, seq: 1 }
+        position: { x: 78, y: 144, direction: "right", moving: true, seq: 1, zoneId: "ceremony" }
       })
     );
 
@@ -395,7 +416,7 @@ describe("GameWorld", () => {
 
     act(() => MockWebSocket.instances[0].emit("close"));
 
-    expect(realtimePill).toHaveClass("realtime-pill--offline");
+    expect(realtimePill).toHaveClass("realtime-pill--reconnecting");
   });
 
   it("sends throttled realtime movement updates while the local player moves", () => {
@@ -405,8 +426,9 @@ describe("GameWorld", () => {
 
     act(() => socket.emit("open"));
     act(() => socket.emitJson({ type: "welcome", guestId: "guest_self", guests: [] }));
+    socket.sentMessages.length = 0;
 
-    const map = screen.getByLabelText("정원 지도");
+    const map = screen.getByLabelText("예식장 지도");
     mockMapRect(map);
 
     fireEvent.click(map, { clientX: 205, clientY: 300 });
@@ -418,8 +440,100 @@ describe("GameWorld", () => {
     const moves = socket.sentMessages.map((message) => JSON.parse(message)).filter((message) => message.type === "move");
 
     expect(moves).toHaveLength(2);
-    expect(moves.map((message) => message.seq)).toEqual([1, 2]);
+    expect(moves.map((message) => message.seq)).toEqual([2, 3]);
     expect(moves.every((message) => message.direction === "up" && message.moving === true)).toBe(true);
+    expect(moves.every((message) => message.zoneId === "ceremony")).toBe(true);
+  });
+
+  it("reconnects and restores the latest zone position", () => {
+    vi.useFakeTimers();
+    configureRealtime();
+    render(<GameWorld profile={profile} />);
+    const firstSocket = MockWebSocket.instances[0];
+
+    act(() => firstSocket.emit("open"));
+    act(() => firstSocket.emitJson({ type: "welcome", guestId: "guest_self", guests: [] }));
+    fireEvent.click(within(screen.getByLabelText("맵 구역 이동")).getByRole("button", { name: "라운지" }));
+
+    act(() => firstSocket.emit("close"));
+    expect(screen.getByText("실시간 재연결 중")).toBeInTheDocument();
+
+    act(() => vi.advanceTimersByTime(500));
+    expect(MockWebSocket.instances).toHaveLength(2);
+
+    const secondSocket = MockWebSocket.instances[1];
+    act(() => secondSocket.emit("open"));
+    expect(JSON.parse(secondSocket.sentMessages[0])).toMatchObject({ type: "join", zoneId: "lounge" });
+
+    act(() => secondSocket.emitJson({ type: "welcome", guestId: "guest_reconnected", guests: [] }));
+    const restoredMove = secondSocket.sentMessages.map((message) => JSON.parse(message)).find((message) => message.type === "move");
+
+    expect(restoredMove).toMatchObject({
+      x: 135,
+      y: 405,
+      direction: "down",
+      moving: false,
+      zoneId: "lounge"
+    });
+    expect(screen.getByText("실시간 정원")).toBeInTheDocument();
+  });
+
+  it("keeps local map play available when the realtime room is full", () => {
+    vi.useFakeTimers();
+    configureRealtime();
+    render(<GameWorld profile={profile} />);
+    const socket = MockWebSocket.instances[0];
+
+    act(() => socket.emit("open"));
+    act(() => socket.emitJson({
+      type: "welcome",
+      guestId: "guest_self",
+      guests: [serverGuest()]
+    }));
+    expect(screen.getByLabelText("하객2")).toBeInTheDocument();
+
+    act(() => socket.emitJson({ type: "error", code: "room_full" }));
+    act(() => vi.advanceTimersByTime(30_000));
+
+    expect(screen.getByText("실시간 만석 · 솔로 모드")).toBeInTheDocument();
+    expect(screen.queryByLabelText("하객2")).not.toBeInTheDocument();
+    expect(MockWebSocket.instances).toHaveLength(1);
+
+    fireEvent.click(within(screen.getByLabelText("맵 구역 이동")).getByRole("button", { name: "라운지" }));
+    expect(screen.getByLabelText("라운지 지도")).toHaveAttribute("data-zone", "lounge");
+  });
+
+  it("announces zone travel and only renders guests in the active zone", () => {
+    configureRealtime();
+    render(<GameWorld profile={profile} />);
+    const socket = MockWebSocket.instances[0];
+
+    act(() => socket.emit("open"));
+    act(() => socket.emitJson({
+      type: "welcome",
+      guestId: "guest_self",
+      guests: [
+        serverGuest({ guestId: "guest_ceremony", nickname: "예식장 하객" }),
+        serverGuest({ guestId: "guest_lounge", nickname: "라운지 하객", zoneId: "lounge", x: 135, y: 405 })
+      ]
+    }));
+
+    expect(screen.getByLabelText("예식장 하객")).toBeInTheDocument();
+    expect(screen.queryByLabelText("라운지 하객")).not.toBeInTheDocument();
+
+    fireEvent.click(within(screen.getByLabelText("맵 구역 이동")).getByRole("button", { name: "라운지" }));
+
+    expect(screen.queryByLabelText("예식장 하객")).not.toBeInTheDocument();
+    expect(screen.getByLabelText("라운지 하객")).toBeInTheDocument();
+
+    const moves = socket.sentMessages.map((message) => JSON.parse(message)).filter((message) => message.type === "move");
+    expect(moves.at(-1)).toMatchObject({
+      zoneId: "lounge",
+      x: 135,
+      y: 405,
+      moving: false,
+      direction: "down"
+    });
   });
 
   it("renders local layers and advances the walk frame once per tile", () => {

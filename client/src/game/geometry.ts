@@ -1,4 +1,4 @@
-import type { GardenWorld, Point, Rect, WorldSpot } from "./world";
+import type { Point, Rect, WorldSpot, WorldZone } from "./world";
 
 export function clampToWorld(point: Point, bounds: Rect): Point {
   return {
@@ -16,7 +16,7 @@ export function pointInRect(point: Point, rect: Rect): boolean {
   );
 }
 
-export function isBlocked(point: Point, world: GardenWorld): boolean {
+export function isBlocked(point: Point, world: WorldZone): boolean {
   return world.blocked.some((rect) => pointInRect(point, rect));
 }
 
@@ -28,6 +28,6 @@ function distance(a: Point, b: Point): number {
   return Math.hypot(a.x - b.x, a.y - b.y);
 }
 
-export function getNearbySpot(point: Point, world: GardenWorld): WorldSpot | null {
+export function getNearbySpot(point: Point, world: WorldZone): WorldSpot | null {
   return world.spots.find((spot) => distance(point, center(spot)) <= spot.actionRadius) ?? null;
 }

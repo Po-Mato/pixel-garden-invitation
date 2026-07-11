@@ -1,13 +1,21 @@
 import { useCallback, useEffect, useRef, useState, type MouseEvent } from "react";
-import { invitationContent, type ClientMessage, type Direction, type RoomGuest, type SpotId } from "@wedding-game/shared";
+import {
+  invitationContent,
+  type ClientMessage,
+  type Direction,
+  type RoomGuest,
+  type SpotId,
+  type WorldZoneId
+} from "@wedding-game/shared";
 import { computeNextGridPosition, directionFromVector, directionTowardPoint, snapToGrid } from "../game/movement";
-import { gardenWorld, type Point } from "../game/world";
-import { connectRealtime, createMoveThrottle, getRoomUrl } from "../realtime/realtimeClient";
+import { gardenWorld, getWorldZone, getZoneForSpot, type Point } from "../game/world";
+import { connectRealtimeWithRetry, createMoveThrottle, getRoomUrl } from "../realtime/realtimeClient";
 import type { EntryProfile } from "./EntryScreen";
 import { CharacterSprite } from "./CharacterSprite";
 import { SpotModal } from "./SpotModal";
 import { VirtualJoystick } from "./VirtualJoystick";
 import { WeddingNpc } from "./WeddingNpc";
+import { WorldDecoration } from "./WorldDecoration";
 
 type GameWorldProps = {
   profile: EntryProfile;
@@ -20,9 +28,9 @@ const realtimeMoveIntervalMs = 100;
 const toPercent = (value: number, total: number) => `${(value / total) * 100}%`;
 const hasJoystickMovement = (vector: Point) => Math.hypot(vector.x, vector.y) > joystickDeadZone;
 const samePoint = (first: Point, second: Point) => first.x === second.x && first.y === second.y;
-type RealtimeStatus = "offline" | "connecting" | "online";
+type RealtimeStatus = "offline" | "connecting" | "reconnecting" | "online" | "full";
 type MoveMessage = Extract<ClientMessage, { type: "move" }>;
-type RealtimeConnection = ReturnType<typeof connectRealtime>;
+type RealtimeConnection = ReturnType<typeof connectRealtimeWithRetry>;
 
 function withoutCurrentGuest(guests: RoomGuest[], currentGuestId: string | null): RoomGuest[] {
   return currentGuestId ? guests.filter((guest) => guest.guestId !== currentGuestId) : guests;
@@ -50,7 +58,8 @@ function moveGuest(guests: RoomGuest[], guestId: string, position: MoveMessage):
           y: position.y,
           direction: position.direction,
           moving: position.moving,
-          seq: position.seq
+          seq: position.seq,
+          zoneId: position.zoneId
         }
       : guest
   );
@@ -58,13 +67,17 @@ function moveGuest(guests: RoomGuest[], guestId: string, position: MoveMessage):
 
 function realtimeStatusText(status: RealtimeStatus) {
   if (status === "online") return "실시간 정원";
+  if (status === "full") return "실시간 만석 · 솔로 모드";
+  if (status === "reconnecting") return "실시간 재연결 중";
   if (status === "connecting") return "실시간 연결 중";
   return "오프라인 정원";
 }
 
 export function GameWorld({ profile }: GameWorldProps) {
+  const [activeZoneId, setActiveZoneId] = useState<WorldZoneId>(gardenWorld.defaultZoneId);
   const [activeSpotId, setActiveSpotId] = useState<SpotId | null>(null);
-  const [position, setPosition] = useState<Point>(gardenWorld.spawn);
+  const activeZone = getWorldZone(gardenWorld, activeZoneId);
+  const [position, setPosition] = useState<Point>(activeZone.spawn);
   const [target, setTarget] = useState<Point | null>(null);
   const [joystickVector, setJoystickVector] = useState<Point>({ x: 0, y: 0 });
   const [direction, setDirection] = useState<Direction>("down");
@@ -72,7 +85,8 @@ export function GameWorld({ profile }: GameWorldProps) {
   const [stepFrame, setStepFrame] = useState(1);
   const [remoteGuests, setRemoteGuests] = useState<RoomGuest[]>([]);
   const [realtimeStatus, setRealtimeStatus] = useState<RealtimeStatus>("offline");
-  const positionRef = useRef<Point>(gardenWorld.spawn);
+  const activeZoneIdRef = useRef<WorldZoneId>(gardenWorld.defaultZoneId);
+  const positionRef = useRef<Point>(activeZone.spawn);
   const lastStepRef = useRef<number | null>(null);
   const connectionRef = useRef<RealtimeConnection | null>(null);
   const currentGuestIdRef = useRef<string | null>(null);
@@ -81,7 +95,7 @@ export function GameWorld({ profile }: GameWorldProps) {
   const moveThrottleRef = useRef<((message: MoveMessage, now: number) => void) | null>(null);
   const joystickWasMovingRef = useRef(false);
 
-  const sendRealtimeMove = useCallback((nextPosition: Point, moving: boolean, direction: Direction, now: number) => {
+  const sendRealtimeMove = useCallback((nextPosition: Point, moving: boolean, direction: Direction, zoneId: WorldZoneId, now: number) => {
     const throttle = moveThrottleRef.current;
     if (!throttle) {
       return;
@@ -94,11 +108,53 @@ export function GameWorld({ profile }: GameWorldProps) {
         y: nextPosition.y,
         direction,
         moving,
-        seq: moveSeqRef.current + 1
+        seq: moveSeqRef.current + 1,
+        zoneId
       },
       now
     );
   }, []);
+
+  const moveToZone = useCallback((zoneId: WorldZoneId, spawn?: Point) => {
+    const zone = getWorldZone(gardenWorld, zoneId);
+    const nextPosition = snapToGrid(spawn ?? zone.spawn, zone);
+
+    activeZoneIdRef.current = zone.id;
+    setActiveZoneId(zone.id);
+    setTarget(null);
+    setJoystickVector({ x: 0, y: 0 });
+    setMoving(false);
+    setStepFrame(1);
+    setDirection("down");
+    lastStepRef.current = null;
+    joystickWasMovingRef.current = false;
+    positionRef.current = nextPosition;
+    setPosition(nextPosition);
+    const connection = connectionRef.current;
+    if (connection) {
+      const message: MoveMessage = {
+        type: "move",
+        x: nextPosition.x,
+        y: nextPosition.y,
+        direction: "down",
+        moving: false,
+        seq: moveSeqRef.current + 1,
+        zoneId: zone.id
+      };
+      moveSeqRef.current = message.seq;
+      connection.send(message);
+    }
+  }, []);
+
+  const openSpot = useCallback((spotId: SpotId) => {
+    const zone = getZoneForSpot(gardenWorld, spotId);
+
+    if (zone.id !== activeZoneId) {
+      moveToZone(zone.id, zone.spawn);
+    }
+
+    setActiveSpotId(spotId);
+  }, [activeZoneId, moveToZone]);
 
   useEffect(() => {
     const workerUrl = import.meta.env.VITE_WORKER_URL;
@@ -117,13 +173,14 @@ export function GameWorld({ profile }: GameWorldProps) {
     setRealtimeStatus("connecting");
 
     try {
-      connection = connectRealtime(
+      connection = connectRealtimeWithRetry(
         getRoomUrl(workerUrl, import.meta.env.VITE_INVITATION_ID ?? "sample-garden"),
-        {
+        () => ({
           type: "join",
           nickname: profile.nickname,
-          appearance: profile.appearance
-        },
+          appearance: profile.appearance,
+          zoneId: activeZoneIdRef.current
+        }),
         {
           onOpen: () => {
             if (active) {
@@ -135,20 +192,37 @@ export function GameWorld({ profile }: GameWorldProps) {
               return;
             }
 
-            connectionRef.current = null;
-            moveThrottleRef.current = null;
             currentGuestIdRef.current = null;
             setRemoteGuests([]);
-            setRealtimeStatus("offline");
+            setRealtimeStatus("reconnecting");
           },
           onMessage: (message) => {
             if (!active) {
               return;
             }
 
+            if (message.type === "error" && message.code === "room_full") {
+              currentGuestIdRef.current = null;
+              setRemoteGuests([]);
+              setRealtimeStatus("full");
+              return;
+            }
+
             if (message.type === "welcome") {
               currentGuestIdRef.current = message.guestId;
               setRemoteGuests(withoutCurrentGuest(message.guests, message.guestId));
+              const currentPosition = positionRef.current;
+              const presence: MoveMessage = {
+                type: "move",
+                x: currentPosition.x,
+                y: currentPosition.y,
+                direction: directionRef.current,
+                moving: false,
+                seq: moveSeqRef.current + 1,
+                zoneId: activeZoneIdRef.current
+              };
+              moveSeqRef.current = presence.seq;
+              connection.send(presence);
               return;
             }
 
@@ -242,7 +316,7 @@ export function GameWorld({ profile }: GameWorldProps) {
       const next = computeNextGridPosition({
         current,
         direction,
-        world: gardenWorld
+        world: activeZone
       });
       const didMove = !samePoint(current, next);
       const reachedTarget = movementTarget ? samePoint(next, movementTarget) : false;
@@ -253,7 +327,7 @@ export function GameWorld({ profile }: GameWorldProps) {
       if (!didMove) {
         setMoving(false);
         setStepFrame(1);
-        sendRealtimeMove(current, false, direction, now);
+        sendRealtimeMove(current, false, direction, activeZone.id, now);
         setTarget(null);
         lastStepRef.current = null;
         return;
@@ -263,7 +337,7 @@ export function GameWorld({ profile }: GameWorldProps) {
       setPosition(next);
       setMoving(true);
       setStepFrame((currentFrame) => (currentFrame + 1) % 3);
-      sendRealtimeMove(next, hasDirectionalInput || !reachedTarget, direction, now);
+      sendRealtimeMove(next, hasDirectionalInput || !reachedTarget, direction, activeZone.id, now);
 
       if (reachedTarget) {
         setMoving(false);
@@ -279,15 +353,15 @@ export function GameWorld({ profile }: GameWorldProps) {
     frame = requestAnimationFrame(tick);
 
     return () => cancelAnimationFrame(frame);
-  }, [target, joystickVector, sendRealtimeMove]);
+  }, [activeZone, target, joystickVector, sendRealtimeMove]);
 
   function handleMapClick(event: MouseEvent<HTMLDivElement>) {
     const rect = event.currentTarget.getBoundingClientRect();
-    const width = rect.width || gardenWorld.bounds.width;
-    const height = rect.height || gardenWorld.bounds.height;
-    const x = gardenWorld.bounds.x + ((event.clientX - rect.left) / width) * gardenWorld.bounds.width;
-    const y = gardenWorld.bounds.y + ((event.clientY - rect.top) / height) * gardenWorld.bounds.height;
-    const nextTarget = snapToGrid({ x, y }, gardenWorld);
+    const width = rect.width || activeZone.bounds.width;
+    const height = rect.height || activeZone.bounds.height;
+    const x = activeZone.bounds.x + ((event.clientX - rect.left) / width) * activeZone.bounds.width;
+    const y = activeZone.bounds.y + ((event.clientY - rect.top) / height) * activeZone.bounds.height;
+    const nextTarget = snapToGrid({ x, y }, activeZone);
 
     const direction = directionTowardPoint(positionRef.current, nextTarget);
     if (direction) {
@@ -315,27 +389,52 @@ export function GameWorld({ profile }: GameWorldProps) {
     if (wasMoving) {
       setMoving(false);
       setStepFrame(1);
-      sendRealtimeMove(positionRef.current, false, directionRef.current, performance.now());
+      sendRealtimeMove(positionRef.current, false, directionRef.current, activeZone.id, performance.now());
     }
   }
 
   return (
-    <section className="game-world" aria-label="정원 월드">
+    <section className="game-world" aria-label="모바일 청첩장 월드">
       <div className={`realtime-pill realtime-pill--${realtimeStatus}`}>
         {realtimeStatusText(realtimeStatus)}
       </div>
-      <div className="world-map">
+      <div className="world-zone-panel">
+        <div className="world-zone-summary">
+          <span>현재 구역</span>
+          <strong>{activeZone.label}</strong>
+          <small>{activeZone.subtitle}</small>
+        </div>
+        <div className="world-zone-tabs" aria-label="맵 구역 이동">
+          {gardenWorld.zones.map((zone) => (
+            <button
+              key={zone.id}
+              type="button"
+              aria-pressed={zone.id === activeZone.id}
+              onClick={() => moveToZone(zone.id)}
+            >
+              {zone.label}
+            </button>
+          ))}
+        </div>
+      </div>
+      <div className={`world-map world-map--${activeZone.id}`}>
         <div
           className="world-map__stage"
-          aria-label="정원 지도"
-          data-logical-width={gardenWorld.bounds.width}
-          data-logical-height={gardenWorld.bounds.height}
+          aria-label={`${activeZone.label} 지도`}
+          data-zone={activeZone.id}
+          data-logical-width={activeZone.bounds.width}
+          data-logical-height={activeZone.bounds.height}
           onClick={handleMapClick}
         >
           <div className="world-path world-path--vertical" />
           <div className="world-path world-path--middle" />
           <div className="world-path world-path--bottom" />
-          {gardenWorld.spots.map((spot) => {
+          <div className="world-decoration-layer">
+            {activeZone.decorations.map((decoration) => (
+              <WorldDecoration key={decoration.id} decoration={decoration} zone={activeZone} />
+            ))}
+          </div>
+          {activeZone.spots.map((spot) => {
             const content = invitationContent.spots.find((candidate) => candidate.id === spot.id);
 
             return (
@@ -344,14 +443,14 @@ export function GameWorld({ profile }: GameWorldProps) {
                 type="button"
                 className={`world-spot world-spot--${spot.id}`}
                 style={{
-                  left: toPercent(spot.x, gardenWorld.bounds.width),
-                  top: toPercent(spot.y, gardenWorld.bounds.height),
-                  width: toPercent(spot.width, gardenWorld.bounds.width),
-                  height: toPercent(spot.height, gardenWorld.bounds.height)
+                  left: toPercent(spot.x, activeZone.bounds.width),
+                  top: toPercent(spot.y, activeZone.bounds.height),
+                  width: toPercent(spot.width, activeZone.bounds.width),
+                  height: toPercent(spot.height, activeZone.bounds.height)
                 }}
                 onClick={(event) => {
                   event.stopPropagation();
-                  setActiveSpotId(spot.id);
+                  openSpot(spot.id);
                 }}
               >
                 <span>{spot.label}</span>
@@ -359,14 +458,34 @@ export function GameWorld({ profile }: GameWorldProps) {
               </button>
             );
           })}
-          {remoteGuests.map((guest) => (
+          {activeZone.portals.map((portal) => (
+            <button
+              key={portal.id}
+              type="button"
+              className="world-portal"
+              style={{
+                left: toPercent(portal.x, activeZone.bounds.width),
+                top: toPercent(portal.y, activeZone.bounds.height),
+                width: toPercent(portal.width, activeZone.bounds.width),
+                height: toPercent(portal.height, activeZone.bounds.height)
+              }}
+              onClick={(event) => {
+                event.stopPropagation();
+                moveToZone(portal.to, portal.spawn);
+              }}
+            >
+              {portal.label}
+            </button>
+          ))}
+          {remoteGuests.filter((guest) => guest.zoneId === activeZone.id).map((guest) => (
             <div
               key={guest.guestId}
               className="world-player player player--remote"
               aria-label={guest.nickname}
+              data-remote-motion="pixel-step-3"
               style={{
-                left: toPercent(guest.x, gardenWorld.bounds.width),
-                top: toPercent(guest.y, gardenWorld.bounds.height)
+                left: toPercent(guest.x, activeZone.bounds.width),
+                top: toPercent(guest.y, activeZone.bounds.height)
               }}
             >
               <CharacterSprite
@@ -379,13 +498,13 @@ export function GameWorld({ profile }: GameWorldProps) {
               <span>{guest.nickname}</span>
             </div>
           ))}
-          {gardenWorld.npcs.map((npc) => (
+          {activeZone.npcs.map((npc) => (
             <div
               key={npc.id}
               className="world-npc"
               style={{
-                left: toPercent(npc.x, gardenWorld.bounds.width),
-                top: toPercent(npc.y, gardenWorld.bounds.height)
+                left: toPercent(npc.x, activeZone.bounds.width),
+                top: toPercent(npc.y, activeZone.bounds.height)
               }}
             >
               <WeddingNpc
@@ -399,8 +518,8 @@ export function GameWorld({ profile }: GameWorldProps) {
             className="world-player player"
             aria-label={profile.nickname}
             style={{
-              left: toPercent(position.x, gardenWorld.bounds.width),
-              top: toPercent(position.y, gardenWorld.bounds.height)
+              left: toPercent(position.x, activeZone.bounds.width),
+              top: toPercent(position.y, activeZone.bounds.height)
             }}
           >
             <CharacterSprite
@@ -418,7 +537,7 @@ export function GameWorld({ profile }: GameWorldProps) {
         <VirtualJoystick onVectorChange={handleJoystickVectorChange} />
         <div className="world-actions" aria-label="초대장 바로가기">
           {invitationContent.spots.map((spot) => (
-            <button key={spot.id} type="button" onClick={() => setActiveSpotId(spot.id)}>
+            <button key={spot.id} type="button" onClick={() => openSpot(spot.id)}>
               {spot.actionLabel}
             </button>
           ))}

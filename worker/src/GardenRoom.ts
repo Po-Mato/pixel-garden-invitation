@@ -1,26 +1,46 @@
 import {
   clampNumber,
+  parseCharacterAppearance,
   parseClientMessage,
   type ClientMessage,
   type RoomGuest,
-  type ServerMessage
+  type ServerMessage,
+  type WorldZoneId,
+  worldZoneIds
 } from "@wedding-game/shared";
 
-type GuestSocket = {
-  guestId: string;
-  socket: WebSocket;
+type GuestAttachment = {
+  kind: "guest";
+  guest: RoomGuest;
   lastMoveAt: number;
 };
 
-const spawn = { x: 195, y: 525 };
-const bounds = { minX: 0, maxX: 390, minY: 0, maxY: 720 };
+type PendingAttachment = { kind: "pending" };
+type SocketAttachment = GuestAttachment | PendingAttachment;
+
+const zoneSpawns: Record<WorldZoneId, { x: number; y: number }> = {
+  entrance: { x: 195, y: 165 },
+  ceremony: { x: 195, y: 525 },
+  gallery: { x: 255, y: 405 },
+  lounge: { x: 135, y: 405 }
+};
+const zoneBounds: Record<WorldZoneId, { minX: number; maxX: number; minY: number; maxY: number }> = {
+  entrance: { minX: 0, maxX: 390, minY: 0, maxY: 720 },
+  ceremony: { minX: 0, maxX: 390, minY: 0, maxY: 720 },
+  gallery: { minX: 0, maxX: 390, minY: 0, maxY: 720 },
+  lounge: { minX: 0, maxX: 390, minY: 0, maxY: 720 }
+};
 const moveThrottleMs = 100;
+const roomCapacity = 100;
+const zones = new Set<WorldZoneId>(worldZoneIds);
 
 export function createGuestSnapshot(
   guestId: string,
   message: Extract<ClientMessage, { type: "join" }>,
   now: number
 ): RoomGuest {
+  const spawn = zoneSpawns[message.zoneId];
+
   return {
     guestId,
     nickname: message.nickname,
@@ -30,12 +50,9 @@ export function createGuestSnapshot(
     direction: "down",
     moving: false,
     seq: 0,
+    zoneId: message.zoneId,
     lastSeenAt: now
   };
-}
-
-export function removeGuest(guests: Map<string, RoomGuest>, guestId: string): void {
-  guests.delete(guestId);
 }
 
 function encode(message: ServerMessage): string {
@@ -52,10 +69,58 @@ function parseRawMessage(raw: unknown): ClientMessage | null {
   }
 }
 
-export class GardenRoom {
-  private readonly guests = new Map<string, RoomGuest>();
-  private readonly sockets = new Map<WebSocket, GuestSocket>();
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
+}
 
+function parseGuestAttachment(value: unknown): GuestAttachment | null {
+  if (!isRecord(value) || value.kind !== "guest" || !isRecord(value.guest)) return null;
+  const guest = value.guest;
+  const appearance = parseCharacterAppearance(guest.appearance);
+
+  if (
+    typeof guest.guestId !== "string" ||
+    typeof guest.nickname !== "string" ||
+    !appearance ||
+    typeof guest.x !== "number" ||
+    !Number.isFinite(guest.x) ||
+    typeof guest.y !== "number" ||
+    !Number.isFinite(guest.y) ||
+    (guest.direction !== "up" && guest.direction !== "down" && guest.direction !== "left" && guest.direction !== "right") ||
+    typeof guest.moving !== "boolean" ||
+    typeof guest.seq !== "number" ||
+    !Number.isInteger(guest.seq) ||
+    !zones.has(guest.zoneId as WorldZoneId) ||
+    typeof guest.lastSeenAt !== "number" ||
+    !Number.isFinite(guest.lastSeenAt) ||
+    typeof value.lastMoveAt !== "number"
+  ) {
+    return null;
+  }
+
+  return {
+    kind: "guest",
+    guest: {
+      guestId: guest.guestId,
+      nickname: guest.nickname,
+      appearance,
+      x: guest.x,
+      y: guest.y,
+      direction: guest.direction,
+      moving: guest.moving,
+      seq: guest.seq,
+      zoneId: guest.zoneId as WorldZoneId,
+      lastSeenAt: guest.lastSeenAt
+    },
+    lastMoveAt: value.lastMoveAt
+  };
+}
+
+function readGuestAttachment(socket: WebSocket): GuestAttachment | null {
+  return parseGuestAttachment(socket.deserializeAttachment());
+}
+
+export class GardenRoom {
   constructor(private readonly state: DurableObjectState) {}
 
   async fetch(request?: Request): Promise<Response> {
@@ -72,16 +137,14 @@ export class GardenRoom {
     const pair = new WebSocketPair();
     const client = pair[0];
     const server = pair[1];
-    this.acceptSocket(server);
+    this.state.acceptWebSocket(server);
+    server.serializeAttachment({ kind: "pending" } satisfies PendingAttachment);
 
     return new Response(null, { status: 101, webSocket: client });
   }
 
-  private acceptSocket(socket: WebSocket): void {
-    socket.accept();
-    socket.addEventListener("message", (event) => this.handleMessage(socket, event.data));
-    socket.addEventListener("close", () => this.disconnect(socket));
-    socket.addEventListener("error", () => this.disconnect(socket));
+  webSocketMessage(socket: WebSocket, raw: string | ArrayBuffer): void {
+    this.handleMessage(socket, raw);
   }
 
   private handleMessage(socket: WebSocket, raw: unknown): void {
@@ -92,69 +155,96 @@ export class GardenRoom {
     }
 
     if (parsed.type === "join") {
-      if (this.sockets.has(socket)) {
+      if (readGuestAttachment(socket)) {
         socket.send(encode({ type: "error", code: "bad_message" }));
+        return;
+      }
+
+      if (this.getGuests().length >= roomCapacity) {
+        socket.send(encode({ type: "error", code: "room_full" }));
+        socket.close(1013, "room full");
         return;
       }
 
       const guestId = `guest_${crypto.randomUUID()}`;
       const guest = createGuestSnapshot(guestId, parsed, Date.now());
-      this.guests.set(guestId, guest);
-      this.sockets.set(socket, { guestId, socket, lastMoveAt: Number.NEGATIVE_INFINITY });
-      socket.send(encode({ type: "welcome", guestId, guests: [...this.guests.values()] }));
+      socket.serializeAttachment({
+        kind: "guest",
+        guest,
+        lastMoveAt: Number.NEGATIVE_INFINITY
+      } satisfies GuestAttachment);
+      socket.send(encode({ type: "welcome", guestId, guests: this.getGuests() }));
       this.broadcast({ type: "guest_joined", guest }, socket);
       return;
     }
 
-    const current = this.sockets.get(socket);
+    const current = readGuestAttachment(socket);
     if (!current) {
       socket.send(encode({ type: "error", code: "bad_message" }));
       return;
     }
 
     if (parsed.type === "move") {
-      const guest = this.guests.get(current.guestId);
-      if (!guest) return;
-
       const now = Date.now();
       if (now - current.lastMoveAt < moveThrottleMs) {
         return;
       }
 
-      current.lastMoveAt = now;
+      const bounds = zoneBounds[parsed.zoneId];
       const position = {
         x: clampNumber(parsed.x, bounds.minX, bounds.maxX),
         y: clampNumber(parsed.y, bounds.minY, bounds.maxY),
         direction: parsed.direction,
         moving: parsed.moving,
-        seq: parsed.seq
+        seq: parsed.seq,
+        zoneId: parsed.zoneId
       };
-      this.guests.set(current.guestId, { ...guest, ...position, lastSeenAt: now });
-      this.broadcast({ type: "guest_moved", guestId: current.guestId, position }, socket);
+      const guest = { ...current.guest, ...position, lastSeenAt: now };
+      socket.serializeAttachment({ kind: "guest", guest, lastMoveAt: now } satisfies GuestAttachment);
+      this.broadcast({ type: "guest_moved", guestId: guest.guestId, position }, socket);
       return;
     }
 
     if (parsed.type === "ping") {
-      const guest = this.guests.get(current.guestId);
-      if (guest) {
-        this.guests.set(current.guestId, { ...guest, lastSeenAt: Date.now() });
-      }
+      socket.serializeAttachment({
+        ...current,
+        guest: { ...current.guest, lastSeenAt: Date.now() }
+      } satisfies GuestAttachment);
       return;
     }
 
     if (parsed.type === "leave") {
       this.disconnect(socket);
+      socket.close(1000, "client leave");
     }
+  }
+
+  webSocketClose(socket: WebSocket): void {
+    this.disconnect(socket);
+  }
+
+  webSocketError(socket: WebSocket): void {
+    this.disconnect(socket);
+    socket.close(1011, "websocket error");
+  }
+
+  private getGuests(): RoomGuest[] {
+    return this.state.getWebSockets().flatMap((socket) => {
+      const attachment = readGuestAttachment(socket);
+      return attachment ? [attachment.guest] : [];
+    });
   }
 
   private broadcast(message: ServerMessage, except?: WebSocket): void {
     const payload = encode(message);
     const failedSockets: WebSocket[] = [];
 
-    for (const { socket } of [...this.sockets.values()]) {
+    for (const socket of this.state.getWebSockets()) {
       if (socket === except) {
         continue;
       }
+
+      if (!readGuestAttachment(socket)) continue;
 
       try {
         socket.send(payload);
@@ -165,15 +255,15 @@ export class GardenRoom {
 
     for (const socket of failedSockets) {
       this.disconnect(socket);
+      socket.close(1011, "broadcast failed");
     }
   }
 
   private disconnect(socket: WebSocket): void {
-    const current = this.sockets.get(socket);
+    const current = readGuestAttachment(socket);
     if (!current) return;
 
-    this.sockets.delete(socket);
-    removeGuest(this.guests, current.guestId);
-    this.broadcast({ type: "guest_left", guestId: current.guestId });
+    socket.serializeAttachment({ kind: "pending" } satisfies SocketAttachment);
+    this.broadcast({ type: "guest_left", guestId: current.guest.guestId }, socket);
   }
 }

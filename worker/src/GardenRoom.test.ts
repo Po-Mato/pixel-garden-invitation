@@ -1,16 +1,19 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { defaultCharacterAppearance, type RoomGuest } from "@wedding-game/shared";
-import { createGuestSnapshot, GardenRoom, removeGuest } from "./GardenRoom";
+import { createGuestSnapshot, GardenRoom } from "./GardenRoom";
 
 type GardenRoomHarness = {
-  guests: Map<string, RoomGuest>;
-  sockets: Map<WebSocket, { guestId: string; socket: WebSocket }>;
-  handleMessage(socket: WebSocket, raw: unknown): void;
+  webSocketMessage(socket: WebSocket, raw: unknown): void;
+  webSocketClose(socket: WebSocket, code: number, reason: string, wasClean: boolean): void;
+  webSocketError(socket: WebSocket, error: unknown): void;
 };
 
 class TestSocket {
   readonly sent: string[] = [];
   failSends = false;
+  closed = false;
+  private attachment: unknown = null;
+  onClose: (() => void) | null = null;
 
   send(payload: string): void {
     if (this.failSends) {
@@ -18,32 +21,73 @@ class TestSocket {
     }
     this.sent.push(payload);
   }
+
+  close(): void {
+    this.closed = true;
+    this.onClose?.();
+  }
+
+  serializeAttachment(attachment: unknown): void {
+    this.attachment = structuredClone(attachment);
+  }
+
+  deserializeAttachment(): unknown {
+    return structuredClone(this.attachment);
+  }
 }
 
-function createRoom(): GardenRoomHarness {
-  return new GardenRoom({} as DurableObjectState) as unknown as GardenRoomHarness;
+class TestState {
+  readonly sockets: TestSocket[] = [];
+
+  addSocket(socket: TestSocket): void {
+    if (this.sockets.includes(socket)) return;
+    this.sockets.push(socket);
+    socket.onClose = () => {
+      const index = this.sockets.indexOf(socket);
+      if (index >= 0) this.sockets.splice(index, 1);
+    };
+  }
+
+  acceptWebSocket(socket: WebSocket): void {
+    this.addSocket(socket as unknown as TestSocket);
+  }
+
+  getWebSockets(): WebSocket[] {
+    return this.sockets.map(asWebSocket);
+  }
+}
+
+function createRoom(state = new TestState()): GardenRoomHarness {
+  return new GardenRoom(state as unknown as DurableObjectState) as unknown as GardenRoomHarness;
 }
 
 function asWebSocket(socket: TestSocket): WebSocket {
   return socket as unknown as WebSocket;
 }
 
+function joinGuest(room: GardenRoomHarness, state: TestState, socket: TestSocket, nickname: string): void {
+  state.addSocket(socket);
+  room.webSocketMessage(asWebSocket(socket), joinMessage(nickname));
+}
+
 function joinMessage(nickname: string): string {
   return JSON.stringify({
     type: "join",
     nickname,
-    appearance: defaultCharacterAppearance
+    appearance: defaultCharacterAppearance,
+    zoneId: "ceremony"
   });
 }
 
-function moveMessage(seq: number, x: number): string {
+function moveMessage(seq: number, x: number, zoneId = "ceremony", y = 520): string {
   return JSON.stringify({
     type: "move",
     x,
-    y: 520,
+    y,
     direction: "right",
     moving: true,
-    seq
+    seq,
+    zoneId
   });
 }
 
@@ -56,7 +100,8 @@ describe("GardenRoom helpers", () => {
     expect(createGuestSnapshot("guest_1", {
       type: "join",
       nickname: "하객1",
-      appearance: defaultCharacterAppearance
+      appearance: defaultCharacterAppearance,
+      zoneId: "ceremony"
     }, 1000)).toMatchObject({
       guestId: "guest_1",
       nickname: "하객1",
@@ -66,27 +111,20 @@ describe("GardenRoom helpers", () => {
       direction: "down",
       moving: false,
       seq: 0,
+      zoneId: "ceremony",
       lastSeenAt: 1000
     });
   });
 
-  it("removes guests by id", () => {
-    const guests = new Map([["guest_1", createGuestSnapshot("guest_1", {
-      type: "join",
-      nickname: "하객1",
-      appearance: defaultCharacterAppearance
-    }, 1000)]]);
-    removeGuest(guests, "guest_1");
-    expect(guests.size).toBe(0);
-  });
 });
 
 describe("GardenRoom socket behavior", () => {
   it("broadcasts appearance without legacy avatar fields", () => {
-    const room = createRoom();
+    const state = new TestState();
+    const statefulRoom = createRoom(state);
     const socket = new TestSocket();
 
-    room.handleMessage(asWebSocket(socket), joinMessage("하객1"));
+    joinGuest(statefulRoom, state, socket, "하객1");
 
     const welcome = JSON.parse(socket.sent[0]);
     expect(welcome.guests[0].appearance).toEqual(defaultCharacterAppearance);
@@ -95,61 +133,125 @@ describe("GardenRoom socket behavior", () => {
   });
 
   it("does not orphan a guest when the same socket joins twice", () => {
-    const room = createRoom();
+    const state = new TestState();
+    const room = createRoom(state);
     const socket = new TestSocket();
 
-    room.handleMessage(asWebSocket(socket), joinMessage("하객1"));
-    room.handleMessage(asWebSocket(socket), joinMessage("하객2"));
+    joinGuest(room, state, socket, "하객1");
+    room.webSocketMessage(asWebSocket(socket), joinMessage("하객2"));
 
-    expect(room.guests.size).toBe(1);
-    const joined = room.sockets.get(asWebSocket(socket));
-    expect(joined).toBeDefined();
-    expect(joined ? room.guests.has(joined.guestId) : false).toBe(true);
+    const attachment = socket.deserializeAttachment() as { guest?: RoomGuest } | null;
+    expect(attachment?.guest?.nickname).toBe("하객1");
+    expect(JSON.parse(socket.sent.at(-1) ?? "{}")).toEqual({ type: "error", code: "bad_message" });
   });
 
   it("prunes a peer whose socket throws during broadcast", () => {
-    const room = createRoom();
+    const state = new TestState();
+    const room = createRoom(state);
     const stale = new TestSocket();
     const joining = new TestSocket();
 
-    room.handleMessage(asWebSocket(stale), joinMessage("stale"));
+    joinGuest(room, state, stale, "stale");
     stale.failSends = true;
 
-    expect(() => room.handleMessage(asWebSocket(joining), joinMessage("joining"))).not.toThrow();
-    expect(room.sockets.has(asWebSocket(stale))).toBe(false);
-    expect(room.guests.size).toBe(1);
-
-    const remaining = room.sockets.get(asWebSocket(joining));
-    expect(remaining).toBeDefined();
-    expect(remaining ? room.guests.has(remaining.guestId) : false).toBe(true);
+    expect(() => joinGuest(room, state, joining, "joining")).not.toThrow();
+    expect(stale.closed).toBe(true);
+    expect(state.getWebSockets()).toEqual([asWebSocket(joining)]);
   });
 
   it("throttles move broadcasts and state updates per socket", () => {
     const nowSpy = vi.spyOn(Date, "now").mockReturnValue(1000);
-    const room = createRoom();
+    const state = new TestState();
+    const room = createRoom(state);
     const moving = new TestSocket();
     const watching = new TestSocket();
 
-    room.handleMessage(asWebSocket(moving), joinMessage("moving"));
-    room.handleMessage(asWebSocket(watching), joinMessage("watching"));
+    joinGuest(room, state, moving, "moving");
+    joinGuest(room, state, watching, "watching");
     watching.sent.length = 0;
 
     nowSpy.mockReturnValue(2000);
-    room.handleMessage(asWebSocket(moving), moveMessage(1, 200));
+    room.webSocketMessage(asWebSocket(moving), moveMessage(1, 200));
 
     nowSpy.mockReturnValue(2050);
-    room.handleMessage(asWebSocket(moving), moveMessage(2, 220));
+    room.webSocketMessage(asWebSocket(moving), moveMessage(2, 220));
 
-    const movingGuestId = room.sockets.get(asWebSocket(moving))?.guestId;
+    const movingGuestId = (moving.deserializeAttachment() as { guest?: RoomGuest } | null)?.guest?.guestId;
     expect(watching.sent.map((payload) => JSON.parse(payload)).filter((message) => message.type === "guest_moved")).toHaveLength(1);
-    expect(movingGuestId ? room.guests.get(movingGuestId)?.x : undefined).toBe(200);
+    expect((moving.deserializeAttachment() as { guest?: RoomGuest } | null)?.guest?.x).toBe(200);
 
     nowSpy.mockReturnValue(2100);
-    room.handleMessage(asWebSocket(moving), moveMessage(3, 240));
+    room.webSocketMessage(asWebSocket(moving), moveMessage(3, 240));
 
     const moveBroadcasts = watching.sent.map((payload) => JSON.parse(payload)).filter((message) => message.type === "guest_moved");
     expect(moveBroadcasts).toHaveLength(2);
     expect(moveBroadcasts.map((message) => message.position.seq)).toEqual([1, 3]);
-    expect(movingGuestId ? room.guests.get(movingGuestId)?.x : undefined).toBe(240);
+    expect((moving.deserializeAttachment() as { guest?: RoomGuest } | null)?.guest?.x).toBe(240);
+    expect(movingGuestId).toBeTypeOf("string");
+  });
+
+  it("broadcasts zone transitions and clamps coordinates inside that zone", () => {
+    vi.spyOn(Date, "now").mockReturnValue(2000);
+    const state = new TestState();
+    const room = createRoom(state);
+    const moving = new TestSocket();
+    const watching = new TestSocket();
+
+    joinGuest(room, state, moving, "moving");
+    joinGuest(room, state, watching, "watching");
+    watching.sent.length = 0;
+
+    room.webSocketMessage(asWebSocket(moving), moveMessage(1, 999, "lounge", -50));
+
+    const broadcast = watching.sent.map((payload) => JSON.parse(payload)).find((message) => message.type === "guest_moved");
+
+    expect(broadcast.position).toEqual({
+      x: 390,
+      y: 0,
+      direction: "right",
+      moving: true,
+      seq: 1,
+      zoneId: "lounge"
+    });
+    expect((moving.deserializeAttachment() as { guest?: RoomGuest } | null)?.guest?.zoneId).toBe("lounge");
+  });
+
+  it("recovers joined guests and their latest position after hibernation", () => {
+    const state = new TestState();
+    const firstRoom = createRoom(state);
+    const moving = new TestSocket();
+
+    joinGuest(firstRoom, state, moving, "moving");
+    firstRoom.webSocketMessage(asWebSocket(moving), moveMessage(1, 135, "lounge", 405));
+
+    const awakenedRoom = createRoom(state);
+    const joining = new TestSocket();
+    joinGuest(awakenedRoom, state, joining, "joining");
+
+    const welcome = joining.sent.map((payload) => JSON.parse(payload)).find((message) => message.type === "welcome");
+    const recovered = welcome.guests.find((guest: RoomGuest) => guest.nickname === "moving");
+
+    expect(recovered).toMatchObject({ x: 135, y: 405, zoneId: "lounge", seq: 1 });
+    expect(moving.sent.map((payload) => JSON.parse(payload))).toContainEqual(
+      expect.objectContaining({ type: "guest_joined", guest: expect.objectContaining({ nickname: "joining" }) })
+    );
+  });
+
+  it("rejects the 101st joined guest without evicting the existing room", () => {
+    const state = new TestState();
+    const room = createRoom(state);
+
+    for (let index = 1; index <= 100; index += 1) {
+      joinGuest(room, state, new TestSocket(), `하객${index}`);
+    }
+
+    const overflow = new TestSocket();
+    joinGuest(room, state, overflow, "초과 하객");
+
+    expect(overflow.sent.map((payload) => JSON.parse(payload))).toEqual([
+      { type: "error", code: "room_full" }
+    ]);
+    expect(overflow.closed).toBe(true);
+    expect(state.getWebSockets()).toHaveLength(100);
   });
 });

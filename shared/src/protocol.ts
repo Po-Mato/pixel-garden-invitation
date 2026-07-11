@@ -1,6 +1,8 @@
 import type { CharacterAppearance } from "./characterCatalog";
 
 export type Direction = "up" | "down" | "left" | "right";
+export const worldZoneIds = ["entrance", "ceremony", "gallery", "lounge"] as const;
+export type WorldZoneId = (typeof worldZoneIds)[number];
 
 export type GuestProfile = {
   guestId: string;
@@ -14,6 +16,7 @@ export type PositionState = {
   direction: Direction;
   moving: boolean;
   seq: number;
+  zoneId: WorldZoneId;
 };
 
 export type RoomGuest = GuestProfile & PositionState & {
@@ -21,8 +24,8 @@ export type RoomGuest = GuestProfile & PositionState & {
 };
 
 export type ClientMessage =
-  | { type: "join"; nickname: string; appearance: CharacterAppearance }
-  | { type: "move"; x: number; y: number; direction: Direction; moving: boolean; seq: number }
+  | { type: "join"; nickname: string; appearance: CharacterAppearance; zoneId: WorldZoneId }
+  | { type: "move"; x: number; y: number; direction: Direction; moving: boolean; seq: number; zoneId: WorldZoneId }
   | { type: "ping" }
   | { type: "leave" };
 

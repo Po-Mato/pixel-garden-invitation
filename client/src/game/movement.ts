@@ -1,19 +1,19 @@
 import type { Direction } from "@wedding-game/shared";
 import { clampToWorld, isBlocked } from "./geometry";
-import type { GardenWorld, Point, Rect } from "./world";
+import type { Point, Rect, WorldZone } from "./world";
 
 export type MoveInput = {
   current: Point;
   target: Point;
   deltaMs: number;
   speed: number;
-  world: GardenWorld;
+  world: WorldZone;
 };
 
 export type GridMoveInput = {
   current: Point;
   direction: Direction;
-  world: GardenWorld;
+  world: WorldZone;
   tileSize?: number;
 };
 
@@ -43,7 +43,7 @@ function nearestTileCenter(value: number, min: number, max: number, tileSize: nu
   return Math.min(lastCenter, Math.max(firstCenter, firstCenter + tileIndex * tileSize));
 }
 
-export function snapToGrid(point: Point, world: GardenWorld, tileSize = gridTileSize): Point {
+export function snapToGrid(point: Point, world: WorldZone, tileSize = gridTileSize): Point {
   const fallback = isFinitePoint(point) ? point : world.spawn;
   const bounds = world.bounds;
 
@@ -129,7 +129,7 @@ function segmentIntersectsRect(from: Point, to: Point, rect: Rect): boolean {
   return true;
 }
 
-function crossesBlockedRect(from: Point, to: Point, world: GardenWorld): boolean {
+function crossesBlockedRect(from: Point, to: Point, world: WorldZone): boolean {
   return world.blocked.some((rect) => segmentIntersectsRect(from, to, rect));
 }
 

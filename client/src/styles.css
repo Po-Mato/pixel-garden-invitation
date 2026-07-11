@@ -372,10 +372,69 @@ select {
 .game-world {
   position: relative;
   display: grid;
-  grid-template-rows: auto auto;
+  grid-template-rows: auto auto auto;
   gap: 10px;
   align-content: start;
   min-height: calc(100vh - 112px);
+}
+
+.world-zone-panel {
+  display: grid;
+  gap: 8px;
+  padding: 10px;
+  border: 4px solid #241812;
+  background: #fff4c7;
+  box-shadow: 5px 5px 0 rgba(36, 24, 18, 0.28);
+}
+
+.world-zone-summary {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.world-zone-summary span,
+.world-zone-summary small {
+  color: #5a3d2a;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.world-zone-summary strong {
+  color: #241812;
+  font-size: 20px;
+  line-height: 1.1;
+}
+
+.world-zone-summary small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.world-zone-tabs {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.world-zone-tabs button {
+  min-width: 0;
+  border: 3px solid #241812;
+  border-radius: 0;
+  padding: 8px 4px;
+  background: #e9d397;
+  color: #241812;
+  font-size: 12px;
+  font-weight: 900;
+  box-shadow: 3px 3px 0 rgba(36, 24, 18, 0.28);
+}
+
+.world-zone-tabs button[aria-pressed="true"] {
+  background: #e96f5f;
+  color: #fff4c7;
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 rgba(36, 24, 18, 0.28);
 }
 
 .world-map {
@@ -393,6 +452,38 @@ select {
   box-shadow:
     inset 0 0 0 5px #d7c579,
     6px 6px 0 #4b2f24;
+}
+
+.world-map--entrance {
+  background:
+    linear-gradient(rgba(36, 24, 18, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(36, 24, 18, 0.08) 1px, transparent 1px),
+    linear-gradient(180deg, #7fb6a7 0 48%, #8fc66f 48% 100%);
+  background-size: calc(100% / 13) calc(100% / 24), calc(100% / 13) calc(100% / 24), auto;
+}
+
+.world-map--ceremony {
+  background:
+    linear-gradient(rgba(36, 24, 18, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(36, 24, 18, 0.08) 1px, transparent 1px),
+    linear-gradient(180deg, #8fc66f, #6aa859);
+  background-size: calc(100% / 13) calc(100% / 24), calc(100% / 13) calc(100% / 24), auto;
+}
+
+.world-map--gallery {
+  background:
+    linear-gradient(rgba(36, 24, 18, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(36, 24, 18, 0.08) 1px, transparent 1px),
+    linear-gradient(180deg, #b7a7d8, #7fa982);
+  background-size: calc(100% / 13) calc(100% / 24), calc(100% / 13) calc(100% / 24), auto;
+}
+
+.world-map--lounge {
+  background:
+    linear-gradient(rgba(36, 24, 18, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(36, 24, 18, 0.08) 1px, transparent 1px),
+    linear-gradient(180deg, #e8bb8f, #7fb6a7);
+  background-size: calc(100% / 13) calc(100% / 24), calc(100% / 13) calc(100% / 24), auto;
 }
 
 .world-map__stage {
@@ -432,6 +523,198 @@ select {
   height: 6.667%;
 }
 
+.world-decoration-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.world-decoration {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  image-rendering: pixelated;
+}
+
+.world-decoration > span,
+.world-decoration::before,
+.world-decoration::after {
+  content: "";
+  display: block;
+  position: absolute;
+}
+
+.world-decoration--flower-bed {
+  border: 3px solid #3f6f3a;
+  background: #78aa54;
+  box-shadow: 3px 3px 0 rgba(36, 24, 18, 0.22);
+}
+
+.world-decoration--flower-bed > span {
+  width: 7px;
+  height: 7px;
+  background: #f7d35c;
+  box-shadow:
+    14px 5px 0 #e96f5f,
+    29px -2px 0 #fff4c7,
+    44px 6px 0 #dc789c,
+    60px 0 0 #f7d35c,
+    76px 5px 0 #e96f5f;
+}
+
+.world-decoration--tree::before {
+  bottom: 0;
+  width: 14px;
+  height: 38%;
+  border: 3px solid #4b2f24;
+  background: #8c5d35;
+}
+
+.world-decoration--tree::after {
+  top: 0;
+  width: 74%;
+  height: 64%;
+  border: 4px solid #2f5c34;
+  background: #5f9b4b;
+  box-shadow:
+    -9px 10px 0 #5f9b4b,
+    9px 10px 0 #5f9b4b,
+    inset 8px 8px 0 #7fbb5f;
+}
+
+.world-decoration--lamp::before {
+  bottom: 0;
+  width: 6px;
+  height: 70%;
+  background: #4b2f24;
+}
+
+.world-decoration--lamp::after {
+  top: 0;
+  width: 18px;
+  height: 18px;
+  border: 3px solid #4b2f24;
+  background: #ffd86b;
+  box-shadow: 0 0 0 4px rgba(255, 244, 199, 0.55);
+}
+
+.world-decoration--banner {
+  border-top: 3px solid #4b2f24;
+}
+
+.world-decoration--banner > span {
+  top: 0;
+  left: 12%;
+  width: 16px;
+  height: 18px;
+  background: #e96f5f;
+  box-shadow:
+    30px 0 0 #f7d35c,
+    60px 0 0 #7fb6a7,
+    90px 0 0 #dc789c,
+    120px 0 0 #fff4c7;
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+}
+
+.world-decoration--pond {
+  border: 5px solid #4f8f69;
+  background: #74bdd1;
+  box-shadow:
+    inset 8px 8px 0 #9bd4df,
+    4px 4px 0 rgba(36, 24, 18, 0.2);
+}
+
+.world-decoration--pond > span {
+  width: 15px;
+  height: 8px;
+  background: #6da64d;
+  box-shadow: 35px 20px 0 #6da64d;
+}
+
+.world-decoration--bench::before {
+  top: 18%;
+  width: 92%;
+  height: 12px;
+  border: 3px solid #4b2f24;
+  background: #a96f3d;
+}
+
+.world-decoration--bench::after {
+  bottom: 6%;
+  width: 82%;
+  height: 10px;
+  border: 3px solid #4b2f24;
+  background: #c7874a;
+  box-shadow:
+    -2px 9px 0 -1px #4b2f24,
+    35px 9px 0 -1px #4b2f24;
+}
+
+.world-decoration--photo-frame {
+  border: 5px solid #4b2f24;
+  background: #fff4c7;
+  box-shadow:
+    inset 0 0 0 4px #d39c61,
+    5px 5px 0 rgba(36, 24, 18, 0.24);
+}
+
+.world-decoration--photo-frame > span {
+  inset: 12px;
+  background: #7fb6a7;
+  box-shadow: inset 0 -14px 0 #8fc66f;
+}
+
+.world-decoration--mailbox::before {
+  top: 4%;
+  width: 72%;
+  height: 48%;
+  border: 4px solid #4b2f24;
+  background: #e96f5f;
+  box-shadow: inset 0 9px 0 #f5a69c;
+}
+
+.world-decoration--mailbox::after {
+  bottom: 0;
+  width: 8px;
+  height: 48%;
+  background: #4b2f24;
+}
+
+.world-decoration--table::before {
+  width: 74%;
+  height: 66%;
+  border: 4px solid #4b2f24;
+  border-radius: 50%;
+  background: #fff4c7;
+  box-shadow:
+    0 8px 0 #c98f68,
+    4px 12px 0 rgba(36, 24, 18, 0.22);
+}
+
+.world-decoration--table::after {
+  width: 14px;
+  height: 14px;
+  background: #dc789c;
+  box-shadow: 8px 0 0 #f7d35c;
+}
+
+.world-decoration--fountain {
+  border: 5px solid #4f8f69;
+  border-radius: 50%;
+  background: #74bdd1;
+  box-shadow:
+    inset 0 0 0 5px #9bd4df,
+    4px 4px 0 rgba(36, 24, 18, 0.22);
+}
+
+.world-decoration--fountain > span {
+  width: 12px;
+  height: 18px;
+  border: 3px solid #4b2f24;
+  background: #d7c579;
+}
+
 .world-spot {
   position: absolute;
   z-index: 1;
@@ -440,13 +723,21 @@ select {
   gap: 2px;
   border: 4px solid #241812;
   border-radius: 0;
-  padding: 8px;
+  padding: 4px;
   background: #fff4c7;
   color: #241812;
   font-weight: 900;
   line-height: 1.1;
   text-align: center;
   box-shadow: 5px 5px 0 rgba(36, 24, 18, 0.3);
+}
+
+.world-spot > span {
+  max-width: 100%;
+  font-size: 13px;
+  line-height: 1.15;
+  overflow-wrap: normal;
+  word-break: keep-all;
 }
 
 .world-spot:active {
@@ -456,8 +747,11 @@ select {
 
 .world-spot small {
   color: #4f3425;
-  font-size: 11px;
+  max-width: 100%;
+  font-size: 10px;
   font-weight: 800;
+  line-height: 1.15;
+  white-space: nowrap;
 }
 
 .world-spot--wedding-info { background: #f5c9c4; }
@@ -468,6 +762,29 @@ select {
 .world-spot--gallery { background: #f5e5ba; }
 .world-spot--story { background: #d7ead4; }
 
+.world-portal {
+  position: absolute;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  border: 3px solid #241812;
+  border-radius: 0;
+  background:
+    linear-gradient(45deg, rgba(36, 24, 18, 0.18) 25%, transparent 25%),
+    #e96f5f;
+  background-size: 10px 10px;
+  color: #fff4c7;
+  font-size: 12px;
+  font-weight: 900;
+  text-shadow: 2px 2px 0 rgba(36, 24, 18, 0.45);
+  box-shadow: 4px 4px 0 rgba(36, 24, 18, 0.32);
+}
+
+.world-portal:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 rgba(36, 24, 18, 0.32);
+}
+
 .world-player {
   position: absolute;
   z-index: 2;
@@ -475,6 +792,7 @@ select {
   justify-items: center;
   gap: 3px;
   width: 76px;
+  pointer-events: none;
   transform: translate(-50%, -50%);
   color: #241812;
   font-size: 12px;
@@ -489,6 +807,10 @@ select {
 
 .player--remote {
   opacity: 0.82;
+  transition:
+    left 90ms steps(3, end),
+    top 90ms steps(3, end);
+  will-change: left, top;
 }
 
 .world-npc {
@@ -667,12 +989,36 @@ select {
   .customizer-options--images {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .world-controls {
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .world-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    overflow: visible;
+    padding: 2px 4px 8px 2px;
+  }
+
+  .world-actions button {
+    min-width: 0;
+    width: 100%;
+    padding: 9px 6px;
+    white-space: normal;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .character-sprite--idle-front .character-layer--base,
   .wedding-npc__sprite {
     animation: none;
+  }
+
+  .player--remote {
+    transition: none;
   }
 }
 
@@ -715,10 +1061,9 @@ select {
 }
 
 .realtime-pill {
-  position: absolute;
-  z-index: 2;
-  top: 12px;
-  left: 12px;
+  position: relative;
+  z-index: 3;
+  justify-self: start;
   border: 3px solid #241812;
   border-radius: 0;
   padding: 7px 10px;
@@ -731,6 +1076,15 @@ select {
 .realtime-pill--online {
   background: #3f8f53;
   color: #fff4c7;
+}
+
+.realtime-pill--reconnecting {
+  background: #f4dfa8;
+}
+
+.realtime-pill--full {
+  background: #f2c7bd;
+  color: #5f211d;
 }
 
 .virtual-joystick {

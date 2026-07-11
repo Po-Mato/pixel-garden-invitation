@@ -1,7 +1,8 @@
 import { parseCharacterAppearance } from "./characterCatalog";
-import type { ClientMessage, Direction } from "./protocol";
+import { worldZoneIds, type ClientMessage, type Direction, type WorldZoneId } from "./protocol";
 
 const directions = new Set<Direction>(["up", "down", "left", "right"]);
+const zones = new Set<WorldZoneId>(worldZoneIds);
 
 export function sanitizeText(value: unknown, maxLength: number): string {
   if (typeof value !== "string") return "";
@@ -24,14 +25,15 @@ export function parseClientMessage(value: unknown): ClientMessage | null {
     const nickname = sanitizeText(value.nickname, 16);
     if (!("appearance" in value)) return null;
     const appearance = parseCharacterAppearance(value.appearance);
-    if (!nickname || !appearance) return null;
-    return { type: "join", nickname, appearance };
+    if (!nickname || !appearance || !zones.has(value.zoneId as WorldZoneId)) return null;
+    return { type: "join", nickname, appearance, zoneId: value.zoneId as WorldZoneId };
   }
 
   if (value.type === "move") {
     if (typeof value.x !== "number" || typeof value.y !== "number") return null;
     if (!Number.isFinite(value.x) || !Number.isFinite(value.y)) return null;
     if (!directions.has(value.direction as Direction)) return null;
+    if (!zones.has(value.zoneId as WorldZoneId)) return null;
     if (typeof value.moving !== "boolean") return null;
     if (typeof value.seq !== "number" || !Number.isInteger(value.seq)) return null;
     return {
@@ -40,7 +42,8 @@ export function parseClientMessage(value: unknown): ClientMessage | null {
       y: value.y,
       direction: value.direction as Direction,
       moving: value.moving,
-      seq: value.seq
+      seq: value.seq,
+      zoneId: value.zoneId as WorldZoneId
     };
   }
 
