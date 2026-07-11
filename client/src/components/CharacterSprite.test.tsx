@@ -33,7 +33,7 @@ it("uses the two-frame idle class only when facing down and stopped", () => {
   expect(screen.getByLabelText("캐릭터")).not.toHaveClass("character-sprite--idle-front");
 });
 
-it("exposes high-density source and display dimensions as CSS variables", () => {
+it("월드에서 24x36 프레임을 48x72로 두 배 확대한다", () => {
   render(
     <CharacterSprite
       appearance={defaultCharacterAppearance}
@@ -48,6 +48,49 @@ it("exposes high-density source and display dimensions as CSS variables", () => 
   const baseLayer = sprite.querySelector('[data-character-layer="base"]');
 
   expect(sprite).toHaveStyle({
+    "--character-source-width": "24px",
+    "--character-source-height": "36px",
+    "--character-display-width": "48px",
+    "--character-display-height": "72px",
+    "--character-display-scale-x": "2",
+    "--character-display-scale-y": "2"
+  });
+  expect(baseLayer).toHaveStyle({ backgroundPosition: "-48px -72px" });
+});
+
+it("미리보기에서는 기존 96x144 프레임을 유지한다", () => {
+  render(
+    <CharacterSprite
+      appearance={defaultCharacterAppearance}
+      direction="down"
+      moving={false}
+      displayMode="preview"
+      label="미리보기 하객"
+    />
+  );
+
+  expect(screen.getByLabelText("미리보기 하객")).toHaveStyle({
+    "--character-source-width": "96px",
+    "--character-source-height": "144px",
+    "--character-display-width": "96px",
+    "--character-display-height": "144px",
+    "--character-display-scale-x": "1",
+    "--character-display-scale-y": "1"
+  });
+});
+
+it("선택 목록 썸네일은 고해상도 원본을 48x72로 표시한다", () => {
+  render(
+    <CharacterSprite
+      appearance={defaultCharacterAppearance}
+      direction="down"
+      moving={false}
+      displayMode="thumbnail"
+      label="목록 하객"
+    />
+  );
+
+  expect(screen.getByLabelText("목록 하객")).toHaveStyle({
     "--character-source-width": "96px",
     "--character-source-height": "144px",
     "--character-display-width": "48px",
@@ -55,7 +98,6 @@ it("exposes high-density source and display dimensions as CSS variables", () => 
     "--character-display-scale-x": "0.5",
     "--character-display-scale-y": "0.5"
   });
-  expect(baseLayer).toHaveStyle({ backgroundPosition: "-192px -288px" });
 });
 
 it("완성 프리셋 이미지 로드 실패 시 해당 레이어만 숨긴다", () => {

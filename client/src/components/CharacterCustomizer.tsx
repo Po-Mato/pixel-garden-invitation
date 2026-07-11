@@ -59,7 +59,12 @@ export function CharacterCustomizer({ value, onChange }: Props) {
                 onClick={() => onChange(appearance)}
               >
                 <span className="customizer-option__sprite" aria-hidden="true">
-                  <CharacterSprite appearance={appearance} direction="down" moving={false} />
+                  <CharacterSprite
+                    appearance={appearance}
+                    direction="down"
+                    moving={false}
+                    displayMode="thumbnail"
+                  />
                 </span>
                 <span>{preset.label}</span>
                 {selected ? <span className="customizer-option__check" aria-hidden="true">✓</span> : null}

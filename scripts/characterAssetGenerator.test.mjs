@@ -337,7 +337,34 @@ test("generator emits idle and four-direction walk sheets for every npc", async 
       )
     );
   }
-  assert.match(stdout, /Generated 28 character assets/);
+  assert.match(stdout, /Generated 52 character assets/);
+});
+
+test("generator emits coarse world sheets for every guest preset", async () => {
+  const dir = await mkdtemp(join(tmpdir(), "character-world-assets-"));
+  try {
+    const { generateCharacterAssets } = await import("./generate-character-assets.mjs");
+    const outputRoot = join(dir, "generated");
+    const count = await generateCharacterAssets({ outputRoot });
+
+    assert.equal(count, 52);
+    for (const preset of guestPresetCatalog.presets) {
+      await assert.doesNotReject(() =>
+        validateDimensions(
+          join(outputRoot, `guests/world/${preset.id}__walk.png`),
+          { width: 72, height: 144 }
+        )
+      );
+      await assert.doesNotReject(() =>
+        validateDimensions(
+          join(outputRoot, `guests/world/${preset.id}__idle.png`),
+          { width: 48, height: 36 }
+        )
+      );
+    }
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
 });
 
 test("generator validates a late npc walk source before replacing existing output", async () => {
@@ -398,7 +425,7 @@ test("generator accepts finished guest preset sources and emits generated preset
     const { generateCharacterAssets } = await import("./generate-character-assets.mjs");
     const outputCount = await generateCharacterAssets({ sourceRoot, outputRoot });
 
-    assert.equal(outputCount, 28);
+    assert.equal(outputCount, 52);
     for (const preset of guestPresetCatalog.presets) {
       await assert.doesNotReject(() =>
         validateDimensions(join(outputRoot, preset.generated.walk), guestPresetCatalog.frame.walk.sheet)

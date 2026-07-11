@@ -26,7 +26,16 @@ export type WorldDecorationKind =
   | "photo-frame"
   | "mailbox"
   | "table"
-  | "fountain";
+  | "fountain"
+  | "flower-arch"
+  | "petal-scatter"
+  | "butterfly"
+  | "topiary"
+  | "string-lights"
+  | "rose-pillar"
+  | "gift-stack"
+  | "dessert-cart"
+  | "star-garland";
 
 export type WorldDecoration = Rect & {
   id: string;
@@ -76,8 +85,8 @@ const ceremonyZone: WorldZone = {
     { id: "story", label: "스토리", x: 34, y: 332, width: 82, height: 70, actionRadius: 58 }
   ],
   npcs: [
-    { id: "groom", label: "신랑 이서준", x: 235, y: 255 },
-    { id: "bride", label: "신부 김하린", x: 335, y: 255 }
+    { id: "groom", label: "신랑 이서준", x: 235, y: 280 },
+    { id: "bride", label: "신부 김하린", x: 335, y: 280 }
   ],
   portals: [
     { id: "to-entrance", label: "입구", to: "entrance", x: 156, y: 642, width: 78, height: 44, spawn: { x: 195, y: 165 } },
@@ -93,7 +102,13 @@ const ceremonyZone: WorldZone = {
     { id: "ceremony-tree-right", kind: "tree", label: "정원 나무", x: 324, y: 42, width: 54, height: 72 },
     { id: "ceremony-lamp-left", kind: "lamp", label: "정원등", x: 112, y: 436, width: 24, height: 48 },
     { id: "ceremony-lamp-right", kind: "lamp", label: "정원등", x: 254, y: 436, width: 24, height: 48 },
-    { id: "ceremony-bench", kind: "bench", label: "나무 벤치", x: 274, y: 596, width: 76, height: 36 }
+    { id: "ceremony-bench", kind: "bench", label: "나무 벤치", x: 274, y: 596, width: 76, height: 36 },
+    { id: "ceremony-lights", kind: "string-lights", label: "반짝이는 예식 조명", x: 88, y: 136, width: 214, height: 26 },
+    { id: "ceremony-rose-left", kind: "rose-pillar", label: "장미 기둥", x: 96, y: 112, width: 30, height: 62 },
+    { id: "ceremony-rose-right", kind: "rose-pillar", label: "장미 기둥", x: 264, y: 112, width: 30, height: 62 },
+    { id: "ceremony-petals-one", kind: "petal-scatter", label: "흩날리는 꽃잎", x: 126, y: 278, width: 54, height: 32 },
+    { id: "ceremony-petals-two", kind: "petal-scatter", label: "흩날리는 꽃잎", x: 216, y: 372, width: 58, height: 34 },
+    { id: "ceremony-butterfly", kind: "butterfly", label: "정원 나비", x: 62, y: 388, width: 28, height: 24 }
   ]
 };
 
@@ -124,7 +139,13 @@ const entranceZone: WorldZone = {
     { id: "entrance-bench", kind: "bench", label: "대기 벤치", x: 266, y: 568, width: 84, height: 38 },
     { id: "entrance-lamp-left", kind: "lamp", label: "입구 조명", x: 126, y: 330, width: 24, height: 48 },
     { id: "entrance-lamp-right", kind: "lamp", label: "입구 조명", x: 240, y: 330, width: 24, height: 48 },
-    { id: "entrance-flowers", kind: "flower-bed", label: "환영 화단", x: 270, y: 642, width: 90, height: 38 }
+    { id: "entrance-flowers", kind: "flower-bed", label: "환영 화단", x: 270, y: 642, width: 90, height: 38 },
+    { id: "entrance-flower-arch", kind: "flower-arch", label: "환영 꽃 아치", x: 142, y: 188, width: 106, height: 102 },
+    { id: "entrance-butterfly-left", kind: "butterfly", label: "환영 나비", x: 82, y: 286, width: 28, height: 24 },
+    { id: "entrance-butterfly-right", kind: "butterfly", label: "환영 나비", x: 292, y: 438, width: 28, height: 24 },
+    { id: "entrance-topiary", kind: "topiary", label: "리본 토피어리", x: 24, y: 348, width: 46, height: 70 },
+    { id: "entrance-lights", kind: "string-lights", label: "환영 조명 줄", x: 92, y: 414, width: 206, height: 24 },
+    { id: "entrance-petals", kind: "petal-scatter", label: "환영 꽃잎", x: 154, y: 292, width: 82, height: 34 }
   ]
 };
 
@@ -154,7 +175,13 @@ const galleryZone: WorldZone = {
     { id: "gallery-lamp", kind: "lamp", label: "전시 조명", x: 166, y: 132, width: 24, height: 48 },
     { id: "gallery-bench", kind: "bench", label: "감상 벤치", x: 42, y: 478, width: 90, height: 40 },
     { id: "gallery-flowers", kind: "flower-bed", label: "전시 화단", x: 252, y: 510, width: 104, height: 42 },
-    { id: "gallery-tree", kind: "tree", label: "보랏빛 정원 나무", x: 20, y: 606, width: 58, height: 76 }
+    { id: "gallery-tree", kind: "tree", label: "보랏빛 정원 나무", x: 20, y: 606, width: 58, height: 76 },
+    { id: "gallery-stars", kind: "star-garland", label: "별빛 전시 가랜드", x: 154, y: 28, width: 210, height: 30 },
+    { id: "gallery-lights", kind: "string-lights", label: "전시 조명 줄", x: 154, y: 194, width: 206, height: 24 },
+    { id: "gallery-petals", kind: "petal-scatter", label: "라벤더 꽃잎", x: 154, y: 400, width: 78, height: 34 },
+    { id: "gallery-butterfly", kind: "butterfly", label: "라벤더 나비", x: 326, y: 286, width: 28, height: 24 },
+    { id: "gallery-topiary", kind: "topiary", label: "별 리본 토피어리", x: 304, y: 612, width: 48, height: 70 },
+    { id: "gallery-frame-four", kind: "photo-frame", label: "약속 사진 액자", x: 148, y: 566, width: 64, height: 78 }
   ]
 };
 
@@ -184,7 +211,13 @@ const loungeZone: WorldZone = {
     { id: "lounge-bench", kind: "bench", label: "휴식 벤치", x: 36, y: 524, width: 92, height: 40 },
     { id: "lounge-lamp", kind: "lamp", label: "라운지 조명", x: 196, y: 102, width: 24, height: 48 },
     { id: "lounge-flowers", kind: "flower-bed", label: "라운지 화단", x: 246, y: 492, width: 112, height: 42 },
-    { id: "lounge-tree", kind: "tree", label: "그늘 나무", x: 18, y: 622, width: 58, height: 76 }
+    { id: "lounge-tree", kind: "tree", label: "그늘 나무", x: 18, y: 622, width: 58, height: 76 },
+    { id: "lounge-gifts", kind: "gift-stack", label: "축하 선물 더미", x: 42, y: 192, width: 54, height: 54 },
+    { id: "lounge-dessert-cart", kind: "dessert-cart", label: "웨딩 디저트 카트", x: 112, y: 450, width: 94, height: 62 },
+    { id: "lounge-lights", kind: "string-lights", label: "티파티 조명 줄", x: 36, y: 32, width: 318, height: 26 },
+    { id: "lounge-topiary", kind: "topiary", label: "하트 토피어리", x: 310, y: 610, width: 48, height: 72 },
+    { id: "lounge-petals", kind: "petal-scatter", label: "축하 꽃잎", x: 164, y: 570, width: 72, height: 34 },
+    { id: "lounge-table-three", kind: "table", label: "미니 티 테이블", x: 116, y: 86, width: 64, height: 50 }
   ]
 };
 

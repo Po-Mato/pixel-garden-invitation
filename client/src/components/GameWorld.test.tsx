@@ -377,7 +377,7 @@ describe("GameWorld", () => {
     expect(screen.getByLabelText("하객2")).toHaveAttribute("data-remote-motion", "pixel-step-3");
     const remoteSprite = screen.getByLabelText("하객2 캐릭터");
     expect(remoteSprite.querySelector('[data-character-layer="base"]')).toHaveStyle({
-      backgroundImage: expect.stringContaining("base/masculine__skin-02-fair__walk.png")
+      backgroundImage: expect.stringContaining("guests/world/masculine-navy-suit__walk.png")
     });
     expect(screen.queryByLabelText("서버의 나")).not.toBeInTheDocument();
 
@@ -549,10 +549,10 @@ describe("GameWorld", () => {
     advanceAnimation(0);
 
     expect(sprite).not.toHaveClass("character-sprite--idle-front");
-    expect(baseLayer).toHaveStyle({ backgroundPosition: "-192px -288px" });
+    expect(baseLayer).toHaveStyle({ backgroundPosition: "-48px -72px" });
 
     fireEvent.keyUp(joystick, { key: "ArrowRight" });
 
-    expect(baseLayer).toHaveStyle({ backgroundPosition: "-96px -288px" });
+    expect(baseLayer).toHaveStyle({ backgroundPosition: "-24px -72px" });
   });
 });

@@ -63,9 +63,11 @@ describe("하객 완성 캐릭터 프리셋", () => {
 
   it("기존 하객 프레임 규격을 유지한다", () => {
     expect(guestPresetFrame.source).toEqual({ width: 96, height: 144 });
+    expect(guestPresetFrame.worldSource).toEqual({ width: 24, height: 36 });
     expect(guestPresetFrame.walk.sheet).toEqual({ width: 288, height: 576 });
     expect(guestPresetFrame.idle.sheet).toEqual({ width: 192, height: 144 });
     expect(guestPresetFrame.display.world).toEqual({ width: 48, height: 72 });
+    expect(guestPresetFrame.display.thumbnail).toEqual({ width: 48, height: 72 });
     expect(guestPresetFrame.display.preview).toEqual({ width: 96, height: 144 });
   });
 

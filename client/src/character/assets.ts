@@ -4,7 +4,7 @@ import {
   resolveGuestPreset
 } from "@wedding-game/shared";
 
-export type CharacterDisplayMode = "world" | "preview";
+export type CharacterDisplayMode = "world" | "thumbnail" | "preview";
 
 export type ResolvedCharacterLayer = {
   slot: "base";
@@ -19,14 +19,22 @@ const assetUrl = (baseUrl: string, path: string) =>
 
 export function resolveCharacterLayers(
   appearance: CharacterAppearance,
-  baseUrl = import.meta.env.BASE_URL
+  baseUrl = import.meta.env.BASE_URL,
+  displayMode: CharacterDisplayMode = "world"
 ): ResolvedCharacterLayer[] {
   const preset = resolveGuestPreset(appearance);
+  const useWorldPixels = displayMode === "world";
   return [{
     slot: "base",
-    walkUrl: assetUrl(baseUrl, preset.generated.walk),
-    idleUrl: assetUrl(baseUrl, preset.generated.idle),
-    sourceSize: guestPresetFrame.source,
+    walkUrl: assetUrl(
+      baseUrl,
+      useWorldPixels ? `guests/world/${preset.id}__walk.png` : preset.generated.walk
+    ),
+    idleUrl: assetUrl(
+      baseUrl,
+      useWorldPixels ? `guests/world/${preset.id}__idle.png` : preset.generated.idle
+    ),
+    sourceSize: useWorldPixels ? guestPresetFrame.worldSource : guestPresetFrame.source,
     displaySize: guestPresetFrame.display
   }];
 }

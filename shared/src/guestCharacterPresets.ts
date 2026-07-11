@@ -9,8 +9,10 @@ export type GuestSpriteSize = {
 
 export type GuestPresetFrame = {
   source: GuestSpriteSize;
+  worldSource: GuestSpriteSize;
   display: {
     world: GuestSpriteSize;
+    thumbnail: GuestSpriteSize;
     preview: GuestSpriteSize;
   };
   walk: {

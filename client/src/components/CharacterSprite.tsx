@@ -28,7 +28,7 @@ export function CharacterSprite({
   const [failedUrls, setFailedUrls] = useState<Set<string>>(() => new Set());
   const safeAppearance = parseCharacterAppearance(appearance) ?? defaultCharacterAppearance;
   const useFrontIdle = !moving && direction === "down";
-  const layers = resolveCharacterLayers(safeAppearance);
+  const layers = resolveCharacterLayers(safeAppearance, import.meta.env.BASE_URL, displayMode);
   const sourceSize = layers[0].sourceSize;
   const displaySize = layers[0].displaySize[displayMode];
   const frame = getWalkFrameStyle(direction, moving ? stepFrame : 1, sourceSize);

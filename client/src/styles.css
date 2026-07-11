@@ -439,6 +439,7 @@ select {
 
 .world-map {
   position: relative;
+  isolation: isolate;
   width: 100%;
   aspect-ratio: 390 / 720;
   overflow: hidden;
@@ -456,34 +457,54 @@ select {
 
 .world-map--entrance {
   background:
-    linear-gradient(rgba(36, 24, 18, 0.08) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(36, 24, 18, 0.08) 1px, transparent 1px),
-    linear-gradient(180deg, #7fb6a7 0 48%, #8fc66f 48% 100%);
-  background-size: calc(100% / 13) calc(100% / 24), calc(100% / 13) calc(100% / 24), auto;
+    linear-gradient(rgba(36, 24, 18, 0.08) 2px, transparent 2px),
+    linear-gradient(90deg, rgba(36, 24, 18, 0.08) 2px, transparent 2px),
+    linear-gradient(135deg, rgba(255, 244, 199, 0.2) 25%, transparent 25%) 0 0 / 30px 30px,
+    linear-gradient(180deg, #85c9bd 0 18%, #a9d37f 18% 58%, #72ad65 58% 100%);
+  background-size: 30px 30px, 30px 30px, 30px 30px, auto;
+  box-shadow:
+    inset 0 0 0 5px #f2cf71,
+    inset 0 0 0 10px #5b9661,
+    6px 6px 0 #4b2f24;
 }
 
 .world-map--ceremony {
   background:
-    linear-gradient(rgba(36, 24, 18, 0.08) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(36, 24, 18, 0.08) 1px, transparent 1px),
-    linear-gradient(180deg, #8fc66f, #6aa859);
-  background-size: calc(100% / 13) calc(100% / 24), calc(100% / 13) calc(100% / 24), auto;
+    linear-gradient(rgba(36, 24, 18, 0.07) 2px, transparent 2px),
+    linear-gradient(90deg, rgba(36, 24, 18, 0.07) 2px, transparent 2px),
+    linear-gradient(135deg, transparent 42%, rgba(255, 244, 199, 0.18) 42% 58%, transparent 58%) 0 0 / 30px 30px,
+    linear-gradient(180deg, #9bd574 0 45%, #75b45d 45% 100%);
+  background-size: 30px 30px, 30px 30px, 30px 30px, auto;
+  box-shadow:
+    inset 0 0 0 5px #f2c9d1,
+    inset 0 0 0 10px #4e8f50,
+    6px 6px 0 #4b2f24;
 }
 
 .world-map--gallery {
   background:
-    linear-gradient(rgba(36, 24, 18, 0.08) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(36, 24, 18, 0.08) 1px, transparent 1px),
-    linear-gradient(180deg, #b7a7d8, #7fa982);
-  background-size: calc(100% / 13) calc(100% / 24), calc(100% / 13) calc(100% / 24), auto;
+    linear-gradient(rgba(49, 38, 65, 0.08) 2px, transparent 2px),
+    linear-gradient(90deg, rgba(49, 38, 65, 0.08) 2px, transparent 2px),
+    linear-gradient(45deg, rgba(255, 244, 199, 0.16) 25%, transparent 25% 75%, rgba(255, 244, 199, 0.16) 75%) 0 0 / 30px 30px,
+    linear-gradient(180deg, #c4b5df 0 34%, #83b88a 34% 100%);
+  background-size: 30px 30px, 30px 30px, 30px 30px, auto;
+  box-shadow:
+    inset 0 0 0 5px #f3d77a,
+    inset 0 0 0 10px #715d96,
+    6px 6px 0 #4b2f24;
 }
 
 .world-map--lounge {
   background:
-    linear-gradient(rgba(36, 24, 18, 0.08) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(36, 24, 18, 0.08) 1px, transparent 1px),
-    linear-gradient(180deg, #e8bb8f, #7fb6a7);
-  background-size: calc(100% / 13) calc(100% / 24), calc(100% / 13) calc(100% / 24), auto;
+    linear-gradient(rgba(36, 24, 18, 0.07) 2px, transparent 2px),
+    linear-gradient(90deg, rgba(36, 24, 18, 0.07) 2px, transparent 2px),
+    linear-gradient(45deg, rgba(236, 127, 111, 0.2) 25%, transparent 25% 75%, rgba(127, 182, 167, 0.22) 75%) 0 0 / 30px 30px,
+    linear-gradient(180deg, #f0c89f 0 28%, #91c4a6 28% 100%);
+  background-size: 30px 30px, 30px 30px, 30px 30px, auto;
+  box-shadow:
+    inset 0 0 0 5px #f4dfa8,
+    inset 0 0 0 10px #bf6f64,
+    6px 6px 0 #4b2f24;
 }
 
 .world-map__stage {
@@ -499,6 +520,42 @@ select {
     #e8c579;
   background-size: 12px 12px;
   box-shadow: inset 0 0 0 3px rgba(36, 24, 18, 0.16);
+}
+
+.world-map--entrance .world-path {
+  background:
+    linear-gradient(90deg, rgba(73, 115, 103, 0.18) 3px, transparent 3px) 0 0 / 15px 15px,
+    #d8ead5;
+  box-shadow:
+    inset 0 0 0 3px #5c9b82,
+    inset 0 0 0 6px #f4dfa8;
+}
+
+.world-map--ceremony .world-path {
+  background:
+    linear-gradient(45deg, rgba(177, 99, 92, 0.17) 25%, transparent 25%) 0 0 / 12px 12px,
+    #f1d58d;
+  box-shadow:
+    inset 0 0 0 3px #c77470,
+    inset 0 0 0 6px #fff1bd;
+}
+
+.world-map--gallery .world-path {
+  background:
+    linear-gradient(135deg, rgba(85, 68, 116, 0.18) 25%, transparent 25%) 0 0 / 12px 12px,
+    #ded1eb;
+  box-shadow:
+    inset 0 0 0 3px #715d96,
+    inset 0 0 0 6px #f7eab8;
+}
+
+.world-map--lounge .world-path {
+  background:
+    linear-gradient(90deg, rgba(164, 87, 77, 0.18) 3px, transparent 3px) 0 0 / 15px 15px,
+    #f5d3bd;
+  box-shadow:
+    inset 0 0 0 3px #bd6f64,
+    inset 0 0 0 6px #fff0ca;
 }
 
 .world-path--vertical {
@@ -715,6 +772,245 @@ select {
   background: #d7c579;
 }
 
+.world-decoration--flower-arch::before,
+.world-decoration--flower-arch::after {
+  bottom: 0;
+  width: 15%;
+  height: 78%;
+  border: 3px solid #355f39;
+  background: #6ba352;
+  box-shadow:
+    inset 5px 0 0 #8bca67,
+    4px 0 0 #f3c963;
+}
+
+.world-decoration--flower-arch::before { left: 5%; }
+.world-decoration--flower-arch::after { right: 5%; }
+
+.world-decoration--flower-arch > span {
+  top: 0;
+  width: 78%;
+  height: 45%;
+  background:
+    linear-gradient(90deg, #e96f78 0 16%, #f7d35c 16% 33%, #fff4c7 33% 50%, #dc789c 50% 67%, #91d2c0 67% 84%, #e96f78 84%) 0 0 / 100% 11px no-repeat,
+    linear-gradient(#4c8148, #4c8148) 0 0 / 11px 100% no-repeat,
+    linear-gradient(#4c8148, #4c8148) 100% 0 / 11px 100% no-repeat;
+}
+
+.world-decoration--petal-scatter > span {
+  width: 6px;
+  height: 5px;
+  background: #f7a8b0;
+  box-shadow:
+    -20px -9px 0 #fff4c7,
+    17px -12px 0 #e96f78,
+    29px 8px 0 #f4c4d7,
+    -31px 11px 0 #f7d35c,
+    3px 14px 0 #fff0ca;
+  animation: pixel-petals 1.8s steps(2, end) infinite;
+}
+
+.world-decoration--butterfly > span {
+  width: 5px;
+  height: 13px;
+  background: #4b2f24;
+}
+
+.world-decoration--butterfly::before,
+.world-decoration--butterfly::after {
+  top: 4px;
+  width: 10px;
+  height: 12px;
+  border: 3px solid #4b2f24;
+  background: #f7d35c;
+  animation: pixel-flutter 0.65s steps(2, end) infinite;
+}
+
+.world-decoration--butterfly::before { right: 52%; }
+.world-decoration--butterfly::after {
+  left: 52%;
+  background: #e96f78;
+  animation-direction: reverse;
+}
+
+.world-decoration--topiary::before {
+  bottom: 0;
+  width: 16px;
+  height: 45%;
+  border: 3px solid #4b2f24;
+  background: #a96f3d;
+}
+
+.world-decoration--topiary::after {
+  top: 0;
+  width: 72%;
+  height: 56%;
+  border: 4px solid #315b37;
+  background: #5d984b;
+  box-shadow:
+    -8px 8px 0 #5d984b,
+    8px 8px 0 #79b85b,
+    inset 7px 7px 0 #8dcc6a;
+}
+
+.world-decoration--topiary > span {
+  top: 49%;
+  z-index: 1;
+  width: 22px;
+  height: 9px;
+  background: #e96f78;
+  box-shadow: -10px -5px 0 #e96f78, 10px -5px 0 #e96f78;
+}
+
+.world-decoration--string-lights,
+.world-decoration--star-garland {
+  border-top: 3px solid #4b2f24;
+}
+
+.world-decoration--string-lights > span {
+  top: -1px;
+  left: 8%;
+  width: 8px;
+  height: 12px;
+  background: #ffe173;
+  box-shadow:
+    38px 4px 0 #f39a8d,
+    76px 0 0 #91d2c0,
+    114px 4px 0 #f4b5cf,
+    152px 0 0 #ffe173,
+    190px 4px 0 #fff4c7,
+    228px 0 0 #91d2c0,
+    266px 4px 0 #f39a8d;
+  animation: pixel-twinkle 1.4s steps(2, end) infinite;
+}
+
+.world-decoration--rose-pillar::before {
+  bottom: 0;
+  width: 14px;
+  height: 76%;
+  border: 3px solid #4b2f24;
+  background: #fff0ca;
+  box-shadow: inset 4px 0 0 #e2b870;
+}
+
+.world-decoration--rose-pillar::after {
+  top: 0;
+  width: 86%;
+  height: 34%;
+  border: 3px solid #355f39;
+  background: #5e9b4c;
+  box-shadow: -4px 7px 0 #e96f78, 7px 5px 0 #f4b5cf;
+}
+
+.world-decoration--rose-pillar > span {
+  top: 10%;
+  width: 8px;
+  height: 8px;
+  background: #fff4c7;
+  box-shadow: -10px 0 0 #e96f78, 10px 0 0 #dc789c;
+}
+
+.world-decoration--gift-stack::before {
+  left: 3%;
+  bottom: 0;
+  width: 58%;
+  height: 58%;
+  border: 4px solid #4b2f24;
+  background:
+    linear-gradient(90deg, transparent 42%, #f7d35c 42% 58%, transparent 58%),
+    #e96f78;
+}
+
+.world-decoration--gift-stack::after {
+  right: 2%;
+  top: 2%;
+  width: 48%;
+  height: 48%;
+  border: 4px solid #4b2f24;
+  background:
+    linear-gradient(90deg, transparent 40%, #fff4c7 40% 60%, transparent 60%),
+    #75b7a5;
+}
+
+.world-decoration--gift-stack > span {
+  top: 0;
+  right: 16%;
+  z-index: 1;
+  width: 18px;
+  height: 8px;
+  background: #f7d35c;
+  box-shadow: -8px -4px 0 #f7d35c, 8px -4px 0 #f7d35c;
+}
+
+.world-decoration--dessert-cart::before {
+  bottom: 10px;
+  width: 82%;
+  height: 54%;
+  border: 4px solid #4b2f24;
+  background:
+    linear-gradient(90deg, #fff4c7 0 20%, #f39a8d 20% 40%, #fff4c7 40% 60%, #f39a8d 60% 80%, #fff4c7 80%);
+  box-shadow: inset 0 -12px 0 #8fc6ad;
+}
+
+.world-decoration--dessert-cart::after {
+  bottom: 0;
+  width: 16px;
+  height: 16px;
+  border: 4px solid #4b2f24;
+  background: #d7c579;
+  box-shadow: 50px 0 0 -4px #d7c579, 50px 0 0 0 #4b2f24;
+  transform: translateX(-25px);
+}
+
+.world-decoration--dessert-cart > span {
+  top: 3px;
+  width: 62%;
+  height: 12px;
+  background: #f7d35c;
+  box-shadow: -18px 8px 0 #dc789c, 18px 8px 0 #fff4c7;
+}
+
+.world-decoration--star-garland > span {
+  top: -4px;
+  left: 8%;
+  width: 10px;
+  height: 10px;
+  background: #f7d35c;
+  clip-path: polygon(50% 0, 62% 36%, 100% 50%, 62% 64%, 50% 100%, 38% 64%, 0 50%, 38% 36%);
+  box-shadow:
+    38px 5px 0 #fff4c7,
+    76px 0 0 #f4b5cf,
+    114px 5px 0 #91d2c0,
+    152px 0 0 #f7d35c,
+    190px 5px 0 #fff4c7;
+  animation: pixel-twinkle 1.6s steps(2, end) infinite reverse;
+}
+
+.world-map--gallery .world-decoration--photo-frame > span {
+  background: #a991c7;
+  box-shadow: inset 0 -14px 0 #7fac83;
+}
+
+.world-map--lounge .world-decoration--table::before {
+  background: #fff0ca;
+  box-shadow: 0 8px 0 #dc8e82, 4px 12px 0 rgba(36, 24, 18, 0.22);
+}
+
+@keyframes pixel-twinkle {
+  0%, 100% { filter: brightness(1); transform: translateY(0); }
+  50% { filter: brightness(1.3); transform: translateY(2px); }
+}
+
+@keyframes pixel-flutter {
+  0%, 100% { transform: scaleX(1); }
+  50% { transform: scaleX(0.45); }
+}
+
+@keyframes pixel-petals {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(4px, 3px); }
+}
+
 .world-spot {
   position: absolute;
   z-index: 1;
@@ -867,7 +1163,7 @@ select {
 
 .world-controls {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 12px;
   min-width: 0;
 }
@@ -875,12 +1171,11 @@ select {
 .world-actions {
   flex: 1 1 auto;
   min-width: 0;
-  display: flex;
-  align-items: center;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
-  overflow-x: auto;
-  padding: 2px 2px 8px 12px;
-  scroll-padding-left: 12px;
+  overflow: visible;
+  padding: 2px 4px 8px 2px;
 }
 
 .world-actions button,
@@ -893,8 +1188,10 @@ select {
 }
 
 .world-actions button {
-  flex: 0 0 auto;
-  padding: 9px 12px;
+  min-width: 0;
+  width: 100%;
+  padding: 9px 6px;
+  white-space: normal;
   box-shadow: 4px 4px 0 #7d5837;
 }
 
@@ -1013,7 +1310,12 @@ select {
 
 @media (prefers-reduced-motion: reduce) {
   .character-sprite--idle-front .character-layer--base,
-  .wedding-npc__sprite {
+  .wedding-npc__sprite,
+  .world-decoration--butterfly::before,
+  .world-decoration--butterfly::after,
+  .world-decoration--petal-scatter > span,
+  .world-decoration--string-lights > span,
+  .world-decoration--star-garland > span {
     animation: none;
   }
 

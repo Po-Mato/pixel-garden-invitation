@@ -1,6 +1,7 @@
 import { access, copyFile, mkdir, readFile, rm } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import sharp from "sharp";
 import { validateDimensions } from "./lib/characterAssetGenerator.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -10,6 +11,14 @@ const defaultSourceRoot = join(root, "character-assets/source");
 const defaultOutputRoot = join(root, "client/public/characters/generated");
 const guestIdleDimensions = guestPresetCatalog.frame.idle.sheet;
 const guestWalkDimensions = guestPresetCatalog.frame.walk.sheet;
+const guestWorldIdleDimensions = {
+  width: guestPresetCatalog.frame.worldSource.width * guestPresetCatalog.frame.idle.columns,
+  height: guestPresetCatalog.frame.worldSource.height
+};
+const guestWorldWalkDimensions = {
+  width: guestPresetCatalog.frame.worldSource.width * guestPresetCatalog.frame.walk.columns,
+  height: guestPresetCatalog.frame.worldSource.height * guestPresetCatalog.frame.walk.rows.length
+};
 const npcIdleDimensions = { width: 192, height: 144 };
 const npcWalkDimensions = { width: 288, height: 576 };
 
@@ -52,12 +61,35 @@ export async function generateCharacterAssets({
     await mkdir(dirname(target), { recursive: true });
     await copyFile(source, target);
   };
+  const writeCoarse = async (source, relative, dimensions) => {
+    const target = outputPath(relative);
+    await mkdir(dirname(target), { recursive: true });
+    await sharp(source)
+      .resize(dimensions.width, dimensions.height, {
+        fit: "fill",
+        kernel: sharp.kernel.nearest
+      })
+      .png()
+      .toFile(target);
+  };
 
   await rm(outputRoot, { recursive: true, force: true });
 
   for (const preset of guestPresetCatalog.presets) {
-    await copyFixed(sourcePath(sourceRoot, preset.source.walk), preset.generated.walk);
-    await copyFixed(sourcePath(sourceRoot, preset.source.idle), preset.generated.idle);
+    const walkSource = sourcePath(sourceRoot, preset.source.walk);
+    const idleSource = sourcePath(sourceRoot, preset.source.idle);
+    await copyFixed(walkSource, preset.generated.walk);
+    await copyFixed(idleSource, preset.generated.idle);
+    await writeCoarse(
+      walkSource,
+      `guests/world/${preset.id}__walk.png`,
+      guestWorldWalkDimensions
+    );
+    await writeCoarse(
+      idleSource,
+      `guests/world/${preset.id}__idle.png`,
+      guestWorldIdleDimensions
+    );
   }
 
   for (const npc of catalog.npcs) {

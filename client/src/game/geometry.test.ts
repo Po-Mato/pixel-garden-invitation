@@ -30,21 +30,37 @@ describe("world geometry", () => {
 
   it("gives every zone a distinctive set of pixel decorations", () => {
     for (const zone of gardenWorld.zones) {
-      expect(zone.decorations.length).toBeGreaterThanOrEqual(6);
-      expect(new Set(zone.decorations.map((decoration) => decoration.kind)).size).toBeGreaterThanOrEqual(3);
+      expect(zone.decorations.length).toBeGreaterThanOrEqual(12);
+      expect(new Set(zone.decorations.map((decoration) => decoration.kind)).size).toBeGreaterThanOrEqual(6);
       expect(zone.decorations.every((decoration) => decoration.label.length > 0)).toBe(true);
     }
 
-    expect(new Set(gardenWorld.zones.flatMap((zone) => zone.decorations.map((decoration) => decoration.kind)))).toEqual(
-      new Set(["flower-bed", "tree", "lamp", "banner", "pond", "bench", "photo-frame", "mailbox", "table", "fountain"])
-    );
+    const kinds = (zoneId: "entrance" | "ceremony" | "gallery" | "lounge") =>
+      new Set(getWorldZone(gardenWorld, zoneId).decorations.map((decoration) => decoration.kind));
+
+    expect([...kinds("entrance")]).toEqual(expect.arrayContaining(["flower-arch", "butterfly"]));
+    expect([...kinds("ceremony")]).toEqual(expect.arrayContaining(["rose-pillar", "petal-scatter"]));
+    expect([...kinds("gallery")]).toEqual(expect.arrayContaining(["star-garland", "string-lights"]));
+    expect([...kinds("lounge")]).toEqual(expect.arrayContaining(["gift-stack", "dessert-cart"]));
   });
 
   it("keeps bride and groom npc labels readable on the mobile stage", () => {
     const [leftNpc, rightNpc] = [...gardenWorld.npcs].sort((first, second) => first.x - second.x);
+    const coupleSpot = gardenWorld.spots.find((spot) => spot.id === "couple");
 
     expect(rightNpc.x - leftNpc.x).toBeGreaterThanOrEqual(92);
     expect(leftNpc.x - 42).toBeGreaterThanOrEqual(gardenWorld.bounds.x);
     expect(rightNpc.x + 42).toBeLessThanOrEqual(gardenWorld.bounds.width);
+    expect(coupleSpot).toBeDefined();
+    expect(leftNpc.y - 45).toBeGreaterThanOrEqual(coupleSpot!.y + coupleSpot!.height + 8);
+    expect(rightNpc.y - 45).toBeGreaterThanOrEqual(coupleSpot!.y + coupleSpot!.height + 8);
+  });
+
+  it("keeps the lounge dessert cart clear of the spawn character", () => {
+    const lounge = getWorldZone(gardenWorld, "lounge");
+    const dessertCart = lounge.decorations.find((decoration) => decoration.kind === "dessert-cart");
+
+    expect(dessertCart).toBeDefined();
+    expect(dessertCart!.y).toBeGreaterThanOrEqual(lounge.spawn.y + 36 + 8);
   });
 });
