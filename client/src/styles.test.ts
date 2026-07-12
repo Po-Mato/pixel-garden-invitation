@@ -102,3 +102,59 @@ describe("world character separation", () => {
     expect(worldSpriteRule).toContain("drop-shadow(2px 2px 0");
   });
 });
+
+describe("dawn prism fine pixel map", () => {
+  it("uses fine ground texture variables instead of 30px visual tiles", () => {
+    for (const zone of ["entrance", "ceremony", "gallery", "lounge"]) {
+      const rule = styles.match(new RegExp(`\\.world-map--${zone}\\s*\\{([^}]*)}`, "s"))?.[1] ?? "";
+
+      expect(rule).toMatch(/--ground-pixel:\s*(6px|8px);/);
+      expect(rule).not.toContain("30px");
+    }
+  });
+
+  it("adds pearl light and drifting prism dust behind interactive elements", () => {
+    expect(styles).toContain(".world-map__stage::before");
+    expect(styles).toContain(".world-map__stage::after");
+    expect(styles).toContain("@keyframes prism-drift");
+  });
+
+  it("uses four-pixel mosaics and thin colored edging on every zone path", () => {
+    for (const zone of ["entrance", "ceremony", "gallery", "lounge"]) {
+      const rule = styles.match(new RegExp(`\\.world-map--${zone} \\.world-path\\s*\\{([^}]*)}`, "s"))?.[1] ?? "";
+
+      expect(rule).toContain("--path-pixel: 4px;");
+      expect(rule).toMatch(/inset 0 0 0 (1px|2px) var\(--path-edge\)/);
+      expect(rule).not.toMatch(/12px|15px/);
+    }
+  });
+
+  it("animates fine water highlights and disables new ambience for reduced motion", () => {
+    expect(styles).toContain("@keyframes water-shimmer");
+    expect(styles).toMatch(/\.world-decoration--pond > span[\s\S]*animation:\s*water-shimmer/);
+    expect(styles).toMatch(
+      /@media \(prefers-reduced-motion: reduce\)[\s\S]*\.world-map__stage::after[\s\S]*animation:\s*none;/
+    );
+  });
+
+  it("uses thin colored outlines and shared highlight tones on decorative objects", () => {
+    const decorationRule = styles.match(/\.world-decoration\s*{([^}]*)}/s)?.[1] ?? "";
+    expect(decorationRule).toContain("--ornament-outline:");
+    expect(decorationRule).toContain("--ornament-highlight:");
+    expect(decorationRule).toContain("--ornament-glow:");
+
+    for (const kind of ["flower-bed", "pond", "fountain", "photo-frame", "mosaic-star"]) {
+      const rule = styles.match(new RegExp(`\\.world-decoration--${kind}\\s*\\{([^}]*)}`, "s"))?.[1] ?? "";
+      expect(rule, kind).toMatch(/border:\s*(1px|2px) solid/);
+      expect(rule, kind).not.toMatch(/border:\s*[3-5]px/);
+    }
+
+    for (const kind of ["banner", "string-lights", "star-garland", "party-flag"]) {
+      const rule = styles.match(new RegExp(`\\.world-decoration--${kind}[^}]*\\{([^}]*)}`, "s"))?.[1] ?? "";
+      expect(rule, kind).toMatch(/border-top:\s*(1px|2px) solid var\(--ornament-outline\)/);
+    }
+
+    const fenceRule = styles.match(/\.world-decoration--flower-fence\s*\{([^}]*)}/s)?.[1] ?? "";
+    expect(fenceRule).toMatch(/border-bottom:\s*2px solid var\(--ornament-outline\)/);
+  });
+});
