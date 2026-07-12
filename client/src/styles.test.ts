@@ -14,6 +14,7 @@ describe("entry screen layout", () => {
     expect(documentRule).toContain("overflow: hidden;");
     expect(entryRule).toContain("height: 100%;");
     expect(entryRule).toContain("overflow: hidden;");
+    expect(styles).toMatch(/\.app-shell:not\(\.app-shell--playing\)\s*\{[^}]*position:\s*fixed;/s);
   });
 
   it("uses one horizontally scrollable snapping row for character choices", () => {
@@ -31,6 +32,15 @@ describe("wedding invitation palette", () => {
     for (const token of ["--paper", "--camellia", "--sage", "--ink", "--gold"]) {
       expect(styles).toContain(token);
     }
+  });
+
+  it("removes the candy-colored map and rainbow path palette", () => {
+    for (const color of ["#c9eca9", "#99d18b", "#d8c9ee", "#f6d6ba", "#e4daf0", "#e8d9ed"]) {
+      expect(styles).not.toContain(color);
+    }
+
+    expect(styles).toContain("--aisle-ivory");
+    expect(styles).toContain("--garden-deep");
   });
 });
 
