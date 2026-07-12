@@ -38,6 +38,34 @@ describe("mobile world controls", () => {
   });
 });
 
+describe("responsive play viewport", () => {
+  it("locks the document and playing shell to the dynamic viewport", () => {
+    const playingDocumentRule = styles.match(
+      /html:has\(\.app-shell--playing\),\s*body:has\(\.app-shell--playing\)\s*\{([^}]*)}/s
+    )?.[1] ?? "";
+    const playingShellRule = styles.match(/\.app-shell--playing\s*\{([^}]*)}/s)?.[1] ?? "";
+
+    expect(playingDocumentRule).toContain("height: 100dvh;");
+    expect(playingDocumentRule).toContain("min-height: 0;");
+    expect(playingDocumentRule).toContain("overflow: hidden;");
+    expect(playingDocumentRule).toContain("overscroll-behavior: none;");
+    expect(playingShellRule).toContain("position: fixed;");
+    expect(playingShellRule).toContain("inset: 0;");
+  });
+
+  it("uses a side HUD so short landscape screens keep the map readable", () => {
+    const landscapeBlock = styles.match(
+      /@media \(orientation: landscape\) and \(max-height: 500px\)\s*\{([\s\S]*?)\n}/
+    )?.[1] ?? "";
+
+    expect(landscapeBlock).toContain(".phone-frame--playing");
+    expect(landscapeBlock).toContain(".game-world");
+    expect(landscapeBlock).toContain("grid-template-columns:");
+    expect(landscapeBlock).toContain(".world-hud");
+    expect(landscapeBlock).toContain(".world-map-shell");
+  });
+});
+
 describe("pixel wedding festival map", () => {
   it("gives every zone its own ground and path treatment", () => {
     for (const zone of ["entrance", "ceremony", "gallery", "lounge"]) {
@@ -156,5 +184,59 @@ describe("dawn prism fine pixel map", () => {
 
     const fenceRule = styles.match(/\.world-decoration--flower-fence\s*\{([^}]*)}/s)?.[1] ?? "";
     expect(fenceRule).toMatch(/border-bottom:\s*2px solid var\(--ornament-outline\)/);
+  });
+});
+
+describe("prism map interactions", () => {
+  it("gives tabs, spots, and portals distinct prism accents and keyboard focus", () => {
+    const tabRule = styles.match(/\.world-zone-tabs button\s*\{([^}]*)}/s)?.[1] ?? "";
+    const spotRule = styles.match(/\.world-spot\s*\{([^}]*)}/s)?.[1] ?? "";
+    const portalRule = styles.match(/\.world-portal\s*\{([^}]*)}/s)?.[1] ?? "";
+
+    expect(tabRule).toContain("--zone-accent:");
+    expect(spotRule).toContain("--spot-accent:");
+    expect(portalRule).toContain("--portal-accent:");
+    expect(styles).toContain(".world-zone-tabs button::before");
+    expect(styles).toContain(".world-spot::before");
+    expect(styles).toContain(".world-spot::after");
+    expect(styles).toContain(".world-portal::after");
+    expect(styles).toContain(".world-zone-tabs button:focus-visible");
+    expect(styles).toContain(".world-spot:focus-visible");
+    expect(styles).toContain(".world-portal:focus-visible");
+  });
+
+  it("draws decorative chevrons without adding text to accessible names", () => {
+    const spotArrowRule = styles.match(/\.world-spot::after\s*\{([^}]*)}/s)?.[1] ?? "";
+    const portalArrowRule = styles.match(/\.world-portal::after\s*\{([^}]*)}/s)?.[1] ?? "";
+
+    expect(spotArrowRule).toContain('content: "";');
+    expect(portalArrowRule).toContain('content: "";');
+    expect(spotArrowRule).not.toContain('content: ">";');
+    expect(portalArrowRule).not.toContain('content: ">";');
+  });
+
+  it("uses the same prism surface language for the menu and joystick", () => {
+    const menuButtonRule = styles.match(/\.world-menu-button\s*\{([^}]*)}/s)?.[1] ?? "";
+    const menuSheetRule = styles.match(/\.world-menu-sheet\s*\{([^}]*)}/s)?.[1] ?? "";
+    const joystickRule = styles.match(/\.virtual-joystick\s*\{([^}]*)}/s)?.[1] ?? "";
+
+    expect(menuButtonRule).toContain("--control-accent:");
+    expect(menuSheetRule).toContain("--menu-prism:");
+    expect(joystickRule).toContain("--joystick-accent:");
+    expect(styles).toContain(".world-menu-button:focus-visible");
+    expect(styles).toContain(".world-menu-grid button:focus-visible");
+    expect(styles).toContain(".virtual-joystick::before");
+    expect(styles).toContain("@media (hover: hover) and (pointer: fine)");
+  });
+
+  it("keeps interaction sheets inside the viewport with prism form controls", () => {
+    const sheetRule = styles.match(/\.bottom-sheet\s*\{([^}]*)}/s)?.[1] ?? "";
+
+    expect(sheetRule).toContain("--sheet-prism:");
+    expect(sheetRule).toContain("max-height: calc(100dvh - 24px);");
+    expect(sheetRule).toContain("overflow-y: auto;");
+    expect(styles).toContain(".bottom-sheet .field input:focus-visible");
+    expect(styles).toContain(".bottom-sheet__header button:focus-visible");
+    expect(styles).toContain(".bottom-sheet .primary-button");
   });
 });
