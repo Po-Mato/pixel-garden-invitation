@@ -82,5 +82,5 @@
 - [x] **Step 3:** `844x390` 가로 화면과 뷰포트 변경 후에도 스크롤이 없는지 측정한다.
 - [x] **Step 4:** 네 구역과 메뉴 열린 상태를 캡처해 텍스트·조작부·인터랙션 교차를 확인한다.
 - [x] **Step 5:** `pnpm test && pnpm typecheck && pnpm build && git diff --check`를 실행한다.
-- [ ] **Step 6:** 변경 파일만 커밋하고 `main`에 푸시한다.
-- [ ] **Step 7:** GitHub Pages 작업 성공과 공개 URL의 새 스타일을 확인한다.
+- [x] **Step 6:** 변경 파일만 커밋하고 `main`에 푸시한다.
+- [x] **Step 7:** GitHub Pages 작업 성공과 공개 URL의 새 스타일을 확인한다.
