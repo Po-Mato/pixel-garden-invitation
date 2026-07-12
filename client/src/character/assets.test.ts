@@ -2,7 +2,7 @@ import { defaultCharacterAppearance } from "@wedding-game/shared";
 import { expect, it } from "vitest";
 import { resolveCharacterLayers } from "./assets";
 
-it("월드에서는 굵은 픽셀 generated 경로를 반환한다", () => {
+it("월드에서는 48x72 고밀도 generated 경로를 반환한다", () => {
   const layers = resolveCharacterLayers(defaultCharacterAppearance, "./");
 
   expect(layers).toEqual([
@@ -10,7 +10,7 @@ it("월드에서는 굵은 픽셀 generated 경로를 반환한다", () => {
       slot: "base",
       walkUrl: "./characters/generated/guests/world/feminine-long-wave-dress__walk.png",
       idleUrl: "./characters/generated/guests/world/feminine-long-wave-dress__idle.png",
-      sourceSize: { width: 24, height: 36 },
+      sourceSize: { width: 48, height: 72 },
       displaySize: {
         world: { width: 48, height: 72 },
         thumbnail: { width: 48, height: 72 },

@@ -340,7 +340,7 @@ test("generator emits idle and four-direction walk sheets for every npc", async 
   assert.match(stdout, /Generated 52 character assets/);
 });
 
-test("generator emits coarse world sheets for every guest preset", async () => {
+test("generator emits 48x72 high-density world sheets for every guest preset", async () => {
   const dir = await mkdtemp(join(tmpdir(), "character-world-assets-"));
   try {
     const { generateCharacterAssets } = await import("./generate-character-assets.mjs");
@@ -352,16 +352,33 @@ test("generator emits coarse world sheets for every guest preset", async () => {
       await assert.doesNotReject(() =>
         validateDimensions(
           join(outputRoot, `guests/world/${preset.id}__walk.png`),
-          { width: 72, height: 144 }
+          { width: 144, height: 288 }
         )
       );
       await assert.doesNotReject(() =>
         validateDimensions(
           join(outputRoot, `guests/world/${preset.id}__idle.png`),
-          { width: 48, height: 36 }
+          { width: 96, height: 72 }
         )
       );
     }
+
+    const preset = guestPresetCatalog.presets[0];
+    const expectedFrame = await sharp(join(root, preset.source.walk))
+      .extract({ left: 96, top: 288, width: 96, height: 144 })
+      .resize(48, 72, { kernel: sharp.kernel.nearest })
+      .ensureAlpha()
+      .raw()
+      .toBuffer();
+    const actualFrame = await sharp(
+      join(outputRoot, `guests/world/${preset.id}__walk.png`)
+    )
+      .extract({ left: 48, top: 144, width: 48, height: 72 })
+      .ensureAlpha()
+      .raw()
+      .toBuffer();
+
+    assert.deepEqual(actualFrame, expectedFrame);
   } finally {
     await rm(dir, { recursive: true, force: true });
   }
