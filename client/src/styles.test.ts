@@ -3,6 +3,37 @@ import { describe, expect, it } from "vitest";
 
 const styles = readFileSync("src/styles.css", "utf8");
 
+describe("entry screen layout", () => {
+  it("locks the entry document to the dynamic viewport", () => {
+    const documentRule = styles.match(
+      /html:has\(\.app-shell:not\(\.app-shell--playing\)\),\s*body:has\(\.app-shell:not\(\.app-shell--playing\)\)\s*\{([^}]*)}/s
+    )?.[1] ?? "";
+    const entryRule = styles.match(/\.entry-screen\s*\{([^}]*)}/s)?.[1] ?? "";
+
+    expect(documentRule).toContain("height: 100dvh;");
+    expect(documentRule).toContain("overflow: hidden;");
+    expect(entryRule).toContain("height: 100%;");
+    expect(entryRule).toContain("overflow: hidden;");
+  });
+
+  it("uses one horizontally scrollable snapping row for character choices", () => {
+    const optionsRule = styles.match(/\.customizer-options--images\s*\{([^}]*)}/s)?.[1] ?? "";
+
+    expect(optionsRule).toContain("grid-auto-flow: column;");
+    expect(optionsRule).toContain("overflow-x: auto;");
+    expect(optionsRule).toContain("overflow-y: hidden;");
+    expect(optionsRule).toContain("scroll-snap-type: x mandatory;");
+  });
+});
+
+describe("wedding invitation palette", () => {
+  it("defines restrained paper, camellia, sage, ink and gold tokens", () => {
+    for (const token of ["--paper", "--camellia", "--sage", "--ink", "--gold"]) {
+      expect(styles).toContain(token);
+    }
+  });
+});
+
 describe("mobile world controls", () => {
   it("uses a viewport-locked game shell with a flexible map", () => {
     const gameWorldRule = styles.match(/\.game-world\s*{([^}]*)}/s)?.[1] ?? "";

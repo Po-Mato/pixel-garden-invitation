@@ -11,6 +11,7 @@
     "characters:generate": "node scripts/generate-character-assets.mjs",
     "characters:author-guest-directions": "node scripts/author-guest-direction-sources.mjs",
     "characters:author-guest-presets": "node scripts/author-guest-preset-sources.mjs",
+    "characters:refresh-ratio-guests": "node scripts/pixelize-guest-ratio-redraw-sources.mjs",
     "characters:audit": "node scripts/audit-character-assets.mjs",
     "characters:contact-sheet": "node scripts/render-character-contact-sheet.mjs",
     "characters:editor": "node scripts/serve-character-editor.mjs",
