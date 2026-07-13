@@ -41,7 +41,7 @@ const joinMessage = {
   type: "join",
   nickname: "하객1",
   appearance: defaultCharacterAppearance,
-  zoneId: "ceremony"
+  zoneId: "home"
 } as const;
 
 describe("getRoomUrl", () => {
@@ -69,9 +69,9 @@ describe("createMoveThrottle", () => {
   it("limits movement messages to 10fps", () => {
     const send = vi.fn();
     const throttle = createMoveThrottle(send, 100);
-    throttle({ type: "move", x: 1, y: 1, direction: "down", moving: true, seq: 1, zoneId: "ceremony" }, 0);
-    throttle({ type: "move", x: 2, y: 2, direction: "down", moving: true, seq: 2, zoneId: "ceremony" }, 50);
-    throttle({ type: "move", x: 3, y: 3, direction: "down", moving: true, seq: 3, zoneId: "ceremony" }, 100);
+    throttle({ type: "move", x: 1, y: 1, direction: "down", moving: true, seq: 1, zoneId: "home" }, 0);
+    throttle({ type: "move", x: 2, y: 2, direction: "down", moving: true, seq: 2, zoneId: "home" }, 50);
+    throttle({ type: "move", x: 3, y: 3, direction: "down", moving: true, seq: 3, zoneId: "home" }, 100);
     expect(send).toHaveBeenCalledTimes(2);
   });
 });
@@ -144,7 +144,7 @@ describe("connectRealtime", () => {
             direction: "down",
             moving: false,
             seq: 0,
-            zoneId: "gallery",
+            zoneId: "lobby",
             lastSeenAt: 1000
           }]
         })
@@ -157,7 +157,7 @@ describe("connectRealtime", () => {
       guests: [expect.objectContaining({
         guestId: "guest_remote",
         appearance: defaultCharacterAppearance,
-        zoneId: "gallery"
+        zoneId: "lobby"
       })]
     });
   });
@@ -265,11 +265,11 @@ describe("connectRealtimeWithRetry", () => {
     );
 
     MockWebSocket.instances[0].emit("error");
-    zoneId = "lounge";
+    zoneId = "banquet";
     vi.advanceTimersByTime(500);
     MockWebSocket.instances[1].emit("open");
 
-    expect(JSON.parse(MockWebSocket.instances[1].sentMessages[0])).toMatchObject({ zoneId: "lounge" });
+    expect(JSON.parse(MockWebSocket.instances[1].sentMessages[0])).toMatchObject({ zoneId: "banquet" });
 
     connection.close();
   });

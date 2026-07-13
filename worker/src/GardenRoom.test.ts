@@ -75,11 +75,11 @@ function joinMessage(nickname: string): string {
     type: "join",
     nickname,
     appearance: defaultCharacterAppearance,
-    zoneId: "ceremony"
+    zoneId: "home"
   });
 }
 
-function moveMessage(seq: number, x: number, zoneId = "ceremony", y = 520): string {
+function moveMessage(seq: number, x: number, zoneId = "home", y = 520): string {
   return JSON.stringify({
     type: "move",
     x,
@@ -101,17 +101,17 @@ describe("GardenRoom helpers", () => {
       type: "join",
       nickname: "하객1",
       appearance: defaultCharacterAppearance,
-      zoneId: "ceremony"
+      zoneId: "home"
     }, 1000)).toMatchObject({
       guestId: "guest_1",
       nickname: "하객1",
       appearance: defaultCharacterAppearance,
-      x: 195,
-      y: 525,
+      x: 135,
+      y: 405,
       direction: "down",
       moving: false,
       seq: 0,
-      zoneId: "ceremony",
+      zoneId: "home",
       lastSeenAt: 1000
     });
   });
@@ -201,19 +201,19 @@ describe("GardenRoom socket behavior", () => {
     joinGuest(room, state, watching, "watching");
     watching.sent.length = 0;
 
-    room.webSocketMessage(asWebSocket(moving), moveMessage(1, 999, "lounge", -50));
+    room.webSocketMessage(asWebSocket(moving), moveMessage(1, 2000, "banquet", -50));
 
     const broadcast = watching.sent.map((payload) => JSON.parse(payload)).find((message) => message.type === "guest_moved");
 
     expect(broadcast.position).toEqual({
-      x: 390,
+      x: 1080,
       y: 0,
       direction: "right",
       moving: true,
       seq: 1,
-      zoneId: "lounge"
+      zoneId: "banquet"
     });
-    expect((moving.deserializeAttachment() as { guest?: RoomGuest } | null)?.guest?.zoneId).toBe("lounge");
+    expect((moving.deserializeAttachment() as { guest?: RoomGuest } | null)?.guest?.zoneId).toBe("banquet");
   });
 
   it("recovers joined guests and their latest position after hibernation", () => {
@@ -222,7 +222,7 @@ describe("GardenRoom socket behavior", () => {
     const moving = new TestSocket();
 
     joinGuest(firstRoom, state, moving, "moving");
-    firstRoom.webSocketMessage(asWebSocket(moving), moveMessage(1, 135, "lounge", 405));
+    firstRoom.webSocketMessage(asWebSocket(moving), moveMessage(1, 135, "banquet", 405));
 
     const awakenedRoom = createRoom(state);
     const joining = new TestSocket();
@@ -231,7 +231,7 @@ describe("GardenRoom socket behavior", () => {
     const welcome = joining.sent.map((payload) => JSON.parse(payload)).find((message) => message.type === "welcome");
     const recovered = welcome.guests.find((guest: RoomGuest) => guest.nickname === "moving");
 
-    expect(recovered).toMatchObject({ x: 135, y: 405, zoneId: "lounge", seq: 1 });
+    expect(recovered).toMatchObject({ x: 135, y: 405, zoneId: "banquet", seq: 1 });
     expect(moving.sent.map((payload) => JSON.parse(payload))).toContainEqual(
       expect.objectContaining({ type: "guest_joined", guest: expect.objectContaining({ nickname: "joining" }) })
     );

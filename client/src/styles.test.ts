@@ -2,6 +2,18 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 const styles = readFileSync("src/styles.css", "utf8");
+const worldZones = [
+  "home",
+  "neighborhood",
+  "subway-station",
+  "subway-train",
+  "venue-exterior",
+  "lobby",
+  "bridal-room",
+  "ceremony-hall",
+  "restroom",
+  "banquet"
+];
 
 describe("entry screen layout", () => {
   it("locks the entry document to the dynamic viewport", () => {
@@ -85,16 +97,18 @@ describe("mobile world controls", () => {
     expect(styles).toContain(".world-menu-sheet");
   });
 
-  it("keeps the 390 by 720 stage proportional when short screens shrink the map", () => {
-    const mapShellRule = styles.match(/\.world-map-shell\s*{([^}]*)}/s)?.[1] ?? "";
+  it("uses a fixed viewport with an actual-size camera stage", () => {
     const mapRule = styles.match(/\.world-map\s*{([^}]*)}/s)?.[1] ?? "";
     const stageRule = styles.match(/\.world-map__stage\s*{([^}]*)}/s)?.[1] ?? "";
 
-    expect(mapShellRule).toContain("container-type: size;");
-    expect(mapRule).toContain("width: min(100%, calc(100cqh * 13 / 24));");
-    expect(stageRule).toContain("width: 390px;");
-    expect(stageRule).toContain("height: 720px;");
-    expect(stageRule).toContain("scale: calc(100cqw / 390px);");
+    expect(mapRule).toContain("width: 100%;");
+    expect(mapRule).toContain("height: 100%;");
+    expect(mapRule).toContain("overflow: hidden;");
+    expect(stageRule).toContain("transform-origin: 0 0;");
+    expect(stageRule).toContain("will-change: transform;");
+    expect(stageRule).not.toContain("width: 390px;");
+    expect(stageRule).not.toContain("height: 720px;");
+    expect(stageRule).not.toContain("scale: calc(");
   });
 });
 
@@ -128,7 +142,7 @@ describe("responsive play viewport", () => {
 
 describe("pixel wedding festival map", () => {
   it("gives every zone its own ground and path treatment", () => {
-    for (const zone of ["entrance", "ceremony", "gallery", "lounge"]) {
+    for (const zone of worldZones) {
       expect(styles).toContain(`.world-map--${zone} {`);
       expect(styles).toContain(`.world-map--${zone} .world-path`);
     }
@@ -151,7 +165,27 @@ describe("pixel wedding festival map", () => {
       "aisle-bouquet",
       "mosaic-star",
       "tea-chair",
-      "party-flag"
+      "party-flag",
+      "sofa",
+      "door",
+      "window",
+      "shoe-rack",
+      "crosswalk-sign",
+      "station-sign",
+      "ticket-gate",
+      "train-seat",
+      "train-window",
+      "venue-sign",
+      "reception-desk",
+      "photo-wall",
+      "vanity",
+      "mirror",
+      "restroom-sink",
+      "stall",
+      "ceremony-seat",
+      "altar",
+      "banquet-table",
+      "buffet"
     ]) {
       expect(styles).toContain(`.world-decoration--${kind}`);
     }
@@ -193,7 +227,7 @@ describe("world character separation", () => {
 
 describe("dawn prism fine pixel map", () => {
   it("uses fine ground texture variables instead of 30px visual tiles", () => {
-    for (const zone of ["entrance", "ceremony", "gallery", "lounge"]) {
+    for (const zone of worldZones) {
       const rule = styles.match(new RegExp(`\\.world-map--${zone}\\s*\\{([^}]*)}`, "s"))?.[1] ?? "";
 
       expect(rule).toMatch(/--ground-pixel:\s*(6px|8px);/);
@@ -208,7 +242,7 @@ describe("dawn prism fine pixel map", () => {
   });
 
   it("uses four-pixel mosaics and thin colored edging on every zone path", () => {
-    for (const zone of ["entrance", "ceremony", "gallery", "lounge"]) {
+    for (const zone of worldZones) {
       const rule = styles.match(new RegExp(`\\.world-map--${zone} \\.world-path\\s*\\{([^}]*)}`, "s"))?.[1] ?? "";
 
       expect(rule).toContain("--path-pixel: 4px;");
@@ -248,19 +282,18 @@ describe("dawn prism fine pixel map", () => {
 });
 
 describe("prism map interactions", () => {
-  it("gives tabs, spots, and portals distinct prism accents and keyboard focus", () => {
-    const tabRule = styles.match(/\.world-zone-tabs button\s*\{([^}]*)}/s)?.[1] ?? "";
+  it("gives the journey, spots, and portals distinct prism accents and keyboard focus", () => {
+    const journeyRule = styles.match(/\.world-journey\s*\{([^}]*)}/s)?.[1] ?? "";
     const spotRule = styles.match(/\.world-spot\s*\{([^}]*)}/s)?.[1] ?? "";
     const portalRule = styles.match(/\.world-portal\s*\{([^}]*)}/s)?.[1] ?? "";
 
-    expect(tabRule).toContain("--zone-accent:");
+    expect(journeyRule).toContain("overflow-x: auto;");
     expect(spotRule).toContain("--spot-accent:");
     expect(portalRule).toContain("--portal-accent:");
-    expect(styles).toContain(".world-zone-tabs button::before");
+    expect(styles).toContain('.world-journey li[aria-current="location"]');
     expect(styles).toContain(".world-spot::before");
     expect(styles).toContain(".world-spot::after");
     expect(styles).toContain(".world-portal::after");
-    expect(styles).toContain(".world-zone-tabs button:focus-visible");
     expect(styles).toContain(".world-spot:focus-visible");
     expect(styles).toContain(".world-portal:focus-visible");
   });

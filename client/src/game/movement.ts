@@ -25,14 +25,14 @@ function isFinitePoint(point: Point): boolean {
 
 function safeCurrentPosition(input: MoveInput): Point {
   if (isFinitePoint(input.current)) {
-    return clampToWorld(input.current, input.world.bounds);
+    return clampToWorld(input.current, input.world.cameraSafeBounds);
   }
 
   if (isFinitePoint(input.world.spawn)) {
-    return clampToWorld(input.world.spawn, input.world.bounds);
+    return clampToWorld(input.world.spawn, input.world.cameraSafeBounds);
   }
 
-  return { x: input.world.bounds.x, y: input.world.bounds.y };
+  return { x: input.world.cameraSafeBounds.x, y: input.world.cameraSafeBounds.y };
 }
 
 function nearestTileCenter(value: number, min: number, max: number, tileSize: number): number {
@@ -45,7 +45,7 @@ function nearestTileCenter(value: number, min: number, max: number, tileSize: nu
 
 export function snapToGrid(point: Point, world: WorldZone, tileSize = gridTileSize): Point {
   const fallback = isFinitePoint(point) ? point : world.spawn;
-  const bounds = world.bounds;
+  const bounds = world.cameraSafeBounds;
 
   return {
     x: nearestTileCenter(fallback.x, bounds.x, bounds.x + bounds.width, tileSize),
@@ -153,14 +153,14 @@ export function computeNextPosition(input: MoveInput): Point {
   const maxStep = (input.speed * input.deltaMs) / 1000;
 
   if (distance <= maxStep) {
-    const target = clampToWorld(input.target, input.world.bounds);
+    const target = clampToWorld(input.target, input.world.cameraSafeBounds);
     return crossesBlockedRect(current, target, input.world) ? current : target;
   }
 
   const next = clampToWorld({
     x: current.x + (dx / distance) * maxStep,
     y: current.y + (dy / distance) * maxStep
-  }, input.world.bounds);
+  }, input.world.cameraSafeBounds);
 
   return crossesBlockedRect(current, next, input.world) ? current : next;
 }

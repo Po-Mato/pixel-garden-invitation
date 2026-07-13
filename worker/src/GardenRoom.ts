@@ -19,16 +19,28 @@ type PendingAttachment = { kind: "pending" };
 type SocketAttachment = GuestAttachment | PendingAttachment;
 
 const zoneSpawns: Record<WorldZoneId, { x: number; y: number }> = {
-  entrance: { x: 195, y: 165 },
-  ceremony: { x: 195, y: 525 },
-  gallery: { x: 255, y: 405 },
-  lounge: { x: 135, y: 405 }
+  home: { x: 135, y: 405 },
+  neighborhood: { x: 75, y: 285 },
+  "subway-station": { x: 105, y: 345 },
+  "subway-train": { x: 105, y: 255 },
+  "venue-exterior": { x: 105, y: 375 },
+  lobby: { x: 105, y: 405 },
+  "bridal-room": { x: 285, y: 435 },
+  "ceremony-hall": { x: 315, y: 1635 },
+  restroom: { x: 105, y: 315 },
+  banquet: { x: 525, y: 735 }
 };
 const zoneBounds: Record<WorldZoneId, { minX: number; maxX: number; minY: number; maxY: number }> = {
-  entrance: { minX: 0, maxX: 390, minY: 0, maxY: 720 },
-  ceremony: { minX: 0, maxX: 390, minY: 0, maxY: 720 },
-  gallery: { minX: 0, maxX: 390, minY: 0, maxY: 720 },
-  lounge: { minX: 0, maxX: 390, minY: 0, maxY: 720 }
+  home: { minX: 0, maxX: 480, minY: 0, maxY: 600 },
+  neighborhood: { minX: 0, maxX: 960, minY: 0, maxY: 540 },
+  "subway-station": { minX: 0, maxX: 720, minY: 0, maxY: 720 },
+  "subway-train": { minX: 0, maxX: 1080, minY: 0, maxY: 480 },
+  "venue-exterior": { minX: 0, maxX: 840, minY: 0, maxY: 720 },
+  lobby: { minX: 0, maxX: 960, minY: 0, maxY: 780 },
+  "bridal-room": { minX: 0, maxX: 600, minY: 0, maxY: 540 },
+  "ceremony-hall": { minX: 0, maxX: 660, minY: 0, maxY: 1800 },
+  restroom: { minX: 0, maxX: 540, minY: 0, maxY: 600 },
+  banquet: { minX: 0, maxX: 1080, minY: 0, maxY: 840 }
 };
 const moveThrottleMs = 100;
 const roomCapacity = 100;

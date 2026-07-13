@@ -1,7 +1,18 @@
 import type { CharacterAppearance } from "./characterCatalog";
 
 export type Direction = "up" | "down" | "left" | "right";
-export const worldZoneIds = ["entrance", "ceremony", "gallery", "lounge"] as const;
+export const worldZoneIds = [
+  "home",
+  "neighborhood",
+  "subway-station",
+  "subway-train",
+  "venue-exterior",
+  "lobby",
+  "bridal-room",
+  "ceremony-hall",
+  "restroom",
+  "banquet"
+] as const;
 export type WorldZoneId = (typeof worldZoneIds)[number];
 
 export type GuestProfile = {

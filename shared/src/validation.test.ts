@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { defaultCharacterAppearance } from "./characterCatalog";
+import { worldZoneIds } from "./protocol";
 import { clampNumber, parseClientMessage, sanitizeText } from "./validation";
 
 describe("sanitizeText", () => {
@@ -27,12 +28,12 @@ describe("parseClientMessage", () => {
       type: "join",
       nickname: "민지",
       appearance: defaultCharacterAppearance,
-      zoneId: "ceremony"
+      zoneId: "home"
     })).toEqual({
       type: "join",
       nickname: "민지",
       appearance: defaultCharacterAppearance,
-      zoneId: "ceremony"
+      zoneId: "home"
     });
   });
 
@@ -62,7 +63,7 @@ describe("parseClientMessage", () => {
       direction: "down",
       moving: true,
       seq: 7,
-      zoneId: "gallery"
+      zoneId: "banquet"
     })).toEqual({
       type: "move",
       x: 48,
@@ -70,7 +71,7 @@ describe("parseClientMessage", () => {
       direction: "down",
       moving: true,
       seq: 7,
-      zoneId: "gallery"
+      zoneId: "banquet"
     });
   });
 
@@ -84,6 +85,50 @@ describe("parseClientMessage", () => {
       seq: 7,
       zoneId: "parking"
     })).toBeNull();
+  });
+
+  it("accepts every guest-route world zone", () => {
+    expect(worldZoneIds).toEqual([
+      "home",
+      "neighborhood",
+      "subway-station",
+      "subway-train",
+      "venue-exterior",
+      "lobby",
+      "bridal-room",
+      "ceremony-hall",
+      "restroom",
+      "banquet"
+    ]);
+
+    for (const zoneId of worldZoneIds) {
+      expect(parseClientMessage({
+        type: "join",
+        nickname: "민지",
+        appearance: defaultCharacterAppearance,
+        zoneId
+      })).not.toBeNull();
+      expect(parseClientMessage({
+        type: "move",
+        x: 45,
+        y: 45,
+        direction: "right",
+        moving: true,
+        seq: 1,
+        zoneId
+      })).not.toBeNull();
+    }
+  });
+
+  it("rejects the retired four-zone world ids", () => {
+    for (const zoneId of ["entrance", "ceremony", "gallery", "lounge"]) {
+      expect(parseClientMessage({
+        type: "join",
+        nickname: "민지",
+        appearance: defaultCharacterAppearance,
+        zoneId
+      })).toBeNull();
+    }
   });
 
   it("rejects non-finite move coordinates", () => {
