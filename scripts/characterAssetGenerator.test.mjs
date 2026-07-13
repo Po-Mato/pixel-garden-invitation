@@ -38,6 +38,34 @@ async function writeSolidPng(file, color, dimensions = { width: 128, height: 220
   }).png().toFile(file);
 }
 
+async function writeSkinOnWhitePng(file, dimensions = { width: 128, height: 220 }) {
+  await mkdir(dirname(file), { recursive: true });
+  await sharp({
+    create: {
+      width: dimensions.width,
+      height: dimensions.height,
+      channels: 4,
+      background: "#ffffff"
+    }
+  })
+    .composite([
+      {
+        input: {
+          create: {
+            width: 36,
+            height: 64,
+            channels: 4,
+            background: { r: 246, g: 214, b: 190, alpha: 1 }
+          }
+        },
+        left: 0,
+        top: 28
+      }
+    ])
+    .png()
+    .toFile(file);
+}
+
 async function extractRawFrame(sheet, column, row, dimensions) {
   return sharp(sheet)
     .extract({
@@ -186,6 +214,59 @@ test("guest preset authoring builds walk rows from explicit directional source i
         `${guestDirections[row]} row must be built from its explicit source image`
       );
     }
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
+});
+
+test("guest preset authoring preserves pale skin connected to a white background", async () => {
+  const dir = await mkdtemp(join(tmpdir(), "guest-preset-skin-background-"));
+  const directions = Object.fromEntries(
+    guestDirections.map((direction) => [
+      direction,
+      `character-assets/reference/guest-directions/test-preset/${direction}.png`
+    ])
+  );
+
+  try {
+    for (const file of Object.values(directions)) {
+      await writeSkinOnWhitePng(join(dir, file));
+    }
+
+    const catalog = {
+      ...guestPresetCatalog,
+      presets: [
+        {
+          id: "test-preset",
+          family: "masculine",
+          label: "피부 배경 테스트",
+          description: "밝은 피부색 보존 테스트",
+          reference: {
+            image: "unused.png",
+            crop: { left: 0, top: 0, width: 1, height: 1 },
+            directions
+          },
+          source: {
+            walk: "character-assets/source/guests/test-preset__walk.png",
+            idle: "character-assets/source/guests/test-preset__idle.png"
+          },
+          generated: {
+            walk: "guests/test-preset__walk.png",
+            idle: "guests/test-preset__idle.png"
+          }
+        }
+      ]
+    };
+    const sourceRoot = join(dir, "character-assets/source");
+    const { authorGuestPresetSources } = await import("./author-guest-preset-sources.mjs");
+    await authorGuestPresetSources({ catalog, projectRoot: dir, sourceRoot });
+
+    const walk = join(sourceRoot, "guests/test-preset__walk.png");
+    const frame = await extractRawFrame(walk, 1, 1, guestPresetCatalog.frame.source);
+    assert.ok(
+      countOpaqueColor(frame, [246, 214, 190]) > 0,
+      "pale skin pixels must survive white-background removal"
+    );
   } finally {
     await rm(dir, { recursive: true, force: true });
   }

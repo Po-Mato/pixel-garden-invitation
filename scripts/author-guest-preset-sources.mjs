@@ -67,7 +67,7 @@ function isFloodFillBackgroundPixel(data, index) {
   const min = Math.min(red, green, blue);
   const chroma = max - min;
 
-  return red >= 214 && green >= 196 && blue >= 160 && chroma <= 76;
+  return red >= 235 && green >= 235 && blue >= 235 && chroma <= 24;
 }
 
 function clearConnectedBackground(data, width, height) {
