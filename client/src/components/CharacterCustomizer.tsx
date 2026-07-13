@@ -21,6 +21,12 @@ export function CharacterCustomizer({ value, onChange }: Props) {
   return (
     <section className="character-customizer" aria-label="하객 캐릭터 선택">
       <div className="character-customizer__preview">
+        <div className="character-customizer__stage" aria-hidden="true">
+          <span className="character-customizer__glass" />
+          <span className="character-customizer__arch" />
+          <span className="character-customizer__flowers character-customizer__flowers--left" />
+          <span className="character-customizer__flowers character-customizer__flowers--right" />
+        </div>
         <div className="character-customizer__halo" aria-hidden="true" />
         <div className="character-customizer__sprite">
           <CharacterSprite
@@ -36,9 +42,11 @@ export function CharacterCustomizer({ value, onChange }: Props) {
 
       <div className="character-customizer__actions">
         <button type="button" className="choice" onClick={() => onChange(randomizeAppearance())}>
+          <span className="character-customizer__action-icon" aria-hidden="true">↻</span>
           무작위 선택
         </button>
         <button type="button" className="choice" onClick={() => onChange(defaultCharacterAppearance)}>
+          <span className="character-customizer__action-icon" aria-hidden="true">⌂</span>
           기본 캐릭터
         </button>
       </div>
@@ -66,7 +74,7 @@ export function CharacterCustomizer({ value, onChange }: Props) {
                     displayMode="thumbnail"
                   />
                 </span>
-                <span>{preset.label}</span>
+                <span className="customizer-option__label">{preset.label}</span>
                 {selected ? <span className="customizer-option__check" aria-hidden="true">✓</span> : null}
               </button>
             );

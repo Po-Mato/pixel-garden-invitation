@@ -25,6 +25,25 @@ describe("entry screen layout", () => {
     expect(optionsRule).toContain("overflow-y: hidden;");
     expect(optionsRule).toContain("scroll-snap-type: x mandatory;");
   });
+
+  it("keeps readable entry content above decorative layers", () => {
+    expect(styles).toMatch(/\.entry-screen__ambient\s*\{[^}]*z-index:\s*0;[^}]*pointer-events:\s*none;/s);
+    expect(styles).toMatch(/\.entry-screen__header\s*\{[^}]*z-index:\s*2;/s);
+    expect(styles).toMatch(/\.character-customizer__selected-name\s*\{[^}]*z-index:\s*5;[^}]*background:/s);
+    expect(styles).toMatch(/\.entry-screen__controls\s*\{[^}]*z-index:\s*3;/s);
+  });
+
+  it("keeps Korean preset names readable in at most two lines", () => {
+    const labelRule = styles.match(/\.customizer-option__label\s*\{([^}]*)}/s)?.[1] ?? "";
+
+    expect(labelRule).toContain("word-break: keep-all;");
+    expect(labelRule).toContain("-webkit-line-clamp: 2;");
+  });
+
+  it("adapts the entry composition for short mobile viewports", () => {
+    expect(styles).toMatch(/@media \(max-height:\s*640px\)[\s\S]*\.character-customizer/);
+    expect(styles).toMatch(/@media \(prefers-reduced-motion:\s*reduce\)[\s\S]*entry-prism/);
+  });
 });
 
 describe("wedding invitation palette", () => {

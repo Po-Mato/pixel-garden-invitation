@@ -33,3 +33,12 @@ it("무작위 선택과 기본 캐릭터 선택을 지원한다", () => {
   fireEvent.click(screen.getByRole("button", { name: "기본 캐릭터" }));
   expect(onChange).toHaveBeenLastCalledWith(defaultCharacterAppearance);
 });
+
+it("장식 무대와 읽을 수 있는 프리셋 라벨을 분리한다", () => {
+  const { container } = render(<CharacterCustomizer value={defaultCharacterAppearance} onChange={vi.fn()} />);
+  const selectedCard = screen.getByRole("button", { name: "크림 롱 웨이브 원피스" });
+
+  expect(container.querySelector(".character-customizer__stage")).toHaveAttribute("aria-hidden", "true");
+  expect(selectedCard.querySelector(".customizer-option__label")).toHaveTextContent("크림 롱 웨이브 원피스");
+  expect(container.querySelector(".character-customizer__selected-name")).toHaveTextContent("크림 롱 웨이브 원피스");
+});

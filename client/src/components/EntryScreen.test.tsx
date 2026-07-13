@@ -54,4 +54,13 @@ describe("EntryScreen", () => {
     expect(screen.getByRole("heading", { name: "완성 하객 캐릭터" })).toBeInTheDocument();
     expect(screen.getByLabelText("선택한 하객 캐릭터")).toBeInTheDocument();
   });
+
+  it("keeps ambient decoration outside the foreground entry controls", () => {
+    const { container } = render(<EntryScreen onEnter={vi.fn()} />);
+    const controls = container.querySelector(".entry-screen__controls");
+
+    expect(container.querySelector(".entry-screen__ambient")).toHaveAttribute("aria-hidden", "true");
+    expect(controls).toContainElement(screen.getByLabelText("닉네임"));
+    expect(controls).toContainElement(screen.getByRole("button", { name: "정원 입장" }));
+  });
 });
