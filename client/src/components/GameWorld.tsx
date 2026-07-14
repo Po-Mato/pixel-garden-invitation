@@ -360,6 +360,18 @@ export function GameWorld({ profile }: GameWorldProps) {
         return;
       }
 
+      const joystickPortal = hasDirectionalInput
+        ? activeZone.portals.find((portal) => samePoint(next, portal.approach))
+        : undefined;
+      if (joystickPortal) {
+        directionRef.current = joystickPortal.facing;
+        setDirection(joystickPortal.facing);
+        setMoving(false);
+        setStepFrame(1);
+        moveToZone(joystickPortal.to, joystickPortal.spawn);
+        return;
+      }
+
       positionRef.current = next;
       setPosition(next);
       setMoving(true);

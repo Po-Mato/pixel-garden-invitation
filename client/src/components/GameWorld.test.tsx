@@ -209,6 +209,32 @@ describe("GameWorld", () => {
     expect(screen.getByText("포털 이동을 취소했어요")).toBeInTheDocument();
   });
 
+  it("enters a portal immediately when joystick movement reaches its approach tile", () => {
+    render(<GameWorld profile={profile} />);
+    const joystick = screen.getByLabelText("가상 조이스틱");
+
+    fireEvent.keyDown(joystick, { key: "ArrowRight" });
+    advanceAnimation(0);
+    advanceAnimation(300);
+    advanceAnimation(540);
+    fireEvent.keyUp(joystick, { key: "ArrowRight" });
+
+    fireEvent.keyDown(joystick, { key: "ArrowUp" });
+    for (const now of [600, 900, 1140, 1380, 1620, 1860, 2100, 2340]) {
+      advanceAnimation(now);
+    }
+
+    expect(screen.getByLabelText("우리 집 지도")).toBeInTheDocument();
+    expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "225px", top: "165px" });
+
+    advanceAnimation(2580);
+    fireEvent.keyUp(joystick, { key: "ArrowUp" });
+
+    expect(screen.getByLabelText("동네 거리 지도")).toBeInTheDocument();
+    expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "135px", top: "285px" });
+    expect(screen.getByText("동네 거리 도착")).toBeInTheDocument();
+  });
+
   it("renders the actual world dimensions, pixel coordinates, and camera transform", () => {
     const { container } = render(<GameWorld profile={profile} />);
     const stage = screen.getByLabelText("우리 집 지도");
