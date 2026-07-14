@@ -13,6 +13,7 @@ type GuestAttachment = {
   kind: "guest";
   guest: RoomGuest;
   lastMoveAt: number;
+  lastMoveBypassAt: number;
 };
 
 type PendingAttachment = { kind: "pending" };
@@ -124,7 +125,10 @@ function parseGuestAttachment(value: unknown): GuestAttachment | null {
       zoneId: guest.zoneId as WorldZoneId,
       lastSeenAt: guest.lastSeenAt
     },
-    lastMoveAt: value.lastMoveAt
+    lastMoveAt: value.lastMoveAt,
+    lastMoveBypassAt: typeof value.lastMoveBypassAt === "number"
+      ? value.lastMoveBypassAt
+      : Number.NEGATIVE_INFINITY
   };
 }
 
@@ -183,7 +187,8 @@ export class GardenRoom {
       socket.serializeAttachment({
         kind: "guest",
         guest,
-        lastMoveAt: Number.NEGATIVE_INFINITY
+        lastMoveAt: Number.NEGATIVE_INFINITY,
+        lastMoveBypassAt: Number.NEGATIVE_INFINITY
       } satisfies GuestAttachment);
       socket.send(encode({ type: "welcome", guestId, guests: this.getGuests() }));
       this.broadcast({ type: "guest_joined", guest }, socket);
@@ -198,7 +203,16 @@ export class GardenRoom {
 
     if (parsed.type === "move") {
       const now = Date.now();
-      if (now - current.lastMoveAt < moveThrottleMs) {
+      const isInsideMoveThrottle = now - current.lastMoveAt < moveThrottleMs;
+      const isSamePositionTerminalStop = !parsed.moving
+        && parsed.seq > current.guest.seq
+        && parsed.zoneId === current.guest.zoneId
+        && parsed.x === current.guest.x
+        && parsed.y === current.guest.y
+        && (current.guest.moving || parsed.direction !== current.guest.direction);
+      const canBypassMoveThrottle = isSamePositionTerminalStop
+        && now - current.lastMoveBypassAt >= moveThrottleMs;
+      if (isInsideMoveThrottle && !canBypassMoveThrottle) {
         return;
       }
 
@@ -212,7 +226,12 @@ export class GardenRoom {
         zoneId: parsed.zoneId
       };
       const guest = { ...current.guest, ...position, lastSeenAt: now };
-      socket.serializeAttachment({ kind: "guest", guest, lastMoveAt: now } satisfies GuestAttachment);
+      socket.serializeAttachment({
+        kind: "guest",
+        guest,
+        lastMoveAt: now,
+        lastMoveBypassAt: isInsideMoveThrottle ? now : current.lastMoveBypassAt
+      } satisfies GuestAttachment);
       this.broadcast({ type: "guest_moved", guestId: guest.guestId, position }, socket);
       return;
     }

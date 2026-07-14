@@ -1,4 +1,11 @@
-import { useCallback, useEffect, useRef, useState, type MouseEvent } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type MouseEvent,
+  type TransitionEvent as ReactTransitionEvent
+} from "react";
 import {
   invitationContent,
   type ClientMessage,
@@ -31,12 +38,21 @@ type RealtimeStatus = "offline" | "connecting" | "reconnecting" | "online" | "fu
 type MoveMessage = Extract<ClientMessage, { type: "move" }>;
 type RealtimeConnection = ReturnType<typeof connectRealtimeWithRetry>;
 type PortalIntent = { portal: WorldPortal; path: Point[] };
+type PortalTransitionPhase = "arrival" | "fade-out" | "fade-in";
+type PortalTransition = { portal: WorldPortal; phase: PortalTransitionPhase };
 
 const joystickDeadZone = 0.05;
 const realtimeMoveIntervalMs = 100;
+const portalArrivalDelayMs = 150;
+const portalFadeOutMs = 250;
+const portalFadeOutFallbackMs = 1000;
+const portalFadeInMs = 300;
 const defaultViewport: ViewportSize = { width: 390, height: 520 };
 const samePoint = (first: Point, second: Point) => first.x === second.x && first.y === second.y;
 const hasJoystickMovement = (vector: Point) => Math.hypot(vector.x, vector.y) > joystickDeadZone;
+const prefersReducedMotion = () => (
+  typeof window.matchMedia === "function" && window.matchMedia("(prefers-reduced-motion: reduce)").matches
+);
 const pixelRect = (rect: { x: number; y: number; width: number; height: number }) => ({
   left: rect.x,
   top: rect.y,
@@ -83,6 +99,8 @@ export function GameWorld({ profile }: GameWorldProps) {
   const [position, setPosition] = useState<Point>(initialZone.spawn);
   const [target, setTarget] = useState<Point | null>(null);
   const [portalIntent, setPortalIntentState] = useState<PortalIntent | null>(null);
+  const [portalTransition, setPortalTransitionState] = useState<PortalTransition | null>(null);
+  const [inputReleaseRequired, setInputReleaseRequiredState] = useState(false);
   const [joystickVector, setJoystickVector] = useState<Point>({ x: 0, y: 0 });
   const [direction, setDirection] = useState<Direction>("down");
   const [moving, setMoving] = useState(false);
@@ -100,9 +118,11 @@ export function GameWorld({ profile }: GameWorldProps) {
   const positionRef = useRef<Point>(initialZone.spawn);
   const directionRef = useRef<Direction>("down");
   const portalIntentRef = useRef<PortalIntent | null>(null);
+  const portalTransitionRef = useRef<PortalTransition | null>(null);
   const targetStepAtRef = useRef<number | null>(null);
   const tileInputStateRef = useRef<TileInputState | null>(null);
   const joystickWasMovingRef = useRef(false);
+  const inputReleaseRequiredRef = useRef(false);
   const connectionRef = useRef<RealtimeConnection | null>(null);
   const currentGuestIdRef = useRef<string | null>(null);
   const moveSeqRef = useRef(0);
@@ -111,6 +131,16 @@ export function GameWorld({ profile }: GameWorldProps) {
   const setPortalIntent = useCallback((intent: PortalIntent | null) => {
     portalIntentRef.current = intent;
     setPortalIntentState(intent);
+  }, []);
+
+  const setPortalTransition = useCallback((transition: PortalTransition | null) => {
+    portalTransitionRef.current = transition;
+    setPortalTransitionState(transition);
+  }, []);
+
+  const setInputReleaseRequired = useCallback((required: boolean) => {
+    inputReleaseRequiredRef.current = required;
+    setInputReleaseRequiredState(required);
   }, []);
 
   const cancelPortalWalk = useCallback(() => {
@@ -131,6 +161,45 @@ export function GameWorld({ profile }: GameWorldProps) {
       zoneId
     }, now);
   }, []);
+
+  const beginPortalTransition = useCallback((portal: WorldPortal, approach: Point, _now: number) => {
+    if (portalTransitionRef.current) return;
+
+    const transition: PortalTransition = { portal, phase: "arrival" };
+    const joystickWasMoving = joystickWasMovingRef.current;
+    positionRef.current = approach;
+    directionRef.current = portal.facing;
+    setPosition(approach);
+    setDirection(portal.facing);
+    setMoving(false);
+    setStepFrame(1);
+    setTarget(null);
+    setPortalIntent(null);
+    setJoystickVector({ x: 0, y: 0 });
+    setMenuOpen(false);
+    setActiveSpotId(null);
+    setTravelStatus(`${portal.label} 도착`);
+    targetStepAtRef.current = null;
+    tileInputStateRef.current = null;
+    joystickWasMovingRef.current = false;
+    setInputReleaseRequired(inputReleaseRequiredRef.current || joystickWasMoving);
+    setPortalTransition(transition);
+
+    const connection = connectionRef.current;
+    if (connection) {
+      const message: MoveMessage = {
+        type: "move",
+        x: approach.x,
+        y: approach.y,
+        direction: portal.facing,
+        moving: false,
+        seq: moveSeqRef.current + 1,
+        zoneId: activeZoneIdRef.current
+      };
+      moveSeqRef.current = message.seq;
+      connection.send(message);
+    }
+  }, [setInputReleaseRequired, setPortalIntent, setPortalTransition]);
 
   const moveToZone = useCallback((zoneId: WorldZoneId, spawn?: Point) => {
     const zone = getWorldZone(gardenWorld, zoneId);
@@ -167,9 +236,45 @@ export function GameWorld({ profile }: GameWorldProps) {
     }
   }, [setPortalIntent]);
 
+  const completePortalFadeOut = useCallback(() => {
+    const transition = portalTransitionRef.current;
+    if (!transition || transition.phase !== "fade-out") return;
+
+    moveToZone(transition.portal.to, transition.portal.spawn);
+    setPortalTransition({ ...transition, phase: "fade-in" });
+  }, [moveToZone, setPortalTransition]);
+
+  useEffect(() => {
+    if (!portalTransition) return;
+
+    const timer = window.setTimeout(() => {
+      if (portalTransition.phase === "arrival") {
+        setPortalTransition({ ...portalTransition, phase: "fade-out" });
+        return;
+      }
+      if (portalTransition.phase === "fade-out") {
+        completePortalFadeOut();
+        return;
+      }
+      setPortalTransition(null);
+    }, portalTransition.phase === "arrival"
+      ? portalArrivalDelayMs
+      : portalTransition.phase === "fade-out"
+        ? prefersReducedMotion() ? portalFadeOutMs : portalFadeOutFallbackMs
+        : portalFadeInMs);
+
+    return () => window.clearTimeout(timer);
+  }, [completePortalFadeOut, portalTransition, setPortalTransition]);
+
   const openSpot = useCallback((spotId: SpotId) => {
+    if (portalTransitionRef.current) return;
     setMenuOpen(false);
     setActiveSpotId(spotId);
+  }, []);
+
+  const openMenu = useCallback(() => {
+    if (portalTransitionRef.current) return;
+    setMenuOpen(true);
   }, []);
 
   useEffect(() => {
@@ -297,6 +402,8 @@ export function GameWorld({ profile }: GameWorldProps) {
   }, [profile.appearance, profile.nickname]);
 
   useEffect(() => {
+    if (portalTransitionRef.current) return;
+
     const hasJoystickInput = hasJoystickMovement(joystickVector);
     const movementTarget = portalIntent?.path[0] ?? target;
     if (!movementTarget && !hasJoystickInput) {
@@ -308,6 +415,8 @@ export function GameWorld({ profile }: GameWorldProps) {
     const movementVector = joystickVector;
     let frame = 0;
     function tick(now: number) {
+      if (portalTransitionRef.current) return;
+
       const current = positionRef.current;
       const hasDirectionalInput = hasJoystickMovement(movementVector);
       const nextDirection = hasDirectionalInput
@@ -360,15 +469,16 @@ export function GameWorld({ profile }: GameWorldProps) {
         return;
       }
 
+      if (portalIntent && portalIntent.path.length === 1 && reachedTarget) {
+        beginPortalTransition(portalIntent.portal, next, now);
+        return;
+      }
+
       const joystickPortal = hasDirectionalInput
         ? activeZone.portals.find((portal) => samePoint(next, portal.approach))
         : undefined;
       if (joystickPortal) {
-        directionRef.current = joystickPortal.facing;
-        setDirection(joystickPortal.facing);
-        setMoving(false);
-        setStepFrame(1);
-        moveToZone(joystickPortal.to, joystickPortal.spawn);
+        beginPortalTransition(joystickPortal, next, now);
         return;
       }
 
@@ -380,15 +490,7 @@ export function GameWorld({ profile }: GameWorldProps) {
 
       if (reachedTarget) {
         if (portalIntent) {
-          if (portalIntent.path.length > 1) {
-            setPortalIntent({ ...portalIntent, path: portalIntent.path.slice(1) });
-          } else {
-            directionRef.current = portalIntent.portal.facing;
-            setDirection(portalIntent.portal.facing);
-            setMoving(false);
-            setStepFrame(1);
-            moveToZone(portalIntent.portal.to, portalIntent.portal.spawn);
-          }
+          setPortalIntent({ ...portalIntent, path: portalIntent.path.slice(1) });
         } else {
           setMoving(false);
           setStepFrame(1);
@@ -403,9 +505,11 @@ export function GameWorld({ profile }: GameWorldProps) {
 
     frame = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(frame);
-  }, [activeZone, joystickVector, moveToZone, portalIntent, sendRealtimeMove, setPortalIntent, target]);
+  }, [activeZone, beginPortalTransition, joystickVector, portalIntent, sendRealtimeMove, setPortalIntent, target]);
 
   function handlePortalClick(portalItem: WorldPortal) {
+    if (portalTransitionRef.current) return;
+
     const route = findTilePath(activeZone, positionRef.current, portalItem.approach);
     setTarget(null);
     setJoystickVector({ x: 0, y: 0 });
@@ -416,7 +520,7 @@ export function GameWorld({ profile }: GameWorldProps) {
       return;
     }
     if (route.length === 0) {
-      moveToZone(portalItem.to, portalItem.spawn);
+      beginPortalTransition(portalItem, portalItem.approach, performance.now());
       return;
     }
     setPortalIntent({ portal: portalItem, path: route });
@@ -424,6 +528,8 @@ export function GameWorld({ profile }: GameWorldProps) {
   }
 
   function handleMapClick(event: MouseEvent<HTMLDivElement>) {
+    if (portalTransitionRef.current) return;
+
     cancelPortalWalk();
     const rect = event.currentTarget.getBoundingClientRect();
     const worldPoint = screenToWorld({
@@ -441,6 +547,19 @@ export function GameWorld({ profile }: GameWorldProps) {
   function handleJoystickVectorChange(vector: Point) {
     const wasMoving = joystickWasMovingRef.current;
     const isMoving = hasJoystickMovement(vector);
+
+    if (!isMoving) {
+      setInputReleaseRequired(false);
+      if (portalTransitionRef.current) {
+        setJoystickVector(vector);
+        joystickWasMovingRef.current = false;
+        tileInputStateRef.current = null;
+        return;
+      }
+    }
+
+    if (portalTransitionRef.current || inputReleaseRequiredRef.current) return;
+
     if (isMoving) cancelPortalWalk();
     setJoystickVector(vector);
 
@@ -464,7 +583,23 @@ export function GameWorld({ profile }: GameWorldProps) {
   const camera = computeCameraTransform({ player: position, viewport, zoom: 1 });
 
   return (
-    <section className="game-world" aria-label="모바일 청첩장 월드">
+    <section className="game-world" aria-label="모바일 청첩장 월드" aria-busy={portalTransition ? "true" : undefined}>
+      <div
+        className={`world-portal-transition world-portal-transition--${portalTransition?.phase ?? "idle"}`}
+        data-testid="world-portal-transition"
+        data-phase={portalTransition?.phase ?? "idle"}
+        aria-hidden="true"
+        onTransitionEnd={(event: ReactTransitionEvent<HTMLDivElement>) => {
+          if (
+            event.target !== event.currentTarget ||
+            event.propertyName !== "opacity" ||
+            portalTransitionRef.current?.phase !== "fade-out"
+          ) {
+            return;
+          }
+          completePortalFadeOut();
+        }}
+      />
       <header className="world-hud">
         <div className="world-hud__status">
           <div className="world-zone-summary">
@@ -565,7 +700,7 @@ export function GameWorld({ profile }: GameWorldProps) {
             ))}
             {activeZone.npcs.map((npc) => (
               <div key={npc.id} className="world-npc" style={{ left: npc.x, top: npc.y }}>
-                <WeddingNpc id={npc.id} label={npc.label} onSelect={() => setActiveSpotId("couple")} />
+                <WeddingNpc id={npc.id} label={npc.label} onSelect={() => openSpot("couple")} />
               </div>
             ))}
             <div className="world-player player" aria-label={profile.nickname} style={{ left: position.x, top: position.y }}>
@@ -590,8 +725,11 @@ export function GameWorld({ profile }: GameWorldProps) {
           />
 
           <div className="world-control-dock" onClick={(event) => event.stopPropagation()}>
-            <VirtualJoystick onVectorChange={handleJoystickVectorChange} />
-            <button type="button" className="world-menu-button" aria-expanded={menuOpen} onClick={() => setMenuOpen(true)}>
+            <VirtualJoystick
+              disabled={Boolean(portalTransition) || inputReleaseRequired}
+              onVectorChange={handleJoystickVectorChange}
+            />
+            <button type="button" className="world-menu-button" aria-expanded={menuOpen} onClick={openMenu}>
               <span aria-hidden="true">+</span>
               초대장 메뉴
             </button>

@@ -79,13 +79,20 @@ function joinMessage(nickname: string): string {
   });
 }
 
-function moveMessage(seq: number, x: number, zoneId = "home", y = 520): string {
+function moveMessage(
+  seq: number,
+  x: number,
+  zoneId = "home",
+  y = 520,
+  moving = true,
+  direction = "right"
+): string {
   return JSON.stringify({
     type: "move",
     x,
     y,
-    direction: "right",
-    moving: true,
+    direction,
+    moving,
     seq,
     zoneId
   });
@@ -188,6 +195,94 @@ describe("GardenRoom socket behavior", () => {
     expect(moveBroadcasts.map((message) => message.position.seq)).toEqual([1, 3]);
     expect((moving.deserializeAttachment() as { guest?: RoomGuest } | null)?.guest?.x).toBe(240);
     expect(movingGuestId).toBeTypeOf("string");
+  });
+
+  it("accepts only a same-position terminal stop inside the move throttle window", () => {
+    const nowSpy = vi.spyOn(Date, "now").mockReturnValue(1000);
+    const state = new TestState();
+    const room = createRoom(state);
+    const moving = new TestSocket();
+    const watching = new TestSocket();
+
+    joinGuest(room, state, moving, "moving");
+    joinGuest(room, state, watching, "watching");
+    watching.sent.length = 0;
+
+    nowSpy.mockReturnValue(2000);
+    room.webSocketMessage(asWebSocket(moving), moveMessage(1, 200));
+
+    nowSpy.mockReturnValue(2050);
+    room.webSocketMessage(asWebSocket(moving), moveMessage(2, 200, "home", 520, false));
+    room.webSocketMessage(asWebSocket(moving), moveMessage(3, 220));
+
+    let attachment = moving.deserializeAttachment() as { guest?: RoomGuest; lastMoveAt?: number } | null;
+    let moveBroadcasts = watching.sent
+      .map((payload) => JSON.parse(payload))
+      .filter((message) => message.type === "guest_moved");
+
+    expect(moveBroadcasts.map((message) => message.position)).toEqual([
+      expect.objectContaining({ x: 200, y: 520, moving: true, seq: 1, zoneId: "home" }),
+      expect.objectContaining({ x: 200, y: 520, moving: false, seq: 2, zoneId: "home" })
+    ]);
+    expect(attachment).toMatchObject({
+      guest: { x: 200, y: 520, moving: false, seq: 2, zoneId: "home" },
+      lastMoveAt: 2050
+    });
+
+    nowSpy.mockReturnValue(2450);
+    room.webSocketMessage(asWebSocket(moving), moveMessage(3, 135, "neighborhood", 285, false));
+
+    attachment = moving.deserializeAttachment() as { guest?: RoomGuest; lastMoveAt?: number } | null;
+    moveBroadcasts = watching.sent
+      .map((payload) => JSON.parse(payload))
+      .filter((message) => message.type === "guest_moved");
+
+    expect(moveBroadcasts.map((message) => message.position.seq)).toEqual([1, 2, 3]);
+    expect(moveBroadcasts.at(-1)?.position).toMatchObject({
+      x: 135,
+      y: 285,
+      moving: false,
+      seq: 3,
+      zoneId: "neighborhood"
+    });
+    expect(attachment).toMatchObject({
+      guest: { x: 135, y: 285, moving: false, seq: 3, zoneId: "neighborhood" },
+      lastMoveAt: 2450
+    });
+  });
+
+  it("accepts a same-position portal-facing update when the guest is already stopped", () => {
+    const nowSpy = vi.spyOn(Date, "now").mockReturnValue(1000);
+    const state = new TestState();
+    const room = createRoom(state);
+    const moving = new TestSocket();
+    const watching = new TestSocket();
+
+    joinGuest(room, state, moving, "moving");
+    joinGuest(room, state, watching, "watching");
+    watching.sent.length = 0;
+
+    nowSpy.mockReturnValue(2000);
+    room.webSocketMessage(asWebSocket(moving), moveMessage(1, 200, "home", 520, false, "right"));
+
+    nowSpy.mockReturnValue(2050);
+    room.webSocketMessage(asWebSocket(moving), moveMessage(2, 200, "home", 520, false, "up"));
+    nowSpy.mockReturnValue(2075);
+    room.webSocketMessage(asWebSocket(moving), moveMessage(3, 200, "home", 520, false, "right"));
+
+    const attachment = moving.deserializeAttachment() as { guest?: RoomGuest; lastMoveAt?: number } | null;
+    const moveBroadcasts = watching.sent
+      .map((payload) => JSON.parse(payload))
+      .filter((message) => message.type === "guest_moved");
+
+    expect(moveBroadcasts.map((message) => message.position)).toEqual([
+      expect.objectContaining({ moving: false, direction: "right", seq: 1 }),
+      expect.objectContaining({ moving: false, direction: "up", seq: 2 })
+    ]);
+    expect(attachment).toMatchObject({
+      guest: { x: 200, y: 520, moving: false, direction: "up", seq: 2, zoneId: "home" },
+      lastMoveAt: 2050
+    });
   });
 
   it("broadcasts zone transitions and clamps coordinates inside that zone", () => {

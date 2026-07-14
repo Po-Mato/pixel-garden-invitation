@@ -1,8 +1,9 @@
-import { useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
+import { useEffect, useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
 
 type Point = { x: number; y: number };
 
 type VirtualJoystickProps = {
+  disabled?: boolean;
   onVectorChange: (vector: Point) => void;
 };
 
@@ -43,9 +44,14 @@ function vectorFromKey(key: string): Point | null {
   return null;
 }
 
-export function VirtualJoystick({ onVectorChange }: VirtualJoystickProps) {
+export function VirtualJoystick({ disabled = false, onVectorChange }: VirtualJoystickProps) {
   const activePointerIdRef = useRef<number | null>(null);
+  const activeKeysRef = useRef<string[]>([]);
   const [thumbOffset, setThumbOffset] = useState<Point>(zeroVector);
+
+  useEffect(() => {
+    if (disabled) setThumbOffset(zeroVector);
+  }, [disabled]);
 
   function applyVector(vector: Point) {
     setThumbOffset({ x: vector.x * radius, y: vector.y * radius });
@@ -53,6 +59,8 @@ export function VirtualJoystick({ onVectorChange }: VirtualJoystickProps) {
   }
 
   function updateVector(event: PointerEvent<HTMLDivElement>) {
+    if (disabled) return;
+
     const rect = event.currentTarget.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;
@@ -68,6 +76,11 @@ export function VirtualJoystick({ onVectorChange }: VirtualJoystickProps) {
 
     activePointerIdRef.current = null;
     event.currentTarget.releasePointerCapture(event.pointerId);
+    const activeKey = activeKeysRef.current.at(-1);
+    if (activeKey) {
+      if (!disabled) applyVector(vectorFromKey(activeKey) ?? zeroVector);
+      return;
+    }
     applyVector(zeroVector);
   }
 
@@ -79,6 +92,11 @@ export function VirtualJoystick({ onVectorChange }: VirtualJoystickProps) {
     }
 
     event.preventDefault();
+    if (disabled) return;
+    activeKeysRef.current = [
+      ...activeKeysRef.current.filter((key) => key !== event.key),
+      event.key
+    ];
     applyVector(vector);
   }
 
@@ -88,17 +106,44 @@ export function VirtualJoystick({ onVectorChange }: VirtualJoystickProps) {
     }
 
     event.preventDefault();
+    releaseKey(event.key);
+  }
+
+  function releaseKey(key: string) {
+    if (!activeKeysRef.current.includes(key)) return;
+
+    activeKeysRef.current = activeKeysRef.current.filter((activeKey) => activeKey !== key);
+    if (activePointerIdRef.current !== null) return;
+
+    const activeKey = activeKeysRef.current.at(-1);
+    if (activeKey) {
+      if (!disabled) applyVector(vectorFromKey(activeKey) ?? zeroVector);
+      return;
+    }
     applyVector(zeroVector);
   }
+
+  useEffect(() => {
+    const handleWindowKeyUp = (event: globalThis.KeyboardEvent) => {
+      if (!activeKeysRef.current.includes(event.key)) return;
+      event.preventDefault();
+      releaseKey(event.key);
+    };
+
+    window.addEventListener("keyup", handleWindowKeyUp);
+    return () => window.removeEventListener("keyup", handleWindowKeyUp);
+  });
 
   return (
     <div
       className="virtual-joystick"
       role="application"
       aria-label="가상 조이스틱"
+      aria-disabled={disabled}
       aria-keyshortcuts="ArrowUp ArrowDown ArrowLeft ArrowRight"
       tabIndex={0}
       onPointerDown={(event) => {
+        if (disabled) return;
         activePointerIdRef.current = event.pointerId;
         event.currentTarget.setPointerCapture(event.pointerId);
         updateVector(event);

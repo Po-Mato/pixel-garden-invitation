@@ -869,6 +869,39 @@ select {
   background: var(--paper);
 }
 
+.world-portal-transition {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  background: #211f26;
+  opacity: 0;
+  pointer-events: none;
+  transition-property: opacity;
+  transition-timing-function: ease-in;
+}
+
+.world-portal-transition--arrival {
+  pointer-events: auto;
+  transition-duration: 0ms;
+}
+
+.world-portal-transition--fade-out {
+  opacity: 1;
+  pointer-events: auto;
+  transition-duration: 250ms;
+}
+
+.world-portal-transition--fade-in {
+  opacity: 0;
+  pointer-events: auto;
+  transition-duration: 300ms;
+  transition-timing-function: ease-out;
+}
+
+.world-portal-transition--idle {
+  transition-duration: 0ms;
+}
+
 .world-hud {
   position: relative;
   z-index: 5;
@@ -2986,6 +3019,10 @@ select {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .world-portal-transition {
+    transition: none;
+  }
+
   .entry-screen__prism,
   .entry-screen__petals,
   .customizer-option--selected {

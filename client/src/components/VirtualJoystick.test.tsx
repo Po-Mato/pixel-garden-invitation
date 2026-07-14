@@ -122,4 +122,94 @@ describe("VirtualJoystick", () => {
     fireEvent.keyUp(control, { key: "ArrowRight" });
     expect(onVectorChange).toHaveBeenLastCalledWith({ x: 0, y: 0 });
   });
+
+  it("resets the thumb and suppresses pointer movement while disabled", () => {
+    const onVectorChange = vi.fn();
+    vi.stubGlobal("PointerEvent", MockPointerEvent);
+    const { rerender } = render(<VirtualJoystick onVectorChange={onVectorChange} disabled={false} />);
+    const control = screen.getByLabelText("가상 조이스틱");
+    vi.spyOn(control, "getBoundingClientRect").mockReturnValue({
+      left: 61,
+      top: 61,
+      right: 139,
+      bottom: 139,
+      width: 78,
+      height: 78
+    } as DOMRect);
+    control.setPointerCapture = vi.fn();
+    control.releasePointerCapture = vi.fn();
+
+    fireEvent.pointerDown(control, { clientX: 130, clientY: 100, pointerId: 1 });
+    expect(control.querySelector("span")).toHaveStyle({ transform: "translate(30px, 0px)" });
+
+    rerender(<VirtualJoystick onVectorChange={onVectorChange} disabled />);
+    expect(control).toHaveAttribute("aria-disabled", "true");
+    expect(control.querySelector("span")).toHaveStyle({ transform: "translate(0px, 0px)" });
+    onVectorChange.mockClear();
+
+    fireEvent.pointerMove(control, { clientX: 70, clientY: 100, pointerId: 1 });
+    expect(onVectorChange).not.toHaveBeenCalled();
+    fireEvent.pointerUp(control, { pointerId: 1 });
+    expect(onVectorChange).toHaveBeenCalledOnce();
+    expect(onVectorChange).toHaveBeenCalledWith({ x: 0, y: 0 });
+  });
+
+  it("ignores an unmatched directional keyup while disabled", () => {
+    const onVectorChange = vi.fn();
+    render(<VirtualJoystick onVectorChange={onVectorChange} disabled />);
+    const control = screen.getByLabelText("가상 조이스틱");
+
+    fireEvent.keyDown(control, { key: "ArrowRight" });
+    expect(onVectorChange).not.toHaveBeenCalled();
+
+    fireEvent.keyUp(control, { key: "ArrowRight" });
+    expect(onVectorChange).not.toHaveBeenCalled();
+  });
+
+  it("reports release only for the directional key held before disabling", () => {
+    const onVectorChange = vi.fn();
+    const { rerender } = render(<VirtualJoystick onVectorChange={onVectorChange} />);
+    const control = screen.getByLabelText("가상 조이스틱");
+
+    fireEvent.keyDown(control, { key: "ArrowUp" });
+    expect(onVectorChange).toHaveBeenLastCalledWith({ x: 0, y: -1 });
+
+    rerender(<VirtualJoystick onVectorChange={onVectorChange} disabled />);
+    onVectorChange.mockClear();
+
+    fireEvent.keyDown(control, { key: "ArrowRight" });
+    fireEvent.keyUp(control, { key: "ArrowRight" });
+    expect(onVectorChange).not.toHaveBeenCalled();
+
+    fireEvent.keyUp(control, { key: "ArrowUp" });
+    expect(onVectorChange).toHaveBeenCalledOnce();
+    expect(onVectorChange).toHaveBeenCalledWith({ x: 0, y: 0 });
+  });
+
+  it("reports a held directional key release after focus leaves the joystick", () => {
+    const onVectorChange = vi.fn();
+    const { rerender } = render(
+      <>
+        <VirtualJoystick onVectorChange={onVectorChange} />
+        <button type="button">다른 컨트롤</button>
+      </>
+    );
+    const control = screen.getByLabelText("가상 조이스틱");
+
+    control.focus();
+    fireEvent.keyDown(control, { key: "ArrowUp" });
+    rerender(
+      <>
+        <VirtualJoystick onVectorChange={onVectorChange} disabled />
+        <button type="button">다른 컨트롤</button>
+      </>
+    );
+    screen.getByRole("button", { name: "다른 컨트롤" }).focus();
+    onVectorChange.mockClear();
+
+    fireEvent.keyUp(window, { key: "ArrowUp" });
+
+    expect(onVectorChange).toHaveBeenCalledOnce();
+    expect(onVectorChange).toHaveBeenCalledWith({ x: 0, y: 0 });
+  });
 });

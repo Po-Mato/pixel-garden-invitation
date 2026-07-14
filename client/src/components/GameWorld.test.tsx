@@ -45,6 +45,7 @@ beforeEach(() => {
   animationFrames = new Map();
   nextAnimationFrameId = 1;
   MockWebSocket.instances = [];
+  vi.useFakeTimers();
   vi.stubGlobal("requestAnimationFrame", vi.fn((callback: FrameRequestCallback) => {
     const id = nextAnimationFrameId++;
     animationFrames.set(id, callback);
@@ -55,6 +56,7 @@ beforeEach(() => {
 
 afterEach(() => {
   cleanup();
+  vi.useRealTimers();
   vi.restoreAllMocks();
   vi.unstubAllEnvs();
   vi.unstubAllGlobals();
@@ -67,10 +69,52 @@ function advanceAnimation(now: number) {
   act(() => callbacks.forEach((callback) => callback(now)));
 }
 
-function finishCurrentRoute() {
+function advanceRouteToPortalArrival() {
   for (let index = 0; index < 40 && animationFrames.size > 0; index += 1) {
     advanceAnimation(index * 240);
   }
+  expect(animationFrames.size, "portal route did not reach arrival within 40 animation frames").toBe(0);
+}
+
+function advancePortalTransition() {
+  act(() => vi.advanceTimersByTime(150));
+  act(() => vi.advanceTimersByTime(250));
+  fireTransitionEnd(screen.getByTestId("world-portal-transition"), "opacity");
+  act(() => vi.advanceTimersByTime(300));
+}
+
+function finishPortalFadeOut() {
+  act(() => vi.advanceTimersByTime(250));
+  fireTransitionEnd(screen.getByTestId("world-portal-transition"), "opacity");
+}
+
+function fireTransitionEnd(element: Element, propertyName: string) {
+  const event = new Event("transitionend", { bubbles: true });
+  Object.defineProperty(event, "propertyName", { value: propertyName });
+  fireEvent(element, event);
+}
+
+function mockReducedMotion(matches: boolean) {
+  vi.stubGlobal("matchMedia", vi.fn((query: string) => ({
+    matches,
+    media: query,
+    onchange: null,
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    addListener: vi.fn(),
+    removeListener: vi.fn(),
+    dispatchEvent: vi.fn()
+  })));
+}
+
+function finishCurrentRoute() {
+  advanceRouteToPortalArrival();
+  advancePortalTransition();
+}
+
+function travelThroughPortal(label: string) {
+  fireEvent.click(screen.getByRole("button", { name: label }));
+  finishCurrentRoute();
 }
 
 function mockMapRect(map: HTMLElement, width = 390, height = 520) {
@@ -209,7 +253,7 @@ describe("GameWorld", () => {
     expect(screen.getByText("포털 이동을 취소했어요")).toBeInTheDocument();
   });
 
-  it("enters a portal immediately when joystick movement reaches its approach tile", () => {
+  it("shows portal arrival before fading into the destination map", () => {
     render(<GameWorld profile={profile} />);
     const joystick = screen.getByLabelText("가상 조이스틱");
 
@@ -230,9 +274,341 @@ describe("GameWorld", () => {
     advanceAnimation(2580);
     fireEvent.keyUp(joystick, { key: "ArrowUp" });
 
+    expect(screen.getByLabelText("우리 집 지도")).toBeInTheDocument();
+    expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "225px", top: "135px" });
+    expect(screen.getByTestId("world-portal-transition")).toHaveAttribute("data-phase", "arrival");
+
+    act(() => vi.advanceTimersByTime(149));
+    expect(screen.getByLabelText("우리 집 지도")).toBeInTheDocument();
+    act(() => vi.advanceTimersByTime(1));
+    expect(screen.getByTestId("world-portal-transition")).toHaveAttribute("data-phase", "fade-out");
+
+    act(() => vi.advanceTimersByTime(249));
+    expect(screen.getByLabelText("우리 집 지도")).toBeInTheDocument();
+    act(() => vi.advanceTimersByTime(1));
+    expect(screen.getByLabelText("우리 집 지도")).toBeInTheDocument();
+    fireTransitionEnd(screen.getByTestId("world-portal-transition"), "opacity");
     expect(screen.getByLabelText("동네 거리 지도")).toBeInTheDocument();
     expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "135px", top: "285px" });
-    expect(screen.getByText("동네 거리 도착")).toBeInTheDocument();
+    expect(screen.getByTestId("world-portal-transition")).toHaveAttribute("data-phase", "fade-in");
+
+    act(() => vi.advanceTimersByTime(300));
+    expect(screen.getByTestId("world-portal-transition")).toHaveAttribute("data-phase", "idle");
+  });
+
+  it("uses the same delayed portal transition after clicking a portal", () => {
+    render(<GameWorld profile={profile} />);
+    fireEvent.click(screen.getByRole("button", { name: "동네로 나가기" }));
+
+    advanceRouteToPortalArrival();
+
+    expect(screen.getByLabelText("우리 집 지도")).toBeInTheDocument();
+    expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "225px", top: "135px" });
+    expect(screen.getByTestId("world-portal-transition")).toHaveAttribute("data-phase", "arrival");
+
+    act(() => vi.advanceTimersByTime(150));
+    expect(screen.getByLabelText("우리 집 지도")).toBeInTheDocument();
+    finishPortalFadeOut();
+    expect(screen.getByLabelText("동네 거리 지도")).toBeInTheDocument();
+    expect(screen.getByTestId("world-portal-transition")).toHaveAttribute("data-phase", "fade-in");
+  });
+
+  it("moves on the first arrow key after a clicked portal finishes fading in", () => {
+    render(<GameWorld profile={profile} />);
+    const joystick = screen.getByLabelText("가상 조이스틱");
+    fireEvent.click(screen.getByRole("button", { name: "동네로 나가기" }));
+    advanceRouteToPortalArrival();
+    advancePortalTransition();
+
+    fireEvent.keyDown(joystick, { key: "ArrowRight" });
+    advanceAnimation(4000);
+
+    expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "165px", top: "285px" });
+  });
+
+  it("ignores map and directional input during transition, then resumes after fade-in", () => {
+    render(<GameWorld profile={profile} />);
+    const map = screen.getByTestId("world-map-viewport");
+    const joystick = screen.getByLabelText("가상 조이스틱");
+    mockMapRect(map);
+    fireEvent.click(screen.getByRole("button", { name: "동네로 나가기" }));
+    advanceRouteToPortalArrival();
+
+    expect(screen.getByTestId("world-portal-transition")).toHaveAttribute("data-phase", "arrival");
+    fireEvent.click(map, { clientX: 350, clientY: 450 });
+    fireEvent.keyDown(joystick, { key: "ArrowLeft" });
+    advanceAnimation(3000);
+    fireEvent.keyUp(joystick, { key: "ArrowLeft" });
+
+    expect(screen.getByLabelText("우리 집 지도")).toBeInTheDocument();
+    expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "225px", top: "135px" });
+
+    act(() => vi.advanceTimersByTime(150));
+    expect(screen.getByTestId("world-portal-transition")).toHaveAttribute("data-phase", "fade-out");
+
+    fireEvent.click(map, { clientX: 350, clientY: 450 });
+    fireEvent.keyDown(joystick, { key: "ArrowDown" });
+    advanceAnimation(3240);
+    fireEvent.keyUp(joystick, { key: "ArrowDown" });
+
+    expect(screen.getByLabelText("우리 집 지도")).toBeInTheDocument();
+    expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "225px", top: "135px" });
+
+    finishPortalFadeOut();
+    expect(screen.getByLabelText("동네 거리 지도")).toBeInTheDocument();
+    expect(screen.getByTestId("world-portal-transition")).toHaveAttribute("data-phase", "fade-in");
+
+    fireEvent.click(map, { clientX: 350, clientY: 450 });
+    fireEvent.keyDown(joystick, { key: "ArrowRight" });
+    advanceAnimation(3480);
+    fireEvent.keyUp(joystick, { key: "ArrowRight" });
+
+    expect(screen.getByLabelText("동네 거리 지도")).toBeInTheDocument();
+    expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "135px", top: "285px" });
+
+    act(() => vi.advanceTimersByTime(300));
+    expect(screen.getByTestId("world-portal-transition")).toHaveAttribute("data-phase", "idle");
+
+    fireEvent.click(map, { clientX: 350, clientY: 450 });
+    advanceAnimation(0);
+
+    expect(screen.getByLabelText("동네 거리 지도")).toBeInTheDocument();
+    expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "135px", top: "315px" });
+
+    fireEvent.keyDown(joystick, { key: "ArrowRight" });
+    advanceAnimation(3240);
+    fireEvent.keyUp(joystick, { key: "ArrowRight" });
+
+    expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "165px", top: "315px" });
+  });
+
+  it("uses the same arrival and fade stages for the neighborhood station portal", () => {
+    render(<GameWorld profile={profile} />);
+    fireEvent.click(screen.getByRole("button", { name: "동네로 나가기" }));
+    advanceRouteToPortalArrival();
+    act(() => vi.advanceTimersByTime(150));
+    finishPortalFadeOut();
+    act(() => vi.advanceTimersByTime(300));
+
+    fireEvent.click(screen.getByRole("button", { name: "지하철역 들어가기" }));
+    advanceRouteToPortalArrival();
+
+    expect(screen.getByLabelText("동네 거리 지도")).toBeInTheDocument();
+    expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "855px", top: "285px" });
+    expect(screen.getByTestId("world-portal-transition")).toHaveAttribute("data-phase", "arrival");
+
+    act(() => vi.advanceTimersByTime(150));
+    expect(screen.getByLabelText("동네 거리 지도")).toBeInTheDocument();
+    finishPortalFadeOut();
+    expect(screen.getByLabelText("지하철 역사 지도")).toBeInTheDocument();
+    expect(screen.getByTestId("world-portal-transition")).toHaveAttribute("data-phase", "fade-in");
+
+    act(() => vi.advanceTimersByTime(300));
+    expect(screen.getByTestId("world-portal-transition")).toHaveAttribute("data-phase", "idle");
+  });
+
+  it("waits for the overlay opacity transition before swapping maps", () => {
+    render(<GameWorld profile={profile} />);
+    fireEvent.click(screen.getByRole("button", { name: "동네로 나가기" }));
+    advanceRouteToPortalArrival();
+    act(() => vi.advanceTimersByTime(150));
+
+    const overlay = screen.getByTestId("world-portal-transition");
+    const child = document.createElement("span");
+    overlay.append(child);
+
+    act(() => vi.advanceTimersByTime(250));
+    expect(screen.getByLabelText("우리 집 지도")).toBeInTheDocument();
+
+    fireTransitionEnd(overlay, "transform");
+    fireTransitionEnd(child, "opacity");
+    expect(screen.getByLabelText("우리 집 지도")).toBeInTheDocument();
+
+    fireTransitionEnd(overlay, "opacity");
+    expect(screen.getByLabelText("동네 거리 지도")).toBeInTheDocument();
+    expect(overlay).toHaveAttribute("data-phase", "fade-in");
+
+    fireTransitionEnd(overlay, "opacity");
+    expect(overlay).toHaveAttribute("data-phase", "fade-in");
+    act(() => vi.advanceTimersByTime(300));
+    expect(overlay).toHaveAttribute("data-phase", "idle");
+  });
+
+  it("uses a late fallback when the opacity transition event is missing", () => {
+    render(<GameWorld profile={profile} />);
+    fireEvent.click(screen.getByRole("button", { name: "동네로 나가기" }));
+    advanceRouteToPortalArrival();
+    act(() => vi.advanceTimersByTime(150));
+
+    act(() => vi.advanceTimersByTime(999));
+    expect(screen.getByLabelText("우리 집 지도")).toBeInTheDocument();
+    act(() => vi.advanceTimersByTime(1));
+    expect(screen.getByLabelText("동네 거리 지도")).toBeInTheDocument();
+    expect(screen.getByTestId("world-portal-transition")).toHaveAttribute("data-phase", "fade-in");
+  });
+
+  it("uses the 250ms state timing for reduced motion", () => {
+    mockReducedMotion(true);
+    render(<GameWorld profile={profile} />);
+    fireEvent.click(screen.getByRole("button", { name: "동네로 나가기" }));
+    advanceRouteToPortalArrival();
+    act(() => vi.advanceTimersByTime(150));
+
+    act(() => vi.advanceTimersByTime(249));
+    expect(screen.getByLabelText("우리 집 지도")).toBeInTheDocument();
+    act(() => vi.advanceTimersByTime(1));
+    expect(screen.getByLabelText("동네 거리 지도")).toBeInTheDocument();
+  });
+
+  it("keeps a held joystick disabled until its release after fading in", () => {
+    render(<GameWorld profile={profile} />);
+    const joystick = screen.getByLabelText("가상 조이스틱");
+
+    fireEvent.keyDown(joystick, { key: "ArrowRight" });
+    advanceAnimation(0);
+    advanceAnimation(300);
+    advanceAnimation(540);
+    fireEvent.keyUp(joystick, { key: "ArrowRight" });
+    fireEvent.keyDown(joystick, { key: "ArrowUp" });
+    for (const now of [600, 900, 1140, 1380, 1620, 1860, 2100, 2340, 2580]) {
+      advanceAnimation(now);
+    }
+
+    expect(screen.getByTestId("world-portal-transition")).toHaveAttribute("data-phase", "arrival");
+    act(() => vi.advanceTimersByTime(150));
+    finishPortalFadeOut();
+    act(() => vi.advanceTimersByTime(300));
+
+    expect(joystick).toHaveAttribute("aria-disabled", "true");
+    fireEvent.keyDown(joystick, { key: "ArrowRight" });
+    fireEvent.keyUp(joystick, { key: "ArrowRight" });
+    expect(joystick).toHaveAttribute("aria-disabled", "true");
+    fireEvent.keyDown(joystick, { key: "ArrowUp", repeat: true });
+    fireEvent.keyDown(joystick, { key: "ArrowUp", repeat: true });
+    advanceAnimation(4000);
+    expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "135px", top: "285px" });
+    expect(joystick.querySelector("span")).toHaveStyle({ transform: "translate(0px, 0px)" });
+
+    screen.getByRole("button", { name: "초대장 메뉴" }).focus();
+    fireEvent.keyUp(window, { key: "ArrowUp" });
+    expect(joystick).toHaveAttribute("aria-disabled", "false");
+    fireEvent.keyDown(joystick, { key: "ArrowRight" });
+    advanceAnimation(5000);
+    expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "165px", top: "285px" });
+  });
+
+  it("preserves the held-input release latch across a second clicked portal transition", () => {
+    render(<GameWorld profile={profile} />);
+    const joystick = screen.getByLabelText("가상 조이스틱");
+
+    fireEvent.keyDown(joystick, { key: "ArrowRight" });
+    advanceAnimation(0);
+    advanceAnimation(300);
+    advanceAnimation(540);
+    fireEvent.keyUp(joystick, { key: "ArrowRight" });
+    fireEvent.keyDown(joystick, { key: "ArrowUp" });
+    for (const now of [600, 900, 1140, 1380, 1620, 1860, 2100, 2340, 2580]) {
+      advanceAnimation(now);
+    }
+    advancePortalTransition();
+
+    expect(joystick).toHaveAttribute("aria-disabled", "true");
+    fireEvent.click(screen.getByRole("button", { name: "집으로 돌아가기" }));
+    advanceRouteToPortalArrival();
+    advancePortalTransition();
+
+    expect(screen.getByTestId("world-portal-transition")).toHaveAttribute("data-phase", "idle");
+    expect(joystick).toHaveAttribute("aria-disabled", "true");
+
+    fireEvent.keyUp(joystick, { key: "ArrowUp" });
+    expect(joystick).toHaveAttribute("aria-disabled", "false");
+  });
+
+  it("blocks direct menu and spot activation throughout every portal transition phase", () => {
+    render(<GameWorld profile={profile} />);
+    const menuButton = screen.getByRole("button", { name: "초대장 메뉴" });
+    const spotButton = screen.getByRole("button", { name: /오시는 길/ });
+
+    fireEvent.click(screen.getByRole("button", { name: "동네로 나가기" }));
+    advanceRouteToPortalArrival();
+
+    expect(screen.getByTestId("world-portal-transition")).toHaveAttribute("data-phase", "arrival");
+    fireEvent.click(menuButton);
+    fireEvent.click(spotButton);
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+
+    act(() => vi.advanceTimersByTime(150));
+    expect(screen.getByTestId("world-portal-transition")).toHaveAttribute("data-phase", "fade-out");
+    fireEvent.click(menuButton);
+    fireEvent.click(spotButton);
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+
+    finishPortalFadeOut();
+    expect(screen.getByTestId("world-portal-transition")).toHaveAttribute("data-phase", "fade-in");
+    fireEvent.click(menuButton);
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+
+    act(() => vi.advanceTimersByTime(300));
+    expect(screen.getByTestId("world-portal-transition")).toHaveAttribute("data-phase", "idle");
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  });
+
+  it("blocks NPC activation during fade-in, arrival, and fade-out", () => {
+    render(<GameWorld profile={profile} />);
+    for (const portalLabel of [
+      "동네로 나가기",
+      "지하철역 들어가기",
+      "열차 타기",
+      "예식장역 내리기",
+      "예식장 로비 들어가기"
+    ]) {
+      travelThroughPortal(portalLabel);
+    }
+
+    fireEvent.click(screen.getByRole("button", { name: "신부 대기실" }));
+    advanceRouteToPortalArrival();
+    act(() => vi.advanceTimersByTime(150));
+    finishPortalFadeOut();
+
+    expect(screen.getByTestId("world-portal-transition")).toHaveAttribute("data-phase", "fade-in");
+    const npcButton = screen.getByRole("button", { name: "신부 김하린 소개 보기" });
+    fireEvent.click(npcButton);
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    act(() => vi.advanceTimersByTime(300));
+
+    fireEvent.click(screen.getByRole("button", { name: "로비로 돌아가기" }));
+    advanceRouteToPortalArrival();
+    expect(screen.getByTestId("world-portal-transition")).toHaveAttribute("data-phase", "arrival");
+    fireEvent.click(npcButton);
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+
+    act(() => vi.advanceTimersByTime(150));
+    expect(screen.getByTestId("world-portal-transition")).toHaveAttribute("data-phase", "fade-out");
+    fireEvent.click(npcButton);
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+
+    finishPortalFadeOut();
+    act(() => vi.advanceTimersByTime(300));
+    expect(screen.getByTestId("world-portal-transition")).toHaveAttribute("data-phase", "idle");
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  });
+
+  it.each([
+    ["menu", () => fireEvent.click(screen.getByRole("button", { name: "초대장 메뉴" }))],
+    ["spot", () => {
+      fireEvent.click(screen.getByRole("button", { name: "초대장 메뉴" }));
+      fireEvent.click(within(screen.getByRole("dialog", { name: "초대장 바로가기" })).getByRole("button", { name: "축하 쓰기" }));
+    }]
+  ])("closes an open %s dialog when portal arrival starts", (_kind, openDialog) => {
+    render(<GameWorld profile={profile} />);
+    fireEvent.click(screen.getByRole("button", { name: "동네로 나가기" }));
+    openDialog();
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+
+    advanceRouteToPortalArrival();
+
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(screen.getByTestId("world-portal-transition")).toHaveAttribute("data-phase", "arrival");
   });
 
   it("renders the actual world dimensions, pixel coordinates, and camera transform", () => {
@@ -277,7 +653,7 @@ describe("GameWorld", () => {
     expect(screen.queryByLabelText("로비 하객")).not.toBeInTheDocument();
   });
 
-  it("sends the destination zone only after portal arrival", () => {
+  it("sends one final approach move before the destination spawn", () => {
     configureRealtime();
     render(<GameWorld profile={profile} />);
     const socket = MockWebSocket.instances[0];
@@ -286,12 +662,71 @@ describe("GameWorld", () => {
     socket.sentMessages.length = 0;
 
     fireEvent.click(screen.getByRole("button", { name: "동네로 나가기" }));
-    advanceAnimation(0);
-    expect(socket.sentMessages.map((message) => JSON.parse(message)).filter((message) => message.type === "move").every((message) => message.zoneId === "home")).toBe(true);
+    advanceRouteToPortalArrival();
+    const approachMoves = socket.sentMessages
+      .map((message) => JSON.parse(message))
+      .filter((message) => message.type === "move");
 
-    finishCurrentRoute();
+    expect(approachMoves.every((message) => message.zoneId === "home")).toBe(true);
+    expect(approachMoves.filter((message) => (
+      message.x === 225 && message.y === 135 && message.moving === false && message.direction === "up"
+    ))).toHaveLength(1);
+
+    advancePortalTransition();
     const moves = socket.sentMessages.map((message) => JSON.parse(message)).filter((message) => message.type === "move");
     expect(moves.at(-1)).toMatchObject({ zoneId: "neighborhood", x: 135, y: 285, moving: false });
+  });
+
+  it("sends an immediate final stop when an approach portal click is inside the throttle window", () => {
+    configureRealtime();
+    render(<GameWorld profile={profile} />);
+    const socket = MockWebSocket.instances[0];
+    act(() => socket.emit("open"));
+    act(() => socket.emitJson({ type: "welcome", guestId: "guest_self", guests: [] }));
+
+    const map = screen.getByTestId("world-map-viewport");
+    mockMapRect(map);
+    fireEvent.click(map, { clientX: 295, clientY: 10 });
+    advanceRouteToPortalArrival();
+    expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "225px", top: "135px" });
+    socket.sentMessages.length = 0;
+
+    fireEvent.click(screen.getByRole("button", { name: "동네로 나가기" }));
+    let moves = socket.sentMessages.map((message) => JSON.parse(message)).filter((message) => message.type === "move");
+    expect(moves).toHaveLength(1);
+    expect(moves[0]).toMatchObject({ zoneId: "home", x: 225, y: 135, moving: false, direction: "up" });
+
+    act(() => vi.advanceTimersByTime(150));
+    finishPortalFadeOut();
+    fireTransitionEnd(screen.getByTestId("world-portal-transition"), "opacity");
+    moves = socket.sentMessages.map((message) => JSON.parse(message)).filter((message) => message.type === "move");
+    expect(moves).toHaveLength(2);
+    expect(moves[1]).toMatchObject({ zoneId: "neighborhood", x: 135, y: 285, moving: false });
+    expect(moves[1].seq).toBe(moves[0].seq + 1);
+  });
+
+  it("does not repeat the destination spawn when the cleared fade-out fallback would expire", () => {
+    configureRealtime();
+    render(<GameWorld profile={profile} />);
+    const socket = MockWebSocket.instances[0];
+    act(() => socket.emit("open"));
+    act(() => socket.emitJson({ type: "welcome", guestId: "guest_self", guests: [] }));
+    socket.sentMessages.length = 0;
+
+    fireEvent.click(screen.getByRole("button", { name: "동네로 나가기" }));
+    advanceRouteToPortalArrival();
+    act(() => vi.advanceTimersByTime(150));
+    finishPortalFadeOut();
+
+    const destinationMoves = () => socket.sentMessages
+      .map((message) => JSON.parse(message))
+      .filter((message) => message.type === "move" && message.zoneId === "neighborhood");
+
+    expect(destinationMoves()).toHaveLength(1);
+    act(() => vi.advanceTimersByTime(1300));
+    expect(screen.getByLabelText("동네 거리 지도")).toBeInTheDocument();
+    expect(screen.getByTestId("world-portal-transition")).toHaveAttribute("data-phase", "idle");
+    expect(destinationMoves()).toHaveLength(1);
   });
 
   it("keeps local play available when realtime is full", () => {
