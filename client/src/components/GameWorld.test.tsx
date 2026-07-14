@@ -123,6 +123,39 @@ describe("GameWorld", () => {
     expect(screen.queryByLabelText("맵 구역 이동")).not.toBeInTheDocument();
   });
 
+  it("keeps a display-only minimap in sync with portal travel and zone changes", () => {
+    render(<GameWorld profile={profile} />);
+    let minimap = screen.getByRole("complementary", { name: "현재 구역 미니맵" });
+
+    expect(within(minimap).getByText("우리 집")).toBeInTheDocument();
+    expect(within(minimap).queryByRole("button")).not.toBeInTheDocument();
+    expect(within(minimap).getByTestId("minimap-portal")).not.toHaveClass("world-minimap__portal--target");
+
+    fireEvent.click(screen.getByRole("button", { name: "동네로 나가기" }));
+    expect(within(minimap).getByTestId("minimap-portal")).toHaveClass("world-minimap__portal--target");
+
+    finishCurrentRoute();
+    minimap = screen.getByRole("complementary", { name: "현재 구역 미니맵" });
+    expect(within(minimap).getByText("동네 거리")).toBeInTheDocument();
+    expect(within(minimap).getAllByTestId("minimap-portal")).toHaveLength(2);
+  });
+
+  it.each([
+    ["가상 조이스틱", () => screen.getByLabelText("가상 조이스틱")],
+    ["초대장 메뉴", () => screen.getByRole("button", { name: "초대장 메뉴" })],
+    ["현재 구역 미니맵", () => screen.getByRole("complementary", { name: "현재 구역 미니맵" })]
+  ])("ignores map movement when %s is clicked", (_label, getControl) => {
+    render(<GameWorld profile={profile} />);
+    const map = screen.getByTestId("world-map-viewport");
+    const player = screen.getByLabelText("하객1");
+    mockMapRect(map);
+
+    fireEvent.click(getControl(), { clientX: 350, clientY: 450 });
+    advanceAnimation(0);
+
+    expect(player).toHaveStyle({ left: "135px", top: "405px" });
+  });
+
   it("opens invitation content without teleporting to its map", () => {
     render(<GameWorld profile={profile} />);
     fireEvent.click(screen.getByRole("button", { name: "초대장 메뉴" }));

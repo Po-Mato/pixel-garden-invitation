@@ -110,6 +110,17 @@ describe("mobile world controls", () => {
     expect(stageRule).not.toContain("height: 720px;");
     expect(stageRule).not.toContain("scale: calc(");
   });
+
+  it("pins a display-only minimap to the upper-right map corner", () => {
+    const minimapRule = styles.match(/\.world-minimap\s*{([^}]*)}/s)?.[1] ?? "";
+
+    expect(minimapRule).toContain("position: absolute;");
+    expect(minimapRule).toContain("top: 10px;");
+    expect(minimapRule).toContain("right: 10px;");
+    expect(minimapRule).toContain("pointer-events: auto;");
+    expect(styles).toContain(".world-minimap__viewport");
+    expect(styles).toContain(".world-minimap__portal--target");
+  });
 });
 
 describe("responsive play viewport", () => {

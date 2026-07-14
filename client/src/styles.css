@@ -1118,6 +1118,122 @@ select {
   opacity: 0.9;
 }
 
+.world-minimap {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 7;
+  display: grid;
+  justify-items: end;
+  gap: 3px;
+  border: 2px solid #4d413a;
+  padding: 4px;
+  background:
+    linear-gradient(rgba(255, 251, 232, 0.82) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 251, 232, 0.82) 1px, transparent 1px),
+    rgba(242, 235, 218, 0.94);
+  background-size: 4px 4px;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 241, 0.9),
+    3px 3px 0 rgba(42, 34, 31, 0.4);
+  pointer-events: auto;
+}
+
+.world-minimap__title {
+  display: block;
+  width: 100%;
+  overflow: hidden;
+  color: #42352f;
+  font-size: 8px;
+  font-weight: 900;
+  line-height: 1;
+  text-align: right;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.world-minimap__canvas {
+  display: block;
+  overflow: visible;
+  shape-rendering: crispEdges;
+}
+
+.world-minimap__boundary {
+  fill: rgba(221, 220, 202, 0.94);
+  stroke: #685a50;
+  stroke-width: 1;
+}
+
+.world-minimap__path {
+  fill: #a9c5b5;
+  stroke: rgba(65, 75, 66, 0.62);
+  stroke-width: 0.55;
+}
+
+.world-minimap__path--street,
+.world-minimap__path--platform,
+.world-minimap__path--carriage {
+  fill: #aeb6b8;
+}
+
+.world-minimap__path--garden,
+.world-minimap__path--aisle {
+  fill: #d6caa3;
+}
+
+.world-minimap__path--lobby,
+.world-minimap__path--corridor,
+.world-minimap__path--banquet {
+  fill: #d8c8c3;
+}
+
+.world-minimap__obstacle {
+  fill: rgba(70, 57, 52, 0.42);
+}
+
+.world-minimap__spot {
+  fill: #e8c875;
+  stroke: #795c39;
+  stroke-width: 0.9;
+}
+
+.world-minimap__portal {
+  fill: #d58c99;
+  stroke: #70434d;
+  stroke-width: 1;
+}
+
+.world-minimap__portal--target {
+  fill: #fff2a8;
+  stroke: #c84f68;
+  stroke-width: 2;
+  animation: minimap-portal-pulse 700ms steps(2, end) infinite;
+}
+
+.world-minimap__viewport {
+  fill: rgba(255, 255, 255, 0.08);
+  stroke: #fffdf0;
+  stroke-width: 1.2;
+  vector-effect: non-scaling-stroke;
+}
+
+.world-minimap__player circle {
+  fill: #fffdf0;
+  stroke: #342c29;
+  stroke-width: 1.4;
+}
+
+.world-minimap__player line {
+  stroke: #c84f68;
+  stroke-width: 2;
+  stroke-linecap: square;
+}
+
+@keyframes minimap-portal-pulse {
+  0%, 100% { opacity: 0.62; }
+  50% { opacity: 1; }
+}
+
 .world-control-dock {
   position: absolute;
   right: 9px;
@@ -2886,6 +3002,7 @@ select {
   .world-decoration--string-lights > span,
   .world-decoration--star-garland > span,
   .world-map__stage::after,
+  .world-minimap__portal--target,
   .world-decoration--pond > span,
   .world-decoration--fountain > span {
     animation: none;

@@ -24,6 +24,7 @@ import { SpotModal } from "./SpotModal";
 import { VirtualJoystick } from "./VirtualJoystick";
 import { WeddingNpc } from "./WeddingNpc";
 import { WorldDecoration } from "./WorldDecoration";
+import { WorldMiniMap } from "./WorldMiniMap";
 
 type GameWorldProps = { profile: EntryProfile };
 type RealtimeStatus = "offline" | "connecting" | "reconnecting" | "online" | "full";
@@ -567,7 +568,16 @@ export function GameWorld({ profile }: GameWorldProps) {
             </div>
           </div>
 
-          <div className="world-control-dock">
+          <WorldMiniMap
+            zone={activeZone}
+            player={position}
+            direction={direction}
+            camera={camera}
+            viewport={viewport}
+            targetPortalId={portalIntent?.portal.id ?? null}
+          />
+
+          <div className="world-control-dock" onClick={(event) => event.stopPropagation()}>
             <VirtualJoystick onVectorChange={handleJoystickVectorChange} />
             <button type="button" className="world-menu-button" aria-expanded={menuOpen} onClick={() => setMenuOpen(true)}>
               <span aria-hidden="true">+</span>
