@@ -1,0 +1,65 @@
+{
+  "version": 2,
+  "zones": [
+    {
+      "id": "home",
+      "background": { "source": "pixel-background-source.png", "output": "background.webp", "width": 600, "height": 720 },
+      "overlays": [{ "source": "topiary-foreground-source.png", "output": "topiary-foreground.png", "width": 60, "height": 90 }],
+      "requiredArtifacts": ["window", "sofa", "table", "shoe-rack", "door", "topiary"]
+    },
+    {
+      "id": "neighborhood",
+      "background": { "source": "pixel-background-source.png", "output": "background.webp", "width": 1200, "height": 660 },
+      "overlays": [{ "source": "tree-canopy-source.png", "output": "tree-canopy.png", "width": 90, "height": 150 }],
+      "requiredArtifacts": ["tree", "street-lamp", "bench", "crosswalk", "flower-bed", "station-entrance"]
+    },
+    {
+      "id": "subway-station",
+      "background": { "source": "pixel-background-source.png", "output": "background.webp", "width": 900, "height": 840 },
+      "overlays": [{ "source": "ticket-gate-front-source.png", "output": "ticket-gate-front.png", "width": 60, "height": 120 }],
+      "requiredArtifacts": ["route-band", "ticket-gate", "bench", "safety-line", "platform-door"]
+    },
+    {
+      "id": "subway-train",
+      "background": { "source": "pixel-background-source.png", "output": "background.webp", "width": 1440, "height": 540 },
+      "overlays": [{ "source": "strap-row-foreground-source.png", "output": "strap-row-foreground.png", "width": 960, "height": 120 }],
+      "requiredArtifacts": ["city-window", "teal-seat", "strap", "ceiling-light", "train-door"]
+    },
+    {
+      "id": "venue-exterior",
+      "background": { "source": "pixel-background-source.png", "output": "background.webp", "width": 960, "height": 900 },
+      "overlays": [{ "source": "flower-arch-front-source.png", "output": "flower-arch-front.png", "width": 240, "height": 180 }],
+      "requiredArtifacts": ["stone-facade", "glass-door", "flower-arch", "water-feature", "flower-bed", "tree"]
+    },
+    {
+      "id": "lobby",
+      "background": { "source": "pixel-background-source.png", "output": "background.webp", "width": 1080, "height": 900 },
+      "overlays": [{ "source": "reception-desk-front-source.png", "output": "reception-desk-front.png", "width": 180, "height": 120 }],
+      "requiredArtifacts": ["reception-desk", "gift-desk", "photo-wall", "sofa", "flower-arrangement", "hall-door"]
+    },
+    {
+      "id": "bridal-room",
+      "background": { "source": "pixel-background-source.png", "output": "background.webp", "width": 720, "height": 630 },
+      "overlays": [{ "source": "flower-arrangement-front-source.png", "output": "flower-arrangement-front.png", "width": 90, "height": 120 }],
+      "requiredArtifacts": ["flower-wall", "ivory-sofa", "vanity", "mirror", "flower-arrangement", "door"]
+    },
+    {
+      "id": "ceremony-hall",
+      "background": { "source": "pixel-background-source.png", "output": "background.webp", "width": 780, "height": 1920 },
+      "overlays": [{ "source": "aisle-bouquet-front-source.png", "output": "aisle-bouquet-front.png", "width": 60, "height": 90 }],
+      "requiredArtifacts": ["altar", "ceremony-seat", "aisle", "aisle-bouquet", "candle-light", "entrance-door"]
+    },
+    {
+      "id": "restroom",
+      "background": { "source": "pixel-background-source.png", "output": "background.webp", "width": 660, "height": 660 },
+      "overlays": [{ "source": "stall-front-source.png", "output": "stall-front.png", "width": 150, "height": 240 }],
+      "requiredArtifacts": ["mirror", "sink", "terrazzo-floor", "stall", "plant", "door"]
+    },
+    {
+      "id": "banquet",
+      "background": { "source": "pixel-background-source.png", "output": "background.webp", "width": 1200, "height": 930 },
+      "overlays": [{ "source": "table-front-source.png", "output": "table-front.png", "width": 180, "height": 180 }],
+      "requiredArtifacts": ["banquet-table", "table-setting", "buffet", "dessert-cart", "window", "garland"]
+    }
+  ]
+}
