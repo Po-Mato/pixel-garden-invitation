@@ -276,7 +276,7 @@ Expected: 자산 장식, 캐릭터 깊이, 포털·UI 입력 차단 테스트 PA
 - Consumes: `WorldZone.paths`, `WorldZone.blocked`
 - Produces: `isWalkable(point, world)`, 경로 밖 이동 차단, 모든 포털의 검증된 A* 경로
 
-- [ ] **Step 1: 경로 밖과 장애물 이동을 구분하는 실패 테스트를 작성한다**
+- [x] **Step 1: 경로 밖과 장애물 이동을 구분하는 실패 테스트를 작성한다**
 
 ```ts
 expect(isWalkable({ x: 225, y: 405 }, home)).toBe(true);
@@ -286,13 +286,13 @@ expect(isBlocked(home.spawn, home)).toBe(false);
 
 각 구역에서 `spawn → 모든 portal.approach`의 `findTilePath()`가 `null`이 아니며, 경로의 모든 점이 `isBlocked`를 통과하지 않는지도 검사한다.
 
-- [ ] **Step 2: 테스트를 실행해 경로 밖 이동이 허용되는 현재 동작으로 실패하는지 확인한다**
+- [x] **Step 2: 테스트를 실행해 경로 밖 이동이 허용되는 현재 동작으로 실패하는지 확인한다**
 
 Run: `pnpm --filter @wedding-game/client test -- geometry.test.ts pathfinding.test.ts world.test.ts`
 
 Expected: 경로 밖 점이 차단되지 않아 FAIL.
 
-- [ ] **Step 3: 보행 가능 판정을 구현한다**
+- [x] **Step 3: 보행 가능 판정을 구현한다**
 
 ```ts
 export function isWalkable(point: Point, world: WorldZone): boolean {
@@ -306,7 +306,7 @@ export function isBlocked(point: Point, world: WorldZone): boolean {
 
 `pathfinding.ts`도 개별 `zone.blocked.some(...)` 대신 `isBlocked(point, zone)`을 사용한다. 시작점이나 목표가 차단 상태면 `null`을 반환하고 강제로 walkable 상태로 덮어쓰지 않는다.
 
-- [ ] **Step 4: 이동·경로·월드 테스트를 통과시킨다**
+- [x] **Step 4: 이동·경로·월드 테스트를 통과시킨다**
 
 Run: `pnpm --filter @wedding-game/client test -- geometry.test.ts movement.test.ts pathfinding.test.ts world.test.ts`
 
