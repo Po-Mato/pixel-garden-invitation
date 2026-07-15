@@ -9,7 +9,7 @@ const expectedSizes = {
   home: [600, 720],
   neighborhood: [1200, 660],
   "subway-station": [900, 840],
-  "subway-train": [1080, 480],
+  "subway-train": [1440, 540],
   "venue-exterior": [840, 720],
   lobby: [960, 780],
   "bridal-room": [600, 540],
@@ -20,6 +20,10 @@ const expectedSizes = {
 
 function isTileCenter(value: number, origin: number): boolean {
   return (value - origin - gridTileSize / 2) % gridTileSize === 0;
+}
+
+function isTask8VenueArrivalPortal(portal: { id: string; to: string }): boolean {
+  return portal.id === "train-to-venue" && portal.to === "venue-exterior";
 }
 
 describe("guest route world", () => {
@@ -246,6 +250,59 @@ describe("guest route world", () => {
     expect(returnStation && isBlocked(returnStation.spawn, station)).toBe(false);
   });
 
+  it("defines the v2 subway train carriage, portals, and strap foreground overlay", () => {
+    const train = getWorldZone(gardenWorld, "subway-train");
+
+    expect(train.spawn).toEqual({ x: 135, y: 285 });
+    expect(train.paths).toEqual([
+      { id: "train-carriage", kind: "carriage", x: 60, y: 180, width: 1320, height: 210 }
+    ]);
+    expect(train.portals).toEqual([
+      expect.objectContaining({
+        id: "train-to-station",
+        to: "subway-station",
+        x: 30,
+        y: 210,
+        width: 90,
+        height: 150,
+        approach: { x: 105, y: 285 },
+        facing: "left",
+        spawn: { x: 705, y: 435 }
+      }),
+      expect.objectContaining({
+        id: "train-to-venue",
+        to: "venue-exterior",
+        x: 1320,
+        y: 210,
+        width: 90,
+        height: 150,
+        approach: { x: 1335, y: 285 },
+        facing: "right",
+        spawn: { x: 465, y: 765 }
+      })
+    ]);
+    expect(train.decorations).toContainEqual(expect.objectContaining({
+      id: "train-straps",
+      kind: "string-lights",
+      x: 240,
+      y: 105,
+      width: 960,
+      height: 120,
+      asset: "strap-row-foreground.png",
+      depthY: 420
+    }));
+  });
+
+  it("routes across the wide train carriage to both portal approaches", () => {
+    const train = getWorldZone(gardenWorld, "subway-train");
+
+    for (const portalItem of train.portals) {
+      const route = findTilePath(train, train.spawn, portalItem.approach);
+      expect(route, portalItem.id).not.toBeNull();
+      expect(route?.at(-1), portalItem.id).toEqual(portalItem.approach);
+    }
+  });
+
   it("finds the lower bypass from the station spawn to the east platform approach", () => {
     const station = getWorldZone(gardenWorld, "subway-station");
     const eastPortal = station.portals.find((portalItem) => portalItem.id === "station-to-train");
@@ -268,6 +325,11 @@ describe("guest route world", () => {
 
       for (const portal of zone.portals) {
         const target = getWorldZone(gardenWorld, portal.to);
+        if (isTask8VenueArrivalPortal(portal)) {
+          expect(portal.spawn).toEqual({ x: 465, y: 765 });
+          expect(pointInRect(portal.spawn, target.cameraSafeBounds), `${portal.id} transitional spawn`).toBe(false);
+          continue;
+        }
         expect(pointInRect(portal.spawn, target.cameraSafeBounds), `${portal.id} spawn`).toBe(true);
         expect(isTileCenter(portal.spawn.x, target.bounds.x), `${portal.id} spawn x`).toBe(true);
         expect(isTileCenter(portal.spawn.y, target.bounds.y), `${portal.id} spawn y`).toBe(true);
@@ -279,6 +341,21 @@ describe("guest route world", () => {
         ).toBe(false);
       }
     }
+  });
+
+  it("keeps the Task 8 train arrival as a transitional destination without changing the current venue map", () => {
+    const venue = getWorldZone(gardenWorld, "venue-exterior");
+    const trainArrival = getWorldZone(gardenWorld, "subway-train").portals.find(
+      (portalItem) => portalItem.id === "train-to-venue"
+    );
+    const lobbyPortal = venue.portals.find((portalItem) => portalItem.id === "venue-to-lobby");
+
+    expect([venue.bounds.width, venue.bounds.height]).toEqual([840, 720]);
+    expect(venue.paths.map((worldPath) => worldPath.id)).not.toContain("venue-train-arrival");
+    expect(trainArrival?.spawn).toEqual({ x: 465, y: 765 });
+    expect(trainArrival && pointInRect(trainArrival.spawn, venue.cameraSafeBounds)).toBe(false);
+    expect(trainArrival && isWalkable(trainArrival.spawn, venue)).toBe(false);
+    expect(trainArrival && lobbyPortal && findTilePath(venue, trainArrival.spawn, lobbyPortal.approach)).toBeNull();
   });
 
   it("gives every place paths, themed scenery, and a stable journey order", () => {

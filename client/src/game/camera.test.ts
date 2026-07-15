@@ -25,6 +25,18 @@ describe("tracking camera", () => {
     expect(735 * camera.zoom + camera.y).toBeCloseTo(200);
   });
 
+  it("tracks the east subway-train portal at the far end of the 1440px carriage", () => {
+    const camera = computeCameraTransform({
+      player: { x: 1335, y: 285 },
+      viewport: { width: 390, height: 520 },
+      zoom: 1
+    });
+
+    expect(camera).toEqual({ x: -1140, y: -25, zoom: 1 });
+    expect(1335 * camera.zoom + camera.x).toBe(195);
+    expect(285 * camera.zoom + camera.y).toBe(260);
+  });
+
   it("inverts a screen click back into world coordinates", () => {
     const camera = computeCameraTransform({
       player: { x: 315, y: 900 },

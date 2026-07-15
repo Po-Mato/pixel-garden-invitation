@@ -507,6 +507,32 @@ describe("GameWorld", () => {
     }
   });
 
+  it("renders the wide subway train strap foreground and arrives at the Task 8 venue coordinate", () => {
+    const { container } = render(<GameWorld profile={profile} />);
+
+    travelThroughPortal("동네로 나가기");
+    travelThroughPortal("지하철역 들어가기");
+    travelThroughPortal("열차 타기");
+
+    const train = screen.getByLabelText("지하철 차량 지도");
+    const straps = [...container.querySelectorAll('img[data-decoration="string-lights"]')];
+
+    expect(train).toHaveStyle({ width: "1440px", height: "540px" });
+    expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "135px", top: "285px" });
+    expect(straps).toHaveLength(1);
+    expect(straps[0]).toHaveAttribute("src", "/assets/maps/v2/subway-train/strap-row-foreground.png");
+    expect(straps[0]).toHaveStyle({ left: "240px", top: "105px", width: "960px", height: "120px", zIndex: "1420" });
+
+    travelThroughPortal("예식장역 내리기");
+
+    expect(screen.getByLabelText("예식장 앞 지도")).toHaveStyle({ width: "840px", height: "720px" });
+    expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "465px", top: "765px" });
+
+    travelThroughPortal("예식장 로비 들어가기");
+
+    expect(screen.getByLabelText("예식장 로비 지도")).toBeInTheDocument();
+  });
+
   it("waits for the overlay opacity transition before swapping maps", () => {
     render(<GameWorld profile={profile} />);
     fireEvent.click(screen.getByRole("button", { name: "동네로 나가기" }));

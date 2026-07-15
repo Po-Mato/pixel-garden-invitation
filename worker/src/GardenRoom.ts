@@ -23,7 +23,7 @@ const zoneSpawns: Record<WorldZoneId, { x: number; y: number }> = {
   home: { x: 135, y: 405 },
   neighborhood: { x: 75, y: 285 },
   "subway-station": { x: 135, y: 435 },
-  "subway-train": { x: 105, y: 255 },
+  "subway-train": { x: 135, y: 285 },
   "venue-exterior": { x: 105, y: 375 },
   lobby: { x: 105, y: 405 },
   "bridal-room": { x: 285, y: 435 },
@@ -35,7 +35,7 @@ const zoneBounds: Record<WorldZoneId, { minX: number; maxX: number; minY: number
   home: { minX: 0, maxX: 480, minY: 0, maxY: 600 },
   neighborhood: { minX: 0, maxX: 960, minY: 0, maxY: 540 },
   "subway-station": { minX: 0, maxX: 900, minY: 0, maxY: 840 },
-  "subway-train": { minX: 0, maxX: 1080, minY: 0, maxY: 480 },
+  "subway-train": { minX: 0, maxX: 1440, minY: 0, maxY: 540 },
   "venue-exterior": { minX: 0, maxX: 840, minY: 0, maxY: 720 },
   lobby: { minX: 0, maxX: 960, minY: 0, maxY: 780 },
   "bridal-room": { minX: 0, maxX: 600, minY: 0, maxY: 540 },
@@ -46,6 +46,22 @@ const zoneBounds: Record<WorldZoneId, { minX: number; maxX: number; minY: number
 const moveThrottleMs = 100;
 const roomCapacity = 100;
 const zones = new Set<WorldZoneId>(worldZoneIds);
+
+function isTask8VenueArrivalPosition(zoneId: WorldZoneId, x: number, y: number): boolean {
+  return zoneId === "venue-exterior" && x === 465 && y === 765;
+}
+
+function clampMovePosition(zoneId: WorldZoneId, x: number, y: number): { x: number; y: number } {
+  if (isTask8VenueArrivalPosition(zoneId, x, y)) {
+    return { x, y };
+  }
+
+  const bounds = zoneBounds[zoneId];
+  return {
+    x: clampNumber(x, bounds.minX, bounds.maxX),
+    y: clampNumber(y, bounds.minY, bounds.maxY)
+  };
+}
 
 export function createGuestSnapshot(
   guestId: string,
@@ -216,10 +232,10 @@ export class GardenRoom {
         return;
       }
 
-      const bounds = zoneBounds[parsed.zoneId];
+      const clampedPosition = clampMovePosition(parsed.zoneId, parsed.x, parsed.y);
       const position = {
-        x: clampNumber(parsed.x, bounds.minX, bounds.maxX),
-        y: clampNumber(parsed.y, bounds.minY, bounds.maxY),
+        x: clampedPosition.x,
+        y: clampedPosition.y,
         direction: parsed.direction,
         moving: parsed.moving,
         seq: parsed.seq,

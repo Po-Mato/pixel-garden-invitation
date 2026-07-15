@@ -302,25 +302,32 @@ const subwayTrainZone = createZone({
   label: "지하철 차량",
   subtitle: "도시의 빛이 흐르는 긴 객차를 지나 하차해요",
   journeyIndex: 3,
-  bounds: bounds(1080, 480),
-  spawn: { x: 105, y: 255 },
-  paths: [path("train-carriage", "carriage", 60, 150, 960, 210)],
+  bounds: bounds(1440, 540),
+  spawn: { x: 135, y: 285 },
+  paths: [path("train-carriage", "carriage", 60, 180, 1320, 210)],
   spots: [],
   npcs: [],
   portals: [
-    portal("train-to-station", "역사로 내리기", "subway-station", { x: 30, y: 180, width: 72, height: 150 }, { x: 105, y: 255 }, "left", { x: 705, y: 435 }),
-    portal("train-to-venue", "예식장역 내리기", "venue-exterior", { x: 978, y: 180, width: 72, height: 150 }, { x: 975, y: 255 }, "right", { x: 135, y: 375 })
+    portal("train-to-station", "역사로 내리기", "subway-station", { x: 30, y: 210, width: 90, height: 150 }, { x: 105, y: 285 }, "left", { x: 705, y: 435 }),
+    portal("train-to-venue", "예식장역 내리기", "venue-exterior", { x: 1320, y: 210, width: 90, height: 150 }, { x: 1335, y: 285 }, "right", { x: 465, y: 765 })
   ],
   decorations: [
-    decoration("train-window-1", "train-window", "도시 창문", 165, 75, 150, 74),
-    decoration("train-window-2", "train-window", "도시 창문", 465, 75, 150, 74),
-    decoration("train-window-3", "train-window", "도시 창문", 765, 75, 150, 74),
-    decoration("train-seat-1", "train-seat", "청록 좌석", 150, 330, 168, 58),
-    decoration("train-seat-2", "train-seat", "청록 좌석", 456, 330, 168, 58),
-    decoration("train-seat-3", "train-seat", "청록 좌석", 762, 330, 168, 58),
-    decoration("train-lights", "string-lights", "객차 손잡이 조명", 180, 155, 720, 24),
-    decoration("train-door-1", "door", "객차 문", 30, 180, 72, 150),
-    decoration("train-door-2", "door", "객차 문", 978, 180, 72, 150)
+    decoration("train-window-1", "train-window", "도시 창문", 180, 60, 150, 90),
+    decoration("train-window-2", "train-window", "도시 창문", 420, 60, 150, 90),
+    decoration("train-window-3", "train-window", "도시 창문", 660, 60, 150, 90),
+    decoration("train-window-4", "train-window", "도시 창문", 900, 60, 150, 90),
+    decoration("train-window-5", "train-window", "도시 창문", 1140, 60, 150, 90),
+    decoration("train-seat-1", "train-seat", "청록 좌석", 150, 390, 168, 58),
+    decoration("train-seat-2", "train-seat", "청록 좌석", 390, 390, 168, 58),
+    decoration("train-seat-3", "train-seat", "청록 좌석", 630, 390, 168, 58),
+    decoration("train-seat-4", "train-seat", "청록 좌석", 870, 390, 168, 58),
+    decoration("train-seat-5", "train-seat", "청록 좌석", 1110, 390, 168, 58),
+    decoration("train-straps", "string-lights", "객차 손잡이", 240, 105, 960, 120, {
+      asset: "strap-row-foreground.png",
+      depthY: 420
+    }),
+    decoration("train-door-1", "door", "객차 문", 30, 210, 90, 150),
+    decoration("train-door-2", "door", "객차 문", 1320, 210, 90, 150)
   ]
 });
 

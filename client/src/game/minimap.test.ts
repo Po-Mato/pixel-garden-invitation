@@ -16,6 +16,15 @@ describe("minimap projection", () => {
     expect(layout.content.width / layout.content.height).toBeCloseTo(960 / 540);
   });
 
+  it("fits the 8:3 subway train inside the regular minimap", () => {
+    const train = getWorldZone(gardenWorld, "subway-train");
+    const layout = createMiniMapLayout(train.bounds);
+
+    expect(layout.width).toBe(96);
+    expect(layout.height).toBe(41);
+    expect(layout.content.width / layout.content.height).toBeCloseTo(8 / 3);
+  });
+
   it("uses the tall 72 by 120 limit for the ceremony hall", () => {
     const layout = createMiniMapLayout({ x: 0, y: 0, width: 660, height: 1800 });
 
