@@ -716,7 +716,7 @@ Expected: spawn에서 네 portal approach까지 모두 경로 존재, 미니맵 
 **Interfaces:**
 - Produces: `bridal-room` `720x630` 신부 NPC 공간
 
-- [ ] **Step 1: 다음 프롬프트로 대기실 자산을 생성한다**
+- [x] **Step 1: 다음 프롬프트로 대기실 자산을 생성한다**
 
 ```text
 인물 없는 우아한 신부 대기실, 정사영 탑다운 3/4 건축 시각화, 자연광, 입체적인 아이보리·코랄 꽃벽, 아이보리 소파, 대형 거울, 화장대, 꽃병과 드레스 조명, 아래 출입문에서 중앙 인사 공간까지 넓은 통로, 글자와 로고 없음
@@ -730,7 +730,7 @@ Expected: spawn에서 네 portal approach까지 모두 경로 존재, 미니맵 
 같은 맵의 소파 옆 큰 꽃꽂이 앞부분만 투명 배경의 고밀도 픽셀 오브젝트로 분리한다. 같은 시점·광원·픽셀 밀도, 바닥 없음.
 ```
 
-- [ ] **Step 2: 다음 데이터로 `bridalRoomZone`을 교체한다**
+- [x] **Step 2: 다음 데이터로 `bridalRoomZone`을 교체한다**
 
 - bounds `720x630`, spawn `(345,525)`.
 - paths: floor `(90,90,540,450)`, entry `(300,510,120,90)`.
@@ -740,7 +740,7 @@ Expected: spawn에서 네 portal approach까지 모두 경로 존재, 미니맵 
 - portal rect `(300,540,120,60)`, approach `(345,555)`, lobby spawn `(135,405)`.
 - flower overlay `(240,300,90,120)`, asset `flower-arrangement-front.png`, depthY `420`.
 
-- [ ] **Step 3: NPC·정보 지점·복귀 포털을 검증한다**
+- [x] **Step 3: NPC·정보 지점·복귀 포털을 검증한다**
 
 Run: `pnpm maps:build -- --zone bridal-room && pnpm --filter @wedding-game/client test -- world.test.ts GameWorld.test.tsx WeddingNpc.test.tsx`
 
