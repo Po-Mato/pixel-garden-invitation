@@ -763,7 +763,7 @@ Expected: 신부 NPC 선택, `couple` 모달, 로비 복귀 경로 PASS.
 **Interfaces:**
 - Produces: `ceremony-hall` `780x1920` 장축 맵
 
-- [ ] **Step 1: 다음 프롬프트로 긴 예식홀 자산을 생성한다**
+- [x] **Step 1: 다음 프롬프트로 긴 예식홀 자산을 생성한다**
 
 ```text
 인물 없는 높은 천장의 밝은 웨딩 세리머니 홀, 매우 긴 세로형 정사영 탑다운 3/4 건축 시각화, 중앙 아이보리 버진로드, 좌우 대칭 좌석, 구간마다 다른 꽃 장식과 촛불, 위쪽 제단, 아래쪽 출입문, 반복감 없는 긴 공간, 글자와 로고 없음
@@ -777,11 +777,11 @@ Expected: 신부 NPC 선택, `couple` 모달, 로비 복귀 경로 PASS.
 같은 예식홀의 버진로드 가장자리 꽃다발 하나 앞부분만 투명 배경의 고밀도 픽셀 오브젝트로 분리한다. 같은 시점·광원·크기, 바닥 없음.
 ```
 
-- [ ] **Step 2: `780x1920` 종횡비와 접합 흔적을 검수한다**
+- [x] **Step 2: `780x1920` 종횡비와 접합 흔적을 검수한다**
 
 `pnpm maps:build -- --zone ceremony-hall`이 종횡비 차이로 실패하면 이미지를 늘이지 않는다. 세로 구도를 다시 생성하고, 최종 이미지의 입구·중앙·제단 세 구간을 `view_image`로 각각 확대 확인한다.
 
-- [ ] **Step 3: 다음 데이터로 `ceremonyHallZone`을 교체한다**
+- [x] **Step 3: 다음 데이터로 `ceremonyHallZone`을 교체한다**
 
 - bounds `780x1920`, spawn `(375,1785)`.
 - paths: aisle `(300,90,180,1740)`, altar-cross `(180,120,420,240)`, entry `(240,1740,300,120)`.
@@ -791,7 +791,7 @@ Expected: 신부 NPC 선택, `couple` 모달, 로비 복귀 경로 PASS.
 - top portal `(330,30,120,90)`, approach `(375,105)`, banquet spawn `(585,795)`.
 - bouquet overlays at `(270,480)`, `(420,720)`, `(270,960)`, `(420,1200)`, 각각 `60x90`, asset `aisle-bouquet-front.png`, depthY는 각각 `570`, `810`, `1050`, `1290`.
 
-- [ ] **Step 4: 장축 카메라, 미니맵, 양방향 포털을 검증한다**
+- [x] **Step 4: 장축 카메라, 미니맵, 양방향 포털을 검증한다**
 
 Run: `pnpm --filter @wedding-game/client test -- world.test.ts camera.test.ts minimap.test.ts WorldMiniMap.test.tsx GameWorld.test.tsx`
 
