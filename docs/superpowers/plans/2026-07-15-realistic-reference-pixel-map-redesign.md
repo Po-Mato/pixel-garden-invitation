@@ -668,7 +668,7 @@ Expected: 분수 우회, 상하 포털 도착·페이드 PASS.
 **Interfaces:**
 - Produces: `lobby` `1080x900` 네 방향 분기 맵
 
-- [ ] **Step 1: 다음 프롬프트로 로비 자산을 생성한다**
+- [x] **Step 1: 다음 프롬프트로 로비 자산을 생성한다**
 
 ```text
 인물 없는 밝고 넓은 웨딩홀 로비, 정사영 탑다운 3/4 건축 시각화, 대리석 바닥과 금속·유리 디테일, 중앙 안내 데스크, 축의대, 꽃 포토월, 소파와 대형 꽃 장식, 아래 외부·왼쪽 신부대기실·오른쪽 화장실·위 예식홀로 이어지는 네 갈래 통로, 글자와 로고 없음
@@ -682,7 +682,7 @@ Expected: 분수 우회, 상하 포털 도착·페이드 PASS.
 같은 로비 중앙 안내 데스크의 앞쪽 패널과 꽃 장식만 투명 배경 고밀도 픽셀 오브젝트로 분리한다. 같은 시점·크기·광원, 바닥 없음.
 ```
 
-- [ ] **Step 2: 다음 데이터로 로비 실패 테스트를 작성한다**
+- [x] **Step 2: 다음 데이터로 로비 실패 테스트를 작성한다**
 
 - bounds `1080x900`, spawn `(525,765)`.
 - paths: main `(90,300,900,300)`, vertical `(420,90,240,720)`, upper `(90,180,900,180)`, lower `(90,540,900,240)`.
@@ -694,7 +694,7 @@ Expected: 분수 우회, 상하 포털 도착·페이드 PASS.
 - hall portal rect `(480,30,120,90)`, approach `(525,105)`, hall spawn `(375,1785)`.
 - desk overlay `(450,300,180,120)`, asset `reception-desk-front.png`, depthY `420`.
 
-- [ ] **Step 3: 네 포털의 독립 A* 경로와 미니맵 표시를 통과시킨다**
+- [x] **Step 3: 네 포털의 독립 A* 경로와 미니맵 표시를 통과시킨다**
 
 Run: `pnpm maps:build -- --zone lobby && pnpm --filter @wedding-game/client test -- world.test.ts pathfinding.test.ts WorldMiniMap.test.tsx GameWorld.test.tsx`
 
