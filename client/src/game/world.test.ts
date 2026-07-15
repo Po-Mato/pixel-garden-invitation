@@ -585,6 +585,78 @@ describe("guest route world", () => {
     }
   });
 
+  it("defines the exact Task 12 long ceremony hall contract", () => {
+    const hall = getWorldZone(gardenWorld, "ceremony-hall");
+    const coupleSpot = hall.spots[0];
+
+    expect([hall.bounds.width, hall.bounds.height]).toEqual([780, 1920]);
+    expect(hall.spawn).toEqual({ x: 375, y: 1785 });
+    expect(hall.paths).toEqual([
+      { id: "hall-aisle", kind: "aisle", x: 300, y: 90, width: 180, height: 1740 },
+      { id: "hall-altar-cross", kind: "aisle", x: 180, y: 120, width: 420, height: 240 },
+      { id: "hall-entry", kind: "corridor", x: 240, y: 1740, width: 300, height: 120 }
+    ]);
+    expect(hall.paths.some((worldPath) => worldPath.id === "hall-entry-corridor")).toBe(false);
+    expect(hall.spots).toEqual([
+      expect.objectContaining({ id: "couple", x: 180, y: 150, width: 90, height: 90 })
+    ]);
+    expect(hall.blocked).toEqual([coupleSpot]);
+    expect(hall.npcs).toEqual([
+      { id: "groom", label: "신랑 이서준", x: 330, y: 255 },
+      { id: "bride", label: "신부 김하린", x: 450, y: 255 }
+    ]);
+    expect(hall.portals).toEqual([
+      expect.objectContaining({
+        id: "hall-to-lobby",
+        to: "lobby",
+        x: 330,
+        y: 1830,
+        width: 120,
+        height: 60,
+        approach: { x: 375, y: 1815 },
+        facing: "down",
+        spawn: { x: 525, y: 135 }
+      }),
+      expect.objectContaining({
+        id: "hall-to-banquet",
+        to: "banquet",
+        x: 330,
+        y: 30,
+        width: 120,
+        height: 90,
+        approach: { x: 375, y: 105 },
+        facing: "up",
+        spawn: { x: 585, y: 795 }
+      })
+    ]);
+    expect(hall.decorations.filter((item) => item.kind === "aisle-bouquet")).toEqual([
+      expect.objectContaining({ x: 270, y: 480, width: 60, height: 90, asset: "aisle-bouquet-front.png", depthY: 570 }),
+      expect.objectContaining({ x: 420, y: 720, width: 60, height: 90, asset: "aisle-bouquet-front.png", depthY: 810 }),
+      expect.objectContaining({ x: 270, y: 960, width: 60, height: 90, asset: "aisle-bouquet-front.png", depthY: 1050 }),
+      expect.objectContaining({ x: 420, y: 1200, width: 60, height: 90, asset: "aisle-bouquet-front.png", depthY: 1290 })
+    ]);
+  });
+
+  it("keeps the Task 12 banquet arrival corridor minimal and connected", () => {
+    const banquet = getWorldZone(gardenWorld, "banquet");
+    const hallToBanquet = getWorldZone(gardenWorld, "ceremony-hall").portals.find((portalItem) => portalItem.id === "hall-to-banquet");
+    const returnPortal = banquet.portals.find((portalItem) => portalItem.id === "banquet-to-hall");
+
+    expect(hallToBanquet?.spawn).toEqual({ x: 585, y: 795 });
+    expect(banquet.paths).toEqual([
+      { id: "banquet-floor", kind: "banquet", x: 60, y: 90, width: 960, height: 660 },
+      { id: "banquet-arrival", kind: "corridor", x: 525, y: 720, width: 120, height: 90 }
+    ]);
+    expect(hallToBanquet && isWalkable(hallToBanquet.spawn, banquet)).toBe(true);
+    expect(hallToBanquet && isBlocked(hallToBanquet.spawn, banquet)).toBe(false);
+
+    const route = hallToBanquet && returnPortal
+      ? findTilePath(banquet, hallToBanquet.spawn, returnPortal.approach)
+      : null;
+    expect(route).not.toBeNull();
+    expect(route?.at(-1)).toEqual(returnPortal?.approach);
+  });
+
   it("gives every place paths, themed scenery, and a stable journey order", () => {
     for (const [index, zone] of gardenWorld.zones.entries()) {
       expect(zone.journeyIndex).toBe(index);

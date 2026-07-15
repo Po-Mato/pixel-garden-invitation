@@ -139,6 +139,43 @@ describe("portal tile pathfinding", () => {
     }
   });
 
+  it("connects the full Task 12 ceremony hall aisle between both portals and the couple greeting tile", () => {
+    const hall = getWorldZone(gardenWorld, "ceremony-hall");
+    const lobbyPortal = hall.portals.find((portal) => portal.id === "hall-to-lobby");
+    const banquetPortal = hall.portals.find((portal) => portal.id === "hall-to-banquet");
+    const goals = [
+      lobbyPortal!.approach,
+      banquetPortal!.approach,
+      { x: 285, y: 165 }
+    ];
+
+    expect(hall.spawn).toEqual({ x: 375, y: 1785 });
+    for (const goal of goals) {
+      const route = findTilePath(hall, hall.spawn, goal);
+      expect(route, `ceremony-hall ${goal.x},${goal.y}`).not.toBeNull();
+      expect(route?.at(-1), `ceremony-hall ${goal.x},${goal.y}`).toEqual(goal);
+      for (const point of route ?? []) {
+        expect(isBlocked(point, hall), `ceremony-hall (${point.x},${point.y})`).toBe(false);
+      }
+    }
+  });
+
+  it("connects the Task 12 banquet arrival spawn to the existing banquet exit", () => {
+    const banquet = getWorldZone(gardenWorld, "banquet");
+    const hallToBanquet = getWorldZone(gardenWorld, "ceremony-hall").portals.find((portal) => portal.id === "hall-to-banquet");
+    const returnPortal = banquet.portals.find((portal) => portal.id === "banquet-to-hall");
+
+    expect(hallToBanquet?.spawn).toEqual({ x: 585, y: 795 });
+    const route = hallToBanquet && returnPortal
+      ? findTilePath(banquet, hallToBanquet.spawn, returnPortal.approach)
+      : null;
+    expect(route).not.toBeNull();
+    expect(route?.at(-1)).toEqual(returnPortal?.approach);
+    for (const point of route ?? []) {
+      expect(isBlocked(point, banquet), `banquet (${point.x},${point.y})`).toBe(false);
+    }
+  });
+
   it("connects every incoming spawn to every exit in its destination zone", () => {
     for (const source of gardenWorld.zones) {
       for (const incoming of source.portals) {

@@ -188,7 +188,7 @@ describe("GardenRoom helpers", () => {
     });
   });
 
-  it("creates future-room guests at the temporary client world spawns", () => {
+  it("creates ceremony hall guests at the exact Task 12 client world spawn", () => {
     expect(createGuestSnapshot("guest_hall", {
       type: "join",
       nickname: "예식홀 하객",
@@ -198,6 +198,19 @@ describe("GardenRoom helpers", () => {
       x: 375,
       y: 1785,
       zoneId: "ceremony-hall"
+    });
+  });
+
+  it("creates banquet guests at the Task 12 arrival coordinate", () => {
+    expect(createGuestSnapshot("guest_banquet", {
+      type: "join",
+      nickname: "연회장 하객",
+      appearance: defaultCharacterAppearance,
+      zoneId: "banquet"
+    }, 1000)).toMatchObject({
+      x: 585,
+      y: 795,
+      zoneId: "banquet"
     });
   });
 
@@ -509,7 +522,7 @@ describe("GardenRoom socket behavior", () => {
     });
   });
 
-  it("does not clamp the Task 10 lobby approach, Task 11 bridal bounds, and future temporary map coordinates", () => {
+  it("does not clamp the Task 10 lobby approach, Task 11 bridal bounds, and Task 12 long hall coordinates", () => {
     const nowSpy = vi.spyOn(Date, "now").mockReturnValue(2000);
     const state = new TestState();
     const room = createRoom(state);
@@ -529,6 +542,8 @@ describe("GardenRoom socket behavior", () => {
     room.webSocketMessage(asWebSocket(moving), moveMessage(4, 375, "ceremony-hall", 1785));
     nowSpy.mockReturnValue(2400);
     room.webSocketMessage(asWebSocket(moving), moveMessage(5, 765, "ceremony-hall", 1905));
+    nowSpy.mockReturnValue(2500);
+    room.webSocketMessage(asWebSocket(moving), moveMessage(6, 585, "banquet", 795));
 
     const broadcasts = watching.sent.map((payload) => JSON.parse(payload)).filter((message) => message.type === "guest_moved");
     expect(broadcasts.map((message) => message.position)).toEqual([
@@ -536,12 +551,13 @@ describe("GardenRoom socket behavior", () => {
       expect.objectContaining({ x: 345, y: 525, zoneId: "bridal-room" }),
       expect.objectContaining({ x: 705, y: 615, zoneId: "bridal-room" }),
       expect.objectContaining({ x: 375, y: 1785, zoneId: "ceremony-hall" }),
-      expect.objectContaining({ x: 765, y: 1905, zoneId: "ceremony-hall" })
+      expect.objectContaining({ x: 765, y: 1905, zoneId: "ceremony-hall" }),
+      expect.objectContaining({ x: 585, y: 795, zoneId: "banquet" })
     ]);
     expect((moving.deserializeAttachment() as { guest?: RoomGuest } | null)?.guest).toMatchObject({
-      x: 765,
-      y: 1905,
-      zoneId: "ceremony-hall"
+      x: 585,
+      y: 795,
+      zoneId: "banquet"
     });
   });
 

@@ -628,6 +628,48 @@ describe("GameWorld", () => {
     expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "135px", top: "405px" });
   });
 
+  it("walks through the Task 12 ceremony hall portals with exact stage, NPCs, and bouquet depths", () => {
+    const { container } = render(<GameWorld profile={profile} />);
+    travelFromHomeToLobby();
+
+    fireEvent.click(screen.getByRole("button", { name: "예식홀" }));
+    advanceRouteToPortalArrival();
+    expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "525px", top: "105px" });
+    expect(screen.getByTestId("world-portal-transition")).toHaveAttribute("data-phase", "arrival");
+    advancePortalTransition();
+
+    const hall = screen.getByLabelText("예식홀 지도");
+    const bouquets = [...container.querySelectorAll('img[data-decoration="aisle-bouquet"]')];
+
+    expect(hall).toHaveStyle({ width: "780px", height: "1920px" });
+    expectMapBackground(container, "ceremony-hall");
+    expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "375px", top: "1785px" });
+    expect(screen.getByRole("button", { name: "신랑 이서준 소개 보기" }).parentElement)
+      .toHaveStyle({ left: "330px", top: "255px", zIndex: "1255" });
+    expect(screen.getByRole("button", { name: "신부 김하린 소개 보기" }).parentElement)
+      .toHaveStyle({ left: "450px", top: "255px", zIndex: "1255" });
+    expect(bouquets).toHaveLength(4);
+    [
+      ["270px", "480px", "1570"],
+      ["420px", "720px", "1810"],
+      ["270px", "960px", "2050"],
+      ["420px", "1200px", "2290"]
+    ].forEach(([left, top, zIndex], index) => {
+      expect(bouquets[index]).toHaveAttribute("src", "/assets/maps/v2/ceremony-hall/aisle-bouquet-front.png");
+      expect(bouquets[index]).toHaveStyle({ left, top, width: "60px", height: "90px", zIndex });
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: "연회장으로" }));
+    advanceRouteToPortalArrival();
+    expect(screen.getByLabelText("예식홀 지도")).toBeInTheDocument();
+    expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "375px", top: "105px" });
+    expect(screen.getByTestId("world-portal-transition")).toHaveAttribute("data-phase", "arrival");
+    advancePortalTransition();
+
+    expect(screen.getByLabelText("연회장 지도")).toBeInTheDocument();
+    expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "585px", top: "795px" });
+  });
+
   it("waits for the overlay opacity transition before swapping maps", () => {
     render(<GameWorld profile={profile} />);
     fireEvent.click(screen.getByRole("button", { name: "동네로 나가기" }));

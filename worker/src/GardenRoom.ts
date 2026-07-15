@@ -29,7 +29,7 @@ const zoneSpawns: Record<WorldZoneId, { x: number; y: number }> = {
   "bridal-room": { x: 345, y: 525 },
   "ceremony-hall": { x: 375, y: 1785 },
   restroom: { x: 105, y: 315 },
-  banquet: { x: 525, y: 735 }
+  banquet: { x: 585, y: 795 }
 };
 const zoneBounds: Record<WorldZoneId, { minX: number; maxX: number; minY: number; maxY: number }> = {
   home: { minX: 0, maxX: 480, minY: 0, maxY: 600 },

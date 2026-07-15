@@ -26,11 +26,31 @@ describe("minimap projection", () => {
   });
 
   it("uses the tall 72 by 120 limit for the ceremony hall", () => {
-    const layout = createMiniMapLayout({ x: 0, y: 0, width: 660, height: 1800 });
+    const hall = getWorldZone(gardenWorld, "ceremony-hall");
+    const layout = createMiniMapLayout(hall.bounds);
 
-    expect(layout.width).toBeCloseTo(49.07, 1);
+    expect(layout.width).toBeCloseTo(53.5, 1);
     expect(layout.height).toBe(120);
-    expect(layout.content.width / layout.content.height).toBeCloseTo(660 / 1800);
+    expect(layout.content.width / layout.content.height).toBeCloseTo(780 / 1920);
+  });
+
+  it("projects Task 12 ceremony hall route markers and portals inside the tall minimap", () => {
+    const hall = getWorldZone(gardenWorld, "ceremony-hall");
+    const layout = createMiniMapLayout(hall.bounds);
+
+    expect(layout.height).toBeLessThanOrEqual(120);
+    expect(projectMiniMapPoint(hall.spawn, hall.bounds, layout)).toEqual({
+      x: layout.content.x + 375 * layout.scale,
+      y: layout.content.y + 1785 * layout.scale
+    });
+
+    for (const marker of [...hall.paths, ...hall.portals, ...hall.spots, ...hall.blocked]) {
+      const projected = projectMiniMapRect(marker, hall.bounds, layout);
+      expect(projected.x).toBeGreaterThanOrEqual(layout.content.x);
+      expect(projected.y).toBeGreaterThanOrEqual(layout.content.y);
+      expect(projected.x + projected.width).toBeLessThanOrEqual(layout.content.x + layout.content.width + 0.001);
+      expect(projected.y + projected.height).toBeLessThanOrEqual(layout.content.y + layout.content.height + 0.001);
+    }
   });
 
   it("fits the expanded subway station and its ticket-gate bypass inside the regular minimap", () => {

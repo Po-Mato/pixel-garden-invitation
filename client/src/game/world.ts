@@ -447,17 +447,18 @@ const ceremonyHallZone = createZone({
   bounds: bounds(780, 1920),
   spawn: { x: 375, y: 1785 },
   paths: [
-    path("hall-aisle", "aisle", 240, 120, 180, 1560),
-    path("hall-entry-corridor", "corridor", 300, 1620, 120, 240)
+    path("hall-aisle", "aisle", 300, 90, 180, 1740),
+    path("hall-altar-cross", "aisle", 180, 120, 420, 240),
+    path("hall-entry", "corridor", 240, 1740, 300, 120)
   ],
-  spots: [spot("couple", "신랑신부", 255, 105, 150, 72)],
+  spots: [spot("couple", "신랑신부", 180, 150, 90, 90)],
   npcs: [
-    { id: "groom", label: "신랑 이서준", x: 270, y: 270 },
-    { id: "bride", label: "신부 김하린", x: 390, y: 270 }
+    { id: "groom", label: "신랑 이서준", x: 330, y: 255 },
+    { id: "bride", label: "신부 김하린", x: 450, y: 255 }
   ],
   portals: [
-    portal("hall-to-lobby", "로비로 돌아가기", "lobby", { x: 255, y: 1680, width: 150, height: 90 }, { x: 315, y: 1635 }, "down", { x: 525, y: 135 }),
-    portal("hall-to-banquet", "연회장으로", "banquet", { x: 255, y: 30, width: 150, height: 72 }, { x: 315, y: 195 }, "up", { x: 525, y: 705 })
+    portal("hall-to-lobby", "로비로 돌아가기", "lobby", { x: 330, y: 1830, width: 120, height: 60 }, { x: 375, y: 1815 }, "down", { x: 525, y: 135 }),
+    portal("hall-to-banquet", "연회장으로", "banquet", { x: 330, y: 30, width: 120, height: 90 }, { x: 375, y: 105 }, "up", { x: 585, y: 795 })
   ],
   decorations: [
     decoration("hall-altar", "altar", "웨딩 단상", 195, 105, 270, 105),
@@ -469,8 +470,22 @@ const ceremonyHallZone = createZone({
     decoration("hall-seat-r3", "ceremony-seat", "하객 좌석", 465, 1020, 150, 120),
     decoration("hall-seat-l4", "ceremony-seat", "하객 좌석", 45, 1350, 150, 120),
     decoration("hall-seat-r4", "ceremony-seat", "하객 좌석", 465, 1350, 150, 120),
-    decoration("hall-flowers-1", "aisle-bouquet", "버진로드 꽃장식", 205, 520, 35, 52),
-    decoration("hall-flowers-2", "aisle-bouquet", "버진로드 꽃장식", 420, 960, 35, 52),
+    decoration("hall-flowers-1", "aisle-bouquet", "버진로드 꽃장식", 270, 480, 60, 90, {
+      asset: "aisle-bouquet-front.png",
+      depthY: 570
+    }),
+    decoration("hall-flowers-2", "aisle-bouquet", "버진로드 꽃장식", 420, 720, 60, 90, {
+      asset: "aisle-bouquet-front.png",
+      depthY: 810
+    }),
+    decoration("hall-flowers-3", "aisle-bouquet", "버진로드 꽃장식", 270, 960, 60, 90, {
+      asset: "aisle-bouquet-front.png",
+      depthY: 1050
+    }),
+    decoration("hall-flowers-4", "aisle-bouquet", "버진로드 꽃장식", 420, 1200, 60, 90, {
+      asset: "aisle-bouquet-front.png",
+      depthY: 1290
+    }),
     decoration("hall-lights", "string-lights", "예식홀 조명", 105, 260, 450, 32)
   ]
 });
@@ -507,12 +522,15 @@ const banquetZone = createZone({
   subtitle: "맛있는 식사와 축하 메시지로 여정을 마무리해요",
   journeyIndex: 9,
   bounds: bounds(1080, 840),
-  spawn: { x: 525, y: 735 },
-  paths: [path("banquet-floor", "banquet", 60, 90, 960, 660)],
+  spawn: { x: 585, y: 795 },
+  paths: [
+    path("banquet-floor", "banquet", 60, 90, 960, 660),
+    path("banquet-arrival", "corridor", 525, 720, 120, 90)
+  ],
   spots: [spot("guestbook", "축하 메시지", 835, 105, 120, 84)],
   npcs: [],
   portals: [
-    portal("banquet-to-hall", "예식홀로 돌아가기", "ceremony-hall", { x: 465, y: 750, width: 150, height: 60 }, { x: 525, y: 735 }, "down", { x: 315, y: 375 })
+    portal("banquet-to-hall", "예식홀로 돌아가기", "ceremony-hall", { x: 465, y: 750, width: 150, height: 60 }, { x: 525, y: 735 }, "down", { x: 375, y: 135 })
   ],
   decorations: [
     decoration("banquet-table-1", "banquet-table", "원형 하객 테이블", 150, 180, 150, 150),
