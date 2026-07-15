@@ -51,3 +51,46 @@ pnpm --filter @wedding-game/client typecheck
 - 포털 검증은 모든 구역의 `spawn -> portal.approach` A* 경로가 존재하고, 반환된 모든 타일이 `isBlocked`를 통과하는지 검사한다.
 - 월드 검증은 모든 spawn 및 portal approach가 경로 안이고 차단되지 않았는지 검사한다.
 - 경로 보정은 실패 원인이었던 `home`의 단일 기존 path에만 적용했으며, 시각/레이아웃 재설계는 하지 않았다.
+
+## Fix Review
+
+### Finding
+
+- `computeNextPosition`은 기존에 `world.blocked` 사각형의 선분 교차만 검사했다. 따라서 경로 내부에서 시작해도 목표점 또는 이동 선분이 `world.paths` 합집합 밖으로 나갈 수 있었다.
+
+### 변경 파일
+
+- `client/src/game/movement.ts`
+- `client/src/game/movement.test.ts`
+- `.superpowers/sdd/task-3-report.md`
+
+### RED 증거
+
+```sh
+pnpm --filter @wedding-game/client exec vitest run src/game/movement.test.ts
+# 1 file failed, 2 tests failed, 10 tests passed
+```
+
+- `home`에서 `(135, 405) -> (45, 405)` 이동이 경로 밖 목표를 반환했다.
+- 분리된 두 path 사이의 빈 공간을 가로지르는 이동이 목표 path에 도착했다.
+
+### GREEN 증거
+
+```sh
+pnpm --filter @wedding-game/client exec vitest run src/game/movement.test.ts src/game/geometry.test.ts src/game/pathfinding.test.ts src/game/world.test.ts
+# 4 files passed, 30 tests passed
+
+pnpm --filter @wedding-game/client exec vitest run src/components/GameWorld.test.tsx
+# 1 file passed, 34 tests passed
+
+pnpm --filter @wedding-game/client test
+# 26 files passed, 186 tests passed
+
+pnpm --filter @wedding-game/client typecheck
+# exit 0
+```
+
+### 수정
+
+- 경로 사각형마다 이동 선분의 매개변수 구간을 계산하고, 그 구간들의 합집합이 시작부터 끝까지 연속인지 검사한다.
+- 목표점에는 `isBlocked`를 적용하고, 기존의 blocked 사각형 선분 교차 검사도 유지한다.

@@ -64,6 +64,35 @@ describe("movement", () => {
     })).toEqual({ x: 213, y: 300 });
   });
 
+  it("does not finish continuous movement outside a walkable path", () => {
+    expect(computeNextPosition({
+      current: { x: 135, y: 405 },
+      target: { x: 45, y: 405 },
+      deltaMs: 1000,
+      speed: 120,
+      world: home
+    })).toEqual({ x: 135, y: 405 });
+  });
+
+  it("does not cross gaps between walkable paths", () => {
+    const splitPaths = {
+      ...home,
+      paths: [
+        { id: "left", kind: "floor" as const, x: 90, y: 180, width: 90, height: 60 },
+        { id: "right", kind: "floor" as const, x: 240, y: 180, width: 90, height: 60 }
+      ],
+      blocked: []
+    };
+
+    expect(computeNextPosition({
+      current: { x: 135, y: 210 },
+      target: { x: 285, y: 210 },
+      deltaMs: 1000,
+      speed: 180,
+      world: splitPaths
+    })).toEqual({ x: 135, y: 210 });
+  });
+
   it("returns a finite safe position for non-finite movement input", () => {
     expect(computeNextPosition({
       current: { x: -10, y: 900 },

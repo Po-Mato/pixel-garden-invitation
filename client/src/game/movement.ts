@@ -97,7 +97,9 @@ export function directionTowardPoint(current: Point, target: Point): Direction |
   return dy > 0 ? "down" : "up";
 }
 
-function segmentIntersectsRect(from: Point, to: Point, rect: Rect): boolean {
+type SegmentInterval = { start: number; end: number };
+
+function segmentRectInterval(from: Point, to: Point, rect: Rect): SegmentInterval | null {
   const dx = to.x - from.x;
   const dy = to.y - from.y;
   let enter = 0;
@@ -111,7 +113,7 @@ function segmentIntersectsRect(from: Point, to: Point, rect: Rect): boolean {
   for (const axis of axes) {
     if (axis.delta === 0) {
       if (axis.start < axis.min || axis.start > axis.max) {
-        return false;
+        return null;
       }
       continue;
     }
@@ -122,15 +124,43 @@ function segmentIntersectsRect(from: Point, to: Point, rect: Rect): boolean {
     exit = Math.min(exit, Math.max(first, second));
 
     if (enter > exit) {
-      return false;
+      return null;
     }
   }
 
-  return true;
+  return { start: enter, end: exit };
+}
+
+function segmentIntersectsRect(from: Point, to: Point, rect: Rect): boolean {
+  return segmentRectInterval(from, to, rect) !== null;
 }
 
 function crossesBlockedRect(from: Point, to: Point, world: WorldZone): boolean {
   return world.blocked.some((rect) => segmentIntersectsRect(from, to, rect));
+}
+
+function staysOnWalkablePaths(from: Point, to: Point, world: WorldZone): boolean {
+  const intervals = world.paths
+    .map((path) => segmentRectInterval(from, to, path))
+    .filter((interval): interval is SegmentInterval => interval !== null)
+    .sort((first, second) => first.start - second.start);
+  let coveredThrough = 0;
+
+  for (const interval of intervals) {
+    if (interval.start > coveredThrough) {
+      return false;
+    }
+    coveredThrough = Math.max(coveredThrough, interval.end);
+    if (coveredThrough >= 1) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+function canMoveContinuously(from: Point, to: Point, world: WorldZone): boolean {
+  return !isBlocked(to, world) && !crossesBlockedRect(from, to, world) && staysOnWalkablePaths(from, to, world);
 }
 
 export function computeNextPosition(input: MoveInput): Point {
@@ -154,7 +184,7 @@ export function computeNextPosition(input: MoveInput): Point {
 
   if (distance <= maxStep) {
     const target = clampToWorld(input.target, input.world.cameraSafeBounds);
-    return crossesBlockedRect(current, target, input.world) ? current : target;
+    return canMoveContinuously(current, target, input.world) ? target : current;
   }
 
   const next = clampToWorld({
@@ -162,7 +192,7 @@ export function computeNextPosition(input: MoveInput): Point {
     y: current.y + (dy / distance) * maxStep
   }, input.world.cameraSafeBounds);
 
-  return crossesBlockedRect(current, next, input.world) ? current : next;
+  return canMoveContinuously(current, next, input.world) ? next : current;
 }
 
 export function directionFromVector(vector: Point): Direction {
