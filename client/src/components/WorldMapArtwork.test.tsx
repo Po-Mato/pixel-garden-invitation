@@ -19,3 +19,16 @@ it("hides the background image when it cannot be loaded", () => {
 
   expect(image).toHaveAttribute("hidden");
 });
+
+it("creates a visible background image when the zone changes after an image error", () => {
+  const { container, rerender } = render(<WorldMapArtwork zoneId="home" />);
+  const failedImage = container.querySelector(".world-map-artwork__background");
+
+  fireEvent.error(failedImage as HTMLImageElement);
+  rerender(<WorldMapArtwork zoneId="banquet" />);
+
+  const nextImage = container.querySelector(".world-map-artwork__background");
+  expect(nextImage).not.toBe(failedImage);
+  expect(nextImage).toHaveAttribute("src", "/assets/maps/v2/banquet/background.webp");
+  expect(nextImage).not.toHaveAttribute("hidden");
+});

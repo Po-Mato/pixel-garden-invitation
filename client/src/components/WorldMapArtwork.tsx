@@ -7,6 +7,7 @@ export function WorldMapArtwork({ zoneId }: { zoneId: WorldZoneId }) {
   return (
     <div className="world-map-artwork" style={{ backgroundColor: visual.fallbackColor }} aria-hidden="true">
       <img
+        key={visual.backgroundUrl}
         className="world-map-artwork__background"
         src={visual.backgroundUrl}
         alt=""

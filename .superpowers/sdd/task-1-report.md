@@ -58,3 +58,52 @@ Result: passed with exit code 0.
 - `client/public/assets/maps/v2` currently contains no generated map images. Until later tasks add them, failed image loads reveal the configured fallback colors.
 - Vitest emits an existing Node warning that `--localstorage-file` has no valid path; it does not affect test outcomes.
 - Existing untracked `character-assets` directories were not modified or staged.
+
+## Fix Review
+
+### Findings Fixed
+
+- Replaced `object-fit: fill` with `object-fit: contain` for map backgrounds. The existing artwork container retains its fallback background color around any unused space.
+- Added an image key based on `visual.backgroundUrl`, so a zone URL change creates a new image element instead of retaining a prior imperative `hidden` state.
+
+### RED Verification
+
+Command:
+
+`pnpm --filter @wedding-game/client test -- WorldMapArtwork.test.tsx styles.test.ts`
+
+Result: failed as intended with two failures. The CSS rule contained `object-fit: fill`, and the error-hidden `home` image was reused after rerendering to `banquet`.
+
+### GREEN Verification
+
+Command:
+
+`pnpm --filter @wedding-game/client test -- WorldMapArtwork.test.tsx styles.test.ts`
+
+Result: 25 test files passed, 176 tests passed.
+
+Command:
+
+`pnpm --filter @wedding-game/client test -- worldVisuals.test.ts WorldMapArtwork.test.tsx GameWorld.test.tsx`
+
+Result: 25 test files passed, 176 tests passed.
+
+Command:
+
+`pnpm --filter @wedding-game/client test`
+
+Result: 25 test files passed, 176 tests passed.
+
+Command:
+
+`pnpm --filter @wedding-game/client typecheck`
+
+Result: passed with exit code 0.
+
+### Changed Files
+
+- `client/src/components/WorldMapArtwork.tsx`
+- `client/src/components/WorldMapArtwork.test.tsx`
+- `client/src/styles.css`
+- `client/src/styles.test.ts`
+- `.superpowers/sdd/task-1-report.md`

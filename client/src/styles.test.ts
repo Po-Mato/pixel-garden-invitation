@@ -152,6 +152,17 @@ describe("responsive play viewport", () => {
 });
 
 describe("pixel wedding festival map", () => {
+  it("preserves map artwork aspect ratios while retaining a fallback background", () => {
+    const artworkRule = styles.match(/\.world-map-artwork\s*\{([^}]*)}/s)?.[1] ?? "";
+    const backgroundRule = [...styles.matchAll(/\.world-map-artwork__background\s*\{([^}]*)}/gs)]
+      .map((match) => match[1])
+      .find((rule) => rule.includes("object-fit")) ?? "";
+
+    expect(artworkRule).toContain("overflow: hidden;");
+    expect(backgroundRule).toContain("object-fit: contain;");
+    expect(backgroundRule).not.toContain("object-fit: fill;");
+  });
+
   it("gives every zone its own ground and path treatment", () => {
     for (const zone of worldZones) {
       expect(styles).toContain(`.world-map--${zone} {`);

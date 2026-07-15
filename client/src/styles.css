@@ -1640,7 +1640,7 @@ select {
 }
 
 .world-map-artwork__background {
-  object-fit: fill;
+  object-fit: contain;
   image-rendering: pixelated;
 }
 
