@@ -478,6 +478,18 @@ describe("GameWorld", () => {
     expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "1065px", top: "375px" });
   });
 
+  it("returns from the train beside the subway station east portal", () => {
+    render(<GameWorld profile={profile} />);
+
+    travelThroughPortal("동네로 나가기");
+    travelThroughPortal("지하철역 들어가기");
+    travelThroughPortal("열차 타기");
+    travelThroughPortal("역사로 내리기");
+
+    expect(screen.getByLabelText("지하철 역사 지도")).toBeInTheDocument();
+    expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "705px", top: "435px" });
+  });
+
   it("renders the subway gate fronts above guests at the shared gate depth", () => {
     const { container } = render(<GameWorld profile={profile} />);
 

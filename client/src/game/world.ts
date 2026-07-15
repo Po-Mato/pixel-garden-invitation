@@ -308,7 +308,7 @@ const subwayTrainZone = createZone({
   spots: [],
   npcs: [],
   portals: [
-    portal("train-to-station", "역사로 내리기", "subway-station", { x: 30, y: 180, width: 72, height: 150 }, { x: 105, y: 255 }, "left", { x: 525, y: 345 }),
+    portal("train-to-station", "역사로 내리기", "subway-station", { x: 30, y: 180, width: 72, height: 150 }, { x: 105, y: 255 }, "left", { x: 705, y: 435 }),
     portal("train-to-venue", "예식장역 내리기", "venue-exterior", { x: 978, y: 180, width: 72, height: 150 }, { x: 975, y: 255 }, "right", { x: 135, y: 375 })
   ],
   decorations: [

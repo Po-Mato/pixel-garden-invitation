@@ -233,6 +233,19 @@ describe("guest route world", () => {
     }
   });
 
+  it("returns from the train beside the station east portal on a safe platform tile", () => {
+    const station = getWorldZone(gardenWorld, "subway-station");
+    const train = getWorldZone(gardenWorld, "subway-train");
+    const platform = station.paths.find((worldPath) => worldPath.id === "station-platform");
+    const returnStation = train.portals.find((portalItem) => portalItem.id === "train-to-station");
+
+    expect(returnStation?.spawn).toEqual({ x: 705, y: 435 });
+    expect(platform && returnStation && pointInRect(returnStation.spawn, platform)).toBe(true);
+    expect(returnStation && pointInRect(returnStation.spawn, station.cameraSafeBounds)).toBe(true);
+    expect(returnStation && isWalkable(returnStation.spawn, station)).toBe(true);
+    expect(returnStation && isBlocked(returnStation.spawn, station)).toBe(false);
+  });
+
   it("finds the lower bypass from the station spawn to the east platform approach", () => {
     const station = getWorldZone(gardenWorld, "subway-station");
     const eastPortal = station.portals.find((portalItem) => portalItem.id === "station-to-train");

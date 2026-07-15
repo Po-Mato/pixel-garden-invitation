@@ -123,6 +123,19 @@ describe("GardenRoom helpers", () => {
     });
   });
 
+  it("creates a subway station guest at the client world spawn", () => {
+    expect(createGuestSnapshot("guest_station", {
+      type: "join",
+      nickname: "역사 하객",
+      appearance: defaultCharacterAppearance,
+      zoneId: "subway-station"
+    }, 1000)).toMatchObject({
+      x: 135,
+      y: 435,
+      zoneId: "subway-station"
+    });
+  });
+
 });
 
 describe("GardenRoom socket behavior", () => {
@@ -309,6 +322,28 @@ describe("GardenRoom socket behavior", () => {
       zoneId: "banquet"
     });
     expect((moving.deserializeAttachment() as { guest?: RoomGuest } | null)?.guest?.zoneId).toBe("banquet");
+  });
+
+  it("keeps the subway station east portal approach inside the worker bounds", () => {
+    vi.spyOn(Date, "now").mockReturnValue(2000);
+    const state = new TestState();
+    const room = createRoom(state);
+    const moving = new TestSocket();
+    const watching = new TestSocket();
+
+    joinGuest(room, state, moving, "moving");
+    joinGuest(room, state, watching, "watching");
+    watching.sent.length = 0;
+
+    room.webSocketMessage(asWebSocket(moving), moveMessage(1, 735, "subway-station", 435));
+
+    const broadcast = watching.sent.map((payload) => JSON.parse(payload)).find((message) => message.type === "guest_moved");
+    expect(broadcast.position).toMatchObject({ x: 735, y: 435, zoneId: "subway-station" });
+    expect((moving.deserializeAttachment() as { guest?: RoomGuest } | null)?.guest).toMatchObject({
+      x: 735,
+      y: 435,
+      zoneId: "subway-station"
+    });
   });
 
   it("recovers joined guests and their latest position after hibernation", () => {
