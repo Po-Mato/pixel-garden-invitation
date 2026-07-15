@@ -8,7 +8,7 @@ import { gardenWorld, getWorldZone } from "./world";
 const expectedSizes = {
   home: [600, 720],
   neighborhood: [1200, 660],
-  "subway-station": [720, 720],
+  "subway-station": [900, 840],
   "subway-train": [1080, 480],
   "venue-exterior": [840, 720],
   lobby: [960, 780],
@@ -168,6 +168,79 @@ describe("guest route world", () => {
     expect(returnNeighborhood && pointInRect(returnNeighborhood.spawn, neighborhood.cameraSafeBounds)).toBe(true);
     expect(returnNeighborhood && isWalkable(returnNeighborhood.spawn, neighborhood)).toBe(true);
     expect(returnNeighborhood && isBlocked(returnNeighborhood.spawn, neighborhood)).toBe(false);
+  });
+
+  it("defines the v2 subway station layout, portals, and gate-front overlays", () => {
+    const station = getWorldZone(gardenWorld, "subway-station");
+    const [directionsSpot] = station.spots;
+
+    expect(station.spawn).toEqual({ x: 135, y: 435 });
+    expect(station.paths).toEqual([
+      { id: "station-concourse", kind: "floor", x: 60, y: 300, width: 600, height: 270 },
+      { id: "station-gate-corridor", kind: "corridor", x: 330, y: 240, width: 240, height: 390 },
+      { id: "station-platform", kind: "platform", x: 600, y: 120, width: 210, height: 600 }
+    ]);
+    expect(station.spots).toEqual([
+      expect.objectContaining({ id: "directions", x: 120, y: 150, width: 120, height: 90 })
+    ]);
+    expect(station.blocked).toEqual([
+      { x: 360, y: 360, width: 60, height: 120 },
+      { x: 450, y: 360, width: 60, height: 120 },
+      { x: 540, y: 360, width: 60, height: 120 },
+      directionsSpot
+    ]);
+    expect(station.portals).toEqual([
+      expect.objectContaining({
+        id: "station-to-neighborhood",
+        to: "neighborhood",
+        x: 30,
+        y: 375,
+        width: 90,
+        height: 120,
+        approach: { x: 105, y: 435 },
+        facing: "left",
+        spawn: { x: 1065, y: 375 }
+      }),
+      expect.objectContaining({
+        id: "station-to-train",
+        to: "subway-train",
+        x: 750,
+        y: 360,
+        width: 90,
+        height: 150,
+        approach: { x: 735, y: 435 },
+        facing: "right",
+        spawn: { x: 135, y: 285 }
+      })
+    ]);
+    expect(station.decorations.filter((item) => item.kind === "ticket-gate")).toEqual([
+      expect.objectContaining({ id: "station-gate-1", x: 360, y: 360, width: 60, height: 120, asset: "ticket-gate-front.png", depthY: 480 }),
+      expect.objectContaining({ id: "station-gate-2", x: 450, y: 360, width: 60, height: 120, asset: "ticket-gate-front.png", depthY: 480 }),
+      expect.objectContaining({ id: "station-gate-3", x: 540, y: 360, width: 60, height: 120, asset: "ticket-gate-front.png", depthY: 480 })
+    ]);
+  });
+
+  it("keeps the station portal spawns safe in both destination zones", () => {
+    const station = getWorldZone(gardenWorld, "subway-station");
+    const neighborhood = getWorldZone(gardenWorld, "neighborhood");
+    const train = getWorldZone(gardenWorld, "subway-train");
+
+    for (const portalItem of station.portals) {
+      const destination = portalItem.to === "neighborhood" ? neighborhood : train;
+      expect(pointInRect(portalItem.spawn, destination.cameraSafeBounds), portalItem.id).toBe(true);
+      expect(isWalkable(portalItem.spawn, destination), portalItem.id).toBe(true);
+      expect(isBlocked(portalItem.spawn, destination), portalItem.id).toBe(false);
+    }
+  });
+
+  it("finds the lower bypass from the station spawn to the east platform approach", () => {
+    const station = getWorldZone(gardenWorld, "subway-station");
+    const eastPortal = station.portals.find((portalItem) => portalItem.id === "station-to-train");
+    const route = findTilePath(station, station.spawn, eastPortal!.approach);
+
+    expect(route).not.toBeNull();
+    expect(route?.at(-1)).toEqual(eastPortal?.approach);
+    expect(route?.some((point) => point.y > 480)).toBe(true);
   });
 
   it("keeps every spawn and portal approach on a safe walkable tile", () => {

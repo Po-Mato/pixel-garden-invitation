@@ -257,28 +257,43 @@ const subwayStationZone = createZone({
   label: "지하철 역사",
   subtitle: "노선 안내를 따라 개찰구와 승강장을 지나가요",
   journeyIndex: 2,
-  bounds: bounds(720, 720),
-  spawn: { x: 105, y: 345 },
+  bounds: bounds(900, 840),
+  spawn: { x: 135, y: 435 },
   paths: [
-    path("station-concourse", "floor", 60, 240, 600, 240),
-    path("station-platform", "platform", 420, 60, 180, 600)
+    path("station-concourse", "floor", 60, 300, 600, 270),
+    path("station-gate-corridor", "corridor", 330, 240, 240, 390),
+    path("station-platform", "platform", 600, 120, 210, 600)
   ],
-  spots: [spot("directions", "지하철 오시는 길", 95, 80, 110, 78)],
+  spots: [spot("directions", "지하철 오시는 길", 120, 150, 120, 90)],
   npcs: [],
   portals: [
-    portal("station-to-neighborhood", "거리로 나가기", "neighborhood", { x: 30, y: 285, width: 72, height: 120 }, { x: 105, y: 345 }, "left", { x: 1065, y: 375 }),
-    portal("station-to-train", "열차 타기", "subway-train", { x: 585, y: 285, width: 84, height: 120 }, { x: 555, y: 345 }, "right", { x: 135, y: 255 })
+    portal("station-to-neighborhood", "거리로 나가기", "neighborhood", { x: 30, y: 375, width: 90, height: 120 }, { x: 105, y: 435 }, "left", { x: 1065, y: 375 }),
+    portal("station-to-train", "열차 타기", "subway-train", { x: 750, y: 360, width: 90, height: 150 }, { x: 735, y: 435 }, "right", { x: 135, y: 285 })
   ],
-  blocked: [{ x: 280, y: 265, width: 100, height: 70 }],
+  blocked: [
+    { x: 360, y: 360, width: 60, height: 120 },
+    { x: 450, y: 360, width: 60, height: 120 },
+    { x: 540, y: 360, width: 60, height: 120 }
+  ],
   decorations: [
-    decoration("station-sign", "station-sign", "노선 안내판", 250, 72, 220, 58),
-    decoration("station-gate-1", "ticket-gate", "개찰구", 270, 255, 54, 82),
-    decoration("station-gate-2", "ticket-gate", "개찰구", 330, 255, 54, 82),
-    decoration("station-gate-3", "ticket-gate", "개찰구", 390, 255, 54, 82),
-    decoration("station-bench", "bench", "승강장 의자", 470, 500, 112, 46),
-    decoration("station-lamp-1", "lamp", "역사 조명", 220, 430, 26, 54),
-    decoration("station-lamp-2", "lamp", "역사 조명", 470, 430, 26, 54),
-    decoration("station-door", "door", "열차 출입문", 590, 286, 72, 116)
+    decoration("station-sign", "station-sign", "노선 안내판", 180, 90, 300, 60),
+    decoration("station-gate-1", "ticket-gate", "개찰구", 360, 360, 60, 120, {
+      asset: "ticket-gate-front.png",
+      depthY: 480
+    }),
+    decoration("station-gate-2", "ticket-gate", "개찰구", 450, 360, 60, 120, {
+      asset: "ticket-gate-front.png",
+      depthY: 480
+    }),
+    decoration("station-gate-3", "ticket-gate", "개찰구", 540, 360, 60, 120, {
+      asset: "ticket-gate-front.png",
+      depthY: 480
+    }),
+    decoration("station-bench-1", "bench", "대합실 벤치", 270, 150, 120, 45),
+    decoration("station-bench-2", "bench", "대합실 벤치", 420, 150, 120, 45),
+    decoration("station-lamp-1", "lamp", "역사 기둥", 570, 60, 60, 120),
+    decoration("station-lamp-2", "lamp", "역사 기둥", 600, 660, 60, 120),
+    decoration("station-door", "door", "열차 출입문", 750, 360, 90, 150)
   ]
 });
 

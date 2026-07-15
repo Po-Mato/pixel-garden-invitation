@@ -11,7 +11,7 @@ describe("world geometry", () => {
 
   it("detects structural and interaction blockers", () => {
     const station = getWorldZone(gardenWorld, "subway-station");
-    expect(isBlocked({ x: 300, y: 300 }, station)).toBe(true);
+    expect(isBlocked({ x: 375, y: 405 }, station)).toBe(true);
     expect(isBlocked(station.spawn, station)).toBe(false);
   });
 

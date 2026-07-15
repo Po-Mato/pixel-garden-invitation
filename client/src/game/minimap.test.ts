@@ -5,7 +5,7 @@ import {
   projectMiniMapPoint,
   projectMiniMapRect
 } from "./minimap";
-import { gardenWorld } from "./world";
+import { gardenWorld, getWorldZone } from "./world";
 
 describe("minimap projection", () => {
   it("fits a wide map inside the regular 96px square while preserving aspect ratio", () => {
@@ -22,6 +22,21 @@ describe("minimap projection", () => {
     expect(layout.width).toBeCloseTo(49.07, 1);
     expect(layout.height).toBe(120);
     expect(layout.content.width / layout.content.height).toBeCloseTo(660 / 1800);
+  });
+
+  it("fits the expanded subway station and its ticket-gate bypass inside the regular minimap", () => {
+    const station = getWorldZone(gardenWorld, "subway-station");
+    const layout = createMiniMapLayout(station.bounds);
+
+    expect(layout.width).toBe(96);
+    expect(layout.height).toBeCloseTo(90.13, 2);
+    for (const marker of [...station.paths, ...station.portals, ...station.blocked]) {
+      const projected = projectMiniMapRect(marker, station.bounds, layout);
+      expect(projected.x).toBeGreaterThanOrEqual(layout.content.x);
+      expect(projected.y).toBeGreaterThanOrEqual(layout.content.y);
+      expect(projected.x + projected.width).toBeLessThanOrEqual(layout.content.x + layout.content.width);
+      expect(projected.y + projected.height).toBeLessThanOrEqual(layout.content.y + layout.content.height);
+    }
   });
 
   it("projects world points and rectangles into minimap coordinates", () => {

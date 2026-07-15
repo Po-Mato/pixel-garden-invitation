@@ -478,6 +478,23 @@ describe("GameWorld", () => {
     expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "1065px", top: "375px" });
   });
 
+  it("renders the subway gate fronts above guests at the shared gate depth", () => {
+    const { container } = render(<GameWorld profile={profile} />);
+
+    travelThroughPortal("동네로 나가기");
+    travelThroughPortal("지하철역 들어가기");
+
+    const stage = screen.getByLabelText("지하철 역사 지도");
+    const gateFronts = [...container.querySelectorAll('img[data-decoration="ticket-gate"]')];
+
+    expect(stage).toHaveStyle({ width: "900px", height: "840px" });
+    expect(gateFronts).toHaveLength(3);
+    for (const [gate, x] of gateFronts.map((item, index) => [item, 360 + index * 90] as const)) {
+      expect(gate).toHaveAttribute("src", "/assets/maps/v2/subway-station/ticket-gate-front.png");
+      expect(gate).toHaveStyle({ left: `${x}px`, top: "360px", width: "60px", height: "120px", zIndex: "1480" });
+    }
+  });
+
   it("waits for the overlay opacity transition before swapping maps", () => {
     render(<GameWorld profile={profile} />);
     fireEvent.click(screen.getByRole("button", { name: "동네로 나가기" }));
