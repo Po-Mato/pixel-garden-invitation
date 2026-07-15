@@ -136,6 +136,18 @@ function travelThroughPortal(label: string) {
   finishCurrentRoute();
 }
 
+function travelFromHomeToLobby() {
+  for (const portalLabel of [
+    "동네로 나가기",
+    "지하철역 들어가기",
+    "열차 타기",
+    "예식장역 내리기",
+    "예식장 로비 들어가기"
+  ]) {
+    travelThroughPortal(portalLabel);
+  }
+}
+
 function mockMapRect(map: HTMLElement, width = 390, height = 520) {
   vi.spyOn(map, "getBoundingClientRect").mockReturnValue({
     x: 10,
@@ -586,6 +598,36 @@ describe("GameWorld", () => {
     expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "465px", top: "135px" });
   });
 
+  it("renders the exact Task 11 bridal room stage, foreground depth, NPC modal, and lobby return", () => {
+    const { container } = render(<GameWorld profile={profile} />);
+    travelFromHomeToLobby();
+
+    travelThroughPortal("신부 대기실");
+
+    const stage = screen.getByLabelText("신부 대기실 지도");
+    const flowerFront = container.querySelector('img[data-decoration-label="대기실 전경 꽃장식"]');
+
+    expect(stage).toHaveStyle({ width: "720px", height: "630px" });
+    expectMapBackground(container, "bridal-room");
+    expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "345px", top: "525px" });
+    expect(screen.getByRole("button", { name: "신부 김하린 소개 보기" }).parentElement)
+      .toHaveStyle({ left: "360px", top: "285px", zIndex: "1285" });
+    expect(flowerFront).toHaveAttribute("src", "/assets/maps/v2/bridal-room/flower-arrangement-front.png");
+    expect(flowerFront).toHaveStyle({ left: "240px", top: "300px", width: "90px", height: "120px", zIndex: "1420" });
+
+    fireEvent.click(screen.getByRole("button", { name: "신부 김하린 소개 보기" }));
+    expect(screen.getByRole("dialog")).toHaveTextContent("신랑신부 정원");
+    fireEvent.click(screen.getByRole("button", { name: "닫기" }));
+
+    fireEvent.click(screen.getByRole("button", { name: "로비로 돌아가기" }));
+    advanceRouteToPortalArrival();
+    expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "345px", top: "555px" });
+    advancePortalTransition();
+
+    expect(screen.getByLabelText("예식장 로비 지도")).toBeInTheDocument();
+    expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "135px", top: "405px" });
+  });
+
   it("waits for the overlay opacity transition before swapping maps", () => {
     render(<GameWorld profile={profile} />);
     fireEvent.click(screen.getByRole("button", { name: "동네로 나가기" }));
@@ -823,19 +865,11 @@ describe("GameWorld", () => {
 
   it("uses shared Y depth for NPCs", () => {
     render(<GameWorld profile={profile} />);
-    for (const portalLabel of [
-      "동네로 나가기",
-      "지하철역 들어가기",
-      "열차 타기",
-      "예식장역 내리기",
-      "예식장 로비 들어가기",
-      "신부 대기실"
-    ]) {
-      travelThroughPortal(portalLabel);
-    }
+    travelFromHomeToLobby();
+    travelThroughPortal("신부 대기실");
 
     expect(screen.getByRole("button", { name: "신부 김하린 소개 보기" }).parentElement)
-      .toHaveStyle({ zIndex: "1225" });
+      .toHaveStyle({ zIndex: "1285" });
   });
 
   it("sends one final approach move before the destination spawn", () => {

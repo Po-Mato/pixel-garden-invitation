@@ -419,23 +419,23 @@ const bridalRoomZone = createZone({
   bounds: bounds(720, 630),
   spawn: { x: 345, y: 525 },
   paths: [
-    path("bridal-floor", "floor", 90, 120, 420, 360),
-    path("bridal-entry-corridor", "corridor", 300, 450, 90, 120)
+    path("bridal-floor", "floor", 90, 90, 540, 450),
+    path("bridal-entry", "floor", 300, 510, 120, 90)
   ],
-  spots: [spot("couple", "신부에게 인사하기", 245, 95, 110, 80)],
-  npcs: [{ id: "bride", label: "신부 김하린", x: 300, y: 225 }],
+  spots: [spot("couple", "신부에게 인사하기", 150, 150, 120, 90)],
+  npcs: [{ id: "bride", label: "신부 김하린", x: 360, y: 285 }],
   portals: [
-    portal("bridal-to-lobby", "로비로 돌아가기", "lobby", { x: 240, y: 450, width: 120, height: 60 }, { x: 285, y: 435 }, "down", { x: 135, y: 405 })
+    portal("bridal-to-lobby", "로비로 돌아가기", "lobby", { x: 300, y: 540, width: 120, height: 60 }, { x: 345, y: 555 }, "down", { x: 135, y: 405 })
+  ],
+  blocked: [
+    { x: 90, y: 330, width: 180, height: 90 },
+    { x: 510, y: 240, width: 90, height: 120 }
   ],
   decorations: [
-    decoration("bridal-photo-wall", "photo-wall", "장미 꽃벽", 180, 45, 240, 72),
-    decoration("bridal-sofa", "sofa", "아이보리 소파", 90, 250, 150, 78),
-    decoration("bridal-vanity", "vanity", "신부 화장대", 400, 220, 110, 78),
-    decoration("bridal-mirror", "mirror", "대형 거울", 430, 80, 90, 116),
-    decoration("bridal-flower-1", "flower-bed", "대기실 꽃장식", 70, 90, 92, 48),
-    decoration("bridal-flower-2", "flower-bed", "대기실 꽃장식", 440, 350, 92, 48),
-    decoration("bridal-lamp", "lamp", "드레스 조명", 355, 190, 30, 62),
-    decoration("bridal-door", "door", "로비 출입문", 240, 450, 120, 60)
+    decoration("bridal-flower-front", "flower-bed", "대기실 전경 꽃장식", 240, 300, 90, 120, {
+      asset: "flower-arrangement-front.png",
+      depthY: 420
+    })
   ]
 });
 

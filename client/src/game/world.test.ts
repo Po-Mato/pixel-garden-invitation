@@ -496,6 +496,70 @@ describe("guest route world", () => {
     }
   });
 
+  it("defines the exact Task 11 bridal room contract with reachable NPC, spot, blockers, portal, and flower depth", () => {
+    const bridal = getWorldZone(gardenWorld, "bridal-room");
+    const coupleSpot = bridal.spots[0];
+
+    expect([bridal.bounds.width, bridal.bounds.height]).toEqual([720, 630]);
+    expect(bridal.spawn).toEqual({ x: 345, y: 525 });
+    expect(bridal.paths).toEqual([
+      { id: "bridal-floor", kind: "floor", x: 90, y: 90, width: 540, height: 450 },
+      { id: "bridal-entry", kind: "floor", x: 300, y: 510, width: 120, height: 90 }
+    ]);
+    expect(bridal.paths.some((worldPath) => worldPath.id === "bridal-entry-corridor")).toBe(false);
+    expect(bridal.spots).toEqual([
+      expect.objectContaining({ id: "couple", x: 150, y: 150, width: 120, height: 90 })
+    ]);
+    expect(bridal.npcs).toEqual([
+      { id: "bride", label: "신부 김하린", x: 360, y: 285 }
+    ]);
+    expect(bridal.blocked).toEqual([
+      { x: 90, y: 330, width: 180, height: 90 },
+      { x: 510, y: 240, width: 90, height: 120 },
+      coupleSpot
+    ]);
+    expect(bridal.portals).toEqual([
+      expect.objectContaining({
+        id: "bridal-to-lobby",
+        to: "lobby",
+        x: 300,
+        y: 540,
+        width: 120,
+        height: 60,
+        approach: { x: 345, y: 555 },
+        facing: "down",
+        spawn: { x: 135, y: 405 }
+      })
+    ]);
+    expect(bridal.decorations).toEqual([
+      expect.objectContaining({
+        id: "bridal-flower-front",
+        kind: "flower-bed",
+        x: 240,
+        y: 300,
+        width: 90,
+        height: 120,
+        asset: "flower-arrangement-front.png",
+        depthY: 420
+      })
+    ]);
+    expect(bridal.decorations.some((item) => ["bridal-photo-wall", "bridal-flower-1", "bridal-flower-2", "bridal-door"].includes(item.id)))
+      .toBe(false);
+
+    expect(isWalkable(bridal.npcs[0], bridal)).toBe(true);
+    expect(isBlocked(bridal.npcs[0], bridal)).toBe(false);
+
+    for (const target of [bridal.portals[0].approach, { x: 165, y: 255 }, { x: 345, y: 285 }]) {
+      const route = findTilePath(bridal, bridal.spawn, target);
+      expect(route, `bridal route to ${target.x},${target.y}`).not.toBeNull();
+      expect(route?.at(-1), `bridal route to ${target.x},${target.y}`).toEqual({ x: target.x, y: target.y });
+      for (const point of route ?? []) {
+        expect(isWalkable(point, bridal), `bridal walkable ${point.x},${point.y}`).toBe(true);
+        expect(isBlocked(point, bridal), `bridal blocked ${point.x},${point.y}`).toBe(false);
+      }
+    }
+  });
+
   it("syncs reverse portal destinations and keeps future lobby destinations connected", () => {
     const lobby = getWorldZone(gardenWorld, "lobby");
     const bridal = getWorldZone(gardenWorld, "bridal-room");
@@ -526,8 +590,10 @@ describe("guest route world", () => {
       expect(zone.journeyIndex).toBe(index);
       expect(zone.theme).toBe(zone.id);
       expect(zone.paths.length).toBeGreaterThan(0);
-      expect(zone.decorations.length).toBeGreaterThanOrEqual(8);
-      expect(new Set(zone.decorations.map((item) => item.kind)).size).toBeGreaterThanOrEqual(4);
+      if (zone.id !== "bridal-room") {
+        expect(zone.decorations.length).toBeGreaterThanOrEqual(8);
+        expect(new Set(zone.decorations.map((item) => item.kind)).size).toBeGreaterThanOrEqual(4);
+      }
     }
 
     expect(getWorldZone(gardenWorld, "ceremony-hall").paths.some((path) => path.kind === "aisle")).toBe(true);

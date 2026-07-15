@@ -120,6 +120,25 @@ describe("portal tile pathfinding", () => {
     }
   });
 
+  it("connects the Task 11 bridal spawn to the lobby portal, couple greeting tile, and bride greeting tile", () => {
+    const bridal = getWorldZone(gardenWorld, "bridal-room");
+    const goals = [
+      bridal.portals.find((portal) => portal.id === "bridal-to-lobby")!.approach,
+      { x: 165, y: 255 },
+      { x: 345, y: 285 }
+    ];
+
+    expect(bridal.spawn).toEqual({ x: 345, y: 525 });
+    for (const goal of goals) {
+      const route = findTilePath(bridal, bridal.spawn, goal);
+      expect(route, `bridal-room ${goal.x},${goal.y}`).not.toBeNull();
+      expect(route?.at(-1), `bridal-room ${goal.x},${goal.y}`).toEqual(goal);
+      for (const point of route ?? []) {
+        expect(isBlocked(point, bridal), `bridal-room (${point.x},${point.y})`).toBe(false);
+      }
+    }
+  });
+
   it("connects every incoming spawn to every exit in its destination zone", () => {
     for (const source of gardenWorld.zones) {
       for (const incoming of source.portals) {

@@ -175,7 +175,7 @@ describe("GardenRoom helpers", () => {
     });
   });
 
-  it("creates future-room guests at the temporary client world spawns", () => {
+  it("creates a bridal room guest at the exact Task 11 client world spawn", () => {
     expect(createGuestSnapshot("guest_bridal", {
       type: "join",
       nickname: "신부대기실 하객",
@@ -186,6 +186,9 @@ describe("GardenRoom helpers", () => {
       y: 525,
       zoneId: "bridal-room"
     });
+  });
+
+  it("creates future-room guests at the temporary client world spawns", () => {
     expect(createGuestSnapshot("guest_hall", {
       type: "join",
       nickname: "예식홀 하객",
@@ -506,7 +509,7 @@ describe("GardenRoom socket behavior", () => {
     });
   });
 
-  it("does not clamp the Task 10 lobby approach and future temporary map coordinates", () => {
+  it("does not clamp the Task 10 lobby approach, Task 11 bridal bounds, and future temporary map coordinates", () => {
     const nowSpy = vi.spyOn(Date, "now").mockReturnValue(2000);
     const state = new TestState();
     const room = createRoom(state);
