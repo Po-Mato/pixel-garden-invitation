@@ -41,7 +41,7 @@
 - Consumes: `WorldZoneId`, `import.meta.env.BASE_URL`
 - Produces: `resolveWorldVisual(zoneId, baseUrl)`, `resolveWorldMapAsset(zoneId, fileName, baseUrl)`, `WorldMapArtwork`
 
-- [ ] **Step 1: URL과 10개 시각 설정에 대한 실패 테스트를 작성한다**
+- [x] **Step 1: URL과 10개 시각 설정에 대한 실패 테스트를 작성한다**
 
 ```ts
 expect(resolveWorldVisual("home", "./base/")).toEqual({
@@ -56,13 +56,13 @@ expect(worldVisualZoneIds).toEqual(worldZoneIds);
 
 `WorldMapArtwork` 테스트는 배경 이미지의 `src`, 빈 `alt`, `draggable="false"`, 오류 발생 후 `hidden` 상태를 검증한다.
 
-- [ ] **Step 2: 테스트를 실행해 모듈 부재로 실패하는지 확인한다**
+- [x] **Step 2: 테스트를 실행해 모듈 부재로 실패하는지 확인한다**
 
 Run: `pnpm --filter @wedding-game/client test -- worldVisuals.test.ts WorldMapArtwork.test.tsx`
 
 Expected: 두 신규 모듈을 찾을 수 없어 FAIL.
 
-- [ ] **Step 3: 시각 설정과 URL 해석기를 구현한다**
+- [x] **Step 3: 시각 설정과 URL 해석기를 구현한다**
 
 ```ts
 import { worldZoneIds, type WorldZoneId } from "@wedding-game/shared";
@@ -106,7 +106,7 @@ export function resolveWorldVisual(zoneId: WorldZoneId, baseUrl = import.meta.en
 }
 ```
 
-- [ ] **Step 4: 배경 렌더러를 구현한다**
+- [x] **Step 4: 배경 렌더러를 구현한다**
 
 ```tsx
 import type { WorldZoneId } from "@wedding-game/shared";
@@ -131,11 +131,11 @@ export function WorldMapArtwork({ zoneId }: { zoneId: WorldZoneId }) {
 }
 ```
 
-- [ ] **Step 5: `GameWorld` 스테이지 첫 자식으로 배경을 연결한다**
+- [x] **Step 5: `GameWorld` 스테이지 첫 자식으로 배경을 연결한다**
 
 `world-map__stage` 내부에서 경로보다 먼저 `<WorldMapArtwork zoneId={activeZone.id} />`를 렌더링한다. `GameWorld.test.tsx`에는 모든 구역 전환 후 `background.webp` URL이 현재 구역 ID를 포함하는지 검증하는 assertion을 추가한다.
 
-- [ ] **Step 6: 배경의 안정적인 크기와 픽셀 렌더링 CSS를 추가한다**
+- [x] **Step 6: 배경의 안정적인 크기와 픽셀 렌더링 CSS를 추가한다**
 
 ```css
 .world-map-artwork,
@@ -151,7 +151,7 @@ export function WorldMapArtwork({ zoneId }: { zoneId: WorldZoneId }) {
 .world-map-effect { position: absolute; pointer-events: none; }
 ```
 
-- [ ] **Step 7: 관련 테스트를 통과시킨다**
+- [x] **Step 7: 관련 테스트를 통과시킨다**
 
 Run: `pnpm --filter @wedding-game/client test -- worldVisuals.test.ts WorldMapArtwork.test.tsx GameWorld.test.tsx`
 
