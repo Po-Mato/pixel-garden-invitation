@@ -635,6 +635,37 @@ describe("GameWorld", () => {
     expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "135px", top: "405px" });
   });
 
+  it("roundtrips through the Task 13 restroom with exact fade coordinates and stall depth", () => {
+    const { container } = render(<GameWorld profile={profile} />);
+    travelFromHomeToLobby();
+
+    fireEvent.click(screen.getByRole("button", { name: "화장실" }));
+    advanceRouteToPortalArrival();
+    expect(screen.getByLabelText("예식장 로비 지도")).toBeInTheDocument();
+    expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "975px", top: "405px" });
+    expect(screen.getByTestId("world-portal-transition")).toHaveAttribute("data-phase", "arrival");
+    advancePortalTransition();
+
+    const restroom = screen.getByLabelText("화장실 지도");
+    const stallFront = container.querySelector('img[data-decoration-label="화장실 칸 전경"]');
+
+    expect(restroom).toHaveStyle({ width: "660px", height: "660px" });
+    expectMapBackground(container, "restroom");
+    expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "135px", top: "345px" });
+    expect(stallFront).toHaveAttribute("src", "/assets/maps/v2/restroom/stall-front.png");
+    expect(stallFront).toHaveStyle({ left: "420px", top: "240px", width: "150px", height: "240px", zIndex: "1480" });
+
+    fireEvent.click(screen.getByRole("button", { name: "로비로 돌아가기" }));
+    advanceRouteToPortalArrival();
+    expect(screen.getByLabelText("화장실 지도")).toBeInTheDocument();
+    expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "105px", top: "345px" });
+    expect(screen.getByTestId("world-portal-transition")).toHaveAttribute("data-phase", "arrival");
+    advancePortalTransition();
+
+    expect(screen.getByLabelText("예식장 로비 지도")).toBeInTheDocument();
+    expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "945px", top: "405px" });
+  });
+
   it("walks through the Task 12 ceremony hall portals with exact stage, NPCs, and bouquet depths", () => {
     const { container } = render(<GameWorld profile={profile} />);
     travelFromHomeToLobby();

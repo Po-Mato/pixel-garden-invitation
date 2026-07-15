@@ -176,6 +176,21 @@ describe("portal tile pathfinding", () => {
     }
   });
 
+  it("connects the Task 13 restroom spawn to the lobby portal through the narrow entry", () => {
+    const restroom = getWorldZone(gardenWorld, "restroom");
+    const lobbyPortal = restroom.portals.find((portal) => portal.id === "restroom-to-lobby");
+
+    expect(restroom.spawn).toEqual({ x: 135, y: 345 });
+    expect(lobbyPortal?.approach).toEqual({ x: 105, y: 345 });
+
+    const route = lobbyPortal ? findTilePath(restroom, restroom.spawn, lobbyPortal.approach) : null;
+    expect(route).not.toBeNull();
+    expect(route?.at(-1)).toEqual(lobbyPortal?.approach);
+    for (const point of route ?? []) {
+      expect(isBlocked(point, restroom), `restroom (${point.x},${point.y})`).toBe(false);
+    }
+  });
+
   it("connects every incoming spawn to every exit in its destination zone", () => {
     for (const source of gardenWorld.zones) {
       for (const incoming of source.portals) {

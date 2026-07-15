@@ -14,7 +14,7 @@ const expectedSizes = {
   lobby: [1080, 900],
   "bridal-room": [720, 630],
   "ceremony-hall": [780, 1920],
-  restroom: [540, 600],
+  restroom: [660, 660],
   banquet: [1080, 840]
 } as const;
 
@@ -583,6 +583,63 @@ describe("guest route world", () => {
         expect(route?.at(-1), `${portalItem.id} -> ${exit.id}`).toEqual(exit.approach);
       }
     }
+  });
+
+  it("defines the exact Task 13 restroom contract with reachable portal and stall depth", () => {
+    const restroom = getWorldZone(gardenWorld, "restroom");
+
+    expect([restroom.bounds.width, restroom.bounds.height]).toEqual([660, 660]);
+    expect(restroom.spawn).toEqual({ x: 135, y: 345 });
+    expect(restroom.paths).toEqual([
+      { id: "restroom-floor", kind: "floor", x: 90, y: 150, width: 480, height: 390 },
+      { id: "restroom-entry", kind: "floor", x: 60, y: 270, width: 90, height: 150 }
+    ]);
+    expect(restroom.blocked).toEqual([
+      { x: 150, y: 150, width: 240, height: 90 },
+      { x: 420, y: 240, width: 150, height: 240 }
+    ]);
+    expect(restroom.portals).toEqual([
+      expect.objectContaining({
+        id: "restroom-to-lobby",
+        to: "lobby",
+        x: 30,
+        y: 285,
+        width: 90,
+        height: 120,
+        approach: { x: 105, y: 345 },
+        facing: "left",
+        spawn: { x: 945, y: 405 }
+      })
+    ]);
+    expect(restroom.decorations).toContainEqual(expect.objectContaining({
+      id: "restroom-stall-front",
+      kind: "stall",
+      x: 420,
+      y: 240,
+      width: 150,
+      height: 240,
+      asset: "stall-front.png",
+      depthY: 480
+    }));
+    expect(restroom.decorations.filter((item) => item.asset === "stall-front.png")).toHaveLength(1);
+
+    for (const target of [
+      { x: 135, y: 315 },
+      { x: 135, y: 375 },
+      { x: 105, y: 345 },
+      { x: 165, y: 345 },
+      restroom.portals[0].approach
+    ]) {
+      expect(isWalkable(target, restroom), `restroom walkable ${target.x},${target.y}`).toBe(true);
+      expect(isBlocked(target, restroom), `restroom blocked ${target.x},${target.y}`).toBe(false);
+    }
+    for (const blockedPoint of [{ x: 165, y: 165 }, { x: 435, y: 255 }]) {
+      expect(isBlocked(blockedPoint, restroom), `restroom blocked ${blockedPoint.x},${blockedPoint.y}`).toBe(true);
+    }
+
+    const route = findTilePath(restroom, restroom.spawn, restroom.portals[0].approach);
+    expect(route).not.toBeNull();
+    expect(route?.at(-1)).toEqual(restroom.portals[0].approach);
   });
 
   it("defines the exact Task 12 long ceremony hall contract", () => {

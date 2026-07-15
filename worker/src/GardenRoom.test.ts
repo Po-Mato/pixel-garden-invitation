@@ -201,6 +201,19 @@ describe("GardenRoom helpers", () => {
     });
   });
 
+  it("creates restroom guests at the exact Task 13 client world spawn", () => {
+    expect(createGuestSnapshot("guest_restroom", {
+      type: "join",
+      nickname: "화장실 하객",
+      appearance: defaultCharacterAppearance,
+      zoneId: "restroom"
+    }, 1000)).toMatchObject({
+      x: 135,
+      y: 345,
+      zoneId: "restroom"
+    });
+  });
+
   it("creates banquet guests at the Task 12 arrival coordinate", () => {
     expect(createGuestSnapshot("guest_banquet", {
       type: "join",
@@ -558,6 +571,33 @@ describe("GardenRoom socket behavior", () => {
       x: 585,
       y: 795,
       zoneId: "banquet"
+    });
+  });
+
+  it("does not clamp restroom coordinates inside the Task 13 660 square bounds", () => {
+    const nowSpy = vi.spyOn(Date, "now").mockReturnValue(2000);
+    const state = new TestState();
+    const room = createRoom(state);
+    const moving = new TestSocket();
+    const watching = new TestSocket();
+
+    joinGuest(room, state, moving, "moving");
+    joinGuest(room, state, watching, "watching");
+    watching.sent.length = 0;
+
+    room.webSocketMessage(asWebSocket(moving), moveMessage(1, 645, "restroom", 645));
+    nowSpy.mockReturnValue(2100);
+    room.webSocketMessage(asWebSocket(moving), moveMessage(2, 690, "restroom", 690));
+
+    const broadcasts = watching.sent.map((payload) => JSON.parse(payload)).filter((message) => message.type === "guest_moved");
+    expect(broadcasts.map((message) => message.position)).toEqual([
+      expect.objectContaining({ x: 645, y: 645, zoneId: "restroom" }),
+      expect.objectContaining({ x: 660, y: 660, zoneId: "restroom" })
+    ]);
+    expect((moving.deserializeAttachment() as { guest?: RoomGuest } | null)?.guest).toMatchObject({
+      x: 660,
+      y: 660,
+      zoneId: "restroom"
     });
   });
 

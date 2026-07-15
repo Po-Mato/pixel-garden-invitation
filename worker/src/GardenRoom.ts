@@ -28,7 +28,7 @@ const zoneSpawns: Record<WorldZoneId, { x: number; y: number }> = {
   lobby: { x: 525, y: 765 },
   "bridal-room": { x: 345, y: 525 },
   "ceremony-hall": { x: 375, y: 1785 },
-  restroom: { x: 105, y: 315 },
+  restroom: { x: 135, y: 345 },
   banquet: { x: 585, y: 795 }
 };
 const zoneBounds: Record<WorldZoneId, { minX: number; maxX: number; minY: number; maxY: number }> = {
@@ -40,7 +40,7 @@ const zoneBounds: Record<WorldZoneId, { minX: number; maxX: number; minY: number
   lobby: { minX: 0, maxX: 1080, minY: 0, maxY: 900 },
   "bridal-room": { minX: 0, maxX: 720, minY: 0, maxY: 630 },
   "ceremony-hall": { minX: 0, maxX: 780, minY: 0, maxY: 1920 },
-  restroom: { minX: 0, maxX: 540, minY: 0, maxY: 600 },
+  restroom: { minX: 0, maxX: 660, minY: 0, maxY: 660 },
   banquet: { minX: 0, maxX: 1080, minY: 0, maxY: 840 }
 };
 const moveThrottleMs = 100;

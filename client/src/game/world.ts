@@ -495,24 +495,33 @@ const restroomZone = createZone({
   label: "화장실",
   subtitle: "밝은 테라조 공간에서 잠시 단정히 준비해요",
   journeyIndex: 8,
-  bounds: bounds(540, 600),
-  spawn: { x: 105, y: 315 },
-  paths: [path("restroom-floor", "floor", 60, 150, 420, 360)],
+  bounds: bounds(660, 660),
+  spawn: { x: 135, y: 345 },
+  paths: [
+    path("restroom-floor", "floor", 90, 150, 480, 390),
+    path("restroom-entry", "floor", 60, 270, 90, 150)
+  ],
   spots: [],
   npcs: [],
   portals: [
-    portal("restroom-to-lobby", "로비로 돌아가기", "lobby", { x: 30, y: 255, width: 72, height: 120 }, { x: 105, y: 315 }, "left", { x: 945, y: 405 })
+    portal("restroom-to-lobby", "로비로 돌아가기", "lobby", { x: 30, y: 285, width: 90, height: 120 }, { x: 105, y: 345 }, "left", { x: 945, y: 405 })
   ],
-  blocked: [{ x: 300, y: 70, width: 180, height: 160 }],
+  blocked: [
+    { x: 150, y: 150, width: 240, height: 90 },
+    { x: 420, y: 240, width: 150, height: 240 }
+  ],
   decorations: [
-    decoration("restroom-mirror-1", "mirror", "큰 거울", 110, 60, 120, 92),
-    decoration("restroom-mirror-2", "mirror", "큰 거울", 250, 60, 120, 92),
-    decoration("restroom-sink-1", "restroom-sink", "세면대", 120, 160, 92, 58),
-    decoration("restroom-sink-2", "restroom-sink", "세면대", 260, 160, 92, 58),
-    decoration("restroom-stall-1", "stall", "화장실 칸", 330, 300, 78, 150),
-    decoration("restroom-stall-2", "stall", "화장실 칸", 420, 300, 78, 150),
-    decoration("restroom-plant", "topiary", "민트 화분", 140, 430, 50, 72),
-    decoration("restroom-door", "door", "로비 출입문", 30, 255, 72, 120)
+    decoration("restroom-mirror-1", "mirror", "조명 거울", 150, 60, 105, 90),
+    decoration("restroom-mirror-2", "mirror", "조명 거울", 285, 60, 105, 90),
+    decoration("restroom-sinks", "restroom-sink", "세면대", 150, 150, 240, 90),
+    decoration("restroom-stall-front", "stall", "화장실 칸 전경", 420, 240, 150, 240, {
+      asset: "stall-front.png",
+      depthY: 480
+    }),
+    decoration("restroom-plant", "topiary", "민트 화분", 240, 450, 60, 72),
+    decoration("restroom-door", "door", "로비 출입문", 30, 285, 90, 120),
+    decoration("restroom-terrazzo", "mosaic-star", "테라조 포인트", 180, 450, 120, 60),
+    decoration("restroom-lamp", "lamp", "화이트 조명", 450, 90, 36, 72)
   ]
 });
 
