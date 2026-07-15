@@ -30,6 +30,7 @@ import { CharacterSprite } from "./CharacterSprite";
 import { SpotModal } from "./SpotModal";
 import { VirtualJoystick } from "./VirtualJoystick";
 import { WeddingNpc } from "./WeddingNpc";
+import { WorldMapArtwork } from "./WorldMapArtwork";
 import { WorldDecoration } from "./WorldDecoration";
 import { WorldMiniMap } from "./WorldMiniMap";
 
@@ -638,6 +639,7 @@ export function GameWorld({ profile }: GameWorldProps) {
               transform: `translate3d(${camera.x}px, ${camera.y}px, 0) scale(${camera.zoom})`
             }}
           >
+            <WorldMapArtwork zoneId={activeZone.id} />
             {activeZone.paths.map((worldPath) => (
               <div
                 key={worldPath.id}

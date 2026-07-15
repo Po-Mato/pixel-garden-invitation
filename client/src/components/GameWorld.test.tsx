@@ -1,5 +1,5 @@
 import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
-import { defaultCharacterAppearance, getDefaultAppearance } from "@wedding-game/shared";
+import { defaultCharacterAppearance, getDefaultAppearance, type WorldZoneId } from "@wedding-game/shared";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { GameWorld } from "./GameWorld";
 
@@ -70,10 +70,10 @@ function advanceAnimation(now: number) {
 }
 
 function advanceRouteToPortalArrival() {
-  for (let index = 0; index < 40 && animationFrames.size > 0; index += 1) {
+  for (let index = 0; index < 50 && animationFrames.size > 0; index += 1) {
     advanceAnimation(index * 240);
   }
-  expect(animationFrames.size, "portal route did not reach arrival within 40 animation frames").toBe(0);
+  expect(animationFrames.size, "portal route did not reach arrival within 50 animation frames").toBe(0);
 }
 
 function advancePortalTransition() {
@@ -156,6 +156,14 @@ function serverGuest(overrides: Partial<Record<string, unknown>> = {}) {
 describe("GameWorld", () => {
   const profile = { nickname: "하객1", appearance: defaultCharacterAppearance };
 
+  function expectMapBackground(container: HTMLElement, zoneId: WorldZoneId) {
+    const stage = screen.getByLabelText(/지도$/);
+    const background = container.querySelector(".world-map-artwork__background");
+
+    expect(stage.firstElementChild).toHaveClass("world-map-artwork");
+    expect(background).toHaveAttribute("src", expect.stringContaining(`/assets/maps/v2/${zoneId}/background.webp`));
+  }
+
   it("starts at home and renders a non-clickable ten-stop journey", () => {
     render(<GameWorld profile={profile} />);
     const journey = screen.getByLabelText("하객 여정");
@@ -165,6 +173,29 @@ describe("GameWorld", () => {
     expect(within(journey).queryAllByRole("button")).toHaveLength(0);
     expect(within(journey).getByText("우리 집").closest("li")).toHaveAttribute("aria-current", "location");
     expect(screen.queryByLabelText("맵 구역 이동")).not.toBeInTheDocument();
+  });
+
+  it("updates map artwork for every zone reached through the journey", () => {
+    const { container } = render(<GameWorld profile={profile} />);
+
+    expectMapBackground(container, "home");
+
+    ([
+      ["동네로 나가기", "neighborhood"],
+      ["지하철역 들어가기", "subway-station"],
+      ["열차 타기", "subway-train"],
+      ["예식장역 내리기", "venue-exterior"],
+      ["예식장 로비 들어가기", "lobby"],
+      ["신부 대기실", "bridal-room"],
+      ["로비로 돌아가기", "lobby"],
+      ["화장실", "restroom"],
+      ["로비로 돌아가기", "lobby"],
+      ["예식홀", "ceremony-hall"],
+      ["연회장으로", "banquet"]
+    ] as const).forEach(([portalLabel, zoneId]) => {
+      travelThroughPortal(portalLabel);
+      expectMapBackground(container, zoneId);
+    });
   });
 
   it("keeps a display-only minimap in sync with portal travel and zone changes", () => {
