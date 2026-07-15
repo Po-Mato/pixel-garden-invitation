@@ -133,6 +133,22 @@ describe("mobile world controls", () => {
     expect(styles).toContain(".world-minimap__viewport");
     expect(styles).toContain(".world-minimap__portal--target");
   });
+
+  it("lets zone subtitles wrap on narrow screens without relying on ellipsis", () => {
+    const subtitleRule = [...styles.matchAll(/^\.world-zone-summary small\s*\{([^}]*)}/gm)]
+      .map((match) => match[1])
+      .find((rule) => rule.includes("grid-area: subtitle;")) ?? "";
+    const landscapeBlock = styles.match(
+      /@media \(orientation: landscape\) and \(max-height: 500px\)\s*\{([\s\S]*?)\n}/
+    )?.[1] ?? "";
+
+    expect(subtitleRule).toContain("overflow: visible;");
+    expect(subtitleRule).toContain("white-space: normal;");
+    expect(subtitleRule).not.toContain("text-overflow: ellipsis;");
+    expect(subtitleRule).not.toContain("white-space: nowrap;");
+    expect(landscapeBlock).toContain(".world-zone-summary small");
+    expect(landscapeBlock).toContain("-webkit-line-clamp: 2;");
+  });
 });
 
 describe("responsive play viewport", () => {

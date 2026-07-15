@@ -957,9 +957,9 @@ select {
 .world-zone-summary small {
   grid-area: subtitle;
   min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow: visible;
+  line-height: 1.25;
+  white-space: normal;
 }
 
 .world-zone-summary > span {
