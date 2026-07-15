@@ -857,7 +857,7 @@ Expected: spawn 주변 4방향 이동, 칸막이 충돌, 로비 복귀 PASS.
 **Interfaces:**
 - Produces: `banquet` `1200x930` 최종 맵
 
-- [ ] **Step 1: 다음 프롬프트로 연회장 자산을 생성한다**
+- [x] **Step 1: 다음 프롬프트로 연회장 자산을 생성한다**
 
 ```text
 인물 없는 밝고 화사한 웨딩 연회장, 정사영 탑다운 3/4 건축 시각화, 큰 창과 자연광, 서로 다른 상차림의 원형 테이블 여섯 개, 꽃 장식, 오른쪽 뷔페, 디저트 카트, 샹들리에 그림자, 아래 출입문에서 테이블 사이로 이어지는 넓은 통로, 글자와 로고 없음
@@ -871,7 +871,7 @@ Expected: spawn 주변 4방향 이동, 칸막이 충돌, 로비 복귀 PASS.
 같은 맵의 원형 연회 테이블 앞쪽 절반과 의자만 투명 배경의 고밀도 픽셀 오브젝트로 분리한다. 같은 시점·광원·크기, 바닥 없음.
 ```
 
-- [ ] **Step 2: 다음 데이터로 `banquetZone`을 교체한다**
+- [x] **Step 2: 다음 데이터로 `banquetZone`을 교체한다**
 
 - bounds `1200x930`, spawn `(585,795)`.
 - paths: floor `(60,90,1080,750)`, central `(510,90,180,780)`.
@@ -881,7 +881,7 @@ Expected: spawn 주변 4방향 이동, 칸막이 충돌, 로비 복귀 PASS.
 - portal `(540,840,120,60)`, approach `(585,825)`, hall spawn `(375,165)`.
 - table overlays는 여섯 blocked table과 같은 rect, asset `table-front.png`, depthY는 각 rect의 `y + 150`.
 
-- [ ] **Step 3: 전체 테이블 통로, 방명록, 예식홀 복귀를 검증한다**
+- [x] **Step 3: 전체 테이블 통로, 방명록, 예식홀 복귀를 검증한다**
 
 Run: `pnpm maps:build -- --zone banquet && pnpm --filter @wedding-game/client test -- world.test.ts pathfinding.test.ts GameWorld.test.tsx GuestbookPanel.test.tsx`
 
