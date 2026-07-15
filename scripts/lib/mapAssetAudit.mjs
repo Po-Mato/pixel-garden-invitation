@@ -2,6 +2,19 @@ import { access, readFile } from "node:fs/promises";
 import path from "node:path";
 import sharp from "sharp";
 
+export const DEFAULT_MAP_ZONE_IDS = Object.freeze([
+  "home",
+  "neighborhood",
+  "subway-station",
+  "subway-train",
+  "venue-exterior",
+  "lobby",
+  "bridal-room",
+  "ceremony-hall",
+  "restroom",
+  "banquet"
+]);
+
 async function exists(file) {
   try {
     await access(file);
@@ -69,14 +82,22 @@ async function inspectSource(file, label, errors) {
   }
 
   try {
-    await sharp(file).metadata();
+    await sharp(file).ensureAlpha().raw().toBuffer();
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     errors.push(`${label} could not be inspected: ${message}`);
   }
 }
 
-export async function auditMapAssets({ rootDir, manifestPath }) {
+function sameZoneOrder(actual, expected) {
+  return actual.length === expected.length && actual.every((id, index) => id === expected[index]);
+}
+
+export async function auditMapAssets({
+  rootDir,
+  manifestPath,
+  expectedZoneIds = DEFAULT_MAP_ZONE_IDS
+}) {
   const errors = [];
   const files = [];
   let manifest;
@@ -93,6 +114,14 @@ export async function auditMapAssets({ rootDir, manifestPath }) {
   }
 
   const zoneIds = manifest.zones.map((zone) => zone?.id).filter((id) => typeof id === "string");
+
+  if (!sameZoneOrder(zoneIds, expectedZoneIds)) {
+    errors.push(
+      "manifest zone IDs must match the expected journey order; " +
+        `expected ${JSON.stringify(expectedZoneIds)}; received ${JSON.stringify(zoneIds)}`
+    );
+  }
+
   addDuplicateErrors(errors, zoneIds, "zone id");
 
   for (const zone of manifest.zones) {

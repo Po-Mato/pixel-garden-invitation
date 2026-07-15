@@ -6,6 +6,7 @@ import test from "node:test";
 import { fileURLToPath } from "node:url";
 import sharp from "sharp";
 import { auditMapAssets } from "./lib/mapAssetAudit.mjs";
+import { buildMapAssets } from "./lib/mapAssetBuilder.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -32,6 +33,12 @@ const manifest = {
     }
   ]
 };
+
+const fixtureZoneIds = ["home"];
+
+async function auditFixture({ rootDir, manifestPath }, expectedZoneIds = fixtureZoneIds) {
+  return auditMapAssets({ rootDir, manifestPath, expectedZoneIds });
+}
 
 async function writeImage(file, { width, height, format, channels = 4, background }) {
   await mkdir(join(file, ".."), { recursive: true });
@@ -83,7 +90,7 @@ async function withFixture(callback) {
 
 test("audits a complete map fixture", async () => {
   await withFixture(async ({ rootDir, manifestPath }) => {
-    const result = await auditMapAssets({ rootDir, manifestPath });
+    const result = await auditFixture({ rootDir, manifestPath });
 
     assert.equal(result.errors.length, 0);
     assert.deepEqual(result.zoneIds, ["home"]);
@@ -94,7 +101,7 @@ test("reports a missing background output", async () => {
   await withFixture(async ({ rootDir, manifestPath, outputDir }) => {
     await unlink(join(outputDir, "background.webp"));
 
-    const missingResult = await auditMapAssets({ rootDir, manifestPath });
+    const missingResult = await auditFixture({ rootDir, manifestPath });
 
     assert.match(missingResult.errors[0], /background\.webp/);
   });
@@ -109,7 +116,7 @@ test("reports an incorrectly sized background output", async () => {
       background: "#4f7f9f"
     });
 
-    const wrongSizeResult = await auditMapAssets({ rootDir, manifestPath });
+    const wrongSizeResult = await auditFixture({ rootDir, manifestPath });
 
     assert.match(wrongSizeResult.errors[0], /크기/);
   });
@@ -125,7 +132,7 @@ test("reports an opaque overlay output", async () => {
       background: "#0f7f3f"
     });
 
-    const opaqueOverlayResult = await auditMapAssets({ rootDir, manifestPath });
+    const opaqueOverlayResult = await auditFixture({ rootDir, manifestPath });
 
     assert.match(opaqueOverlayResult.errors[0], /알파/);
   });
@@ -135,7 +142,7 @@ test("reports a missing source image", async () => {
   await withFixture(async ({ rootDir, manifestPath, sourceDir }) => {
     await unlink(join(sourceDir, "pixel-background-source.png"));
 
-    const result = await auditMapAssets({ rootDir, manifestPath });
+    const result = await auditFixture({ rootDir, manifestPath });
 
     assert.match(result.errors[0], /pixel-background-source\.png/);
   });
@@ -156,9 +163,221 @@ test("allows higher-resolution source images when app outputs match the contract
       background: "#00000000"
     });
 
-    const result = await auditMapAssets({ rootDir, manifestPath });
+    const result = await auditFixture({ rootDir, manifestPath });
 
     assert.equal(result.errors.length, 0);
+  });
+});
+
+async function corruptImageBody(file) {
+  const data = await readFile(file);
+  await writeFile(file, data.subarray(0, -24));
+}
+
+async function writePatternImage(file, { width, height, channels = 4 }) {
+  const data = Buffer.alloc(width * height * channels);
+
+  for (let y = 0; y < height; y += 1) {
+    for (let x = 0; x < width; x += 1) {
+      const offset = (y * width + x) * channels;
+      const color = (x + y) % 2 === 0 ? [13, 97, 211] : [241, 72, 39];
+      data[offset] = color[0];
+      data[offset + 1] = color[1];
+      data[offset + 2] = color[2];
+      if (channels === 4) data[offset + 3] = 255;
+    }
+  }
+
+  await mkdir(dirname(file), { recursive: true });
+  await sharp(data, { raw: { width, height, channels } }).png().toFile(file);
+}
+
+async function withBuildFixture(
+  callback,
+  { backgroundWidth = 103, overlayWidth = 103 } = {}
+) {
+  const rootDir = await mkdtemp(join(tmpdir(), "map-asset-build-"));
+  const manifestPath = join(rootDir, "map-assets/reference/v2/manifest.json");
+  const sourceDir = join(rootDir, "map-assets/reference/v2/home");
+  const outputDir = join(rootDir, "client/public/assets/maps/v2/home");
+  const buildManifest = {
+    version: 2,
+    zones: [
+      {
+        id: "home",
+        background: {
+          source: "pixel-background-source.png",
+          output: "background.webp",
+          width: 100,
+          height: 100
+        },
+        overlays: [
+          {
+            source: "topiary-foreground-source.png",
+            output: "topiary-foreground.png",
+            width: 100,
+            height: 100
+          }
+        ],
+        requiredArtifacts: ["window", "sofa", "table", "door"]
+      }
+    ]
+  };
+
+  try {
+    await mkdir(sourceDir, { recursive: true });
+    await writeFile(manifestPath, `${JSON.stringify(buildManifest, null, 2)}\n`);
+    await writePatternImage(join(sourceDir, "pixel-background-source.png"), {
+      width: backgroundWidth,
+      height: 100,
+      channels: 3
+    });
+    await writePatternImage(join(sourceDir, "topiary-foreground-source.png"), {
+      width: overlayWidth,
+      height: 100
+    });
+
+    return await callback({
+      rootDir,
+      manifestPath,
+      sourceDir,
+      outputDir,
+      backgroundSource: join(sourceDir, "pixel-background-source.png")
+    });
+  } finally {
+    await rm(rootDir, { recursive: true, force: true });
+  }
+}
+
+test("builds assets at exactly three percent aspect-ratio difference", async () => {
+  await withBuildFixture(async ({ rootDir, manifestPath, outputDir, backgroundSource }) => {
+    await buildMapAssets({ rootDir, manifestPath, zoneId: "home" });
+
+    const backgroundOutput = join(outputDir, "background.webp");
+    const overlayOutput = join(outputDir, "topiary-foreground.png");
+    const backgroundMetadata = await sharp(backgroundOutput).metadata();
+    const overlayMetadata = await sharp(overlayOutput).metadata();
+    const expectedBackground = await sharp(backgroundSource)
+      .resize({ width: 100, height: 100, fit: "cover", kernel: sharp.kernel.nearest })
+      .raw()
+      .toBuffer();
+    const actualBackground = await sharp(backgroundOutput).raw().toBuffer();
+    const { data: overlayPixels } = await sharp(overlayOutput)
+      .ensureAlpha()
+      .raw()
+      .toBuffer({ resolveWithObject: true });
+
+    assert.equal(backgroundMetadata.format, "webp");
+    assert.equal(backgroundMetadata.width, 100);
+    assert.equal(backgroundMetadata.height, 100);
+    assert.deepEqual(actualBackground, expectedBackground);
+    assert.equal(overlayMetadata.format, "png");
+    assert.equal(overlayMetadata.width, 100);
+    assert.equal(overlayMetadata.height, 100);
+    assert.equal(overlayMetadata.hasAlpha, true);
+    assert.ok(overlayPixels.some((channel, index) => index % 4 === 3 && channel === 0));
+  });
+});
+
+test("rejects a background source that exceeds three percent aspect-ratio difference", async () => {
+  await withBuildFixture(
+    async ({ rootDir, manifestPath }) => {
+      await assert.rejects(
+        () => buildMapAssets({ rootDir, manifestPath, zoneId: "home" }),
+        /background aspect ratio differs by 4\.00%; maximum is 3%/
+      );
+    },
+    { backgroundWidth: 104 }
+  );
+});
+
+test("rejects an overlay source that exceeds three percent aspect-ratio difference", async () => {
+  await withBuildFixture(
+    async ({ rootDir, manifestPath }) => {
+      await assert.rejects(
+        () => buildMapAssets({ rootDir, manifestPath, zoneId: "home" }),
+        /topiary-foreground\.png aspect ratio differs by 4\.00%; maximum is 3%/
+      );
+    },
+    { overlayWidth: 104 }
+  );
+});
+
+test("defaults to the production journey zone order", async () => {
+  await withFixture(async ({ rootDir, manifestPath }) => {
+    const result = await auditMapAssets({ rootDir, manifestPath });
+
+    assert.match(result.errors[0], /zone IDs must match the expected journey order/);
+    assert.match(result.errors[0], /"home"/);
+    assert.match(result.errors[0], /"banquet"/);
+  });
+});
+
+test("rejects a manifest missing an expected zone", async () => {
+  await withFixture(async ({ rootDir, manifestPath }) => {
+    const result = await auditFixture(
+      { rootDir, manifestPath },
+      ["home", "neighborhood"]
+    );
+
+    assert.match(result.errors[0], /zone IDs must match the expected journey order/);
+    assert.match(result.errors[0], /"home","neighborhood"/);
+  });
+});
+
+test("rejects a manifest with an unexpected extra zone", async () => {
+  await withFixture(async ({ rootDir, manifestPath }) => {
+    const extraManifest = {
+      ...manifest,
+      zones: [...manifest.zones, { ...manifest.zones[0], id: "extra-zone" }]
+    };
+    await writeFile(manifestPath, `${JSON.stringify(extraManifest, null, 2)}\n`);
+
+    const result = await auditFixture({ rootDir, manifestPath });
+
+    assert.match(result.errors[0], /zone IDs must match the expected journey order/);
+    assert.match(result.errors[0], /"extra-zone"/);
+  });
+});
+
+test("rejects a manifest whose zones are out of journey order", async () => {
+  await withFixture(async ({ rootDir, manifestPath }) => {
+    const reorderedManifest = {
+      ...manifest,
+      zones: [
+        { ...manifest.zones[0], id: "neighborhood" },
+        manifest.zones[0]
+      ]
+    };
+    await writeFile(manifestPath, `${JSON.stringify(reorderedManifest, null, 2)}\n`);
+
+    const result = await auditFixture(
+      { rootDir, manifestPath },
+      ["home", "neighborhood"]
+    );
+
+    assert.match(result.errors[0], /zone IDs must match the expected journey order/);
+    assert.match(result.errors[0], /"neighborhood","home"/);
+  });
+});
+
+test("reports a background source with a corrupted pixel body", async () => {
+  await withFixture(async ({ rootDir, manifestPath, sourceDir }) => {
+    await corruptImageBody(join(sourceDir, "pixel-background-source.png"));
+
+    const result = await auditFixture({ rootDir, manifestPath });
+
+    assert.match(result.errors[0], /background source could not be inspected/);
+  });
+});
+
+test("reports an overlay source with a corrupted pixel body", async () => {
+  await withFixture(async ({ rootDir, manifestPath, sourceDir }) => {
+    await corruptImageBody(join(sourceDir, "topiary-foreground-source.png"));
+
+    const result = await auditFixture({ rootDir, manifestPath });
+
+    assert.match(result.errors[0], /overlay source could not be inspected/);
   });
 });
 
