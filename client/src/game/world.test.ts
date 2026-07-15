@@ -2,11 +2,12 @@ import { describe, expect, it } from "vitest";
 import { worldZoneIds } from "@wedding-game/shared";
 import { isBlocked, pointInRect } from "./geometry";
 import { gridTileSize } from "./movement";
+import { findTilePath } from "./pathfinding";
 import { gardenWorld, getWorldZone } from "./world";
 
 const expectedSizes = {
   home: [600, 720],
-  neighborhood: [960, 540],
+  neighborhood: [1200, 660],
   "subway-station": [720, 720],
   "subway-train": [1080, 480],
   "venue-exterior": [840, 720],
@@ -96,6 +97,65 @@ describe("guest route world", () => {
       asset: "topiary-foreground.png",
       depthY: 555
     }));
+  });
+
+  it("defines the v2 neighborhood street, portals, and tree canopy assets", () => {
+    const neighborhood = getWorldZone(gardenWorld, "neighborhood");
+
+    expect(neighborhood.spawn).toEqual({ x: 135, y: 375 });
+    expect(neighborhood.paths).toEqual([
+      { id: "neighborhood-street", kind: "street", x: 60, y: 240, width: 1080, height: 270 },
+      { id: "neighborhood-crosswalk", kind: "crosswalk", x: 510, y: 180, width: 180, height: 390 }
+    ]);
+    expect(neighborhood.portals).toEqual([
+      expect.objectContaining({
+        id: "neighborhood-to-home",
+        to: "home",
+        x: 30,
+        y: 315,
+        width: 90,
+        height: 120,
+        approach: { x: 105, y: 375 },
+        facing: "left",
+        spawn: { x: 285, y: 135 }
+      }),
+      expect.objectContaining({
+        id: "neighborhood-to-station",
+        to: "subway-station",
+        x: 1080,
+        y: 300,
+        width: 90,
+        height: 150,
+        approach: { x: 1095, y: 375 },
+        facing: "right",
+        spawn: { x: 135, y: 435 }
+      })
+    ]);
+    expect(neighborhood.decorations.filter((item) => item.kind === "tree")).toEqual([
+      expect.objectContaining({ x: 180, y: 120, width: 90, height: 150, asset: "tree-canopy.png", depthY: 270 }),
+      expect.objectContaining({ x: 510, y: 90, width: 90, height: 150, asset: "tree-canopy.png", depthY: 240 }),
+      expect.objectContaining({ x: 840, y: 120, width: 90, height: 150, asset: "tree-canopy.png", depthY: 270 })
+    ]);
+  });
+
+  it("routes safely from the neighborhood spawn to both portal approaches", () => {
+    const neighborhood = getWorldZone(gardenWorld, "neighborhood");
+
+    for (const portal of neighborhood.portals) {
+      const route = findTilePath(neighborhood, neighborhood.spawn, portal.approach);
+      expect(route, portal.id).not.toBeNull();
+      expect(route?.at(-1), portal.id).toEqual(portal.approach);
+    }
+  });
+
+  it("keeps the home return spawn safe after the neighborhood portal transition", () => {
+    const home = getWorldZone(gardenWorld, "home");
+    const returnHome = getWorldZone(gardenWorld, "neighborhood").portals.find((portal) => portal.to === "home");
+
+    expect(returnHome?.spawn).toEqual({ x: 285, y: 135 });
+    expect(returnHome?.spawn).not.toEqual(home.portals[0].approach);
+    expect(returnHome && pointInRect(returnHome.spawn, home.cameraSafeBounds)).toBe(true);
+    expect(returnHome && isBlocked(returnHome.spawn, home)).toBe(false);
   });
 
   it("keeps every spawn and portal approach on a safe walkable tile", () => {

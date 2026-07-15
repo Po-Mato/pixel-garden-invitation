@@ -433,13 +433,13 @@ describe("GameWorld", () => {
     advanceAnimation(0);
 
     expect(screen.getByLabelText("동네 거리 지도")).toBeInTheDocument();
-    expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "165px", top: "375px" });
+    expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "135px", top: "405px" });
 
     fireEvent.keyDown(joystick, { key: "ArrowRight" });
     advanceAnimation(3240);
     fireEvent.keyUp(joystick, { key: "ArrowRight" });
 
-    expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "195px", top: "375px" });
+    expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "165px", top: "405px" });
   });
 
   it("uses the same arrival and fade stages for the neighborhood station portal", () => {
@@ -454,7 +454,7 @@ describe("GameWorld", () => {
     advanceRouteToPortalArrival();
 
     expect(screen.getByLabelText("동네 거리 지도")).toBeInTheDocument();
-    expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "855px", top: "285px" });
+    expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "1095px", top: "375px" });
     expect(screen.getByTestId("world-portal-transition")).toHaveAttribute("data-phase", "arrival");
 
     act(() => vi.advanceTimersByTime(150));

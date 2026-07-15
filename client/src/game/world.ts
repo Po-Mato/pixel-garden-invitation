@@ -218,28 +218,37 @@ const neighborhoodZone = createZone({
   label: "동네 거리",
   subtitle: "새벽빛 골목과 횡단보도를 지나 지하철역으로",
   journeyIndex: 1,
-  bounds: bounds(960, 540),
-  spawn: { x: 75, y: 285 },
+  bounds: bounds(1200, 660),
+  spawn: { x: 135, y: 375 },
   paths: [
-    path("neighborhood-street", "street", 30, 210, 900, 180),
-    path("neighborhood-crosswalk", "crosswalk", 450, 210, 150, 180)
+    path("neighborhood-street", "street", 60, 240, 1080, 270),
+    path("neighborhood-crosswalk", "crosswalk", 510, 180, 180, 390)
   ],
   spots: [],
   npcs: [],
   portals: [
-    portal("neighborhood-to-home", "집으로 돌아가기", "home", { x: 30, y: 220, width: 60, height: 120 }, { x: 75, y: 285 }, "left", { x: 225, y: 165 }),
-    portal("neighborhood-to-station", "지하철역 들어가기", "subway-station", { x: 870, y: 195, width: 60, height: 150 }, { x: 855, y: 285 }, "right", { x: 135, y: 345 })
+    portal("neighborhood-to-home", "집으로 돌아가기", "home", { x: 30, y: 315, width: 90, height: 120 }, { x: 105, y: 375 }, "left", { x: 285, y: 135 }),
+    portal("neighborhood-to-station", "지하철역 들어가기", "subway-station", { x: 1080, y: 300, width: 90, height: 150 }, { x: 1095, y: 375 }, "right", { x: 135, y: 435 })
   ],
   decorations: [
-    decoration("street-tree-1", "tree", "가로수", 135, 72, 58, 82),
-    decoration("street-tree-2", "tree", "가로수", 345, 62, 58, 82),
-    decoration("street-tree-3", "tree", "가로수", 660, 70, 58, 82),
-    decoration("street-lamp-1", "lamp", "가로등", 250, 112, 28, 64),
-    decoration("street-lamp-2", "lamp", "가로등", 730, 110, 28, 64),
-    decoration("street-bench", "bench", "골목 벤치", 610, 410, 96, 42),
-    decoration("street-sign", "crosswalk-sign", "횡단보도 표지", 462, 150, 40, 56),
-    decoration("street-flower", "flower-bed", "골목 화단", 250, 415, 120, 46),
-    decoration("street-station", "station-sign", "지하철역 간판", 820, 120, 118, 64)
+    decoration("street-tree-1", "tree", "가로수", 180, 120, 90, 150, {
+      asset: "tree-canopy.png",
+      depthY: 270
+    }),
+    decoration("street-tree-2", "tree", "가로수", 510, 90, 90, 150, {
+      asset: "tree-canopy.png",
+      depthY: 240
+    }),
+    decoration("street-tree-3", "tree", "가로수", 840, 120, 90, 150, {
+      asset: "tree-canopy.png",
+      depthY: 270
+    }),
+    decoration("street-lamp-1", "lamp", "가로등", 450, 120, 30, 75),
+    decoration("street-lamp-2", "lamp", "가로등", 825, 120, 30, 75),
+    decoration("street-bench", "bench", "골목 벤치", 210, 195, 90, 45),
+    decoration("street-sign", "crosswalk-sign", "횡단보도 표지", 495, 180, 45, 60),
+    decoration("street-flower", "flower-bed", "골목 화단", 720, 480, 210, 60),
+    decoration("street-station", "station-sign", "지하철역 간판", 1020, 150, 120, 75)
   ]
 });
 
@@ -257,7 +266,7 @@ const subwayStationZone = createZone({
   spots: [spot("directions", "지하철 오시는 길", 95, 80, 110, 78)],
   npcs: [],
   portals: [
-    portal("station-to-neighborhood", "거리로 나가기", "neighborhood", { x: 30, y: 285, width: 72, height: 120 }, { x: 105, y: 345 }, "left", { x: 825, y: 285 }),
+    portal("station-to-neighborhood", "거리로 나가기", "neighborhood", { x: 30, y: 285, width: 72, height: 120 }, { x: 105, y: 345 }, "left", { x: 1065, y: 375 }),
     portal("station-to-train", "열차 타기", "subway-train", { x: 585, y: 285, width: 84, height: 120 }, { x: 555, y: 345 }, "right", { x: 135, y: 255 })
   ],
   blocked: [{ x: 280, y: 265, width: 100, height: 70 }],
