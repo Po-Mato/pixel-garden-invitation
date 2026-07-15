@@ -70,10 +70,10 @@ function advanceAnimation(now: number) {
 }
 
 function advanceRouteToPortalArrival() {
-  for (let index = 0; index < 50 && animationFrames.size > 0; index += 1) {
+  for (let index = 0; index < 70 && animationFrames.size > 0; index += 1) {
     advanceAnimation(index * 240);
   }
-  expect(animationFrames.size, "portal route did not reach arrival within 50 animation frames").toBe(0);
+  expect(animationFrames.size, "portal route did not reach arrival within 70 animation frames").toBe(0);
 }
 
 function advancePortalTransition() {
@@ -567,7 +567,7 @@ describe("GameWorld", () => {
     expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "1305px", top: "285px" });
   });
 
-  it("roundtrips from the Task 9 lobby arrival back to the venue with the camera safe", () => {
+  it("roundtrips from the Task 10 lobby arrival back to the venue with the camera safe", () => {
     render(<GameWorld profile={profile} />);
 
     travelThroughPortal("동네로 나가기");
@@ -576,7 +576,7 @@ describe("GameWorld", () => {
     travelThroughPortal("예식장역 내리기");
     travelThroughPortal("예식장 로비 들어가기");
 
-    expect(screen.getByLabelText("예식장 로비 지도")).toHaveStyle({ width: "960px", height: "900px" });
+    expect(screen.getByLabelText("예식장 로비 지도")).toHaveStyle({ width: "1080px", height: "900px" });
     expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "525px", top: "765px" });
 
     fireEvent.click(screen.getByRole("button", { name: "예식장 밖으로" }));

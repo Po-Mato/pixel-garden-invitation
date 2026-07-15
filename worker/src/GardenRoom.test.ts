@@ -162,16 +162,39 @@ describe("GardenRoom helpers", () => {
     });
   });
 
-  it("keeps the transitional lobby default spawn until Task 10", () => {
+  it("creates a lobby guest at the Task 10 client world spawn", () => {
     expect(createGuestSnapshot("guest_lobby", {
       type: "join",
       nickname: "로비 하객",
       appearance: defaultCharacterAppearance,
       zoneId: "lobby"
     }, 1000)).toMatchObject({
-      x: 105,
-      y: 405,
+      x: 525,
+      y: 765,
       zoneId: "lobby"
+    });
+  });
+
+  it("creates future-room guests at the temporary client world spawns", () => {
+    expect(createGuestSnapshot("guest_bridal", {
+      type: "join",
+      nickname: "신부대기실 하객",
+      appearance: defaultCharacterAppearance,
+      zoneId: "bridal-room"
+    }, 1000)).toMatchObject({
+      x: 345,
+      y: 525,
+      zoneId: "bridal-room"
+    });
+    expect(createGuestSnapshot("guest_hall", {
+      type: "join",
+      nickname: "예식홀 하객",
+      appearance: defaultCharacterAppearance,
+      zoneId: "ceremony-hall"
+    }, 1000)).toMatchObject({
+      x: 375,
+      y: 1785,
+      zoneId: "ceremony-hall"
     });
   });
 
@@ -480,6 +503,42 @@ describe("GardenRoom socket behavior", () => {
       x: 525,
       y: 765,
       zoneId: "lobby"
+    });
+  });
+
+  it("does not clamp the Task 10 lobby approach and future temporary map coordinates", () => {
+    const nowSpy = vi.spyOn(Date, "now").mockReturnValue(2000);
+    const state = new TestState();
+    const room = createRoom(state);
+    const moving = new TestSocket();
+    const watching = new TestSocket();
+
+    joinGuest(room, state, moving, "moving");
+    joinGuest(room, state, watching, "watching");
+    watching.sent.length = 0;
+
+    room.webSocketMessage(asWebSocket(moving), moveMessage(1, 975, "lobby", 405));
+    nowSpy.mockReturnValue(2100);
+    room.webSocketMessage(asWebSocket(moving), moveMessage(2, 345, "bridal-room", 525));
+    nowSpy.mockReturnValue(2200);
+    room.webSocketMessage(asWebSocket(moving), moveMessage(3, 705, "bridal-room", 615));
+    nowSpy.mockReturnValue(2300);
+    room.webSocketMessage(asWebSocket(moving), moveMessage(4, 375, "ceremony-hall", 1785));
+    nowSpy.mockReturnValue(2400);
+    room.webSocketMessage(asWebSocket(moving), moveMessage(5, 765, "ceremony-hall", 1905));
+
+    const broadcasts = watching.sent.map((payload) => JSON.parse(payload)).filter((message) => message.type === "guest_moved");
+    expect(broadcasts.map((message) => message.position)).toEqual([
+      expect.objectContaining({ x: 975, y: 405, zoneId: "lobby" }),
+      expect.objectContaining({ x: 345, y: 525, zoneId: "bridal-room" }),
+      expect.objectContaining({ x: 705, y: 615, zoneId: "bridal-room" }),
+      expect.objectContaining({ x: 375, y: 1785, zoneId: "ceremony-hall" }),
+      expect.objectContaining({ x: 765, y: 1905, zoneId: "ceremony-hall" })
+    ]);
+    expect((moving.deserializeAttachment() as { guest?: RoomGuest } | null)?.guest).toMatchObject({
+      x: 765,
+      y: 1905,
+      zoneId: "ceremony-hall"
     });
   });
 

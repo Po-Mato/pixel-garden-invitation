@@ -373,28 +373,33 @@ const lobbyZone = createZone({
   label: "예식장 로비",
   subtitle: "축의대와 포토월을 지나 원하는 공간으로 이동해요",
   journeyIndex: 5,
-  bounds: bounds(960, 900),
-  spawn: { x: 105, y: 405 },
+  bounds: bounds(1080, 900),
+  spawn: { x: 525, y: 765 },
   paths: [
-    path("lobby-main", "lobby", 60, 300, 840, 210),
-    path("lobby-cross", "corridor", 420, 90, 150, 600),
-    path("lobby-arrival", "corridor", 480, 660, 90, 180)
+    path("lobby-main", "lobby", 90, 300, 900, 300),
+    path("lobby-vertical", "corridor", 420, 90, 240, 720),
+    path("lobby-upper", "lobby", 90, 180, 900, 180),
+    path("lobby-lower", "lobby", 90, 540, 900, 240)
   ],
   spots: [
-    spot("wedding-info", "예식 안내", 180, 90, 108, 78),
-    spot("rsvp", "축의대", 315, 585, 108, 78),
-    spot("gallery", "웨딩 갤러리", 590, 90, 108, 78),
-    spot("story", "우리 이야기", 720, 585, 108, 78)
+    spot("wedding-info", "예식 안내", 180, 180, 120, 90),
+    spot("rsvp", "축의대", 300, 630, 120, 90),
+    spot("gallery", "웨딩 갤러리", 690, 180, 120, 90),
+    spot("story", "우리 이야기", 780, 630, 120, 90)
   ],
   npcs: [],
   portals: [
-    portal("lobby-to-venue", "예식장 밖으로", "venue-exterior", { x: 30, y: 345, width: 72, height: 120 }, { x: 105, y: 405 }, "left", { x: 465, y: 135 }),
-    portal("lobby-to-bridal", "신부 대기실", "bridal-room", { x: 432, y: 30, width: 96, height: 90 }, { x: 465, y: 135 }, "up", { x: 285, y: 405 }),
-    portal("lobby-to-restroom", "화장실", "restroom", { x: 858, y: 345, width: 72, height: 120 }, { x: 855, y: 405 }, "right", { x: 135, y: 315 }),
-    portal("lobby-to-hall", "예식홀", "ceremony-hall", { x: 432, y: 660, width: 96, height: 90 }, { x: 465, y: 645 }, "down", { x: 315, y: 1605 })
+    portal("lobby-to-venue", "예식장 밖으로", "venue-exterior", { x: 480, y: 810, width: 120, height: 60 }, { x: 525, y: 795 }, "down", { x: 465, y: 135 }),
+    portal("lobby-to-bridal", "신부 대기실", "bridal-room", { x: 30, y: 345, width: 90, height: 120 }, { x: 105, y: 405 }, "left", { x: 345, y: 525 }),
+    portal("lobby-to-restroom", "화장실", "restroom", { x: 960, y: 345, width: 90, height: 120 }, { x: 975, y: 405 }, "right", { x: 135, y: 345 }),
+    portal("lobby-to-hall", "예식홀", "ceremony-hall", { x: 480, y: 30, width: 120, height: 90 }, { x: 525, y: 105 }, "up", { x: 375, y: 1785 })
   ],
+  blocked: [{ x: 450, y: 300, width: 180, height: 120 }],
   decorations: [
-    decoration("lobby-desk", "reception-desk", "안내 데스크", 410, 205, 150, 72),
+    decoration("lobby-desk", "reception-desk", "안내 데스크", 450, 300, 180, 120, {
+      asset: "reception-desk-front.png",
+      depthY: 420
+    }),
     decoration("lobby-photo", "photo-wall", "꽃 포토월", 610, 180, 165, 96),
     decoration("lobby-sofa-1", "sofa", "로비 소파", 120, 520, 130, 72),
     decoration("lobby-sofa-2", "sofa", "로비 소파", 620, 500, 130, 72),
@@ -411,13 +416,16 @@ const bridalRoomZone = createZone({
   label: "신부 대기실",
   subtitle: "꽃벽 앞 신부에게 축하 인사를 건네요",
   journeyIndex: 6,
-  bounds: bounds(600, 540),
-  spawn: { x: 285, y: 435 },
-  paths: [path("bridal-floor", "floor", 90, 120, 420, 360)],
+  bounds: bounds(720, 630),
+  spawn: { x: 345, y: 525 },
+  paths: [
+    path("bridal-floor", "floor", 90, 120, 420, 360),
+    path("bridal-entry-corridor", "corridor", 300, 450, 90, 120)
+  ],
   spots: [spot("couple", "신부에게 인사하기", 245, 95, 110, 80)],
   npcs: [{ id: "bride", label: "신부 김하린", x: 300, y: 225 }],
   portals: [
-    portal("bridal-to-lobby", "로비로 돌아가기", "lobby", { x: 240, y: 450, width: 120, height: 60 }, { x: 285, y: 435 }, "down", { x: 465, y: 165 })
+    portal("bridal-to-lobby", "로비로 돌아가기", "lobby", { x: 240, y: 450, width: 120, height: 60 }, { x: 285, y: 435 }, "down", { x: 135, y: 405 })
   ],
   decorations: [
     decoration("bridal-photo-wall", "photo-wall", "장미 꽃벽", 180, 45, 240, 72),
@@ -436,16 +444,19 @@ const ceremonyHallZone = createZone({
   label: "예식홀",
   subtitle: "긴 버진로드 끝에서 두 사람의 약속을 함께해요",
   journeyIndex: 7,
-  bounds: bounds(660, 1800),
-  spawn: { x: 315, y: 1635 },
-  paths: [path("hall-aisle", "aisle", 240, 120, 180, 1560)],
+  bounds: bounds(780, 1920),
+  spawn: { x: 375, y: 1785 },
+  paths: [
+    path("hall-aisle", "aisle", 240, 120, 180, 1560),
+    path("hall-entry-corridor", "corridor", 300, 1620, 120, 240)
+  ],
   spots: [spot("couple", "신랑신부", 255, 105, 150, 72)],
   npcs: [
     { id: "groom", label: "신랑 이서준", x: 270, y: 270 },
     { id: "bride", label: "신부 김하린", x: 390, y: 270 }
   ],
   portals: [
-    portal("hall-to-lobby", "로비로 돌아가기", "lobby", { x: 255, y: 1680, width: 150, height: 90 }, { x: 315, y: 1635 }, "down", { x: 465, y: 615 }),
+    portal("hall-to-lobby", "로비로 돌아가기", "lobby", { x: 255, y: 1680, width: 150, height: 90 }, { x: 315, y: 1635 }, "down", { x: 525, y: 135 }),
     portal("hall-to-banquet", "연회장으로", "banquet", { x: 255, y: 30, width: 150, height: 72 }, { x: 315, y: 195 }, "up", { x: 525, y: 705 })
   ],
   decorations: [
@@ -475,7 +486,7 @@ const restroomZone = createZone({
   spots: [],
   npcs: [],
   portals: [
-    portal("restroom-to-lobby", "로비로 돌아가기", "lobby", { x: 30, y: 255, width: 72, height: 120 }, { x: 105, y: 315 }, "left", { x: 825, y: 405 })
+    portal("restroom-to-lobby", "로비로 돌아가기", "lobby", { x: 30, y: 255, width: 72, height: 120 }, { x: 105, y: 315 }, "left", { x: 945, y: 405 })
   ],
   blocked: [{ x: 300, y: 70, width: 180, height: 160 }],
   decorations: [

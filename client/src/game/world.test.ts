@@ -11,9 +11,9 @@ const expectedSizes = {
   "subway-station": [900, 840],
   "subway-train": [1440, 540],
   "venue-exterior": [960, 900],
-  lobby: [960, 900],
-  "bridal-room": [600, 540],
-  "ceremony-hall": [660, 1800],
+  lobby: [1080, 900],
+  "bridal-room": [720, 630],
+  "ceremony-hall": [780, 1920],
   restroom: [540, 600],
   banquet: [1080, 840]
 } as const;
@@ -406,23 +406,118 @@ describe("guest route world", () => {
     expect(roundTrip?.at(-1)).toEqual(trainPortal?.approach);
   });
 
-  it("keeps the transitional lobby arrival corridor walkable without adopting Task 10 geometry", () => {
+  it("defines the exact Task 10 lobby contract with four portals and desk depth overlay", () => {
     const lobby = getWorldZone(gardenWorld, "lobby");
-    const venuePortal = getWorldZone(gardenWorld, "venue-exterior").portals.find(
-      (portalItem) => portalItem.id === "venue-to-lobby"
-    );
+    const [weddingInfo, rsvp, gallery, story] = lobby.spots;
 
-    expect([lobby.bounds.width, lobby.bounds.height]).toEqual([960, 900]);
-    expect(lobby.spawn).toEqual({ x: 105, y: 405 });
-    expect(lobby.paths).toContainEqual({ id: "lobby-cross", kind: "corridor", x: 420, y: 90, width: 150, height: 600 });
-    expect(lobby.paths).toContainEqual({ id: "lobby-arrival", kind: "corridor", x: 480, y: 660, width: 90, height: 180 });
-    expect(venuePortal?.spawn).toEqual({ x: 525, y: 765 });
-    expect(venuePortal && pointInRect(venuePortal.spawn, lobby.cameraSafeBounds)).toBe(true);
-    expect(venuePortal && isWalkable(venuePortal.spawn, lobby)).toBe(true);
-    expect(venuePortal && isBlocked(venuePortal.spawn, lobby)).toBe(false);
+    expect([lobby.bounds.width, lobby.bounds.height]).toEqual([1080, 900]);
+    expect(lobby.spawn).toEqual({ x: 525, y: 765 });
+    expect(lobby.paths).toEqual([
+      { id: "lobby-main", kind: "lobby", x: 90, y: 300, width: 900, height: 300 },
+      { id: "lobby-vertical", kind: "corridor", x: 420, y: 90, width: 240, height: 720 },
+      { id: "lobby-upper", kind: "lobby", x: 90, y: 180, width: 900, height: 180 },
+      { id: "lobby-lower", kind: "lobby", x: 90, y: 540, width: 900, height: 240 }
+    ]);
+    expect(lobby.paths.some((worldPath) => worldPath.id === "lobby-arrival")).toBe(false);
+    expect(lobby.spots).toEqual([
+      expect.objectContaining({ id: "wedding-info", x: 180, y: 180, width: 120, height: 90 }),
+      expect.objectContaining({ id: "rsvp", x: 300, y: 630, width: 120, height: 90 }),
+      expect.objectContaining({ id: "gallery", x: 690, y: 180, width: 120, height: 90 }),
+      expect.objectContaining({ id: "story", x: 780, y: 630, width: 120, height: 90 })
+    ]);
+    expect(lobby.blocked).toEqual([
+      { x: 450, y: 300, width: 180, height: 120 },
+      weddingInfo,
+      rsvp,
+      gallery,
+      story
+    ]);
+    expect(lobby.portals).toEqual([
+      expect.objectContaining({
+        id: "lobby-to-venue",
+        to: "venue-exterior",
+        x: 480,
+        y: 810,
+        width: 120,
+        height: 60,
+        approach: { x: 525, y: 795 },
+        facing: "down",
+        spawn: { x: 465, y: 135 }
+      }),
+      expect.objectContaining({
+        id: "lobby-to-bridal",
+        to: "bridal-room",
+        x: 30,
+        y: 345,
+        width: 90,
+        height: 120,
+        approach: { x: 105, y: 405 },
+        facing: "left",
+        spawn: { x: 345, y: 525 }
+      }),
+      expect.objectContaining({
+        id: "lobby-to-restroom",
+        to: "restroom",
+        x: 960,
+        y: 345,
+        width: 90,
+        height: 120,
+        approach: { x: 975, y: 405 },
+        facing: "right",
+        spawn: { x: 135, y: 345 }
+      }),
+      expect.objectContaining({
+        id: "lobby-to-hall",
+        to: "ceremony-hall",
+        x: 480,
+        y: 30,
+        width: 120,
+        height: 90,
+        approach: { x: 525, y: 105 },
+        facing: "up",
+        spawn: { x: 375, y: 1785 }
+      })
+    ]);
+    expect(lobby.decorations).toContainEqual(expect.objectContaining({
+      id: "lobby-desk",
+      kind: "reception-desk",
+      x: 450,
+      y: 300,
+      width: 180,
+      height: 120,
+      asset: "reception-desk-front.png",
+      depthY: 420
+    }));
 
-    for (const portalItem of lobby.portals.slice(0, 2)) {
-      expect(findTilePath(lobby, venuePortal!.spawn, portalItem.approach), portalItem.id).not.toBeNull();
+    for (const portalItem of lobby.portals) {
+      const route = findTilePath(lobby, lobby.spawn, portalItem.approach);
+      expect(route, portalItem.id).not.toBeNull();
+      expect(route?.at(-1), portalItem.id).toEqual(portalItem.approach);
+    }
+  });
+
+  it("syncs reverse portal destinations and keeps future lobby destinations connected", () => {
+    const lobby = getWorldZone(gardenWorld, "lobby");
+    const bridal = getWorldZone(gardenWorld, "bridal-room");
+    const restroom = getWorldZone(gardenWorld, "restroom");
+    const hall = getWorldZone(gardenWorld, "ceremony-hall");
+
+    expect(getWorldZone(gardenWorld, "venue-exterior").portals.find((portalItem) => portalItem.id === "venue-to-lobby")?.spawn)
+      .toEqual({ x: 525, y: 765 });
+    expect(bridal.portals.find((portalItem) => portalItem.id === "bridal-to-lobby")?.spawn).toEqual({ x: 135, y: 405 });
+    expect(restroom.portals.find((portalItem) => portalItem.id === "restroom-to-lobby")?.spawn).toEqual({ x: 945, y: 405 });
+    expect(hall.portals.find((portalItem) => portalItem.id === "hall-to-lobby")?.spawn).toEqual({ x: 525, y: 135 });
+
+    for (const portalItem of lobby.portals) {
+      const destination = getWorldZone(gardenWorld, portalItem.to);
+      expect(pointInRect(portalItem.spawn, destination.cameraSafeBounds), portalItem.id).toBe(true);
+      expect(isWalkable(portalItem.spawn, destination), portalItem.id).toBe(true);
+      expect(isBlocked(portalItem.spawn, destination), portalItem.id).toBe(false);
+      for (const exit of destination.portals) {
+        const route = findTilePath(destination, portalItem.spawn, exit.approach);
+        expect(route, `${portalItem.id} -> ${exit.id}`).not.toBeNull();
+        expect(route?.at(-1), `${portalItem.id} -> ${exit.id}`).toEqual(exit.approach);
+      }
     }
   });
 

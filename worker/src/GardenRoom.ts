@@ -25,9 +25,9 @@ const zoneSpawns: Record<WorldZoneId, { x: number; y: number }> = {
   "subway-station": { x: 135, y: 435 },
   "subway-train": { x: 135, y: 285 },
   "venue-exterior": { x: 465, y: 765 },
-  lobby: { x: 105, y: 405 },
-  "bridal-room": { x: 285, y: 435 },
-  "ceremony-hall": { x: 315, y: 1635 },
+  lobby: { x: 525, y: 765 },
+  "bridal-room": { x: 345, y: 525 },
+  "ceremony-hall": { x: 375, y: 1785 },
   restroom: { x: 105, y: 315 },
   banquet: { x: 525, y: 735 }
 };
@@ -37,9 +37,9 @@ const zoneBounds: Record<WorldZoneId, { minX: number; maxX: number; minY: number
   "subway-station": { minX: 0, maxX: 900, minY: 0, maxY: 840 },
   "subway-train": { minX: 0, maxX: 1440, minY: 0, maxY: 540 },
   "venue-exterior": { minX: 0, maxX: 960, minY: 0, maxY: 900 },
-  lobby: { minX: 0, maxX: 960, minY: 0, maxY: 900 },
-  "bridal-room": { minX: 0, maxX: 600, minY: 0, maxY: 540 },
-  "ceremony-hall": { minX: 0, maxX: 660, minY: 0, maxY: 1800 },
+  lobby: { minX: 0, maxX: 1080, minY: 0, maxY: 900 },
+  "bridal-room": { minX: 0, maxX: 720, minY: 0, maxY: 630 },
+  "ceremony-hall": { minX: 0, maxX: 780, minY: 0, maxY: 1920 },
   restroom: { minX: 0, maxX: 540, minY: 0, maxY: 600 },
   banquet: { minX: 0, maxX: 1080, minY: 0, maxY: 840 }
 };

@@ -103,13 +103,18 @@ describe("portal tile pathfinding", () => {
     }
   });
 
-  it("connects the transitional lobby arrival to at least two existing lobby exits", () => {
+  it("connects the Task 10 lobby spawn to all four portal approaches", () => {
     const lobby = getWorldZone(gardenWorld, "lobby");
-    const arrival = { x: 525, y: 765 };
 
-    expect(lobby.portals.length).toBeGreaterThanOrEqual(2);
-    for (const portal of lobby.portals.slice(0, 2)) {
-      const route = findTilePath(lobby, arrival, portal.approach);
+    expect(lobby.spawn).toEqual({ x: 525, y: 765 });
+    expect(lobby.portals.map((portal) => portal.id)).toEqual([
+      "lobby-to-venue",
+      "lobby-to-bridal",
+      "lobby-to-restroom",
+      "lobby-to-hall"
+    ]);
+    for (const portal of lobby.portals) {
+      const route = findTilePath(lobby, lobby.spawn, portal.approach);
       expect(route, portal.id).not.toBeNull();
       expect(route?.at(-1), portal.id).toEqual(portal.approach);
     }
