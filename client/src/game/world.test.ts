@@ -64,11 +64,13 @@ describe("guest route world", () => {
     expect(home.spots).toEqual([
       expect.objectContaining({ id: "directions", x: 90, y: 180, width: 120, height: 90 })
     ]);
-    expect(home.blocked.slice(0, 4)).toEqual([
+    const [directionsSpot] = home.spots;
+    expect(home.blocked).toEqual([
       { x: 360, y: 240, width: 150, height: 90 },
       { x: 270, y: 330, width: 120, height: 90 },
       { x: 90, y: 480, width: 120, height: 120 },
-      { x: 420, y: 480, width: 60, height: 90 }
+      { x: 420, y: 480, width: 60, height: 90 },
+      directionsSpot
     ]);
 
     expect(home.portals).toEqual([

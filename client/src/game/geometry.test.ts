@@ -6,7 +6,7 @@ describe("world geometry", () => {
   const home = getWorldZone(gardenWorld, "home");
 
   it("clamps points to the requested rectangle", () => {
-    expect(clampToWorld({ x: -10, y: 900 }, home.bounds)).toEqual({ x: 0, y: 600 });
+    expect(clampToWorld({ x: -10, y: 900 }, home.bounds)).toEqual({ x: 0, y: 720 });
   });
 
   it("detects structural and interaction blockers", () => {
@@ -22,7 +22,7 @@ describe("world geometry", () => {
   });
 
   it("finds the nearest actionable invitation spot", () => {
-    expect(getNearbySpot({ x: 134, y: 121 }, home)?.id).toBe("directions");
+    expect(getNearbySpot({ x: 150, y: 225 }, home)?.id).toBe("directions");
     expect(getNearbySpot(home.spawn, home)).toBeNull();
   });
 

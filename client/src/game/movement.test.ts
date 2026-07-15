@@ -13,7 +13,7 @@ describe("movement", () => {
 
   it("snaps positions to the 30px tile grid", () => {
     expect(snapToGrid({ x: 136, y: 410 }, home)).toEqual({ x: 135, y: 405 });
-    expect(snapToGrid({ x: -10, y: 900 }, home)).toEqual({ x: 45, y: 555 });
+    expect(snapToGrid({ x: -10, y: 900 }, home)).toEqual({ x: 45, y: 675 });
   });
 
   it("moves exactly one tile in a cardinal direction", () => {
@@ -32,10 +32,10 @@ describe("movement", () => {
 
   it("keeps grid movement out of blocked tiles", () => {
     expect(computeNextGridPosition({
-      current: { x: 195, y: 135 },
+      current: { x: 225, y: 225 },
       direction: "left",
       world: home
-    })).toEqual({ x: 195, y: 135 });
+    })).toEqual({ x: 225, y: 225 });
   });
 
   it("chooses a cardinal direction toward a grid target", () => {
@@ -100,7 +100,7 @@ describe("movement", () => {
       deltaMs: 100,
       speed: 120,
       world: home
-    })).toEqual({ x: 30, y: 570 });
+    })).toEqual({ x: 30, y: 690 });
 
     expect(computeNextPosition({
       current: { x: Number.NaN, y: Number.POSITIVE_INFINITY },
@@ -116,7 +116,7 @@ describe("movement", () => {
       deltaMs: Number.POSITIVE_INFINITY,
       speed: 120,
       world: home
-    })).toEqual({ x: 30, y: 570 });
+    })).toEqual({ x: 30, y: 690 });
 
     expect(computeNextPosition({
       current: { x: -10, y: 900 },
@@ -124,7 +124,7 @@ describe("movement", () => {
       deltaMs: 100,
       speed: Number.NaN,
       world: home
-    })).toEqual({ x: 30, y: 570 });
+    })).toEqual({ x: 30, y: 690 });
   });
 
   it("does not tunnel through blocked rectangles on large movement steps", () => {

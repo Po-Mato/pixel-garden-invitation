@@ -113,6 +113,7 @@ export function GameWorld({ profile }: GameWorldProps) {
   const [viewport, setViewport] = useState<ViewportSize>(defaultViewport);
   const [remoteGuests, setRemoteGuests] = useState<RoomGuest[]>([]);
   const [realtimeStatus, setRealtimeStatus] = useState<RealtimeStatus>("offline");
+  const [loadedBackgroundZoneId, setLoadedBackgroundZoneId] = useState<WorldZoneId | null>(null);
 
   const mapViewportRef = useRef<HTMLDivElement | null>(null);
   const menuCloseButtonRef = useRef<HTMLButtonElement | null>(null);
@@ -209,6 +210,7 @@ export function GameWorld({ profile }: GameWorldProps) {
     activeZoneIdRef.current = zone.id;
     positionRef.current = nextPosition;
     directionRef.current = "down";
+    setLoadedBackgroundZoneId(null);
     setActiveZoneId(zone.id);
     setPosition(nextPosition);
     setTarget(null);
@@ -629,7 +631,7 @@ export function GameWorld({ profile }: GameWorldProps) {
           onClick={handleMapClick}
         >
           <div
-            className="world-map__stage"
+            className={`world-map__stage${loadedBackgroundZoneId === activeZone.id ? " world-map__stage--background-loaded" : ""}`}
             aria-label={`${activeZone.label} 지도`}
             data-zone={activeZone.id}
             data-logical-width={activeZone.bounds.width}
@@ -640,7 +642,14 @@ export function GameWorld({ profile }: GameWorldProps) {
               transform: `translate3d(${camera.x}px, ${camera.y}px, 0) scale(${camera.zoom})`
             }}
           >
-            <WorldMapArtwork zoneId={activeZone.id} />
+            <WorldMapArtwork
+              zoneId={activeZone.id}
+              onLoadStateChange={(loaded) => {
+                setLoadedBackgroundZoneId((current) => (
+                  loaded ? activeZone.id : current === activeZone.id ? null : current
+                ));
+              }}
+            />
             {activeZone.paths.map((worldPath) => (
               <div
                 key={worldPath.id}

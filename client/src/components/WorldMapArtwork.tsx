@@ -1,7 +1,12 @@
 import type { WorldZoneId } from "@wedding-game/shared";
 import { resolveWorldVisual } from "../game/worldVisuals";
 
-export function WorldMapArtwork({ zoneId }: { zoneId: WorldZoneId }) {
+type WorldMapArtworkProps = {
+  zoneId: WorldZoneId;
+  onLoadStateChange?: (loaded: boolean) => void;
+};
+
+export function WorldMapArtwork({ zoneId, onLoadStateChange }: WorldMapArtworkProps) {
   const visual = resolveWorldVisual(zoneId);
 
   return (
@@ -12,7 +17,11 @@ export function WorldMapArtwork({ zoneId }: { zoneId: WorldZoneId }) {
         src={visual.backgroundUrl}
         alt=""
         draggable={false}
-        onError={(event) => { event.currentTarget.hidden = true; }}
+        onLoad={() => { onLoadStateChange?.(true); }}
+        onError={(event) => {
+          event.currentTarget.hidden = true;
+          onLoadStateChange?.(false);
+        }}
       />
       {visual.effects.map((effect) => (
         <span key={effect} className={`world-map-effect world-map-effect--${effect}`} />

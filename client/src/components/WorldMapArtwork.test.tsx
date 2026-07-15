@@ -1,5 +1,5 @@
 import { fireEvent, render } from "@testing-library/react";
-import { expect, it } from "vitest";
+import { expect, it, vi } from "vitest";
 import { WorldMapArtwork } from "./WorldMapArtwork";
 
 it("renders the zone background as a non-draggable decorative image", () => {
@@ -31,4 +31,17 @@ it("creates a visible background image when the zone changes after an image erro
   expect(nextImage).not.toBe(failedImage);
   expect(nextImage).toHaveAttribute("src", "/assets/maps/v2/banquet/background.webp");
   expect(nextImage).not.toHaveAttribute("hidden");
+});
+
+it("reports whether the background image loaded or failed", () => {
+  const onLoadStateChange = vi.fn();
+  const { container } = render(
+    <WorldMapArtwork zoneId="home" onLoadStateChange={onLoadStateChange} />
+  );
+  const image = container.querySelector(".world-map-artwork__background") as HTMLImageElement;
+
+  fireEvent.load(image);
+  fireEvent.error(image);
+
+  expect(onLoadStateChange.mock.calls).toEqual([[true], [false]]);
 });

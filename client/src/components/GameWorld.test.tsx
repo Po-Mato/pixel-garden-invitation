@@ -83,6 +83,25 @@ function advancePortalTransition() {
   act(() => vi.advanceTimersByTime(300));
 }
 
+function walkHomeToPortalEntrance(joystick: HTMLElement) {
+  const move = (key: string, times: number[]) => {
+    fireEvent.keyDown(joystick, { key });
+    times.forEach(advanceAnimation);
+    fireEvent.keyUp(joystick, { key });
+  };
+
+  move("ArrowLeft", [0, 300]);
+  move("ArrowUp", [600, 900, 1140, 1380, 1620, 1860, 2100, 2340, 2580]);
+  move("ArrowRight", [2880, 3180]);
+  fireEvent.keyDown(joystick, { key: "ArrowUp" });
+  [3420, 3720, 3960, 4200, 4440].forEach(advanceAnimation);
+}
+
+function walkHomeToPortalWithHeldUp(joystick: HTMLElement) {
+  walkHomeToPortalEntrance(joystick);
+  advanceAnimation(4680);
+}
+
 function finishPortalFadeOut() {
   act(() => vi.advanceTimersByTime(250));
   fireTransitionEnd(screen.getByTestId("world-portal-transition"), "opacity");
@@ -175,6 +194,32 @@ describe("GameWorld", () => {
     expect(screen.queryByLabelText("맵 구역 이동")).not.toBeInTheDocument();
   });
 
+  it("uses fallback path visuals only while the map background is unavailable", () => {
+    const { container } = render(<GameWorld profile={profile} />);
+    const stage = screen.getByLabelText("우리 집 지도");
+    const background = container.querySelector(".world-map-artwork__background") as HTMLImageElement;
+
+    expect(stage).not.toHaveClass("world-map__stage--background-loaded");
+    fireEvent.load(background);
+    expect(stage).toHaveClass("world-map__stage--background-loaded");
+    fireEvent.error(background);
+    expect(stage).not.toHaveClass("world-map__stage--background-loaded");
+  });
+
+  it("restores fallback paths when returning to a previously loaded zone", () => {
+    const { container } = render(<GameWorld profile={profile} />);
+    const homeBackground = container.querySelector(".world-map-artwork__background") as HTMLImageElement;
+
+    fireEvent.load(homeBackground);
+    expect(screen.getByLabelText("우리 집 지도")).toHaveClass("world-map__stage--background-loaded");
+
+    travelThroughPortal("동네로 나가기");
+    expect(screen.getByLabelText("동네 거리 지도")).not.toHaveClass("world-map__stage--background-loaded");
+
+    travelThroughPortal("집으로 돌아가기");
+    expect(screen.getByLabelText("우리 집 지도")).not.toHaveClass("world-map__stage--background-loaded");
+  });
+
   it("updates map artwork for every zone reached through the journey", () => {
     const { container } = render(<GameWorld profile={profile} />);
 
@@ -228,7 +273,7 @@ describe("GameWorld", () => {
     fireEvent.click(getControl(), { clientX: 350, clientY: 450 });
     advanceAnimation(0);
 
-    expect(player).toHaveStyle({ left: "135px", top: "405px" });
+    expect(player).toHaveStyle({ left: "285px", top: "555px" });
   });
 
   it("opens invitation content without teleporting to its map", () => {
@@ -286,27 +331,11 @@ describe("GameWorld", () => {
 
   it("shows portal arrival before fading into the destination map", () => {
     render(<GameWorld profile={profile} />);
-    const joystick = screen.getByLabelText("가상 조이스틱");
-
-    fireEvent.keyDown(joystick, { key: "ArrowRight" });
-    advanceAnimation(0);
-    advanceAnimation(300);
-    advanceAnimation(540);
-    fireEvent.keyUp(joystick, { key: "ArrowRight" });
-
-    fireEvent.keyDown(joystick, { key: "ArrowUp" });
-    for (const now of [600, 900, 1140, 1380, 1620, 1860, 2100, 2340]) {
-      advanceAnimation(now);
-    }
+    fireEvent.click(screen.getByRole("button", { name: "동네로 나가기" }));
+    advanceRouteToPortalArrival();
 
     expect(screen.getByLabelText("우리 집 지도")).toBeInTheDocument();
-    expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "225px", top: "165px" });
-
-    advanceAnimation(2580);
-    fireEvent.keyUp(joystick, { key: "ArrowUp" });
-
-    expect(screen.getByLabelText("우리 집 지도")).toBeInTheDocument();
-    expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "225px", top: "135px" });
+    expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "285px", top: "105px" });
     expect(screen.getByTestId("world-portal-transition")).toHaveAttribute("data-phase", "arrival");
 
     act(() => vi.advanceTimersByTime(149));
@@ -320,7 +349,7 @@ describe("GameWorld", () => {
     expect(screen.getByLabelText("우리 집 지도")).toBeInTheDocument();
     fireTransitionEnd(screen.getByTestId("world-portal-transition"), "opacity");
     expect(screen.getByLabelText("동네 거리 지도")).toBeInTheDocument();
-    expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "135px", top: "285px" });
+    expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "135px", top: "375px" });
     expect(screen.getByTestId("world-portal-transition")).toHaveAttribute("data-phase", "fade-in");
 
     act(() => vi.advanceTimersByTime(300));
@@ -334,7 +363,7 @@ describe("GameWorld", () => {
     advanceRouteToPortalArrival();
 
     expect(screen.getByLabelText("우리 집 지도")).toBeInTheDocument();
-    expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "225px", top: "135px" });
+    expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "285px", top: "105px" });
     expect(screen.getByTestId("world-portal-transition")).toHaveAttribute("data-phase", "arrival");
 
     act(() => vi.advanceTimersByTime(150));
@@ -354,7 +383,7 @@ describe("GameWorld", () => {
     fireEvent.keyDown(joystick, { key: "ArrowRight" });
     advanceAnimation(4000);
 
-    expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "165px", top: "285px" });
+    expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "165px", top: "375px" });
   });
 
   it("ignores map and directional input during transition, then resumes after fade-in", () => {
@@ -372,7 +401,7 @@ describe("GameWorld", () => {
     fireEvent.keyUp(joystick, { key: "ArrowLeft" });
 
     expect(screen.getByLabelText("우리 집 지도")).toBeInTheDocument();
-    expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "225px", top: "135px" });
+    expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "285px", top: "105px" });
 
     act(() => vi.advanceTimersByTime(150));
     expect(screen.getByTestId("world-portal-transition")).toHaveAttribute("data-phase", "fade-out");
@@ -383,7 +412,7 @@ describe("GameWorld", () => {
     fireEvent.keyUp(joystick, { key: "ArrowDown" });
 
     expect(screen.getByLabelText("우리 집 지도")).toBeInTheDocument();
-    expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "225px", top: "135px" });
+    expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "285px", top: "105px" });
 
     finishPortalFadeOut();
     expect(screen.getByLabelText("동네 거리 지도")).toBeInTheDocument();
@@ -395,7 +424,7 @@ describe("GameWorld", () => {
     fireEvent.keyUp(joystick, { key: "ArrowRight" });
 
     expect(screen.getByLabelText("동네 거리 지도")).toBeInTheDocument();
-    expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "135px", top: "285px" });
+    expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "135px", top: "375px" });
 
     act(() => vi.advanceTimersByTime(300));
     expect(screen.getByTestId("world-portal-transition")).toHaveAttribute("data-phase", "idle");
@@ -404,13 +433,13 @@ describe("GameWorld", () => {
     advanceAnimation(0);
 
     expect(screen.getByLabelText("동네 거리 지도")).toBeInTheDocument();
-    expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "135px", top: "315px" });
+    expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "165px", top: "375px" });
 
     fireEvent.keyDown(joystick, { key: "ArrowRight" });
     advanceAnimation(3240);
     fireEvent.keyUp(joystick, { key: "ArrowRight" });
 
-    expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "165px", top: "315px" });
+    expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "195px", top: "375px" });
   });
 
   it("uses the same arrival and fade stages for the neighborhood station portal", () => {
@@ -495,15 +524,7 @@ describe("GameWorld", () => {
     render(<GameWorld profile={profile} />);
     const joystick = screen.getByLabelText("가상 조이스틱");
 
-    fireEvent.keyDown(joystick, { key: "ArrowRight" });
-    advanceAnimation(0);
-    advanceAnimation(300);
-    advanceAnimation(540);
-    fireEvent.keyUp(joystick, { key: "ArrowRight" });
-    fireEvent.keyDown(joystick, { key: "ArrowUp" });
-    for (const now of [600, 900, 1140, 1380, 1620, 1860, 2100, 2340, 2580]) {
-      advanceAnimation(now);
-    }
+    walkHomeToPortalWithHeldUp(joystick);
 
     expect(screen.getByTestId("world-portal-transition")).toHaveAttribute("data-phase", "arrival");
     act(() => vi.advanceTimersByTime(150));
@@ -517,7 +538,7 @@ describe("GameWorld", () => {
     fireEvent.keyDown(joystick, { key: "ArrowUp", repeat: true });
     fireEvent.keyDown(joystick, { key: "ArrowUp", repeat: true });
     advanceAnimation(4000);
-    expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "135px", top: "285px" });
+    expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "135px", top: "375px" });
     expect(joystick.querySelector("span")).toHaveStyle({ transform: "translate(0px, 0px)" });
 
     screen.getByRole("button", { name: "초대장 메뉴" }).focus();
@@ -525,22 +546,14 @@ describe("GameWorld", () => {
     expect(joystick).toHaveAttribute("aria-disabled", "false");
     fireEvent.keyDown(joystick, { key: "ArrowRight" });
     advanceAnimation(5000);
-    expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "165px", top: "285px" });
+    expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "165px", top: "375px" });
   });
 
   it("preserves the held-input release latch across a second clicked portal transition", () => {
     render(<GameWorld profile={profile} />);
     const joystick = screen.getByLabelText("가상 조이스틱");
 
-    fireEvent.keyDown(joystick, { key: "ArrowRight" });
-    advanceAnimation(0);
-    advanceAnimation(300);
-    advanceAnimation(540);
-    fireEvent.keyUp(joystick, { key: "ArrowRight" });
-    fireEvent.keyDown(joystick, { key: "ArrowUp" });
-    for (const now of [600, 900, 1140, 1380, 1620, 1860, 2100, 2340, 2580]) {
-      advanceAnimation(now);
-    }
+    walkHomeToPortalWithHeldUp(joystick);
     advancePortalTransition();
 
     expect(joystick).toHaveAttribute("aria-disabled", "true");
@@ -647,9 +660,9 @@ describe("GameWorld", () => {
     const stage = screen.getByLabelText("우리 집 지도");
     const player = screen.getByLabelText("하객1");
 
-    expect(stage).toHaveStyle({ width: "480px", height: "600px" });
+    expect(stage).toHaveStyle({ width: "600px", height: "720px" });
     expect(stage.style.transform).toContain("translate3d(");
-    expect(player).toHaveStyle({ left: "135px", top: "405px", zIndex: "1405" });
+    expect(player).toHaveStyle({ left: "285px", top: "555px", zIndex: "1555" });
   });
 
   it("keeps portals and information buttons above map depth layers", () => {
@@ -667,11 +680,11 @@ describe("GameWorld", () => {
 
     fireEvent.click(map, { clientX: 265, clientY: 280 });
     advanceAnimation(0);
-    expect(player).toHaveStyle({ left: "165px", top: "405px" });
+    expect(player).toHaveStyle({ left: "315px", top: "555px" });
     advanceAnimation(239);
-    expect(player).toHaveStyle({ left: "165px" });
+    expect(player).toHaveStyle({ left: "315px" });
     advanceAnimation(240);
-    expect(player).toHaveStyle({ left: "195px" });
+    expect(player).toHaveStyle({ left: "345px" });
   });
 
   it("keeps remote guests isolated to the active zone", () => {
@@ -722,12 +735,12 @@ describe("GameWorld", () => {
 
     expect(approachMoves.every((message) => message.zoneId === "home")).toBe(true);
     expect(approachMoves.filter((message) => (
-      message.x === 225 && message.y === 135 && message.moving === false && message.direction === "up"
+      message.x === 285 && message.y === 105 && message.moving === false && message.direction === "up"
     ))).toHaveLength(1);
 
     advancePortalTransition();
     const moves = socket.sentMessages.map((message) => JSON.parse(message)).filter((message) => message.type === "move");
-    expect(moves.at(-1)).toMatchObject({ zoneId: "neighborhood", x: 135, y: 285, moving: false });
+    expect(moves.at(-1)).toMatchObject({ zoneId: "neighborhood", x: 135, y: 375, moving: false });
   });
 
   it("sends an immediate final stop when an approach portal click is inside the throttle window", () => {
@@ -737,24 +750,23 @@ describe("GameWorld", () => {
     act(() => socket.emit("open"));
     act(() => socket.emitJson({ type: "welcome", guestId: "guest_self", guests: [] }));
 
-    const map = screen.getByTestId("world-map-viewport");
-    mockMapRect(map);
-    fireEvent.click(map, { clientX: 295, clientY: 10 });
-    advanceRouteToPortalArrival();
-    expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "225px", top: "135px" });
+    const joystick = screen.getByLabelText("가상 조이스틱");
+    walkHomeToPortalEntrance(joystick);
+    expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "285px", top: "135px" });
     socket.sentMessages.length = 0;
 
     fireEvent.click(screen.getByRole("button", { name: "동네로 나가기" }));
+    advanceRouteToPortalArrival();
     let moves = socket.sentMessages.map((message) => JSON.parse(message)).filter((message) => message.type === "move");
     expect(moves).toHaveLength(1);
-    expect(moves[0]).toMatchObject({ zoneId: "home", x: 225, y: 135, moving: false, direction: "up" });
+    expect(moves[0]).toMatchObject({ zoneId: "home", x: 285, y: 105, moving: false, direction: "up" });
 
     act(() => vi.advanceTimersByTime(150));
     finishPortalFadeOut();
     fireTransitionEnd(screen.getByTestId("world-portal-transition"), "opacity");
     moves = socket.sentMessages.map((message) => JSON.parse(message)).filter((message) => message.type === "move");
     expect(moves).toHaveLength(2);
-    expect(moves[1]).toMatchObject({ zoneId: "neighborhood", x: 135, y: 285, moving: false });
+    expect(moves[1]).toMatchObject({ zoneId: "neighborhood", x: 135, y: 375, moving: false });
     expect(moves[1].seq).toBe(moves[0].seq + 1);
   });
 
