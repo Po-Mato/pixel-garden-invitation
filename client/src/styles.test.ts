@@ -14,6 +14,18 @@ const worldZones = [
   "restroom",
   "banquet"
 ];
+const worldEffects = [
+  "window-light",
+  "leaf-shadow",
+  "station-glow",
+  "city-motion",
+  "garden-petals",
+  "lobby-glint",
+  "bridal-sparkle",
+  "aisle-light",
+  "mirror-glint",
+  "banquet-light"
+];
 
 describe("entry screen layout", () => {
   it("locks the entry document to the dynamic viewport", () => {
@@ -152,88 +164,31 @@ describe("responsive play viewport", () => {
 });
 
 describe("pixel wedding festival map", () => {
-  it("preserves map artwork aspect ratios while retaining a fallback background", () => {
+  it("uses pixelated image artwork as the map surface", () => {
     const artworkRule = styles.match(/\.world-map-artwork\s*\{([^}]*)}/s)?.[1] ?? "";
     const backgroundRule = [...styles.matchAll(/\.world-map-artwork__background\s*\{([^}]*)}/gs)]
       .map((match) => match[1])
       .find((rule) => rule.includes("object-fit")) ?? "";
 
+    expect(styles).toContain(".world-map-artwork__background");
     expect(artworkRule).toContain("overflow: hidden;");
     expect(backgroundRule).toContain("object-fit: contain;");
+    expect(backgroundRule).toContain("image-rendering: pixelated;");
     expect(backgroundRule).not.toContain("object-fit: fill;");
   });
 
-  it("gives every zone its own ground and path treatment", () => {
-    for (const zone of worldZones) {
-      expect(styles).toContain(`.world-map--${zone} {`);
-      expect(styles).toContain(`.world-map--${zone} .world-path`);
-    }
+  it("keeps route DOM transparent so image backgrounds stay visible", () => {
+    expect(styles).toMatch(/\.world-path\s*\{[^}]*opacity:\s*0/s);
+    expect(styles).toMatch(/\.world-path\s*\{[^}]*pointer-events:\s*none;/s);
+    expect(styles).not.toContain("--world-ground:");
+    expect(styles).not.toContain("background: var(--world-ground)");
   });
 
-  it("styles every festival decoration kind", () => {
-    for (const kind of [
-      "flower-arch",
-      "petal-scatter",
-      "butterfly",
-      "topiary",
-      "string-lights",
-      "rose-pillar",
-      "gift-stack",
-      "dessert-cart",
-      "star-garland",
-      "flower-fence",
-      "lily-cluster",
-      "ribbon-post",
-      "aisle-bouquet",
-      "mosaic-star",
-      "tea-chair",
-      "party-flag",
-      "sofa",
-      "door",
-      "window",
-      "shoe-rack",
-      "crosswalk-sign",
-      "station-sign",
-      "ticket-gate",
-      "train-seat",
-      "train-window",
-      "venue-sign",
-      "reception-desk",
-      "photo-wall",
-      "vanity",
-      "mirror",
-      "restroom-sink",
-      "stall",
-      "ceremony-seat",
-      "altar",
-      "banquet-table",
-      "buffet"
-    ]) {
-      expect(styles).toContain(`.world-decoration--${kind}`);
-    }
-  });
-
-  it("builds the map from ground, edge, decoration, path, and foreground depth layers", () => {
-    expect(styles).toContain(".world-map::before");
-    expect(styles).toContain(".world-map::after");
+  it("keeps only asset foreground decorations in the map style layer", () => {
     expect(styles).toMatch(/\.world-decoration-layer\s*{[^}]*z-index:\s*1;/s);
-    expect(styles).toMatch(/\.world-path\s*{[^}]*z-index:\s*2;/s);
-  });
-
-  it("does not duplicate the whole flower arch as oversized flower blocks", () => {
-    const flowerArchRule = styles.match(/\.world-decoration--flower-arch > span\s*{([^}]*)}/s)?.[1] ?? "";
-
-    expect(flowerArchRule).not.toContain("box-shadow");
-    expect(flowerArchRule).toContain("background:");
-  });
-
-  it("uses stepped ambience and disables it for reduced motion", () => {
-    expect(styles).toContain("@keyframes pixel-twinkle");
-    expect(styles).toContain("@keyframes pixel-flutter");
-    expect(styles).toContain("@keyframes pixel-petals");
-    expect(styles).toMatch(
-      /@media \(prefers-reduced-motion: reduce\)[\s\S]*\.world-decoration--butterfly[\s\S]*animation:\s*none;/
-    );
+    expect(styles).toMatch(/\.world-decoration--asset\s*\{[^}]*object-fit:\s*contain;[^}]*image-rendering:\s*pixelated;[^}]*pointer-events:\s*none;/s);
+    expect(styles).not.toMatch(/\.world-decoration--(?!asset\b)[\w-]+/);
+    expect(styles).not.toMatch(/\.world-decoration(?!--asset)[^{,]*(::before|::after|>\s*span)/);
   });
 });
 
@@ -247,59 +202,50 @@ describe("world character separation", () => {
   });
 });
 
-describe("dawn prism fine pixel map", () => {
-  it("uses fine ground texture variables instead of 30px visual tiles", () => {
-    for (const zone of worldZones) {
-      const rule = styles.match(new RegExp(`\\.world-map--${zone}\\s*\\{([^}]*)}`, "s"))?.[1] ?? "";
+describe("world map image effects", () => {
+  it("defines one bounded effect class for every map effect", () => {
+    const baseRule = styles.match(/\.world-map-effect\s*\{([^}]*)}/s)?.[1] ?? "";
 
-      expect(rule).toMatch(/--ground-pixel:\s*(6px|8px);/);
-      expect(rule).not.toContain("30px");
+    expect(baseRule).toContain("pointer-events: none;");
+
+    for (const effect of worldEffects) {
+      expect(styles).toContain(`.world-map-effect--${effect}`);
+      expect(styles).not.toContain(`.world-map-effect--${effect}::before`);
+      expect(styles).not.toContain(`.world-map-effect--${effect}::after`);
     }
   });
 
-  it("adds pearl light and drifting prism dust behind interactive elements", () => {
-    expect(styles).toContain(".world-map__stage::before");
-    expect(styles).toContain(".world-map__stage::after");
-    expect(styles).toContain("@keyframes prism-drift");
-  });
-
-  it("uses four-pixel mosaics and thin colored edging on every zone path", () => {
-    for (const zone of worldZones) {
-      const rule = styles.match(new RegExp(`\\.world-map--${zone} \\.world-path\\s*\\{([^}]*)}`, "s"))?.[1] ?? "";
-
-      expect(rule).toContain("--path-pixel: 4px;");
-      expect(rule).toMatch(/inset 0 0 0 (1px|2px) var\(--path-edge\)/);
-      expect(rule).not.toMatch(/12px|15px/);
+  it("limits each effect to subtle opacity, stepped pixel, glow, or window-band motion", () => {
+    for (const effect of ["window-light", "lobby-glint", "mirror-glint"]) {
+      const rule = styles.match(new RegExp(`\\.world-map-effect--${effect}\\s*\\{([^}]*)}`, "s"))?.[1] ?? "";
+      expect(rule, effect).toMatch(/animation:\s*effect-opacity/);
     }
+
+    for (const effect of ["leaf-shadow", "garden-petals", "bridal-sparkle"]) {
+      const rule = styles.match(new RegExp(`\\.world-map-effect--${effect}\\s*\\{([^}]*)}`, "s"))?.[1] ?? "";
+      expect(rule, effect).toMatch(/animation:\s*effect-pixel-(drift|sparkle)[^;]*steps\(2,\s*end\)/);
+    }
+
+    for (const effect of ["station-glow", "aisle-light", "banquet-light"]) {
+      const rule = styles.match(new RegExp(`\\.world-map-effect--${effect}\\s*\\{([^}]*)}`, "s"))?.[1] ?? "";
+      expect(rule, effect).toMatch(/animation:\s*effect-glow[^;]*steps\(2,\s*end\)/);
+    }
+
+    const cityRule = styles.match(/\.world-map-effect--city-motion\s*\{([^}]*)}/s)?.[1] ?? "";
+    expect(cityRule).toContain("overflow: hidden;");
+    expect(cityRule).toMatch(/animation:\s*effect-city-band[^;]*steps\(2,\s*end\)/);
+    expect(styles).toContain("@keyframes effect-opacity");
+    expect(styles).toContain("@keyframes effect-pixel-drift");
+    expect(styles).toContain("@keyframes effect-pixel-sparkle");
+    expect(styles).toContain("@keyframes effect-glow");
+    expect(styles).toContain("@keyframes effect-city-band");
   });
 
-  it("animates fine water highlights and disables new ambience for reduced motion", () => {
-    expect(styles).toContain("@keyframes water-shimmer");
-    expect(styles).toMatch(/\.world-decoration--pond > span[\s\S]*animation:\s*water-shimmer/);
+  it("stops world map effects when reduced motion is requested", () => {
+    expect(styles).toContain("prefers-reduced-motion: reduce");
     expect(styles).toMatch(
-      /@media \(prefers-reduced-motion: reduce\)[\s\S]*\.world-map__stage::after[\s\S]*animation:\s*none;/
+      /@media \(prefers-reduced-motion: reduce\)[\s\S]*\.world-map-effect\s*\{[^}]*animation:\s*none !important;/
     );
-  });
-
-  it("uses thin colored outlines and shared highlight tones on decorative objects", () => {
-    const decorationRule = styles.match(/\.world-decoration\s*{([^}]*)}/s)?.[1] ?? "";
-    expect(decorationRule).toContain("--ornament-outline:");
-    expect(decorationRule).toContain("--ornament-highlight:");
-    expect(decorationRule).toContain("--ornament-glow:");
-
-    for (const kind of ["flower-bed", "pond", "fountain", "photo-frame", "mosaic-star"]) {
-      const rule = styles.match(new RegExp(`\\.world-decoration--${kind}\\s*\\{([^}]*)}`, "s"))?.[1] ?? "";
-      expect(rule, kind).toMatch(/border:\s*(1px|2px) solid/);
-      expect(rule, kind).not.toMatch(/border:\s*[3-5]px/);
-    }
-
-    for (const kind of ["banner", "string-lights", "star-garland", "party-flag"]) {
-      const rule = styles.match(new RegExp(`\\.world-decoration--${kind}[^}]*\\{([^}]*)}`, "s"))?.[1] ?? "";
-      expect(rule, kind).toMatch(/border-top:\s*(1px|2px) solid var\(--ornament-outline\)/);
-    }
-
-    const fenceRule = styles.match(/\.world-decoration--flower-fence\s*\{([^}]*)}/s)?.[1] ?? "";
-    expect(fenceRule).toMatch(/border-bottom:\s*2px solid var\(--ornament-outline\)/);
   });
 });
 
