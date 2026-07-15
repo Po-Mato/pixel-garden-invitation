@@ -16,8 +16,12 @@ export function pointInRect(point: Point, rect: Rect): boolean {
   );
 }
 
+export function isWalkable(point: Point, world: WorldZone): boolean {
+  return world.paths.some((path) => pointInRect(point, path));
+}
+
 export function isBlocked(point: Point, world: WorldZone): boolean {
-  return world.blocked.some((rect) => pointInRect(point, rect));
+  return !isWalkable(point, world) || world.blocked.some((rect) => pointInRect(point, rect));
 }
 
 function center(rect: Rect): Point {

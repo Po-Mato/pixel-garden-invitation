@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { worldZoneIds } from "@wedding-game/shared";
-import { pointInRect } from "./geometry";
+import { isBlocked, pointInRect } from "./geometry";
 import { gridTileSize } from "./movement";
 import { gardenWorld, getWorldZone } from "./world";
 
@@ -60,7 +60,7 @@ describe("guest route world", () => {
         expect(isTileCenter(point.x, zone.bounds.x), `${zone.id} x=${point.x}`).toBe(true);
         expect(isTileCenter(point.y, zone.bounds.y), `${zone.id} y=${point.y}`).toBe(true);
         expect(pointInRect(point, zone.cameraSafeBounds), `${zone.id} safe point`).toBe(true);
-        expect(zone.blocked.some((rect) => pointInRect(point, rect)), `${zone.id} blocked point`).toBe(false);
+        expect(isBlocked(point, zone), `${zone.id} blocked point`).toBe(false);
       }
 
       for (const portal of zone.portals) {

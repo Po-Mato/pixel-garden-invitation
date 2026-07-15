@@ -183,7 +183,7 @@ const homeZone = createZone({
   journeyIndex: 0,
   bounds: bounds(480, 600),
   spawn: { x: 135, y: 405 },
-  paths: [path("home-floor", "floor", 90, 150, 300, 390)],
+  paths: [path("home-floor", "floor", 90, 120, 300, 420)],
   spots: [spot("directions", "오시는 길", 82, 82, 104, 78)],
   npcs: [],
   portals: [

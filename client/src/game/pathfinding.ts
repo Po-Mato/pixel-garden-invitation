@@ -1,5 +1,5 @@
 import PF from "pathfinding";
-import { pointInRect } from "./geometry";
+import { isBlocked } from "./geometry";
 import { gridTileSize } from "./movement";
 import type { Point, WorldZone } from "./world";
 
@@ -33,6 +33,10 @@ export function findTilePath(zone: WorldZone, start: Point, goal: Point): Point[
     return null;
   }
 
+  if (isBlocked(start, zone) || isBlocked(goal, zone)) {
+    return null;
+  }
+
   const columns = Math.floor(zone.cameraSafeBounds.width / gridTileSize);
   const rows = Math.floor(zone.cameraSafeBounds.height / gridTileSize);
   const grid = new PF.Grid(columns, rows);
@@ -40,14 +44,11 @@ export function findTilePath(zone: WorldZone, start: Point, goal: Point): Point[
   for (let row = 0; row < rows; row += 1) {
     for (let column = 0; column < columns; column += 1) {
       const point = toWorldPoint(column, row, zone);
-      if (zone.blocked.some((rect) => pointInRect(point, rect))) {
+      if (isBlocked(point, zone)) {
         grid.setWalkableAt(column, row, false);
       }
     }
   }
-
-  grid.setWalkableAt(startGrid.column, startGrid.row, true);
-  grid.setWalkableAt(goalGrid.column, goalGrid.row, true);
 
   const finder = new PF.AStarFinder({ allowDiagonal: false });
   const result = finder.findPath(

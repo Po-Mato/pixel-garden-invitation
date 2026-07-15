@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { clampToWorld, getNearbySpot, isBlocked } from "./geometry";
+import { clampToWorld, getNearbySpot, isBlocked, isWalkable } from "./geometry";
 import { gardenWorld, getWorldZone, getZoneForSpot } from "./world";
 
 describe("world geometry", () => {
@@ -13,6 +13,12 @@ describe("world geometry", () => {
     const station = getWorldZone(gardenWorld, "subway-station");
     expect(isBlocked({ x: 300, y: 300 }, station)).toBe(true);
     expect(isBlocked(station.spawn, station)).toBe(false);
+  });
+
+  it("treats paths as the walkable area apart from blocked rectangles", () => {
+    expect(isWalkable({ x: 225, y: 405 }, home)).toBe(true);
+    expect(isBlocked({ x: 45, y: 45 }, home)).toBe(true);
+    expect(isBlocked(home.spawn, home)).toBe(false);
   });
 
   it("finds the nearest actionable invitation spot", () => {

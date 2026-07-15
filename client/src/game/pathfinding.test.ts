@@ -1,8 +1,12 @@
 import { describe, expect, it } from "vitest";
+import { isBlocked } from "./geometry";
 import { gardenWorld, getWorldZone, type WorldZone } from "./world";
 import { findTilePath } from "./pathfinding";
 
-function testZone(blocked: WorldZone["blocked"]): WorldZone {
+function testZone(
+  blocked: WorldZone["blocked"],
+  paths: WorldZone["paths"] = [{ id: "test-path", kind: "floor", x: 0, y: 0, width: 180, height: 180 }]
+): WorldZone {
   const home = getWorldZone(gardenWorld, "home");
   return {
     ...home,
@@ -13,7 +17,7 @@ function testZone(blocked: WorldZone["blocked"]): WorldZone {
     spots: [],
     portals: [],
     decorations: [],
-    paths: []
+    paths
   };
 }
 
@@ -52,10 +56,24 @@ describe("portal tile pathfinding", () => {
     expect(findTilePath(zone, { x: 15, y: 15 }, { x: 75, y: 45 })).toBeNull();
   });
 
+  it("returns null when the start or goal is blocked", () => {
+    expect(findTilePath(testZone([{ x: 0, y: 0, width: 30, height: 30 }]), { x: 15, y: 15 }, { x: 105, y: 15 })).toBeNull();
+    expect(findTilePath(testZone([{ x: 90, y: 0, width: 30, height: 30 }]), { x: 15, y: 15 }, { x: 105, y: 15 })).toBeNull();
+  });
+
+  it("returns null when the start or goal lies outside a path", () => {
+    const paths = [{ id: "test-path", kind: "floor" as const, x: 0, y: 0, width: 90, height: 30 }];
+    expect(findTilePath(testZone([], paths), { x: 15, y: 15 }, { x: 105, y: 15 })).toBeNull();
+  });
+
   it("finds a route from every zone spawn to every portal approach", () => {
     for (const zone of gardenWorld.zones) {
       for (const portal of zone.portals) {
-        expect(findTilePath(zone, zone.spawn, portal.approach), `${zone.id}/${portal.id}`).not.toBeNull();
+        const route = findTilePath(zone, zone.spawn, portal.approach);
+        expect(route, `${zone.id}/${portal.id}`).not.toBeNull();
+        for (const point of route ?? []) {
+          expect(isBlocked(point, zone), `${zone.id}/${portal.id} (${point.x}, ${point.y})`).toBe(false);
+        }
       }
     }
   });
