@@ -328,7 +328,7 @@ Expected: 경로 내부 이동과 모든 포털 A* 경로 테스트 PASS.
 - Consumes: 맵별 레퍼런스·픽셀 배경·투명 오버레이 원본
 - Produces: `client/public/assets/maps/v2/<zone>/background.webp`, 투명 PNG 오버레이, `maps:build`, `maps:audit`
 
-- [ ] **Step 1: 임시 이미지로 manifest 감사 실패 테스트를 작성한다**
+- [x] **Step 1: 임시 이미지로 manifest 감사 실패 테스트를 작성한다**
 
 테스트 fixture는 Sharp로 `60x90` 배경과 투명 `12x18` 오버레이를 만들고 다음을 검증한다.
 
@@ -340,13 +340,13 @@ assert.match(wrongSizeResult.errors[0], /크기/);
 assert.match(opaqueOverlayResult.errors[0], /알파/);
 ```
 
-- [ ] **Step 2: 테스트를 실행해 감사 모듈 부재로 실패하는지 확인한다**
+- [x] **Step 2: 테스트를 실행해 감사 모듈 부재로 실패하는지 확인한다**
 
 Run: `node --test scripts/mapAssetAudit.test.mjs`
 
 Expected: `scripts/lib/mapAssetAudit.mjs` 부재로 FAIL.
 
-- [ ] **Step 3: manifest를 정확한 10개 구역과 출력 크기로 작성한다**
+- [x] **Step 3: manifest를 정확한 10개 구역과 출력 크기로 작성한다**
 
 | 구역 | 최종 크기 | 깊이 오버레이와 출력 크기 | `requiredArtifacts` |
 |---|---:|---|---|
@@ -363,7 +363,7 @@ Expected: `scripts/lib/mapAssetAudit.mjs` 부재로 FAIL.
 
 모든 배경 원본 파일명은 `pixel-background-source.png`다. 소스 경로는 `map-assets/reference/v2/<zone>/`, 출력 경로는 `client/public/assets/maps/v2/<zone>/`로 고정한다.
 
-- [ ] **Step 4: Sharp 기반 빌드와 감사를 구현한다**
+- [x] **Step 4: Sharp 기반 빌드와 감사를 구현한다**
 
 `build-map-assets.mjs --zone <id>`는 배경을 manifest 크기로 `fit: cover`, `kernel: nearest` 처리해 lossless WebP로 만들고, 오버레이는 manifest의 장식 표시 크기에 `fit: contain`, 투명 배경으로 PNG 출력한다. 입력과 출력 종횡비 차이가 `3%`를 넘으면 빌드를 실패시켜 강제 크롭을 막는다.
 
@@ -377,7 +377,7 @@ export async function auditMapAssets({ rootDir, manifestPath }) {
 
 검사 항목은 10개 ID 순서, 소스 존재, 앱 배경 크기, 오버레이 알파 채널, manifest 중복, 요구 아티팩트 4개 이상이다.
 
-- [ ] **Step 5: package script를 추가하되 전체 build/test 연결은 Task 15까지 보류한다**
+- [x] **Step 5: package script를 추가하되 전체 build/test 연결은 Task 15까지 보류한다**
 
 ```json
 "maps:build": "node scripts/build-map-assets.mjs",
@@ -385,7 +385,7 @@ export async function auditMapAssets({ rootDir, manifestPath }) {
 "maps:test": "node --test scripts/mapAssetAudit.test.mjs"
 ```
 
-- [ ] **Step 6: 감사 도구 단위 테스트를 통과시킨다**
+- [x] **Step 6: 감사 도구 단위 테스트를 통과시킨다**
 
 Run: `pnpm maps:test`
 
