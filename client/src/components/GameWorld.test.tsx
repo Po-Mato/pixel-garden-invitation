@@ -643,15 +643,20 @@ describe("GameWorld", () => {
   });
 
   it("renders the actual world dimensions, pixel coordinates, and camera transform", () => {
-    const { container } = render(<GameWorld profile={profile} />);
+    render(<GameWorld profile={profile} />);
     const stage = screen.getByLabelText("우리 집 지도");
     const player = screen.getByLabelText("하객1");
-    const window = container.querySelector('[data-decoration="window"]');
 
     expect(stage).toHaveStyle({ width: "480px", height: "600px" });
     expect(stage.style.transform).toContain("translate3d(");
-    expect(player).toHaveStyle({ left: "135px", top: "405px" });
-    expect(window).toHaveStyle({ left: "270px", top: "65px" });
+    expect(player).toHaveStyle({ left: "135px", top: "405px", zIndex: "1405" });
+  });
+
+  it("keeps portals and information buttons above map depth layers", () => {
+    render(<GameWorld profile={profile} />);
+
+    expect(screen.getByRole("button", { name: "동네로 나가기" })).toHaveStyle({ zIndex: "9000" });
+    expect(screen.getByRole("button", { name: /오시는 길/ })).toHaveStyle({ zIndex: "9000" });
   });
 
   it("inverse-transforms map clicks and moves one grid tile at a time", () => {
@@ -680,8 +685,25 @@ describe("GameWorld", () => {
       guests: [serverGuest(), serverGuest({ guestId: "guest_lobby", nickname: "로비 하객", zoneId: "lobby" })]
     }));
 
-    expect(screen.getByLabelText("하객2")).toHaveStyle({ left: "165px", top: "405px" });
+    expect(screen.getByLabelText("하객2")).toHaveStyle({ left: "165px", top: "405px", zIndex: "1405" });
     expect(screen.queryByLabelText("로비 하객")).not.toBeInTheDocument();
+  });
+
+  it("uses shared Y depth for NPCs", () => {
+    render(<GameWorld profile={profile} />);
+    for (const portalLabel of [
+      "동네로 나가기",
+      "지하철역 들어가기",
+      "열차 타기",
+      "예식장역 내리기",
+      "예식장 로비 들어가기",
+      "신부 대기실"
+    ]) {
+      travelThroughPortal(portalLabel);
+    }
+
+    expect(screen.getByRole("button", { name: "신부 김하린 소개 보기" }).parentElement)
+      .toHaveStyle({ zIndex: "1225" });
   });
 
   it("sends one final approach move before the destination spawn", () => {

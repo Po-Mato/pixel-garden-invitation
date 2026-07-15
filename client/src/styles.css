@@ -1808,6 +1808,14 @@ select {
   --ornament-glow: rgba(180, 154, 104, 0.34);
 }
 
+.world-decoration--asset {
+  position: absolute;
+  display: block;
+  object-fit: contain;
+  image-rendering: pixelated;
+  pointer-events: none;
+}
+
 .world-decoration--sofa,
 .world-decoration--train-seat,
 .world-decoration--reception-desk,
@@ -2549,7 +2557,7 @@ select {
   --spot-soft: #e3f2dc;
   --spot-edge: #557d72;
   position: absolute;
-  z-index: 4;
+  z-index: 9000;
   display: grid;
   place-items: center;
   gap: 2px;
@@ -2639,7 +2647,7 @@ select {
   --portal-accent: #e98283;
   --portal-soft: #ffd9c7;
   position: absolute;
-  z-index: 4;
+  z-index: 9000;
   display: grid;
   place-items: center;
   overflow: hidden;
@@ -2684,7 +2692,6 @@ select {
 
 .world-player {
   position: absolute;
-  z-index: 5;
   display: grid;
   justify-items: center;
   gap: 3px;
@@ -2712,7 +2719,6 @@ select {
 
 .world-npc {
   position: absolute;
-  z-index: 5;
   width: 84px;
   transform: translate(-50%, -50%);
 }

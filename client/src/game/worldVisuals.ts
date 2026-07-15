@@ -31,6 +31,10 @@ export function resolveWorldMapAsset(zoneId: WorldZoneId, fileName: string, base
   return `${withTrailingSlash(baseUrl)}assets/maps/v2/${zoneId}/${fileName}`;
 }
 
+export function worldDepth(y: number): number {
+  return 1000 + Math.max(0, Math.round(Number.isFinite(y) ? y : 0));
+}
+
 export function resolveWorldVisual(zoneId: WorldZoneId, baseUrl = import.meta.env.BASE_URL) {
   return {
     backgroundUrl: resolveWorldMapAsset(zoneId, "background.webp", baseUrl),

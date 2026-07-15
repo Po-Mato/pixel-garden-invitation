@@ -68,6 +68,8 @@ export type WorldDecoration = Rect & {
   id: string;
   kind: WorldDecorationKind;
   label: string;
+  asset?: string;
+  depthY?: number;
 };
 
 export type WorldPathKind =
@@ -160,8 +162,9 @@ const decoration = (
   x: number,
   y: number,
   width: number,
-  height: number
-): WorldDecoration => ({ id, kind, label, x, y, width, height });
+  height: number,
+  visual?: { asset: string; depthY: number }
+): WorldDecoration => ({ id, kind, label, x, y, width, height, ...visual });
 
 const portal = (
   id: string,

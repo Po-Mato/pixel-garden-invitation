@@ -24,6 +24,7 @@ import {
   type TileInputState
 } from "../game/tileInput";
 import { gardenWorld, getWorldZone, type Point, type WorldPortal } from "../game/world";
+import { worldDepth } from "../game/worldVisuals";
 import { connectRealtimeWithRetry, createMoveThrottle, getRoomUrl } from "../realtime/realtimeClient";
 import type { EntryProfile } from "./EntryScreen";
 import { CharacterSprite } from "./CharacterSprite";
@@ -647,9 +648,9 @@ export function GameWorld({ profile }: GameWorldProps) {
                 style={pixelRect(worldPath)}
               />
             ))}
-            <div className="world-decoration-layer">
-              {activeZone.decorations.map((item) => <WorldDecoration key={item.id} decoration={item} />)}
-            </div>
+            {activeZone.decorations.map((item) => (
+              <WorldDecoration key={item.id} zoneId={activeZone.id} decoration={item} />
+            ))}
             {activeZone.spots.map((worldSpot) => {
               const content = invitationContent.spots.find((candidate) => candidate.id === worldSpot.id);
               return (
@@ -657,7 +658,7 @@ export function GameWorld({ profile }: GameWorldProps) {
                   key={worldSpot.id}
                   type="button"
                   className={`world-spot world-spot--${worldSpot.id}`}
-                  style={pixelRect(worldSpot)}
+                  style={{ ...pixelRect(worldSpot), zIndex: 9000 }}
                   onClick={(event) => {
                     event.stopPropagation();
                     openSpot(worldSpot.id);
@@ -673,7 +674,7 @@ export function GameWorld({ profile }: GameWorldProps) {
                 key={portalItem.id}
                 type="button"
                 className={`world-portal${portalIntent?.portal.id === portalItem.id ? " world-portal--target" : ""}`}
-                style={pixelRect(portalItem)}
+                style={{ ...pixelRect(portalItem), zIndex: 9000 }}
                 onClick={(event) => {
                   event.stopPropagation();
                   handlePortalClick(portalItem);
@@ -688,7 +689,7 @@ export function GameWorld({ profile }: GameWorldProps) {
                 className="world-player player player--remote"
                 aria-label={guest.nickname}
                 data-remote-motion="pixel-step-3"
-                style={{ left: guest.x, top: guest.y }}
+                style={{ left: guest.x, top: guest.y, zIndex: worldDepth(guest.y) }}
               >
                 <CharacterSprite
                   appearance={guest.appearance}
@@ -701,11 +702,15 @@ export function GameWorld({ profile }: GameWorldProps) {
               </div>
             ))}
             {activeZone.npcs.map((npc) => (
-              <div key={npc.id} className="world-npc" style={{ left: npc.x, top: npc.y }}>
+              <div key={npc.id} className="world-npc" style={{ left: npc.x, top: npc.y, zIndex: worldDepth(npc.y) }}>
                 <WeddingNpc id={npc.id} label={npc.label} onSelect={() => openSpot("couple")} />
               </div>
             ))}
-            <div className="world-player player" aria-label={profile.nickname} style={{ left: position.x, top: position.y }}>
+            <div
+              className="world-player player"
+              aria-label={profile.nickname}
+              style={{ left: position.x, top: position.y, zIndex: worldDepth(position.y) }}
+            >
               <CharacterSprite
                 appearance={profile.appearance}
                 direction={direction}

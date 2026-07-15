@@ -1,6 +1,6 @@
 import { worldZoneIds } from "@wedding-game/shared";
 import { describe, expect, it } from "vitest";
-import { resolveWorldMapAsset, resolveWorldVisual, worldVisualZoneIds } from "./worldVisuals";
+import { resolveWorldMapAsset, resolveWorldVisual, worldDepth, worldVisualZoneIds } from "./worldVisuals";
 
 describe("world visuals", () => {
   it.each([
@@ -25,6 +25,11 @@ describe("world visuals", () => {
   it("resolves map assets from a base URL without a trailing slash", () => {
     expect(resolveWorldMapAsset("banquet", "table-front.png", "./base"))
       .toBe("./base/assets/maps/v2/banquet/table-front.png");
+  });
+
+  it("places map artwork and characters on a shared Y-depth scale", () => {
+    expect(worldDepth(345)).toBe(1345);
+    expect(worldDepth(Number.NaN)).toBe(1000);
   });
 
   it("uses every shared world zone in visual order", () => {
