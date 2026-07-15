@@ -479,7 +479,7 @@ Expected: `home` 배경 `600x720`, 포털 경로, 캐릭터/토피어리 깊이 
 **Interfaces:**
 - Produces: `neighborhood` `1200x660` 횡형 맵과 양방향 포털
 
-- [ ] **Step 1: 다음 프롬프트로 레퍼런스·픽셀 배경·나무 캐노피를 순서대로 생성한다**
+- [x] **Step 1: 다음 프롬프트로 레퍼런스·픽셀 배경·나무 캐노피를 순서대로 생성한다**
 
 ```text
 인물 없는 봄날 한국 주택가와 작은 상점 거리, 정사영 탑다운 3/4 건축 시각화, 벽돌 보도와 차도, 횡단보도, 가로수, 카페 외벽, 다채로운 화단, 좌우 끝이 연결된 넓은 보행로, 긴 가로형 구도, 글자와 로고 없음
@@ -493,21 +493,21 @@ Expected: `home` 배경 `600x720`, 포털 경로, 캐릭터/토피어리 깊이 
 같은 맵의 봄 가로수 윗부분 캐노피 하나만 투명 배경의 고밀도 픽셀 오브젝트로 분리한다. 같은 시점과 좌상단 광원, 줄기 하단과 바닥 없음.
 ```
 
-- [ ] **Step 2: 다음 정확한 좌표를 테스트에 추가한 뒤 기존 데이터로 실패를 확인한다**
+- [x] **Step 2: 다음 정확한 좌표를 테스트에 추가한 뒤 기존 데이터로 실패를 확인한다**
 
 - bounds `1200x660`, spawn `(135,375)`.
 - paths: street `(60,240,1080,270)`, crosswalk `(510,180,180,390)`.
 - west portal rect `(30,315,90,120)`, approach `(105,375)`, home spawn `(285,135)`.
 - east portal rect `(1080,300,90,150)`, approach `(1095,375)`, station spawn `(135,435)`.
-- asset trees: `(180,120,90,150)` depthY `270`, `(510,90,90,150)` depthY `240`, `(840,120,90,150)` depthY `270`, 모두 `tree-canopy.png`.
+- asset trees: 배경 밑동과 알파 실루엣 중심을 맞춘 `(214,120,90,150)` depthY `270`, `(513,90,90,150)` depthY `240`, `(860,120,90,150)` depthY `270`, 모두 `tree-canopy.png`.
 
-- [ ] **Step 3: `neighborhoodZone`을 교체하고 양방향 A* 경로를 통과시킨다**
+- [x] **Step 3: `neighborhoodZone`을 교체하고 양방향 A* 경로를 통과시킨다**
 
 Run: `pnpm maps:build -- --zone neighborhood && pnpm --filter @wedding-game/client test -- world.test.ts pathfinding.test.ts GameWorld.test.tsx`
 
 Expected: 좌우 포털 경로와 home 복귀 spawn PASS.
 
-- [ ] **Step 4: 모바일에서 나무 캐노피와 캐릭터 가림, 횡단보도 판독성을 확인한다**
+- [x] **Step 4: 모바일에서 나무 캐노피와 캐릭터 가림, 횡단보도 판독성을 확인한다**
 
 `390x844`에서 캐릭터가 나무 아래를 지나기 전·후 스크린샷을 남기고 미니맵 경로와 실제 도로 방향이 일치하는지 확인한다.
 
