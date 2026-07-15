@@ -453,7 +453,7 @@ Expected: 기존 `480x600` 데이터로 FAIL.
 
 - paths: `floor(90,120,420,510)`, `entry(240,60,120,120)`; 두 path kind는 `floor`.
 - spot: `directions(90,180,120,90)`.
-- explicit blocked: `sofa(360,240,150,90)`, `table(270,330,120,90)`, `shoe-rack(90,480,120,120)`, `topiary(420,480,60,90)`.
+- explicit blocked: `sofa(400,110,140,290)`, `table(340,290,65,135)`, `shoe-rack(15,565,115,130)`, `topiary(420,480,60,90)`.
 - portal rect: `(240,30,120,90)`, approach `(285,105)`, facing `up`, destination spawn `(135,375)`.
 - asset decoration: topiary `(420,480,60,90)`, asset `topiary-foreground.png`, depthY `555`.
 
@@ -462,6 +462,8 @@ Expected: 기존 `480x600` 데이터로 FAIL.
 Run: `pnpm maps:build -- --zone home && pnpm --filter @wedding-game/client test -- world.test.ts GameWorld.test.tsx`
 
 Expected: `home` 배경 `600x720`, 포털 경로, 캐릭터/토피어리 깊이 PASS.
+
+최종 전체 리뷰에서는 승인된 배경 위에 path/blocker/portal을 합성해 재감사하고, 배경에 포함된 소파·테이블·신발장 footprint에 맞춰 위 blocked 좌표와 대응 decoration rect를 동일하게 보정한다. `(105,615)`는 신발장 내부로 blocked, `(195,525)`와 `(285,405)`는 열린 통로로 walkable이어야 한다.
 
 ---
 
