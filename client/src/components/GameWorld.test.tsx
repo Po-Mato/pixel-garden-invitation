@@ -507,7 +507,7 @@ describe("GameWorld", () => {
     }
   });
 
-  it("renders the wide subway train strap foreground and arrives at the Task 8 venue coordinate", () => {
+  it("renders the wide subway train strap foreground and arrives at the Task 9 venue coordinate", () => {
     const { container } = render(<GameWorld profile={profile} />);
 
     travelThroughPortal("동네로 나가기");
@@ -525,8 +525,11 @@ describe("GameWorld", () => {
 
     travelThroughPortal("예식장역 내리기");
 
-    expect(screen.getByLabelText("예식장 앞 지도")).toHaveStyle({ width: "840px", height: "900px" });
+    expect(screen.getByLabelText("예식장 앞 지도")).toHaveStyle({ width: "960px", height: "900px" });
     expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "465px", top: "765px" });
+    const flowerArch = container.querySelector('img[data-decoration="flower-arch"]');
+    expect(flowerArch).toHaveAttribute("src", "/assets/maps/v2/venue-exterior/flower-arch-front.png");
+    expect(flowerArch).toHaveStyle({ left: "360px", top: "180px", width: "240px", height: "180px", zIndex: "1360" });
 
     fireEvent.click(screen.getByRole("button", { name: "예식장 로비 들어가기" }));
 
@@ -538,9 +541,10 @@ describe("GameWorld", () => {
     finishCurrentRoute();
 
     expect(screen.getByLabelText("예식장 로비 지도")).toBeInTheDocument();
+    expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "525px", top: "765px" });
   });
 
-  it("walks from the Task 8 venue coordinate back to the train portal without an immediate transition", () => {
+  it("walks from the Task 9 venue coordinate back to the bottom train portal", () => {
     render(<GameWorld profile={profile} />);
 
     travelThroughPortal("동네로 나가기");
@@ -555,11 +559,31 @@ describe("GameWorld", () => {
     expect(screen.getByTestId("world-portal-transition")).toHaveAttribute("data-phase", "idle");
     expect(screen.getByText("지하철역으로 돌아가기까지 이동 중")).toBeInTheDocument();
     advanceAnimation(0);
-    expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "465px", top: "735px" });
+    expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "465px", top: "795px" });
 
     finishCurrentRoute();
 
     expect(screen.getByLabelText("지하철 차량 지도")).toBeInTheDocument();
+    expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "1305px", top: "285px" });
+  });
+
+  it("roundtrips from the Task 9 lobby arrival back to the venue with the camera safe", () => {
+    render(<GameWorld profile={profile} />);
+
+    travelThroughPortal("동네로 나가기");
+    travelThroughPortal("지하철역 들어가기");
+    travelThroughPortal("열차 타기");
+    travelThroughPortal("예식장역 내리기");
+    travelThroughPortal("예식장 로비 들어가기");
+
+    expect(screen.getByLabelText("예식장 로비 지도")).toHaveStyle({ width: "960px", height: "900px" });
+    expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "525px", top: "765px" });
+
+    fireEvent.click(screen.getByRole("button", { name: "예식장 밖으로" }));
+    finishCurrentRoute();
+
+    expect(screen.getByLabelText("예식장 앞 지도")).toBeInTheDocument();
+    expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "465px", top: "135px" });
   });
 
   it("waits for the overlay opacity transition before swapping maps", () => {

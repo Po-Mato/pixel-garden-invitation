@@ -10,8 +10,8 @@ const expectedSizes = {
   neighborhood: [1200, 660],
   "subway-station": [900, 840],
   "subway-train": [1440, 540],
-  "venue-exterior": [840, 900],
-  lobby: [960, 780],
+  "venue-exterior": [960, 900],
+  lobby: [960, 900],
   "bridal-room": [600, 540],
   "ceremony-hall": [660, 1800],
   restroom: [540, 600],
@@ -32,7 +32,7 @@ describe("guest route world", () => {
       expect([zone.bounds.width, zone.bounds.height]).toEqual([width, height]);
     }
 
-    expect(new Set(gardenWorld.zones.map((zone) => `${zone.bounds.width}x${zone.bounds.height}`)).size).toBe(10);
+    expect(new Set(gardenWorld.zones.map((zone) => `${zone.bounds.width}x${zone.bounds.height}`)).size).toBeGreaterThanOrEqual(9);
   });
 
   it("connects the full route and lobby branches with reverse portals", () => {
@@ -334,28 +334,95 @@ describe("guest route world", () => {
     }
   });
 
-  it("connects the Task 8 train arrival through a minimal venue corridor without replacing the venue map", () => {
+  it("defines the exact Task 9 venue exterior with top and bottom portals", () => {
+    const venue = getWorldZone(gardenWorld, "venue-exterior");
+
+    expect(venue.spawn).toEqual({ x: 465, y: 765 });
+    expect(venue.paths).toEqual([
+      { id: "venue-garden", kind: "garden", x: 90, y: 570, width: 780, height: 180 },
+      { id: "venue-plaza", kind: "garden", x: 240, y: 300, width: 480, height: 360 },
+      { id: "venue-central", kind: "garden", x: 390, y: 60, width: 180, height: 780 }
+    ]);
+    expect(venue.blocked).toEqual([{ x: 240, y: 450, width: 120, height: 120 }]);
+    expect(venue.paths.some((item) => item.id === "venue-arrival")).toBe(false);
+    expect(venue.portals).toEqual([
+      expect.objectContaining({
+        id: "venue-to-train",
+        to: "subway-train",
+        x: 420,
+        y: 810,
+        width: 90,
+        height: 60,
+        approach: { x: 465, y: 795 },
+        facing: "down",
+        spawn: { x: 1305, y: 285 }
+      }),
+      expect.objectContaining({
+        id: "venue-to-lobby",
+        to: "lobby",
+        x: 405,
+        y: 30,
+        width: 120,
+        height: 90,
+        approach: { x: 465, y: 105 },
+        facing: "up",
+        spawn: { x: 525, y: 765 }
+      })
+    ]);
+    expect(venue.decorations).toContainEqual(expect.objectContaining({
+      id: "venue-arch",
+      kind: "flower-arch",
+      x: 360,
+      y: 180,
+      width: 240,
+      height: 180,
+      asset: "flower-arch-front.png",
+      depthY: 360
+    }));
+  });
+
+  it("routes around the Task 9 venue fountain between bottom arrival and the lobby", () => {
     const venue = getWorldZone(gardenWorld, "venue-exterior");
     const trainArrival = getWorldZone(gardenWorld, "subway-train").portals.find(
       (portalItem) => portalItem.id === "train-to-venue"
     );
-    const arrival = trainArrival?.spawn;
+    const lobbyPortal = venue.portals.find((portalItem) => portalItem.id === "venue-to-lobby");
+    const trainPortal = venue.portals.find((portalItem) => portalItem.id === "venue-to-train");
+    const fountainBypass = findTilePath(venue, { x: 285, y: 615 }, { x: 285, y: 405 });
+    const arrivalToLobby = findTilePath(venue, trainArrival!.spawn, lobbyPortal!.approach);
 
-    expect([venue.bounds.width, venue.bounds.height]).toEqual([840, 900]);
-    expect(venue.paths).toEqual([
-      { id: "venue-garden", kind: "garden", x: 60, y: 300, width: 720, height: 180 },
-      { id: "venue-arrival", kind: "garden", x: 420, y: 300, width: 90, height: 510 }
-    ]);
-    expect(arrival).toEqual({ x: 465, y: 765 });
-    expect(arrival && pointInRect(arrival, venue.cameraSafeBounds)).toBe(true);
-    expect(arrival && isWalkable(arrival, venue)).toBe(true);
-    expect(arrival && isBlocked(arrival, venue)).toBe(false);
+    expect(trainArrival?.spawn).toEqual(venue.spawn);
+    expect(fountainBypass).not.toBeNull();
+    expect(fountainBypass?.at(-1)).toEqual({ x: 285, y: 405 });
+    expect(fountainBypass?.some((point) => point.x === 375), "route should side-step the fountain").toBe(true);
+    for (const point of fountainBypass ?? []) {
+      expect(isBlocked(point, venue), `venue fountain bypass blocked at ${point.x},${point.y}`).toBe(false);
+    }
 
-    for (const portalItem of venue.portals) {
-      const route = arrival ? findTilePath(venue, arrival, portalItem.approach) : null;
-      expect(route, portalItem.id).not.toBeNull();
-      expect(route?.at(-1), portalItem.id).toEqual(portalItem.approach);
-      expect(route?.some((point) => point.y === 465), portalItem.id).toBe(true);
+    expect(arrivalToLobby).not.toBeNull();
+    expect(arrivalToLobby?.at(-1)).toEqual(lobbyPortal?.approach);
+    const roundTrip = findTilePath(venue, lobbyPortal!.approach, trainPortal!.approach);
+    expect(roundTrip).not.toBeNull();
+    expect(roundTrip?.at(-1)).toEqual(trainPortal?.approach);
+  });
+
+  it("keeps the transitional lobby arrival corridor walkable without adopting Task 10 geometry", () => {
+    const lobby = getWorldZone(gardenWorld, "lobby");
+    const venuePortal = getWorldZone(gardenWorld, "venue-exterior").portals.find(
+      (portalItem) => portalItem.id === "venue-to-lobby"
+    );
+
+    expect([lobby.bounds.width, lobby.bounds.height]).toEqual([960, 900]);
+    expect(lobby.spawn).toEqual({ x: 105, y: 405 });
+    expect(lobby.paths).toContainEqual({ id: "lobby-cross", kind: "corridor", x: 420, y: 90, width: 150, height: 600 });
+    expect(lobby.paths).toContainEqual({ id: "lobby-arrival", kind: "corridor", x: 480, y: 660, width: 90, height: 180 });
+    expect(venuePortal?.spawn).toEqual({ x: 525, y: 765 });
+    expect(venuePortal && pointInRect(venuePortal.spawn, lobby.cameraSafeBounds)).toBe(true);
+    expect(venuePortal && isWalkable(venuePortal.spawn, lobby)).toBe(true);
+    expect(venuePortal && isBlocked(venuePortal.spawn, lobby)).toBe(false);
+
+    for (const portalItem of lobby.portals.slice(0, 2)) {
+      expect(findTilePath(lobby, venuePortal!.spawn, portalItem.approach), portalItem.id).not.toBeNull();
     }
   });
 

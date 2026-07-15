@@ -336,28 +336,35 @@ const venueExteriorZone = createZone({
   label: "예식장 앞",
   subtitle: "꽃 간판과 유리문 너머로 축하의 공간이 보여요",
   journeyIndex: 4,
-  bounds: bounds(840, 900),
-  spawn: { x: 105, y: 375 },
+  bounds: bounds(960, 900),
+  spawn: { x: 465, y: 765 },
   paths: [
-    path("venue-garden", "garden", 60, 300, 720, 180),
-    path("venue-arrival", "garden", 420, 300, 90, 510)
+    path("venue-garden", "garden", 90, 570, 780, 180),
+    path("venue-plaza", "garden", 240, 300, 480, 360),
+    path("venue-central", "garden", 390, 60, 180, 780)
   ],
+  blocked: [{ x: 240, y: 450, width: 120, height: 120 }],
   spots: [],
   npcs: [],
   portals: [
-    portal("venue-to-train", "지하철역으로 돌아가기", "subway-train", { x: 30, y: 315, width: 72, height: 120 }, { x: 105, y: 375 }, "left", { x: 945, y: 255 }),
-    portal("venue-to-lobby", "예식장 로비 들어가기", "lobby", { x: 690, y: 285, width: 96, height: 150 }, { x: 675, y: 375 }, "right", { x: 135, y: 405 })
+    portal("venue-to-train", "지하철역으로 돌아가기", "subway-train", { x: 420, y: 810, width: 90, height: 60 }, { x: 465, y: 795 }, "down", { x: 1305, y: 285 }),
+    portal("venue-to-lobby", "예식장 로비 들어가기", "lobby", { x: 405, y: 30, width: 120, height: 90 }, { x: 465, y: 105 }, "up", { x: 525, y: 765 })
   ],
   decorations: [
-    decoration("venue-building", "venue-sign", "예식장 간판", 260, 72, 330, 90),
-    decoration("venue-door", "door", "예식장 유리문", 690, 285, 96, 150),
-    decoration("venue-arch", "flower-arch", "코랄 꽃 아치", 600, 235, 120, 138),
-    decoration("venue-tree-1", "tree", "예식장 나무", 120, 120, 72, 94),
-    decoration("venue-tree-2", "tree", "예식장 나무", 610, 500, 72, 94),
-    decoration("venue-flower-1", "flower-bed", "입구 화단", 180, 500, 150, 48),
-    decoration("venue-flower-2", "flower-bed", "입구 화단", 420, 530, 150, 48),
-    decoration("venue-lamp", "lamp", "드롭오프 조명", 360, 215, 30, 62),
-    decoration("venue-bench", "bench", "대기 벤치", 90, 570, 110, 46)
+    decoration("venue-building", "venue-sign", "예식장 유리 파사드", 300, 60, 360, 120),
+    decoration("venue-door", "door", "예식장 유리문", 405, 30, 120, 90),
+    decoration("venue-arch", "flower-arch", "코랄 꽃 아치", 360, 180, 240, 180, {
+      asset: "flower-arch-front.png",
+      depthY: 360
+    }),
+    decoration("venue-fountain", "fountain", "작은 수경 요소", 240, 450, 120, 120),
+    decoration("venue-tree-1", "tree", "예식장 나무", 120, 330, 90, 135),
+    decoration("venue-tree-2", "tree", "예식장 나무", 750, 330, 90, 135),
+    decoration("venue-flower-1", "flower-bed", "정원 화단", 105, 570, 150, 60),
+    decoration("venue-flower-2", "flower-bed", "정원 화단", 705, 570, 150, 60),
+    decoration("venue-lamp-1", "lamp", "정원 조명", 330, 255, 30, 60),
+    decoration("venue-lamp-2", "lamp", "정원 조명", 600, 255, 30, 60),
+    decoration("venue-bench", "bench", "대기 벤치", 645, 705, 120, 45)
   ]
 });
 
@@ -366,11 +373,12 @@ const lobbyZone = createZone({
   label: "예식장 로비",
   subtitle: "축의대와 포토월을 지나 원하는 공간으로 이동해요",
   journeyIndex: 5,
-  bounds: bounds(960, 780),
+  bounds: bounds(960, 900),
   spawn: { x: 105, y: 405 },
   paths: [
     path("lobby-main", "lobby", 60, 300, 840, 210),
-    path("lobby-cross", "corridor", 420, 90, 150, 600)
+    path("lobby-cross", "corridor", 420, 90, 150, 600),
+    path("lobby-arrival", "corridor", 480, 660, 90, 180)
   ],
   spots: [
     spot("wedding-info", "예식 안내", 180, 90, 108, 78),
@@ -380,7 +388,7 @@ const lobbyZone = createZone({
   ],
   npcs: [],
   portals: [
-    portal("lobby-to-venue", "예식장 밖으로", "venue-exterior", { x: 30, y: 345, width: 72, height: 120 }, { x: 105, y: 405 }, "left", { x: 645, y: 375 }),
+    portal("lobby-to-venue", "예식장 밖으로", "venue-exterior", { x: 30, y: 345, width: 72, height: 120 }, { x: 105, y: 405 }, "left", { x: 465, y: 135 }),
     portal("lobby-to-bridal", "신부 대기실", "bridal-room", { x: 432, y: 30, width: 96, height: 90 }, { x: 465, y: 135 }, "up", { x: 285, y: 405 }),
     portal("lobby-to-restroom", "화장실", "restroom", { x: 858, y: 345, width: 72, height: 120 }, { x: 855, y: 405 }, "right", { x: 135, y: 315 }),
     portal("lobby-to-hall", "예식홀", "ceremony-hall", { x: 432, y: 660, width: 96, height: 90 }, { x: 465, y: 645 }, "down", { x: 315, y: 1605 })

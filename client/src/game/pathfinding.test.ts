@@ -91,6 +91,30 @@ describe("portal tile pathfinding", () => {
     }
   });
 
+  it("uses the venue plaza side path to bypass the fountain", () => {
+    const venue = getWorldZone(gardenWorld, "venue-exterior");
+    const route = findTilePath(venue, { x: 285, y: 615 }, { x: 285, y: 405 });
+
+    expect(route).not.toBeNull();
+    expect(route?.at(-1)).toEqual({ x: 285, y: 405 });
+    expect(route?.some((point) => point.x === 375)).toBe(true);
+    for (const point of route ?? []) {
+      expect(isBlocked(point, venue), `venue-exterior (${point.x}, ${point.y})`).toBe(false);
+    }
+  });
+
+  it("connects the transitional lobby arrival to at least two existing lobby exits", () => {
+    const lobby = getWorldZone(gardenWorld, "lobby");
+    const arrival = { x: 525, y: 765 };
+
+    expect(lobby.portals.length).toBeGreaterThanOrEqual(2);
+    for (const portal of lobby.portals.slice(0, 2)) {
+      const route = findTilePath(lobby, arrival, portal.approach);
+      expect(route, portal.id).not.toBeNull();
+      expect(route?.at(-1), portal.id).toEqual(portal.approach);
+    }
+  });
+
   it("connects every incoming spawn to every exit in its destination zone", () => {
     for (const source of gardenWorld.zones) {
       for (const incoming of source.portals) {

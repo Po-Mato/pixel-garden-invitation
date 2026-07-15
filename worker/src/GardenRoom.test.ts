@@ -149,6 +149,32 @@ describe("GardenRoom helpers", () => {
     });
   });
 
+  it("creates a venue exterior guest at the Task 9 client world spawn", () => {
+    expect(createGuestSnapshot("guest_venue", {
+      type: "join",
+      nickname: "예식장 하객",
+      appearance: defaultCharacterAppearance,
+      zoneId: "venue-exterior"
+    }, 1000)).toMatchObject({
+      x: 465,
+      y: 765,
+      zoneId: "venue-exterior"
+    });
+  });
+
+  it("keeps the transitional lobby default spawn until Task 10", () => {
+    expect(createGuestSnapshot("guest_lobby", {
+      type: "join",
+      nickname: "로비 하객",
+      appearance: defaultCharacterAppearance,
+      zoneId: "lobby"
+    }, 1000)).toMatchObject({
+      x: 105,
+      y: 405,
+      zoneId: "lobby"
+    });
+  });
+
 });
 
 describe("GardenRoom socket behavior", () => {
@@ -381,8 +407,8 @@ describe("GardenRoom socket behavior", () => {
     });
   });
 
-  it("keeps the Task 8 venue arrival coordinate inside the regular venue bounds", () => {
-    vi.spyOn(Date, "now").mockReturnValue(2000);
+  it("keeps the Task 9 venue portal approaches inside the regular venue bounds", () => {
+    const nowSpy = vi.spyOn(Date, "now").mockReturnValue(2000);
     const state = new TestState();
     const room = createRoom(state);
     const moving = new TestSocket();
@@ -392,18 +418,23 @@ describe("GardenRoom socket behavior", () => {
     joinGuest(room, state, watching, "watching");
     watching.sent.length = 0;
 
-    room.webSocketMessage(asWebSocket(moving), moveMessage(1, 465, "venue-exterior", 765));
+    room.webSocketMessage(asWebSocket(moving), moveMessage(1, 465, "venue-exterior", 795));
+    nowSpy.mockReturnValue(2100);
+    room.webSocketMessage(asWebSocket(moving), moveMessage(2, 465, "venue-exterior", 105));
 
-    const broadcast = watching.sent.map((payload) => JSON.parse(payload)).find((message) => message.type === "guest_moved");
-    expect(broadcast.position).toMatchObject({ x: 465, y: 765, zoneId: "venue-exterior" });
+    const broadcasts = watching.sent.map((payload) => JSON.parse(payload)).filter((message) => message.type === "guest_moved");
+    expect(broadcasts.map((message) => message.position)).toEqual([
+      expect.objectContaining({ x: 465, y: 795, zoneId: "venue-exterior" }),
+      expect.objectContaining({ x: 465, y: 105, zoneId: "venue-exterior" })
+    ]);
     expect((moving.deserializeAttachment() as { guest?: RoomGuest } | null)?.guest).toMatchObject({
       x: 465,
-      y: 765,
+      y: 105,
       zoneId: "venue-exterior"
     });
   });
 
-  it("clamps venue exterior positions above the expanded venue bounds", () => {
+  it("clamps venue exterior positions outside the Task 9 bounds", () => {
     vi.spyOn(Date, "now").mockReturnValue(2000);
     const state = new TestState();
     const room = createRoom(state);
@@ -414,14 +445,41 @@ describe("GardenRoom socket behavior", () => {
     joinGuest(room, state, watching, "watching");
     watching.sent.length = 0;
 
-    room.webSocketMessage(asWebSocket(moving), moveMessage(1, 600, "venue-exterior", 960));
+    room.webSocketMessage(asWebSocket(moving), moveMessage(1, 990, "venue-exterior", 960));
 
     const broadcast = watching.sent.map((payload) => JSON.parse(payload)).find((message) => message.type === "guest_moved");
-    expect(broadcast.position).toMatchObject({ x: 600, y: 900, zoneId: "venue-exterior" });
+    expect(broadcast.position).toMatchObject({ x: 960, y: 900, zoneId: "venue-exterior" });
     expect((moving.deserializeAttachment() as { guest?: RoomGuest } | null)?.guest).toMatchObject({
-      x: 600,
+      x: 960,
       y: 900,
       zoneId: "venue-exterior"
+    });
+  });
+
+  it("does not clamp the Task 9 portal destination coordinates", () => {
+    const nowSpy = vi.spyOn(Date, "now").mockReturnValue(2000);
+    const state = new TestState();
+    const room = createRoom(state);
+    const moving = new TestSocket();
+    const watching = new TestSocket();
+
+    joinGuest(room, state, moving, "moving");
+    joinGuest(room, state, watching, "watching");
+    watching.sent.length = 0;
+
+    room.webSocketMessage(asWebSocket(moving), moveMessage(1, 1305, "subway-train", 285));
+    nowSpy.mockReturnValue(2100);
+    room.webSocketMessage(asWebSocket(moving), moveMessage(2, 525, "lobby", 765));
+
+    const broadcasts = watching.sent.map((payload) => JSON.parse(payload)).filter((message) => message.type === "guest_moved");
+    expect(broadcasts.map((message) => message.position)).toEqual([
+      expect.objectContaining({ x: 1305, y: 285, zoneId: "subway-train" }),
+      expect.objectContaining({ x: 525, y: 765, zoneId: "lobby" })
+    ]);
+    expect((moving.deserializeAttachment() as { guest?: RoomGuest } | null)?.guest).toMatchObject({
+      x: 525,
+      y: 765,
+      zoneId: "lobby"
     });
   });
 

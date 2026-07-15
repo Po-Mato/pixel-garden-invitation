@@ -48,6 +48,21 @@ describe("minimap projection", () => {
     }
   });
 
+  it("projects the Task 9 venue fountain and vertical portals inside the minimap", () => {
+    const venue = getWorldZone(gardenWorld, "venue-exterior");
+    const layout = createMiniMapLayout(venue.bounds);
+
+    expect(layout.width).toBe(96);
+    expect(layout.height).toBeCloseTo(90.5, 1);
+    for (const marker of [...venue.portals, ...venue.blocked]) {
+      const projected = projectMiniMapRect(marker, venue.bounds, layout);
+      expect(projected.x).toBeGreaterThanOrEqual(layout.content.x);
+      expect(projected.y).toBeGreaterThanOrEqual(layout.content.y);
+      expect(projected.x + projected.width).toBeLessThanOrEqual(layout.content.x + layout.content.width + 0.001);
+      expect(projected.y + projected.height).toBeLessThanOrEqual(layout.content.y + layout.content.height + 0.001);
+    }
+  });
+
   it("projects world points and rectangles into minimap coordinates", () => {
     const bounds = { x: 0, y: 0, width: 480, height: 600 };
     const layout = createMiniMapLayout(bounds);
