@@ -527,7 +527,7 @@ Expected: 좌우 포털 경로와 home 복귀 spawn PASS.
 **Interfaces:**
 - Produces: `subway-station` `900x840` 맵과 개찰구 우회 경로
 
-- [ ] **Step 1: 다음 세 프롬프트로 이미지를 생성·검수한다**
+- [x] **Step 1: 다음 세 프롬프트로 이미지를 생성·검수한다**
 
 ```text
 인물 없는 밝고 현대적인 한국 지하철 대합실과 승강장, 정사영 탑다운 3/4 건축 시각화, 유광 타일, 금속 개찰구 세 개, 노선색 띠, 벤치, 안전선, 오른쪽 승강장 문, 서쪽 출입구에서 동쪽 승강장까지 명확한 통로, 글자와 로고 없음
@@ -541,7 +541,7 @@ Expected: 좌우 포털 경로와 home 복귀 spawn PASS.
 같은 맵의 금속 개찰구 앞쪽 덮개 한 개만 투명 배경의 고밀도 픽셀 오브젝트로 분리한다. 같은 시점·광원·픽셀 밀도, 바닥 없음.
 ```
 
-- [ ] **Step 2: 다음 데이터로 실패 테스트를 작성하고 `subwayStationZone`을 교체한다**
+- [x] **Step 2: 다음 데이터로 실패 테스트를 작성하고 `subwayStationZone`을 교체한다**
 
 - bounds `900x840`, spawn `(135,435)`.
 - paths: concourse `(60,300,600,270)`, gate-corridor `(330,240,240,390)`, platform `(600,120,210,600)`.
@@ -551,7 +551,7 @@ Expected: 좌우 포털 경로와 home 복귀 spawn PASS.
 - east portal `(750,360,90,150)`, approach `(735,435)`, train spawn `(135,285)`.
 - asset gate fronts: 같은 세 blocked rect, asset `ticket-gate-front.png`, depthY `480`.
 
-- [ ] **Step 3: 빌드와 개찰구 우회 경로 검증을 실행한다**
+- [x] **Step 3: 빌드와 개찰구 우회 경로 검증을 실행한다**
 
 Run: `pnpm maps:build -- --zone subway-station && pnpm --filter @wedding-game/client test -- world.test.ts pathfinding.test.ts minimap.test.ts`
 
