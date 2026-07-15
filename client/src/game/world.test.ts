@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { worldZoneIds } from "@wedding-game/shared";
-import { isBlocked, pointInRect } from "./geometry";
+import { isBlocked, isWalkable, pointInRect } from "./geometry";
 import { gridTileSize } from "./movement";
 import { findTilePath } from "./pathfinding";
 import { gardenWorld, getWorldZone } from "./world";
@@ -132,9 +132,9 @@ describe("guest route world", () => {
       })
     ]);
     expect(neighborhood.decorations.filter((item) => item.kind === "tree")).toEqual([
-      expect.objectContaining({ x: 180, y: 120, width: 90, height: 150, asset: "tree-canopy.png", depthY: 270 }),
-      expect.objectContaining({ x: 510, y: 90, width: 90, height: 150, asset: "tree-canopy.png", depthY: 240 }),
-      expect.objectContaining({ x: 840, y: 120, width: 90, height: 150, asset: "tree-canopy.png", depthY: 270 })
+      expect.objectContaining({ x: 214, y: 120, width: 90, height: 150, asset: "tree-canopy.png", depthY: 270 }),
+      expect.objectContaining({ x: 513, y: 90, width: 90, height: 150, asset: "tree-canopy.png", depthY: 240 }),
+      expect.objectContaining({ x: 860, y: 120, width: 90, height: 150, asset: "tree-canopy.png", depthY: 270 })
     ]);
   });
 
@@ -156,6 +156,18 @@ describe("guest route world", () => {
     expect(returnHome?.spawn).not.toEqual(home.portals[0].approach);
     expect(returnHome && pointInRect(returnHome.spawn, home.cameraSafeBounds)).toBe(true);
     expect(returnHome && isBlocked(returnHome.spawn, home)).toBe(false);
+  });
+
+  it("keeps the station return spawn safe and walkable in the neighborhood", () => {
+    const neighborhood = getWorldZone(gardenWorld, "neighborhood");
+    const returnNeighborhood = getWorldZone(gardenWorld, "subway-station").portals.find(
+      (portal) => portal.id === "station-to-neighborhood"
+    );
+
+    expect(returnNeighborhood?.spawn).toEqual({ x: 1065, y: 375 });
+    expect(returnNeighborhood && pointInRect(returnNeighborhood.spawn, neighborhood.cameraSafeBounds)).toBe(true);
+    expect(returnNeighborhood && isWalkable(returnNeighborhood.spawn, neighborhood)).toBe(true);
+    expect(returnNeighborhood && isBlocked(returnNeighborhood.spawn, neighborhood)).toBe(false);
   });
 
   it("keeps every spawn and portal approach on a safe walkable tile", () => {

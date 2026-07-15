@@ -231,15 +231,15 @@ const neighborhoodZone = createZone({
     portal("neighborhood-to-station", "지하철역 들어가기", "subway-station", { x: 1080, y: 300, width: 90, height: 150 }, { x: 1095, y: 375 }, "right", { x: 135, y: 435 })
   ],
   decorations: [
-    decoration("street-tree-1", "tree", "가로수", 180, 120, 90, 150, {
+    decoration("street-tree-1", "tree", "가로수", 214, 120, 90, 150, {
       asset: "tree-canopy.png",
       depthY: 270
     }),
-    decoration("street-tree-2", "tree", "가로수", 510, 90, 90, 150, {
+    decoration("street-tree-2", "tree", "가로수", 513, 90, 90, 150, {
       asset: "tree-canopy.png",
       depthY: 240
     }),
-    decoration("street-tree-3", "tree", "가로수", 840, 120, 90, 150, {
+    decoration("street-tree-3", "tree", "가로수", 860, 120, 90, 150, {
       asset: "tree-canopy.png",
       depthY: 270
     }),

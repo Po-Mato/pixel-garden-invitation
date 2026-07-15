@@ -467,6 +467,17 @@ describe("GameWorld", () => {
     expect(screen.getByTestId("world-portal-transition")).toHaveAttribute("data-phase", "idle");
   });
 
+  it("returns from the subway station to the safe neighborhood east spawn", () => {
+    render(<GameWorld profile={profile} />);
+
+    travelThroughPortal("동네로 나가기");
+    travelThroughPortal("지하철역 들어가기");
+    travelThroughPortal("거리로 나가기");
+
+    expect(screen.getByLabelText("동네 거리 지도")).toBeInTheDocument();
+    expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "1065px", top: "375px" });
+  });
+
   it("waits for the overlay opacity transition before swapping maps", () => {
     render(<GameWorld profile={profile} />);
     fireEvent.click(screen.getByRole("button", { name: "동네로 나가기" }));
