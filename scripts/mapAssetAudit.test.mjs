@@ -449,3 +449,16 @@ test("declares the ten map contracts in journey order", async () => {
     }
   ]);
 });
+
+test("wires map asset audit into root test and build scripts", async () => {
+  const packageJson = JSON.parse(await readFile(join(root, "package.json"), "utf8"));
+
+  assert.equal(
+    packageJson.scripts.build,
+    "pnpm maps:audit && pnpm characters:audit && pnpm characters:generate && pnpm --filter @wedding-game/shared build && pnpm --filter @wedding-game/client build && pnpm --filter @wedding-game/worker build"
+  );
+  assert.equal(
+    packageJson.scripts.test,
+    "pnpm maps:audit && pnpm maps:test && pnpm characters:audit && pnpm characters:test && pnpm --filter @wedding-game/shared test && pnpm --filter @wedding-game/client test && pnpm --filter @wedding-game/worker test"
+  );
+});

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { worldZoneIds } from "@wedding-game/shared";
+import mapManifest from "../../../map-assets/reference/v2/manifest.json";
 import { isBlocked, isWalkable, pointInRect } from "./geometry";
 import { gridTileSize } from "./movement";
 import { findTilePath } from "./pathfinding";
@@ -33,6 +34,38 @@ describe("guest route world", () => {
     }
 
     expect(new Set(gardenWorld.zones.map((zone) => `${zone.bounds.width}x${zone.bounds.height}`)).size).toBeGreaterThanOrEqual(9);
+  });
+
+  it("matches every world zone to the v2 manifest background and depth assets", () => {
+    expect(mapManifest.zones.map((zone) => zone.id)).toEqual(worldZoneIds);
+
+    const manifestByZone = new Map(mapManifest.zones.map((zone) => [zone.id, zone]));
+
+    for (const zone of gardenWorld.zones) {
+      const manifestZone = manifestByZone.get(zone.id);
+      const assetDecorations = zone.decorations.filter((decoration) => decoration.asset);
+      const overlayOutputs = new Set(manifestZone?.overlays.map((overlay) => overlay.output) ?? []);
+
+      expect(manifestZone, zone.id).toBeDefined();
+      expect(manifestZone?.background.output, zone.id).toBe("background.webp");
+      expect(
+        [manifestZone?.background.width, manifestZone?.background.height],
+        `${zone.id} manifest background size`
+      ).toEqual([zone.bounds.width, zone.bounds.height]);
+      expect(assetDecorations.length, `${zone.id} asset decorations`).toBeGreaterThanOrEqual(1);
+      expect(overlayOutputs.size, `${zone.id} manifest overlays`).toBeGreaterThanOrEqual(1);
+
+      for (const decoration of assetDecorations) {
+        expect(overlayOutputs.has(decoration.asset!), `${zone.id} decoration asset ${decoration.asset}`).toBe(true);
+      }
+
+      for (const output of overlayOutputs) {
+        expect(
+          assetDecorations.some((decoration) => decoration.asset === output),
+          `${zone.id} manifest overlay ${output}`
+        ).toBe(true);
+      }
+    }
   });
 
   it("connects the full route and lobby branches with reverse portals", () => {
@@ -321,9 +354,15 @@ describe("guest route world", () => {
 
       for (const portal of zone.portals) {
         const target = getWorldZone(gardenWorld, portal.to);
+        expect(
+          target.paths.some((worldPath) => pointInRect(portal.spawn, worldPath)),
+          `${portal.id} spawn inside destination path`
+        ).toBe(true);
         expect(pointInRect(portal.spawn, target.cameraSafeBounds), `${portal.id} spawn`).toBe(true);
         expect(isTileCenter(portal.spawn.x, target.bounds.x), `${portal.id} spawn x`).toBe(true);
         expect(isTileCenter(portal.spawn.y, target.bounds.y), `${portal.id} spawn y`).toBe(true);
+        expect(isWalkable(portal.spawn, target), `${portal.id} spawn walkable`).toBe(true);
+        expect(isBlocked(portal.spawn, target), `${portal.id} spawn blocked`).toBe(false);
         expect(
           target.portals.some((targetPortal) =>
             targetPortal.approach.x === portal.spawn.x && targetPortal.approach.y === portal.spawn.y
