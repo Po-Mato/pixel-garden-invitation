@@ -425,13 +425,13 @@ Task 5부터 Task 14까지는 각 맵에서 다음 순서를 반복하되 서로
 **Interfaces:**
 - Produces: `home` `600x720` 맵과 `home-to-neighborhood` 포털
 
-- [ ] **Step 1: 다음 사실적 레퍼런스 프롬프트로 이미지를 생성·검수한다**
+- [x] **Step 1: 다음 사실적 레퍼런스 프롬프트로 이미지를 생성·검수한다**
 
 ```text
 인물 없는 한국의 소형 아파트 현관과 거실, 정사영에 가까운 탑다운 3/4 건축 시각화, 아침 햇살, 원목 바닥과 현관 타일, 낮은 소파, 작은 테이블, 신발장, 창가 식물, 위쪽 중앙 현관문까지 넓고 명확한 보행 통로, 세로형 구도, 글자와 로고 없음
 ```
 
-- [ ] **Step 2: 픽셀 배경과 투명 토피어리 오버레이를 생성·검수한다**
+- [x] **Step 2: 픽셀 배경과 투명 토피어리 오버레이를 생성·검수한다**
 
 ```text
 이 공간을 모바일 게임용 고밀도 픽셀 아트 맵으로 다시 그린다. 같은 탑다운 3/4 시점과 조명, 선명한 픽셀 가장자리, 캐릭터가 걸을 중앙 통로 확보, 인물·글자·UI 없음.
@@ -441,7 +441,7 @@ Task 5부터 Task 14까지는 각 맵에서 다음 순서를 반복하되 서로
 같은 맵의 현관 토피어리 화분 하나만 고밀도 픽셀 아트 투명 PNG 오브젝트로 분리한다. 원본과 같은 시점·크기·광원, 배경과 바닥 없음.
 ```
 
-- [ ] **Step 3: 새 크기와 포털 좌표를 기대하는 실패 테스트를 작성하고 실행한다**
+- [x] **Step 3: 새 크기와 포털 좌표를 기대하는 실패 테스트를 작성하고 실행한다**
 
 `home` 기대값: bounds `600x720`, spawn `(285,555)`, 포털 approach `(285,105)`, 대상 spawn `(135,375)`.
 
@@ -449,7 +449,7 @@ Run: `pnpm --filter @wedding-game/client test -- world.test.ts`
 
 Expected: 기존 `480x600` 데이터로 FAIL.
 
-- [ ] **Step 4: 다음 데이터로 `homeZone`을 교체한다**
+- [x] **Step 4: 다음 데이터로 `homeZone`을 교체한다**
 
 - paths: `floor(90,120,420,510)`, `entry(240,60,120,120)`; 두 path kind는 `floor`.
 - spot: `directions(90,180,120,90)`.
@@ -457,7 +457,7 @@ Expected: 기존 `480x600` 데이터로 FAIL.
 - portal rect: `(240,30,120,90)`, approach `(285,105)`, facing `up`, destination spawn `(135,375)`.
 - asset decoration: topiary `(420,480,60,90)`, asset `topiary-foreground.png`, depthY `555`.
 
-- [ ] **Step 5: 빌드·테스트·브라우저 검수를 완료한다**
+- [x] **Step 5: 빌드·테스트·브라우저 검수를 완료한다**
 
 Run: `pnpm maps:build -- --zone home && pnpm --filter @wedding-game/client test -- world.test.ts GameWorld.test.tsx`
 
