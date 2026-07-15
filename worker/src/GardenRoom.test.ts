@@ -214,7 +214,7 @@ describe("GardenRoom helpers", () => {
     });
   });
 
-  it("creates banquet guests at the Task 12 arrival coordinate", () => {
+  it("creates banquet guests at the Task 14 client world spawn", () => {
     expect(createGuestSnapshot("guest_banquet", {
       type: "join",
       nickname: "연회장 하객",
@@ -405,7 +405,7 @@ describe("GardenRoom socket behavior", () => {
     const broadcast = watching.sent.map((payload) => JSON.parse(payload)).find((message) => message.type === "guest_moved");
 
     expect(broadcast.position).toEqual({
-      x: 1080,
+      x: 1200,
       y: 0,
       direction: "right",
       moving: true,
@@ -535,7 +535,7 @@ describe("GardenRoom socket behavior", () => {
     });
   });
 
-  it("does not clamp the Task 10 lobby approach, Task 11 bridal bounds, and Task 12 long hall coordinates", () => {
+  it("does not clamp the Task 10 lobby approach, Task 11 bridal bounds, Task 12 long hall, and Task 14 banquet coordinates", () => {
     const nowSpy = vi.spyOn(Date, "now").mockReturnValue(2000);
     const state = new TestState();
     const room = createRoom(state);
@@ -570,6 +570,33 @@ describe("GardenRoom socket behavior", () => {
     expect((moving.deserializeAttachment() as { guest?: RoomGuest } | null)?.guest).toMatchObject({
       x: 585,
       y: 795,
+      zoneId: "banquet"
+    });
+  });
+
+  it("clamps banquet movement to the Task 14 1200 by 930 bounds", () => {
+    const nowSpy = vi.spyOn(Date, "now").mockReturnValue(2000);
+    const state = new TestState();
+    const room = createRoom(state);
+    const moving = new TestSocket();
+    const watching = new TestSocket();
+
+    joinGuest(room, state, moving, "moving");
+    joinGuest(room, state, watching, "watching");
+    watching.sent.length = 0;
+
+    room.webSocketMessage(asWebSocket(moving), moveMessage(1, 1185, "banquet", 915));
+    nowSpy.mockReturnValue(2100);
+    room.webSocketMessage(asWebSocket(moving), moveMessage(2, 1230, "banquet", 960));
+
+    const broadcasts = watching.sent.map((payload) => JSON.parse(payload)).filter((message) => message.type === "guest_moved");
+    expect(broadcasts.map((message) => message.position)).toEqual([
+      expect.objectContaining({ x: 1185, y: 915, zoneId: "banquet" }),
+      expect.objectContaining({ x: 1200, y: 930, zoneId: "banquet" })
+    ]);
+    expect((moving.deserializeAttachment() as { guest?: RoomGuest } | null)?.guest).toMatchObject({
+      x: 1200,
+      y: 930,
       zoneId: "banquet"
     });
   });

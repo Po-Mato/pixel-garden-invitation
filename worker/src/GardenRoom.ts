@@ -41,7 +41,7 @@ const zoneBounds: Record<WorldZoneId, { minX: number; maxX: number; minY: number
   "bridal-room": { minX: 0, maxX: 720, minY: 0, maxY: 630 },
   "ceremony-hall": { minX: 0, maxX: 780, minY: 0, maxY: 1920 },
   restroom: { minX: 0, maxX: 660, minY: 0, maxY: 660 },
-  banquet: { minX: 0, maxX: 1080, minY: 0, maxY: 840 }
+  banquet: { minX: 0, maxX: 1200, minY: 0, maxY: 930 }
 };
 const moveThrottleMs = 100;
 const roomCapacity = 100;

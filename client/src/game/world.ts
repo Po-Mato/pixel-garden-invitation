@@ -530,28 +530,55 @@ const banquetZone = createZone({
   label: "연회장",
   subtitle: "맛있는 식사와 축하 메시지로 여정을 마무리해요",
   journeyIndex: 9,
-  bounds: bounds(1080, 840),
+  bounds: bounds(1200, 930),
   spawn: { x: 585, y: 795 },
   paths: [
-    path("banquet-floor", "banquet", 60, 90, 960, 660),
-    path("banquet-arrival", "corridor", 525, 720, 120, 90)
+    path("banquet-floor", "banquet", 60, 90, 1080, 750),
+    path("banquet-central", "corridor", 510, 90, 180, 780)
   ],
-  spots: [spot("guestbook", "축하 메시지", 835, 105, 120, 84)],
+  spots: [spot("guestbook", "축하 메시지", 930, 120, 120, 90)],
   npcs: [],
   portals: [
-    portal("banquet-to-hall", "예식홀로 돌아가기", "ceremony-hall", { x: 465, y: 750, width: 150, height: 60 }, { x: 525, y: 735 }, "down", { x: 375, y: 135 })
+    portal("banquet-to-hall", "예식홀로 돌아가기", "ceremony-hall", { x: 540, y: 840, width: 120, height: 60 }, { x: 585, y: 825 }, "down", { x: 375, y: 165 })
+  ],
+  blocked: [
+    { x: 120, y: 210, width: 180, height: 180 },
+    { x: 390, y: 210, width: 180, height: 180 },
+    { x: 660, y: 210, width: 180, height: 180 },
+    { x: 120, y: 480, width: 180, height: 180 },
+    { x: 390, y: 480, width: 180, height: 180 },
+    { x: 660, y: 480, width: 180, height: 180 },
+    { x: 930, y: 300, width: 150, height: 300 }
   ],
   decorations: [
-    decoration("banquet-table-1", "banquet-table", "원형 하객 테이블", 150, 180, 150, 150),
-    decoration("banquet-table-2", "banquet-table", "원형 하객 테이블", 435, 180, 150, 150),
-    decoration("banquet-table-3", "banquet-table", "원형 하객 테이블", 720, 180, 150, 150),
-    decoration("banquet-table-4", "banquet-table", "원형 하객 테이블", 150, 450, 150, 150),
-    decoration("banquet-table-5", "banquet-table", "원형 하객 테이블", 435, 450, 150, 150),
-    decoration("banquet-table-6", "banquet-table", "원형 하객 테이블", 720, 450, 150, 150),
-    decoration("banquet-buffet", "buffet", "웨딩 뷔페", 900, 260, 120, 300),
+    decoration("banquet-table-1", "banquet-table", "원형 하객 테이블", 120, 210, 180, 180, {
+      asset: "table-front.png",
+      depthY: 360
+    }),
+    decoration("banquet-table-2", "banquet-table", "원형 하객 테이블", 390, 210, 180, 180, {
+      asset: "table-front.png",
+      depthY: 360
+    }),
+    decoration("banquet-table-3", "banquet-table", "원형 하객 테이블", 660, 210, 180, 180, {
+      asset: "table-front.png",
+      depthY: 360
+    }),
+    decoration("banquet-table-4", "banquet-table", "원형 하객 테이블", 120, 480, 180, 180, {
+      asset: "table-front.png",
+      depthY: 630
+    }),
+    decoration("banquet-table-5", "banquet-table", "원형 하객 테이블", 390, 480, 180, 180, {
+      asset: "table-front.png",
+      depthY: 630
+    }),
+    decoration("banquet-table-6", "banquet-table", "원형 하객 테이블", 660, 480, 180, 180, {
+      asset: "table-front.png",
+      depthY: 630
+    }),
+    decoration("banquet-buffet", "buffet", "웨딩 뷔페", 930, 300, 150, 300),
     decoration("banquet-banner", "party-flag", "축하 가랜드", 300, 65, 480, 36),
     decoration("banquet-dessert", "dessert-cart", "디저트 카트", 60, 640, 105, 68),
-    decoration("banquet-door", "door", "예식홀 출입문", 465, 750, 150, 60)
+    decoration("banquet-door", "door", "예식홀 출입문", 540, 840, 120, 60)
   ]
 });
 

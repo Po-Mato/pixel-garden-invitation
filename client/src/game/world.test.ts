@@ -15,7 +15,7 @@ const expectedSizes = {
   "bridal-room": [720, 630],
   "ceremony-hall": [780, 1920],
   restroom: [660, 660],
-  banquet: [1080, 840]
+  banquet: [1200, 930]
 } as const;
 
 function isTileCenter(value: number, origin: number): boolean {
@@ -694,15 +694,56 @@ describe("guest route world", () => {
     ]);
   });
 
-  it("keeps the Task 12 banquet arrival corridor minimal and connected", () => {
+  it("defines the exact Task 14 banquet contract with guestbook, blockers, portal, and table depths", () => {
     const banquet = getWorldZone(gardenWorld, "banquet");
     const hallToBanquet = getWorldZone(gardenWorld, "ceremony-hall").portals.find((portalItem) => portalItem.id === "hall-to-banquet");
     const returnPortal = banquet.portals.find((portalItem) => portalItem.id === "banquet-to-hall");
+    const guestbookSpot = banquet.spots[0];
+    const tableRects = [
+      { x: 120, y: 210, width: 180, height: 180 },
+      { x: 390, y: 210, width: 180, height: 180 },
+      { x: 660, y: 210, width: 180, height: 180 },
+      { x: 120, y: 480, width: 180, height: 180 },
+      { x: 390, y: 480, width: 180, height: 180 },
+      { x: 660, y: 480, width: 180, height: 180 }
+    ];
 
+    expect([banquet.bounds.width, banquet.bounds.height]).toEqual([1200, 930]);
+    expect(banquet.spawn).toEqual({ x: 585, y: 795 });
     expect(hallToBanquet?.spawn).toEqual({ x: 585, y: 795 });
     expect(banquet.paths).toEqual([
-      { id: "banquet-floor", kind: "banquet", x: 60, y: 90, width: 960, height: 660 },
-      { id: "banquet-arrival", kind: "corridor", x: 525, y: 720, width: 120, height: 90 }
+      { id: "banquet-floor", kind: "banquet", x: 60, y: 90, width: 1080, height: 750 },
+      { id: "banquet-central", kind: "corridor", x: 510, y: 90, width: 180, height: 780 }
+    ]);
+    expect(banquet.paths.some((worldPath) => worldPath.id === "banquet-arrival")).toBe(false);
+    expect(banquet.spots).toEqual([
+      expect.objectContaining({ id: "guestbook", x: 930, y: 120, width: 120, height: 90 })
+    ]);
+    expect(banquet.blocked).toEqual([
+      ...tableRects,
+      { x: 930, y: 300, width: 150, height: 300 },
+      guestbookSpot
+    ]);
+    expect(banquet.portals).toEqual([
+      expect.objectContaining({
+        id: "banquet-to-hall",
+        to: "ceremony-hall",
+        x: 540,
+        y: 840,
+        width: 120,
+        height: 60,
+        approach: { x: 585, y: 825 },
+        facing: "down",
+        spawn: { x: 375, y: 165 }
+      })
+    ]);
+    expect(banquet.decorations.filter((item) => item.asset === "table-front.png")).toEqual([
+      expect.objectContaining({ id: "banquet-table-1", kind: "banquet-table", ...tableRects[0], depthY: 360 }),
+      expect.objectContaining({ id: "banquet-table-2", kind: "banquet-table", ...tableRects[1], depthY: 360 }),
+      expect.objectContaining({ id: "banquet-table-3", kind: "banquet-table", ...tableRects[2], depthY: 360 }),
+      expect.objectContaining({ id: "banquet-table-4", kind: "banquet-table", ...tableRects[3], depthY: 630 }),
+      expect.objectContaining({ id: "banquet-table-5", kind: "banquet-table", ...tableRects[4], depthY: 630 }),
+      expect.objectContaining({ id: "banquet-table-6", kind: "banquet-table", ...tableRects[5], depthY: 630 })
     ]);
     expect(hallToBanquet && isWalkable(hallToBanquet.spawn, banquet)).toBe(true);
     expect(hallToBanquet && isBlocked(hallToBanquet.spawn, banquet)).toBe(false);
@@ -712,6 +753,22 @@ describe("guest route world", () => {
       : null;
     expect(route).not.toBeNull();
     expect(route?.at(-1)).toEqual(returnPortal?.approach);
+
+    const guestbookRoute = findTilePath(banquet, banquet.spawn, { x: 915, y: 165 });
+    expect(guestbookRoute).not.toBeNull();
+    expect(guestbookRoute?.at(-1)).toEqual({ x: 915, y: 165 });
+
+    for (const blockedPoint of [
+      { x: 135, y: 225 },
+      { x: 405, y: 225 },
+      { x: 675, y: 225 },
+      { x: 135, y: 495 },
+      { x: 405, y: 495 },
+      { x: 675, y: 495 },
+      { x: 945, y: 315 }
+    ]) {
+      expect(isBlocked(blockedPoint, banquet), `banquet blocked ${blockedPoint.x},${blockedPoint.y}`).toBe(true);
+    }
   });
 
   it("gives every place paths, themed scenery, and a stable journey order", () => {

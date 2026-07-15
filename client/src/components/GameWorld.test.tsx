@@ -666,7 +666,7 @@ describe("GameWorld", () => {
     expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "945px", top: "405px" });
   });
 
-  it("walks through the Task 12 ceremony hall portals with exact stage, NPCs, and bouquet depths", () => {
+  it("walks through the Task 12 hall and Task 14 banquet portals with exact depths and guestbook modal", () => {
     const { container } = render(<GameWorld profile={profile} />);
     travelFromHomeToLobby();
 
@@ -709,8 +709,45 @@ describe("GameWorld", () => {
     expect(screen.getByTestId("world-portal-transition")).toHaveAttribute("data-phase", "arrival");
     advancePortalTransition();
 
-    expect(screen.getByLabelText("연회장 지도")).toBeInTheDocument();
+    const banquet = screen.getByLabelText("연회장 지도");
+    const tableFronts = [...container.querySelectorAll('img[data-decoration="banquet-table"]')];
+
+    expect(banquet).toHaveStyle({
+      width: "1200px",
+      height: "930px",
+      transform: "translate3d(-390px, -410px, 0) scale(1)"
+    });
     expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "585px", top: "795px" });
+    expect(tableFronts).toHaveLength(6);
+    [
+      ["120px", "210px", "1360"],
+      ["390px", "210px", "1360"],
+      ["660px", "210px", "1360"],
+      ["120px", "480px", "1630"],
+      ["390px", "480px", "1630"],
+      ["660px", "480px", "1630"]
+    ].forEach(([left, top, zIndex], index) => {
+      expect(tableFronts[index]).toHaveAttribute("src", "/assets/maps/v2/banquet/table-front.png");
+      expect(tableFronts[index]).toHaveStyle({ left, top, width: "180px", height: "180px", zIndex });
+    });
+
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response(JSON.stringify({ messages: [] }), {
+      status: 200,
+      headers: { "content-type": "application/json" }
+    })));
+    fireEvent.click(screen.getByRole("button", { name: /축하 메시지/ }));
+    expect(screen.getByRole("dialog", { name: "방명록 우체통" })).toHaveTextContent("축하 메시지");
+    fireEvent.click(screen.getByRole("button", { name: "닫기" }));
+
+    fireEvent.click(screen.getByRole("button", { name: "예식홀로 돌아가기" }));
+    advanceRouteToPortalArrival();
+    expect(screen.getByLabelText("연회장 지도")).toBeInTheDocument();
+    expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "585px", top: "825px" });
+    expect(screen.getByTestId("world-portal-transition")).toHaveAttribute("data-phase", "arrival");
+    advancePortalTransition();
+
+    expect(screen.getByLabelText("예식홀 지도")).toBeInTheDocument();
+    expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "375px", top: "165px" });
   });
 
   it("waits for the overlay opacity transition before swapping maps", () => {
