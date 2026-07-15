@@ -525,12 +525,41 @@ describe("GameWorld", () => {
 
     travelThroughPortal("예식장역 내리기");
 
-    expect(screen.getByLabelText("예식장 앞 지도")).toHaveStyle({ width: "840px", height: "720px" });
+    expect(screen.getByLabelText("예식장 앞 지도")).toHaveStyle({ width: "840px", height: "900px" });
     expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "465px", top: "765px" });
 
-    travelThroughPortal("예식장 로비 들어가기");
+    fireEvent.click(screen.getByRole("button", { name: "예식장 로비 들어가기" }));
+
+    expect(screen.getByTestId("world-portal-transition")).toHaveAttribute("data-phase", "idle");
+    expect(screen.getByText("예식장 로비 들어가기까지 이동 중")).toBeInTheDocument();
+    advanceAnimation(0);
+    expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "465px", top: "735px" });
+
+    finishCurrentRoute();
 
     expect(screen.getByLabelText("예식장 로비 지도")).toBeInTheDocument();
+  });
+
+  it("walks from the Task 8 venue coordinate back to the train portal without an immediate transition", () => {
+    render(<GameWorld profile={profile} />);
+
+    travelThroughPortal("동네로 나가기");
+    travelThroughPortal("지하철역 들어가기");
+    travelThroughPortal("열차 타기");
+    travelThroughPortal("예식장역 내리기");
+
+    expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "465px", top: "765px" });
+
+    fireEvent.click(screen.getByRole("button", { name: "지하철역으로 돌아가기" }));
+
+    expect(screen.getByTestId("world-portal-transition")).toHaveAttribute("data-phase", "idle");
+    expect(screen.getByText("지하철역으로 돌아가기까지 이동 중")).toBeInTheDocument();
+    advanceAnimation(0);
+    expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "465px", top: "735px" });
+
+    finishCurrentRoute();
+
+    expect(screen.getByLabelText("지하철 차량 지도")).toBeInTheDocument();
   });
 
   it("waits for the overlay opacity transition before swapping maps", () => {

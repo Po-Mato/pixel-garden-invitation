@@ -381,7 +381,7 @@ describe("GardenRoom socket behavior", () => {
     });
   });
 
-  it("does not clamp the Task 8 venue arrival coordinate", () => {
+  it("keeps the Task 8 venue arrival coordinate inside the regular venue bounds", () => {
     vi.spyOn(Date, "now").mockReturnValue(2000);
     const state = new TestState();
     const room = createRoom(state);
@@ -403,7 +403,7 @@ describe("GardenRoom socket behavior", () => {
     });
   });
 
-  it("keeps other venue exterior positions clamped to the current venue bounds", () => {
+  it("clamps venue exterior positions above the expanded venue bounds", () => {
     vi.spyOn(Date, "now").mockReturnValue(2000);
     const state = new TestState();
     const room = createRoom(state);
@@ -414,13 +414,13 @@ describe("GardenRoom socket behavior", () => {
     joinGuest(room, state, watching, "watching");
     watching.sent.length = 0;
 
-    room.webSocketMessage(asWebSocket(moving), moveMessage(1, 600, "venue-exterior", 765));
+    room.webSocketMessage(asWebSocket(moving), moveMessage(1, 600, "venue-exterior", 960));
 
     const broadcast = watching.sent.map((payload) => JSON.parse(payload)).find((message) => message.type === "guest_moved");
-    expect(broadcast.position).toMatchObject({ x: 600, y: 720, zoneId: "venue-exterior" });
+    expect(broadcast.position).toMatchObject({ x: 600, y: 900, zoneId: "venue-exterior" });
     expect((moving.deserializeAttachment() as { guest?: RoomGuest } | null)?.guest).toMatchObject({
       x: 600,
-      y: 720,
+      y: 900,
       zoneId: "venue-exterior"
     });
   });

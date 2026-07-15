@@ -10,7 +10,7 @@ const expectedSizes = {
   neighborhood: [1200, 660],
   "subway-station": [900, 840],
   "subway-train": [1440, 540],
-  "venue-exterior": [840, 720],
+  "venue-exterior": [840, 900],
   lobby: [960, 780],
   "bridal-room": [600, 540],
   "ceremony-hall": [660, 1800],
@@ -20,10 +20,6 @@ const expectedSizes = {
 
 function isTileCenter(value: number, origin: number): boolean {
   return (value - origin - gridTileSize / 2) % gridTileSize === 0;
-}
-
-function isTask8VenueArrivalPortal(portal: { id: string; to: string }): boolean {
-  return portal.id === "train-to-venue" && portal.to === "venue-exterior";
 }
 
 describe("guest route world", () => {
@@ -325,11 +321,6 @@ describe("guest route world", () => {
 
       for (const portal of zone.portals) {
         const target = getWorldZone(gardenWorld, portal.to);
-        if (isTask8VenueArrivalPortal(portal)) {
-          expect(portal.spawn).toEqual({ x: 465, y: 765 });
-          expect(pointInRect(portal.spawn, target.cameraSafeBounds), `${portal.id} transitional spawn`).toBe(false);
-          continue;
-        }
         expect(pointInRect(portal.spawn, target.cameraSafeBounds), `${portal.id} spawn`).toBe(true);
         expect(isTileCenter(portal.spawn.x, target.bounds.x), `${portal.id} spawn x`).toBe(true);
         expect(isTileCenter(portal.spawn.y, target.bounds.y), `${portal.id} spawn y`).toBe(true);
@@ -343,19 +334,29 @@ describe("guest route world", () => {
     }
   });
 
-  it("keeps the Task 8 train arrival as a transitional destination without changing the current venue map", () => {
+  it("connects the Task 8 train arrival through a minimal venue corridor without replacing the venue map", () => {
     const venue = getWorldZone(gardenWorld, "venue-exterior");
     const trainArrival = getWorldZone(gardenWorld, "subway-train").portals.find(
       (portalItem) => portalItem.id === "train-to-venue"
     );
-    const lobbyPortal = venue.portals.find((portalItem) => portalItem.id === "venue-to-lobby");
+    const arrival = trainArrival?.spawn;
 
-    expect([venue.bounds.width, venue.bounds.height]).toEqual([840, 720]);
-    expect(venue.paths.map((worldPath) => worldPath.id)).not.toContain("venue-train-arrival");
-    expect(trainArrival?.spawn).toEqual({ x: 465, y: 765 });
-    expect(trainArrival && pointInRect(trainArrival.spawn, venue.cameraSafeBounds)).toBe(false);
-    expect(trainArrival && isWalkable(trainArrival.spawn, venue)).toBe(false);
-    expect(trainArrival && lobbyPortal && findTilePath(venue, trainArrival.spawn, lobbyPortal.approach)).toBeNull();
+    expect([venue.bounds.width, venue.bounds.height]).toEqual([840, 900]);
+    expect(venue.paths).toEqual([
+      { id: "venue-garden", kind: "garden", x: 60, y: 300, width: 720, height: 180 },
+      { id: "venue-arrival", kind: "garden", x: 420, y: 300, width: 90, height: 510 }
+    ]);
+    expect(arrival).toEqual({ x: 465, y: 765 });
+    expect(arrival && pointInRect(arrival, venue.cameraSafeBounds)).toBe(true);
+    expect(arrival && isWalkable(arrival, venue)).toBe(true);
+    expect(arrival && isBlocked(arrival, venue)).toBe(false);
+
+    for (const portalItem of venue.portals) {
+      const route = arrival ? findTilePath(venue, arrival, portalItem.approach) : null;
+      expect(route, portalItem.id).not.toBeNull();
+      expect(route?.at(-1), portalItem.id).toEqual(portalItem.approach);
+      expect(route?.some((point) => point.y === 465), portalItem.id).toBe(true);
+    }
   });
 
   it("gives every place paths, themed scenery, and a stable journey order", () => {

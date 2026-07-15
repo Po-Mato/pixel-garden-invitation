@@ -94,10 +94,6 @@ describe("portal tile pathfinding", () => {
   it("connects every incoming spawn to every exit in its destination zone", () => {
     for (const source of gardenWorld.zones) {
       for (const incoming of source.portals) {
-        if (source.id === "subway-train" && incoming.id === "train-to-venue") {
-          expect(incoming.spawn).toEqual({ x: 465, y: 765 });
-          continue;
-        }
         const destination = getWorldZone(gardenWorld, incoming.to);
         for (const exit of destination.portals) {
           expect(

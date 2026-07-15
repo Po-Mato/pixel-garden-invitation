@@ -51,7 +51,6 @@ const portalFadeOutFallbackMs = 1000;
 const portalFadeInMs = 300;
 const defaultViewport: ViewportSize = { width: 390, height: 520 };
 const samePoint = (first: Point, second: Point) => first.x === second.x && first.y === second.y;
-const task8VenueArrival: Point = { x: 465, y: 765 };
 const hasJoystickMovement = (vector: Point) => Math.hypot(vector.x, vector.y) > joystickDeadZone;
 const prefersReducedMotion = () => (
   typeof window.matchMedia === "function" && window.matchMedia("(prefers-reduced-motion: reduce)").matches
@@ -207,7 +206,7 @@ export function GameWorld({ profile }: GameWorldProps) {
 
   const moveToZone = useCallback((zoneId: WorldZoneId, spawn?: Point) => {
     const zone = getWorldZone(gardenWorld, zoneId);
-    const nextPosition = spawn ?? snapToGrid(zone.spawn, zone);
+    const nextPosition = snapToGrid(spawn ?? zone.spawn, zone);
     activeZoneIdRef.current = zone.id;
     positionRef.current = nextPosition;
     directionRef.current = "down";
@@ -520,10 +519,6 @@ export function GameWorld({ profile }: GameWorldProps) {
     setJoystickVector({ x: 0, y: 0 });
     targetStepAtRef.current = null;
     if (!route) {
-      if (activeZone.id === "venue-exterior" && samePoint(positionRef.current, task8VenueArrival)) {
-        beginPortalTransition(portalItem, portalItem.approach, performance.now());
-        return;
-      }
       setPortalIntent(null);
       setTravelStatus("길을 찾을 수 없어요");
       return;

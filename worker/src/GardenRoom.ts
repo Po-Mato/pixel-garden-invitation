@@ -36,7 +36,7 @@ const zoneBounds: Record<WorldZoneId, { minX: number; maxX: number; minY: number
   neighborhood: { minX: 0, maxX: 960, minY: 0, maxY: 540 },
   "subway-station": { minX: 0, maxX: 900, minY: 0, maxY: 840 },
   "subway-train": { minX: 0, maxX: 1440, minY: 0, maxY: 540 },
-  "venue-exterior": { minX: 0, maxX: 840, minY: 0, maxY: 720 },
+  "venue-exterior": { minX: 0, maxX: 840, minY: 0, maxY: 900 },
   lobby: { minX: 0, maxX: 960, minY: 0, maxY: 780 },
   "bridal-room": { minX: 0, maxX: 600, minY: 0, maxY: 540 },
   "ceremony-hall": { minX: 0, maxX: 660, minY: 0, maxY: 1800 },
@@ -47,15 +47,7 @@ const moveThrottleMs = 100;
 const roomCapacity = 100;
 const zones = new Set<WorldZoneId>(worldZoneIds);
 
-function isTask8VenueArrivalPosition(zoneId: WorldZoneId, x: number, y: number): boolean {
-  return zoneId === "venue-exterior" && x === 465 && y === 765;
-}
-
 function clampMovePosition(zoneId: WorldZoneId, x: number, y: number): { x: number; y: number } {
-  if (isTask8VenueArrivalPosition(zoneId, x, y)) {
-    return { x, y };
-  }
-
   const bounds = zoneBounds[zoneId];
   return {
     x: clampNumber(x, bounds.minX, bounds.maxX),

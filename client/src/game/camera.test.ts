@@ -37,6 +37,24 @@ describe("tracking camera", () => {
     expect(285 * camera.zoom + camera.y).toBe(260);
   });
 
+  it("keeps the Task 8 venue arrival coordinate inside a 390 by 520 viewport", () => {
+    const camera = computeCameraTransform({
+      player: { x: 465, y: 765 },
+      viewport: { width: 390, height: 520 },
+      zoom: 1
+    });
+    const screenX = 465 * camera.zoom + camera.x;
+    const screenY = 765 * camera.zoom + camera.y;
+
+    expect(camera).toEqual({ x: -270, y: -505, zoom: 1 });
+    expect(screenX).toBe(195);
+    expect(screenY).toBe(260);
+    expect(screenX).toBeGreaterThanOrEqual(0);
+    expect(screenX).toBeLessThanOrEqual(390);
+    expect(screenY).toBeGreaterThanOrEqual(0);
+    expect(screenY).toBeLessThanOrEqual(520);
+  });
+
   it("inverts a screen click back into world coordinates", () => {
     const camera = computeCameraTransform({
       player: { x: 315, y: 900 },

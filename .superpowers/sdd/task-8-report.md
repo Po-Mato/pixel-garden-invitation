@@ -14,34 +14,39 @@ Task 8 코드 계약을 완료했다. `subway-train`은 `1440x540` 초광폭 맵
 - strap overlay: `(240,105,960,120)`, asset `strap-row-foreground.png`, `depthY 420`
 - worker train bounds: `minX 0`, `maxX 1440`, `minY 0`, `maxY 540`
 
-## venue `(465,765)` 과도기 처리
+## venue `(465,765)` 도착점 호환 처리
 
-현재 `venue-exterior` 맵 계약은 `840x720`으로 유지했다. 이전 구현처럼 venue height를 `810`으로 키우거나 `venue-train-arrival` path를 추가하면 Task 9 venue 데이터를 선행 변경하게 되므로 제거했다.
+리뷰 요청에 따라 `(465,765)` exact 예외 처리를 제거했다. `venue-exterior`는 Task 9 전체 geometry를 선행 적용하지 않고, Task 8 도착점 호환에 필요한 최소 corridor만 추가했다.
 
-대신 Task 8의 train-to-venue destination `(465,765)`은 포털 도착 좌표로 그대로 보존한다. 이 좌표는 현재 venue walkable/camera-safe 영역 밖인 과도기 좌표이므로:
+- venue bounds: `840x900`
+- 기존 garden path 유지: `(60,300,720,180)`
+- 최소 arrival corridor 추가: `path("venue-arrival", "garden", 420,300,90,510)`
+- corridor는 `(465,765)`을 bounds/path/camera-safe 안에 두고, `y=300`에서 기존 garden path와 연결한다.
+- client `moveToZone`은 explicit spawn도 다시 `snapToGrid(spawn ?? zone.spawn, zone)`로 처리한다.
+- `handlePortalClick`의 Task 8 무경로 즉시 전환 예외와 상수는 제거했다. 도착점에서 `venue-to-lobby`, `venue-to-train` 모두 정상 A* 경로로 걸어간다.
+- worker `venue-exterior` bounds는 `maxY 900`으로 동기화했고, `(465,765)` unclamp 예외 함수는 제거했다. 모든 venue 좌표는 일반 bounds clamp만 사용한다.
 
-- client `moveToZone`은 명시 portal spawn을 `snapToGrid`로 클램프하지 않는다.
-- 현재 위치가 `(465,765)`인 venue 과도기 상태에서 portal button을 누르면 일반 pathfinding 실패를 오류로 끝내지 않고 기존 portal transition으로 이어간다.
-- worker는 `venue-exterior` 전체 bounds를 키우지 않고, 정확히 `(465,765)`만 clamp 예외로 허용한다.
-- 다른 venue 좌표는 여전히 현재 bounds `840x720`에 맞춰 clamp된다.
+## strap source 판단
+
+`strap-row-foreground-source.png`는 `1774x222`이며 8:1 목표 대비 오차가 약 `0.11%`다. Task brief의 3% 이내 조건을 충족하므로 이미지 소스는 수정하지 않았다.
 
 ## TDD/테스트 보강
 
 의미 있는 테스트로 보강했다.
 
-- `world.test.ts`: Task 8 train 데이터 전체, 양쪽 portal route, venue가 `840x720`으로 유지되고 `(465,765)`이 walkable이 아닌 과도기 destination임을 검증한다.
-- `GameWorld.test.tsx`: train stage `1440x540`, strap overlay 위치/asset/depth, venue 도착 좌표 `(465,765)`, 이후 lobby portal 전환을 검증한다.
-- `pathfinding.test.ts`: 일반 incoming spawn pathfinding 계약에서 Task 8 venue 과도기 spawn만 명시 예외로 고정한다.
-- `GardenRoom.test.ts`: train spawn/bounds, train east approach, venue `(465,765)` 예외 통과, 다른 venue 좌표 clamp 유지까지 검증한다.
-- `camera.test.ts`, `minimap.test.ts`: 초광폭 train camera tracking과 8:3 minimap projection을 검증한다.
+- `world.test.ts`: Task 8 train 데이터 전체, 양쪽 portal route, `venue-arrival` corridor, `(465,765)` safe/walkable/in-bounds, arrival에서 venue 양쪽 portal approach까지 정상 A* 경로를 검증한다.
+- `GameWorld.test.tsx`: train stage `1440x540`, strap overlay 위치/asset/depth, venue 도착 좌표 `(465,765)`, 이후 lobby/train portal 클릭이 즉시 전환하지 않고 한 타일씩 걷기 시작하는 회귀를 검증한다.
+- `pathfinding.test.ts`: Task 8 예외 없이 모든 incoming spawn에서 destination exits까지 정상 경로가 있음을 검증한다.
+- `GardenRoom.test.ts`: train spawn/bounds, train east approach, venue `(465,765)` 일반 bounds 보존, `y > 900` clamp를 검증한다.
+- `camera.test.ts`, `minimap.test.ts`: 초광폭 train camera tracking, `(465,765)` 390x520 viewport projection, 8:3 minimap projection을 검증한다.
 
 ## 실행 결과
 
 - `pnpm maps:build -- --zone subway-train`: PASS, `Built map assets: subway-train`
-- `pnpm --filter @wedding-game/client test -- world.test.ts camera.test.ts minimap.test.ts GameWorld.test.tsx`: PASS, 26 files / 210 tests
+- `pnpm --filter @wedding-game/client test -- world.test.ts camera.test.ts minimap.test.ts GameWorld.test.tsx`: PASS, 26 files / 212 tests
 - `pnpm --filter @wedding-game/worker test`: PASS, 5 files / 51 tests
 - `pnpm typecheck`: PASS
-- `pnpm --filter @wedding-game/client test`: PASS, 26 files / 210 tests
+- `pnpm --filter @wedding-game/client test`: PASS, 26 files / 212 tests
 
 ## 범위
 

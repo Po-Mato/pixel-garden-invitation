@@ -336,9 +336,12 @@ const venueExteriorZone = createZone({
   label: "예식장 앞",
   subtitle: "꽃 간판과 유리문 너머로 축하의 공간이 보여요",
   journeyIndex: 4,
-  bounds: bounds(840, 720),
+  bounds: bounds(840, 900),
   spawn: { x: 105, y: 375 },
-  paths: [path("venue-garden", "garden", 60, 300, 720, 180)],
+  paths: [
+    path("venue-garden", "garden", 60, 300, 720, 180),
+    path("venue-arrival", "garden", 420, 300, 90, 510)
+  ],
   spots: [],
   npcs: [],
   portals: [
