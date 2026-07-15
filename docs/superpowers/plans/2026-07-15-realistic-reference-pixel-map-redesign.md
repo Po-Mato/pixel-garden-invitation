@@ -175,7 +175,7 @@ Expected: 신규 배경 URL, 폴백, 오류 숨김, `GameWorld` 연결 테스트
 - Consumes: `WorldDecoration.asset`, `WorldDecoration.depthY`, 현재 구역 ID
 - Produces: `worldDepth(y)`, 이미지 기반 `WorldDecoration`, 캐릭터와 오브젝트의 공통 깊이 정렬
 
-- [ ] **Step 1: 자산 장식과 깊이 계산 실패 테스트를 작성한다**
+- [x] **Step 1: 자산 장식과 깊이 계산 실패 테스트를 작성한다**
 
 ```ts
 expect(worldDepth(345)).toBe(1345);
@@ -184,13 +184,13 @@ expect(worldDepth(Number.NaN)).toBe(1000);
 
 컴포넌트 테스트는 `asset: "tree-canopy.png"`, `depthY: 390`인 장식이 현재 구역 URL과 `z-index: 1390`을 갖는 `<img>`를 렌더링하고, `asset`이 없는 장식은 DOM을 만들지 않는지 확인한다.
 
-- [ ] **Step 2: 테스트를 실행해 새 필드 부재로 실패하는지 확인한다**
+- [x] **Step 2: 테스트를 실행해 새 필드 부재로 실패하는지 확인한다**
 
 Run: `pnpm --filter @wedding-game/client test -- worldVisuals.test.ts WorldDecoration.test.tsx`
 
 Expected: `asset`, `depthY`, `worldDepth` 부재로 FAIL.
 
-- [ ] **Step 3: 장식 타입과 깊이 함수를 추가한다**
+- [x] **Step 3: 장식 타입과 깊이 함수를 추가한다**
 
 ```ts
 export type WorldDecoration = Rect & {
@@ -208,7 +208,7 @@ export function worldDepth(y: number): number {
 
 `decoration()` helper의 마지막 인자로 `visual?: { asset: string; depthY: number }`를 받아 반환 객체에 병합한다.
 
-- [ ] **Step 4: 이미지 장식 컴포넌트를 구현한다**
+- [x] **Step 4: 이미지 장식 컴포넌트를 구현한다**
 
 ```tsx
 export function WorldDecoration({ zoneId, decoration }: {
@@ -239,11 +239,11 @@ export function WorldDecoration({ zoneId, decoration }: {
 }
 ```
 
-- [ ] **Step 5: 모든 월드 인물에 같은 깊이 기준을 적용한다**
+- [x] **Step 5: 모든 월드 인물에 같은 깊이 기준을 적용한다**
 
 `GameWorld.tsx`에서 장식 wrapper를 제거하고 장식을 스테이지 직접 자식으로 렌더링한다. 로컬·원격 캐릭터와 NPC에는 각각 `zIndex: worldDepth(y)`를 적용한다. 포털과 정보 버튼은 `z-index: 9000`, 미니맵과 HUD는 기존 상위 레이어를 유지한다.
 
-- [ ] **Step 6: 픽셀 아티팩트 CSS를 적용한다**
+- [x] **Step 6: 픽셀 아티팩트 CSS를 적용한다**
 
 ```css
 .world-decoration--asset {
@@ -255,7 +255,7 @@ export function WorldDecoration({ zoneId, decoration }: {
 }
 ```
 
-- [ ] **Step 7: 깊이와 입력 회귀 테스트를 통과시킨다**
+- [x] **Step 7: 깊이와 입력 회귀 테스트를 통과시킨다**
 
 Run: `pnpm --filter @wedding-game/client test -- WorldDecoration.test.tsx GameWorld.test.tsx`
 
