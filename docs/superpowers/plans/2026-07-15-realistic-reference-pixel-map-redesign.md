@@ -899,7 +899,7 @@ Expected: spawn에서 guestbook 인접 타일까지 이동 가능, 예식홀 복
 - Consumes: `WorldMapArtwork` effect 클래스와 이미지 기반 장식
 - Produces: 이미지 배경을 가리지 않는 투명 경로, 10개 장소별 제한 효과, 모션 감소 대응
 
-- [ ] **Step 1: 이미지 배경 계약과 구식 도형 제거 실패 테스트를 작성한다**
+- [x] **Step 1: 이미지 배경 계약과 구식 도형 제거 실패 테스트를 작성한다**
 
 테스트는 다음을 검사한다.
 
@@ -911,11 +911,11 @@ expect(css).not.toContain("--world-ground:");
 expect(css).toContain("prefers-reduced-motion: reduce");
 ```
 
-- [ ] **Step 2: 기존 10개 `--world-ground` 테마와 CSS 장식 도형을 제거한다**
+- [x] **Step 2: 기존 10개 `--world-ground` 테마와 CSS 장식 도형을 제거한다**
 
 컨트롤, 포털, 정보 버튼, 미니맵 스타일은 유지한다. `.world-path`는 미니맵용 데이터 DOM으로만 남기고 월드에서는 `opacity: 0; pointer-events: none;`으로 숨긴다. `.world-decoration--asset` 외 기존 pseudo-element 장식 규칙을 제거한다.
 
-- [ ] **Step 3: 각 effect를 작고 제한된 픽셀 모션으로 구현한다**
+- [x] **Step 3: 각 effect를 작고 제한된 픽셀 모션으로 구현한다**
 
 - `window-light`, `lobby-glint`, `mirror-glint`: 작은 불투명도 변화
 - `leaf-shadow`, `garden-petals`, `bridal-sparkle`: `steps(2, end)` 위치·불투명도 변화
@@ -924,7 +924,7 @@ expect(css).toContain("prefers-reduced-motion: reduce");
 
 모든 effect는 `pointer-events: none`, 동시에 최대 1개 DOM 요소만 사용한다.
 
-- [ ] **Step 4: 모션 감소에서 환경 효과를 정지한다**
+- [x] **Step 4: 모션 감소에서 환경 효과를 정지한다**
 
 ```css
 @media (prefers-reduced-motion: reduce) {
@@ -932,7 +932,7 @@ expect(css).toContain("prefers-reduced-motion: reduce");
 }
 ```
 
-- [ ] **Step 5: 스타일 테스트를 통과시킨다**
+- [x] **Step 5: 스타일 테스트를 통과시킨다**
 
 Run: `pnpm --filter @wedding-game/client test -- styles.test.ts`
 
