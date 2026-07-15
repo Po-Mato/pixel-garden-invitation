@@ -14,7 +14,7 @@ describe("WorldMiniMap", () => {
         zone={zone}
         player={player}
         direction="up"
-        camera={computeCameraTransform({ player, viewport, zoom: 1 })}
+        camera={computeCameraTransform({ player, viewport, bounds: zone.bounds, zoom: 1 })}
         viewport={viewport}
         targetPortalId="home-to-neighborhood"
       />
@@ -41,7 +41,7 @@ describe("WorldMiniMap", () => {
         zone={zone}
         player={player}
         direction="down"
-        camera={computeCameraTransform({ player, viewport, zoom: 1 })}
+        camera={computeCameraTransform({ player, viewport, bounds: zone.bounds, zoom: 1 })}
         viewport={viewport}
         targetPortalId={null}
       />

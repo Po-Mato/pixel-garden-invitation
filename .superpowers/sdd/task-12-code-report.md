@@ -33,3 +33,37 @@
 **주의**
 - `character-assets` 미추적 변경은 기존/병렬 작업물로 보고 건드리지 않았다.
 - 새 worktree와 push는 하지 않았다.
+
+### 리뷰 수정: 월드 경계 카메라 clamp
+
+**기준**
+- 리뷰 수정 기준 HEAD: `ef4d7fe7e4d0c951580b13232436200fc9bd7742`.
+- 원 Task 12 코드 커밋: `bf34054`.
+- 수정 대상은 공통 카메라 코드와 client 카메라/GameWorld/미니맵 테스트뿐이며 이미지/manifest/`character-assets`는 수정하지 않았다.
+
+**재현 및 RED**
+- 원인은 `computeCameraTransform`이 map bounds를 입력받지 않고 desired tracking 좌표를 그대로 반환해 경계에서도 플레이어를 무조건 중앙에 둔 것이었다.
+- `390x520` viewport에서 구 구현은 hall top `(375,105)`에 `camera.y=155`, hall bottom `(375,1815)`에 `camera.y=-1555`, venue bottom `(465,765)`에 `camera.y=-505`를 반환해 stage 바깥 fallback을 노출했다.
+- RED 명령: `pnpm --filter @wedding-game/client exec vitest run src/game/camera.test.ts src/game/minimap.test.ts src/components/WorldMiniMap.test.tsx src/components/GameWorld.test.tsx`.
+- RED 결과: 4파일 중 3파일 실패, 68건 중 13건 실패. camera 경계 8건, hall 미니맵 viewport 2건, 실제 GameWorld stage/역변환 3건이 새 계약과 정확히 불일치했다.
+
+**GREEN**
+- `computeCameraTransform` 입력에 `bounds.width/height`를 추가했다.
+- 각 축의 desired tracking 좌표를 먼저 계산한 뒤 scaled map이 viewport보다 크면 `[viewport - mapSize * zoom, 0]`으로 clamp한다.
+- scaled map이 viewport보다 작거나 같으면 플레이어 위치와 무관하게 해당 축의 맵 전체를 viewport 중앙에 배치한다.
+- `GameWorld`가 매 렌더에서 `activeZone.bounds`를 전달하도록 연결했다.
+- 중앙 구간은 플레이어가 정확히 viewport 중앙에 유지되고, hall top은 `camera.y=0`, hall bottom은 `camera.y=-1400`, venue top/bottom은 각각 `0/-380`으로 고정된다.
+- 경계 clamp 이후에도 `screenToWorld` 클릭 역변환과 hall top/bottom 미니맵 viewport 투영이 실제 월드 범위를 보존하도록 회귀 테스트를 갱신했다.
+
+**낮음 꽃 socket finding**
+- 리뷰 근거로 제시된 실제 모바일 합성 `/tmp/task12-hall-first-socket-mobile.png`에서는 꽃과 금색 받침이 하나의 socket으로 붙어 있고 중복 또는 부유가 없어 finding이 재현되지 않았다.
+- 이미지 병렬 담당 범위를 유지하며 이미지/manifest 수정은 하지 않았다.
+
+**리뷰 수정 검증**
+- 지정 client: 4파일 / 68테스트 PASS.
+- 전체 client: 26파일 / 235테스트 PASS. Node의 기존 `--localstorage-file` 경고 1줄 외 실패 없음.
+- 전체 worker: 5파일 / 58테스트 PASS.
+- `pnpm typecheck`: shared/client/worker PASS.
+- `git diff --check`: PASS.
+- 리뷰 수정 커밋 메시지: `fix: clamp tracking camera to map bounds`.
+- 최종 커밋 해시는 커밋 생성 후 확정한다.

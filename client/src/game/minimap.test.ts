@@ -5,6 +5,7 @@ import {
   projectMiniMapPoint,
   projectMiniMapRect
 } from "./minimap";
+import { computeCameraTransform } from "./camera";
 import { gardenWorld, getWorldZone } from "./world";
 
 describe("minimap projection", () => {
@@ -113,6 +114,27 @@ describe("minimap projection", () => {
     expect(rect.y).toBeCloseTo(layout.content.y + 145 * layout.scale);
     expect(rect.width).toBeCloseTo(330 * layout.scale);
     expect(rect.height).toBeCloseTo(455 * layout.scale);
+  });
+
+  it.each([
+    ["top", 105, 0],
+    ["bottom", 1815, 1400]
+  ])("projects the full viewport at the hall %s camera boundary", (_edge, playerY, expectedWorldTop) => {
+    const hall = getWorldZone(gardenWorld, "ceremony-hall");
+    const viewport = { width: 390, height: 520 };
+    const layout = createMiniMapLayout(hall.bounds);
+    const camera = computeCameraTransform({
+      player: { x: 375, y: playerY },
+      viewport,
+      bounds: hall.bounds,
+      zoom: 1
+    });
+    const rect = computeMiniMapViewportRect({ bounds: hall.bounds, layout, viewport, camera });
+
+    expect(rect.x).toBeCloseTo(layout.content.x + 180 * layout.scale);
+    expect(rect.y).toBeCloseTo(layout.content.y + expectedWorldTop * layout.scale);
+    expect(rect.width).toBeCloseTo(390 * layout.scale);
+    expect(rect.height).toBeCloseTo(520 * layout.scale);
   });
 
   it("keeps every zone and its route markers inside the minimap limits", () => {

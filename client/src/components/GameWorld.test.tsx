@@ -407,7 +407,7 @@ describe("GameWorld", () => {
     advanceRouteToPortalArrival();
 
     expect(screen.getByTestId("world-portal-transition")).toHaveAttribute("data-phase", "arrival");
-    fireEvent.click(map, { clientX: 350, clientY: 450 });
+    fireEvent.click(map, { clientX: 145, clientY: 450 });
     fireEvent.keyDown(joystick, { key: "ArrowLeft" });
     advanceAnimation(3000);
     fireEvent.keyUp(joystick, { key: "ArrowLeft" });
@@ -418,7 +418,7 @@ describe("GameWorld", () => {
     act(() => vi.advanceTimersByTime(150));
     expect(screen.getByTestId("world-portal-transition")).toHaveAttribute("data-phase", "fade-out");
 
-    fireEvent.click(map, { clientX: 350, clientY: 450 });
+    fireEvent.click(map, { clientX: 145, clientY: 450 });
     fireEvent.keyDown(joystick, { key: "ArrowDown" });
     advanceAnimation(3240);
     fireEvent.keyUp(joystick, { key: "ArrowDown" });
@@ -430,7 +430,7 @@ describe("GameWorld", () => {
     expect(screen.getByLabelText("동네 거리 지도")).toBeInTheDocument();
     expect(screen.getByTestId("world-portal-transition")).toHaveAttribute("data-phase", "fade-in");
 
-    fireEvent.click(map, { clientX: 350, clientY: 450 });
+    fireEvent.click(map, { clientX: 145, clientY: 450 });
     fireEvent.keyDown(joystick, { key: "ArrowRight" });
     advanceAnimation(3480);
     fireEvent.keyUp(joystick, { key: "ArrowRight" });
@@ -441,7 +441,7 @@ describe("GameWorld", () => {
     act(() => vi.advanceTimersByTime(300));
     expect(screen.getByTestId("world-portal-transition")).toHaveAttribute("data-phase", "idle");
 
-    fireEvent.click(map, { clientX: 350, clientY: 450 });
+    fireEvent.click(map, { clientX: 145, clientY: 450 });
     advanceAnimation(0);
 
     expect(screen.getByLabelText("동네 거리 지도")).toBeInTheDocument();
@@ -537,7 +537,12 @@ describe("GameWorld", () => {
 
     travelThroughPortal("예식장역 내리기");
 
-    expect(screen.getByLabelText("예식장 앞 지도")).toHaveStyle({ width: "960px", height: "900px" });
+    const venue = screen.getByLabelText("예식장 앞 지도");
+    expect(venue).toHaveStyle({
+      width: "960px",
+      height: "900px",
+      transform: "translate3d(-270px, -380px, 0) scale(1)"
+    });
     expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "465px", top: "765px" });
     const flowerArch = container.querySelector('img[data-decoration="flower-arch"]');
     expect(flowerArch).toHaveAttribute("src", "/assets/maps/v2/venue-exterior/flower-arch-front.png");
@@ -550,7 +555,9 @@ describe("GameWorld", () => {
     advanceAnimation(0);
     expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "465px", top: "735px" });
 
-    finishCurrentRoute();
+    advanceRouteToPortalArrival();
+    expect(venue).toHaveStyle({ transform: "translate3d(-270px, 0px, 0) scale(1)" });
+    advancePortalTransition();
 
     expect(screen.getByLabelText("예식장 로비 지도")).toBeInTheDocument();
     expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "525px", top: "765px" });
@@ -641,7 +648,11 @@ describe("GameWorld", () => {
     const hall = screen.getByLabelText("예식홀 지도");
     const bouquets = [...container.querySelectorAll('img[data-decoration="aisle-bouquet"]')];
 
-    expect(hall).toHaveStyle({ width: "780px", height: "1920px" });
+    expect(hall).toHaveStyle({
+      width: "780px",
+      height: "1920px",
+      transform: "translate3d(-180px, -1400px, 0) scale(1)"
+    });
     expectMapBackground(container, "ceremony-hall");
     expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "375px", top: "1785px" });
     expect(screen.getByRole("button", { name: "신랑 이서준 소개 보기" }).parentElement)
@@ -663,6 +674,7 @@ describe("GameWorld", () => {
     advanceRouteToPortalArrival();
     expect(screen.getByLabelText("예식홀 지도")).toBeInTheDocument();
     expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "375px", top: "105px" });
+    expect(hall).toHaveStyle({ transform: "translate3d(-180px, 0px, 0) scale(1)" });
     expect(screen.getByTestId("world-portal-transition")).toHaveAttribute("data-phase", "arrival");
     advancePortalTransition();
 
@@ -875,13 +887,13 @@ describe("GameWorld", () => {
     expect(screen.getByRole("button", { name: /오시는 길/ })).toHaveStyle({ zIndex: "9000" });
   });
 
-  it("inverse-transforms map clicks and moves one grid tile at a time", () => {
+  it("inverse-transforms map clicks with a boundary-clamped camera and moves one grid tile at a time", () => {
     render(<GameWorld profile={profile} />);
     const map = screen.getByTestId("world-map-viewport");
     mockMapRect(map);
     const player = screen.getByLabelText("하객1");
 
-    fireEvent.click(map, { clientX: 265, clientY: 280 });
+    fireEvent.click(map, { clientX: 265, clientY: 375 });
     advanceAnimation(0);
     expect(player).toHaveStyle({ left: "315px", top: "555px" });
     advanceAnimation(239);

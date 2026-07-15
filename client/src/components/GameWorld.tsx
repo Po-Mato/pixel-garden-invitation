@@ -584,7 +584,7 @@ export function GameWorld({ profile }: GameWorldProps) {
     }
   }
 
-  const camera = computeCameraTransform({ player: position, viewport, zoom: 1 });
+  const camera = computeCameraTransform({ player: position, viewport, bounds: activeZone.bounds, zoom: 1 });
 
   return (
     <section className="game-world" aria-label="모바일 청첩장 월드" aria-busy={portalTransition ? "true" : undefined}>
