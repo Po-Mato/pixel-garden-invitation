@@ -186,6 +186,13 @@ export function collectFrameRuleFailures(inspection, frameRules = {}) {
       fails: (actual, expected) => actual < expected
     },
     {
+      key: "maximumBoundsHeight",
+      message: (index, actual, expected) =>
+        `frame ${index} bounds height ${actual} exceeds ${expected}`,
+      measure: (bounds) => bounds.height,
+      fails: (actual, expected) => actual > expected
+    },
+    {
       key: "minimumBoundsWidth",
       message: (index, actual, expected) =>
         `frame ${index} bounds width ${actual} is below ${expected}`,
@@ -198,6 +205,13 @@ export function collectFrameRuleFailures(inspection, frameRules = {}) {
         `frame ${index} bounds top ${actual} exceeds ${expected}`,
       measure: (bounds) => bounds.top,
       fails: (actual, expected) => actual > expected
+    },
+    {
+      key: "minimumBoundsTop",
+      message: (index, actual, expected) =>
+        `frame ${index} bounds top ${actual} is below ${expected}`,
+      measure: (bounds) => bounds.top,
+      fails: (actual, expected) => actual < expected
     },
     {
       key: "minimumBoundsBottom",

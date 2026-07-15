@@ -15,13 +15,15 @@
     "minimumOpaquePixelsPerFrame": 1100,
     "minimumUniqueOpaqueColors": 8,
     "minimumColorTransitionsPerFrame": 100,
-    "minimumBoundsHeight": 106,
+    "minimumBoundsHeight": 127,
+    "maximumBoundsHeight": 128,
     "minimumBoundsWidth": 34,
     "minimumSideOpaquePixelsPerFrame": 900,
     "minimumSideBoundsWidth": 22,
-    "maximumBoundsTop": 18,
-    "minimumBoundsBottom": 126,
-    "maximumBoundsBottom": 143
+    "minimumBoundsTop": 5,
+    "maximumBoundsTop": 6,
+    "minimumBoundsBottom": 132,
+    "maximumBoundsBottom": 132
   },
   "base": {
     "minimumOpaquePixelsPerFrame": 650,

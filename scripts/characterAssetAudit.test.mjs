@@ -389,6 +389,85 @@ test("frame rule failures accept full high-density guest frame occupancy", async
   });
 });
 
+test("frame rules reject a guest that is too tall or starts above the approved top", async () => {
+  const pixels = Buffer.alloc(96 * 144 * 4);
+  for (let y = 3; y <= 132; y += 1) {
+    for (let x = 30; x <= 65; x += 1) {
+      pixels.set([37, 24, 18, 255], (y * 96 + x) * 4);
+    }
+  }
+
+  await withTemporaryPng(96, 144, pixels, async (file) => {
+    const inspection = await inspectSheet(file, { frameWidth: 96, frameHeight: 144 });
+    const failures = collectFrameRuleFailures(inspection, {
+      minimumBoundsTop: 5,
+      maximumBoundsHeight: 128
+    });
+
+    assert.deepEqual(failures.map((failure) => failure.message), [
+      "frame 1 bounds height 130 exceeds 128",
+      "frame 1 bounds top 3 is below 5"
+    ]);
+  });
+});
+
+test("frame rules keep maximum height 128 and minimum top 5 as inclusive boundaries", async () => {
+  const inspectFrame = async (top, height) => {
+    const pixels = Buffer.alloc(96 * 144 * 4);
+    for (let y = top; y < top + height; y += 1) {
+      for (let x = 30; x <= 65; x += 1) {
+        pixels.set([37, 24, 18, 255], (y * 96 + x) * 4);
+      }
+    }
+
+    return withTemporaryPng(96, 144, pixels, async (file) => {
+      const inspection = await inspectSheet(file, { frameWidth: 96, frameHeight: 144 });
+      return collectFrameRuleFailures(inspection, {
+        maximumBoundsHeight: 128,
+        minimumBoundsTop: 5
+      });
+    });
+  };
+
+  assert.deepEqual(await inspectFrame(5, 128), []);
+  assert.deepEqual(
+    (await inspectFrame(4, 129)).map((failure) => failure.message),
+    [
+      "frame 1 bounds height 129 exceeds 128",
+      "frame 1 bounds top 4 is below 5"
+    ]
+  );
+});
+
+test("all guest walk sheets contain 144 approved high-density frames", async () => {
+  let frameCount = 0;
+  const walkPaths = guestPresetCatalog.presets.map((preset) => preset.source.walk);
+
+  assert.equal(new Set(walkPaths).size, 12);
+  assert.equal(walkPaths.length, guestPresetCatalog.presets.length);
+
+  for (const preset of guestPresetCatalog.presets) {
+    const relative = preset.source.walk.replace(/^character-assets\/source\//, "");
+    const inspection = await inspectSheet(join(root, "character-assets/source", relative), {
+      frameWidth: 96,
+      frameHeight: 144
+    });
+
+    assert.equal(inspection.width, guestPresetCatalog.frame.walk.sheet.width, preset.id);
+    assert.equal(inspection.height, guestPresetCatalog.frame.walk.sheet.height, preset.id);
+    assert.equal(inspection.frames.length, 12, preset.id);
+    for (const frame of inspection.frames) {
+      assert.ok(frame.bounds, preset.id);
+      assert.ok(frame.bounds.top >= 5 && frame.bounds.top <= 6, preset.id);
+      assert.equal(frame.bounds.bottom, 132, preset.id);
+      assert.ok(frame.bounds.height >= 127 && frame.bounds.height <= 128, preset.id);
+    }
+    frameCount += inspection.frames.length;
+  }
+
+  assert.equal(frameCount, 144);
+});
+
 test("region rule failures reject front hair covering the face guard", async () => {
   const pixels = Buffer.alloc(96 * 144 * 4);
   for (let y = 31; y <= 45; y += 1) {

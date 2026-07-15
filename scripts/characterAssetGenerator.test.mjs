@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { execFile } from "node:child_process";
-import { cp, mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { cp, mkdir, mkdtemp, readdir, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import test from "node:test";
@@ -698,6 +698,44 @@ test("guest preset samples defer frame decoding instead of retaining image buffe
   }
 });
 
+test("high-density guest review includes all 144 walk frames", async () => {
+  const { guestPresetWalkSamples } = await import("./render-character-contact-sheet.mjs");
+  const samples = await guestPresetWalkSamples();
+
+  assert.equal(samples.length, 48);
+  assert.equal(samples.reduce((total, sample) => total + sample.frames.length, 0), 144);
+  assert.deepEqual(
+    samples.flatMap((sample) => sample.frames.map((frame) => ({
+      presetId: sample.presetId,
+      direction: sample.direction,
+      relative: frame.relative,
+      column: frame.column,
+      row: frame.row,
+      step: frame.step
+    }))),
+    guestPresetCatalog.presets.flatMap((preset) =>
+      guestDirections.flatMap((direction, row) =>
+        [0, 1, 2].map((column) => ({
+          presetId: preset.id,
+          direction,
+          relative: preset.generated.walk,
+          column,
+          row,
+          step: `step-${String(column + 1).padStart(2, "0")}`
+        }))
+      )
+    )
+  );
+});
+
+test("contact-sheet parser accepts high-density guest review mode", async () => {
+  const { parseArguments } = await import("./render-character-contact-sheet.mjs");
+  assert.deepEqual(parseArguments(["--mode=guest-walk-review", "--output=review.png"]), {
+    mode: "guest-walk-review",
+    output: "review.png"
+  });
+});
+
 test("contact-sheet CLI rejects an unknown mode", async () => {
   const dir = await mkdtemp(join(tmpdir(), "character-contact-sheet-"));
   try {
@@ -844,6 +882,160 @@ test("guest presets are the default mode and render every finished preset card",
     );
   } finally {
     await rm(dir, { recursive: true });
+  }
+});
+
+test("guest walk review renders 48 direction rows", async () => {
+  const dir = await mkdtemp(join(tmpdir(), "guest-walk-review-"));
+  const output = join(dir, "review.png");
+  try {
+    const { stdout } = await execFileAsync(
+      process.execPath,
+      [
+        join(root, "scripts/render-character-contact-sheet.mjs"),
+        "--mode=guest-walk-review",
+        `--output=${output}`
+      ],
+      { cwd: root }
+    );
+    const metadata = await sharp(output).metadata();
+    assert.match(stdout, /Rendered 48 guest-walk-review samples/);
+    assert.deepEqual(
+      { width: metadata.width, height: metadata.height },
+      { width: 1356, height: 3168 }
+    );
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
+});
+
+test("guest walk review first tile preserves source and Lanczos3 display pixels", async () => {
+  const dir = await mkdtemp(join(tmpdir(), "guest-walk-review-pixels-"));
+  const output = join(dir, "review.png");
+  try {
+    await execFileAsync(
+      process.execPath,
+      [
+        join(root, "scripts/render-character-contact-sheet.mjs"),
+        "--mode=guest-walk-review",
+        `--output=${output}`
+      ],
+      { cwd: root }
+    );
+
+    const sourcePath = join(
+      root,
+      "client/public/characters/generated",
+      guestPresetCatalog.presets[0].generated.walk
+    );
+    const sourceImage = sharp(sourcePath)
+      .extract({ left: 0, top: 0, width: 96, height: 144 })
+      .ensureAlpha();
+    const sourcePng = await sourceImage.clone().png().toBuffer();
+    const displayPng = await sourceImage.clone()
+      .resize(48, 72, { kernel: sharp.kernel.lanczos3 })
+      .png()
+      .toBuffer();
+    const checkerColors = [
+      [0xff, 0xfa, 0xf2, 0xff],
+      [0xde, 0xd5, 0xc9, 0xff]
+    ];
+    const actualSource = await sharp(output)
+      .extract({ left: 4, top: 50, width: 96, height: 144 })
+      .ensureAlpha()
+      .raw()
+      .toBuffer();
+    const actualDisplay = await sharp(output)
+      .extract({ left: 100, top: 86, width: 48, height: 72 })
+      .ensureAlpha()
+      .raw()
+      .toBuffer();
+    const checker = Buffer.alloc(96 * 144 * 4);
+    for (let y = 0; y < 144; y += 1) {
+      for (let x = 0; x < 96; x += 1) {
+        checker.set(
+          checkerColors[(Math.floor(x / 8) + Math.floor(y / 8)) % 2],
+          (y * 96 + x) * 4
+        );
+      }
+    }
+    const ratioGuide = Buffer.from(
+      `<svg width="96" height="144" xmlns="http://www.w3.org/2000/svg">` +
+        `<line x1="0" y1="48" x2="96" y2="48" stroke="#d1495b" stroke-opacity="0.72"/>` +
+        `<line x1="0" y1="90" x2="96" y2="90" stroke="#2a9d8f" stroke-opacity="0.72"/>` +
+      `</svg>`
+    );
+    const expectedSource = await sharp(checker, {
+      raw: { width: 96, height: 144, channels: 4 }
+    })
+      .composite([{ input: sourcePng }, { input: ratioGuide }])
+      .ensureAlpha()
+      .raw()
+      .toBuffer();
+    const displayChecker = Buffer.alloc(48 * 72 * 4);
+    for (let y = 0; y < 72; y += 1) {
+      for (let x = 0; x < 48; x += 1) {
+        displayChecker.set(
+          checkerColors[(Math.floor(x / 4) + Math.floor(y / 4)) % 2],
+          (y * 48 + x) * 4
+        );
+      }
+    }
+    const expectedDisplay = await sharp(displayChecker, {
+      raw: { width: 48, height: 72, channels: 4 }
+    })
+      .composite([{ input: displayPng }])
+      .ensureAlpha()
+      .raw()
+      .toBuffer();
+
+    for (let y = 0; y < 144; y += 1) {
+      for (let x = 0; x < 96; x += 1) {
+        const offset = (y * 96 + x) * 4;
+        assert.deepEqual(
+          [...actualSource.subarray(offset, offset + 4)],
+          [...expectedSource.subarray(offset, offset + 4)],
+          `unexpected first-tile source pixel at ${x},${y}`
+        );
+      }
+    }
+    for (let y = 0; y < 72; y += 1) {
+      for (let x = 0; x < 48; x += 1) {
+        const offset = (y * 48 + x) * 4;
+        assert.deepEqual(
+          [...actualDisplay.subarray(offset, offset + 4)],
+          [...expectedDisplay.subarray(offset, offset + 4)],
+          `unexpected first-tile display pixel at ${x},${y}`
+        );
+      }
+    }
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
+});
+
+test("guest walk review cleans temporary tiles after output failure", async () => {
+  const tempRoot = await mkdtemp(join(tmpdir(), "guest-walk-review-cleanup-"));
+  const output = join(tempRoot, "output-directory");
+  try {
+    await mkdir(output);
+    await assert.rejects(
+      () => execFileAsync(
+        process.execPath,
+        [
+          join(root, "scripts/render-character-contact-sheet.mjs"),
+          "--mode=guest-walk-review",
+          `--output=${output}`
+        ],
+        { cwd: root, env: { ...process.env, TMPDIR: tempRoot } }
+      )
+    );
+    assert.deepEqual(
+      (await readdir(tempRoot)).filter((entry) => entry.startsWith("guest-walk-review-")),
+      []
+    );
+  } finally {
+    await rm(tempRoot, { recursive: true, force: true });
   }
 });
 

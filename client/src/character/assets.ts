@@ -20,21 +20,14 @@ const assetUrl = (baseUrl: string, path: string) =>
 export function resolveCharacterLayers(
   appearance: CharacterAppearance,
   baseUrl = import.meta.env.BASE_URL,
-  displayMode: CharacterDisplayMode = "world"
+  _displayMode: CharacterDisplayMode = "world"
 ): ResolvedCharacterLayer[] {
   const preset = resolveGuestPreset(appearance);
-  const useWorldPixels = displayMode === "world";
   return [{
     slot: "base",
-    walkUrl: assetUrl(
-      baseUrl,
-      useWorldPixels ? `guests/world/${preset.id}__walk.png` : preset.generated.walk
-    ),
-    idleUrl: assetUrl(
-      baseUrl,
-      useWorldPixels ? `guests/world/${preset.id}__idle.png` : preset.generated.idle
-    ),
-    sourceSize: useWorldPixels ? guestPresetFrame.worldSource : guestPresetFrame.source,
+    walkUrl: assetUrl(baseUrl, preset.generated.walk),
+    idleUrl: assetUrl(baseUrl, preset.generated.idle),
+    sourceSize: guestPresetFrame.source,
     displaySize: guestPresetFrame.display
   }];
 }

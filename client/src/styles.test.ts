@@ -209,12 +209,28 @@ describe("pixel wedding festival map", () => {
 });
 
 describe("world character separation", () => {
-  it("adds a crisp light rim and dark pixel shadow only to world sprites", () => {
+  it("downscales high-density sprites smoothly with a restrained rim and shadow", () => {
     const worldSpriteRule = styles.match(/\.character-sprite--world\s*{([^}]*)}/s)?.[1] ?? "";
+    const worldLayerRule = styles.match(
+      /\.character-sprite--world \.character-layer\s*{([^}]*)}/s
+    )?.[1] ?? "";
 
-    expect(worldSpriteRule).toContain("drop-shadow(-1px 0 0");
-    expect(worldSpriteRule).toContain("drop-shadow(1px 0 0");
-    expect(worldSpriteRule).toContain("drop-shadow(2px 2px 0");
+    expect(worldLayerRule).toContain("image-rendering: auto;");
+    expect(worldSpriteRule).toContain("drop-shadow(0 0 1px rgba(255, 246, 224, 0.72))");
+    expect(worldSpriteRule).toContain("drop-shadow(1px 2px 1px rgba(36, 24, 18, 0.52))");
+    expect(worldSpriteRule).not.toContain("drop-shadow(-1px 0 0");
+    expect(worldSpriteRule).not.toContain("drop-shadow(1px 0 0");
+  });
+
+  it("keeps pixelated rendering on the base layer while limiting auto to world layers", () => {
+    const baseLayerRule = styles.match(/(?:^|\n)\.character-layer\s*{([^}]*)}/m)?.[1] ?? "";
+    const worldLayerRule = styles.match(
+      /\.character-sprite--world \.character-layer\s*{([^}]*)}/s
+    )?.[1] ?? "";
+
+    expect(baseLayerRule).toContain("image-rendering: pixelated;");
+    expect(baseLayerRule).not.toContain("image-rendering: auto;");
+    expect(worldLayerRule).toContain("image-rendering: auto;");
   });
 });
 

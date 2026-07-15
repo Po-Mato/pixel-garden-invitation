@@ -41,9 +41,9 @@ const guestFrame = guestPresetCatalog.frame.source;
 const guestIdleDimensions = guestPresetCatalog.frame.idle.sheet;
 const guestWalkDimensions = guestPresetCatalog.frame.walk.sheet;
 const guestPresetFootBaseline = {
-  footBottomMin: 128,
+  footBottomMin: 132,
   footBottomMax: 132,
-  footBottomSpreadMax: 2
+  footBottomSpreadMax: 0
 };
 const guestPresetWalkFrameRuleOverrides = [
   {

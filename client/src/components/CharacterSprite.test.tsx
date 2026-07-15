@@ -33,7 +33,7 @@ it("uses the two-frame idle class only when facing down and stopped", () => {
   expect(screen.getByLabelText("캐릭터")).not.toHaveClass("character-sprite--idle-front");
 });
 
-it("월드에서 48x72 프레임을 같은 표시 크기로 렌더링한다", () => {
+it("월드에서 96x144 프레임을 동일 비율로 48x72에 렌더링한다", () => {
   render(
     <CharacterSprite
       appearance={defaultCharacterAppearance}
@@ -49,14 +49,14 @@ it("월드에서 48x72 프레임을 같은 표시 크기로 렌더링한다", ()
 
   expect(sprite).toHaveClass("character-sprite--world");
   expect(sprite).toHaveStyle({
-    "--character-source-width": "48px",
-    "--character-source-height": "72px",
+    "--character-source-width": "96px",
+    "--character-source-height": "144px",
     "--character-display-width": "48px",
     "--character-display-height": "72px",
-    "--character-display-scale-x": "1",
-    "--character-display-scale-y": "1"
+    "--character-display-scale-x": "0.5",
+    "--character-display-scale-y": "0.5"
   });
-  expect(baseLayer).toHaveStyle({ backgroundPosition: "-96px -144px" });
+  expect(baseLayer).toHaveStyle({ backgroundPosition: "-192px -288px" });
 });
 
 it("미리보기에서는 기존 96x144 프레임을 유지한다", () => {

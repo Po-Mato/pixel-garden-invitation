@@ -69,7 +69,7 @@ export function parseArguments(arguments_) {
   }
 
   const resolvedMode = mode ?? "guest-presets";
-  if (!new Set(["couple", "guest-presets"]).has(resolvedMode)) {
+  if (!new Set(["couple", "guest-presets", "guest-walk-review"]).has(resolvedMode)) {
     throw new Error(`Unknown contact-sheet mode: ${resolvedMode}`);
   }
   return {
@@ -137,6 +137,22 @@ export async function guestPresetSamples() {
       row: direction.row
     }))
   }));
+}
+
+export async function guestPresetWalkSamples() {
+  return guestPresetCatalog.presets.flatMap((preset) =>
+    directions.map((direction) => ({
+      label: `${preset.id} / ${preset.label} / ${direction.id}`,
+      presetId: preset.id,
+      direction: direction.id,
+      frames: [0, 1, 2].map((column) => ({
+        step: `step-${String(column + 1).padStart(2, "0")}`,
+        relative: preset.generated.walk,
+        column,
+        row: direction.row
+      }))
+    }))
+  );
 }
 
 async function checkerboard(width, height, squareSize) {
@@ -331,15 +347,104 @@ async function renderCatalog(samples, output) {
   }
 }
 
+async function renderGuestWalkReviewTile(sample, output, sourceChecker, actualChecker) {
+  const tileWidth = 452;
+  const tileHeight = 198;
+  const ratioGuide = Buffer.from(
+    `<svg width="96" height="144" xmlns="http://www.w3.org/2000/svg">` +
+      `<line x1="0" y1="48" x2="96" y2="48" stroke="#d1495b" stroke-opacity="0.72"/>` +
+      `<line x1="0" y1="90" x2="96" y2="90" stroke="#2a9d8f" stroke-opacity="0.72"/>` +
+    `</svg>`
+  );
+  const composites = [{
+    input: await label(sample.label, tileWidth - 8),
+    left: 4,
+    top: 4
+  }];
+
+  for (let index = 0; index < sample.frames.length; index += 1) {
+    const sampleFrame = sample.frames[index];
+    const sourceLeft = 4 + index * 148;
+    const source = await renderCatalogFrame(sampleFrame);
+    const actual = await sharp(source)
+      .resize(48, 72, { kernel: sharp.kernel.lanczos3 })
+      .png()
+      .toBuffer();
+
+    composites.push(
+      { input: await label(sampleFrame.step, 144), left: sourceLeft, top: 28 },
+      { input: sourceChecker, left: sourceLeft, top: 50 },
+      { input: source, left: sourceLeft, top: 50 },
+      { input: ratioGuide, left: sourceLeft, top: 50 },
+      { input: actualChecker, left: sourceLeft + 96, top: 86 },
+      { input: actual, left: sourceLeft + 96, top: 86 }
+    );
+  }
+
+  await sharp({
+    create: {
+      width: tileWidth,
+      height: tileHeight,
+      channels: 4,
+      background: sheetBackground
+    }
+  })
+    .composite(composites)
+    .png({ compressionLevel: 9 })
+    .toFile(output);
+}
+
+async function renderGuestWalkReview(samples, output) {
+  const tileWidth = 452;
+  const tileHeight = 198;
+  const columns = 3;
+  const rows = Math.ceil(samples.length / columns);
+  const sourceChecker = await checkerboard(96, 144, 8);
+  const actualChecker = await checkerboard(48, 72, 4);
+  const temporaryDirectory = await mkdtemp(join(tmpdir(), "guest-walk-review-"));
+  const composites = [];
+
+  try {
+    for (let index = 0; index < samples.length; index += 1) {
+      const tilePath = join(temporaryDirectory, `tile-${index}.png`);
+      await renderGuestWalkReviewTile(samples[index], tilePath, sourceChecker, actualChecker);
+      composites.push({
+        input: tilePath,
+        left: (index % columns) * tileWidth,
+        top: Math.floor(index / columns) * tileHeight
+      });
+    }
+
+    await mkdir(dirname(output), { recursive: true });
+    await sharp({
+      create: {
+        width: columns * tileWidth,
+        height: rows * tileHeight,
+        channels: 4,
+        background: sheetBackground
+      }
+    })
+      .composite(composites)
+      .png({ compressionLevel: 9 })
+      .toFile(output);
+  } finally {
+    await rm(temporaryDirectory, { recursive: true, force: true });
+  }
+}
+
 async function main() {
   const { mode, output: outputArgument } = parseArguments(process.argv.slice(2));
   const output = resolve(outputArgument);
 
   const samples = mode === "couple"
     ? await coupleSamples()
-    : await guestPresetSamples();
+    : mode === "guest-walk-review"
+      ? await guestPresetWalkSamples()
+      : await guestPresetSamples();
   if (mode === "couple") {
     await renderCouple(samples, output);
+  } else if (mode === "guest-walk-review") {
+    await renderGuestWalkReview(samples, output);
   } else {
     await renderCatalog(samples, output);
   }
