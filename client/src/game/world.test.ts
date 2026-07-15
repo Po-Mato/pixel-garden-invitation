@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { worldZoneIds } from "@wedding-game/shared";
+import { realtimeWorldContract, worldZoneIds } from "@wedding-game/shared";
 import mapManifest from "../../../map-assets/reference/v2/manifest.json";
 import { isBlocked, isWalkable, pointInRect } from "./geometry";
 import { gridTileSize } from "./movement";
@@ -34,6 +34,15 @@ describe("guest route world", () => {
     }
 
     expect(new Set(gardenWorld.zones.map((zone) => `${zone.bounds.width}x${zone.bounds.height}`)).size).toBeGreaterThanOrEqual(9);
+  });
+
+  it.each(worldZoneIds)("matches the shared realtime contract for %s", (zoneId) => {
+    const zone = getWorldZone(gardenWorld, zoneId);
+
+    expect({
+      spawn: zone.spawn,
+      bounds: { width: zone.bounds.width, height: zone.bounds.height }
+    }).toEqual(realtimeWorldContract[zoneId]);
   });
 
   it("matches every world zone to the v2 manifest background and depth assets", () => {
@@ -100,9 +109,9 @@ describe("guest route world", () => {
     ]);
     const [directionsSpot] = home.spots;
     expect(home.blocked).toEqual([
-      { x: 360, y: 240, width: 150, height: 90 },
-      { x: 270, y: 330, width: 120, height: 90 },
-      { x: 90, y: 480, width: 120, height: 120 },
+      { x: 400, y: 110, width: 140, height: 290 },
+      { x: 340, y: 290, width: 65, height: 135 },
+      { x: 15, y: 565, width: 115, height: 130 },
       { x: 420, y: 480, width: 60, height: 90 },
       directionsSpot
     ]);
@@ -130,6 +139,36 @@ describe("guest route world", () => {
       asset: "topiary-foreground.png",
       depthY: 555
     }));
+
+    for (const [id, rect] of [
+      ["home-sofa", { x: 400, y: 110, width: 140, height: 290 }],
+      ["home-table", { x: 340, y: 290, width: 65, height: 135 }],
+      ["home-rack", { x: 15, y: 565, width: 115, height: 130 }]
+    ] as const) {
+      expect(home.decorations.find((item) => item.id === id)).toMatchObject(rect);
+      expect(home.blocked).toContainEqual(rect);
+    }
+  });
+
+  it.each([
+    ["shoe rack", { x: 105, y: 615 }],
+    ["sofa", { x: 465, y: 375 }],
+    ["table", { x: 345, y: 300 }]
+  ] as const)("blocks the home %s footprint", (_label, point) => {
+    const home = getWorldZone(gardenWorld, "home");
+
+    expect(isWalkable(point, home), `home furniture path ${point.x},${point.y}`).toBe(true);
+    expect(isBlocked(point, home), `home furniture blocked ${point.x},${point.y}`).toBe(true);
+  });
+
+  it.each([
+    ["former shoe-rack blocker", { x: 195, y: 525 }],
+    ["central passage", { x: 285, y: 405 }]
+  ] as const)("keeps the home %s walkable", (_label, point) => {
+    const home = getWorldZone(gardenWorld, "home");
+
+    expect(isWalkable(point, home), `home open path ${point.x},${point.y}`).toBe(true);
+    expect(isBlocked(point, home), `home open floor ${point.x},${point.y}`).toBe(false);
   });
 
   it("defines the v2 neighborhood street, portals, and tree canopy assets", () => {

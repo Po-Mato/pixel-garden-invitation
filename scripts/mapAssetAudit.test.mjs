@@ -47,6 +47,13 @@ async function writeImage(file, { width, height, format, channels = 4, backgroun
   })[format]().toFile(file);
 }
 
+async function writeTransparentVisibleImage(file, { width, height }) {
+  const pixels = Buffer.alloc(width * height * 4);
+  pixels.set([15, 127, 63, 255], 0);
+  await mkdir(dirname(file), { recursive: true });
+  await sharp(pixels, { raw: { width, height, channels: 4 } }).png().toFile(file);
+}
+
 async function withFixture(callback) {
   const rootDir = await mkdtemp(join(tmpdir(), "map-asset-audit-"));
   const manifestPath = join(rootDir, "map-assets/reference/v2/manifest.json");
@@ -63,11 +70,9 @@ async function withFixture(callback) {
       format: "png",
       background: "#4f7f9f"
     });
-    await writeImage(join(sourceDir, "topiary-foreground-source.png"), {
+    await writeTransparentVisibleImage(join(sourceDir, "topiary-foreground-source.png"), {
       width: 12,
-      height: 18,
-      format: "png",
-      background: "#00000000"
+      height: 18
     });
     await writeImage(join(outputDir, "background.webp"), {
       width: 60,
@@ -75,11 +80,9 @@ async function withFixture(callback) {
       format: "webp",
       background: "#4f7f9f"
     });
-    await writeImage(join(outputDir, "topiary-foreground.png"), {
+    await writeTransparentVisibleImage(join(outputDir, "topiary-foreground.png"), {
       width: 12,
-      height: 18,
-      format: "png",
-      background: "#00000000"
+      height: 18
     });
 
     return await callback({ rootDir, manifestPath, sourceDir, outputDir });
@@ -135,6 +138,24 @@ test("reports an opaque overlay output", async () => {
     const opaqueOverlayResult = await auditFixture({ rootDir, manifestPath });
 
     assert.match(opaqueOverlayResult.errors[0], /알파/);
+  });
+});
+
+test("reports a fully transparent overlay output", async () => {
+  await withFixture(async ({ rootDir, manifestPath, outputDir }) => {
+    await writeImage(join(outputDir, "topiary-foreground.png"), {
+      width: 12,
+      height: 18,
+      format: "png",
+      background: "#00000000"
+    });
+
+    const transparentOverlayResult = await auditFixture({ rootDir, manifestPath });
+
+    assert.ok(
+      transparentOverlayResult.errors.some((error) => /visible 알파 pixel/.test(error)),
+      `expected a visible alpha pixel error; received ${JSON.stringify(transparentOverlayResult.errors)}`
+    );
   });
 });
 

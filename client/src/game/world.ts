@@ -1,4 +1,9 @@
-import type { Direction, SpotId, WorldZoneId } from "@wedding-game/shared";
+import {
+  realtimeWorldContract,
+  type Direction,
+  type SpotId,
+  type WorldZoneId
+} from "@wedding-game/shared";
 
 export type Point = { x: number; y: number };
 export type Rect = { x: number; y: number; width: number; height: number };
@@ -120,7 +125,7 @@ export type GardenWorld = {
   zones: WorldZone[];
 };
 
-type ZoneInput = Omit<WorldZone, "theme" | "cameraSafeBounds" | "blocked"> & {
+type ZoneInput = Omit<WorldZone, "theme" | "bounds" | "cameraSafeBounds" | "spawn" | "blocked"> & {
   blocked?: Rect[];
 };
 
@@ -128,10 +133,15 @@ const bounds = (width: number, height: number): Rect => ({ x: 0, y: 0, width, he
 const safeBounds = (width: number, height: number): Rect => ({ x: 30, y: 30, width: width - 60, height: height - 60 });
 
 function createZone(input: ZoneInput): WorldZone {
+  const realtime = realtimeWorldContract[input.id];
+  const zoneBounds = bounds(realtime.bounds.width, realtime.bounds.height);
+
   return {
     ...input,
     theme: input.id,
-    cameraSafeBounds: safeBounds(input.bounds.width, input.bounds.height),
+    bounds: zoneBounds,
+    cameraSafeBounds: safeBounds(zoneBounds.width, zoneBounds.height),
+    spawn: { ...realtime.spawn },
     blocked: [...(input.blocked ?? []), ...input.spots]
   };
 }
@@ -181,8 +191,6 @@ const homeZone = createZone({
   label: "우리 집",
   subtitle: "초대장을 챙겨 설레는 하루를 시작해요",
   journeyIndex: 0,
-  bounds: bounds(600, 720),
-  spawn: { x: 285, y: 555 },
   paths: [
     path("home-floor", "floor", 90, 120, 420, 510),
     path("home-entry", "floor", 240, 60, 120, 120)
@@ -193,16 +201,16 @@ const homeZone = createZone({
     portal("home-to-neighborhood", "동네로 나가기", "neighborhood", { x: 240, y: 30, width: 120, height: 90 }, { x: 285, y: 105 }, "up", { x: 135, y: 375 })
   ],
   blocked: [
-    { x: 360, y: 240, width: 150, height: 90 },
-    { x: 270, y: 330, width: 120, height: 90 },
-    { x: 90, y: 480, width: 120, height: 120 },
+    { x: 400, y: 110, width: 140, height: 290 },
+    { x: 340, y: 290, width: 65, height: 135 },
+    { x: 15, y: 565, width: 115, height: 130 },
     { x: 420, y: 480, width: 60, height: 90 }
   ],
   decorations: [
     decoration("home-window", "window", "아침빛 창문", 90, 600, 180, 90),
-    decoration("home-sofa", "sofa", "거실 소파", 360, 240, 150, 90),
-    decoration("home-table", "table", "작은 탁자", 270, 330, 120, 90),
-    decoration("home-rack", "shoe-rack", "현관 신발장", 90, 480, 120, 120),
+    decoration("home-sofa", "sofa", "거실 소파", 400, 110, 140, 290),
+    decoration("home-table", "table", "작은 탁자", 340, 290, 65, 135),
+    decoration("home-rack", "shoe-rack", "현관 신발장", 15, 565, 115, 130),
     decoration("home-door", "door", "현관문", 240, 30, 120, 90),
     decoration("home-plant", "topiary", "현관 화분", 420, 480, 60, 90, {
       asset: "topiary-foreground.png",
@@ -218,8 +226,6 @@ const neighborhoodZone = createZone({
   label: "동네 거리",
   subtitle: "새벽빛 골목과 횡단보도를 지나 지하철역으로",
   journeyIndex: 1,
-  bounds: bounds(1200, 660),
-  spawn: { x: 135, y: 375 },
   paths: [
     path("neighborhood-street", "street", 60, 240, 1080, 270),
     path("neighborhood-crosswalk", "crosswalk", 510, 180, 180, 390)
@@ -257,8 +263,6 @@ const subwayStationZone = createZone({
   label: "지하철 역사",
   subtitle: "노선 안내를 따라 개찰구와 승강장을 지나가요",
   journeyIndex: 2,
-  bounds: bounds(900, 840),
-  spawn: { x: 135, y: 435 },
   paths: [
     path("station-concourse", "floor", 60, 300, 600, 270),
     path("station-gate-corridor", "corridor", 330, 240, 240, 390),
@@ -302,8 +306,6 @@ const subwayTrainZone = createZone({
   label: "지하철 차량",
   subtitle: "도시의 빛이 흐르는 긴 객차를 지나 하차해요",
   journeyIndex: 3,
-  bounds: bounds(1440, 540),
-  spawn: { x: 135, y: 285 },
   paths: [path("train-carriage", "carriage", 60, 180, 1320, 210)],
   spots: [],
   npcs: [],
@@ -336,8 +338,6 @@ const venueExteriorZone = createZone({
   label: "예식장 앞",
   subtitle: "꽃 간판과 유리문 너머로 축하의 공간이 보여요",
   journeyIndex: 4,
-  bounds: bounds(960, 900),
-  spawn: { x: 465, y: 765 },
   paths: [
     path("venue-garden", "garden", 90, 570, 780, 180),
     path("venue-plaza", "garden", 240, 300, 480, 360),
@@ -373,8 +373,6 @@ const lobbyZone = createZone({
   label: "예식장 로비",
   subtitle: "축의대와 포토월을 지나 원하는 공간으로 이동해요",
   journeyIndex: 5,
-  bounds: bounds(1080, 900),
-  spawn: { x: 525, y: 765 },
   paths: [
     path("lobby-main", "lobby", 90, 300, 900, 300),
     path("lobby-vertical", "corridor", 420, 90, 240, 720),
@@ -416,8 +414,6 @@ const bridalRoomZone = createZone({
   label: "신부 대기실",
   subtitle: "꽃벽 앞 신부에게 축하 인사를 건네요",
   journeyIndex: 6,
-  bounds: bounds(720, 630),
-  spawn: { x: 345, y: 525 },
   paths: [
     path("bridal-floor", "floor", 90, 90, 540, 450),
     path("bridal-entry", "floor", 300, 510, 120, 90)
@@ -444,8 +440,6 @@ const ceremonyHallZone = createZone({
   label: "예식홀",
   subtitle: "긴 버진로드 끝에서 두 사람의 약속을 함께해요",
   journeyIndex: 7,
-  bounds: bounds(780, 1920),
-  spawn: { x: 375, y: 1785 },
   paths: [
     path("hall-aisle", "aisle", 300, 90, 180, 1740),
     path("hall-altar-cross", "aisle", 180, 120, 420, 240),
@@ -495,8 +489,6 @@ const restroomZone = createZone({
   label: "화장실",
   subtitle: "밝은 테라조 공간에서 잠시 단정히 준비해요",
   journeyIndex: 8,
-  bounds: bounds(660, 660),
-  spawn: { x: 135, y: 345 },
   paths: [
     path("restroom-floor", "floor", 90, 150, 480, 390),
     path("restroom-entry", "floor", 60, 270, 90, 150)
@@ -530,8 +522,6 @@ const banquetZone = createZone({
   label: "연회장",
   subtitle: "맛있는 식사와 축하 메시지로 여정을 마무리해요",
   journeyIndex: 9,
-  bounds: bounds(1200, 930),
-  spawn: { x: 585, y: 795 },
   paths: [
     path("banquet-floor", "banquet", 60, 90, 1080, 750),
     path("banquet-central", "corridor", 510, 90, 180, 780)

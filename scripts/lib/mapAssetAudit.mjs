@@ -64,9 +64,13 @@ async function inspectImage(file, expected, label, errors, { transparent = false
     if (transparent) {
       const { data } = await image.ensureAlpha().raw().toBuffer({ resolveWithObject: true });
       const hasTransparentPixel = metadata.hasAlpha && data.some((channel, index) => index % 4 === 3 && channel < 255);
+      const hasVisiblePixel = data.some((channel, index) => index % 4 === 3 && channel > 0);
 
       if (!hasTransparentPixel) {
         errors.push(`${label} must preserve transparent 알파 pixels`);
+      }
+      if (!hasVisiblePixel) {
+        errors.push(`${label} must contain at least one visible 알파 pixel`);
       }
     }
   } catch (error) {

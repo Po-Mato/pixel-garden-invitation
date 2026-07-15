@@ -2,6 +2,7 @@ import {
   clampNumber,
   parseCharacterAppearance,
   parseClientMessage,
+  realtimeWorldContract,
   type ClientMessage,
   type RoomGuest,
   type ServerMessage,
@@ -19,39 +20,15 @@ type GuestAttachment = {
 type PendingAttachment = { kind: "pending" };
 type SocketAttachment = GuestAttachment | PendingAttachment;
 
-const zoneSpawns: Record<WorldZoneId, { x: number; y: number }> = {
-  home: { x: 135, y: 405 },
-  neighborhood: { x: 75, y: 285 },
-  "subway-station": { x: 135, y: 435 },
-  "subway-train": { x: 135, y: 285 },
-  "venue-exterior": { x: 465, y: 765 },
-  lobby: { x: 525, y: 765 },
-  "bridal-room": { x: 345, y: 525 },
-  "ceremony-hall": { x: 375, y: 1785 },
-  restroom: { x: 135, y: 345 },
-  banquet: { x: 585, y: 795 }
-};
-const zoneBounds: Record<WorldZoneId, { minX: number; maxX: number; minY: number; maxY: number }> = {
-  home: { minX: 0, maxX: 480, minY: 0, maxY: 600 },
-  neighborhood: { minX: 0, maxX: 960, minY: 0, maxY: 540 },
-  "subway-station": { minX: 0, maxX: 900, minY: 0, maxY: 840 },
-  "subway-train": { minX: 0, maxX: 1440, minY: 0, maxY: 540 },
-  "venue-exterior": { minX: 0, maxX: 960, minY: 0, maxY: 900 },
-  lobby: { minX: 0, maxX: 1080, minY: 0, maxY: 900 },
-  "bridal-room": { minX: 0, maxX: 720, minY: 0, maxY: 630 },
-  "ceremony-hall": { minX: 0, maxX: 780, minY: 0, maxY: 1920 },
-  restroom: { minX: 0, maxX: 660, minY: 0, maxY: 660 },
-  banquet: { minX: 0, maxX: 1200, minY: 0, maxY: 930 }
-};
 const moveThrottleMs = 100;
 const roomCapacity = 100;
 const zones = new Set<WorldZoneId>(worldZoneIds);
 
 function clampMovePosition(zoneId: WorldZoneId, x: number, y: number): { x: number; y: number } {
-  const bounds = zoneBounds[zoneId];
+  const { bounds } = realtimeWorldContract[zoneId];
   return {
-    x: clampNumber(x, bounds.minX, bounds.maxX),
-    y: clampNumber(y, bounds.minY, bounds.maxY)
+    x: clampNumber(x, 0, bounds.width),
+    y: clampNumber(y, 0, bounds.height)
   };
 }
 
@@ -60,7 +37,7 @@ export function createGuestSnapshot(
   message: Extract<ClientMessage, { type: "join" }>,
   now: number
 ): RoomGuest {
-  const spawn = zoneSpawns[message.zoneId];
+  const { spawn } = realtimeWorldContract[message.zoneId];
 
   return {
     guestId,

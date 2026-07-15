@@ -1,5 +1,10 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { defaultCharacterAppearance, type RoomGuest } from "@wedding-game/shared";
+import {
+  defaultCharacterAppearance,
+  type RoomGuest,
+  type WorldZoneId,
+  worldZoneIds
+} from "@wedding-game/shared";
 import { createGuestSnapshot, GardenRoom } from "./GardenRoom";
 
 type GardenRoomHarness = {
@@ -82,7 +87,7 @@ function joinMessage(nickname: string): string {
 function moveMessage(
   seq: number,
   x: number,
-  zoneId = "home",
+  zoneId: WorldZoneId = "home",
   y = 520,
   moving = true,
   direction = "right"
@@ -102,6 +107,19 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
+const expectedRealtimeWorldContract = {
+  home: { spawn: { x: 285, y: 555 }, bounds: { width: 600, height: 720 } },
+  neighborhood: { spawn: { x: 135, y: 375 }, bounds: { width: 1200, height: 660 } },
+  "subway-station": { spawn: { x: 135, y: 435 }, bounds: { width: 900, height: 840 } },
+  "subway-train": { spawn: { x: 135, y: 285 }, bounds: { width: 1440, height: 540 } },
+  "venue-exterior": { spawn: { x: 465, y: 765 }, bounds: { width: 960, height: 900 } },
+  lobby: { spawn: { x: 525, y: 765 }, bounds: { width: 1080, height: 900 } },
+  "bridal-room": { spawn: { x: 345, y: 525 }, bounds: { width: 720, height: 630 } },
+  "ceremony-hall": { spawn: { x: 375, y: 1785 }, bounds: { width: 780, height: 1920 } },
+  restroom: { spawn: { x: 135, y: 345 }, bounds: { width: 660, height: 660 } },
+  banquet: { spawn: { x: 585, y: 795 }, bounds: { width: 1200, height: 930 } }
+} satisfies Record<WorldZoneId, { spawn: { x: number; y: number }; bounds: { width: number; height: number } }>;
+
 describe("GardenRoom helpers", () => {
   it("creates a room guest snapshot", () => {
     expect(createGuestSnapshot("guest_1", {
@@ -113,14 +131,25 @@ describe("GardenRoom helpers", () => {
       guestId: "guest_1",
       nickname: "하객1",
       appearance: defaultCharacterAppearance,
-      x: 135,
-      y: 405,
+      x: 285,
+      y: 555,
       direction: "down",
       moving: false,
       seq: 0,
       zoneId: "home",
       lastSeenAt: 1000
     });
+  });
+
+  it.each(worldZoneIds)("creates a %s guest at the final client spawn", (zoneId) => {
+    const guest = createGuestSnapshot(`guest_${zoneId}`, {
+      type: "join",
+      nickname: `${zoneId} 하객`,
+      appearance: defaultCharacterAppearance,
+      zoneId
+    }, 1000);
+
+    expect(guest).toMatchObject({ ...expectedRealtimeWorldContract[zoneId].spawn, zoneId });
   });
 
   it("creates a subway station guest at the client world spawn", () => {
@@ -230,6 +259,45 @@ describe("GardenRoom helpers", () => {
 });
 
 describe("GardenRoom socket behavior", () => {
+  it.each(worldZoneIds)("clamps only coordinates beyond the %s maximum bounds", (zoneId) => {
+    vi.spyOn(Date, "now").mockReturnValue(2000);
+    const state = new TestState();
+    const room = createRoom(state);
+    const moving = new TestSocket();
+    const watching = new TestSocket();
+    const { width, height } = expectedRealtimeWorldContract[zoneId].bounds;
+
+    joinGuest(room, state, moving, "moving");
+    joinGuest(room, state, watching, "watching");
+    watching.sent.length = 0;
+
+    room.webSocketMessage(asWebSocket(moving), moveMessage(1, width + 30, zoneId, height + 30));
+
+    const broadcast = watching.sent
+      .map((payload) => JSON.parse(payload))
+      .find((message) => message.type === "guest_moved");
+    expect(broadcast.position).toMatchObject({ x: width, y: height, zoneId });
+  });
+
+  it("does not clamp the neighborhood east portal approach", () => {
+    vi.spyOn(Date, "now").mockReturnValue(2000);
+    const state = new TestState();
+    const room = createRoom(state);
+    const moving = new TestSocket();
+    const watching = new TestSocket();
+
+    joinGuest(room, state, moving, "moving");
+    joinGuest(room, state, watching, "watching");
+    watching.sent.length = 0;
+
+    room.webSocketMessage(asWebSocket(moving), moveMessage(1, 1095, "neighborhood", 375));
+
+    const broadcast = watching.sent
+      .map((payload) => JSON.parse(payload))
+      .find((message) => message.type === "guest_moved");
+    expect(broadcast.position).toMatchObject({ x: 1095, y: 375, zoneId: "neighborhood" });
+  });
+
   it("broadcasts appearance without legacy avatar fields", () => {
     const state = new TestState();
     const statefulRoom = createRoom(state);
