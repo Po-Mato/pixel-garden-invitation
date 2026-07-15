@@ -5,7 +5,7 @@ import { gridTileSize } from "./movement";
 import { gardenWorld, getWorldZone } from "./world";
 
 const expectedSizes = {
-  home: [480, 600],
+  home: [600, 720],
   neighborhood: [960, 540],
   "subway-station": [720, 720],
   "subway-train": [1080, 480],
@@ -51,6 +51,49 @@ describe("guest route world", () => {
       expect(getWorldZone(gardenWorld, from).portals.some((portal) => portal.to === to)).toBe(true);
       expect(getWorldZone(gardenWorld, to).portals.some((portal) => portal.to === from)).toBe(true);
     }
+  });
+
+  it("defines the v2 home layout, portal, and topiary depth asset", () => {
+    const home = getWorldZone(gardenWorld, "home");
+
+    expect(home.spawn).toEqual({ x: 285, y: 555 });
+    expect(home.paths).toEqual([
+      { id: "home-floor", kind: "floor", x: 90, y: 120, width: 420, height: 510 },
+      { id: "home-entry", kind: "floor", x: 240, y: 60, width: 120, height: 120 }
+    ]);
+    expect(home.spots).toEqual([
+      expect.objectContaining({ id: "directions", x: 90, y: 180, width: 120, height: 90 })
+    ]);
+    expect(home.blocked.slice(0, 4)).toEqual([
+      { x: 360, y: 240, width: 150, height: 90 },
+      { x: 270, y: 330, width: 120, height: 90 },
+      { x: 90, y: 480, width: 120, height: 120 },
+      { x: 420, y: 480, width: 60, height: 90 }
+    ]);
+
+    expect(home.portals).toEqual([
+      expect.objectContaining({
+        id: "home-to-neighborhood",
+        to: "neighborhood",
+        x: 240,
+        y: 30,
+        width: 120,
+        height: 90,
+        approach: { x: 285, y: 105 },
+        facing: "up",
+        spawn: { x: 135, y: 375 }
+      })
+    ]);
+    expect(home.decorations).toContainEqual(expect.objectContaining({
+      id: "home-plant",
+      kind: "topiary",
+      x: 420,
+      y: 480,
+      width: 60,
+      height: 90,
+      asset: "topiary-foreground.png",
+      depthY: 555
+    }));
   });
 
   it("keeps every spawn and portal approach on a safe walkable tile", () => {

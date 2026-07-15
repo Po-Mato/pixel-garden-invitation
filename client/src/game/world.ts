@@ -181,23 +181,35 @@ const homeZone = createZone({
   label: "우리 집",
   subtitle: "초대장을 챙겨 설레는 하루를 시작해요",
   journeyIndex: 0,
-  bounds: bounds(480, 600),
-  spawn: { x: 135, y: 405 },
-  paths: [path("home-floor", "floor", 90, 120, 300, 420)],
-  spots: [spot("directions", "오시는 길", 82, 82, 104, 78)],
+  bounds: bounds(600, 720),
+  spawn: { x: 285, y: 555 },
+  paths: [
+    path("home-floor", "floor", 90, 120, 420, 510),
+    path("home-entry", "floor", 240, 60, 120, 120)
+  ],
+  spots: [spot("directions", "오시는 길", 90, 180, 120, 90)],
   npcs: [],
   portals: [
-    portal("home-to-neighborhood", "동네로 나가기", "neighborhood", { x: 195, y: 30, width: 90, height: 72 }, { x: 225, y: 135 }, "up", { x: 135, y: 285 })
+    portal("home-to-neighborhood", "동네로 나가기", "neighborhood", { x: 240, y: 30, width: 120, height: 90 }, { x: 285, y: 105 }, "up", { x: 135, y: 375 })
+  ],
+  blocked: [
+    { x: 360, y: 240, width: 150, height: 90 },
+    { x: 270, y: 330, width: 120, height: 90 },
+    { x: 90, y: 480, width: 120, height: 120 },
+    { x: 420, y: 480, width: 60, height: 90 }
   ],
   decorations: [
-    decoration("home-window", "window", "아침빛 창문", 270, 65, 120, 82),
-    decoration("home-sofa", "sofa", "거실 소파", 285, 210, 126, 72),
-    decoration("home-table", "table", "작은 탁자", 185, 300, 74, 58),
-    decoration("home-rack", "shoe-rack", "현관 신발장", 45, 430, 92, 72),
-    decoration("home-door", "door", "현관문", 195, 30, 90, 72),
-    decoration("home-plant", "topiary", "현관 화분", 320, 430, 48, 72),
-    decoration("home-mail", "mailbox", "청첩장 보관함", 55, 205, 62, 68),
-    decoration("home-lamp", "lamp", "거실 조명", 388, 315, 28, 54)
+    decoration("home-window", "window", "아침빛 창문", 90, 600, 180, 90),
+    decoration("home-sofa", "sofa", "거실 소파", 360, 240, 150, 90),
+    decoration("home-table", "table", "작은 탁자", 270, 330, 120, 90),
+    decoration("home-rack", "shoe-rack", "현관 신발장", 90, 480, 120, 120),
+    decoration("home-door", "door", "현관문", 240, 30, 120, 90),
+    decoration("home-plant", "topiary", "현관 화분", 420, 480, 60, 90, {
+      asset: "topiary-foreground.png",
+      depthY: 555
+    }),
+    decoration("home-mail", "mailbox", "청첩장 보관함", 90, 300, 90, 90),
+    decoration("home-lamp", "lamp", "거실 조명", 450, 150, 30, 60)
   ]
 });
 
