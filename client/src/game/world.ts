@@ -394,7 +394,7 @@ const lobbyZone = createZone({
   ],
   blocked: [{ x: 450, y: 300, width: 180, height: 120 }],
   decorations: [
-    decoration("lobby-desk", "reception-desk", "안내 데스크", 450, 300, 180, 120, {
+    decoration("lobby-desk", "reception-desk", "안내 데스크", 450, 320, 180, 120, {
       asset: "reception-desk-front.png",
       depthY: 420
     }),

@@ -18,7 +18,8 @@
     "characters:test": "pnpm characters:generate && node --test scripts/referenceAsset.test.mjs scripts/characterAssetGenerator.test.mjs scripts/characterAssetAudit.test.mjs tools/character-pixel-editor/editor-core.test.mjs",
     "maps:build": "node scripts/build-map-assets.mjs",
     "maps:audit": "node scripts/audit-map-assets.mjs",
-    "maps:test": "node --test scripts/mapAssetAudit.test.mjs",
+    "maps:foreground-audit": "node scripts/render-map-foreground-audit-sheet.mjs",
+    "maps:test": "node --test scripts/mapAssetAudit.test.mjs scripts/mapForegroundAuditRenderer.test.mjs",
     "build": "pnpm maps:audit && pnpm characters:audit && pnpm characters:generate && pnpm --filter @wedding-game/shared build && pnpm --filter @wedding-game/client build && pnpm --filter @wedding-game/worker build",
     "test": "pnpm maps:audit && pnpm maps:test && pnpm characters:audit && pnpm characters:test && pnpm --filter @wedding-game/shared test && pnpm --filter @wedding-game/client test && pnpm --filter @wedding-game/worker test",
     "typecheck": "pnpm --filter @wedding-game/shared typecheck && pnpm --filter @wedding-game/client typecheck && pnpm --filter @wedding-game/worker typecheck"

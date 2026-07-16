@@ -560,7 +560,7 @@ describe("guest route world", () => {
       id: "lobby-desk",
       kind: "reception-desk",
       x: 450,
-      y: 300,
+      y: 320,
       width: 180,
       height: 120,
       asset: "reception-desk-front.png",
