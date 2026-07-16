@@ -66,6 +66,36 @@ async function writeSkinOnWhitePng(file, dimensions = { width: 128, height: 220 
     .toFile(file);
 }
 
+async function writeHairHoleOnWhitePng(file, dimensions = { width: 128, height: 220 }) {
+  await mkdir(dirname(file), { recursive: true });
+  const data = Buffer.alloc(dimensions.width * dimensions.height * 4, 255);
+  const fill = (left, top, width, height, color) => {
+    for (let y = top; y < top + height; y += 1) {
+      for (let x = left; x < left + width; x += 1) {
+        const offset = (y * dimensions.width + x) * 4;
+        data[offset] = color[0];
+        data[offset + 1] = color[1];
+        data[offset + 2] = color[2];
+        data[offset + 3] = 255;
+      }
+    }
+  };
+
+  fill(20, 10, 88, 82, [58, 38, 30]);
+  fill(38, 28, 52, 48, [246, 214, 190]);
+  fill(30, 80, 68, 110, [44, 51, 63]);
+  fill(42, 100, 44, 50, [255, 255, 255]);
+  fill(20, 20, 1, 1, [224, 224, 224]);
+  fill(23, 45, 5, 8, [224, 224, 224]);
+  fill(24, 46, 3, 6, [255, 255, 255]);
+
+  await sharp(data, {
+    raw: { width: dimensions.width, height: dimensions.height, channels: 4 }
+  })
+    .png()
+    .toFile(file);
+}
+
 async function extractRawFrame(sheet, column, row, dimensions) {
   return sharp(sheet)
     .extract({
@@ -91,6 +121,10 @@ function countOpaqueColor(raw, color) {
     }
   }
   return count;
+}
+
+function alphaAt(raw, dimensions, x, y) {
+  return raw[(y * dimensions.width + x) * 4 + 3];
 }
 
 test("guest direction source authoring emits four source images per preset", async () => {
@@ -267,6 +301,58 @@ test("guest preset authoring preserves pale skin connected to a white background
       countOpaqueColor(frame, [246, 214, 190]) > 0,
       "pale skin pixels must survive white-background removal"
     );
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
+});
+
+test("guest preset authoring clears enclosed white hair gaps without erasing white clothes", async () => {
+  const dir = await mkdtemp(join(tmpdir(), "guest-preset-hair-gap-"));
+  const directions = Object.fromEntries(
+    guestDirections.map((direction) => [
+      direction,
+      `character-assets/reference/guest-directions/test-preset/${direction}.png`
+    ])
+  );
+
+  try {
+    for (const file of Object.values(directions)) {
+      await writeHairHoleOnWhitePng(join(dir, file));
+    }
+
+    const catalog = {
+      ...guestPresetCatalog,
+      presets: [
+        {
+          id: "test-preset",
+          family: "feminine",
+          label: "머리 틈 배경 테스트",
+          description: "폐쇄된 흰 배경 제거 테스트",
+          reference: {
+            image: "unused.png",
+            crop: { left: 0, top: 0, width: 1, height: 1 },
+            directions
+          },
+          source: {
+            walk: "character-assets/source/guests/test-preset__walk.png",
+            idle: "character-assets/source/guests/test-preset__idle.png"
+          },
+          generated: {
+            walk: "guests/test-preset__walk.png",
+            idle: "guests/test-preset__idle.png"
+          }
+        }
+      ]
+    };
+    const sourceRoot = join(dir, "character-assets/source");
+    const { authorGuestPresetSources } = await import("./author-guest-preset-sources.mjs");
+    await authorGuestPresetSources({ catalog, projectRoot: dir, sourceRoot });
+
+    const walk = join(sourceRoot, "guests/test-preset__walk.png");
+    const authoredFrame = await extractRawFrame(walk, 1, 0, guestPresetCatalog.frame.source);
+    assert.equal(alphaAt(authoredFrame, guestPresetCatalog.frame.source, 17, 12), 0);
+    assert.equal(alphaAt(authoredFrame, guestPresetCatalog.frame.source, 21, 33), 0);
+    assert.equal(alphaAt(authoredFrame, guestPresetCatalog.frame.source, 48, 86), 255);
   } finally {
     await rm(dir, { recursive: true, force: true });
   }
