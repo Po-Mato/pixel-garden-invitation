@@ -85,9 +85,12 @@ async function writeHairHoleOnWhitePng(file, dimensions = { width: 128, height: 
   fill(38, 28, 52, 48, [246, 214, 190]);
   fill(30, 80, 68, 110, [44, 51, 63]);
   fill(42, 100, 44, 50, [255, 255, 255]);
+  fill(19, 30, 1, 1, [198, 196, 194]);
   fill(20, 20, 1, 1, [224, 224, 224]);
   fill(23, 45, 5, 8, [224, 224, 224]);
   fill(24, 46, 3, 6, [255, 255, 255]);
+  fill(23, 44, 14, 16, [224, 224, 224]);
+  fill(25, 46, 10, 12, [255, 255, 255]);
 
   await sharp(data, {
     raw: { width: dimensions.width, height: dimensions.height, channels: 4 }
@@ -351,7 +354,9 @@ test("guest preset authoring clears enclosed white hair gaps without erasing whi
     const walk = join(sourceRoot, "guests/test-preset__walk.png");
     const authoredFrame = await extractRawFrame(walk, 1, 0, guestPresetCatalog.frame.source);
     assert.equal(alphaAt(authoredFrame, guestPresetCatalog.frame.source, 17, 12), 0);
+    assert.equal(countOpaqueColor(authoredFrame, [198, 196, 194]), 0);
     assert.equal(alphaAt(authoredFrame, guestPresetCatalog.frame.source, 21, 33), 0);
+    assert.equal(alphaAt(authoredFrame, guestPresetCatalog.frame.source, 25, 35), 0);
     assert.equal(alphaAt(authoredFrame, guestPresetCatalog.frame.source, 48, 86), 255);
   } finally {
     await rm(dir, { recursive: true, force: true });
@@ -531,7 +536,7 @@ test("generator emits 48x72 high-density world sheets for every guest preset", a
     }
 
     const preset = guestPresetCatalog.presets[0];
-    const expectedFrame = await sharp(join(root, preset.source.walk))
+    const expectedFrame = await sharp(join(outputRoot, preset.generated.walk))
       .extract({ left: 96, top: 288, width: 96, height: 144 })
       .resize(48, 72, { kernel: sharp.kernel.nearest })
       .ensureAlpha()
@@ -546,6 +551,46 @@ test("generator emits 48x72 high-density world sheets for every guest preset", a
       .toBuffer();
 
     assert.deepEqual(actualFrame, expectedFrame);
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
+});
+
+test("generator clears neutral wave-hair edge matte without mutating source sheets", async () => {
+  const dir = await mkdtemp(join(tmpdir(), "character-wave-hair-cleanup-"));
+  const sourceRoot = join(dir, "source");
+  const source = join(
+    sourceRoot,
+    "guests/feminine-lavender-jacket-dress__walk.png"
+  );
+
+  try {
+    await cp(join(root, "character-assets/source"), sourceRoot, { recursive: true });
+    const { data, info } = await sharp(source)
+      .ensureAlpha()
+      .raw()
+      .toBuffer({ resolveWithObject: true });
+    data.set([198, 196, 194, 255], (41 * info.width + 73) * 4);
+    await sharp(data, { raw: info }).png().toFile(source);
+
+    const sourceBefore = await extractRawFrame(source, 0, 0, guestPresetCatalog.frame.source);
+    assert.equal(alphaAt(sourceBefore, guestPresetCatalog.frame.source, 73, 41), 255);
+
+    const { generateCharacterAssets } = await import("./generate-character-assets.mjs");
+    const outputRoot = join(dir, "generated");
+    await generateCharacterAssets({ sourceRoot, outputRoot });
+
+    const generated = await extractRawFrame(
+      join(outputRoot, "guests/feminine-lavender-jacket-dress__walk.png"),
+      0,
+      0,
+      guestPresetCatalog.frame.source
+    );
+    assert.equal(alphaAt(generated, guestPresetCatalog.frame.source, 73, 41), 0);
+    assert.equal(alphaAt(generated, guestPresetCatalog.frame.source, 50, 30), 255);
+
+    const sourceAfter = await extractRawFrame(source, 0, 0, guestPresetCatalog.frame.source);
+    assert.deepEqual(sourceAfter, sourceBefore);
   } finally {
     await rm(dir, { recursive: true, force: true });
   }

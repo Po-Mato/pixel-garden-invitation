@@ -1,7 +1,8 @@
-import { access, copyFile, mkdir, readFile, rm } from "node:fs/promises";
+import { access, copyFile, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import sharp from "sharp";
+import { cleanGuestHairSheet, waveHairPresetIds } from "./lib/guestHairBackground.mjs";
 import { validateDimensions } from "./lib/characterAssetGenerator.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -61,6 +62,12 @@ export async function generateCharacterAssets({
     await mkdir(dirname(target), { recursive: true });
     await copyFile(source, target);
   };
+  const writeFixed = async (source, relative) => {
+    if (typeof source === "string") return copyFixed(source, relative);
+    const target = outputPath(relative);
+    await mkdir(dirname(target), { recursive: true });
+    await writeFile(target, source);
+  };
   const writeCoarse = async (source, relative, dimensions) => {
     const target = outputPath(relative);
     await mkdir(dirname(target), { recursive: true });
@@ -78,15 +85,22 @@ export async function generateCharacterAssets({
   for (const preset of guestPresetCatalog.presets) {
     const walkSource = sourcePath(sourceRoot, preset.source.walk);
     const idleSource = sourcePath(sourceRoot, preset.source.idle);
-    await copyFixed(walkSource, preset.generated.walk);
-    await copyFixed(idleSource, preset.generated.idle);
+    const cleansHairBackground = waveHairPresetIds.has(preset.id);
+    const generatedWalkSource = cleansHairBackground
+      ? await cleanGuestHairSheet(walkSource, guestPresetCatalog.frame.source)
+      : walkSource;
+    const generatedIdleSource = cleansHairBackground
+      ? await cleanGuestHairSheet(idleSource, guestPresetCatalog.frame.source)
+      : idleSource;
+    await writeFixed(generatedWalkSource, preset.generated.walk);
+    await writeFixed(generatedIdleSource, preset.generated.idle);
     await writeCoarse(
-      walkSource,
+      generatedWalkSource,
       `guests/world/${preset.id}__walk.png`,
       guestWorldWalkDimensions
     );
     await writeCoarse(
-      idleSource,
+      generatedIdleSource,
       `guests/world/${preset.id}__idle.png`,
       guestWorldIdleDimensions
     );

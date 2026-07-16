@@ -689,7 +689,16 @@ export function GameWorld({ profile }: GameWorldProps) {
                   handlePortalClick(portalItem);
                 }}
               >
-                {portalItem.label}
+                <span className="world-portal__effect" aria-hidden="true">
+                  <span className="world-portal__beam world-portal__beam--outer" />
+                  <span className="world-portal__beam world-portal__beam--core" />
+                  <span className="world-portal__particle world-portal__particle--one" />
+                  <span className="world-portal__particle world-portal__particle--two" />
+                  <span className="world-portal__particle world-portal__particle--three" />
+                  <span className="world-portal__particle world-portal__particle--four" />
+                  <span className="world-portal__circle" />
+                </span>
+                <span className="world-portal__label">{portalItem.label}</span>
               </button>
             ))}
             {remoteGuests.filter((guest) => guest.zoneId === activeZone.id).map((guest) => (

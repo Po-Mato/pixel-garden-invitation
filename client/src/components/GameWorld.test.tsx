@@ -955,6 +955,20 @@ describe("GameWorld", () => {
     expect(screen.getByRole("button", { name: /오시는 길/ })).toHaveStyle({ zIndex: "9000" });
   });
 
+  it("keeps animated portal artwork decorative while preserving its destination name", () => {
+    render(<GameWorld profile={profile} />);
+    const portal = screen.getByRole("button", { name: "동네로 나가기" });
+    const effect = portal.querySelector(".world-portal__effect");
+
+    expect(portal).toHaveAccessibleName("동네로 나가기");
+    expect(effect).toHaveAttribute("aria-hidden", "true");
+    expect(effect?.querySelector(".world-portal__beam--outer")).toBeInTheDocument();
+    expect(effect?.querySelector(".world-portal__beam--core")).toBeInTheDocument();
+    expect(effect?.querySelector(".world-portal__circle")).toBeInTheDocument();
+    expect(effect?.querySelectorAll(".world-portal__particle")).toHaveLength(4);
+    expect(portal.querySelector(".world-portal__label")).toHaveTextContent("동네로 나가기");
+  });
+
   it("inverse-transforms map clicks with a boundary-clamped camera and moves one grid tile at a time", () => {
     render(<GameWorld profile={profile} />);
     const map = screen.getByTestId("world-map-viewport");

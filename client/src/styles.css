@@ -1631,8 +1631,10 @@ select {
 }
 
 .world-portal--target {
-  animation: pixel-twinkle 0.8s steps(2, end) infinite;
-  box-shadow: inset 0 0 0 2px #fff5cc, 0 0 0 3px #d6b35f, 0 0 12px #ffe8a0;
+  --portal-accent: #ffd86f;
+  --portal-core: #fff9ce;
+  --portal-deep: #ba762a;
+  --portal-glow: rgba(255, 221, 119, 0.82);
 }
 
 @keyframes effect-opacity {
@@ -1757,50 +1759,168 @@ select {
 .world-spot--story { --spot-accent: #7db987; --spot-soft: #def0d8; --spot-edge: #587860; }
 
 .world-portal {
-  --portal-accent: #e98283;
-  --portal-soft: #ffd9c7;
+  --portal-accent: #70e4ef;
+  --portal-core: #efffff;
+  --portal-deep: #477ac5;
+  --portal-glow: rgba(91, 220, 244, 0.72);
   position: absolute;
   z-index: 9000;
-  display: grid;
-  place-items: center;
-  overflow: hidden;
-  border: 2px solid #78545e;
-  border-radius: 0;
-  padding-right: 15px;
-  background:
-    linear-gradient(180deg, rgba(255, 248, 218, 0.72) 0 3px, transparent 3px),
-    linear-gradient(135deg, var(--portal-soft) 0 25%, var(--portal-accent) 25% 50%, #f5c1b2 50% 75%, var(--portal-accent) 75%);
-  background-size: auto, 8px 8px;
-  color: #392923;
-  font-size: 12px;
-  font-weight: 900;
-  text-shadow: 1px 1px 0 rgba(255, 244, 211, 0.72);
-  box-shadow:
-    inset 0 0 0 2px rgba(255, 244, 213, 0.72),
-    3px 3px 0 rgba(82, 68, 63, 0.38),
-    0 0 8px color-mix(in srgb, var(--portal-accent) 44%, transparent);
+  display: block;
+  overflow: visible;
+  border: 0;
+  border-radius: 4px;
+  padding: 0;
+  background: transparent;
+  color: #f6ffff;
+  isolation: isolate;
 }
 
-.world-portal::after {
+.world-portal__effect {
   position: absolute;
-  right: 5px;
-  width: 7px;
-  height: 7px;
-  border-right: 2px solid #78545e;
-  border-bottom: 2px solid #78545e;
+  left: 50%;
+  bottom: max(6px, calc(50% - 38px));
+  width: min(82px, calc(100% - 8px));
+  height: 96px;
+  pointer-events: none;
+  transform: translateX(-50%);
+  transform-origin: 50% 100%;
+  filter: drop-shadow(0 0 6px var(--portal-glow));
+}
+
+.world-portal__beam {
+  position: absolute;
+  left: 50%;
+  bottom: 12px;
+  height: 82px;
+  pointer-events: none;
+  transform: translateX(-50%);
+  transform-origin: 50% 100%;
+  clip-path: polygon(34% 0, 66% 0, 100% 100%, 0 100%);
+  animation: portal-beam-rise 1.15s steps(5, end) infinite;
+}
+
+.world-portal__beam--outer {
+  width: 66px;
+  opacity: 0.76;
+  background:
+    linear-gradient(180deg, transparent 0%, color-mix(in srgb, var(--portal-accent) 18%, transparent) 20%, color-mix(in srgb, var(--portal-accent) 66%, transparent) 78%, var(--portal-core) 100%),
+    repeating-linear-gradient(180deg, transparent 0 13px, color-mix(in srgb, var(--portal-core) 34%, transparent) 13px 16px);
+  background-size: 100% 100%, 100% 32px;
+}
+
+.world-portal__beam--core {
+  width: 31px;
+  height: 88px;
+  opacity: 0.9;
+  background:
+    linear-gradient(180deg, transparent 0%, color-mix(in srgb, var(--portal-core) 28%, transparent) 18%, color-mix(in srgb, var(--portal-core) 78%, transparent) 76%, var(--portal-core) 100%),
+    repeating-linear-gradient(180deg, transparent 0 17px, rgba(255, 255, 255, 0.62) 17px 20px);
+  background-size: 100% 100%, 100% 40px;
+  animation-delay: -0.36s;
+}
+
+.world-portal__circle {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: min(76px, calc(100% - 4px));
+  height: 28px;
+  border: 3px solid var(--portal-core);
+  border-radius: 50%;
+  background:
+    repeating-conic-gradient(from 0deg, color-mix(in srgb, var(--portal-core) 88%, transparent) 0 8deg, transparent 8deg 24deg),
+    radial-gradient(ellipse at center, var(--portal-core) 0 12%, color-mix(in srgb, var(--portal-accent) 72%, transparent) 16% 38%, color-mix(in srgb, var(--portal-deep) 72%, transparent) 42% 60%, transparent 64%);
+  box-shadow:
+    0 0 0 2px color-mix(in srgb, var(--portal-deep) 78%, transparent),
+    0 0 10px 4px var(--portal-glow),
+    inset 0 0 8px var(--portal-core);
+  transform: translateX(-50%);
+  animation: portal-circle-pulse 1.15s steps(4, end) infinite;
+}
+
+.world-portal__circle::before {
+  position: absolute;
+  inset: 5px 12px;
+  border: 2px dashed var(--portal-core);
+  border-radius: 50%;
   content: "";
-  transform: rotate(-45deg);
+  animation: portal-ring-turn 2.8s linear infinite;
+}
+
+.world-portal__particle {
+  --portal-particle-x: 40px;
+  --portal-particle-delay: 0s;
+  position: absolute;
+  left: var(--portal-particle-x);
+  bottom: 13px;
+  z-index: 2;
+  width: 4px;
+  height: 7px;
+  background: var(--portal-core);
+  box-shadow: 0 0 6px 2px var(--portal-glow);
+  opacity: 0;
+  animation: portal-particle-rise 1.45s steps(6, end) var(--portal-particle-delay) infinite;
+}
+
+.world-portal__particle--one { --portal-particle-x: 12px; --portal-particle-delay: -0.2s; }
+.world-portal__particle--two { --portal-particle-x: 28px; --portal-particle-delay: -0.85s; }
+.world-portal__particle--three { --portal-particle-x: 52px; --portal-particle-delay: -0.5s; }
+.world-portal__particle--four { --portal-particle-x: 68px; --portal-particle-delay: -1.15s; }
+
+.world-portal__label {
+  position: absolute;
+  z-index: 3;
+  left: 50%;
+  bottom: -17px;
+  width: max-content;
+  max-width: calc(100% + 56px);
+  padding: 2px 5px;
+  border: 1px solid rgba(231, 255, 255, 0.72);
+  background: rgba(26, 39, 48, 0.78);
+  box-shadow: 1px 1px 0 rgba(20, 28, 34, 0.38);
+  color: #f8ffff;
+  font-size: 10px;
+  font-weight: 900;
+  line-height: 1.25;
+  text-shadow: 1px 1px 0 rgba(31, 46, 55, 0.88);
+  white-space: nowrap;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+@keyframes portal-circle-pulse {
+  0%, 100% { opacity: 0.82; transform: translateX(-50%) scale(0.96); }
+  50% { opacity: 1; transform: translateX(-50%) scale(1.04); }
+}
+
+@keyframes portal-ring-turn {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes portal-beam-rise {
+  0% { opacity: 0.54; background-position: 0 0, 0 20px; transform: translateX(-50%) scaleY(0.92); }
+  50% { opacity: 0.92; transform: translateX(-50%) scaleY(1.03); }
+  100% { opacity: 0.62; background-position: 0 0, 0 -20px; transform: translateX(-50%) scaleY(0.98); }
+}
+
+@keyframes portal-particle-rise {
+  0% { opacity: 0; transform: translate(0, 0) scale(0.7); }
+  18% { opacity: 1; }
+  100% { opacity: 0; transform: translate(2px, -78px) scale(1.1); }
 }
 
 .world-portal:active {
-  transform: translate(2px, 2px);
-  box-shadow: inset 0 0 0 2px rgba(255, 244, 213, 0.72), 1px 1px 0 rgba(82, 68, 63, 0.38);
+  transform: none;
+}
+
+.world-portal:active .world-portal__effect {
+  transform: translateX(-50%) scale(0.96);
 }
 
 .world-portal:focus-visible {
   outline: 2px solid #fff8cf;
   outline-offset: 2px;
-  box-shadow: 0 0 0 5px #8b8190, 3px 3px 0 #78545e;
+  box-shadow: 0 0 0 4px rgba(90, 123, 159, 0.72);
 }
 
 .world-player {
@@ -2181,6 +2301,13 @@ select {
   }
 
   .world-map-effect {
+    animation: none !important;
+  }
+
+  .world-portal__circle,
+  .world-portal__circle::before,
+  .world-portal__beam,
+  .world-portal__particle {
     animation: none !important;
   }
 

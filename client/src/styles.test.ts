@@ -294,19 +294,40 @@ describe("prism map interactions", () => {
     expect(styles).toContain('.world-journey li[aria-current="location"]');
     expect(styles).toContain(".world-spot::before");
     expect(styles).toContain(".world-spot::after");
-    expect(styles).toContain(".world-portal::after");
+    expect(styles).toContain(".world-portal__effect");
     expect(styles).toContain(".world-spot:focus-visible");
     expect(styles).toContain(".world-portal:focus-visible");
   });
 
-  it("draws decorative chevrons without adding text to accessible names", () => {
+  it("draws the spot chevron without adding text to accessible names", () => {
     const spotArrowRule = styles.match(/\.world-spot::after\s*\{([^}]*)}/s)?.[1] ?? "";
-    const portalArrowRule = styles.match(/\.world-portal::after\s*\{([^}]*)}/s)?.[1] ?? "";
 
     expect(spotArrowRule).toContain('content: "";');
-    expect(portalArrowRule).toContain('content: "";');
     expect(spotArrowRule).not.toContain('content: ">";');
-    expect(portalArrowRule).not.toContain('content: ">";');
+  });
+
+  it("renders portals as floor circles with light and particles rising from the base", () => {
+    const portalRule = styles.match(/\.world-portal\s*\{([^}]*)}/s)?.[1] ?? "";
+    const effectRule = styles.match(/\.world-portal__effect\s*\{([^}]*)}/s)?.[1] ?? "";
+    const circleRule = styles.match(/\.world-portal__circle\s*\{([^}]*)}/s)?.[1] ?? "";
+    const beamRule = styles.match(/\.world-portal__beam\s*\{([^}]*)}/s)?.[1] ?? "";
+    const particleRule = styles.match(/\.world-portal__particle\s*\{([^}]*)}/s)?.[1] ?? "";
+
+    expect(portalRule).toContain("overflow: visible;");
+    expect(portalRule).toContain("background: transparent;");
+    expect(effectRule).toContain("pointer-events: none;");
+    expect(circleRule).toContain("border-radius: 50%;");
+    expect(circleRule).toMatch(/animation:\s*portal-circle-pulse/);
+    expect(beamRule).toContain("bottom:");
+    expect(beamRule).toMatch(/animation:\s*portal-beam-rise/);
+    expect(particleRule).toMatch(/animation:\s*portal-particle-rise/);
+    expect(styles).toContain("@keyframes portal-circle-pulse");
+    expect(styles).toContain("@keyframes portal-beam-rise");
+    expect(styles).toContain("@keyframes portal-particle-rise");
+    expect(styles).toMatch(/\.world-portal--target\s*\{[^}]*--portal-accent:/s);
+    expect(styles).toMatch(
+      /@media \(prefers-reduced-motion: reduce\)[\s\S]*\.world-portal__circle,[\s\S]*\.world-portal__particle\s*\{[^}]*animation:\s*none !important;/
+    );
   });
 
   it("uses the same prism surface language for the menu and joystick", () => {
