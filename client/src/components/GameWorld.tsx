@@ -23,7 +23,14 @@ import {
   tileInputRepeatIntervalMs,
   type TileInputState
 } from "../game/tileInput";
-import { gardenWorld, getWorldZone, type Point, type WorldPortal } from "../game/world";
+import {
+  gardenWorld,
+  getWorldZone,
+  pointInPortalEntry,
+  portalEntryRect,
+  type Point,
+  type WorldPortal
+} from "../game/world";
 import { worldDepth } from "../game/worldVisuals";
 import { connectRealtimeWithRetry, createMoveThrottle, getRoomUrl } from "../realtime/realtimeClient";
 import type { EntryProfile } from "./EntryScreen";
@@ -479,7 +486,7 @@ export function GameWorld({ profile }: GameWorldProps) {
       }
 
       const joystickPortal = hasDirectionalInput
-        ? activeZone.portals.find((portal) => samePoint(next, portal.approach))
+        ? activeZone.portals.find((portal) => pointInPortalEntry(portal, next))
         : undefined;
       if (joystickPortal) {
         beginPortalTransition(joystickPortal, next, now);
@@ -683,7 +690,7 @@ export function GameWorld({ profile }: GameWorldProps) {
                 key={portalItem.id}
                 type="button"
                 className={`world-portal${portalIntent?.portal.id === portalItem.id ? " world-portal--target" : ""}`}
-                style={{ ...pixelRect(portalItem), zIndex: 9000 }}
+                style={{ ...pixelRect(portalEntryRect(portalItem)), zIndex: 9000 }}
                 onClick={(event) => {
                   event.stopPropagation();
                   handlePortalClick(portalItem);

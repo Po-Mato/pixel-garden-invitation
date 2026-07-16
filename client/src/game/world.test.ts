@@ -4,7 +4,13 @@ import mapManifest from "../../../map-assets/reference/v2/manifest.json";
 import { isBlocked, isWalkable, pointInRect } from "./geometry";
 import { gridTileSize } from "./movement";
 import { findTilePath } from "./pathfinding";
-import { gardenWorld, getWorldZone } from "./world";
+import {
+  gardenWorld,
+  getWorldZone,
+  pointInPortalEntry,
+  portalEntryRect,
+  portalEntrySize
+} from "./world";
 
 const expectedSizes = {
   home: [600, 720],
@@ -61,8 +67,7 @@ describe("guest route world", () => {
         [manifestZone?.background.width, manifestZone?.background.height],
         `${zone.id} manifest background size`
       ).toEqual([zone.bounds.width, zone.bounds.height]);
-      expect(assetDecorations.length, `${zone.id} asset decorations`).toBeGreaterThanOrEqual(1);
-      expect(overlayOutputs.size, `${zone.id} manifest overlays`).toBeGreaterThanOrEqual(1);
+      expect(Array.isArray(manifestZone?.overlays), `${zone.id} manifest overlays`).toBe(true);
 
       for (const decoration of assetDecorations) {
         expect(overlayOutputs.has(decoration.asset!), `${zone.id} decoration asset ${decoration.asset}`).toBe(true);
@@ -93,6 +98,36 @@ describe("guest route world", () => {
     for (const [from, to] of requiredEdges) {
       expect(getWorldZone(gardenWorld, from).portals.some((portal) => portal.to === to)).toBe(true);
       expect(getWorldZone(gardenWorld, to).portals.some((portal) => portal.to === from)).toBe(true);
+    }
+  });
+
+  it("aligns every portal entry ellipse and visual bounds to its approach point", () => {
+    for (const zone of gardenWorld.zones) {
+      for (const portal of zone.portals) {
+        const entry = portalEntryRect(portal);
+
+        expect(entry.width, portal.id).toBe(portalEntrySize.width);
+        expect(entry.height, portal.id).toBe(portalEntrySize.height);
+        expect(entry.x + entry.width / 2, portal.id).toBe(portal.approach.x);
+        expect(entry.y + entry.height / 2, portal.id).toBe(portal.approach.y);
+        expect(pointInPortalEntry(portal, portal.approach), portal.id).toBe(true);
+        expect(pointInPortalEntry(portal, {
+          x: portal.approach.x + portalEntrySize.width / 2,
+          y: portal.approach.y
+        }), `${portal.id} horizontal edge`).toBe(true);
+        expect(pointInPortalEntry(portal, {
+          x: portal.approach.x,
+          y: portal.approach.y + portalEntrySize.height / 2
+        }), `${portal.id} vertical edge`).toBe(true);
+        expect(pointInPortalEntry(portal, {
+          x: portal.approach.x + portalEntrySize.width / 2 + 1,
+          y: portal.approach.y
+        }), `${portal.id} outside horizontal edge`).toBe(false);
+        expect(pointInPortalEntry(portal, {
+          x: portal.approach.x,
+          y: portal.approach.y + portalEntrySize.height / 2 + 1
+        }), `${portal.id} outside vertical edge`).toBe(false);
+      }
     }
   });
 
@@ -204,9 +239,9 @@ describe("guest route world", () => {
       })
     ]);
     expect(neighborhood.decorations.filter((item) => item.kind === "tree")).toEqual([
-      expect.objectContaining({ x: 214, y: 120, width: 90, height: 150, asset: "tree-canopy.png", depthY: 270 }),
+      expect.objectContaining({ x: 214, y: 90, width: 90, height: 150, asset: "tree-canopy.png", depthY: 240 }),
       expect.objectContaining({ x: 513, y: 90, width: 90, height: 150, asset: "tree-canopy.png", depthY: 240 }),
-      expect.objectContaining({ x: 860, y: 120, width: 90, height: 150, asset: "tree-canopy.png", depthY: 270 })
+      expect.objectContaining({ x: 860, y: 90, width: 90, height: 150, asset: "tree-canopy.png", depthY: 240 })
     ]);
   });
 
@@ -689,17 +724,7 @@ describe("guest route world", () => {
         spawn: { x: 945, y: 405 }
       })
     ]);
-    expect(restroom.decorations).toContainEqual(expect.objectContaining({
-      id: "restroom-stall-front",
-      kind: "stall",
-      x: 420,
-      y: 240,
-      width: 150,
-      height: 240,
-      asset: "stall-front.png",
-      depthY: 480
-    }));
-    expect(restroom.decorations.filter((item) => item.asset === "stall-front.png")).toHaveLength(1);
+    expect(restroom.decorations.filter((item) => item.asset === "stall-front.png")).toHaveLength(0);
 
     for (const target of [
       { x: 135, y: 315 },
@@ -765,10 +790,10 @@ describe("guest route world", () => {
       })
     ]);
     expect(hall.decorations.filter((item) => item.kind === "aisle-bouquet")).toEqual([
-      expect.objectContaining({ x: 270, y: 480, width: 60, height: 90, asset: "aisle-bouquet-front.png", depthY: 570 }),
-      expect.objectContaining({ x: 420, y: 720, width: 60, height: 90, asset: "aisle-bouquet-front.png", depthY: 810 }),
-      expect.objectContaining({ x: 270, y: 960, width: 60, height: 90, asset: "aisle-bouquet-front.png", depthY: 1050 }),
-      expect.objectContaining({ x: 420, y: 1200, width: 60, height: 90, asset: "aisle-bouquet-front.png", depthY: 1290 })
+      expect.objectContaining({ x: 240, y: 480, width: 60, height: 90, asset: "aisle-bouquet-front.png", depthY: 570 }),
+      expect.objectContaining({ x: 480, y: 720, width: 60, height: 90, asset: "aisle-bouquet-front.png", depthY: 810 }),
+      expect.objectContaining({ x: 240, y: 960, width: 60, height: 90, asset: "aisle-bouquet-front.png", depthY: 1050 }),
+      expect.objectContaining({ x: 480, y: 1200, width: 60, height: 90, asset: "aisle-bouquet-front.png", depthY: 1290 })
     ]);
   });
 
@@ -855,7 +880,7 @@ describe("guest route world", () => {
       expect(zone.theme).toBe(zone.id);
       expect(zone.paths.length).toBeGreaterThan(0);
       if (zone.id !== "bridal-room") {
-        expect(zone.decorations.length).toBeGreaterThanOrEqual(8);
+        expect(zone.decorations.length).toBeGreaterThanOrEqual(zone.id === "restroom" ? 7 : 8);
         expect(new Set(zone.decorations.map((item) => item.kind)).size).toBeGreaterThanOrEqual(4);
       }
     }

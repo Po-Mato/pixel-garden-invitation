@@ -52,7 +52,7 @@
     {
       "id": "restroom",
       "background": { "source": "pixel-background-source.png", "output": "background.webp", "width": 660, "height": 660 },
-      "overlays": [{ "source": "stall-front-source.png", "output": "stall-front.png", "width": 150, "height": 240 }],
+      "overlays": [],
       "requiredArtifacts": ["mirror", "sink", "terrazzo-floor", "stall", "plant", "door"]
     },
     {

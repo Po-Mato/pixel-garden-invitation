@@ -102,6 +102,20 @@ function walkHomeToPortalWithHeldUp(joystick: HTMLElement) {
   advanceAnimation(4680);
 }
 
+function walkHomeToPortalRightEdge(joystick: HTMLElement) {
+  const move = (key: string, times: number[]) => {
+    fireEvent.keyDown(joystick, { key });
+    times.forEach(advanceAnimation);
+    fireEvent.keyUp(joystick, { key });
+  };
+
+  move("ArrowLeft", [0, 300]);
+  move("ArrowUp", [600, 900, 1140, 1380, 1620, 1860, 2100, 2340, 2580]);
+  move("ArrowRight", [2880, 3180, 3420]);
+  fireEvent.keyDown(joystick, { key: "ArrowUp" });
+  [3660, 3960, 4200, 4440, 4680, 4920].forEach(advanceAnimation);
+}
+
 function finishPortalFadeOut() {
   act(() => vi.advanceTimersByTime(250));
   fireTransitionEnd(screen.getByTestId("world-portal-transition"), "opacity");
@@ -635,7 +649,7 @@ describe("GameWorld", () => {
     expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "135px", top: "405px" });
   });
 
-  it("roundtrips through the Task 13 restroom with exact fade coordinates and stall depth", () => {
+  it("roundtrips through the Task 13 restroom without duplicating the background stalls", () => {
     const { container } = render(<GameWorld profile={profile} />);
     travelFromHomeToLobby();
 
@@ -652,8 +666,7 @@ describe("GameWorld", () => {
     expect(restroom).toHaveStyle({ width: "660px", height: "660px" });
     expectMapBackground(container, "restroom");
     expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "135px", top: "345px" });
-    expect(stallFront).toHaveAttribute("src", "/assets/maps/v2/restroom/stall-front.png");
-    expect(stallFront).toHaveStyle({ left: "420px", top: "240px", width: "150px", height: "240px", zIndex: "1480" });
+    expect(stallFront).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "로비로 돌아가기" }));
     advanceRouteToPortalArrival();
@@ -692,10 +705,10 @@ describe("GameWorld", () => {
       .toHaveStyle({ left: "450px", top: "255px", zIndex: "1255" });
     expect(bouquets).toHaveLength(4);
     [
-      ["270px", "480px", "1570"],
-      ["420px", "720px", "1810"],
-      ["270px", "960px", "2050"],
-      ["420px", "1200px", "2290"]
+      ["240px", "480px", "1570"],
+      ["480px", "720px", "1810"],
+      ["240px", "960px", "2050"],
+      ["480px", "1200px", "2290"]
     ].forEach(([left, top, zIndex], index) => {
       expect(bouquets[index]).toHaveAttribute("src", "/assets/maps/v2/ceremony-hall/aisle-bouquet-front.png");
       expect(bouquets[index]).toHaveStyle({ left, top, width: "60px", height: "90px", zIndex });
@@ -967,6 +980,42 @@ describe("GameWorld", () => {
     expect(effect?.querySelector(".world-portal__circle")).toBeInTheDocument();
     expect(effect?.querySelectorAll(".world-portal__particle")).toHaveLength(4);
     expect(portal.querySelector(".world-portal__label")).toHaveTextContent("동네로 나가기");
+  });
+
+  it("centers every portal interaction area on its visible 76 by 28 floor circle", () => {
+    render(<GameWorld profile={profile} />);
+
+    expect(screen.getByRole("button", { name: "동네로 나가기" })).toHaveStyle({
+      left: "247px",
+      top: "91px",
+      width: "76px",
+      height: "28px"
+    });
+
+    travelThroughPortal("동네로 나가기");
+
+    expect(screen.getByRole("button", { name: "집으로 돌아가기" })).toHaveStyle({
+      left: "67px",
+      top: "361px",
+      width: "76px",
+      height: "28px"
+    });
+    expect(screen.getByRole("button", { name: "지하철역 들어가기" })).toHaveStyle({
+      left: "1057px",
+      top: "361px",
+      width: "76px",
+      height: "28px"
+    });
+  });
+
+  it("enters a portal by joystick from a grid tile covered by the circle edge", () => {
+    render(<GameWorld profile={profile} />);
+    const joystick = screen.getByLabelText("가상 조이스틱");
+
+    walkHomeToPortalRightEdge(joystick);
+
+    expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "315px", top: "105px" });
+    expect(screen.getByTestId("world-portal-transition")).toHaveAttribute("data-phase", "arrival");
   });
 
   it("inverse-transforms map clicks with a boundary-clamped camera and moves one grid tile at a time", () => {

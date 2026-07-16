@@ -130,6 +130,22 @@ function alphaAt(raw, dimensions, x, y) {
   return raw[(y * dimensions.width + x) * 4 + 3];
 }
 
+function opaqueSpanInRows(raw, dimensions, top) {
+  let minX = dimensions.width;
+  let maxX = -1;
+
+  for (let y = top; y < dimensions.height; y += 1) {
+    for (let x = 0; x < dimensions.width; x += 1) {
+      if (alphaAt(raw, dimensions, x, y) > 16) {
+        minX = Math.min(minX, x);
+        maxX = Math.max(maxX, x);
+      }
+    }
+  }
+
+  return maxX >= minX ? maxX - minX + 1 : 0;
+}
+
 test("guest direction source authoring emits four source images per preset", async () => {
   const dir = await mkdtemp(join(tmpdir(), "guest-direction-sources-"));
   try {
@@ -192,6 +208,28 @@ test("guest preset authoring emits distinct directional walk frames", async () =
     }
   } finally {
     await rm(dir, { recursive: true, force: true });
+  }
+});
+
+test("guest 08 side walk neutral frames bring the feet together", async () => {
+  const frameDimensions = guestPresetCatalog.frame.source;
+  const walk = join(
+    root,
+    "character-assets/source/guests/feminine-teal-modern-hanbok__walk.png"
+  );
+  const lowerRowsTop = Math.floor(frameDimensions.height * 0.875);
+
+  for (const row of [1, 2]) {
+    const spans = [];
+    for (let column = 0; column < 3; column += 1) {
+      const raw = await extractRawFrame(walk, column, row, frameDimensions);
+      spans.push(opaqueSpanInRows(raw, frameDimensions, lowerRowsTop));
+    }
+
+    assert.ok(
+      spans[1] <= Math.min(spans[0], spans[2]) - 4,
+      `guest 08 row ${row} neutral frame feet must be visibly closer: ${spans.join(", ")}`
+    );
   }
 });
 

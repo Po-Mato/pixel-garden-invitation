@@ -100,6 +100,20 @@ test("audits a complete map fixture", async () => {
   });
 });
 
+test("allows a map zone with no foreground overlays", async () => {
+  await withFixture(async ({ rootDir, manifestPath }) => {
+    const overlaylessManifest = {
+      ...manifest,
+      zones: manifest.zones.map((zone) => ({ ...zone, overlays: [] }))
+    };
+    await writeFile(manifestPath, `${JSON.stringify(overlaylessManifest, null, 2)}\n`);
+
+    const result = await auditFixture({ rootDir, manifestPath });
+
+    assert.equal(result.errors.length, 0);
+  });
+});
+
 test("reports a missing background output", async () => {
   await withFixture(async ({ rootDir, manifestPath, outputDir }) => {
     await unlink(join(outputDir, "background.webp"));
@@ -459,7 +473,7 @@ test("declares the ten map contracts in journey order", async () => {
     {
       id: "restroom",
       background: { source: "pixel-background-source.png", output: "background.webp", width: 660, height: 660 },
-      overlays: [{ source: "stall-front-source.png", output: "stall-front.png", width: 150, height: 240 }],
+      overlays: [],
       requiredArtifacts: ["mirror", "sink", "terrazzo-floor", "stall", "plant", "door"]
     },
     {

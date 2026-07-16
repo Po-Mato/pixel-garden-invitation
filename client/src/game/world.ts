@@ -103,6 +103,26 @@ export type WorldPortal = Rect & {
   spawn: Point;
 };
 
+export const portalEntrySize = { width: 76, height: 28 } as const;
+
+export function portalEntryRect(portal: WorldPortal): Rect {
+  return {
+    x: portal.approach.x - portalEntrySize.width / 2,
+    y: portal.approach.y - portalEntrySize.height / 2,
+    width: portalEntrySize.width,
+    height: portalEntrySize.height
+  };
+}
+
+export function pointInPortalEntry(portal: WorldPortal, point: Point): boolean {
+  const horizontalRadius = portalEntrySize.width / 2;
+  const verticalRadius = portalEntrySize.height / 2;
+  const normalizedX = (point.x - portal.approach.x) / horizontalRadius;
+  const normalizedY = (point.y - portal.approach.y) / verticalRadius;
+
+  return normalizedX ** 2 + normalizedY ** 2 <= 1;
+}
+
 export type WorldZone = {
   id: WorldZoneId;
   label: string;
@@ -237,17 +257,17 @@ const neighborhoodZone = createZone({
     portal("neighborhood-to-station", "지하철역 들어가기", "subway-station", { x: 1080, y: 300, width: 90, height: 150 }, { x: 1095, y: 375 }, "right", { x: 135, y: 435 })
   ],
   decorations: [
-    decoration("street-tree-1", "tree", "가로수", 214, 120, 90, 150, {
+    decoration("street-tree-1", "tree", "가로수", 214, 90, 90, 150, {
       asset: "tree-canopy.png",
-      depthY: 270
+      depthY: 240
     }),
     decoration("street-tree-2", "tree", "가로수", 513, 90, 90, 150, {
       asset: "tree-canopy.png",
       depthY: 240
     }),
-    decoration("street-tree-3", "tree", "가로수", 860, 120, 90, 150, {
+    decoration("street-tree-3", "tree", "가로수", 860, 90, 90, 150, {
       asset: "tree-canopy.png",
-      depthY: 270
+      depthY: 240
     }),
     decoration("street-lamp-1", "lamp", "가로등", 450, 120, 30, 75),
     decoration("street-lamp-2", "lamp", "가로등", 825, 120, 30, 75),
@@ -464,19 +484,19 @@ const ceremonyHallZone = createZone({
     decoration("hall-seat-r3", "ceremony-seat", "하객 좌석", 465, 1020, 150, 120),
     decoration("hall-seat-l4", "ceremony-seat", "하객 좌석", 45, 1350, 150, 120),
     decoration("hall-seat-r4", "ceremony-seat", "하객 좌석", 465, 1350, 150, 120),
-    decoration("hall-flowers-1", "aisle-bouquet", "버진로드 꽃장식", 270, 480, 60, 90, {
+    decoration("hall-flowers-1", "aisle-bouquet", "버진로드 꽃장식", 240, 480, 60, 90, {
       asset: "aisle-bouquet-front.png",
       depthY: 570
     }),
-    decoration("hall-flowers-2", "aisle-bouquet", "버진로드 꽃장식", 420, 720, 60, 90, {
+    decoration("hall-flowers-2", "aisle-bouquet", "버진로드 꽃장식", 480, 720, 60, 90, {
       asset: "aisle-bouquet-front.png",
       depthY: 810
     }),
-    decoration("hall-flowers-3", "aisle-bouquet", "버진로드 꽃장식", 270, 960, 60, 90, {
+    decoration("hall-flowers-3", "aisle-bouquet", "버진로드 꽃장식", 240, 960, 60, 90, {
       asset: "aisle-bouquet-front.png",
       depthY: 1050
     }),
-    decoration("hall-flowers-4", "aisle-bouquet", "버진로드 꽃장식", 420, 1200, 60, 90, {
+    decoration("hall-flowers-4", "aisle-bouquet", "버진로드 꽃장식", 480, 1200, 60, 90, {
       asset: "aisle-bouquet-front.png",
       depthY: 1290
     }),
@@ -506,10 +526,6 @@ const restroomZone = createZone({
     decoration("restroom-mirror-1", "mirror", "조명 거울", 150, 60, 105, 90),
     decoration("restroom-mirror-2", "mirror", "조명 거울", 285, 60, 105, 90),
     decoration("restroom-sinks", "restroom-sink", "세면대", 150, 150, 240, 90),
-    decoration("restroom-stall-front", "stall", "화장실 칸 전경", 420, 240, 150, 240, {
-      asset: "stall-front.png",
-      depthY: 480
-    }),
     decoration("restroom-plant", "topiary", "민트 화분", 240, 450, 60, 72),
     decoration("restroom-door", "door", "로비 출입문", 30, 285, 90, 120),
     decoration("restroom-terrazzo", "mosaic-star", "테라조 포인트", 180, 450, 120, 60),

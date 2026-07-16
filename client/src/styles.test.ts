@@ -312,16 +312,23 @@ describe("prism map interactions", () => {
     const circleRule = styles.match(/\.world-portal__circle\s*\{([^}]*)}/s)?.[1] ?? "";
     const beamRule = styles.match(/\.world-portal__beam\s*\{([^}]*)}/s)?.[1] ?? "";
     const particleRule = styles.match(/\.world-portal__particle\s*\{([^}]*)}/s)?.[1] ?? "";
+    const circlePulseRule = styles.match(/@keyframes portal-circle-pulse\s*\{([\s\S]*?)\n}/)?.[1] ?? "";
+    const activeEffectRule = styles.match(/\.world-portal:active \.world-portal__effect\s*\{([^}]*)}/s)?.[1] ?? "";
 
     expect(portalRule).toContain("overflow: visible;");
     expect(portalRule).toContain("background: transparent;");
     expect(effectRule).toContain("pointer-events: none;");
+    expect(effectRule).toContain("bottom: 0;");
+    expect(circleRule).toContain("width: 100%;");
+    expect(circleRule).toContain("height: 100%;");
     expect(circleRule).toContain("border-radius: 50%;");
     expect(circleRule).toMatch(/animation:\s*portal-circle-pulse/);
     expect(beamRule).toContain("bottom:");
     expect(beamRule).toMatch(/animation:\s*portal-beam-rise/);
     expect(particleRule).toMatch(/animation:\s*portal-particle-rise/);
     expect(styles).toContain("@keyframes portal-circle-pulse");
+    expect(circlePulseRule).not.toContain("transform:");
+    expect(activeEffectRule).not.toContain("transform:");
     expect(styles).toContain("@keyframes portal-beam-rise");
     expect(styles).toContain("@keyframes portal-particle-rise");
     expect(styles).toMatch(/\.world-portal--target\s*\{[^}]*--portal-accent:/s);

@@ -148,8 +148,8 @@ export async function auditMapAssets({
       await inspectImage(output, background, `${zone.id} background output`, errors);
     }
 
-    if (!Array.isArray(zone.overlays) || zone.overlays.length === 0) {
-      errors.push(`manifest overlays are required for ${zone.id}`);
+    if (!Array.isArray(zone.overlays)) {
+      errors.push(`manifest overlays must be an array for ${zone.id}`);
     } else {
       addDuplicateErrors(errors, zone.overlays.map((overlay) => overlay?.output).filter(Boolean), `${zone.id} overlay output`);
 

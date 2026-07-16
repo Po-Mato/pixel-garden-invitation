@@ -5,9 +5,9 @@ import sharp from "sharp";
 export const DEFAULT_FOREGROUND_PLACEMENTS = Object.freeze({
   home: [{ asset: "topiary-foreground.png", x: 420, y: 480 }],
   neighborhood: [
-    { asset: "tree-canopy.png", x: 214, y: 120 },
+    { asset: "tree-canopy.png", x: 214, y: 90 },
     { asset: "tree-canopy.png", x: 513, y: 90 },
-    { asset: "tree-canopy.png", x: 860, y: 120 }
+    { asset: "tree-canopy.png", x: 860, y: 90 }
   ],
   "subway-station": [
     { asset: "ticket-gate-front.png", x: 360, y: 360 },
@@ -19,12 +19,12 @@ export const DEFAULT_FOREGROUND_PLACEMENTS = Object.freeze({
   lobby: [{ asset: "reception-desk-front.png", x: 450, y: 320 }],
   "bridal-room": [{ asset: "flower-arrangement-front.png", x: 240, y: 300 }],
   "ceremony-hall": [
-    { asset: "aisle-bouquet-front.png", x: 270, y: 480 },
-    { asset: "aisle-bouquet-front.png", x: 420, y: 720 },
-    { asset: "aisle-bouquet-front.png", x: 270, y: 960 },
-    { asset: "aisle-bouquet-front.png", x: 420, y: 1200 }
+    { asset: "aisle-bouquet-front.png", x: 240, y: 480 },
+    { asset: "aisle-bouquet-front.png", x: 480, y: 720 },
+    { asset: "aisle-bouquet-front.png", x: 240, y: 960 },
+    { asset: "aisle-bouquet-front.png", x: 480, y: 1200 }
   ],
-  restroom: [{ asset: "stall-front.png", x: 420, y: 240 }],
+  restroom: [],
   banquet: [
     { asset: "table-front.png", x: 120, y: 210 },
     { asset: "table-front.png", x: 390, y: 210 },
