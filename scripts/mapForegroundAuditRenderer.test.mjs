@@ -4,7 +4,10 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import test from "node:test";
 import sharp from "sharp";
-import { renderMapForegroundAuditSheet } from "./lib/mapForegroundAuditRenderer.mjs";
+import {
+  DEFAULT_FOREGROUND_PLACEMENTS,
+  renderMapForegroundAuditSheet
+} from "./lib/mapForegroundAuditRenderer.mjs";
 
 async function writePng(file, width, height, background) {
   await mkdir(join(file, ".."), { recursive: true });
@@ -12,6 +15,12 @@ async function writePng(file, width, height, background) {
     create: { width, height, channels: 4, background }
   }).png().toFile(file);
 }
+
+test("uses one unified gate bank placement for the subway station", () => {
+  assert.deepEqual(DEFAULT_FOREGROUND_PLACEMENTS["subway-station"], [
+    { asset: "ticket-gate-bank-front.png", x: 360, y: 360 }
+  ]);
+});
 
 test("renders every manifest zone with its foreground placements", async () => {
   const rootDir = await mkdtemp(join(tmpdir(), "map-foreground-audit-"));

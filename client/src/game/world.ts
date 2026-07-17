@@ -310,16 +310,8 @@ const subwayStationZone = createZone({
   ],
   decorations: [
     decoration("station-sign", "station-sign", "노선 안내판", 180, 90, 300, 60),
-    decoration("station-gate-1", "ticket-gate", "개찰구", 360, 360, 60, 120, {
-      asset: "ticket-gate-front.png",
-      depthY: 480
-    }),
-    decoration("station-gate-2", "ticket-gate", "개찰구", 450, 360, 60, 120, {
-      asset: "ticket-gate-front.png",
-      depthY: 480
-    }),
-    decoration("station-gate-3", "ticket-gate", "개찰구", 540, 360, 60, 120, {
-      asset: "ticket-gate-front.png",
+    decoration("station-gate-bank", "ticket-gate", "통합 개찰구", 360, 360, 240, 120, {
+      asset: "ticket-gate-bank-front.png",
       depthY: 480
     }),
     decoration("station-bench-1", "bench", "대합실 벤치", 270, 150, 120, 45),

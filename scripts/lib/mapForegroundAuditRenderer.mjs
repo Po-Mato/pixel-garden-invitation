@@ -9,11 +9,7 @@ export const DEFAULT_FOREGROUND_PLACEMENTS = Object.freeze({
     { asset: "tree-canopy.png", x: 513, y: 90 },
     { asset: "tree-canopy.png", x: 860, y: 90 }
   ],
-  "subway-station": [
-    { asset: "ticket-gate-front.png", x: 360, y: 360 },
-    { asset: "ticket-gate-front.png", x: 450, y: 360 },
-    { asset: "ticket-gate-front.png", x: 540, y: 360 }
-  ],
+  "subway-station": [{ asset: "ticket-gate-bank-front.png", x: 360, y: 360 }],
   "subway-train": [{ asset: "strap-row-foreground.png", x: 240, y: 105 }],
   "venue-exterior": [{ asset: "flower-arch-front.png", x: 360, y: 180 }],
   lobby: [{ asset: "reception-desk-front.png", x: 450, y: 320 }],

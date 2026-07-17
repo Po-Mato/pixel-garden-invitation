@@ -437,7 +437,7 @@ test("declares the ten map contracts in journey order", async () => {
     {
       id: "subway-station",
       background: { source: "pixel-background-source.png", output: "background.webp", width: 900, height: 840 },
-      overlays: [{ source: "ticket-gate-front-source.png", output: "ticket-gate-front.png", width: 60, height: 120 }],
+      overlays: [{ source: "ticket-gate-bank-front-source.png", output: "ticket-gate-bank-front.png", width: 240, height: 120 }],
       requiredArtifacts: ["route-band", "ticket-gate", "bench", "safety-line", "platform-door"]
     },
     {

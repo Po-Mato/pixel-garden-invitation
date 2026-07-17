@@ -303,7 +303,7 @@ describe("guest route world", () => {
     expect(returnNeighborhood && isBlocked(returnNeighborhood.spawn, neighborhood)).toBe(false);
   });
 
-  it("defines the v2 subway station layout, portals, and gate-front overlays", () => {
+  it("defines the v2 subway station layout, portals, and unified gate bank", () => {
     const station = getWorldZone(gardenWorld, "subway-station");
     const [directionsSpot] = station.spots;
 
@@ -347,9 +347,15 @@ describe("guest route world", () => {
       })
     ]);
     expect(station.decorations.filter((item) => item.kind === "ticket-gate")).toEqual([
-      expect.objectContaining({ id: "station-gate-1", x: 360, y: 360, width: 60, height: 120, asset: "ticket-gate-front.png", depthY: 480 }),
-      expect.objectContaining({ id: "station-gate-2", x: 450, y: 360, width: 60, height: 120, asset: "ticket-gate-front.png", depthY: 480 }),
-      expect.objectContaining({ id: "station-gate-3", x: 540, y: 360, width: 60, height: 120, asset: "ticket-gate-front.png", depthY: 480 })
+      expect.objectContaining({
+        id: "station-gate-bank",
+        x: 360,
+        y: 360,
+        width: 240,
+        height: 120,
+        asset: "ticket-gate-bank-front.png",
+        depthY: 480
+      })
     ]);
   });
 
@@ -906,7 +912,8 @@ describe("guest route world", () => {
       expect(zone.theme).toBe(zone.id);
       expect(zone.paths.length).toBeGreaterThan(0);
       if (zone.id !== "bridal-room") {
-        expect(zone.decorations.length).toBeGreaterThanOrEqual(zone.id === "restroom" ? 7 : 8);
+        const minimumDecorationCount = ["restroom", "subway-station"].includes(zone.id) ? 7 : 8;
+        expect(zone.decorations.length).toBeGreaterThanOrEqual(minimumDecorationCount);
         expect(new Set(zone.decorations.map((item) => item.kind)).size).toBeGreaterThanOrEqual(4);
       }
     }
