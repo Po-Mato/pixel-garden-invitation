@@ -697,7 +697,7 @@ Run:
 pnpm --filter @wedding-game/client exec vite preview --host 127.0.0.1 --port 58862
 ```
 
-Expected: `http://127.0.0.1:58862/pixel-garden-invitation/`에서 응답. 포트가 사용 중이면 Vite가 출력한 다음 사용 가능 포트를 기록한다.
+Expected: 상대 `base`를 사용하는 로컬 Vite preview는 `http://127.0.0.1:58862/`에서 응답한다. 포트가 사용 중이면 Vite가 출력한 다음 사용 가능 포트를 기록한다.
 
 - [ ] **Step 4: 데스크톱·모바일 브라우저 검증**
 
