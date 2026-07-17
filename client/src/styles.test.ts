@@ -337,17 +337,21 @@ describe("prism map interactions", () => {
     );
   });
 
-  it("uses the same prism surface language for the menu and joystick", () => {
+  it("uses the menu prism surface and image-based wedding joystick", () => {
     const menuButtonRule = styles.match(/\.world-menu-button\s*\{([^}]*)}/s)?.[1] ?? "";
     const menuSheetRule = styles.match(/\.world-menu-sheet\s*\{([^}]*)}/s)?.[1] ?? "";
     const joystickRule = styles.match(/\.virtual-joystick\s*\{([^}]*)}/s)?.[1] ?? "";
 
     expect(menuButtonRule).toContain("--control-accent:");
     expect(menuSheetRule).toContain("--menu-prism:");
-    expect(joystickRule).toContain("--joystick-accent:");
+    expect(joystickRule).toContain("--joystick-travel: 30px;");
     expect(styles).toContain(".world-menu-button:focus-visible");
     expect(styles).toContain(".world-menu-grid button:focus-visible");
-    expect(styles).toContain(".virtual-joystick::before");
+    expect(styles).toContain(".virtual-joystick__base");
+    expect(styles).toContain(".virtual-joystick__thumb");
+    expect(styles).toMatch(
+      /@media \(max-width: 720px\)[\s\S]*\.virtual-joystick\s*\{[^}]*--joystick-travel:\s*22px;/
+    );
     expect(styles).toContain("@media (hover: hover) and (pointer: fine)");
   });
 

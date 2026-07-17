@@ -835,7 +835,10 @@ describe("GameWorld", () => {
     fireEvent.keyDown(joystick, { key: "ArrowUp", repeat: true });
     advanceAnimation(4000);
     expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "135px", top: "375px" });
-    expect(joystick.querySelector("span")).toHaveStyle({ transform: "translate(0px, 0px)" });
+    expect(joystick.querySelector(".virtual-joystick__thumb")).toHaveStyle({
+      "--joystick-x": "0",
+      "--joystick-y": "0"
+    });
 
     screen.getByRole("button", { name: "초대장 메뉴" }).focus();
     fireEvent.keyUp(window, { key: "ArrowUp" });

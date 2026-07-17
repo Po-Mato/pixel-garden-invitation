@@ -16,6 +16,24 @@ afterEach(() => {
 });
 
 describe("VirtualJoystick", () => {
+  it("renders the wedding compass base and thumb using normalized movement variables", () => {
+    const onVectorChange = vi.fn();
+    render(<VirtualJoystick onVectorChange={onVectorChange} />);
+
+    const control = screen.getByLabelText("가상 조이스틱");
+    const base = control.querySelector(".virtual-joystick__base");
+    const thumb = control.querySelector(".virtual-joystick__thumb");
+
+    expect(base).toHaveAttribute("src", "/assets/ui/joystick-wedding-compass-base.png");
+    expect(thumb).toHaveAttribute("src", "/assets/ui/joystick-wedding-compass-thumb.png");
+
+    fireEvent.keyDown(control, { key: "ArrowRight" });
+    expect(thumb).toHaveStyle({ "--joystick-x": "1", "--joystick-y": "0" });
+
+    fireEvent.keyUp(control, { key: "ArrowRight" });
+    expect(thumb).toHaveStyle({ "--joystick-x": "0", "--joystick-y": "0" });
+  });
+
   it("reports a normalized movement vector while dragging", () => {
     const onVectorChange = vi.fn();
     vi.stubGlobal("PointerEvent", MockPointerEvent);
@@ -140,11 +158,17 @@ describe("VirtualJoystick", () => {
     control.releasePointerCapture = vi.fn();
 
     fireEvent.pointerDown(control, { clientX: 130, clientY: 100, pointerId: 1 });
-    expect(control.querySelector("span")).toHaveStyle({ transform: "translate(30px, 0px)" });
+    expect(control.querySelector(".virtual-joystick__thumb")).toHaveStyle({
+      "--joystick-x": "1",
+      "--joystick-y": "0"
+    });
 
     rerender(<VirtualJoystick onVectorChange={onVectorChange} disabled />);
     expect(control).toHaveAttribute("aria-disabled", "true");
-    expect(control.querySelector("span")).toHaveStyle({ transform: "translate(0px, 0px)" });
+    expect(control.querySelector(".virtual-joystick__thumb")).toHaveStyle({
+      "--joystick-x": "0",
+      "--joystick-y": "0"
+    });
     onVectorChange.mockClear();
 
     fireEvent.pointerMove(control, { clientX: 70, clientY: 100, pointerId: 1 });

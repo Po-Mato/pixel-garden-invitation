@@ -1,4 +1,11 @@
-import { useEffect, useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+  type KeyboardEvent,
+  type PointerEvent
+} from "react";
 
 type Point = { x: number; y: number };
 
@@ -7,7 +14,6 @@ type VirtualJoystickProps = {
   onVectorChange: (vector: Point) => void;
 };
 
-const radius = 30;
 const zeroVector: Point = { x: 0, y: 0 };
 
 function normalize(dx: number, dy: number): Point {
@@ -47,14 +53,14 @@ function vectorFromKey(key: string): Point | null {
 export function VirtualJoystick({ disabled = false, onVectorChange }: VirtualJoystickProps) {
   const activePointerIdRef = useRef<number | null>(null);
   const activeKeysRef = useRef<string[]>([]);
-  const [thumbOffset, setThumbOffset] = useState<Point>(zeroVector);
+  const [thumbVector, setThumbVector] = useState<Point>(zeroVector);
 
   useEffect(() => {
-    if (disabled) setThumbOffset(zeroVector);
+    if (disabled) setThumbVector(zeroVector);
   }, [disabled]);
 
   function applyVector(vector: Point) {
-    setThumbOffset({ x: vector.x * radius, y: vector.y * radius });
+    setThumbVector(vector);
     onVectorChange(vector);
   }
 
@@ -160,7 +166,26 @@ export function VirtualJoystick({ disabled = false, onVectorChange }: VirtualJoy
       onKeyDown={handleKeyDown}
       onKeyUp={handleKeyUp}
     >
-      <span style={{ transform: `translate(${thumbOffset.x}px, ${thumbOffset.y}px)` }} />
+      <img
+        className="virtual-joystick__base"
+        src={`${import.meta.env.BASE_URL}assets/ui/joystick-wedding-compass-base.png`}
+        alt=""
+        aria-hidden="true"
+        draggable={false}
+      />
+      <img
+        className="virtual-joystick__thumb"
+        src={`${import.meta.env.BASE_URL}assets/ui/joystick-wedding-compass-thumb.png`}
+        alt=""
+        aria-hidden="true"
+        draggable={false}
+        style={
+          {
+            "--joystick-x": thumbVector.x,
+            "--joystick-y": thumbVector.y
+          } as CSSProperties
+        }
+      />
     </div>
   );
 }
