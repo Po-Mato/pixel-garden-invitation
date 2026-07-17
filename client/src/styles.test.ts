@@ -306,31 +306,30 @@ describe("prism map interactions", () => {
     expect(spotArrowRule).not.toContain('content: ">";');
   });
 
-  it("renders portals as three square floor tiles with one rising light effect", () => {
-    const portalRule = styles.match(/\.world-portal\s*\{([^}]*)}/s)?.[1] ?? "";
-    const tilesRule = styles.match(/\.world-portal__tiles\s*\{([^}]*)}/s)?.[1] ?? "";
+  it("renders three enhanced tiles with short local sparks and no trapezoid beam styles", () => {
+    const effectRule = styles.match(/\.world-portal__effect\s*\{([^}]*)}/s)?.[1] ?? "";
     const tileRule = styles.match(/\.world-portal__tile\s*\{([^}]*)}/s)?.[1] ?? "";
-    const beamRule = styles.match(/\.world-portal__beam\s*\{([^}]*)}/s)?.[1] ?? "";
-    const particleRule = styles.match(/\.world-portal__particle\s*\{([^}]*)}/s)?.[1] ?? "";
+    const runeRule = styles.match(/\.world-portal__tile::before\s*\{([^}]*)}/s)?.[1] ?? "";
+    const sparkRule = styles.match(/\.world-portal__tile::after\s*\{([^}]*)}/s)?.[1] ?? "";
+    const sparkFrames = styles.match(/@keyframes portal-tile-spark\s*\{([\s\S]*?)\n}/)?.[1] ?? "";
 
-    expect(portalRule).toContain("overflow: visible;");
-    expect(portalRule).toContain("background: transparent;");
-    expect(portalRule).toContain("border-radius: 3px;");
-    expect(tilesRule).toContain("display: grid;");
-    expect(styles).toMatch(/\.world-portal--horizontal \.world-portal__tiles\s*\{[^}]*grid-template-columns:\s*repeat\(3, 30px\);/s);
-    expect(styles).toMatch(/\.world-portal--vertical \.world-portal__tiles\s*\{[^}]*grid-template-rows:\s*repeat\(3, 30px\);/s);
+    expect(effectRule).toContain("drop-shadow(0 0 8px var(--portal-glow))");
     expect(tileRule).toContain("width: 30px;");
     expect(tileRule).toContain("height: 30px;");
-    expect(tileRule).toMatch(/animation:\s*portal-tile-pulse/);
-    expect(beamRule).toContain("bottom: calc(50% - 15px);");
-    expect(beamRule).toMatch(/animation:\s*portal-beam-rise/);
-    expect(particleRule).toMatch(/animation:\s*portal-particle-rise/);
-    expect(styles).toContain("@keyframes portal-tile-pulse");
-    expect(styles).toContain("@keyframes portal-beam-rise");
-    expect(styles).toContain("@keyframes portal-particle-rise");
-    expect(styles).toMatch(/\.world-portal--target\s*\{[^}]*--portal-accent:/s);
+    expect(tileRule).toContain("--portal-tile-delay: 0s;");
+    expect(tileRule).toMatch(/animation:\s*portal-tile-pulse[^;]*var\(--portal-tile-delay\)/);
+    expect(runeRule).toContain('content: "";');
+    expect(sparkRule).toContain('content: "";');
+    expect(sparkRule).toMatch(/animation:\s*portal-tile-spark[^;]*var\(--portal-tile-delay\)/);
+    expect(sparkFrames).toContain("translate(-50%, -24px)");
+    expect(styles).toMatch(/\.world-portal__tile:nth-child\(2\)\s*\{[^}]*--portal-tile-delay:\s*-0\.38s;/s);
+    expect(styles).toMatch(/\.world-portal__tile:nth-child\(3\)\s*\{[^}]*--portal-tile-delay:\s*-0\.76s;/s);
+    expect(styles).not.toContain(".world-portal__beam");
+    expect(styles).not.toContain(".world-portal__particle");
+    expect(styles).not.toContain("portal-beam-rise");
+    expect(styles).not.toContain("portal-particle-rise");
     expect(styles).toMatch(
-      /@media \(prefers-reduced-motion: reduce\)[\s\S]*\.world-portal__tile,[\s\S]*\.world-portal__particle\s*\{[^}]*animation:\s*none !important;/
+      /@media \(prefers-reduced-motion: reduce\)[\s\S]*\.world-portal__tile,[\s\S]*\.world-portal__tile::after\s*\{[^}]*animation:\s*none !important;/
     );
   });
 
