@@ -50,16 +50,19 @@
       "requiredArtifacts": ["altar", "ceremony-seat", "aisle", "aisle-bouquet", "candle-light", "entrance-door"]
     },
     {
+      "id": "banquet",
+      "background": { "source": "pixel-background-source.png", "output": "background.webp", "width": 1200, "height": 930 },
+      "overlays": [
+        { "source": "table-floral-source.png", "output": "table-floral.png", "width": 240, "height": 240 },
+        { "source": "table-dining-source.png", "output": "table-dining.png", "width": 240, "height": 240 }
+      ],
+      "requiredArtifacts": ["window", "buffet", "central-aisle", "banquet-table", "table-setting", "flower-arrangement", "lobby-door", "restroom-door"]
+    },
+    {
       "id": "restroom",
       "background": { "source": "pixel-background-source.png", "output": "background.webp", "width": 660, "height": 660 },
       "overlays": [],
       "requiredArtifacts": ["mirror", "sink", "terrazzo-floor", "stall", "plant", "door"]
-    },
-    {
-      "id": "banquet",
-      "background": { "source": "pixel-background-source.png", "output": "background.webp", "width": 1200, "height": 930 },
-      "overlays": [{ "source": "table-front-source.png", "output": "table-front.png", "width": 180, "height": 180 }],
-      "requiredArtifacts": ["banquet-table", "table-setting", "buffet", "dessert-cart", "window", "garland"]
     }
   ]
 }

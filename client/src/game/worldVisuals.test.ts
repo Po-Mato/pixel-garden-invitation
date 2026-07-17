@@ -23,8 +23,10 @@ describe("world visuals", () => {
   });
 
   it("resolves map assets from a base URL without a trailing slash", () => {
-    expect(resolveWorldMapAsset("banquet", "table-front.png", "./base"))
-      .toBe("./base/assets/maps/v2/banquet/table-front.png");
+    expect(resolveWorldMapAsset("banquet", "table-floral.png", "./base"))
+      .toBe("./base/assets/maps/v2/banquet/table-floral.png");
+    expect(resolveWorldMapAsset("banquet", "table-dining.png", "./base"))
+      .toBe("./base/assets/maps/v2/banquet/table-dining.png");
   });
 
   it("places map artwork and characters on a shared Y-depth scale", () => {

@@ -20,6 +20,19 @@ test("keeps the subway platform free of foreground ticket gates", () => {
   assert.deepEqual(DEFAULT_FOREGROUND_PLACEMENTS["subway-station"], []);
 });
 
+test("composes four complete banquet tables without legacy split fronts", () => {
+  assert.deepEqual(DEFAULT_FOREGROUND_PLACEMENTS.banquet, [
+    { asset: "table-floral.png", x: 150, y: 120 },
+    { asset: "table-dining.png", x: 690, y: 120 },
+    { asset: "table-dining.png", x: 150, y: 570 },
+    { asset: "table-floral.png", x: 690, y: 570 }
+  ]);
+  assert.equal(
+    DEFAULT_FOREGROUND_PLACEMENTS.banquet.some(({ asset }) => asset === "table-front.png"),
+    false
+  );
+});
+
 test("renders every manifest zone with its foreground placements", async () => {
   const rootDir = await mkdtemp(join(tmpdir(), "map-foreground-audit-"));
   const manifestPath = join(rootDir, "map-assets/reference/v2/manifest.json");

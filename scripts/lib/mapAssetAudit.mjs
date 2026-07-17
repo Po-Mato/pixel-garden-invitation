@@ -11,8 +11,8 @@ export const DEFAULT_MAP_ZONE_IDS = Object.freeze([
   "lobby",
   "bridal-room",
   "ceremony-hall",
-  "restroom",
-  "banquet"
+  "banquet",
+  "restroom"
 ]);
 
 async function exists(file) {
