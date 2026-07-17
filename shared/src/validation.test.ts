@@ -97,8 +97,8 @@ describe("parseClientMessage", () => {
       "lobby",
       "bridal-room",
       "ceremony-hall",
-      "restroom",
-      "banquet"
+      "banquet",
+      "restroom"
     ]);
 
     for (const zoneId of worldZoneIds) {

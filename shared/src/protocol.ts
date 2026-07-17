@@ -10,8 +10,8 @@ export const worldZoneIds = [
   "lobby",
   "bridal-room",
   "ceremony-hall",
-  "restroom",
-  "banquet"
+  "banquet",
+  "restroom"
 ] as const;
 export type WorldZoneId = (typeof worldZoneIds)[number];
 
