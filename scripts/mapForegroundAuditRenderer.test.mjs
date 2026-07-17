@@ -22,9 +22,9 @@ test("keeps the subway platform free of foreground ticket gates", () => {
 
 test("composes four complete banquet tables without legacy split fronts", () => {
   assert.deepEqual(DEFAULT_FOREGROUND_PLACEMENTS.banquet, [
-    { asset: "table-floral.png", x: 150, y: 120 },
-    { asset: "table-dining.png", x: 690, y: 120 },
-    { asset: "table-dining.png", x: 150, y: 570 },
+    { asset: "table-floral.png", x: 210, y: 270 },
+    { asset: "table-dining.png", x: 690, y: 270 },
+    { asset: "table-dining.png", x: 210, y: 570 },
     { asset: "table-floral.png", x: 690, y: 570 }
   ]);
   assert.equal(

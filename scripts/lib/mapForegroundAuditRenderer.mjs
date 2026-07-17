@@ -22,9 +22,9 @@ export const DEFAULT_FOREGROUND_PLACEMENTS = Object.freeze({
   ],
   restroom: [],
   banquet: [
-    { asset: "table-floral.png", x: 150, y: 120 },
-    { asset: "table-dining.png", x: 690, y: 120 },
-    { asset: "table-dining.png", x: 150, y: 570 },
+    { asset: "table-floral.png", x: 210, y: 270 },
+    { asset: "table-dining.png", x: 690, y: 270 },
+    { asset: "table-dining.png", x: 210, y: 570 },
     { asset: "table-floral.png", x: 690, y: 570 }
   ]
 });

@@ -560,22 +560,22 @@ const banquetZone = createZone({
     portal("banquet-to-restroom", "화장실", "restroom", { x: 1080, y: 405, width: 90, height: 120 }, { x: 1095, y: 465 }, "right", { x: 135, y: 345 })
   ],
   blocked: [
-    { x: 150, y: 120, width: 240, height: 240 },
-    { x: 690, y: 120, width: 240, height: 240 },
-    { x: 150, y: 570, width: 240, height: 240 },
+    { x: 210, y: 270, width: 240, height: 240 },
+    { x: 690, y: 270, width: 240, height: 240 },
+    { x: 210, y: 570, width: 240, height: 240 },
     { x: 690, y: 570, width: 240, height: 240 },
     { x: 450, y: 90, width: 300, height: 90 }
   ],
   decorations: [
-    decoration("banquet-table-1", "banquet-table", "꽃장식 하객 테이블", 150, 120, 240, 240, {
+    decoration("banquet-table-1", "banquet-table", "꽃장식 하객 테이블", 210, 270, 240, 240, {
       asset: "table-floral.png",
-      depthY: 360
+      depthY: 510
     }),
-    decoration("banquet-table-2", "banquet-table", "식사 하객 테이블", 690, 120, 240, 240, {
+    decoration("banquet-table-2", "banquet-table", "식사 하객 테이블", 690, 270, 240, 240, {
       asset: "table-dining.png",
-      depthY: 360
+      depthY: 510
     }),
-    decoration("banquet-table-3", "banquet-table", "식사 하객 테이블", 150, 570, 240, 240, {
+    decoration("banquet-table-3", "banquet-table", "식사 하객 테이블", 210, 570, 240, 240, {
       asset: "table-dining.png",
       depthY: 810
     }),

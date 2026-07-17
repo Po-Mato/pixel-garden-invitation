@@ -670,9 +670,9 @@ describe("GameWorld", () => {
     expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "135px", top: "465px" });
     expect(banquetTables).toHaveLength(4);
     [
-      ["150px", "120px", "table-floral.png", "1360"],
-      ["690px", "120px", "table-dining.png", "1360"],
-      ["150px", "570px", "table-dining.png", "1810"],
+      ["210px", "270px", "table-floral.png", "1510"],
+      ["690px", "270px", "table-dining.png", "1510"],
+      ["210px", "570px", "table-dining.png", "1810"],
       ["690px", "570px", "table-floral.png", "1810"]
     ].forEach(([left, top, asset, zIndex], index) => {
       expect(banquetTables[index]).toHaveAttribute("src", `/assets/maps/v2/banquet/${asset}`);

@@ -813,9 +813,9 @@ describe("guest route world", () => {
     const restroomToBanquet = getWorldZone(gardenWorld, "restroom").portals.find((portalItem) => portalItem.id === "restroom-to-banquet");
     const guestbookSpot = banquet.spots[0];
     const tableRects = [
-      { x: 150, y: 120, width: 240, height: 240 },
-      { x: 690, y: 120, width: 240, height: 240 },
-      { x: 150, y: 570, width: 240, height: 240 },
+      { x: 210, y: 270, width: 240, height: 240 },
+      { x: 690, y: 270, width: 240, height: 240 },
+      { x: 210, y: 570, width: 240, height: 240 },
       { x: 690, y: 570, width: 240, height: 240 }
     ];
 
@@ -861,8 +861,8 @@ describe("guest route world", () => {
       })
     ]);
     expect(banquet.decorations.filter((item) => item.kind === "banquet-table")).toEqual([
-      expect.objectContaining({ id: "banquet-table-1", ...tableRects[0], asset: "table-floral.png", depthY: 360 }),
-      expect.objectContaining({ id: "banquet-table-2", ...tableRects[1], asset: "table-dining.png", depthY: 360 }),
+      expect.objectContaining({ id: "banquet-table-1", ...tableRects[0], asset: "table-floral.png", depthY: 510 }),
+      expect.objectContaining({ id: "banquet-table-2", ...tableRects[1], asset: "table-dining.png", depthY: 510 }),
       expect.objectContaining({ id: "banquet-table-3", ...tableRects[2], asset: "table-dining.png", depthY: 810 }),
       expect.objectContaining({ id: "banquet-table-4", ...tableRects[3], asset: "table-floral.png", depthY: 810 })
     ]);
@@ -879,9 +879,9 @@ describe("guest route world", () => {
     }
 
     for (const blockedPoint of [
-      { x: 165, y: 135 },
-      { x: 705, y: 135 },
-      { x: 165, y: 585 },
+      { x: 225, y: 285 },
+      { x: 705, y: 285 },
+      { x: 225, y: 585 },
       { x: 705, y: 585 },
       { x: 465, y: 105 }
     ]) {
