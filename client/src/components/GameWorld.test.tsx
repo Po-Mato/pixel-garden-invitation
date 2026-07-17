@@ -971,17 +971,16 @@ describe("GameWorld", () => {
     expect(screen.getByRole("button", { name: /오시는 길/ })).toHaveStyle({ zIndex: "9000" });
   });
 
-  it("renders one portal effect over three visible entry tiles", () => {
+  it("renders only three tile-local portal effects without global beams or particles", () => {
     render(<GameWorld profile={profile} />);
     const portal = screen.getByRole("button", { name: "동네로 나가기" });
     const effect = portal.querySelector(".world-portal__effect");
 
     expect(portal).toHaveAccessibleName("동네로 나가기");
     expect(effect).toHaveAttribute("aria-hidden", "true");
-    expect(effect?.querySelectorAll(".world-portal__beam--outer")).toHaveLength(1);
-    expect(effect?.querySelectorAll(".world-portal__beam--core")).toHaveLength(1);
     expect(effect?.querySelectorAll(".world-portal__tile")).toHaveLength(3);
-    expect(effect?.querySelectorAll(".world-portal__particle")).toHaveLength(4);
+    expect(effect?.querySelector(".world-portal__beam")).not.toBeInTheDocument();
+    expect(effect?.querySelector(".world-portal__particle")).not.toBeInTheDocument();
     expect(portal.querySelector(".world-portal__label")).toHaveTextContent("동네로 나가기");
   });
 
