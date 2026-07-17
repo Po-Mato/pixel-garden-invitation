@@ -306,51 +306,56 @@ describe("prism map interactions", () => {
     expect(spotArrowRule).not.toContain('content: ">";');
   });
 
-  it("renders portals as floor circles with light and particles rising from the base", () => {
+  it("renders portals as three square floor tiles with one rising light effect", () => {
     const portalRule = styles.match(/\.world-portal\s*\{([^}]*)}/s)?.[1] ?? "";
-    const effectRule = styles.match(/\.world-portal__effect\s*\{([^}]*)}/s)?.[1] ?? "";
-    const circleRule = styles.match(/\.world-portal__circle\s*\{([^}]*)}/s)?.[1] ?? "";
+    const tilesRule = styles.match(/\.world-portal__tiles\s*\{([^}]*)}/s)?.[1] ?? "";
+    const tileRule = styles.match(/\.world-portal__tile\s*\{([^}]*)}/s)?.[1] ?? "";
     const beamRule = styles.match(/\.world-portal__beam\s*\{([^}]*)}/s)?.[1] ?? "";
     const particleRule = styles.match(/\.world-portal__particle\s*\{([^}]*)}/s)?.[1] ?? "";
-    const circlePulseRule = styles.match(/@keyframes portal-circle-pulse\s*\{([\s\S]*?)\n}/)?.[1] ?? "";
-    const activeEffectRule = styles.match(/\.world-portal:active \.world-portal__effect\s*\{([^}]*)}/s)?.[1] ?? "";
 
     expect(portalRule).toContain("overflow: visible;");
     expect(portalRule).toContain("background: transparent;");
-    expect(effectRule).toContain("pointer-events: none;");
-    expect(effectRule).toContain("bottom: 0;");
-    expect(circleRule).toContain("width: 100%;");
-    expect(circleRule).toContain("height: 100%;");
-    expect(circleRule).toContain("border-radius: 50%;");
-    expect(circleRule).toMatch(/animation:\s*portal-circle-pulse/);
-    expect(beamRule).toContain("bottom:");
+    expect(portalRule).toContain("border-radius: 3px;");
+    expect(tilesRule).toContain("display: grid;");
+    expect(styles).toMatch(/\.world-portal--horizontal \.world-portal__tiles\s*\{[^}]*grid-template-columns:\s*repeat\(3, 30px\);/s);
+    expect(styles).toMatch(/\.world-portal--vertical \.world-portal__tiles\s*\{[^}]*grid-template-rows:\s*repeat\(3, 30px\);/s);
+    expect(tileRule).toContain("width: 30px;");
+    expect(tileRule).toContain("height: 30px;");
+    expect(tileRule).toMatch(/animation:\s*portal-tile-pulse/);
+    expect(beamRule).toContain("bottom: calc(50% - 15px);");
     expect(beamRule).toMatch(/animation:\s*portal-beam-rise/);
     expect(particleRule).toMatch(/animation:\s*portal-particle-rise/);
-    expect(styles).toContain("@keyframes portal-circle-pulse");
-    expect(circlePulseRule).not.toContain("transform:");
-    expect(activeEffectRule).not.toContain("transform:");
+    expect(styles).toContain("@keyframes portal-tile-pulse");
     expect(styles).toContain("@keyframes portal-beam-rise");
     expect(styles).toContain("@keyframes portal-particle-rise");
     expect(styles).toMatch(/\.world-portal--target\s*\{[^}]*--portal-accent:/s);
     expect(styles).toMatch(
-      /@media \(prefers-reduced-motion: reduce\)[\s\S]*\.world-portal__circle,[\s\S]*\.world-portal__particle\s*\{[^}]*animation:\s*none !important;/
+      /@media \(prefers-reduced-motion: reduce\)[\s\S]*\.world-portal__tile,[\s\S]*\.world-portal__particle\s*\{[^}]*animation:\s*none !important;/
     );
   });
 
-  it("uses the menu prism surface and image-based wedding joystick", () => {
+  it("uses the menu prism surface and approved J2 joystick contrast", () => {
     const menuButtonRule = styles.match(/\.world-menu-button\s*\{([^}]*)}/s)?.[1] ?? "";
     const menuSheetRule = styles.match(/\.world-menu-sheet\s*\{([^}]*)}/s)?.[1] ?? "";
     const joystickRule = styles.match(/\.virtual-joystick\s*\{([^}]*)}/s)?.[1] ?? "";
+    const thumbRule = styles.match(/\.virtual-joystick__thumb\s*\{([^}]*)}/s)?.[1] ?? "";
 
     expect(menuButtonRule).toContain("--control-accent:");
     expect(menuSheetRule).toContain("--menu-prism:");
-    expect(joystickRule).toContain("--joystick-travel: 30px;");
+    expect(joystickRule).toContain("--joystick-travel: 26px;");
+    expect(thumbRule).toContain("width: 38px;");
+    expect(thumbRule).toContain("height: 38px;");
+    expect(thumbRule).toContain("saturate(1.16)");
+    expect(thumbRule).toContain("drop-shadow(0 2px 0 #743e52)");
     expect(styles).toContain(".world-menu-button:focus-visible");
     expect(styles).toContain(".world-menu-grid button:focus-visible");
     expect(styles).toContain(".virtual-joystick__base");
     expect(styles).toContain(".virtual-joystick__thumb");
     expect(styles).toMatch(
-      /@media \(max-width: 720px\)[\s\S]*\.virtual-joystick\s*\{[^}]*--joystick-travel:\s*22px;/
+      /@media \(max-width: 720px\)[\s\S]*\.virtual-joystick\s*\{[^}]*--joystick-travel:\s*21px;/
+    );
+    expect(styles).toMatch(
+      /@media \(max-width: 720px\)[\s\S]*\.virtual-joystick__thumb\s*\{[^}]*width:\s*30px;[^}]*height:\s*30px;/
     );
     expect(styles).toContain("@media (hover: hover) and (pointer: fine)");
   });

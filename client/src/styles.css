@@ -1764,11 +1764,10 @@ select {
   --portal-deep: #477ac5;
   --portal-glow: rgba(91, 220, 244, 0.72);
   position: absolute;
-  z-index: 9000;
   display: block;
   overflow: visible;
   border: 0;
-  border-radius: 50%;
+  border-radius: 3px;
   padding: 0;
   background: transparent;
   color: #f6ffff;
@@ -1777,10 +1776,7 @@ select {
 
 .world-portal__effect {
   position: absolute;
-  left: 0;
-  bottom: 0;
-  width: 100%;
-  height: 100%;
+  inset: 0;
   pointer-events: none;
   transform-origin: 50% 100%;
   filter: drop-shadow(0 0 6px var(--portal-glow));
@@ -1789,7 +1785,7 @@ select {
 .world-portal__beam {
   position: absolute;
   left: 50%;
-  bottom: 12px;
+  bottom: calc(50% - 15px);
   height: 82px;
   pointer-events: none;
   transform: translateX(-50%);
@@ -1818,39 +1814,55 @@ select {
   animation-delay: -0.36s;
 }
 
-.world-portal__circle {
+.world-portal__tiles {
   position: absolute;
-  left: 0;
-  bottom: 0;
-  width: 100%;
-  height: 100%;
-  border: 3px solid var(--portal-core);
-  border-radius: 50%;
-  background:
-    repeating-conic-gradient(from 0deg, color-mix(in srgb, var(--portal-core) 88%, transparent) 0 8deg, transparent 8deg 24deg),
-    radial-gradient(ellipse at center, var(--portal-core) 0 12%, color-mix(in srgb, var(--portal-accent) 72%, transparent) 16% 38%, color-mix(in srgb, var(--portal-deep) 72%, transparent) 42% 60%, transparent 64%);
-  box-shadow:
-    0 0 0 2px color-mix(in srgb, var(--portal-deep) 78%, transparent),
-    0 0 10px 4px var(--portal-glow),
-    inset 0 0 8px var(--portal-core);
-  animation: portal-circle-pulse 1.15s steps(4, end) infinite;
+  inset: 0;
+  z-index: 1;
+  display: grid;
+  pointer-events: none;
 }
 
-.world-portal__circle::before {
+.world-portal--horizontal .world-portal__tiles {
+  grid-template-columns: repeat(3, 30px);
+  grid-template-rows: 30px;
+}
+
+.world-portal--vertical .world-portal__tiles {
+  grid-template-columns: 30px;
+  grid-template-rows: repeat(3, 30px);
+}
+
+.world-portal__tile {
+  position: relative;
+  box-sizing: border-box;
+  width: 30px;
+  height: 30px;
+  border: 2px solid var(--portal-core);
+  border-radius: 3px;
+  background:
+    linear-gradient(135deg, transparent 38%, color-mix(in srgb, var(--portal-core) 72%, transparent) 39% 45%, transparent 46% 54%, color-mix(in srgb, var(--portal-core) 72%, transparent) 55% 61%, transparent 62%),
+    repeating-linear-gradient(90deg, color-mix(in srgb, var(--portal-accent) 82%, transparent) 0 4px, color-mix(in srgb, var(--portal-deep) 74%, transparent) 4px 8px);
+  box-shadow:
+    inset 0 0 0 3px color-mix(in srgb, var(--portal-core) 42%, transparent),
+    0 0 8px var(--portal-glow);
+  animation: portal-tile-pulse 1.15s steps(4, end) infinite;
+}
+
+.world-portal__tile::before {
   position: absolute;
-  inset: 5px 12px;
-  border: 2px dashed var(--portal-core);
-  border-radius: 50%;
+  inset: 7px;
+  border: 2px solid var(--portal-core);
+  border-radius: 2px;
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--portal-deep) 68%, transparent);
   content: "";
-  animation: portal-ring-turn 2.8s linear infinite;
 }
 
 .world-portal__particle {
-  --portal-particle-x: 40px;
+  --portal-particle-x: 50%;
   --portal-particle-delay: 0s;
   position: absolute;
   left: var(--portal-particle-x);
-  bottom: 13px;
+  bottom: calc(50% - 11px);
   z-index: 2;
   width: 4px;
   height: 7px;
@@ -1860,10 +1872,10 @@ select {
   animation: portal-particle-rise 1.45s steps(6, end) var(--portal-particle-delay) infinite;
 }
 
-.world-portal__particle--one { --portal-particle-x: 12px; --portal-particle-delay: -0.2s; }
-.world-portal__particle--two { --portal-particle-x: 28px; --portal-particle-delay: -0.85s; }
-.world-portal__particle--three { --portal-particle-x: 52px; --portal-particle-delay: -0.5s; }
-.world-portal__particle--four { --portal-particle-x: 68px; --portal-particle-delay: -1.15s; }
+.world-portal__particle--one { --portal-particle-x: 18%; --portal-particle-delay: -0.2s; }
+.world-portal__particle--two { --portal-particle-x: 36%; --portal-particle-delay: -0.85s; }
+.world-portal__particle--three { --portal-particle-x: 64%; --portal-particle-delay: -0.5s; }
+.world-portal__particle--four { --portal-particle-x: 82%; --portal-particle-delay: -1.15s; }
 
 .world-portal__label {
   position: absolute;
@@ -1886,13 +1898,9 @@ select {
   pointer-events: none;
 }
 
-@keyframes portal-circle-pulse {
+@keyframes portal-tile-pulse {
   0%, 100% { opacity: 0.82; filter: brightness(0.95); }
   50% { opacity: 1; filter: brightness(1.12); }
-}
-
-@keyframes portal-ring-turn {
-  to { transform: rotate(360deg); }
 }
 
 @keyframes portal-beam-rise {
@@ -2302,8 +2310,7 @@ select {
     animation: none !important;
   }
 
-  .world-portal__circle,
-  .world-portal__circle::before,
+  .world-portal__tile,
   .world-portal__beam,
   .world-portal__particle {
     animation: none !important;
@@ -2381,7 +2388,7 @@ select {
 }
 
 .virtual-joystick {
-  --joystick-travel: 30px;
+  --joystick-travel: 26px;
   position: relative;
   flex: 0 0 auto;
   width: 90px;
@@ -2414,11 +2421,16 @@ select {
 .virtual-joystick__thumb {
   position: relative;
   z-index: 1;
-  width: 34px;
-  height: 34px;
+  width: 38px;
+  height: 38px;
   object-fit: contain;
   pointer-events: none;
   user-select: none;
+  filter:
+    saturate(1.16)
+    contrast(1.08)
+    drop-shadow(0 2px 0 #743e52)
+    drop-shadow(0 0 3px rgba(255, 248, 218, 0.92));
   transform: translate(
     calc(var(--joystick-x) * var(--joystick-travel)),
     calc(var(--joystick-y) * var(--joystick-travel))
@@ -2432,12 +2444,12 @@ select {
 
 @media (max-width: 720px) {
   .virtual-joystick {
-    --joystick-travel: 22px;
+    --joystick-travel: 21px;
   }
 
   .virtual-joystick__thumb {
-    width: 27px;
-    height: 27px;
+    width: 30px;
+    height: 30px;
   }
 }
 
@@ -2513,14 +2525,14 @@ select {
   }
 
   .virtual-joystick {
-    --joystick-travel: 22px;
+    --joystick-travel: 21px;
     width: 72px;
     height: 72px;
   }
 
   .virtual-joystick__thumb {
-    width: 27px;
-    height: 27px;
+    width: 30px;
+    height: 30px;
   }
 
   .world-menu-button {
