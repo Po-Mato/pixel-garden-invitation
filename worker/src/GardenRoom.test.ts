@@ -117,7 +117,7 @@ const expectedRealtimeWorldContract = {
   "bridal-room": { spawn: { x: 345, y: 525 }, bounds: { width: 720, height: 630 } },
   "ceremony-hall": { spawn: { x: 375, y: 1785 }, bounds: { width: 780, height: 1920 } },
   restroom: { spawn: { x: 135, y: 345 }, bounds: { width: 660, height: 660 } },
-  banquet: { spawn: { x: 585, y: 795 }, bounds: { width: 1200, height: 930 } }
+  banquet: { spawn: { x: 135, y: 465 }, bounds: { width: 1200, height: 930 } }
 } satisfies Record<WorldZoneId, { spawn: { x: number; y: number }; bounds: { width: number; height: number } }>;
 
 describe("GardenRoom helpers", () => {
@@ -243,15 +243,15 @@ describe("GardenRoom helpers", () => {
     });
   });
 
-  it("creates banquet guests at the Task 14 client world spawn", () => {
+  it("creates banquet guests at the current client world spawn", () => {
     expect(createGuestSnapshot("guest_banquet", {
       type: "join",
       nickname: "연회장 하객",
       appearance: defaultCharacterAppearance,
       zoneId: "banquet"
     }, 1000)).toMatchObject({
-      x: 585,
-      y: 795,
+      x: 135,
+      y: 465,
       zoneId: "banquet"
     });
   });
