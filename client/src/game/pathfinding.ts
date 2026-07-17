@@ -1,9 +1,14 @@
 import PF from "pathfinding";
 import { isBlocked } from "./geometry";
 import { gridTileSize } from "./movement";
-import type { Point, WorldZone } from "./world";
+import type { Point, WorldPortal, WorldZone } from "./world";
 
 type GridPoint = { column: number; row: number };
+
+export type PortalRoute = {
+  entry: Point;
+  path: Point[];
+};
 
 function toGridPoint(point: Point, zone: WorldZone): GridPoint | null {
   const safe = zone.cameraSafeBounds;
@@ -64,4 +69,25 @@ export function findTilePath(zone: WorldZone, start: Point, goal: Point): Point[
   }
 
   return result.slice(1).map(([column, row]) => toWorldPoint(column, row, zone));
+}
+
+export function findNearestPortalRoute(
+  zone: WorldZone,
+  start: Point,
+  portal: WorldPortal
+): PortalRoute | null {
+  const routes = portal.entryTiles
+    .map((entry) => ({ entry, path: findTilePath(zone, start, entry) }))
+    .filter((candidate): candidate is PortalRoute => candidate.path !== null);
+
+  routes.sort((a, b) => {
+    const lengthDifference = a.path.length - b.path.length;
+    if (lengthDifference !== 0) return lengthDifference;
+
+    const aIsCenter = a.entry.x === portal.approach.x && a.entry.y === portal.approach.y;
+    const bIsCenter = b.entry.x === portal.approach.x && b.entry.y === portal.approach.y;
+    return Number(bIsCenter) - Number(aIsCenter);
+  });
+
+  return routes[0] ?? null;
 }

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { isBlocked } from "./geometry";
 import { gardenWorld, getWorldZone, type WorldZone } from "./world";
-import { findTilePath } from "./pathfinding";
+import { findNearestPortalRoute, findTilePath } from "./pathfinding";
 
 function testZone(
   blocked: WorldZone["blocked"],
@@ -66,13 +66,52 @@ describe("portal tile pathfinding", () => {
     expect(findTilePath(testZone([], paths), { x: 15, y: 15 }, { x: 105, y: 15 })).toBeNull();
   });
 
-  it("finds a route from every zone spawn to every portal approach", () => {
+  it("selects the shortest reachable entry tile for a clicked portal", () => {
+    const home = getWorldZone(gardenWorld, "home");
+    const portal = home.portals[0];
+    const route = findNearestPortalRoute(home, { x: 255, y: 165 }, portal);
+
+    expect(route).not.toBeNull();
+    expect(route?.entry).toEqual({ x: 255, y: 105 });
+    expect(route?.path.at(-1)).toEqual(route?.entry);
+  });
+
+  it("returns an empty path when already standing on an entry tile", () => {
+    const home = getWorldZone(gardenWorld, "home");
+    const portal = home.portals[0];
+    const route = findNearestPortalRoute(home, portal.entryTiles[2], portal);
+
+    expect(route).toEqual({ entry: portal.entryTiles[2], path: [] });
+  });
+
+  it("returns null when all three portal entry tiles are blocked", () => {
+    const home = getWorldZone(gardenWorld, "home");
+    const portal = home.portals[0];
+    const sealedHome = {
+      ...home,
+      blocked: [
+        ...home.blocked,
+        ...portal.entryTiles.map((tile) => ({
+          x: tile.x - 15,
+          y: tile.y - 15,
+          width: 30,
+          height: 30
+        }))
+      ]
+    };
+
+    expect(findNearestPortalRoute(sealedHome, home.spawn, portal)).toBeNull();
+  });
+
+  it("finds a route from every zone spawn to every portal entry tile", () => {
     for (const zone of gardenWorld.zones) {
       for (const portal of zone.portals) {
-        const route = findTilePath(zone, zone.spawn, portal.approach);
-        expect(route, `${zone.id}/${portal.id}`).not.toBeNull();
-        for (const point of route ?? []) {
-          expect(isBlocked(point, zone), `${zone.id}/${portal.id} (${point.x}, ${point.y})`).toBe(false);
+        for (const entry of portal.entryTiles) {
+          const route = findTilePath(zone, zone.spawn, entry);
+          expect(route, `${zone.id}/${portal.id}/${entry.x},${entry.y}`).not.toBeNull();
+          for (const point of route ?? []) {
+            expect(isBlocked(point, zone), `${zone.id}/${portal.id} (${point.x}, ${point.y})`).toBe(false);
+          }
         }
       }
     }
