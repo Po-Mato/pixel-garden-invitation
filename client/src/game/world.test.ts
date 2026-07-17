@@ -90,9 +90,9 @@ describe("guest route world", () => {
       ["subway-train", "venue-exterior"],
       ["venue-exterior", "lobby"],
       ["lobby", "bridal-room"],
-      ["lobby", "restroom"],
       ["lobby", "ceremony-hall"],
-      ["ceremony-hall", "banquet"]
+      ["lobby", "banquet"],
+      ["banquet", "restroom"]
     ] as const;
 
     for (const [from, to] of requiredEdges) {
@@ -583,15 +583,15 @@ describe("guest route world", () => {
         spawn: { x: 345, y: 525 }
       }),
       expect.objectContaining({
-        id: "lobby-to-restroom",
-        to: "restroom",
+        id: "lobby-to-banquet",
+        to: "banquet",
         x: 960,
         y: 345,
         width: 90,
         height: 120,
         approach: { x: 975, y: 405 },
         facing: "right",
-        spawn: { x: 135, y: 345 }
+        spawn: { x: 135, y: 465 }
       }),
       expect.objectContaining({
         id: "lobby-to-hall",
@@ -690,13 +690,15 @@ describe("guest route world", () => {
   it("syncs reverse portal destinations and keeps future lobby destinations connected", () => {
     const lobby = getWorldZone(gardenWorld, "lobby");
     const bridal = getWorldZone(gardenWorld, "bridal-room");
+    const banquet = getWorldZone(gardenWorld, "banquet");
     const restroom = getWorldZone(gardenWorld, "restroom");
     const hall = getWorldZone(gardenWorld, "ceremony-hall");
 
     expect(getWorldZone(gardenWorld, "venue-exterior").portals.find((portalItem) => portalItem.id === "venue-to-lobby")?.spawn)
       .toEqual({ x: 525, y: 765 });
     expect(bridal.portals.find((portalItem) => portalItem.id === "bridal-to-lobby")?.spawn).toEqual({ x: 135, y: 405 });
-    expect(restroom.portals.find((portalItem) => portalItem.id === "restroom-to-lobby")?.spawn).toEqual({ x: 945, y: 405 });
+    expect(banquet.portals.find((portalItem) => portalItem.id === "banquet-to-lobby")?.spawn).toEqual({ x: 945, y: 405 });
+    expect(restroom.portals.find((portalItem) => portalItem.id === "restroom-to-banquet")?.spawn).toEqual({ x: 1065, y: 465 });
     expect(hall.portals.find((portalItem) => portalItem.id === "hall-to-lobby")?.spawn).toEqual({ x: 525, y: 135 });
 
     for (const portalItem of lobby.portals) {
@@ -712,7 +714,7 @@ describe("guest route world", () => {
     }
   });
 
-  it("defines the exact Task 13 restroom contract with reachable portal and stall depth", () => {
+  it("defines the restroom contract connected only to the banquet", () => {
     const restroom = getWorldZone(gardenWorld, "restroom");
 
     expect([restroom.bounds.width, restroom.bounds.height]).toEqual([660, 660]);
@@ -727,17 +729,22 @@ describe("guest route world", () => {
     ]);
     expect(restroom.portals).toEqual([
       expect.objectContaining({
-        id: "restroom-to-lobby",
-        to: "lobby",
+        id: "restroom-to-banquet",
+        to: "banquet",
         x: 30,
         y: 285,
         width: 90,
         height: 120,
         approach: { x: 105, y: 345 },
         facing: "left",
-        spawn: { x: 945, y: 405 }
+        spawn: { x: 1065, y: 465 }
       })
     ]);
+    expect(restroom.subtitle).toBe("연회장 옆 밝은 테라조 공간에서 잠시 단정히 준비해요");
+    expect(restroom.decorations).toContainEqual(expect.objectContaining({
+      id: "restroom-door",
+      label: "연회장 출입문"
+    }));
     expect(restroom.decorations.filter((item) => item.asset === "stall-front.png")).toHaveLength(0);
 
     for (const target of [
@@ -790,17 +797,6 @@ describe("guest route world", () => {
         approach: { x: 375, y: 1815 },
         facing: "down",
         spawn: { x: 525, y: 135 }
-      }),
-      expect.objectContaining({
-        id: "hall-to-banquet",
-        to: "banquet",
-        x: 330,
-        y: 30,
-        width: 120,
-        height: 90,
-        approach: { x: 375, y: 105 },
-        facing: "up",
-        spawn: { x: 585, y: 795 }
       })
     ]);
     expect(hall.decorations.filter((item) => item.kind === "aisle-bouquet")).toEqual([
@@ -811,78 +807,83 @@ describe("guest route world", () => {
     ]);
   });
 
-  it("defines the exact Task 14 banquet contract with guestbook, blockers, portal, and table depths", () => {
+  it("defines the banquet between lobby and restroom with complete table depths", () => {
     const banquet = getWorldZone(gardenWorld, "banquet");
-    const hallToBanquet = getWorldZone(gardenWorld, "ceremony-hall").portals.find((portalItem) => portalItem.id === "hall-to-banquet");
-    const returnPortal = banquet.portals.find((portalItem) => portalItem.id === "banquet-to-hall");
+    const lobbyToBanquet = getWorldZone(gardenWorld, "lobby").portals.find((portalItem) => portalItem.id === "lobby-to-banquet");
+    const restroomToBanquet = getWorldZone(gardenWorld, "restroom").portals.find((portalItem) => portalItem.id === "restroom-to-banquet");
     const guestbookSpot = banquet.spots[0];
     const tableRects = [
-      { x: 120, y: 210, width: 180, height: 180 },
-      { x: 390, y: 210, width: 180, height: 180 },
-      { x: 660, y: 210, width: 180, height: 180 },
-      { x: 120, y: 480, width: 180, height: 180 },
-      { x: 390, y: 480, width: 180, height: 180 },
-      { x: 660, y: 480, width: 180, height: 180 }
+      { x: 150, y: 120, width: 240, height: 240 },
+      { x: 690, y: 120, width: 240, height: 240 },
+      { x: 150, y: 570, width: 240, height: 240 },
+      { x: 690, y: 570, width: 240, height: 240 }
     ];
 
     expect([banquet.bounds.width, banquet.bounds.height]).toEqual([1200, 930]);
-    expect(banquet.spawn).toEqual({ x: 585, y: 795 });
-    expect(hallToBanquet?.spawn).toEqual({ x: 585, y: 795 });
+    expect(banquet.spawn).toEqual({ x: 135, y: 465 });
+    expect(lobbyToBanquet?.spawn).toEqual({ x: 135, y: 465 });
+    expect(restroomToBanquet?.spawn).toEqual({ x: 1065, y: 465 });
     expect(banquet.paths).toEqual([
       { id: "banquet-floor", kind: "banquet", x: 60, y: 90, width: 1080, height: 750 },
-      { id: "banquet-central", kind: "corridor", x: 510, y: 90, width: 180, height: 780 }
+      { id: "banquet-central", kind: "corridor", x: 60, y: 360, width: 1080, height: 210 }
     ]);
     expect(banquet.paths.some((worldPath) => worldPath.id === "banquet-arrival")).toBe(false);
     expect(banquet.spots).toEqual([
-      expect.objectContaining({ id: "guestbook", x: 930, y: 120, width: 120, height: 90 })
+      expect.objectContaining({ id: "guestbook", x: 990, y: 690, width: 120, height: 90 })
     ]);
     expect(banquet.blocked).toEqual([
       ...tableRects,
-      { x: 930, y: 300, width: 150, height: 300 },
+      { x: 450, y: 90, width: 300, height: 90 },
       guestbookSpot
     ]);
     expect(banquet.portals).toEqual([
       expect.objectContaining({
-        id: "banquet-to-hall",
-        to: "ceremony-hall",
-        x: 540,
-        y: 840,
-        width: 120,
-        height: 60,
-        approach: { x: 585, y: 825 },
-        facing: "down",
-        spawn: { x: 375, y: 165 }
+        id: "banquet-to-lobby",
+        to: "lobby",
+        x: 30,
+        y: 405,
+        width: 90,
+        height: 120,
+        approach: { x: 105, y: 465 },
+        facing: "left",
+        spawn: { x: 945, y: 405 }
+      }),
+      expect.objectContaining({
+        id: "banquet-to-restroom",
+        to: "restroom",
+        x: 1080,
+        y: 405,
+        width: 90,
+        height: 120,
+        approach: { x: 1095, y: 465 },
+        facing: "right",
+        spawn: { x: 135, y: 345 }
       })
     ]);
-    expect(banquet.decorations.filter((item) => item.asset === "table-front.png")).toEqual([
-      expect.objectContaining({ id: "banquet-table-1", kind: "banquet-table", ...tableRects[0], depthY: 360 }),
-      expect.objectContaining({ id: "banquet-table-2", kind: "banquet-table", ...tableRects[1], depthY: 360 }),
-      expect.objectContaining({ id: "banquet-table-3", kind: "banquet-table", ...tableRects[2], depthY: 360 }),
-      expect.objectContaining({ id: "banquet-table-4", kind: "banquet-table", ...tableRects[3], depthY: 630 }),
-      expect.objectContaining({ id: "banquet-table-5", kind: "banquet-table", ...tableRects[4], depthY: 630 }),
-      expect.objectContaining({ id: "banquet-table-6", kind: "banquet-table", ...tableRects[5], depthY: 630 })
+    expect(banquet.decorations.filter((item) => item.kind === "banquet-table")).toEqual([
+      expect.objectContaining({ id: "banquet-table-1", ...tableRects[0], asset: "table-floral.png", depthY: 360 }),
+      expect.objectContaining({ id: "banquet-table-2", ...tableRects[1], asset: "table-dining.png", depthY: 360 }),
+      expect.objectContaining({ id: "banquet-table-3", ...tableRects[2], asset: "table-dining.png", depthY: 810 }),
+      expect.objectContaining({ id: "banquet-table-4", ...tableRects[3], asset: "table-floral.png", depthY: 810 })
     ]);
-    expect(hallToBanquet && isWalkable(hallToBanquet.spawn, banquet)).toBe(true);
-    expect(hallToBanquet && isBlocked(hallToBanquet.spawn, banquet)).toBe(false);
+    expect(banquet.decorations.some((item) => item.asset === "table-front.png")).toBe(false);
 
-    const route = hallToBanquet && returnPortal
-      ? findTilePath(banquet, hallToBanquet.spawn, returnPortal.approach)
-      : null;
-    expect(route).not.toBeNull();
-    expect(route?.at(-1)).toEqual(returnPortal?.approach);
-
-    const guestbookRoute = findTilePath(banquet, banquet.spawn, { x: 915, y: 165 });
-    expect(guestbookRoute).not.toBeNull();
-    expect(guestbookRoute?.at(-1)).toEqual({ x: 915, y: 165 });
+    for (const spawn of [lobbyToBanquet?.spawn, restroomToBanquet?.spawn]) {
+      expect(spawn && isWalkable(spawn, banquet)).toBe(true);
+      expect(spawn && isBlocked(spawn, banquet)).toBe(false);
+      for (const goal of [...banquet.portals.map((portalItem) => portalItem.approach), { x: 975, y: 735 }]) {
+        const route = spawn ? findTilePath(banquet, spawn, goal) : null;
+        expect(route, `banquet ${spawn?.x},${spawn?.y} -> ${goal.x},${goal.y}`).not.toBeNull();
+        expect(route?.at(-1)).toEqual(goal);
+      }
+    }
 
     for (const blockedPoint of [
-      { x: 135, y: 225 },
-      { x: 405, y: 225 },
-      { x: 675, y: 225 },
-      { x: 135, y: 495 },
-      { x: 405, y: 495 },
-      { x: 675, y: 495 },
-      { x: 945, y: 315 }
+      { x: 165, y: 135 },
+      { x: 705, y: 135 },
+      { x: 165, y: 585 },
+      { x: 705, y: 585 },
+      { x: 465, y: 105 }
     ]) {
       expect(isBlocked(blockedPoint, banquet), `banquet blocked ${blockedPoint.x},${blockedPoint.y}`).toBe(true);
     }
