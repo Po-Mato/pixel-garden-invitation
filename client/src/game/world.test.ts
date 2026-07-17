@@ -9,8 +9,7 @@ import {
   getWorldZone,
   pointInPortalEntry,
   portalEntryRect,
-  portalEntrySize,
-  portalVisualCenter
+  portalEntryTileSize
 } from "./world";
 
 const expectedSizes = {
@@ -102,57 +101,55 @@ describe("guest route world", () => {
     }
   });
 
-  it("aligns every portal entry ellipse to its entrance while preserving its approach tile", () => {
-    const expectedVisualCenters: Record<string, { x: number; y: number }> = {
-      "home-to-neighborhood": { x: 300, y: 105 },
-      "neighborhood-to-home": { x: 105, y: 360 },
-      "neighborhood-to-station": { x: 1095, y: 360 },
-      "station-to-neighborhood": { x: 105, y: 420 },
-      "station-to-train": { x: 735, y: 420 },
-      "train-to-station": { x: 105, y: 270 },
-      "train-to-venue": { x: 1335, y: 270 },
-      "venue-to-train": { x: 480, y: 795 },
-      "venue-to-lobby": { x: 480, y: 105 },
-      "lobby-to-venue": { x: 540, y: 795 },
-      "lobby-to-bridal": { x: 105, y: 390 },
-      "lobby-to-restroom": { x: 975, y: 390 },
-      "lobby-to-hall": { x: 540, y: 105 },
-      "bridal-to-lobby": { x: 360, y: 555 },
-      "hall-to-lobby": { x: 390, y: 1815 },
-      "hall-to-banquet": { x: 390, y: 105 },
-      "restroom-to-lobby": { x: 105, y: 330 },
-      "banquet-to-hall": { x: 600, y: 825 }
-    };
+  it("defines three walkable entry tiles perpendicular to every portal direction", () => {
+    expect(portalEntryTileSize).toBe(30);
 
-    expect(portalEntrySize).toEqual({ width: 80, height: 34 });
+    let entryTileCount = 0;
+    for (const zone of gardenWorld.zones) {
+      for (const portal of zone.portals) {
+        entryTileCount += portal.entryTiles.length;
+        expect(portal.entryTiles, portal.id).toHaveLength(3);
+        expect(portal.entryTiles, portal.id).toContainEqual(portal.approach);
 
+        const xs = portal.entryTiles.map((tile) => tile.x);
+        const ys = portal.entryTiles.map((tile) => tile.y);
+        if (portal.facing === "up" || portal.facing === "down") {
+          expect(new Set(xs).size, portal.id).toBe(3);
+          expect(new Set(ys), portal.id).toEqual(new Set([portal.approach.y]));
+        } else {
+          expect(new Set(xs), portal.id).toEqual(new Set([portal.approach.x]));
+          expect(new Set(ys).size, portal.id).toBe(3);
+        }
+
+        for (const tile of portal.entryTiles) {
+          expect(isTileCenter(tile.x, zone.cameraSafeBounds.x), `${portal.id} x`).toBe(true);
+          expect(isTileCenter(tile.y, zone.cameraSafeBounds.y), `${portal.id} y`).toBe(true);
+          expect(isWalkable(tile, zone), `${portal.id} walkable`).toBe(true);
+          expect(isBlocked(tile, zone), `${portal.id} blocked`).toBe(false);
+          expect(pointInPortalEntry(portal, tile), `${portal.id} entry`).toBe(true);
+        }
+      }
+    }
+
+    expect(entryTileCount).toBe(54);
+  });
+
+  it("uses the exact contiguous tile strip as each portal entry rectangle", () => {
     for (const zone of gardenWorld.zones) {
       for (const portal of zone.portals) {
         const entry = portalEntryRect(portal);
-        const center = portalVisualCenter(portal);
+        const horizontal = portal.facing === "up" || portal.facing === "down";
 
-        expect(center, portal.id).toEqual(expectedVisualCenters[portal.id]);
-        expect(entry.width, portal.id).toBe(portalEntrySize.width);
-        expect(entry.height, portal.id).toBe(portalEntrySize.height);
-        expect(entry.x + entry.width / 2, portal.id).toBe(center.x);
-        expect(entry.y + entry.height / 2, portal.id).toBe(center.y);
-        expect(pointInPortalEntry(portal, portal.approach), portal.id).toBe(true);
+        expect([entry.width, entry.height], portal.id).toEqual(horizontal ? [90, 30] : [30, 90]);
+        expect(pointInPortalEntry(portal, { x: entry.x + 1, y: entry.y + 1 }), portal.id).toBe(true);
         expect(pointInPortalEntry(portal, {
-          x: center.x + portalEntrySize.width / 2,
-          y: center.y
-        }), `${portal.id} horizontal edge`).toBe(true);
+          x: entry.x - 1,
+          y: entry.y + entry.height / 2
+        }), portal.id).toBe(false);
         expect(pointInPortalEntry(portal, {
-          x: center.x,
-          y: center.y + portalEntrySize.height / 2
-        }), `${portal.id} vertical edge`).toBe(true);
-        expect(pointInPortalEntry(portal, {
-          x: center.x + portalEntrySize.width / 2 + 1,
-          y: center.y
-        }), `${portal.id} outside horizontal edge`).toBe(false);
-        expect(pointInPortalEntry(portal, {
-          x: center.x,
-          y: center.y + portalEntrySize.height / 2 + 1
-        }), `${portal.id} outside vertical edge`).toBe(false);
+          x: entry.x + entry.width / 2,
+          y: entry.y - 1
+        }), portal.id).toBe(false);
       }
     }
   });
