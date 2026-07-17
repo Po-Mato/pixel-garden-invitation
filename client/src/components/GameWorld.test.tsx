@@ -985,29 +985,29 @@ describe("GameWorld", () => {
     expect(portal.querySelector(".world-portal__label")).toHaveTextContent("동네로 나가기");
   });
 
-  it("centers every portal interaction area on its visible 76 by 28 floor circle", () => {
+  it("centers every portal interaction area on its visible 80 by 34 entrance circle", () => {
     render(<GameWorld profile={profile} />);
 
     expect(screen.getByRole("button", { name: "동네로 나가기" })).toHaveStyle({
-      left: "247px",
-      top: "91px",
-      width: "76px",
-      height: "28px"
+      left: "260px",
+      top: "88px",
+      width: "80px",
+      height: "34px"
     });
 
     travelThroughPortal("동네로 나가기");
 
     expect(screen.getByRole("button", { name: "집으로 돌아가기" })).toHaveStyle({
-      left: "67px",
-      top: "361px",
-      width: "76px",
-      height: "28px"
+      left: "65px",
+      top: "343px",
+      width: "80px",
+      height: "34px"
     });
     expect(screen.getByRole("button", { name: "지하철역 들어가기" })).toHaveStyle({
-      left: "1057px",
-      top: "361px",
-      width: "76px",
-      height: "28px"
+      left: "1055px",
+      top: "343px",
+      width: "80px",
+      height: "34px"
     });
   });
 

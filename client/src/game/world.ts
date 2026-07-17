@@ -99,26 +99,34 @@ export type WorldPortal = Rect & {
   label: string;
   to: WorldZoneId;
   approach: Point;
+  visualCenter?: Point;
   facing: Direction;
   spawn: Point;
 };
 
-export const portalEntrySize = { width: 76, height: 28 } as const;
+export const portalEntrySize = { width: 80, height: 34 } as const;
+
+export function portalVisualCenter(portal: WorldPortal): Point {
+  return portal.visualCenter ?? portal.approach;
+}
 
 export function portalEntryRect(portal: WorldPortal): Rect {
+  const center = portalVisualCenter(portal);
+
   return {
-    x: portal.approach.x - portalEntrySize.width / 2,
-    y: portal.approach.y - portalEntrySize.height / 2,
+    x: center.x - portalEntrySize.width / 2,
+    y: center.y - portalEntrySize.height / 2,
     width: portalEntrySize.width,
     height: portalEntrySize.height
   };
 }
 
 export function pointInPortalEntry(portal: WorldPortal, point: Point): boolean {
+  const center = portalVisualCenter(portal);
   const horizontalRadius = portalEntrySize.width / 2;
   const verticalRadius = portalEntrySize.height / 2;
-  const normalizedX = (point.x - portal.approach.x) / horizontalRadius;
-  const normalizedY = (point.y - portal.approach.y) / verticalRadius;
+  const normalizedX = (point.x - center.x) / horizontalRadius;
+  const normalizedY = (point.y - center.y) / verticalRadius;
 
   return normalizedX ** 2 + normalizedY ** 2 <= 1;
 }
@@ -203,8 +211,9 @@ const portal = (
   rect: Rect,
   approach: Point,
   facing: Direction,
-  spawn: Point
-): WorldPortal => ({ id, label, to, ...rect, approach, facing, spawn });
+  spawn: Point,
+  visualCenter?: Point
+): WorldPortal => ({ id, label, to, ...rect, approach, facing, spawn, visualCenter });
 
 const homeZone = createZone({
   id: "home",
@@ -218,7 +227,7 @@ const homeZone = createZone({
   spots: [spot("directions", "오시는 길", 90, 180, 120, 90)],
   npcs: [],
   portals: [
-    portal("home-to-neighborhood", "동네로 나가기", "neighborhood", { x: 240, y: 30, width: 120, height: 90 }, { x: 285, y: 105 }, "up", { x: 135, y: 375 })
+    portal("home-to-neighborhood", "동네로 나가기", "neighborhood", { x: 240, y: 30, width: 120, height: 90 }, { x: 285, y: 105 }, "up", { x: 135, y: 375 }, { x: 300, y: 105 })
   ],
   blocked: [
     { x: 400, y: 110, width: 140, height: 290 },
@@ -253,8 +262,8 @@ const neighborhoodZone = createZone({
   spots: [],
   npcs: [],
   portals: [
-    portal("neighborhood-to-home", "집으로 돌아가기", "home", { x: 30, y: 315, width: 90, height: 120 }, { x: 105, y: 375 }, "left", { x: 285, y: 135 }),
-    portal("neighborhood-to-station", "지하철역 들어가기", "subway-station", { x: 1080, y: 300, width: 90, height: 150 }, { x: 1095, y: 375 }, "right", { x: 135, y: 435 })
+    portal("neighborhood-to-home", "집으로 돌아가기", "home", { x: 30, y: 315, width: 90, height: 120 }, { x: 105, y: 375 }, "left", { x: 285, y: 135 }, { x: 105, y: 360 }),
+    portal("neighborhood-to-station", "지하철역 들어가기", "subway-station", { x: 1080, y: 300, width: 90, height: 150 }, { x: 1095, y: 375 }, "right", { x: 135, y: 435 }, { x: 1095, y: 360 })
   ],
   decorations: [
     decoration("street-tree-1", "tree", "가로수", 214, 90, 90, 150, {
@@ -291,8 +300,8 @@ const subwayStationZone = createZone({
   spots: [spot("directions", "지하철 오시는 길", 120, 150, 120, 90)],
   npcs: [],
   portals: [
-    portal("station-to-neighborhood", "거리로 나가기", "neighborhood", { x: 30, y: 375, width: 90, height: 120 }, { x: 105, y: 435 }, "left", { x: 1065, y: 375 }),
-    portal("station-to-train", "열차 타기", "subway-train", { x: 750, y: 360, width: 90, height: 150 }, { x: 735, y: 435 }, "right", { x: 135, y: 285 })
+    portal("station-to-neighborhood", "거리로 나가기", "neighborhood", { x: 30, y: 375, width: 90, height: 120 }, { x: 105, y: 435 }, "left", { x: 1065, y: 375 }, { x: 105, y: 420 }),
+    portal("station-to-train", "열차 타기", "subway-train", { x: 750, y: 360, width: 90, height: 150 }, { x: 735, y: 435 }, "right", { x: 135, y: 285 }, { x: 735, y: 420 })
   ],
   blocked: [
     { x: 360, y: 360, width: 60, height: 120 },
@@ -330,8 +339,8 @@ const subwayTrainZone = createZone({
   spots: [],
   npcs: [],
   portals: [
-    portal("train-to-station", "역사로 내리기", "subway-station", { x: 30, y: 210, width: 90, height: 150 }, { x: 105, y: 285 }, "left", { x: 705, y: 435 }),
-    portal("train-to-venue", "예식장역 내리기", "venue-exterior", { x: 1320, y: 210, width: 90, height: 150 }, { x: 1335, y: 285 }, "right", { x: 465, y: 765 })
+    portal("train-to-station", "역사로 내리기", "subway-station", { x: 30, y: 210, width: 90, height: 150 }, { x: 105, y: 285 }, "left", { x: 705, y: 435 }, { x: 105, y: 270 }),
+    portal("train-to-venue", "예식장역 내리기", "venue-exterior", { x: 1320, y: 210, width: 90, height: 150 }, { x: 1335, y: 285 }, "right", { x: 465, y: 765 }, { x: 1335, y: 270 })
   ],
   decorations: [
     decoration("train-window-1", "train-window", "도시 창문", 180, 60, 150, 90),
@@ -367,8 +376,8 @@ const venueExteriorZone = createZone({
   spots: [],
   npcs: [],
   portals: [
-    portal("venue-to-train", "지하철역으로 돌아가기", "subway-train", { x: 420, y: 810, width: 90, height: 60 }, { x: 465, y: 795 }, "down", { x: 1305, y: 285 }),
-    portal("venue-to-lobby", "예식장 로비 들어가기", "lobby", { x: 405, y: 30, width: 120, height: 90 }, { x: 465, y: 105 }, "up", { x: 525, y: 765 })
+    portal("venue-to-train", "지하철역으로 돌아가기", "subway-train", { x: 420, y: 810, width: 90, height: 60 }, { x: 465, y: 795 }, "down", { x: 1305, y: 285 }, { x: 480, y: 795 }),
+    portal("venue-to-lobby", "예식장 로비 들어가기", "lobby", { x: 405, y: 30, width: 120, height: 90 }, { x: 465, y: 105 }, "up", { x: 525, y: 765 }, { x: 480, y: 105 })
   ],
   decorations: [
     decoration("venue-building", "venue-sign", "예식장 유리 파사드", 300, 60, 360, 120),
@@ -407,10 +416,10 @@ const lobbyZone = createZone({
   ],
   npcs: [],
   portals: [
-    portal("lobby-to-venue", "예식장 밖으로", "venue-exterior", { x: 480, y: 810, width: 120, height: 60 }, { x: 525, y: 795 }, "down", { x: 465, y: 135 }),
-    portal("lobby-to-bridal", "신부 대기실", "bridal-room", { x: 30, y: 345, width: 90, height: 120 }, { x: 105, y: 405 }, "left", { x: 345, y: 525 }),
-    portal("lobby-to-restroom", "화장실", "restroom", { x: 960, y: 345, width: 90, height: 120 }, { x: 975, y: 405 }, "right", { x: 135, y: 345 }),
-    portal("lobby-to-hall", "예식홀", "ceremony-hall", { x: 480, y: 30, width: 120, height: 90 }, { x: 525, y: 105 }, "up", { x: 375, y: 1785 })
+    portal("lobby-to-venue", "예식장 밖으로", "venue-exterior", { x: 480, y: 810, width: 120, height: 60 }, { x: 525, y: 795 }, "down", { x: 465, y: 135 }, { x: 540, y: 795 }),
+    portal("lobby-to-bridal", "신부 대기실", "bridal-room", { x: 30, y: 345, width: 90, height: 120 }, { x: 105, y: 405 }, "left", { x: 345, y: 525 }, { x: 105, y: 390 }),
+    portal("lobby-to-restroom", "화장실", "restroom", { x: 960, y: 345, width: 90, height: 120 }, { x: 975, y: 405 }, "right", { x: 135, y: 345 }, { x: 975, y: 390 }),
+    portal("lobby-to-hall", "예식홀", "ceremony-hall", { x: 480, y: 30, width: 120, height: 90 }, { x: 525, y: 105 }, "up", { x: 375, y: 1785 }, { x: 540, y: 105 })
   ],
   blocked: [{ x: 450, y: 300, width: 180, height: 120 }],
   decorations: [
@@ -441,7 +450,7 @@ const bridalRoomZone = createZone({
   spots: [spot("couple", "신부에게 인사하기", 150, 150, 120, 90)],
   npcs: [{ id: "bride", label: "신부 김하린", x: 360, y: 285 }],
   portals: [
-    portal("bridal-to-lobby", "로비로 돌아가기", "lobby", { x: 300, y: 540, width: 120, height: 60 }, { x: 345, y: 555 }, "down", { x: 135, y: 405 })
+    portal("bridal-to-lobby", "로비로 돌아가기", "lobby", { x: 300, y: 540, width: 120, height: 60 }, { x: 345, y: 555 }, "down", { x: 135, y: 405 }, { x: 360, y: 555 })
   ],
   blocked: [
     { x: 90, y: 330, width: 180, height: 90 },
@@ -471,8 +480,8 @@ const ceremonyHallZone = createZone({
     { id: "bride", label: "신부 김하린", x: 450, y: 255 }
   ],
   portals: [
-    portal("hall-to-lobby", "로비로 돌아가기", "lobby", { x: 330, y: 1830, width: 120, height: 60 }, { x: 375, y: 1815 }, "down", { x: 525, y: 135 }),
-    portal("hall-to-banquet", "연회장으로", "banquet", { x: 330, y: 30, width: 120, height: 90 }, { x: 375, y: 105 }, "up", { x: 585, y: 795 })
+    portal("hall-to-lobby", "로비로 돌아가기", "lobby", { x: 330, y: 1830, width: 120, height: 60 }, { x: 375, y: 1815 }, "down", { x: 525, y: 135 }, { x: 390, y: 1815 }),
+    portal("hall-to-banquet", "연회장으로", "banquet", { x: 330, y: 30, width: 120, height: 90 }, { x: 375, y: 105 }, "up", { x: 585, y: 795 }, { x: 390, y: 105 })
   ],
   decorations: [
     decoration("hall-altar", "altar", "웨딩 단상", 195, 105, 270, 105),
@@ -516,7 +525,7 @@ const restroomZone = createZone({
   spots: [],
   npcs: [],
   portals: [
-    portal("restroom-to-lobby", "로비로 돌아가기", "lobby", { x: 30, y: 285, width: 90, height: 120 }, { x: 105, y: 345 }, "left", { x: 945, y: 405 })
+    portal("restroom-to-lobby", "로비로 돌아가기", "lobby", { x: 30, y: 285, width: 90, height: 120 }, { x: 105, y: 345 }, "left", { x: 945, y: 405 }, { x: 105, y: 330 })
   ],
   blocked: [
     { x: 150, y: 150, width: 240, height: 90 },
@@ -545,7 +554,7 @@ const banquetZone = createZone({
   spots: [spot("guestbook", "축하 메시지", 930, 120, 120, 90)],
   npcs: [],
   portals: [
-    portal("banquet-to-hall", "예식홀로 돌아가기", "ceremony-hall", { x: 540, y: 840, width: 120, height: 60 }, { x: 585, y: 825 }, "down", { x: 375, y: 165 })
+    portal("banquet-to-hall", "예식홀로 돌아가기", "ceremony-hall", { x: 540, y: 840, width: 120, height: 60 }, { x: 585, y: 825 }, "down", { x: 375, y: 165 }, { x: 600, y: 825 })
   ],
   blocked: [
     { x: 120, y: 210, width: 180, height: 180 },

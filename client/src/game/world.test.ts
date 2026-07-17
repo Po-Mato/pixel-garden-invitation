@@ -9,7 +9,8 @@ import {
   getWorldZone,
   pointInPortalEntry,
   portalEntryRect,
-  portalEntrySize
+  portalEntrySize,
+  portalVisualCenter
 } from "./world";
 
 const expectedSizes = {
@@ -101,31 +102,56 @@ describe("guest route world", () => {
     }
   });
 
-  it("aligns every portal entry ellipse and visual bounds to its approach point", () => {
+  it("aligns every portal entry ellipse to its entrance while preserving its approach tile", () => {
+    const expectedVisualCenters: Record<string, { x: number; y: number }> = {
+      "home-to-neighborhood": { x: 300, y: 105 },
+      "neighborhood-to-home": { x: 105, y: 360 },
+      "neighborhood-to-station": { x: 1095, y: 360 },
+      "station-to-neighborhood": { x: 105, y: 420 },
+      "station-to-train": { x: 735, y: 420 },
+      "train-to-station": { x: 105, y: 270 },
+      "train-to-venue": { x: 1335, y: 270 },
+      "venue-to-train": { x: 480, y: 795 },
+      "venue-to-lobby": { x: 480, y: 105 },
+      "lobby-to-venue": { x: 540, y: 795 },
+      "lobby-to-bridal": { x: 105, y: 390 },
+      "lobby-to-restroom": { x: 975, y: 390 },
+      "lobby-to-hall": { x: 540, y: 105 },
+      "bridal-to-lobby": { x: 360, y: 555 },
+      "hall-to-lobby": { x: 390, y: 1815 },
+      "hall-to-banquet": { x: 390, y: 105 },
+      "restroom-to-lobby": { x: 105, y: 330 },
+      "banquet-to-hall": { x: 600, y: 825 }
+    };
+
+    expect(portalEntrySize).toEqual({ width: 80, height: 34 });
+
     for (const zone of gardenWorld.zones) {
       for (const portal of zone.portals) {
         const entry = portalEntryRect(portal);
+        const center = portalVisualCenter(portal);
 
+        expect(center, portal.id).toEqual(expectedVisualCenters[portal.id]);
         expect(entry.width, portal.id).toBe(portalEntrySize.width);
         expect(entry.height, portal.id).toBe(portalEntrySize.height);
-        expect(entry.x + entry.width / 2, portal.id).toBe(portal.approach.x);
-        expect(entry.y + entry.height / 2, portal.id).toBe(portal.approach.y);
+        expect(entry.x + entry.width / 2, portal.id).toBe(center.x);
+        expect(entry.y + entry.height / 2, portal.id).toBe(center.y);
         expect(pointInPortalEntry(portal, portal.approach), portal.id).toBe(true);
         expect(pointInPortalEntry(portal, {
-          x: portal.approach.x + portalEntrySize.width / 2,
-          y: portal.approach.y
+          x: center.x + portalEntrySize.width / 2,
+          y: center.y
         }), `${portal.id} horizontal edge`).toBe(true);
         expect(pointInPortalEntry(portal, {
-          x: portal.approach.x,
-          y: portal.approach.y + portalEntrySize.height / 2
+          x: center.x,
+          y: center.y + portalEntrySize.height / 2
         }), `${portal.id} vertical edge`).toBe(true);
         expect(pointInPortalEntry(portal, {
-          x: portal.approach.x + portalEntrySize.width / 2 + 1,
-          y: portal.approach.y
+          x: center.x + portalEntrySize.width / 2 + 1,
+          y: center.y
         }), `${portal.id} outside horizontal edge`).toBe(false);
         expect(pointInPortalEntry(portal, {
-          x: portal.approach.x,
-          y: portal.approach.y + portalEntrySize.height / 2 + 1
+          x: center.x,
+          y: center.y + portalEntrySize.height / 2 + 1
         }), `${portal.id} outside vertical edge`).toBe(false);
       }
     }

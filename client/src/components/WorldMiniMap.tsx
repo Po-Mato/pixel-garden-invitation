@@ -6,7 +6,7 @@ import {
   projectMiniMapPoint,
   projectMiniMapRect
 } from "../game/minimap";
-import type { Point, WorldZone } from "../game/world";
+import { portalEntryRect, type Point, type WorldZone } from "../game/world";
 
 type WorldMiniMapProps = {
   zone: WorldZone;
@@ -86,7 +86,7 @@ export function WorldMiniMap({
             key={portal.id}
             data-testid="minimap-portal"
             className={`world-minimap__portal${portal.id === targetPortalId ? " world-minimap__portal--target" : ""}`}
-            {...projectMiniMapRect(portal, zone.bounds, layout)}
+            {...projectMiniMapRect(portalEntryRect(portal), zone.bounds, layout)}
           />
         ))}
         <rect
