@@ -34,7 +34,7 @@ describe("world geometry", () => {
     expect(getWorldZone(gardenWorld, "lobby").portals.map((portal) => portal.to)).toEqual([
       "venue-exterior",
       "bridal-room",
-      "restroom",
+      "banquet",
       "ceremony-hall"
     ]);
   });
