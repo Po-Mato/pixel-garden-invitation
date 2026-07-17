@@ -1,6 +1,7 @@
 import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { defaultCharacterAppearance, getDefaultAppearance, type WorldZoneId } from "@wedding-game/shared";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { worldDepth } from "../game/worldVisuals";
 import { GameWorld } from "./GameWorld";
 
 type MockListener = (event: Event) => void;
@@ -652,7 +653,7 @@ describe("GameWorld", () => {
     fireEvent.click(screen.getByRole("button", { name: "화장실" }));
     advanceRouteToPortalArrival();
     expect(screen.getByLabelText("예식장 로비 지도")).toBeInTheDocument();
-    expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "975px", top: "405px" });
+    expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "975px", top: "435px" });
     expect(screen.getByTestId("world-portal-transition")).toHaveAttribute("data-phase", "arrival");
     advancePortalTransition();
 
@@ -681,7 +682,7 @@ describe("GameWorld", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "예식홀" }));
     advanceRouteToPortalArrival();
-    expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "525px", top: "105px" });
+    expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "495px", top: "105px" });
     expect(screen.getByTestId("world-portal-transition")).toHaveAttribute("data-phase", "arrival");
     advancePortalTransition();
 
@@ -960,54 +961,57 @@ describe("GameWorld", () => {
     expect(player).toHaveStyle({ left: "285px", top: "555px", zIndex: "1555" });
   });
 
-  it("keeps portals and information buttons above map depth layers", () => {
+  it("keeps portal effects behind characters while information buttons stay above the map", () => {
     render(<GameWorld profile={profile} />);
 
-    expect(screen.getByRole("button", { name: "동네로 나가기" })).toHaveStyle({ zIndex: "9000" });
+    const portal = screen.getByRole("button", { name: "동네로 나가기" });
+    expect(portal).toHaveStyle({ zIndex: "1005" });
+    expect(screen.getByLabelText("하객1")).toHaveStyle({ zIndex: "1555" });
+    expect(Number(portal.style.zIndex)).toBeLessThan(worldDepth(105 - 88));
     expect(screen.getByRole("button", { name: /오시는 길/ })).toHaveStyle({ zIndex: "9000" });
   });
 
-  it("keeps animated portal artwork decorative while preserving its destination name", () => {
+  it("renders one portal effect over three visible entry tiles", () => {
     render(<GameWorld profile={profile} />);
     const portal = screen.getByRole("button", { name: "동네로 나가기" });
     const effect = portal.querySelector(".world-portal__effect");
 
     expect(portal).toHaveAccessibleName("동네로 나가기");
     expect(effect).toHaveAttribute("aria-hidden", "true");
-    expect(effect?.querySelector(".world-portal__beam--outer")).toBeInTheDocument();
-    expect(effect?.querySelector(".world-portal__beam--core")).toBeInTheDocument();
-    expect(effect?.querySelector(".world-portal__circle")).toBeInTheDocument();
+    expect(effect?.querySelectorAll(".world-portal__beam--outer")).toHaveLength(1);
+    expect(effect?.querySelectorAll(".world-portal__beam--core")).toHaveLength(1);
+    expect(effect?.querySelectorAll(".world-portal__tile")).toHaveLength(3);
     expect(effect?.querySelectorAll(".world-portal__particle")).toHaveLength(4);
     expect(portal.querySelector(".world-portal__label")).toHaveTextContent("동네로 나가기");
   });
 
-  it("centers every portal interaction area on its visible 80 by 34 entrance circle", () => {
+  it("uses the exact three-tile portal strip as its click area", () => {
     render(<GameWorld profile={profile} />);
 
     expect(screen.getByRole("button", { name: "동네로 나가기" })).toHaveStyle({
-      left: "260px",
-      top: "88px",
-      width: "80px",
-      height: "34px"
+      left: "240px",
+      top: "90px",
+      width: "90px",
+      height: "30px"
     });
 
     travelThroughPortal("동네로 나가기");
 
     expect(screen.getByRole("button", { name: "집으로 돌아가기" })).toHaveStyle({
-      left: "65px",
-      top: "343px",
-      width: "80px",
-      height: "34px"
+      left: "90px",
+      top: "330px",
+      width: "30px",
+      height: "90px"
     });
     expect(screen.getByRole("button", { name: "지하철역 들어가기" })).toHaveStyle({
-      left: "1055px",
-      top: "343px",
-      width: "80px",
-      height: "34px"
+      left: "1080px",
+      top: "330px",
+      width: "30px",
+      height: "90px"
     });
   });
 
-  it("enters a portal by joystick from a grid tile covered by the circle edge", () => {
+  it("enters a portal by joystick through an edge entry tile", () => {
     render(<GameWorld profile={profile} />);
     const joystick = screen.getByLabelText("가상 조이스틱");
 

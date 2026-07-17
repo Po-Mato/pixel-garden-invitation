@@ -31,6 +31,7 @@ describe("WorldMiniMap", () => {
     expect(within(minimap).getByTestId("minimap-viewport")).toBeInTheDocument();
     expect(within(minimap).getByTestId("minimap-player")).toHaveAttribute("data-direction", "up");
     const portal = within(minimap).getByTestId("minimap-portal");
+    expect(portalEntryRect(zone.portals[0])).toEqual({ x: 240, y: 90, width: 90, height: 30 });
     const projectedPortal = projectMiniMapRect(
       portalEntryRect(zone.portals[0]),
       zone.bounds,

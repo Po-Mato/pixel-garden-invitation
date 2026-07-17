@@ -16,7 +16,7 @@ import {
 } from "@wedding-game/shared";
 import { computeCameraTransform, screenToWorld, type ViewportSize } from "../game/camera";
 import { computeNextGridPosition, directionFromVector, directionTowardPoint, snapToGrid } from "../game/movement";
-import { findTilePath } from "../game/pathfinding";
+import { findNearestPortalRoute, findTilePath } from "../game/pathfinding";
 import {
   advanceTileInput,
   createTileInputState,
@@ -521,7 +521,7 @@ export function GameWorld({ profile }: GameWorldProps) {
   function handlePortalClick(portalItem: WorldPortal) {
     if (portalTransitionRef.current) return;
 
-    const route = findTilePath(activeZone, positionRef.current, portalItem.approach);
+    const route = findNearestPortalRoute(activeZone, positionRef.current, portalItem);
     setTarget(null);
     setJoystickVector({ x: 0, y: 0 });
     targetStepAtRef.current = null;
@@ -530,11 +530,11 @@ export function GameWorld({ profile }: GameWorldProps) {
       setTravelStatus("길을 찾을 수 없어요");
       return;
     }
-    if (route.length === 0) {
-      beginPortalTransition(portalItem, portalItem.approach, performance.now());
+    if (route.path.length === 0) {
+      beginPortalTransition(portalItem, route.entry, performance.now());
       return;
     }
-    setPortalIntent({ portal: portalItem, path: route });
+    setPortalIntent({ portal: portalItem, path: route.path });
     setTravelStatus(`${portalItem.label}까지 이동 중`);
   }
 
@@ -685,29 +685,40 @@ export function GameWorld({ profile }: GameWorldProps) {
                 </button>
               );
             })}
-            {activeZone.portals.map((portalItem) => (
-              <button
-                key={portalItem.id}
-                type="button"
-                className={`world-portal${portalIntent?.portal.id === portalItem.id ? " world-portal--target" : ""}`}
-                style={{ ...pixelRect(portalEntryRect(portalItem)), zIndex: 9000 }}
-                onClick={(event) => {
-                  event.stopPropagation();
-                  handlePortalClick(portalItem);
-                }}
-              >
-                <span className="world-portal__effect" aria-hidden="true">
-                  <span className="world-portal__beam world-portal__beam--outer" />
-                  <span className="world-portal__beam world-portal__beam--core" />
-                  <span className="world-portal__particle world-portal__particle--one" />
-                  <span className="world-portal__particle world-portal__particle--two" />
-                  <span className="world-portal__particle world-portal__particle--three" />
-                  <span className="world-portal__particle world-portal__particle--four" />
-                  <span className="world-portal__circle" />
-                </span>
-                <span className="world-portal__label">{portalItem.label}</span>
-              </button>
-            ))}
+            {activeZone.portals.map((portalItem) => {
+              const horizontal = portalItem.facing === "up" || portalItem.facing === "down";
+
+              return (
+                <button
+                  key={portalItem.id}
+                  type="button"
+                  className={`world-portal world-portal--${horizontal ? "horizontal" : "vertical"}${portalIntent?.portal.id === portalItem.id ? " world-portal--target" : ""}`}
+                  style={{
+                    ...pixelRect(portalEntryRect(portalItem)),
+                    zIndex: worldDepth(portalItem.approach.y) - 100
+                  }}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    handlePortalClick(portalItem);
+                  }}
+                >
+                  <span className="world-portal__effect" aria-hidden="true">
+                    <span className="world-portal__beam world-portal__beam--outer" />
+                    <span className="world-portal__beam world-portal__beam--core" />
+                    <span className="world-portal__particle world-portal__particle--one" />
+                    <span className="world-portal__particle world-portal__particle--two" />
+                    <span className="world-portal__particle world-portal__particle--three" />
+                    <span className="world-portal__particle world-portal__particle--four" />
+                    <span className="world-portal__tiles">
+                      {portalItem.entryTiles.map((tile) => (
+                        <span key={`${tile.x}-${tile.y}`} className="world-portal__tile" />
+                      ))}
+                    </span>
+                  </span>
+                  <span className="world-portal__label">{portalItem.label}</span>
+                </button>
+              );
+            })}
             {remoteGuests.filter((guest) => guest.zoneId === activeZone.id).map((guest) => (
               <div
                 key={guest.guestId}
