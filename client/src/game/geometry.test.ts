@@ -9,9 +9,10 @@ describe("world geometry", () => {
     expect(clampToWorld({ x: -10, y: 900 }, home.bounds)).toEqual({ x: 0, y: 720 });
   });
 
-  it("detects structural and interaction blockers", () => {
+  it("keeps the open platform walkable while detecting interaction blockers", () => {
     const station = getWorldZone(gardenWorld, "subway-station");
-    expect(isBlocked({ x: 375, y: 405 }, station)).toBe(true);
+    expect(isBlocked({ x: 375, y: 405 }, station)).toBe(false);
+    expect(isBlocked({ x: 135, y: 195 }, station)).toBe(true);
     expect(isBlocked(station.spawn, station)).toBe(false);
   });
 

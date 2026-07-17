@@ -54,7 +54,6 @@ export type WorldDecorationKind =
   | "shoe-rack"
   | "crosswalk-sign"
   | "station-sign"
-  | "ticket-gate"
   | "train-seat"
   | "train-window"
   | "venue-sign"
@@ -290,11 +289,11 @@ const neighborhoodZone = createZone({
 const subwayStationZone = createZone({
   id: "subway-station",
   label: "지하철 역사",
-  subtitle: "노선 안내를 따라 개찰구와 승강장을 지나가요",
+  subtitle: "노선 안내와 안전선을 따라 승강장으로 이동해요",
   journeyIndex: 2,
   paths: [
     path("station-concourse", "floor", 60, 300, 600, 270),
-    path("station-gate-corridor", "corridor", 330, 240, 240, 390),
+    path("station-platform-approach", "corridor", 330, 240, 240, 390),
     path("station-platform", "platform", 600, 120, 210, 600)
   ],
   spots: [spot("directions", "지하철 오시는 길", 120, 150, 120, 90)],
@@ -303,17 +302,8 @@ const subwayStationZone = createZone({
     portal("station-to-neighborhood", "거리로 나가기", "neighborhood", { x: 30, y: 375, width: 90, height: 120 }, { x: 105, y: 435 }, "left", { x: 1065, y: 375 }, { x: 105, y: 420 }),
     portal("station-to-train", "열차 타기", "subway-train", { x: 750, y: 360, width: 90, height: 150 }, { x: 735, y: 435 }, "right", { x: 135, y: 285 }, { x: 735, y: 420 })
   ],
-  blocked: [
-    { x: 360, y: 360, width: 60, height: 120 },
-    { x: 450, y: 360, width: 60, height: 120 },
-    { x: 540, y: 360, width: 60, height: 120 }
-  ],
   decorations: [
     decoration("station-sign", "station-sign", "노선 안내판", 180, 90, 300, 60),
-    decoration("station-gate-bank", "ticket-gate", "통합 개찰구", 360, 360, 240, 120, {
-      asset: "ticket-gate-bank-front.png",
-      depthY: 480
-    }),
     decoration("station-bench-1", "bench", "대합실 벤치", 270, 150, 120, 45),
     decoration("station-bench-2", "bench", "대합실 벤치", 420, 150, 120, 45),
     decoration("station-lamp-1", "lamp", "역사 기둥", 570, 60, 60, 120),

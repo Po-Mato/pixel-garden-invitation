@@ -16,10 +16,8 @@ async function writePng(file, width, height, background) {
   }).png().toFile(file);
 }
 
-test("uses one unified gate bank placement for the subway station", () => {
-  assert.deepEqual(DEFAULT_FOREGROUND_PLACEMENTS["subway-station"], [
-    { asset: "ticket-gate-bank-front.png", x: 360, y: 360 }
-  ]);
+test("keeps the subway platform free of foreground ticket gates", () => {
+  assert.deepEqual(DEFAULT_FOREGROUND_PLACEMENTS["subway-station"], []);
 });
 
 test("renders every manifest zone with its foreground placements", async () => {

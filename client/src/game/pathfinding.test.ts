@@ -78,14 +78,14 @@ describe("portal tile pathfinding", () => {
     }
   });
 
-  it("uses the lower concourse to bypass the subway ticket gates", () => {
+  it("uses a direct route across the open subway platform", () => {
     const station = getWorldZone(gardenWorld, "subway-station");
     const eastPortal = station.portals.find((portal) => portal.id === "station-to-train");
     const route = findTilePath(station, station.spawn, eastPortal!.approach);
 
     expect(route).not.toBeNull();
     expect(route?.at(-1)).toEqual(eastPortal?.approach);
-    expect(route?.some((point) => point.y > 480)).toBe(true);
+    expect(route?.every((point) => point.y === station.spawn.y)).toBe(true);
     for (const point of route ?? []) {
       expect(isBlocked(point, station)).toBe(false);
     }

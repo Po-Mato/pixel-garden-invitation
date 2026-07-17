@@ -38,14 +38,14 @@ describe("movement", () => {
     })).toEqual({ x: 225, y: 225 });
   });
 
-  it("keeps grid movement out of the subway ticket gates", () => {
+  it("allows grid movement across the open subway platform", () => {
     const station = getWorldZone(gardenWorld, "subway-station");
 
     expect(computeNextGridPosition({
       current: { x: 345, y: 435 },
       direction: "right",
       world: station
-    })).toEqual({ x: 345, y: 435 });
+    })).toEqual({ x: 375, y: 435 });
   });
 
   it("chooses a cardinal direction toward a grid target", () => {

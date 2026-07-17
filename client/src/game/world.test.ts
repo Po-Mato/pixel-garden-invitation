@@ -303,25 +303,20 @@ describe("guest route world", () => {
     expect(returnNeighborhood && isBlocked(returnNeighborhood.spawn, neighborhood)).toBe(false);
   });
 
-  it("defines the v2 subway station layout, portals, and unified gate bank", () => {
+  it("defines an open v2 subway platform interior without ticket gates", () => {
     const station = getWorldZone(gardenWorld, "subway-station");
     const [directionsSpot] = station.spots;
 
     expect(station.spawn).toEqual({ x: 135, y: 435 });
     expect(station.paths).toEqual([
       { id: "station-concourse", kind: "floor", x: 60, y: 300, width: 600, height: 270 },
-      { id: "station-gate-corridor", kind: "corridor", x: 330, y: 240, width: 240, height: 390 },
+      { id: "station-platform-approach", kind: "corridor", x: 330, y: 240, width: 240, height: 390 },
       { id: "station-platform", kind: "platform", x: 600, y: 120, width: 210, height: 600 }
     ]);
     expect(station.spots).toEqual([
       expect.objectContaining({ id: "directions", x: 120, y: 150, width: 120, height: 90 })
     ]);
-    expect(station.blocked).toEqual([
-      { x: 360, y: 360, width: 60, height: 120 },
-      { x: 450, y: 360, width: 60, height: 120 },
-      { x: 540, y: 360, width: 60, height: 120 },
-      directionsSpot
-    ]);
+    expect(station.blocked).toEqual([directionsSpot]);
     expect(station.portals).toEqual([
       expect.objectContaining({
         id: "station-to-neighborhood",
@@ -346,17 +341,7 @@ describe("guest route world", () => {
         spawn: { x: 135, y: 285 }
       })
     ]);
-    expect(station.decorations.filter((item) => item.kind === "ticket-gate")).toEqual([
-      expect.objectContaining({
-        id: "station-gate-bank",
-        x: 360,
-        y: 360,
-        width: 240,
-        height: 120,
-        asset: "ticket-gate-bank-front.png",
-        depthY: 480
-      })
-    ]);
+    expect(station.decorations.filter((item) => item.asset?.includes("ticket-gate"))).toEqual([]);
   });
 
   it("keeps the station portal spawns safe in both destination zones", () => {
@@ -438,14 +423,14 @@ describe("guest route world", () => {
     }
   });
 
-  it("finds the lower bypass from the station spawn to the east platform approach", () => {
+  it("finds a direct platform route from the station spawn to the east portal", () => {
     const station = getWorldZone(gardenWorld, "subway-station");
     const eastPortal = station.portals.find((portalItem) => portalItem.id === "station-to-train");
     const route = findTilePath(station, station.spawn, eastPortal!.approach);
 
     expect(route).not.toBeNull();
     expect(route?.at(-1)).toEqual(eastPortal?.approach);
-    expect(route?.some((point) => point.y > 480)).toBe(true);
+    expect(route?.every((point) => point.y === station.spawn.y)).toBe(true);
   });
 
   it("keeps every spawn and portal approach on a safe walkable tile", () => {
@@ -912,7 +897,11 @@ describe("guest route world", () => {
       expect(zone.theme).toBe(zone.id);
       expect(zone.paths.length).toBeGreaterThan(0);
       if (zone.id !== "bridal-room") {
-        const minimumDecorationCount = ["restroom", "subway-station"].includes(zone.id) ? 7 : 8;
+        const minimumDecorationCount = zone.id === "subway-station"
+          ? 6
+          : zone.id === "restroom"
+            ? 7
+            : 8;
         expect(zone.decorations.length).toBeGreaterThanOrEqual(minimumDecorationCount);
         expect(new Set(zone.decorations.map((item) => item.kind)).size).toBeGreaterThanOrEqual(4);
       }
