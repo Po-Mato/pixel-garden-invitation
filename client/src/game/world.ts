@@ -486,6 +486,10 @@ const ceremonyHallZone = createZone({
     portal("hall-to-lobby", "로비로 돌아가기", "lobby", { x: 330, y: 1830, width: 120, height: 60 }, { x: 375, y: 1815 }, "down", { x: 525, y: 135 })
   ],
   decorations: [
+    decoration("hall-ceremony-arch", "flower-arch", "예식홀 꽃 아치", 180, 30, 420, 300, {
+      asset: "ceremony-arch-front.png",
+      depthY: 330
+    }),
     decoration("hall-altar", "altar", "웨딩 단상", 195, 105, 270, 105),
     decoration("hall-seat-l1", "ceremony-seat", "하객 좌석", 45, 360, 150, 120),
     decoration("hall-seat-r1", "ceremony-seat", "하객 좌석", 465, 360, 150, 120),

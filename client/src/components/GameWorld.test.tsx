@@ -721,6 +721,7 @@ describe("GameWorld", () => {
 
     const hall = screen.getByLabelText("예식홀 지도");
     const bouquets = [...container.querySelectorAll('img[data-decoration="aisle-bouquet"]')];
+    const ceremonyArch = container.querySelector('img[data-decoration-label="예식홀 꽃 아치"]');
 
     expect(hall).toHaveStyle({
       width: "780px",
@@ -733,6 +734,14 @@ describe("GameWorld", () => {
       .toHaveStyle({ left: "330px", top: "255px", zIndex: "1255" });
     expect(screen.getByRole("button", { name: "신부 김하린 소개 보기" }).parentElement)
       .toHaveStyle({ left: "450px", top: "255px", zIndex: "1255" });
+    expect(ceremonyArch).toHaveAttribute("src", "/assets/maps/v2/ceremony-hall/ceremony-arch-front.png");
+    expect(ceremonyArch).toHaveStyle({
+      left: "180px",
+      top: "30px",
+      width: "420px",
+      height: "300px",
+      zIndex: "1330"
+    });
     expect(bouquets).toHaveLength(4);
     [
       ["240px", "480px", "1570"],

@@ -805,6 +805,17 @@ describe("guest route world", () => {
       expect.objectContaining({ x: 240, y: 960, width: 60, height: 90, asset: "aisle-bouquet-front.png", depthY: 1050 }),
       expect.objectContaining({ x: 480, y: 1200, width: 60, height: 90, asset: "aisle-bouquet-front.png", depthY: 1290 })
     ]);
+    expect(hall.decorations.find((item) => item.id === "hall-ceremony-arch")).toEqual(
+      expect.objectContaining({
+        kind: "flower-arch",
+        x: 180,
+        y: 30,
+        width: 420,
+        height: 300,
+        asset: "ceremony-arch-front.png",
+        depthY: 330
+      })
+    );
   });
 
   it("defines the banquet between lobby and restroom with complete table depths", () => {

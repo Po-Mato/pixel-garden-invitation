@@ -46,8 +46,11 @@
     {
       "id": "ceremony-hall",
       "background": { "source": "pixel-background-source.png", "output": "background.webp", "width": 780, "height": 1920 },
-      "overlays": [{ "source": "aisle-bouquet-front-source.png", "output": "aisle-bouquet-front.png", "width": 60, "height": 90 }],
-      "requiredArtifacts": ["altar", "ceremony-seat", "aisle", "aisle-bouquet", "candle-light", "entrance-door"]
+      "overlays": [
+        { "source": "ceremony-arch-front-source.png", "output": "ceremony-arch-front.png", "width": 420, "height": 300 },
+        { "source": "aisle-bouquet-front-source.png", "output": "aisle-bouquet-front.png", "width": 60, "height": 90 }
+      ],
+      "requiredArtifacts": ["altar", "ceremony-arch", "ceremony-seat", "aisle", "aisle-bouquet", "candle-light", "entrance-door"]
     },
     {
       "id": "banquet",

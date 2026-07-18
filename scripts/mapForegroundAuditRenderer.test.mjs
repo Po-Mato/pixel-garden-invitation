@@ -20,6 +20,16 @@ test("keeps the subway platform free of foreground ticket gates", () => {
   assert.deepEqual(DEFAULT_FOREGROUND_PLACEMENTS["subway-station"], []);
 });
 
+test("composes the ceremony arch above the hall background", () => {
+  assert.deepEqual(DEFAULT_FOREGROUND_PLACEMENTS["ceremony-hall"], [
+    { asset: "ceremony-arch-front.png", x: 180, y: 30 },
+    { asset: "aisle-bouquet-front.png", x: 240, y: 480 },
+    { asset: "aisle-bouquet-front.png", x: 480, y: 720 },
+    { asset: "aisle-bouquet-front.png", x: 240, y: 960 },
+    { asset: "aisle-bouquet-front.png", x: 480, y: 1200 }
+  ]);
+});
+
 test("composes four complete banquet tables without legacy split fronts", () => {
   assert.deepEqual(DEFAULT_FOREGROUND_PLACEMENTS.banquet, [
     { asset: "table-floral.png", x: 210, y: 270 },
