@@ -247,6 +247,14 @@ export function GameWorld({ profile }: GameWorldProps) {
     }
   }, [setPortalIntent]);
 
+  const handleJourneySelect = useCallback((zoneId: WorldZoneId) => {
+    if (portalTransitionRef.current || zoneId === activeZoneIdRef.current) return;
+    setMenuOpen(false);
+    setActiveSpotId(null);
+    setInputReleaseRequired(false);
+    moveToZone(zoneId);
+  }, [moveToZone, setInputReleaseRequired]);
+
   const completePortalFadeOut = useCallback(() => {
     const transition = portalTransitionRef.current;
     if (!transition || transition.phase !== "fade-out") return;
@@ -623,7 +631,15 @@ export function GameWorld({ profile }: GameWorldProps) {
         <ol className="world-journey" aria-label="하객 여정">
           {gardenWorld.zones.map((zone) => (
             <li key={zone.id} aria-current={zone.id === activeZone.id ? "location" : undefined}>
-              <span>{zone.label}</span>
+              <button
+                type="button"
+                className="world-journey__button"
+                aria-label={`${zone.label} 바로 이동`}
+                disabled={Boolean(portalTransition)}
+                onClick={() => { handleJourneySelect(zone.id); }}
+              >
+                {zone.label}
+              </button>
             </li>
           ))}
         </ol>

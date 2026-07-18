@@ -291,7 +291,8 @@ describe("prism map interactions", () => {
     expect(journeyRule).toContain("overflow-x: auto;");
     expect(spotRule).toContain("--spot-accent:");
     expect(portalRule).toContain("--portal-accent:");
-    expect(styles).toContain('.world-journey li[aria-current="location"]');
+    expect(styles).toContain('.world-journey li[aria-current="location"] .world-journey__button');
+    expect(styles).toContain(".world-journey__button:focus-visible");
     expect(styles).toContain(".world-spot::before");
     expect(styles).toContain(".world-spot::after");
     expect(styles).toContain(".world-portal__effect");

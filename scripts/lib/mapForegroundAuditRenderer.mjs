@@ -16,6 +16,7 @@ export const DEFAULT_FOREGROUND_PLACEMENTS = Object.freeze({
   "bridal-room": [{ asset: "flower-arrangement-front.png", x: 240, y: 300 }],
   "ceremony-hall": [
     { asset: "ceremony-arch-front.png", x: 180, y: 30 },
+    { asset: "altar-table-front.png", x: 300, y: 165 },
     { asset: "aisle-bouquet-front.png", x: 240, y: 480 },
     { asset: "aisle-bouquet-front.png", x: 480, y: 720 },
     { asset: "aisle-bouquet-front.png", x: 240, y: 960 },

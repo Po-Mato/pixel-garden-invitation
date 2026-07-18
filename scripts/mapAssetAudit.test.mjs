@@ -469,9 +469,10 @@ test("declares the ten map contracts in journey order", async () => {
       background: { source: "pixel-background-source.png", output: "background.webp", width: 780, height: 1920 },
       overlays: [
         { source: "ceremony-arch-front-source.png", output: "ceremony-arch-front.png", width: 420, height: 300 },
+        { source: "altar-table-front-source.png", output: "altar-table-front.png", width: 180, height: 120 },
         { source: "aisle-bouquet-front-source.png", output: "aisle-bouquet-front.png", width: 60, height: 90 }
       ],
-      requiredArtifacts: ["altar", "ceremony-arch", "ceremony-seat", "aisle", "aisle-bouquet", "candle-light", "entrance-door"]
+      requiredArtifacts: ["altar", "altar-table", "ceremony-arch", "ceremony-seat", "aisle", "aisle-bouquet", "candle-light", "entrance-door"]
     },
     {
       id: "banquet",

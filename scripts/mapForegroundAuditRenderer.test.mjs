@@ -23,6 +23,7 @@ test("keeps the subway platform free of foreground ticket gates", () => {
 test("composes the ceremony arch above the hall background", () => {
   assert.deepEqual(DEFAULT_FOREGROUND_PLACEMENTS["ceremony-hall"], [
     { asset: "ceremony-arch-front.png", x: 180, y: 30 },
+    { asset: "altar-table-front.png", x: 300, y: 165 },
     { asset: "aisle-bouquet-front.png", x: 240, y: 480 },
     { asset: "aisle-bouquet-front.png", x: 480, y: 720 },
     { asset: "aisle-bouquet-front.png", x: 240, y: 960 },

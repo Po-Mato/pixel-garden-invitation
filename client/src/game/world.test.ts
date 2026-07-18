@@ -816,6 +816,17 @@ describe("guest route world", () => {
         depthY: 330
       })
     );
+    expect(hall.decorations.find((item) => item.id === "hall-altar-table-front")).toEqual(
+      expect.objectContaining({
+        kind: "altar",
+        x: 300,
+        y: 165,
+        width: 180,
+        height: 120,
+        asset: "altar-table-front.png",
+        depthY: 240
+      })
+    );
   });
 
   it("defines the banquet between lobby and restroom with complete table depths", () => {

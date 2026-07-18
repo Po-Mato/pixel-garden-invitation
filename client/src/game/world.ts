@@ -490,6 +490,10 @@ const ceremonyHallZone = createZone({
       asset: "ceremony-arch-front.png",
       depthY: 330
     }),
+    decoration("hall-altar-table-front", "altar", "예식홀 중앙 꽃 테이블", 300, 165, 180, 120, {
+      asset: "altar-table-front.png",
+      depthY: 240
+    }),
     decoration("hall-altar", "altar", "웨딩 단상", 195, 105, 270, 105),
     decoration("hall-seat-l1", "ceremony-seat", "하객 좌석", 45, 360, 150, 120),
     decoration("hall-seat-r1", "ceremony-seat", "하객 좌석", 465, 360, 150, 120),

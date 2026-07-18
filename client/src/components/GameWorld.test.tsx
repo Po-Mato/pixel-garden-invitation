@@ -210,15 +210,21 @@ describe("GameWorld", () => {
     expect(background).toHaveAttribute("src", expect.stringContaining(`/assets/maps/v2/${zoneId}/background.webp`));
   }
 
-  it("starts at home and renders a non-clickable ten-stop journey", () => {
+  it("starts at home and jumps directly to a selected journey zone", () => {
     render(<GameWorld profile={profile} />);
     const journey = screen.getByLabelText("하객 여정");
 
     expect(screen.getByLabelText("우리 집 지도")).toHaveAttribute("data-zone", "home");
     expect(within(journey).getAllByRole("listitem")).toHaveLength(10);
-    expect(within(journey).queryAllByRole("button")).toHaveLength(0);
+    expect(within(journey).getAllByRole("button")).toHaveLength(10);
     expect(within(journey).getByText("우리 집").closest("li")).toHaveAttribute("aria-current", "location");
-    expect(screen.queryByLabelText("맵 구역 이동")).not.toBeInTheDocument();
+
+    fireEvent.click(within(journey).getByRole("button", { name: "예식홀 바로 이동" }));
+
+    expect(screen.getByLabelText("예식홀 지도")).toHaveAttribute("data-zone", "ceremony-hall");
+    expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "375px", top: "1785px" });
+    expect(within(journey).getByText("예식홀").closest("li")).toHaveAttribute("aria-current", "location");
+    expect(screen.getByTestId("world-portal-transition")).toHaveAttribute("data-phase", "idle");
   });
 
   it("uses fallback path visuals only while the map background is unavailable", () => {
@@ -722,6 +728,7 @@ describe("GameWorld", () => {
     const hall = screen.getByLabelText("예식홀 지도");
     const bouquets = [...container.querySelectorAll('img[data-decoration="aisle-bouquet"]')];
     const ceremonyArch = container.querySelector('img[data-decoration-label="예식홀 꽃 아치"]');
+    const altarTable = container.querySelector('img[data-decoration-label="예식홀 중앙 꽃 테이블"]');
 
     expect(hall).toHaveStyle({
       width: "780px",
@@ -741,6 +748,14 @@ describe("GameWorld", () => {
       width: "420px",
       height: "300px",
       zIndex: "1330"
+    });
+    expect(altarTable).toHaveAttribute("src", "/assets/maps/v2/ceremony-hall/altar-table-front.png");
+    expect(altarTable).toHaveStyle({
+      left: "300px",
+      top: "165px",
+      width: "180px",
+      height: "120px",
+      zIndex: "1240"
     });
     expect(bouquets).toHaveLength(4);
     [
