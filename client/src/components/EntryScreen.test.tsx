@@ -8,6 +8,24 @@ afterEach(() => {
 });
 
 describe("EntryScreen", () => {
+  it("shows the confirmed couple and compact wedding summary before entry", () => {
+    render(<EntryScreen onEnter={vi.fn()} />);
+
+    expect(screen.getByRole("heading", { name: "이승재 & 이건희의 정원" })).toBeInTheDocument();
+    expect(screen.getByText("2027년 5월 1일 토요일")).toBeInTheDocument();
+    expect(screen.getByText("오후 5시 10분")).toBeInTheDocument();
+    expect(screen.getByText("MJ컨벤션 5층 파티오볼룸")).toBeInTheDocument();
+  });
+
+  it("opens calendar choices without requiring a nickname", () => {
+    render(<EntryScreen onEnter={vi.fn()} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "캘린더 저장" }));
+
+    expect(screen.getByRole("dialog", { name: "캘린더 저장" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "정원 입장" })).toBeDisabled();
+  });
+
   it("disables entry for initial or whitespace-only nickname", () => {
     const onEnter = vi.fn();
     render(<EntryScreen onEnter={onEnter} />);

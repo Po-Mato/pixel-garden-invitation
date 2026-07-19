@@ -5,6 +5,7 @@ import {
 } from "@wedding-game/shared";
 import { loadAppearance, saveAppearance } from "../character/storage";
 import { CharacterCustomizer } from "./CharacterCustomizer";
+import { WeddingEventSummary } from "./WeddingEventSummary";
 
 export type EntryProfile = {
   nickname: string;
@@ -35,10 +36,11 @@ export function EntryScreen({ onEnter }: EntryScreenProps) {
         <span className="entry-screen__petals" />
       </div>
       <header className="entry-screen__header">
-        <p>WEDDING GARDEN · 2026</p>
-        <h1>서준 & 하린의 정원</h1>
-        <span>정원에 입장할 완성 하객 캐릭터를 선택해주세요.</span>
+        <p>WEDDING GARDEN · 2027</p>
+        <h1>이승재 & 이건희의 정원</h1>
+        <span>정원에 입장할 하객 캐릭터를 선택해주세요.</span>
       </header>
+      <WeddingEventSummary variant="compact" />
       <CharacterCustomizer value={appearance} onChange={setAppearance} />
       <div className="entry-screen__controls">
         <label className="field">
