@@ -14,24 +14,47 @@ export type InvitationSpot = {
   body: string;
 };
 
+export type WeddingEvent = {
+  couple: {
+    groom: string;
+    bride: string;
+  };
+  title: string;
+  startAt: string;
+  endAt: string;
+  timeZone: string;
+  venue: {
+    name: string;
+    hall: string;
+    address: string;
+  };
+};
+
 export const invitationContent = {
-  coupleNames: "이서준 & 김하린",
-  weddingDate: "2027-05-15",
-  weddingTime: "토요일 오후 1시",
-  venueName: "라온가든 웨딩홀",
-  venueAddress: "서울특별시 강남구 테헤란로 123",
+  event: {
+    couple: { groom: "이승재", bride: "이건희" },
+    title: "이승재 · 이건희 결혼식",
+    startAt: "2027-05-01T17:10:00+09:00",
+    endAt: "2027-05-01T18:40:00+09:00",
+    timeZone: "Asia/Seoul",
+    venue: {
+      name: "MJ컨벤션",
+      hall: "5층 파티오볼룸",
+      address: "경기 부천시 소사구 경인로 386"
+    }
+  } satisfies WeddingEvent,
   spots: [
     {
       id: "wedding-info",
       title: "예식 안내",
       actionLabel: "예식 보기",
-      body: "2027년 5월 15일 토요일 오후 1시, 라온가든 웨딩홀에서 예식이 진행됩니다."
+      body: "2027년 5월 1일 토요일 오후 5시 10분, MJ컨벤션 5층 파티오볼룸에서 예식이 진행됩니다."
     },
     {
       id: "directions",
       title: "오시는 길",
       actionLabel: "길 찾기",
-      body: "지하철 2호선 역삼역 3번 출구에서 도보 7분입니다. 주차는 웨딩홀 지하 주차장을 이용해 주세요."
+      body: "MJ컨벤션은 경기 부천시 소사구 경인로 386에 있습니다."
     },
     {
       id: "rsvp",
