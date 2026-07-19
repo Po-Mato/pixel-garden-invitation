@@ -1,4 +1,5 @@
 import { useEffect, useRef, type ReactNode } from "react";
+import { createPortal } from "react-dom";
 
 type BottomSheetProps = {
   title: string;
@@ -89,9 +90,14 @@ export function BottomSheet({ title, onClose, children }: BottomSheetProps) {
     };
   }, []);
 
-  return (
+  return createPortal(
     <>
-      <div className="sheet-backdrop" />
+      <button
+        type="button"
+        className="sheet-backdrop"
+        aria-label={`${title} 닫기`}
+        onClick={onClose}
+      />
       <section
         ref={dialogRef}
         className="bottom-sheet"
@@ -108,6 +114,7 @@ export function BottomSheet({ title, onClose, children }: BottomSheetProps) {
         </header>
         <div className="bottom-sheet__body">{children}</div>
       </section>
-    </>
+    </>,
+    document.body
   );
 }
