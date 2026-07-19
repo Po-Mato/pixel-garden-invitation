@@ -37,6 +37,7 @@ import type { EntryProfile } from "./EntryScreen";
 import { CharacterSprite } from "./CharacterSprite";
 import { SpotModal } from "./SpotModal";
 import { VirtualJoystick } from "./VirtualJoystick";
+import { WeddingEventSummary } from "./WeddingEventSummary";
 import { WeddingNpc } from "./WeddingNpc";
 import { WorldMapArtwork } from "./WorldMapArtwork";
 import { WorldDecoration } from "./WorldDecoration";
@@ -116,6 +117,7 @@ export function GameWorld({ profile }: GameWorldProps) {
   const [stepFrame, setStepFrame] = useState(1);
   const [activeSpotId, setActiveSpotId] = useState<SpotId | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [calendarSheetOpen, setCalendarSheetOpen] = useState(false);
   const [travelStatus, setTravelStatus] = useState("우리 집에서 여정을 시작해요");
   const [viewport, setViewport] = useState<ViewportSize>(defaultViewport);
   const [remoteGuests, setRemoteGuests] = useState<RoomGuest[]>([]);
@@ -160,6 +162,11 @@ export function GameWorld({ profile }: GameWorldProps) {
     targetStepAtRef.current = null;
   }, [setPortalIntent]);
 
+  const closeMenu = useCallback(() => {
+    setCalendarSheetOpen(false);
+    setMenuOpen(false);
+  }, []);
+
   const sendRealtimeMove = useCallback((nextPosition: Point, isMoving: boolean, nextDirection: Direction, zoneId: WorldZoneId, now: number) => {
     moveThrottleRef.current?.({
       type: "move",
@@ -186,6 +193,7 @@ export function GameWorld({ profile }: GameWorldProps) {
     setTarget(null);
     setPortalIntent(null);
     setJoystickVector({ x: 0, y: 0 });
+    setCalendarSheetOpen(false);
     setMenuOpen(false);
     setActiveSpotId(null);
     setTravelStatus(`${portal.label} 도착`);
@@ -249,11 +257,11 @@ export function GameWorld({ profile }: GameWorldProps) {
 
   const handleJourneySelect = useCallback((zoneId: WorldZoneId) => {
     if (portalTransitionRef.current || zoneId === activeZoneIdRef.current) return;
-    setMenuOpen(false);
+    closeMenu();
     setActiveSpotId(null);
     setInputReleaseRequired(false);
     moveToZone(zoneId);
-  }, [moveToZone, setInputReleaseRequired]);
+  }, [closeMenu, moveToZone, setInputReleaseRequired]);
 
   const completePortalFadeOut = useCallback(() => {
     const transition = portalTransitionRef.current;
@@ -287,9 +295,9 @@ export function GameWorld({ profile }: GameWorldProps) {
 
   const openSpot = useCallback((spotId: SpotId) => {
     if (portalTransitionRef.current) return;
-    setMenuOpen(false);
+    closeMenu();
     setActiveSpotId(spotId);
-  }, []);
+  }, [closeMenu]);
 
   const openMenu = useCallback(() => {
     if (portalTransitionRef.current) return;
@@ -317,12 +325,16 @@ export function GameWorld({ profile }: GameWorldProps) {
   useEffect(() => {
     if (!menuOpen) return;
     menuCloseButtonRef.current?.focus();
+  }, [menuOpen]);
+
+  useEffect(() => {
+    if (!menuOpen) return;
     const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setMenuOpen(false);
+      if (event.key === "Escape" && !calendarSheetOpen) closeMenu();
     };
     document.addEventListener("keydown", handleEscape);
     return () => document.removeEventListener("keydown", handleEscape);
-  }, [menuOpen]);
+  }, [calendarSheetOpen, closeMenu, menuOpen]);
 
   useEffect(() => {
     const workerUrl = import.meta.env.VITE_WORKER_URL;
@@ -792,12 +804,27 @@ export function GameWorld({ profile }: GameWorldProps) {
 
       {menuOpen ? (
         <>
-          <button type="button" className="world-menu-backdrop" aria-label="초대장 메뉴 닫기" onClick={() => setMenuOpen(false)} />
-          <section className="world-menu-sheet" role="dialog" aria-modal="true" aria-label="초대장 바로가기">
+          <button type="button" className="world-menu-backdrop" aria-label="초대장 메뉴 닫기" onClick={closeMenu} />
+          <section
+            className="world-menu-sheet"
+            role="dialog"
+            aria-modal="true"
+            aria-label="초대장 바로가기"
+            aria-hidden={calendarSheetOpen || undefined}
+            onClickCapture={(event) => {
+              if (event.target instanceof Element) {
+                event.target.closest<HTMLButtonElement>("button")?.focus();
+              }
+            }}
+          >
             <header className="world-menu-sheet__header">
               <div><span>WEDDING MENU</span><h2>초대장 바로가기</h2></div>
-              <button ref={menuCloseButtonRef} type="button" aria-label="초대장 메뉴 닫기" onClick={() => setMenuOpen(false)}>×</button>
+              <button ref={menuCloseButtonRef} type="button" aria-label="초대장 메뉴 닫기" onClick={closeMenu}>×</button>
             </header>
+            <WeddingEventSummary
+              variant="detail"
+              onCalendarSheetOpenChange={setCalendarSheetOpen}
+            />
             <div className="world-menu-grid">
               {invitationContent.spots.map((item) => (
                 <button key={item.id} type="button" onClick={() => openSpot(item.id)}>{item.actionLabel}</button>

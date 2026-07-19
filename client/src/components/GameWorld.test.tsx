@@ -320,6 +320,77 @@ describe("GameWorld", () => {
     expect(screen.getByLabelText("우리 집 지도")).toBeInTheDocument();
   });
 
+  it("shows detailed wedding information in the invitation menu", () => {
+    render(<GameWorld profile={profile} />);
+    fireEvent.click(screen.getByRole("button", { name: "초대장 메뉴" }));
+    const menu = screen.getByRole("dialog", { name: "초대장 바로가기" });
+
+    expect(within(menu).getByText("오후 5시 10분 - 오후 6시 40분")).toBeInTheDocument();
+    expect(within(menu).getByText("MJ컨벤션 5층 파티오볼룸")).toBeInTheDocument();
+    expect(within(menu).getByText("경기 부천시 소사구 경인로 386")).toBeInTheDocument();
+    expect(within(menu).getByRole("button", { name: "주소 복사" })).toBeInTheDocument();
+  });
+
+  it("opens calendar choices from the menu without moving the player", () => {
+    render(<GameWorld profile={profile} />);
+    const player = screen.getByLabelText("하객1");
+
+    fireEvent.click(screen.getByRole("button", { name: "초대장 메뉴" }));
+    const menu = screen.getByRole("dialog", { name: "초대장 바로가기" });
+    fireEvent.click(within(menu).getByRole("button", { name: "캘린더 저장" }));
+
+    expect(screen.getByRole("dialog", { name: "캘린더 저장" })).toBeInTheDocument();
+    expect(menu).toHaveAttribute("aria-hidden", "true");
+    expect(player).toHaveStyle({ left: "285px", top: "555px" });
+  });
+
+  it("closes only the calendar sheet on Escape and restores its menu trigger", () => {
+    render(<GameWorld profile={profile} />);
+    fireEvent.click(screen.getByRole("button", { name: "초대장 메뉴" }));
+    const menu = screen.getByRole("dialog", { name: "초대장 바로가기" });
+    const calendarButton = within(menu).getByRole("button", { name: "캘린더 저장" });
+    fireEvent.click(calendarButton);
+
+    fireEvent.keyDown(document, { key: "Escape" });
+
+    expect(screen.queryByRole("dialog", { name: "캘린더 저장" })).not.toBeInTheDocument();
+    expect(screen.getByRole("dialog", { name: "초대장 바로가기" })).toBeInTheDocument();
+    expect(calendarButton).toHaveFocus();
+  });
+
+  it("clears calendar state when the invitation menu closes", () => {
+    render(<GameWorld profile={profile} />);
+    fireEvent.click(screen.getByRole("button", { name: "초대장 메뉴" }));
+    const menu = screen.getByRole("dialog", { name: "초대장 바로가기" });
+    fireEvent.click(within(menu).getByRole("button", { name: "캘린더 저장" }));
+
+    fireEvent.click(screen.getByRole("button", { name: "초대장 메뉴 닫기" }));
+
+    expect(screen.queryByRole("dialog", { name: "캘린더 저장" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("dialog", { name: "초대장 바로가기" })).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "초대장 메뉴" }));
+    expect(screen.getByRole("dialog", { name: "초대장 바로가기" })).not.toHaveAttribute("aria-hidden");
+  });
+
+  it("clears menu calendar state when portal arrival starts", () => {
+    render(<GameWorld profile={profile} />);
+    fireEvent.click(screen.getByRole("button", { name: "동네로 나가기" }));
+    fireEvent.click(screen.getByRole("button", { name: "초대장 메뉴" }));
+    const menu = screen.getByRole("dialog", { name: "초대장 바로가기" });
+    fireEvent.click(within(menu).getByRole("button", { name: "캘린더 저장" }));
+
+    advanceRouteToPortalArrival();
+
+    expect(screen.queryByRole("dialog", { name: "캘린더 저장" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("dialog", { name: "초대장 바로가기" })).not.toBeInTheDocument();
+    expect(screen.getByTestId("world-portal-transition")).toHaveAttribute("data-phase", "arrival");
+
+    advancePortalTransition();
+    fireEvent.click(screen.getByRole("button", { name: "초대장 메뉴" }));
+    expect(screen.getByRole("dialog", { name: "초대장 바로가기" })).not.toHaveAttribute("aria-hidden");
+  });
+
   it("does not change zones until the player reaches the clicked portal", () => {
     render(<GameWorld profile={profile} />);
     fireEvent.click(screen.getByRole("button", { name: "동네로 나가기" }));
