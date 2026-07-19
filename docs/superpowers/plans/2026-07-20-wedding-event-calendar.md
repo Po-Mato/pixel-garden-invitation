@@ -47,7 +47,7 @@
 
 ---
 
-### 작업 1: 공통 예식 데이터 계약
+### Task 1: 공통 예식 데이터 계약
 
 **파일:**
 - 수정: `shared/src/content.ts:1-72`
@@ -174,7 +174,7 @@ git commit -m "feat: add confirmed wedding event data"
 
 ---
 
-### 작업 2: 캘린더 포맷터와 표준 파일 생성
+### Task 2: 캘린더 포맷터와 표준 파일 생성
 
 **파일:**
 - 생성: `client/src/invitation/calendarEvent.ts`
@@ -431,7 +431,7 @@ git commit -m "feat: generate wedding calendar events"
 
 ---
 
-### 작업 3: 브라우저 동작과 공통 하단 선택창 접근성
+### Task 3: 브라우저 동작과 공통 하단 선택창 접근성
 
 **파일:**
 - 생성: `client/src/invitation/browserActions.ts`
@@ -632,7 +632,7 @@ git commit -m "feat: add accessible calendar browser actions"
 
 ---
 
-### 작업 4: 재사용 예식 요약과 캘린더 선택창
+### Task 4: 재사용 예식 요약과 캘린더 선택창
 
 **파일:**
 - 수정: `client/package.json`
@@ -974,7 +974,7 @@ git commit -m "feat: add reusable wedding event controls"
 
 ---
 
-### 작업 5: 입장 화면 요약 통합
+### Task 5: 입장 화면 요약 통합
 
 **파일:**
 - 수정: `client/src/components/EntryScreen.tsx:1-57`
@@ -1051,7 +1051,7 @@ git commit -m "feat: show wedding event before entry"
 
 ---
 
-### 작업 6: 초대장 메뉴 상세 정보 통합
+### Task 6: 초대장 메뉴 상세 정보 통합
 
 **파일:**
 - 수정: `client/src/components/GameWorld.tsx:1-819`
@@ -1200,7 +1200,7 @@ git commit -m "feat: add wedding details to invitation menu"
 
 ---
 
-### 작업 7: 반응형 스타일, 전체 검증 및 배포
+### Task 7: 반응형 스타일, 전체 검증 및 배포
 
 **파일:**
 - 수정: `client/src/styles.css`
