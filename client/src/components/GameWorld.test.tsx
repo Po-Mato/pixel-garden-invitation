@@ -344,6 +344,26 @@ describe("GameWorld", () => {
     expect(player).toHaveStyle({ left: "285px", top: "555px" });
   });
 
+  it("places the calendar sheet above the hidden menu layers", () => {
+    const { container } = render(<GameWorld profile={profile} />);
+    fireEvent.click(screen.getByRole("button", { name: "초대장 메뉴" }));
+    const menu = screen.getByRole("dialog", { name: "초대장 바로가기" });
+    const menuBackdrop = container.querySelector<HTMLElement>(".world-menu-backdrop");
+
+    expect(menuBackdrop?.style.zIndex).toBe("");
+    expect(menu.style.zIndex).toBe("");
+
+    fireEvent.click(within(menu).getByRole("button", { name: "캘린더 저장" }));
+
+    expect(menuBackdrop).toHaveStyle({ zIndex: "8" });
+    expect(menu).toHaveStyle({ zIndex: "9" });
+
+    fireEvent.keyDown(document, { key: "Escape" });
+
+    expect(menuBackdrop?.style.zIndex).toBe("");
+    expect(menu.style.zIndex).toBe("");
+  });
+
   it("closes only the calendar sheet on Escape and restores its menu trigger", () => {
     render(<GameWorld profile={profile} />);
     fireEvent.click(screen.getByRole("button", { name: "초대장 메뉴" }));

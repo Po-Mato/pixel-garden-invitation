@@ -804,13 +804,20 @@ export function GameWorld({ profile }: GameWorldProps) {
 
       {menuOpen ? (
         <>
-          <button type="button" className="world-menu-backdrop" aria-label="초대장 메뉴 닫기" onClick={closeMenu} />
+          <button
+            type="button"
+            className="world-menu-backdrop"
+            aria-label="초대장 메뉴 닫기"
+            style={{ zIndex: calendarSheetOpen ? 8 : undefined }}
+            onClick={closeMenu}
+          />
           <section
             className="world-menu-sheet"
             role="dialog"
             aria-modal="true"
             aria-label="초대장 바로가기"
             aria-hidden={calendarSheetOpen || undefined}
+            style={{ zIndex: calendarSheetOpen ? 9 : undefined }}
             onClickCapture={(event) => {
               if (event.target instanceof Element) {
                 event.target.closest<HTMLButtonElement>("button")?.focus();
