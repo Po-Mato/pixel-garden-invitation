@@ -370,13 +370,13 @@ export function GameWorld({ profile }: GameWorldProps) {
 
   const openSpot = useCallback((spotId: SpotId, restoreMenuButtonFocus = false) => {
     if (portalTransitionRef.current) return;
-    restoreMenuButtonFocusRef.current = restoreMenuButtonFocus && spotId === "directions";
-    if (spotId === "directions") pauseWorldInput();
+    restoreMenuButtonFocusRef.current = restoreMenuButtonFocus;
+    pauseWorldInput();
     closeMenu();
     setActiveSpotId(spotId);
   }, [closeMenu, pauseWorldInput]);
 
-  const closeDirectionsSpot = useCallback(() => {
+  const closeActiveSpot = useCallback(() => {
     const restoreMenuButtonFocus = restoreMenuButtonFocusRef.current;
     restoreMenuButtonFocusRef.current = false;
     setActiveSpotId(null);
@@ -953,9 +953,9 @@ export function GameWorld({ profile }: GameWorldProps) {
         </>
       ) : null}
       {activeSpotId === "directions" ? (
-        <DirectionsSheet onClose={closeDirectionsSpot} />
+        <DirectionsSheet onClose={closeActiveSpot} />
       ) : activeSpotId ? (
-        <SpotModal spotId={activeSpotId} nickname={profile.nickname} onClose={() => setActiveSpotId(null)} />
+        <SpotModal spotId={activeSpotId} nickname={profile.nickname} onClose={closeActiveSpot} />
       ) : null}
     </section>
   );

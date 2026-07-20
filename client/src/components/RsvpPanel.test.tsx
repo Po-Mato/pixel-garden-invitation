@@ -120,6 +120,33 @@ describe("RsvpPanel", () => {
     expect(screen.getByRole("status")).toHaveTextContent("이 기기에서 다시 수정하기 어려울 수 있습니다");
   });
 
+  it("persists the credential when creation succeeds after the sheet unmounts", async () => {
+    let resolveCreate: ((value: { response: RsvpRecord; credential: typeof credential }) => void) | undefined;
+    api.createRsvp.mockImplementation(() => new Promise((resolve) => { resolveCreate = resolve; }));
+    const { unmount } = render(<RsvpPanel />);
+    fillNewForm();
+    fireEvent.click(screen.getByRole("button", { name: "참석 답변 보내기" }));
+
+    unmount();
+    resolveCreate?.({ response, credential });
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(storage.saveRsvpCredential).toHaveBeenCalledWith("sample-garden", credential);
+  });
+
+  it.each([null, "2025-01-01"])("requires fresh consent when an editable response has consent version %s", async (consentVersion) => {
+    storage.loadRsvpCredential.mockReturnValue(credential);
+    api.fetchOwnedRsvp.mockResolvedValue({ ...response, consentVersion });
+    render(<RsvpPanel />);
+    await screen.findByRole("heading", { name: "보내주신 답변" });
+
+    fireEvent.click(screen.getByRole("button", { name: "답변 수정" }));
+
+    expect(screen.getByLabelText(/개인정보 수집/)).not.toBeChecked();
+    expect(screen.getByRole("button", { name: "수정 저장" })).toBeDisabled();
+  });
+
   it("preserves form values on create failure and blocks duplicate creation", async () => {
     let rejectCreate: ((reason?: unknown) => void) | undefined;
     api.createRsvp.mockImplementation(() => new Promise((_, reject) => { rejectCreate = reject; }));

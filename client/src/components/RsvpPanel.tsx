@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { invitationContent, type RsvpRecord, type RsvpSubmission } from "@wedding-game/shared";
 import { createRsvp, fetchOwnedRsvp, updateOwnedRsvp, WeddingApiError, type RsvpCredential } from "../api/weddingApi";
 import { clearRsvpCredential, loadRsvpCredential, saveRsvpCredential } from "../invitation/rsvpStorage";
-import { RsvpForm } from "./RsvpForm";
+import { RsvpForm, type RsvpFormInitialValue } from "./RsvpForm";
 
 type PanelState =
   | { kind: "loading" }
@@ -19,7 +19,7 @@ function invitationId(): string {
   return import.meta.env.VITE_INVITATION_ID ?? "sample-garden";
 }
 
-function editableValue(response: RsvpRecord): RsvpSubmission {
+function editableValue(response: RsvpRecord): RsvpFormInitialValue {
   return {
     side: response.side === "legacy" ? "groom" : response.side,
     guestName: response.guestName,
@@ -28,7 +28,7 @@ function editableValue(response: RsvpRecord): RsvpSubmission {
     partySize: response.partySize,
     mealStatus: response.mealStatus,
     note: response.note,
-    consentVersion: invitationContent.event.rsvp.consentVersion
+    consentVersion: response.consentVersion
   };
 }
 
@@ -89,9 +89,9 @@ export function RsvpPanel() {
   async function handleCreate(payload: RsvpSubmission) {
     try {
       const result = await createRsvp(payload);
-      if (!mountedRef.current) return;
       credentialRef.current = result.credential;
       const saved = saveRsvpCredential(id, result.credential);
+      if (!mountedRef.current) return;
       setNotice(saved ? "답변이 저장되었습니다." : "답변은 저장되었지만 이 기기에서 다시 수정하기 어려울 수 있습니다.");
       setState({ kind: "summary", response: result.response });
     } catch (error) {

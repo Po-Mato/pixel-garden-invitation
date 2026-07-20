@@ -8,16 +8,20 @@ export type RsvpPolicy = {
 };
 
 type RsvpFormProps = {
-  initialValue?: RsvpSubmission;
+  initialValue?: RsvpFormInitialValue;
   policy: RsvpPolicy;
   submitLabel: string;
   onSubmit: (payload: RsvpSubmission) => Promise<void>;
 };
 
+export type RsvpFormInitialValue = Omit<RsvpSubmission, "consentVersion"> & {
+  consentVersion: string | null;
+};
+
 function formatPhone(value: string): string {
   const digits = normalizeRsvpPhone(value).slice(0, 15);
   if (digits.startsWith("010") && digits.length > 7) {
-    return `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7, 11)}`;
+    return `${digits.slice(0, 3)}-${digits.slice(3, -4)}-${digits.slice(-4)}`;
   }
   if (digits.length > 7) return `${digits.slice(0, 3)}-${digits.slice(3, digits.length - 4)}-${digits.slice(-4)}`;
   if (digits.length > 3) return `${digits.slice(0, 3)}-${digits.slice(3)}`;

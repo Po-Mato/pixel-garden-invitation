@@ -132,4 +132,19 @@ describe("RsvpForm", () => {
     resolveSubmit?.();
     await Promise.resolve();
   });
+
+  it.each(Array.from({ length: 8 }, (_, index) => "010123456789012".slice(0, index + 8)))(
+    "preserves every digit in an 8-15 digit 010 phone number: %s",
+    async (phone) => {
+      const onSubmit = vi.fn().mockResolvedValue(undefined);
+      render(<RsvpForm policy={policy} submitLabel="보내기" onSubmit={onSubmit} />);
+      fireEvent.change(screen.getByLabelText("이름"), { target: { value: "김하객" } });
+      fireEvent.change(screen.getByLabelText("연락처"), { target: { value: phone } });
+      fireEvent.click(screen.getByLabelText(/개인정보 수집/));
+      fireEvent.click(screen.getByRole("button", { name: "보내기" }));
+
+      await waitFor(() => expect(onSubmit).toHaveBeenCalledWith(expect.objectContaining({ phone })));
+      expect(screen.getByLabelText("연락처").getAttribute("value")?.replace(/\D/g, "")).toBe(phone);
+    }
+  );
 });
