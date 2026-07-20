@@ -30,7 +30,7 @@ type CreateDbOptions = {
   writeError?: Error;
 };
 
-const adminPasswordHash = "pbkdf2-sha256$210000$MTIzNDU2Nzg5MDEyMzQ1Ng$phubAHgXidq3Bl2dnyCVT5BhzrMiDhR5bKZqTmIWi2s";
+const adminPasswordHash = "pbkdf2-sha256$100000$MTIzNDU2Nzg5MDEyMzQ1Ng$YEAsDXNqEF4BcOvVtfmXmFhoK-UtjKo4y180j0n9IgU";
 
 function createDb(options: CreateDbOptions = {}) {
   const invitation = options.invitation === undefined ? { id: "sample-garden" } : options.invitation;

@@ -51,7 +51,7 @@ describe("password verification", () => {
     await expect(
       verifyPassword(
         "correct horse battery staple",
-        "pbkdf2-sha256$210000$MTIzNDU2Nzg5MDEyMzQ1Ng$phubAHgXidq3Bl2dnyCVT5BhzrMiDhR5bKZqTmIWi2s"
+        "pbkdf2-sha256$100000$MTIzNDU2Nzg5MDEyMzQ1Ng$YEAsDXNqEF4BcOvVtfmXmFhoK-UtjKo4y180j0n9IgU"
       )
     ).resolves.toBe(true);
   });
@@ -60,23 +60,23 @@ describe("password verification", () => {
     await expect(
       verifyPassword(
         "incorrect password",
-        "pbkdf2-sha256$210000$MTIzNDU2Nzg5MDEyMzQ1Ng$phubAHgXidq3Bl2dnyCVT5BhzrMiDhR5bKZqTmIWi2s"
+        "pbkdf2-sha256$100000$MTIzNDU2Nzg5MDEyMzQ1Ng$YEAsDXNqEF4BcOvVtfmXmFhoK-UtjKo4y180j0n9IgU"
       )
     ).resolves.toBe(false);
     await expect(verifyPassword("correct horse battery staple", "pbkdf2-sha256$1$salt$hash")).resolves.toBe(false);
   });
 
   it.each([
-    "pbkdf2-sha256$210000",
-    "pbkdf2-sha256$210000$$phubAHgXidq3Bl2dnyCVT5BhzrMiDhR5bKZqTmIWi2s",
-    "pbkdf2-sha256$210000$MTIzNDU2Nzg5MDEyMzQ1Ng"
+    "pbkdf2-sha256$100000",
+    "pbkdf2-sha256$100000$$YEAsDXNqEF4BcOvVtfmXmFhoK-UtjKo4y180j0n9IgU",
+    "pbkdf2-sha256$100000$MTIzNDU2Nzg5MDEyMzQ1Ng"
   ])("returns false for a PBKDF2 value with missing fields", async (encodedHash) => {
     await expect(verifyPassword("correct horse battery staple", encodedHash)).resolves.toBe(false);
   });
 
   it("returns false for runtime malformed inputs", async () => {
     await expect(verifyPassword("correct horse battery staple", null as unknown as string)).resolves.toBe(false);
-    await expect(verifyPassword(null as unknown as string, "pbkdf2-sha256$210000$salt$hash")).resolves.toBe(false);
+    await expect(verifyPassword(null as unknown as string, "pbkdf2-sha256$100000$salt$hash")).resolves.toBe(false);
   });
 });
 

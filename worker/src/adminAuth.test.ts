@@ -4,7 +4,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { attemptAdminLogin, type AdminLoginInput } from "./adminAuth";
 import * as security from "./security";
 
-const passwordHash = "pbkdf2-sha256$210000$MTIzNDU2Nzg5MDEyMzQ1Ng$phubAHgXidq3Bl2dnyCVT5BhzrMiDhR5bKZqTmIWi2s";
+const passwordHash = "pbkdf2-sha256$100000$MTIzNDU2Nzg5MDEyMzQ1Ng$YEAsDXNqEF4BcOvVtfmXmFhoK-UtjKo4y180j0n9IgU";
 
 type SqliteStatement = {
   get(...parameters: unknown[]): unknown;

@@ -463,7 +463,7 @@ pnpm --filter @wedding-game/worker test -- security.test.ts validation.test.ts
 export type AdminClaims = { invitationId: string; expiresAt: number };
 ```
 
-PBKDF2 secret 문자열 형식은 `pbkdf2-sha256$210000$<salt-base64url>$<hash-base64url>`로 고정한다. 비교는 두 byte array 전체를 XOR 누적하는 상수 시간 비교를 사용한다. `scripts/hash-rsvp-admin-password.mjs`는 `RSVP_ADMIN_PASSWORD` 환경값이 12자 이상인지 검사하고 16 byte 무작위 salt와 210,000회 PBKDF2-SHA256으로 같은 형식의 한 줄만 출력한다. 원문 비밀번호는 출력하거나 파일에 기록하지 않는다. `worker/src/validation.ts`의 RSVP parser는 공통 `parseRsvpSubmission`에 위임하고 기존 방명록 parser는 유지한다.
+PBKDF2 secret 문자열 형식은 `pbkdf2-sha256$100000$<salt-base64url>$<hash-base64url>`로 고정한다. Cloudflare Workers 운영 런타임의 PBKDF2 상한에 맞춰 100,000회를 사용하고, 비교는 두 byte array 전체를 XOR 누적하는 상수 시간 비교를 사용한다. `scripts/hash-rsvp-admin-password.mjs`는 `RSVP_ADMIN_PASSWORD` 환경값이 12자 이상인지 검사하고 16 byte 무작위 salt와 100,000회 PBKDF2-SHA256으로 같은 형식의 한 줄만 출력한다. 원문 비밀번호는 출력하거나 파일에 기록하지 않는다. `worker/src/validation.ts`의 RSVP parser는 공통 `parseRsvpSubmission`에 위임하고 기존 방명록 parser는 유지한다.
 
 ```js
 const password = process.env.RSVP_ADMIN_PASSWORD;
@@ -481,13 +481,13 @@ const material = await crypto.subtle.importKey(
   ["deriveBits"]
 );
 const bits = await crypto.subtle.deriveBits(
-  { name: "PBKDF2", hash: "SHA-256", salt, iterations: 210_000 },
+  { name: "PBKDF2", hash: "SHA-256", salt, iterations: 100_000 },
   material,
   256
 );
 const encodedSalt = Buffer.from(salt).toString("base64url");
 const encodedHash = Buffer.from(bits).toString("base64url");
-process.stdout.write(`pbkdf2-sha256$210000$${encodedSalt}$${encodedHash}`);
+process.stdout.write(`pbkdf2-sha256$100000$${encodedSalt}$${encodedHash}`);
 ```
 
 - [ ] **Step 4: 보안과 검증 테스트 통과 확인**

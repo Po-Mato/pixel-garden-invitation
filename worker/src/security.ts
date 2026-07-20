@@ -5,6 +5,7 @@ export type AdminClaims = {
 
 const encoder = new TextEncoder();
 const decoder = new TextDecoder("utf-8", { fatal: true });
+const passwordIterations = 100_000;
 
 function encodeBase64Url(bytes: Uint8Array): string {
   let binary = "";
@@ -82,7 +83,7 @@ export async function verifyPassword(password: string, encodedHash: string): Pro
   const [algorithm, iterations, encodedSalt, encodedDerivedKey, ...extra] = encodedHash.split("$");
   if (
     algorithm !== "pbkdf2-sha256"
-    || iterations !== "210000"
+    || iterations !== String(passwordIterations)
     || typeof encodedSalt !== "string"
     || typeof encodedDerivedKey !== "string"
     || extra.length > 0
@@ -95,7 +96,7 @@ export async function verifyPassword(password: string, encodedHash: string): Pro
   try {
     const key = await crypto.subtle.importKey("raw", encoder.encode(password), "PBKDF2", false, ["deriveBits"]);
     const derivedKey = new Uint8Array(await crypto.subtle.deriveBits(
-      { name: "PBKDF2", hash: "SHA-256", salt: copyToArrayBuffer(salt), iterations: 210_000 },
+      { name: "PBKDF2", hash: "SHA-256", salt: copyToArrayBuffer(salt), iterations: passwordIterations },
       key,
       256
     ));
