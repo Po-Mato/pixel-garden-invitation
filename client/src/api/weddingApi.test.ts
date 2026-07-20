@@ -144,11 +144,31 @@ describe("weddingApi", () => {
     await expect(createRsvp(submission)).rejects.toBeInstanceOf(WeddingApiError);
   });
 
+  it("uses request_failed for empty or non-JSON error bodies and only accepts integer Retry-After delays", async () => {
+    vi.stubEnv("VITE_WORKER_URL", "https://worker.test");
+    vi.stubGlobal("fetch", vi.fn()
+      .mockResolvedValueOnce(new Response(null, { status: 429, headers: { "retry-after": "3.5" } }))
+      .mockResolvedValueOnce(new Response("temporarily unavailable", { status: 503, headers: { "retry-after": "-1" } })));
+
+    const { createRsvp } = await import("./weddingApi");
+
+    await expect(createRsvp(submission)).rejects.toEqual(expect.objectContaining({
+      status: 429,
+      code: "request_failed",
+      retryAfterSeconds: undefined
+    }));
+    await expect(createRsvp(submission)).rejects.toEqual(expect.objectContaining({
+      status: 503,
+      code: "request_failed",
+      retryAfterSeconds: undefined
+    }));
+  });
+
   it("uses Bearer auth for admin session data and deletes", async () => {
     vi.stubEnv("VITE_WORKER_URL", "https://worker.test");
     vi.stubEnv("VITE_INVITATION_ID", "sample-garden");
     const fetchMock = vi.fn()
-      .mockResolvedValueOnce(jsonResponse({ token: "admin-token", expiresAt: "2026-07-21T00:00:00.000Z" }))
+      .mockResolvedValueOnce(jsonResponse({ token: "admin-token", expiresAt: 1_784_592_000_000 }))
       .mockResolvedValueOnce(jsonResponse({ summary: {}, responses: [] }))
       .mockResolvedValueOnce(new Response(null, { status: 204 }));
     vi.stubGlobal("fetch", fetchMock);

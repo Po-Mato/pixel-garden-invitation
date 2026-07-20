@@ -32,7 +32,7 @@ export type RsvpUpdatePayload = RsvpSubmission & {
 
 export type AdminSession = {
   token: string;
-  expiresAt: string;
+  expiresAt: number;
 };
 
 export class WeddingApiError extends Error {
@@ -87,8 +87,9 @@ async function postJson(path: string, body: unknown): Promise<void> {
 }
 
 function parseRetryAfterSeconds(value: string | null): number | undefined {
-  if (!value || !/^\d+(?:\.\d+)?$/.test(value.trim())) return undefined;
-  const seconds = Number(value);
+  const trimmed = value?.trim();
+  if (!trimmed || !/^\d+$/.test(trimmed)) return undefined;
+  const seconds = Number(trimmed);
   return Number.isFinite(seconds) && seconds >= 0 ? seconds : undefined;
 }
 
@@ -176,6 +177,9 @@ export async function deleteAdminRsvp(token: string, rsvpId: string): Promise<vo
   throw new WeddingApiError(response.status, errorCode(body), parseRetryAfterSeconds(response.headers.get("retry-after")));
 }
 
+/**
+ * @deprecated Task 8 replaces this transitional form API with createRsvp and a complete RsvpSubmission.
+ */
 export function submitRsvp(payload: RsvpPayload): Promise<void> {
   return postJson(`/api/invitations/${getInvitationId()}/rsvps`, payload);
 }

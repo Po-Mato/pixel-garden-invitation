@@ -27,6 +27,10 @@ function nonEmptyString(value: unknown): value is string {
   return typeof value === "string" && value.length > 0;
 }
 
+function isEpochMilliseconds(value: unknown): value is number {
+  return typeof value === "number" && Number.isSafeInteger(value) && value >= 0;
+}
+
 function parseCredential(value: unknown): RsvpCredential | null {
   return isRecord(value) && nonEmptyString(value.rsvpId) && nonEmptyString(value.editToken)
     ? { rsvpId: value.rsvpId, editToken: value.editToken }
@@ -34,7 +38,7 @@ function parseCredential(value: unknown): RsvpCredential | null {
 }
 
 function parseAdminSession(value: unknown): AdminSession | null {
-  return isRecord(value) && nonEmptyString(value.token) && nonEmptyString(value.expiresAt)
+  return isRecord(value) && nonEmptyString(value.token) && isEpochMilliseconds(value.expiresAt)
     ? { token: value.token, expiresAt: value.expiresAt }
     : null;
 }
@@ -97,7 +101,14 @@ export function clearRsvpCredential(invitationId: string): boolean {
 }
 
 export function loadAdminSession(invitationId: string): AdminSession | null {
-  return load("sessionStorage", adminSessionKey(invitationId), parseAdminSession);
+  const key = adminSessionKey(invitationId);
+  const session = load("sessionStorage", key, parseAdminSession);
+  if (!session) return null;
+  if (session.expiresAt <= Date.now()) {
+    clear("sessionStorage", key);
+    return null;
+  }
+  return session;
 }
 
 export function saveAdminSession(invitationId: string, session: AdminSession): boolean {
