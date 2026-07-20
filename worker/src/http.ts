@@ -24,11 +24,6 @@ function createWriteLimiter(): MemoryRateLimiter {
 
 let writeLimiter: WriteLimiter = createWriteLimiter();
 
-const corsHeaders = {
-  "access-control-allow-methods": "GET,POST,PATCH,DELETE,OPTIONS",
-  "access-control-allow-headers": "content-type,authorization"
-};
-
 function json(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body), {
     status,
@@ -63,10 +58,14 @@ function isSensitivePath(pathname: string): boolean {
   return /^\/api\/invitations\/[^/]+\/(?:rsvps|admin)(?:\/|$)/.test(pathname);
 }
 
-function addCorsHeaders(response: Response, origin: string | null): Response {
+function addCorsHeaders(response: Response, origin: string | null, preflight = false): Response {
+  response.headers.set("vary", "Origin");
   if (origin) {
     response.headers.set("access-control-allow-origin", origin);
-    response.headers.set("vary", "Origin");
+    if (preflight) {
+      response.headers.set("access-control-allow-methods", "GET,POST,PATCH,DELETE,OPTIONS");
+      response.headers.set("access-control-allow-headers", "content-type,authorization");
+    }
   }
   return response;
 }
@@ -395,10 +394,9 @@ export async function handleApiRequest(
     return addCorsHeaders(new Response(null, {
       status: 204,
       headers: {
-        ...corsHeaders,
         ...(sensitive ? { "cache-control": "no-store" } : {})
       }
-    }), origin);
+    }), origin, true);
   }
 
   const response = await handleApiRequestWithoutCors(request, env, clientKey, options);

@@ -1,9 +1,43 @@
+import { createRequire } from "node:module";
 import { describe, expect, it, vi } from "vitest";
 
 import { cleanupExpiredRsvpData } from "./cleanup";
 
 type Invitation = { id: string; rsvpDeleteAt: string | null };
 type Attempt = { id: string; windowStartedAt: string };
+
+type SqliteStatement = {
+  get(...parameters: unknown[]): unknown;
+  run(...parameters: unknown[]): { changes: number | bigint };
+};
+
+type SqliteDatabase = {
+  exec(sql: string): void;
+  prepare(sql: string): SqliteStatement;
+  close(): void;
+};
+
+const { DatabaseSync } = createRequire(import.meta.url)("node:sqlite") as {
+  DatabaseSync: new (path: string) => SqliteDatabase;
+};
+
+function createD1Adapter(database: SqliteDatabase): D1Database {
+  return {
+    prepare(sql: string) {
+      const statement = database.prepare(sql);
+      return {
+        bind(...values: unknown[]) {
+          return {
+            run: async () => {
+              const result = statement.run(...values);
+              return { success: true, meta: { changes: Number(result.changes) } };
+            }
+          } as unknown as D1PreparedStatement;
+        }
+      } as D1PreparedStatement;
+    }
+  } as D1Database;
+}
 
 function createDb(invitations: Invitation[], rsvpInvitationIds: string[], attempts: Attempt[]) {
   const rsvps = [...rsvpInvitationIds];
@@ -36,6 +70,32 @@ function createDb(invitations: Invitation[], rsvpInvitationIds: string[], attemp
 }
 
 describe("cleanupExpiredRsvpData", () => {
+  it("deletes an RSVP when rsvp_delete_at exactly equals now in SQLite", async () => {
+    const database = new DatabaseSync(":memory:");
+
+    try {
+      database.exec(`
+        CREATE TABLE invitations (id TEXT PRIMARY KEY, rsvp_delete_at TEXT);
+        CREATE TABLE rsvps (id TEXT PRIMARY KEY, invitation_id TEXT NOT NULL);
+        CREATE TABLE admin_login_attempts (window_started_at TEXT NOT NULL);
+        INSERT INTO invitations VALUES
+          ('boundary', '2027-06-01T00:00:00.000Z'),
+          ('future', '2027-06-01T00:00:00.001Z');
+        INSERT INTO rsvps VALUES ('rsvp_boundary', 'boundary'), ('rsvp_future', 'future');
+      `);
+
+      await expect(cleanupExpiredRsvpData(
+        createD1Adapter(database),
+        new Date("2027-06-01T00:00:00.000Z")
+      )).resolves.toEqual({ rsvps: 1, attempts: 0 });
+
+      expect(database.prepare("SELECT id FROM rsvps WHERE id = ?").get("rsvp_boundary")).toBeUndefined();
+      expect(database.prepare("SELECT id FROM rsvps WHERE id = ?").get("rsvp_future")).toEqual({ id: "rsvp_future" });
+    } finally {
+      database.close();
+    }
+  });
+
   it("keeps RSVP data immediately before its deletion time", async () => {
     const { db, rsvps } = createDb(
       [{ id: "sample-garden", rsvpDeleteAt: "2027-05-31T14:59:59.000Z" }],

@@ -419,7 +419,25 @@ describe("handleApiRequest", () => {
 
     expect(response.status).toBe(201);
     expect(response.headers.get("access-control-allow-origin")).toBeNull();
+    expect(response.headers.get("vary")).toBe("Origin");
     expect(response.headers.get("cache-control")).toBe("no-store");
+  });
+
+  it("does not add access-control headers to origin-less OPTIONS requests", async () => {
+    const { db, prepare } = createDb();
+
+    const response = await handleApiRequest(new Request(
+      "https://worker.test/api/invitations/sample-garden/rsvps",
+      { method: "OPTIONS" }
+    ), apiEnv(db), "server-options-client");
+
+    expect(response.status).toBe(204);
+    expect(response.headers.get("vary")).toBe("Origin");
+    expect(response.headers.get("access-control-allow-origin")).toBeNull();
+    expect(response.headers.get("access-control-allow-methods")).toBeNull();
+    expect(response.headers.get("access-control-allow-headers")).toBeNull();
+    expect(response.headers.get("cache-control")).toBe("no-store");
+    expect(prepare).not.toHaveBeenCalled();
   });
 
   it("marks admin preflight responses as no-store", async () => {
