@@ -44,7 +44,7 @@ function createDb() {
               : { ...existing, attempts: existing.attempts + 1 };
             attempts.set(key, next);
             reservedAttempts.push(next.attempts);
-            return { attempts: next.attempts };
+            return { attempts: next.attempts, window_started_at: next.window_started_at };
           }
           return null;
         },
@@ -145,7 +145,11 @@ describe("attemptAdminLogin", () => {
       await expect(attemptAdminLogin(db, wrong)).resolves.toEqual({ ok: false, reason: "invalid_credentials" });
     }
 
-    await expect(attemptAdminLogin(db, loginInput())).resolves.toEqual({ ok: false, reason: "rate_limited" });
+    await expect(attemptAdminLogin(db, loginInput({ now: wrong.now + 30_001 }))).resolves.toEqual({
+      ok: false,
+      reason: "rate_limited",
+      retryAfterSeconds: 570
+    });
     await expect(attemptAdminLogin(db, loginInput({ clientKey: "198.51.100.20" }))).resolves.toMatchObject({ ok: true });
   });
 
@@ -171,7 +175,7 @@ describe("attemptAdminLogin", () => {
     expect(reservationSql.filter((sql) => /SELECT window_started_at, attempts/i.test(sql))).toHaveLength(0);
     expect(reservationSql.every((sql) =>
       /INSERT INTO admin_login_attempts/i.test(sql)
-      ? /ON CONFLICT[\s\S]*RETURNING attempts/i.test(sql)
+      ? /ON CONFLICT[\s\S]*RETURNING attempts, window_started_at/i.test(sql)
       : /DELETE FROM admin_login_attempts/i.test(sql)
     )).toBe(true);
   });
@@ -186,7 +190,11 @@ describe("attemptAdminLogin", () => {
       await expect(attemptAdminLogin(db, loginInput({ password: "wrong again" })))
         .resolves.toEqual({ ok: false, reason: "invalid_credentials" });
     }
-    await expect(attemptAdminLogin(db, loginInput())).resolves.toEqual({ ok: false, reason: "rate_limited" });
+    await expect(attemptAdminLogin(db, loginInput())).resolves.toEqual({
+      ok: false,
+      reason: "rate_limited",
+      retryAfterSeconds: 600
+    });
   });
 
   it("starts a new half-open window exactly ten minutes after the prior start", async () => {

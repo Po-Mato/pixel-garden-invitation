@@ -1,3 +1,4 @@
+import { StrictMode } from "react";
 import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { RsvpAdminResult } from "@wedding-game/shared";
@@ -117,6 +118,40 @@ describe("RsvpAdminPage", () => {
     expect(api.createAdminSession).not.toHaveBeenCalled();
   });
 
+  it.each(["login", "restore"])("expires an active %s session at expiresAt and clears all admin data", async (source) => {
+    vi.useFakeTimers();
+    vi.setSystemTime(1_800_000_000_000);
+    const expiringSession = { token: "expiring-token", expiresAt: Date.now() + 2_000 };
+    if (source === "restore") storage.loadAdminSession.mockReturnValue(expiringSession);
+    else api.createAdminSession.mockResolvedValue(expiringSession);
+    api.fetchAdminRsvps.mockResolvedValue(result);
+
+    render(<RsvpAdminPage />);
+    if (source === "login") {
+      fireEvent.change(screen.getByLabelText("관리자 비밀번호"), { target: { value: "secret" } });
+      fireEvent.click(screen.getByRole("button", { name: "로그인" }));
+    }
+    await act(async () => { await Promise.resolve(); await Promise.resolve(); });
+    expect(screen.getByRole("button", { name: "CSV 저장" })).toBeInTheDocument();
+
+    act(() => { vi.advanceTimersByTime(1_999); });
+    expect(screen.getByText("김하객")).toBeInTheDocument();
+    act(() => { vi.advanceTimersByTime(1); });
+
+    expect(screen.getByRole("button", { name: "로그인" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "CSV 저장" })).not.toBeInTheDocument();
+    expect(screen.queryByText("김하객")).not.toBeInTheDocument();
+    expect(storage.clearAdminSession).toHaveBeenCalledWith("sample-garden");
+  });
+
+  it("restores and loads the session under React StrictMode without a busy-ref deadlock", async () => {
+    storage.loadAdminSession.mockReturnValue(session);
+    render(<StrictMode><RsvpAdminPage /></StrictMode>);
+
+    expect(await screen.findByText("김하객")).toBeInTheDocument();
+    expect(api.fetchAdminRsvps).toHaveBeenCalledTimes(2);
+  });
+
   it("lets an authenticated administrator retry an initial fetch failure", async () => {
     api.fetchAdminRsvps.mockRejectedValueOnce(new Error("network")).mockResolvedValueOnce(result);
     render(<RsvpAdminPage />);
@@ -143,6 +178,17 @@ describe("RsvpAdminPage", () => {
     expect(screen.getByLabelText("관리자 비밀번호")).toBeEnabled();
     fireEvent.change(screen.getByLabelText("관리자 비밀번호"), { target: { value: "retry" } });
     expect(screen.getByRole("button", { name: "로그인" })).toBeEnabled();
+  });
+
+  it("does not invent a one-second lockout when a malformed 429 omits Retry-After", async () => {
+    api.createAdminSession.mockRejectedValue(new WeddingApiError(429, "rate_limited"));
+    render(<RsvpAdminPage />);
+    fireEvent.change(screen.getByLabelText("관리자 비밀번호"), { target: { value: "wrong" } });
+    fireEvent.click(screen.getByRole("button", { name: "로그인" }));
+
+    expect(await screen.findByRole("alert")).toHaveTextContent("잠시 후 다시 시도");
+    expect(screen.queryByText(/1초 후/)).not.toBeInTheDocument();
+    expect(screen.getByLabelText("관리자 비밀번호")).toBeEnabled();
   });
 
   it("displays the complete server summary without changing it for filters", async () => {
@@ -175,6 +221,20 @@ describe("RsvpAdminPage", () => {
     expect(screen.getByText("옛 하객")).toBeInTheDocument();
   });
 
+  it("uses NFKC names and common phone normalization for punctuation and country-code searches", async () => {
+    api.fetchAdminRsvps.mockResolvedValue({
+      ...result,
+      responses: [{ ...result.responses[1], guestName: "Ｌｅｅ　Ｇｕｅｓｔ", phone: "+82.10.9999.8888" }]
+    });
+    render(<RsvpAdminPage />);
+    await login();
+
+    fireEvent.change(screen.getByLabelText("검색"), { target: { value: "lee guest" } });
+    expect(screen.getAllByText((_, element) => element?.textContent === "Ｌｅｅ　Ｇｕｅｓｔ").length).toBeGreaterThan(0);
+    fireEvent.change(screen.getByLabelText("검색"), { target: { value: "+82 (10) 9999-8888" } });
+    expect(screen.getAllByText((_, element) => element?.textContent === "Ｌｅｅ　Ｇｕｅｓｔ").length).toBeGreaterThan(0);
+  });
+
   it("shows an explicit empty result state", async () => {
     render(<RsvpAdminPage />);
     await login();
@@ -198,6 +258,27 @@ describe("RsvpAdminPage", () => {
     fireEvent.click(screen.getByRole("button", { name: "삭제" }));
     await waitFor(() => expect(api.deleteAdminRsvp).toHaveBeenCalledWith("admin-token", "1"));
     await waitFor(() => expect(api.fetchAdminRsvps).toHaveBeenCalledTimes(2));
+    expect(screen.queryByText("김하객")).not.toBeInTheDocument();
+  });
+
+  it("force-refetches after deletion while an older GET is pending and discards the stale GET", async () => {
+    const oldRefresh = deferred<RsvpAdminResult>();
+    const fresh = { ...result, summary: { ...result.summary, responseCount: 3 }, responses: result.responses.slice(1) };
+    api.fetchAdminRsvps
+      .mockResolvedValueOnce(result)
+      .mockReturnValueOnce(oldRefresh.promise)
+      .mockResolvedValueOnce(fresh);
+    render(<RsvpAdminPage />);
+    await login();
+
+    fireEvent.click(screen.getByRole("button", { name: "새로고침" }));
+    fireEvent.click(screen.getByRole("button", { name: "김하객 답변 삭제" }));
+    fireEvent.click(screen.getByRole("button", { name: "삭제" }));
+
+    await waitFor(() => expect(api.fetchAdminRsvps).toHaveBeenCalledTimes(3));
+    expect(screen.queryByText("김하객")).not.toBeInTheDocument();
+    oldRefresh.resolve(result);
+    await act(async () => { await Promise.resolve(); });
     expect(screen.queryByText("김하객")).not.toBeInTheDocument();
   });
 
@@ -230,6 +311,59 @@ describe("RsvpAdminPage", () => {
     expect(api.deleteAdminRsvp).toHaveBeenCalledTimes(1);
     pendingDelete.resolve(undefined);
     await waitFor(() => expect(api.fetchAdminRsvps).toHaveBeenCalledTimes(2));
+  });
+
+  it("traps dialog focus, cancels with Escape, hides the shell, and restores the delete trigger", async () => {
+    render(<RsvpAdminPage />);
+    await login();
+    const trigger = screen.getByRole("button", { name: "김하객 답변 삭제" });
+    trigger.focus();
+    fireEvent.click(trigger);
+
+    const dialog = screen.getByRole("dialog", { name: "답변 삭제 확인" });
+    const cancel = screen.getByRole("button", { name: "취소" });
+    const remove = screen.getByRole("button", { name: "삭제" });
+    expect(cancel).toHaveFocus();
+    expect(document.querySelector(".rsvp-admin-shell")).toHaveAttribute("inert");
+    expect(document.querySelector(".rsvp-admin-shell")).toHaveAttribute("aria-hidden", "true");
+
+    fireEvent.keyDown(dialog, { key: "Tab", shiftKey: true });
+    expect(remove).toHaveFocus();
+    fireEvent.keyDown(dialog, { key: "Tab" });
+    expect(cancel).toHaveFocus();
+    fireEvent.keyDown(dialog, { key: "Escape" });
+
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(trigger).toHaveFocus();
+    expect(document.querySelector(".rsvp-admin-shell")).not.toHaveAttribute("inert");
+  });
+
+  it("does not close the deletion dialog with Escape while deletion is pending", async () => {
+    const pendingDelete = deferred<void>();
+    api.deleteAdminRsvp.mockReturnValue(pendingDelete.promise);
+    render(<RsvpAdminPage />);
+    await login();
+    fireEvent.click(screen.getByRole("button", { name: "김하객 답변 삭제" }));
+    fireEvent.click(screen.getByRole("button", { name: "삭제" }));
+
+    fireEvent.keyDown(screen.getByRole("dialog"), { key: "Escape" });
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+    pendingDelete.resolve(undefined);
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+    expect(screen.getByRole("heading", { name: "전체 답변" })).toHaveFocus();
+  });
+
+  it("announces refresh progress and completion for an existing result", async () => {
+    const refresh = deferred<RsvpAdminResult>();
+    api.fetchAdminRsvps.mockResolvedValueOnce(result).mockReturnValueOnce(refresh.promise);
+    render(<RsvpAdminPage />);
+    await login();
+
+    fireEvent.click(screen.getByRole("button", { name: "새로고침" }));
+    expect(screen.getByRole("status")).toHaveTextContent("새로고침하고 있습니다");
+    refresh.resolve(result);
+
+    await waitFor(() => expect(screen.getByRole("status")).toHaveTextContent("새로고침을 완료했습니다"));
   });
 
   it("exports the complete server result regardless of list filters", async () => {

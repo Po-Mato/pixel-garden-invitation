@@ -46,6 +46,18 @@ describe("private RSVP administration layout", () => {
     expect(styles).toContain(".rsvp-admin-page input:focus-visible");
     expect(styles).toContain(".rsvp-admin-page select:focus-visible");
   });
+
+  it("respects every safe-area inset on portrait and short landscape screens", () => {
+    const pageRule = styles.match(/\.rsvp-admin-page\s*\{([^}]*)}/s)?.[1] ?? "";
+    const narrowBlock = styles.match(/@media \(max-width:\s*390px\)\s*\{([\s\S]*?)\n}/)?.[1] ?? "";
+    const landscapeBlock = styles.match(/@media \(orientation: landscape\) and \(max-height: 500px\)\s*\{([\s\S]*?)\n}/)?.[1] ?? "";
+
+    for (const inset of ["top", "right", "bottom", "left"]) {
+      expect(pageRule).toContain(`env(safe-area-inset-${inset})`);
+      expect(narrowBlock).toContain(`env(safe-area-inset-${inset})`);
+      expect(landscapeBlock).toContain(`env(safe-area-inset-${inset})`);
+    }
+  });
 });
 
 describe("entry screen layout", () => {

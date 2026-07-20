@@ -55,11 +55,11 @@ function createDb(options: CreateDbOptions = {}) {
             const now = String(values[2]);
             const cutoff = String(values[3]);
             const existing = adminAttempts.get(key);
-            const next = !existing || existing.window_started_at < cutoff
+            const next = !existing || existing.window_started_at <= cutoff
               ? { window_started_at: now, attempts: 1 }
               : { ...existing, attempts: existing.attempts + 1 };
             adminAttempts.set(key, next);
-            return { attempts: next.attempts };
+            return { attempts: next.attempts, window_started_at: next.window_started_at };
           }
 
           if (/SELECT config_json, rsvp_deadline, rsvp_delete_at\s+FROM invitations/i.test(sql)) {
@@ -288,6 +288,31 @@ describe("handleApiRequest", () => {
       token: expect.any(String),
       expiresAt: expect.any(Number)
     });
+  });
+
+  it("returns the exact remaining login window as an integer Retry-After header", async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(Date.parse("2026-07-20T10:00:00.000Z"));
+    try {
+      const { db } = createDb();
+      const env = apiEnv(db);
+      for (let index = 0; index < 5; index += 1) {
+        expect((await handleApiRequest(adminSessionRequest("wrong"), env, "limited-admin")).status).toBe(401);
+      }
+
+      vi.setSystemTime(Date.parse("2026-07-20T10:00:30.001Z"));
+      const limitedRequest = adminSessionRequest();
+      limitedRequest.headers.set("origin", "https://example.test");
+      const limited = await handleApiRequest(limitedRequest, env, "limited-admin");
+
+      expect(limited.status).toBe(429);
+      expect(limited.headers.get("retry-after")).toBe("570");
+      expect(limited.headers.get("access-control-expose-headers")).toBe("Retry-After");
+      expect(limited.headers.get("cache-control")).toBe("no-store");
+      await expect(limited.json()).resolves.toEqual({ error: "rate_limited" });
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it("returns the full admin RSVP result only for a valid scoped token", async () => {

@@ -168,4 +168,21 @@ describe("weddingApi", () => {
       headers: { authorization: "Bearer admin-token" }
     });
   });
+
+  it("exposes the Worker's integer Retry-After contract for admin login", async () => {
+    vi.stubEnv("VITE_WORKER_URL", "https://worker.test");
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(jsonResponse(
+      { error: "rate_limited" },
+      429,
+      { "retry-after": "570" }
+    )));
+
+    const { createAdminSession } = await import("./weddingApi");
+
+    await expect(createAdminSession("password")).rejects.toEqual(expect.objectContaining({
+      status: 429,
+      code: "rate_limited",
+      retryAfterSeconds: 570
+    }));
+  });
 });

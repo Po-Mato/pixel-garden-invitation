@@ -33,12 +33,13 @@ function json(body: unknown, status = 200): Response {
   });
 }
 
-function adminJson(body: unknown, status = 200): Response {
+function adminJson(body: unknown, status = 200, headers: HeadersInit = {}): Response {
   return new Response(JSON.stringify(body), {
     status,
     headers: {
       "content-type": "application/json; charset=utf-8",
-      "cache-control": "no-store"
+      "cache-control": "no-store",
+      ...headers
     }
   });
 }
@@ -62,6 +63,9 @@ function addCorsHeaders(response: Response, origin: string | null, preflight = f
   response.headers.set("vary", "Origin");
   if (origin) {
     response.headers.set("access-control-allow-origin", origin);
+    if (response.headers.has("retry-after")) {
+      response.headers.set("access-control-expose-headers", "Retry-After");
+    }
     if (preflight) {
       response.headers.set("access-control-allow-methods", "GET,POST,PATCH,DELETE,OPTIONS");
       response.headers.set("access-control-allow-headers", "content-type,authorization");
@@ -226,7 +230,7 @@ async function handleAdminSession(
     });
     if (!result.ok) {
       return result.reason === "rate_limited"
-        ? adminJson({ error: "rate_limited" }, 429)
+        ? adminJson({ error: "rate_limited" }, 429, { "retry-after": String(result.retryAfterSeconds) })
         : adminJson({ error: "unauthorized" }, 401);
     }
     return adminJson({ token: result.token, expiresAt: result.expiresAt });

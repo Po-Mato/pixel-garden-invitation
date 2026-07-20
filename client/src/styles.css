@@ -2704,7 +2704,11 @@ select {
 .rsvp-admin-page {
   min-height: 100dvh;
   overflow-x: hidden;
-  padding: 24px;
+  padding:
+    calc(24px + env(safe-area-inset-top))
+    calc(24px + env(safe-area-inset-right))
+    calc(24px + env(safe-area-inset-bottom))
+    calc(24px + env(safe-area-inset-left));
   background: #eef0eb;
   color: #252a27;
   font-family: "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
@@ -3040,7 +3044,11 @@ select {
 
 @media (max-width: 720px) {
   .rsvp-admin-page {
-    padding: 12px;
+    padding:
+      calc(12px + env(safe-area-inset-top))
+      calc(12px + env(safe-area-inset-right))
+      calc(12px + env(safe-area-inset-bottom))
+      calc(12px + env(safe-area-inset-left));
   }
 
   .rsvp-admin-header,
@@ -3107,7 +3115,11 @@ select {
 
 @media (max-width: 390px) {
   .rsvp-admin-page {
-    padding: 8px;
+    padding:
+      calc(8px + env(safe-area-inset-top))
+      calc(8px + env(safe-area-inset-right))
+      calc(8px + env(safe-area-inset-bottom))
+      calc(8px + env(safe-area-inset-left));
   }
 
   .rsvp-admin-summary,
@@ -3464,7 +3476,11 @@ select {
 
 @media (orientation: landscape) and (max-height: 500px) {
   .rsvp-admin-page {
-    padding-block: 8px;
+    padding:
+      calc(8px + env(safe-area-inset-top))
+      calc(12px + env(safe-area-inset-right))
+      calc(8px + env(safe-area-inset-bottom))
+      calc(12px + env(safe-area-inset-left));
   }
 
   .rsvp-admin-login {

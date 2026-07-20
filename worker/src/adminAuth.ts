@@ -16,7 +16,8 @@ export type AdminLoginInput = {
 
 export type AdminLoginResult =
   | { ok: true; token: string; expiresAt: number }
-  | { ok: false; reason: "invalid_credentials" | "rate_limited" };
+  | { ok: false; reason: "invalid_credentials" }
+  | { ok: false; reason: "rate_limited"; retryAfterSeconds: number };
 
 export async function attemptAdminLogin(db: D1Database, input: AdminLoginInput): Promise<AdminLoginResult> {
   const clientHash = await hashClientKey(input.clientKey, input.clientKeySecret);
@@ -36,13 +37,21 @@ export async function attemptAdminLogin(db: D1Database, input: AdminLoginInput):
           WHEN window_started_at <= ? THEN excluded.window_started_at
           ELSE window_started_at
         END
-      RETURNING attempts
+      RETURNING attempts, window_started_at
     `)
     .bind(input.invitationId, clientHash, now, cutoff, cutoff)
-    .first<{ attempts: number }>();
+    .first<{ attempts: number; window_started_at: string }>();
 
   if (!reservation) throw new Error("D1 did not reserve the admin login attempt");
-  if (reservation.attempts > MAX_LOGIN_FAILURES) return { ok: false, reason: "rate_limited" };
+  if (reservation.attempts > MAX_LOGIN_FAILURES) {
+    const windowStartedAt = Date.parse(reservation.window_started_at);
+    if (!Number.isFinite(windowStartedAt)) throw new Error("D1 returned an invalid admin login window");
+    return {
+      ok: false,
+      reason: "rate_limited",
+      retryAfterSeconds: Math.max(1, Math.ceil((windowStartedAt + LOGIN_WINDOW_MS - input.now) / 1_000))
+    };
+  }
   if (!(await verifyPassword(input.password, input.passwordHash))) {
     return { ok: false, reason: "invalid_credentials" };
   }

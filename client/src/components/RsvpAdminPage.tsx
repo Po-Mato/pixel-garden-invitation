@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Download, LockKeyhole, LogOut, RefreshCw, Search, Trash2 } from "lucide-react";
+import { normalizeRsvpPhone } from "@wedding-game/shared";
 import type {
   RsvpAdminResult,
   RsvpAttendance,
@@ -24,7 +25,7 @@ function invitationId(): string {
 }
 
 function normalizeSearch(value: string): string {
-  return value.normalize("NFKC").toLocaleLowerCase("ko-KR").replace(/[\s()-]/g, "");
+  return value.normalize("NFKC").toLocaleLowerCase("ko-KR").replace(/\s/g, "");
 }
 
 function sideLabel(side: RsvpRecordSide): string {
@@ -52,7 +53,11 @@ function formatDate(value: string): string {
 function errorMessage(error: unknown, fallback: string): string {
   if (!(error instanceof WeddingApiError)) return fallback;
   if (error.status === 403) return "비밀번호를 확인해 주세요.";
-  if (error.status === 429) return `${error.retryAfterSeconds ?? 1}초 후 다시 시도해 주세요.`;
+  if (error.status === 429) {
+    return error.retryAfterSeconds === undefined
+      ? "로그인 시도가 제한되었습니다. 잠시 후 다시 시도해 주세요."
+      : `${error.retryAfterSeconds}초 후 다시 시도해 주세요.`;
+  }
   return fallback;
 }
 
@@ -66,7 +71,12 @@ export function RsvpAdminPage() {
   const loginVersionRef = useRef(0);
   const fetchVersionRef = useRef(0);
   const deleteVersionRef = useRef(0);
+  const shellRef = useRef<HTMLDivElement>(null);
   const cancelDeleteRef = useRef<HTMLButtonElement>(null);
+  const deleteDialogRef = useRef<HTMLElement>(null);
+  const deleteTriggerRef = useRef<HTMLButtonElement | null>(null);
+  const restoreDeleteFocusRef = useRef(false);
+  const resultsHeadingRef = useRef<HTMLHeadingElement>(null);
 
   const [session, setSession] = useState<AdminSession | null>(null);
   const [result, setResult] = useState<RsvpAdminResult | null>(null);
@@ -102,17 +112,22 @@ export function RsvpAdminPage() {
     setStatus("");
   }
 
-  async function loadAll(token: string, successMessage = "") {
-    if (fetchBusyRef.current) return;
+  async function loadAll(token: string, options: {
+    force?: boolean;
+    successMessage?: string;
+    announce?: boolean;
+  } = {}) {
+    if (fetchBusyRef.current && !options.force) return;
     fetchBusyRef.current = true;
     const version = ++fetchVersionRef.current;
     setIsFetching(true);
     setError("");
+    if (options.announce) setStatus("참석 답변을 새로고침하고 있습니다.");
     try {
       const nextResult = await fetchAdminRsvps(token);
       if (!mountedRef.current || version !== fetchVersionRef.current || sessionRef.current?.token !== token) return;
       setResult(nextResult);
-      setStatus(successMessage);
+      setStatus(options.successMessage || (options.announce ? "참석 답변 새로고침을 완료했습니다." : ""));
     } catch (loadError) {
       if (!mountedRef.current || version !== fetchVersionRef.current || sessionRef.current?.token !== token) return;
       if (loadError instanceof WeddingApiError && loadError.status === 401) {
@@ -130,14 +145,16 @@ export function RsvpAdminPage() {
 
   useEffect(() => {
     mountedRef.current = true;
+    fetchBusyRef.current = false;
     const restored = loadAdminSession(id);
     if (restored) {
       sessionRef.current = restored;
       setSession(restored);
-      void loadAll(restored.token);
+      void loadAll(restored.token, { force: true });
     }
     return () => {
       mountedRef.current = false;
+      fetchBusyRef.current = false;
       loginVersionRef.current += 1;
       fetchVersionRef.current += 1;
       deleteVersionRef.current += 1;
@@ -147,14 +164,43 @@ export function RsvpAdminPage() {
   }, [id]);
 
   useEffect(() => {
+    if (!session) return;
+    let timer: number | undefined;
+    const expireWhenDue = () => {
+      const remainingMs = session.expiresAt - Date.now();
+      if (remainingMs <= 0) {
+        if (sessionRef.current?.token === session.token) {
+          resetAdminState("세션이 만료되었습니다. 다시 로그인해 주세요.");
+        }
+        return;
+      }
+      timer = window.setTimeout(expireWhenDue, Math.min(remainingMs, 2_147_483_647));
+    };
+    expireWhenDue();
+    return () => {
+      if (timer !== undefined) window.clearTimeout(timer);
+    };
+    // The timer intentionally expires the session snapshot that created it.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [session?.expiresAt, session?.token]);
+
+  useEffect(() => {
     if (retrySeconds <= 0) return;
     const timer = window.setInterval(() => setRetrySeconds((seconds) => Math.max(0, seconds - 1)), 1_000);
     return () => window.clearInterval(timer);
   }, [retrySeconds > 0]);
 
   useEffect(() => {
-    if (!deleteTarget) return;
-    cancelDeleteRef.current?.focus();
+    shellRef.current?.toggleAttribute("inert", Boolean(deleteTarget));
+    if (deleteTarget) {
+      cancelDeleteRef.current?.focus();
+      return;
+    }
+    if (restoreDeleteFocusRef.current && deleteTriggerRef.current?.isConnected) {
+      deleteTriggerRef.current.focus();
+    }
+    restoreDeleteFocusRef.current = false;
+    deleteTriggerRef.current = null;
   }, [deleteTarget]);
 
   async function handleLogin(event: React.FormEvent<HTMLFormElement>) {
@@ -181,7 +227,7 @@ export function RsvpAdminPage() {
       } else {
         setError(errorMessage(loginError, "로그인하지 못했습니다. 다시 시도해 주세요."));
         if (loginError instanceof WeddingApiError && loginError.status === 429) {
-          setRetrySeconds(Math.max(1, loginError.retryAfterSeconds ?? 1));
+          setRetrySeconds(loginError.retryAfterSeconds === undefined ? 0 : Math.max(1, loginError.retryAfterSeconds));
         }
       }
     } finally {
@@ -203,8 +249,13 @@ export function RsvpAdminPage() {
     try {
       await deleteAdminRsvp(token, target.id);
       if (!mountedRef.current || version !== deleteVersionRef.current || sessionRef.current?.token !== token) return;
+      restoreDeleteFocusRef.current = false;
       setDeleteTarget(null);
-      await loadAll(token, `${target.guestName}님의 답변을 삭제했습니다.`);
+      await loadAll(token, {
+        force: true,
+        successMessage: `${target.guestName}님의 답변을 삭제했습니다.`
+      });
+      if (mountedRef.current && sessionRef.current?.token === token) resultsHeadingRef.current?.focus();
     } catch (deleteError) {
       if (!mountedRef.current || version !== deleteVersionRef.current || sessionRef.current?.token !== token) return;
       if (deleteError instanceof WeddingApiError && deleteError.status === 401) {
@@ -212,6 +263,7 @@ export function RsvpAdminPage() {
         return;
       }
       setError(errorMessage(deleteError, "답변을 삭제하지 못했습니다. 기존 목록은 유지됩니다."));
+      restoreDeleteFocusRef.current = true;
       setDeleteTarget(null);
     } finally {
       if (version === deleteVersionRef.current) {
@@ -223,9 +275,12 @@ export function RsvpAdminPage() {
 
   const filteredResponses = useMemo(() => {
     if (!result) return [];
-    const query = normalizeSearch(search);
+    const nameQuery = normalizeSearch(search);
+    const phoneQuery = normalizeRsvpPhone(search);
     return result.responses.filter((response) => {
-      const matchesQuery = !query || normalizeSearch(`${response.guestName}${response.phone ?? ""}`).includes(query);
+      const matchesQuery = !nameQuery
+        || normalizeSearch(response.guestName).includes(nameQuery)
+        || (phoneQuery.length > 0 && normalizeRsvpPhone(response.phone ?? "").includes(phoneQuery));
       return matchesQuery
         && (side === "all" || response.side === side)
         && (attendance === "all" || response.attendance === attendance)
@@ -238,6 +293,42 @@ export function RsvpAdminPage() {
     setSide("all");
     setAttendance("all");
     setMeal("all");
+  }
+
+  function openDeleteDialog(response: RsvpRecord, trigger: HTMLButtonElement) {
+    deleteTriggerRef.current = trigger;
+    restoreDeleteFocusRef.current = true;
+    setDeleteTarget(response);
+  }
+
+  function closeDeleteDialog() {
+    if (deletingId !== null) return;
+    restoreDeleteFocusRef.current = true;
+    setDeleteTarget(null);
+  }
+
+  function handleDialogKeyDown(event: React.KeyboardEvent<HTMLElement>) {
+    if (event.key === "Escape") {
+      if (deletingId === null) {
+        event.preventDefault();
+        closeDeleteDialog();
+      }
+      return;
+    }
+    if (event.key !== "Tab" || deletingId !== null) return;
+    const focusable = Array.from(
+      deleteDialogRef.current?.querySelectorAll<HTMLButtonElement>("button:not(:disabled)") ?? []
+    );
+    if (focusable.length === 0) return;
+    const first = focusable[0];
+    const last = focusable.at(-1) ?? first;
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
   }
 
   if (!session) {
@@ -270,7 +361,7 @@ export function RsvpAdminPage() {
 
   return (
     <main className="rsvp-admin-page">
-      <div className="rsvp-admin-shell">
+      <div ref={shellRef} className="rsvp-admin-shell" aria-hidden={deleteTarget ? true : undefined}>
         <header className="rsvp-admin-header">
           <div>
             <p className="rsvp-admin-eyebrow">MJ CONVENTION · 2027.05.01</p>
@@ -309,11 +400,11 @@ export function RsvpAdminPage() {
             <section className="rsvp-admin-results" aria-labelledby="rsvp-results-title">
               <div className="rsvp-admin-results__header">
                 <div>
-                  <h2 id="rsvp-results-title">전체 답변</h2>
+                  <h2 ref={resultsHeadingRef} id="rsvp-results-title" tabIndex={-1}>전체 답변</h2>
                   <p>표시 {filteredResponses.length}건 · 전체 {result.responses.length}건</p>
                 </div>
                 <div className="rsvp-admin-actions">
-                  <button type="button" onClick={() => void loadAll(session.token)} disabled={isFetching}>
+                  <button type="button" onClick={() => void loadAll(session.token, { announce: true })} disabled={isFetching}>
                     <RefreshCw aria-hidden="true" /> {isFetching ? "불러오는 중" : "새로고침"}
                   </button>
                   <button type="button" onClick={() => downloadRsvpCsv(result)}>
@@ -350,7 +441,7 @@ export function RsvpAdminPage() {
                           <td data-label="식사">{mealLabel(response.mealStatus)}</td>
                           <td data-label="전달사항">{response.note || "-"}</td>
                           <td data-label="수정"><time dateTime={response.updatedAt}>{formatDate(response.updatedAt)}</time></td>
-                          <td data-label="관리"><button type="button" className="rsvp-admin-delete" aria-label={`${response.guestName} 답변 삭제`} onClick={() => setDeleteTarget(response)} disabled={deletingId !== null}><Trash2 aria-hidden="true" /></button></td>
+                          <td data-label="관리"><button type="button" className="rsvp-admin-delete" aria-label={`${response.guestName} 답변 삭제`} onClick={(event) => openDeleteDialog(response, event.currentTarget)} disabled={deletingId !== null}><Trash2 aria-hidden="true" /></button></td>
                         </tr>
                       ))}
                     </tbody>
@@ -364,11 +455,11 @@ export function RsvpAdminPage() {
 
       {deleteTarget && (
         <div className="rsvp-admin-dialog-backdrop">
-          <section className="rsvp-admin-dialog" role="dialog" aria-modal="true" aria-labelledby="rsvp-delete-title">
+          <section ref={deleteDialogRef} className="rsvp-admin-dialog" role="dialog" aria-modal="true" aria-labelledby="rsvp-delete-title" onKeyDown={handleDialogKeyDown}>
             <h2 id="rsvp-delete-title">답변 삭제 확인</h2>
             <p><strong>{deleteTarget.guestName}</strong>님의 참석 답변을 삭제합니다. 이 작업은 되돌릴 수 없습니다.</p>
             <div>
-              <button ref={cancelDeleteRef} type="button" className="rsvp-admin-secondary" onClick={() => setDeleteTarget(null)} disabled={deletingId !== null}>취소</button>
+              <button ref={cancelDeleteRef} type="button" className="rsvp-admin-secondary" onClick={closeDeleteDialog} disabled={deletingId !== null}>취소</button>
               <button type="button" className="rsvp-admin-danger" onClick={() => void handleDelete()} disabled={deletingId !== null}>{deletingId ? "삭제 중" : "삭제"}</button>
             </div>
           </section>
