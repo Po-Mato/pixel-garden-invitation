@@ -20,8 +20,11 @@
     "maps:audit": "node scripts/audit-map-assets.mjs",
     "maps:foreground-audit": "node scripts/render-map-foreground-audit-sheet.mjs",
     "maps:test": "node --test scripts/mapAssetAudit.test.mjs scripts/mapForegroundAuditRenderer.test.mjs",
-    "build": "pnpm maps:audit && pnpm characters:audit && pnpm characters:generate && pnpm --filter @wedding-game/shared build && pnpm --filter @wedding-game/client build && pnpm --filter @wedding-game/worker build",
-    "test": "pnpm maps:audit && pnpm maps:test && pnpm characters:audit && pnpm characters:test && pnpm --filter @wedding-game/shared test && pnpm --filter @wedding-game/client test && pnpm --filter @wedding-game/worker test",
+    "gallery:build": "node scripts/build-wedding-gallery-assets.mjs",
+    "gallery:audit": "node scripts/audit-wedding-gallery-assets.mjs",
+    "gallery:test": "node --test scripts/weddingGalleryAssets.test.mjs",
+    "build": "pnpm gallery:audit && pnpm maps:audit && pnpm characters:audit && pnpm characters:generate && pnpm --filter @wedding-game/shared build && pnpm --filter @wedding-game/client build && pnpm --filter @wedding-game/worker build",
+    "test": "pnpm gallery:audit && pnpm gallery:test && pnpm maps:audit && pnpm maps:test && pnpm characters:audit && pnpm characters:test && pnpm --filter @wedding-game/shared test && pnpm --filter @wedding-game/client test && pnpm --filter @wedding-game/worker test",
     "typecheck": "pnpm --filter @wedding-game/shared typecheck && pnpm --filter @wedding-game/client typecheck && pnpm --filter @wedding-game/worker typecheck"
   },
   "devDependencies": {

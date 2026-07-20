@@ -8,3 +8,4 @@ client/public/characters/generated/
 worker/dist/
 coverage/
 *.local
+wedding-photo-sources/generated/
