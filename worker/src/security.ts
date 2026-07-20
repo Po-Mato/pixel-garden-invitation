@@ -17,7 +17,8 @@ function decodeBase64Url(value: string): Uint8Array | null {
 
   try {
     const binary = atob(value.replace(/-/g, "+").replace(/_/g, "/") + "=".repeat((4 - value.length % 4) % 4));
-    return Uint8Array.from(binary, (character) => character.charCodeAt(0));
+    const bytes = Uint8Array.from(binary, (character) => character.charCodeAt(0));
+    return encodeBase64Url(bytes) === value ? bytes : null;
   } catch {
     return null;
   }
@@ -58,6 +59,8 @@ async function hmacSha256(value: string, secret: string): Promise<Uint8Array> {
 function isAdminClaims(value: unknown): value is AdminClaims {
   if (typeof value !== "object" || value === null) return false;
   const claims = value as Record<string, unknown>;
+  const ownKeys = Reflect.ownKeys(claims);
+  if (ownKeys.length !== 2 || !ownKeys.includes("invitationId") || !ownKeys.includes("expiresAt")) return false;
   return typeof claims.invitationId === "string"
     && claims.invitationId.length > 0
     && typeof claims.expiresAt === "number"
@@ -74,6 +77,8 @@ export async function hashEditToken(token: string): Promise<string> {
 }
 
 export async function verifyPassword(password: string, encodedHash: string): Promise<boolean> {
+  if (typeof password !== "string" || typeof encodedHash !== "string") return false;
+
   const [algorithm, iterations, encodedSalt, encodedDerivedKey, ...extra] = encodedHash.split("$");
   if (algorithm !== "pbkdf2-sha256" || iterations !== "210000" || extra.length > 0) return false;
 
@@ -97,7 +102,8 @@ export async function verifyPassword(password: string, encodedHash: string): Pro
 export async function issueAdminToken(claims: AdminClaims, secret: string): Promise<string> {
   if (!isAdminClaims(claims)) throw new TypeError("Invalid admin claims");
 
-  const payload = encodeBase64Url(encoder.encode(JSON.stringify(claims)));
+  const canonicalClaims = { invitationId: claims.invitationId, expiresAt: claims.expiresAt };
+  const payload = encodeBase64Url(encoder.encode(JSON.stringify(canonicalClaims)));
   const signature = encodeBase64Url(await hmacSha256(payload, secret));
   return `${payload}.${signature}`;
 }
@@ -108,7 +114,12 @@ export async function verifyAdminToken(
   invitationId: string,
   now: number
 ): Promise<AdminClaims | null> {
-  if (!Number.isSafeInteger(now)) return null;
+  if (
+    typeof token !== "string"
+    || typeof secret !== "string"
+    || typeof invitationId !== "string"
+    || !Number.isSafeInteger(now)
+  ) return null;
 
   const parts = token.split(".");
   if (parts.length !== 2 || !parts[0] || !parts[1]) return null;
