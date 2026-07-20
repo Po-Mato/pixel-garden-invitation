@@ -335,6 +335,31 @@ describe("GameWorld", () => {
     expect(screen.getByLabelText("우리 집 지도")).toBeInTheDocument();
   });
 
+  it.each([
+    ["menu", () => {
+      fireEvent.click(screen.getByRole("button", { name: "초대장 메뉴" }));
+      fireEvent.click(within(screen.getByRole("dialog", { name: "초대장 바로가기" })).getByRole("button", { name: "답변하기" }));
+    }],
+    ["world spot", () => {
+      fireEvent.click(screen.getByRole("button", { name: "예식장 로비 바로 이동" }));
+      fireEvent.click(screen.getByRole("button", { name: "축의대 답변하기" }));
+    }]
+  ])("opens the shared RSVP panel from the %s without moving during form input", (_source, openRsvp) => {
+    render(<GameWorld profile={profile} />);
+    const player = screen.getByLabelText("하객1");
+
+    openRsvp();
+    const before = { left: player.style.left, top: player.style.top };
+    const dialog = screen.getByRole("dialog", { name: "참석 답변" });
+    fireEvent.click(within(dialog).getByLabelText("이름"));
+    fireEvent.change(within(dialog).getByLabelText("이름"), { target: { value: "김하객" } });
+    fireEvent.click(within(dialog).getByLabelText("신부측"));
+    advanceAnimation(0);
+
+    expect(within(dialog).getByRole("button", { name: "참석 답변 보내기" })).toBeInTheDocument();
+    expect(player).toHaveStyle(before);
+  });
+
   it("shows detailed wedding information in the invitation menu", () => {
     render(<GameWorld profile={profile} />);
     fireEvent.click(screen.getByRole("button", { name: "초대장 메뉴" }));

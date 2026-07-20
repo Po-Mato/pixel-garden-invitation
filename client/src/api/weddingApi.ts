@@ -2,13 +2,6 @@
 
 import type { RsvpAdminResult, RsvpCreateResult, RsvpRecord, RsvpSubmission } from "@wedding-game/shared";
 
-export type RsvpPayload = {
-  guestName: string;
-  attendance: "yes" | "no" | "unsure";
-  partySize: number;
-  note: string;
-};
-
 export type GuestbookPayload = {
   nickname: string;
   message: string;
@@ -175,13 +168,6 @@ export async function deleteAdminRsvp(token: string, rsvpId: string): Promise<vo
 
   const body = await parseResponseBody(response);
   throw new WeddingApiError(response.status, errorCode(body), parseRetryAfterSeconds(response.headers.get("retry-after")));
-}
-
-/**
- * @deprecated Task 8 replaces this transitional form API with createRsvp and a complete RsvpSubmission.
- */
-export function submitRsvp(payload: RsvpPayload): Promise<void> {
-  return postJson(`/api/invitations/${getInvitationId()}/rsvps`, payload);
 }
 
 export function submitGuestbook(payload: GuestbookPayload): Promise<void> {

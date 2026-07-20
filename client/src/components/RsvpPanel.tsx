@@ -1,0 +1,179 @@
+import { useCallback, useEffect, useRef, useState } from "react";
+import { invitationContent, type RsvpRecord, type RsvpSubmission } from "@wedding-game/shared";
+import { createRsvp, fetchOwnedRsvp, updateOwnedRsvp, WeddingApiError, type RsvpCredential } from "../api/weddingApi";
+import { clearRsvpCredential, loadRsvpCredential, saveRsvpCredential } from "../invitation/rsvpStorage";
+import { RsvpForm } from "./RsvpForm";
+
+type PanelState =
+  | { kind: "loading" }
+  | { kind: "new" }
+  | { kind: "summary"; response: RsvpRecord }
+  | { kind: "editing"; response: RsvpRecord }
+  | { kind: "error"; message: string; recoverTo: "new" | "summary" };
+
+const sideLabel = { groom: "신랑측", bride: "신부측", legacy: "하객" } as const;
+const attendanceLabel = { yes: "참석", no: "불참", unsure: "미정" } as const;
+const mealLabel = { yes: "식사 예정", no: "식사 안 함", unsure: "미정", not_applicable: "해당 없음" } as const;
+
+function invitationId(): string {
+  return import.meta.env.VITE_INVITATION_ID ?? "sample-garden";
+}
+
+function editableValue(response: RsvpRecord): RsvpSubmission {
+  return {
+    side: response.side === "legacy" ? "groom" : response.side,
+    guestName: response.guestName,
+    phone: response.phone ?? "",
+    attendance: response.attendance,
+    partySize: response.partySize,
+    mealStatus: response.mealStatus,
+    note: response.note,
+    consentVersion: invitationContent.event.rsvp.consentVersion
+  };
+}
+
+function formatUpdatedAt(value: string): string {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  return new Intl.DateTimeFormat("ko-KR", {
+    timeZone: invitationContent.event.timeZone,
+    year: "numeric", month: "long", day: "numeric", hour: "numeric", minute: "2-digit"
+  }).format(date);
+}
+
+function apiMessage(error: unknown, fallback: string): Error {
+  if (error instanceof WeddingApiError && error.status >= 500) return new Error("서버 응답이 지연되고 있습니다. 잠시 후 다시 시도해 주세요.");
+  return new Error(fallback);
+}
+
+export function RsvpPanel() {
+  const id = invitationId();
+  const credentialRef = useRef<RsvpCredential | null>(loadRsvpCredential(id));
+  const mountedRef = useRef(true);
+  const [state, setState] = useState<PanelState>(credentialRef.current ? { kind: "loading" } : { kind: "new" });
+  const [notice, setNotice] = useState("");
+
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []);
+
+  const loadOwned = useCallback(async () => {
+    const credential = credentialRef.current;
+    if (!credential) {
+      if (mountedRef.current) setState({ kind: "new" });
+      return;
+    }
+    if (mountedRef.current) setState({ kind: "loading" });
+    try {
+      const response = await fetchOwnedRsvp(credential);
+      if (mountedRef.current) setState({ kind: "summary", response });
+    } catch (error) {
+      if (!mountedRef.current) return;
+      if (error instanceof WeddingApiError && (error.status === 401 || error.status === 404)) {
+        clearRsvpCredential(id);
+        credentialRef.current = null;
+        setState({ kind: "new" });
+        return;
+      }
+      setState({ kind: "error", message: "저장된 답변을 불러오지 못했습니다.", recoverTo: "new" });
+    }
+  }, [id]);
+
+  useEffect(() => {
+    if (credentialRef.current) void loadOwned();
+  }, [loadOwned]);
+
+  async function handleCreate(payload: RsvpSubmission) {
+    try {
+      const result = await createRsvp(payload);
+      if (!mountedRef.current) return;
+      credentialRef.current = result.credential;
+      const saved = saveRsvpCredential(id, result.credential);
+      setNotice(saved ? "답변이 저장되었습니다." : "답변은 저장되었지만 이 기기에서 다시 수정하기 어려울 수 있습니다.");
+      setState({ kind: "summary", response: result.response });
+    } catch (error) {
+      throw apiMessage(error, "답변을 보내지 못했습니다. 입력 내용을 확인하고 다시 시도해 주세요.");
+    }
+  }
+
+  async function handleUpdate(response: RsvpRecord, payload: RsvpSubmission) {
+    const credential = credentialRef.current;
+    if (!credential) {
+      setState({ kind: "new" });
+      throw new Error("수정 정보를 찾지 못했습니다. 새 답변을 작성해 주세요.");
+    }
+    try {
+      const updated = await updateOwnedRsvp(credential, { ...payload, revision: response.revision });
+      if (!mountedRef.current) return;
+      setNotice("답변을 수정했습니다.");
+      setState({ kind: "summary", response: updated });
+    } catch (error) {
+      if (error instanceof WeddingApiError && error.status === 409) {
+        try {
+          const latest = await fetchOwnedRsvp(credential);
+          if (mountedRef.current) {
+            setNotice("다른 변경사항을 반영했습니다. 내용을 확인한 뒤 다시 수정해 주세요.");
+            setState({ kind: "summary", response: latest });
+          }
+          return;
+        } catch (refreshError) {
+          throw apiMessage(refreshError, "최신 답변을 불러오지 못했습니다. 다시 시도해 주세요.");
+        }
+      }
+      throw apiMessage(error, "답변을 수정하지 못했습니다. 입력 내용을 유지했으니 다시 시도해 주세요.");
+    }
+  }
+
+  function resetToNew() {
+    clearRsvpCredential(id);
+    credentialRef.current = null;
+    setNotice("");
+    setState({ kind: "new" });
+  }
+
+  return (
+    <div className="rsvp-panel" onClick={(event) => event.stopPropagation()} onPointerDown={(event) => event.stopPropagation()}>
+      {notice ? <p className="rsvp-panel__notice" role="status">{notice}</p> : null}
+      {state.kind === "loading" ? <p className="rsvp-panel__loading" role="status">답변을 확인하고 있습니다...</p> : null}
+      {state.kind === "new" ? (
+        <RsvpForm policy={invitationContent.event.rsvp} submitLabel="참석 답변 보내기" onSubmit={handleCreate} />
+      ) : null}
+      {state.kind === "editing" ? (
+        <RsvpForm
+          initialValue={editableValue(state.response)}
+          policy={invitationContent.event.rsvp}
+          submitLabel="수정 저장"
+          onSubmit={(payload) => handleUpdate(state.response, payload)}
+        />
+      ) : null}
+      {state.kind === "summary" ? (
+        <section className="rsvp-summary" aria-labelledby="rsvp-summary-title">
+          <h3 id="rsvp-summary-title">보내주신 답변</h3>
+          <dl>
+            <div><dt>대상</dt><dd>{sideLabel[state.response.side]}</dd></div>
+            <div><dt>이름</dt><dd>{state.response.guestName}</dd></div>
+            <div><dt>연락처</dt><dd>{state.response.phone ?? "-"}</dd></div>
+            <div><dt>참석</dt><dd>{attendanceLabel[state.response.attendance]}</dd></div>
+            {state.response.attendance !== "no" ? <div><dt>인원</dt><dd>{state.response.partySize}명</dd></div> : null}
+            {state.response.attendance === "yes" ? <div><dt>식사</dt><dd>{mealLabel[state.response.mealStatus]}</dd></div> : null}
+            <div><dt>전달사항</dt><dd>{state.response.note || "없음"}</dd></div>
+            <div><dt>마지막 수정</dt><dd>{formatUpdatedAt(state.response.updatedAt)}</dd></div>
+          </dl>
+          <button type="button" className="primary-button" onClick={() => { setNotice(""); setState({ kind: "editing", response: state.response }); }}>답변 수정</button>
+        </section>
+      ) : null}
+      {state.kind === "error" ? (
+        <div className="rsvp-panel__error" role="alert">
+          <p>{state.message}</p>
+          <div>
+            <button type="button" className="primary-button" onClick={() => void loadOwned()}>다시 불러오기</button>
+            <button type="button" onClick={resetToNew}>새 답변 작성</button>
+          </div>
+        </div>
+      ) : null}
+    </div>
+  );
+}

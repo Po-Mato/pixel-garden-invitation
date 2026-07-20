@@ -452,5 +452,10 @@ describe("prism map interactions", () => {
     expect(styles).toContain(".bottom-sheet .field input:focus-visible");
     expect(styles).toContain(".bottom-sheet__header button:focus-visible");
     expect(styles).toContain(".bottom-sheet .primary-button");
+    expect(styles).toContain(".rsvp-segmented");
+    expect(styles).toContain(".rsvp-segmented input:focus-visible + span");
+    expect(styles).toContain(".rsvp-summary");
+    expect(styles).toMatch(/@media \(max-width:\s*390px\)[\s\S]*\.rsvp-panel/);
+    expect(styles).toMatch(/@media \(orientation:\s*landscape\) and \(max-height:\s*500px\)[\s\S]*\.rsvp-panel/);
   });
 });

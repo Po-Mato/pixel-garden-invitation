@@ -3,13 +3,12 @@ import { invitationContent, type SpotId } from "@wedding-game/shared";
 import {
   fetchGuestbookMessages,
   submitGuestbook,
-  submitRsvp,
   type GuestbookMessage,
   type GuestbookPayload
 } from "../api/weddingApi";
 import { BottomSheet } from "./BottomSheet";
 import { GuestbookPanel } from "./GuestbookPanel";
-import { RsvpForm } from "./RsvpForm";
+import { RsvpPanel } from "./RsvpPanel";
 
 type SpotModalProps = {
   spotId: SpotId;
@@ -61,7 +60,7 @@ export function SpotModal({ spotId, nickname, onClose }: SpotModalProps) {
   return (
     <BottomSheet title={spot.title} onClose={onClose}>
       <p>{spot.body}</p>
-      {spotId === "rsvp" && <RsvpForm onSubmit={submitRsvp} />}
+      {spotId === "rsvp" && <RsvpPanel />}
       {spotId === "guestbook" && (
         <GuestbookPanel nickname={nickname} messages={guestbookMessages} onSubmit={handleGuestbookSubmit} />
       )}
