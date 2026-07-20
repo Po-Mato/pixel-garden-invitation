@@ -2701,6 +2701,442 @@ select {
   margin-top: 14px;
 }
 
+.rsvp-admin-page {
+  min-height: 100dvh;
+  overflow-x: hidden;
+  padding: 24px;
+  background: #eef0eb;
+  color: #252a27;
+  font-family: "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
+  image-rendering: auto;
+}
+
+.rsvp-admin-shell {
+  width: min(100%, 1240px);
+  min-width: 0;
+  margin: 0 auto;
+}
+
+.rsvp-admin-header,
+.rsvp-admin-results__header,
+.rsvp-admin-actions,
+.rsvp-admin-dialog > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.rsvp-admin-header {
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid #9ca79d;
+}
+
+.rsvp-admin-page h1,
+.rsvp-admin-page h2,
+.rsvp-admin-page p {
+  margin-top: 0;
+}
+
+.rsvp-admin-page h1 {
+  margin-bottom: 0;
+  font-size: 28px;
+  line-height: 1.25;
+}
+
+.rsvp-admin-page h2 {
+  margin-bottom: 12px;
+  font-size: 18px;
+}
+
+.rsvp-admin-eyebrow {
+  margin-bottom: 5px;
+  color: #5d6e61;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.rsvp-admin-page button,
+.rsvp-admin-page input,
+.rsvp-admin-page select {
+  min-height: 44px;
+}
+
+.rsvp-admin-page button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border: 1px solid #53675a;
+  border-radius: 4px;
+  padding: 9px 14px;
+  background: #52685a;
+  color: #fff;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.rsvp-admin-page button svg {
+  width: 17px;
+  height: 17px;
+  flex: 0 0 17px;
+}
+
+.rsvp-admin-page button:disabled {
+  cursor: wait;
+  opacity: 0.58;
+}
+
+.rsvp-admin-page button:focus-visible,
+.rsvp-admin-page input:focus-visible,
+.rsvp-admin-page select:focus-visible {
+  outline: 3px solid #b96b73;
+  outline-offset: 2px;
+}
+
+.rsvp-admin-page .rsvp-admin-secondary {
+  border-color: #9ca79d;
+  background: #fff;
+  color: #344039;
+}
+
+.rsvp-admin-login {
+  width: min(100%, 390px);
+  margin: max(8vh, 32px) auto 0;
+  padding: 28px;
+  border: 1px solid #c5ccc6;
+  border-radius: 6px;
+  background: #fff;
+  box-shadow: 0 12px 30px rgba(42, 54, 46, 0.12);
+}
+
+.rsvp-admin-login > svg {
+  width: 32px;
+  height: 32px;
+  margin-bottom: 16px;
+  color: #52685a;
+}
+
+.rsvp-admin-login form {
+  display: grid;
+  gap: 9px;
+  margin-top: 22px;
+}
+
+.rsvp-admin-login label,
+.rsvp-admin-filters label > span:first-child {
+  color: #4c5850;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.rsvp-admin-login input,
+.rsvp-admin-filters input,
+.rsvp-admin-filters select {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid #aab3ac;
+  border-radius: 3px;
+  padding: 9px 10px;
+  background: #fff;
+  color: #252a27;
+}
+
+.rsvp-admin-message {
+  margin: 12px 0;
+  padding: 10px 12px;
+  border-left: 3px solid #718673;
+  background: #f5f7f4;
+  color: #415047;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.rsvp-admin-message--error {
+  border-color: #a64d56;
+  background: #fff2f2;
+  color: #872f38;
+}
+
+.rsvp-admin-summary,
+.rsvp-admin-results {
+  margin-bottom: 20px;
+  padding: 18px;
+  border: 1px solid #c5ccc6;
+  border-radius: 6px;
+  background: #fff;
+}
+
+.rsvp-admin-summary dl {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1px;
+  margin: 0;
+  background: #d7ddd8;
+}
+
+.rsvp-admin-summary dl > div {
+  min-width: 0;
+  padding: 12px;
+  background: #f7f8f6;
+}
+
+.rsvp-admin-summary dt {
+  color: #657169;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.rsvp-admin-summary dd {
+  margin: 6px 0 0;
+  overflow-wrap: anywhere;
+  color: #25342a;
+  font-size: 21px;
+  font-weight: 900;
+}
+
+.rsvp-admin-results__header > div:first-child p {
+  margin-bottom: 0;
+  color: #667169;
+  font-size: 12px;
+}
+
+.rsvp-admin-filters {
+  display: grid;
+  grid-template-columns: minmax(210px, 2fr) repeat(3, minmax(120px, 1fr)) auto;
+  align-items: end;
+  gap: 10px;
+  margin: 18px 0;
+  padding: 14px;
+  border-block: 1px solid #d9ded9;
+  background: #f7f8f6;
+}
+
+.rsvp-admin-filters label {
+  display: grid;
+  min-width: 0;
+  gap: 5px;
+}
+
+.rsvp-admin-search > span:last-child {
+  position: relative;
+  display: block;
+}
+
+.rsvp-admin-search svg {
+  position: absolute;
+  top: 50%;
+  left: 10px;
+  width: 17px;
+  height: 17px;
+  color: #647169;
+  transform: translateY(-50%);
+}
+
+.rsvp-admin-search input {
+  padding-left: 34px;
+}
+
+.rsvp-admin-table-wrap {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.rsvp-admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.rsvp-admin-table th,
+.rsvp-admin-table td {
+  padding: 11px 9px;
+  border-bottom: 1px solid #dde1dd;
+  text-align: left;
+  vertical-align: top;
+}
+
+.rsvp-admin-table th {
+  background: #eff2ef;
+  color: #4d5a52;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.rsvp-admin-table td {
+  min-width: 58px;
+  overflow-wrap: anywhere;
+}
+
+.rsvp-admin-table td:nth-child(2),
+.rsvp-admin-table td:nth-child(3) {
+  min-width: 104px;
+}
+
+.rsvp-admin-table td:nth-child(7) {
+  min-width: 140px;
+  max-width: 260px;
+}
+
+.rsvp-admin-table .rsvp-admin-delete {
+  width: 44px;
+  padding: 0;
+  border-color: #bd8187;
+  background: #fff;
+  color: #963f48;
+}
+
+.rsvp-admin-empty {
+  margin-bottom: 0;
+  padding: 28px 12px;
+  color: #657169;
+  text-align: center;
+}
+
+.rsvp-admin-dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(28, 34, 30, 0.48);
+}
+
+.rsvp-admin-dialog {
+  width: min(100%, 420px);
+  padding: 22px;
+  border: 1px solid #bdc5bf;
+  border-radius: 6px;
+  background: #fff;
+  box-shadow: 0 20px 48px rgba(20, 27, 22, 0.28);
+}
+
+.rsvp-admin-dialog p {
+  color: #4e5952;
+  line-height: 1.6;
+}
+
+.rsvp-admin-dialog .rsvp-admin-danger {
+  border-color: #963f48;
+  background: #963f48;
+}
+
+@media (max-width: 900px) {
+  .rsvp-admin-summary dl {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .rsvp-admin-filters {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .rsvp-admin-search {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 720px) {
+  .rsvp-admin-page {
+    padding: 12px;
+  }
+
+  .rsvp-admin-header,
+  .rsvp-admin-results__header {
+    align-items: flex-start;
+  }
+
+  .rsvp-admin-results__header {
+    display: grid;
+  }
+
+  .rsvp-admin-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .rsvp-admin-filters {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    padding: 10px 0;
+    background: transparent;
+  }
+
+  .rsvp-admin-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+  }
+
+  .rsvp-admin-table,
+  .rsvp-admin-table tbody,
+  .rsvp-admin-table tr,
+  .rsvp-admin-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .rsvp-admin-table tr {
+    padding: 10px 0;
+    border-top: 2px solid #aeb8b0;
+  }
+
+  .rsvp-admin-table td,
+  .rsvp-admin-table td:nth-child(2),
+  .rsvp-admin-table td:nth-child(3),
+  .rsvp-admin-table td:nth-child(7) {
+    display: grid;
+    grid-template-columns: 78px minmax(0, 1fr);
+    min-width: 0;
+    max-width: none;
+    gap: 8px;
+    padding: 7px 3px;
+    border-bottom: 0;
+  }
+
+  .rsvp-admin-table td::before {
+    content: attr(data-label);
+    color: #69756d;
+    font-size: 11px;
+    font-weight: 800;
+  }
+}
+
+@media (max-width: 390px) {
+  .rsvp-admin-page {
+    padding: 8px;
+  }
+
+  .rsvp-admin-summary,
+  .rsvp-admin-results,
+  .rsvp-admin-login {
+    padding: 14px;
+  }
+
+  .rsvp-admin-header {
+    display: grid;
+  }
+
+  .rsvp-admin-header .rsvp-admin-secondary {
+    justify-self: start;
+  }
+
+  .rsvp-admin-summary dl {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .rsvp-admin-filters {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .rsvp-admin-search {
+    grid-column: auto;
+  }
+}
+
 .rsvp-panel {
   display: grid;
   min-width: 0;
@@ -3027,6 +3463,19 @@ select {
 }
 
 @media (orientation: landscape) and (max-height: 500px) {
+  .rsvp-admin-page {
+    padding-block: 8px;
+  }
+
+  .rsvp-admin-login {
+    margin-top: 0;
+    padding: 16px;
+  }
+
+  .rsvp-admin-summary dl {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
   .rsvp-panel {
     gap: 8px;
   }

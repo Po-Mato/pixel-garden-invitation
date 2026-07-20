@@ -27,6 +27,27 @@ const worldEffects = [
   "banquet-light"
 ];
 
+describe("private RSVP administration layout", () => {
+  it("uses a viewport-safe operational layout without horizontal overflow", () => {
+    const pageRule = styles.match(/\.rsvp-admin-page\s*\{([^}]*)}/s)?.[1] ?? "";
+    const shellRule = styles.match(/\.rsvp-admin-shell\s*\{([^}]*)}/s)?.[1] ?? "";
+
+    expect(pageRule).toContain("min-height: 100dvh;");
+    expect(pageRule).toContain("overflow-x: hidden;");
+    expect(shellRule).toContain("min-width: 0;");
+    expect(styles).toMatch(/\.rsvp-admin-table-wrap\s*\{[^}]*max-width:\s*100%;/s);
+    expect(styles).toMatch(/@media \(max-width:\s*720px\)[\s\S]*\.rsvp-admin-table thead/);
+    expect(styles).toMatch(/@media \(orientation:\s*landscape\) and \(max-height:\s*500px\)[\s\S]*\.rsvp-admin-page/);
+  });
+
+  it("keeps all administrator controls accessible by touch and keyboard", () => {
+    expect(styles).toMatch(/\.rsvp-admin-page button,[\s\S]*\.rsvp-admin-page input,[\s\S]*\.rsvp-admin-page select\s*\{[^}]*min-height:\s*44px;/s);
+    expect(styles).toContain(".rsvp-admin-page button:focus-visible");
+    expect(styles).toContain(".rsvp-admin-page input:focus-visible");
+    expect(styles).toContain(".rsvp-admin-page select:focus-visible");
+  });
+});
+
 describe("entry screen layout", () => {
   it("locks the entry document to the dynamic viewport", () => {
     const documentRule = styles.match(

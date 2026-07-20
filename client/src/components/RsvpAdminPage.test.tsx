@@ -1,0 +1,295 @@
+import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import type { RsvpAdminResult } from "@wedding-game/shared";
+import { WeddingApiError } from "../api/weddingApi";
+import { RsvpAdminPage } from "./RsvpAdminPage";
+
+const api = vi.hoisted(() => ({
+  createAdminSession: vi.fn(),
+  fetchAdminRsvps: vi.fn(),
+  deleteAdminRsvp: vi.fn()
+}));
+
+const storage = vi.hoisted(() => ({
+  loadAdminSession: vi.fn(),
+  saveAdminSession: vi.fn(),
+  clearAdminSession: vi.fn()
+}));
+
+const csv = vi.hoisted(() => ({ downloadRsvpCsv: vi.fn() }));
+
+vi.mock("../api/weddingApi", async (importOriginal) => ({
+  ...await importOriginal<typeof import("../api/weddingApi")>(),
+  ...api
+}));
+vi.mock("../invitation/rsvpStorage", () => storage);
+vi.mock("../invitation/rsvpCsv", () => csv);
+
+const session = { token: "admin-token", expiresAt: 1_900_000_000_000 };
+const result: RsvpAdminResult = {
+  summary: {
+    responseCount: 4,
+    attendingResponseCount: 2,
+    attendingPartySize: 5,
+    mealPartySize: 4,
+    declinedResponseCount: 1,
+    unsureResponseCount: 1,
+    unsurePartySize: 2,
+    deleteAt: "2027-05-31T14:59:59.000Z"
+  },
+  responses: [
+    { id: "1", side: "groom", guestName: "김하객", phone: "01012345678", attendance: "yes", partySize: 3, mealStatus: "yes", note: "축하합니다", consentVersion: "v1", revision: 1, createdAt: "2027-01-01T00:00:00Z", updatedAt: "2027-01-02T00:00:00Z" },
+    { id: "2", side: "bride", guestName: "Lee Guest", phone: "010 9999 8888", attendance: "yes", partySize: 2, mealStatus: "no", note: "", consentVersion: "v1", revision: 2, createdAt: "2027-01-01T00:00:00Z", updatedAt: "2027-01-03T00:00:00Z" },
+    { id: "3", side: "legacy", guestName: "옛 하객", phone: null, attendance: "no", partySize: 0, mealStatus: "not_applicable", note: "기존", consentVersion: null, revision: 1, createdAt: "2027-01-01T00:00:00Z", updatedAt: "2027-01-01T00:00:00Z" },
+    { id: "4", side: "bride", guestName: "박미정", phone: "01022223333", attendance: "unsure", partySize: 2, mealStatus: "unsure", note: "확인 중", consentVersion: "v1", revision: 1, createdAt: "2027-01-01T00:00:00Z", updatedAt: "2027-01-01T00:00:00Z" }
+  ]
+};
+
+function deferred<T>() {
+  let resolve!: (value: T) => void;
+  let reject!: (reason?: unknown) => void;
+  const promise = new Promise<T>((res, rej) => { resolve = res; reject = rej; });
+  return { promise, resolve, reject };
+}
+
+async function login() {
+  fireEvent.change(screen.getByLabelText("관리자 비밀번호"), { target: { value: "secret" } });
+  fireEvent.click(screen.getByRole("button", { name: "로그인" }));
+  await screen.findByRole("heading", { name: "참석 답변 현황" });
+}
+
+describe("RsvpAdminPage", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    storage.loadAdminSession.mockReturnValue(null);
+    storage.saveAdminSession.mockReturnValue(true);
+    storage.clearAdminSession.mockReturnValue(true);
+    api.createAdminSession.mockResolvedValue(session);
+    api.fetchAdminRsvps.mockResolvedValue(result);
+    api.deleteAdminRsvp.mockResolvedValue(undefined);
+  });
+
+  afterEach(() => {
+    cleanup();
+    vi.useRealTimers();
+  });
+
+  it("shows only the password login before authentication and clears the password after failure", async () => {
+    api.createAdminSession.mockRejectedValue(new WeddingApiError(403, "invalid_credentials"));
+    render(<RsvpAdminPage />);
+
+    const input = screen.getByLabelText("관리자 비밀번호");
+    expect(input).toHaveAttribute("type", "password");
+    expect(input).toHaveAttribute("autocomplete", "current-password");
+    fireEvent.change(input, { target: { value: "wrong" } });
+    fireEvent.click(screen.getByRole("button", { name: "로그인" }));
+
+    expect(await screen.findByRole("alert")).toHaveTextContent("비밀번호를 확인해 주세요");
+    expect(input).toHaveValue("");
+    expect(screen.queryByText("참석 답변 현황")).not.toBeInTheDocument();
+  });
+
+  it("stores a successful session and immediately fetches all responses", async () => {
+    render(<RsvpAdminPage />);
+    await login();
+
+    expect(storage.saveAdminSession).toHaveBeenCalledWith("sample-garden", session);
+    expect(api.fetchAdminRsvps).toHaveBeenCalledWith("admin-token");
+    expect(screen.getByText("김하객")).toBeInTheDocument();
+    expect(screen.queryByLabelText("관리자 비밀번호")).not.toBeInTheDocument();
+  });
+
+  it("restores a valid stored session and clears it when initial fetch is unauthorized", async () => {
+    storage.loadAdminSession.mockReturnValue(session);
+    api.fetchAdminRsvps.mockRejectedValue(new WeddingApiError(401, "unauthorized"));
+    render(<RsvpAdminPage />);
+
+    expect(await screen.findByRole("button", { name: "로그인" })).toBeInTheDocument();
+    expect(storage.clearAdminSession).toHaveBeenCalledWith("sample-garden");
+  });
+
+  it("restores a valid stored session without showing the login form", async () => {
+    storage.loadAdminSession.mockReturnValue(session);
+    render(<RsvpAdminPage />);
+
+    expect(await screen.findByText("김하객")).toBeInTheDocument();
+    expect(screen.queryByLabelText("관리자 비밀번호")).not.toBeInTheDocument();
+    expect(api.createAdminSession).not.toHaveBeenCalled();
+  });
+
+  it("lets an authenticated administrator retry an initial fetch failure", async () => {
+    api.fetchAdminRsvps.mockRejectedValueOnce(new Error("network")).mockResolvedValueOnce(result);
+    render(<RsvpAdminPage />);
+    fireEvent.change(screen.getByLabelText("관리자 비밀번호"), { target: { value: "secret" } });
+    fireEvent.click(screen.getByRole("button", { name: "로그인" }));
+
+    expect(await screen.findByRole("alert")).toHaveTextContent("불러오지 못했습니다");
+    fireEvent.click(screen.getByRole("button", { name: "다시 불러오기" }));
+    expect(await screen.findByText("김하객")).toBeInTheDocument();
+    expect(api.fetchAdminRsvps).toHaveBeenCalledTimes(2);
+  });
+
+  it("disables login for Retry-After seconds and then re-enables it", async () => {
+    vi.useFakeTimers();
+    api.createAdminSession.mockRejectedValue(new WeddingApiError(429, "rate_limited", 2));
+    render(<RsvpAdminPage />);
+    fireEvent.change(screen.getByLabelText("관리자 비밀번호"), { target: { value: "wrong" } });
+    fireEvent.click(screen.getByRole("button", { name: "로그인" }));
+
+    await act(async () => { await Promise.resolve(); });
+    expect(screen.getByRole("alert")).toHaveTextContent("2초 후 다시 시도");
+    expect(screen.getByRole("button", { name: /로그인/ })).toBeDisabled();
+    act(() => { vi.advanceTimersByTime(2_000); });
+    expect(screen.getByLabelText("관리자 비밀번호")).toBeEnabled();
+    fireEvent.change(screen.getByLabelText("관리자 비밀번호"), { target: { value: "retry" } });
+    expect(screen.getByRole("button", { name: "로그인" })).toBeEnabled();
+  });
+
+  it("displays the complete server summary without changing it for filters", async () => {
+    render(<RsvpAdminPage />);
+    await login();
+
+    for (const value of ["4", "2", "5", "4", "1", "2", "2027. 5. 31."]) {
+      expect(screen.getAllByText(value).length).toBeGreaterThan(0);
+    }
+    fireEvent.change(screen.getByLabelText("대상 필터"), { target: { value: "legacy" } });
+    expect(screen.queryByText("김하객")).not.toBeInTheDocument();
+    expect(screen.getAllByText("4").length).toBeGreaterThan(0);
+  });
+
+  it("searches normalized names and phone numbers and resets all filters", async () => {
+    render(<RsvpAdminPage />);
+    await login();
+
+    fireEvent.change(screen.getByLabelText("검색"), { target: { value: "lee guest" } });
+    expect(screen.getByText("Lee Guest")).toBeInTheDocument();
+    expect(screen.queryByText("김하객")).not.toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText("검색"), { target: { value: "01099998888" } });
+    expect(screen.getByText("Lee Guest")).toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText("대상 필터"), { target: { value: "bride" } });
+    fireEvent.change(screen.getByLabelText("참석 필터"), { target: { value: "yes" } });
+    fireEvent.change(screen.getByLabelText("식사 필터"), { target: { value: "no" } });
+    fireEvent.click(screen.getByRole("button", { name: "필터 초기화" }));
+    expect(screen.getByLabelText("검색")).toHaveValue("");
+    expect(screen.getByLabelText("대상 필터")).toHaveValue("all");
+    expect(screen.getByText("옛 하객")).toBeInTheDocument();
+  });
+
+  it("shows an explicit empty result state", async () => {
+    render(<RsvpAdminPage />);
+    await login();
+    fireEvent.change(screen.getByLabelText("검색"), { target: { value: "없는 사람" } });
+    expect(screen.getByRole("status")).toHaveTextContent("조건에 맞는 답변이 없습니다");
+  });
+
+  it("requires deletion confirmation, supports cancel, and refetches the whole result after success", async () => {
+    const refreshed = { ...result, summary: { ...result.summary, responseCount: 3 }, responses: result.responses.slice(1) };
+    api.fetchAdminRsvps.mockResolvedValueOnce(result).mockResolvedValueOnce(refreshed);
+    render(<RsvpAdminPage />);
+    await login();
+
+    fireEvent.click(screen.getByRole("button", { name: "김하객 답변 삭제" }));
+    expect(screen.getByRole("dialog", { name: "답변 삭제 확인" })).toHaveTextContent("김하객");
+    expect(screen.getByRole("button", { name: "취소" })).toHaveFocus();
+    fireEvent.click(screen.getByRole("button", { name: "취소" }));
+    expect(api.deleteAdminRsvp).not.toHaveBeenCalled();
+
+    fireEvent.click(screen.getByRole("button", { name: "김하객 답변 삭제" }));
+    fireEvent.click(screen.getByRole("button", { name: "삭제" }));
+    await waitFor(() => expect(api.deleteAdminRsvp).toHaveBeenCalledWith("admin-token", "1"));
+    await waitFor(() => expect(api.fetchAdminRsvps).toHaveBeenCalledTimes(2));
+    expect(screen.queryByText("김하객")).not.toBeInTheDocument();
+  });
+
+  it("preserves the list on delete failure and logs out on a delete 401", async () => {
+    api.deleteAdminRsvp.mockRejectedValueOnce(new Error("network")).mockRejectedValueOnce(new WeddingApiError(401, "unauthorized"));
+    render(<RsvpAdminPage />);
+    await login();
+
+    fireEvent.click(screen.getByRole("button", { name: "김하객 답변 삭제" }));
+    fireEvent.click(screen.getByRole("button", { name: "삭제" }));
+    expect(await screen.findByRole("alert")).toHaveTextContent("삭제하지 못했습니다");
+    expect(screen.getByText("김하객")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "김하객 답변 삭제" }));
+    fireEvent.click(screen.getByRole("button", { name: "삭제" }));
+    expect(await screen.findByRole("button", { name: "로그인" })).toBeInTheDocument();
+    expect(storage.clearAdminSession).toHaveBeenCalledWith("sample-garden");
+  });
+
+  it("blocks duplicate delete requests while one deletion is pending", async () => {
+    const pendingDelete = deferred<void>();
+    api.deleteAdminRsvp.mockReturnValue(pendingDelete.promise);
+    render(<RsvpAdminPage />);
+    await login();
+    fireEvent.click(screen.getByRole("button", { name: "김하객 답변 삭제" }));
+
+    const confirm = screen.getByRole("button", { name: "삭제" });
+    fireEvent.click(confirm);
+    fireEvent.click(confirm);
+    expect(api.deleteAdminRsvp).toHaveBeenCalledTimes(1);
+    pendingDelete.resolve(undefined);
+    await waitFor(() => expect(api.fetchAdminRsvps).toHaveBeenCalledTimes(2));
+  });
+
+  it("exports the complete server result regardless of list filters", async () => {
+    render(<RsvpAdminPage />);
+    await login();
+    fireEvent.change(screen.getByLabelText("대상 필터"), { target: { value: "legacy" } });
+    fireEvent.click(screen.getByRole("button", { name: "CSV 저장" }));
+    expect(csv.downloadRsvpCsv).toHaveBeenCalledWith(result);
+  });
+
+  it("clears persistent and in-memory admin state on logout", async () => {
+    render(<RsvpAdminPage />);
+    await login();
+    fireEvent.click(screen.getByRole("button", { name: "로그아웃" }));
+    expect(storage.clearAdminSession).toHaveBeenCalledWith("sample-garden");
+    expect(screen.getByRole("button", { name: "로그인" })).toBeInTheDocument();
+    expect(screen.queryByText("김하객")).not.toBeInTheDocument();
+  });
+
+  it("ignores stale fetch responses and prevents duplicate login and delete requests", async () => {
+    const firstFetch = deferred<RsvpAdminResult>();
+    const secondFetch = deferred<RsvpAdminResult>();
+    api.fetchAdminRsvps.mockReturnValueOnce(firstFetch.promise).mockReturnValueOnce(secondFetch.promise);
+    render(<RsvpAdminPage />);
+    fireEvent.change(screen.getByLabelText("관리자 비밀번호"), { target: { value: "secret" } });
+    fireEvent.click(screen.getByRole("button", { name: "로그인" }));
+    fireEvent.click(screen.getByRole("button", { name: "로그인 중" }));
+    expect(api.createAdminSession).toHaveBeenCalledTimes(1);
+
+    firstFetch.resolve(result);
+    await screen.findByText("김하객");
+    fireEvent.click(screen.getByRole("button", { name: "새로고침" }));
+    secondFetch.resolve({ ...result, responses: [result.responses[1]] });
+    expect(await screen.findByText("Lee Guest")).toBeInTheDocument();
+  });
+
+  it("does not update state after unmount while login is pending", async () => {
+    const pending = deferred<typeof session>();
+    api.createAdminSession.mockReturnValue(pending.promise);
+    const { unmount } = render(<RsvpAdminPage />);
+    fireEvent.change(screen.getByLabelText("관리자 비밀번호"), { target: { value: "secret" } });
+    fireEvent.click(screen.getByRole("button", { name: "로그인" }));
+    unmount();
+    pending.resolve(session);
+    await act(async () => { await Promise.resolve(); });
+    expect(api.fetchAdminRsvps).not.toHaveBeenCalled();
+  });
+
+  it("does not let an old fetch restore data after logout", async () => {
+    const pendingFetch = deferred<RsvpAdminResult>();
+    storage.loadAdminSession.mockReturnValue(session);
+    api.fetchAdminRsvps.mockReturnValue(pendingFetch.promise);
+    render(<RsvpAdminPage />);
+    await waitFor(() => expect(screen.getByRole("button", { name: "로그아웃" })).toBeInTheDocument());
+
+    fireEvent.click(screen.getByRole("button", { name: "로그아웃" }));
+    pendingFetch.resolve(result);
+    await act(async () => { await Promise.resolve(); });
+
+    expect(screen.getByRole("button", { name: "로그인" })).toBeInTheDocument();
+    expect(screen.queryByText("김하객")).not.toBeInTheDocument();
+  });
+});
