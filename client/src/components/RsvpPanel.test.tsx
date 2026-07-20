@@ -1,4 +1,5 @@
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { StrictMode } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { RsvpRecord } from "@wedding-game/shared";
 import { WeddingApiError } from "../api/weddingApi";
@@ -65,6 +66,16 @@ describe("RsvpPanel", () => {
     expect(screen.getByRole("status")).toHaveTextContent("답변을 확인하고 있습니다");
     expect(await screen.findByRole("heading", { name: "보내주신 답변" })).toBeInTheDocument();
     expect(api.fetchOwnedRsvp).toHaveBeenCalledWith(credential);
+  });
+
+  it("restores a stored credential once under React StrictMode", async () => {
+    storage.loadRsvpCredential.mockReturnValue(credential);
+    api.fetchOwnedRsvp.mockResolvedValue(response);
+
+    render(<StrictMode><RsvpPanel /></StrictMode>);
+
+    expect(await screen.findByRole("heading", { name: "보내주신 답변" })).toBeInTheDocument();
+    expect(api.fetchOwnedRsvp).toHaveBeenCalledTimes(1);
   });
 
   it.each([401, 404])("clears a rejected credential after a %s lookup", async (status) => {

@@ -50,6 +50,7 @@ export function RsvpPanel() {
   const id = invitationId();
   const credentialRef = useRef<RsvpCredential | null>(loadRsvpCredential(id));
   const mountedRef = useRef(true);
+  const initialLoadStartedRef = useRef(false);
   const [state, setState] = useState<PanelState>(credentialRef.current ? { kind: "loading" } : { kind: "new" });
   const [notice, setNotice] = useState("");
 
@@ -83,7 +84,9 @@ export function RsvpPanel() {
   }, [id]);
 
   useEffect(() => {
-    if (credentialRef.current) void loadOwned();
+    if (!credentialRef.current || initialLoadStartedRef.current) return;
+    initialLoadStartedRef.current = true;
+    void loadOwned();
   }, [loadOwned]);
 
   async function handleCreate(payload: RsvpSubmission) {
