@@ -138,9 +138,11 @@ export function GameWorld({ profile }: GameWorldProps) {
   const tileInputStateRef = useRef<TileInputState | null>(null);
   const joystickWasMovingRef = useRef(false);
   const inputReleaseRequiredRef = useRef(false);
+  const inputGenerationRef = useRef(0);
   const connectionRef = useRef<RealtimeConnection | null>(null);
   const currentGuestIdRef = useRef<string | null>(null);
   const moveSeqRef = useRef(0);
+  const lastSentMoveRef = useRef<MoveMessage | null>(null);
   const moveThrottleRef = useRef<((message: MoveMessage, now: number) => void) | null>(null);
 
   const setPortalIntent = useCallback((intent: PortalIntent | null) => {
@@ -171,6 +173,14 @@ export function GameWorld({ profile }: GameWorldProps) {
     setMenuOpen(false);
   }, []);
 
+  const sendMoveImmediately = useCallback((connection: RealtimeConnection, message: MoveMessage) => {
+    if (!currentGuestIdRef.current) return;
+
+    connection.send(message);
+    moveSeqRef.current = message.seq;
+    lastSentMoveRef.current = message;
+  }, []);
+
   const sendRealtimeMove = useCallback((nextPosition: Point, isMoving: boolean, nextDirection: Direction, zoneId: WorldZoneId, now: number) => {
     moveThrottleRef.current?.({
       type: "move",
@@ -196,12 +206,25 @@ export function GameWorld({ profile }: GameWorldProps) {
       seq: moveSeqRef.current + 1,
       zoneId
     };
-    moveSeqRef.current = message.seq;
-    connection.send(message);
-  }, []);
+    sendMoveImmediately(connection, message);
+  }, [sendMoveImmediately]);
+
+  const sendRealtimeTerminalStop = useCallback((nextDirection: Direction) => {
+    const connection = connectionRef.current;
+    const lastSentMove = lastSentMoveRef.current;
+    if (!connection || !lastSentMove?.moving) return;
+
+    sendMoveImmediately(connection, {
+      ...lastSentMove,
+      direction: nextDirection,
+      moving: false,
+      seq: lastSentMove.seq + 1
+    });
+  }, [sendMoveImmediately]);
 
   const pauseWorldInput = useCallback(() => {
     const joystickWasMoving = joystickWasMovingRef.current;
+    inputGenerationRef.current += 1;
 
     setTarget(null);
     setPortalIntent(null);
@@ -213,10 +236,8 @@ export function GameWorld({ profile }: GameWorldProps) {
     joystickWasMovingRef.current = false;
     setInputReleaseRequired(inputReleaseRequiredRef.current || joystickWasMoving);
 
-    if (moving) {
-      sendRealtimeStop(positionRef.current, directionRef.current, activeZone.id);
-    }
-  }, [activeZone.id, moving, sendRealtimeStop, setInputReleaseRequired, setPortalIntent]);
+    sendRealtimeTerminalStop(directionRef.current);
+  }, [sendRealtimeTerminalStop, setInputReleaseRequired, setPortalIntent]);
 
   const beginPortalTransition = useCallback((portal: WorldPortal, approach: Point, _now: number) => {
     if (portalTransitionRef.current) return;
@@ -276,10 +297,9 @@ export function GameWorld({ profile }: GameWorldProps) {
         seq: moveSeqRef.current + 1,
         zoneId: zone.id
       };
-      moveSeqRef.current = message.seq;
-      connection.send(message);
+      sendMoveImmediately(connection, message);
     }
-  }, [setPortalIntent]);
+  }, [sendMoveImmediately, setPortalIntent]);
 
   const handleJourneySelect = useCallback((zoneId: WorldZoneId) => {
     if (portalTransitionRef.current || zoneId === activeZoneIdRef.current) return;
@@ -380,6 +400,7 @@ export function GameWorld({ profile }: GameWorldProps) {
     let connection: RealtimeConnection;
     currentGuestIdRef.current = null;
     moveSeqRef.current = 0;
+    lastSentMoveRef.current = null;
     setRemoteGuests([]);
     setRealtimeStatus("connecting");
 
@@ -397,6 +418,7 @@ export function GameWorld({ profile }: GameWorldProps) {
           onClose: () => {
             if (!active) return;
             currentGuestIdRef.current = null;
+            lastSentMoveRef.current = null;
             setRemoteGuests([]);
             setRealtimeStatus("reconnecting");
           },
@@ -420,8 +442,7 @@ export function GameWorld({ profile }: GameWorldProps) {
                 seq: moveSeqRef.current + 1,
                 zoneId: activeZoneIdRef.current
               };
-              moveSeqRef.current = presence.seq;
-              connection.send(presence);
+              sendMoveImmediately(connection, presence);
               return;
             }
             if (message.type === "guest_joined") {
@@ -451,8 +472,7 @@ export function GameWorld({ profile }: GameWorldProps) {
 
     connectionRef.current = connection;
     moveThrottleRef.current = createMoveThrottle((message) => {
-      moveSeqRef.current = message.seq;
-      connection.send(message);
+      sendMoveImmediately(connection, message);
     }, realtimeMoveIntervalMs);
 
     return () => {
@@ -460,11 +480,13 @@ export function GameWorld({ profile }: GameWorldProps) {
       if (connectionRef.current === connection) connectionRef.current = null;
       moveThrottleRef.current = null;
       currentGuestIdRef.current = null;
+      lastSentMoveRef.current = null;
       connection.close();
     };
-  }, [profile.appearance, profile.nickname]);
+  }, [profile.appearance, profile.nickname, sendMoveImmediately]);
 
   useEffect(() => {
+    const inputGeneration = inputGenerationRef.current;
     if (portalTransitionRef.current) return;
 
     const hasJoystickInput = hasJoystickMovement(joystickVector);
@@ -478,7 +500,7 @@ export function GameWorld({ profile }: GameWorldProps) {
     const movementVector = joystickVector;
     let frame = 0;
     function tick(now: number) {
-      if (portalTransitionRef.current) return;
+      if (inputGeneration !== inputGenerationRef.current || portalTransitionRef.current) return;
 
       const current = positionRef.current;
       const hasDirectionalInput = hasJoystickMovement(movementVector);
@@ -533,6 +555,7 @@ export function GameWorld({ profile }: GameWorldProps) {
       }
 
       if (portalIntent && portalIntent.path.length === 1 && reachedTarget) {
+        if (inputGeneration !== inputGenerationRef.current) return;
         beginPortalTransition(portalIntent.portal, next, now);
         return;
       }
@@ -541,6 +564,7 @@ export function GameWorld({ profile }: GameWorldProps) {
         ? activeZone.portals.find((portal) => pointInPortalEntry(portal, next))
         : undefined;
       if (joystickPortal) {
+        if (inputGeneration !== inputGenerationRef.current) return;
         beginPortalTransition(joystickPortal, next, now);
         return;
       }

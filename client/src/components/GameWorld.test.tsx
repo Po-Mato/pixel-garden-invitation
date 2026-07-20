@@ -471,6 +471,33 @@ describe("GameWorld", () => {
     expect(screen.getByTestId("world-portal-transition")).toHaveAttribute("data-phase", "idle");
   });
 
+  it("keeps a cancelled portal RAF stale after directions closes and accepts new input", () => {
+    render(<GameWorld profile={profile} />);
+    const player = screen.getByLabelText("하객1");
+    const joystick = screen.getByLabelText("가상 조이스틱");
+
+    fireEvent.click(screen.getByRole("button", { name: "동네로 나가기" }));
+    Array.from({ length: 14 }, (_, index) => index * 240).forEach(advanceAnimation);
+    expect(player).toHaveStyle({ left: "285px", top: "135px" });
+    const staleTick = [...animationFrames.values()][0];
+    expect(staleTick).toBeDefined();
+
+    fireEvent.click(screen.getByRole("button", { name: "초대장 메뉴" }));
+    fireEvent.click(within(screen.getByRole("dialog", { name: "초대장 바로가기" })).getByRole("button", { name: "오시는 길" }));
+    expect(animationFrames.size).toBe(0);
+
+    act(() => staleTick?.(3360));
+    expect(player).toHaveStyle({ left: "285px", top: "135px" });
+    expect(screen.getByTestId("world-portal-transition")).toHaveAttribute("data-phase", "idle");
+
+    fireEvent.click(within(screen.getByRole("dialog", { name: "오시는 길" })).getByRole("button", { name: "닫기" }));
+    expect(animationFrames.size).toBe(0);
+
+    fireEvent.keyDown(joystick, { key: "ArrowRight" });
+    advanceAnimation(3600);
+    expect(player).toHaveStyle({ left: "315px", top: "135px" });
+  });
+
   it("pauses a started map target when directions opens from the menu shortcut", () => {
     render(<GameWorld profile={profile} />);
     const map = screen.getByTestId("world-map-viewport");
@@ -527,6 +554,39 @@ describe("GameWorld", () => {
 
     fireEvent.keyUp(joystick, { key: "ArrowRight" });
     expect(joystick).toHaveAttribute("aria-disabled", "false");
+  });
+
+  it("stops realtime at the last transmitted tile when the latest local tile was throttled", () => {
+    configureRealtime();
+    render(<GameWorld profile={profile} />);
+    const socket = MockWebSocket.instances[0];
+    act(() => socket.emit("open"));
+    act(() => socket.emitJson({ type: "welcome", guestId: "guest_self", guests: [] }));
+    socket.sentMessages.length = 0;
+
+    const joystick = screen.getByLabelText("가상 조이스틱");
+    const player = screen.getByLabelText("하객1");
+    fireEvent.keyDown(joystick, { key: "ArrowRight" });
+    advanceAnimation(0);
+    const priorMove = JSON.parse(socket.sentMessages.at(-1) ?? "null");
+    expect(priorMove).toMatchObject({ x: 315, y: 555, direction: "right", moving: true, zoneId: "home" });
+
+    fireEvent.keyDown(joystick, { key: "ArrowDown" });
+    advanceAnimation(50);
+    expect(player).toHaveStyle({ left: "315px", top: "585px" });
+    expect(socket.sentMessages).toHaveLength(1);
+
+    fireEvent.click(screen.getByRole("button", { name: /오시는 길/ }));
+
+    const terminalStop = JSON.parse(socket.sentMessages.at(-1) ?? "null");
+    expect(terminalStop).toMatchObject({
+      x: priorMove.x,
+      y: priorMove.y,
+      direction: "down",
+      moving: false,
+      zoneId: priorMove.zoneId,
+      seq: priorMove.seq + 1
+    });
   });
 
   it("places the calendar sheet above the hidden menu layers", () => {
