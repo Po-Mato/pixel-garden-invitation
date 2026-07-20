@@ -12,7 +12,7 @@ export default {
     const url = new URL(request.url);
     if (url.pathname.startsWith("/api/")) {
       const clientKey = request.headers.get("cf-connecting-ip") ?? "local";
-      return handleApiRequest(request, env.DB, clientKey);
+      return handleApiRequest(request, env, clientKey);
     }
 
     const roomMatch = url.pathname.match(/^\/rooms\/([^/]+)$/);

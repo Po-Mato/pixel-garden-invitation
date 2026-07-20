@@ -1,5 +1,8 @@
 import { MemoryRateLimiter } from "./rateLimit";
+import { createRsvp, findRsvp, getRsvpPolicy, updateRsvp } from "./rsvpRepository";
+import { createEditCredential, hashEditToken } from "./security";
 import { parseGuestbookPayload, parseRsvpPayload } from "./validation";
+import type { Env } from "./index";
 
 type WriteLimiter = Pick<MemoryRateLimiter, "allow">;
 
@@ -48,6 +51,39 @@ async function readJson(request: Request): Promise<unknown | null> {
   }
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
+}
+
+function readExpectedRevision(value: unknown): number | null {
+  if (!isRecord(value) || !Number.isInteger(value.revision) || (value.revision as number) < 1) return null;
+  return value.revision as number;
+}
+
+function readBearerToken(request: Request): string | null {
+  const match = request.headers.get("authorization")?.match(/^Bearer ([^\s]+)$/);
+  return match?.[1] ?? null;
+}
+
+function constantTimeEqual(left: string, right: string): boolean {
+  const leftBytes = new TextEncoder().encode(left);
+  const rightBytes = new TextEncoder().encode(right);
+  let difference = leftBytes.length ^ rightBytes.length;
+  const length = Math.max(leftBytes.length, rightBytes.length);
+
+  for (let index = 0; index < length; index += 1) {
+    difference |= (leftBytes[index] ?? 0) ^ (rightBytes[index] ?? 0);
+  }
+
+  return difference === 0;
+}
+
+async function ownsRsvp(request: Request, editTokenHash: string | null): Promise<boolean> {
+  const token = readBearerToken(request);
+  if (!token || !editTokenHash) return false;
+  return constantTimeEqual(await hashEditToken(token), editTokenHash);
+}
+
 export function resetHttpRateLimiterForTest(): void {
   writeLimiter = createWriteLimiter();
 }
@@ -61,9 +97,55 @@ async function invitationExists(db: D1Database, invitationId: string): Promise<b
   return invitation !== null;
 }
 
+async function handleOwnedRsvp(
+  request: Request,
+  env: Env,
+  clientKey: string,
+  invitationId: string,
+  rsvpId: string,
+  options: HandleApiRequestOptions
+): Promise<Response> {
+  if (request.method !== "GET" && request.method !== "PATCH") {
+    return json({ error: "not_found" }, 404);
+  }
+
+  try {
+    const owned = await findRsvp(env.DB, invitationId, rsvpId);
+    if (!owned) return json({ error: "not_found" }, 404);
+    if (!(await ownsRsvp(request, owned.editTokenHash))) return json({ error: "unauthorized" }, 401);
+    if (request.method === "GET") return json(owned.response);
+
+    const body = await readJson(request);
+    const expectedRevision = readExpectedRevision(body);
+    if (body === null || expectedRevision === null) return json({ error: "invalid_request" }, 400);
+
+    const policy = await getRsvpPolicy(env.DB, invitationId);
+    if (!policy) return json({ error: "not_found" }, 404);
+    const submission = parseRsvpPayload(body, policy.consentVersion);
+    if (!submission) return json({ error: "invalid_request" }, 400);
+
+    const limiter = options.limiter ?? writeLimiter;
+    if (!limiter.allow(clientKey)) return json({ error: "rate_limited" }, 429);
+
+    const response = await updateRsvp(env.DB, {
+      invitationId,
+      rsvpId,
+      submission,
+      expectedRevision,
+      updatedAt: new Date().toISOString()
+    });
+    if (response) return json(response);
+
+    const existing = await findRsvp(env.DB, invitationId, rsvpId);
+    return existing ? json({ error: "conflict" }, 409) : json({ error: "not_found" }, 404);
+  } catch {
+    return json({ error: "internal_error" }, 500);
+  }
+}
+
 export async function handleApiRequest(
   request: Request,
-  db: D1Database,
+  env: Env,
   clientKey: string,
   options: HandleApiRequestOptions = {}
 ): Promise<Response> {
@@ -72,25 +154,26 @@ export async function handleApiRequest(
   }
 
   const url = new URL(request.url);
-  const match = url.pathname.match(/^\/api\/invitations\/([^/]+)\/(rsvps|guestbook)$/);
-  if (!match) {
-    return json({ error: "not_found" }, 404);
+  const ownedRsvpMatch = url.pathname.match(/^\/api\/invitations\/([^/]+)\/rsvps\/([^/]+)$/);
+  if (ownedRsvpMatch) {
+    return handleOwnedRsvp(request, env, clientKey, ownedRsvpMatch[1], ownedRsvpMatch[2], options);
   }
 
-  const [, invitationId, resource] = match;
+  const collectionMatch = url.pathname.match(/^\/api\/invitations\/([^/]+)\/(rsvps|guestbook)$/);
+  if (!collectionMatch) return json({ error: "not_found" }, 404);
+
+  const [, invitationId, resource] = collectionMatch;
   if (request.method === "GET" && resource === "guestbook") {
     try {
-      if (!(await invitationExists(db, invitationId))) {
-        return json({ error: "not_found" }, 404);
-      }
+      if (!(await invitationExists(env.DB, invitationId))) return json({ error: "not_found" }, 404);
 
-      const result = await db
-        .prepare(
-          `SELECT id, nickname, message, created_at
-           FROM guestbook_messages
-           WHERE invitation_id = ? AND is_hidden = 0
-           ORDER BY created_at DESC`
-        )
+      const result = await env.DB
+        .prepare(`
+          SELECT id, nickname, message, created_at
+          FROM guestbook_messages
+          WHERE invitation_id = ? AND is_hidden = 0
+          ORDER BY created_at DESC
+        `)
         .bind(invitationId)
         .all<GuestbookRow>();
 
@@ -107,70 +190,59 @@ export async function handleApiRequest(
     }
   }
 
-  if (request.method !== "POST") {
-    return json({ error: "method_not_allowed" }, 405);
-  }
+  if (request.method !== "POST") return json({ error: "not_found" }, 404);
 
   const body = await readJson(request);
+  if (body === null) return json({ error: "invalid_request" }, 400);
 
   if (resource === "rsvps") {
-    const payload = parseRsvpPayload(body);
-    if (!payload) {
-      return json({ error: "invalid_request" }, 400);
-    }
-
     try {
-      if (!(await invitationExists(db, invitationId))) {
-        return json({ error: "not_found" }, 404);
-      }
+      const policy = await getRsvpPolicy(env.DB, invitationId);
+      if (!policy) return json({ error: "not_found" }, 404);
+
+      const submission = parseRsvpPayload(body, policy.consentVersion);
+      if (!submission) return json({ error: "invalid_request" }, 400);
+
+      const limiter = options.limiter ?? writeLimiter;
+      if (!limiter.allow(clientKey)) return json({ error: "rate_limited" }, 429);
+
+      const rsvpId = id("rsvp");
+      const credential = await createEditCredential();
+      const response = await createRsvp(env.DB, {
+        id: rsvpId,
+        invitationId,
+        submission,
+        consentedAt: new Date().toISOString(),
+        editTokenHash: credential.editTokenHash
+      });
+
+      return json({
+        response,
+        credential: { rsvpId, editToken: credential.editToken }
+      }, 201);
     } catch {
       return json({ error: "internal_error" }, 500);
     }
-
-    const limiter = options.limiter ?? writeLimiter;
-    if (!limiter.allow(clientKey)) {
-      return json({ error: "rate_limited" }, 429);
-    }
-
-    try {
-      await db
-        .prepare(
-          `INSERT INTO rsvps (id, invitation_id, guest_name, attendance, party_size, note)
-           VALUES (?, ?, ?, ?, ?, ?)`
-        )
-        .bind(id("rsvp"), invitationId, payload.guestName, payload.attendance, payload.partySize, payload.note)
-        .run();
-    } catch {
-      return json({ error: "internal_error" }, 500);
-    }
-
-    return json({ ok: true }, 201);
   }
 
   const payload = parseGuestbookPayload(body);
-  if (!payload) {
-    return json({ error: "invalid_request" }, 400);
-  }
+  if (!payload) return json({ error: "invalid_request" }, 400);
 
   try {
-    if (!(await invitationExists(db, invitationId))) {
-      return json({ error: "not_found" }, 404);
-    }
+    if (!(await invitationExists(env.DB, invitationId))) return json({ error: "not_found" }, 404);
   } catch {
     return json({ error: "internal_error" }, 500);
   }
 
   const limiter = options.limiter ?? writeLimiter;
-  if (!limiter.allow(clientKey)) {
-    return json({ error: "rate_limited" }, 429);
-  }
+  if (!limiter.allow(clientKey)) return json({ error: "rate_limited" }, 429);
 
   try {
-    await db
-      .prepare(
-        `INSERT INTO guestbook_messages (id, invitation_id, nickname, message)
-         VALUES (?, ?, ?, ?)`
-      )
+    await env.DB
+      .prepare(`
+        INSERT INTO guestbook_messages (id, invitation_id, nickname, message)
+        VALUES (?, ?, ?, ?)
+      `)
       .bind(id("guestbook"), invitationId, payload.nickname, payload.message)
       .run();
   } catch {
