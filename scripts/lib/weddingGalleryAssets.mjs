@@ -1,4 +1,4 @@
-import { access, mkdir, mkdtemp, readdir, readFile, rename, rm } from "node:fs/promises";
+import { access, cp, mkdir, mkdtemp, readdir, readFile, rename, rm } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import sharp from "sharp";
@@ -201,7 +201,11 @@ export async function auditWeddingGalleryAssets(options = {}) {
 
 export async function buildWeddingGalleryAssets(options = {}) {
   const { rootDir, manifestPath, sourceRoot, outputRoot } = defaultPaths(options);
-  const fileSystem = { rename: options.fileSystem?.rename ?? rename };
+  const fileSystem = {
+    rename: options.fileSystem?.rename ?? rename,
+    cp: options.fileSystem?.cp ?? cp,
+    rm: options.fileSystem?.rm ?? rm
+  };
   const manifest = await loadWeddingGalleryManifest({ ...options, manifestPath });
   const sources = await Promise.all(manifest.map(async (photo) => {
     const source = await readSourceDimensions(sourceRoot, photo);
@@ -231,6 +235,7 @@ export async function buildWeddingGalleryAssets(options = {}) {
 
     const backupRoot = `${outputRoot}.previous-${process.pid}-${Date.now()}`;
     let movedExistingOutput = false;
+    let cleanupWarning;
     try {
       try {
         await fileSystem.rename(outputRoot, backupRoot);
@@ -239,13 +244,36 @@ export async function buildWeddingGalleryAssets(options = {}) {
         if (error?.code !== "ENOENT") throw error;
       }
       await fileSystem.rename(stagedOutputRoot, outputRoot);
-    } catch (error) {
-      if (movedExistingOutput) await fileSystem.rename(backupRoot, outputRoot);
-      throw error;
-    }
-    if (movedExistingOutput) await rm(backupRoot, { recursive: true, force: true });
+    } catch (publishError) {
+      if (!movedExistingOutput) throw publishError;
 
-    return { files: expectedOutputNames(manifest).map((name) => path.join(outputRoot, name)), manifest };
+      try {
+        await fileSystem.rename(backupRoot, outputRoot);
+      } catch (restoreError) {
+        try {
+          await fileSystem.cp(backupRoot, outputRoot, { recursive: true });
+        } catch (copyError) {
+          throw new AggregateError(
+            [publishError, restoreError, copyError],
+            `웨딩 갤러리 publish와 복구에 실패했습니다. backup 경로: ${backupRoot}`
+          );
+        }
+      }
+      throw publishError;
+    }
+    if (movedExistingOutput) {
+      try {
+        await fileSystem.rm(backupRoot, { recursive: true, force: true });
+      } catch (error) {
+        cleanupWarning = error;
+      }
+    }
+
+    return {
+      files: expectedOutputNames(manifest).map((name) => path.join(outputRoot, name)),
+      manifest,
+      cleanupWarning
+    };
   } finally {
     await rm(temporaryRoot, { recursive: true, force: true });
   }

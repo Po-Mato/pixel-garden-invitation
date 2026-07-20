@@ -22,7 +22,7 @@ pnpm gallery:build
 pnpm gallery:audit
 ```
 
-`gallery:build`는 각 원본을 폭 640px와 1024px WebP로 변환하여 `client/public/images/wedding-gallery/`에 배치합니다. `gallery:audit`는 20개 출력 파일, WebP 형식, 선언 폭 및 원본 비율을 확인합니다.
+`gallery:build`는 각 원본을 폭 640px와 1024px WebP로 변환하여 `client/public/images/wedding-gallery/`에 배치합니다. `gallery:audit`는 20개 출력 파일, WebP 형식, 선언 폭 및 매니페스트 선언 비율을 확인합니다.
 
 ## 실제 사진 교체
 

@@ -183,6 +183,95 @@ test("publish 교체가 실패하면 기존 출력 20개를 복원한다", async
   });
 });
 
+test("rollback rename이 실패하면 backup을 복사해 기존 출력을 복구한다", async () => {
+  await withFixture(async ({ rootDir, manifestPath, sourceRoot, outputRoot }) => {
+    await buildWeddingGalleryAssets({ rootDir, manifestPath, sourceRoot, outputRoot });
+    const existingOutput = join(outputRoot, "01-cover-640.webp");
+    const before = await readFile(existingOutput);
+    let backupRoot;
+    let renameCalls = 0;
+
+    await assert.rejects(
+      () => buildWeddingGalleryAssets({
+        rootDir,
+        manifestPath,
+        sourceRoot,
+        outputRoot,
+        fileSystem: {
+          rename: async (from, to) => {
+            renameCalls += 1;
+            if (renameCalls === 1) backupRoot = to;
+            if (renameCalls === 2) throw new Error("publish replacement failed");
+            if (renameCalls === 3) throw new Error("rollback rename failed");
+            await rename(from, to);
+          }
+        }
+      }),
+      /publish replacement failed/
+    );
+
+    assert.equal(renameCalls, 3);
+    assert.equal((await readdir(outputRoot)).length, 20);
+    assert.deepEqual(await readFile(existingOutput), before);
+    assert.equal((await readdir(backupRoot)).length, 20);
+  });
+});
+
+test("rollback copy도 실패하면 backup 경로를 포함해 보고하고 보존한다", async () => {
+  await withFixture(async ({ rootDir, manifestPath, sourceRoot, outputRoot }) => {
+    await buildWeddingGalleryAssets({ rootDir, manifestPath, sourceRoot, outputRoot });
+    let backupRoot;
+    let renameCalls = 0;
+
+    await assert.rejects(
+      () => buildWeddingGalleryAssets({
+        rootDir,
+        manifestPath,
+        sourceRoot,
+        outputRoot,
+        fileSystem: {
+          rename: async (from, to) => {
+            renameCalls += 1;
+            if (renameCalls === 1) backupRoot = to;
+            if (renameCalls === 2) throw new Error("publish replacement failed");
+            if (renameCalls === 3) throw new Error("rollback rename failed");
+            await rename(from, to);
+          },
+          cp: async () => {
+            throw new Error("rollback copy failed");
+          }
+        }
+      }),
+      (error) => error instanceof AggregateError && error.message.includes(backupRoot)
+    );
+
+    assert.equal(renameCalls, 3);
+    assert.equal((await readdir(backupRoot)).length, 20);
+  });
+});
+
+test("backup 정리 실패는 경고로 반환하고 새 출력을 유지한다", async () => {
+  await withFixture(async ({ rootDir, manifestPath, sourceRoot, outputRoot }) => {
+    await buildWeddingGalleryAssets({ rootDir, manifestPath, sourceRoot, outputRoot });
+
+    const result = await buildWeddingGalleryAssets({
+      rootDir,
+      manifestPath,
+      sourceRoot,
+      outputRoot,
+      fileSystem: {
+        rm: async () => {
+          throw new Error("backup cleanup failed");
+        }
+      }
+    });
+
+    assert.match(result.cleanupWarning.message, /backup cleanup failed/);
+    assert.equal((await readdir(outputRoot)).length, 20);
+    await auditWeddingGalleryAssets({ rootDir, manifestPath, outputRoot });
+  });
+});
+
 test("중복 ID 매니페스트를 거부하고 실패한 빌드는 기존 출력을 유지한다", async () => {
   await withFixture(async ({ rootDir, manifestPath, sourceRoot, outputRoot }) => {
     const duplicateManifest = [...photos.slice(0, -1), { ...photos[0] }];
