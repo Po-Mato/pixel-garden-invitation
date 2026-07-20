@@ -609,6 +609,43 @@ describe("GameWorld", () => {
     });
   });
 
+  it("confirms a terminal stop when the last transmitted state was unacknowledged", () => {
+    configureRealtime();
+    render(<GameWorld profile={profile} />);
+    const socket = MockWebSocket.instances[0];
+    act(() => socket.emit("open"));
+    act(() => socket.emitJson({ type: "welcome", guestId: "guest_self", guests: [] }));
+    const priorStop = JSON.parse(socket.sentMessages.at(-1) ?? "null");
+    expect(priorStop).toMatchObject({ x: 285, y: 555, moving: false, zoneId: "home" });
+    socket.sentMessages.length = 0;
+
+    fireEvent.click(screen.getByRole("button", { name: /오시는 길/ }));
+
+    const terminalStop = JSON.parse(socket.sentMessages.at(-1) ?? "null");
+    expect(socket.sentMessages).toHaveLength(1);
+    expect(terminalStop).toMatchObject({
+      x: priorStop.x,
+      y: priorStop.y,
+      moving: false,
+      zoneId: priorStop.zoneId,
+      seq: priorStop.seq + 1
+    });
+
+    act(() => vi.advanceTimersByTime(125));
+    const confirmedStop = JSON.parse(socket.sentMessages.at(-1) ?? "null");
+    expect(socket.sentMessages).toHaveLength(2);
+    expect(confirmedStop).toMatchObject({
+      x: terminalStop.x,
+      y: terminalStop.y,
+      moving: false,
+      zoneId: terminalStop.zoneId,
+      seq: terminalStop.seq + 1
+    });
+
+    act(() => vi.advanceTimersByTime(1000));
+    expect(socket.sentMessages).toHaveLength(2);
+  });
+
   it("cancels a pending terminal stop confirmation when joystick input restarts", () => {
     configureRealtime();
     render(<GameWorld profile={profile} />);

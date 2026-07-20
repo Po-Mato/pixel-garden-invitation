@@ -221,7 +221,7 @@ export function GameWorld({ profile }: GameWorldProps) {
   const sendRealtimeTerminalStop = useCallback((nextDirection: Direction) => {
     const connection = connectionRef.current;
     const lastSentMove = lastSentMoveRef.current;
-    if (!connection || !lastSentMove?.moving) return;
+    if (!connection || !lastSentMove) return;
 
     clearTerminalStopConfirm();
     const terminalStop: MoveMessage = {
