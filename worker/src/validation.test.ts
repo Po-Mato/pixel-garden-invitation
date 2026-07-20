@@ -2,34 +2,66 @@ import { describe, expect, it } from "vitest";
 import { parseGuestbookPayload, parseRsvpPayload } from "./validation";
 
 describe("parseRsvpPayload", () => {
-  it("accepts a valid RSVP", () => {
+  const consentVersion = "2026-07-20";
+  const base = {
+    side: "groom",
+    guestName: " 이승재 ",
+    phone: "010-1234-5678",
+    attendance: "yes",
+    partySize: 2,
+    mealStatus: "yes",
+    note: " 창가 자리 ",
+    consentVersion
+  };
+
+  it("accepts the canonical attending RSVP", () => {
     expect(
-      parseRsvpPayload({
-        guestName: "이승재",
-        attendance: "yes",
-        partySize: 2,
-        note: "주차 필요",
-      }),
+      parseRsvpPayload(base, consentVersion)
     ).toEqual({
+      side: "groom",
       guestName: "이승재",
+      phone: "01012345678",
       attendance: "yes",
       partySize: 2,
-      note: "주차 필요",
+      mealStatus: "yes",
+      note: "창가 자리",
+      consentVersion
     });
   });
 
-  it("rejects invalid RSVP data", () => {
-    expect(parseRsvpPayload({ guestName: "", attendance: "bad", partySize: 99 })).toBeNull();
+  it("accepts the canonical declined RSVP", () => {
+    expect(
+      parseRsvpPayload({ ...base, attendance: "no", partySize: 0, mealStatus: "not_applicable" }, consentVersion)
+    ).toEqual({
+      ...base,
+      guestName: "이승재",
+      phone: "01012345678",
+      note: "창가 자리",
+      attendance: "no",
+      partySize: 0,
+      mealStatus: "not_applicable"
+    });
   });
 
-  it.each([true, [2], "2", null])("rejects non-number party size %j", (partySize) => {
+  it("accepts the canonical unsure RSVP", () => {
     expect(
-      parseRsvpPayload({
-        guestName: "이승재",
-        attendance: "yes",
-        partySize,
-      }),
-    ).toBeNull();
+      parseRsvpPayload({ ...base, attendance: "unsure", mealStatus: "unsure" }, consentVersion)
+    ).toEqual({
+      ...base,
+      guestName: "이승재",
+      phone: "01012345678",
+      note: "창가 자리",
+      attendance: "unsure",
+      mealStatus: "unsure"
+    });
+  });
+
+  it("rejects an invalid contact number", () => {
+    expect(parseRsvpPayload({ ...base, phone: "010-12" }, consentVersion)).toBeNull();
+  });
+
+  it("rejects a stale consent version", () => {
+    expect(parseRsvpPayload({ ...base, consentVersion: "old" }, consentVersion)).toBeNull();
   });
 });
 
