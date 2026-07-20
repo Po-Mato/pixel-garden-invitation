@@ -185,4 +185,28 @@ describe("weddingApi", () => {
       retryAfterSeconds: 570
     }));
   });
+
+  it("exposes the Worker's 60-second RSVP create and update retry delay", async () => {
+    vi.stubEnv("VITE_WORKER_URL", "https://worker.test");
+    vi.stubGlobal("fetch", vi.fn().mockImplementation(() => Promise.resolve(jsonResponse(
+      { error: "rate_limited" },
+      429,
+      { "retry-after": "60" }
+    ))));
+
+    const { createRsvp, updateOwnedRsvp } = await import("./weddingApi");
+    await expect(createRsvp(submission)).rejects.toEqual(expect.objectContaining({
+      status: 429,
+      code: "rate_limited",
+      retryAfterSeconds: 60
+    }));
+    await expect(updateOwnedRsvp({ rsvpId: "rsvp_1", editToken: "edit-token" }, {
+      ...submission,
+      revision: 1
+    })).rejects.toEqual(expect.objectContaining({
+      status: 429,
+      code: "rate_limited",
+      retryAfterSeconds: 60
+    }));
+  });
 });

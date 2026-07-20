@@ -24,11 +24,12 @@ function createWriteLimiter(): MemoryRateLimiter {
 
 let writeLimiter: WriteLimiter = createWriteLimiter();
 
-function json(body: unknown, status = 200): Response {
+function json(body: unknown, status = 200, headers: HeadersInit = {}): Response {
   return new Response(JSON.stringify(body), {
     status,
     headers: {
-      "content-type": "application/json; charset=utf-8"
+      "content-type": "application/json; charset=utf-8",
+      ...headers
     }
   });
 }
@@ -184,7 +185,7 @@ async function handleOwnedRsvp(
     if (!submission) return json({ error: "invalid_request" }, 400);
 
     const limiter = options.limiter ?? writeLimiter;
-    if (!limiter.allow(clientKey)) return json({ error: "rate_limited" }, 429);
+    if (!limiter.allow(clientKey)) return json({ error: "rate_limited" }, 429, { "retry-after": "60" });
 
     const response = await updateRsvp(env.DB, {
       invitationId,
@@ -332,7 +333,7 @@ async function handleApiRequestWithoutCors(
       if (!submission) return json({ error: "invalid_request" }, 400);
 
       const limiter = options.limiter ?? writeLimiter;
-      if (!limiter.allow(clientKey)) return json({ error: "rate_limited" }, 429);
+      if (!limiter.allow(clientKey)) return json({ error: "rate_limited" }, 429, { "retry-after": "60" });
 
       const rsvpId = id("rsvp");
       const credential = await createEditCredential();

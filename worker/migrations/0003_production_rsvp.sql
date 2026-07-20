@@ -34,6 +34,16 @@ CREATE TABLE rsvps (
       AND meal_status = 'unsure'
       AND revision = 1)
     OR (side IN ('groom', 'bride')
+      AND phone IS NOT NULL
+      AND length(phone) BETWEEN 8 AND 15
+      AND phone NOT GLOB '*[^0-9]*'
+      AND consent_version IS NOT NULL
+      AND length(trim(consent_version)) > 0
+      AND consented_at IS NOT NULL
+      AND length(trim(consented_at)) > 0
+      AND edit_token_hash IS NOT NULL
+      AND length(edit_token_hash) = 43
+      AND edit_token_hash NOT GLOB '*[^A-Za-z0-9_-]*'
       AND (
         (attendance = 'yes' AND party_size BETWEEN 1 AND 10 AND meal_status IN ('yes', 'no', 'unsure'))
         OR (attendance = 'no' AND party_size = 0 AND meal_status = 'not_applicable')

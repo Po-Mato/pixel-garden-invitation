@@ -296,7 +296,7 @@ expect(querySampleGarden(database)).toMatchObject({
 });
 ```
 
-또한 신규 불참 `party_size=0`은 성공하고, 참석 `party_size=0` 또는 불참 `meal_status=yes`는 SQLite CHECK 오류가 발생하는지 검증한다.
+또한 필수 개인정보·동의·소유권 필드를 갖춘 신규 불참 `party_size=0`은 성공하고, 참석 `party_size=0` 또는 불참 `meal_status=yes`는 SQLite CHECK 오류가 발생하는지 검증한다. 신규 `groom`/`bride` 행의 `phone`, `consent_version`, `consented_at`, `edit_token_hash` 누락·빈값과 잘못된 연락처·해시는 실패하고, 기존 `legacy` 행의 null 필드는 보존되는지도 실제 SQLite에서 검증한다.
 
 - [ ] **Step 2: 신규 마이그레이션 부재로 실패 확인**
 
@@ -328,7 +328,7 @@ CREATE TABLE rsvps (
   guest_name TEXT NOT NULL,
   phone TEXT,
   attendance TEXT NOT NULL CHECK (attendance IN ('yes', 'no', 'unsure')),
-  party_size INTEGER NOT NULL CHECK (party_size >= 0 AND party_size <= 10),
+  party_size INTEGER NOT NULL CHECK (typeof(party_size) = 'integer' AND party_size >= 0 AND party_size <= 10),
   meal_status TEXT NOT NULL CHECK (meal_status IN ('yes', 'no', 'unsure', 'not_applicable')),
   note TEXT NOT NULL,
   consent_version TEXT,
@@ -339,10 +339,29 @@ CREATE TABLE rsvps (
   updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (invitation_id) REFERENCES invitations(id),
   CHECK (
-    side = 'legacy'
-    OR (attendance = 'yes' AND party_size BETWEEN 1 AND 10 AND meal_status IN ('yes', 'no', 'unsure'))
-    OR (attendance = 'no' AND party_size = 0 AND meal_status = 'not_applicable')
-    OR (attendance = 'unsure' AND party_size BETWEEN 1 AND 10 AND meal_status = 'unsure')
+    (side = 'legacy'
+      AND phone IS NULL
+      AND consent_version IS NULL
+      AND consented_at IS NULL
+      AND edit_token_hash IS NULL
+      AND meal_status = 'unsure'
+      AND revision = 1)
+    OR (side IN ('groom', 'bride')
+      AND phone IS NOT NULL
+      AND length(phone) BETWEEN 8 AND 15
+      AND phone NOT GLOB '*[^0-9]*'
+      AND consent_version IS NOT NULL
+      AND length(trim(consent_version)) > 0
+      AND consented_at IS NOT NULL
+      AND length(trim(consented_at)) > 0
+      AND edit_token_hash IS NOT NULL
+      AND length(edit_token_hash) = 43
+      AND edit_token_hash NOT GLOB '*[^A-Za-z0-9_-]*'
+      AND (
+        (attendance = 'yes' AND party_size BETWEEN 1 AND 10 AND meal_status IN ('yes', 'no', 'unsure'))
+        OR (attendance = 'no' AND party_size = 0 AND meal_status = 'not_applicable')
+        OR (attendance = 'unsure' AND party_size BETWEEN 1 AND 10 AND meal_status = 'unsure')
+      ))
   )
 );
 
@@ -377,7 +396,7 @@ pnpm db:migrate:local
 pnpm db:migrate:local
 ```
 
-예상: 기존 행 보존, 신규 조건 제약과 확정 정책이 통과한다. 첫 로컬 적용은 0003을 적용하고 두 번째 적용은 적용할 마이그레이션이 없다고 보고한다.
+예상: 기존 행 보존, 신규 필수 필드·형식·조건 제약과 확정 정책이 통과한다. fresh 로컬 DB의 첫 적용은 `0001`부터 `0004`까지 적용하고, 두 번째 적용은 적용할 마이그레이션이 없다고 보고한다.
 
 - [ ] **Step 5: 스키마 커밋**
 
@@ -985,8 +1004,8 @@ VITE_WORKER_URL=http://127.0.0.1:8787 VITE_INVITATION_ID=sample-garden pnpm dev 
 - [ ] **Step 3: 운영 D1 백업**
 
 ```bash
-mkdir -p .superpowers/backups
-pnpm --filter @wedding-game/worker exec wrangler d1 export wedding-game-invitation --remote --output .superpowers/backups/wedding-game-invitation-pre-rsvp.sql
+mkdir -p "$PWD/.superpowers/backups"
+pnpm --filter @wedding-game/worker exec wrangler d1 export wedding-game-invitation --remote --output "$PWD/.superpowers/backups/wedding-game-invitation-pre-rsvp.sql"
 ```
 
 예상: 비어 있지 않은 SQL 백업 파일이 생성된다. 백업 파일은 git에 추가하지 않는다.
@@ -1021,7 +1040,7 @@ pnpm --filter @wedding-game/worker exec wrangler d1 migrations apply wedding-gam
 pnpm --filter @wedding-game/worker exec wrangler deploy
 ```
 
-예상: 0003 마이그레이션과 Worker 배포가 성공하고 cron trigger가 표시된다. 운영 API에서 허용 origin preflight는 204, 임의 origin은 403이어야 한다.
+예상: `0003_production_rsvp.sql`과 `0004_rsvp_consent_policy.sql` 적용이 모두 확인되고 Worker 배포가 성공하며 cron trigger가 표시된다. 운영 API에서 허용 origin preflight는 204, 임의 origin은 403이어야 한다.
 
 - [ ] **Step 6: 작업 트리 확인과 GitHub Pages 배포**
 

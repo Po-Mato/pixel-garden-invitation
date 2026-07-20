@@ -102,7 +102,7 @@ export function RsvpAdminPage() {
   const [meal, setMeal] = useState<FilterValue<RsvpMealStatus>>("all");
   const retrySeconds = Math.max(0, Math.ceil((retryUntil - retryClock) / 1_000));
 
-  function resetAdminState(message = "") {
+  function resetAdminState(message = "", resetInteraction = false) {
     sessionRef.current = null;
     loginVersionRef.current += 1;
     fetchVersionRef.current += 1;
@@ -122,10 +122,12 @@ export function RsvpAdminPage() {
     setPassword("");
     setRetryUntil(0);
     setRetryClock(Date.now());
-    setSearch("");
-    setSide("all");
-    setAttendance("all");
-    setMeal("all");
+    if (resetInteraction) {
+      setSearch("");
+      setSide("all");
+      setAttendance("all");
+      setMeal("all");
+    }
   }
 
   async function loadAll(token: string, options: {
@@ -423,7 +425,7 @@ export function RsvpAdminPage() {
             <p className="rsvp-admin-eyebrow">MJ CONVENTION · 2027.05.01</p>
             <h1>참석 답변 관리</h1>
           </div>
-          <button type="button" className="rsvp-admin-secondary" onClick={() => resetAdminState()}>
+          <button type="button" className="rsvp-admin-secondary" onClick={() => resetAdminState("", true)}>
             <LogOut aria-hidden="true" /> 로그아웃
           </button>
         </header>

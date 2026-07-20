@@ -4,7 +4,10 @@ import { describe, expect, it } from "vitest";
 
 type SqliteDatabase = {
   exec(sql: string): void;
-  prepare(sql: string): { get(...parameters: string[]): unknown };
+  prepare(sql: string): {
+    get(...parameters: unknown[]): unknown;
+    run(...parameters: unknown[]): unknown;
+  };
   close(): void;
 };
 
@@ -147,18 +150,18 @@ describe("invitation migrations", () => {
       });
 
       expect(() => database.exec(`
-        INSERT INTO rsvps (id, invitation_id, side, guest_name, attendance, party_size, meal_status, note)
-        VALUES ('rsvp_absent', 'sample-garden', 'groom', '불참 하객', 'no', 0, 'not_applicable', '')
+        INSERT INTO rsvps (id, invitation_id, side, guest_name, phone, attendance, party_size, meal_status, note, consent_version, consented_at, edit_token_hash)
+        VALUES ('rsvp_absent', 'sample-garden', 'groom', '불참 하객', '01012345678', 'no', 0, 'not_applicable', '', '2026-07-20', '2027-04-20T00:00:00.000Z', 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
       `)).not.toThrow();
 
       expect(() => database.exec(`
-        INSERT INTO rsvps (id, invitation_id, side, guest_name, attendance, party_size, meal_status, note)
-        VALUES ('rsvp_attending_zero', 'sample-garden', 'groom', '참석 하객', 'yes', 0, 'yes', '')
+        INSERT INTO rsvps (id, invitation_id, side, guest_name, phone, attendance, party_size, meal_status, note, consent_version, consented_at, edit_token_hash)
+        VALUES ('rsvp_attending_zero', 'sample-garden', 'groom', '참석 하객', '01012345678', 'yes', 0, 'yes', '', '2026-07-20', '2027-04-20T00:00:00.000Z', 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
       `)).toThrow(/CHECK constraint failed/);
 
       expect(() => database.exec(`
-        INSERT INTO rsvps (id, invitation_id, side, guest_name, attendance, party_size, meal_status, note)
-        VALUES ('rsvp_absent_meal', 'sample-garden', 'bride', '불참 하객', 'no', 0, 'yes', '')
+        INSERT INTO rsvps (id, invitation_id, side, guest_name, phone, attendance, party_size, meal_status, note, consent_version, consented_at, edit_token_hash)
+        VALUES ('rsvp_absent_meal', 'sample-garden', 'bride', '불참 하객', '01012345678', 'no', 0, 'yes', '', '2026-07-20', '2027-04-20T00:00:00.000Z', 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
       `)).toThrow(/CHECK constraint failed/);
 
       expect(() => database.exec(`
@@ -197,14 +200,73 @@ describe("invitation migrations", () => {
       `)).toThrow(/CHECK constraint failed/);
 
       expect(() => database.exec(`
-        INSERT INTO rsvps (id, invitation_id, side, guest_name, attendance, party_size, meal_status, note)
-        VALUES ('rsvp_attending_integer', 'sample-garden', 'groom', '참석 하객', 'yes', 1, 'yes', '')
+        INSERT INTO rsvps (id, invitation_id, side, guest_name, phone, attendance, party_size, meal_status, note, consent_version, consented_at, edit_token_hash)
+        VALUES ('rsvp_attending_integer', 'sample-garden', 'groom', '참석 하객', '01012345678', 'yes', 1, 'yes', '', '2026-07-20', '2027-04-20T00:00:00.000Z', 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
       `)).not.toThrow();
 
       expect(() => database.exec(`
-        INSERT INTO rsvps (id, invitation_id, side, guest_name, attendance, party_size, meal_status, note)
-        VALUES ('rsvp_attending_fraction', 'sample-garden', 'groom', '참석 하객', 'yes', 1.5, 'yes', '')
+        INSERT INTO rsvps (id, invitation_id, side, guest_name, phone, attendance, party_size, meal_status, note, consent_version, consented_at, edit_token_hash)
+        VALUES ('rsvp_attending_fraction', 'sample-garden', 'groom', '참석 하객', '01012345678', 'yes', 1.5, 'yes', '', '2026-07-20', '2027-04-20T00:00:00.000Z', 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
       `)).toThrow(/CHECK constraint failed/);
+    } finally {
+      database.close();
+    }
+  });
+
+  it("requires canonical ownership and consent fields for every new RSVP", () => {
+    const database = new DatabaseSync(":memory:");
+    const validHash = "A".repeat(43);
+
+    try {
+      for (const filename of migrationFiles.slice(0, 3)) {
+        database.exec(readMigration(filename));
+      }
+
+      const insert = database.prepare(`
+        INSERT INTO rsvps (
+          id, invitation_id, side, guest_name, phone, attendance, party_size,
+          meal_status, note, consent_version, consented_at, edit_token_hash
+        ) VALUES (?, 'sample-garden', 'groom', '신규 하객', ?, 'yes', 1, 'yes', '', ?, ?, ?)
+      `);
+      const insertValues = (
+        id: string,
+        phone: string | null = "01012345678",
+        consentVersion: string | null = "2026-07-20",
+        consentedAt: string | null = "2027-04-20T00:00:00.000Z",
+        editTokenHash: string | null = validHash
+      ) => insert.run(id, phone, consentVersion, consentedAt, editTokenHash);
+
+      expect(() => insertValues("rsvp_canonical")).not.toThrow();
+
+      for (const [label, phone] of [
+        ["missing", null],
+        ["empty", ""],
+        ["short", "1234567"],
+        ["long", "1".repeat(16)],
+        ["formatted", "010-1234-5678"],
+        ["letters", "0101234abcd"]
+      ] as const) {
+        expect(() => insertValues(`rsvp_phone_${label}`, phone)).toThrow(/CHECK constraint failed/);
+      }
+
+      for (const [label, consentVersion] of [["missing", null], ["empty", ""], ["blank", "   "]] as const) {
+        expect(() => insertValues(`rsvp_consent_version_${label}`, undefined, consentVersion)).toThrow(/CHECK constraint failed/);
+      }
+
+      for (const [label, consentedAt] of [["missing", null], ["empty", ""], ["blank", "   "]] as const) {
+        expect(() => insertValues(`rsvp_consented_at_${label}`, undefined, undefined, consentedAt)).toThrow(/CHECK constraint failed/);
+      }
+
+      for (const [label, hash] of [
+        ["missing", null],
+        ["empty", ""],
+        ["short", "A".repeat(42)],
+        ["long", "A".repeat(44)],
+        ["padding", `${"A".repeat(42)}=`],
+        ["invalid", `${"A".repeat(42)}+`]
+      ] as const) {
+        expect(() => insertValues(`rsvp_hash_${label}`, undefined, undefined, undefined, hash)).toThrow(/CHECK constraint failed/);
+      }
     } finally {
       database.close();
     }

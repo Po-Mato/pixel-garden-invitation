@@ -723,9 +723,41 @@ describe("handleApiRequest", () => {
     const response = await handleApiRequest(rsvpRequest(), apiEnv(db), "injected-limit-client", { limiter });
 
     expect(response.status).toBe(429);
+    expect(response.headers.get("retry-after")).toBe("60");
     await expect(response.json()).resolves.toEqual({ error: "rate_limited" });
     expect(limiter.allow).toHaveBeenCalledWith("injected-limit-client");
     expect(bindCalls.some(({ sql }) => /INSERT INTO rsvps/i.test(sql))).toBe(false);
+  });
+
+  it("returns and exposes a 60-second Retry-After for rate-limited RSVP creates and updates", async () => {
+    const { db } = createDb();
+    const env = apiEnv(db, { RSVP_ALLOWED_ORIGINS: "https://po-mato.github.io" });
+    const limiter = { allow: vi.fn().mockReturnValue(false) };
+    const createRequest = rsvpRequest();
+    createRequest.headers.set("origin", "https://po-mato.github.io");
+
+    const createResponse = await handleApiRequest(createRequest, env, "limited-create", { limiter });
+
+    const { body } = await createOwnedRsvp(db);
+    const updateResponse = await handleApiRequest(new Request(
+      `https://worker.test/api/invitations/sample-garden/rsvps/${body.credential.rsvpId}`,
+      {
+        method: "PATCH",
+        body: JSON.stringify({ ...canonicalRsvp, revision: 1 }),
+        headers: {
+          authorization: `Bearer ${body.credential.editToken}`,
+          "content-type": "application/json",
+          origin: "https://po-mato.github.io"
+        }
+      }
+    ), env, "limited-update", { limiter });
+
+    for (const response of [createResponse, updateResponse]) {
+      expect(response.status).toBe(429);
+      expect(response.headers.get("retry-after")).toBe("60");
+      expect(response.headers.get("access-control-expose-headers")).toBe("Retry-After");
+      await expect(response.json()).resolves.toEqual({ error: "rate_limited" });
+    }
   });
 
   it("rate limits valid writes", async () => {

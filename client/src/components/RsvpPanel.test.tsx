@@ -120,6 +120,21 @@ describe("RsvpPanel", () => {
     expect(api.fetchOwnedRsvp).toHaveBeenCalledTimes(2);
   });
 
+  it.each([401, 404])("clears an invalid credential and recovers to a new form after update returns %s", async (status) => {
+    storage.loadRsvpCredential.mockReturnValue(credential);
+    api.fetchOwnedRsvp.mockResolvedValue(response);
+    api.updateOwnedRsvp.mockRejectedValue(new WeddingApiError(status, "unauthorized"));
+    render(<RsvpPanel />);
+    await screen.findByRole("heading", { name: "보내주신 답변" });
+
+    fireEvent.click(screen.getByRole("button", { name: "답변 수정" }));
+    fireEvent.click(screen.getByRole("button", { name: "수정 저장" }));
+
+    expect(await screen.findByRole("button", { name: "참석 답변 보내기" })).toBeInTheDocument();
+    expect(storage.clearRsvpCredential).toHaveBeenCalledWith("sample-garden");
+    expect(screen.getByRole("status")).toHaveTextContent("수정 정보를 확인할 수 없어 새 답변 작성으로 전환했습니다");
+  });
+
   it("keeps the summary when credential storage fails and warns about revisit editing", async () => {
     storage.saveRsvpCredential.mockReturnValue(false);
     api.createRsvp.mockResolvedValue({ response, credential });
@@ -144,6 +159,46 @@ describe("RsvpPanel", () => {
     await Promise.resolve();
 
     expect(storage.saveRsvpCredential).toHaveBeenCalledWith("sample-garden", credential);
+  });
+
+  it("shares an in-flight creation across a closed and reopened sheet", async () => {
+    let resolveCreate: ((value: { response: RsvpRecord; credential: typeof credential }) => void) | undefined;
+    api.createRsvp.mockImplementation(() => new Promise((resolve) => { resolveCreate = resolve; }));
+    const first = render(<RsvpPanel />);
+    fillNewForm();
+    fireEvent.click(screen.getByRole("button", { name: "참석 답변 보내기" }));
+
+    first.unmount();
+    render(<RsvpPanel />);
+
+    expect(screen.getByRole("status")).toHaveTextContent("답변을 저장하고 있습니다");
+    expect(screen.queryByRole("button", { name: "참석 답변 보내기" })).not.toBeInTheDocument();
+    resolveCreate?.({ response, credential });
+
+    expect(await screen.findByRole("heading", { name: "보내주신 답변" })).toBeInTheDocument();
+    expect(api.createRsvp).toHaveBeenCalledTimes(1);
+    expect(storage.saveRsvpCredential).toHaveBeenCalledTimes(1);
+  });
+
+  it("recovers a reopened sheet to a retryable new form after pending creation fails", async () => {
+    let rejectCreate: ((reason?: unknown) => void) | undefined;
+    api.createRsvp.mockImplementationOnce(() => new Promise((_, reject) => { rejectCreate = reject; }));
+    const first = render(<RsvpPanel />);
+    fillNewForm();
+    fireEvent.click(screen.getByRole("button", { name: "참석 답변 보내기" }));
+
+    first.unmount();
+    render(<StrictMode><RsvpPanel /></StrictMode>);
+    expect(screen.getByRole("status")).toHaveTextContent("답변을 저장하고 있습니다");
+    rejectCreate?.(new Error("network"));
+
+    expect(await screen.findByRole("button", { name: "참석 답변 보내기" })).toBeInTheDocument();
+    api.createRsvp.mockResolvedValueOnce({ response, credential });
+    fillNewForm();
+    fireEvent.click(screen.getByRole("button", { name: "참석 답변 보내기" }));
+
+    expect(await screen.findByRole("heading", { name: "보내주신 답변" })).toBeInTheDocument();
+    expect(api.createRsvp).toHaveBeenCalledTimes(2);
   });
 
   it.each([null, "2025-01-01"])("requires fresh consent when an editable response has consent version %s", async (consentVersion) => {
@@ -171,6 +226,27 @@ describe("RsvpPanel", () => {
 
     expect(await screen.findByRole("alert")).toHaveTextContent("답변을 보내지 못했습니다");
     expect(screen.getByLabelText("이름")).toHaveValue("새 하객");
+  });
+
+  it("shows the RSVP Retry-After delay after a rate-limited creation", async () => {
+    api.createRsvp.mockRejectedValue(new WeddingApiError(429, "rate_limited", 60));
+    render(<RsvpPanel />);
+    fillNewForm();
+    fireEvent.click(screen.getByRole("button", { name: "참석 답변 보내기" }));
+
+    expect(await screen.findByRole("alert")).toHaveTextContent("60초 후 다시 시도해 주세요");
+  });
+
+  it("shows the RSVP Retry-After delay after a rate-limited update", async () => {
+    storage.loadRsvpCredential.mockReturnValue(credential);
+    api.fetchOwnedRsvp.mockResolvedValue(response);
+    api.updateOwnedRsvp.mockRejectedValue(new WeddingApiError(429, "rate_limited", 60));
+    render(<RsvpPanel />);
+    await screen.findByRole("heading", { name: "보내주신 답변" });
+    fireEvent.click(screen.getByRole("button", { name: "답변 수정" }));
+    fireEvent.click(screen.getByRole("button", { name: "수정 저장" }));
+
+    expect(await screen.findByRole("alert")).toHaveTextContent("60초 후 다시 시도해 주세요");
   });
 
   it("does not update state after an owned lookup completes following unmount", async () => {

@@ -144,6 +144,46 @@ describe("RsvpAdminPage", () => {
     expect(storage.clearAdminSession).toHaveBeenCalledWith("sample-garden");
   });
 
+  it("preserves search and filters across session expiry while clearing protected data", async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(1_800_000_000_000);
+    const expiringSession = { token: "expiring-token", expiresAt: Date.now() + 2_000 };
+    api.createAdminSession.mockResolvedValueOnce(expiringSession).mockResolvedValueOnce(session);
+    render(<RsvpAdminPage />);
+    fireEvent.change(screen.getByLabelText("관리자 비밀번호"), { target: { value: "secret" } });
+    fireEvent.click(screen.getByRole("button", { name: "로그인" }));
+    await act(async () => { await Promise.resolve(); await Promise.resolve(); });
+    fireEvent.change(screen.getByLabelText("검색"), { target: { value: "Lee" } });
+    fireEvent.change(screen.getByLabelText("대상 필터"), { target: { value: "bride" } });
+    fireEvent.change(screen.getByLabelText("참석 필터"), { target: { value: "yes" } });
+    fireEvent.change(screen.getByLabelText("식사 필터"), { target: { value: "no" } });
+
+    act(() => { vi.advanceTimersByTime(2_000); });
+    expect(screen.queryByText("Lee Guest")).not.toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText("관리자 비밀번호"), { target: { value: "secret" } });
+    fireEvent.click(screen.getByRole("button", { name: "로그인" }));
+    await act(async () => { await Promise.resolve(); await Promise.resolve(); });
+
+    expect(screen.getByLabelText("검색")).toHaveValue("Lee");
+    expect(screen.getByLabelText("대상 필터")).toHaveValue("bride");
+    expect(screen.getByLabelText("참석 필터")).toHaveValue("yes");
+    expect(screen.getByLabelText("식사 필터")).toHaveValue("no");
+  });
+
+  it("preserves search and filters after an authenticated request returns 401", async () => {
+    api.fetchAdminRsvps.mockResolvedValueOnce(result).mockRejectedValueOnce(new WeddingApiError(401, "unauthorized"));
+    render(<RsvpAdminPage />);
+    await login();
+    fireEvent.change(screen.getByLabelText("검색"), { target: { value: "Lee" } });
+    fireEvent.change(screen.getByLabelText("대상 필터"), { target: { value: "bride" } });
+    fireEvent.click(screen.getByRole("button", { name: "새로고침" }));
+
+    expect(await screen.findByRole("button", { name: "로그인" })).toBeInTheDocument();
+    await login();
+    expect(screen.getByLabelText("검색")).toHaveValue("Lee");
+    expect(screen.getByLabelText("대상 필터")).toHaveValue("bride");
+  });
+
   it("restores and loads the session under React StrictMode without a busy-ref deadlock", async () => {
     storage.loadAdminSession.mockReturnValue(session);
     render(<StrictMode><RsvpAdminPage /></StrictMode>);
