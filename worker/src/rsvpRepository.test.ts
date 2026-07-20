@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 
 import type { RsvpSubmission } from "@wedding-game/shared";
-import { createRsvp, findRsvp, getRsvpPolicy, updateRsvp } from "./rsvpRepository";
+import { createRsvp, deleteRsvp, findRsvp, getRsvpPolicy, listRsvps, updateRsvp } from "./rsvpRepository";
 import { hashEditToken } from "./security";
 
 const submission: RsvpSubmission = {
@@ -177,5 +177,65 @@ describe("getRsvpPolicy", () => {
     });
     expect(prepare).toHaveBeenCalledWith(expect.stringMatching(/config_json/));
     expect(bind).toHaveBeenCalledWith("sample-garden");
+  });
+});
+
+describe("listRsvps", () => {
+  it("returns all responses newest-first with attendance and meal totals", async () => {
+    const responses = [
+      { ...row, id: "rsvp_yes_meal", party_size: 3, updated_at: "2026-07-20T13:00:00.000Z" },
+      { ...row, id: "rsvp_yes_no_meal", party_size: 2, meal_status: "no", updated_at: "2026-07-20T12:00:00.000Z" },
+      { ...row, id: "rsvp_unsure", attendance: "unsure", party_size: 4, meal_status: "unsure", updated_at: "2026-07-20T11:00:00.000Z" },
+      { ...row, id: "rsvp_no", attendance: "no", party_size: 0, meal_status: "not_applicable", updated_at: "2026-07-20T10:00:00.000Z" }
+    ];
+    const first = vi.fn().mockResolvedValue({ rsvp_delete_at: "2027-05-31T14:59:59.000Z" });
+    const all = vi.fn().mockResolvedValue({ results: responses });
+    const bind = vi.fn(() => ({ first, all }));
+    const prepare = vi.fn(() => ({ bind }));
+    const db = { prepare } as unknown as D1Database;
+
+    const result = await listRsvps(db, "sample-garden");
+
+    expect(prepare).toHaveBeenCalledWith(expect.stringMatching(/ORDER BY updated_at DESC/i));
+    expect(bind).toHaveBeenCalledWith("sample-garden");
+    expect(result.responses.map(({ id }) => id)).toEqual([
+      "rsvp_yes_meal",
+      "rsvp_yes_no_meal",
+      "rsvp_unsure",
+      "rsvp_no"
+    ]);
+    expect(result.summary).toEqual({
+      responseCount: 4,
+      attendingResponseCount: 2,
+      attendingPartySize: 5,
+      mealPartySize: 3,
+      declinedResponseCount: 1,
+      unsureResponseCount: 1,
+      unsurePartySize: 4,
+      deleteAt: "2027-05-31T14:59:59.000Z"
+    });
+  });
+});
+
+describe("deleteRsvp", () => {
+  it("deletes only an RSVP belonging to the requested invitation", async () => {
+    const run = vi.fn().mockResolvedValue({ success: true, meta: { changes: 1 } });
+    const bind = vi.fn(() => ({ run }));
+    const prepare = vi.fn(() => ({ bind }));
+    const db = { prepare } as unknown as D1Database;
+
+    await expect(deleteRsvp(db, "sample-garden", "rsvp_1")).resolves.toBe(true);
+
+    expect(prepare).toHaveBeenCalledWith(expect.stringMatching(/WHERE invitation_id = \? AND id = \?/i));
+    expect(bind).toHaveBeenCalledWith("sample-garden", "rsvp_1");
+  });
+
+  it("returns false when no scoped row was deleted", async () => {
+    const run = vi.fn().mockResolvedValue({ success: true, meta: { changes: 0 } });
+    const db = {
+      prepare: vi.fn(() => ({ bind: vi.fn(() => ({ run })) }))
+    } as unknown as D1Database;
+
+    await expect(deleteRsvp(db, "sample-garden", "missing")).resolves.toBe(false);
   });
 });

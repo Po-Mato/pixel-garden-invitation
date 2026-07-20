@@ -3,6 +3,10 @@ import { handleApiRequest } from "./http";
 export interface Env {
   DB: D1Database;
   GARDEN_ROOM: DurableObjectNamespace;
+  RSVP_ADMIN_PASSWORD_HASH: string;
+  RSVP_ADMIN_SESSION_SECRET: string;
+  RSVP_CLIENT_KEY_SECRET: string;
+  RSVP_ALLOWED_ORIGINS: string;
 }
 
 export { GardenRoom } from "./GardenRoom";

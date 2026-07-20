@@ -1,4 +1,4 @@
-import type { RsvpRecord, RsvpRecordSide, RsvpSubmission } from "@wedding-game/shared";
+import type { RsvpAdminResult, RsvpRecord, RsvpRecordSide, RsvpSubmission } from "@wedding-game/shared";
 
 export type CreateRsvpArgs = {
   id: string;
@@ -46,6 +46,10 @@ type RsvpRow = {
 type InvitationPolicyRow = {
   config_json: string;
   rsvp_deadline: string | null;
+  rsvp_delete_at: string | null;
+};
+
+type InvitationDeletePolicyRow = {
   rsvp_delete_at: string | null;
 };
 
@@ -182,4 +186,55 @@ export async function getRsvpPolicy(db: D1Database, invitationId: string): Promi
     responseDeadline: row.rsvp_deadline,
     deleteAt: row.rsvp_delete_at
   };
+}
+
+export async function listRsvps(db: D1Database, invitationId: string): Promise<RsvpAdminResult> {
+  const invitation = await db
+    .prepare(`
+      SELECT rsvp_delete_at
+      FROM invitations
+      WHERE id = ?
+    `)
+    .bind(invitationId)
+    .first<InvitationDeletePolicyRow>();
+  if (!invitation?.rsvp_delete_at) throw new Error("Invitation RSVP delete policy is missing");
+
+  const result = await db
+    .prepare(`
+      SELECT ${rsvpColumns}
+      FROM rsvps
+      WHERE invitation_id = ?
+      ORDER BY updated_at DESC
+    `)
+    .bind(invitationId)
+    .all<RsvpRow>();
+  const responses = (result.results ?? []).map(mapRsvpRow);
+
+  return {
+    summary: {
+      responseCount: responses.length,
+      attendingResponseCount: responses.filter(({ attendance }) => attendance === "yes").length,
+      attendingPartySize: responses
+        .filter(({ attendance }) => attendance === "yes")
+        .reduce((total, { partySize }) => total + partySize, 0),
+      mealPartySize: responses
+        .filter(({ attendance, mealStatus }) => attendance === "yes" && mealStatus === "yes")
+        .reduce((total, { partySize }) => total + partySize, 0),
+      declinedResponseCount: responses.filter(({ attendance }) => attendance === "no").length,
+      unsureResponseCount: responses.filter(({ attendance }) => attendance === "unsure").length,
+      unsurePartySize: responses
+        .filter(({ attendance }) => attendance === "unsure")
+        .reduce((total, { partySize }) => total + partySize, 0),
+      deleteAt: invitation.rsvp_delete_at
+    },
+    responses
+  };
+}
+
+export async function deleteRsvp(db: D1Database, invitationId: string, rsvpId: string): Promise<boolean> {
+  const result = await db
+    .prepare("DELETE FROM rsvps WHERE invitation_id = ? AND id = ?")
+    .bind(invitationId, rsvpId)
+    .run();
+  return result.meta.changes > 0;
 }

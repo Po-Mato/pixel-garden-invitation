@@ -30,10 +30,13 @@ type CreateDbOptions = {
   writeError?: Error;
 };
 
+const adminPasswordHash = "pbkdf2-sha256$210000$MTIzNDU2Nzg5MDEyMzQ1Ng$phubAHgXidq3Bl2dnyCVT5BhzrMiDhR5bKZqTmIWi2s";
+
 function createDb(options: CreateDbOptions = {}) {
   const invitation = options.invitation === undefined ? { id: "sample-garden" } : options.invitation;
   const consentVersion = options.consentVersion ?? "2026-07-20";
   const rows = new Map<string, RsvpRow>();
+  const adminAttempts = new Map<string, { window_started_at: string; attempts: number }>();
   const prepare = vi.fn((sql: string) => ({
     bind: (...values: unknown[]) => {
       bindCalls.push({ sql, values });
@@ -42,12 +45,33 @@ function createDb(options: CreateDbOptions = {}) {
         first: async () => {
           if (options.selectError) throw options.selectError;
 
+          if (/SELECT window_started_at, attempts\s+FROM admin_login_attempts/i.test(sql)) {
+            return adminAttempts.get(`${String(values[0])}:${String(values[1])}`) ?? null;
+          }
+
+          if (/INSERT INTO admin_login_attempts/i.test(sql)) {
+            if (options.writeError) throw options.writeError;
+            const key = `${String(values[0])}:${String(values[1])}`;
+            const now = String(values[2]);
+            const cutoff = String(values[3]);
+            const existing = adminAttempts.get(key);
+            const next = !existing || existing.window_started_at < cutoff
+              ? { window_started_at: now, attempts: 1 }
+              : { ...existing, attempts: existing.attempts + 1 };
+            adminAttempts.set(key, next);
+            return { attempts: next.attempts };
+          }
+
           if (/SELECT config_json, rsvp_deadline, rsvp_delete_at\s+FROM invitations/i.test(sql)) {
             return invitation && {
               config_json: JSON.stringify({ rsvp: { consentVersion } }),
               rsvp_deadline: "2027-04-24T14:59:59.000Z",
               rsvp_delete_at: "2027-05-31T14:59:59.000Z"
             };
+          }
+
+          if (/SELECT rsvp_delete_at\s+FROM invitations/i.test(sql)) {
+            return invitation && { rsvp_delete_at: "2027-05-31T14:59:59.000Z" };
           }
 
           if (/SELECT id FROM invitations/i.test(sql)) return invitation;
@@ -143,13 +167,31 @@ function createDb(options: CreateDbOptions = {}) {
         },
         all: async () => {
           if (options.selectError) throw options.selectError;
+          if (/FROM rsvps/i.test(sql)) {
+            const invitationId = String(values[0]);
+            return {
+              results: [...rows.values()]
+                .filter((row) => row.invitation_id === invitationId)
+                .sort((left, right) => right.updated_at.localeCompare(left.updated_at))
+            };
+          }
           const visibleRows = (options.guestbookRows ?? []).filter((row) => row.is_hidden === 0);
           return { results: visibleRows };
         },
         run: async () => {
           if (options.writeError) throw options.writeError;
           runCount += 1;
-          return { success: true };
+          if (/DELETE FROM admin_login_attempts/i.test(sql)) {
+            const deleted = adminAttempts.delete(`${String(values[0])}:${String(values[1])}`);
+            return { success: true, meta: { changes: deleted ? 1 : 0 } };
+          }
+          if (/DELETE FROM rsvps/i.test(sql)) {
+            const [invitationId, rsvpId] = values as [string, string];
+            const existing = rows.get(rsvpId);
+            const deleted = existing?.invitation_id === invitationId && rows.delete(rsvpId);
+            return { success: true, meta: { changes: deleted ? 1 : 0 } };
+          }
+          return { success: true, meta: { changes: 1 } };
         }
       };
     }
@@ -162,14 +204,22 @@ function createDb(options: CreateDbOptions = {}) {
     prepare,
     bindCalls,
     rows,
+    adminAttempts,
     get runCount() {
       return runCount;
     }
   };
 }
 
-function apiEnv(db: D1Database): Env {
-  return { DB: db } as Env;
+function apiEnv(db: D1Database, overrides: Partial<Env> = {}): Env {
+  return {
+    DB: db,
+    RSVP_ADMIN_PASSWORD_HASH: adminPasswordHash,
+    RSVP_ADMIN_SESSION_SECRET: "session-secret",
+    RSVP_CLIENT_KEY_SECRET: "client-key-secret",
+    RSVP_ALLOWED_ORIGINS: "https://example.test",
+    ...overrides
+  } as Env;
 }
 
 const canonicalRsvp = {
@@ -208,7 +258,99 @@ async function createOwnedRsvp(db: D1Database) {
   return { response, body };
 }
 
+function adminSessionRequest(password: unknown = "correct horse battery staple") {
+  return new Request("https://worker.test/api/invitations/sample-garden/admin/session", {
+    method: "POST",
+    body: JSON.stringify({ password }),
+    headers: { "content-type": "application/json" }
+  });
+}
+
+async function createAdminSession(db: D1Database, env = apiEnv(db), clientKey = "admin-client") {
+  const response = await handleApiRequest(adminSessionRequest(), env, clientKey);
+  const body = await response.json() as { token: string; expiresAt: number };
+  return { response, body };
+}
+
 describe("handleApiRequest", () => {
+  it("rejects a wrong admin password and issues a no-store session for the correct password", async () => {
+    const { db } = createDb();
+
+    const wrong = await handleApiRequest(adminSessionRequest("wrong"), apiEnv(db), "admin-login-client");
+    const correct = await handleApiRequest(adminSessionRequest(), apiEnv(db), "admin-login-client");
+
+    expect(wrong.status).toBe(401);
+    expect(wrong.headers.get("cache-control")).toBe("no-store");
+    await expect(wrong.json()).resolves.toEqual({ error: "unauthorized" });
+    expect(correct.status).toBe(200);
+    expect(correct.headers.get("cache-control")).toBe("no-store");
+    await expect(correct.json()).resolves.toEqual({
+      token: expect.any(String),
+      expiresAt: expect.any(Number)
+    });
+  });
+
+  it("returns the full admin RSVP result only for a valid scoped token", async () => {
+    const { db } = createDb();
+    await createOwnedRsvp(db);
+    const { body } = await createAdminSession(db);
+    const url = "https://worker.test/api/invitations/sample-garden/admin/rsvps";
+
+    const list = await handleApiRequest(new Request(url, {
+      headers: { authorization: `Bearer ${body.token}` }
+    }), apiEnv(db), "admin-list-client");
+    const badToken = await handleApiRequest(new Request(url, {
+      headers: { authorization: "Bearer bad-token" }
+    }), apiEnv(db), "admin-list-client");
+
+    expect(list.status).toBe(200);
+    expect(list.headers.get("cache-control")).toBe("no-store");
+    await expect(list.json()).resolves.toMatchObject({
+      summary: { responseCount: 1, attendingPartySize: 2, mealPartySize: 2 },
+      responses: [{ guestName: "이승재" }]
+    });
+    expect(badToken.status).toBe(401);
+    expect(badToken.headers.get("cache-control")).toBe("no-store");
+  });
+
+  it("deletes one scoped admin RSVP and returns 404 when it is missing", async () => {
+    const { db } = createDb();
+    const { body: created } = await createOwnedRsvp(db);
+    const { body: session } = await createAdminSession(db);
+    const url = `https://worker.test/api/invitations/sample-garden/admin/rsvps/${created.response.id}`;
+    const remove = () => handleApiRequest(new Request(url, {
+      method: "DELETE",
+      headers: { authorization: `Bearer ${session.token}` }
+    }), apiEnv(db), "admin-delete-client");
+
+    const deleted = await remove();
+    const missing = await remove();
+
+    expect(deleted.status).toBe(204);
+    expect(deleted.headers.get("cache-control")).toBe("no-store");
+    expect(missing.status).toBe(404);
+    expect(missing.headers.get("cache-control")).toBe("no-store");
+  });
+
+  it.each([
+    "RSVP_ADMIN_PASSWORD_HASH",
+    "RSVP_ADMIN_SESSION_SECRET",
+    "RSVP_CLIENT_KEY_SECRET"
+  ] as const)("returns a controlled no-store error when %s is missing", async (secretName) => {
+    const { db } = createDb();
+    const env = apiEnv(db) as unknown as Record<string, unknown>;
+    delete env[secretName];
+
+    const response = await handleApiRequest(adminSessionRequest(), env as unknown as Env, "missing-secret-client");
+    const body = await response.text();
+
+    expect(response.status).toBe(500);
+    expect(response.headers.get("cache-control")).toBe("no-store");
+    expect(body).toBe(JSON.stringify({ error: "internal_error" }));
+    expect(body).not.toContain(secretName);
+    expect(body).not.toContain(adminPasswordHash);
+  });
+
   it("returns the existing CORS headers for preflight requests", async () => {
     const { db, prepare } = createDb();
     const request = new Request("https://worker.test/api/invitations/sample-garden/rsvps", { method: "OPTIONS" });
@@ -219,6 +361,21 @@ describe("handleApiRequest", () => {
     expect(response.headers.get("access-control-allow-origin")).toBe("*");
     expect(response.headers.get("access-control-allow-methods")).toBe("GET,POST,OPTIONS");
     expect(response.headers.get("access-control-allow-headers")).toBe("content-type");
+    expect(prepare).not.toHaveBeenCalled();
+  });
+
+  it("marks admin preflight responses as no-store without changing the existing CORS policy", async () => {
+    const { db, prepare } = createDb();
+    const request = new Request("https://worker.test/api/invitations/sample-garden/admin/rsvps", {
+      method: "OPTIONS"
+    });
+
+    const response = await handleApiRequest(request, apiEnv(db), "admin-preflight-client");
+
+    expect(response.status).toBe(204);
+    expect(response.headers.get("cache-control")).toBe("no-store");
+    expect(response.headers.get("access-control-allow-origin")).toBe("*");
+    expect(response.headers.get("access-control-allow-methods")).toBe("GET,POST,OPTIONS");
     expect(prepare).not.toHaveBeenCalled();
   });
 

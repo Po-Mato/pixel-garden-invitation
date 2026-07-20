@@ -1,6 +1,7 @@
 import { MemoryRateLimiter } from "./rateLimit";
-import { createRsvp, findRsvp, getRsvpPolicy, updateRsvp } from "./rsvpRepository";
-import { createEditCredential, hashEditToken } from "./security";
+import { attemptAdminLogin } from "./adminAuth";
+import { createRsvp, deleteRsvp, findRsvp, getRsvpPolicy, listRsvps, updateRsvp } from "./rsvpRepository";
+import { createEditCredential, hashEditToken, verifyAdminToken } from "./security";
 import { parseGuestbookPayload, parseRsvpPayload } from "./validation";
 import type { Env } from "./index";
 
@@ -39,6 +40,24 @@ function json(body: unknown, status = 200): Response {
   });
 }
 
+function adminJson(body: unknown, status = 200): Response {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "no-store",
+      ...corsHeaders
+    }
+  });
+}
+
+function adminEmpty(status: number): Response {
+  return new Response(null, {
+    status,
+    headers: { "cache-control": "no-store", ...corsHeaders }
+  });
+}
+
 function id(prefix: string): string {
   return `${prefix}_${crypto.randomUUID()}`;
 }
@@ -63,6 +82,16 @@ function readExpectedRevision(value: unknown): number | null {
 function readBearerToken(request: Request): string | null {
   const match = request.headers.get("authorization")?.match(/^Bearer ([^\s]+)$/);
   return match?.[1] ?? null;
+}
+
+function hasSecret(value: unknown): value is string {
+  return typeof value === "string" && value.length > 0;
+}
+
+function readAdminPassword(value: unknown): string | null {
+  return isRecord(value) && typeof value.password === "string" && value.password.length > 0
+    ? value.password
+    : null;
 }
 
 function constantTimeEqual(left: string, right: string): boolean {
@@ -146,17 +175,93 @@ async function handleOwnedRsvp(
   }
 }
 
+async function handleAdminSession(
+  request: Request,
+  env: Env,
+  clientKey: string,
+  invitationId: string
+): Promise<Response> {
+  if (request.method !== "POST") return adminJson({ error: "not_found" }, 404);
+  if (
+    !hasSecret(env.RSVP_ADMIN_PASSWORD_HASH)
+    || !hasSecret(env.RSVP_ADMIN_SESSION_SECRET)
+    || !hasSecret(env.RSVP_CLIENT_KEY_SECRET)
+  ) return adminJson({ error: "internal_error" }, 500);
+
+  const password = readAdminPassword(await readJson(request));
+  if (!password) return adminJson({ error: "invalid_request" }, 400);
+
+  try {
+    const result = await attemptAdminLogin(env.DB, {
+      invitationId,
+      clientKey,
+      password,
+      passwordHash: env.RSVP_ADMIN_PASSWORD_HASH,
+      sessionSecret: env.RSVP_ADMIN_SESSION_SECRET,
+      clientKeySecret: env.RSVP_CLIENT_KEY_SECRET,
+      now: Date.now()
+    });
+    if (!result.ok) {
+      return result.reason === "rate_limited"
+        ? adminJson({ error: "rate_limited" }, 429)
+        : adminJson({ error: "unauthorized" }, 401);
+    }
+    return adminJson({ token: result.token, expiresAt: result.expiresAt });
+  } catch {
+    return adminJson({ error: "internal_error" }, 500);
+  }
+}
+
+async function authenticateAdmin(request: Request, env: Env, invitationId: string): Promise<boolean | null> {
+  const token = readBearerToken(request);
+  if (!token) return false;
+  if (!hasSecret(env.RSVP_ADMIN_SESSION_SECRET)) return null;
+  return (await verifyAdminToken(token, env.RSVP_ADMIN_SESSION_SECRET, invitationId, Date.now())) !== null;
+}
+
+async function handleAdminRsvps(
+  request: Request,
+  env: Env,
+  invitationId: string,
+  rsvpId?: string
+): Promise<Response> {
+  const expectedMethod = rsvpId ? "DELETE" : "GET";
+  if (request.method !== expectedMethod) return adminJson({ error: "not_found" }, 404);
+
+  try {
+    const authenticated = await authenticateAdmin(request, env, invitationId);
+    if (authenticated === null) return adminJson({ error: "internal_error" }, 500);
+    if (!authenticated) return adminJson({ error: "unauthorized" }, 401);
+
+    if (!rsvpId) return adminJson(await listRsvps(env.DB, invitationId));
+    return await deleteRsvp(env.DB, invitationId, rsvpId)
+      ? adminEmpty(204)
+      : adminJson({ error: "not_found" }, 404);
+  } catch {
+    return adminJson({ error: "internal_error" }, 500);
+  }
+}
+
 export async function handleApiRequest(
   request: Request,
   env: Env,
   clientKey: string,
   options: HandleApiRequestOptions = {}
 ): Promise<Response> {
+  const url = new URL(request.url);
   if (request.method === "OPTIONS") {
-    return new Response(null, { status: 204, headers: corsHeaders });
+    const headers = /^\/api\/invitations\/[^/]+\/admin(?:\/|$)/.test(url.pathname)
+      ? { ...corsHeaders, "cache-control": "no-store" }
+      : corsHeaders;
+    return new Response(null, { status: 204, headers });
   }
 
-  const url = new URL(request.url);
+  const adminSessionMatch = url.pathname.match(/^\/api\/invitations\/([^/]+)\/admin\/session$/);
+  if (adminSessionMatch) return handleAdminSession(request, env, clientKey, adminSessionMatch[1]);
+
+  const adminRsvpMatch = url.pathname.match(/^\/api\/invitations\/([^/]+)\/admin\/rsvps(?:\/([^/]+))?$/);
+  if (adminRsvpMatch) return handleAdminRsvps(request, env, adminRsvpMatch[1], adminRsvpMatch[2]);
+
   const ownedRsvpMatch = url.pathname.match(/^\/api\/invitations\/([^/]+)\/rsvps\/([^/]+)$/);
   if (ownedRsvpMatch) {
     return handleOwnedRsvp(request, env, clientKey, ownedRsvpMatch[1], ownedRsvpMatch[2], options);
