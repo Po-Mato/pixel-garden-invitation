@@ -322,7 +322,7 @@ select {
   grid-row: 2;
 }
 
-.wedding-event-summary--compact .wedding-event-summary__calendar {
+.wedding-event-summary--compact .wedding-event-summary__actions {
   grid-column: 2;
   grid-row: 1 / 3;
   min-width: 116px;
@@ -381,7 +381,7 @@ select {
   user-select: text;
 }
 
-.wedding-event-summary__calendar,
+.wedding-event-summary__actions > button,
 .calendar-save-options > button,
 .calendar-save-options > a {
   display: inline-flex;
@@ -403,14 +403,35 @@ select {
   box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.76), 2px 2px 0 rgba(86, 66, 57, 0.42);
 }
 
-.wedding-event-summary__calendar {
-  border-color: #765665;
+.wedding-event-summary__actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  min-width: 0;
+}
+
+.wedding-event-summary__actions > button {
+  min-width: 0;
+  min-height: 42px;
+  padding: 8px 6px;
+  white-space: normal;
+}
+
+.wedding-event-summary__directions {
+  border-color: color-mix(in srgb, var(--sage) 68%, #59483f);
   background:
     linear-gradient(180deg, rgba(255, 255, 238, 0.72) 0 3px, transparent 3px),
     linear-gradient(135deg, var(--paper-raised), var(--sage-soft));
 }
 
-.wedding-event-summary svg,
+.wedding-event-summary__calendar {
+  border-color: #765665;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 238, 0.72) 0 3px, transparent 3px),
+    linear-gradient(135deg, var(--paper-raised), var(--gold-soft));
+}
+
+.wedding-event-summary__actions svg,
 .calendar-save-options svg {
   width: 18px;
   height: 18px;
@@ -482,7 +503,7 @@ select {
   outline-offset: 2px;
 }
 
-.wedding-event-summary__calendar:focus-visible {
+.wedding-event-summary__actions > button:focus-visible {
   outline: 3px solid var(--camellia);
   outline-offset: 2px;
 }
@@ -2334,6 +2355,152 @@ select {
   margin: 0;
 }
 
+.directions-sheet {
+  display: grid;
+  min-width: 0;
+  gap: 12px;
+  line-height: 1.45;
+}
+
+.directions-sheet__venue,
+.directions-sheet__info,
+.directions-sheet__phone {
+  display: grid;
+  align-items: center;
+  min-width: 0;
+  gap: 10px;
+}
+
+.directions-sheet__venue,
+.directions-sheet__phone {
+  grid-template-columns: 22px minmax(0, 1fr) 62px;
+}
+
+.directions-sheet__info {
+  grid-template-columns: 22px minmax(0, 1fr);
+  padding-top: 10px;
+  border-top: 1px dashed color-mix(in srgb, var(--sage) 64%, var(--paper-raised));
+}
+
+.directions-sheet__venue > div,
+.directions-sheet__info > div {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+
+.directions-sheet__venue strong,
+.directions-sheet__info strong,
+.directions-sheet__phone strong {
+  overflow-wrap: anywhere;
+  color: var(--ink);
+  font-weight: 900;
+}
+
+.directions-sheet__venue span,
+.directions-sheet__info span {
+  overflow-wrap: anywhere;
+  color: var(--ink-soft);
+  font-size: 13px;
+}
+
+.directions-sheet__venue span {
+  user-select: text;
+}
+
+.directions-sheet svg {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+}
+
+.directions-sheet__maps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.directions-sheet__maps > a,
+.directions-sheet__maps > button {
+  display: flex;
+  min-width: 0;
+  min-height: 48px;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  border: 2px solid color-mix(in srgb, var(--sage) 62%, #59483f);
+  padding: 7px 5px;
+  background: var(--paper-raised);
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 900;
+  line-height: 1.25;
+  text-align: center;
+  text-decoration: none;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.76), 2px 2px 0 rgba(89, 72, 63, 0.42);
+}
+
+.directions-sheet__maps > a:nth-child(2) {
+  border-color: color-mix(in srgb, var(--camellia) 68%, #59483f);
+}
+
+.directions-sheet__maps > a:nth-child(3) {
+  border-color: color-mix(in srgb, var(--gold) 78%, #59483f);
+}
+
+.directions-sheet__maps > button:disabled {
+  border-style: dashed;
+  background: var(--paper);
+  color: var(--ink-soft);
+  cursor: not-allowed;
+  opacity: 0.58;
+  box-shadow: none;
+}
+
+.directions-sheet__venue > button,
+.directions-sheet__phone > a {
+  display: inline-flex;
+  min-width: 0;
+  min-height: 42px;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  border: 2px solid #765665;
+  padding: 7px 6px;
+  background: var(--paper-raised);
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 900;
+  line-height: 1.2;
+  text-decoration: none;
+  box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.76), 2px 2px 0 rgba(89, 72, 63, 0.42);
+}
+
+.directions-sheet__venue > button:disabled {
+  border-style: dotted;
+  background: var(--gold-soft);
+  color: var(--ink-soft);
+  cursor: wait;
+  opacity: 0.72;
+  box-shadow: none;
+}
+
+.directions-sheet__status {
+  min-height: 1.45em;
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 13px;
+}
+
+.directions-sheet a:focus-visible,
+.directions-sheet button:focus-visible {
+  outline: 2px solid #fff8cf;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px var(--sage), 2px 2px 0 rgba(89, 72, 63, 0.42);
+}
+
 @media (max-height: 640px) {
   .phone-frame:has(.entry-screen) {
     padding-top: 9px;
@@ -2460,6 +2627,24 @@ select {
     width: 100%;
     padding: 9px 6px;
     white-space: normal;
+  }
+}
+
+@media (max-width: 360px) {
+  .wedding-event-summary--compact {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto auto;
+  }
+
+  .wedding-event-summary--compact .wedding-event-summary__actions {
+    grid-column: 1;
+    grid-row: 3;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .directions-sheet__maps {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
@@ -2709,11 +2894,29 @@ select {
     grid-row: 2;
   }
 
-  .wedding-event-summary--compact .wedding-event-summary__calendar {
+  .wedding-event-summary--compact .wedding-event-summary__actions {
     grid-column: 1;
     grid-row: 3;
     width: 100%;
     min-width: 0;
+  }
+
+  .bottom-sheet {
+    max-height: calc(100dvh - 12px);
+    padding: 12px;
+  }
+
+  .directions-sheet {
+    gap: 8px;
+    line-height: 1.3;
+  }
+
+  .directions-sheet__info {
+    padding-top: 6px;
+  }
+
+  .directions-sheet__maps {
+    gap: 6px;
   }
 
   .character-customizer {

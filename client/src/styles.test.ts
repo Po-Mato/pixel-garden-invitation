@@ -79,11 +79,11 @@ describe("wedding event access", () => {
     expect(rule).toContain("min-width: 0;");
     expect(styles).toMatch(/\.wedding-event-summary__venue\s*\{[^}]*grid-template-columns:/s);
     expect(styles).toMatch(/\.wedding-event-summary--detail \.wedding-event-summary__venue span\s*\{[^}]*user-select:\s*text;/s);
-    expect(styles).toMatch(/\.wedding-event-summary__calendar:focus-visible\s*\{/s);
+    expect(styles).toMatch(/\.wedding-event-summary__actions > button:focus-visible\s*\{/s);
   });
 
   it("uses fixed-size icons and non-overlapping calendar actions", () => {
-    expect(styles).toMatch(/\.wedding-event-summary svg,\s*\.calendar-save-options svg\s*\{[^}]*width:\s*18px;[^}]*height:\s*18px;/s);
+    expect(styles).toMatch(/\.wedding-event-summary__actions svg,\s*\.calendar-save-options svg\s*\{[^}]*width:\s*18px;[^}]*height:\s*18px;/s);
     expect(styles).toMatch(/\.calendar-save-options\s*\{[^}]*display:\s*grid;/s);
     expect(styles).toMatch(/\.calendar-save-options > (?:button|a)[^{]*\{[^}]*min-height:\s*48px;/s);
     expect(styles).toMatch(/\.sheet-backdrop\s*\{[^}]*z-index:\s*40;/s);
@@ -119,6 +119,34 @@ describe("wedding event access", () => {
     expect(narrowLandscapeBlock).toContain(".character-customizer");
     expect(narrowLandscapeBlock).toContain("grid-template-rows: minmax(82px, 1fr) 28px 92px;");
     expect(narrowLandscapeBlock).toContain(".entry-screen__controls");
+  });
+
+  it("keeps directions actions stable and accessible on narrow screens", () => {
+    expect(styles).toMatch(/\.wedding-event-summary__actions\s*\{[^}]*display:\s*grid;[^}]*grid-template-columns:\s*repeat\(2, minmax\(0, 1fr\)\);/s);
+    expect(styles).toMatch(/\.wedding-event-summary__actions > button\s*\{[^}]*min-width:\s*0;[^}]*min-height:\s*42px;/s);
+    expect(styles).toMatch(/\.directions-sheet__maps\s*\{[^}]*display:\s*grid;/s);
+    expect(styles).toMatch(/\.directions-sheet__maps > (?:a|button)[^{]*\{[^}]*min-height:\s*48px;/s);
+    expect(styles).toMatch(/\.directions-sheet__venue span\s*\{[^}]*user-select:\s*text;/s);
+    expect(styles).toMatch(/\.directions-sheet a:focus-visible,\s*\.directions-sheet button:focus-visible\s*\{/s);
+  });
+
+  it("gives compact actions their own grid area at 320px", () => {
+    expect(styles).toMatch(/\.wedding-event-summary--compact \.wedding-event-summary__actions\s*\{[^}]*grid-column:\s*2;[^}]*grid-row:\s*1\s*\/\s*3;/s);
+
+    const narrowBlock = styles.match(/@media \(max-width:\s*360px\)\s*\{([\s\S]*?)\n}/)?.[1] ?? "";
+
+    expect(narrowBlock).toContain(".wedding-event-summary--compact");
+    expect(narrowBlock).toContain("grid-template-columns: minmax(0, 1fr);");
+    expect(narrowBlock).toContain(".wedding-event-summary--compact .wedding-event-summary__actions");
+    expect(narrowBlock).toContain("grid-column: 1;");
+    expect(narrowBlock).toContain("grid-row: 3;");
+    expect(narrowBlock).toContain(".directions-sheet__maps");
+  });
+
+  it("adapts the directions sheet for narrow and short landscape viewports", () => {
+    expect(styles).toMatch(/@media \(max-width:\s*360px\)[\s\S]*\.directions-sheet__maps/);
+    expect(styles).toMatch(/@media \(orientation:\s*landscape\) and \(max-height:\s*500px\)[\s\S]*\.bottom-sheet/);
+    expect(styles).toMatch(/@media \(orientation:\s*landscape\) and \(max-height:\s*500px\)[\s\S]*\.directions-sheet/);
   });
 });
 
