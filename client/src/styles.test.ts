@@ -74,9 +74,17 @@ describe("wedding event access", () => {
   it("keeps the compact event summary stable and readable", () => {
     const entryRule = styles.match(/\.entry-screen\s*\{([^}]*)}/s)?.[1] ?? "";
     const rule = styles.match(/\.wedding-event-summary--compact\s*\{([^}]*)}/s)?.[1] ?? "";
+    const actionsRule = styles.match(
+      /\.wedding-event-summary--compact \.wedding-event-summary__actions\s*\{([^}]*)}/s
+    )?.[1] ?? "";
 
     expect(entryRule).toContain("grid-template-rows: auto auto minmax(0, 1fr) auto;");
     expect(rule).toContain("min-width: 0;");
+    expect(rule).toContain("grid-template-columns: minmax(0, 1fr);");
+    expect(rule).toContain("grid-template-rows: auto auto auto;");
+    expect(actionsRule).toContain("grid-column: 1;");
+    expect(actionsRule).toContain("grid-row: 3;");
+    expect(actionsRule).toContain("width: 100%;");
     expect(styles).toMatch(/\.wedding-event-summary__venue\s*\{[^}]*grid-template-columns:/s);
     expect(styles).toMatch(/\.wedding-event-summary--detail \.wedding-event-summary__venue span\s*\{[^}]*user-select:\s*text;/s);
     expect(styles).toMatch(/\.wedding-event-summary__actions > button:focus-visible\s*\{/s);
@@ -119,28 +127,23 @@ describe("wedding event access", () => {
     expect(narrowLandscapeBlock).toContain(".character-customizer");
     expect(narrowLandscapeBlock).toContain("grid-template-rows: minmax(82px, 1fr) 28px 92px;");
     expect(narrowLandscapeBlock).toContain(".entry-screen__controls");
+    expect(narrowLandscapeBlock).toContain(".wedding-event-summary--compact .wedding-event-summary__actions");
+    expect(narrowLandscapeBlock).toContain("grid-template-columns: minmax(0, 1fr);");
   });
 
   it("keeps directions actions stable and accessible on narrow screens", () => {
     expect(styles).toMatch(/\.wedding-event-summary__actions\s*\{[^}]*display:\s*grid;[^}]*grid-template-columns:\s*repeat\(2, minmax\(0, 1fr\)\);/s);
-    expect(styles).toMatch(/\.wedding-event-summary__actions > button\s*\{[^}]*min-width:\s*0;[^}]*min-height:\s*42px;/s);
+    expect(styles).toMatch(/\.wedding-event-summary__actions > button\s*\{[^}]*min-width:\s*0;[^}]*min-height:\s*48px;/s);
     expect(styles).toMatch(/\.directions-sheet__maps\s*\{[^}]*display:\s*grid;/s);
     expect(styles).toMatch(/\.directions-sheet__maps > (?:a|button)[^{]*\{[^}]*min-height:\s*48px;/s);
+    expect(styles).toMatch(/\.directions-sheet__venue > button,\s*\.directions-sheet__phone > a\s*\{[^}]*min-height:\s*48px;/s);
     expect(styles).toMatch(/\.directions-sheet__venue span\s*\{[^}]*user-select:\s*text;/s);
     expect(styles).toMatch(/\.directions-sheet a:focus-visible,\s*\.directions-sheet button:focus-visible\s*\{/s);
   });
 
-  it("gives compact actions their own grid area at 320px", () => {
-    expect(styles).toMatch(/\.wedding-event-summary--compact \.wedding-event-summary__actions\s*\{[^}]*grid-column:\s*2;[^}]*grid-row:\s*1\s*\/\s*3;/s);
-
-    const narrowBlock = styles.match(/@media \(max-width:\s*360px\)\s*\{([\s\S]*?)\n}/)?.[1] ?? "";
-
-    expect(narrowBlock).toContain(".wedding-event-summary--compact");
-    expect(narrowBlock).toContain("grid-template-columns: minmax(0, 1fr);");
-    expect(narrowBlock).toContain(".wedding-event-summary--compact .wedding-event-summary__actions");
-    expect(narrowBlock).toContain("grid-column: 1;");
-    expect(narrowBlock).toContain("grid-row: 3;");
-    expect(narrowBlock).toContain(".directions-sheet__maps");
+  it("keeps compact actions in a full-width portrait row", () => {
+    expect(styles).toMatch(/\.wedding-event-summary--compact \.wedding-event-summary__actions\s*\{[^}]*grid-column:\s*1;[^}]*grid-row:\s*3;[^}]*width:\s*100%;/s);
+    expect(styles).toMatch(/\.wedding-event-summary--compact \.wedding-event-summary__date time,[\s\S]*?\.wedding-event-summary--compact \.wedding-event-summary__venue strong\s*\{[^}]*white-space:\s*nowrap;/s);
   });
 
   it("adapts the directions sheet for narrow and short landscape viewports", () => {
