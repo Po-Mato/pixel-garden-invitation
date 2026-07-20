@@ -81,6 +81,8 @@ export function RsvpAdminPage() {
   const deleteDialogRef = useRef<HTMLElement>(null);
   const deleteTriggerRef = useRef<HTMLButtonElement | null>(null);
   const restoreDeleteFocusRef = useRef(false);
+  const focusAfterDeleteRef = useRef(false);
+  const loginInputRef = useRef<HTMLInputElement>(null);
   const resultsHeadingRef = useRef<HTMLHeadingElement>(null);
 
   const [session, setSession] = useState<AdminSession | null>(null);
@@ -136,7 +138,8 @@ export function RsvpAdminPage() {
     const version = ++fetchVersionRef.current;
     setIsFetching(true);
     setError("");
-    if (options.announce) setStatus("참석 답변을 새로고침하고 있습니다.");
+    if (options.force) setStatus("");
+    else if (options.announce) setStatus("참석 답변을 새로고침하고 있습니다.");
     try {
       const nextResult = await fetchAdminRsvps(token);
       if (!mountedRef.current || version !== fetchVersionRef.current || sessionRef.current?.token !== token) return;
@@ -148,7 +151,7 @@ export function RsvpAdminPage() {
         resetAdminState("세션이 만료되었습니다. 다시 로그인해 주세요.");
         return;
       }
-      if (options.announce) setStatus("");
+      if (options.force || options.announce) setStatus("");
       setError(errorMessage(loadError, "참석 답변을 불러오지 못했습니다. 다시 시도해 주세요."));
     } finally {
       if (version === fetchVersionRef.current) {
@@ -221,6 +224,13 @@ export function RsvpAdminPage() {
       else cancelDeleteRef.current?.focus();
       return;
     }
+    if (focusAfterDeleteRef.current) {
+      (resultsHeadingRef.current ?? loginInputRef.current)?.focus();
+      focusAfterDeleteRef.current = false;
+      restoreDeleteFocusRef.current = false;
+      deleteTriggerRef.current = null;
+      return;
+    }
     if (restoreDeleteFocusRef.current && deleteTriggerRef.current?.isConnected) {
       deleteTriggerRef.current.focus();
     }
@@ -282,12 +292,12 @@ export function RsvpAdminPage() {
       await deleteAdminRsvp(token, target.id);
       if (!mountedRef.current || version !== deleteVersionRef.current || sessionRef.current?.token !== token) return;
       restoreDeleteFocusRef.current = false;
-      setDeleteTarget(null);
+      focusAfterDeleteRef.current = true;
       await loadAll(token, {
         force: true,
         successMessage: `${target.guestName}님의 답변을 삭제했습니다.`
       });
-      if (mountedRef.current && sessionRef.current?.token === token) resultsHeadingRef.current?.focus();
+      if (mountedRef.current && sessionRef.current?.token === token) setDeleteTarget(null);
     } catch (deleteError) {
       if (!mountedRef.current || version !== deleteVersionRef.current || sessionRef.current?.token !== token) return;
       if (deleteError instanceof WeddingApiError && deleteError.status === 401) {
@@ -295,6 +305,7 @@ export function RsvpAdminPage() {
         return;
       }
       setError(errorMessage(deleteError, "답변을 삭제하지 못했습니다. 기존 목록은 유지됩니다."));
+      focusAfterDeleteRef.current = false;
       restoreDeleteFocusRef.current = true;
       setDeleteTarget(null);
     } finally {
@@ -329,6 +340,7 @@ export function RsvpAdminPage() {
 
   function openDeleteDialog(response: RsvpRecord, trigger: HTMLButtonElement) {
     deleteTriggerRef.current = trigger;
+    focusAfterDeleteRef.current = false;
     restoreDeleteFocusRef.current = true;
     setDeleteTarget(response);
   }
@@ -378,6 +390,7 @@ export function RsvpAdminPage() {
           <form onSubmit={handleLogin}>
             <label htmlFor="rsvp-admin-password">관리자 비밀번호</label>
             <input
+              ref={loginInputRef}
               id="rsvp-admin-password"
               type="password"
               autoComplete="current-password"
@@ -390,10 +403,12 @@ export function RsvpAdminPage() {
               {isLoggingIn ? "로그인 중" : retrySeconds > 0 ? `${retrySeconds}초 후 로그인` : "로그인"}
             </button>
           </form>
-          {(error || retrySeconds > 0) && (
-            <p className="rsvp-admin-message rsvp-admin-message--error" role="alert">
-              {retrySeconds > 0 ? `${retrySeconds}초 후 다시 시도해 주세요.` : error}
-            </p>
+          {error && <p className="rsvp-admin-message rsvp-admin-message--error" role="alert">{error}</p>}
+          {retrySeconds > 0 && (
+            <>
+              <p className="rsvp-admin-message rsvp-admin-message--error" role="alert">로그인 시도가 제한되었습니다.</p>
+              <p className="rsvp-admin-message" aria-live="off">{retrySeconds}초 후 다시 시도해 주세요.</p>
+            </>
           )}
         </section>
       </main>

@@ -164,7 +164,7 @@ describe("RsvpAdminPage", () => {
     expect(api.fetchAdminRsvps).toHaveBeenCalledTimes(2);
   });
 
-  it("disables login for Retry-After seconds and then re-enables it", async () => {
+  it("keeps the rate-limit alert static while the non-live countdown changes", async () => {
     vi.useFakeTimers();
     api.createAdminSession.mockRejectedValue(new WeddingApiError(429, "rate_limited", 2));
     render(<RsvpAdminPage />);
@@ -172,9 +172,16 @@ describe("RsvpAdminPage", () => {
     fireEvent.click(screen.getByRole("button", { name: "로그인" }));
 
     await act(async () => { await Promise.resolve(); });
-    expect(screen.getByRole("alert")).toHaveTextContent("2초 후 다시 시도");
+    const alert = screen.getByRole("alert");
+    expect(alert).toHaveTextContent("로그인 시도가 제한되었습니다");
+    expect(alert).not.toHaveTextContent(/\d+초/);
+    expect(screen.getByText("2초 후 다시 시도해 주세요.")).toHaveAttribute("aria-live", "off");
     expect(screen.getByRole("button", { name: /로그인/ })).toBeDisabled();
-    act(() => { vi.advanceTimersByTime(2_000); });
+    act(() => { vi.advanceTimersByTime(1_000); });
+    expect(screen.getByRole("alert")).toBe(alert);
+    expect(alert).toHaveTextContent("로그인 시도가 제한되었습니다");
+    expect(screen.getByText("1초 후 다시 시도해 주세요.")).toHaveAttribute("aria-live", "off");
+    act(() => { vi.advanceTimersByTime(1_000); });
     expect(screen.getByLabelText("관리자 비밀번호")).toBeEnabled();
     fireEvent.change(screen.getByLabelText("관리자 비밀번호"), { target: { value: "retry" } });
     expect(screen.getByRole("button", { name: "로그인" })).toBeEnabled();
@@ -301,6 +308,27 @@ describe("RsvpAdminPage", () => {
     await waitFor(() => expect(api.deleteAdminRsvp).toHaveBeenCalledWith("admin-token", "1"));
     await waitFor(() => expect(api.fetchAdminRsvps).toHaveBeenCalledTimes(2));
     expect(screen.queryByText("김하객")).not.toBeInTheDocument();
+  });
+
+  it("keeps the focused inert dialog through the forced GET after DELETE succeeds", async () => {
+    const forcedRefresh = deferred<RsvpAdminResult>();
+    const refreshed = { ...result, summary: { ...result.summary, responseCount: 3 }, responses: result.responses.slice(1) };
+    api.fetchAdminRsvps.mockResolvedValueOnce(result).mockReturnValueOnce(forcedRefresh.promise);
+    render(<RsvpAdminPage />);
+    await login();
+
+    fireEvent.click(screen.getByRole("button", { name: "김하객 답변 삭제" }));
+    fireEvent.click(screen.getByRole("button", { name: "삭제" }));
+    await waitFor(() => expect(api.fetchAdminRsvps).toHaveBeenCalledTimes(2));
+
+    const dialog = screen.getByRole("dialog", { name: "답변 삭제 확인" });
+    expect(dialog).toHaveFocus();
+    expect(dialog).toHaveAttribute("aria-busy", "true");
+    expect(document.querySelector(".rsvp-admin-shell")).toHaveAttribute("inert");
+
+    forcedRefresh.resolve(refreshed);
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+    expect(screen.getByRole("heading", { name: "전체 답변" })).toHaveFocus();
   });
 
   it("force-refetches after deletion while an older GET is pending and discards the stale GET", async () => {
@@ -440,6 +468,35 @@ describe("RsvpAdminPage", () => {
     refresh.reject(new Error("network"));
 
     expect(await screen.findByRole("alert")).toHaveTextContent("불러오지 못했습니다");
+    expect(screen.queryByText("참석 답변을 새로고침하고 있습니다.")).not.toBeInTheDocument();
+  });
+
+  it("clears a superseded refresh announcement before a forced refetch and after forced failure", async () => {
+    const staleRefresh = deferred<RsvpAdminResult>();
+    const forcedRefresh = deferred<RsvpAdminResult>();
+    api.fetchAdminRsvps
+      .mockResolvedValueOnce(result)
+      .mockReturnValueOnce(staleRefresh.promise)
+      .mockReturnValueOnce(forcedRefresh.promise);
+    render(<RsvpAdminPage />);
+    await login();
+
+    fireEvent.click(screen.getByRole("button", { name: "새로고침" }));
+    expect(screen.getByRole("status")).toHaveTextContent("새로고침하고 있습니다");
+    fireEvent.click(screen.getByRole("button", { name: "김하객 답변 삭제" }));
+    fireEvent.click(screen.getByRole("button", { name: "삭제" }));
+    await waitFor(() => expect(api.fetchAdminRsvps).toHaveBeenCalledTimes(3));
+
+    expect(screen.queryByText("참석 답변을 새로고침하고 있습니다.")).not.toBeInTheDocument();
+    expect(screen.getByRole("dialog", { name: "답변 삭제 확인" })).toHaveFocus();
+    forcedRefresh.reject(new Error("network"));
+    expect(await screen.findByRole("alert")).toHaveTextContent("불러오지 못했습니다");
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(screen.queryByText("참석 답변을 새로고침하고 있습니다.")).not.toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "전체 답변" })).toHaveFocus();
+
+    staleRefresh.resolve(result);
+    await act(async () => { await Promise.resolve(); });
     expect(screen.queryByText("참석 답변을 새로고침하고 있습니다.")).not.toBeInTheDocument();
   });
 
