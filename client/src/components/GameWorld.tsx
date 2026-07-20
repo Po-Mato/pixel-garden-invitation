@@ -129,7 +129,9 @@ export function GameWorld({ profile }: GameWorldProps) {
   const nestedMenuSheetOpen = calendarSheetOpen || directionsSheetOpen;
 
   const mapViewportRef = useRef<HTMLDivElement | null>(null);
+  const menuButtonRef = useRef<HTMLButtonElement | null>(null);
   const menuCloseButtonRef = useRef<HTMLButtonElement | null>(null);
+  const restoreMenuButtonFocusRef = useRef(false);
   const activeZoneIdRef = useRef<WorldZoneId>(initialZone.id);
   const positionRef = useRef<Point>(initialZone.spawn);
   const directionRef = useRef<Direction>("down");
@@ -236,9 +238,13 @@ export function GameWorld({ profile }: GameWorldProps) {
       if (connectionRef.current !== connection || !currentGuestIdRef.current) return;
 
       sendMoveImmediately(connection, {
-        ...terminalStop,
+        type: "move",
+        x: positionRef.current.x,
+        y: positionRef.current.y,
         direction: directionRef.current,
-        seq: moveSeqRef.current + 1
+        moving: false,
+        seq: moveSeqRef.current + 1,
+        zoneId: activeZoneIdRef.current
       });
     }, realtimeTerminalStopConfirmDelayMs);
   }, [clearTerminalStopConfirm, sendMoveImmediately]);
@@ -362,12 +368,22 @@ export function GameWorld({ profile }: GameWorldProps) {
     return () => window.clearTimeout(timer);
   }, [completePortalFadeOut, portalTransition, setPortalTransition]);
 
-  const openSpot = useCallback((spotId: SpotId) => {
+  const openSpot = useCallback((spotId: SpotId, restoreMenuButtonFocus = false) => {
     if (portalTransitionRef.current) return;
+    restoreMenuButtonFocusRef.current = restoreMenuButtonFocus && spotId === "directions";
     if (spotId === "directions") pauseWorldInput();
     closeMenu();
     setActiveSpotId(spotId);
   }, [closeMenu, pauseWorldInput]);
+
+  const closeDirectionsSpot = useCallback(() => {
+    const restoreMenuButtonFocus = restoreMenuButtonFocusRef.current;
+    restoreMenuButtonFocusRef.current = false;
+    setActiveSpotId(null);
+    if (restoreMenuButtonFocus) {
+      window.setTimeout(() => menuButtonRef.current?.focus(), 0);
+    }
+  }, []);
 
   const handleDirectionsSheetOpenChange = useCallback((open: boolean) => {
     if (open) pauseWorldInput();
@@ -889,7 +905,7 @@ export function GameWorld({ profile }: GameWorldProps) {
               disabled={Boolean(portalTransition) || inputReleaseRequired}
               onVectorChange={handleJoystickVectorChange}
             />
-            <button type="button" className="world-menu-button" aria-expanded={menuOpen} onClick={openMenu}>
+            <button ref={menuButtonRef} type="button" className="world-menu-button" aria-expanded={menuOpen} onClick={openMenu}>
               <span aria-hidden="true">+</span>
               초대장 메뉴
             </button>
@@ -930,14 +946,14 @@ export function GameWorld({ profile }: GameWorldProps) {
             />
             <div className="world-menu-grid">
               {invitationContent.spots.map((item) => (
-                <button key={item.id} type="button" onClick={() => openSpot(item.id)}>{item.actionLabel}</button>
+                <button key={item.id} type="button" onClick={() => openSpot(item.id, true)}>{item.actionLabel}</button>
               ))}
             </div>
           </section>
         </>
       ) : null}
       {activeSpotId === "directions" ? (
-        <DirectionsSheet onClose={() => setActiveSpotId(null)} />
+        <DirectionsSheet onClose={closeDirectionsSpot} />
       ) : activeSpotId ? (
         <SpotModal spotId={activeSpotId} nickname={profile.nickname} onClose={() => setActiveSpotId(null)} />
       ) : null}

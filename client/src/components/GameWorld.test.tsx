@@ -438,6 +438,18 @@ describe("GameWorld", () => {
     expect(screen.queryByText("MJ컨벤션은 경기 부천시 소사구 경인로 386에 있습니다.")).not.toBeInTheDocument();
   });
 
+  it("restores the persistent invitation menu button after closing directions opened from the menu shortcut", () => {
+    render(<GameWorld profile={profile} />);
+    const menuButton = screen.getByRole("button", { name: "초대장 메뉴" });
+    fireEvent.click(menuButton);
+    fireEvent.click(within(screen.getByRole("dialog", { name: "초대장 바로가기" })).getByRole("button", { name: "길 찾기" }));
+
+    fireEvent.click(within(screen.getByRole("dialog", { name: "오시는 길" })).getByRole("button", { name: "닫기" }));
+    act(() => vi.advanceTimersByTime(0));
+
+    expect(menuButton).toHaveFocus();
+  });
+
   it("opens the directions sheet from the world directions spot", () => {
     render(<GameWorld profile={profile} />);
     fireEvent.click(screen.getByRole("button", { name: /오시는 길/ }));
@@ -579,6 +591,10 @@ describe("GameWorld", () => {
     advanceAnimation(50);
     expect(player).toHaveStyle({ left: "315px", top: "585px" });
     expect(socket.sentMessages).toHaveLength(1);
+    const pausedAt = {
+      x: Number.parseInt(player.style.left, 10),
+      y: Number.parseInt(player.style.top, 10)
+    };
 
     fireEvent.click(screen.getByRole("button", { name: /오시는 길/ }));
 
@@ -600,11 +616,11 @@ describe("GameWorld", () => {
     const confirmedStop = JSON.parse(socket.sentMessages.at(-1) ?? "null");
     expect(socket.sentMessages).toHaveLength(3);
     expect(confirmedStop).toMatchObject({
-      x: terminalStop.x,
-      y: terminalStop.y,
+      x: pausedAt.x,
+      y: pausedAt.y,
       direction: "down",
       moving: false,
-      zoneId: terminalStop.zoneId,
+      zoneId: "home",
       seq: terminalStop.seq + 1
     });
   });
@@ -667,6 +683,29 @@ describe("GameWorld", () => {
 
     expect(socket.sentMessages).toHaveLength(2);
     expect(JSON.parse(socket.sentMessages.at(-1) ?? "null")).toMatchObject({ moving: false });
+  });
+
+  it("cancels a pending terminal stop confirmation when map movement starts", () => {
+    configureRealtime();
+    render(<GameWorld profile={profile} />);
+    const socket = MockWebSocket.instances[0];
+    act(() => socket.emit("open"));
+    act(() => socket.emitJson({ type: "welcome", guestId: "guest_self", guests: [] }));
+    socket.sentMessages.length = 0;
+
+    const joystick = screen.getByLabelText("가상 조이스틱");
+    fireEvent.keyDown(joystick, { key: "ArrowRight" });
+    advanceAnimation(0);
+    fireEvent.click(screen.getByRole("button", { name: /오시는 길/ }));
+    fireEvent.click(within(screen.getByRole("dialog", { name: "오시는 길" })).getByRole("button", { name: "닫기" }));
+    fireEvent.keyUp(joystick, { key: "ArrowRight" });
+
+    const map = screen.getByTestId("world-map-viewport");
+    mockMapRect(map);
+    fireEvent.click(map, { clientX: 265, clientY: 375 });
+    act(() => vi.advanceTimersByTime(125));
+
+    expect(socket.sentMessages).toHaveLength(2);
   });
 
   it("places the calendar sheet above the hidden menu layers", () => {
