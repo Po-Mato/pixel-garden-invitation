@@ -35,6 +35,7 @@ import { worldDepth } from "../game/worldVisuals";
 import { connectRealtimeWithRetry, createMoveThrottle, getRoomUrl } from "../realtime/realtimeClient";
 import type { EntryProfile } from "./EntryScreen";
 import { CharacterSprite } from "./CharacterSprite";
+import { DirectionsSheet } from "./DirectionsSheet";
 import { SpotModal } from "./SpotModal";
 import { VirtualJoystick } from "./VirtualJoystick";
 import { WeddingEventSummary } from "./WeddingEventSummary";
@@ -118,11 +119,13 @@ export function GameWorld({ profile }: GameWorldProps) {
   const [activeSpotId, setActiveSpotId] = useState<SpotId | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [calendarSheetOpen, setCalendarSheetOpen] = useState(false);
+  const [directionsSheetOpen, setDirectionsSheetOpen] = useState(false);
   const [travelStatus, setTravelStatus] = useState("우리 집에서 여정을 시작해요");
   const [viewport, setViewport] = useState<ViewportSize>(defaultViewport);
   const [remoteGuests, setRemoteGuests] = useState<RoomGuest[]>([]);
   const [realtimeStatus, setRealtimeStatus] = useState<RealtimeStatus>("offline");
   const [loadedBackgroundZoneId, setLoadedBackgroundZoneId] = useState<WorldZoneId | null>(null);
+  const nestedMenuSheetOpen = calendarSheetOpen || directionsSheetOpen;
 
   const mapViewportRef = useRef<HTMLDivElement | null>(null);
   const menuCloseButtonRef = useRef<HTMLButtonElement | null>(null);
@@ -164,6 +167,7 @@ export function GameWorld({ profile }: GameWorldProps) {
 
   const closeMenu = useCallback(() => {
     setCalendarSheetOpen(false);
+    setDirectionsSheetOpen(false);
     setMenuOpen(false);
   }, []);
 
@@ -194,6 +198,7 @@ export function GameWorld({ profile }: GameWorldProps) {
     setPortalIntent(null);
     setJoystickVector({ x: 0, y: 0 });
     setCalendarSheetOpen(false);
+    setDirectionsSheetOpen(false);
     setMenuOpen(false);
     setActiveSpotId(null);
     setTravelStatus(`${portal.label} 도착`);
@@ -330,11 +335,11 @@ export function GameWorld({ profile }: GameWorldProps) {
   useEffect(() => {
     if (!menuOpen) return;
     const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape" && !calendarSheetOpen) closeMenu();
+      if (event.key === "Escape" && !nestedMenuSheetOpen) closeMenu();
     };
     document.addEventListener("keydown", handleEscape);
     return () => document.removeEventListener("keydown", handleEscape);
-  }, [calendarSheetOpen, closeMenu, menuOpen]);
+  }, [closeMenu, menuOpen, nestedMenuSheetOpen]);
 
   useEffect(() => {
     const workerUrl = import.meta.env.VITE_WORKER_URL;
@@ -808,7 +813,7 @@ export function GameWorld({ profile }: GameWorldProps) {
             type="button"
             className="world-menu-backdrop"
             aria-label="초대장 메뉴 닫기"
-            style={{ zIndex: calendarSheetOpen ? 8 : undefined }}
+            style={{ zIndex: nestedMenuSheetOpen ? 8 : undefined }}
             onClick={closeMenu}
           />
           <section
@@ -816,8 +821,8 @@ export function GameWorld({ profile }: GameWorldProps) {
             role="dialog"
             aria-modal="true"
             aria-label="초대장 바로가기"
-            aria-hidden={calendarSheetOpen || undefined}
-            style={{ zIndex: calendarSheetOpen ? 9 : undefined }}
+            aria-hidden={nestedMenuSheetOpen || undefined}
+            style={{ zIndex: nestedMenuSheetOpen ? 9 : undefined }}
             onClickCapture={(event) => {
               if (event.target instanceof Element) {
                 event.target.closest<HTMLButtonElement>("button")?.focus();
@@ -831,6 +836,7 @@ export function GameWorld({ profile }: GameWorldProps) {
             <WeddingEventSummary
               variant="detail"
               onCalendarSheetOpenChange={setCalendarSheetOpen}
+              onDirectionsSheetOpenChange={setDirectionsSheetOpen}
             />
             <div className="world-menu-grid">
               {invitationContent.spots.map((item) => (
@@ -840,7 +846,11 @@ export function GameWorld({ profile }: GameWorldProps) {
           </section>
         </>
       ) : null}
-      {activeSpotId ? <SpotModal spotId={activeSpotId} nickname={profile.nickname} onClose={() => setActiveSpotId(null)} /> : null}
+      {activeSpotId === "directions" ? (
+        <DirectionsSheet onClose={() => setActiveSpotId(null)} />
+      ) : activeSpotId ? (
+        <SpotModal spotId={activeSpotId} nickname={profile.nickname} onClose={() => setActiveSpotId(null)} />
+      ) : null}
     </section>
   );
 }

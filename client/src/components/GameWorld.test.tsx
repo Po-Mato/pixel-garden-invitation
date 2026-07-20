@@ -7,7 +7,13 @@ import {
 } from "@wedding-game/shared";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { worldDepth } from "../game/worldVisuals";
+import { copyText } from "../invitation/browserActions";
 import { GameWorld } from "./GameWorld";
+
+vi.mock("../invitation/browserActions", () => ({
+  copyText: vi.fn(),
+  downloadIcs: vi.fn()
+}));
 
 const groomNpcLabel = `신랑 ${invitationContent.event.couple.groom}`;
 const brideNpcLabel = `신부 ${invitationContent.event.couple.bride}`;
@@ -54,6 +60,7 @@ beforeEach(() => {
   animationFrames = new Map();
   nextAnimationFrameId = 1;
   MockWebSocket.instances = [];
+  vi.mocked(copyText).mockResolvedValue(undefined);
   vi.useFakeTimers();
   vi.stubGlobal("requestAnimationFrame", vi.fn((callback: FrameRequestCallback) => {
     const id = nextAnimationFrameId++;
@@ -358,6 +365,89 @@ describe("GameWorld", () => {
     expect(player).toHaveStyle({ left: "285px", top: "555px" });
   });
 
+  it("opens directions from the invitation detail without moving the player", async () => {
+    const { container } = render(<GameWorld profile={profile} />);
+    const player = container.querySelector<HTMLElement>(".world-player");
+    const before = { left: player?.style.left, top: player?.style.top };
+
+    fireEvent.click(screen.getByRole("button", { name: "초대장 메뉴" }));
+    const menu = screen.getByRole("dialog", { name: "초대장 바로가기" });
+    const directionsButton = within(menu).getByRole("button", { name: "오시는 길" });
+    const menuBackdrop = container.querySelector<HTMLElement>(".world-menu-backdrop");
+    fireEvent.click(directionsButton);
+
+    const directions = screen.getByRole("dialog", { name: "오시는 길" });
+    expect(menu).toHaveAttribute("aria-hidden", "true");
+    expect(menuBackdrop).toHaveStyle({ zIndex: "8" });
+    expect(menu).toHaveStyle({ zIndex: "9" });
+    expect(player?.style.left).toBe(before.left);
+    expect(player?.style.top).toBe(before.top);
+
+    fireEvent.click(within(directions).getByRole("button", { name: "주소 복사" }));
+    await act(async () => {
+      await Promise.resolve();
+    });
+    expect(screen.getByText("주소를 복사했습니다.")).toBeInTheDocument();
+    expect(player?.style.left).toBe(before.left);
+    expect(player?.style.top).toBe(before.top);
+
+    fireEvent.click(within(directions).getByRole("button", { name: "닫기" }));
+    expect(screen.queryByRole("dialog", { name: "오시는 길" })).not.toBeInTheDocument();
+    expect(menu).not.toHaveAttribute("aria-hidden");
+    expect(menuBackdrop?.style.zIndex).toBe("");
+    expect(menu.style.zIndex).toBe("");
+    expect(directionsButton).toHaveFocus();
+    expect(player?.style.left).toBe(before.left);
+    expect(player?.style.top).toBe(before.top);
+  });
+
+  it("closes only the directions sheet on Escape and restores its menu trigger", () => {
+    render(<GameWorld profile={profile} />);
+    fireEvent.click(screen.getByRole("button", { name: "초대장 메뉴" }));
+    const menu = screen.getByRole("dialog", { name: "초대장 바로가기" });
+    const directionsButton = within(menu).getByRole("button", { name: "오시는 길" });
+    fireEvent.click(directionsButton);
+
+    fireEvent.keyDown(document, { key: "Escape" });
+
+    expect(screen.queryByRole("dialog", { name: "오시는 길" })).not.toBeInTheDocument();
+    expect(screen.getByRole("dialog", { name: "초대장 바로가기" })).toBeInTheDocument();
+    expect(directionsButton).toHaveFocus();
+  });
+
+  it("clears directions state when the invitation menu closes", () => {
+    render(<GameWorld profile={profile} />);
+    fireEvent.click(screen.getByRole("button", { name: "초대장 메뉴" }));
+    const menu = screen.getByRole("dialog", { name: "초대장 바로가기" });
+    const closeButton = within(menu).getByRole("button", { name: "초대장 메뉴 닫기" });
+    fireEvent.click(within(menu).getByRole("button", { name: "오시는 길" }));
+
+    fireEvent.click(closeButton);
+
+    expect(screen.queryByRole("dialog", { name: "오시는 길" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("dialog", { name: "초대장 바로가기" })).not.toBeInTheDocument();
+  });
+
+  it("opens the directions sheet from the menu shortcut", () => {
+    render(<GameWorld profile={profile} />);
+    fireEvent.click(screen.getByRole("button", { name: "초대장 메뉴" }));
+    fireEvent.click(within(screen.getByRole("dialog", { name: "초대장 바로가기" })).getByRole("button", { name: "길 찾기" }));
+
+    expect(screen.queryByRole("dialog", { name: "초대장 바로가기" })).not.toBeInTheDocument();
+    expect(screen.getByRole("dialog", { name: "오시는 길" })).toHaveTextContent("네이버지도");
+    expect(screen.queryByText("MJ컨벤션은 경기 부천시 소사구 경인로 386에 있습니다.")).not.toBeInTheDocument();
+  });
+
+  it("opens the directions sheet from the world directions spot", () => {
+    render(<GameWorld profile={profile} />);
+    fireEvent.click(screen.getByRole("button", { name: /오시는 길/ }));
+
+    const directions = screen.getByRole("dialog", { name: "오시는 길" });
+    expect(directions).toHaveTextContent("네이버지도");
+    expect(directions).toHaveTextContent("주차 2시간 무료");
+    expect(screen.queryByText("MJ컨벤션은 경기 부천시 소사구 경인로 386에 있습니다.")).not.toBeInTheDocument();
+  });
+
   it("places the calendar sheet above the hidden menu layers", () => {
     const { container } = render(<GameWorld profile={profile} />);
     fireEvent.click(screen.getByRole("button", { name: "초대장 메뉴" }));
@@ -423,6 +513,20 @@ describe("GameWorld", () => {
     advancePortalTransition();
     fireEvent.click(screen.getByRole("button", { name: "초대장 메뉴" }));
     expect(screen.getByRole("dialog", { name: "초대장 바로가기" })).not.toHaveAttribute("aria-hidden");
+  });
+
+  it("clears menu directions state when portal arrival starts", () => {
+    render(<GameWorld profile={profile} />);
+    fireEvent.click(screen.getByRole("button", { name: "동네로 나가기" }));
+    fireEvent.click(screen.getByRole("button", { name: "초대장 메뉴" }));
+    const menu = screen.getByRole("dialog", { name: "초대장 바로가기" });
+    fireEvent.click(within(menu).getByRole("button", { name: "오시는 길" }));
+
+    advanceRouteToPortalArrival();
+
+    expect(screen.queryByRole("dialog", { name: "오시는 길" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("dialog", { name: "초대장 바로가기" })).not.toBeInTheDocument();
+    expect(screen.getByTestId("world-portal-transition")).toHaveAttribute("data-phase", "arrival");
   });
 
   it("does not change zones until the player reaches the clicked portal", () => {
