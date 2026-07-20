@@ -10,6 +10,7 @@ import { BottomSheet } from "./BottomSheet";
 import { CoupleProfilePanel } from "./CoupleProfilePanel";
 import { GuestbookPanel } from "./GuestbookPanel";
 import { RsvpPanel } from "./RsvpPanel";
+import { WeddingGallery } from "./WeddingGallery";
 import { WeddingStoryTimeline } from "./WeddingStoryTimeline";
 
 type SpotModalProps = {
@@ -67,6 +68,7 @@ export function SpotModal({ spotId, nickname, onClose }: SpotModalProps) {
         <GuestbookPanel nickname={nickname} messages={guestbookMessages} onSubmit={handleGuestbookSubmit} />
       )}
       {spotId === "couple" && <CoupleProfilePanel />}
+      {spotId === "gallery" && <WeddingGallery />}
       {spotId === "story" && <WeddingStoryTimeline />}
     </BottomSheet>
   );

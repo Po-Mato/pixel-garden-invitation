@@ -38,4 +38,11 @@ describe("지점 모달", () => {
     expect(await screen.findByText("방명록 전용 패널")).toBeInTheDocument();
     expect(api.fetchGuestbookMessages).toHaveBeenCalledTimes(1);
   });
+
+  it("갤러리 지점에서 기본 문구와 사진 갤러리를 함께 표시한다", () => {
+    render(<SpotModal spotId="gallery" nickname="하객1" onClose={vi.fn()} />);
+
+    expect(screen.getByRole("heading", { name: "사진 갤러리" })).toBeInTheDocument();
+    expect(screen.getAllByRole("button", { name: /사진 \d+:/ })).toHaveLength(10);
+  });
 });
