@@ -34,7 +34,9 @@ describe("weddingContent", () => {
 
   it("중복 ID와 잘못된 방향을 거부한다", () => {
     const valid = weddingContent.gallery.map(({ assetPath: _assetPath, sources: _sources, ...photo }) => photo);
-    expect(() => parseWeddingGalleryManifest([...valid, valid[0]])).toThrow(/10장/);
+    expect(() => parseWeddingGalleryManifest(valid.map((photo, index) =>
+      index === 1 ? { ...photo, id: valid[0].id } : photo
+    ))).toThrow("웨딩 갤러리 사진 ID는 고유해야 합니다.");
     expect(() => parseWeddingGalleryManifest(valid.map((photo, index) =>
       index === 0 ? { ...photo, orientation: "portrait" } : photo
     ))).toThrow(/방향/);
