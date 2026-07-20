@@ -80,7 +80,13 @@ export async function verifyPassword(password: string, encodedHash: string): Pro
   if (typeof password !== "string" || typeof encodedHash !== "string") return false;
 
   const [algorithm, iterations, encodedSalt, encodedDerivedKey, ...extra] = encodedHash.split("$");
-  if (algorithm !== "pbkdf2-sha256" || iterations !== "210000" || extra.length > 0) return false;
+  if (
+    algorithm !== "pbkdf2-sha256"
+    || iterations !== "210000"
+    || typeof encodedSalt !== "string"
+    || typeof encodedDerivedKey !== "string"
+    || extra.length > 0
+  ) return false;
 
   const salt = decodeBase64Url(encodedSalt);
   const expectedDerivedKey = decodeBase64Url(encodedDerivedKey);
