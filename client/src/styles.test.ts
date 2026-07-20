@@ -528,7 +528,9 @@ describe("wedding editorial content", () => {
 
     expect(galleryRule).toContain("grid-template-columns: repeat(2, minmax(0, 1fr));");
     expect(galleryRule).toContain("max-width: 100%;");
-    expect(galleryRule).toContain("overflow: hidden;");
+    expect(galleryRule).toContain("box-sizing: border-box;");
+    expect(galleryRule).toContain("padding: 5px;");
+    expect(galleryRule).toContain("overflow: visible;");
     expect(itemRule).toContain("min-width: 0;");
     expect(styles).toMatch(/\.wedding-gallery__item--hero,\s*\.wedding-gallery__item--wide\s*\{[^}]*grid-column:\s*1 \/ -1;/s);
     expect(styles).toMatch(/\.wedding-gallery__item--half\s*\{[^}]*grid-column:\s*span 1;/s);
@@ -536,6 +538,20 @@ describe("wedding editorial content", () => {
     expect(triggerRule).toContain("border-radius: 6px;");
     expect(triggerRule).toContain("overflow: hidden;");
     expect(styles).toContain(".wedding-gallery__photo-button:focus-visible");
+  });
+
+  it("preserves gallery button borders and focus halos inside the bottom sheet cascade", () => {
+    const sheetTriggerRule = styles.match(
+      /\.bottom-sheet \.wedding-gallery__photo-button\s*\{([^}]*)}/s
+    )?.[1] ?? "";
+    const sheetFocusRule = styles.match(
+      /\.bottom-sheet \.wedding-gallery__photo-button:focus-visible\s*\{([^}]*)}/s
+    )?.[1] ?? "";
+
+    expect(sheetTriggerRule).toContain("border: 1px solid");
+    expect(sheetTriggerRule).toContain("border-radius: 6px;");
+    expect(sheetFocusRule).toContain("outline: 3px solid var(--camellia);");
+    expect(sheetFocusRule).toContain("outline-offset: 2px;");
   });
 
   it("preserves image and fallback geometry without overflowing the gallery", () => {
