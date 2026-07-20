@@ -89,8 +89,9 @@ export async function createRsvp(db: D1Database, args: CreateRsvpArgs): Promise<
     .prepare(`
       INSERT INTO rsvps (
         id, invitation_id, side, guest_name, phone, attendance, party_size,
-        meal_status, note, consent_version, consented_at, edit_token_hash
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        meal_status, note, consent_version, consented_at, edit_token_hash,
+        created_at, updated_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       RETURNING ${rsvpColumns}
     `)
     .bind(
@@ -105,7 +106,9 @@ export async function createRsvp(db: D1Database, args: CreateRsvpArgs): Promise<
       submission.note,
       submission.consentVersion,
       args.consentedAt,
-      args.editTokenHash
+      args.editTokenHash,
+      args.consentedAt,
+      args.consentedAt
     )
     .first<RsvpRow>();
 

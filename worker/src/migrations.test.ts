@@ -14,7 +14,12 @@ const { DatabaseSync } = createRequire(import.meta.url)("node:sqlite") as {
   DatabaseSync: SqliteDatabaseConstructor;
 };
 
-const migrationFiles = ["0001_init.sql", "0002_update_invitation_details.sql", "0003_production_rsvp.sql"] as const;
+const migrationFiles = [
+  "0001_init.sql",
+  "0002_update_invitation_details.sql",
+  "0003_production_rsvp.sql",
+  "0004_rsvp_consent_policy.sql"
+] as const;
 
 const expectedInvitation = {
   id: "sample-garden",
@@ -23,7 +28,7 @@ const expectedInvitation = {
   wedding_date: "2027-05-01",
   venue_name: "MJ컨벤션 5층 파티오볼룸",
   venue_address: "경기 부천시 소사구 경인로 386",
-  config_json: "{}"
+  config_json: JSON.stringify({ rsvp: { consentVersion: "2026-07-20" } })
 };
 
 function readMigration(filename: typeof migrationFiles[number]): string {
@@ -68,7 +73,33 @@ describe("invitation migrations", () => {
 
       expect(querySampleGarden(database)).toEqual({
         ...expectedInvitation,
+        config_json: "{}",
         created_at: expect.any(String)
+      });
+    } finally {
+      database.close();
+    }
+  });
+
+  it("adds the RSVP consent policy without replacing existing config keys", () => {
+    const database = new DatabaseSync(":memory:");
+
+    try {
+      for (const filename of migrationFiles.slice(0, 3)) {
+        database.exec(readMigration(filename));
+      }
+      database.exec(`
+        UPDATE invitations
+        SET config_json = '{"theme":"garden","rsvp":{"collectPhone":true}}'
+        WHERE id = 'sample-garden'
+      `);
+
+      database.exec(readMigration("0004_rsvp_consent_policy.sql"));
+
+      const invitation = querySampleGarden(database);
+      expect(JSON.parse(invitation?.config_json as string)).toEqual({
+        theme: "garden",
+        rsvp: { collectPhone: true, consentVersion: "2026-07-20" }
       });
     } finally {
       database.close();

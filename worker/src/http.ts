@@ -78,9 +78,8 @@ function constantTimeEqual(left: string, right: string): boolean {
   return difference === 0;
 }
 
-async function ownsRsvp(request: Request, editTokenHash: string | null): Promise<boolean> {
-  const token = readBearerToken(request);
-  if (!token || !editTokenHash) return false;
+async function ownsRsvp(token: string, editTokenHash: string | null): Promise<boolean> {
+  if (!editTokenHash) return false;
   return constantTimeEqual(await hashEditToken(token), editTokenHash);
 }
 
@@ -109,10 +108,14 @@ async function handleOwnedRsvp(
     return json({ error: "not_found" }, 404);
   }
 
+  const token = readBearerToken(request);
+  if (!token) return json({ error: "unauthorized" }, 401);
+
   try {
     const owned = await findRsvp(env.DB, invitationId, rsvpId);
-    if (!owned) return json({ error: "not_found" }, 404);
-    if (!(await ownsRsvp(request, owned.editTokenHash))) return json({ error: "unauthorized" }, 401);
+    if (!owned || !(await ownsRsvp(token, owned.editTokenHash))) {
+      return json({ error: "unauthorized" }, 401);
+    }
     if (request.method === "GET") return json(owned.response);
 
     const body = await readJson(request);

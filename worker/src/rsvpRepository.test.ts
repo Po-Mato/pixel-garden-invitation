@@ -54,6 +54,7 @@ describe("createRsvp", () => {
 
     expect(prepare).toHaveBeenCalledWith(expect.stringMatching(/INSERT INTO rsvps/i));
     expect(prepare).toHaveBeenCalledWith(expect.stringMatching(/RETURNING[\s\S]*guest_name/i));
+    expect(prepare).toHaveBeenCalledWith(expect.stringMatching(/created_at, updated_at/i));
     expect(bind).toHaveBeenCalledWith(
       "rsvp_1",
       "sample-garden",
@@ -66,7 +67,9 @@ describe("createRsvp", () => {
       "창가 자리",
       "2026-07-20",
       "2026-07-20T10:00:00.000Z",
-      editTokenHash
+      editTokenHash,
+      "2026-07-20T10:00:00.000Z",
+      "2026-07-20T10:00:00.000Z"
     );
     expect(bind.mock.calls.flat()).not.toContain(rawEditToken);
     expect(response).toEqual({

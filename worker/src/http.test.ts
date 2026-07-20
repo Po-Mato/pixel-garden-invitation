@@ -66,8 +66,13 @@ function createDb(options: CreateDbOptions = {}) {
               note,
               storedConsentVersion,
               consentedAt,
-              editTokenHash
-            ] = values as [string, string, string, string, string, string, number, string, string, string, string, string];
+              editTokenHash,
+              createdAt,
+              updatedAt
+            ] = values as [
+              string, string, string, string, string, string, number,
+              string, string, string, string, string, string, string
+            ];
             const row: RsvpRow = {
               id,
               invitation_id: invitationId,
@@ -82,8 +87,8 @@ function createDb(options: CreateDbOptions = {}) {
               consented_at: consentedAt,
               edit_token_hash: editTokenHash,
               revision: 1,
-              created_at: consentedAt,
-              updated_at: consentedAt
+              created_at: createdAt,
+              updated_at: updatedAt
             };
             rows.set(id, row);
             return row;
@@ -297,6 +302,47 @@ describe("handleApiRequest", () => {
     await expect(ownedGet.json()).resolves.toMatchObject({ id: body.credential.rsvpId, revision: 1 });
     expect(missingTokenGet.status).toBe(401);
     expect(wrongTokenGet.status).toBe(401);
+  });
+
+  it.each([
+    ["missing", undefined],
+    ["wrong scheme", "Basic token"],
+    ["missing token", "Bearer"],
+    ["extra token", "Bearer first second"]
+  ])("rejects a %s authorization header before querying D1", async (_label, authorization) => {
+    const { db, prepare } = createDb();
+    const headers = authorization ? { authorization } : undefined;
+
+    const response = await handleApiRequest(new Request(
+      "https://worker.test/api/invitations/sample-garden/rsvps/rsvp_private",
+      { headers }
+    ), apiEnv(db), "invalid-auth-client");
+
+    expect(response.status).toBe(401);
+    await expect(response.json()).resolves.toEqual({ error: "unauthorized" });
+    expect(prepare).not.toHaveBeenCalled();
+  });
+
+  it("does not reveal missing or cross-invitation RSVP ownership", async () => {
+    const { db } = createDb();
+    const { body } = await createOwnedRsvp(db);
+    const requests = [
+      new Request("https://worker.test/api/invitations/sample-garden/rsvps/rsvp_missing", {
+        headers: { authorization: `Bearer ${body.credential.editToken}` }
+      }),
+      new Request(`https://worker.test/api/invitations/other-garden/rsvps/${body.credential.rsvpId}`, {
+        headers: { authorization: `Bearer ${body.credential.editToken}` }
+      }),
+      new Request(`https://worker.test/api/invitations/sample-garden/rsvps/${body.credential.rsvpId}`, {
+        headers: { authorization: "Bearer wrong-token" }
+      })
+    ];
+
+    for (const request of requests) {
+      const response = await handleApiRequest(request, apiEnv(db), "private-owner-client");
+      expect(response.status).toBe(401);
+      await expect(response.json()).resolves.toEqual({ error: "unauthorized" });
+    }
   });
 
   it("updates an owned RSVP and distinguishes stale revisions", async () => {
