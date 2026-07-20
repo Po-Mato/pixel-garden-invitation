@@ -1,0 +1,12 @@
+[
+  { "id": "01-cover", "alt": "햇살이 비치는 정원 통로에 나란히 선 신랑신부의 뒷모습", "caption": "햇살 가득한 정원에서, 함께 걷는 첫걸음", "width": 1536, "height": 1024, "orientation": "landscape", "layout": "hero" },
+  { "id": "02-dress-bouquet", "alt": "흰 드레스 자락과 흰 꽃 부케를 든 신부의 옆모습", "width": 1024, "height": 1536, "orientation": "portrait", "layout": "half" },
+  { "id": "03-side-walk", "alt": "밝은 정원에서 나란히 걷는 신랑신부의 옆모습", "width": 1024, "height": 1536, "orientation": "portrait", "layout": "half" },
+  { "id": "06-hands-rings", "alt": "자연광 아래 서로 맞잡은 두 사람의 손과 결혼반지", "caption": "같은 방향을 바라보며", "width": 1536, "height": 1024, "orientation": "landscape", "layout": "wide" },
+  { "id": "04-bench-silhouette", "alt": "정원 벤치에 앉아 있는 신랑신부의 부드러운 옆 실루엣", "width": 1024, "height": 1536, "orientation": "portrait", "layout": "half" },
+  { "id": "05-veil-flowers", "alt": "흰 꽃 사이로 흐르는 웨딩 베일과 드레스의 뒷모습", "width": 1024, "height": 1536, "orientation": "portrait", "layout": "half" },
+  { "id": "08-under-tree", "alt": "큰 나무 아래 마주 선 신랑신부의 옆모습과 정원 풍경", "width": 1536, "height": 1024, "orientation": "landscape", "layout": "wide" },
+  { "id": "07-bouquet-still", "alt": "밝은 창가에 놓인 흰 꽃과 연분홍 꽃의 웨딩 부케", "width": 1024, "height": 1536, "orientation": "portrait", "layout": "half" },
+  { "id": "10-sunlit-finale", "alt": "따뜻한 햇살 속 정원을 함께 걸어가는 신랑신부의 뒷모습", "width": 1024, "height": 1536, "orientation": "portrait", "layout": "half" },
+  { "id": "09-garden-aisle", "alt": "흰 꽃과 초록 잎으로 장식된 화사한 야외 예식 통로 전경", "caption": "소중한 분들과 함께할 우리의 첫날", "width": 1536, "height": 1024, "orientation": "landscape", "layout": "wide" }
+]

@@ -1,4 +1,5 @@
 export * from "./content";
+export * from "./weddingContent";
 export * from "./guestCharacterPresets";
 export * from "./characterCatalog";
 export * from "./protocol";

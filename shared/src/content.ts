@@ -1,3 +1,5 @@
+import { weddingContent } from "./weddingContent";
+
 export type SpotId =
   | "wedding-info"
   | "directions"
@@ -65,6 +67,7 @@ export const invitationContent = {
       }
     }
   } satisfies WeddingEvent,
+  content: weddingContent,
   spots: [
     {
       id: "wedding-info",
