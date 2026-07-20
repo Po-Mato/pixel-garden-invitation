@@ -56,6 +56,7 @@ describe("wedding calendar event", () => {
         bride: "신부\\이름;하나,둘\n셋"
       },
       venue: {
+        ...event.venue,
         name: "장소\\이름;하나,둘\n셋",
         hall: "홀\\이름;하나,둘\n셋",
         address: "주소\\이름;하나,둘\n셋"
