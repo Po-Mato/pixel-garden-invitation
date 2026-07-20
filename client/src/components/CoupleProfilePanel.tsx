@@ -8,14 +8,12 @@ export function CoupleProfilePanel() {
     <div className="couple-profile-panel" style={{ display: "grid", gap: "16px" }}>
       {coupleProfiles.map((profile) => {
         const photo = gallery.find((candidate) => candidate.id === profile.photoId);
-        const heading = `${profile.roleLabel} ${profile.name}`;
+        const sectionLabel = `${profile.roleLabel} ${profile.name}`;
 
         return (
-          <section key={profile.role} aria-label={heading} style={{ display: "grid", gap: "8px" }}>
-            <div>
-              <h3>{heading}</h3>
-              <p>{profile.roleLabel}</p>
-            </div>
+          <section key={profile.role} aria-label={sectionLabel} style={{ display: "grid", gap: "8px" }}>
+            <p>{profile.roleLabel}</p>
+            <h3>{profile.name}</h3>
             {photo ? (
               <img
                 src={resolveGalleryAssetPath(photo.assetPath)}

@@ -21,7 +21,7 @@ afterEach(() => {
 
 describe("지점 모달", () => {
   it.each([
-    ["couple", "서로의 계절을 함께 걷기로 한 두 사람을 소개합니다.", "신랑 이승재"],
+    ["couple", "서로의 계절을 함께 걷기로 한 두 사람을 소개합니다.", "이승재"],
     ["story", "첫 만남부터 결혼식까지 이어진 이야기를 따라 걸어보세요.", "첫 인사"]
   ] as const)("%s 지점에서 기본 문구와 전용 패널을 함께 표시한다", (spotId, body, panelHeading) => {
     render(<SpotModal spotId={spotId} nickname="하객1" onClose={vi.fn()} />);
