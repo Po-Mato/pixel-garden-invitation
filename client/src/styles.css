@@ -2537,6 +2537,9 @@ select {
 .bottom-sheet .wedding-gallery__photo-button {
   border: 1px solid color-mix(in srgb, var(--gold) 68%, var(--ink));
   border-radius: 6px;
+  background: var(--paper);
+  color: var(--ink);
+  font-weight: 400;
 }
 
 .bottom-sheet .wedding-gallery__photo-button:focus-visible {

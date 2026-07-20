@@ -540,7 +540,7 @@ describe("wedding editorial content", () => {
     expect(styles).toContain(".wedding-gallery__photo-button:focus-visible");
   });
 
-  it("preserves gallery button borders and focus halos inside the bottom sheet cascade", () => {
+  it("isolates gallery button visuals and focus halos from the bottom sheet cascade", () => {
     const sheetTriggerRule = styles.match(
       /\.bottom-sheet \.wedding-gallery__photo-button\s*\{([^}]*)}/s
     )?.[1] ?? "";
@@ -550,6 +550,9 @@ describe("wedding editorial content", () => {
 
     expect(sheetTriggerRule).toContain("border: 1px solid");
     expect(sheetTriggerRule).toContain("border-radius: 6px;");
+    expect(sheetTriggerRule).toContain("background: var(--paper);");
+    expect(sheetTriggerRule).toContain("color: var(--ink);");
+    expect(sheetTriggerRule).toContain("font-weight: 400;");
     expect(sheetFocusRule).toContain("outline: 3px solid var(--camellia);");
     expect(sheetFocusRule).toContain("outline-offset: 2px;");
   });
