@@ -21,6 +21,11 @@ describe("invitationContent", () => {
       startAt: "2027-05-01T17:10:00+09:00",
       endAt: "2027-05-01T18:40:00+09:00",
       timeZone: "Asia/Seoul",
+      rsvp: {
+        responseDeadline: "2027-04-24T23:59:59+09:00",
+        deleteAt: "2027-05-31T23:59:59+09:00",
+        consentVersion: "2026-07-20"
+      },
       venue: {
         name: "MJ컨벤션",
         hall: "5층 파티오볼룸",
