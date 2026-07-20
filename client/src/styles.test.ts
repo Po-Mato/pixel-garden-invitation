@@ -572,8 +572,9 @@ describe("wedding editorial content", () => {
   it("keeps the lightbox above the world in a safe full-viewport grid", () => {
     const lightboxRule = styles.match(/\.photo-lightbox\s*\{([^}]*)}/s)?.[1] ?? "";
     const stageRule = styles.match(/\.photo-lightbox__stage\s*\{([^}]*)}/s)?.[1] ?? "";
+    const mediaRule = styles.match(/\.photo-lightbox__media\s*\{([^}]*)}/s)?.[1] ?? "";
     const mediaImageRule = styles.match(
-      /\.photo-lightbox__media \.responsive-gallery-image\s*\{([^}]*)}/s
+      /\.photo-lightbox__media img\.responsive-gallery-image\s*\{([^}]*)}/s
     )?.[1] ?? "";
     const mediaFallbackRule = styles.match(
       /\.photo-lightbox__media \.responsive-gallery-image--fallback\s*\{([^}]*)}/s
@@ -590,10 +591,16 @@ describe("wedding editorial content", () => {
     }
     expect(stageRule).toContain("min-height: 0;");
     expect(stageRule).toContain("grid-template-columns: 48px minmax(0, 1fr) 48px;");
+    expect(mediaRule).toContain("position: relative;");
+    expect(mediaImageRule).toContain("position: absolute;");
+    expect(mediaImageRule).toContain("inset: 0;");
+    expect(mediaImageRule).toContain("width: 100%;");
+    expect(mediaImageRule).toContain("height: 100%;");
     expect(mediaImageRule).toContain("max-width: 100%;");
     expect(mediaImageRule).toContain("max-height: 100%;");
     expect(mediaImageRule).toContain("object-fit: contain;");
     expect(mediaFallbackRule).toContain("width: min(100%, 640px);");
+    expect(mediaFallbackRule).toContain("height: auto;");
     expect(mediaFallbackRule).toContain("max-height: 100%;");
   });
 
