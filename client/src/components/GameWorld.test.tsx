@@ -486,14 +486,18 @@ describe("GameWorld", () => {
     fireEvent.click(within(screen.getByRole("dialog", { name: "초대장 바로가기" })).getByRole("button", { name: "오시는 길" }));
     expect(animationFrames.size).toBe(0);
 
-    act(() => staleTick?.(3360));
-    expect(player).toHaveStyle({ left: "285px", top: "135px" });
-    expect(screen.getByTestId("world-portal-transition")).toHaveAttribute("data-phase", "idle");
-
     fireEvent.click(within(screen.getByRole("dialog", { name: "오시는 길" })).getByRole("button", { name: "닫기" }));
     expect(animationFrames.size).toBe(0);
 
     fireEvent.keyDown(joystick, { key: "ArrowRight" });
+    const activeTick = [...animationFrames.values()][0];
+    expect(activeTick).toBeDefined();
+
+    act(() => staleTick?.(3360));
+    expect(player).toHaveStyle({ left: "285px", top: "135px" });
+    expect(screen.getByTestId("world-portal-transition")).toHaveAttribute("data-phase", "idle");
+    expect([...animationFrames.values()]).toEqual([activeTick]);
+
     advanceAnimation(3600);
     expect(player).toHaveStyle({ left: "315px", top: "135px" });
   });
@@ -556,7 +560,7 @@ describe("GameWorld", () => {
     expect(joystick).toHaveAttribute("aria-disabled", "false");
   });
 
-  it("stops realtime at the last transmitted tile when the latest local tile was throttled", () => {
+  it("confirms a terminal stop outside the worker throttle window", () => {
     configureRealtime();
     render(<GameWorld profile={profile} />);
     const socket = MockWebSocket.instances[0];
@@ -587,6 +591,45 @@ describe("GameWorld", () => {
       zoneId: priorMove.zoneId,
       seq: priorMove.seq + 1
     });
+
+    fireEvent.click(within(screen.getByRole("dialog", { name: "오시는 길" })).getByRole("button", { name: "닫기" }));
+    act(() => vi.advanceTimersByTime(100));
+    expect(socket.sentMessages).toHaveLength(2);
+
+    act(() => vi.advanceTimersByTime(25));
+    const confirmedStop = JSON.parse(socket.sentMessages.at(-1) ?? "null");
+    expect(socket.sentMessages).toHaveLength(3);
+    expect(confirmedStop).toMatchObject({
+      x: terminalStop.x,
+      y: terminalStop.y,
+      direction: "down",
+      moving: false,
+      zoneId: terminalStop.zoneId,
+      seq: terminalStop.seq + 1
+    });
+  });
+
+  it("cancels a pending terminal stop confirmation when joystick input restarts", () => {
+    configureRealtime();
+    render(<GameWorld profile={profile} />);
+    const socket = MockWebSocket.instances[0];
+    act(() => socket.emit("open"));
+    act(() => socket.emitJson({ type: "welcome", guestId: "guest_self", guests: [] }));
+    socket.sentMessages.length = 0;
+
+    const joystick = screen.getByLabelText("가상 조이스틱");
+    fireEvent.keyDown(joystick, { key: "ArrowRight" });
+    advanceAnimation(0);
+    fireEvent.click(screen.getByRole("button", { name: /오시는 길/ }));
+    expect(socket.sentMessages).toHaveLength(2);
+
+    fireEvent.click(within(screen.getByRole("dialog", { name: "오시는 길" })).getByRole("button", { name: "닫기" }));
+    fireEvent.keyUp(joystick, { key: "ArrowRight" });
+    fireEvent.keyDown(joystick, { key: "ArrowDown" });
+    act(() => vi.advanceTimersByTime(125));
+
+    expect(socket.sentMessages).toHaveLength(2);
+    expect(JSON.parse(socket.sentMessages.at(-1) ?? "null")).toMatchObject({ moving: false });
   });
 
   it("places the calendar sheet above the hidden menu layers", () => {
