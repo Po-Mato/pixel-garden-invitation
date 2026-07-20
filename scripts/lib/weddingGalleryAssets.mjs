@@ -134,7 +134,7 @@ export async function loadWeddingGalleryManifest(options = {}) {
 }
 
 export async function auditWeddingGalleryAssets(options = {}) {
-  const { manifestPath, sourceRoot, outputRoot } = defaultPaths(options);
+  const { manifestPath, outputRoot } = defaultPaths(options);
   const manifest = await loadWeddingGalleryManifest({ ...options, manifestPath });
   const errors = [];
   const expectedNames = expectedOutputNames(manifest);
@@ -160,19 +160,7 @@ export async function auditWeddingGalleryAssets(options = {}) {
   }
 
   for (const photo of manifest) {
-    let sourceDimensions;
-    try {
-      ({ dimensions: sourceDimensions } = await readSourceDimensions(sourceRoot, photo));
-    } catch (error) {
-      errors.push(error instanceof Error ? error.message : String(error));
-      continue;
-    }
-
     const declaredRatio = photo.width / photo.height;
-    const sourceRatio = sourceDimensions.width / sourceDimensions.height;
-    if (ratioDifference(sourceRatio, declaredRatio) > maximumRatioDifference) {
-      errors.push(`원본 비율이 선언 비율과 1% 이내로 일치해야 합니다: ${photo.id}`);
-    }
 
     for (const width of derivativeWidths) {
       const fileName = `${photo.id}-${width}.webp`;
@@ -197,8 +185,8 @@ export async function auditWeddingGalleryAssets(options = {}) {
           continue;
         }
         const outputRatio = metadata.width / metadata.height;
-        if (ratioDifference(outputRatio, sourceRatio) > maximumRatioDifference) {
-          errors.push(`출력 파일 비율이 원본과 1% 이내로 일치해야 합니다: ${fileName}`);
+        if (ratioDifference(outputRatio, declaredRatio) > maximumRatioDifference) {
+          errors.push(`출력 파일 비율이 선언 비율과 1% 이내로 일치해야 합니다: ${fileName}`);
         }
       } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
@@ -213,6 +201,7 @@ export async function auditWeddingGalleryAssets(options = {}) {
 
 export async function buildWeddingGalleryAssets(options = {}) {
   const { rootDir, manifestPath, sourceRoot, outputRoot } = defaultPaths(options);
+  const fileSystem = { rename: options.fileSystem?.rename ?? rename };
   const manifest = await loadWeddingGalleryManifest({ ...options, manifestPath });
   const sources = await Promise.all(manifest.map(async (photo) => {
     const source = await readSourceDimensions(sourceRoot, photo);
@@ -244,14 +233,14 @@ export async function buildWeddingGalleryAssets(options = {}) {
     let movedExistingOutput = false;
     try {
       try {
-        await rename(outputRoot, backupRoot);
+        await fileSystem.rename(outputRoot, backupRoot);
         movedExistingOutput = true;
       } catch (error) {
         if (error?.code !== "ENOENT") throw error;
       }
-      await rename(stagedOutputRoot, outputRoot);
+      await fileSystem.rename(stagedOutputRoot, outputRoot);
     } catch (error) {
-      if (movedExistingOutput) await rename(backupRoot, outputRoot);
+      if (movedExistingOutput) await fileSystem.rename(backupRoot, outputRoot);
       throw error;
     }
     if (movedExistingOutput) await rm(backupRoot, { recursive: true, force: true });

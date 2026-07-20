@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { mkdtemp, mkdir, readdir, rm, unlink, writeFile } from "node:fs/promises";
+import { mkdtemp, mkdir, readFile, readdir, rename, rm, unlink, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import test from "node:test";
@@ -139,6 +139,47 @@ test("감사는 출력 디렉터리의 추가 항목을 거부한다", async () 
       () => auditWeddingGalleryAssets({ rootDir, manifestPath, outputRoot }),
       /정확히/
     );
+  });
+});
+
+test("감사는 원본 디렉터리 없이 커밋된 WebP를 검증한다", async () => {
+  await withFixture(async ({ rootDir, manifestPath, sourceRoot, outputRoot }) => {
+    await buildWeddingGalleryAssets({ rootDir, manifestPath, sourceRoot, outputRoot });
+    await rm(sourceRoot, { recursive: true, force: true });
+
+    const result = await auditWeddingGalleryAssets({ rootDir, manifestPath, outputRoot });
+
+    assert.equal(result.files.length, 20);
+  });
+});
+
+test("publish 교체가 실패하면 기존 출력 20개를 복원한다", async () => {
+  await withFixture(async ({ rootDir, manifestPath, sourceRoot, outputRoot }) => {
+    await buildWeddingGalleryAssets({ rootDir, manifestPath, sourceRoot, outputRoot });
+    const existingOutput = join(outputRoot, "01-cover-640.webp");
+    const before = await readFile(existingOutput);
+    let renameCalls = 0;
+
+    await assert.rejects(
+      () => buildWeddingGalleryAssets({
+        rootDir,
+        manifestPath,
+        sourceRoot,
+        outputRoot,
+        fileSystem: {
+          rename: async (from, to) => {
+            renameCalls += 1;
+            if (renameCalls === 2) throw new Error("publish replacement failed");
+            await rename(from, to);
+          }
+        }
+      }),
+      /publish replacement failed/
+    );
+
+    assert.equal(renameCalls, 3);
+    assert.equal((await readdir(outputRoot)).length, 20);
+    assert.deepEqual(await readFile(existingOutput), before);
   });
 });
 
