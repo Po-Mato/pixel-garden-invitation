@@ -2871,3 +2871,21 @@ select {
     font-size: 16px;
   }
 }
+
+@media (orientation: landscape) and (max-height: 500px) and (max-width: 767px) {
+  .entry-screen {
+    grid-template-columns: minmax(128px, 0.9fr) minmax(300px, 1.6fr) minmax(128px, 0.9fr);
+  }
+
+  .character-customizer {
+    grid-template-rows: minmax(82px, 1fr) 28px 92px;
+  }
+
+  .character-customizer__sprite {
+    transform: translate(-50%, -50%) scale(0.62);
+  }
+
+  .entry-screen__controls {
+    min-width: 128px;
+  }
+}

@@ -106,6 +106,20 @@ describe("wedding event access", () => {
     expect(landscapeBlock).toContain(".character-customizer");
     expect(landscapeBlock).toContain(".entry-screen__controls");
   });
+
+  it("bounds short landscape entry columns below the 768px three-column threshold", () => {
+    const narrowLandscapeBlock = styles.match(
+      /@media \(orientation: landscape\) and \(max-height: 500px\) and \(max-width: 767px\)\s*\{([\s\S]*?)\n}/
+    )?.[1] ?? "";
+
+    expect(narrowLandscapeBlock).toContain(".entry-screen");
+    expect(narrowLandscapeBlock).toContain(
+      "grid-template-columns: minmax(128px, 0.9fr) minmax(300px, 1.6fr) minmax(128px, 0.9fr);"
+    );
+    expect(narrowLandscapeBlock).toContain(".character-customizer");
+    expect(narrowLandscapeBlock).toContain("grid-template-rows: minmax(82px, 1fr) 28px 92px;");
+    expect(narrowLandscapeBlock).toContain(".entry-screen__controls");
+  });
 });
 
 describe("wedding invitation palette", () => {
