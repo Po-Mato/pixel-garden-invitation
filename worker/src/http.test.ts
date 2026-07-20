@@ -351,31 +351,89 @@ describe("handleApiRequest", () => {
     expect(body).not.toContain(adminPasswordHash);
   });
 
-  it("returns the existing CORS headers for preflight requests", async () => {
+  it("returns restricted CORS headers for an allowed preflight request", async () => {
     const { db, prepare } = createDb();
-    const request = new Request("https://worker.test/api/invitations/sample-garden/rsvps", { method: "OPTIONS" });
+    const request = new Request("https://worker.test/api/invitations/sample-garden/rsvps", {
+      method: "OPTIONS",
+      headers: { origin: "https://po-mato.github.io" }
+    });
 
-    const response = await handleApiRequest(request, apiEnv(db), "preflight-client");
+    const response = await handleApiRequest(request, apiEnv(db, {
+      RSVP_ALLOWED_ORIGINS: "https://po-mato.github.io,http://localhost:5173,http://127.0.0.1:5173"
+    }), "preflight-client");
 
     expect(response.status).toBe(204);
-    expect(response.headers.get("access-control-allow-origin")).toBe("*");
-    expect(response.headers.get("access-control-allow-methods")).toBe("GET,POST,OPTIONS");
-    expect(response.headers.get("access-control-allow-headers")).toBe("content-type");
+    expect(response.headers.get("access-control-allow-origin")).toBe("https://po-mato.github.io");
+    expect(response.headers.get("access-control-allow-methods")).toBe("GET,POST,PATCH,DELETE,OPTIONS");
+    expect(response.headers.get("access-control-allow-headers")).toBe("content-type,authorization");
+    expect(response.headers.get("vary")).toBe("Origin");
     expect(prepare).not.toHaveBeenCalled();
   });
 
-  it("marks admin preflight responses as no-store without changing the existing CORS policy", async () => {
+  it("rejects disallowed preflight and actual origins before D1 access", async () => {
+    const { db, prepare } = createDb();
+    const env = apiEnv(db, { RSVP_ALLOWED_ORIGINS: "https://po-mato.github.io" });
+    const url = "https://worker.test/api/invitations/sample-garden/rsvps";
+
+    const preflight = await handleApiRequest(new Request(url, {
+      method: "OPTIONS",
+      headers: { origin: "https://evil.example" }
+    }), env, "denied-preflight-client");
+    const actual = await handleApiRequest(new Request(url, {
+      method: "POST",
+      body: JSON.stringify(canonicalRsvp),
+      headers: { "content-type": "application/json", origin: "https://evil.example" }
+    }), env, "denied-actual-client");
+
+    expect(preflight.status).toBe(403);
+    expect(actual.status).toBe(403);
+    expect(preflight.headers.get("access-control-allow-origin")).toBeNull();
+    expect(actual.headers.get("access-control-allow-origin")).toBeNull();
+    expect(prepare).not.toHaveBeenCalled();
+  });
+
+  it("requires an exact origin match and preserves allowed guestbook writes", async () => {
+    const { db, prepare } = createDb();
+    const env = apiEnv(db, { RSVP_ALLOWED_ORIGINS: "https://po-mato.github.io" });
+    const deceptive = new Request("https://worker.test/api/invitations/sample-garden/guestbook", {
+      method: "POST",
+      body: JSON.stringify({ nickname: "하객1", message: "축하합니다" }),
+      headers: { "content-type": "application/json", origin: "https://po-mato.github.io.evil.example" }
+    });
+
+    const denied = await handleApiRequest(deceptive, env, "deceptive-origin-client");
+    expect(denied.status).toBe(403);
+    expect(prepare).not.toHaveBeenCalled();
+
+    const allowed = await handleApiRequest(new Request(guestbookRequest(), {
+      headers: { "content-type": "application/json", origin: "https://po-mato.github.io" }
+    }), env, "allowed-guestbook-client");
+    expect(allowed.status).toBe(201);
+    expect(allowed.headers.get("access-control-allow-origin")).toBe("https://po-mato.github.io");
+  });
+
+  it("allows origin-less server requests without adding CORS headers", async () => {
+    const { db } = createDb();
+
+    const response = await handleApiRequest(rsvpRequest(), apiEnv(db), "server-client");
+
+    expect(response.status).toBe(201);
+    expect(response.headers.get("access-control-allow-origin")).toBeNull();
+    expect(response.headers.get("cache-control")).toBe("no-store");
+  });
+
+  it("marks admin preflight responses as no-store", async () => {
     const { db, prepare } = createDb();
     const request = new Request("https://worker.test/api/invitations/sample-garden/admin/rsvps", {
-      method: "OPTIONS"
+      method: "OPTIONS",
+      headers: { origin: "https://example.test" }
     });
 
     const response = await handleApiRequest(request, apiEnv(db), "admin-preflight-client");
 
     expect(response.status).toBe(204);
     expect(response.headers.get("cache-control")).toBe("no-store");
-    expect(response.headers.get("access-control-allow-origin")).toBe("*");
-    expect(response.headers.get("access-control-allow-methods")).toBe("GET,POST,OPTIONS");
+    expect(response.headers.get("access-control-allow-origin")).toBe("https://example.test");
     expect(prepare).not.toHaveBeenCalled();
   });
 

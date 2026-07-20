@@ -1,4 +1,5 @@
 import { handleApiRequest } from "./http";
+import { cleanupExpiredRsvpData } from "./cleanup";
 
 export interface Env {
   DB: D1Database;
@@ -28,5 +29,13 @@ export default {
     return new Response("Wedding game worker is running", {
       headers: { "content-type": "text/plain; charset=utf-8" }
     });
+  },
+
+  scheduled(controller: ScheduledController, env: Env, ctx: ExecutionContext): void {
+    const cleanup = cleanupExpiredRsvpData(env.DB, new Date(controller.scheduledTime)).then((result) => {
+      console.info(JSON.stringify({ event: "rsvp_cleanup", ...result }));
+      return result;
+    });
+    ctx.waitUntil(cleanup);
   }
 };

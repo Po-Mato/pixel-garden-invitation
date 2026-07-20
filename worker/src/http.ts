@@ -25,17 +25,15 @@ function createWriteLimiter(): MemoryRateLimiter {
 let writeLimiter: WriteLimiter = createWriteLimiter();
 
 const corsHeaders = {
-  "access-control-allow-origin": "*",
-  "access-control-allow-methods": "GET,POST,OPTIONS",
-  "access-control-allow-headers": "content-type"
+  "access-control-allow-methods": "GET,POST,PATCH,DELETE,OPTIONS",
+  "access-control-allow-headers": "content-type,authorization"
 };
 
 function json(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body), {
     status,
     headers: {
-      "content-type": "application/json; charset=utf-8",
-      ...corsHeaders
+      "content-type": "application/json; charset=utf-8"
     }
   });
 }
@@ -45,8 +43,7 @@ function adminJson(body: unknown, status = 200): Response {
     status,
     headers: {
       "content-type": "application/json; charset=utf-8",
-      "cache-control": "no-store",
-      ...corsHeaders
+      "cache-control": "no-store"
     }
   });
 }
@@ -54,7 +51,34 @@ function adminJson(body: unknown, status = 200): Response {
 function adminEmpty(status: number): Response {
   return new Response(null, {
     status,
-    headers: { "cache-control": "no-store", ...corsHeaders }
+    headers: { "cache-control": "no-store" }
+  });
+}
+
+function allowedOrigins(value: string | undefined): Set<string> {
+  return new Set((value ?? "").split(",").map((origin) => origin.trim()).filter(Boolean));
+}
+
+function isSensitivePath(pathname: string): boolean {
+  return /^\/api\/invitations\/[^/]+\/(?:rsvps|admin)(?:\/|$)/.test(pathname);
+}
+
+function addCorsHeaders(response: Response, origin: string | null): Response {
+  if (origin) {
+    response.headers.set("access-control-allow-origin", origin);
+    response.headers.set("vary", "Origin");
+  }
+  return response;
+}
+
+function forbidden(): Response {
+  return new Response(JSON.stringify({ error: "forbidden" }), {
+    status: 403,
+    headers: {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "no-store",
+      "vary": "Origin"
+    }
   });
 }
 
@@ -242,20 +266,13 @@ async function handleAdminRsvps(
   }
 }
 
-export async function handleApiRequest(
+async function handleApiRequestWithoutCors(
   request: Request,
   env: Env,
   clientKey: string,
   options: HandleApiRequestOptions = {}
 ): Promise<Response> {
   const url = new URL(request.url);
-  if (request.method === "OPTIONS") {
-    const headers = /^\/api\/invitations\/[^/]+\/admin(?:\/|$)/.test(url.pathname)
-      ? { ...corsHeaders, "cache-control": "no-store" }
-      : corsHeaders;
-    return new Response(null, { status: 204, headers });
-  }
-
   const adminSessionMatch = url.pathname.match(/^\/api\/invitations\/([^/]+)\/admin\/session$/);
   if (adminSessionMatch) return handleAdminSession(request, env, clientKey, adminSessionMatch[1]);
 
@@ -358,4 +375,33 @@ export async function handleApiRequest(
   }
 
   return json({ ok: true }, 201);
+}
+
+export async function handleApiRequest(
+  request: Request,
+  env: Env,
+  clientKey: string,
+  options: HandleApiRequestOptions = {}
+): Promise<Response> {
+  const { pathname } = new URL(request.url);
+  const origin = request.headers.get("origin");
+  const sensitive = isSensitivePath(pathname);
+
+  if (origin && !allowedOrigins(env.RSVP_ALLOWED_ORIGINS).has(origin)) {
+    return forbidden();
+  }
+
+  if (request.method === "OPTIONS") {
+    return addCorsHeaders(new Response(null, {
+      status: 204,
+      headers: {
+        ...corsHeaders,
+        ...(sensitive ? { "cache-control": "no-store" } : {})
+      }
+    }), origin);
+  }
+
+  const response = await handleApiRequestWithoutCors(request, env, clientKey, options);
+  if (sensitive) response.headers.set("cache-control", "no-store");
+  return addCorsHeaders(response, origin);
 }

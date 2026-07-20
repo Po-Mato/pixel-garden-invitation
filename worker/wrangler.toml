@@ -2,6 +2,12 @@ name = "wedding-game-invitation"
 main = "src/index.ts"
 compatibility_date = "2026-06-09"
 
+[triggers]
+crons = ["17 15 * * *"]
+
+[vars]
+RSVP_ALLOWED_ORIGINS = "https://po-mato.github.io,http://localhost:5173,http://127.0.0.1:5173"
+
 [[durable_objects.bindings]]
 name = "GARDEN_ROOM"
 class_name = "GardenRoom"
