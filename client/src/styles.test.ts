@@ -492,3 +492,109 @@ describe("prism map interactions", () => {
     expect(styles).toMatch(/@media \(orientation:\s*landscape\) and \(max-height:\s*500px\)[\s\S]*\.rsvp-panel/);
   });
 });
+
+describe("wedding editorial content", () => {
+  it("keeps couple profiles as unframed vertical sections with stable portraits", () => {
+    const panelRule = styles.match(/\.couple-profile-panel\s*\{([^}]*)}/s)?.[1] ?? "";
+    const personRule = styles.match(/\.couple-profile-panel__person\s*\{([^}]*)}/s)?.[1] ?? "";
+    const imageRule = styles.match(/\.couple-profile-panel__image\s*\{([^}]*)}/s)?.[1] ?? "";
+
+    expect(panelRule).toContain("display: grid;");
+    expect(panelRule).toContain("grid-template-columns: minmax(0, 1fr);");
+    expect(personRule).toContain("display: grid;");
+    expect(personRule).not.toMatch(/background|box-shadow/);
+    expect(imageRule).toContain("width: min(100%, 220px);");
+    expect(imageRule).toContain("aspect-ratio: 4 / 5;");
+    expect(imageRule).toContain("object-fit: cover;");
+  });
+
+  it("renders a four-step vertical story with stable one-line step markers", () => {
+    const timelineRule = styles.match(/\.wedding-story-timeline\s*\{([^}]*)}/s)?.[1] ?? "";
+    const markerRule = styles.match(/\.wedding-story-timeline__number\s*\{([^}]*)}/s)?.[1] ?? "";
+
+    expect(timelineRule).toContain("display: grid;");
+    expect(timelineRule).toContain("grid-template-columns: minmax(0, 1fr);");
+    expect(timelineRule).toContain("border-inline-start: 2px solid");
+    expect(markerRule).toContain("width: 44px;");
+    expect(markerRule).toContain("height: 44px;");
+    expect(markerRule).toContain("white-space: nowrap;");
+    expect(markerRule).toContain("letter-spacing: 0;");
+  });
+
+  it("uses a bounded two-column editorial gallery with full-width hero and wide items", () => {
+    const galleryRule = styles.match(/\.wedding-gallery\s*\{([^}]*)}/s)?.[1] ?? "";
+    const itemRule = styles.match(/\.wedding-gallery__item\s*\{([^}]*)}/s)?.[1] ?? "";
+    const triggerRule = styles.match(/\.wedding-gallery__photo-button\s*\{([^}]*)}/s)?.[1] ?? "";
+
+    expect(galleryRule).toContain("grid-template-columns: repeat(2, minmax(0, 1fr));");
+    expect(galleryRule).toContain("max-width: 100%;");
+    expect(galleryRule).toContain("overflow: hidden;");
+    expect(itemRule).toContain("min-width: 0;");
+    expect(styles).toMatch(/\.wedding-gallery__item--hero,\s*\.wedding-gallery__item--wide\s*\{[^}]*grid-column:\s*1 \/ -1;/s);
+    expect(styles).toMatch(/\.wedding-gallery__item--half\s*\{[^}]*grid-column:\s*span 1;/s);
+    expect(triggerRule).toContain("border: 1px solid");
+    expect(triggerRule).toContain("border-radius: 6px;");
+    expect(triggerRule).toContain("overflow: hidden;");
+    expect(styles).toContain(".wedding-gallery__photo-button:focus-visible");
+  });
+
+  it("preserves image and fallback geometry without overflowing the gallery", () => {
+    const imageRule = styles.match(/\.responsive-gallery-image\s*\{([^}]*)}/s)?.[1] ?? "";
+    const fallbackRule = styles.match(/\.responsive-gallery-image--fallback\s*\{([^}]*)}/s)?.[1] ?? "";
+
+    expect(imageRule).toContain("display: block;");
+    expect(imageRule).toContain("width: 100%;");
+    expect(imageRule).toContain("max-width: 100%;");
+    expect(imageRule).toContain("height: auto;");
+    expect(fallbackRule).toContain("width: 100%;");
+    expect(fallbackRule).toContain("overflow: hidden;");
+  });
+
+  it("keeps the lightbox above the world in a safe full-viewport grid", () => {
+    const lightboxRule = styles.match(/\.photo-lightbox\s*\{([^}]*)}/s)?.[1] ?? "";
+    const stageRule = styles.match(/\.photo-lightbox__stage\s*\{([^}]*)}/s)?.[1] ?? "";
+    const mediaImageRule = styles.match(
+      /\.photo-lightbox__media \.responsive-gallery-image\s*\{([^}]*)}/s
+    )?.[1] ?? "";
+    const mediaFallbackRule = styles.match(
+      /\.photo-lightbox__media \.responsive-gallery-image--fallback\s*\{([^}]*)}/s
+    )?.[1] ?? "";
+
+    expect(lightboxRule).toContain("position: fixed;");
+    expect(lightboxRule).toContain("inset: 0;");
+    expect(lightboxRule).toContain("z-index: 10000;");
+    expect(lightboxRule).toContain("min-height: 100dvh;");
+    expect(lightboxRule).toContain("grid-template-rows: auto minmax(0, 1fr) auto;");
+    expect(lightboxRule).toContain("background: #11100f;");
+    for (const inset of ["top", "right", "bottom", "left"]) {
+      expect(lightboxRule).toContain(`env(safe-area-inset-${inset})`);
+    }
+    expect(stageRule).toContain("min-height: 0;");
+    expect(stageRule).toContain("grid-template-columns: 48px minmax(0, 1fr) 48px;");
+    expect(mediaImageRule).toContain("max-width: 100%;");
+    expect(mediaImageRule).toContain("max-height: 100%;");
+    expect(mediaImageRule).toContain("object-fit: contain;");
+    expect(mediaFallbackRule).toContain("width: min(100%, 640px);");
+    expect(mediaFallbackRule).toContain("max-height: 100%;");
+  });
+
+  it("keeps narrow portrait and landscape viewer content non-overlapping", () => {
+    const narrowBlock = styles.match(/@media \(max-width: 520px\)\s*\{([\s\S]*?)\n}/)?.[1] ?? "";
+    const landscapeBlock = styles.match(
+      /@media \(orientation: landscape\) and \(max-height: 500px\)\s*\{([\s\S]*?)\n}/
+    )?.[1] ?? "";
+
+    expect(narrowBlock).toContain(".wedding-gallery");
+    expect(narrowBlock).toContain("grid-template-columns: repeat(2, minmax(0, 1fr));");
+    expect(narrowBlock).toContain(".photo-lightbox__stage");
+    expect(landscapeBlock).toContain(".photo-lightbox");
+    expect(landscapeBlock).toContain("grid-template-rows: auto minmax(0, 1fr) auto;");
+    expect(landscapeBlock).toContain(".photo-lightbox__footer");
+  });
+
+  it("removes viewer transitions when reduced motion is requested", () => {
+    expect(styles).toMatch(
+      /@media \(prefers-reduced-motion: reduce\)[\s\S]*\.photo-lightbox,\s*[\s\S]*\.photo-lightbox \*\s*\{[^}]*transition:\s*none !important;/
+    );
+  });
+});

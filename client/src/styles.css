@@ -2362,6 +2362,372 @@ select {
   margin: 0;
 }
 
+.couple-profile-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 24px;
+  min-width: 0;
+  margin-top: 18px;
+}
+
+.couple-profile-panel__person {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  justify-items: start;
+  gap: 7px;
+  min-width: 0;
+  padding-block: 4px 22px;
+  border-bottom: 1px solid color-mix(in srgb, var(--sage) 52%, var(--gold-soft));
+}
+
+.couple-profile-panel__person--bride {
+  justify-items: end;
+  text-align: end;
+}
+
+.couple-profile-panel__role,
+.couple-profile-panel__name,
+.couple-profile-panel__message,
+.couple-profile-panel__together {
+  letter-spacing: 0;
+}
+
+.couple-profile-panel__role {
+  color: var(--camellia);
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.couple-profile-panel__name {
+  margin: 0;
+  color: var(--ink);
+  font-size: 20px;
+  line-height: 1.25;
+}
+
+.couple-profile-panel__image {
+  display: block;
+  width: min(100%, 220px);
+  height: auto;
+  aspect-ratio: 4 / 5;
+  margin-block: 6px;
+  object-fit: cover;
+  object-position: center;
+}
+
+.couple-profile-panel__message {
+  max-width: 32ch;
+  color: var(--ink-soft);
+  font-size: 13px;
+  line-height: 1.75;
+  word-break: keep-all;
+}
+
+.couple-profile-panel__together {
+  padding: 2px 8px 8px;
+  color: var(--garden-deep);
+  font-size: 14px;
+  font-weight: 900;
+  line-height: 1.75;
+  text-align: center;
+  word-break: keep-all;
+}
+
+.wedding-story-timeline {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 28px;
+  min-width: 0;
+  margin: 22px 0 8px 22px;
+  padding: 0 0 0 32px;
+  border-inline-start: 2px solid var(--sage);
+  list-style: none;
+}
+
+.wedding-story-timeline__step {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 7px;
+  min-width: 0;
+}
+
+.wedding-story-timeline__number {
+  position: absolute;
+  top: -7px;
+  inset-inline-start: -55px;
+  display: grid;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  border: 2px solid var(--sage);
+  border-radius: 50%;
+  background: var(--paper-raised);
+  color: var(--camellia);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.wedding-story-timeline__title {
+  margin: 0;
+  color: var(--ink);
+  font-size: 16px;
+  line-height: 1.35;
+  letter-spacing: 0;
+}
+
+.wedding-story-timeline__body {
+  color: var(--ink-soft);
+  font-size: 13px;
+  line-height: 1.7;
+  letter-spacing: 0;
+  word-break: keep-all;
+}
+
+.wedding-gallery {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px 8px;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  margin-top: 16px;
+  overflow: hidden;
+}
+
+.wedding-gallery__item {
+  display: grid;
+  align-content: start;
+  min-width: 0;
+  margin: 0;
+}
+
+.wedding-gallery__item--hero,
+.wedding-gallery__item--wide {
+  grid-column: 1 / -1;
+}
+
+.wedding-gallery__item--half {
+  grid-column: span 1;
+}
+
+.wedding-gallery__photo-button {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  border: 1px solid color-mix(in srgb, var(--gold) 68%, var(--ink));
+  border-radius: 6px;
+  padding: 0;
+  overflow: hidden;
+  background: var(--paper);
+  color: var(--ink);
+  cursor: zoom-in;
+}
+
+.wedding-gallery__photo-button:focus-visible {
+  outline: 3px solid var(--camellia);
+  outline-offset: 2px;
+}
+
+.wedding-gallery__caption {
+  padding: 7px 2px 0;
+  color: var(--ink-soft);
+  font-size: 11px;
+  line-height: 1.55;
+  letter-spacing: 0;
+  word-break: keep-all;
+}
+
+.responsive-gallery-image {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  color: var(--ink-soft);
+  image-rendering: auto;
+}
+
+.responsive-gallery-image--fallback {
+  display: grid;
+  width: 100%;
+  max-width: 100%;
+  min-height: 120px;
+  place-items: center;
+  overflow: hidden;
+  padding: 16px;
+  background: var(--sage-soft);
+  color: var(--ink-soft);
+  font-size: 12px;
+  line-height: 1.5;
+  text-align: center;
+  word-break: keep-all;
+}
+
+.photo-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  width: 100%;
+  min-width: 0;
+  min-height: 100dvh;
+  padding:
+    calc(12px + env(safe-area-inset-top))
+    calc(12px + env(safe-area-inset-right))
+    calc(12px + env(safe-area-inset-bottom))
+    calc(12px + env(safe-area-inset-left));
+  overflow: hidden;
+  background: #11100f;
+  color: #fffdf8;
+  font-family: "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
+  image-rendering: auto;
+}
+
+.photo-lightbox__header,
+.photo-lightbox__footer {
+  min-width: 0;
+}
+
+.photo-lightbox__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 44px;
+}
+
+.photo-lightbox__counter,
+.photo-lightbox__caption {
+  margin: 0;
+  letter-spacing: 0;
+}
+
+.photo-lightbox__counter {
+  color: #d8c9a5;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.photo-lightbox__stage {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr) 48px;
+  grid-template-rows: minmax(0, 1fr);
+  align-items: center;
+  min-width: 0;
+  min-height: 0;
+  gap: 10px;
+  overflow: hidden;
+  touch-action: pan-y;
+}
+
+.photo-lightbox__media {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  place-items: center;
+  overflow: hidden;
+}
+
+.photo-lightbox__media .responsive-gallery-image {
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.photo-lightbox__media .responsive-gallery-image--fallback {
+  width: min(100%, 640px);
+  max-height: 100%;
+}
+
+.photo-lightbox__close,
+.photo-lightbox__previous,
+.photo-lightbox__next {
+  display: inline-grid;
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+  place-items: center;
+  border: 1px solid #746c64;
+  border-radius: 6px;
+  padding: 0;
+  background: #24211f;
+  color: #fffdf8;
+  cursor: pointer;
+}
+
+.photo-lightbox__close {
+  justify-self: end;
+}
+
+.photo-lightbox__previous:disabled,
+.photo-lightbox__next:disabled {
+  cursor: default;
+  opacity: 0.32;
+}
+
+.photo-lightbox__close:focus-visible,
+.photo-lightbox__previous:focus-visible,
+.photo-lightbox__next:focus-visible {
+  outline: 3px solid #d8c9a5;
+  outline-offset: 2px;
+}
+
+.photo-lightbox__close svg,
+.photo-lightbox__previous svg,
+.photo-lightbox__next svg {
+  width: 22px;
+  height: 22px;
+}
+
+.photo-lightbox__footer {
+  display: grid;
+  min-height: 48px;
+  align-items: center;
+  padding: 8px 56px 0;
+}
+
+.photo-lightbox__caption {
+  max-height: 4.8em;
+  overflow-y: auto;
+  color: #e7e0d4;
+  font-size: 13px;
+  line-height: 1.6;
+  text-align: center;
+  word-break: keep-all;
+}
+
+@media (max-width: 520px) {
+  .wedding-gallery {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px 6px;
+  }
+
+  .photo-lightbox {
+    padding:
+      calc(8px + env(safe-area-inset-top))
+      calc(8px + env(safe-area-inset-right))
+      calc(8px + env(safe-area-inset-bottom))
+      calc(8px + env(safe-area-inset-left));
+  }
+
+  .photo-lightbox__stage {
+    grid-template-columns: 44px minmax(0, 1fr) 44px;
+    gap: 4px;
+  }
+
+  .photo-lightbox__footer {
+    padding-inline: 48px;
+  }
+}
+
 .directions-sheet {
   display: grid;
   min-width: 0;
@@ -2663,6 +3029,11 @@ select {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .photo-lightbox,
+  .photo-lightbox * {
+    transition: none !important;
+  }
+
   .world-portal-transition {
     transition: none;
   }
@@ -3575,6 +3946,34 @@ select {
   .bottom-sheet {
     max-height: calc(100dvh - 12px);
     padding: 12px;
+  }
+
+  .photo-lightbox {
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    padding:
+      calc(6px + env(safe-area-inset-top))
+      calc(8px + env(safe-area-inset-right))
+      calc(6px + env(safe-area-inset-bottom))
+      calc(8px + env(safe-area-inset-left));
+  }
+
+  .photo-lightbox__header {
+    min-height: 38px;
+  }
+
+  .photo-lightbox__stage {
+    grid-template-columns: 44px minmax(0, 1fr) 44px;
+    gap: 6px;
+  }
+
+  .photo-lightbox__footer {
+    min-height: 38px;
+    padding: 4px 50px 0;
+  }
+
+  .photo-lightbox__caption {
+    max-height: 3.2em;
+    font-size: 12px;
   }
 
   .directions-sheet {

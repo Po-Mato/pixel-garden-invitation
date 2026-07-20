@@ -396,6 +396,95 @@ describe("GameWorld", () => {
   });
 
   it.each([
+    ["소개 보기", "신랑신부 정원"],
+    ["사진 보기", "사진 갤러리"],
+    ["스토리 보기", "연애 스토리 꽃길"]
+  ])("pauses world input for %s opened from the menu", (actionLabel, dialogLabel) => {
+    render(<GameWorld profile={profile} />);
+    const joystick = screen.getByLabelText("가상 조이스틱");
+    const player = screen.getByLabelText("하객1");
+
+    fireEvent.keyDown(joystick, { key: "ArrowRight" });
+    advanceAnimation(0);
+    const pausedAt = { left: player.style.left, top: player.style.top };
+    fireEvent.click(screen.getByRole("button", { name: "초대장 메뉴" }));
+    fireEvent.click(within(screen.getByRole("dialog", { name: "초대장 바로가기" })).getByRole("button", { name: actionLabel }));
+
+    expect(screen.getByRole("dialog", { name: dialogLabel })).toBeInTheDocument();
+    expect(joystick).toHaveAttribute("aria-disabled", "true");
+    [240, 480, 720].forEach(advanceAnimation);
+    expect(player).toHaveStyle(pausedAt);
+  });
+
+  it("stops an active map route when the gallery opens", () => {
+    render(<GameWorld profile={profile} />);
+    const map = screen.getByTestId("world-map-viewport");
+    const player = screen.getByLabelText("하객1");
+    mockMapRect(map);
+
+    fireEvent.click(map, { clientX: 265, clientY: 375 });
+    advanceAnimation(0);
+    const pausedAt = { left: player.style.left, top: player.style.top };
+    expect(pausedAt).not.toEqual({ left: "285px", top: "555px" });
+
+    fireEvent.click(screen.getByRole("button", { name: "초대장 메뉴" }));
+    fireEvent.click(within(screen.getByRole("dialog", { name: "초대장 바로가기" })).getByRole("button", { name: "사진 보기" }));
+    [240, 480, 720, 960].forEach(advanceAnimation);
+
+    expect(screen.getByRole("dialog", { name: "사진 갤러리" })).toBeInTheDocument();
+    expect(player).toHaveStyle(pausedAt);
+  });
+
+  it("keeps lightbox arrow navigation isolated from the character", () => {
+    render(<GameWorld profile={profile} />);
+    const player = screen.getByLabelText("하객1");
+    const before = { left: player.style.left, top: player.style.top };
+
+    fireEvent.click(screen.getByRole("button", { name: "초대장 메뉴" }));
+    fireEvent.click(within(screen.getByRole("dialog", { name: "초대장 바로가기" })).getByRole("button", { name: "사진 보기" }));
+    fireEvent.click(screen.getAllByRole("button", { name: /사진 \d+:/ })[0]);
+    const lightbox = screen.getByRole("dialog", { name: "웨딩 사진 전체 화면" });
+
+    fireEvent.keyDown(lightbox, { key: "ArrowRight" });
+
+    expect(within(lightbox).getByText("2 / 10")).toBeInTheDocument();
+    expect(player).toHaveStyle(before);
+  });
+
+  it("closes the lightbox before the gallery sheet and restores menu focus", () => {
+    render(<GameWorld profile={profile} />);
+    const menuButton = screen.getByRole("button", { name: "초대장 메뉴" });
+    fireEvent.click(menuButton);
+    fireEvent.click(within(screen.getByRole("dialog", { name: "초대장 바로가기" })).getByRole("button", { name: "사진 보기" }));
+    fireEvent.click(screen.getAllByRole("button", { name: /사진 \d+:/ })[0]);
+
+    fireEvent.keyDown(screen.getByRole("dialog", { name: "웨딩 사진 전체 화면" }), { key: "Escape" });
+    expect(screen.queryByRole("dialog", { name: "웨딩 사진 전체 화면" })).not.toBeInTheDocument();
+    expect(screen.getByRole("dialog", { name: "사진 갤러리" })).toBeInTheDocument();
+
+    fireEvent.keyDown(document, { key: "Escape" });
+    act(() => vi.advanceTimersByTime(0));
+    expect(screen.queryByRole("dialog", { name: "사진 갤러리" })).not.toBeInTheDocument();
+    expect(menuButton).toHaveFocus();
+  });
+
+  it("keeps held joystick input latched after the gallery closes until keyup", () => {
+    render(<GameWorld profile={profile} />);
+    const joystick = screen.getByLabelText("가상 조이스틱");
+    fireEvent.keyDown(joystick, { key: "ArrowRight" });
+    advanceAnimation(0);
+
+    fireEvent.click(screen.getByRole("button", { name: "초대장 메뉴" }));
+    fireEvent.click(within(screen.getByRole("dialog", { name: "초대장 바로가기" })).getByRole("button", { name: "사진 보기" }));
+    expect(joystick).toHaveAttribute("aria-disabled", "true");
+
+    fireEvent.click(within(screen.getByRole("dialog", { name: "사진 갤러리" })).getByRole("button", { name: "닫기" }));
+    expect(joystick).toHaveAttribute("aria-disabled", "true");
+    fireEvent.keyUp(joystick, { key: "ArrowRight" });
+    expect(joystick).toHaveAttribute("aria-disabled", "false");
+  });
+
+  it.each([
     ["답변하기", "참석 답변"],
     ["축하 쓰기", "방명록 우체통"]
   ])("restores menu-button focus after closing the %s spot opened from the menu", (actionLabel, dialogLabel) => {
