@@ -333,8 +333,13 @@ describe("GameWorld", () => {
     fireEvent.click(screen.getByRole("button", { name: "초대장 메뉴" }));
     const menu = screen.getByRole("dialog", { name: "초대장 바로가기" });
 
-    expect(menu.querySelector(".wedding-event-summary__date strong"))
+    const timeRange = menu.querySelector(".wedding-event-summary__date strong");
+    expect(timeRange)
       .toHaveTextContent("오후 5시 10분 - 오후 6시 40분");
+    expect(timeRange?.querySelector('time[datetime="2027-05-01T17:10:00+09:00"]'))
+      .toHaveTextContent("오후 5시 10분");
+    expect(timeRange?.querySelector('time[datetime="2027-05-01T18:40:00+09:00"]'))
+      .toHaveTextContent("오후 6시 40분");
     expect(within(menu).getByText("MJ컨벤션 5층 파티오볼룸")).toBeInTheDocument();
     expect(within(menu).getByText("경기 부천시 소사구 경인로 386")).toBeInTheDocument();
     expect(within(menu).getByRole("button", { name: "주소 복사" })).toBeInTheDocument();

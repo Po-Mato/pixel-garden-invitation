@@ -13,12 +13,12 @@ afterEach(() => {
   vi.clearAllMocks();
 });
 
-it("renders a compact entry summary with machine-readable start and end times", () => {
+it("renders a compact entry summary with only a machine-readable start time", () => {
   render(<WeddingEventSummary variant="compact" />);
 
   expect(screen.getByText("2027년 5월 1일 토요일")).toBeInTheDocument();
   expect(screen.getByText("오후 5시 10분")).toHaveAttribute("dateTime", "2027-05-01T17:10:00+09:00");
-  expect(screen.getByText("오후 6시 40분")).toHaveAttribute("dateTime", "2027-05-01T18:40:00+09:00");
+  expect(screen.queryByText("오후 6시 40분")).not.toBeInTheDocument();
   expect(screen.getByText("MJ컨벤션 5층 파티오볼룸")).toBeInTheDocument();
   expect(screen.queryByText("경기 부천시 소사구 경인로 386")).not.toBeInTheDocument();
 });

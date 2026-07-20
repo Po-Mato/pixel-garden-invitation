@@ -6,6 +6,7 @@ const productionExtensions = new Set([".css", ".html", ".json", ".sql", ".ts", "
 const legacyValues = [
   "이서" + "준",
   "김하" + "린",
+  "서준 & 하린의 정원",
   "라온" + "가든",
   "2027-05-" + "15",
   "역삼" + "역",

@@ -52,8 +52,12 @@ export function WeddingEventSummary({
           <time dateTime={event.startAt}>{formatEventDate(event)}</time>
           <strong>
             <time dateTime={event.startAt}>{formatEventStartTime(event)}</time>
-            {" - "}
-            <time dateTime={event.endAt}>{formatEventEndTime(event)}</time>
+            {variant === "detail" ? (
+              <>
+                {" - "}
+                <time dateTime={event.endAt}>{formatEventEndTime(event)}</time>
+              </>
+            ) : null}
           </strong>
         </div>
       </div>
