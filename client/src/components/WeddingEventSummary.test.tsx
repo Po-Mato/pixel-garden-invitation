@@ -23,6 +23,14 @@ it("renders a compact entry summary with only a machine-readable start time", ()
   expect(screen.queryByText("경기 부천시 소사구 경인로 386")).not.toBeInTheDocument();
 });
 
+it("compact 요약에서 공통 오시는 길 시트를 연다", () => {
+  render(<WeddingEventSummary variant="compact" />);
+
+  fireEvent.click(screen.getByRole("button", { name: "오시는 길" }));
+
+  expect(screen.getByRole("dialog", { name: "오시는 길" })).toHaveTextContent("소사역 1번 출구");
+});
+
 it("renders details and reports address copy status", async () => {
   vi.mocked(copyText).mockResolvedValue(undefined);
   const { container } = render(<WeddingEventSummary variant="detail" />);
@@ -59,4 +67,19 @@ it("notifies its owner while the calendar sheet is open", () => {
   expect(onCalendarSheetOpenChange).toHaveBeenLastCalledWith(true);
   fireEvent.click(screen.getByRole("button", { name: "닫기" }));
   expect(onCalendarSheetOpenChange).toHaveBeenLastCalledWith(false);
+});
+
+it("상세 요약의 오시는 길 시트 열림 상태를 소유자에게 알린다", () => {
+  const onDirectionsSheetOpenChange = vi.fn();
+  render(
+    <WeddingEventSummary
+      variant="detail"
+      onDirectionsSheetOpenChange={onDirectionsSheetOpenChange}
+    />
+  );
+
+  fireEvent.click(screen.getByRole("button", { name: "오시는 길" }));
+  expect(onDirectionsSheetOpenChange).toHaveBeenLastCalledWith(true);
+  fireEvent.click(screen.getByRole("button", { name: "닫기" }));
+  expect(onDirectionsSheetOpenChange).toHaveBeenLastCalledWith(false);
 });

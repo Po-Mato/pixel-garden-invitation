@@ -20,6 +20,11 @@ describe("EntryScreen", () => {
     expect(screen.getByText("오후 5시 10분")).toHaveAttribute("dateTime", startAt);
     expect(screen.queryByText("오후 6시 40분")).not.toBeInTheDocument();
     expect(screen.getByText("MJ컨벤션 5층 파티오볼룸")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "오시는 길" })).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "오시는 길" }));
+
+    expect(screen.getByRole("dialog", { name: "오시는 길" })).toBeInTheDocument();
   });
 
   it("opens calendar choices without requiring a nickname", () => {
