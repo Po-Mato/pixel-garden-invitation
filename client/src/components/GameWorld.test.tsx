@@ -448,6 +448,87 @@ describe("GameWorld", () => {
     expect(screen.queryByText("MJ컨벤션은 경기 부천시 소사구 경인로 386에 있습니다.")).not.toBeInTheDocument();
   });
 
+  it("pauses a started portal route when directions opens from the invitation details", () => {
+    render(<GameWorld profile={profile} />);
+    const player = screen.getByLabelText("하객1");
+
+    fireEvent.click(screen.getByRole("button", { name: "동네로 나가기" }));
+    advanceAnimation(0);
+    const pausedAt = { left: player.style.left, top: player.style.top };
+    expect(pausedAt).not.toEqual({ left: "285px", top: "555px" });
+
+    fireEvent.click(screen.getByRole("button", { name: "초대장 메뉴" }));
+    fireEvent.click(within(screen.getByRole("dialog", { name: "초대장 바로가기" })).getByRole("button", { name: "오시는 길" }));
+
+    expect(screen.getByRole("dialog", { name: "오시는 길" })).toBeInTheDocument();
+    [240, 480, 720, 960].forEach(advanceAnimation);
+    expect(player).toHaveStyle(pausedAt);
+    expect(screen.getByTestId("world-portal-transition")).toHaveAttribute("data-phase", "idle");
+
+    fireEvent.click(within(screen.getByRole("dialog", { name: "오시는 길" })).getByRole("button", { name: "닫기" }));
+    [1200, 1440, 1680].forEach(advanceAnimation);
+    expect(player).toHaveStyle(pausedAt);
+    expect(screen.getByTestId("world-portal-transition")).toHaveAttribute("data-phase", "idle");
+  });
+
+  it("pauses a started map target when directions opens from the menu shortcut", () => {
+    render(<GameWorld profile={profile} />);
+    const map = screen.getByTestId("world-map-viewport");
+    const player = screen.getByLabelText("하객1");
+    mockMapRect(map);
+
+    fireEvent.click(map, { clientX: 265, clientY: 375 });
+    advanceAnimation(0);
+    const pausedAt = { left: player.style.left, top: player.style.top };
+    expect(pausedAt).not.toEqual({ left: "285px", top: "555px" });
+
+    fireEvent.click(screen.getByRole("button", { name: "초대장 메뉴" }));
+    fireEvent.click(within(screen.getByRole("dialog", { name: "초대장 바로가기" })).getByRole("button", { name: "길 찾기" }));
+
+    expect(screen.getByRole("dialog", { name: "오시는 길" })).toBeInTheDocument();
+    [240, 480, 720].forEach(advanceAnimation);
+    expect(player).toHaveStyle(pausedAt);
+
+    fireEvent.click(within(screen.getByRole("dialog", { name: "오시는 길" })).getByRole("button", { name: "닫기" }));
+    [960, 1200].forEach(advanceAnimation);
+    expect(player).toHaveStyle(pausedAt);
+  });
+
+  it("pauses held joystick input and sends a stop when directions opens from the world spot", () => {
+    configureRealtime();
+    render(<GameWorld profile={profile} />);
+    const socket = MockWebSocket.instances[0];
+    act(() => socket.emit("open"));
+    act(() => socket.emitJson({ type: "welcome", guestId: "guest_self", guests: [] }));
+    socket.sentMessages.length = 0;
+
+    const joystick = screen.getByLabelText("가상 조이스틱");
+    const player = screen.getByLabelText("하객1");
+    fireEvent.keyDown(joystick, { key: "ArrowRight" });
+    advanceAnimation(0);
+    const pausedAt = { left: player.style.left, top: player.style.top };
+    expect(pausedAt).toEqual({ left: "315px", top: "555px" });
+
+    fireEvent.click(screen.getByRole("button", { name: /오시는 길/ }));
+
+    expect(screen.getByRole("dialog", { name: "오시는 길" })).toBeInTheDocument();
+    expect(joystick).toHaveAttribute("aria-disabled", "true");
+    [240, 480, 720].forEach(advanceAnimation);
+    expect(player).toHaveStyle(pausedAt);
+    expect(screen.getByTestId("world-portal-transition")).toHaveAttribute("data-phase", "idle");
+
+    const moves = socket.sentMessages.map((message) => JSON.parse(message)).filter((message) => message.type === "move");
+    expect(moves.at(-1)).toMatchObject({ x: 315, y: 555, direction: "right", moving: false, zoneId: "home" });
+
+    fireEvent.click(within(screen.getByRole("dialog", { name: "오시는 길" })).getByRole("button", { name: "닫기" }));
+    [960, 1200].forEach(advanceAnimation);
+    expect(player).toHaveStyle(pausedAt);
+    expect(joystick).toHaveAttribute("aria-disabled", "true");
+
+    fireEvent.keyUp(joystick, { key: "ArrowRight" });
+    expect(joystick).toHaveAttribute("aria-disabled", "false");
+  });
+
   it("places the calendar sheet above the hidden menu layers", () => {
     const { container } = render(<GameWorld profile={profile} />);
     fireEvent.click(screen.getByRole("button", { name: "초대장 메뉴" }));
@@ -515,12 +596,13 @@ describe("GameWorld", () => {
     expect(screen.getByRole("dialog", { name: "초대장 바로가기" })).not.toHaveAttribute("aria-hidden");
   });
 
-  it("clears menu directions state when portal arrival starts", () => {
+  it("clears menu directions state when a new portal route arrives", () => {
     render(<GameWorld profile={profile} />);
-    fireEvent.click(screen.getByRole("button", { name: "동네로 나가기" }));
     fireEvent.click(screen.getByRole("button", { name: "초대장 메뉴" }));
     const menu = screen.getByRole("dialog", { name: "초대장 바로가기" });
     fireEvent.click(within(menu).getByRole("button", { name: "오시는 길" }));
+
+    fireEvent.click(screen.getByRole("button", { name: "동네로 나가기" }));
 
     advanceRouteToPortalArrival();
 

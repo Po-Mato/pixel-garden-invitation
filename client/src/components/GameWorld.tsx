@@ -183,6 +183,41 @@ export function GameWorld({ profile }: GameWorldProps) {
     }, now);
   }, []);
 
+  const sendRealtimeStop = useCallback((nextPosition: Point, nextDirection: Direction, zoneId: WorldZoneId) => {
+    const connection = connectionRef.current;
+    if (!connection) return;
+
+    const message: MoveMessage = {
+      type: "move",
+      x: nextPosition.x,
+      y: nextPosition.y,
+      direction: nextDirection,
+      moving: false,
+      seq: moveSeqRef.current + 1,
+      zoneId
+    };
+    moveSeqRef.current = message.seq;
+    connection.send(message);
+  }, []);
+
+  const pauseWorldInput = useCallback(() => {
+    const joystickWasMoving = joystickWasMovingRef.current;
+
+    setTarget(null);
+    setPortalIntent(null);
+    setJoystickVector({ x: 0, y: 0 });
+    setMoving(false);
+    setStepFrame(1);
+    targetStepAtRef.current = null;
+    tileInputStateRef.current = null;
+    joystickWasMovingRef.current = false;
+    setInputReleaseRequired(inputReleaseRequiredRef.current || joystickWasMoving);
+
+    if (moving) {
+      sendRealtimeStop(positionRef.current, directionRef.current, activeZone.id);
+    }
+  }, [activeZone.id, moving, sendRealtimeStop, setInputReleaseRequired, setPortalIntent]);
+
   const beginPortalTransition = useCallback((portal: WorldPortal, approach: Point, _now: number) => {
     if (portalTransitionRef.current) return;
 
@@ -207,22 +242,8 @@ export function GameWorld({ profile }: GameWorldProps) {
     joystickWasMovingRef.current = false;
     setInputReleaseRequired(inputReleaseRequiredRef.current || joystickWasMoving);
     setPortalTransition(transition);
-
-    const connection = connectionRef.current;
-    if (connection) {
-      const message: MoveMessage = {
-        type: "move",
-        x: approach.x,
-        y: approach.y,
-        direction: portal.facing,
-        moving: false,
-        seq: moveSeqRef.current + 1,
-        zoneId: activeZoneIdRef.current
-      };
-      moveSeqRef.current = message.seq;
-      connection.send(message);
-    }
-  }, [setInputReleaseRequired, setPortalIntent, setPortalTransition]);
+    sendRealtimeStop(approach, portal.facing, activeZoneIdRef.current);
+  }, [sendRealtimeStop, setInputReleaseRequired, setPortalIntent, setPortalTransition]);
 
   const moveToZone = useCallback((zoneId: WorldZoneId, spawn?: Point) => {
     const zone = getWorldZone(gardenWorld, zoneId);
@@ -300,9 +321,15 @@ export function GameWorld({ profile }: GameWorldProps) {
 
   const openSpot = useCallback((spotId: SpotId) => {
     if (portalTransitionRef.current) return;
+    if (spotId === "directions") pauseWorldInput();
     closeMenu();
     setActiveSpotId(spotId);
-  }, [closeMenu]);
+  }, [closeMenu, pauseWorldInput]);
+
+  const handleDirectionsSheetOpenChange = useCallback((open: boolean) => {
+    if (open) pauseWorldInput();
+    setDirectionsSheetOpen(open);
+  }, [pauseWorldInput]);
 
   const openMenu = useCallback(() => {
     if (portalTransitionRef.current) return;
@@ -836,7 +863,7 @@ export function GameWorld({ profile }: GameWorldProps) {
             <WeddingEventSummary
               variant="detail"
               onCalendarSheetOpenChange={setCalendarSheetOpen}
-              onDirectionsSheetOpenChange={setDirectionsSheetOpen}
+              onDirectionsSheetOpenChange={handleDirectionsSheetOpenChange}
             />
             <div className="world-menu-grid">
               {invitationContent.spots.map((item) => (
