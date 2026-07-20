@@ -149,7 +149,7 @@ describe("RsvpAdminPage", () => {
     render(<StrictMode><RsvpAdminPage /></StrictMode>);
 
     expect(await screen.findByText("김하객")).toBeInTheDocument();
-    expect(api.fetchAdminRsvps).toHaveBeenCalledTimes(2);
+    expect(api.fetchAdminRsvps).toHaveBeenCalledTimes(1);
   });
 
   it("lets an authenticated administrator retry an initial fetch failure", async () => {
@@ -179,6 +179,38 @@ describe("RsvpAdminPage", () => {
     fireEvent.change(screen.getByLabelText("관리자 비밀번호"), { target: { value: "retry" } });
     expect(screen.getByRole("button", { name: "로그인" })).toBeEnabled();
   });
+
+  it.each(["visibilitychange", "focus", "pageshow"] as const)(
+    "recomputes an absolute Retry-After lock on %s after background timer suspension",
+    async (eventName) => {
+      vi.useFakeTimers();
+      vi.setSystemTime(1_800_000_000_000);
+      api.createAdminSession.mockRejectedValue(new WeddingApiError(429, "rate_limited", 2));
+      render(<RsvpAdminPage />);
+      fireEvent.change(screen.getByLabelText("관리자 비밀번호"), { target: { value: "wrong" } });
+      fireEvent.click(screen.getByRole("button", { name: "로그인" }));
+
+      await act(async () => { await Promise.resolve(); });
+      expect(screen.getByRole("button", { name: "2초 후 로그인" })).toBeDisabled();
+
+      act(() => {
+        vi.setSystemTime(1_800_000_001_001);
+        const target = eventName === "visibilitychange" ? document : window;
+        target.dispatchEvent(new Event(eventName));
+      });
+      expect(screen.getByRole("button", { name: "1초 후 로그인" })).toBeDisabled();
+
+      act(() => {
+        vi.setSystemTime(1_800_000_002_100);
+        const target = eventName === "visibilitychange" ? document : window;
+        target.dispatchEvent(new Event(eventName));
+      });
+
+      expect(screen.getByLabelText("관리자 비밀번호")).toBeEnabled();
+      fireEvent.change(screen.getByLabelText("관리자 비밀번호"), { target: { value: "retry" } });
+      expect(screen.getByRole("button", { name: "로그인" })).toBeEnabled();
+    }
+  );
 
   it("does not invent a one-second lockout when a malformed 429 omits Retry-After", async () => {
     api.createAdminSession.mockRejectedValue(new WeddingApiError(429, "rate_limited"));
@@ -233,6 +265,16 @@ describe("RsvpAdminPage", () => {
     expect(screen.getAllByText((_, element) => element?.textContent === "Ｌｅｅ　Ｇｕｅｓｔ").length).toBeGreaterThan(0);
     fireEvent.change(screen.getByLabelText("검색"), { target: { value: "+82 (10) 9999-8888" } });
     expect(screen.getAllByText((_, element) => element?.textContent === "Ｌｅｅ　Ｇｕｅｓｔ").length).toBeGreaterThan(0);
+  });
+
+  it("does not interpret digits inside a name query as a phone-number search", async () => {
+    render(<RsvpAdminPage />);
+    await login();
+
+    fireEvent.change(screen.getByLabelText("검색"), { target: { value: "하객1" } });
+
+    expect(screen.getByRole("status")).toHaveTextContent("조건에 맞는 답변이 없습니다");
+    expect(screen.queryByText("김하객")).not.toBeInTheDocument();
   });
 
   it("shows an explicit empty result state", async () => {
@@ -353,6 +395,27 @@ describe("RsvpAdminPage", () => {
     expect(screen.getByRole("heading", { name: "전체 답변" })).toHaveFocus();
   });
 
+  it("keeps focus on the dialog itself while every deletion action is disabled", async () => {
+    const pendingDelete = deferred<void>();
+    api.deleteAdminRsvp.mockReturnValue(pendingDelete.promise);
+    render(<RsvpAdminPage />);
+    await login();
+    fireEvent.click(screen.getByRole("button", { name: "김하객 답변 삭제" }));
+    fireEvent.click(screen.getByRole("button", { name: "삭제" }));
+
+    const dialog = screen.getByRole("dialog", { name: "답변 삭제 확인" });
+    await waitFor(() => expect(dialog).toHaveAttribute("aria-busy", "true"));
+    expect(dialog).toHaveAttribute("tabindex", "-1");
+    expect(dialog).toHaveFocus();
+    fireEvent.keyDown(dialog, { key: "Tab" });
+    expect(dialog).toHaveFocus();
+    fireEvent.keyDown(dialog, { key: "Tab", shiftKey: true });
+    expect(dialog).toHaveFocus();
+
+    pendingDelete.resolve(undefined);
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+  });
+
   it("announces refresh progress and completion for an existing result", async () => {
     const refresh = deferred<RsvpAdminResult>();
     api.fetchAdminRsvps.mockResolvedValueOnce(result).mockReturnValueOnce(refresh.promise);
@@ -366,6 +429,20 @@ describe("RsvpAdminPage", () => {
     await waitFor(() => expect(screen.getByRole("status")).toHaveTextContent("새로고침을 완료했습니다"));
   });
 
+  it("clears the refresh progress announcement when a manual refresh fails", async () => {
+    const refresh = deferred<RsvpAdminResult>();
+    api.fetchAdminRsvps.mockResolvedValueOnce(result).mockReturnValueOnce(refresh.promise);
+    render(<RsvpAdminPage />);
+    await login();
+
+    fireEvent.click(screen.getByRole("button", { name: "새로고침" }));
+    expect(screen.getByRole("status")).toHaveTextContent("새로고침하고 있습니다");
+    refresh.reject(new Error("network"));
+
+    expect(await screen.findByRole("alert")).toHaveTextContent("불러오지 못했습니다");
+    expect(screen.queryByText("참석 답변을 새로고침하고 있습니다.")).not.toBeInTheDocument();
+  });
+
   it("exports the complete server result regardless of list filters", async () => {
     render(<RsvpAdminPage />);
     await login();
@@ -377,10 +454,20 @@ describe("RsvpAdminPage", () => {
   it("clears persistent and in-memory admin state on logout", async () => {
     render(<RsvpAdminPage />);
     await login();
+    fireEvent.change(screen.getByLabelText("검색"), { target: { value: "Lee" } });
+    fireEvent.change(screen.getByLabelText("대상 필터"), { target: { value: "bride" } });
+    fireEvent.change(screen.getByLabelText("참석 필터"), { target: { value: "yes" } });
+    fireEvent.change(screen.getByLabelText("식사 필터"), { target: { value: "no" } });
     fireEvent.click(screen.getByRole("button", { name: "로그아웃" }));
     expect(storage.clearAdminSession).toHaveBeenCalledWith("sample-garden");
     expect(screen.getByRole("button", { name: "로그인" })).toBeInTheDocument();
     expect(screen.queryByText("김하객")).not.toBeInTheDocument();
+
+    await login();
+    expect(screen.getByLabelText("검색")).toHaveValue("");
+    expect(screen.getByLabelText("대상 필터")).toHaveValue("all");
+    expect(screen.getByLabelText("참석 필터")).toHaveValue("all");
+    expect(screen.getByLabelText("식사 필터")).toHaveValue("all");
   });
 
   it("ignores stale fetch responses and prevents duplicate login and delete requests", async () => {

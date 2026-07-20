@@ -28,6 +28,11 @@ function normalizeSearch(value: string): string {
   return value.normalize("NFKC").toLocaleLowerCase("ko-KR").replace(/\s/g, "");
 }
 
+function isPhoneSearch(value: string): boolean {
+  const normalized = value.normalize("NFKC").trim();
+  return /\d/.test(normalized) && /^[\d\s+().-]+$/.test(normalized);
+}
+
 function sideLabel(side: RsvpRecordSide): string {
   return side === "groom" ? "신랑측" : side === "bride" ? "신부측" : "기존";
 }
@@ -87,11 +92,13 @@ export function RsvpAdminPage() {
   const [deleteTarget, setDeleteTarget] = useState<RsvpRecord | null>(null);
   const [error, setError] = useState("");
   const [status, setStatus] = useState("");
-  const [retrySeconds, setRetrySeconds] = useState(0);
+  const [retryUntil, setRetryUntil] = useState(0);
+  const [retryClock, setRetryClock] = useState(() => Date.now());
   const [search, setSearch] = useState("");
   const [side, setSide] = useState<FilterValue<RsvpRecordSide>>("all");
   const [attendance, setAttendance] = useState<FilterValue<RsvpAttendance>>("all");
   const [meal, setMeal] = useState<FilterValue<RsvpMealStatus>>("all");
+  const retrySeconds = Math.max(0, Math.ceil((retryUntil - retryClock) / 1_000));
 
   function resetAdminState(message = "") {
     sessionRef.current = null;
@@ -110,6 +117,13 @@ export function RsvpAdminPage() {
     setDeleteTarget(null);
     setError(message);
     setStatus("");
+    setPassword("");
+    setRetryUntil(0);
+    setRetryClock(Date.now());
+    setSearch("");
+    setSide("all");
+    setAttendance("all");
+    setMeal("all");
   }
 
   async function loadAll(token: string, options: {
@@ -134,6 +148,7 @@ export function RsvpAdminPage() {
         resetAdminState("세션이 만료되었습니다. 다시 로그인해 주세요.");
         return;
       }
+      if (options.announce) setStatus("");
       setError(errorMessage(loadError, "참석 답변을 불러오지 못했습니다. 다시 시도해 주세요."));
     } finally {
       if (version === fetchVersionRef.current) {
@@ -145,19 +160,14 @@ export function RsvpAdminPage() {
 
   useEffect(() => {
     mountedRef.current = true;
-    fetchBusyRef.current = false;
     const restored = loadAdminSession(id);
     if (restored) {
       sessionRef.current = restored;
       setSession(restored);
-      void loadAll(restored.token, { force: true });
+      void loadAll(restored.token);
     }
     return () => {
       mountedRef.current = false;
-      fetchBusyRef.current = false;
-      loginVersionRef.current += 1;
-      fetchVersionRef.current += 1;
-      deleteVersionRef.current += 1;
     };
     // The invitation id is fixed for the lifetime of this page.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -185,15 +195,30 @@ export function RsvpAdminPage() {
   }, [session?.expiresAt, session?.token]);
 
   useEffect(() => {
-    if (retrySeconds <= 0) return;
-    const timer = window.setInterval(() => setRetrySeconds((seconds) => Math.max(0, seconds - 1)), 1_000);
-    return () => window.clearInterval(timer);
-  }, [retrySeconds > 0]);
+    if (retryUntil <= 0) return;
+    const syncRetryClock = () => {
+      const now = Date.now();
+      setRetryClock(now);
+      if (now >= retryUntil) setRetryUntil(0);
+    };
+    const timer = window.setInterval(syncRetryClock, 1_000);
+    document.addEventListener("visibilitychange", syncRetryClock);
+    window.addEventListener("focus", syncRetryClock);
+    window.addEventListener("pageshow", syncRetryClock);
+    syncRetryClock();
+    return () => {
+      window.clearInterval(timer);
+      document.removeEventListener("visibilitychange", syncRetryClock);
+      window.removeEventListener("focus", syncRetryClock);
+      window.removeEventListener("pageshow", syncRetryClock);
+    };
+  }, [retryUntil]);
 
   useEffect(() => {
     shellRef.current?.toggleAttribute("inert", Boolean(deleteTarget));
     if (deleteTarget) {
-      cancelDeleteRef.current?.focus();
+      if (deletingId !== null) deleteDialogRef.current?.focus();
+      else cancelDeleteRef.current?.focus();
       return;
     }
     if (restoreDeleteFocusRef.current && deleteTriggerRef.current?.isConnected) {
@@ -201,7 +226,7 @@ export function RsvpAdminPage() {
     }
     restoreDeleteFocusRef.current = false;
     deleteTriggerRef.current = null;
-  }, [deleteTarget]);
+  }, [deleteTarget, deletingId]);
 
   async function handleLogin(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -225,9 +250,16 @@ export function RsvpAdminPage() {
       if (loginError instanceof WeddingApiError && loginError.status === 401) {
         resetAdminState("인증할 수 없습니다. 다시 로그인해 주세요.");
       } else {
-        setError(errorMessage(loginError, "로그인하지 못했습니다. 다시 시도해 주세요."));
-        if (loginError instanceof WeddingApiError && loginError.status === 429) {
-          setRetrySeconds(loginError.retryAfterSeconds === undefined ? 0 : Math.max(1, loginError.retryAfterSeconds));
+        if (loginError instanceof WeddingApiError
+          && loginError.status === 429
+          && loginError.retryAfterSeconds !== undefined) {
+          const now = Date.now();
+          const seconds = Math.max(1, loginError.retryAfterSeconds);
+          setError("");
+          setRetryClock(now);
+          setRetryUntil(now + seconds * 1_000);
+        } else {
+          setError(errorMessage(loginError, "로그인하지 못했습니다. 다시 시도해 주세요."));
         }
       }
     } finally {
@@ -276,7 +308,7 @@ export function RsvpAdminPage() {
   const filteredResponses = useMemo(() => {
     if (!result) return [];
     const nameQuery = normalizeSearch(search);
-    const phoneQuery = normalizeRsvpPhone(search);
+    const phoneQuery = isPhoneSearch(search) ? normalizeRsvpPhone(search) : "";
     return result.responses.filter((response) => {
       const matchesQuery = !nameQuery
         || normalizeSearch(response.guestName).includes(nameQuery)
@@ -315,7 +347,12 @@ export function RsvpAdminPage() {
       }
       return;
     }
-    if (event.key !== "Tab" || deletingId !== null) return;
+    if (event.key !== "Tab") return;
+    if (deletingId !== null) {
+      event.preventDefault();
+      deleteDialogRef.current?.focus();
+      return;
+    }
     const focusable = Array.from(
       deleteDialogRef.current?.querySelectorAll<HTMLButtonElement>("button:not(:disabled)") ?? []
     );
@@ -353,7 +390,11 @@ export function RsvpAdminPage() {
               {isLoggingIn ? "로그인 중" : retrySeconds > 0 ? `${retrySeconds}초 후 로그인` : "로그인"}
             </button>
           </form>
-          {error && <p className="rsvp-admin-message rsvp-admin-message--error" role="alert">{error}</p>}
+          {(error || retrySeconds > 0) && (
+            <p className="rsvp-admin-message rsvp-admin-message--error" role="alert">
+              {retrySeconds > 0 ? `${retrySeconds}초 후 다시 시도해 주세요.` : error}
+            </p>
+          )}
         </section>
       </main>
     );
@@ -455,7 +496,7 @@ export function RsvpAdminPage() {
 
       {deleteTarget && (
         <div className="rsvp-admin-dialog-backdrop">
-          <section ref={deleteDialogRef} className="rsvp-admin-dialog" role="dialog" aria-modal="true" aria-labelledby="rsvp-delete-title" onKeyDown={handleDialogKeyDown}>
+          <section ref={deleteDialogRef} className="rsvp-admin-dialog" role="dialog" aria-modal="true" aria-labelledby="rsvp-delete-title" aria-busy={deletingId !== null} tabIndex={-1} onKeyDown={handleDialogKeyDown}>
             <h2 id="rsvp-delete-title">답변 삭제 확인</h2>
             <p><strong>{deleteTarget.guestName}</strong>님의 참석 답변을 삭제합니다. 이 작업은 되돌릴 수 없습니다.</p>
             <div>
