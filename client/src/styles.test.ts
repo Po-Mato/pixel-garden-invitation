@@ -70,6 +70,44 @@ describe("entry screen layout", () => {
   });
 });
 
+describe("wedding event access", () => {
+  it("keeps the compact event summary stable and readable", () => {
+    const entryRule = styles.match(/\.entry-screen\s*\{([^}]*)}/s)?.[1] ?? "";
+    const rule = styles.match(/\.wedding-event-summary--compact\s*\{([^}]*)}/s)?.[1] ?? "";
+
+    expect(entryRule).toContain("grid-template-rows: auto auto minmax(0, 1fr) auto;");
+    expect(rule).toContain("min-width: 0;");
+    expect(styles).toMatch(/\.wedding-event-summary__venue\s*\{[^}]*grid-template-columns:/s);
+    expect(styles).toMatch(/\.wedding-event-summary--detail \.wedding-event-summary__venue span\s*\{[^}]*user-select:\s*text;/s);
+    expect(styles).toMatch(/\.wedding-event-summary__calendar:focus-visible\s*\{/s);
+  });
+
+  it("uses fixed-size icons and non-overlapping calendar actions", () => {
+    expect(styles).toMatch(/\.wedding-event-summary svg,\s*\.calendar-save-options svg\s*\{[^}]*width:\s*18px;[^}]*height:\s*18px;/s);
+    expect(styles).toMatch(/\.calendar-save-options\s*\{[^}]*display:\s*grid;/s);
+    expect(styles).toMatch(/\.calendar-save-options > (?:button|a)[^{]*\{[^}]*min-height:\s*48px;/s);
+    expect(styles).toMatch(/\.sheet-backdrop\s*\{[^}]*z-index:\s*40;/s);
+    expect(styles).toMatch(/\.bottom-sheet\s*\{[^}]*z-index:\s*41;/s);
+  });
+
+  it("adapts event content for short entry viewports", () => {
+    expect(styles).toMatch(/@media \(max-height:\s*640px\)[\s\S]*\.wedding-event-summary--compact/);
+  });
+
+  it("keeps the complete entry flow visible in short landscape viewports", () => {
+    const landscapeBlock = styles.match(
+      /@media \(orientation: landscape\) and \(max-height: 500px\)\s*\{([\s\S]*?)\n}/
+    )?.[1] ?? "";
+
+    expect(landscapeBlock).toContain(".phone-frame:has(.entry-screen)");
+    expect(landscapeBlock).toContain(".entry-screen");
+    expect(landscapeBlock).toContain("grid-template-columns:");
+    expect(landscapeBlock).toContain(".wedding-event-summary--compact");
+    expect(landscapeBlock).toContain(".character-customizer");
+    expect(landscapeBlock).toContain(".entry-screen__controls");
+  });
+});
+
 describe("wedding invitation palette", () => {
   it("defines restrained paper, camellia, sage, ink and gold tokens", () => {
     for (const token of ["--paper", "--camellia", "--sage", "--ink", "--gold"]) {
