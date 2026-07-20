@@ -26,6 +26,8 @@ const focusableSelector = [
   "[tabindex]:not([tabindex='-1'])"
 ].join(",");
 
+const interactiveSwipeSelector = "button, a, input, select, textarea, [role='button']";
+
 function getFocusableElements(container: HTMLElement) {
   return Array.from(container.querySelectorAll<HTMLElement>(focusableSelector)).filter(
     (element) => element.tabIndex >= 0 && element.getAttribute("aria-hidden") !== "true"
@@ -46,7 +48,15 @@ export function PhotoLightbox({ photos, index, onIndexChange, onClose }: PhotoLi
   onIndexChangeRef.current = onIndexChange;
   onCloseRef.current = onClose;
 
+  const photo = Number.isInteger(index) && index >= 0 && index < photos.length ? photos[index] : undefined;
+  const hasValidPhoto = photo !== undefined;
+
   useEffect(() => {
+    if (!hasValidPhoto) {
+      pointerStartRef.current = null;
+      return;
+    }
+
     const previouslyFocused = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
@@ -114,9 +124,8 @@ export function PhotoLightbox({ photos, index, onIndexChange, onClose }: PhotoLi
         previouslyFocused.focus();
       }
     };
-  }, []);
+  }, [hasValidPhoto]);
 
-  const photo = photos[index];
   if (!photo) {
     return null;
   }
@@ -124,6 +133,11 @@ export function PhotoLightbox({ photos, index, onIndexChange, onClose }: PhotoLi
   const captionId = photo.caption ? `photo-lightbox-caption-${photo.id}` : undefined;
 
   const handlePointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (event.target instanceof Element && event.target.closest(interactiveSwipeSelector)) {
+      pointerStartRef.current = null;
+      return;
+    }
+
     pointerStartRef.current = {
       pointerId: event.pointerId,
       x: event.clientX,

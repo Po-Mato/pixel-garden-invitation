@@ -25,6 +25,36 @@ afterEach(() => {
 });
 
 describe("전체 화면 웨딩 사진 뷰어", () => {
+  it.each([
+    ["빈 사진 목록", [] as const, 0],
+    ["음수 인덱스", photos, -1],
+    ["목록 범위를 넘은 인덱스", photos, photos.length]
+  ])("%s에서는 전역 화면과 키보드 상태를 변경하지 않는다", (_, invalidPhotos, invalidIndex) => {
+    const onIndexChange = vi.fn();
+    const onClose = vi.fn();
+    document.body.style.overflow = "clip";
+
+    render(
+      <PhotoLightbox
+        photos={invalidPhotos}
+        index={invalidIndex}
+        onIndexChange={onIndexChange}
+        onClose={onClose}
+      />
+    );
+
+    expect(screen.queryByRole("dialog", { name: "웨딩 사진 전체 화면" })).not.toBeInTheDocument();
+    expect(document.body.style.overflow).toBe("clip");
+
+    for (const key of ["Escape", "ArrowLeft", "ArrowRight"]) {
+      const event = new KeyboardEvent("keydown", { key, bubbles: true, cancelable: true });
+      document.body.dispatchEvent(event);
+      expect(event.defaultPrevented).toBe(false);
+    }
+    expect(onClose).not.toHaveBeenCalled();
+    expect(onIndexChange).not.toHaveBeenCalled();
+  });
+
   it("document.body 포털에 선택 사진, 카운터와 캡션을 표시한다", () => {
     render(<PhotoLightbox photos={photos} index={0} onIndexChange={vi.fn()} onClose={vi.fn()} />);
 
@@ -102,6 +132,21 @@ describe("전체 화면 웨딩 사진 뷰어", () => {
     fireEvent.pointerDown(stage, { pointerId: 8, clientX: 100, clientY: 20 });
     fireEvent.pointerUp(stage, { pointerId: 8, clientX: 40, clientY: 20 });
     expect(onIndexChange).not.toHaveBeenCalled();
+  });
+
+  it("탐색 버튼에서 시작한 포인터 제스처는 클릭 한 번만 처리한다", () => {
+    const onIndexChange = vi.fn();
+    render(<PhotoLightbox photos={photos} index={2} onIndexChange={onIndexChange} onClose={vi.fn()} />);
+    const nextButton = screen.getByRole("button", { name: "다음 사진" });
+    const nextIcon = nextButton.querySelector("svg");
+
+    expect(nextIcon).not.toBeNull();
+    fireEvent.pointerDown(nextIcon!, { pointerId: 9, clientX: 100, clientY: 20 });
+    fireEvent.pointerUp(nextIcon!, { pointerId: 9, clientX: 40, clientY: 20 });
+    fireEvent.click(nextButton);
+
+    expect(onIndexChange).toHaveBeenCalledTimes(1);
+    expect(onIndexChange).toHaveBeenCalledWith(3);
   });
 
   it("Escape 한 번은 라이트박스만 닫고 하단 시트를 유지한다", () => {
