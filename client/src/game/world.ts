@@ -1,4 +1,5 @@
 import {
+  invitationContent,
   realtimeWorldContract,
   type Direction,
   type SpotId,
@@ -451,7 +452,7 @@ const bridalRoomZone = createZone({
     path("bridal-entry", "floor", 300, 510, 120, 90)
   ],
   spots: [spot("couple", "신부에게 인사하기", 150, 150, 120, 90)],
-  npcs: [{ id: "bride", label: "신부 김하린", x: 360, y: 285 }],
+  npcs: [{ id: "bride", label: `신부 ${invitationContent.event.couple.bride}`, x: 360, y: 285 }],
   portals: [
     portal("bridal-to-lobby", "로비로 돌아가기", "lobby", { x: 300, y: 540, width: 120, height: 60 }, { x: 345, y: 555 }, "down", { x: 135, y: 405 })
   ],
@@ -479,8 +480,8 @@ const ceremonyHallZone = createZone({
   ],
   spots: [spot("couple", "신랑신부", 180, 150, 90, 90)],
   npcs: [
-    { id: "groom", label: "신랑 이서준", x: 330, y: 255 },
-    { id: "bride", label: "신부 김하린", x: 450, y: 255 }
+    { id: "groom", label: `신랑 ${invitationContent.event.couple.groom}`, x: 330, y: 255 },
+    { id: "bride", label: `신부 ${invitationContent.event.couple.bride}`, x: 450, y: 255 }
   ],
   portals: [
     portal("hall-to-lobby", "로비로 돌아가기", "lobby", { x: 330, y: 1830, width: 120, height: 60 }, { x: 375, y: 1815 }, "down", { x: 525, y: 135 })

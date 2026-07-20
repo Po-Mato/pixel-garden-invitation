@@ -83,9 +83,13 @@ export function formatEventStartTime(event: WeddingEvent): string {
   return formatTime(event.startAt, event.timeZone);
 }
 
-export function formatEventTimeRange(event: WeddingEvent): string {
+export function formatEventEndTime(event: WeddingEvent): string {
   validateWeddingEvent(event);
-  return `${formatTime(event.startAt, event.timeZone)} - ${formatTime(event.endAt, event.timeZone)}`;
+  return formatTime(event.endAt, event.timeZone);
+}
+
+export function formatEventTimeRange(event: WeddingEvent): string {
+  return `${formatEventStartTime(event)} - ${formatEventEndTime(event)}`;
 }
 
 export function formatVenueLabel(event: WeddingEvent): string {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { realtimeWorldContract, worldZoneIds } from "@wedding-game/shared";
+import { invitationContent, realtimeWorldContract, worldZoneIds } from "@wedding-game/shared";
 import mapManifest from "../../../map-assets/reference/v2/manifest.json";
 import { isBlocked, isWalkable, pointInRect } from "./geometry";
 import { gridTileSize } from "./movement";
@@ -638,7 +638,7 @@ describe("guest route world", () => {
       expect.objectContaining({ id: "couple", x: 150, y: 150, width: 120, height: 90 })
     ]);
     expect(bridal.npcs).toEqual([
-      { id: "bride", label: "신부 김하린", x: 360, y: 285 }
+      { id: "bride", label: `신부 ${invitationContent.event.couple.bride}`, x: 360, y: 285 }
     ]);
     expect(bridal.blocked).toEqual([
       { x: 90, y: 330, width: 180, height: 90 },
@@ -783,8 +783,8 @@ describe("guest route world", () => {
     ]);
     expect(hall.blocked).toEqual([coupleSpot]);
     expect(hall.npcs).toEqual([
-      { id: "groom", label: "신랑 이서준", x: 330, y: 255 },
-      { id: "bride", label: "신부 김하린", x: 450, y: 255 }
+      { id: "groom", label: `신랑 ${invitationContent.event.couple.groom}`, x: 330, y: 255 },
+      { id: "bride", label: `신부 ${invitationContent.event.couple.bride}`, x: 450, y: 255 }
     ]);
     expect(hall.portals).toEqual([
       expect.objectContaining({

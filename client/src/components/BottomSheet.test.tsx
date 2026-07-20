@@ -36,3 +36,22 @@ it("renders its dialog in the document body portal", () => {
 
   expect(screen.getByRole("dialog").parentElement).toBe(document.body);
 });
+
+it("cycles focus in both directions at the dialog boundaries", () => {
+  render(
+    <BottomSheet title="캘린더 저장" onClose={vi.fn()}>
+      <button type="button">기본 캘린더</button>
+      <button type="button">파일 다운로드</button>
+    </BottomSheet>
+  );
+
+  const closeButton = screen.getByRole("button", { name: "닫기" });
+  const lastButton = screen.getByRole("button", { name: "파일 다운로드" });
+
+  closeButton.focus();
+  fireEvent.keyDown(closeButton, { key: "Tab", shiftKey: true });
+  expect(lastButton).toHaveFocus();
+
+  fireEvent.keyDown(lastButton, { key: "Tab" });
+  expect(closeButton).toHaveFocus();
+});

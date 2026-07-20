@@ -4,10 +4,14 @@ import {
   defaultCharacterAppearance,
   parseCharacterAppearance
 } from "./characterCatalog";
+import { invitationContent } from "./content";
 
 describe("character catalog", () => {
   it("NPC와 하객 프리셋 카탈로그를 제공한다", () => {
-    expect(characterCatalog.npcs.map((item) => item.id)).toEqual(["groom", "bride"]);
+    expect(characterCatalog.npcs).toEqual([
+      { id: "groom", label: `신랑 ${invitationContent.event.couple.groom}` },
+      { id: "bride", label: `신부 ${invitationContent.event.couple.bride}` }
+    ]);
     expect(characterCatalog.guestPresets).toHaveLength(12);
   });
 

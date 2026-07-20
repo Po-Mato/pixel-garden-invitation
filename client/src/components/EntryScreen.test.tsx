@@ -1,5 +1,5 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
-import { defaultCharacterAppearance } from "@wedding-game/shared";
+import { defaultCharacterAppearance, invitationContent } from "@wedding-game/shared";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { EntryScreen } from "./EntryScreen";
 
@@ -11,7 +11,11 @@ describe("EntryScreen", () => {
   it("shows the confirmed couple and compact wedding summary before entry", () => {
     render(<EntryScreen onEnter={vi.fn()} />);
 
-    expect(screen.getByRole("heading", { name: "이승재 & 이건희의 정원" })).toBeInTheDocument();
+    const { couple, startAt, timeZone } = invitationContent.event;
+    const year = new Intl.DateTimeFormat("en", { year: "numeric", timeZone }).format(new Date(startAt));
+
+    expect(screen.getByText(`WEDDING GARDEN · ${year}`)).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: `${couple.groom} & ${couple.bride}의 정원` })).toBeInTheDocument();
     expect(screen.getByText("2027년 5월 1일 토요일")).toBeInTheDocument();
     expect(screen.getByText("오후 5시 10분")).toBeInTheDocument();
     expect(screen.getByText("MJ컨벤션 5층 파티오볼룸")).toBeInTheDocument();

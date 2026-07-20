@@ -74,7 +74,7 @@
     }
   },
   "npcs": [
-    { "id": "groom", "label": "신랑 이서준" },
-    { "id": "bride", "label": "신부 김하린" }
+    { "id": "groom", "label": "신랑 이승재" },
+    { "id": "bride", "label": "신부 이건희" }
   ]
 }

@@ -4,8 +4,8 @@ import { invitationContent } from "@wedding-game/shared";
 import { copyText } from "../invitation/browserActions";
 import {
   formatEventDate,
+  formatEventEndTime,
   formatEventStartTime,
-  formatEventTimeRange,
   formatVenueLabel
 } from "../invitation/calendarEvent";
 import { CalendarSaveSheet } from "./CalendarSaveSheet";
@@ -50,7 +50,11 @@ export function WeddingEventSummary({
         <CalendarDays aria-hidden="true" />
         <div>
           <time dateTime={event.startAt}>{formatEventDate(event)}</time>
-          <strong>{variant === "detail" ? formatEventTimeRange(event) : formatEventStartTime(event)}</strong>
+          <strong>
+            <time dateTime={event.startAt}>{formatEventStartTime(event)}</time>
+            {" - "}
+            <time dateTime={event.endAt}>{formatEventEndTime(event)}</time>
+          </strong>
         </div>
       </div>
       <div className="wedding-event-summary__venue">

@@ -1,8 +1,16 @@
 import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
-import { defaultCharacterAppearance, getDefaultAppearance, type WorldZoneId } from "@wedding-game/shared";
+import {
+  defaultCharacterAppearance,
+  getDefaultAppearance,
+  invitationContent,
+  type WorldZoneId
+} from "@wedding-game/shared";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { worldDepth } from "../game/worldVisuals";
 import { GameWorld } from "./GameWorld";
+
+const groomNpcLabel = `신랑 ${invitationContent.event.couple.groom}`;
+const brideNpcLabel = `신부 ${invitationContent.event.couple.bride}`;
 
 type MockListener = (event: Event) => void;
 
@@ -325,7 +333,8 @@ describe("GameWorld", () => {
     fireEvent.click(screen.getByRole("button", { name: "초대장 메뉴" }));
     const menu = screen.getByRole("dialog", { name: "초대장 바로가기" });
 
-    expect(within(menu).getByText("오후 5시 10분 - 오후 6시 40분")).toBeInTheDocument();
+    expect(menu.querySelector(".wedding-event-summary__date strong"))
+      .toHaveTextContent("오후 5시 10분 - 오후 6시 40분");
     expect(within(menu).getByText("MJ컨벤션 5층 파티오볼룸")).toBeInTheDocument();
     expect(within(menu).getByText("경기 부천시 소사구 경인로 386")).toBeInTheDocument();
     expect(within(menu).getByRole("button", { name: "주소 복사" })).toBeInTheDocument();
@@ -726,12 +735,12 @@ describe("GameWorld", () => {
     expect(stage).toHaveStyle({ width: "720px", height: "630px" });
     expectMapBackground(container, "bridal-room");
     expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "345px", top: "525px" });
-    expect(screen.getByRole("button", { name: "신부 김하린 소개 보기" }).parentElement)
+    expect(screen.getByRole("button", { name: `${brideNpcLabel} 소개 보기` }).parentElement)
       .toHaveStyle({ left: "360px", top: "285px", zIndex: "1285" });
     expect(flowerFront).toHaveAttribute("src", "/assets/maps/v2/bridal-room/flower-arrangement-front.png");
     expect(flowerFront).toHaveStyle({ left: "240px", top: "300px", width: "90px", height: "120px", zIndex: "1420" });
 
-    fireEvent.click(screen.getByRole("button", { name: "신부 김하린 소개 보기" }));
+    fireEvent.click(screen.getByRole("button", { name: `${brideNpcLabel} 소개 보기` }));
     expect(screen.getByRole("dialog")).toHaveTextContent("신랑신부 정원");
     fireEvent.click(screen.getByRole("button", { name: "닫기" }));
 
@@ -828,9 +837,9 @@ describe("GameWorld", () => {
     });
     expectMapBackground(container, "ceremony-hall");
     expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "375px", top: "1785px" });
-    expect(screen.getByRole("button", { name: "신랑 이서준 소개 보기" }).parentElement)
+    expect(screen.getByRole("button", { name: `${groomNpcLabel} 소개 보기` }).parentElement)
       .toHaveStyle({ left: "330px", top: "255px", zIndex: "1255" });
-    expect(screen.getByRole("button", { name: "신부 김하린 소개 보기" }).parentElement)
+    expect(screen.getByRole("button", { name: `${brideNpcLabel} 소개 보기` }).parentElement)
       .toHaveStyle({ left: "450px", top: "255px", zIndex: "1255" });
     expect(ceremonyArch).toHaveAttribute("src", "/assets/maps/v2/ceremony-hall/ceremony-arch-front.png");
     expect(ceremonyArch).toHaveStyle({
@@ -1022,7 +1031,7 @@ describe("GameWorld", () => {
     finishPortalFadeOut();
 
     expect(screen.getByTestId("world-portal-transition")).toHaveAttribute("data-phase", "fade-in");
-    const npcButton = screen.getByRole("button", { name: "신부 김하린 소개 보기" });
+    const npcButton = screen.getByRole("button", { name: `${brideNpcLabel} 소개 보기` });
     fireEvent.click(npcButton);
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     act(() => vi.advanceTimersByTime(300));
@@ -1166,7 +1175,7 @@ describe("GameWorld", () => {
     travelFromHomeToLobby();
     travelThroughPortal("신부 대기실");
 
-    expect(screen.getByRole("button", { name: "신부 김하린 소개 보기" }).parentElement)
+    expect(screen.getByRole("button", { name: `${brideNpcLabel} 소개 보기` }).parentElement)
       .toHaveStyle({ zIndex: "1285" });
   });
 

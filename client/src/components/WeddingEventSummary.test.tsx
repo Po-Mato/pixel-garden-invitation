@@ -13,20 +13,24 @@ afterEach(() => {
   vi.clearAllMocks();
 });
 
-it("renders a compact entry summary", () => {
+it("renders a compact entry summary with machine-readable start and end times", () => {
   render(<WeddingEventSummary variant="compact" />);
 
   expect(screen.getByText("2027년 5월 1일 토요일")).toBeInTheDocument();
-  expect(screen.getByText("오후 5시 10분")).toBeInTheDocument();
+  expect(screen.getByText("오후 5시 10분")).toHaveAttribute("dateTime", "2027-05-01T17:10:00+09:00");
+  expect(screen.getByText("오후 6시 40분")).toHaveAttribute("dateTime", "2027-05-01T18:40:00+09:00");
   expect(screen.getByText("MJ컨벤션 5층 파티오볼룸")).toBeInTheDocument();
   expect(screen.queryByText("경기 부천시 소사구 경인로 386")).not.toBeInTheDocument();
 });
 
 it("renders details and reports address copy status", async () => {
   vi.mocked(copyText).mockResolvedValue(undefined);
-  render(<WeddingEventSummary variant="detail" />);
+  const { container } = render(<WeddingEventSummary variant="detail" />);
 
-  expect(screen.getByText("오후 5시 10분 - 오후 6시 40분")).toBeInTheDocument();
+  const timeRange = container.querySelector(".wedding-event-summary__date strong");
+  expect(timeRange).toHaveTextContent("오후 5시 10분 - 오후 6시 40분");
+  expect(timeRange?.querySelector('time[datetime="2027-05-01T17:10:00+09:00"]')).toHaveTextContent("오후 5시 10분");
+  expect(timeRange?.querySelector('time[datetime="2027-05-01T18:40:00+09:00"]')).toHaveTextContent("오후 6시 40분");
   expect(screen.getByText("경기 부천시 소사구 경인로 386")).toBeInTheDocument();
   fireEvent.click(screen.getByRole("button", { name: "주소 복사" }));
   expect(await screen.findByText("주소를 복사했습니다.")).toBeInTheDocument();

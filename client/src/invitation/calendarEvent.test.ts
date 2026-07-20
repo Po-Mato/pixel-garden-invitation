@@ -5,6 +5,7 @@ import {
   buildGoogleCalendarUrl,
   buildIcs,
   formatEventDate,
+  formatEventEndTime,
   formatEventStartTime,
   formatEventTimeRange,
   formatVenueLabel,
@@ -17,6 +18,7 @@ describe("wedding calendar event", () => {
   it("formats the confirmed Korean date, time, and venue", () => {
     expect(formatEventDate(event)).toBe("2027년 5월 1일 토요일");
     expect(formatEventStartTime(event)).toBe("오후 5시 10분");
+    expect(formatEventEndTime(event)).toBe("오후 6시 40분");
     expect(formatEventTimeRange(event)).toBe("오후 5시 10분 - 오후 6시 40분");
     expect(formatVenueLabel(event)).toBe("MJ컨벤션 5층 파티오볼룸");
   });
@@ -43,6 +45,27 @@ describe("wedding calendar event", () => {
     expect(ics).not.toContain("VALARM");
     expect(ics.endsWith("\r\n")).toBe(true);
     expect(ics.split("\r\n").every((line) => new TextEncoder().encode(line).length <= 75)).toBe(true);
+  });
+
+  it("escapes every iCalendar TEXT delimiter and line break", () => {
+    const escapedEvent = {
+      ...event,
+      title: "제목\\경로;순서,다음\n새 줄",
+      couple: {
+        groom: "신랑\\이름;하나,둘\n셋",
+        bride: "신부\\이름;하나,둘\n셋"
+      },
+      venue: {
+        name: "장소\\이름;하나,둘\n셋",
+        hall: "홀\\이름;하나,둘\n셋",
+        address: "주소\\이름;하나,둘\n셋"
+      }
+    };
+    const unfolded = buildIcs(escapedEvent).replace(/\r\n /g, "");
+
+    expect(unfolded).toContain("SUMMARY:제목\\\\경로\\;순서\\,다음\\n새 줄");
+    expect(unfolded).toContain("LOCATION:장소\\\\이름\\;하나\\,둘\\n셋 홀\\\\이름\\;하나\\,둘\\n셋\\, 주소\\\\이름\\;하나\\,둘\\n셋");
+    expect(unfolded).toContain("DESCRIPTION:신랑\\\\이름\\;하나\\,둘\\n셋 · 신부\\\\이름\\;하나\\,둘\\n셋의 결혼식에 초대합니다.\\n2027년 5월 1일 토요일 오후 5시 10분 - 오후 6시 40분");
   });
 
   it("builds a Google Calendar template URL with the same UTC interval", () => {

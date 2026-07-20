@@ -1,6 +1,7 @@
 import { useState } from "react";
 import {
   defaultCharacterAppearance,
+  invitationContent,
   type CharacterAppearance
 } from "@wedding-game/shared";
 import { loadAppearance, saveAppearance } from "../character/storage";
@@ -17,6 +18,11 @@ type EntryScreenProps = {
 };
 
 export function EntryScreen({ onEnter }: EntryScreenProps) {
+  const event = invitationContent.event;
+  const weddingYear = new Intl.DateTimeFormat("en", {
+    year: "numeric",
+    timeZone: event.timeZone
+  }).format(new Date(event.startAt));
   const [nickname, setNickname] = useState("");
   const [appearance, setAppearance] = useState(
     () => loadAppearance() ?? defaultCharacterAppearance
@@ -36,8 +42,8 @@ export function EntryScreen({ onEnter }: EntryScreenProps) {
         <span className="entry-screen__petals" />
       </div>
       <header className="entry-screen__header">
-        <p>WEDDING GARDEN · 2027</p>
-        <h1>이승재 & 이건희의 정원</h1>
+        <p>WEDDING GARDEN · {weddingYear}</p>
+        <h1>{event.couple.groom} & {event.couple.bride}의 정원</h1>
         <span>정원에 입장할 하객 캐릭터를 선택해주세요.</span>
       </header>
       <WeddingEventSummary variant="compact" />
