@@ -15,7 +15,7 @@ CREATE TABLE rsvps (
   guest_name TEXT NOT NULL,
   phone TEXT,
   attendance TEXT NOT NULL CHECK (attendance IN ('yes', 'no', 'unsure')),
-  party_size INTEGER NOT NULL CHECK (party_size >= 0 AND party_size <= 10),
+  party_size INTEGER NOT NULL CHECK (typeof(party_size) = 'integer' AND party_size >= 0 AND party_size <= 10),
   meal_status TEXT NOT NULL CHECK (meal_status IN ('yes', 'no', 'unsure', 'not_applicable')),
   note TEXT NOT NULL,
   consent_version TEXT,
@@ -26,10 +26,19 @@ CREATE TABLE rsvps (
   updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (invitation_id) REFERENCES invitations(id),
   CHECK (
-    side = 'legacy'
-    OR (attendance = 'yes' AND party_size BETWEEN 1 AND 10 AND meal_status IN ('yes', 'no', 'unsure'))
-    OR (attendance = 'no' AND party_size = 0 AND meal_status = 'not_applicable')
-    OR (attendance = 'unsure' AND party_size BETWEEN 1 AND 10 AND meal_status = 'unsure')
+    (side = 'legacy'
+      AND phone IS NULL
+      AND consent_version IS NULL
+      AND consented_at IS NULL
+      AND edit_token_hash IS NULL
+      AND meal_status = 'unsure'
+      AND revision = 1)
+    OR (side IN ('groom', 'bride')
+      AND (
+        (attendance = 'yes' AND party_size BETWEEN 1 AND 10 AND meal_status IN ('yes', 'no', 'unsure'))
+        OR (attendance = 'no' AND party_size = 0 AND meal_status = 'not_applicable')
+        OR (attendance = 'unsure' AND party_size BETWEEN 1 AND 10 AND meal_status = 'unsure')
+      ))
   )
 );
 

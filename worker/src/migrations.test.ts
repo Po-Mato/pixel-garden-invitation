@@ -82,16 +82,32 @@ describe("invitation migrations", () => {
       database.exec(readMigration("0001_init.sql"));
       database.exec(readMigration("0002_update_invitation_details.sql"));
       database.exec(`
-        INSERT INTO rsvps (id, invitation_id, guest_name, attendance, party_size, note)
-        VALUES ('rsvp_old', 'sample-garden', '기존 하객', 'yes', 2, '기존 응답')
+        INSERT INTO rsvps (id, invitation_id, guest_name, attendance, party_size, note, created_at)
+        VALUES ('rsvp_old', 'sample-garden', '기존 하객', 'yes', 2, '기존 응답', '2025-01-02T03:04:05.000Z')
       `);
       database.exec(readMigration("0003_production_rsvp.sql"));
 
-      expect(database.prepare("SELECT side, phone, meal_status, revision FROM rsvps WHERE id = ?").get("rsvp_old")).toEqual({
+      expect(database.prepare(`
+        SELECT id, invitation_id, side, guest_name, phone, attendance, party_size,
+               meal_status, note, consent_version, consented_at, edit_token_hash,
+               revision, created_at, updated_at
+        FROM rsvps WHERE id = ?
+      `).get("rsvp_old")).toEqual({
+        id: "rsvp_old",
+        invitation_id: "sample-garden",
         side: "legacy",
+        guest_name: "기존 하객",
         phone: null,
+        attendance: "yes",
+        party_size: 2,
         meal_status: "unsure",
-        revision: 1
+        note: "기존 응답",
+        consent_version: null,
+        consented_at: null,
+        edit_token_hash: null,
+        revision: 1,
+        created_at: "2025-01-02T03:04:05.000Z",
+        updated_at: "2025-01-02T03:04:05.000Z"
       });
 
       expect(querySampleGarden(database)).toMatchObject({
@@ -112,6 +128,51 @@ describe("invitation migrations", () => {
       expect(() => database.exec(`
         INSERT INTO rsvps (id, invitation_id, side, guest_name, attendance, party_size, meal_status, note)
         VALUES ('rsvp_absent_meal', 'sample-garden', 'bride', '불참 하객', 'no', 0, 'yes', '')
+      `)).toThrow(/CHECK constraint failed/);
+
+      expect(() => database.exec(`
+        INSERT INTO rsvps (id, invitation_id, side, guest_name, attendance, party_size, meal_status, note)
+        VALUES ('rsvp_legacy_old_shape', 'sample-garden', 'legacy', '기존 불참 하객', 'no', 10, 'unsure', '')
+      `)).not.toThrow();
+
+      expect(() => database.exec(`
+        INSERT INTO rsvps (id, invitation_id, side, guest_name, phone, attendance, party_size, meal_status, note)
+        VALUES ('rsvp_legacy_phone', 'sample-garden', 'legacy', '변조된 기존 하객', '010-0000-0000', 'yes', 2, 'unsure', '')
+      `)).toThrow(/CHECK constraint failed/);
+
+      expect(() => database.exec(`
+        INSERT INTO rsvps (id, invitation_id, side, guest_name, attendance, party_size, meal_status, note, consent_version)
+        VALUES ('rsvp_legacy_consent', 'sample-garden', 'legacy', '변조된 기존 하객', 'yes', 2, 'unsure', '', 'v1')
+      `)).toThrow(/CHECK constraint failed/);
+
+      expect(() => database.exec(`
+        INSERT INTO rsvps (id, invitation_id, side, guest_name, attendance, party_size, meal_status, note, consented_at)
+        VALUES ('rsvp_legacy_consented_at', 'sample-garden', 'legacy', '변조된 기존 하객', 'yes', 2, 'unsure', '', '2025-01-01T00:00:00.000Z')
+      `)).toThrow(/CHECK constraint failed/);
+
+      expect(() => database.exec(`
+        INSERT INTO rsvps (id, invitation_id, side, guest_name, attendance, party_size, meal_status, note, edit_token_hash)
+        VALUES ('rsvp_legacy_token', 'sample-garden', 'legacy', '변조된 기존 하객', 'yes', 2, 'unsure', '', 'hash')
+      `)).toThrow(/CHECK constraint failed/);
+
+      expect(() => database.exec(`
+        INSERT INTO rsvps (id, invitation_id, side, guest_name, attendance, party_size, meal_status, note)
+        VALUES ('rsvp_legacy_meal', 'sample-garden', 'legacy', '변조된 기존 하객', 'yes', 2, 'yes', '')
+      `)).toThrow(/CHECK constraint failed/);
+
+      expect(() => database.exec(`
+        INSERT INTO rsvps (id, invitation_id, side, guest_name, attendance, party_size, meal_status, note, revision)
+        VALUES ('rsvp_legacy_revision', 'sample-garden', 'legacy', '변조된 기존 하객', 'yes', 2, 'unsure', '', 2)
+      `)).toThrow(/CHECK constraint failed/);
+
+      expect(() => database.exec(`
+        INSERT INTO rsvps (id, invitation_id, side, guest_name, attendance, party_size, meal_status, note)
+        VALUES ('rsvp_attending_integer', 'sample-garden', 'groom', '참석 하객', 'yes', 1, 'yes', '')
+      `)).not.toThrow();
+
+      expect(() => database.exec(`
+        INSERT INTO rsvps (id, invitation_id, side, guest_name, attendance, party_size, meal_status, note)
+        VALUES ('rsvp_attending_fraction', 'sample-garden', 'groom', '참석 하객', 'yes', 1.5, 'yes', '')
       `)).toThrow(/CHECK constraint failed/);
     } finally {
       database.close();
