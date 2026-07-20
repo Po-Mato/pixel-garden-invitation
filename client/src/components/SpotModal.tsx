@@ -7,8 +7,10 @@ import {
   type GuestbookPayload
 } from "../api/weddingApi";
 import { BottomSheet } from "./BottomSheet";
+import { CoupleProfilePanel } from "./CoupleProfilePanel";
 import { GuestbookPanel } from "./GuestbookPanel";
 import { RsvpPanel } from "./RsvpPanel";
+import { WeddingStoryTimeline } from "./WeddingStoryTimeline";
 
 type SpotModalProps = {
   spotId: SpotId;
@@ -64,6 +66,8 @@ export function SpotModal({ spotId, nickname, onClose }: SpotModalProps) {
       {spotId === "guestbook" && (
         <GuestbookPanel nickname={nickname} messages={guestbookMessages} onSubmit={handleGuestbookSubmit} />
       )}
+      {spotId === "couple" && <CoupleProfilePanel />}
+      {spotId === "story" && <WeddingStoryTimeline />}
     </BottomSheet>
   );
 }
