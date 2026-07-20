@@ -40,5 +40,17 @@ describe("에디토리얼 웨딩 갤러리", () => {
     fireEvent.click(screen.getAllByRole("button", { name: /사진 \d+:/ })[4]);
 
     expect(onPhotoOpen).toHaveBeenCalledWith(4);
+    expect(screen.getByRole("dialog", { name: "웨딩 사진 전체 화면" })).toBeInTheDocument();
+  });
+
+  it("라이트박스를 닫으면 선택했던 사진 버튼으로 포커스를 복원한다", () => {
+    render(<WeddingGallery />);
+    const selectedPhoto = screen.getAllByRole("button", { name: /사진 \d+:/ })[4];
+
+    fireEvent.click(selectedPhoto);
+    fireEvent.click(screen.getByRole("button", { name: "전체 화면 닫기" }));
+
+    expect(screen.queryByRole("dialog", { name: "웨딩 사진 전체 화면" })).not.toBeInTheDocument();
+    expect(selectedPhoto).toHaveFocus();
   });
 });
