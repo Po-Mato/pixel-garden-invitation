@@ -24,9 +24,37 @@ describe("invitationContent", () => {
       venue: {
         name: "MJ컨벤션",
         hall: "5층 파티오볼룸",
-        address: "경기 부천시 소사구 경인로 386"
+        address: "경기 부천시 소사구 경인로 386",
+        directions: {
+          mapSearchName: "MJ컨벤션",
+          phone: "032-347-5500",
+          transit: "1호선·서해선 소사역 1번 출구에서 도보 약 3분",
+          parking: "주차 2시간 무료 · 약 500대 이상 주차 가능"
+        }
       }
     });
+  });
+
+  it("contains the confirmed wedding directions", () => {
+    expect(invitationContent.event.venue).toEqual({
+      name: "MJ컨벤션",
+      hall: "5층 파티오볼룸",
+      address: "경기 부천시 소사구 경인로 386",
+      directions: {
+        mapSearchName: "MJ컨벤션",
+        phone: "032-347-5500",
+        transit: "1호선·서해선 소사역 1번 출구에서 도보 약 3분",
+        parking: "주차 2시간 무료 · 약 500대 이상 주차 가능"
+      }
+    });
+  });
+
+  it("keeps the directions spot consistent with the venue", () => {
+    const directions = invitationContent.spots.find((spot) => spot.id === "directions");
+    const venue = invitationContent.event.venue;
+
+    expect(directions?.body).toContain(venue.name);
+    expect(directions?.body).toContain(venue.address);
   });
 
   it("defines an exact 90 minute event", () => {

@@ -27,6 +27,12 @@ export type WeddingEvent = {
     name: string;
     hall: string;
     address: string;
+    directions: {
+      mapSearchName: string;
+      phone: string;
+      transit: string;
+      parking: string;
+    };
   };
 };
 
@@ -40,7 +46,13 @@ export const invitationContent = {
     venue: {
       name: "MJ컨벤션",
       hall: "5층 파티오볼룸",
-      address: "경기 부천시 소사구 경인로 386"
+      address: "경기 부천시 소사구 경인로 386",
+      directions: {
+        mapSearchName: "MJ컨벤션",
+        phone: "032-347-5500",
+        transit: "1호선·서해선 소사역 1번 출구에서 도보 약 3분",
+        parking: "주차 2시간 무료 · 약 500대 이상 주차 가능"
+      }
     }
   } satisfies WeddingEvent,
   spots: [
