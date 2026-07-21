@@ -15,16 +15,17 @@ type FamilyContactSheetProps = {
   familyContacts?: WeddingEvent["familyContacts"];
 };
 
+type FamilyContactContentProps = Omit<FamilyContactSheetProps, "onClose">;
+
 type WeddingSide = WeddingFamilyContact["side"];
 
 function recipientLabel(contact: WeddingFamilyContact) {
   return contact.name ? `${contact.relation} ${contact.name}` : contact.relation;
 }
 
-export function FamilyContactSheet({
-  onClose,
+export function FamilyContactContent({
   familyContacts = invitationContent.event.familyContacts
-}: FamilyContactSheetProps) {
+}: FamilyContactContentProps) {
   const coupleOrder = useCoupleOrder();
   const sideOrder = coupleSides(coupleOrder);
   const [activeSide, setActiveSide] = useState<WeddingSide>(sideOrder[0]);
@@ -37,8 +38,7 @@ export function FamilyContactSheet({
   );
 
   return (
-    <BottomSheet title="혼주 연락처" onClose={onClose}>
-      <div className="family-contact-sheet" data-nosnippet="">
+    <div className="family-contact-sheet" data-nosnippet="">
         <div className="family-contact-sheet__intro">
           <UsersRound aria-hidden="true" />
           <p>{familyContacts.notice}</p>
@@ -111,7 +111,14 @@ export function FamilyContactSheet({
         <p className="family-contact-sheet__privacy">
           연락처는 예식 관련 연락이 필요하신 분을 위해서만 안내드립니다.
         </p>
-      </div>
+    </div>
+  );
+}
+
+export function FamilyContactSheet({ onClose, familyContacts }: FamilyContactSheetProps) {
+  return (
+    <BottomSheet title="혼주 연락처" onClose={onClose}>
+      <FamilyContactContent familyContacts={familyContacts} />
     </BottomSheet>
   );
 }

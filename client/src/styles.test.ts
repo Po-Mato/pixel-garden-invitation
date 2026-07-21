@@ -128,7 +128,7 @@ describe("wedding event access", () => {
       /\.wedding-event-summary--compact \.wedding-event-summary__actions\s*\{([^}]*)}/s
     )?.[1] ?? "";
 
-    expect(entryRule).toContain("grid-template-rows: auto auto minmax(0, 1fr) auto;");
+    expect(entryRule).toContain("grid-template-rows: auto auto auto minmax(0, 1fr) auto;");
     expect(rule).toContain("min-width: 0;");
     expect(rule).toContain("grid-template-columns: minmax(0, 1fr);");
     expect(rule).toContain("grid-template-rows: auto auto auto;");

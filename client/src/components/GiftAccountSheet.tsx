@@ -15,6 +15,8 @@ type GiftAccountSheetProps = {
   giftAccounts?: WeddingEvent["giftAccounts"];
 };
 
+type GiftAccountContentProps = Omit<GiftAccountSheetProps, "onClose">;
+
 type WeddingSide = WeddingGiftAccount["side"];
 type CopyStatus = { accountId: WeddingGiftAccount["id"]; state: "copying" | "copied" | "error" } | null;
 
@@ -39,10 +41,9 @@ function hasVisibleDetails(account: WeddingGiftAccount) {
   return hasAccountDetails(account) || Boolean(safeHttpsUrl(account.kakaoPayUrl) || safeHttpsUrl(account.tossUrl));
 }
 
-export function GiftAccountSheet({
-  onClose,
+export function GiftAccountContent({
   giftAccounts = invitationContent.event.giftAccounts
-}: GiftAccountSheetProps) {
+}: GiftAccountContentProps) {
   const coupleOrder = useCoupleOrder();
   const sideOrder = coupleSides(coupleOrder);
   const [activeSide, setActiveSide] = useState<WeddingSide>(sideOrder[0]);
@@ -65,8 +66,7 @@ export function GiftAccountSheet({
   };
 
   return (
-    <BottomSheet title="마음 전하실 곳" onClose={onClose}>
-      <div className="gift-account-sheet" data-nosnippet="">
+    <div className="gift-account-sheet" data-nosnippet="">
         <div className="gift-account-sheet__intro">
           <HeartHandshake aria-hidden="true" />
           <p>{giftAccounts.notice}</p>
@@ -173,7 +173,14 @@ export function GiftAccountSheet({
         <p className="gift-account-sheet__privacy">
           계좌 정보는 마음을 전하고자 하시는 분을 위해서만 안내드립니다.
         </p>
-      </div>
+    </div>
+  );
+}
+
+export function GiftAccountSheet({ onClose, giftAccounts }: GiftAccountSheetProps) {
+  return (
+    <BottomSheet title="마음 전하실 곳" onClose={onClose}>
+      <GiftAccountContent giftAccounts={giftAccounts} />
     </BottomSheet>
   );
 }

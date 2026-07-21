@@ -92,6 +92,26 @@ describe("EntryScreen", () => {
     expect(onEnterIntent).toHaveBeenCalled();
   });
 
+  it("닉네임 없이 간편 초대장을 열고 화면을 미리 불러온다", () => {
+    const onQuickView = vi.fn();
+    const onQuickViewIntent = vi.fn();
+    render(
+      <EntryScreen
+        onEnter={vi.fn()}
+        onQuickView={onQuickView}
+        onQuickViewIntent={onQuickViewIntent}
+      />
+    );
+
+    const quickButton = screen.getByRole("button", { name: /초대장 바로 보기/ });
+    fireEvent.pointerEnter(quickButton);
+    fireEvent.click(quickButton);
+
+    expect(onQuickViewIntent).toHaveBeenCalled();
+    expect(onQuickView).toHaveBeenCalledOnce();
+    expect(screen.getByRole("button", { name: "정원 입장" })).toBeDisabled();
+  });
+
   it("submits nickname and customized appearance", () => {
     const onEnter = vi.fn();
     render(<EntryScreen onEnter={onEnter} />);

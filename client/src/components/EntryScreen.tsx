@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { BookOpen, ChevronRight } from "lucide-react";
 import {
   defaultCharacterAppearance,
   invitationContent,
@@ -19,10 +20,18 @@ export type EntryProfile = {
 type EntryScreenProps = {
   onEnter: (profile: EntryProfile) => void;
   onEnterIntent?: () => void;
+  onQuickView?: () => void;
+  onQuickViewIntent?: () => void;
   weddingDayPreview?: boolean;
 };
 
-export function EntryScreen({ onEnter, onEnterIntent, weddingDayPreview = false }: EntryScreenProps) {
+export function EntryScreen({
+  onEnter,
+  onEnterIntent,
+  onQuickView,
+  onQuickViewIntent,
+  weddingDayPreview = false
+}: EntryScreenProps) {
   const event = invitationContent.event;
   const coupleOrder = useCoupleOrder();
   const weddingYear = new Intl.DateTimeFormat("en", {
@@ -58,6 +67,20 @@ export function EntryScreen({ onEnter, onEnterIntent, weddingDayPreview = false 
         weddingDayPreview={weddingDayPreview}
         onFamilyContactOpen={() => setFamilyContactOpen(true)}
       />
+      {onQuickView ? (
+        <button
+          className="entry-screen__quick-access"
+          type="button"
+          onFocus={onQuickViewIntent}
+          onPointerEnter={onQuickViewIntent}
+          onPointerDown={onQuickViewIntent}
+          onClick={onQuickView}
+        >
+          <BookOpen aria-hidden="true" />
+          <span><small>게임 없이</small><strong>초대장 바로 보기</strong></span>
+          <ChevronRight aria-hidden="true" />
+        </button>
+      ) : null}
       <CharacterCustomizer value={appearance} onChange={setAppearance} />
       <div className="entry-screen__controls">
         <label className="field">

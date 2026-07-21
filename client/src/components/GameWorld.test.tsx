@@ -354,6 +354,17 @@ describe("GameWorld", () => {
     expect(screen.getByLabelText("우리 집 지도")).toBeInTheDocument();
   });
 
+  it("초대장 메뉴에서 간편 초대장 전환을 요청한다", () => {
+    const onOpenQuickView = vi.fn();
+    render(<GameWorld profile={profile} onOpenQuickView={onOpenQuickView} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "초대장 메뉴" }));
+    fireEvent.click(within(screen.getByRole("dialog", { name: "초대장 바로가기" }))
+      .getByRole("button", { name: "간편 초대장" }));
+
+    expect(onOpenQuickView).toHaveBeenCalledOnce();
+  });
+
   it("초대장 메뉴의 공유 시트를 열 때 월드 입력을 멈춘다", () => {
     render(<GameWorld profile={profile} />);
     const map = screen.getByTestId("world-map-viewport");

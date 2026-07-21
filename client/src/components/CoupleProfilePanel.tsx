@@ -31,6 +31,8 @@ export function CoupleProfilePanel() {
                 alt={photo.alt}
                 width={photo.width}
                 height={photo.height}
+                loading="lazy"
+                decoding="async"
               />
             ) : null}
             <p className="couple-profile-panel__message">{profile.message}</p>

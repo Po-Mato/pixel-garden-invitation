@@ -1,11 +1,17 @@
-import { cleanup, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { CoupleOrderProvider } from "./invitation/CoupleOrderContext";
 import { App } from "./App";
 
 vi.mock("./components/EntryScreen", () => ({
-  EntryScreen: ({ weddingDayPreview }: { weddingDayPreview?: boolean }) => (
-    <div data-wedding-day-preview={weddingDayPreview || undefined}>일반 입장 화면</div>
+  EntryScreen: ({
+    weddingDayPreview,
+    onQuickView
+  }: { weddingDayPreview?: boolean; onQuickView?: () => void }) => (
+    <div data-wedding-day-preview={weddingDayPreview || undefined}>
+      일반 입장 화면
+      <button type="button" onClick={onQuickView}>간편 모드 열기</button>
+    </div>
   )
 }));
 vi.mock("./components/GameWorld", () => ({
@@ -18,6 +24,11 @@ vi.mock("./components/RsvpAdminPage", () => ({
 }));
 vi.mock("./components/GuestbookAdminPage", () => ({
   GuestbookAdminPage: () => <div>방명록 관리자 화면</div>
+}));
+vi.mock("./components/QuickInvitation", () => ({
+  QuickInvitation: ({ onOpenGarden }: { onOpenGarden: () => void }) => (
+    <div>간편 초대장 화면<button type="button" onClick={onOpenGarden}>정원 열기</button></div>
+  )
 }));
 
 describe("App query routing", () => {
@@ -53,6 +64,29 @@ describe("App query routing", () => {
     render(<App />);
 
     expect(screen.getByText("일반 입장 화면")).toHaveAttribute("data-wedding-day-preview", "true");
+  });
+
+  it("직접 링크와 입장 화면 버튼에서 간편 초대장을 연다", async () => {
+    window.history.replaceState({}, "", "/?view=invitation#directions");
+    const direct = render(<App />);
+    expect(await screen.findByText("간편 초대장 화면")).toBeInTheDocument();
+    direct.unmount();
+
+    window.history.replaceState({}, "", "/");
+    render(<App />);
+    fireEvent.click(screen.getByRole("button", { name: "간편 모드 열기" }));
+
+    expect(await screen.findByText("간편 초대장 화면")).toBeInTheDocument();
+    expect(window.location.search).toBe("?view=invitation");
+  });
+
+  it("간편 초대장에서 입장 화면으로 돌아온다", async () => {
+    window.history.replaceState({}, "", "/?view=invitation");
+    render(<App />);
+    fireEvent.click(await screen.findByRole("button", { name: "정원 열기" }));
+
+    expect(screen.getByText("일반 입장 화면")).toBeInTheDocument();
+    expect(window.location.search).toBe("");
   });
 
   it("선택된 순서로 브라우저 문서 제목도 동기화한다", async () => {

@@ -49,7 +49,11 @@ import { WorldMapArtwork } from "./WorldMapArtwork";
 import { WorldDecoration } from "./WorldDecoration";
 import { WorldMiniMap } from "./WorldMiniMap";
 
-type GameWorldProps = { profile: EntryProfile; weddingDayPreview?: boolean };
+type GameWorldProps = {
+  profile: EntryProfile;
+  weddingDayPreview?: boolean;
+  onOpenQuickView?: () => void;
+};
 type RealtimeStatus = "offline" | "connecting" | "reconnecting" | "online" | "full";
 type MoveMessage = Extract<ClientMessage, { type: "move" }>;
 type RealtimeConnection = ReturnType<typeof connectRealtimeWithRetry>;
@@ -109,7 +113,7 @@ function realtimeStatusText(status: RealtimeStatus) {
   return "오프라인 정원";
 }
 
-export function GameWorld({ profile, weddingDayPreview = false }: GameWorldProps) {
+export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView }: GameWorldProps) {
   const initialZone = getWorldZone(gardenWorld, gardenWorld.defaultZoneId);
   const [activeZoneId, setActiveZoneId] = useState<WorldZoneId>(initialZone.id);
   const activeZone = getWorldZone(gardenWorld, activeZoneId);
@@ -1007,6 +1011,17 @@ export function GameWorld({ profile, weddingDayPreview = false }: GameWorldProps
               onFamilyContactOpen={openFamilyContacts}
             />
             <div className="world-menu-grid">
+              {onOpenQuickView ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    closeMenu();
+                    onOpenQuickView();
+                  }}
+                >
+                  간편 초대장
+                </button>
+              ) : null}
               {invitationContent.spots.map((item) => (
                 <button key={item.id} type="button" onClick={() => openSpot(item.id, true)}>{item.actionLabel}</button>
               ))}

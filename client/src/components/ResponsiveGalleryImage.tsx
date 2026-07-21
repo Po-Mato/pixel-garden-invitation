@@ -10,6 +10,7 @@ type ResponsiveGalleryImageProps = {
 
 export function ResponsiveGalleryImage({ photo, priority = false, sizes }: ResponsiveGalleryImageProps) {
   const [failed, setFailed] = useState(false);
+  const priorityAttribute = { fetchpriority: priority ? "high" : "auto" };
 
   if (failed) {
     return (
@@ -34,7 +35,7 @@ export function ResponsiveGalleryImage({ photo, priority = false, sizes }: Respo
       height={photo.height}
       alt={photo.alt}
       loading={priority ? "eager" : "lazy"}
-      fetchPriority={priority ? "high" : "auto"}
+      {...priorityAttribute}
       decoding="async"
       onError={() => setFailed(true)}
     />

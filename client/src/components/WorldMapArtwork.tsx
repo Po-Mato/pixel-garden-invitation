@@ -17,7 +17,7 @@ export function WorldMapArtwork({ zoneId, onLoadStateChange }: WorldMapArtworkPr
         src={visual.backgroundUrl}
         alt=""
         decoding="async"
-        fetchPriority="high"
+        {...{ fetchpriority: "high" }}
         loading="eager"
         draggable={false}
         onLoad={() => { onLoadStateChange?.(true); }}
