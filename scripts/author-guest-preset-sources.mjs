@@ -17,6 +17,7 @@ const minimumFrameWidthByDirection = {
   right: 30,
   up: 46
 };
+const lowerBodyHaloPresetIds = new Set(["masculine-green-blazer-cream-pants"]);
 
 function sourcePath(sourceRoot, manifestPath) {
   return join(sourceRoot, manifestPath.replace(/^character-assets\/source\//, ""));
@@ -149,6 +150,60 @@ async function clearPixelFrameHairBackground(input) {
   ]);
 }
 
+export function clearLowerBodyNeutralHalo(data, width, height) {
+  const lowerBodyTop = Math.floor(height * 0.72);
+  const clearOffsets = [];
+
+  for (let y = lowerBodyTop; y < height; y += 1) {
+    for (let x = 0; x < width; x += 1) {
+      const offset = (y * width + x) * 4;
+      if (data[offset + 3] === 0) continue;
+
+      const red = data[offset];
+      const green = data[offset + 1];
+      const blue = data[offset + 2];
+      const maximum = Math.max(red, green, blue);
+      const minimum = Math.min(red, green, blue);
+      if (minimum < 140 || maximum - minimum > 12) continue;
+
+      let touchesTransparency = false;
+      for (let deltaY = -1; deltaY <= 1 && !touchesTransparency; deltaY += 1) {
+        for (let deltaX = -1; deltaX <= 1; deltaX += 1) {
+          if (deltaX === 0 && deltaY === 0) continue;
+          const neighborX = x + deltaX;
+          const neighborY = y + deltaY;
+          if (
+            neighborX < 0 ||
+            neighborX >= width ||
+            neighborY < 0 ||
+            neighborY >= height ||
+            data[(neighborY * width + neighborX) * 4 + 3] === 0
+          ) {
+            touchesTransparency = true;
+            break;
+          }
+        }
+      }
+
+      if (touchesTransparency) clearOffsets.push(offset);
+    }
+  }
+
+  for (const offset of clearOffsets) {
+    data.fill(0, offset, offset + 4);
+  }
+  return clearOffsets.length;
+}
+
+async function cleanLowerBodyHalo(input) {
+  const { data, info } = await sharp(input)
+    .ensureAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  clearLowerBodyNeutralHalo(data, info.width, info.height);
+  return sharp(data, { raw: info }).png().toBuffer();
+}
+
 async function transparentSource(input) {
   const { data, info } = await sharp(input)
     .ensureAlpha()
@@ -270,7 +325,7 @@ export async function authorGuestPresetSources({
       const directionFrame = directionFrames.get(direction);
       const frames = [];
       for (let column = 0; column < catalog.frame.walk.columns; column += 1) {
-        frames.push(
+        const walkFrame =
           (await pixelizeWalkStepFrame(
             preset,
             presetIndex,
@@ -278,8 +333,10 @@ export async function authorGuestPresetSources({
             column,
             projectRoot,
             walkSourceRoot
-          )) ?? (await renderWalkStep(directionFrame, column))
-        );
+          )) ?? (await renderWalkStep(directionFrame, column));
+        const cleansLowerBodyHalo =
+          lowerBodyHaloPresetIds.has(preset.id) && (direction === "down" || direction === "up");
+        frames.push(cleansLowerBodyHalo ? await cleanLowerBodyHalo(walkFrame) : walkFrame);
       }
       walkFrames.set(direction, frames);
     }

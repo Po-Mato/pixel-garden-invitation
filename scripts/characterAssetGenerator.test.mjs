@@ -511,6 +511,29 @@ test("guest preset authoring uses explicit walk step source images when present"
   }
 });
 
+test("guest lower-body cleanup removes neutral edge halo without erasing cream clothes", async () => {
+  const width = 12;
+  const height = 12;
+  const data = Buffer.alloc(width * height * 4);
+  const setPixel = (x, y, color) => {
+    data.set([...color, 255], (y * width + x) * 4);
+  };
+
+  setPixel(2, 2, [220, 220, 220]);
+  setPixel(4, 10, [224, 224, 224]);
+  setPixel(5, 10, [249, 241, 224]);
+  setPixel(6, 10, [58, 34, 20]);
+
+  const { clearLowerBodyNeutralHalo } = await import("./author-guest-preset-sources.mjs");
+  const removed = clearLowerBodyNeutralHalo(data, width, height);
+
+  assert.equal(removed, 1);
+  assert.equal(alphaAt(data, { width, height }, 2, 2), 255);
+  assert.equal(alphaAt(data, { width, height }, 4, 10), 0);
+  assert.equal(alphaAt(data, { width, height }, 5, 10), 255);
+  assert.equal(alphaAt(data, { width, height }, 6, 10), 255);
+});
+
 test("npc source contract includes idle and four-direction walk sheets", async () => {
   await assert.doesNotReject(() =>
     validateDimensions("character-assets/source/npc/groom-idle.png", { width: 192, height: 144 })
