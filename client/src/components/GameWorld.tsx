@@ -31,6 +31,7 @@ import {
   type Point,
   type WorldPortal
 } from "../game/world";
+import { preloadWorldZoneAssets } from "../game/worldAssetPreloader";
 import { worldDepth } from "../game/worldVisuals";
 import { connectRealtimeWithRetry, createMoveThrottle, getRoomUrl } from "../realtime/realtimeClient";
 import type { EntryProfile } from "./EntryScreen";
@@ -286,6 +287,7 @@ export function GameWorld({ profile, weddingDayPreview = false }: GameWorldProps
   const beginPortalTransition = useCallback((portal: WorldPortal, approach: Point, _now: number) => {
     if (portalTransitionRef.current) return;
 
+    void preloadWorldZoneAssets(portal.to, "high");
     clearTerminalStopConfirm();
     const transition: PortalTransition = { portal, phase: "arrival" };
     const joystickWasMoving = joystickWasMovingRef.current;
@@ -353,6 +355,7 @@ export function GameWorld({ profile, weddingDayPreview = false }: GameWorldProps
 
   const handleJourneySelect = useCallback((zoneId: WorldZoneId) => {
     if (portalTransitionRef.current || zoneId === activeZoneIdRef.current) return;
+    void preloadWorldZoneAssets(zoneId, "high");
     closeMenu();
     setActiveSpotId(null);
     setInputReleaseRequired(false);
@@ -462,6 +465,17 @@ export function GameWorld({ profile, weddingDayPreview = false }: GameWorldProps
     document.addEventListener("keydown", handleEscape);
     return () => document.removeEventListener("keydown", handleEscape);
   }, [closeMenu, menuOpen, nestedMenuSheetOpen]);
+
+  useEffect(() => {
+    if (loadedBackgroundZoneId !== activeZone.id) return;
+
+    const timer = window.setTimeout(() => {
+      const connectedZoneIds = new Set(activeZone.portals.map((portal) => portal.to));
+      connectedZoneIds.forEach((zoneId) => { void preloadWorldZoneAssets(zoneId); });
+    }, 200);
+
+    return () => window.clearTimeout(timer);
+  }, [activeZone, loadedBackgroundZoneId]);
 
   useEffect(() => {
     return clearTerminalStopConfirm;
@@ -684,6 +698,7 @@ export function GameWorld({ profile, weddingDayPreview = false }: GameWorldProps
   function handlePortalClick(portalItem: WorldPortal) {
     if (portalTransitionRef.current) return;
 
+    void preloadWorldZoneAssets(portalItem.to, "high");
     clearTerminalStopConfirm();
     const route = findNearestPortalRoute(activeZone, positionRef.current, portalItem);
     setTarget(null);

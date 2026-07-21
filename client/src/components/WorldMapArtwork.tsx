@@ -16,6 +16,9 @@ export function WorldMapArtwork({ zoneId, onLoadStateChange }: WorldMapArtworkPr
         className="world-map-artwork__background"
         src={visual.backgroundUrl}
         alt=""
+        decoding="async"
+        fetchPriority="high"
+        loading="eager"
         draggable={false}
         onLoad={() => { onLoadStateChange?.(true); }}
         onError={(event) => {

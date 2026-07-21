@@ -83,6 +83,15 @@ describe("EntryScreen", () => {
     });
   });
 
+  it("starts loading the garden when nickname entry begins", () => {
+    const onEnterIntent = vi.fn();
+    render(<EntryScreen onEnter={vi.fn()} onEnterIntent={onEnterIntent} />);
+
+    fireEvent.focus(screen.getByLabelText("닉네임"));
+
+    expect(onEnterIntent).toHaveBeenCalled();
+  });
+
   it("submits nickname and customized appearance", () => {
     const onEnter = vi.fn();
     render(<EntryScreen onEnter={onEnter} />);

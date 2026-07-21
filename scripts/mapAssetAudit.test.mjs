@@ -6,7 +6,7 @@ import test from "node:test";
 import { fileURLToPath } from "node:url";
 import sharp from "sharp";
 import { auditMapAssets } from "./lib/mapAssetAudit.mjs";
-import { buildMapAssets } from "./lib/mapAssetBuilder.mjs";
+import { buildMapAssets, mapBackgroundWebpOptions } from "./lib/mapAssetBuilder.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -292,11 +292,7 @@ test("builds assets at exactly three percent aspect-ratio difference", async () 
     const overlayOutput = join(outputDir, "topiary-foreground.png");
     const backgroundMetadata = await sharp(backgroundOutput).metadata();
     const overlayMetadata = await sharp(overlayOutput).metadata();
-    const expectedBackground = await sharp(backgroundSource)
-      .resize({ width: 100, height: 100, fit: "cover", kernel: sharp.kernel.nearest })
-      .raw()
-      .toBuffer();
-    const actualBackground = await sharp(backgroundOutput).raw().toBuffer();
+    const backgroundFile = await readFile(backgroundOutput);
     const { data: overlayPixels } = await sharp(overlayOutput)
       .ensureAlpha()
       .raw()
@@ -305,7 +301,12 @@ test("builds assets at exactly three percent aspect-ratio difference", async () 
     assert.equal(backgroundMetadata.format, "webp");
     assert.equal(backgroundMetadata.width, 100);
     assert.equal(backgroundMetadata.height, 100);
-    assert.deepEqual(actualBackground, expectedBackground);
+    assert.deepEqual(mapBackgroundWebpOptions, {
+      quality: 92,
+      effort: 6,
+      smartSubsample: true
+    });
+    assert.ok(backgroundFile.byteLength < 100 * 100 * 3);
     assert.equal(overlayMetadata.format, "png");
     assert.equal(overlayMetadata.width, 100);
     assert.equal(overlayMetadata.height, 100);

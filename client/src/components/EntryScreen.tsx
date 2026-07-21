@@ -18,10 +18,11 @@ export type EntryProfile = {
 
 type EntryScreenProps = {
   onEnter: (profile: EntryProfile) => void;
+  onEnterIntent?: () => void;
   weddingDayPreview?: boolean;
 };
 
-export function EntryScreen({ onEnter, weddingDayPreview = false }: EntryScreenProps) {
+export function EntryScreen({ onEnter, onEnterIntent, weddingDayPreview = false }: EntryScreenProps) {
   const event = invitationContent.event;
   const coupleOrder = useCoupleOrder();
   const weddingYear = new Intl.DateTimeFormat("en", {
@@ -61,12 +62,23 @@ export function EntryScreen({ onEnter, weddingDayPreview = false }: EntryScreenP
       <div className="entry-screen__controls">
         <label className="field">
           <span>닉네임</span>
-          <input value={nickname} maxLength={16} onChange={(event) => setNickname(event.target.value)} />
+          <input
+            value={nickname}
+            maxLength={16}
+            onFocus={onEnterIntent}
+            onChange={(event) => {
+              onEnterIntent?.();
+              setNickname(event.target.value);
+            }}
+          />
         </label>
         <button
           className="primary-button"
           type="button"
           disabled={!canEnter}
+          onFocus={onEnterIntent}
+          onPointerEnter={onEnterIntent}
+          onPointerDown={onEnterIntent}
           onClick={enterGarden}
         >
           정원 입장

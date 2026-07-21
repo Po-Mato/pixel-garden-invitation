@@ -124,6 +124,18 @@ select {
   overflow: hidden;
 }
 
+.screen-loading {
+  display: grid;
+  min-height: 100%;
+  width: 100%;
+  place-items: center;
+  padding: 24px;
+  color: #486052;
+  background: #f6f8f4;
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
 .phone-frame:has(.entry-screen) {
   position: relative;
   border-color: #3f343d;

@@ -18,6 +18,7 @@ export function WorldDecoration({ zoneId, decoration }: WorldDecorationProps) {
       data-decoration-label={decoration.label}
       src={resolveWorldMapAsset(zoneId, decoration.asset)}
       alt=""
+      decoding="async"
       draggable={false}
       aria-hidden="true"
       style={{

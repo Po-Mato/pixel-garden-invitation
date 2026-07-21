@@ -26,17 +26,17 @@ describe("App query routing", () => {
     window.history.replaceState({}, "", "/");
   });
 
-  it("renders only the RSVP admin page for the exact admin query", () => {
+  it("renders only the RSVP admin page for the exact admin query", async () => {
     window.history.replaceState({}, "", "/?admin=rsvp");
     render(<App />);
-    expect(screen.getByText("참석 답변 관리자 화면")).toBeInTheDocument();
+    expect(await screen.findByText("참석 답변 관리자 화면")).toBeInTheDocument();
     expect(screen.queryByText("일반 입장 화면")).not.toBeInTheDocument();
   });
 
-  it("renders only the guestbook admin page for its exact admin query", () => {
+  it("renders only the guestbook admin page for its exact admin query", async () => {
     window.history.replaceState({}, "", "/?admin=guestbook");
     render(<App />);
-    expect(screen.getByText("방명록 관리자 화면")).toBeInTheDocument();
+    expect(await screen.findByText("방명록 관리자 화면")).toBeInTheDocument();
     expect(screen.queryByText("일반 입장 화면")).not.toBeInTheDocument();
   });
 

@@ -2,6 +2,12 @@ import { access, mkdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import sharp from "sharp";
 
+export const mapBackgroundWebpOptions = Object.freeze({
+  quality: 92,
+  effort: 6,
+  smartSubsample: true
+});
+
 async function requireFile(file) {
   try {
     await access(file);
@@ -39,7 +45,7 @@ async function buildZone(rootDir, zone) {
       fit: "cover",
       kernel: sharp.kernel.nearest
     })
-    .webp({ lossless: true })
+    .webp(mapBackgroundWebpOptions)
     .toFile(backgroundOutput);
 
   const files = [backgroundOutput];
