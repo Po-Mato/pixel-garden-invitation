@@ -1,6 +1,7 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import type { WeddingEvent } from "@wedding-game/shared";
 import { afterEach, expect, it, vi } from "vitest";
+import { CoupleOrderProvider } from "../invitation/CoupleOrderContext";
 import { FamilyContactSheet } from "./FamilyContactSheet";
 
 const populatedContacts: WeddingEvent["familyContacts"] = {
@@ -53,4 +54,16 @@ it("유효한 연락처만 표시하고 휴대전화에 전화·문자 동작을
 
   fireEvent.click(screen.getByRole("tab", { name: "신부 측" }));
   expect(screen.getByText("신부 이건희")).toBeInTheDocument();
+});
+
+it("신랑 우선 세션에서는 신랑 측을 첫 탭과 기본 패널로 사용한다", () => {
+  render(
+    <CoupleOrderProvider initialOrder="groom-first">
+      <FamilyContactSheet onClose={vi.fn()} familyContacts={populatedContacts} />
+    </CoupleOrderProvider>
+  );
+
+  expect(screen.getAllByRole("tab").map((tab) => tab.textContent)).toEqual(["신랑 측", "신부 측"]);
+  expect(screen.getByRole("tab", { name: "신랑 측" })).toHaveAttribute("aria-selected", "true");
+  expect(screen.getByText("신랑 이승재")).toBeInTheDocument();
 });

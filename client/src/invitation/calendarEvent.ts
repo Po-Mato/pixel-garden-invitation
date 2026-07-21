@@ -1,4 +1,10 @@
 import type { WeddingEvent } from "@wedding-game/shared";
+import {
+  defaultCoupleDisplayOrder,
+  formatCoupleNames,
+  formatWeddingTitle,
+  type CoupleDisplayOrder
+} from "./coupleOrder";
 
 const encoder = new TextEncoder();
 
@@ -53,12 +59,8 @@ function locationText(event: WeddingEvent): string {
   return `${formatVenueLabel(event)}, ${event.venue.address}`;
 }
 
-function descriptionText(event: WeddingEvent): string {
-  return `${formatCoupleNames(event)}의 결혼식에 초대합니다.\n${formatEventDate(event)} ${formatEventTimeRange(event)}`;
-}
-
-export function formatCoupleNames(event: WeddingEvent, separator = " · "): string {
-  return `${event.couple.bride}${separator}${event.couple.groom}`;
+function descriptionText(event: WeddingEvent, order: CoupleDisplayOrder): string {
+  return `${formatCoupleNames(event, order)}의 결혼식에 초대합니다.\n${formatEventDate(event)} ${formatEventTimeRange(event)}`;
 }
 
 export function validateWeddingEvent(event: WeddingEvent): void {
@@ -100,17 +102,24 @@ export function formatVenueLabel(event: WeddingEvent): string {
   return `${event.venue.name} ${event.venue.hall}`;
 }
 
-export function buildEventCopyText(event: WeddingEvent): string {
+export function buildEventCopyText(
+  event: WeddingEvent,
+  order: CoupleDisplayOrder = defaultCoupleDisplayOrder
+): string {
   validateWeddingEvent(event);
   return [
-    event.title,
+    formatWeddingTitle(event, order),
     `${formatEventDate(event)} ${formatEventTimeRange(event)}`,
     formatVenueLabel(event),
     event.venue.address
   ].join("\n");
 }
 
-export function buildIcs(event: WeddingEvent, generatedAt = new Date()): string {
+export function buildIcs(
+  event: WeddingEvent,
+  generatedAt = new Date(),
+  order: CoupleDisplayOrder = defaultCoupleDisplayOrder
+): string {
   validateWeddingEvent(event);
   const start = utcStamp(eventDate(event.startAt));
   const rawLines = [
@@ -123,9 +132,9 @@ export function buildIcs(event: WeddingEvent, generatedAt = new Date()): string 
     `DTSTAMP:${utcStamp(generatedAt)}`,
     `DTSTART:${start}`,
     `DTEND:${utcStamp(eventDate(event.endAt))}`,
-    `SUMMARY:${escapeIcsText(event.title)}`,
+    `SUMMARY:${escapeIcsText(formatWeddingTitle(event, order))}`,
     `LOCATION:${escapeIcsText(locationText(event))}`,
-    `DESCRIPTION:${escapeIcsText(descriptionText(event))}`,
+    `DESCRIPTION:${escapeIcsText(descriptionText(event, order))}`,
     "END:VEVENT",
     "END:VCALENDAR"
   ];
@@ -133,13 +142,16 @@ export function buildIcs(event: WeddingEvent, generatedAt = new Date()): string 
   return `${rawLines.flatMap(foldIcsLine).join("\r\n")}\r\n`;
 }
 
-export function buildGoogleCalendarUrl(event: WeddingEvent): string {
+export function buildGoogleCalendarUrl(
+  event: WeddingEvent,
+  order: CoupleDisplayOrder = defaultCoupleDisplayOrder
+): string {
   validateWeddingEvent(event);
   const url = new URL("https://calendar.google.com/calendar/render");
   url.searchParams.set("action", "TEMPLATE");
-  url.searchParams.set("text", event.title);
+  url.searchParams.set("text", formatWeddingTitle(event, order));
   url.searchParams.set("dates", `${utcStamp(eventDate(event.startAt))}/${utcStamp(eventDate(event.endAt))}`);
-  url.searchParams.set("details", descriptionText(event));
+  url.searchParams.set("details", descriptionText(event, order));
   url.searchParams.set("location", locationText(event));
   return url.toString();
 }

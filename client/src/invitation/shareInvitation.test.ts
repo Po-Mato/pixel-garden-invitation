@@ -24,4 +24,15 @@ describe("초대장 공유 데이터", () => {
       `${invitationPublicUrl}?preview=wedding-day&admin=rsvp#private`
     )).toBe(invitationPublicUrl);
   });
+
+  it("신랑 우선 세션에서는 공유 제목과 본문도 신랑 이름부터 구성한다", () => {
+    expect(buildInvitationShareData(
+      invitationContent.event,
+      invitationPublicUrl,
+      "groom-first"
+    )).toMatchObject({
+      title: "이승재 · 이건희 결혼식",
+      text: expect.stringMatching(/^이승재 · 이건희의 결혼식/)
+    });
+  });
 });

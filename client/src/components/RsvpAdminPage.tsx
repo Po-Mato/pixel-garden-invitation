@@ -15,6 +15,8 @@ import {
   WeddingApiError,
   type AdminSession
 } from "../api/weddingApi";
+import { useCoupleOrder } from "../invitation/CoupleOrderContext";
+import { coupleSides } from "../invitation/coupleOrder";
 import { downloadRsvpCsv } from "../invitation/rsvpCsv";
 import { clearAdminSession, loadAdminSession, saveAdminSession } from "../invitation/rsvpStorage";
 
@@ -68,6 +70,8 @@ function errorMessage(error: unknown, fallback: string): string {
 
 export function RsvpAdminPage() {
   const id = invitationId();
+  const coupleOrder = useCoupleOrder();
+  const sideOrder = coupleSides(coupleOrder);
   const mountedRef = useRef(false);
   const sessionRef = useRef<AdminSession | null>(null);
   const loginBusyRef = useRef(false);
@@ -479,7 +483,22 @@ export function RsvpAdminPage() {
                   <span>검색</span>
                   <span><Search aria-hidden="true" /><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="이름 또는 연락처" /></span>
                 </label>
-                <label><span>대상</span><select aria-label="대상 필터" value={side} onChange={(event) => setSide(event.target.value as FilterValue<RsvpRecordSide>)}><option value="all">전체</option><option value="bride">신부측</option><option value="groom">신랑측</option><option value="legacy">기존</option></select></label>
+                <label>
+                  <span>대상</span>
+                  <select
+                    aria-label="대상 필터"
+                    value={side}
+                    onChange={(event) => setSide(event.target.value as FilterValue<RsvpRecordSide>)}
+                  >
+                    <option value="all">전체</option>
+                    {sideOrder.map((weddingSide) => (
+                      <option key={weddingSide} value={weddingSide}>
+                        {weddingSide === "bride" ? "신부측" : "신랑측"}
+                      </option>
+                    ))}
+                    <option value="legacy">기존</option>
+                  </select>
+                </label>
                 <label><span>참석</span><select aria-label="참석 필터" value={attendance} onChange={(event) => setAttendance(event.target.value as FilterValue<RsvpAttendance>)}><option value="all">전체</option><option value="yes">참석</option><option value="no">불참</option><option value="unsure">미정</option></select></label>
                 <label><span>식사</span><select aria-label="식사 필터" value={meal} onChange={(event) => setMeal(event.target.value as FilterValue<RsvpMealStatus>)}><option value="all">전체</option><option value="yes">식사 예정</option><option value="no">식사 안 함</option><option value="unsure">미정</option><option value="not_applicable">해당 없음</option></select></label>
                 <button type="button" className="rsvp-admin-secondary" onClick={resetFilters}>필터 초기화</button>

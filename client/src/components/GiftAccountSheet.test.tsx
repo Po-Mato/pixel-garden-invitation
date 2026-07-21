@@ -2,6 +2,7 @@ import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-li
 import type { WeddingEvent } from "@wedding-game/shared";
 import { afterEach, expect, it, vi } from "vitest";
 import { copyText } from "../invitation/browserActions";
+import { CoupleOrderProvider } from "../invitation/CoupleOrderContext";
 import { GiftAccountSheet } from "./GiftAccountSheet";
 
 vi.mock("../invitation/browserActions", () => ({ copyText: vi.fn() }));
@@ -127,4 +128,16 @@ it("계좌번호를 복사하고 실패 시에도 직접 복사할 수 있게 �
   fireEvent.click(copyButton);
   expect(await screen.findByText("복사하지 못했습니다. 계좌번호를 길게 눌러 복사해주세요.")).toBeInTheDocument();
   await waitFor(() => expect(screen.getByText("123-456-789")).toBeInTheDocument());
+});
+
+it("신랑 우선 세션에서는 신랑 측을 첫 탭과 기본 계좌로 사용한다", () => {
+  render(
+    <CoupleOrderProvider initialOrder="groom-first">
+      <GiftAccountSheet onClose={vi.fn()} giftAccounts={populatedGiftAccounts} />
+    </CoupleOrderProvider>
+  );
+
+  expect(screen.getAllByRole("tab").map((tab) => tab.textContent)).toEqual(["신랑 측", "신부 측"]);
+  expect(screen.getByRole("tab", { name: "신랑 측" })).toHaveAttribute("aria-selected", "true");
+  expect(screen.getByText("신랑 이승재")).toBeInTheDocument();
 });

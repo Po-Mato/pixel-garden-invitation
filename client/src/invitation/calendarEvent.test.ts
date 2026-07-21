@@ -79,6 +79,19 @@ describe("wedding calendar event", () => {
     expect(url.searchParams.get("location")).toContain(event.venue.address);
   });
 
+  it("선택된 신랑 우선 순서를 복사·ICS·Google 캘린더에 동일하게 적용한다", () => {
+    const copyText = buildEventCopyText(event, "groom-first");
+    const ics = buildIcs(event, new Date("2026-07-20T00:00:00Z"), "groom-first")
+      .replace(/\r\n /g, "");
+    const googleUrl = new URL(buildGoogleCalendarUrl(event, "groom-first"));
+
+    expect(copyText).toMatch(/^이승재 · 이건희 결혼식/);
+    expect(ics).toContain("SUMMARY:이승재 · 이건희 결혼식");
+    expect(ics).toContain("DESCRIPTION:이승재 · 이건희의 결혼식에 초대합니다.");
+    expect(googleUrl.searchParams.get("text")).toBe("이승재 · 이건희 결혼식");
+    expect(googleUrl.searchParams.get("details")).toContain("이승재 · 이건희의 결혼식");
+  });
+
   it("rejects invalid or reversed dates", () => {
     expect(() => validateWeddingEvent({ ...event, startAt: "invalid" })).toThrow("유효한 예식 시작 시각");
     expect(() => validateWeddingEvent({ ...event, endAt: event.startAt })).toThrow("종료 시각");

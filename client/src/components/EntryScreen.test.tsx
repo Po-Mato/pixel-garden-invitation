@@ -1,6 +1,7 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { defaultCharacterAppearance, invitationContent } from "@wedding-game/shared";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { CoupleOrderProvider } from "../invitation/CoupleOrderContext";
 import { EntryScreen } from "./EntryScreen";
 
 afterEach(() => {
@@ -25,6 +26,16 @@ describe("EntryScreen", () => {
     fireEvent.click(screen.getByRole("button", { name: "오시는 길" }));
 
     expect(screen.getByRole("dialog", { name: "오시는 길" })).toBeInTheDocument();
+  });
+
+  it("신랑 우선 세션에서는 입장 제목도 신랑 이름부터 표시한다", () => {
+    render(
+      <CoupleOrderProvider initialOrder="groom-first">
+        <EntryScreen onEnter={vi.fn()} />
+      </CoupleOrderProvider>
+    );
+
+    expect(screen.getByRole("heading", { name: "이승재 & 이건희의 정원" })).toBeInTheDocument();
   });
 
   it("opens calendar choices without requiring a nickname", () => {

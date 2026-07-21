@@ -1,6 +1,7 @@
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { RsvpSubmission } from "@wedding-game/shared";
+import { CoupleOrderProvider } from "../invitation/CoupleOrderContext";
 import { RsvpForm } from "./RsvpForm";
 
 const policy = {
@@ -56,6 +57,19 @@ describe("RsvpForm", () => {
       note: "축하합니다",
       consentVersion: "2026-07-20"
     } satisfies RsvpSubmission));
+  });
+
+  it("신랑 우선 세션에서는 신랑측을 첫 선택이자 기본값으로 사용한다", () => {
+    render(
+      <CoupleOrderProvider initialOrder="groom-first">
+        <RsvpForm policy={policy} submitLabel="보내기" onSubmit={vi.fn()} />
+      </CoupleOrderProvider>
+    );
+
+    const sideGroup = screen.getByRole("radiogroup", { name: "어느 분의 하객인가요?" });
+    expect(Array.from(sideGroup.querySelectorAll("input")).map((input) => input.value))
+      .toEqual(["groom", "bride"]);
+    expect(within(sideGroup).getByLabelText("신랑측")).toBeChecked();
   });
 
   it("normalizes declined and unsure conditional fields", async () => {

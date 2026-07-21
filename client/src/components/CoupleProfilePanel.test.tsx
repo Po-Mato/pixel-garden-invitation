@@ -1,6 +1,7 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import { invitationContent } from "@wedding-game/shared";
 import { afterEach, describe, expect, it } from "vitest";
+import { CoupleOrderProvider } from "../invitation/CoupleOrderContext";
 import { resolveGalleryAssetPath } from "../invitation/galleryAssets";
 import { CoupleProfilePanel } from "./CoupleProfilePanel";
 
@@ -36,5 +37,17 @@ describe("신랑신부 소개 패널", () => {
       expect(Array.from(sections[index].querySelectorAll("p")).filter((element) => element.textContent === profile.roleLabel))
         .toHaveLength(1);
     });
+  });
+
+  it("신랑 우선 세션에서는 신랑 소개를 먼저 배치한다", () => {
+    render(
+      <CoupleOrderProvider initialOrder="groom-first">
+        <CoupleProfilePanel />
+      </CoupleOrderProvider>
+    );
+
+    expect(screen.getAllByRole("region", { name: /신랑 이승재|신부 이건희/ })
+      .map((section) => section.getAttribute("aria-label")))
+      .toEqual(["신랑 이승재", "신부 이건희"]);
   });
 });

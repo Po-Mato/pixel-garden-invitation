@@ -1,12 +1,18 @@
 import { invitationContent } from "@wedding-game/shared";
+import { useCoupleOrder } from "../invitation/CoupleOrderContext";
+import { coupleSides } from "../invitation/coupleOrder";
 import { resolveGalleryAssetPath } from "../invitation/galleryAssets";
 
 export function CoupleProfilePanel() {
   const { coupleMessage, coupleProfiles, gallery } = invitationContent.content;
+  const coupleOrder = useCoupleOrder();
+  const orderedProfiles = coupleSides(coupleOrder).flatMap((side) => (
+    coupleProfiles.filter((profile) => profile.role === side)
+  ));
 
   return (
     <div className="couple-profile-panel">
-      {coupleProfiles.map((profile) => {
+      {orderedProfiles.map((profile) => {
         const photo = gallery.find((candidate) => candidate.id === profile.photoId);
         const sectionLabel = `${profile.roleLabel} ${profile.name}`;
 

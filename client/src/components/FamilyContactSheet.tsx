@@ -6,6 +6,8 @@ import {
   type WeddingFamilyContact
 } from "@wedding-game/shared";
 import { buildFamilyContactLinks } from "../invitation/familyContactLinks";
+import { useCoupleOrder } from "../invitation/CoupleOrderContext";
+import { coupleSides } from "../invitation/coupleOrder";
 import { BottomSheet } from "./BottomSheet";
 
 type FamilyContactSheetProps = {
@@ -23,7 +25,9 @@ export function FamilyContactSheet({
   onClose,
   familyContacts = invitationContent.event.familyContacts
 }: FamilyContactSheetProps) {
-  const [activeSide, setActiveSide] = useState<WeddingSide>("bride");
+  const coupleOrder = useCoupleOrder();
+  const sideOrder = coupleSides(coupleOrder);
+  const [activeSide, setActiveSide] = useState<WeddingSide>(sideOrder[0]);
   const contacts = useMemo(
     () => familyContacts.contacts
       .filter((contact) => contact.side === activeSide)
@@ -41,7 +45,7 @@ export function FamilyContactSheet({
         </div>
 
         <div className="family-contact-sheet__tabs" role="tablist" aria-label="연락처 구분">
-          {(["bride", "groom"] as const).map((side) => {
+          {sideOrder.map((side) => {
             const label = side === "groom" ? "신랑 측" : "신부 측";
             return (
               <button

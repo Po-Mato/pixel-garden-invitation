@@ -7,11 +7,12 @@ import {
   shareContent
 } from "../invitation/browserActions";
 import {
-  formatCoupleNames,
   formatEventDate,
   formatEventStartTime,
   formatVenueLabel
 } from "../invitation/calendarEvent";
+import { useCoupleOrder } from "../invitation/CoupleOrderContext";
+import { formatCoupleNames, formatWeddingTitle } from "../invitation/coupleOrder";
 import {
   buildInvitationShareData,
   invitationPublicUrl
@@ -47,9 +48,10 @@ export function InvitationShareAccess({
 }: InvitationShareAccessProps) {
   const [open, setOpen] = useState(false);
   const [status, setStatus] = useState<ShareStatus>("idle");
+  const coupleOrder = useCoupleOrder();
   const nativeShareSupported = typeof navigator.share === "function";
   const busy = status === "sharing";
-  const data = buildInvitationShareData(event, canonicalShareUrl());
+  const data = buildInvitationShareData(event, canonicalShareUrl(), coupleOrder);
 
   const setVisibility = (visible: boolean) => {
     setOpen(visible);
@@ -100,8 +102,8 @@ export function InvitationShareAccess({
           <div className="invitation-share-sheet">
             <section className="invitation-share-sheet__preview">
               <span>WEDDING INVITATION</span>
-              <strong>{formatCoupleNames(event)}</strong>
-              <p>{event.title}</p>
+              <strong>{formatCoupleNames(event, coupleOrder)}</strong>
+              <p>{formatWeddingTitle(event, coupleOrder)}</p>
             </section>
 
             <section className="invitation-share-sheet__detail">

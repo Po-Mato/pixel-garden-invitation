@@ -2,6 +2,7 @@ import { useState } from "react";
 import { CalendarPlus, Copy, ExternalLink } from "lucide-react";
 import { invitationContent } from "@wedding-game/shared";
 import { copyText, downloadIcs } from "../invitation/browserActions";
+import { useCoupleOrder } from "../invitation/CoupleOrderContext";
 import { buildEventCopyText, buildGoogleCalendarUrl, buildIcs } from "../invitation/calendarEvent";
 import { BottomSheet } from "./BottomSheet";
 
@@ -13,7 +14,8 @@ type ActionStatus = "idle" | "downloading" | "copying" | "copied" | "copy-error"
 
 export function CalendarSaveSheet({ onClose }: CalendarSaveSheetProps) {
   const event = invitationContent.event;
-  const eventText = buildEventCopyText(event);
+  const coupleOrder = useCoupleOrder();
+  const eventText = buildEventCopyText(event, coupleOrder);
   const [status, setStatus] = useState<ActionStatus>("idle");
   const busy = status === "downloading" || status === "copying";
 
@@ -36,7 +38,7 @@ export function CalendarSaveSheet({ onClose }: CalendarSaveSheetProps) {
     setStatus("downloading");
 
     try {
-      downloadIcs(buildIcs(event));
+      downloadIcs(buildIcs(event, new Date(), coupleOrder));
       setStatus("idle");
     } catch {
       setStatus("download-error");
@@ -51,7 +53,7 @@ export function CalendarSaveSheet({ onClose }: CalendarSaveSheetProps) {
           <span>기본 캘린더에 저장</span>
         </button>
         <a
-          href={buildGoogleCalendarUrl(event)}
+          href={buildGoogleCalendarUrl(event, coupleOrder)}
           target="_blank"
           rel="noreferrer"
           aria-label="Google 캘린더에서 열기"

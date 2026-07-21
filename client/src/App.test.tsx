@@ -1,5 +1,6 @@
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { CoupleOrderProvider } from "./invitation/CoupleOrderContext";
 import { App } from "./App";
 
 vi.mock("./components/EntryScreen", () => ({
@@ -52,5 +53,15 @@ describe("App query routing", () => {
     render(<App />);
 
     expect(screen.getByText("일반 입장 화면")).toHaveAttribute("data-wedding-day-preview", "true");
+  });
+
+  it("선택된 순서로 브라우저 문서 제목도 동기화한다", async () => {
+    render(
+      <CoupleOrderProvider initialOrder="groom-first">
+        <App />
+      </CoupleOrderProvider>
+    );
+
+    await waitFor(() => expect(document.title).toBe("이승재 · 이건희 결혼식 | 2027.05.01"));
   });
 });

@@ -5,7 +5,8 @@ import {
   type CharacterAppearance
 } from "@wedding-game/shared";
 import { loadAppearance, saveAppearance } from "../character/storage";
-import { formatCoupleNames } from "../invitation/calendarEvent";
+import { useCoupleOrder } from "../invitation/CoupleOrderContext";
+import { formatCoupleNames } from "../invitation/coupleOrder";
 import { CharacterCustomizer } from "./CharacterCustomizer";
 import { FamilyContactSheet } from "./FamilyContactSheet";
 import { WeddingEventSummary } from "./WeddingEventSummary";
@@ -22,6 +23,7 @@ type EntryScreenProps = {
 
 export function EntryScreen({ onEnter, weddingDayPreview = false }: EntryScreenProps) {
   const event = invitationContent.event;
+  const coupleOrder = useCoupleOrder();
   const weddingYear = new Intl.DateTimeFormat("en", {
     year: "numeric",
     timeZone: event.timeZone
@@ -47,7 +49,7 @@ export function EntryScreen({ onEnter, weddingDayPreview = false }: EntryScreenP
       </div>
       <header className="entry-screen__header">
         <p>WEDDING GARDEN · {weddingYear}</p>
-        <h1>{formatCoupleNames(event, " & ")}의 정원</h1>
+        <h1>{formatCoupleNames(event, coupleOrder, " & ")}의 정원</h1>
         <span>정원에 입장할 하객 캐릭터를 선택해주세요.</span>
       </header>
       <WeddingEventSummary

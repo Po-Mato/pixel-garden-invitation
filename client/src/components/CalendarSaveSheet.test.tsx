@@ -1,6 +1,7 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { copyText, downloadIcs } from "../invitation/browserActions";
+import { CoupleOrderProvider } from "../invitation/CoupleOrderContext";
 import { CalendarSaveSheet } from "./CalendarSaveSheet";
 
 vi.mock("../invitation/browserActions", () => ({
@@ -37,6 +38,20 @@ describe("CalendarSaveSheet", () => {
     fireEvent.click(screen.getByRole("button", { name: "일정 내용 복사" }));
     expect(await screen.findByText("복사하지 못했습니다. 내용을 길게 눌러 복사해주세요.")).toBeInTheDocument();
     expect(screen.getByText(/MJ컨벤션 5층 파티오볼룸/)).toBeInTheDocument();
+  });
+
+  it("신랑 우선 세션의 순서를 미리보기와 Google 캘린더에 유지한다", () => {
+    render(
+      <CoupleOrderProvider initialOrder="groom-first">
+        <CalendarSaveSheet onClose={vi.fn()} />
+      </CoupleOrderProvider>
+    );
+
+    expect(screen.getByText(/이승재 · 이건희 결혼식/)).toBeInTheDocument();
+    const googleUrl = new URL(
+      screen.getByRole("link", { name: "Google 캘린더에서 열기" }).getAttribute("href") ?? ""
+    );
+    expect(googleUrl.searchParams.get("text")).toBe("이승재 · 이건희 결혼식");
   });
 
   it("downloads one calendar file and reports download failures", () => {

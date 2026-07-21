@@ -6,6 +6,7 @@ import {
   shareContent
 } from "../invitation/browserActions";
 import { invitationPublicUrl } from "../invitation/shareInvitation";
+import { CoupleOrderProvider } from "../invitation/CoupleOrderContext";
 import { InvitationShareAccess } from "./InvitationShareAccess";
 
 vi.mock("../invitation/browserActions", () => ({
@@ -54,6 +55,25 @@ describe("InvitationShareAccess", () => {
       title: "이건희 · 이승재 결혼식",
       text: expect.stringContaining("오후 5시 10분"),
       url: invitationPublicUrl
+    }));
+    expect(await screen.findByText("공유 앱으로 초대장을 전달했습니다.")).toBeInTheDocument();
+  });
+
+  it("신랑 우선 세션에서는 시트와 시스템 공유 데이터 순서를 함께 바꾼다", async () => {
+    render(
+      <CoupleOrderProvider initialOrder="groom-first">
+        <InvitationShareAccess variant="menu" />
+      </CoupleOrderProvider>
+    );
+    fireEvent.click(screen.getByRole("button", { name: "초대장 공유" }));
+
+    expect(screen.getByRole("dialog", { name: "초대장 공유" }))
+      .toHaveTextContent("이승재 · 이건희 결혼식");
+    fireEvent.click(screen.getByRole("button", { name: "공유 앱 선택" }));
+
+    expect(shareContent).toHaveBeenCalledWith(expect.objectContaining({
+      title: "이승재 · 이건희 결혼식",
+      text: expect.stringMatching(/^이승재 · 이건희의 결혼식/)
     }));
     expect(await screen.findByText("공유 앱으로 초대장을 전달했습니다.")).toBeInTheDocument();
   });
