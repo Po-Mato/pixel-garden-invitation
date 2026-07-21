@@ -23,7 +23,8 @@ const migrationFiles = [
   "0003_production_rsvp.sql",
   "0004_rsvp_consent_policy.sql",
   "0005_production_guestbook.sql",
-  "0006_admin_notifications.sql"
+  "0006_admin_notifications.sql",
+  "0007_admin_notification_email_queue.sql"
 ] as const;
 
 const expectedInvitation = {
@@ -156,7 +157,6 @@ describe("invitation migrations", () => {
         INSERT INTO rsvps (id, invitation_id, side, guest_name, phone, attendance, party_size, meal_status, note, consent_version, consented_at, edit_token_hash)
         VALUES ('rsvp_absent', 'sample-garden', 'groom', '불참 하객', '01012345678', 'no', 0, 'not_applicable', '', '2026-07-20', '2027-04-20T00:00:00.000Z', 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
       `)).not.toThrow();
-
       expect(() => database.exec(`
         INSERT INTO rsvps (id, invitation_id, side, guest_name, phone, attendance, party_size, meal_status, note, consent_version, consented_at, edit_token_hash)
         VALUES ('rsvp_attending_zero', 'sample-garden', 'groom', '참석 하객', '01012345678', 'yes', 0, 'yes', '', '2026-07-20', '2027-04-20T00:00:00.000Z', 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
@@ -354,6 +354,24 @@ describe("invitation migrations", () => {
           '2026-07-21T00:00:00.000Z', '2027-05-31T14:59:59.000Z'
         )
       `)).not.toThrow();
+      expect(() => database.exec(`
+        INSERT INTO admin_notifications (
+          id, invitation_id, event_key, kind, source_id, title, body, created_at, expires_at
+        ) VALUES (
+          'notification_event_1', 'sample-garden', 'rsvp_created:rsvp_1:1', 'rsvp_created', 'rsvp_1',
+          '새 참석 답변', '김하객 · 신부측 · 참석',
+          '2026-07-21T00:00:01.000Z', '2027-05-31T14:59:59.000Z'
+        )
+      `)).not.toThrow();
+      expect(() => database.exec(`
+        INSERT INTO admin_notifications (
+          id, invitation_id, event_key, kind, source_id, title, body, created_at, expires_at
+        ) VALUES (
+          'notification_event_2', 'sample-garden', 'rsvp_created:rsvp_1:1', 'rsvp_created', 'rsvp_1',
+          '새 참석 답변', '김하객 · 신부측 · 참석',
+          '2026-07-21T00:00:02.000Z', '2027-05-31T14:59:59.000Z'
+        )
+      `)).toThrow(/UNIQUE constraint failed/);
       expect(() => database.exec(`
         INSERT INTO admin_notifications (
           id, invitation_id, kind, source_id, title, body, created_at, expires_at

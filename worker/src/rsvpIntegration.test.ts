@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { createRequire } from "node:module";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import { handleApiRequest } from "./http";
 import type { Env } from "./index";
@@ -29,7 +29,8 @@ const migrationFiles = [
   "0002_update_invitation_details.sql",
   "0003_production_rsvp.sql",
   "0004_rsvp_consent_policy.sql",
-  "0006_admin_notifications.sql"
+  "0006_admin_notifications.sql",
+  "0007_admin_notification_email_queue.sql"
 ] as const;
 
 function applyMigrations(database: SqliteDatabase): void {
@@ -131,11 +132,19 @@ describe("RSVP API with migrated SQLite through a D1 adapter", () => {
       const notifications = await notificationsResponse.json() as {
         unreadCount: number;
         emailConfigured: boolean;
-        notifications: Array<{ id: string; kind: string; sourceId: string; readAt: string | null }>;
+        emailPendingCount: number;
+        emailFailedCount: number;
+        notifications: Array<{ id: string; kind: string; sourceId: string; readAt: string | null; emailStatus: string }>;
       };
 
       expect(notificationsResponse.status).toBe(200);
-      expect(notifications).toMatchObject({ unreadCount: 2, emailConfigured: false });
+      expect(notifications).toMatchObject({
+        unreadCount: 2,
+        emailConfigured: false,
+        emailPendingCount: 2,
+        emailFailedCount: 0
+      });
+      expect(notifications.notifications.every(({ emailStatus }) => emailStatus === "pending")).toBe(true);
       expect(notifications.notifications.map(({ kind }) => kind)).toEqual(["rsvp_updated", "rsvp_created"]);
       expect(notifications.notifications.every(({ sourceId }) => sourceId === created.response.id)).toBe(true);
 
@@ -157,6 +166,43 @@ describe("RSVP API with migrated SQLite through a D1 adapter", () => {
       expect(markResponse.status).toBe(200);
       expect(marked.unreadCount).toBe(1);
       expect(marked.notifications.find(({ id }) => id === notifications.notifications[0].id)?.readAt).toEqual(expect.any(String));
+
+      const retryWithoutEmail = await handleApiRequest(new Request(
+        "https://worker.test/api/invitations/sample-garden/admin/notifications",
+        {
+          method: "PATCH",
+          headers: {
+            authorization: `Bearer ${adminToken}`,
+            "content-type": "application/json"
+          },
+          body: JSON.stringify({ retryEmail: true })
+        }
+      ), env, "sqlite-notification-retry-disabled");
+      expect(retryWithoutEmail.status).toBe(409);
+
+      database.exec(`
+        UPDATE admin_notifications
+        SET email_attempts = 5, email_error = 'E_SENDER_NOT_VERIFIED: configure sender'
+      `);
+      const send = vi.fn().mockResolvedValue({ messageId: "message_retry" });
+      env.EMAIL = { send } as unknown as SendEmail;
+      env.ADMIN_NOTIFICATION_EMAIL_TO = "admin@example.com";
+      env.ADMIN_NOTIFICATION_EMAIL_FROM = "invitation@example.test";
+      const retriedResponse = await handleApiRequest(new Request(
+        "https://worker.test/api/invitations/sample-garden/admin/notifications",
+        {
+          method: "PATCH",
+          headers: {
+            authorization: `Bearer ${adminToken}`,
+            "content-type": "application/json"
+          },
+          body: JSON.stringify({ retryEmail: true })
+        }
+      ), env, "sqlite-notification-retry-enabled");
+      const retried = await retriedResponse.json() as { emailPendingCount: number; emailFailedCount: number };
+      expect(retriedResponse.status).toBe(200);
+      expect(retried).toMatchObject({ emailPendingCount: 0, emailFailedCount: 0 });
+      expect(send).toHaveBeenCalledTimes(2);
     } finally {
       database.close();
     }

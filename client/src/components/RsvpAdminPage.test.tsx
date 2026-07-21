@@ -9,6 +9,7 @@ const api = vi.hoisted(() => ({
   createAdminSession: vi.fn(),
   fetchAdminNotifications: vi.fn(),
   markAdminNotificationsRead: vi.fn(),
+  retryFailedAdminNotificationEmails: vi.fn(),
   fetchAdminRsvps: vi.fn(),
   updateAdminRsvp: vi.fn(),
   deleteAdminRsvp: vi.fn()
@@ -69,8 +70,9 @@ describe("RsvpAdminPage", () => {
     storage.saveAdminSession.mockReturnValue(true);
     storage.clearAdminSession.mockReturnValue(true);
     api.createAdminSession.mockResolvedValue(session);
-    api.fetchAdminNotifications.mockResolvedValue({ notifications: [], unreadCount: 0, emailConfigured: false });
-    api.markAdminNotificationsRead.mockResolvedValue({ notifications: [], unreadCount: 0, emailConfigured: false });
+    api.fetchAdminNotifications.mockResolvedValue({ notifications: [], unreadCount: 0, emailConfigured: false, emailPendingCount: 0, emailFailedCount: 0, lastEmailSentAt: null });
+    api.markAdminNotificationsRead.mockResolvedValue({ notifications: [], unreadCount: 0, emailConfigured: false, emailPendingCount: 0, emailFailedCount: 0, lastEmailSentAt: null });
+    api.retryFailedAdminNotificationEmails.mockResolvedValue({ notifications: [], unreadCount: 0, emailConfigured: false, emailPendingCount: 0, emailFailedCount: 0, lastEmailSentAt: null });
     api.fetchAdminRsvps.mockResolvedValue(result);
     api.updateAdminRsvp.mockResolvedValue({ ...result.responses[0], revision: 2 });
     api.deleteAdminRsvp.mockResolvedValue(undefined);

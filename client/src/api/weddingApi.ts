@@ -166,6 +166,14 @@ export function markAdminNotificationsRead(
   });
 }
 
+export function retryFailedAdminNotificationEmails(token: string): Promise<AdminNotificationResult> {
+  return requestJson<AdminNotificationResult>(`/api/invitations/${getInvitationId()}/admin/notifications`, {
+    method: "PATCH",
+    headers: { "content-type": "application/json", ...bearerHeaders(token) },
+    body: JSON.stringify({ retryEmail: true })
+  });
+}
+
 export function updateAdminRsvp(
   token: string,
   rsvpId: string,

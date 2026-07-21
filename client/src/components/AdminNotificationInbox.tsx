@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from "react";
-import { Bell, Check, CheckCheck, Mail, RefreshCw } from "lucide-react";
+import { Bell, Check, CheckCheck, Mail, RefreshCw, RotateCcw } from "lucide-react";
 import type { AdminNotification, AdminNotificationResult } from "@wedding-game/shared";
 
 import {
   fetchAdminNotifications,
   markAdminNotificationsRead,
+  retryFailedAdminNotificationEmails,
   WeddingApiError
 } from "../api/weddingApi";
 
@@ -30,6 +31,26 @@ function notificationPage(notification: AdminNotification): { href: string; labe
   return notification.kind.startsWith("rsvp_")
     ? { href: "?admin=rsvp", label: "참석 답변" }
     : { href: "?admin=guestbook", label: "방명록" };
+}
+
+function emailStatusLabel(notification: AdminNotification, configured: boolean): string {
+  if (!configured) return "화면 알림";
+  if (notification.emailStatus === "sent") return "이메일 발송 완료";
+  if (notification.emailStatus === "failed") return "이메일 발송 실패";
+  if (notification.emailStatus === "retrying") return `이메일 재시도 ${notification.emailAttempts}/5`;
+  return "이메일 발송 대기";
+}
+
+function emailSummary(result: AdminNotificationResult | null): string {
+  if (!result?.emailConfigured) {
+    return result?.emailPendingCount
+      ? `이메일 미연결 · 알림 ${result.emailPendingCount}건 보관 중`
+      : "이메일 알림 연결 대기";
+  }
+  if (result.emailFailedCount > 0) return `이메일 발송 실패 ${result.emailFailedCount}건 · 설정 확인 필요`;
+  if (result.emailPendingCount > 0) return `이메일 발송 대기·재시도 ${result.emailPendingCount}건`;
+  if (result.lastEmailSentAt) return `이메일 정상 발송 · 최근 ${formatNotificationDate(result.lastEmailSentAt)}`;
+  return "관리자 이메일 알림 연결됨";
 }
 
 export function AdminNotificationInbox({ token, onUnauthorized }: AdminNotificationInboxProps) {
@@ -105,6 +126,25 @@ export function AdminNotificationInbox({ token, onUnauthorized }: AdminNotificat
     }
   }
 
+  async function retryFailedEmail() {
+    if (busyId) return;
+    setBusyId("email-retry");
+    setError("");
+    try {
+      const next = await retryFailedAdminNotificationEmails(token);
+      if (mountedRef.current) setResult(next);
+    } catch (retryError) {
+      if (!mountedRef.current) return;
+      if (retryError instanceof WeddingApiError && retryError.status === 401) {
+        onUnauthorizedRef.current();
+      } else {
+        setError("이메일 재시도를 시작하지 못했습니다. 발송 설정을 확인해 주세요.");
+      }
+    } finally {
+      if (mountedRef.current) setBusyId(null);
+    }
+  }
+
   return (
     <section className="admin-notification-inbox" aria-labelledby="admin-notification-title">
       <div className="admin-notification-inbox__header">
@@ -156,6 +196,9 @@ export function AdminNotificationInbox({ token, onUnauthorized }: AdminNotificat
                 <div>
                   <span className="admin-notification-item__type">{page.label}</span>
                   <strong>{notification.title}</strong>
+                  <span className={`admin-notification-item__email admin-notification-item__email--${notification.emailStatus ?? "pending"}`}>
+                    {emailStatusLabel(notification, result.emailConfigured)}
+                  </span>
                   <p>{notification.body}</p>
                   <time dateTime={notification.createdAt}>{formatNotificationDate(notification.createdAt)}</time>
                 </div>
@@ -184,7 +227,17 @@ export function AdminNotificationInbox({ token, onUnauthorized }: AdminNotificat
 
       <p className="admin-notification-inbox__delivery">
         <Mail aria-hidden="true" />
-        {result?.emailConfigured ? "관리자 이메일 알림 연결됨" : "관리자 화면 알림 사용 중"}
+        <span>{emailSummary(result)}</span>
+        {Boolean(result?.emailConfigured && result.emailFailedCount > 0) && (
+          <button
+            type="button"
+            className="rsvp-admin-secondary admin-notification-inbox__retry"
+            onClick={() => void retryFailedEmail()}
+            disabled={busyId !== null}
+          >
+            <RotateCcw aria-hidden="true" /> 실패 재시도
+          </button>
+        )}
       </p>
     </section>
   );

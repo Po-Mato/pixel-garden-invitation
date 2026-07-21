@@ -254,14 +254,26 @@ describe("weddingApi", () => {
   it("관리자 알림을 조회하고 개별·전체 확인 처리한다", async () => {
     vi.stubEnv("VITE_WORKER_URL", "https://worker.test");
     vi.stubEnv("VITE_INVITATION_ID", "sample-garden");
-    const result = { notifications: [], unreadCount: 0, emailConfigured: false };
+    const result = {
+      notifications: [],
+      unreadCount: 0,
+      emailConfigured: false,
+      emailPendingCount: 0,
+      emailFailedCount: 0,
+      lastEmailSentAt: null
+    };
     const fetchMock = vi.fn().mockImplementation(async () => jsonResponse(result));
     vi.stubGlobal("fetch", fetchMock);
 
-    const { fetchAdminNotifications, markAdminNotificationsRead } = await import("./weddingApi");
+    const {
+      fetchAdminNotifications,
+      markAdminNotificationsRead,
+      retryFailedAdminNotificationEmails
+    } = await import("./weddingApi");
     await fetchAdminNotifications("admin-token");
     await markAdminNotificationsRead("admin-token", ["notification_1"]);
     await markAdminNotificationsRead("admin-token");
+    await retryFailedAdminNotificationEmails("admin-token");
 
     expect(fetchMock).toHaveBeenNthCalledWith(
       1,
@@ -284,6 +296,15 @@ describe("weddingApi", () => {
         method: "PATCH",
         headers: { "content-type": "application/json", authorization: "Bearer admin-token" },
         body: JSON.stringify({ markAll: true })
+      }
+    );
+    expect(fetchMock).toHaveBeenNthCalledWith(
+      4,
+      "https://worker.test/api/invitations/sample-garden/admin/notifications",
+      {
+        method: "PATCH",
+        headers: { "content-type": "application/json", authorization: "Bearer admin-token" },
+        body: JSON.stringify({ retryEmail: true })
       }
     );
   });

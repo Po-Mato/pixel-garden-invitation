@@ -14,8 +14,12 @@ import {
 } from "./guestbookRepository";
 import { createRsvp, deleteRsvp, findRsvp, getRsvpPolicy, listRsvps, updateRsvp } from "./rsvpRepository";
 import { adminNotificationEmailConfigured } from "./adminNotificationEmail";
-import { listAdminNotifications, markAdminNotificationsRead } from "./adminNotificationRepository";
-import { publishAdminNotification } from "./adminNotificationService";
+import {
+  listAdminNotifications,
+  markAdminNotificationsRead,
+  resetFailedAdminNotificationEmails
+} from "./adminNotificationRepository";
+import { publishAdminNotification, retryPendingAdminNotificationEmails } from "./adminNotificationService";
 import { createEditCredential, hashClientKey, hashEditToken, verifyAdminToken } from "./security";
 import { parseGuestbookPayload, parseRsvpPayload } from "./validation";
 import type { GuestbookOwnedMessage, RsvpRecord } from "@wedding-game/shared";
@@ -123,9 +127,14 @@ function readGuestbookModeration(value: unknown): { hidden: boolean; revision: n
   return { hidden: value.hidden, revision };
 }
 
-function readNotificationReadRequest(value: unknown): { notificationIds: string[] | null } | null {
+type NotificationAdminAction =
+  | { action: "mark_read"; notificationIds: string[] | null }
+  | { action: "retry_email" };
+
+function readNotificationAdminAction(value: unknown): NotificationAdminAction | null {
   if (!isRecord(value)) return null;
-  if (value.markAll === true) return { notificationIds: null };
+  if (value.retryEmail === true) return { action: "retry_email" };
+  if (value.markAll === true) return { action: "mark_read", notificationIds: null };
   if (
     !Array.isArray(value.notificationIds)
     || value.notificationIds.length < 1
@@ -133,7 +142,7 @@ function readNotificationReadRequest(value: unknown): { notificationIds: string[
     || !value.notificationIds.every((item) => typeof item === "string" && /^notification_[\w-]+$/.test(item))
   ) return null;
 
-  return { notificationIds: [...new Set(value.notificationIds as string[])] };
+  return { action: "mark_read", notificationIds: [...new Set(value.notificationIds as string[])] };
 }
 
 function readBearerToken(request: Request): string | null {
@@ -194,6 +203,7 @@ async function notifyRsvp(
   if (!expiresAt) return;
   await publishAdminNotification(env, {
     invitationId,
+    eventKey: `${kind}:${response.id}:${response.revision}`,
     kind,
     sourceId: response.id,
     title: kind === "rsvp_created" ? "새 참석 답변" : "참석 답변 수정",
@@ -213,6 +223,7 @@ async function notifyGuestbook(
   if (!expiresAt) return;
   await publishAdminNotification(env, {
     invitationId,
+    eventKey: `${kind}:${response.id}:${response.revision}`,
     kind,
     sourceId: response.id,
     title: kind === "guestbook_created" ? "새 방명록 메시지" : "방명록 메시지 수정",
@@ -496,7 +507,8 @@ async function handleAdminGuestbook(
 async function handleAdminNotifications(
   request: Request,
   env: Env,
-  invitationId: string
+  invitationId: string,
+  options: HandleApiRequestOptions
 ): Promise<Response> {
   if (request.method !== "GET" && request.method !== "PATCH") {
     return adminJson({ error: "not_found" }, 404);
@@ -508,14 +520,22 @@ async function handleAdminNotifications(
     if (!authenticated) return adminJson({ error: "unauthorized" }, 401);
 
     if (request.method === "PATCH") {
-      const payload = readNotificationReadRequest(await readJson(request));
-      if (!payload) return adminJson({ error: "invalid_request" }, 400);
-      await markAdminNotificationsRead(
-        env.DB,
-        invitationId,
-        payload.notificationIds,
-        new Date().toISOString()
-      );
+      const action = readNotificationAdminAction(await readJson(request));
+      if (!action) return adminJson({ error: "invalid_request" }, 400);
+      if (action.action === "retry_email") {
+        if (!adminNotificationEmailConfigured(env)) return adminJson({ error: "email_not_configured" }, 409);
+        await resetFailedAdminNotificationEmails(env.DB, invitationId);
+        const retry = retryPendingAdminNotificationEmails(env);
+        if (options.waitUntil) options.waitUntil(retry);
+        else await retry;
+      } else {
+        await markAdminNotificationsRead(
+          env.DB,
+          invitationId,
+          action.notificationIds,
+          new Date().toISOString()
+        );
+      }
     }
 
     return adminJson(await listAdminNotifications(
@@ -615,7 +635,7 @@ async function handleApiRequestWithoutCors(
   if (adminSessionMatch) return handleAdminSession(request, env, clientKey, adminSessionMatch[1]);
 
   const adminNotificationsMatch = url.pathname.match(/^\/api\/invitations\/([^/]+)\/admin\/notifications$/);
-  if (adminNotificationsMatch) return handleAdminNotifications(request, env, adminNotificationsMatch[1]);
+  if (adminNotificationsMatch) return handleAdminNotifications(request, env, adminNotificationsMatch[1], options);
 
   const adminRsvpMatch = url.pathname.match(/^\/api\/invitations\/([^/]+)\/admin\/rsvps(?:\/([^/]+))?$/);
   if (adminRsvpMatch) return handleAdminRsvps(request, env, adminRsvpMatch[1], adminRsvpMatch[2]);

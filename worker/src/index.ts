@@ -1,5 +1,6 @@
 import { handleApiRequest } from "./http";
 import { cleanupExpiredInvitationData } from "./cleanup";
+import { retryPendingAdminNotificationEmails } from "./adminNotificationService";
 
 export interface Env {
   DB: D1Database;
@@ -42,10 +43,19 @@ export default {
   },
 
   scheduled(controller: ScheduledController, env: Env, ctx: ExecutionContext): void {
-    const cleanup = cleanupExpiredInvitationData(env.DB, new Date(controller.scheduledTime)).then((result) => {
-      console.info(JSON.stringify({ event: "invitation_data_cleanup", ...result }));
-      return result;
-    });
-    ctx.waitUntil(cleanup);
+    const now = new Date(controller.scheduledTime);
+    const work = (async () => {
+      const emailQueue = await retryPendingAdminNotificationEmails(env, now);
+      console.info(JSON.stringify({ event: "admin_notification_email_queue", ...emailQueue }));
+
+      if (controller.cron === "17 15 * * *" || !controller.cron) {
+        const cleanup = await cleanupExpiredInvitationData(env.DB, now);
+        console.info(JSON.stringify({ event: "invitation_data_cleanup", ...cleanup }));
+        return { emailQueue, cleanup };
+      }
+
+      return { emailQueue, cleanup: null };
+    })();
+    ctx.waitUntil(work);
   }
 };

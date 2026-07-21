@@ -2,5 +2,6 @@
 # D1 and Durable Object bindings are configured in wrangler.toml.
 
 # Optional after Cloudflare Email Sending is configured.
+# Use Worker secrets in production; do not commit real addresses.
 # ADMIN_NOTIFICATION_EMAIL_TO=admin@example.com
 # ADMIN_NOTIFICATION_EMAIL_FROM=invitation@example.com

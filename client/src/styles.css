@@ -4385,6 +4385,37 @@ select {
   font-weight: 800;
 }
 
+.admin-notification-item__email {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 2px 6px;
+  border: 1px solid #c4ccc6;
+  border-radius: 3px;
+  background: #f1f4f1;
+  color: #5d6961;
+  font-size: 10px;
+  font-weight: 800;
+  vertical-align: 1px;
+}
+
+.admin-notification-item__email--sent {
+  border-color: #9ab5a0;
+  background: #e8f2e9;
+  color: #3e6848;
+}
+
+.admin-notification-item__email--retrying {
+  border-color: #d3b77a;
+  background: #fff7df;
+  color: #755c25;
+}
+
+.admin-notification-item__email--failed {
+  border-color: #d1a0a5;
+  background: #fff0f1;
+  color: #8b3943;
+}
+
 .admin-notification-item strong {
   font-size: 14px;
 }
@@ -4434,6 +4465,16 @@ select {
 .admin-notification-inbox__delivery svg {
   width: 14px;
   height: 14px;
+}
+
+.admin-notification-inbox__delivery > span {
+  margin-right: auto;
+}
+
+.rsvp-admin-page .admin-notification-inbox__retry {
+  min-height: 34px;
+  padding: 6px 9px;
+  font-size: 11px;
 }
 
 .rsvp-admin-summary dl {

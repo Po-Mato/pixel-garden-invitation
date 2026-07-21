@@ -22,7 +22,7 @@ describe("wrangler RSVP settings", () => {
   it("keeps the production cron and exact public origin allowlist configured", () => {
     const source = readFileSync(new URL("../wrangler.toml", import.meta.url), "utf8");
 
-    expect(parseSection(source, "triggers")).toMatchObject({ crons: ["17 15 * * *"] });
+    expect(parseSection(source, "triggers")).toMatchObject({ crons: ["*/5 * * * *", "17 15 * * *"] });
     expect(parseSection(source, "vars")).toMatchObject({
       RSVP_ALLOWED_ORIGINS: "https://po-mato.github.io,http://localhost:5173,http://127.0.0.1:5173",
       ADMIN_NOTIFICATION_BASE_URL: "https://po-mato.github.io/pixel-garden-invitation"
