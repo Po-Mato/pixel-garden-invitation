@@ -97,6 +97,23 @@ describe("entry screen layout", () => {
     expect(labelRule).toContain("-webkit-line-clamp: 2;");
   });
 
+  it("keeps high-density entry characters clear without clipping or fractional final sizes", () => {
+    expect(styles).toMatch(
+      /\.character-sprite--preview,[\s\S]*?\.character-sprite--thumbnail \.character-layer\s*\{[^}]*image-rendering:\s*auto;/s
+    );
+    expect(styles).toMatch(
+      /\.character-sprite--preview,\s*\.character-sprite--thumbnail\s*\{[^}]*transform:\s*none;/s
+    );
+    expect(styles).toMatch(
+      /@media \(max-height:\s*640px\)[\s\S]*?\.customizer-option__sprite\s*\{[^}]*height:\s*72px;/s
+    );
+    expect(styles).toContain("scale(0.75)");
+    expect(styles).toContain("scale(0.625)");
+    expect(styles).toContain("scale(0.8333333333)");
+    expect(styles).not.toContain("scale(0.74)");
+    expect(styles).not.toContain("scale(0.62)");
+  });
+
   it("adapts the entry composition for short mobile viewports", () => {
     expect(styles).toMatch(/@media \(max-height:\s*640px\)[\s\S]*\.character-customizer/);
     expect(styles).toMatch(/@media \(prefers-reduced-motion:\s*reduce\)[\s\S]*entry-prism/);

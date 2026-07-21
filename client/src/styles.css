@@ -1048,6 +1048,18 @@ select {
   transform: translateZ(0);
 }
 
+.character-sprite--preview,
+.character-sprite--thumbnail,
+.character-sprite--preview .character-layer,
+.character-sprite--thumbnail .character-layer {
+  image-rendering: auto;
+}
+
+.character-sprite--preview,
+.character-sprite--thumbnail {
+  transform: none;
+}
+
 .character-sprite--world {
   image-rendering: auto;
   filter: drop-shadow(1px 2px 1px rgba(36, 24, 18, 0.52));
@@ -3346,10 +3358,11 @@ select {
   .customizer-option--image {
     min-height: 78px;
     height: 80px;
+    padding: 3px 8px 3px 5px;
   }
 
   .customizer-option__sprite {
-    height: 68px;
+    height: 72px;
     overflow: hidden;
   }
 
@@ -4759,7 +4772,7 @@ select {
   }
 
   .character-customizer__sprite {
-    transform: translate(-50%, -50%) scale(0.74);
+    transform: translate(-50%, -50%) scale(0.75);
   }
 
   .character-customizer__selected-name {
@@ -4811,6 +4824,11 @@ select {
     width: 40px;
     height: 60px;
     overflow: hidden;
+  }
+
+  .customizer-option__sprite .character-sprite--thumbnail {
+    transform: scale(0.8333333333);
+    transform-origin: left top;
   }
 
   .customizer-option__label {
@@ -4918,7 +4936,7 @@ select {
   }
 
   .character-customizer__sprite {
-    transform: translate(-50%, -50%) scale(0.62);
+    transform: translate(-50%, -50%) scale(0.625);
   }
 
   .entry-screen__controls {
