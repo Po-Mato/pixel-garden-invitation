@@ -53,6 +53,6 @@ describe("청첩장 링크 미리보기 메타데이터", () => {
       .map((element) => element.getAttribute("content") ?? "")
       .join(" ");
 
-    expect(metadata).not.toMatch(/계좌|예금주|카카오페이|토스/);
+    expect(metadata).not.toMatch(/계좌|예금주|카카오페이|토스|혼주|연락처|010-/);
   });
 });

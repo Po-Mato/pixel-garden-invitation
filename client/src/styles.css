@@ -3122,6 +3122,184 @@ select {
   box-shadow: 0 0 0 4px var(--sage), 2px 2px 0 rgba(89, 72, 63, 0.42);
 }
 
+.family-contact-sheet {
+  display: grid;
+  min-width: 0;
+  gap: 14px;
+  line-height: 1.45;
+}
+
+.family-contact-sheet__intro {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  color: var(--ink);
+}
+
+.family-contact-sheet__intro svg {
+  width: 24px;
+  height: 24px;
+  color: var(--camellia);
+}
+
+.family-contact-sheet__intro p {
+  font-size: 14px;
+  font-weight: 800;
+  word-break: keep-all;
+}
+
+.family-contact-sheet__tabs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+  padding: 4px;
+  border: 2px solid #6d6159;
+  background: color-mix(in srgb, var(--sage) 18%, var(--paper));
+  box-shadow: inset 2px 2px 0 rgba(89, 72, 63, 0.12);
+}
+
+.family-contact-sheet__tabs button {
+  min-height: 44px;
+  border: 0;
+  padding: 8px 10px;
+  background: transparent;
+  color: var(--ink-soft);
+  box-shadow: none;
+}
+
+.family-contact-sheet__tabs button[aria-selected="true"] {
+  border: 2px solid #765665;
+  background: var(--paper-raised);
+  color: var(--ink);
+  box-shadow: 2px 2px 0 rgba(89, 72, 63, 0.38);
+}
+
+.family-contact-sheet__panel,
+.family-contact-sheet__people {
+  display: grid;
+  min-width: 0;
+  gap: 10px;
+}
+
+.family-contact-sheet__empty {
+  display: grid;
+  justify-items: center;
+  gap: 7px;
+  min-height: 156px;
+  align-content: center;
+  padding: 22px 18px;
+  border: 2px dashed color-mix(in srgb, var(--sage) 72%, #59483f);
+  background: rgba(255, 252, 233, 0.52);
+  text-align: center;
+}
+
+.family-contact-sheet__empty svg {
+  width: 28px;
+  height: 28px;
+  color: var(--sage);
+}
+
+.family-contact-sheet__empty strong {
+  font-size: 15px;
+}
+
+.family-contact-sheet__empty span {
+  max-width: 270px;
+  color: var(--ink-soft);
+  font-size: 13px;
+  word-break: keep-all;
+}
+
+.family-contact-sheet__person {
+  display: grid;
+  min-width: 0;
+  gap: 10px;
+  padding: 12px;
+  border: 2px solid #6d6159;
+  background: var(--paper-raised);
+  box-shadow: 3px 3px 0 rgba(89, 72, 63, 0.34);
+}
+
+.family-contact-sheet__identity {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  align-items: center;
+  gap: 9px;
+}
+
+.family-contact-sheet__identity > svg {
+  width: 20px;
+  height: 20px;
+  color: var(--sage);
+}
+
+.family-contact-sheet__identity > div {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+
+.family-contact-sheet__identity strong,
+.family-contact-sheet__identity span {
+  overflow-wrap: anywhere;
+}
+
+.family-contact-sheet__identity span {
+  color: var(--ink-soft);
+  font-size: 13px;
+  user-select: text;
+}
+
+.family-contact-sheet__actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.family-contact-sheet__actions a {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 2px solid #765665;
+  padding: 8px;
+  background: var(--paper-raised);
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 900;
+  line-height: 1.2;
+  text-decoration: none;
+  box-shadow: 2px 2px 0 rgba(89, 72, 63, 0.38);
+}
+
+.family-contact-sheet__actions a:last-child {
+  border-color: color-mix(in srgb, var(--sage) 72%, #59483f);
+  background: color-mix(in srgb, var(--sage) 14%, var(--paper-raised));
+}
+
+.family-contact-sheet__actions svg {
+  width: 16px;
+  height: 16px;
+}
+
+.family-contact-sheet__privacy {
+  padding-top: 10px;
+  border-top: 1px solid color-mix(in srgb, var(--gold) 52%, var(--paper-raised));
+  color: var(--ink-soft);
+  font-size: 11px;
+  text-align: center;
+  word-break: keep-all;
+}
+
+.family-contact-sheet button:focus-visible,
+.family-contact-sheet a:focus-visible {
+  outline: 2px solid #fff8cf;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px var(--sage), 2px 2px 0 rgba(89, 72, 63, 0.42);
+}
+
 @media (max-height: 640px) {
   .phone-frame:has(.entry-screen) {
     padding-top: 9px;

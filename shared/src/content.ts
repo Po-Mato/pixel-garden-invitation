@@ -33,6 +33,10 @@ export type WeddingEvent = {
   guestbook: {
     deleteAt: string;
   };
+  familyContacts: {
+    notice: string;
+    contacts: readonly WeddingFamilyContact[];
+  };
   giftAccounts: {
     notice: string;
     accounts: readonly WeddingGiftAccount[];
@@ -68,6 +72,13 @@ export type WeddingGiftAccount = {
   tossUrl: string;
 };
 
+export type WeddingFamilyContact = Pick<
+  WeddingGiftAccount,
+  "id" | "side" | "relation" | "name"
+> & {
+  phone: string;
+};
+
 export const invitationContent = {
   event: {
     couple: { groom: "이승재", bride: "이건희" },
@@ -82,6 +93,17 @@ export const invitationContent = {
     },
     guestbook: {
       deleteAt: "2027-05-31T23:59:59+09:00"
+    },
+    familyContacts: {
+      notice: "축하와 문의 연락은 편하신 쪽으로 전해주세요.",
+      contacts: [
+        { id: "groom", side: "groom", relation: "신랑", name: "이승재", phone: "" },
+        { id: "groom-father", side: "groom", relation: "신랑 아버지", name: "", phone: "" },
+        { id: "groom-mother", side: "groom", relation: "신랑 어머니", name: "", phone: "" },
+        { id: "bride", side: "bride", relation: "신부", name: "이건희", phone: "" },
+        { id: "bride-father", side: "bride", relation: "신부 아버지", name: "", phone: "" },
+        { id: "bride-mother", side: "bride", relation: "신부 어머니", name: "", phone: "" }
+      ]
     },
     giftAccounts: {
       notice: "축하의 마음만으로도 충분히 감사드립니다.",

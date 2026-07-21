@@ -29,6 +29,13 @@ describe("invitationContent", () => {
       guestbook: {
         deleteAt: "2027-05-31T23:59:59+09:00"
       },
+      familyContacts: {
+        notice: "축하와 문의 연락은 편하신 쪽으로 전해주세요.",
+        contacts: expect.arrayContaining([
+          expect.objectContaining({ id: "groom", side: "groom", relation: "신랑", name: "이승재" }),
+          expect.objectContaining({ id: "bride", side: "bride", relation: "신부", name: "이건희" })
+        ])
+      },
       giftAccounts: {
         notice: "축하의 마음만으로도 충분히 감사드립니다.",
         accounts: expect.arrayContaining([
@@ -48,6 +55,22 @@ describe("invitationContent", () => {
         }
       }
     });
+  });
+
+  it("신랑·신부와 양가 부모님 연락처 자리를 각각 마련한다", () => {
+    const contacts = invitationContent.event.familyContacts.contacts;
+
+    expect(contacts.map((contact) => contact.id)).toEqual([
+      "groom",
+      "groom-father",
+      "groom-mother",
+      "bride",
+      "bride-father",
+      "bride-mother"
+    ]);
+    expect(contacts.filter((contact) => contact.side === "groom")).toHaveLength(3);
+    expect(contacts.filter((contact) => contact.side === "bride")).toHaveLength(3);
+    expect(contacts.every((contact) => contact.phone === "")).toBe(true);
   });
 
   it("신랑·신부와 양가 부모님 계좌 및 간편송금 자리를 각각 마련한다", () => {
