@@ -1,6 +1,7 @@
 export type CleanupResult = {
   rsvps: number;
   guestbookMessages: number;
+  notifications: number;
   attempts: number;
 };
 
@@ -28,6 +29,11 @@ export async function cleanupExpiredInvitationData(db: D1Database, now: Date): P
     )
   `).bind(nowIso).run();
 
+  const notificationResult = await db.prepare(`
+    DELETE FROM admin_notifications
+    WHERE expires_at <= ?
+  `).bind(nowIso).run();
+
   const attemptResult = await db.prepare(`
     DELETE FROM admin_login_attempts
     WHERE window_started_at < ?
@@ -36,6 +42,7 @@ export async function cleanupExpiredInvitationData(db: D1Database, now: Date): P
   return {
     rsvps: changes(rsvpResult),
     guestbookMessages: changes(guestbookResult),
+    notifications: changes(notificationResult),
     attempts: changes(attemptResult)
   };
 }

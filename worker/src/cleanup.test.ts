@@ -5,6 +5,7 @@ import { cleanupExpiredInvitationData } from "./cleanup";
 
 type Invitation = { id: string; rsvpDeleteAt: string | null; guestbookDeleteAt?: string | null };
 type Attempt = { id: string; windowStartedAt: string };
+type Notification = { id: string; expiresAt: string };
 
 type SqliteStatement = {
   get(...parameters: unknown[]): unknown;
@@ -43,11 +44,13 @@ function createDb(
   invitations: Invitation[],
   rsvpInvitationIds: string[],
   attempts: Attempt[],
-  guestbookInvitationIds: string[] = []
+  guestbookInvitationIds: string[] = [],
+  notificationRows: Notification[] = []
 ) {
   const rsvps = [...rsvpInvitationIds];
   const guestbookMessages = [...guestbookInvitationIds];
   const loginAttempts = [...attempts];
+  const notifications = [...notificationRows];
   const prepare = vi.fn((sql: string) => ({
     bind: (...values: unknown[]) => ({
       run: async () => {
@@ -74,6 +77,14 @@ function createDb(
           return { success: true, meta: { changes: before - guestbookMessages.length } };
         }
 
+        if (/DELETE FROM admin_notifications/i.test(sql)) {
+          const before = notifications.length;
+          for (let index = notifications.length - 1; index >= 0; index -= 1) {
+            if (notifications[index].expiresAt <= cutoff) notifications.splice(index, 1);
+          }
+          return { success: true, meta: { changes: before - notifications.length } };
+        }
+
         const before = loginAttempts.length;
         for (let index = loginAttempts.length - 1; index >= 0; index -= 1) {
           if (loginAttempts[index].windowStartedAt < cutoff) loginAttempts.splice(index, 1);
@@ -83,7 +94,7 @@ function createDb(
     })
   }));
 
-  return { db: { prepare } as unknown as D1Database, prepare, rsvps, guestbookMessages, loginAttempts };
+  return { db: { prepare } as unknown as D1Database, prepare, rsvps, guestbookMessages, notifications, loginAttempts };
 }
 
 describe("cleanupExpiredInvitationData", () => {
@@ -95,23 +106,29 @@ describe("cleanupExpiredInvitationData", () => {
         CREATE TABLE invitations (id TEXT PRIMARY KEY, rsvp_delete_at TEXT, guestbook_delete_at TEXT);
         CREATE TABLE rsvps (id TEXT PRIMARY KEY, invitation_id TEXT NOT NULL);
         CREATE TABLE guestbook_messages (id TEXT PRIMARY KEY, invitation_id TEXT NOT NULL);
+        CREATE TABLE admin_notifications (id TEXT PRIMARY KEY, expires_at TEXT NOT NULL);
         CREATE TABLE admin_login_attempts (window_started_at TEXT NOT NULL);
         INSERT INTO invitations VALUES
           ('boundary', '2027-06-01T00:00:00.000Z', '2027-06-01T00:00:00.000Z'),
           ('future', '2027-06-01T00:00:00.001Z', '2027-06-01T00:00:00.001Z');
         INSERT INTO rsvps VALUES ('rsvp_boundary', 'boundary'), ('rsvp_future', 'future');
         INSERT INTO guestbook_messages VALUES ('guestbook_boundary', 'boundary'), ('guestbook_future', 'future');
+        INSERT INTO admin_notifications VALUES
+          ('notification_boundary', '2027-06-01T00:00:00.000Z'),
+          ('notification_future', '2027-06-01T00:00:00.001Z');
       `);
 
       await expect(cleanupExpiredInvitationData(
         createD1Adapter(database),
         new Date("2027-06-01T00:00:00.000Z")
-      )).resolves.toEqual({ rsvps: 1, guestbookMessages: 1, attempts: 0 });
+      )).resolves.toEqual({ rsvps: 1, guestbookMessages: 1, notifications: 1, attempts: 0 });
 
       expect(database.prepare("SELECT id FROM rsvps WHERE id = ?").get("rsvp_boundary")).toBeUndefined();
       expect(database.prepare("SELECT id FROM rsvps WHERE id = ?").get("rsvp_future")).toEqual({ id: "rsvp_future" });
       expect(database.prepare("SELECT id FROM guestbook_messages WHERE id = ?").get("guestbook_boundary")).toBeUndefined();
       expect(database.prepare("SELECT id FROM guestbook_messages WHERE id = ?").get("guestbook_future")).toEqual({ id: "guestbook_future" });
+      expect(database.prepare("SELECT id FROM admin_notifications WHERE id = ?").get("notification_boundary")).toBeUndefined();
+      expect(database.prepare("SELECT id FROM admin_notifications WHERE id = ?").get("notification_future")).toEqual({ id: "notification_future" });
     } finally {
       database.close();
     }
@@ -126,12 +143,12 @@ describe("cleanupExpiredInvitationData", () => {
 
     const result = await cleanupExpiredInvitationData(db, new Date("2027-05-31T14:59:58.999Z"));
 
-    expect(result).toEqual({ rsvps: 0, guestbookMessages: 0, attempts: 0 });
+    expect(result).toEqual({ rsvps: 0, guestbookMessages: 0, notifications: 0, attempts: 0 });
     expect(rsvps).toEqual(["sample-garden"]);
   });
 
   it("deletes RSVP data at the policy boundary and stale login attempts", async () => {
-    const { db, rsvps, guestbookMessages, loginAttempts, prepare } = createDb(
+    const { db, rsvps, guestbookMessages, notifications, loginAttempts, prepare } = createDb(
       [
         { id: "expired", rsvpDeleteAt: "2027-05-31T14:59:59.000Z", guestbookDeleteAt: "2027-05-31T14:59:59.000Z" },
         { id: "active", rsvpDeleteAt: "2027-06-01T00:00:00.001Z", guestbookDeleteAt: "2027-06-01T00:00:00.001Z" },
@@ -142,14 +159,19 @@ describe("cleanupExpiredInvitationData", () => {
         { id: "stale", windowStartedAt: "2027-05-31T23:49:59.999Z" },
         { id: "boundary", windowStartedAt: "2027-05-31T23:50:00.000Z" }
       ],
-      ["expired", "active", "retained"]
+      ["expired", "active", "retained"],
+      [
+        { id: "notification-expired", expiresAt: "2027-06-01T00:00:00.000Z" },
+        { id: "notification-active", expiresAt: "2027-06-01T00:00:00.001Z" }
+      ]
     );
 
     const result = await cleanupExpiredInvitationData(db, new Date("2027-06-01T00:00:00.000Z"));
 
-    expect(result).toEqual({ rsvps: 1, guestbookMessages: 1, attempts: 1 });
+    expect(result).toEqual({ rsvps: 1, guestbookMessages: 1, notifications: 1, attempts: 1 });
     expect(rsvps).toEqual(["active", "retained"]);
     expect(guestbookMessages).toEqual(["active", "retained"]);
+    expect(notifications).toEqual([{ id: "notification-active", expiresAt: "2027-06-01T00:00:00.001Z" }]);
     expect(loginAttempts).toEqual([{ id: "boundary", windowStartedAt: "2027-05-31T23:50:00.000Z" }]);
     expect(prepare).toHaveBeenCalledWith(expect.stringMatching(/rsvp_delete_at\s*<=\s*\?/i));
     expect(prepare).toHaveBeenCalledWith(expect.stringMatching(/window_started_at\s*<\s*\?/i));
@@ -163,7 +185,7 @@ describe("cleanupExpiredInvitationData", () => {
     );
     const now = new Date("2027-06-01T00:00:00.000Z");
 
-    await expect(cleanupExpiredInvitationData(db, now)).resolves.toEqual({ rsvps: 1, guestbookMessages: 0, attempts: 1 });
-    await expect(cleanupExpiredInvitationData(db, now)).resolves.toEqual({ rsvps: 0, guestbookMessages: 0, attempts: 0 });
+    await expect(cleanupExpiredInvitationData(db, now)).resolves.toEqual({ rsvps: 1, guestbookMessages: 0, notifications: 0, attempts: 1 });
+    await expect(cleanupExpiredInvitationData(db, now)).resolves.toEqual({ rsvps: 0, guestbookMessages: 0, notifications: 0, attempts: 0 });
   });
 });

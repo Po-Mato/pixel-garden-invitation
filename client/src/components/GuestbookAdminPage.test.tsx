@@ -5,6 +5,8 @@ import { GuestbookAdminPage } from "./GuestbookAdminPage";
 
 const api = vi.hoisted(() => ({
   createAdminSession: vi.fn(),
+  fetchAdminNotifications: vi.fn(),
+  markAdminNotificationsRead: vi.fn(),
   fetchAdminGuestbook: vi.fn(),
   moderateAdminGuestbook: vi.fn(),
   updateAdminGuestbook: vi.fn(),
@@ -53,6 +55,8 @@ describe("GuestbookAdminPage", () => {
     vi.resetAllMocks();
     storage.loadAdminSession.mockReturnValue(null);
     api.createAdminSession.mockResolvedValue(session);
+    api.fetchAdminNotifications.mockResolvedValue({ notifications: [], unreadCount: 0, emailConfigured: false });
+    api.markAdminNotificationsRead.mockResolvedValue({ notifications: [], unreadCount: 0, emailConfigured: false });
     api.fetchAdminGuestbook.mockResolvedValue(result);
     api.moderateAdminGuestbook.mockResolvedValue({ ...message, isHidden: true, revision: 2 });
     api.updateAdminGuestbook.mockResolvedValue({ ...message, nickname: "수정 하객", message: "수정 축하", revision: 2 });

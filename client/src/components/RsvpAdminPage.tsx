@@ -20,6 +20,7 @@ import { useCoupleOrder } from "../invitation/CoupleOrderContext";
 import { coupleSides } from "../invitation/coupleOrder";
 import { downloadRsvpCsv } from "../invitation/rsvpCsv";
 import { clearAdminSession, loadAdminSession, saveAdminSession } from "../invitation/rsvpStorage";
+import { AdminNotificationInbox } from "./AdminNotificationInbox";
 
 type FilterValue<T extends string> = "all" | T;
 
@@ -606,6 +607,11 @@ export function RsvpAdminPage() {
             </button>
           </div>
         </header>
+
+        <AdminNotificationInbox
+          token={session.token}
+          onUnauthorized={() => resetAdminState("세션이 만료되었습니다. 다시 로그인해 주세요.")}
+        />
 
         {isFetching && !result && <p className="rsvp-admin-message" role="status">참석 답변을 불러오고 있습니다.</p>}
         {error && <p className="rsvp-admin-message rsvp-admin-message--error" role="alert">{error}</p>}

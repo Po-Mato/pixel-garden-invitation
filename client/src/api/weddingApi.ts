@@ -1,6 +1,7 @@
 /// <reference types="vite/client" />
 
 import type {
+  AdminNotificationResult,
   GuestbookAdminResult,
   GuestbookCreateResult,
   GuestbookCredential,
@@ -144,6 +145,24 @@ export function fetchAdminRsvps(token: string): Promise<RsvpAdminResult> {
   return requestJson<RsvpAdminResult>(`/api/invitations/${getInvitationId()}/admin/rsvps`, {
     method: "GET",
     headers: bearerHeaders(token)
+  });
+}
+
+export function fetchAdminNotifications(token: string): Promise<AdminNotificationResult> {
+  return requestJson<AdminNotificationResult>(`/api/invitations/${getInvitationId()}/admin/notifications`, {
+    method: "GET",
+    headers: bearerHeaders(token)
+  });
+}
+
+export function markAdminNotificationsRead(
+  token: string,
+  notificationIds?: string[]
+): Promise<AdminNotificationResult> {
+  return requestJson<AdminNotificationResult>(`/api/invitations/${getInvitationId()}/admin/notifications`, {
+    method: "PATCH",
+    headers: { "content-type": "application/json", ...bearerHeaders(token) },
+    body: JSON.stringify(notificationIds ? { notificationIds } : { markAll: true })
   });
 }
 

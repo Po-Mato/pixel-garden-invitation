@@ -28,7 +28,8 @@ const migrationFiles = [
   "0001_init.sql",
   "0002_update_invitation_details.sql",
   "0003_production_rsvp.sql",
-  "0004_rsvp_consent_policy.sql"
+  "0004_rsvp_consent_policy.sql",
+  "0006_admin_notifications.sql"
 ] as const;
 
 function applyMigrations(database: SqliteDatabase): void {
@@ -75,7 +76,11 @@ describe("RSVP API with migrated SQLite through a D1 adapter", () => {
     try {
       database.exec("PRAGMA foreign_keys = ON");
       applyMigrations(database);
-      const env = { DB: createD1Adapter(database) } as Env;
+      const sessionSecret = "notification-integration-secret";
+      const env = {
+        DB: createD1Adapter(database),
+        RSVP_ADMIN_SESSION_SECRET: sessionSecret
+      } as Env;
 
       const createResponse = await handleApiRequest(new Request(
         "https://worker.test/api/invitations/sample-garden/rsvps",
@@ -114,6 +119,44 @@ describe("RSVP API with migrated SQLite through a D1 adapter", () => {
       expect(updateResponse.status).toBe(200);
       expect(updated.revision).toBe(2);
       expect(updated.updatedAt).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/);
+
+      const adminToken = await issueAdminToken({
+        invitationId: "sample-garden",
+        expiresAt: Date.now() + 60_000
+      }, sessionSecret);
+      const notificationsResponse = await handleApiRequest(new Request(
+        "https://worker.test/api/invitations/sample-garden/admin/notifications",
+        { headers: { authorization: `Bearer ${adminToken}` } }
+      ), env, "sqlite-notification-list");
+      const notifications = await notificationsResponse.json() as {
+        unreadCount: number;
+        emailConfigured: boolean;
+        notifications: Array<{ id: string; kind: string; sourceId: string; readAt: string | null }>;
+      };
+
+      expect(notificationsResponse.status).toBe(200);
+      expect(notifications).toMatchObject({ unreadCount: 2, emailConfigured: false });
+      expect(notifications.notifications.map(({ kind }) => kind)).toEqual(["rsvp_updated", "rsvp_created"]);
+      expect(notifications.notifications.every(({ sourceId }) => sourceId === created.response.id)).toBe(true);
+
+      const markResponse = await handleApiRequest(new Request(
+        "https://worker.test/api/invitations/sample-garden/admin/notifications",
+        {
+          method: "PATCH",
+          headers: {
+            authorization: `Bearer ${adminToken}`,
+            "content-type": "application/json"
+          },
+          body: JSON.stringify({ notificationIds: [notifications.notifications[0].id] })
+        }
+      ), env, "sqlite-notification-read");
+      const marked = await markResponse.json() as {
+        unreadCount: number;
+        notifications: Array<{ id: string; readAt: string | null }>;
+      };
+      expect(markResponse.status).toBe(200);
+      expect(marked.unreadCount).toBe(1);
+      expect(marked.notifications.find(({ id }) => id === notifications.notifications[0].id)?.readAt).toEqual(expect.any(String));
     } finally {
       database.close();
     }
@@ -180,6 +223,7 @@ describe("RSVP API with migrated SQLite through a D1 adapter", () => {
       const conflict = await requestUpdate();
       expect(conflict.status).toBe(409);
       await expect(conflict.json()).resolves.toEqual({ error: "conflict" });
+      expect(database.prepare("SELECT COUNT(*) AS count FROM admin_notifications").get()).toEqual({ count: 1 });
     } finally {
       database.close();
     }

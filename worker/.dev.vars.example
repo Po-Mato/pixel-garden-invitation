@@ -1,2 +1,6 @@
 # No local Worker secrets are required right now.
 # D1 and Durable Object bindings are configured in wrangler.toml.
+
+# Optional after Cloudflare Email Sending is configured.
+# ADMIN_NOTIFICATION_EMAIL_TO=admin@example.com
+# ADMIN_NOTIFICATION_EMAIL_FROM=invitation@example.com

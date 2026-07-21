@@ -1,4 +1,5 @@
 export * from "./content";
+export * from "./adminNotifications";
 export * from "./guestbook";
 export * from "./weddingContent";
 export * from "./guestCharacterPresets";

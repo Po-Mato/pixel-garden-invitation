@@ -7,6 +7,8 @@ import { RsvpAdminPage } from "./RsvpAdminPage";
 
 const api = vi.hoisted(() => ({
   createAdminSession: vi.fn(),
+  fetchAdminNotifications: vi.fn(),
+  markAdminNotificationsRead: vi.fn(),
   fetchAdminRsvps: vi.fn(),
   updateAdminRsvp: vi.fn(),
   deleteAdminRsvp: vi.fn()
@@ -67,6 +69,8 @@ describe("RsvpAdminPage", () => {
     storage.saveAdminSession.mockReturnValue(true);
     storage.clearAdminSession.mockReturnValue(true);
     api.createAdminSession.mockResolvedValue(session);
+    api.fetchAdminNotifications.mockResolvedValue({ notifications: [], unreadCount: 0, emailConfigured: false });
+    api.markAdminNotificationsRead.mockResolvedValue({ notifications: [], unreadCount: 0, emailConfigured: false });
     api.fetchAdminRsvps.mockResolvedValue(result);
     api.updateAdminRsvp.mockResolvedValue({ ...result.responses[0], revision: 2 });
     api.deleteAdminRsvp.mockResolvedValue(undefined);

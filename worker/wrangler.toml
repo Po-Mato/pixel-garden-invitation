@@ -7,6 +7,7 @@ crons = ["17 15 * * *"]
 
 [vars]
 RSVP_ALLOWED_ORIGINS = "https://po-mato.github.io,http://localhost:5173,http://127.0.0.1:5173"
+ADMIN_NOTIFICATION_BASE_URL = "https://po-mato.github.io/pixel-garden-invitation"
 
 [[durable_objects.bindings]]
 name = "GARDEN_ROOM"

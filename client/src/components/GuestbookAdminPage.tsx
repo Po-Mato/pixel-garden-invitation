@@ -13,6 +13,7 @@ import {
 } from "../api/weddingApi";
 import { downloadGuestbookCsv } from "../invitation/guestbookCsv";
 import { clearAdminSession, loadAdminSession, saveAdminSession } from "../invitation/rsvpStorage";
+import { AdminNotificationInbox } from "./AdminNotificationInbox";
 
 type VisibilityFilter = "all" | "visible" | "hidden";
 
@@ -289,6 +290,11 @@ export function GuestbookAdminPage() {
             </button>
           </div>
         </header>
+
+        <AdminNotificationInbox
+          token={session.token}
+          onUnauthorized={() => logout("관리자 세션이 만료되었습니다. 다시 로그인해 주세요.")}
+        />
 
         {error && <p className="rsvp-admin-message rsvp-admin-message--error" role="alert">{error}</p>}
         {status && <p className="rsvp-admin-message" role="status">{status}</p>}

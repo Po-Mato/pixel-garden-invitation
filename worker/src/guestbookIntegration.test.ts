@@ -27,7 +27,8 @@ const migrationFiles = [
   "0002_update_invitation_details.sql",
   "0003_production_rsvp.sql",
   "0004_rsvp_consent_policy.sql",
-  "0005_production_guestbook.sql"
+  "0005_production_guestbook.sql",
+  "0006_admin_notifications.sql"
 ] as const;
 
 function applyMigrations(database: SqliteDatabase): void {
@@ -126,6 +127,12 @@ describe("production guestbook API with migrated SQLite", () => {
         message: "오래오래 행복하세요",
         revision: 2
       });
+      expect(database.prepare(`
+        SELECT kind, source_id FROM admin_notifications ORDER BY created_at, kind
+      `).all()).toEqual([
+        { kind: "guestbook_created", source_id: created.body.response.id },
+        { kind: "guestbook_updated", source_id: created.body.response.id }
+      ]);
 
       const deleted = await handleApiRequest(
         request(
@@ -209,6 +216,7 @@ describe("production guestbook API with migrated SQLite", () => {
         message: "수정한 축하 메시지",
         revision: 2
       });
+      expect(database.prepare("SELECT COUNT(*) AS count FROM admin_notifications").get()).toEqual({ count: 1 });
 
       const hiddenResponse = await handleApiRequest(
         request(

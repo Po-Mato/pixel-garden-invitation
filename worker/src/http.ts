@@ -13,14 +13,19 @@ import {
   updateGuestbook
 } from "./guestbookRepository";
 import { createRsvp, deleteRsvp, findRsvp, getRsvpPolicy, listRsvps, updateRsvp } from "./rsvpRepository";
+import { adminNotificationEmailConfigured } from "./adminNotificationEmail";
+import { listAdminNotifications, markAdminNotificationsRead } from "./adminNotificationRepository";
+import { publishAdminNotification } from "./adminNotificationService";
 import { createEditCredential, hashClientKey, hashEditToken, verifyAdminToken } from "./security";
 import { parseGuestbookPayload, parseRsvpPayload } from "./validation";
+import type { GuestbookOwnedMessage, RsvpRecord } from "@wedding-game/shared";
 import type { Env } from "./index";
 
 type WriteLimiter = Pick<MemoryRateLimiter, "allow">;
 
 type HandleApiRequestOptions = {
   limiter?: WriteLimiter;
+  waitUntil?: (task: Promise<unknown>) => void;
 };
 
 function createWriteLimiter(): MemoryRateLimiter {
@@ -118,6 +123,19 @@ function readGuestbookModeration(value: unknown): { hidden: boolean; revision: n
   return { hidden: value.hidden, revision };
 }
 
+function readNotificationReadRequest(value: unknown): { notificationIds: string[] | null } | null {
+  if (!isRecord(value)) return null;
+  if (value.markAll === true) return { notificationIds: null };
+  if (
+    !Array.isArray(value.notificationIds)
+    || value.notificationIds.length < 1
+    || value.notificationIds.length > 50
+    || !value.notificationIds.every((item) => typeof item === "string" && /^notification_[\w-]+$/.test(item))
+  ) return null;
+
+  return { notificationIds: [...new Set(value.notificationIds as string[])] };
+}
+
 function readBearerToken(request: Request): string | null {
   const match = request.headers.get("authorization")?.match(/^Bearer ([^\s]+)$/);
   return match?.[1] ?? null;
@@ -149,6 +167,58 @@ function constantTimeEqual(left: string, right: string): boolean {
 async function ownsRecord(token: string, editTokenHash: string | null): Promise<boolean> {
   if (!editTokenHash) return false;
   return constantTimeEqual(await hashEditToken(token), editTokenHash);
+}
+
+function rsvpNotificationBody(response: RsvpRecord): string {
+  const side = response.side === "bride" ? "신부측" : response.side === "groom" ? "신랑측" : "구분 없음";
+  const attendance = response.attendance === "yes"
+    ? "참석"
+    : response.attendance === "no" ? "불참" : "미정";
+  const party = response.attendance === "no" ? "" : ` · ${response.partySize}명`;
+  return `${response.guestName} · ${side} · ${attendance}${party}`;
+}
+
+function guestbookNotificationBody(response: GuestbookOwnedMessage): string {
+  const message = response.message.length > 90 ? `${response.message.slice(0, 89)}…` : response.message;
+  return `${response.nickname} · ${message}`;
+}
+
+async function notifyRsvp(
+  env: Env,
+  invitationId: string,
+  response: RsvpRecord,
+  kind: "rsvp_created" | "rsvp_updated",
+  expiresAt: string | null,
+  options: HandleApiRequestOptions
+): Promise<void> {
+  if (!expiresAt) return;
+  await publishAdminNotification(env, {
+    invitationId,
+    kind,
+    sourceId: response.id,
+    title: kind === "rsvp_created" ? "새 참석 답변" : "참석 답변 수정",
+    body: rsvpNotificationBody(response),
+    expiresAt
+  }, options.waitUntil);
+}
+
+async function notifyGuestbook(
+  env: Env,
+  invitationId: string,
+  response: GuestbookOwnedMessage,
+  kind: "guestbook_created" | "guestbook_updated",
+  expiresAt: string | null,
+  options: HandleApiRequestOptions
+): Promise<void> {
+  if (!expiresAt) return;
+  await publishAdminNotification(env, {
+    invitationId,
+    kind,
+    sourceId: response.id,
+    title: kind === "guestbook_created" ? "새 방명록 메시지" : "방명록 메시지 수정",
+    body: guestbookNotificationBody(response),
+    expiresAt
+  }, options.waitUntil);
 }
 
 export function resetHttpRateLimiterForTest(): void {
@@ -196,7 +266,10 @@ async function handleOwnedRsvp(
       expectedRevision,
       updatedAt: new Date().toISOString()
     });
-    if (response) return json(response);
+    if (response) {
+      await notifyRsvp(env, invitationId, response, "rsvp_updated", policy.deleteAt, options);
+      return json(response);
+    }
 
     const existing = await findRsvp(env.DB, invitationId, rsvpId);
     return existing ? json({ error: "conflict" }, 409) : json({ error: "not_found" }, 404);
@@ -249,7 +322,15 @@ async function handleOwnedGuestbook(
       expectedRevision,
       updatedAt: new Date().toISOString()
     });
-    if (response) return json(response);
+    if (response) {
+      try {
+        const deleteAt = await getGuestbookDeleteAt(env.DB, invitationId);
+        await notifyGuestbook(env, invitationId, response, "guestbook_updated", deleteAt ?? null, options);
+      } catch {
+        console.error(JSON.stringify({ event: "admin_notification_policy_lookup_failed", kind: "guestbook_updated" }));
+      }
+      return json(response);
+    }
 
     const existing = await findGuestbook(env.DB, invitationId, guestbookId);
     return existing ? json({ error: "conflict" }, 409) : json({ error: "not_found" }, 404);
@@ -412,6 +493,41 @@ async function handleAdminGuestbook(
   }
 }
 
+async function handleAdminNotifications(
+  request: Request,
+  env: Env,
+  invitationId: string
+): Promise<Response> {
+  if (request.method !== "GET" && request.method !== "PATCH") {
+    return adminJson({ error: "not_found" }, 404);
+  }
+
+  try {
+    const authenticated = await authenticateAdmin(request, env, invitationId);
+    if (authenticated === null) return adminJson({ error: "internal_error" }, 500);
+    if (!authenticated) return adminJson({ error: "unauthorized" }, 401);
+
+    if (request.method === "PATCH") {
+      const payload = readNotificationReadRequest(await readJson(request));
+      if (!payload) return adminJson({ error: "invalid_request" }, 400);
+      await markAdminNotificationsRead(
+        env.DB,
+        invitationId,
+        payload.notificationIds,
+        new Date().toISOString()
+      );
+    }
+
+    return adminJson(await listAdminNotifications(
+      env.DB,
+      invitationId,
+      adminNotificationEmailConfigured(env)
+    ));
+  } catch {
+    return adminJson({ error: "internal_error" }, 500);
+  }
+}
+
 async function handleGuestbookCollection(
   request: Request,
   env: Env,
@@ -477,6 +593,8 @@ async function handleGuestbookCollection(
       createdAt: now.toISOString()
     });
 
+    await notifyGuestbook(env, invitationId, response, "guestbook_created", deleteAt, options);
+
     return json({
       response,
       credential: { guestbookId, editToken: credential.editToken }
@@ -495,6 +613,9 @@ async function handleApiRequestWithoutCors(
   const url = new URL(request.url);
   const adminSessionMatch = url.pathname.match(/^\/api\/invitations\/([^/]+)\/admin\/session$/);
   if (adminSessionMatch) return handleAdminSession(request, env, clientKey, adminSessionMatch[1]);
+
+  const adminNotificationsMatch = url.pathname.match(/^\/api\/invitations\/([^/]+)\/admin\/notifications$/);
+  if (adminNotificationsMatch) return handleAdminNotifications(request, env, adminNotificationsMatch[1]);
 
   const adminRsvpMatch = url.pathname.match(/^\/api\/invitations\/([^/]+)\/admin\/rsvps(?:\/([^/]+))?$/);
   if (adminRsvpMatch) return handleAdminRsvps(request, env, adminRsvpMatch[1], adminRsvpMatch[2]);
@@ -545,6 +666,8 @@ async function handleApiRequestWithoutCors(
         consentedAt: new Date().toISOString(),
         editTokenHash: credential.editTokenHash
       });
+
+      await notifyRsvp(env, invitationId, response, "rsvp_created", policy.deleteAt, options);
 
       return json({
         response,

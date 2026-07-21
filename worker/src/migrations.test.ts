@@ -22,7 +22,8 @@ const migrationFiles = [
   "0002_update_invitation_details.sql",
   "0003_production_rsvp.sql",
   "0004_rsvp_consent_policy.sql",
-  "0005_production_guestbook.sql"
+  "0005_production_guestbook.sql",
+  "0006_admin_notifications.sql"
 ] as const;
 
 const expectedInvitation = {
@@ -332,6 +333,35 @@ describe("invitation migrations", () => {
       expect(() => database.exec(`
         INSERT INTO guestbook_messages (id, invitation_id, nickname, message, is_hidden)
         VALUES ('guestbook_bad_hidden', 'sample-garden', '하객', '축하', 2)
+      `)).toThrow(/CHECK constraint failed/);
+    } finally {
+      database.close();
+    }
+  });
+
+  it("관리자 알림 유형과 보존 기한 제약을 강제한다", () => {
+    const database = new DatabaseSync(":memory:");
+
+    try {
+      for (const filename of migrationFiles) database.exec(readMigration(filename));
+
+      expect(() => database.exec(`
+        INSERT INTO admin_notifications (
+          id, invitation_id, kind, source_id, title, body, created_at, expires_at
+        ) VALUES (
+          'notification_valid', 'sample-garden', 'rsvp_created', 'rsvp_1',
+          '새 참석 답변', '김하객 · 신부측 · 참석',
+          '2026-07-21T00:00:00.000Z', '2027-05-31T14:59:59.000Z'
+        )
+      `)).not.toThrow();
+      expect(() => database.exec(`
+        INSERT INTO admin_notifications (
+          id, invitation_id, kind, source_id, title, body, created_at, expires_at
+        ) VALUES (
+          'notification_invalid', 'sample-garden', 'unknown', 'source_1',
+          '잘못된 알림', '본문',
+          '2026-07-21T00:00:00.000Z', '2027-05-31T14:59:59.000Z'
+        )
       `)).toThrow(/CHECK constraint failed/);
     } finally {
       database.close();
