@@ -29,6 +29,13 @@ describe("invitationContent", () => {
       guestbook: {
         deleteAt: "2027-05-31T23:59:59+09:00"
       },
+      giftAccounts: {
+        notice: "축하의 마음만으로도 충분히 감사드립니다.",
+        accounts: expect.arrayContaining([
+          expect.objectContaining({ id: "groom", side: "groom", relation: "신랑", name: "이승재" }),
+          expect.objectContaining({ id: "bride", side: "bride", relation: "신부", name: "이건희" })
+        ])
+      },
       venue: {
         name: "MJ컨벤션",
         hall: "5층 파티오볼룸",
@@ -41,6 +48,28 @@ describe("invitationContent", () => {
         }
       }
     });
+  });
+
+  it("신랑·신부와 양가 부모님 계좌 및 간편송금 자리를 각각 마련한다", () => {
+    const accounts = invitationContent.event.giftAccounts.accounts;
+
+    expect(accounts.map((account) => account.id)).toEqual([
+      "groom",
+      "groom-father",
+      "groom-mother",
+      "bride",
+      "bride-father",
+      "bride-mother"
+    ]);
+    expect(accounts.filter((account) => account.side === "groom")).toHaveLength(3);
+    expect(accounts.filter((account) => account.side === "bride")).toHaveLength(3);
+    expect(accounts.every((account) => (
+      account.bank === ""
+      && account.accountNumber === ""
+      && account.holder === ""
+      && account.kakaoPayUrl === ""
+      && account.tossUrl === ""
+    ))).toBe(true);
   });
 
   it("contains the confirmed wedding directions", () => {

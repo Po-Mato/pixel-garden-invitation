@@ -47,4 +47,12 @@ describe("청첩장 링크 미리보기 메타데이터", () => {
     expect(namedMeta("twitter:image")).toBe(meta("og:image"));
     expect(namedMeta("twitter:image:alt")).toBe(meta("og:image:alt"));
   });
+
+  it("계좌 및 간편송금 정보는 링크 미리보기 메타데이터에 포함하지 않는다", () => {
+    const metadata = Array.from(document.querySelectorAll("meta"))
+      .map((element) => element.getAttribute("content") ?? "")
+      .join(" ");
+
+    expect(metadata).not.toMatch(/계좌|예금주|카카오페이|토스/);
+  });
 });

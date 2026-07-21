@@ -33,6 +33,10 @@ export type WeddingEvent = {
   guestbook: {
     deleteAt: string;
   };
+  giftAccounts: {
+    notice: string;
+    accounts: readonly WeddingGiftAccount[];
+  };
   venue: {
     name: string;
     hall: string;
@@ -44,6 +48,24 @@ export type WeddingEvent = {
       parking: string;
     };
   };
+};
+
+export type WeddingGiftAccount = {
+  id:
+    | "groom"
+    | "groom-father"
+    | "groom-mother"
+    | "bride"
+    | "bride-father"
+    | "bride-mother";
+  side: "groom" | "bride";
+  relation: "신랑" | "신랑 아버지" | "신랑 어머니" | "신부" | "신부 아버지" | "신부 어머니";
+  name: string;
+  bank: string;
+  accountNumber: string;
+  holder: string;
+  kakaoPayUrl: string;
+  tossUrl: string;
 };
 
 export const invitationContent = {
@@ -60,6 +82,77 @@ export const invitationContent = {
     },
     guestbook: {
       deleteAt: "2027-05-31T23:59:59+09:00"
+    },
+    giftAccounts: {
+      notice: "축하의 마음만으로도 충분히 감사드립니다.",
+      accounts: [
+        {
+          id: "groom",
+          side: "groom",
+          relation: "신랑",
+          name: "이승재",
+          bank: "",
+          accountNumber: "",
+          holder: "",
+          kakaoPayUrl: "",
+          tossUrl: ""
+        },
+        {
+          id: "groom-father",
+          side: "groom",
+          relation: "신랑 아버지",
+          name: "",
+          bank: "",
+          accountNumber: "",
+          holder: "",
+          kakaoPayUrl: "",
+          tossUrl: ""
+        },
+        {
+          id: "groom-mother",
+          side: "groom",
+          relation: "신랑 어머니",
+          name: "",
+          bank: "",
+          accountNumber: "",
+          holder: "",
+          kakaoPayUrl: "",
+          tossUrl: ""
+        },
+        {
+          id: "bride",
+          side: "bride",
+          relation: "신부",
+          name: "이건희",
+          bank: "",
+          accountNumber: "",
+          holder: "",
+          kakaoPayUrl: "",
+          tossUrl: ""
+        },
+        {
+          id: "bride-father",
+          side: "bride",
+          relation: "신부 아버지",
+          name: "",
+          bank: "",
+          accountNumber: "",
+          holder: "",
+          kakaoPayUrl: "",
+          tossUrl: ""
+        },
+        {
+          id: "bride-mother",
+          side: "bride",
+          relation: "신부 어머니",
+          name: "",
+          bank: "",
+          accountNumber: "",
+          holder: "",
+          kakaoPayUrl: "",
+          tossUrl: ""
+        }
+      ]
     },
     venue: {
       name: "MJ컨벤션",

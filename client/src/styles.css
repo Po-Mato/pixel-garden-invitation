@@ -2893,6 +2893,235 @@ select {
   box-shadow: 0 0 0 4px var(--sage), 2px 2px 0 rgba(89, 72, 63, 0.42);
 }
 
+.gift-account-sheet {
+  display: grid;
+  min-width: 0;
+  gap: 14px;
+  line-height: 1.45;
+}
+
+.gift-account-sheet__intro {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  color: var(--ink);
+}
+
+.gift-account-sheet__intro svg {
+  width: 24px;
+  height: 24px;
+  color: var(--camellia);
+}
+
+.gift-account-sheet__intro p {
+  font-size: 14px;
+  font-weight: 800;
+  word-break: keep-all;
+}
+
+.gift-account-sheet__tabs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+  padding: 4px;
+  border: 2px solid #6d6159;
+  background: color-mix(in srgb, var(--sage) 18%, var(--paper));
+  box-shadow: inset 2px 2px 0 rgba(89, 72, 63, 0.12);
+}
+
+.gift-account-sheet__tabs button {
+  min-height: 44px;
+  border: 0;
+  padding: 8px 10px;
+  background: transparent;
+  color: var(--ink-soft);
+  box-shadow: none;
+}
+
+.gift-account-sheet__tabs button[aria-selected="true"] {
+  border: 2px solid #765665;
+  background: var(--paper-raised);
+  color: var(--ink);
+  box-shadow: 2px 2px 0 rgba(89, 72, 63, 0.38);
+}
+
+.gift-account-sheet__panel,
+.gift-account-sheet__accounts {
+  display: grid;
+  min-width: 0;
+  gap: 10px;
+}
+
+.gift-account-sheet__empty {
+  display: grid;
+  justify-items: center;
+  gap: 7px;
+  min-height: 156px;
+  align-content: center;
+  padding: 22px 18px;
+  border: 2px dashed color-mix(in srgb, var(--sage) 72%, #59483f);
+  background: rgba(255, 252, 233, 0.52);
+  text-align: center;
+}
+
+.gift-account-sheet__empty svg {
+  width: 28px;
+  height: 28px;
+  color: var(--sage);
+}
+
+.gift-account-sheet__empty strong {
+  font-size: 15px;
+}
+
+.gift-account-sheet__empty span {
+  max-width: 270px;
+  color: var(--ink-soft);
+  font-size: 13px;
+  word-break: keep-all;
+}
+
+.gift-account-sheet__account {
+  border: 2px solid #6d6159;
+  background: var(--paper-raised);
+  box-shadow: 3px 3px 0 rgba(89, 72, 63, 0.34);
+}
+
+.gift-account-sheet__account summary {
+  display: flex;
+  min-height: 52px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  cursor: pointer;
+  list-style: none;
+}
+
+.gift-account-sheet__account summary::-webkit-details-marker {
+  display: none;
+}
+
+.gift-account-sheet__account summary > span {
+  display: inline-flex;
+  min-width: 0;
+  align-items: center;
+  gap: 8px;
+}
+
+.gift-account-sheet__account summary svg {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+  color: var(--sage);
+}
+
+.gift-account-sheet__account summary > svg {
+  color: var(--ink-soft);
+  transition: transform 160ms ease;
+}
+
+.gift-account-sheet__account[open] summary > svg {
+  transform: rotate(180deg);
+}
+
+.gift-account-sheet__account-body {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+  border-top: 1px dashed color-mix(in srgb, var(--sage) 64%, var(--paper-raised));
+}
+
+.gift-account-sheet__number-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 64px;
+  align-items: center;
+  gap: 10px;
+}
+
+.gift-account-sheet__number-row > div {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+}
+
+.gift-account-sheet__number-row span {
+  color: var(--ink-soft);
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+.gift-account-sheet__number-row strong {
+  font-size: 16px;
+  letter-spacing: 0;
+  overflow-wrap: anywhere;
+  user-select: text;
+}
+
+.gift-account-sheet__number-row button,
+.gift-account-sheet__transfer-links a {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  border: 2px solid #765665;
+  padding: 7px;
+  background: var(--paper-raised);
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 900;
+  line-height: 1.2;
+  text-decoration: none;
+  box-shadow: 2px 2px 0 rgba(89, 72, 63, 0.38);
+}
+
+.gift-account-sheet__number-row button svg,
+.gift-account-sheet__transfer-links svg {
+  width: 15px;
+  height: 15px;
+}
+
+.gift-account-sheet__transfer-links {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.gift-account-sheet__transfer-links a:first-child {
+  border-color: color-mix(in srgb, #f5cf36 78%, #59483f);
+  background: color-mix(in srgb, #f5cf36 24%, var(--paper-raised));
+}
+
+.gift-account-sheet__transfer-links a:last-child {
+  border-color: color-mix(in srgb, #3977d9 62%, #59483f);
+  background: color-mix(in srgb, #dbe8ff 52%, var(--paper-raised));
+}
+
+.gift-account-sheet__status {
+  min-height: 1.45em;
+  color: var(--ink-soft);
+  font-size: 12px;
+}
+
+.gift-account-sheet__privacy {
+  padding-top: 10px;
+  border-top: 1px solid color-mix(in srgb, var(--gold) 52%, var(--paper-raised));
+  color: var(--ink-soft);
+  font-size: 11px;
+  text-align: center;
+  word-break: keep-all;
+}
+
+.gift-account-sheet button:focus-visible,
+.gift-account-sheet a:focus-visible,
+.gift-account-sheet summary:focus-visible {
+  outline: 2px solid #fff8cf;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px var(--sage), 2px 2px 0 rgba(89, 72, 63, 0.42);
+}
+
 @media (max-height: 640px) {
   .phone-frame:has(.entry-screen) {
     padding-top: 9px;

@@ -36,6 +36,7 @@ import { connectRealtimeWithRetry, createMoveThrottle, getRoomUrl } from "../rea
 import type { EntryProfile } from "./EntryScreen";
 import { CharacterSprite } from "./CharacterSprite";
 import { DirectionsSheet } from "./DirectionsSheet";
+import { GiftAccountSheet } from "./GiftAccountSheet";
 import { SpotModal } from "./SpotModal";
 import { VirtualJoystick } from "./VirtualJoystick";
 import { WeddingEventSummary } from "./WeddingEventSummary";
@@ -121,12 +122,13 @@ export function GameWorld({ profile }: GameWorldProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [calendarSheetOpen, setCalendarSheetOpen] = useState(false);
   const [directionsSheetOpen, setDirectionsSheetOpen] = useState(false);
+  const [giftAccountSheetOpen, setGiftAccountSheetOpen] = useState(false);
   const [travelStatus, setTravelStatus] = useState("우리 집에서 여정을 시작해요");
   const [viewport, setViewport] = useState<ViewportSize>(defaultViewport);
   const [remoteGuests, setRemoteGuests] = useState<RoomGuest[]>([]);
   const [realtimeStatus, setRealtimeStatus] = useState<RealtimeStatus>("offline");
   const [loadedBackgroundZoneId, setLoadedBackgroundZoneId] = useState<WorldZoneId | null>(null);
-  const nestedMenuSheetOpen = calendarSheetOpen || directionsSheetOpen;
+  const nestedMenuSheetOpen = calendarSheetOpen || directionsSheetOpen || giftAccountSheetOpen;
 
   const mapViewportRef = useRef<HTMLDivElement | null>(null);
   const menuButtonRef = useRef<HTMLButtonElement | null>(null);
@@ -174,6 +176,7 @@ export function GameWorld({ profile }: GameWorldProps) {
   const closeMenu = useCallback(() => {
     setCalendarSheetOpen(false);
     setDirectionsSheetOpen(false);
+    setGiftAccountSheetOpen(false);
     setMenuOpen(false);
   }, []);
 
@@ -283,6 +286,7 @@ export function GameWorld({ profile }: GameWorldProps) {
     setJoystickVector({ x: 0, y: 0 });
     setCalendarSheetOpen(false);
     setDirectionsSheetOpen(false);
+    setGiftAccountSheetOpen(false);
     setMenuOpen(false);
     setActiveSpotId(null);
     setTravelStatus(`${portal.label} 도착`);
@@ -948,9 +952,21 @@ export function GameWorld({ profile }: GameWorldProps) {
               {invitationContent.spots.map((item) => (
                 <button key={item.id} type="button" onClick={() => openSpot(item.id, true)}>{item.actionLabel}</button>
               ))}
+              <button
+                type="button"
+                onClick={() => {
+                  pauseWorldInput();
+                  setGiftAccountSheetOpen(true);
+                }}
+              >
+                마음 전하실 곳
+              </button>
             </div>
           </section>
         </>
+      ) : null}
+      {giftAccountSheetOpen ? (
+        <GiftAccountSheet onClose={() => setGiftAccountSheetOpen(false)} />
       ) : null}
       {activeSpotId === "directions" ? (
         <DirectionsSheet onClose={closeActiveSpot} />
