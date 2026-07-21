@@ -5,7 +5,9 @@ import { WeddingEventSummary } from "./WeddingEventSummary";
 
 vi.mock("../invitation/browserActions", () => ({
   copyText: vi.fn(),
-  downloadIcs: vi.fn()
+  downloadIcs: vi.fn(),
+  shareContent: vi.fn(),
+  isShareAbortError: vi.fn(() => false)
 }));
 
 afterEach(() => {
@@ -29,6 +31,16 @@ it("compact 요약에서 공통 오시는 길 시트를 연다", () => {
   fireEvent.click(screen.getByRole("button", { name: "오시는 길" }));
 
   expect(screen.getByRole("dialog", { name: "오시는 길" })).toHaveTextContent("소사역 1번 출구");
+});
+
+it("compact 요약에서 공개 초대장 공유 시트를 연다", () => {
+  render(<WeddingEventSummary variant="compact" />);
+
+  fireEvent.click(screen.getByRole("button", { name: "초대장 공유" }));
+
+  const dialog = screen.getByRole("dialog", { name: "초대장 공유" });
+  expect(dialog).toHaveTextContent("이승재 · 이건희");
+  expect(dialog).toHaveTextContent("MJ컨벤션 5층 파티오볼룸");
 });
 
 it("당일 미리보기에서는 캘린더 대신 당일 안내를 우선 제공한다", () => {

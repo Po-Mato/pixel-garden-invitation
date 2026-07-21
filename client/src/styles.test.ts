@@ -174,6 +174,19 @@ describe("wedding event access", () => {
     expect(styles).toContain(".wedding-day-sheet a:focus-visible");
   });
 
+  it("공유 진입점과 공유 시트에 안정적인 터치 영역을 제공한다", () => {
+    expect(styles).toMatch(
+      /\.invitation-share-trigger--icon\s*\{[^}]*width:\s*40px;[^}]*height:\s*40px;/s
+    );
+    expect(styles).toMatch(
+      /\.world-menu-grid \.invitation-share-trigger--menu\s*\{[^}]*display:\s*inline-flex;/s
+    );
+    expect(styles).toMatch(
+      /\.invitation-share-sheet__actions > button\s*\{[^}]*min-height:\s*48px;/s
+    );
+    expect(styles).toContain(".invitation-share-sheet button:focus-visible");
+  });
+
   it("keeps the complete entry flow visible in short landscape viewports", () => {
     const landscapeBlock = styles.match(
       /@media \(orientation: landscape\) and \(max-height: 500px\)\s*\{([\s\S]*?)\n}/

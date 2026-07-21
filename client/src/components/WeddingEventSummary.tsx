@@ -10,6 +10,7 @@ import {
 } from "../invitation/calendarEvent";
 import { CalendarSaveSheet } from "./CalendarSaveSheet";
 import { DirectionsSheet } from "./DirectionsSheet";
+import { InvitationShareAccess } from "./InvitationShareAccess";
 import { WeddingDayQuickAccess } from "./WeddingDayQuickAccess";
 
 type WeddingEventSummaryProps = {
@@ -94,7 +95,7 @@ export function WeddingEventSummary({
           >
             <Copy aria-hidden="true" />
           </button>
-        ) : null}
+        ) : <InvitationShareAccess variant="icon" />}
       </div>
       <div className="wedding-event-summary__actions">
         <button

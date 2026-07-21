@@ -1,6 +1,12 @@
 import { Blob as NodeBlob } from "node:buffer";
 import { describe, expect, it, vi } from "vitest";
-import { copyText, downloadIcs } from "./browserActions";
+import {
+  copyText,
+  downloadIcs,
+  isShareAbortError,
+  NativeShareUnavailableError,
+  shareContent
+} from "./browserActions";
 
 describe("wedding browser actions", () => {
   it("writes exact text to the supplied clipboard", async () => {
@@ -15,6 +21,22 @@ describe("wedding browser actions", () => {
     const writeText = vi.fn().mockRejectedValue(new Error("denied"));
 
     await expect(copyText("예식 일정", { writeText })).rejects.toThrow("denied");
+  });
+
+  it("passes exact data to the supplied native share function", async () => {
+    const share = vi.fn().mockResolvedValue(undefined);
+    const data = { title: "결혼식", text: "초대합니다.", url: "https://example.test/" };
+
+    await shareContent(data, share);
+
+    expect(share).toHaveBeenCalledWith(data);
+  });
+
+  it("reports native share support separately from a user cancellation", async () => {
+    await expect(shareContent({ title: "결혼식" }, undefined))
+      .rejects.toBeInstanceOf(NativeShareUnavailableError);
+    expect(isShareAbortError(new DOMException("취소", "AbortError"))).toBe(true);
+    expect(isShareAbortError(new Error("blocked"))).toBe(false);
   });
 
   it("downloads one CRLF UTF-8 calendar Blob and revokes its URL", async () => {

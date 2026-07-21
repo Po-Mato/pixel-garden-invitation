@@ -1,4 +1,12 @@
 type ClipboardWriter = { writeText(text: string): Promise<void> };
+type NativeShare = (data: ShareData) => Promise<void>;
+
+export class NativeShareUnavailableError extends Error {
+  constructor() {
+    super("이 브라우저에서는 시스템 공유창을 사용할 수 없습니다.");
+    this.name = "NativeShareUnavailableError";
+  }
+}
 
 export type CalendarDownloadEnvironment = {
   createObjectUrl(blob: Blob): string;
@@ -29,6 +37,25 @@ export async function copyText(
   }
 
   await clipboard.writeText(text);
+}
+
+export async function shareContent(
+  data: ShareData,
+  share: NativeShare | undefined = typeof navigator.share === "function"
+    ? navigator.share.bind(navigator)
+    : undefined
+): Promise<void> {
+  if (!share) throw new NativeShareUnavailableError();
+  await share(data);
+}
+
+export function isShareAbortError(error: unknown): boolean {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "name" in error &&
+    (error as { name?: unknown }).name === "AbortError"
+  );
 }
 
 export function downloadIcs(

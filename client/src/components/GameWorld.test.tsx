@@ -12,7 +12,9 @@ import { GameWorld } from "./GameWorld";
 
 vi.mock("../invitation/browserActions", () => ({
   copyText: vi.fn(),
-  downloadIcs: vi.fn()
+  downloadIcs: vi.fn(),
+  shareContent: vi.fn(),
+  isShareAbortError: vi.fn(() => false)
 }));
 
 const groomNpcLabel = `신랑 ${invitationContent.event.couple.groom}`;
@@ -350,6 +352,26 @@ describe("GameWorld", () => {
 
     expect(screen.getByRole("dialog")).toHaveTextContent("축하 메시지");
     expect(screen.getByLabelText("우리 집 지도")).toBeInTheDocument();
+  });
+
+  it("초대장 메뉴의 공유 시트를 열 때 월드 입력을 멈춘다", () => {
+    render(<GameWorld profile={profile} />);
+    const map = screen.getByTestId("world-map-viewport");
+    const player = screen.getByLabelText("하객1");
+    mockMapRect(map);
+
+    fireEvent.click(map, { clientX: 265, clientY: 375 });
+    advanceAnimation(0);
+    const pausedAt = { left: player.style.left, top: player.style.top };
+
+    fireEvent.click(screen.getByRole("button", { name: "초대장 메뉴" }));
+    const menu = screen.getByRole("dialog", { name: "초대장 바로가기" });
+    fireEvent.click(within(menu).getByRole("button", { name: "초대장 공유" }));
+    [240, 480, 720].forEach(advanceAnimation);
+
+    expect(screen.getByRole("dialog", { name: "초대장 공유" })).toBeInTheDocument();
+    expect(menu).toHaveAttribute("aria-hidden", "true");
+    expect(player).toHaveStyle(pausedAt);
   });
 
   it.each([

@@ -38,6 +38,7 @@ import { CharacterSprite } from "./CharacterSprite";
 import { DirectionsSheet } from "./DirectionsSheet";
 import { FamilyContactSheet } from "./FamilyContactSheet";
 import { GiftAccountSheet } from "./GiftAccountSheet";
+import { InvitationShareAccess } from "./InvitationShareAccess";
 import { SpotModal } from "./SpotModal";
 import { VirtualJoystick } from "./VirtualJoystick";
 import { WeddingEventSummary } from "./WeddingEventSummary";
@@ -127,6 +128,7 @@ export function GameWorld({ profile, weddingDayPreview = false }: GameWorldProps
   const [giftAccountSheetOpen, setGiftAccountSheetOpen] = useState(false);
   const [familyContactSheetOpen, setFamilyContactSheetOpen] = useState(false);
   const [weddingDaySheetOpen, setWeddingDaySheetOpen] = useState(false);
+  const [shareSheetOpen, setShareSheetOpen] = useState(false);
   const [travelStatus, setTravelStatus] = useState("우리 집에서 여정을 시작해요");
   const [viewport, setViewport] = useState<ViewportSize>(defaultViewport);
   const [remoteGuests, setRemoteGuests] = useState<RoomGuest[]>([]);
@@ -136,7 +138,8 @@ export function GameWorld({ profile, weddingDayPreview = false }: GameWorldProps
     || directionsSheetOpen
     || giftAccountSheetOpen
     || familyContactSheetOpen
-    || weddingDaySheetOpen;
+    || weddingDaySheetOpen
+    || shareSheetOpen;
 
   const mapViewportRef = useRef<HTMLDivElement | null>(null);
   const menuButtonRef = useRef<HTMLButtonElement | null>(null);
@@ -187,6 +190,7 @@ export function GameWorld({ profile, weddingDayPreview = false }: GameWorldProps
     setGiftAccountSheetOpen(false);
     setFamilyContactSheetOpen(false);
     setWeddingDaySheetOpen(false);
+    setShareSheetOpen(false);
     setMenuOpen(false);
   }, []);
 
@@ -299,6 +303,7 @@ export function GameWorld({ profile, weddingDayPreview = false }: GameWorldProps
     setGiftAccountSheetOpen(false);
     setFamilyContactSheetOpen(false);
     setWeddingDaySheetOpen(false);
+    setShareSheetOpen(false);
     setMenuOpen(false);
     setActiveSpotId(null);
     setTravelStatus(`${portal.label} 도착`);
@@ -409,6 +414,11 @@ export function GameWorld({ profile, weddingDayPreview = false }: GameWorldProps
   const handleWeddingDaySheetOpenChange = useCallback((open: boolean) => {
     if (open) pauseWorldInput();
     setWeddingDaySheetOpen(open);
+  }, [pauseWorldInput]);
+
+  const handleShareSheetOpenChange = useCallback((open: boolean) => {
+    if (open) pauseWorldInput();
+    setShareSheetOpen(open);
   }, [pauseWorldInput]);
 
   const openFamilyContacts = useCallback(() => {
@@ -1002,6 +1012,10 @@ export function GameWorld({ profile, weddingDayPreview = false }: GameWorldProps
               >
                 혼주 연락처
               </button>
+              <InvitationShareAccess
+                variant="menu"
+                onOpenChange={handleShareSheetOpenChange}
+              />
             </div>
           </section>
         </>
