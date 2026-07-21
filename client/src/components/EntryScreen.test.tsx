@@ -36,6 +36,15 @@ describe("EntryScreen", () => {
     expect(screen.getByRole("button", { name: "정원 입장" })).toBeDisabled();
   });
 
+  it("예식 당일 미리보기에서 입장 전에 퀵 안내를 연다", () => {
+    render(<EntryScreen onEnter={vi.fn()} weddingDayPreview />);
+
+    fireEvent.click(screen.getByRole("button", { name: /예식 당일 안내/ }));
+
+    expect(screen.getByRole("dialog", { name: "예식 당일 안내" })).toHaveTextContent("예식까지 45분");
+    expect(screen.getByRole("button", { name: "정원 입장" })).toBeDisabled();
+  });
+
   it("disables entry for initial or whitespace-only nickname", () => {
     const onEnter = vi.fn();
     render(<EntryScreen onEnter={onEnter} />);

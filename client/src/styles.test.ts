@@ -152,6 +152,28 @@ describe("wedding event access", () => {
     expect(styles).toMatch(/@media \(max-height:\s*640px\)[\s\S]*\.wedding-event-summary--compact/);
   });
 
+  it("예식 당일에는 캘린더 대신 터치 가능한 당일 안내를 우선 배치한다", () => {
+    expect(styles).toMatch(
+      /\.wedding-event-summary__actions:has\(\.wedding-day-trigger\)[^{]*\{[^}]*display:\s*none;/s
+    );
+    expect(styles).toMatch(
+      /\.wedding-day-trigger--world\s*\{[^}]*min-height:\s*52px;/s
+    );
+    expect(styles).toMatch(
+      /\.world-control-actions\s*\{[^}]*display:\s*flex;[^}]*gap:\s*8px;/s
+    );
+  });
+
+  it("당일 안내의 지도와 연락 수단을 작은 화면에서도 접근 가능하게 유지한다", () => {
+    expect(styles).toMatch(
+      /\.wedding-day-sheet__maps > a,[\s\S]*?\.wedding-day-sheet__actions > button\s*\{[^}]*min-height:\s*48px;/s
+    );
+    expect(styles).toMatch(
+      /@media \(max-width:\s*360px\)[\s\S]*?\.wedding-day-sheet__maps\s*\{[^}]*grid-template-columns:\s*minmax\(0, 1fr\);/s
+    );
+    expect(styles).toContain(".wedding-day-sheet a:focus-visible");
+  });
+
   it("keeps the complete entry flow visible in short landscape viewports", () => {
     const landscapeBlock = styles.match(
       /@media \(orientation: landscape\) and \(max-height: 500px\)\s*\{([\s\S]*?)\n}/

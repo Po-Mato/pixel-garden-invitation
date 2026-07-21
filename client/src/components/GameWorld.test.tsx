@@ -325,6 +325,23 @@ describe("GameWorld", () => {
     expect(player).toHaveStyle({ left: "285px", top: "555px" });
   });
 
+  it("당일 퀵 안내를 열 때 이동을 멈추고 지도 클릭을 발생시키지 않는다", () => {
+    render(<GameWorld profile={profile} weddingDayPreview />);
+    const map = screen.getByTestId("world-map-viewport");
+    const player = screen.getByLabelText("하객1");
+    mockMapRect(map);
+
+    fireEvent.click(map, { clientX: 265, clientY: 375 });
+    advanceAnimation(0);
+    const pausedAt = { left: player.style.left, top: player.style.top };
+
+    fireEvent.click(screen.getByRole("button", { name: /예식 당일 안내/ }));
+    [240, 480, 720].forEach(advanceAnimation);
+
+    expect(screen.getByRole("dialog", { name: "예식 당일 안내" })).toBeInTheDocument();
+    expect(player).toHaveStyle(pausedAt);
+  });
+
   it("opens invitation content without teleporting to its map", () => {
     render(<GameWorld profile={profile} />);
     fireEvent.click(screen.getByRole("button", { name: "초대장 메뉴" }));

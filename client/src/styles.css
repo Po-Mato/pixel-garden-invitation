@@ -424,6 +424,10 @@ select {
   white-space: nowrap;
 }
 
+.wedding-event-summary__actions:has(.wedding-day-trigger) > .wedding-event-summary__calendar {
+  display: none;
+}
+
 .wedding-event-summary__directions {
   border-color: color-mix(in srgb, var(--sage) 68%, #59483f);
   background:
@@ -436,6 +440,20 @@ select {
   background:
     linear-gradient(180deg, rgba(255, 255, 238, 0.72) 0 3px, transparent 3px),
     linear-gradient(135deg, var(--paper-raised), var(--gold-soft));
+}
+
+.wedding-day-trigger--summary {
+  border-color: #8b5e47;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 238, 0.76) 0 3px, transparent 3px),
+    linear-gradient(135deg, #fff0c7, #f1c6b7 56%, #c7ded1);
+  color: #4b312c;
+}
+
+.wedding-day-trigger--summary > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .wedding-event-summary__actions svg,
@@ -1538,6 +1556,64 @@ select {
 
 .world-control-dock > * {
   pointer-events: auto;
+}
+
+.world-control-actions {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  pointer-events: auto;
+}
+
+.wedding-day-trigger--world {
+  display: grid;
+  min-width: 82px;
+  min-height: 52px;
+  grid-template-columns: 20px minmax(0, 1fr);
+  place-items: center;
+  gap: 5px;
+  border: 2px solid #79534e;
+  padding: 5px 7px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 238, 0.88) 0 4px, transparent 4px),
+    linear-gradient(135deg, #fff0c7, #edc2bb 58%, #c9ddd0);
+  color: #44343d;
+  font-size: 10px;
+  font-weight: 900;
+  line-height: 1.05;
+  box-shadow:
+    inset 0 0 0 2px rgba(255, 250, 225, 0.88),
+    3px 3px 0 rgba(67, 66, 60, 0.42),
+    0 0 9px rgba(215, 151, 130, 0.32);
+}
+
+.wedding-day-trigger--world > svg {
+  width: 19px;
+  height: 19px;
+  color: #9b5d55;
+}
+
+.wedding-day-trigger--world > span {
+  display: grid;
+  gap: 2px;
+  white-space: nowrap;
+}
+
+.wedding-day-trigger--world small {
+  color: #8b5e47;
+  font-size: 7px;
+  line-height: 1;
+}
+
+.wedding-day-trigger--world:active {
+  transform: translate(2px, 2px);
+  box-shadow: inset 0 0 0 2px rgba(255, 250, 225, 0.88), 1px 1px 0 rgba(67, 66, 60, 0.42);
+}
+
+.wedding-day-trigger--world:focus-visible {
+  outline: 2px solid #fff8cf;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 5px #b67578, 3px 3px 0 rgba(67, 66, 60, 0.42);
 }
 
 .world-menu-button {
@@ -2905,6 +2981,175 @@ select {
   box-shadow: 0 0 0 4px var(--sage), 2px 2px 0 rgba(89, 72, 63, 0.42);
 }
 
+.wedding-day-sheet {
+  display: grid;
+  min-width: 0;
+  gap: 12px;
+  line-height: 1.45;
+}
+
+.wedding-day-sheet__status {
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr);
+  align-items: start;
+  gap: 10px;
+  padding: 14px;
+  border: 2px solid #8b5e47;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 239, 0.82) 0 4px, transparent 4px),
+    linear-gradient(135deg, #fff0c7, #f5d6c9 58%, #d7e7d9);
+  box-shadow: inset 0 0 0 2px rgba(255, 250, 225, 0.84), 3px 3px 0 rgba(89, 72, 63, 0.34);
+}
+
+.wedding-day-sheet__status[data-phase="in-progress"] {
+  border-color: #5d7c71;
+  background: linear-gradient(135deg, #e4f0df, #fff1c9 58%, #f1cbc4);
+}
+
+.wedding-day-sheet__status[data-phase="after"] {
+  border-color: #765f7f;
+  background: linear-gradient(135deg, #ece2ee, #f7deda 58%, #dce9df);
+}
+
+.wedding-day-sheet__status > svg {
+  width: 26px;
+  height: 26px;
+  color: #aa655c;
+}
+
+.wedding-day-sheet__status > div,
+.wedding-day-sheet__event > div,
+.wedding-day-sheet__travel > div {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+
+.wedding-day-sheet__status span {
+  color: #8b5e47;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.wedding-day-sheet__status strong {
+  font-size: 18px;
+  line-height: 1.25;
+  word-break: keep-all;
+}
+
+.wedding-day-sheet__status p {
+  margin-top: 3px;
+  color: var(--ink-soft);
+  font-size: 12px;
+  word-break: keep-all;
+}
+
+.wedding-day-sheet__event,
+.wedding-day-sheet__travel {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.wedding-day-sheet__event + .wedding-day-sheet__event,
+.wedding-day-sheet__travel {
+  padding-top: 10px;
+  border-top: 1px dashed color-mix(in srgb, var(--sage) 64%, var(--paper-raised));
+}
+
+.wedding-day-sheet__event > svg,
+.wedding-day-sheet__travel > svg {
+  width: 19px;
+  height: 19px;
+  color: #667d70;
+}
+
+.wedding-day-sheet__event strong,
+.wedding-day-sheet__travel strong {
+  color: var(--ink);
+  font-size: 14px;
+}
+
+.wedding-day-sheet__event span,
+.wedding-day-sheet__travel span {
+  overflow-wrap: anywhere;
+  color: var(--ink-soft);
+  font-size: 12px;
+}
+
+.wedding-day-sheet__event span {
+  user-select: text;
+}
+
+.wedding-day-sheet__maps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.wedding-day-sheet__maps > a,
+.wedding-day-sheet__actions > a,
+.wedding-day-sheet__actions > button {
+  display: inline-flex;
+  min-width: 0;
+  min-height: 48px;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 2px solid #6d6159;
+  padding: 7px;
+  background: var(--paper-raised);
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 900;
+  line-height: 1.2;
+  text-align: center;
+  text-decoration: none;
+  word-break: keep-all;
+  box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.76), 2px 2px 0 rgba(89, 72, 63, 0.42);
+}
+
+.wedding-day-sheet__maps > a:first-child {
+  border-color: #557d72;
+  background: color-mix(in srgb, var(--sage) 16%, var(--paper-raised));
+}
+
+.wedding-day-sheet__maps > a:nth-child(2) {
+  border-color: #925d64;
+}
+
+.wedding-day-sheet__maps > a:nth-child(3) {
+  border-color: #8b7048;
+}
+
+.wedding-day-sheet__maps svg,
+.wedding-day-sheet__actions svg {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 16px;
+}
+
+.wedding-day-sheet__actions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 8px;
+}
+
+.wedding-day-sheet__actions > a,
+.wedding-day-sheet__actions > button {
+  border-color: #765665;
+  background: linear-gradient(135deg, var(--paper-raised), var(--gold-soft));
+}
+
+.wedding-day-sheet a:focus-visible,
+.wedding-day-sheet button:focus-visible {
+  outline: 2px solid #fff8cf;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px var(--sage), 2px 2px 0 rgba(89, 72, 63, 0.42);
+}
+
 .gift-account-sheet {
   display: grid;
   min-width: 0;
@@ -3351,6 +3596,17 @@ select {
     grid-template-rows: minmax(148px, 1fr) 38px 112px;
   }
 
+  .character-customizer__sprite {
+    transform: translate(-50%, -50%) scale(0.8333333333);
+  }
+
+  .character-customizer__selected-name {
+    top: auto;
+    bottom: 4px;
+    padding: 3px 8px;
+    font-size: 9px;
+  }
+
   .character-customizer__panel {
     padding-top: 5px;
   }
@@ -3444,6 +3700,10 @@ select {
 
 @media (max-width: 360px) {
   .directions-sheet__maps {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .wedding-day-sheet__maps {
     grid-template-columns: minmax(0, 1fr);
   }
 }
@@ -4901,6 +5161,10 @@ select {
     gap: 6px;
   }
 
+  .world-control-actions {
+    gap: 5px;
+  }
+
   .virtual-joystick {
     --joystick-travel: 21px;
     width: 72px;
@@ -4917,6 +5181,24 @@ select {
     min-height: 44px;
     padding: 4px 6px;
     font-size: 9px;
+  }
+
+  .wedding-day-trigger--world {
+    min-width: 72px;
+    min-height: 44px;
+    grid-template-columns: 16px minmax(0, 1fr);
+    gap: 3px;
+    padding: 4px 5px;
+    font-size: 8px;
+  }
+
+  .wedding-day-trigger--world > svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .wedding-day-trigger--world small {
+    font-size: 6px;
   }
 
   .world-menu-button > span {

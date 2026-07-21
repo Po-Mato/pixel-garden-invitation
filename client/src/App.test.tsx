@@ -3,10 +3,14 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { App } from "./App";
 
 vi.mock("./components/EntryScreen", () => ({
-  EntryScreen: () => <div>일반 입장 화면</div>
+  EntryScreen: ({ weddingDayPreview }: { weddingDayPreview?: boolean }) => (
+    <div data-wedding-day-preview={weddingDayPreview || undefined}>일반 입장 화면</div>
+  )
 }));
 vi.mock("./components/GameWorld", () => ({
-  GameWorld: () => <div>게임 월드</div>
+  GameWorld: ({ weddingDayPreview }: { weddingDayPreview?: boolean }) => (
+    <div data-wedding-day-preview={weddingDayPreview || undefined}>게임 월드</div>
+  )
 }));
 vi.mock("./components/RsvpAdminPage", () => ({
   RsvpAdminPage: () => <div>참석 답변 관리자 화면</div>
@@ -41,5 +45,12 @@ describe("App query routing", () => {
     expect(screen.getByText("일반 입장 화면")).toBeInTheDocument();
     expect(screen.queryByText("참석 답변 관리자 화면")).not.toBeInTheDocument();
     expect(screen.queryByText("방명록 관리자 화면")).not.toBeInTheDocument();
+  });
+
+  it("예식 당일 미리보기 쿼리를 일반 초대장에 전달한다", () => {
+    window.history.replaceState({}, "", "/?preview=wedding-day");
+    render(<App />);
+
+    expect(screen.getByText("일반 입장 화면")).toHaveAttribute("data-wedding-day-preview", "true");
   });
 });

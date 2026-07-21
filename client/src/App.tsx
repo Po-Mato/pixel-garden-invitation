@@ -7,7 +7,9 @@ import { RsvpAdminPage } from "./components/RsvpAdminPage";
 export function App() {
   const [profile, setProfile] = useState<EntryProfile | null>(null);
 
-  const adminPage = new URLSearchParams(window.location.search).get("admin");
+  const searchParams = new URLSearchParams(window.location.search);
+  const adminPage = searchParams.get("admin");
+  const weddingDayPreview = searchParams.get("preview") === "wedding-day";
   if (adminPage === "rsvp") {
     return <RsvpAdminPage />;
   }
@@ -16,7 +18,11 @@ export function App() {
   return (
     <main className={`app-shell ${profile ? "app-shell--playing" : ""}`}>
       <section className={`phone-frame ${profile ? "phone-frame--playing" : ""}`}>
-        {profile ? <GameWorld profile={profile} /> : <EntryScreen onEnter={setProfile} />}
+        {profile ? (
+          <GameWorld profile={profile} weddingDayPreview={weddingDayPreview} />
+        ) : (
+          <EntryScreen onEnter={setProfile} weddingDayPreview={weddingDayPreview} />
+        )}
       </section>
     </main>
   );

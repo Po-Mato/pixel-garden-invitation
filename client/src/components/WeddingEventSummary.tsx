@@ -10,17 +10,24 @@ import {
 } from "../invitation/calendarEvent";
 import { CalendarSaveSheet } from "./CalendarSaveSheet";
 import { DirectionsSheet } from "./DirectionsSheet";
+import { WeddingDayQuickAccess } from "./WeddingDayQuickAccess";
 
 type WeddingEventSummaryProps = {
   variant: "compact" | "detail";
+  weddingDayPreview?: boolean;
   onCalendarSheetOpenChange?: (open: boolean) => void;
   onDirectionsSheetOpenChange?: (open: boolean) => void;
+  onWeddingDaySheetOpenChange?: (open: boolean) => void;
+  onFamilyContactOpen?: () => void;
 };
 
 export function WeddingEventSummary({
   variant,
+  weddingDayPreview = false,
   onCalendarSheetOpenChange,
-  onDirectionsSheetOpenChange
+  onDirectionsSheetOpenChange,
+  onWeddingDaySheetOpenChange,
+  onFamilyContactOpen
 }: WeddingEventSummaryProps) {
   const event = invitationContent.event;
   const [calendarOpen, setCalendarOpen] = useState(false);
@@ -106,6 +113,12 @@ export function WeddingEventSummary({
           <CalendarPlus aria-hidden="true" />
           캘린더 저장
         </button>
+        <WeddingDayQuickAccess
+          variant="summary"
+          preview={weddingDayPreview}
+          onOpenChange={onWeddingDaySheetOpenChange}
+          onFamilyContactOpen={onFamilyContactOpen}
+        />
       </div>
       <p className="wedding-event-summary__status" aria-live="polite">
         {addressStatus === "copied" ? "주소를 복사했습니다." : null}

@@ -6,6 +6,7 @@ import {
 } from "@wedding-game/shared";
 import { loadAppearance, saveAppearance } from "../character/storage";
 import { CharacterCustomizer } from "./CharacterCustomizer";
+import { FamilyContactSheet } from "./FamilyContactSheet";
 import { WeddingEventSummary } from "./WeddingEventSummary";
 
 export type EntryProfile = {
@@ -15,9 +16,10 @@ export type EntryProfile = {
 
 type EntryScreenProps = {
   onEnter: (profile: EntryProfile) => void;
+  weddingDayPreview?: boolean;
 };
 
-export function EntryScreen({ onEnter }: EntryScreenProps) {
+export function EntryScreen({ onEnter, weddingDayPreview = false }: EntryScreenProps) {
   const event = invitationContent.event;
   const weddingYear = new Intl.DateTimeFormat("en", {
     year: "numeric",
@@ -27,6 +29,7 @@ export function EntryScreen({ onEnter }: EntryScreenProps) {
   const [appearance, setAppearance] = useState(
     () => loadAppearance() ?? defaultCharacterAppearance
   );
+  const [familyContactOpen, setFamilyContactOpen] = useState(false);
 
   const canEnter = nickname.trim().length > 0;
   const enterGarden = () => {
@@ -46,7 +49,11 @@ export function EntryScreen({ onEnter }: EntryScreenProps) {
         <h1>{event.couple.groom} & {event.couple.bride}의 정원</h1>
         <span>정원에 입장할 하객 캐릭터를 선택해주세요.</span>
       </header>
-      <WeddingEventSummary variant="compact" />
+      <WeddingEventSummary
+        variant="compact"
+        weddingDayPreview={weddingDayPreview}
+        onFamilyContactOpen={() => setFamilyContactOpen(true)}
+      />
       <CharacterCustomizer value={appearance} onChange={setAppearance} />
       <div className="entry-screen__controls">
         <label className="field">
@@ -62,6 +69,9 @@ export function EntryScreen({ onEnter }: EntryScreenProps) {
           정원 입장
         </button>
       </div>
+      {familyContactOpen ? (
+        <FamilyContactSheet onClose={() => setFamilyContactOpen(false)} />
+      ) : null}
     </section>
   );
 }

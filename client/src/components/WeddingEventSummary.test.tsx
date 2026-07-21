@@ -31,6 +31,17 @@ it("compact 요약에서 공통 오시는 길 시트를 연다", () => {
   expect(screen.getByRole("dialog", { name: "오시는 길" })).toHaveTextContent("소사역 1번 출구");
 });
 
+it("당일 미리보기에서는 캘린더 대신 당일 안내를 우선 제공한다", () => {
+  render(<WeddingEventSummary variant="compact" weddingDayPreview />);
+
+  expect(screen.getByRole("button", { name: "예식 당일 안내: 예식까지 45분" })).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "캘린더 저장" })).toBeInTheDocument();
+
+  fireEvent.click(screen.getByRole("button", { name: /예식 당일 안내/ }));
+
+  expect(screen.getByRole("dialog", { name: "예식 당일 안내" })).toBeInTheDocument();
+});
+
 it("renders details and reports address copy status", async () => {
   vi.mocked(copyText).mockResolvedValue(undefined);
   const { container } = render(<WeddingEventSummary variant="detail" />);

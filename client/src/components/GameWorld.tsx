@@ -41,12 +41,13 @@ import { GiftAccountSheet } from "./GiftAccountSheet";
 import { SpotModal } from "./SpotModal";
 import { VirtualJoystick } from "./VirtualJoystick";
 import { WeddingEventSummary } from "./WeddingEventSummary";
+import { WeddingDayQuickAccess } from "./WeddingDayQuickAccess";
 import { WeddingNpc } from "./WeddingNpc";
 import { WorldMapArtwork } from "./WorldMapArtwork";
 import { WorldDecoration } from "./WorldDecoration";
 import { WorldMiniMap } from "./WorldMiniMap";
 
-type GameWorldProps = { profile: EntryProfile };
+type GameWorldProps = { profile: EntryProfile; weddingDayPreview?: boolean };
 type RealtimeStatus = "offline" | "connecting" | "reconnecting" | "online" | "full";
 type MoveMessage = Extract<ClientMessage, { type: "move" }>;
 type RealtimeConnection = ReturnType<typeof connectRealtimeWithRetry>;
@@ -106,7 +107,7 @@ function realtimeStatusText(status: RealtimeStatus) {
   return "오프라인 정원";
 }
 
-export function GameWorld({ profile }: GameWorldProps) {
+export function GameWorld({ profile, weddingDayPreview = false }: GameWorldProps) {
   const initialZone = getWorldZone(gardenWorld, gardenWorld.defaultZoneId);
   const [activeZoneId, setActiveZoneId] = useState<WorldZoneId>(initialZone.id);
   const activeZone = getWorldZone(gardenWorld, activeZoneId);
@@ -125,6 +126,7 @@ export function GameWorld({ profile }: GameWorldProps) {
   const [directionsSheetOpen, setDirectionsSheetOpen] = useState(false);
   const [giftAccountSheetOpen, setGiftAccountSheetOpen] = useState(false);
   const [familyContactSheetOpen, setFamilyContactSheetOpen] = useState(false);
+  const [weddingDaySheetOpen, setWeddingDaySheetOpen] = useState(false);
   const [travelStatus, setTravelStatus] = useState("우리 집에서 여정을 시작해요");
   const [viewport, setViewport] = useState<ViewportSize>(defaultViewport);
   const [remoteGuests, setRemoteGuests] = useState<RoomGuest[]>([]);
@@ -133,7 +135,8 @@ export function GameWorld({ profile }: GameWorldProps) {
   const nestedMenuSheetOpen = calendarSheetOpen
     || directionsSheetOpen
     || giftAccountSheetOpen
-    || familyContactSheetOpen;
+    || familyContactSheetOpen
+    || weddingDaySheetOpen;
 
   const mapViewportRef = useRef<HTMLDivElement | null>(null);
   const menuButtonRef = useRef<HTMLButtonElement | null>(null);
@@ -183,6 +186,7 @@ export function GameWorld({ profile }: GameWorldProps) {
     setDirectionsSheetOpen(false);
     setGiftAccountSheetOpen(false);
     setFamilyContactSheetOpen(false);
+    setWeddingDaySheetOpen(false);
     setMenuOpen(false);
   }, []);
 
@@ -294,6 +298,7 @@ export function GameWorld({ profile }: GameWorldProps) {
     setDirectionsSheetOpen(false);
     setGiftAccountSheetOpen(false);
     setFamilyContactSheetOpen(false);
+    setWeddingDaySheetOpen(false);
     setMenuOpen(false);
     setActiveSpotId(null);
     setTravelStatus(`${portal.label} 도착`);
@@ -399,6 +404,16 @@ export function GameWorld({ profile }: GameWorldProps) {
   const handleDirectionsSheetOpenChange = useCallback((open: boolean) => {
     if (open) pauseWorldInput();
     setDirectionsSheetOpen(open);
+  }, [pauseWorldInput]);
+
+  const handleWeddingDaySheetOpenChange = useCallback((open: boolean) => {
+    if (open) pauseWorldInput();
+    setWeddingDaySheetOpen(open);
+  }, [pauseWorldInput]);
+
+  const openFamilyContacts = useCallback(() => {
+    pauseWorldInput();
+    setFamilyContactSheetOpen(true);
   }, [pauseWorldInput]);
 
   const openMenu = useCallback(() => {
@@ -916,10 +931,18 @@ export function GameWorld({ profile }: GameWorldProps) {
               disabled={Boolean(portalTransition) || inputReleaseRequired}
               onVectorChange={handleJoystickVectorChange}
             />
-            <button ref={menuButtonRef} type="button" className="world-menu-button" aria-expanded={menuOpen} onClick={openMenu}>
-              <span aria-hidden="true">+</span>
-              초대장 메뉴
-            </button>
+            <div className="world-control-actions">
+              <WeddingDayQuickAccess
+                variant="world"
+                preview={weddingDayPreview}
+                onOpenChange={handleWeddingDaySheetOpenChange}
+                onFamilyContactOpen={openFamilyContacts}
+              />
+              <button ref={menuButtonRef} type="button" className="world-menu-button" aria-expanded={menuOpen} onClick={openMenu}>
+                <span aria-hidden="true">+</span>
+                초대장 메뉴
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -952,8 +975,11 @@ export function GameWorld({ profile }: GameWorldProps) {
             </header>
             <WeddingEventSummary
               variant="detail"
+              weddingDayPreview={weddingDayPreview}
               onCalendarSheetOpenChange={setCalendarSheetOpen}
               onDirectionsSheetOpenChange={handleDirectionsSheetOpenChange}
+              onWeddingDaySheetOpenChange={handleWeddingDaySheetOpenChange}
+              onFamilyContactOpen={openFamilyContacts}
             />
             <div className="world-menu-grid">
               {invitationContent.spots.map((item) => (
@@ -971,8 +997,7 @@ export function GameWorld({ profile }: GameWorldProps) {
               <button
                 type="button"
                 onClick={() => {
-                  pauseWorldInput();
-                  setFamilyContactSheetOpen(true);
+                  openFamilyContacts();
                 }}
               >
                 혼주 연락처
