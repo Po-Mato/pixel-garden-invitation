@@ -1,7 +1,19 @@
 import { MemoryRateLimiter } from "./rateLimit";
 import { attemptAdminLogin } from "./adminAuth";
+import {
+  countRecentGuestbookWrites,
+  createGuestbook,
+  decodeGuestbookCursor,
+  deleteGuestbook,
+  findGuestbook,
+  getGuestbookDeleteAt,
+  listAdminGuestbook,
+  listGuestbookPage,
+  moderateGuestbook,
+  updateGuestbook
+} from "./guestbookRepository";
 import { createRsvp, deleteRsvp, findRsvp, getRsvpPolicy, listRsvps, updateRsvp } from "./rsvpRepository";
-import { createEditCredential, hashEditToken, verifyAdminToken } from "./security";
+import { createEditCredential, hashClientKey, hashEditToken, verifyAdminToken } from "./security";
 import { parseGuestbookPayload, parseRsvpPayload } from "./validation";
 import type { Env } from "./index";
 
@@ -9,13 +21,6 @@ type WriteLimiter = Pick<MemoryRateLimiter, "allow">;
 
 type HandleApiRequestOptions = {
   limiter?: WriteLimiter;
-};
-
-type GuestbookRow = {
-  id: string;
-  nickname: string;
-  message: string;
-  created_at: string;
 };
 
 function createWriteLimiter(): MemoryRateLimiter {
@@ -57,7 +62,7 @@ function allowedOrigins(value: string | undefined): Set<string> {
 }
 
 function isSensitivePath(pathname: string): boolean {
-  return /^\/api\/invitations\/[^/]+\/(?:rsvps|admin)(?:\/|$)/.test(pathname);
+  return /^\/api\/invitations\/[^/]+\/(?:rsvps|guestbook|admin)(?:\/|$)/.test(pathname);
 }
 
 function addCorsHeaders(response: Response, origin: string | null, preflight = false): Response {
@@ -107,6 +112,12 @@ function readExpectedRevision(value: unknown): number | null {
   return value.revision as number;
 }
 
+function readGuestbookModeration(value: unknown): { hidden: boolean; revision: number } | null {
+  const revision = readExpectedRevision(value);
+  if (!isRecord(value) || typeof value.hidden !== "boolean" || revision === null) return null;
+  return { hidden: value.hidden, revision };
+}
+
 function readBearerToken(request: Request): string | null {
   const match = request.headers.get("authorization")?.match(/^Bearer ([^\s]+)$/);
   return match?.[1] ?? null;
@@ -135,22 +146,13 @@ function constantTimeEqual(left: string, right: string): boolean {
   return difference === 0;
 }
 
-async function ownsRsvp(token: string, editTokenHash: string | null): Promise<boolean> {
+async function ownsRecord(token: string, editTokenHash: string | null): Promise<boolean> {
   if (!editTokenHash) return false;
   return constantTimeEqual(await hashEditToken(token), editTokenHash);
 }
 
 export function resetHttpRateLimiterForTest(): void {
   writeLimiter = createWriteLimiter();
-}
-
-async function invitationExists(db: D1Database, invitationId: string): Promise<boolean> {
-  const invitation = await db
-    .prepare("SELECT id FROM invitations WHERE id = ?")
-    .bind(invitationId)
-    .first<{ id: string }>();
-
-  return invitation !== null;
 }
 
 async function handleOwnedRsvp(
@@ -170,7 +172,7 @@ async function handleOwnedRsvp(
 
   try {
     const owned = await findRsvp(env.DB, invitationId, rsvpId);
-    if (!owned || !(await ownsRsvp(token, owned.editTokenHash))) {
+    if (!owned || !(await ownsRecord(token, owned.editTokenHash))) {
       return json({ error: "unauthorized" }, 401);
     }
     if (request.method === "GET") return json(owned.response);
@@ -197,6 +199,59 @@ async function handleOwnedRsvp(
     if (response) return json(response);
 
     const existing = await findRsvp(env.DB, invitationId, rsvpId);
+    return existing ? json({ error: "conflict" }, 409) : json({ error: "not_found" }, 404);
+  } catch {
+    return json({ error: "internal_error" }, 500);
+  }
+}
+
+async function handleOwnedGuestbook(
+  request: Request,
+  env: Env,
+  clientKey: string,
+  invitationId: string,
+  guestbookId: string,
+  options: HandleApiRequestOptions
+): Promise<Response> {
+  if (!["GET", "PATCH", "DELETE"].includes(request.method)) {
+    return json({ error: "not_found" }, 404);
+  }
+
+  const token = readBearerToken(request);
+  if (!token) return json({ error: "unauthorized" }, 401);
+
+  try {
+    const owned = await findGuestbook(env.DB, invitationId, guestbookId);
+    if (!owned || !(await ownsRecord(token, owned.editTokenHash))) {
+      return json({ error: "unauthorized" }, 401);
+    }
+    if (request.method === "GET") return json(owned.response);
+
+    const limiter = options.limiter ?? writeLimiter;
+    if (!limiter.allow(clientKey)) return json({ error: "rate_limited" }, 429, { "retry-after": "60" });
+
+    if (request.method === "DELETE") {
+      return await deleteGuestbook(env.DB, invitationId, guestbookId)
+        ? new Response(null, { status: 204 })
+        : json({ error: "not_found" }, 404);
+    }
+
+    const body = await readJson(request);
+    const expectedRevision = readExpectedRevision(body);
+    if (body === null || expectedRevision === null) return json({ error: "invalid_request" }, 400);
+    const submission = parseGuestbookPayload(body);
+    if (!submission) return json({ error: "invalid_request" }, 400);
+
+    const response = await updateGuestbook(env.DB, {
+      invitationId,
+      guestbookId,
+      submission,
+      expectedRevision,
+      updatedAt: new Date().toISOString()
+    });
+    if (response) return json(response);
+
+    const existing = await findGuestbook(env.DB, invitationId, guestbookId);
     return existing ? json({ error: "conflict" }, 409) : json({ error: "not_found" }, 404);
   } catch {
     return json({ error: "internal_error" }, 500);
@@ -270,6 +325,120 @@ async function handleAdminRsvps(
   }
 }
 
+async function handleAdminGuestbook(
+  request: Request,
+  env: Env,
+  invitationId: string,
+  guestbookId?: string
+): Promise<Response> {
+  if ((!guestbookId && request.method !== "GET") || (guestbookId && !["PATCH", "DELETE"].includes(request.method))) {
+    return adminJson({ error: "not_found" }, 404);
+  }
+
+  try {
+    const authenticated = await authenticateAdmin(request, env, invitationId);
+    if (authenticated === null) return adminJson({ error: "internal_error" }, 500);
+    if (!authenticated) return adminJson({ error: "unauthorized" }, 401);
+
+    if (!guestbookId) return adminJson(await listAdminGuestbook(env.DB, invitationId));
+    if (request.method === "DELETE") {
+      return await deleteGuestbook(env.DB, invitationId, guestbookId)
+        ? adminEmpty(204)
+        : adminJson({ error: "not_found" }, 404);
+    }
+
+    const moderation = readGuestbookModeration(await readJson(request));
+    if (!moderation) return adminJson({ error: "invalid_request" }, 400);
+    const updated = await moderateGuestbook(env.DB, {
+      invitationId,
+      guestbookId,
+      hidden: moderation.hidden,
+      expectedRevision: moderation.revision,
+      updatedAt: new Date().toISOString()
+    });
+    if (updated) return adminJson(updated);
+
+    const existing = await findGuestbook(env.DB, invitationId, guestbookId);
+    return existing ? adminJson({ error: "conflict" }, 409) : adminJson({ error: "not_found" }, 404);
+  } catch {
+    return adminJson({ error: "internal_error" }, 500);
+  }
+}
+
+async function handleGuestbookCollection(
+  request: Request,
+  env: Env,
+  clientKey: string,
+  invitationId: string,
+  options: HandleApiRequestOptions
+): Promise<Response> {
+  if (request.method === "GET") {
+    const cursorValue = new URL(request.url).searchParams.get("cursor");
+    const cursor = cursorValue === null ? null : decodeGuestbookCursor(cursorValue);
+    if (cursorValue !== null && !cursor) return json({ error: "invalid_request" }, 400);
+
+    try {
+      const deleteAt = await getGuestbookDeleteAt(env.DB, invitationId);
+      if (deleteAt === undefined) return json({ error: "not_found" }, 404);
+      if (!deleteAt) return json({ error: "internal_error" }, 500);
+      return json(await listGuestbookPage(env.DB, invitationId, cursor));
+    } catch {
+      return json({ error: "internal_error" }, 500);
+    }
+  }
+
+  if (request.method !== "POST") return json({ error: "not_found" }, 404);
+  const body = await readJson(request);
+  if (body === null) return json({ error: "invalid_request" }, 400);
+  const submission = parseGuestbookPayload(body);
+  if (!submission) return json({ error: "invalid_request" }, 400);
+  if (!hasSecret(env.RSVP_CLIENT_KEY_SECRET)) return json({ error: "internal_error" }, 500);
+
+  try {
+    const deleteAt = await getGuestbookDeleteAt(env.DB, invitationId);
+    if (deleteAt === undefined) return json({ error: "not_found" }, 404);
+    if (!deleteAt) return json({ error: "internal_error" }, 500);
+
+    const limiter = options.limiter ?? writeLimiter;
+    if (!limiter.allow(clientKey)) return json({ error: "rate_limited" }, 429, { "retry-after": "60" });
+
+    const now = new Date();
+    const clientHash = await hashClientKey(clientKey, env.RSVP_CLIENT_KEY_SECRET);
+    const windowMs = 10 * 60 * 1_000;
+    const recent = await countRecentGuestbookWrites(
+      env.DB,
+      invitationId,
+      clientHash,
+      new Date(now.getTime() - windowMs).toISOString()
+    );
+    if (recent.count >= 3) {
+      const oldestTime = recent.oldestCreatedAt ? Date.parse(recent.oldestCreatedAt) : Number.NaN;
+      const retryAfter = Number.isFinite(oldestTime)
+        ? Math.max(1, Math.ceil((oldestTime + windowMs - now.getTime()) / 1_000))
+        : 600;
+      return json({ error: "rate_limited" }, 429, { "retry-after": String(retryAfter) });
+    }
+
+    const guestbookId = id("guestbook");
+    const credential = await createEditCredential();
+    const response = await createGuestbook(env.DB, {
+      id: guestbookId,
+      invitationId,
+      submission,
+      clientHash,
+      editTokenHash: credential.editTokenHash,
+      createdAt: now.toISOString()
+    });
+
+    return json({
+      response,
+      credential: { guestbookId, editToken: credential.editToken }
+    }, 201);
+  } catch {
+    return json({ error: "internal_error" }, 500);
+  }
+}
+
 async function handleApiRequestWithoutCors(
   request: Request,
   env: Env,
@@ -283,41 +452,26 @@ async function handleApiRequestWithoutCors(
   const adminRsvpMatch = url.pathname.match(/^\/api\/invitations\/([^/]+)\/admin\/rsvps(?:\/([^/]+))?$/);
   if (adminRsvpMatch) return handleAdminRsvps(request, env, adminRsvpMatch[1], adminRsvpMatch[2]);
 
+  const adminGuestbookMatch = url.pathname.match(/^\/api\/invitations\/([^/]+)\/admin\/guestbook(?:\/([^/]+))?$/);
+  if (adminGuestbookMatch) {
+    return handleAdminGuestbook(request, env, adminGuestbookMatch[1], adminGuestbookMatch[2]);
+  }
+
   const ownedRsvpMatch = url.pathname.match(/^\/api\/invitations\/([^/]+)\/rsvps\/([^/]+)$/);
   if (ownedRsvpMatch) {
     return handleOwnedRsvp(request, env, clientKey, ownedRsvpMatch[1], ownedRsvpMatch[2], options);
+  }
+
+  const ownedGuestbookMatch = url.pathname.match(/^\/api\/invitations\/([^/]+)\/guestbook\/([^/]+)$/);
+  if (ownedGuestbookMatch) {
+    return handleOwnedGuestbook(request, env, clientKey, ownedGuestbookMatch[1], ownedGuestbookMatch[2], options);
   }
 
   const collectionMatch = url.pathname.match(/^\/api\/invitations\/([^/]+)\/(rsvps|guestbook)$/);
   if (!collectionMatch) return json({ error: "not_found" }, 404);
 
   const [, invitationId, resource] = collectionMatch;
-  if (request.method === "GET" && resource === "guestbook") {
-    try {
-      if (!(await invitationExists(env.DB, invitationId))) return json({ error: "not_found" }, 404);
-
-      const result = await env.DB
-        .prepare(`
-          SELECT id, nickname, message, created_at
-          FROM guestbook_messages
-          WHERE invitation_id = ? AND is_hidden = 0
-          ORDER BY created_at DESC
-        `)
-        .bind(invitationId)
-        .all<GuestbookRow>();
-
-      return json({
-        messages: (result.results ?? []).map((row) => ({
-          id: row.id,
-          nickname: row.nickname,
-          message: row.message,
-          createdAt: row.created_at
-        }))
-      });
-    } catch {
-      return json({ error: "internal_error" }, 500);
-    }
-  }
+  if (resource === "guestbook") return handleGuestbookCollection(request, env, clientKey, invitationId, options);
 
   if (request.method !== "POST") return json({ error: "not_found" }, 404);
 
@@ -354,31 +508,7 @@ async function handleApiRequestWithoutCors(
     }
   }
 
-  const payload = parseGuestbookPayload(body);
-  if (!payload) return json({ error: "invalid_request" }, 400);
-
-  try {
-    if (!(await invitationExists(env.DB, invitationId))) return json({ error: "not_found" }, 404);
-  } catch {
-    return json({ error: "internal_error" }, 500);
-  }
-
-  const limiter = options.limiter ?? writeLimiter;
-  if (!limiter.allow(clientKey)) return json({ error: "rate_limited" }, 429);
-
-  try {
-    await env.DB
-      .prepare(`
-        INSERT INTO guestbook_messages (id, invitation_id, nickname, message)
-        VALUES (?, ?, ?, ?)
-      `)
-      .bind(id("guestbook"), invitationId, payload.nickname, payload.message)
-      .run();
-  } catch {
-    return json({ error: "internal_error" }, 500);
-  }
-
-  return json({ ok: true }, 201);
+  return json({ error: "not_found" }, 404);
 }
 
 export async function handleApiRequest(

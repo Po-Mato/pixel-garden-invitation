@@ -33,9 +33,14 @@ describe("worker scaffold", () => {
     );
 
     expect(waitUntil).toHaveBeenCalledOnce();
-    await expect(waitUntil.mock.calls[0][0]).resolves.toEqual({ rsvps: 0, attempts: 0 });
-    expect(run).toHaveBeenCalledTimes(2);
-    expect(info).toHaveBeenCalledWith(JSON.stringify({ event: "rsvp_cleanup", rsvps: 0, attempts: 0 }));
+    await expect(waitUntil.mock.calls[0][0]).resolves.toEqual({ rsvps: 0, guestbookMessages: 0, attempts: 0 });
+    expect(run).toHaveBeenCalledTimes(3);
+    expect(info).toHaveBeenCalledWith(JSON.stringify({
+      event: "invitation_data_cleanup",
+      rsvps: 0,
+      guestbookMessages: 0,
+      attempts: 0
+    }));
     info.mockRestore();
   });
 });

@@ -3,8 +3,11 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { SpotModal } from "./SpotModal";
 
 const api = vi.hoisted(() => ({
-  fetchGuestbookMessages: vi.fn().mockResolvedValue([]),
-  submitGuestbook: vi.fn()
+  fetchGuestbookPage: vi.fn().mockResolvedValue({ messages: [], nextCursor: null }),
+  fetchOwnedGuestbook: vi.fn(),
+  createGuestbook: vi.fn(),
+  updateOwnedGuestbook: vi.fn(),
+  deleteOwnedGuestbook: vi.fn()
 }));
 
 vi.mock("../api/weddingApi", async (importOriginal) => ({
@@ -36,7 +39,7 @@ describe("지점 모달", () => {
 
     rerender(<SpotModal spotId="guestbook" nickname="하객1" onClose={vi.fn()} />);
     expect(await screen.findByText("방명록 전용 패널")).toBeInTheDocument();
-    expect(api.fetchGuestbookMessages).toHaveBeenCalledTimes(1);
+    expect(api.fetchGuestbookPage).toHaveBeenCalledTimes(1);
   });
 
   it("갤러리 지점에서 기본 문구와 사진 갤러리를 함께 표시한다", () => {

@@ -1,18 +1,20 @@
 /// <reference types="vite/client" />
 
-import type { RsvpAdminResult, RsvpCreateResult, RsvpRecord, RsvpSubmission } from "@wedding-game/shared";
+import type {
+  GuestbookAdminResult,
+  GuestbookCreateResult,
+  GuestbookCredential,
+  GuestbookOwnedMessage,
+  GuestbookPage,
+  GuestbookSubmission,
+  RsvpAdminResult,
+  RsvpCreateResult,
+  RsvpRecord,
+  RsvpSubmission
+} from "@wedding-game/shared";
 
-export type GuestbookPayload = {
-  nickname: string;
-  message: string;
-};
-
-export type GuestbookMessage = {
-  id: string;
-  nickname: string;
-  message: string;
-  createdAt: string;
-};
+export type GuestbookPayload = GuestbookSubmission;
+export type { GuestbookCredential, GuestbookOwnedMessage, GuestbookPage };
 
 export type RsvpCredential = {
   rsvpId: string;
@@ -60,25 +62,6 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
 }
 
-function isGuestbookMessage(value: unknown): value is GuestbookMessage {
-  return (
-    isRecord(value) &&
-    typeof value.id === "string" &&
-    typeof value.nickname === "string" &&
-    typeof value.message === "string" &&
-    typeof value.createdAt === "string"
-  );
-}
-
-async function postJson(path: string, body: unknown): Promise<void> {
-  const response = await fetch(buildApiUrl(getApiBase(), path), {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify(body)
-  });
-  if (!response.ok) throw new Error(`Request failed: ${response.status}`);
-}
-
 function parseRetryAfterSeconds(value: string | null): number | undefined {
   const trimmed = value?.trim();
   if (!trimmed || !/^\d+$/.test(trimmed)) return undefined;
@@ -112,6 +95,10 @@ async function requestJson<T>(path: string, init: RequestInit): Promise<T> {
 
 function rsvpPath(): string {
   return `/api/invitations/${getInvitationId()}/rsvps`;
+}
+
+function guestbookPath(): string {
+  return `/api/invitations/${getInvitationId()}/guestbook`;
 }
 
 function bearerHeaders(token: string): HeadersInit {
@@ -170,23 +157,85 @@ export async function deleteAdminRsvp(token: string, rsvpId: string): Promise<vo
   throw new WeddingApiError(response.status, errorCode(body), parseRetryAfterSeconds(response.headers.get("retry-after")));
 }
 
-export function submitGuestbook(payload: GuestbookPayload): Promise<void> {
-  return postJson(`/api/invitations/${getInvitationId()}/guestbook`, payload);
+export function createGuestbook(payload: GuestbookSubmission): Promise<GuestbookCreateResult> {
+  return requestJson<GuestbookCreateResult>(guestbookPath(), {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(payload)
+  });
 }
 
-export async function fetchGuestbookMessages(): Promise<GuestbookMessage[]> {
-  const response = await fetch(buildApiUrl(getApiBase(), `/api/invitations/${getInvitationId()}/guestbook`), {
-    method: "GET"
+export function fetchGuestbookPage(cursor?: string): Promise<GuestbookPage> {
+  const suffix = cursor ? `?cursor=${encodeURIComponent(cursor)}` : "";
+  return requestJson<GuestbookPage>(`${guestbookPath()}${suffix}`, { method: "GET" });
+}
+
+export function fetchOwnedGuestbook(credential: GuestbookCredential): Promise<GuestbookOwnedMessage> {
+  return requestJson<GuestbookOwnedMessage>(
+    `${guestbookPath()}/${encodeURIComponent(credential.guestbookId)}`,
+    { method: "GET", headers: bearerHeaders(credential.editToken) }
+  );
+}
+
+export function updateOwnedGuestbook(
+  credential: GuestbookCredential,
+  payload: GuestbookSubmission & { revision: number }
+): Promise<GuestbookOwnedMessage> {
+  return requestJson<GuestbookOwnedMessage>(
+    `${guestbookPath()}/${encodeURIComponent(credential.guestbookId)}`,
+    {
+      method: "PATCH",
+      headers: { "content-type": "application/json", ...bearerHeaders(credential.editToken) },
+      body: JSON.stringify(payload)
+    }
+  );
+}
+
+export async function deleteOwnedGuestbook(credential: GuestbookCredential): Promise<void> {
+  const response = await fetch(buildApiUrl(
+    getApiBase(),
+    `${guestbookPath()}/${encodeURIComponent(credential.guestbookId)}`
+  ), {
+    method: "DELETE",
+    headers: bearerHeaders(credential.editToken)
   });
+  if (response.ok) return;
+  const body = await parseResponseBody(response);
+  throw new WeddingApiError(response.status, errorCode(body), parseRetryAfterSeconds(response.headers.get("retry-after")));
+}
 
-  if (!response.ok) {
-    throw new Error(`Request failed: ${response.status}`);
-  }
+export function fetchAdminGuestbook(token: string): Promise<GuestbookAdminResult> {
+  return requestJson<GuestbookAdminResult>(`/api/invitations/${getInvitationId()}/admin/guestbook`, {
+    method: "GET",
+    headers: bearerHeaders(token)
+  });
+}
 
-  const body: unknown = await response.json();
-  if (!isRecord(body) || !Array.isArray(body.messages)) {
-    return [];
-  }
+export function moderateAdminGuestbook(
+  token: string,
+  guestbookId: string,
+  hidden: boolean,
+  revision: number
+): Promise<GuestbookOwnedMessage> {
+  return requestJson<GuestbookOwnedMessage>(
+    `/api/invitations/${getInvitationId()}/admin/guestbook/${encodeURIComponent(guestbookId)}`,
+    {
+      method: "PATCH",
+      headers: { "content-type": "application/json", ...bearerHeaders(token) },
+      body: JSON.stringify({ hidden, revision })
+    }
+  );
+}
 
-  return body.messages.filter(isGuestbookMessage);
+export async function deleteAdminGuestbook(token: string, guestbookId: string): Promise<void> {
+  const response = await fetch(buildApiUrl(
+    getApiBase(),
+    `/api/invitations/${getInvitationId()}/admin/guestbook/${encodeURIComponent(guestbookId)}`
+  ), {
+    method: "DELETE",
+    headers: bearerHeaders(token)
+  });
+  if (response.ok) return;
+  const body = await parseResponseBody(response);
+  throw new WeddingApiError(response.status, errorCode(body), parseRetryAfterSeconds(response.headers.get("retry-after")));
 }

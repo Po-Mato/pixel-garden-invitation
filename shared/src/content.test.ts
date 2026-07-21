@@ -26,6 +26,9 @@ describe("invitationContent", () => {
         deleteAt: "2027-05-31T23:59:59+09:00",
         consentVersion: "2026-07-20"
       },
+      guestbook: {
+        deleteAt: "2027-05-31T23:59:59+09:00"
+      },
       venue: {
         name: "MJ컨벤션",
         hall: "5층 파티오볼룸",

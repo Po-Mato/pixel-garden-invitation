@@ -21,7 +21,8 @@ const migrationFiles = [
   "0001_init.sql",
   "0002_update_invitation_details.sql",
   "0003_production_rsvp.sql",
-  "0004_rsvp_consent_policy.sql"
+  "0004_rsvp_consent_policy.sql",
+  "0005_production_guestbook.sql"
 ] as const;
 
 const expectedInvitation = {
@@ -55,7 +56,8 @@ describe("invitation migrations", () => {
         ...expectedInvitation,
         created_at: expect.any(String),
         rsvp_deadline: "2027-04-24T14:59:59.000Z",
-        rsvp_delete_at: "2027-05-31T14:59:59.000Z"
+        rsvp_delete_at: "2027-05-31T14:59:59.000Z",
+        guestbook_delete_at: "2027-05-31T14:59:59.000Z"
       });
     } finally {
       database.close();
@@ -267,6 +269,70 @@ describe("invitation migrations", () => {
       ] as const) {
         expect(() => insertValues(`rsvp_hash_${label}`, undefined, undefined, undefined, hash)).toThrow(/CHECK constraint failed/);
       }
+    } finally {
+      database.close();
+    }
+  });
+
+  it("기존 방명록을 보존하고 신규 메시지의 소유권 필드를 강제한다", () => {
+    const database = new DatabaseSync(":memory:");
+    const validHash = "A".repeat(43);
+
+    try {
+      for (const filename of migrationFiles.slice(0, 4)) {
+        database.exec(readMigration(filename));
+      }
+      database.exec(`
+        INSERT INTO guestbook_messages (id, invitation_id, nickname, message, is_hidden, created_at)
+        VALUES ('guestbook_old', 'sample-garden', '기존 하객', '기존 축하', 1, '2026-07-01T00:00:00.000Z')
+      `);
+
+      database.exec(readMigration("0005_production_guestbook.sql"));
+
+      expect(database.prepare(`
+        SELECT id, invitation_id, nickname, message, is_hidden, client_hash,
+               edit_token_hash, revision, created_at, updated_at
+        FROM guestbook_messages WHERE id = ?
+      `).get("guestbook_old")).toEqual({
+        id: "guestbook_old",
+        invitation_id: "sample-garden",
+        nickname: "기존 하객",
+        message: "기존 축하",
+        is_hidden: 1,
+        client_hash: null,
+        edit_token_hash: null,
+        revision: 1,
+        created_at: "2026-07-01T00:00:00.000Z",
+        updated_at: "2026-07-01T00:00:00.000Z"
+      });
+      expect(querySampleGarden(database)).toMatchObject({
+        guestbook_delete_at: "2027-05-31T14:59:59.000Z"
+      });
+
+      expect(() => database.exec(`
+        INSERT INTO guestbook_messages (
+          id, invitation_id, nickname, message, client_hash, edit_token_hash,
+          created_at, updated_at
+        ) VALUES (
+          'guestbook_new', 'sample-garden', '신규 하객', '새 축하',
+          '${validHash}', '${validHash}', '2026-07-02T00:00:00.000Z', '2026-07-02T00:00:00.000Z'
+        )
+      `)).not.toThrow();
+
+      expect(() => database.exec(`
+        INSERT INTO guestbook_messages (id, invitation_id, nickname, message, client_hash)
+        VALUES ('guestbook_partial_owner', 'sample-garden', '하객', '축하', '${validHash}')
+      `)).toThrow(/CHECK constraint failed/);
+
+      expect(() => database.exec(`
+        INSERT INTO guestbook_messages (id, invitation_id, nickname, message, client_hash, edit_token_hash)
+        VALUES ('guestbook_bad_hash', 'sample-garden', '하객', '축하', 'short', 'short')
+      `)).toThrow(/CHECK constraint failed/);
+
+      expect(() => database.exec(`
+        INSERT INTO guestbook_messages (id, invitation_id, nickname, message, is_hidden)
+        VALUES ('guestbook_bad_hidden', 'sample-garden', '하객', '축하', 2)
+      `)).toThrow(/CHECK constraint failed/);
     } finally {
       database.close();
     }

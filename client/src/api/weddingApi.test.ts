@@ -25,7 +25,7 @@ describe("weddingApi", () => {
     vi.unstubAllGlobals();
   });
 
-  it("fetches visible guestbook messages for the invitation", async () => {
+  it("페이지 단위로 공개 방명록 메시지를 조회한다", async () => {
     vi.stubEnv("VITE_WORKER_URL", "https://worker.test/");
     vi.stubEnv("VITE_INVITATION_ID", "sample-garden");
 
@@ -37,9 +37,12 @@ describe("weddingApi", () => {
               id: "guestbook_1",
               nickname: "하객1",
               message: "축하합니다",
-              createdAt: "2026-06-12T00:00:00.000Z"
+              revision: 1,
+              createdAt: "2026-06-12T00:00:00.000Z",
+              updatedAt: "2026-06-12T00:00:00.000Z"
             }
-          ]
+          ],
+          nextCursor: "next-page"
         }),
         {
           status: 200,
@@ -49,18 +52,55 @@ describe("weddingApi", () => {
     );
     vi.stubGlobal("fetch", fetchMock);
 
-    const { fetchGuestbookMessages } = await import("./weddingApi");
+    const { fetchGuestbookPage } = await import("./weddingApi");
 
-    await expect(fetchGuestbookMessages()).resolves.toEqual([
-      {
-        id: "guestbook_1",
-        nickname: "하객1",
-        message: "축하합니다",
-        createdAt: "2026-06-12T00:00:00.000Z"
-      }
-    ]);
+    await expect(fetchGuestbookPage()).resolves.toMatchObject({
+      messages: [{ id: "guestbook_1", revision: 1 }],
+      nextCursor: "next-page"
+    });
     expect(fetchMock).toHaveBeenCalledWith("https://worker.test/api/invitations/sample-garden/guestbook", {
       method: "GET"
+    });
+  });
+
+  it("소유 방명록을 생성·조회·수정·삭제한다", async () => {
+    vi.stubEnv("VITE_WORKER_URL", "https://worker.test");
+    vi.stubEnv("VITE_INVITATION_ID", "sample-garden");
+    const credential = { guestbookId: "guestbook_1", editToken: "edit-token" };
+    const message = {
+      id: "guestbook_1",
+      nickname: "하객1",
+      message: "축하합니다",
+      isHidden: false,
+      revision: 1,
+      createdAt: "2026-07-21T00:00:00.000Z",
+      updatedAt: "2026-07-21T00:00:00.000Z"
+    };
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce(jsonResponse({ response: message, credential }, 201))
+      .mockResolvedValueOnce(jsonResponse(message))
+      .mockResolvedValueOnce(jsonResponse({ ...message, message: "수정 축하", revision: 2 }))
+      .mockResolvedValueOnce(new Response(null, { status: 204 }));
+    vi.stubGlobal("fetch", fetchMock);
+    const {
+      createGuestbook,
+      deleteOwnedGuestbook,
+      fetchOwnedGuestbook,
+      updateOwnedGuestbook
+    } = await import("./weddingApi");
+
+    const created = await createGuestbook({ nickname: "하객1", message: "축하합니다" });
+    await fetchOwnedGuestbook(created.credential);
+    await updateOwnedGuestbook(created.credential, { nickname: "하객1", message: "수정 축하", revision: 1 });
+    await deleteOwnedGuestbook(created.credential);
+
+    expect(fetchMock).toHaveBeenNthCalledWith(2, "https://worker.test/api/invitations/sample-garden/guestbook/guestbook_1", {
+      method: "GET",
+      headers: { authorization: "Bearer edit-token" }
+    });
+    expect(fetchMock).toHaveBeenNthCalledWith(4, "https://worker.test/api/invitations/sample-garden/guestbook/guestbook_1", {
+      method: "DELETE",
+      headers: { authorization: "Bearer edit-token" }
     });
   });
 

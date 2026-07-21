@@ -9,7 +9,10 @@ vi.mock("./components/GameWorld", () => ({
   GameWorld: () => <div>게임 월드</div>
 }));
 vi.mock("./components/RsvpAdminPage", () => ({
-  RsvpAdminPage: () => <div>비공개 관리자 화면</div>
+  RsvpAdminPage: () => <div>참석 답변 관리자 화면</div>
+}));
+vi.mock("./components/GuestbookAdminPage", () => ({
+  GuestbookAdminPage: () => <div>방명록 관리자 화면</div>
 }));
 
 describe("App query routing", () => {
@@ -21,7 +24,14 @@ describe("App query routing", () => {
   it("renders only the RSVP admin page for the exact admin query", () => {
     window.history.replaceState({}, "", "/?admin=rsvp");
     render(<App />);
-    expect(screen.getByText("비공개 관리자 화면")).toBeInTheDocument();
+    expect(screen.getByText("참석 답변 관리자 화면")).toBeInTheDocument();
+    expect(screen.queryByText("일반 입장 화면")).not.toBeInTheDocument();
+  });
+
+  it("renders only the guestbook admin page for its exact admin query", () => {
+    window.history.replaceState({}, "", "/?admin=guestbook");
+    render(<App />);
+    expect(screen.getByText("방명록 관리자 화면")).toBeInTheDocument();
     expect(screen.queryByText("일반 입장 화면")).not.toBeInTheDocument();
   });
 
@@ -29,6 +39,7 @@ describe("App query routing", () => {
     window.history.replaceState({}, "", path);
     render(<App />);
     expect(screen.getByText("일반 입장 화면")).toBeInTheDocument();
-    expect(screen.queryByText("비공개 관리자 화면")).not.toBeInTheDocument();
+    expect(screen.queryByText("참석 답변 관리자 화면")).not.toBeInTheDocument();
+    expect(screen.queryByText("방명록 관리자 화면")).not.toBeInTheDocument();
   });
 });

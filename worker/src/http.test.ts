@@ -30,6 +30,17 @@ type CreateDbOptions = {
   writeError?: Error;
 };
 
+type GuestbookTestRow = {
+  id: string;
+  nickname: string;
+  message: string;
+  is_hidden: number;
+  edit_token_hash: string | null;
+  revision: number;
+  created_at: string;
+  updated_at: string;
+};
+
 const adminPasswordHash = "pbkdf2-sha256$100000$MTIzNDU2Nzg5MDEyMzQ1Ng$YEAsDXNqEF4BcOvVtfmXmFhoK-UtjKo4y180j0n9IgU";
 
 function createDb(options: CreateDbOptions = {}) {
@@ -74,6 +85,14 @@ function createDb(options: CreateDbOptions = {}) {
             return invitation && { rsvp_delete_at: "2027-05-31T14:59:59.000Z" };
           }
 
+          if (/SELECT guestbook_delete_at\s+FROM invitations/i.test(sql)) {
+            return invitation && { guestbook_delete_at: "2027-05-31T14:59:59.000Z" };
+          }
+
+          if (/COUNT\(\*\) AS write_count[\s\S]+FROM guestbook_messages/i.test(sql)) {
+            return { write_count: 0, oldest_created_at: null };
+          }
+
           if (/SELECT id FROM invitations/i.test(sql)) return invitation;
 
           if (/INSERT INTO rsvps/i.test(sql)) {
@@ -116,6 +135,21 @@ function createDb(options: CreateDbOptions = {}) {
             };
             rows.set(id, row);
             return row;
+          }
+
+          if (/INSERT INTO guestbook_messages/i.test(sql)) {
+            if (options.writeError) throw options.writeError;
+            const [id, , nickname, message, , editTokenHash, createdAt] = values as string[];
+            return {
+              id,
+              nickname,
+              message,
+              is_hidden: 0,
+              edit_token_hash: editTokenHash,
+              revision: 1,
+              created_at: createdAt,
+              updated_at: createdAt
+            } satisfies GuestbookTestRow;
           }
 
           if (/UPDATE rsvps/i.test(sql)) {
@@ -175,7 +209,14 @@ function createDb(options: CreateDbOptions = {}) {
                 .sort((left, right) => right.updated_at.localeCompare(left.updated_at))
             };
           }
-          const visibleRows = (options.guestbookRows ?? []).filter((row) => row.is_hidden === 0);
+          const visibleRows = (options.guestbookRows ?? [])
+            .filter((row) => row.is_hidden === 0)
+            .map((row) => ({
+              ...row,
+              edit_token_hash: null,
+              revision: 1,
+              updated_at: row.created_at
+            } satisfies GuestbookTestRow));
           return { results: visibleRows };
         },
         run: async () => {
@@ -678,9 +719,24 @@ describe("handleApiRequest", () => {
     expect(prepare).toHaveBeenCalledWith(expect.stringMatching(/ORDER BY created_at DESC/i));
     await expect(response.json()).resolves.toEqual({
       messages: [
-        { id: "guestbook_new", nickname: "하객2", message: "새 축하", createdAt: "2026-06-12T00:00:00.000Z" },
-        { id: "guestbook_old", nickname: "하객1", message: "오래된 축하", createdAt: "2026-06-11T00:00:00.000Z" }
-      ]
+        {
+          id: "guestbook_new",
+          nickname: "하객2",
+          message: "새 축하",
+          revision: 1,
+          createdAt: "2026-06-12T00:00:00.000Z",
+          updatedAt: "2026-06-12T00:00:00.000Z"
+        },
+        {
+          id: "guestbook_old",
+          nickname: "하객1",
+          message: "오래된 축하",
+          revision: 1,
+          createdAt: "2026-06-11T00:00:00.000Z",
+          updatedAt: "2026-06-11T00:00:00.000Z"
+        }
+      ],
+      nextCursor: null
     });
   });
 

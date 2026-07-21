@@ -1,5 +1,5 @@
 import { handleApiRequest } from "./http";
-import { cleanupExpiredRsvpData } from "./cleanup";
+import { cleanupExpiredInvitationData } from "./cleanup";
 
 export interface Env {
   DB: D1Database;
@@ -32,8 +32,8 @@ export default {
   },
 
   scheduled(controller: ScheduledController, env: Env, ctx: ExecutionContext): void {
-    const cleanup = cleanupExpiredRsvpData(env.DB, new Date(controller.scheduledTime)).then((result) => {
-      console.info(JSON.stringify({ event: "rsvp_cleanup", ...result }));
+    const cleanup = cleanupExpiredInvitationData(env.DB, new Date(controller.scheduledTime)).then((result) => {
+      console.info(JSON.stringify({ event: "invitation_data_cleanup", ...result }));
       return result;
     });
     ctx.waitUntil(cleanup);

@@ -425,9 +425,12 @@ export function RsvpAdminPage() {
             <p className="rsvp-admin-eyebrow">MJ CONVENTION · 2027.05.01</p>
             <h1>참석 답변 관리</h1>
           </div>
-          <button type="button" className="rsvp-admin-secondary" onClick={() => resetAdminState("", true)}>
-            <LogOut aria-hidden="true" /> 로그아웃
-          </button>
+          <div className="guestbook-admin-header-actions">
+            <a className="rsvp-admin-nav-link" href="?admin=guestbook">방명록 관리</a>
+            <button type="button" className="rsvp-admin-secondary" onClick={() => resetAdminState("", true)}>
+              <LogOut aria-hidden="true" /> 로그아웃
+            </button>
+          </div>
         </header>
 
         {isFetching && !result && <p className="rsvp-admin-message" role="status">참석 답변을 불러오고 있습니다.</p>}

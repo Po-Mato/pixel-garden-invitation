@@ -1,5 +1,6 @@
 export type CleanupResult = {
   rsvps: number;
+  guestbookMessages: number;
   attempts: number;
 };
 
@@ -7,7 +8,7 @@ function changes(result: D1Result): number {
   return Number(result.meta?.changes ?? 0);
 }
 
-export async function cleanupExpiredRsvpData(db: D1Database, now: Date): Promise<CleanupResult> {
+export async function cleanupExpiredInvitationData(db: D1Database, now: Date): Promise<CleanupResult> {
   const nowIso = now.toISOString();
   const attemptCutoff = new Date(now.getTime() - 10 * 60 * 1000).toISOString();
 
@@ -19,6 +20,14 @@ export async function cleanupExpiredRsvpData(db: D1Database, now: Date): Promise
     )
   `).bind(nowIso).run();
 
+  const guestbookResult = await db.prepare(`
+    DELETE FROM guestbook_messages
+    WHERE invitation_id IN (
+      SELECT id FROM invitations
+      WHERE guestbook_delete_at IS NOT NULL AND guestbook_delete_at <= ?
+    )
+  `).bind(nowIso).run();
+
   const attemptResult = await db.prepare(`
     DELETE FROM admin_login_attempts
     WHERE window_started_at < ?
@@ -26,6 +35,7 @@ export async function cleanupExpiredRsvpData(db: D1Database, now: Date): Promise
 
   return {
     rsvps: changes(rsvpResult),
+    guestbookMessages: changes(guestbookResult),
     attempts: changes(attemptResult)
   };
 }
