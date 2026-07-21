@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Eye, EyeOff, LockKeyhole, LogOut, RefreshCw, Search, Trash2 } from "lucide-react";
+import { Download, Eye, EyeOff, LockKeyhole, LogOut, Pencil, RefreshCw, Search, Trash2 } from "lucide-react";
 import type { GuestbookAdminResult, GuestbookOwnedMessage } from "@wedding-game/shared";
 
 import {
@@ -7,9 +7,11 @@ import {
   deleteAdminGuestbook,
   fetchAdminGuestbook,
   moderateAdminGuestbook,
+  updateAdminGuestbook,
   WeddingApiError,
   type AdminSession
 } from "../api/weddingApi";
+import { downloadGuestbookCsv } from "../invitation/guestbookCsv";
 import { clearAdminSession, loadAdminSession, saveAdminSession } from "../invitation/rsvpStorage";
 
 type VisibilityFilter = "all" | "visible" | "hidden";
@@ -55,6 +57,9 @@ export function GuestbookAdminPage() {
   const [loading, setLoading] = useState(false);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<GuestbookOwnedMessage | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editNickname, setEditNickname] = useState("");
+  const [editMessage, setEditMessage] = useState("");
   const [error, setError] = useState("");
   const [status, setStatus] = useState("");
 
@@ -68,6 +73,9 @@ export function GuestbookAdminPage() {
     setStatus("");
     setBusyId(null);
     setDeleteTarget(null);
+    setEditingId(null);
+    setEditNickname("");
+    setEditMessage("");
   }
 
   async function loadMessages(token: string, announcement = "") {
@@ -182,6 +190,51 @@ export function GuestbookAdminPage() {
     }
   }
 
+  function startEditing(message: GuestbookOwnedMessage) {
+    setDeleteTarget(null);
+    setEditingId(message.id);
+    setEditNickname(message.nickname);
+    setEditMessage(message.message);
+    setError("");
+    setStatus("");
+  }
+
+  function cancelEditing() {
+    if (busyId) return;
+    setEditingId(null);
+    setEditNickname("");
+    setEditMessage("");
+  }
+
+  async function handleUpdate(message: GuestbookOwnedMessage) {
+    const token = sessionRef.current?.token;
+    const nickname = editNickname.trim();
+    const nextMessage = editMessage.trim();
+    if (!token || busyId || editingId !== message.id || !nickname || !nextMessage) return;
+    setBusyId(message.id);
+    setError("");
+    setStatus("");
+    try {
+      await updateAdminGuestbook(token, message.id, {
+        nickname,
+        message: nextMessage,
+        revision: message.revision
+      });
+      setEditingId(null);
+      setEditNickname("");
+      setEditMessage("");
+      await loadMessages(token, `${nickname}님의 메시지를 수정했습니다.`);
+    } catch (updateError) {
+      if (updateError instanceof WeddingApiError && updateError.status === 401) {
+        logout("관리자 세션이 만료되었습니다. 다시 로그인해 주세요.");
+        return;
+      }
+      setError(messageForError(updateError, "메시지를 수정하지 못했습니다."));
+    } finally {
+      if (mountedRef.current) setBusyId(null);
+    }
+  }
+
   const filteredMessages = useMemo(() => {
     if (!result) return [];
     const query = normalizeSearch(search);
@@ -264,9 +317,14 @@ export function GuestbookAdminPage() {
                   <h2 id="guestbook-results-title">전체 메시지</h2>
                   <p>표시 {filteredMessages.length}건 · 전체 {result.messages.length}건</p>
                 </div>
-                <button type="button" onClick={() => void loadMessages(session.token, "방명록을 새로고침했습니다.")} disabled={loading}>
-                  <RefreshCw aria-hidden="true" /> {loading ? "불러오는 중" : "새로고침"}
-                </button>
+                <div className="rsvp-admin-actions">
+                  <button type="button" onClick={() => void loadMessages(session.token, "방명록을 새로고침했습니다.")} disabled={loading}>
+                    <RefreshCw aria-hidden="true" /> {loading ? "불러오는 중" : "새로고침"}
+                  </button>
+                  <button type="button" onClick={() => downloadGuestbookCsv(result)}>
+                    <Download aria-hidden="true" /> CSV 저장
+                  </button>
+                </div>
               </div>
 
               <div className="rsvp-admin-filters guestbook-admin-filters">
@@ -296,8 +354,35 @@ export function GuestbookAdminPage() {
                         <span>{message.isHidden ? "비공개" : "공개"}</span>
                         <time dateTime={message.updatedAt}>{formatDate(message.updatedAt)}</time>
                       </div>
-                      <p>{message.message}</p>
-                      {deleteTarget?.id === message.id ? (
+                      {editingId === message.id ? (
+                        <form
+                          className="guestbook-admin-edit"
+                          onSubmit={(event) => { event.preventDefault(); void handleUpdate(message); }}
+                          onKeyDown={(event) => {
+                            if (event.key === "Escape" && !busyId) {
+                              event.preventDefault();
+                              cancelEditing();
+                            }
+                          }}
+                        >
+                          <label>
+                            <span>작성자</span>
+                            <input autoFocus value={editNickname} maxLength={16} onChange={(event) => setEditNickname(event.target.value)} disabled={busyId !== null} required />
+                          </label>
+                          <label>
+                            <span>메시지</span>
+                            <textarea value={editMessage} maxLength={240} rows={4} onChange={(event) => setEditMessage(event.target.value)} disabled={busyId !== null} required />
+                            <small>{editMessage.length}/240</small>
+                          </label>
+                          <div>
+                            <button type="button" className="rsvp-admin-secondary" onClick={cancelEditing} disabled={busyId !== null}>취소</button>
+                            <button type="submit" disabled={busyId !== null || !editNickname.trim() || !editMessage.trim()}>{busyId === message.id ? "저장 중" : "변경 저장"}</button>
+                          </div>
+                        </form>
+                      ) : (
+                        <p>{message.message}</p>
+                      )}
+                      {editingId === message.id ? null : deleteTarget?.id === message.id ? (
                         <div className="guestbook-delete-confirm" role="group" aria-label={`${message.nickname} 메시지 삭제 확인`}>
                           <span>영구 삭제할까요?</span>
                           <button type="button" className="rsvp-admin-secondary" onClick={() => setDeleteTarget(null)} disabled={busyId !== null}>취소</button>
@@ -307,6 +392,9 @@ export function GuestbookAdminPage() {
                         </div>
                       ) : (
                         <div className="guestbook-admin-item__actions">
+                          <button type="button" className="rsvp-admin-secondary" onClick={() => startEditing(message)} disabled={busyId !== null}>
+                            <Pencil aria-hidden="true" /> 수정
+                          </button>
                           <button type="button" className="rsvp-admin-secondary" onClick={() => void handleModerate(message)} disabled={busyId !== null}>
                             {message.isHidden ? <Eye aria-hidden="true" /> : <EyeOff aria-hidden="true" />}
                             {busyId === message.id ? "변경 중" : message.isHidden ? "다시 공개" : "비공개"}

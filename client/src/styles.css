@@ -3998,6 +3998,16 @@ select {
   min-height: 44px;
 }
 
+.rsvp-admin-page textarea {
+  min-height: 44px;
+}
+
+.rsvp-admin-page input,
+.rsvp-admin-page select,
+.rsvp-admin-page textarea {
+  font: inherit;
+}
+
 .rsvp-admin-page button {
   display: inline-flex;
   align-items: center;
@@ -4025,7 +4035,8 @@ select {
 
 .rsvp-admin-page button:focus-visible,
 .rsvp-admin-page input:focus-visible,
-.rsvp-admin-page select:focus-visible {
+.rsvp-admin-page select:focus-visible,
+.rsvp-admin-page textarea:focus-visible {
   outline: 3px solid #b96b73;
   outline-offset: 2px;
 }
@@ -4131,6 +4142,7 @@ select {
 
 .guestbook-admin-item__actions {
   justify-content: flex-end;
+  flex-wrap: wrap;
 }
 
 .guestbook-admin-item__actions .rsvp-admin-delete {
@@ -4148,6 +4160,55 @@ select {
 .guestbook-admin-item .rsvp-admin-danger {
   border-color: #963f48;
   background: #963f48;
+}
+
+.guestbook-admin-edit {
+  display: grid;
+  gap: 10px;
+  padding-block: 4px;
+}
+
+.guestbook-admin-edit label,
+.rsvp-admin-edit-grid label {
+  display: grid;
+  min-width: 0;
+  gap: 5px;
+  color: #4c5850;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.guestbook-admin-edit input,
+.guestbook-admin-edit textarea,
+.rsvp-admin-edit-grid input,
+.rsvp-admin-edit-grid select,
+.rsvp-admin-edit-grid textarea {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid #aab3ac;
+  border-radius: 3px;
+  padding: 9px 10px;
+  background: #fff;
+  color: #252a27;
+}
+
+.guestbook-admin-edit textarea,
+.rsvp-admin-edit-grid textarea {
+  resize: vertical;
+  line-height: 1.55;
+}
+
+.guestbook-admin-edit small,
+.rsvp-admin-edit-grid small {
+  justify-self: end;
+  color: #69756d;
+  font-weight: 700;
+}
+
+.guestbook-admin-edit > div {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
 }
 
 .rsvp-admin-login {
@@ -4329,12 +4390,26 @@ select {
   max-width: 260px;
 }
 
-.rsvp-admin-table .rsvp-admin-delete {
+.rsvp-admin-row-actions {
+  display: flex;
+  gap: 7px;
+}
+
+.rsvp-admin-table .rsvp-admin-delete,
+.rsvp-admin-table .rsvp-admin-edit {
   width: 44px;
   padding: 0;
-  border-color: #bd8187;
   background: #fff;
+}
+
+.rsvp-admin-table .rsvp-admin-delete {
+  border-color: #bd8187;
   color: #963f48;
+}
+
+.rsvp-admin-table .rsvp-admin-edit {
+  border-color: #91a097;
+  color: #435c4b;
 }
 
 .rsvp-admin-empty {
@@ -4371,6 +4446,56 @@ select {
 .rsvp-admin-dialog .rsvp-admin-danger {
   border-color: #963f48;
   background: #963f48;
+}
+
+.rsvp-admin-edit-dialog {
+  width: min(100%, 620px);
+  max-height: calc(100dvh - 40px);
+  overflow-y: auto;
+}
+
+.rsvp-admin-edit-dialog > .rsvp-admin-edit-dialog__heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 13px;
+  border-bottom: 1px solid #d7ddd8;
+}
+
+.rsvp-admin-edit-dialog__heading h2,
+.rsvp-admin-edit-dialog__heading p {
+  margin-bottom: 0;
+}
+
+.rsvp-admin-edit-dialog__heading > span {
+  flex: 0 0 auto;
+  padding: 4px 7px;
+  border: 1px solid #bdc6bf;
+  border-radius: 3px;
+  color: #657169;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.rsvp-admin-edit-dialog > .rsvp-admin-edit-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-block: 16px;
+}
+
+.rsvp-admin-edit-grid__wide,
+.rsvp-admin-edit-grid__full {
+  grid-column: 1 / -1;
+}
+
+.rsvp-admin-edit-dialog > .rsvp-admin-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 9px;
+  padding-top: 14px;
+  border-top: 1px solid #d7ddd8;
 }
 
 @media (max-width: 900px) {
@@ -4465,6 +4590,10 @@ select {
     font-size: 11px;
     font-weight: 800;
   }
+
+  .rsvp-admin-row-actions {
+    justify-content: flex-start;
+  }
 }
 
 @media (max-width: 390px) {
@@ -4518,6 +4647,15 @@ select {
   }
 
   .rsvp-admin-search {
+    grid-column: auto;
+  }
+
+  .rsvp-admin-edit-dialog > .rsvp-admin-edit-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .rsvp-admin-edit-grid__wide,
+  .rsvp-admin-edit-grid__full {
     grid-column: auto;
   }
 }

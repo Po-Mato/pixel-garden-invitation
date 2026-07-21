@@ -308,8 +308,9 @@ async function handleAdminRsvps(
   invitationId: string,
   rsvpId?: string
 ): Promise<Response> {
-  const expectedMethod = rsvpId ? "DELETE" : "GET";
-  if (request.method !== expectedMethod) return adminJson({ error: "not_found" }, 404);
+  if ((!rsvpId && request.method !== "GET") || (rsvpId && !["PATCH", "DELETE"].includes(request.method))) {
+    return adminJson({ error: "not_found" }, 404);
+  }
 
   try {
     const authenticated = await authenticateAdmin(request, env, invitationId);
@@ -317,8 +318,42 @@ async function handleAdminRsvps(
     if (!authenticated) return adminJson({ error: "unauthorized" }, 401);
 
     if (!rsvpId) return adminJson(await listRsvps(env.DB, invitationId));
-    return await deleteRsvp(env.DB, invitationId, rsvpId)
-      ? adminEmpty(204)
+    if (request.method === "DELETE") {
+      return await deleteRsvp(env.DB, invitationId, rsvpId)
+        ? adminEmpty(204)
+        : adminJson({ error: "not_found" }, 404);
+    }
+
+    const existing = await findRsvp(env.DB, invitationId, rsvpId);
+    if (!existing) return adminJson({ error: "not_found" }, 404);
+    if (
+      existing.response.side === "legacy"
+      || !existing.response.phone
+      || !existing.response.consentVersion
+    ) return adminJson({ error: "legacy_read_only" }, 409);
+
+    const body = await readJson(request);
+    const expectedRevision = readExpectedRevision(body);
+    if (body === null || expectedRevision === null || !isRecord(body)) {
+      return adminJson({ error: "invalid_request" }, 400);
+    }
+    const submission = parseRsvpPayload(
+      { ...body, consentVersion: existing.response.consentVersion },
+      existing.response.consentVersion
+    );
+    if (!submission) return adminJson({ error: "invalid_request" }, 400);
+
+    const updated = await updateRsvp(env.DB, {
+      invitationId,
+      rsvpId,
+      submission,
+      expectedRevision,
+      updatedAt: new Date().toISOString()
+    });
+    if (updated) return adminJson(updated);
+
+    return await findRsvp(env.DB, invitationId, rsvpId)
+      ? adminJson({ error: "conflict" }, 409)
       : adminJson({ error: "not_found" }, 404);
   } catch {
     return adminJson({ error: "internal_error" }, 500);
@@ -347,15 +382,27 @@ async function handleAdminGuestbook(
         : adminJson({ error: "not_found" }, 404);
     }
 
-    const moderation = readGuestbookModeration(await readJson(request));
-    if (!moderation) return adminJson({ error: "invalid_request" }, 400);
-    const updated = await moderateGuestbook(env.DB, {
-      invitationId,
-      guestbookId,
-      hidden: moderation.hidden,
-      expectedRevision: moderation.revision,
-      updatedAt: new Date().toISOString()
-    });
+    const body = await readJson(request);
+    const expectedRevision = readExpectedRevision(body);
+    if (body === null || expectedRevision === null) return adminJson({ error: "invalid_request" }, 400);
+    const moderation = readGuestbookModeration(body);
+    const submission = moderation ? null : parseGuestbookPayload(body);
+    if (!moderation && !submission) return adminJson({ error: "invalid_request" }, 400);
+    const updated = moderation
+      ? await moderateGuestbook(env.DB, {
+        invitationId,
+        guestbookId,
+        hidden: moderation.hidden,
+        expectedRevision,
+        updatedAt: new Date().toISOString()
+      })
+      : submission && await updateGuestbook(env.DB, {
+        invitationId,
+        guestbookId,
+        submission,
+        expectedRevision,
+        updatedAt: new Date().toISOString()
+      });
     if (updated) return adminJson(updated);
 
     const existing = await findGuestbook(env.DB, invitationId, guestbookId);

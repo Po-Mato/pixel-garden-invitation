@@ -180,18 +180,41 @@ describe("weddingApi", () => {
     }));
   });
 
-  it("uses Bearer auth for admin session data and deletes", async () => {
+  it("uses Bearer auth for admin session data, updates, and deletes", async () => {
     vi.stubEnv("VITE_WORKER_URL", "https://worker.test");
     vi.stubEnv("VITE_INVITATION_ID", "sample-garden");
     const fetchMock = vi.fn()
       .mockResolvedValueOnce(jsonResponse({ token: "admin-token", expiresAt: 1_784_592_000_000 }))
       .mockResolvedValueOnce(jsonResponse({ summary: {}, responses: [] }))
+      .mockResolvedValueOnce(jsonResponse({ id: "rsvp_1", revision: 2 }))
+      .mockResolvedValueOnce(jsonResponse({ id: "guestbook_1", revision: 2 }))
       .mockResolvedValueOnce(new Response(null, { status: 204 }));
     vi.stubGlobal("fetch", fetchMock);
 
-    const { createAdminSession, fetchAdminRsvps, deleteAdminRsvp } = await import("./weddingApi");
+    const {
+      createAdminSession,
+      fetchAdminRsvps,
+      updateAdminRsvp,
+      updateAdminGuestbook,
+      deleteAdminRsvp
+    } = await import("./weddingApi");
     const session = await createAdminSession("password");
     await fetchAdminRsvps(session.token);
+    await updateAdminRsvp(session.token, "rsvp_1", {
+      side: "bride",
+      guestName: "관리자 수정",
+      phone: "01099998888",
+      attendance: "yes",
+      partySize: 2,
+      mealStatus: "yes",
+      note: "수정",
+      revision: 1
+    });
+    await updateAdminGuestbook(session.token, "guestbook_1", {
+      nickname: "수정 하객",
+      message: "수정 메시지",
+      revision: 1
+    });
     await deleteAdminRsvp(session.token, "rsvp_1");
 
     expect(fetchMock).toHaveBeenNthCalledWith(1, "https://worker.test/api/invitations/sample-garden/admin/session", {
@@ -204,6 +227,25 @@ describe("weddingApi", () => {
       headers: { authorization: "Bearer admin-token" }
     });
     expect(fetchMock).toHaveBeenNthCalledWith(3, "https://worker.test/api/invitations/sample-garden/admin/rsvps/rsvp_1", {
+      method: "PATCH",
+      headers: { "content-type": "application/json", authorization: "Bearer admin-token" },
+      body: JSON.stringify({
+        side: "bride",
+        guestName: "관리자 수정",
+        phone: "01099998888",
+        attendance: "yes",
+        partySize: 2,
+        mealStatus: "yes",
+        note: "수정",
+        revision: 1
+      })
+    });
+    expect(fetchMock).toHaveBeenNthCalledWith(4, "https://worker.test/api/invitations/sample-garden/admin/guestbook/guestbook_1", {
+      method: "PATCH",
+      headers: { "content-type": "application/json", authorization: "Bearer admin-token" },
+      body: JSON.stringify({ nickname: "수정 하객", message: "수정 메시지", revision: 1 })
+    });
+    expect(fetchMock).toHaveBeenNthCalledWith(5, "https://worker.test/api/invitations/sample-garden/admin/rsvps/rsvp_1", {
       method: "DELETE",
       headers: { authorization: "Bearer admin-token" }
     });

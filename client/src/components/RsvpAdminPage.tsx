@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Download, LockKeyhole, LogOut, RefreshCw, Search, Trash2 } from "lucide-react";
+import { Download, LockKeyhole, LogOut, Pencil, RefreshCw, Search, Trash2 } from "lucide-react";
 import { normalizeRsvpPhone } from "@wedding-game/shared";
 import type {
   RsvpAdminResult,
@@ -12,6 +12,7 @@ import {
   createAdminSession,
   deleteAdminRsvp,
   fetchAdminRsvps,
+  updateAdminRsvp,
   WeddingApiError,
   type AdminSession
 } from "../api/weddingApi";
@@ -21,6 +22,18 @@ import { downloadRsvpCsv } from "../invitation/rsvpCsv";
 import { clearAdminSession, loadAdminSession, saveAdminSession } from "../invitation/rsvpStorage";
 
 type FilterValue<T extends string> = "all" | T;
+
+type EditableRsvpSide = Exclude<RsvpRecordSide, "legacy">;
+
+type RsvpEditDraft = {
+  side: EditableRsvpSide;
+  guestName: string;
+  phone: string;
+  attendance: RsvpAttendance;
+  partySize: number;
+  mealStatus: RsvpMealStatus;
+  note: string;
+};
 
 function invitationId(): string {
   return import.meta.env.VITE_INVITATION_ID ?? "sample-garden";
@@ -68,6 +81,26 @@ function errorMessage(error: unknown, fallback: string): string {
   return fallback;
 }
 
+function isEditableRsvp(response: RsvpRecord): response is RsvpRecord & {
+  side: EditableRsvpSide;
+  phone: string;
+  consentVersion: string;
+} {
+  return response.side !== "legacy" && Boolean(response.phone) && Boolean(response.consentVersion);
+}
+
+function editDraft(response: RsvpRecord & { side: EditableRsvpSide; phone: string }): RsvpEditDraft {
+  return {
+    side: response.side,
+    guestName: response.guestName,
+    phone: response.phone,
+    attendance: response.attendance,
+    partySize: response.partySize,
+    mealStatus: response.mealStatus,
+    note: response.note
+  };
+}
+
 export function RsvpAdminPage() {
   const id = invitationId();
   const coupleOrder = useCoupleOrder();
@@ -77,14 +110,19 @@ export function RsvpAdminPage() {
   const loginBusyRef = useRef(false);
   const fetchBusyRef = useRef(false);
   const deleteBusyRef = useRef(false);
+  const updateBusyRef = useRef(false);
   const loginVersionRef = useRef(0);
   const fetchVersionRef = useRef(0);
   const deleteVersionRef = useRef(0);
   const shellRef = useRef<HTMLDivElement>(null);
   const cancelDeleteRef = useRef<HTMLButtonElement>(null);
   const deleteDialogRef = useRef<HTMLElement>(null);
+  const editDialogRef = useRef<HTMLFormElement>(null);
+  const editNameRef = useRef<HTMLInputElement>(null);
   const deleteTriggerRef = useRef<HTMLButtonElement | null>(null);
+  const editTriggerRef = useRef<HTMLButtonElement | null>(null);
   const restoreDeleteFocusRef = useRef(false);
+  const restoreEditFocusRef = useRef(false);
   const focusAfterDeleteRef = useRef(false);
   const loginInputRef = useRef<HTMLInputElement>(null);
   const resultsHeadingRef = useRef<HTMLHeadingElement>(null);
@@ -96,6 +134,9 @@ export function RsvpAdminPage() {
   const [isFetching, setIsFetching] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<RsvpRecord | null>(null);
+  const [editTarget, setEditTarget] = useState<RsvpRecord | null>(null);
+  const [editValues, setEditValues] = useState<RsvpEditDraft | null>(null);
+  const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [error, setError] = useState("");
   const [status, setStatus] = useState("");
   const [retryUntil, setRetryUntil] = useState(0);
@@ -114,6 +155,7 @@ export function RsvpAdminPage() {
     loginBusyRef.current = false;
     fetchBusyRef.current = false;
     deleteBusyRef.current = false;
+    updateBusyRef.current = false;
     clearAdminSession(id);
     setSession(null);
     setResult(null);
@@ -121,6 +163,9 @@ export function RsvpAdminPage() {
     setIsFetching(false);
     setDeletingId(null);
     setDeleteTarget(null);
+    setEditTarget(null);
+    setEditValues(null);
+    setUpdatingId(null);
     setError(message);
     setStatus("");
     setPassword("");
@@ -224,7 +269,17 @@ export function RsvpAdminPage() {
   }, [retryUntil]);
 
   useEffect(() => {
-    shellRef.current?.toggleAttribute("inert", Boolean(deleteTarget));
+    shellRef.current?.toggleAttribute("inert", Boolean(deleteTarget || editTarget));
+    if (editTarget) {
+      if (updatingId !== null) editDialogRef.current?.focus();
+      else editNameRef.current?.focus();
+      return;
+    }
+    if (restoreEditFocusRef.current && editTriggerRef.current?.isConnected) {
+      editTriggerRef.current.focus();
+    }
+    restoreEditFocusRef.current = false;
+    editTriggerRef.current = null;
     if (deleteTarget) {
       if (deletingId !== null) deleteDialogRef.current?.focus();
       else cancelDeleteRef.current?.focus();
@@ -242,7 +297,7 @@ export function RsvpAdminPage() {
     }
     restoreDeleteFocusRef.current = false;
     deleteTriggerRef.current = null;
-  }, [deleteTarget, deletingId]);
+  }, [deleteTarget, deletingId, editTarget, updatingId]);
 
   async function handleLogin(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -322,6 +377,58 @@ export function RsvpAdminPage() {
     }
   }
 
+  async function handleUpdate(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const target = editTarget;
+    const values = editValues;
+    const token = sessionRef.current?.token;
+    if (!target || !values || !token || updateBusyRef.current || !isEditableRsvp(target)) return;
+
+    const phone = normalizeRsvpPhone(values.phone);
+    if (phone.length < 8 || phone.length > 15) {
+      setError("연락처는 숫자 8~15자리로 입력해 주세요.");
+      editDialogRef.current?.focus();
+      return;
+    }
+
+    updateBusyRef.current = true;
+    setUpdatingId(target.id);
+    setError("");
+    setStatus("");
+    try {
+      await updateAdminRsvp(token, target.id, {
+        ...values,
+        phone,
+        guestName: values.guestName.trim(),
+        note: values.note.trim(),
+        revision: target.revision
+      });
+      if (!mountedRef.current || sessionRef.current?.token !== token) return;
+      await loadAll(token, {
+        force: true,
+        successMessage: `${values.guestName.trim()}님의 답변을 수정했습니다.`
+      });
+      if (mountedRef.current && sessionRef.current?.token === token) {
+        setEditTarget(null);
+        setEditValues(null);
+      }
+    } catch (updateError) {
+      if (!mountedRef.current || sessionRef.current?.token !== token) return;
+      if (updateError instanceof WeddingApiError && updateError.status === 401) {
+        resetAdminState("세션이 만료되었습니다. 다시 로그인해 주세요.");
+        return;
+      }
+      if (updateError instanceof WeddingApiError && updateError.status === 409) {
+        setError("다른 변경이 먼저 저장되었습니다. 목록을 새로고침한 뒤 다시 수정해 주세요.");
+      } else {
+        setError(errorMessage(updateError, "답변을 수정하지 못했습니다. 입력 내용을 확인해 주세요."));
+      }
+    } finally {
+      updateBusyRef.current = false;
+      if (mountedRef.current) setUpdatingId(null);
+    }
+  }
+
   const filteredResponses = useMemo(() => {
     if (!result) return [];
     const nameQuery = normalizeSearch(search);
@@ -351,6 +458,40 @@ export function RsvpAdminPage() {
     setDeleteTarget(response);
   }
 
+  function openEditDialog(response: RsvpRecord, trigger: HTMLButtonElement) {
+    if (!isEditableRsvp(response)) return;
+    editTriggerRef.current = trigger;
+    restoreEditFocusRef.current = true;
+    setError("");
+    setEditTarget(response);
+    setEditValues(editDraft(response));
+  }
+
+  function closeEditDialog() {
+    if (updatingId !== null) return;
+    restoreEditFocusRef.current = true;
+    setEditTarget(null);
+    setEditValues(null);
+  }
+
+  function updateAttendance(nextAttendance: RsvpAttendance) {
+    setEditValues((current) => {
+      if (!current) return current;
+      if (nextAttendance === "no") {
+        return { ...current, attendance: nextAttendance, partySize: 0, mealStatus: "not_applicable" };
+      }
+      if (nextAttendance === "unsure") {
+        return { ...current, attendance: nextAttendance, partySize: Math.max(1, current.partySize), mealStatus: "unsure" };
+      }
+      return {
+        ...current,
+        attendance: nextAttendance,
+        partySize: Math.max(1, current.partySize),
+        mealStatus: current.mealStatus === "not_applicable" ? "unsure" : current.mealStatus
+      };
+    });
+  }
+
   function closeDeleteDialog() {
     if (deletingId !== null) return;
     restoreDeleteFocusRef.current = true;
@@ -373,6 +514,35 @@ export function RsvpAdminPage() {
     }
     const focusable = Array.from(
       deleteDialogRef.current?.querySelectorAll<HTMLButtonElement>("button:not(:disabled)") ?? []
+    );
+    if (focusable.length === 0) return;
+    const first = focusable[0];
+    const last = focusable.at(-1) ?? first;
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  }
+
+  function handleEditDialogKeyDown(event: React.KeyboardEvent<HTMLFormElement>) {
+    if (event.key === "Escape") {
+      if (updatingId === null) {
+        event.preventDefault();
+        closeEditDialog();
+      }
+      return;
+    }
+    if (event.key !== "Tab") return;
+    if (updatingId !== null) {
+      event.preventDefault();
+      editDialogRef.current?.focus();
+      return;
+    }
+    const focusable = Array.from(
+      editDialogRef.current?.querySelectorAll<HTMLElement>("input:not(:disabled), select:not(:disabled), textarea:not(:disabled), button:not(:disabled)") ?? []
     );
     if (focusable.length === 0) return;
     const first = focusable[0];
@@ -423,7 +593,7 @@ export function RsvpAdminPage() {
 
   return (
     <main className="rsvp-admin-page">
-      <div ref={shellRef} className="rsvp-admin-shell" aria-hidden={deleteTarget ? true : undefined}>
+      <div ref={shellRef} className="rsvp-admin-shell" aria-hidden={deleteTarget || editTarget ? true : undefined}>
         <header className="rsvp-admin-header">
           <div>
             <p className="rsvp-admin-eyebrow">MJ CONVENTION · 2027.05.01</p>
@@ -509,7 +679,7 @@ export function RsvpAdminPage() {
               ) : (
                 <div className="rsvp-admin-table-wrap">
                   <table className="rsvp-admin-table">
-                    <thead><tr><th>대상</th><th>이름</th><th>연락처</th><th>상태</th><th>인원</th><th>식사</th><th>전달사항</th><th>수정</th><th>관리</th></tr></thead>
+                    <thead><tr><th>대상</th><th>이름</th><th>연락처</th><th>상태</th><th>인원</th><th>식사</th><th>전달사항</th><th>최근 수정</th><th>관리</th></tr></thead>
                     <tbody>
                       {filteredResponses.map((response) => (
                         <tr key={response.id}>
@@ -520,8 +690,22 @@ export function RsvpAdminPage() {
                           <td data-label="인원">{response.partySize}</td>
                           <td data-label="식사">{mealLabel(response.mealStatus)}</td>
                           <td data-label="전달사항">{response.note || "-"}</td>
-                          <td data-label="수정"><time dateTime={response.updatedAt}>{formatDate(response.updatedAt)}</time></td>
-                          <td data-label="관리"><button type="button" className="rsvp-admin-delete" aria-label={`${response.guestName} 답변 삭제`} onClick={(event) => openDeleteDialog(response, event.currentTarget)} disabled={deletingId !== null}><Trash2 aria-hidden="true" /></button></td>
+                          <td data-label="최근 수정"><time dateTime={response.updatedAt}>{formatDate(response.updatedAt)}</time></td>
+                          <td data-label="관리">
+                            <div className="rsvp-admin-row-actions">
+                              <button
+                                type="button"
+                                className="rsvp-admin-edit"
+                                aria-label={`${response.guestName} 답변 수정`}
+                                title={isEditableRsvp(response) ? "답변 수정" : "기존 데이터는 수정할 수 없습니다"}
+                                onClick={(event) => openEditDialog(response, event.currentTarget)}
+                                disabled={deletingId !== null || updatingId !== null || !isEditableRsvp(response)}
+                              >
+                                <Pencil aria-hidden="true" />
+                              </button>
+                              <button type="button" className="rsvp-admin-delete" aria-label={`${response.guestName} 답변 삭제`} title="답변 삭제" onClick={(event) => openDeleteDialog(response, event.currentTarget)} disabled={deletingId !== null || updatingId !== null}><Trash2 aria-hidden="true" /></button>
+                            </div>
+                          </td>
                         </tr>
                       ))}
                     </tbody>
@@ -543,6 +727,72 @@ export function RsvpAdminPage() {
               <button type="button" className="rsvp-admin-danger" onClick={() => void handleDelete()} disabled={deletingId !== null}>{deletingId ? "삭제 중" : "삭제"}</button>
             </div>
           </section>
+        </div>
+      )}
+
+      {editTarget && editValues && (
+        <div className="rsvp-admin-dialog-backdrop">
+          <form
+            ref={editDialogRef}
+            className="rsvp-admin-dialog rsvp-admin-edit-dialog"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="rsvp-edit-title"
+            aria-busy={updatingId !== null}
+            tabIndex={-1}
+            onSubmit={handleUpdate}
+            onKeyDown={handleEditDialogKeyDown}
+          >
+            <div className="rsvp-admin-edit-dialog__heading">
+              <div>
+                <p className="rsvp-admin-eyebrow">RSVP RESPONSE</p>
+                <h2 id="rsvp-edit-title">참석 답변 수정</h2>
+              </div>
+              <span>rev. {editTarget.revision}</span>
+            </div>
+            {error && <p className="rsvp-admin-message rsvp-admin-message--error" role="alert">{error}</p>}
+            <div className="rsvp-admin-edit-grid">
+              <label>
+                <span>대상</span>
+                <select value={editValues.side} onChange={(event) => setEditValues({ ...editValues, side: event.target.value as EditableRsvpSide })} disabled={updatingId !== null}>
+                  {sideOrder.map((weddingSide) => <option key={weddingSide} value={weddingSide}>{weddingSide === "bride" ? "신부측" : "신랑측"}</option>)}
+                </select>
+              </label>
+              <label>
+                <span>이름</span>
+                <input ref={editNameRef} value={editValues.guestName} maxLength={30} onChange={(event) => setEditValues({ ...editValues, guestName: event.target.value })} disabled={updatingId !== null} required />
+              </label>
+              <label className="rsvp-admin-edit-grid__wide">
+                <span>연락처</span>
+                <input type="tel" inputMode="tel" value={editValues.phone} maxLength={20} onChange={(event) => setEditValues({ ...editValues, phone: event.target.value })} disabled={updatingId !== null} required />
+              </label>
+              <label>
+                <span>참석 여부</span>
+                <select value={editValues.attendance} onChange={(event) => updateAttendance(event.target.value as RsvpAttendance)} disabled={updatingId !== null}>
+                  <option value="yes">참석</option><option value="no">불참</option><option value="unsure">미정</option>
+                </select>
+              </label>
+              <label>
+                <span>인원</span>
+                <input type="number" min={editValues.attendance === "no" ? 0 : 1} max={10} value={editValues.partySize} onChange={(event) => setEditValues({ ...editValues, partySize: Number(event.target.value) })} disabled={updatingId !== null || editValues.attendance === "no"} required />
+              </label>
+              <label className="rsvp-admin-edit-grid__wide">
+                <span>식사 여부</span>
+                <select value={editValues.mealStatus} onChange={(event) => setEditValues({ ...editValues, mealStatus: event.target.value as RsvpMealStatus })} disabled={updatingId !== null || editValues.attendance !== "yes"}>
+                  <option value="yes">식사 예정</option><option value="no">식사 안 함</option><option value="unsure">미정</option><option value="not_applicable" disabled>해당 없음</option>
+                </select>
+              </label>
+              <label className="rsvp-admin-edit-grid__full">
+                <span>전달사항</span>
+                <textarea value={editValues.note} maxLength={160} rows={4} onChange={(event) => setEditValues({ ...editValues, note: event.target.value })} disabled={updatingId !== null} />
+                <small>{editValues.note.length}/160</small>
+              </label>
+            </div>
+            <div className="rsvp-admin-dialog-actions">
+              <button type="button" className="rsvp-admin-secondary" onClick={closeEditDialog} disabled={updatingId !== null}>취소</button>
+              <button type="submit" disabled={updatingId !== null || !editValues.guestName.trim()}>{updatingId ? "저장 중" : "변경 저장"}</button>
+            </div>
+          </form>
         </div>
       )}
     </main>

@@ -25,6 +25,10 @@ export type RsvpUpdatePayload = RsvpSubmission & {
   revision: number;
 };
 
+export type AdminRsvpUpdatePayload = Omit<RsvpSubmission, "consentVersion"> & {
+  revision: number;
+};
+
 export type AdminSession = {
   token: string;
   expiresAt: number;
@@ -143,6 +147,21 @@ export function fetchAdminRsvps(token: string): Promise<RsvpAdminResult> {
   });
 }
 
+export function updateAdminRsvp(
+  token: string,
+  rsvpId: string,
+  payload: AdminRsvpUpdatePayload
+): Promise<RsvpRecord> {
+  return requestJson<RsvpRecord>(
+    `/api/invitations/${getInvitationId()}/admin/rsvps/${encodeURIComponent(rsvpId)}`,
+    {
+      method: "PATCH",
+      headers: { "content-type": "application/json", ...bearerHeaders(token) },
+      body: JSON.stringify(payload)
+    }
+  );
+}
+
 export async function deleteAdminRsvp(token: string, rsvpId: string): Promise<void> {
   const response = await fetch(buildApiUrl(
     getApiBase(),
@@ -223,6 +242,21 @@ export function moderateAdminGuestbook(
       method: "PATCH",
       headers: { "content-type": "application/json", ...bearerHeaders(token) },
       body: JSON.stringify({ hidden, revision })
+    }
+  );
+}
+
+export function updateAdminGuestbook(
+  token: string,
+  guestbookId: string,
+  payload: GuestbookSubmission & { revision: number }
+): Promise<GuestbookOwnedMessage> {
+  return requestJson<GuestbookOwnedMessage>(
+    `/api/invitations/${getInvitationId()}/admin/guestbook/${encodeURIComponent(guestbookId)}`,
+    {
+      method: "PATCH",
+      headers: { "content-type": "application/json", ...bearerHeaders(token) },
+      body: JSON.stringify(payload)
     }
   );
 }

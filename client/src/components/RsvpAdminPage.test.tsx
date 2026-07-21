@@ -1,5 +1,5 @@
 import { StrictMode } from "react";
-import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { RsvpAdminResult } from "@wedding-game/shared";
 import { WeddingApiError } from "../api/weddingApi";
@@ -8,6 +8,7 @@ import { RsvpAdminPage } from "./RsvpAdminPage";
 const api = vi.hoisted(() => ({
   createAdminSession: vi.fn(),
   fetchAdminRsvps: vi.fn(),
+  updateAdminRsvp: vi.fn(),
   deleteAdminRsvp: vi.fn()
 }));
 
@@ -67,6 +68,7 @@ describe("RsvpAdminPage", () => {
     storage.clearAdminSession.mockReturnValue(true);
     api.createAdminSession.mockResolvedValue(session);
     api.fetchAdminRsvps.mockResolvedValue(result);
+    api.updateAdminRsvp.mockResolvedValue({ ...result.responses[0], revision: 2 });
     api.deleteAdminRsvp.mockResolvedValue(undefined);
   });
 
@@ -546,6 +548,50 @@ describe("RsvpAdminPage", () => {
     fireEvent.change(screen.getByLabelText("대상 필터"), { target: { value: "legacy" } });
     fireEvent.click(screen.getByRole("button", { name: "CSV 저장" }));
     expect(csv.downloadRsvpCsv).toHaveBeenCalledWith(result);
+  });
+
+  it("관리자가 참석 답변을 수정하고 유효한 조건부 값을 저장한다", async () => {
+    const updatedResult = {
+      ...result,
+      responses: [{ ...result.responses[0], side: "bride" as const, guestName: "김수정", phone: "01099998888", revision: 2 }, ...result.responses.slice(1)]
+    };
+    api.fetchAdminRsvps.mockResolvedValueOnce(result).mockResolvedValueOnce(updatedResult);
+    render(<RsvpAdminPage />);
+    await login();
+
+    fireEvent.click(screen.getByRole("button", { name: "김하객 답변 수정" }));
+    const dialog = screen.getByRole("dialog", { name: "참석 답변 수정" });
+    expect(dialog).toBeInTheDocument();
+    const editor = within(dialog);
+    expect(editor.getByLabelText("이름")).toHaveFocus();
+    fireEvent.change(editor.getByLabelText("이름"), { target: { value: "김수정" } });
+    fireEvent.change(editor.getByLabelText("연락처"), { target: { value: "010-9999-8888" } });
+    fireEvent.change(editor.getByLabelText("대상"), { target: { value: "bride" } });
+    fireEvent.change(editor.getByLabelText("참석 여부"), { target: { value: "no" } });
+    expect(editor.getByLabelText("인원")).toHaveValue(0);
+    expect(editor.getByLabelText("식사 여부")).toHaveValue("not_applicable");
+    fireEvent.click(editor.getByRole("button", { name: "변경 저장" }));
+
+    await waitFor(() => expect(api.updateAdminRsvp).toHaveBeenCalledWith("admin-token", "1", {
+      side: "bride",
+      guestName: "김수정",
+      phone: "01099998888",
+      attendance: "no",
+      partySize: 0,
+      mealStatus: "not_applicable",
+      note: "축하합니다",
+      revision: 1
+    }));
+    await waitFor(() => expect(screen.queryByRole("dialog", { name: "참석 답변 수정" })).not.toBeInTheDocument());
+    expect(screen.getByText("김수정")).toBeInTheDocument();
+  });
+
+  it("기존 마이그레이션 답변은 수정하지 못하지만 삭제는 유지한다", async () => {
+    render(<RsvpAdminPage />);
+    await login();
+
+    expect(screen.getByRole("button", { name: "옛 하객 답변 수정" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "옛 하객 답변 삭제" })).toBeEnabled();
   });
 
   it("clears persistent and in-memory admin state on logout", async () => {

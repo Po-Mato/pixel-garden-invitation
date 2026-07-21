@@ -7,8 +7,13 @@ const api = vi.hoisted(() => ({
   createAdminSession: vi.fn(),
   fetchAdminGuestbook: vi.fn(),
   moderateAdminGuestbook: vi.fn(),
+  updateAdminGuestbook: vi.fn(),
   deleteAdminGuestbook: vi.fn()
 }));
+
+const csv = vi.hoisted(() => ({ downloadGuestbookCsv: vi.fn() }));
+
+vi.mock("../invitation/guestbookCsv", () => csv);
 
 const storage = vi.hoisted(() => ({
   loadAdminSession: vi.fn(),
@@ -45,10 +50,12 @@ const result = {
 
 describe("GuestbookAdminPage", () => {
   beforeEach(() => {
+    vi.resetAllMocks();
     storage.loadAdminSession.mockReturnValue(null);
     api.createAdminSession.mockResolvedValue(session);
     api.fetchAdminGuestbook.mockResolvedValue(result);
     api.moderateAdminGuestbook.mockResolvedValue({ ...message, isHidden: true, revision: 2 });
+    api.updateAdminGuestbook.mockResolvedValue({ ...message, nickname: "수정 하객", message: "수정 축하", revision: 2 });
     api.deleteAdminGuestbook.mockResolvedValue(undefined);
   });
 
@@ -89,5 +96,35 @@ describe("GuestbookAdminPage", () => {
     expect(screen.getByText("영구 삭제할까요?")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "삭제" }));
     await waitFor(() => expect(api.deleteAdminGuestbook).toHaveBeenCalledWith("admin-token", "guestbook_1"));
+  });
+
+  it("관리자가 작성자와 메시지를 수정한 뒤 전체 목록을 다시 불러온다", async () => {
+    const updated = { ...message, nickname: "수정 하객", message: "수정 축하", revision: 2 };
+    api.fetchAdminGuestbook.mockResolvedValueOnce(result).mockResolvedValueOnce({
+      ...result,
+      messages: [updated]
+    });
+    storage.loadAdminSession.mockReturnValue(session);
+    render(<GuestbookAdminPage />);
+
+    fireEvent.click(await screen.findByRole("button", { name: "수정" }));
+    fireEvent.change(screen.getByRole("textbox", { name: "작성자" }), { target: { value: "수정 하객" } });
+    fireEvent.change(screen.getByRole("textbox", { name: /메시지/ }), { target: { value: "수정 축하" } });
+    fireEvent.click(screen.getByRole("button", { name: "변경 저장" }));
+
+    await waitFor(() => expect(api.updateAdminGuestbook).toHaveBeenCalledWith("admin-token", "guestbook_1", {
+      nickname: "수정 하객",
+      message: "수정 축하",
+      revision: 1
+    }));
+    expect(await screen.findByText("수정 축하")).toBeInTheDocument();
+  });
+
+  it("방명록 전체 결과를 CSV로 저장한다", async () => {
+    storage.loadAdminSession.mockReturnValue(session);
+    render(<GuestbookAdminPage />);
+
+    fireEvent.click(await screen.findByRole("button", { name: "CSV 저장" }));
+    expect(csv.downloadGuestbookCsv).toHaveBeenCalledWith(result);
   });
 });

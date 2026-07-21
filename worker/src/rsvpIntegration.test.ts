@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 
 import { handleApiRequest } from "./http";
 import type { Env } from "./index";
+import { issueAdminToken } from "./security";
 
 type SqliteStatement = {
   all(...parameters: unknown[]): unknown[];
@@ -113,6 +114,72 @@ describe("RSVP API with migrated SQLite through a D1 adapter", () => {
       expect(updateResponse.status).toBe(200);
       expect(updated.revision).toBe(2);
       expect(updated.updatedAt).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/);
+    } finally {
+      database.close();
+    }
+  });
+
+  it("관리자가 edit token 없이 RSVP를 수정하고 revision 충돌을 감지한다", async () => {
+    const database = new DatabaseSync(":memory:");
+
+    try {
+      database.exec("PRAGMA foreign_keys = ON");
+      applyMigrations(database);
+      const sessionSecret = "rsvp-admin-integration-secret";
+      const env = {
+        DB: createD1Adapter(database),
+        RSVP_ADMIN_SESSION_SECRET: sessionSecret
+      } as Env;
+      const createResponse = await handleApiRequest(new Request(
+        "https://worker.test/api/invitations/sample-garden/rsvps",
+        {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify(submission)
+        }
+      ), env, "sqlite-admin-create");
+      const created = await createResponse.json() as { response: { id: string; revision: number } };
+      const adminToken = await issueAdminToken({
+        invitationId: "sample-garden",
+        expiresAt: Date.now() + 60_000
+      }, sessionSecret);
+      const updateBody = {
+        side: "bride",
+        guestName: "관리자 수정",
+        phone: "01099998888",
+        attendance: "no",
+        partySize: 0,
+        mealStatus: "not_applicable",
+        note: "관리자 확인",
+        revision: created.response.revision
+      };
+      const requestUpdate = () => handleApiRequest(new Request(
+        `https://worker.test/api/invitations/sample-garden/admin/rsvps/${created.response.id}`,
+        {
+          method: "PATCH",
+          headers: {
+            authorization: `Bearer ${adminToken}`,
+            "content-type": "application/json"
+          },
+          body: JSON.stringify(updateBody)
+        }
+      ), env, "sqlite-admin-update");
+
+      const updated = await requestUpdate();
+      expect(updated.status).toBe(200);
+      await expect(updated.json()).resolves.toMatchObject({
+        side: "bride",
+        guestName: "관리자 수정",
+        attendance: "no",
+        partySize: 0,
+        mealStatus: "not_applicable",
+        consentVersion: submission.consentVersion,
+        revision: 2
+      });
+
+      const conflict = await requestUpdate();
+      expect(conflict.status).toBe(409);
+      await expect(conflict.json()).resolves.toEqual({ error: "conflict" });
     } finally {
       database.close();
     }

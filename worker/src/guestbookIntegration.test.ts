@@ -182,7 +182,7 @@ describe("production guestbook API with migrated SQLite", () => {
     }
   });
 
-  it("관리자가 메시지를 숨김·복원·삭제하고 공개 목록은 숨긴 메시지를 제외한다", async () => {
+  it("관리자가 메시지를 수정·숨김·복원·삭제하고 공개 목록은 숨긴 메시지를 제외한다", async () => {
     const database = new DatabaseSync(":memory:");
     try {
       applyMigrations(database);
@@ -193,18 +193,35 @@ describe("production guestbook API with migrated SQLite", () => {
         expiresAt: Date.now() + 60_000
       }, env.RSVP_ADMIN_SESSION_SECRET);
 
+      const editedResponse = await handleApiRequest(
+        request(
+          `/admin/guestbook/${created.body.response.id}`,
+          "PATCH",
+          { nickname: "관리자 수정", message: "수정한 축하 메시지", revision: 1 },
+          adminToken
+        ),
+        env,
+        "guestbook-admin-client"
+      );
+      expect(editedResponse.status).toBe(200);
+      await expect(editedResponse.json()).resolves.toMatchObject({
+        nickname: "관리자 수정",
+        message: "수정한 축하 메시지",
+        revision: 2
+      });
+
       const hiddenResponse = await handleApiRequest(
         request(
           `/admin/guestbook/${created.body.response.id}`,
           "PATCH",
-          { hidden: true, revision: 1 },
+          { hidden: true, revision: 2 },
           adminToken
         ),
         env,
         "guestbook-admin-client"
       );
       const hidden = await hiddenResponse.json() as { revision: number; isHidden: boolean };
-      expect(hidden).toMatchObject({ revision: 2, isHidden: true });
+      expect(hidden).toMatchObject({ revision: 3, isHidden: true });
 
       const publicResponse = await handleApiRequest(request("/guestbook"), env, "guestbook-public-client");
       await expect(publicResponse.json()).resolves.toMatchObject({ messages: [] });
