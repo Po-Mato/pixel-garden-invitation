@@ -39,7 +39,7 @@ it("compact 요약에서 공개 초대장 공유 시트를 연다", () => {
   fireEvent.click(screen.getByRole("button", { name: "초대장 공유" }));
 
   const dialog = screen.getByRole("dialog", { name: "초대장 공유" });
-  expect(dialog).toHaveTextContent("이승재 · 이건희");
+  expect(dialog).toHaveTextContent("이건희 · 이승재");
   expect(dialog).toHaveTextContent("MJ컨벤션 5층 파티오볼룸");
 });
 

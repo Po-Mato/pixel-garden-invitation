@@ -41,7 +41,7 @@ export function GiftAccountSheet({
   onClose,
   giftAccounts = invitationContent.event.giftAccounts
 }: GiftAccountSheetProps) {
-  const [activeSide, setActiveSide] = useState<WeddingSide>("groom");
+  const [activeSide, setActiveSide] = useState<WeddingSide>("bride");
   const [copyStatus, setCopyStatus] = useState<CopyStatus>(null);
   const accounts = useMemo(
     () => giftAccounts.accounts.filter((account) => account.side === activeSide && hasVisibleDetails(account)),
@@ -69,7 +69,7 @@ export function GiftAccountSheet({
         </div>
 
         <div className="gift-account-sheet__tabs" role="tablist" aria-label="계좌 구분">
-          {(["groom", "bride"] as const).map((side) => {
+          {(["bride", "groom"] as const).map((side) => {
             const label = side === "groom" ? "신랑 측" : "신부 측";
             return (
               <button

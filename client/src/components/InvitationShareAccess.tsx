@@ -7,6 +7,7 @@ import {
   shareContent
 } from "../invitation/browserActions";
 import {
+  formatCoupleNames,
   formatEventDate,
   formatEventStartTime,
   formatVenueLabel
@@ -99,7 +100,7 @@ export function InvitationShareAccess({
           <div className="invitation-share-sheet">
             <section className="invitation-share-sheet__preview">
               <span>WEDDING INVITATION</span>
-              <strong>{event.couple.groom} · {event.couple.bride}</strong>
+              <strong>{formatCoupleNames(event)}</strong>
               <p>{event.title}</p>
             </section>
 

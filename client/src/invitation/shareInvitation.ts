@@ -1,5 +1,6 @@
 import type { WeddingEvent } from "@wedding-game/shared";
 import {
+  formatCoupleNames,
   formatEventDate,
   formatEventStartTime,
   formatVenueLabel
@@ -21,7 +22,7 @@ export function buildInvitationShareData(
   return {
     title: event.title,
     text: [
-      `${event.couple.groom} · ${event.couple.bride}의 결혼식에 초대합니다.`,
+      `${formatCoupleNames(event)}의 결혼식에 초대합니다.`,
       `${formatEventDate(event)} ${formatEventStartTime(event)}`,
       formatVenueLabel(event)
     ].join("\n"),

@@ -10,7 +10,7 @@ vi.mock("@wedding-game/shared", async (importOriginal) => {
       ...actual.invitationContent,
       event: {
         ...actual.invitationContent.event,
-        couple: { groom: "테스트신랑", bride: "테스트신부" },
+        couple: { bride: "테스트신부", groom: "테스트신랑" },
         startAt: "2031-06-07T13:00:00+09:00",
         endAt: "2031-06-07T14:00:00+09:00"
       }
@@ -26,5 +26,5 @@ it("derives the entry heading names and year from the shared wedding event", () 
   render(<EntryScreen onEnter={vi.fn()} />);
 
   expect(screen.getByText("WEDDING GARDEN · 2031")).toBeInTheDocument();
-  expect(screen.getByRole("heading", { name: "테스트신랑 & 테스트신부의 정원" })).toBeInTheDocument();
+  expect(screen.getByRole("heading", { name: "테스트신부 & 테스트신랑의 정원" })).toBeInTheDocument();
 });

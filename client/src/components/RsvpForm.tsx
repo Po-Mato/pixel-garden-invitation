@@ -42,7 +42,7 @@ function formatPolicyDate(value: string): string {
 }
 
 export function RsvpForm({ initialValue, policy, submitLabel, onSubmit }: RsvpFormProps) {
-  const [side, setSide] = useState<RsvpSide>(initialValue?.side ?? "groom");
+  const [side, setSide] = useState<RsvpSide>(initialValue?.side ?? "bride");
   const [guestName, setGuestName] = useState(initialValue?.guestName ?? "");
   const [phone, setPhone] = useState(formatPhone(initialValue?.phone ?? ""));
   const [attendance, setAttendance] = useState<RsvpAttendance>(initialValue?.attendance ?? "yes");
@@ -117,8 +117,8 @@ export function RsvpForm({ initialValue, policy, submitLabel, onSubmit }: RsvpFo
       <fieldset className="rsvp-fieldset" role="radiogroup">
         <legend>어느 분의 하객인가요?</legend>
         <div className="rsvp-segmented">
-          <label><input type="radio" name="rsvp-side" value="groom" checked={side === "groom"} onChange={() => setSide("groom")} /><span>신랑측</span></label>
           <label><input type="radio" name="rsvp-side" value="bride" checked={side === "bride"} onChange={() => setSide("bride")} /><span>신부측</span></label>
+          <label><input type="radio" name="rsvp-side" value="groom" checked={side === "groom"} onChange={() => setSide("groom")} /><span>신랑측</span></label>
         </div>
       </fieldset>
 

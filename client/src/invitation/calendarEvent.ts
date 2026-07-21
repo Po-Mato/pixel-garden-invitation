@@ -54,7 +54,11 @@ function locationText(event: WeddingEvent): string {
 }
 
 function descriptionText(event: WeddingEvent): string {
-  return `${event.couple.groom} · ${event.couple.bride}의 결혼식에 초대합니다.\n${formatEventDate(event)} ${formatEventTimeRange(event)}`;
+  return `${formatCoupleNames(event)}의 결혼식에 초대합니다.\n${formatEventDate(event)} ${formatEventTimeRange(event)}`;
+}
+
+export function formatCoupleNames(event: WeddingEvent, separator = " · "): string {
+  return `${event.couple.bride}${separator}${event.couple.groom}`;
 }
 
 export function validateWeddingEvent(event: WeddingEvent): void {

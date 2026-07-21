@@ -18,8 +18,8 @@ export type InvitationSpot = {
 
 export type WeddingEvent = {
   couple: {
-    groom: string;
     bride: string;
+    groom: string;
   };
   title: string;
   startAt: string;
@@ -81,8 +81,8 @@ export type WeddingFamilyContact = Pick<
 
 export const invitationContent = {
   event: {
-    couple: { groom: "이승재", bride: "이건희" },
-    title: "이승재 · 이건희 결혼식",
+    couple: { bride: "이건희", groom: "이승재" },
+    title: "이건희 · 이승재 결혼식",
     startAt: "2027-05-01T17:10:00+09:00",
     endAt: "2027-05-01T18:40:00+09:00",
     timeZone: "Asia/Seoul",

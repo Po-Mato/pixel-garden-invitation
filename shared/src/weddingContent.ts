@@ -112,18 +112,18 @@ export function parseWeddingGalleryManifest(manifest: readonly unknown[]): Weddi
 export const weddingContent = {
   coupleProfiles: [
     {
-      role: "groom",
-      roleLabel: "신랑",
-      name: "이승재",
-      message: "새로운 계절을 함께 시작합니다. 귀한 걸음에 감사드리며 기쁜 마음으로 기다리겠습니다.",
-      photoId: "01-cover"
-    },
-    {
       role: "bride",
       roleLabel: "신부",
       name: "이건희",
       message: "함께 걷는 첫날을 소중한 분들과 나누고 싶습니다. 따뜻한 축복으로 함께해 주세요.",
       photoId: "02-dress-bouquet"
+    },
+    {
+      role: "groom",
+      roleLabel: "신랑",
+      name: "이승재",
+      message: "새로운 계절을 함께 시작합니다. 귀한 걸음에 감사드리며 기쁜 마음으로 기다리겠습니다.",
+      photoId: "01-cover"
     }
   ],
   coupleMessage: "저희 두 사람의 새로운 시작에 함께해 주시면 더없는 기쁨이겠습니다.",

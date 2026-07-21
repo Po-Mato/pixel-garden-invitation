@@ -14,15 +14,15 @@ describe("weddingContent", () => {
 
   it("승인된 프로필과 공동 인사말을 포함한다", () => {
     expect(weddingContent.coupleProfiles.map(({ role, name }) => ({ role, name }))).toEqual([
-      { role: "groom", name: "이승재" },
-      { role: "bride", name: "이건희" }
+      { role: "bride", name: "이건희" },
+      { role: "groom", name: "이승재" }
     ]);
     expect(weddingContent.coupleMessage).toBe(
       "저희 두 사람의 새로운 시작에 함께해 주시면 더없는 기쁨이겠습니다."
     );
     expect(weddingContent.coupleProfiles.map((profile) => profile.name)).toEqual([
-      invitationContent.event.couple.groom,
-      invitationContent.event.couple.bride
+      invitationContent.event.couple.bride,
+      invitationContent.event.couple.groom
     ]);
   });
 

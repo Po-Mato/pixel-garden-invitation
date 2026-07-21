@@ -83,21 +83,23 @@ afterEach(() => {
   vi.clearAllMocks();
 });
 
-it("미입력 상태에서는 신랑·신부 양쪽의 준비 안내만 표시한다", () => {
+it("미입력 상태에서는 신부·신랑 양쪽의 준비 안내만 표시한다", () => {
   render(<GiftAccountSheet onClose={vi.fn()} />);
 
-  expect(screen.getByRole("tab", { name: "신랑 측" })).toHaveAttribute("aria-selected", "true");
+  expect(screen.getByRole("tab", { name: "신부 측" })).toHaveAttribute("aria-selected", "true");
   expect(screen.getByRole("dialog", { name: "마음 전하실 곳" }).querySelector("[data-nosnippet]"))
     .toBeInTheDocument();
-  expect(screen.getByText("신랑 측 계좌 정보 준비 중")).toBeInTheDocument();
-  fireEvent.click(screen.getByRole("tab", { name: "신부 측" }));
   expect(screen.getByText("신부 측 계좌 정보 준비 중")).toBeInTheDocument();
+  fireEvent.click(screen.getByRole("tab", { name: "신랑 측" }));
+  expect(screen.getByText("신랑 측 계좌 정보 준비 중")).toBeInTheDocument();
   expect(screen.queryByRole("button", { name: /계좌번호 복사/ })).not.toBeInTheDocument();
 });
 
 it("완성된 계좌만 기본 접힘 항목으로 표시하고 안전한 간편송금 링크를 제공한다", () => {
   render(<GiftAccountSheet onClose={vi.fn()} giftAccounts={populatedGiftAccounts} />);
 
+  expect(screen.getByText("신부 이건희")).toBeInTheDocument();
+  fireEvent.click(screen.getByRole("tab", { name: "신랑 측" }));
   const account = screen.getByText("신랑 이승재").closest("details");
   expect(account).not.toHaveAttribute("open");
   expect(screen.queryByText("신랑 아버지")).not.toBeInTheDocument();
@@ -115,6 +117,7 @@ it("계좌번호를 복사하고 실패 시에도 직접 복사할 수 있게 �
   vi.mocked(copyText).mockResolvedValueOnce(undefined).mockRejectedValueOnce(new Error("denied"));
   render(<GiftAccountSheet onClose={vi.fn()} giftAccounts={populatedGiftAccounts} />);
 
+  fireEvent.click(screen.getByRole("tab", { name: "신랑 측" }));
   fireEvent.click(screen.getByText("신랑 이승재"));
   const copyButton = screen.getByRole("button", { name: "신랑 이승재 계좌번호 복사" });
   fireEvent.click(copyButton);

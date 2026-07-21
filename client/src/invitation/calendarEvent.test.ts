@@ -25,7 +25,7 @@ describe("wedding calendar event", () => {
 
   it("builds a complete copyable event summary", () => {
     expect(buildEventCopyText(event)).toBe([
-      "이승재 · 이건희 결혼식",
+      "이건희 · 이승재 결혼식",
       "2027년 5월 1일 토요일 오후 5시 10분 - 오후 6시 40분",
       "MJ컨벤션 5층 파티오볼룸",
       "경기 부천시 소사구 경인로 386"
@@ -40,7 +40,7 @@ describe("wedding calendar event", () => {
     expect(unfolded).toContain("DTSTAMP:20260720T000000Z");
     expect(unfolded).toContain("DTSTART:20270501T081000Z");
     expect(unfolded).toContain("DTEND:20270501T094000Z");
-    expect(unfolded).toContain("SUMMARY:이승재 · 이건희 결혼식");
+    expect(unfolded).toContain("SUMMARY:이건희 · 이승재 결혼식");
     expect(unfolded).toContain("LOCATION:MJ컨벤션 5층 파티오볼룸\\, 경기 부천시 소사구 경인로 386");
     expect(ics).not.toContain("VALARM");
     expect(ics.endsWith("\r\n")).toBe(true);
@@ -66,7 +66,7 @@ describe("wedding calendar event", () => {
 
     expect(unfolded).toContain("SUMMARY:제목\\\\경로\\;순서\\,다음\\n새 줄");
     expect(unfolded).toContain("LOCATION:장소\\\\이름\\;하나\\,둘\\n셋 홀\\\\이름\\;하나\\,둘\\n셋\\, 주소\\\\이름\\;하나\\,둘\\n셋");
-    expect(unfolded).toContain("DESCRIPTION:신랑\\\\이름\\;하나\\,둘\\n셋 · 신부\\\\이름\\;하나\\,둘\\n셋의 결혼식에 초대합니다.\\n2027년 5월 1일 토요일 오후 5시 10분 - 오후 6시 40분");
+    expect(unfolded).toContain("DESCRIPTION:신부\\\\이름\\;하나\\,둘\\n셋 · 신랑\\\\이름\\;하나\\,둘\\n셋의 결혼식에 초대합니다.\\n2027년 5월 1일 토요일 오후 5시 10분 - 오후 6시 40분");
   });
 
   it("builds a Google Calendar template URL with the same UTC interval", () => {

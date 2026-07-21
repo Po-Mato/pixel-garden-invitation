@@ -15,7 +15,7 @@ describe("EntryScreen", () => {
     const year = new Intl.DateTimeFormat("en", { year: "numeric", timeZone }).format(new Date(startAt));
 
     expect(screen.getByText(`WEDDING GARDEN · ${year}`)).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: `${couple.groom} & ${couple.bride}의 정원` })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: `${couple.bride} & ${couple.groom}의 정원` })).toBeInTheDocument();
     expect(screen.getByText("2027년 5월 1일 토요일")).toBeInTheDocument();
     expect(screen.getByText("오후 5시 10분")).toHaveAttribute("dateTime", startAt);
     expect(screen.queryByText("오후 6시 40분")).not.toBeInTheDocument();

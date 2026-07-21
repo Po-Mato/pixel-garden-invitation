@@ -39,7 +39,7 @@ describe("InvitationShareAccess", () => {
     fireEvent.click(screen.getByRole("button", { name: "초대장 공유" }));
 
     const dialog = screen.getByRole("dialog", { name: "초대장 공유" });
-    expect(dialog).toHaveTextContent("이승재 · 이건희");
+    expect(dialog).toHaveTextContent("이건희 · 이승재");
     expect(dialog).toHaveTextContent("2027년 5월 1일 토요일");
     expect(dialog).toHaveTextContent("MJ컨벤션 5층 파티오볼룸");
     expect(within(dialog).getByRole("button", { name: "공유 앱 선택" })).toBeInTheDocument();
@@ -51,7 +51,7 @@ describe("InvitationShareAccess", () => {
     fireEvent.click(screen.getByRole("button", { name: "공유 앱 선택" }));
 
     expect(shareContent).toHaveBeenCalledWith(expect.objectContaining({
-      title: "이승재 · 이건희 결혼식",
+      title: "이건희 · 이승재 결혼식",
       text: expect.stringContaining("오후 5시 10분"),
       url: invitationPublicUrl
     }));

@@ -9,9 +9,9 @@ import {
 describe("초대장 공유 데이터", () => {
   it("예식 공통 데이터로 공유 제목과 본문을 생성한다", () => {
     expect(buildInvitationShareData(invitationContent.event)).toEqual({
-      title: "이승재 · 이건희 결혼식",
+      title: "이건희 · 이승재 결혼식",
       text: [
-        "이승재 · 이건희의 결혼식에 초대합니다.",
+        "이건희 · 이승재의 결혼식에 초대합니다.",
         "2027년 5월 1일 토요일 오후 5시 10분",
         "MJ컨벤션 5층 파티오볼룸"
       ].join("\n"),

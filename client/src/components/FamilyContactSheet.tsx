@@ -23,7 +23,7 @@ export function FamilyContactSheet({
   onClose,
   familyContacts = invitationContent.event.familyContacts
 }: FamilyContactSheetProps) {
-  const [activeSide, setActiveSide] = useState<WeddingSide>("groom");
+  const [activeSide, setActiveSide] = useState<WeddingSide>("bride");
   const contacts = useMemo(
     () => familyContacts.contacts
       .filter((contact) => contact.side === activeSide)
@@ -41,7 +41,7 @@ export function FamilyContactSheet({
         </div>
 
         <div className="family-contact-sheet__tabs" role="tablist" aria-label="연락처 구분">
-          {(["groom", "bride"] as const).map((side) => {
+          {(["bride", "groom"] as const).map((side) => {
             const label = side === "groom" ? "신랑 측" : "신부 측";
             return (
               <button

@@ -27,7 +27,13 @@ describe("RsvpForm", () => {
     const onSubmit = vi.fn().mockResolvedValue(undefined);
     render(<RsvpForm policy={policy} submitLabel="참석 답변 보내기" onSubmit={onSubmit} />);
 
-    expect(screen.getByRole("radiogroup", { name: "어느 분의 하객인가요?" })).toBeInTheDocument();
+    const sideGroup = screen.getByRole("radiogroup", { name: "어느 분의 하객인가요?" });
+    expect(sideGroup).toBeInTheDocument();
+    expect(within(sideGroup).getByLabelText("신부측")).toBeChecked();
+    expect(Array.from(sideGroup.querySelectorAll("input")).map((input) => input.value)).toEqual([
+      "bride",
+      "groom"
+    ]);
     expect(screen.getByRole("radiogroup", { name: "참석 여부" })).toBeInTheDocument();
     expect(screen.getByLabelText("연락처")).toHaveAttribute("type", "tel");
     expect(screen.getByLabelText("연락처")).toHaveAttribute("inputmode", "tel");

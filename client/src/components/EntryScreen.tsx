@@ -5,6 +5,7 @@ import {
   type CharacterAppearance
 } from "@wedding-game/shared";
 import { loadAppearance, saveAppearance } from "../character/storage";
+import { formatCoupleNames } from "../invitation/calendarEvent";
 import { CharacterCustomizer } from "./CharacterCustomizer";
 import { FamilyContactSheet } from "./FamilyContactSheet";
 import { WeddingEventSummary } from "./WeddingEventSummary";
@@ -46,7 +47,7 @@ export function EntryScreen({ onEnter, weddingDayPreview = false }: EntryScreenP
       </div>
       <header className="entry-screen__header">
         <p>WEDDING GARDEN · {weddingYear}</p>
-        <h1>{event.couple.groom} & {event.couple.bride}의 정원</h1>
+        <h1>{formatCoupleNames(event, " & ")}의 정원</h1>
         <span>정원에 입장할 하객 캐릭터를 선택해주세요.</span>
       </header>
       <WeddingEventSummary

@@ -20,19 +20,21 @@ afterEach(cleanup);
 it("미입력 상태에서는 양가 연락처 준비 안내만 표시한다", () => {
   render(<FamilyContactSheet onClose={vi.fn()} />);
 
-  expect(screen.getByRole("tab", { name: "신랑 측" })).toHaveAttribute("aria-selected", "true");
-  expect(screen.getByText("신랑 측 연락처 준비 중")).toBeInTheDocument();
+  expect(screen.getByRole("tab", { name: "신부 측" })).toHaveAttribute("aria-selected", "true");
+  expect(screen.getByText("신부 측 연락처 준비 중")).toBeInTheDocument();
   expect(screen.getByRole("dialog", { name: "혼주 연락처" }).querySelector("[data-nosnippet]"))
     .toBeInTheDocument();
 
-  fireEvent.click(screen.getByRole("tab", { name: "신부 측" }));
-  expect(screen.getByText("신부 측 연락처 준비 중")).toBeInTheDocument();
+  fireEvent.click(screen.getByRole("tab", { name: "신랑 측" }));
+  expect(screen.getByText("신랑 측 연락처 준비 중")).toBeInTheDocument();
   expect(screen.queryByRole("link")).not.toBeInTheDocument();
 });
 
 it("유효한 연락처만 표시하고 휴대전화에 전화·문자 동작을 제공한다", () => {
   render(<FamilyContactSheet onClose={vi.fn()} familyContacts={populatedContacts} />);
 
+  expect(screen.getByText("신부 이건희")).toBeInTheDocument();
+  fireEvent.click(screen.getByRole("tab", { name: "신랑 측" }));
   expect(screen.getByText("신랑 이승재")).toBeInTheDocument();
   expect(screen.getByRole("link", { name: "신랑 이승재에게 전화하기" })).toHaveAttribute(
     "href",

@@ -14,7 +14,7 @@ function namedMeta(name: string): string | null {
 
 describe("청첩장 링크 미리보기 메타데이터", () => {
   it("신랑신부 이름과 예식 정보를 문서 제목과 설명에 제공한다", () => {
-    expect(document.title).toBe("이승재 · 이건희 결혼식 | 2027.05.01");
+    expect(document.title).toBe("이건희 · 이승재 결혼식 | 2027.05.01");
     expect(namedMeta("description")).toBe(
       "2027년 5월 1일 토요일 오후 5시 10분, MJ컨벤션 5층 파티오볼룸에서 만나요."
     );
@@ -23,8 +23,8 @@ describe("청첩장 링크 미리보기 메타데이터", () => {
   it("공개 주소와 대표 사진을 포함한 Open Graph 계약을 제공한다", () => {
     expect(meta("og:type")).toBe("website");
     expect(meta("og:locale")).toBe("ko_KR");
-    expect(meta("og:site_name")).toBe("이승재 · 이건희 모바일 청첩장");
-    expect(meta("og:title")).toBe("이승재 · 이건희 결혼식");
+    expect(meta("og:site_name")).toBe("이건희 · 이승재 모바일 청첩장");
+    expect(meta("og:title")).toBe("이건희 · 이승재 결혼식");
     expect(meta("og:description")).toBe(
       "2027년 5월 1일 토요일 오후 5시 10분 · MJ컨벤션 5층 파티오볼룸"
     );
