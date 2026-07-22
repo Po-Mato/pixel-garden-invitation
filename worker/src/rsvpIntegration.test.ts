@@ -30,7 +30,10 @@ const migrationFiles = [
   "0003_production_rsvp.sql",
   "0004_rsvp_consent_policy.sql",
   "0006_admin_notifications.sql",
-  "0007_admin_notification_email_queue.sql"
+  "0007_admin_notification_email_queue.sql",
+  "0013_invitation_invite_links.sql",
+  "0014_invitation_invite_delivery_history.sql",
+  "0015_attendance_operations.sql"
 ] as const;
 
 function applyMigrations(database: SqliteDatabase): void {

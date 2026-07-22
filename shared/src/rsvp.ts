@@ -11,6 +11,7 @@ export type RsvpSubmission = {
   phone: string;
   attendance: RsvpAttendance;
   partySize: number;
+  childCount?: number;
   mealStatus: RsvpMealStatus;
   note: string;
   consentVersion: string;
@@ -66,11 +67,18 @@ export function parseRsvpSubmission(value: unknown, expectedConsentVersion: stri
   const phone = normalizeRsvpPhone(value.phone);
   const note = sanitizeText(value.note ?? "", 160);
   const partySize = value.partySize;
+  const childCount = "childCount" in value ? value.childCount : undefined;
   const consentVersion = value.consentVersion;
 
   if (!sides.has(side) || !attendances.has(attendance) || !meals.has(mealStatus)) return null;
   if (!guestName || phone.length < 8 || phone.length > 15) return null;
   if (typeof partySize !== "number" || !Number.isInteger(partySize)) return null;
+  if (childCount !== undefined && (
+    typeof childCount !== "number"
+    || !Number.isInteger(childCount)
+    || childCount < 0
+    || childCount > partySize
+  )) return null;
   if (consentVersion !== expectedConsentVersion) return null;
 
   const conditionalFieldsAreValid =
@@ -79,5 +87,15 @@ export function parseRsvpSubmission(value: unknown, expectedConsentVersion: stri
     || (attendance === "unsure" && partySize >= 1 && partySize <= 10 && mealStatus === "unsure");
   if (!conditionalFieldsAreValid) return null;
 
-  return { side, guestName, phone, attendance, partySize, mealStatus, note, consentVersion };
+  return {
+    side,
+    guestName,
+    phone,
+    attendance,
+    partySize,
+    ...(childCount === undefined ? {} : { childCount }),
+    mealStatus,
+    note,
+    consentVersion
+  };
 }

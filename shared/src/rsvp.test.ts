@@ -36,6 +36,14 @@ describe("parseRsvpSubmission", () => {
     expect(parseRsvpSubmission({ ...base, attendance: "no", partySize: 0, mealStatus: "not_applicable" }, consentVersion)).not.toBeNull();
     expect(parseRsvpSubmission({ ...base, attendance: "unsure", partySize: 2, mealStatus: "unsure" }, consentVersion)).not.toBeNull();
   });
+
+  it("accepts a bounded child count and keeps legacy payloads compatible", () => {
+    expect(parseRsvpSubmission({ ...base, partySize: 3, childCount: 1 }, consentVersion))
+      .toMatchObject({ partySize: 3, childCount: 1 });
+    expect(parseRsvpSubmission(base, consentVersion)).not.toHaveProperty("childCount");
+    expect(parseRsvpSubmission({ ...base, childCount: 3 }, consentVersion)).toBeNull();
+    expect(parseRsvpSubmission({ ...base, childCount: -1 }, consentVersion)).toBeNull();
+  });
 });
 
 it("normalizes domestic and international separators", () => {

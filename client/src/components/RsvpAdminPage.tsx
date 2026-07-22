@@ -1,13 +1,38 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Download, LockKeyhole, LogOut, Pencil, RefreshCw, Search, Trash2 } from "lucide-react";
+import {
+  Baby,
+  CheckCircle2,
+  CircleAlert,
+  ClipboardCopy,
+  Download,
+  Eye,
+  Link2,
+  LockKeyhole,
+  LogOut,
+  MessageSquareText,
+  Pencil,
+  RefreshCw,
+  Send,
+  Search,
+  Trash2,
+  Users,
+  Utensils
+} from "lucide-react";
 import { normalizeRsvpPhone } from "@wedding-game/shared";
 import type {
+  InvitationInviteLinkAdminResult,
+  InvitationInviteLinkRecord,
   RsvpAdminResult,
   RsvpAttendance,
   RsvpMealStatus,
   RsvpRecord,
   RsvpRecordSide
 } from "@wedding-game/shared";
+import {
+  fetchAdminInvitationInviteLinks,
+  recordAdminInvitationInviteLinkDeliveries,
+  updateAdminInvitationInviteLink
+} from "../api/invitationInviteLinksApi";
 import {
   createAdminSession,
   deleteAdminRsvp,
@@ -18,9 +43,16 @@ import {
 } from "../api/weddingApi";
 import { useCoupleOrder } from "../invitation/CoupleOrderContext";
 import { coupleSides } from "../invitation/coupleOrder";
+import { buildAttendanceOperations, type AttendanceOperationStage } from "../invitation/attendanceOperations";
+import { downloadAttendanceOperationsCsv } from "../invitation/attendanceOperationsCsv";
+import { buildAttendanceReminderMessage } from "../invitation/attendanceReminderMessage";
+import { copyText } from "../invitation/browserActions";
+import { loadAdminInviteLinkTokens } from "../invitation/inviteLinkAdminTokens";
+import { buildInvitationInviteUrl } from "../invitation/inviteLinkQr";
 import { downloadRsvpCsv } from "../invitation/rsvpCsv";
 import { clearAdminSession, loadAdminSession, saveAdminSession } from "../invitation/rsvpStorage";
 import { AdminNotificationInbox } from "./AdminNotificationInbox";
+import "../rsvp-operations-admin.css";
 
 type FilterValue<T extends string> = "all" | T;
 
@@ -32,6 +64,7 @@ type RsvpEditDraft = {
   phone: string;
   attendance: RsvpAttendance;
   partySize: number;
+  childCount: number;
   mealStatus: RsvpMealStatus;
   note: string;
 };
@@ -97,9 +130,38 @@ function editDraft(response: RsvpRecord & { side: EditableRsvpSide; phone: strin
     phone: response.phone,
     attendance: response.attendance,
     partySize: response.partySize,
+    childCount: response.childCount ?? 0,
     mealStatus: response.mealStatus,
     note: response.note
   };
+}
+
+type FollowUpFilter = "all" | "unsent" | "unopened" | "unresponded" | "unsure" | "contacted";
+
+const followUpFilters: Array<{ value: FollowUpFilter; label: string }> = [
+  { value: "all", label: "전체 확인 대상" },
+  { value: "unsent", label: "미발송" },
+  { value: "unopened", label: "미열람" },
+  { value: "unresponded", label: "미응답" },
+  { value: "unsure", label: "참석 미정" },
+  { value: "contacted", label: "연락 완료" }
+];
+
+function operationStageLabel(stage: AttendanceOperationStage): string {
+  if (stage === "unsent") return "미발송";
+  if (stage === "unopened") return "미열람";
+  if (stage === "unresponded") return "미응답";
+  if (stage === "contacted") return "연락 완료";
+  if (stage === "unsure") return "참석 미정";
+  if (stage === "inactive") return "링크 중지";
+  return "응답 완료";
+}
+
+function deadlineLabel(value: string): string {
+  const remaining = Math.ceil((Date.parse(value) - Date.now()) / 86_400_000);
+  if (remaining > 0) return `응답 마감 D-${remaining}`;
+  if (remaining === 0) return "응답 마감일";
+  return `응답 마감 D+${Math.abs(remaining)}`;
 }
 
 export function RsvpAdminPage() {
@@ -130,6 +192,7 @@ export function RsvpAdminPage() {
 
   const [session, setSession] = useState<AdminSession | null>(null);
   const [result, setResult] = useState<RsvpAdminResult | null>(null);
+  const [inviteResult, setInviteResult] = useState<InvitationInviteLinkAdminResult | null>(null);
   const [password, setPassword] = useState("");
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [isFetching, setIsFetching] = useState(false);
@@ -146,6 +209,9 @@ export function RsvpAdminPage() {
   const [side, setSide] = useState<FilterValue<RsvpRecordSide>>("all");
   const [attendance, setAttendance] = useState<FilterValue<RsvpAttendance>>("all");
   const [meal, setMeal] = useState<FilterValue<RsvpMealStatus>>("all");
+  const [followUpFilter, setFollowUpFilter] = useState<FollowUpFilter>("all");
+  const [operationBusyId, setOperationBusyId] = useState<string | null>(null);
+  const inviteTokens = useMemo(() => loadAdminInviteLinkTokens(id), [id]);
   const retrySeconds = Math.max(0, Math.ceil((retryUntil - retryClock) / 1_000));
 
   function resetAdminState(message = "", resetInteraction = false) {
@@ -160,6 +226,7 @@ export function RsvpAdminPage() {
     clearAdminSession(id);
     setSession(null);
     setResult(null);
+    setInviteResult(null);
     setIsLoggingIn(false);
     setIsFetching(false);
     setDeletingId(null);
@@ -167,6 +234,7 @@ export function RsvpAdminPage() {
     setEditTarget(null);
     setEditValues(null);
     setUpdatingId(null);
+    setOperationBusyId(null);
     setError(message);
     setStatus("");
     setPassword("");
@@ -177,6 +245,7 @@ export function RsvpAdminPage() {
       setSide("all");
       setAttendance("all");
       setMeal("all");
+      setFollowUpFilter("all");
     }
   }
 
@@ -193,9 +262,13 @@ export function RsvpAdminPage() {
     if (options.force) setStatus("");
     else if (options.announce) setStatus("참석 답변을 새로고침하고 있습니다.");
     try {
-      const nextResult = await fetchAdminRsvps(token);
+      const [nextResult, nextInviteResult] = await Promise.all([
+        fetchAdminRsvps(token),
+        fetchAdminInvitationInviteLinks(token)
+      ]);
       if (!mountedRef.current || version !== fetchVersionRef.current || sessionRef.current?.token !== token) return;
       setResult(nextResult);
+      setInviteResult(nextInviteResult);
       setStatus(options.successMessage || (options.announce ? "참석 답변 새로고침을 완료했습니다." : ""));
     } catch (loadError) {
       if (!mountedRef.current || version !== fetchVersionRef.current || sessionRef.current?.token !== token) return;
@@ -391,6 +464,15 @@ export function RsvpAdminPage() {
       editDialogRef.current?.focus();
       return;
     }
+    if (
+      !Number.isInteger(values.childCount)
+      || values.childCount < 0
+      || values.childCount > values.partySize
+    ) {
+      setError("어린이 인원은 전체 참석 인원을 넘을 수 없습니다.");
+      editDialogRef.current?.focus();
+      return;
+    }
 
     updateBusyRef.current = true;
     setUpdatingId(target.id);
@@ -445,6 +527,92 @@ export function RsvpAdminPage() {
     });
   }, [attendance, meal, result, search, side]);
 
+  const operations = useMemo(() => (
+    result && inviteResult ? buildAttendanceOperations(inviteResult, result) : null
+  ), [inviteResult, result]);
+
+  const operationByRsvpId = useMemo(() => new Map(
+    operations?.entries.flatMap((entry) => entry.response ? [[entry.response.id, entry] as const] : []) ?? []
+  ), [operations]);
+
+  const followUpEntries = useMemo(() => {
+    if (!operations) return [];
+    const visibleStages = new Set<AttendanceOperationStage>(["unsent", "unopened", "unresponded", "unsure", "contacted"]);
+    return operations.entries.filter((entry) => (
+      entry.link
+      && visibleStages.has(entry.stage)
+      && (followUpFilter === "all" || entry.stage === followUpFilter)
+    ));
+  }, [followUpFilter, operations]);
+
+  async function copyReminder(link: InvitationInviteLinkRecord) {
+    const rawToken = inviteTokens[link.id];
+    if (!rawToken) {
+      setError(`${link.guestName}님의 개인 링크 원문이 이 탭에 없습니다. 초대 링크 화면에서 재발급해 주세요.`);
+      return;
+    }
+    try {
+      await copyText(buildAttendanceReminderMessage(link.guestName, buildInvitationInviteUrl(rawToken)));
+      setError("");
+      setStatus(`${link.guestName}님의 참석 재안내 문구를 복사했습니다.`);
+    } catch {
+      setError("재안내 문구를 복사하지 못했습니다.");
+    }
+  }
+
+  async function recordReminder(link: InvitationInviteLinkRecord) {
+    const token = sessionRef.current?.token;
+    if (!token || operationBusyId) return;
+    setOperationBusyId(link.id);
+    setError("");
+    try {
+      const next = await recordAdminInvitationInviteLinkDeliveries(token, {
+        linkIds: [link.id],
+        channel: link.deliveryChannel ?? "kakao",
+        note: "참석 답변 재안내"
+      });
+      if (!mountedRef.current || sessionRef.current?.token !== token) return;
+      setInviteResult(next);
+      setStatus(`${link.guestName}님의 재안내 발송 이력을 기록했습니다.`);
+    } catch (operationError) {
+      if (operationError instanceof WeddingApiError && operationError.status === 401) {
+        resetAdminState("세션이 만료되었습니다. 다시 로그인해 주세요.");
+      } else {
+        setError("재안내 발송 이력을 기록하지 못했습니다.");
+      }
+    } finally {
+      if (mountedRef.current) setOperationBusyId(null);
+    }
+  }
+
+  async function toggleFollowUpCompleted(link: InvitationInviteLinkRecord) {
+    const token = sessionRef.current?.token;
+    if (!token || operationBusyId) return;
+    setOperationBusyId(link.id);
+    setError("");
+    try {
+      const updated = await updateAdminInvitationInviteLink(token, link.id, {
+        followUpCompleted: !link.followUpCompletedAt
+      });
+      if (!mountedRef.current || sessionRef.current?.token !== token) return;
+      setInviteResult((current) => current ? {
+        ...current,
+        links: current.links.map((item) => item.id === updated.id ? updated : item)
+      } : current);
+      setStatus(link.followUpCompletedAt
+        ? `${link.guestName}님의 연락 완료 표시를 취소했습니다.`
+        : `${link.guestName}님의 후속 연락을 완료 처리했습니다.`);
+    } catch (operationError) {
+      if (operationError instanceof WeddingApiError && operationError.status === 401) {
+        resetAdminState("세션이 만료되었습니다. 다시 로그인해 주세요.");
+      } else {
+        setError("후속 연락 상태를 변경하지 못했습니다.");
+      }
+    } finally {
+      if (mountedRef.current) setOperationBusyId(null);
+    }
+  }
+
   function resetFilters() {
     setSearch("");
     setSide("all");
@@ -479,10 +647,10 @@ export function RsvpAdminPage() {
     setEditValues((current) => {
       if (!current) return current;
       if (nextAttendance === "no") {
-        return { ...current, attendance: nextAttendance, partySize: 0, mealStatus: "not_applicable" };
+        return { ...current, attendance: nextAttendance, partySize: 0, childCount: 0, mealStatus: "not_applicable" };
       }
       if (nextAttendance === "unsure") {
-        return { ...current, attendance: nextAttendance, partySize: Math.max(1, current.partySize), mealStatus: "unsure" };
+        return { ...current, attendance: nextAttendance, partySize: Math.max(1, current.partySize), childCount: 0, mealStatus: "unsure" };
       }
       return {
         ...current,
@@ -563,7 +731,7 @@ export function RsvpAdminPage() {
         <section className="rsvp-admin-login" aria-labelledby="rsvp-admin-title">
           <LockKeyhole aria-hidden="true" />
           <p className="rsvp-admin-eyebrow">PRIVATE ACCESS</p>
-          <h1 id="rsvp-admin-title">참석 답변 관리</h1>
+          <h1 id="rsvp-admin-title">참석 현황 통합 운영</h1>
           <form onSubmit={handleLogin}>
             <label htmlFor="rsvp-admin-password">관리자 비밀번호</label>
             <input
@@ -598,7 +766,7 @@ export function RsvpAdminPage() {
         <header className="rsvp-admin-header">
           <div>
             <p className="rsvp-admin-eyebrow">MJ CONVENTION · 2027.05.01</p>
-            <h1>참석 답변 관리</h1>
+            <h1>참석 현황 통합 운영</h1>
           </div>
           <div className="guestbook-admin-header-actions">
             <a className="rsvp-admin-nav-link" href="?admin=invites">초대 링크</a>
@@ -619,7 +787,7 @@ export function RsvpAdminPage() {
           onUnauthorized={() => resetAdminState("세션이 만료되었습니다. 다시 로그인해 주세요.")}
         />
 
-        {isFetching && !result && <p className="rsvp-admin-message" role="status">참석 답변을 불러오고 있습니다.</p>}
+        {isFetching && !result && <p className="rsvp-admin-message" role="status">하객 명단과 참석 답변을 결합하고 있습니다.</p>}
         {error && <p className="rsvp-admin-message rsvp-admin-message--error" role="alert">{error}</p>}
         {error && !result && (
           <button type="button" onClick={() => void loadAll(session.token)} disabled={isFetching}>
@@ -628,21 +796,107 @@ export function RsvpAdminPage() {
         )}
         {status && <p className="rsvp-admin-message" role="status">{status}</p>}
 
-        {result && (
+        {result && inviteResult && operations && (
           <>
-            <section className="rsvp-admin-summary" aria-labelledby="rsvp-summary-title">
-              <h2 id="rsvp-summary-title">참석 답변 현황</h2>
-              <dl>
-                <div><dt>전체 답변</dt><dd>{result.summary.responseCount}</dd></div>
-                <div><dt>참석 확정 응답</dt><dd>{result.summary.attendingResponseCount}</dd></div>
-                <div><dt>참석 확정 총인원</dt><dd>{result.summary.attendingPartySize}</dd></div>
-                <div><dt>식사 예정 인원</dt><dd>{result.summary.mealPartySize}</dd></div>
-                <div><dt>불참 응답</dt><dd>{result.summary.declinedResponseCount}</dd></div>
-                <div><dt>미정 응답</dt><dd>{result.summary.unsureResponseCount}</dd></div>
-                <div><dt>미정 예상 인원</dt><dd>{result.summary.unsurePartySize}</dd></div>
-                <div><dt>자동 삭제일</dt><dd>{formatDate(result.summary.deleteAt)}</dd></div>
-              </dl>
+            <section className="rsvp-admin-summary attendance-operations-summary" aria-labelledby="rsvp-summary-title">
+              <div className="attendance-operations-section-heading">
+                <div>
+                  <p className="rsvp-admin-eyebrow">ATTENDANCE OPERATIONS</p>
+                  <h2 id="rsvp-summary-title">참석 답변 현황</h2>
+                </div>
+                <span>{deadlineLabel("2027-04-24T23:59:59+09:00")}</span>
+              </div>
+              <div className="attendance-operations-metrics">
+                <article><Link2 aria-hidden="true" /><span>초대 명단</span><strong>{operations.summary.invited}</strong></article>
+                <article><CheckCircle2 aria-hidden="true" /><span>RSVP 응답</span><strong>{result.summary.responseCount}</strong></article>
+                <article><Users aria-hidden="true" /><span>참석 총인원</span><strong>{operations.summary.attendingPartySize}</strong></article>
+                <article><Users aria-hidden="true" /><span>성인 인원</span><strong>{operations.summary.adultPartySize}</strong></article>
+                <article><Baby aria-hidden="true" /><span>어린이 인원</span><strong>{operations.summary.childPartySize}</strong></article>
+                <article><Utensils aria-hidden="true" /><span>식사 예정</span><strong>{operations.summary.mealPartySize}</strong></article>
+                <article className={operations.summary.followUpNeeded > 0 ? "attendance-operations-metric--attention" : ""}><MessageSquareText aria-hidden="true" /><span>후속 연락 필요</span><strong>{operations.summary.followUpNeeded}</strong></article>
+                <article><CircleAlert aria-hidden="true" /><span>미정 예상 인원</span><strong>{operations.summary.unsurePartySize}</strong></article>
+              </div>
+              <p className="attendance-operations-retention">RSVP 데이터 자동 삭제일 · <time dateTime={result.summary.deleteAt}>{formatDate(result.summary.deleteAt)}</time></p>
             </section>
+
+            <section className="attendance-operations-panel" aria-labelledby="attendance-funnel-title">
+              <div className="attendance-operations-section-heading">
+                <div><p className="rsvp-admin-eyebrow">DELIVERY FUNNEL</p><h2 id="attendance-funnel-title">초대 진행 현황</h2></div>
+                <a className="rsvp-admin-nav-link" href="?admin=invites">초대 링크 관리</a>
+              </div>
+              <div className="attendance-operations-funnel">
+                <div><Link2 aria-hidden="true" /><span>초대 명단</span><strong>{operations.summary.invited}</strong></div>
+                <div><Send aria-hidden="true" /><span>발송 완료</span><strong>{operations.summary.delivered}</strong><small>미발송 {operations.summary.unsent}</small></div>
+                <div><Eye aria-hidden="true" /><span>열람 완료</span><strong>{operations.summary.opened}</strong><small>미열람 {operations.summary.unopened}</small></div>
+                <div><CheckCircle2 aria-hidden="true" /><span>연결된 응답</span><strong>{operations.summary.responded}</strong><small>열람 후 미응답 {operations.summary.unresponded}</small></div>
+              </div>
+            </section>
+
+            <section className="attendance-operations-panel" aria-labelledby="attendance-groups-title">
+              <div className="attendance-operations-section-heading">
+                <div><p className="rsvp-admin-eyebrow">GROUP HEADCOUNT</p><h2 id="attendance-groups-title">측별·관계 그룹 집계</h2></div>
+                <button type="button" onClick={() => downloadAttendanceOperationsCsv(operations)}><Download aria-hidden="true" /> 운영 명단 CSV</button>
+              </div>
+              {operations.groups.length === 0 ? <p className="rsvp-admin-empty">등록된 초대 명단이 없습니다.</p> : (
+                <div className="attendance-operations-table-wrap">
+                  <table className="attendance-operations-table">
+                    <thead><tr><th>대상</th><th>관계 그룹</th><th>초대</th><th>응답</th><th>참석</th><th>성인</th><th>어린이</th><th>식사</th><th>후속 연락</th></tr></thead>
+                    <tbody>{operations.groups.map((group) => (
+                      <tr key={group.key}>
+                        <td data-label="대상">{sideLabel(group.side)}</td>
+                        <td data-label="관계 그룹"><strong>{group.groupLabel}</strong></td>
+                        <td data-label="초대">{group.invited}</td>
+                        <td data-label="응답">{group.responded}</td>
+                        <td data-label="참석">{group.attendingPartySize}</td>
+                        <td data-label="성인">{group.adultPartySize}</td>
+                        <td data-label="어린이">{group.childPartySize}</td>
+                        <td data-label="식사">{group.mealPartySize}</td>
+                        <td data-label="후속 연락">{group.followUpNeeded}</td>
+                      </tr>
+                    ))}</tbody>
+                  </table>
+                </div>
+              )}
+            </section>
+
+            <section className="attendance-operations-panel" aria-labelledby="attendance-follow-up-title">
+              <div className="attendance-operations-section-heading">
+                <div><p className="rsvp-admin-eyebrow">FOLLOW-UP QUEUE</p><h2 id="attendance-follow-up-title">후속 연락 목록</h2></div>
+                <span>{followUpEntries.length}명 표시</span>
+              </div>
+              <div className="attendance-operations-filter" role="group" aria-label="후속 연락 상태 필터">
+                {followUpFilters.map((option) => <button key={option.value} type="button" className="rsvp-admin-secondary" aria-pressed={followUpFilter === option.value} onClick={() => setFollowUpFilter(option.value)}>{option.label}</button>)}
+              </div>
+              {followUpEntries.length === 0 ? <p className="rsvp-admin-empty">선택한 상태에 해당하는 하객이 없습니다.</p> : (
+                <ul className="attendance-operations-follow-up-list">
+                  {followUpEntries.map((entry) => {
+                    const link = entry.link!;
+                    const hasToken = Boolean(inviteTokens[link.id]);
+                    return (
+                      <li key={entry.key}>
+                        <div className="attendance-operations-follow-up-main">
+                          <span className={`attendance-operations-stage attendance-operations-stage--${entry.stage}`}>{operationStageLabel(entry.stage)}</span>
+                          <div><strong>{link.guestName}</strong><p>{sideLabel(link.side)} · {link.groupLabel || "미분류"} · 발송 {link.sendCount}회 · 열람 {link.openCount}회</p></div>
+                        </div>
+                        <div className="attendance-operations-follow-up-actions">
+                          <button type="button" className="rsvp-admin-secondary" onClick={() => void copyReminder(link)} disabled={!hasToken || operationBusyId !== null} title={hasToken ? "개인화 재안내 문구 복사" : "초대 링크 화면에서 개인 링크 재발급 필요"}><ClipboardCopy aria-hidden="true" /> 문구 복사</button>
+                          <button type="button" className="rsvp-admin-secondary" onClick={() => void recordReminder(link)} disabled={operationBusyId !== null}><Send aria-hidden="true" /> 재안내 기록</button>
+                          <button type="button" onClick={() => void toggleFollowUpCompleted(link)} disabled={operationBusyId !== null}><CheckCircle2 aria-hidden="true" /> {link.followUpCompletedAt ? "완료 취소" : "연락 완료"}</button>
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+            </section>
+
+            {(operations.issues.length > 0 || operations.summary.unmatchedResponses > 0) && (
+              <section className="attendance-operations-panel attendance-operations-issues" aria-labelledby="attendance-issues-title">
+                <div className="attendance-operations-section-heading"><div><p className="rsvp-admin-eyebrow">DATA CHECK</p><h2 id="attendance-issues-title">명단 확인 필요</h2></div><CircleAlert aria-hidden="true" /></div>
+                <ul>{operations.issues.map((issue) => <li key={issue}>{issue}</li>)}</ul>
+                <p>이름만으로 자동 병합하지 않습니다. 초대 링크 화면에서 재발급하거나 실제 하객 여부를 확인해 주세요.</p>
+              </section>
+            )}
 
             <section className="rsvp-admin-results" aria-labelledby="rsvp-results-title">
               <div className="rsvp-admin-results__header">
@@ -654,8 +908,8 @@ export function RsvpAdminPage() {
                   <button type="button" onClick={() => void loadAll(session.token, { announce: true })} disabled={isFetching}>
                     <RefreshCw aria-hidden="true" /> {isFetching ? "불러오는 중" : "새로고침"}
                   </button>
-                  <button type="button" onClick={() => downloadRsvpCsv(result)}>
-                    <Download aria-hidden="true" /> CSV 저장
+                  <button type="button" aria-label="CSV 저장" onClick={() => downloadRsvpCsv(result)}>
+                    <Download aria-hidden="true" /> 답변 CSV
                   </button>
                 </div>
               </div>
@@ -690,17 +944,21 @@ export function RsvpAdminPage() {
                 <p className="rsvp-admin-empty" role="status">조건에 맞는 답변이 없습니다.</p>
               ) : (
                 <div className="rsvp-admin-table-wrap">
-                  <table className="rsvp-admin-table">
-                    <thead><tr><th>대상</th><th>이름</th><th>연락처</th><th>상태</th><th>인원</th><th>식사</th><th>전달사항</th><th>최근 수정</th><th>관리</th></tr></thead>
+                  <table className="rsvp-admin-table attendance-operations-response-table">
+                    <thead><tr><th>대상</th><th>그룹</th><th>이름</th><th>연락처</th><th>참석</th><th>총인원</th><th>어린이</th><th>식사</th><th>연결 상태</th><th>전달사항</th><th>최근 수정</th><th>관리</th></tr></thead>
                     <tbody>
-                      {filteredResponses.map((response) => (
-                        <tr key={response.id}>
+                      {filteredResponses.map((response) => {
+                        const operation = operationByRsvpId.get(response.id);
+                        return <tr key={response.id}>
                           <td data-label="대상">{sideLabel(response.side)}</td>
+                          <td data-label="그룹">{operation?.link?.groupLabel || "-"}</td>
                           <td data-label="이름"><strong>{response.guestName}</strong></td>
                           <td data-label="연락처">{response.phone ?? "-"}</td>
-                          <td data-label="상태">{attendanceLabel(response.attendance)}</td>
-                          <td data-label="인원">{response.partySize}</td>
+                          <td data-label="참석">{attendanceLabel(response.attendance)}</td>
+                          <td data-label="총인원">{response.partySize}</td>
+                          <td data-label="어린이">{response.childCount ?? 0}</td>
                           <td data-label="식사">{mealLabel(response.mealStatus)}</td>
+                          <td data-label="연결 상태"><span className={`attendance-operations-stage attendance-operations-stage--${operation?.stage ?? "responded"}`}>{operation?.link ? "개인 초대 연결" : "응답만 있음"}</span></td>
                           <td data-label="전달사항">{response.note || "-"}</td>
                           <td data-label="최근 수정"><time dateTime={response.updatedAt}>{formatDate(response.updatedAt)}</time></td>
                           <td data-label="관리">
@@ -718,8 +976,8 @@ export function RsvpAdminPage() {
                               <button type="button" className="rsvp-admin-delete" aria-label={`${response.guestName} 답변 삭제`} title="답변 삭제" onClick={(event) => openDeleteDialog(response, event.currentTarget)} disabled={deletingId !== null || updatingId !== null}><Trash2 aria-hidden="true" /></button>
                             </div>
                           </td>
-                        </tr>
-                      ))}
+                        </tr>;
+                      })}
                     </tbody>
                   </table>
                 </div>
@@ -786,7 +1044,14 @@ export function RsvpAdminPage() {
               </label>
               <label>
                 <span>인원</span>
-                <input type="number" min={editValues.attendance === "no" ? 0 : 1} max={10} value={editValues.partySize} onChange={(event) => setEditValues({ ...editValues, partySize: Number(event.target.value) })} disabled={updatingId !== null || editValues.attendance === "no"} required />
+                <input type="number" min={editValues.attendance === "no" ? 0 : 1} max={10} value={editValues.partySize} onChange={(event) => {
+                  const partySize = Number(event.target.value);
+                  setEditValues({ ...editValues, partySize, childCount: Math.min(editValues.childCount, partySize) });
+                }} disabled={updatingId !== null || editValues.attendance === "no"} required />
+              </label>
+              <label>
+                <span>어린이 인원</span>
+                <input type="number" min={0} max={editValues.partySize} value={editValues.childCount} onChange={(event) => setEditValues({ ...editValues, childCount: Number(event.target.value) })} disabled={updatingId !== null || editValues.attendance !== "yes"} required />
               </label>
               <label className="rsvp-admin-edit-grid__wide">
                 <span>식사 여부</span>

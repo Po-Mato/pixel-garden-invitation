@@ -14,6 +14,7 @@ export type InvitationInviteLinkInput = {
 
 export type InvitationInviteLinkUpdate = Partial<InvitationInviteLinkInput> & {
   active?: boolean;
+  followUpCompleted?: boolean;
 };
 
 export type InvitationInviteDeliveryInput = {
@@ -35,6 +36,7 @@ export type InvitationInviteLinkRecord = InvitationInviteLinkInput & {
   lastOpenedAt: string | null;
   respondedAt: string | null;
   rsvpId: string | null;
+  followUpCompletedAt: string | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -112,6 +114,10 @@ export function parseInvitationInviteLinkUpdate(value: unknown): InvitationInvit
   if ("active" in value) {
     if (typeof value.active !== "boolean") return null;
     update.active = value.active;
+  }
+  if ("followUpCompleted" in value) {
+    if (typeof value.followUpCompleted !== "boolean") return null;
+    update.followUpCompleted = value.followUpCompleted;
   }
   return Object.keys(update).length > 0 ? update : null;
 }

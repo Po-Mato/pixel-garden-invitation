@@ -1,7 +1,7 @@
 import { StrictMode } from "react";
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import type { RsvpAdminResult } from "@wedding-game/shared";
+import type { InvitationInviteLinkAdminResult, RsvpAdminResult } from "@wedding-game/shared";
 import { WeddingApiError } from "../api/weddingApi";
 import { RsvpAdminPage } from "./RsvpAdminPage";
 
@@ -15,6 +15,19 @@ const api = vi.hoisted(() => ({
   deleteAdminRsvp: vi.fn()
 }));
 
+const inviteApi = vi.hoisted(() => ({
+  fetchAdminInvitationInviteLinks: vi.fn(),
+  recordAdminInvitationInviteLinkDeliveries: vi.fn(),
+  updateAdminInvitationInviteLink: vi.fn()
+}));
+
+const inviteTokenStorage = vi.hoisted(() => ({
+  loadAdminInviteLinkTokens: vi.fn()
+}));
+
+const browserActions = vi.hoisted(() => ({ copyText: vi.fn() }));
+const operationsCsv = vi.hoisted(() => ({ downloadAttendanceOperationsCsv: vi.fn() }));
+
 const storage = vi.hoisted(() => ({
   loadAdminSession: vi.fn(),
   saveAdminSession: vi.fn(),
@@ -27,6 +40,10 @@ vi.mock("../api/weddingApi", async (importOriginal) => ({
   ...await importOriginal<typeof import("../api/weddingApi")>(),
   ...api
 }));
+vi.mock("../api/invitationInviteLinksApi", () => inviteApi);
+vi.mock("../invitation/inviteLinkAdminTokens", () => inviteTokenStorage);
+vi.mock("../invitation/browserActions", () => browserActions);
+vi.mock("../invitation/attendanceOperationsCsv", () => operationsCsv);
 vi.mock("../invitation/rsvpStorage", () => storage);
 vi.mock("../invitation/rsvpCsv", () => csv);
 
@@ -43,10 +60,36 @@ const result: RsvpAdminResult = {
     deleteAt: "2027-05-31T14:59:59.000Z"
   },
   responses: [
-    { id: "1", side: "groom", guestName: "김하객", phone: "01012345678", attendance: "yes", partySize: 3, mealStatus: "yes", note: "축하합니다", consentVersion: "v1", revision: 1, createdAt: "2027-01-01T00:00:00Z", updatedAt: "2027-01-02T00:00:00Z" },
+    { id: "1", side: "groom", guestName: "김하객", phone: "01012345678", attendance: "yes", partySize: 3, childCount: 1, mealStatus: "yes", note: "축하합니다", consentVersion: "v1", revision: 1, createdAt: "2027-01-01T00:00:00Z", updatedAt: "2027-01-02T00:00:00Z" },
     { id: "2", side: "bride", guestName: "Lee Guest", phone: "010 9999 8888", attendance: "yes", partySize: 2, mealStatus: "no", note: "", consentVersion: "v1", revision: 2, createdAt: "2027-01-01T00:00:00Z", updatedAt: "2027-01-03T00:00:00Z" },
     { id: "3", side: "legacy", guestName: "옛 하객", phone: null, attendance: "no", partySize: 0, mealStatus: "not_applicable", note: "기존", consentVersion: null, revision: 1, createdAt: "2027-01-01T00:00:00Z", updatedAt: "2027-01-01T00:00:00Z" },
     { id: "4", side: "bride", guestName: "박미정", phone: "01022223333", attendance: "unsure", partySize: 2, mealStatus: "unsure", note: "확인 중", consentVersion: "v1", revision: 1, createdAt: "2027-01-01T00:00:00Z", updatedAt: "2027-01-01T00:00:00Z" }
+  ]
+};
+
+const inviteBase = {
+  active: true,
+  deliveryChannel: "kakao" as const,
+  sendCount: 1,
+  firstSentAt: "2027-01-01T00:00:00Z",
+  lastSentAt: "2027-01-01T00:00:00Z",
+  deliveryNote: "",
+  openCount: 1,
+  firstOpenedAt: "2027-01-01T00:00:00Z",
+  lastOpenedAt: "2027-01-01T00:00:00Z",
+  respondedAt: "2027-01-02T00:00:00Z",
+  followUpCompletedAt: null,
+  createdAt: "2027-01-01T00:00:00Z",
+  updatedAt: "2027-01-02T00:00:00Z"
+};
+
+const inviteResult: InvitationInviteLinkAdminResult = {
+  summary: { total: 4, active: 4, delivered: 3, opened: 2, responded: 3 },
+  links: [
+    { ...inviteBase, id: "invite_1", guestName: "김하객", side: "groom", groupLabel: "친구", rsvpId: "1" },
+    { ...inviteBase, id: "invite_2", guestName: "Lee Guest", side: "bride", groupLabel: "직장", rsvpId: "2" },
+    { ...inviteBase, id: "invite_4", guestName: "박미정", side: "bride", groupLabel: "가족", rsvpId: "4" },
+    { ...inviteBase, id: "invite_5", guestName: "미응답 하객", side: "groom", groupLabel: "친구", sendCount: 0, firstSentAt: null, lastSentAt: null, openCount: 0, firstOpenedAt: null, lastOpenedAt: null, respondedAt: null, rsvpId: null }
   ]
 };
 
@@ -76,6 +119,14 @@ describe("RsvpAdminPage", () => {
     api.fetchAdminRsvps.mockResolvedValue(result);
     api.updateAdminRsvp.mockResolvedValue({ ...result.responses[0], revision: 2 });
     api.deleteAdminRsvp.mockResolvedValue(undefined);
+    inviteTokenStorage.loadAdminInviteLinkTokens.mockReturnValue({ invite_5: "A".repeat(43) });
+    browserActions.copyText.mockResolvedValue(undefined);
+    inviteApi.fetchAdminInvitationInviteLinks.mockResolvedValue(inviteResult);
+    inviteApi.recordAdminInvitationInviteLinkDeliveries.mockResolvedValue(inviteResult);
+    inviteApi.updateAdminInvitationInviteLink.mockImplementation(async (_token, linkId, update) => ({
+      ...inviteResult.links.find(({ id }) => id === linkId)!,
+      followUpCompletedAt: update.followUpCompleted ? "2027-04-20T00:00:00Z" : null
+    }));
   });
 
   afterEach(() => {
@@ -286,8 +337,44 @@ describe("RsvpAdminPage", () => {
       expect(screen.getAllByText(value).length).toBeGreaterThan(0);
     }
     fireEvent.change(screen.getByLabelText("대상 필터"), { target: { value: "legacy" } });
-    expect(screen.queryByText("김하객")).not.toBeInTheDocument();
+    expect(within(screen.getByRole("region", { name: "전체 답변" })).queryByText("김하객")).not.toBeInTheDocument();
     expect(screen.getAllByText("4").length).toBeGreaterThan(0);
+  });
+
+  it("combines invite delivery and RSVP data into headcount and group operations", async () => {
+    render(<RsvpAdminPage />);
+    await login();
+
+    expect(inviteApi.fetchAdminInvitationInviteLinks).toHaveBeenCalledWith("admin-token");
+    expect(screen.getByRole("heading", { name: "초대 진행 현황" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "측별·관계 그룹 집계" })).toBeInTheDocument();
+    const summary = screen.getByRole("region", { name: "참석 답변 현황" });
+    expect(within(summary).getByText("어린이 인원").nextElementSibling).toHaveTextContent("1");
+    expect(screen.getByText("미응답 하객")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "운영 명단 CSV" }));
+    expect(operationsCsv.downloadAttendanceOperationsCsv).toHaveBeenCalledOnce();
+  });
+
+  it("copies a personal reminder and records and completes follow-up work", async () => {
+    render(<RsvpAdminPage />);
+    await login();
+    const row = screen.getByText("미응답 하객").closest("li");
+    expect(row).not.toBeNull();
+    const actions = within(row!);
+
+    fireEvent.click(actions.getByRole("button", { name: "문구 복사" }));
+    await waitFor(() => expect(browserActions.copyText).toHaveBeenCalledWith(expect.stringContaining("2027년 4월 24일")));
+
+    fireEvent.click(actions.getByRole("button", { name: "재안내 기록" }));
+    await waitFor(() => expect(inviteApi.recordAdminInvitationInviteLinkDeliveries).toHaveBeenCalledWith("admin-token", {
+      linkIds: ["invite_5"], channel: "kakao", note: "참석 답변 재안내"
+    }));
+
+    fireEvent.click(actions.getByRole("button", { name: "연락 완료" }));
+    await waitFor(() => expect(inviteApi.updateAdminInvitationInviteLink).toHaveBeenCalledWith("admin-token", "invite_5", {
+      followUpCompleted: true
+    }));
   });
 
   it("searches normalized names and phone numbers and resets all filters", async () => {
@@ -296,7 +383,7 @@ describe("RsvpAdminPage", () => {
 
     fireEvent.change(screen.getByLabelText("검색"), { target: { value: "lee guest" } });
     expect(screen.getByText("Lee Guest")).toBeInTheDocument();
-    expect(screen.queryByText("김하객")).not.toBeInTheDocument();
+    expect(within(screen.getByRole("region", { name: "전체 답변" })).queryByText("김하객")).not.toBeInTheDocument();
     fireEvent.change(screen.getByLabelText("검색"), { target: { value: "01099998888" } });
     expect(screen.getByText("Lee Guest")).toBeInTheDocument();
     fireEvent.change(screen.getByLabelText("대상 필터"), { target: { value: "bride" } });
@@ -329,7 +416,7 @@ describe("RsvpAdminPage", () => {
     fireEvent.change(screen.getByLabelText("검색"), { target: { value: "하객1" } });
 
     expect(screen.getByRole("status")).toHaveTextContent("조건에 맞는 답변이 없습니다");
-    expect(screen.queryByText("김하객")).not.toBeInTheDocument();
+    expect(within(screen.getByRole("region", { name: "전체 답변" })).queryByText("김하객")).not.toBeInTheDocument();
   });
 
   it("shows an explicit empty result state", async () => {
@@ -355,7 +442,7 @@ describe("RsvpAdminPage", () => {
     fireEvent.click(screen.getByRole("button", { name: "삭제" }));
     await waitFor(() => expect(api.deleteAdminRsvp).toHaveBeenCalledWith("admin-token", "1"));
     await waitFor(() => expect(api.fetchAdminRsvps).toHaveBeenCalledTimes(2));
-    expect(screen.queryByText("김하객")).not.toBeInTheDocument();
+    expect(within(screen.getByRole("region", { name: "전체 답변" })).queryByText("김하객")).not.toBeInTheDocument();
   });
 
   it("keeps the focused inert dialog through the forced GET after DELETE succeeds", async () => {
@@ -394,10 +481,10 @@ describe("RsvpAdminPage", () => {
     fireEvent.click(screen.getByRole("button", { name: "삭제" }));
 
     await waitFor(() => expect(api.fetchAdminRsvps).toHaveBeenCalledTimes(3));
-    expect(screen.queryByText("김하객")).not.toBeInTheDocument();
+    expect(within(screen.getByRole("region", { name: "전체 답변" })).queryByText("김하객")).not.toBeInTheDocument();
     oldRefresh.resolve(result);
     await act(async () => { await Promise.resolve(); });
-    expect(screen.queryByText("김하객")).not.toBeInTheDocument();
+    expect(within(screen.getByRole("region", { name: "전체 답변" })).queryByText("김하객")).not.toBeInTheDocument();
   });
 
   it("preserves the list on delete failure and logs out on a delete 401", async () => {
@@ -584,6 +671,7 @@ describe("RsvpAdminPage", () => {
       phone: "01099998888",
       attendance: "no",
       partySize: 0,
+      childCount: 0,
       mealStatus: "not_applicable",
       note: "축하합니다",
       revision: 1

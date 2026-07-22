@@ -11,6 +11,7 @@ type RsvpRow = {
   phone: string;
   attendance: string;
   party_size: number;
+  child_count: number;
   meal_status: string;
   note: string;
   consent_version: string;
@@ -105,6 +106,7 @@ function createDb(options: CreateDbOptions = {}) {
               phone,
               attendance,
               partySize,
+              childCount,
               mealStatus,
               note,
               storedConsentVersion,
@@ -113,7 +115,7 @@ function createDb(options: CreateDbOptions = {}) {
               createdAt,
               updatedAt
             ] = values as [
-              string, string, string, string, string, string, number,
+              string, string, string, string, string, string, number, number,
               string, string, string, string, string, string, string
             ];
             const row: RsvpRow = {
@@ -124,6 +126,7 @@ function createDb(options: CreateDbOptions = {}) {
               phone,
               attendance,
               party_size: partySize,
+              child_count: childCount,
               meal_status: mealStatus,
               note,
               consent_version: storedConsentVersion,
@@ -160,6 +163,9 @@ function createDb(options: CreateDbOptions = {}) {
               phone,
               attendance,
               partySize,
+              requestedChildCount,
+              preservedPartySize,
+              explicitChildCount,
               mealStatus,
               note,
               storedConsentVersion,
@@ -167,7 +173,10 @@ function createDb(options: CreateDbOptions = {}) {
               invitationId,
               rsvpId,
               expectedRevision
-            ] = values as [string, string, string, string, number, string, string, string, string, string, string, number];
+            ] = values as [
+              string, string, string, string, number, number | null, number, number | null,
+              string, string, string, string, string, string, number
+            ];
             const existing = rows.get(rsvpId);
             if (options.deleteOnUpdate) {
               rows.delete(rsvpId);
@@ -181,6 +190,9 @@ function createDb(options: CreateDbOptions = {}) {
               phone,
               attendance,
               party_size: partySize,
+              child_count: requestedChildCount === null
+                ? Math.min(existing.child_count, preservedPartySize)
+                : Number(explicitChildCount),
               meal_status: mealStatus,
               note,
               consent_version: storedConsentVersion,

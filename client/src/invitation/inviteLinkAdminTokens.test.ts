@@ -28,6 +28,7 @@ describe("administrator invite link tokens", () => {
         lastOpenedAt: null,
         respondedAt: null,
         rsvpId: null,
+        followUpCompletedAt: null,
         createdAt: "now",
         updatedAt: "now"
       }

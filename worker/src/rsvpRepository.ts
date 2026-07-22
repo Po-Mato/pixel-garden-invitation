@@ -34,6 +34,7 @@ type RsvpRow = {
   phone: string | null;
   attendance: RsvpRecord["attendance"];
   party_size: number;
+  child_count: number;
   meal_status: RsvpRecord["mealStatus"];
   note: string;
   consent_version: string | null;
@@ -54,7 +55,7 @@ type InvitationDeletePolicyRow = {
 };
 
 const rsvpColumns = `
-  id, side, guest_name, phone, attendance, party_size, meal_status, note,
+  id, side, guest_name, phone, attendance, party_size, child_count, meal_status, note,
   consent_version, edit_token_hash, revision, created_at, updated_at
 `;
 
@@ -66,6 +67,7 @@ function mapRsvpRow(row: RsvpRow): RsvpRecord {
     phone: row.phone,
     attendance: row.attendance,
     partySize: row.party_size,
+    childCount: row.child_count,
     mealStatus: row.meal_status,
     note: row.note,
     consentVersion: row.consent_version,
@@ -93,9 +95,9 @@ export async function createRsvp(db: D1Database, args: CreateRsvpArgs): Promise<
     .prepare(`
       INSERT INTO rsvps (
         id, invitation_id, side, guest_name, phone, attendance, party_size,
-        meal_status, note, consent_version, consented_at, edit_token_hash,
+        child_count, meal_status, note, consent_version, consented_at, edit_token_hash,
         created_at, updated_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       RETURNING ${rsvpColumns}
     `)
     .bind(
@@ -106,6 +108,7 @@ export async function createRsvp(db: D1Database, args: CreateRsvpArgs): Promise<
       submission.phone,
       submission.attendance,
       submission.partySize,
+      submission.childCount ?? 0,
       submission.mealStatus,
       submission.note,
       submission.consentVersion,
@@ -143,6 +146,10 @@ export async function updateRsvp(db: D1Database, args: UpdateRsvpArgs): Promise<
           phone = ?,
           attendance = ?,
           party_size = ?,
+          child_count = CASE
+            WHEN ? IS NULL THEN MIN(child_count, ?)
+            ELSE ?
+          END,
           meal_status = ?,
           note = ?,
           consent_version = ?,
@@ -157,6 +164,9 @@ export async function updateRsvp(db: D1Database, args: UpdateRsvpArgs): Promise<
       submission.phone,
       submission.attendance,
       submission.partySize,
+      submission.childCount ?? null,
+      submission.partySize,
+      submission.childCount ?? null,
       submission.mealStatus,
       submission.note,
       submission.consentVersion,

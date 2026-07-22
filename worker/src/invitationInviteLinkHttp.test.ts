@@ -39,6 +39,7 @@ const link = {
   lastOpenedAt: null,
   respondedAt: null,
   rsvpId: null,
+  followUpCompletedAt: null,
   createdAt: "2026-07-22T00:00:00.000Z",
   updatedAt: "2026-07-22T00:00:00.000Z"
 };
@@ -104,11 +105,11 @@ describe("invitation invite link HTTP", () => {
 
   it("updates, rotates and deletes a link", async () => {
     const updated = await handleAdminInvitationInviteLinkRequest(
-      adminRequest("PATCH", { active: false }), env, "sample-garden", link.id
+      adminRequest("PATCH", { active: false, followUpCompleted: true }), env, "sample-garden", link.id
     );
     expect(updated.status).toBe(200);
     expect(repository.updateInvitationInviteLink).toHaveBeenCalledWith(
-      env.DB, "sample-garden", link.id, { active: false }
+      env.DB, "sample-garden", link.id, { active: false, followUpCompleted: true }
     );
 
     const rotated = await handleAdminInvitationInviteLinkRequest(

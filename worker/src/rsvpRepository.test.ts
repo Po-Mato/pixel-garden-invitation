@@ -22,6 +22,7 @@ const row = {
   phone: "01012345678",
   attendance: "yes",
   party_size: 2,
+  child_count: 1,
   meal_status: "yes",
   note: "창가 자리",
   consent_version: "2026-07-20",
@@ -63,6 +64,7 @@ describe("createRsvp", () => {
       "01012345678",
       "yes",
       2,
+      0,
       "yes",
       "창가 자리",
       "2026-07-20",
@@ -79,6 +81,7 @@ describe("createRsvp", () => {
       phone: "01012345678",
       attendance: "yes",
       partySize: 2,
+      childCount: 1,
       mealStatus: "yes",
       note: "창가 자리",
       consentVersion: "2026-07-20",
@@ -105,6 +108,7 @@ describe("findRsvp", () => {
         phone: "01012345678",
         attendance: "yes",
         partySize: 2,
+        childCount: 1,
         mealStatus: "yes",
         note: "창가 자리",
         consentVersion: "2026-07-20",
@@ -138,6 +142,9 @@ describe("updateRsvp", () => {
       "01012345678",
       "yes",
       2,
+      null,
+      2,
+      null,
       "yes",
       "창가 자리",
       "2026-07-20",
@@ -147,6 +154,18 @@ describe("updateRsvp", () => {
       1
     );
     expect(response).toMatchObject({ id: "rsvp_1", side: "bride", revision: 2 });
+  });
+
+  it("updates an explicit child count and preserves a bounded existing value when omitted", async () => {
+    const { db, bind } = createFirstDb({ ...row, child_count: 2, revision: 2 });
+    await updateRsvp(db, {
+      invitationId: "sample-garden",
+      rsvpId: "rsvp_1",
+      submission: { ...submission, partySize: 3, childCount: 2 },
+      expectedRevision: 1,
+      updatedAt: "2026-07-20T11:00:00.000Z"
+    });
+    expect(bind.mock.calls[0]).toEqual(expect.arrayContaining([3, 2, 3, 2]));
   });
 
   it("returns null when the expected revision does not update a row", async () => {

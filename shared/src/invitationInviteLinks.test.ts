@@ -29,9 +29,11 @@ describe("invitation invite links", () => {
 
   it("accepts partial updates only when at least one valid field exists", () => {
     expect(parseInvitationInviteLinkUpdate({ active: false })).toEqual({ active: false });
+    expect(parseInvitationInviteLinkUpdate({ followUpCompleted: true })).toEqual({ followUpCompleted: true });
     expect(parseInvitationInviteLinkUpdate({ groupLabel: "" })).toEqual({ groupLabel: "" });
     expect(parseInvitationInviteLinkUpdate({})).toBeNull();
     expect(parseInvitationInviteLinkUpdate({ active: "yes" })).toBeNull();
+    expect(parseInvitationInviteLinkUpdate({ followUpCompleted: "yes" })).toBeNull();
   });
 
   it("normalizes a bounded delivery batch without contact details", () => {

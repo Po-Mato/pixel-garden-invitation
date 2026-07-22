@@ -25,6 +25,7 @@ type InviteLinkRow = {
   last_opened_at: string | null;
   responded_at: string | null;
   rsvp_id: string | null;
+  follow_up_completed_at: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -46,6 +47,7 @@ function record(row: InviteLinkRow): InvitationInviteLinkRecord {
     lastOpenedAt: row.last_opened_at,
     respondedAt: row.responded_at,
     rsvpId: row.rsvp_id,
+    followUpCompletedAt: row.follow_up_completed_at,
     createdAt: row.created_at,
     updatedAt: row.updated_at
   };
@@ -66,7 +68,7 @@ export async function listInvitationInviteLinks(
   const rows = await db.prepare(`
     SELECT id, guest_name, side, group_label, active, delivery_channel, send_count,
            first_sent_at, last_sent_at, delivery_note, open_count, first_opened_at,
-           last_opened_at, responded_at, rsvp_id, created_at, updated_at
+           last_opened_at, responded_at, rsvp_id, follow_up_completed_at, created_at, updated_at
     FROM invitation_invite_links
     WHERE invitation_id = ?
     ORDER BY created_at DESC, id DESC
@@ -131,6 +133,7 @@ export async function createInvitationInviteLinks(
       lastOpenedAt: null,
       respondedAt: null,
       rsvpId: null,
+      followUpCompletedAt: null,
       createdAt,
       updatedAt: createdAt
     }
@@ -150,16 +153,24 @@ export async function updateInvitationInviteLink(
         side = COALESCE(?, side),
         group_label = COALESCE(?, group_label),
         active = COALESCE(?, active),
+        follow_up_completed_at = CASE
+          WHEN ? IS NULL THEN follow_up_completed_at
+          WHEN ? = 1 THEN COALESCE(follow_up_completed_at, ?)
+          ELSE NULL
+        END,
         updated_at = ?
     WHERE invitation_id = ? AND id = ?
     RETURNING id, guest_name, side, group_label, active, delivery_channel, send_count,
               first_sent_at, last_sent_at, delivery_note, open_count, first_opened_at,
-              last_opened_at, responded_at, rsvp_id, created_at, updated_at
+              last_opened_at, responded_at, rsvp_id, follow_up_completed_at, created_at, updated_at
   `).bind(
     update.guestName ?? null,
     update.side ?? null,
     update.groupLabel ?? null,
     update.active === undefined ? null : Number(update.active),
+    update.followUpCompleted === undefined ? null : Number(update.followUpCompleted),
+    update.followUpCompleted === undefined ? null : Number(update.followUpCompleted),
+    now.toISOString(),
     now.toISOString(),
     invitationId,
     linkId
@@ -180,7 +191,7 @@ export async function rotateInvitationInviteLink(
     WHERE invitation_id = ? AND id = ?
     RETURNING id, guest_name, side, group_label, active, delivery_channel, send_count,
               first_sent_at, last_sent_at, delivery_note, open_count, first_opened_at,
-              last_opened_at, responded_at, rsvp_id, created_at, updated_at
+              last_opened_at, responded_at, rsvp_id, follow_up_completed_at, created_at, updated_at
   `).bind(credential.tokenHash, now.toISOString(), invitationId, linkId).first<InviteLinkRow>();
   return row ? { link: record(row), token: credential.token } : null;
 }

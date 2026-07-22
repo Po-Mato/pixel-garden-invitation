@@ -51,6 +51,7 @@ function setup(): { database: SqliteDatabase; db: D1Database } {
   database.exec(readFileSync(new URL("../migrations/0001_init.sql", import.meta.url), "utf8"));
   database.exec(readFileSync(new URL("../migrations/0013_invitation_invite_links.sql", import.meta.url), "utf8"));
   database.exec(readFileSync(new URL("../migrations/0014_invitation_invite_delivery_history.sql", import.meta.url), "utf8"));
+  database.exec(readFileSync(new URL("../migrations/0015_attendance_operations.sql", import.meta.url), "utf8"));
   return { database, db: d1(database) };
 }
 
@@ -117,8 +118,12 @@ describe("invitation invite link repository", () => {
 
       await expect(updateInvitationInviteLink(db, "sample-garden", created![0].link.id, {
         groupLabel: "친구",
-        active: false
-      }, now)).resolves.toMatchObject({ groupLabel: "친구", active: false });
+        active: false,
+        followUpCompleted: true
+      }, now)).resolves.toMatchObject({ groupLabel: "친구", active: false, followUpCompletedAt: now.toISOString() });
+      await expect(updateInvitationInviteLink(db, "sample-garden", created![0].link.id, {
+        followUpCompleted: false
+      }, now)).resolves.toMatchObject({ followUpCompletedAt: null });
       await expect(openInvitationInviteLink(db, "sample-garden", created![0].token, now)).resolves.toBeNull();
 
       const rotated = await rotateInvitationInviteLink(db, "sample-garden", created![0].link.id, now);
