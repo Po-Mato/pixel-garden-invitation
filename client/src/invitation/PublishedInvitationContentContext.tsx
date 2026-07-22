@@ -18,11 +18,10 @@ import {
   type WeddingContent,
   type WeddingEvent
 } from "@wedding-game/shared";
-import { fetchPublishedInvitationContent } from "../api/invitationContentApi";
 import {
-  fetchPublishedInvitationGallery,
   invitationGalleryMediaUrl
 } from "../api/invitationGalleryApi";
+import { fetchPublishedInvitationRelease } from "../api/invitationReleaseApi";
 
 export type PublishedInvitationContent = {
   event: WeddingEvent;
@@ -41,7 +40,10 @@ const defaultEditable = buildDefaultEditableInvitationContent(
   invitationContent.content
 );
 
-function deriveRuntimeGallery(gallery: EditableInvitationGallery | null): readonly WeddingGalleryPhoto[] {
+function deriveRuntimeGallery(
+  gallery: EditableInvitationGallery | null,
+  mediaUrl: (assetId: string, width: 640 | 1024) => string = invitationGalleryMediaUrl
+): readonly WeddingGalleryPhoto[] {
   if (!gallery || gallery.photos.some((photo) => !photo.assetId)) return invitationContent.content.gallery;
   return gallery.photos.map((photo) => ({
     id: photo.id,
@@ -51,9 +53,9 @@ function deriveRuntimeGallery(gallery: EditableInvitationGallery | null): readon
     height: photo.height,
     orientation: photo.orientation,
     layout: photo.layout,
-    assetPath: invitationGalleryMediaUrl(photo.assetId!, 1024),
+    assetPath: mediaUrl(photo.assetId!, 1024),
     sources: ([640, 1024] as const).map((width) => ({
-      assetPath: invitationGalleryMediaUrl(photo.assetId!, width),
+      assetPath: mediaUrl(photo.assetId!, width),
       width
     }))
   }));
@@ -61,7 +63,8 @@ function deriveRuntimeGallery(gallery: EditableInvitationGallery | null): readon
 
 function derivePublishedContent(
   editable: EditableInvitationContent,
-  gallery: EditableInvitationGallery | null = null
+  gallery: EditableInvitationGallery | null = null,
+  mediaUrl?: (assetId: string, width: 640 | 1024) => string
 ) {
   const event: WeddingEvent = {
     ...invitationContent.event,
@@ -77,7 +80,7 @@ function derivePublishedContent(
         : editable.coupleIntroduction.groom
     })),
     coupleMessage: editable.coupleIntroduction.together,
-    gallery: deriveRuntimeGallery(gallery),
+    gallery: deriveRuntimeGallery(gallery, mediaUrl),
     storyTimeline: invitationContent.content.storyTimeline.map((step, index) => ({
       ...step,
       title: editable.storyTimeline[index]?.title ?? step.title,
@@ -114,59 +117,44 @@ export function PublishedInvitationContentProvider({ children }: { children: Rea
   } | null>(null);
 
   const refresh = useCallback(async () => {
-    const [contentRequest, galleryRequest] = await Promise.allSettled([
-      fetchPublishedInvitationContent(),
-      fetchPublishedInvitationGallery()
-    ]);
-    if (contentRequest.status === "fulfilled") {
-      const result = contentRequest.value;
+    try {
+      const result = await fetchPublishedInvitationRelease();
       const content = result.content ? parseEditableInvitationContent(result.content) : null;
-      if (content && result.revision !== null) {
-        setPublished({ editable: content, revision: result.revision, publishedAt: result.publishedAt });
+      if (content && result.contentRevision !== null) {
+        setPublished({ editable: content, revision: result.contentRevision, publishedAt: result.publishedAt });
       } else {
         setPublished(null);
       }
-    } else {
-      setPublished(null);
-    }
-    if (galleryRequest.status === "fulfilled") {
-      const result = galleryRequest.value;
       const gallery = result.gallery
         ? parseEditableInvitationGallery(result.gallery, invitationContent.content.gallery)
         : null;
-      if (gallery && result.revision !== null) {
-        setPublishedGallery({ gallery, revision: result.revision, publishedAt: result.publishedAt });
+      if (gallery && result.galleryRevision !== null) {
+        setPublishedGallery({ gallery, revision: result.galleryRevision, publishedAt: result.publishedAt });
       } else {
         setPublishedGallery(null);
       }
-    } else {
+    } catch {
+      setPublished(null);
       setPublishedGallery(null);
     }
   }, []);
 
   useEffect(() => {
     const controller = new AbortController();
-    void Promise.allSettled([
-      fetchPublishedInvitationContent(controller.signal),
-      fetchPublishedInvitationGallery(controller.signal)
-    ]).then(([contentRequest, galleryRequest]) => {
-      if (contentRequest.status === "fulfilled") {
-        const result = contentRequest.value;
+    void fetchPublishedInvitationRelease(controller.signal).then((result) => {
+      if (!controller.signal.aborted) {
         const content = result.content ? parseEditableInvitationContent(result.content) : null;
-        if (content && result.revision !== null) {
-          setPublished({ editable: content, revision: result.revision, publishedAt: result.publishedAt });
-        }
-      }
-      if (galleryRequest.status === "fulfilled") {
-        const result = galleryRequest.value;
+        setPublished(content && result.contentRevision !== null
+          ? { editable: content, revision: result.contentRevision, publishedAt: result.publishedAt }
+          : null);
         const gallery = result.gallery
           ? parseEditableInvitationGallery(result.gallery, invitationContent.content.gallery)
           : null;
-        if (gallery && result.revision !== null) {
-          setPublishedGallery({ gallery, revision: result.revision, publishedAt: result.publishedAt });
-        }
+        setPublishedGallery(gallery && result.galleryRevision !== null
+          ? { gallery, revision: result.galleryRevision, publishedAt: result.publishedAt }
+          : null);
       }
-    });
+    }).catch(() => undefined);
     return () => controller.abort();
   }, []);
 
@@ -193,4 +181,32 @@ export function PublishedInvitationContentProvider({ children }: { children: Rea
 
 export function usePublishedInvitationContent(): PublishedInvitationContent {
   return useContext(PublishedInvitationContentContext);
+}
+
+export function InvitationContentPreviewProvider({
+  editable,
+  gallery,
+  galleryAssetUrl,
+  children
+}: {
+  editable: EditableInvitationContent;
+  gallery: EditableInvitationGallery | null;
+  galleryAssetUrl: (assetId: string, width: 640 | 1024) => string;
+  children: ReactNode;
+}) {
+  const value = useMemo<PublishedInvitationContent>(() => ({
+    ...derivePublishedContent(editable, gallery, galleryAssetUrl),
+    editable,
+    share: editable.share,
+    source: "published",
+    gallerySource: gallery ? "published" : "static",
+    revision: null,
+    publishedAt: null,
+    refresh: async () => undefined
+  }), [editable, gallery, galleryAssetUrl]);
+  return (
+    <PublishedInvitationContentContext.Provider value={value}>
+      {children}
+    </PublishedInvitationContentContext.Provider>
+  );
 }

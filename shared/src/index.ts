@@ -1,6 +1,7 @@
 export * from "./content";
 export * from "./editableInvitationContent";
 export * from "./editableInvitationGallery";
+export * from "./invitationRelease";
 export * from "./adminNotifications";
 export * from "./guestbook";
 export * from "./weddingContent";

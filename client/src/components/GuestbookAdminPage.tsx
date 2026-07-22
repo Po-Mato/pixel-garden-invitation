@@ -284,6 +284,7 @@ export function GuestbookAdminPage() {
             <h1>방명록 관리</h1>
           </div>
           <div className="guestbook-admin-header-actions">
+            <a className="rsvp-admin-nav-link" href="?admin=release">통합 공개</a>
             <a className="rsvp-admin-nav-link" href="?admin=content">실데이터 편집</a>
             <a className="rsvp-admin-nav-link" href="?admin=gallery">사진 관리</a>
             <a className="rsvp-admin-nav-link" href="?admin=readiness">공개 준비</a>

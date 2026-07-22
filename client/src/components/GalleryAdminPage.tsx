@@ -492,6 +492,7 @@ export function GalleryAdminPage() {
         <header className="rsvp-admin-header gallery-admin-header">
           <div><p className="rsvp-admin-eyebrow">MJ CONVENTION · 2027.05.01</p><h1>사진·갤러리 관리</h1></div>
           <div className="guestbook-admin-header-actions">
+            <a className="rsvp-admin-nav-link" href="?admin=release">통합 공개</a>
             <a className="rsvp-admin-nav-link" href="?admin=content">실데이터</a>
             <a className="rsvp-admin-nav-link" href="?admin=readiness">공개 준비</a>
             <a className="rsvp-admin-nav-link" href="?admin=rsvp">참석 답변</a>

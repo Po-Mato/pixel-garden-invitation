@@ -11,15 +11,15 @@ import {
 } from "./PublishedInvitationContentContext";
 
 const api = vi.hoisted(() => ({
-  fetchPublishedInvitationContent: vi.fn(),
-  fetchPublishedInvitationGallery: vi.fn(),
+  fetchPublishedInvitationRelease: vi.fn(),
   invitationGalleryMediaUrl: vi.fn((assetId: string, width: number) => `https://worker.test/media/${assetId}-${width}.webp`)
 }));
 
-vi.mock("../api/invitationContentApi", () => api);
 vi.mock("../api/invitationGalleryApi", () => ({
-  fetchPublishedInvitationGallery: api.fetchPublishedInvitationGallery,
   invitationGalleryMediaUrl: api.invitationGalleryMediaUrl
+}));
+vi.mock("../api/invitationReleaseApi", () => ({
+  fetchPublishedInvitationRelease: api.fetchPublishedInvitationRelease
 }));
 
 function Consumer() {
@@ -39,8 +39,14 @@ function Consumer() {
 describe("PublishedInvitationContentProvider", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    api.fetchPublishedInvitationContent.mockResolvedValue({ content: null, revision: null, publishedAt: null });
-    api.fetchPublishedInvitationGallery.mockResolvedValue({ gallery: null, revision: null, publishedAt: null });
+    api.fetchPublishedInvitationRelease.mockResolvedValue({
+      content: null,
+      gallery: null,
+      releaseNumber: null,
+      contentRevision: null,
+      galleryRevision: null,
+      publishedAt: null
+    });
   });
 
   afterEach(cleanup);
@@ -50,7 +56,7 @@ describe("PublishedInvitationContentProvider", () => {
 
     expect(screen.getByText("content:static")).toBeInTheDocument();
     expect(screen.getByText(invitationContent.content.coupleMessage)).toBeInTheDocument();
-    await waitFor(() => expect(api.fetchPublishedInvitationContent).toHaveBeenCalled());
+    await waitFor(() => expect(api.fetchPublishedInvitationRelease).toHaveBeenCalled());
   });
 
   it("검증된 공개본을 소개·연락처·공유 문구에 함께 적용한다", async () => {
@@ -58,9 +64,12 @@ describe("PublishedInvitationContentProvider", () => {
     content.coupleIntroduction.together = "공개된 공동 인사말";
     content.familyContacts.contacts[0].phone = "010-1234-5678";
     content.share.description = "공개된 공유 설명";
-    api.fetchPublishedInvitationContent.mockResolvedValue({
+    api.fetchPublishedInvitationRelease.mockResolvedValue({
       content,
-      revision: 3,
+      gallery: null,
+      releaseNumber: 1,
+      contentRevision: 3,
+      galleryRevision: null,
       publishedAt: "2026-07-22T00:00:00.000Z"
     });
 
@@ -73,10 +82,10 @@ describe("PublishedInvitationContentProvider", () => {
   });
 
   it("공개본 요청 실패 시 정적 콘텐츠를 유지한다", async () => {
-    api.fetchPublishedInvitationContent.mockRejectedValue(new Error("network"));
+    api.fetchPublishedInvitationRelease.mockRejectedValue(new Error("network"));
     render(<PublishedInvitationContentProvider><Consumer /></PublishedInvitationContentProvider>);
 
-    await waitFor(() => expect(api.fetchPublishedInvitationContent).toHaveBeenCalled());
+    await waitFor(() => expect(api.fetchPublishedInvitationRelease).toHaveBeenCalled());
     expect(screen.getByText("content:static")).toBeInTheDocument();
     expect(screen.getByText("no-phone")).toBeInTheDocument();
   });
@@ -86,7 +95,14 @@ describe("PublishedInvitationContentProvider", () => {
     gallery.photos.forEach((photo, index) => {
       photo.assetId = `12345678-1234-4${String(index).padStart(3, "0")}-8123-123456789abc`;
     });
-    api.fetchPublishedInvitationGallery.mockResolvedValue({ gallery, revision: 4, publishedAt: "2026-07-22T03:00:00.000Z" });
+    api.fetchPublishedInvitationRelease.mockResolvedValue({
+      content: null,
+      gallery,
+      releaseNumber: 1,
+      contentRevision: null,
+      galleryRevision: 4,
+      publishedAt: "2026-07-22T03:00:00.000Z"
+    });
     render(<PublishedInvitationContentProvider><Consumer /></PublishedInvitationContentProvider>);
 
     expect(await screen.findByText("https://worker.test/media/12345678-1234-4000-8123-123456789abc-1024.webp")).toBeInTheDocument();

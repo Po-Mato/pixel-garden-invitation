@@ -2,6 +2,7 @@ import { handleApiRequest } from "./http";
 import { cleanupExpiredInvitationData } from "./cleanup";
 import { retryPendingAdminNotificationEmails } from "./adminNotificationService";
 import { handlePublishedGalleryMediaRequest } from "./invitationGalleryHttp";
+import { publishDueInvitationReleases } from "./invitationReleaseRepository";
 
 export interface Env {
   DB: D1Database;
@@ -60,13 +61,16 @@ export default {
       const emailQueue = await retryPendingAdminNotificationEmails(env, now);
       console.info(JSON.stringify({ event: "admin_notification_email_queue", ...emailQueue }));
 
+      const invitationReleases = await publishDueInvitationReleases(env.DB, now);
+      console.info(JSON.stringify({ event: "invitation_release_queue", ...invitationReleases }));
+
       if (controller.cron === "17 15 * * *" || !controller.cron) {
         const cleanup = await cleanupExpiredInvitationData(env.DB, now);
         console.info(JSON.stringify({ event: "invitation_data_cleanup", ...cleanup }));
-        return { emailQueue, cleanup };
+        return { emailQueue, invitationReleases, cleanup };
       }
 
-      return { emailQueue, cleanup: null };
+      return { emailQueue, invitationReleases, cleanup: null };
     })();
     ctx.waitUntil(work);
   }

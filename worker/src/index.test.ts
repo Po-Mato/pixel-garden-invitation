@@ -20,8 +20,9 @@ describe("worker scaffold", () => {
 
   test("passes scheduled cleanup work to waitUntil", async () => {
     const run = vi.fn().mockResolvedValue({ success: true, meta: { changes: 0 } });
+    const all = vi.fn().mockResolvedValue({ results: [] });
     const db = {
-      prepare: vi.fn(() => ({ bind: vi.fn(() => ({ run })) }))
+      prepare: vi.fn(() => ({ bind: vi.fn(() => ({ run, all })) }))
     } as unknown as D1Database;
     const waitUntil = vi.fn();
     const info = vi.spyOn(console, "info").mockImplementation(() => undefined);
@@ -35,13 +36,21 @@ describe("worker scaffold", () => {
     expect(waitUntil).toHaveBeenCalledOnce();
     await expect(waitUntil.mock.calls[0][0]).resolves.toEqual({
       emailQueue: { attempted: 0, sent: 0, failed: 0 },
+      invitationReleases: { attempted: 0, published: 0, failed: 0 },
       cleanup: { rsvps: 0, guestbookMessages: 0, notifications: 0, attempts: 0 }
     });
     expect(run).toHaveBeenCalledTimes(4);
+    expect(all).toHaveBeenCalledOnce();
     expect(info).toHaveBeenCalledWith(JSON.stringify({
       event: "admin_notification_email_queue",
       attempted: 0,
       sent: 0,
+      failed: 0
+    }));
+    expect(info).toHaveBeenCalledWith(JSON.stringify({
+      event: "invitation_release_queue",
+      attempted: 0,
+      published: 0,
       failed: 0
     }));
     expect(info).toHaveBeenCalledWith(JSON.stringify({
@@ -54,8 +63,9 @@ describe("worker scaffold", () => {
     info.mockRestore();
   });
 
-  test("runs only the email queue on the five-minute cron", async () => {
-    const prepare = vi.fn();
+  test("runs the email and release queues on the five-minute cron", async () => {
+    const all = vi.fn().mockResolvedValue({ results: [] });
+    const prepare = vi.fn(() => ({ bind: vi.fn(() => ({ all })) }));
     const waitUntil = vi.fn();
     const info = vi.spyOn(console, "info").mockImplementation(() => undefined);
 
@@ -70,9 +80,10 @@ describe("worker scaffold", () => {
 
     await expect(waitUntil.mock.calls[0][0]).resolves.toEqual({
       emailQueue: { attempted: 0, sent: 0, failed: 0 },
+      invitationReleases: { attempted: 0, published: 0, failed: 0 },
       cleanup: null
     });
-    expect(prepare).not.toHaveBeenCalled();
+    expect(prepare).toHaveBeenCalledOnce();
     info.mockRestore();
   });
 });
