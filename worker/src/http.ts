@@ -44,6 +44,10 @@ import {
   handleAdminInvitationInviteLinkRequest,
   handlePublicInvitationInviteLinkRequest
 } from "./invitationInviteLinkHttp";
+import {
+  handleAdminGuestInformationRequest,
+  handlePublicGuestInformationRequest
+} from "./guestInformationHttp";
 import { markInvitationInviteLinkResponded } from "./invitationInviteLinkRepository";
 import type { GuestbookOwnedMessage, RsvpRecord } from "@wedding-game/shared";
 import type { Env } from "./index";
@@ -724,6 +728,19 @@ async function handleApiRequestWithoutCors(
     );
   }
 
+  const adminGuestInformationMatch = url.pathname.match(
+    /^\/api\/invitations\/([^/]+)\/admin\/guest-information(?:\/(announcements|faqs)\/([0-9a-z_-]+))?$/
+  );
+  if (adminGuestInformationMatch) {
+    return handleAdminGuestInformationRequest(
+      request,
+      env,
+      adminGuestInformationMatch[1],
+      adminGuestInformationMatch[2] as "announcements" | "faqs" | undefined,
+      adminGuestInformationMatch[3]
+    );
+  }
+
   const adminNotificationsMatch = url.pathname.match(/^\/api\/invitations\/([^/]+)\/admin\/notifications$/);
   if (adminNotificationsMatch) return handleAdminNotifications(request, env, adminNotificationsMatch[1], options);
 
@@ -758,6 +775,18 @@ async function handleApiRequestWithoutCors(
   const publicInviteLinkMatch = url.pathname.match(/^\/api\/invitations\/([^/]+)\/invites\/([^/]+)$/);
   if (publicInviteLinkMatch) {
     return handlePublicInvitationInviteLinkRequest(request, env, publicInviteLinkMatch[1], publicInviteLinkMatch[2]);
+  }
+
+  const publicGuestInformationMatch = url.pathname.match(
+    /^\/api\/invitations\/([^/]+)\/guest-information(?:\/(views))?$/
+  );
+  if (publicGuestInformationMatch) {
+    return handlePublicGuestInformationRequest(
+      request,
+      env,
+      publicGuestInformationMatch[1],
+      publicGuestInformationMatch[2] === "views" ? "views" : undefined
+    );
   }
 
   const ownedRsvpMatch = url.pathname.match(/^\/api\/invitations\/([^/]+)\/rsvps\/([^/]+)$/);

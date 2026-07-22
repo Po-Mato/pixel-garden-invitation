@@ -20,6 +20,7 @@ import { DirectionsContent } from "./DirectionsSheet";
 import { FamilyContactContent } from "./FamilyContactSheet";
 import { GiftAccountContent } from "./GiftAccountSheet";
 import { GuestbookExperience } from "./GuestbookExperience";
+import { GuestInformationAccess } from "./GuestInformationAccess";
 import { InvitationShareAccess } from "./InvitationShareAccess";
 import { ResponsiveGalleryImage } from "./ResponsiveGalleryImage";
 import { RsvpPanel } from "./RsvpPanel";
@@ -101,6 +102,7 @@ export function QuickInvitation({
           {canReturnToGarden ? "정원으로 돌아가기" : "캐릭터 정원"}
         </button>
         <div className="quick-invitation__topbar-actions">
+          <GuestInformationAccess variant="quick" />
           <ViewSettingsAccess variant="icon" />
           <InvitationShareAccess variant="icon" />
         </div>

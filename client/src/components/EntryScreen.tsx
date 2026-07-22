@@ -11,6 +11,7 @@ import { formatCoupleNames } from "../invitation/coupleOrder";
 import { usePublishedInvitationContent } from "../invitation/PublishedInvitationContentContext";
 import { CharacterCustomizer } from "./CharacterCustomizer";
 import { FamilyContactSheet } from "./FamilyContactSheet";
+import { GuestInformationAccess } from "./GuestInformationAccess";
 import { ViewSettingsAccess } from "./ViewSettingsAccess";
 import { WeddingEventSummary } from "./WeddingEventSummary";
 import "../invite-link-public.css";
@@ -88,6 +89,7 @@ export function EntryScreen({
         weddingDayPreview={weddingDayPreview}
         onFamilyContactOpen={() => setFamilyContactOpen(true)}
       />
+      <GuestInformationAccess variant="entry" />
       {onQuickView ? (
         <button
           className="entry-screen__quick-access"

@@ -43,6 +43,9 @@ vi.mock("./components/SetupWizardAdminPage", () => ({
 vi.mock("./components/InviteLinksAdminPage", () => ({
   InviteLinksAdminPage: () => <div>초대 링크 발송 화면</div>
 }));
+vi.mock("./components/GuestInformationAdminPage", () => ({
+  GuestInformationAdminPage: () => <div>하객 공지 FAQ 관리 화면</div>
+}));
 vi.mock("./components/QuickInvitation", () => ({
   QuickInvitation: ({ onOpenGarden }: { onOpenGarden: () => void }) => (
     <div>간편 초대장 화면<button type="button" onClick={onOpenGarden}>정원 열기</button></div>
@@ -116,6 +119,13 @@ describe("App query routing", () => {
     window.history.replaceState({}, "", "/?admin=invites");
     render(<App />);
     expect(await screen.findByText("초대 링크 발송 화면")).toBeInTheDocument();
+    expect(screen.queryByText("일반 입장 화면")).not.toBeInTheDocument();
+  });
+
+  it("renders only the guest information page for its exact admin query", async () => {
+    window.history.replaceState({}, "", "/?admin=guest-info");
+    render(<App />);
+    expect(await screen.findByText("하객 공지 FAQ 관리 화면")).toBeInTheDocument();
     expect(screen.queryByText("일반 입장 화면")).not.toBeInTheDocument();
   });
 

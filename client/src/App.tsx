@@ -55,6 +55,8 @@ const SetupWizardAdminPage = lazy(() => import("./components/SetupWizardAdminPag
   .then((module) => ({ default: module.SetupWizardAdminPage })));
 const InviteLinksAdminPage = lazy(() => import("./components/InviteLinksAdminPage")
   .then((module) => ({ default: module.InviteLinksAdminPage })));
+const GuestInformationAdminPage = lazy(() => import("./components/GuestInformationAdminPage")
+  .then((module) => ({ default: module.GuestInformationAdminPage })));
 
 function ScreenLoadingFallback() {
   return <div className="screen-loading" role="status">화면을 준비하고 있어요</div>;
@@ -153,6 +155,9 @@ export function App() {
   }
   if (adminPage === "invites") {
     return <Suspense fallback={<ScreenLoadingFallback />}><InviteLinksAdminPage /></Suspense>;
+  }
+  if (adminPage === "guest-info") {
+    return <Suspense fallback={<ScreenLoadingFallback />}><GuestInformationAdminPage /></Suspense>;
   }
 
   const playing = mode === "garden" && profile !== null;

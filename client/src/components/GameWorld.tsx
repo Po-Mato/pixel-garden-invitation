@@ -40,6 +40,7 @@ import { CharacterSprite } from "./CharacterSprite";
 import { DirectionsSheet } from "./DirectionsSheet";
 import { FamilyContactSheet } from "./FamilyContactSheet";
 import { GiftAccountSheet } from "./GiftAccountSheet";
+import { GuestInformationAccess } from "./GuestInformationAccess";
 import { InvitationShareAccess } from "./InvitationShareAccess";
 import { SpotModal } from "./SpotModal";
 import { VirtualJoystick } from "./VirtualJoystick";
@@ -132,6 +133,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   const [giftAccountSheetOpen, setGiftAccountSheetOpen] = useState(false);
   const [familyContactSheetOpen, setFamilyContactSheetOpen] = useState(false);
   const [weddingDaySheetOpen, setWeddingDaySheetOpen] = useState(false);
+  const [guestInformationOpen, setGuestInformationOpen] = useState(false);
   const [shareSheetOpen, setShareSheetOpen] = useState(false);
   const [viewSettingsOpen, setViewSettingsOpen] = useState(false);
   const [travelStatus, setTravelStatus] = useState("우리 집에서 여정을 시작해요");
@@ -144,6 +146,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     || giftAccountSheetOpen
     || familyContactSheetOpen
     || weddingDaySheetOpen
+    || guestInformationOpen
     || shareSheetOpen
     || viewSettingsOpen;
 
@@ -423,6 +426,11 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   const handleWeddingDaySheetOpenChange = useCallback((open: boolean) => {
     if (open) pauseWorldInput();
     setWeddingDaySheetOpen(open);
+  }, [pauseWorldInput]);
+
+  const handleGuestInformationOpenChange = useCallback((open: boolean) => {
+    if (open) pauseWorldInput();
+    setGuestInformationOpen(open);
   }, [pauseWorldInput]);
 
   const handleShareSheetOpenChange = useCallback((open: boolean) => {
@@ -968,6 +976,10 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
               onVectorChange={handleJoystickVectorChange}
             />
             <div className="world-control-actions">
+              <GuestInformationAccess
+                variant="world"
+                onOpenChange={handleGuestInformationOpenChange}
+              />
               <WeddingDayQuickAccess
                 variant="world"
                 preview={weddingDayPreview}
