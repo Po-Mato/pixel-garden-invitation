@@ -17,7 +17,7 @@ import {
 import { shouldReduceMotion } from "../accessibility/viewPreferences";
 import { computeCameraTransform, screenToWorld, type ViewportSize } from "../game/camera";
 import { computeNextGridPosition, directionFromVector, directionTowardPoint, snapToGrid } from "../game/movement";
-import { findNearestPortalRoute, findTilePath } from "../game/pathfinding";
+import { findNearestInteractionRoute, findNearestPortalRoute, findTilePath } from "../game/pathfinding";
 import {
   advanceTileInput,
   createTileInputState,
@@ -30,6 +30,7 @@ import {
   pointInPortalEntry,
   portalEntryRect,
   type Point,
+  type Rect,
   type WorldPortal
 } from "../game/world";
 import { preloadWorldZoneAssets } from "../game/worldAssetPreloader";
@@ -61,6 +62,13 @@ type RealtimeStatus = "offline" | "connecting" | "reconnecting" | "online" | "fu
 type MoveMessage = Extract<ClientMessage, { type: "move" }>;
 type RealtimeConnection = ReturnType<typeof connectRealtimeWithRetry>;
 type PortalIntent = { portal: WorldPortal; path: Point[] };
+type WorldInteractionIntent = {
+  targetId: string;
+  spotId: SpotId;
+  label: string;
+  path: Point[];
+  target: Point;
+};
 type PortalTransitionPhase = "arrival" | "fade-out" | "fade-in";
 type PortalTransition = { portal: WorldPortal; phase: PortalTransitionPhase };
 
@@ -71,6 +79,7 @@ const portalArrivalDelayMs = 150;
 const portalFadeOutMs = 250;
 const portalFadeOutFallbackMs = 1000;
 const portalFadeInMs = 300;
+const npcInteractionRadius = 30;
 const defaultViewport: ViewportSize = { width: 390, height: 520 };
 const samePoint = (first: Point, second: Point) => first.x === second.x && first.y === second.y;
 const hasJoystickMovement = (vector: Point) => Math.hypot(vector.x, vector.y) > joystickDeadZone;
@@ -79,6 +88,13 @@ const pixelRect = (rect: { x: number; y: number; width: number; height: number }
   top: rect.y,
   width: rect.width,
   height: rect.height
+});
+const rectCenter = (rect: Rect): Point => ({ x: rect.x + rect.width / 2, y: rect.y + rect.height / 2 });
+const npcInteractionRect = (npc: { x: number; y: number }): Rect => ({
+  x: npc.x - 30,
+  y: npc.y - 45,
+  width: 60,
+  height: 75
 });
 
 function withoutCurrentGuest(guests: RoomGuest[], currentGuestId: string | null): RoomGuest[] {
@@ -120,6 +136,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   const [position, setPosition] = useState<Point>(initialZone.spawn);
   const [target, setTarget] = useState<Point | null>(null);
   const [portalIntent, setPortalIntentState] = useState<PortalIntent | null>(null);
+  const [interactionIntent, setInteractionIntentState] = useState<WorldInteractionIntent | null>(null);
   const [portalTransition, setPortalTransitionState] = useState<PortalTransition | null>(null);
   const [inputReleaseRequired, setInputReleaseRequiredState] = useState(false);
   const [joystickVector, setJoystickVector] = useState<Point>({ x: 0, y: 0 });
@@ -158,6 +175,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   const positionRef = useRef<Point>(initialZone.spawn);
   const directionRef = useRef<Direction>("down");
   const portalIntentRef = useRef<PortalIntent | null>(null);
+  const interactionIntentRef = useRef<WorldInteractionIntent | null>(null);
   const portalTransitionRef = useRef<PortalTransition | null>(null);
   const targetStepAtRef = useRef<number | null>(null);
   const tileInputStateRef = useRef<TileInputState | null>(null);
@@ -176,6 +194,11 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     setPortalIntentState(intent);
   }, []);
 
+  const setInteractionIntent = useCallback((intent: WorldInteractionIntent | null) => {
+    interactionIntentRef.current = intent;
+    setInteractionIntentState(intent);
+  }, []);
+
   const setPortalTransition = useCallback((transition: PortalTransition | null) => {
     portalTransitionRef.current = transition;
     setPortalTransitionState(transition);
@@ -192,6 +215,13 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     setTravelStatus("포털 이동을 취소했어요");
     targetStepAtRef.current = null;
   }, [setPortalIntent]);
+
+  const cancelInteractionWalk = useCallback(() => {
+    if (!interactionIntentRef.current) return;
+    setInteractionIntent(null);
+    setTravelStatus("상호작용 이동을 취소했어요");
+    targetStepAtRef.current = null;
+  }, [setInteractionIntent]);
 
   const closeMenu = useCallback(() => {
     setCalendarSheetOpen(false);
@@ -282,6 +312,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
 
     setTarget(null);
     setPortalIntent(null);
+    setInteractionIntent(null);
     setJoystickVector({ x: 0, y: 0 });
     setMoving(false);
     setStepFrame(1);
@@ -291,7 +322,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     setInputReleaseRequired(inputReleaseRequiredRef.current || joystickWasMoving);
 
     sendRealtimeTerminalStop(directionRef.current);
-  }, [sendRealtimeTerminalStop, setInputReleaseRequired, setPortalIntent]);
+  }, [sendRealtimeTerminalStop, setInputReleaseRequired, setInteractionIntent, setPortalIntent]);
 
   const beginPortalTransition = useCallback((portal: WorldPortal, approach: Point, _now: number) => {
     if (portalTransitionRef.current) return;
@@ -308,6 +339,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     setStepFrame(1);
     setTarget(null);
     setPortalIntent(null);
+    setInteractionIntent(null);
     setJoystickVector({ x: 0, y: 0 });
     setCalendarSheetOpen(false);
     setDirectionsSheetOpen(false);
@@ -324,7 +356,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     setInputReleaseRequired(inputReleaseRequiredRef.current || joystickWasMoving);
     setPortalTransition(transition);
     sendRealtimeStop(approach, portal.facing, activeZoneIdRef.current);
-  }, [clearTerminalStopConfirm, sendRealtimeStop, setInputReleaseRequired, setPortalIntent, setPortalTransition]);
+  }, [clearTerminalStopConfirm, sendRealtimeStop, setInputReleaseRequired, setInteractionIntent, setPortalIntent, setPortalTransition]);
 
   const moveToZone = useCallback((zoneId: WorldZoneId, spawn?: Point) => {
     clearTerminalStopConfirm();
@@ -338,6 +370,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     setPosition(nextPosition);
     setTarget(null);
     setPortalIntent(null);
+    setInteractionIntent(null);
     setJoystickVector({ x: 0, y: 0 });
     setDirection("down");
     setMoving(false);
@@ -360,7 +393,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
       };
       sendMoveImmediately(connection, message);
     }
-  }, [clearTerminalStopConfirm, sendMoveImmediately, setPortalIntent]);
+  }, [clearTerminalStopConfirm, sendMoveImmediately, setInteractionIntent, setPortalIntent]);
 
   const handleJourneySelect = useCallback((zoneId: WorldZoneId) => {
     if (portalTransitionRef.current || zoneId === activeZoneIdRef.current) return;
@@ -408,6 +441,69 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     closeMenu();
     setActiveSpotId(spotId);
   }, [closeMenu, pauseWorldInput]);
+
+  const beginWorldInteraction = useCallback((input: {
+    targetId: string;
+    spotId: SpotId;
+    label: string;
+    target: Rect;
+    actionRadius: number;
+  }) => {
+    if (portalTransitionRef.current) return;
+
+    clearTerminalStopConfirm();
+    const route = findNearestInteractionRoute(
+      activeZone,
+      positionRef.current,
+      input.target,
+      input.actionRadius
+    );
+    const joystickWasMoving = joystickWasMovingRef.current;
+    inputGenerationRef.current += 1;
+    setTarget(null);
+    setPortalIntent(null);
+    setInteractionIntent(null);
+    setJoystickVector({ x: 0, y: 0 });
+    setMoving(false);
+    setStepFrame(1);
+    targetStepAtRef.current = null;
+    tileInputStateRef.current = null;
+    joystickWasMovingRef.current = false;
+    setInputReleaseRequired(inputReleaseRequiredRef.current || joystickWasMoving);
+    if (joystickWasMoving) sendRealtimeTerminalStop(directionRef.current);
+
+    if (!route) {
+      setTravelStatus(`${input.label} 근처로 갈 수 없어요`);
+      return;
+    }
+
+    const targetPoint = rectCenter(input.target);
+    const nextDirection = directionTowardPoint(route.entry, targetPoint) ?? directionRef.current;
+    if (route.path.length === 0) {
+      directionRef.current = nextDirection;
+      setDirection(nextDirection);
+      setTravelStatus(`${input.label}에 도착했어요`);
+      openSpot(input.spotId);
+      return;
+    }
+
+    setInteractionIntent({
+      targetId: input.targetId,
+      spotId: input.spotId,
+      label: input.label,
+      path: route.path,
+      target: targetPoint
+    });
+    setTravelStatus(`${input.label} 가까이 이동 중`);
+  }, [
+    activeZone,
+    clearTerminalStopConfirm,
+    openSpot,
+    sendRealtimeTerminalStop,
+    setInputReleaseRequired,
+    setInteractionIntent,
+    setPortalIntent
+  ]);
 
   const closeActiveSpot = useCallback(() => {
     const restoreMenuButtonFocus = restoreMenuButtonFocusRef.current;
@@ -610,7 +706,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     if (portalTransitionRef.current) return;
 
     const hasJoystickInput = hasJoystickMovement(joystickVector);
-    const movementTarget = portalIntent?.path[0] ?? target;
+    const movementTarget = interactionIntent?.path[0] ?? portalIntent?.path[0] ?? target;
     if (!movementTarget && !hasJoystickInput) {
       targetStepAtRef.current = null;
       tileInputStateRef.current = null;
@@ -668,6 +764,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
         setStepFrame(1);
         setTarget(null);
         setPortalIntent(null);
+        setInteractionIntent(null);
         setTravelStatus("길을 찾을 수 없어요");
         sendRealtimeMove(current, false, nextDirection, activeZone.id, now);
         targetStepAtRef.current = null;
@@ -677,6 +774,25 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
       if (portalIntent && portalIntent.path.length === 1 && reachedTarget) {
         if (inputGeneration !== inputGenerationRef.current) return;
         beginPortalTransition(portalIntent.portal, next, now);
+        return;
+      }
+
+      if (interactionIntent && interactionIntent.path.length === 1 && reachedTarget) {
+        if (inputGeneration !== inputGenerationRef.current) return;
+        const facing = directionTowardPoint(next, interactionIntent.target) ?? nextDirection;
+        positionRef.current = next;
+        directionRef.current = facing;
+        setPosition(next);
+        setDirection(facing);
+        setMoving(false);
+        setStepFrame(1);
+        setTarget(null);
+        setInteractionIntent(null);
+        setTravelStatus(`${interactionIntent.label}에 도착했어요`);
+        targetStepAtRef.current = null;
+        tileInputStateRef.current = null;
+        sendRealtimeStop(next, facing, activeZone.id);
+        openSpot(interactionIntent.spotId);
         return;
       }
 
@@ -698,6 +814,8 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
       if (reachedTarget) {
         if (portalIntent) {
           setPortalIntent({ ...portalIntent, path: portalIntent.path.slice(1) });
+        } else if (interactionIntent) {
+          setInteractionIntent({ ...interactionIntent, path: interactionIntent.path.slice(1) });
         } else {
           setMoving(false);
           setStepFrame(1);
@@ -712,13 +830,26 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
 
     frame = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(frame);
-  }, [activeZone, beginPortalTransition, joystickVector, portalIntent, sendRealtimeMove, setPortalIntent, target]);
+  }, [
+    activeZone,
+    beginPortalTransition,
+    interactionIntent,
+    joystickVector,
+    openSpot,
+    portalIntent,
+    sendRealtimeMove,
+    sendRealtimeStop,
+    setInteractionIntent,
+    setPortalIntent,
+    target
+  ]);
 
   function handlePortalClick(portalItem: WorldPortal) {
     if (portalTransitionRef.current) return;
 
     void preloadWorldZoneAssets(portalItem.to, "high");
     clearTerminalStopConfirm();
+    cancelInteractionWalk();
     const route = findNearestPortalRoute(activeZone, positionRef.current, portalItem);
     setTarget(null);
     setJoystickVector({ x: 0, y: 0 });
@@ -741,6 +872,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
 
     clearTerminalStopConfirm();
     cancelPortalWalk();
+    cancelInteractionWalk();
     const rect = event.currentTarget.getBoundingClientRect();
     const worldPoint = screenToWorld({
       client: { x: event.clientX, y: event.clientY },
@@ -772,7 +904,10 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
 
     if (portalTransitionRef.current || inputReleaseRequiredRef.current) return;
 
-    if (isMoving) cancelPortalWalk();
+    if (isMoving) {
+      cancelPortalWalk();
+      cancelInteractionWalk();
+    }
     setJoystickVector(vector);
 
     if (isMoving) {
@@ -882,11 +1017,17 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
                 <button
                   key={worldSpot.id}
                   type="button"
-                  className={`world-spot world-spot--${worldSpot.id}`}
+                  className={`world-spot world-spot--${worldSpot.id}${interactionIntent?.targetId === `spot:${worldSpot.id}` ? " world-spot--target" : ""}`}
                   style={{ ...pixelRect(worldSpot), zIndex: 9000 }}
                   onClick={(event) => {
                     event.stopPropagation();
-                    openSpot(worldSpot.id);
+                    beginWorldInteraction({
+                      targetId: `spot:${worldSpot.id}`,
+                      spotId: worldSpot.id,
+                      label: worldSpot.label,
+                      target: worldSpot,
+                      actionRadius: worldSpot.actionRadius
+                    });
                   }}
                 >
                   <span>{worldSpot.label}</span>
@@ -942,7 +1083,18 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
             ))}
             {activeZone.npcs.map((npc) => (
               <div key={npc.id} className="world-npc" style={{ left: npc.x, top: npc.y, zIndex: worldDepth(npc.y) }}>
-                <WeddingNpc id={npc.id} label={npc.label} onSelect={() => openSpot("couple")} />
+                <WeddingNpc
+                  id={npc.id}
+                  label={npc.label}
+                  approaching={interactionIntent?.targetId === `npc:${npc.id}`}
+                  onSelect={() => beginWorldInteraction({
+                    targetId: `npc:${npc.id}`,
+                    spotId: "couple",
+                    label: npc.label,
+                    target: npcInteractionRect(npc),
+                    actionRadius: npcInteractionRadius
+                  })}
+                />
               </div>
             ))}
             <div

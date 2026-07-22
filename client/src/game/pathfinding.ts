@@ -1,7 +1,7 @@
 import PF from "pathfinding";
 import { isBlocked } from "./geometry";
 import { gridTileSize } from "./movement";
-import type { Point, WorldPortal, WorldZone } from "./world";
+import type { Point, Rect, WorldPortal, WorldZone } from "./world";
 
 type GridPoint = { column: number; row: number };
 
@@ -9,6 +9,8 @@ export type PortalRoute = {
   entry: Point;
   path: Point[];
 };
+
+export type InteractionRoute = PortalRoute;
 
 function toGridPoint(point: Point, zone: WorldZone): GridPoint | null {
   const safe = zone.cameraSafeBounds;
@@ -29,6 +31,16 @@ function toWorldPoint(column: number, row: number, zone: WorldZone): Point {
     x: zone.cameraSafeBounds.x + gridTileSize / 2 + column * gridTileSize,
     y: zone.cameraSafeBounds.y + gridTileSize / 2 + row * gridTileSize
   };
+}
+
+function distanceToRect(point: Point, rect: Rect): number {
+  const dx = Math.max(rect.x - point.x, 0, point.x - (rect.x + rect.width));
+  const dy = Math.max(rect.y - point.y, 0, point.y - (rect.y + rect.height));
+  return Math.hypot(dx, dy);
+}
+
+function rectCenter(rect: Rect): Point {
+  return { x: rect.x + rect.width / 2, y: rect.y + rect.height / 2 };
 }
 
 export function findTilePath(zone: WorldZone, start: Point, goal: Point): Point[] | null {
@@ -87,6 +99,46 @@ export function findNearestPortalRoute(
     const aIsCenter = a.entry.x === portal.approach.x && a.entry.y === portal.approach.y;
     const bIsCenter = b.entry.x === portal.approach.x && b.entry.y === portal.approach.y;
     return Number(bIsCenter) - Number(aIsCenter);
+  });
+
+  return routes[0] ?? null;
+}
+
+export function findNearestInteractionRoute(
+  zone: WorldZone,
+  start: Point,
+  target: Rect,
+  actionRadius: number
+): InteractionRoute | null {
+  const columns = Math.floor(zone.cameraSafeBounds.width / gridTileSize);
+  const rows = Math.floor(zone.cameraSafeBounds.height / gridTileSize);
+  const routeZone = {
+    ...zone,
+    blocked: [...zone.blocked, target]
+  };
+  const center = rectCenter(target);
+  const routes: InteractionRoute[] = [];
+
+  for (let row = 0; row < rows; row += 1) {
+    for (let column = 0; column < columns; column += 1) {
+      const entry = toWorldPoint(column, row, zone);
+      if (
+        distanceToRect(entry, target) > actionRadius + gridTileSize / 2
+        || isBlocked(entry, routeZone)
+      ) continue;
+
+      const path = findTilePath(routeZone, start, entry);
+      if (path !== null) routes.push({ entry, path });
+    }
+  }
+
+  routes.sort((a, b) => {
+    const lengthDifference = a.path.length - b.path.length;
+    if (lengthDifference !== 0) return lengthDifference;
+
+    const aDistance = Math.hypot(a.entry.x - center.x, a.entry.y - center.y);
+    const bDistance = Math.hypot(b.entry.x - center.x, b.entry.y - center.y);
+    return aDistance - bDistance;
   });
 
   return routes[0] ?? null;

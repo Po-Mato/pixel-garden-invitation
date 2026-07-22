@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { isBlocked } from "./geometry";
 import { gardenWorld, getWorldZone, type WorldZone } from "./world";
-import { findNearestPortalRoute, findTilePath } from "./pathfinding";
+import { findNearestInteractionRoute, findNearestPortalRoute, findTilePath } from "./pathfinding";
 
 function testZone(
   blocked: WorldZone["blocked"],
@@ -241,5 +241,54 @@ describe("portal tile pathfinding", () => {
         }
       }
     }
+  });
+
+  it("finds the shortest reachable tile beside an interaction target", () => {
+    const zone = testZone([{ x: 60, y: 60, width: 60, height: 60 }]);
+    const route = findNearestInteractionRoute(
+      zone,
+      { x: 15, y: 15 },
+      { x: 60, y: 60, width: 60, height: 60 },
+      45
+    );
+
+    expect(route).not.toBeNull();
+    expect(route?.path.at(-1)).toEqual(route?.entry);
+    expect(route?.entry).toEqual({ x: 45, y: 15 });
+    expect(isBlocked(route!.entry, zone)).toBe(false);
+  });
+
+  it("returns an empty interaction path when already close enough", () => {
+    const home = getWorldZone(gardenWorld, "home");
+    const directions = home.spots[0];
+    const start = { x: 225, y: 285 };
+
+    expect(findNearestInteractionRoute(home, start, directions, directions.actionRadius)).toEqual({
+      entry: start,
+      path: []
+    });
+  });
+
+  it("reaches every world content spot from its zone spawn", () => {
+    for (const zone of gardenWorld.zones) {
+      for (const worldSpot of zone.spots) {
+        const route = findNearestInteractionRoute(zone, zone.spawn, worldSpot, worldSpot.actionRadius);
+
+        expect(route, `${zone.id}/${worldSpot.id}`).not.toBeNull();
+        expect(isBlocked(route!.entry, zone), `${zone.id}/${worldSpot.id}`).toBe(false);
+      }
+    }
+  });
+
+  it("approaches an NPC without stepping onto its occupied area", () => {
+    const bridal = getWorldZone(gardenWorld, "bridal-room");
+    const bride = bridal.npcs[0];
+    const target = { x: bride.x - 30, y: bride.y - 45, width: 60, height: 75 };
+    const route = findNearestInteractionRoute(bridal, bridal.spawn, target, 30);
+
+    expect(route).not.toBeNull();
+    expect(route?.path.at(-1)).toEqual(route?.entry);
+    expect(route?.entry).toEqual({ x: 345, y: 345 });
+    expect(isBlocked(route!.entry, { ...bridal, blocked: [...bridal.blocked, target] })).toBe(false);
   });
 });

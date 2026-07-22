@@ -94,6 +94,13 @@ function advanceRouteToPortalArrival() {
   expect(animationFrames.size, "portal route did not reach arrival within 70 animation frames").toBe(0);
 }
 
+function advanceInteractionRoute() {
+  for (let index = 0; index < 70 && animationFrames.size > 0; index += 1) {
+    advanceAnimation(index * 240);
+  }
+  expect(animationFrames.size, "interaction route did not finish within 70 animation frames").toBe(0);
+}
+
 function advancePortalTransition() {
   act(() => vi.advanceTimersByTime(150));
   act(() => vi.advanceTimersByTime(250));
@@ -178,6 +185,12 @@ function travelFromHomeToLobby() {
   ]) {
     travelThroughPortal(portalLabel);
   }
+}
+
+function openDirectionsFromMenu() {
+  fireEvent.click(screen.getByRole("button", { name: "초대장 메뉴" }));
+  fireEvent.click(within(screen.getByRole("dialog", { name: "초대장 바로가기" }))
+    .getByRole("button", { name: "길 찾기" }));
 }
 
 function mockMapRect(map: HTMLElement, width = 390, height = 520) {
@@ -399,6 +412,7 @@ describe("GameWorld", () => {
     const player = screen.getByLabelText("하객1");
 
     openRsvp();
+    advanceInteractionRoute();
     const before = { left: player.style.left, top: player.style.top };
     const dialog = screen.getByRole("dialog", { name: "참석 답변" });
     fireEvent.click(within(dialog).getByLabelText("이름"));
@@ -556,6 +570,9 @@ describe("GameWorld", () => {
     const menuButton = screen.getByRole("button", { name: "초대장 메뉴" });
     worldSpot.focus();
     fireEvent.click(worldSpot);
+    expect(worldSpot).toHaveClass("world-spot--target");
+    expect(screen.queryByRole("dialog", { name: "참석 답변" })).not.toBeInTheDocument();
+    advanceInteractionRoute();
 
     fireEvent.click(within(screen.getByRole("dialog", { name: "참석 답변" })).getByRole("button", { name: "닫기" }));
     act(() => vi.advanceTimersByTime(0));
@@ -682,11 +699,47 @@ describe("GameWorld", () => {
   it("opens the directions sheet from the world directions spot", () => {
     render(<GameWorld profile={profile} />);
     fireEvent.click(screen.getByRole("button", { name: /오시는 길/ }));
+    expect(screen.queryByRole("dialog", { name: "오시는 길" })).not.toBeInTheDocument();
+    expect(screen.getByText("오시는 길 가까이 이동 중")).toBeInTheDocument();
+    advanceInteractionRoute();
 
     const directions = screen.getByRole("dialog", { name: "오시는 길" });
     expect(directions).toHaveTextContent("네이버지도");
     expect(directions).toHaveTextContent("주차 2시간 무료");
     expect(screen.queryByText("MJ컨벤션은 경기 부천시 소사구 경인로 386에 있습니다.")).not.toBeInTheDocument();
+  });
+
+  it("cancels guided interaction when the joystick receives new input", () => {
+    render(<GameWorld profile={profile} />);
+    const directionsSpot = screen.getByRole("button", { name: /오시는 길/ });
+    const joystick = screen.getByLabelText("가상 조이스틱");
+
+    fireEvent.click(directionsSpot);
+    expect(directionsSpot).toHaveClass("world-spot--target");
+
+    fireEvent.keyDown(joystick, { key: "ArrowLeft" });
+    advanceAnimation(0);
+    fireEvent.keyUp(joystick, { key: "ArrowLeft" });
+
+    expect(directionsSpot).not.toHaveClass("world-spot--target");
+    expect(screen.getByText("상호작용 이동을 취소했어요")).toBeInTheDocument();
+    expect(screen.queryByRole("dialog", { name: "오시는 길" })).not.toBeInTheDocument();
+  });
+
+  it("replaces a guided interaction when another world spot is selected", () => {
+    render(<GameWorld profile={profile} />);
+    fireEvent.click(screen.getByRole("button", { name: "예식장 로비 바로 이동" }));
+    const rsvpSpot = screen.getByRole("button", { name: "축의대 답변하기" });
+    const gallerySpot = screen.getByRole("button", { name: "웨딩 갤러리 사진 보기" });
+
+    fireEvent.click(rsvpSpot);
+    expect(rsvpSpot).toHaveClass("world-spot--target");
+    fireEvent.click(gallerySpot);
+
+    expect(rsvpSpot).not.toHaveClass("world-spot--target");
+    expect(gallerySpot).toHaveClass("world-spot--target");
+    advanceInteractionRoute();
+    expect(screen.getByRole("dialog", { name: "사진 갤러리" })).toBeInTheDocument();
   });
 
   it("pauses a started portal route when directions opens from the invitation details", () => {
@@ -766,7 +819,7 @@ describe("GameWorld", () => {
     expect(player).toHaveStyle(pausedAt);
   });
 
-  it("pauses held joystick input and sends a stop when directions opens from the world spot", () => {
+  it("switches held joystick input to guided movement before opening a world spot", () => {
     configureRealtime();
     render(<GameWorld profile={profile} />);
     const socket = MockWebSocket.instances[0];
@@ -783,18 +836,18 @@ describe("GameWorld", () => {
 
     fireEvent.click(screen.getByRole("button", { name: /오시는 길/ }));
 
-    expect(screen.getByRole("dialog", { name: "오시는 길" })).toBeInTheDocument();
+    expect(screen.queryByRole("dialog", { name: "오시는 길" })).not.toBeInTheDocument();
     expect(joystick).toHaveAttribute("aria-disabled", "true");
-    [240, 480, 720].forEach(advanceAnimation);
-    expect(player).toHaveStyle(pausedAt);
+    advanceInteractionRoute();
+    expect(screen.getByRole("dialog", { name: "오시는 길" })).toBeInTheDocument();
+    expect(player).not.toHaveStyle(pausedAt);
     expect(screen.getByTestId("world-portal-transition")).toHaveAttribute("data-phase", "idle");
 
     const moves = socket.sentMessages.map((message) => JSON.parse(message)).filter((message) => message.type === "move");
-    expect(moves.at(-1)).toMatchObject({ x: 315, y: 555, direction: "right", moving: false, zoneId: "home" });
+    expect(moves.at(-1)).toMatchObject({ moving: false, zoneId: "home" });
 
     fireEvent.click(within(screen.getByRole("dialog", { name: "오시는 길" })).getByRole("button", { name: "닫기" }));
     [960, 1200].forEach(advanceAnimation);
-    expect(player).toHaveStyle(pausedAt);
     expect(joystick).toHaveAttribute("aria-disabled", "true");
 
     fireEvent.keyUp(joystick, { key: "ArrowRight" });
@@ -825,7 +878,7 @@ describe("GameWorld", () => {
       y: Number.parseInt(player.style.top, 10)
     };
 
-    fireEvent.click(screen.getByRole("button", { name: /오시는 길/ }));
+    openDirectionsFromMenu();
 
     const terminalStop = JSON.parse(socket.sentMessages.at(-1) ?? "null");
     expect(terminalStop).toMatchObject({
@@ -864,7 +917,7 @@ describe("GameWorld", () => {
     expect(priorStop).toMatchObject({ x: 285, y: 555, moving: false, zoneId: "home" });
     socket.sentMessages.length = 0;
 
-    fireEvent.click(screen.getByRole("button", { name: /오시는 길/ }));
+    openDirectionsFromMenu();
 
     const terminalStop = JSON.parse(socket.sentMessages.at(-1) ?? "null");
     expect(socket.sentMessages).toHaveLength(1);
@@ -902,7 +955,7 @@ describe("GameWorld", () => {
     const joystick = screen.getByLabelText("가상 조이스틱");
     fireEvent.keyDown(joystick, { key: "ArrowRight" });
     advanceAnimation(0);
-    fireEvent.click(screen.getByRole("button", { name: /오시는 길/ }));
+    openDirectionsFromMenu();
     expect(socket.sentMessages).toHaveLength(2);
 
     fireEvent.click(within(screen.getByRole("dialog", { name: "오시는 길" })).getByRole("button", { name: "닫기" }));
@@ -925,7 +978,7 @@ describe("GameWorld", () => {
     const joystick = screen.getByLabelText("가상 조이스틱");
     fireEvent.keyDown(joystick, { key: "ArrowRight" });
     advanceAnimation(0);
-    fireEvent.click(screen.getByRole("button", { name: /오시는 길/ }));
+    openDirectionsFromMenu();
     fireEvent.click(within(screen.getByRole("dialog", { name: "오시는 길" })).getByRole("button", { name: "닫기" }));
     fireEvent.keyUp(joystick, { key: "ArrowRight" });
 
@@ -1396,6 +1449,9 @@ describe("GameWorld", () => {
     expect(flowerFront).toHaveStyle({ left: "240px", top: "300px", width: "90px", height: "120px", zIndex: "1420" });
 
     fireEvent.click(screen.getByRole("button", { name: `${brideNpcLabel} 소개 보기` }));
+    expect(screen.getByRole("button", { name: `${brideNpcLabel} 소개 보기` })).toHaveAttribute("data-approaching", "true");
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    advanceInteractionRoute();
     expect(screen.getByRole("dialog")).toHaveTextContent("신랑신부 정원");
     fireEvent.click(screen.getByRole("button", { name: "닫기" }));
 
@@ -1446,6 +1502,7 @@ describe("GameWorld", () => {
       headers: { "content-type": "application/json" }
     })));
     fireEvent.click(screen.getByRole("button", { name: /축하 메시지/ }));
+    advanceInteractionRoute();
     expect(screen.getByRole("dialog", { name: "방명록 우체통" })).toHaveTextContent("축하 메시지");
     fireEvent.click(screen.getByRole("button", { name: "닫기" }));
 

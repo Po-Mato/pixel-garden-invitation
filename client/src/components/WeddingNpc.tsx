@@ -3,10 +3,11 @@ import type { CSSProperties, MouseEvent } from "react";
 type Props = {
   id: "groom" | "bride";
   label: string;
+  approaching?: boolean;
   onSelect: () => void;
 };
 
-export function WeddingNpc({ id, label, onSelect }: Props) {
+export function WeddingNpc({ id, label, approaching = false, onSelect }: Props) {
   const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
     onSelect();
@@ -24,8 +25,9 @@ export function WeddingNpc({ id, label, onSelect }: Props) {
   return (
     <button
       type="button"
-      className="wedding-npc"
+      className={`wedding-npc${approaching ? " wedding-npc--target" : ""}`}
       aria-label={`${label} 소개 보기`}
+      data-approaching={approaching || undefined}
       onClick={handleClick}
     >
       <span
