@@ -19,7 +19,23 @@ function storage(initial?: string) {
 describe("보기 설정 저장", () => {
   it("검증된 설정만 불러오고 손상된 값은 기본값으로 복구한다", () => {
     expect(loadViewPreferences(storage(JSON.stringify({ textScale: "large", reduceMotion: true }))))
-      .toEqual({ textScale: "large", reduceMotion: true });
+      .toEqual({
+        textScale: "large",
+        reduceMotion: true,
+        highContrast: false,
+        comfortableControls: false
+      });
+    expect(loadViewPreferences(storage(JSON.stringify({
+      textScale: "xlarge",
+      reduceMotion: true,
+      highContrast: true,
+      comfortableControls: true
+    })))).toEqual({
+      textScale: "xlarge",
+      reduceMotion: true,
+      highContrast: true,
+      comfortableControls: true
+    });
     expect(loadViewPreferences(storage("{broken"))).toEqual(defaultViewPreferences);
     expect(loadViewPreferences(storage(JSON.stringify({ textScale: "huge", reduceMotion: true }))))
       .toEqual(defaultViewPreferences);
@@ -27,23 +43,38 @@ describe("보기 설정 저장", () => {
 
   it("기기 저장소에 버전 키로 저장한다", () => {
     const target = storage();
-    expect(saveViewPreferences({ textScale: "large", reduceMotion: true }, target)).toBe(true);
+    const preferences = {
+      textScale: "large" as const,
+      reduceMotion: true,
+      highContrast: true,
+      comfortableControls: true
+    };
+    expect(saveViewPreferences(preferences, target)).toBe(true);
     expect(target.setItem).toHaveBeenCalledWith(
       viewPreferencesStorageKey,
-      JSON.stringify({ textScale: "large", reduceMotion: true })
+      JSON.stringify(preferences)
     );
   });
 
   it("문서 속성과 시스템 모션 설정을 함께 반영한다", () => {
     const root = document.createElement("html");
-    applyViewPreferences({ textScale: "large", reduceMotion: true }, root);
-    expect(root).toHaveAttribute("data-text-scale", "large");
+    applyViewPreferences({
+      textScale: "xlarge",
+      reduceMotion: true,
+      highContrast: true,
+      comfortableControls: true
+    }, root);
+    expect(root).toHaveAttribute("data-text-scale", "xlarge");
     expect(root).toHaveAttribute("data-reduce-motion", "true");
+    expect(root).toHaveAttribute("data-high-contrast", "true");
+    expect(root).toHaveAttribute("data-comfortable-controls", "true");
     expect(shouldReduceMotion(root, vi.fn(() => ({ matches: false })) as unknown as typeof window.matchMedia)).toBe(true);
 
     applyViewPreferences(defaultViewPreferences, root);
     expect(root).not.toHaveAttribute("data-text-scale");
     expect(root).not.toHaveAttribute("data-reduce-motion");
+    expect(root).not.toHaveAttribute("data-high-contrast");
+    expect(root).not.toHaveAttribute("data-comfortable-controls");
     expect(shouldReduceMotion(root, vi.fn(() => ({ matches: true })) as unknown as typeof window.matchMedia)).toBe(true);
   });
 });

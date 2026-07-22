@@ -61,6 +61,12 @@ describe("private RSVP administration layout", () => {
 });
 
 describe("entry screen layout", () => {
+  it("provides keyboard skip navigation and a visible focus treatment", () => {
+    expect(styles).toMatch(/\.skip-link\s*\{[^}]*min-height:\s*44px;/s);
+    expect(styles).toMatch(/\.skip-link:focus-visible\s*\{[^}]*transform:\s*translateY\(0\);/s);
+    expect(styles).toContain("@media (forced-colors: active)");
+  });
+
   it("locks the entry document to the dynamic viewport", () => {
     const documentRule = styles.match(
       /html:has\(\.app-shell:not\(\.app-shell--playing\)\),\s*body:has\(\.app-shell:not\(\.app-shell--playing\)\)\s*\{([^}]*)}/s
@@ -117,6 +123,27 @@ describe("entry screen layout", () => {
   it("adapts the entry composition for short mobile viewports", () => {
     expect(styles).toMatch(/@media \(max-height:\s*640px\)[\s\S]*\.character-customizer/);
     expect(styles).toMatch(/@media \(prefers-reduced-motion:\s*reduce\)[\s\S]*entry-prism/);
+  });
+});
+
+describe("고령 하객 보기 설정", () => {
+  it("아주 큰 글씨와 편한 터치 영역을 앱 콘텐츠에만 적용한다", () => {
+    expect(styles).toContain('html[data-text-scale="xlarge"]');
+    expect(styles).toMatch(/html\[data-comfortable-controls="true"\][\s\S]*min-height:\s*48px;/);
+    expect(styles).not.toMatch(/html\[data-comfortable-controls="true"\][^{]*\.world-portal/);
+  });
+
+  it("사용자와 시스템의 모션 감소 및 대비 선호를 모두 지원한다", () => {
+    expect(styles).toContain('html[data-reduce-motion="true"] *');
+    expect(styles).toContain('@media (prefers-reduced-motion: reduce)');
+    expect(styles).toContain('html[data-high-contrast="true"]');
+    expect(styles).toContain('@media (prefers-contrast: more)');
+  });
+
+  it("간편 초대장 핵심 탐색 요소를 기본 44px 이상으로 유지한다", () => {
+    expect(styles).toMatch(/\.quick-invitation__topbar > button,[\s\S]*?min-height:\s*44px;/);
+    expect(styles).toMatch(/\.quick-invitation__nav a\s*\{[^}]*min-height:\s*44px;/s);
+    expect(styles).toMatch(/\.view-settings-trigger--icon\s*\{[^}]*min-height:\s*44px;/s);
   });
 });
 

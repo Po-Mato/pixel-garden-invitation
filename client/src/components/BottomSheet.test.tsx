@@ -55,3 +55,25 @@ it("cycles focus in both directions at the dialog boundaries", () => {
   fireEvent.keyDown(lastButton, { key: "Tab" });
   expect(closeButton).toHaveFocus();
 });
+
+it("열려 있는 동안 앱 배경을 비활성화하고 닫을 때 복구한다", () => {
+  const appRoot = document.createElement("div");
+  appRoot.id = "root";
+  document.body.append(appRoot);
+
+  const { unmount } = render(
+    <BottomSheet title="보기 설정" onClose={vi.fn()}>
+      <button type="button">편한 화면</button>
+    </BottomSheet>
+  );
+
+  expect(appRoot).toHaveAttribute("aria-hidden", "true");
+  expect(appRoot).toHaveAttribute("inert");
+  expect(document.body.style.overflow).toBe("hidden");
+
+  unmount();
+  expect(appRoot).not.toHaveAttribute("aria-hidden");
+  expect(appRoot).not.toHaveAttribute("inert");
+  expect(document.body.style.overflow).toBe("");
+  appRoot.remove();
+});

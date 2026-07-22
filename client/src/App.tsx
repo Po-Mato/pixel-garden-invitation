@@ -147,39 +147,46 @@ export function App() {
   const quickView = mode === "invitation";
 
   return (
-    <main className={`app-shell ${playing ? "app-shell--playing" : ""}${quickView ? " app-shell--quick" : ""}`}>
-      <section className={`phone-frame ${playing ? "phone-frame--playing" : ""}${quickView ? " phone-frame--quick" : ""}`}>
-        {quickView ? (
-          <Suspense fallback={<ScreenLoadingFallback />}>
-            <QuickInvitation
-              nickname={profile?.nickname}
-              canReturnToGarden={profile !== null}
-              onOpenGarden={openGardenExperience}
+    <>
+      <a className="skip-link" href="#main-content">본문 바로가기</a>
+      <main
+        id="main-content"
+        className={`app-shell ${playing ? "app-shell--playing" : ""}${quickView ? " app-shell--quick" : ""}`}
+        tabIndex={-1}
+      >
+        <section className={`phone-frame ${playing ? "phone-frame--playing" : ""}${quickView ? " phone-frame--quick" : ""}`}>
+          {quickView ? (
+            <Suspense fallback={<ScreenLoadingFallback />}>
+              <QuickInvitation
+                nickname={profile?.nickname}
+                canReturnToGarden={profile !== null}
+                onOpenGarden={openGardenExperience}
+                weddingDayPreview={weddingDayPreview}
+              />
+            </Suspense>
+          ) : playing ? (
+            <Suspense fallback={<ScreenLoadingFallback />}>
+              <GameWorld
+                profile={profile}
+                weddingDayPreview={weddingDayPreview}
+                onOpenQuickView={openQuickInvitation}
+              />
+            </Suspense>
+          ) : (
+            <EntryScreen
+              onEnter={(nextProfile) => {
+                trackAnalyticsModeOpen("game");
+                setProfile(nextProfile);
+                setMode("garden");
+              }}
+              onEnterIntent={() => { void loadGameWorld(); }}
+              onQuickView={openQuickInvitation}
+              onQuickViewIntent={() => { void loadQuickInvitation(); }}
               weddingDayPreview={weddingDayPreview}
             />
-          </Suspense>
-        ) : playing ? (
-          <Suspense fallback={<ScreenLoadingFallback />}>
-            <GameWorld
-              profile={profile}
-              weddingDayPreview={weddingDayPreview}
-              onOpenQuickView={openQuickInvitation}
-            />
-          </Suspense>
-        ) : (
-          <EntryScreen
-            onEnter={(nextProfile) => {
-              trackAnalyticsModeOpen("game");
-              setProfile(nextProfile);
-              setMode("garden");
-            }}
-            onEnterIntent={() => { void loadGameWorld(); }}
-            onQuickView={openQuickInvitation}
-            onQuickViewIntent={() => { void loadQuickInvitation(); }}
-            weddingDayPreview={weddingDayPreview}
-          />
-        )}
-      </section>
-    </main>
+          )}
+        </section>
+      </main>
+    </>
   );
 }

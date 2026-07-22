@@ -52,7 +52,7 @@ export function EntryScreen({
   };
 
   return (
-    <section className="entry-screen">
+    <section className="entry-screen" aria-labelledby="entry-screen-title">
       <div className="entry-screen__ambient" aria-hidden="true">
         <span className="entry-screen__prism entry-screen__prism--one" />
         <span className="entry-screen__prism entry-screen__prism--two" />
@@ -63,7 +63,7 @@ export function EntryScreen({
       </div>
       <header className="entry-screen__header">
         <p>WEDDING GARDEN · {weddingYear}</p>
-        <h1>{formatCoupleNames(event, coupleOrder, " & ")}의 정원</h1>
+        <h1 id="entry-screen-title">{formatCoupleNames(event, coupleOrder, " & ")}의 정원</h1>
         <span>정원에 입장할 하객 캐릭터를 선택해주세요.</span>
       </header>
       <WeddingEventSummary
@@ -90,6 +90,9 @@ export function EntryScreen({
         <label className="field">
           <span>닉네임</span>
           <input
+            name="nickname"
+            autoComplete="nickname"
+            placeholder="예: 신부 친구…"
             value={nickname}
             maxLength={16}
             onFocus={onEnterIntent}

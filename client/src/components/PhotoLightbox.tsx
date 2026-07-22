@@ -2,6 +2,7 @@ import type { WeddingGalleryPhoto } from "@wedding-game/shared";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { useEffect, useRef, type PointerEvent as ReactPointerEvent } from "react";
 import { createPortal } from "react-dom";
+import { isolateAppForModal } from "../accessibility/modalIsolation";
 import { ResponsiveGalleryImage } from "./ResponsiveGalleryImage";
 
 type PhotoLightboxProps = {
@@ -61,6 +62,7 @@ export function PhotoLightbox({ photos, index, onIndexChange, onClose }: PhotoLi
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     closeButtonRef.current?.focus();
+    const restoreApp = isolateAppForModal();
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -120,6 +122,7 @@ export function PhotoLightbox({ photos, index, onIndexChange, onClose }: PhotoLi
     return () => {
       document.removeEventListener("keydown", handleKeyDown, true);
       document.body.style.overflow = previousOverflow;
+      restoreApp();
       if (previouslyFocused?.isConnected) {
         previouslyFocused.focus();
       }

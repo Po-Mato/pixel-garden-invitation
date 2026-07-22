@@ -1,5 +1,6 @@
-import { useEffect, useRef, type ReactNode } from "react";
+import { useEffect, useId, useRef, type ReactNode } from "react";
 import { createPortal } from "react-dom";
+import { isolateAppForModal } from "../accessibility/modalIsolation";
 
 type BottomSheetProps = {
   title: string;
@@ -23,6 +24,7 @@ function getFocusableElements(container: HTMLElement) {
 }
 
 export function BottomSheet({ title, onClose, children }: BottomSheetProps) {
+  const titleId = useId();
   const dialogRef = useRef<HTMLElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const onCloseRef = useRef(onClose);
@@ -33,8 +35,11 @@ export function BottomSheet({ title, onClose, children }: BottomSheetProps) {
 
   useEffect(() => {
     const previouslyFocused = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    const previousOverflow = document.body.style.overflow;
 
     closeButtonRef.current?.focus();
+    const restoreApp = isolateAppForModal();
+    document.body.style.overflow = "hidden";
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -86,7 +91,9 @@ export function BottomSheet({ title, onClose, children }: BottomSheetProps) {
 
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
-      previouslyFocused?.focus();
+      document.body.style.overflow = previousOverflow;
+      restoreApp();
+      if (previouslyFocused?.isConnected) previouslyFocused.focus();
     };
   }, []);
 
@@ -103,11 +110,11 @@ export function BottomSheet({ title, onClose, children }: BottomSheetProps) {
         className="bottom-sheet"
         role="dialog"
         aria-modal={true}
-        aria-label={title}
+        aria-labelledby={titleId}
         tabIndex={-1}
       >
         <header className="bottom-sheet__header">
-          <h2>{title}</h2>
+          <h2 id={titleId}>{title}</h2>
           <button ref={closeButtonRef} type="button" aria-label="닫기" onClick={onClose}>
             닫기
           </button>

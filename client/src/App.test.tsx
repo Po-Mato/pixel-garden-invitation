@@ -49,6 +49,14 @@ describe("App query routing", () => {
     window.history.replaceState({}, "", "/");
   });
 
+  it("공개 화면에서 키보드용 본문 건너뛰기 링크와 main 랜드마크를 제공한다", () => {
+    render(<App />);
+
+    expect(screen.getByRole("link", { name: "본문 바로가기" })).toHaveAttribute("href", "#main-content");
+    expect(screen.getByRole("main")).toHaveAttribute("id", "main-content");
+    expect(screen.getByRole("main")).toHaveAttribute("tabindex", "-1");
+  });
+
   it("renders only the RSVP admin page for the exact admin query", async () => {
     window.history.replaceState({}, "", "/?admin=rsvp");
     render(<App />);
