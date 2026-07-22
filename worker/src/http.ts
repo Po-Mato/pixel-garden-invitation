@@ -48,6 +48,7 @@ import {
   handleAdminGuestInformationRequest,
   handlePublicGuestInformationRequest
 } from "./guestInformationHttp";
+import { handleAdminInvitationReminderRequest } from "./invitationReminderHttp";
 import { markInvitationInviteLinkResponded } from "./invitationInviteLinkRepository";
 import type { GuestbookOwnedMessage, RsvpRecord } from "@wedding-game/shared";
 import type { Env } from "./index";
@@ -739,6 +740,11 @@ async function handleApiRequestWithoutCors(
       adminGuestInformationMatch[2] as "announcements" | "faqs" | undefined,
       adminGuestInformationMatch[3]
     );
+  }
+
+  const adminReminderMatch = url.pathname.match(/^\/api\/invitations\/([^/]+)\/admin\/reminders$/);
+  if (adminReminderMatch) {
+    return handleAdminInvitationReminderRequest(request, env, adminReminderMatch[1]);
   }
 
   const adminNotificationsMatch = url.pathname.match(/^\/api\/invitations\/([^/]+)\/admin\/notifications$/);

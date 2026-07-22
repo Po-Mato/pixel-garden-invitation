@@ -46,6 +46,9 @@ vi.mock("./components/InviteLinksAdminPage", () => ({
 vi.mock("./components/GuestInformationAdminPage", () => ({
   GuestInformationAdminPage: () => <div>하객 공지 FAQ 관리 화면</div>
 }));
+vi.mock("./components/ReminderAdminPage", () => ({
+  ReminderAdminPage: () => <div>하객 리마인드 재발송 화면</div>
+}));
 vi.mock("./components/QuickInvitation", () => ({
   QuickInvitation: ({ onOpenGarden }: { onOpenGarden: () => void }) => (
     <div>간편 초대장 화면<button type="button" onClick={onOpenGarden}>정원 열기</button></div>
@@ -126,6 +129,13 @@ describe("App query routing", () => {
     window.history.replaceState({}, "", "/?admin=guest-info");
     render(<App />);
     expect(await screen.findByText("하객 공지 FAQ 관리 화면")).toBeInTheDocument();
+    expect(screen.queryByText("일반 입장 화면")).not.toBeInTheDocument();
+  });
+
+  it("renders only the reminder page for its exact admin query", async () => {
+    window.history.replaceState({}, "", "/?admin=reminders");
+    render(<App />);
+    expect(await screen.findByText("하객 리마인드 재발송 화면")).toBeInTheDocument();
     expect(screen.queryByText("일반 입장 화면")).not.toBeInTheDocument();
   });
 

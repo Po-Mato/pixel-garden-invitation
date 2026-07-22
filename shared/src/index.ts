@@ -5,6 +5,7 @@ export * from "./invitationRelease";
 export * from "./invitationAnalytics";
 export * from "./invitationInviteLinks";
 export * from "./guestInformation";
+export * from "./invitationReminders";
 export * from "./adminNotifications";
 export * from "./guestbook";
 export * from "./weddingContent";

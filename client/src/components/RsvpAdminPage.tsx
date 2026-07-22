@@ -770,6 +770,7 @@ export function RsvpAdminPage() {
           </div>
           <div className="guestbook-admin-header-actions">
             <a className="rsvp-admin-nav-link" href="?admin=invites">초대 링크</a>
+            <a className="rsvp-admin-nav-link" href="?admin=reminders">리마인드</a>
             <a className="rsvp-admin-nav-link" href="?admin=guest-info">공지·FAQ</a>
             <a className="rsvp-admin-nav-link" href="?admin=analytics">방문 통계</a>
             <a className="rsvp-admin-nav-link" href="?admin=release">통합 공개</a>

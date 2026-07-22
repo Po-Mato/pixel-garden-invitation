@@ -526,6 +526,7 @@ export function InviteLinksAdminPage() {
           <div className="guestbook-admin-header-actions">
             <a className="rsvp-admin-nav-link" href="?admin=setup">일괄 입력</a>
             <a className="rsvp-admin-nav-link" href="?admin=rsvp">참석 답변</a>
+            <a className="rsvp-admin-nav-link" href="?admin=reminders">리마인드</a>
             <a className="rsvp-admin-nav-link" href="?admin=analytics">방문 통계</a>
             <button type="button" className="rsvp-admin-secondary" onClick={() => logout()}><LogOut aria-hidden="true" /> 로그아웃</button>
           </div>

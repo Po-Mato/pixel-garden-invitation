@@ -1,0 +1,465 @@
+.reminder-admin-page {
+  --reminder-ink: #26322b;
+  --reminder-green: #426651;
+  --reminder-green-soft: #e6eee8;
+  --reminder-blue: #536c91;
+  --reminder-blue-soft: #e8edf5;
+  --reminder-rose: #a5555b;
+  --reminder-rose-soft: #f5e7e8;
+  --reminder-amber: #a06b28;
+  --reminder-amber-soft: #f5ecdd;
+  color: var(--reminder-ink);
+  background: #edf1ed;
+}
+
+.reminder-admin-header > div:first-child > span {
+  display: block;
+  max-width: 680px;
+  margin-top: 6px;
+  color: #657169;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.reminder-admin-overview,
+.reminder-admin-schedule,
+.reminder-admin-queue,
+.reminder-admin-history {
+  margin-top: 18px;
+  border: 1px solid #cbd4cc;
+  border-radius: 6px;
+  background: #f9fbf9;
+}
+
+.reminder-admin-section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 20px;
+  border-bottom: 1px solid #d4dbd5;
+}
+
+.reminder-admin-section-heading h2,
+.reminder-admin-dialog h2 {
+  margin: 2px 0 0;
+  font-size: 21px;
+  line-height: 1.2;
+  letter-spacing: 0;
+}
+
+.reminder-admin-section-heading > span {
+  color: #667169;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.reminder-admin-overview dl {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  margin: 0;
+  padding: 16px 20px 20px;
+  gap: 8px;
+}
+
+.reminder-admin-overview dl > div {
+  display: grid;
+  grid-template-columns: 26px 1fr;
+  grid-template-rows: auto auto;
+  min-height: 90px;
+  padding: 14px;
+  border: 1px solid #d4dbd5;
+  border-top: 3px solid var(--reminder-green);
+  background: #fff;
+}
+
+.reminder-admin-overview dl > div:nth-child(2) { border-top-color: var(--reminder-rose); }
+.reminder-admin-overview dl > div:nth-child(3) { border-top-color: var(--reminder-blue); }
+.reminder-admin-overview dl > div:nth-child(4) { border-top-color: var(--reminder-amber); }
+
+.reminder-admin-overview svg {
+  grid-row: 1 / 3;
+  width: 19px;
+  height: 19px;
+  color: var(--reminder-green);
+}
+
+.reminder-admin-overview dt {
+  color: #68736b;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.reminder-admin-overview dd {
+  margin: 7px 0 0;
+  overflow-wrap: anywhere;
+  font-size: 24px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.reminder-admin-overview dl > div:last-child dd {
+  font-size: 15px;
+  line-height: 1.25;
+}
+
+.reminder-admin-schedule-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
+  padding: 18px 20px 20px;
+}
+
+.reminder-admin-schedule-grid button {
+  display: flex;
+  min-height: 170px;
+  padding: 15px;
+  flex-direction: column;
+  align-items: flex-start;
+  border: 1px solid #cbd4cc;
+  border-radius: 5px;
+  color: var(--reminder-ink);
+  text-align: left;
+  background: #fff;
+}
+
+.reminder-admin-schedule-grid button:hover,
+.reminder-admin-schedule-grid button.is-selected {
+  border-color: var(--reminder-green);
+  box-shadow: inset 0 0 0 1px var(--reminder-green);
+}
+
+.reminder-admin-schedule-grid button.is-selected {
+  background: var(--reminder-green-soft);
+}
+
+.reminder-admin-schedule-grid button > span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--reminder-green);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.reminder-admin-schedule-grid button svg {
+  width: 16px;
+  height: 16px;
+}
+
+.reminder-admin-schedule-grid button strong {
+  margin-top: 12px;
+  font-size: 18px;
+}
+
+.reminder-admin-schedule-grid button p {
+  margin: 8px 0 14px;
+  color: #606d64;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.reminder-admin-schedule-grid button small {
+  margin-top: auto;
+  color: #4e5d52;
+  font-weight: 800;
+}
+
+.reminder-admin-toolbar {
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) 140px 160px auto;
+  gap: 8px;
+  padding: 14px 20px;
+  border-bottom: 1px solid #d4dbd5;
+  background: #f1f5f1;
+}
+
+.reminder-admin-toolbar > label {
+  display: flex;
+  align-items: center;
+  border: 1px solid #bfc9c1;
+  border-radius: 4px;
+  background: #fff;
+}
+
+.reminder-admin-toolbar > label svg {
+  width: 17px;
+  margin-left: 10px;
+  color: #657169;
+}
+
+.reminder-admin-toolbar input,
+.reminder-admin-toolbar select,
+.reminder-admin-history select {
+  width: 100%;
+  min-height: 42px;
+  border: 1px solid #bfc9c1;
+  border-radius: 4px;
+  color: var(--reminder-ink);
+  background: #fff;
+}
+
+.reminder-admin-toolbar > label input {
+  border: 0;
+}
+
+.reminder-admin-toolbar > div {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.reminder-admin-toolbar > div button {
+  min-width: 62px;
+  border-radius: 0;
+  border-color: #bfc9c1;
+  color: #536057;
+  background: #fff;
+}
+
+.reminder-admin-toolbar > div button:first-child { border-radius: 4px 0 0 4px; }
+.reminder-admin-toolbar > div button:last-child { border-radius: 0 4px 4px 0; }
+.reminder-admin-toolbar > div button[aria-pressed="true"] {
+  color: #fff;
+  background: var(--reminder-green);
+}
+
+.reminder-admin-selection {
+  display: flex;
+  min-height: 58px;
+  padding: 10px 20px;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid #d4dbd5;
+  background: #e8efea;
+}
+
+.reminder-admin-selection label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+}
+
+.reminder-admin-selection strong {
+  margin-right: auto;
+  color: var(--reminder-green);
+  font-size: 13px;
+}
+
+.reminder-admin-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.reminder-admin-list > li {
+  display: grid;
+  grid-template-columns: 28px minmax(230px, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  min-height: 104px;
+  padding: 16px 20px;
+  border-bottom: 1px solid #dde2dd;
+  background: #fff;
+}
+
+.reminder-admin-list > li:last-child { border-bottom: 0; }
+.reminder-admin-list > li.is-completed { background: #f3f6f3; }
+.reminder-admin-list > li.is-completed .reminder-admin-person { opacity: .72; }
+
+.reminder-admin-row-select {
+  display: grid;
+  width: 28px;
+  height: 42px;
+  place-items: center;
+}
+
+.reminder-admin-person {
+  min-width: 0;
+}
+
+.reminder-admin-person > strong {
+  display: block;
+  margin-top: 7px;
+  font-size: 17px;
+}
+
+.reminder-admin-person p,
+.reminder-admin-person small {
+  display: block;
+  margin: 4px 0 0;
+  color: #69736c;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.reminder-admin-status {
+  display: inline-flex;
+  padding: 3px 7px;
+  border-radius: 3px;
+  color: #4f617c;
+  font-size: 11px;
+  font-weight: 800;
+  background: var(--reminder-blue-soft);
+}
+
+.reminder-admin-status--unsent,
+.reminder-admin-status--unopened { color: #85591e; background: var(--reminder-amber-soft); }
+.reminder-admin-status--unresponded,
+.reminder-admin-status--unsure { color: #8e4248; background: var(--reminder-rose-soft); }
+.reminder-admin-status--attending,
+.reminder-admin-status--sent,
+.reminder-admin-status--resolved { color: #345841; background: var(--reminder-green-soft); }
+
+.reminder-admin-row-actions {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.reminder-admin-row-actions button,
+.reminder-admin-selection button {
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.reminder-admin-row-actions svg,
+.reminder-admin-selection svg {
+  width: 17px;
+  height: 17px;
+}
+
+.reminder-admin-icon-button {
+  width: 42px;
+  min-width: 42px;
+  min-height: 42px;
+  padding: 0;
+}
+
+.reminder-admin-history ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.reminder-admin-history ol > li {
+  display: grid;
+  grid-template-columns: 28px minmax(180px, 1fr) minmax(180px, 1fr) 150px;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 20px;
+  border-bottom: 1px solid #dde2dd;
+  background: #fff;
+}
+
+.reminder-admin-history ol > li:last-child { border-bottom: 0; }
+.reminder-admin-history ol svg { width: 18px; color: var(--reminder-blue); }
+.reminder-admin-history ol strong,
+.reminder-admin-history ol span { display: block; }
+.reminder-admin-history ol span,
+.reminder-admin-history time { margin-top: 3px; color: #68736b; font-size: 12px; }
+
+.reminder-admin-dialog {
+  width: min(520px, calc(100vw - 28px));
+}
+
+.reminder-admin-dialog > header,
+.reminder-admin-qr > header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.reminder-admin-dialog form {
+  display: grid;
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.reminder-admin-dialog form > p {
+  margin: 0;
+  color: #59665d;
+  line-height: 1.6;
+}
+
+.reminder-admin-dialog form label {
+  display: grid;
+  gap: 6px;
+}
+
+.reminder-admin-dialog form label > span {
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.reminder-admin-dialog form select,
+.reminder-admin-dialog form textarea {
+  width: 100%;
+  border: 1px solid #bfc9c1;
+  border-radius: 4px;
+  background: #fff;
+}
+
+.reminder-admin-dialog form > div,
+.reminder-admin-qr > div:last-child {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.reminder-admin-qr {
+  width: min(430px, calc(100vw - 28px));
+  text-align: center;
+}
+
+.reminder-admin-qr img {
+  width: min(260px, 75vw);
+  margin: 18px auto 10px;
+  border: 1px solid #d1d8d2;
+}
+
+.reminder-admin-qr p {
+  color: #647068;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+@media (max-width: 980px) {
+  .reminder-admin-overview dl,
+  .reminder-admin-schedule-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .reminder-admin-schedule-grid button:last-child { grid-column: 1 / -1; min-height: 130px; }
+  .reminder-admin-toolbar { grid-template-columns: 1fr 1fr; }
+  .reminder-admin-toolbar > div { grid-column: 1 / -1; }
+  .reminder-admin-list > li { grid-template-columns: 28px 1fr; }
+  .reminder-admin-row-actions { grid-column: 2; justify-content: flex-start; }
+}
+
+@media (max-width: 640px) {
+  .reminder-admin-header > div:first-child > span { font-size: 13px; }
+  .reminder-admin-section-heading { padding: 15px 14px; align-items: flex-start; }
+  .reminder-admin-section-heading h2 { font-size: 19px; }
+  .reminder-admin-overview dl,
+  .reminder-admin-schedule-grid { grid-template-columns: 1fr; padding: 12px 14px 14px; }
+  .reminder-admin-overview dl > div { min-height: 76px; }
+  .reminder-admin-schedule-grid button,
+  .reminder-admin-schedule-grid button:last-child { grid-column: auto; min-height: 146px; }
+  .reminder-admin-toolbar { grid-template-columns: 1fr; padding: 12px 14px; }
+  .reminder-admin-toolbar > div { grid-column: auto; }
+  .reminder-admin-selection { align-items: stretch; padding: 12px 14px; flex-wrap: wrap; }
+  .reminder-admin-selection strong { flex: 1; text-align: right; }
+  .reminder-admin-selection button { flex: 1 1 calc(50% - 5px); }
+  .reminder-admin-list > li { grid-template-columns: 26px 1fr; padding: 15px 14px; }
+  .reminder-admin-row-actions { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .reminder-admin-row-actions button { width: 100%; min-width: 0; padding-inline: 8px; }
+  .reminder-admin-row-actions .reminder-admin-icon-button { width: 100%; }
+  .reminder-admin-history ol > li { grid-template-columns: 24px 1fr; padding: 14px; }
+  .reminder-admin-history ol > li > div:nth-of-type(2),
+  .reminder-admin-history ol > li > time { grid-column: 2; }
+  .reminder-admin-dialog form > div,
+  .reminder-admin-qr > div:last-child { display: grid; grid-template-columns: 1fr 1fr; }
+}
