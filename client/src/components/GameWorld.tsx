@@ -14,6 +14,7 @@ import {
   type SpotId,
   type WorldZoneId
 } from "@wedding-game/shared";
+import { shouldReduceMotion } from "../accessibility/viewPreferences";
 import { computeCameraTransform, screenToWorld, type ViewportSize } from "../game/camera";
 import { computeNextGridPosition, directionFromVector, directionTowardPoint, snapToGrid } from "../game/movement";
 import { findNearestPortalRoute, findTilePath } from "../game/pathfinding";
@@ -42,6 +43,7 @@ import { GiftAccountSheet } from "./GiftAccountSheet";
 import { InvitationShareAccess } from "./InvitationShareAccess";
 import { SpotModal } from "./SpotModal";
 import { VirtualJoystick } from "./VirtualJoystick";
+import { ViewSettingsAccess } from "./ViewSettingsAccess";
 import { WeddingEventSummary } from "./WeddingEventSummary";
 import { WeddingDayQuickAccess } from "./WeddingDayQuickAccess";
 import { WeddingNpc } from "./WeddingNpc";
@@ -71,9 +73,6 @@ const portalFadeInMs = 300;
 const defaultViewport: ViewportSize = { width: 390, height: 520 };
 const samePoint = (first: Point, second: Point) => first.x === second.x && first.y === second.y;
 const hasJoystickMovement = (vector: Point) => Math.hypot(vector.x, vector.y) > joystickDeadZone;
-const prefersReducedMotion = () => (
-  typeof window.matchMedia === "function" && window.matchMedia("(prefers-reduced-motion: reduce)").matches
-);
 const pixelRect = (rect: { x: number; y: number; width: number; height: number }) => ({
   left: rect.x,
   top: rect.y,
@@ -134,6 +133,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   const [familyContactSheetOpen, setFamilyContactSheetOpen] = useState(false);
   const [weddingDaySheetOpen, setWeddingDaySheetOpen] = useState(false);
   const [shareSheetOpen, setShareSheetOpen] = useState(false);
+  const [viewSettingsOpen, setViewSettingsOpen] = useState(false);
   const [travelStatus, setTravelStatus] = useState("우리 집에서 여정을 시작해요");
   const [viewport, setViewport] = useState<ViewportSize>(defaultViewport);
   const [remoteGuests, setRemoteGuests] = useState<RoomGuest[]>([]);
@@ -144,7 +144,8 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     || giftAccountSheetOpen
     || familyContactSheetOpen
     || weddingDaySheetOpen
-    || shareSheetOpen;
+    || shareSheetOpen
+    || viewSettingsOpen;
 
   const mapViewportRef = useRef<HTMLDivElement | null>(null);
   const menuButtonRef = useRef<HTMLButtonElement | null>(null);
@@ -196,6 +197,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     setFamilyContactSheetOpen(false);
     setWeddingDaySheetOpen(false);
     setShareSheetOpen(false);
+    setViewSettingsOpen(false);
     setMenuOpen(false);
   }, []);
 
@@ -390,7 +392,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     }, portalTransition.phase === "arrival"
       ? portalArrivalDelayMs
       : portalTransition.phase === "fade-out"
-        ? prefersReducedMotion() ? portalFadeOutMs : portalFadeOutFallbackMs
+        ? shouldReduceMotion() ? portalFadeOutMs : portalFadeOutFallbackMs
         : portalFadeInMs);
 
     return () => window.clearTimeout(timer);
@@ -426,6 +428,11 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   const handleShareSheetOpenChange = useCallback((open: boolean) => {
     if (open) pauseWorldInput();
     setShareSheetOpen(open);
+  }, [pauseWorldInput]);
+
+  const handleViewSettingsOpenChange = useCallback((open: boolean) => {
+    if (open) pauseWorldInput();
+    setViewSettingsOpen(open);
   }, [pauseWorldInput]);
 
   const openFamilyContacts = useCallback(() => {
@@ -1045,6 +1052,10 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
               <InvitationShareAccess
                 variant="menu"
                 onOpenChange={handleShareSheetOpenChange}
+              />
+              <ViewSettingsAccess
+                variant="menu"
+                onOpenChange={handleViewSettingsOpenChange}
               />
             </div>
           </section>

@@ -1057,6 +1057,24 @@ describe("GameWorld", () => {
     expect(player).toHaveStyle(initialPosition);
   });
 
+  it("초대장 메뉴에서 보기 설정을 열면 월드 입력을 중지한다", () => {
+    render(<GameWorld profile={profile} />);
+    const player = screen.getByLabelText("하객1");
+    const initialPosition = { left: player.style.left, top: player.style.top };
+
+    fireEvent.click(screen.getByRole("button", { name: "초대장 메뉴" }));
+    const menu = screen.getByRole("dialog", { name: "초대장 바로가기" });
+    fireEvent.click(within(menu).getByRole("button", { name: "보기 설정" }));
+
+    expect(screen.getByRole("dialog", { name: "보기 설정" })).toBeInTheDocument();
+    expect(menu).toHaveAttribute("aria-hidden", "true");
+    expect(player).toHaveStyle(initialPosition);
+
+    fireEvent.click(screen.getByRole("button", { name: "닫기" }));
+    expect(menu).not.toHaveAttribute("aria-hidden");
+    expect(player).toHaveStyle(initialPosition);
+  });
+
   it("does not change zones until the player reaches the clicked portal", () => {
     render(<GameWorld profile={profile} />);
     fireEvent.click(screen.getByRole("button", { name: "동네로 나가기" }));

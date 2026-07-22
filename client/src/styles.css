@@ -197,6 +197,13 @@ select {
   pointer-events: none;
 }
 
+.entry-screen__view-settings {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  z-index: 5;
+}
+
 .entry-screen__prism {
   position: absolute;
   width: 5px;
@@ -5849,8 +5856,15 @@ select {
   backdrop-filter: blur(10px);
 }
 
+.quick-invitation__topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
 .quick-invitation__topbar > button,
-.quick-invitation__topbar .invitation-share-trigger {
+.quick-invitation__topbar .invitation-share-trigger,
+.quick-invitation__topbar .view-settings-trigger {
   display: inline-flex;
   min-height: 36px;
   align-items: center;
@@ -5971,6 +5985,206 @@ select {
 .quick-invitation__topbar button:focus-visible {
   outline: 2px solid #a85f6d;
   outline-offset: 2px;
+}
+
+.view-settings-trigger--icon {
+  display: inline-grid;
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  min-height: 36px;
+  place-items: center;
+  border: 2px solid #65535e;
+  border-radius: 0;
+  padding: 0;
+  background: #fffaf0;
+  color: #4d4148;
+  box-shadow: inset 0 0 0 1px #f0dba9, 2px 2px 0 rgba(64, 54, 51, 0.34);
+}
+
+.view-settings-trigger--icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.view-settings-trigger--icon:focus-visible {
+  outline: 2px solid #fff8cf;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px #8b8190, 2px 2px 0 rgba(64, 54, 51, 0.34);
+}
+
+.view-settings-trigger--menu {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+}
+
+.view-settings-trigger--menu svg {
+  width: 17px;
+  height: 17px;
+}
+
+.view-settings-sheet {
+  display: grid;
+  gap: 18px;
+  color: var(--ink);
+}
+
+.view-settings-sheet > section {
+  display: grid;
+  gap: 10px;
+}
+
+.view-settings-sheet header,
+.view-settings-sheet__switch > span:first-child {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.view-settings-sheet header svg,
+.view-settings-sheet__switch svg {
+  width: 20px;
+  height: 20px;
+  color: #9a5965;
+}
+
+.view-settings-sheet__segments {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  border: 2px solid #77656d;
+  background: #f1eee7;
+}
+
+.view-settings-sheet__segments button {
+  min-height: 46px;
+  border: 0;
+  border-right: 1px solid #a99aa0;
+  background: transparent;
+  color: #62565b;
+  font-weight: 900;
+}
+
+.view-settings-sheet__segments button:last-child {
+  border-right: 0;
+}
+
+.view-settings-sheet__segments button[aria-pressed="true"] {
+  background: #5f796e;
+  color: #fffdf5;
+  box-shadow: inset 0 0 0 2px #dce8d8;
+}
+
+.view-settings-sheet__switch {
+  position: relative;
+  display: flex;
+  min-height: 52px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-top: 1px solid #d6cec4;
+  padding-top: 16px;
+  cursor: pointer;
+}
+
+.view-settings-sheet__switch input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.view-settings-sheet__switch-track {
+  position: relative;
+  flex: 0 0 auto;
+  width: 48px;
+  height: 28px;
+  border: 2px solid #74636a;
+  background: #d5d1ca;
+  box-shadow: inset 0 0 0 2px #f6f2e9;
+}
+
+.view-settings-sheet__switch-track::after {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 16px;
+  height: 16px;
+  background: #665961;
+  content: "";
+  transition: transform 160ms ease, background 160ms ease;
+}
+
+.view-settings-sheet__switch input:checked + .view-settings-sheet__switch-track {
+  background: #b8cfbd;
+}
+
+.view-settings-sheet__switch input:checked + .view-settings-sheet__switch-track::after {
+  background: #456d5a;
+  transform: translateX(20px);
+}
+
+.view-settings-sheet__switch input:focus-visible + .view-settings-sheet__switch-track {
+  outline: 2px solid #a04f5f;
+  outline-offset: 3px;
+}
+
+html[data-text-scale="large"] {
+  -webkit-text-size-adjust: 118%;
+  text-size-adjust: 118%;
+}
+
+html[data-text-scale="large"] .quick-invitation :is(p, li, a, button, label, input, textarea, select, dt, dd, time) {
+  font-size: max(14px, 1em);
+}
+
+html[data-text-scale="large"] .quick-invitation :is(span, small, strong) {
+  font-size: max(12px, 1em);
+}
+
+html[data-text-scale="large"] .bottom-sheet__body :is(p, li, a, button, label, input, textarea, select, dt, dd, time, span, strong) {
+  font-size: max(14px, 1em);
+}
+
+html[data-text-scale="large"] .entry-screen :is(button, label, input) {
+  font-size: max(12px, 1em);
+}
+
+html[data-text-scale="large"] .entry-screen__header :is(p, span) {
+  font-size: 11px;
+}
+
+html[data-text-scale="large"] .world-menu-grid button {
+  font-size: 12px;
+}
+
+html[data-reduce-motion="true"] .photo-lightbox,
+html[data-reduce-motion="true"] .photo-lightbox * {
+  transition: none !important;
+}
+
+html[data-reduce-motion="true"] .world-portal-transition,
+html[data-reduce-motion="true"] .quick-invitation {
+  scroll-behavior: auto;
+  transition: none;
+}
+
+html[data-reduce-motion="true"] .entry-screen__prism,
+html[data-reduce-motion="true"] .entry-screen__petals,
+html[data-reduce-motion="true"] .customizer-option--selected,
+html[data-reduce-motion="true"] .character-sprite--idle-front .character-layer--base,
+html[data-reduce-motion="true"] .wedding-npc__sprite,
+html[data-reduce-motion="true"] .world-minimap__portal--target,
+html[data-reduce-motion="true"] .player--remote {
+  animation: none;
+  transition: none;
+}
+
+html[data-reduce-motion="true"] .world-map-effect,
+html[data-reduce-motion="true"] .world-portal__tile,
+html[data-reduce-motion="true"] .world-portal__tile::after {
+  animation: none !important;
 }
 
 .quick-band {

@@ -10,6 +10,7 @@ import { useCoupleOrder } from "../invitation/CoupleOrderContext";
 import { formatCoupleNames } from "../invitation/coupleOrder";
 import { CharacterCustomizer } from "./CharacterCustomizer";
 import { FamilyContactSheet } from "./FamilyContactSheet";
+import { ViewSettingsAccess } from "./ViewSettingsAccess";
 import { WeddingEventSummary } from "./WeddingEventSummary";
 
 export type EntryProfile = {
@@ -56,6 +57,9 @@ export function EntryScreen({
         <span className="entry-screen__prism entry-screen__prism--one" />
         <span className="entry-screen__prism entry-screen__prism--two" />
         <span className="entry-screen__petals" />
+      </div>
+      <div className="entry-screen__view-settings">
+        <ViewSettingsAccess variant="icon" />
       </div>
       <header className="entry-screen__header">
         <p>WEDDING GARDEN · {weddingYear}</p>

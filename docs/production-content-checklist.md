@@ -95,6 +95,15 @@
 - 참석 답변 마감 2027년 4월 24일
 - RSVP와 방명록 데이터 삭제 2027년 5월 31일
 
+## 9. 운영 연동 TODO
+
+- [ ] Cloudflare API 토큰 준비: `Account / Turnstile / Edit`, `Account / Workers Scripts / Edit`
+- [ ] RSVP·방명록 Turnstile 운영 위젯과 검증 Worker 생성
+- [ ] GitHub 변수 `VITE_TURNSTILE_SITE_KEY` 등록 후 Worker·Pages 배포
+- [ ] 관리자 이메일용 발신 도메인 준비 및 `normalgom@naver.com` 수신 연동
+
+Turnstile용 비밀키와 Cloudflare API 토큰은 이 문서나 저장소에 기록하지 않습니다.
+
 ## 일괄 전달 양식
 
 ```text

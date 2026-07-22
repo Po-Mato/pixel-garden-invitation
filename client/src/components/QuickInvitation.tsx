@@ -11,6 +11,7 @@ import {
   UsersRound
 } from "lucide-react";
 import { invitationContent } from "@wedding-game/shared";
+import { shouldReduceMotion } from "../accessibility/viewPreferences";
 import { formatEventDate, formatEventStartTime } from "../invitation/calendarEvent";
 import { useCoupleOrder } from "../invitation/CoupleOrderContext";
 import { formatCoupleNames } from "../invitation/coupleOrder";
@@ -22,6 +23,7 @@ import { GuestbookExperience } from "./GuestbookExperience";
 import { InvitationShareAccess } from "./InvitationShareAccess";
 import { ResponsiveGalleryImage } from "./ResponsiveGalleryImage";
 import { RsvpPanel } from "./RsvpPanel";
+import { ViewSettingsAccess } from "./ViewSettingsAccess";
 import { WeddingEventSummary } from "./WeddingEventSummary";
 import { WeddingGallery } from "./WeddingGallery";
 import { WeddingStoryTimeline } from "./WeddingStoryTimeline";
@@ -59,7 +61,10 @@ function SectionHeading({ eyebrow, title, body }: SectionHeadingProps) {
 }
 
 function scrollToSection(id: string) {
-  document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  document.getElementById(id)?.scrollIntoView({
+    behavior: shouldReduceMotion() ? "auto" : "smooth",
+    block: "start"
+  });
 }
 
 export function QuickInvitation({
@@ -87,7 +92,10 @@ export function QuickInvitation({
           <ArrowLeft aria-hidden="true" />
           {canReturnToGarden ? "정원으로 돌아가기" : "캐릭터 정원"}
         </button>
-        <InvitationShareAccess variant="icon" />
+        <div className="quick-invitation__topbar-actions">
+          <ViewSettingsAccess variant="icon" />
+          <InvitationShareAccess variant="icon" />
+        </div>
       </header>
 
       <section className="quick-hero" id="top" aria-label={`${names} 결혼식 초대`}>
