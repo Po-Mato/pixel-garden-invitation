@@ -23,6 +23,7 @@ import {
   getWeddingDayStatus
 } from "../invitation/weddingDay";
 import { BottomSheet } from "./BottomSheet";
+import { trackInvitationAnalytics } from "../analytics/invitationAnalytics";
 
 type WeddingDayQuickAccessProps = {
   variant: "summary" | "world";
@@ -58,9 +59,9 @@ export function WeddingDayQuickAccess({
 
   const links = buildDirectionsLinks(event.venue);
   const mapLinks = [
-    ["네이버지도", links.naver],
-    ["카카오맵", links.kakao],
-    ["Google 지도", links.google]
+    ["네이버지도", links.naver, "naver"],
+    ["카카오맵", links.kakao, "kakao"],
+    ["Google 지도", links.google, "google"]
   ] as const;
   const hasFamilyContacts = event.familyContacts.contacts.some((contact) => contact.phone.trim());
 
@@ -119,8 +120,14 @@ export function WeddingDayQuickAccess({
             </section>
 
             <div className="wedding-day-sheet__maps" aria-label="지도 앱 선택">
-              {mapLinks.map(([label, href]) => href ? (
-                <a key={label} href={href} target="_blank" rel="noopener noreferrer">
+              {mapLinks.map(([label, href, provider]) => href ? (
+                <a
+                  key={label}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => trackInvitationAnalytics("map_click", provider)}
+                >
                   {label === "네이버지도" ? <Navigation aria-hidden="true" /> : <ExternalLink aria-hidden="true" />}
                   {label}
                 </a>
@@ -138,7 +145,11 @@ export function WeddingDayQuickAccess({
 
             <div className="wedding-day-sheet__actions">
               {links.telephone ? (
-                <a href={links.telephone} aria-label={`${event.venue.name}에 전화하기`}>
+                <a
+                  href={links.telephone}
+                  aria-label={`${event.venue.name}에 전화하기`}
+                  onClick={() => trackInvitationAnalytics("call_click", "venue")}
+                >
                   <Phone aria-hidden="true" />
                   예식장 전화
                 </a>

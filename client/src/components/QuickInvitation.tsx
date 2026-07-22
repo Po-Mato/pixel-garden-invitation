@@ -27,6 +27,7 @@ import { ViewSettingsAccess } from "./ViewSettingsAccess";
 import { WeddingEventSummary } from "./WeddingEventSummary";
 import { WeddingGallery } from "./WeddingGallery";
 import { WeddingStoryTimeline } from "./WeddingStoryTimeline";
+import { observeAnalyticsSections } from "../analytics/invitationAnalytics";
 
 type QuickInvitationProps = {
   nickname?: string;
@@ -84,6 +85,13 @@ export function QuickInvitation({
     const frame = window.requestAnimationFrame(() => scrollToSection(id));
     return () => window.cancelAnimationFrame(frame);
   }, []);
+
+  useEffect(() => observeAnalyticsSections([
+    { id: "gallery", event: "gallery_view" },
+    { id: "directions", event: "directions_view" },
+    { id: "rsvp", event: "rsvp_view" },
+    { id: "guestbook", event: "guestbook_view" }
+  ]), []);
 
   return (
     <article className="quick-invitation">

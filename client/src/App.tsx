@@ -5,6 +5,7 @@ import { usePublishedInvitationContent } from "./invitation/PublishedInvitationC
 import { formatCoupleNames, formatWeddingTitle } from "./invitation/coupleOrder";
 import { preloadImage } from "./performance/imagePreloader";
 import { resolveInvitationShareText } from "./invitation/shareInvitation";
+import { setAnalyticsContext, trackAnalyticsModeOpen } from "./analytics/invitationAnalytics";
 
 const homeMapUrl = `${import.meta.env.BASE_URL}assets/maps/v2/home/background.webp`;
 const quickCoverUrl = `${import.meta.env.BASE_URL}images/wedding-gallery/01-cover-640.webp`;
@@ -47,6 +48,8 @@ const GalleryAdminPage = lazy(() => import("./components/GalleryAdminPage")
   .then((module) => ({ default: module.GalleryAdminPage })));
 const ReleaseAdminPage = lazy(() => import("./components/ReleaseAdminPage")
   .then((module) => ({ default: module.ReleaseAdminPage })));
+const AnalyticsAdminPage = lazy(() => import("./components/AnalyticsAdminPage")
+  .then((module) => ({ default: module.AnalyticsAdminPage })));
 
 function ScreenLoadingFallback() {
   return <div className="screen-loading" role="status">화면을 준비하고 있어요</div>;
@@ -92,6 +95,7 @@ export function App() {
 
   const openQuickInvitation = useCallback(() => {
     void loadQuickInvitation();
+    trackAnalyticsModeOpen("simple");
     setMode("invitation");
     if (new URLSearchParams(window.location.search).get("view") !== "invitation") {
       setInvitationUrl(true);
@@ -99,6 +103,8 @@ export function App() {
   }, [setInvitationUrl]);
 
   const openGardenExperience = useCallback(() => {
+    if (profile) trackAnalyticsModeOpen("game");
+    else setAnalyticsContext("entry");
     setMode(profile ? "garden" : "entry");
     if (new URLSearchParams(window.location.search).has("view")) setInvitationUrl(false);
   }, [profile, setInvitationUrl]);
@@ -133,6 +139,9 @@ export function App() {
   if (adminPage === "release") {
     return <Suspense fallback={<ScreenLoadingFallback />}><ReleaseAdminPage /></Suspense>;
   }
+  if (adminPage === "analytics") {
+    return <Suspense fallback={<ScreenLoadingFallback />}><AnalyticsAdminPage /></Suspense>;
+  }
 
   const playing = mode === "garden" && profile !== null;
   const quickView = mode === "invitation";
@@ -160,6 +169,7 @@ export function App() {
         ) : (
           <EntryScreen
             onEnter={(nextProfile) => {
+              trackAnalyticsModeOpen("game");
               setProfile(nextProfile);
               setMode("garden");
             }}

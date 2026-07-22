@@ -5,6 +5,7 @@ import { copyText, downloadIcs } from "../invitation/browserActions";
 import { useCoupleOrder } from "../invitation/CoupleOrderContext";
 import { buildEventCopyText, buildGoogleCalendarUrl, buildIcs } from "../invitation/calendarEvent";
 import { BottomSheet } from "./BottomSheet";
+import { trackInvitationAnalytics } from "../analytics/invitationAnalytics";
 
 type CalendarSaveSheetProps = {
   onClose: () => void;
@@ -27,6 +28,7 @@ export function CalendarSaveSheet({ onClose }: CalendarSaveSheetProps) {
     try {
       await copyText(eventText);
       setStatus("copied");
+      trackInvitationAnalytics("calendar_click", "copy");
     } catch {
       setStatus("copy-error");
     }
@@ -39,6 +41,7 @@ export function CalendarSaveSheet({ onClose }: CalendarSaveSheetProps) {
 
     try {
       downloadIcs(buildIcs(event, new Date(), coupleOrder));
+      trackInvitationAnalytics("calendar_click", "ics");
       setStatus("idle");
     } catch {
       setStatus("download-error");
@@ -57,6 +60,7 @@ export function CalendarSaveSheet({ onClose }: CalendarSaveSheetProps) {
           target="_blank"
           rel="noreferrer"
           aria-label="Google 캘린더에서 열기"
+          onClick={() => trackInvitationAnalytics("calendar_click", "google")}
         >
           <ExternalLink aria-hidden="true" />
           <span>Google 캘린더</span>

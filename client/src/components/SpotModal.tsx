@@ -5,6 +5,8 @@ import { GuestbookExperience } from "./GuestbookExperience";
 import { RsvpPanel } from "./RsvpPanel";
 import { WeddingGallery } from "./WeddingGallery";
 import { WeddingStoryTimeline } from "./WeddingStoryTimeline";
+import { useEffect } from "react";
+import { trackAnalyticsContextEvent } from "../analytics/invitationAnalytics";
 
 type SpotModalProps = {
   spotId: SpotId;
@@ -14,6 +16,13 @@ type SpotModalProps = {
 
 export function SpotModal({ spotId, nickname, onClose }: SpotModalProps) {
   const spot = invitationContent.spots.find((item) => item.id === spotId);
+
+  useEffect(() => {
+    if (spotId === "gallery") trackAnalyticsContextEvent("gallery_view");
+    if (spotId === "rsvp") trackAnalyticsContextEvent("rsvp_view");
+    if (spotId === "guestbook") trackAnalyticsContextEvent("guestbook_view");
+  }, [spotId]);
+
   if (!spot) return null;
 
   return (

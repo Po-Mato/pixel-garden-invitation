@@ -3,6 +3,7 @@ import { invitationContent, type RsvpCreateResult, type RsvpRecord, type RsvpSub
 import { createRsvp, fetchOwnedRsvp, updateOwnedRsvp, WeddingApiError, type RsvpCredential } from "../api/weddingApi";
 import { clearRsvpCredential, loadRsvpCredential, saveRsvpCredential } from "../invitation/rsvpStorage";
 import { RsvpForm, type RsvpFormInitialValue } from "./RsvpForm";
+import { trackAnalyticsContextEvent } from "../analytics/invitationAnalytics";
 
 type PanelState =
   | { kind: "loading" }
@@ -76,6 +77,7 @@ export function RsvpPanel() {
   const pendingAtRender = pendingCreates.get(id);
   const mountedRef = useRef(true);
   const initialLoadStartedRef = useRef(false);
+  const startTrackedRef = useRef(false);
   const [state, setState] = useState<PanelState>(
     pendingAtRender ? { kind: "saving" } : credentialRef.current ? { kind: "loading" } : { kind: "new" }
   );
@@ -140,6 +142,7 @@ export function RsvpPanel() {
   async function handleCreate(payload: RsvpSubmission) {
     try {
       applyCreated(await createOnce(id, payload));
+      trackAnalyticsContextEvent("rsvp_submit");
     } catch (error) {
       throw apiMessage(error, "답변을 보내지 못했습니다. 입력 내용을 확인하고 다시 시도해 주세요.");
     }
@@ -189,8 +192,21 @@ export function RsvpPanel() {
     setState({ kind: "new" });
   }
 
+  function trackFormStart(event: React.SyntheticEvent<HTMLDivElement>) {
+    if (state.kind !== "new" || startTrackedRef.current) return;
+    if (!(event.target instanceof Element) || !event.target.closest("form")) return;
+    startTrackedRef.current = true;
+    trackAnalyticsContextEvent("rsvp_start");
+  }
+
   return (
-    <div className="rsvp-panel" onClick={(event) => event.stopPropagation()} onPointerDown={(event) => event.stopPropagation()}>
+    <div
+      className="rsvp-panel"
+      onClick={(event) => event.stopPropagation()}
+      onPointerDown={(event) => event.stopPropagation()}
+      onFocusCapture={trackFormStart}
+      onChangeCapture={trackFormStart}
+    >
       {notice ? <p className="rsvp-panel__notice" role="status">{notice}</p> : null}
       {state.kind === "loading" ? <p className="rsvp-panel__loading" role="status">답변을 확인하고 있습니다...</p> : null}
       {state.kind === "saving" ? <p className="rsvp-panel__loading" role="status">답변을 저장하고 있습니다...</p> : null}

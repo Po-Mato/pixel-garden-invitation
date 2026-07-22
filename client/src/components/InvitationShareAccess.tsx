@@ -19,6 +19,7 @@ import {
   invitationPublicUrl
 } from "../invitation/shareInvitation";
 import { BottomSheet } from "./BottomSheet";
+import { trackInvitationAnalytics } from "../analytics/invitationAnalytics";
 
 type InvitationShareAccessProps = {
   variant: "icon" | "menu";
@@ -69,6 +70,7 @@ export function InvitationShareAccess({
     try {
       await copyText(data.url ?? invitationPublicUrl);
       setStatus(fallback ? "fallback" : "copied");
+      trackInvitationAnalytics("share_click", fallback ? "fallback" : "copy");
     } catch {
       setStatus("error");
     }
@@ -81,6 +83,7 @@ export function InvitationShareAccess({
     try {
       await shareContent(data);
       setStatus("shared");
+      trackInvitationAnalytics("share_click", "native");
     } catch (error) {
       if (isShareAbortError(error)) {
         setStatus("canceled");

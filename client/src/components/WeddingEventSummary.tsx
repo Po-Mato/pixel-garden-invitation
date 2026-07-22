@@ -12,6 +12,7 @@ import { CalendarSaveSheet } from "./CalendarSaveSheet";
 import { DirectionsSheet } from "./DirectionsSheet";
 import { InvitationShareAccess } from "./InvitationShareAccess";
 import { WeddingDayQuickAccess } from "./WeddingDayQuickAccess";
+import { trackAnalyticsContextEvent } from "../analytics/invitationAnalytics";
 
 type WeddingEventSummaryProps = {
   variant: "compact" | "detail";
@@ -42,6 +43,7 @@ export function WeddingEventSummary({
 
   const setDirectionsVisibility = (open: boolean) => {
     setDirectionsOpen(open);
+    if (open) trackAnalyticsContextEvent("directions_view");
     onDirectionsSheetOpenChange?.(open);
   };
 

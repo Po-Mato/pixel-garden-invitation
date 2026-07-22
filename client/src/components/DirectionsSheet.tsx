@@ -4,6 +4,7 @@ import { invitationContent, type WeddingEvent } from "@wedding-game/shared";
 import { copyText } from "../invitation/browserActions";
 import { buildDirectionsLinks } from "../invitation/directions";
 import { BottomSheet } from "./BottomSheet";
+import { trackInvitationAnalytics } from "../analytics/invitationAnalytics";
 
 type DirectionsSheetProps = {
   onClose: () => void;
@@ -19,9 +20,9 @@ export function DirectionsContent({ venue = invitationContent.event.venue }: Dir
   const links = buildDirectionsLinks(venue);
   const [copyStatus, setCopyStatus] = useState<CopyStatus>("idle");
   const mapLinks = [
-    ["네이버지도", links.naver],
-    ["카카오맵", links.kakao],
-    ["Google 지도", links.google]
+    ["네이버지도", links.naver, "naver"],
+    ["카카오맵", links.kakao, "kakao"],
+    ["Google 지도", links.google, "google"]
   ] as const;
 
   const copyAddress = async () => {
@@ -60,9 +61,15 @@ export function DirectionsContent({ venue = invitationContent.event.venue }: Dir
       </section>
 
       <div className="directions-sheet__maps">
-        {mapLinks.map(([label, href]) =>
+        {mapLinks.map(([label, href, provider]) =>
           href ? (
-            <a key={label} href={href} target="_blank" rel="noopener noreferrer">
+            <a
+              key={label}
+              href={href}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => trackInvitationAnalytics("map_click", provider)}
+            >
               <ExternalLink aria-hidden="true" />
               {label}
             </a>
@@ -95,7 +102,11 @@ export function DirectionsContent({ venue = invitationContent.event.venue }: Dir
         <Phone aria-hidden="true" />
         <strong>{venue.directions.phone}</strong>
         {links.telephone ? (
-          <a href={links.telephone} aria-label={`${venue.directions.phone} 전화하기`}>
+          <a
+            href={links.telephone}
+            aria-label={`${venue.directions.phone} 전화하기`}
+            onClick={() => trackInvitationAnalytics("call_click", "venue")}
+          >
             전화
           </a>
         ) : null}

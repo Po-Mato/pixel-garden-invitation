@@ -36,6 +36,10 @@ import {
   handlePublicInvitationReleaseRequest,
   type AdminReleaseAction
 } from "./invitationReleaseHttp";
+import {
+  handleAdminInvitationAnalyticsRequest,
+  handlePublicInvitationAnalyticsRequest
+} from "./invitationAnalyticsHttp";
 import type { GuestbookOwnedMessage, RsvpRecord } from "@wedding-game/shared";
 import type { Env } from "./index";
 
@@ -697,6 +701,11 @@ async function handleApiRequestWithoutCors(
     );
   }
 
+  const adminAnalyticsMatch = url.pathname.match(/^\/api\/invitations\/([^/]+)\/admin\/analytics$/);
+  if (adminAnalyticsMatch) {
+    return handleAdminInvitationAnalyticsRequest(request, env, adminAnalyticsMatch[1]);
+  }
+
   const adminNotificationsMatch = url.pathname.match(/^\/api\/invitations\/([^/]+)\/admin\/notifications$/);
   if (adminNotificationsMatch) return handleAdminNotifications(request, env, adminNotificationsMatch[1], options);
 
@@ -721,6 +730,11 @@ async function handleApiRequestWithoutCors(
   const publicReleaseMatch = url.pathname.match(/^\/api\/invitations\/([^/]+)\/release$/);
   if (publicReleaseMatch) {
     return handlePublicInvitationReleaseRequest(request, env, publicReleaseMatch[1]);
+  }
+
+  const publicAnalyticsMatch = url.pathname.match(/^\/api\/invitations\/([^/]+)\/analytics\/events$/);
+  if (publicAnalyticsMatch) {
+    return handlePublicInvitationAnalyticsRequest(request, env, publicAnalyticsMatch[1]);
   }
 
   const ownedRsvpMatch = url.pathname.match(/^\/api\/invitations\/([^/]+)\/rsvps\/([^/]+)$/);

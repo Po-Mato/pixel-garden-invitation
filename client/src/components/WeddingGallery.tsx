@@ -3,6 +3,7 @@ import { useRef, useState } from "react";
 import { usePublishedInvitationContent } from "../invitation/PublishedInvitationContentContext";
 import { PhotoLightbox } from "./PhotoLightbox";
 import { ResponsiveGalleryImage } from "./ResponsiveGalleryImage";
+import { trackAnalyticsContextEvent } from "../analytics/invitationAnalytics";
 
 type WeddingGalleryProps = {
   photos?: readonly WeddingGalleryPhoto[];
@@ -25,6 +26,7 @@ export function WeddingGallery({ photos: photosOverride, onPhotoOpen }: WeddingG
     returnFocusRef.current = trigger;
     trigger?.focus();
     onPhotoOpen?.(index);
+    trackAnalyticsContextEvent("gallery_zoom");
     setSelectedIndex(index);
   };
 

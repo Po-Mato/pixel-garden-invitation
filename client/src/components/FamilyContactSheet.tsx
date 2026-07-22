@@ -9,6 +9,7 @@ import { useCoupleOrder } from "../invitation/CoupleOrderContext";
 import { coupleSides } from "../invitation/coupleOrder";
 import { usePublishedInvitationContent } from "../invitation/PublishedInvitationContentContext";
 import { BottomSheet } from "./BottomSheet";
+import { trackInvitationAnalytics } from "../analytics/invitationAnalytics";
 
 type FamilyContactSheetProps = {
   onClose: () => void;
@@ -93,7 +94,11 @@ export function FamilyContactContent({
                     </div>
                   </div>
                   <div className="family-contact-sheet__actions">
-                    <a href={links.telephone ?? undefined} aria-label={`${recipientLabel(contact)}에게 전화하기`}>
+                    <a
+                      href={links.telephone ?? undefined}
+                      aria-label={`${recipientLabel(contact)}에게 전화하기`}
+                      onClick={() => trackInvitationAnalytics("call_click", "family")}
+                    >
                       <Phone aria-hidden="true" />
                       전화
                     </a>
