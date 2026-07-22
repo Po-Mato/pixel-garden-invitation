@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { invitationContent, type RsvpCreateResult, type RsvpRecord, type RsvpSubmission } from "@wedding-game/shared";
-import { createRsvp, fetchOwnedRsvp, updateOwnedRsvp, WeddingApiError, type RsvpCredential } from "../api/weddingApi";
+import { fetchOwnedRsvp, updateOwnedRsvp, WeddingApiError, type RsvpCredential } from "../api/weddingApi";
+import { createRsvpWithInviteLink } from "../api/invitationInviteLinksApi";
+import { loadStoredInvitationInvite } from "../invitation/inviteLinkStorage";
 import { clearRsvpCredential, loadRsvpCredential, saveRsvpCredential } from "../invitation/rsvpStorage";
 import { RsvpForm, type RsvpFormInitialValue } from "./RsvpForm";
 import { trackAnalyticsContextEvent } from "../analytics/invitationAnalytics";
@@ -28,7 +30,7 @@ function createOnce(id: string, payload: RsvpSubmission): Promise<PendingCreateR
   const existing = pendingCreates.get(id);
   if (existing) return existing;
 
-  const pending = createRsvp(payload)
+  const pending = createRsvpWithInviteLink(payload)
     .then((result) => ({ result, credentialSaved: saveRsvpCredential(id, result.credential) }))
     .finally(() => {
       if (pendingCreates.get(id) === pending) pendingCreates.delete(id);
@@ -82,6 +84,17 @@ export function RsvpPanel() {
     pendingAtRender ? { kind: "saving" } : credentialRef.current ? { kind: "loading" } : { kind: "new" }
   );
   const [notice, setNotice] = useState("");
+  const invitedGuest = loadStoredInvitationInvite(id)?.invite ?? null;
+  const invitedInitialValue: RsvpFormInitialValue | undefined = invitedGuest ? {
+    side: invitedGuest.side,
+    guestName: invitedGuest.guestName,
+    phone: "",
+    attendance: "yes",
+    partySize: 1,
+    mealStatus: "unsure",
+    note: "",
+    consentVersion: invitationContent.event.rsvp.consentVersion
+  } : undefined;
 
   useEffect(() => {
     mountedRef.current = true;
@@ -211,7 +224,12 @@ export function RsvpPanel() {
       {state.kind === "loading" ? <p className="rsvp-panel__loading" role="status">답변을 확인하고 있습니다...</p> : null}
       {state.kind === "saving" ? <p className="rsvp-panel__loading" role="status">답변을 저장하고 있습니다...</p> : null}
       {state.kind === "new" ? (
-        <RsvpForm policy={invitationContent.event.rsvp} submitLabel="참석 답변 보내기" onSubmit={handleCreate} />
+        <RsvpForm
+          initialValue={invitedInitialValue}
+          policy={invitationContent.event.rsvp}
+          submitLabel="참석 답변 보내기"
+          onSubmit={handleCreate}
+        />
       ) : null}
       {state.kind === "editing" ? (
         <RsvpForm

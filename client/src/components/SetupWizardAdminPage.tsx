@@ -344,6 +344,7 @@ export function SetupWizardAdminPage() {
           </div>
           <div className="guestbook-admin-header-actions">
             <a className="rsvp-admin-nav-link" href="?admin=content">상세 편집</a>
+            <a className="rsvp-admin-nav-link" href="?admin=invites">초대 링크</a>
             <a className="rsvp-admin-nav-link" href="?admin=gallery">사진 관리</a>
             <a className="rsvp-admin-nav-link" href="?admin=release">통합 공개</a>
             <a className="rsvp-admin-nav-link" href="?admin=readiness">공개 준비</a>

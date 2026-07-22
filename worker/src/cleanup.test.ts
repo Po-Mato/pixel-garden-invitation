@@ -55,6 +55,10 @@ function createDb(
     bind: (...values: unknown[]) => ({
       run: async () => {
         const cutoff = String(values[0]);
+        if (/DELETE FROM invitation_invite_links/i.test(sql)) {
+          return { success: true, meta: { changes: 0 } };
+        }
+
         if (/DELETE FROM rsvps/i.test(sql)) {
           const expiredIds = new Set(invitations
             .filter(({ rsvpDeleteAt }) => rsvpDeleteAt !== null && rsvpDeleteAt <= cutoff)
@@ -104,6 +108,7 @@ describe("cleanupExpiredInvitationData", () => {
     try {
       database.exec(`
         CREATE TABLE invitations (id TEXT PRIMARY KEY, rsvp_delete_at TEXT, guestbook_delete_at TEXT);
+        CREATE TABLE invitation_invite_links (id TEXT PRIMARY KEY, invitation_id TEXT NOT NULL);
         CREATE TABLE rsvps (id TEXT PRIMARY KEY, invitation_id TEXT NOT NULL);
         CREATE TABLE guestbook_messages (id TEXT PRIMARY KEY, invitation_id TEXT NOT NULL);
         CREATE TABLE admin_notifications (id TEXT PRIMARY KEY, expires_at TEXT NOT NULL);
@@ -111,6 +116,7 @@ describe("cleanupExpiredInvitationData", () => {
         INSERT INTO invitations VALUES
           ('boundary', '2027-06-01T00:00:00.000Z', '2027-06-01T00:00:00.000Z'),
           ('future', '2027-06-01T00:00:00.001Z', '2027-06-01T00:00:00.001Z');
+        INSERT INTO invitation_invite_links VALUES ('invite_boundary', 'boundary'), ('invite_future', 'future');
         INSERT INTO rsvps VALUES ('rsvp_boundary', 'boundary'), ('rsvp_future', 'future');
         INSERT INTO guestbook_messages VALUES ('guestbook_boundary', 'boundary'), ('guestbook_future', 'future');
         INSERT INTO admin_notifications VALUES
@@ -121,8 +127,10 @@ describe("cleanupExpiredInvitationData", () => {
       await expect(cleanupExpiredInvitationData(
         createD1Adapter(database),
         new Date("2027-06-01T00:00:00.000Z")
-      )).resolves.toEqual({ rsvps: 1, guestbookMessages: 1, notifications: 1, attempts: 0 });
+      )).resolves.toEqual({ inviteLinks: 1, rsvps: 1, guestbookMessages: 1, notifications: 1, attempts: 0 });
 
+      expect(database.prepare("SELECT id FROM invitation_invite_links WHERE id = ?").get("invite_boundary")).toBeUndefined();
+      expect(database.prepare("SELECT id FROM invitation_invite_links WHERE id = ?").get("invite_future")).toEqual({ id: "invite_future" });
       expect(database.prepare("SELECT id FROM rsvps WHERE id = ?").get("rsvp_boundary")).toBeUndefined();
       expect(database.prepare("SELECT id FROM rsvps WHERE id = ?").get("rsvp_future")).toEqual({ id: "rsvp_future" });
       expect(database.prepare("SELECT id FROM guestbook_messages WHERE id = ?").get("guestbook_boundary")).toBeUndefined();
@@ -143,7 +151,7 @@ describe("cleanupExpiredInvitationData", () => {
 
     const result = await cleanupExpiredInvitationData(db, new Date("2027-05-31T14:59:58.999Z"));
 
-    expect(result).toEqual({ rsvps: 0, guestbookMessages: 0, notifications: 0, attempts: 0 });
+    expect(result).toEqual({ inviteLinks: 0, rsvps: 0, guestbookMessages: 0, notifications: 0, attempts: 0 });
     expect(rsvps).toEqual(["sample-garden"]);
   });
 
@@ -168,7 +176,7 @@ describe("cleanupExpiredInvitationData", () => {
 
     const result = await cleanupExpiredInvitationData(db, new Date("2027-06-01T00:00:00.000Z"));
 
-    expect(result).toEqual({ rsvps: 1, guestbookMessages: 1, notifications: 1, attempts: 1 });
+    expect(result).toEqual({ inviteLinks: 0, rsvps: 1, guestbookMessages: 1, notifications: 1, attempts: 1 });
     expect(rsvps).toEqual(["active", "retained"]);
     expect(guestbookMessages).toEqual(["active", "retained"]);
     expect(notifications).toEqual([{ id: "notification-active", expiresAt: "2027-06-01T00:00:00.001Z" }]);
@@ -185,7 +193,7 @@ describe("cleanupExpiredInvitationData", () => {
     );
     const now = new Date("2027-06-01T00:00:00.000Z");
 
-    await expect(cleanupExpiredInvitationData(db, now)).resolves.toEqual({ rsvps: 1, guestbookMessages: 0, notifications: 0, attempts: 1 });
-    await expect(cleanupExpiredInvitationData(db, now)).resolves.toEqual({ rsvps: 0, guestbookMessages: 0, notifications: 0, attempts: 0 });
+    await expect(cleanupExpiredInvitationData(db, now)).resolves.toEqual({ inviteLinks: 0, rsvps: 1, guestbookMessages: 0, notifications: 0, attempts: 1 });
+    await expect(cleanupExpiredInvitationData(db, now)).resolves.toEqual({ inviteLinks: 0, rsvps: 0, guestbookMessages: 0, notifications: 0, attempts: 0 });
   });
 });

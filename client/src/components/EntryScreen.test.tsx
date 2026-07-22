@@ -83,6 +83,20 @@ describe("EntryScreen", () => {
     });
   });
 
+  it("개인 초대 하객에게 맞춤 인사와 미리 입력된 닉네임을 제공한다", () => {
+    const onEnter = vi.fn();
+    render(<EntryScreen
+      onEnter={onEnter}
+      invitedGuest={{ guestName: "김하객", side: "bride", groupLabel: "대학 친구" }}
+    />);
+
+    expect(screen.getByText("김하객님을 초대합니다.")).toBeInTheDocument();
+    expect(screen.getByText(/대학 친구 하객으로/)).toBeInTheDocument();
+    expect(screen.getByLabelText("닉네임")).toHaveValue("김하객");
+    fireEvent.click(screen.getByRole("button", { name: "정원 입장" }));
+    expect(onEnter).toHaveBeenCalledWith(expect.objectContaining({ nickname: "김하객" }));
+  });
+
   it("starts loading the garden when nickname entry begins", () => {
     const onEnterIntent = vi.fn();
     render(<EntryScreen onEnter={vi.fn()} onEnterIntent={onEnterIntent} />);

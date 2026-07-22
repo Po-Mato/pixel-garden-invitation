@@ -37,9 +37,9 @@ describe("worker scaffold", () => {
     await expect(waitUntil.mock.calls[0][0]).resolves.toEqual({
       emailQueue: { attempted: 0, sent: 0, failed: 0 },
       invitationReleases: { attempted: 0, published: 0, failed: 0 },
-      cleanup: { rsvps: 0, guestbookMessages: 0, notifications: 0, attempts: 0 }
+      cleanup: { inviteLinks: 0, rsvps: 0, guestbookMessages: 0, notifications: 0, attempts: 0 }
     });
-    expect(run).toHaveBeenCalledTimes(4);
+    expect(run).toHaveBeenCalledTimes(5);
     expect(all).toHaveBeenCalledOnce();
     expect(info).toHaveBeenCalledWith(JSON.stringify({
       event: "admin_notification_email_queue",
@@ -55,6 +55,7 @@ describe("worker scaffold", () => {
     }));
     expect(info).toHaveBeenCalledWith(JSON.stringify({
       event: "invitation_data_cleanup",
+      inviteLinks: 0,
       rsvps: 0,
       guestbookMessages: 0,
       notifications: 0,

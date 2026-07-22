@@ -1,4 +1,5 @@
 export type CleanupResult = {
+  inviteLinks: number;
   rsvps: number;
   guestbookMessages: number;
   notifications: number;
@@ -12,6 +13,14 @@ function changes(result: D1Result): number {
 export async function cleanupExpiredInvitationData(db: D1Database, now: Date): Promise<CleanupResult> {
   const nowIso = now.toISOString();
   const attemptCutoff = new Date(now.getTime() - 10 * 60 * 1000).toISOString();
+
+  const inviteLinkResult = await db.prepare(`
+    DELETE FROM invitation_invite_links
+    WHERE invitation_id IN (
+      SELECT id FROM invitations
+      WHERE rsvp_delete_at IS NOT NULL AND rsvp_delete_at <= ?
+    )
+  `).bind(nowIso).run();
 
   const rsvpResult = await db.prepare(`
     DELETE FROM rsvps
@@ -40,6 +49,7 @@ export async function cleanupExpiredInvitationData(db: D1Database, now: Date): P
   `).bind(attemptCutoff).run();
 
   return {
+    inviteLinks: changes(inviteLinkResult),
     rsvps: changes(rsvpResult),
     guestbookMessages: changes(guestbookResult),
     notifications: changes(notificationResult),

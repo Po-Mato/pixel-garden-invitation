@@ -1,0 +1,34 @@
+.entry-screen__invite {
+  display: grid;
+  gap: 4px;
+  margin: 0 0 12px;
+  border-left: 4px solid #4f715e;
+  padding: 11px 13px;
+  background: #f5faf6;
+  color: #30483b;
+}
+
+.entry-screen__invite strong,
+.entry-screen__invite span {
+  overflow-wrap: anywhere;
+}
+
+.entry-screen__invite strong {
+  font-size: 14px;
+}
+
+.entry-screen__invite span {
+  color: #5c6b62;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.entry-screen__invite-notice {
+  margin: 0 0 10px;
+  border: 1px solid #d5b9a9;
+  padding: 9px 11px;
+  background: #fff7f2;
+  color: #744532;
+  font-size: 11px;
+  line-height: 1.55;
+}

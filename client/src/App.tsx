@@ -6,6 +6,7 @@ import { formatCoupleNames, formatWeddingTitle } from "./invitation/coupleOrder"
 import { preloadImage } from "./performance/imagePreloader";
 import { resolveInvitationShareText } from "./invitation/shareInvitation";
 import { setAnalyticsContext, trackAnalyticsModeOpen } from "./analytics/invitationAnalytics";
+import { useInvitationInvite } from "./invitation/useInvitationInvite";
 
 const homeMapUrl = `${import.meta.env.BASE_URL}assets/maps/v2/home/background.webp`;
 const quickCoverUrl = `${import.meta.env.BASE_URL}images/wedding-gallery/01-cover-640.webp`;
@@ -52,6 +53,8 @@ const AnalyticsAdminPage = lazy(() => import("./components/AnalyticsAdminPage")
   .then((module) => ({ default: module.AnalyticsAdminPage })));
 const SetupWizardAdminPage = lazy(() => import("./components/SetupWizardAdminPage")
   .then((module) => ({ default: module.SetupWizardAdminPage })));
+const InviteLinksAdminPage = lazy(() => import("./components/InviteLinksAdminPage")
+  .then((module) => ({ default: module.InviteLinksAdminPage })));
 
 function ScreenLoadingFallback() {
   return <div className="screen-loading" role="status">화면을 준비하고 있어요</div>;
@@ -68,6 +71,9 @@ export function App() {
   ));
   const coupleOrder = useCoupleOrder();
   const { event, share } = usePublishedInvitationContent();
+  const searchParams = new URLSearchParams(window.location.search);
+  const adminPage = searchParams.get("admin");
+  const invitationInvite = useInvitationInvite(adminPage === null);
 
   useEffect(() => {
     const title = resolveInvitationShareText(share.title, event, coupleOrder)
@@ -120,8 +126,6 @@ export function App() {
     return () => window.removeEventListener("popstate", handlePopState);
   }, [profile]);
 
-  const searchParams = new URLSearchParams(window.location.search);
-  const adminPage = searchParams.get("admin");
   const weddingDayPreview = searchParams.get("preview") === "wedding-day";
   if (adminPage === "rsvp") {
     return <Suspense fallback={<ScreenLoadingFallback />}><RsvpAdminPage /></Suspense>;
@@ -147,6 +151,9 @@ export function App() {
   if (adminPage === "setup") {
     return <Suspense fallback={<ScreenLoadingFallback />}><SetupWizardAdminPage /></Suspense>;
   }
+  if (adminPage === "invites") {
+    return <Suspense fallback={<ScreenLoadingFallback />}><InviteLinksAdminPage /></Suspense>;
+  }
 
   const playing = mode === "garden" && profile !== null;
   const quickView = mode === "invitation";
@@ -163,7 +170,7 @@ export function App() {
           {quickView ? (
             <Suspense fallback={<ScreenLoadingFallback />}>
               <QuickInvitation
-                nickname={profile?.nickname}
+                nickname={profile?.nickname ?? invitationInvite.invite?.guestName}
                 canReturnToGarden={profile !== null}
                 onOpenGarden={openGardenExperience}
                 weddingDayPreview={weddingDayPreview}
@@ -188,6 +195,8 @@ export function App() {
               onQuickView={openQuickInvitation}
               onQuickViewIntent={() => { void loadQuickInvitation(); }}
               weddingDayPreview={weddingDayPreview}
+              invitedGuest={invitationInvite.invite}
+              inviteNotice={invitationInvite.notice}
             />
           )}
         </section>

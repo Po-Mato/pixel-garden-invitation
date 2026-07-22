@@ -16,12 +16,14 @@ const storage = vi.hoisted(() => ({
   saveRsvpCredential: vi.fn(),
   clearRsvpCredential: vi.fn()
 }));
+const inviteStorage = vi.hoisted(() => ({ loadStoredInvitationInvite: vi.fn() }));
 
 vi.mock("../api/weddingApi", async (importOriginal) => ({
   ...await importOriginal<typeof import("../api/weddingApi")>(),
   ...api
 }));
 vi.mock("../invitation/rsvpStorage", () => storage);
+vi.mock("../invitation/inviteLinkStorage", () => inviteStorage);
 
 const credential = { rsvpId: "rsvp_1", editToken: "edit-token" };
 const response: RsvpRecord = {
@@ -43,6 +45,7 @@ describe("RsvpPanel", () => {
     storage.loadRsvpCredential.mockReturnValue(null);
     storage.saveRsvpCredential.mockReturnValue(true);
     storage.clearRsvpCredential.mockReturnValue(true);
+    inviteStorage.loadStoredInvitationInvite.mockReturnValue(null);
   });
   afterEach(cleanup);
 
@@ -56,6 +59,17 @@ describe("RsvpPanel", () => {
     expect(await screen.findByRole("heading", { name: "보내주신 답변" })).toBeInTheDocument();
     expect(storage.saveRsvpCredential).toHaveBeenCalledWith("sample-garden", credential);
     expect(screen.getByText("김하객")).toBeInTheDocument();
+  });
+
+  it("개인 초대 링크의 이름과 측을 새 참석 답변에 미리 입력한다", () => {
+    inviteStorage.loadStoredInvitationInvite.mockReturnValue({
+      token: "A".repeat(43),
+      invite: { guestName: "초대 하객", side: "bride", groupLabel: "친구" }
+    });
+    render(<RsvpPanel />);
+
+    expect(screen.getByLabelText("이름")).toHaveValue("초대 하객");
+    expect(screen.getByLabelText("신부측")).toBeChecked();
   });
 
   it("restores a stored credential from loading to summary", async () => {

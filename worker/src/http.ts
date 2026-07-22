@@ -40,6 +40,11 @@ import {
   handleAdminInvitationAnalyticsRequest,
   handlePublicInvitationAnalyticsRequest
 } from "./invitationAnalyticsHttp";
+import {
+  handleAdminInvitationInviteLinkRequest,
+  handlePublicInvitationInviteLinkRequest
+} from "./invitationInviteLinkHttp";
+import { markInvitationInviteLinkResponded } from "./invitationInviteLinkRepository";
 import type { GuestbookOwnedMessage, RsvpRecord } from "@wedding-game/shared";
 import type { Env } from "./index";
 
@@ -89,7 +94,7 @@ function allowedOrigins(value: string | undefined): Set<string> {
 }
 
 function isSensitivePath(pathname: string): boolean {
-  return /^\/api\/invitations\/[^/]+\/(?:rsvps|guestbook|admin)(?:\/|$)/.test(pathname);
+  return /^\/api\/invitations\/[^/]+\/(?:rsvps|guestbook|invites|admin)(?:\/|$)/.test(pathname);
 }
 
 function addCorsHeaders(response: Response, origin: string | null, preflight = false): Response {
@@ -101,7 +106,7 @@ function addCorsHeaders(response: Response, origin: string | null, preflight = f
     }
     if (preflight) {
       response.headers.set("access-control-allow-methods", "GET,POST,PATCH,PUT,DELETE,OPTIONS");
-      response.headers.set("access-control-allow-headers", "content-type,authorization,x-gallery-slot-id");
+      response.headers.set("access-control-allow-headers", "content-type,authorization,x-gallery-slot-id,x-invite-token");
     }
   }
   return response;
@@ -706,6 +711,19 @@ async function handleApiRequestWithoutCors(
     return handleAdminInvitationAnalyticsRequest(request, env, adminAnalyticsMatch[1]);
   }
 
+  const adminInviteLinksMatch = url.pathname.match(
+    /^\/api\/invitations\/([^/]+)\/admin\/invite-links(?:\/(invite_[0-9a-f-]+)(?:\/(rotate))?)?$/
+  );
+  if (adminInviteLinksMatch) {
+    return handleAdminInvitationInviteLinkRequest(
+      request,
+      env,
+      adminInviteLinksMatch[1],
+      adminInviteLinksMatch[2],
+      adminInviteLinksMatch[3] === "rotate" ? "rotate" : undefined
+    );
+  }
+
   const adminNotificationsMatch = url.pathname.match(/^\/api\/invitations\/([^/]+)\/admin\/notifications$/);
   if (adminNotificationsMatch) return handleAdminNotifications(request, env, adminNotificationsMatch[1], options);
 
@@ -735,6 +753,11 @@ async function handleApiRequestWithoutCors(
   const publicAnalyticsMatch = url.pathname.match(/^\/api\/invitations\/([^/]+)\/analytics\/events$/);
   if (publicAnalyticsMatch) {
     return handlePublicInvitationAnalyticsRequest(request, env, publicAnalyticsMatch[1]);
+  }
+
+  const publicInviteLinkMatch = url.pathname.match(/^\/api\/invitations\/([^/]+)\/invites\/([^/]+)$/);
+  if (publicInviteLinkMatch) {
+    return handlePublicInvitationInviteLinkRequest(request, env, publicInviteLinkMatch[1], publicInviteLinkMatch[2]);
   }
 
   const ownedRsvpMatch = url.pathname.match(/^\/api\/invitations\/([^/]+)\/rsvps\/([^/]+)$/);
@@ -769,15 +792,25 @@ async function handleApiRequestWithoutCors(
       const limiter = options.limiter ?? writeLimiter;
       if (!limiter.allow(clientKey)) return json({ error: "rate_limited" }, 429, { "retry-after": "60" });
 
+      const now = new Date();
       const rsvpId = id("rsvp");
       const credential = await createEditCredential();
       const response = await createRsvp(env.DB, {
         id: rsvpId,
         invitationId,
         submission,
-        consentedAt: new Date().toISOString(),
+        consentedAt: now.toISOString(),
         editTokenHash: credential.editTokenHash
       });
+
+      const inviteToken = request.headers.get("x-invite-token");
+      if (inviteToken) {
+        try {
+          await markInvitationInviteLinkResponded(env.DB, invitationId, inviteToken, rsvpId, now);
+        } catch {
+          console.error(JSON.stringify({ event: "invite_link_rsvp_association_failed" }));
+        }
+      }
 
       await notifyRsvp(env, invitationId, response, "rsvp_created", policy.deleteAt, options);
 

@@ -431,7 +431,7 @@ describe("handleApiRequest", () => {
     expect(response.status).toBe(204);
     expect(response.headers.get("access-control-allow-origin")).toBe("https://po-mato.github.io");
     expect(response.headers.get("access-control-allow-methods")).toBe("GET,POST,PATCH,PUT,DELETE,OPTIONS");
-    expect(response.headers.get("access-control-allow-headers")).toBe("content-type,authorization,x-gallery-slot-id");
+    expect(response.headers.get("access-control-allow-headers")).toBe("content-type,authorization,x-gallery-slot-id,x-invite-token");
     expect(response.headers.get("vary")).toBe("Origin");
     expect(prepare).not.toHaveBeenCalled();
   });

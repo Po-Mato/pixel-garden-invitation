@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { BookOpen, ChevronRight } from "lucide-react";
 import {
   defaultCharacterAppearance,
-  type CharacterAppearance
+  type CharacterAppearance,
+  type PublicInvitationInvite
 } from "@wedding-game/shared";
 import { loadAppearance, saveAppearance } from "../character/storage";
 import { useCoupleOrder } from "../invitation/CoupleOrderContext";
@@ -12,6 +13,7 @@ import { CharacterCustomizer } from "./CharacterCustomizer";
 import { FamilyContactSheet } from "./FamilyContactSheet";
 import { ViewSettingsAccess } from "./ViewSettingsAccess";
 import { WeddingEventSummary } from "./WeddingEventSummary";
+import "../invite-link-public.css";
 
 export type EntryProfile = {
   nickname: string;
@@ -24,6 +26,8 @@ type EntryScreenProps = {
   onQuickView?: () => void;
   onQuickViewIntent?: () => void;
   weddingDayPreview?: boolean;
+  invitedGuest?: PublicInvitationInvite | null;
+  inviteNotice?: string;
 };
 
 export function EntryScreen({
@@ -31,7 +35,9 @@ export function EntryScreen({
   onEnterIntent,
   onQuickView,
   onQuickViewIntent,
-  weddingDayPreview = false
+  weddingDayPreview = false,
+  invitedGuest = null,
+  inviteNotice = ""
 }: EntryScreenProps) {
   const { event } = usePublishedInvitationContent();
   const coupleOrder = useCoupleOrder();
@@ -39,11 +45,15 @@ export function EntryScreen({
     year: "numeric",
     timeZone: event.timeZone
   }).format(new Date(event.startAt));
-  const [nickname, setNickname] = useState("");
+  const [nickname, setNickname] = useState(() => invitedGuest?.guestName ?? "");
   const [appearance, setAppearance] = useState(
     () => loadAppearance() ?? defaultCharacterAppearance
   );
   const [familyContactOpen, setFamilyContactOpen] = useState(false);
+
+  useEffect(() => {
+    if (invitedGuest?.guestName) setNickname((current) => current || invitedGuest.guestName);
+  }, [invitedGuest]);
 
   const canEnter = nickname.trim().length > 0;
   const enterGarden = () => {
@@ -66,6 +76,13 @@ export function EntryScreen({
         <h1 id="entry-screen-title">{formatCoupleNames(event, coupleOrder, " & ")}의 정원</h1>
         <span>정원에 입장할 하객 캐릭터를 선택해주세요.</span>
       </header>
+      {invitedGuest ? (
+        <p className="entry-screen__invite">
+          <strong>{invitedGuest.guestName}님을 초대합니다.</strong>
+          <span>{invitedGuest.groupLabel ? `${invitedGuest.groupLabel} 하객으로 ` : ""}두 사람의 소중한 날을 함께해 주세요.</span>
+        </p>
+      ) : null}
+      {inviteNotice ? <p className="entry-screen__invite-notice" role="status">{inviteNotice}</p> : null}
       <WeddingEventSummary
         variant="compact"
         weddingDayPreview={weddingDayPreview}

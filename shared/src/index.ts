@@ -3,6 +3,7 @@ export * from "./editableInvitationContent";
 export * from "./editableInvitationGallery";
 export * from "./invitationRelease";
 export * from "./invitationAnalytics";
+export * from "./invitationInviteLinks";
 export * from "./adminNotifications";
 export * from "./guestbook";
 export * from "./weddingContent";
