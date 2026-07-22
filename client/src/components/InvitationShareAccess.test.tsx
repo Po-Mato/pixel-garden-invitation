@@ -53,7 +53,7 @@ describe("InvitationShareAccess", () => {
 
     expect(shareContent).toHaveBeenCalledWith(expect.objectContaining({
       title: "이건희 · 이승재 결혼식",
-      text: expect.stringContaining("오후 5시 10분"),
+      text: "2027.05.01 · MJ컨벤션 5층 파티오볼룸",
       url: invitationPublicUrl
     }));
     expect(await screen.findByText("공유 앱으로 초대장을 전달했습니다.")).toBeInTheDocument();
@@ -73,7 +73,7 @@ describe("InvitationShareAccess", () => {
 
     expect(shareContent).toHaveBeenCalledWith(expect.objectContaining({
       title: "이승재 · 이건희 결혼식",
-      text: expect.stringMatching(/^이승재 · 이건희의 결혼식/)
+      text: "2027.05.01 · MJ컨벤션 5층 파티오볼룸"
     }));
     expect(await screen.findByText("공유 앱으로 초대장을 전달했습니다.")).toBeInTheDocument();
   });

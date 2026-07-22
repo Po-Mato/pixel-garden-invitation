@@ -601,6 +601,7 @@ export function RsvpAdminPage() {
             <h1>참석 답변 관리</h1>
           </div>
           <div className="guestbook-admin-header-actions">
+            <a className="rsvp-admin-nav-link" href="?admin=content">실데이터 편집</a>
             <a className="rsvp-admin-nav-link" href="?admin=readiness">공개 준비</a>
             <a className="rsvp-admin-nav-link" href="?admin=guestbook">방명록 관리</a>
             <button type="button" className="rsvp-admin-secondary" onClick={() => resetAdminState("", true)}>

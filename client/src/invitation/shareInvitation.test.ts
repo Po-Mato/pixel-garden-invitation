@@ -25,6 +25,18 @@ describe("초대장 공유 데이터", () => {
     )).toBe(invitationPublicUrl);
   });
 
+  it("관리자 공유 문구의 이름 토큰을 선택된 커플 순서로 바꾼다", () => {
+    expect(buildInvitationShareData(
+      invitationContent.event,
+      invitationPublicUrl,
+      "bride-first",
+      { title: "{names} 결혼식", description: "{names}의 첫날에 초대합니다." }
+    )).toMatchObject({
+      title: "이건희 · 이승재 결혼식",
+      text: "이건희 · 이승재의 첫날에 초대합니다."
+    });
+  });
+
   it("신랑 우선 세션에서는 공유 제목과 본문도 신랑 이름부터 구성한다", () => {
     expect(buildInvitationShareData(
       invitationContent.event,

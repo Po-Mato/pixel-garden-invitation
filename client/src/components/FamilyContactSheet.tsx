@@ -1,13 +1,13 @@
 import { useMemo, useState } from "react";
 import { MessageCircle, Phone, UserRound, UsersRound } from "lucide-react";
 import {
-  invitationContent,
   type WeddingEvent,
   type WeddingFamilyContact
 } from "@wedding-game/shared";
 import { buildFamilyContactLinks } from "../invitation/familyContactLinks";
 import { useCoupleOrder } from "../invitation/CoupleOrderContext";
 import { coupleSides } from "../invitation/coupleOrder";
+import { usePublishedInvitationContent } from "../invitation/PublishedInvitationContentContext";
 import { BottomSheet } from "./BottomSheet";
 
 type FamilyContactSheetProps = {
@@ -24,24 +24,26 @@ function recipientLabel(contact: WeddingFamilyContact) {
 }
 
 export function FamilyContactContent({
-  familyContacts = invitationContent.event.familyContacts
+  familyContacts
 }: FamilyContactContentProps) {
+  const published = usePublishedInvitationContent();
+  const resolvedFamilyContacts = familyContacts ?? published.event.familyContacts;
   const coupleOrder = useCoupleOrder();
   const sideOrder = coupleSides(coupleOrder);
   const [activeSide, setActiveSide] = useState<WeddingSide>(sideOrder[0]);
   const contacts = useMemo(
-    () => familyContacts.contacts
+    () => resolvedFamilyContacts.contacts
       .filter((contact) => contact.side === activeSide)
       .map((contact) => ({ contact, links: buildFamilyContactLinks(contact.phone) }))
       .filter(({ links }) => links.telephone !== null),
-    [activeSide, familyContacts.contacts]
+    [activeSide, resolvedFamilyContacts.contacts]
   );
 
   return (
     <div className="family-contact-sheet" data-nosnippet="">
         <div className="family-contact-sheet__intro">
           <UsersRound aria-hidden="true" />
-          <p>{familyContacts.notice}</p>
+          <p>{resolvedFamilyContacts.notice}</p>
         </div>
 
         <div className="family-contact-sheet__tabs" role="tablist" aria-label="연락처 구분">

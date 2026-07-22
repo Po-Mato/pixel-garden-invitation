@@ -1,13 +1,13 @@
 import { useMemo, useState } from "react";
 import { ChevronDown, Copy, ExternalLink, HeartHandshake, Landmark } from "lucide-react";
 import {
-  invitationContent,
   type WeddingEvent,
   type WeddingGiftAccount
 } from "@wedding-game/shared";
 import { copyText } from "../invitation/browserActions";
 import { useCoupleOrder } from "../invitation/CoupleOrderContext";
 import { coupleSides } from "../invitation/coupleOrder";
+import { usePublishedInvitationContent } from "../invitation/PublishedInvitationContentContext";
 import { BottomSheet } from "./BottomSheet";
 
 type GiftAccountSheetProps = {
@@ -42,15 +42,17 @@ function hasVisibleDetails(account: WeddingGiftAccount) {
 }
 
 export function GiftAccountContent({
-  giftAccounts = invitationContent.event.giftAccounts
+  giftAccounts
 }: GiftAccountContentProps) {
+  const published = usePublishedInvitationContent();
+  const resolvedGiftAccounts = giftAccounts ?? published.event.giftAccounts;
   const coupleOrder = useCoupleOrder();
   const sideOrder = coupleSides(coupleOrder);
   const [activeSide, setActiveSide] = useState<WeddingSide>(sideOrder[0]);
   const [copyStatus, setCopyStatus] = useState<CopyStatus>(null);
   const accounts = useMemo(
-    () => giftAccounts.accounts.filter((account) => account.side === activeSide && hasVisibleDetails(account)),
-    [activeSide, giftAccounts.accounts]
+    () => resolvedGiftAccounts.accounts.filter((account) => account.side === activeSide && hasVisibleDetails(account)),
+    [activeSide, resolvedGiftAccounts.accounts]
   );
 
   const copyAccountNumber = async (account: WeddingGiftAccount) => {
@@ -69,7 +71,7 @@ export function GiftAccountContent({
     <div className="gift-account-sheet" data-nosnippet="">
         <div className="gift-account-sheet__intro">
           <HeartHandshake aria-hidden="true" />
-          <p>{giftAccounts.notice}</p>
+          <p>{resolvedGiftAccounts.notice}</p>
         </div>
 
         <div className="gift-account-sheet__tabs" role="tablist" aria-label="계좌 구분">

@@ -2,12 +2,12 @@ import { useState } from "react";
 import { BookOpen, ChevronRight } from "lucide-react";
 import {
   defaultCharacterAppearance,
-  invitationContent,
   type CharacterAppearance
 } from "@wedding-game/shared";
 import { loadAppearance, saveAppearance } from "../character/storage";
 import { useCoupleOrder } from "../invitation/CoupleOrderContext";
 import { formatCoupleNames } from "../invitation/coupleOrder";
+import { usePublishedInvitationContent } from "../invitation/PublishedInvitationContentContext";
 import { CharacterCustomizer } from "./CharacterCustomizer";
 import { FamilyContactSheet } from "./FamilyContactSheet";
 import { ViewSettingsAccess } from "./ViewSettingsAccess";
@@ -33,7 +33,7 @@ export function EntryScreen({
   onQuickViewIntent,
   weddingDayPreview = false
 }: EntryScreenProps) {
-  const event = invitationContent.event;
+  const { event } = usePublishedInvitationContent();
   const coupleOrder = useCoupleOrder();
   const weddingYear = new Intl.DateTimeFormat("en", {
     year: "numeric",

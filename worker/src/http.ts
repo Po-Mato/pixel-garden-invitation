@@ -22,6 +22,10 @@ import {
 import { publishAdminNotification, retryPendingAdminNotificationEmails } from "./adminNotificationService";
 import { createEditCredential, hashClientKey, hashEditToken, verifyAdminToken } from "./security";
 import { parseGuestbookPayload, parseRsvpPayload } from "./validation";
+import {
+  handleAdminInvitationContentRequest,
+  handlePublicInvitationContentRequest
+} from "./invitationContentHttp";
 import type { GuestbookOwnedMessage, RsvpRecord } from "@wedding-game/shared";
 import type { Env } from "./index";
 
@@ -634,6 +638,18 @@ async function handleApiRequestWithoutCors(
   const adminSessionMatch = url.pathname.match(/^\/api\/invitations\/([^/]+)\/admin\/session$/);
   if (adminSessionMatch) return handleAdminSession(request, env, clientKey, adminSessionMatch[1]);
 
+  const adminContentMatch = url.pathname.match(/^\/api\/invitations\/([^/]+)\/admin\/content(?:\/(publish|restore))?$/);
+  if (adminContentMatch) {
+    return handleAdminInvitationContentRequest(
+      request,
+      env,
+      adminContentMatch[1],
+      adminContentMatch[2] === "publish" || adminContentMatch[2] === "restore"
+        ? adminContentMatch[2]
+        : "content"
+    );
+  }
+
   const adminNotificationsMatch = url.pathname.match(/^\/api\/invitations\/([^/]+)\/admin\/notifications$/);
   if (adminNotificationsMatch) return handleAdminNotifications(request, env, adminNotificationsMatch[1], options);
 
@@ -643,6 +659,11 @@ async function handleApiRequestWithoutCors(
   const adminGuestbookMatch = url.pathname.match(/^\/api\/invitations\/([^/]+)\/admin\/guestbook(?:\/([^/]+))?$/);
   if (adminGuestbookMatch) {
     return handleAdminGuestbook(request, env, adminGuestbookMatch[1], adminGuestbookMatch[2]);
+  }
+
+  const publicContentMatch = url.pathname.match(/^\/api\/invitations\/([^/]+)\/content$/);
+  if (publicContentMatch) {
+    return handlePublicInvitationContentRequest(request, env, publicContentMatch[1]);
   }
 
   const ownedRsvpMatch = url.pathname.match(/^\/api\/invitations\/([^/]+)\/rsvps\/([^/]+)$/);

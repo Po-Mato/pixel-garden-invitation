@@ -1,10 +1,12 @@
-import { invitationContent } from "@wedding-game/shared";
+import type { WeddingContent } from "@wedding-game/shared";
 import { useCoupleOrder } from "../invitation/CoupleOrderContext";
 import { coupleSides } from "../invitation/coupleOrder";
 import { resolveGalleryAssetPath } from "../invitation/galleryAssets";
+import { usePublishedInvitationContent } from "../invitation/PublishedInvitationContentContext";
 
-export function CoupleProfilePanel() {
-  const { coupleMessage, coupleProfiles, gallery } = invitationContent.content;
+export function CoupleProfilePanel({ content: contentOverride }: { content?: WeddingContent } = {}) {
+  const published = usePublishedInvitationContent();
+  const { coupleMessage, coupleProfiles, gallery } = contentOverride ?? published.content;
   const coupleOrder = useCoupleOrder();
   const orderedProfiles = coupleSides(coupleOrder).flatMap((side) => (
     coupleProfiles.filter((profile) => profile.role === side)

@@ -1,9 +1,12 @@
-import { invitationContent } from "@wedding-game/shared";
+import type { WeddingContent } from "@wedding-game/shared";
+import { usePublishedInvitationContent } from "../invitation/PublishedInvitationContentContext";
 
-export function WeddingStoryTimeline() {
+export function WeddingStoryTimeline({ timeline }: { timeline?: WeddingContent["storyTimeline"] } = {}) {
+  const { content } = usePublishedInvitationContent();
+  const steps = timeline ?? content.storyTimeline;
   return (
     <ol className="wedding-story wedding-story-timeline">
-      {invitationContent.content.storyTimeline.map((step, index) => (
+      {steps.map((step, index) => (
         <li key={step.id} className="wedding-story-timeline__step">
           <span className="wedding-story-timeline__number" aria-hidden="true">
             {String(index + 1).padStart(2, "0")}

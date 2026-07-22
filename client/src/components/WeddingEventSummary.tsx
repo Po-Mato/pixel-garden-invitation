@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { CalendarDays, CalendarPlus, Copy, MapPin, Navigation } from "lucide-react";
-import { invitationContent } from "@wedding-game/shared";
 import { copyText } from "../invitation/browserActions";
+import { usePublishedInvitationContent } from "../invitation/PublishedInvitationContentContext";
 import {
   formatEventDate,
   formatEventEndTime,
@@ -30,7 +30,7 @@ export function WeddingEventSummary({
   onWeddingDaySheetOpenChange,
   onFamilyContactOpen
 }: WeddingEventSummaryProps) {
-  const event = invitationContent.event;
+  const { event } = usePublishedInvitationContent();
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [directionsOpen, setDirectionsOpen] = useState(false);
   const [addressStatus, setAddressStatus] = useState<"idle" | "copying" | "copied" | "error">("idle");

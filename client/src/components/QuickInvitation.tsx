@@ -10,11 +10,11 @@ import {
   Sparkles,
   UsersRound
 } from "lucide-react";
-import { invitationContent } from "@wedding-game/shared";
 import { shouldReduceMotion } from "../accessibility/viewPreferences";
 import { formatEventDate, formatEventStartTime } from "../invitation/calendarEvent";
 import { useCoupleOrder } from "../invitation/CoupleOrderContext";
 import { formatCoupleNames } from "../invitation/coupleOrder";
+import { usePublishedInvitationContent } from "../invitation/PublishedInvitationContentContext";
 import { CoupleProfilePanel } from "./CoupleProfilePanel";
 import { DirectionsContent } from "./DirectionsSheet";
 import { FamilyContactContent } from "./FamilyContactSheet";
@@ -73,9 +73,9 @@ export function QuickInvitation({
   onOpenGarden,
   weddingDayPreview = false
 }: QuickInvitationProps) {
-  const event = invitationContent.event;
+  const { event, content } = usePublishedInvitationContent();
   const coupleOrder = useCoupleOrder();
-  const cover = invitationContent.content.gallery[0];
+  const cover = content.gallery[0];
   const names = formatCoupleNames(event, coupleOrder, " & ");
 
   useEffect(() => {
@@ -119,7 +119,7 @@ export function QuickInvitation({
         <Sparkles aria-hidden="true" />
         <p>서로의 계절을 함께 걷기로 했습니다.</p>
         <h2 id="quick-intro-title">소중한 분들을<br />저희의 첫날에 초대합니다.</h2>
-        <span>{invitationContent.content.coupleMessage}</span>
+        <span>{content.coupleMessage}</span>
       </section>
 
       <section className="quick-band quick-band--profiles" id="couple">

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { CalendarDays, Copy, MapPin, Send, Share2 } from "lucide-react";
-import { invitationContent, type WeddingEvent } from "@wedding-game/shared";
+import type { EditableInvitationContent, WeddingEvent } from "@wedding-game/shared";
 import {
   copyText,
   isShareAbortError,
@@ -13,6 +13,7 @@ import {
 } from "../invitation/calendarEvent";
 import { useCoupleOrder } from "../invitation/CoupleOrderContext";
 import { formatCoupleNames, formatWeddingTitle } from "../invitation/coupleOrder";
+import { usePublishedInvitationContent } from "../invitation/PublishedInvitationContentContext";
 import {
   buildInvitationShareData,
   invitationPublicUrl
@@ -22,6 +23,7 @@ import { BottomSheet } from "./BottomSheet";
 type InvitationShareAccessProps = {
   variant: "icon" | "menu";
   event?: WeddingEvent;
+  share?: EditableInvitationContent["share"];
   onOpenChange?: (open: boolean) => void;
 };
 
@@ -43,15 +45,19 @@ function statusMessage(status: ShareStatus) {
 
 export function InvitationShareAccess({
   variant,
-  event = invitationContent.event,
+  event: eventOverride,
+  share: shareOverride,
   onOpenChange
 }: InvitationShareAccessProps) {
+  const published = usePublishedInvitationContent();
+  const event = eventOverride ?? published.event;
+  const share = shareOverride ?? published.share;
   const [open, setOpen] = useState(false);
   const [status, setStatus] = useState<ShareStatus>("idle");
   const coupleOrder = useCoupleOrder();
   const nativeShareSupported = typeof navigator.share === "function";
   const busy = status === "sharing";
-  const data = buildInvitationShareData(event, canonicalShareUrl(), coupleOrder);
+  const data = buildInvitationShareData(event, canonicalShareUrl(), coupleOrder, share);
 
   const setVisibility = (visible: boolean) => {
     setOpen(visible);
@@ -103,7 +109,7 @@ export function InvitationShareAccess({
             <section className="invitation-share-sheet__preview">
               <span>WEDDING INVITATION</span>
               <strong>{formatCoupleNames(event, coupleOrder)}</strong>
-              <p>{formatWeddingTitle(event, coupleOrder)}</p>
+              <p>{data.title ?? formatWeddingTitle(event, coupleOrder)}</p>
             </section>
 
             <section className="invitation-share-sheet__detail">

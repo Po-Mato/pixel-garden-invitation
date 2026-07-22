@@ -1,9 +1,10 @@
 import { lazy, Suspense, useCallback, useEffect, useState } from "react";
-import { invitationContent } from "@wedding-game/shared";
 import { EntryScreen, type EntryProfile } from "./components/EntryScreen";
 import { useCoupleOrder } from "./invitation/CoupleOrderContext";
+import { usePublishedInvitationContent } from "./invitation/PublishedInvitationContentContext";
 import { formatCoupleNames, formatWeddingTitle } from "./invitation/coupleOrder";
 import { preloadImage } from "./performance/imagePreloader";
+import { resolveInvitationShareText } from "./invitation/shareInvitation";
 
 const homeMapUrl = `${import.meta.env.BASE_URL}assets/maps/v2/home/background.webp`;
 const quickCoverUrl = `${import.meta.env.BASE_URL}images/wedding-gallery/01-cover-640.webp`;
@@ -40,6 +41,8 @@ const RsvpAdminPage = lazy(() => import("./components/RsvpAdminPage")
   .then((module) => ({ default: module.RsvpAdminPage })));
 const ReadinessAdminPage = lazy(() => import("./components/ReadinessAdminPage")
   .then((module) => ({ default: module.ReadinessAdminPage })));
+const ContentAdminPage = lazy(() => import("./components/ContentAdminPage")
+  .then((module) => ({ default: module.ContentAdminPage })));
 
 function ScreenLoadingFallback() {
   return <div className="screen-loading" role="status">화면을 준비하고 있어요</div>;
@@ -55,19 +58,23 @@ export function App() {
     new URLSearchParams(window.location.search).get("view") === "invitation" ? "invitation" : "entry"
   ));
   const coupleOrder = useCoupleOrder();
-  const event = invitationContent.event;
+  const { event, share } = usePublishedInvitationContent();
 
   useEffect(() => {
-    const title = formatWeddingTitle(event, coupleOrder);
+    const title = resolveInvitationShareText(share.title, event, coupleOrder)
+      || formatWeddingTitle(event, coupleOrder);
     const date = event.startAt.slice(0, 10).replaceAll("-", ".");
     document.title = `${title} | ${date}`;
     updateNamedMeta('meta[property="og:title"]', title);
     updateNamedMeta('meta[name="twitter:title"]', title);
+    updateNamedMeta('meta[name="description"]', share.description);
+    updateNamedMeta('meta[property="og:description"]', share.description);
+    updateNamedMeta('meta[name="twitter:description"]', share.description);
     updateNamedMeta(
       'meta[property="og:site_name"]',
       `${formatCoupleNames(event, coupleOrder)} 모바일 청첩장`
     );
-  }, [coupleOrder, event]);
+  }, [coupleOrder, event, share.description, share.title]);
 
   const setInvitationUrl = useCallback((enabled: boolean) => {
     const url = new URL(window.location.href);
@@ -112,6 +119,9 @@ export function App() {
   }
   if (adminPage === "readiness") {
     return <Suspense fallback={<ScreenLoadingFallback />}><ReadinessAdminPage /></Suspense>;
+  }
+  if (adminPage === "content") {
+    return <Suspense fallback={<ScreenLoadingFallback />}><ContentAdminPage /></Suspense>;
   }
 
   const playing = mode === "garden" && profile !== null;

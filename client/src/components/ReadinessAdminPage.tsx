@@ -13,7 +13,6 @@ import {
   TriangleAlert
 } from "lucide-react";
 import {
-  invitationContent,
   weddingContentPublication,
   type AdminNotificationResult
 } from "@wedding-game/shared";
@@ -33,6 +32,7 @@ import {
   type ReadinessService
 } from "../invitation/publicationReadiness";
 import { clearAdminSession, loadAdminSession, saveAdminSession } from "../invitation/rsvpStorage";
+import { usePublishedInvitationContent } from "../invitation/PublishedInvitationContentContext";
 import "../readiness-admin.css";
 
 function invitationId(): string {
@@ -89,13 +89,16 @@ export function ReadinessAdminPage() {
   const [error, setError] = useState("");
   const [checkedAt, setCheckedAt] = useState<Date | null>(null);
   const [retrySeconds, setRetrySeconds] = useState(0);
+  const published = usePublishedInvitationContent();
 
   const readiness = useMemo(() => buildPublicationReadiness({
-    event: invitationContent.event,
-    content: invitationContent.content,
-    publication: weddingContentPublication,
+    event: published.event,
+    content: published.content,
+    publication: published.source === "published"
+      ? { ...weddingContentPublication, coupleIntroduction: "ready", storyTimeline: "ready" }
+      : weddingContentPublication,
     runtime
-  }), [runtime]);
+  }), [published.content, published.event, published.source, runtime]);
 
   function logout(message = "") {
     sessionRef.current = null;
@@ -259,6 +262,7 @@ export function ReadinessAdminPage() {
             <h1>공개 준비 점검</h1>
           </div>
           <div className="guestbook-admin-header-actions">
+            <a className="rsvp-admin-nav-link" href="?admin=content">실데이터 편집</a>
             <a className="rsvp-admin-nav-link" href="?admin=rsvp">참석 답변</a>
             <a className="rsvp-admin-nav-link" href="?admin=guestbook">방명록</a>
             <button type="button" className="rsvp-admin-secondary" onClick={() => logout()}>

@@ -1,0 +1,426 @@
+.content-admin-page {
+  --content-accent: #4f6d59;
+  --content-warn: #a55c38;
+  --content-soft: #f3f6f2;
+  --content-line: #c8d0ca;
+  --content-muted: #657169;
+}
+
+.content-admin-header {
+  align-items: flex-end;
+}
+
+.content-admin-status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 14px;
+  padding: 18px;
+  border: 1px solid var(--content-line);
+  border-left: 5px solid var(--content-accent);
+  border-radius: 6px;
+  background: #fff;
+}
+
+.content-admin-status > div:first-child {
+  display: grid;
+  gap: 5px;
+}
+
+.content-admin-status__badge {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  gap: 5px;
+  color: var(--content-accent);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.content-admin-status__badge--dirty {
+  color: var(--content-warn);
+}
+
+.content-admin-status__badge svg {
+  width: 16px;
+  height: 16px;
+}
+
+.content-admin-status strong {
+  font-size: 15px;
+}
+
+.content-admin-status small {
+  color: var(--content-muted);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.content-admin-status__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.content-admin-page .content-admin-publish {
+  border-color: #805257;
+  background: #805257;
+}
+
+.content-admin-blockers {
+  margin: 0 0 14px;
+  padding: 10px 13px;
+  border-left: 3px solid var(--content-warn);
+  background: #fff7f1;
+  color: #81462d;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.content-admin-tabs {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  margin-bottom: 14px;
+  border: 1px solid #aeb9b1;
+  border-radius: 5px;
+  background: #fff;
+}
+
+.content-admin-page .content-admin-tabs button {
+  min-width: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #4b5a51;
+  font-size: 12px;
+}
+
+.content-admin-page .content-admin-tabs button + button {
+  border-left: 1px solid #d4dad5;
+}
+
+.content-admin-page .content-admin-tabs button[aria-current="page"] {
+  background: var(--content-accent);
+  color: #fff;
+}
+
+.content-admin-workspace {
+  min-width: 0;
+}
+
+.content-admin-loading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  color: var(--content-muted);
+  font-weight: 800;
+}
+
+.content-admin-loading svg {
+  width: 18px;
+  animation: content-admin-spin 900ms linear infinite;
+}
+
+@keyframes content-admin-spin {
+  to { transform: rotate(360deg); }
+}
+
+.content-admin-section {
+  padding: 20px;
+  border: 1px solid var(--content-line);
+  border-radius: 6px;
+  background: #fff;
+}
+
+.content-admin-section > header {
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr);
+  align-items: center;
+  gap: 11px;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #dce1dd;
+}
+
+.content-admin-section > header > svg {
+  width: 36px;
+  height: 36px;
+  padding: 8px;
+  border: 1px solid #cbd4cd;
+  border-radius: 4px;
+  background: var(--content-soft);
+  color: var(--content-accent);
+}
+
+.content-admin-section > header h2 {
+  margin-bottom: 3px;
+}
+
+.content-admin-section > header p {
+  margin: 0;
+  color: var(--content-muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.content-admin-section > header code {
+  padding: 1px 4px;
+  border-radius: 3px;
+  background: #e8eee9;
+  color: #405347;
+}
+
+.content-admin-section label {
+  display: grid;
+  min-width: 0;
+  gap: 5px;
+  color: #4b5850;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.content-admin-section input,
+.content-admin-section textarea {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid #aeb8b0;
+  border-radius: 3px;
+  padding: 10px 11px;
+  background: #fff;
+  color: #252a27;
+  font: inherit;
+}
+
+.content-admin-section textarea {
+  resize: vertical;
+  line-height: 1.55;
+}
+
+.content-admin-wide-field {
+  margin-bottom: 16px;
+}
+
+.content-admin-person-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.content-admin-section fieldset {
+  min-width: 0;
+  margin: 0;
+  border: 1px solid #d1d8d2;
+  border-radius: 5px;
+  padding: 13px;
+  background: #fbfcfb;
+}
+
+.content-admin-section legend {
+  padding: 0 5px;
+  color: #34443a;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.content-admin-person-grid fieldset {
+  display: grid;
+  gap: 10px;
+}
+
+.content-admin-account-list,
+.content-admin-story-list {
+  display: grid;
+  gap: 12px;
+}
+
+.content-admin-account-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.content-admin-account-grid__wide {
+  grid-column: span 2;
+}
+
+.content-admin-copy-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.content-admin-copy-grid__wide {
+  grid-column: 1 / -1;
+}
+
+.content-admin-story-list {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.content-admin-story-list fieldset {
+  display: grid;
+  gap: 10px;
+}
+
+.content-admin-preview {
+  background: #f7f8f5;
+}
+
+.content-admin-preview__phone {
+  width: min(100%, 430px);
+  margin: 0 auto;
+  overflow: hidden;
+  border: 1px solid #aeb8b0;
+  border-radius: 6px;
+  background: #fff;
+  box-shadow: 0 12px 28px rgba(42, 54, 46, 0.12);
+}
+
+.content-admin-preview__phone > section,
+.content-admin-preview__phone > .couple-profile-panel,
+.content-admin-preview__phone > .wedding-story {
+  margin: 0;
+  padding: 22px 18px;
+  border-top: 1px solid #e1e5e2;
+}
+
+.content-admin-preview__phone > section > h3 {
+  margin: 0 0 14px;
+  font-size: 16px;
+}
+
+.content-admin-preview__intro {
+  padding: 32px 20px;
+  background: #eff3ed;
+  text-align: center;
+}
+
+.content-admin-preview__intro span,
+.content-admin-preview__share span {
+  color: #65756a;
+  font-size: 10px;
+  font-weight: 900;
+}
+
+.content-admin-preview__intro h3 {
+  margin: 9px 0;
+  font-size: 23px;
+}
+
+.content-admin-preview__intro p,
+.content-admin-preview__share p {
+  margin: 0;
+  color: #5c685f;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.content-admin-preview__share {
+  display: grid;
+  gap: 6px;
+  padding: 20px;
+  border-top: 1px solid #e1e5e2;
+}
+
+.content-admin-history {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.content-admin-history li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 13px 0;
+  border-bottom: 1px solid #e1e5e2;
+}
+
+.content-admin-history li > div {
+  display: grid;
+  gap: 3px;
+}
+
+.content-admin-history time {
+  color: var(--content-muted);
+  font-size: 11px;
+}
+
+.content-admin-empty {
+  margin: 0;
+  padding: 28px;
+  color: var(--content-muted);
+  text-align: center;
+}
+
+.content-admin-restore-dialog > p {
+  color: #57645b;
+  line-height: 1.6;
+}
+
+@media (max-width: 860px) {
+  .content-admin-status {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .content-admin-status__actions {
+    justify-content: flex-start;
+  }
+
+  .content-admin-tabs {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .content-admin-page .content-admin-tabs button:nth-child(4) {
+    border-left: 0;
+  }
+
+  .content-admin-page .content-admin-tabs button:nth-child(n + 4) {
+    border-top: 1px solid #d4dad5;
+  }
+
+  .content-admin-person-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .content-admin-account-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .content-admin-section {
+    padding: 15px;
+  }
+
+  .content-admin-status__actions > button {
+    flex: 1 1 calc(50% - 8px);
+  }
+
+  .content-admin-person-grid,
+  .content-admin-copy-grid,
+  .content-admin-story-list,
+  .content-admin-account-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .content-admin-copy-grid__wide,
+  .content-admin-account-grid__wide {
+    grid-column: auto;
+  }
+
+  .content-admin-history li {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}
+
+html[data-reduce-motion="true"] .content-admin-loading svg {
+  animation: none;
+}
