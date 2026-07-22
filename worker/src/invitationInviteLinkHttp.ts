@@ -1,5 +1,6 @@
 import {
   parseInvitationInviteLinkBatch,
+  parseInvitationInviteDeliveryInput,
   parseInvitationInviteLinkUpdate,
   validInvitationInviteToken
 } from "@wedding-game/shared";
@@ -9,6 +10,7 @@ import {
   deleteInvitationInviteLink,
   listInvitationInviteLinks,
   openInvitationInviteLink,
+  recordInvitationInviteLinkDeliveries,
   rotateInvitationInviteLink,
   updateInvitationInviteLink
 } from "./invitationInviteLinkRepository";
@@ -52,7 +54,17 @@ export async function handleAdminInvitationInviteLinkRequest(
       return result ? json(result) : json({ error: "not_found" }, 404);
     }
     if (!linkId && request.method === "POST") {
-      const links = parseInvitationInviteLinkBatch(await body(request));
+      const requestBody = await body(request);
+      const delivery = typeof requestBody === "object" && requestBody !== null && "delivery" in requestBody
+        ? parseInvitationInviteDeliveryInput(requestBody.delivery)
+        : null;
+      if (delivery) {
+        const recorded = await recordInvitationInviteLinkDeliveries(env.DB, invitationId, delivery);
+        if (!recorded) return json({ error: "not_found" }, 404);
+        const result = await listInvitationInviteLinks(env.DB, invitationId);
+        return result ? json(result) : json({ error: "not_found" }, 404);
+      }
+      const links = parseInvitationInviteLinkBatch(requestBody);
       if (!links) return json({ error: "invalid_request" }, 400);
       const created = await createInvitationInviteLinks(env.DB, invitationId, links);
       if (!created) return json({ error: "not_found" }, 404);

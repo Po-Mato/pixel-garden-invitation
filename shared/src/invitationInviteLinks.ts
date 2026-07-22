@@ -1,8 +1,10 @@
 import type { RsvpSide } from "./rsvp";
 
 export const invitationInviteLinkSides = ["groom", "bride"] as const;
+export const invitationInviteDeliveryChannels = ["kakao", "sms", "in_person", "other"] as const;
 
 export type InvitationInviteLinkSide = RsvpSide;
+export type InvitationInviteDeliveryChannel = typeof invitationInviteDeliveryChannels[number];
 
 export type InvitationInviteLinkInput = {
   guestName: string;
@@ -14,9 +16,20 @@ export type InvitationInviteLinkUpdate = Partial<InvitationInviteLinkInput> & {
   active?: boolean;
 };
 
+export type InvitationInviteDeliveryInput = {
+  linkIds: string[];
+  channel: InvitationInviteDeliveryChannel;
+  note: string;
+};
+
 export type InvitationInviteLinkRecord = InvitationInviteLinkInput & {
   id: string;
   active: boolean;
+  deliveryChannel: InvitationInviteDeliveryChannel | null;
+  sendCount: number;
+  firstSentAt: string | null;
+  lastSentAt: string | null;
+  deliveryNote: string;
   openCount: number;
   firstOpenedAt: string | null;
   lastOpenedAt: string | null;
@@ -34,6 +47,7 @@ export type InvitationInviteLinkCreated = {
 export type InvitationInviteLinkSummary = {
   total: number;
   active: number;
+  delivered: number;
   opened: number;
   responded: number;
 };
@@ -100,6 +114,20 @@ export function parseInvitationInviteLinkUpdate(value: unknown): InvitationInvit
     update.active = value.active;
   }
   return Object.keys(update).length > 0 ? update : null;
+}
+
+export function parseInvitationInviteDeliveryInput(value: unknown): InvitationInviteDeliveryInput | null {
+  if (!isRecord(value) || !Array.isArray(value.linkIds)) return null;
+  const linkIds = [...new Set(value.linkIds)];
+  if (
+    linkIds.length < 1
+    || linkIds.length > 100
+    || !linkIds.every((linkId) => typeof linkId === "string" && /^invite_[0-9a-f-]+$/.test(linkId))
+    || !invitationInviteDeliveryChannels.includes(value.channel as InvitationInviteDeliveryChannel)
+  ) return null;
+  const note = normalizedText(value.note ?? "", 200, false);
+  if (note === null) return null;
+  return { linkIds, channel: value.channel as InvitationInviteDeliveryChannel, note };
 }
 
 export function validInvitationInviteToken(value: unknown): value is string {

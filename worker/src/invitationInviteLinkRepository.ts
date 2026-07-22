@@ -1,6 +1,7 @@
 import type {
   InvitationInviteLinkAdminResult,
   InvitationInviteLinkCreated,
+  InvitationInviteDeliveryInput,
   InvitationInviteLinkInput,
   InvitationInviteLinkRecord,
   InvitationInviteLinkUpdate,
@@ -14,6 +15,11 @@ type InviteLinkRow = {
   side: "groom" | "bride";
   group_label: string;
   active: number;
+  delivery_channel: "kakao" | "sms" | "in_person" | "other" | null;
+  send_count: number;
+  first_sent_at: string | null;
+  last_sent_at: string | null;
+  delivery_note: string;
   open_count: number;
   first_opened_at: string | null;
   last_opened_at: string | null;
@@ -30,6 +36,11 @@ function record(row: InviteLinkRow): InvitationInviteLinkRecord {
     side: row.side,
     groupLabel: row.group_label,
     active: row.active === 1,
+    deliveryChannel: row.delivery_channel,
+    sendCount: row.send_count,
+    firstSentAt: row.first_sent_at,
+    lastSentAt: row.last_sent_at,
+    deliveryNote: row.delivery_note,
     openCount: row.open_count,
     firstOpenedAt: row.first_opened_at,
     lastOpenedAt: row.last_opened_at,
@@ -53,7 +64,8 @@ export async function listInvitationInviteLinks(
     .first<{ id: string }>();
   if (!invitation) return null;
   const rows = await db.prepare(`
-    SELECT id, guest_name, side, group_label, active, open_count, first_opened_at,
+    SELECT id, guest_name, side, group_label, active, delivery_channel, send_count,
+           first_sent_at, last_sent_at, delivery_note, open_count, first_opened_at,
            last_opened_at, responded_at, rsvp_id, created_at, updated_at
     FROM invitation_invite_links
     WHERE invitation_id = ?
@@ -64,6 +76,7 @@ export async function listInvitationInviteLinks(
     summary: {
       total: links.length,
       active: links.filter(({ active }) => active).length,
+      delivered: links.filter(({ sendCount }) => sendCount > 0).length,
       opened: links.filter(({ openCount }) => openCount > 0).length,
       responded: links.filter(({ respondedAt }) => respondedAt !== null).length
     },
@@ -108,6 +121,11 @@ export async function createInvitationInviteLinks(
       id: item.id,
       ...item.input,
       active: true,
+      deliveryChannel: null,
+      sendCount: 0,
+      firstSentAt: null,
+      lastSentAt: null,
+      deliveryNote: "",
       openCount: 0,
       firstOpenedAt: null,
       lastOpenedAt: null,
@@ -134,7 +152,8 @@ export async function updateInvitationInviteLink(
         active = COALESCE(?, active),
         updated_at = ?
     WHERE invitation_id = ? AND id = ?
-    RETURNING id, guest_name, side, group_label, active, open_count, first_opened_at,
+    RETURNING id, guest_name, side, group_label, active, delivery_channel, send_count,
+              first_sent_at, last_sent_at, delivery_note, open_count, first_opened_at,
               last_opened_at, responded_at, rsvp_id, created_at, updated_at
   `).bind(
     update.guestName ?? null,
@@ -159,10 +178,39 @@ export async function rotateInvitationInviteLink(
     UPDATE invitation_invite_links
     SET token_hash = ?, active = 1, updated_at = ?
     WHERE invitation_id = ? AND id = ?
-    RETURNING id, guest_name, side, group_label, active, open_count, first_opened_at,
+    RETURNING id, guest_name, side, group_label, active, delivery_channel, send_count,
+              first_sent_at, last_sent_at, delivery_note, open_count, first_opened_at,
               last_opened_at, responded_at, rsvp_id, created_at, updated_at
   `).bind(credential.tokenHash, now.toISOString(), invitationId, linkId).first<InviteLinkRow>();
   return row ? { link: record(row), token: credential.token } : null;
+}
+
+export async function recordInvitationInviteLinkDeliveries(
+  db: D1Database,
+  invitationId: string,
+  input: InvitationInviteDeliveryInput,
+  now = new Date()
+): Promise<boolean> {
+  const placeholders = input.linkIds.map(() => "?").join(", ");
+  const found = await db.prepare(`
+    SELECT COUNT(*) AS count
+    FROM invitation_invite_links
+    WHERE invitation_id = ? AND id IN (${placeholders})
+  `).bind(invitationId, ...input.linkIds).first<{ count: number }>();
+  if (Number(found?.count ?? 0) !== input.linkIds.length) return false;
+
+  const sentAt = now.toISOString();
+  await db.batch(input.linkIds.map((linkId) => db.prepare(`
+    UPDATE invitation_invite_links
+    SET delivery_channel = ?,
+        send_count = send_count + 1,
+        first_sent_at = COALESCE(first_sent_at, ?),
+        last_sent_at = ?,
+        delivery_note = ?,
+        updated_at = ?
+    WHERE invitation_id = ? AND id = ?
+  `).bind(input.channel, sentAt, sentAt, input.note, sentAt, invitationId, linkId)));
+  return true;
 }
 
 export async function deleteInvitationInviteLink(

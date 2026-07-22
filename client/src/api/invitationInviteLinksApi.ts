@@ -2,6 +2,7 @@ import type {
   InvitationInviteLinkAdminResult,
   InvitationInviteLinkCreateResult,
   InvitationInviteLinkCreated,
+  InvitationInviteDeliveryInput,
   InvitationInviteLinkInput,
   InvitationInviteLinkRecord,
   InvitationInviteLinkUpdate,
@@ -82,6 +83,16 @@ export function updateAdminInvitationInviteLink(
   return requestJson<InvitationInviteLinkRecord>(
     adminPath(`/${encodeURIComponent(linkId)}`),
     authorized(token, "PATCH", update)
+  );
+}
+
+export function recordAdminInvitationInviteLinkDeliveries(
+  token: string,
+  delivery: InvitationInviteDeliveryInput
+): Promise<InvitationInviteLinkAdminResult> {
+  return requestJson<InvitationInviteLinkAdminResult>(
+    adminPath(),
+    authorized(token, "POST", { delivery })
   );
 }
 

@@ -10,6 +10,7 @@ const repository = vi.hoisted(() => ({
   createInvitationInviteLinks: vi.fn(),
   updateInvitationInviteLink: vi.fn(),
   rotateInvitationInviteLink: vi.fn(),
+  recordInvitationInviteLinkDeliveries: vi.fn(),
   deleteInvitationInviteLink: vi.fn(),
   openInvitationInviteLink: vi.fn()
 }));
@@ -28,6 +29,11 @@ const link = {
   side: "bride" as const,
   groupLabel: "친구",
   active: true,
+  deliveryChannel: null,
+  sendCount: 0,
+  firstSentAt: null,
+  lastSentAt: null,
+  deliveryNote: "",
   openCount: 0,
   firstOpenedAt: null,
   lastOpenedAt: null,
@@ -36,7 +42,7 @@ const link = {
   createdAt: "2026-07-22T00:00:00.000Z",
   updatedAt: "2026-07-22T00:00:00.000Z"
 };
-const result = { summary: { total: 1, active: 1, opened: 0, responded: 0 }, links: [link] };
+const result = { summary: { total: 1, active: 1, delivered: 0, opened: 0, responded: 0 }, links: [link] };
 const env = {
   DB: {} as D1Database,
   RSVP_ADMIN_SESSION_SECRET: "session-secret"
@@ -61,6 +67,7 @@ describe("invitation invite link HTTP", () => {
     repository.createInvitationInviteLinks.mockResolvedValue([{ link, token }]);
     repository.updateInvitationInviteLink.mockResolvedValue(link);
     repository.rotateInvitationInviteLink.mockResolvedValue({ link, token });
+    repository.recordInvitationInviteLinkDeliveries.mockResolvedValue(true);
     repository.deleteInvitationInviteLink.mockResolvedValue(true);
     repository.openInvitationInviteLink.mockResolvedValue({ guestName: "김하객", side: "bride", groupLabel: "친구" });
   });
@@ -113,6 +120,18 @@ describe("invitation invite link HTTP", () => {
       adminRequest("DELETE"), env, "sample-garden", link.id
     );
     expect(deleted.status).toBe(204);
+  });
+
+  it("records a normalized delivery batch through the collection endpoint", async () => {
+    const response = await handleAdminInvitationInviteLinkRequest(adminRequest("POST", {
+      delivery: { linkIds: [link.id, link.id], channel: "kakao", note: "  가족   단체방 " }
+    }), env, "sample-garden");
+
+    expect(response.status).toBe(200);
+    expect(repository.recordInvitationInviteLinkDeliveries).toHaveBeenCalledWith(env.DB, "sample-garden", {
+      linkIds: [link.id], channel: "kakao", note: "가족 단체방"
+    });
+    expect(await response.json()).toEqual(result);
   });
 
   it("resolves only active fixed-format public tokens", async () => {

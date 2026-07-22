@@ -7,6 +7,7 @@ import {
   listInvitationInviteLinks,
   markInvitationInviteLinkResponded,
   openInvitationInviteLink,
+  recordInvitationInviteLinkDeliveries,
   rotateInvitationInviteLink,
   updateInvitationInviteLink
 } from "./invitationInviteLinkRepository";
@@ -49,6 +50,7 @@ function setup(): { database: SqliteDatabase; db: D1Database } {
   database.exec("PRAGMA foreign_keys = ON");
   database.exec(readFileSync(new URL("../migrations/0001_init.sql", import.meta.url), "utf8"));
   database.exec(readFileSync(new URL("../migrations/0013_invitation_invite_links.sql", import.meta.url), "utf8"));
+  database.exec(readFileSync(new URL("../migrations/0014_invitation_invite_delivery_history.sql", import.meta.url), "utf8"));
   return { database, db: d1(database) };
 }
 
@@ -72,8 +74,31 @@ describe("invitation invite link repository", () => {
         .get(created![0].link.id)).not.toEqual({ token_hash: created![0].token });
 
       expect(await listInvitationInviteLinks(db, "sample-garden")).toMatchObject({
-        summary: { total: 2, active: 2, opened: 0, responded: 0 }
+        summary: { total: 2, active: 2, delivered: 0, opened: 0, responded: 0 }
       });
+
+      await expect(recordInvitationInviteLinkDeliveries(db, "sample-garden", {
+        linkIds: created!.map(({ link }) => link.id),
+        channel: "kakao",
+        note: "친구 단체방"
+      }, now)).resolves.toBe(true);
+      await expect(recordInvitationInviteLinkDeliveries(db, "sample-garden", {
+        linkIds: [created![0].link.id],
+        channel: "sms",
+        note: "개별 재발송"
+      }, new Date(now.getTime() + 2_000))).resolves.toBe(true);
+      const deliveryLinks = (await listInvitationInviteLinks(db, "sample-garden"))!.links;
+      expect(deliveryLinks.find(({ id }) => id === created![0].link.id)).toMatchObject({
+        deliveryChannel: "sms",
+        sendCount: 2,
+        firstSentAt: now.toISOString(),
+        lastSentAt: new Date(now.getTime() + 2_000).toISOString(),
+        deliveryNote: "개별 재발송"
+      });
+      expect((await listInvitationInviteLinks(db, "sample-garden"))?.summary.delivered).toBe(2);
+      await expect(recordInvitationInviteLinkDeliveries(db, "sample-garden", {
+        linkIds: ["invite_missing"], channel: "other", note: ""
+      }, now)).resolves.toBe(false);
       await expect(openInvitationInviteLink(db, "sample-garden", created![0].token, now)).resolves.toEqual({
         guestName: "김하객", side: "bride", groupLabel: "대학 친구"
       });

@@ -30,6 +30,9 @@ importers:
       lucide-react:
         specifier: ^1.25.0
         version: 1.25.0(react@18.3.1)
+      papaparse:
+        specifier: 5.5.4
+        version: 5.5.4
       pathfinding:
         specifier: ^0.4.18
         version: 0.4.18
@@ -49,6 +52,9 @@ importers:
       '@testing-library/react':
         specifier: ^15.0.0
         version: 15.0.7(@types/react@18.3.31)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@types/papaparse':
+        specifier: 5.5.2
+        version: 5.5.2
       '@types/pathfinding':
         specifier: ^0.1.0
         version: 0.1.0
@@ -694,6 +700,9 @@ packages:
   '@types/node@20.19.43':
     resolution: {integrity: sha512-6oYBAi5ikg4Pl+kGsoYtawUMBT2zZMCvPNF7pVLnHZfd1zf38DRiWn/gT01RYCdUqkv7Fhr+C9ot4/tb+2sVvA==}
 
+  '@types/papaparse@5.5.2':
+    resolution: {integrity: sha512-gFnFp/JMzLHCwRf7tQHrNnfhN4eYBVYYI897CGX4MY1tzY9l2aLkVyx2IlKZ/SAqDbB3I1AOZW5gTMGGsqWliA==}
+
   '@types/pathfinding@0.1.0':
     resolution: {integrity: sha512-QkKZqdAPhfkHIoiCWa/4yVolcCDin10qScbdiyqtDsY9cxlcslVgoU1g9yVdFytsHqJQevkYNcNBgD/P7OZbQg==}
 
@@ -1158,6 +1167,9 @@ packages:
   p-try@2.2.0:
     resolution: {integrity: sha512-R4nPAVTAU0B9D35/Gk3uJf/7XYbQcyohSKdvAxIRSNghFl4e71hVoGnBNQz9cWaXxO2I10KTC+3jMdvvoKw6dQ==}
     engines: {node: '>=6'}
+
+  papaparse@5.5.4:
+    resolution: {integrity: sha512-SwzWD9gl/ElwYLCI0nUja1mFJzjq2D8ziShfNBa7zCHzkOozeOGDwHWQ+tvCzEZcewecWZ5U7kUopDnG+DFYEQ==}
 
   parse5@7.3.0:
     resolution: {integrity: sha512-IInvU7fabl34qmi9gY8XOVxhYyMyuH2xUNpb2q8/Y+7552KlejkRvqvD19nMoUW/uQGGbqNpA6Tufu5FL5BZgw==}
@@ -1919,6 +1931,10 @@ snapshots:
     dependencies:
       undici-types: 6.21.0
 
+  '@types/papaparse@5.5.2':
+    dependencies:
+      '@types/node': 20.19.43
+
   '@types/pathfinding@0.1.0': {}
 
   '@types/prop-types@15.7.15': {}
@@ -2355,6 +2371,8 @@ snapshots:
       p-limit: 2.3.0
 
   p-try@2.2.0: {}
+
+  papaparse@5.5.4: {}
 
   parse5@7.3.0:
     dependencies:

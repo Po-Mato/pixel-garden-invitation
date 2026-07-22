@@ -5,6 +5,7 @@ import {
   createRsvpWithInviteLink,
   fetchAdminInvitationInviteLinks,
   fetchPublicInvitationInvite,
+  recordAdminInvitationInviteLinkDeliveries,
   rotateAdminInvitationInviteLink,
   updateAdminInvitationInviteLink
 } from "./invitationInviteLinksApi";
@@ -26,7 +27,7 @@ describe("invitation invite links API", () => {
     vi.stubEnv("VITE_INVITATION_ID", "sample-garden");
     installMemoryLocalStorage();
     global.fetch = vi.fn().mockImplementation(async () => new Response(JSON.stringify({
-      summary: { total: 0, active: 0, opened: 0, responded: 0 }, links: [], created: []
+      summary: { total: 0, active: 0, delivered: 0, opened: 0, responded: 0 }, links: [], created: []
     }), { status: 200, headers: { "content-type": "application/json" } }));
   });
 
@@ -53,6 +54,16 @@ describe("invitation invite links API", () => {
     expect(fetch).toHaveBeenLastCalledWith(expect.stringContaining("/invite_one"), expect.objectContaining({ method: "PATCH" }));
     await rotateAdminInvitationInviteLink("admin", "invite_one");
     expect(fetch).toHaveBeenLastCalledWith(expect.stringContaining("/invite_one/rotate"), expect.objectContaining({ method: "POST" }));
+    await recordAdminInvitationInviteLinkDeliveries("admin", {
+      linkIds: ["invite_one"], channel: "kakao", note: "친구 단체방"
+    });
+    expect(fetch).toHaveBeenLastCalledWith(
+      "https://worker.test/api/invitations/sample-garden/admin/invite-links",
+      expect.objectContaining({
+        method: "POST",
+        body: JSON.stringify({ delivery: { linkIds: ["invite_one"], channel: "kakao", note: "친구 단체방" } })
+      })
+    );
   });
 
   it("adds the stored bearer token only to an invited RSVP", async () => {

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   parseInvitationInviteLinkBatch,
+  parseInvitationInviteDeliveryInput,
   parseInvitationInviteLinkInput,
   parseInvitationInviteLinkUpdate,
   validInvitationInviteToken
@@ -31,6 +32,20 @@ describe("invitation invite links", () => {
     expect(parseInvitationInviteLinkUpdate({ groupLabel: "" })).toEqual({ groupLabel: "" });
     expect(parseInvitationInviteLinkUpdate({})).toBeNull();
     expect(parseInvitationInviteLinkUpdate({ active: "yes" })).toBeNull();
+  });
+
+  it("normalizes a bounded delivery batch without contact details", () => {
+    expect(parseInvitationInviteDeliveryInput({
+      linkIds: ["invite_abc-123", "invite_abc-123", "invite_def-456"],
+      channel: "kakao",
+      note: "  신부가   직접 발송 "
+    })).toEqual({
+      linkIds: ["invite_abc-123", "invite_def-456"],
+      channel: "kakao",
+      note: "신부가 직접 발송"
+    });
+    expect(parseInvitationInviteDeliveryInput({ linkIds: [], channel: "sms", note: "" })).toBeNull();
+    expect(parseInvitationInviteDeliveryInput({ linkIds: ["invalid"], channel: "email", note: "" })).toBeNull();
   });
 
   it("accepts only fixed-length base64url bearer tokens", () => {
