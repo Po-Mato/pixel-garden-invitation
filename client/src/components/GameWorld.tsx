@@ -6,6 +6,7 @@ import {
   type MouseEvent,
   type TransitionEvent as ReactTransitionEvent
 } from "react";
+import { Share2 } from "lucide-react";
 import {
   invitationContent,
   type ClientMessage,
@@ -25,13 +26,24 @@ import {
   type TileInputState
 } from "../game/tileInput";
 import {
+  completeJourneyCheckpoint,
+  journeyCheckpointForInteraction,
+  journeyCheckpointForZone,
+  journeyCheckpoints,
+  loadJourneyProgress,
+  saveJourneyProgress,
+  type JourneyCheckpoint,
+  type JourneyCheckpointId
+} from "../game/journeyProgress";
+import {
   gardenWorld,
   getWorldZone,
   pointInPortalEntry,
   portalEntryRect,
   type Point,
   type Rect,
-  type WorldPortal
+  type WorldPortal,
+  type WorldZone
 } from "../game/world";
 import { preloadWorldZoneAssets } from "../game/worldAssetPreloader";
 import { worldDepth } from "../game/worldVisuals";
@@ -43,6 +55,7 @@ import { FamilyContactSheet } from "./FamilyContactSheet";
 import { GiftAccountSheet } from "./GiftAccountSheet";
 import { GuestInformationAccess } from "./GuestInformationAccess";
 import { InvitationShareAccess } from "./InvitationShareAccess";
+import { JourneyCompletion, JourneyStampBook, JourneyStampNotice } from "./JourneyStampBook";
 import { SpotModal } from "./SpotModal";
 import { VirtualJoystick } from "./VirtualJoystick";
 import { ViewSettingsAccess } from "./ViewSettingsAccess";
@@ -52,6 +65,7 @@ import { WeddingNpc } from "./WeddingNpc";
 import { WorldMapArtwork } from "./WorldMapArtwork";
 import { WorldDecoration } from "./WorldDecoration";
 import { WorldMiniMap } from "./WorldMiniMap";
+import "../journey.css";
 
 type GameWorldProps = {
   profile: EntryProfile;
@@ -96,6 +110,25 @@ const npcInteractionRect = (npc: { x: number; y: number }): Rect => ({
   width: 60,
   height: 75
 });
+
+function journeyMarkerPoint(zone: WorldZone, checkpoint: JourneyCheckpoint): Point | null {
+  const checkpointTarget = checkpoint.target;
+  if (checkpointTarget.type === "spot") {
+    const target = zone.spots.find((spot) => spot.id === checkpointTarget.spotId);
+    return target ? rectCenter(target) : null;
+  }
+  if (checkpointTarget.type === "npc") {
+    const target = zone.npcs.find((npc) => npc.id === checkpointTarget.npcId);
+    return target ? { x: target.x, y: target.y } : null;
+  }
+  if (zone.npcs.length > 0) {
+    return {
+      x: zone.npcs.reduce((sum, npc) => sum + npc.x, 0) / zone.npcs.length,
+      y: zone.npcs.reduce((sum, npc) => sum + npc.y, 0) / zone.npcs.length
+    };
+  }
+  return zone.spawn;
+}
 
 function withoutCurrentGuest(guests: RoomGuest[], currentGuestId: string | null): RoomGuest[] {
   return currentGuestId ? guests.filter((guest) => guest.guestId !== currentGuestId) : guests;
@@ -154,6 +187,10 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   const [shareSheetOpen, setShareSheetOpen] = useState(false);
   const [viewSettingsOpen, setViewSettingsOpen] = useState(false);
   const [travelStatus, setTravelStatus] = useState("우리 집에서 여정을 시작해요");
+  const [journeyProgress, setJourneyProgress] = useState(loadJourneyProgress);
+  const [stampedCheckpointId, setStampedCheckpointId] = useState<JourneyCheckpointId | null>(null);
+  const [journeyCompletionPending, setJourneyCompletionPending] = useState(false);
+  const [journeyCompletionOpen, setJourneyCompletionOpen] = useState(false);
   const [viewport, setViewport] = useState<ViewportSize>(defaultViewport);
   const [remoteGuests, setRemoteGuests] = useState<RoomGuest[]>([]);
   const [realtimeStatus, setRealtimeStatus] = useState<RealtimeStatus>("offline");
@@ -186,6 +223,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   const currentGuestIdRef = useRef<string | null>(null);
   const moveSeqRef = useRef(0);
   const lastSentMoveRef = useRef<MoveMessage | null>(null);
+  const journeyProgressRef = useRef(journeyProgress);
   const moveThrottleRef = useRef<((message: MoveMessage, now: number) => void) | null>(null);
   const terminalStopConfirmTimerRef = useRef<number | null>(null);
 
@@ -208,6 +246,24 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     inputReleaseRequiredRef.current = required;
     setInputReleaseRequiredState(required);
   }, []);
+
+  const stampJourneyCheckpoint = useCallback((checkpointId: JourneyCheckpointId) => {
+    const result = completeJourneyCheckpoint(journeyProgressRef.current, checkpointId);
+    if (!result.changed) return;
+
+    journeyProgressRef.current = result.progress;
+    saveJourneyProgress(result.progress);
+    setJourneyProgress(result.progress);
+    setStampedCheckpointId(checkpointId);
+    const checkpoint = journeyCheckpoints.find((candidate) => candidate.id === checkpointId);
+    setTravelStatus(`${checkpoint?.label ?? "방문"} 스탬프를 찍었어요`);
+    if (result.journeyCompleted) setJourneyCompletionPending(true);
+  }, []);
+
+  const stampWorldInteraction = useCallback((spotId: SpotId) => {
+    const checkpointId = journeyCheckpointForInteraction(activeZoneIdRef.current, spotId);
+    if (checkpointId) stampJourneyCheckpoint(checkpointId);
+  }, [stampJourneyCheckpoint]);
 
   const cancelPortalWalk = useCallback(() => {
     if (!portalIntentRef.current) return;
@@ -376,6 +432,8 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     setMoving(false);
     setStepFrame(1);
     setTravelStatus(`${zone.label} 도착`);
+    const checkpointId = journeyCheckpointForZone(zone.id);
+    if (checkpointId) stampJourneyCheckpoint(checkpointId);
     targetStepAtRef.current = null;
     tileInputStateRef.current = null;
     joystickWasMovingRef.current = false;
@@ -393,7 +451,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
       };
       sendMoveImmediately(connection, message);
     }
-  }, [clearTerminalStopConfirm, sendMoveImmediately, setInteractionIntent, setPortalIntent]);
+  }, [clearTerminalStopConfirm, sendMoveImmediately, setInteractionIntent, setPortalIntent, stampJourneyCheckpoint]);
 
   const handleJourneySelect = useCallback((zoneId: WorldZoneId) => {
     if (portalTransitionRef.current || zoneId === activeZoneIdRef.current) return;
@@ -483,6 +541,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
       directionRef.current = nextDirection;
       setDirection(nextDirection);
       setTravelStatus(`${input.label}에 도착했어요`);
+      stampWorldInteraction(input.spotId);
       openSpot(input.spotId);
       return;
     }
@@ -502,7 +561,8 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     sendRealtimeTerminalStop,
     setInputReleaseRequired,
     setInteractionIntent,
-    setPortalIntent
+    setPortalIntent,
+    stampWorldInteraction
   ]);
 
   const closeActiveSpot = useCallback(() => {
@@ -580,6 +640,25 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     document.addEventListener("keydown", handleEscape);
     return () => document.removeEventListener("keydown", handleEscape);
   }, [closeMenu, menuOpen, nestedMenuSheetOpen]);
+
+  useEffect(() => {
+    if (!stampedCheckpointId) return;
+    const timer = window.setTimeout(() => setStampedCheckpointId(null), 1900);
+    return () => window.clearTimeout(timer);
+  }, [stampedCheckpointId]);
+
+  useEffect(() => {
+    if (
+      !journeyCompletionPending ||
+      activeSpotId ||
+      menuOpen ||
+      nestedMenuSheetOpen
+    ) return;
+
+    pauseWorldInput();
+    setJourneyCompletionPending(false);
+    setJourneyCompletionOpen(true);
+  }, [activeSpotId, journeyCompletionPending, menuOpen, nestedMenuSheetOpen, pauseWorldInput]);
 
   useEffect(() => {
     if (loadedBackgroundZoneId !== activeZone.id) return;
@@ -792,6 +871,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
         targetStepAtRef.current = null;
         tileInputStateRef.current = null;
         sendRealtimeStop(next, facing, activeZone.id);
+        stampWorldInteraction(interactionIntent.spotId);
         openSpot(interactionIntent.spotId);
         return;
       }
@@ -841,6 +921,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     sendRealtimeStop,
     setInteractionIntent,
     setPortalIntent,
+    stampWorldInteraction,
     target
   ]);
 
@@ -928,6 +1009,13 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   }
 
   const camera = computeCameraTransform({ player: position, viewport, bounds: activeZone.bounds, zoom: 1 });
+  const completedJourneyIds = new Set(journeyProgress.completedIds);
+  const activeJourneyMarkers = journeyCheckpoints
+    .filter((checkpoint) => checkpoint.zoneId === activeZone.id)
+    .flatMap((checkpoint) => {
+      const point = journeyMarkerPoint(activeZone, checkpoint);
+      return point ? [{ id: checkpoint.id, point, completed: completedJourneyIds.has(checkpoint.id) }] : [];
+    });
 
   return (
     <section className="game-world" aria-label="모바일 청첩장 월드" aria-busy={portalTransition ? "true" : undefined}>
@@ -956,9 +1044,24 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
           </div>
           <div className={`realtime-pill realtime-pill--${realtimeStatus}`}>{realtimeStatusText(realtimeStatus)}</div>
         </div>
+        <JourneyStampBook
+          progress={journeyProgress}
+          activeZoneId={activeZone.id}
+          highlightedCheckpointId={stampedCheckpointId}
+          disabled={Boolean(portalTransition)}
+          onOpenChange={(open) => { if (open) pauseWorldInput(); }}
+          onSelectZone={handleJourneySelect}
+        />
         <ol className="world-journey" aria-label="하객 여정">
-          {gardenWorld.zones.map((zone) => (
-            <li key={zone.id} aria-current={zone.id === activeZone.id ? "location" : undefined}>
+          {gardenWorld.zones.map((zone) => {
+            const checkpoints = journeyCheckpoints.filter((checkpoint) => checkpoint.zoneId === zone.id);
+            const stamped = checkpoints.length > 0 && checkpoints.every((checkpoint) => completedJourneyIds.has(checkpoint.id));
+            return (
+            <li
+              key={zone.id}
+              aria-current={zone.id === activeZone.id ? "location" : undefined}
+              data-stamped={stamped || undefined}
+            >
               <button
                 type="button"
                 className="world-journey__button"
@@ -967,9 +1070,11 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
                 onClick={() => { handleJourneySelect(zone.id); }}
               >
                 {zone.label}
+                {stamped ? <span className="world-journey__stamp" aria-label="방문 완료">✓</span> : null}
               </button>
             </li>
-          ))}
+            );
+          })}
         </ol>
         <p className="world-travel-status" aria-live="polite">{travelStatus}</p>
       </header>
@@ -1120,6 +1225,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
             camera={camera}
             viewport={viewport}
             targetPortalId={portalIntent?.portal.id ?? null}
+            journeyMarkers={activeJourneyMarkers}
           />
 
           <div className="world-control-dock" onClick={(event) => event.stopPropagation()}>
@@ -1213,10 +1319,10 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
               >
                 혼주 연락처
               </button>
-              <InvitationShareAccess
-                variant="menu"
-                onOpenChange={handleShareSheetOpenChange}
-              />
+              <button type="button" onClick={() => handleShareSheetOpenChange(true)}>
+                <Share2 aria-hidden="true" />
+                초대장 공유
+              </button>
               <ViewSettingsAccess
                 variant="menu"
                 onOpenChange={handleViewSettingsOpenChange}
@@ -1235,6 +1341,27 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
         <DirectionsSheet onClose={closeActiveSpot} />
       ) : activeSpotId ? (
         <SpotModal spotId={activeSpotId} nickname={profile.nickname} onClose={closeActiveSpot} />
+      ) : null}
+      <InvitationShareAccess
+        variant="menu"
+        open={shareSheetOpen}
+        showTrigger={false}
+        onOpenChange={handleShareSheetOpenChange}
+      />
+      {stampedCheckpointId ? <JourneyStampNotice checkpointId={stampedCheckpointId} /> : null}
+      {journeyCompletionOpen ? (
+        <JourneyCompletion
+          onClose={() => setJourneyCompletionOpen(false)}
+          onOpenRsvp={() => {
+            setJourneyCompletionOpen(false);
+            openSpot("rsvp");
+          }}
+          onOpenShare={() => {
+            setJourneyCompletionOpen(false);
+            pauseWorldInput();
+            setShareSheetOpen(true);
+          }}
+        />
       ) : null}
     </section>
   );

@@ -15,6 +15,13 @@ type WorldMiniMapProps = {
   camera: CameraTransform;
   viewport: ViewportSize;
   targetPortalId: string | null;
+  journeyMarkers?: JourneyMiniMapMarker[];
+};
+
+export type JourneyMiniMapMarker = {
+  id: string;
+  point: Point;
+  completed: boolean;
 };
 
 const directionVectors: Record<Direction, Point> = {
@@ -30,7 +37,8 @@ export function WorldMiniMap({
   direction,
   camera,
   viewport,
-  targetPortalId
+  targetPortalId,
+  journeyMarkers = []
 }: WorldMiniMapProps) {
   const layout = createMiniMapLayout(zone.bounds);
   const playerPoint = projectMiniMapPoint(player, zone.bounds, layout);
@@ -89,6 +97,23 @@ export function WorldMiniMap({
             {...projectMiniMapRect(portalEntryRect(portal), zone.bounds, layout)}
           />
         ))}
+        {journeyMarkers.map((marker) => {
+          const point = projectMiniMapPoint(marker.point, zone.bounds, layout);
+          return (
+            <g
+              key={marker.id}
+              data-testid="minimap-journey-marker"
+              data-checkpoint-id={marker.id}
+              className={`world-minimap__journey-marker${marker.completed ? " world-minimap__journey-marker--complete" : ""}`}
+              transform={`translate(${point.x} ${point.y})`}
+            >
+              <circle r="4.5" />
+              {marker.completed
+                ? <path d="M -2 0 L -0.4 2 L 2.7 -2" />
+                : <path d="M 0 -2.5 L 0 2.5 M -2.5 0 L 2.5 0" />}
+            </g>
+          );
+        })}
         <rect
           data-testid="minimap-viewport"
           className="world-minimap__viewport"

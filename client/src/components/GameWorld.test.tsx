@@ -7,6 +7,7 @@ import {
 } from "@wedding-game/shared";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { worldDepth } from "../game/worldVisuals";
+import { journeyProgressStorageKey } from "../game/journeyProgress";
 import { copyText } from "../invitation/browserActions";
 import { GameWorld } from "./GameWorld";
 
@@ -62,6 +63,15 @@ beforeEach(() => {
   animationFrames = new Map();
   nextAnimationFrameId = 1;
   MockWebSocket.instances = [];
+  const localValues = new Map<string, string>();
+  vi.stubGlobal("localStorage", {
+    getItem: (key: string) => localValues.get(key) ?? null,
+    setItem: (key: string, value: string) => { localValues.set(key, value); },
+    removeItem: (key: string) => { localValues.delete(key); },
+    clear: () => { localValues.clear(); },
+    key: (index: number) => [...localValues.keys()][index] ?? null,
+    get length() { return localValues.size; }
+  });
   vi.mocked(copyText).mockResolvedValue(undefined);
   vi.useFakeTimers();
   vi.stubGlobal("requestAnimationFrame", vi.fn((callback: FrameRequestCallback) => {
@@ -707,6 +717,62 @@ describe("GameWorld", () => {
     expect(directions).toHaveTextContent("네이버지도");
     expect(directions).toHaveTextContent("주차 2시간 무료");
     expect(screen.queryByText("MJ컨벤션은 경기 부천시 소사구 경인로 386에 있습니다.")).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "방문 스탬프 1/5, 열기" })).toBeInTheDocument();
+    expect(screen.getByTestId("minimap-journey-marker")).toHaveClass("world-minimap__journey-marker--complete");
+    expect(JSON.parse(window.localStorage.getItem(journeyProgressStorageKey) ?? "null")).toMatchObject({
+      completedIds: ["directions"]
+    });
+  });
+
+  it("restores saved stamps without reopening the completion reward", () => {
+    window.localStorage.setItem(journeyProgressStorageKey, JSON.stringify({
+      version: 1,
+      completedIds: ["directions", "gallery"],
+      updatedAt: "2026-07-23T01:00:00.000Z"
+    }));
+
+    render(<GameWorld profile={profile} />);
+    fireEvent.click(screen.getByRole("button", { name: "방문 스탬프 2/5, 열기" }));
+
+    expect(screen.getByRole("button", { name: "오시는 길 완료" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "웨딩 갤러리 완료" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "신부에게 인사 방문하기" })).toBeInTheDocument();
+    expect(screen.queryByRole("dialog", { name: "방문 여정 완주" })).not.toBeInTheDocument();
+  });
+
+  it("rewards the final checkpoint and keeps RSVP available as a direct action", () => {
+    window.localStorage.setItem(journeyProgressStorageKey, JSON.stringify({
+      version: 1,
+      completedIds: ["directions", "gallery", "bride", "guestbook"],
+      updatedAt: "2026-07-23T01:00:00.000Z"
+    }));
+    render(<GameWorld profile={profile} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "예식홀 바로 이동" }));
+
+    expect(screen.getByRole("dialog", { name: "방문 여정 완주" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "방문 스탬프 5/5, 열기" })).toBeInTheDocument();
+    expect(JSON.parse(window.localStorage.getItem(journeyProgressStorageKey) ?? "null")).toMatchObject({
+      completedIds: ["directions", "gallery", "bride", "ceremony", "guestbook"]
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: "참석 답변하기" }));
+    expect(screen.getByRole("dialog")).toHaveTextContent("참석 여부와 동행 인원을 알려주세요");
+  });
+
+  it("opens the real invitation share sheet from the journey reward", () => {
+    window.localStorage.setItem(journeyProgressStorageKey, JSON.stringify({
+      version: 1,
+      completedIds: ["directions", "gallery", "bride", "guestbook"],
+      updatedAt: "2026-07-23T01:00:00.000Z"
+    }));
+    render(<GameWorld profile={profile} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "예식홀 바로 이동" }));
+    fireEvent.click(within(screen.getByRole("dialog", { name: "방문 여정 완주" }))
+      .getByRole("button", { name: "초대장 공유" }));
+
+    expect(screen.getByRole("dialog", { name: "초대장 공유" })).toHaveTextContent("이건희 · 이승재");
   });
 
   it("cancels guided interaction when the joystick receives new input", () => {

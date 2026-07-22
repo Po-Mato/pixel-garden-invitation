@@ -34,6 +34,15 @@ afterEach(() => {
 });
 
 describe("InvitationShareAccess", () => {
+  it("외부 완주 동작에서 트리거 없이 공유 시트를 제어한다", () => {
+    const onOpenChange = vi.fn();
+    render(<InvitationShareAccess variant="menu" open showTrigger={false} onOpenChange={onOpenChange} />);
+
+    expect(screen.queryByRole("button", { name: "초대장 공유" })).not.toBeInTheDocument();
+    fireEvent.click(within(screen.getByRole("dialog", { name: "초대장 공유" })).getByRole("button", { name: "닫기" }));
+    expect(onOpenChange).toHaveBeenCalledWith(false);
+  });
+
   it("아이콘 진입점에서 예식 정보를 포함한 공유 시트를 연다", () => {
     render(<InvitationShareAccess variant="icon" />);
 

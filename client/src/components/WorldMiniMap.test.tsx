@@ -18,6 +18,7 @@ describe("WorldMiniMap", () => {
         camera={computeCameraTransform({ player, viewport, bounds: zone.bounds, zoom: 1 })}
         viewport={viewport}
         targetPortalId="home-to-neighborhood"
+        journeyMarkers={[{ id: "directions", point: { x: 150, y: 225 }, completed: true }]}
       />
     );
 
@@ -30,6 +31,7 @@ describe("WorldMiniMap", () => {
     expect(within(minimap).getAllByTestId("minimap-spot")).toHaveLength(zone.spots.length);
     expect(within(minimap).getByTestId("minimap-viewport")).toBeInTheDocument();
     expect(within(minimap).getByTestId("minimap-player")).toHaveAttribute("data-direction", "up");
+    expect(within(minimap).getByTestId("minimap-journey-marker")).toHaveClass("world-minimap__journey-marker--complete");
     const portal = within(minimap).getByTestId("minimap-portal");
     expect(portalEntryRect(zone.portals[0])).toEqual({ x: 240, y: 90, width: 90, height: 30 });
     const projectedPortal = projectMiniMapRect(

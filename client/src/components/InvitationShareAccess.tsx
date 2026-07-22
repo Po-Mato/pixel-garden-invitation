@@ -25,6 +25,8 @@ type InvitationShareAccessProps = {
   variant: "icon" | "menu";
   event?: WeddingEvent;
   share?: EditableInvitationContent["share"];
+  open?: boolean;
+  showTrigger?: boolean;
   onOpenChange?: (open: boolean) => void;
 };
 
@@ -48,12 +50,15 @@ export function InvitationShareAccess({
   variant,
   event: eventOverride,
   share: shareOverride,
+  open: controlledOpen,
+  showTrigger = true,
   onOpenChange
 }: InvitationShareAccessProps) {
   const published = usePublishedInvitationContent();
   const event = eventOverride ?? published.event;
   const share = shareOverride ?? published.share;
-  const [open, setOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
+  const open = controlledOpen ?? internalOpen;
   const [status, setStatus] = useState<ShareStatus>("idle");
   const coupleOrder = useCoupleOrder();
   const nativeShareSupported = typeof navigator.share === "function";
@@ -61,7 +66,7 @@ export function InvitationShareAccess({
   const data = buildInvitationShareData(event, canonicalShareUrl(), coupleOrder, share);
 
   const setVisibility = (visible: boolean) => {
-    setOpen(visible);
+    if (controlledOpen === undefined) setInternalOpen(visible);
     if (visible) setStatus("idle");
     onOpenChange?.(visible);
   };
@@ -95,7 +100,7 @@ export function InvitationShareAccess({
 
   return (
     <>
-      <button
+      {showTrigger ? <button
         type="button"
         className={`invitation-share-trigger invitation-share-trigger--${variant}`}
         aria-label={variant === "icon" ? "초대장 공유" : undefined}
@@ -104,7 +109,7 @@ export function InvitationShareAccess({
       >
         <Share2 aria-hidden="true" />
         {variant === "menu" ? "초대장 공유" : null}
-      </button>
+      </button> : null}
 
       {open ? (
         <BottomSheet title="초대장 공유" onClose={() => setVisibility(false)}>
