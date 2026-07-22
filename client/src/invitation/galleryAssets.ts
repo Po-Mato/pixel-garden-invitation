@@ -1,4 +1,5 @@
 export function resolveGalleryAssetPath(assetPath: string, baseUrl = import.meta.env.BASE_URL): string {
+  if (/^https?:\/\//.test(assetPath)) return assetPath;
   const normalizedBase = baseUrl.endsWith("/") ? baseUrl : `${baseUrl}/`;
 
   return `${normalizedBase}${assetPath.replace(/^\/+/, "")}`;

@@ -374,6 +374,7 @@ export function ContentAdminPage() {
             <h1>실데이터 편집</h1>
           </div>
           <div className="guestbook-admin-header-actions">
+            <a className="rsvp-admin-nav-link" href="?admin=gallery">사진 관리</a>
             <a className="rsvp-admin-nav-link" href="?admin=readiness">공개 준비</a>
             <a className="rsvp-admin-nav-link" href="?admin=rsvp">참석 답변</a>
             <a className="rsvp-admin-nav-link" href="?admin=guestbook">방명록</a>

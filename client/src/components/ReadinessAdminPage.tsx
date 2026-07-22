@@ -94,11 +94,15 @@ export function ReadinessAdminPage() {
   const readiness = useMemo(() => buildPublicationReadiness({
     event: published.event,
     content: published.content,
-    publication: published.source === "published"
-      ? { ...weddingContentPublication, coupleIntroduction: "ready", storyTimeline: "ready" }
-      : weddingContentPublication,
+    publication: {
+      ...weddingContentPublication,
+      ...(published.source === "published"
+        ? { coupleIntroduction: "ready" as const, storyTimeline: "ready" as const }
+        : {}),
+      ...(published.gallerySource === "published" ? { gallery: "ready" as const } : {})
+    },
     runtime
-  }), [published.content, published.event, published.source, runtime]);
+  }), [published.content, published.event, published.gallerySource, published.source, runtime]);
 
   function logout(message = "") {
     sessionRef.current = null;
@@ -263,6 +267,7 @@ export function ReadinessAdminPage() {
           </div>
           <div className="guestbook-admin-header-actions">
             <a className="rsvp-admin-nav-link" href="?admin=content">실데이터 편집</a>
+            <a className="rsvp-admin-nav-link" href="?admin=gallery">사진 관리</a>
             <a className="rsvp-admin-nav-link" href="?admin=rsvp">참석 답변</a>
             <a className="rsvp-admin-nav-link" href="?admin=guestbook">방명록</a>
             <button type="button" className="rsvp-admin-secondary" onClick={() => logout()}>

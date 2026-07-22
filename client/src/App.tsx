@@ -43,6 +43,8 @@ const ReadinessAdminPage = lazy(() => import("./components/ReadinessAdminPage")
   .then((module) => ({ default: module.ReadinessAdminPage })));
 const ContentAdminPage = lazy(() => import("./components/ContentAdminPage")
   .then((module) => ({ default: module.ContentAdminPage })));
+const GalleryAdminPage = lazy(() => import("./components/GalleryAdminPage")
+  .then((module) => ({ default: module.GalleryAdminPage })));
 
 function ScreenLoadingFallback() {
   return <div className="screen-loading" role="status">화면을 준비하고 있어요</div>;
@@ -122,6 +124,9 @@ export function App() {
   }
   if (adminPage === "content") {
     return <Suspense fallback={<ScreenLoadingFallback />}><ContentAdminPage /></Suspense>;
+  }
+  if (adminPage === "gallery") {
+    return <Suspense fallback={<ScreenLoadingFallback />}><GalleryAdminPage /></Suspense>;
   }
 
   const playing = mode === "garden" && profile !== null;

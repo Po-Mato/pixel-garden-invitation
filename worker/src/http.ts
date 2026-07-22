@@ -26,6 +26,11 @@ import {
   handleAdminInvitationContentRequest,
   handlePublicInvitationContentRequest
 } from "./invitationContentHttp";
+import {
+  handleAdminGalleryAssetRequest,
+  handleAdminInvitationGalleryRequest,
+  handlePublicInvitationGalleryRequest
+} from "./invitationGalleryHttp";
 import type { GuestbookOwnedMessage, RsvpRecord } from "@wedding-game/shared";
 import type { Env } from "./index";
 
@@ -86,8 +91,8 @@ function addCorsHeaders(response: Response, origin: string | null, preflight = f
       response.headers.set("access-control-expose-headers", "Retry-After");
     }
     if (preflight) {
-      response.headers.set("access-control-allow-methods", "GET,POST,PATCH,DELETE,OPTIONS");
-      response.headers.set("access-control-allow-headers", "content-type,authorization");
+      response.headers.set("access-control-allow-methods", "GET,POST,PATCH,PUT,DELETE,OPTIONS");
+      response.headers.set("access-control-allow-headers", "content-type,authorization,x-gallery-slot-id");
     }
   }
   return response;
@@ -638,6 +643,31 @@ async function handleApiRequestWithoutCors(
   const adminSessionMatch = url.pathname.match(/^\/api\/invitations\/([^/]+)\/admin\/session$/);
   if (adminSessionMatch) return handleAdminSession(request, env, clientKey, adminSessionMatch[1]);
 
+  const adminGalleryAssetMatch = url.pathname.match(
+    /^\/api\/invitations\/([^/]+)\/admin\/gallery\/assets\/([0-9a-f-]+)\/(640|1024)$/
+  );
+  if (adminGalleryAssetMatch) {
+    return handleAdminGalleryAssetRequest(
+      request,
+      env,
+      adminGalleryAssetMatch[1],
+      adminGalleryAssetMatch[2],
+      Number(adminGalleryAssetMatch[3]) as 640 | 1024
+    );
+  }
+
+  const adminGalleryMatch = url.pathname.match(/^\/api\/invitations\/([^/]+)\/admin\/gallery(?:\/(publish|restore))?$/);
+  if (adminGalleryMatch) {
+    return handleAdminInvitationGalleryRequest(
+      request,
+      env,
+      adminGalleryMatch[1],
+      adminGalleryMatch[2] === "publish" || adminGalleryMatch[2] === "restore"
+        ? adminGalleryMatch[2]
+        : "gallery"
+    );
+  }
+
   const adminContentMatch = url.pathname.match(/^\/api\/invitations\/([^/]+)\/admin\/content(?:\/(publish|restore))?$/);
   if (adminContentMatch) {
     return handleAdminInvitationContentRequest(
@@ -664,6 +694,11 @@ async function handleApiRequestWithoutCors(
   const publicContentMatch = url.pathname.match(/^\/api\/invitations\/([^/]+)\/content$/);
   if (publicContentMatch) {
     return handlePublicInvitationContentRequest(request, env, publicContentMatch[1]);
+  }
+
+  const publicGalleryMatch = url.pathname.match(/^\/api\/invitations\/([^/]+)\/gallery$/);
+  if (publicGalleryMatch) {
+    return handlePublicInvitationGalleryRequest(request, env, publicGalleryMatch[1]);
   }
 
   const ownedRsvpMatch = url.pathname.match(/^\/api\/invitations\/([^/]+)\/rsvps\/([^/]+)$/);

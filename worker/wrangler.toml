@@ -24,3 +24,7 @@ new_sqlite_classes = ["GardenRoom"]
 binding = "DB"
 database_name = "wedding-game-invitation"
 database_id = "c3f7e2aa-e0b9-4373-bb25-e2e973f17649"
+
+[[kv_namespaces]]
+binding = "WEDDING_MEDIA"
+id = "bcf508da3f7c4bd1beab36273ebfd68a"

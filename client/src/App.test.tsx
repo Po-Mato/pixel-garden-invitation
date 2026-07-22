@@ -31,6 +31,9 @@ vi.mock("./components/ReadinessAdminPage", () => ({
 vi.mock("./components/ContentAdminPage", () => ({
   ContentAdminPage: () => <div>실데이터 편집 화면</div>
 }));
+vi.mock("./components/GalleryAdminPage", () => ({
+  GalleryAdminPage: () => <div>사진 갤러리 관리 화면</div>
+}));
 vi.mock("./components/QuickInvitation", () => ({
   QuickInvitation: ({ onOpenGarden }: { onOpenGarden: () => void }) => (
     <div>간편 초대장 화면<button type="button" onClick={onOpenGarden}>정원 열기</button></div>
@@ -68,6 +71,13 @@ describe("App query routing", () => {
     window.history.replaceState({}, "", "/?admin=content");
     render(<App />);
     expect(await screen.findByText("실데이터 편집 화면")).toBeInTheDocument();
+    expect(screen.queryByText("일반 입장 화면")).not.toBeInTheDocument();
+  });
+
+  it("renders only the gallery editor page for its exact admin query", async () => {
+    window.history.replaceState({}, "", "/?admin=gallery");
+    render(<App />);
+    expect(await screen.findByText("사진 갤러리 관리 화면")).toBeInTheDocument();
     expect(screen.queryByText("일반 입장 화면")).not.toBeInTheDocument();
   });
 

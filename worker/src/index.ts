@@ -1,9 +1,11 @@
 import { handleApiRequest } from "./http";
 import { cleanupExpiredInvitationData } from "./cleanup";
 import { retryPendingAdminNotificationEmails } from "./adminNotificationService";
+import { handlePublishedGalleryMediaRequest } from "./invitationGalleryHttp";
 
 export interface Env {
   DB: D1Database;
+  WEDDING_MEDIA?: KVNamespace;
   GARDEN_ROOM: DurableObjectNamespace;
   EMAIL?: SendEmail;
   RSVP_ADMIN_PASSWORD_HASH: string;
@@ -24,6 +26,16 @@ export default {
     ctx?: ExecutionContext
   ): Promise<Response> {
     const url = new URL(request.url);
+    const galleryMediaMatch = url.pathname.match(/^\/media\/invitations\/([^/]+)\/gallery\/([0-9a-f-]+)-(640|1024)\.webp$/);
+    if (galleryMediaMatch) {
+      return handlePublishedGalleryMediaRequest(
+        request,
+        env,
+        galleryMediaMatch[1],
+        galleryMediaMatch[2],
+        Number(galleryMediaMatch[3]) as 640 | 1024
+      );
+    }
     if (url.pathname.startsWith("/api/")) {
       const clientKey = request.headers.get("cf-connecting-ip") ?? "local";
       return handleApiRequest(request, env, clientKey, {
