@@ -386,6 +386,7 @@ export function ReleaseAdminPage() {
             <h1>통합 공개 관리</h1>
           </div>
           <div className="guestbook-admin-header-actions">
+            <a className="rsvp-admin-nav-link" href="?admin=setup">일괄 입력</a>
             <a className="rsvp-admin-nav-link" href="?admin=analytics">방문 통계</a>
             <a className="rsvp-admin-nav-link" href="?admin=content">실데이터</a>
             <a className="rsvp-admin-nav-link" href="?admin=gallery">사진 관리</a>

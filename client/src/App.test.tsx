@@ -37,6 +37,9 @@ vi.mock("./components/GalleryAdminPage", () => ({
 vi.mock("./components/ReleaseAdminPage", () => ({
   ReleaseAdminPage: () => <div>통합 공개 관리 화면</div>
 }));
+vi.mock("./components/SetupWizardAdminPage", () => ({
+  SetupWizardAdminPage: () => <div>실데이터 일괄 입력 화면</div>
+}));
 vi.mock("./components/QuickInvitation", () => ({
   QuickInvitation: ({ onOpenGarden }: { onOpenGarden: () => void }) => (
     <div>간편 초대장 화면<button type="button" onClick={onOpenGarden}>정원 열기</button></div>
@@ -96,6 +99,13 @@ describe("App query routing", () => {
     window.history.replaceState({}, "", "/?admin=release");
     render(<App />);
     expect(await screen.findByText("통합 공개 관리 화면")).toBeInTheDocument();
+    expect(screen.queryByText("일반 입장 화면")).not.toBeInTheDocument();
+  });
+
+  it("renders only the setup wizard page for its exact admin query", async () => {
+    window.history.replaceState({}, "", "/?admin=setup");
+    render(<App />);
+    expect(await screen.findByText("실데이터 일괄 입력 화면")).toBeInTheDocument();
     expect(screen.queryByText("일반 입장 화면")).not.toBeInTheDocument();
   });
 
