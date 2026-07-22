@@ -25,6 +25,9 @@ vi.mock("./components/RsvpAdminPage", () => ({
 vi.mock("./components/GuestbookAdminPage", () => ({
   GuestbookAdminPage: () => <div>방명록 관리자 화면</div>
 }));
+vi.mock("./components/ReadinessAdminPage", () => ({
+  ReadinessAdminPage: () => <div>공개 준비 점검 화면</div>
+}));
 vi.mock("./components/QuickInvitation", () => ({
   QuickInvitation: ({ onOpenGarden }: { onOpenGarden: () => void }) => (
     <div>간편 초대장 화면<button type="button" onClick={onOpenGarden}>정원 열기</button></div>
@@ -48,6 +51,13 @@ describe("App query routing", () => {
     window.history.replaceState({}, "", "/?admin=guestbook");
     render(<App />);
     expect(await screen.findByText("방명록 관리자 화면")).toBeInTheDocument();
+    expect(screen.queryByText("일반 입장 화면")).not.toBeInTheDocument();
+  });
+
+  it("renders only the publication readiness page for its exact admin query", async () => {
+    window.history.replaceState({}, "", "/?admin=readiness");
+    render(<App />);
+    expect(await screen.findByText("공개 준비 점검 화면")).toBeInTheDocument();
     expect(screen.queryByText("일반 입장 화면")).not.toBeInTheDocument();
   });
 

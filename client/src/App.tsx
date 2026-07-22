@@ -38,6 +38,8 @@ const GuestbookAdminPage = lazy(() => import("./components/GuestbookAdminPage")
   .then((module) => ({ default: module.GuestbookAdminPage })));
 const RsvpAdminPage = lazy(() => import("./components/RsvpAdminPage")
   .then((module) => ({ default: module.RsvpAdminPage })));
+const ReadinessAdminPage = lazy(() => import("./components/ReadinessAdminPage")
+  .then((module) => ({ default: module.ReadinessAdminPage })));
 
 function ScreenLoadingFallback() {
   return <div className="screen-loading" role="status">화면을 준비하고 있어요</div>;
@@ -107,6 +109,9 @@ export function App() {
   }
   if (adminPage === "guestbook") {
     return <Suspense fallback={<ScreenLoadingFallback />}><GuestbookAdminPage /></Suspense>;
+  }
+  if (adminPage === "readiness") {
+    return <Suspense fallback={<ScreenLoadingFallback />}><ReadinessAdminPage /></Suspense>;
   }
 
   const playing = mode === "garden" && profile !== null;

@@ -37,6 +37,12 @@ export type WeddingContent = {
   storyTimeline: readonly WeddingStoryStep[];
 };
 
+export type WeddingContentPublication = {
+  gallery: "placeholder" | "ready";
+  coupleIntroduction: "draft" | "ready";
+  storyTimeline: "draft" | "ready";
+};
+
 type ManifestPhoto = Omit<WeddingGalleryPhoto, "assetPath" | "sources">;
 
 const assetRoot = "images/wedding-gallery";
@@ -155,3 +161,9 @@ export const weddingContent = {
     }
   ]
 } satisfies WeddingContent;
+
+export const weddingContentPublication = {
+  gallery: "placeholder",
+  coupleIntroduction: "draft",
+  storyTimeline: "draft"
+} satisfies WeddingContentPublication;

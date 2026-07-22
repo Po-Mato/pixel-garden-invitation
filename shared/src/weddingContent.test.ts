@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { invitationContent } from "./content";
-import { parseWeddingGalleryManifest, weddingContent } from "./weddingContent";
+import {
+  parseWeddingGalleryManifest,
+  weddingContent,
+  weddingContentPublication
+} from "./weddingContent";
 
 describe("weddingContent", () => {
   it("에디토리얼 갤러리 사진 10장을 고유한 ID로 포함한다", () => {
@@ -30,6 +34,14 @@ describe("weddingContent", () => {
     expect(weddingContent.storyTimeline.map((step) => step.id)).toEqual([
       "hello", "seasons", "promise", "wedding"
     ]);
+  });
+
+  it("실제 콘텐츠 교체 전 임시 사진과 문구 초안 상태를 명시한다", () => {
+    expect(weddingContentPublication).toEqual({
+      gallery: "placeholder",
+      coupleIntroduction: "draft",
+      storyTimeline: "draft"
+    });
   });
 
   it("중복 ID와 잘못된 방향을 거부한다", () => {
