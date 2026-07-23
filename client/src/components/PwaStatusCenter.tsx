@@ -144,7 +144,9 @@ export function PwaStatusCenter({ playing, showInstall }: PwaStatusCenterProps) 
     const percent = Math.round((client.completed / client.total) * 100);
     content = (
       <>
-        <LoaderCircle aria-hidden="true" />
+        <div className="pwa-status__icon pwa-status__icon--spinner" aria-hidden="true">
+          <LoaderCircle />
+        </div>
         <span><strong>오프라인 초대장 준비 중</strong><small>{percent}%</small></span>
         <progress max={client.total} value={client.completed} aria-label={`오프라인 준비 ${percent}%`} />
       </>

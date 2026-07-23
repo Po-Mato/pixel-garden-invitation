@@ -52,6 +52,21 @@
   color: #fffbed;
 }
 
+.pwa-status > .pwa-status__icon {
+  display: grid;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  border: 1px solid currentColor;
+  background: #718f75;
+  color: #fffbed;
+}
+
+.pwa-status__icon > svg {
+  width: 18px;
+  height: 18px;
+}
+
 .pwa-status > span {
   display: grid;
   min-width: 0;
@@ -118,8 +133,9 @@
 .pwa-status--offline small,
 .pwa-status--online small { display: none; }
 
-.pwa-status--preparing > svg {
+.pwa-status--preparing > .pwa-status__icon > svg {
   animation: pwa-status-spin 1s steps(8, end) infinite;
+  transform-origin: center;
 }
 
 .pwa-status progress {
@@ -167,7 +183,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .pwa-status--preparing > svg { animation: none; }
+  .pwa-status--preparing > .pwa-status__icon > svg { animation: none; }
 }
 
-html[data-reduce-motion="true"] .pwa-status--preparing > svg { animation: none; }
+html[data-reduce-motion="true"] .pwa-status--preparing > .pwa-status__icon > svg { animation: none; }
