@@ -1,0 +1,47 @@
+.wedding-gallery__photo-button,
+.quick-hero__image,
+.photo-lightbox__media {
+  background:
+    linear-gradient(110deg, transparent 32%, rgba(255, 255, 255, 0.52) 48%, transparent 64%),
+    #dce7de;
+  background-size: 220% 100%, auto;
+}
+
+.responsive-gallery-image--loading {
+  opacity: 0.18;
+  filter: blur(8px);
+  transform: scale(1.015);
+}
+
+.responsive-gallery-image--loaded {
+  opacity: 1;
+  filter: none;
+  transform: none;
+  transition: opacity 180ms ease, filter 180ms ease, transform 180ms ease;
+}
+
+.responsive-gallery-image--fallback {
+  gap: 7px;
+}
+
+.responsive-gallery-image--fallback > span {
+  font-weight: 900;
+}
+
+.responsive-gallery-image--fallback > small {
+  color: #637169;
+  font-size: 9px;
+  font-weight: 800;
+}
+
+html[data-reduce-motion="true"] .responsive-gallery-image--loaded,
+html[data-reduce-motion="true"] .responsive-gallery-image--loading {
+  transition: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .responsive-gallery-image--loaded,
+  .responsive-gallery-image--loading {
+    transition: none;
+  }
+}

@@ -12,6 +12,7 @@ afterEach(() => {
   delete document.documentElement.dataset.reduceMotion;
   delete document.documentElement.dataset.highContrast;
   delete document.documentElement.dataset.comfortableControls;
+  delete document.documentElement.dataset.dataSaver;
 });
 
 describe("ViewSettingsAccess", () => {
@@ -40,12 +41,14 @@ describe("ViewSettingsAccess", () => {
     );
 
     fireEvent.click(screen.getByRole("button", { name: "환경 설정" }));
+    fireEvent.click(screen.getByRole("switch", { name: "데이터 절약" }));
     fireEvent.click(screen.getByRole("button", { name: "한 번에 적용" }));
 
     expect(screen.getByRole("button", { name: "아주 크게" })).toHaveAttribute("aria-pressed", "true");
     expect(screen.getByRole("switch", { name: "선명한 화면" })).toBeChecked();
     expect(screen.getByRole("switch", { name: "큰 터치 영역" })).toBeChecked();
     expect(screen.getByRole("switch", { name: "움직임 줄이기" })).toBeChecked();
+    expect(screen.getByRole("switch", { name: "데이터 절약" })).toBeChecked();
     expect(document.documentElement).toHaveAttribute("data-high-contrast", "true");
     expect(document.documentElement).toHaveAttribute("data-comfortable-controls", "true");
 
@@ -64,6 +67,20 @@ describe("ViewSettingsAccess", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "환경 설정" }));
     expect(screen.getByRole("dialog", { name: "환경 설정" })).toBeInTheDocument();
+  });
+
+  it("데이터 절약 설정을 즉시 적용한다", () => {
+    render(
+      <ViewPreferencesProvider initialPreferences={defaultViewPreferences}>
+        <ViewSettingsAccess variant="icon" />
+      </ViewPreferencesProvider>
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "환경 설정" }));
+    fireEvent.click(screen.getByRole("switch", { name: "데이터 절약" }));
+
+    expect(screen.getByRole("switch", { name: "데이터 절약" })).toBeChecked();
+    expect(document.documentElement).toHaveAttribute("data-data-saver", "true");
   });
 
   it("게임 소리와 진동을 각각 설정하고 음량을 미리 선택한다", () => {

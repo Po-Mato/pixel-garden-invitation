@@ -1,6 +1,8 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { invitationContent } from "@wedding-game/shared";
 import { afterEach, describe, expect, it } from "vitest";
+import { ViewPreferencesProvider } from "../accessibility/ViewPreferencesContext";
+import { defaultViewPreferences } from "../accessibility/viewPreferences";
 import { buildGallerySrcSet } from "../invitation/galleryAssets";
 import { ResponsiveGalleryImage } from "./ResponsiveGalleryImage";
 
@@ -41,5 +43,21 @@ describe("반응형 갤러리 이미지", () => {
     const fallback = screen.getByRole("img", { name: secondaryPhoto.alt });
     expect(fallback).toHaveClass("responsive-gallery-image--fallback");
     expect(fallback).toHaveStyle({ aspectRatio: `${secondaryPhoto.width} / ${secondaryPhoto.height}` });
+
+    fireEvent(window, new Event("online"));
+    expect(screen.getByRole("img", { name: secondaryPhoto.alt })).toHaveAttribute("data-retry-count", "1");
+  });
+
+  it("데이터 절약 모드에서는 640px 소스만 요청한다", () => {
+    render(
+      <ViewPreferencesProvider initialPreferences={{ ...defaultViewPreferences, dataSaver: true }}>
+        <ResponsiveGalleryImage photo={photo} priority sizes="88vw" />
+      </ViewPreferencesProvider>
+    );
+
+    const image = screen.getByRole("img", { name: photo.alt });
+    expect(image).toHaveAttribute("src", expect.stringContaining("-640.webp"));
+    expect(image).not.toHaveAttribute("srcset");
+    expect(image).toHaveAttribute("data-network-mode", "economy");
   });
 });

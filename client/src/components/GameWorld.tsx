@@ -51,7 +51,7 @@ import {
   type WorldPortal,
   type WorldZone
 } from "../game/world";
-import { preloadWorldZoneAssets } from "../game/worldAssetPreloader";
+import { nextWorldZoneToward, preloadWorldZoneAssets } from "../game/worldAssetPreloader";
 import { worldDepth } from "../game/worldVisuals";
 import {
   loadWeddingPhotoAlbum,
@@ -86,6 +86,7 @@ import { WorldMiniMap } from "./WorldMiniMap";
 import "../journey.css";
 import "../game-guide.css";
 import "../npc-reactions.css";
+import "../game-mobile-controls.css";
 import "../wedding-photo.css";
 
 type GameWorldProps = {
@@ -903,12 +904,15 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     if (loadedBackgroundZoneId !== activeZone.id) return;
 
     const timer = window.setTimeout(() => {
-      const connectedZoneIds = new Set(activeZone.portals.map((portal) => portal.to));
-      connectedZoneIds.forEach((zoneId) => { void preloadWorldZoneAssets(zoneId); });
+      const nextCheckpoint = nextJourneyCheckpoint(journeyProgress);
+      const nextZoneId = nextCheckpoint
+        ? nextWorldZoneToward(activeZone.id, nextCheckpoint.zoneId)
+        : null;
+      if (nextZoneId) void preloadWorldZoneAssets(nextZoneId);
     }, 200);
 
     return () => window.clearTimeout(timer);
-  }, [activeZone, loadedBackgroundZoneId]);
+  }, [activeZone, journeyProgress, loadedBackgroundZoneId]);
 
   useEffect(() => {
     return clearTerminalStopConfirm;
@@ -1592,17 +1596,16 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
             destinationLabel={recommendedCheckpoint?.zoneId === activeZone.id ? recommendedCheckpoint.label : null}
           />
 
-          <GuestReactionDock
-            disabled={Boolean(portalTransition)}
-            onReact={handleGuestReaction}
-          />
-
           <div className="world-control-dock" onClick={(event) => event.stopPropagation()}>
             <VirtualJoystick
               disabled={Boolean(portalTransition) || inputReleaseRequired}
               onVectorChange={handleJoystickVectorChange}
             />
             <div className="world-control-actions">
+              <GuestReactionDock
+                disabled={Boolean(portalTransition)}
+                onReact={handleGuestReaction}
+              />
               <GuestInformationAccess
                 variant="world"
                 onOpenChange={handleGuestInformationOpenChange}

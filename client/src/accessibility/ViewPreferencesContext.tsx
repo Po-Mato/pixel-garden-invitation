@@ -21,6 +21,7 @@ type ViewPreferencesContextValue = {
   setReduceMotion: (reduceMotion: boolean) => void;
   setHighContrast: (highContrast: boolean) => void;
   setComfortableControls: (comfortableControls: boolean) => void;
+  setDataSaver: (dataSaver: boolean) => void;
   enableComfortableView: () => void;
   resetPreferences: () => void;
 };
@@ -31,6 +32,7 @@ const ViewPreferencesContext = createContext<ViewPreferencesContextValue>({
   setReduceMotion: () => undefined,
   setHighContrast: () => undefined,
   setComfortableControls: () => undefined,
+  setDataSaver: () => undefined,
   enableComfortableView: () => undefined,
   resetPreferences: () => undefined
 });
@@ -57,7 +59,11 @@ export function ViewPreferencesProvider({ children, initialPreferences }: ViewPr
       ...current,
       comfortableControls
     })),
-    enableComfortableView: () => setPreferences(comfortableViewPreferences),
+    setDataSaver: (dataSaver) => setPreferences((current) => ({ ...current, dataSaver })),
+    enableComfortableView: () => setPreferences((current) => ({
+      ...comfortableViewPreferences,
+      dataSaver: current.dataSaver
+    })),
     resetPreferences: () => setPreferences(defaultViewPreferences)
   }), [preferences]);
 

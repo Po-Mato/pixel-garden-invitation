@@ -2136,6 +2136,14 @@ describe("GameWorld", () => {
     expect(screen.getByRole("status", { name: "하객1님의 하트" })).toBeInTheDocument();
   });
 
+  it("keeps the reaction control inside the bottom action dock", () => {
+    render(<GameWorld profile={profile} />);
+
+    const reactionButton = screen.getByRole("button", { name: "하객 리액션 열기" });
+    expect(reactionButton.closest(".guest-reaction-dock")?.parentElement)
+      .toHaveClass("world-control-actions");
+  });
+
   it("shows and expires a remote guest reaction above that guest", () => {
     configureRealtime();
     render(<GameWorld profile={profile} />);

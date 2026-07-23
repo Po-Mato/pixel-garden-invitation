@@ -3,6 +3,7 @@ import {
   BellRing,
   Contrast,
   Hand,
+  Gauge,
   Music2,
   RotateCcw,
   Settings2,
@@ -29,6 +30,7 @@ export function ViewSettingsAccess({ variant, onOpenChange }: ViewSettingsAccess
     setReduceMotion,
     setHighContrast,
     setComfortableControls,
+    setDataSaver,
     enableComfortableView,
     resetPreferences
   } = useViewPreferences();
@@ -141,6 +143,17 @@ export function ViewSettingsAccess({ variant, onOpenChange }: ViewSettingsAccess
               <span aria-hidden="true" className="view-settings-sheet__switch-track" />
             </label>
 
+            <label className="view-settings-sheet__switch">
+              <span><Gauge aria-hidden="true" /><strong>데이터 절약</strong></span>
+              <input
+                type="checkbox"
+                role="switch"
+                checked={preferences.dataSaver}
+                onChange={(event) => setDataSaver(event.target.checked)}
+              />
+              <span aria-hidden="true" className="view-settings-sheet__switch-track" />
+            </label>
+
             <section className="feedback-settings" aria-labelledby="game-sound-title">
               <header><Volume2 aria-hidden="true" /><strong id="game-sound-title">게임 사운드</strong></header>
               <label className="view-settings-sheet__switch">
@@ -226,6 +239,7 @@ export function ViewSettingsAccess({ variant, onOpenChange }: ViewSettingsAccess
               선명한 화면 {preferences.highContrast ? "켜짐" : "꺼짐"},
               큰 터치 영역 {preferences.comfortableControls ? "켜짐" : "꺼짐"},
               움직임 줄이기 {preferences.reduceMotion ? "켜짐" : "꺼짐"},
+              데이터 절약 {preferences.dataSaver ? "켜짐" : "꺼짐"},
               전체 소리 {feedbackPreferences.soundEnabled ? "켜짐" : "꺼짐"},
               효과음 {feedbackPreferences.effectsEnabled ? "켜짐" : "꺼짐"},
               배경 음악 {feedbackPreferences.musicEnabled ? "켜짐" : "꺼짐"},

@@ -1,0 +1,100 @@
+.world-control-actions .guest-reaction-dock {
+  position: relative;
+  bottom: auto;
+  left: auto;
+  z-index: 8;
+  flex: 0 0 auto;
+  gap: 0;
+  transform: none;
+}
+
+.world-control-actions .guest-reaction-dock__options {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 0;
+}
+
+@media (max-width: 520px) {
+  .world-control-dock {
+    gap: 6px;
+  }
+
+  .world-control-actions {
+    gap: 4px;
+  }
+
+  .world-control-actions .guest-information-trigger--world {
+    display: grid;
+    width: 46px;
+    min-width: 46px;
+    min-height: 48px;
+    grid-template-columns: 1fr;
+    place-items: center;
+    padding: 0;
+  }
+
+  .world-control-actions .guest-information-trigger--world > span,
+  .world-control-actions .guest-information-trigger--world > svg:last-child {
+    display: none;
+  }
+
+  .world-control-actions .guest-information-trigger--world > svg:first-child {
+    width: 20px;
+    height: 20px;
+  }
+
+  .world-control-actions .wedding-day-trigger--world {
+    width: 72px;
+    min-width: 72px;
+    min-height: 48px;
+    grid-template-columns: 17px minmax(0, 1fr);
+    gap: 3px;
+    padding: 4px 5px;
+    font-size: 8px;
+  }
+
+  .world-control-actions .world-menu-button {
+    width: 82px;
+    min-width: 82px;
+    min-height: 48px;
+    padding: 4px 5px;
+    font-size: 9px;
+  }
+}
+
+@media (max-width: 360px) {
+  .world-control-dock {
+    right: 6px;
+    left: 6px;
+    gap: 5px;
+  }
+
+  .virtual-joystick {
+    --joystick-travel: 21px;
+    width: 78px;
+    height: 78px;
+  }
+
+  .guest-reaction-dock__toggle {
+    width: 40px;
+    height: 44px;
+  }
+
+  .world-control-actions .guest-information-trigger--world {
+    width: 42px;
+    min-width: 42px;
+    min-height: 44px;
+  }
+
+  .world-control-actions .wedding-day-trigger--world {
+    width: 64px;
+    min-width: 64px;
+    min-height: 44px;
+  }
+
+  .world-control-actions .world-menu-button {
+    width: 72px;
+    min-width: 72px;
+    min-height: 44px;
+  }
+}

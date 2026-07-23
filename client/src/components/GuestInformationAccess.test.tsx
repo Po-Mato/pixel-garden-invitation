@@ -81,4 +81,11 @@ describe("GuestInformationAccess", () => {
     render(<GuestInformationAccess variant="world" />);
     await waitFor(() => expect(screen.queryByRole("button")).not.toBeInTheDocument());
   });
+
+  it("게임 화면 진입점은 모바일 아이콘 배치를 위한 명확한 이름을 가진다", async () => {
+    render(<GuestInformationAccess variant="world" />);
+
+    expect(await screen.findByRole("button", { name: "공지·FAQ 열기" }))
+      .toHaveClass("guest-information-trigger--world");
+  });
 });

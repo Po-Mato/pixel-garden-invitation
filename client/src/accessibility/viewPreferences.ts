@@ -3,6 +3,7 @@ export type ViewPreferences = {
   reduceMotion: boolean;
   highContrast: boolean;
   comfortableControls: boolean;
+  dataSaver: boolean;
 };
 
 type StorageLike = Pick<Storage, "getItem" | "setItem">;
@@ -12,14 +13,16 @@ export const defaultViewPreferences: ViewPreferences = {
   textScale: "default",
   reduceMotion: false,
   highContrast: false,
-  comfortableControls: false
+  comfortableControls: false,
+  dataSaver: false
 };
 
 export const comfortableViewPreferences: ViewPreferences = {
   textScale: "xlarge",
   reduceMotion: true,
   highContrast: true,
-  comfortableControls: true
+  comfortableControls: true,
+  dataSaver: false
 };
 
 function browserStorage(): StorageLike | null {
@@ -41,7 +44,8 @@ export function isViewPreferences(value: unknown): value is ViewPreferences {
   )
     && typeof candidate.reduceMotion === "boolean"
     && typeof candidate.highContrast === "boolean"
-    && typeof candidate.comfortableControls === "boolean";
+    && typeof candidate.comfortableControls === "boolean"
+    && typeof candidate.dataSaver === "boolean";
 }
 
 function normalizeStoredPreferences(value: unknown): ViewPreferences | null {
@@ -60,7 +64,8 @@ function normalizeStoredPreferences(value: unknown): ViewPreferences | null {
     highContrast: typeof candidate.highContrast === "boolean" ? candidate.highContrast : false,
     comfortableControls: typeof candidate.comfortableControls === "boolean"
       ? candidate.comfortableControls
-      : false
+      : false,
+    dataSaver: typeof candidate.dataSaver === "boolean" ? candidate.dataSaver : false
   };
 }
 
@@ -104,6 +109,9 @@ export function applyViewPreferences(
 
   if (preferences.comfortableControls) root.dataset.comfortableControls = "true";
   else delete root.dataset.comfortableControls;
+
+  if (preferences.dataSaver) root.dataset.dataSaver = "true";
+  else delete root.dataset.dataSaver;
 }
 
 export function shouldReduceMotion(
