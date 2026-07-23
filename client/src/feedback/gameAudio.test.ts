@@ -78,6 +78,22 @@ describe("GameAudioEngine", () => {
     expect(context.oscillators).toHaveLength(3);
   });
 
+  it("plays a longer four-note celebration for journey completion", async () => {
+    vi.stubGlobal("AudioContext", FakeAudioContext);
+    const engine = new GameAudioEngine({
+      ...defaultFeedbackPreferences,
+      soundEnabled: true,
+      musicEnabled: false
+    });
+
+    await engine.unlock();
+    engine.playCue("complete");
+
+    const context = FakeAudioContext.instances[0];
+    expect(context.oscillators.map((oscillator) => oscillator.frequency.values[0]))
+      .toEqual([392, 523.25, 659.25, 783.99]);
+  });
+
   it("starts zone music only while sound, music, and page visibility are active", async () => {
     vi.useFakeTimers();
     vi.stubGlobal("AudioContext", FakeAudioContext);
@@ -104,6 +120,8 @@ describe("triggerHaptic", () => {
     const vibrate = vi.fn(() => true);
     expect(triggerHaptic("portal", vibrate)).toBe(true);
     expect(vibrate).toHaveBeenCalledWith([18, 35, 28]);
+    expect(triggerHaptic("complete", vibrate)).toBe(true);
+    expect(vibrate).toHaveBeenLastCalledWith([16, 34, 20, 34, 32]);
     expect(triggerHaptic("tap", undefined)).toBe(false);
   });
 });

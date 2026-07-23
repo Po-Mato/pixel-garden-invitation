@@ -60,7 +60,8 @@ import { GameFeedbackToggle } from "./GameFeedbackToggle";
 import { GuestReactionBubble, GuestReactionDock } from "./GuestReactions";
 import { GuestInformationAccess } from "./GuestInformationAccess";
 import { InvitationShareAccess } from "./InvitationShareAccess";
-import { JourneyCompletion, JourneyStampBook, JourneyStampNotice } from "./JourneyStampBook";
+import { JourneyCompletion } from "./JourneyCompletion";
+import { JourneyStampBook, JourneyStampNotice } from "./JourneyStampBook";
 import { NpcDialogueBubble } from "./NpcDialogueBubble";
 import { SpotModal } from "./SpotModal";
 import { VirtualJoystick } from "./VirtualJoystick";
@@ -731,6 +732,13 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     setMenuOpen(true);
   }, []);
 
+  const openJourneyCompletion = useCallback(() => {
+    pauseWorldInput();
+    setJourneyCompletionPending(false);
+    setJourneyCompletionOpen(true);
+    playFeedback("complete");
+  }, [pauseWorldInput, playFeedback]);
+
   useEffect(() => {
     setFeedbackZone(activeZone.id);
   }, [activeZone.id, setFeedbackZone]);
@@ -781,10 +789,8 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
       nestedMenuSheetOpen
     ) return;
 
-    pauseWorldInput();
-    setJourneyCompletionPending(false);
-    setJourneyCompletionOpen(true);
-  }, [activeSpotId, journeyCompletionPending, menuOpen, nestedMenuSheetOpen, pauseWorldInput]);
+    openJourneyCompletion();
+  }, [activeSpotId, journeyCompletionPending, menuOpen, nestedMenuSheetOpen, openJourneyCompletion]);
 
   useEffect(() => {
     if (loadedBackgroundZoneId !== activeZone.id) return;
@@ -1215,6 +1221,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
           highlightedCheckpointId={stampedCheckpointId}
           disabled={Boolean(portalTransition)}
           onOpenChange={(open) => { if (open) pauseWorldInput(); }}
+          onOpenCompletion={openJourneyCompletion}
           onSelectZone={handleJourneySelect}
         />
         <ol className="world-journey" aria-label="하객 여정">
@@ -1547,6 +1554,8 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
       {stampedCheckpointId ? <JourneyStampNotice checkpointId={stampedCheckpointId} /> : null}
       {journeyCompletionOpen ? (
         <JourneyCompletion
+          nickname={profile.nickname}
+          appearance={profile.appearance}
           onClose={() => setJourneyCompletionOpen(false)}
           onOpenRsvp={() => {
             setJourneyCompletionOpen(false);

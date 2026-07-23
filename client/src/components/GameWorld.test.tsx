@@ -740,6 +740,35 @@ describe("GameWorld", () => {
     expect(screen.queryByRole("dialog", { name: "방문 여정 완주" })).not.toBeInTheDocument();
   });
 
+  it("guides the guest to the next incomplete destination from the stamp book", () => {
+    window.localStorage.setItem(journeyProgressStorageKey, JSON.stringify({
+      version: 1,
+      completedIds: ["directions"],
+      updatedAt: "2026-07-23T01:00:00.000Z"
+    }));
+    render(<GameWorld profile={profile} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "방문 스탬프 1/5, 열기" }));
+    fireEvent.click(screen.getByRole("button", { name: /다음 목적지 웨딩 갤러리/ }));
+
+    expect(screen.getByText("예식장 로비", { selector: ".world-zone-summary strong" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "방문 스탬프 1/5, 열기" })).toHaveAttribute("aria-expanded", "false");
+  });
+
+  it("reopens the keepsake reward from a completed stamp book", () => {
+    window.localStorage.setItem(journeyProgressStorageKey, JSON.stringify({
+      version: 1,
+      completedIds: ["directions", "gallery", "bride", "ceremony", "guestbook"],
+      updatedAt: "2026-07-23T01:00:00.000Z"
+    }));
+    render(<GameWorld profile={profile} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "방문 스탬프 5/5, 열기" }));
+    fireEvent.click(screen.getByRole("button", { name: /기념 카드 다시 보기/ }));
+
+    expect(screen.getByRole("dialog", { name: "방문 여정 완주" })).toHaveTextContent(`${profile.nickname}님`);
+  });
+
   it("rewards the final checkpoint and keeps RSVP available as a direct action", () => {
     window.localStorage.setItem(journeyProgressStorageKey, JSON.stringify({
       version: 1,

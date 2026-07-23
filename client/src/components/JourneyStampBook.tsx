@@ -1,14 +1,14 @@
 import {
+  ArrowRight,
   CalendarHeart,
   Check,
   ChevronDown,
   Flower2,
   Footprints,
+  Gift,
   Images,
   MapPinned,
   MessageCircleHeart,
-  Sparkles,
-  X,
   type LucideIcon
 } from "lucide-react";
 import { useState } from "react";
@@ -26,13 +26,8 @@ type JourneyStampBookProps = {
   highlightedCheckpointId: JourneyCheckpointId | null;
   disabled?: boolean;
   onOpenChange?: (open: boolean) => void;
+  onOpenCompletion: () => void;
   onSelectZone: (zoneId: WorldZoneId) => void;
-};
-
-type JourneyCompletionProps = {
-  onClose: () => void;
-  onOpenRsvp: () => void;
-  onOpenShare: () => void;
 };
 
 type JourneyStampNoticeProps = {
@@ -53,6 +48,7 @@ export function JourneyStampBook({
   highlightedCheckpointId,
   disabled = false,
   onOpenChange,
+  onOpenCompletion,
   onSelectZone
 }: JourneyStampBookProps) {
   const [open, setOpen] = useState(false);
@@ -98,13 +94,46 @@ export function JourneyStampBook({
             <span>WEDDING TRAIL</span>
             <strong>{nextCheckpoint ? "다음 추억을 찾아가요" : "모든 추억을 모았어요"}</strong>
           </header>
+          {nextCheckpoint ? (
+            <button
+              type="button"
+              className="journey-stamp-book__next"
+              disabled={disabled}
+              onClick={() => {
+                updateOpen(false);
+                onSelectZone(nextCheckpoint.zoneId);
+              }}
+            >
+              <span><small>다음 목적지</small><strong>{nextCheckpoint.label}</strong></span>
+              <ArrowRight aria-hidden="true" />
+            </button>
+          ) : (
+            <button
+              type="button"
+              className="journey-stamp-book__reward"
+              disabled={disabled}
+              onClick={() => {
+                updateOpen(false);
+                onOpenCompletion();
+              }}
+            >
+              <Gift aria-hidden="true" />
+              <span><small>완주 보상</small><strong>기념 카드 다시 보기</strong></span>
+            </button>
+          )}
           <ol>
             {journeyCheckpoints.map((checkpoint, index) => {
               const complete = completed.has(checkpoint.id);
               const current = activeZoneId === checkpoint.zoneId;
+              const next = nextCheckpoint?.id === checkpoint.id;
               const Icon = checkpointIcons[checkpoint.id];
               return (
-                <li key={checkpoint.id} data-complete={complete || undefined} data-current={current || undefined}>
+                <li
+                  key={checkpoint.id}
+                  data-complete={complete || undefined}
+                  data-current={current || undefined}
+                  data-next={next || undefined}
+                >
                   <button
                     type="button"
                     disabled={disabled}
@@ -124,6 +153,7 @@ export function JourneyStampBook({
                       <small>{checkpoint.detail}</small>
                     </span>
                     {current ? <span className="journey-stamp-book__here">현재</span> : null}
+                    {next && !current ? <span className="journey-stamp-book__next-label">다음</span> : null}
                   </button>
                 </li>
               );
@@ -132,29 +162,6 @@ export function JourneyStampBook({
         </div>
       ) : null}
     </section>
-  );
-}
-
-export function JourneyCompletion({ onClose, onOpenRsvp, onOpenShare }: JourneyCompletionProps) {
-  return (
-    <div className="journey-completion" role="dialog" aria-label="방문 여정 완주">
-      <div className="journey-completion__petals" aria-hidden="true">
-        {Array.from({ length: 12 }, (_, index) => <i key={index} />)}
-      </div>
-      <section className="journey-completion__card">
-        <button type="button" className="journey-completion__close" aria-label="완주 안내 닫기" onClick={onClose}>
-          <X />
-        </button>
-        <span className="journey-completion__seal" aria-hidden="true"><Sparkles /><Flower2 /></span>
-        <small>WEDDING TRAIL COMPLETE</small>
-        <h2>축하의 정원 완주</h2>
-        <p>두 사람의 소중한 순간을 모두 만나보셨어요.</p>
-        <div className="journey-completion__actions">
-          <button type="button" onClick={onOpenRsvp}>참석 답변하기</button>
-          <button type="button" onClick={onOpenShare}>초대장 공유</button>
-        </div>
-      </section>
-    </div>
   );
 }
 
