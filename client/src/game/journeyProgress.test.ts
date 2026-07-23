@@ -6,6 +6,7 @@ import {
   journeyCheckpointForZone,
   journeyProgressStorageKey,
   loadJourneyProgress,
+  nextJourneyCheckpoint,
   saveJourneyProgress
 } from "./journeyProgress";
 
@@ -19,6 +20,20 @@ function createMemoryStorage(initial?: string) {
 }
 
 describe("journey progress", () => {
+  it("returns the first incomplete destination in canonical journey order", () => {
+    expect(nextJourneyCheckpoint(createEmptyJourneyProgress())?.id).toBe("directions");
+    expect(nextJourneyCheckpoint({
+      version: 1,
+      completedIds: ["directions", "gallery"],
+      updatedAt: null
+    })?.id).toBe("bride");
+    expect(nextJourneyCheckpoint({
+      version: 1,
+      completedIds: ["directions", "gallery", "bride", "ceremony", "guestbook"],
+      updatedAt: null
+    })).toBeNull();
+  });
+
   it("persists checkpoints in the canonical journey order", () => {
     const storage = createMemoryStorage();
     let progress = createEmptyJourneyProgress();

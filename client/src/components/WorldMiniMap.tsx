@@ -16,12 +16,14 @@ type WorldMiniMapProps = {
   viewport: ViewportSize;
   targetPortalId: string | null;
   journeyMarkers?: JourneyMiniMapMarker[];
+  destinationLabel?: string | null;
 };
 
 export type JourneyMiniMapMarker = {
   id: string;
   point: Point;
   completed: boolean;
+  recommended?: boolean;
 };
 
 const directionVectors: Record<Direction, Point> = {
@@ -38,12 +40,17 @@ export function WorldMiniMap({
   camera,
   viewport,
   targetPortalId,
-  journeyMarkers = []
+  journeyMarkers = [],
+  destinationLabel = null
 }: WorldMiniMapProps) {
   const layout = createMiniMapLayout(zone.bounds);
   const playerPoint = projectMiniMapPoint(player, zone.bounds, layout);
   const viewportRect = computeMiniMapViewportRect({ bounds: zone.bounds, layout, viewport, camera });
   const directionVector = directionVectors[direction];
+  const recommendedMarker = journeyMarkers.find((marker) => marker.recommended);
+  const recommendedPoint = recommendedMarker
+    ? projectMiniMapPoint(recommendedMarker.point, zone.bounds, layout)
+    : null;
 
   return (
     <aside
@@ -53,6 +60,7 @@ export function WorldMiniMap({
       onClick={(event) => event.stopPropagation()}
     >
       <span className="world-minimap__title">{zone.label}</span>
+      {destinationLabel ? <span className="world-minimap__destination-label">목적지 · {destinationLabel}</span> : null}
       <svg
         className="world-minimap__canvas"
         width={layout.width}
@@ -105,6 +113,16 @@ export function WorldMiniMap({
             {...projectMiniMapRect(portalEntryRect(portal), zone.bounds, layout)}
           />
         ))}
+        {recommendedPoint ? (
+          <line
+            data-testid="minimap-destination-route"
+            className="world-minimap__destination-route"
+            x1={playerPoint.x}
+            y1={playerPoint.y}
+            x2={recommendedPoint.x}
+            y2={recommendedPoint.y}
+          />
+        ) : null}
         {journeyMarkers.map((marker) => {
           const point = projectMiniMapPoint(marker.point, zone.bounds, layout);
           return (
@@ -112,7 +130,7 @@ export function WorldMiniMap({
               key={marker.id}
               data-testid="minimap-journey-marker"
               data-checkpoint-id={marker.id}
-              className={`world-minimap__journey-marker${marker.completed ? " world-minimap__journey-marker--complete" : ""}`}
+              className={`world-minimap__journey-marker${marker.completed ? " world-minimap__journey-marker--complete" : ""}${marker.recommended ? " world-minimap__journey-marker--recommended" : ""}`}
               transform={`translate(${point.x} ${point.y})`}
             >
               <circle r="4.5" />

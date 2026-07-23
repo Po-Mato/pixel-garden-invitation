@@ -118,6 +118,11 @@ export function saveJourneyProgress(
   }
 }
 
+export function nextJourneyCheckpoint(progress: JourneyProgress): JourneyCheckpoint | null {
+  const completed = new Set(progress.completedIds);
+  return journeyCheckpoints.find((checkpoint) => !completed.has(checkpoint.id)) ?? null;
+}
+
 export function completeJourneyCheckpoint(
   progress: JourneyProgress,
   checkpointId: JourneyCheckpointId,

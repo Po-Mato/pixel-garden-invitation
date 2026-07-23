@@ -6,7 +6,7 @@ import {
   type MouseEvent,
   type TransitionEvent as ReactTransitionEvent
 } from "react";
-import { Camera, Images, Share2 } from "lucide-react";
+import { ArrowRight, Camera, CircleHelp, Images, MapPinned, Share2 } from "lucide-react";
 import {
   invitationContent,
   type ClientMessage,
@@ -32,10 +32,12 @@ import {
   journeyCheckpointForZone,
   journeyCheckpoints,
   loadJourneyProgress,
+  nextJourneyCheckpoint,
   saveJourneyProgress,
   type JourneyCheckpoint,
   type JourneyCheckpointId
 } from "../game/journeyProgress";
+import { completeGameGuide, loadGameGuideState, shouldAutoOpenGameGuide } from "../game/gameGuide";
 import { resolveNpcDialogue, type NpcDialogue, type NpcId } from "../game/npcDialogue";
 import { useGameFeedback } from "../feedback/GameFeedbackContext";
 import {
@@ -61,6 +63,7 @@ import type { EntryProfile } from "./EntryScreen";
 import { CharacterSprite } from "./CharacterSprite";
 import { DirectionsSheet } from "./DirectionsSheet";
 import { FamilyContactSheet } from "./FamilyContactSheet";
+import { GameFirstVisitGuide } from "./GameFirstVisitGuide";
 import { GiftAccountSheet } from "./GiftAccountSheet";
 import { GameFeedbackToggle } from "./GameFeedbackToggle";
 import { GuestReactionBubble, GuestReactionDock } from "./GuestReactions";
@@ -81,6 +84,7 @@ import { WorldMapArtwork } from "./WorldMapArtwork";
 import { WorldDecoration } from "./WorldDecoration";
 import { WorldMiniMap } from "./WorldMiniMap";
 import "../journey.css";
+import "../game-guide.css";
 import "../npc-reactions.css";
 import "../wedding-photo.css";
 
@@ -217,6 +221,10 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   const [viewSettingsOpen, setViewSettingsOpen] = useState(false);
   const [travelStatus, setTravelStatus] = useState("우리 집에서 여정을 시작해요");
   const [journeyProgress, setJourneyProgress] = useState(loadJourneyProgress);
+  const [gameGuideOpen, setGameGuideOpen] = useState(() => (
+    shouldAutoOpenGameGuide(loadGameGuideState(), journeyProgress)
+  ));
+  const [pendingJourneyGuideId, setPendingJourneyGuideId] = useState<JourneyCheckpointId | null>(null);
   const [stampedCheckpointId, setStampedCheckpointId] = useState<JourneyCheckpointId | null>(null);
   const [journeyCompletionPending, setJourneyCompletionPending] = useState(false);
   const [journeyCompletionOpen, setJourneyCompletionOpen] = useState(false);
@@ -235,7 +243,8 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     || guestInformationOpen
     || shareSheetOpen
     || viewSettingsOpen
-    || photoAlbumOpen;
+    || photoAlbumOpen
+    || gameGuideOpen;
 
   const mapViewportRef = useRef<HTMLDivElement | null>(null);
   const menuButtonRef = useRef<HTMLButtonElement | null>(null);
@@ -721,6 +730,55 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     stampWorldInteraction
   ]);
 
+  const startJourneyGuidance = useCallback((checkpoint: JourneyCheckpoint) => {
+    if (portalTransitionRef.current) return;
+    if (checkpoint.zoneId !== activeZone.id) {
+      const destinationZone = getWorldZone(gardenWorld, checkpoint.zoneId);
+      setPendingJourneyGuideId(checkpoint.id);
+      setTravelStatus(`${destinationZone.label}의 ${checkpoint.label}(으)로 안내할게요`);
+      handleJourneySelect(checkpoint.zoneId);
+      return;
+    }
+
+    setPendingJourneyGuideId(null);
+    const target = checkpoint.target;
+    if (target.type === "spot") {
+      const worldSpot = activeZone.spots.find((spot) => spot.id === target.spotId);
+      if (!worldSpot) return;
+      beginWorldInteraction({
+        targetId: `spot:${worldSpot.id}`,
+        spotId: worldSpot.id,
+        label: checkpoint.label,
+        target: worldSpot,
+        actionRadius: worldSpot.actionRadius
+      });
+      return;
+    }
+    if (target.type === "npc") {
+      const npc = activeZone.npcs.find((candidate) => candidate.id === target.npcId);
+      if (!npc) return;
+      beginWorldInteraction({
+        targetId: `npc:${npc.id}`,
+        npcId: npc.id,
+        label: checkpoint.label,
+        target: npcInteractionRect(npc),
+        actionRadius: npcInteractionRadius
+      });
+      return;
+    }
+
+    stampJourneyCheckpoint(checkpoint.id);
+    setTravelStatus(`${checkpoint.label}에 도착했어요`);
+  }, [activeZone, beginWorldInteraction, handleJourneySelect, stampJourneyCheckpoint]);
+
+  useEffect(() => {
+    if (!pendingJourneyGuideId) return;
+    const checkpoint = journeyCheckpoints.find((candidate) => candidate.id === pendingJourneyGuideId);
+    if (!checkpoint || checkpoint.zoneId !== activeZone.id) return;
+    const timer = window.setTimeout(() => startJourneyGuidance(checkpoint), 0);
+    return () => window.clearTimeout(timer);
+  }, [activeZone.id, pendingJourneyGuideId, startJourneyGuidance]);
+
   const closeActiveSpot = useCallback(() => {
     const restoreMenuButtonFocus = restoreMenuButtonFocusRef.current;
     restoreMenuButtonFocusRef.current = false;
@@ -759,6 +817,16 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     if (open) pauseWorldInput();
     setPhotoAlbumOpen(open);
   }, [pauseWorldInput]);
+
+  const openGameGuide = useCallback(() => {
+    pauseWorldInput();
+    setGameGuideOpen(true);
+  }, [pauseWorldInput]);
+
+  const dismissGameGuide = useCallback(() => {
+    completeGameGuide();
+    setGameGuideOpen(false);
+  }, []);
 
   const openFamilyContacts = useCallback(() => {
     pauseWorldInput();
@@ -1224,11 +1292,20 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
 
   const camera = computeCameraTransform({ player: position, viewport, bounds: activeZone.bounds, zoom: 1 });
   const completedJourneyIds = new Set(journeyProgress.completedIds);
+  const recommendedCheckpoint = nextJourneyCheckpoint(journeyProgress);
+  const recommendedZone = recommendedCheckpoint
+    ? getWorldZone(gardenWorld, recommendedCheckpoint.zoneId)
+    : null;
   const activeJourneyMarkers = journeyCheckpoints
     .filter((checkpoint) => checkpoint.zoneId === activeZone.id)
     .flatMap((checkpoint) => {
       const point = journeyMarkerPoint(activeZone, checkpoint);
-      return point ? [{ id: checkpoint.id, point, completed: completedJourneyIds.has(checkpoint.id) }] : [];
+      return point ? [{
+        id: checkpoint.id,
+        point,
+        completed: completedJourneyIds.has(checkpoint.id),
+        recommended: checkpoint.id === recommendedCheckpoint?.id
+      }] : [];
     });
 
   return (
@@ -1270,6 +1347,23 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
           onOpenCompletion={openJourneyCompletion}
           onSelectZone={handleJourneySelect}
         />
+        {recommendedCheckpoint && recommendedZone ? (
+          <button
+            type="button"
+            className="world-destination-guide"
+            aria-label={`다음 목적지 ${recommendedCheckpoint.label}, ${recommendedCheckpoint.zoneId === activeZone.id ? "길 안내 시작" : `${recommendedZone.label}로 이동`}`}
+            disabled={Boolean(portalTransition)}
+            onClick={() => startJourneyGuidance(recommendedCheckpoint)}
+          >
+            <MapPinned aria-hidden="true" />
+            <span>
+              <small>NEXT DESTINATION</small>
+              <strong>{recommendedCheckpoint.label}</strong>
+              <em>{recommendedCheckpoint.zoneId === activeZone.id ? "현재 맵 · 목적지까지 걷기" : recommendedZone.label}</em>
+            </span>
+            <ArrowRight aria-hidden="true" />
+          </button>
+        ) : null}
         <ol className="world-journey" aria-label="하객 여정">
           {gardenWorld.zones.map((zone) => {
             const checkpoints = journeyCheckpoints.filter((checkpoint) => checkpoint.zoneId === zone.id);
@@ -1495,6 +1589,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
             viewport={viewport}
             targetPortalId={portalIntent?.portal.id ?? null}
             journeyMarkers={activeJourneyMarkers}
+            destinationLabel={recommendedCheckpoint?.zoneId === activeZone.id ? recommendedCheckpoint.label : null}
           />
 
           <GuestReactionDock
@@ -1601,6 +1696,10 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
                 <Images aria-hidden="true" />
                 포토앨범 {weddingPhotoAlbumProgress(photoAlbum)}/3
               </button>
+              <button type="button" onClick={openGameGuide}>
+                <CircleHelp aria-hidden="true" />
+                게임 안내 다시 보기
+              </button>
               <ViewSettingsAccess
                 variant="menu"
                 onOpenChange={handleViewSettingsOpenChange}
@@ -1644,6 +1743,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
           }}
         />
       ) : null}
+      {gameGuideOpen ? <GameFirstVisitGuide onDismiss={dismissGameGuide} /> : null}
       <InvitationShareAccess
         variant="menu"
         open={shareSheetOpen}

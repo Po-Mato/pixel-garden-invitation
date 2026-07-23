@@ -67,4 +67,33 @@ describe("WorldMiniMap", () => {
     expect(Number(svg?.getAttribute("height"))).toBe(120);
     expect(screen.getByTestId("minimap-photo-spot")).toBeInTheDocument();
   });
+
+  it("highlights the recommended destination and draws a route from the player", () => {
+    const zone = getWorldZone(gardenWorld, "home");
+    const viewport = { width: 390, height: 520 };
+    const player = zone.spawn;
+    const { container } = render(
+      <WorldMiniMap
+        zone={zone}
+        player={player}
+        direction="down"
+        camera={computeCameraTransform({ player, viewport, bounds: zone.bounds, zoom: 1 })}
+        viewport={viewport}
+        targetPortalId={null}
+        destinationLabel="오시는 길"
+        journeyMarkers={[{
+          id: "directions",
+          point: { x: 150, y: 225 },
+          completed: false,
+          recommended: true
+        }]}
+      />
+    );
+
+    const minimap = container.querySelector(".world-minimap");
+    expect(minimap).not.toBeNull();
+    expect(within(minimap as HTMLElement).getByText("목적지 · 오시는 길")).toBeInTheDocument();
+    expect(within(minimap as HTMLElement).getByTestId("minimap-destination-route")).toBeInTheDocument();
+    expect(within(minimap as HTMLElement).getByTestId("minimap-journey-marker")).toHaveClass("world-minimap__journey-marker--recommended");
+  });
 });

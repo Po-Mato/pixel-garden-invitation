@@ -6,6 +6,7 @@ import {
   type WorldZoneId
 } from "@wedding-game/shared";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { gameGuideStorageKey } from "../game/gameGuide";
 import { worldDepth } from "../game/worldVisuals";
 import { journeyProgressStorageKey } from "../game/journeyProgress";
 import { copyText } from "../invitation/browserActions";
@@ -72,6 +73,11 @@ beforeEach(() => {
     key: (index: number) => [...localValues.keys()][index] ?? null,
     get length() { return localValues.size; }
   });
+  window.localStorage.setItem(gameGuideStorageKey, JSON.stringify({
+    version: 1,
+    completed: true,
+    completedAt: "2026-07-24T00:00:00.000Z"
+  }));
   vi.mocked(copyText).mockResolvedValue(undefined);
   vi.useFakeTimers();
   vi.stubGlobal("requestAnimationFrame", vi.fn((callback: FrameRequestCallback) => {
@@ -109,6 +115,14 @@ function advanceInteractionRoute() {
     advanceAnimation(index * 240);
   }
   expect(animationFrames.size, "interaction route did not finish within 70 animation frames").toBe(0);
+}
+
+function getDirectionsWorldSpot() {
+  const spot = document.querySelector<HTMLButtonElement>(".world-spot--directions");
+  if (!spot) {
+    throw new Error("오시는 길 월드 스팟을 찾지 못했습니다.");
+  }
+  return spot;
 }
 
 function advancePortalTransition() {
@@ -265,6 +279,79 @@ describe("GameWorld", () => {
     expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "375px", top: "1785px" });
     expect(within(journey).getByText("예식홀").closest("li")).toHaveAttribute("aria-current", "location");
     expect(screen.getByTestId("world-portal-transition")).toHaveAttribute("data-phase", "idle");
+  });
+
+  it("opens the three-step guide only for a first visit and remembers dismissal", () => {
+    window.localStorage.removeItem(gameGuideStorageKey);
+
+    render(<GameWorld profile={profile} />);
+
+    expect(screen.getByRole("dialog", { name: "게임 첫 방문 안내" })).toHaveTextContent("한 칸씩 차분하게 걸어요");
+    fireEvent.click(screen.getByRole("button", { name: "건너뛰기" }));
+
+    expect(screen.queryByRole("dialog", { name: "게임 첫 방문 안내" })).not.toBeInTheDocument();
+    expect(JSON.parse(window.localStorage.getItem(gameGuideStorageKey) ?? "null")).toMatchObject({
+      version: 1,
+      completed: true
+    });
+  });
+
+  it("does not interrupt a returning guest who already has journey progress", () => {
+    window.localStorage.removeItem(gameGuideStorageKey);
+    window.localStorage.setItem(journeyProgressStorageKey, JSON.stringify({
+      version: 1,
+      completedIds: ["directions"],
+      updatedAt: "2026-07-23T01:00:00.000Z"
+    }));
+
+    render(<GameWorld profile={profile} />);
+
+    expect(screen.queryByRole("dialog", { name: "게임 첫 방문 안내" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "다음 목적지 웨딩 갤러리, 예식장 로비로 이동" })).toBeInTheDocument();
+  });
+
+  it("starts walking to the recommended destination in the current map", () => {
+    render(<GameWorld profile={profile} />);
+
+    expect(screen.getByText("목적지 · 오시는 길")).toBeInTheDocument();
+    expect(screen.getByTestId("minimap-destination-route")).toBeInTheDocument();
+    expect(screen.getByTestId("minimap-journey-marker")).toHaveClass("world-minimap__journey-marker--recommended");
+
+    fireEvent.click(screen.getByRole("button", { name: "다음 목적지 오시는 길, 길 안내 시작" }));
+
+    expect(screen.getByText("오시는 길 가까이 이동 중")).toBeInTheDocument();
+    expect(getDirectionsWorldSpot()).toHaveClass("world-spot--target");
+  });
+
+  it("moves to another map and continues walking to its recommended destination", () => {
+    window.localStorage.setItem(journeyProgressStorageKey, JSON.stringify({
+      version: 1,
+      completedIds: ["directions"],
+      updatedAt: "2026-07-23T01:00:00.000Z"
+    }));
+    render(<GameWorld profile={profile} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "다음 목적지 웨딩 갤러리, 예식장 로비로 이동" }));
+    act(() => vi.advanceTimersByTime(0));
+
+    expect(screen.getByText("예식장 로비", { selector: ".world-zone-summary strong" })).toBeInTheDocument();
+    expect(screen.getByText("웨딩 갤러리 가까이 이동 중")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "웨딩 갤러리 사진 보기" })).toHaveClass("world-spot--target");
+  });
+
+  it("reopens the guide from the invitation menu without moving the guest", () => {
+    render(<GameWorld profile={profile} />);
+    const player = screen.getByLabelText("하객1");
+    const startingPosition = { left: player.style.left, top: player.style.top };
+
+    fireEvent.click(screen.getByRole("button", { name: "초대장 메뉴" }));
+    fireEvent.click(within(screen.getByRole("dialog", { name: "초대장 바로가기" }))
+      .getByRole("button", { name: "게임 안내 다시 보기" }));
+
+    expect(screen.getByRole("dialog", { name: "게임 첫 방문 안내" })).toBeInTheDocument();
+    expect(player).toHaveStyle(startingPosition);
+    fireEvent.click(screen.getByRole("button", { name: "게임 안내 닫기" }));
+    expect(screen.queryByRole("dialog", { name: "게임 첫 방문 안내" })).not.toBeInTheDocument();
   });
 
   it("walks to a photo spot before opening the camera experience", () => {
@@ -741,7 +828,7 @@ describe("GameWorld", () => {
 
   it("opens the directions sheet from the world directions spot", () => {
     render(<GameWorld profile={profile} />);
-    fireEvent.click(screen.getByRole("button", { name: /오시는 길/ }));
+    fireEvent.click(getDirectionsWorldSpot());
     expect(screen.queryByRole("dialog", { name: "오시는 길" })).not.toBeInTheDocument();
     expect(screen.getByText("오시는 길 가까이 이동 중")).toBeInTheDocument();
     advanceInteractionRoute();
@@ -782,7 +869,9 @@ describe("GameWorld", () => {
     render(<GameWorld profile={profile} />);
 
     fireEvent.click(screen.getByRole("button", { name: "방문 스탬프 1/5, 열기" }));
-    fireEvent.click(screen.getByRole("button", { name: /다음 목적지 웨딩 갤러리/ }));
+    const stampPanel = document.getElementById("journey-stamp-panel");
+    expect(stampPanel).not.toBeNull();
+    fireEvent.click(within(stampPanel as HTMLElement).getByRole("button", { name: /다음 목적지 웨딩 갤러리/ }));
 
     expect(screen.getByText("예식장 로비", { selector: ".world-zone-summary strong" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "방문 스탬프 1/5, 열기" })).toHaveAttribute("aria-expanded", "false");
@@ -839,7 +928,7 @@ describe("GameWorld", () => {
 
   it("cancels guided interaction when the joystick receives new input", () => {
     render(<GameWorld profile={profile} />);
-    const directionsSpot = screen.getByRole("button", { name: /오시는 길/ });
+    const directionsSpot = getDirectionsWorldSpot();
     const joystick = screen.getByLabelText("가상 조이스틱");
 
     fireEvent.click(directionsSpot);
@@ -962,7 +1051,7 @@ describe("GameWorld", () => {
     const pausedAt = { left: player.style.left, top: player.style.top };
     expect(pausedAt).toEqual({ left: "315px", top: "555px" });
 
-    fireEvent.click(screen.getByRole("button", { name: /오시는 길/ }));
+    fireEvent.click(getDirectionsWorldSpot());
 
     expect(screen.queryByRole("dialog", { name: "오시는 길" })).not.toBeInTheDocument();
     expect(joystick).toHaveAttribute("aria-disabled", "true");
@@ -1833,7 +1922,7 @@ describe("GameWorld", () => {
   it("blocks direct menu and spot activation throughout every portal transition phase", () => {
     render(<GameWorld profile={profile} />);
     const menuButton = screen.getByRole("button", { name: "초대장 메뉴" });
-    const spotButton = screen.getByRole("button", { name: /오시는 길/ });
+    const spotButton = getDirectionsWorldSpot();
 
     fireEvent.click(screen.getByRole("button", { name: "동네로 나가기" }));
     advanceRouteToPortalArrival();
@@ -1940,7 +2029,7 @@ describe("GameWorld", () => {
     expect(portal).toHaveStyle({ zIndex: "1005" });
     expect(screen.getByLabelText("하객1")).toHaveStyle({ zIndex: "1555" });
     expect(Number(portal.style.zIndex)).toBeLessThan(worldDepth(105 - 88));
-    expect(screen.getByRole("button", { name: /오시는 길/ })).toHaveStyle({ zIndex: "9000" });
+    expect(getDirectionsWorldSpot()).toHaveStyle({ zIndex: "9000" });
   });
 
   it("renders only three tile-local portal effects without global beams or particles", () => {

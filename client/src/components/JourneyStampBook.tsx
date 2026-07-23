@@ -16,6 +16,7 @@ import type { WorldZoneId } from "@wedding-game/shared";
 import {
   journeyCheckpoints,
   journeyCheckpointIds,
+  nextJourneyCheckpoint,
   type JourneyCheckpointId,
   type JourneyProgress
 } from "../game/journeyProgress";
@@ -53,7 +54,7 @@ export function JourneyStampBook({
 }: JourneyStampBookProps) {
   const [open, setOpen] = useState(false);
   const completed = new Set(progress.completedIds);
-  const nextCheckpoint = journeyCheckpoints.find((checkpoint) => !completed.has(checkpoint.id)) ?? null;
+  const nextCheckpoint = nextJourneyCheckpoint(progress);
 
   const updateOpen = (nextOpen: boolean) => {
     setOpen(nextOpen);
