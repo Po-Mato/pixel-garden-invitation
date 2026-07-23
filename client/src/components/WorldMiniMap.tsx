@@ -17,6 +17,7 @@ type WorldMiniMapProps = {
   targetPortalId: string | null;
   journeyMarkers?: JourneyMiniMapMarker[];
   destinationLabel?: string | null;
+  destinationPoint?: Point | null;
 };
 
 export type JourneyMiniMapMarker = {
@@ -41,15 +42,18 @@ export function WorldMiniMap({
   viewport,
   targetPortalId,
   journeyMarkers = [],
-  destinationLabel = null
+  destinationLabel = null,
+  destinationPoint = null
 }: WorldMiniMapProps) {
   const layout = createMiniMapLayout(zone.bounds);
   const playerPoint = projectMiniMapPoint(player, zone.bounds, layout);
   const viewportRect = computeMiniMapViewportRect({ bounds: zone.bounds, layout, viewport, camera });
   const directionVector = directionVectors[direction];
   const recommendedMarker = journeyMarkers.find((marker) => marker.recommended);
-  const recommendedPoint = recommendedMarker
-    ? projectMiniMapPoint(recommendedMarker.point, zone.bounds, layout)
+  const recommendedPoint = destinationPoint
+    ? projectMiniMapPoint(destinationPoint, zone.bounds, layout)
+    : recommendedMarker
+      ? projectMiniMapPoint(recommendedMarker.point, zone.bounds, layout)
     : null;
 
   return (

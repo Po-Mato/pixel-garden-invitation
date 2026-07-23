@@ -32,6 +32,8 @@ type WeddingDayQuickAccessProps = {
   event?: WeddingEvent;
   onOpenChange?: (open: boolean) => void;
   onFamilyContactOpen?: () => void;
+  open?: boolean;
+  showTrigger?: boolean;
 };
 
 const clockRefreshMs = 30_000;
@@ -42,10 +44,13 @@ export function WeddingDayQuickAccess({
   now,
   event = invitationContent.event,
   onOpenChange,
-  onFamilyContactOpen
+  onFamilyContactOpen,
+  open: controlledOpen,
+  showTrigger = true
 }: WeddingDayQuickAccessProps) {
   const [clock, setClock] = useState(() => new Date());
-  const [open, setOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
+  const open = controlledOpen ?? internalOpen;
   const effectiveNow = preview ? getWeddingDayPreviewNow(event) : now ?? clock;
   const status = getWeddingDayStatus(event, effectiveNow);
 
@@ -66,7 +71,7 @@ export function WeddingDayQuickAccess({
   const hasFamilyContacts = event.familyContacts.contacts.some((contact) => contact.phone.trim());
 
   const setVisibility = (visible: boolean) => {
-    setOpen(visible);
+    if (controlledOpen === undefined) setInternalOpen(visible);
     onOpenChange?.(visible);
   };
 
@@ -77,19 +82,21 @@ export function WeddingDayQuickAccess({
 
   return (
     <>
-      <button
-        type="button"
-        className={`wedding-day-trigger wedding-day-trigger--${variant}`}
-        aria-label={`예식 당일 안내: ${status.headline}`}
-        onClick={() => setVisibility(true)}
-      >
-        <Clock3 aria-hidden="true" />
-        {variant === "world" ? (
-          <span><small>WEDDING DAY</small>당일 안내</span>
-        ) : (
-          <span>{status.headline}</span>
-        )}
-      </button>
+      {showTrigger ? (
+        <button
+          type="button"
+          className={`wedding-day-trigger wedding-day-trigger--${variant}`}
+          aria-label={`예식 당일 안내: ${status.headline}`}
+          onClick={() => setVisibility(true)}
+        >
+          <Clock3 aria-hidden="true" />
+          {variant === "world" ? (
+            <span><small>WEDDING DAY</small>당일 안내</span>
+          ) : (
+            <span>{status.headline}</span>
+          )}
+        </button>
+      ) : null}
 
       {open ? (
         <BottomSheet title="예식 당일 안내" onClose={() => setVisibility(false)}>

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Check, ChevronDown, Pencil, RefreshCw, Trash2, X } from "lucide-react";
 import {
   invitationContent,
@@ -8,6 +8,11 @@ import {
 } from "@wedding-game/shared";
 
 import { WeddingApiError } from "../api/weddingApi";
+import {
+  clearGuestbookFormDraft,
+  loadGuestbookFormDraft,
+  saveGuestbookFormDraft
+} from "../invitation/publicFormDraftStorage";
 
 type GuestbookPanelProps = {
   nickname: string;
@@ -69,19 +74,60 @@ export function GuestbookPanel({
   onLoadMore,
   onRetry
 }: GuestbookPanelProps) {
-  const [draftNickname, setDraftNickname] = useState(nickname);
-  const [draftMessage, setDraftMessage] = useState("");
+  const invitationId = import.meta.env.VITE_INVITATION_ID ?? "sample-garden";
+  const storedDraftRef = useRef(loadGuestbookFormDraft(invitationId));
+  const [draftNickname, setDraftNickname] = useState(storedDraftRef.current?.value.nickname ?? nickname);
+  const [draftMessage, setDraftMessage] = useState(storedDraftRef.current?.value.message ?? "");
   const [editing, setEditing] = useState(false);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [busy, setBusy] = useState<"create" | "update" | "delete" | null>(null);
   const [status, setStatus] = useState("");
   const [error, setError] = useState("");
+  const [online, setOnline] = useState(() => navigator.onLine !== false);
+  const [draftTouched, setDraftTouched] = useState(false);
+  const [draftStatus, setDraftStatus] = useState(() => (
+    storedDraftRef.current ? "이 기기에 저장된 작성 내용을 복원했습니다." : ""
+  ));
+  const previousOnlineRef = useRef(online);
 
   useEffect(() => {
     if (!ownedMessage || editing) return;
     setDraftNickname(ownedMessage.nickname);
     setDraftMessage(ownedMessage.message);
   }, [editing, ownedMessage]);
+
+  useEffect(() => {
+    const update = () => setOnline(navigator.onLine !== false);
+    window.addEventListener("online", update);
+    window.addEventListener("offline", update);
+    return () => {
+      window.removeEventListener("online", update);
+      window.removeEventListener("offline", update);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (ownedMessage || !draftTouched) return;
+    const timer = window.setTimeout(() => {
+      const saved = saveGuestbookFormDraft(invitationId, {
+        nickname: draftNickname,
+        message: draftMessage
+      });
+      setDraftStatus(saved
+        ? online
+          ? "작성 중인 메시지를 이 기기에 임시 저장했습니다."
+          : "오프라인입니다. 작성 중인 메시지를 이 기기에 임시 저장했습니다."
+        : "이 기기에 임시 저장하지 못했습니다. 이 화면을 닫지 말아주세요.");
+    }, 250);
+    return () => window.clearTimeout(timer);
+  }, [draftMessage, draftNickname, draftTouched, invitationId, online, ownedMessage]);
+
+  useEffect(() => {
+    if (draftTouched && online && !previousOnlineRef.current) {
+      setDraftStatus("연결이 복구됐습니다. 내용을 확인하고 메시지를 보내주세요.");
+    }
+    previousOnlineRef.current = online;
+  }, [draftTouched, online]);
 
   const visibleMessages = useMemo(
     () => messages.filter(({ id }) => id !== ownedMessage?.id),
@@ -112,8 +158,11 @@ export function GuestbookPanel({
     setStatus("");
     try {
       await onCreate(payload);
+      clearGuestbookFormDraft(invitationId);
+      setDraftStatus("");
       setStatus("축하 메시지를 남겼습니다. 이 기기에서 수정하거나 삭제할 수 있습니다.");
     } catch (createError) {
+      setDraftTouched(true);
       setError(operationError(createError, "전송에 실패했습니다. 작성한 내용은 그대로 유지됩니다."));
     } finally {
       setBusy(null);
@@ -255,7 +304,10 @@ export function GuestbookPanel({
             <input
               value={draftNickname}
               maxLength={16}
-              onChange={(event) => setDraftNickname(event.target.value)}
+              onChange={(event) => {
+                setDraftTouched(true);
+                setDraftNickname(event.target.value);
+              }}
               required
             />
           </label>
@@ -264,14 +316,18 @@ export function GuestbookPanel({
             <textarea
               value={draftMessage}
               maxLength={240}
-              onChange={(event) => setDraftMessage(event.target.value)}
+              onChange={(event) => {
+                setDraftTouched(true);
+                setDraftMessage(event.target.value);
+              }}
               required
             />
           </label>
           <span className="guestbook-character-count">{draftMessage.length}/240</span>
-          <button className="primary-button" type="submit" disabled={busy !== null}>
-            {busy === "create" ? "메시지 보내는 중" : "메시지 남기기"}
+          <button className="primary-button" type="submit" disabled={busy !== null || !online}>
+            {busy === "create" ? "메시지 보내는 중" : !online ? "연결 후 전송 가능" : "메시지 남기기"}
           </button>
+          {draftStatus ? <p className="form-draft-status" role="status">{draftStatus}</p> : null}
         </form>
       )}
 

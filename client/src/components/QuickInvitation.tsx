@@ -17,6 +17,7 @@ import { formatCoupleNames } from "../invitation/coupleOrder";
 import { usePublishedInvitationContent } from "../invitation/PublishedInvitationContentContext";
 import { CoupleProfilePanel } from "./CoupleProfilePanel";
 import { DirectionsContent } from "./DirectionsSheet";
+import { DeferredContent } from "./DeferredContent";
 import { FamilyContactContent } from "./FamilyContactSheet";
 import { GiftAccountContent } from "./GiftAccountSheet";
 import { GuestbookExperience } from "./GuestbookExperience";
@@ -26,6 +27,7 @@ import { ResponsiveGalleryImage } from "./ResponsiveGalleryImage";
 import { RsvpPanel } from "./RsvpPanel";
 import { ViewSettingsAccess } from "./ViewSettingsAccess";
 import { WeddingEventSummary } from "./WeddingEventSummary";
+import { WeddingDayActionBar } from "./WeddingDayActionBar";
 import { WeddingGallery } from "./WeddingGallery";
 import { WeddingStoryTimeline } from "./WeddingStoryTimeline";
 import { observeAnalyticsSections } from "../analytics/invitationAnalytics";
@@ -63,10 +65,16 @@ function SectionHeading({ eyebrow, title, body }: SectionHeadingProps) {
 }
 
 function scrollToSection(id: string) {
-  document.getElementById(id)?.scrollIntoView({
-    behavior: shouldReduceMotion() ? "auto" : "smooth",
+  const timers: number[] = [];
+  const align = (smooth: boolean) => document.getElementById(id)?.scrollIntoView({
+    behavior: smooth && !shouldReduceMotion() ? "smooth" : "auto",
     block: "start"
   });
+  align(true);
+  [180, 520, 1_200].forEach((delay) => {
+    timers.push(window.setTimeout(() => align(false), delay));
+  });
+  return () => timers.forEach((timer) => window.clearTimeout(timer));
 }
 
 export function QuickInvitation({
@@ -83,8 +91,14 @@ export function QuickInvitation({
   useEffect(() => {
     const id = window.location.hash.slice(1);
     if (!id) return;
-    const frame = window.requestAnimationFrame(() => scrollToSection(id));
-    return () => window.cancelAnimationFrame(frame);
+    let cancelAlignment: (() => void) | undefined;
+    const frame = window.requestAnimationFrame(() => {
+      cancelAlignment = scrollToSection(id);
+    });
+    return () => {
+      window.cancelAnimationFrame(frame);
+      cancelAlignment?.();
+    };
   }, []);
 
   useEffect(() => observeAnalyticsSections([
@@ -152,7 +166,9 @@ export function QuickInvitation({
           title="우리의 장면들"
           body="사진을 누르면 한 장씩 크게 감상할 수 있습니다."
         />
-        <WeddingGallery />
+        <DeferredContent label="사진 갤러리" minHeight={420}>
+          <WeddingGallery />
+        </DeferredContent>
       </section>
 
       <section className="quick-band quick-band--event" id="schedule">
@@ -179,7 +195,9 @@ export function QuickInvitation({
           title="참석 여부를 알려주세요"
           body="예식 준비를 위해 2027년 4월 24일까지 답변 부탁드립니다."
         />
-        <RsvpPanel />
+        <DeferredContent label="참석 답변" minHeight={360} rootMargin="360px 0px">
+          <RsvpPanel />
+        </DeferredContent>
       </section>
 
       <section className="quick-band quick-band--gift" id="gift">
@@ -198,7 +216,9 @@ export function QuickInvitation({
           title="축하의 말을 남겨주세요"
           body="남겨주신 마음은 두 사람에게 오래도록 소중한 선물이 됩니다."
         />
-        <GuestbookExperience nickname={nickname} />
+        <DeferredContent label="방명록" minHeight={320} rootMargin="320px 0px">
+          <GuestbookExperience nickname={nickname} />
+        </DeferredContent>
       </section>
 
       <section className="quick-closing quick-band" id="share">
@@ -235,6 +255,12 @@ export function QuickInvitation({
         <strong>{names}</strong>
         <button type="button" onClick={() => scrollToSection("top")}>맨 위로</button>
       </footer>
+      <WeddingDayActionBar
+        variant="quick"
+        preview={weddingDayPreview}
+        onSchedule={() => scrollToSection("schedule")}
+        onRsvp={() => scrollToSection("rsvp")}
+      />
     </article>
   );
 }

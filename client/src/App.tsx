@@ -61,8 +61,16 @@ const GuestInformationAdminPage = lazy(() => import("./components/GuestInformati
 const ReminderAdminPage = lazy(() => import("./components/ReminderAdminPage")
   .then((module) => ({ default: module.ReminderAdminPage })));
 
-function ScreenLoadingFallback() {
-  return <div className="screen-loading" role="status">화면을 준비하고 있어요</div>;
+function ScreenLoadingFallback({ mode = "screen" }: { mode?: "screen" | "invitation" | "garden" }) {
+  return (
+    <div className={`screen-loading screen-loading--${mode}`} role="status" aria-label="화면을 준비하고 있어요">
+      <span className="screen-loading__eyebrow">WEDDING INVITATION</span>
+      <strong>{mode === "garden" ? "정원을 준비하고 있어요" : "초대장을 준비하고 있어요"}</strong>
+      <div className="screen-loading__visual" aria-hidden="true">
+        <span /><span /><span />
+      </div>
+    </div>
+  );
 }
 
 function updateNamedMeta(selector: string, value: string) {
@@ -179,7 +187,7 @@ export function App() {
       >
         <section className={`phone-frame ${playing ? "phone-frame--playing" : ""}${quickView ? " phone-frame--quick" : ""}`}>
           {quickView ? (
-            <Suspense fallback={<ScreenLoadingFallback />}>
+            <Suspense fallback={<ScreenLoadingFallback mode="invitation" />}>
               <QuickInvitation
                 nickname={profile?.nickname ?? invitationInvite.invite?.guestName}
                 canReturnToGarden={profile !== null}
@@ -188,7 +196,7 @@ export function App() {
               />
             </Suspense>
           ) : playing ? (
-            <Suspense fallback={<ScreenLoadingFallback />}>
+            <Suspense fallback={<ScreenLoadingFallback mode="garden" />}>
               <GameWorld
                 profile={profile}
                 weddingDayPreview={weddingDayPreview}

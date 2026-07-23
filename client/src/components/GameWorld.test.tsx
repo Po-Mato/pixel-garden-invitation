@@ -313,7 +313,7 @@ describe("GameWorld", () => {
   it("starts walking to the recommended destination in the current map", () => {
     render(<GameWorld profile={profile} />);
 
-    expect(screen.getByText("목적지 · 오시는 길")).toBeInTheDocument();
+    expect(screen.getByText(/목적지 · 오시는 길 · .*타일/)).toBeInTheDocument();
     expect(screen.getByTestId("minimap-destination-route")).toBeInTheDocument();
     expect(screen.getByTestId("minimap-journey-marker")).toHaveClass("world-minimap__journey-marker--recommended");
 
@@ -332,7 +332,12 @@ describe("GameWorld", () => {
     render(<GameWorld profile={profile} />);
 
     fireEvent.click(screen.getByRole("button", { name: "다음 목적지 웨딩 갤러리, 예식장 로비로 이동" }));
-    act(() => vi.advanceTimersByTime(0));
+    expect(screen.getByRole("button", { name: "동네로 나가기" })).toHaveClass("world-portal--target");
+
+    for (let index = 0; index < 5; index += 1) {
+      finishCurrentRoute();
+      act(() => vi.advanceTimersByTime(0));
+    }
 
     expect(screen.getByText("예식장 로비", { selector: ".world-zone-summary strong" })).toBeInTheDocument();
     expect(screen.getByText("웨딩 갤러리 가까이 이동 중")).toBeInTheDocument();
@@ -461,7 +466,8 @@ describe("GameWorld", () => {
     advanceAnimation(0);
     const pausedAt = { left: player.style.left, top: player.style.top };
 
-    fireEvent.click(screen.getByRole("button", { name: /예식 당일 안내/ }));
+    fireEvent.click(within(screen.getByRole("navigation", { name: /예식 당일 바로가기/ }))
+      .getByRole("button", { name: "일정" }));
     [240, 480, 720].forEach(advanceAnimation);
 
     expect(screen.getByRole("dialog", { name: "예식 당일 안내" })).toBeInTheDocument();

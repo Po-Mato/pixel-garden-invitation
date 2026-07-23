@@ -51,10 +51,25 @@ export function EntryScreen({
     () => loadAppearance() ?? defaultCharacterAppearance
   );
   const [familyContactOpen, setFamilyContactOpen] = useState(false);
+  const [characterReady, setCharacterReady] = useState(() => import.meta.env.MODE === "test");
 
   useEffect(() => {
     if (invitedGuest?.guestName) setNickname((current) => current || invitedGuest.guestName);
   }, [invitedGuest]);
+
+  useEffect(() => {
+    if (characterReady) return;
+    const idleWindow = window as Window & {
+      requestIdleCallback?: (callback: () => void, options?: { timeout: number }) => number;
+      cancelIdleCallback?: (id: number) => void;
+    };
+    if (idleWindow.requestIdleCallback) {
+      const id = idleWindow.requestIdleCallback(() => setCharacterReady(true), { timeout: 450 });
+      return () => idleWindow.cancelIdleCallback?.(id);
+    }
+    const timer = window.setTimeout(() => setCharacterReady(true), 120);
+    return () => window.clearTimeout(timer);
+  }, [characterReady]);
 
   const canEnter = nickname.trim().length > 0;
   const enterGarden = () => {
@@ -104,7 +119,13 @@ export function EntryScreen({
           <ChevronRight aria-hidden="true" />
         </button>
       ) : null}
-      <CharacterCustomizer value={appearance} onChange={setAppearance} />
+      {characterReady ? (
+        <CharacterCustomizer value={appearance} onChange={setAppearance} />
+      ) : (
+        <div className="character-customizer-loading" role="status" aria-label="하객 캐릭터 목록 준비 중">
+          <span /><span /><span />
+        </div>
+      )}
       <div className="entry-screen__controls">
         <label className="field">
           <span>닉네임</span>

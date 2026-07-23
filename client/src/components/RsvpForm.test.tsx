@@ -2,6 +2,8 @@ import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-li
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { RsvpSubmission } from "@wedding-game/shared";
 import { CoupleOrderProvider } from "../invitation/CoupleOrderContext";
+import { loadRsvpFormDraft } from "../invitation/publicFormDraftStorage";
+import { installMemoryLocalStorage } from "../test/memoryStorage";
 import { RsvpForm } from "./RsvpForm";
 
 const policy = {
@@ -17,11 +19,27 @@ function completeRequiredFields() {
 }
 
 describe("RsvpForm", () => {
-  beforeEach(() => vi.setSystemTime(new Date("2027-04-20T00:00:00+09:00")));
+  beforeEach(() => {
+    vi.setSystemTime(new Date("2027-04-20T00:00:00+09:00"));
+    installMemoryLocalStorage();
+    Object.defineProperty(navigator, "onLine", { configurable: true, value: true });
+  });
 
   afterEach(() => {
     cleanup();
     vi.useRealTimers();
+    Object.defineProperty(navigator, "onLine", { configurable: true, value: true });
+  });
+
+  it("작성 중인 답변을 기기에 임시 저장하고 오프라인 전송을 막는다", async () => {
+    Object.defineProperty(navigator, "onLine", { configurable: true, value: false });
+    render(<RsvpForm policy={policy} draftStorageId="sample" submitLabel="보내기" onSubmit={vi.fn()} />);
+
+    fireEvent.change(screen.getByLabelText("이름"), { target: { value: "김하객" } });
+
+    expect(screen.getByRole("button", { name: "연결 후 전송 가능" })).toBeDisabled();
+    await waitFor(() => expect(loadRsvpFormDraft("sample")?.value.guestName).toBe("김하객"));
+    expect(screen.getByRole("status")).toHaveTextContent("오프라인입니다");
   });
 
   it("uses accessible radio groups and submits a canonical attending payload", async () => {

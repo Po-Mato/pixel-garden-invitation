@@ -35,6 +35,23 @@ describe("WeddingDayQuickAccess", () => {
       .toHaveAttribute("href", "tel:0323475500");
   });
 
+  it("고정 바에서 제어할 때 중복 트리거 없이 상세 시트만 연다", () => {
+    const onOpenChange = vi.fn();
+    render(
+      <WeddingDayQuickAccess
+        variant="world"
+        preview
+        open
+        showTrigger={false}
+        onOpenChange={onOpenChange}
+      />
+    );
+
+    expect(screen.queryByRole("button", { name: /예식 당일 안내:/ })).not.toBeInTheDocument();
+    fireEvent.click(within(screen.getByRole("dialog", { name: "예식 당일 안내" })).getByRole("button", { name: "닫기" }));
+    expect(onOpenChange).toHaveBeenCalledWith(false);
+  });
+
   it("실제 연락처가 있을 때 혼주 연락처 화면으로 연결한다", () => {
     const onFamilyContactOpen = vi.fn();
     const event: WeddingEvent = {

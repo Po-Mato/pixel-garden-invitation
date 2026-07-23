@@ -48,8 +48,23 @@ export function PwaStatusCenter({ playing, showInstall }: PwaStatusCenterProps) 
 
   useEffect(() => {
     const unsubscribe = subscribePwaClient(setClient);
-    void startPwaClient();
-    return unsubscribe;
+    const idleWindow = window as Window & {
+      requestIdleCallback?: (callback: () => void, options?: { timeout: number }) => number;
+      cancelIdleCallback?: (id: number) => void;
+    };
+    let timer: number | null = null;
+    let idleId: number | null = null;
+    const start = () => { void startPwaClient(); };
+    if (idleWindow.requestIdleCallback) {
+      idleId = idleWindow.requestIdleCallback(start, { timeout: 1_500 });
+    } else {
+      timer = window.setTimeout(start, 700);
+    }
+    return () => {
+      unsubscribe();
+      if (idleId !== null) idleWindow.cancelIdleCallback?.(idleId);
+      if (timer !== null) window.clearTimeout(timer);
+    };
   }, []);
 
   useEffect(() => {

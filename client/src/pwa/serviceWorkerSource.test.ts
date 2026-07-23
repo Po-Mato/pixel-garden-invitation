@@ -11,6 +11,8 @@ describe("PWA service worker source", () => {
       "assets/index-abc.js",
       "assets/index-abc.js",
       "assets/GameWorld-def.css",
+      "assets/RsvpAdminPage-private.js",
+      "assets/papaparse.min-private.js",
       "assets/cover.webp",
       "index.html"
     ]);
@@ -22,6 +24,8 @@ describe("PWA service worker source", () => {
     ]);
     expect(paths).toContain("./manifest.webmanifest");
     expect(paths).toContain("./assets/maps/v2/home/background.webp");
+    expect(paths).not.toContain("./assets/RsvpAdminPage-private.js");
+    expect(paths).not.toContain("./assets/papaparse.min-private.js");
   });
 
   it("emits valid JavaScript with navigation fallback, bounded runtime caching, and update messages", () => {

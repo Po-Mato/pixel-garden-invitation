@@ -16,9 +16,11 @@ function relativeAssetPath(fileName: string): string {
   return fileName.startsWith("./") ? fileName : `./${fileName.replace(/^\/+/, "")}`;
 }
 
+const adminOnlyBundlePattern = /(?:AdminPage|AdminNotificationInbox|papaparse|inviteLinkAdminTokens|attendanceOperations)/i;
+
 export function resolvePwaPrecachePaths(bundleFileNames: readonly string[]): string[] {
   const buildAssets = bundleFileNames
-    .filter((fileName) => /\.(?:css|js)$/i.test(fileName))
+    .filter((fileName) => /\.(?:css|js)$/i.test(fileName) && !adminOnlyBundlePattern.test(fileName))
     .map(relativeAssetPath);
   return [...new Set([...pwaCorePrecachePaths, ...buildAssets])];
 }

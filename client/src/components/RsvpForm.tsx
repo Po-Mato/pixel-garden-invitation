@@ -2,6 +2,11 @@ import { useEffect, useRef, useState } from "react";
 import { normalizeRsvpPhone, type RsvpAttendance, type RsvpMealStatus, type RsvpSide, type RsvpSubmission } from "@wedding-game/shared";
 import { useCoupleOrder } from "../invitation/CoupleOrderContext";
 import { coupleSides } from "../invitation/coupleOrder";
+import {
+  clearRsvpFormDraft,
+  saveRsvpFormDraft,
+  type RsvpFormDraft
+} from "../invitation/publicFormDraftStorage";
 
 export type RsvpPolicy = {
   responseDeadline: string;
@@ -12,6 +17,8 @@ export type RsvpPolicy = {
 type RsvpFormProps = {
   initialValue?: RsvpFormInitialValue;
   policy: RsvpPolicy;
+  draftStorageId?: string;
+  restoredDraftAt?: string;
   submitLabel: string;
   onSubmit: (payload: RsvpSubmission) => Promise<void>;
 };
@@ -43,7 +50,7 @@ function formatPolicyDate(value: string): string {
   }).format(new Date(value));
 }
 
-export function RsvpForm({ initialValue, policy, submitLabel, onSubmit }: RsvpFormProps) {
+export function RsvpForm({ initialValue, policy, draftStorageId, restoredDraftAt, submitLabel, onSubmit }: RsvpFormProps) {
   const coupleOrder = useCoupleOrder();
   const sideOrder = coupleSides(coupleOrder);
   const [side, setSide] = useState<RsvpSide>(initialValue?.side ?? sideOrder[0]);
@@ -58,8 +65,14 @@ export function RsvpForm({ initialValue, policy, submitLabel, onSubmit }: RsvpFo
   const [consented, setConsented] = useState(initialValue?.consentVersion === policy.consentVersion);
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState("");
+  const [online, setOnline] = useState(() => navigator.onLine !== false);
+  const [draftTouched, setDraftTouched] = useState(false);
+  const [draftStatus, setDraftStatus] = useState(() => (
+    restoredDraftAt ? "이 기기에 저장된 작성 내용을 복원했습니다." : ""
+  ));
   const mountedRef = useRef(true);
   const submittingRef = useRef(false);
+  const previousOnlineRef = useRef(online);
 
   useEffect(() => {
     mountedRef.current = true;
@@ -67,6 +80,59 @@ export function RsvpForm({ initialValue, policy, submitLabel, onSubmit }: RsvpFo
       mountedRef.current = false;
     };
   }, []);
+
+  useEffect(() => {
+    const update = () => setOnline(navigator.onLine !== false);
+    window.addEventListener("online", update);
+    window.addEventListener("offline", update);
+    return () => {
+      window.removeEventListener("online", update);
+      window.removeEventListener("offline", update);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!draftStorageId || !draftTouched) return;
+    const value: RsvpFormDraft = {
+      side,
+      guestName,
+      phone: normalizeRsvpPhone(phone),
+      attendance,
+      partySize: attendance === "no" ? 0 : partySize,
+      mealStatus: attendance === "no" ? "not_applicable" : attendance === "unsure" ? "unsure" : mealStatus,
+      note,
+      consentVersion: consented ? policy.consentVersion : null
+    };
+    const timer = window.setTimeout(() => {
+      const saved = saveRsvpFormDraft(draftStorageId, value);
+      setDraftStatus(saved
+        ? online
+          ? "작성 중인 답변을 이 기기에 임시 저장했습니다."
+          : "오프라인입니다. 작성 중인 답변을 이 기기에 임시 저장했습니다."
+        : "이 기기에 임시 저장하지 못했습니다. 이 화면을 닫지 말아주세요.");
+    }, 250);
+    return () => window.clearTimeout(timer);
+  }, [
+    attendance,
+    consented,
+    draftStorageId,
+    draftTouched,
+    guestName,
+    mealStatus,
+    note,
+    online,
+    partySize,
+    phone,
+    policy.consentVersion,
+    side
+  ]);
+
+  useEffect(() => {
+    if (draftStorageId && draftTouched && online && !previousOnlineRef.current) {
+      setDraftStatus("연결이 복구됐습니다. 내용을 확인하고 답변을 보내주세요.");
+    }
+    previousOnlineRef.current = online;
+  }, [draftStorageId, draftTouched, online]);
 
   const normalizedPhone = normalizeRsvpPhone(phone);
   const partySizeValid = attendance === "no" || (Number.isInteger(partySize) && partySize >= 1 && partySize <= 10);
@@ -104,8 +170,13 @@ export function RsvpForm({ initialValue, policy, submitLabel, onSubmit }: RsvpFo
 
     try {
       await onSubmit(payload);
+      if (draftStorageId) clearRsvpFormDraft(draftStorageId);
+      setDraftStatus("");
     } catch (error) {
-      if (mountedRef.current) setMessage(errorMessage(error));
+      if (mountedRef.current) {
+        setMessage(errorMessage(error));
+        setDraftTouched(true);
+      }
     } finally {
       submittingRef.current = false;
       if (mountedRef.current) setSubmitting(false);
@@ -113,7 +184,7 @@ export function RsvpForm({ initialValue, policy, submitLabel, onSubmit }: RsvpFo
   }
 
   return (
-    <form className="rsvp-form form-stack" onSubmit={handleSubmit}>
+    <form className="rsvp-form form-stack" onSubmit={handleSubmit} onChange={() => setDraftTouched(true)}>
       <p className="rsvp-deadline">{deadlinePassed
         ? "마감일이 지났지만 답변을 보내실 수 있습니다"
         : `${deadlineLabel}까지 알려주세요`}</p>
@@ -188,9 +259,10 @@ export function RsvpForm({ initialValue, policy, submitLabel, onSubmit }: RsvpFo
         <span>개인정보 수집 및 이용에 동의합니다. 예식 참석 인원 확인을 위해 이름·연락처·답변을 {deleteAtLabel}까지 보관 후 자동 삭제합니다.</span>
       </label>
 
-      <button className="primary-button rsvp-submit" type="submit" disabled={!valid || submitting}>
-        {submitting ? "보내는 중" : submitLabel}
+      <button className="primary-button rsvp-submit" type="submit" disabled={!valid || submitting || !online}>
+        {submitting ? "보내는 중" : !online ? "연결 후 전송 가능" : submitLabel}
       </button>
+      {draftStatus ? <p className="form-draft-status" role="status">{draftStatus}</p> : null}
       {message ? <p className="form-status form-status--error" role="alert">{message}</p> : null}
     </form>
   );

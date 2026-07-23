@@ -1,9 +1,19 @@
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { loadGuestbookFormDraft } from "../invitation/publicFormDraftStorage";
+import { installMemoryLocalStorage } from "../test/memoryStorage";
 import { GuestbookPanel } from "./GuestbookPanel";
 
-afterEach(cleanup);
+beforeEach(() => {
+  installMemoryLocalStorage();
+  Object.defineProperty(navigator, "onLine", { configurable: true, value: true });
+});
+
+afterEach(() => {
+  cleanup();
+  Object.defineProperty(navigator, "onLine", { configurable: true, value: true });
+});
 
 const callbacks = () => ({
   onCreate: vi.fn().mockResolvedValue(undefined),
@@ -41,6 +51,16 @@ const ownedMessage = {
 };
 
 describe("GuestbookPanel", () => {
+  it("오프라인에서 메시지를 임시 저장하고 연결 전 전송을 막는다", async () => {
+    Object.defineProperty(navigator, "onLine", { configurable: true, value: false });
+    renderPanel();
+    fireEvent.change(screen.getByRole("textbox", { name: "축하 메시지" }), { target: { value: "연결되면 보낼게요" } });
+
+    expect(screen.getByRole("button", { name: "연결 후 전송 가능" })).toBeDisabled();
+    await waitFor(() => expect(loadGuestbookFormDraft("sample-garden")?.value.message).toBe("연결되면 보낼게요"));
+    expect(screen.getByRole("status")).toHaveTextContent("오프라인입니다");
+  });
+
   it("작성한 내용을 정리해 전송하고 같은 기기 수정 안내를 표시한다", async () => {
     const actions = renderPanel();
     fireEvent.change(screen.getByRole("textbox", { name: "축하 메시지" }), { target: { value: "  축하합니다  " } });

@@ -38,6 +38,7 @@ import {
   type JourneyCheckpointId
 } from "../game/journeyProgress";
 import { completeGameGuide, loadGameGuideState, shouldAutoOpenGameGuide } from "../game/gameGuide";
+import { journeyDirectionLabels, resolveJourneyGuidance } from "../game/journeyGuidance";
 import { resolveNpcDialogue, type NpcDialogue, type NpcId } from "../game/npcDialogue";
 import { useGameFeedback } from "../feedback/GameFeedbackContext";
 import {
@@ -77,6 +78,7 @@ import { VirtualJoystick } from "./VirtualJoystick";
 import { ViewSettingsAccess } from "./ViewSettingsAccess";
 import { WeddingEventSummary } from "./WeddingEventSummary";
 import { WeddingDayQuickAccess } from "./WeddingDayQuickAccess";
+import { WeddingDayActionBar } from "./WeddingDayActionBar";
 import { WeddingNpc } from "./WeddingNpc";
 import { WeddingPhotoBooth } from "./WeddingPhotoBooth";
 import { WeddingPhotoAlbum } from "./WeddingPhotoAlbum";
@@ -267,6 +269,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   const moveSeqRef = useRef(0);
   const lastSentMoveRef = useRef<MoveMessage | null>(null);
   const journeyProgressRef = useRef(journeyProgress);
+  const journeyGuideLastZoneRef = useRef<WorldZoneId | null>(null);
   const moveThrottleRef = useRef<((message: MoveMessage, now: number) => void) | null>(null);
   const terminalStopConfirmTimerRef = useRef<number | null>(null);
   const localReactionTimerRef = useRef<number | null>(null);
@@ -587,6 +590,8 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
 
   const handleJourneySelect = useCallback((zoneId: WorldZoneId) => {
     if (portalTransitionRef.current || zoneId === activeZoneIdRef.current) return;
+    setPendingJourneyGuideId(null);
+    journeyGuideLastZoneRef.current = null;
     playFeedback("portal");
     void preloadWorldZoneAssets(zoneId, "high");
     closeMenu();
@@ -735,12 +740,24 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     if (portalTransitionRef.current) return;
     if (checkpoint.zoneId !== activeZone.id) {
       const destinationZone = getWorldZone(gardenWorld, checkpoint.zoneId);
+      const nextZoneId = nextWorldZoneToward(activeZone.id, checkpoint.zoneId);
+      const portal = nextZoneId
+        ? activeZone.portals.find((candidate) => candidate.to === nextZoneId)
+        : null;
+      if (!portal) {
+        setPendingJourneyGuideId(null);
+        journeyGuideLastZoneRef.current = null;
+        setTravelStatus(`${destinationZone.label} 방향을 찾을 수 없어요`);
+        return;
+      }
+      journeyGuideLastZoneRef.current = activeZone.id;
       setPendingJourneyGuideId(checkpoint.id);
       setTravelStatus(`${destinationZone.label}의 ${checkpoint.label}(으)로 안내할게요`);
-      handleJourneySelect(checkpoint.zoneId);
+      handlePortalClick(portal);
       return;
     }
 
+    journeyGuideLastZoneRef.current = null;
     setPendingJourneyGuideId(null);
     const target = checkpoint.target;
     if (target.type === "spot") {
@@ -770,15 +787,16 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
 
     stampJourneyCheckpoint(checkpoint.id);
     setTravelStatus(`${checkpoint.label}에 도착했어요`);
-  }, [activeZone, beginWorldInteraction, handleJourneySelect, stampJourneyCheckpoint]);
+  }, [activeZone, beginWorldInteraction, stampJourneyCheckpoint]);
 
   useEffect(() => {
-    if (!pendingJourneyGuideId) return;
+    if (!pendingJourneyGuideId || portalTransition) return;
     const checkpoint = journeyCheckpoints.find((candidate) => candidate.id === pendingJourneyGuideId);
-    if (!checkpoint || checkpoint.zoneId !== activeZone.id) return;
+    if (!checkpoint || journeyGuideLastZoneRef.current === activeZone.id) return;
+    journeyGuideLastZoneRef.current = activeZone.id;
     const timer = window.setTimeout(() => startJourneyGuidance(checkpoint), 0);
     return () => window.clearTimeout(timer);
-  }, [activeZone.id, pendingJourneyGuideId, startJourneyGuidance]);
+  }, [activeZone.id, pendingJourneyGuideId, portalTransition, startJourneyGuidance]);
 
   const closeActiveSpot = useCallback(() => {
     const restoreMenuButtonFocus = restoreMenuButtonFocusRef.current;
@@ -1235,6 +1253,8 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     if (portalTransitionRef.current) return;
 
     clearTerminalStopConfirm();
+    setPendingJourneyGuideId(null);
+    journeyGuideLastZoneRef.current = null;
     setActiveNpcDialogue(null);
     cancelPortalWalk();
     cancelInteractionWalk();
@@ -1271,6 +1291,8 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
 
     if (isMoving) {
       if (!wasMoving) playFeedback("tap");
+      setPendingJourneyGuideId(null);
+      journeyGuideLastZoneRef.current = null;
       setActiveNpcDialogue(null);
       cancelPortalWalk();
       cancelInteractionWalk();
@@ -1300,6 +1322,14 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   const recommendedZone = recommendedCheckpoint
     ? getWorldZone(gardenWorld, recommendedCheckpoint.zoneId)
     : null;
+  const journeyGuidance = recommendedCheckpoint
+    ? resolveJourneyGuidance(activeZone, position, recommendedCheckpoint)
+    : null;
+  const journeyDistanceLabel = journeyGuidance?.available
+    ? journeyGuidance.tileCount === 0
+      ? "목적지 도착"
+      : `${journeyGuidance.direction ? `${journeyDirectionLabels[journeyGuidance.direction]} · ` : ""}${journeyGuidance.tileCount}타일`
+    : "경로 확인 필요";
   const activeJourneyMarkers = journeyCheckpoints
     .filter((checkpoint) => checkpoint.zoneId === activeZone.id)
     .flatMap((checkpoint) => {
@@ -1363,7 +1393,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
             <span>
               <small>NEXT DESTINATION</small>
               <strong>{recommendedCheckpoint.label}</strong>
-              <em>{recommendedCheckpoint.zoneId === activeZone.id ? "현재 맵 · 목적지까지 걷기" : recommendedZone.label}</em>
+              <em>{recommendedCheckpoint.zoneId === activeZone.id ? "현재 맵" : recommendedZone.label} · {journeyDistanceLabel} · 자동 이동</em>
             </span>
             <ArrowRight aria-hidden="true" />
           </button>
@@ -1438,7 +1468,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
                 <button
                   key={worldSpot.id}
                   type="button"
-                  className={`world-spot world-spot--${worldSpot.id}${interactionIntent?.targetId === `spot:${worldSpot.id}` ? " world-spot--target" : ""}`}
+                  className={`world-spot world-spot--${worldSpot.id}${interactionIntent?.targetId === `spot:${worldSpot.id}` ? " world-spot--target" : ""}${recommendedCheckpoint?.zoneId === activeZone.id && recommendedCheckpoint.target.type === "spot" && recommendedCheckpoint.target.spotId === worldSpot.id ? " world-spot--recommended" : ""}`}
                   style={{ ...pixelRect(worldSpot), zIndex: 9000 }}
                   onClick={(event) => {
                     event.stopPropagation();
@@ -1488,7 +1518,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
                 <button
                   key={portalItem.id}
                   type="button"
-                  className={`world-portal world-portal--${horizontal ? "horizontal" : "vertical"}${portalIntent?.portal.id === portalItem.id ? " world-portal--target" : ""}`}
+                  className={`world-portal world-portal--${horizontal ? "horizontal" : "vertical"}${portalIntent?.portal.id === portalItem.id ? " world-portal--target" : ""}${journeyGuidance?.portalId === portalItem.id ? " world-portal--recommended" : ""}`}
                   style={{
                     ...pixelRect(portalEntryRect(portalItem)),
                     zIndex: worldDepth(portalItem.approach.y) - 100
@@ -1554,7 +1584,11 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
                 <WeddingNpc
                   id={npc.id}
                   label={npc.label}
-                  approaching={interactionIntent?.targetId === `npc:${npc.id}`}
+                  approaching={interactionIntent?.targetId === `npc:${npc.id}` || (
+                    recommendedCheckpoint?.zoneId === activeZone.id
+                    && recommendedCheckpoint.target.type === "npc"
+                    && recommendedCheckpoint.target.npcId === npc.id
+                  )}
                   onSelect={() => beginWorldInteraction({
                     targetId: `npc:${npc.id}`,
                     spotId: "couple",
@@ -1591,9 +1625,10 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
             direction={direction}
             camera={camera}
             viewport={viewport}
-            targetPortalId={portalIntent?.portal.id ?? null}
+            targetPortalId={portalIntent?.portal.id ?? journeyGuidance?.portalId ?? null}
             journeyMarkers={activeJourneyMarkers}
-            destinationLabel={recommendedCheckpoint?.zoneId === activeZone.id ? recommendedCheckpoint.label : null}
+            destinationLabel={recommendedCheckpoint ? `${recommendedCheckpoint.label} · ${journeyDistanceLabel}` : null}
+            destinationPoint={journeyGuidance?.destinationPoint ?? null}
           />
 
           <div className="world-control-dock" onClick={(event) => event.stopPropagation()}>
@@ -1613,6 +1648,8 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
               <WeddingDayQuickAccess
                 variant="world"
                 preview={weddingDayPreview}
+                open={weddingDaySheetOpen}
+                showTrigger={false}
                 onOpenChange={handleWeddingDaySheetOpenChange}
                 onFamilyContactOpen={openFamilyContacts}
               />
@@ -1775,6 +1812,16 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
           }}
         />
       ) : null}
+      <WeddingDayActionBar
+        variant="world"
+        preview={weddingDayPreview}
+        onOpenChange={(open) => { if (open) pauseWorldInput(); }}
+        onSchedule={() => {
+          pauseWorldInput();
+          setWeddingDaySheetOpen(true);
+        }}
+        onRsvp={() => openSpot("rsvp")}
+      />
     </section>
   );
 }

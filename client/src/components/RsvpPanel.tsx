@@ -3,6 +3,7 @@ import { invitationContent, type RsvpCreateResult, type RsvpRecord, type RsvpSub
 import { fetchOwnedRsvp, updateOwnedRsvp, WeddingApiError, type RsvpCredential } from "../api/weddingApi";
 import { createRsvpWithInviteLink } from "../api/invitationInviteLinksApi";
 import { loadStoredInvitationInvite } from "../invitation/inviteLinkStorage";
+import { loadRsvpFormDraft } from "../invitation/publicFormDraftStorage";
 import { clearRsvpCredential, loadRsvpCredential, saveRsvpCredential } from "../invitation/rsvpStorage";
 import { RsvpForm, type RsvpFormInitialValue } from "./RsvpForm";
 import { trackAnalyticsContextEvent } from "../analytics/invitationAnalytics";
@@ -85,7 +86,8 @@ export function RsvpPanel() {
   );
   const [notice, setNotice] = useState("");
   const invitedGuest = loadStoredInvitationInvite(id)?.invite ?? null;
-  const invitedInitialValue: RsvpFormInitialValue | undefined = invitedGuest ? {
+  const storedDraftRef = useRef(loadRsvpFormDraft(id));
+  const invitedInitialValue: RsvpFormInitialValue | undefined = storedDraftRef.current?.value ?? (invitedGuest ? {
     side: invitedGuest.side,
     guestName: invitedGuest.guestName,
     phone: "",
@@ -94,7 +96,7 @@ export function RsvpPanel() {
     mealStatus: "unsure",
     note: "",
     consentVersion: invitationContent.event.rsvp.consentVersion
-  } : undefined;
+  } : undefined);
 
   useEffect(() => {
     mountedRef.current = true;
@@ -227,6 +229,8 @@ export function RsvpPanel() {
         <RsvpForm
           initialValue={invitedInitialValue}
           policy={invitationContent.event.rsvp}
+          draftStorageId={id}
+          restoredDraftAt={storedDraftRef.current?.savedAt}
           submitLabel="참석 답변 보내기"
           onSubmit={handleCreate}
         />
