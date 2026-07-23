@@ -480,8 +480,8 @@ const ceremonyHallZone = createZone({
   ],
   spots: [spot("couple", "신랑신부", 180, 150, 90, 90)],
   npcs: [
-    { id: "groom", label: `신랑 ${invitationContent.event.couple.groom}`, x: 330, y: 255 },
-    { id: "bride", label: `신부 ${invitationContent.event.couple.bride}`, x: 450, y: 255 }
+    { id: "groom", label: `신랑 ${invitationContent.event.couple.groom}`, x: 360, y: 255 },
+    { id: "bride", label: `신부 ${invitationContent.event.couple.bride}`, x: 420, y: 255 }
   ],
   portals: [
     portal("hall-to-lobby", "로비로 돌아가기", "lobby", { x: 330, y: 1830, width: 120, height: 60 }, { x: 375, y: 1815 }, "down", { x: 525, y: 135 })

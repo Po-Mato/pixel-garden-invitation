@@ -783,9 +783,10 @@ describe("guest route world", () => {
     ]);
     expect(hall.blocked).toEqual([coupleSpot]);
     expect(hall.npcs).toEqual([
-      { id: "groom", label: `신랑 ${invitationContent.event.couple.groom}`, x: 330, y: 255 },
-      { id: "bride", label: `신부 ${invitationContent.event.couple.bride}`, x: 450, y: 255 }
+      { id: "groom", label: `신랑 ${invitationContent.event.couple.groom}`, x: 360, y: 255 },
+      { id: "bride", label: `신부 ${invitationContent.event.couple.bride}`, x: 420, y: 255 }
     ]);
+    expect(hall.npcs[1].x - hall.npcs[0].x).toBe(60);
     expect(hall.portals).toEqual([
       expect.objectContaining({
         id: "hall-to-lobby",

@@ -1651,9 +1651,9 @@ describe("GameWorld", () => {
     expectMapBackground(container, "ceremony-hall");
     expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "375px", top: "1785px" });
     expect(screen.getByRole("button", { name: `${groomNpcLabel}와 대화하기` }).parentElement)
-      .toHaveStyle({ left: "330px", top: "255px", zIndex: "1255" });
+      .toHaveStyle({ left: "360px", top: "255px", zIndex: "1255" });
     expect(screen.getByRole("button", { name: `${brideNpcLabel}와 대화하기` }).parentElement)
-      .toHaveStyle({ left: "450px", top: "255px", zIndex: "1255" });
+      .toHaveStyle({ left: "420px", top: "255px", zIndex: "1255" });
     expect(ceremonyArch).toHaveAttribute("src", "/assets/maps/v2/ceremony-hall/ceremony-arch-front.png");
     expect(ceremonyArch).toHaveStyle({
       left: "180px",
