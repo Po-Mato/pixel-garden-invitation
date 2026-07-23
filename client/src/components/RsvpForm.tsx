@@ -7,6 +7,7 @@ import {
   saveRsvpFormDraft,
   type RsvpFormDraft
 } from "../invitation/publicFormDraftStorage";
+import { FormDraftManager } from "./FormDraftManager";
 
 export type RsvpPolicy = {
   responseDeadline: string;
@@ -19,6 +20,7 @@ type RsvpFormProps = {
   policy: RsvpPolicy;
   draftStorageId?: string;
   restoredDraftAt?: string;
+  draftResetValue?: RsvpFormInitialValue;
   submitLabel: string;
   onSubmit: (payload: RsvpSubmission) => Promise<void>;
 };
@@ -50,7 +52,15 @@ function formatPolicyDate(value: string): string {
   }).format(new Date(value));
 }
 
-export function RsvpForm({ initialValue, policy, draftStorageId, restoredDraftAt, submitLabel, onSubmit }: RsvpFormProps) {
+export function RsvpForm({
+  initialValue,
+  policy,
+  draftStorageId,
+  restoredDraftAt,
+  draftResetValue,
+  submitLabel,
+  onSubmit
+}: RsvpFormProps) {
   const coupleOrder = useCoupleOrder();
   const sideOrder = coupleSides(coupleOrder);
   const [side, setSide] = useState<RsvpSide>(initialValue?.side ?? sideOrder[0]);
@@ -67,6 +77,7 @@ export function RsvpForm({ initialValue, policy, draftStorageId, restoredDraftAt
   const [message, setMessage] = useState("");
   const [online, setOnline] = useState(() => navigator.onLine !== false);
   const [draftTouched, setDraftTouched] = useState(false);
+  const [draftSavedAt, setDraftSavedAt] = useState<string | null>(restoredDraftAt ?? null);
   const [draftStatus, setDraftStatus] = useState(() => (
     restoredDraftAt ? "이 기기에 저장된 작성 내용을 복원했습니다." : ""
   ));
@@ -105,6 +116,7 @@ export function RsvpForm({ initialValue, policy, draftStorageId, restoredDraftAt
     };
     const timer = window.setTimeout(() => {
       const saved = saveRsvpFormDraft(draftStorageId, value);
+      setDraftSavedAt(saved?.savedAt ?? null);
       setDraftStatus(saved
         ? online
           ? "작성 중인 답변을 이 기기에 임시 저장했습니다."
@@ -150,6 +162,25 @@ export function RsvpForm({ initialValue, policy, draftStorageId, restoredDraftAt
     if (value === "unsure") setMealStatus("unsure");
   }
 
+  function discardDraft() {
+    if (!draftStorageId || !clearRsvpFormDraft(draftStorageId)) {
+      setDraftStatus("임시 저장을 삭제하지 못했습니다. 잠시 후 다시 시도해 주세요.");
+      return;
+    }
+    const reset = draftResetValue;
+    setSide(reset?.side ?? sideOrder[0]);
+    setGuestName(reset?.guestName ?? "");
+    setPhone(formatPhone(reset?.phone ?? ""));
+    setAttendance(reset?.attendance ?? "yes");
+    setPartySize(reset?.partySize && reset.partySize > 0 ? reset.partySize : 1);
+    setMealStatus(reset?.mealStatus && reset.mealStatus !== "not_applicable" ? reset.mealStatus : "unsure");
+    setNote(reset?.note ?? "");
+    setConsented(reset?.consentVersion === policy.consentVersion);
+    setDraftTouched(false);
+    setDraftSavedAt(null);
+    setDraftStatus("이 기기의 임시 저장을 삭제했습니다.");
+  }
+
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!valid || submittingRef.current) return;
@@ -171,6 +202,7 @@ export function RsvpForm({ initialValue, policy, draftStorageId, restoredDraftAt
     try {
       await onSubmit(payload);
       if (draftStorageId) clearRsvpFormDraft(draftStorageId);
+      setDraftSavedAt(null);
       setDraftStatus("");
     } catch (error) {
       if (mountedRef.current) {
@@ -185,6 +217,7 @@ export function RsvpForm({ initialValue, policy, draftStorageId, restoredDraftAt
 
   return (
     <form className="rsvp-form form-stack" onSubmit={handleSubmit} onChange={() => setDraftTouched(true)}>
+      {draftSavedAt ? <FormDraftManager savedAt={draftSavedAt} onDiscard={discardDraft} /> : null}
       <p className="rsvp-deadline">{deadlinePassed
         ? "마감일이 지났지만 답변을 보내실 수 있습니다"
         : `${deadlineLabel}까지 알려주세요`}</p>

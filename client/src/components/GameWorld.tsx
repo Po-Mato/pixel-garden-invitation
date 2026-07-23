@@ -6,7 +6,7 @@ import {
   type MouseEvent,
   type TransitionEvent as ReactTransitionEvent
 } from "react";
-import { ArrowRight, Camera, CircleHelp, Images, MapPinned, Share2 } from "lucide-react";
+import { ArrowRight, Camera, CircleHelp, Images, MapPinned, RefreshCw, Share2, X } from "lucide-react";
 import {
   invitationContent,
   type ClientMessage,
@@ -41,6 +41,7 @@ import { completeGameGuide, loadGameGuideState, shouldAutoOpenGameGuide } from "
 import { journeyDirectionLabels, resolveJourneyGuidance } from "../game/journeyGuidance";
 import { resolveNpcDialogue, type NpcDialogue, type NpcId } from "../game/npcDialogue";
 import { useGameFeedback } from "../feedback/GameFeedbackContext";
+import { useDevicePerformance } from "../performance/DevicePerformanceContext";
 import {
   gardenWorld,
   getWorldZone,
@@ -195,6 +196,7 @@ function realtimeStatusText(status: RealtimeStatus) {
 }
 
 export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView }: GameWorldProps) {
+  const devicePerformance = useDevicePerformance();
   const { playFeedback, setFeedbackZone } = useGameFeedback();
   const initialZone = getWorldZone(gardenWorld, gardenWorld.defaultZoneId);
   const [activeZoneId, setActiveZoneId] = useState<WorldZoneId>(initialZone.id);
@@ -228,6 +230,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     shouldAutoOpenGameGuide(loadGameGuideState(), journeyProgress)
   ));
   const [pendingJourneyGuideId, setPendingJourneyGuideId] = useState<JourneyCheckpointId | null>(null);
+  const [activeJourneyGuideId, setActiveJourneyGuideId] = useState<JourneyCheckpointId | null>(null);
   const [stampedCheckpointId, setStampedCheckpointId] = useState<JourneyCheckpointId | null>(null);
   const [journeyCompletionPending, setJourneyCompletionPending] = useState(false);
   const [journeyCompletionOpen, setJourneyCompletionOpen] = useState(false);
@@ -478,6 +481,22 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     }, realtimeTerminalStopConfirmDelayMs);
   }, [clearTerminalStopConfirm, sendMoveImmediately]);
 
+  const stopJourneyGuidance = useCallback((announce = true) => {
+    setPendingJourneyGuideId(null);
+    setActiveJourneyGuideId(null);
+    journeyGuideLastZoneRef.current = null;
+    inputGenerationRef.current += 1;
+    targetStepAtRef.current = null;
+    tileInputStateRef.current = null;
+    setPortalIntent(null);
+    setInteractionIntent(null);
+    setTarget(null);
+    setMoving(false);
+    setStepFrame(1);
+    sendRealtimeTerminalStop(directionRef.current);
+    if (announce) setTravelStatus("길 안내를 중단했어요");
+  }, [sendRealtimeTerminalStop, setInteractionIntent, setPortalIntent]);
+
   const pauseWorldInput = useCallback(() => {
     const joystickWasMoving = joystickWasMovingRef.current;
     inputGenerationRef.current += 1;
@@ -591,6 +610,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   const handleJourneySelect = useCallback((zoneId: WorldZoneId) => {
     if (portalTransitionRef.current || zoneId === activeZoneIdRef.current) return;
     setPendingJourneyGuideId(null);
+    setActiveJourneyGuideId(null);
     journeyGuideLastZoneRef.current = null;
     playFeedback("portal");
     void preloadWorldZoneAssets(zoneId, "high");
@@ -738,6 +758,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
 
   const startJourneyGuidance = useCallback((checkpoint: JourneyCheckpoint) => {
     if (portalTransitionRef.current) return;
+    setActiveJourneyGuideId(checkpoint.id);
     if (checkpoint.zoneId !== activeZone.id) {
       const destinationZone = getWorldZone(gardenWorld, checkpoint.zoneId);
       const nextZoneId = nextWorldZoneToward(activeZone.id, checkpoint.zoneId);
@@ -746,6 +767,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
         : null;
       if (!portal) {
         setPendingJourneyGuideId(null);
+        setActiveJourneyGuideId(null);
         journeyGuideLastZoneRef.current = null;
         setTravelStatus(`${destinationZone.label} 방향을 찾을 수 없어요`);
         return;
@@ -786,8 +808,14 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     }
 
     stampJourneyCheckpoint(checkpoint.id);
+    setActiveJourneyGuideId(null);
     setTravelStatus(`${checkpoint.label}에 도착했어요`);
   }, [activeZone, beginWorldInteraction, stampJourneyCheckpoint]);
+
+  const restartJourneyGuidance = useCallback((checkpoint: JourneyCheckpoint) => {
+    stopJourneyGuidance(false);
+    window.setTimeout(() => startJourneyGuidance(checkpoint), 0);
+  }, [startJourneyGuidance, stopJourneyGuidance]);
 
   useEffect(() => {
     if (!pendingJourneyGuideId || portalTransition) return;
@@ -1132,6 +1160,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
         setTarget(null);
         setPortalIntent(null);
         setInteractionIntent(null);
+        setActiveJourneyGuideId(null);
         setTravelStatus("길을 찾을 수 없어요");
         sendRealtimeMove(current, false, nextDirection, activeZone.id, now);
         targetStepAtRef.current = null;
@@ -1155,6 +1184,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
         setStepFrame(1);
         setTarget(null);
         setInteractionIntent(null);
+        setActiveJourneyGuideId(null);
         setTravelStatus(`${interactionIntent.label}에 도착했어요`);
         targetStepAtRef.current = null;
         tileInputStateRef.current = null;
@@ -1254,6 +1284,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
 
     clearTerminalStopConfirm();
     setPendingJourneyGuideId(null);
+    setActiveJourneyGuideId(null);
     journeyGuideLastZoneRef.current = null;
     setActiveNpcDialogue(null);
     cancelPortalWalk();
@@ -1292,6 +1323,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     if (isMoving) {
       if (!wasMoving) playFeedback("tap");
       setPendingJourneyGuideId(null);
+      setActiveJourneyGuideId(null);
       journeyGuideLastZoneRef.current = null;
       setActiveNpcDialogue(null);
       cancelPortalWalk();
@@ -1330,6 +1362,18 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
       ? "목적지 도착"
       : `${journeyGuidance.direction ? `${journeyDirectionLabels[journeyGuidance.direction]} · ` : ""}${journeyGuidance.tileCount}타일`
     : "경로 확인 필요";
+  const journeyRoutePoints = activeJourneyGuideId && journeyGuidance?.available
+    ? [position, ...journeyGuidance.path]
+    : [];
+  const zoneRemoteGuests = remoteGuests.filter((guest) => guest.zoneId === activeZone.id);
+  const visibleRemoteGuests = devicePerformance.mode === "lite"
+    ? [...zoneRemoteGuests]
+      .sort((left, right) => (
+        Math.hypot(left.x - position.x, left.y - position.y)
+        - Math.hypot(right.x - position.x, right.y - position.y)
+      ))
+      .slice(0, 8)
+    : zoneRemoteGuests;
   const activeJourneyMarkers = journeyCheckpoints
     .filter((checkpoint) => checkpoint.zoneId === activeZone.id)
     .flatMap((checkpoint) => {
@@ -1382,21 +1426,39 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
           onSelectZone={handleJourneySelect}
         />
         {recommendedCheckpoint && recommendedZone ? (
-          <button
-            type="button"
-            className="world-destination-guide"
-            aria-label={`다음 목적지 ${recommendedCheckpoint.label}, ${recommendedCheckpoint.zoneId === activeZone.id ? "길 안내 시작" : `${recommendedZone.label}로 이동`}`}
-            disabled={Boolean(portalTransition)}
-            onClick={() => startJourneyGuidance(recommendedCheckpoint)}
-          >
-            <MapPinned aria-hidden="true" />
-            <span>
-              <small>NEXT DESTINATION</small>
-              <strong>{recommendedCheckpoint.label}</strong>
-              <em>{recommendedCheckpoint.zoneId === activeZone.id ? "현재 맵" : recommendedZone.label} · {journeyDistanceLabel} · 자동 이동</em>
-            </span>
-            <ArrowRight aria-hidden="true" />
-          </button>
+          <div className="world-destination-guide-row" data-active={activeJourneyGuideId === recommendedCheckpoint.id || undefined}>
+            <button
+              type="button"
+              className="world-destination-guide"
+              aria-label={activeJourneyGuideId === recommendedCheckpoint.id
+                ? `다음 목적지 ${recommendedCheckpoint.label}, 현재 위치에서 경로 다시 찾기`
+                : `다음 목적지 ${recommendedCheckpoint.label}, ${recommendedCheckpoint.zoneId === activeZone.id ? "길 안내 시작" : `${recommendedZone.label}로 이동`}`}
+              disabled={Boolean(portalTransition)}
+              onClick={() => activeJourneyGuideId === recommendedCheckpoint.id
+                ? restartJourneyGuidance(recommendedCheckpoint)
+                : startJourneyGuidance(recommendedCheckpoint)}
+            >
+              <MapPinned aria-hidden="true" />
+              <span>
+                <small>{activeJourneyGuideId === recommendedCheckpoint.id ? "GUIDING NOW" : "NEXT DESTINATION"}</small>
+                <strong>{recommendedCheckpoint.label}</strong>
+                <em>{recommendedCheckpoint.zoneId === activeZone.id ? "현재 맵" : recommendedZone.label} · {journeyDistanceLabel} · {activeJourneyGuideId === recommendedCheckpoint.id ? "재탐색 가능" : "자동 이동"}</em>
+              </span>
+              {activeJourneyGuideId === recommendedCheckpoint.id ? <RefreshCw aria-hidden="true" /> : <ArrowRight aria-hidden="true" />}
+            </button>
+            {activeJourneyGuideId === recommendedCheckpoint.id ? (
+              <button
+                type="button"
+                className="world-destination-guide__cancel"
+                aria-label="길 안내 중단"
+                title="길 안내 중단"
+                disabled={Boolean(portalTransition)}
+                onClick={() => stopJourneyGuidance()}
+              >
+                <X aria-hidden="true" />
+              </button>
+            ) : null}
+          </div>
         ) : null}
         <ol className="world-journey" aria-label="하객 여정">
           {gardenWorld.zones.map((zone) => {
@@ -1459,6 +1521,17 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
                 style={pixelRect(worldPath)}
               />
             ))}
+            {journeyRoutePoints.length > 1 ? (
+              <svg
+                className="world-journey-route"
+                data-testid="world-journey-route"
+                viewBox={`0 0 ${activeZone.bounds.width} ${activeZone.bounds.height}`}
+                aria-hidden="true"
+              >
+                <polyline points={journeyRoutePoints.map((point) => `${point.x},${point.y}`).join(" ")} />
+                <circle cx={journeyRoutePoints.at(-1)?.x} cy={journeyRoutePoints.at(-1)?.y} r="9" />
+              </svg>
+            ) : null}
             {activeZone.decorations.map((item) => (
               <WorldDecoration key={item.id} zoneId={activeZone.id} decoration={item} />
             ))}
@@ -1472,6 +1545,8 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
                   style={{ ...pixelRect(worldSpot), zIndex: 9000 }}
                   onClick={(event) => {
                     event.stopPropagation();
+                    setActiveJourneyGuideId(null);
+                    setPendingJourneyGuideId(null);
                     beginWorldInteraction({
                       targetId: `spot:${worldSpot.id}`,
                       spotId: worldSpot.id,
@@ -1497,6 +1572,8 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
                   aria-label={`${photoSpot.label} ${captured ? "다시 촬영" : "기념 촬영"}`}
                   onClick={(event) => {
                     event.stopPropagation();
+                    setActiveJourneyGuideId(null);
+                    setPendingJourneyGuideId(null);
                     beginWorldInteraction({
                       targetId: `photo:${photoSpot.id}`,
                       photoSpotId: photoSpot.id,
@@ -1525,6 +1602,8 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
                   }}
                   onClick={(event) => {
                     event.stopPropagation();
+                    setActiveJourneyGuideId(null);
+                    setPendingJourneyGuideId(null);
                     handlePortalClick(portalItem);
                   }}
                 >
@@ -1539,7 +1618,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
                 </button>
               );
             })}
-            {remoteGuests.filter((guest) => guest.zoneId === activeZone.id).map((guest) => (
+            {visibleRemoteGuests.map((guest) => (
               <div
                 key={guest.guestId}
                 className="world-player player player--remote"
@@ -1589,14 +1668,18 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
                     && recommendedCheckpoint.target.type === "npc"
                     && recommendedCheckpoint.target.npcId === npc.id
                   )}
-                  onSelect={() => beginWorldInteraction({
-                    targetId: `npc:${npc.id}`,
-                    spotId: "couple",
-                    label: npc.label,
-                    target: npcInteractionRect(npc),
-                    actionRadius: npcInteractionRadius,
-                    npcId: npc.id
-                  })}
+                  onSelect={() => {
+                    setActiveJourneyGuideId(null);
+                    setPendingJourneyGuideId(null);
+                    beginWorldInteraction({
+                      targetId: `npc:${npc.id}`,
+                      spotId: "couple",
+                      label: npc.label,
+                      target: npcInteractionRect(npc),
+                      actionRadius: npcInteractionRadius,
+                      npcId: npc.id
+                    });
+                  }}
                 />
               </div>
             ))}

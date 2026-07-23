@@ -2,6 +2,7 @@ import {
   Accessibility,
   BellRing,
   Contrast,
+  Cpu,
   Hand,
   Gauge,
   Music2,
@@ -15,6 +16,7 @@ import {
 import { useState } from "react";
 import { useViewPreferences } from "../accessibility/ViewPreferencesContext";
 import { useGameFeedback } from "../feedback/GameFeedbackContext";
+import { useDevicePerformance } from "../performance/DevicePerformanceContext";
 import { BottomSheet } from "./BottomSheet";
 
 type ViewSettingsAccessProps = {
@@ -24,6 +26,7 @@ type ViewSettingsAccessProps = {
 
 export function ViewSettingsAccess({ variant, onOpenChange }: ViewSettingsAccessProps) {
   const [open, setOpen] = useState(false);
+  const devicePerformance = useDevicePerformance();
   const {
     preferences,
     setTextScale,
@@ -153,6 +156,20 @@ export function ViewSettingsAccess({ variant, onOpenChange }: ViewSettingsAccess
               />
               <span aria-hidden="true" className="view-settings-sheet__switch-track" />
             </label>
+
+            <section className="device-performance-status" data-mode={devicePerformance.mode} aria-label="기기 성능 최적화 상태">
+              <Cpu aria-hidden="true" />
+              <span>
+                <strong>{devicePerformance.mode === "lite" ? "가벼운 화면 자동 적용" : "표준 화면 효과 적용"}</strong>
+                <small>{devicePerformance.mode === "lite"
+                  ? devicePerformance.reason === "memory"
+                    ? "메모리 사용량을 줄이고 있어요"
+                    : devicePerformance.reason === "processor"
+                      ? "장식 애니메이션을 줄이고 있어요"
+                      : "느린 연결에 맞춰 화면 효과를 줄이고 있어요"
+                  : "현재 기기에서 전체 화면 효과를 사용해요"}</small>
+              </span>
+            </section>
 
             <section className="feedback-settings" aria-labelledby="game-sound-title">
               <header><Volume2 aria-hidden="true" /><strong id="game-sound-title">게임 사운드</strong></header>

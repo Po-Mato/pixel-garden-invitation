@@ -1,6 +1,8 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { invitationContent } from "@wedding-game/shared";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { ViewPreferencesProvider } from "../accessibility/ViewPreferencesContext";
+import { defaultViewPreferences } from "../accessibility/viewPreferences";
 import { WeddingGallery } from "./WeddingGallery";
 
 afterEach(cleanup);
@@ -52,5 +54,18 @@ describe("에디토리얼 웨딩 갤러리", () => {
 
     expect(screen.queryByRole("dialog", { name: "웨딩 사진 전체 화면" })).not.toBeInTheDocument();
     expect(selectedPhoto).toHaveFocus();
+  });
+
+  it("데이터 절약 중에는 4장만 먼저 표시하고 요청할 때 나머지를 불러온다", () => {
+    render(
+      <ViewPreferencesProvider initialPreferences={{ ...defaultViewPreferences, dataSaver: true }}>
+        <WeddingGallery />
+      </ViewPreferencesProvider>
+    );
+
+    expect(screen.getAllByRole("button", { name: /사진 \d+:/ })).toHaveLength(4);
+    expect(screen.getByText("데이터 절약 중 · 사진 4/10장 표시")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "나머지 6장 불러오기" }));
+    expect(screen.getAllByRole("button", { name: /사진 \d+:/ })).toHaveLength(10);
   });
 });

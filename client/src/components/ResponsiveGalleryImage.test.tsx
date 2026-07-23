@@ -60,4 +60,16 @@ describe("반응형 갤러리 이미지", () => {
     expect(image).not.toHaveAttribute("srcset");
     expect(image).toHaveAttribute("data-network-mode", "economy");
   });
+
+  it("사용자가 고화질을 요청하면 데이터 절약 중에도 반응형 원본을 제공한다", () => {
+    render(
+      <ViewPreferencesProvider initialPreferences={{ ...defaultViewPreferences, dataSaver: true }}>
+        <ResponsiveGalleryImage photo={photo} priority quality="full" sizes="100vw" />
+      </ViewPreferencesProvider>
+    );
+
+    const image = screen.getByRole("img", { name: photo.alt });
+    expect(image).toHaveAttribute("data-network-mode", "full");
+    expect(image).toHaveAttribute("srcset", expect.stringContaining("1024w"));
+  });
 });

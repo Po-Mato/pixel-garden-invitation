@@ -3,6 +3,8 @@ import { invitationContent } from "@wedding-game/shared";
 import { useState } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { BottomSheet } from "./BottomSheet";
+import { ViewPreferencesProvider } from "../accessibility/ViewPreferencesContext";
+import { defaultViewPreferences } from "../accessibility/viewPreferences";
 import { PhotoLightbox } from "./PhotoLightbox";
 
 const photos = invitationContent.content.gallery;
@@ -216,5 +218,18 @@ describe("전체 화면 웨딩 사진 뷰어", () => {
     expect(onIndexChange).toHaveBeenCalledWith(2);
     fireEvent.click(screen.getByRole("button", { name: "전체 화면 닫기" }));
     expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
+  it("데이터 절약 중에도 현재 사진만 고화질로 다시 요청할 수 있다", () => {
+    render(
+      <ViewPreferencesProvider initialPreferences={{ ...defaultViewPreferences, dataSaver: true }}>
+        <PhotoLightbox photos={photos} index={0} onIndexChange={vi.fn()} onClose={vi.fn()} />
+      </ViewPreferencesProvider>
+    );
+
+    expect(screen.getByRole("img", { name: photos[0].alt })).toHaveAttribute("data-network-mode", "economy");
+    fireEvent.click(screen.getByRole("button", { name: "이 사진 고화질로 보기" }));
+    expect(screen.getByRole("img", { name: photos[0].alt })).toHaveAttribute("data-network-mode", "full");
+    expect(screen.queryByRole("button", { name: "이 사진 고화질로 보기" })).not.toBeInTheDocument();
   });
 });

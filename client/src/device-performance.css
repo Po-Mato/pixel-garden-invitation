@@ -1,0 +1,58 @@
+html[data-performance-mode="lite"] .entry-screen__prism,
+html[data-performance-mode="lite"] .entry-screen__petals,
+html[data-performance-mode="lite"] .character-customizer__flowers,
+html[data-performance-mode="lite"] .world-map-effect,
+html[data-performance-mode="lite"] .journey-completion__petals,
+html[data-performance-mode="lite"] .journey-completion__sparkles {
+  display: none !important;
+}
+
+html[data-performance-mode="lite"] .world-portal__tile,
+html[data-performance-mode="lite"] .world-portal__tile::after,
+html[data-performance-mode="lite"] .world-minimap__portal--target,
+html[data-performance-mode="lite"] .world-minimap__destination-route,
+html[data-performance-mode="lite"] .world-minimap__journey-marker--recommended circle,
+html[data-performance-mode="lite"] .world-journey-route polyline,
+html[data-performance-mode="lite"] .character-sprite--idle-front .character-layer--base,
+html[data-performance-mode="lite"] .wedding-npc__sprite {
+  animation: none !important;
+}
+
+html[data-performance-mode="lite"] .responsive-gallery-image--loading {
+  filter: none;
+  transform: none;
+}
+
+html[data-performance-mode="lite"] :is(
+  .bottom-sheet__backdrop,
+  .game-guide,
+  .journey-completion,
+  .wedding-day-action-bar,
+  .quick-invitation__topbar,
+  .quick-invitation__nav
+) {
+  backdrop-filter: none !important;
+}
+
+.device-performance-status {
+  display: grid;
+  min-height: 52px;
+  grid-template-columns: 24px minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #84998a;
+  padding: 8px 10px;
+  background: #eff4ee;
+  color: #4b6052;
+}
+
+.device-performance-status[data-mode="lite"] {
+  border-color: #a37c4f;
+  background: #fff3d9;
+  color: #74532e;
+}
+
+.device-performance-status > svg { width: 19px; height: 19px; }
+.device-performance-status > span { display: grid; gap: 2px; }
+.device-performance-status strong { font-size: 11px; }
+.device-performance-status small { font-size: 9px; font-weight: 700; line-height: 1.4; }

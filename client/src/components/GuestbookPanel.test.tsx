@@ -1,7 +1,7 @@
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { loadGuestbookFormDraft } from "../invitation/publicFormDraftStorage";
+import { loadGuestbookFormDraft, saveGuestbookFormDraft } from "../invitation/publicFormDraftStorage";
 import { installMemoryLocalStorage } from "../test/memoryStorage";
 import { GuestbookPanel } from "./GuestbookPanel";
 
@@ -59,6 +59,24 @@ describe("GuestbookPanel", () => {
     expect(screen.getByRole("button", { name: "연결 후 전송 가능" })).toBeDisabled();
     await waitFor(() => expect(loadGuestbookFormDraft("sample-garden")?.value.message).toBe("연결되면 보낼게요"));
     expect(screen.getByRole("status")).toHaveTextContent("오프라인입니다");
+  });
+
+  it("복원한 메시지 임시 저장을 확인하고 삭제할 수 있다", () => {
+    saveGuestbookFormDraft(
+      "sample-garden",
+      { nickname: "임시 이름", message: "임시 축하" },
+      undefined,
+      new Date("2027-04-20T03:30:00.000Z")
+    );
+    renderPanel();
+
+    expect(screen.getByRole("textbox", { name: "축하 메시지" })).toHaveValue("임시 축하");
+    expect(screen.getByText(/7일간 보관/)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "임시 저장 삭제" }));
+    expect(screen.getByRole("textbox", { name: "이름 또는 닉네임" })).toHaveValue("하객1");
+    expect(screen.getByRole("textbox", { name: "축하 메시지" })).toHaveValue("");
+    expect(loadGuestbookFormDraft("sample-garden")).toBeNull();
+    expect(screen.getByRole("status")).toHaveTextContent("임시 저장을 삭제했습니다");
   });
 
   it("작성한 내용을 정리해 전송하고 같은 기기 수정 안내를 표시한다", async () => {

@@ -13,6 +13,7 @@ import {
   loadGuestbookFormDraft,
   saveGuestbookFormDraft
 } from "../invitation/publicFormDraftStorage";
+import { FormDraftManager } from "./FormDraftManager";
 
 type GuestbookPanelProps = {
   nickname: string;
@@ -85,6 +86,7 @@ export function GuestbookPanel({
   const [error, setError] = useState("");
   const [online, setOnline] = useState(() => navigator.onLine !== false);
   const [draftTouched, setDraftTouched] = useState(false);
+  const [draftSavedAt, setDraftSavedAt] = useState<string | null>(storedDraftRef.current?.savedAt ?? null);
   const [draftStatus, setDraftStatus] = useState(() => (
     storedDraftRef.current ? "이 기기에 저장된 작성 내용을 복원했습니다." : ""
   ));
@@ -113,6 +115,7 @@ export function GuestbookPanel({
         nickname: draftNickname,
         message: draftMessage
       });
+      setDraftSavedAt(saved?.savedAt ?? null);
       setDraftStatus(saved
         ? online
           ? "작성 중인 메시지를 이 기기에 임시 저장했습니다."
@@ -133,6 +136,19 @@ export function GuestbookPanel({
     () => messages.filter(({ id }) => id !== ownedMessage?.id),
     [messages, ownedMessage?.id]
   );
+
+  function discardDraft() {
+    if (!clearGuestbookFormDraft(invitationId)) {
+      setDraftStatus("임시 저장을 삭제하지 못했습니다. 잠시 후 다시 시도해 주세요.");
+      return;
+    }
+    storedDraftRef.current = null;
+    setDraftNickname(nickname);
+    setDraftMessage("");
+    setDraftTouched(false);
+    setDraftSavedAt(null);
+    setDraftStatus("이 기기의 임시 저장을 삭제했습니다.");
+  }
 
   function validateDraft(): GuestbookSubmission | null {
     const nextNickname = draftNickname.trim();
@@ -159,6 +175,7 @@ export function GuestbookPanel({
     try {
       await onCreate(payload);
       clearGuestbookFormDraft(invitationId);
+      setDraftSavedAt(null);
       setDraftStatus("");
       setStatus("축하 메시지를 남겼습니다. 이 기기에서 수정하거나 삭제할 수 있습니다.");
     } catch (createError) {
@@ -299,6 +316,7 @@ export function GuestbookPanel({
         </section>
       ) : (
         <form className="form-stack guestbook-compose" onSubmit={handleCreate}>
+          {draftSavedAt ? <FormDraftManager savedAt={draftSavedAt} onDiscard={discardDraft} /> : null}
           <label className="field">
             <span>이름 또는 닉네임</span>
             <input

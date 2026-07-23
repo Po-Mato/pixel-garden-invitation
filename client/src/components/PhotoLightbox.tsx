@@ -1,8 +1,10 @@
 import type { WeddingGalleryPhoto } from "@wedding-game/shared";
-import { ChevronLeft, ChevronRight, X } from "lucide-react";
-import { useEffect, useRef, type PointerEvent as ReactPointerEvent } from "react";
+import { ChevronLeft, ChevronRight, ImageUp, X } from "lucide-react";
+import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
 import { createPortal } from "react-dom";
 import { isolateAppForModal } from "../accessibility/modalIsolation";
+import { useViewPreferences } from "../accessibility/ViewPreferencesContext";
+import { useNetworkMode } from "../performance/networkQuality";
 import { ResponsiveGalleryImage } from "./ResponsiveGalleryImage";
 
 type PhotoLightboxProps = {
@@ -36,6 +38,9 @@ function getFocusableElements(container: HTMLElement) {
 }
 
 export function PhotoLightbox({ photos, index, onIndexChange, onClose }: PhotoLightboxProps) {
+  const { preferences } = useViewPreferences();
+  const networkMode = useNetworkMode(preferences.dataSaver);
+  const [fullQualityPhotoId, setFullQualityPhotoId] = useState<string | null>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const pointerStartRef = useRef<PointerStart | null>(null);
@@ -132,6 +137,7 @@ export function PhotoLightbox({ photos, index, onIndexChange, onClose }: PhotoLi
   if (!photo) {
     return null;
   }
+  const fullQuality = fullQualityPhotoId === photo.id;
 
   const captionId = photo.caption ? `photo-lightbox-caption-${photo.id}` : undefined;
 
@@ -216,7 +222,13 @@ export function PhotoLightbox({ photos, index, onIndexChange, onClose }: PhotoLi
           <ChevronLeft aria-hidden="true" />
         </button>
         <div className="photo-lightbox__media">
-          <ResponsiveGalleryImage key={photo.id} photo={photo} priority sizes="100vw" />
+          <ResponsiveGalleryImage
+            key={`${photo.id}-${fullQuality ? "full" : "auto"}`}
+            photo={photo}
+            priority
+            quality={fullQuality ? "full" : "auto"}
+            sizes="100vw"
+          />
         </div>
         <button
           className="photo-lightbox__next"
@@ -231,6 +243,11 @@ export function PhotoLightbox({ photos, index, onIndexChange, onClose }: PhotoLi
       </div>
 
       <footer className="photo-lightbox__footer">
+        {networkMode === "economy" && !fullQuality ? (
+          <button className="photo-lightbox__quality" type="button" onClick={() => setFullQualityPhotoId(photo.id)}>
+            <ImageUp aria-hidden="true" /> 이 사진 고화질로 보기
+          </button>
+        ) : null}
         {photo.caption ? (
           <p id={captionId} className="photo-lightbox__caption">
             {photo.caption}

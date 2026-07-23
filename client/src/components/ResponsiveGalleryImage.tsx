@@ -7,19 +7,21 @@ import { useNetworkMode } from "../performance/networkQuality";
 type ResponsiveGalleryImageProps = {
   photo: WeddingGalleryPhoto;
   priority?: boolean;
+  quality?: "auto" | "full";
   sizes: string;
 };
 
-export function ResponsiveGalleryImage({ photo, priority = false, sizes }: ResponsiveGalleryImageProps) {
+export function ResponsiveGalleryImage({ photo, priority = false, quality = "auto", sizes }: ResponsiveGalleryImageProps) {
   const [failed, setFailed] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
   const { preferences } = useViewPreferences();
   const networkMode = useNetworkMode(preferences.dataSaver);
+  const effectiveMode = quality === "full" ? "balanced" : networkMode;
   const economySource = useMemo(() => (
     [...photo.sources].sort((left, right) => left.width - right.width)[0]
   ), [photo.sources]);
-  const source = networkMode === "economy" && economySource
+  const source = effectiveMode === "economy" && economySource
     ? economySource.assetPath
     : photo.assetPath;
   const priorityAttribute = { fetchpriority: priority ? "high" : "auto" };
@@ -27,7 +29,7 @@ export function ResponsiveGalleryImage({ photo, priority = false, sizes }: Respo
   useEffect(() => {
     setFailed(false);
     setLoaded(false);
-  }, [networkMode, photo.id, retryCount]);
+  }, [effectiveMode, photo.id, retryCount]);
 
   useEffect(() => {
     if (!failed) return;
@@ -53,10 +55,10 @@ export function ResponsiveGalleryImage({ photo, priority = false, sizes }: Respo
   return (
     <img
       className={`responsive-gallery-image responsive-gallery-image--${loaded ? "loaded" : "loading"}`}
-      data-network-mode={networkMode}
+      data-network-mode={quality === "full" ? "full" : networkMode}
       data-retry-count={retryCount}
       src={resolveGalleryAssetPath(source)}
-      srcSet={networkMode === "balanced" ? buildGallerySrcSet(photo.sources) : undefined}
+      srcSet={effectiveMode === "balanced" ? buildGallerySrcSet(photo.sources) : undefined}
       sizes={sizes}
       width={photo.width}
       height={photo.height}

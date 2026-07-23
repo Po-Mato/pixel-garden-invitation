@@ -8,6 +8,7 @@ import { gardenWorld, getWorldZone, type GardenWorld, type Point, type WorldZone
 export type JourneyGuidancePreview = {
   direction: Direction | null;
   tileCount: number;
+  path: readonly Point[];
   destinationPoint: Point;
   portalId: string | null;
   available: boolean;
@@ -28,6 +29,7 @@ function previewFromPath(
   return {
     direction: path?.[0] ? directionTowardPoint(position, path[0]) : null,
     tileCount: path?.length ?? 0,
+    path: path ?? [],
     destinationPoint,
     portalId,
     available: path !== null

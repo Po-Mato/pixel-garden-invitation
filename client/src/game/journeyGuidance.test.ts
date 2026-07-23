@@ -12,6 +12,7 @@ describe("게임 목적지 경로 미리보기", () => {
     expect(guidance?.portalId).toBeNull();
     expect(guidance?.tileCount).toBeGreaterThan(0);
     expect(guidance?.direction).not.toBeNull();
+    expect(guidance?.path).toHaveLength(guidance?.tileCount ?? 0);
   });
 
   it("다른 맵 목적지는 첫 번째 연결 포털을 안내한다", () => {
@@ -21,5 +22,6 @@ describe("게임 목적지 경로 미리보기", () => {
     expect(guidance?.available).toBe(true);
     expect(guidance?.portalId).toBe("home-to-neighborhood");
     expect(guidance?.tileCount).toBeGreaterThan(0);
+    expect(guidance?.path).toHaveLength(guidance?.tileCount ?? 0);
   });
 });

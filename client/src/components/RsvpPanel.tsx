@@ -87,7 +87,7 @@ export function RsvpPanel() {
   const [notice, setNotice] = useState("");
   const invitedGuest = loadStoredInvitationInvite(id)?.invite ?? null;
   const storedDraftRef = useRef(loadRsvpFormDraft(id));
-  const invitedInitialValue: RsvpFormInitialValue | undefined = storedDraftRef.current?.value ?? (invitedGuest ? {
+  const invitedInitialValue: RsvpFormInitialValue | undefined = invitedGuest ? {
     side: invitedGuest.side,
     guestName: invitedGuest.guestName,
     phone: "",
@@ -96,7 +96,8 @@ export function RsvpPanel() {
     mealStatus: "unsure",
     note: "",
     consentVersion: invitationContent.event.rsvp.consentVersion
-  } : undefined);
+  } : undefined;
+  const initialValue = storedDraftRef.current?.value ?? invitedInitialValue;
 
   useEffect(() => {
     mountedRef.current = true;
@@ -227,10 +228,11 @@ export function RsvpPanel() {
       {state.kind === "saving" ? <p className="rsvp-panel__loading" role="status">답변을 저장하고 있습니다...</p> : null}
       {state.kind === "new" ? (
         <RsvpForm
-          initialValue={invitedInitialValue}
+          initialValue={initialValue}
           policy={invitationContent.event.rsvp}
           draftStorageId={id}
           restoredDraftAt={storedDraftRef.current?.savedAt}
+          draftResetValue={invitedInitialValue}
           submitLabel="참석 답변 보내기"
           onSubmit={handleCreate}
         />

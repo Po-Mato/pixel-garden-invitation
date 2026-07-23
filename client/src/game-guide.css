@@ -330,6 +330,17 @@
   outline-offset: 3px;
 }
 
+.world-destination-guide-row {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 5px;
+}
+
+.world-destination-guide-row[data-active="true"] {
+  grid-template-columns: minmax(0, 1fr) 40px;
+}
+
 .world-destination-guide {
   display: grid;
   width: 100%;
@@ -345,6 +356,28 @@
   color: #49393d;
   box-shadow: inset 0 0 0 2px #fff4e3, 2px 2px 0 rgba(82, 62, 56, 0.28);
   text-align: left;
+}
+
+.world-destination-guide-row[data-active="true"] .world-destination-guide {
+  border-color: #8a5b32;
+  background: #f7e7b8;
+}
+
+.world-destination-guide__cancel {
+  display: grid;
+  min-width: 40px;
+  min-height: 40px;
+  place-items: center;
+  border: 2px solid #784b50;
+  padding: 0;
+  background: #fff5e7;
+  color: #8f4550;
+  box-shadow: inset 0 0 0 2px #f0dac5, 2px 2px 0 rgba(82, 62, 56, 0.24);
+}
+
+.world-destination-guide__cancel svg {
+  width: 19px;
+  height: 19px;
 }
 
 .world-destination-guide > svg:first-child {
@@ -419,6 +452,35 @@
 
 .world-minimap__journey-marker--recommended path { stroke: #9e344d; stroke-width: 1.6; }
 
+.world-journey-route {
+  position: absolute;
+  inset: 0;
+  z-index: 8500;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.world-journey-route polyline {
+  fill: none;
+  stroke: rgba(213, 87, 109, 0.92);
+  stroke-width: 5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 5 9;
+  vector-effect: non-scaling-stroke;
+  filter: drop-shadow(0 1px 0 #fff8dc);
+  animation: game-guide-route 850ms linear infinite;
+}
+
+.world-journey-route circle {
+  fill: #fff19c;
+  stroke: #a33851;
+  stroke-width: 3;
+  vector-effect: non-scaling-stroke;
+}
+
 @keyframes game-guide-step {
   0%, 100% { opacity: 0.4; }
   50% { opacity: 1; }
@@ -470,11 +532,13 @@
 
 @media (prefers-reduced-motion: reduce) {
   .game-guide *,
+  .world-journey-route polyline,
   .world-minimap__destination-route,
   .world-minimap__journey-marker--recommended circle { animation: none !important; }
 }
 
 html[data-reduce-motion="true"] .game-guide *,
+html[data-reduce-motion="true"] .world-journey-route polyline,
 html[data-reduce-motion="true"] .world-minimap__destination-route,
 html[data-reduce-motion="true"] .world-minimap__journey-marker--recommended circle {
   animation: none !important;

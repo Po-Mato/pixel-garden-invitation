@@ -321,6 +321,14 @@ describe("GameWorld", () => {
 
     expect(screen.getByText("오시는 길 가까이 이동 중")).toBeInTheDocument();
     expect(getDirectionsWorldSpot()).toHaveClass("world-spot--target");
+    expect(screen.getByTestId("world-journey-route")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /현재 위치에서 경로 다시 찾기/ })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: /현재 위치에서 경로 다시 찾기/ }));
+    act(() => vi.advanceTimersByTime(0));
+    expect(screen.getByTestId("world-journey-route")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "길 안내 중단" }));
+    expect(screen.queryByTestId("world-journey-route")).not.toBeInTheDocument();
+    expect(screen.getByText("길 안내를 중단했어요")).toBeInTheDocument();
   });
 
   it("moves to another map and continues walking to its recommended destination", () => {

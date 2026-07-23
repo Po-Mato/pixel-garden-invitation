@@ -67,6 +67,7 @@ describe("ViewSettingsAccess", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "환경 설정" }));
     expect(screen.getByRole("dialog", { name: "환경 설정" })).toBeInTheDocument();
+    expect(screen.getByRole("region", { name: "기기 성능 최적화 상태" })).toHaveTextContent("표준 화면 효과 적용");
   });
 
   it("데이터 절약 설정을 즉시 적용한다", () => {

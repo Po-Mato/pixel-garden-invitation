@@ -2,7 +2,7 @@ import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-li
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { RsvpSubmission } from "@wedding-game/shared";
 import { CoupleOrderProvider } from "../invitation/CoupleOrderContext";
-import { loadRsvpFormDraft } from "../invitation/publicFormDraftStorage";
+import { loadRsvpFormDraft, saveRsvpFormDraft } from "../invitation/publicFormDraftStorage";
 import { installMemoryLocalStorage } from "../test/memoryStorage";
 import { RsvpForm } from "./RsvpForm";
 
@@ -40,6 +40,37 @@ describe("RsvpForm", () => {
     expect(screen.getByRole("button", { name: "연결 후 전송 가능" })).toBeDisabled();
     await waitFor(() => expect(loadRsvpFormDraft("sample")?.value.guestName).toBe("김하객"));
     expect(screen.getByRole("status")).toHaveTextContent("오프라인입니다");
+  });
+
+  it("복원한 임시 저장의 시각을 보여주고 삭제하면 폼을 초기화한다", () => {
+    const draft = {
+      side: "bride" as const,
+      guestName: "임시 하객",
+      phone: "01012345678",
+      attendance: "yes" as const,
+      partySize: 2,
+      mealStatus: "yes" as const,
+      note: "임시 메모",
+      consentVersion: policy.consentVersion
+    };
+    const saved = saveRsvpFormDraft("sample", draft, undefined, new Date("2027-04-20T03:30:00.000Z"));
+    render(
+      <RsvpForm
+        initialValue={draft}
+        policy={policy}
+        draftStorageId="sample"
+        restoredDraftAt={saved?.savedAt}
+        submitLabel="보내기"
+        onSubmit={vi.fn()}
+      />
+    );
+
+    expect(screen.getByLabelText("이름")).toHaveValue("임시 하객");
+    expect(screen.getByText(/7일간 보관/)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "임시 저장 삭제" }));
+    expect(screen.getByLabelText("이름")).toHaveValue("");
+    expect(loadRsvpFormDraft("sample")).toBeNull();
+    expect(screen.getByRole("status")).toHaveTextContent("임시 저장을 삭제했습니다");
   });
 
   it("uses accessible radio groups and submits a canonical attending payload", async () => {
