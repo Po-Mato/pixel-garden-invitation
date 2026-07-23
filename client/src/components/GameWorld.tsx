@@ -37,6 +37,7 @@ import {
   type JourneyCheckpointId
 } from "../game/journeyProgress";
 import { resolveNpcDialogue, type NpcDialogue, type NpcId } from "../game/npcDialogue";
+import { useGameFeedback } from "../feedback/GameFeedbackContext";
 import {
   gardenWorld,
   getWorldZone,
@@ -55,6 +56,7 @@ import { CharacterSprite } from "./CharacterSprite";
 import { DirectionsSheet } from "./DirectionsSheet";
 import { FamilyContactSheet } from "./FamilyContactSheet";
 import { GiftAccountSheet } from "./GiftAccountSheet";
+import { GameFeedbackToggle } from "./GameFeedbackToggle";
 import { GuestReactionBubble, GuestReactionDock } from "./GuestReactions";
 import { GuestInformationAccess } from "./GuestInformationAccess";
 import { InvitationShareAccess } from "./InvitationShareAccess";
@@ -175,6 +177,7 @@ function realtimeStatusText(status: RealtimeStatus) {
 }
 
 export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView }: GameWorldProps) {
+  const { playFeedback, setFeedbackZone } = useGameFeedback();
   const initialZone = getWorldZone(gardenWorld, gardenWorld.defaultZoneId);
   const [activeZoneId, setActiveZoneId] = useState<WorldZoneId>(initialZone.id);
   const activeZone = getWorldZone(gardenWorld, activeZoneId);
@@ -275,8 +278,9 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     setStampedCheckpointId(checkpointId);
     const checkpoint = journeyCheckpoints.find((candidate) => candidate.id === checkpointId);
     setTravelStatus(`${checkpoint?.label ?? "방문"} 스탬프를 찍었어요`);
+    playFeedback("stamp");
     if (result.journeyCompleted) setJourneyCompletionPending(true);
-  }, []);
+  }, [playFeedback]);
 
   const stampWorldInteraction = useCallback((spotId: SpotId) => {
     const checkpointId = journeyCheckpointForInteraction(activeZoneIdRef.current, spotId);
@@ -330,7 +334,8 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     if (currentGuestIdRef.current) {
       connectionRef.current?.send({ type: "react", reaction });
     }
-  }, []);
+    playFeedback("reaction");
+  }, [playFeedback]);
 
   const showNpcDialogue = useCallback((npcId: NpcId) => {
     const npc = activeZone.npcs.find((candidate) => candidate.id === npcId);
@@ -344,7 +349,8 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     stampWorldInteraction("couple");
     setActiveNpcDialogue(dialogue);
     setTravelStatus(`${npc.label}와 이야기를 나눴어요`);
-  }, [activeZone, profile.nickname, stampWorldInteraction]);
+    playFeedback("dialogue");
+  }, [activeZone, playFeedback, profile.nickname, stampWorldInteraction]);
 
   const cancelPortalWalk = useCallback(() => {
     if (!portalIntentRef.current) return;
@@ -495,7 +501,16 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     setInputReleaseRequired(inputReleaseRequiredRef.current || joystickWasMoving);
     setPortalTransition(transition);
     sendRealtimeStop(approach, portal.facing, activeZoneIdRef.current);
-  }, [clearTerminalStopConfirm, sendRealtimeStop, setInputReleaseRequired, setInteractionIntent, setPortalIntent, setPortalTransition]);
+    playFeedback("portal");
+  }, [
+    clearTerminalStopConfirm,
+    playFeedback,
+    sendRealtimeStop,
+    setInputReleaseRequired,
+    setInteractionIntent,
+    setPortalIntent,
+    setPortalTransition
+  ]);
 
   const moveToZone = useCallback((zoneId: WorldZoneId, spawn?: Point) => {
     clearTerminalStopConfirm();
@@ -544,12 +559,13 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
 
   const handleJourneySelect = useCallback((zoneId: WorldZoneId) => {
     if (portalTransitionRef.current || zoneId === activeZoneIdRef.current) return;
+    playFeedback("portal");
     void preloadWorldZoneAssets(zoneId, "high");
     closeMenu();
     setActiveSpotId(null);
     setInputReleaseRequired(false);
     moveToZone(zoneId);
-  }, [closeMenu, moveToZone, setInputReleaseRequired]);
+  }, [closeMenu, moveToZone, playFeedback, setInputReleaseRequired]);
 
   const completePortalFadeOut = useCallback(() => {
     const transition = portalTransitionRef.current;
@@ -714,6 +730,10 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     if (portalTransitionRef.current) return;
     setMenuOpen(true);
   }, []);
+
+  useEffect(() => {
+    setFeedbackZone(activeZone.id);
+  }, [activeZone.id, setFeedbackZone]);
 
   useEffect(() => {
     const element = mapViewportRef.current;
@@ -1126,6 +1146,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     if (portalTransitionRef.current || inputReleaseRequiredRef.current) return;
 
     if (isMoving) {
+      if (!wasMoving) playFeedback("tap");
       setActiveNpcDialogue(null);
       cancelPortalWalk();
       cancelInteractionWalk();
@@ -1183,7 +1204,10 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
             <strong>{activeZone.label}</strong>
             <small>{activeZone.subtitle}</small>
           </div>
-          <div className={`realtime-pill realtime-pill--${realtimeStatus}`}>{realtimeStatusText(realtimeStatus)}</div>
+          <div className="world-hud__realtime-controls">
+            <GameFeedbackToggle />
+            <div className={`realtime-pill realtime-pill--${realtimeStatus}`}>{realtimeStatusText(realtimeStatus)}</div>
+          </div>
         </div>
         <JourneyStampBook
           progress={journeyProgress}

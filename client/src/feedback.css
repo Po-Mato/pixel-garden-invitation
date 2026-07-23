@@ -1,0 +1,88 @@
+.world-hud__realtime-controls {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: stretch;
+  gap: 5px;
+}
+
+.game-feedback-toggle {
+  display: grid;
+  width: 34px;
+  min-width: 34px;
+  height: 34px;
+  place-items: center;
+  border: 3px solid var(--ink);
+  border-radius: 0;
+  padding: 0;
+  background: #f4dfa8;
+  color: #5b443a;
+  box-shadow: 3px 3px 0 rgba(36, 24, 18, 0.28);
+}
+
+.game-feedback-toggle[aria-pressed="true"] {
+  background: #d9868e;
+  color: #fffdf2;
+}
+
+.game-feedback-toggle svg {
+  width: 17px;
+  height: 17px;
+  stroke-width: 2.7;
+}
+
+.game-feedback-toggle:focus-visible {
+  outline: 3px solid #fff5a8;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 5px #694f59;
+}
+
+.feedback-settings {
+  border-top: 2px solid #b9aa9f;
+  border-bottom: 2px solid #b9aa9f;
+  padding: 16px 0;
+}
+
+.feedback-settings .view-settings-sheet__switch:first-of-type {
+  border-top: 0;
+  padding-top: 4px;
+}
+
+.feedback-settings__volume {
+  display: grid;
+  gap: 8px;
+  border-top: 1px solid #d6cec4;
+  padding-top: 14px;
+}
+
+.feedback-settings__volume > strong {
+  font-size: 13px;
+}
+
+.feedback-settings__volume button:disabled {
+  cursor: not-allowed;
+  opacity: 0.46;
+}
+
+@media (min-width: 760px) and (orientation: landscape) {
+  .world-hud__realtime-controls {
+    align-items: start;
+  }
+}
+
+html[data-comfortable-controls="true"] .game-feedback-toggle {
+  width: 46px;
+  min-width: 46px;
+  height: 46px;
+}
+
+html[data-high-contrast="true"] .game-feedback-toggle {
+  border-color: #111;
+  background: #fff;
+  color: #111;
+  box-shadow: 3px 3px 0 #111;
+}
+
+html[data-high-contrast="true"] .game-feedback-toggle[aria-pressed="true"] {
+  background: #111;
+  color: #fff;
+}

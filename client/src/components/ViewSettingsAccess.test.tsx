@@ -1,7 +1,9 @@
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 import { ViewPreferencesProvider } from "../accessibility/ViewPreferencesContext";
 import { defaultViewPreferences } from "../accessibility/viewPreferences";
+import { GameFeedbackProvider } from "../feedback/GameFeedbackContext";
+import { defaultFeedbackPreferences } from "../feedback/feedbackPreferences";
 import { ViewSettingsAccess } from "./ViewSettingsAccess";
 
 afterEach(() => {
@@ -20,11 +22,12 @@ describe("ViewSettingsAccess", () => {
       </ViewPreferencesProvider>
     );
 
-    fireEvent.click(screen.getByRole("button", { name: "보기 설정" }));
-    fireEvent.click(screen.getByRole("button", { name: "크게" }));
+    fireEvent.click(screen.getByRole("button", { name: "환경 설정" }));
+    const textScale = screen.getByRole("group", { name: "글자 크기" });
+    fireEvent.click(within(textScale).getByRole("button", { name: "크게" }));
     fireEvent.click(screen.getByRole("switch", { name: "움직임 줄이기" }));
 
-    expect(screen.getByRole("button", { name: "크게" })).toHaveAttribute("aria-pressed", "true");
+    expect(within(textScale).getByRole("button", { name: "크게" })).toHaveAttribute("aria-pressed", "true");
     expect(document.documentElement).toHaveAttribute("data-text-scale", "large");
     expect(document.documentElement).toHaveAttribute("data-reduce-motion", "true");
   });
@@ -36,7 +39,7 @@ describe("ViewSettingsAccess", () => {
       </ViewPreferencesProvider>
     );
 
-    fireEvent.click(screen.getByRole("button", { name: "보기 설정" }));
+    fireEvent.click(screen.getByRole("button", { name: "환경 설정" }));
     fireEvent.click(screen.getByRole("button", { name: "한 번에 적용" }));
 
     expect(screen.getByRole("button", { name: "아주 크게" })).toHaveAttribute("aria-pressed", "true");
@@ -59,7 +62,37 @@ describe("ViewSettingsAccess", () => {
       </ViewPreferencesProvider>
     );
 
-    fireEvent.click(screen.getByRole("button", { name: "보기 설정" }));
-    expect(screen.getByRole("dialog", { name: "보기 설정" })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "환경 설정" }));
+    expect(screen.getByRole("dialog", { name: "환경 설정" })).toBeInTheDocument();
+  });
+
+  it("게임 소리와 진동을 각각 설정하고 음량을 미리 선택한다", () => {
+    render(
+      <ViewPreferencesProvider initialPreferences={defaultViewPreferences}>
+        <GameFeedbackProvider initialPreferences={defaultFeedbackPreferences}>
+          <ViewSettingsAccess variant="icon" />
+        </GameFeedbackProvider>
+      </ViewPreferencesProvider>
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "환경 설정" }));
+    expect(screen.getByRole("switch", { name: "전체 소리" })).not.toBeChecked();
+    expect(screen.getByRole("switch", { name: "효과음" })).toBeChecked();
+    expect(screen.getByRole("switch", { name: "배경 음악" })).toBeChecked();
+    expect(screen.getByRole("switch", { name: "진동 피드백" })).toBeChecked();
+    const volume = screen.getByRole("group", { name: "게임 음량" });
+    expect(within(volume).getByRole("button", { name: "보통" })).toBeDisabled();
+
+    fireEvent.click(screen.getByRole("switch", { name: "전체 소리" }));
+    fireEvent.click(within(volume).getByRole("button", { name: "크게" }));
+    fireEvent.click(screen.getByRole("switch", { name: "효과음" }));
+    fireEvent.click(screen.getByRole("switch", { name: "배경 음악" }));
+    fireEvent.click(screen.getByRole("switch", { name: "진동 피드백" }));
+
+    expect(screen.getByRole("switch", { name: "전체 소리" })).toBeChecked();
+    expect(screen.getByRole("switch", { name: "효과음" })).not.toBeChecked();
+    expect(screen.getByRole("switch", { name: "배경 음악" })).not.toBeChecked();
+    expect(within(volume).getByRole("button", { name: "크게" })).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByRole("switch", { name: "진동 피드백" })).not.toBeChecked();
   });
 });
