@@ -53,6 +53,11 @@ test("couple source sprites are locked to the approved art direction", async () 
   assert.equal(lock.approvedReferenceSha256, approvedMetadata.sha256);
   assert.equal(lock.artDirection, approvedMetadata.artDirection);
   assert.equal(lock.proportion, approvedMetadata.proportion);
+  assert.equal(lock.gameplayProportion, "exact three-head: 42px head and 84px chin-to-feet body");
+  assert.equal(
+    lock.redrawSource,
+    "character-assets/reference/couple-three-head-redraw-sources/v1/_sheets"
+  );
   assert.equal(lock.face, approvedMetadata.face);
   assert.equal(lock.idlePose, "standing portrait pose from the approved upper-row reference");
   assert.equal(lock.walkPose, "compact gameplay walking pose from the approved lower-row reference");

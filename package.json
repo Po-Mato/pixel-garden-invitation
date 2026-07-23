@@ -15,7 +15,7 @@
     "characters:audit": "node scripts/audit-character-assets.mjs",
     "characters:contact-sheet": "node scripts/render-character-contact-sheet.mjs",
     "characters:editor": "node scripts/serve-character-editor.mjs",
-    "characters:test": "pnpm characters:generate && node --test scripts/referenceAsset.test.mjs scripts/characterAssetGenerator.test.mjs scripts/characterAssetAudit.test.mjs tools/character-pixel-editor/editor-core.test.mjs",
+    "characters:test": "pnpm characters:generate && node --test scripts/referenceAsset.test.mjs scripts/characterAssetGenerator.test.mjs scripts/characterAssetAudit.test.mjs scripts/coupleThreeHeadSprite.test.mjs tools/character-pixel-editor/editor-core.test.mjs",
     "maps:build": "node scripts/build-map-assets.mjs",
     "maps:audit": "node scripts/audit-map-assets.mjs",
     "maps:foreground-audit": "node scripts/render-map-foreground-audit-sheet.mjs",

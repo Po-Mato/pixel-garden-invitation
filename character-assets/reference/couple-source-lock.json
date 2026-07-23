@@ -3,14 +3,16 @@
   "approvedReferenceSha256": "2b15858e5e16a7210181b79cbf94aa1041df3bc5cb255a76f41a36c1d553458a",
   "artDirection": "ornate romantic fashion pixel art",
   "proportion": "A2 balanced compact",
+  "gameplayProportion": "exact three-head: 42px head and 84px chin-to-feet body",
+  "redrawSource": "character-assets/reference/couple-three-head-redraw-sources/v1/_sheets",
   "face": "F1 clear and refined",
   "idlePose": "standing portrait pose from the approved upper-row reference",
   "walkPose": "compact gameplay walking pose from the approved lower-row reference",
   "lockPolicy": "Bride and groom source sprites must preserve the approved ornate romantic fashion reference; do not replace with simplified block art.",
   "sourceSha256": {
-    "character-assets/source/npc/groom-idle.png": "60a1b9857d7bc73467f107cb14bd9f8e87c9ad6ae468889ed07ff41160b371b7",
-    "character-assets/source/npc/groom-walk.png": "b60a3da714f15e7e62d8b6eaec431d0dd7008af538f431fe7887fa5ecbd850e2",
-    "character-assets/source/npc/bride-idle.png": "766d9cb37d09b0a2cd816d09192f80343166e9025fac09bd64e0338c818bbccd",
-    "character-assets/source/npc/bride-walk.png": "3176526cc1814fe1d3938099abcd086f311d80a56b9eb2bed01735b6c5c64db3"
+    "character-assets/source/npc/groom-idle.png": "57804432d1f79d86041ee18331703e0387faf05b4b46fa34040f8e211511e7a6",
+    "character-assets/source/npc/groom-walk.png": "7a7c3105fe147b71a636b981187e5bda3890be22670d428a4a4ef0ed3b22e0bb",
+    "character-assets/source/npc/bride-idle.png": "ab3f7444bb1c10224e4c47b4d0fbdd9e420f676a1a587e983053b6c81927a872",
+    "character-assets/source/npc/bride-walk.png": "2f977b0f5100f6de0987f6373343a7abfc9add72de349a85a98e9073ef8f105e"
   }
 }
