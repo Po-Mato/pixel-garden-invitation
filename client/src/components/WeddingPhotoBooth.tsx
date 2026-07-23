@@ -13,6 +13,7 @@ import { invitationPublicUrl } from "../invitation/shareInvitation";
 import { isShareAbortError } from "../invitation/browserActions";
 import { resolveWorldMapAsset } from "../game/worldVisuals";
 import {
+  createWeddingPhotoNpcPreviewUrl,
   createWeddingPhotoCapture,
   saveWeddingPhotoBlob,
   saveWeddingPhotoMemory,
@@ -74,6 +75,10 @@ export function WeddingPhotoBooth({
   const [pose, setPose] = useState<WorldPhotoPose>("wave");
   const [capture, setCapture] = useState<WeddingPhotoCapture | null>(null);
   const [captureUrl, setCaptureUrl] = useState<string | null>(null);
+  const [npcPreviewUrls, setNpcPreviewUrls] = useState<{ bride: string | null; groom: string | null }>({
+    bride: null,
+    groom: null
+  });
   const [status, setStatus] = useState<PhotoStatus>("ready");
   const busy = status === "capturing" || status === "saving" || status === "sharing";
   onCloseRef.current = onClose;
@@ -108,6 +113,19 @@ export function WeddingPhotoBooth({
       previousFocus?.focus();
     };
   }, []);
+
+  useEffect(() => {
+    let active = true;
+    const kinds = spot.cast === "couple" ? (["bride", "groom"] as const) : (["bride"] as const);
+    void Promise.all(kinds.map(async (kind) => [kind, await createWeddingPhotoNpcPreviewUrl(kind)] as const))
+      .then((entries) => {
+        if (!active) return;
+        setNpcPreviewUrls((current) => ({ ...current, ...Object.fromEntries(entries) }));
+      });
+    return () => {
+      active = false;
+    };
+  }, [spot.cast]);
 
   const resetCapture = (nextPose = pose) => {
     releaseCaptureUrl();
@@ -182,13 +200,25 @@ export function WeddingPhotoBooth({
             <div className={`wedding-photo-booth__cast wedding-photo-booth__cast--${spot.cast}`} aria-hidden="true">
               <span
                 className="wedding-photo-booth__npc wedding-photo-booth__npc--bride"
-                style={{ backgroundImage: `url("${import.meta.env.BASE_URL}characters/generated/npc/bride__idle.png")` }}
+                style={npcPreviewUrls.bride ? {
+                  backgroundImage: `url("${npcPreviewUrls.bride}")`,
+                  backgroundPosition: "0 0",
+                  backgroundSize: "96px 144px"
+                } : {
+                  backgroundImage: `url("${import.meta.env.BASE_URL}characters/generated/npc/bride__walk.png")`,
+                  backgroundPosition: "-96px 0",
+                  backgroundSize: "288px 576px"
+                }}
               />
               <span className="wedding-photo-booth__guest"><CharacterSprite appearance={appearance} direction="down" moving={false} displayMode="preview" /></span>
               {spot.cast === "couple" ? (
                 <span
                   className="wedding-photo-booth__npc wedding-photo-booth__npc--groom"
-                  style={{ backgroundImage: `url("${import.meta.env.BASE_URL}characters/generated/npc/groom__idle.png")` }}
+                  style={{
+                    backgroundImage: npcPreviewUrls.groom ? `url("${npcPreviewUrls.groom}")` : "none",
+                    backgroundPosition: "0 0",
+                    backgroundSize: "96px 144px"
+                  }}
                 />
               ) : null}
             </div>

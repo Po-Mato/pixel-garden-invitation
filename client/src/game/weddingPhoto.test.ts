@@ -3,11 +3,13 @@ import { defaultCharacterAppearance } from "@wedding-game/shared";
 import { getWorldZone, gardenWorld } from "./world";
 import { memoryStorage } from "../test/memoryStorage";
 import {
+  removeGroomLegBackground,
   loadWeddingPhotoMemory,
   saveWeddingPhotoBlob,
   saveWeddingPhotoMemory,
   shareWeddingPhotoBlob,
   weddingPhotoFilename,
+  weddingPhotoNpcFrames,
   weddingPhotoMemoryStorageKey,
   type WeddingPhotoData,
   type WeddingPhotoMemory
@@ -45,6 +47,35 @@ function downloadEnvironment() {
 }
 
 describe("wedding photo", () => {
+  it("uses the complete neutral walking frame for the bride photo sprite", () => {
+    expect(weddingPhotoNpcFrames.bride).toEqual({
+      file: "bride__walk.png",
+      x: 96,
+      y: 0
+    });
+  });
+
+  it("removes only the light background connected to the groom's feet", () => {
+    const width = 5;
+    const height = 8;
+    const pixels = new Uint8ClampedArray(width * height * 4);
+    const setPixel = (x: number, y: number, value: number) => {
+      const offset = (y * width + x) * 4;
+      pixels.set([value, value, value, 255], offset);
+    };
+
+    setPixel(2, 1, 248); // shirt: isolated above the lower-body cleanup area
+    for (let y = 4; y < height; y += 1) setPixel(2, y, 245); // leg gap connected to the floor
+    for (let x = 1; x <= 3; x += 1) setPixel(x, 7, 235);
+    setPixel(0, 5, 32); // dark trouser pixel
+
+    expect(removeGroomLegBackground(pixels, width, height)).toBeGreaterThan(0);
+    expect(pixels[(1 * width + 2) * 4 + 3]).toBe(255);
+    expect(pixels[(5 * width + 0) * 4 + 3]).toBe(255);
+    expect(pixels[(5 * width + 2) * 4 + 3]).toBe(0);
+    expect(pixels[(7 * width + 1) * 4 + 3]).toBe(0);
+  });
+
   it("uses a safe personalized PNG filename", () => {
     expect(weddingPhotoFilename(data.guestName, spot.id))
       .toBe("wedding-photo-lobby-photo-wall-김-하객.png");

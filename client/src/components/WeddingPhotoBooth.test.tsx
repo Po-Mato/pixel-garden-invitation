@@ -6,6 +6,7 @@ import { WeddingPhotoBooth } from "./WeddingPhotoBooth";
 
 const photoMocks = vi.hoisted(() => ({
   create: vi.fn(),
+  preview: vi.fn(async () => null),
   save: vi.fn(),
   persist: vi.fn(() => true),
   share: vi.fn(async (): Promise<"shared" | "saved"> => "shared")
@@ -15,6 +16,7 @@ vi.mock("../game/weddingPhoto", async (importOriginal) => {
   const actual = await importOriginal<typeof import("../game/weddingPhoto")>();
   return {
     ...actual,
+    createWeddingPhotoNpcPreviewUrl: photoMocks.preview,
     createWeddingPhotoCapture: photoMocks.create,
     saveWeddingPhotoBlob: photoMocks.save,
     saveWeddingPhotoMemory: photoMocks.persist,
@@ -36,6 +38,7 @@ const memory = {
 
 beforeEach(() => {
   photoMocks.create.mockReset();
+  photoMocks.preview.mockClear();
   photoMocks.save.mockReset();
   photoMocks.persist.mockClear();
   photoMocks.share.mockReset();

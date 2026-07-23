@@ -33,6 +33,8 @@ export type WeddingPhotoCapture = {
   memory: WeddingPhotoMemory;
 };
 
+export type WeddingPhotoNpcKind = "bride" | "groom";
+
 type PhotoDownloadEnvironment = {
   createObjectUrl: (blob: Blob) => string;
   clickDownload: (url: string, filename: string) => void;
@@ -51,6 +53,23 @@ export const weddingPhotoHeight = 1350;
 const sceneHeight = 1030;
 const spriteFrameWidth = guestPresetFrame.source.width;
 const spriteFrameHeight = guestPresetFrame.source.height;
+
+export const weddingPhotoNpcFrames = {
+  bride: {
+    file: "bride__walk.png",
+    x: spriteFrameWidth,
+    y: 0
+  },
+  groom: {
+    file: "groom__idle.png",
+    x: 0,
+    y: 0
+  }
+} as const satisfies Record<WeddingPhotoNpcKind, { file: string; x: number; y: number }>;
+
+type SpriteImage = HTMLImageElement | HTMLCanvasElement;
+
+const weddingPhotoNpcSpriteCache = new Map<string, Promise<HTMLCanvasElement | null>>();
 
 const browserDownloadEnvironment: PhotoDownloadEnvironment = {
   createObjectUrl: (blob) => URL.createObjectURL(blob),
@@ -96,6 +115,133 @@ function loadImage(url: string, timeoutMs = 6000): Promise<HTMLImageElement | nu
     image.onerror = () => finish(null);
     image.src = resolveAssetUrl(url);
   });
+}
+
+function isLightNeutralPixel(data: Uint8ClampedArray, offset: number) {
+  const red = data[offset];
+  const green = data[offset + 1];
+  const blue = data[offset + 2];
+  const alpha = data[offset + 3];
+  const brightest = Math.max(red, green, blue);
+  const darkest = Math.min(red, green, blue);
+  return alpha > 8 && (red + green + blue) / 3 >= 130 && brightest - darkest <= 34;
+}
+
+export function removeGroomLegBackground(
+  data: Uint8ClampedArray,
+  width: number,
+  height: number
+) {
+  const startY = Math.floor(height * 0.5);
+  const seedY = Math.max(startY, height - 18);
+  const eligible = new Uint8Array(width * height);
+  const queued = new Uint8Array(width * height);
+  const queue: number[] = [];
+
+  for (let y = startY; y < height; y += 1) {
+    for (let x = 0; x < width; x += 1) {
+      const pixel = y * width + x;
+      if (isLightNeutralPixel(data, pixel * 4)) eligible[pixel] = 1;
+    }
+  }
+
+  for (let y = seedY; y < height; y += 1) {
+    for (let x = 0; x < width; x += 1) {
+      const pixel = y * width + x;
+      if (!eligible[pixel]) continue;
+      let touchesTransparency = false;
+      for (let offsetY = -1; offsetY <= 1 && !touchesTransparency; offsetY += 1) {
+        for (let offsetX = -1; offsetX <= 1; offsetX += 1) {
+          const nextX = x + offsetX;
+          const nextY = y + offsetY;
+          if (
+            nextX < 0
+            || nextX >= width
+            || nextY < 0
+            || nextY >= height
+            || data[(nextY * width + nextX) * 4 + 3] <= 8
+          ) {
+            touchesTransparency = true;
+            break;
+          }
+        }
+      }
+      if (touchesTransparency) {
+        queue.push(pixel);
+        queued[pixel] = 1;
+      }
+    }
+  }
+
+  for (let queueIndex = 0; queueIndex < queue.length; queueIndex += 1) {
+    const pixel = queue[queueIndex];
+    const x = pixel % width;
+    const y = Math.floor(pixel / width);
+    data[pixel * 4 + 3] = 0;
+
+    for (let offsetY = -1; offsetY <= 1; offsetY += 1) {
+      for (let offsetX = -1; offsetX <= 1; offsetX += 1) {
+        const nextX = x + offsetX;
+        const nextY = y + offsetY;
+        if (nextX < 0 || nextX >= width || nextY < startY || nextY >= height) continue;
+        const nextPixel = nextY * width + nextX;
+        if (eligible[nextPixel] && !queued[nextPixel]) {
+          queued[nextPixel] = 1;
+          queue.push(nextPixel);
+        }
+      }
+    }
+  }
+
+  return queue.length;
+}
+
+async function loadWeddingPhotoNpcSprite(
+  kind: WeddingPhotoNpcKind,
+  baseUrl = import.meta.env.BASE_URL
+): Promise<HTMLCanvasElement | null> {
+  const cacheKey = `${baseUrl}:${kind}`;
+  const cached = weddingPhotoNpcSpriteCache.get(cacheKey);
+  if (cached) return cached;
+
+  const pending = (async () => {
+    const frame = weddingPhotoNpcFrames[kind];
+    const image = await loadImage(`${baseUrl}characters/generated/npc/${frame.file}`);
+    if (!image) return null;
+
+    const canvas = document.createElement("canvas");
+    canvas.width = spriteFrameWidth;
+    canvas.height = spriteFrameHeight;
+    const context = canvas.getContext("2d", { willReadFrequently: kind === "groom" });
+    if (!context) return null;
+    context.imageSmoothingEnabled = false;
+    context.drawImage(
+      image,
+      frame.x,
+      frame.y,
+      spriteFrameWidth,
+      spriteFrameHeight,
+      0,
+      0,
+      spriteFrameWidth,
+      spriteFrameHeight
+    );
+
+    if (kind === "groom") {
+      const imageData = context.getImageData(0, 0, spriteFrameWidth, spriteFrameHeight);
+      removeGroomLegBackground(imageData.data, spriteFrameWidth, spriteFrameHeight);
+      context.putImageData(imageData, 0, 0);
+    }
+    return canvas;
+  })();
+
+  weddingPhotoNpcSpriteCache.set(cacheKey, pending);
+  return pending;
+}
+
+export async function createWeddingPhotoNpcPreviewUrl(kind: WeddingPhotoNpcKind) {
+  const sprite = await loadWeddingPhotoNpcSprite(kind);
+  return sprite?.toDataURL("image/png") ?? null;
 }
 
 function drawHeart(context: CanvasRenderingContext2D, x: number, y: number, size: number, color: string) {
@@ -148,7 +294,7 @@ function drawBackground(
 
 function drawSprite(
   context: CanvasRenderingContext2D,
-  image: HTMLImageElement | null,
+  image: SpriteImage | null,
   centerX: number,
   floorY: number,
   width: number,
@@ -161,13 +307,15 @@ function drawSprite(
   context.fill();
 
   if (image) {
+    const sourceWidth = image instanceof HTMLImageElement ? image.naturalWidth : image.width;
+    const sourceHeight = image instanceof HTMLImageElement ? image.naturalHeight : image.height;
     context.imageSmoothingEnabled = false;
     context.drawImage(
       image,
       0,
       0,
-      Math.min(spriteFrameWidth, image.naturalWidth),
-      Math.min(spriteFrameHeight, image.naturalHeight),
+      Math.min(spriteFrameWidth, sourceWidth),
+      Math.min(spriteFrameHeight, sourceHeight),
       centerX - width / 2,
       floorY - height,
       width,
@@ -293,8 +441,8 @@ export async function createWeddingPhotoCapture(data: WeddingPhotoData): Promise
   const [background, guest, bride, groom] = await Promise.all([
     loadImage(resolveWorldMapAsset(data.spot.zoneId, "background.webp", baseUrl)),
     loadImage(`${baseUrl}characters/generated/${guestPreset.generated.idle}`),
-    loadImage(`${baseUrl}characters/generated/npc/bride__idle.png`),
-    data.spot.cast === "couple" ? loadImage(`${baseUrl}characters/generated/npc/groom__idle.png`) : Promise.resolve(null)
+    loadWeddingPhotoNpcSprite("bride", baseUrl),
+    data.spot.cast === "couple" ? loadWeddingPhotoNpcSprite("groom", baseUrl) : Promise.resolve(null)
   ]);
 
   drawBackground(context, background, data.spot);
