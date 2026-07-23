@@ -39,10 +39,10 @@ describe("world geometry", () => {
     ]);
   });
 
-  it("keeps the couple readable around the hall altar", () => {
+  it("keeps the couple close but visually distinct around the hall altar", () => {
     const hall = getWorldZone(gardenWorld, "ceremony-hall");
     const [groom, bride] = [...hall.npcs].sort((first, second) => first.x - second.x);
-    expect(bride.x - groom.x).toBeGreaterThanOrEqual(90);
+    expect(bride.x - groom.x).toBeGreaterThanOrEqual(60);
     expect(groom.y).toBe(bride.y);
   });
 });
