@@ -75,6 +75,15 @@ describe("parseClientMessage", () => {
     });
   });
 
+  it("accepts only the four predefined guest reactions", () => {
+    for (const reaction of ["wave", "heart", "applause", "celebrate"] as const) {
+      expect(parseClientMessage({ type: "react", reaction })).toEqual({ type: "react", reaction });
+    }
+
+    expect(parseClientMessage({ type: "react", reaction: "custom-text" })).toBeNull();
+    expect(parseClientMessage({ type: "react", reaction: 1 })).toBeNull();
+  });
+
   it("rejects an unknown move zone", () => {
     expect(parseClientMessage({
       type: "move",

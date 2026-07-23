@@ -11,6 +11,7 @@ import {
   invitationContent,
   type ClientMessage,
   type Direction,
+  type GuestReaction,
   type RoomGuest,
   type SpotId,
   type WorldZoneId
@@ -35,6 +36,7 @@ import {
   type JourneyCheckpoint,
   type JourneyCheckpointId
 } from "../game/journeyProgress";
+import { resolveNpcDialogue, type NpcDialogue, type NpcId } from "../game/npcDialogue";
 import {
   gardenWorld,
   getWorldZone,
@@ -53,9 +55,11 @@ import { CharacterSprite } from "./CharacterSprite";
 import { DirectionsSheet } from "./DirectionsSheet";
 import { FamilyContactSheet } from "./FamilyContactSheet";
 import { GiftAccountSheet } from "./GiftAccountSheet";
+import { GuestReactionBubble, GuestReactionDock } from "./GuestReactions";
 import { GuestInformationAccess } from "./GuestInformationAccess";
 import { InvitationShareAccess } from "./InvitationShareAccess";
 import { JourneyCompletion, JourneyStampBook, JourneyStampNotice } from "./JourneyStampBook";
+import { NpcDialogueBubble } from "./NpcDialogueBubble";
 import { SpotModal } from "./SpotModal";
 import { VirtualJoystick } from "./VirtualJoystick";
 import { ViewSettingsAccess } from "./ViewSettingsAccess";
@@ -66,6 +70,7 @@ import { WorldMapArtwork } from "./WorldMapArtwork";
 import { WorldDecoration } from "./WorldDecoration";
 import { WorldMiniMap } from "./WorldMiniMap";
 import "../journey.css";
+import "../npc-reactions.css";
 
 type GameWorldProps = {
   profile: EntryProfile;
@@ -82,6 +87,12 @@ type WorldInteractionIntent = {
   label: string;
   path: Point[];
   target: Point;
+  npcId?: NpcId;
+};
+type ActiveGuestReaction = {
+  reaction: GuestReaction;
+  token: number;
+  zoneId: WorldZoneId;
 };
 type PortalTransitionPhase = "arrival" | "fade-out" | "fade-in";
 type PortalTransition = { portal: WorldPortal; phase: PortalTransitionPhase };
@@ -94,6 +105,7 @@ const portalFadeOutMs = 250;
 const portalFadeOutFallbackMs = 1000;
 const portalFadeInMs = 300;
 const npcInteractionRadius = 30;
+const reactionVisibleMs = 2200;
 const defaultViewport: ViewportSize = { width: 390, height: 520 };
 const samePoint = (first: Point, second: Point) => first.x === second.x && first.y === second.y;
 const hasJoystickMovement = (vector: Point) => Math.hypot(vector.x, vector.y) > joystickDeadZone;
@@ -191,6 +203,9 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   const [stampedCheckpointId, setStampedCheckpointId] = useState<JourneyCheckpointId | null>(null);
   const [journeyCompletionPending, setJourneyCompletionPending] = useState(false);
   const [journeyCompletionOpen, setJourneyCompletionOpen] = useState(false);
+  const [activeNpcDialogue, setActiveNpcDialogue] = useState<NpcDialogue | null>(null);
+  const [localReaction, setLocalReaction] = useState<ActiveGuestReaction | null>(null);
+  const [remoteReactions, setRemoteReactions] = useState<Record<string, ActiveGuestReaction>>({});
   const [viewport, setViewport] = useState<ViewportSize>(defaultViewport);
   const [remoteGuests, setRemoteGuests] = useState<RoomGuest[]>([]);
   const [realtimeStatus, setRealtimeStatus] = useState<RealtimeStatus>("offline");
@@ -226,6 +241,9 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   const journeyProgressRef = useRef(journeyProgress);
   const moveThrottleRef = useRef<((message: MoveMessage, now: number) => void) | null>(null);
   const terminalStopConfirmTimerRef = useRef<number | null>(null);
+  const localReactionTimerRef = useRef<number | null>(null);
+  const remoteReactionTimersRef = useRef(new Map<string, number>());
+  const reactionTokenRef = useRef(0);
 
   const setPortalIntent = useCallback((intent: PortalIntent | null) => {
     portalIntentRef.current = intent;
@@ -264,6 +282,69 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     const checkpointId = journeyCheckpointForInteraction(activeZoneIdRef.current, spotId);
     if (checkpointId) stampJourneyCheckpoint(checkpointId);
   }, [stampJourneyCheckpoint]);
+
+  const clearRemoteReaction = useCallback((guestId: string) => {
+    const timer = remoteReactionTimersRef.current.get(guestId);
+    if (timer !== undefined) window.clearTimeout(timer);
+    remoteReactionTimersRef.current.delete(guestId);
+    setRemoteReactions((current) => {
+      if (!(guestId in current)) return current;
+      const remaining = { ...current };
+      delete remaining[guestId];
+      return remaining;
+    });
+  }, []);
+
+  const clearAllRemoteReactions = useCallback(() => {
+    remoteReactionTimersRef.current.forEach((timer) => window.clearTimeout(timer));
+    remoteReactionTimersRef.current.clear();
+    setRemoteReactions({});
+  }, []);
+
+  const showRemoteReaction = useCallback((guestId: string, reaction: GuestReaction, zoneId: WorldZoneId) => {
+    const previousTimer = remoteReactionTimersRef.current.get(guestId);
+    if (previousTimer !== undefined) window.clearTimeout(previousTimer);
+    const token = ++reactionTokenRef.current;
+    setRemoteReactions((current) => ({ ...current, [guestId]: { reaction, token, zoneId } }));
+    const timer = window.setTimeout(() => {
+      remoteReactionTimersRef.current.delete(guestId);
+      setRemoteReactions((current) => {
+        if (current[guestId]?.token !== token) return current;
+        const remaining = { ...current };
+        delete remaining[guestId];
+        return remaining;
+      });
+    }, reactionVisibleMs);
+    remoteReactionTimersRef.current.set(guestId, timer);
+  }, []);
+
+  const handleGuestReaction = useCallback((reaction: GuestReaction) => {
+    if (localReactionTimerRef.current !== null) window.clearTimeout(localReactionTimerRef.current);
+    const token = ++reactionTokenRef.current;
+    setLocalReaction({ reaction, token, zoneId: activeZoneIdRef.current });
+    localReactionTimerRef.current = window.setTimeout(() => {
+      localReactionTimerRef.current = null;
+      setLocalReaction((current) => current?.token === token ? null : current);
+    }, reactionVisibleMs);
+
+    if (currentGuestIdRef.current) {
+      connectionRef.current?.send({ type: "react", reaction });
+    }
+  }, []);
+
+  const showNpcDialogue = useCallback((npcId: NpcId) => {
+    const npc = activeZone.npcs.find((candidate) => candidate.id === npcId);
+    if (!npc) return;
+    const dialogue = resolveNpcDialogue({
+      npcId,
+      zoneId: activeZone.id,
+      nickname: profile.nickname,
+      completedCheckpointIds: journeyProgressRef.current.completedIds
+    });
+    stampWorldInteraction("couple");
+    setActiveNpcDialogue(dialogue);
+    setTravelStatus(`${npc.label}와 이야기를 나눴어요`);
+  }, [activeZone, profile.nickname, stampWorldInteraction]);
 
   const cancelPortalWalk = useCallback(() => {
     if (!portalIntentRef.current) return;
@@ -372,6 +453,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     setJoystickVector({ x: 0, y: 0 });
     setMoving(false);
     setStepFrame(1);
+    setActiveNpcDialogue(null);
     targetStepAtRef.current = null;
     tileInputStateRef.current = null;
     joystickWasMovingRef.current = false;
@@ -405,6 +487,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     setShareSheetOpen(false);
     setMenuOpen(false);
     setActiveSpotId(null);
+    setActiveNpcDialogue(null);
     setTravelStatus(`${portal.label} 도착`);
     targetStepAtRef.current = null;
     tileInputStateRef.current = null;
@@ -431,6 +514,12 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     setDirection("down");
     setMoving(false);
     setStepFrame(1);
+    setActiveNpcDialogue(null);
+    setLocalReaction(null);
+    if (localReactionTimerRef.current !== null) {
+      window.clearTimeout(localReactionTimerRef.current);
+      localReactionTimerRef.current = null;
+    }
     setTravelStatus(`${zone.label} 도착`);
     const checkpointId = journeyCheckpointForZone(zone.id);
     if (checkpointId) stampJourneyCheckpoint(checkpointId);
@@ -500,12 +589,22 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     setActiveSpotId(spotId);
   }, [closeMenu, pauseWorldInput]);
 
+  const closeNpcDialogue = useCallback(() => {
+    setActiveNpcDialogue(null);
+  }, []);
+
+  const openNpcProfile = useCallback(() => {
+    setActiveNpcDialogue(null);
+    openSpot("couple");
+  }, [openSpot]);
+
   const beginWorldInteraction = useCallback((input: {
     targetId: string;
     spotId: SpotId;
     label: string;
     target: Rect;
     actionRadius: number;
+    npcId?: NpcId;
   }) => {
     if (portalTransitionRef.current) return;
 
@@ -524,6 +623,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     setJoystickVector({ x: 0, y: 0 });
     setMoving(false);
     setStepFrame(1);
+    setActiveNpcDialogue(null);
     targetStepAtRef.current = null;
     tileInputStateRef.current = null;
     joystickWasMovingRef.current = false;
@@ -541,6 +641,10 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
       directionRef.current = nextDirection;
       setDirection(nextDirection);
       setTravelStatus(`${input.label}에 도착했어요`);
+      if (input.npcId) {
+        showNpcDialogue(input.npcId);
+        return;
+      }
       stampWorldInteraction(input.spotId);
       openSpot(input.spotId);
       return;
@@ -551,7 +655,8 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
       spotId: input.spotId,
       label: input.label,
       path: route.path,
-      target: targetPoint
+      target: targetPoint,
+      npcId: input.npcId
     });
     setTravelStatus(`${input.label} 가까이 이동 중`);
   }, [
@@ -562,6 +667,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     setInputReleaseRequired,
     setInteractionIntent,
     setPortalIntent,
+    showNpcDialogue,
     stampWorldInteraction
   ]);
 
@@ -676,11 +782,20 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   }, [clearTerminalStopConfirm]);
 
   useEffect(() => {
+    return () => {
+      if (localReactionTimerRef.current !== null) window.clearTimeout(localReactionTimerRef.current);
+      remoteReactionTimersRef.current.forEach((timer) => window.clearTimeout(timer));
+      remoteReactionTimersRef.current.clear();
+    };
+  }, []);
+
+  useEffect(() => {
     const workerUrl = import.meta.env.VITE_WORKER_URL;
     if (!workerUrl) {
       clearTerminalStopConfirm();
       setRealtimeStatus("offline");
       setRemoteGuests([]);
+      clearAllRemoteReactions();
       return;
     }
 
@@ -690,6 +805,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     moveSeqRef.current = 0;
     lastSentMoveRef.current = null;
     setRemoteGuests([]);
+    clearAllRemoteReactions();
     setRealtimeStatus("connecting");
 
     try {
@@ -712,6 +828,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
             currentGuestIdRef.current = null;
             lastSentMoveRef.current = null;
             setRemoteGuests([]);
+            clearAllRemoteReactions();
             setRealtimeStatus("reconnecting");
           },
           onMessage: (message) => {
@@ -719,6 +836,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
             if (message.type === "error" && message.code === "room_full") {
               currentGuestIdRef.current = null;
               setRemoteGuests([]);
+              clearAllRemoteReactions();
               setRealtimeStatus("full");
               return;
             }
@@ -748,8 +866,15 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
               }
               return;
             }
+            if (message.type === "guest_reacted") {
+              if (message.guestId !== currentGuestIdRef.current) {
+                showRemoteReaction(message.guestId, message.reaction, message.zoneId);
+              }
+              return;
+            }
             if (message.type === "guest_left") {
               setRemoteGuests((guests) => guests.filter((guest) => guest.guestId !== message.guestId));
+              clearRemoteReaction(message.guestId);
               return;
             }
             if (message.type === "room_state") {
@@ -778,7 +903,15 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
       lastSentMoveRef.current = null;
       connection.close();
     };
-  }, [clearTerminalStopConfirm, profile.appearance, profile.nickname, sendMoveImmediately]);
+  }, [
+    clearAllRemoteReactions,
+    clearRemoteReaction,
+    clearTerminalStopConfirm,
+    profile.appearance,
+    profile.nickname,
+    sendMoveImmediately,
+    showRemoteReaction
+  ]);
 
   useEffect(() => {
     const inputGeneration = inputGenerationRef.current;
@@ -871,6 +1004,10 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
         targetStepAtRef.current = null;
         tileInputStateRef.current = null;
         sendRealtimeStop(next, facing, activeZone.id);
+        if (interactionIntent.npcId) {
+          showNpcDialogue(interactionIntent.npcId);
+          return;
+        }
         stampWorldInteraction(interactionIntent.spotId);
         openSpot(interactionIntent.spotId);
         return;
@@ -921,6 +1058,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     sendRealtimeStop,
     setInteractionIntent,
     setPortalIntent,
+    showNpcDialogue,
     stampWorldInteraction,
     target
   ]);
@@ -930,6 +1068,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
 
     void preloadWorldZoneAssets(portalItem.to, "high");
     clearTerminalStopConfirm();
+    setActiveNpcDialogue(null);
     cancelInteractionWalk();
     const route = findNearestPortalRoute(activeZone, positionRef.current, portalItem);
     setTarget(null);
@@ -952,6 +1091,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     if (portalTransitionRef.current) return;
 
     clearTerminalStopConfirm();
+    setActiveNpcDialogue(null);
     cancelPortalWalk();
     cancelInteractionWalk();
     const rect = event.currentTarget.getBoundingClientRect();
@@ -986,6 +1126,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     if (portalTransitionRef.current || inputReleaseRequiredRef.current) return;
 
     if (isMoving) {
+      setActiveNpcDialogue(null);
       cancelPortalWalk();
       cancelInteractionWalk();
     }
@@ -1176,6 +1317,12 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
                 data-remote-motion="pixel-step-3"
                 style={{ left: guest.x, top: guest.y, zIndex: worldDepth(guest.y) }}
               >
+                {remoteReactions[guest.guestId]?.zoneId === activeZone.id ? (
+                  <GuestReactionBubble
+                    reaction={remoteReactions[guest.guestId].reaction}
+                    guestName={guest.nickname}
+                  />
+                ) : null}
                 <CharacterSprite
                   appearance={guest.appearance}
                   direction={guest.direction}
@@ -1187,7 +1334,23 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
               </div>
             ))}
             {activeZone.npcs.map((npc) => (
-              <div key={npc.id} className="world-npc" style={{ left: npc.x, top: npc.y, zIndex: worldDepth(npc.y) }}>
+              <div
+                key={npc.id}
+                className="world-npc"
+                style={{
+                  left: npc.x,
+                  top: npc.y,
+                  zIndex: activeNpcDialogue?.npcId === npc.id ? 9100 : worldDepth(npc.y)
+                }}
+              >
+                {activeNpcDialogue?.npcId === npc.id ? (
+                  <NpcDialogueBubble
+                    dialogue={activeNpcDialogue}
+                    speaker={npc.label}
+                    onClose={closeNpcDialogue}
+                    onOpenProfile={openNpcProfile}
+                  />
+                ) : null}
                 <WeddingNpc
                   id={npc.id}
                   label={npc.label}
@@ -1197,7 +1360,8 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
                     spotId: "couple",
                     label: npc.label,
                     target: npcInteractionRect(npc),
-                    actionRadius: npcInteractionRadius
+                    actionRadius: npcInteractionRadius,
+                    npcId: npc.id
                   })}
                 />
               </div>
@@ -1207,6 +1371,9 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
               aria-label={profile.nickname}
               style={{ left: position.x, top: position.y, zIndex: worldDepth(position.y) }}
             >
+              {localReaction?.zoneId === activeZone.id ? (
+                <GuestReactionBubble reaction={localReaction.reaction} guestName={profile.nickname} />
+              ) : null}
               <CharacterSprite
                 appearance={profile.appearance}
                 direction={direction}
@@ -1226,6 +1393,11 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
             viewport={viewport}
             targetPortalId={portalIntent?.portal.id ?? null}
             journeyMarkers={activeJourneyMarkers}
+          />
+
+          <GuestReactionDock
+            disabled={Boolean(portalTransition)}
+            onReact={handleGuestReaction}
           />
 
           <div className="world-control-dock" onClick={(event) => event.stopPropagation()}>

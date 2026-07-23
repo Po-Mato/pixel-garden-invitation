@@ -120,6 +120,41 @@ describe("connectRealtime", () => {
     expect(onMessage).toHaveBeenCalledWith({ type: "error", code: "bad_message" });
   });
 
+  it("accepts validated remote reactions and rejects unknown ones", () => {
+    const onMessage = vi.fn();
+    connectRealtime("wss://worker.example.com/rooms/sample-garden", joinMessage, {
+      onOpen: vi.fn(),
+      onClose: vi.fn(),
+      onMessage
+    });
+    const socket = MockWebSocket.instances[0];
+
+    socket.emit("message", new MessageEvent("message", {
+      data: JSON.stringify({
+        type: "guest_reacted",
+        guestId: "guest_remote",
+        reaction: "heart",
+        zoneId: "lobby"
+      })
+    }));
+    socket.emit("message", new MessageEvent("message", {
+      data: JSON.stringify({
+        type: "guest_reacted",
+        guestId: "guest_remote",
+        reaction: "unknown",
+        zoneId: "lobby"
+      })
+    }));
+
+    expect(onMessage).toHaveBeenNthCalledWith(1, {
+      type: "guest_reacted",
+      guestId: "guest_remote",
+      reaction: "heart",
+      zoneId: "lobby"
+    });
+    expect(onMessage).toHaveBeenNthCalledWith(2, { type: "error", code: "bad_message" });
+  });
+
   it("normalizes room guests with invalid appearances to the default preset", () => {
     const onMessage = vi.fn();
     connectRealtime("wss://worker.example.com/rooms/sample-garden", joinMessage, {

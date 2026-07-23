@@ -1,8 +1,16 @@
 import { parseCharacterAppearance } from "./characterCatalog";
-import { worldZoneIds, type ClientMessage, type Direction, type WorldZoneId } from "./protocol";
+import {
+  guestReactionIds,
+  worldZoneIds,
+  type ClientMessage,
+  type Direction,
+  type GuestReaction,
+  type WorldZoneId
+} from "./protocol";
 
 const directions = new Set<Direction>(["up", "down", "left", "right"]);
 const zones = new Set<WorldZoneId>(worldZoneIds);
+const reactions = new Set<GuestReaction>(guestReactionIds);
 
 export function sanitizeText(value: unknown, maxLength: number): string {
   if (typeof value !== "string") return "";
@@ -45,6 +53,11 @@ export function parseClientMessage(value: unknown): ClientMessage | null {
       seq: value.seq,
       zoneId: value.zoneId as WorldZoneId
     };
+  }
+
+  if (value.type === "react") {
+    if (!reactions.has(value.reaction as GuestReaction)) return null;
+    return { type: "react", reaction: value.reaction as GuestReaction };
   }
 
   if (value.type === "ping") return { type: "ping" };

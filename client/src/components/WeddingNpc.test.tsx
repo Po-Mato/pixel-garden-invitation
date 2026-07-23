@@ -8,7 +8,7 @@ it("renders an accessible exclusive npc button", () => {
   const label = `신부 ${invitationContent.event.couple.bride}`;
   const { container } = render(<WeddingNpc id="bride" label={label} onSelect={onSelect} />);
 
-  fireEvent.click(screen.getByRole("button", { name: `${label} 소개 보기` }));
+  fireEvent.click(screen.getByRole("button", { name: `${label}와 대화하기` }));
 
   expect(onSelect).toHaveBeenCalledTimes(1);
   expect(screen.getByText(label)).toBeInTheDocument();

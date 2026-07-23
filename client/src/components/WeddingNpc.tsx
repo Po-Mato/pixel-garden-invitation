@@ -26,7 +26,7 @@ export function WeddingNpc({ id, label, approaching = false, onSelect }: Props) 
     <button
       type="button"
       className={`wedding-npc${approaching ? " wedding-npc--target" : ""}`}
-      aria-label={`${label} 소개 보기`}
+      aria-label={`${label}와 대화하기`}
       data-approaching={approaching || undefined}
       onClick={handleClick}
     >

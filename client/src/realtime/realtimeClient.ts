@@ -1,7 +1,9 @@
 import {
   parseCharacterAppearance,
+  guestReactionIds,
   type ClientMessage,
   type Direction,
+  type GuestReaction,
   type RoomGuest,
   type ServerMessage,
   type WorldZoneId,
@@ -13,6 +15,7 @@ type JoinMessage = Extract<ClientMessage, { type: "join" }>;
 
 const directions = new Set<Direction>(["up", "down", "left", "right"]);
 const zones = new Set<WorldZoneId>(worldZoneIds);
+const reactions = new Set<GuestReaction>(guestReactionIds);
 const serverErrorCodes = new Set<Extract<ServerMessage, { type: "error" }>["code"]>([
   "bad_message",
   "room_full",
@@ -123,6 +126,15 @@ function parseServerMessage(value: unknown): ServerMessage | null {
 
   if (value.type === "guest_moved") {
     if (typeof value.guestId !== "string" || !isPositionState(value.position)) return null;
+    return value as ServerMessage;
+  }
+
+  if (value.type === "guest_reacted") {
+    if (
+      typeof value.guestId !== "string" ||
+      !reactions.has(value.reaction as GuestReaction) ||
+      !zones.has(value.zoneId as WorldZoneId)
+    ) return null;
     return value as ServerMessage;
   }
 

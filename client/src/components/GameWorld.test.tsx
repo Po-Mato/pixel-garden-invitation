@@ -1509,17 +1509,23 @@ describe("GameWorld", () => {
     expect(stage).toHaveStyle({ width: "720px", height: "630px" });
     expectMapBackground(container, "bridal-room");
     expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "345px", top: "525px" });
-    expect(screen.getByRole("button", { name: `${brideNpcLabel} 소개 보기` }).parentElement)
+    expect(screen.getByRole("button", { name: `${brideNpcLabel}와 대화하기` }).parentElement)
       .toHaveStyle({ left: "360px", top: "285px", zIndex: "1285" });
     expect(flowerFront).toHaveAttribute("src", "/assets/maps/v2/bridal-room/flower-arrangement-front.png");
     expect(flowerFront).toHaveStyle({ left: "240px", top: "300px", width: "90px", height: "120px", zIndex: "1420" });
 
-    fireEvent.click(screen.getByRole("button", { name: `${brideNpcLabel} 소개 보기` }));
-    expect(screen.getByRole("button", { name: `${brideNpcLabel} 소개 보기` })).toHaveAttribute("data-approaching", "true");
+    fireEvent.click(screen.getByRole("button", { name: `${brideNpcLabel}와 대화하기` }));
+    expect(screen.getByRole("button", { name: `${brideNpcLabel}와 대화하기` })).toHaveAttribute("data-approaching", "true");
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     advanceInteractionRoute();
+    expect(screen.getByLabelText(`${brideNpcLabel}의 인사`)).toHaveTextContent("하객1님");
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "두 사람 소개" }));
     expect(screen.getByRole("dialog")).toHaveTextContent("신랑신부 정원");
     fireEvent.click(screen.getByRole("button", { name: "닫기" }));
+
+    fireEvent.click(screen.getByRole("button", { name: `${brideNpcLabel}와 대화하기` }));
+    expect(screen.getByLabelText(`${brideNpcLabel}의 인사`)).toHaveTextContent("다시 인사");
 
     fireEvent.click(screen.getByRole("button", { name: "로비로 돌아가기" }));
     advanceRouteToPortalArrival();
@@ -1615,9 +1621,9 @@ describe("GameWorld", () => {
     });
     expectMapBackground(container, "ceremony-hall");
     expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "375px", top: "1785px" });
-    expect(screen.getByRole("button", { name: `${groomNpcLabel} 소개 보기` }).parentElement)
+    expect(screen.getByRole("button", { name: `${groomNpcLabel}와 대화하기` }).parentElement)
       .toHaveStyle({ left: "330px", top: "255px", zIndex: "1255" });
-    expect(screen.getByRole("button", { name: `${brideNpcLabel} 소개 보기` }).parentElement)
+    expect(screen.getByRole("button", { name: `${brideNpcLabel}와 대화하기` }).parentElement)
       .toHaveStyle({ left: "450px", top: "255px", zIndex: "1255" });
     expect(ceremonyArch).toHaveAttribute("src", "/assets/maps/v2/ceremony-hall/ceremony-arch-front.png");
     expect(ceremonyArch).toHaveStyle({
@@ -1809,21 +1815,21 @@ describe("GameWorld", () => {
     finishPortalFadeOut();
 
     expect(screen.getByTestId("world-portal-transition")).toHaveAttribute("data-phase", "fade-in");
-    const npcButton = screen.getByRole("button", { name: `${brideNpcLabel} 소개 보기` });
+    const npcButton = screen.getByRole("button", { name: `${brideNpcLabel}와 대화하기` });
     fireEvent.click(npcButton);
-    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText(`${brideNpcLabel}의 인사`)).not.toBeInTheDocument();
     act(() => vi.advanceTimersByTime(300));
 
     fireEvent.click(screen.getByRole("button", { name: "로비로 돌아가기" }));
     advanceRouteToPortalArrival();
     expect(screen.getByTestId("world-portal-transition")).toHaveAttribute("data-phase", "arrival");
     fireEvent.click(npcButton);
-    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText(`${brideNpcLabel}의 인사`)).not.toBeInTheDocument();
 
     act(() => vi.advanceTimersByTime(150));
     expect(screen.getByTestId("world-portal-transition")).toHaveAttribute("data-phase", "fade-out");
     fireEvent.click(npcButton);
-    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText(`${brideNpcLabel}의 인사`)).not.toBeInTheDocument();
 
     finishPortalFadeOut();
     act(() => vi.advanceTimersByTime(300));
@@ -1954,12 +1960,62 @@ describe("GameWorld", () => {
     expect(screen.queryByLabelText("로비 하객")).not.toBeInTheDocument();
   });
 
+  it("sends a local reaction without interrupting joystick movement", () => {
+    configureRealtime();
+    render(<GameWorld profile={profile} />);
+    const socket = MockWebSocket.instances[0];
+    act(() => socket.emit("open"));
+    act(() => socket.emitJson({ type: "welcome", guestId: "guest_self", guests: [] }));
+    socket.sentMessages.length = 0;
+
+    const joystick = screen.getByLabelText("가상 조이스틱");
+    const player = screen.getByLabelText("하객1");
+    fireEvent.keyDown(joystick, { key: "ArrowRight" });
+    fireEvent.click(screen.getByRole("button", { name: "하객 리액션 열기" }));
+    fireEvent.click(screen.getByRole("button", { name: "하트 보내기" }));
+
+    expect(screen.getByRole("status", { name: "하객1님의 하트" })).toBeInTheDocument();
+    expect(socket.sentMessages.map((message) => JSON.parse(message))).toContainEqual({
+      type: "react",
+      reaction: "heart"
+    });
+
+    advanceAnimation(0);
+    expect(player).toHaveStyle({ left: "315px", top: "555px" });
+    expect(screen.getByRole("status", { name: "하객1님의 하트" })).toBeInTheDocument();
+  });
+
+  it("shows and expires a remote guest reaction above that guest", () => {
+    configureRealtime();
+    render(<GameWorld profile={profile} />);
+    const socket = MockWebSocket.instances[0];
+    act(() => socket.emit("open"));
+    act(() => socket.emitJson({
+      type: "welcome",
+      guestId: "guest_self",
+      guests: [serverGuest()]
+    }));
+
+    act(() => socket.emitJson({
+      type: "guest_reacted",
+      guestId: "guest_remote",
+      reaction: "celebrate",
+      zoneId: "home"
+    }));
+
+    const remotePlayer = screen.getByLabelText("하객2");
+    expect(within(remotePlayer).getByRole("status", { name: "하객2님의 축하" })).toBeInTheDocument();
+
+    act(() => vi.advanceTimersByTime(2200));
+    expect(screen.queryByRole("status", { name: "하객2님의 축하" })).not.toBeInTheDocument();
+  });
+
   it("uses shared Y depth for NPCs", () => {
     render(<GameWorld profile={profile} />);
     travelFromHomeToLobby();
     travelThroughPortal("신부 대기실");
 
-    expect(screen.getByRole("button", { name: `${brideNpcLabel} 소개 보기` }).parentElement)
+    expect(screen.getByRole("button", { name: `${brideNpcLabel}와 대화하기` }).parentElement)
       .toHaveStyle({ zIndex: "1285" });
   });
 

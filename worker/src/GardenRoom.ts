@@ -15,12 +15,14 @@ type GuestAttachment = {
   guest: RoomGuest;
   lastMoveAt: number;
   lastMoveBypassAt: number;
+  lastReactionAt: number;
 };
 
 type PendingAttachment = { kind: "pending" };
 type SocketAttachment = GuestAttachment | PendingAttachment;
 
 const moveThrottleMs = 100;
+const reactionThrottleMs = 800;
 const roomCapacity = 100;
 const zones = new Set<WorldZoneId>(worldZoneIds);
 
@@ -113,6 +115,9 @@ function parseGuestAttachment(value: unknown): GuestAttachment | null {
     lastMoveAt: value.lastMoveAt,
     lastMoveBypassAt: typeof value.lastMoveBypassAt === "number"
       ? value.lastMoveBypassAt
+      : Number.NEGATIVE_INFINITY,
+    lastReactionAt: typeof value.lastReactionAt === "number"
+      ? value.lastReactionAt
       : Number.NEGATIVE_INFINITY
   };
 }
@@ -173,7 +178,8 @@ export class GardenRoom {
         kind: "guest",
         guest,
         lastMoveAt: Number.NEGATIVE_INFINITY,
-        lastMoveBypassAt: Number.NEGATIVE_INFINITY
+        lastMoveBypassAt: Number.NEGATIVE_INFINITY,
+        lastReactionAt: Number.NEGATIVE_INFINITY
       } satisfies GuestAttachment);
       socket.send(encode({ type: "welcome", guestId, guests: this.getGuests() }));
       this.broadcast({ type: "guest_joined", guest }, socket);
@@ -215,9 +221,28 @@ export class GardenRoom {
         kind: "guest",
         guest,
         lastMoveAt: now,
-        lastMoveBypassAt: isInsideMoveThrottle ? now : current.lastMoveBypassAt
+        lastMoveBypassAt: isInsideMoveThrottle ? now : current.lastMoveBypassAt,
+        lastReactionAt: current.lastReactionAt
       } satisfies GuestAttachment);
       this.broadcast({ type: "guest_moved", guestId: guest.guestId, position }, socket);
+      return;
+    }
+
+    if (parsed.type === "react") {
+      const now = Date.now();
+      if (now - current.lastReactionAt < reactionThrottleMs) return;
+
+      socket.serializeAttachment({
+        ...current,
+        guest: { ...current.guest, lastSeenAt: now },
+        lastReactionAt: now
+      } satisfies GuestAttachment);
+      this.broadcast({
+        type: "guest_reacted",
+        guestId: current.guest.guestId,
+        reaction: parsed.reaction,
+        zoneId: current.guest.zoneId
+      }, socket);
       return;
     }
 

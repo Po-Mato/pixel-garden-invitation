@@ -103,6 +103,10 @@ function moveMessage(
   });
 }
 
+function reactionMessage(reaction: "wave" | "heart" | "applause" | "celebrate"): string {
+  return JSON.stringify({ type: "react", reaction });
+}
+
 afterEach(() => {
   vi.restoreAllMocks();
 });
@@ -256,6 +260,45 @@ describe("GardenRoom helpers", () => {
     });
   });
 
+});
+
+describe("GardenRoom guest reactions", () => {
+  it("broadcasts a validated reaction with the server-owned current zone", () => {
+    const state = new TestState();
+    const room = createRoom(state);
+    const reacting = new TestSocket();
+    const watching = new TestSocket();
+    joinGuest(room, state, reacting, "반응 하객");
+    joinGuest(room, state, watching, "보는 하객");
+    watching.sent.length = 0;
+
+    room.webSocketMessage(asWebSocket(reacting), moveMessage(1, 300, "banquet", 420, false));
+    room.webSocketMessage(asWebSocket(reacting), reactionMessage("heart"));
+
+    expect(watching.sent.map((payload) => JSON.parse(payload)).find((message) => message.type === "guest_reacted"))
+      .toMatchObject({ reaction: "heart", zoneId: "banquet" });
+  });
+
+  it("throttles repeated reactions without disconnecting the guest", () => {
+    const state = new TestState();
+    const room = createRoom(state);
+    const reacting = new TestSocket();
+    const watching = new TestSocket();
+    joinGuest(room, state, reacting, "반응 하객");
+    joinGuest(room, state, watching, "보는 하객");
+    watching.sent.length = 0;
+    vi.spyOn(Date, "now").mockReturnValueOnce(1000).mockReturnValueOnce(1200).mockReturnValueOnce(1900);
+
+    room.webSocketMessage(asWebSocket(reacting), reactionMessage("wave"));
+    room.webSocketMessage(asWebSocket(reacting), reactionMessage("heart"));
+    room.webSocketMessage(asWebSocket(reacting), reactionMessage("celebrate"));
+
+    const reactions = watching.sent
+      .map((payload) => JSON.parse(payload))
+      .filter((message) => message.type === "guest_reacted");
+    expect(reactions.map((message) => message.reaction)).toEqual(["wave", "celebrate"]);
+    expect(reacting.closed).toBe(false);
+  });
 });
 
 describe("GardenRoom socket behavior", () => {
