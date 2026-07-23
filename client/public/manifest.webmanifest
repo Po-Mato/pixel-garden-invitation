@@ -1,0 +1,55 @@
+{
+  "id": "./",
+  "name": "이건희 · 이승재의 웨딩 가든",
+  "short_name": "웨딩 가든",
+  "description": "2027년 5월 1일, MJ컨벤션에서 열리는 이건희와 이승재의 모바일 청첩장",
+  "lang": "ko-KR",
+  "dir": "ltr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#f4eddb",
+  "theme_color": "#6f8f73",
+  "categories": ["lifestyle", "social"],
+  "icons": [
+    {
+      "src": "icons/wedding-garden-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/wedding-garden-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "간편 초대장",
+      "short_name": "간편 초대장",
+      "url": "./?view=invitation",
+      "icons": [
+        {
+          "src": "icons/wedding-garden-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "오시는 길",
+      "short_name": "오시는 길",
+      "url": "./?view=invitation#directions",
+      "icons": [
+        {
+          "src": "icons/wedding-garden-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
+  ]
+}

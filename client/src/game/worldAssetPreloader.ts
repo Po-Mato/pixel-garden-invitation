@@ -1,5 +1,6 @@
 import type { WorldZoneId } from "@wedding-game/shared";
 import { preloadImage, type ImagePreloadPriority } from "../performance/imagePreloader";
+import { warmPwaAssetCache } from "../pwa/pwaClient";
 import { gardenWorld, getWorldZone } from "./world";
 import { resolveWorldMapAsset, resolveWorldVisual } from "./worldVisuals";
 
@@ -22,5 +23,9 @@ export function preloadWorldZoneAssets(
   zoneId: WorldZoneId,
   priority: ImagePreloadPriority = "low"
 ) {
-  return Promise.all(resolveWorldZoneAssetUrls(zoneId).map((url) => preloadImage(url, priority)));
+  const urls = resolveWorldZoneAssetUrls(zoneId);
+  return Promise.all(urls.map((url) => preloadImage(url, priority))).then((results) => {
+    warmPwaAssetCache(urls);
+    return results;
+  });
 }

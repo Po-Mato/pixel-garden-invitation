@@ -7,6 +7,7 @@ import { preloadImage } from "./performance/imagePreloader";
 import { resolveInvitationShareText } from "./invitation/shareInvitation";
 import { setAnalyticsContext, trackAnalyticsModeOpen } from "./analytics/invitationAnalytics";
 import { useInvitationInvite } from "./invitation/useInvitationInvite";
+import { PwaStatusCenter } from "./components/PwaStatusCenter";
 
 const homeMapUrl = `${import.meta.env.BASE_URL}assets/maps/v2/home/background.webp`;
 const quickCoverUrl = `${import.meta.env.BASE_URL}images/wedding-gallery/01-cover-640.webp`;
@@ -211,6 +212,7 @@ export function App() {
           )}
         </section>
       </main>
+      <PwaStatusCenter playing={playing} showInstall={mode === "entry"} />
     </>
   );
 }

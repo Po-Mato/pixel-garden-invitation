@@ -8,6 +8,7 @@ import { GameFeedbackProvider } from "./feedback/GameFeedbackContext";
 import { startInvitationAnalytics } from "./analytics/invitationAnalytics";
 import "./styles.css";
 import "./feedback.css";
+import "./pwa.css";
 
 const initialSearch = new URLSearchParams(window.location.search);
 if (!initialSearch.has("admin")) {
