@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Camera, Check, Download, MessageCircleHeart, Send, Share2, Sparkles, X } from "lucide-react";
+import { Camera, Check, Download, Images, MessageCircleHeart, Send, Share2, Sparkles, X } from "lucide-react";
 import type { CharacterAppearance } from "@wedding-game/shared";
 import { isShareAbortError } from "../invitation/browserActions";
 import {
@@ -17,7 +17,7 @@ import {
   shareJourneyKeepsake,
   type JourneyKeepsakeData
 } from "../game/journeyKeepsake";
-import { loadWeddingPhotoMemory } from "../game/weddingPhoto";
+import { loadWeddingPhotoAlbum, weddingPhotoAlbumProgress } from "../game/weddingPhoto";
 import { CharacterSprite } from "./CharacterSprite";
 
 type JourneyCompletionProps = {
@@ -26,6 +26,7 @@ type JourneyCompletionProps = {
   onClose: () => void;
   onOpenRsvp: () => void;
   onOpenShare: () => void;
+  onOpenPhotoAlbum: () => void;
 };
 
 type KeepsakeStatus = "idle" | "saving" | "saved" | "sharing" | "shared" | "fallback" | "canceled" | "error";
@@ -55,7 +56,8 @@ export function JourneyCompletion({
   appearance,
   onClose,
   onOpenRsvp,
-  onOpenShare
+  onOpenShare,
+  onOpenPhotoAlbum
 }: JourneyCompletionProps) {
   const { event, content } = usePublishedInvitationContent();
   const coupleOrder = useCoupleOrder();
@@ -67,7 +69,9 @@ export function JourneyCompletion({
   onCloseRef.current = onClose;
   busyRef.current = busy;
   const coupleNames = formatCoupleNames(event, coupleOrder);
-  const photoMemory = useMemo(loadWeddingPhotoMemory, []);
+  const photoAlbum = useMemo(loadWeddingPhotoAlbum, []);
+  const photoMemory = [...photoAlbum.photos].sort((left, right) => right.createdAt - left.createdAt)[0] ?? null;
+  const photoProgress = weddingPhotoAlbumProgress(photoAlbum);
   const finalePhoto = content.gallery.find((photo) => photo.id === "10-sunlit-finale")
     ?? content.gallery[content.gallery.length - 1];
   const keepsakeData = useMemo<JourneyKeepsakeData>(() => ({
@@ -174,7 +178,7 @@ export function JourneyCompletion({
             {photoMemory ? (
               <div className="journey-keepsake-preview__photo">
                 <img src={photoMemory.dataUrl} alt={`${photoMemory.spotLabel}에서 촬영한 기념 사진`} />
-                <span><Camera aria-hidden="true" />{photoMemory.spotLabel} 사진 반영</span>
+                <span><Camera aria-hidden="true" />포토앨범 {photoProgress}/3 · {photoMemory.spotLabel}</span>
               </div>
             ) : null}
             <div className="journey-keepsake-preview__stamps" aria-label="방문 스탬프 5개 완료">
@@ -202,6 +206,9 @@ export function JourneyCompletion({
             </button>
             <button type="button" disabled={busy} onClick={onOpenShare}>
               <Share2 aria-hidden="true" />초대장 공유
+            </button>
+            <button type="button" disabled={busy} onClick={onOpenPhotoAlbum}>
+              <Images aria-hidden="true" />포토앨범 {photoProgress}/3
             </button>
           </div>
 

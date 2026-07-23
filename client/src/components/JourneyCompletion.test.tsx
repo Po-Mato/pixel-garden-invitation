@@ -23,7 +23,8 @@ function renderCompletion() {
   const actions = {
     onClose: vi.fn(),
     onOpenRsvp: vi.fn(),
-    onOpenShare: vi.fn()
+    onOpenShare: vi.fn(),
+    onOpenPhotoAlbum: vi.fn()
   };
   render(
     <JourneyCompletion
@@ -95,15 +96,17 @@ describe("JourneyCompletion", () => {
     })));
   });
 
-  it("keeps RSVP, invitation sharing, close, and Escape actions available", () => {
+  it("keeps RSVP, invitation sharing, photo album, close, and Escape actions available", () => {
     const actions = renderCompletion();
 
     fireEvent.click(screen.getByRole("button", { name: "참석 답변하기" }));
     fireEvent.click(screen.getByRole("button", { name: "초대장 공유" }));
+    fireEvent.click(screen.getByRole("button", { name: "포토앨범 0/3" }));
     fireEvent.keyDown(document, { key: "Escape" });
 
     expect(actions.onOpenRsvp).toHaveBeenCalledTimes(1);
     expect(actions.onOpenShare).toHaveBeenCalledTimes(1);
+    expect(actions.onOpenPhotoAlbum).toHaveBeenCalledTimes(1);
     expect(actions.onClose).toHaveBeenCalledTimes(1);
   });
 });

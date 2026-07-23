@@ -3,11 +3,17 @@ import { defaultCharacterAppearance } from "@wedding-game/shared";
 import { getWorldZone, gardenWorld } from "./world";
 import { memoryStorage } from "../test/memoryStorage";
 import {
+  createEmptyWeddingPhotoAlbum,
+  isWeddingPhotoAlbumComplete,
+  loadWeddingPhotoAlbum,
   removeGroomLegBackground,
   loadWeddingPhotoMemory,
   saveWeddingPhotoBlob,
   saveWeddingPhotoMemory,
   shareWeddingPhotoBlob,
+  upsertWeddingPhotoMemory,
+  weddingPhotoAlbumProgress,
+  weddingPhotoAlbumStorageKey,
   weddingPhotoFilename,
   weddingPhotoNpcFrames,
   weddingPhotoMemoryStorageKey,
@@ -83,15 +89,46 @@ describe("wedding photo", () => {
       .toBe("wedding-photo-lobby-photo-wall-guest.png");
   });
 
-  it("persists only a validated image memory", () => {
+  it("persists a validated image memory in both the legacy slot and album", () => {
     const storage = memoryStorage();
     expect(saveWeddingPhotoMemory(memory, storage)).toBe(true);
     expect(storage.getItem(weddingPhotoMemoryStorageKey)).toContain(memory.photoSpotId);
+    expect(storage.getItem(weddingPhotoAlbumStorageKey)).toContain(memory.photoSpotId);
     expect(loadWeddingPhotoMemory(storage)).toEqual(memory);
+    expect(loadWeddingPhotoAlbum(storage).photos).toEqual([memory]);
 
     storage.setItem(weddingPhotoMemoryStorageKey, JSON.stringify({ ...memory, dataUrl: "https://example.com/photo" }));
-    expect(loadWeddingPhotoMemory(storage)).toBeNull();
+    expect(loadWeddingPhotoMemory(storage)).toEqual(memory);
     expect(saveWeddingPhotoMemory({ ...memory, dataUrl: "invalid" }, storage)).toBe(false);
+  });
+
+  it("migrates the previous single photo and replaces only the matching album spot", () => {
+    const storage = memoryStorage();
+    storage.setItem(weddingPhotoMemoryStorageKey, JSON.stringify(memory));
+    expect(loadWeddingPhotoAlbum(storage).photos).toEqual([memory]);
+
+    const replacement = { ...memory, dataUrl: "data:image/jpeg;base64,replacement", createdAt: 9999 };
+    const replaced = upsertWeddingPhotoMemory(loadWeddingPhotoAlbum(storage), replacement);
+    expect(replaced.photos).toEqual([replacement]);
+  });
+
+  it("unlocks the photo strip only after all three photo spots are collected", () => {
+    const memories = gardenWorld.zones.flatMap((zone) => zone.photoSpots).map((photoSpot, index) => ({
+      ...memory,
+      photoSpotId: photoSpot.id,
+      zoneId: photoSpot.zoneId,
+      spotLabel: photoSpot.label,
+      createdAt: memory.createdAt + index
+    }));
+    const album = memories.reduce(upsertWeddingPhotoMemory, createEmptyWeddingPhotoAlbum());
+
+    expect(weddingPhotoAlbumProgress(album)).toBe(3);
+    expect(isWeddingPhotoAlbumComplete(album)).toBe(true);
+    expect(album.photos.map((photo) => photo.photoSpotId)).toEqual([
+      "lobby-photo-wall",
+      "bridal-flower-wall",
+      "ceremony-aisle"
+    ]);
   });
 
   it("downloads the PNG and always releases its object URL", () => {

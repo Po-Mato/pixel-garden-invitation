@@ -6,7 +6,7 @@ import {
   type MouseEvent,
   type TransitionEvent as ReactTransitionEvent
 } from "react";
-import { Camera, Share2 } from "lucide-react";
+import { Camera, Images, Share2 } from "lucide-react";
 import {
   invitationContent,
   type ClientMessage,
@@ -51,7 +51,11 @@ import {
 } from "../game/world";
 import { preloadWorldZoneAssets } from "../game/worldAssetPreloader";
 import { worldDepth } from "../game/worldVisuals";
-import { loadWeddingPhotoMemory, type WeddingPhotoMemory } from "../game/weddingPhoto";
+import {
+  loadWeddingPhotoAlbum,
+  weddingPhotoAlbumProgress,
+  type WeddingPhotoMemory
+} from "../game/weddingPhoto";
 import { connectRealtimeWithRetry, createMoveThrottle, getRoomUrl } from "../realtime/realtimeClient";
 import type { EntryProfile } from "./EntryScreen";
 import { CharacterSprite } from "./CharacterSprite";
@@ -72,6 +76,7 @@ import { WeddingEventSummary } from "./WeddingEventSummary";
 import { WeddingDayQuickAccess } from "./WeddingDayQuickAccess";
 import { WeddingNpc } from "./WeddingNpc";
 import { WeddingPhotoBooth } from "./WeddingPhotoBooth";
+import { WeddingPhotoAlbum } from "./WeddingPhotoAlbum";
 import { WorldMapArtwork } from "./WorldMapArtwork";
 import { WorldDecoration } from "./WorldDecoration";
 import { WorldMiniMap } from "./WorldMiniMap";
@@ -199,7 +204,8 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   const [stepFrame, setStepFrame] = useState(1);
   const [activeSpotId, setActiveSpotId] = useState<SpotId | null>(null);
   const [activePhotoSpotId, setActivePhotoSpotId] = useState<WorldPhotoSpotId | null>(null);
-  const [photoMemory, setPhotoMemory] = useState(loadWeddingPhotoMemory);
+  const [photoAlbum, setPhotoAlbum] = useState(loadWeddingPhotoAlbum);
+  const [photoAlbumOpen, setPhotoAlbumOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [calendarSheetOpen, setCalendarSheetOpen] = useState(false);
   const [directionsSheetOpen, setDirectionsSheetOpen] = useState(false);
@@ -228,7 +234,8 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     || weddingDaySheetOpen
     || guestInformationOpen
     || shareSheetOpen
-    || viewSettingsOpen;
+    || viewSettingsOpen
+    || photoAlbumOpen;
 
   const mapViewportRef = useRef<HTMLDivElement | null>(null);
   const menuButtonRef = useRef<HTMLButtonElement | null>(null);
@@ -382,6 +389,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     setWeddingDaySheetOpen(false);
     setShareSheetOpen(false);
     setViewSettingsOpen(false);
+    setPhotoAlbumOpen(false);
     setMenuOpen(false);
   }, []);
 
@@ -745,6 +753,11 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   const handleViewSettingsOpenChange = useCallback((open: boolean) => {
     if (open) pauseWorldInput();
     setViewSettingsOpen(open);
+  }, [pauseWorldInput]);
+
+  const handlePhotoAlbumOpenChange = useCallback((open: boolean) => {
+    if (open) pauseWorldInput();
+    setPhotoAlbumOpen(open);
   }, [pauseWorldInput]);
 
   const openFamilyContacts = useCallback(() => {
@@ -1346,7 +1359,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
               );
             })}
             {activeZone.photoSpots.map((photoSpot) => {
-              const captured = photoMemory?.photoSpotId === photoSpot.id;
+              const captured = photoAlbum.photos.some((photo) => photo.photoSpotId === photoSpot.id);
               return (
                 <button
                   key={photoSpot.id}
@@ -1584,6 +1597,10 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
                 <Share2 aria-hidden="true" />
                 초대장 공유
               </button>
+              <button type="button" onClick={() => handlePhotoAlbumOpenChange(true)}>
+                <Images aria-hidden="true" />
+                포토앨범 {weddingPhotoAlbumProgress(photoAlbum)}/3
+              </button>
               <ViewSettingsAccess
                 variant="menu"
                 onOpenChange={handleViewSettingsOpenChange}
@@ -1605,13 +1622,25 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
       ) : null}
       {activePhotoSpotId ? (
         <WeddingPhotoBooth
-          spot={activeZone.photoSpots.find((photoSpot) => photoSpot.id === activePhotoSpotId)!}
+          spot={gardenWorld.zones.flatMap((zone) => zone.photoSpots).find((photoSpot) => photoSpot.id === activePhotoSpotId)!}
           nickname={profile.nickname}
           appearance={profile.appearance}
           onClose={() => setActivePhotoSpotId(null)}
           onCaptured={(memory: WeddingPhotoMemory) => {
-            setPhotoMemory(memory);
+            setPhotoAlbum(loadWeddingPhotoAlbum());
             setTravelStatus(`${memory.spotLabel} 기념 촬영 완료`);
+          }}
+        />
+      ) : null}
+      {photoAlbumOpen ? (
+        <WeddingPhotoAlbum
+          album={photoAlbum}
+          nickname={profile.nickname}
+          onClose={() => setPhotoAlbumOpen(false)}
+          onRetake={(photoSpotId) => {
+            setPhotoAlbumOpen(false);
+            setMenuOpen(false);
+            setActivePhotoSpotId(photoSpotId);
           }}
         />
       ) : null}
@@ -1635,6 +1664,11 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
             setJourneyCompletionOpen(false);
             pauseWorldInput();
             setShareSheetOpen(true);
+          }}
+          onOpenPhotoAlbum={() => {
+            setJourneyCompletionOpen(false);
+            pauseWorldInput();
+            setPhotoAlbumOpen(true);
           }}
         />
       ) : null}

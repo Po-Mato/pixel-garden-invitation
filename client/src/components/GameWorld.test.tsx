@@ -622,6 +622,25 @@ describe("GameWorld", () => {
     expect(within(menu).getByRole("button", { name: "주소 복사" })).toBeInTheDocument();
   });
 
+  it("opens the same-device photo album from the invitation menu without moving the player", () => {
+    const { container } = render(<GameWorld profile={profile} />);
+    const player = container.querySelector<HTMLElement>(".world-player");
+    const before = { left: player?.style.left, top: player?.style.top };
+
+    fireEvent.click(screen.getByRole("button", { name: "초대장 메뉴" }));
+    const menu = screen.getByRole("dialog", { name: "초대장 바로가기" });
+    fireEvent.click(within(menu).getByRole("button", { name: "포토앨범 0/3" }));
+
+    expect(screen.getByRole("dialog", { name: "웨딩 포토앨범" })).toBeInTheDocument();
+    expect(menu).toHaveAttribute("aria-hidden", "true");
+    expect(player?.style.left).toBe(before.left);
+    expect(player?.style.top).toBe(before.top);
+
+    fireEvent.click(screen.getByRole("button", { name: "포토앨범 닫기" }));
+    expect(screen.queryByRole("dialog", { name: "웨딩 포토앨범" })).not.toBeInTheDocument();
+    expect(menu).not.toHaveAttribute("aria-hidden");
+  });
+
   it("opens calendar choices from the menu without moving the player", () => {
     render(<GameWorld profile={profile} />);
     const player = screen.getByLabelText("하객1");

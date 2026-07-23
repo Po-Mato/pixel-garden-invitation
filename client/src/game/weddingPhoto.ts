@@ -28,6 +28,20 @@ export type WeddingPhotoMemory = {
   createdAt: number;
 };
 
+export type WeddingPhotoAlbum = {
+  version: 2;
+  photos: WeddingPhotoMemory[];
+};
+
+export type WeddingPhotoStripData = {
+  album: WeddingPhotoAlbum;
+  coupleNames: string;
+  guestName: string;
+  dateLabel: string;
+  venueLabel: string;
+  publicUrl: string;
+};
+
 export type WeddingPhotoCapture = {
   blob: Blob;
   memory: WeddingPhotoMemory;
@@ -47,8 +61,16 @@ type PhotoShareEnvironment = PhotoDownloadEnvironment & {
 };
 
 export const weddingPhotoMemoryStorageKey = "wedding-game:photo-memory:v1";
+export const weddingPhotoAlbumStorageKey = "wedding-game:photo-album:v2";
+export const weddingPhotoSpotOrder = [
+  "lobby-photo-wall",
+  "bridal-flower-wall",
+  "ceremony-aisle"
+] as const satisfies readonly WorldPhotoSpotId[];
 export const weddingPhotoWidth = 1080;
 export const weddingPhotoHeight = 1350;
+export const weddingPhotoStripWidth = 1080;
+export const weddingPhotoStripHeight = 2160;
 
 const sceneHeight = 1030;
 const spriteFrameWidth = guestPresetFrame.source.width;
@@ -425,8 +447,20 @@ function createMemoryPreview(canvas: HTMLCanvasElement): string {
 }
 
 export function weddingPhotoFilename(guestName: string, spotId: WorldPhotoSpotId): string {
-  const safeName = guestName.trim().replace(/[^0-9A-Za-z가-힣_-]+/g, "-").replace(/^-+|-+$/g, "");
+  const safeName = safeGuestName(guestName);
   return `wedding-photo-${spotId}-${safeName || "guest"}.png`;
+}
+
+function safeGuestName(guestName: string) {
+  return guestName.trim().replace(/[^0-9A-Za-z가-힣_-]+/g, "-").replace(/^-+|-+$/g, "");
+}
+
+export function weddingPhotoMemoryFilename(memory: WeddingPhotoMemory): string {
+  return `wedding-photo-${memory.photoSpotId}-${safeGuestName(memory.guestName) || "guest"}.jpg`;
+}
+
+export function weddingPhotoStripFilename(guestName: string): string {
+  return `wedding-photo-strip-${safeGuestName(guestName) || "guest"}.png`;
 }
 
 export async function createWeddingPhotoCapture(data: WeddingPhotoData): Promise<WeddingPhotoCapture> {
@@ -500,36 +534,258 @@ export async function createWeddingPhotoCapture(data: WeddingPhotoData): Promise
   };
 }
 
+function isWeddingPhotoMemory(value: unknown): value is WeddingPhotoMemory {
+  if (!value || typeof value !== "object") return false;
+  const memory = value as Partial<WeddingPhotoMemory>;
+  return memory.version === 1
+    && typeof memory.dataUrl === "string"
+    && memory.dataUrl.startsWith("data:image/")
+    && weddingPhotoSpotOrder.some((spotId) => spotId === memory.photoSpotId)
+    && typeof memory.zoneId === "string"
+    && typeof memory.guestName === "string"
+    && typeof memory.spotLabel === "string"
+    && typeof memory.pose === "string"
+    && typeof memory.createdAt === "number";
+}
+
+export function createEmptyWeddingPhotoAlbum(): WeddingPhotoAlbum {
+  return { version: 2, photos: [] };
+}
+
+export function upsertWeddingPhotoMemory(
+  album: WeddingPhotoAlbum,
+  memory: WeddingPhotoMemory
+): WeddingPhotoAlbum {
+  if (!isWeddingPhotoMemory(memory)) return album;
+  const bySpot = new Map(album.photos.filter(isWeddingPhotoMemory).map((photo) => [photo.photoSpotId, photo]));
+  bySpot.set(memory.photoSpotId, memory);
+  return {
+    version: 2,
+    photos: weddingPhotoSpotOrder.flatMap((spotId) => {
+      const photo = bySpot.get(spotId);
+      return photo ? [photo] : [];
+    })
+  };
+}
+
+export function weddingPhotoAlbumProgress(album: WeddingPhotoAlbum) {
+  return weddingPhotoSpotOrder.filter((spotId) => album.photos.some((photo) => photo.photoSpotId === spotId)).length;
+}
+
+export function isWeddingPhotoAlbumComplete(album: WeddingPhotoAlbum) {
+  return weddingPhotoAlbumProgress(album) === weddingPhotoSpotOrder.length;
+}
+
+function parseWeddingPhotoMemory(raw: string | null): WeddingPhotoMemory | null {
+  if (!raw) return null;
+  try {
+    const parsed = JSON.parse(raw) as unknown;
+    return isWeddingPhotoMemory(parsed) ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
+export function loadWeddingPhotoMemory(storage: Storage = localStorage): WeddingPhotoMemory | null {
+  const legacy = parseWeddingPhotoMemory(storage.getItem(weddingPhotoMemoryStorageKey));
+  if (legacy) return legacy;
+  const photos = loadWeddingPhotoAlbum(storage).photos;
+  return [...photos].sort((left, right) => right.createdAt - left.createdAt)[0] ?? null;
+}
+
+export function loadWeddingPhotoAlbum(storage: Storage = localStorage): WeddingPhotoAlbum {
+  try {
+    const raw = storage.getItem(weddingPhotoAlbumStorageKey);
+    if (raw) {
+      const parsed = JSON.parse(raw) as Partial<WeddingPhotoAlbum>;
+      if (parsed.version === 2 && Array.isArray(parsed.photos)) {
+        return parsed.photos.reduce(upsertWeddingPhotoMemory, createEmptyWeddingPhotoAlbum());
+      }
+    }
+  } catch {
+    // Fall through to the legacy single-photo memory.
+  }
+  const legacy = parseWeddingPhotoMemory(storage.getItem(weddingPhotoMemoryStorageKey));
+  return legacy
+    ? upsertWeddingPhotoMemory(createEmptyWeddingPhotoAlbum(), legacy)
+    : createEmptyWeddingPhotoAlbum();
+}
+
 export function saveWeddingPhotoMemory(memory: WeddingPhotoMemory, storage: Storage = localStorage) {
-  if (!memory.dataUrl.startsWith("data:image/")) return false;
+  if (!isWeddingPhotoMemory(memory)) return false;
   try {
     storage.setItem(weddingPhotoMemoryStorageKey, JSON.stringify(memory));
+    storage.setItem(
+      weddingPhotoAlbumStorageKey,
+      JSON.stringify(upsertWeddingPhotoMemory(loadWeddingPhotoAlbum(storage), memory))
+    );
     return true;
   } catch {
     return false;
   }
 }
 
-export function loadWeddingPhotoMemory(storage: Storage = localStorage): WeddingPhotoMemory | null {
+function dataUrlToBlob(dataUrl: string) {
+  const match = /^data:([^;,]+)(;base64)?,(.*)$/.exec(dataUrl);
+  if (!match) throw new Error("저장된 사진 형식을 읽을 수 없습니다.");
+  const mimeType = match[1];
+  const encoded = match[3];
+  const binary = match[2] ? atob(encoded) : decodeURIComponent(encoded);
+  const bytes = new Uint8Array(binary.length);
+  for (let index = 0; index < binary.length; index += 1) bytes[index] = binary.charCodeAt(index);
+  return new Blob([bytes], { type: mimeType });
+}
+
+export function saveWeddingPhotoMemoryImage(
+  memory: WeddingPhotoMemory,
+  environment: PhotoDownloadEnvironment = browserDownloadEnvironment
+) {
+  const blob = dataUrlToBlob(memory.dataUrl);
+  const url = environment.createObjectUrl(blob);
   try {
-    const raw = storage.getItem(weddingPhotoMemoryStorageKey);
-    if (!raw) return null;
-    const parsed = JSON.parse(raw) as Partial<WeddingPhotoMemory>;
-    if (
-      parsed.version !== 1
-      || typeof parsed.dataUrl !== "string"
-      || !parsed.dataUrl.startsWith("data:image/")
-      || typeof parsed.photoSpotId !== "string"
-      || typeof parsed.zoneId !== "string"
-      || typeof parsed.guestName !== "string"
-      || typeof parsed.spotLabel !== "string"
-      || typeof parsed.pose !== "string"
-      || typeof parsed.createdAt !== "number"
-    ) return null;
-    return parsed as WeddingPhotoMemory;
-  } catch {
-    return null;
+    environment.clickDownload(url, weddingPhotoMemoryFilename(memory));
+  } finally {
+    environment.revokeObjectUrl(url);
   }
+}
+
+export async function shareWeddingPhotoMemoryImage(
+  memory: WeddingPhotoMemory,
+  coupleNames: string,
+  publicUrl: string,
+  environment: PhotoShareEnvironment = browserShareEnvironment()
+): Promise<"shared" | "saved"> {
+  const blob = dataUrlToBlob(memory.dataUrl);
+  const file = new File([blob], weddingPhotoMemoryFilename(memory), { type: blob.type });
+  const shareData: ShareData = {
+    files: [file],
+    title: `${coupleNames} 웨딩 가든 포토앨범`,
+    text: `${memory.guestName}님이 ${memory.spotLabel}에서 남긴 기념 사진이에요.`,
+    url: publicUrl
+  };
+  if (environment.share && (!environment.canShare || environment.canShare(shareData))) {
+    try {
+      await environment.share(shareData);
+      return "shared";
+    } catch (error) {
+      if (typeof error === "object" && error !== null && "name" in error && error.name === "AbortError") throw error;
+    }
+  }
+  saveWeddingPhotoMemoryImage(memory, environment);
+  return "saved";
+}
+
+function drawImageCover(
+  context: CanvasRenderingContext2D,
+  image: HTMLImageElement,
+  x: number,
+  y: number,
+  width: number,
+  height: number
+) {
+  const sourceRatio = image.naturalWidth / image.naturalHeight;
+  const targetRatio = width / height;
+  const sourceWidth = sourceRatio > targetRatio ? image.naturalHeight * targetRatio : image.naturalWidth;
+  const sourceHeight = sourceRatio > targetRatio ? image.naturalHeight : image.naturalWidth / targetRatio;
+  const sourceX = (image.naturalWidth - sourceWidth) / 2;
+  const sourceY = (image.naturalHeight - sourceHeight) / 2;
+  context.drawImage(image, sourceX, sourceY, sourceWidth, sourceHeight, x, y, width, height);
+}
+
+export async function createWeddingPhotoStrip(data: WeddingPhotoStripData): Promise<Blob> {
+  if (!isWeddingPhotoAlbumComplete(data.album)) throw new Error("포토존 세 곳의 사진이 모두 필요합니다.");
+  const photos = weddingPhotoSpotOrder.map((spotId) => data.album.photos.find((photo) => photo.photoSpotId === spotId)!);
+  const images = await Promise.all(photos.map((photo) => loadImage(photo.dataUrl)));
+  if (images.some((image) => !image)) throw new Error("포토앨범 사진을 불러오지 못했습니다.");
+
+  const canvas = document.createElement("canvas");
+  canvas.width = weddingPhotoStripWidth;
+  canvas.height = weddingPhotoStripHeight;
+  const context = canvas.getContext("2d");
+  if (!context) throw new Error("이 브라우저에서는 포토스트립을 만들 수 없습니다.");
+
+  context.fillStyle = "#f7f0df";
+  context.fillRect(0, 0, canvas.width, canvas.height);
+  context.fillStyle = "#6f8f76";
+  context.fillRect(0, 0, 54, canvas.height);
+  context.fillStyle = "#bd727f";
+  context.fillRect(canvas.width - 54, 0, 54, canvas.height);
+  context.strokeStyle = "#9a765e";
+  context.lineWidth = 4;
+  context.strokeRect(78, 78, canvas.width - 156, canvas.height - 156);
+
+  context.textAlign = "center";
+  context.fillStyle = "#4a3935";
+  context.font = "900 58px serif";
+  context.fillText(data.coupleNames, canvas.width / 2, 150);
+  context.fillStyle = "#a35f6d";
+  context.font = "900 24px sans-serif";
+  context.fillText("WEDDING GARDEN PHOTO STRIP", canvas.width / 2, 198);
+
+  photos.forEach((photo, index) => {
+    const y = 250 + index * 555;
+    context.fillStyle = "#fffaf0";
+    context.fillRect(108, y - 12, 864, 512);
+    drawImageCover(context, images[index]!, 126, y + 6, 828, 438);
+    context.fillStyle = "#574640";
+    context.textAlign = "left";
+    context.font = "900 25px sans-serif";
+    context.fillText(`${index + 1}. ${photo.spotLabel}`, 130, y + 480);
+    context.textAlign = "right";
+    context.fillStyle = "#8a746a";
+    context.font = "800 20px sans-serif";
+    context.fillText(photo.guestName, 950, y + 480);
+  });
+
+  context.textAlign = "center";
+  context.fillStyle = "#4a3935";
+  context.font = "900 34px serif";
+  context.fillText(`${data.guestName}님과 함께한 세 장의 축하`, canvas.width / 2, 1940);
+  context.fillStyle = "#755e55";
+  context.font = "800 25px sans-serif";
+  context.fillText(`${data.dateLabel} · ${data.venueLabel}`, canvas.width / 2, 1995);
+  context.fillStyle = "#5b7f68";
+  context.font = "900 22px sans-serif";
+  context.fillText("우리의 소중한 날을 함께해주셔서 고맙습니다", canvas.width / 2, 2050);
+
+  return canvasToBlob(canvas);
+}
+
+export function saveWeddingPhotoStripBlob(
+  blob: Blob,
+  guestName: string,
+  environment: PhotoDownloadEnvironment = browserDownloadEnvironment
+) {
+  const url = environment.createObjectUrl(blob);
+  try {
+    environment.clickDownload(url, weddingPhotoStripFilename(guestName));
+  } finally {
+    environment.revokeObjectUrl(url);
+  }
+}
+
+export async function shareWeddingPhotoStripBlob(
+  blob: Blob,
+  data: WeddingPhotoStripData,
+  environment: PhotoShareEnvironment = browserShareEnvironment()
+): Promise<"shared" | "saved"> {
+  const file = new File([blob], weddingPhotoStripFilename(data.guestName), { type: "image/png" });
+  const shareData: ShareData = {
+    files: [file],
+    title: `${data.coupleNames} 웨딩 가든 포토스트립`,
+    text: `${data.guestName}님이 웨딩 가든 세 곳에서 남긴 기념 포토스트립이에요.`,
+    url: data.publicUrl
+  };
+  if (environment.share && (!environment.canShare || environment.canShare(shareData))) {
+    try {
+      await environment.share(shareData);
+      return "shared";
+    } catch (error) {
+      if (typeof error === "object" && error !== null && "name" in error && error.name === "AbortError") throw error;
+    }
+  }
+  saveWeddingPhotoStripBlob(blob, data.guestName, environment);
+  return "saved";
 }
 
 export function saveWeddingPhotoBlob(

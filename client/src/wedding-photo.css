@@ -497,3 +497,436 @@ html[data-reduce-motion="true"] .wedding-photo-booth__pose-effect::before,
 html[data-reduce-motion="true"] .wedding-photo-booth__pose-effect::after {
   animation: none !important;
 }
+
+.world-menu-grid button > svg {
+  width: 17px;
+  height: 17px;
+  flex: 0 0 17px;
+  margin-right: 6px;
+  vertical-align: -4px;
+}
+
+.wedding-photo-album {
+  position: fixed;
+  inset: 0;
+  z-index: 110;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  min-width: 0;
+  gap: 12px;
+  overflow: hidden;
+  padding:
+    max(16px, env(safe-area-inset-top))
+    max(14px, env(safe-area-inset-right))
+    max(12px, env(safe-area-inset-bottom))
+    max(14px, env(safe-area-inset-left));
+  background:
+    repeating-linear-gradient(90deg, rgba(91, 127, 104, 0.06) 0 1px, transparent 1px 10px),
+    #f5eddd;
+  color: #473a36;
+  isolation: isolate;
+}
+
+.wedding-photo-album::before {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: -1;
+  height: 8px;
+  background: linear-gradient(90deg, #668a71 0 33%, #d28a93 33% 66%, #d3ac57 66%);
+  content: "";
+}
+
+.wedding-photo-album__header {
+  display: flex;
+  width: min(100%, 1060px);
+  align-items: start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-inline: auto;
+  padding-top: 5px;
+}
+
+.wedding-photo-album__header > div { min-width: 0; }
+
+.wedding-photo-album__header small {
+  color: #a25968;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0;
+}
+
+.wedding-photo-album__header h2 {
+  margin: 2px 0 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(24px, 5vw, 38px);
+  line-height: 1.05;
+  letter-spacing: 0;
+}
+
+.wedding-photo-album__header p {
+  margin: 5px 0 0;
+  color: #79665d;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.wedding-photo-album__header p strong { color: #a25968; font-size: 15px; }
+
+.wedding-photo-album__header > button,
+.wedding-photo-lightbox > button {
+  display: grid;
+  flex: 0 0 42px;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border: 2px solid #67514b;
+  border-radius: 50%;
+  padding: 0;
+  background: #a85f70;
+  color: #fffaf0;
+  box-shadow: 2px 2px 0 rgba(70, 54, 49, 0.42);
+}
+
+.wedding-photo-album__header svg,
+.wedding-photo-lightbox > button svg { width: 21px; height: 21px; }
+
+.wedding-photo-album__workspace {
+  display: grid;
+  min-width: 0;
+  min-height: 0;
+  width: min(100%, 1060px);
+  grid-template-columns: minmax(0, 1fr);
+  gap: 14px;
+  margin-inline: auto;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.wedding-photo-album__viewer {
+  display: grid;
+  min-width: 0;
+  align-content: start;
+  gap: 9px;
+}
+
+.wedding-photo-album__viewer-title {
+  display: grid;
+  gap: 1px;
+}
+
+.wedding-photo-album__viewer-title span {
+  color: #8d6f63;
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.wedding-photo-album__viewer-title strong {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 18px;
+  letter-spacing: 0;
+}
+
+.wedding-photo-album__photo {
+  position: relative;
+  display: block;
+  width: 100%;
+  min-height: 0;
+  max-height: 52dvh;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border: 5px solid #fffaf0;
+  border-radius: 2px;
+  padding: 0;
+  background: #d8cbb9;
+  box-shadow: 0 0 0 2px #80675b, 7px 8px 0 rgba(81, 64, 57, 0.16);
+}
+
+.wedding-photo-album__photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.wedding-photo-album__photo > span {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 8px;
+  background: rgba(57, 46, 42, 0.84);
+  color: #fff9e6;
+  font-size: 9px;
+  font-weight: 900;
+}
+
+.wedding-photo-album__photo > span svg { width: 14px; height: 14px; }
+
+.wedding-photo-album__empty {
+  display: grid;
+  width: 100%;
+  min-height: 230px;
+  aspect-ratio: 4 / 5;
+  place-content: center;
+  justify-items: center;
+  gap: 7px;
+  border: 2px dashed #9a7c6e;
+  background:
+    linear-gradient(45deg, transparent 48%, rgba(168, 95, 112, 0.08) 49% 51%, transparent 52%),
+    #e8dece;
+  color: #756058;
+  text-align: center;
+}
+
+.wedding-photo-album__empty svg { width: 38px; height: 38px; color: #a85f70; }
+.wedding-photo-album__empty strong { font-size: 14px; }
+.wedding-photo-album__empty span { font-size: 10px; font-weight: 800; }
+
+.wedding-photo-album__photo-actions {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.wedding-photo-album__photo-actions button,
+.wedding-photo-strip__copy button {
+  display: flex;
+  min-width: 0;
+  min-height: 42px;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  border: 1px solid #705a51;
+  border-radius: 2px;
+  padding: 7px 5px;
+  background: #fffaf0;
+  color: #493c37;
+  font-size: 10px;
+  font-weight: 900;
+  box-shadow: 2px 2px 0 rgba(89, 69, 61, 0.22);
+}
+
+.wedding-photo-album__photo-actions button:last-child { background: #6d9178; color: #fffced; }
+.wedding-photo-album__photo-actions svg,
+.wedding-photo-strip__copy button svg { width: 16px; height: 16px; flex: 0 0 16px; }
+
+.wedding-photo-album__collection {
+  display: grid;
+  min-width: 0;
+  align-content: start;
+  gap: 13px;
+}
+
+.wedding-photo-album__slots {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.wedding-photo-album__slots > button {
+  position: relative;
+  display: grid;
+  min-width: 0;
+  min-height: 110px;
+  grid-template-rows: 68px auto;
+  align-content: start;
+  gap: 5px;
+  overflow: hidden;
+  border: 2px solid #a58d7e;
+  border-radius: 2px;
+  padding: 5px;
+  background: #e5d8c6;
+  color: #4d403a;
+  text-align: left;
+}
+
+.wedding-photo-album__slots > button.is-selected {
+  border-color: #9f5365;
+  background: #fff8e9;
+  box-shadow: inset 0 0 0 2px #e5b3ba;
+}
+
+.wedding-photo-album__slots img {
+  display: block;
+  width: 100%;
+  height: 68px;
+  object-fit: cover;
+  object-position: center 38%;
+}
+
+.wedding-photo-album__slots > button > svg {
+  align-self: center;
+  justify-self: center;
+  width: 29px;
+  height: 29px;
+  color: #a99183;
+}
+
+.wedding-photo-album__slots button > span:not(.wedding-photo-album__slot-number) {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+
+.wedding-photo-album__slots strong,
+.wedding-photo-album__slots small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.wedding-photo-album__slots strong { font-size: 8px; }
+.wedding-photo-album__slots small { color: #90766b; font-size: 7px; font-weight: 800; }
+
+.wedding-photo-album__slot-number {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 1;
+  padding: 2px 4px;
+  background: rgba(64, 49, 45, 0.82);
+  color: #fff8dc;
+  font-size: 7px;
+  font-weight: 900;
+}
+
+.wedding-photo-strip {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: 104px minmax(0, 1fr);
+  align-items: center;
+  gap: 15px;
+  border-top: 2px solid #a98e7d;
+  padding: 13px 2px 2px;
+}
+
+.wedding-photo-strip__preview {
+  display: grid;
+  width: 104px;
+  gap: 5px;
+  border: 5px solid #3f3431;
+  padding: 8px;
+  background: #fff9ea;
+  box-shadow: 5px 6px 0 rgba(73, 58, 52, 0.2);
+  transform: rotate(-2deg);
+}
+
+.wedding-photo-strip__title {
+  color: #a25968;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 9px;
+  font-weight: 900;
+  line-height: 0.92;
+  text-align: center;
+}
+
+.wedding-photo-strip__preview img,
+.wedding-photo-strip__blank {
+  display: grid;
+  width: 100%;
+  height: 60px;
+  place-items: center;
+  border: 1px solid #b9a18d;
+  background: #dcd2c4;
+  object-fit: cover;
+  object-position: center 38%;
+}
+
+.wedding-photo-strip__blank svg { width: 19px; height: 19px; color: #927d70; }
+.wedding-photo-strip__preview > small { font-family: Georgia, serif; font-size: 6px; font-weight: 900; text-align: center; }
+
+.wedding-photo-strip__copy { display: grid; min-width: 0; gap: 5px; }
+.wedding-photo-strip__copy > span { display: flex; align-items: center; gap: 5px; color: #a25968; font-size: 8px; font-weight: 900; }
+.wedding-photo-strip__copy > span svg { width: 14px; height: 14px; }
+.wedding-photo-strip__copy h3 { margin: 0; font-family: Georgia, "Times New Roman", serif; font-size: 17px; letter-spacing: 0; }
+.wedding-photo-strip__copy p { margin: 0; color: #766159; font-size: 9px; font-weight: 700; line-height: 1.45; word-break: keep-all; }
+.wedding-photo-strip__copy > div { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; margin-top: 3px; }
+.wedding-photo-strip.is-complete .wedding-photo-strip__copy button { background: #a65f70; color: #fffaf0; }
+.wedding-photo-strip__copy button:disabled { cursor: not-allowed; opacity: 0.5; }
+
+.wedding-photo-album__status {
+  width: min(100%, 1060px);
+  min-height: 16px;
+  margin: 0 auto;
+  color: #765f56;
+  font-size: 9px;
+  font-weight: 800;
+  text-align: center;
+}
+
+.wedding-photo-album button:focus-visible {
+  outline: 3px solid #e0b84d;
+  outline-offset: 3px;
+}
+
+.wedding-photo-album button:disabled { opacity: 0.58; }
+
+.wedding-photo-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 130;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: 10px;
+  padding:
+    max(14px, env(safe-area-inset-top))
+    max(14px, env(safe-area-inset-right))
+    max(16px, env(safe-area-inset-bottom))
+    max(14px, env(safe-area-inset-left));
+  background: rgba(27, 24, 25, 0.98);
+  color: #fff9e8;
+}
+
+.wedding-photo-lightbox > button { justify-self: end; }
+
+.wedding-photo-lightbox img {
+  display: block;
+  min-width: 0;
+  min-height: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.wedding-photo-lightbox p { display: grid; gap: 2px; margin: 0; text-align: center; }
+.wedding-photo-lightbox p span { color: #efcd75; font-size: 9px; font-weight: 900; }
+.wedding-photo-lightbox p strong { font-family: Georgia, "Times New Roman", serif; font-size: 15px; letter-spacing: 0; }
+
+@media (min-width: 760px) and (min-height: 660px) {
+  .wedding-photo-album__workspace {
+    grid-template-columns: minmax(320px, 0.88fr) minmax(380px, 1.12fr);
+    align-items: start;
+    gap: 32px;
+  }
+
+  .wedding-photo-album__photo,
+  .wedding-photo-album__empty { max-height: min(64dvh, 620px); }
+  .wedding-photo-album__slots > button { min-height: 150px; grid-template-rows: 102px auto; }
+  .wedding-photo-album__slots img { height: 102px; }
+  .wedding-photo-album__slots strong { font-size: 10px; }
+  .wedding-photo-album__slots small { font-size: 8px; }
+  .wedding-photo-strip { grid-template-columns: 150px minmax(0, 1fr); gap: 24px; padding-top: 20px; }
+  .wedding-photo-strip__preview { width: 150px; gap: 7px; padding: 11px; }
+  .wedding-photo-strip__preview img,
+  .wedding-photo-strip__blank { height: 92px; }
+  .wedding-photo-strip__copy h3 { font-size: 23px; }
+  .wedding-photo-strip__copy p { font-size: 11px; }
+  .wedding-photo-strip__copy button { min-height: 48px; font-size: 12px; }
+}
+
+@media (max-height: 690px) and (max-width: 759px) {
+  .wedding-photo-album { gap: 7px; }
+  .wedding-photo-album__header h2 { font-size: 22px; }
+  .wedding-photo-album__header p { display: none; }
+  .wedding-photo-album__photo { max-height: 43dvh; }
+  .wedding-photo-album__slots > button { min-height: 92px; grid-template-rows: 52px auto; }
+  .wedding-photo-album__slots img { height: 52px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wedding-photo-strip__preview { transform: none; }
+}
+
+html[data-reduce-motion="true"] .wedding-photo-strip__preview { transform: none; }
