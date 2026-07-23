@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Check, Download, MessageCircleHeart, Send, Share2, Sparkles, X } from "lucide-react";
+import { Camera, Check, Download, MessageCircleHeart, Send, Share2, Sparkles, X } from "lucide-react";
 import type { CharacterAppearance } from "@wedding-game/shared";
 import { isShareAbortError } from "../invitation/browserActions";
 import {
@@ -17,6 +17,7 @@ import {
   shareJourneyKeepsake,
   type JourneyKeepsakeData
 } from "../game/journeyKeepsake";
+import { loadWeddingPhotoMemory } from "../game/weddingPhoto";
 import { CharacterSprite } from "./CharacterSprite";
 
 type JourneyCompletionProps = {
@@ -66,6 +67,7 @@ export function JourneyCompletion({
   onCloseRef.current = onClose;
   busyRef.current = busy;
   const coupleNames = formatCoupleNames(event, coupleOrder);
+  const photoMemory = useMemo(loadWeddingPhotoMemory, []);
   const finalePhoto = content.gallery.find((photo) => photo.id === "10-sunlit-finale")
     ?? content.gallery[content.gallery.length - 1];
   const keepsakeData = useMemo<JourneyKeepsakeData>(() => ({
@@ -75,9 +77,9 @@ export function JourneyCompletion({
     timeLabel: formatEventStartTime(event),
     venueLabel: formatVenueLabel(event),
     checkpointLabels: journeyCheckpoints.map((checkpoint) => checkpoint.label),
-    photoUrl: resolveAssetUrl(finalePhoto.assetPath),
+    photoUrl: photoMemory?.dataUrl || resolveAssetUrl(finalePhoto.assetPath),
     publicUrl: canonicalInvitationUrl()
-  }), [coupleNames, event, finalePhoto.assetPath, nickname]);
+  }), [coupleNames, event, finalePhoto.assetPath, nickname, photoMemory?.dataUrl]);
 
   useEffect(() => {
     const previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
@@ -169,6 +171,12 @@ export function JourneyCompletion({
 
           <figure className="journey-keepsake-preview" aria-label="완주 기념 카드 미리보기">
             <figcaption><span>YOUR WEDDING TRAIL</span><strong>{coupleNames}</strong></figcaption>
+            {photoMemory ? (
+              <div className="journey-keepsake-preview__photo">
+                <img src={photoMemory.dataUrl} alt={`${photoMemory.spotLabel}에서 촬영한 기념 사진`} />
+                <span><Camera aria-hidden="true" />{photoMemory.spotLabel} 사진 반영</span>
+              </div>
+            ) : null}
             <div className="journey-keepsake-preview__stamps" aria-label="방문 스탬프 5개 완료">
               {journeyCheckpoints.map((checkpoint) => (
                 <span key={checkpoint.id}><Check aria-hidden="true" /><small>{checkpoint.label}</small></span>

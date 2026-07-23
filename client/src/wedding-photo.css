@@ -1,0 +1,499 @@
+.world-minimap__photo-spot {
+  fill: #fff1a9;
+  stroke: #9c6477;
+  stroke-width: 1.4;
+  vector-effect: non-scaling-stroke;
+}
+
+.world-photo-spot {
+  --photo-accent: #f5d77f;
+  position: absolute;
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  align-items: center;
+  justify-items: center;
+  gap: 5px;
+  overflow: visible;
+  border: 2px solid #6d4f5c;
+  border-radius: 2px;
+  padding: 5px 8px;
+  background:
+    linear-gradient(90deg, rgba(255, 250, 218, 0.88) 0 4px, transparent 4px),
+    repeating-linear-gradient(135deg, rgba(168, 99, 120, 0.9) 0 6px, rgba(121, 83, 111, 0.92) 6px 12px);
+  color: #fff9df;
+  box-shadow:
+    inset 0 0 0 2px rgba(255, 244, 193, 0.42),
+    3px 3px 0 rgba(64, 45, 52, 0.5),
+    0 0 12px rgba(255, 222, 126, 0.56);
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.world-photo-spot::after {
+  position: absolute;
+  inset: -5px;
+  border: 1px dashed rgba(255, 241, 174, 0.72);
+  content: "";
+  pointer-events: none;
+}
+
+.world-photo-spot svg {
+  width: 23px;
+  height: 23px;
+  filter: drop-shadow(1px 1px 0 rgba(64, 45, 52, 0.7));
+}
+
+.world-photo-spot span {
+  font-size: 10px;
+  letter-spacing: 0;
+  line-height: 1.1;
+  text-shadow: 1px 1px 0 rgba(64, 45, 52, 0.8);
+  white-space: nowrap;
+}
+
+.world-photo-spot--target {
+  outline: 3px solid rgba(255, 249, 199, 0.96);
+  outline-offset: 4px;
+  animation: world-photo-target 760ms steps(2, end) infinite;
+}
+
+.world-photo-spot--captured {
+  --photo-accent: #8ed1ad;
+  border-color: #426b5a;
+  background: repeating-linear-gradient(135deg, #5a8f75 0 6px, #416f62 6px 12px);
+}
+
+.world-photo-spot:focus-visible {
+  outline: 2px solid #fff9d0;
+  outline-offset: 4px;
+  box-shadow: 0 0 0 6px rgba(118, 80, 100, 0.76), 3px 3px 0 rgba(64, 45, 52, 0.5);
+}
+
+@keyframes world-photo-target {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.24); }
+}
+
+.wedding-photo-booth {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: 12px;
+  min-width: 0;
+  padding:
+    max(18px, env(safe-area-inset-top))
+    max(16px, env(safe-area-inset-right))
+    max(16px, env(safe-area-inset-bottom))
+    max(16px, env(safe-area-inset-left));
+  background:
+    linear-gradient(90deg, rgba(255, 244, 193, 0.04) 1px, transparent 1px) 0 0 / 12px 12px,
+    rgba(31, 29, 33, 0.96);
+  color: #fff8e5;
+  isolation: isolate;
+}
+
+.wedding-photo-booth::before,
+.wedding-photo-booth::after {
+  position: fixed;
+  z-index: -1;
+  width: 34vw;
+  height: 100dvh;
+  background: linear-gradient(180deg, rgba(184, 111, 121, 0.2), rgba(81, 121, 94, 0.14));
+  content: "";
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.wedding-photo-booth::before { inset: 0 auto 0 0; clip-path: polygon(0 0, 65% 0, 100% 100%, 0 100%); }
+.wedding-photo-booth::after { inset: 0 0 0 auto; clip-path: polygon(35% 0, 100% 0, 100% 100%, 0 100%); }
+
+.wedding-photo-booth__header {
+  display: flex;
+  width: min(100%, 760px);
+  min-width: 0;
+  align-items: start;
+  justify-content: space-between;
+  gap: 18px;
+  margin-inline: auto;
+}
+
+.wedding-photo-booth__header > div { min-width: 0; }
+
+.wedding-photo-booth__header small {
+  color: #f2cf74;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0;
+}
+
+.wedding-photo-booth__header h2 {
+  margin: 2px 0 0;
+  color: #fff9e7;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(23px, 5vw, 34px);
+  line-height: 1.15;
+  letter-spacing: 0;
+}
+
+.wedding-photo-booth__header p {
+  margin: 3px 0 0;
+  color: #d7cec2;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.4;
+  letter-spacing: 0;
+  word-break: keep-all;
+}
+
+.wedding-photo-booth__header button {
+  display: grid;
+  flex: 0 0 42px;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border: 1px solid rgba(255, 244, 205, 0.54);
+  border-radius: 50%;
+  padding: 0;
+  background: rgba(255, 250, 229, 0.08);
+  color: #fff8e5;
+}
+
+.wedding-photo-booth__header button svg { width: 22px; height: 22px; }
+
+.wedding-photo-booth__viewport {
+  position: relative;
+  align-self: center;
+  justify-self: center;
+  width: auto;
+  height: min(56dvh, 650px);
+  max-width: min(100%, 520px);
+  max-height: 100%;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border: 5px solid #f5e6bd;
+  border-radius: 2px;
+  background: #554b4e;
+  box-shadow:
+    0 0 0 2px #8f6471,
+    10px 12px 0 rgba(0, 0, 0, 0.34),
+    0 0 42px rgba(238, 198, 114, 0.2);
+}
+
+.wedding-photo-booth__scene,
+.wedding-photo-booth__result {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.wedding-photo-booth__result {
+  object-fit: cover;
+  animation: wedding-photo-develop 520ms steps(5, end) both;
+}
+
+.wedding-photo-booth__scene {
+  position: relative;
+  overflow: hidden;
+  background-repeat: no-repeat;
+  background-size: cover;
+  image-rendering: pixelated;
+}
+
+.wedding-photo-booth__scene::before {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(180deg, rgba(49, 38, 43, 0.08), transparent 52%, rgba(49, 38, 43, 0.34));
+  content: "";
+}
+
+.wedding-photo-booth__frame {
+  position: absolute;
+  inset: 14px;
+  z-index: 5;
+  border: 3px solid rgba(255, 247, 205, 0.86);
+  box-shadow: inset 0 0 0 1px rgba(104, 72, 78, 0.66);
+}
+
+.wedding-photo-booth__frame::before {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  width: 52%;
+  border-top: 1px solid rgba(255, 247, 205, 0.84);
+  content: "WEDDING GARDEN";
+  color: #fff7d4;
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 0;
+  line-height: 1;
+  text-align: center;
+  text-shadow: 1px 1px 0 #604852;
+  transform: translateX(-50%);
+}
+
+.wedding-photo-booth__petals {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background-image:
+    radial-gradient(circle, #fff0b7 0 3px, transparent 4px),
+    radial-gradient(circle, #e88f9f 0 3px, transparent 4px),
+    radial-gradient(circle, #94b79a 0 2px, transparent 3px);
+  background-position: 8% 18%, 87% 26%, 22% 72%;
+  background-repeat: no-repeat;
+  animation: wedding-photo-petals 2.4s steps(5, end) infinite;
+}
+
+.wedding-photo-booth__cast {
+  position: absolute;
+  left: 50%;
+  bottom: 8%;
+  z-index: 3;
+  display: flex;
+  width: min(82%, 390px);
+  align-items: end;
+  justify-content: center;
+  gap: 5%;
+  transform: translateX(-50%);
+}
+
+.wedding-photo-booth__cast::before {
+  position: absolute;
+  right: 7%;
+  bottom: 0;
+  left: 7%;
+  height: 18px;
+  border-radius: 50%;
+  background: rgba(47, 37, 34, 0.26);
+  content: "";
+  filter: blur(2px);
+}
+
+.wedding-photo-booth__cast--bride { gap: 10%; }
+
+.wedding-photo-booth__guest,
+.wedding-photo-booth__npc {
+  position: relative;
+  z-index: 1;
+  flex: 0 0 auto;
+  filter: drop-shadow(3px 4px 1px rgba(45, 34, 34, 0.42));
+}
+
+.wedding-photo-booth__guest .character-sprite {
+  width: 96px;
+  height: 144px;
+}
+
+.wedding-photo-booth__npc {
+  display: block;
+  width: 96px;
+  height: 144px;
+  background-position: 0 0;
+  background-repeat: no-repeat;
+  background-size: 192px 144px;
+  image-rendering: auto;
+}
+
+.wedding-photo-booth__pose-effect {
+  position: absolute;
+  z-index: 4;
+  left: 50%;
+  top: 32%;
+  width: 110px;
+  height: 100px;
+  pointer-events: none;
+  transform: translateX(-5%);
+}
+
+.wedding-photo-booth__scene--wave .wedding-photo-booth__pose-effect {
+  border-top: 3px solid #fff1b9;
+  border-right: 3px solid #fff1b9;
+  border-radius: 50%;
+  box-shadow: 9px -8px 0 -6px #fff1b9, 17px -15px 0 -12px #fff1b9;
+  animation: wedding-photo-wave 900ms steps(3, end) infinite;
+}
+
+.wedding-photo-booth__scene--flower-heart .wedding-photo-booth__pose-effect {
+  width: 122px;
+  height: 110px;
+  border: 7px dotted #f4d675;
+  border-radius: 48% 48% 42% 42%;
+  box-shadow: 0 0 0 3px rgba(231, 136, 155, 0.8);
+  transform: translate(-20%, -10%) rotate(45deg);
+}
+
+.wedding-photo-booth__scene--hearts .wedding-photo-booth__pose-effect::before,
+.wedding-photo-booth__scene--hearts .wedding-photo-booth__pose-effect::after {
+  position: absolute;
+  color: #ee8d9d;
+  content: "♥";
+  font-family: Georgia, serif;
+  font-size: 42px;
+  text-shadow: 42px 46px 0 #fff0b8, -34px 62px 0 #e58c9f;
+  animation: wedding-photo-hearts 1.3s steps(4, end) infinite;
+}
+
+.wedding-photo-booth__scene--hearts .wedding-photo-booth__pose-effect::after {
+  top: -34px;
+  left: 54px;
+  color: #fff0b8;
+  font-size: 28px;
+  animation-delay: -0.6s;
+}
+
+.wedding-photo-booth__controls {
+  display: grid;
+  width: min(100%, 620px);
+  min-width: 0;
+  gap: 10px;
+  margin-inline: auto;
+}
+
+.wedding-photo-booth__poses,
+.wedding-photo-booth__actions {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.wedding-photo-booth__poses button,
+.wedding-photo-booth__actions button {
+  display: flex;
+  min-width: 0;
+  min-height: 46px;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border: 1px solid rgba(255, 244, 205, 0.54);
+  border-radius: 3px;
+  padding: 8px;
+  background: rgba(255, 250, 229, 0.08);
+  color: #fff8e5;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0;
+}
+
+.wedding-photo-booth__poses button[aria-pressed="true"] {
+  border-color: #f2cf74;
+  background: #8f5f70;
+  box-shadow: inset 0 0 0 2px rgba(255, 239, 184, 0.34);
+}
+
+.wedding-photo-booth__poses svg,
+.wedding-photo-booth__actions svg {
+  flex: 0 0 18px;
+  width: 18px;
+  height: 18px;
+}
+
+.wedding-photo-booth__actions .wedding-photo-booth__shutter {
+  grid-column: 1 / -1;
+  min-height: 54px;
+  border: 2px solid #f5db8c;
+  background: #a76378;
+  box-shadow: inset 0 0 0 3px rgba(255, 239, 188, 0.2), 4px 4px 0 rgba(0, 0, 0, 0.34);
+  font-size: 15px;
+}
+
+.wedding-photo-booth__actions .wedding-photo-booth__shutter svg { width: 24px; height: 24px; }
+
+.wedding-photo-booth__poses button:focus-visible,
+.wedding-photo-booth__actions button:focus-visible,
+.wedding-photo-booth__header button:focus-visible {
+  outline: 2px solid #fff5c6;
+  outline-offset: 3px;
+}
+
+.wedding-photo-booth button:disabled { opacity: 0.56; }
+
+.wedding-photo-booth__status {
+  min-height: 18px;
+  margin: 0;
+  color: #ddd3c6;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1.35;
+  text-align: center;
+}
+
+@keyframes wedding-photo-develop {
+  0% { opacity: 0; filter: brightness(2.4) saturate(0); }
+  100% { opacity: 1; filter: brightness(1) saturate(1); }
+}
+
+@keyframes wedding-photo-petals {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(4px, 8px); }
+}
+
+@keyframes wedding-photo-wave {
+  0%, 100% { transform: translateX(-5%) rotate(-8deg); }
+  50% { transform: translateX(-5%) rotate(8deg); }
+}
+
+@keyframes wedding-photo-hearts {
+  0%, 100% { opacity: 0.68; transform: translateY(4px); }
+  50% { opacity: 1; transform: translateY(-7px); }
+}
+
+@media (max-height: 720px) {
+  .wedding-photo-booth { gap: 8px; padding-top: max(10px, env(safe-area-inset-top)); }
+  .wedding-photo-booth__header p { display: none; }
+  .wedding-photo-booth__viewport { height: min(49dvh, 430px); }
+  .wedding-photo-booth__poses button,
+  .wedding-photo-booth__actions button { min-height: 40px; padding-block: 6px; }
+  .wedding-photo-booth__actions .wedding-photo-booth__shutter { min-height: 44px; }
+}
+
+@media (min-width: 820px) and (min-height: 700px) {
+  .wedding-photo-booth {
+    grid-template-columns: minmax(300px, 520px) minmax(300px, 430px);
+    grid-template-rows: auto minmax(0, 1fr);
+    align-content: center;
+    justify-content: center;
+    column-gap: 40px;
+  }
+
+  .wedding-photo-booth__header {
+    grid-column: 2;
+    align-self: end;
+    width: 100%;
+  }
+
+  .wedding-photo-booth__viewport {
+    grid-column: 1;
+    grid-row: 1 / 3;
+    height: min(84dvh, 760px);
+  }
+
+  .wedding-photo-booth__controls {
+    grid-column: 2;
+    align-self: start;
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .world-photo-spot--target,
+  .wedding-photo-booth__result,
+  .wedding-photo-booth__petals,
+  .wedding-photo-booth__pose-effect,
+  .wedding-photo-booth__pose-effect::before,
+  .wedding-photo-booth__pose-effect::after {
+    animation: none !important;
+  }
+}
+
+html[data-reduce-motion="true"] .world-photo-spot--target,
+html[data-reduce-motion="true"] .wedding-photo-booth__result,
+html[data-reduce-motion="true"] .wedding-photo-booth__petals,
+html[data-reduce-motion="true"] .wedding-photo-booth__pose-effect,
+html[data-reduce-motion="true"] .wedding-photo-booth__pose-effect::before,
+html[data-reduce-motion="true"] .wedding-photo-booth__pose-effect::after {
+  animation: none !important;
+}

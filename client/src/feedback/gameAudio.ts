@@ -1,7 +1,7 @@
 import type { WorldZoneId } from "@wedding-game/shared";
 import type { FeedbackPreferences, FeedbackVolume } from "./feedbackPreferences";
 
-export type FeedbackCue = "tap" | "portal" | "stamp" | "dialogue" | "reaction" | "complete";
+export type FeedbackCue = "tap" | "portal" | "stamp" | "dialogue" | "reaction" | "photo" | "complete";
 
 type AudioContextConstructor = new () => AudioContext;
 
@@ -50,6 +50,10 @@ const cueTones: Record<FeedbackCue, Array<{
     { frequency: 659.25, offset: 0, duration: 0.12, strength: 0.065 },
     { frequency: 880, offset: 0.09, duration: 0.26, strength: 0.07 }
   ],
+  photo: [
+    { frequency: 880, offset: 0, duration: 0.045, strength: 0.075, wave: "square" },
+    { frequency: 1174.66, offset: 0.08, duration: 0.18, strength: 0.065 }
+  ],
   complete: [
     { frequency: 392, offset: 0, duration: 0.28, strength: 0.07, wave: "triangle" },
     { frequency: 523.25, offset: 0.14, duration: 0.34, strength: 0.075, wave: "triangle" },
@@ -64,6 +68,7 @@ const hapticPatterns: Record<FeedbackCue, number | number[]> = {
   stamp: [12, 28, 12],
   dialogue: 9,
   reaction: [8, 22, 8],
+  photo: [10, 24, 14],
   complete: [16, 34, 20, 34, 32]
 };
 

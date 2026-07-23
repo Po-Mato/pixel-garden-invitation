@@ -677,6 +677,38 @@ li[data-complete="true"] .journey-stamp-book__stamp {
   letter-spacing: 0;
 }
 
+.journey-keepsake-preview__photo {
+  position: relative;
+  height: 84px;
+  overflow: hidden;
+  border: 1px solid #bca486;
+  background: #e3d9c8;
+}
+
+.journey-keepsake-preview__photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 38%;
+}
+
+.journey-keepsake-preview__photo span {
+  position: absolute;
+  right: 5px;
+  bottom: 5px;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px 5px;
+  background: rgba(52, 43, 40, 0.82);
+  color: #fff8df;
+  font-size: 7px;
+  font-weight: 900;
+}
+
+.journey-keepsake-preview__photo svg { width: 10px; height: 10px; }
+
 .journey-keepsake-preview__stamps {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));

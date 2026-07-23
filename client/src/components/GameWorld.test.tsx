@@ -267,6 +267,20 @@ describe("GameWorld", () => {
     expect(screen.getByTestId("world-portal-transition")).toHaveAttribute("data-phase", "idle");
   });
 
+  it("walks to a photo spot before opening the camera experience", () => {
+    render(<GameWorld profile={profile} />);
+    fireEvent.click(screen.getByRole("button", { name: "예식장 로비 바로 이동" }));
+
+    fireEvent.click(screen.getByRole("button", { name: "로비 포토월 기념 촬영" }));
+    expect(screen.queryByRole("dialog", { name: "웨딩 포토존 촬영" })).not.toBeInTheDocument();
+    expect(screen.getByText("로비 포토월 가까이 이동 중")).toBeInTheDocument();
+
+    advanceInteractionRoute();
+
+    expect(screen.getByRole("dialog", { name: "웨딩 포토존 촬영" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "포토존 닫기" })).toHaveFocus();
+  });
+
   it("uses fallback path visuals only while the map background is unavailable", () => {
     const { container } = render(<GameWorld profile={profile} />);
     const stage = screen.getByLabelText("우리 집 지도");

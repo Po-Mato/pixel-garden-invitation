@@ -3,7 +3,7 @@ import { invitationContent, realtimeWorldContract, worldZoneIds } from "@wedding
 import mapManifest from "../../../map-assets/reference/v2/manifest.json";
 import { isBlocked, isWalkable, pointInRect } from "./geometry";
 import { gridTileSize } from "./movement";
-import { findTilePath } from "./pathfinding";
+import { findNearestInteractionRoute, findTilePath } from "./pathfinding";
 import {
   gardenWorld,
   getWorldZone,
@@ -98,6 +98,20 @@ describe("guest route world", () => {
     for (const [from, to] of requiredEdges) {
       expect(getWorldZone(gardenWorld, from).portals.some((portal) => portal.to === to)).toBe(true);
       expect(getWorldZone(gardenWorld, to).portals.some((portal) => portal.to === from)).toBe(true);
+    }
+  });
+
+  it("places one reachable photo spot in the lobby, bridal room, and ceremony hall", () => {
+    const photoZones = ["lobby", "bridal-room", "ceremony-hall"] as const;
+    expect(gardenWorld.zones.flatMap((zone) => zone.photoSpots)).toHaveLength(3);
+
+    for (const zoneId of photoZones) {
+      const zone = getWorldZone(gardenWorld, zoneId);
+      expect(zone.photoSpots).toHaveLength(1);
+      const [photoSpot] = zone.photoSpots;
+      expect(photoSpot.zoneId).toBe(zoneId);
+      expect(findNearestInteractionRoute(zone, zone.spawn, photoSpot, photoSpot.actionRadius), photoSpot.id)
+        .not.toBeNull();
     }
   });
 

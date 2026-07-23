@@ -29,6 +29,7 @@ describe("WorldMiniMap", () => {
     expect(within(minimap).getAllByTestId("minimap-obstacle")).toHaveLength(zone.blocked.length);
     expect(within(minimap).getAllByTestId("minimap-portal")).toHaveLength(zone.portals.length);
     expect(within(minimap).getAllByTestId("minimap-spot")).toHaveLength(zone.spots.length);
+    expect(within(minimap).queryAllByTestId("minimap-photo-spot")).toHaveLength(zone.photoSpots.length);
     expect(within(minimap).getByTestId("minimap-viewport")).toBeInTheDocument();
     expect(within(minimap).getByTestId("minimap-player")).toHaveAttribute("data-direction", "up");
     expect(within(minimap).getByTestId("minimap-journey-marker")).toHaveClass("world-minimap__journey-marker--complete");
@@ -64,5 +65,6 @@ describe("WorldMiniMap", () => {
     const svg = container.querySelector("svg");
     expect(Number(svg?.getAttribute("width"))).toBeLessThanOrEqual(72);
     expect(Number(svg?.getAttribute("height"))).toBe(120);
+    expect(screen.getByTestId("minimap-photo-spot")).toBeInTheDocument();
   });
 });

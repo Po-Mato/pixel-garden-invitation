@@ -2,6 +2,8 @@ import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/re
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { defaultCharacterAppearance } from "@wedding-game/shared";
 import { JourneyCompletion } from "./JourneyCompletion";
+import { weddingPhotoMemoryStorageKey } from "../game/weddingPhoto";
+import { installMemoryLocalStorage } from "../test/memoryStorage";
 
 const keepsakeMocks = vi.hoisted(() => ({
   save: vi.fn(async () => undefined),
@@ -37,6 +39,7 @@ beforeEach(() => {
   keepsakeMocks.save.mockClear();
   keepsakeMocks.share.mockClear();
   keepsakeMocks.share.mockResolvedValue("shared");
+  installMemoryLocalStorage();
 });
 
 afterEach(() => cleanup());
@@ -70,6 +73,26 @@ describe("JourneyCompletion", () => {
     await waitFor(() => expect(screen.getByText(
       "이미지 공유를 지원하지 않아 기념 카드를 저장했습니다."
     )).toBeInTheDocument());
+  });
+
+  it("uses the latest photo-zone image in the journey keepsake", async () => {
+    localStorage.setItem(weddingPhotoMemoryStorageKey, JSON.stringify({
+      version: 1,
+      dataUrl: "data:image/jpeg;base64,photo",
+      photoSpotId: "ceremony-aisle",
+      zoneId: "ceremony-hall",
+      spotLabel: "버진로드 포토존",
+      guestName: "정원하객",
+      pose: "hearts",
+      createdAt: 1234
+    }));
+    renderCompletion();
+
+    expect(screen.getByRole("img", { name: "버진로드 포토존에서 촬영한 기념 사진" })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: /기념 카드 저장/ }));
+    await waitFor(() => expect(keepsakeMocks.save).toHaveBeenCalledWith(expect.objectContaining({
+      photoUrl: "data:image/jpeg;base64,photo"
+    })));
   });
 
   it("keeps RSVP, invitation sharing, close, and Escape actions available", () => {

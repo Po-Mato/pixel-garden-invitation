@@ -89,6 +89,14 @@ export function WorldMiniMap({
             {...projectMiniMapRect(spot, zone.bounds, layout)}
           />
         ))}
+        {zone.photoSpots.map((photoSpot) => (
+          <rect
+            key={photoSpot.id}
+            data-testid="minimap-photo-spot"
+            className="world-minimap__photo-spot"
+            {...projectMiniMapRect(photoSpot, zone.bounds, layout)}
+          />
+        ))}
         {zone.portals.map((portal) => (
           <rect
             key={portal.id}

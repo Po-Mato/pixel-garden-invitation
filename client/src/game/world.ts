@@ -15,6 +15,21 @@ export type WorldSpot = Rect & {
   actionRadius: number;
 };
 
+export type WorldPhotoSpotId = "lobby-photo-wall" | "bridal-flower-wall" | "ceremony-aisle";
+export type WorldPhotoPose = "wave" | "flower-heart" | "hearts";
+export type WorldPhotoCast = "bride" | "couple";
+
+export type WorldPhotoSpot = Rect & {
+  id: WorldPhotoSpotId;
+  zoneId: WorldZoneId;
+  label: string;
+  sceneLabel: string;
+  actionRadius: number;
+  cast: WorldPhotoCast;
+  backgroundCrop: Rect;
+  previewPosition: string;
+};
+
 export type WorldNpc = {
   id: "groom" | "bride";
   label: string;
@@ -156,6 +171,7 @@ export type WorldZone = {
   blocked: Rect[];
   paths: WorldPath[];
   spots: WorldSpot[];
+  photoSpots: WorldPhotoSpot[];
   npcs: WorldNpc[];
   portals: WorldPortal[];
   decorations: WorldDecoration[];
@@ -166,8 +182,9 @@ export type GardenWorld = {
   zones: WorldZone[];
 };
 
-type ZoneInput = Omit<WorldZone, "theme" | "bounds" | "cameraSafeBounds" | "spawn" | "blocked"> & {
+type ZoneInput = Omit<WorldZone, "theme" | "bounds" | "cameraSafeBounds" | "spawn" | "blocked" | "photoSpots"> & {
   blocked?: Rect[];
+  photoSpots?: WorldPhotoSpot[];
 };
 
 const bounds = (width: number, height: number): Rect => ({ x: 0, y: 0, width, height });
@@ -183,7 +200,8 @@ function createZone(input: ZoneInput): WorldZone {
     bounds: zoneBounds,
     cameraSafeBounds: safeBounds(zoneBounds.width, zoneBounds.height),
     spawn: { ...realtime.spawn },
-    blocked: [...(input.blocked ?? []), ...input.spots]
+    blocked: [...(input.blocked ?? []), ...input.spots],
+    photoSpots: input.photoSpots ?? []
   };
 }
 
@@ -195,6 +213,27 @@ const spot = (id: SpotId, label: string, x: number, y: number, width = 90, heigh
   width,
   height,
   actionRadius: 72
+});
+
+const photoSpot = (
+  id: WorldPhotoSpotId,
+  zoneId: WorldZoneId,
+  label: string,
+  sceneLabel: string,
+  rect: Rect,
+  backgroundCrop: Rect,
+  cast: WorldPhotoCast,
+  previewPosition: string
+): WorldPhotoSpot => ({
+  id,
+  zoneId,
+  label,
+  sceneLabel,
+  ...rect,
+  actionRadius: 84,
+  cast,
+  backgroundCrop,
+  previewPosition
 });
 
 const path = (id: string, kind: WorldPathKind, x: number, y: number, width: number, height: number): WorldPath => ({
@@ -418,6 +457,18 @@ const lobbyZone = createZone({
     spot("gallery", "웨딩 갤러리", 690, 180, 120, 90),
     spot("story", "우리 이야기", 780, 630, 120, 90)
   ],
+  photoSpots: [
+    photoSpot(
+      "lobby-photo-wall",
+      "lobby",
+      "로비 포토월",
+      "꽃빛 로비에서 남기는 첫 장",
+      { x: 630, y: 450, width: 120, height: 60 },
+      { x: 420, y: 90, width: 540, height: 510 },
+      "couple",
+      "67% 35%"
+    )
+  ],
   npcs: [],
   portals: [
     portal("lobby-to-venue", "예식장 밖으로", "venue-exterior", { x: 480, y: 810, width: 120, height: 60 }, { x: 525, y: 795 }, "down", { x: 465, y: 135 }),
@@ -452,6 +503,18 @@ const bridalRoomZone = createZone({
     path("bridal-entry", "floor", 300, 510, 120, 90)
   ],
   spots: [spot("couple", "신부에게 인사하기", 150, 150, 120, 90)],
+  photoSpots: [
+    photoSpot(
+      "bridal-flower-wall",
+      "bridal-room",
+      "신부 대기실 포토존",
+      "꽃벽 앞에서 신부와 함께",
+      { x: 360, y: 360, width: 90, height: 60 },
+      { x: 90, y: 60, width: 540, height: 510 },
+      "bride",
+      "50% 42%"
+    )
+  ],
   npcs: [{ id: "bride", label: `신부 ${invitationContent.event.couple.bride}`, x: 360, y: 285 }],
   portals: [
     portal("bridal-to-lobby", "로비로 돌아가기", "lobby", { x: 300, y: 540, width: 120, height: 60 }, { x: 345, y: 555 }, "down", { x: 135, y: 405 })
@@ -479,6 +542,18 @@ const ceremonyHallZone = createZone({
     path("hall-entry", "corridor", 240, 1740, 300, 120)
   ],
   spots: [spot("couple", "신랑신부", 180, 150, 90, 90)],
+  photoSpots: [
+    photoSpot(
+      "ceremony-aisle",
+      "ceremony-hall",
+      "버진로드 포토존",
+      "두 사람과 함께 남기는 축하의 순간",
+      { x: 330, y: 390, width: 120, height: 60 },
+      { x: 120, y: 30, width: 540, height: 510 },
+      "couple",
+      "50% 15%"
+    )
+  ],
   npcs: [
     { id: "groom", label: `신랑 ${invitationContent.event.couple.groom}`, x: 360, y: 255 },
     { id: "bride", label: `신부 ${invitationContent.event.couple.bride}`, x: 420, y: 255 }

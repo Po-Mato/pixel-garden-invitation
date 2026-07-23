@@ -6,7 +6,7 @@ import {
   type MouseEvent,
   type TransitionEvent as ReactTransitionEvent
 } from "react";
-import { Share2 } from "lucide-react";
+import { Camera, Share2 } from "lucide-react";
 import {
   invitationContent,
   type ClientMessage,
@@ -45,11 +45,13 @@ import {
   portalEntryRect,
   type Point,
   type Rect,
+  type WorldPhotoSpotId,
   type WorldPortal,
   type WorldZone
 } from "../game/world";
 import { preloadWorldZoneAssets } from "../game/worldAssetPreloader";
 import { worldDepth } from "../game/worldVisuals";
+import { loadWeddingPhotoMemory, type WeddingPhotoMemory } from "../game/weddingPhoto";
 import { connectRealtimeWithRetry, createMoveThrottle, getRoomUrl } from "../realtime/realtimeClient";
 import type { EntryProfile } from "./EntryScreen";
 import { CharacterSprite } from "./CharacterSprite";
@@ -69,11 +71,13 @@ import { ViewSettingsAccess } from "./ViewSettingsAccess";
 import { WeddingEventSummary } from "./WeddingEventSummary";
 import { WeddingDayQuickAccess } from "./WeddingDayQuickAccess";
 import { WeddingNpc } from "./WeddingNpc";
+import { WeddingPhotoBooth } from "./WeddingPhotoBooth";
 import { WorldMapArtwork } from "./WorldMapArtwork";
 import { WorldDecoration } from "./WorldDecoration";
 import { WorldMiniMap } from "./WorldMiniMap";
 import "../journey.css";
 import "../npc-reactions.css";
+import "../wedding-photo.css";
 
 type GameWorldProps = {
   profile: EntryProfile;
@@ -86,10 +90,11 @@ type RealtimeConnection = ReturnType<typeof connectRealtimeWithRetry>;
 type PortalIntent = { portal: WorldPortal; path: Point[] };
 type WorldInteractionIntent = {
   targetId: string;
-  spotId: SpotId;
+  spotId?: SpotId;
   label: string;
   path: Point[];
   target: Point;
+  photoSpotId?: WorldPhotoSpotId;
   npcId?: NpcId;
 };
 type ActiveGuestReaction = {
@@ -193,6 +198,8 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   const [moving, setMoving] = useState(false);
   const [stepFrame, setStepFrame] = useState(1);
   const [activeSpotId, setActiveSpotId] = useState<SpotId | null>(null);
+  const [activePhotoSpotId, setActivePhotoSpotId] = useState<WorldPhotoSpotId | null>(null);
+  const [photoMemory, setPhotoMemory] = useState(loadWeddingPhotoMemory);
   const [menuOpen, setMenuOpen] = useState(false);
   const [calendarSheetOpen, setCalendarSheetOpen] = useState(false);
   const [directionsSheetOpen, setDirectionsSheetOpen] = useState(false);
@@ -494,6 +501,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     setShareSheetOpen(false);
     setMenuOpen(false);
     setActiveSpotId(null);
+    setActivePhotoSpotId(null);
     setActiveNpcDialogue(null);
     setTravelStatus(`${portal.label} 도착`);
     targetStepAtRef.current = null;
@@ -531,6 +539,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     setMoving(false);
     setStepFrame(1);
     setActiveNpcDialogue(null);
+    setActivePhotoSpotId(null);
     setLocalReaction(null);
     if (localReactionTimerRef.current !== null) {
       window.clearTimeout(localReactionTimerRef.current);
@@ -606,6 +615,13 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     setActiveSpotId(spotId);
   }, [closeMenu, pauseWorldInput]);
 
+  const openPhotoSpot = useCallback((photoSpotId: WorldPhotoSpotId) => {
+    if (portalTransitionRef.current) return;
+    pauseWorldInput();
+    closeMenu();
+    setActivePhotoSpotId(photoSpotId);
+  }, [closeMenu, pauseWorldInput]);
+
   const closeNpcDialogue = useCallback(() => {
     setActiveNpcDialogue(null);
   }, []);
@@ -617,10 +633,11 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
 
   const beginWorldInteraction = useCallback((input: {
     targetId: string;
-    spotId: SpotId;
+    spotId?: SpotId;
     label: string;
     target: Rect;
     actionRadius: number;
+    photoSpotId?: WorldPhotoSpotId;
     npcId?: NpcId;
   }) => {
     if (portalTransitionRef.current) return;
@@ -658,12 +675,18 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
       directionRef.current = nextDirection;
       setDirection(nextDirection);
       setTravelStatus(`${input.label}에 도착했어요`);
+      if (input.photoSpotId) {
+        openPhotoSpot(input.photoSpotId);
+        return;
+      }
       if (input.npcId) {
         showNpcDialogue(input.npcId);
         return;
       }
-      stampWorldInteraction(input.spotId);
-      openSpot(input.spotId);
+      if (input.spotId) {
+        stampWorldInteraction(input.spotId);
+        openSpot(input.spotId);
+      }
       return;
     }
 
@@ -673,13 +696,15 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
       label: input.label,
       path: route.path,
       target: targetPoint,
-      npcId: input.npcId
+      npcId: input.npcId,
+      photoSpotId: input.photoSpotId
     });
     setTravelStatus(`${input.label} 가까이 이동 중`);
   }, [
     activeZone,
     clearTerminalStopConfirm,
     openSpot,
+    openPhotoSpot,
     sendRealtimeTerminalStop,
     setInputReleaseRequired,
     setInteractionIntent,
@@ -785,12 +810,13 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     if (
       !journeyCompletionPending ||
       activeSpotId ||
+      activePhotoSpotId ||
       menuOpen ||
       nestedMenuSheetOpen
     ) return;
 
     openJourneyCompletion();
-  }, [activeSpotId, journeyCompletionPending, menuOpen, nestedMenuSheetOpen, openJourneyCompletion]);
+  }, [activePhotoSpotId, activeSpotId, journeyCompletionPending, menuOpen, nestedMenuSheetOpen, openJourneyCompletion]);
 
   useEffect(() => {
     if (loadedBackgroundZoneId !== activeZone.id) return;
@@ -1030,12 +1056,18 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
         targetStepAtRef.current = null;
         tileInputStateRef.current = null;
         sendRealtimeStop(next, facing, activeZone.id);
+        if (interactionIntent.photoSpotId) {
+          openPhotoSpot(interactionIntent.photoSpotId);
+          return;
+        }
         if (interactionIntent.npcId) {
           showNpcDialogue(interactionIntent.npcId);
           return;
         }
-        stampWorldInteraction(interactionIntent.spotId);
-        openSpot(interactionIntent.spotId);
+        if (interactionIntent.spotId) {
+          stampWorldInteraction(interactionIntent.spotId);
+          openSpot(interactionIntent.spotId);
+        }
         return;
       }
 
@@ -1079,6 +1111,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     interactionIntent,
     joystickVector,
     openSpot,
+    openPhotoSpot,
     portalIntent,
     sendRealtimeMove,
     sendRealtimeStop,
@@ -1309,6 +1342,31 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
                 >
                   <span>{worldSpot.label}</span>
                   <small>{content?.actionLabel ?? "보기"}</small>
+                </button>
+              );
+            })}
+            {activeZone.photoSpots.map((photoSpot) => {
+              const captured = photoMemory?.photoSpotId === photoSpot.id;
+              return (
+                <button
+                  key={photoSpot.id}
+                  type="button"
+                  className={`world-photo-spot${interactionIntent?.targetId === `photo:${photoSpot.id}` ? " world-photo-spot--target" : ""}${captured ? " world-photo-spot--captured" : ""}`}
+                  style={{ ...pixelRect(photoSpot), zIndex: worldDepth(photoSpot.y) - 200 }}
+                  aria-label={`${photoSpot.label} ${captured ? "다시 촬영" : "기념 촬영"}`}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    beginWorldInteraction({
+                      targetId: `photo:${photoSpot.id}`,
+                      photoSpotId: photoSpot.id,
+                      label: photoSpot.label,
+                      target: photoSpot,
+                      actionRadius: photoSpot.actionRadius
+                    });
+                  }}
+                >
+                  <Camera aria-hidden="true" />
+                  <span>{captured ? "촬영 완료" : "PHOTO"}</span>
                 </button>
               );
             })}
@@ -1544,6 +1602,18 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
         <DirectionsSheet onClose={closeActiveSpot} />
       ) : activeSpotId ? (
         <SpotModal spotId={activeSpotId} nickname={profile.nickname} onClose={closeActiveSpot} />
+      ) : null}
+      {activePhotoSpotId ? (
+        <WeddingPhotoBooth
+          spot={activeZone.photoSpots.find((photoSpot) => photoSpot.id === activePhotoSpotId)!}
+          nickname={profile.nickname}
+          appearance={profile.appearance}
+          onClose={() => setActivePhotoSpotId(null)}
+          onCaptured={(memory: WeddingPhotoMemory) => {
+            setPhotoMemory(memory);
+            setTravelStatus(`${memory.spotLabel} 기념 촬영 완료`);
+          }}
+        />
       ) : null}
       <InvitationShareAccess
         variant="menu"
