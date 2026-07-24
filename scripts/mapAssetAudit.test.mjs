@@ -498,7 +498,7 @@ test("wires gallery and map asset audits into root test and build scripts", asyn
 
   assert.equal(
     packageJson.scripts.build,
-    "pnpm gallery:audit && pnpm maps:audit && pnpm characters:audit && pnpm characters:generate && pnpm --filter @wedding-game/shared build && pnpm --filter @wedding-game/client build && pnpm --filter @wedding-game/worker build"
+    "pnpm gallery:audit && pnpm maps:audit && pnpm characters:audit && pnpm characters:generate && pnpm characters:build-couple-puppets && pnpm --filter @wedding-game/shared build && pnpm --filter @wedding-game/client build && pnpm --filter @wedding-game/worker build"
   );
   assert.equal(
     packageJson.scripts.test,
