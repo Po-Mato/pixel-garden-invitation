@@ -1,0 +1,360 @@
+#!/usr/bin/env node
+
+import fs from "node:fs/promises";
+import path from "node:path";
+import process from "node:process";
+import sharp from "sharp";
+
+const ROOT = process.cwd();
+const GUEST_ID = "guest-01";
+const DIRECTIONS = ["down", "left", "right", "up"];
+const FRAME = { width: 96, height: 144 };
+const SOURCE = { width: 640, height: 1024, foregroundHeight: 820, baseline: 930 };
+const FOOT_BOTTOM = 132;
+const CONTENT_HEIGHT = 127;
+const INPUT_ROOT = path.join(
+  ROOT,
+  "character-assets/reference/guest-3d-master-sources/v1",
+  GUEST_ID,
+  "walk-renders"
+);
+const OUTPUT_ROOT = path.join(
+  ROOT,
+  "character-assets/reference/guest-3d-master-sources/v1",
+  GUEST_ID,
+  "pilot"
+);
+const CURRENT_WALK = path.join(
+  ROOT,
+  "client/public/characters/generated/guests/feminine-long-wave-dress__walk.png"
+);
+
+async function alphaBounds(input, threshold = 8) {
+  const { data, info } = await sharp(input).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+  let left = info.width;
+  let top = info.height;
+  let right = -1;
+  let bottom = -1;
+
+  for (let y = 0; y < info.height; y += 1) {
+    for (let x = 0; x < info.width; x += 1) {
+      if (data[(y * info.width + x) * 4 + 3] <= threshold) continue;
+      left = Math.min(left, x);
+      top = Math.min(top, y);
+      right = Math.max(right, x);
+      bottom = Math.max(bottom, y);
+    }
+  }
+
+  if (right < left || bottom < top) throw new Error("투명하지 않은 캐릭터 픽셀을 찾지 못했습니다.");
+  return { left, top, width: right - left + 1, height: bottom - top + 1 };
+}
+
+async function splitDirectionSheet(direction) {
+  const input = path.join(INPUT_ROOT, `${direction}-walk-cycle-render.png`);
+  const metadata = await sharp(input).metadata();
+  const frames = [];
+
+  for (let step = 0; step < 3; step += 1) {
+    const panelLeft = Math.floor((metadata.width * step) / 3);
+    const panelRight = Math.floor((metadata.width * (step + 1)) / 3);
+    const panel = await sharp(input)
+      .extract({ left: panelLeft, top: 0, width: panelRight - panelLeft, height: metadata.height })
+      .png()
+      .toBuffer();
+    const bounds = await alphaBounds(panel);
+    const padding = 3;
+    const left = Math.max(0, bounds.left - padding);
+    const top = Math.max(0, bounds.top - padding);
+    const width = Math.min(panelRight - panelLeft - left, bounds.width + padding * 2);
+    const height = Math.min(metadata.height - top, bounds.height + padding * 2);
+    frames.push(await sharp(panel).extract({ left, top, width, height }).png().toBuffer());
+  }
+
+  return frames;
+}
+
+async function canvas(width, height, composites) {
+  return sharp({
+    create: { width, height, channels: 4, background: "#00000000" }
+  })
+    .composite(composites)
+    .png({ compressionLevel: 9 })
+    .toBuffer();
+}
+
+async function normalizeSource(frame) {
+  const metadata = await sharp(frame).metadata();
+  const scale = Math.min(SOURCE.foregroundHeight / metadata.height, 570 / metadata.width);
+  const width = Math.max(1, Math.round(metadata.width * scale));
+  const height = Math.max(1, Math.round(metadata.height * scale));
+  const resized = await sharp(frame)
+    .resize({ width, height, fit: "fill", kernel: sharp.kernel.lanczos3 })
+    .png()
+    .toBuffer();
+  return canvas(SOURCE.width, SOURCE.height, [
+    {
+      input: resized,
+      left: Math.round((SOURCE.width - width) / 2),
+      top: SOURCE.baseline - height + 1
+    }
+  ]);
+}
+
+async function normalizeGameFrame(frame, mode) {
+  const metadata = await sharp(frame).metadata();
+  const targetHeight = mode === "pixel" ? CONTENT_HEIGHT - 1 : CONTENT_HEIGHT;
+  const scale = Math.min(targetHeight / metadata.height, 90 / metadata.width);
+  let width = Math.max(2, Math.round(metadata.width * scale));
+  let height = Math.max(2, Math.round(metadata.height * scale));
+  let resized;
+
+  if (mode === "pixel") {
+    width -= width % 2;
+    height -= height % 2;
+    const lowWidth = Math.max(1, width / 2);
+    const lowHeight = Math.max(1, height / 2);
+    const lowResolution = await sharp(frame)
+      .resize({ width: lowWidth, height: lowHeight, fit: "fill", kernel: sharp.kernel.lanczos3 })
+      .png({ palette: true, colours: 96, dither: 0.35 })
+      .toBuffer();
+    resized = await sharp(lowResolution)
+      .resize({ width, height, fit: "fill", kernel: sharp.kernel.nearest })
+      .png()
+      .toBuffer();
+  } else {
+    resized = await sharp(frame)
+      .resize({ width, height, fit: "fill", kernel: sharp.kernel.lanczos3 })
+      .png()
+      .toBuffer();
+  }
+
+  return canvas(FRAME.width, FRAME.height, [
+    {
+      input: resized,
+      left: Math.round((FRAME.width - width) / 2),
+      top: FOOT_BOTTOM - height + 1
+    }
+  ]);
+}
+
+async function saveBuffer(file, buffer) {
+  await fs.mkdir(path.dirname(file), { recursive: true });
+  await fs.writeFile(file, buffer);
+}
+
+async function buildSheet(framesByDirection, mode) {
+  const composites = [];
+  for (let row = 0; row < DIRECTIONS.length; row += 1) {
+    for (let column = 0; column < 3; column += 1) {
+      composites.push({
+        input: framesByDirection[DIRECTIONS[row]][column][mode],
+        left: column * FRAME.width,
+        top: row * FRAME.height
+      });
+    }
+  }
+  return canvas(FRAME.width * 3, FRAME.height * DIRECTIONS.length, composites);
+}
+
+function labelSvg(text, width, height = 28) {
+  const escaped = text.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+  return Buffer.from(`<svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
+    <rect width="100%" height="100%" fill="#fffaf4"/>
+    <text x="8" y="19" font-family="sans-serif" font-size="13" fill="#2e241f">${escaped}</text>
+  </svg>`);
+}
+
+async function checkerboard(width, height, size = 12) {
+  const data = Buffer.alloc(width * height * 4);
+  const colors = [[246, 241, 235, 255], [218, 211, 202, 255]];
+  for (let y = 0; y < height; y += 1) {
+    for (let x = 0; x < width; x += 1) {
+      const color = colors[(Math.floor(x / size) + Math.floor(y / size)) % 2];
+      const offset = (y * width + x) * 4;
+      data.set(color, offset);
+    }
+  }
+  return sharp(data, { raw: { width, height, channels: 4 } }).png().toBuffer();
+}
+
+async function renderComparison(framesByDirection) {
+  const scale = 2;
+  const sampleWidth = FRAME.width * scale;
+  const sampleHeight = FRAME.height * scale;
+  const labelHeight = 28;
+  const rowGap = 18;
+  const margin = 20;
+  const groupGap = 18;
+  const groupWidth = sampleWidth * 3;
+  const width = margin * 2 + groupWidth * 3 + groupGap * 2;
+  const rowHeight = labelHeight + sampleHeight;
+  const height = margin * 2 + DIRECTIONS.length * rowHeight + (DIRECTIONS.length - 1) * rowGap;
+  const checker = await checkerboard(sampleWidth, sampleHeight);
+  const composites = [];
+
+  for (let row = 0; row < DIRECTIONS.length; row += 1) {
+    const direction = DIRECTIONS[row];
+    const rowTop = margin + row * (rowHeight + rowGap);
+    const groups = [
+      { label: `현재 픽셀 · ${direction}`, frames: [] },
+      { label: `3D 선명형 · ${direction}`, frames: framesByDirection[direction].map((item) => item.soft) },
+      { label: `3D 픽셀형 · ${direction}`, frames: framesByDirection[direction].map((item) => item.pixel) }
+    ];
+
+    for (let column = 0; column < 3; column += 1) {
+      groups[0].frames.push(
+        await sharp(CURRENT_WALK)
+          .extract({ left: column * FRAME.width, top: row * FRAME.height, ...FRAME })
+          .png()
+          .toBuffer()
+      );
+    }
+
+    for (let group = 0; group < groups.length; group += 1) {
+      const groupLeft = margin + group * (groupWidth + groupGap);
+      composites.push({ input: labelSvg(groups[group].label, groupWidth), left: groupLeft, top: rowTop });
+      for (let step = 0; step < 3; step += 1) {
+        const left = groupLeft + step * sampleWidth;
+        const top = rowTop + labelHeight;
+        const enlarged = await sharp(groups[group].frames[step])
+          .resize({ width: sampleWidth, height: sampleHeight, kernel: sharp.kernel.nearest })
+          .png()
+          .toBuffer();
+        composites.push({ input: checker, left, top }, { input: enlarged, left, top });
+      }
+    }
+  }
+
+  const output = path.join(OUTPUT_ROOT, "review", `${GUEST_ID}-pilot-comparison.png`);
+  await fs.mkdir(path.dirname(output), { recursive: true });
+  await sharp({ create: { width, height, channels: 4, background: "#eee7dd" } })
+    .composite(composites)
+    .png({ compressionLevel: 9 })
+    .toFile(output);
+  return path.relative(ROOT, output);
+}
+
+async function renderRatioAudit(sourceFrames) {
+  const scale = 0.32;
+  const frameWidth = Math.round(SOURCE.width * scale);
+  const frameHeight = Math.round(SOURCE.height * scale);
+  const gap = 10;
+  const margin = 18;
+  const labelHeight = 26;
+  const rowHeight = labelHeight + frameHeight;
+  const width = margin * 2 + frameWidth * 3 + gap * 2;
+  const height = margin * 2 + rowHeight * 4 + gap * 3;
+  const guideTop = (SOURCE.baseline - SOURCE.foregroundHeight + 1) * scale;
+  const oneHead = (SOURCE.foregroundHeight / 3) * scale;
+  const baseline = SOURCE.baseline * scale;
+  const guide = Buffer.from(`<svg width="${frameWidth}" height="${frameHeight}" xmlns="http://www.w3.org/2000/svg">
+    <line x1="0" y1="${guideTop}" x2="${frameWidth}" y2="${guideTop}" stroke="#3b82f6" stroke-width="1.5"/>
+    <line x1="0" y1="${guideTop + oneHead}" x2="${frameWidth}" y2="${guideTop + oneHead}" stroke="#ef4444" stroke-width="2"/>
+    <line x1="0" y1="${guideTop + oneHead * 2}" x2="${frameWidth}" y2="${guideTop + oneHead * 2}" stroke="#f59e0b" stroke-width="1.5"/>
+    <line x1="0" y1="${baseline}" x2="${frameWidth}" y2="${baseline}" stroke="#22c55e" stroke-width="2"/>
+  </svg>`);
+  const composites = [];
+
+  for (let row = 0; row < DIRECTIONS.length; row += 1) {
+    const direction = DIRECTIONS[row];
+    const rowTop = margin + row * (rowHeight + gap);
+    composites.push({ input: labelSvg(`${direction} · 머리 1 + 몸 2 기준선`, frameWidth * 3 + gap * 2, labelHeight), left: margin, top: rowTop });
+    for (let step = 0; step < 3; step += 1) {
+      const rendered = await sharp(sourceFrames[direction][step])
+        .resize({ width: frameWidth, height: frameHeight, fit: "fill" })
+        .composite([{ input: guide, left: 0, top: 0 }])
+        .png()
+        .toBuffer();
+      composites.push({
+        input: rendered,
+        left: margin + step * (frameWidth + gap),
+        top: rowTop + labelHeight
+      });
+    }
+  }
+
+  const output = path.join(OUTPUT_ROOT, "review", `${GUEST_ID}-ratio-audit.png`);
+  await fs.mkdir(path.dirname(output), { recursive: true });
+  await sharp({ create: { width, height, channels: 4, background: "#f6f1eb" } })
+    .composite(composites)
+    .png({ compressionLevel: 9 })
+    .toFile(output);
+  return path.relative(ROOT, output);
+}
+
+async function inspectFrame(buffer) {
+  const bounds = await alphaBounds(buffer, 12);
+  const { data, info } = await sharp(buffer).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+  let greenFringePixels = 0;
+  let partialAlphaPixels = 0;
+  for (let offset = 0; offset < data.length; offset += 4) {
+    const [red, green, blue, alpha] = data.subarray(offset, offset + 4);
+    if (alpha > 0 && alpha < 255) partialAlphaPixels += 1;
+    if (alpha > 16 && green > 90 && green > red * 1.45 && green > blue * 1.45) {
+      greenFringePixels += 1;
+    }
+  }
+  return { ...bounds, greenFringePixels, partialAlphaPixels, pixels: info.width * info.height };
+}
+
+async function main() {
+  const framesByDirection = {};
+  const sourceFrames = {};
+  const audit = { guest: GUEST_ID, frameSize: FRAME, directions: {} };
+
+  for (const direction of DIRECTIONS) {
+    const splitFrames = await splitDirectionSheet(direction);
+    framesByDirection[direction] = [];
+    sourceFrames[direction] = [];
+    audit.directions[direction] = [];
+
+    for (let step = 0; step < splitFrames.length; step += 1) {
+      const number = String(step + 1).padStart(2, "0");
+      const source = await normalizeSource(splitFrames[step]);
+      const soft = await normalizeGameFrame(splitFrames[step], "soft");
+      const pixel = await normalizeGameFrame(splitFrames[step], "pixel");
+      sourceFrames[direction].push(source);
+      framesByDirection[direction].push({ soft, pixel });
+
+      await saveBuffer(path.join(OUTPUT_ROOT, "sources", direction, `step-${number}-source.png`), source);
+      await saveBuffer(path.join(OUTPUT_ROOT, "frames", "soft", direction, `step-${number}.png`), soft);
+      await saveBuffer(path.join(OUTPUT_ROOT, "frames", "pixel", direction, `step-${number}.png`), pixel);
+      audit.directions[direction].push({
+        step: step + 1,
+        soft: await inspectFrame(soft),
+        pixel: await inspectFrame(pixel)
+      });
+    }
+  }
+
+  for (const mode of ["soft", "pixel"]) {
+    const walk = await buildSheet(framesByDirection, mode);
+    await saveBuffer(path.join(OUTPUT_ROOT, `${GUEST_ID}__walk-${mode}-pilot.png`), walk);
+    const idle = await canvas(FRAME.width * 2, FRAME.height, [
+      { input: framesByDirection.down[1][mode], left: 0, top: 0 },
+      { input: framesByDirection.down[1][mode], left: FRAME.width, top: 0 }
+    ]);
+    await saveBuffer(path.join(OUTPUT_ROOT, `${GUEST_ID}__idle-${mode}-pilot.png`), idle);
+  }
+
+  audit.review = await renderComparison(framesByDirection);
+  audit.ratioAudit = await renderRatioAudit(sourceFrames);
+  audit.acceptance = {
+    frameCount: Object.values(audit.directions).flat().length,
+    allFrameSizesMatch: Object.values(audit.directions).flat().every((item) =>
+      [item.soft, item.pixel].every((frame) => frame.width <= FRAME.width && frame.height <= FRAME.height)
+    ),
+    greenFringePixels: Object.values(audit.directions).flat().reduce(
+      (total, item) => total + item.soft.greenFringePixels + item.pixel.greenFringePixels,
+      0
+    )
+  };
+  await fs.writeFile(path.join(OUTPUT_ROOT, "audit.json"), `${JSON.stringify(audit, null, 2)}\n`);
+  console.log(JSON.stringify(audit.acceptance, null, 2));
+}
+
+main().catch((error) => {
+  console.error(error);
+  process.exitCode = 1;
+});

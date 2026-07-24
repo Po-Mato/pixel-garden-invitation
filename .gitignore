@@ -9,3 +9,11 @@ worker/dist/
 coverage/
 *.local
 wedding-photo-sources/generated/
+character-assets/reference/guest-3d-master-sources/**/_raw/
+character-assets/reference/guest-3d-master-sources/**/blender/renders/
+character-assets/reference/guest-3d-master-sources/**/blender/pose-guides/
+character-assets/reference/guest-3d-master-sources/**/pilot/frames/
+character-assets/reference/guest-3d-master-sources/**/pilot/sources/
+*.blend1
+__pycache__/
+*.pyc

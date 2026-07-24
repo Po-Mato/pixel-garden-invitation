@@ -1,0 +1,276 @@
+{
+  "guest": "guest-01",
+  "frameSize": {
+    "width": 96,
+    "height": 144
+  },
+  "directions": {
+    "down": [
+      {
+        "step": 1,
+        "soft": {
+          "left": 21,
+          "top": 6,
+          "width": 54,
+          "height": 127,
+          "greenFringePixels": 0,
+          "partialAlphaPixels": 1342,
+          "pixels": 13824
+        },
+        "pixel": {
+          "left": 21,
+          "top": 7,
+          "width": 54,
+          "height": 126,
+          "greenFringePixels": 0,
+          "partialAlphaPixels": 5492,
+          "pixels": 13824
+        }
+      },
+      {
+        "step": 2,
+        "soft": {
+          "left": 21,
+          "top": 6,
+          "width": 54,
+          "height": 127,
+          "greenFringePixels": 0,
+          "partialAlphaPixels": 1323,
+          "pixels": 13824
+        },
+        "pixel": {
+          "left": 22,
+          "top": 7,
+          "width": 52,
+          "height": 126,
+          "greenFringePixels": 0,
+          "partialAlphaPixels": 5256,
+          "pixels": 13824
+        }
+      },
+      {
+        "step": 3,
+        "soft": {
+          "left": 21,
+          "top": 6,
+          "width": 54,
+          "height": 127,
+          "greenFringePixels": 0,
+          "partialAlphaPixels": 1295,
+          "pixels": 13824
+        },
+        "pixel": {
+          "left": 21,
+          "top": 7,
+          "width": 54,
+          "height": 126,
+          "greenFringePixels": 0,
+          "partialAlphaPixels": 4904,
+          "pixels": 13824
+        }
+      }
+    ],
+    "left": [
+      {
+        "step": 1,
+        "soft": {
+          "left": 20,
+          "top": 6,
+          "width": 57,
+          "height": 127,
+          "greenFringePixels": 0,
+          "partialAlphaPixels": 1315,
+          "pixels": 13824
+        },
+        "pixel": {
+          "left": 20,
+          "top": 7,
+          "width": 56,
+          "height": 126,
+          "greenFringePixels": 0,
+          "partialAlphaPixels": 3000,
+          "pixels": 13824
+        }
+      },
+      {
+        "step": 2,
+        "soft": {
+          "left": 24,
+          "top": 6,
+          "width": 48,
+          "height": 127,
+          "greenFringePixels": 0,
+          "partialAlphaPixels": 1123,
+          "pixels": 13824
+        },
+        "pixel": {
+          "left": 24,
+          "top": 7,
+          "width": 48,
+          "height": 126,
+          "greenFringePixels": 0,
+          "partialAlphaPixels": 3136,
+          "pixels": 13824
+        }
+      },
+      {
+        "step": 3,
+        "soft": {
+          "left": 21,
+          "top": 6,
+          "width": 54,
+          "height": 127,
+          "greenFringePixels": 0,
+          "partialAlphaPixels": 1307,
+          "pixels": 13824
+        },
+        "pixel": {
+          "left": 21,
+          "top": 7,
+          "width": 54,
+          "height": 126,
+          "greenFringePixels": 0,
+          "partialAlphaPixels": 3368,
+          "pixels": 13824
+        }
+      }
+    ],
+    "right": [
+      {
+        "step": 1,
+        "soft": {
+          "left": 15,
+          "top": 6,
+          "width": 67,
+          "height": 127,
+          "greenFringePixels": 0,
+          "partialAlphaPixels": 1353,
+          "pixels": 13824
+        },
+        "pixel": {
+          "left": 15,
+          "top": 7,
+          "width": 66,
+          "height": 126,
+          "greenFringePixels": 0,
+          "partialAlphaPixels": 3104,
+          "pixels": 13824
+        }
+      },
+      {
+        "step": 2,
+        "soft": {
+          "left": 25,
+          "top": 6,
+          "width": 46,
+          "height": 127,
+          "greenFringePixels": 0,
+          "partialAlphaPixels": 1127,
+          "pixels": 13824
+        },
+        "pixel": {
+          "left": 25,
+          "top": 7,
+          "width": 46,
+          "height": 126,
+          "greenFringePixels": 0,
+          "partialAlphaPixels": 4648,
+          "pixels": 13824
+        }
+      },
+      {
+        "step": 3,
+        "soft": {
+          "left": 15,
+          "top": 6,
+          "width": 67,
+          "height": 127,
+          "greenFringePixels": 0,
+          "partialAlphaPixels": 1344,
+          "pixels": 13824
+        },
+        "pixel": {
+          "left": 15,
+          "top": 7,
+          "width": 66,
+          "height": 126,
+          "greenFringePixels": 0,
+          "partialAlphaPixels": 3368,
+          "pixels": 13824
+        }
+      }
+    ],
+    "up": [
+      {
+        "step": 1,
+        "soft": {
+          "left": 26,
+          "top": 6,
+          "width": 44,
+          "height": 127,
+          "greenFringePixels": 0,
+          "partialAlphaPixels": 1202,
+          "pixels": 13824
+        },
+        "pixel": {
+          "left": 26,
+          "top": 7,
+          "width": 44,
+          "height": 126,
+          "greenFringePixels": 0,
+          "partialAlphaPixels": 3924,
+          "pixels": 13824
+        }
+      },
+      {
+        "step": 2,
+        "soft": {
+          "left": 26,
+          "top": 6,
+          "width": 44,
+          "height": 127,
+          "greenFringePixels": 0,
+          "partialAlphaPixels": 1240,
+          "pixels": 13824
+        },
+        "pixel": {
+          "left": 27,
+          "top": 7,
+          "width": 42,
+          "height": 126,
+          "greenFringePixels": 0,
+          "partialAlphaPixels": 3240,
+          "pixels": 13824
+        }
+      },
+      {
+        "step": 3,
+        "soft": {
+          "left": 26,
+          "top": 6,
+          "width": 45,
+          "height": 127,
+          "greenFringePixels": 0,
+          "partialAlphaPixels": 1235,
+          "pixels": 13824
+        },
+        "pixel": {
+          "left": 26,
+          "top": 7,
+          "width": 44,
+          "height": 126,
+          "greenFringePixels": 0,
+          "partialAlphaPixels": 4236,
+          "pixels": 13824
+        }
+      }
+    ]
+  },
+  "review": "character-assets/reference/guest-3d-master-sources/v1/guest-01/pilot/review/guest-01-pilot-comparison.png",
+  "ratioAudit": "character-assets/reference/guest-3d-master-sources/v1/guest-01/pilot/review/guest-01-ratio-audit.png",
+  "acceptance": {
+    "frameCount": 12,
+    "allFrameSizesMatch": true,
+    "greenFringePixels": 0
+  }
+}
