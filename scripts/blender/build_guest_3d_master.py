@@ -11,7 +11,7 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--guest",
-        choices=("guest-01", "guest-02", "guest-03", "guest-04", "guest-05", "guest-06", "guest-07", "guest-08", "guest-09", "guest-10", "guest-11"),
+        choices=("guest-01", "guest-02", "guest-03", "guest-04", "guest-05", "guest-06", "guest-07", "guest-08", "guest-09", "guest-10", "guest-11", "guest-12"),
         default="guest-01",
     )
     parser.add_argument("--output-root", required=True)
@@ -1136,6 +1136,74 @@ def build_guest11_character():
     return root, left_leg, right_leg, left_arm, right_arm
 
 
+def build_guest12_character():
+    root, left_leg, right_leg, left_arm, right_arm = build_guest03_character()
+    root.name = "Guest12_Master"
+
+    black_hair = material("Guest12 neat black hair", (0.008, 0.012, 0.020), roughness=0.34)
+    hair_highlight = material("Guest12 black hair highlight", (0.055, 0.070, 0.100), roughness=0.38)
+    navy = material("Guest12 navy modern hanbok", (0.035, 0.090, 0.210), roughness=0.56)
+    navy_dark = material("Guest12 navy trim", (0.015, 0.035, 0.105), roughness=0.50)
+    ivory = material("Guest12 ivory jeogori", (0.95, 0.92, 0.84), roughness=0.64)
+    blue_gray = material("Guest12 blue gray baji", (0.30, 0.35, 0.48), roughness=0.62)
+    silver = material("Guest12 silver norigae", (0.68, 0.72, 0.78), roughness=0.30, metallic=0.56)
+    black = material("Guest12 black shoes", (0.010, 0.012, 0.018), roughness=0.32)
+
+    for obj in root.children_recursive:
+        name = obj.name
+        if name.startswith(("Hair back", "Side part", "Short hair lock", "Front side part", "Front fringe", "Eyebrow")):
+            obj.data.materials.clear()
+            highlighted = "highlight" in name.lower() or name.endswith(("1", "4", "7"))
+            obj.data.materials.append(hair_highlight if highlighted else black_hair)
+        elif name.startswith("Suit torso"):
+            obj.data.materials.clear()
+            obj.data.materials.append(navy)
+        elif name.startswith("Suit sleeve"):
+            obj.data.materials.clear()
+            obj.data.materials.append(ivory)
+        elif name.startswith("Suit trouser"):
+            obj.data.materials.clear()
+            obj.data.materials.append(blue_gray)
+            obj.scale.x *= 1.20
+        elif name.startswith(("Left lapel", "Right lapel")):
+            obj.data.materials.clear()
+            obj.data.materials.append(ivory)
+        elif name.startswith("Jacket pocket") or name == "Pocket square":
+            obj.hide_render = True
+            obj.hide_viewport = True
+        elif name in {"Shirt front", "Shirt cuff 1", "Shirt cuff -1"}:
+            obj.data.materials.clear()
+            obj.data.materials.append(ivory)
+        elif name.startswith(("Tie knot", "Tie body")):
+            obj.hide_render = True
+            obj.hide_viewport = True
+        elif name.startswith(("Dress shoe", "Shoe welt")):
+            obj.data.materials.clear()
+            obj.data.materials.append(black)
+
+    rounded_cube("Guest12 long navy vest", (0, -0.08, 1.58), (0.39, 0.23, 0.54), navy, root, 0.12)
+    curve("Guest12 wrap collar left", [(-0.24, -0.34, 2.05), (0.04, -0.40, 1.72)], ivory, 0.032, root)
+    curve("Guest12 wrap collar right", [(0.24, -0.34, 2.05), (-0.04, -0.40, 1.72)], ivory, 0.032, root)
+    sphere("Guest12 bow center", (0, -0.39, 1.47), (0.065, 0.028, 0.065), navy_dark, root)
+    for side in (-1, 1):
+        bow = sphere(
+            f"Guest12 bow loop {side}",
+            (0.105 * side, -0.38, 1.48),
+            (0.13, 0.032, 0.075),
+            navy_dark,
+            root,
+            28,
+            18,
+        )
+        bow.rotation_euler.y = math.radians(24 * side)
+    curve("Guest12 norigae cord", [(0, -0.40, 1.42), (0, -0.42, 1.08)], silver, 0.020, root)
+    sphere("Guest12 norigae ornament", (0, -0.42, 1.16), (0.050, 0.022, 0.075), silver, root, 24, 16)
+    for x in (-0.045, -0.022, 0, 0.022, 0.045):
+        curve(f"Guest12 tassel {x}", [(x, -0.42, 1.08), (x, -0.42, 0.84)], silver, 0.010, root)
+
+    return root, left_leg, right_leg, left_arm, right_arm
+
+
 def set_walk_animation(root, left_leg, right_leg, left_arm, right_arm, guest_id):
     left_base_z = left_leg.location.z
     right_base_z = right_leg.location.z
@@ -1252,6 +1320,7 @@ def main():
         "guest-09": build_guest09_character,
         "guest-10": build_guest10_character,
         "guest-11": build_guest11_character,
+        "guest-12": build_guest12_character,
     }
     root, left_leg, right_leg, left_arm, right_arm = builders[args.guest]()
     set_walk_animation(root, left_leg, right_leg, left_arm, right_arm, args.guest)
