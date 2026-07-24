@@ -250,10 +250,11 @@ async function replaceLowerWithMirroredStep(target, source, startY) {
     .flop()
     .png()
     .toBuffer();
-  return canvas(metadata.width, metadata.height, [
+  const composited = await canvas(metadata.width, metadata.height, [
     { input: upper, left: 0, top: 0 },
     { input: mirroredLower, left: 0, top: lowerTop }
   ]);
+  return removeTinyAlphaIslands(composited, metadata.width > FRAME.width ? 32 : 4);
 }
 
 async function buildSheet(framesByDirection, mode) {

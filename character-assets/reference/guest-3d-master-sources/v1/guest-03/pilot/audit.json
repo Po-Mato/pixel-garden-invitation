@@ -56,7 +56,7 @@
           "width": 42,
           "height": 127,
           "greenFringePixels": 0,
-          "partialAlphaPixels": 1269,
+          "partialAlphaPixels": 1263,
           "pixels": 13824
         },
         "pixel": {
@@ -65,7 +65,7 @@
           "width": 40,
           "height": 126,
           "greenFringePixels": 0,
-          "partialAlphaPixels": 4794,
+          "partialAlphaPixels": 4798,
           "pixels": 13824
         }
       }
@@ -79,7 +79,7 @@
           "width": 62,
           "height": 127,
           "greenFringePixels": 0,
-          "partialAlphaPixels": 1411,
+          "partialAlphaPixels": 1410,
           "pixels": 13824
         },
         "pixel": {
@@ -251,7 +251,7 @@
           "width": 43,
           "height": 127,
           "greenFringePixels": 0,
-          "partialAlphaPixels": 1231,
+          "partialAlphaPixels": 1224,
           "pixels": 13824
         },
         "pixel": {
@@ -260,7 +260,7 @@
           "width": 42,
           "height": 126,
           "greenFringePixels": 0,
-          "partialAlphaPixels": 3254,
+          "partialAlphaPixels": 3230,
           "pixels": 13824
         }
       }
