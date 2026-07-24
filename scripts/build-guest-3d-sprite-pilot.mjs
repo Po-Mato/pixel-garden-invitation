@@ -183,13 +183,14 @@ async function normalizeSource(frame) {
     .resize({ width, height, fit: "fill", kernel: sharp.kernel.lanczos3 })
     .png()
     .toBuffer();
-  return canvas(SOURCE.width, SOURCE.height, [
+  const normalized = await canvas(SOURCE.width, SOURCE.height, [
     {
       input: resized,
       left: Math.round((SOURCE.width - width) / 2),
       top: SOURCE.baseline - height + 1
     }
   ]);
+  return removeTinyAlphaIslands(normalized, 16);
 }
 
 async function normalizeGameFrame(frame, mode) {

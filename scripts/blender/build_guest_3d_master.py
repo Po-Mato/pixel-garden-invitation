@@ -11,7 +11,7 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--guest",
-        choices=("guest-01", "guest-02", "guest-03", "guest-04", "guest-05", "guest-06", "guest-07"),
+        choices=("guest-01", "guest-02", "guest-03", "guest-04", "guest-05", "guest-06", "guest-07", "guest-08"),
         default="guest-01",
     )
     parser.add_argument("--output-root", required=True)
@@ -902,6 +902,59 @@ def build_guest07_character():
     return root, left_leg, right_leg, left_arm, right_arm
 
 
+def build_guest08_character():
+    root, left_leg, right_leg, left_arm, right_arm = build_guest01_character()
+    root.name = "Guest08_Master"
+
+    dusty_rose = material("Guest08 dusty rose dress", (0.58, 0.30, 0.34), roughness=0.54)
+    rose_light = material("Guest08 rose highlight", (0.76, 0.48, 0.50), roughness=0.58)
+    rose_shadow = material("Guest08 rose sash", (0.39, 0.17, 0.20), roughness=0.50)
+    taupe = material("Guest08 taupe handbag", (0.40, 0.29, 0.23), roughness=0.48)
+    brown = material("Guest08 brown pumps", (0.25, 0.13, 0.08), roughness=0.38)
+    gold = material("Guest08 warm gold", (0.78, 0.48, 0.08), roughness=0.30, metallic=0.72)
+
+    for obj in root.children_recursive:
+        name = obj.name
+        if name in {"Torso", "Skirt", "Left bolero panel", "Right bolero panel"} or name.startswith("Sleeve "):
+            obj.data.materials.clear()
+            obj.data.materials.append(dusty_rose)
+        elif name == "Waist belt":
+            obj.data.materials.clear()
+            obj.data.materials.append(rose_shadow)
+        elif name == "Skirt hem":
+            obj.data.materials.clear()
+            obj.data.materials.append(rose_light)
+        elif name.startswith("Shoe ") or name.startswith("Heel "):
+            obj.data.materials.clear()
+            obj.data.materials.append(brown)
+        elif name in {"Back braid", "Handbag", "Handbag handle", "Handbag clasp"} or name.startswith("Lace line "):
+            obj.hide_render = True
+            obj.hide_viewport = True
+
+    curve("Guest08 wrap collar left", [(-0.25, -0.34, 2.00), (0.08, -0.39, 1.66)], rose_light, 0.022, root)
+    curve("Guest08 wrap collar right", [(0.25, -0.34, 2.00), (-0.03, -0.40, 1.73)], rose_light, 0.022, root)
+    rounded_cube("Guest08 sash knot", (0.28, -0.36, 1.52), (0.105, 0.035, 0.095), rose_shadow, root, 0.045)
+    for index, x in enumerate((0.22, 0.32)):
+        curve(
+            f"Guest08 sash tail {index + 1}",
+            [(x, -0.38, 1.47), (x + 0.03, -0.42, 1.18), (x - 0.04, -0.40, 0.93)],
+            rose_light if index else rose_shadow,
+            0.028,
+            root,
+        )
+    rounded_cube("Guest08 left-hand handbag", (0.04, -0.08, -0.88), (0.23, 0.065, 0.19), taupe, left_arm, 0.055)
+    curve(
+        "Guest08 handbag handle",
+        [(-0.13, -0.15, -0.72), (0.04, -0.17, -0.57), (0.21, -0.15, -0.72)],
+        gold,
+        0.016,
+        left_arm,
+    )
+    rounded_cube("Guest08 handbag clasp", (0.04, -0.16, -0.86), (0.040, 0.018, 0.050), gold, left_arm, 0.016)
+
+    return root, left_leg, right_leg, left_arm, right_arm
+
+
 def set_walk_animation(root, left_leg, right_leg, left_arm, right_arm, guest_id):
     left_base_z = left_leg.location.z
     right_base_z = right_leg.location.z
@@ -1014,6 +1067,7 @@ def main():
         "guest-05": build_guest05_character,
         "guest-06": build_guest06_character,
         "guest-07": build_guest07_character,
+        "guest-08": build_guest08_character,
     }
     root, left_leg, right_leg, left_arm, right_arm = builders[args.guest]()
     set_walk_animation(root, left_leg, right_leg, left_arm, right_arm, args.guest)

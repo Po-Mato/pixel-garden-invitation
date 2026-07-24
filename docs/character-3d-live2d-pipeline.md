@@ -67,6 +67,13 @@
 - 앱 적용 후보와 감사 결과: `character-assets/reference/guest-3d-master-sources/v1/guest-07/pilot`
 - Live2D 계획: `character-assets/live2d/guest-07/model-plan.json`
 
+`guest-08`은 긴 볼륨 갈색 웨이브 헤어, 더스티 로즈 랩 원피스, 왼손 토프 핸드백 프리셋으로 같은 구조와 검증 기준을 사용한다.
+
+- 턴어라운드: `character-assets/reference/guest-3d-master-sources/v1/guest-08/guest-08-turnaround-concept.png`
+- 3D 마스터: `character-assets/reference/guest-3d-master-sources/v1/guest-08/blender/guest-08-master.blend`
+- 앱 적용 후보와 감사 결과: `character-assets/reference/guest-3d-master-sources/v1/guest-08/pilot`
+- Live2D 계획: `character-assets/live2d/guest-08/model-plan.json`
+
 재생성 명령:
 
 ```sh
@@ -93,6 +100,10 @@ node scripts/build-guest-3d-sprite-pilot.mjs --guest guest-06 --preset feminine-
 blender --background --python scripts/blender/build_guest_3d_master.py -- --guest guest-07 --output-root character-assets/reference/guest-3d-master-sources/v1/guest-07/blender
 node scripts/render-guest-3d-pose-guides.mjs --root character-assets/reference/guest-3d-master-sources/v1/guest-07/blender
 node scripts/build-guest-3d-sprite-pilot.mjs --guest guest-07 --preset feminine-lavender-jacket-dress
+
+blender --background --python scripts/blender/build_guest_3d_master.py -- --guest guest-08 --output-root character-assets/reference/guest-3d-master-sources/v1/guest-08/blender
+node scripts/render-guest-3d-pose-guides.mjs --root character-assets/reference/guest-3d-master-sources/v1/guest-08/blender
+node scripts/build-guest-3d-sprite-pilot.mjs --guest guest-08 --preset feminine-teal-modern-hanbok
 ```
 
 ## Live2D 적용 범위
