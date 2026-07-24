@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "characterId": "guest-02",
+  "status": "rig-pending",
+  "sourceTurnaround": "character-assets/reference/guest-3d-master-sources/v1/guest-02/guest-02-turnaround-concept.png",
+  "target": {
+    "model": "guest-02.moc3",
+    "manifest": "guest-02.model3.json",
+    "textures": "textures"
+  },
+  "requiredLayers": [
+    "뒤쪽 머리카락",
+    "땋은 쪽머리",
+    "꽃 머리장식",
+    "몸통과 목",
+    "얼굴",
+    "왼쪽 눈과 눈썹",
+    "오른쪽 눈과 눈썹",
+    "코",
+    "입",
+    "앞머리",
+    "옆머리",
+    "왼팔",
+    "오른팔",
+    "저고리",
+    "치마",
+    "노리개"
+  ],
+  "expressions": ["기본", "미소", "축하"],
+  "motions": ["대기", "인사", "축하"],
+  "runtimePolicy": {
+    "maximumConcurrentModels": 1,
+    "unloadWhenHidden": true,
+    "fallback": "static-poster"
+  }
+}

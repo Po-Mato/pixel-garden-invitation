@@ -17,7 +17,7 @@
 6. `288x576` 보행 시트와 `192x144` 대기 시트를 만든다.
 7. 기준선 리뷰, 투명도 검사, 녹색 잔여 픽셀 검사, 기존 이미지 비교를 통과한 결과만 앱에 적용한다.
 
-## guest-01 파일
+## 캐릭터별 파일
 
 - 턴어라운드: `character-assets/reference/guest-3d-master-sources/v1/guest-01/guest-01-turnaround-concept.png`
 - 3D 마스터: `character-assets/reference/guest-3d-master-sources/v1/guest-01/blender/guest-01-master.blend`
@@ -25,12 +25,19 @@
 - 방향·보행 렌더: `character-assets/reference/guest-3d-master-sources/v1/guest-01/walk-renders`
 - 앱 적용 후보와 감사 결과: `character-assets/reference/guest-3d-master-sources/v1/guest-01/pilot`
 
+`guest-02`도 같은 구조를 사용하며, 여성 한복 프리셋과 Live2D 리깅 계획은 다음 경로에 있다.
+
+- 턴어라운드: `character-assets/reference/guest-3d-master-sources/v1/guest-02/guest-02-turnaround-concept.png`
+- 3D 마스터: `character-assets/reference/guest-3d-master-sources/v1/guest-02/blender/guest-02-master.blend`
+- 앱 적용 후보와 감사 결과: `character-assets/reference/guest-3d-master-sources/v1/guest-02/pilot`
+- Live2D 계획: `character-assets/live2d/guest-02/model-plan.json`
+
 재생성 명령:
 
 ```sh
-blender --background --python scripts/blender/build_guest_3d_master.py
-node scripts/render-guest-3d-pose-guides.mjs
-node scripts/build-guest-3d-sprite-pilot.mjs
+blender --background --python scripts/blender/build_guest_3d_master.py -- --guest guest-02 --output-root character-assets/reference/guest-3d-master-sources/v1/guest-02/blender
+node scripts/render-guest-3d-pose-guides.mjs --root character-assets/reference/guest-3d-master-sources/v1/guest-02/blender
+node scripts/build-guest-3d-sprite-pilot.mjs --guest guest-02 --preset feminine-formal-hanbok
 ```
 
 ## Live2D 적용 범위

@@ -38,10 +38,11 @@ async function renderDirection(root, direction) {
 
 async function main() {
   const root = parseArgs(process.argv.slice(2));
+  const guestId = path.basename(root) === "blender" ? path.basename(path.dirname(root)) : path.basename(root);
   const guides = [];
   for (const direction of directions) guides.push(await renderDirection(root, direction));
 
-  const contactSheet = path.join(root, "pose-guides", "guest-01-all-directions-pose-guide.png");
+  const contactSheet = path.join(root, "pose-guides", `${guestId}-all-directions-pose-guide.png`);
   await sharp({
     create: {
       width: frameWidth * 3,
