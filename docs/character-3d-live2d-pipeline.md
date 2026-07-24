@@ -81,6 +81,13 @@
 - 앱 적용 후보와 감사 결과: `character-assets/reference/guest-3d-master-sources/v1/guest-09/pilot`
 - Live2D 계획: `character-assets/live2d/guest-09/model-plan.json`
 
+`guest-10`은 검은 쇼트 보브, 네이비 랩 원피스, 은색 허리 브로치, 오른손 검은 클러치 프리셋으로 같은 구조와 검증 기준을 사용한다.
+
+- 턴어라운드: `character-assets/reference/guest-3d-master-sources/v1/guest-10/guest-10-turnaround-concept.png`
+- 3D 마스터: `character-assets/reference/guest-3d-master-sources/v1/guest-10/blender/guest-10-master.blend`
+- 앱 적용 후보와 감사 결과: `character-assets/reference/guest-3d-master-sources/v1/guest-10/pilot`
+- Live2D 계획: `character-assets/live2d/guest-10/model-plan.json`
+
 재생성 명령:
 
 ```sh
@@ -115,6 +122,10 @@ node scripts/build-guest-3d-sprite-pilot.mjs --guest guest-08 --preset feminine-
 blender --background --python scripts/blender/build_guest_3d_master.py -- --guest guest-09 --output-root character-assets/reference/guest-3d-master-sources/v1/guest-09/blender
 node scripts/render-guest-3d-pose-guides.mjs --root character-assets/reference/guest-3d-master-sources/v1/guest-09/blender
 node scripts/build-guest-3d-sprite-pilot.mjs --guest guest-09 --preset masculine-beige-summer-suit
+
+blender --background --python scripts/blender/build_guest_3d_master.py -- --guest guest-10 --output-root character-assets/reference/guest-3d-master-sources/v1/guest-10/blender
+node scripts/render-guest-3d-pose-guides.mjs --root character-assets/reference/guest-3d-master-sources/v1/guest-10/blender
+node scripts/build-guest-3d-sprite-pilot.mjs --guest guest-10 --preset masculine-charcoal-burgundy-tie
 ```
 
 ## Live2D 적용 범위

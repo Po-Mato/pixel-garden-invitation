@@ -11,7 +11,7 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--guest",
-        choices=("guest-01", "guest-02", "guest-03", "guest-04", "guest-05", "guest-06", "guest-07", "guest-08", "guest-09"),
+        choices=("guest-01", "guest-02", "guest-03", "guest-04", "guest-05", "guest-06", "guest-07", "guest-08", "guest-09", "guest-10"),
         default="guest-01",
     )
     parser.add_argument("--output-root", required=True)
@@ -1005,6 +1005,88 @@ def build_guest09_character():
     return root, left_leg, right_leg, left_arm, right_arm
 
 
+def build_guest10_character():
+    root, left_leg, right_leg, left_arm, right_arm = build_guest01_character()
+    root.name = "Guest10_Master"
+
+    black_hair = material("Guest10 soft black bob", (0.012, 0.015, 0.022), roughness=0.34)
+    hair_highlight = material("Guest10 black hair highlight", (0.075, 0.090, 0.120), roughness=0.38)
+    navy = material("Guest10 navy formal dress", (0.025, 0.055, 0.145), roughness=0.50)
+    navy_light = material("Guest10 navy chiffon", (0.12, 0.18, 0.34), roughness=0.58)
+    navy_dark = material("Guest10 navy waist", (0.012, 0.025, 0.075), roughness=0.46)
+    silver = material("Guest10 silver brooch", (0.64, 0.68, 0.76), roughness=0.22, metallic=0.70)
+    black = material("Guest10 black clutch", (0.010, 0.012, 0.018), roughness=0.32)
+
+    for obj in root.children_recursive:
+        name = obj.name
+        if name.startswith(("Hair ", "Eyebrow")):
+            obj.data.materials.clear()
+            obj.data.materials.append(hair_highlight if "crown" in name.lower() else black_hair)
+        elif name.startswith(("Back wave", "Face curl")) or name == "Back braid":
+            obj.hide_render = True
+            obj.hide_viewport = True
+        elif name in {"Torso", "Skirt", "Left bolero panel", "Right bolero panel"}:
+            obj.data.materials.clear()
+            obj.data.materials.append(navy)
+        elif name.startswith("Sleeve "):
+            obj.data.materials.clear()
+            obj.data.materials.append(navy_light)
+        elif name in {"Waist belt", "Bolero neckline"}:
+            obj.data.materials.clear()
+            obj.data.materials.append(navy_dark)
+        elif name == "Skirt hem":
+            obj.data.materials.clear()
+            obj.data.materials.append(navy_light)
+        elif name.startswith("Lace line "):
+            obj.hide_render = True
+            obj.hide_viewport = True
+        elif name.startswith(("Shoe ", "Heel ")):
+            obj.data.materials.clear()
+            obj.data.materials.append(navy_dark)
+        elif name.startswith("Handbag"):
+            obj.hide_render = True
+            obj.hide_viewport = True
+
+    for index, x in enumerate((-0.46, -0.31, -0.16, 0.0, 0.16, 0.31, 0.46)):
+        lock = sphere(
+            f"Guest10 bob lock {index + 1}",
+            (x, 0.28 + 0.02 * (index % 2), 2.23 - 0.035 * (index % 2)),
+            (0.16, 0.20, 0.25),
+            hair_highlight if index in (1, 5) else black_hair,
+            root,
+            segments=32,
+            rings=20,
+        )
+        lock.rotation_euler.y = math.radians((index - 3) * 4)
+    for side in (-1, 1):
+        curve(
+            f"Guest10 short side curl {side}",
+            [(0.40 * side, -0.33, 2.76), (0.52 * side, -0.30, 2.49), (0.47 * side, -0.24, 2.25)],
+            hair_highlight,
+            0.050,
+            root,
+        )
+
+    curve("Guest10 wrap neckline left", [(-0.27, -0.34, 2.01), (0.05, -0.39, 1.67)], navy_light, 0.026, root)
+    curve("Guest10 wrap neckline right", [(0.27, -0.34, 2.01), (-0.05, -0.39, 1.67)], navy_light, 0.026, root)
+    sphere("Guest10 waist brooch center", (0.25, -0.38, 1.51), (0.070, 0.030, 0.070), silver, root, 28, 18)
+    for index in range(8):
+        angle = math.radians(index * 45)
+        sphere(
+            f"Guest10 waist brooch petal {index + 1}",
+            (0.25 + math.cos(angle) * 0.095, -0.37, 1.51 + math.sin(angle) * 0.095),
+            (0.035, 0.020, 0.055),
+            silver,
+            root,
+            20,
+            12,
+        )
+    rounded_cube("Guest10 right-hand clutch", (-0.04, -0.08, -0.88), (0.25, 0.055, 0.14), black, right_arm, 0.050)
+    rounded_cube("Guest10 clutch clasp", (-0.04, -0.15, -0.84), (0.045, 0.018, 0.035), silver, right_arm, 0.015)
+
+    return root, left_leg, right_leg, left_arm, right_arm
+
+
 def set_walk_animation(root, left_leg, right_leg, left_arm, right_arm, guest_id):
     left_base_z = left_leg.location.z
     right_base_z = right_leg.location.z
@@ -1119,6 +1201,7 @@ def main():
         "guest-07": build_guest07_character,
         "guest-08": build_guest08_character,
         "guest-09": build_guest09_character,
+        "guest-10": build_guest10_character,
     }
     root, left_leg, right_leg, left_arm, right_arm = builders[args.guest]()
     set_walk_animation(root, left_leg, right_leg, left_arm, right_arm, args.guest)

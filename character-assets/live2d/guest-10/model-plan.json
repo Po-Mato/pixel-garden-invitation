@@ -1,0 +1,38 @@
+{
+  "version": 1,
+  "characterId": "guest-10",
+  "status": "rig-pending",
+  "sourceTurnaround": "character-assets/reference/guest-3d-master-sources/v1/guest-10/guest-10-turnaround-concept.png",
+  "target": {
+    "model": "guest-10.moc3",
+    "manifest": "guest-10.model3.json",
+    "textures": "textures"
+  },
+  "requiredLayers": [
+    "뒤쪽 검은 쇼트 보브",
+    "몸통과 목",
+    "얼굴",
+    "왼쪽 눈과 눈썹",
+    "오른쪽 눈과 눈썹",
+    "코",
+    "입",
+    "앞 가르마 머리",
+    "왼쪽 옆머리",
+    "오른쪽 옆머리",
+    "왼팔",
+    "오른팔",
+    "네이비 랩 원피스",
+    "시스루 네이비 소매",
+    "은색 허리 브로치",
+    "오른손 검은 클러치",
+    "진주 귀걸이",
+    "목걸이"
+  ],
+  "expressions": ["기본", "미소", "축하"],
+  "motions": ["대기", "인사", "축하"],
+  "runtimePolicy": {
+    "maximumConcurrentModels": 1,
+    "unloadWhenHidden": true,
+    "fallback": "static-poster"
+  }
+}
