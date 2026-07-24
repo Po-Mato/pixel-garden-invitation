@@ -11,7 +11,7 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--guest",
-        choices=("guest-01", "guest-02", "guest-03", "guest-04", "guest-05", "guest-06", "guest-07", "guest-08", "guest-09", "guest-10"),
+        choices=("guest-01", "guest-02", "guest-03", "guest-04", "guest-05", "guest-06", "guest-07", "guest-08", "guest-09", "guest-10", "guest-11"),
         default="guest-01",
     )
     parser.add_argument("--output-root", required=True)
@@ -1087,6 +1087,55 @@ def build_guest10_character():
     return root, left_leg, right_leg, left_arm, right_arm
 
 
+def build_guest11_character():
+    root, left_leg, right_leg, left_arm, right_arm = build_guest03_character()
+    root.name = "Guest11_Master"
+
+    black_hair = material("Guest11 soft black hair", (0.010, 0.014, 0.020), roughness=0.34)
+    hair_highlight = material("Guest11 black hair highlight", (0.060, 0.075, 0.100), roughness=0.38)
+    green = material("Guest11 deep green blazer", (0.025, 0.155, 0.105), roughness=0.52)
+    green_shadow = material("Guest11 green blazer shadow", (0.012, 0.075, 0.050), roughness=0.50)
+    cream = material("Guest11 cream trousers", (0.88, 0.82, 0.70), roughness=0.60)
+    shirt = material("Guest11 ivory open collar shirt", (0.97, 0.95, 0.88), roughness=0.62)
+    leather = material("Guest11 brown leather", (0.17, 0.070, 0.025), roughness=0.34)
+    gold = material("Guest11 belt buckle", (0.50, 0.29, 0.09), roughness=0.28, metallic=0.62)
+
+    for obj in root.children_recursive:
+        name = obj.name
+        if name.startswith(("Hair back", "Side part", "Short hair lock", "Front side part", "Front fringe", "Eyebrow")):
+            obj.data.materials.clear()
+            highlighted = "highlight" in name.lower() or name.endswith(("1", "4", "7"))
+            obj.data.materials.append(hair_highlight if highlighted else black_hair)
+        elif name.startswith(("Suit torso", "Suit sleeve")):
+            obj.data.materials.clear()
+            obj.data.materials.append(green)
+        elif name.startswith("Suit trouser"):
+            obj.data.materials.clear()
+            obj.data.materials.append(cream)
+        elif name.startswith(("Left lapel", "Right lapel", "Jacket pocket")):
+            obj.data.materials.clear()
+            obj.data.materials.append(green_shadow)
+        elif name in {"Shirt front", "Shirt cuff 1", "Shirt cuff -1", "Pocket square"}:
+            obj.data.materials.clear()
+            obj.data.materials.append(shirt)
+        elif name.startswith(("Tie knot", "Tie body")):
+            obj.hide_render = True
+            obj.hide_viewport = True
+        elif name.startswith("Dress shoe"):
+            obj.data.materials.clear()
+            obj.data.materials.append(leather)
+        elif name.startswith("Shoe welt"):
+            obj.data.materials.clear()
+            obj.data.materials.append(green_shadow)
+
+    curve("Guest11 open collar left", [(-0.12, -0.30, 2.02), (-0.24, -0.35, 1.88)], shirt, 0.030, root)
+    curve("Guest11 open collar right", [(0.12, -0.30, 2.02), (0.24, -0.35, 1.88)], shirt, 0.030, root)
+    rounded_cube("Guest11 brown belt", (0, -0.272, 1.22), (0.35, 0.030, 0.045), leather, root, 0.020)
+    rounded_cube("Guest11 belt buckle", (0, -0.309, 1.22), (0.070, 0.020, 0.060), gold, root, 0.018)
+
+    return root, left_leg, right_leg, left_arm, right_arm
+
+
 def set_walk_animation(root, left_leg, right_leg, left_arm, right_arm, guest_id):
     left_base_z = left_leg.location.z
     right_base_z = right_leg.location.z
@@ -1202,6 +1251,7 @@ def main():
         "guest-08": build_guest08_character,
         "guest-09": build_guest09_character,
         "guest-10": build_guest10_character,
+        "guest-11": build_guest11_character,
     }
     root, left_leg, right_leg, left_arm, right_arm = builders[args.guest]()
     set_walk_animation(root, left_leg, right_leg, left_arm, right_arm, args.guest)

@@ -88,6 +88,13 @@
 - 앱 적용 후보와 감사 결과: `character-assets/reference/guest-3d-master-sources/v1/guest-10/pilot`
 - Live2D 계획: `character-assets/live2d/guest-10/model-plan.json`
 
+`guest-11`은 검은 볼륨 가르마 헤어, 딥 그린 블레이저, 아이보리 오픈칼라 셔츠, 크림 팬츠 프리셋으로 같은 구조와 검증 기준을 사용한다.
+
+- 턴어라운드: `character-assets/reference/guest-3d-master-sources/v1/guest-11/guest-11-turnaround-concept.png`
+- 3D 마스터: `character-assets/reference/guest-3d-master-sources/v1/guest-11/blender/guest-11-master.blend`
+- 앱 적용 후보와 감사 결과: `character-assets/reference/guest-3d-master-sources/v1/guest-11/pilot`
+- Live2D 계획: `character-assets/live2d/guest-11/model-plan.json`
+
 재생성 명령:
 
 ```sh
@@ -126,6 +133,10 @@ node scripts/build-guest-3d-sprite-pilot.mjs --guest guest-09 --preset masculine
 blender --background --python scripts/blender/build_guest_3d_master.py -- --guest guest-10 --output-root character-assets/reference/guest-3d-master-sources/v1/guest-10/blender
 node scripts/render-guest-3d-pose-guides.mjs --root character-assets/reference/guest-3d-master-sources/v1/guest-10/blender
 node scripts/build-guest-3d-sprite-pilot.mjs --guest guest-10 --preset masculine-charcoal-burgundy-tie
+
+blender --background --python scripts/blender/build_guest_3d_master.py -- --guest guest-11 --output-root character-assets/reference/guest-3d-master-sources/v1/guest-11/blender
+node scripts/render-guest-3d-pose-guides.mjs --root character-assets/reference/guest-3d-master-sources/v1/guest-11/blender
+node scripts/build-guest-3d-sprite-pilot.mjs --guest guest-11 --preset masculine-green-blazer-cream-pants
 ```
 
 ## Live2D 적용 범위
