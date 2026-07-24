@@ -9,7 +9,15 @@ afterEach(() => {
 });
 
 describe("EntryScreen", () => {
-  it("shows the confirmed couple and compact wedding summary before entry", () => {
+  const openCharacterPicker = () => {
+    fireEvent.click(screen.getByRole("button", { name: /입장 캐릭터/ }));
+  };
+
+  const openEventInformation = () => {
+    fireEvent.click(screen.getByRole("button", { name: "예식 정보 열기" }));
+  };
+
+  it("확정된 두 사람과 간결한 예식 요약만 먼저 보여준다", () => {
     render(<EntryScreen onEnter={vi.fn()} />);
 
     const { couple, startAt, timeZone } = invitationContent.event;
@@ -22,6 +30,12 @@ describe("EntryScreen", () => {
     expect(screen.getByText("오후 5시 10분")).toHaveAttribute("dateTime", startAt);
     expect(screen.queryByText("오후 6시 40분")).not.toBeInTheDocument();
     expect(screen.getByText("MJ컨벤션 5층 파티오볼룸")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /입장 캐릭터/ })).toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "완성 하객 캐릭터" })).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("닉네임")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "오시는 길" })).not.toBeInTheDocument();
+
+    openEventInformation();
     expect(screen.getByRole("button", { name: "오시는 길" })).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "오시는 길" }));
@@ -42,24 +56,27 @@ describe("EntryScreen", () => {
   it("opens calendar choices without requiring a nickname", () => {
     render(<EntryScreen onEnter={vi.fn()} />);
 
+    openEventInformation();
     fireEvent.click(screen.getByRole("button", { name: "캘린더 저장" }));
 
     expect(screen.getByRole("dialog", { name: "캘린더 저장" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "정원 입장" })).toBeDisabled();
+    expect(screen.queryByRole("button", { name: "정원 입장" })).not.toBeInTheDocument();
   });
 
   it("예식 당일 미리보기에서 입장 전에 퀵 안내를 연다", () => {
     render(<EntryScreen onEnter={vi.fn()} weddingDayPreview />);
 
+    openEventInformation();
     fireEvent.click(screen.getByRole("button", { name: /예식 당일 안내/ }));
 
     expect(screen.getByRole("dialog", { name: "예식 당일 안내" })).toHaveTextContent("예식까지 45분");
-    expect(screen.getByRole("button", { name: "정원 입장" })).toBeDisabled();
+    expect(screen.queryByRole("button", { name: "정원 입장" })).not.toBeInTheDocument();
   });
 
   it("disables entry for initial or whitespace-only nickname", () => {
     const onEnter = vi.fn();
     render(<EntryScreen onEnter={onEnter} />);
+    openCharacterPicker();
 
     const enterButton = screen.getByRole("button", { name: "정원 입장" });
 
@@ -74,6 +91,7 @@ describe("EntryScreen", () => {
   it("submits trimmed nickname", () => {
     const onEnter = vi.fn();
     render(<EntryScreen onEnter={onEnter} />);
+    openCharacterPicker();
 
     fireEvent.change(screen.getByLabelText("닉네임"), { target: { value: "  하객2  " } });
     fireEvent.click(screen.getByRole("button", { name: "정원 입장" }));
@@ -93,6 +111,7 @@ describe("EntryScreen", () => {
 
     expect(screen.getByText("김하객님을 초대합니다.")).toBeInTheDocument();
     expect(screen.getByText(/대학 친구 하객으로/)).toBeInTheDocument();
+    openCharacterPicker();
     expect(screen.getByLabelText("닉네임")).toHaveValue("김하객");
     fireEvent.click(screen.getByRole("button", { name: "정원 입장" }));
     expect(onEnter).toHaveBeenCalledWith(expect.objectContaining({ nickname: "김하객" }));
@@ -102,6 +121,7 @@ describe("EntryScreen", () => {
     const onEnterIntent = vi.fn();
     render(<EntryScreen onEnter={vi.fn()} onEnterIntent={onEnterIntent} />);
 
+    openCharacterPicker();
     fireEvent.focus(screen.getByLabelText("닉네임"));
 
     expect(onEnterIntent).toHaveBeenCalled();
@@ -124,12 +144,13 @@ describe("EntryScreen", () => {
 
     expect(onQuickViewIntent).toHaveBeenCalled();
     expect(onQuickView).toHaveBeenCalledOnce();
-    expect(screen.getByRole("button", { name: "정원 입장" })).toBeDisabled();
+    expect(screen.queryByRole("button", { name: "정원 입장" })).not.toBeInTheDocument();
   });
 
   it("submits nickname and customized appearance", () => {
     const onEnter = vi.fn();
     render(<EntryScreen onEnter={onEnter} />);
+    openCharacterPicker();
 
     fireEvent.change(screen.getByLabelText("닉네임"), { target: { value: "하객1" } });
     fireEvent.click(screen.getByRole("button", { name: "네이비 클래식 수트" }));
@@ -141,17 +162,21 @@ describe("EntryScreen", () => {
     });
   });
 
-  it("exposes the character customizer", () => {
+  it("캐릭터 선택 요청 후 넓은 선택창을 연다", () => {
     render(<EntryScreen onEnter={vi.fn()} />);
+    openCharacterPicker();
+
+    expect(screen.getByRole("dialog", { name: "하객 캐릭터 선택" })).toHaveClass("entry-character-sheet");
     expect(screen.getByRole("heading", { name: "완성 하객 캐릭터" })).toBeInTheDocument();
     expect(screen.getByLabelText("선택한 하객 캐릭터")).toBeInTheDocument();
   });
 
-  it("keeps ambient decoration outside the foreground entry controls", () => {
+  it("장식은 첫 화면 뒤에 유지하고 입장 제어는 선택창 안에 배치한다", () => {
     const { container } = render(<EntryScreen onEnter={vi.fn()} />);
-    const controls = container.querySelector(".entry-screen__controls");
 
     expect(container.querySelector(".entry-screen__ambient")).toHaveAttribute("aria-hidden", "true");
+    openCharacterPicker();
+    const controls = document.querySelector(".entry-character-picker__controls");
     expect(controls).toContainElement(screen.getByLabelText("닉네임"));
     expect(controls).toContainElement(screen.getByRole("button", { name: "정원 입장" }));
   });

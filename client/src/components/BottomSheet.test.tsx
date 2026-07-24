@@ -29,11 +29,12 @@ it("closes from Escape and backdrop and restores trigger focus", () => {
 
 it("renders its dialog in the document body portal", () => {
   render(
-    <BottomSheet title="캘린더 저장" onClose={vi.fn()}>
+    <BottomSheet title="캘린더 저장" className="calendar-sheet-test" onClose={vi.fn()}>
       <button type="button">기본 캘린더</button>
     </BottomSheet>
   );
 
+  expect(screen.getByRole("dialog")).toHaveClass("calendar-sheet-test");
   expect(screen.getByRole("dialog").parentElement).toBe(document.body);
 });
 

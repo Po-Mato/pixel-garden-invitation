@@ -6,6 +6,7 @@ type BottomSheetProps = {
   title: string;
   onClose: () => void;
   children: ReactNode;
+  className?: string;
 };
 
 const focusableSelector = [
@@ -23,7 +24,7 @@ function getFocusableElements(container: HTMLElement) {
   );
 }
 
-export function BottomSheet({ title, onClose, children }: BottomSheetProps) {
+export function BottomSheet({ title, onClose, children, className = "" }: BottomSheetProps) {
   const titleId = useId();
   const dialogRef = useRef<HTMLElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
@@ -107,7 +108,7 @@ export function BottomSheet({ title, onClose, children }: BottomSheetProps) {
       />
       <section
         ref={dialogRef}
-        className="bottom-sheet"
+        className={`bottom-sheet ${className}`.trim()}
         role="dialog"
         aria-modal={true}
         aria-labelledby={titleId}

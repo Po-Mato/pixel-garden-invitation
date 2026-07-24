@@ -4,6 +4,8 @@ import {
   resolveGuestPreset,
   type CharacterAppearance
 } from "@wedding-game/shared";
+import { RotateCcw, Shuffle } from "lucide-react";
+import { useEffect, useRef } from "react";
 import {
   randomizeAppearance,
   updateAppearance
@@ -17,6 +19,11 @@ type Props = {
 
 export function CharacterCustomizer({ value, onChange }: Props) {
   const selectedPreset = resolveGuestPreset(value);
+  const selectedOptionRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    selectedOptionRef.current?.scrollIntoView?.({ block: "nearest", inline: "center" });
+  }, [selectedPreset.id]);
 
   return (
     <section className="character-customizer" aria-label="하객 캐릭터 선택">
@@ -42,11 +49,11 @@ export function CharacterCustomizer({ value, onChange }: Props) {
 
       <div className="character-customizer__actions">
         <button type="button" className="choice" onClick={() => onChange(randomizeAppearance())}>
-          <span className="character-customizer__action-icon" aria-hidden="true">↻</span>
+          <Shuffle className="character-customizer__action-icon" aria-hidden="true" />
           무작위 선택
         </button>
         <button type="button" className="choice" onClick={() => onChange(defaultCharacterAppearance)}>
-          <span className="character-customizer__action-icon" aria-hidden="true">⌂</span>
+          <RotateCcw className="character-customizer__action-icon" aria-hidden="true" />
           기본 캐릭터
         </button>
       </div>
@@ -60,6 +67,7 @@ export function CharacterCustomizer({ value, onChange }: Props) {
             return (
               <button
                 key={preset.id}
+                ref={selected ? selectedOptionRef : undefined}
                 type="button"
                 className={`customizer-option customizer-option--image ${selected ? "customizer-option--selected" : ""}`}
                 aria-label={preset.label}
