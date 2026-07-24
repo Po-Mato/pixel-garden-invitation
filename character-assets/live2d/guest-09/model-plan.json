@@ -1,0 +1,37 @@
+{
+  "version": 1,
+  "characterId": "guest-09",
+  "status": "rig-pending",
+  "sourceTurnaround": "character-assets/reference/guest-3d-master-sources/v1/guest-09/guest-09-turnaround-concept.png",
+  "target": {
+    "model": "guest-09.moc3",
+    "manifest": "guest-09.model3.json",
+    "textures": "textures"
+  },
+  "requiredLayers": [
+    "뒤쪽 짙은 브라운 헤어",
+    "몸통과 목",
+    "얼굴",
+    "왼쪽 눈과 눈썹",
+    "오른쪽 눈과 눈썹",
+    "코",
+    "입",
+    "앞 가르마 머리",
+    "왼쪽 옆머리",
+    "오른쪽 옆머리",
+    "왼팔",
+    "오른팔",
+    "베이지 썸머 재킷",
+    "흰색 오픈칼라 셔츠",
+    "베이지 수트 바지",
+    "브라운 벨트",
+    "왼쪽 라펠 흰 부토니에"
+  ],
+  "expressions": ["기본", "미소", "축하"],
+  "motions": ["대기", "인사", "축하"],
+  "runtimePolicy": {
+    "maximumConcurrentModels": 1,
+    "unloadWhenHidden": true,
+    "fallback": "static-poster"
+  }
+}

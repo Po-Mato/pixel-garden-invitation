@@ -11,7 +11,7 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--guest",
-        choices=("guest-01", "guest-02", "guest-03", "guest-04", "guest-05", "guest-06", "guest-07", "guest-08"),
+        choices=("guest-01", "guest-02", "guest-03", "guest-04", "guest-05", "guest-06", "guest-07", "guest-08", "guest-09"),
         default="guest-01",
     )
     parser.add_argument("--output-root", required=True)
@@ -955,6 +955,56 @@ def build_guest08_character():
     return root, left_leg, right_leg, left_arm, right_arm
 
 
+def build_guest09_character():
+    root, left_leg, right_leg, left_arm, right_arm = build_guest03_character()
+    root.name = "Guest09_Master"
+
+    brown_hair = material("Guest09 deep brown hair", (0.075, 0.030, 0.015), roughness=0.34)
+    brown_highlight = material("Guest09 brown hair highlight", (0.22, 0.095, 0.045), roughness=0.38)
+    beige = material("Guest09 beige summer suit", (0.70, 0.60, 0.47), roughness=0.56)
+    beige_shadow = material("Guest09 beige suit shadow", (0.45, 0.36, 0.27), roughness=0.54)
+    shirt = material("Guest09 open collar shirt", (0.96, 0.95, 0.91), roughness=0.62)
+    leather = material("Guest09 brown leather", (0.17, 0.075, 0.030), roughness=0.34)
+    gold = material("Guest09 belt buckle", (0.50, 0.29, 0.09), roughness=0.28, metallic=0.62)
+    leaf = material("Guest09 boutonniere leaf", (0.15, 0.32, 0.13), roughness=0.64)
+    flower = material("Guest09 boutonniere flower", (0.95, 0.94, 0.84), roughness=0.72)
+
+    for obj in root.children_recursive:
+        name = obj.name
+        if name.startswith(("Hair back", "Side part", "Short hair lock", "Front side part", "Front fringe", "Eyebrow")):
+            obj.data.materials.clear()
+            highlighted = "highlight" in name.lower() or name.endswith(("1", "4", "7"))
+            obj.data.materials.append(brown_highlight if highlighted else brown_hair)
+        elif name.startswith(("Suit torso", "Suit sleeve", "Suit trouser")):
+            obj.data.materials.clear()
+            obj.data.materials.append(beige)
+        elif name.startswith(("Left lapel", "Right lapel", "Jacket pocket")):
+            obj.data.materials.clear()
+            obj.data.materials.append(beige_shadow)
+        elif name in {"Shirt front", "Shirt cuff 1", "Shirt cuff -1", "Pocket square"}:
+            obj.data.materials.clear()
+            obj.data.materials.append(shirt)
+        elif name.startswith(("Tie knot", "Tie body")):
+            obj.hide_render = True
+            obj.hide_viewport = True
+        elif name.startswith("Dress shoe"):
+            obj.data.materials.clear()
+            obj.data.materials.append(leather)
+        elif name.startswith("Shoe welt"):
+            obj.data.materials.clear()
+            obj.data.materials.append(beige_shadow)
+
+    curve("Guest09 open collar left", [(-0.12, -0.30, 2.02), (-0.24, -0.35, 1.88)], shirt, 0.030, root)
+    curve("Guest09 open collar right", [(0.12, -0.30, 2.02), (0.24, -0.35, 1.88)], shirt, 0.030, root)
+    rounded_cube("Guest09 brown belt", (0, -0.272, 1.22), (0.35, 0.030, 0.045), leather, root, 0.020)
+    rounded_cube("Guest09 belt buckle", (0, -0.309, 1.22), (0.070, 0.020, 0.060), gold, root, 0.018)
+    curve("Guest09 boutonniere stem", [(0.22, -0.36, 1.92), (0.29, -0.37, 1.72)], leaf, 0.018, root)
+    sphere("Guest09 boutonniere flower", (0.22, -0.37, 1.94), (0.085, 0.035, 0.085), flower, root, 28, 18)
+    sphere("Guest09 boutonniere leaf", (0.28, -0.36, 1.82), (0.055, 0.020, 0.105), leaf, root, 24, 16)
+
+    return root, left_leg, right_leg, left_arm, right_arm
+
+
 def set_walk_animation(root, left_leg, right_leg, left_arm, right_arm, guest_id):
     left_base_z = left_leg.location.z
     right_base_z = right_leg.location.z
@@ -1068,6 +1118,7 @@ def main():
         "guest-06": build_guest06_character,
         "guest-07": build_guest07_character,
         "guest-08": build_guest08_character,
+        "guest-09": build_guest09_character,
     }
     root, left_leg, right_leg, left_arm, right_arm = builders[args.guest]()
     set_walk_animation(root, left_leg, right_leg, left_arm, right_arm, args.guest)

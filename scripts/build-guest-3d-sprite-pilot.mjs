@@ -190,7 +190,7 @@ async function normalizeSource(frame) {
       top: SOURCE.baseline - height + 1
     }
   ]);
-  return removeTinyAlphaIslands(normalized, 16);
+  return removeTinyAlphaIslands(normalized, 32);
 }
 
 async function normalizeGameFrame(frame, mode) {
