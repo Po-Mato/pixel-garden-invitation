@@ -10,7 +10,17 @@ export const pwaCorePrecachePaths = [
   "./assets/ui/joystick-wedding-compass-base.png",
   "./assets/ui/joystick-wedding-compass-thumb.png",
   "./characters/generated/guests/world/feminine-long-wave-dress__idle.png",
-  "./characters/generated/guests/world/feminine-long-wave-dress__walk.png"
+  "./characters/generated/guests/world/feminine-long-wave-dress__walk.png",
+  "./characters/puppets/bride/rig.json",
+  "./characters/puppets/bride/body.webp",
+  "./characters/puppets/bride/head-open.webp",
+  "./characters/puppets/bride/head-blink.webp",
+  "./characters/puppets/bride/preview.webp",
+  "./characters/puppets/groom/rig.json",
+  "./characters/puppets/groom/body.webp",
+  "./characters/puppets/groom/head-open.webp",
+  "./characters/puppets/groom/head-blink.webp",
+  "./characters/puppets/groom/preview.webp"
 ] as const;
 
 function relativeAssetPath(fileName: string): string {

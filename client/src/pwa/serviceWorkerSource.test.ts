@@ -24,6 +24,8 @@ describe("PWA service worker source", () => {
     ]);
     expect(paths).toContain("./manifest.webmanifest");
     expect(paths).toContain("./assets/maps/v2/home/background.webp");
+    expect(paths).toContain("./characters/puppets/bride/rig.json");
+    expect(paths).toContain("./characters/puppets/groom/head-blink.webp");
     expect(paths).not.toContain("./assets/RsvpAdminPage-private.js");
     expect(paths).not.toContain("./assets/papaparse.min-private.js");
   });

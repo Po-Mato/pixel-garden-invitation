@@ -17,6 +17,7 @@ describe("EntryScreen", () => {
 
     expect(screen.getByText(`WEDDING GARDEN · ${year}`)).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: `${couple.bride} & ${couple.groom}의 정원` })).toBeInTheDocument();
+    expect(screen.getByRole("img", { name: `${couple.bride} · ${couple.groom} 2D 퍼펫` })).toBeInTheDocument();
     expect(screen.getByText("2027년 5월 1일 토요일")).toBeInTheDocument();
     expect(screen.getByText("오후 5시 10분")).toHaveAttribute("dateTime", startAt);
     expect(screen.queryByText("오후 6시 40분")).not.toBeInTheDocument();

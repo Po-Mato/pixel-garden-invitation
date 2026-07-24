@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "characterId": "groom",
+  "roleLabel": "신랑",
+  "license": {
+    "runtime": "PixiJS",
+    "spdx": "MIT"
+  },
+  "canvas": {
+    "width": 512,
+    "height": 768
+  },
+  "layers": {
+    "body": "body.webp",
+    "headOpen": "head-open.webp",
+    "headBlink": "head-blink.webp",
+    "preview": "preview.webp"
+  },
+  "bones": {
+    "root": {
+      "x": 256,
+      "y": 736
+    },
+    "head": {
+      "x": 256,
+      "y": 252
+    }
+  },
+  "motion": {
+    "headDegrees": 1.25,
+    "headLift": 2.2,
+    "breathScale": 0.008,
+    "phase": 0,
+    "blinkEveryMs": [
+      3100,
+      5200
+    ],
+    "blinkDurationMs": 135
+  }
+}

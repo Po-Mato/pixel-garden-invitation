@@ -10,6 +10,7 @@ import { useCoupleOrder } from "../invitation/CoupleOrderContext";
 import { formatCoupleNames } from "../invitation/coupleOrder";
 import { usePublishedInvitationContent } from "../invitation/PublishedInvitationContentContext";
 import { CharacterCustomizer } from "./CharacterCustomizer";
+import { CouplePuppetStage } from "./CouplePuppetStage";
 import { FamilyContactSheet } from "./FamilyContactSheet";
 import { GuestInformationAccess } from "./GuestInformationAccess";
 import { ViewSettingsAccess } from "./ViewSettingsAccess";
@@ -92,6 +93,13 @@ export function EntryScreen({
         <h1 id="entry-screen-title">{formatCoupleNames(event, coupleOrder, " & ")}의 정원</h1>
         <span>정원에 입장할 하객 캐릭터를 선택해주세요.</span>
       </header>
+      <CouplePuppetStage
+        className="entry-screen__couple-puppets"
+        order={coupleOrder}
+        framing="portrait"
+        label={`${formatCoupleNames(event, coupleOrder)} 2D 퍼펫`}
+        priority
+      />
       {invitedGuest ? (
         <p className="entry-screen__invite">
           <strong>{invitedGuest.guestName}님을 초대합니다.</strong>

@@ -3,6 +3,7 @@ import { useCoupleOrder } from "../invitation/CoupleOrderContext";
 import { coupleSides } from "../invitation/coupleOrder";
 import { resolveGalleryAssetPath } from "../invitation/galleryAssets";
 import { usePublishedInvitationContent } from "../invitation/PublishedInvitationContentContext";
+import { CouplePuppetStage } from "./CouplePuppetStage";
 
 export function CoupleProfilePanel({ content: contentOverride }: { content?: WeddingContent } = {}) {
   const published = usePublishedInvitationContent();
@@ -27,15 +28,22 @@ export function CoupleProfilePanel({ content: contentOverride }: { content?: Wed
             <p className="couple-profile-panel__role">{profile.roleLabel}</p>
             <h3 className="couple-profile-panel__name">{profile.name}</h3>
             {photo ? (
-              <img
-                className="couple-profile-panel__image"
-                src={resolveGalleryAssetPath(photo.assetPath)}
-                alt={photo.alt}
-                width={photo.width}
-                height={photo.height}
-                loading="lazy"
-                decoding="async"
-              />
+              <div className="couple-profile-panel__media">
+                <img
+                  className="couple-profile-panel__image"
+                  src={resolveGalleryAssetPath(photo.assetPath)}
+                  alt={photo.alt}
+                  width={photo.width}
+                  height={photo.height}
+                  loading="lazy"
+                  decoding="async"
+                />
+                <CouplePuppetStage
+                  className="couple-profile-panel__puppet"
+                  character={profile.role}
+                  label={`${sectionLabel} 2D 퍼펫`}
+                />
+              </div>
             ) : null}
             <p className="couple-profile-panel__message">{profile.message}</p>
           </section>

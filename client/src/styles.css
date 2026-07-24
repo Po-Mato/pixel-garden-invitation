@@ -431,6 +431,62 @@ select,
     -1px -1px 0 #fff8dd;
 }
 
+.couple-puppet-stage {
+  position: relative;
+  contain: layout paint;
+  min-width: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.couple-puppet-stage--full {
+  aspect-ratio: 2 / 3;
+}
+
+.couple-puppet-stage--portrait {
+  aspect-ratio: 64 / 35;
+}
+
+.couple-puppet-stage__fallback,
+.couple-puppet-stage__canvas {
+  position: absolute;
+  inset: 0;
+}
+
+.couple-puppet-stage__fallback {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  opacity: 1;
+  transition: opacity 180ms ease-out;
+}
+
+.couple-puppet-stage__fallback img {
+  display: block;
+  width: auto;
+  height: 100%;
+  object-fit: contain;
+  object-position: top center;
+}
+
+.couple-puppet-stage__canvas canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.couple-puppet-stage[data-renderer-ready="true"] .couple-puppet-stage__fallback {
+  opacity: 0;
+}
+
+.entry-screen__couple-puppets {
+  z-index: 2;
+  width: min(216px, 64vw);
+  justify-self: center;
+  margin-block: -4px -8px;
+  filter: drop-shadow(0 5px 3px rgba(83, 59, 65, 0.18));
+}
+
 .wedding-event-summary {
   position: relative;
   z-index: 3;
@@ -2716,6 +2772,30 @@ select,
   object-position: center;
 }
 
+.couple-profile-panel__media {
+  position: relative;
+  width: min(100%, 220px);
+  margin-block: 6px;
+}
+
+.couple-profile-panel__media .couple-profile-panel__image {
+  width: 100%;
+  margin: 0;
+}
+
+.couple-profile-panel__puppet {
+  position: absolute;
+  right: -18px;
+  bottom: -10px;
+  width: min(42%, 96px);
+  filter: drop-shadow(0 5px 3px rgba(38, 32, 31, 0.2));
+}
+
+.couple-profile-panel__person--bride .couple-profile-panel__puppet {
+  right: auto;
+  left: -18px;
+}
+
 .couple-profile-panel__message {
   max-width: 32ch;
   color: var(--ink-soft);
@@ -3913,6 +3993,11 @@ select,
 
   .entry-screen h1 {
     font-size: 22px;
+  }
+
+  .entry-screen__couple-puppets {
+    width: min(154px, 48vw);
+    margin-block: -8px -12px;
   }
 
   .entry-screen__header p,
@@ -6591,6 +6676,18 @@ html[data-reduce-motion="true"] .world-portal__tile::after {
   animation: none !important;
 }
 
+html[data-reduce-motion="true"] .couple-puppet-stage__canvas,
+html[data-performance-mode="lite"] .couple-puppet-stage__canvas,
+html[data-data-saver="true"] .couple-puppet-stage__canvas {
+  display: none;
+}
+
+html[data-reduce-motion="true"] .couple-puppet-stage__fallback,
+html[data-performance-mode="lite"] .couple-puppet-stage__fallback,
+html[data-data-saver="true"] .couple-puppet-stage__fallback {
+  opacity: 1 !important;
+}
+
 .quick-band {
   scroll-margin-top: calc(104px + env(safe-area-inset-top));
   padding: 58px 24px;
@@ -6695,6 +6792,14 @@ html[data-reduce-motion="true"] .world-portal__tile::after {
   width: min(100%, 286px);
   border-radius: 2px;
   box-shadow: 8px 8px 0 #dde5df;
+}
+
+.quick-band--profiles .couple-profile-panel__media {
+  width: min(100%, 286px);
+}
+
+.quick-band--profiles .couple-profile-panel__puppet {
+  width: min(40%, 108px);
 }
 
 .quick-band--profiles .couple-profile-panel__name {
