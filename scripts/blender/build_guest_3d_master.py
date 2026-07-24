@@ -11,7 +11,7 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--guest",
-        choices=("guest-01", "guest-02", "guest-03", "guest-04"),
+        choices=("guest-01", "guest-02", "guest-03", "guest-04", "guest-05"),
         default="guest-01",
     )
     parser.add_argument("--output-root", required=True)
@@ -606,6 +606,122 @@ def build_guest04_character():
     return root, left_leg, right_leg, left_arm, right_arm
 
 
+def build_guest05_character():
+    root, left_leg, right_leg, left_arm, right_arm = build_guest02_character()
+    root.name = "Guest05_Master"
+
+    brown_hair = material("Guest05 deep brown hair", (0.105, 0.042, 0.024), roughness=0.36)
+    brown_highlight = material("Guest05 hair highlight", (0.245, 0.100, 0.058), roughness=0.40)
+    ivory = material("Guest05 ivory bolero", (0.94, 0.90, 0.84))
+    sage = material("Guest05 sage dress", (0.40, 0.49, 0.39))
+    sage_light = material("Guest05 sage fold", (0.57, 0.65, 0.54))
+    sage_dark = material("Guest05 sage ribbon", (0.29, 0.37, 0.29))
+    skin = material("Guest05 leg skin", (0.96, 0.72, 0.62))
+    shoe = material("Guest05 ivory heels", (0.88, 0.82, 0.73), roughness=0.48)
+    bag = material("Guest05 beige handbag", (0.66, 0.52, 0.42), roughness=0.56)
+    gold = material("Guest05 warm gold", (0.78, 0.48, 0.08), roughness=0.32, metallic=0.72)
+
+    for obj in root.children_recursive:
+        name = obj.name
+        if name.startswith(("Hair ", "Low bun", "Bun braid", "Face curl", "Back crown braid", "Eyebrow")):
+            obj.data.materials.clear()
+            highlighted = name.startswith(("Hair left", "Bun braid", "Face curl", "Back crown braid"))
+            obj.data.materials.append(brown_highlight if highlighted else brown_hair)
+        elif name.startswith(("Hairpin",)):
+            obj.hide_render = True
+            obj.hide_viewport = True
+        elif name in {"Torso", "Left jeogori panel", "Right jeogori panel"} or name.startswith("Wide sleeve"):
+            obj.data.materials.clear()
+            obj.data.materials.append(ivory)
+        elif name == "Chima":
+            obj.data.materials.clear()
+            obj.data.materials.append(sage)
+            obj.scale.z = 0.82
+            obj.location.z = 1.05
+        elif name == "High waist":
+            obj.data.materials.clear()
+            obj.data.materials.append(sage_dark)
+        elif name in {"Jeogori collar left", "Jeogori collar right"}:
+            obj.data.materials.clear()
+            obj.data.materials.append(sage_light)
+        elif name.startswith(("Ot-goreum", "Chima embroidery")):
+            obj.hide_render = True
+            obj.hide_viewport = True
+        elif name == "Chima hem":
+            obj.data.materials.clear()
+            obj.data.materials.append(sage_light)
+            obj.location.z = 0.52
+        elif name.startswith("Beoseon leg"):
+            obj.data.materials.clear()
+            obj.data.materials.append(skin)
+        elif name.startswith(("Flower shoe", "Shoe pearl")):
+            obj.data.materials.clear()
+            obj.data.materials.append(shoe)
+        elif name.startswith("Norigae"):
+            obj.hide_render = True
+            obj.hide_viewport = True
+
+    curve(
+        "Guest05 wrap neckline left",
+        [(-0.25, -0.34, 2.01), (0.02, -0.38, 1.72)],
+        sage,
+        0.026,
+        root,
+    )
+    curve(
+        "Guest05 wrap neckline right",
+        [(0.25, -0.34, 2.01), (-0.02, -0.39, 1.72)],
+        sage,
+        0.026,
+        root,
+    )
+    sphere("Guest05 waist bow center", (0.17, -0.39, 1.55), (0.070, 0.035, 0.070), sage_dark, root)
+    for side in (-1, 1):
+        bow = sphere(
+            f"Guest05 waist bow loop {side}",
+            (0.17 + 0.10 * side, -0.38, 1.56),
+            (0.13, 0.035, 0.085),
+            sage_dark,
+            root,
+            28,
+            18,
+        )
+        bow.rotation_euler.y = math.radians(22 * side)
+    curve(
+        "Guest05 waist bow tail",
+        [(0.18, -0.38, 1.50), (0.25, -0.39, 1.18), (0.20, -0.36, 0.93)],
+        sage_dark,
+        0.036,
+        root,
+    )
+
+    rounded_cube(
+        "Guest05 right-hand handbag",
+        (-0.24, -0.03, -0.95),
+        (0.22, 0.09, 0.20),
+        bag,
+        right_arm,
+        0.065,
+    )
+    curve(
+        "Guest05 handbag handle",
+        [(-0.36, -0.04, -0.78), (-0.29, -0.05, -0.59), (-0.13, -0.05, -0.78)],
+        gold,
+        0.018,
+        right_arm,
+    )
+    rounded_cube(
+        "Guest05 handbag clasp",
+        (-0.24, -0.13, -0.94),
+        (0.045, 0.018, 0.050),
+        gold,
+        right_arm,
+        0.018,
+    )
+
+    return root, left_leg, right_leg, left_arm, right_arm
+
+
 def set_walk_animation(root, left_leg, right_leg, left_arm, right_arm, guest_id):
     left_base_z = left_leg.location.z
     right_base_z = right_leg.location.z
@@ -715,6 +831,7 @@ def main():
         "guest-02": build_guest02_character,
         "guest-03": build_guest03_character,
         "guest-04": build_guest04_character,
+        "guest-05": build_guest05_character,
     }
     root, left_leg, right_leg, left_arm, right_arm = builders[args.guest]()
     set_walk_animation(root, left_leg, right_leg, left_arm, right_arm, args.guest)

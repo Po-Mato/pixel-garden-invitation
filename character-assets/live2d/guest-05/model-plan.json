@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "characterId": "guest-05",
+  "status": "rig-pending",
+  "sourceTurnaround": "character-assets/reference/guest-3d-master-sources/v1/guest-05/guest-05-turnaround-concept.png",
+  "target": {
+    "model": "guest-05.moc3",
+    "manifest": "guest-05.model3.json",
+    "textures": "textures"
+  },
+  "requiredLayers": [
+    "뒤쪽 머리카락",
+    "땋은 로우 번",
+    "몸통과 목",
+    "얼굴",
+    "왼쪽 눈과 눈썹",
+    "오른쪽 눈과 눈썹",
+    "코",
+    "입",
+    "앞머리",
+    "옆머리",
+    "왼팔",
+    "오른팔",
+    "아이보리 볼레로",
+    "세이지 랩 원피스",
+    "허리 리본",
+    "오른손 핸드백"
+  ],
+  "expressions": ["기본", "미소", "축하"],
+  "motions": ["대기", "인사", "축하"],
+  "runtimePolicy": {
+    "maximumConcurrentModels": 1,
+    "unloadWhenHidden": true,
+    "fallback": "static-poster"
+  }
+}
