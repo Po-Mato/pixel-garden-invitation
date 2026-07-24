@@ -1,8 +1,7 @@
 import {
-  guestPresetFrame,
-  resolveGuestPreset,
   type CharacterAppearance
 } from "@wedding-game/shared";
+import { resolveCharacterPortraitUrl } from "../character/assets";
 import { resolveWorldMapAsset } from "./worldVisuals";
 import type { WorldPhotoPose, WorldPhotoSpot, WorldPhotoSpotId } from "./world";
 
@@ -73,8 +72,8 @@ export const weddingPhotoStripWidth = 1080;
 export const weddingPhotoStripHeight = 2160;
 
 const sceneHeight = 1030;
-const spriteFrameWidth = guestPresetFrame.source.width;
-const spriteFrameHeight = guestPresetFrame.source.height;
+const spriteFrameWidth = 96;
+const spriteFrameHeight = 144;
 
 export const weddingPhotoNpcFrames = {
   bride: {
@@ -227,6 +226,18 @@ async function loadWeddingPhotoNpcSprite(
   if (cached) return cached;
 
   const pending = (async () => {
+    const portrait = await loadImage(`${baseUrl}characters/puppets/${kind}/preview.webp`);
+    if (portrait) {
+      const canvas = document.createElement("canvas");
+      canvas.width = portrait.naturalWidth;
+      canvas.height = portrait.naturalHeight;
+      const context = canvas.getContext("2d");
+      if (!context) return null;
+      context.imageSmoothingEnabled = true;
+      context.drawImage(portrait, 0, 0);
+      return canvas;
+    }
+
     const frame = weddingPhotoNpcFrames[kind];
     const image = await loadImage(`${baseUrl}characters/generated/npc/${frame.file}`);
     if (!image) return null;
@@ -331,13 +342,13 @@ function drawSprite(
   if (image) {
     const sourceWidth = image instanceof HTMLImageElement ? image.naturalWidth : image.width;
     const sourceHeight = image instanceof HTMLImageElement ? image.naturalHeight : image.height;
-    context.imageSmoothingEnabled = false;
+    context.imageSmoothingEnabled = true;
     context.drawImage(
       image,
       0,
       0,
-      Math.min(spriteFrameWidth, sourceWidth),
-      Math.min(spriteFrameHeight, sourceHeight),
+      sourceWidth,
+      sourceHeight,
       centerX - width / 2,
       floorY - height,
       width,
@@ -437,13 +448,14 @@ function canvasToBlob(canvas: HTMLCanvasElement): Promise<Blob> {
 
 function createMemoryPreview(canvas: HTMLCanvasElement): string {
   const preview = document.createElement("canvas");
-  preview.width = 432;
-  preview.height = 540;
+  preview.width = 720;
+  preview.height = 900;
   const context = preview.getContext("2d");
   if (!context) return "";
-  context.imageSmoothingEnabled = false;
+  context.imageSmoothingEnabled = true;
+  context.imageSmoothingQuality = "high";
   context.drawImage(canvas, 0, 0, preview.width, preview.height);
-  return preview.toDataURL("image/jpeg", 0.84);
+  return preview.toDataURL("image/jpeg", 0.92);
 }
 
 export function weddingPhotoFilename(guestName: string, spotId: WorldPhotoSpotId): string {
@@ -470,11 +482,10 @@ export async function createWeddingPhotoCapture(data: WeddingPhotoData): Promise
   const context = canvas.getContext("2d");
   if (!context) throw new Error("이 브라우저에서는 기념 사진을 만들 수 없습니다.");
 
-  const guestPreset = resolveGuestPreset(data.appearance);
   const baseUrl = import.meta.env.BASE_URL;
   const [background, guest, bride, groom] = await Promise.all([
     loadImage(resolveWorldMapAsset(data.spot.zoneId, "background.webp", baseUrl)),
-    loadImage(`${baseUrl}characters/generated/${guestPreset.generated.idle}`),
+    loadImage(resolveCharacterPortraitUrl(data.appearance, baseUrl)),
     loadWeddingPhotoNpcSprite("bride", baseUrl),
     data.spot.cast === "couple" ? loadWeddingPhotoNpcSprite("groom", baseUrl) : Promise.resolve(null)
   ]);

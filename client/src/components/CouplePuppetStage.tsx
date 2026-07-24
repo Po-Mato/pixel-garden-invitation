@@ -46,12 +46,13 @@ export function resolvePuppetPlacement(
 ): PuppetPlacement {
   if (!fitFullBody) return { scale: 1, rootY: sourceRootY };
 
-  const verticalPadding = 12;
-  const scale = (viewportHeight - verticalPadding * 2) / canvasHeight;
+  const topPadding = 20;
+  const bottomPadding = 32;
+  const scale = (viewportHeight - topPadding - bottomPadding) / canvasHeight;
   const sourceBelowRoot = canvasHeight - sourceRootY;
   return {
     scale,
-    rootY: viewportHeight - verticalPadding - sourceBelowRoot * scale
+    rootY: viewportHeight - bottomPadding - sourceBelowRoot * scale
   };
 }
 

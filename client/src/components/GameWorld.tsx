@@ -93,6 +93,7 @@ import "../game-guide.css";
 import "../npc-reactions.css";
 import "../game-mobile-controls.css";
 import "../wedding-photo.css";
+import "../game-luxe-theme.css";
 
 type GameWorldProps = {
   profile: EntryProfile;

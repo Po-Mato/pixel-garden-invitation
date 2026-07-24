@@ -28,8 +28,8 @@ describe("신랑·신부 2D 퍼펫", () => {
     const top = placement.rootY - 736 * placement.scale;
     const bottom = placement.rootY + (768 - 736) * placement.scale;
 
-    expect(top).toBeCloseTo(12, 5);
-    expect(bottom).toBeCloseTo(548, 5);
+    expect(top).toBeCloseTo(20, 5);
+    expect(bottom).toBeCloseTo(528, 5);
     expect(placement.scale).toBeLessThan(1);
   });
 

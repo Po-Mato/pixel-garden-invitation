@@ -32,10 +32,15 @@ function sourcePath(sourceRoot, manifestPath) {
   return join(sourceRoot, manifestPath.replace(/^character-assets\/source\//, ""));
 }
 
+function projectPath(manifestPath) {
+  return join(root, manifestPath);
+}
+
 async function prevalidateSources(sourceRoot) {
   for (const preset of guestPresetCatalog.presets) {
     await requireFile(sourcePath(sourceRoot, preset.source.walk), guestWalkDimensions);
     await requireFile(sourcePath(sourceRoot, preset.source.idle), guestIdleDimensions);
+    await requireFile(projectPath(preset.reference.directions.down), { width: 192, height: 288 });
   }
 
   for (const npc of catalog.npcs) {
@@ -94,6 +99,10 @@ export async function generateCharacterAssets({
       : idleSource;
     await writeFixed(generatedWalkSource, preset.generated.walk);
     await writeFixed(generatedIdleSource, preset.generated.idle);
+    await writeFixed(
+      projectPath(preset.reference.directions.down),
+      `guests/portraits/${preset.id}.png`
+    );
     await writeCoarse(
       generatedWalkSource,
       `guests/world/${preset.id}__walk.png`,

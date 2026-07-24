@@ -192,7 +192,7 @@ describe("EntryScreen", () => {
 
     expect(screen.getByRole("dialog", { name: "하객 캐릭터 선택" })).toHaveClass("entry-character-sheet");
     expect(screen.getByRole("heading", { name: "완성 하객 캐릭터" })).toBeInTheDocument();
-    expect(screen.getByLabelText("선택한 하객 캐릭터")).toBeInTheDocument();
+    expect(screen.getByRole("img", { name: "선택한 하객 캐릭터" })).toBeInTheDocument();
   });
 
   it("장식은 첫 화면 뒤에 유지하고 입장 제어는 선택창 안에 배치한다", () => {

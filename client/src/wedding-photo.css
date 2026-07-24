@@ -282,7 +282,9 @@
   filter: drop-shadow(3px 4px 1px rgba(45, 34, 34, 0.42));
 }
 
-.wedding-photo-booth__guest .character-sprite {
+.wedding-photo-booth__guest .character-sprite,
+.wedding-photo-booth__guest .character-portrait {
+  display: block;
   width: 96px;
   height: 144px;
 }

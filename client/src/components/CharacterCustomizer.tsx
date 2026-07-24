@@ -10,6 +10,7 @@ import {
   randomizeAppearance,
   updateAppearance
 } from "../character/appearanceState";
+import { CharacterPortrait } from "./CharacterPortrait";
 import { CharacterSprite } from "./CharacterSprite";
 
 type Props = {
@@ -36,12 +37,9 @@ export function CharacterCustomizer({ value, onChange }: Props) {
         </div>
         <div className="character-customizer__halo" aria-hidden="true" />
         <div className="character-customizer__sprite">
-          <CharacterSprite
+          <CharacterPortrait
             appearance={value}
-            direction="down"
-            moving={false}
             label="선택한 하객 캐릭터"
-            displayMode="preview"
           />
         </div>
         <p className="character-customizer__selected-name">{selectedPreset.label}</p>

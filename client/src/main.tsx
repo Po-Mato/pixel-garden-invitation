@@ -13,6 +13,7 @@ import "./pwa.css";
 import "./network-performance.css";
 import "./device-performance.css";
 import "./entry-screen-v3.css";
+import "./wedding-luxe-theme.css";
 
 const initialSearch = new URLSearchParams(window.location.search);
 if (!initialSearch.has("admin")) {

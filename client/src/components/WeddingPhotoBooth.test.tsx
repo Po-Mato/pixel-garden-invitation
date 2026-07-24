@@ -67,6 +67,8 @@ describe("WeddingPhotoBooth", () => {
     );
 
     expect(screen.getByRole("button", { name: "포토존 닫기" })).toHaveFocus();
+    expect(document.querySelector(".wedding-photo-booth__guest .character-portrait"))
+      .toHaveAttribute("src", expect.stringContaining("/guests/portraits/feminine-long-wave-dress.png"));
     fireEvent.click(screen.getByRole("button", { name: "꽃하트" }));
     expect(screen.getByRole("button", { name: "꽃하트" })).toHaveAttribute("aria-pressed", "true");
     fireEvent.click(screen.getByRole("button", { name: "기념 촬영" }));

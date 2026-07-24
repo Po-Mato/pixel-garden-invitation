@@ -23,7 +23,7 @@ import {
   type WeddingPhotoMemory
 } from "../game/weddingPhoto";
 import type { WorldPhotoPose, WorldPhotoSpot } from "../game/world";
-import { CharacterSprite } from "./CharacterSprite";
+import { CharacterPortrait } from "./CharacterPortrait";
 
 type WeddingPhotoBoothProps = {
   spot: WorldPhotoSpot;
@@ -210,7 +210,7 @@ export function WeddingPhotoBooth({
                   backgroundSize: "288px 576px"
                 }}
               />
-              <span className="wedding-photo-booth__guest"><CharacterSprite appearance={appearance} direction="down" moving={false} displayMode="preview" /></span>
+              <span className="wedding-photo-booth__guest"><CharacterPortrait appearance={appearance} /></span>
               {spot.cast === "couple" ? (
                 <span
                   className="wedding-photo-booth__npc wedding-photo-booth__npc--groom"

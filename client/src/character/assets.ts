@@ -17,6 +17,14 @@ export type ResolvedCharacterLayer = {
 const assetUrl = (baseUrl: string, path: string) =>
   `${baseUrl}characters/generated/${path}`;
 
+export function resolveCharacterPortraitUrl(
+  appearance: CharacterAppearance,
+  baseUrl = import.meta.env.BASE_URL
+) {
+  const preset = resolveGuestPreset(appearance);
+  return assetUrl(baseUrl, `guests/portraits/${preset.id}.png`);
+}
+
 export function resolveCharacterLayers(
   appearance: CharacterAppearance,
   baseUrl = import.meta.env.BASE_URL,
