@@ -11,7 +11,7 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--guest",
-        choices=("guest-01", "guest-02", "guest-03", "guest-04", "guest-05", "guest-06"),
+        choices=("guest-01", "guest-02", "guest-03", "guest-04", "guest-05", "guest-06", "guest-07"),
         default="guest-01",
     )
     parser.add_argument("--output-root", required=True)
@@ -832,6 +832,76 @@ def build_guest06_character():
     return root, left_leg, right_leg, left_arm, right_arm
 
 
+def build_guest07_character():
+    root, left_leg, right_leg, left_arm, right_arm = build_guest06_character()
+    root.name = "Guest07_Master"
+
+    white = material("Guest07 white bolero", (0.97, 0.96, 0.93))
+    lavender = material("Guest07 lavender chiffon", (0.49, 0.39, 0.76), roughness=0.52)
+    lavender_light = material("Guest07 chiffon highlight", (0.72, 0.64, 0.92), roughness=0.58)
+    silver = material("Guest07 silver", (0.64, 0.67, 0.72), roughness=0.26, metallic=0.72)
+    pearl = material("Guest07 crystal pearl", (0.94, 0.95, 0.98), roughness=0.18, metallic=0.08)
+
+    for obj in root.children_recursive:
+        name = obj.name
+        if name == "Torso":
+            obj.data.materials.clear()
+            obj.data.materials.append(lavender)
+        elif name in {"Left bolero panel", "Right bolero panel", "Bolero neckline"} or name.startswith("Sleeve "):
+            obj.data.materials.clear()
+            obj.data.materials.append(white)
+        elif name == "Skirt":
+            obj.data.materials.clear()
+            obj.data.materials.append(lavender)
+            obj.scale.z = 1.0
+            obj.location.z = 0.94
+        elif name == "Waist belt":
+            obj.data.materials.clear()
+            obj.data.materials.append(lavender_light)
+        elif name == "Skirt hem":
+            obj.data.materials.clear()
+            obj.data.materials.append(lavender_light)
+            obj.location.z = 0.33
+        elif name.startswith(("Guest06 blouse bow", "Guest06 left shoulder bag", "Guest06 bag")):
+            obj.hide_render = True
+            obj.hide_viewport = True
+        elif name.startswith("Earring link"):
+            obj.data.materials.clear()
+            obj.data.materials.append(silver)
+        elif name.startswith("Pearl earring"):
+            obj.data.materials.clear()
+            obj.data.materials.append(pearl)
+
+    sphere("Guest07 ruched bodice", (0, -0.285, 1.78), (0.27, 0.055, 0.32), lavender, root)
+    for offset in (-0.16, -0.08, 0.0, 0.08, 0.16):
+        curve(
+            f"Guest07 bodice gather {offset}",
+            [(offset, -0.35, 2.01), (offset * 0.42, -0.37, 1.77), (offset * 0.72, -0.36, 1.54)],
+            lavender_light,
+            0.012,
+            root,
+        )
+    rounded_cube("Guest07 waist accent", (0, -0.31, 1.50), (0.34, 0.030, 0.045), lavender_light, root, 0.020)
+    rounded_cube(
+        "Guest07 right-hand clutch",
+        (-0.04, -0.08, -0.88),
+        (0.25, 0.055, 0.13),
+        silver,
+        right_arm,
+        0.055,
+    )
+    curve(
+        "Guest07 clutch seam",
+        [(-0.22, -0.145, -0.82), (-0.04, -0.16, -0.91), (0.14, -0.145, -0.82)],
+        pearl,
+        0.012,
+        right_arm,
+    )
+    sphere("Guest07 clutch clasp", (-0.04, -0.15, -0.87), (0.035, 0.018, 0.035), pearl, right_arm, 20, 12)
+
+    return root, left_leg, right_leg, left_arm, right_arm
+
+
 def set_walk_animation(root, left_leg, right_leg, left_arm, right_arm, guest_id):
     left_base_z = left_leg.location.z
     right_base_z = right_leg.location.z
@@ -943,6 +1013,7 @@ def main():
         "guest-04": build_guest04_character,
         "guest-05": build_guest05_character,
         "guest-06": build_guest06_character,
+        "guest-07": build_guest07_character,
     }
     root, left_leg, right_leg, left_arm, right_arm = builders[args.guest]()
     set_walk_animation(root, left_leg, right_leg, left_arm, right_arm, args.guest)

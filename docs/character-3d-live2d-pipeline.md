@@ -60,6 +60,13 @@
 - 앱 적용 후보와 감사 결과: `character-assets/reference/guest-3d-master-sources/v1/guest-06/pilot`
 - Live2D 계획: `character-assets/live2d/guest-06/model-plan.json`
 
+`guest-07`은 반묶음 브레이드가 있는 긴 갈색 웨이브 헤어, 흰색 크롭 볼레로, 라벤더 쉬폰 드레스, 오른손 은색 클러치 프리셋으로 같은 구조와 검증 기준을 사용한다.
+
+- 턴어라운드: `character-assets/reference/guest-3d-master-sources/v1/guest-07/guest-07-turnaround-concept.png`
+- 3D 마스터: `character-assets/reference/guest-3d-master-sources/v1/guest-07/blender/guest-07-master.blend`
+- 앱 적용 후보와 감사 결과: `character-assets/reference/guest-3d-master-sources/v1/guest-07/pilot`
+- Live2D 계획: `character-assets/live2d/guest-07/model-plan.json`
+
 재생성 명령:
 
 ```sh
@@ -82,6 +89,10 @@ node scripts/build-guest-3d-sprite-pilot.mjs --guest guest-05 --preset feminine-
 blender --background --python scripts/blender/build_guest_3d_master.py -- --guest guest-06 --output-root character-assets/reference/guest-3d-master-sources/v1/guest-06/blender
 node scripts/render-guest-3d-pose-guides.mjs --root character-assets/reference/guest-3d-master-sources/v1/guest-06/blender
 node scripts/build-guest-3d-sprite-pilot.mjs --guest guest-06 --preset feminine-champagne-navy-skirt
+
+blender --background --python scripts/blender/build_guest_3d_master.py -- --guest guest-07 --output-root character-assets/reference/guest-3d-master-sources/v1/guest-07/blender
+node scripts/render-guest-3d-pose-guides.mjs --root character-assets/reference/guest-3d-master-sources/v1/guest-07/blender
+node scripts/build-guest-3d-sprite-pilot.mjs --guest guest-07 --preset feminine-lavender-jacket-dress
 ```
 
 ## Live2D 적용 범위

@@ -237,18 +237,21 @@ async function saveBuffer(file, buffer) {
 
 async function replaceLowerWithMirroredStep(target, source, startY) {
   const metadata = await sharp(target).metadata();
+  const seamOverlap = Math.max(2, Math.round(metadata.height * 0.008));
+  const upperBottom = Math.min(metadata.height, startY + seamOverlap);
+  const lowerTop = Math.max(0, startY - seamOverlap);
   const upper = await sharp(target)
-    .extract({ left: 0, top: 0, width: metadata.width, height: startY })
+    .extract({ left: 0, top: 0, width: metadata.width, height: upperBottom })
     .png()
     .toBuffer();
   const mirroredLower = await sharp(source)
-    .extract({ left: 0, top: startY, width: metadata.width, height: metadata.height - startY })
+    .extract({ left: 0, top: lowerTop, width: metadata.width, height: metadata.height - lowerTop })
     .flop()
     .png()
     .toBuffer();
   return canvas(metadata.width, metadata.height, [
     { input: upper, left: 0, top: 0 },
-    { input: mirroredLower, left: 0, top: startY }
+    { input: mirroredLower, left: 0, top: lowerTop }
   ]);
 }
 
