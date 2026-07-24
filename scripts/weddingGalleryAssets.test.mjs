@@ -56,20 +56,23 @@ function ratio(metadata) {
   return metadata.width / metadata.height;
 }
 
-test("640과 1024 폭의 WebP 파생 이미지를 정확히 생성한다", async () => {
+test("640과 1024 폭의 WebP와 AVIF 파생 이미지를 정확히 생성한다", async () => {
   await withFixture(async ({ rootDir, manifestPath, sourceRoot, outputRoot }) => {
     await buildWeddingGalleryAssets({ rootDir, manifestPath, sourceRoot, outputRoot });
 
     const files = (await readdir(outputRoot)).sort();
-    assert.equal(files.length, 20);
-    assert.equal(new Set(files).size, 20);
+    assert.equal(files.length, 40);
+    assert.equal(new Set(files).size, 40);
 
     for (const photo of photos) {
       for (const width of [640, 1024]) {
-        const metadata = await sharp(join(outputRoot, `${photo.id}-${width}.webp`)).metadata();
-        assert.equal(metadata.format, "webp");
-        assert.equal(metadata.width, width);
-        assert.ok(Math.abs(ratio(metadata) / (photo.width / photo.height) - 1) <= 0.01);
+        for (const format of ["webp", "avif"]) {
+          const metadata = await sharp(join(outputRoot, `${photo.id}-${width}.${format}`)).metadata();
+          assert.equal(metadata.format, format === "avif" ? "heif" : format);
+          if (format === "avif") assert.equal(metadata.compression, "av1");
+          assert.equal(metadata.width, width);
+          assert.ok(Math.abs(ratio(metadata) / (photo.width / photo.height) - 1) <= 0.01);
+        }
       }
     }
   });
@@ -142,18 +145,18 @@ test("감사는 출력 디렉터리의 추가 항목을 거부한다", async () 
   });
 });
 
-test("감사는 원본 디렉터리 없이 커밋된 WebP를 검증한다", async () => {
+test("감사는 원본 디렉터리 없이 커밋된 WebP와 AVIF를 검증한다", async () => {
   await withFixture(async ({ rootDir, manifestPath, sourceRoot, outputRoot }) => {
     await buildWeddingGalleryAssets({ rootDir, manifestPath, sourceRoot, outputRoot });
     await rm(sourceRoot, { recursive: true, force: true });
 
     const result = await auditWeddingGalleryAssets({ rootDir, manifestPath, outputRoot });
 
-    assert.equal(result.files.length, 20);
+    assert.equal(result.files.length, 40);
   });
 });
 
-test("publish 교체가 실패하면 기존 출력 20개를 복원한다", async () => {
+test("publish 교체가 실패하면 기존 출력 40개를 복원한다", async () => {
   await withFixture(async ({ rootDir, manifestPath, sourceRoot, outputRoot }) => {
     await buildWeddingGalleryAssets({ rootDir, manifestPath, sourceRoot, outputRoot });
     const existingOutput = join(outputRoot, "01-cover-640.webp");
@@ -178,7 +181,7 @@ test("publish 교체가 실패하면 기존 출력 20개를 복원한다", async
     );
 
     assert.equal(renameCalls, 3);
-    assert.equal((await readdir(outputRoot)).length, 20);
+    assert.equal((await readdir(outputRoot)).length, 40);
     assert.deepEqual(await readFile(existingOutput), before);
   });
 });
@@ -211,9 +214,9 @@ test("rollback rename이 실패하면 backup을 복사해 기존 출력을 복�
     );
 
     assert.equal(renameCalls, 3);
-    assert.equal((await readdir(outputRoot)).length, 20);
+    assert.equal((await readdir(outputRoot)).length, 40);
     assert.deepEqual(await readFile(existingOutput), before);
-    assert.equal((await readdir(backupRoot)).length, 20);
+    assert.equal((await readdir(backupRoot)).length, 40);
   });
 });
 
@@ -246,7 +249,7 @@ test("rollback copy도 실패하면 backup 경로를 포함해 보고하고 보�
     );
 
     assert.equal(renameCalls, 3);
-    assert.equal((await readdir(backupRoot)).length, 20);
+    assert.equal((await readdir(backupRoot)).length, 40);
   });
 });
 
@@ -267,7 +270,7 @@ test("backup 정리 실패는 경고로 반환하고 새 출력을 유지한다"
     });
 
     assert.match(result.cleanupWarning.message, /backup cleanup failed/);
-    assert.equal((await readdir(outputRoot)).length, 20);
+    assert.equal((await readdir(outputRoot)).length, 40);
     await auditWeddingGalleryAssets({ rootDir, manifestPath, outputRoot });
   });
 });
@@ -288,6 +291,6 @@ test("중복 ID 매니페스트를 거부하고 실패한 빌드는 기존 출�
       () => buildWeddingGalleryAssets({ rootDir, manifestPath, sourceRoot, outputRoot }),
       /원본/
     );
-    assert.equal((await readdir(outputRoot)).length, 20);
+    assert.equal((await readdir(outputRoot)).length, 40);
   });
 });

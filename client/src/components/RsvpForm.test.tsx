@@ -31,15 +31,17 @@ describe("RsvpForm", () => {
     Object.defineProperty(navigator, "onLine", { configurable: true, value: true });
   });
 
-  it("작성 중인 답변을 기기에 임시 저장하고 오프라인 전송을 막는다", async () => {
+  it("작성 중인 답변을 임시 저장하고 오프라인 전송 대기 동작을 제공한다", async () => {
     Object.defineProperty(navigator, "onLine", { configurable: true, value: false });
-    render(<RsvpForm policy={policy} draftStorageId="sample" submitLabel="보내기" onSubmit={vi.fn()} />);
+    const onSubmit = vi.fn().mockResolvedValue(undefined);
+    render(<RsvpForm policy={policy} draftStorageId="sample" submitLabel="보내기" onSubmit={onSubmit} />);
 
-    fireEvent.change(screen.getByLabelText("이름"), { target: { value: "김하객" } });
+    completeRequiredFields();
 
-    expect(screen.getByRole("button", { name: "연결 후 전송 가능" })).toBeDisabled();
-    await waitFor(() => expect(loadRsvpFormDraft("sample")?.value.guestName).toBe("김하객"));
-    expect(screen.getByRole("status")).toHaveTextContent("오프라인입니다");
+    const queueButton = screen.getByRole("button", { name: "전송 대기함에 저장" });
+    expect(queueButton).toBeEnabled();
+    fireEvent.click(queueButton);
+    await waitFor(() => expect(onSubmit).toHaveBeenCalledOnce());
   });
 
   it("복원한 임시 저장의 시각을 보여주고 삭제하면 폼을 초기화한다", () => {

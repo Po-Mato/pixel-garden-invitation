@@ -8,6 +8,7 @@ import {
   type RsvpFormDraft
 } from "../invitation/publicFormDraftStorage";
 import { FormDraftManager } from "./FormDraftManager";
+import { PendingSubmissionManager } from "./PendingSubmissionManager";
 
 export type RsvpPolicy = {
   responseDeadline: string;
@@ -21,6 +22,8 @@ type RsvpFormProps = {
   draftStorageId?: string;
   restoredDraftAt?: string;
   draftResetValue?: RsvpFormInitialValue;
+  queuedAt?: string;
+  onDiscardQueued?: () => void;
   submitLabel: string;
   onSubmit: (payload: RsvpSubmission) => Promise<void>;
 };
@@ -58,6 +61,8 @@ export function RsvpForm({
   draftStorageId,
   restoredDraftAt,
   draftResetValue,
+  queuedAt,
+  onDiscardQueued,
   submitLabel,
   onSubmit
 }: RsvpFormProps) {
@@ -217,7 +222,9 @@ export function RsvpForm({
 
   return (
     <form className="rsvp-form form-stack" onSubmit={handleSubmit} onChange={() => setDraftTouched(true)}>
-      {draftSavedAt ? <FormDraftManager savedAt={draftSavedAt} onDiscard={discardDraft} /> : null}
+      {queuedAt && onDiscardQueued ? (
+        <PendingSubmissionManager queuedAt={queuedAt} online={online} label="참석 답변" onDiscard={onDiscardQueued} />
+      ) : draftSavedAt ? <FormDraftManager savedAt={draftSavedAt} onDiscard={discardDraft} /> : null}
       <p className="rsvp-deadline">{deadlinePassed
         ? "마감일이 지났지만 답변을 보내실 수 있습니다"
         : `${deadlineLabel}까지 알려주세요`}</p>
@@ -292,8 +299,8 @@ export function RsvpForm({
         <span>개인정보 수집 및 이용에 동의합니다. 예식 참석 인원 확인을 위해 이름·연락처·답변을 {deleteAtLabel}까지 보관 후 자동 삭제합니다.</span>
       </label>
 
-      <button className="primary-button rsvp-submit" type="submit" disabled={!valid || submitting || !online}>
-        {submitting ? "보내는 중" : !online ? "연결 후 전송 가능" : submitLabel}
+      <button className="primary-button rsvp-submit" type="submit" disabled={!valid || submitting}>
+        {submitting ? online ? "보내는 중" : "저장 중" : !online ? "전송 대기함에 저장" : queuedAt ? "대기 중인 답변 보내기" : submitLabel}
       </button>
       {draftStatus ? <p className="form-draft-status" role="status">{draftStatus}</p> : null}
       {message ? <p className="form-status form-status--error" role="alert">{message}</p> : null}

@@ -331,6 +331,21 @@ describe("GameWorld", () => {
     expect(screen.getByText("길 안내를 중단했어요")).toBeInTheDocument();
   });
 
+  it("offers a text route with the remaining journey and starts guidance from it", () => {
+    render(<GameWorld profile={profile} />);
+
+    fireEvent.click(screen.getByRole("button", { name: /쉬운 길찾기 열기/ }));
+
+    const dialog = screen.getByRole("dialog", { name: "쉬운 길찾기" });
+    expect(within(dialog).getByLabelText("남은 전체 여정 요약")).toHaveTextContent("남은 추억");
+    expect(within(dialog).getByRole("list", { name: "오시는 길까지 이동 순서" })).toBeInTheDocument();
+
+    fireEvent.click(within(dialog).getByRole("button", { name: "길 안내 시작" }));
+
+    expect(screen.queryByRole("dialog", { name: "쉬운 길찾기" })).not.toBeInTheDocument();
+    expect(screen.getByText("오시는 길 가까이 이동 중")).toBeInTheDocument();
+  });
+
   it("moves to another map and continues walking to its recommended destination", () => {
     window.localStorage.setItem(journeyProgressStorageKey, JSON.stringify({
       version: 1,

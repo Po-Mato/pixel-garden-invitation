@@ -1,7 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import type { WeddingGalleryPhoto } from "@wedding-game/shared";
 import { useViewPreferences } from "../accessibility/ViewPreferencesContext";
-import { buildGallerySrcSet, resolveGalleryAssetPath } from "../invitation/galleryAssets";
+import {
+  buildGalleryFormatSrcSet,
+  buildGallerySrcSet,
+  gallerySourcePathForFormat,
+  resolveGalleryAssetPath
+} from "../invitation/galleryAssets";
 import { useNetworkMode } from "../performance/networkQuality";
 
 type ResponsiveGalleryImageProps = {
@@ -24,6 +29,10 @@ export function ResponsiveGalleryImage({ photo, priority = false, quality = "aut
   const source = effectiveMode === "economy" && economySource
     ? economySource.assetPath
     : photo.assetPath;
+  const avifSource = gallerySourcePathForFormat(source, "avif");
+  const avifSrcSet = effectiveMode === "balanced"
+    ? buildGalleryFormatSrcSet(photo.sources, "avif")
+    : avifSource ? resolveGalleryAssetPath(avifSource) : null;
   const priorityAttribute = { fetchpriority: priority ? "high" : "auto" };
 
   useEffect(() => {
@@ -53,24 +62,27 @@ export function ResponsiveGalleryImage({ photo, priority = false, quality = "aut
   }
 
   return (
-    <img
-      className={`responsive-gallery-image responsive-gallery-image--${loaded ? "loaded" : "loading"}`}
-      data-network-mode={quality === "full" ? "full" : networkMode}
-      data-retry-count={retryCount}
-      src={resolveGalleryAssetPath(source)}
-      srcSet={effectiveMode === "balanced" ? buildGallerySrcSet(photo.sources) : undefined}
-      sizes={sizes}
-      width={photo.width}
-      height={photo.height}
-      alt={photo.alt}
-      loading={priority ? "eager" : "lazy"}
-      {...priorityAttribute}
-      decoding="async"
-      onLoad={() => setLoaded(true)}
-      onError={() => {
-        setLoaded(false);
-        setFailed(true);
-      }}
-    />
+    <picture className="responsive-gallery-picture">
+      {avifSrcSet ? <source type="image/avif" srcSet={avifSrcSet} sizes={sizes} /> : null}
+      <img
+        className={`responsive-gallery-image responsive-gallery-image--${loaded ? "loaded" : "loading"}`}
+        data-network-mode={quality === "full" ? "full" : networkMode}
+        data-retry-count={retryCount}
+        src={resolveGalleryAssetPath(source)}
+        srcSet={effectiveMode === "balanced" ? buildGallerySrcSet(photo.sources) : undefined}
+        sizes={sizes}
+        width={photo.width}
+        height={photo.height}
+        alt={photo.alt}
+        loading={priority ? "eager" : "lazy"}
+        {...priorityAttribute}
+        decoding="async"
+        onLoad={() => setLoaded(true)}
+        onError={() => {
+          setLoaded(false);
+          setFailed(true);
+        }}
+      />
+    </picture>
   );
 }

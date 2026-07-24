@@ -145,13 +145,47 @@ export async function checkForPwaUpdate(): Promise<void> {
 
 export async function applyPwaUpdate(): Promise<boolean> {
   const registration = await registrationPromise;
-  if (!registration?.waiting) {
-    await checkForPwaUpdate();
-    return false;
-  }
+  if (!registration) return false;
+  if (!registration.waiting) await checkForPwaUpdate();
+  const waiting = registration.waiting ?? await waitForWaitingWorker(registration);
+  if (!waiting) return false;
   reloadForUpdate = true;
-  registration.waiting.postMessage({ type: "SKIP_WAITING" });
+  waiting.postMessage({ type: "SKIP_WAITING" });
   return true;
+}
+
+function waitForWaitingWorker(
+  registration: ServiceWorkerRegistration,
+  timeoutMs = 4_000
+): Promise<ServiceWorker | null> {
+  if (registration.waiting) return Promise.resolve(registration.waiting);
+
+  return new Promise((resolve) => {
+    let installing = registration.installing;
+    let finished = false;
+    const finish = (worker: ServiceWorker | null) => {
+      if (finished) return;
+      finished = true;
+      window.clearTimeout(timer);
+      registration.removeEventListener("updatefound", handleUpdateFound);
+      installing?.removeEventListener("statechange", handleStateChange);
+      resolve(worker);
+    };
+    const handleStateChange = () => {
+      if (registration.waiting) finish(registration.waiting);
+      else if (installing?.state === "redundant") finish(null);
+    };
+    const handleUpdateFound = () => {
+      installing?.removeEventListener("statechange", handleStateChange);
+      installing = registration.installing;
+      installing?.addEventListener("statechange", handleStateChange);
+      handleStateChange();
+    };
+    const timer = window.setTimeout(() => finish(registration.waiting), timeoutMs);
+    registration.addEventListener("updatefound", handleUpdateFound);
+    installing?.addEventListener("statechange", handleStateChange);
+    handleStateChange();
+  });
 }
 
 export function warmPwaAssetCache(urls: readonly string[]): void {

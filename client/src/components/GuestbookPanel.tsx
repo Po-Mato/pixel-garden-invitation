@@ -13,7 +13,13 @@ import {
   loadGuestbookFormDraft,
   saveGuestbookFormDraft
 } from "../invitation/publicFormDraftStorage";
+import {
+  clearGuestbookSendQueue,
+  loadGuestbookSendQueue,
+  saveGuestbookSendQueue
+} from "../invitation/publicFormQueueStorage";
 import { FormDraftManager } from "./FormDraftManager";
+import { PendingSubmissionManager } from "./PendingSubmissionManager";
 
 type GuestbookPanelProps = {
   nickname: string;
@@ -77,8 +83,9 @@ export function GuestbookPanel({
 }: GuestbookPanelProps) {
   const invitationId = import.meta.env.VITE_INVITATION_ID ?? "sample-garden";
   const storedDraftRef = useRef(loadGuestbookFormDraft(invitationId));
-  const [draftNickname, setDraftNickname] = useState(storedDraftRef.current?.value.nickname ?? nickname);
-  const [draftMessage, setDraftMessage] = useState(storedDraftRef.current?.value.message ?? "");
+  const queuedSubmissionRef = useRef(loadGuestbookSendQueue(invitationId));
+  const [draftNickname, setDraftNickname] = useState(queuedSubmissionRef.current?.value.nickname ?? storedDraftRef.current?.value.nickname ?? nickname);
+  const [draftMessage, setDraftMessage] = useState(queuedSubmissionRef.current?.value.message ?? storedDraftRef.current?.value.message ?? "");
   const [editing, setEditing] = useState(false);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [busy, setBusy] = useState<"create" | "update" | "delete" | null>(null);
@@ -87,6 +94,7 @@ export function GuestbookPanel({
   const [online, setOnline] = useState(() => navigator.onLine !== false);
   const [draftTouched, setDraftTouched] = useState(false);
   const [draftSavedAt, setDraftSavedAt] = useState<string | null>(storedDraftRef.current?.savedAt ?? null);
+  const [queuedAt, setQueuedAt] = useState<string | null>(queuedSubmissionRef.current?.queuedAt ?? null);
   const [draftStatus, setDraftStatus] = useState(() => (
     storedDraftRef.current ? "이 기기에 저장된 작성 내용을 복원했습니다." : ""
   ));
@@ -150,6 +158,16 @@ export function GuestbookPanel({
     setDraftStatus("이 기기의 임시 저장을 삭제했습니다.");
   }
 
+  function discardQueuedSubmission() {
+    if (!clearGuestbookSendQueue(invitationId)) {
+      setStatus("전송 대기를 삭제하지 못했습니다. 잠시 후 다시 시도해 주세요.");
+      return;
+    }
+    queuedSubmissionRef.current = null;
+    setQueuedAt(null);
+    setStatus("전송 대기함에서 축하 메시지를 삭제했습니다.");
+  }
+
   function validateDraft(): GuestbookSubmission | null {
     const nextNickname = draftNickname.trim();
     const nextMessage = draftMessage.trim();
@@ -169,12 +187,27 @@ export function GuestbookPanel({
     if (busy) return;
     const payload = validateDraft();
     if (!payload) return;
+    if (!online) {
+      const queued = saveGuestbookSendQueue(invitationId, payload);
+      if (!queued) {
+        setError("전송 대기함에 저장하지 못했습니다. 이 화면을 닫지 말아주세요.");
+        return;
+      }
+      queuedSubmissionRef.current = queued;
+      setQueuedAt(queued.queuedAt);
+      setError("");
+      setStatus("축하 메시지를 전송 대기함에 저장했습니다. 연결되면 내용을 확인하고 보내주세요.");
+      return;
+    }
     setBusy("create");
     setError("");
     setStatus("");
     try {
       await onCreate(payload);
       clearGuestbookFormDraft(invitationId);
+      clearGuestbookSendQueue(invitationId);
+      queuedSubmissionRef.current = null;
+      setQueuedAt(null);
       setDraftSavedAt(null);
       setDraftStatus("");
       setStatus("축하 메시지를 남겼습니다. 이 기기에서 수정하거나 삭제할 수 있습니다.");
@@ -316,7 +349,9 @@ export function GuestbookPanel({
         </section>
       ) : (
         <form className="form-stack guestbook-compose" onSubmit={handleCreate}>
-          {draftSavedAt ? <FormDraftManager savedAt={draftSavedAt} onDiscard={discardDraft} /> : null}
+          {queuedAt ? (
+            <PendingSubmissionManager queuedAt={queuedAt} online={online} label="축하 메시지" onDiscard={discardQueuedSubmission} />
+          ) : draftSavedAt ? <FormDraftManager savedAt={draftSavedAt} onDiscard={discardDraft} /> : null}
           <label className="field">
             <span>이름 또는 닉네임</span>
             <input
@@ -342,8 +377,8 @@ export function GuestbookPanel({
             />
           </label>
           <span className="guestbook-character-count">{draftMessage.length}/240</span>
-          <button className="primary-button" type="submit" disabled={busy !== null || !online}>
-            {busy === "create" ? "메시지 보내는 중" : !online ? "연결 후 전송 가능" : "메시지 남기기"}
+          <button className="primary-button" type="submit" disabled={busy !== null}>
+            {busy === "create" ? "메시지 보내는 중" : !online ? "전송 대기함에 저장" : queuedAt ? "대기 중인 메시지 보내기" : "메시지 남기기"}
           </button>
           {draftStatus ? <p className="form-draft-status" role="status">{draftStatus}</p> : null}
         </form>

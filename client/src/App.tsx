@@ -10,7 +10,7 @@ import { useInvitationInvite } from "./invitation/useInvitationInvite";
 import { PwaStatusCenter } from "./components/PwaStatusCenter";
 
 const homeMapUrl = `${import.meta.env.BASE_URL}assets/maps/v2/home/background.webp`;
-const quickCoverUrl = `${import.meta.env.BASE_URL}images/wedding-gallery/01-cover-640.webp`;
+const quickCoverUrl = `${import.meta.env.BASE_URL}images/wedding-gallery/01-cover-640.avif`;
 let gameWorldModule: ReturnType<typeof importGameWorld> | undefined;
 let quickInvitationModule: ReturnType<typeof importQuickInvitation> | undefined;
 

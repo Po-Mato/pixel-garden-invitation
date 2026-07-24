@@ -5,6 +5,8 @@ import { createPortal } from "react-dom";
 import { isolateAppForModal } from "../accessibility/modalIsolation";
 import { useViewPreferences } from "../accessibility/ViewPreferencesContext";
 import { useNetworkMode } from "../performance/networkQuality";
+import { galleryPrefetchUrl, nextGalleryPrefetchIndex } from "../performance/galleryPrefetch";
+import { preloadImage } from "../performance/imagePreloader";
 import { ResponsiveGalleryImage } from "./ResponsiveGalleryImage";
 
 type PhotoLightboxProps = {
@@ -48,6 +50,7 @@ export function PhotoLightbox({ photos, index, onIndexChange, onClose }: PhotoLi
   const photoCountRef = useRef(photos.length);
   const onIndexChangeRef = useRef(onIndexChange);
   const onCloseRef = useRef(onClose);
+  const previousIndexRef = useRef(index);
 
   indexRef.current = index;
   photoCountRef.current = photos.length;
@@ -133,6 +136,30 @@ export function PhotoLightbox({ photos, index, onIndexChange, onClose }: PhotoLi
       }
     };
   }, [hasValidPhoto]);
+
+  useEffect(() => {
+    const previous = previousIndexRef.current;
+    previousIndexRef.current = index;
+    if (networkMode === "economy") return;
+    const nextIndex = nextGalleryPrefetchIndex(index, previous, photos.length);
+    const nextPhoto = nextIndex === null ? null : photos[nextIndex];
+    const url = nextPhoto ? galleryPrefetchUrl(nextPhoto, networkMode) : null;
+    if (!url) return;
+
+    const idleWindow = window as Window & {
+      requestIdleCallback?: (callback: () => void, options?: { timeout: number }) => number;
+      cancelIdleCallback?: (id: number) => void;
+    };
+    let timer: number | null = null;
+    let idleId: number | null = null;
+    const preload = () => { void preloadImage(url, "low"); };
+    if (idleWindow.requestIdleCallback) idleId = idleWindow.requestIdleCallback(preload, { timeout: 800 });
+    else timer = window.setTimeout(preload, 240);
+    return () => {
+      if (idleId !== null) idleWindow.cancelIdleCallback?.(idleId);
+      if (timer !== null) window.clearTimeout(timer);
+    };
+  }, [index, networkMode, photos]);
 
   if (!photo) {
     return null;

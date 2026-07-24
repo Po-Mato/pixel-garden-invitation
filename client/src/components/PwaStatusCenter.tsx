@@ -44,6 +44,8 @@ export function PwaStatusCenter({ playing, showInstall }: PwaStatusCenterProps) 
   const [prepared, setPrepared] = useState(false);
   const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [installDismissed, setInstallDismissed] = useState(installWasDismissed);
+  const [applyingUpdate, setApplyingUpdate] = useState(false);
+  const [updateError, setUpdateError] = useState(false);
   const previousCacheState = useRef(client.cacheState);
 
   useEffect(() => {
@@ -64,6 +66,20 @@ export function PwaStatusCenter({ playing, showInstall }: PwaStatusCenterProps) 
       unsubscribe();
       if (idleId !== null) idleWindow.cancelIdleCallback?.(idleId);
       if (timer !== null) window.clearTimeout(timer);
+    };
+  }, []);
+
+  useEffect(() => {
+    const check = () => {
+      if (document.visibilityState === "visible" && navigator.onLine !== false) void checkForPwaUpdate();
+    };
+    const timer = window.setInterval(check, 30 * 60 * 1000);
+    window.addEventListener("focus", check);
+    document.addEventListener("visibilitychange", check);
+    return () => {
+      window.clearInterval(timer);
+      window.removeEventListener("focus", check);
+      document.removeEventListener("visibilitychange", check);
     };
   }, []);
 
@@ -131,6 +147,16 @@ export function PwaStatusCenter({ playing, showInstall }: PwaStatusCenterProps) 
     else setInstallPrompt(null);
   };
 
+  const update = async () => {
+    setApplyingUpdate(true);
+    setUpdateError(false);
+    const applied = await applyPwaUpdate();
+    if (!applied) {
+      setApplyingUpdate(false);
+      setUpdateError(true);
+    }
+  };
+
   let content: React.ReactNode = null;
   let tone = "neutral";
   if (!online) {
@@ -141,8 +167,13 @@ export function PwaStatusCenter({ playing, showInstall }: PwaStatusCenterProps) 
     content = (
       <>
         <RefreshCw aria-hidden="true" />
-        <span><strong>새 초대장이 도착했어요</strong><small>최신 버전으로 바로 바꿀 수 있어요</small></span>
-        <button type="button" onClick={() => { void applyPwaUpdate(); }}>새 버전 적용</button>
+        <span>
+          <strong>{applyingUpdate ? "최신 초대장으로 바꾸는 중" : "새 초대장이 도착했어요"}</strong>
+          <small>{updateError ? "잠시 후 다시 눌러주세요" : "작성 중인 내용은 이 기기에 보관돼요"}</small>
+        </span>
+        <button type="button" disabled={applyingUpdate} onClick={() => { void update(); }}>
+          {applyingUpdate ? "적용 중" : updateError ? "다시 적용" : "새 버전 적용"}
+        </button>
       </>
     );
   } else if (client.cacheState === "error") {

@@ -5,6 +5,7 @@ export const pwaCorePrecachePaths = [
   "./icons/wedding-garden-192.png",
   "./icons/wedding-garden-512.png",
   "./images/wedding-gallery/01-cover-640.webp",
+  "./images/wedding-gallery/01-cover-640.avif",
   "./assets/maps/v2/home/background.webp",
   "./assets/ui/joystick-wedding-compass-base.png",
   "./assets/ui/joystick-wedding-compass-thumb.png",

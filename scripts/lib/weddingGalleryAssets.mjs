@@ -5,6 +5,10 @@ import sharp from "sharp";
 
 const projectRoot = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 const derivativeWidths = Object.freeze([640, 1024]);
+const derivativeFormats = Object.freeze([
+  { extension: "webp", sharpFormat: "webp", label: "WebP" },
+  { extension: "avif", sharpFormat: "heif", compression: "av1", label: "AVIF" }
+]);
 const sourceExtensions = Object.freeze(["png", "jpg", "jpeg", "webp"]);
 const maximumRatioDifference = 0.01;
 
@@ -31,7 +35,9 @@ function ratioDifference(actual, expected) {
 }
 
 function expectedOutputNames(manifest) {
-  return manifest.flatMap((photo) => derivativeWidths.map((width) => `${photo.id}-${width}.webp`));
+  return manifest.flatMap((photo) => derivativeWidths.flatMap((width) => (
+    derivativeFormats.map(({ extension }) => `${photo.id}-${width}.${extension}`)
+  )));
 }
 
 function throwAuditErrors(errors) {
@@ -163,34 +169,39 @@ export async function auditWeddingGalleryAssets(options = {}) {
     const declaredRatio = photo.width / photo.height;
 
     for (const width of derivativeWidths) {
-      const fileName = `${photo.id}-${width}.webp`;
-      const output = path.join(outputRoot, fileName);
-      try {
-        await access(output);
-      } catch {
-        errors.push(`출력 파일 누락: ${fileName}`);
-        continue;
-      }
-
-      try {
-        const metadata = await sharp(output).metadata();
-        if (metadata.format !== "webp") {
-          errors.push(`출력 파일은 WebP 형식이어야 합니다: ${fileName}`);
-        }
-        if (metadata.width !== width) {
-          errors.push(`출력 파일 폭은 ${width}px이어야 합니다: ${fileName}`);
-        }
-        if (!metadata.width || !metadata.height) {
-          errors.push(`출력 파일 크기를 읽을 수 없습니다: ${fileName}`);
+      for (const format of derivativeFormats) {
+        const fileName = `${photo.id}-${width}.${format.extension}`;
+        const output = path.join(outputRoot, fileName);
+        try {
+          await access(output);
+        } catch {
+          errors.push(`출력 파일 누락: ${fileName}`);
           continue;
         }
-        const outputRatio = metadata.width / metadata.height;
-        if (ratioDifference(outputRatio, declaredRatio) > maximumRatioDifference) {
-          errors.push(`출력 파일 비율이 선언 비율과 1% 이내로 일치해야 합니다: ${fileName}`);
+
+        try {
+          const metadata = await sharp(output).metadata();
+          if (metadata.format !== format.sharpFormat) {
+            errors.push(`출력 파일은 ${format.label} 형식이어야 합니다: ${fileName}`);
+          }
+          if (format.compression && metadata.compression !== format.compression) {
+            errors.push(`출력 파일은 ${format.label} ${format.compression.toUpperCase()} 압축이어야 합니다: ${fileName}`);
+          }
+          if (metadata.width !== width) {
+            errors.push(`출력 파일 폭은 ${width}px이어야 합니다: ${fileName}`);
+          }
+          if (!metadata.width || !metadata.height) {
+            errors.push(`출력 파일 크기를 읽을 수 없습니다: ${fileName}`);
+            continue;
+          }
+          const outputRatio = metadata.width / metadata.height;
+          if (ratioDifference(outputRatio, declaredRatio) > maximumRatioDifference) {
+            errors.push(`출력 파일 비율이 선언 비율과 1% 이내로 일치해야 합니다: ${fileName}`);
+          }
+        } catch (error) {
+          const message = error instanceof Error ? error.message : String(error);
+          errors.push(`출력 파일 메타데이터를 읽을 수 없습니다: ${fileName}; ${message}`);
         }
-      } catch (error) {
-        const message = error instanceof Error ? error.message : String(error);
-        errors.push(`출력 파일 메타데이터를 읽을 수 없습니다: ${fileName}; ${message}`);
       }
     }
   }
@@ -223,13 +234,18 @@ export async function buildWeddingGalleryAssets(options = {}) {
 
   try {
     await mkdir(stagedOutputRoot, { recursive: true });
-    await Promise.all(sources.flatMap(({ photo, source }) => derivativeWidths.map(async (width) => {
-      await sharp(source)
+    await Promise.all(sources.flatMap(({ photo, source }) => derivativeWidths.flatMap((width) => [
+      sharp(source)
         .rotate()
         .resize({ width, fit: "inside", withoutEnlargement: false })
         .webp({ quality: 82, effort: 6 })
-        .toFile(path.join(stagedOutputRoot, `${photo.id}-${width}.webp`));
-    })));
+        .toFile(path.join(stagedOutputRoot, `${photo.id}-${width}.webp`)),
+      sharp(source)
+        .rotate()
+        .resize({ width, fit: "inside", withoutEnlargement: false })
+        .avif({ quality: 58, effort: 5 })
+        .toFile(path.join(stagedOutputRoot, `${photo.id}-${width}.avif`))
+    ])));
 
     await auditWeddingGalleryAssets({ rootDir, manifestPath, sourceRoot, outputRoot: stagedOutputRoot });
 

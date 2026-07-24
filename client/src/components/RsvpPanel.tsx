@@ -4,6 +4,11 @@ import { fetchOwnedRsvp, updateOwnedRsvp, WeddingApiError, type RsvpCredential }
 import { createRsvpWithInviteLink } from "../api/invitationInviteLinksApi";
 import { loadStoredInvitationInvite } from "../invitation/inviteLinkStorage";
 import { loadRsvpFormDraft } from "../invitation/publicFormDraftStorage";
+import {
+  clearRsvpSendQueue,
+  loadRsvpSendQueue,
+  saveRsvpSendQueue
+} from "../invitation/publicFormQueueStorage";
 import { clearRsvpCredential, loadRsvpCredential, saveRsvpCredential } from "../invitation/rsvpStorage";
 import { RsvpForm, type RsvpFormInitialValue } from "./RsvpForm";
 import { trackAnalyticsContextEvent } from "../analytics/invitationAnalytics";
@@ -87,6 +92,8 @@ export function RsvpPanel() {
   const [notice, setNotice] = useState("");
   const invitedGuest = loadStoredInvitationInvite(id)?.invite ?? null;
   const storedDraftRef = useRef(loadRsvpFormDraft(id));
+  const queuedSubmissionRef = useRef(loadRsvpSendQueue(id));
+  const [queuedAt, setQueuedAt] = useState<string | null>(queuedSubmissionRef.current?.queuedAt ?? null);
   const invitedInitialValue: RsvpFormInitialValue | undefined = invitedGuest ? {
     side: invitedGuest.side,
     guestName: invitedGuest.guestName,
@@ -97,7 +104,7 @@ export function RsvpPanel() {
     note: "",
     consentVersion: invitationContent.event.rsvp.consentVersion
   } : undefined;
-  const initialValue = storedDraftRef.current?.value ?? invitedInitialValue;
+  const initialValue = queuedSubmissionRef.current?.value ?? storedDraftRef.current?.value ?? invitedInitialValue;
 
   useEffect(() => {
     mountedRef.current = true;
@@ -156,8 +163,19 @@ export function RsvpPanel() {
   }, [applyCreated, id, loadOwned]);
 
   async function handleCreate(payload: RsvpSubmission) {
+    if (navigator.onLine === false) {
+      const queued = saveRsvpSendQueue(id, payload);
+      if (!queued) throw new Error("전송 대기함에 저장하지 못했습니다. 이 화면을 닫지 말아주세요.");
+      queuedSubmissionRef.current = queued;
+      setQueuedAt(queued.queuedAt);
+      setNotice("참석 답변을 전송 대기함에 저장했습니다. 연결되면 내용을 확인하고 보내주세요.");
+      return;
+    }
     try {
       applyCreated(await createOnce(id, payload));
+      clearRsvpSendQueue(id);
+      queuedSubmissionRef.current = null;
+      setQueuedAt(null);
       trackAnalyticsContextEvent("rsvp_submit");
     } catch (error) {
       throw apiMessage(error, "답변을 보내지 못했습니다. 입력 내용을 확인하고 다시 시도해 주세요.");
@@ -208,6 +226,16 @@ export function RsvpPanel() {
     setState({ kind: "new" });
   }
 
+  function discardQueuedSubmission() {
+    if (!clearRsvpSendQueue(id)) {
+      setNotice("전송 대기를 삭제하지 못했습니다. 잠시 후 다시 시도해 주세요.");
+      return;
+    }
+    queuedSubmissionRef.current = null;
+    setQueuedAt(null);
+    setNotice("전송 대기함에서 참석 답변을 삭제했습니다.");
+  }
+
   function trackFormStart(event: React.SyntheticEvent<HTMLDivElement>) {
     if (state.kind !== "new" || startTrackedRef.current) return;
     if (!(event.target instanceof Element) || !event.target.closest("form")) return;
@@ -233,6 +261,8 @@ export function RsvpPanel() {
           draftStorageId={id}
           restoredDraftAt={storedDraftRef.current?.savedAt}
           draftResetValue={invitedInitialValue}
+          queuedAt={queuedAt ?? undefined}
+          onDiscardQueued={discardQueuedSubmission}
           submitLabel="참석 답변 보내기"
           onSubmit={handleCreate}
         />

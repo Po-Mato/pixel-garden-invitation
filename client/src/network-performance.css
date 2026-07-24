@@ -7,6 +7,10 @@
   background-size: 220% 100%, auto;
 }
 
+.responsive-gallery-picture {
+  display: contents;
+}
+
 .responsive-gallery-image--loading {
   opacity: 0.18;
   filter: blur(8px);
@@ -110,6 +114,56 @@
 }
 
 .form-draft-manager button svg { width: 16px; height: 16px; }
+
+.pending-submission {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) 36px;
+  align-items: center;
+  gap: 9px;
+  border: 1px solid #6e8b7d;
+  border-left: 4px solid #4d8069;
+  border-radius: 6px;
+  padding: 9px;
+  background: #edf4ed;
+  color: #2f493d;
+}
+
+.pending-submission__icon {
+  display: grid;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  border-radius: 50%;
+  background: #5f8c75;
+  color: #fff;
+}
+
+.pending-submission__icon svg,
+.pending-submission > button svg {
+  width: 17px;
+  height: 17px;
+}
+
+.pending-submission > span:nth-child(2) {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+
+.pending-submission strong { font-size: 12px; }
+.pending-submission small { color: #60756a; font-size: 9px; font-weight: 800; }
+.pending-submission em { color: #435c50; font-size: 9px; font-style: normal; line-height: 1.45; }
+
+.pending-submission > button {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border: 1px solid #9dafa6;
+  border-radius: 4px;
+  background: #fff;
+  color: #745754;
+}
 
 .wedding-gallery__network-control svg,
 .photo-lightbox__quality svg {

@@ -86,4 +86,17 @@ describe("PWA client", () => {
     await expect(applyPwaUpdate()).resolves.toBe(true);
     expect(waiting.postMessage).toHaveBeenCalledWith({ type: "SKIP_WAITING" });
   });
+
+  it("applies a new worker discovered by the explicit update check", async () => {
+    const waiting = { postMessage: vi.fn() };
+    const { registration } = stubServiceWorker();
+    registration.update.mockImplementation(async () => {
+      registration.waiting = waiting;
+    });
+    await startPwaClient(true, "./");
+
+    await expect(applyPwaUpdate()).resolves.toBe(true);
+    expect(registration.update).toHaveBeenCalledTimes(1);
+    expect(waiting.postMessage).toHaveBeenCalledWith({ type: "SKIP_WAITING" });
+  });
 });

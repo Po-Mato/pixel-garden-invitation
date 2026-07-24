@@ -3,6 +3,8 @@ import { StrictMode } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { RsvpRecord } from "@wedding-game/shared";
 import { WeddingApiError } from "../api/weddingApi";
+import { loadRsvpSendQueue } from "../invitation/publicFormQueueStorage";
+import { installMemoryLocalStorage } from "../test/memoryStorage";
 import { RsvpPanel } from "./RsvpPanel";
 
 const api = vi.hoisted(() => ({
@@ -33,26 +35,46 @@ const response: RsvpRecord = {
   createdAt: "2027-04-20T00:00:00.000Z", updatedAt: "2027-04-20T01:00:00.000Z"
 };
 
-function fillNewForm() {
+async function fillNewForm() {
   fireEvent.change(screen.getByLabelText("이름"), { target: { value: "새 하객" } });
   fireEvent.change(screen.getByLabelText("연락처"), { target: { value: "010-9999-8888" } });
   fireEvent.click(screen.getByLabelText(/개인정보 수집/));
+  await waitFor(() => expect(screen.getByRole("button", { name: "참석 답변 보내기" })).toBeEnabled());
 }
 
 describe("RsvpPanel", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    installMemoryLocalStorage();
+    Object.defineProperty(navigator, "onLine", { configurable: true, value: true });
     storage.loadRsvpCredential.mockReturnValue(null);
     storage.saveRsvpCredential.mockReturnValue(true);
     storage.clearRsvpCredential.mockReturnValue(true);
     inviteStorage.loadStoredInvitationInvite.mockReturnValue(null);
   });
-  afterEach(cleanup);
+  afterEach(() => {
+    cleanup();
+    Object.defineProperty(navigator, "onLine", { configurable: true, value: true });
+  });
+
+  it("오프라인 참석 답변을 전송 대기함에 보관한다", async () => {
+    Object.defineProperty(navigator, "onLine", { configurable: true, value: false });
+    render(<RsvpPanel />);
+    fireEvent.change(screen.getByLabelText("이름"), { target: { value: "대기 하객" } });
+    fireEvent.change(screen.getByLabelText("연락처"), { target: { value: "010-9999-8888" } });
+    fireEvent.click(screen.getByLabelText(/개인정보 수집/));
+
+    fireEvent.click(screen.getByRole("button", { name: "전송 대기함에 저장" }));
+
+    await waitFor(() => expect(loadRsvpSendQueue("sample-garden")?.value.guestName).toBe("대기 하객"));
+    expect(api.createRsvp).not.toHaveBeenCalled();
+    expect(screen.getByLabelText("참석 답변 전송 대기함")).toHaveTextContent("연결되면 안전하게");
+  });
 
   it("creates an RSVP, stores its credential, and shows the summary", async () => {
     api.createRsvp.mockResolvedValue({ response, credential });
     render(<RsvpPanel />);
-    fillNewForm();
+    await fillNewForm();
 
     fireEvent.click(screen.getByRole("button", { name: "참석 답변 보내기" }));
 
@@ -153,7 +175,7 @@ describe("RsvpPanel", () => {
     storage.saveRsvpCredential.mockReturnValue(false);
     api.createRsvp.mockResolvedValue({ response, credential });
     render(<RsvpPanel />);
-    fillNewForm();
+    await fillNewForm();
     fireEvent.click(screen.getByRole("button", { name: "참석 답변 보내기" }));
 
     expect(await screen.findByRole("heading", { name: "보내주신 답변" })).toBeInTheDocument();
@@ -164,7 +186,7 @@ describe("RsvpPanel", () => {
     let resolveCreate: ((value: { response: RsvpRecord; credential: typeof credential }) => void) | undefined;
     api.createRsvp.mockImplementation(() => new Promise((resolve) => { resolveCreate = resolve; }));
     const { unmount } = render(<RsvpPanel />);
-    fillNewForm();
+    await fillNewForm();
     fireEvent.click(screen.getByRole("button", { name: "참석 답변 보내기" }));
 
     unmount();
@@ -179,7 +201,7 @@ describe("RsvpPanel", () => {
     let resolveCreate: ((value: { response: RsvpRecord; credential: typeof credential }) => void) | undefined;
     api.createRsvp.mockImplementation(() => new Promise((resolve) => { resolveCreate = resolve; }));
     const first = render(<RsvpPanel />);
-    fillNewForm();
+    await fillNewForm();
     fireEvent.click(screen.getByRole("button", { name: "참석 답변 보내기" }));
 
     first.unmount();
@@ -198,7 +220,7 @@ describe("RsvpPanel", () => {
     let rejectCreate: ((reason?: unknown) => void) | undefined;
     api.createRsvp.mockImplementationOnce(() => new Promise((_, reject) => { rejectCreate = reject; }));
     const first = render(<RsvpPanel />);
-    fillNewForm();
+    await fillNewForm();
     fireEvent.click(screen.getByRole("button", { name: "참석 답변 보내기" }));
 
     first.unmount();
@@ -208,7 +230,7 @@ describe("RsvpPanel", () => {
 
     expect(await screen.findByRole("button", { name: "참석 답변 보내기" })).toBeInTheDocument();
     api.createRsvp.mockResolvedValueOnce({ response, credential });
-    fillNewForm();
+    await fillNewForm();
     fireEvent.click(screen.getByRole("button", { name: "참석 답변 보내기" }));
 
     expect(await screen.findByRole("heading", { name: "보내주신 답변" })).toBeInTheDocument();
@@ -231,7 +253,7 @@ describe("RsvpPanel", () => {
     let rejectCreate: ((reason?: unknown) => void) | undefined;
     api.createRsvp.mockImplementation(() => new Promise((_, reject) => { rejectCreate = reject; }));
     render(<RsvpPanel />);
-    fillNewForm();
+    await fillNewForm();
 
     fireEvent.click(screen.getByRole("button", { name: "참석 답변 보내기" }));
     fireEvent.click(screen.getByRole("button", { name: "보내는 중" }));
@@ -245,7 +267,7 @@ describe("RsvpPanel", () => {
   it("shows the RSVP Retry-After delay after a rate-limited creation", async () => {
     api.createRsvp.mockRejectedValue(new WeddingApiError(429, "rate_limited", 60));
     render(<RsvpPanel />);
-    fillNewForm();
+    await fillNewForm();
     fireEvent.click(screen.getByRole("button", { name: "참석 답변 보내기" }));
 
     expect(await screen.findByRole("alert")).toHaveTextContent("60초 후 다시 시도해 주세요");

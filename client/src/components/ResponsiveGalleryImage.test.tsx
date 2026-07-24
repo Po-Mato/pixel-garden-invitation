@@ -12,7 +12,7 @@ afterEach(cleanup);
 
 describe("반응형 갤러리 이미지", () => {
   it("대표 사진에는 우선 로드 속성과 반응형 소스를 제공한다", () => {
-    render(<ResponsiveGalleryImage photo={photo} priority sizes="88vw" />);
+    const { container } = render(<ResponsiveGalleryImage photo={photo} priority sizes="88vw" />);
 
     const image = screen.getByRole("img", { name: photo.alt });
     expect(image).toHaveAttribute("src", expect.stringContaining(photo.assetPath));
@@ -24,6 +24,7 @@ describe("반응형 갤러리 이미지", () => {
     expect(image).toHaveAttribute("loading", "eager");
     expect(image).toHaveAttribute("fetchpriority", "high");
     expect(image).toHaveAttribute("decoding", "async");
+    expect(container.querySelector('source[type="image/avif"]')).toHaveAttribute("srcset", expect.stringContaining("-1024.avif"));
     expect(buildGallerySrcSet(photo.sources, "/pixel-garden-invitation")).toContain(
       "/pixel-garden-invitation/images/wedding-gallery/01-cover-640.webp 640w"
     );
@@ -71,5 +72,15 @@ describe("반응형 갤러리 이미지", () => {
     const image = screen.getByRole("img", { name: photo.alt });
     expect(image).toHaveAttribute("data-network-mode", "full");
     expect(image).toHaveAttribute("srcset", expect.stringContaining("1024w"));
+  });
+
+  it("Worker 절대 URL에는 존재하지 않는 AVIF 소스를 만들지 않는다", () => {
+    const remotePhoto = {
+      ...photo,
+      assetPath: "https://worker.test/photo-1024.webp",
+      sources: photo.sources.map((source) => ({ ...source, assetPath: `https://worker.test/photo-${source.width}.webp` }))
+    };
+    const { container } = render(<ResponsiveGalleryImage photo={remotePhoto} sizes="88vw" />);
+    expect(container.querySelector('source[type="image/avif"]')).toBeNull();
   });
 });

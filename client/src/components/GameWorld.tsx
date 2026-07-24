@@ -6,7 +6,7 @@ import {
   type MouseEvent,
   type TransitionEvent as ReactTransitionEvent
 } from "react";
-import { ArrowRight, Camera, CircleHelp, Images, MapPinned, RefreshCw, Share2, X } from "lucide-react";
+import { Accessibility, ArrowRight, Camera, CircleHelp, Images, MapPinned, RefreshCw, Share2, X } from "lucide-react";
 import {
   invitationContent,
   type ClientMessage,
@@ -39,6 +39,7 @@ import {
 } from "../game/journeyProgress";
 import { completeGameGuide, loadGameGuideState, shouldAutoOpenGameGuide } from "../game/gameGuide";
 import { journeyDirectionLabels, resolveJourneyGuidance } from "../game/journeyGuidance";
+import { summarizeRemainingJourney } from "../game/journeyRouteSummary";
 import { resolveNpcDialogue, type NpcDialogue, type NpcId } from "../game/npcDialogue";
 import { useGameFeedback } from "../feedback/GameFeedbackContext";
 import { useDevicePerformance } from "../performance/DevicePerformanceContext";
@@ -72,6 +73,7 @@ import { GuestReactionBubble, GuestReactionDock } from "./GuestReactions";
 import { GuestInformationAccess } from "./GuestInformationAccess";
 import { InvitationShareAccess } from "./InvitationShareAccess";
 import { JourneyCompletion } from "./JourneyCompletion";
+import { JourneyRouteSheet } from "./JourneyRouteSheet";
 import { JourneyStampBook, JourneyStampNotice } from "./JourneyStampBook";
 import { NpcDialogueBubble } from "./NpcDialogueBubble";
 import { SpotModal } from "./SpotModal";
@@ -234,6 +236,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   const [stampedCheckpointId, setStampedCheckpointId] = useState<JourneyCheckpointId | null>(null);
   const [journeyCompletionPending, setJourneyCompletionPending] = useState(false);
   const [journeyCompletionOpen, setJourneyCompletionOpen] = useState(false);
+  const [journeyRouteOpen, setJourneyRouteOpen] = useState(false);
   const [activeNpcDialogue, setActiveNpcDialogue] = useState<NpcDialogue | null>(null);
   const [localReaction, setLocalReaction] = useState<ActiveGuestReaction | null>(null);
   const [remoteReactions, setRemoteReactions] = useState<Record<string, ActiveGuestReaction>>({});
@@ -250,7 +253,8 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     || shareSheetOpen
     || viewSettingsOpen
     || photoAlbumOpen
-    || gameGuideOpen;
+    || gameGuideOpen
+    || journeyRouteOpen;
 
   const mapViewportRef = useRef<HTMLDivElement | null>(null);
   const menuButtonRef = useRef<HTMLButtonElement | null>(null);
@@ -1362,6 +1366,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
       ? "목적지 도착"
       : `${journeyGuidance.direction ? `${journeyDirectionLabels[journeyGuidance.direction]} · ` : ""}${journeyGuidance.tileCount}타일`
     : "경로 확인 필요";
+  const journeyOverallSummary = summarizeRemainingJourney(journeyProgress, activeZone.id);
   const journeyRoutePoints = activeJourneyGuideId && journeyGuidance?.available
     ? [position, ...journeyGuidance.path]
     : [];
@@ -1426,39 +1431,54 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
           onSelectZone={handleJourneySelect}
         />
         {recommendedCheckpoint && recommendedZone ? (
-          <div className="world-destination-guide-row" data-active={activeJourneyGuideId === recommendedCheckpoint.id || undefined}>
-            <button
-              type="button"
-              className="world-destination-guide"
-              aria-label={activeJourneyGuideId === recommendedCheckpoint.id
-                ? `다음 목적지 ${recommendedCheckpoint.label}, 현재 위치에서 경로 다시 찾기`
-                : `다음 목적지 ${recommendedCheckpoint.label}, ${recommendedCheckpoint.zoneId === activeZone.id ? "길 안내 시작" : `${recommendedZone.label}로 이동`}`}
-              disabled={Boolean(portalTransition)}
-              onClick={() => activeJourneyGuideId === recommendedCheckpoint.id
-                ? restartJourneyGuidance(recommendedCheckpoint)
-                : startJourneyGuidance(recommendedCheckpoint)}
-            >
-              <MapPinned aria-hidden="true" />
-              <span>
-                <small>{activeJourneyGuideId === recommendedCheckpoint.id ? "GUIDING NOW" : "NEXT DESTINATION"}</small>
-                <strong>{recommendedCheckpoint.label}</strong>
-                <em>{recommendedCheckpoint.zoneId === activeZone.id ? "현재 맵" : recommendedZone.label} · {journeyDistanceLabel} · {activeJourneyGuideId === recommendedCheckpoint.id ? "재탐색 가능" : "자동 이동"}</em>
-              </span>
-              {activeJourneyGuideId === recommendedCheckpoint.id ? <RefreshCw aria-hidden="true" /> : <ArrowRight aria-hidden="true" />}
-            </button>
-            {activeJourneyGuideId === recommendedCheckpoint.id ? (
+          <>
+            <div className="world-destination-guide-row" data-active={activeJourneyGuideId === recommendedCheckpoint.id || undefined}>
               <button
                 type="button"
-                className="world-destination-guide__cancel"
-                aria-label="길 안내 중단"
-                title="길 안내 중단"
+                className="world-destination-guide"
+                aria-label={activeJourneyGuideId === recommendedCheckpoint.id
+                  ? `다음 목적지 ${recommendedCheckpoint.label}, 현재 위치에서 경로 다시 찾기`
+                  : `다음 목적지 ${recommendedCheckpoint.label}, ${recommendedCheckpoint.zoneId === activeZone.id ? "길 안내 시작" : `${recommendedZone.label}로 이동`}`}
                 disabled={Boolean(portalTransition)}
-                onClick={() => stopJourneyGuidance()}
+                onClick={() => activeJourneyGuideId === recommendedCheckpoint.id
+                  ? restartJourneyGuidance(recommendedCheckpoint)
+                  : startJourneyGuidance(recommendedCheckpoint)}
               >
-                <X aria-hidden="true" />
+                <MapPinned aria-hidden="true" />
+                <span>
+                  <small>{activeJourneyGuideId === recommendedCheckpoint.id ? "GUIDING NOW" : "NEXT DESTINATION"}</small>
+                  <strong>{recommendedCheckpoint.label}</strong>
+                  <em>{recommendedCheckpoint.zoneId === activeZone.id ? "현재 맵" : recommendedZone.label} · {journeyDistanceLabel} · {activeJourneyGuideId === recommendedCheckpoint.id ? "재탐색 가능" : "자동 이동"}</em>
+                </span>
+                {activeJourneyGuideId === recommendedCheckpoint.id ? <RefreshCw aria-hidden="true" /> : <ArrowRight aria-hidden="true" />}
               </button>
-            ) : null}
-          </div>
+              {activeJourneyGuideId === recommendedCheckpoint.id ? (
+                <button
+                  type="button"
+                  className="world-destination-guide__cancel"
+                  aria-label="길 안내 중단"
+                  title="길 안내 중단"
+                  disabled={Boolean(portalTransition)}
+                  onClick={() => stopJourneyGuidance()}
+                >
+                  <X aria-hidden="true" />
+                </button>
+              ) : null}
+            </div>
+            <button
+              type="button"
+              className="world-accessible-route"
+              aria-label={`쉬운 길찾기 열기, 남은 추억 ${journeyOverallSummary.remainingCheckpoints}개, 예상 ${journeyOverallSummary.estimatedStages}단계`}
+              onClick={() => {
+                pauseWorldInput();
+                setJourneyRouteOpen(true);
+              }}
+            >
+              <Accessibility aria-hidden="true" />
+              <strong>쉬운 길찾기</strong>
+              <span>남은 {journeyOverallSummary.remainingCheckpoints}개 · 맵 이동 {journeyOverallSummary.zoneTransitions}회 · 예상 {journeyOverallSummary.estimatedStages}단계</span>
+            </button>
+          </>
         ) : null}
         <ol className="world-journey" aria-label="하객 여정">
           {gardenWorld.zones.map((zone) => {
@@ -1867,6 +1887,20 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
         />
       ) : null}
       {gameGuideOpen ? <GameFirstVisitGuide onDismiss={dismissGameGuide} /> : null}
+      {journeyRouteOpen && recommendedCheckpoint ? (
+        <JourneyRouteSheet
+          activeZone={activeZone}
+          checkpoint={recommendedCheckpoint}
+          progress={journeyProgress}
+          guidance={journeyGuidance}
+          onClose={() => setJourneyRouteOpen(false)}
+          onStart={() => {
+            setJourneyRouteOpen(false);
+            if (activeJourneyGuideId === recommendedCheckpoint.id) restartJourneyGuidance(recommendedCheckpoint);
+            else startJourneyGuidance(recommendedCheckpoint);
+          }}
+        />
+      ) : null}
       <InvitationShareAccess
         variant="menu"
         open={shareSheetOpen}
