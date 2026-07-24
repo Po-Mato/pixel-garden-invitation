@@ -325,6 +325,40 @@ async function accessorySide(frame) {
   return { ...counts, detected: counts.right > counts.left ? "right" : "left" };
 }
 
+async function rearHairBounds(frame) {
+  const { data, info } = await sharp(frame).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+  let left = info.width;
+  let right = -1;
+  let top = info.height;
+  let bottom = -1;
+  let pixels = 0;
+
+  for (let y = 0; y < 80; y += 1) {
+    for (let x = 0; x < info.width; x += 1) {
+      const offset = (y * info.width + x) * 4;
+      const red = data[offset];
+      const green = data[offset + 1];
+      const blue = data[offset + 2];
+      const alpha = data[offset + 3];
+      const isHairColor =
+        alpha > 80 &&
+        red >= 18 && red < 145 &&
+        green >= 8 && green < 105 &&
+        blue < 90 &&
+        red > green * 1.12 &&
+        green > blue * 0.85;
+      if (!isHairColor) continue;
+      left = Math.min(left, x);
+      right = Math.max(right, x);
+      top = Math.min(top, y);
+      bottom = Math.max(bottom, y);
+      pixels += 1;
+    }
+  }
+
+  return { left, right, top, bottom, width: right - left + 1, height: bottom - top + 1, pixels };
+}
+
 async function main() {
   const framesByDirection = {};
   const sourceFrames = {};
@@ -379,15 +413,30 @@ async function main() {
     rightHandAccessoryPlacement: {
       down: await Promise.all(framesByDirection.down.map((item) => accessorySide(item.soft))),
       up: await Promise.all(framesByDirection.up.map((item) => accessorySide(item.soft)))
+    },
+    rearHairConsistency: {
+      frames: await Promise.all(framesByDirection.up.map((item) => rearHairBounds(item.soft)))
     }
   };
   audit.acceptance.rightHandAccessoryPlacement.passed =
     audit.acceptance.rightHandAccessoryPlacement.down.every((item) => item.detected === "left") &&
     audit.acceptance.rightHandAccessoryPlacement.up.every((item) => item.detected === "right");
+  const rearHairHeights = audit.acceptance.rearHairConsistency.frames.map((item) => item.height);
+  const rearHairWidths = audit.acceptance.rearHairConsistency.frames.map((item) => item.width);
+  audit.acceptance.rearHairConsistency.maximumHeightDelta =
+    Math.max(...rearHairHeights) - Math.min(...rearHairHeights);
+  audit.acceptance.rearHairConsistency.maximumWidthDelta =
+    Math.max(...rearHairWidths) - Math.min(...rearHairWidths);
+  audit.acceptance.rearHairConsistency.passed =
+    audit.acceptance.rearHairConsistency.maximumHeightDelta <= 1 &&
+    audit.acceptance.rearHairConsistency.maximumWidthDelta <= 1;
   await fs.writeFile(path.join(OUTPUT_ROOT, "audit.json"), `${JSON.stringify(audit, null, 2)}\n`);
   console.log(JSON.stringify(audit.acceptance, null, 2));
   if (!audit.acceptance.rightHandAccessoryPlacement.passed) {
     throw new Error("오른손 가방 방향 감사에 실패했습니다.");
+  }
+  if (!audit.acceptance.rearHairConsistency.passed) {
+    throw new Error("뒷머리 크기 일관성 감사에 실패했습니다.");
   }
 }
 
