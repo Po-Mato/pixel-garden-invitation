@@ -298,6 +298,33 @@ async function inspectFrame(buffer) {
   return { ...bounds, greenFringePixels, partialAlphaPixels, pixels: info.width * info.height };
 }
 
+async function accessorySide(frame) {
+  const { data, info } = await sharp(frame).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+  const counts = { left: 0, right: 0 };
+
+  for (let y = 45; y < 120; y += 1) {
+    for (let x = 0; x < info.width; x += 1) {
+      if (x >= 34 && x <= 62) continue;
+      const offset = (y * info.width + x) * 4;
+      const red = data[offset];
+      const green = data[offset + 1];
+      const blue = data[offset + 2];
+      const alpha = data[offset + 3];
+      const isBagColor =
+        alpha > 80 &&
+        red >= 55 && red <= 210 &&
+        green >= 35 && green <= 175 &&
+        blue >= 30 && blue <= 165 &&
+        red > green * 1.05 &&
+        green > blue * 0.82;
+      if (!isBagColor) continue;
+      counts[x < info.width / 2 ? "left" : "right"] += 1;
+    }
+  }
+
+  return { ...counts, detected: counts.right > counts.left ? "right" : "left" };
+}
+
 async function main() {
   const framesByDirection = {};
   const sourceFrames = {};
@@ -348,10 +375,20 @@ async function main() {
     greenFringePixels: Object.values(audit.directions).flat().reduce(
       (total, item) => total + item.soft.greenFringePixels + item.pixel.greenFringePixels,
       0
-    )
+    ),
+    rightHandAccessoryPlacement: {
+      down: await Promise.all(framesByDirection.down.map((item) => accessorySide(item.soft))),
+      up: await Promise.all(framesByDirection.up.map((item) => accessorySide(item.soft)))
+    }
   };
+  audit.acceptance.rightHandAccessoryPlacement.passed =
+    audit.acceptance.rightHandAccessoryPlacement.down.every((item) => item.detected === "left") &&
+    audit.acceptance.rightHandAccessoryPlacement.up.every((item) => item.detected === "right");
   await fs.writeFile(path.join(OUTPUT_ROOT, "audit.json"), `${JSON.stringify(audit, null, 2)}\n`);
   console.log(JSON.stringify(audit.acceptance, null, 2));
+  if (!audit.acceptance.rightHandAccessoryPlacement.passed) {
+    throw new Error("오른손 가방 방향 감사에 실패했습니다.");
+  }
 }
 
 main().catch((error) => {
