@@ -9,7 +9,11 @@ from mathutils import Vector
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--guest", choices=("guest-01", "guest-02", "guest-03"), default="guest-01")
+    parser.add_argument(
+        "--guest",
+        choices=("guest-01", "guest-02", "guest-03", "guest-04"),
+        default="guest-01",
+    )
     parser.add_argument("--output-root", required=True)
     return parser.parse_args(sys.argv[sys.argv.index("--") + 1 :] if "--" in sys.argv else [])
 
@@ -517,6 +521,91 @@ def build_guest03_character():
     return root, left_leg, right_leg, left_arm, right_arm
 
 
+def build_guest04_character():
+    root, left_leg, right_leg, left_arm, right_arm = build_guest03_character()
+    root.name = "Guest04_Master"
+
+    brown_hair = material("Warm brown hair", (0.105, 0.040, 0.020), roughness=0.34)
+    brown_highlight = material("Warm brown hair highlight", (0.235, 0.090, 0.040), roughness=0.38)
+    charcoal = material("Charcoal blazer", (0.050, 0.055, 0.060))
+    charcoal_dark = material("Charcoal blazer shadow", (0.018, 0.020, 0.024))
+    black_inner = material("Black crew neck shirt", (0.010, 0.012, 0.014), roughness=0.52)
+    belt = material("Black leather belt", (0.012, 0.013, 0.015), roughness=0.30)
+    buckle = material("Silver belt buckle", (0.34, 0.36, 0.39), roughness=0.24, metallic=0.70)
+
+    for obj in root.children_recursive:
+        name = obj.name
+        if name.startswith(
+            (
+                "Hair back",
+                "Side part",
+                "Short hair lock",
+                "Front side part",
+                "Front fringe",
+                "Eyebrow",
+            )
+        ):
+            obj.data.materials.clear()
+            highlighted = "highlight" in name.lower() or name.endswith(("1", "4", "7"))
+            obj.data.materials.append(brown_highlight if highlighted else brown_hair)
+        elif name.startswith(("Suit torso", "Suit sleeve", "Suit trouser")):
+            obj.data.materials.clear()
+            obj.data.materials.append(charcoal)
+        elif name.startswith(("Left lapel", "Right lapel", "Jacket pocket")):
+            obj.data.materials.clear()
+            obj.data.materials.append(charcoal_dark)
+        elif name == "Shirt front":
+            obj.data.materials.clear()
+            obj.data.materials.append(black_inner)
+            obj.scale.x *= 1.35
+        elif name.startswith(("Tie knot", "Tie body", "Pocket square")):
+            obj.hide_render = True
+            obj.hide_viewport = True
+        elif name.startswith("Shirt cuff"):
+            obj.data.materials.clear()
+            obj.data.materials.append(charcoal)
+
+    for index, (x, z, tilt) in enumerate(
+        (
+            (-0.43, 2.67, -12),
+            (-0.29, 2.83, -8),
+            (-0.12, 2.91, -4),
+            (0.09, 2.90, 5),
+            (0.27, 2.82, 9),
+            (0.43, 2.65, 13),
+        )
+    ):
+        lock = sphere(
+            f"Guest04 wavy crown lock {index + 1}",
+            (x, -0.20, z),
+            (0.18, 0.15, 0.27),
+            brown_highlight if index in (1, 4) else brown_hair,
+            root,
+            segments=32,
+            rings=20,
+        )
+        lock.rotation_euler.y = math.radians(tilt)
+    curve(
+        "Guest04 left curtain fringe",
+        [(-0.34, -0.46, 2.92), (-0.23, -0.52, 2.76), (-0.10, -0.49, 2.64)],
+        brown_highlight,
+        0.055,
+        root,
+    )
+    curve(
+        "Guest04 right curtain fringe",
+        [(0.35, -0.45, 2.91), (0.23, -0.51, 2.76), (0.10, -0.49, 2.64)],
+        brown_hair,
+        0.055,
+        root,
+    )
+
+    rounded_cube("Leather belt", (0, -0.272, 1.22), (0.35, 0.030, 0.045), belt, root, 0.020)
+    rounded_cube("Belt buckle", (0, -0.309, 1.22), (0.070, 0.020, 0.060), buckle, root, 0.018)
+
+    return root, left_leg, right_leg, left_arm, right_arm
+
+
 def set_walk_animation(root, left_leg, right_leg, left_arm, right_arm, guest_id):
     left_base_z = left_leg.location.z
     right_base_z = right_leg.location.z
@@ -625,6 +714,7 @@ def main():
         "guest-01": build_guest01_character,
         "guest-02": build_guest02_character,
         "guest-03": build_guest03_character,
+        "guest-04": build_guest04_character,
     }
     root, left_leg, right_leg, left_arm, right_arm = builders[args.guest]()
     set_walk_animation(root, left_leg, right_leg, left_arm, right_arm, args.guest)
