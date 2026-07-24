@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { BookOpen, CalendarDays, ChevronRight, MapPin, Sparkles } from "lucide-react";
+import { BookOpen, CalendarDays, ChevronRight, CircleHelp, MapPin, Sparkles } from "lucide-react";
 import {
   defaultCharacterAppearance,
   resolveGuestPreset,
@@ -21,6 +21,7 @@ import { CharacterSprite } from "./CharacterSprite";
 import { CouplePuppetStage } from "./CouplePuppetStage";
 import { FamilyContactSheet } from "./FamilyContactSheet";
 import { GuestInformationAccess } from "./GuestInformationAccess";
+import { InvitationShareAccess } from "./InvitationShareAccess";
 import { ViewSettingsAccess } from "./ViewSettingsAccess";
 import { WeddingEventSummary } from "./WeddingEventSummary";
 import "../invite-link-public.css";
@@ -100,87 +101,101 @@ export function EntryScreen({
         <span className="entry-screen__prism entry-screen__prism--two" />
         <span className="entry-screen__petals" />
       </div>
-      <div className="entry-screen__view-settings">
-        <ViewSettingsAccess variant="icon" />
-      </div>
-      <header className="entry-screen__header">
-        <p>WEDDING GARDEN · {weddingYear}</p>
-        <h1 id="entry-screen-title">{formatCoupleNames(event, coupleOrder, " & ")}의 정원</h1>
-        <span>두 사람의 새로운 시작에 함께해 주세요.</span>
-      </header>
-      <CouplePuppetStage
-        className="entry-screen__couple-puppets"
-        order={coupleOrder}
-        framing="portrait"
-        label={`${formatCoupleNames(event, coupleOrder)} 2D 퍼펫`}
-        priority
-      />
-      {invitedGuest ? (
-        <p className="entry-screen__invite">
-          <strong>{invitedGuest.guestName}님을 초대합니다.</strong>
-          <span>{invitedGuest.groupLabel ? `${invitedGuest.groupLabel} 하객으로 ` : ""}두 사람의 소중한 날을 함께해 주세요.</span>
-        </p>
-      ) : null}
-      {inviteNotice ? <p className="entry-screen__invite-notice" role="status">{inviteNotice}</p> : null}
-      <button
-        className="entry-screen__event-brief"
-        type="button"
-        aria-label="예식 정보 열기"
-        onClick={() => setEventInfoOpen(true)}
-      >
-        <span>
-          <CalendarDays aria-hidden="true" />
-          <span className="entry-screen__event-date">
-            <time dateTime={event.startAt}>{formatEventDate(event)}</time>
-            <span aria-hidden="true">·</span>
-            <time dateTime={event.startAt}>{formatEventStartTime(event)}</time>
-          </span>
-        </span>
-        <span>
-          <MapPin aria-hidden="true" />
-          <strong>{formatVenueLabel(event)}</strong>
-        </span>
-        <ChevronRight aria-hidden="true" />
-      </button>
-      <button
-        className="entry-screen__character-access"
-        type="button"
-        onFocus={onEnterIntent}
-        onPointerEnter={onEnterIntent}
-        onPointerDown={onEnterIntent}
-        onClick={openCharacterPicker}
-      >
-        <span className="entry-screen__character-thumb" aria-hidden="true">
-          <CharacterSprite
-            appearance={appearance}
-            direction="down"
-            moving={false}
-            displayMode="thumbnail"
-          />
-        </span>
-        <span>
-          <small>입장 캐릭터</small>
-          <strong>{selectedPreset.label}</strong>
-        </span>
-        <span className="entry-screen__character-command">
-          <Sparkles aria-hidden="true" />
-          선택하기
-        </span>
-      </button>
-      {onQuickView ? (
+      <nav className="entry-screen__utilities" aria-label="빠른 도구">
         <button
-          className="entry-screen__quick-access"
+          className="entry-screen__utility-button entry-screen__utility-button--help"
           type="button"
-          onFocus={onQuickViewIntent}
-          onPointerEnter={onQuickViewIntent}
-          onPointerDown={onQuickViewIntent}
-          onClick={onQuickView}
+          aria-label="예식 도움말"
+          title="예식 도움말"
+          onClick={() => setEventInfoOpen(true)}
         >
-          <BookOpen aria-hidden="true" />
-          <span><small>게임 없이</small><strong>초대장 바로 보기</strong></span>
+          <CircleHelp aria-hidden="true" />
+        </button>
+        <InvitationShareAccess variant="icon" />
+        <ViewSettingsAccess variant="icon" />
+      </nav>
+      <div className="entry-screen__hero">
+        <header className="entry-screen__header">
+          <p>WEDDING GARDEN · {weddingYear}</p>
+          <h1 id="entry-screen-title">{formatCoupleNames(event, coupleOrder, " & ")}의 정원</h1>
+          <span>두 사람의 새로운 시작에 함께해 주세요.</span>
+        </header>
+        <CouplePuppetStage
+          className="entry-screen__couple-puppets"
+          order={coupleOrder}
+          framing="portrait"
+          label={`${formatCoupleNames(event, coupleOrder)} 2D 퍼펫`}
+          priority
+        />
+        {invitedGuest ? (
+          <p className="entry-screen__invite">
+            <strong>{invitedGuest.guestName}님을 초대합니다.</strong>
+            <span>{invitedGuest.groupLabel ? `${invitedGuest.groupLabel} 하객으로 ` : ""}두 사람의 소중한 날을 함께해 주세요.</span>
+          </p>
+        ) : null}
+        {inviteNotice ? <p className="entry-screen__invite-notice" role="status">{inviteNotice}</p> : null}
+      </div>
+      <div className="entry-screen__actions">
+        <button
+          className="entry-screen__event-brief"
+          type="button"
+          aria-label="예식 정보 열기"
+          onClick={() => setEventInfoOpen(true)}
+        >
+          <span>
+            <CalendarDays aria-hidden="true" />
+            <span className="entry-screen__event-date">
+              <time dateTime={event.startAt}>{formatEventDate(event)}</time>
+              <span aria-hidden="true">·</span>
+              <time dateTime={event.startAt}>{formatEventStartTime(event)}</time>
+            </span>
+          </span>
+          <span>
+            <MapPin aria-hidden="true" />
+            <strong>{formatVenueLabel(event)}</strong>
+          </span>
           <ChevronRight aria-hidden="true" />
         </button>
-      ) : null}
+        <button
+          className="entry-screen__character-access"
+          type="button"
+          onFocus={onEnterIntent}
+          onPointerEnter={onEnterIntent}
+          onPointerDown={onEnterIntent}
+          onClick={openCharacterPicker}
+        >
+          <span className="entry-screen__character-thumb" aria-hidden="true">
+            <CharacterSprite
+              appearance={appearance}
+              direction="down"
+              moving={false}
+              displayMode="thumbnail"
+            />
+          </span>
+          <span>
+            <small>입장 캐릭터</small>
+            <strong>{selectedPreset.label}</strong>
+          </span>
+          <span className="entry-screen__character-command">
+            <Sparkles aria-hidden="true" />
+            선택하기
+          </span>
+        </button>
+        {onQuickView ? (
+          <button
+            className="entry-screen__quick-access"
+            type="button"
+            onFocus={onQuickViewIntent}
+            onPointerEnter={onQuickViewIntent}
+            onPointerDown={onQuickViewIntent}
+            onClick={onQuickView}
+          >
+            <BookOpen aria-hidden="true" />
+            <span><small>게임 없이</small><strong>초대장 바로 보기</strong></span>
+            <ChevronRight aria-hidden="true" />
+          </button>
+        ) : null}
+      </div>
       {eventInfoOpen ? (
         <BottomSheet title="예식 정보" className="entry-event-sheet" onClose={() => setEventInfoOpen(false)}>
           <WeddingEventSummary

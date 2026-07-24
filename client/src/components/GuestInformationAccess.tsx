@@ -188,6 +188,7 @@ export function GuestInformationAccess({ variant, onOpenChange }: GuestInformati
         type="button"
         className={`guest-information-trigger guest-information-trigger--${variant}${urgent ? " guest-information-trigger--urgent" : ""}`}
         aria-label={variant === "quick" || variant === "world" ? "공지·FAQ 열기" : undefined}
+        title={variant === "quick" ? "공지·FAQ" : undefined}
         aria-busy={loading || undefined}
         disabled={loading}
         onClick={() => setVisibility(true)}

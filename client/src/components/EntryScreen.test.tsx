@@ -18,7 +18,7 @@ describe("EntryScreen", () => {
   };
 
   it("확정된 두 사람과 간결한 예식 요약만 먼저 보여준다", () => {
-    render(<EntryScreen onEnter={vi.fn()} />);
+    const { container } = render(<EntryScreen onEnter={vi.fn()} />);
 
     const { couple, startAt, timeZone } = invitationContent.event;
     const year = new Intl.DateTimeFormat("en", { year: "numeric", timeZone }).format(new Date(startAt));
@@ -31,6 +31,21 @@ describe("EntryScreen", () => {
     expect(screen.queryByText("오후 6시 40분")).not.toBeInTheDocument();
     expect(screen.getByText("MJ컨벤션 5층 파티오볼룸")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /입장 캐릭터/ })).toBeInTheDocument();
+    expect(screen.getByRole("navigation", { name: "빠른 도구" })).toContainElement(
+      screen.getByRole("button", { name: "예식 도움말" })
+    );
+    expect(screen.getByRole("navigation", { name: "빠른 도구" })).toContainElement(
+      screen.getByRole("button", { name: "초대장 공유" })
+    );
+    expect(screen.getByRole("navigation", { name: "빠른 도구" })).toContainElement(
+      screen.getByRole("button", { name: "환경 설정" })
+    );
+    expect(container.querySelector(".entry-screen__hero")).toContainElement(
+      screen.getByRole("heading", { name: `${couple.bride} & ${couple.groom}의 정원` })
+    );
+    expect(container.querySelector(".entry-screen__actions")).toContainElement(
+      screen.getByRole("button", { name: /입장 캐릭터/ })
+    );
     expect(screen.queryByRole("heading", { name: "완성 하객 캐릭터" })).not.toBeInTheDocument();
     expect(screen.queryByLabelText("닉네임")).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "오시는 길" })).not.toBeInTheDocument();
@@ -51,6 +66,15 @@ describe("EntryScreen", () => {
     );
 
     expect(screen.getByRole("heading", { name: "이승재 & 이건희의 정원" })).toBeInTheDocument();
+  });
+
+  it("빠른 도구의 도움말 아이콘에서 예식 상세를 연다", () => {
+    render(<EntryScreen onEnter={vi.fn()} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "예식 도움말" }));
+
+    expect(screen.getByRole("dialog", { name: "예식 정보" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "캘린더 저장" })).toBeInTheDocument();
   });
 
   it("opens calendar choices without requiring a nickname", () => {
