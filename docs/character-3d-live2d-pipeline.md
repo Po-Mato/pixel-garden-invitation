@@ -53,6 +53,13 @@
 - 앱 적용 후보와 감사 결과: `character-assets/reference/guest-3d-master-sources/v1/guest-05/pilot`
 - Live2D 계획: `character-assets/live2d/guest-05/model-plan.json`
 
+`guest-06`은 반묶음 브레이드가 있는 긴 갈색 웨이브 헤어, 샴페인 리본 블라우스, 네이비 플레어 스커트, 왼쪽 체인 숄더백 프리셋으로 같은 구조와 검증 기준을 사용한다.
+
+- 턴어라운드: `character-assets/reference/guest-3d-master-sources/v1/guest-06/guest-06-turnaround-concept.png`
+- 3D 마스터: `character-assets/reference/guest-3d-master-sources/v1/guest-06/blender/guest-06-master.blend`
+- 앱 적용 후보와 감사 결과: `character-assets/reference/guest-3d-master-sources/v1/guest-06/pilot`
+- Live2D 계획: `character-assets/live2d/guest-06/model-plan.json`
+
 재생성 명령:
 
 ```sh
@@ -71,6 +78,10 @@ node scripts/build-guest-3d-sprite-pilot.mjs --guest guest-04 --preset masculine
 blender --background --python scripts/blender/build_guest_3d_master.py -- --guest guest-05 --output-root character-assets/reference/guest-3d-master-sources/v1/guest-05/blender
 node scripts/render-guest-3d-pose-guides.mjs --root character-assets/reference/guest-3d-master-sources/v1/guest-05/blender
 node scripts/build-guest-3d-sprite-pilot.mjs --guest guest-05 --preset feminine-sage-bolero-dress
+
+blender --background --python scripts/blender/build_guest_3d_master.py -- --guest guest-06 --output-root character-assets/reference/guest-3d-master-sources/v1/guest-06/blender
+node scripts/render-guest-3d-pose-guides.mjs --root character-assets/reference/guest-3d-master-sources/v1/guest-06/blender
+node scripts/build-guest-3d-sprite-pilot.mjs --guest guest-06 --preset feminine-champagne-navy-skirt
 ```
 
 ## Live2D 적용 범위

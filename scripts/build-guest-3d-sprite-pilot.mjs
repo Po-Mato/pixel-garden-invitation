@@ -66,11 +66,41 @@ async function alphaBounds(input, threshold = 8) {
 async function splitDirectionSheet(direction) {
   const input = path.join(INPUT_ROOT, `${direction}-walk-cycle-render.png`);
   const metadata = await sharp(input).metadata();
+  const { data, info } = await sharp(input).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+  const occupiedColumns = new Array(info.width).fill(false);
+  for (let y = 0; y < info.height; y += 1) {
+    for (let x = 0; x < info.width; x += 1) {
+      if (data[(y * info.width + x) * 4 + 3] > 8) occupiedColumns[x] = true;
+    }
+  }
+
+  const foregroundRuns = [];
+  let runStart = -1;
+  for (let x = 0; x <= occupiedColumns.length; x += 1) {
+    if (x < occupiedColumns.length && occupiedColumns[x]) {
+      if (runStart < 0) runStart = x;
+      continue;
+    }
+    if (runStart >= 0) {
+      foregroundRuns.push({ left: runStart, right: x - 1 });
+      runStart = -1;
+    }
+  }
+
+  const panelRanges = foregroundRuns.length === 3
+    ? foregroundRuns.map(({ left, right }) => ({
+        left: Math.max(0, left - 4),
+        right: Math.min(metadata.width, right + 5)
+      }))
+    : Array.from({ length: 3 }, (_, step) => ({
+        left: Math.floor((metadata.width * step) / 3),
+        right: Math.floor((metadata.width * (step + 1)) / 3)
+      }));
   const frames = [];
 
   for (let step = 0; step < 3; step += 1) {
-    const panelLeft = Math.floor((metadata.width * step) / 3);
-    const panelRight = Math.floor((metadata.width * (step + 1)) / 3);
+    const panelLeft = panelRanges[step].left;
+    const panelRight = panelRanges[step].right;
     const panel = await sharp(input)
       .extract({ left: panelLeft, top: 0, width: panelRight - panelLeft, height: metadata.height })
       .png()
@@ -105,10 +135,49 @@ async function visibleFrame(frame) {
   return { image: cropped, width: bounds.width, height: bounds.height };
 }
 
+async function removeTinyAlphaIslands(frame, minimumPixels = 4) {
+  const { data, info } = await sharp(frame).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+  const visited = new Uint8Array(info.width * info.height);
+
+  for (let start = 0; start < visited.length; start += 1) {
+    if (visited[start] || data[start * 4 + 3] <= 8) continue;
+    const stack = [start];
+    const pixels = [];
+    visited[start] = 1;
+
+    while (stack.length > 0) {
+      const current = stack.pop();
+      const x = current % info.width;
+      const y = Math.floor(current / info.width);
+      pixels.push(current);
+
+      for (const next of [current - 1, current + 1, current - info.width, current + info.width]) {
+        if (next < 0 || next >= visited.length || visited[next]) continue;
+        const nextX = next % info.width;
+        const nextY = Math.floor(next / info.width);
+        if (Math.abs(nextX - x) + Math.abs(nextY - y) !== 1) continue;
+        if (data[next * 4 + 3] <= 8) continue;
+        visited[next] = 1;
+        stack.push(next);
+      }
+    }
+
+    if (pixels.length >= minimumPixels) continue;
+    for (const pixel of pixels) {
+      data[pixel * 4] = 0;
+      data[pixel * 4 + 1] = 0;
+      data[pixel * 4 + 2] = 0;
+      data[pixel * 4 + 3] = 0;
+    }
+  }
+
+  return sharp(data, { raw: info }).png({ compressionLevel: 9 }).toBuffer();
+}
+
 async function normalizeSource(frame) {
   const visible = await visibleFrame(frame);
   const scale = SOURCE.foregroundHeight / visible.height;
-  const width = Math.max(1, Math.round(visible.width * scale));
+  const width = Math.min(SOURCE.width - 16, Math.max(1, Math.round(visible.width * scale)));
   const height = SOURCE.foregroundHeight;
   const resized = await sharp(visible.image)
     .resize({ width, height, fit: "fill", kernel: sharp.kernel.lanczos3 })
@@ -127,7 +196,7 @@ async function normalizeGameFrame(frame, mode) {
   const visible = await visibleFrame(frame);
   const targetHeight = mode === "pixel" ? CONTENT_HEIGHT - 1 : CONTENT_HEIGHT;
   const scale = targetHeight / visible.height;
-  let width = Math.max(2, Math.round(visible.width * scale));
+  let width = Math.min(FRAME.width - 4, Math.max(2, Math.round(visible.width * scale)));
   let height = targetHeight;
   let resized;
 
@@ -151,13 +220,14 @@ async function normalizeGameFrame(frame, mode) {
       .toBuffer();
   }
 
-  return canvas(FRAME.width, FRAME.height, [
+  const normalized = await canvas(FRAME.width, FRAME.height, [
     {
       input: resized,
       left: Math.round((FRAME.width - width) / 2),
       top: FOOT_BOTTOM - height + 1
     }
   ]);
+  return removeTinyAlphaIslands(normalized);
 }
 
 async function saveBuffer(file, buffer) {
