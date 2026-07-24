@@ -32,12 +32,23 @@
 - 앱 적용 후보와 감사 결과: `character-assets/reference/guest-3d-master-sources/v1/guest-02/pilot`
 - Live2D 계획: `character-assets/live2d/guest-02/model-plan.json`
 
+`guest-03`은 남성 네이비 정장 프리셋으로 같은 구조와 검증 기준을 사용한다.
+
+- 턴어라운드: `character-assets/reference/guest-3d-master-sources/v1/guest-03/guest-03-turnaround-concept.png`
+- 3D 마스터: `character-assets/reference/guest-3d-master-sources/v1/guest-03/blender/guest-03-master.blend`
+- 앱 적용 후보와 감사 결과: `character-assets/reference/guest-3d-master-sources/v1/guest-03/pilot`
+- Live2D 계획: `character-assets/live2d/guest-03/model-plan.json`
+
 재생성 명령:
 
 ```sh
 blender --background --python scripts/blender/build_guest_3d_master.py -- --guest guest-02 --output-root character-assets/reference/guest-3d-master-sources/v1/guest-02/blender
 node scripts/render-guest-3d-pose-guides.mjs --root character-assets/reference/guest-3d-master-sources/v1/guest-02/blender
 node scripts/build-guest-3d-sprite-pilot.mjs --guest guest-02 --preset feminine-formal-hanbok
+
+blender --background --python scripts/blender/build_guest_3d_master.py -- --guest guest-03 --output-root character-assets/reference/guest-3d-master-sources/v1/guest-03/blender
+node scripts/render-guest-3d-pose-guides.mjs --root character-assets/reference/guest-3d-master-sources/v1/guest-03/blender
+node scripts/build-guest-3d-sprite-pilot.mjs --guest guest-03 --preset masculine-navy-suit
 ```
 
 ## Live2D 적용 범위

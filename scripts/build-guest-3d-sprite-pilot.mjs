@@ -96,12 +96,21 @@ async function canvas(width, height, composites) {
     .toBuffer();
 }
 
-async function normalizeSource(frame, referenceHeight) {
-  const metadata = await sharp(frame).metadata();
-  const scale = SOURCE.foregroundHeight / referenceHeight;
-  const width = Math.max(1, Math.round(metadata.width * scale));
-  const height = Math.max(1, Math.round(metadata.height * scale));
-  const resized = await sharp(frame)
+async function visibleFrame(frame) {
+  const bounds = await alphaBounds(frame);
+  const cropped = await sharp(frame)
+    .extract(bounds)
+    .png()
+    .toBuffer();
+  return { image: cropped, width: bounds.width, height: bounds.height };
+}
+
+async function normalizeSource(frame) {
+  const visible = await visibleFrame(frame);
+  const scale = SOURCE.foregroundHeight / visible.height;
+  const width = Math.max(1, Math.round(visible.width * scale));
+  const height = SOURCE.foregroundHeight;
+  const resized = await sharp(visible.image)
     .resize({ width, height, fit: "fill", kernel: sharp.kernel.lanczos3 })
     .png()
     .toBuffer();
@@ -114,12 +123,12 @@ async function normalizeSource(frame, referenceHeight) {
   ]);
 }
 
-async function normalizeGameFrame(frame, mode, referenceHeight) {
-  const metadata = await sharp(frame).metadata();
+async function normalizeGameFrame(frame, mode) {
+  const visible = await visibleFrame(frame);
   const targetHeight = mode === "pixel" ? CONTENT_HEIGHT - 1 : CONTENT_HEIGHT;
-  const scale = targetHeight / referenceHeight;
-  let width = Math.max(2, Math.round(metadata.width * scale));
-  let height = Math.max(2, Math.round(metadata.height * scale));
+  const scale = targetHeight / visible.height;
+  let width = Math.max(2, Math.round(visible.width * scale));
+  let height = targetHeight;
   let resized;
 
   if (mode === "pixel") {
@@ -127,7 +136,7 @@ async function normalizeGameFrame(frame, mode, referenceHeight) {
     height -= height % 2;
     const lowWidth = Math.max(1, width / 2);
     const lowHeight = Math.max(1, height / 2);
-    const lowResolution = await sharp(frame)
+    const lowResolution = await sharp(visible.image)
       .resize({ width: lowWidth, height: lowHeight, fit: "fill", kernel: sharp.kernel.lanczos3 })
       .png({ palette: true, colours: 96, dither: 0.35 })
       .toBuffer();
@@ -136,7 +145,7 @@ async function normalizeGameFrame(frame, mode, referenceHeight) {
       .png()
       .toBuffer();
   } else {
-    resized = await sharp(frame)
+    resized = await sharp(visible.image)
       .resize({ width, height, fit: "fill", kernel: sharp.kernel.lanczos3 })
       .png()
       .toBuffer();
@@ -363,7 +372,7 @@ async function rearHairBounds(frame) {
   let bottom = -1;
   let pixels = 0;
 
-  for (let y = 0; y < 80; y += 1) {
+  for (let y = 0; y < Math.min(56, info.height); y += 1) {
     for (let x = 0; x < info.width; x += 1) {
       const offset = (y * info.width + x) * 4;
       const red = data[offset];
@@ -396,16 +405,15 @@ async function main() {
 
   for (const direction of DIRECTIONS) {
     const splitFrames = await splitDirectionSheet(direction);
-    const referenceHeight = (await sharp(splitFrames[1]).metadata()).height;
     framesByDirection[direction] = [];
     sourceFrames[direction] = [];
     audit.directions[direction] = [];
 
     for (let step = 0; step < splitFrames.length; step += 1) {
       const number = String(step + 1).padStart(2, "0");
-      const source = await normalizeSource(splitFrames[step], referenceHeight);
-      const soft = await normalizeGameFrame(splitFrames[step], "soft", referenceHeight);
-      const pixel = await normalizeGameFrame(splitFrames[step], "pixel", referenceHeight);
+      const source = await normalizeSource(splitFrames[step]);
+      const soft = await normalizeGameFrame(splitFrames[step], "soft");
+      const pixel = await normalizeGameFrame(splitFrames[step], "pixel");
       sourceFrames[direction].push(source);
       framesByDirection[direction].push({ soft, pixel });
 

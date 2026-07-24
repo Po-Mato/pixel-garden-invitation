@@ -9,7 +9,7 @@ from mathutils import Vector
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--guest", choices=("guest-01", "guest-02"), default="guest-01")
+    parser.add_argument("--guest", choices=("guest-01", "guest-02", "guest-03"), default="guest-01")
     parser.add_argument("--output-root", required=True)
     return parser.parse_args(sys.argv[sys.argv.index("--") + 1 :] if "--" in sys.argv else [])
 
@@ -421,7 +421,105 @@ def build_guest02_character():
     return root, left_leg, right_leg, left_arm, right_arm
 
 
+def build_guest03_character():
+    skin = material("Skin", (0.96, 0.72, 0.62))
+    blush = material("Blush", (0.98, 0.45, 0.42), roughness=0.9)
+    hair = material("Black hair", (0.018, 0.022, 0.030), roughness=0.34)
+    hair_highlight = material("Blue black hair highlight", (0.065, 0.080, 0.115), roughness=0.38)
+    navy = material("Navy suit", (0.025, 0.070, 0.160))
+    navy_dark = material("Navy suit shadow", (0.012, 0.030, 0.080))
+    shirt = material("White shirt", (0.95, 0.95, 0.93))
+    tie = material("Midnight navy tie", (0.018, 0.035, 0.085), roughness=0.45)
+    shoe = material("Black dress shoes", (0.015, 0.018, 0.024), roughness=0.30)
+    metal = material("Suit button", (0.15, 0.16, 0.18), roughness=0.25, metallic=0.55)
+    eye_white = material("Eye white", (0.98, 0.98, 0.97), roughness=0.25)
+    iris = material("Warm brown iris", (0.18, 0.065, 0.020), roughness=0.28)
+    pupil = material("Pupil", (0.008, 0.006, 0.004), roughness=0.2)
+    mouth = material("Mouth", (0.48, 0.075, 0.065), roughness=0.6)
+
+    root = empty("Guest03_Master")
+
+    sphere("Head", (0, -0.01, 2.50), (0.53, 0.46, 0.52), skin, root)
+    sphere("Left ear", (-0.50, -0.01, 2.47), (0.10, 0.07, 0.14), skin, root)
+    sphere("Right ear", (0.50, -0.01, 2.47), (0.10, 0.07, 0.14), skin, root)
+
+    sphere("Hair back", (0, 0.15, 2.62), (0.58, 0.46, 0.50), hair, root)
+    sphere("Side part left", (-0.24, -0.22, 2.80), (0.39, 0.24, 0.22), hair_highlight, root)
+    sphere("Side part right", (0.22, -0.20, 2.78), (0.34, 0.23, 0.24), hair, root)
+    for index, x in enumerate((-0.46, -0.30, -0.14, 0.02, 0.18, 0.34, 0.47)):
+        sphere(
+            f"Short hair lock {index + 1}",
+            (x, 0.34 + 0.02 * (index % 2), 2.48 + 0.08 * (1.0 - abs(x) / 0.5)),
+            (0.15, 0.12, 0.24),
+            hair_highlight if index % 3 == 0 else hair,
+            root,
+            segments=32,
+            rings=20,
+        )
+    curve(
+        "Front side part",
+        [(-0.34, -0.42, 2.88), (-0.14, -0.49, 2.76), (0.08, -0.48, 2.67)],
+        hair_highlight,
+        0.055,
+        root,
+    )
+    curve(
+        "Front fringe",
+        [(0.06, -0.46, 2.86), (0.22, -0.49, 2.75), (0.34, -0.44, 2.66)],
+        hair,
+        0.050,
+        root,
+    )
+
+    for side in (-1, 1):
+        sphere(f"Eye white {side}", (0.205 * side, -0.438, 2.57), (0.145, 0.035, 0.110), eye_white, root, 36, 24)
+        sphere(f"Iris {side}", (0.205 * side, -0.470, 2.56), (0.076, 0.022, 0.080), iris, root, 32, 20)
+        sphere(f"Pupil {side}", (0.205 * side, -0.487, 2.555), (0.037, 0.012, 0.045), pupil, root, 24, 16)
+        sphere(f"Eye highlight {side}", (0.180 * side, -0.500, 2.59), (0.016, 0.008, 0.020), eye_white, root, 20, 12)
+        curve(
+            f"Eyebrow {side}",
+            [(0.09 * side, -0.472, 2.72), (0.21 * side, -0.489, 2.75), (0.34 * side, -0.467, 2.71)],
+            hair,
+            0.020,
+            root,
+        )
+        sphere(f"Cheek {side}", (0.34 * side, -0.445, 2.40), (0.080, 0.012, 0.036), blush, root, 24, 14)
+    sphere("Nose", (0, -0.475, 2.46), (0.035, 0.025, 0.045), skin, root, 24, 16)
+    curve("Smile", [(-0.075, -0.486, 2.34), (0, -0.503, 2.31), (0.075, -0.486, 2.34)], mouth, 0.012, root)
+
+    sphere("Suit torso", (0, 0.0, 1.68), (0.38, 0.25, 0.44), navy, root)
+    rounded_cube("Shirt front", (0, -0.245, 1.78), (0.13, 0.035, 0.34), shirt, root, 0.035)
+    curve("Left lapel", [(-0.28, -0.30, 2.03), (-0.10, -0.35, 1.77), (-0.24, -0.31, 1.55)], navy_dark, 0.035, root)
+    curve("Right lapel", [(0.28, -0.30, 2.03), (0.10, -0.35, 1.77), (0.24, -0.31, 1.55)], navy_dark, 0.035, root)
+    cone("Tie knot", (0, -0.315, 1.99), 0.080, 0.045, 0.13, tie, root, vertices=32)
+    rounded_cube("Tie body", (0, -0.315, 1.73), (0.060, 0.025, 0.23), tie, root, 0.025)
+    rounded_cube("Pocket square", (0.25, -0.275, 1.79), (0.075, 0.025, 0.035), shirt, root, 0.018)
+    sphere("Jacket button upper", (0, -0.267, 1.52), (0.040, 0.020, 0.040), metal, root, 20, 12)
+    sphere("Jacket button lower", (0, -0.267, 1.40), (0.035, 0.018, 0.035), metal, root, 20, 12)
+    for side in (-1, 1):
+        rounded_cube(f"Jacket pocket {side}", (0.24 * side, -0.262, 1.38), (0.12, 0.024, 0.035), navy_dark, root, 0.018)
+
+    left_arm = empty("Left arm rig", (0.43, 0, 1.88), root)
+    right_arm = empty("Right arm rig", (-0.43, 0, 1.88), root)
+    for side, rig in ((1, left_arm), (-1, right_arm)):
+        cylinder(f"Suit sleeve {side}", (0.05 * side, 0, -0.31), 0.120, 0.60, navy, rig)
+        cylinder(f"Shirt cuff {side}", (0.06 * side, -0.01, -0.61), 0.103, 0.075, shirt, rig)
+        cylinder(f"Wrist {side}", (0.06 * side, -0.01, -0.69), 0.080, 0.12, skin, rig)
+        sphere(f"Hand {side}", (0.06 * side, -0.01, -0.80), (0.095, 0.075, 0.12), skin, rig, 32, 20)
+
+    left_leg = empty("Left leg rig", (0.19, 0, 0.92), root)
+    right_leg = empty("Right leg rig", (-0.19, 0, 0.92), root)
+    for side, rig in ((1, left_leg), (-1, right_leg)):
+        cylinder(f"Suit trouser {side}", (0, 0, -0.43), 0.145, 0.86, navy, rig)
+        rounded_cube(f"Dress shoe {side}", (0, -0.10, -0.88), (0.17, 0.25, 0.105), shoe, rig, 0.08)
+        rounded_cube(f"Shoe welt {side}", (0, -0.13, -0.96), (0.18, 0.26, 0.030), navy_dark, rig, 0.025)
+
+    return root, left_leg, right_leg, left_arm, right_arm
+
+
 def set_walk_animation(root, left_leg, right_leg, left_arm, right_arm, guest_id):
+    left_base_z = left_leg.location.z
+    right_base_z = right_leg.location.z
     poses = (
         (1, 0.24, -0.24, math.radians(-11), math.radians(8), 0.0),
         (7, 0.0, 0.0, 0.0, 0.0, 0.035),
@@ -432,8 +530,8 @@ def set_walk_animation(root, left_leg, right_leg, left_arm, right_arm, guest_id)
     for frame, left_stride, right_stride, left_arm_rotation, right_arm_rotation, bob in poses:
         left_leg.location.y = left_stride
         right_leg.location.y = right_stride
-        left_leg.location.z = 0.58 + (0.025 if left_stride < 0 else 0.0)
-        right_leg.location.z = 0.58 + (0.025 if right_stride < 0 else 0.0)
+        left_leg.location.z = left_base_z + (0.025 if left_stride < 0 else 0.0)
+        right_leg.location.z = right_base_z + (0.025 if right_stride < 0 else 0.0)
         left_arm.rotation_euler.x = left_arm_rotation
         right_arm.rotation_euler.x = right_arm_rotation
         root.location.z = bob
@@ -526,6 +624,7 @@ def main():
     builders = {
         "guest-01": build_guest01_character,
         "guest-02": build_guest02_character,
+        "guest-03": build_guest03_character,
     }
     root, left_leg, right_leg, left_arm, right_arm = builders[args.guest]()
     set_walk_animation(root, left_leg, right_leg, left_arm, right_arm, args.guest)
