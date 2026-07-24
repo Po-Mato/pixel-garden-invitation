@@ -89,7 +89,7 @@
 }
 
 .entry-screen__hero .entry-screen__couple-puppets {
-  width: clamp(174px, 62vw, 252px);
+  width: clamp(196px, 68vw, 276px);
   max-height: min(210px, 28dvh);
   grid-row: 2;
   align-self: center;
@@ -125,7 +125,7 @@
 
 @media (min-height: 760px) {
   .entry-screen__hero .entry-screen__couple-puppets {
-    width: clamp(220px, 68vw, 276px);
+    width: clamp(248px, 80vw, 320px);
     max-height: 220px;
   }
 
@@ -159,7 +159,7 @@
   }
 
   .entry-screen__hero .entry-screen__couple-puppets {
-    width: min(164px, 44vw);
+    width: min(200px, 52vw);
     max-height: 126px;
   }
 
@@ -192,7 +192,7 @@
   }
 
   .entry-screen__hero .entry-screen__couple-puppets {
-    width: min(184px, 28vw);
+    width: min(220px, 32vw);
     max-height: 142px;
   }
 

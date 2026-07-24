@@ -33,6 +33,28 @@ type PuppetSlot = {
   x: number;
 };
 
+type PuppetPlacement = {
+  scale: number;
+  rootY: number;
+};
+
+export function resolvePuppetPlacement(
+  viewportHeight: number,
+  canvasHeight: number,
+  sourceRootY: number,
+  fitFullBody: boolean
+): PuppetPlacement {
+  if (!fitFullBody) return { scale: 1, rootY: sourceRootY };
+
+  const verticalPadding = 12;
+  const scale = (viewportHeight - verticalPadding * 2) / canvasHeight;
+  const sourceBelowRoot = canvasHeight - sourceRootY;
+  return {
+    scale,
+    rootY: viewportHeight - verticalPadding - sourceBelowRoot * scale
+  };
+}
+
 function slotsFor(character: CoupleSide | undefined, order: CoupleDisplayOrder): PuppetSlot[] {
   if (character) return [{ character, x: 256 }];
   return coupleSides(order).map((side, index) => ({
@@ -135,8 +157,15 @@ export function CouplePuppetStage({
         }
 
         const rootBone = new PIXI.Container();
+        const placement = resolvePuppetPlacement(
+          viewport.height,
+          manifest.canvas.height,
+          manifest.bones.root.y,
+          !character && framing === "portrait"
+        );
         rootBone.pivot.set(manifest.bones.root.x, manifest.bones.root.y);
-        rootBone.position.set(slot.x, manifest.bones.root.y);
+        rootBone.position.set(slot.x, placement.rootY);
+        rootBone.scale.set(placement.scale);
 
         const body = new PIXI.Sprite(bodyTexture);
         const headBone = new PIXI.Container();
@@ -159,7 +188,7 @@ export function CouplePuppetStage({
           const now = performance.now();
           const time = now / 1000 + motion.phase;
           const breath = Math.sin(time * 1.8) * motion.breathScale;
-          rootBone.scale.y = 1 + breath;
+          rootBone.scale.y = placement.scale * (1 + breath);
           headBone.rotation = Math.sin(time * 0.72) * motion.headDegrees * Math.PI / 180;
           headBone.position.y = manifest.bones.head.y + Math.sin(time * 1.1) * motion.headLift;
 

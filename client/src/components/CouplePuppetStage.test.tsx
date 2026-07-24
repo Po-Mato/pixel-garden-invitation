@@ -1,7 +1,7 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 import { allowsCouplePuppetMotion, resolveCouplePuppetAssetPath } from "../character/couplePuppet";
-import { CouplePuppetStage } from "./CouplePuppetStage";
+import { CouplePuppetStage, resolvePuppetPlacement } from "./CouplePuppetStage";
 
 afterEach(cleanup);
 
@@ -21,6 +21,23 @@ describe("신랑·신부 2D 퍼펫", () => {
     expect(stage).toHaveAttribute("data-renderer-ready", "false");
     expect(sources[0]).toContain("/groom/preview.webp");
     expect(sources[1]).toContain("/bride/preview.webp");
+  });
+
+  it("입장 화면에서는 전신이 상하 여백 안에 들어오도록 축소한다", () => {
+    const placement = resolvePuppetPlacement(560, 768, 736, true);
+    const top = placement.rootY - 736 * placement.scale;
+    const bottom = placement.rootY + (768 - 736) * placement.scale;
+
+    expect(top).toBeCloseTo(12, 5);
+    expect(bottom).toBeCloseTo(548, 5);
+    expect(placement.scale).toBeLessThan(1);
+  });
+
+  it("전신 무대에서는 원본 배율과 기준선을 유지한다", () => {
+    expect(resolvePuppetPlacement(768, 768, 736, false)).toEqual({
+      scale: 1,
+      rootY: 736
+    });
   });
 
   it("모션 감소와 저사양 모드에서는 런타임 애니메이션을 생략한다", () => {
