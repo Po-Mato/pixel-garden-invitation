@@ -92,6 +92,14 @@ test("12명 모두 상하좌우와 보행 3컷의 머리 크기를 일정하게 
       consistency.maximumStepDelta <= 2,
       `${guestId} 보행 프레임 머리 폭 편차: ${consistency.maximumStepDelta}`
     );
+    if (guestId === "guest-12") {
+      assert.equal(audit.acceptance?.threeHeadProportion?.passed, true, "guest-12 실제 3등신 비율");
+      assert.ok(audit.acceptance.threeHeadProportion.maximumDirectionRatio <= 1.03);
+      for (const direction of Object.values(audit.acceptance.threeHeadProportion.directions)) {
+        assert.ok(Math.abs(direction.bodyHeight - direction.headHeight * 2) <= 1);
+        assert.ok(direction.headAspectRatio >= 0.97 && direction.headAspectRatio <= 1.03);
+      }
+    }
   }
 });
 

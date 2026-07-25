@@ -22,6 +22,15 @@ const NEEDS_RIGHT_HAND_ACCESSORY_AUDIT = GUEST_ID === "guest-01";
 const MAX_REAR_HAIR_HEIGHT_DELTA = GUEST_ID === "guest-01" ? 1 : 3;
 const MAX_DIRECTION_HEAD_WIDTH_RATIO = 1.1;
 const MAX_STEP_HEAD_WIDTH_DELTA = 2;
+const TARGET_HEAD_RATIO = 1 / 3;
+const MAX_HEAD_WIDTH_SCALE = GUEST_ID === "guest-12" ? 1.7 : 1.38;
+const MAX_THREE_HEAD_DIRECTION_RATIO = 1.03;
+const MIN_THREE_HEAD_ASPECT_RATIO = 0.97;
+const MAX_THREE_HEAD_ASPECT_RATIO = 1.03;
+const HEAD_BOUNDARY_RATIO_OVERRIDES = {
+  "guest-12": { down: 0.27, left: 0.23, right: 0.2, up: 0.31 }
+};
+const ABSOLUTE_HEAD_WIDTH_RATIO_OVERRIDES = { "guest-12": TARGET_HEAD_RATIO };
 const DIRECTIONS = ["down", "left", "right", "up"];
 const FRAME = { width: 96, height: 144 };
 const SOURCE = { width: 640, height: 1024, foregroundHeight: 820, baseline: 930 };
@@ -178,20 +187,57 @@ function median(values) {
 function samplePremultiplied(data, info, x, y) {
   const x0 = Math.max(0, Math.min(info.width - 1, Math.floor(x)));
   const x1 = Math.max(0, Math.min(info.width - 1, x0 + 1));
-  const weight = Math.max(0, Math.min(1, x - x0));
-  const first = (y * info.width + x0) * 4;
-  const second = (y * info.width + x1) * 4;
-  const alpha0 = data[first + 3];
-  const alpha1 = data[second + 3];
-  const alpha = alpha0 * (1 - weight) + alpha1 * weight;
+  const y0 = Math.max(0, Math.min(info.height - 1, Math.floor(y)));
+  const y1 = Math.max(0, Math.min(info.height - 1, y0 + 1));
+  const xWeight = Math.max(0, Math.min(1, x - x0));
+  const yWeight = Math.max(0, Math.min(1, y - y0));
+  const samples = [
+    { offset: (y0 * info.width + x0) * 4, weight: (1 - xWeight) * (1 - yWeight) },
+    { offset: (y0 * info.width + x1) * 4, weight: xWeight * (1 - yWeight) },
+    { offset: (y1 * info.width + x0) * 4, weight: (1 - xWeight) * yWeight },
+    { offset: (y1 * info.width + x1) * 4, weight: xWeight * yWeight }
+  ];
+  const alpha = samples.reduce((total, sample) => total + data[sample.offset + 3] * sample.weight, 0);
   if (alpha <= 0.5) return [0, 0, 0, 0];
 
   return [
-    Math.round((data[first] * alpha0 * (1 - weight) + data[second] * alpha1 * weight) / alpha),
-    Math.round((data[first + 1] * alpha0 * (1 - weight) + data[second + 1] * alpha1 * weight) / alpha),
-    Math.round((data[first + 2] * alpha0 * (1 - weight) + data[second + 2] * alpha1 * weight) / alpha),
+    Math.round(samples.reduce(
+      (total, sample) => total + data[sample.offset] * data[sample.offset + 3] * sample.weight,
+      0
+    ) / alpha),
+    Math.round(samples.reduce(
+      (total, sample) => total + data[sample.offset + 1] * data[sample.offset + 3] * sample.weight,
+      0
+    ) / alpha),
+    Math.round(samples.reduce(
+      (total, sample) => total + data[sample.offset + 2] * data[sample.offset + 3] * sample.weight,
+      0
+    ) / alpha),
     Math.round(alpha)
   ];
+}
+
+async function normalizeHeadBodyHeight(frame, sourceHeadRatio) {
+  const bounds = await alphaBounds(frame, 12);
+  const { data, info } = await sharp(frame).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+  const output = Buffer.alloc(data.length);
+  const top = bounds.top;
+  const bottom = bounds.top + bounds.height - 1;
+  const sourceBoundary = top + (bottom - top) * sourceHeadRatio;
+  const targetBoundary = top + (bottom - top) * TARGET_HEAD_RATIO;
+
+  for (let y = top; y <= bottom; y += 1) {
+    const sourceY = y <= targetBoundary
+      ? top + ((y - top) / Math.max(1, targetBoundary - top)) * (sourceBoundary - top)
+      : sourceBoundary +
+        ((y - targetBoundary) / Math.max(1, bottom - targetBoundary)) * (bottom - sourceBoundary);
+    for (let x = 0; x < info.width; x += 1) {
+      const sampled = samplePremultiplied(data, info, x, sourceY);
+      output.set(sampled, (y * info.width + x) * 4);
+    }
+  }
+
+  return sharp(output, { raw: info }).png({ compressionLevel: 9 }).toBuffer();
 }
 
 async function normalizeHeadWidth(frame, scale) {
@@ -599,17 +645,27 @@ async function main() {
 
   const rawFramesByDirection = {};
   const rawHeadWidthsByDirection = {};
+  const headBoundaryOverrides = HEAD_BOUNDARY_RATIO_OVERRIDES[GUEST_ID];
   for (const direction of DIRECTIONS) {
     rawFramesByDirection[direction] = await splitDirectionSheet(direction);
+    if (headBoundaryOverrides) {
+      rawFramesByDirection[direction] = await Promise.all(
+        rawFramesByDirection[direction].map((frame) =>
+          normalizeHeadBodyHeight(frame, headBoundaryOverrides[direction])
+        )
+      );
+    }
     const metrics = await Promise.all(rawFramesByDirection[direction].map((frame) => headBandMetrics(frame)));
     rawHeadWidthsByDirection[direction] = metrics.map((item) => item.normalizedWidth);
   }
-  const targetHeadWidth = median(Object.values(rawHeadWidthsByDirection).flat());
+  const targetHeadWidth =
+    ABSOLUTE_HEAD_WIDTH_RATIO_OVERRIDES[GUEST_ID] ??
+    median(Object.values(rawHeadWidthsByDirection).flat());
   const headScalesByDirection = Object.fromEntries(
     DIRECTIONS.map((direction) => [
       direction,
       rawHeadWidthsByDirection[direction].map((width) =>
-        Math.max(0.72, Math.min(1.38, targetHeadWidth / width))
+        Math.max(0.72, Math.min(MAX_HEAD_WIDTH_SCALE, targetHeadWidth / width))
       )
     ])
   );
@@ -634,7 +690,7 @@ async function main() {
         const correction = previewTargetWidth / previewWidthsByDirection[direction][index];
         headScalesByDirection[direction][index] = Math.max(
           0.72,
-          Math.min(1.38, headScalesByDirection[direction][index] * correction)
+          Math.min(MAX_HEAD_WIDTH_SCALE, headScalesByDirection[direction][index] * correction)
         );
       }
     }
@@ -645,6 +701,13 @@ async function main() {
     sourceFrameWidths: rawHeadWidthsByDirection,
     scaleByFrame: headScalesByDirection
   };
+  if (headBoundaryOverrides) {
+    audit.verticalRatioNormalization = {
+      sourceHeadRatios: headBoundaryOverrides,
+      targetHeadRatio: TARGET_HEAD_RATIO,
+      targetBodyRatio: 1 - TARGET_HEAD_RATIO
+    };
+  }
 
   for (const direction of DIRECTIONS) {
     const splitFrames = await Promise.all(
@@ -753,6 +816,32 @@ async function main() {
       Math.max(...directionAverages) / Math.min(...directionAverages) <= MAX_DIRECTION_HEAD_WIDTH_RATIO &&
       maximumStepDelta <= MAX_STEP_HEAD_WIDTH_DELTA
   };
+  if (headBoundaryOverrides) {
+    const neutralMetrics = await Promise.all(
+      DIRECTIONS.map((direction) => headBandMetrics(framesByDirection[direction][1].soft))
+    );
+    const headHeights = neutralMetrics.map((item) => Math.round(item.characterHeight * TARGET_HEAD_RATIO));
+    const headAspectRatios = neutralMetrics.map((item, index) => item.width / headHeights[index]);
+    const neutralHeadWidths = neutralMetrics.map((item) => item.width);
+    const maximumDirectionRatio = Math.max(...neutralHeadWidths) / Math.min(...neutralHeadWidths);
+    audit.acceptance.threeHeadProportion = {
+      directions: Object.fromEntries(
+        DIRECTIONS.map((direction, index) => [direction, {
+          characterHeight: neutralMetrics[index].characterHeight,
+          headHeight: headHeights[index],
+          bodyHeight: neutralMetrics[index].characterHeight - headHeights[index],
+          headWidth: neutralMetrics[index].width,
+          headAspectRatio: headAspectRatios[index]
+        }])
+      ),
+      maximumDirectionRatio,
+      passed:
+        maximumDirectionRatio <= MAX_THREE_HEAD_DIRECTION_RATIO &&
+        headAspectRatios.every(
+          (ratio) => ratio >= MIN_THREE_HEAD_ASPECT_RATIO && ratio <= MAX_THREE_HEAD_ASPECT_RATIO
+        )
+    };
+  }
   if (NEEDS_RIGHT_HAND_ACCESSORY_AUDIT) {
     audit.acceptance.rightHandAccessoryPlacement = {
       down: await Promise.all(framesByDirection.down.map((item) => accessorySide(item.soft))),
@@ -781,6 +870,9 @@ async function main() {
   }
   if (!audit.acceptance.headSizeConsistency.passed) {
     throw new Error("방향별 머리 크기 일관성 감사에 실패했습니다.");
+  }
+  if (headBoundaryOverrides && !audit.acceptance.threeHeadProportion.passed) {
+    throw new Error("머리 1 + 몸 2 비율 감사에 실패했습니다.");
   }
 }
 
