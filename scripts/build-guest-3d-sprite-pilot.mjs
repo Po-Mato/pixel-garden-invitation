@@ -454,13 +454,20 @@ async function rearHairBounds(frame) {
       const green = data[offset + 1];
       const blue = data[offset + 2];
       const alpha = data[offset + 3];
-      const isHairColor =
+      const isWarmHair =
         alpha > 80 &&
         red >= 18 && red < 145 &&
         green >= 8 && green < 105 &&
         blue < 90 &&
         red > green * 1.12 &&
         green > blue * 0.85;
+      const isNeutralDarkHair =
+        alpha > 80 &&
+        red < 115 &&
+        green < 115 &&
+        blue < 120 &&
+        Math.max(red, green, blue) - Math.min(red, green, blue) <= 48;
+      const isHairColor = isWarmHair || isNeutralDarkHair;
       if (!isHairColor) continue;
       left = Math.min(left, x);
       right = Math.max(right, x);
