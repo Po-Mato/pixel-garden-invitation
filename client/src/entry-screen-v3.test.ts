@@ -12,8 +12,15 @@ describe("entry screen wedding artwork", () => {
     expect(styles).toMatch(/\.entry-screen__hero::before\s*\{[^}]*background-size:\s*cover;/s);
   });
 
-  it("lowers the selected character together with its floor halo", () => {
-    expect(styles).toMatch(/\.entry-character-picker \.character-customizer__sprite\s*\{[^}]*top:\s*calc\(50% \+ 9px\);/s);
-    expect(styles).toMatch(/\.entry-character-picker \.character-customizer__halo\s*\{[^}]*top:\s*calc\(50% \+ 81px\);/s);
+  it("uses an optimized wedding lounge behind the selected guest", () => {
+    expect(existsSync("src/assets/guest-character-preview-lounge.avif")).toBe(true);
+    expect(existsSync("src/assets/guest-character-preview-lounge.webp")).toBe(true);
+    expect(styles).toContain("guest-character-preview-lounge.avif");
+    expect(styles).toContain("guest-character-preview-lounge.webp");
+  });
+
+  it("anchors the selected character lower together with its floor shadow", () => {
+    expect(styles).toMatch(/\.entry-character-picker \.character-customizer__sprite\s*\{[^}]*top:\s*calc\(50% \+ 30px\);/s);
+    expect(styles).toMatch(/\.entry-character-picker \.character-customizer__halo\s*\{[^}]*top:\s*calc\(50% \+ 102px\);/s);
   });
 });

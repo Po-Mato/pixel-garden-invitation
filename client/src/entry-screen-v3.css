@@ -165,12 +165,36 @@
   min-width: 0;
 }
 
+.entry-character-picker .character-customizer__preview {
+  background-color: #eef0e8;
+  background-image: url("./assets/guest-character-preview-lounge.webp");
+  background-image: image-set(
+    url("./assets/guest-character-preview-lounge.avif") type("image/avif"),
+    url("./assets/guest-character-preview-lounge.webp") type("image/webp")
+  );
+  background-position: center 72%;
+  background-size: cover;
+}
+
+.entry-character-picker .character-customizer__preview::before,
+.entry-character-picker .character-customizer__preview::after,
+.entry-character-picker .character-customizer__stage {
+  display: none;
+}
+
 .entry-character-picker .character-customizer__sprite {
-  top: calc(50% + 9px);
+  top: calc(50% + 30px);
 }
 
 .entry-character-picker .character-customizer__halo {
-  top: calc(50% + 81px);
+  top: calc(50% + 102px);
+  width: 120px;
+  height: 18px;
+  border: 0;
+  background: rgba(72, 61, 52, 0.2);
+  box-shadow: none;
+  filter: blur(3px);
+  transform: translateX(-50%) scaleY(0.55);
 }
 
 @media (min-height: 760px) {
@@ -212,11 +236,11 @@
   }
 
   .entry-character-picker .character-customizer__sprite {
-    top: calc(50% + 4px);
+    top: calc(50% + 18px);
   }
 
   .entry-character-picker .character-customizer__halo {
-    top: calc(50% + 76px);
+    top: calc(50% + 90px);
   }
 
   .entry-screen__actions {
