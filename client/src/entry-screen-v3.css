@@ -134,6 +134,10 @@
   max-height: 100%;
 }
 
+.entry-screen__hero .couple-puppet-stage[data-arrangement="close"] .couple-puppet-stage__fallback img + img {
+  margin-left: -14%;
+}
+
 .entry-screen__hero .entry-screen__invite,
 .entry-screen__hero .entry-screen__invite-notice {
   width: 100%;
@@ -171,7 +175,7 @@
 
 @media (min-height: 760px) {
   .entry-screen__hero .entry-screen__couple-puppets {
-    width: clamp(248px, 80vw, 320px);
+    width: clamp(272px, 88vw, 356px);
   }
 
   .entry-screen__actions {
@@ -204,7 +208,7 @@
   }
 
   .entry-screen__hero .entry-screen__couple-puppets {
-    width: min(200px, 52vw);
+    width: min(228px, 58vw);
   }
 
   .entry-character-picker .character-customizer__sprite {
@@ -244,7 +248,7 @@
   }
 
   .entry-screen__hero .entry-screen__couple-puppets {
-    width: min(220px, 32vw);
+    width: min(242px, 36vw);
   }
 
   .entry-screen__actions {

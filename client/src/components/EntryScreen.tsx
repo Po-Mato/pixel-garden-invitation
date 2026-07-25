@@ -124,6 +124,7 @@ export function EntryScreen({
           className="entry-screen__couple-puppets"
           order={coupleOrder}
           framing="portrait"
+          arrangement="close"
           label={`${formatCoupleNames(event, coupleOrder)} 2D 퍼펫`}
           priority
         />

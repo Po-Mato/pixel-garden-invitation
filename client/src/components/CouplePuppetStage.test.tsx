@@ -1,7 +1,11 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 import { allowsCouplePuppetMotion, resolveCouplePuppetAssetPath } from "../character/couplePuppet";
-import { CouplePuppetStage, resolvePuppetPlacement } from "./CouplePuppetStage";
+import {
+  CouplePuppetStage,
+  resolveCouplePuppetSlotXs,
+  resolvePuppetPlacement
+} from "./CouplePuppetStage";
 
 afterEach(cleanup);
 
@@ -31,6 +35,11 @@ describe("신랑·신부 2D 퍼펫", () => {
     expect(top).toBeCloseTo(20, 5);
     expect(bottom).toBeCloseTo(528, 5);
     expect(placement.scale).toBeLessThan(1);
+  });
+
+  it("입장 화면용 밀착 배치는 두 사람을 중앙 가까이에 둔다", () => {
+    expect(resolveCouplePuppetSlotXs("close")).toEqual([400, 624]);
+    expect(resolveCouplePuppetSlotXs("standard")).toEqual([324, 700]);
   });
 
   it("전신 무대에서는 원본 배율과 기준선을 유지한다", () => {

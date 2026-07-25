@@ -23,6 +23,7 @@ type CouplePuppetStageProps = {
   character?: CoupleSide;
   order?: CoupleDisplayOrder;
   framing?: "full" | "portrait";
+  arrangement?: "standard" | "close";
   label: string;
   priority?: boolean;
   className?: string;
@@ -56,11 +57,20 @@ export function resolvePuppetPlacement(
   };
 }
 
-function slotsFor(character: CoupleSide | undefined, order: CoupleDisplayOrder): PuppetSlot[] {
+export function resolveCouplePuppetSlotXs(arrangement: "standard" | "close"): [number, number] {
+  return arrangement === "close" ? [400, 624] : [324, 700];
+}
+
+function slotsFor(
+  character: CoupleSide | undefined,
+  order: CoupleDisplayOrder,
+  arrangement: "standard" | "close"
+): PuppetSlot[] {
   if (character) return [{ character, x: 256 }];
+  const slotXs = resolveCouplePuppetSlotXs(arrangement);
   return coupleSides(order).map((side, index) => ({
     character: side,
-    x: index === 0 ? 324 : 700
+    x: slotXs[index]
   }));
 }
 
@@ -68,6 +78,7 @@ export function CouplePuppetStage({
   character,
   order = "bride-first",
   framing = character ? "full" : "portrait",
+  arrangement = "standard",
   label,
   priority = false,
   className = ""
@@ -76,7 +87,7 @@ export function CouplePuppetStage({
   const hostRef = useRef<HTMLDivElement>(null);
   const [inRange, setInRange] = useState(() => priority || import.meta.env.MODE === "test");
   const [ready, setReady] = useState(false);
-  const slots = slotsFor(character, order);
+  const slots = slotsFor(character, order, arrangement);
 
   useEffect(() => {
     if (import.meta.env.MODE === "test" || !containerRef.current) return;
@@ -217,13 +228,14 @@ export function CouplePuppetStage({
       disposed = true;
       destroy?.();
     };
-  }, [character, framing, inRange, order]);
+  }, [arrangement, character, framing, inRange, order]);
 
   return (
     <div
       ref={containerRef}
       className={`couple-puppet-stage couple-puppet-stage--${framing} ${className}`.trim()}
       data-character={character ?? "couple"}
+      data-arrangement={arrangement}
       data-renderer-ready={ready ? "true" : "false"}
       role="img"
       aria-label={label}
