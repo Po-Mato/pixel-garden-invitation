@@ -71,6 +71,7 @@
 .entry-screen__hero {
   position: relative;
   z-index: 2;
+  isolation: isolate;
   display: grid;
   min-width: 0;
   min-height: 0;
@@ -78,6 +79,35 @@
   align-content: stretch;
   justify-items: center;
   gap: clamp(4px, 1.2dvh, 10px);
+  overflow: hidden;
+  background: #f8f4ed;
+}
+
+.entry-screen__hero::before,
+.entry-screen__hero::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+  pointer-events: none;
+}
+
+.entry-screen__hero::before {
+  z-index: 0;
+  background-image: url("./assets/entry-wedding-garden-hero.webp");
+  background-image: image-set(
+    url("./assets/entry-wedding-garden-hero.avif") type("image/avif"),
+    url("./assets/entry-wedding-garden-hero.webp") type("image/webp")
+  );
+  background-position: center 58%;
+  background-size: cover;
+  opacity: 0.86;
+}
+
+.entry-screen__hero::after {
+  z-index: 1;
+  background:
+    linear-gradient(180deg, rgba(255, 253, 249, 0.16), transparent 34% 76%, rgba(255, 250, 244, 0.28)),
+    linear-gradient(90deg, rgba(255, 253, 249, 0.2), transparent 28% 72%, rgba(255, 253, 249, 0.2));
 }
 
 .entry-screen__hero .entry-screen__header {
@@ -131,6 +161,14 @@
   min-width: 0;
 }
 
+.entry-character-picker .character-customizer__sprite {
+  top: calc(50% + 9px);
+}
+
+.entry-character-picker .character-customizer__halo {
+  top: calc(50% + 81px);
+}
+
 @media (min-height: 760px) {
   .entry-screen__hero .entry-screen__couple-puppets {
     width: clamp(248px, 80vw, 320px);
@@ -167,6 +205,14 @@
 
   .entry-screen__hero .entry-screen__couple-puppets {
     width: min(200px, 52vw);
+  }
+
+  .entry-character-picker .character-customizer__sprite {
+    top: calc(50% + 4px);
+  }
+
+  .entry-character-picker .character-customizer__halo {
+    top: calc(50% + 76px);
   }
 
   .entry-screen__actions {
