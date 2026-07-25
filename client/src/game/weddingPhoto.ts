@@ -331,7 +331,8 @@ function drawSprite(
   centerX: number,
   floorY: number,
   width: number,
-  height: number
+  height: number,
+  smooth = true
 ) {
   context.save();
   context.fillStyle = "rgba(47, 37, 34, 0.23)";
@@ -342,7 +343,7 @@ function drawSprite(
   if (image) {
     const sourceWidth = image instanceof HTMLImageElement ? image.naturalWidth : image.width;
     const sourceHeight = image instanceof HTMLImageElement ? image.naturalHeight : image.height;
-    context.imageSmoothingEnabled = true;
+    context.imageSmoothingEnabled = smooth;
     context.drawImage(
       image,
       0,
@@ -499,11 +500,11 @@ export async function createWeddingPhotoCapture(data: WeddingPhotoData): Promise
   const guestX = data.spot.cast === "couple" ? 540 : 660;
   if (data.spot.cast === "couple") {
     drawSprite(context, bride, 300, floorY, characterWidth, characterHeight);
-    drawSprite(context, guest, guestX, floorY, characterWidth, characterHeight);
+    drawSprite(context, guest, guestX, floorY, characterWidth, characterHeight, false);
     drawSprite(context, groom, 780, floorY, characterWidth, characterHeight);
   } else {
     drawSprite(context, bride, 400, floorY, characterWidth, characterHeight);
-    drawSprite(context, guest, guestX, floorY, characterWidth, characterHeight);
+    drawSprite(context, guest, guestX, floorY, characterWidth, characterHeight, false);
   }
   drawPoseEffect(context, data.pose, guestX, floorY - characterHeight);
 

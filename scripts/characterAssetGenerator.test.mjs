@@ -600,6 +600,18 @@ test("generator emits 48x72 high-density world sheets for every guest preset", a
           { width: 192, height: 288 }
         )
       );
+
+      const expectedPortrait = await sharp(join(outputRoot, preset.generated.idle))
+        .extract({ left: 0, top: 0, width: 96, height: 144 })
+        .resize(192, 288, { kernel: sharp.kernel.nearest })
+        .ensureAlpha()
+        .raw()
+        .toBuffer();
+      const actualPortrait = await sharp(join(outputRoot, `guests/portraits/${preset.id}.png`))
+        .ensureAlpha()
+        .raw()
+        .toBuffer();
+      assert.deepEqual(actualPortrait, expectedPortrait, `${preset.id} portrait must match its game idle frame`);
     }
 
     const preset = guestPresetCatalog.presets[0];

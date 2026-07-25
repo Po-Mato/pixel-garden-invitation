@@ -22,6 +22,10 @@ const guestWorldWalkDimensions = {
 };
 const npcIdleDimensions = { width: 192, height: 144 };
 const npcWalkDimensions = { width: 288, height: 576 };
+const guestPortraitDimensions = {
+  width: guestPresetCatalog.frame.source.width * 2,
+  height: guestPresetCatalog.frame.source.height * 2
+};
 
 async function requireFile(file, dimensions) {
   await access(file);
@@ -32,15 +36,10 @@ function sourcePath(sourceRoot, manifestPath) {
   return join(sourceRoot, manifestPath.replace(/^character-assets\/source\//, ""));
 }
 
-function projectPath(manifestPath) {
-  return join(root, manifestPath);
-}
-
 async function prevalidateSources(sourceRoot) {
   for (const preset of guestPresetCatalog.presets) {
     await requireFile(sourcePath(sourceRoot, preset.source.walk), guestWalkDimensions);
     await requireFile(sourcePath(sourceRoot, preset.source.idle), guestIdleDimensions);
-    await requireFile(projectPath(preset.reference.directions.down), { width: 192, height: 288 });
   }
 
   for (const npc of catalog.npcs) {
@@ -84,6 +83,23 @@ export async function generateCharacterAssets({
       .png()
       .toFile(target);
   };
+  const writePortrait = async (source, relative) => {
+    const target = outputPath(relative);
+    await mkdir(dirname(target), { recursive: true });
+    await sharp(source)
+      .extract({
+        left: 0,
+        top: 0,
+        width: guestPresetCatalog.frame.source.width,
+        height: guestPresetCatalog.frame.source.height
+      })
+      .resize(guestPortraitDimensions.width, guestPortraitDimensions.height, {
+        fit: "fill",
+        kernel: sharp.kernel.nearest
+      })
+      .png()
+      .toFile(target);
+  };
 
   await rm(outputRoot, { recursive: true, force: true });
 
@@ -99,8 +115,8 @@ export async function generateCharacterAssets({
       : idleSource;
     await writeFixed(generatedWalkSource, preset.generated.walk);
     await writeFixed(generatedIdleSource, preset.generated.idle);
-    await writeFixed(
-      projectPath(preset.reference.directions.down),
+    await writePortrait(
+      generatedIdleSource,
       `guests/portraits/${preset.id}.png`
     );
     await writeCoarse(

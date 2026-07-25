@@ -31,7 +31,7 @@ body {
   width: 100%;
   height: 100%;
   object-fit: contain;
-  image-rendering: auto;
+  image-rendering: pixelated;
 }
 
 .app-shell:not(.app-shell--playing) {
