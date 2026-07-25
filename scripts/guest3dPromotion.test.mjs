@@ -65,10 +65,51 @@ test("필수 감사 실패는 원본 승격 전에 차단한다", () => {
             frameCount: 12,
             allFrameSizesMatch: true,
             greenFringePixels: 1,
+            headSizeConsistency: { passed: true },
             rearHairConsistency: { passed: true }
           }
         },
         "guest-01"
+      ),
+    /필수 품질 감사/
+  );
+});
+
+test("12명 모두 상하좌우와 보행 3컷의 머리 크기를 일정하게 유지한다", async () => {
+  for (let index = 1; index <= 12; index += 1) {
+    const guestId = `guest-${String(index).padStart(2, "0")}`;
+    const audit = JSON.parse(
+      await readFile(path.join(pilotRoot, guestId, "pilot", "audit.json"), "utf8")
+    );
+    const consistency = audit.acceptance?.headSizeConsistency;
+
+    assert.equal(consistency?.passed, true, `${guestId} 머리 크기 감사`);
+    assert.ok(
+      consistency.maximumDirectionRatio <= 1.1,
+      `${guestId} 방향별 머리 폭 편차: ${consistency.maximumDirectionRatio}`
+    );
+    assert.ok(
+      consistency.maximumStepDelta <= 2,
+      `${guestId} 보행 프레임 머리 폭 편차: ${consistency.maximumStepDelta}`
+    );
+  }
+});
+
+test("방향별 머리 크기 감사 실패도 원본 승격 전에 차단한다", () => {
+  assert.throws(
+    () =>
+      assertAcceptedAudit(
+        {
+          guest: "guest-12",
+          acceptance: {
+            frameCount: 12,
+            allFrameSizesMatch: true,
+            greenFringePixels: 0,
+            headSizeConsistency: { passed: false },
+            rearHairConsistency: { passed: true }
+          }
+        },
+        "guest-12"
       ),
     /필수 품질 감사/
   );

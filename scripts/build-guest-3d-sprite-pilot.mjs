@@ -20,6 +20,8 @@ const GUEST_ID = args.get("guest") ?? "guest-01";
 const PRESET_ID = args.get("preset") ?? "feminine-long-wave-dress";
 const NEEDS_RIGHT_HAND_ACCESSORY_AUDIT = GUEST_ID === "guest-01";
 const MAX_REAR_HAIR_HEIGHT_DELTA = GUEST_ID === "guest-01" ? 1 : 3;
+const MAX_DIRECTION_HEAD_WIDTH_RATIO = 1.1;
+const MAX_STEP_HEAD_WIDTH_DELTA = 2;
 const DIRECTIONS = ["down", "left", "right", "up"];
 const FRAME = { width: 96, height: 144 };
 const SOURCE = { width: 640, height: 1024, foregroundHeight: 820, baseline: 930 };
@@ -135,6 +137,99 @@ async function visibleFrame(frame) {
   return { image: cropped, width: bounds.width, height: bounds.height };
 }
 
+async function headBandMetrics(frame, threshold = 12) {
+  const bounds = await alphaBounds(frame, threshold);
+  const { data, info } = await sharp(frame).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+  const bottom = Math.min(info.height - 1, bounds.top + Math.round(bounds.height / 3));
+  let left = info.width;
+  let right = -1;
+  let top = info.height;
+
+  for (let y = bounds.top; y <= bottom; y += 1) {
+    for (let x = 0; x < info.width; x += 1) {
+      if (data[(y * info.width + x) * 4 + 3] <= threshold) continue;
+      left = Math.min(left, x);
+      right = Math.max(right, x);
+      top = Math.min(top, y);
+    }
+  }
+
+  if (right < left) throw new Error("머리 영역의 불투명 픽셀을 찾지 못했습니다.");
+  const width = right - left + 1;
+  return {
+    left,
+    right,
+    top,
+    bottom,
+    width,
+    characterHeight: bounds.height,
+    normalizedWidth: width / bounds.height
+  };
+}
+
+function median(values) {
+  const ordered = [...values].sort((left, right) => left - right);
+  const middle = Math.floor(ordered.length / 2);
+  return ordered.length % 2 === 0
+    ? (ordered[middle - 1] + ordered[middle]) / 2
+    : ordered[middle];
+}
+
+function samplePremultiplied(data, info, x, y) {
+  const x0 = Math.max(0, Math.min(info.width - 1, Math.floor(x)));
+  const x1 = Math.max(0, Math.min(info.width - 1, x0 + 1));
+  const weight = Math.max(0, Math.min(1, x - x0));
+  const first = (y * info.width + x0) * 4;
+  const second = (y * info.width + x1) * 4;
+  const alpha0 = data[first + 3];
+  const alpha1 = data[second + 3];
+  const alpha = alpha0 * (1 - weight) + alpha1 * weight;
+  if (alpha <= 0.5) return [0, 0, 0, 0];
+
+  return [
+    Math.round((data[first] * alpha0 * (1 - weight) + data[second] * alpha1 * weight) / alpha),
+    Math.round((data[first + 1] * alpha0 * (1 - weight) + data[second + 1] * alpha1 * weight) / alpha),
+    Math.round((data[first + 2] * alpha0 * (1 - weight) + data[second + 2] * alpha1 * weight) / alpha),
+    Math.round(alpha)
+  ];
+}
+
+async function normalizeHeadWidth(frame, scale) {
+  if (Math.abs(scale - 1) < 0.005) return frame;
+  const metrics = await headBandMetrics(frame);
+  const { data, info } = await sharp(frame).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+  const extraWidth = Math.max(12, Math.ceil(metrics.width * Math.max(0, scale - 1)) + 12);
+  const outputWidth = info.width + extraWidth;
+  const output = Buffer.alloc(outputWidth * info.height * 4);
+  const sourceCenter = (info.width - 1) / 2;
+  const outputCenter = (outputWidth - 1) / 2;
+  const transitionEnd = Math.min(
+    info.height - 1,
+    metrics.bottom + Math.max(4, Math.round(metrics.characterHeight * 0.08))
+  );
+
+  for (let y = 0; y < info.height; y += 1) {
+    const blend = y <= metrics.bottom
+      ? 0
+      : y >= transitionEnd
+        ? 1
+        : (y - metrics.bottom) / Math.max(1, transitionEnd - metrics.bottom);
+    const rowScale = scale + (1 - scale) * blend;
+
+    for (let x = 0; x < outputWidth; x += 1) {
+      const sourceX = sourceCenter + (x - outputCenter) / rowScale;
+      if (sourceX < 0 || sourceX > info.width - 1) continue;
+      const sampled = samplePremultiplied(data, info, sourceX, y);
+      const offset = (y * outputWidth + x) * 4;
+      output.set(sampled, offset);
+    }
+  }
+
+  return sharp(output, {
+    raw: { width: outputWidth, height: info.height, channels: 4 }
+  }).png({ compressionLevel: 9 }).toBuffer();
+}
+
 async function removeTinyAlphaIslands(frame, minimumPixels = 4) {
   const { data, info } = await sharp(frame).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
   const visited = new Uint8Array(info.width * info.height);
@@ -171,6 +266,23 @@ async function removeTinyAlphaIslands(frame, minimumPixels = 4) {
     }
   }
 
+  return sharp(data, { raw: info }).png({ compressionLevel: 9 }).toBuffer();
+}
+
+async function removeGreenFringe(frame) {
+  const { data, info } = await sharp(frame).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+  for (let offset = 0; offset < data.length; offset += 4) {
+    const red = data[offset];
+    const green = data[offset + 1];
+    const blue = data[offset + 2];
+    const alpha = data[offset + 3];
+    if (alpha > 16 && green > 90 && green > red * 1.45 && green > blue * 1.45) {
+      data[offset] = 0;
+      data[offset + 1] = 0;
+      data[offset + 2] = 0;
+      data[offset + 3] = 0;
+    }
+  }
   return sharp(data, { raw: info }).png({ compressionLevel: 9 }).toBuffer();
 }
 
@@ -485,17 +597,70 @@ async function main() {
   const sourceFrames = {};
   const audit = { guest: GUEST_ID, frameSize: FRAME, directions: {} };
 
+  const rawFramesByDirection = {};
+  const rawHeadWidthsByDirection = {};
   for (const direction of DIRECTIONS) {
-    const splitFrames = await splitDirectionSheet(direction);
+    rawFramesByDirection[direction] = await splitDirectionSheet(direction);
+    const metrics = await Promise.all(rawFramesByDirection[direction].map((frame) => headBandMetrics(frame)));
+    rawHeadWidthsByDirection[direction] = metrics.map((item) => item.normalizedWidth);
+  }
+  const targetHeadWidth = median(Object.values(rawHeadWidthsByDirection).flat());
+  const headScalesByDirection = Object.fromEntries(
+    DIRECTIONS.map((direction) => [
+      direction,
+      rawHeadWidthsByDirection[direction].map((width) =>
+        Math.max(0.72, Math.min(1.38, targetHeadWidth / width))
+      )
+    ])
+  );
+
+  let previewTargetWidth = null;
+  for (let iteration = 0; iteration < 2; iteration += 1) {
+    const previewWidthsByDirection = {};
+    for (const direction of DIRECTIONS) {
+      const previews = await Promise.all(
+        rawFramesByDirection[direction].map(async (frame, index) => {
+          const adjusted = await normalizeHeadWidth(frame, headScalesByDirection[direction][index]);
+          return normalizeGameFrame(adjusted, "soft");
+        })
+      );
+      previewWidthsByDirection[direction] = await Promise.all(
+        previews.map(async (frame) => (await headBandMetrics(frame)).width)
+      );
+    }
+    previewTargetWidth = median(Object.values(previewWidthsByDirection).flat());
+    for (const direction of DIRECTIONS) {
+      for (let index = 0; index < headScalesByDirection[direction].length; index += 1) {
+        const correction = previewTargetWidth / previewWidthsByDirection[direction][index];
+        headScalesByDirection[direction][index] = Math.max(
+          0.72,
+          Math.min(1.38, headScalesByDirection[direction][index] * correction)
+        );
+      }
+    }
+  }
+  audit.headWidthNormalization = {
+    targetNormalizedWidth: targetHeadWidth,
+    targetGameFrameWidth: previewTargetWidth,
+    sourceFrameWidths: rawHeadWidthsByDirection,
+    scaleByFrame: headScalesByDirection
+  };
+
+  for (const direction of DIRECTIONS) {
+    const splitFrames = await Promise.all(
+      rawFramesByDirection[direction].map((frame, index) =>
+        normalizeHeadWidth(frame, headScalesByDirection[direction][index])
+      )
+    );
     framesByDirection[direction] = [];
     sourceFrames[direction] = [];
     audit.directions[direction] = [];
 
     for (let step = 0; step < splitFrames.length; step += 1) {
       const number = String(step + 1).padStart(2, "0");
-      const source = await normalizeSource(splitFrames[step]);
-      const soft = await normalizeGameFrame(splitFrames[step], "soft");
-      const pixel = await normalizeGameFrame(splitFrames[step], "pixel");
+      const source = await removeGreenFringe(await normalizeSource(splitFrames[step]));
+      const soft = await removeGreenFringe(await normalizeGameFrame(splitFrames[step], "soft"));
+      const pixel = await removeGreenFringe(await normalizeGameFrame(splitFrames[step], "pixel"));
       sourceFrames[direction].push(source);
       framesByDirection[direction].push({ soft, pixel });
 
@@ -565,7 +730,28 @@ async function main() {
     ),
     rearHairConsistency: {
       frames: await Promise.all(framesByDirection.up.map((item) => rearHairBounds(item.soft)))
-    }
+    },
+    headSizeConsistency: {}
+  };
+  const headWidthsByDirection = {};
+  for (const direction of DIRECTIONS) {
+    const metrics = await Promise.all(framesByDirection[direction].map((item) => headBandMetrics(item.soft)));
+    headWidthsByDirection[direction] = {
+      frames: metrics.map((item) => item.width),
+      average: metrics.reduce((total, item) => total + item.width, 0) / metrics.length
+    };
+  }
+  const directionAverages = Object.values(headWidthsByDirection).map((item) => item.average);
+  const maximumStepDelta = Math.max(
+    ...Object.values(headWidthsByDirection).map((item) => Math.max(...item.frames) - Math.min(...item.frames))
+  );
+  audit.acceptance.headSizeConsistency = {
+    directions: headWidthsByDirection,
+    maximumDirectionRatio: Math.max(...directionAverages) / Math.min(...directionAverages),
+    maximumStepDelta,
+    passed:
+      Math.max(...directionAverages) / Math.min(...directionAverages) <= MAX_DIRECTION_HEAD_WIDTH_RATIO &&
+      maximumStepDelta <= MAX_STEP_HEAD_WIDTH_DELTA
   };
   if (NEEDS_RIGHT_HAND_ACCESSORY_AUDIT) {
     audit.acceptance.rightHandAccessoryPlacement = {
@@ -592,6 +778,9 @@ async function main() {
   }
   if (!audit.acceptance.rearHairConsistency.passed) {
     throw new Error("뒷머리 크기 일관성 감사에 실패했습니다.");
+  }
+  if (!audit.acceptance.headSizeConsistency.passed) {
+    throw new Error("방향별 머리 크기 일관성 감사에 실패했습니다.");
   }
 }
 

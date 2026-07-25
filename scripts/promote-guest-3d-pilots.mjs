@@ -126,6 +126,7 @@ export function assertAcceptedAudit(audit, guestId) {
     acceptance?.frameCount !== 12 ||
     acceptance?.allFrameSizesMatch !== true ||
     acceptance?.greenFringePixels !== 0 ||
+    acceptance?.headSizeConsistency?.passed !== true ||
     acceptance?.rearHairConsistency?.passed !== true ||
     acceptance?.rightHandAccessoryPlacement?.passed === false
   ) {

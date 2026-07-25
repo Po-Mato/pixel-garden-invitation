@@ -9,63 +9,63 @@
       {
         "step": 1,
         "soft": {
-          "left": 27,
+          "left": 26,
           "top": 6,
-          "width": 43,
+          "width": 44,
           "height": 127,
           "greenFringePixels": 0,
-          "partialAlphaPixels": 1402,
+          "partialAlphaPixels": 1407,
           "pixels": 13824
         },
         "pixel": {
-          "left": 27,
+          "left": 26,
           "top": 7,
-          "width": 42,
+          "width": 44,
           "height": 126,
           "greenFringePixels": 0,
-          "partialAlphaPixels": 4096,
+          "partialAlphaPixels": 4728,
           "pixels": 13824
         }
       },
       {
         "step": 2,
         "soft": {
-          "left": 27,
+          "left": 26,
           "top": 6,
-          "width": 43,
+          "width": 44,
           "height": 127,
           "greenFringePixels": 0,
-          "partialAlphaPixels": 1339,
+          "partialAlphaPixels": 1390,
           "pixels": 13824
         },
         "pixel": {
-          "left": 27,
+          "left": 26,
           "top": 7,
-          "width": 42,
+          "width": 44,
           "height": 126,
           "greenFringePixels": 0,
-          "partialAlphaPixels": 4144,
+          "partialAlphaPixels": 4864,
           "pixels": 13824
         }
       },
       {
         "step": 3,
         "soft": {
-          "left": 27,
+          "left": 26,
           "top": 6,
-          "width": 43,
+          "width": 44,
           "height": 127,
           "greenFringePixels": 0,
-          "partialAlphaPixels": 1377,
+          "partialAlphaPixels": 1404,
           "pixels": 13824
         },
         "pixel": {
-          "left": 27,
+          "left": 26,
           "top": 7,
-          "width": 42,
+          "width": 44,
           "height": 126,
           "greenFringePixels": 0,
-          "partialAlphaPixels": 4314,
+          "partialAlphaPixels": 4492,
           "pixels": 13824
         }
       }
@@ -79,7 +79,7 @@
           "width": 63,
           "height": 127,
           "greenFringePixels": 0,
-          "partialAlphaPixels": 1376,
+          "partialAlphaPixels": 1394,
           "pixels": 13824
         },
         "pixel": {
@@ -88,28 +88,28 @@
           "width": 62,
           "height": 126,
           "greenFringePixels": 0,
-          "partialAlphaPixels": 3116,
+          "partialAlphaPixels": 3316,
           "pixels": 13824
         }
       },
       {
         "step": 2,
         "soft": {
-          "left": 28,
+          "left": 26,
           "top": 6,
-          "width": 40,
+          "width": 44,
           "height": 127,
           "greenFringePixels": 0,
-          "partialAlphaPixels": 1003,
+          "partialAlphaPixels": 1020,
           "pixels": 13824
         },
         "pixel": {
-          "left": 28,
+          "left": 26,
           "top": 7,
-          "width": 40,
+          "width": 44,
           "height": 126,
           "greenFringePixels": 0,
-          "partialAlphaPixels": 2624,
+          "partialAlphaPixels": 4572,
           "pixels": 13824
         }
       },
@@ -121,7 +121,7 @@
           "width": 61,
           "height": 127,
           "greenFringePixels": 0,
-          "partialAlphaPixels": 1370,
+          "partialAlphaPixels": 1383,
           "pixels": 13824
         },
         "pixel": {
@@ -130,7 +130,7 @@
           "width": 60,
           "height": 126,
           "greenFringePixels": 0,
-          "partialAlphaPixels": 7168,
+          "partialAlphaPixels": 2944,
           "pixels": 13824
         }
       }
@@ -144,7 +144,7 @@
           "width": 68,
           "height": 127,
           "greenFringePixels": 0,
-          "partialAlphaPixels": 1567,
+          "partialAlphaPixels": 1559,
           "pixels": 13824
         },
         "pixel": {
@@ -153,7 +153,7 @@
           "width": 66,
           "height": 126,
           "greenFringePixels": 0,
-          "partialAlphaPixels": 8196,
+          "partialAlphaPixels": 3452,
           "pixels": 13824
         }
       },
@@ -162,10 +162,10 @@
         "soft": {
           "left": 26,
           "top": 6,
-          "width": 45,
+          "width": 44,
           "height": 127,
           "greenFringePixels": 0,
-          "partialAlphaPixels": 1050,
+          "partialAlphaPixels": 1041,
           "pixels": 13824
         },
         "pixel": {
@@ -174,7 +174,7 @@
           "width": 44,
           "height": 126,
           "greenFringePixels": 0,
-          "partialAlphaPixels": 5204,
+          "partialAlphaPixels": 5476,
           "pixels": 13824
         }
       },
@@ -186,7 +186,7 @@
           "width": 71,
           "height": 127,
           "greenFringePixels": 0,
-          "partialAlphaPixels": 1473,
+          "partialAlphaPixels": 1464,
           "pixels": 13824
         },
         "pixel": {
@@ -195,7 +195,7 @@
           "width": 70,
           "height": 126,
           "greenFringePixels": 0,
-          "partialAlphaPixels": 3884,
+          "partialAlphaPixels": 3792,
           "pixels": 13824
         }
       }
@@ -204,67 +204,115 @@
       {
         "step": 1,
         "soft": {
-          "left": 20,
+          "left": 24,
           "top": 6,
-          "width": 57,
+          "width": 48,
           "height": 127,
           "greenFringePixels": 0,
-          "partialAlphaPixels": 1307,
+          "partialAlphaPixels": 1289,
           "pixels": 13824
         },
         "pixel": {
-          "left": 20,
+          "left": 24,
           "top": 7,
-          "width": 56,
+          "width": 48,
           "height": 126,
           "greenFringePixels": 0,
-          "partialAlphaPixels": 5080,
+          "partialAlphaPixels": 4792,
           "pixels": 13824
         }
       },
       {
         "step": 2,
         "soft": {
-          "left": 20,
+          "left": 25,
           "top": 6,
-          "width": 56,
+          "width": 46,
           "height": 127,
           "greenFringePixels": 0,
-          "partialAlphaPixels": 1297,
+          "partialAlphaPixels": 1227,
           "pixels": 13824
         },
         "pixel": {
-          "left": 20,
+          "left": 25,
           "top": 7,
-          "width": 56,
+          "width": 46,
           "height": 126,
           "greenFringePixels": 0,
-          "partialAlphaPixels": 5168,
+          "partialAlphaPixels": 4048,
           "pixels": 13824
         }
       },
       {
         "step": 3,
         "soft": {
-          "left": 20,
+          "left": 24,
           "top": 6,
-          "width": 57,
+          "width": 48,
           "height": 127,
           "greenFringePixels": 0,
-          "partialAlphaPixels": 1323,
+          "partialAlphaPixels": 1276,
           "pixels": 13824
         },
         "pixel": {
-          "left": 20,
+          "left": 25,
           "top": 7,
-          "width": 56,
+          "width": 46,
           "height": 126,
           "greenFringePixels": 0,
-          "partialAlphaPixels": 5084,
+          "partialAlphaPixels": 4141,
           "pixels": 13824
         }
       }
     ]
+  },
+  "headWidthNormalization": {
+    "targetNormalizedWidth": 0.3465809129911417,
+    "targetGameFrameWidth": 44.5,
+    "sourceFrameWidths": {
+      "down": [
+        0.3370165745856354,
+        0.33660589060308554,
+        0.3360995850622407
+      ],
+      "left": [
+        0.31767955801104975,
+        0.3161559888579387,
+        0.31900138696255204
+      ],
+      "right": [
+        0.365034965034965,
+        0.35664335664335667,
+        0.35614525139664804
+      ],
+      "up": [
+        0.4503105590062112,
+        0.44427244582043346,
+        0.44907407407407407
+      ]
+    },
+    "scaleByFrame": {
+      "down": [
+        1.0285092762384351,
+        1.0297641333204022,
+        1.0313153857159294
+      ],
+      "left": [
+        1.0673943150376197,
+        1.096372314374157,
+        1.0865929973154607
+      ],
+      "right": [
+        0.9711467137277092,
+        0.9719083974247504,
+        0.9516395385382855
+      ],
+      "up": [
+        0.769745826019255,
+        0.7802074525853616,
+        0.7718652516783975
+      ]
+    }
   },
   "review": "character-assets/reference/guest-3d-master-sources/v1/guest-09/pilot/review/guest-09-pilot-comparison.png",
   "ratioAudit": "character-assets/reference/guest-3d-master-sources/v1/guest-09/pilot/review/guest-09-ratio-audit.png",
@@ -275,35 +323,74 @@
     "rearHairConsistency": {
       "frames": [
         {
-          "left": 20,
-          "right": 76,
+          "left": 26,
+          "right": 69,
           "top": 6,
           "bottom": 55,
-          "width": 57,
+          "width": 44,
           "height": 50,
-          "pixels": 2245
+          "pixels": 1769
         },
         {
-          "left": 20,
-          "right": 75,
+          "left": 26,
+          "right": 69,
           "top": 6,
           "bottom": 55,
-          "width": 56,
+          "width": 44,
           "height": 50,
-          "pixels": 2211
+          "pixels": 1757
         },
         {
-          "left": 20,
-          "right": 76,
+          "left": 26,
+          "right": 69,
           "top": 6,
           "bottom": 55,
-          "width": 57,
+          "width": 44,
           "height": 50,
-          "pixels": 2262
+          "pixels": 1778
         }
       ],
       "maximumHeightDelta": 0,
-      "maximumWidthDelta": 1,
+      "maximumWidthDelta": 0,
+      "passed": true
+    },
+    "headSizeConsistency": {
+      "directions": {
+        "down": {
+          "frames": [
+            44,
+            44,
+            44
+          ],
+          "average": 44
+        },
+        "left": {
+          "frames": [
+            44,
+            44,
+            45
+          ],
+          "average": 44.333333333333336
+        },
+        "right": {
+          "frames": [
+            46,
+            44,
+            44
+          ],
+          "average": 44.666666666666664
+        },
+        "up": {
+          "frames": [
+            45,
+            45,
+            45
+          ],
+          "average": 45
+        }
+      },
+      "maximumDirectionRatio": 1.0227272727272727,
+      "maximumStepDelta": 2,
       "passed": true
     }
   }
