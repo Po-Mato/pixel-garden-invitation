@@ -130,6 +130,89 @@ function alphaAt(raw, dimensions, x, y) {
   return raw[(y * dimensions.width + x) * 4 + 3];
 }
 
+function findNeutralHairEdgePixel(raw, dimensions) {
+  let left = dimensions.width;
+  let right = -1;
+  let top = dimensions.height;
+  let bottom = -1;
+
+  for (let y = 0; y < dimensions.height; y += 1) {
+    for (let x = 0; x < dimensions.width; x += 1) {
+      if (alphaAt(raw, dimensions, x, y) === 0) continue;
+      left = Math.min(left, x);
+      right = Math.max(right, x);
+      top = Math.min(top, y);
+      bottom = Math.max(bottom, y);
+    }
+  }
+
+  const opaqueWidth = right - left + 1;
+  const opaqueHeight = bottom - top + 1;
+  const headBottom = top + Math.floor(opaqueHeight * 0.44);
+  const longHairBottom = top + Math.floor(opaqueHeight * 0.58);
+  const outerLeft = left + Math.floor(opaqueWidth * 0.32);
+  const outerRight = right - Math.floor(opaqueWidth * 0.32);
+
+  for (let y = top; y <= longHairBottom; y += 1) {
+    for (let x = left; x <= right; x += 1) {
+      if (alphaAt(raw, dimensions, x, y) !== 0) continue;
+      const inOuterHair = x <= outerLeft || x >= outerRight;
+      if (y > (inOuterHair ? longHairBottom : headBottom)) continue;
+
+      let transparentNeighbors = 0;
+      let opaqueNeighbors = 0;
+      let darkNeighbors = 0;
+      let skinNeighbors = 0;
+      let paleNeutralNeighbors = 0;
+
+      for (const [nextX, nextY] of [
+        [x + 1, y],
+        [x - 1, y],
+        [x, y + 1],
+        [x, y - 1]
+      ]) {
+        if (
+          nextX < 0 ||
+          nextX >= dimensions.width ||
+          nextY < 0 ||
+          nextY >= dimensions.height
+        ) {
+          continue;
+        }
+
+        const offset = (nextY * dimensions.width + nextX) * 4;
+        if (raw[offset + 3] === 0) {
+          transparentNeighbors += 1;
+          continue;
+        }
+
+        opaqueNeighbors += 1;
+        const red = raw[offset];
+        const green = raw[offset + 1];
+        const blue = raw[offset + 2];
+        const maximum = Math.max(red, green, blue);
+        const minimum = Math.min(red, green, blue);
+        const luminance = 0.2126 * red + 0.7152 * green + 0.0722 * blue;
+        if (luminance < 150) darkNeighbors += 1;
+        if (red > green + 8 && green > blue + 4 && red > 180) skinNeighbors += 1;
+        if (minimum >= 190 && maximum - minimum <= 32) paleNeutralNeighbors += 1;
+      }
+
+      if (
+        transparentNeighbors > 0 &&
+        opaqueNeighbors > 0 &&
+        skinNeighbors === 0 &&
+        paleNeutralNeighbors === 0 &&
+        darkNeighbors / opaqueNeighbors >= 0.5
+      ) {
+        return { x, y };
+      }
+    }
+  }
+
+  throw new Error("Expected a transparent pixel along the wave-hair edge");
+}
+
 function opaqueSpanInRows(raw, dimensions, top) {
   let minX = dimensions.width;
   let maxX = -1;
@@ -645,15 +728,21 @@ test("generator clears neutral wave-hair edge matte without mutating source shee
 
   try {
     await cp(join(root, "character-assets/source"), sourceRoot, { recursive: true });
+    const frame = guestPresetCatalog.frame.source;
+    const sourceFrame = await extractRawFrame(source, 0, 0, frame);
+    const hairEdgePixel = findNeutralHairEdgePixel(sourceFrame, frame);
     const { data, info } = await sharp(source)
       .ensureAlpha()
       .raw()
       .toBuffer({ resolveWithObject: true });
-    data.set([198, 196, 194, 255], (41 * info.width + 73) * 4);
+    data.set(
+      [198, 196, 194, 255],
+      (hairEdgePixel.y * info.width + hairEdgePixel.x) * 4
+    );
     await sharp(data, { raw: info }).png().toFile(source);
 
-    const sourceBefore = await extractRawFrame(source, 0, 0, guestPresetCatalog.frame.source);
-    assert.equal(alphaAt(sourceBefore, guestPresetCatalog.frame.source, 73, 41), 255);
+    const sourceBefore = await extractRawFrame(source, 0, 0, frame);
+    assert.equal(alphaAt(sourceBefore, frame, hairEdgePixel.x, hairEdgePixel.y), 255);
 
     const { generateCharacterAssets } = await import("./generate-character-assets.mjs");
     const outputRoot = join(dir, "generated");
@@ -663,12 +752,12 @@ test("generator clears neutral wave-hair edge matte without mutating source shee
       join(outputRoot, "guests/feminine-lavender-jacket-dress__walk.png"),
       0,
       0,
-      guestPresetCatalog.frame.source
+      frame
     );
-    assert.equal(alphaAt(generated, guestPresetCatalog.frame.source, 73, 41), 0);
-    assert.equal(alphaAt(generated, guestPresetCatalog.frame.source, 50, 30), 255);
+    assert.equal(alphaAt(generated, frame, hairEdgePixel.x, hairEdgePixel.y), 0);
+    assert.equal(alphaAt(generated, frame, 50, 30), 255);
 
-    const sourceAfter = await extractRawFrame(source, 0, 0, guestPresetCatalog.frame.source);
+    const sourceAfter = await extractRawFrame(source, 0, 0, frame);
     assert.deepEqual(sourceAfter, sourceBefore);
   } finally {
     await rm(dir, { recursive: true, force: true });

@@ -9,63 +9,63 @@
       {
         "step": 1,
         "soft": {
-          "left": 22,
+          "left": 24,
           "top": 6,
-          "width": 53,
+          "width": 48,
           "height": 127,
           "greenFringePixels": 0,
-          "partialAlphaPixels": 1187,
+          "partialAlphaPixels": 1139,
           "pixels": 13824
         },
         "pixel": {
-          "left": 22,
+          "left": 25,
           "top": 7,
-          "width": 52,
+          "width": 46,
           "height": 126,
           "greenFringePixels": 0,
-          "partialAlphaPixels": 5512,
+          "partialAlphaPixels": 5204,
           "pixels": 13824
         }
       },
       {
         "step": 2,
         "soft": {
-          "left": 22,
+          "left": 25,
           "top": 6,
-          "width": 52,
+          "width": 46,
           "height": 127,
           "greenFringePixels": 0,
-          "partialAlphaPixels": 1169,
+          "partialAlphaPixels": 1101,
           "pixels": 13824
         },
         "pixel": {
-          "left": 22,
+          "left": 25,
           "top": 7,
-          "width": 52,
+          "width": 46,
           "height": 126,
           "greenFringePixels": 0,
-          "partialAlphaPixels": 5676,
+          "partialAlphaPixels": 5080,
           "pixels": 13824
         }
       },
       {
         "step": 3,
         "soft": {
-          "left": 22,
+          "left": 25,
           "top": 6,
-          "width": 52,
+          "width": 46,
           "height": 127,
           "greenFringePixels": 0,
-          "partialAlphaPixels": 1173,
+          "partialAlphaPixels": 1103,
           "pixels": 13824
         },
         "pixel": {
-          "left": 22,
+          "left": 25,
           "top": 7,
-          "width": 52,
+          "width": 45,
           "height": 126,
           "greenFringePixels": 0,
-          "partialAlphaPixels": 4438,
+          "partialAlphaPixels": 4615,
           "pixels": 13824
         }
       }
@@ -74,12 +74,12 @@
       {
         "step": 1,
         "soft": {
-          "left": 18,
+          "left": 19,
           "top": 6,
-          "width": 60,
+          "width": 59,
           "height": 127,
           "greenFringePixels": 0,
-          "partialAlphaPixels": 1316,
+          "partialAlphaPixels": 1331,
           "pixels": 13824
         },
         "pixel": {
@@ -88,49 +88,49 @@
           "width": 58,
           "height": 126,
           "greenFringePixels": 0,
-          "partialAlphaPixels": 6424,
+          "partialAlphaPixels": 7308,
           "pixels": 13824
         }
       },
       {
         "step": 2,
         "soft": {
-          "left": 23,
+          "left": 24,
           "top": 6,
-          "width": 51,
+          "width": 48,
           "height": 127,
           "greenFringePixels": 0,
-          "partialAlphaPixels": 1108,
+          "partialAlphaPixels": 1121,
           "pixels": 13824
         },
         "pixel": {
-          "left": 23,
+          "left": 24,
           "top": 7,
-          "width": 50,
+          "width": 48,
           "height": 126,
           "greenFringePixels": 0,
-          "partialAlphaPixels": 3568,
+          "partialAlphaPixels": 6048,
           "pixels": 13824
         }
       },
       {
         "step": 3,
         "soft": {
-          "left": 23,
+          "left": 20,
           "top": 6,
-          "width": 51,
+          "width": 57,
           "height": 127,
           "greenFringePixels": 0,
-          "partialAlphaPixels": 1243,
+          "partialAlphaPixels": 1298,
           "pixels": 13824
         },
         "pixel": {
-          "left": 23,
+          "left": 20,
           "top": 7,
-          "width": 50,
+          "width": 56,
           "height": 126,
           "greenFringePixels": 0,
-          "partialAlphaPixels": 5956,
+          "partialAlphaPixels": 6272,
           "pixels": 13824
         }
       }
@@ -139,63 +139,63 @@
       {
         "step": 1,
         "soft": {
-          "left": 18,
+          "left": 17,
           "top": 6,
-          "width": 60,
+          "width": 62,
           "height": 127,
           "greenFringePixels": 0,
-          "partialAlphaPixels": 1316,
+          "partialAlphaPixels": 1324,
           "pixels": 13824
         },
         "pixel": {
-          "left": 19,
+          "left": 18,
           "top": 7,
-          "width": 58,
+          "width": 60,
           "height": 126,
           "greenFringePixels": 0,
-          "partialAlphaPixels": 5792,
+          "partialAlphaPixels": 3384,
           "pixels": 13824
         }
       },
       {
         "step": 2,
         "soft": {
-          "left": 23,
+          "left": 28,
           "top": 6,
-          "width": 51,
+          "width": 41,
           "height": 127,
           "greenFringePixels": 0,
-          "partialAlphaPixels": 1108,
+          "partialAlphaPixels": 1035,
           "pixels": 13824
         },
         "pixel": {
-          "left": 23,
+          "left": 28,
           "top": 7,
-          "width": 50,
+          "width": 40,
           "height": 126,
           "greenFringePixels": 0,
-          "partialAlphaPixels": 5684,
+          "partialAlphaPixels": 5040,
           "pixels": 13824
         }
       },
       {
         "step": 3,
         "soft": {
-          "left": 23,
+          "left": 18,
           "top": 6,
-          "width": 51,
+          "width": 61,
           "height": 127,
           "greenFringePixels": 0,
-          "partialAlphaPixels": 1243,
+          "partialAlphaPixels": 1293,
           "pixels": 13824
         },
         "pixel": {
-          "left": 23,
+          "left": 18,
           "top": 7,
-          "width": 50,
+          "width": 60,
           "height": 126,
           "greenFringePixels": 0,
-          "partialAlphaPixels": 6300,
+          "partialAlphaPixels": 3512,
           "pixels": 13824
         }
       }
@@ -204,63 +204,63 @@
       {
         "step": 1,
         "soft": {
-          "left": 21,
+          "left": 27,
           "top": 6,
-          "width": 54,
+          "width": 43,
           "height": 127,
           "greenFringePixels": 0,
-          "partialAlphaPixels": 1271,
+          "partialAlphaPixels": 1227,
           "pixels": 13824
         },
         "pixel": {
-          "left": 22,
+          "left": 27,
           "top": 7,
-          "width": 52,
+          "width": 42,
           "height": 126,
           "greenFringePixels": 0,
-          "partialAlphaPixels": 4156,
+          "partialAlphaPixels": 3860,
           "pixels": 13824
         }
       },
       {
         "step": 2,
         "soft": {
-          "left": 21,
+          "left": 28,
           "top": 6,
-          "width": 54,
+          "width": 40,
           "height": 127,
           "greenFringePixels": 0,
-          "partialAlphaPixels": 1275,
+          "partialAlphaPixels": 1190,
           "pixels": 13824
         },
         "pixel": {
-          "left": 21,
+          "left": 28,
           "top": 7,
-          "width": 54,
+          "width": 40,
           "height": 126,
           "greenFringePixels": 0,
-          "partialAlphaPixels": 4908,
+          "partialAlphaPixels": 3968,
           "pixels": 13824
         }
       },
       {
         "step": 3,
         "soft": {
-          "left": 22,
+          "left": 27,
           "top": 6,
-          "width": 53,
+          "width": 42,
           "height": 127,
           "greenFringePixels": 0,
-          "partialAlphaPixels": 1249,
+          "partialAlphaPixels": 1218,
           "pixels": 13824
         },
         "pixel": {
-          "left": 22,
+          "left": 27,
           "top": 7,
-          "width": 52,
+          "width": 42,
           "height": 126,
           "greenFringePixels": 0,
-          "partialAlphaPixels": 5428,
+          "partialAlphaPixels": 3778,
           "pixels": 13824
         }
       }
@@ -275,34 +275,34 @@
     "rearHairConsistency": {
       "frames": [
         {
-          "left": 21,
-          "right": 74,
+          "left": 32,
+          "right": 64,
           "top": 6,
           "bottom": 55,
-          "width": 54,
+          "width": 33,
           "height": 50,
-          "pixels": 1952
+          "pixels": 1032
         },
         {
-          "left": 21,
-          "right": 74,
+          "left": 30,
+          "right": 62,
           "top": 6,
-          "bottom": 55,
-          "width": 54,
-          "height": 50,
-          "pixels": 1954
+          "bottom": 53,
+          "width": 33,
+          "height": 48,
+          "pixels": 1071
         },
         {
-          "left": 22,
-          "right": 74,
+          "left": 32,
+          "right": 63,
           "top": 6,
           "bottom": 55,
-          "width": 53,
+          "width": 32,
           "height": 50,
-          "pixels": 1907
+          "pixels": 988
         }
       ],
-      "maximumHeightDelta": 0,
+      "maximumHeightDelta": 2,
       "maximumWidthDelta": 1,
       "passed": true
     }
