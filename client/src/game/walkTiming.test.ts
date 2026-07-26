@@ -3,6 +3,7 @@ import {
   advanceWalkPhase,
   auditWalkTiming,
   defaultWalkTiming,
+  isWalkLandingFrame,
   neutralWalkFrame,
   walkFrameForPhase
 } from "./walkTiming";
@@ -18,9 +19,17 @@ describe("walk timing audit", () => {
       neutralBetweenOppositeFeet: true,
       startsOnStrideFrame: true,
       returnsToNeutralBeforeLoop: true,
+      landingFeedbacksPerCycle: 2,
+      landingIntervalMs: 480,
+      landingFeedbackSynchronized: true,
       initialDelayRatio: 1.25,
       passed: true
     });
+  });
+
+  it("emits landing feedback only for right-foot and left-foot frames", () => {
+    expect(Array.from({ length: 8 }, (_, phase) => isWalkLandingFrame(walkFrameForPhase(phase))))
+      .toEqual([true, false, true, false, true, false, true, false]);
   });
 
   it("cycles right foot, neutral, left foot, neutral without skipping", () => {

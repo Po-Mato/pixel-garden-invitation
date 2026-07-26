@@ -10,6 +10,8 @@ import { gameGuideStorageKey } from "../game/gameGuide";
 import { worldDepth } from "../game/worldVisuals";
 import { journeyProgressStorageKey } from "../game/journeyProgress";
 import { copyText } from "../invitation/browserActions";
+import { GameFeedbackProvider } from "../feedback/GameFeedbackContext";
+import { defaultFeedbackPreferences } from "../feedback/feedbackPreferences";
 import { GameWorld } from "./GameWorld";
 
 vi.mock("../invitation/browserActions", () => ({
@@ -26,6 +28,7 @@ type MockListener = (event: Event) => void;
 
 let animationFrames = new Map<number, FrameRequestCallback>();
 let nextAnimationFrameId = 1;
+const originalVibrate = navigator.vibrate;
 
 class MockWebSocket {
   static readonly OPEN = 1;
@@ -95,6 +98,11 @@ afterEach(() => {
   vi.unstubAllEnvs();
   vi.unstubAllGlobals();
   animationFrames.clear();
+  if (originalVibrate) {
+    Object.defineProperty(navigator, "vibrate", { configurable: true, value: originalVibrate });
+  } else {
+    Reflect.deleteProperty(navigator, "vibrate");
+  }
 });
 
 function advanceAnimation(now: number) {
@@ -316,6 +324,39 @@ describe("GameWorld", () => {
     fireEvent.keyUp(joystick, { key: "ArrowLeft" });
     expect(sprite).toHaveAttribute("data-moving", "false");
     expect(sprite).toHaveAttribute("data-walk-frame", "1");
+  });
+
+  it("plays footstep haptics only on right-foot and left-foot landing frames", () => {
+    const vibrate = vi.fn(() => true);
+    Object.defineProperty(navigator, "vibrate", { configurable: true, value: vibrate });
+    render(
+      <GameFeedbackProvider initialPreferences={{
+        ...defaultFeedbackPreferences,
+        soundEnabled: false,
+        hapticsEnabled: true
+      }}>
+        <GameWorld profile={profile} />
+      </GameFeedbackProvider>
+    );
+    const joystick = screen.getByLabelText("가상 조이스틱");
+
+    fireEvent.keyDown(joystick, { key: "ArrowLeft" });
+    advanceAnimation(0);
+    expect(vibrate).toHaveBeenCalledTimes(1);
+    expect(vibrate).toHaveBeenLastCalledWith(4);
+
+    advanceAnimation(299);
+    expect(vibrate).toHaveBeenCalledTimes(1);
+
+    advanceAnimation(300);
+    expect(vibrate).toHaveBeenCalledTimes(1);
+
+    advanceAnimation(540);
+    expect(vibrate).toHaveBeenCalledTimes(2);
+    expect(vibrate).toHaveBeenLastCalledWith(4);
+
+    fireEvent.keyUp(joystick, { key: "ArrowLeft" });
+    expect(vibrate).toHaveBeenCalledTimes(2);
   });
 
   it("opens the three-step guide only for a first visit and remembers dismissal", () => {

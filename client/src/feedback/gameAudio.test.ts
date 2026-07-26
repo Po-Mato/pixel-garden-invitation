@@ -78,6 +78,22 @@ describe("GameAudioEngine", () => {
     expect(context.oscillators).toHaveLength(3);
   });
 
+  it("plays a quiet low two-tone footstep on each landing", async () => {
+    vi.stubGlobal("AudioContext", FakeAudioContext);
+    const engine = new GameAudioEngine({
+      ...defaultFeedbackPreferences,
+      soundEnabled: true,
+      musicEnabled: false
+    });
+
+    await engine.unlock();
+    engine.playCue("footstep");
+
+    const context = FakeAudioContext.instances[0];
+    expect(context.oscillators.map((oscillator) => oscillator.frequency.values[0]))
+      .toEqual([110, 72]);
+  });
+
   it("plays a longer four-note celebration for journey completion", async () => {
     vi.stubGlobal("AudioContext", FakeAudioContext);
     const engine = new GameAudioEngine({
@@ -140,6 +156,8 @@ describe("triggerHaptic", () => {
     expect(vibrate).toHaveBeenLastCalledWith([16, 34, 20, 34, 32]);
     expect(triggerHaptic("photo", vibrate)).toBe(true);
     expect(vibrate).toHaveBeenLastCalledWith([10, 24, 14]);
+    expect(triggerHaptic("footstep", vibrate)).toBe(true);
+    expect(vibrate).toHaveBeenLastCalledWith(4);
     expect(triggerHaptic("tap", undefined)).toBe(false);
   });
 });

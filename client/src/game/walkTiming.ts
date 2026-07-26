@@ -3,6 +3,7 @@ export const walkInputInitialDelayMs = 300;
 export const walkStepIntervalMs = 240;
 export const neutralWalkFrame = 1;
 export const walkFrameSequence = [0, 1, 2, 1] as const;
+export const walkLandingFrames = [0, 2] as const;
 
 const minimumTileSpeedPxPerSecond = 100;
 const maximumTileSpeedPxPerSecond = 150;
@@ -24,6 +25,9 @@ export type WalkTimingAudit = {
   neutralBetweenOppositeFeet: boolean;
   startsOnStrideFrame: boolean;
   returnsToNeutralBeforeLoop: boolean;
+  landingFeedbacksPerCycle: number;
+  landingIntervalMs: number;
+  landingFeedbackSynchronized: boolean;
   initialDelayRatio: number;
   passed: boolean;
 };
@@ -48,6 +52,10 @@ export function advanceWalkPhase(phase: number): { frame: number; nextPhase: num
   };
 }
 
+export function isWalkLandingFrame(frame: number): boolean {
+  return walkLandingFrames.some((landingFrame) => landingFrame === frame);
+}
+
 export function auditWalkTiming(config: WalkTimingConfig = defaultWalkTiming): WalkTimingAudit {
   const { tileSizePx, initialDelayMs, stepIntervalMs, frameSequence } = config;
   const tileSpeedPxPerSecond = stepIntervalMs > 0 ? (tileSizePx * 1_000) / stepIntervalMs : 0;
@@ -61,6 +69,17 @@ export function auditWalkTiming(config: WalkTimingConfig = defaultWalkTiming): W
     && frameSequence[3] === neutralWalkFrame;
   const startsOnStrideFrame = frameSequence[0] === 0 || frameSequence[0] === 2;
   const returnsToNeutralBeforeLoop = frameSequence.at(-1) === neutralWalkFrame;
+  const landingPhaseIndexes = frameSequence
+    .map((frame, index) => isWalkLandingFrame(frame) ? index : -1)
+    .filter((index) => index >= 0);
+  const landingFeedbacksPerCycle = landingPhaseIndexes.length;
+  const landingIntervalMs = landingFeedbacksPerCycle === 2
+    ? (landingPhaseIndexes[1] - landingPhaseIndexes[0]) * stepIntervalMs
+    : 0;
+  const landingFeedbackSynchronized = landingFeedbacksPerCycle === 2
+    && landingPhaseIndexes[0] === 0
+    && landingPhaseIndexes[1] === 2
+    && landingIntervalMs * 2 === strideCycleMs;
   const passed = Number.isFinite(tileSpeedPxPerSecond)
     && tileSpeedPxPerSecond >= minimumTileSpeedPxPerSecond
     && tileSpeedPxPerSecond <= maximumTileSpeedPxPerSecond
@@ -70,7 +89,8 @@ export function auditWalkTiming(config: WalkTimingConfig = defaultWalkTiming): W
     && initialDelayRatio <= maximumInitialDelayRatio
     && neutralBetweenOppositeFeet
     && startsOnStrideFrame
-    && returnsToNeutralBeforeLoop;
+    && returnsToNeutralBeforeLoop
+    && landingFeedbackSynchronized;
 
   return {
     tileSpeedPxPerSecond,
@@ -79,6 +99,9 @@ export function auditWalkTiming(config: WalkTimingConfig = defaultWalkTiming): W
     neutralBetweenOppositeFeet,
     startsOnStrideFrame,
     returnsToNeutralBeforeLoop,
+    landingFeedbacksPerCycle,
+    landingIntervalMs,
+    landingFeedbackSynchronized,
     initialDelayRatio,
     passed
   };
