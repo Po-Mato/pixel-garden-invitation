@@ -6,6 +6,7 @@ export type FeedbackPreferences = {
   musicEnabled: boolean;
   hapticsEnabled: boolean;
   volume: FeedbackVolume;
+  footstepVolume: FeedbackVolume;
 };
 
 type StorageLike = Pick<Storage, "getItem" | "setItem">;
@@ -16,8 +17,13 @@ export const defaultFeedbackPreferences: FeedbackPreferences = {
   effectsEnabled: true,
   musicEnabled: true,
   hapticsEnabled: true,
-  volume: "balanced"
+  volume: "balanced",
+  footstepVolume: "balanced"
 };
+
+function isFeedbackVolume(value: unknown): value is FeedbackVolume {
+  return value === "quiet" || value === "balanced" || value === "bright";
+}
 
 function browserStorage(): StorageLike | null {
   if (typeof window === "undefined") return null;
@@ -35,7 +41,29 @@ export function isFeedbackPreferences(value: unknown): value is FeedbackPreferen
     && typeof candidate.effectsEnabled === "boolean"
     && typeof candidate.musicEnabled === "boolean"
     && typeof candidate.hapticsEnabled === "boolean"
-    && (candidate.volume === "quiet" || candidate.volume === "balanced" || candidate.volume === "bright");
+    && isFeedbackVolume(candidate.volume)
+    && isFeedbackVolume(candidate.footstepVolume);
+}
+
+function migrateFeedbackPreferences(value: unknown): FeedbackPreferences | null {
+  if (isFeedbackPreferences(value)) return value;
+  if (typeof value !== "object" || value === null) return null;
+  const candidate = value as Partial<FeedbackPreferences>;
+  if (typeof candidate.soundEnabled !== "boolean"
+    || typeof candidate.effectsEnabled !== "boolean"
+    || typeof candidate.musicEnabled !== "boolean"
+    || typeof candidate.hapticsEnabled !== "boolean"
+    || !isFeedbackVolume(candidate.volume)
+    || candidate.footstepVolume !== undefined) return null;
+
+  return {
+    soundEnabled: candidate.soundEnabled,
+    effectsEnabled: candidate.effectsEnabled,
+    musicEnabled: candidate.musicEnabled,
+    hapticsEnabled: candidate.hapticsEnabled,
+    volume: candidate.volume,
+    footstepVolume: defaultFeedbackPreferences.footstepVolume
+  };
 }
 
 export function loadFeedbackPreferences(
@@ -45,7 +73,7 @@ export function loadFeedbackPreferences(
     const stored = storage?.getItem(feedbackPreferencesStorageKey);
     if (!stored) return defaultFeedbackPreferences;
     const parsed: unknown = JSON.parse(stored);
-    return isFeedbackPreferences(parsed) ? parsed : defaultFeedbackPreferences;
+    return migrateFeedbackPreferences(parsed) ?? defaultFeedbackPreferences;
   } catch {
     return defaultFeedbackPreferences;
   }

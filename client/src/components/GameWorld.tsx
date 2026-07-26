@@ -27,7 +27,7 @@ import {
   tileInputRepeatIntervalMs,
   type TileInputState
 } from "../game/tileInput";
-import { advanceWalkPhase, isWalkLandingFrame, neutralWalkFrame, walkFrameForPhase } from "../game/walkTiming";
+import { advanceWalkPhase, neutralWalkFrame, walkFrameForPhase, walkLandingFootForFrame } from "../game/walkTiming";
 import {
   completeJourneyCheckpoint,
   journeyCheckpointForInteraction,
@@ -316,7 +316,8 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     const next = advanceWalkPhase(walkPhaseRef.current);
     walkPhaseRef.current = next.nextPhase;
     setStepFrame(next.frame);
-    if (isWalkLandingFrame(next.frame)) playFeedback("footstep", { surface });
+    const foot = walkLandingFootForFrame(next.frame);
+    if (foot) playFeedback("footstep", { surface, foot });
   }, [playFeedback]);
 
   const stampJourneyCheckpoint = useCallback((checkpointId: JourneyCheckpointId) => {

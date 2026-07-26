@@ -3,6 +3,7 @@ import {
   BellRing,
   Contrast,
   Cpu,
+  Footprints,
   Hand,
   Gauge,
   Music2,
@@ -44,6 +45,7 @@ export function ViewSettingsAccess({ variant, onOpenChange }: ViewSettingsAccess
     setMusicEnabled,
     setHapticsEnabled,
     setVolume,
+    setFootstepVolume,
     resetFeedbackPreferences
   } = useGameFeedback();
   const comfortableViewEnabled = preferences.textScale === "xlarge"
@@ -226,6 +228,30 @@ export function ViewSettingsAccess({ variant, onOpenChange }: ViewSettingsAccess
                   ))}
                 </div>
               </div>
+
+              <div className="feedback-settings__volume">
+                <span className="feedback-settings__volume-label">
+                  <Footprints aria-hidden="true" />
+                  <strong>발소리 강도</strong>
+                </span>
+                <div className="view-settings-sheet__segments" role="group" aria-label="발소리 강도">
+                  {([
+                    ["quiet", "약하게"],
+                    ["balanced", "보통"],
+                    ["bright", "강하게"]
+                  ] as const).map(([volume, label]) => (
+                    <button
+                      key={volume}
+                      type="button"
+                      aria-pressed={feedbackPreferences.footstepVolume === volume}
+                      disabled={!feedbackPreferences.soundEnabled || !feedbackPreferences.effectsEnabled}
+                      onClick={() => setFootstepVolume(volume)}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              </div>
             </section>
 
             <label className="view-settings-sheet__switch">
@@ -260,6 +286,9 @@ export function ViewSettingsAccess({ variant, onOpenChange }: ViewSettingsAccess
               전체 소리 {feedbackPreferences.soundEnabled ? "켜짐" : "꺼짐"},
               효과음 {feedbackPreferences.effectsEnabled ? "켜짐" : "꺼짐"},
               배경 음악 {feedbackPreferences.musicEnabled ? "켜짐" : "꺼짐"},
+              발소리 강도 {feedbackPreferences.footstepVolume === "quiet"
+                ? "약하게"
+                : feedbackPreferences.footstepVolume === "balanced" ? "보통" : "강하게"},
               진동 피드백 {feedbackPreferences.hapticsEnabled ? "켜짐" : "꺼짐"}
             </p>
           </div>

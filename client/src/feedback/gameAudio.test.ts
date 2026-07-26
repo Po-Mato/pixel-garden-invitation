@@ -27,6 +27,7 @@ class FakeAudioContext {
   static instances: FakeAudioContext[] = [];
   readonly destination = {};
   readonly oscillators: FakeOscillator[] = [];
+  readonly gains: FakeGain[] = [];
   currentTime = 10;
   state: AudioContextState = "running";
 
@@ -40,7 +41,11 @@ class FakeAudioContext {
     return oscillator;
   }
 
-  createGain() { return new FakeGain(); }
+  createGain() {
+    const gain = new FakeGain();
+    this.gains.push(gain);
+    return gain;
+  }
   resume() { this.state = "running"; return Promise.resolve(); }
   close() { this.state = "closed"; return Promise.resolve(); }
 }
@@ -107,6 +112,37 @@ describe("GameAudioEngine", () => {
         .map((oscillator) => oscillator.frequency.values[0]))
         .toEqual(frequencies);
     }
+  });
+
+  it("makes right and left landings subtly different and applies the footstep level", async () => {
+    vi.stubGlobal("AudioContext", FakeAudioContext);
+    const engine = new GameAudioEngine({
+      ...defaultFeedbackPreferences,
+      soundEnabled: true,
+      musicEnabled: false
+    });
+
+    await engine.unlock();
+    const context = FakeAudioContext.instances[0];
+    engine.playCue("footstep", { surface: "wood", foot: "right" });
+    engine.playCue("footstep", { surface: "wood", foot: "left" });
+
+    const rightFrequency = context.oscillators[0].frequency.values[0];
+    const leftFrequency = context.oscillators[2].frequency.values[0];
+    const rightPeak = context.gains[0].gain.values[1];
+    const leftPeak = context.gains[2].gain.values[1];
+    expect(rightFrequency).toBeCloseTo(157.6);
+    expect(leftFrequency).toBeCloseTo(162.4);
+    expect(leftPeak).toBeGreaterThan(rightPeak);
+
+    engine.configure({
+      ...defaultFeedbackPreferences,
+      soundEnabled: true,
+      musicEnabled: false,
+      footstepVolume: "bright"
+    });
+    engine.playCue("footstep", { surface: "wood", foot: "right" });
+    expect(context.gains[4].gain.values[1]).toBeCloseTo(rightPeak * 1.3);
   });
 
   it("plays a longer four-note celebration for journey completion", async () => {

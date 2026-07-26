@@ -30,6 +30,7 @@ type GameFeedbackContextValue = {
   setMusicEnabled: (enabled: boolean) => void;
   setHapticsEnabled: (enabled: boolean) => void;
   setVolume: (volume: FeedbackVolume) => void;
+  setFootstepVolume: (volume: FeedbackVolume) => void;
   resetFeedbackPreferences: () => void;
   playFeedback: (cue: FeedbackCue, options?: FeedbackCueOptions) => void;
   setFeedbackZone: (zoneId: WorldZoneId) => void;
@@ -42,6 +43,7 @@ const GameFeedbackContext = createContext<GameFeedbackContextValue>({
   setMusicEnabled: () => undefined,
   setHapticsEnabled: () => undefined,
   setVolume: () => undefined,
+  setFootstepVolume: () => undefined,
   resetFeedbackPreferences: () => undefined,
   playFeedback: () => undefined,
   setFeedbackZone: () => undefined
@@ -124,6 +126,13 @@ export function GameFeedbackProvider({ children, initialPreferences }: GameFeedb
       const next = { ...preferencesRef.current, volume };
       applyPreferences(next);
       if (next.soundEnabled) void activateAndPlay("tap");
+    },
+    setFootstepVolume: (footstepVolume) => {
+      const next = { ...preferencesRef.current, footstepVolume };
+      applyPreferences(next);
+      if (next.soundEnabled && next.effectsEnabled) {
+        void activateAndPlay("footstep", { surface: "wood", foot: "right" });
+      }
     },
     resetFeedbackPreferences: () => applyPreferences(defaultFeedbackPreferences),
     playFeedback: (cue, options) => {

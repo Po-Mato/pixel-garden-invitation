@@ -5,6 +5,7 @@ import {
   defaultWalkTiming,
   isWalkLandingFrame,
   neutralWalkFrame,
+  walkLandingFootForFrame,
   walkFrameForPhase
 } from "./walkTiming";
 
@@ -30,6 +31,8 @@ describe("walk timing audit", () => {
   it("emits landing feedback only for right-foot and left-foot frames", () => {
     expect(Array.from({ length: 8 }, (_, phase) => isWalkLandingFrame(walkFrameForPhase(phase))))
       .toEqual([true, false, true, false, true, false, true, false]);
+    expect(Array.from({ length: 4 }, (_, phase) => walkLandingFootForFrame(walkFrameForPhase(phase))))
+      .toEqual(["right", null, "left", null]);
   });
 
   it("cycles right foot, neutral, left foot, neutral without skipping", () => {

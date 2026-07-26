@@ -4,6 +4,7 @@ export const walkStepIntervalMs = 240;
 export const neutralWalkFrame = 1;
 export const walkFrameSequence = [0, 1, 2, 1] as const;
 export const walkLandingFrames = [0, 2] as const;
+export type WalkLandingFoot = "right" | "left";
 
 const minimumTileSpeedPxPerSecond = 100;
 const maximumTileSpeedPxPerSecond = 150;
@@ -54,6 +55,12 @@ export function advanceWalkPhase(phase: number): { frame: number; nextPhase: num
 
 export function isWalkLandingFrame(frame: number): boolean {
   return walkLandingFrames.some((landingFrame) => landingFrame === frame);
+}
+
+export function walkLandingFootForFrame(frame: number): WalkLandingFoot | null {
+  if (frame === walkLandingFrames[0]) return "right";
+  if (frame === walkLandingFrames[1]) return "left";
+  return null;
 }
 
 export function auditWalkTiming(config: WalkTimingConfig = defaultWalkTiming): WalkTimingAudit {

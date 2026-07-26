@@ -1,9 +1,13 @@
 import type { WorldZoneId } from "@wedding-game/shared";
 import type { FootstepSurface } from "../game/footstepSurface";
+import type { WalkLandingFoot } from "../game/walkTiming";
 import type { FeedbackPreferences, FeedbackVolume } from "./feedbackPreferences";
 
 export type FeedbackCue = "tap" | "footstep" | "portal" | "stamp" | "dialogue" | "reaction" | "photo" | "complete";
-export type FeedbackCueOptions = { surface?: FootstepSurface };
+export type FeedbackCueOptions = {
+  surface?: FootstepSurface;
+  foot?: WalkLandingFoot;
+};
 
 type AudioContextConstructor = new () => AudioContext;
 
@@ -11,6 +15,17 @@ const volumeGain: Record<FeedbackVolume, number> = {
   quiet: 0.55,
   balanced: 0.78,
   bright: 1
+};
+
+const footstepVolumeGain: Record<FeedbackVolume, number> = {
+  quiet: 0.65,
+  balanced: 1,
+  bright: 1.3
+};
+
+const footstepVariation: Record<WalkLandingFoot, { pitch: number; strength: number }> = {
+  right: { pitch: 0.985, strength: 0.94 },
+  left: { pitch: 1.015, strength: 1.04 }
 };
 
 const zoneRoots: Record<WorldZoneId, number> = {
@@ -181,10 +196,24 @@ export class GameAudioEngine {
 
   playCue(cue: FeedbackCue, options: FeedbackCueOptions = {}) {
     if (!this.preferences.effectsEnabled || !this.canPlaySound()) return;
-    const tones = cue === "footstep"
-      ? footstepTones[options.surface ?? "wood"]
-      : cueTones[cue];
-    tones.forEach((tone) => {
+    if (cue === "footstep") {
+      const variation = options.foot ? footstepVariation[options.foot] : { pitch: 1, strength: 1 };
+      const strengthScale = variation.strength * footstepVolumeGain[this.preferences.footstepVolume];
+      footstepTones[options.surface ?? "wood"].forEach((tone) => {
+        this.playTone(
+          tone.frequency * variation.pitch,
+          tone.offset,
+          tone.duration,
+          tone.strength,
+          tone.wave ?? "sine",
+          false,
+          strengthScale
+        );
+      });
+      return;
+    }
+
+    cueTones[cue].forEach((tone) => {
       this.playTone(tone.frequency, tone.offset, tone.duration, tone.strength, tone.wave ?? "sine", false);
     });
   }
@@ -248,7 +277,8 @@ export class GameAudioEngine {
     duration: number,
     strength: number,
     wave: OscillatorType,
-    music: boolean
+    music: boolean,
+    strengthScale = 1
   ) {
     const context = this.context;
     if (!context || context.state !== "running") return;
@@ -256,7 +286,7 @@ export class GameAudioEngine {
     const stopAt = startAt + duration;
     const oscillator = context.createOscillator();
     const gain = context.createGain();
-    const peak = strength * volumeGain[this.preferences.volume];
+    const peak = strength * volumeGain[this.preferences.volume] * strengthScale;
 
     oscillator.type = wave;
     oscillator.frequency.setValueAtTime(frequency, startAt);
