@@ -18,6 +18,7 @@ import {
 } from "@wedding-game/shared";
 import { shouldReduceMotion } from "../accessibility/viewPreferences";
 import { computeCameraTransform, screenToWorld, type ViewportSize } from "../game/camera";
+import { resolveFootstepSurface, type FootstepSurface } from "../game/footstepSurface";
 import { computeNextGridPosition, directionFromVector, directionTowardPoint, snapToGrid } from "../game/movement";
 import { findNearestInteractionRoute, findNearestPortalRoute, findTilePath } from "../game/pathfinding";
 import {
@@ -311,11 +312,11 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     setStepFrame(neutralWalkFrame);
   }, []);
 
-  const advanceWalkCycle = useCallback(() => {
+  const advanceWalkCycle = useCallback((surface: FootstepSurface) => {
     const next = advanceWalkPhase(walkPhaseRef.current);
     walkPhaseRef.current = next.nextPhase;
     setStepFrame(next.frame);
-    if (isWalkLandingFrame(next.frame)) playFeedback("footstep");
+    if (isWalkLandingFrame(next.frame)) playFeedback("footstep", { surface });
   }, [playFeedback]);
 
   const stampJourneyCheckpoint = useCallback((checkpointId: JourneyCheckpointId) => {
@@ -1237,7 +1238,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
       positionRef.current = next;
       setPosition(next);
       setMoving(true);
-      advanceWalkCycle();
+      advanceWalkCycle(resolveFootstepSurface(activeZone, next));
       sendRealtimeMove(next, hasDirectionalInput || !reachedTarget, nextDirection, activeZone.id, now);
 
       if (reachedTarget) {

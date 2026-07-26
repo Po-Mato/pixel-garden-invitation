@@ -78,7 +78,7 @@ describe("GameAudioEngine", () => {
     expect(context.oscillators).toHaveLength(3);
   });
 
-  it("plays a quiet low two-tone footstep on each landing", async () => {
+  it("uses a distinct quiet tone profile for every map surface", async () => {
     vi.stubGlobal("AudioContext", FakeAudioContext);
     const engine = new GameAudioEngine({
       ...defaultFeedbackPreferences,
@@ -87,11 +87,26 @@ describe("GameAudioEngine", () => {
     });
 
     await engine.unlock();
-    engine.playCue("footstep");
-
     const context = FakeAudioContext.instances[0];
-    expect(context.oscillators.map((oscillator) => oscillator.frequency.values[0]))
-      .toEqual([110, 72]);
+    const expected = {
+      wood: [160, 96],
+      asphalt: [125, 84],
+      concrete: [210, 135],
+      metal: [360, 220],
+      gravel: [240, 180, 300],
+      marble: [260, 180],
+      carpet: [135],
+      tile: [300, 190]
+    } as const;
+
+    for (const [surface, frequencies] of Object.entries(expected)) {
+      const firstNewOscillator = context.oscillators.length;
+      engine.playCue("footstep", { surface: surface as keyof typeof expected });
+      expect(context.oscillators
+        .slice(firstNewOscillator)
+        .map((oscillator) => oscillator.frequency.values[0]))
+        .toEqual(frequencies);
+    }
   });
 
   it("plays a longer four-note celebration for journey completion", async () => {

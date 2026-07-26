@@ -1,7 +1,9 @@
 import type { WorldZoneId } from "@wedding-game/shared";
+import type { FootstepSurface } from "../game/footstepSurface";
 import type { FeedbackPreferences, FeedbackVolume } from "./feedbackPreferences";
 
 export type FeedbackCue = "tap" | "footstep" | "portal" | "stamp" | "dialogue" | "reaction" | "photo" | "complete";
+export type FeedbackCueOptions = { surface?: FootstepSurface };
 
 type AudioContextConstructor = new () => AudioContext;
 
@@ -24,18 +26,51 @@ const zoneRoots: Record<WorldZoneId, number> = {
   restroom: 261.63
 };
 
-const cueTones: Record<FeedbackCue, Array<{
+type FeedbackTone = {
   frequency: number;
   offset: number;
   duration: number;
   strength: number;
   wave?: OscillatorType;
-}>> = {
-  tap: [{ frequency: 540, offset: 0, duration: 0.055, strength: 0.045 }],
-  footstep: [
-    { frequency: 110, offset: 0, duration: 0.045, strength: 0.025, wave: "triangle" },
-    { frequency: 72, offset: 0.015, duration: 0.055, strength: 0.018 }
+};
+
+const footstepTones: Record<FootstepSurface, FeedbackTone[]> = {
+  wood: [
+    { frequency: 160, offset: 0, duration: 0.045, strength: 0.024, wave: "triangle" },
+    { frequency: 96, offset: 0.014, duration: 0.055, strength: 0.017 }
   ],
+  asphalt: [
+    { frequency: 125, offset: 0, duration: 0.035, strength: 0.022, wave: "square" },
+    { frequency: 84, offset: 0.012, duration: 0.05, strength: 0.016, wave: "triangle" }
+  ],
+  concrete: [
+    { frequency: 210, offset: 0, duration: 0.04, strength: 0.022, wave: "triangle" },
+    { frequency: 135, offset: 0.012, duration: 0.05, strength: 0.016, wave: "square" }
+  ],
+  metal: [
+    { frequency: 360, offset: 0, duration: 0.035, strength: 0.019, wave: "square" },
+    { frequency: 220, offset: 0.012, duration: 0.07, strength: 0.014, wave: "triangle" }
+  ],
+  gravel: [
+    { frequency: 240, offset: 0, duration: 0.025, strength: 0.018, wave: "square" },
+    { frequency: 180, offset: 0.018, duration: 0.025, strength: 0.016, wave: "triangle" },
+    { frequency: 300, offset: 0.032, duration: 0.022, strength: 0.013, wave: "square" }
+  ],
+  marble: [
+    { frequency: 260, offset: 0, duration: 0.045, strength: 0.02 },
+    { frequency: 180, offset: 0.018, duration: 0.09, strength: 0.013, wave: "triangle" }
+  ],
+  carpet: [
+    { frequency: 135, offset: 0, duration: 0.032, strength: 0.012, wave: "triangle" }
+  ],
+  tile: [
+    { frequency: 300, offset: 0, duration: 0.035, strength: 0.019, wave: "square" },
+    { frequency: 190, offset: 0.012, duration: 0.055, strength: 0.014 }
+  ]
+};
+
+const cueTones: Record<Exclude<FeedbackCue, "footstep">, FeedbackTone[]> = {
+  tap: [{ frequency: 540, offset: 0, duration: 0.055, strength: 0.045 }],
   portal: [
     { frequency: 329.63, offset: 0, duration: 0.24, strength: 0.08, wave: "triangle" },
     { frequency: 493.88, offset: 0.1, duration: 0.3, strength: 0.075, wave: "triangle" },
@@ -144,9 +179,12 @@ export class GameAudioEngine {
     this.syncMusic();
   }
 
-  playCue(cue: FeedbackCue) {
+  playCue(cue: FeedbackCue, options: FeedbackCueOptions = {}) {
     if (!this.preferences.effectsEnabled || !this.canPlaySound()) return;
-    cueTones[cue].forEach((tone) => {
+    const tones = cue === "footstep"
+      ? footstepTones[options.surface ?? "wood"]
+      : cueTones[cue];
+    tones.forEach((tone) => {
       this.playTone(tone.frequency, tone.offset, tone.duration, tone.strength, tone.wave ?? "sine", false);
     });
   }

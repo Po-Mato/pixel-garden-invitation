@@ -16,7 +16,12 @@ import {
   type FeedbackPreferences,
   type FeedbackVolume
 } from "./feedbackPreferences";
-import { GameAudioEngine, triggerHaptic, type FeedbackCue } from "./gameAudio";
+import {
+  GameAudioEngine,
+  triggerHaptic,
+  type FeedbackCue,
+  type FeedbackCueOptions
+} from "./gameAudio";
 
 type GameFeedbackContextValue = {
   preferences: FeedbackPreferences;
@@ -26,7 +31,7 @@ type GameFeedbackContextValue = {
   setHapticsEnabled: (enabled: boolean) => void;
   setVolume: (volume: FeedbackVolume) => void;
   resetFeedbackPreferences: () => void;
-  playFeedback: (cue: FeedbackCue) => void;
+  playFeedback: (cue: FeedbackCue, options?: FeedbackCueOptions) => void;
   setFeedbackZone: (zoneId: WorldZoneId) => void;
 };
 
@@ -66,11 +71,11 @@ export function GameFeedbackProvider({ children, initialPreferences }: GameFeedb
     engineRef.current?.configure(next);
   }, []);
 
-  const activateAndPlay = useCallback(async (cue?: FeedbackCue) => {
+  const activateAndPlay = useCallback(async (cue?: FeedbackCue, options?: FeedbackCueOptions) => {
     const engine = getEngine();
     if (await engine.unlock()) {
       engine.configure(preferencesRef.current);
-      if (cue) engine.playCue(cue);
+      if (cue) engine.playCue(cue, options);
     }
   }, [getEngine]);
 
@@ -121,10 +126,10 @@ export function GameFeedbackProvider({ children, initialPreferences }: GameFeedb
       if (next.soundEnabled) void activateAndPlay("tap");
     },
     resetFeedbackPreferences: () => applyPreferences(defaultFeedbackPreferences),
-    playFeedback: (cue) => {
+    playFeedback: (cue, options) => {
       const current = preferencesRef.current;
       if (current.hapticsEnabled) triggerHaptic(cue);
-      if (current.soundEnabled) void activateAndPlay(cue);
+      if (current.soundEnabled) void activateAndPlay(cue, options);
     },
     setFeedbackZone: (zoneId) => {
       zoneRef.current = zoneId;
