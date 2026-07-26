@@ -1,6 +1,7 @@
 import type { Direction } from "@wedding-game/shared";
 import { clampToWorld, isBlocked } from "./geometry";
 import type { Point, Rect, WorldZone } from "./world";
+import { walkTileSizePx } from "./walkTiming";
 
 export type MoveInput = {
   current: Point;
@@ -17,7 +18,7 @@ export type GridMoveInput = {
   tileSize?: number;
 };
 
-export const gridTileSize = 30;
+export const gridTileSize = walkTileSizePx;
 
 function isFinitePoint(point: Point): boolean {
   return Number.isFinite(point.x) && Number.isFinite(point.y);

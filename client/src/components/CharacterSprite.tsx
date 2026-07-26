@@ -31,7 +31,8 @@ export function CharacterSprite({
   const layers = resolveCharacterLayers(safeAppearance, import.meta.env.BASE_URL, displayMode);
   const sourceSize = layers[0].sourceSize;
   const displaySize = layers[0].displaySize[displayMode];
-  const frame = getWalkFrameStyle(direction, moving ? stepFrame : 1, sourceSize);
+  const renderedStepFrame = moving ? ((stepFrame % 3) + 3) % 3 : 1;
+  const frame = getWalkFrameStyle(direction, renderedStepFrame, sourceSize);
   const spriteStyle = {
     "--character-source-width": `${sourceSize.width}px`,
     "--character-source-height": `${sourceSize.height}px`,
@@ -56,6 +57,8 @@ export function CharacterSprite({
     <span
       className={`character-sprite character-sprite--${displayMode} ${useFrontIdle ? "character-sprite--idle-front" : ""}`}
       aria-label={label}
+      data-moving={moving ? "true" : "false"}
+      data-walk-frame={renderedStepFrame}
       style={spriteStyle}
     >
       {layers.map((layer) => {

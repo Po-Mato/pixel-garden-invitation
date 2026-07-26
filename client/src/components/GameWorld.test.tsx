@@ -281,6 +281,43 @@ describe("GameWorld", () => {
     expect(screen.getByTestId("world-portal-transition")).toHaveAttribute("data-phase", "idle");
   });
 
+  it("synchronizes every 30px tile step with the approved four-phase walk cycle", () => {
+    render(<GameWorld profile={profile} />);
+    const player = screen.getByLabelText("하객1");
+    const sprite = screen.getByLabelText("하객1 캐릭터");
+    const joystick = screen.getByLabelText("가상 조이스틱");
+
+    expect(player).toHaveStyle({ left: "285px", top: "555px" });
+    expect(sprite).toHaveAttribute("data-moving", "false");
+    expect(sprite).toHaveAttribute("data-walk-frame", "1");
+
+    fireEvent.keyDown(joystick, { key: "ArrowLeft" });
+    advanceAnimation(0);
+    expect(player).toHaveStyle({ left: "255px", top: "555px" });
+    expect(sprite).toHaveAttribute("data-moving", "true");
+    expect(sprite).toHaveAttribute("data-walk-frame", "0");
+
+    advanceAnimation(299);
+    expect(player).toHaveStyle({ left: "255px", top: "555px" });
+    expect(sprite).toHaveAttribute("data-walk-frame", "0");
+
+    advanceAnimation(300);
+    expect(player).toHaveStyle({ left: "225px", top: "555px" });
+    expect(sprite).toHaveAttribute("data-walk-frame", "1");
+
+    advanceAnimation(540);
+    expect(player).toHaveStyle({ left: "195px", top: "555px" });
+    expect(sprite).toHaveAttribute("data-walk-frame", "2");
+
+    advanceAnimation(780);
+    expect(player).toHaveStyle({ left: "165px", top: "555px" });
+    expect(sprite).toHaveAttribute("data-walk-frame", "1");
+
+    fireEvent.keyUp(joystick, { key: "ArrowLeft" });
+    expect(sprite).toHaveAttribute("data-moving", "false");
+    expect(sprite).toHaveAttribute("data-walk-frame", "1");
+  });
+
   it("opens the three-step guide only for a first visit and remembers dismissal", () => {
     window.localStorage.removeItem(gameGuideStorageKey);
 
@@ -2138,6 +2175,34 @@ describe("GameWorld", () => {
 
     expect(screen.getByLabelText("하객2")).toHaveStyle({ left: "165px", top: "405px", zIndex: "1405" });
     expect(screen.queryByLabelText("로비 하객")).not.toBeInTheDocument();
+  });
+
+  it("renders remote guest movement with the same neutral-separated walk cycle", () => {
+    configureRealtime();
+    render(<GameWorld profile={profile} />);
+    const socket = MockWebSocket.instances[0];
+    act(() => socket.emit("open"));
+    act(() => socket.emitJson({
+      type: "welcome",
+      guestId: "guest_self",
+      guests: [serverGuest({ moving: true, seq: 1 })]
+    }));
+    const sprite = screen.getByLabelText("하객2 캐릭터");
+
+    expect(sprite).toHaveAttribute("data-walk-frame", "0");
+    act(() => socket.emitJson({
+      type: "guest_moved",
+      guestId: "guest_remote",
+      position: { x: 195, y: 405, direction: "right", moving: true, seq: 2, zoneId: "home" }
+    }));
+    expect(sprite).toHaveAttribute("data-walk-frame", "1");
+
+    act(() => socket.emitJson({
+      type: "guest_moved",
+      guestId: "guest_remote",
+      position: { x: 225, y: 405, direction: "right", moving: true, seq: 3, zoneId: "home" }
+    }));
+    expect(sprite).toHaveAttribute("data-walk-frame", "2");
   });
 
   it("sends a local reaction without interrupting joystick movement", () => {

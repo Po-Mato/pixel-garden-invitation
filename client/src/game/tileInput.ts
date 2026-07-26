@@ -1,7 +1,8 @@
 import type { Direction } from "@wedding-game/shared";
+import { walkInputInitialDelayMs, walkStepIntervalMs } from "./walkTiming";
 
-export const tileInputInitialDelayMs = 300;
-export const tileInputRepeatIntervalMs = 240;
+export const tileInputInitialDelayMs = walkInputInitialDelayMs;
+export const tileInputRepeatIntervalMs = walkStepIntervalMs;
 
 export type TileInputState = {
   direction: Direction;
