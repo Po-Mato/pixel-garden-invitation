@@ -116,6 +116,45 @@ describe("GameAudioEngine", () => {
 
   it("makes right and left landings subtly different and applies the footstep level", async () => {
     vi.stubGlobal("AudioContext", FakeAudioContext);
+    const rightEngine = new GameAudioEngine({
+      ...defaultFeedbackPreferences,
+      soundEnabled: true,
+      musicEnabled: false
+    });
+    const leftEngine = new GameAudioEngine({
+      ...defaultFeedbackPreferences,
+      soundEnabled: true,
+      musicEnabled: false
+    });
+    const strongEngine = new GameAudioEngine({
+      ...defaultFeedbackPreferences,
+      soundEnabled: true,
+      musicEnabled: false,
+      footstepVolume: "bright"
+    });
+
+    await rightEngine.unlock();
+    await leftEngine.unlock();
+    await strongEngine.unlock();
+    rightEngine.playCue("footstep", { surface: "wood", foot: "right" });
+    leftEngine.playCue("footstep", { surface: "wood", foot: "left" });
+    strongEngine.playCue("footstep", { surface: "wood", foot: "right" });
+
+    const rightContext = FakeAudioContext.instances[0];
+    const leftContext = FakeAudioContext.instances[1];
+    const strongContext = FakeAudioContext.instances[2];
+    const rightFrequency = rightContext.oscillators[0].frequency.values[0];
+    const leftFrequency = leftContext.oscillators[0].frequency.values[0];
+    const rightPeak = rightContext.gains[0].gain.values[1];
+    const leftPeak = leftContext.gains[0].gain.values[1];
+    expect(rightFrequency).toBeCloseTo(157.6);
+    expect(leftFrequency).toBeCloseTo(162.4);
+    expect(leftPeak).toBeGreaterThan(rightPeak);
+    expect(strongContext.gains[0].gain.values[1]).toBeCloseTo(rightPeak * 1.3);
+  });
+
+  it("cycles three texture variants independently for each surface", async () => {
+    vi.stubGlobal("AudioContext", FakeAudioContext);
     const engine = new GameAudioEngine({
       ...defaultFeedbackPreferences,
       soundEnabled: true,
@@ -124,25 +163,28 @@ describe("GameAudioEngine", () => {
 
     await engine.unlock();
     const context = FakeAudioContext.instances[0];
-    engine.playCue("footstep", { surface: "wood", foot: "right" });
-    engine.playCue("footstep", { surface: "wood", foot: "left" });
+    for (let index = 0; index < 6; index += 1) {
+      engine.playCue("footstep", { surface: "wood", foot: "right" });
+    }
+    engine.playCue("footstep", { surface: "metal", foot: "right" });
 
-    const rightFrequency = context.oscillators[0].frequency.values[0];
-    const leftFrequency = context.oscillators[2].frequency.values[0];
-    const rightPeak = context.gains[0].gain.values[1];
-    const leftPeak = context.gains[2].gain.values[1];
-    expect(rightFrequency).toBeCloseTo(157.6);
-    expect(leftFrequency).toBeCloseTo(162.4);
-    expect(leftPeak).toBeGreaterThan(rightPeak);
-
-    engine.configure({
-      ...defaultFeedbackPreferences,
-      soundEnabled: true,
-      musicEnabled: false,
-      footstepVolume: "bright"
+    const woodFirstToneFrequencies = Array.from(
+      { length: 6 },
+      (_, index) => context.oscillators[index * 2].frequency.values[0]
+    );
+    const expectedWoodFrequencies = [
+      157.6,
+      156.3392,
+      158.8608,
+      157.6,
+      158.8608,
+      156.3392
+    ];
+    woodFirstToneFrequencies.forEach((frequency, index) => {
+      expect(frequency).toBeCloseTo(expectedWoodFrequencies[index]);
     });
-    engine.playCue("footstep", { surface: "wood", foot: "right" });
-    expect(context.gains[4].gain.values[1]).toBeCloseTo(rightPeak * 1.3);
+    expect(new Set(woodFirstToneFrequencies.map((frequency) => frequency.toFixed(4))).size).toBe(3);
+    expect(context.oscillators[12].frequency.values[0]).toBeCloseTo(354.6);
   });
 
   it("plays a longer four-note celebration for journey completion", async () => {

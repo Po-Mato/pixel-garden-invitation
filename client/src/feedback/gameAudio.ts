@@ -28,6 +28,21 @@ const footstepVariation: Record<WalkLandingFoot, { pitch: number; strength: numb
   left: { pitch: 1.015, strength: 1.04 }
 };
 
+type FootstepTextureVariation = {
+  pitch: number;
+  strength: number;
+  duration: number;
+  spacing: number;
+};
+
+const footstepTextureVariations: readonly FootstepTextureVariation[] = [
+  { pitch: 1, strength: 1, duration: 1, spacing: 1 },
+  { pitch: 0.992, strength: 0.96, duration: 0.92, spacing: 0.94 },
+  { pitch: 1.008, strength: 1.035, duration: 1.06, spacing: 1.04 }
+];
+
+const footstepTextureSequence = [0, 1, 2, 0, 2, 1] as const;
+
 const zoneRoots: Record<WorldZoneId, number> = {
   home: 261.63,
   neighborhood: 293.66,
@@ -154,6 +169,16 @@ export class GameAudioEngine {
   private visible = true;
   private musicTimer: number | null = null;
   private musicOscillators = new Set<OscillatorNode>();
+  private footstepVariantIndexes: Record<FootstepSurface, number> = {
+    wood: 0,
+    asphalt: 0,
+    concrete: 0,
+    metal: 0,
+    gravel: 0,
+    marble: 0,
+    carpet: 0,
+    tile: 0
+  };
 
   constructor(preferences: FeedbackPreferences) {
     this.preferences = preferences;
@@ -197,13 +222,20 @@ export class GameAudioEngine {
   playCue(cue: FeedbackCue, options: FeedbackCueOptions = {}) {
     if (!this.preferences.effectsEnabled || !this.canPlaySound()) return;
     if (cue === "footstep") {
-      const variation = options.foot ? footstepVariation[options.foot] : { pitch: 1, strength: 1 };
-      const strengthScale = variation.strength * footstepVolumeGain[this.preferences.footstepVolume];
-      footstepTones[options.surface ?? "wood"].forEach((tone) => {
+      const surface = options.surface ?? "wood";
+      const foot = options.foot ? footstepVariation[options.foot] : { pitch: 1, strength: 1 };
+      const textureSequenceIndex = this.footstepVariantIndexes[surface];
+      const textureIndex = footstepTextureSequence[textureSequenceIndex % footstepTextureSequence.length];
+      const texture = footstepTextureVariations[textureIndex];
+      this.footstepVariantIndexes[surface] = textureSequenceIndex + 1;
+      const strengthScale = foot.strength
+        * texture.strength
+        * footstepVolumeGain[this.preferences.footstepVolume];
+      footstepTones[surface].forEach((tone) => {
         this.playTone(
-          tone.frequency * variation.pitch,
-          tone.offset,
-          tone.duration,
+          tone.frequency * foot.pitch * texture.pitch,
+          tone.offset * texture.spacing,
+          tone.duration * texture.duration,
           tone.strength,
           tone.wave ?? "sine",
           false,
