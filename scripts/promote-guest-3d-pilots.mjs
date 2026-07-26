@@ -127,7 +127,8 @@ export function assertAcceptedAudit(audit, guestId) {
     acceptance?.allFrameSizesMatch !== true ||
     acceptance?.greenFringePixels !== 0 ||
     acceptance?.headSizeConsistency?.passed !== true ||
-    (guestId === "guest-12" && acceptance?.threeHeadProportion?.passed !== true) ||
+    acceptance?.threeHeadProportion?.passed !== true ||
+    (guestId === "guest-12" && acceptance?.headShapeConsistency?.passed !== true) ||
     acceptance?.rearHairConsistency?.passed !== true ||
     acceptance?.rightHandAccessoryPlacement?.passed === false
   ) {

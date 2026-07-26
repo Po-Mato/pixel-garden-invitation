@@ -92,15 +92,43 @@ test("12명 모두 상하좌우와 보행 3컷의 머리 크기를 일정하게 
       consistency.maximumStepDelta <= 2,
       `${guestId} 보행 프레임 머리 폭 편차: ${consistency.maximumStepDelta}`
     );
+    const proportion = audit.acceptance?.threeHeadProportion;
+    assert.equal(proportion?.passed, true, `${guestId} 실제 턱선 3등신 비율`);
+    assert.match(audit.verticalRatioNormalization?.sourceRenderDigest ?? "", /^[a-f0-9]{64}$/);
+    assert.ok(proportion.maximumRatioErrorPixels <= 1);
+    for (const direction of Object.values(proportion.directions)) {
+      assert.ok(Math.abs(direction.bodyHeight - direction.headHeight * 2) <= 1);
+      assert.equal(direction.boundaryY, 48);
+    }
     if (guestId === "guest-12") {
-      assert.equal(audit.acceptance?.threeHeadProportion?.passed, true, "guest-12 실제 3등신 비율");
-      assert.ok(audit.acceptance.threeHeadProportion.maximumDirectionRatio <= 1.03);
-      for (const direction of Object.values(audit.acceptance.threeHeadProportion.directions)) {
-        assert.ok(Math.abs(direction.bodyHeight - direction.headHeight * 2) <= 1);
-        assert.ok(direction.headAspectRatio >= 0.97 && direction.headAspectRatio <= 1.03);
+      const shape = audit.acceptance?.headShapeConsistency;
+      assert.equal(shape?.passed, true, "guest-12 머리 형태 일관성");
+      assert.ok(shape.maximumDirectionRatio <= 1.03);
+      for (const ratio of Object.values(shape.aspectRatios)) {
+        assert.ok(ratio >= 0.97 && ratio <= 1.03);
       }
     }
   }
+});
+
+test("실제 턱선 3등신 감사 누락은 모든 하객 승격 전에 차단한다", () => {
+  assert.throws(
+    () =>
+      assertAcceptedAudit(
+        {
+          guest: "guest-01",
+          acceptance: {
+            frameCount: 12,
+            allFrameSizesMatch: true,
+            greenFringePixels: 0,
+            headSizeConsistency: { passed: true },
+            rearHairConsistency: { passed: true }
+          }
+        },
+        "guest-01"
+      ),
+    /필수 품질 감사/
+  );
 });
 
 test("방향별 머리 크기 감사 실패도 원본 승격 전에 차단한다", () => {

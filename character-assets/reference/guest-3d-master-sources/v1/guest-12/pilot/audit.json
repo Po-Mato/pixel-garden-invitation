@@ -315,6 +315,8 @@
     }
   },
   "verticalRatioNormalization": {
+    "boundary": "anatomical-chin-or-neck",
+    "sourceRenderDigest": "ffc56fbf7c4286886c45f8d4b2985e2dd4b89f5e5adfeea3d32623609b5586a3",
     "sourceHeadRatios": {
       "down": 0.27,
       "left": 0.23,
@@ -404,37 +406,56 @@
       "passed": true
     },
     "threeHeadProportion": {
+      "boundary": "anatomical-chin-or-neck",
       "directions": {
         "down": {
           "characterHeight": 127,
+          "sourceHeadRatio": 0.27,
           "headHeight": 42,
           "bodyHeight": 85,
-          "headWidth": 43,
-          "headAspectRatio": 1.0238095238095237
+          "bodyToHeadRatio": 2.0238095238095237,
+          "ratioErrorPixels": 1,
+          "boundaryY": 48
         },
         "left": {
           "characterHeight": 127,
+          "sourceHeadRatio": 0.23,
           "headHeight": 42,
           "bodyHeight": 85,
-          "headWidth": 43,
-          "headAspectRatio": 1.0238095238095237
+          "bodyToHeadRatio": 2.0238095238095237,
+          "ratioErrorPixels": 1,
+          "boundaryY": 48
         },
         "right": {
           "characterHeight": 127,
+          "sourceHeadRatio": 0.2,
           "headHeight": 42,
           "bodyHeight": 85,
-          "headWidth": 43,
-          "headAspectRatio": 1.0238095238095237
+          "bodyToHeadRatio": 2.0238095238095237,
+          "ratioErrorPixels": 1,
+          "boundaryY": 48
         },
         "up": {
           "characterHeight": 127,
+          "sourceHeadRatio": 0.31,
           "headHeight": 42,
           "bodyHeight": 85,
-          "headWidth": 43,
-          "headAspectRatio": 1.0238095238095237
+          "bodyToHeadRatio": 2.0238095238095237,
+          "ratioErrorPixels": 1,
+          "boundaryY": 48
         }
       },
+      "maximumRatioErrorPixels": 1,
+      "passed": true
+    },
+    "headShapeConsistency": {
       "maximumDirectionRatio": 1,
+      "aspectRatios": {
+        "down": 1.0238095238095237,
+        "left": 1.0238095238095237,
+        "right": 1.0238095238095237,
+        "up": 1.0238095238095237
+      },
       "passed": true
     }
   }

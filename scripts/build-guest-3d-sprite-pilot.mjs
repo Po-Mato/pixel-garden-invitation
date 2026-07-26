@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import fs from "node:fs/promises";
+import { createHash } from "node:crypto";
 import path from "node:path";
 import process from "node:process";
 import sharp from "sharp";
@@ -27,8 +28,29 @@ const MAX_HEAD_WIDTH_SCALE = GUEST_ID === "guest-12" ? 1.7 : 1.38;
 const MAX_THREE_HEAD_DIRECTION_RATIO = 1.03;
 const MIN_THREE_HEAD_ASPECT_RATIO = 0.97;
 const MAX_THREE_HEAD_ASPECT_RATIO = 1.03;
-const HEAD_BOUNDARY_RATIO_OVERRIDES = {
+const MAX_THREE_HEAD_PIXEL_DELTA = 1;
+const DEFAULT_SOURCE_HEAD_RATIOS = {
+  down: TARGET_HEAD_RATIO,
+  left: TARGET_HEAD_RATIO,
+  right: TARGET_HEAD_RATIO,
+  up: TARGET_HEAD_RATIO
+};
+const SOURCE_HEAD_RATIO_OVERRIDES = {
   "guest-12": { down: 0.27, left: 0.23, right: 0.2, up: 0.31 }
+};
+const SOURCE_RENDER_DIGESTS = {
+  "guest-01": "8a37e0b41b5164ff3b29befe4e45ff694cfebaf28c72b3ff5ad21c4052d79f0a",
+  "guest-02": "64cc4450fed6bd322bc1c6a6697042041af28470e26347747249eb7567887e22",
+  "guest-03": "fcad165ab554df32c9147c82abebabfdb984557667d96ed4d033479a9551b19d",
+  "guest-04": "df1ec955631b56b6dc3888ba6b2d2fdc09434cbf96346902172488622c83ada0",
+  "guest-05": "0744313fdd069b181c58011d809845debb39177fad12d779fe5ec98df5928660",
+  "guest-06": "26f521091c267036bca70695ede715406ab516ef474090247c8449d061e11522",
+  "guest-07": "b88ad2368f7c8bc3f834bd9a98e1d7b978a57d96282dbf42110940e0dade02fd",
+  "guest-08": "743cf0f9445fc32f14b33df004864d3523bcf6bb3292bf9699e1da3cb37aac24",
+  "guest-09": "460653af2cd474b5b02d3b8e986d88af5d1a77efe7ffbf2ac0365de94f82757c",
+  "guest-10": "520f18de9caf49e893257de02deb0fb0ac0caf93a561803916376f324c502224",
+  "guest-11": "e23659fdcd1e4e3b48aadd3e45762ab4abb3ab1469553f75faa8b31f7d06b6cb",
+  "guest-12": "ffc56fbf7c4286886c45f8d4b2985e2dd4b89f5e5adfeea3d32623609b5586a3"
 };
 const ABSOLUTE_HEAD_WIDTH_RATIO_OVERRIDES = { "guest-12": TARGET_HEAD_RATIO };
 const DIRECTIONS = ["down", "left", "right", "up"];
@@ -128,6 +150,14 @@ async function splitDirectionSheet(direction) {
   return frames;
 }
 
+async function sourceRenderDigest() {
+  const hash = createHash("sha256");
+  for (const direction of DIRECTIONS) {
+    hash.update(await fs.readFile(path.join(INPUT_ROOT, `${direction}-walk-cycle-render.png`)));
+  }
+  return hash.digest("hex");
+}
+
 async function canvas(width, height, composites) {
   return sharp({
     create: { width, height, channels: 4, background: "#00000000" }
@@ -218,6 +248,7 @@ function samplePremultiplied(data, info, x, y) {
 }
 
 async function normalizeHeadBodyHeight(frame, sourceHeadRatio) {
+  if (Math.abs(sourceHeadRatio - TARGET_HEAD_RATIO) < 0.0005) return frame;
   const bounds = await alphaBounds(frame, 12);
   const { data, info } = await sharp(frame).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
   const output = Buffer.alloc(data.length);
@@ -531,7 +562,7 @@ async function renderRatioAudit(sourceFrames) {
   for (let row = 0; row < DIRECTIONS.length; row += 1) {
     const direction = DIRECTIONS[row];
     const rowTop = margin + row * (rowHeight + gap);
-    composites.push({ input: labelSvg(`${direction} · 머리 1 + 몸 2 기준선`, frameWidth * 3 + gap * 2, labelHeight), left: margin, top: rowTop });
+    composites.push({ input: labelSvg(`${direction} · 턱·목 경계(빨강) · 머리 1 + 몸 2`, frameWidth * 3 + gap * 2, labelHeight), left: margin, top: rowTop });
     for (let step = 0; step < 3; step += 1) {
       const rendered = await sharp(sourceFrames[direction][step])
         .resize({ width: frameWidth, height: frameHeight, fit: "fill" })
@@ -645,16 +676,18 @@ async function main() {
 
   const rawFramesByDirection = {};
   const rawHeadWidthsByDirection = {};
-  const headBoundaryOverrides = HEAD_BOUNDARY_RATIO_OVERRIDES[GUEST_ID];
+  const sourceHeadRatios = SOURCE_HEAD_RATIO_OVERRIDES[GUEST_ID] ?? DEFAULT_SOURCE_HEAD_RATIOS;
+  const actualSourceRenderDigest = await sourceRenderDigest();
+  if (SOURCE_RENDER_DIGESTS[GUEST_ID] !== actualSourceRenderDigest) {
+    throw new Error(`${GUEST_ID} 원본 3D 렌더가 변경되어 턱·목 경계 재측정이 필요합니다.`);
+  }
   for (const direction of DIRECTIONS) {
     rawFramesByDirection[direction] = await splitDirectionSheet(direction);
-    if (headBoundaryOverrides) {
-      rawFramesByDirection[direction] = await Promise.all(
-        rawFramesByDirection[direction].map((frame) =>
-          normalizeHeadBodyHeight(frame, headBoundaryOverrides[direction])
-        )
-      );
-    }
+    rawFramesByDirection[direction] = await Promise.all(
+      rawFramesByDirection[direction].map((frame) =>
+        normalizeHeadBodyHeight(frame, sourceHeadRatios[direction])
+      )
+    );
     const metrics = await Promise.all(rawFramesByDirection[direction].map((frame) => headBandMetrics(frame)));
     rawHeadWidthsByDirection[direction] = metrics.map((item) => item.normalizedWidth);
   }
@@ -701,13 +734,13 @@ async function main() {
     sourceFrameWidths: rawHeadWidthsByDirection,
     scaleByFrame: headScalesByDirection
   };
-  if (headBoundaryOverrides) {
-    audit.verticalRatioNormalization = {
-      sourceHeadRatios: headBoundaryOverrides,
-      targetHeadRatio: TARGET_HEAD_RATIO,
-      targetBodyRatio: 1 - TARGET_HEAD_RATIO
-    };
-  }
+  audit.verticalRatioNormalization = {
+    boundary: "anatomical-chin-or-neck",
+    sourceRenderDigest: actualSourceRenderDigest,
+    sourceHeadRatios,
+    targetHeadRatio: TARGET_HEAD_RATIO,
+    targetBodyRatio: 1 - TARGET_HEAD_RATIO
+  };
 
   for (const direction of DIRECTIONS) {
     const splitFrames = await Promise.all(
@@ -816,25 +849,37 @@ async function main() {
       Math.max(...directionAverages) / Math.min(...directionAverages) <= MAX_DIRECTION_HEAD_WIDTH_RATIO &&
       maximumStepDelta <= MAX_STEP_HEAD_WIDTH_DELTA
   };
-  if (headBoundaryOverrides) {
-    const neutralMetrics = await Promise.all(
-      DIRECTIONS.map((direction) => headBandMetrics(framesByDirection[direction][1].soft))
-    );
-    const headHeights = neutralMetrics.map((item) => Math.round(item.characterHeight * TARGET_HEAD_RATIO));
+  const neutralMetrics = await Promise.all(
+    DIRECTIONS.map((direction) => headBandMetrics(framesByDirection[direction][1].soft))
+  );
+  const headHeights = neutralMetrics.map((item) => Math.round(item.characterHeight * TARGET_HEAD_RATIO));
+  const bodyHeights = neutralMetrics.map((item, index) => item.characterHeight - headHeights[index]);
+  const ratioErrorPixels = bodyHeights.map((height, index) => Math.abs(height - headHeights[index] * 2));
+  audit.acceptance.threeHeadProportion = {
+    boundary: "anatomical-chin-or-neck",
+    directions: Object.fromEntries(
+      DIRECTIONS.map((direction, index) => [direction, {
+        characterHeight: neutralMetrics[index].characterHeight,
+        sourceHeadRatio: sourceHeadRatios[direction],
+        headHeight: headHeights[index],
+        bodyHeight: bodyHeights[index],
+        bodyToHeadRatio: bodyHeights[index] / headHeights[index],
+        ratioErrorPixels: ratioErrorPixels[index],
+        boundaryY: neutralMetrics[index].top + headHeights[index]
+      }])
+    ),
+    maximumRatioErrorPixels: Math.max(...ratioErrorPixels),
+    passed: ratioErrorPixels.every((delta) => delta <= MAX_THREE_HEAD_PIXEL_DELTA)
+  };
+  if (GUEST_ID === "guest-12") {
     const headAspectRatios = neutralMetrics.map((item, index) => item.width / headHeights[index]);
     const neutralHeadWidths = neutralMetrics.map((item) => item.width);
     const maximumDirectionRatio = Math.max(...neutralHeadWidths) / Math.min(...neutralHeadWidths);
-    audit.acceptance.threeHeadProportion = {
-      directions: Object.fromEntries(
-        DIRECTIONS.map((direction, index) => [direction, {
-          characterHeight: neutralMetrics[index].characterHeight,
-          headHeight: headHeights[index],
-          bodyHeight: neutralMetrics[index].characterHeight - headHeights[index],
-          headWidth: neutralMetrics[index].width,
-          headAspectRatio: headAspectRatios[index]
-        }])
-      ),
+    audit.acceptance.headShapeConsistency = {
       maximumDirectionRatio,
+      aspectRatios: Object.fromEntries(
+        DIRECTIONS.map((direction, index) => [direction, headAspectRatios[index]])
+      ),
       passed:
         maximumDirectionRatio <= MAX_THREE_HEAD_DIRECTION_RATIO &&
         headAspectRatios.every(
@@ -871,7 +916,7 @@ async function main() {
   if (!audit.acceptance.headSizeConsistency.passed) {
     throw new Error("방향별 머리 크기 일관성 감사에 실패했습니다.");
   }
-  if (headBoundaryOverrides && !audit.acceptance.threeHeadProportion.passed) {
+  if (!audit.acceptance.threeHeadProportion.passed) {
     throw new Error("머리 1 + 몸 2 비율 감사에 실패했습니다.");
   }
 }

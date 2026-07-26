@@ -314,6 +314,18 @@
       ]
     }
   },
+  "verticalRatioNormalization": {
+    "boundary": "anatomical-chin-or-neck",
+    "sourceRenderDigest": "fcad165ab554df32c9147c82abebabfdb984557667d96ed4d033479a9551b19d",
+    "sourceHeadRatios": {
+      "down": 0.3333333333333333,
+      "left": 0.3333333333333333,
+      "right": 0.3333333333333333,
+      "up": 0.3333333333333333
+    },
+    "targetHeadRatio": 0.3333333333333333,
+    "targetBodyRatio": 0.6666666666666667
+  },
   "review": "character-assets/reference/guest-3d-master-sources/v1/guest-03/pilot/review/guest-03-pilot-comparison.png",
   "ratioAudit": "character-assets/reference/guest-3d-master-sources/v1/guest-03/pilot/review/guest-03-ratio-audit.png",
   "acceptance": {
@@ -391,6 +403,49 @@
       },
       "maximumDirectionRatio": 1.015267175572519,
       "maximumStepDelta": 1,
+      "passed": true
+    },
+    "threeHeadProportion": {
+      "boundary": "anatomical-chin-or-neck",
+      "directions": {
+        "down": {
+          "characterHeight": 127,
+          "sourceHeadRatio": 0.3333333333333333,
+          "headHeight": 42,
+          "bodyHeight": 85,
+          "bodyToHeadRatio": 2.0238095238095237,
+          "ratioErrorPixels": 1,
+          "boundaryY": 48
+        },
+        "left": {
+          "characterHeight": 127,
+          "sourceHeadRatio": 0.3333333333333333,
+          "headHeight": 42,
+          "bodyHeight": 85,
+          "bodyToHeadRatio": 2.0238095238095237,
+          "ratioErrorPixels": 1,
+          "boundaryY": 48
+        },
+        "right": {
+          "characterHeight": 127,
+          "sourceHeadRatio": 0.3333333333333333,
+          "headHeight": 42,
+          "bodyHeight": 85,
+          "bodyToHeadRatio": 2.0238095238095237,
+          "ratioErrorPixels": 1,
+          "boundaryY": 48
+        },
+        "up": {
+          "characterHeight": 127,
+          "sourceHeadRatio": 0.3333333333333333,
+          "headHeight": 42,
+          "bodyHeight": 85,
+          "bodyToHeadRatio": 2.0238095238095237,
+          "ratioErrorPixels": 1,
+          "boundaryY": 48
+        }
+      },
+      "maximumRatioErrorPixels": 1,
       "passed": true
     }
   }
