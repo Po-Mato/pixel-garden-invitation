@@ -183,19 +183,19 @@
         "soft": {
           "left": 16,
           "top": 6,
-          "width": 64,
+          "width": 63,
           "height": 127,
           "greenFringePixels": 0,
-          "partialAlphaPixels": 1335,
+          "partialAlphaPixels": 1326,
           "pixels": 13824
         },
         "pixel": {
-          "left": 16,
+          "left": 17,
           "top": 7,
-          "width": 64,
+          "width": 62,
           "height": 126,
           "greenFringePixels": 0,
-          "partialAlphaPixels": 6896,
+          "partialAlphaPixels": 6286,
           "pixels": 13824
         }
       }
@@ -403,6 +403,85 @@
       },
       "maximumDirectionRatio": 1.0156250000000002,
       "maximumStepDelta": 1,
+      "passed": true
+    },
+    "gaitCycle": {
+      "repairs": [
+        {
+          "direction": "right",
+          "step": 3,
+          "mirroredFromDirection": "left",
+          "mirroredFromStep": 3
+        }
+      ],
+      "directions": {
+        "down": {
+          "footSpans": [
+            21,
+            27,
+            25
+          ],
+          "mirroredAlternation": {
+            "alpha": 0,
+            "rgba": 0
+          },
+          "directAlternation": {
+            "alpha": 0.47619047619047616,
+            "rgba": 0.2691468253968254
+          },
+          "neutralDifference": {
+            "alpha": 0.38144329896907214,
+            "rgba": 0.23567313523347483
+          },
+          "passed": true
+        },
+        "left": {
+          "footSpans": [
+            62,
+            23,
+            63
+          ],
+          "neutralSpanRatio": 0.3709677419354839,
+          "alternation": {
+            "alpha": 0.09177820267686425,
+            "rgba": 0.06668166310501256
+          },
+          "passed": true
+        },
+        "right": {
+          "footSpans": [
+            64,
+            22,
+            63
+          ],
+          "neutralSpanRatio": 0.3492063492063492,
+          "alternation": {
+            "alpha": 0.19855595667870035,
+            "rgba": 0.1542825794577759
+          },
+          "passed": true
+        },
+        "up": {
+          "footSpans": [
+            29,
+            32,
+            29
+          ],
+          "mirroredAlternation": {
+            "alpha": 0,
+            "rgba": 0
+          },
+          "directAlternation": {
+            "alpha": 0.21674876847290642,
+            "rgba": 0.1742683280208635
+          },
+          "neutralDifference": {
+            "alpha": 0.25681818181818183,
+            "rgba": 0.1678119429590018
+          },
+          "passed": true
+        }
+      },
       "passed": true
     },
     "threeHeadProportion": {

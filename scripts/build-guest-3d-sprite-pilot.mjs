@@ -58,6 +58,13 @@ const FRAME = { width: 96, height: 144 };
 const SOURCE = { width: 640, height: 1024, foregroundHeight: 820, baseline: 930 };
 const FOOT_BOTTOM = 132;
 const CONTENT_HEIGHT = 127;
+const FOOT_ZONE_TOP = 112;
+const FOOT_COMPARE_TOP = 114;
+const MAX_SIDE_NEUTRAL_SPAN_RATIO = 0.75;
+const MIN_SIDE_ALTERNATION_DIFFERENCE = 0.04;
+const MAX_VERTICAL_MIRROR_DIFFERENCE = 0.01;
+const MIN_VERTICAL_POSE_DIFFERENCE = 0.07;
+const MIN_VERTICAL_NEUTRAL_DIFFERENCE = 0.065;
 const INPUT_ROOT = path.join(
   ROOT,
   "character-assets/reference/guest-3d-master-sources/v1",
@@ -446,6 +453,153 @@ async function replaceLowerWithMirroredStep(target, source, startY) {
   return removeTinyAlphaIslands(composited, metadata.width > FRAME.width ? 32 : 4);
 }
 
+async function footZoneMetrics(frame) {
+  const { data, info } = await sharp(frame).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+  let left = info.width;
+  let right = -1;
+  let pixels = 0;
+
+  for (let y = FOOT_ZONE_TOP; y <= FOOT_BOTTOM; y += 1) {
+    for (let x = 0; x < info.width; x += 1) {
+      if (data[(y * info.width + x) * 4 + 3] <= 16) continue;
+      left = Math.min(left, x);
+      right = Math.max(right, x);
+      pixels += 1;
+    }
+  }
+
+  return { left, right, span: right >= left ? right - left + 1 : 0, pixels };
+}
+
+async function lowerPoseDifference(first, second, mirrorSecond = false) {
+  const [firstRaw, secondRaw] = await Promise.all([
+    sharp(first).ensureAlpha().raw().toBuffer({ resolveWithObject: true }),
+    sharp(second).ensureAlpha().raw().toBuffer({ resolveWithObject: true })
+  ]);
+  if (firstRaw.info.width !== secondRaw.info.width || firstRaw.info.height !== secondRaw.info.height) {
+    throw new Error("보행 하체 비교 프레임 크기가 일치하지 않습니다.");
+  }
+
+  const width = firstRaw.info.width;
+  let unionPixels = 0;
+  let alphaDifferencePixels = 0;
+  let rgbaDifference = 0;
+  for (let y = FOOT_COMPARE_TOP; y <= FOOT_BOTTOM; y += 1) {
+    for (let x = 0; x < width; x += 1) {
+      const firstOffset = (y * width + x) * 4;
+      const secondX = mirrorSecond ? width - 1 - x : x;
+      const secondOffset = (y * width + secondX) * 4;
+      const firstOpaque = firstRaw.data[firstOffset + 3] > 16;
+      const secondOpaque = secondRaw.data[secondOffset + 3] > 16;
+      if (!firstOpaque && !secondOpaque) continue;
+      unionPixels += 1;
+      if (firstOpaque !== secondOpaque) alphaDifferencePixels += 1;
+      for (let channel = 0; channel < 4; channel += 1) {
+        rgbaDifference += Math.abs(firstRaw.data[firstOffset + channel] - secondRaw.data[secondOffset + channel]);
+      }
+    }
+  }
+
+  return {
+    alpha: unionPixels === 0 ? 0 : alphaDifferencePixels / unionPixels,
+    rgba: unionPixels === 0 ? 0 : rgbaDifference / (unionPixels * 4 * 255)
+  };
+}
+
+async function repairSideStepAlternation(framesByDirection, sourceFrames) {
+  const originals = {
+    left: { game: [...framesByDirection.left], source: [...sourceFrames.left] },
+    right: { game: [...framesByDirection.right], source: [...sourceFrames.right] }
+  };
+  const repairs = [];
+
+  for (const direction of ["left", "right"]) {
+    const opposite = direction === "left" ? "right" : "left";
+    const current = await lowerPoseDifference(
+      originals[direction].game[0].soft,
+      originals[direction].game[2].soft
+    );
+    if (
+      current.alpha >= MIN_SIDE_ALTERNATION_DIFFERENCE &&
+      current.rgba >= MIN_SIDE_ALTERNATION_DIFFERENCE
+    ) continue;
+
+    let best = null;
+    for (const sourceIndex of [0, 2]) {
+      const candidate = await replaceLowerWithMirroredStep(
+        originals[direction].game[2].soft,
+        originals[opposite].game[sourceIndex].soft,
+        FOOT_ZONE_TOP
+      );
+      const difference = await lowerPoseDifference(originals[direction].game[0].soft, candidate);
+      const neutral = await footZoneMetrics(originals[direction].game[1].soft);
+      const stride = await footZoneMetrics(candidate);
+      const score = difference.alpha + difference.rgba + Math.max(0, stride.span - neutral.span) / FRAME.width;
+      if (!best || score > best.score) best = { sourceIndex, score };
+    }
+
+    const sourceIndex = best.sourceIndex;
+    sourceFrames[direction][2] = await replaceLowerWithMirroredStep(
+      originals[direction].source[2],
+      originals[opposite].source[sourceIndex],
+      820
+    );
+    for (const mode of ["soft", "pixel"]) {
+      framesByDirection[direction][2][mode] = await replaceLowerWithMirroredStep(
+        originals[direction].game[2][mode],
+        originals[opposite].game[sourceIndex][mode],
+        FOOT_ZONE_TOP
+      );
+    }
+    repairs.push({ direction, step: 3, mirroredFromDirection: opposite, mirroredFromStep: sourceIndex + 1 });
+  }
+
+  return repairs;
+}
+
+async function gaitCycleAudit(framesByDirection, repairs) {
+  const directions = {};
+  for (const direction of DIRECTIONS) {
+    const frames = framesByDirection[direction].map((item) => item.soft);
+    const feet = await Promise.all(frames.map((frame) => footZoneMetrics(frame)));
+    if (direction === "left" || direction === "right") {
+      const alternation = await lowerPoseDifference(frames[0], frames[2]);
+      const neutralSpanRatio = feet[1].span / Math.max(1, Math.min(feet[0].span, feet[2].span));
+      directions[direction] = {
+        footSpans: feet.map((item) => item.span),
+        neutralSpanRatio,
+        alternation,
+        passed:
+          neutralSpanRatio <= MAX_SIDE_NEUTRAL_SPAN_RATIO &&
+          alternation.alpha >= MIN_SIDE_ALTERNATION_DIFFERENCE &&
+          alternation.rgba >= MIN_SIDE_ALTERNATION_DIFFERENCE
+      };
+      continue;
+    }
+
+    const mirroredAlternation = await lowerPoseDifference(frames[0], frames[2], true);
+    const directAlternation = await lowerPoseDifference(frames[0], frames[2]);
+    const neutralDifference = await lowerPoseDifference(frames[0], frames[1]);
+    directions[direction] = {
+      footSpans: feet.map((item) => item.span),
+      mirroredAlternation,
+      directAlternation,
+      neutralDifference,
+      passed:
+        mirroredAlternation.alpha <= MAX_VERTICAL_MIRROR_DIFFERENCE &&
+        mirroredAlternation.rgba <= MAX_VERTICAL_MIRROR_DIFFERENCE &&
+        directAlternation.rgba >= MIN_VERTICAL_POSE_DIFFERENCE &&
+        neutralDifference.rgba >= MIN_VERTICAL_NEUTRAL_DIFFERENCE
+    };
+  }
+
+  return {
+    repairs,
+    directions,
+    passed: Object.values(directions).every((direction) => direction.passed)
+  };
+}
+
 async function buildSheet(framesByDirection, mode) {
   const composites = [];
   for (let row = 0; row < DIRECTIONS.length; row += 1) {
@@ -728,6 +882,7 @@ async function main() {
       }
     }
   }
+
   audit.headWidthNormalization = {
     targetNormalizedWidth: targetHeadWidth,
     targetGameFrameWidth: previewTargetWidth,
@@ -803,6 +958,26 @@ async function main() {
     }
   }
 
+  const gaitRepairs = await repairSideStepAlternation(framesByDirection, sourceFrames);
+  for (const repair of gaitRepairs) {
+    const direction = repair.direction;
+    await saveBuffer(
+      path.join(OUTPUT_ROOT, "sources", direction, "step-03-source.png"),
+      sourceFrames[direction][2]
+    );
+    for (const mode of ["soft", "pixel"]) {
+      await saveBuffer(
+        path.join(OUTPUT_ROOT, "frames", mode, direction, "step-03.png"),
+        framesByDirection[direction][2][mode]
+      );
+    }
+    audit.directions[direction][2] = {
+      step: 3,
+      soft: await inspectFrame(framesByDirection[direction][2].soft),
+      pixel: await inspectFrame(framesByDirection[direction][2].pixel)
+    };
+  }
+
   for (const mode of ["soft", "pixel"]) {
     const walk = await buildSheet(framesByDirection, mode);
     await saveBuffer(path.join(OUTPUT_ROOT, `${GUEST_ID}__walk-${mode}-pilot.png`), walk);
@@ -827,7 +1002,8 @@ async function main() {
     rearHairConsistency: {
       frames: await Promise.all(framesByDirection.up.map((item) => rearHairBounds(item.soft)))
     },
-    headSizeConsistency: {}
+    headSizeConsistency: {},
+    gaitCycle: await gaitCycleAudit(framesByDirection, gaitRepairs)
   };
   const headWidthsByDirection = {};
   for (const direction of DIRECTIONS) {
@@ -915,6 +1091,9 @@ async function main() {
   }
   if (!audit.acceptance.headSizeConsistency.passed) {
     throw new Error("방향별 머리 크기 일관성 감사에 실패했습니다.");
+  }
+  if (!audit.acceptance.gaitCycle.passed) {
+    throw new Error("보행 1·2·3컷 동작 감사에 실패했습니다.");
   }
   if (!audit.acceptance.threeHeadProportion.passed) {
     throw new Error("머리 1 + 몸 2 비율 감사에 실패했습니다.");

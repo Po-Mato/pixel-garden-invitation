@@ -405,6 +405,78 @@
       "maximumStepDelta": 0,
       "passed": true
     },
+    "gaitCycle": {
+      "repairs": [],
+      "directions": {
+        "down": {
+          "footSpans": [
+            23,
+            21,
+            25
+          ],
+          "mirroredAlternation": {
+            "alpha": 0,
+            "rgba": 0.000003035269835488375
+          },
+          "directAlternation": {
+            "alpha": 0.5644444444444444,
+            "rgba": 0.23354030501089323
+          },
+          "neutralDifference": {
+            "alpha": 0.2924281984334204,
+            "rgba": 0.1588696052833666
+          },
+          "passed": true
+        },
+        "left": {
+          "footSpans": [
+            63,
+            23,
+            64
+          ],
+          "neutralSpanRatio": 0.36507936507936506,
+          "alternation": {
+            "alpha": 0.16029143897996356,
+            "rgba": 0.07828493874781242
+          },
+          "passed": true
+        },
+        "right": {
+          "footSpans": [
+            69,
+            23,
+            71
+          ],
+          "neutralSpanRatio": 0.3333333333333333,
+          "alternation": {
+            "alpha": 0.19759450171821305,
+            "rgba": 0.09913583990297149
+          },
+          "passed": true
+        },
+        "up": {
+          "footSpans": [
+            22,
+            22,
+            23
+          ],
+          "mirroredAlternation": {
+            "alpha": 0,
+            "rgba": 0
+          },
+          "directAlternation": {
+            "alpha": 0.10555555555555556,
+            "rgba": 0.0841285403050109
+          },
+          "neutralDifference": {
+            "alpha": 0.11506849315068493,
+            "rgba": 0.06972065538544185
+          },
+          "passed": true
+        }
+      },
+      "passed": true
+    },
     "threeHeadProportion": {
       "boundary": "anatomical-chin-or-neck",
       "directions": {
