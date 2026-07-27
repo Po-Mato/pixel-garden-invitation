@@ -120,9 +120,15 @@ type WorldInteractionIntent = {
   label: string;
   path: Point[];
   target: Point;
+  targetRect: Rect;
+  actionRadius: number;
   photoSpotId?: WorldPhotoSpotId;
   npcId?: NpcId;
 };
+type NavigationResumeIntent =
+  | { kind: "portal"; portal: WorldPortal }
+  | { kind: "interaction"; intent: WorldInteractionIntent }
+  | { kind: "map"; target: Point };
 type ActiveGuestReaction = {
   reaction: GuestReaction;
   token: number;
@@ -277,6 +283,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   const directionRef = useRef<Direction>("down");
   const portalIntentRef = useRef<PortalIntent | null>(null);
   const interactionIntentRef = useRef<WorldInteractionIntent | null>(null);
+  const navigationResumeRef = useRef<NavigationResumeIntent | null>(null);
   const portalTransitionRef = useRef<PortalTransition | null>(null);
   const targetStepAtRef = useRef<number | null>(null);
   const tileInputStateRef = useRef<TileInputState | null>(null);
@@ -518,6 +525,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   }, [clearTerminalStopConfirm, sendMoveImmediately]);
 
   const stopJourneyGuidance = useCallback((announce = true) => {
+    navigationResumeRef.current = null;
     setPendingJourneyGuideId(null);
     setActiveJourneyGuideId(null);
     journeyGuideLastZoneRef.current = null;
@@ -534,6 +542,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   }, [resetWalkCycle, sendRealtimeTerminalStop, setInteractionIntent, setPortalIntent]);
 
   const pauseWorldInput = useCallback(() => {
+    navigationResumeRef.current = null;
     const joystickWasMoving = joystickWasMovingRef.current;
     inputGenerationRef.current += 1;
 
@@ -722,6 +731,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   }) => {
     if (portalTransitionRef.current) return;
 
+    navigationResumeRef.current = null;
     clearTerminalStopConfirm();
     const route = findNearestInteractionRoute(
       activeZone,
@@ -776,6 +786,8 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
       label: input.label,
       path: route.path,
       target: targetPoint,
+      targetRect: input.target,
+      actionRadius: input.actionRadius,
       npcId: input.npcId,
       photoSpotId: input.photoSpotId
     });
@@ -1310,6 +1322,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   function handlePortalClick(portalItem: WorldPortal) {
     if (portalTransitionRef.current) return;
 
+    navigationResumeRef.current = null;
     void preloadWorldZoneAssets(portalItem.to, "high");
     clearTerminalStopConfirm();
     setActiveNpcDialogue(null);
@@ -1334,6 +1347,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   function handleMapClick(event: MouseEvent<HTMLDivElement>) {
     if (portalTransitionRef.current) return;
 
+    navigationResumeRef.current = null;
     clearTerminalStopConfirm();
     setPendingJourneyGuideId(null);
     setActiveJourneyGuideId(null);
@@ -1362,6 +1376,46 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     targetStepAtRef.current = null;
   }
 
+  function resumeNavigationAfterManualMove() {
+    const resumeIntent = navigationResumeRef.current;
+    navigationResumeRef.current = null;
+    if (!resumeIntent || portalTransitionRef.current) return;
+
+    if (resumeIntent.kind === "portal") {
+      handlePortalClick(resumeIntent.portal);
+      if (portalIntentRef.current) {
+        setTravelStatus(`${resumeIntent.portal.label}까지 경로를 다시 찾았어요`);
+      }
+      return;
+    }
+
+    if (resumeIntent.kind === "interaction") {
+      const { intent } = resumeIntent;
+      beginWorldInteraction({
+        targetId: intent.targetId,
+        spotId: intent.spotId,
+        label: intent.label,
+        target: intent.targetRect,
+        actionRadius: intent.actionRadius,
+        photoSpotId: intent.photoSpotId,
+        npcId: intent.npcId
+      });
+      if (interactionIntentRef.current) {
+        setTravelStatus(`${intent.label}까지 경로를 다시 찾았어요`);
+      }
+      return;
+    }
+
+    const path = findTilePath(activeZone, positionRef.current, resumeIntent.target);
+    if (!path || path.length === 0) {
+      setTravelStatus(path ? "현재 위치예요" : "목적지까지 새 경로를 찾지 못했어요");
+      return;
+    }
+    setTarget(resumeIntent.target);
+    setMapPath(path);
+    setTravelStatus("선택한 위치까지 경로를 다시 찾았어요");
+  }
+
   function handleJoystickVectorChange(vector: Point) {
     const wasMoving = joystickWasMovingRef.current;
     const isMoving = hasJoystickMovement(vector);
@@ -1381,12 +1435,23 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     if (portalTransitionRef.current || inputReleaseRequiredRef.current) return;
 
     if (isMoving) {
-      setPendingJourneyGuideId(null);
-      setActiveJourneyGuideId(null);
-      journeyGuideLastZoneRef.current = null;
+      if (!wasMoving) {
+        navigationResumeRef.current = portalIntentRef.current
+          ? { kind: "portal", portal: portalIntentRef.current.portal }
+          : interactionIntentRef.current
+            ? { kind: "interaction", intent: interactionIntentRef.current }
+            : target
+              ? { kind: "map", target }
+              : null;
+      }
+      if (!navigationResumeRef.current) {
+        setPendingJourneyGuideId(null);
+        setActiveJourneyGuideId(null);
+        journeyGuideLastZoneRef.current = null;
+      }
       setActiveNpcDialogue(null);
-      cancelPortalWalk();
-      cancelInteractionWalk();
+      setPortalIntent(null);
+      setInteractionIntent(null);
     }
     setJoystickVector(vector);
 
@@ -1404,6 +1469,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
       setMoving(false);
       resetWalkCycle();
       sendRealtimeMove(positionRef.current, false, directionRef.current, activeZone.id, performance.now());
+      resumeNavigationAfterManualMove();
     }
   }
 

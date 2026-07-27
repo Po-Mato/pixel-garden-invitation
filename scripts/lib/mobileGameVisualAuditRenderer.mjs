@@ -13,6 +13,11 @@ const characterCellWidth = 260;
 const characterCellHeight = 154;
 const directionRows = ["down", "left", "right", "up"];
 
+export const mobileVisualDifferenceDefaults = Object.freeze({
+  channelThreshold: 32,
+  maxChangedRatio: 0.005
+});
+
 function escapeXml(value) {
   return value.replace(/[<>&'\"]/g, (character) => ({
     "<": "&lt;",
@@ -171,4 +176,79 @@ export async function renderMobileGameVisualAudit({ rootDir, outputPath }) {
     outputHeight,
     outputPath
   };
+}
+
+export function mobileVisualComparisonRegions(mapCount, characterCount) {
+  const mapRows = Math.ceil(mapCount / 2);
+  const characterSectionTop = sectionHeaderHeight + mapRows * mapCellHeight + sectionHeaderHeight;
+  const regions = [];
+
+  for (let index = 0; index < mapCount; index += 1) {
+    regions.push({
+      left: (index % 2) * mapCellWidth,
+      top: sectionHeaderHeight + Math.floor(index / 2) * mapCellHeight + mapLabelHeight,
+      width: mapCellWidth,
+      height: mapPreviewHeight
+    });
+  }
+  for (let index = 0; index < characterCount; index += 1) {
+    regions.push({
+      left: (index % 3) * characterCellWidth + 8,
+      top: characterSectionTop + Math.floor(index / 3) * characterCellHeight + 52,
+      width: 244,
+      height: 90
+    });
+  }
+
+  return regions;
+}
+
+export async function compareMobileGameVisualAudit({
+  currentPath,
+  baselinePath,
+  mapCount = 10,
+  characterCount = 12,
+  channelThreshold = mobileVisualDifferenceDefaults.channelThreshold,
+  maxChangedRatio = mobileVisualDifferenceDefaults.maxChangedRatio
+}) {
+  const [current, baseline] = await Promise.all([
+    sharp(currentPath).ensureAlpha().raw().toBuffer({ resolveWithObject: true }),
+    sharp(baselinePath).ensureAlpha().raw().toBuffer({ resolveWithObject: true })
+  ]);
+  if (
+    current.info.width !== baseline.info.width
+    || current.info.height !== baseline.info.height
+    || current.info.channels !== baseline.info.channels
+  ) {
+    throw new Error("mobile visual baseline dimensions do not match the current audit");
+  }
+
+  let comparedPixels = 0;
+  let changedPixels = 0;
+  const channels = current.info.channels;
+  const width = current.info.width;
+  for (const region of mobileVisualComparisonRegions(mapCount, characterCount)) {
+    for (let y = region.top; y < region.top + region.height; y += 1) {
+      for (let x = region.left; x < region.left + region.width; x += 1) {
+        const offset = (y * width + x) * channels;
+        const difference = Math.max(
+          Math.abs(current.data[offset] - baseline.data[offset]),
+          Math.abs(current.data[offset + 1] - baseline.data[offset + 1]),
+          Math.abs(current.data[offset + 2] - baseline.data[offset + 2])
+        );
+        comparedPixels += 1;
+        if (difference > channelThreshold) changedPixels += 1;
+      }
+    }
+  }
+
+  const changedRatio = comparedPixels === 0 ? 0 : changedPixels / comparedPixels;
+  if (changedRatio > maxChangedRatio) {
+    throw new Error(
+      `mobile visual regression changed ${(changedRatio * 100).toFixed(3)}% `
+      + `(allowed ${(maxChangedRatio * 100).toFixed(3)}%)`
+    );
+  }
+
+  return { comparedPixels, changedPixels, changedRatio, channelThreshold, maxChangedRatio };
 }

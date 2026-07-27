@@ -63,6 +63,7 @@ export function EntryScreen({
   const [familyContactOpen, setFamilyContactOpen] = useState(false);
   const [eventInfoOpen, setEventInfoOpen] = useState(false);
   const [characterPickerOpen, setCharacterPickerOpen] = useState(false);
+  const [puppetMotionEnabled, setPuppetMotionEnabled] = useState(false);
   const [characterReady, setCharacterReady] = useState(() => import.meta.env.MODE === "test");
 
   useEffect(() => {
@@ -85,8 +86,12 @@ export function EntryScreen({
 
   const canEnter = nickname.trim().length > 0;
   const selectedPreset = resolveGuestPreset(appearance);
-  const openCharacterPicker = () => {
+  const prepareGarden = () => {
+    setPuppetMotionEnabled(true);
     onEnterIntent?.();
+  };
+  const openCharacterPicker = () => {
+    prepareGarden();
     setCharacterPickerOpen(true);
   };
   const enterGarden = () => {
@@ -127,6 +132,7 @@ export function EntryScreen({
           arrangement="close"
           label={`${formatCoupleNames(event, coupleOrder)} 2D 퍼펫`}
           priority
+          motionEnabled={puppetMotionEnabled}
         />
         {invitedGuest ? (
           <p className="entry-screen__invite">
@@ -160,9 +166,9 @@ export function EntryScreen({
         <button
           className="entry-screen__character-access"
           type="button"
-          onFocus={onEnterIntent}
-          onPointerEnter={onEnterIntent}
-          onPointerDown={onEnterIntent}
+          onFocus={prepareGarden}
+          onPointerEnter={prepareGarden}
+          onPointerDown={prepareGarden}
           onClick={openCharacterPicker}
         >
           <span className="entry-screen__character-thumb" aria-hidden="true">
@@ -230,9 +236,9 @@ export function EntryScreen({
                   placeholder="예: 신부 친구…"
                   value={nickname}
                   maxLength={16}
-                  onFocus={onEnterIntent}
+                  onFocus={prepareGarden}
                   onChange={(event) => {
-                    onEnterIntent?.();
+                    prepareGarden();
                     setNickname(event.target.value);
                   }}
                 />
@@ -241,9 +247,9 @@ export function EntryScreen({
                 className="primary-button"
                 type="button"
                 disabled={!canEnter}
-                onFocus={onEnterIntent}
-                onPointerEnter={onEnterIntent}
-                onPointerDown={onEnterIntent}
+                onFocus={prepareGarden}
+                onPointerEnter={prepareGarden}
+                onPointerDown={prepareGarden}
                 onClick={enterGarden}
               >
                 정원 입장

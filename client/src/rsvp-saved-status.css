@@ -1,0 +1,133 @@
+.rsvp-saved-status {
+  width: min(calc(100% - 36px), 700px);
+  margin: 14px auto 8px;
+  padding: 14px;
+  border: 1px solid #bfd1c7;
+  border-radius: 8px;
+  background: #f7fbf8;
+  color: #263a31;
+}
+
+.rsvp-saved-status > header {
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 9px;
+}
+
+.rsvp-saved-status > header > svg {
+  width: 22px;
+  height: 22px;
+  color: #3d765e;
+}
+
+.rsvp-saved-status > header span,
+.rsvp-saved-status__history > div:first-child span {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.rsvp-saved-status strong { font-size: 0.84rem; }
+.rsvp-saved-status small { color: #607269; font-size: 0.69rem; line-height: 1.4; }
+
+.rsvp-saved-status > header em {
+  padding: 4px 7px;
+  border-radius: 999px;
+  background: #dcebe3;
+  color: #315d49;
+  font-size: 0.64rem;
+  font-style: normal;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.rsvp-saved-status > p,
+.rsvp-saved-status__offline p {
+  margin: 13px 0 0;
+  color: #607269;
+  font-size: 0.75rem;
+}
+
+.rsvp-saved-status__offline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.rsvp-saved-status__offline button,
+.rsvp-saved-status__actions button {
+  min-height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.rsvp-saved-status__offline button {
+  flex: 0 0 auto;
+  padding: 0 10px;
+  font-size: 0.72rem;
+}
+
+.rsvp-saved-status__offline button svg,
+.rsvp-saved-status__actions button svg {
+  width: 17px;
+  height: 17px;
+}
+
+.rsvp-saved-status__history {
+  margin-top: 13px;
+  padding-top: 12px;
+  border-top: 1px solid #d8e4dd;
+}
+
+.rsvp-saved-status__history > div:first-child {
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+}
+
+.rsvp-saved-status__history > div:first-child svg {
+  width: 18px;
+  height: 18px;
+  color: #547666;
+}
+
+.rsvp-saved-status dl {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.rsvp-saved-status dl div {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.rsvp-saved-status dt { color: #6d7d74; font-size: 0.65rem; }
+.rsvp-saved-status dd { margin: 0; font-size: 0.72rem; font-weight: 750; overflow-wrap: anywhere; }
+
+.rsvp-saved-status__actions {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr);
+  gap: 8px;
+}
+
+.rsvp-saved-status__actions button:first-child {
+  padding: 0;
+  border: 1px solid #bdcec5;
+  background: #fff;
+  color: #49675a;
+}
+
+@media (max-width: 380px) {
+  .rsvp-saved-status > header { grid-template-columns: 22px minmax(0, 1fr); }
+  .rsvp-saved-status > header em { grid-column: 2; justify-self: start; }
+  .rsvp-saved-status dl { grid-template-columns: 1fr; }
+}

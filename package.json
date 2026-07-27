@@ -23,6 +23,7 @@
     "maps:foreground-audit": "node scripts/render-map-foreground-audit-sheet.mjs",
     "maps:test": "node --test scripts/mapAssetAudit.test.mjs scripts/mapForegroundAuditRenderer.test.mjs",
     "visual:mobile-audit": "node scripts/render-mobile-game-visual-audit.mjs",
+    "visual:update-baseline": "node scripts/render-mobile-game-visual-audit.mjs --update-baseline",
     "visual:test": "pnpm characters:generate && node --test scripts/mobileGameVisualAuditRenderer.test.mjs",
     "gallery:build": "node scripts/build-wedding-gallery-assets.mjs",
     "gallery:audit": "node scripts/audit-wedding-gallery-assets.mjs",

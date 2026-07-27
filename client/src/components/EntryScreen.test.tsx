@@ -28,6 +28,8 @@ describe("EntryScreen", () => {
     expect(screen.getByRole("img", { name: `${couple.bride} · ${couple.groom} 2D 퍼펫` })).toBeInTheDocument();
     expect(screen.getByRole("img", { name: `${couple.bride} · ${couple.groom} 2D 퍼펫` }))
       .toHaveAttribute("data-arrangement", "close");
+    expect(screen.getByRole("img", { name: `${couple.bride} · ${couple.groom} 2D 퍼펫` }))
+      .toHaveAttribute("data-renderer-enabled", "false");
     expect(screen.getByText("2027년 5월 1일 토요일")).toBeInTheDocument();
     expect(screen.getByText("오후 5시 10분")).toHaveAttribute("dateTime", startAt);
     expect(screen.queryByText("오후 6시 40분")).not.toBeInTheDocument();
@@ -151,6 +153,7 @@ describe("EntryScreen", () => {
     fireEvent.focus(screen.getByLabelText("닉네임"));
 
     expect(onEnterIntent).toHaveBeenCalled();
+    expect(screen.getByRole("img", { name: /2D 퍼펫/ })).toHaveAttribute("data-renderer-enabled", "true");
   });
 
   it("닉네임 없이 간편 초대장을 열고 화면을 미리 불러온다", () => {

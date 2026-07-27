@@ -5,12 +5,17 @@ import path from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 import sharp from "sharp";
-import { renderMobileGameVisualAudit } from "./lib/mobileGameVisualAuditRenderer.mjs";
+import {
+  compareMobileGameVisualAudit,
+  renderMobileGameVisualAudit
+} from "./lib/mobileGameVisualAuditRenderer.mjs";
 
 test("renders every map and every guest direction into a nonblank mobile regression sheet", async () => {
   const rootDir = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
   const tempDir = await mkdtemp(path.join(tmpdir(), "mobile-game-audit-"));
   const outputPath = path.join(tempDir, "audit.png");
+  const alteredPath = path.join(tempDir, "altered.png");
+  const baselinePath = path.join(rootDir, "scripts/visual-baselines/mobile-game-visual-regression.webp");
 
   try {
     const result = await renderMobileGameVisualAudit({ rootDir, outputPath });
@@ -24,6 +29,18 @@ test("renders every map and every guest direction into a nonblank mobile regress
     assert.equal(metadata.height, result.outputHeight);
     assert.ok(stats.channels.some((channel) => channel.stdev > 10));
     assert.ok((await readFile(outputPath)).length > 100_000);
+
+    const comparison = await compareMobileGameVisualAudit({ currentPath: outputPath, baselinePath });
+    assert.ok(comparison.changedRatio <= comparison.maxChangedRatio);
+
+    const changedRegion = await sharp({
+      create: { width: 180, height: 180, channels: 4, background: "#ff0066ff" }
+    }).png().toBuffer();
+    await sharp(outputPath).composite([{ input: changedRegion, left: 80, top: 100 }]).png().toFile(alteredPath);
+    await assert.rejects(
+      compareMobileGameVisualAudit({ currentPath: alteredPath, baselinePath }),
+      /mobile visual regression changed/
+    );
   } finally {
     await rm(tempDir, { recursive: true, force: true });
   }

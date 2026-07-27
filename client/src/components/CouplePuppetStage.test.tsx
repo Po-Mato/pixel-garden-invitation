@@ -23,8 +23,15 @@ describe("신랑·신부 2D 퍼펫", () => {
     const sources = Array.from(container.querySelectorAll("img")).map((image) => image.getAttribute("src"));
 
     expect(stage).toHaveAttribute("data-renderer-ready", "false");
+    expect(stage).toHaveAttribute("data-renderer-enabled", "false");
     expect(sources[0]).toContain("/groom/preview.webp");
     expect(sources[1]).toContain("/bride/preview.webp");
+  });
+
+  it("게임 진입 의도가 생긴 뒤에만 동적 렌더러를 허용한다", () => {
+    render(<CouplePuppetStage label="동적 퍼펫" motionEnabled priority />);
+
+    expect(screen.getByRole("img", { name: "동적 퍼펫" })).toHaveAttribute("data-renderer-enabled", "true");
   });
 
   it("입장 화면에서는 전신이 상하 여백 안에 들어오도록 축소한다", () => {

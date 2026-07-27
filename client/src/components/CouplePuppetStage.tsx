@@ -26,6 +26,7 @@ type CouplePuppetStageProps = {
   arrangement?: "standard" | "close";
   label: string;
   priority?: boolean;
+  motionEnabled?: boolean;
   className?: string;
 };
 
@@ -81,6 +82,7 @@ export function CouplePuppetStage({
   arrangement = "standard",
   label,
   priority = false,
+  motionEnabled = false,
   className = ""
 }: CouplePuppetStageProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -104,7 +106,7 @@ export function CouplePuppetStage({
   }, []);
 
   useEffect(() => {
-    if (!inRange || !hostRef.current || import.meta.env.MODE === "test") return;
+    if (!motionEnabled || !inRange || !hostRef.current || import.meta.env.MODE === "test") return;
     if (!allowsCouplePuppetMotion()) return;
 
     let disposed = false;
@@ -228,7 +230,7 @@ export function CouplePuppetStage({
       disposed = true;
       destroy?.();
     };
-  }, [arrangement, character, framing, inRange, order]);
+  }, [arrangement, character, framing, inRange, motionEnabled, order]);
 
   return (
     <div
@@ -236,6 +238,7 @@ export function CouplePuppetStage({
       className={`couple-puppet-stage couple-puppet-stage--${framing} ${className}`.trim()}
       data-character={character ?? "couple"}
       data-arrangement={arrangement}
+      data-renderer-enabled={motionEnabled ? "true" : "false"}
       data-renderer-ready={ready ? "true" : "false"}
       role="img"
       aria-label={label}

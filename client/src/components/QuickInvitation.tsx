@@ -25,6 +25,7 @@ import { GuestInformationAccess } from "./GuestInformationAccess";
 import { InvitationShareAccess } from "./InvitationShareAccess";
 import { ResponsiveGalleryImage } from "./ResponsiveGalleryImage";
 import { RsvpPanel } from "./RsvpPanel";
+import { RsvpSavedStatus } from "./RsvpSavedStatus";
 import { ViewSettingsAccess } from "./ViewSettingsAccess";
 import { WeddingEventSummary } from "./WeddingEventSummary";
 import { WeddingDayActionBar } from "./WeddingDayActionBar";
@@ -35,6 +36,7 @@ import { journeyCheckpoints } from "../game/journeyProgress";
 import { quickInvitationHashForCheckpoint } from "../game/journeyAccessibility";
 import { InvitationPriorityActions } from "./InvitationPriorityActions";
 import "../invitation-priority-actions.css";
+import "../rsvp-saved-status.css";
 
 type QuickInvitationProps = {
   nickname?: string;
@@ -146,6 +148,7 @@ export function QuickInvitation({
       </nav>
 
       <InvitationPriorityActions event={event} now={now} onSelect={(id) => scrollToSection(id)} />
+      <RsvpSavedStatus event={event} onOpenDetails={() => scrollToSection("rsvp")} />
 
       <nav className="quick-destination-nav" aria-label="초대장 목적지 탐색">
         <strong>여정 목적지</strong>

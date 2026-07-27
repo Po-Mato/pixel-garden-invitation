@@ -1033,7 +1033,7 @@ describe("GameWorld", () => {
     expect(screen.getByRole("dialog", { name: "초대장 공유" })).toHaveTextContent("이건희 · 이승재");
   });
 
-  it("cancels guided interaction when the joystick receives new input", () => {
+  it("recalculates a guided interaction after joystick input", () => {
     render(<GameWorld profile={profile} />);
     const directionsSpot = getDirectionsWorldSpot();
     const joystick = screen.getByLabelText("가상 조이스틱");
@@ -1045,8 +1045,8 @@ describe("GameWorld", () => {
     advanceAnimation(0);
     fireEvent.keyUp(joystick, { key: "ArrowLeft" });
 
-    expect(directionsSpot).not.toHaveClass("world-spot--target");
-    expect(screen.getByText("상호작용 이동을 취소했어요")).toBeInTheDocument();
+    expect(directionsSpot).toHaveClass("world-spot--target");
+    expect(screen.getByText("오시는 길까지 경로를 다시 찾았어요")).toBeInTheDocument();
     expect(screen.queryByRole("dialog", { name: "오시는 길" })).not.toBeInTheDocument();
   });
 
@@ -1518,7 +1518,7 @@ describe("GameWorld", () => {
     expect(screen.getByText("선택한 위치에 도착했어요")).toBeInTheDocument();
   });
 
-  it("cancels portal walking when the joystick receives input", () => {
+  it("recalculates the portal route after joystick input is released", () => {
     render(<GameWorld profile={profile} />);
     fireEvent.click(screen.getByRole("button", { name: "동네로 나가기" }));
     advanceAnimation(0);
@@ -1529,7 +1529,11 @@ describe("GameWorld", () => {
     fireEvent.keyUp(joystick, { key: "ArrowLeft" });
 
     expect(screen.getByLabelText("우리 집 지도")).toBeInTheDocument();
-    expect(screen.getByText("포털 이동을 취소했어요")).toBeInTheDocument();
+    expect(screen.getByText("동네로 나가기까지 경로를 다시 찾았어요")).toBeInTheDocument();
+    expect(screen.getByTestId("world-journey-route")).toHaveAttribute("data-route-kind", "selected");
+
+    finishCurrentRoute();
+    expect(screen.getByLabelText("동네 거리 지도")).toBeInTheDocument();
   });
 
   it("shows portal arrival before fading into the destination map", () => {
