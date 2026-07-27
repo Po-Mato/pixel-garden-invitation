@@ -18,7 +18,9 @@ describe("feedbackPreferences", () => {
       volume: "balanced",
       footstepVolume: "balanced",
       portalAudioEnabled: true,
-      portalAudioVolume: "balanced"
+      portalAudioVolume: "balanced",
+      portalMonoEnabled: false,
+      portalHapticsEnabled: false
     });
   });
 
@@ -32,7 +34,9 @@ describe("feedbackPreferences", () => {
       volume: "quiet" as const,
       footstepVolume: "bright" as const,
       portalAudioEnabled: false,
-      portalAudioVolume: "quiet" as const
+      portalAudioVolume: "quiet" as const,
+      portalMonoEnabled: true,
+      portalHapticsEnabled: true
     };
 
     expect(saveFeedbackPreferences(preferences, storage)).toBe(true);
@@ -57,7 +61,9 @@ describe("feedbackPreferences", () => {
       volume: "quiet",
       footstepVolume: "balanced",
       portalAudioEnabled: true,
-      portalAudioVolume: "balanced"
+      portalAudioVolume: "balanced",
+      portalMonoEnabled: false,
+      portalHapticsEnabled: false
     });
   });
 
@@ -75,7 +81,29 @@ describe("feedbackPreferences", () => {
     expect(loadFeedbackPreferences(storage)).toMatchObject({
       footstepVolume: "quiet",
       portalAudioEnabled: true,
-      portalAudioVolume: "balanced"
+      portalAudioVolume: "balanced",
+      portalMonoEnabled: false,
+      portalHapticsEnabled: false
+    });
+  });
+
+  it("keeps portal sound choices while adding accessibility defaults", () => {
+    const storage = memoryStorage();
+    storage.setItem(feedbackPreferencesStorageKey, JSON.stringify({
+      soundEnabled: true,
+      effectsEnabled: true,
+      musicEnabled: false,
+      hapticsEnabled: true,
+      volume: "balanced",
+      footstepVolume: "quiet",
+      portalAudioEnabled: true,
+      portalAudioVolume: "bright"
+    }));
+
+    expect(loadFeedbackPreferences(storage)).toMatchObject({
+      portalAudioVolume: "bright",
+      portalMonoEnabled: false,
+      portalHapticsEnabled: false
     });
   });
 

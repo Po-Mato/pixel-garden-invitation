@@ -1,6 +1,11 @@
 import {
   Accessibility,
+  ArrowDown,
+  ArrowLeft,
+  ArrowRight,
+  ArrowUp,
   BellRing,
+  Circle,
   Contrast,
   Cpu,
   Footprints,
@@ -50,13 +55,22 @@ export function ViewSettingsAccess({ variant, onOpenChange }: ViewSettingsAccess
     setFootstepVolume,
     setPortalAudioEnabled,
     setPortalAudioVolume,
+    setPortalMonoEnabled,
+    setPortalHapticsEnabled,
     previewPortalAudio,
+    previewPortalDirection,
     resetFeedbackPreferences
   } = useGameFeedback();
   const comfortableViewEnabled = preferences.textScale === "xlarge"
     && preferences.reduceMotion
     && preferences.highContrast
     && preferences.comfortableControls;
+  const portalDirectionAudioReady = feedbackPreferences.soundEnabled
+    && feedbackPreferences.effectsEnabled
+    && feedbackPreferences.portalAudioEnabled
+    && feedbackPreferences.portalMonoEnabled;
+  const portalDirectionHapticsReady = feedbackPreferences.hapticsEnabled
+    && feedbackPreferences.portalHapticsEnabled;
 
   const setVisibility = (visible: boolean) => {
     setOpen(visible);
@@ -308,16 +322,73 @@ export function ViewSettingsAccess({ variant, onOpenChange }: ViewSettingsAccess
               </button>
             </section>
 
-            <label className="view-settings-sheet__switch">
-              <span><Vibrate aria-hidden="true" /><strong>진동 피드백</strong></span>
-              <input
-                type="checkbox"
-                role="switch"
-                checked={feedbackPreferences.hapticsEnabled}
-                onChange={(event) => setHapticsEnabled(event.target.checked)}
-              />
-              <span aria-hidden="true" className="view-settings-sheet__switch-track" />
-            </label>
+            <section className="feedback-settings" aria-labelledby="portal-accessibility-title">
+              <header>
+                <Accessibility aria-hidden="true" />
+                <strong id="portal-accessibility-title">포털 접근성</strong>
+              </header>
+
+              <label className="view-settings-sheet__switch">
+                <span><Volume2 aria-hidden="true" /><strong>모노 방향 안내</strong></span>
+                <input
+                  type="checkbox"
+                  role="switch"
+                  checked={feedbackPreferences.portalMonoEnabled}
+                  onChange={(event) => setPortalMonoEnabled(event.target.checked)}
+                />
+                <span aria-hidden="true" className="view-settings-sheet__switch-track" />
+              </label>
+
+              <label className="view-settings-sheet__switch">
+                <span><Vibrate aria-hidden="true" /><strong>진동 피드백</strong></span>
+                <input
+                  type="checkbox"
+                  role="switch"
+                  checked={feedbackPreferences.hapticsEnabled}
+                  onChange={(event) => setHapticsEnabled(event.target.checked)}
+                />
+                <span aria-hidden="true" className="view-settings-sheet__switch-track" />
+              </label>
+
+              <label className="view-settings-sheet__switch">
+                <span><RadioTower aria-hidden="true" /><strong>포털 방향 진동</strong></span>
+                <input
+                  type="checkbox"
+                  role="switch"
+                  checked={feedbackPreferences.portalHapticsEnabled}
+                  onChange={(event) => setPortalHapticsEnabled(event.target.checked)}
+                />
+                <span aria-hidden="true" className="view-settings-sheet__switch-track" />
+              </label>
+
+              <div className="feedback-settings__volume">
+                <strong>방향 안내 시험</strong>
+                <div
+                  className="view-settings-sheet__segments"
+                  role="group"
+                  aria-label="포털 방향 안내 시험"
+                >
+                  {([
+                    ["left", "왼쪽 안내 시험", ArrowLeft],
+                    ["up", "위쪽 안내 시험", ArrowUp],
+                    ["right", "오른쪽 안내 시험", ArrowRight],
+                    ["down", "아래쪽 안내 시험", ArrowDown],
+                    ["arrived", "도착 안내 시험", Circle]
+                  ] as const).map(([direction, label, Icon]) => (
+                    <button
+                      key={direction}
+                      type="button"
+                      aria-label={label}
+                      title={label}
+                      disabled={!portalDirectionAudioReady && !portalDirectionHapticsReady}
+                      onClick={() => previewPortalDirection(direction)}
+                    >
+                      <Icon aria-hidden="true" />
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </section>
 
             <button
               className="view-settings-sheet__reset"
@@ -347,7 +418,9 @@ export function ViewSettingsAccess({ variant, onOpenChange }: ViewSettingsAccess
               포털 안내음 강도 {feedbackPreferences.portalAudioVolume === "quiet"
                 ? "약하게"
                 : feedbackPreferences.portalAudioVolume === "balanced" ? "보통" : "선명하게"},
-              진동 피드백 {feedbackPreferences.hapticsEnabled ? "켜짐" : "꺼짐"}
+              모노 방향 안내 {feedbackPreferences.portalMonoEnabled ? "켜짐" : "꺼짐"},
+              진동 피드백 {feedbackPreferences.hapticsEnabled ? "켜짐" : "꺼짐"},
+              포털 방향 진동 {feedbackPreferences.portalHapticsEnabled ? "켜짐" : "꺼짐"}
             </p>
           </div>
         </BottomSheet>

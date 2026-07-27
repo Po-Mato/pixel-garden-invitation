@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { defaultFeedbackPreferences } from "./feedbackPreferences";
-import { GameAudioEngine, triggerHaptic } from "./gameAudio";
+import { GameAudioEngine, triggerHaptic, triggerPortalDirectionHaptic } from "./gameAudio";
 
 class FakeAudioParam {
   value = 1;
@@ -293,7 +293,7 @@ describe("GameAudioEngine", () => {
       musicEnabled: false
     });
 
-    engine.setPortalAudio({ intensity: 0.5, pan: 0.75, destination: "neighborhood" });
+    engine.setPortalAudio({ intensity: 0.5, pan: 0.75, destination: "neighborhood", direction: "right" });
     await engine.unlock();
 
     const context = FakeAudioContext.instances[0];
@@ -304,7 +304,7 @@ describe("GameAudioEngine", () => {
     expect(portalBus.gain.linearRamps.at(-1)?.at).toBeCloseTo(10.16);
     expect(context.panners[0].pan.linearRamps.at(-1)).toEqual({ value: 0.75, at: 10.16 });
 
-    engine.setPortalAudio({ intensity: 1, pan: -0.5, destination: "subway-station" });
+    engine.setPortalAudio({ intensity: 1, pan: -0.5, destination: "subway-station", direction: "left" });
     expect(portalBus.gain.linearRamps.at(-1)?.value).toBeCloseTo(0.01404);
     expect(portalBus.gain.linearRamps.at(-1)?.at).toBeCloseTo(10.16);
     expect(context.panners[0].pan.linearRamps.at(-1)).toEqual({ value: -0.5, at: 10.16 });
@@ -333,6 +333,56 @@ describe("GameAudioEngine", () => {
     expect(portalBus.gain.linearRamps.at(-1)).toEqual({ value: 0.0001, at: 10.16 });
     vi.advanceTimersByTime(180);
     expect(context.oscillators.every((oscillator) => oscillator.stops.length === 1)).toBe(true);
+  });
+
+  it("centers mono portal audio and repeats direction-specific tone patterns", async () => {
+    vi.useFakeTimers();
+    vi.stubGlobal("AudioContext", FakeAudioContext);
+    const engine = new GameAudioEngine({
+      ...defaultFeedbackPreferences,
+      soundEnabled: true,
+      musicEnabled: false,
+      portalMonoEnabled: true
+    });
+
+    engine.setPortalAudio({
+      intensity: 0.5,
+      pan: -0.8,
+      destination: "ceremony-hall",
+      direction: "left"
+    });
+    await engine.unlock();
+    const context = FakeAudioContext.instances[0];
+    expect(context.panners[0].pan.linearRamps.at(-1)?.value).toBe(0);
+    expect(context.oscillators.slice(-2).map((oscillator) => oscillator.frequency.values[0]))
+      .toEqual([261.63, 261.63]);
+
+    vi.advanceTimersByTime(1_119);
+    expect(context.oscillators).toHaveLength(4);
+    vi.advanceTimersByTime(1);
+    expect(context.oscillators.slice(-2).map((oscillator) => oscillator.frequency.values[0]))
+      .toEqual([261.63, 261.63]);
+
+    engine.setPortalAudio({
+      intensity: 0.8,
+      pan: 0.7,
+      destination: "ceremony-hall",
+      direction: "up"
+    });
+    expect(context.panners[0].pan.linearRamps.at(-1)?.value).toBe(0);
+    expect(context.oscillators.slice(-2).map((oscillator) => oscillator.frequency.values[0]))
+      .toEqual([329.63, 493.88]);
+
+    engine.configure({
+      ...defaultFeedbackPreferences,
+      soundEnabled: true,
+      musicEnabled: false,
+      portalMonoEnabled: false
+    });
+    expect(context.panners[0].pan.linearRamps.at(-1)?.value).toBeCloseTo(0.7);
+    const oscillatorCount = context.oscillators.length;
+    vi.advanceTimersByTime(2_000);
+    expect(context.oscillators).toHaveLength(oscillatorCount);
   });
 
   it("previews the selected portal level with a wedding-hall signature", async () => {
@@ -381,7 +431,7 @@ describe("GameAudioEngine", () => {
       "restroom"
     ] as const;
 
-    engine.setPortalAudio({ intensity: 0.5, pan: 0, destination: destinations[0] });
+    engine.setPortalAudio({ intensity: 0.5, pan: 0, destination: destinations[0], direction: "up" });
     await engine.unlock();
     const context = FakeAudioContext.instances[0];
     const signatures = [context.oscillators
@@ -389,7 +439,7 @@ describe("GameAudioEngine", () => {
       .join("|")];
 
     destinations.slice(1).forEach((destination) => {
-      engine.setPortalAudio({ intensity: 0.5, pan: 0, destination });
+      engine.setPortalAudio({ intensity: 0.5, pan: 0, destination, direction: "up" });
       signatures.push(context.oscillators
         .map((oscillator) => `${oscillator.frequency.exponentialRamps.at(-1)?.value}:${oscillator.type}`)
         .join("|"));
@@ -480,5 +530,21 @@ describe("triggerHaptic", () => {
     expect(triggerHaptic("footstep", vibrate)).toBe(true);
     expect(vibrate).toHaveBeenLastCalledWith(4);
     expect(triggerHaptic("tap", undefined)).toBe(false);
+  });
+
+  it("uses distinct portal direction patterns", () => {
+    const vibrate = vi.fn<(pattern: number | number[]) => boolean>(() => true);
+    const directions = ["left", "right", "up", "down", "arrived"] as const;
+
+    directions.forEach((direction) => triggerPortalDirectionHaptic(direction, vibrate));
+
+    expect(vibrate.mock.calls.map(([pattern]) => pattern)).toEqual([
+      28,
+      [10, 34, 10],
+      [10, 28, 22],
+      [22, 28, 10],
+      [12, 24, 12, 24, 24]
+    ]);
+    expect(triggerPortalDirectionHaptic("left", undefined)).toBe(false);
   });
 });

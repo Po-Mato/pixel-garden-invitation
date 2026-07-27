@@ -9,7 +9,7 @@ import {
   type ReactNode
 } from "react";
 import type { WorldZoneId } from "@wedding-game/shared";
-import type { PortalAudioMix } from "../game/portalAudio";
+import type { PortalAudioMix, PortalGuideDirection } from "../game/portalAudio";
 import {
   defaultFeedbackPreferences,
   loadFeedbackPreferences,
@@ -20,6 +20,7 @@ import {
 import {
   GameAudioEngine,
   triggerHaptic,
+  triggerPortalDirectionHaptic,
   type FeedbackCue,
   type FeedbackCueOptions
 } from "./gameAudio";
@@ -34,7 +35,10 @@ type GameFeedbackContextValue = {
   setFootstepVolume: (volume: FeedbackVolume) => void;
   setPortalAudioEnabled: (enabled: boolean) => void;
   setPortalAudioVolume: (volume: FeedbackVolume) => void;
+  setPortalMonoEnabled: (enabled: boolean) => void;
+  setPortalHapticsEnabled: (enabled: boolean) => void;
   previewPortalAudio: () => void;
+  previewPortalDirection: (direction: PortalGuideDirection) => void;
   resetFeedbackPreferences: () => void;
   playFeedback: (cue: FeedbackCue, options?: FeedbackCueOptions) => void;
   setFeedbackZone: (zoneId: WorldZoneId) => void;
@@ -51,7 +55,10 @@ const GameFeedbackContext = createContext<GameFeedbackContextValue>({
   setFootstepVolume: () => undefined,
   setPortalAudioEnabled: () => undefined,
   setPortalAudioVolume: () => undefined,
+  setPortalMonoEnabled: () => undefined,
+  setPortalHapticsEnabled: () => undefined,
   previewPortalAudio: () => undefined,
+  previewPortalDirection: () => undefined,
   resetFeedbackPreferences: () => undefined,
   playFeedback: () => undefined,
   setFeedbackZone: () => undefined,
@@ -69,6 +76,7 @@ export function GameFeedbackProvider({ children, initialPreferences }: GameFeedb
   const engineRef = useRef<GameAudioEngine | null>(null);
   const zoneRef = useRef<WorldZoneId>("home");
   const portalAudioRef = useRef<PortalAudioMix | null>(null);
+  const portalHapticStateRef = useRef<{ direction: PortalGuideDirection; playedAt: number } | null>(null);
 
   const getEngine = useCallback(() => {
     engineRef.current ??= new GameAudioEngine(preferencesRef.current);
@@ -97,6 +105,14 @@ export function GameFeedbackProvider({ children, initialPreferences }: GameFeedb
     if (await engine.unlock()) {
       engine.configure(preferencesRef.current);
       engine.previewPortalAudio();
+    }
+  }, [getEngine]);
+
+  const activateAndPreviewPortalDirection = useCallback(async (direction: PortalGuideDirection) => {
+    const engine = getEngine();
+    if (await engine.unlock()) {
+      engine.configure(preferencesRef.current);
+      engine.previewPortalDirection(direction);
     }
   }, [getEngine]);
 
@@ -167,10 +183,35 @@ export function GameFeedbackProvider({ children, initialPreferences }: GameFeedb
         void activateAndPreviewPortal();
       }
     },
+    setPortalMonoEnabled: (portalMonoEnabled) => {
+      const next = { ...preferencesRef.current, portalMonoEnabled };
+      applyPreferences(next);
+      if (portalMonoEnabled && next.soundEnabled && next.effectsEnabled && next.portalAudioEnabled) {
+        void activateAndPreviewPortalDirection("right");
+      }
+    },
+    setPortalHapticsEnabled: (portalHapticsEnabled) => {
+      const next = { ...preferencesRef.current, portalHapticsEnabled };
+      applyPreferences(next);
+      portalHapticStateRef.current = null;
+      if (portalHapticsEnabled && next.hapticsEnabled) triggerPortalDirectionHaptic("right");
+    },
     previewPortalAudio: () => {
       const current = preferencesRef.current;
       if (current.soundEnabled && current.effectsEnabled && current.portalAudioEnabled) {
         void activateAndPreviewPortal();
+      }
+    },
+    previewPortalDirection: (direction) => {
+      const current = preferencesRef.current;
+      if (current.hapticsEnabled && current.portalHapticsEnabled) {
+        triggerPortalDirectionHaptic(direction);
+      }
+      if (current.soundEnabled
+        && current.effectsEnabled
+        && current.portalAudioEnabled
+        && current.portalMonoEnabled) {
+        void activateAndPreviewPortalDirection(direction);
       }
     },
     resetFeedbackPreferences: () => applyPreferences(defaultFeedbackPreferences),
@@ -185,9 +226,27 @@ export function GameFeedbackProvider({ children, initialPreferences }: GameFeedb
     },
     setPortalAudio: (mix) => {
       portalAudioRef.current = mix;
+      const current = preferencesRef.current;
+      if (!mix || !current.hapticsEnabled || !current.portalHapticsEnabled) {
+        portalHapticStateRef.current = null;
+      } else {
+        const now = Date.now();
+        const previous = portalHapticStateRef.current;
+        const interval = 1_500 - 650 * mix.intensity;
+        if (!previous || previous.direction !== mix.direction || now - previous.playedAt >= interval) {
+          triggerPortalDirectionHaptic(mix.direction);
+          portalHapticStateRef.current = { direction: mix.direction, playedAt: now };
+        }
+      }
       engineRef.current?.setPortalAudio(mix);
     }
-  }), [activateAndPlay, activateAndPreviewPortal, applyPreferences, preferences]);
+  }), [
+    activateAndPlay,
+    activateAndPreviewPortal,
+    activateAndPreviewPortalDirection,
+    applyPreferences,
+    preferences
+  ]);
 
   return <GameFeedbackContext.Provider value={value}>{children}</GameFeedbackContext.Provider>;
 }

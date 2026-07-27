@@ -1,6 +1,6 @@
 import type { WorldZoneId } from "@wedding-game/shared";
 import type { FootstepSurface } from "../game/footstepSurface";
-import type { PortalAudioMix } from "../game/portalAudio";
+import type { PortalAudioMix, PortalGuideDirection } from "../game/portalAudio";
 import type { WalkLandingFoot } from "../game/walkTiming";
 import type { FeedbackPreferences, FeedbackVolume } from "./feedbackPreferences";
 
@@ -53,6 +53,8 @@ const musicCrossfadeSeconds = 0.42;
 const portalAudioFadeSeconds = 0.16;
 const portalToneTransitionSeconds = 0.24;
 const portalAudioMaxGain = 0.018;
+const portalGuidanceMinIntervalMs = 760;
+const portalGuidanceMaxIntervalMs = 1_480;
 
 type PortalTone = { frequency: number; strength: number; wave: OscillatorType };
 type PortalToneProfile = readonly [PortalTone, PortalTone];
@@ -133,6 +135,30 @@ type FeedbackTone = {
   duration: number;
   strength: number;
   wave?: OscillatorType;
+};
+
+const portalDirectionTones: Record<PortalGuideDirection, readonly FeedbackTone[]> = {
+  left: [
+    { frequency: 261.63, offset: 0, duration: 0.12, strength: 0.022, wave: "triangle" },
+    { frequency: 261.63, offset: 0.18, duration: 0.12, strength: 0.022, wave: "triangle" }
+  ],
+  right: [
+    { frequency: 523.25, offset: 0, duration: 0.12, strength: 0.018 },
+    { frequency: 523.25, offset: 0.18, duration: 0.12, strength: 0.018 }
+  ],
+  up: [
+    { frequency: 329.63, offset: 0, duration: 0.13, strength: 0.019, wave: "triangle" },
+    { frequency: 493.88, offset: 0.16, duration: 0.16, strength: 0.02 }
+  ],
+  down: [
+    { frequency: 493.88, offset: 0, duration: 0.13, strength: 0.019 },
+    { frequency: 329.63, offset: 0.16, duration: 0.16, strength: 0.02, wave: "triangle" }
+  ],
+  arrived: [
+    { frequency: 392, offset: 0, duration: 0.16, strength: 0.02, wave: "triangle" },
+    { frequency: 523.25, offset: 0.11, duration: 0.2, strength: 0.022 },
+    { frequency: 659.25, offset: 0.22, duration: 0.28, strength: 0.024 }
+  ]
 };
 
 type FootstepEcho = {
@@ -283,6 +309,14 @@ const hapticPatterns: Record<FeedbackCue, number | number[]> = {
   complete: [16, 34, 20, 34, 32]
 };
 
+const portalDirectionHapticPatterns: Record<PortalGuideDirection, number | number[]> = {
+  left: 28,
+  right: [10, 34, 10],
+  up: [10, 28, 22],
+  down: [22, 28, 10],
+  arrived: [12, 24, 12, 24, 24]
+};
+
 function audioContextConstructor(): AudioContextConstructor | null {
   if (typeof window === "undefined") return null;
   const candidate = window as typeof window & { webkitAudioContext?: AudioContextConstructor };
@@ -298,6 +332,20 @@ export function triggerHaptic(
   if (!vibrate) return false;
   try {
     return vibrate(hapticPatterns[cue]);
+  } catch {
+    return false;
+  }
+}
+
+export function triggerPortalDirectionHaptic(
+  direction: PortalGuideDirection,
+  vibrate: ((pattern: number | number[]) => boolean) | undefined = typeof navigator === "undefined"
+    ? undefined
+    : navigator.vibrate?.bind(navigator)
+): boolean {
+  if (!vibrate) return false;
+  try {
+    return vibrate(portalDirectionHapticPatterns[direction]);
   } catch {
     return false;
   }
@@ -320,6 +368,8 @@ export class GameAudioEngine {
   private portalToneGains: GainNode[] = [];
   private portalDestination: WorldZoneId | null = null;
   private portalStopTimer: number | null = null;
+  private portalGuidanceTimer: number | null = null;
+  private portalGuidanceDirection: PortalGuideDirection | null = null;
   private portalAppliedGain = 0.0001;
   private portalAppliedPan = 0;
   private footstepVariantIndexes: Record<FootstepSurface, number> = {
@@ -387,7 +437,8 @@ export class GameAudioEngine {
     this.portalMix = mix ? {
       intensity: Math.min(1, Math.max(0, mix.intensity)),
       pan: Math.min(1, Math.max(-1, mix.pan)),
-      destination: mix.destination
+      destination: mix.destination,
+      direction: mix.direction
     } : null;
     this.syncPortalAudio();
   }
@@ -441,8 +492,14 @@ export class GameAudioEngine {
     });
   }
 
+  previewPortalDirection(direction: PortalGuideDirection) {
+    if (!this.canPlayPortalGuidance()) return;
+    this.playPortalDirectionCue(direction, 1);
+  }
+
   dispose() {
     this.stopMusic();
+    this.stopPortalGuidance();
     this.stopPortalAudio();
     this.backgroundBus = null;
     const context = this.context;
@@ -466,6 +523,10 @@ export class GameAudioEngine {
       && this.preferences.portalAudioEnabled;
   }
 
+  private canPlayPortalGuidance() {
+    return this.canPlayPortalAudio() && this.preferences.portalMonoEnabled;
+  }
+
   private syncMusic() {
     if (!this.canPlayMusic()) {
       this.stopMusic();
@@ -477,6 +538,7 @@ export class GameAudioEngine {
   private syncPortalAudio() {
     const mix = this.portalMix;
     if (!this.canPlayPortalAudio() || !mix || mix.intensity <= 0) {
+      this.stopPortalGuidance();
       this.fadeOutPortalAudio();
       return;
     }
@@ -499,11 +561,67 @@ export class GameAudioEngine {
     this.portalAppliedGain = Math.max(0.0001, targetGain);
 
     if (this.portalPanner) {
+      const targetPan = this.preferences.portalMonoEnabled ? 0 : mix.pan;
       this.portalPanner.pan.cancelScheduledValues(now);
       this.portalPanner.pan.setValueAtTime(this.portalAppliedPan, now);
-      this.portalPanner.pan.linearRampToValueAtTime(mix.pan, now + portalAudioFadeSeconds);
-      this.portalAppliedPan = mix.pan;
+      this.portalPanner.pan.linearRampToValueAtTime(targetPan, now + portalAudioFadeSeconds);
+      this.portalAppliedPan = targetPan;
     }
+    this.syncPortalGuidance();
+  }
+
+  private syncPortalGuidance() {
+    const mix = this.portalMix;
+    if (!this.canPlayPortalGuidance() || !mix || mix.intensity <= 0) {
+      this.stopPortalGuidance();
+      return;
+    }
+    if (this.portalGuidanceDirection !== mix.direction) {
+      this.stopPortalGuidance();
+      this.portalGuidanceDirection = mix.direction;
+      this.playPortalDirectionCue(mix.direction, mix.intensity);
+    }
+    if (this.portalGuidanceTimer === null) this.schedulePortalGuidance();
+  }
+
+  private schedulePortalGuidance() {
+    const mix = this.portalMix;
+    if (!this.canPlayPortalGuidance() || !mix) return;
+    const interval = portalGuidanceMaxIntervalMs
+      - (portalGuidanceMaxIntervalMs - portalGuidanceMinIntervalMs) * mix.intensity;
+    this.portalGuidanceTimer = window.setTimeout(() => {
+      this.portalGuidanceTimer = null;
+      const current = this.portalMix;
+      if (!this.canPlayPortalGuidance() || !current) {
+        this.stopPortalGuidance();
+        return;
+      }
+      this.portalGuidanceDirection = current.direction;
+      this.playPortalDirectionCue(current.direction, current.intensity);
+      this.schedulePortalGuidance();
+    }, interval);
+  }
+
+  private playPortalDirectionCue(direction: PortalGuideDirection, intensity: number) {
+    const strengthScale = portalAudioVolumeGain[this.preferences.portalAudioVolume]
+      * (0.55 + Math.min(1, Math.max(0, intensity)) * 0.45);
+    portalDirectionTones[direction].forEach((tone) => {
+      this.playTone(
+        tone.frequency,
+        tone.offset,
+        tone.duration,
+        tone.strength,
+        tone.wave ?? "sine",
+        false,
+        strengthScale
+      );
+    });
+  }
+
+  private stopPortalGuidance() {
+    if (this.portalGuidanceTimer !== null) window.clearTimeout(this.portalGuidanceTimer);
+    this.portalGuidanceTimer = null;
+    this.portalGuidanceDirection = null;
   }
 
   private duckBackgroundForCue(cue: FeedbackCue) {
