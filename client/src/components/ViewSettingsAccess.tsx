@@ -7,6 +7,8 @@ import {
   Hand,
   Gauge,
   Music2,
+  Play,
+  RadioTower,
   RotateCcw,
   Settings2,
   Sparkles,
@@ -46,6 +48,9 @@ export function ViewSettingsAccess({ variant, onOpenChange }: ViewSettingsAccess
     setHapticsEnabled,
     setVolume,
     setFootstepVolume,
+    setPortalAudioEnabled,
+    setPortalAudioVolume,
+    previewPortalAudio,
     resetFeedbackPreferences
   } = useGameFeedback();
   const comfortableViewEnabled = preferences.textScale === "xlarge"
@@ -208,6 +213,17 @@ export function ViewSettingsAccess({ variant, onOpenChange }: ViewSettingsAccess
                 <span aria-hidden="true" className="view-settings-sheet__switch-track" />
               </label>
 
+              <label className="view-settings-sheet__switch">
+                <span><RadioTower aria-hidden="true" /><strong>포털 안내음</strong></span>
+                <input
+                  type="checkbox"
+                  role="switch"
+                  checked={feedbackPreferences.portalAudioEnabled}
+                  onChange={(event) => setPortalAudioEnabled(event.target.checked)}
+                />
+                <span aria-hidden="true" className="view-settings-sheet__switch-track" />
+              </label>
+
               <div className="feedback-settings__volume">
                 <strong>음량</strong>
                 <div className="view-settings-sheet__segments" role="group" aria-label="게임 음량">
@@ -252,6 +268,44 @@ export function ViewSettingsAccess({ variant, onOpenChange }: ViewSettingsAccess
                   ))}
                 </div>
               </div>
+
+              <div className="feedback-settings__volume">
+                <span className="feedback-settings__volume-label">
+                  <RadioTower aria-hidden="true" />
+                  <strong>포털 안내음 강도</strong>
+                </span>
+                <div className="view-settings-sheet__segments" role="group" aria-label="포털 안내음 강도">
+                  {([
+                    ["quiet", "약하게"],
+                    ["balanced", "보통"],
+                    ["bright", "선명하게"]
+                  ] as const).map(([volume, label]) => (
+                    <button
+                      key={volume}
+                      type="button"
+                      aria-pressed={feedbackPreferences.portalAudioVolume === volume}
+                      disabled={!feedbackPreferences.soundEnabled
+                        || !feedbackPreferences.effectsEnabled
+                        || !feedbackPreferences.portalAudioEnabled}
+                      onClick={() => setPortalAudioVolume(volume)}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <button
+                className="view-settings-sheet__reset"
+                type="button"
+                disabled={!feedbackPreferences.soundEnabled
+                  || !feedbackPreferences.effectsEnabled
+                  || !feedbackPreferences.portalAudioEnabled}
+                onClick={previewPortalAudio}
+              >
+                <Play aria-hidden="true" />
+                안내음 미리듣기
+              </button>
             </section>
 
             <label className="view-settings-sheet__switch">
@@ -289,6 +343,10 @@ export function ViewSettingsAccess({ variant, onOpenChange }: ViewSettingsAccess
               발소리 강도 {feedbackPreferences.footstepVolume === "quiet"
                 ? "약하게"
                 : feedbackPreferences.footstepVolume === "balanced" ? "보통" : "강하게"},
+              포털 안내음 {feedbackPreferences.portalAudioEnabled ? "켜짐" : "꺼짐"},
+              포털 안내음 강도 {feedbackPreferences.portalAudioVolume === "quiet"
+                ? "약하게"
+                : feedbackPreferences.portalAudioVolume === "balanced" ? "보통" : "선명하게"},
               진동 피드백 {feedbackPreferences.hapticsEnabled ? "켜짐" : "꺼짐"}
             </p>
           </div>

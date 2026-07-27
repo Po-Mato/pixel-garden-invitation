@@ -319,12 +319,46 @@ describe("GameAudioEngine", () => {
     engine.configure({
       ...defaultFeedbackPreferences,
       soundEnabled: true,
-      effectsEnabled: false,
+      portalAudioVolume: "bright",
+      musicEnabled: false
+    });
+    expect(portalBus.gain.linearRamps.at(-1)?.value).toBeCloseTo(0.018954);
+
+    engine.configure({
+      ...defaultFeedbackPreferences,
+      soundEnabled: true,
+      portalAudioEnabled: false,
       musicEnabled: false
     });
     expect(portalBus.gain.linearRamps.at(-1)).toEqual({ value: 0.0001, at: 10.16 });
     vi.advanceTimersByTime(180);
     expect(context.oscillators.every((oscillator) => oscillator.stops.length === 1)).toBe(true);
+  });
+
+  it("previews the selected portal level with a wedding-hall signature", async () => {
+    vi.stubGlobal("AudioContext", FakeAudioContext);
+    const engine = new GameAudioEngine({
+      ...defaultFeedbackPreferences,
+      soundEnabled: true,
+      musicEnabled: false,
+      portalAudioVolume: "bright"
+    });
+
+    await engine.unlock();
+    engine.previewPortalAudio();
+    const context = FakeAudioContext.instances[0];
+    expect(context.oscillators.map((oscillator) => oscillator.frequency.values[0]))
+      .toEqual([329.63, 493.88]);
+    expect(context.gains[0].gain.values[1]).toBeCloseTo(0.0250614);
+
+    engine.configure({
+      ...defaultFeedbackPreferences,
+      soundEnabled: true,
+      musicEnabled: false,
+      portalAudioEnabled: false
+    });
+    engine.previewPortalAudio();
+    expect(context.oscillators).toHaveLength(2);
   });
 
   it("assigns every portal destination a distinct two-tone signature", async () => {

@@ -16,7 +16,9 @@ describe("feedbackPreferences", () => {
       musicEnabled: true,
       hapticsEnabled: true,
       volume: "balanced",
-      footstepVolume: "balanced"
+      footstepVolume: "balanced",
+      portalAudioEnabled: true,
+      portalAudioVolume: "balanced"
     });
   });
 
@@ -28,14 +30,16 @@ describe("feedbackPreferences", () => {
       musicEnabled: false,
       hapticsEnabled: false,
       volume: "quiet" as const,
-      footstepVolume: "bright" as const
+      footstepVolume: "bright" as const,
+      portalAudioEnabled: false,
+      portalAudioVolume: "quiet" as const
     };
 
     expect(saveFeedbackPreferences(preferences, storage)).toBe(true);
     expect(loadFeedbackPreferences(storage)).toEqual(preferences);
   });
 
-  it("keeps existing sound choices while adding the default footstep level", () => {
+  it("keeps existing sound choices while adding new default sound levels", () => {
     const storage = memoryStorage();
     storage.setItem(feedbackPreferencesStorageKey, JSON.stringify({
       soundEnabled: true,
@@ -51,7 +55,27 @@ describe("feedbackPreferences", () => {
       musicEnabled: false,
       hapticsEnabled: true,
       volume: "quiet",
-      footstepVolume: "balanced"
+      footstepVolume: "balanced",
+      portalAudioEnabled: true,
+      portalAudioVolume: "balanced"
+    });
+  });
+
+  it("keeps the saved footstep level while adding portal audio defaults", () => {
+    const storage = memoryStorage();
+    storage.setItem(feedbackPreferencesStorageKey, JSON.stringify({
+      soundEnabled: true,
+      effectsEnabled: true,
+      musicEnabled: true,
+      hapticsEnabled: true,
+      volume: "bright",
+      footstepVolume: "quiet"
+    }));
+
+    expect(loadFeedbackPreferences(storage)).toMatchObject({
+      footstepVolume: "quiet",
+      portalAudioEnabled: true,
+      portalAudioVolume: "balanced"
     });
   });
 

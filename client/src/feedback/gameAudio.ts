@@ -24,6 +24,12 @@ const footstepVolumeGain: Record<FeedbackVolume, number> = {
   bright: 1.3
 };
 
+const portalAudioVolumeGain: Record<FeedbackVolume, number> = {
+  quiet: 0.55,
+  balanced: 1,
+  bright: 1.35
+};
+
 const footstepVariation: Record<WalkLandingFoot, { pitch: number; strength: number }> = {
   right: { pitch: 0.985, strength: 0.94 },
   left: { pitch: 1.015, strength: 1.04 }
@@ -419,6 +425,22 @@ export class GameAudioEngine {
     });
   }
 
+  previewPortalAudio(destination: WorldZoneId = this.portalMix?.destination ?? "ceremony-hall") {
+    if (!this.canPlayPortalAudio()) return;
+    const strengthScale = portalAudioVolumeGain[this.preferences.portalAudioVolume];
+    portalToneProfiles[destination].forEach((tone, index) => {
+      this.playTone(
+        tone.frequency,
+        index * 0.08,
+        0.44,
+        0.034 * tone.strength,
+        tone.wave,
+        false,
+        strengthScale
+      );
+    });
+  }
+
   dispose() {
     this.stopMusic();
     this.stopPortalAudio();
@@ -439,7 +461,9 @@ export class GameAudioEngine {
   }
 
   private canPlayPortalAudio() {
-    return this.canPlaySound() && this.preferences.effectsEnabled;
+    return this.canPlaySound()
+      && this.preferences.effectsEnabled
+      && this.preferences.portalAudioEnabled;
   }
 
   private syncMusic() {
@@ -465,7 +489,10 @@ export class GameAudioEngine {
     this.portalStopTimer = null;
 
     const now = context.currentTime;
-    const targetGain = portalAudioMaxGain * volumeGain[this.preferences.volume] * mix.intensity;
+    const targetGain = portalAudioMaxGain
+      * volumeGain[this.preferences.volume]
+      * portalAudioVolumeGain[this.preferences.portalAudioVolume]
+      * mix.intensity;
     bus.gain.cancelScheduledValues(now);
     bus.gain.setValueAtTime(this.portalAppliedGain, now);
     bus.gain.linearRampToValueAtTime(Math.max(0.0001, targetGain), now + portalAudioFadeSeconds);

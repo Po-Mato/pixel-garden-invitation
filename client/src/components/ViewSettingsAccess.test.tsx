@@ -97,15 +97,23 @@ describe("ViewSettingsAccess", () => {
     expect(screen.getByRole("switch", { name: "전체 소리" })).not.toBeChecked();
     expect(screen.getByRole("switch", { name: "효과음" })).toBeChecked();
     expect(screen.getByRole("switch", { name: "배경 음악·공간음" })).toBeChecked();
+    expect(screen.getByRole("switch", { name: "포털 안내음" })).toBeChecked();
     expect(screen.getByRole("switch", { name: "진동 피드백" })).toBeChecked();
     const volume = screen.getByRole("group", { name: "게임 음량" });
     const footstepVolume = screen.getByRole("group", { name: "발소리 강도" });
+    const portalVolume = screen.getByRole("group", { name: "포털 안내음 강도" });
+    const portalPreview = screen.getByRole("button", { name: "안내음 미리듣기" });
     expect(within(volume).getByRole("button", { name: "보통" })).toBeDisabled();
     expect(within(footstepVolume).getByRole("button", { name: "보통" })).toBeDisabled();
+    expect(within(portalVolume).getByRole("button", { name: "보통" })).toBeDisabled();
+    expect(portalPreview).toBeDisabled();
 
     fireEvent.click(screen.getByRole("switch", { name: "전체 소리" }));
     fireEvent.click(within(volume).getByRole("button", { name: "크게" }));
     fireEvent.click(within(footstepVolume).getByRole("button", { name: "강하게" }));
+    fireEvent.click(within(portalVolume).getByRole("button", { name: "선명하게" }));
+    fireEvent.click(portalPreview);
+    fireEvent.click(screen.getByRole("switch", { name: "포털 안내음" }));
     fireEvent.click(screen.getByRole("switch", { name: "효과음" }));
     fireEvent.click(screen.getByRole("switch", { name: "배경 음악·공간음" }));
     fireEvent.click(screen.getByRole("switch", { name: "진동 피드백" }));
@@ -113,9 +121,13 @@ describe("ViewSettingsAccess", () => {
     expect(screen.getByRole("switch", { name: "전체 소리" })).toBeChecked();
     expect(screen.getByRole("switch", { name: "효과음" })).not.toBeChecked();
     expect(screen.getByRole("switch", { name: "배경 음악·공간음" })).not.toBeChecked();
+    expect(screen.getByRole("switch", { name: "포털 안내음" })).not.toBeChecked();
     expect(within(volume).getByRole("button", { name: "크게" })).toHaveAttribute("aria-pressed", "true");
     expect(within(footstepVolume).getByRole("button", { name: "강하게" })).toHaveAttribute("aria-pressed", "true");
     expect(within(footstepVolume).getByRole("button", { name: "강하게" })).toBeDisabled();
+    expect(within(portalVolume).getByRole("button", { name: "선명하게" })).toHaveAttribute("aria-pressed", "true");
+    expect(within(portalVolume).getByRole("button", { name: "선명하게" })).toBeDisabled();
+    expect(portalPreview).toBeDisabled();
     expect(screen.getByRole("switch", { name: "진동 피드백" })).not.toBeChecked();
   });
 });

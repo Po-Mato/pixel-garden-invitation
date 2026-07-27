@@ -32,6 +32,9 @@ type GameFeedbackContextValue = {
   setHapticsEnabled: (enabled: boolean) => void;
   setVolume: (volume: FeedbackVolume) => void;
   setFootstepVolume: (volume: FeedbackVolume) => void;
+  setPortalAudioEnabled: (enabled: boolean) => void;
+  setPortalAudioVolume: (volume: FeedbackVolume) => void;
+  previewPortalAudio: () => void;
   resetFeedbackPreferences: () => void;
   playFeedback: (cue: FeedbackCue, options?: FeedbackCueOptions) => void;
   setFeedbackZone: (zoneId: WorldZoneId) => void;
@@ -46,6 +49,9 @@ const GameFeedbackContext = createContext<GameFeedbackContextValue>({
   setHapticsEnabled: () => undefined,
   setVolume: () => undefined,
   setFootstepVolume: () => undefined,
+  setPortalAudioEnabled: () => undefined,
+  setPortalAudioVolume: () => undefined,
+  previewPortalAudio: () => undefined,
   resetFeedbackPreferences: () => undefined,
   playFeedback: () => undefined,
   setFeedbackZone: () => undefined,
@@ -83,6 +89,14 @@ export function GameFeedbackProvider({ children, initialPreferences }: GameFeedb
     if (await engine.unlock()) {
       engine.configure(preferencesRef.current);
       if (cue) engine.playCue(cue, options);
+    }
+  }, [getEngine]);
+
+  const activateAndPreviewPortal = useCallback(async () => {
+    const engine = getEngine();
+    if (await engine.unlock()) {
+      engine.configure(preferencesRef.current);
+      engine.previewPortalAudio();
     }
   }, [getEngine]);
 
@@ -139,6 +153,26 @@ export function GameFeedbackProvider({ children, initialPreferences }: GameFeedb
         void activateAndPlay("footstep", { surface: "wood", foot: "right" });
       }
     },
+    setPortalAudioEnabled: (portalAudioEnabled) => {
+      const next = { ...preferencesRef.current, portalAudioEnabled };
+      applyPreferences(next);
+      if (portalAudioEnabled && next.soundEnabled && next.effectsEnabled) {
+        void activateAndPreviewPortal();
+      }
+    },
+    setPortalAudioVolume: (portalAudioVolume) => {
+      const next = { ...preferencesRef.current, portalAudioVolume };
+      applyPreferences(next);
+      if (next.soundEnabled && next.effectsEnabled && next.portalAudioEnabled) {
+        void activateAndPreviewPortal();
+      }
+    },
+    previewPortalAudio: () => {
+      const current = preferencesRef.current;
+      if (current.soundEnabled && current.effectsEnabled && current.portalAudioEnabled) {
+        void activateAndPreviewPortal();
+      }
+    },
     resetFeedbackPreferences: () => applyPreferences(defaultFeedbackPreferences),
     playFeedback: (cue, options) => {
       const current = preferencesRef.current;
@@ -153,7 +187,7 @@ export function GameFeedbackProvider({ children, initialPreferences }: GameFeedb
       portalAudioRef.current = mix;
       engineRef.current?.setPortalAudio(mix);
     }
-  }), [activateAndPlay, applyPreferences, preferences]);
+  }), [activateAndPlay, activateAndPreviewPortal, applyPreferences, preferences]);
 
   return <GameFeedbackContext.Provider value={value}>{children}</GameFeedbackContext.Provider>;
 }
