@@ -3,16 +3,20 @@ import { defaultFeedbackPreferences } from "./feedbackPreferences";
 import { GameAudioEngine, triggerHaptic } from "./gameAudio";
 
 class FakeAudioParam {
+  value = 1;
   readonly values: number[] = [];
   readonly linearRamps: Array<{ value: number; at: number }> = [];
   readonly cancellations: number[] = [];
-  setValueAtTime(value: number) { this.values.push(value); }
-  exponentialRampToValueAtTime(value: number) { this.values.push(value); }
+  readonly holds: number[] = [];
+  setValueAtTime(value: number) { this.value = value; this.values.push(value); }
+  exponentialRampToValueAtTime(value: number) { this.value = value; this.values.push(value); }
   linearRampToValueAtTime(value: number, at: number) {
+    this.value = value;
     this.values.push(value);
     this.linearRamps.push({ value, at });
   }
   cancelScheduledValues(at: number) { this.cancellations.push(at); }
+  cancelAndHoldAtTime(at: number) { this.holds.push(at); }
 }
 
 class FakeOscillator extends EventTarget {
@@ -329,7 +333,7 @@ describe("GameAudioEngine", () => {
       .toEqual([42, 84]);
 
     engine.setZone("neighborhood");
-    const neighborhoodBus = context.gains[9];
+    const neighborhoodBus = context.gains[10];
     expect(context.oscillators).toHaveLength(17);
     expect(context.oscillators.slice(-3).map((oscillator) => oscillator.frequency.values[0]))
       .toEqual([1046.5, 1318.5, 880]);
@@ -345,6 +349,39 @@ describe("GameAudioEngine", () => {
     expect(context.oscillators.every((oscillator) => oscillator.stops.length === 2)).toBe(true);
     vi.advanceTimersByTime(5000);
     expect(context.oscillators).toHaveLength(17);
+  });
+
+  it.each([
+    ["portal", 0.28, 10.05, 11.05],
+    ["stamp", 0.38, 10.04, 10.96],
+    ["dialogue", 0.46, 10.04, 10.7],
+    ["complete", 0.22, 10.06, 11.75]
+  ] as const)("ducks background audio for the %s cue and restores it smoothly", async (
+    cue,
+    expectedGain,
+    expectedDuckAt,
+    expectedRestoreAt
+  ) => {
+    vi.useFakeTimers();
+    vi.stubGlobal("AudioContext", FakeAudioContext);
+    const engine = new GameAudioEngine({
+      ...defaultFeedbackPreferences,
+      soundEnabled: true,
+      musicEnabled: true
+    });
+
+    await engine.unlock();
+    const context = FakeAudioContext.instances[0];
+    const backgroundBus = context.gains[1];
+    engine.playCue("footstep", { surface: "wood", foot: "right" });
+    expect(backgroundBus.gain.linearRamps).toHaveLength(0);
+
+    engine.playCue(cue);
+    expect(backgroundBus.gain.holds).toEqual([10]);
+    expect(backgroundBus.gain.linearRamps[0].value).toBeCloseTo(expectedGain);
+    expect(backgroundBus.gain.linearRamps[0].at).toBeCloseTo(expectedDuckAt);
+    expect(backgroundBus.gain.linearRamps.at(-1)?.value).toBe(1);
+    expect(backgroundBus.gain.linearRamps.at(-1)?.at).toBeCloseTo(expectedRestoreAt);
   });
 });
 

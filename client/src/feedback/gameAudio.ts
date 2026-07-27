@@ -51,6 +51,20 @@ const portalAudioTones = [
   { frequency: 392, strength: 0.24, wave: "triangle" }
 ] as const satisfies readonly { frequency: number; strength: number; wave: OscillatorType }[];
 
+type BackgroundDuckProfile = {
+  gain: number;
+  attack: number;
+  hold: number;
+  release: number;
+};
+
+const backgroundDuckProfiles: Partial<Record<FeedbackCue, BackgroundDuckProfile>> = {
+  portal: { gain: 0.28, attack: 0.05, hold: 0.65, release: 0.35 },
+  stamp: { gain: 0.38, attack: 0.04, hold: 0.58, release: 0.34 },
+  dialogue: { gain: 0.46, attack: 0.04, hold: 0.36, release: 0.3 },
+  complete: { gain: 0.22, attack: 0.06, hold: 1.14, release: 0.55 }
+};
+
 const zoneRoots: Record<WorldZoneId, number> = {
   home: 261.63,
   neighborhood: 293.66,
@@ -249,6 +263,7 @@ export class GameAudioEngine {
   private musicOscillators = new Set<OscillatorNode>();
   private musicBus: GainNode | null = null;
   private musicFadeInPending = false;
+  private backgroundBus: GainNode | null = null;
   private portalMix: PortalAudioMix | null = null;
   private portalBus: GainNode | null = null;
   private portalPanner: StereoPannerNode | null = null;
@@ -352,6 +367,7 @@ export class GameAudioEngine {
       return;
     }
 
+    this.duckBackgroundForCue(cue);
     cueTones[cue].forEach((tone) => {
       this.playTone(tone.frequency, tone.offset, tone.duration, tone.strength, tone.wave ?? "sine", false);
     });
@@ -360,6 +376,7 @@ export class GameAudioEngine {
   dispose() {
     this.stopMusic();
     this.stopPortalAudio();
+    this.backgroundBus = null;
     const context = this.context;
     this.context = null;
     if (context && context.state !== "closed") void context.close();
@@ -415,6 +432,38 @@ export class GameAudioEngine {
     }
   }
 
+  private duckBackgroundForCue(cue: FeedbackCue) {
+    const profile = backgroundDuckProfiles[cue];
+    const context = this.context;
+    const bus = this.backgroundBus;
+    if (!profile || !context || !bus) return;
+
+    const now = context.currentTime;
+    if (typeof bus.gain.cancelAndHoldAtTime === "function") {
+      bus.gain.cancelAndHoldAtTime(now);
+    } else {
+      const currentGain = bus.gain.value;
+      bus.gain.cancelScheduledValues(now);
+      bus.gain.setValueAtTime(currentGain, now);
+    }
+    const duckAt = now + profile.attack;
+    const releaseAt = duckAt + profile.hold;
+    bus.gain.linearRampToValueAtTime(profile.gain, duckAt);
+    bus.gain.setValueAtTime(profile.gain, releaseAt);
+    bus.gain.linearRampToValueAtTime(1, releaseAt + profile.release);
+  }
+
+  private ensureBackgroundBus() {
+    if (this.backgroundBus) return this.backgroundBus;
+    const context = this.context;
+    if (!context || context.state !== "running") return null;
+    const bus = context.createGain();
+    bus.gain.setValueAtTime(1, context.currentTime);
+    bus.connect(context.destination);
+    this.backgroundBus = bus;
+    return bus;
+  }
+
   private ensurePortalAudio() {
     if (this.portalBus) return this.portalBus;
     const context = this.context;
@@ -428,9 +477,9 @@ export class GameAudioEngine {
     if (panner) {
       panner.pan.setValueAtTime(0, context.currentTime);
       bus.connect(panner);
-      panner.connect(context.destination);
+      panner.connect(this.ensureBackgroundBus() ?? context.destination);
     } else {
-      bus.connect(context.destination);
+      bus.connect(this.ensureBackgroundBus() ?? context.destination);
     }
 
     portalAudioTones.forEach((tone) => {
@@ -556,7 +605,7 @@ export class GameAudioEngine {
     } else {
       bus.gain.setValueAtTime(1, startAt);
     }
-    bus.connect(context.destination);
+    bus.connect(this.ensureBackgroundBus() ?? context.destination);
     this.musicBus = bus;
     this.musicFadeInPending = false;
     return bus;
