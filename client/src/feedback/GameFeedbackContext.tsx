@@ -9,6 +9,7 @@ import {
   type ReactNode
 } from "react";
 import type { WorldZoneId } from "@wedding-game/shared";
+import type { PortalAudioMix } from "../game/portalAudio";
 import {
   defaultFeedbackPreferences,
   loadFeedbackPreferences,
@@ -34,6 +35,7 @@ type GameFeedbackContextValue = {
   resetFeedbackPreferences: () => void;
   playFeedback: (cue: FeedbackCue, options?: FeedbackCueOptions) => void;
   setFeedbackZone: (zoneId: WorldZoneId) => void;
+  setPortalAudio: (mix: PortalAudioMix | null) => void;
 };
 
 const GameFeedbackContext = createContext<GameFeedbackContextValue>({
@@ -46,7 +48,8 @@ const GameFeedbackContext = createContext<GameFeedbackContextValue>({
   setFootstepVolume: () => undefined,
   resetFeedbackPreferences: () => undefined,
   playFeedback: () => undefined,
-  setFeedbackZone: () => undefined
+  setFeedbackZone: () => undefined,
+  setPortalAudio: () => undefined
 });
 
 type GameFeedbackProviderProps = {
@@ -59,10 +62,12 @@ export function GameFeedbackProvider({ children, initialPreferences }: GameFeedb
   const preferencesRef = useRef(preferences);
   const engineRef = useRef<GameAudioEngine | null>(null);
   const zoneRef = useRef<WorldZoneId>("home");
+  const portalAudioRef = useRef<PortalAudioMix | null>(null);
 
   const getEngine = useCallback(() => {
     engineRef.current ??= new GameAudioEngine(preferencesRef.current);
     engineRef.current.setZone(zoneRef.current);
+    engineRef.current.setPortalAudio(portalAudioRef.current);
     return engineRef.current;
   }, []);
 
@@ -143,6 +148,10 @@ export function GameFeedbackProvider({ children, initialPreferences }: GameFeedb
     setFeedbackZone: (zoneId) => {
       zoneRef.current = zoneId;
       engineRef.current?.setZone(zoneId);
+    },
+    setPortalAudio: (mix) => {
+      portalAudioRef.current = mix;
+      engineRef.current?.setPortalAudio(mix);
     }
   }), [activateAndPlay, applyPreferences, preferences]);
 

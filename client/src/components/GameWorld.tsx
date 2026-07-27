@@ -21,6 +21,7 @@ import { computeCameraTransform, screenToWorld, type ViewportSize } from "../gam
 import { resolveFootstepSurface, type FootstepSurface } from "../game/footstepSurface";
 import { computeNextGridPosition, directionFromVector, directionTowardPoint, snapToGrid } from "../game/movement";
 import { findNearestInteractionRoute, findNearestPortalRoute, findTilePath } from "../game/pathfinding";
+import { portalAudioMixAt } from "../game/portalAudio";
 import {
   advanceTileInput,
   createTileInputState,
@@ -202,7 +203,7 @@ function realtimeStatusText(status: RealtimeStatus) {
 
 export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView }: GameWorldProps) {
   const devicePerformance = useDevicePerformance();
-  const { playFeedback, setFeedbackZone } = useGameFeedback();
+  const { playFeedback, setFeedbackZone, setPortalAudio } = useGameFeedback();
   const initialZone = getWorldZone(gardenWorld, gardenWorld.defaultZoneId);
   const [activeZoneId, setActiveZoneId] = useState<WorldZoneId>(initialZone.id);
   const activeZone = getWorldZone(gardenWorld, activeZoneId);
@@ -918,6 +919,12 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   useEffect(() => {
     setFeedbackZone(activeZone.id);
   }, [activeZone.id, setFeedbackZone]);
+
+  useEffect(() => {
+    setPortalAudio(portalTransition ? null : portalAudioMixAt(position, activeZone.portals));
+  }, [activeZone.portals, portalTransition, position, setPortalAudio]);
+
+  useEffect(() => () => setPortalAudio(null), [setPortalAudio]);
 
   useEffect(() => {
     const element = mapViewportRef.current;

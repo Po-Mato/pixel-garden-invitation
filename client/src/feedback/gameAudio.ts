@@ -1,5 +1,6 @@
 import type { WorldZoneId } from "@wedding-game/shared";
 import type { FootstepSurface } from "../game/footstepSurface";
+import type { PortalAudioMix } from "../game/portalAudio";
 import type { WalkLandingFoot } from "../game/walkTiming";
 import type { FeedbackPreferences, FeedbackVolume } from "./feedbackPreferences";
 
@@ -43,6 +44,12 @@ const footstepTextureVariations: readonly FootstepTextureVariation[] = [
 
 const footstepTextureSequence = [0, 1, 2, 0, 2, 1] as const;
 const musicCrossfadeSeconds = 0.42;
+const portalAudioFadeSeconds = 0.16;
+const portalAudioMaxGain = 0.018;
+const portalAudioTones = [
+  { frequency: 196, strength: 0.72, wave: "sine" },
+  { frequency: 392, strength: 0.24, wave: "triangle" }
+] as const satisfies readonly { frequency: number; strength: number; wave: OscillatorType }[];
 
 const zoneRoots: Record<WorldZoneId, number> = {
   home: 261.63,
@@ -242,6 +249,13 @@ export class GameAudioEngine {
   private musicOscillators = new Set<OscillatorNode>();
   private musicBus: GainNode | null = null;
   private musicFadeInPending = false;
+  private portalMix: PortalAudioMix | null = null;
+  private portalBus: GainNode | null = null;
+  private portalPanner: StereoPannerNode | null = null;
+  private portalOscillators = new Set<OscillatorNode>();
+  private portalStopTimer: number | null = null;
+  private portalAppliedGain = 0.0001;
+  private portalAppliedPan = 0;
   private footstepVariantIndexes: Record<FootstepSurface, number> = {
     wood: 0,
     asphalt: 0,
@@ -270,12 +284,14 @@ export class GameAudioEngine {
     }
     if (this.context.state !== "running") return false;
     this.syncMusic();
+    this.syncPortalAudio();
     return true;
   }
 
   configure(preferences: FeedbackPreferences) {
     this.preferences = preferences;
     this.syncMusic();
+    this.syncPortalAudio();
   }
 
   setZone(zoneId: WorldZoneId) {
@@ -298,6 +314,15 @@ export class GameAudioEngine {
   setVisible(visible: boolean) {
     this.visible = visible;
     this.syncMusic();
+    this.syncPortalAudio();
+  }
+
+  setPortalAudio(mix: PortalAudioMix | null) {
+    this.portalMix = mix ? {
+      intensity: Math.min(1, Math.max(0, mix.intensity)),
+      pan: Math.min(1, Math.max(-1, mix.pan))
+    } : null;
+    this.syncPortalAudio();
   }
 
   playCue(cue: FeedbackCue, options: FeedbackCueOptions = {}) {
@@ -334,6 +359,7 @@ export class GameAudioEngine {
 
   dispose() {
     this.stopMusic();
+    this.stopPortalAudio();
     const context = this.context;
     this.context = null;
     if (context && context.state !== "closed") void context.close();
@@ -349,12 +375,112 @@ export class GameAudioEngine {
     return this.canPlaySound() && this.preferences.musicEnabled;
   }
 
+  private canPlayPortalAudio() {
+    return this.canPlaySound() && this.preferences.effectsEnabled;
+  }
+
   private syncMusic() {
     if (!this.canPlayMusic()) {
       this.stopMusic();
       return;
     }
     if (this.musicTimer === null && this.musicOscillators.size === 0) this.scheduleMusicCycle();
+  }
+
+  private syncPortalAudio() {
+    const mix = this.portalMix;
+    if (!this.canPlayPortalAudio() || !mix || mix.intensity <= 0) {
+      this.fadeOutPortalAudio();
+      return;
+    }
+
+    const context = this.context;
+    const bus = this.ensurePortalAudio();
+    if (!context || !bus) return;
+    if (this.portalStopTimer !== null) window.clearTimeout(this.portalStopTimer);
+    this.portalStopTimer = null;
+
+    const now = context.currentTime;
+    const targetGain = portalAudioMaxGain * volumeGain[this.preferences.volume] * mix.intensity;
+    bus.gain.cancelScheduledValues(now);
+    bus.gain.setValueAtTime(this.portalAppliedGain, now);
+    bus.gain.linearRampToValueAtTime(Math.max(0.0001, targetGain), now + portalAudioFadeSeconds);
+    this.portalAppliedGain = Math.max(0.0001, targetGain);
+
+    if (this.portalPanner) {
+      this.portalPanner.pan.cancelScheduledValues(now);
+      this.portalPanner.pan.setValueAtTime(this.portalAppliedPan, now);
+      this.portalPanner.pan.linearRampToValueAtTime(mix.pan, now + portalAudioFadeSeconds);
+      this.portalAppliedPan = mix.pan;
+    }
+  }
+
+  private ensurePortalAudio() {
+    if (this.portalBus) return this.portalBus;
+    const context = this.context;
+    if (!context || context.state !== "running") return null;
+
+    const bus = context.createGain();
+    bus.gain.setValueAtTime(0.0001, context.currentTime);
+    const panner = typeof context.createStereoPanner === "function"
+      ? context.createStereoPanner()
+      : null;
+    if (panner) {
+      panner.pan.setValueAtTime(0, context.currentTime);
+      bus.connect(panner);
+      panner.connect(context.destination);
+    } else {
+      bus.connect(context.destination);
+    }
+
+    portalAudioTones.forEach((tone) => {
+      const oscillator = context.createOscillator();
+      const toneGain = context.createGain();
+      oscillator.type = tone.wave;
+      oscillator.frequency.setValueAtTime(tone.frequency, context.currentTime);
+      toneGain.gain.setValueAtTime(tone.strength, context.currentTime);
+      oscillator.connect(toneGain);
+      toneGain.connect(bus);
+      this.portalOscillators.add(oscillator);
+      oscillator.addEventListener("ended", () => this.portalOscillators.delete(oscillator), { once: true });
+      oscillator.start(context.currentTime);
+    });
+
+    this.portalBus = bus;
+    this.portalPanner = panner;
+    this.portalAppliedGain = 0.0001;
+    this.portalAppliedPan = 0;
+    return bus;
+  }
+
+  private fadeOutPortalAudio() {
+    const context = this.context;
+    const bus = this.portalBus;
+    if (!context || !bus || this.portalStopTimer !== null) return;
+
+    const now = context.currentTime;
+    bus.gain.cancelScheduledValues(now);
+    bus.gain.setValueAtTime(this.portalAppliedGain, now);
+    bus.gain.linearRampToValueAtTime(0.0001, now + portalAudioFadeSeconds);
+    this.portalAppliedGain = 0.0001;
+    this.portalStopTimer = window.setTimeout(() => this.stopPortalAudio(), portalAudioFadeSeconds * 1_000 + 20);
+  }
+
+  private stopPortalAudio() {
+    if (this.portalStopTimer !== null) window.clearTimeout(this.portalStopTimer);
+    this.portalStopTimer = null;
+    this.portalOscillators.forEach((oscillator) => {
+      try {
+        oscillator.stop();
+      } catch {
+        // Already stopped.
+      }
+    });
+    this.portalOscillators.clear();
+    this.portalBus = null;
+    this.portalPanner = null;
+    this.portalAppliedGain = 0.0001;
+    this.portalAppliedPan = 0;
   }
 
   private scheduleMusicCycle() {

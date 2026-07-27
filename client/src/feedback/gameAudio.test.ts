@@ -35,12 +35,18 @@ class FakeDelay {
   connect() { return undefined; }
 }
 
+class FakeStereoPanner {
+  readonly pan = new FakeAudioParam();
+  connect() { return undefined; }
+}
+
 class FakeAudioContext {
   static instances: FakeAudioContext[] = [];
   readonly destination = {};
   readonly oscillators: FakeOscillator[] = [];
   readonly gains: FakeGain[] = [];
   readonly delays: FakeDelay[] = [];
+  readonly panners: FakeStereoPanner[] = [];
   currentTime = 10;
   state: AudioContextState = "running";
 
@@ -63,6 +69,11 @@ class FakeAudioContext {
     const delay = new FakeDelay();
     this.delays.push(delay);
     return delay;
+  }
+  createStereoPanner() {
+    const panner = new FakeStereoPanner();
+    this.panners.push(panner);
+    return panner;
   }
   resume() { this.state = "running"; return Promise.resolve(); }
   close() { this.state = "closed"; return Promise.resolve(); }
@@ -262,6 +273,42 @@ describe("GameAudioEngine", () => {
     const context = FakeAudioContext.instances[0];
     expect(context.oscillators.map((oscillator) => oscillator.frequency.values[0]))
       .toEqual([880, 1174.66]);
+  });
+
+  it("fades and pans the portal hum with proximity while respecting effect settings", async () => {
+    vi.useFakeTimers();
+    vi.stubGlobal("AudioContext", FakeAudioContext);
+    const engine = new GameAudioEngine({
+      ...defaultFeedbackPreferences,
+      soundEnabled: true,
+      musicEnabled: false
+    });
+
+    engine.setPortalAudio({ intensity: 0.5, pan: 0.75 });
+    await engine.unlock();
+
+    const context = FakeAudioContext.instances[0];
+    const portalBus = context.gains[0];
+    expect(context.oscillators.map((oscillator) => oscillator.frequency.values[0]))
+      .toEqual([196, 392]);
+    expect(portalBus.gain.linearRamps.at(-1)?.value).toBeCloseTo(0.00702);
+    expect(portalBus.gain.linearRamps.at(-1)?.at).toBeCloseTo(10.16);
+    expect(context.panners[0].pan.linearRamps.at(-1)).toEqual({ value: 0.75, at: 10.16 });
+
+    engine.setPortalAudio({ intensity: 1, pan: -0.5 });
+    expect(portalBus.gain.linearRamps.at(-1)?.value).toBeCloseTo(0.01404);
+    expect(portalBus.gain.linearRamps.at(-1)?.at).toBeCloseTo(10.16);
+    expect(context.panners[0].pan.linearRamps.at(-1)).toEqual({ value: -0.5, at: 10.16 });
+
+    engine.configure({
+      ...defaultFeedbackPreferences,
+      soundEnabled: true,
+      effectsEnabled: false,
+      musicEnabled: false
+    });
+    expect(portalBus.gain.linearRamps.at(-1)).toEqual({ value: 0.0001, at: 10.16 });
+    vi.advanceTimersByTime(180);
+    expect(context.oscillators.every((oscillator) => oscillator.stops.length === 1)).toBe(true);
   });
 
   it("changes ambience with the map and stops all background sound while hidden", async () => {
