@@ -23,11 +23,17 @@ class FakeGain {
   connect() { return undefined; }
 }
 
+class FakeDelay {
+  readonly delayTime = new FakeAudioParam();
+  connect() { return undefined; }
+}
+
 class FakeAudioContext {
   static instances: FakeAudioContext[] = [];
   readonly destination = {};
   readonly oscillators: FakeOscillator[] = [];
   readonly gains: FakeGain[] = [];
+  readonly delays: FakeDelay[] = [];
   currentTime = 10;
   state: AudioContextState = "running";
 
@@ -45,6 +51,11 @@ class FakeAudioContext {
     const gain = new FakeGain();
     this.gains.push(gain);
     return gain;
+  }
+  createDelay() {
+    const delay = new FakeDelay();
+    this.delays.push(delay);
+    return delay;
   }
   resume() { this.state = "running"; return Promise.resolve(); }
   close() { this.state = "closed"; return Promise.resolve(); }
@@ -187,6 +198,33 @@ describe("GameAudioEngine", () => {
     expect(context.oscillators[12].frequency.values[0]).toBeCloseTo(354.6);
   });
 
+  it("adds zone-sized footstep reflections indoors while keeping outdoor steps dry", async () => {
+    vi.stubGlobal("AudioContext", FakeAudioContext);
+    const engine = new GameAudioEngine({
+      ...defaultFeedbackPreferences,
+      soundEnabled: true,
+      musicEnabled: false
+    });
+
+    engine.setZone("neighborhood");
+    await engine.unlock();
+    const context = FakeAudioContext.instances[0];
+    engine.playCue("footstep", { surface: "asphalt", foot: "right" });
+    expect(context.delays).toHaveLength(0);
+
+    engine.setZone("ceremony-hall");
+    engine.playCue("footstep", { surface: "carpet", foot: "left" });
+    expect(context.delays).toHaveLength(1);
+    expect(context.delays[0].delayTime.values[0]).toBeCloseTo(0.14);
+    expect(context.gains[3].gain.values[0]).toBeCloseTo(0.24);
+
+    engine.setZone("restroom");
+    engine.playCue("footstep", { surface: "tile", foot: "right" });
+    expect(context.delays).toHaveLength(3);
+    expect(context.delays[1].delayTime.values[0]).toBeCloseTo(0.115);
+    expect(context.gains[5].gain.values[0]).toBeCloseTo(0.26);
+  });
+
   it("plays a longer four-note celebration for journey completion", async () => {
     vi.stubGlobal("AudioContext", FakeAudioContext);
     const engine = new GameAudioEngine({
@@ -219,7 +257,7 @@ describe("GameAudioEngine", () => {
       .toEqual([880, 1174.66]);
   });
 
-  it("starts zone music only while sound, music, and page visibility are active", async () => {
+  it("changes ambience with the map and stops all background sound while hidden", async () => {
     vi.useFakeTimers();
     vi.stubGlobal("AudioContext", FakeAudioContext);
     const engine = new GameAudioEngine({
@@ -228,15 +266,24 @@ describe("GameAudioEngine", () => {
       musicEnabled: true
     });
 
+    engine.setZone("subway-train");
     await engine.unlock();
     const context = FakeAudioContext.instances[0];
-    expect(context.oscillators).toHaveLength(6);
-    expect(context.oscillators.every((oscillator) => oscillator.stops.length === 1)).toBe(true);
+    expect(context.oscillators).toHaveLength(8);
+    expect(context.oscillators.slice(-2).map((oscillator) => oscillator.frequency.values[0]))
+      .toEqual([42, 84]);
+
+    engine.setZone("neighborhood");
+    expect(context.oscillators).toHaveLength(17);
+    expect(context.oscillators.slice(-3).map((oscillator) => oscillator.frequency.values[0]))
+      .toEqual([1046.5, 1318.5, 880]);
+    expect(context.oscillators.slice(0, 8).every((oscillator) => oscillator.stops.length === 2)).toBe(true);
+    expect(context.oscillators.slice(8).every((oscillator) => oscillator.stops.length === 1)).toBe(true);
 
     engine.setVisible(false);
     expect(context.oscillators.every((oscillator) => oscillator.stops.length === 2)).toBe(true);
     vi.advanceTimersByTime(5000);
-    expect(context.oscillators).toHaveLength(6);
+    expect(context.oscillators).toHaveLength(17);
   });
 });
 

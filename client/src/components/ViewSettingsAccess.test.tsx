@@ -96,7 +96,7 @@ describe("ViewSettingsAccess", () => {
     fireEvent.click(screen.getByRole("button", { name: "환경 설정" }));
     expect(screen.getByRole("switch", { name: "전체 소리" })).not.toBeChecked();
     expect(screen.getByRole("switch", { name: "효과음" })).toBeChecked();
-    expect(screen.getByRole("switch", { name: "배경 음악" })).toBeChecked();
+    expect(screen.getByRole("switch", { name: "배경 음악·공간음" })).toBeChecked();
     expect(screen.getByRole("switch", { name: "진동 피드백" })).toBeChecked();
     const volume = screen.getByRole("group", { name: "게임 음량" });
     const footstepVolume = screen.getByRole("group", { name: "발소리 강도" });
@@ -107,12 +107,12 @@ describe("ViewSettingsAccess", () => {
     fireEvent.click(within(volume).getByRole("button", { name: "크게" }));
     fireEvent.click(within(footstepVolume).getByRole("button", { name: "강하게" }));
     fireEvent.click(screen.getByRole("switch", { name: "효과음" }));
-    fireEvent.click(screen.getByRole("switch", { name: "배경 음악" }));
+    fireEvent.click(screen.getByRole("switch", { name: "배경 음악·공간음" }));
     fireEvent.click(screen.getByRole("switch", { name: "진동 피드백" }));
 
     expect(screen.getByRole("switch", { name: "전체 소리" })).toBeChecked();
     expect(screen.getByRole("switch", { name: "효과음" })).not.toBeChecked();
-    expect(screen.getByRole("switch", { name: "배경 음악" })).not.toBeChecked();
+    expect(screen.getByRole("switch", { name: "배경 음악·공간음" })).not.toBeChecked();
     expect(within(volume).getByRole("button", { name: "크게" })).toHaveAttribute("aria-pressed", "true");
     expect(within(footstepVolume).getByRole("button", { name: "강하게" })).toHaveAttribute("aria-pressed", "true");
     expect(within(footstepVolume).getByRole("button", { name: "강하게" })).toBeDisabled();

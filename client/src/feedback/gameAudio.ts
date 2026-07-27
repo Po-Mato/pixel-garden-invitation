@@ -64,6 +64,76 @@ type FeedbackTone = {
   wave?: OscillatorType;
 };
 
+type FootstepEcho = {
+  delay: number;
+  mix: number;
+};
+
+type ZoneAcoustics = {
+  footstepEcho: FootstepEcho | null;
+  ambience: FeedbackTone[];
+};
+
+const zoneAcoustics: Record<WorldZoneId, ZoneAcoustics> = {
+  home: {
+    footstepEcho: { delay: 0.045, mix: 0.11 },
+    ambience: [{ frequency: 72, offset: 0, duration: 4.55, strength: 0.003, wave: "sine" }]
+  },
+  neighborhood: {
+    footstepEcho: null,
+    ambience: [
+      { frequency: 1046.5, offset: 1.05, duration: 0.08, strength: 0.0035, wave: "triangle" },
+      { frequency: 1318.5, offset: 1.17, duration: 0.07, strength: 0.0028, wave: "triangle" },
+      { frequency: 880, offset: 3.2, duration: 0.1, strength: 0.0025, wave: "triangle" }
+    ]
+  },
+  "subway-station": {
+    footstepEcho: { delay: 0.105, mix: 0.22 },
+    ambience: [
+      { frequency: 46, offset: 0, duration: 4.55, strength: 0.005, wave: "triangle" },
+      { frequency: 92, offset: 2.1, duration: 0.62, strength: 0.003, wave: "square" }
+    ]
+  },
+  "subway-train": {
+    footstepEcho: { delay: 0.055, mix: 0.17 },
+    ambience: [
+      { frequency: 42, offset: 0, duration: 4.55, strength: 0.006, wave: "triangle" },
+      { frequency: 84, offset: 0.38, duration: 3.8, strength: 0.003, wave: "square" }
+    ]
+  },
+  "venue-exterior": {
+    footstepEcho: null,
+    ambience: [
+      { frequency: 987.77, offset: 0.9, duration: 0.09, strength: 0.003, wave: "triangle" },
+      { frequency: 1174.66, offset: 1.04, duration: 0.08, strength: 0.0026, wave: "triangle" },
+      { frequency: 783.99, offset: 3.35, duration: 0.12, strength: 0.0022, wave: "triangle" }
+    ]
+  },
+  lobby: {
+    footstepEcho: { delay: 0.075, mix: 0.15 },
+    ambience: [{ frequency: 98, offset: 0, duration: 4.55, strength: 0.0027, wave: "sine" }]
+  },
+  "bridal-room": {
+    footstepEcho: { delay: 0.045, mix: 0.09 },
+    ambience: [{ frequency: 110, offset: 0, duration: 4.55, strength: 0.0022, wave: "sine" }]
+  },
+  "ceremony-hall": {
+    footstepEcho: { delay: 0.14, mix: 0.24 },
+    ambience: [{ frequency: 65.41, offset: 0, duration: 4.55, strength: 0.0032, wave: "sine" }]
+  },
+  banquet: {
+    footstepEcho: { delay: 0.085, mix: 0.14 },
+    ambience: [
+      { frequency: 82.41, offset: 0, duration: 4.55, strength: 0.0028, wave: "triangle" },
+      { frequency: 164.81, offset: 2.65, duration: 0.32, strength: 0.002, wave: "sine" }
+    ]
+  },
+  restroom: {
+    footstepEcho: { delay: 0.115, mix: 0.26 },
+    ambience: [{ frequency: 120, offset: 0, duration: 4.55, strength: 0.0024, wave: "sine" }]
+  }
+};
+
 const footstepTones: Record<FootstepSurface, FeedbackTone[]> = {
   wood: [
     { frequency: 160, offset: 0, duration: 0.045, strength: 0.024, wave: "triangle" },
@@ -239,7 +309,8 @@ export class GameAudioEngine {
           tone.strength,
           tone.wave ?? "sine",
           false,
-          strengthScale
+          strengthScale,
+          zoneAcoustics[this.zoneId].footstepEcho
         );
       });
       return;
@@ -284,6 +355,9 @@ export class GameAudioEngine {
     motif.forEach((ratio, index) => {
       this.playTone(root * ratio, 0.22 + index * 0.72, 1.55, 0.018, index % 2 === 0 ? "sine" : "triangle", true);
     });
+    zoneAcoustics[this.zoneId].ambience.forEach((tone) => {
+      this.playTone(tone.frequency, tone.offset, tone.duration, tone.strength, tone.wave ?? "sine", true);
+    });
     this.musicTimer = window.setTimeout(() => {
       this.musicTimer = null;
       this.scheduleMusicCycle();
@@ -310,7 +384,8 @@ export class GameAudioEngine {
     strength: number,
     wave: OscillatorType,
     music: boolean,
-    strengthScale = 1
+    strengthScale = 1,
+    echo: FootstepEcho | null = null
   ) {
     const context = this.context;
     if (!context || context.state !== "running") return;
@@ -327,6 +402,15 @@ export class GameAudioEngine {
     gain.gain.exponentialRampToValueAtTime(0.0001, stopAt);
     oscillator.connect(gain);
     gain.connect(context.destination);
+    if (echo) {
+      const delay = context.createDelay();
+      const echoGain = context.createGain();
+      delay.delayTime.setValueAtTime(echo.delay, startAt);
+      echoGain.gain.setValueAtTime(echo.mix, startAt);
+      gain.connect(delay);
+      delay.connect(echoGain);
+      echoGain.connect(context.destination);
+    }
     if (music) {
       this.musicOscillators.add(oscillator);
       oscillator.addEventListener("ended", () => this.musicOscillators.delete(oscillator), { once: true });

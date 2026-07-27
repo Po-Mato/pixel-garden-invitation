@@ -198,7 +198,7 @@ export function ViewSettingsAccess({ variant, onOpenChange }: ViewSettingsAccess
               </label>
 
               <label className="view-settings-sheet__switch">
-                <span><Music2 aria-hidden="true" /><strong>배경 음악</strong></span>
+                <span><Music2 aria-hidden="true" /><strong>배경 음악·공간음</strong></span>
                 <input
                   type="checkbox"
                   role="switch"
@@ -285,7 +285,7 @@ export function ViewSettingsAccess({ variant, onOpenChange }: ViewSettingsAccess
               데이터 절약 {preferences.dataSaver ? "켜짐" : "꺼짐"},
               전체 소리 {feedbackPreferences.soundEnabled ? "켜짐" : "꺼짐"},
               효과음 {feedbackPreferences.effectsEnabled ? "켜짐" : "꺼짐"},
-              배경 음악 {feedbackPreferences.musicEnabled ? "켜짐" : "꺼짐"},
+              배경 음악과 공간음 {feedbackPreferences.musicEnabled ? "켜짐" : "꺼짐"},
               발소리 강도 {feedbackPreferences.footstepVolume === "quiet"
                 ? "약하게"
                 : feedbackPreferences.footstepVolume === "balanced" ? "보통" : "강하게"},
