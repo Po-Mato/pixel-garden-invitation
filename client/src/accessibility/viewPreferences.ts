@@ -4,6 +4,7 @@ export type ViewPreferences = {
   highContrast: boolean;
   comfortableControls: boolean;
   dataSaver: boolean;
+  routeVoiceGuidance: boolean;
 };
 
 type StorageLike = Pick<Storage, "getItem" | "setItem">;
@@ -14,7 +15,8 @@ export const defaultViewPreferences: ViewPreferences = {
   reduceMotion: false,
   highContrast: false,
   comfortableControls: false,
-  dataSaver: false
+  dataSaver: false,
+  routeVoiceGuidance: false
 };
 
 export const comfortableViewPreferences: ViewPreferences = {
@@ -22,7 +24,8 @@ export const comfortableViewPreferences: ViewPreferences = {
   reduceMotion: true,
   highContrast: true,
   comfortableControls: true,
-  dataSaver: false
+  dataSaver: false,
+  routeVoiceGuidance: false
 };
 
 function browserStorage(): StorageLike | null {
@@ -45,7 +48,8 @@ export function isViewPreferences(value: unknown): value is ViewPreferences {
     && typeof candidate.reduceMotion === "boolean"
     && typeof candidate.highContrast === "boolean"
     && typeof candidate.comfortableControls === "boolean"
-    && typeof candidate.dataSaver === "boolean";
+    && typeof candidate.dataSaver === "boolean"
+    && typeof candidate.routeVoiceGuidance === "boolean";
 }
 
 function normalizeStoredPreferences(value: unknown): ViewPreferences | null {
@@ -65,7 +69,10 @@ function normalizeStoredPreferences(value: unknown): ViewPreferences | null {
     comfortableControls: typeof candidate.comfortableControls === "boolean"
       ? candidate.comfortableControls
       : false,
-    dataSaver: typeof candidate.dataSaver === "boolean" ? candidate.dataSaver : false
+    dataSaver: typeof candidate.dataSaver === "boolean" ? candidate.dataSaver : false,
+    routeVoiceGuidance: typeof candidate.routeVoiceGuidance === "boolean"
+      ? candidate.routeVoiceGuidance
+      : false
   };
 }
 
@@ -112,6 +119,9 @@ export function applyViewPreferences(
 
   if (preferences.dataSaver) root.dataset.dataSaver = "true";
   else delete root.dataset.dataSaver;
+
+  if (preferences.routeVoiceGuidance) root.dataset.routeVoiceGuidance = "true";
+  else delete root.dataset.routeVoiceGuidance;
 }
 
 export function shouldReduceMotion(

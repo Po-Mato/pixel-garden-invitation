@@ -39,6 +39,14 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm visual:check
+      - name: Upload visual region report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: mobile-visual-region-report-${{ github.run_id }}
+          path: .superpowers/visual-regression/mobile-game-regions.json
+          if-no-files-found: ignore
+          retention-days: 14
       - name: Upload visual difference
         if: failure()
         uses: actions/upload-artifact@v7

@@ -28,7 +28,10 @@ const dimensionRules: Record<InvitationAnalyticsEventName, RegExp> = {
   gallery_view: contextPattern,
   gallery_zoom: contextPattern,
   page_load: /^(mobile|tablet|desktop)$/,
-  client_error: /^(script|promise|resource)$/
+  client_error: /^(script|promise|resource)$/,
+  performance_fps: /^(standard|lite):(standard|memory|processor|network|frame-rate)$/,
+  performance_long_task: /^(mobile|tablet|desktop)$/,
+  performance_quality_change: /^(standard|lite):(standard|memory|processor|network|frame-rate)$/
 };
 
 function json(body: unknown, status = 200): Response {
@@ -50,8 +53,12 @@ function parseEvent(value: unknown): InvitationAnalyticsEvent | null {
   if (typeof value.dimension !== "string") return null;
   const name = value.name as InvitationAnalyticsEventName;
   if (!dimensionRules[name].test(value.dimension)) return null;
-  if (name === "page_load") {
+  if (name === "page_load" || name === "performance_long_task") {
     if (!Number.isInteger(value.value) || (value.value as number) < 0 || (value.value as number) > 60_000) return null;
+    return { name, dimension: value.dimension, value: value.value as number };
+  }
+  if (name === "performance_fps") {
+    if (!Number.isInteger(value.value) || (value.value as number) < 1 || (value.value as number) > 120) return null;
     return { name, dimension: value.dimension, value: value.value as number };
   }
   if (value.value !== undefined) return null;

@@ -47,6 +47,12 @@ import { quickInvitationHashForCheckpoint } from "../game/journeyAccessibility";
 import { summarizeRemainingJourney } from "../game/journeyRouteSummary";
 import { resolveNpcDialogue, type NpcDialogue, type NpcId } from "../game/npcDialogue";
 import { navigationProgress } from "../game/navigationProgress";
+import {
+  firstJourneyWaypoint,
+  normalizeJourneyWaypointPlan,
+  remainingJourneyWaypoints,
+  toggleJourneyWaypoint
+} from "../game/journeyWaypointPlan";
 import { useGameFeedback } from "../feedback/GameFeedbackContext";
 import { useDevicePerformance } from "../performance/DevicePerformanceContext";
 import {
@@ -88,6 +94,7 @@ import { JourneyStampBook, JourneyStampNotice } from "./JourneyStampBook";
 import { NpcDialogueBubble } from "./NpcDialogueBubble";
 import { SpotModal } from "./SpotModal";
 import { VirtualJoystick } from "./VirtualJoystick";
+import { useViewPreferences } from "../accessibility/ViewPreferencesContext";
 import { ViewSettingsAccess } from "./ViewSettingsAccess";
 import { WeddingEventSummary } from "./WeddingEventSummary";
 import { WeddingDayQuickAccess } from "./WeddingDayQuickAccess";
@@ -217,6 +224,7 @@ function realtimeStatusText(status: RealtimeStatus) {
 
 export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView }: GameWorldProps) {
   const devicePerformance = useDevicePerformance();
+  const { preferences: viewPreferences } = useViewPreferences();
   const { playFeedback, setFeedbackZone, setPortalAudio } = useGameFeedback();
   const initialZone = getWorldZone(gardenWorld, gardenWorld.defaultZoneId);
   const [activeZoneId, setActiveZoneId] = useState<WorldZoneId>(initialZone.id);
@@ -248,6 +256,9 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   const [travelStatus, setTravelStatus] = useState("우리 집에서 여정을 시작해요");
   const [routeRecalculationId, setRouteRecalculationId] = useState(0);
   const [journeyProgress, setJourneyProgress] = useState(loadJourneyProgress);
+  const [plannedCheckpointIds, setPlannedCheckpointIds] = useState(() => (
+    remainingJourneyWaypoints(loadJourneyProgress()).map(({ id }) => id)
+  ));
   const [gameGuideOpen, setGameGuideOpen] = useState(() => (
     shouldAutoOpenGameGuide(loadGameGuideState(), journeyProgress)
   ));
@@ -305,6 +316,21 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   const reactionTokenRef = useRef(0);
   const walkPhaseRef = useRef(0);
   const renderFrameAtRef = useRef<number | null>(null);
+  const spokenTravelStatusRef = useRef("");
+
+  useEffect(() => {
+    if (!viewPreferences.routeVoiceGuidance || spokenTravelStatusRef.current === travelStatus) return;
+    if (!("speechSynthesis" in window) || typeof SpeechSynthesisUtterance !== "function") return;
+    spokenTravelStatusRef.current = travelStatus;
+    const timer = window.setTimeout(() => {
+      const utterance = new SpeechSynthesisUtterance(travelStatus);
+      utterance.lang = "ko-KR";
+      utterance.rate = 1.05;
+      window.speechSynthesis.cancel();
+      window.speechSynthesis.speak(utterance);
+    }, 120);
+    return () => window.clearTimeout(timer);
+  }, [travelStatus, viewPreferences.routeVoiceGuidance]);
 
   const setTarget = useCallback((nextTarget: Point | null) => {
     setTargetState(nextTarget);
@@ -351,6 +377,10 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     journeyProgressRef.current = result.progress;
     saveJourneyProgress(result.progress);
     setJourneyProgress(result.progress);
+    setPlannedCheckpointIds((current) => normalizeJourneyWaypointPlan(
+      result.progress,
+      current.filter((id) => id !== checkpointId)
+    ));
     setStampedCheckpointId(checkpointId);
     const checkpoint = journeyCheckpoints.find((candidate) => candidate.id === checkpointId);
     setTravelStatus(`${checkpoint?.label ?? "방문"} 스탬프를 찍었어요`);
@@ -1482,7 +1512,9 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
 
   const camera = computeCameraTransform({ player: position, viewport, bounds: activeZone.bounds, zoom: 1 });
   const completedJourneyIds = new Set(journeyProgress.completedIds);
-  const recommendedCheckpoint = nextJourneyCheckpoint(journeyProgress);
+  const remainingWaypoints = remainingJourneyWaypoints(journeyProgress);
+  const recommendedCheckpoint = firstJourneyWaypoint(journeyProgress, plannedCheckpointIds)
+    ?? nextJourneyCheckpoint(journeyProgress);
   const recommendedZone = recommendedCheckpoint
     ? getWorldZone(gardenWorld, recommendedCheckpoint.zoneId)
     : null;
@@ -2053,6 +2085,11 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
           checkpoint={recommendedCheckpoint}
           progress={journeyProgress}
           guidance={journeyGuidance}
+          waypoints={remainingWaypoints}
+          selectedWaypointIds={plannedCheckpointIds}
+          onToggleWaypoint={(checkpointId) => setPlannedCheckpointIds((current) => (
+            toggleJourneyWaypoint(journeyProgress, current, checkpointId)
+          ))}
           onClose={() => setJourneyRouteOpen(false)}
           onStart={() => {
             setJourneyRouteOpen(false);

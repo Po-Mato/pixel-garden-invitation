@@ -2,6 +2,7 @@ import { CheckCircle2, History, RefreshCw } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { RsvpRecord, WeddingEvent } from "@wedding-game/shared";
 import { fetchOwnedRsvp, WeddingApiError } from "../api/weddingApi";
+import { RsvpHistoryDialog } from "./RsvpHistoryDialog";
 import {
   clearRsvpCredential,
   loadRsvpCredential,
@@ -44,6 +45,7 @@ export function RsvpSavedStatus({ event, onOpenDetails }: RsvpSavedStatusProps) 
   const [state, setState] = useState<SavedStatusState>(() => (
     loadRsvpCredential(invitationId) ? { kind: "loading" } : { kind: "hidden" }
   ));
+  const [historyOpen, setHistoryOpen] = useState(false);
 
   const refresh = useCallback(async () => {
     const credential = loadRsvpCredential(invitationId);
@@ -82,7 +84,10 @@ export function RsvpSavedStatus({ event, onOpenDetails }: RsvpSavedStatusProps) 
 
   if (state.kind === "hidden") return null;
 
+  const credential = loadRsvpCredential(invitationId);
+
   return (
+    <>
     <section className="rsvp-saved-status" aria-label="이 기기에 저장된 참석 답변">
       <header>
         <CheckCircle2 aria-hidden="true" />
@@ -111,10 +116,24 @@ export function RsvpSavedStatus({ event, onOpenDetails }: RsvpSavedStatusProps) 
             <button type="button" onClick={() => void refresh()} aria-label="참석 답변 최신 상태 확인" title="최신 상태 확인">
               <RefreshCw aria-hidden="true" />
             </button>
+            <button type="button" onClick={() => setHistoryOpen(true)}><History aria-hidden="true" /> 변경 이력</button>
             <button type="button" className="primary-button" onClick={onOpenDetails}>답변 확인·수정</button>
           </div>
         </div>
       ) : null}
     </section>
+    {historyOpen && state.kind === "ready" && credential ? (
+      <RsvpHistoryDialog
+        credential={credential}
+        response={state.response}
+        onClose={() => setHistoryOpen(false)}
+        onUnauthorized={() => {
+          setHistoryOpen(false);
+          clearRsvpCredential(invitationId);
+          setState({ kind: "hidden" });
+        }}
+      />
+    ) : null}
+    </>
   );
 }

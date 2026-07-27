@@ -15,6 +15,9 @@ type JourneyRouteSheetProps = {
   checkpoint: JourneyCheckpoint;
   progress: JourneyProgress;
   guidance: JourneyGuidancePreview | null;
+  waypoints?: readonly JourneyCheckpoint[];
+  selectedWaypointIds?: readonly JourneyCheckpoint["id"][];
+  onToggleWaypoint?: (checkpointId: JourneyCheckpoint["id"]) => void;
   onClose: () => void;
   onStart: () => void;
   onOpenSimpleDestination?: (checkpoint: JourneyCheckpoint) => void;
@@ -25,6 +28,9 @@ export function JourneyRouteSheet({
   checkpoint,
   progress,
   guidance,
+  waypoints = [checkpoint],
+  selectedWaypointIds = [checkpoint.id],
+  onToggleWaypoint,
   onClose,
   onStart,
   onOpenSimpleDestination
@@ -73,6 +79,27 @@ export function JourneyRouteSheet({
             : checkpoint.zoneId === activeZone.id ? "현재 맵" : "포털 경로 안내"}</em>
         </div>
 
+        <fieldset className="journey-route-sheet__waypoints">
+          <legend>경유지 계획</legend>
+          <p>방문할 목적지를 선택하면 예식 여정 순서로 안내합니다.</p>
+          {waypoints.map((waypoint, index) => {
+            const selected = selectedWaypointIds.includes(waypoint.id);
+            return (
+              <label key={waypoint.id} data-selected={selected || undefined}>
+                <input
+                  type="checkbox"
+                  checked={selected}
+                  disabled={!onToggleWaypoint || (selected && selectedWaypointIds.length === 1)}
+                  onChange={() => onToggleWaypoint?.(waypoint.id)}
+                />
+                <b>{index + 1}</b>
+                <span><strong>{waypoint.label}</strong><small>{waypoint.detail}</small></span>
+                <em>{waypoint.zoneId === activeZone.id ? "현재 맵" : getWorldZone(gardenWorld, waypoint.zoneId).label}</em>
+              </label>
+            );
+          })}
+        </fieldset>
+
         <ol aria-label={`${checkpoint.label}까지 이동 순서`}>
           {routeZones.map((zone, index) => (
             <li key={zone.id} aria-current={index === 0 ? "location" : undefined}>
@@ -98,8 +125,8 @@ export function JourneyRouteSheet({
 
         <footer>
           <button type="button" className="secondary-button" onClick={onClose}>계속 둘러보기</button>
-          <button type="button" className="primary-button" onClick={onStart}>
-            <Navigation aria-hidden="true" /> 길 안내 시작
+          <button type="button" className="primary-button" aria-label="길 안내 시작" onClick={onStart}>
+            <Navigation aria-hidden="true" /> {selectedWaypointIds.length > 1 ? `${selectedWaypointIds.length}곳 안내 시작` : "길 안내 시작"}
           </button>
         </footer>
       </section>

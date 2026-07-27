@@ -1,4 +1,4 @@
-import { mkdir, readFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import sharp from "sharp";
 import { DEFAULT_FOREGROUND_PLACEMENTS } from "./mapForegroundAuditRenderer.mjs";
@@ -15,7 +15,8 @@ const directionRows = ["down", "left", "right", "up"];
 
 export const mobileVisualDifferenceDefaults = Object.freeze({
   channelThreshold: 32,
-  maxChangedRatio: 0.005
+  maxChangedRatio: 0.005,
+  maxRegionChangedRatio: 0.02
 });
 
 function escapeXml(value) {
@@ -178,21 +179,27 @@ export async function renderMobileGameVisualAudit({ rootDir, outputPath }) {
   };
 }
 
-export function mobileVisualComparisonRegions(mapCount, characterCount) {
-  const mapRows = Math.ceil(mapCount / 2);
+export function mobileVisualComparisonRegions(mapInput, characterInput) {
+  const mapIds = Array.isArray(mapInput) ? mapInput : Array.from({ length: mapInput }, (_, index) => `map-${index + 1}`);
+  const characterIds = Array.isArray(characterInput) ? characterInput : Array.from({ length: characterInput }, (_, index) => `guest-${index + 1}`);
+  const mapRows = Math.ceil(mapIds.length / 2);
   const characterSectionTop = sectionHeaderHeight + mapRows * mapCellHeight + sectionHeaderHeight;
   const regions = [];
 
-  for (let index = 0; index < mapCount; index += 1) {
+  for (let index = 0; index < mapIds.length; index += 1) {
     regions.push({
+      id: mapIds[index],
+      kind: "map",
       left: (index % 2) * mapCellWidth,
       top: sectionHeaderHeight + Math.floor(index / 2) * mapCellHeight + mapLabelHeight,
       width: mapCellWidth,
       height: mapPreviewHeight
     });
   }
-  for (let index = 0; index < characterCount; index += 1) {
+  for (let index = 0; index < characterIds.length; index += 1) {
     regions.push({
+      id: characterIds[index],
+      kind: "character",
       left: (index % 3) * characterCellWidth + 8,
       top: characterSectionTop + Math.floor(index / 3) * characterCellHeight + 52,
       width: 244,
@@ -207,10 +214,14 @@ export async function compareMobileGameVisualAudit({
   currentPath,
   baselinePath,
   diffPath,
+  reportPath,
   mapCount = 10,
   characterCount = 12,
+  mapRegionIds,
+  characterRegionIds,
   channelThreshold = mobileVisualDifferenceDefaults.channelThreshold,
-  maxChangedRatio = mobileVisualDifferenceDefaults.maxChangedRatio
+  maxChangedRatio = mobileVisualDifferenceDefaults.maxChangedRatio,
+  maxRegionChangedRatio = mobileVisualDifferenceDefaults.maxRegionChangedRatio
 }) {
   const [current, baseline] = await Promise.all([
     sharp(currentPath).ensureAlpha().raw().toBuffer({ resolveWithObject: true }),
@@ -243,7 +254,11 @@ export async function compareMobileGameVisualAudit({
       diffData[offset + 3] = 255;
     }
   }
-  for (const region of mobileVisualComparisonRegions(mapCount, characterCount)) {
+  const regions = mobileVisualComparisonRegions(mapRegionIds ?? mapCount, characterRegionIds ?? characterCount);
+  const regionResults = [];
+  for (const region of regions) {
+    let regionComparedPixels = 0;
+    let regionChangedPixels = 0;
     for (let y = region.top; y < region.top + region.height; y += 1) {
       for (let x = region.left; x < region.left + region.width; x += 1) {
         const offset = (y * width + x) * channels;
@@ -253,8 +268,10 @@ export async function compareMobileGameVisualAudit({
           Math.abs(current.data[offset + 2] - baseline.data[offset + 2])
         );
         comparedPixels += 1;
+        regionComparedPixels += 1;
         if (difference > channelThreshold) {
           changedPixels += 1;
+          regionChangedPixels += 1;
           if (diffData) {
             diffData[offset] = 255;
             diffData[offset + 1] = 24;
@@ -264,6 +281,13 @@ export async function compareMobileGameVisualAudit({
         }
       }
     }
+    regionResults.push({
+      id: region.id,
+      kind: region.kind,
+      comparedPixels: regionComparedPixels,
+      changedPixels: regionChangedPixels,
+      changedRatio: regionComparedPixels === 0 ? 0 : regionChangedPixels / regionComparedPixels
+    });
   }
 
   const changedRatio = comparedPixels === 0 ? 0 : changedPixels / comparedPixels;
@@ -277,13 +301,33 @@ export async function compareMobileGameVisualAudit({
       }
     }).png().toFile(diffPath);
   }
-  if (changedRatio > maxChangedRatio) {
+  const result = {
+    comparedPixels,
+    changedPixels,
+    changedRatio,
+    channelThreshold,
+    maxChangedRatio,
+    maxRegionChangedRatio,
+    regionResults,
+    diffPath,
+    reportPath
+  };
+  if (reportPath) {
+    await mkdir(path.dirname(reportPath), { recursive: true });
+    await writeFile(reportPath, `${JSON.stringify(result, null, 2)}\n`);
+  }
+  const failedRegions = regionResults.filter((region) => region.changedRatio > maxRegionChangedRatio);
+  if (changedRatio > maxChangedRatio || failedRegions.length > 0) {
+    const regionMessage = failedRegions.length > 0
+      ? `; regions: ${failedRegions.map((region) => `${region.id} ${(region.changedRatio * 100).toFixed(3)}%`).join(", ")}`
+      : "";
     throw new Error(
       `mobile visual regression changed ${(changedRatio * 100).toFixed(3)}% `
       + `(allowed ${(maxChangedRatio * 100).toFixed(3)}%)`
+      + regionMessage
       + (diffPath ? `; diff: ${diffPath}` : "")
     );
   }
 
-  return { comparedPixels, changedPixels, changedRatio, channelThreshold, maxChangedRatio, diffPath };
+  return result;
 }

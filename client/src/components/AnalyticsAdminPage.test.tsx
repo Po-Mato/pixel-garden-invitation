@@ -28,7 +28,9 @@ function result(): InvitationAnalyticsAdminResult {
       directionsViews: 7, mapClicks: 5, callClicks: 1, shareClicks: 3, calendarClicks: 2,
       rsvpViews: 8, rsvpStarts: 6, rsvpSubmits: 4, rsvpResponses: 5, attendingGuests: 9,
       guestbookViews: 6, guestbookMessages: 3, galleryViews: 8, galleryZooms: 5,
-      clientErrors: 1, pageLoadSamples: 10, averagePageLoadMs: 1400
+      clientErrors: 1, pageLoadSamples: 10, averagePageLoadMs: 1400,
+      fpsSamples: 4, averageFps: 54, longTaskCount: 2, averageLongTaskMs: 82,
+      qualityDowngrades: 1, qualityRecoveries: 1
     },
     daily: Array.from({ length: 7 }, (_, index) => ({
       date: `2026-07-${String(16 + index).padStart(2, "0")}`,
@@ -46,7 +48,8 @@ function result(): InvitationAnalyticsAdminResult {
       modes: [{ key: "game", count: 6 }, { key: "simple", count: 4 }],
       maps: [{ key: "naver", count: 5 }],
       shares: [{ key: "copy", count: 3 }],
-      calendars: [{ key: "ics", count: 2 }]
+      calendars: [{ key: "ics", count: 2 }],
+      qualityModes: [{ key: "lite:frame-rate", count: 1 }]
     },
     generatedAt: "2026-07-22T03:00:00.000Z"
   };
@@ -76,7 +79,8 @@ describe("AnalyticsAdminPage", () => {
     expect(screen.getByText("재방문 40%")).toBeInTheDocument();
     expect(screen.getByText("예상 참석 9명")).toBeInTheDocument();
     expect(screen.getByText("완료율 50%")).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "로딩·오류 상태" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "로딩·게임 성능" })).toBeInTheDocument();
+    expect(screen.getByText(/FPS 표본 4회/)).toBeInTheDocument();
   });
 
   it("기간 버튼을 바꾸면 해당 기간으로 다시 조회한다", async () => {

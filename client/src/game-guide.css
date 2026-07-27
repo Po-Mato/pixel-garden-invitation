@@ -547,6 +547,56 @@
 .journey-route-sheet__destination strong { font-size: 12px; }
 .journey-route-sheet__destination em { color: #735e58; font-size: 9px; font-style: normal; font-weight: 800; }
 
+.journey-route-sheet__waypoints {
+  display: grid;
+  gap: 7px;
+  margin: 0;
+  padding: 10px;
+  border: 1px solid #d6ddd3;
+  border-radius: 8px;
+  background: #f8faf7;
+}
+
+.journey-route-sheet__waypoints legend {
+  padding: 0 5px;
+  color: #456453;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.journey-route-sheet__waypoints > p {
+  margin: 0 0 2px;
+  color: #68756c;
+  font-size: 9px;
+  line-height: 1.45;
+}
+
+.journey-route-sheet__waypoints label {
+  display: grid;
+  grid-template-columns: 18px 24px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 7px;
+  min-height: 42px;
+  padding: 6px 8px;
+  border: 1px solid #d9ded8;
+  border-radius: 6px;
+  background: #fff;
+  color: #55615a;
+}
+
+.journey-route-sheet__waypoints label[data-selected] {
+  border-color: #7d9b89;
+  background: #eef5ef;
+  color: #314b3d;
+}
+
+.journey-route-sheet__waypoints input { width: 17px; height: 17px; accent-color: #557765; }
+.journey-route-sheet__waypoints b { font-size: 10px; text-align: center; }
+.journey-route-sheet__waypoints span { display: grid; min-width: 0; gap: 1px; }
+.journey-route-sheet__waypoints strong { font-size: 11px; }
+.journey-route-sheet__waypoints small { overflow: hidden; color: #718078; font-size: 8px; text-overflow: ellipsis; white-space: nowrap; }
+.journey-route-sheet__waypoints em { color: #7d665f; font-size: 8px; font-style: normal; font-weight: 800; }
+
 .journey-route-sheet > ol {
   display: grid;
   gap: 0;
@@ -593,10 +643,16 @@
 .journey-route-sheet > ol small { color: #6d645e; font-size: 9px; line-height: 1.45; }
 
 .journey-route-sheet > footer {
+  position: sticky;
+  z-index: 2;
+  bottom: -12px;
   display: grid;
   grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
   gap: 8px;
-  padding-top: 4px;
+  margin: 10px -4px -12px;
+  padding: 10px 4px 12px;
+  border-top: 1px solid #d5c7b5;
+  background: linear-gradient(to bottom, rgba(248, 242, 229, 0.94), #f8f2e5 26%);
 }
 
 .journey-route-sheet > footer button { min-height: 46px; }

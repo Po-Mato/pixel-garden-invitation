@@ -6,6 +6,7 @@ import {
   invitationAnalyticsEventsUrl,
   postInvitationAnalyticsEvents
 } from "../api/invitationAnalyticsApi";
+import { observeLongTasks } from "../performance/realUserPerformance";
 
 export type AnalyticsContext = "entry" | "game" | "simple";
 type DeviceType = "mobile" | "tablet" | "desktop";
@@ -130,6 +131,9 @@ export function startInvitationAnalytics(initialContext: AnalyticsContext): void
     trackInvitationAnalytics("client_error", "promise");
   });
   window.addEventListener("pagehide", flushWithBeacon);
+  observeLongTasks((duration) => {
+    trackInvitationAnalytics("performance_long_task", deviceType(), duration);
+  });
 
   if (document.readyState === "complete") window.setTimeout(reportPageLoad, 0);
   else window.addEventListener("load", reportPageLoad, { once: true });

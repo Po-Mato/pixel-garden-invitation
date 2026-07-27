@@ -12,6 +12,7 @@ import {
   Hand,
   Gauge,
   Music2,
+  Navigation,
   Play,
   RadioTower,
   RotateCcw,
@@ -42,6 +43,7 @@ export function ViewSettingsAccess({ variant, onOpenChange }: ViewSettingsAccess
     setHighContrast,
     setComfortableControls,
     setDataSaver,
+    setRouteVoiceGuidance,
     enableComfortableView,
     resetPreferences
   } = useViewPreferences();
@@ -146,12 +148,23 @@ export function ViewSettingsAccess({ variant, onOpenChange }: ViewSettingsAccess
             </label>
 
             <label className="view-settings-sheet__switch">
-              <span><Hand aria-hidden="true" /><strong>큰 터치 영역</strong></span>
+                <span><Hand aria-hidden="true" /><strong>큰 조이스틱·터치 영역</strong></span>
               <input
                 type="checkbox"
                 role="switch"
                 checked={preferences.comfortableControls}
                 onChange={(event) => setComfortableControls(event.target.checked)}
+              />
+              <span aria-hidden="true" className="view-settings-sheet__switch-track" />
+            </label>
+
+            <label className="view-settings-sheet__switch">
+              <span><Navigation aria-hidden="true" /><strong>길찾기 음성 안내</strong></span>
+              <input
+                type="checkbox"
+                role="switch"
+                checked={preferences.routeVoiceGuidance}
+                onChange={(event) => setRouteVoiceGuidance(event.target.checked)}
               />
               <span aria-hidden="true" className="view-settings-sheet__switch-track" />
             </label>

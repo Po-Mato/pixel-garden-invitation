@@ -13,7 +13,10 @@ export const invitationAnalyticsEventNames = [
   "gallery_view",
   "gallery_zoom",
   "page_load",
-  "client_error"
+  "client_error",
+  "performance_fps",
+  "performance_long_task",
+  "performance_quality_change"
 ] as const;
 
 export type InvitationAnalyticsEventName = typeof invitationAnalyticsEventNames[number];
@@ -75,6 +78,12 @@ export type InvitationAnalyticsAdminResult = {
     clientErrors: number;
     pageLoadSamples: number;
     averagePageLoadMs: number | null;
+    fpsSamples: number;
+    averageFps: number | null;
+    longTaskCount: number;
+    averageLongTaskMs: number | null;
+    qualityDowngrades: number;
+    qualityRecoveries: number;
   };
   daily: InvitationAnalyticsDaily[];
   breakdowns: {
@@ -83,6 +92,7 @@ export type InvitationAnalyticsAdminResult = {
     maps: InvitationAnalyticsBreakdown[];
     shares: InvitationAnalyticsBreakdown[];
     calendars: InvitationAnalyticsBreakdown[];
+    qualityModes: InvitationAnalyticsBreakdown[];
   };
   generatedAt: string;
 };

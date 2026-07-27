@@ -33,10 +33,12 @@ describe("invitation analytics HTTP", () => {
         directionsViews: 0, mapClicks: 0, callClicks: 0, shareClicks: 0, calendarClicks: 0,
         rsvpViews: 0, rsvpStarts: 0, rsvpSubmits: 0, rsvpResponses: 0, attendingGuests: 0,
         guestbookViews: 0, guestbookMessages: 0, galleryViews: 0, galleryZooms: 0,
-        clientErrors: 0, pageLoadSamples: 0, averagePageLoadMs: null
+        clientErrors: 0, pageLoadSamples: 0, averagePageLoadMs: null,
+        fpsSamples: 0, averageFps: null, longTaskCount: 0, averageLongTaskMs: null,
+        qualityDowngrades: 0, qualityRecoveries: 0
       },
       daily: [],
-      breakdowns: { devices: [], modes: [], maps: [], shares: [], calendars: [] },
+      breakdowns: { devices: [], modes: [], maps: [], shares: [], calendars: [], qualityModes: [] },
       generatedAt: "2026-07-22T00:00:00.000Z"
     });
     mockedVerify.mockResolvedValue({ invitationId: "sample-garden", expiresAt: Date.now() + 60_000 });

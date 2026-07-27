@@ -325,13 +325,13 @@ export function AnalyticsAdminPage() {
 
             <section className="analytics-quality" aria-labelledby="analytics-quality-title">
               <Gauge aria-hidden="true" />
-              <div><p>EXPERIENCE QUALITY</p><h2 id="analytics-quality-title">로딩·오류 상태</h2><span>표본 {formatNumber(analytics.totals.pageLoadSamples)}회 · 평균 {analytics.totals.averagePageLoadMs === null ? "집계 전" : `${(analytics.totals.averagePageLoadMs / 1000).toFixed(1)}초`}</span></div>
+              <div><p>EXPERIENCE QUALITY</p><h2 id="analytics-quality-title">로딩·게임 성능</h2><span>로딩 {analytics.totals.averagePageLoadMs === null ? "집계 전" : `${(analytics.totals.averagePageLoadMs / 1000).toFixed(1)}초`} · FPS {analytics.totals.averageFps ?? "집계 전"}</span><small>FPS 표본 {formatNumber(analytics.totals.fpsSamples)}회 · 긴 작업 {formatNumber(analytics.totals.longTaskCount)}건{analytics.totals.averageLongTaskMs === null ? "" : `, 평균 ${analytics.totals.averageLongTaskMs}ms`} · 자동 경량화 {formatNumber(analytics.totals.qualityDowngrades)}회</small></div>
               <strong className={analytics.totals.clientErrors > 0 ? "has-errors" : ""}><AlertTriangle aria-hidden="true" /> 오류 {formatNumber(analytics.totals.clientErrors)}건</strong>
             </section>
 
             <footer className="analytics-privacy-note">
               <span>마지막 집계 {formatDateTime(analytics.generatedAt)}</span>
-              <p>IP 주소나 개인별 행동 로그는 저장하지 않습니다. 날짜·행동·기기 유형별 합계만 집계하며 재방문은 해당 기기의 로컬 상태로 판단합니다.</p>
+              <p>IP 주소나 개인별 행동 로그는 저장하지 않습니다. 날짜·행동·기기 유형·성능 표본의 합계만 집계하며 재방문은 해당 기기의 로컬 상태로 판단합니다.</p>
             </footer>
           </>
         ) : <p className="analytics-loading" role="status">통계를 불러오고 있습니다.</p>}

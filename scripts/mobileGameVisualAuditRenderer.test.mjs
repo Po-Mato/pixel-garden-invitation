@@ -33,6 +33,8 @@ test("renders every map and every guest direction into a nonblank mobile regress
 
     const comparison = await compareMobileGameVisualAudit({ currentPath: outputPath, baselinePath });
     assert.ok(comparison.changedRatio <= comparison.maxChangedRatio);
+    assert.equal(comparison.regionResults.length, 22);
+    assert.ok(comparison.regionResults.every((region) => region.changedRatio <= comparison.maxRegionChangedRatio));
 
     const changedRegion = await sharp({
       create: { width: 180, height: 180, channels: 4, background: "#ff0066ff" }

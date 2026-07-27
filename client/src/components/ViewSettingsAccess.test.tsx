@@ -46,7 +46,7 @@ describe("ViewSettingsAccess", () => {
 
     expect(screen.getByRole("button", { name: "아주 크게" })).toHaveAttribute("aria-pressed", "true");
     expect(screen.getByRole("switch", { name: "선명한 화면" })).toBeChecked();
-    expect(screen.getByRole("switch", { name: "큰 터치 영역" })).toBeChecked();
+    expect(screen.getByRole("switch", { name: "큰 조이스틱·터치 영역" })).toBeChecked();
     expect(screen.getByRole("switch", { name: "움직임 줄이기" })).toBeChecked();
     expect(screen.getByRole("switch", { name: "데이터 절약" })).toBeChecked();
     expect(document.documentElement).toHaveAttribute("data-high-contrast", "true");

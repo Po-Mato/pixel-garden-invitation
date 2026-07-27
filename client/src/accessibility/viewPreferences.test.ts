@@ -24,20 +24,23 @@ describe("보기 설정 저장", () => {
         reduceMotion: true,
         highContrast: false,
         comfortableControls: false,
-        dataSaver: false
+        dataSaver: false,
+        routeVoiceGuidance: false
       });
     expect(loadViewPreferences(storage(JSON.stringify({
       textScale: "xlarge",
       reduceMotion: true,
       highContrast: true,
       comfortableControls: true,
-      dataSaver: true
+      dataSaver: true,
+      routeVoiceGuidance: false
     })))).toEqual({
       textScale: "xlarge",
       reduceMotion: true,
       highContrast: true,
       comfortableControls: true,
-      dataSaver: true
+      dataSaver: true,
+      routeVoiceGuidance: false
     });
     expect(loadViewPreferences(storage("{broken"))).toEqual(defaultViewPreferences);
     expect(loadViewPreferences(storage(JSON.stringify({ textScale: "huge", reduceMotion: true }))))
@@ -51,7 +54,8 @@ describe("보기 설정 저장", () => {
       reduceMotion: true,
       highContrast: true,
       comfortableControls: true,
-      dataSaver: true
+      dataSaver: true,
+      routeVoiceGuidance: true
     };
     expect(saveViewPreferences(preferences, target)).toBe(true);
     expect(target.setItem).toHaveBeenCalledWith(
@@ -67,13 +71,15 @@ describe("보기 설정 저장", () => {
       reduceMotion: true,
       highContrast: true,
       comfortableControls: true,
-      dataSaver: true
+      dataSaver: true,
+      routeVoiceGuidance: true
     }, root);
     expect(root).toHaveAttribute("data-text-scale", "xlarge");
     expect(root).toHaveAttribute("data-reduce-motion", "true");
     expect(root).toHaveAttribute("data-high-contrast", "true");
     expect(root).toHaveAttribute("data-comfortable-controls", "true");
     expect(root).toHaveAttribute("data-data-saver", "true");
+    expect(root).toHaveAttribute("data-route-voice-guidance", "true");
     expect(shouldReduceMotion(root, vi.fn(() => ({ matches: false })) as unknown as typeof window.matchMedia)).toBe(true);
 
     applyViewPreferences(defaultViewPreferences, root);
@@ -82,6 +88,7 @@ describe("보기 설정 저장", () => {
     expect(root).not.toHaveAttribute("data-high-contrast");
     expect(root).not.toHaveAttribute("data-comfortable-controls");
     expect(root).not.toHaveAttribute("data-data-saver");
+    expect(root).not.toHaveAttribute("data-route-voice-guidance");
     expect(shouldReduceMotion(root, vi.fn(() => ({ matches: true })) as unknown as typeof window.matchMedia)).toBe(true);
   });
 });

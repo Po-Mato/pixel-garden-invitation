@@ -1,6 +1,8 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { trackInvitationAnalytics } from "../analytics/invitationAnalytics";
 import { networkConnection, type NetworkConnectionLike } from "./networkQuality";
 import { createFrameQualityMonitor } from "./frameQualityMonitor";
+import { createFpsSampler } from "./realUserPerformance";
 
 export type DevicePerformanceMode = "standard" | "lite";
 export type DevicePerformanceReason = "standard" | "memory" | "processor" | "network" | "frame-rate";
@@ -46,6 +48,9 @@ export function DevicePerformanceProvider({ children }: { children: ReactNode })
   const [baseStatus, setBaseStatus] = useState(() => resolveDevicePerformanceStatus());
   const [frameConstrained, setFrameConstrained] = useState(false);
   const frameMonitorRef = useRef(createFrameQualityMonitor());
+  const fpsSamplerRef = useRef(createFpsSampler());
+  const statusRef = useRef<DevicePerformanceStatus>(baseStatus);
+  const previousStatusRef = useRef<DevicePerformanceStatus | null>(null);
 
   useEffect(() => {
     const update = () => setBaseStatus(resolveDevicePerformanceStatus());
@@ -62,6 +67,11 @@ export function DevicePerformanceProvider({ children }: { children: ReactNode })
   }, [baseStatus.mode]);
 
   const reportAnimationFrame = useCallback((now: number) => {
+    const fps = fpsSamplerRef.current.sample(now);
+    if (fps !== null) {
+      const current = statusRef.current;
+      trackInvitationAnalytics("performance_fps", `${current.mode}:${current.reason}`, fps);
+    }
     if (baseStatus.mode !== "standard") return;
     const decision = frameMonitorRef.current.sample(now);
     if (decision === "downgrade") setFrameConstrained(true);
@@ -71,6 +81,14 @@ export function DevicePerformanceProvider({ children }: { children: ReactNode })
   const status: DevicePerformanceStatus = frameConstrained
     ? { mode: "lite", reason: "frame-rate" }
     : baseStatus;
+  statusRef.current = status;
+
+  useEffect(() => {
+    const previous = previousStatusRef.current;
+    previousStatusRef.current = status;
+    if (!previous || (previous.mode === status.mode && previous.reason === status.reason)) return;
+    trackInvitationAnalytics("performance_quality_change", `${status.mode}:${status.reason}`);
+  }, [status]);
 
   useEffect(() => {
     document.documentElement.dataset.performanceMode = status.mode;

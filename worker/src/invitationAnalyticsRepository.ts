@@ -202,14 +202,23 @@ export async function getInvitationAnalytics(
     galleryZooms: 0,
     clientErrors: 0,
     pageLoadSamples: 0,
-    averagePageLoadMs: null
+    averagePageLoadMs: null,
+    fpsSamples: 0,
+    averageFps: null,
+    longTaskCount: 0,
+    averageLongTaskMs: null,
+    qualityDowngrades: 0,
+    qualityRecoveries: 0
   };
   const devices = new Map<string, number>();
   const modes = new Map<string, number>();
   const maps = new Map<string, number>();
   const shares = new Map<string, number>();
   const calendars = new Map<string, number>();
+  const qualityModes = new Map<string, number>();
   let pageLoadValueSum = 0;
+  let fpsValueSum = 0;
+  let longTaskValueSum = 0;
 
   for (const row of analytics.results) {
     const item = daily.get(row.local_date);
@@ -260,6 +269,19 @@ export async function getInvitationAnalytics(
         totals.clientErrors += count;
         item.clientErrors += count;
         break;
+      case "performance_fps":
+        totals.fpsSamples += count;
+        fpsValueSum += row.value_sum;
+        break;
+      case "performance_long_task":
+        totals.longTaskCount += count;
+        longTaskValueSum += row.value_sum;
+        break;
+      case "performance_quality_change":
+        increment(qualityModes, row.dimension, count);
+        if (row.dimension.startsWith("lite:")) totals.qualityDowngrades += count;
+        else totals.qualityRecoveries += count;
+        break;
     }
   }
 
@@ -277,6 +299,8 @@ export async function getInvitationAnalytics(
   if (totals.pageLoadSamples > 0) {
     totals.averagePageLoadMs = Math.round(pageLoadValueSum / totals.pageLoadSamples);
   }
+  if (totals.fpsSamples > 0) totals.averageFps = Math.round(fpsValueSum / totals.fpsSamples);
+  if (totals.longTaskCount > 0) totals.averageLongTaskMs = Math.round(longTaskValueSum / totals.longTaskCount);
 
   return {
     range,
@@ -287,7 +311,8 @@ export async function getInvitationAnalytics(
       modes: breakdown(modes),
       maps: breakdown(maps),
       shares: breakdown(shares),
-      calendars: breakdown(calendars)
+      calendars: breakdown(calendars),
+      qualityModes: breakdown(qualityModes)
     },
     generatedAt: (input.now ?? new Date()).toISOString()
   };

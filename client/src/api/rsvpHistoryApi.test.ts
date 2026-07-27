@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { fetchAdminRsvpHistory } from "./rsvpHistoryApi";
+import { fetchAdminRsvpHistory, fetchOwnedRsvpHistory } from "./rsvpHistoryApi";
 
 afterEach(() => vi.unstubAllGlobals());
 
@@ -18,6 +18,20 @@ describe("RSVP history API", () => {
     expect(fetchMock).toHaveBeenCalledWith(expect.stringContaining("/admin/rsvps/rsvp%2F1/history"), {
       method: "GET",
       headers: { authorization: "Bearer admin-token" }
+    });
+  });
+
+  it("기기에 저장된 편집 권한으로 본인 이력을 조회한다", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(new Response(JSON.stringify({
+      rsvpId: "rsvp/owned",
+      entries: []
+    }), { status: 200, headers: { "content-type": "application/json" } }));
+    vi.stubGlobal("fetch", fetchMock);
+
+    await fetchOwnedRsvpHistory({ rsvpId: "rsvp/owned", editToken: "edit-token" });
+    expect(fetchMock).toHaveBeenCalledWith(expect.stringContaining("/rsvps/rsvp%2Fowned/history"), {
+      method: "GET",
+      headers: { authorization: "Bearer edit-token" }
     });
   });
 });

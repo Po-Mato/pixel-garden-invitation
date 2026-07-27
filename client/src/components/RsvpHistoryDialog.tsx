@@ -1,12 +1,13 @@
 import { History, X } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { RsvpHistoryEntry, RsvpHistoryResult, RsvpRecord } from "@wedding-game/shared";
-import { fetchAdminRsvpHistory } from "../api/rsvpHistoryApi";
-import { WeddingApiError } from "../api/weddingApi";
+import { fetchAdminRsvpHistory, fetchOwnedRsvpHistory } from "../api/rsvpHistoryApi";
+import { WeddingApiError, type RsvpCredential } from "../api/weddingApi";
 import "../rsvp-history-admin.css";
 
 type RsvpHistoryDialogProps = {
-  token: string;
+  token?: string;
+  credential?: RsvpCredential;
   response: RsvpRecord;
   onClose: () => void;
   onUnauthorized: () => void;
@@ -45,14 +46,19 @@ function changedFields(entry: RsvpHistoryEntry, previous?: RsvpHistoryEntry): st
     .map(([, label]) => label);
 }
 
-export function RsvpHistoryDialog({ token, response, onClose, onUnauthorized }: RsvpHistoryDialogProps) {
+export function RsvpHistoryDialog({ token, credential, response, onClose, onUnauthorized }: RsvpHistoryDialogProps) {
   const dialogRef = useRef<HTMLElement>(null);
   const [result, setResult] = useState<RsvpHistoryResult | null>(null);
   const [error, setError] = useState("");
 
   useEffect(() => {
     let active = true;
-    void fetchAdminRsvpHistory(token, response.id).then((next) => {
+    const request = credential
+      ? fetchOwnedRsvpHistory(credential)
+      : token
+        ? fetchAdminRsvpHistory(token, response.id)
+        : Promise.reject(new WeddingApiError(401, "unauthorized"));
+    void request.then((next) => {
       if (active) setResult(next);
     }).catch((loadError) => {
       if (!active) return;
@@ -64,7 +70,7 @@ export function RsvpHistoryDialog({ token, response, onClose, onUnauthorized }: 
     });
     dialogRef.current?.focus();
     return () => { active = false; };
-  }, [onUnauthorized, response.id, token]);
+  }, [credential, onUnauthorized, response.id, token]);
 
   const entries = useMemo(() => result?.entries ?? [], [result]);
 

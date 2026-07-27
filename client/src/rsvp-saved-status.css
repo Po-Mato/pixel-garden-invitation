@@ -115,7 +115,7 @@
 
 .rsvp-saved-status__actions {
   display: grid;
-  grid-template-columns: 40px minmax(0, 1fr);
+  grid-template-columns: 40px minmax(0, 0.8fr) minmax(0, 1fr);
   gap: 8px;
 }
 
@@ -130,4 +130,6 @@
   .rsvp-saved-status > header { grid-template-columns: 22px minmax(0, 1fr); }
   .rsvp-saved-status > header em { grid-column: 2; justify-self: start; }
   .rsvp-saved-status dl { grid-template-columns: 1fr; }
+  .rsvp-saved-status__actions { grid-template-columns: 40px minmax(0, 1fr); }
+  .rsvp-saved-status__actions .primary-button { grid-column: 1 / -1; }
 }

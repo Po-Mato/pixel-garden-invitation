@@ -200,6 +200,7 @@
 
 .analytics-quality > svg { width: 28px; height: 28px; color: var(--analytics-gold); }
 .analytics-quality div > span { display: block; margin-top: 5px; color: var(--analytics-muted); font-size: 12px; }
+.analytics-quality div > small { display: block; margin-top: 4px; color: var(--analytics-muted); font-size: 10px; line-height: 1.45; }
 .analytics-quality > strong { display: flex; gap: 6px; align-items: center; color: var(--analytics-green); font-size: 13px; }
 .analytics-quality > strong.has-errors { color: #a14747; }
 .analytics-quality > strong svg { width: 16px; height: 16px; }

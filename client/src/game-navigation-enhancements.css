@@ -84,3 +84,22 @@
 html[data-reduce-motion="true"] .world-journey-route[data-route-kind="selected"] polyline {
   animation: none;
 }
+
+html[data-comfortable-controls="true"] .virtual-joystick {
+  --joystick-travel: 32px;
+  width: 112px;
+  height: 112px;
+}
+
+html[data-comfortable-controls="true"] .virtual-joystick__thumb {
+  width: 44px;
+  height: 44px;
+}
+
+@media (max-width: 360px) {
+  html[data-comfortable-controls="true"] .virtual-joystick {
+    --joystick-travel: 27px;
+    width: 98px;
+    height: 98px;
+  }
+}

@@ -50,7 +50,7 @@ import {
 } from "./guestInformationHttp";
 import { handleAdminInvitationReminderRequest } from "./invitationReminderHttp";
 import { markInvitationInviteLinkResponded } from "./invitationInviteLinkRepository";
-import { handleAdminRsvpHistoryRequest } from "./rsvpHistoryHttp";
+import { handleAdminRsvpHistoryRequest, handleOwnedRsvpHistoryRequest } from "./rsvpHistoryHttp";
 import type { GuestbookOwnedMessage, RsvpRecord } from "@wedding-game/shared";
 import type { Env } from "./index";
 
@@ -806,6 +806,11 @@ async function handleApiRequestWithoutCors(
       publicGuestInformationMatch[1],
       publicGuestInformationMatch[2] === "views" ? "views" : undefined
     );
+  }
+
+  const ownedRsvpHistoryMatch = url.pathname.match(/^\/api\/invitations\/([^/]+)\/rsvps\/([^/]+)\/history$/);
+  if (ownedRsvpHistoryMatch) {
+    return handleOwnedRsvpHistoryRequest(request, env, ownedRsvpHistoryMatch[1], ownedRsvpHistoryMatch[2]);
   }
 
   const ownedRsvpMatch = url.pathname.match(/^\/api\/invitations\/([^/]+)\/rsvps\/([^/]+)$/);
