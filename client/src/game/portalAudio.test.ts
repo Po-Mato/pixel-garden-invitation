@@ -22,7 +22,11 @@ const portal: WorldPortal = {
 
 describe("portalAudioMixAt", () => {
   it("uses the nearest entry tile and grows smoothly toward the portal", () => {
-    expect(portalAudioMixAt({ x: 300, y: 300 }, [portal])).toEqual({ intensity: 1, pan: 0 });
+    expect(portalAudioMixAt({ x: 300, y: 300 }, [portal])).toEqual({
+      intensity: 1,
+      pan: 0,
+      destination: "neighborhood"
+    });
 
     const halfway = portalAudioMixAt({ x: 300, y: 300 + portalAudioRangePx / 2 }, [portal]);
     expect(halfway?.intensity).toBeCloseTo(0.25);
@@ -49,11 +53,13 @@ describe("portalAudioMixAt", () => {
     const closerPortal: WorldPortal = {
       ...portal,
       id: "closer-portal",
+      to: "subway-station",
       entryTiles: [{ x: 180, y: 300 }]
     };
 
     const mix = portalAudioMixAt({ x: 150, y: 300 }, [portal, closerPortal]);
     expect(mix?.intensity).toBeCloseTo((1 - 30 / portalAudioRangePx) ** 2);
     expect(mix?.pan).toBeGreaterThan(0);
+    expect(mix?.destination).toBe("subway-station");
   });
 });

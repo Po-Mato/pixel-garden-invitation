@@ -45,11 +45,54 @@ const footstepTextureVariations: readonly FootstepTextureVariation[] = [
 const footstepTextureSequence = [0, 1, 2, 0, 2, 1] as const;
 const musicCrossfadeSeconds = 0.42;
 const portalAudioFadeSeconds = 0.16;
+const portalToneTransitionSeconds = 0.24;
 const portalAudioMaxGain = 0.018;
-const portalAudioTones = [
-  { frequency: 196, strength: 0.72, wave: "sine" },
-  { frequency: 392, strength: 0.24, wave: "triangle" }
-] as const satisfies readonly { frequency: number; strength: number; wave: OscillatorType }[];
+
+type PortalTone = { frequency: number; strength: number; wave: OscillatorType };
+type PortalToneProfile = readonly [PortalTone, PortalTone];
+
+const portalToneProfiles: Record<WorldZoneId, PortalToneProfile> = {
+  home: [
+    { frequency: 174.61, strength: 0.72, wave: "sine" },
+    { frequency: 261.63, strength: 0.22, wave: "sine" }
+  ],
+  neighborhood: [
+    { frequency: 196, strength: 0.72, wave: "sine" },
+    { frequency: 392, strength: 0.24, wave: "triangle" }
+  ],
+  "subway-station": [
+    { frequency: 146.83, strength: 0.68, wave: "triangle" },
+    { frequency: 220, strength: 0.26, wave: "sine" }
+  ],
+  "subway-train": [
+    { frequency: 123.47, strength: 0.65, wave: "triangle" },
+    { frequency: 246.94, strength: 0.22, wave: "square" }
+  ],
+  "venue-exterior": [
+    { frequency: 220, strength: 0.7, wave: "sine" },
+    { frequency: 329.63, strength: 0.24, wave: "triangle" }
+  ],
+  lobby: [
+    { frequency: 261.63, strength: 0.7, wave: "sine" },
+    { frequency: 392, strength: 0.23, wave: "sine" }
+  ],
+  "bridal-room": [
+    { frequency: 293.66, strength: 0.68, wave: "sine" },
+    { frequency: 440, strength: 0.25, wave: "triangle" }
+  ],
+  "ceremony-hall": [
+    { frequency: 329.63, strength: 0.7, wave: "sine" },
+    { frequency: 493.88, strength: 0.24, wave: "sine" }
+  ],
+  banquet: [
+    { frequency: 246.94, strength: 0.68, wave: "triangle" },
+    { frequency: 369.99, strength: 0.22, wave: "sine" }
+  ],
+  restroom: [
+    { frequency: 185, strength: 0.65, wave: "sine" },
+    { frequency: 277.18, strength: 0.2, wave: "triangle" }
+  ]
+};
 
 type BackgroundDuckProfile = {
   gain: number;
@@ -267,7 +310,9 @@ export class GameAudioEngine {
   private portalMix: PortalAudioMix | null = null;
   private portalBus: GainNode | null = null;
   private portalPanner: StereoPannerNode | null = null;
-  private portalOscillators = new Set<OscillatorNode>();
+  private portalOscillators: OscillatorNode[] = [];
+  private portalToneGains: GainNode[] = [];
+  private portalDestination: WorldZoneId | null = null;
   private portalStopTimer: number | null = null;
   private portalAppliedGain = 0.0001;
   private portalAppliedPan = 0;
@@ -335,7 +380,8 @@ export class GameAudioEngine {
   setPortalAudio(mix: PortalAudioMix | null) {
     this.portalMix = mix ? {
       intensity: Math.min(1, Math.max(0, mix.intensity)),
-      pan: Math.min(1, Math.max(-1, mix.pan))
+      pan: Math.min(1, Math.max(-1, mix.pan)),
+      destination: mix.destination
     } : null;
     this.syncPortalAudio();
   }
@@ -414,6 +460,7 @@ export class GameAudioEngine {
     const context = this.context;
     const bus = this.ensurePortalAudio();
     if (!context || !bus) return;
+    this.updatePortalTone(mix.destination);
     if (this.portalStopTimer !== null) window.clearTimeout(this.portalStopTimer);
     this.portalStopTimer = null;
 
@@ -482,7 +529,8 @@ export class GameAudioEngine {
       bus.connect(this.ensureBackgroundBus() ?? context.destination);
     }
 
-    portalAudioTones.forEach((tone) => {
+    const destination = this.portalMix?.destination ?? "neighborhood";
+    portalToneProfiles[destination].forEach((tone) => {
       const oscillator = context.createOscillator();
       const toneGain = context.createGain();
       oscillator.type = tone.wave;
@@ -490,8 +538,8 @@ export class GameAudioEngine {
       toneGain.gain.setValueAtTime(tone.strength, context.currentTime);
       oscillator.connect(toneGain);
       toneGain.connect(bus);
-      this.portalOscillators.add(oscillator);
-      oscillator.addEventListener("ended", () => this.portalOscillators.delete(oscillator), { once: true });
+      this.portalOscillators.push(oscillator);
+      this.portalToneGains.push(toneGain);
       oscillator.start(context.currentTime);
     });
 
@@ -499,7 +547,28 @@ export class GameAudioEngine {
     this.portalPanner = panner;
     this.portalAppliedGain = 0.0001;
     this.portalAppliedPan = 0;
+    this.portalDestination = destination;
     return bus;
+  }
+
+  private updatePortalTone(destination: WorldZoneId) {
+    if (this.portalDestination === destination) return;
+    const context = this.context;
+    if (!context || this.portalOscillators.length !== 2 || this.portalToneGains.length !== 2) return;
+
+    const now = context.currentTime;
+    portalToneProfiles[destination].forEach((tone, index) => {
+      const oscillator = this.portalOscillators[index];
+      const toneGain = this.portalToneGains[index];
+      oscillator.frequency.cancelScheduledValues(now);
+      oscillator.frequency.setValueAtTime(oscillator.frequency.value, now);
+      oscillator.frequency.exponentialRampToValueAtTime(tone.frequency, now + portalToneTransitionSeconds);
+      oscillator.type = tone.wave;
+      toneGain.gain.cancelScheduledValues(now);
+      toneGain.gain.setValueAtTime(toneGain.gain.value, now);
+      toneGain.gain.linearRampToValueAtTime(tone.strength, now + portalToneTransitionSeconds);
+    });
+    this.portalDestination = destination;
   }
 
   private fadeOutPortalAudio() {
@@ -525,7 +594,9 @@ export class GameAudioEngine {
         // Already stopped.
       }
     });
-    this.portalOscillators.clear();
+    this.portalOscillators = [];
+    this.portalToneGains = [];
+    this.portalDestination = null;
     this.portalBus = null;
     this.portalPanner = null;
     this.portalAppliedGain = 0.0001;

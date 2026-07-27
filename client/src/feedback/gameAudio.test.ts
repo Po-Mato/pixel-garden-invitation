@@ -6,10 +6,15 @@ class FakeAudioParam {
   value = 1;
   readonly values: number[] = [];
   readonly linearRamps: Array<{ value: number; at: number }> = [];
+  readonly exponentialRamps: Array<{ value: number; at: number }> = [];
   readonly cancellations: number[] = [];
   readonly holds: number[] = [];
   setValueAtTime(value: number) { this.value = value; this.values.push(value); }
-  exponentialRampToValueAtTime(value: number) { this.value = value; this.values.push(value); }
+  exponentialRampToValueAtTime(value: number, at: number) {
+    this.value = value;
+    this.values.push(value);
+    this.exponentialRamps.push({ value, at });
+  }
   linearRampToValueAtTime(value: number, at: number) {
     this.value = value;
     this.values.push(value);
@@ -288,7 +293,7 @@ describe("GameAudioEngine", () => {
       musicEnabled: false
     });
 
-    engine.setPortalAudio({ intensity: 0.5, pan: 0.75 });
+    engine.setPortalAudio({ intensity: 0.5, pan: 0.75, destination: "neighborhood" });
     await engine.unlock();
 
     const context = FakeAudioContext.instances[0];
@@ -299,10 +304,17 @@ describe("GameAudioEngine", () => {
     expect(portalBus.gain.linearRamps.at(-1)?.at).toBeCloseTo(10.16);
     expect(context.panners[0].pan.linearRamps.at(-1)).toEqual({ value: 0.75, at: 10.16 });
 
-    engine.setPortalAudio({ intensity: 1, pan: -0.5 });
+    engine.setPortalAudio({ intensity: 1, pan: -0.5, destination: "subway-station" });
     expect(portalBus.gain.linearRamps.at(-1)?.value).toBeCloseTo(0.01404);
     expect(portalBus.gain.linearRamps.at(-1)?.at).toBeCloseTo(10.16);
     expect(context.panners[0].pan.linearRamps.at(-1)).toEqual({ value: -0.5, at: 10.16 });
+    expect(context.oscillators[0].frequency.exponentialRamps.at(-1))
+      .toEqual({ value: 146.83, at: 10.24 });
+    expect(context.oscillators[1].frequency.exponentialRamps.at(-1))
+      .toEqual({ value: 220, at: 10.24 });
+    expect(context.oscillators.map((oscillator) => oscillator.type)).toEqual(["triangle", "sine"]);
+    expect(context.gains[2].gain.linearRamps.at(-1)).toEqual({ value: 0.68, at: 10.24 });
+    expect(context.gains[3].gain.linearRamps.at(-1)).toEqual({ value: 0.26, at: 10.24 });
 
     engine.configure({
       ...defaultFeedbackPreferences,
@@ -313,6 +325,43 @@ describe("GameAudioEngine", () => {
     expect(portalBus.gain.linearRamps.at(-1)).toEqual({ value: 0.0001, at: 10.16 });
     vi.advanceTimersByTime(180);
     expect(context.oscillators.every((oscillator) => oscillator.stops.length === 1)).toBe(true);
+  });
+
+  it("assigns every portal destination a distinct two-tone signature", async () => {
+    vi.stubGlobal("AudioContext", FakeAudioContext);
+    const engine = new GameAudioEngine({
+      ...defaultFeedbackPreferences,
+      soundEnabled: true,
+      musicEnabled: false
+    });
+    const destinations = [
+      "home",
+      "neighborhood",
+      "subway-station",
+      "subway-train",
+      "venue-exterior",
+      "lobby",
+      "bridal-room",
+      "ceremony-hall",
+      "banquet",
+      "restroom"
+    ] as const;
+
+    engine.setPortalAudio({ intensity: 0.5, pan: 0, destination: destinations[0] });
+    await engine.unlock();
+    const context = FakeAudioContext.instances[0];
+    const signatures = [context.oscillators
+      .map((oscillator) => `${oscillator.frequency.values[0]}:${oscillator.type}`)
+      .join("|")];
+
+    destinations.slice(1).forEach((destination) => {
+      engine.setPortalAudio({ intensity: 0.5, pan: 0, destination });
+      signatures.push(context.oscillators
+        .map((oscillator) => `${oscillator.frequency.exponentialRamps.at(-1)?.value}:${oscillator.type}`)
+        .join("|"));
+    });
+
+    expect(new Set(signatures).size).toBe(destinations.length);
   });
 
   it("changes ambience with the map and stops all background sound while hidden", async () => {
