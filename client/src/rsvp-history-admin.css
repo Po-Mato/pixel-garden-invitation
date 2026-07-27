@@ -1,0 +1,96 @@
+.rsvp-history-dialog {
+  width: min(620px, calc(100vw - 28px));
+  max-height: min(760px, calc(100dvh - 28px));
+  overflow: auto;
+}
+
+.rsvp-history-dialog > header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.rsvp-history-dialog > header button {
+  width: 44px;
+  min-width: 44px;
+  padding: 0;
+}
+
+.rsvp-history-list {
+  display: grid;
+  gap: 0;
+  margin: 20px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rsvp-history-list > li {
+  position: relative;
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr);
+  gap: 10px;
+  padding: 0 0 22px;
+}
+
+.rsvp-history-list > li:not(:last-child)::before {
+  position: absolute;
+  top: 26px;
+  bottom: 0;
+  left: 14px;
+  width: 1px;
+  background: #cbd9d1;
+  content: "";
+}
+
+.rsvp-history-list > li > svg {
+  position: relative;
+  z-index: 1;
+  width: 28px;
+  height: 28px;
+  padding: 6px;
+  border-radius: 50%;
+  background: #e8f3ec;
+  color: #376d58;
+}
+
+.rsvp-history-list header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.rsvp-history-list time,
+.rsvp-history-list p {
+  color: #66736d;
+  font-size: 12px;
+}
+
+.rsvp-history-list p {
+  margin: 6px 0 9px;
+}
+
+.rsvp-history-list li > div > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.rsvp-history-list li > div > div span {
+  padding: 3px 6px;
+  border: 1px solid #d7e1db;
+  border-radius: 4px;
+  background: #f6f9f7;
+  color: #3d554a;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+@media (max-width: 520px) {
+  .rsvp-history-list header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 3px;
+  }
+}

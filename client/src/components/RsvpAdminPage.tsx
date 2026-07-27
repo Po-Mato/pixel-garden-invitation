@@ -6,6 +6,7 @@ import {
   ClipboardCopy,
   Download,
   Eye,
+  History,
   Link2,
   LockKeyhole,
   LogOut,
@@ -52,6 +53,7 @@ import { buildInvitationInviteUrl } from "../invitation/inviteLinkQr";
 import { downloadRsvpCsv } from "../invitation/rsvpCsv";
 import { clearAdminSession, loadAdminSession, saveAdminSession } from "../invitation/rsvpStorage";
 import { AdminNotificationInbox } from "./AdminNotificationInbox";
+import { RsvpHistoryDialog } from "./RsvpHistoryDialog";
 import "../rsvp-operations-admin.css";
 
 type FilterValue<T extends string> = "all" | T;
@@ -199,6 +201,7 @@ export function RsvpAdminPage() {
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<RsvpRecord | null>(null);
   const [editTarget, setEditTarget] = useState<RsvpRecord | null>(null);
+  const [historyTarget, setHistoryTarget] = useState<RsvpRecord | null>(null);
   const [editValues, setEditValues] = useState<RsvpEditDraft | null>(null);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [error, setError] = useState("");
@@ -232,6 +235,7 @@ export function RsvpAdminPage() {
     setDeletingId(null);
     setDeleteTarget(null);
     setEditTarget(null);
+    setHistoryTarget(null);
     setEditValues(null);
     setUpdatingId(null);
     setOperationBusyId(null);
@@ -343,7 +347,7 @@ export function RsvpAdminPage() {
   }, [retryUntil]);
 
   useEffect(() => {
-    shellRef.current?.toggleAttribute("inert", Boolean(deleteTarget || editTarget));
+    shellRef.current?.toggleAttribute("inert", Boolean(deleteTarget || editTarget || historyTarget));
     if (editTarget) {
       if (updatingId !== null) editDialogRef.current?.focus();
       else editNameRef.current?.focus();
@@ -371,7 +375,7 @@ export function RsvpAdminPage() {
     }
     restoreDeleteFocusRef.current = false;
     deleteTriggerRef.current = null;
-  }, [deleteTarget, deletingId, editTarget, updatingId]);
+  }, [deleteTarget, deletingId, editTarget, historyTarget, updatingId]);
 
   async function handleLogin(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -762,7 +766,7 @@ export function RsvpAdminPage() {
 
   return (
     <main className="rsvp-admin-page">
-      <div ref={shellRef} className="rsvp-admin-shell" aria-hidden={deleteTarget || editTarget ? true : undefined}>
+      <div ref={shellRef} className="rsvp-admin-shell" aria-hidden={deleteTarget || editTarget || historyTarget ? true : undefined}>
         <header className="rsvp-admin-header">
           <div>
             <p className="rsvp-admin-eyebrow">MJ CONVENTION · 2027.05.01</p>
@@ -967,6 +971,16 @@ export function RsvpAdminPage() {
                             <div className="rsvp-admin-row-actions">
                               <button
                                 type="button"
+                                className="rsvp-admin-secondary"
+                                aria-label={`${response.guestName} 답변 변경 이력`}
+                                title="변경 이력"
+                                onClick={() => setHistoryTarget(response)}
+                                disabled={deletingId !== null || updatingId !== null}
+                              >
+                                <History aria-hidden="true" />
+                              </button>
+                              <button
+                                type="button"
                                 className="rsvp-admin-edit"
                                 aria-label={`${response.guestName} 답변 수정`}
                                 title={isEditableRsvp(response) ? "답변 수정" : "기존 데이터는 수정할 수 없습니다"}
@@ -1074,6 +1088,14 @@ export function RsvpAdminPage() {
           </form>
         </div>
       )}
+      {historyTarget ? (
+        <RsvpHistoryDialog
+          token={session.token}
+          response={historyTarget}
+          onClose={() => setHistoryTarget(null)}
+          onUnauthorized={() => resetAdminState("세션이 만료되었습니다. 다시 로그인해 주세요.")}
+        />
+      ) : null}
     </main>
   );
 }

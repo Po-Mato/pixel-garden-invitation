@@ -187,7 +187,9 @@ export function ViewSettingsAccess({ variant, onOpenChange }: ViewSettingsAccess
                     ? "메모리 사용량을 줄이고 있어요"
                     : devicePerformance.reason === "processor"
                       ? "장식 애니메이션을 줄이고 있어요"
-                      : "느린 연결에 맞춰 화면 효과를 줄이고 있어요"
+                      : devicePerformance.reason === "frame-rate"
+                        ? "프레임 저하를 감지해 화면 효과를 자동 조절했어요"
+                        : "느린 연결에 맞춰 화면 효과를 줄이고 있어요"
                   : "현재 기기에서 전체 화면 효과를 사용해요"}</small>
               </span>
             </section>

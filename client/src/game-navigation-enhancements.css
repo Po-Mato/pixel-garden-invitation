@@ -1,9 +1,29 @@
 .world-travel-status-row {
   display: grid;
   min-height: 30px;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) auto auto;
   align-items: center;
   gap: 8px;
+}
+
+.world-travel-progress {
+  display: inline-flex;
+  min-height: 26px;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 7px;
+  border: 1px solid rgba(55, 109, 88, 0.28);
+  border-radius: 6px;
+  background: rgba(247, 255, 242, 0.92);
+  color: #315d4b;
+  font-size: 11px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.world-travel-progress svg {
+  width: 13px;
+  height: 13px;
 }
 
 .world-travel-status-row .world-travel-status {
@@ -20,9 +40,47 @@
 .world-journey-route[data-route-kind="selected"] polyline {
   stroke: rgba(70, 130, 104, 0.94);
   filter: drop-shadow(0 1px 0 #fffdf4);
+  animation: selected-route-recalculated 420ms ease-out both;
 }
 
 .world-journey-route[data-route-kind="selected"] circle {
   fill: #dff5c8;
   stroke: #376d58;
+}
+
+@keyframes selected-route-recalculated {
+  0% {
+    opacity: 0.2;
+    stroke-dasharray: 2 18;
+    stroke-dashoffset: 20;
+  }
+  55% {
+    opacity: 1;
+    stroke-dasharray: 12 5;
+  }
+  100% {
+    opacity: 1;
+    stroke-dasharray: 7 6;
+    stroke-dashoffset: 0;
+  }
+}
+
+@media (max-width: 390px) {
+  .world-travel-status-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .world-travel-progress {
+    grid-column: 1;
+    justify-self: start;
+  }
+
+  .world-travel-cancel {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+  }
+}
+
+html[data-reduce-motion="true"] .world-journey-route[data-route-kind="selected"] polyline {
+  animation: none;
 }

@@ -46,6 +46,7 @@ import { journeyDirectionLabels, resolveJourneyGuidance } from "../game/journeyG
 import { quickInvitationHashForCheckpoint } from "../game/journeyAccessibility";
 import { summarizeRemainingJourney } from "../game/journeyRouteSummary";
 import { resolveNpcDialogue, type NpcDialogue, type NpcId } from "../game/npcDialogue";
+import { navigationProgress } from "../game/navigationProgress";
 import { useGameFeedback } from "../feedback/GameFeedbackContext";
 import { useDevicePerformance } from "../performance/DevicePerformanceContext";
 import {
@@ -245,6 +246,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   const [shareSheetOpen, setShareSheetOpen] = useState(false);
   const [viewSettingsOpen, setViewSettingsOpen] = useState(false);
   const [travelStatus, setTravelStatus] = useState("우리 집에서 여정을 시작해요");
+  const [routeRecalculationId, setRouteRecalculationId] = useState(0);
   const [journeyProgress, setJourneyProgress] = useState(loadJourneyProgress);
   const [gameGuideOpen, setGameGuideOpen] = useState(() => (
     shouldAutoOpenGameGuide(loadGameGuideState(), journeyProgress)
@@ -1164,6 +1166,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     let frame = 0;
     function tick(now: number) {
       if (inputGeneration !== inputGenerationRef.current || portalTransitionRef.current) return;
+      devicePerformance.reportAnimationFrame(now);
       if (!shouldProcessGameFrame(devicePerformance.mode, renderFrameAtRef.current, now)) {
         frame = requestAnimationFrame(tick);
         return;
@@ -1303,6 +1306,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     advanceWalkCycle,
     beginPortalTransition,
     devicePerformance.mode,
+    devicePerformance.reportAnimationFrame,
     interactionIntent,
     joystickVector,
     mapPath,
@@ -1384,6 +1388,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     if (resumeIntent.kind === "portal") {
       handlePortalClick(resumeIntent.portal);
       if (portalIntentRef.current) {
+        setRouteRecalculationId((current) => current + 1);
         setTravelStatus(`${resumeIntent.portal.label}까지 경로를 다시 찾았어요`);
       }
       return;
@@ -1401,6 +1406,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
         npcId: intent.npcId
       });
       if (interactionIntentRef.current) {
+        setRouteRecalculationId((current) => current + 1);
         setTravelStatus(`${intent.label}까지 경로를 다시 찾았어요`);
       }
       return;
@@ -1413,6 +1419,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     }
     setTarget(resumeIntent.target);
     setMapPath(path);
+    setRouteRecalculationId((current) => current + 1);
     setTravelStatus("선택한 위치까지 경로를 다시 찾았어요");
   }
 
@@ -1498,6 +1505,9 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     ? [position, ...selectedTravelPath]
     : journeyRoutePoints;
   const directTravelActive = Boolean(interactionIntent || portalIntent || target);
+  const directTravelProgress = directTravelActive
+    ? navigationProgress(selectedTravelPath.length)
+    : null;
   const zoneRemoteGuests = remoteGuests.filter((guest) => guest.zoneId === activeZone.id);
   const visibleRemoteGuests = devicePerformance.mode === "lite"
     ? [...zoneRemoteGuests]
@@ -1634,6 +1644,11 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
         </ol>
         <div className="world-travel-status-row">
           <p className="world-travel-status" aria-live="polite">{travelStatus}</p>
+          {directTravelProgress && !portalTransition ? (
+            <span className="world-travel-progress" data-testid="world-travel-progress">
+              <MapPinned aria-hidden="true" /> {directTravelProgress.label}
+            </span>
+          ) : null}
           {directTravelActive && !portalTransition ? (
             <button
               type="button"
@@ -1685,9 +1700,11 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
             ))}
             {selectedTravelRoutePoints.length > 1 ? (
               <svg
+                key={`route-${routeRecalculationId}`}
                 className="world-journey-route"
                 data-testid="world-journey-route"
                 data-route-kind={directTravelActive ? "selected" : "journey"}
+                data-route-recalculation={routeRecalculationId}
                 viewBox={`0 0 ${activeZone.bounds.width} ${activeZone.bounds.height}`}
                 aria-hidden="true"
               >

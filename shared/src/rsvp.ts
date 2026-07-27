@@ -45,6 +45,21 @@ export type RsvpAdminSummary = {
 
 export type RsvpAdminResult = { summary: RsvpAdminSummary; responses: RsvpRecord[] };
 
+export type RsvpHistoryAction = "created" | "updated" | "snapshot";
+
+export type RsvpHistoryEntry = {
+  id: string;
+  action: RsvpHistoryAction;
+  revision: number;
+  response: RsvpRecord;
+  occurredAt: string;
+};
+
+export type RsvpHistoryResult = {
+  rsvpId: string;
+  entries: RsvpHistoryEntry[];
+};
+
 export function normalizeRsvpPhone(value: string): string {
   return value.replace(/\D/g, "");
 }

@@ -1,12 +1,17 @@
-import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { networkConnection, type NetworkConnectionLike } from "./networkQuality";
+import { createFrameQualityMonitor } from "./frameQualityMonitor";
 
 export type DevicePerformanceMode = "standard" | "lite";
-export type DevicePerformanceReason = "standard" | "memory" | "processor" | "network";
+export type DevicePerformanceReason = "standard" | "memory" | "processor" | "network" | "frame-rate";
 
 export type DevicePerformanceStatus = {
   mode: DevicePerformanceMode;
   reason: DevicePerformanceReason;
+};
+
+export type DevicePerformanceContextValue = DevicePerformanceStatus & {
+  reportAnimationFrame: (now: number) => void;
 };
 
 export type DeviceNavigatorLike = {
@@ -31,18 +36,41 @@ export function resolveDevicePerformanceStatus(source: DeviceNavigatorLike = nav
   return { mode: "standard", reason: "standard" };
 }
 
-const DevicePerformanceContext = createContext<DevicePerformanceStatus>({ mode: "standard", reason: "standard" });
+const DevicePerformanceContext = createContext<DevicePerformanceContextValue>({
+  mode: "standard",
+  reason: "standard",
+  reportAnimationFrame: () => undefined
+});
 
 export function DevicePerformanceProvider({ children }: { children: ReactNode }) {
-  const [status, setStatus] = useState(() => resolveDevicePerformanceStatus());
+  const [baseStatus, setBaseStatus] = useState(() => resolveDevicePerformanceStatus());
+  const [frameConstrained, setFrameConstrained] = useState(false);
+  const frameMonitorRef = useRef(createFrameQualityMonitor());
 
   useEffect(() => {
-    const update = () => setStatus(resolveDevicePerformanceStatus());
+    const update = () => setBaseStatus(resolveDevicePerformanceStatus());
     const connection = networkConnection();
     connection?.addEventListener?.("change", update);
     update();
     return () => connection?.removeEventListener?.("change", update);
   }, []);
+
+  useEffect(() => {
+    if (baseStatus.mode === "standard") return;
+    frameMonitorRef.current.reset();
+    setFrameConstrained(false);
+  }, [baseStatus.mode]);
+
+  const reportAnimationFrame = useCallback((now: number) => {
+    if (baseStatus.mode !== "standard") return;
+    const decision = frameMonitorRef.current.sample(now);
+    if (decision === "downgrade") setFrameConstrained(true);
+    if (decision === "restore") setFrameConstrained(false);
+  }, [baseStatus.mode]);
+
+  const status: DevicePerformanceStatus = frameConstrained
+    ? { mode: "lite", reason: "frame-rate" }
+    : baseStatus;
 
   useEffect(() => {
     document.documentElement.dataset.performanceMode = status.mode;
@@ -53,10 +81,10 @@ export function DevicePerformanceProvider({ children }: { children: ReactNode })
     };
   }, [status]);
 
-  const value = useMemo(() => status, [status]);
+  const value = useMemo(() => ({ ...status, reportAnimationFrame }), [reportAnimationFrame, status]);
   return <DevicePerformanceContext.Provider value={value}>{children}</DevicePerformanceContext.Provider>;
 }
 
-export function useDevicePerformance(): DevicePerformanceStatus {
+export function useDevicePerformance(): DevicePerformanceContextValue {
   return useContext(DevicePerformanceContext);
 }

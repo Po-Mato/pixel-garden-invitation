@@ -206,6 +206,7 @@ export function mobileVisualComparisonRegions(mapCount, characterCount) {
 export async function compareMobileGameVisualAudit({
   currentPath,
   baselinePath,
+  diffPath,
   mapCount = 10,
   characterCount = 12,
   channelThreshold = mobileVisualDifferenceDefaults.channelThreshold,
@@ -227,6 +228,21 @@ export async function compareMobileGameVisualAudit({
   let changedPixels = 0;
   const channels = current.info.channels;
   const width = current.info.width;
+  const diffData = diffPath ? Buffer.alloc(current.data.length) : null;
+  if (diffData) {
+    for (let offset = 0; offset < current.data.length; offset += channels) {
+      const luminance = Math.round(
+        current.data[offset] * 0.21
+        + current.data[offset + 1] * 0.72
+        + current.data[offset + 2] * 0.07
+      );
+      const faded = Math.round(225 + luminance * 0.12);
+      diffData[offset] = faded;
+      diffData[offset + 1] = faded;
+      diffData[offset + 2] = faded;
+      diffData[offset + 3] = 255;
+    }
+  }
   for (const region of mobileVisualComparisonRegions(mapCount, characterCount)) {
     for (let y = region.top; y < region.top + region.height; y += 1) {
       for (let x = region.left; x < region.left + region.width; x += 1) {
@@ -237,18 +253,37 @@ export async function compareMobileGameVisualAudit({
           Math.abs(current.data[offset + 2] - baseline.data[offset + 2])
         );
         comparedPixels += 1;
-        if (difference > channelThreshold) changedPixels += 1;
+        if (difference > channelThreshold) {
+          changedPixels += 1;
+          if (diffData) {
+            diffData[offset] = 255;
+            diffData[offset + 1] = 24;
+            diffData[offset + 2] = 92;
+            diffData[offset + 3] = 255;
+          }
+        }
       }
     }
   }
 
   const changedRatio = comparedPixels === 0 ? 0 : changedPixels / comparedPixels;
+  if (diffData && diffPath) {
+    await mkdir(path.dirname(diffPath), { recursive: true });
+    await sharp(diffData, {
+      raw: {
+        width: current.info.width,
+        height: current.info.height,
+        channels
+      }
+    }).png().toFile(diffPath);
+  }
   if (changedRatio > maxChangedRatio) {
     throw new Error(
       `mobile visual regression changed ${(changedRatio * 100).toFixed(3)}% `
       + `(allowed ${(maxChangedRatio * 100).toFixed(3)}%)`
+      + (diffPath ? `; diff: ${diffPath}` : "")
     );
   }
 
-  return { comparedPixels, changedPixels, changedRatio, channelThreshold, maxChangedRatio };
+  return { comparedPixels, changedPixels, changedRatio, channelThreshold, maxChangedRatio, diffPath };
 }

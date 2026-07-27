@@ -24,6 +24,7 @@ describe("신랑·신부 2D 퍼펫", () => {
 
     expect(stage).toHaveAttribute("data-renderer-ready", "false");
     expect(stage).toHaveAttribute("data-renderer-enabled", "false");
+    expect(stage).toHaveAttribute("data-renderer", "canvas-2d");
     expect(sources[0]).toContain("/groom/preview.webp");
     expect(sources[1]).toContain("/bride/preview.webp");
   });

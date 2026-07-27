@@ -1,0 +1,49 @@
+name: Mobile visual regression
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "client/public/assets/maps/**"
+      - "client/public/characters/**"
+      - "character-assets/**"
+      - "map-assets/**"
+      - "scripts/**"
+      - "package.json"
+      - "pnpm-lock.yaml"
+  push:
+    branches: [main]
+    paths:
+      - "client/public/assets/maps/**"
+      - "client/public/characters/**"
+      - "character-assets/**"
+      - "map-assets/**"
+      - "scripts/**"
+      - "package.json"
+      - "pnpm-lock.yaml"
+
+permissions:
+  contents: read
+
+jobs:
+  compare:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 10.29.2
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm visual:check
+      - name: Upload visual difference
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: mobile-visual-regression-${{ github.run_id }}
+          path: .superpowers/visual-regression
+          if-no-files-found: ignore
+          retention-days: 14

@@ -29,4 +29,13 @@ describe("기기 성능 자동 최적화", () => {
     expect(screen.getByText(/standard|lite/)).toBeInTheDocument();
     expect(document.documentElement.dataset.performanceMode).toMatch(/standard|lite/);
   });
+
+  it("실측 프레임 보고 함수를 하위 게임 UI에 제공한다", () => {
+    function Reporter() {
+      const status = useDevicePerformance();
+      return <button type="button" onClick={() => status.reportAnimationFrame(16)}>프레임 보고</button>;
+    }
+    render(<DevicePerformanceProvider><Reporter /></DevicePerformanceProvider>);
+    expect(screen.getByRole("button", { name: "프레임 보고" })).toBeInTheDocument();
+  });
 });

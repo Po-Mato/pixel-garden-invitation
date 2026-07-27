@@ -14,7 +14,8 @@ test("renders every map and every guest direction into a nonblank mobile regress
   const rootDir = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
   const tempDir = await mkdtemp(path.join(tmpdir(), "mobile-game-audit-"));
   const outputPath = path.join(tempDir, "audit.png");
-  const alteredPath = path.join(tempDir, "altered.png");
+    const alteredPath = path.join(tempDir, "altered.png");
+    const diffPath = path.join(tempDir, "diff.png");
   const baselinePath = path.join(rootDir, "scripts/visual-baselines/mobile-game-visual-regression.webp");
 
   try {
@@ -38,9 +39,13 @@ test("renders every map and every guest direction into a nonblank mobile regress
     }).png().toBuffer();
     await sharp(outputPath).composite([{ input: changedRegion, left: 80, top: 100 }]).png().toFile(alteredPath);
     await assert.rejects(
-      compareMobileGameVisualAudit({ currentPath: alteredPath, baselinePath }),
+      compareMobileGameVisualAudit({ currentPath: alteredPath, baselinePath, diffPath }),
       /mobile visual regression changed/
     );
+    const diffMetadata = await sharp(diffPath).metadata();
+    assert.equal(diffMetadata.width, result.outputWidth);
+    const diffPixels = await sharp(diffPath).ensureAlpha().raw().toBuffer();
+    assert.ok(diffPixels.includes(Buffer.from([255, 24, 92, 255])));
   } finally {
     await rm(tempDir, { recursive: true, force: true });
   }

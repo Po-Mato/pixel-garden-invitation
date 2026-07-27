@@ -40,6 +40,26 @@ type PuppetPlacement = {
   rootY: number;
 };
 
+type LoadedPuppet = {
+  slot: PuppetSlot;
+  manifest: PuppetManifest;
+  placement: PuppetPlacement;
+  body: HTMLImageElement;
+  headOpen: HTMLImageElement;
+  headBlink: HTMLImageElement;
+  nextBlinkAt: number;
+};
+
+function loadImage(source: string): Promise<HTMLImageElement> {
+  return new Promise((resolve, reject) => {
+    const image = new Image();
+    image.decoding = "async";
+    image.onload = () => resolve(image);
+    image.onerror = () => reject(new Error(`퍼펫 이미지를 불러오지 못했습니다: ${source}`));
+    image.src = source;
+  });
+}
+
 export function resolvePuppetPlacement(
   viewportHeight: number,
   canvasHeight: number,
@@ -110,125 +130,120 @@ export function CouplePuppetStage({
     if (!allowsCouplePuppetMotion()) return;
 
     let disposed = false;
-    let destroy: (() => void) | undefined;
+    let animationFrame = 0;
+    let canvas: HTMLCanvasElement | null = null;
+
+    const stopAnimation = () => {
+      if (animationFrame) cancelAnimationFrame(animationFrame);
+      animationFrame = 0;
+    };
 
     const mount = async () => {
-      const PIXI = await import("pixi.js");
-      if (disposed || !hostRef.current) return;
-
       const viewport = character
         ? { width: 512, height: 768 }
         : { width: 1024, height: framing === "portrait" ? 560 : 768 };
-      const app = new PIXI.Application();
-      await app.init({
-        width: viewport.width,
-        height: viewport.height,
-        autoDensity: true,
-        antialias: true,
-        backgroundAlpha: 0,
-        preference: "webgl",
-        resolution: Math.min(window.devicePixelRatio || 1, 2)
-      });
-      if (disposed || !hostRef.current) {
-        app.destroy(true);
-        return;
-      }
-
-      app.canvas.setAttribute("aria-hidden", "true");
-      app.canvas.setAttribute("tabindex", "-1");
-      app.canvas.style.width = "100%";
-      app.canvas.style.height = "100%";
-      hostRef.current.replaceChildren(app.canvas);
-
-      const cleanups: Array<() => void> = [];
-      let appDestroyed = false;
-      const onVisibility = () => {
-        if (document.hidden) app.ticker.stop();
-        else app.ticker.start();
-      };
-      document.addEventListener("visibilitychange", onVisibility);
-      destroy = () => {
-        if (appDestroyed) return;
-        appDestroyed = true;
-        cleanups.forEach((cleanup) => cleanup());
-        document.removeEventListener("visibilitychange", onVisibility);
-        app.destroy(true);
-      };
-
-      for (const slot of slots) {
+      const loaded = await Promise.all(slots.map(async (slot): Promise<LoadedPuppet> => {
         const basePath = resolveCouplePuppetAssetPath(slot.character, "").replace(/\/$/, "");
         const manifestResponse = await fetch(`${basePath}/rig.json`);
         if (!manifestResponse.ok) throw new Error(`${slot.character} 퍼펫 리그를 불러오지 못했습니다.`);
         const manifest = await manifestResponse.json() as PuppetManifest;
-        const [bodyTexture, headOpenTexture, headBlinkTexture] = await Promise.all([
-          PIXI.Assets.load(`${basePath}/${manifest.layers.body}`),
-          PIXI.Assets.load(`${basePath}/${manifest.layers.headOpen}`),
-          PIXI.Assets.load(`${basePath}/${manifest.layers.headBlink}`)
+        const [body, headOpen, headBlink] = await Promise.all([
+          loadImage(`${basePath}/${manifest.layers.body}`),
+          loadImage(`${basePath}/${manifest.layers.headOpen}`),
+          loadImage(`${basePath}/${manifest.layers.headBlink}`)
         ]);
-        if (disposed) {
-          destroy();
-          return;
-        }
-
-        const rootBone = new PIXI.Container();
         const placement = resolvePuppetPlacement(
           viewport.height,
           manifest.canvas.height,
           manifest.bones.root.y,
           !character && framing === "portrait"
         );
-        rootBone.pivot.set(manifest.bones.root.x, manifest.bones.root.y);
-        rootBone.position.set(slot.x, placement.rootY);
-        rootBone.scale.set(placement.scale);
-
-        const body = new PIXI.Sprite(bodyTexture);
-        const headBone = new PIXI.Container();
-        headBone.pivot.set(manifest.bones.head.x, manifest.bones.head.y);
-        headBone.position.set(manifest.bones.head.x, manifest.bones.head.y);
-        const headOpen = new PIXI.Sprite(headOpenTexture);
-        const headBlink = new PIXI.Sprite(headBlinkTexture);
-        headBlink.visible = false;
-
-        headBone.addChild(headOpen, headBlink);
-        rootBone.addChild(body, headBone);
-        app.stage.addChild(rootBone);
-
-        const motion = manifest.motion;
-        const minBlink = motion.blinkEveryMs[0];
-        const blinkRange = motion.blinkEveryMs[1] - minBlink;
-        let nextBlinkAt = performance.now() + minBlink + Math.random() * blinkRange;
-
-        const animate = () => {
-          const now = performance.now();
-          const time = now / 1000 + motion.phase;
-          const breath = Math.sin(time * 1.8) * motion.breathScale;
-          rootBone.scale.y = placement.scale * (1 + breath);
-          headBone.rotation = Math.sin(time * 0.72) * motion.headDegrees * Math.PI / 180;
-          headBone.position.y = manifest.bones.head.y + Math.sin(time * 1.1) * motion.headLift;
-
-          const blinking = now >= nextBlinkAt && now < nextBlinkAt + motion.blinkDurationMs;
-          headOpen.visible = !blinking;
-          headBlink.visible = blinking;
-          if (now >= nextBlinkAt + motion.blinkDurationMs) {
-            nextBlinkAt = now + minBlink + Math.random() * blinkRange;
-          }
+        const minBlink = manifest.motion.blinkEveryMs[0];
+        const blinkRange = manifest.motion.blinkEveryMs[1] - minBlink;
+        return {
+          slot,
+          manifest,
+          placement,
+          body,
+          headOpen,
+          headBlink,
+          nextBlinkAt: performance.now() + minBlink + Math.random() * blinkRange
         };
-        app.ticker.add(animate);
-        cleanups.push(() => app.ticker.remove(animate));
-      }
+      }));
+      if (disposed || !hostRef.current) return;
 
-      if (!disposed) setReady(true);
+      const resolution = Math.min(window.devicePixelRatio || 1, 2);
+      canvas = document.createElement("canvas");
+      canvas.width = Math.round(viewport.width * resolution);
+      canvas.height = Math.round(viewport.height * resolution);
+      canvas.setAttribute("aria-hidden", "true");
+      canvas.setAttribute("tabindex", "-1");
+      canvas.style.width = "100%";
+      canvas.style.height = "100%";
+      const context = canvas.getContext("2d", { alpha: true });
+      if (!context) throw new Error("Canvas 2D 렌더러를 사용할 수 없습니다.");
+      context.setTransform(resolution, 0, 0, resolution, 0, 0);
+      context.imageSmoothingEnabled = true;
+      hostRef.current.replaceChildren(canvas);
+
+      const draw = (now: number) => {
+        if (disposed || document.hidden) return;
+        context.clearRect(0, 0, viewport.width, viewport.height);
+        for (const puppet of loaded) {
+          const { manifest, placement, slot } = puppet;
+          const motion = manifest.motion;
+          const time = now / 1_000 + motion.phase;
+          const breath = Math.sin(time * 1.8) * motion.breathScale;
+          const headRotation = Math.sin(time * 0.72) * motion.headDegrees * Math.PI / 180;
+          const headLift = Math.sin(time * 1.1) * motion.headLift;
+          const blinking = now >= puppet.nextBlinkAt
+            && now < puppet.nextBlinkAt + motion.blinkDurationMs;
+
+          if (now >= puppet.nextBlinkAt + motion.blinkDurationMs) {
+            const minBlink = motion.blinkEveryMs[0];
+            puppet.nextBlinkAt = now + minBlink + Math.random() * (motion.blinkEveryMs[1] - minBlink);
+          }
+
+          context.save();
+          context.translate(slot.x, placement.rootY);
+          context.scale(placement.scale, placement.scale * (1 + breath));
+          context.translate(-manifest.bones.root.x, -manifest.bones.root.y);
+          context.drawImage(puppet.body, 0, 0);
+          context.translate(manifest.bones.head.x, manifest.bones.head.y + headLift);
+          context.rotate(headRotation);
+          context.translate(-manifest.bones.head.x, -manifest.bones.head.y);
+          context.drawImage(blinking ? puppet.headBlink : puppet.headOpen, 0, 0);
+          context.restore();
+        }
+        animationFrame = requestAnimationFrame(draw);
+      };
+
+      const onVisibility = () => {
+        stopAnimation();
+        if (!document.hidden && !disposed) animationFrame = requestAnimationFrame(draw);
+      };
+      document.addEventListener("visibilitychange", onVisibility);
+      animationFrame = requestAnimationFrame(draw);
+
+      if (!disposed) {
+        setReady(true);
+      }
+      return () => document.removeEventListener("visibilitychange", onVisibility);
     };
 
-    mount().catch(() => {
-      destroy?.();
-      destroy = undefined;
+    let removeVisibilityListener: (() => void) | undefined;
+    mount().then((cleanup) => {
+      removeVisibilityListener = cleanup;
+    }).catch(() => {
+      stopAnimation();
       if (!disposed) setReady(false);
     });
 
     return () => {
       disposed = true;
-      destroy?.();
+      stopAnimation();
+      removeVisibilityListener?.();
+      canvas?.remove();
     };
   }, [arrangement, character, framing, inRange, motionEnabled, order]);
 
@@ -240,6 +255,7 @@ export function CouplePuppetStage({
       data-arrangement={arrangement}
       data-renderer-enabled={motionEnabled ? "true" : "false"}
       data-renderer-ready={ready ? "true" : "false"}
+      data-renderer="canvas-2d"
       role="img"
       aria-label={label}
     >
