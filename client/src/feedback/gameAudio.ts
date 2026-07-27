@@ -42,6 +42,7 @@ const footstepTextureVariations: readonly FootstepTextureVariation[] = [
 ];
 
 const footstepTextureSequence = [0, 1, 2, 0, 2, 1] as const;
+const musicCrossfadeSeconds = 0.42;
 
 const zoneRoots: Record<WorldZoneId, number> = {
   home: 261.63,
@@ -239,6 +240,8 @@ export class GameAudioEngine {
   private visible = true;
   private musicTimer: number | null = null;
   private musicOscillators = new Set<OscillatorNode>();
+  private musicBus: GainNode | null = null;
+  private musicFadeInPending = false;
   private footstepVariantIndexes: Record<FootstepSurface, number> = {
     wood: 0,
     asphalt: 0,
@@ -277,6 +280,14 @@ export class GameAudioEngine {
 
   setZone(zoneId: WorldZoneId) {
     if (this.zoneId === zoneId) return;
+    if (this.canPlayMusic() && this.musicBus) {
+      this.fadeOutCurrentMusic();
+      this.zoneId = zoneId;
+      this.musicFadeInPending = true;
+      this.scheduleMusicCycle();
+      return;
+    }
+
     this.zoneId = zoneId;
     if (this.musicTimer !== null || this.musicOscillators.size > 0) {
       this.stopMusic();
@@ -348,6 +359,7 @@ export class GameAudioEngine {
 
   private scheduleMusicCycle() {
     if (!this.canPlayMusic()) return;
+    this.ensureMusicBus();
     const root = zoneRoots[this.zoneId];
     const motif = [1, 1.25, 1.5, 2, 1.5];
 
@@ -367,6 +379,7 @@ export class GameAudioEngine {
   private stopMusic() {
     if (this.musicTimer !== null) window.clearTimeout(this.musicTimer);
     this.musicTimer = null;
+    this.musicFadeInPending = false;
     this.musicOscillators.forEach((oscillator) => {
       try {
         oscillator.stop();
@@ -375,6 +388,52 @@ export class GameAudioEngine {
       }
     });
     this.musicOscillators.clear();
+    this.musicBus = null;
+  }
+
+  private fadeOutCurrentMusic() {
+    if (this.musicTimer !== null) window.clearTimeout(this.musicTimer);
+    this.musicTimer = null;
+    const context = this.context;
+    const bus = this.musicBus;
+    const oscillators = [...this.musicOscillators];
+    this.musicBus = null;
+    this.musicOscillators.clear();
+    if (!context || !bus) {
+      oscillators.forEach((oscillator) => oscillator.stop());
+      return;
+    }
+
+    const fadeStart = context.currentTime;
+    const fadeEnd = fadeStart + musicCrossfadeSeconds;
+    bus.gain.cancelScheduledValues(fadeStart);
+    bus.gain.setValueAtTime(1, fadeStart);
+    bus.gain.linearRampToValueAtTime(0.0001, fadeEnd);
+    oscillators.forEach((oscillator) => {
+      try {
+        oscillator.stop(fadeEnd + 0.02);
+      } catch {
+        // Already stopped by its scheduled end.
+      }
+    });
+  }
+
+  private ensureMusicBus() {
+    if (this.musicBus) return this.musicBus;
+    const context = this.context;
+    if (!context || context.state !== "running") return null;
+    const bus = context.createGain();
+    const startAt = context.currentTime;
+    if (this.musicFadeInPending) {
+      bus.gain.setValueAtTime(0.0001, startAt);
+      bus.gain.linearRampToValueAtTime(1, startAt + musicCrossfadeSeconds);
+    } else {
+      bus.gain.setValueAtTime(1, startAt);
+    }
+    bus.connect(context.destination);
+    this.musicBus = bus;
+    this.musicFadeInPending = false;
+    return bus;
   }
 
   private playTone(
@@ -401,7 +460,7 @@ export class GameAudioEngine {
     gain.gain.exponentialRampToValueAtTime(Math.max(0.0002, peak), startAt + Math.min(0.05, duration / 3));
     gain.gain.exponentialRampToValueAtTime(0.0001, stopAt);
     oscillator.connect(gain);
-    gain.connect(context.destination);
+    gain.connect(music ? this.musicBus ?? context.destination : context.destination);
     if (echo) {
       const delay = context.createDelay();
       const echoGain = context.createGain();

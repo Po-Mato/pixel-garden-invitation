@@ -4,8 +4,15 @@ import { GameAudioEngine, triggerHaptic } from "./gameAudio";
 
 class FakeAudioParam {
   readonly values: number[] = [];
+  readonly linearRamps: Array<{ value: number; at: number }> = [];
+  readonly cancellations: number[] = [];
   setValueAtTime(value: number) { this.values.push(value); }
   exponentialRampToValueAtTime(value: number) { this.values.push(value); }
+  linearRampToValueAtTime(value: number, at: number) {
+    this.values.push(value);
+    this.linearRamps.push({ value, at });
+  }
+  cancelScheduledValues(at: number) { this.cancellations.push(at); }
 }
 
 class FakeOscillator extends EventTarget {
@@ -269,16 +276,23 @@ describe("GameAudioEngine", () => {
     engine.setZone("subway-train");
     await engine.unlock();
     const context = FakeAudioContext.instances[0];
+    const subwayBus = context.gains[0];
     expect(context.oscillators).toHaveLength(8);
     expect(context.oscillators.slice(-2).map((oscillator) => oscillator.frequency.values[0]))
       .toEqual([42, 84]);
 
     engine.setZone("neighborhood");
+    const neighborhoodBus = context.gains[9];
     expect(context.oscillators).toHaveLength(17);
     expect(context.oscillators.slice(-3).map((oscillator) => oscillator.frequency.values[0]))
       .toEqual([1046.5, 1318.5, 880]);
     expect(context.oscillators.slice(0, 8).every((oscillator) => oscillator.stops.length === 2)).toBe(true);
     expect(context.oscillators.slice(8).every((oscillator) => oscillator.stops.length === 1)).toBe(true);
+    expect(subwayBus.gain.cancellations).toEqual([10]);
+    expect(subwayBus.gain.linearRamps).toEqual([{ value: 0.0001, at: 10.42 }]);
+    expect(context.oscillators[0].stops.at(-1)).toBeCloseTo(10.44);
+    expect(neighborhoodBus.gain.values[0]).toBe(0.0001);
+    expect(neighborhoodBus.gain.linearRamps).toEqual([{ value: 1, at: 10.42 }]);
 
     engine.setVisible(false);
     expect(context.oscillators.every((oscillator) => oscillator.stops.length === 2)).toBe(true);
