@@ -6,16 +6,22 @@ vi.mock("./invitationAnalyticsRepository", () => ({
   recordInvitationAnalytics: vi.fn(),
   getInvitationAnalytics: vi.fn()
 }));
+vi.mock("./invitationPerformanceConfig", () => ({
+  getInvitationPerformanceAdminState: vi.fn(),
+  setInvitationPerformanceMode: vi.fn()
+}));
 
 import {
   handleAdminInvitationAnalyticsRequest,
   handlePublicInvitationAnalyticsRequest
 } from "./invitationAnalyticsHttp";
 import * as repository from "./invitationAnalyticsRepository";
+import * as performanceConfig from "./invitationPerformanceConfig";
 import { verifyAdminToken } from "./security";
 import type { Env } from "./index";
 
 const mockedRepository = vi.mocked(repository);
+const mockedPerformance = vi.mocked(performanceConfig);
 const mockedVerify = vi.mocked(verifyAdminToken);
 const env = {
   DB: {} as D1Database,
@@ -41,6 +47,26 @@ describe("invitation analytics HTTP", () => {
       breakdowns: { devices: [], modes: [], maps: [], shares: [], calendars: [], qualityModes: [] },
       generatedAt: "2026-07-22T00:00:00.000Z"
     });
+    mockedPerformance.getInvitationPerformanceAdminState.mockResolvedValue({
+      mode: "adaptive",
+      effective: {
+        version: 1, source: "observed", sampleCount: 30, observedAverageFps: 50,
+        slowFpsThreshold: 41, recoveryFpsThreshold: 49,
+        slowWindowsRequired: 2, recoveryWindowsRequired: 4,
+        generatedAt: "2026-07-22T00:00:00.000Z"
+      },
+      adaptive: {
+        version: 1, source: "observed", sampleCount: 30, observedAverageFps: 50,
+        slowFpsThreshold: 41, recoveryFpsThreshold: 49,
+        slowWindowsRequired: 2, recoveryWindowsRequired: 4,
+        generatedAt: "2026-07-22T00:00:00.000Z"
+      },
+      updatedAt: null
+    });
+    mockedPerformance.setInvitationPerformanceMode.mockImplementation(async (_db, _id, mode) => ({
+      ...(await mockedPerformance.getInvitationPerformanceAdminState(env.DB, "sample-garden")),
+      mode
+    } as Awaited<ReturnType<typeof performanceConfig.setInvitationPerformanceMode>>));
     mockedVerify.mockResolvedValue({ invitationId: "sample-garden", expiresAt: Date.now() + 60_000 });
   });
 
@@ -90,6 +116,24 @@ describe("invitation analytics HTTP", () => {
       from: "2026-07-16",
       to: "2026-07-22"
     });
+    expect(await response.json()).toMatchObject({ performance: { mode: "adaptive" } });
+  });
+
+  it("관리자가 성능 운영 모드를 즉시 전환한다", async () => {
+    const response = await handleAdminInvitationAnalyticsRequest(new Request(
+      "https://worker.test/api/invitations/sample-garden/admin/analytics",
+      {
+        method: "POST",
+        headers: { authorization: "Bearer admin-token", "content-type": "application/json" },
+        body: JSON.stringify({ performanceMode: "safe-default" })
+      }
+    ), env, "sample-garden");
+    expect(response.status).toBe(200);
+    expect(mockedPerformance.setInvitationPerformanceMode).toHaveBeenCalledWith(
+      env.DB,
+      "sample-garden",
+      "safe-default"
+    );
   });
 
   it("인증 실패와 잘못된 기간을 구분한다", async () => {

@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { listRsvpHistory } from "./rsvpHistoryRepository";
+import { listRsvpHistory, restoreRsvpHistory } from "./rsvpHistoryRepository";
 
 const snapshot = {
   id: "rsvp_1",
@@ -53,5 +53,50 @@ describe("listRsvpHistory", () => {
       prepare: vi.fn(() => ({ bind: vi.fn(() => ({ all: vi.fn().mockResolvedValue({ results: [] }) })) }))
     } as unknown as D1Database;
     await expect(listRsvpHistory(db, "sample-garden", "missing")).resolves.toBeNull();
+  });
+
+  it("이전 스냅샷을 새 개정본으로 복원하고 사유를 같은 트랜잭션에 기록한다", async () => {
+    const updateRun = vi.fn().mockResolvedValue({ meta: { changes: 1 } });
+    const annotateRun = vi.fn().mockResolvedValue({ meta: { changes: 1 } });
+    const batch = vi.fn(async (statements: D1PreparedStatement[]) => Promise.all(statements.map((statement) => statement.run())));
+    const prepare = vi.fn((sql: string) => ({
+      bind: vi.fn(() => {
+        if (sql.includes("SELECT snapshot_json")) return { first: vi.fn().mockResolvedValue({ snapshot_json: JSON.stringify({ ...snapshot, revision: 1 }) }) };
+        if (sql.includes("SELECT revision")) return { first: vi.fn().mockResolvedValue({ revision: 2 }) };
+        if (sql.includes("UPDATE rsvps")) return { run: updateRun };
+        return { run: annotateRun };
+      })
+    }));
+
+    await expect(restoreRsvpHistory(
+      { prepare, batch } as unknown as D1Database,
+      "sample-garden",
+      "rsvp_1",
+      1,
+      2,
+      "인원 입력 전 상태로 복원",
+      new Date("2027-04-03T00:00:00.000Z")
+    )).resolves.toEqual({ status: "restored", revision: 3 });
+    expect(batch).toHaveBeenCalledOnce();
+    expect(updateRun).toHaveBeenCalledOnce();
+    expect(annotateRun).toHaveBeenCalledOnce();
+  });
+
+  it("현재 개정이 달라졌으면 복원하지 않는다", async () => {
+    const prepare = vi.fn((sql: string) => ({
+      bind: vi.fn(() => sql.includes("snapshot_json")
+        ? { first: vi.fn().mockResolvedValue({ snapshot_json: JSON.stringify(snapshot) }) }
+        : { first: vi.fn().mockResolvedValue({ revision: 3 }) })
+    }));
+    const batch = vi.fn();
+    await expect(restoreRsvpHistory(
+      { prepare, batch } as unknown as D1Database,
+      "sample-garden",
+      "rsvp_1",
+      1,
+      2,
+      "과거 답변 복원"
+    )).resolves.toEqual({ status: "conflict" });
+    expect(batch).not.toHaveBeenCalled();
   });
 });

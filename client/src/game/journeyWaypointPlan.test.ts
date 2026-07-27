@@ -5,6 +5,7 @@ import {
   estimateJourneyWaypointPlan,
   moveJourneyWaypoint,
   normalizeJourneyWaypointPlan,
+  optimizeJourneyWaypointPlan,
   remainingJourneyWaypoints,
   toggleJourneyWaypoint
 } from "./journeyWaypointPlan";
@@ -41,5 +42,14 @@ describe("journeyWaypointPlan", () => {
   it("빈 계획은 남은 전체 경유지로 복구한다", () => {
     const progress = createEmptyJourneyProgress();
     expect(normalizeJourneyWaypointPlan(progress, [])).toHaveLength(5);
+  });
+
+  it("선택한 경유지는 유지하면서 맵 전환이 적은 순서로 자동 정렬한다", () => {
+    const progress = createEmptyJourneyProgress();
+    expect(optimizeJourneyWaypointPlan(
+      progress,
+      ["guestbook", "directions", "bride", "gallery"],
+      "home"
+    )).toEqual(["directions", "guestbook", "gallery", "bride"]);
   });
 });

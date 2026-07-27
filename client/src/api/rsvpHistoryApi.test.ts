@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { fetchAdminRsvpHistory, fetchOwnedRsvpHistory } from "./rsvpHistoryApi";
+import { fetchAdminRsvpHistory, fetchOwnedRsvpHistory, restoreAdminRsvpHistory } from "./rsvpHistoryApi";
 
 afterEach(() => vi.unstubAllGlobals());
 
@@ -32,6 +32,28 @@ describe("RSVP history API", () => {
     expect(fetchMock).toHaveBeenCalledWith(expect.stringContaining("/rsvps/rsvp%2Fowned/history"), {
       method: "GET",
       headers: { authorization: "Bearer edit-token" }
+    });
+  });
+
+  it("관리자 복원 사유와 개정 번호를 전송한다", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(new Response(JSON.stringify({
+      rsvpId: "rsvp_1",
+      entries: []
+    }), { status: 200, headers: { "content-type": "application/json" } }));
+    vi.stubGlobal("fetch", fetchMock);
+
+    await restoreAdminRsvpHistory("admin-token", "rsvp_1", {
+      targetRevision: 1,
+      currentRevision: 3,
+      reason: "최초 응답으로 복원"
+    });
+    expect(fetchMock).toHaveBeenCalledWith(expect.stringContaining("/admin/rsvps/rsvp_1/history"), {
+      method: "POST",
+      headers: {
+        authorization: "Bearer admin-token",
+        "content-type": "application/json"
+      },
+      body: JSON.stringify({ targetRevision: 1, currentRevision: 3, reason: "최초 응답으로 복원" })
     });
   });
 });

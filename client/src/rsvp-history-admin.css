@@ -137,6 +137,73 @@
   font-weight: 700;
 }
 
+.rsvp-history-reason {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 7px;
+  margin: 8px 0 !important;
+  border-left: 3px solid #6d8c79;
+  padding: 6px 8px;
+  background: #edf4ef;
+  color: #43574d !important;
+}
+
+.rsvp-history-restore-trigger {
+  display: inline-flex;
+  min-height: 34px;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  border: 1px solid #6f8f7c;
+  background: #fff;
+  color: #38614f;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.rsvp-history-restore-trigger svg,
+.rsvp-history-restore button svg { width: 15px; height: 15px; }
+
+.rsvp-history-restore {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 5px 8px;
+  margin-top: 10px;
+  border-top: 1px solid #d1dcd5;
+  padding-top: 10px;
+}
+
+.rsvp-history-restore label {
+  grid-column: 1 / -1;
+  color: #3f5449;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.rsvp-history-restore textarea {
+  grid-column: 1 / -1;
+  width: 100%;
+  min-height: 66px;
+  resize: vertical;
+}
+
+.rsvp-history-restore > small { color: #68766f; font-size: 11px; }
+
+.rsvp-history-restore > div {
+  display: flex;
+  justify-content: flex-end;
+  gap: 7px;
+}
+
+.rsvp-history-restore > div button {
+  display: inline-flex;
+  min-height: 34px;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 10px;
+  font-size: 12px;
+}
+
 @media (max-width: 520px) {
   .rsvp-history-list header {
     align-items: flex-start;

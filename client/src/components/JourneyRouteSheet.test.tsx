@@ -30,4 +30,25 @@ describe("JourneyRouteSheet", () => {
     fireEvent.click(screen.getByRole("button", { name: /간편 초대장에서 이 목적지 보기/ }));
     expect(onOpenSimpleDestination).toHaveBeenCalledWith(journeyCheckpoints[1]);
   });
+
+  it("계단 없는 길을 켜면 엘리베이터와 화장실 확인 안내를 펼친다", () => {
+    const onStepFreeRouteChange = vi.fn();
+    render(
+      <JourneyRouteSheet
+        activeZone={getWorldZone(gardenWorld, "home")}
+        checkpoint={journeyCheckpoints[0]}
+        progress={createEmptyJourneyProgress()}
+        guidance={null}
+        stepFreeRouteEnabled
+        onStepFreeRouteChange={onStepFreeRouteChange}
+        onClose={vi.fn()}
+        onStart={vi.fn()}
+      />
+    );
+
+    expect(screen.getByText("엘리베이터")).toBeInTheDocument();
+    expect(screen.getByText("접근 가능한 화장실")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("switch", { name: "계단 없는 길 우선" }));
+    expect(onStepFreeRouteChange).toHaveBeenCalledWith(false);
+  });
 });

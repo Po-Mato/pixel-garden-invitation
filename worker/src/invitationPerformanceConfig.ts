@@ -1,4 +1,7 @@
-import type { InvitationPerformanceConfig } from "@wedding-game/shared";
+import type {
+  InvitationPerformanceAdminState,
+  InvitationPerformanceConfig
+} from "@wedding-game/shared";
 import type { Env } from "./index";
 
 type PerformanceAggregateRow = {
@@ -8,6 +11,11 @@ type PerformanceAggregateRow = {
 };
 
 const minimumObservedSamples = 20;
+
+type PerformanceSettingRow = {
+  force_default: number;
+  updated_at: string;
+};
 
 function clamp(value: number, minimum: number, maximum: number): number {
   return Math.min(maximum, Math.max(minimum, value));
@@ -55,11 +63,15 @@ export async function loadInvitationPerformanceConfig(
   invitationId: string,
   now = new Date()
 ): Promise<InvitationPerformanceConfig | null> {
-  const invitation = await db.prepare("SELECT id FROM invitations WHERE id = ?")
-    .bind(invitationId)
-    .first<{ id: string }>();
-  if (!invitation) return null;
+  const state = await getInvitationPerformanceAdminState(db, invitationId, now);
+  return state?.effective ?? null;
+}
 
+async function loadPerformanceAggregate(
+  db: D1Database,
+  invitationId: string,
+  now: Date
+): Promise<PerformanceAggregateRow> {
   const row = await db.prepare(`
     SELECT
       COALESCE(SUM(CASE WHEN event_name = 'performance_fps' THEN event_count ELSE 0 END), 0) AS fps_sample_count,
@@ -71,12 +83,62 @@ export async function loadInvitationPerformanceConfig(
     invitationId,
     new Date(now.getTime() - 13 * 86_400_000).toISOString().slice(0, 10)
   ).first<PerformanceAggregateRow>();
+  return row ?? { fps_sample_count: 0, fps_value_sum: 0, downgrade_count: 0 };
+}
 
-  return deriveInvitationPerformanceConfig(row ?? {
+export async function getInvitationPerformanceAdminState(
+  db: D1Database,
+  invitationId: string,
+  now = new Date()
+): Promise<InvitationPerformanceAdminState | null> {
+  const invitation = await db.prepare("SELECT id FROM invitations WHERE id = ?")
+    .bind(invitationId)
+    .first<{ id: string }>();
+  if (!invitation) return null;
+  const [aggregate, setting] = await Promise.all([
+    loadPerformanceAggregate(db, invitationId, now),
+    db.prepare(`
+      SELECT force_default, updated_at
+      FROM invitation_performance_settings
+      WHERE invitation_id = ?
+    `).bind(invitationId).first<PerformanceSettingRow>()
+  ]);
+  const generatedAt = now.toISOString();
+  const adaptive = deriveInvitationPerformanceConfig(aggregate, generatedAt);
+  const forceDefault = setting?.force_default === 1;
+  const stableDefault = deriveInvitationPerformanceConfig({
     fps_sample_count: 0,
     fps_value_sum: 0,
     downgrade_count: 0
-  }, now.toISOString());
+  }, generatedAt);
+  return {
+    mode: forceDefault ? "safe-default" : "adaptive",
+    effective: forceDefault ? {
+      ...stableDefault,
+      sampleCount: adaptive.sampleCount,
+      observedAverageFps: adaptive.observedAverageFps
+    } : adaptive,
+    adaptive,
+    updatedAt: setting?.updated_at ?? null
+  };
+}
+
+export async function setInvitationPerformanceMode(
+  db: D1Database,
+  invitationId: string,
+  mode: InvitationPerformanceAdminState["mode"],
+  now = new Date()
+): Promise<InvitationPerformanceAdminState | null> {
+  const current = await getInvitationPerformanceAdminState(db, invitationId, now);
+  if (!current) return null;
+  await db.prepare(`
+    INSERT INTO invitation_performance_settings (invitation_id, force_default, updated_at)
+    VALUES (?, ?, ?)
+    ON CONFLICT(invitation_id) DO UPDATE SET
+      force_default = excluded.force_default,
+      updated_at = excluded.updated_at
+  `).bind(invitationId, mode === "safe-default" ? 1 : 0, now.toISOString()).run();
+  return getInvitationPerformanceAdminState(db, invitationId, now);
 }
 
 function json(body: unknown, status = 200): Response {
@@ -84,7 +146,7 @@ function json(body: unknown, status = 200): Response {
     status,
     headers: {
       "content-type": "application/json; charset=utf-8",
-      "cache-control": status === 200 ? "public, max-age=3600" : "no-store"
+      "cache-control": "no-store"
     }
   });
 }

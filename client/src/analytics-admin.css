@@ -205,6 +205,76 @@
 .analytics-quality > strong.has-errors { color: #a14747; }
 .analytics-quality > strong svg { width: 16px; height: 16px; }
 
+.analytics-performance-admin {
+  margin-top: 14px;
+  border: 1px solid var(--analytics-line);
+  border-top: 3px solid var(--analytics-green);
+  padding: 18px 20px;
+  background: #fff;
+}
+
+.analytics-performance-admin > header {
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+}
+
+.analytics-performance-admin > header > svg { width: 26px; height: 26px; color: var(--analytics-green); }
+.analytics-performance-admin header p { margin: 0 0 3px; color: var(--analytics-green); font-size: 10px; font-weight: 850; }
+.analytics-performance-admin h2 { margin: 0; color: var(--analytics-ink); font-size: 18px; }
+.analytics-performance-admin header span { display: block; margin-top: 4px; color: var(--analytics-muted); font-size: 11px; }
+
+.analytics-performance-admin > header > strong {
+  padding: 5px 8px;
+  border: 1px solid #8ab09d;
+  border-radius: 4px;
+  background: #edf6f1;
+  color: #286049;
+  font-size: 11px;
+}
+
+.analytics-performance-admin > header > strong[data-mode="safe-default"] {
+  border-color: #c69d63;
+  background: #fff6e8;
+  color: #79551e;
+}
+
+.analytics-performance-admin dl {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  margin: 16px 0;
+  border-block: 1px solid var(--analytics-line);
+}
+
+.analytics-performance-admin dl > div {
+  display: grid;
+  gap: 4px;
+  padding: 12px 9px;
+}
+
+.analytics-performance-admin dl > div + div { border-left: 1px solid var(--analytics-line); }
+.analytics-performance-admin dt { color: var(--analytics-muted); font-size: 10px; }
+.analytics-performance-admin dd { margin: 0; color: var(--analytics-ink); font-size: 15px; font-weight: 850; }
+
+.analytics-performance-admin__action {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.analytics-performance-admin__action span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--analytics-muted);
+  font-size: 11px;
+}
+
+.analytics-performance-admin__action span svg { width: 15px; height: 15px; }
+.analytics-performance-admin__action button { min-height: 38px; font-size: 12px; }
+
 .analytics-privacy-note { display: flex; justify-content: space-between; gap: 24px; margin-top: 16px; color: var(--analytics-muted); font-size: 10px; line-height: 1.5; }
 .analytics-privacy-note p { max-width: 580px; margin: 0; text-align: right; }
 .analytics-loading { padding: 40px; text-align: center; color: var(--analytics-muted); }
@@ -212,6 +282,9 @@
 @media (max-width: 980px) {
   .analytics-kpis { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .analytics-breakdown-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .analytics-performance-admin dl { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .analytics-performance-admin dl > div:nth-child(4) { border-left: 0; }
+  .analytics-performance-admin dl > div:nth-child(n + 4) { border-top: 1px solid var(--analytics-line); }
 }
 
 @media (max-width: 720px) {
@@ -225,6 +298,8 @@
   .analytics-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .analytics-breakdown-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .analytics-privacy-note p { text-align: left; }
+  .analytics-performance-admin__action { align-items: stretch; flex-direction: column; }
+  .analytics-performance-admin__action button { width: 100%; }
 }
 
 @media (max-width: 420px) {
@@ -232,4 +307,10 @@
   .analytics-breakdown-grid { grid-template-columns: 1fr; }
   .analytics-trend__chart { gap: 4px; }
   .analytics-section { padding: 15px; }
+  .analytics-performance-admin > header { grid-template-columns: 28px minmax(0, 1fr); }
+  .analytics-performance-admin > header > strong { grid-column: 1 / -1; justify-self: start; }
+  .analytics-performance-admin dl { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .analytics-performance-admin dl > div:nth-child(4) { border-left: 1px solid var(--analytics-line); }
+  .analytics-performance-admin dl > div:nth-child(odd) { border-left: 0; }
+  .analytics-performance-admin dl > div:nth-child(n + 3) { border-top: 1px solid var(--analytics-line); }
 }

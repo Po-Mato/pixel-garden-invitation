@@ -17,6 +17,7 @@ import {
   type WorldZoneId
 } from "@wedding-game/shared";
 import { shouldReduceMotion } from "../accessibility/viewPreferences";
+import { fetchSyncedJourneyProgress, saveSyncedJourneyProgress } from "../api/journeyProgressApi";
 import { computeCameraTransform, screenToWorld, type ViewportSize } from "../game/camera";
 import { resolveFootstepSurface, type FootstepSurface } from "../game/footstepSurface";
 import { computeNextGridPosition, directionFromVector, directionTowardPoint, snapToGrid } from "../game/movement";
@@ -36,6 +37,7 @@ import {
   journeyCheckpointForZone,
   journeyCheckpoints,
   loadJourneyProgress,
+  mergeJourneyProgress,
   nextJourneyCheckpoint,
   saveJourneyProgress,
   type JourneyCheckpoint,
@@ -52,6 +54,7 @@ import {
   estimateJourneyWaypointPlan,
   moveJourneyWaypoint,
   normalizeJourneyWaypointPlan,
+  optimizeJourneyWaypointPlan,
   remainingJourneyWaypoints,
   toggleJourneyWaypoint
 } from "../game/journeyWaypointPlan";
@@ -226,7 +229,7 @@ function realtimeStatusText(status: RealtimeStatus) {
 
 export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView }: GameWorldProps) {
   const devicePerformance = useDevicePerformance();
-  const { preferences: viewPreferences } = useViewPreferences();
+  const { preferences: viewPreferences, setStepFreeRouteEnabled } = useViewPreferences();
   const { playFeedback, playJourneyHaptic, setFeedbackZone, setPortalAudio } = useGameFeedback();
   const initialZone = getWorldZone(gardenWorld, gardenWorld.defaultZoneId);
   const [activeZoneId, setActiveZoneId] = useState<WorldZoneId>(initialZone.id);
@@ -258,6 +261,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   const [travelStatus, setTravelStatus] = useState("우리 집에서 여정을 시작해요");
   const [routeRecalculationId, setRouteRecalculationId] = useState(0);
   const [journeyProgress, setJourneyProgress] = useState(loadJourneyProgress);
+  const [journeySyncStatus, setJourneySyncStatus] = useState<"local" | "syncing" | "synced" | "error">("local");
   const [plannedCheckpointIds, setPlannedCheckpointIds] = useState(() => (
     remainingJourneyWaypoints(loadJourneyProgress()).map(({ id }) => id)
   ));
@@ -311,6 +315,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   const lastSentMoveRef = useRef<MoveMessage | null>(null);
   const journeyProgressRef = useRef(journeyProgress);
   const journeyGuideLastZoneRef = useRef<WorldZoneId | null>(null);
+  const journeySyncRequestRef = useRef(0);
   const moveThrottleRef = useRef<((message: MoveMessage, now: number) => void) | null>(null);
   const terminalStopConfirmTimerRef = useRef<number | null>(null);
   const localReactionTimerRef = useRef<number | null>(null);
@@ -374,6 +379,48 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     if (foot) playFeedback("footstep", { surface, foot });
   }, [playFeedback]);
 
+  const applyJourneyProgress = useCallback((remoteProgress: ReturnType<typeof loadJourneyProgress>) => {
+    const merged = mergeJourneyProgress(journeyProgressRef.current, remoteProgress);
+    journeyProgressRef.current = merged;
+    saveJourneyProgress(merged);
+    setJourneyProgress(merged);
+    setPlannedCheckpointIds((current) => normalizeJourneyWaypointPlan(merged, current));
+    return merged;
+  }, []);
+
+  const syncJourneyProgress = useCallback(async (
+    progress: ReturnType<typeof loadJourneyProgress>,
+    loadFirst = false
+  ) => {
+    const requestId = ++journeySyncRequestRef.current;
+    setJourneySyncStatus("syncing");
+    try {
+      const remote = loadFirst
+        ? await fetchSyncedJourneyProgress()
+        : await saveSyncedJourneyProgress(progress);
+      if (requestId !== journeySyncRequestRef.current) return;
+      if (!remote) {
+        setJourneySyncStatus("local");
+        return;
+      }
+      const merged = applyJourneyProgress(remote);
+      if (loadFirst && merged.completedIds.some((id) => !remote.completedIds.includes(id))) {
+        const saved = await saveSyncedJourneyProgress(merged);
+        if (saved && requestId === journeySyncRequestRef.current) applyJourneyProgress(saved);
+      }
+      if (requestId === journeySyncRequestRef.current) setJourneySyncStatus("synced");
+    } catch {
+      if (requestId === journeySyncRequestRef.current) setJourneySyncStatus("error");
+    }
+  }, [applyJourneyProgress]);
+
+  useEffect(() => {
+    void syncJourneyProgress(journeyProgressRef.current, true);
+    const retry = () => { void syncJourneyProgress(journeyProgressRef.current); };
+    window.addEventListener("online", retry);
+    return () => window.removeEventListener("online", retry);
+  }, [syncJourneyProgress]);
+
   const stampJourneyCheckpoint = useCallback((checkpointId: JourneyCheckpointId) => {
     const result = completeJourneyCheckpoint(journeyProgressRef.current, checkpointId);
     if (!result.changed) return;
@@ -381,6 +428,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     journeyProgressRef.current = result.progress;
     saveJourneyProgress(result.progress);
     setJourneyProgress(result.progress);
+    void syncJourneyProgress(result.progress);
     setPlannedCheckpointIds((current) => normalizeJourneyWaypointPlan(
       result.progress,
       current.filter((id) => id !== checkpointId)
@@ -391,7 +439,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     playFeedback("stamp");
     playJourneyHaptic(checkpointId, "arrived");
     if (result.journeyCompleted) setJourneyCompletionPending(true);
-  }, [playFeedback, playJourneyHaptic]);
+  }, [playFeedback, playJourneyHaptic, syncJourneyProgress]);
 
   const stampWorldInteraction = useCallback((spotId: SpotId) => {
     const checkpointId = journeyCheckpointForInteraction(activeZoneIdRef.current, spotId);
@@ -1605,6 +1653,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
         </div>
         <JourneyStampBook
           progress={journeyProgress}
+          syncStatus={journeySyncStatus}
           activeZoneId={activeZone.id}
           highlightedCheckpointId={stampedCheckpointId}
           disabled={Boolean(portalTransition)}
@@ -2105,7 +2154,12 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
           onMoveWaypoint={(checkpointId, moveDirection) => setPlannedCheckpointIds((current) => (
             moveJourneyWaypoint(journeyProgress, current, checkpointId, moveDirection)
           ))}
+          onOptimizeWaypoints={() => setPlannedCheckpointIds((current) => (
+            optimizeJourneyWaypointPlan(journeyProgress, current, activeZone.id)
+          ))}
           estimatedTotalLabel={journeyPlanEstimate.label}
+          stepFreeRouteEnabled={viewPreferences.stepFreeRouteEnabled}
+          onStepFreeRouteChange={setStepFreeRouteEnabled}
           onClose={() => setJourneyRouteOpen(false)}
           onStart={() => {
             setJourneyRouteOpen(false);

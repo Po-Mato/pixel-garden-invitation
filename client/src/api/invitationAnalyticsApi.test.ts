@@ -1,7 +1,8 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   fetchAdminInvitationAnalytics,
-  postInvitationAnalyticsEvents
+  postInvitationAnalyticsEvents,
+  updateAdminInvitationPerformanceMode
 } from "./invitationAnalyticsApi";
 
 describe("invitation analytics API", () => {
@@ -32,5 +33,23 @@ describe("invitation analytics API", () => {
       expect.stringMatching(/admin\/analytics\?from=2026-07-16&to=2026-07-22/),
       expect.objectContaining({ headers: { authorization: "Bearer admin-token" } })
     );
+  });
+
+  it("관리자 성능 운영 모드를 변경한다", async () => {
+    const body = { mode: "safe-default" };
+    const fetchMock = vi.fn().mockResolvedValue(new Response(JSON.stringify(body), {
+      status: 200,
+      headers: { "content-type": "application/json" }
+    }));
+    vi.stubGlobal("fetch", fetchMock);
+    await expect(updateAdminInvitationPerformanceMode("admin-token", "safe-default")).resolves.toEqual(body);
+    expect(fetchMock).toHaveBeenCalledWith(expect.stringContaining("/admin/analytics"), {
+      method: "POST",
+      headers: {
+        authorization: "Bearer admin-token",
+        "content-type": "application/json"
+      },
+      body: JSON.stringify({ performanceMode: "safe-default" })
+    });
   });
 });

@@ -6,6 +6,7 @@ import {
   journeyCheckpointForZone,
   journeyProgressStorageKey,
   loadJourneyProgress,
+  mergeJourneyProgress,
   nextJourneyCheckpoint,
   saveJourneyProgress
 } from "./journeyProgress";
@@ -88,5 +89,16 @@ describe("journey progress", () => {
     expect(journeyCheckpointForInteraction("home", "rsvp")).toBeNull();
     expect(journeyCheckpointForZone("ceremony-hall")).toBe("ceremony");
     expect(journeyCheckpointForZone("lobby")).toBeNull();
+  });
+
+  it("기기와 개인 초대 링크의 완료 지점을 잃지 않고 합친다", () => {
+    expect(mergeJourneyProgress(
+      { version: 1, completedIds: ["directions", "gallery"], updatedAt: "2026-07-28T01:00:00.000Z" },
+      { version: 1, completedIds: ["directions", "bride"], updatedAt: "2026-07-28T02:00:00.000Z" }
+    )).toEqual({
+      version: 1,
+      completedIds: ["directions", "gallery", "bride"],
+      updatedAt: "2026-07-28T02:00:00.000Z"
+    });
   });
 });

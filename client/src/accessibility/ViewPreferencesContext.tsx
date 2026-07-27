@@ -24,6 +24,7 @@ type ViewPreferencesContextValue = {
   setDataSaver: (dataSaver: boolean) => void;
   setRouteVoiceGuidance: (routeVoiceGuidance: boolean) => void;
   setRouteVoiceRate: (routeVoiceRate: ViewPreferences["routeVoiceRate"]) => void;
+  setStepFreeRouteEnabled: (stepFreeRouteEnabled: boolean) => void;
   enableComfortableView: () => void;
   resetPreferences: () => void;
 };
@@ -37,6 +38,7 @@ const ViewPreferencesContext = createContext<ViewPreferencesContextValue>({
   setDataSaver: () => undefined,
   setRouteVoiceGuidance: () => undefined,
   setRouteVoiceRate: () => undefined,
+  setStepFreeRouteEnabled: () => undefined,
   enableComfortableView: () => undefined,
   resetPreferences: () => undefined
 });
@@ -69,6 +71,10 @@ export function ViewPreferencesProvider({ children, initialPreferences }: ViewPr
       routeVoiceGuidance
     })),
     setRouteVoiceRate: (routeVoiceRate) => setPreferences((current) => ({ ...current, routeVoiceRate })),
+    setStepFreeRouteEnabled: (stepFreeRouteEnabled) => setPreferences((current) => ({
+      ...current,
+      stepFreeRouteEnabled
+    })),
     enableComfortableView: () => setPreferences((current) => ({
       ...comfortableViewPreferences,
       dataSaver: current.dataSaver,

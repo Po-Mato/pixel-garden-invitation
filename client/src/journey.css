@@ -146,6 +146,17 @@
   letter-spacing: 0;
 }
 
+.journey-stamp-book__sync {
+  display: block;
+  margin-top: 4px;
+  color: #68766d;
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.journey-stamp-book__sync[data-status="synced"] { color: #397158; }
+.journey-stamp-book__sync[data-status="error"] { color: #9a5960; }
+
 .journey-stamp-book__next,
 .journey-stamp-book__reward {
   display: flex;

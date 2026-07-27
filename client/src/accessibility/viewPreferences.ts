@@ -6,6 +6,7 @@ export type ViewPreferences = {
   dataSaver: boolean;
   routeVoiceGuidance: boolean;
   routeVoiceRate: "slow" | "normal" | "fast";
+  stepFreeRouteEnabled: boolean;
 };
 
 type StorageLike = Pick<Storage, "getItem" | "setItem">;
@@ -18,7 +19,8 @@ export const defaultViewPreferences: ViewPreferences = {
   comfortableControls: false,
   dataSaver: false,
   routeVoiceGuidance: false,
-  routeVoiceRate: "normal"
+  routeVoiceRate: "normal",
+  stepFreeRouteEnabled: false
 };
 
 export const comfortableViewPreferences: ViewPreferences = {
@@ -28,7 +30,8 @@ export const comfortableViewPreferences: ViewPreferences = {
   comfortableControls: true,
   dataSaver: false,
   routeVoiceGuidance: false,
-  routeVoiceRate: "normal"
+  routeVoiceRate: "normal",
+  stepFreeRouteEnabled: true
 };
 
 function browserStorage(): StorageLike | null {
@@ -53,7 +56,8 @@ export function isViewPreferences(value: unknown): value is ViewPreferences {
     && typeof candidate.comfortableControls === "boolean"
     && typeof candidate.dataSaver === "boolean"
     && typeof candidate.routeVoiceGuidance === "boolean"
-    && (candidate.routeVoiceRate === "slow" || candidate.routeVoiceRate === "normal" || candidate.routeVoiceRate === "fast");
+    && (candidate.routeVoiceRate === "slow" || candidate.routeVoiceRate === "normal" || candidate.routeVoiceRate === "fast")
+    && typeof candidate.stepFreeRouteEnabled === "boolean";
 }
 
 function normalizeStoredPreferences(value: unknown): ViewPreferences | null {
@@ -79,7 +83,10 @@ function normalizeStoredPreferences(value: unknown): ViewPreferences | null {
       : false,
     routeVoiceRate: candidate.routeVoiceRate === "slow" || candidate.routeVoiceRate === "fast"
       ? candidate.routeVoiceRate
-      : "normal"
+      : "normal",
+    stepFreeRouteEnabled: typeof candidate.stepFreeRouteEnabled === "boolean"
+      ? candidate.stepFreeRouteEnabled
+      : false
   };
 }
 

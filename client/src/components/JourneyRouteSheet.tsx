@@ -1,9 +1,21 @@
-import { Accessibility, ArrowDown, ArrowUp, MapPinned, Navigation, X } from "lucide-react";
+import {
+  Accessibility,
+  ArrowDown,
+  ArrowUp,
+  Bath,
+  Building2,
+  Footprints,
+  MapPinned,
+  Navigation,
+  Sparkles,
+  X
+} from "lucide-react";
 import { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import type { JourneyGuidancePreview } from "../game/journeyGuidance";
 import { journeyDirectionLabels } from "../game/journeyGuidance";
 import type { JourneyCheckpoint, JourneyProgress } from "../game/journeyProgress";
+import { journeyAccessibilityGuide } from "../game/journeyAccessibility";
 import {
   journeyDestinationInstruction,
   summarizeRemainingJourney
@@ -19,7 +31,10 @@ type JourneyRouteSheetProps = {
   selectedWaypointIds?: readonly JourneyCheckpoint["id"][];
   onToggleWaypoint?: (checkpointId: JourneyCheckpoint["id"]) => void;
   onMoveWaypoint?: (checkpointId: JourneyCheckpoint["id"], direction: "up" | "down") => void;
+  onOptimizeWaypoints?: () => void;
   estimatedTotalLabel?: string;
+  stepFreeRouteEnabled?: boolean;
+  onStepFreeRouteChange?: (enabled: boolean) => void;
   onClose: () => void;
   onStart: () => void;
   onOpenSimpleDestination?: (checkpoint: JourneyCheckpoint) => void;
@@ -34,7 +49,10 @@ export function JourneyRouteSheet({
   selectedWaypointIds = [checkpoint.id],
   onToggleWaypoint,
   onMoveWaypoint,
+  onOptimizeWaypoints,
   estimatedTotalLabel,
+  stepFreeRouteEnabled = false,
+  onStepFreeRouteChange,
   onClose,
   onStart,
   onOpenSimpleDestination
@@ -50,6 +68,7 @@ export function JourneyRouteSheet({
     }),
     ...waypoints.filter((waypoint) => !selectedOrder.has(waypoint.id))
   ];
+  const accessibilityGuide = journeyAccessibilityGuide(checkpoint);
 
   useEffect(() => {
     closeRef.current?.focus();
@@ -91,9 +110,37 @@ export function JourneyRouteSheet({
             : checkpoint.zoneId === activeZone.id ? "현재 맵" : "포털 경로 안내"}</em>
         </div>
 
+        <section className="journey-route-sheet__accessible" aria-labelledby="journey-accessible-title">
+          <label>
+            <span><Accessibility aria-hidden="true" /><strong id="journey-accessible-title">계단 없는 길 우선</strong></span>
+            <input
+              type="checkbox"
+              role="switch"
+              checked={stepFreeRouteEnabled}
+              disabled={!onStepFreeRouteChange}
+              onChange={(event) => onStepFreeRouteChange?.(event.target.checked)}
+            />
+            <span aria-hidden="true" className="journey-route-sheet__switch-track" />
+          </label>
+          {stepFreeRouteEnabled ? (
+            <ul>
+              <li><Footprints aria-hidden="true" /><span><strong>계단 없는 이동</strong><small>{accessibilityGuide.stepFree}</small></span></li>
+              <li><Building2 aria-hidden="true" /><span><strong>엘리베이터</strong><small>{accessibilityGuide.elevator}</small></span></li>
+              <li><Bath aria-hidden="true" /><span><strong>접근 가능한 화장실</strong><small>{accessibilityGuide.restroom}</small></span></li>
+            </ul>
+          ) : null}
+        </section>
+
         <fieldset className="journey-route-sheet__waypoints">
           <legend>경유지 계획</legend>
-          <p>방문할 목적지를 선택하면 예식 여정 순서로 안내합니다.</p>
+          <div className="journey-route-sheet__waypoint-tools">
+            <p>방문할 목적지를 선택하면 예식 여정 순서로 안내합니다.</p>
+            {onOptimizeWaypoints ? (
+              <button type="button" onClick={onOptimizeWaypoints} disabled={selectedWaypointIds.length < 2}>
+                <Sparkles aria-hidden="true" /> 빠른 순서
+              </button>
+            ) : null}
+          </div>
           {orderedWaypoints.map((waypoint) => {
             const selected = selectedWaypointIds.includes(waypoint.id);
             const order = selectedOrder.get(waypoint.id);

@@ -118,6 +118,20 @@ export function saveJourneyProgress(
   }
 }
 
+export function mergeJourneyProgress(
+  local: JourneyProgress,
+  remote: JourneyProgress
+): JourneyProgress {
+  const completed = new Set([...local.completedIds, ...remote.completedIds]);
+  const localTime = local.updatedAt ? Date.parse(local.updatedAt) : 0;
+  const remoteTime = remote.updatedAt ? Date.parse(remote.updatedAt) : 0;
+  return {
+    version: 1,
+    completedIds: journeyCheckpointIds.filter((id) => completed.has(id)),
+    updatedAt: localTime >= remoteTime ? local.updatedAt : remote.updatedAt
+  };
+}
+
 export function nextJourneyCheckpoint(progress: JourneyProgress): JourneyCheckpoint | null {
   const completed = new Set(progress.completedIds);
   return journeyCheckpoints.find((checkpoint) => !completed.has(checkpoint.id)) ?? null;

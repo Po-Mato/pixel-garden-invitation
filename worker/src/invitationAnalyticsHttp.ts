@@ -10,6 +10,10 @@ import {
   recordInvitationAnalytics
 } from "./invitationAnalyticsRepository";
 import { verifyAdminToken } from "./security";
+import {
+  getInvitationPerformanceAdminState,
+  setInvitationPerformanceMode
+} from "./invitationPerformanceConfig";
 
 const eventNames = new Set<string>(invitationAnalyticsEventNames);
 const contextPattern = /^(entry|game|simple)$/;
@@ -107,11 +111,32 @@ export async function handleAdminInvitationAnalyticsRequest(
   env: Env,
   invitationId: string
 ): Promise<Response> {
-  if (request.method !== "GET") return json({ error: "not_found" }, 404);
+  if (request.method !== "GET" && request.method !== "POST") return json({ error: "not_found" }, 404);
   const token = request.headers.get("authorization")?.match(/^Bearer ([^\s]+)$/)?.[1] ?? "";
   if (!token || !env.RSVP_ADMIN_SESSION_SECRET) return json({ error: "unauthorized" }, 401);
   const session = await verifyAdminToken(token, env.RSVP_ADMIN_SESSION_SECRET, invitationId, Date.now());
   if (!session) return json({ error: "unauthorized" }, 401);
+
+  if (request.method === "POST") {
+    let body: unknown;
+    try {
+      body = await request.json();
+    } catch {
+      return json({ error: "invalid_request" }, 400);
+    }
+    const performanceMode = body && typeof body === "object" && "performanceMode" in body
+      ? (body as { performanceMode?: unknown }).performanceMode
+      : null;
+    if (performanceMode !== "adaptive" && performanceMode !== "safe-default") {
+      return json({ error: "invalid_request" }, 400);
+    }
+    try {
+      const performance = await setInvitationPerformanceMode(env.DB, invitationId, performanceMode);
+      return performance ? json(performance) : json({ error: "not_found" }, 404);
+    } catch {
+      return json({ error: "internal_error" }, 500);
+    }
+  }
 
   const url = new URL(request.url);
   const from = url.searchParams.get("from");
@@ -121,8 +146,11 @@ export async function handleAdminInvitationAnalyticsRequest(
   }
 
   try {
-    const result = await getInvitationAnalytics(env.DB, invitationId, { from, to });
-    return result ? json(result) : json({ error: "not_found" }, 404);
+    const [result, performance] = await Promise.all([
+      getInvitationAnalytics(env.DB, invitationId, { from, to }),
+      getInvitationPerformanceAdminState(env.DB, invitationId)
+    ]);
+    return result && performance ? json({ ...result, performance }) : json({ error: "not_found" }, 404);
   } catch {
     return json({ error: "internal_error" }, 500);
   }

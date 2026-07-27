@@ -26,7 +26,8 @@ describe("보기 설정 저장", () => {
         comfortableControls: false,
         dataSaver: false,
         routeVoiceGuidance: false,
-        routeVoiceRate: "normal"
+        routeVoiceRate: "normal",
+        stepFreeRouteEnabled: false
       });
     expect(loadViewPreferences(storage(JSON.stringify({
       textScale: "xlarge",
@@ -35,7 +36,8 @@ describe("보기 설정 저장", () => {
       comfortableControls: true,
       dataSaver: true,
       routeVoiceGuidance: false,
-      routeVoiceRate: "normal"
+      routeVoiceRate: "normal",
+      stepFreeRouteEnabled: false
     })))).toEqual({
       textScale: "xlarge",
       reduceMotion: true,
@@ -43,7 +45,8 @@ describe("보기 설정 저장", () => {
       comfortableControls: true,
       dataSaver: true,
       routeVoiceGuidance: false,
-      routeVoiceRate: "normal"
+      routeVoiceRate: "normal",
+      stepFreeRouteEnabled: false
     });
     expect(loadViewPreferences(storage("{broken"))).toEqual(defaultViewPreferences);
     expect(loadViewPreferences(storage(JSON.stringify({ textScale: "huge", reduceMotion: true }))))
@@ -59,7 +62,8 @@ describe("보기 설정 저장", () => {
       comfortableControls: true,
       dataSaver: true,
       routeVoiceGuidance: true,
-      routeVoiceRate: "fast" as const
+      routeVoiceRate: "fast" as const,
+      stepFreeRouteEnabled: true
     };
     expect(saveViewPreferences(preferences, target)).toBe(true);
     expect(target.setItem).toHaveBeenCalledWith(
@@ -77,7 +81,8 @@ describe("보기 설정 저장", () => {
       comfortableControls: true,
       dataSaver: true,
       routeVoiceGuidance: true,
-      routeVoiceRate: "slow"
+      routeVoiceRate: "slow",
+      stepFreeRouteEnabled: true
     }, root);
     expect(root).toHaveAttribute("data-text-scale", "xlarge");
     expect(root).toHaveAttribute("data-reduce-motion", "true");

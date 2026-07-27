@@ -1,5 +1,6 @@
 import type {
-  InvitationAnalyticsAdminResult,
+  InvitationAnalyticsAdminResponse,
+  InvitationPerformanceAdminState,
   InvitationAnalyticsEventBatch
 } from "@wedding-game/shared";
 import { WeddingApiError } from "./weddingApi";
@@ -39,7 +40,7 @@ export async function postInvitationAnalyticsEvents(batch: InvitationAnalyticsEv
 export async function fetchAdminInvitationAnalytics(
   token: string,
   range: { from?: string; to?: string } = {}
-): Promise<InvitationAnalyticsAdminResult> {
+): Promise<InvitationAnalyticsAdminResponse> {
   const response = await fetch(adminAnalyticsUrl(range), {
     method: "GET",
     headers: { authorization: `Bearer ${token}` }
@@ -57,5 +58,33 @@ export async function fetchAdminInvitationAnalytics(
     throw new WeddingApiError(response.status, code);
   }
   if (!body) throw new WeddingApiError(response.status, "invalid_response");
-  return body as InvitationAnalyticsAdminResult;
+  return body as InvitationAnalyticsAdminResponse;
+}
+
+export async function updateAdminInvitationPerformanceMode(
+  token: string,
+  performanceMode: InvitationPerformanceAdminState["mode"]
+): Promise<InvitationPerformanceAdminState> {
+  const response = await fetch(adminAnalyticsUrl({}), {
+    method: "POST",
+    headers: {
+      authorization: `Bearer ${token}`,
+      "content-type": "application/json"
+    },
+    body: JSON.stringify({ performanceMode })
+  });
+  let body: unknown = null;
+  try {
+    body = await response.json();
+  } catch {
+    body = null;
+  }
+  if (!response.ok) {
+    const code = typeof body === "object" && body !== null && "error" in body && typeof body.error === "string"
+      ? body.error
+      : "request_failed";
+    throw new WeddingApiError(response.status, code);
+  }
+  if (!body) throw new WeddingApiError(response.status, "invalid_response");
+  return body as InvitationPerformanceAdminState;
 }

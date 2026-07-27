@@ -108,3 +108,14 @@ export type InvitationPerformanceConfig = {
   recoveryWindowsRequired: number;
   generatedAt: string;
 };
+
+export type InvitationPerformanceAdminState = {
+  mode: "adaptive" | "safe-default";
+  effective: InvitationPerformanceConfig;
+  adaptive: InvitationPerformanceConfig;
+  updatedAt: string | null;
+};
+
+export type InvitationAnalyticsAdminResponse = InvitationAnalyticsAdminResult & {
+  performance: InvitationPerformanceAdminState;
+};

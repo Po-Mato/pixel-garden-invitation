@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   AlertTriangle,
+  Activity,
   BarChart3,
   BookOpen,
   CalendarRange,
@@ -13,13 +14,17 @@ import {
   MousePointerClick,
   RefreshCw,
   Share2,
+  ShieldCheck,
   Users
 } from "lucide-react";
 import type {
-  InvitationAnalyticsAdminResult,
+  InvitationAnalyticsAdminResponse,
   InvitationAnalyticsBreakdown
 } from "@wedding-game/shared";
-import { fetchAdminInvitationAnalytics } from "../api/invitationAnalyticsApi";
+import {
+  fetchAdminInvitationAnalytics,
+  updateAdminInvitationPerformanceMode
+} from "../api/invitationAnalyticsApi";
 import { createAdminSession, WeddingApiError, type AdminSession } from "../api/weddingApi";
 import { downloadInvitationAnalyticsCsv } from "../invitation/analyticsCsv";
 import { clearAdminSession, loadAdminSession, saveAdminSession } from "../invitation/rsvpStorage";
@@ -125,9 +130,11 @@ export function AnalyticsAdminPage() {
   const [session, setSession] = useState<AdminSession | null>(null);
   const [password, setPassword] = useState("");
   const [preset, setPreset] = useState<RangePreset>("30");
-  const [analytics, setAnalytics] = useState<InvitationAnalyticsAdminResult | null>(null);
+  const [analytics, setAnalytics] = useState<InvitationAnalyticsAdminResponse | null>(null);
   const [loading, setLoading] = useState(false);
+  const [performanceBusy, setPerformanceBusy] = useState(false);
   const [error, setError] = useState("");
+  const [status, setStatus] = useState("");
 
   const logout = useCallback((message = "") => {
     sessionRef.current = null;
@@ -136,7 +143,9 @@ export function AnalyticsAdminPage() {
     setAnalytics(null);
     setPassword("");
     setLoading(false);
+    setPerformanceBusy(false);
     setError(message);
+    setStatus("");
   }, [id]);
 
   const loadAnalytics = useCallback(async (token: string, nextPreset: RangePreset) => {
@@ -189,6 +198,29 @@ export function AnalyticsAdminPage() {
   function changePreset(nextPreset: RangePreset) {
     setPreset(nextPreset);
     if (sessionRef.current) void loadAnalytics(sessionRef.current.token, nextPreset);
+  }
+
+  async function changePerformanceMode() {
+    if (!sessionRef.current || !analytics || performanceBusy) return;
+    const nextMode = analytics.performance.mode === "adaptive" ? "safe-default" : "adaptive";
+    setPerformanceBusy(true);
+    setError("");
+    setStatus("");
+    try {
+      const performance = await updateAdminInvitationPerformanceMode(sessionRef.current.token, nextMode);
+      setAnalytics((current) => current ? { ...current, performance } : current);
+      setStatus(nextMode === "safe-default"
+        ? "안정 기본값으로 즉시 전환했습니다."
+        : "실기기 표본 기반 자동 보정을 다시 사용합니다.");
+    } catch (updateError) {
+      if (updateError instanceof WeddingApiError && updateError.status === 401) {
+        logout(errorMessage(updateError));
+        return;
+      }
+      setError("성능 운영 모드를 변경하지 못했습니다. 잠시 후 다시 시도해 주세요.");
+    } finally {
+      setPerformanceBusy(false);
+    }
   }
 
   const recentDays = analytics?.daily.slice(-7) ?? [];
@@ -265,6 +297,7 @@ export function AnalyticsAdminPage() {
         </section>
 
         {error && <p className="rsvp-admin-message rsvp-admin-message--error" role="alert">{error}</p>}
+        {status && <p className="rsvp-admin-message" role="status">{status}</p>}
 
         {analytics ? (
           <>
@@ -327,6 +360,38 @@ export function AnalyticsAdminPage() {
               <Gauge aria-hidden="true" />
               <div><p>EXPERIENCE QUALITY</p><h2 id="analytics-quality-title">로딩·게임 성능</h2><span>로딩 {analytics.totals.averagePageLoadMs === null ? "집계 전" : `${(analytics.totals.averagePageLoadMs / 1000).toFixed(1)}초`} · FPS {analytics.totals.averageFps ?? "집계 전"}</span><small>FPS 표본 {formatNumber(analytics.totals.fpsSamples)}회 · 긴 작업 {formatNumber(analytics.totals.longTaskCount)}건{analytics.totals.averageLongTaskMs === null ? "" : `, 평균 ${analytics.totals.averageLongTaskMs}ms`} · 자동 경량화 {formatNumber(analytics.totals.qualityDowngrades)}회</small></div>
               <strong className={analytics.totals.clientErrors > 0 ? "has-errors" : ""}><AlertTriangle aria-hidden="true" /> 오류 {formatNumber(analytics.totals.clientErrors)}건</strong>
+            </section>
+
+            <section className="analytics-performance-admin" aria-labelledby="analytics-performance-admin-title">
+              <header>
+                <ShieldCheck aria-hidden="true" />
+                <div>
+                  <p>LIVE DEVICE GUARD</p>
+                  <h2 id="analytics-performance-admin-title">실기기 성능 기준 운영</h2>
+                  <span>{analytics.performance.mode === "adaptive" ? "실측 표본 자동 보정 중" : "안정 기본값 강제 적용 중"}</span>
+                </div>
+                <strong data-mode={analytics.performance.mode}>
+                  {analytics.performance.mode === "adaptive" ? "자동 보정" : "안전 모드"}
+                </strong>
+              </header>
+              <dl>
+                <div><dt>최근 표본</dt><dd>{formatNumber(analytics.performance.adaptive.sampleCount)}회</dd></div>
+                <div><dt>실측 평균</dt><dd>{analytics.performance.adaptive.observedAverageFps === null ? "집계 전" : `${analytics.performance.adaptive.observedAverageFps} FPS`}</dd></div>
+                <div><dt>경량화 기준</dt><dd>{analytics.performance.effective.slowFpsThreshold} FPS</dd></div>
+                <div><dt>복구 기준</dt><dd>{analytics.performance.effective.recoveryFpsThreshold} FPS</dd></div>
+                <div><dt>감지 창</dt><dd>{analytics.performance.effective.slowWindowsRequired}회</dd></div>
+                <div><dt>복구 창</dt><dd>{analytics.performance.effective.recoveryWindowsRequired}회</dd></div>
+              </dl>
+              <div className="analytics-performance-admin__action">
+                <span><Activity aria-hidden="true" />{analytics.performance.updatedAt
+                  ? `마지막 모드 변경 ${formatDateTime(analytics.performance.updatedAt)}`
+                  : "수동 모드 변경 이력이 없습니다."}</span>
+                <button type="button" onClick={() => void changePerformanceMode()} disabled={performanceBusy}>
+                  {performanceBusy
+                    ? "변경 중"
+                    : analytics.performance.mode === "adaptive" ? "안정 기본값으로 즉시 전환" : "자동 보정 다시 사용"}
+                </button>
+              </div>
             </section>
 
             <footer className="analytics-privacy-note">

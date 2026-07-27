@@ -53,6 +53,7 @@ export type RsvpHistoryEntry = {
   revision: number;
   response: RsvpRecord;
   occurredAt: string;
+  changeReason?: string | null;
 };
 
 export type RsvpHistoryResult = {

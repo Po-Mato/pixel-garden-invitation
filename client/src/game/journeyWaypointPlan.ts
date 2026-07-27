@@ -53,6 +53,48 @@ export function moveJourneyWaypoint(
   return result;
 }
 
+function routeTransitionCost(activeZoneId: WorldZoneId, checkpointIds: readonly JourneyCheckpointId[]): number {
+  let cursor = activeZoneId;
+  let cost = 0;
+  for (const checkpointId of checkpointIds) {
+    const checkpoint = journeyCheckpoints.find((candidate) => candidate.id === checkpointId);
+    if (!checkpoint) continue;
+    cost += Math.max(0, findWorldZonePath(cursor, checkpoint.zoneId).length - 1);
+    cursor = checkpoint.zoneId;
+  }
+  return cost;
+}
+
+export function optimizeJourneyWaypointPlan(
+  progress: JourneyProgress,
+  checkpointIds: readonly JourneyCheckpointId[],
+  activeZoneId: WorldZoneId
+): JourneyCheckpointId[] {
+  const normalized = normalizeJourneyWaypointPlan(progress, checkpointIds);
+  if (normalized.length < 2) return normalized;
+
+  let best = normalized;
+  let bestCost = routeTransitionCost(activeZoneId, normalized);
+  const visit = (prefix: JourneyCheckpointId[], remaining: JourneyCheckpointId[]) => {
+    if (remaining.length === 0) {
+      const cost = routeTransitionCost(activeZoneId, prefix);
+      if (cost < bestCost) {
+        best = prefix;
+        bestCost = cost;
+      }
+      return;
+    }
+    for (let index = 0; index < remaining.length; index += 1) {
+      visit(
+        [...prefix, remaining[index]],
+        remaining.filter((_, candidateIndex) => candidateIndex !== index)
+      );
+    }
+  };
+  visit([], normalized);
+  return best;
+}
+
 export type JourneyWaypointEstimate = {
   waypointCount: number;
   zoneTransitions: number;

@@ -23,6 +23,7 @@ import {
 
 type JourneyStampBookProps = {
   progress: JourneyProgress;
+  syncStatus?: "local" | "syncing" | "synced" | "error";
   activeZoneId: WorldZoneId;
   highlightedCheckpointId: JourneyCheckpointId | null;
   disabled?: boolean;
@@ -45,6 +46,7 @@ const checkpointIcons: Record<JourneyCheckpointId, LucideIcon> = {
 
 export function JourneyStampBook({
   progress,
+  syncStatus = "local",
   activeZoneId,
   highlightedCheckpointId,
   disabled = false,
@@ -94,6 +96,15 @@ export function JourneyStampBook({
           <header>
             <span>WEDDING TRAIL</span>
             <strong>{nextCheckpoint ? "다음 추억을 찾아가요" : "모든 추억을 모았어요"}</strong>
+            <small className="journey-stamp-book__sync" data-status={syncStatus} role="status">
+              {syncStatus === "synced"
+                ? "개인 초대 링크에 저장됨"
+                : syncStatus === "syncing"
+                  ? "여정을 동기화하고 있어요"
+                  : syncStatus === "error"
+                    ? "기기에 저장됨 · 연결되면 다시 동기화"
+                    : "이 기기에 안전하게 저장됨"}
+            </small>
           </header>
           {nextCheckpoint ? (
             <button

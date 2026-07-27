@@ -1,7 +1,7 @@
 import { findRsvp } from "./rsvpRepository";
 import { hashEditToken, verifyAdminToken } from "./security";
 import type { Env } from "./index";
-import { listRsvpHistory } from "./rsvpHistoryRepository";
+import { listRsvpHistory, restoreRsvpHistory } from "./rsvpHistoryRepository";
 
 function json(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body), {
@@ -35,7 +35,7 @@ export async function handleAdminRsvpHistoryRequest(
   invitationId: string,
   rsvpId: string
 ): Promise<Response> {
-  if (request.method !== "GET") return json({ error: "not_found" }, 404);
+  if (request.method !== "GET" && request.method !== "POST") return json({ error: "not_found" }, 404);
   const token = bearerToken(request);
   if (!token) return json({ error: "unauthorized" }, 401);
   if (!env.RSVP_ADMIN_SESSION_SECRET) return json({ error: "internal_error" }, 500);
@@ -48,6 +48,37 @@ export async function handleAdminRsvpHistoryRequest(
       Date.now()
     );
     if (!authenticated) return json({ error: "unauthorized" }, 401);
+    if (request.method === "POST") {
+      let body: unknown;
+      try {
+        body = await request.json();
+      } catch {
+        return json({ error: "invalid_request" }, 400);
+      }
+      if (!body || typeof body !== "object") return json({ error: "invalid_request" }, 400);
+      const candidate = body as Record<string, unknown>;
+      const reason = typeof candidate.reason === "string" ? candidate.reason.trim() : "";
+      if (
+        !Number.isInteger(candidate.targetRevision)
+        || !Number.isInteger(candidate.currentRevision)
+        || (candidate.targetRevision as number) < 1
+        || (candidate.currentRevision as number) < 1
+        || (candidate.targetRevision as number) >= (candidate.currentRevision as number)
+        || reason.length < 2
+        || reason.length > 120
+      ) return json({ error: "invalid_request" }, 400);
+
+      const restored = await restoreRsvpHistory(
+        env.DB,
+        invitationId,
+        rsvpId,
+        candidate.targetRevision as number,
+        candidate.currentRevision as number,
+        reason
+      );
+      if (restored.status === "not_found") return json({ error: "not_found" }, 404);
+      if (restored.status === "conflict") return json({ error: "revision_conflict" }, 409);
+    }
     const history = await listRsvpHistory(env.DB, invitationId, rsvpId);
     return history ? json(history) : json({ error: "not_found" }, 404);
   } catch {

@@ -1,9 +1,12 @@
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import type { InvitationAnalyticsAdminResult } from "@wedding-game/shared";
+import type { InvitationAnalyticsAdminResponse } from "@wedding-game/shared";
 import { AnalyticsAdminPage } from "./AnalyticsAdminPage";
 
-const analyticsApi = vi.hoisted(() => ({ fetchAdminInvitationAnalytics: vi.fn() }));
+const analyticsApi = vi.hoisted(() => ({
+  fetchAdminInvitationAnalytics: vi.fn(),
+  updateAdminInvitationPerformanceMode: vi.fn()
+}));
 const authApi = vi.hoisted(() => ({ createAdminSession: vi.fn() }));
 const storage = vi.hoisted(() => ({
   loadAdminSession: vi.fn(),
@@ -20,7 +23,7 @@ vi.mock("../invitation/rsvpStorage", () => storage);
 
 const session = { token: "admin-token", expiresAt: Date.now() + 60_000 };
 
-function result(): InvitationAnalyticsAdminResult {
+function result(): InvitationAnalyticsAdminResponse {
   return {
     range: { from: "2026-07-16", to: "2026-07-22", days: 7 },
     totals: {
@@ -31,6 +34,22 @@ function result(): InvitationAnalyticsAdminResult {
       clientErrors: 1, pageLoadSamples: 10, averagePageLoadMs: 1400,
       fpsSamples: 4, averageFps: 54, longTaskCount: 2, averageLongTaskMs: 82,
       qualityDowngrades: 1, qualityRecoveries: 1
+    },
+    performance: {
+      mode: "adaptive",
+      effective: {
+        version: 1, source: "observed", sampleCount: 30, observedAverageFps: 50,
+        slowFpsThreshold: 41, recoveryFpsThreshold: 49,
+        slowWindowsRequired: 2, recoveryWindowsRequired: 4,
+        generatedAt: "2026-07-22T03:00:00.000Z"
+      },
+      adaptive: {
+        version: 1, source: "observed", sampleCount: 30, observedAverageFps: 50,
+        slowFpsThreshold: 41, recoveryFpsThreshold: 49,
+        slowWindowsRequired: 2, recoveryWindowsRequired: 4,
+        generatedAt: "2026-07-22T03:00:00.000Z"
+      },
+      updatedAt: null
     },
     daily: Array.from({ length: 7 }, (_, index) => ({
       date: `2026-07-${String(16 + index).padStart(2, "0")}`,
@@ -63,6 +82,12 @@ describe("AnalyticsAdminPage", () => {
     storage.clearAdminSession.mockReturnValue(true);
     authApi.createAdminSession.mockResolvedValue(session);
     analyticsApi.fetchAdminInvitationAnalytics.mockResolvedValue(result());
+    analyticsApi.updateAdminInvitationPerformanceMode.mockResolvedValue({
+      ...result().performance,
+      mode: "safe-default",
+      effective: { ...result().performance.effective, source: "default", slowFpsThreshold: 42, recoveryFpsThreshold: 52 },
+      updatedAt: "2026-07-22T04:00:00.000Z"
+    });
   });
 
   afterEach(cleanup);
@@ -81,6 +106,8 @@ describe("AnalyticsAdminPage", () => {
     expect(screen.getByText("완료율 50%")).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "로딩·게임 성능" })).toBeInTheDocument();
     expect(screen.getByText(/FPS 표본 4회/)).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "실기기 성능 기준 운영" })).toBeInTheDocument();
+    expect(screen.getByText("실측 표본 자동 보정 중")).toBeInTheDocument();
   });
 
   it("기간 버튼을 바꾸면 해당 기간으로 다시 조회한다", async () => {
@@ -92,5 +119,15 @@ describe("AnalyticsAdminPage", () => {
       "admin-token",
       expect.objectContaining({ from: expect.any(String), to: expect.any(String) })
     );
+  });
+
+  it("안정 기본값으로 즉시 전환하고 상태를 갱신한다", async () => {
+    render(<AnalyticsAdminPage />);
+    await login();
+    fireEvent.click(screen.getByRole("button", { name: "안정 기본값으로 즉시 전환" }));
+    await waitFor(() => expect(analyticsApi.updateAdminInvitationPerformanceMode)
+      .toHaveBeenCalledWith("admin-token", "safe-default"));
+    expect(await screen.findByText("안정 기본값으로 즉시 전환했습니다.")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "자동 보정 다시 사용" })).toBeInTheDocument();
   });
 });

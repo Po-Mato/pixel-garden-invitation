@@ -47,6 +47,7 @@ describe("ViewSettingsAccess", () => {
     expect(screen.getByRole("button", { name: "아주 크게" })).toHaveAttribute("aria-pressed", "true");
     expect(screen.getByRole("switch", { name: "선명한 화면" })).toBeChecked();
     expect(screen.getByRole("switch", { name: "큰 조이스틱·터치 영역" })).toBeChecked();
+    expect(screen.getByRole("switch", { name: "계단 없는 길 우선" })).toBeChecked();
     expect(screen.getByRole("switch", { name: "움직임 줄이기" })).toBeChecked();
     expect(screen.getByRole("switch", { name: "데이터 절약" })).toBeChecked();
     expect(document.documentElement).toHaveAttribute("data-high-contrast", "true");
@@ -56,6 +57,19 @@ describe("ViewSettingsAccess", () => {
     expect(screen.getByRole("button", { name: "기본" })).toHaveAttribute("aria-pressed", "true");
     expect(document.documentElement).not.toHaveAttribute("data-high-contrast");
     expect(document.documentElement).not.toHaveAttribute("data-comfortable-controls");
+  });
+
+  it("계단 없는 길 우선 설정을 저장 상태에 반영한다", () => {
+    render(
+      <ViewPreferencesProvider initialPreferences={defaultViewPreferences}>
+        <ViewSettingsAccess variant="icon" />
+      </ViewPreferencesProvider>
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "환경 설정" }));
+    const control = screen.getByRole("switch", { name: "계단 없는 길 우선" });
+    fireEvent.click(control);
+    expect(control).toBeChecked();
   });
 
   it("메뉴형 진입점도 동일한 설정 시트를 연다", () => {

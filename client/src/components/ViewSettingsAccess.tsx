@@ -46,6 +46,7 @@ export function ViewSettingsAccess({ variant, onOpenChange }: ViewSettingsAccess
     setDataSaver,
     setRouteVoiceGuidance,
     setRouteVoiceRate,
+    setStepFreeRouteEnabled,
     enableComfortableView,
     resetPreferences
   } = useViewPreferences();
@@ -168,6 +169,17 @@ export function ViewSettingsAccess({ variant, onOpenChange }: ViewSettingsAccess
                 role="switch"
                 checked={preferences.routeVoiceGuidance}
                 onChange={(event) => setRouteVoiceGuidance(event.target.checked)}
+              />
+              <span aria-hidden="true" className="view-settings-sheet__switch-track" />
+            </label>
+
+            <label className="view-settings-sheet__switch">
+              <span><Accessibility aria-hidden="true" /><strong>계단 없는 길 우선</strong></span>
+              <input
+                type="checkbox"
+                role="switch"
+                checked={preferences.stepFreeRouteEnabled}
+                onChange={(event) => setStepFreeRouteEnabled(event.target.checked)}
               />
               <span aria-hidden="true" className="view-settings-sheet__switch-track" />
             </label>
@@ -463,6 +475,7 @@ export function ViewSettingsAccess({ variant, onOpenChange }: ViewSettingsAccess
               큰 터치 영역 {preferences.comfortableControls ? "켜짐" : "꺼짐"},
               길찾기 음성 안내 {preferences.routeVoiceGuidance ? "켜짐" : "꺼짐"},
               음성 안내 속도 {preferences.routeVoiceRate === "slow" ? "느리게" : preferences.routeVoiceRate === "fast" ? "빠르게" : "보통"},
+              계단 없는 길 우선 {preferences.stepFreeRouteEnabled ? "켜짐" : "꺼짐"},
               움직임 줄이기 {preferences.reduceMotion ? "켜짐" : "꺼짐"},
               데이터 절약 {preferences.dataSaver ? "켜짐" : "꺼짐"},
               전체 소리 {feedbackPreferences.soundEnabled ? "켜짐" : "꺼짐"},

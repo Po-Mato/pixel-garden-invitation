@@ -1,9 +1,13 @@
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { fetchAdminRsvpHistory } from "../api/rsvpHistoryApi";
+import { fetchAdminRsvpHistory, restoreAdminRsvpHistory } from "../api/rsvpHistoryApi";
 import { RsvpHistoryDialog } from "./RsvpHistoryDialog";
 
-vi.mock("../api/rsvpHistoryApi", () => ({ fetchAdminRsvpHistory: vi.fn() }));
+vi.mock("../api/rsvpHistoryApi", () => ({
+  fetchAdminRsvpHistory: vi.fn(),
+  fetchOwnedRsvpHistory: vi.fn(),
+  restoreAdminRsvpHistory: vi.fn()
+}));
 
 const response = {
   id: "rsvp_1",
@@ -54,5 +58,53 @@ describe("RsvpHistoryDialog", () => {
     expect(screen.getByText("창가 자리", { selector: "ins" })).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "변경 이력 닫기" }));
     expect(onClose).toHaveBeenCalledOnce();
+  });
+
+  it("관리자가 복원 사유를 입력해 특정 개정본을 복원한다", async () => {
+    const history = {
+      rsvpId: response.id,
+      entries: [
+        { id: "2", action: "updated" as const, revision: 2, response, occurredAt: response.updatedAt },
+        {
+          id: "1",
+          action: "created" as const,
+          revision: 1,
+          response: { ...response, partySize: 1, revision: 1, updatedAt: response.createdAt },
+          occurredAt: response.createdAt
+        }
+      ]
+    };
+    vi.mocked(fetchAdminRsvpHistory).mockResolvedValue(history);
+    vi.mocked(restoreAdminRsvpHistory).mockResolvedValue({
+      ...history,
+      entries: [{
+        ...history.entries[0],
+        id: "3",
+        revision: 3,
+        changeReason: "최초 답변 확인 후 복원"
+      }, ...history.entries]
+    });
+    const onRestored = vi.fn();
+    render(<RsvpHistoryDialog
+      token="admin-token"
+      response={response}
+      onClose={vi.fn()}
+      onUnauthorized={vi.fn()}
+      onRestored={onRestored}
+    />);
+
+    const restoreButtons = await screen.findAllByRole("button", { name: "이 버전으로 복원" });
+    fireEvent.click(restoreButtons.at(-1)!);
+    fireEvent.change(screen.getByLabelText("복원 사유"), { target: { value: "최초 답변 확인 후 복원" } });
+    fireEvent.click(screen.getByRole("button", { name: "이 버전으로 복원" }));
+
+    await waitFor(() => {
+      expect(restoreAdminRsvpHistory).toHaveBeenCalledWith("admin-token", response.id, {
+        targetRevision: 1,
+        currentRevision: 2,
+        reason: "최초 답변 확인 후 복원"
+      });
+      expect(onRestored).toHaveBeenCalledOnce();
+    });
   });
 });
