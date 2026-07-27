@@ -31,12 +31,17 @@ import { WeddingDayActionBar } from "./WeddingDayActionBar";
 import { WeddingGallery } from "./WeddingGallery";
 import { WeddingStoryTimeline } from "./WeddingStoryTimeline";
 import { observeAnalyticsSections } from "../analytics/invitationAnalytics";
+import { journeyCheckpoints } from "../game/journeyProgress";
+import { quickInvitationHashForCheckpoint } from "../game/journeyAccessibility";
+import { InvitationPriorityActions } from "./InvitationPriorityActions";
+import "../invitation-priority-actions.css";
 
 type QuickInvitationProps = {
   nickname?: string;
   canReturnToGarden?: boolean;
   onOpenGarden: () => void;
   weddingDayPreview?: boolean;
+  now?: Date;
 };
 
 type SectionHeadingProps = {
@@ -81,7 +86,8 @@ export function QuickInvitation({
   nickname = "",
   canReturnToGarden = false,
   onOpenGarden,
-  weddingDayPreview = false
+  weddingDayPreview = false,
+  now
 }: QuickInvitationProps) {
   const { event, content } = usePublishedInvitationContent();
   const coupleOrder = useCoupleOrder();
@@ -137,6 +143,22 @@ export function QuickInvitation({
 
       <nav className="quick-invitation__nav" aria-label="간편 초대장 목차">
         {navigation.map(([label, id]) => <a key={id} href={`#${id}`}>{label}</a>)}
+      </nav>
+
+      <InvitationPriorityActions event={event} now={now} onSelect={(id) => scrollToSection(id)} />
+
+      <nav className="quick-destination-nav" aria-label="초대장 목적지 탐색">
+        <strong>여정 목적지</strong>
+        <ol>
+          {journeyCheckpoints.map((checkpoint, index) => (
+            <li key={checkpoint.id}>
+              <a href={quickInvitationHashForCheckpoint(checkpoint)}>
+                <b>{index + 1}</b>
+                <span><strong>{checkpoint.label}</strong><small>{checkpoint.detail}</small></span>
+              </a>
+            </li>
+          ))}
+        </ol>
       </nav>
 
       <section className="quick-intro quick-band" aria-labelledby="quick-intro-title">

@@ -493,7 +493,7 @@ test("declares the ten map contracts in journey order", async () => {
   ]);
 });
 
-test("wires gallery and map asset audits into root test and build scripts", async () => {
+test("wires gallery, map, character, and mobile visual audits into root scripts", async () => {
   const packageJson = JSON.parse(await readFile(join(root, "package.json"), "utf8"));
 
   assert.equal(
@@ -502,6 +502,6 @@ test("wires gallery and map asset audits into root test and build scripts", asyn
   );
   assert.equal(
     packageJson.scripts.test,
-    "pnpm gallery:audit && pnpm gallery:test && pnpm maps:audit && pnpm maps:test && pnpm characters:audit && pnpm characters:test && pnpm --filter @wedding-game/shared test && pnpm --filter @wedding-game/client test && pnpm --filter @wedding-game/worker test"
+    "pnpm gallery:audit && pnpm gallery:test && pnpm maps:audit && pnpm maps:test && pnpm characters:audit && pnpm characters:test && pnpm visual:test && pnpm --filter @wedding-game/shared test && pnpm --filter @wedding-game/client test && pnpm --filter @wedding-game/worker test"
   );
 });

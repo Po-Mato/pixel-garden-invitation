@@ -5,7 +5,9 @@ import { currentNetworkMode } from "../performance/networkQuality";
 import { warmPwaAssetCache } from "../pwa/pwaClient";
 import { gardenWorld, getWorldZone } from "./world";
 import {
+  adjacentWorldZoneIds,
   nextWorldZoneToward,
+  preloadAdjacentWorldZoneAssets,
   preloadWorldZoneAssets,
   resolveWorldZoneAssetUrls
 } from "./worldAssetPreloader";
@@ -64,5 +66,31 @@ describe("world asset preloader", () => {
     expect(nextWorldZoneToward("bridal-room", "ceremony-hall")).toBe("lobby");
     expect(nextWorldZoneToward("banquet", "restroom")).toBe("restroom");
     expect(nextWorldZoneToward("lobby", "lobby")).toBeNull();
+  });
+
+  it("collects every unique zone directly connected by a portal", () => {
+    const expected = [...new Set(getWorldZone(gardenWorld, "lobby").portals.map((portal) => portal.to))];
+    expect(adjacentWorldZoneIds("lobby")).toEqual(expected);
+  });
+
+  it("preloads all adjacent map assets on a standard device", async () => {
+    const adjacent = adjacentWorldZoneIds("lobby");
+    const expectedUrls = adjacent.flatMap((zoneId) => resolveWorldZoneAssetUrls(zoneId));
+
+    await expect(preloadAdjacentWorldZoneAssets("lobby", "standard")).resolves.toEqual(adjacent);
+
+    expect(preloadImage).toHaveBeenCalledTimes(expectedUrls.length);
+    expect(vi.mocked(preloadImage).mock.calls.map(([url]) => url)).toEqual(expect.arrayContaining(expectedUrls));
+  });
+
+  it("preloads only adjacent backgrounds on a lite device", async () => {
+    const adjacent = adjacentWorldZoneIds("lobby");
+
+    await expect(preloadAdjacentWorldZoneAssets("lobby", "lite")).resolves.toEqual(adjacent);
+
+    expect(preloadImage).toHaveBeenCalledTimes(adjacent.length);
+    expect(vi.mocked(preloadImage).mock.calls.every(([url, priority]) => (
+      url.endsWith("/background.webp") && priority === "low"
+    ))).toBe(true);
   });
 });

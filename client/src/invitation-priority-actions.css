@@ -1,0 +1,151 @@
+.invitation-priority-actions {
+  width: min(100%, 760px);
+  margin: 0 auto;
+  padding: 20px clamp(18px, 5vw, 30px) 8px;
+}
+
+.invitation-priority-actions__label {
+  display: block;
+  margin-bottom: 10px;
+  color: #496156;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.invitation-priority-actions > div {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.invitation-priority-actions button {
+  min-width: 0;
+  min-height: 74px;
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  padding: 11px 10px;
+  border: 1px solid #d9e2dc;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #24372f;
+  text-align: left;
+}
+
+.invitation-priority-actions button.is-primary {
+  border-color: #4c7865;
+  background: #edf5f0;
+}
+
+.invitation-priority-actions button svg {
+  width: 21px;
+  height: 21px;
+}
+
+.invitation-priority-actions button span,
+.quick-destination-nav a span {
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+}
+
+.invitation-priority-actions button strong,
+.invitation-priority-actions button small,
+.quick-destination-nav a strong,
+.quick-destination-nav a small {
+  overflow-wrap: anywhere;
+}
+
+.invitation-priority-actions button strong {
+  font-size: 0.82rem;
+}
+
+.invitation-priority-actions button small {
+  color: #617269;
+  font-size: 0.68rem;
+  line-height: 1.35;
+}
+
+.quick-destination-nav {
+  width: min(100%, 760px);
+  margin: 0 auto;
+  padding: 18px clamp(18px, 5vw, 30px) 26px;
+}
+
+.quick-destination-nav > strong {
+  display: block;
+  margin-bottom: 10px;
+  color: #496156;
+  font-size: 0.78rem;
+}
+
+.quick-destination-nav ol {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid #dfe6e2;
+}
+
+.quick-destination-nav a {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  min-height: 54px;
+  padding: 8px 2px;
+  border-bottom: 1px solid #dfe6e2;
+  color: #263a31;
+  text-decoration: none;
+}
+
+.quick-destination-nav a b {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #416e5a;
+  color: #fff;
+  font-size: 0.7rem;
+}
+
+.quick-destination-nav a strong {
+  font-size: 0.82rem;
+}
+
+.quick-destination-nav a small {
+  color: #67776f;
+  font-size: 0.7rem;
+}
+
+.journey-route-sheet__simple-destination {
+  width: calc(100% - 32px);
+  min-height: 42px;
+  margin: 0 16px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border: 1px solid #cbdad2;
+  border-radius: 7px;
+  background: #f8fbf9;
+  color: #345849;
+  font-weight: 750;
+}
+
+.journey-route-sheet__simple-destination svg {
+  width: 18px;
+  height: 18px;
+}
+
+@media (max-width: 520px) {
+  .invitation-priority-actions > div {
+    grid-template-columns: 1fr;
+  }
+
+  .invitation-priority-actions button {
+    min-height: 60px;
+  }
+}

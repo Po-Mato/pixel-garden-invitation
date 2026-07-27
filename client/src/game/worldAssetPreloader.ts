@@ -4,6 +4,7 @@ import { currentNetworkMode } from "../performance/networkQuality";
 import { warmPwaAssetCache } from "../pwa/pwaClient";
 import { gardenWorld, getWorldZone, type GardenWorld } from "./world";
 import { resolveWorldMapAsset, resolveWorldVisual } from "./worldVisuals";
+import type { DevicePerformanceMode } from "../performance/DevicePerformanceContext";
 
 export type WorldAssetDetail = "background" | "all";
 
@@ -25,10 +26,11 @@ export function resolveWorldZoneAssetUrls(
 
 export function preloadWorldZoneAssets(
   zoneId: WorldZoneId,
-  priority: ImagePreloadPriority = "low"
+  priority: ImagePreloadPriority = "low",
+  detailOverride?: WorldAssetDetail
 ) {
   const economy = currentNetworkMode() === "economy";
-  const detail: WorldAssetDetail = economy && priority === "low" ? "background" : "all";
+  const detail: WorldAssetDetail = detailOverride ?? (economy && priority === "low" ? "background" : "all");
   const urls = resolveWorldZoneAssetUrls(zoneId, import.meta.env.BASE_URL, detail);
   const load = economy
     ? urls.reduce<Promise<boolean[]>>(async (pending, url, index) => {
@@ -42,6 +44,33 @@ export function preloadWorldZoneAssets(
     warmPwaAssetCache(urls.filter((_url, index) => results[index]));
     return results;
   });
+}
+
+export function adjacentWorldZoneIds(
+  zoneId: WorldZoneId,
+  world: GardenWorld = gardenWorld
+): WorldZoneId[] {
+  return [...new Set(getWorldZone(world, zoneId).portals.map((portal) => portal.to))];
+}
+
+export async function preloadAdjacentWorldZoneAssets(
+  zoneId: WorldZoneId,
+  performanceMode: DevicePerformanceMode,
+  world: GardenWorld = gardenWorld
+): Promise<WorldZoneId[]> {
+  const adjacentZoneIds = adjacentWorldZoneIds(zoneId, world);
+
+  if (performanceMode === "lite") {
+    for (const adjacentZoneId of adjacentZoneIds) {
+      await preloadWorldZoneAssets(adjacentZoneId, "low", "background");
+    }
+  } else {
+    await Promise.all(adjacentZoneIds.map((adjacentZoneId) => (
+      preloadWorldZoneAssets(adjacentZoneId, "low", "all")
+    )));
+  }
+
+  return adjacentZoneIds;
 }
 
 export function nextWorldZoneToward(

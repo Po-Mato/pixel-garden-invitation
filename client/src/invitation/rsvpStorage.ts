@@ -3,6 +3,8 @@ import type { AdminSession, RsvpCredential } from "../api/weddingApi";
 const credentialKey = (invitationId: string) => `wedding:rsvp:${invitationId}`;
 const adminSessionKey = (invitationId: string) => `wedding:rsvp-admin:${invitationId}`;
 
+export const rsvpCredentialChangedEvent = "wedding:rsvp-credential-changed";
+
 type StorageKind = "localStorage" | "sessionStorage";
 
 function getStorage(kind: StorageKind): Storage | null {
@@ -90,14 +92,18 @@ export function loadRsvpCredential(invitationId: string): RsvpCredential | null 
 }
 
 export function saveRsvpCredential(invitationId: string, credential: RsvpCredential): boolean {
-  return save("localStorage", credentialKey(invitationId), {
+  const saved = save("localStorage", credentialKey(invitationId), {
     rsvpId: credential.rsvpId,
     editToken: credential.editToken
   });
+  if (saved) window.dispatchEvent(new Event(rsvpCredentialChangedEvent));
+  return saved;
 }
 
 export function clearRsvpCredential(invitationId: string): boolean {
-  return clear("localStorage", credentialKey(invitationId));
+  const cleared = clear("localStorage", credentialKey(invitationId));
+  if (cleared) window.dispatchEvent(new Event(rsvpCredentialChangedEvent));
+  return cleared;
 }
 
 export function loadAdminSession(invitationId: string): AdminSession | null {

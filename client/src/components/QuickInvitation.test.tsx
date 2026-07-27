@@ -23,6 +23,20 @@ describe("간편 초대장", () => {
     expect(document.getElementById("rsvp")).toHaveTextContent("참석 답변 내용");
     expect(document.getElementById("guestbook")).toHaveTextContent("방명록 내용 하객1");
     expect(screen.getAllByText("경기 부천시 소사구 경인로 386")).toHaveLength(2);
+    expect(screen.getByRole("navigation", { name: "초대장 목적지 탐색" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /신부에게 인사/ })).toHaveAttribute("href", "#couple");
+  });
+
+  it("답변 전에는 참석 답변을 첫 번째 우선 행동으로 제공한다", () => {
+    render(
+      <QuickInvitation
+        onOpenGarden={vi.fn()}
+        now={new Date("2027-04-01T12:00:00+09:00")}
+      />
+    );
+
+    const actions = screen.getByRole("navigation", { name: "지금 필요한 안내" });
+    expect(actions.querySelector("button")?.textContent).toContain("참석 답변");
   });
 
   it("정원 이동 명령을 제공한다", () => {

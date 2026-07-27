@@ -17,9 +17,18 @@ type JourneyRouteSheetProps = {
   guidance: JourneyGuidancePreview | null;
   onClose: () => void;
   onStart: () => void;
+  onOpenSimpleDestination?: (checkpoint: JourneyCheckpoint) => void;
 };
 
-export function JourneyRouteSheet({ activeZone, checkpoint, progress, guidance, onClose, onStart }: JourneyRouteSheetProps) {
+export function JourneyRouteSheet({
+  activeZone,
+  checkpoint,
+  progress,
+  guidance,
+  onClose,
+  onStart,
+  onOpenSimpleDestination
+}: JourneyRouteSheetProps) {
   const closeRef = useRef<HTMLButtonElement>(null);
   const summary = summarizeRemainingJourney(progress, activeZone.id);
   const routeZones = summary.nextZonePath.map((zoneId) => getWorldZone(gardenWorld, zoneId));
@@ -76,6 +85,16 @@ export function JourneyRouteSheet({ activeZone, checkpoint, progress, guidance, 
             <span><strong>{checkpoint.label}</strong><small>{journeyDestinationInstruction(checkpoint)}</small></span>
           </li>
         </ol>
+
+        {onOpenSimpleDestination ? (
+          <button
+            type="button"
+            className="journey-route-sheet__simple-destination"
+            onClick={() => onOpenSimpleDestination(checkpoint)}
+          >
+            <Accessibility aria-hidden="true" /> 간편 초대장에서 이 목적지 보기
+          </button>
+        ) : null}
 
         <footer>
           <button type="button" className="secondary-button" onClick={onClose}>계속 둘러보기</button>

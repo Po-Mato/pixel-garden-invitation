@@ -1058,12 +1058,49 @@ describe("GameWorld", () => {
 
     fireEvent.click(rsvpSpot);
     expect(rsvpSpot).toHaveClass("world-spot--target");
+    expect(screen.getByTestId("world-journey-route")).toHaveAttribute("data-route-kind", "selected");
     fireEvent.click(gallerySpot);
 
     expect(rsvpSpot).not.toHaveClass("world-spot--target");
     expect(gallerySpot).toHaveClass("world-spot--target");
     advanceInteractionRoute();
     expect(screen.getByRole("dialog", { name: "사진 갤러리" })).toBeInTheDocument();
+  });
+
+  it("previews and explicitly cancels a selected tile route", () => {
+    render(<GameWorld profile={profile} />);
+    const directionsSpot = getDirectionsWorldSpot();
+
+    fireEvent.click(directionsSpot);
+
+    expect(screen.getByTestId("world-journey-route")).toHaveAttribute("data-route-kind", "selected");
+    expect(screen.getByRole("button", { name: "이동 취소" })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "이동 취소" }));
+
+    expect(directionsSpot).not.toHaveClass("world-spot--target");
+    expect(screen.queryByTestId("world-journey-route")).not.toBeInTheDocument();
+    expect(screen.getByText("길 안내를 중단했어요")).toBeInTheDocument();
+  });
+
+  it("moves through the same tile path shown for a map selection", () => {
+    render(<GameWorld profile={profile} />);
+    const viewport = screen.getByTestId("world-map-viewport");
+    vi.spyOn(viewport, "getBoundingClientRect").mockReturnValue({
+      left: 0,
+      top: 0,
+      right: 390,
+      bottom: 700,
+      width: 390,
+      height: 700,
+      x: 0,
+      y: 0,
+      toJSON: () => ({})
+    });
+
+    fireEvent.click(viewport, { clientX: 260, clientY: 420 });
+
+    expect(screen.getByText("선택한 위치로 이동 중")).toBeInTheDocument();
+    expect(screen.getByTestId("world-journey-route")).toHaveAttribute("data-route-kind", "selected");
   });
 
   it("pauses a started portal route when directions opens from the invitation details", () => {
@@ -1478,7 +1515,7 @@ describe("GameWorld", () => {
     finishCurrentRoute();
 
     expect(screen.getByLabelText("우리 집 지도")).toBeInTheDocument();
-    expect(screen.getByText("포털 이동을 취소했어요")).toBeInTheDocument();
+    expect(screen.getByText("선택한 위치에 도착했어요")).toBeInTheDocument();
   });
 
   it("cancels portal walking when the joystick receives input", () => {
@@ -1599,13 +1636,14 @@ describe("GameWorld", () => {
     advanceAnimation(0);
 
     expect(screen.getByLabelText("동네 거리 지도")).toBeInTheDocument();
-    expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "135px", top: "405px" });
+    expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "135px", top: "375px" });
+    expect(screen.getByText("길을 찾을 수 없어요")).toBeInTheDocument();
 
     fireEvent.keyDown(joystick, { key: "ArrowRight" });
     advanceAnimation(3240);
     fireEvent.keyUp(joystick, { key: "ArrowRight" });
 
-    expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "165px", top: "405px" });
+    expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "165px", top: "375px" });
   });
 
   it("uses the same arrival and fade stages for the neighborhood station portal", () => {
