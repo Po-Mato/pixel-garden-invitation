@@ -1,4 +1,4 @@
-import { Accessibility, MapPinned, Navigation, X } from "lucide-react";
+import { Accessibility, ArrowDown, ArrowUp, MapPinned, Navigation, X } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import type { JourneyGuidancePreview } from "../game/journeyGuidance";
@@ -18,6 +18,8 @@ type JourneyRouteSheetProps = {
   waypoints?: readonly JourneyCheckpoint[];
   selectedWaypointIds?: readonly JourneyCheckpoint["id"][];
   onToggleWaypoint?: (checkpointId: JourneyCheckpoint["id"]) => void;
+  onMoveWaypoint?: (checkpointId: JourneyCheckpoint["id"], direction: "up" | "down") => void;
+  estimatedTotalLabel?: string;
   onClose: () => void;
   onStart: () => void;
   onOpenSimpleDestination?: (checkpoint: JourneyCheckpoint) => void;
@@ -31,6 +33,8 @@ export function JourneyRouteSheet({
   waypoints = [checkpoint],
   selectedWaypointIds = [checkpoint.id],
   onToggleWaypoint,
+  onMoveWaypoint,
+  estimatedTotalLabel,
   onClose,
   onStart,
   onOpenSimpleDestination
@@ -38,6 +42,14 @@ export function JourneyRouteSheet({
   const closeRef = useRef<HTMLButtonElement>(null);
   const summary = summarizeRemainingJourney(progress, activeZone.id);
   const routeZones = summary.nextZonePath.map((zoneId) => getWorldZone(gardenWorld, zoneId));
+  const selectedOrder = new Map(selectedWaypointIds.map((id, index) => [id, index]));
+  const orderedWaypoints = [
+    ...selectedWaypointIds.flatMap((id) => {
+      const waypoint = waypoints.find((candidate) => candidate.id === id);
+      return waypoint ? [waypoint] : [];
+    }),
+    ...waypoints.filter((waypoint) => !selectedOrder.has(waypoint.id))
+  ];
 
   useEffect(() => {
     closeRef.current?.focus();
@@ -68,7 +80,7 @@ export function JourneyRouteSheet({
         <div className="journey-route-sheet__summary" aria-label="남은 전체 여정 요약">
           <span><strong>{summary.remainingCheckpoints}</strong><small>남은 추억</small></span>
           <span><strong>{summary.zoneTransitions}</strong><small>맵 이동</small></span>
-          <span><strong>{summary.estimatedStages}</strong><small>예상 단계</small></span>
+          <span><strong>{estimatedTotalLabel ?? summary.estimatedStages}</strong><small>{estimatedTotalLabel ? "전체 예상" : "예상 단계"}</small></span>
         </div>
 
         <div className="journey-route-sheet__destination">
@@ -82,20 +94,28 @@ export function JourneyRouteSheet({
         <fieldset className="journey-route-sheet__waypoints">
           <legend>경유지 계획</legend>
           <p>방문할 목적지를 선택하면 예식 여정 순서로 안내합니다.</p>
-          {waypoints.map((waypoint, index) => {
+          {orderedWaypoints.map((waypoint) => {
             const selected = selectedWaypointIds.includes(waypoint.id);
+            const order = selectedOrder.get(waypoint.id);
             return (
-              <label key={waypoint.id} data-selected={selected || undefined}>
+              <div className="journey-route-sheet__waypoint" key={waypoint.id} data-selected={selected || undefined}>
                 <input
                   type="checkbox"
+                  aria-label={`${waypoint.label} 경유지 ${selected ? "제외" : "추가"}`}
                   checked={selected}
                   disabled={!onToggleWaypoint || (selected && selectedWaypointIds.length === 1)}
                   onChange={() => onToggleWaypoint?.(waypoint.id)}
                 />
-                <b>{index + 1}</b>
+                <b>{order === undefined ? "+" : order + 1}</b>
                 <span><strong>{waypoint.label}</strong><small>{waypoint.detail}</small></span>
                 <em>{waypoint.zoneId === activeZone.id ? "현재 맵" : getWorldZone(gardenWorld, waypoint.zoneId).label}</em>
-              </label>
+                {selected && onMoveWaypoint ? (
+                  <span className="journey-route-sheet__waypoint-order" aria-label={`${waypoint.label} 순서 변경`}>
+                    <button type="button" aria-label={`${waypoint.label} 앞 순서로`} disabled={order === 0} onClick={() => onMoveWaypoint(waypoint.id, "up")}><ArrowUp aria-hidden="true" /></button>
+                    <button type="button" aria-label={`${waypoint.label} 뒤 순서로`} disabled={order === selectedWaypointIds.length - 1} onClick={() => onMoveWaypoint(waypoint.id, "down")}><ArrowDown aria-hidden="true" /></button>
+                  </span>
+                ) : null}
+              </div>
             );
           })}
         </fieldset>

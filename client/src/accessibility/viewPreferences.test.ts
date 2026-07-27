@@ -25,7 +25,8 @@ describe("보기 설정 저장", () => {
         highContrast: false,
         comfortableControls: false,
         dataSaver: false,
-        routeVoiceGuidance: false
+        routeVoiceGuidance: false,
+        routeVoiceRate: "normal"
       });
     expect(loadViewPreferences(storage(JSON.stringify({
       textScale: "xlarge",
@@ -33,14 +34,16 @@ describe("보기 설정 저장", () => {
       highContrast: true,
       comfortableControls: true,
       dataSaver: true,
-      routeVoiceGuidance: false
+      routeVoiceGuidance: false,
+      routeVoiceRate: "normal"
     })))).toEqual({
       textScale: "xlarge",
       reduceMotion: true,
       highContrast: true,
       comfortableControls: true,
       dataSaver: true,
-      routeVoiceGuidance: false
+      routeVoiceGuidance: false,
+      routeVoiceRate: "normal"
     });
     expect(loadViewPreferences(storage("{broken"))).toEqual(defaultViewPreferences);
     expect(loadViewPreferences(storage(JSON.stringify({ textScale: "huge", reduceMotion: true }))))
@@ -55,7 +58,8 @@ describe("보기 설정 저장", () => {
       highContrast: true,
       comfortableControls: true,
       dataSaver: true,
-      routeVoiceGuidance: true
+      routeVoiceGuidance: true,
+      routeVoiceRate: "fast" as const
     };
     expect(saveViewPreferences(preferences, target)).toBe(true);
     expect(target.setItem).toHaveBeenCalledWith(
@@ -72,7 +76,8 @@ describe("보기 설정 저장", () => {
       highContrast: true,
       comfortableControls: true,
       dataSaver: true,
-      routeVoiceGuidance: true
+      routeVoiceGuidance: true,
+      routeVoiceRate: "slow"
     }, root);
     expect(root).toHaveAttribute("data-text-scale", "xlarge");
     expect(root).toHaveAttribute("data-reduce-motion", "true");

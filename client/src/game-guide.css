@@ -571,9 +571,9 @@
   line-height: 1.45;
 }
 
-.journey-route-sheet__waypoints label {
+.journey-route-sheet__waypoint {
   display: grid;
-  grid-template-columns: 18px 24px minmax(0, 1fr) auto;
+  grid-template-columns: 18px 24px minmax(0, 1fr) auto 48px;
   align-items: center;
   gap: 7px;
   min-height: 42px;
@@ -584,18 +584,43 @@
   color: #55615a;
 }
 
-.journey-route-sheet__waypoints label[data-selected] {
+.journey-route-sheet__waypoint[data-selected] {
   border-color: #7d9b89;
   background: #eef5ef;
   color: #314b3d;
 }
 
-.journey-route-sheet__waypoints input { width: 17px; height: 17px; accent-color: #557765; }
-.journey-route-sheet__waypoints b { font-size: 10px; text-align: center; }
-.journey-route-sheet__waypoints span { display: grid; min-width: 0; gap: 1px; }
-.journey-route-sheet__waypoints strong { font-size: 11px; }
-.journey-route-sheet__waypoints small { overflow: hidden; color: #718078; font-size: 8px; text-overflow: ellipsis; white-space: nowrap; }
-.journey-route-sheet__waypoints em { color: #7d665f; font-size: 8px; font-style: normal; font-weight: 800; }
+.journey-route-sheet__waypoint > input { width: 17px; height: 17px; accent-color: #557765; }
+.journey-route-sheet__waypoint > b { font-size: 10px; text-align: center; }
+.journey-route-sheet__waypoint > span:not(.journey-route-sheet__waypoint-order) { display: grid; min-width: 0; gap: 1px; }
+.journey-route-sheet__waypoint strong { font-size: 11px; }
+.journey-route-sheet__waypoint small { overflow: hidden; color: #718078; font-size: 8px; text-overflow: ellipsis; white-space: nowrap; }
+.journey-route-sheet__waypoint > em { color: #7d665f; font-size: 8px; font-style: normal; font-weight: 800; }
+
+.journey-route-sheet__waypoint-order {
+  display: grid;
+  grid-template-columns: repeat(2, 22px);
+  gap: 3px;
+}
+
+.journey-route-sheet__waypoint-order button {
+  display: grid;
+  width: 22px;
+  height: 28px;
+  place-items: center;
+  padding: 0;
+  border: 1px solid #b8c8be;
+  background: #fff;
+  color: #476353;
+}
+
+.journey-route-sheet__waypoint-order button:disabled { opacity: 0.35; }
+.journey-route-sheet__waypoint-order svg { width: 13px; height: 13px; }
+
+@media (max-width: 360px) {
+  .journey-route-sheet__waypoint { grid-template-columns: 18px 18px minmax(0, 1fr) 46px; }
+  .journey-route-sheet__waypoint > em { display: none; }
+}
 
 .journey-route-sheet > ol {
   display: grid;

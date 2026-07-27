@@ -11,6 +11,7 @@ export type FeedbackPreferences = {
   portalAudioVolume: FeedbackVolume;
   portalMonoEnabled: boolean;
   portalHapticsEnabled: boolean;
+  routeHapticsEnabled: boolean;
 };
 
 type StorageLike = Pick<Storage, "getItem" | "setItem">;
@@ -26,7 +27,8 @@ export const defaultFeedbackPreferences: FeedbackPreferences = {
   portalAudioEnabled: true,
   portalAudioVolume: "balanced",
   portalMonoEnabled: false,
-  portalHapticsEnabled: false
+  portalHapticsEnabled: false,
+  routeHapticsEnabled: false
 };
 
 function isFeedbackVolume(value: unknown): value is FeedbackVolume {
@@ -54,7 +56,8 @@ export function isFeedbackPreferences(value: unknown): value is FeedbackPreferen
     && typeof candidate.portalAudioEnabled === "boolean"
     && isFeedbackVolume(candidate.portalAudioVolume)
     && typeof candidate.portalMonoEnabled === "boolean"
-    && typeof candidate.portalHapticsEnabled === "boolean";
+    && typeof candidate.portalHapticsEnabled === "boolean"
+    && typeof candidate.routeHapticsEnabled === "boolean";
 }
 
 function migrateFeedbackPreferences(value: unknown): FeedbackPreferences | null {
@@ -82,11 +85,15 @@ function migrateFeedbackPreferences(value: unknown): FeedbackPreferences | null 
   const portalHapticsEnabled = candidate.portalHapticsEnabled === undefined
     ? defaultFeedbackPreferences.portalHapticsEnabled
     : typeof candidate.portalHapticsEnabled === "boolean" ? candidate.portalHapticsEnabled : null;
+  const routeHapticsEnabled = candidate.routeHapticsEnabled === undefined
+    ? defaultFeedbackPreferences.routeHapticsEnabled
+    : typeof candidate.routeHapticsEnabled === "boolean" ? candidate.routeHapticsEnabled : null;
   if (!footstepVolume
     || portalAudioEnabled === null
     || !portalAudioVolume
     || portalMonoEnabled === null
-    || portalHapticsEnabled === null) return null;
+    || portalHapticsEnabled === null
+    || routeHapticsEnabled === null) return null;
 
   return {
     soundEnabled: candidate.soundEnabled,
@@ -98,7 +105,8 @@ function migrateFeedbackPreferences(value: unknown): FeedbackPreferences | null 
     portalAudioEnabled,
     portalAudioVolume,
     portalMonoEnabled,
-    portalHapticsEnabled
+    portalHapticsEnabled,
+    routeHapticsEnabled
   };
 }
 

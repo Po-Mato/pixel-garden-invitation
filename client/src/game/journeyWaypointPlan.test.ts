@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 import { createEmptyJourneyProgress, type JourneyProgress } from "./journeyProgress";
 import {
   firstJourneyWaypoint,
+  estimateJourneyWaypointPlan,
+  moveJourneyWaypoint,
   normalizeJourneyWaypointPlan,
   remainingJourneyWaypoints,
   toggleJourneyWaypoint
@@ -15,16 +17,25 @@ describe("journeyWaypointPlan", () => {
       "ceremony",
       "guestbook"
     ]);
-    expect(normalizeJourneyWaypointPlan(progress, ["guestbook", "gallery"])).toEqual([
-      "gallery",
-      "guestbook"
-    ]);
+    expect(normalizeJourneyWaypointPlan(progress, ["guestbook", "gallery"])).toEqual(["guestbook", "gallery"]);
   });
 
   it("마지막 경유지는 해제하지 않고 첫 경유지를 찾는다", () => {
     const progress = createEmptyJourneyProgress();
     expect(toggleJourneyWaypoint(progress, ["gallery"], "gallery")).toEqual(["gallery"]);
-    expect(firstJourneyWaypoint(progress, ["ceremony", "gallery"])?.id).toBe("gallery");
+    expect(firstJourneyWaypoint(progress, ["ceremony", "gallery"])?.id).toBe("ceremony");
+  });
+
+  it("경유지를 위아래로 이동하고 선택 순서대로 시간을 추정한다", () => {
+    const progress = createEmptyJourneyProgress();
+    expect(moveJourneyWaypoint(progress, ["directions", "gallery", "bride"], "bride", "up"))
+      .toEqual(["directions", "bride", "gallery"]);
+    expect(moveJourneyWaypoint(progress, ["directions", "gallery"], "directions", "up"))
+      .toEqual(["directions", "gallery"]);
+    const estimate = estimateJourneyWaypointPlan(progress, ["directions", "gallery"], "home", 10);
+    expect(estimate.waypointCount).toBe(2);
+    expect(estimate.zoneTransitions).toBeGreaterThan(0);
+    expect(estimate.estimatedSeconds).toBeGreaterThan(20);
   });
 
   it("빈 계획은 남은 전체 경유지로 복구한다", () => {

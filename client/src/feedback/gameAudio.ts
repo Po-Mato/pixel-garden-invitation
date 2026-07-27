@@ -2,6 +2,7 @@ import type { WorldZoneId } from "@wedding-game/shared";
 import type { FootstepSurface } from "../game/footstepSurface";
 import type { PortalAudioMix, PortalGuideDirection } from "../game/portalAudio";
 import type { WalkLandingFoot } from "../game/walkTiming";
+import type { JourneyCheckpointId } from "../game/journeyProgress";
 import type { FeedbackPreferences, FeedbackVolume } from "./feedbackPreferences";
 
 export type FeedbackCue = "tap" | "footstep" | "portal" | "stamp" | "dialogue" | "reaction" | "photo" | "complete";
@@ -317,6 +318,16 @@ const portalDirectionHapticPatterns: Record<PortalGuideDirection, number | numbe
   arrived: [12, 24, 12, 24, 24]
 };
 
+export type JourneyHapticPhase = "start" | "arrived";
+
+const journeyHapticPatterns: Record<JourneyCheckpointId, Record<JourneyHapticPhase, number | number[]>> = {
+  directions: { start: [8, 26, 8], arrived: [14, 24, 14] },
+  gallery: { start: [8, 18, 8, 34, 8], arrived: [12, 18, 20] },
+  bride: { start: [14, 34, 8], arrived: [18, 22, 10, 22, 18] },
+  ceremony: { start: [20, 38, 20], arrived: [24, 28, 24, 28, 30] },
+  guestbook: { start: [7, 16, 7, 16, 7], arrived: [12, 20, 12, 20, 22] }
+};
+
 function audioContextConstructor(): AudioContextConstructor | null {
   if (typeof window === "undefined") return null;
   const candidate = window as typeof window & { webkitAudioContext?: AudioContextConstructor };
@@ -346,6 +357,21 @@ export function triggerPortalDirectionHaptic(
   if (!vibrate) return false;
   try {
     return vibrate(portalDirectionHapticPatterns[direction]);
+  } catch {
+    return false;
+  }
+}
+
+export function triggerJourneyHaptic(
+  checkpointId: JourneyCheckpointId,
+  phase: JourneyHapticPhase,
+  vibrate: ((pattern: number | number[]) => boolean) | undefined = typeof navigator === "undefined"
+    ? undefined
+    : navigator.vibrate?.bind(navigator)
+): boolean {
+  if (!vibrate) return false;
+  try {
+    return vibrate(journeyHapticPatterns[checkpointId][phase]);
   } catch {
     return false;
   }

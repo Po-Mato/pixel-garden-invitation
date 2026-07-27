@@ -84,6 +84,26 @@ describe("ViewSettingsAccess", () => {
     expect(document.documentElement).toHaveAttribute("data-data-saver", "true");
   });
 
+  it("길찾기 음성 속도와 목적지별 진동을 설정한다", () => {
+    render(
+      <ViewPreferencesProvider initialPreferences={defaultViewPreferences}>
+        <GameFeedbackProvider initialPreferences={defaultFeedbackPreferences}>
+          <ViewSettingsAccess variant="icon" />
+        </GameFeedbackProvider>
+      </ViewPreferencesProvider>
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "환경 설정" }));
+    const voiceRate = screen.getByRole("group", { name: "길찾기 음성 속도" });
+    expect(within(voiceRate).getByRole("button", { name: "빠르게" })).toBeDisabled();
+    fireEvent.click(screen.getByRole("switch", { name: "길찾기 음성 안내" }));
+    fireEvent.click(within(voiceRate).getByRole("button", { name: "빠르게" }));
+    fireEvent.click(screen.getByRole("switch", { name: "목적지별 안내 진동" }));
+
+    expect(within(voiceRate).getByRole("button", { name: "빠르게" })).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByRole("switch", { name: "목적지별 안내 진동" })).toBeChecked();
+  });
+
   it("게임 소리와 진동을 각각 설정하고 음량을 미리 선택한다", () => {
     render(
       <ViewPreferencesProvider initialPreferences={defaultViewPreferences}>

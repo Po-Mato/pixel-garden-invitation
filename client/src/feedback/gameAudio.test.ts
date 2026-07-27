@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { defaultFeedbackPreferences } from "./feedbackPreferences";
-import { GameAudioEngine, triggerHaptic, triggerPortalDirectionHaptic } from "./gameAudio";
+import { GameAudioEngine, triggerHaptic, triggerJourneyHaptic, triggerPortalDirectionHaptic } from "./gameAudio";
 
 class FakeAudioParam {
   value = 1;
@@ -546,5 +546,19 @@ describe("triggerHaptic", () => {
       [12, 24, 12, 24, 24]
     ]);
     expect(triggerPortalDirectionHaptic("left", undefined)).toBe(false);
+  });
+
+  it("uses distinct journey destination patterns for start and arrival", () => {
+    const vibrate = vi.fn<(pattern: number | number[]) => boolean>(() => true);
+    const destinations = ["directions", "gallery", "bride", "ceremony", "guestbook"] as const;
+
+    destinations.forEach((destination) => {
+      triggerJourneyHaptic(destination, "start", vibrate);
+      triggerJourneyHaptic(destination, "arrived", vibrate);
+    });
+
+    const serializedPatterns = vibrate.mock.calls.map(([pattern]) => JSON.stringify(pattern));
+    expect(new Set(serializedPatterns)).toHaveProperty("size", 10);
+    expect(triggerJourneyHaptic("ceremony", "arrived", undefined)).toBe(false);
   });
 });

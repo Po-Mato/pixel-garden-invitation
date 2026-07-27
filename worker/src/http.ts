@@ -51,6 +51,7 @@ import {
 import { handleAdminInvitationReminderRequest } from "./invitationReminderHttp";
 import { markInvitationInviteLinkResponded } from "./invitationInviteLinkRepository";
 import { handleAdminRsvpHistoryRequest, handleOwnedRsvpHistoryRequest } from "./rsvpHistoryHttp";
+import { handleInvitationPerformanceConfigRequest } from "./invitationPerformanceConfig";
 import type { GuestbookOwnedMessage, RsvpRecord } from "@wedding-game/shared";
 import type { Env } from "./index";
 
@@ -789,6 +790,11 @@ async function handleApiRequestWithoutCors(
   const publicAnalyticsMatch = url.pathname.match(/^\/api\/invitations\/([^/]+)\/analytics\/events$/);
   if (publicAnalyticsMatch) {
     return handlePublicInvitationAnalyticsRequest(request, env, publicAnalyticsMatch[1]);
+  }
+
+  const publicPerformanceConfigMatch = url.pathname.match(/^\/api\/invitations\/([^/]+)\/performance-config$/);
+  if (publicPerformanceConfigMatch) {
+    return handleInvitationPerformanceConfigRequest(request, env, publicPerformanceConfigMatch[1]);
   }
 
   const publicInviteLinkMatch = url.pathname.match(/^\/api\/invitations\/([^/]+)\/invites\/([^/]+)$/);

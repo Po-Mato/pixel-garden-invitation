@@ -49,6 +49,8 @@ import { resolveNpcDialogue, type NpcDialogue, type NpcId } from "../game/npcDia
 import { navigationProgress } from "../game/navigationProgress";
 import {
   firstJourneyWaypoint,
+  estimateJourneyWaypointPlan,
+  moveJourneyWaypoint,
   normalizeJourneyWaypointPlan,
   remainingJourneyWaypoints,
   toggleJourneyWaypoint
@@ -225,7 +227,7 @@ function realtimeStatusText(status: RealtimeStatus) {
 export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView }: GameWorldProps) {
   const devicePerformance = useDevicePerformance();
   const { preferences: viewPreferences } = useViewPreferences();
-  const { playFeedback, setFeedbackZone, setPortalAudio } = useGameFeedback();
+  const { playFeedback, playJourneyHaptic, setFeedbackZone, setPortalAudio } = useGameFeedback();
   const initialZone = getWorldZone(gardenWorld, gardenWorld.defaultZoneId);
   const [activeZoneId, setActiveZoneId] = useState<WorldZoneId>(initialZone.id);
   const activeZone = getWorldZone(gardenWorld, activeZoneId);
@@ -325,12 +327,14 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     const timer = window.setTimeout(() => {
       const utterance = new SpeechSynthesisUtterance(travelStatus);
       utterance.lang = "ko-KR";
-      utterance.rate = 1.05;
+      utterance.rate = viewPreferences.routeVoiceRate === "slow"
+        ? 0.88
+        : viewPreferences.routeVoiceRate === "fast" ? 1.2 : 1.05;
       window.speechSynthesis.cancel();
       window.speechSynthesis.speak(utterance);
     }, 120);
     return () => window.clearTimeout(timer);
-  }, [travelStatus, viewPreferences.routeVoiceGuidance]);
+  }, [travelStatus, viewPreferences.routeVoiceGuidance, viewPreferences.routeVoiceRate]);
 
   const setTarget = useCallback((nextTarget: Point | null) => {
     setTargetState(nextTarget);
@@ -385,8 +389,9 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     const checkpoint = journeyCheckpoints.find((candidate) => candidate.id === checkpointId);
     setTravelStatus(`${checkpoint?.label ?? "방문"} 스탬프를 찍었어요`);
     playFeedback("stamp");
+    playJourneyHaptic(checkpointId, "arrived");
     if (result.journeyCompleted) setJourneyCompletionPending(true);
-  }, [playFeedback]);
+  }, [playFeedback, playJourneyHaptic]);
 
   const stampWorldInteraction = useCallback((spotId: SpotId) => {
     const checkpointId = journeyCheckpointForInteraction(activeZoneIdRef.current, spotId);
@@ -840,6 +845,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
 
   const startJourneyGuidance = useCallback((checkpoint: JourneyCheckpoint) => {
     if (portalTransitionRef.current) return;
+    if (activeJourneyGuideId !== checkpoint.id) playJourneyHaptic(checkpoint.id, "start");
     setActiveJourneyGuideId(checkpoint.id);
     if (checkpoint.zoneId !== activeZone.id) {
       const destinationZone = getWorldZone(gardenWorld, checkpoint.zoneId);
@@ -892,7 +898,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     stampJourneyCheckpoint(checkpoint.id);
     setActiveJourneyGuideId(null);
     setTravelStatus(`${checkpoint.label}에 도착했어요`);
-  }, [activeZone, beginWorldInteraction, stampJourneyCheckpoint]);
+  }, [activeJourneyGuideId, activeZone, beginWorldInteraction, playJourneyHaptic, stampJourneyCheckpoint]);
 
   const restartJourneyGuidance = useCallback((checkpoint: JourneyCheckpoint) => {
     stopJourneyGuidance(false);
@@ -1527,6 +1533,12 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
       : `${journeyGuidance.direction ? `${journeyDirectionLabels[journeyGuidance.direction]} · ` : ""}${journeyGuidance.tileCount}타일`
     : "경로 확인 필요";
   const journeyOverallSummary = summarizeRemainingJourney(journeyProgress, activeZone.id);
+  const journeyPlanEstimate = estimateJourneyWaypointPlan(
+    journeyProgress,
+    plannedCheckpointIds,
+    activeZone.id,
+    journeyGuidance?.available ? journeyGuidance.tileCount : 0
+  );
   const journeyRoutePoints = activeJourneyGuideId && journeyGuidance?.available
     ? [position, ...journeyGuidance.path]
     : [];
@@ -2090,6 +2102,10 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
           onToggleWaypoint={(checkpointId) => setPlannedCheckpointIds((current) => (
             toggleJourneyWaypoint(journeyProgress, current, checkpointId)
           ))}
+          onMoveWaypoint={(checkpointId, moveDirection) => setPlannedCheckpointIds((current) => (
+            moveJourneyWaypoint(journeyProgress, current, checkpointId, moveDirection)
+          ))}
+          estimatedTotalLabel={journeyPlanEstimate.label}
           onClose={() => setJourneyRouteOpen(false)}
           onStart={() => {
             setJourneyRouteOpen(false);

@@ -20,7 +20,8 @@ describe("feedbackPreferences", () => {
       portalAudioEnabled: true,
       portalAudioVolume: "balanced",
       portalMonoEnabled: false,
-      portalHapticsEnabled: false
+      portalHapticsEnabled: false,
+      routeHapticsEnabled: false
     });
   });
 
@@ -36,7 +37,8 @@ describe("feedbackPreferences", () => {
       portalAudioEnabled: false,
       portalAudioVolume: "quiet" as const,
       portalMonoEnabled: true,
-      portalHapticsEnabled: true
+      portalHapticsEnabled: true,
+      routeHapticsEnabled: true
     };
 
     expect(saveFeedbackPreferences(preferences, storage)).toBe(true);
@@ -63,7 +65,8 @@ describe("feedbackPreferences", () => {
       portalAudioEnabled: true,
       portalAudioVolume: "balanced",
       portalMonoEnabled: false,
-      portalHapticsEnabled: false
+      portalHapticsEnabled: false,
+      routeHapticsEnabled: false
     });
   });
 
@@ -83,7 +86,8 @@ describe("feedbackPreferences", () => {
       portalAudioEnabled: true,
       portalAudioVolume: "balanced",
       portalMonoEnabled: false,
-      portalHapticsEnabled: false
+      portalHapticsEnabled: false,
+      routeHapticsEnabled: false
     });
   });
 
@@ -103,7 +107,8 @@ describe("feedbackPreferences", () => {
     expect(loadFeedbackPreferences(storage)).toMatchObject({
       portalAudioVolume: "bright",
       portalMonoEnabled: false,
-      portalHapticsEnabled: false
+      portalHapticsEnabled: false,
+      routeHapticsEnabled: false
     });
   });
 

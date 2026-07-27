@@ -96,3 +96,15 @@ export type InvitationAnalyticsAdminResult = {
   };
   generatedAt: string;
 };
+
+export type InvitationPerformanceConfig = {
+  version: 1;
+  source: "default" | "observed";
+  sampleCount: number;
+  observedAverageFps: number | null;
+  slowFpsThreshold: number;
+  recoveryFpsThreshold: number;
+  slowWindowsRequired: number;
+  recoveryWindowsRequired: number;
+  generatedAt: string;
+};

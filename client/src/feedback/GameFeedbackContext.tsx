@@ -10,6 +10,7 @@ import {
 } from "react";
 import type { WorldZoneId } from "@wedding-game/shared";
 import type { PortalAudioMix, PortalGuideDirection } from "../game/portalAudio";
+import type { JourneyCheckpointId } from "../game/journeyProgress";
 import {
   defaultFeedbackPreferences,
   loadFeedbackPreferences,
@@ -20,9 +21,11 @@ import {
 import {
   GameAudioEngine,
   triggerHaptic,
+  triggerJourneyHaptic,
   triggerPortalDirectionHaptic,
   type FeedbackCue,
-  type FeedbackCueOptions
+  type FeedbackCueOptions,
+  type JourneyHapticPhase
 } from "./gameAudio";
 
 type GameFeedbackContextValue = {
@@ -37,8 +40,10 @@ type GameFeedbackContextValue = {
   setPortalAudioVolume: (volume: FeedbackVolume) => void;
   setPortalMonoEnabled: (enabled: boolean) => void;
   setPortalHapticsEnabled: (enabled: boolean) => void;
+  setRouteHapticsEnabled: (enabled: boolean) => void;
   previewPortalAudio: () => void;
   previewPortalDirection: (direction: PortalGuideDirection) => void;
+  playJourneyHaptic: (checkpointId: JourneyCheckpointId, phase: JourneyHapticPhase) => void;
   resetFeedbackPreferences: () => void;
   playFeedback: (cue: FeedbackCue, options?: FeedbackCueOptions) => void;
   setFeedbackZone: (zoneId: WorldZoneId) => void;
@@ -57,8 +62,10 @@ const GameFeedbackContext = createContext<GameFeedbackContextValue>({
   setPortalAudioVolume: () => undefined,
   setPortalMonoEnabled: () => undefined,
   setPortalHapticsEnabled: () => undefined,
+  setRouteHapticsEnabled: () => undefined,
   previewPortalAudio: () => undefined,
   previewPortalDirection: () => undefined,
+  playJourneyHaptic: () => undefined,
   resetFeedbackPreferences: () => undefined,
   playFeedback: () => undefined,
   setFeedbackZone: () => undefined,
@@ -196,6 +203,11 @@ export function GameFeedbackProvider({ children, initialPreferences }: GameFeedb
       portalHapticStateRef.current = null;
       if (portalHapticsEnabled && next.hapticsEnabled) triggerPortalDirectionHaptic("right");
     },
+    setRouteHapticsEnabled: (routeHapticsEnabled) => {
+      const next = { ...preferencesRef.current, routeHapticsEnabled };
+      applyPreferences(next);
+      if (routeHapticsEnabled && next.hapticsEnabled) triggerJourneyHaptic("directions", "start");
+    },
     previewPortalAudio: () => {
       const current = preferencesRef.current;
       if (current.soundEnabled && current.effectsEnabled && current.portalAudioEnabled) {
@@ -213,6 +225,10 @@ export function GameFeedbackProvider({ children, initialPreferences }: GameFeedb
         && current.portalMonoEnabled) {
         void activateAndPreviewPortalDirection(direction);
       }
+    },
+    playJourneyHaptic: (checkpointId, phase) => {
+      const current = preferencesRef.current;
+      if (current.hapticsEnabled && current.routeHapticsEnabled) triggerJourneyHaptic(checkpointId, phase);
     },
     resetFeedbackPreferences: () => applyPreferences(defaultFeedbackPreferences),
     playFeedback: (cue, options) => {

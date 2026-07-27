@@ -1,8 +1,9 @@
-import { History, X } from "lucide-react";
+import { ArrowRight, History, X } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { RsvpHistoryEntry, RsvpHistoryResult, RsvpRecord } from "@wedding-game/shared";
 import { fetchAdminRsvpHistory, fetchOwnedRsvpHistory } from "../api/rsvpHistoryApi";
 import { WeddingApiError, type RsvpCredential } from "../api/weddingApi";
+import { getRsvpHistoryChanges } from "../invitation/rsvpHistoryChanges";
 import "../rsvp-history-admin.css";
 
 type RsvpHistoryDialogProps = {
@@ -12,17 +13,6 @@ type RsvpHistoryDialogProps = {
   onClose: () => void;
   onUnauthorized: () => void;
 };
-
-const fieldLabels: Array<[keyof RsvpRecord, string]> = [
-  ["side", "대상"],
-  ["guestName", "이름"],
-  ["phone", "연락처"],
-  ["attendance", "참석"],
-  ["partySize", "인원"],
-  ["childCount", "어린이"],
-  ["mealStatus", "식사"],
-  ["note", "전달사항"]
-];
 
 function formatDate(value: string): string {
   const date = new Date(value);
@@ -37,13 +27,6 @@ function actionLabel(action: RsvpHistoryEntry["action"]): string {
   if (action === "created") return "최초 답변";
   if (action === "snapshot") return "이력 추적 시작";
   return "답변 수정";
-}
-
-function changedFields(entry: RsvpHistoryEntry, previous?: RsvpHistoryEntry): string[] {
-  if (!previous) return entry.action === "snapshot" ? ["현재 상태"] : ["최초 저장"];
-  return fieldLabels
-    .filter(([field]) => entry.response[field] !== previous.response[field])
-    .map(([, label]) => label);
 }
 
 export function RsvpHistoryDialog({ token, credential, response, onClose, onUnauthorized }: RsvpHistoryDialogProps) {
@@ -96,14 +79,23 @@ export function RsvpHistoryDialog({ token, credential, response, onClose, onUnau
         {result ? (
           <ol className="rsvp-history-list">
             {entries.map((entry, index) => {
-              const changes = changedFields(entry, entries[index + 1]);
+              const changes = getRsvpHistoryChanges(entry, entries[index + 1]);
               return (
                 <li key={entry.id}>
                   <History aria-hidden="true" />
                   <div>
                     <header><strong>{actionLabel(entry.action)} · rev. {entry.revision}</strong><time dateTime={entry.occurredAt}>{formatDate(entry.occurredAt)}</time></header>
                     <p>{entry.response.attendance === "yes" ? `참석 ${entry.response.partySize}명` : entry.response.attendance === "no" ? "불참" : `참석 미정 ${entry.response.partySize}명`} · {entry.response.note || "전달사항 없음"}</p>
-                    <div>{changes.map((field) => <span key={field}>{field}</span>)}</div>
+                    {changes.length > 0 ? (
+                      <ul className="rsvp-history-changes" aria-label={`rev. ${entry.revision} 변경 내용`}>
+                        {changes.map((change) => (
+                          <li key={change.field}>
+                            <strong>{change.label}</strong>
+                            <div><del>{change.before}</del><ArrowRight aria-hidden="true" /><ins>{change.after}</ins></div>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : <span className="rsvp-history-initial">{entry.action === "snapshot" ? "현재 상태" : "최초 저장"}</span>}
                   </div>
                 </li>
               );

@@ -1,0 +1,77 @@
+name: Approve mobile visual baseline
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: "기준선 갱신을 승인하려면 UPDATE를 입력하세요"
+        required: true
+        type: string
+      reason:
+        description: "기준선 갱신 사유"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  approve:
+    runs-on: ubuntu-latest
+    env:
+      APPROVAL_CONFIRMATION: ${{ inputs.confirmation }}
+      APPROVAL_REASON: ${{ inputs.reason }}
+    steps:
+      - name: Validate approval
+        run: |
+          test "$APPROVAL_CONFIRMATION" = "UPDATE"
+          test -n "$APPROVAL_REASON"
+      - uses: actions/checkout@v6
+        with:
+          ref: main
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 10.29.2
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Build visual baseline
+        run: pnpm visual:baseline:approve -- --approve --reason "$APPROVAL_REASON"
+      - name: Verify approved baseline
+        run: pnpm visual:check
+      - name: Create review pull request
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          branch="visual-baseline/${GITHUB_RUN_ID}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -c "$branch"
+          git add scripts/visual-baselines/mobile-game-visual-regression.webp scripts/visual-baselines/mobile-game-visual-regression.json
+          git commit -m "chore: approve mobile visual baseline"
+          git push origin "$branch"
+          printf '%s\n' \
+            '모바일 시각 기준선 갱신 요청입니다.' \
+            '' \
+            "사유: ${APPROVAL_REASON}" \
+            '' \
+            '자동 검증을 통과했으며 병합 전 시각 검토가 필요합니다.' > /tmp/visual-baseline-pr.md
+          gh pr create \
+            --base main \
+            --head "$branch" \
+            --title "chore: approve mobile visual baseline" \
+            --body-file /tmp/visual-baseline-pr.md
+      - name: Upload approved audit
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: approved-mobile-visual-baseline-${{ github.run_id }}
+          path: |
+            scripts/visual-baselines/mobile-game-visual-regression.webp
+            scripts/visual-baselines/mobile-game-visual-regression.json
+            .superpowers/visual-regression
+          if-no-files-found: ignore
+          retention-days: 14

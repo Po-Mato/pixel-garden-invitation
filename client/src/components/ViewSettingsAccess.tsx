@@ -12,6 +12,7 @@ import {
   Hand,
   Gauge,
   Music2,
+  MapPinned,
   Navigation,
   Play,
   RadioTower,
@@ -44,6 +45,7 @@ export function ViewSettingsAccess({ variant, onOpenChange }: ViewSettingsAccess
     setComfortableControls,
     setDataSaver,
     setRouteVoiceGuidance,
+    setRouteVoiceRate,
     enableComfortableView,
     resetPreferences
   } = useViewPreferences();
@@ -59,6 +61,7 @@ export function ViewSettingsAccess({ variant, onOpenChange }: ViewSettingsAccess
     setPortalAudioVolume,
     setPortalMonoEnabled,
     setPortalHapticsEnabled,
+    setRouteHapticsEnabled,
     previewPortalAudio,
     previewPortalDirection,
     resetFeedbackPreferences
@@ -169,6 +172,29 @@ export function ViewSettingsAccess({ variant, onOpenChange }: ViewSettingsAccess
               <span aria-hidden="true" className="view-settings-sheet__switch-track" />
             </label>
 
+            <div className="feedback-settings__volume">
+              <strong>음성 안내 속도</strong>
+              <div className="view-settings-sheet__segments" role="group" aria-label="길찾기 음성 속도">
+                {([[
+                  "slow", "느리게"
+                ], [
+                  "normal", "보통"
+                ], [
+                  "fast", "빠르게"
+                ]] as const).map(([rate, label]) => (
+                  <button
+                    key={rate}
+                    type="button"
+                    aria-pressed={preferences.routeVoiceRate === rate}
+                    disabled={!preferences.routeVoiceGuidance}
+                    onClick={() => setRouteVoiceRate(rate)}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             <label className="view-settings-sheet__switch">
               <span><Sparkles aria-hidden="true" /><strong>움직임 줄이기</strong></span>
               <input
@@ -204,6 +230,9 @@ export function ViewSettingsAccess({ variant, onOpenChange }: ViewSettingsAccess
                         ? "프레임 저하를 감지해 화면 효과를 자동 조절했어요"
                         : "느린 연결에 맞춰 화면 효과를 줄이고 있어요"
                   : "현재 기기에서 전체 화면 효과를 사용해요"}</small>
+                <small>{devicePerformance.tuningSource === "observed"
+                  ? `실사용 성능 표본 ${devicePerformance.tuningSampleCount}개로 자동 기준을 보정했어요`
+                  : "안정적인 기본 성능 기준을 사용하고 있어요"}</small>
               </span>
             </section>
 
@@ -376,6 +405,17 @@ export function ViewSettingsAccess({ variant, onOpenChange }: ViewSettingsAccess
                 <span aria-hidden="true" className="view-settings-sheet__switch-track" />
               </label>
 
+              <label className="view-settings-sheet__switch">
+                <span><MapPinned aria-hidden="true" /><strong>목적지별 안내 진동</strong></span>
+                <input
+                  type="checkbox"
+                  role="switch"
+                  checked={feedbackPreferences.routeHapticsEnabled}
+                  onChange={(event) => setRouteHapticsEnabled(event.target.checked)}
+                />
+                <span aria-hidden="true" className="view-settings-sheet__switch-track" />
+              </label>
+
               <div className="feedback-settings__volume">
                 <strong>방향 안내 시험</strong>
                 <div
@@ -421,6 +461,8 @@ export function ViewSettingsAccess({ variant, onOpenChange }: ViewSettingsAccess
               글자 크기 {preferences.textScale === "default" ? "기본" : preferences.textScale === "large" ? "크게" : "아주 크게"},
               선명한 화면 {preferences.highContrast ? "켜짐" : "꺼짐"},
               큰 터치 영역 {preferences.comfortableControls ? "켜짐" : "꺼짐"},
+              길찾기 음성 안내 {preferences.routeVoiceGuidance ? "켜짐" : "꺼짐"},
+              음성 안내 속도 {preferences.routeVoiceRate === "slow" ? "느리게" : preferences.routeVoiceRate === "fast" ? "빠르게" : "보통"},
               움직임 줄이기 {preferences.reduceMotion ? "켜짐" : "꺼짐"},
               데이터 절약 {preferences.dataSaver ? "켜짐" : "꺼짐"},
               전체 소리 {feedbackPreferences.soundEnabled ? "켜짐" : "꺼짐"},
@@ -435,7 +477,8 @@ export function ViewSettingsAccess({ variant, onOpenChange }: ViewSettingsAccess
                 : feedbackPreferences.portalAudioVolume === "balanced" ? "보통" : "선명하게"},
               모노 방향 안내 {feedbackPreferences.portalMonoEnabled ? "켜짐" : "꺼짐"},
               진동 피드백 {feedbackPreferences.hapticsEnabled ? "켜짐" : "꺼짐"},
-              포털 방향 진동 {feedbackPreferences.portalHapticsEnabled ? "켜짐" : "꺼짐"}
+              포털 방향 진동 {feedbackPreferences.portalHapticsEnabled ? "켜짐" : "꺼짐"},
+              목적지별 안내 진동 {feedbackPreferences.routeHapticsEnabled ? "켜짐" : "꺼짐"}
             </p>
           </div>
         </BottomSheet>

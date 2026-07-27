@@ -4,6 +4,9 @@ import {
   type JourneyCheckpointId,
   type JourneyProgress
 } from "./journeyProgress";
+import type { WorldZoneId } from "@wedding-game/shared";
+import { findWorldZonePath } from "./journeyRouteSummary";
+import { walkStepIntervalMs } from "./walkTiming";
 
 export function remainingJourneyWaypoints(progress: JourneyProgress): JourneyCheckpoint[] {
   const completed = new Set(progress.completedIds);
@@ -15,8 +18,10 @@ export function normalizeJourneyWaypointPlan(
   checkpointIds: readonly JourneyCheckpointId[]
 ): JourneyCheckpointId[] {
   const remaining = remainingJourneyWaypoints(progress);
-  const requested = new Set(checkpointIds);
-  const normalized = remaining.filter((checkpoint) => requested.has(checkpoint.id)).map(({ id }) => id);
+  const remainingIds = new Set(remaining.map(({ id }) => id));
+  const normalized = checkpointIds.filter((id, index) => (
+    remainingIds.has(id) && checkpointIds.indexOf(id) === index
+  ));
   return normalized.length > 0 ? normalized : remaining.map(({ id }) => id);
 }
 
@@ -26,16 +31,64 @@ export function toggleJourneyWaypoint(
   checkpointId: JourneyCheckpointId
 ): JourneyCheckpointId[] {
   const normalized = normalizeJourneyWaypointPlan(progress, checkpointIds);
-  const selected = new Set(normalized);
-  if (selected.has(checkpointId)) {
-    if (selected.size === 1) return normalized;
-    selected.delete(checkpointId);
-  } else {
-    selected.add(checkpointId);
+  if (normalized.includes(checkpointId)) {
+    return normalized.length === 1 ? normalized : normalized.filter((id) => id !== checkpointId);
   }
-  return remainingJourneyWaypoints(progress)
-    .filter((checkpoint) => selected.has(checkpoint.id))
-    .map(({ id }) => id);
+  return [...normalized, checkpointId];
+}
+
+export function moveJourneyWaypoint(
+  progress: JourneyProgress,
+  checkpointIds: readonly JourneyCheckpointId[],
+  checkpointId: JourneyCheckpointId,
+  direction: "up" | "down"
+): JourneyCheckpointId[] {
+  const normalized = normalizeJourneyWaypointPlan(progress, checkpointIds);
+  const currentIndex = normalized.indexOf(checkpointId);
+  if (currentIndex < 0) return normalized;
+  const nextIndex = direction === "up" ? currentIndex - 1 : currentIndex + 1;
+  if (nextIndex < 0 || nextIndex >= normalized.length) return normalized;
+  const result = [...normalized];
+  [result[currentIndex], result[nextIndex]] = [result[nextIndex], result[currentIndex]];
+  return result;
+}
+
+export type JourneyWaypointEstimate = {
+  waypointCount: number;
+  zoneTransitions: number;
+  estimatedSeconds: number;
+  label: string;
+};
+
+export function estimateJourneyWaypointPlan(
+  progress: JourneyProgress,
+  checkpointIds: readonly JourneyCheckpointId[],
+  activeZoneId: WorldZoneId,
+  firstLegTiles = 0
+): JourneyWaypointEstimate {
+  const normalized = normalizeJourneyWaypointPlan(progress, checkpointIds);
+  const checkpoints = normalized.flatMap((id) => {
+    const checkpoint = journeyCheckpoints.find((candidate) => candidate.id === id);
+    return checkpoint ? [checkpoint] : [];
+  });
+  let cursor = activeZoneId;
+  let zoneTransitions = 0;
+  for (const checkpoint of checkpoints) {
+    zoneTransitions += Math.max(0, findWorldZonePath(cursor, checkpoint.zoneId).length - 1);
+    cursor = checkpoint.zoneId;
+  }
+  const walkingSeconds = Math.ceil(Math.max(0, firstLegTiles) * walkStepIntervalMs / 1_000);
+  const estimatedSeconds = Math.max(
+    checkpoints.length > 0 ? 10 : 0,
+    walkingSeconds + zoneTransitions * 12 + checkpoints.length * 8
+  );
+  const minutes = Math.max(1, Math.ceil(estimatedSeconds / 60));
+  return {
+    waypointCount: checkpoints.length,
+    zoneTransitions,
+    estimatedSeconds,
+    label: estimatedSeconds < 60 ? `약 ${estimatedSeconds}초` : `약 ${minutes}분`
+  };
 }
 
 export function firstJourneyWaypoint(

@@ -45,8 +45,13 @@ describe("RsvpHistoryDialog", () => {
     render(<RsvpHistoryDialog token="admin-token" response={response} onClose={onClose} onUnauthorized={vi.fn()} />);
 
     expect(await screen.findByText("답변 수정 · rev. 2")).toBeInTheDocument();
+    expect(screen.getByRole("list", { name: "rev. 2 변경 내용" })).toBeInTheDocument();
     expect(screen.getByText("인원")).toBeInTheDocument();
+    expect(screen.getByText("1명")).toBeInTheDocument();
+    expect(screen.getByText("2명")).toBeInTheDocument();
     expect(screen.getByText("전달사항")).toBeInTheDocument();
+    expect(screen.getByText("없음")).toBeInTheDocument();
+    expect(screen.getByText("창가 자리", { selector: "ins" })).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "변경 이력 닫기" }));
     expect(onClose).toHaveBeenCalledOnce();
   });

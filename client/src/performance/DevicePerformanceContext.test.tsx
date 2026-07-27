@@ -1,10 +1,17 @@
-import { cleanup, render, screen } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { cleanup, render, screen, waitFor } from "@testing-library/react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { fetchInvitationPerformanceConfig } from "../api/performanceConfigApi";
 import {
   DevicePerformanceProvider,
   resolveDevicePerformanceStatus,
   useDevicePerformance
 } from "./DevicePerformanceContext";
+
+vi.mock("../api/performanceConfigApi", () => ({ fetchInvitationPerformanceConfig: vi.fn() }));
+
+beforeEach(() => {
+  vi.mocked(fetchInvitationPerformanceConfig).mockRejectedValue(new Error("offline"));
+});
 
 afterEach(() => {
   cleanup();
@@ -37,5 +44,26 @@ describe("기기 성능 자동 최적화", () => {
     }
     render(<DevicePerformanceProvider><Reporter /></DevicePerformanceProvider>);
     expect(screen.getByRole("button", { name: "프레임 보고" })).toBeInTheDocument();
+  });
+
+  it("익명 실기기 표본으로 보정된 원격 기준을 하위 UI에 공유한다", async () => {
+    vi.mocked(fetchInvitationPerformanceConfig).mockResolvedValueOnce({
+      version: 1,
+      source: "observed",
+      sampleCount: 87,
+      observedAverageFps: 49,
+      slowFpsThreshold: 40,
+      recoveryFpsThreshold: 48,
+      slowWindowsRequired: 2,
+      recoveryWindowsRequired: 4,
+      generatedAt: "2026-07-28T00:00:00.000Z"
+    });
+    function TuningStatus() {
+      const status = useDevicePerformance();
+      return <span>{status.tuningSource}:{status.tuningSampleCount}</span>;
+    }
+
+    render(<DevicePerformanceProvider><TuningStatus /></DevicePerformanceProvider>);
+    await waitFor(() => expect(screen.getByText("observed:87")).toBeInTheDocument());
   });
 });

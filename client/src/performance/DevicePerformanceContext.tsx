@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { trackInvitationAnalytics } from "../analytics/invitationAnalytics";
+import { fetchInvitationPerformanceConfig } from "../api/performanceConfigApi";
 import { networkConnection, type NetworkConnectionLike } from "./networkQuality";
 import { createFrameQualityMonitor } from "./frameQualityMonitor";
 import { createFpsSampler } from "./realUserPerformance";
@@ -14,6 +15,8 @@ export type DevicePerformanceStatus = {
 
 export type DevicePerformanceContextValue = DevicePerformanceStatus & {
   reportAnimationFrame: (now: number) => void;
+  tuningSource: "default" | "observed";
+  tuningSampleCount: number;
 };
 
 export type DeviceNavigatorLike = {
@@ -41,12 +44,18 @@ export function resolveDevicePerformanceStatus(source: DeviceNavigatorLike = nav
 const DevicePerformanceContext = createContext<DevicePerformanceContextValue>({
   mode: "standard",
   reason: "standard",
-  reportAnimationFrame: () => undefined
+  reportAnimationFrame: () => undefined,
+  tuningSource: "default",
+  tuningSampleCount: 0
 });
 
 export function DevicePerformanceProvider({ children }: { children: ReactNode }) {
   const [baseStatus, setBaseStatus] = useState(() => resolveDevicePerformanceStatus());
   const [frameConstrained, setFrameConstrained] = useState(false);
+  const [tuning, setTuning] = useState<{ source: "default" | "observed"; sampleCount: number }>({
+    source: "default",
+    sampleCount: 0
+  });
   const frameMonitorRef = useRef(createFrameQualityMonitor());
   const fpsSamplerRef = useRef(createFpsSampler());
   const statusRef = useRef<DevicePerformanceStatus>(baseStatus);
@@ -58,6 +67,24 @@ export function DevicePerformanceProvider({ children }: { children: ReactNode })
     connection?.addEventListener?.("change", update);
     update();
     return () => connection?.removeEventListener?.("change", update);
+  }, []);
+
+  useEffect(() => {
+    let active = true;
+    void fetchInvitationPerformanceConfig().then((config) => {
+      if (!active) return;
+      frameMonitorRef.current = createFrameQualityMonitor({
+        slowFpsThreshold: config.slowFpsThreshold,
+        recoveryFpsThreshold: config.recoveryFpsThreshold,
+        slowWindowsRequired: config.slowWindowsRequired,
+        recoveryWindowsRequired: config.recoveryWindowsRequired
+      });
+      setFrameConstrained(false);
+      setTuning({ source: config.source, sampleCount: config.sampleCount });
+    }).catch(() => {
+      // The static defaults remain active when remote tuning is unavailable.
+    });
+    return () => { active = false; };
   }, []);
 
   useEffect(() => {
@@ -99,7 +126,12 @@ export function DevicePerformanceProvider({ children }: { children: ReactNode })
     };
   }, [status]);
 
-  const value = useMemo(() => ({ ...status, reportAnimationFrame }), [reportAnimationFrame, status]);
+  const value = useMemo(() => ({
+    ...status,
+    reportAnimationFrame,
+    tuningSource: tuning.source,
+    tuningSampleCount: tuning.sampleCount
+  }), [reportAnimationFrame, status, tuning]);
   return <DevicePerformanceContext.Provider value={value}>{children}</DevicePerformanceContext.Provider>;
 }
 
