@@ -52,6 +52,8 @@ export function ViewSettingsAccess({ variant, onOpenChange }: ViewSettingsAccess
     setMiniMapHighContrast,
     setMiniMapRouteWeight,
     setRoutePatternEnhanced,
+    setGameMovementSpeed,
+    setGameUiScale,
     enableComfortableView,
     resetPreferences
   } = useViewPreferences();
@@ -80,7 +82,9 @@ export function ViewSettingsAccess({ variant, onOpenChange }: ViewSettingsAccess
     && preferences.joystickSide === "left"
     && preferences.miniMapHighContrast
     && preferences.miniMapRouteWeight === "bold"
-    && preferences.routePatternEnhanced;
+    && preferences.routePatternEnhanced
+    && preferences.gameMovementSpeed === "relaxed"
+    && preferences.gameUiScale === "large";
   const portalDirectionAudioReady = feedbackPreferences.soundEnabled
     && feedbackPreferences.effectsEnabled
     && feedbackPreferences.portalAudioEnabled
@@ -199,6 +203,48 @@ export function ViewSettingsAccess({ variant, onOpenChange }: ViewSettingsAccess
                   onClick={() => setJoystickSide("right")}
                 >
                   오른쪽
+                </button>
+              </div>
+            </div>
+
+            <div className="feedback-settings__volume">
+              <strong>게임 이동 속도</strong>
+              <div className="view-settings-sheet__segments" role="group" aria-label="게임 이동 속도">
+                {([[
+                  "relaxed", "느긋하게"
+                ], [
+                  "normal", "보통"
+                ], [
+                  "brisk", "빠르게"
+                ]] as const).map(([speed, label]) => (
+                  <button
+                    key={speed}
+                    type="button"
+                    aria-pressed={preferences.gameMovementSpeed === speed}
+                    onClick={() => setGameMovementSpeed(speed)}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="feedback-settings__volume">
+              <strong>게임 UI 크기</strong>
+              <div className="view-settings-sheet__segments" role="group" aria-label="게임 UI 크기">
+                <button
+                  type="button"
+                  aria-pressed={preferences.gameUiScale === "standard"}
+                  onClick={() => setGameUiScale("standard")}
+                >
+                  기본
+                </button>
+                <button
+                  type="button"
+                  aria-pressed={preferences.gameUiScale === "large"}
+                  onClick={() => setGameUiScale("large")}
+                >
+                  크게
                 </button>
               </div>
             </div>

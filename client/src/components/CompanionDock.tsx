@@ -4,16 +4,33 @@ import type { CompanionCandidate } from "../game/companionMode";
 type CompanionDockProps = {
   candidates: readonly CompanionCandidate[];
   activeGuestId: string | null;
-  onSelect: (guestId: string) => void;
+  pendingGuestId?: string | null;
+  role?: "leader" | "follower" | null;
+  onInvite: (guestId: string) => void;
   onStop: () => void;
 };
 
-export function CompanionDock({ candidates, activeGuestId, onSelect, onStop }: CompanionDockProps) {
-  if (candidates.length === 0 && !activeGuestId) return null;
+export function CompanionDock({
+  candidates,
+  activeGuestId,
+  pendingGuestId = null,
+  role = null,
+  onInvite,
+  onStop
+}: CompanionDockProps) {
+  if (candidates.length === 0 && !activeGuestId && !pendingGuestId) return null;
   const active = candidates.find(({ guestId }) => guestId === activeGuestId) ?? null;
+  const pending = candidates.find(({ guestId }) => guestId === pendingGuestId) ?? null;
   return (
     <aside className="world-companion-dock" aria-label="같이 걷기">
-      <header><UsersRound aria-hidden="true" /><strong>{active ? `${active.nickname}님과 동행 중` : "근처 하객과 같이 걷기"}</strong></header>
+      <header>
+        <UsersRound aria-hidden="true" />
+        <strong>{active
+          ? `${active.nickname}님과 동행 중`
+          : pending
+            ? `${pending.nickname}님의 응답 기다리는 중`
+            : "근처 하객에게 동행 초대"}</strong>
+      </header>
       {active ? (
         <button
           type="button"
@@ -29,13 +46,16 @@ export function CompanionDock({ candidates, activeGuestId, onSelect, onStop }: C
             <button
               key={guest.guestId}
               type="button"
-              onClick={(event) => { event.stopPropagation(); onSelect(guest.guestId); }}
+              disabled={Boolean(pendingGuestId)}
+              onClick={(event) => { event.stopPropagation(); onInvite(guest.guestId); }}
             >
-              <UserPlus aria-hidden="true" /><span>{guest.nickname}</span>
+              <UserPlus aria-hidden="true" />
+              <span>{guest.guestId === pendingGuestId ? "응답 대기" : guest.nickname}</span>
             </button>
           ))}
         </div>
       )}
+      {active && role ? <small>{role === "follower" ? "상대의 걸음을 따라가요" : "상대가 내 걸음을 따라와요"}</small> : null}
     </aside>
   );
 }

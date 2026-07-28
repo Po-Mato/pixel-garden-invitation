@@ -60,6 +60,18 @@ export function parseClientMessage(value: unknown): ClientMessage | null {
     return { type: "react", reaction: value.reaction as GuestReaction };
   }
 
+  if (value.type === "companion_invite" || value.type === "companion_stop") {
+    const targetGuestId = sanitizeText(value.targetGuestId, 80);
+    if (!targetGuestId) return null;
+    return { type: value.type, targetGuestId };
+  }
+
+  if (value.type === "companion_reply") {
+    const requesterGuestId = sanitizeText(value.requesterGuestId, 80);
+    if (!requesterGuestId || typeof value.accepted !== "boolean") return null;
+    return { type: "companion_reply", requesterGuestId, accepted: value.accepted };
+  }
+
   if (value.type === "ping") return { type: "ping" };
   if (value.type === "leave") return { type: "leave" };
   return null;

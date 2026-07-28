@@ -232,6 +232,157 @@
 .world-companion-dock > div button svg { width: 12px; flex: 0 0 auto; }
 .world-companion-dock > div button span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .world-companion-dock__stop { position: absolute; top: 2px; right: 2px; width: 25px; height: 25px; padding: 5px; border: 0; background: transparent; }
+.world-companion-dock > small { display: block; margin-top: 3px; color: #627567; font-size: 8px; }
+
+.companion-invitation {
+  position: absolute;
+  z-index: 13000;
+  top: 106px;
+  left: 50%;
+  display: grid;
+  width: min(320px, calc(100% - 24px));
+  grid-template-columns: 34px minmax(0, 1fr) auto 30px;
+  align-items: center;
+  gap: 7px;
+  padding: 9px;
+  transform: translateX(-50%);
+  color: #3f493f;
+  background: rgba(250, 255, 246, 0.97);
+  border: 2px solid #708b72;
+  border-radius: 6px;
+  box-shadow: 0 8px 20px rgba(40, 56, 43, 0.25);
+}
+.companion-invitation > svg { width: 28px; color: #66866c; }
+.companion-invitation > div { display: grid; gap: 2px; min-width: 0; }
+.companion-invitation > div strong { font-size: 11px; }
+.companion-invitation > div span { overflow: hidden; font-size: 9px; text-overflow: ellipsis; white-space: nowrap; }
+.companion-invitation button { display: grid; place-items: center; min-width: 30px; height: 30px; padding: 5px; border: 1px solid #78917b; border-radius: 4px; background: #fff; }
+.companion-invitation button svg { width: 15px; }
+.companion-invitation__accept { grid-auto-flow: column; gap: 3px; padding-inline: 8px !important; color: #fff; background: #5e8066 !important; }
+.companion-invitation__accept span { font-size: 9px; }
+
+.celebration-reward-notice {
+  position: fixed;
+  z-index: 24000;
+  left: 50%;
+  bottom: max(124px, calc(env(safe-area-inset-bottom) + 112px));
+  display: grid;
+  width: min(360px, calc(100% - 24px));
+  grid-template-columns: 42px minmax(0, 1fr) 30px;
+  align-items: center;
+  gap: 9px;
+  padding: 12px;
+  transform: translateX(-50%);
+  color: #5a3f49;
+  background: #fff9e6;
+  border: 2px solid #bd7888;
+  border-radius: 6px;
+  box-shadow: 0 12px 30px rgba(70, 42, 48, 0.28);
+  overflow: hidden;
+}
+.celebration-reward-notice > svg { width: 38px; color: #b6677c; }
+.celebration-reward-notice > div:not(.celebration-reward-notice__petals) { display: grid; gap: 2px; }
+.celebration-reward-notice small { color: #8f6971; font-size: 8px; font-weight: 900; }
+.celebration-reward-notice strong { font-size: 13px; }
+.celebration-reward-notice span { display: flex; align-items: center; gap: 4px; font-size: 9px; }
+.celebration-reward-notice span svg { width: 13px; }
+.celebration-reward-notice > button { display: grid; place-items: center; width: 30px; height: 30px; padding: 5px; border: 0; background: transparent; }
+.celebration-reward-notice__petals { position: absolute; inset: 0; pointer-events: none; }
+.celebration-reward-notice__petals svg { position: absolute; width: 12px; color: rgba(189, 104, 127, 0.24); }
+.celebration-reward-notice__petals svg:nth-child(3n + 1) { left: 12%; top: 8%; }
+.celebration-reward-notice__petals svg:nth-child(3n + 2) { right: 18%; bottom: 5%; }
+.celebration-reward-notice__petals svg:nth-child(3n) { left: 54%; top: 18%; }
+
+.world-cooperative-celebration {
+  position: absolute;
+  z-index: 11000;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  overflow: hidden;
+}
+.world-cooperative-celebration > div { position: absolute; inset: 0; }
+.world-cooperative-celebration i { position: absolute; top: -10%; left: calc((var(--petal-index, 1) * 17%) - 8%); color: #e8a2b0; }
+.world-cooperative-celebration i:nth-child(4n + 1) { left: 8%; color: #f0c45f; }
+.world-cooperative-celebration i:nth-child(4n + 2) { left: 34%; color: #87af8d; }
+.world-cooperative-celebration i:nth-child(4n + 3) { left: 61%; color: #d68ca0; }
+.world-cooperative-celebration i:nth-child(4n) { left: 87%; color: #f0d483; }
+.world-cooperative-celebration i svg { width: 13px; }
+.world-cooperative-celebration > p { display: grid; justify-items: center; gap: 2px; padding: 10px 18px; color: #6e4650; background: rgba(255, 250, 231, 0.94); border: 2px solid #bd7787; border-radius: 6px; box-shadow: 0 8px 24px rgba(67, 41, 47, 0.2); }
+.world-cooperative-celebration > p svg { width: 24px; }
+.world-cooperative-celebration > p strong { font-size: 13px; }
+.world-cooperative-celebration > p span { font-size: 9px; }
+
+.game-memory-album {
+  position: fixed;
+  z-index: 23000;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  max-width: 620px;
+  margin: 0 auto;
+  padding: max(14px, env(safe-area-inset-top)) 14px max(18px, env(safe-area-inset-bottom));
+  color: #463d3a;
+  background: #f8f5ec;
+  overflow-y: auto;
+}
+.game-memory-album > header { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 2px 14px; border-bottom: 1px solid #d9c9b8; }
+.game-memory-album > header small { color: #9e6472; font-size: 9px; font-weight: 900; }
+.game-memory-album > header h2 { margin: 2px 0 0; font-size: 21px; }
+.game-memory-album > header button { display: grid; place-items: center; width: 38px; height: 38px; padding: 7px; border: 1px solid #bda99b; border-radius: 4px; background: #fff; }
+.game-memory-album__summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; padding: 14px 0; }
+.game-memory-album__summary > * { display: grid; justify-items: center; gap: 2px; min-width: 0; min-height: 78px; padding: 10px 5px; color: inherit; background: #fff; border: 1px solid #d9c9b8; border-radius: 6px; }
+.game-memory-album__summary svg { width: 19px; color: #a96574; }
+.game-memory-album__summary strong { font-size: 17px; }
+.game-memory-album__summary small { font-size: 9px; }
+.game-memory-album__reward { display: flex; align-items: center; gap: 10px; padding: 11px; background: #eeeae1; border: 1px solid #d0c4b8; border-radius: 6px; }
+.game-memory-album__reward[data-unlocked="true"] { background: #fff4d2; border-color: #c68a59; }
+.game-memory-album__reward > svg { width: 28px; color: #a75d72; }
+.game-memory-album__reward > div { display: grid; gap: 2px; }
+.game-memory-album__reward strong { font-size: 12px; }
+.game-memory-album__reward span { font-size: 9px; }
+.game-memory-album__photos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; margin-top: 12px; }
+.game-memory-album__photos img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border: 2px solid #fff; box-shadow: 0 2px 8px rgba(65, 46, 42, 0.16); }
+.game-memory-album__timeline { padding: 16px 0 24px; }
+.game-memory-album__timeline h3 { margin: 0 0 9px; font-size: 14px; }
+.game-memory-album__timeline article { display: grid; grid-template-columns: 32px minmax(0, 1fr) auto; align-items: center; gap: 8px; padding: 10px 2px; border-bottom: 1px solid #dfd4c9; }
+.game-memory-album__timeline article > svg { width: 21px; color: #9c6470; }
+.game-memory-album__timeline article > div { display: grid; gap: 2px; min-width: 0; }
+.game-memory-album__timeline article strong { font-size: 11px; }
+.game-memory-album__timeline article span { overflow: hidden; font-size: 9px; text-overflow: ellipsis; white-space: nowrap; }
+.game-memory-album__timeline time { color: #8a7770; font-size: 8px; }
+.game-memory-album__timeline > p { padding: 22px 8px; color: #7d6d66; text-align: center; font-size: 10px; }
+
+.wedding-photo-booth__scene[data-celebration-frame="true"]::after {
+  position: absolute;
+  z-index: 8;
+  inset: 7px;
+  content: "";
+  pointer-events: none;
+  border: 4px double rgba(255, 237, 178, 0.92);
+  box-shadow: inset 0 0 0 3px rgba(178, 105, 126, 0.7), inset 0 0 22px rgba(255, 242, 192, 0.42);
+}
+.wedding-photo-booth__reward-note { margin: 4px 0 0; color: #9c596e; font-size: 9px; font-weight: 800; text-align: center; }
+
+html[data-game-ui-scale="large"] .game-world :is(.world-journey__button, .world-menu-grid button) {
+  min-height: 48px;
+  font-size: 12px;
+}
+html[data-game-ui-scale="large"] .game-world :is(.world-travel-status, .world-zone-summary small) { font-size: 11px; }
+html[data-game-ui-scale="large"] .world-collectible { width: 38px; height: 38px; }
+html[data-game-ui-scale="large"] .world-collectible svg { width: 21px; height: 21px; }
+html[data-game-ui-scale="large"] .world-collection-progress { min-width: 64px; height: 34px; font-size: 12px; }
+html[data-game-ui-scale="large"] .world-companion-dock { width: min(236px, calc(100% - 150px)); padding: 9px; }
+html[data-game-ui-scale="large"] .world-companion-dock header strong { font-size: 12px; }
+html[data-game-ui-scale="large"] .virtual-joystick { --joystick-travel: 29px; width: 104px; height: 104px; }
+html[data-game-ui-scale="large"] .virtual-joystick__thumb { width: 34px; height: 34px; }
+html[data-game-ui-scale="large"] .world-control-actions :is(button, .guest-reaction-dock__toggle) { min-height: 54px; }
+
+@media (max-width: 360px) {
+  html[data-game-ui-scale="large"] .virtual-joystick { --joystick-travel: 25px; width: 94px; height: 94px; }
+  html[data-game-ui-scale="large"] .world-control-actions :is(button, .guest-reaction-dock__toggle) { min-height: 48px; }
+}
 
 .wedding-photo-booth__cast--group { width: min(94%, 430px); gap: 1.5%; }
 .wedding-photo-booth__cast--group :is(.wedding-photo-booth__guest, .wedding-photo-booth__companion, .wedding-photo-booth__npc) {
@@ -249,6 +400,12 @@
 @media (prefers-reduced-motion: no-preference) {
   .world-collectible:not([data-collected="true"]) { animation: wedding-collectible-float 1.8s ease-in-out infinite; }
   .world-companion-link line { animation: wedding-companion-dash 1.2s linear infinite; }
+  .world-cooperative-celebration i { animation: cooperative-petal-fall 2.8s ease-in both; }
+  .world-cooperative-celebration i:nth-child(2n) { animation-delay: 240ms; }
+  .world-cooperative-celebration i:nth-child(3n) { animation-delay: 520ms; }
+  .world-cooperative-celebration > p { animation: cooperative-celebration-card 420ms ease-out both; }
   @keyframes wedding-collectible-float { 50% { transform: translate(-50%, -62%); } }
   @keyframes wedding-companion-dash { to { stroke-dashoffset: -24; } }
+  @keyframes cooperative-petal-fall { to { transform: translate(12px, 760px) rotate(280deg); opacity: 0.2; } }
+  @keyframes cooperative-celebration-card { from { opacity: 0; transform: translateY(8px) scale(0.95); } }
 }

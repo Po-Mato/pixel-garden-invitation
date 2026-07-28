@@ -32,7 +32,9 @@ describe("보기 설정 저장", () => {
         stepFreeRouteEnabled: false,
         miniMapHighContrast: false,
         miniMapRouteWeight: "standard",
-        routePatternEnhanced: false
+        routePatternEnhanced: false,
+        gameMovementSpeed: "normal",
+        gameUiScale: "standard"
       });
     expect(loadViewPreferences(storage(JSON.stringify({
       textScale: "xlarge",
@@ -47,7 +49,9 @@ describe("보기 설정 저장", () => {
       stepFreeRouteEnabled: false,
       miniMapHighContrast: false,
       miniMapRouteWeight: "standard",
-      routePatternEnhanced: false
+      routePatternEnhanced: false,
+      gameMovementSpeed: "normal",
+      gameUiScale: "standard"
     })))).toEqual({
       textScale: "xlarge",
       reduceMotion: true,
@@ -61,7 +65,9 @@ describe("보기 설정 저장", () => {
       stepFreeRouteEnabled: false,
       miniMapHighContrast: false,
       miniMapRouteWeight: "standard",
-      routePatternEnhanced: false
+      routePatternEnhanced: false,
+      gameMovementSpeed: "normal",
+      gameUiScale: "standard"
     });
     expect(loadViewPreferences(storage("{broken"))).toEqual(defaultViewPreferences);
     expect(loadViewPreferences(storage(JSON.stringify({ textScale: "huge", reduceMotion: true }))))
@@ -83,7 +89,9 @@ describe("보기 설정 저장", () => {
       stepFreeRouteEnabled: true,
       miniMapHighContrast: true,
       miniMapRouteWeight: "bold" as const,
-      routePatternEnhanced: true
+      routePatternEnhanced: true,
+      gameMovementSpeed: "brisk" as const,
+      gameUiScale: "large" as const
     };
     expect(saveViewPreferences(preferences, target)).toBe(true);
     expect(target.setItem).toHaveBeenCalledWith(
@@ -107,7 +115,9 @@ describe("보기 설정 저장", () => {
       stepFreeRouteEnabled: true,
       miniMapHighContrast: true,
       miniMapRouteWeight: "bold",
-      routePatternEnhanced: true
+      routePatternEnhanced: true,
+      gameMovementSpeed: "relaxed",
+      gameUiScale: "large"
     }, root);
     expect(root).toHaveAttribute("data-text-scale", "xlarge");
     expect(root).toHaveAttribute("data-reduce-motion", "true");
@@ -120,6 +130,8 @@ describe("보기 설정 저장", () => {
     expect(root).toHaveAttribute("data-mini-map-high-contrast", "true");
     expect(root).toHaveAttribute("data-mini-map-route-weight", "bold");
     expect(root).toHaveAttribute("data-route-pattern", "enhanced");
+    expect(root).toHaveAttribute("data-game-movement-speed", "relaxed");
+    expect(root).toHaveAttribute("data-game-ui-scale", "large");
     expect(shouldReduceMotion(root, vi.fn(() => ({ matches: false })) as unknown as typeof window.matchMedia)).toBe(true);
 
     applyViewPreferences(defaultViewPreferences, root);
@@ -134,6 +146,8 @@ describe("보기 설정 저장", () => {
     expect(root).not.toHaveAttribute("data-mini-map-high-contrast");
     expect(root).toHaveAttribute("data-mini-map-route-weight", "standard");
     expect(root).not.toHaveAttribute("data-route-pattern");
+    expect(root).toHaveAttribute("data-game-movement-speed", "normal");
+    expect(root).toHaveAttribute("data-game-ui-scale", "standard");
     expect(shouldReduceMotion(root, vi.fn(() => ({ matches: true })) as unknown as typeof window.matchMedia)).toBe(true);
   });
 });

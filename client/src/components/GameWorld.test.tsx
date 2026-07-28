@@ -7,6 +7,11 @@ import {
 } from "@wedding-game/shared";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { gameGuideStorageKey } from "../game/gameGuide";
+import {
+  allCelebrationCollectibles,
+  celebrationCollectionStorageKey
+} from "../game/celebrationCollectibles";
+import { gameMemoryAlbumStorageKey } from "../game/gameMemoryAlbum";
 import { worldDepth } from "../game/worldVisuals";
 import { journeyProgressStorageKey } from "../game/journeyProgress";
 import { copyText } from "../invitation/browserActions";
@@ -2348,10 +2353,52 @@ describe("GameWorld", () => {
     fireEvent.click(within(screen.getByLabelText("같이 걷기"))
       .getByRole("button", { name: "하객2" }));
 
+    expect(socket.sentMessages.map((message) => JSON.parse(message))).toContainEqual({
+      type: "companion_invite",
+      targetGuestId: "guest_remote"
+    });
+    expect(screen.getByText("하객2님의 응답 기다리는 중")).toBeInTheDocument();
+    act(() => socket.emitJson({
+      type: "companion_replied",
+      guestId: "guest_remote",
+      guestNickname: "하객2",
+      accepted: true,
+      zoneId: "home"
+    }));
+
     expect(screen.getByText("하객2님과 동행 중")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "동행 그만하기" })).toBeInTheDocument();
     expect(document.querySelector(".world-companion-link")).toBeInTheDocument();
     expect(screen.getByText("하객2님을 따라 이동 중")).toBeInTheDocument();
+  });
+
+  it("starts mutual companionship only after accepting an incoming invitation", () => {
+    configureRealtime();
+    render(<GameWorld profile={profile} />);
+    const socket = MockWebSocket.instances[0];
+    act(() => socket.emit("open"));
+    act(() => socket.emitJson({
+      type: "welcome",
+      guestId: "guest_self",
+      guests: [serverGuest()]
+    }));
+    act(() => socket.emitJson({
+      type: "companion_invited",
+      requesterGuestId: "guest_remote",
+      requesterNickname: "하객2",
+      zoneId: "home"
+    }));
+
+    expect(screen.getByRole("dialog", { name: "동행 초대" })).toHaveTextContent("하객2님의 같이 걷기 초대");
+    fireEvent.click(screen.getByRole("button", { name: "수락" }));
+
+    expect(socket.sentMessages.map((message) => JSON.parse(message))).toContainEqual({
+      type: "companion_reply",
+      requesterGuestId: "guest_remote",
+      accepted: true
+    });
+    expect(screen.getByText("하객2님과 동행 중")).toBeInTheDocument();
+    expect(screen.getByText("상대가 내 걸음을 따라와요")).toBeInTheDocument();
   });
 
   it("walks to a celebration item before collecting it", () => {
@@ -2365,6 +2412,55 @@ describe("GameWorld", () => {
     advanceInteractionRoute();
     expect(screen.getByLabelText(/축하 아이템 1\//)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "축하 꽃잎 수집 완료" })).toBeDisabled();
+  });
+
+  it("unlocks the limited photo frame after collecting all thirty items", () => {
+    const remainingId = "home-petal";
+    window.localStorage.setItem(celebrationCollectionStorageKey, JSON.stringify(
+      allCelebrationCollectibles().map(({ id }) => id).filter((id) => id !== remainingId)
+    ));
+    render(<GameWorld profile={profile} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "축하 꽃잎 수집하기" }));
+    advanceInteractionRoute();
+
+    expect(screen.getByRole("dialog", { name: "축하 아이템 완주 보상" }))
+      .toHaveTextContent("축복의 꽃 정원 프레임 획득");
+    expect(screen.getByLabelText("축하 아이템 30/30")).toBeInTheDocument();
+  });
+
+  it("opens a combined game memory album from the invitation menu", () => {
+    render(<GameWorld profile={profile} />);
+    fireEvent.click(screen.getByRole("button", { name: "초대장 메뉴" }));
+    fireEvent.click(within(screen.getByRole("dialog", { name: "초대장 바로가기" }))
+      .getByRole("button", { name: "게임 추억 0" }));
+
+    expect(screen.getByRole("dialog", { name: "게임 추억 앨범" })).toBeInTheDocument();
+    expect(screen.getByText("축하 아이템")).toBeInTheDocument();
+  });
+
+  it("creates a cooperative flower shower when two guests celebrate in the ceremony hall", () => {
+    configureRealtime();
+    render(<GameWorld profile={profile} />);
+    const socket = MockWebSocket.instances[0];
+    act(() => socket.emit("open"));
+    act(() => socket.emitJson({
+      type: "welcome",
+      guestId: "guest_self",
+      guests: [serverGuest({ zoneId: "ceremony-hall" })]
+    }));
+    fireEvent.click(screen.getByRole("button", { name: "예식홀 바로 이동" }));
+    fireEvent.click(screen.getByRole("button", { name: "하객 리액션 열기" }));
+    fireEvent.click(screen.getByRole("button", { name: "축하 보내기" }));
+    act(() => socket.emitJson({
+      type: "guest_reacted",
+      guestId: "guest_remote",
+      reaction: "celebrate",
+      zoneId: "ceremony-hall"
+    }));
+
+    expect(screen.getByRole("status", { name: "하객 협동 축하 성공" })).toHaveTextContent("함께 만든 축하 꽃비");
+    expect(window.localStorage.getItem(gameMemoryAlbumStorageKey)).toContain("celebration");
   });
 
   it("stops before an occupied tile and continues after the remote guest moves", () => {

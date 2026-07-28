@@ -30,6 +30,8 @@ type ViewPreferencesContextValue = {
   setMiniMapHighContrast: (miniMapHighContrast: boolean) => void;
   setMiniMapRouteWeight: (miniMapRouteWeight: ViewPreferences["miniMapRouteWeight"]) => void;
   setRoutePatternEnhanced: (routePatternEnhanced: boolean) => void;
+  setGameMovementSpeed: (gameMovementSpeed: ViewPreferences["gameMovementSpeed"]) => void;
+  setGameUiScale: (gameUiScale: ViewPreferences["gameUiScale"]) => void;
   enableComfortableView: () => void;
   resetPreferences: () => void;
 };
@@ -49,6 +51,8 @@ const ViewPreferencesContext = createContext<ViewPreferencesContextValue>({
   setMiniMapHighContrast: () => undefined,
   setMiniMapRouteWeight: () => undefined,
   setRoutePatternEnhanced: () => undefined,
+  setGameMovementSpeed: () => undefined,
+  setGameUiScale: () => undefined,
   enableComfortableView: () => undefined,
   resetPreferences: () => undefined
 });
@@ -102,6 +106,11 @@ export function ViewPreferencesProvider({ children, initialPreferences }: ViewPr
       ...current,
       routePatternEnhanced
     })),
+    setGameMovementSpeed: (gameMovementSpeed) => setPreferences((current) => ({
+      ...current,
+      gameMovementSpeed
+    })),
+    setGameUiScale: (gameUiScale) => setPreferences((current) => ({ ...current, gameUiScale })),
     enableComfortableView: () => setPreferences((current) => ({
       ...comfortableViewPreferences,
       dataSaver: current.dataSaver,

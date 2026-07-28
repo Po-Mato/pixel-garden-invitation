@@ -39,7 +39,6 @@ import { shouldProcessGameFrame } from "../game/renderCadence";
 import {
   advanceTileInput,
   createTileInputState,
-  tileInputRepeatIntervalMs,
   type TileInputState
 } from "../game/tileInput";
 import { advanceWalkPhase, neutralWalkFrame, walkFrameForPhase, walkLandingFootForFrame } from "../game/walkTiming";
@@ -92,6 +91,16 @@ import {
   loadCelebrationCollection,
   type CelebrationCollectible
 } from "../game/celebrationCollectibles";
+import { celebrationRewardProgress } from "../game/celebrationReward";
+import {
+  loadGameMemoryAlbum,
+  recordGameMemory,
+  type GameMemoryAlbum as GameMemoryAlbumData
+} from "../game/gameMemoryAlbum";
+import {
+  registerCooperativeCelebration,
+  type CooperativeCelebrationPulse
+} from "../game/cooperativeCelebration";
 import {
   journeyArrivalAction,
   type JourneyArrivalAction
@@ -145,9 +154,12 @@ import type { EntryProfile } from "./EntryScreen";
 import { CharacterSprite } from "./CharacterSprite";
 import { AccessibleDestinationCue } from "./AccessibleDestinationCue";
 import { CompanionDock } from "./CompanionDock";
+import { CompanionInvitationPrompt } from "./CompanionInvitationPrompt";
+import { CelebrationRewardNotice } from "./CelebrationRewardNotice";
 import { DirectionsSheet } from "./DirectionsSheet";
 import { FamilyContactSheet } from "./FamilyContactSheet";
 import { GameFirstVisitGuide } from "./GameFirstVisitGuide";
+import { GameMemoryAlbum } from "./GameMemoryAlbum";
 import { GiftAccountSheet } from "./GiftAccountSheet";
 import { GameFeedbackToggle } from "./GameFeedbackToggle";
 import { GuestReactionBubble, GuestReactionDock } from "./GuestReactions";
@@ -177,6 +189,7 @@ import { WeddingPhotoBooth } from "./WeddingPhotoBooth";
 import { WeddingPhotoAlbum } from "./WeddingPhotoAlbum";
 import { WorldMapArtwork } from "./WorldMapArtwork";
 import { WorldCrowdHeatmap } from "./WorldCrowdHeatmap";
+import { WorldCooperativeCelebration } from "./WorldCooperativeCelebration";
 import {
   CelebrationCollectionProgress,
   WorldCelebrationCollectibles
@@ -202,6 +215,9 @@ type GameWorldProps = {
 type RealtimeStatus = "offline" | "connecting" | "reconnecting" | "online" | "full";
 type MoveMessage = Extract<ClientMessage, { type: "move" }>;
 type RealtimeConnection = ReturnType<typeof connectRealtimeWithRetry>;
+type CompanionRole = "leader" | "follower";
+type IncomingCompanionInvite = { requesterGuestId: string; requesterNickname: string };
+type ActiveCooperativeCelebration = { token: number; participantNames: string[] };
 type PortalIntent = { portal: WorldPortal; path: Point[] };
 type WorldInteractionIntent = {
   targetId: string;
@@ -315,6 +331,12 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   const devicePerformance = useDevicePerformance();
   const { preferences: viewPreferences, setStepFreeRouteEnabled } = useViewPreferences();
   const networkMode = useNetworkMode(viewPreferences.dataSaver);
+  const movementStepIntervalMs = viewPreferences.gameMovementSpeed === "relaxed"
+    ? 320
+    : viewPreferences.gameMovementSpeed === "brisk" ? 190 : 240;
+  const movementInitialDelayMs = viewPreferences.gameMovementSpeed === "relaxed"
+    ? 380
+    : viewPreferences.gameMovementSpeed === "brisk" ? 240 : 300;
   const {
     playFeedback,
     playJourneyHaptic,
@@ -393,7 +415,14 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   const [viewport, setViewport] = useState<ViewportSize>(defaultViewport);
   const [remoteGuests, setRemoteGuests] = useState<RoomGuest[]>([]);
   const [companionGuestId, setCompanionGuestId] = useState<string | null>(null);
+  const [companionRole, setCompanionRole] = useState<CompanionRole | null>(null);
+  const [pendingCompanionGuestId, setPendingCompanionGuestId] = useState<string | null>(null);
+  const [incomingCompanionInvite, setIncomingCompanionInvite] = useState<IncomingCompanionInvite | null>(null);
   const [collectedCelebrationIds, setCollectedCelebrationIds] = useState(loadCelebrationCollection);
+  const [celebrationRewardOpen, setCelebrationRewardOpen] = useState(false);
+  const [gameMemoryAlbum, setGameMemoryAlbum] = useState<GameMemoryAlbumData>(loadGameMemoryAlbum);
+  const [gameMemoryAlbumOpen, setGameMemoryAlbumOpen] = useState(false);
+  const [cooperativeCelebration, setCooperativeCelebration] = useState<ActiveCooperativeCelebration | null>(null);
   const [realtimeStatus, setRealtimeStatus] = useState<RealtimeStatus>("offline");
   const [loadedBackgroundZoneId, setLoadedBackgroundZoneId] = useState<WorldZoneId | null>(null);
   const nestedMenuSheetOpen = calendarSheetOpen
@@ -405,6 +434,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     || shareSheetOpen
     || viewSettingsOpen
     || photoAlbumOpen
+    || gameMemoryAlbumOpen
     || gameGuideOpen
     || journeyRouteOpen;
 
@@ -439,6 +469,11 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   const terminalStopConfirmTimerRef = useRef<number | null>(null);
   const localReactionTimerRef = useRef<number | null>(null);
   const remoteReactionTimersRef = useRef(new Map<string, number>());
+  const companionGuestIdRef = useRef<string | null>(null);
+  const pendingCompanionGuestIdRef = useRef<string | null>(null);
+  const cooperativeCelebrationPulsesRef = useRef<CooperativeCelebrationPulse[]>([]);
+  const cooperativeCelebrationAtRef = useRef(Number.NEGATIVE_INFINITY);
+  const cooperativeCelebrationTimerRef = useRef<number | null>(null);
   const reactionTokenRef = useRef(0);
   const walkPhaseRef = useRef(0);
   const renderFrameAtRef = useRef<number | null>(null);
@@ -452,10 +487,43 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   remoteGuestsRef.current = remoteGuests;
   npcMotionsRef.current = npcMotions;
   plannedCheckpointIdsRef.current = plannedCheckpointIds;
+  companionGuestIdRef.current = companionGuestId;
+  pendingCompanionGuestIdRef.current = pendingCompanionGuestId;
 
   useEffect(() => {
     pendingJourneyGuideIdRef.current = pendingJourneyGuideId;
   }, [pendingJourneyGuideId]);
+
+  useEffect(() => {
+    if (!pendingCompanionGuestId) return;
+    const timer = window.setTimeout(() => {
+      if (pendingCompanionGuestIdRef.current !== pendingCompanionGuestId) return;
+      connectionRef.current?.send({
+        type: "companion_stop",
+        targetGuestId: pendingCompanionGuestId
+      });
+      pendingCompanionGuestIdRef.current = null;
+      setPendingCompanionGuestId(null);
+      setTravelStatus("동행 초대 응답 시간이 지났어요");
+    }, 15_000);
+    return () => window.clearTimeout(timer);
+  }, [pendingCompanionGuestId]);
+
+  useEffect(() => {
+    if (!incomingCompanionInvite) return;
+    const timer = window.setTimeout(() => {
+      connectionRef.current?.send({
+        type: "companion_reply",
+        requesterGuestId: incomingCompanionInvite.requesterGuestId,
+        accepted: false
+      });
+      setIncomingCompanionInvite((current) => (
+        current?.requesterGuestId === incomingCompanionInvite.requesterGuestId ? null : current
+      ));
+      setTravelStatus("동행 초대 응답 시간이 지났어요");
+    }, 15_000);
+    return () => window.clearTimeout(timer);
+  }, [incomingCompanionInvite]);
 
   useEffect(() => {
     saveWorldSession({
@@ -749,6 +817,43 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     remoteReactionTimersRef.current.set(guestId, timer);
   }, []);
 
+  const registerCelebrationReaction = useCallback((
+    guestId: string,
+    nickname: string,
+    reaction: GuestReaction,
+    zoneId: WorldZoneId
+  ) => {
+    if (reaction !== "celebrate" || zoneId !== "ceremony-hall") return;
+    const now = Date.now();
+    const result = registerCooperativeCelebration(
+      cooperativeCelebrationPulsesRef.current,
+      { guestId, nickname, at: now }
+    );
+    cooperativeCelebrationPulsesRef.current = result.pulses;
+    if (!result.completed || now - cooperativeCelebrationAtRef.current < 10_000) return;
+
+    cooperativeCelebrationAtRef.current = now;
+    const token = ++reactionTokenRef.current;
+    setCooperativeCelebration({ token, participantNames: result.participantNames });
+    setTravelStatus(`${result.participantNames.length}명의 하객이 함께 축하 꽃비를 만들었어요`);
+    setGameMemoryAlbum(recordGameMemory({
+      id: `celebration:${Math.floor(now / 10_000)}`,
+      kind: "celebration",
+      title: "함께 만든 축하 꽃비",
+      detail: `${result.participantNames.join(", ")}님과 예식홀을 축하했어요`,
+      zoneId,
+      createdAt: new Date(now).toISOString()
+    }));
+    playFeedback("reaction");
+    if (cooperativeCelebrationTimerRef.current !== null) {
+      window.clearTimeout(cooperativeCelebrationTimerRef.current);
+    }
+    cooperativeCelebrationTimerRef.current = window.setTimeout(() => {
+      cooperativeCelebrationTimerRef.current = null;
+      setCooperativeCelebration((current) => current?.token === token ? null : current);
+    }, 4_500);
+  }, [playFeedback]);
+
   const handleGuestReaction = useCallback((reaction: GuestReaction) => {
     if (localReactionTimerRef.current !== null) window.clearTimeout(localReactionTimerRef.current);
     const token = ++reactionTokenRef.current;
@@ -761,16 +866,82 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     if (currentGuestIdRef.current) {
       connectionRef.current?.send({ type: "react", reaction });
     }
+    registerCelebrationReaction(
+      currentGuestIdRef.current ?? "local-guest",
+      profile.nickname,
+      reaction,
+      activeZoneIdRef.current
+    );
     playFeedback("reaction");
-  }, [playFeedback]);
+  }, [playFeedback, profile.nickname, registerCelebrationReaction]);
 
   const handleCollectCelebrationItem = useCallback((item: CelebrationCollectible) => {
     const next = collectCelebrationItem(collectedCelebrationIds, item.id);
     if (next.length === collectedCelebrationIds.length) return;
     setCollectedCelebrationIds(next);
     setTravelStatus(`${item.label}을 모았어요 · ${next.length}/${totalCelebrationCollectibles}`);
+    setGameMemoryAlbum(recordGameMemory({
+      id: `collectible:${item.id}`,
+      kind: "collectible",
+      title: `${item.label} 수집`,
+      detail: `${getWorldZone(gardenWorld, item.zoneId).label}에서 발견했어요`,
+      zoneId: item.zoneId
+    }));
+    if (celebrationRewardProgress(next, totalCelebrationCollectibles).unlocked) {
+      setCelebrationRewardOpen(true);
+    }
     playFeedback("stamp");
   }, [collectedCelebrationIds, playFeedback]);
+
+  const clearCompanionState = useCallback(() => {
+    companionGuestIdRef.current = null;
+    pendingCompanionGuestIdRef.current = null;
+    setCompanionGuestId(null);
+    setCompanionRole(null);
+    setPendingCompanionGuestId(null);
+    setIncomingCompanionInvite(null);
+  }, []);
+
+  const stopCompanion = useCallback((announce = true) => {
+    const targetGuestId = companionGuestIdRef.current ?? pendingCompanionGuestIdRef.current;
+    if (targetGuestId) connectionRef.current?.send({ type: "companion_stop", targetGuestId });
+    clearCompanionState();
+    if (announce) setTravelStatus("동행을 마쳤어요");
+  }, [clearCompanionState]);
+
+  const inviteCompanion = useCallback((guestId: string) => {
+    const guest = remoteGuestsRef.current.find((candidate) => candidate.guestId === guestId);
+    if (!guest || guest.zoneId !== activeZoneIdRef.current) return;
+    connectionRef.current?.send({ type: "companion_invite", targetGuestId: guestId });
+    pendingCompanionGuestIdRef.current = guestId;
+    setPendingCompanionGuestId(guestId);
+    setTravelStatus(`${guest.nickname}님에게 동행 초대를 보냈어요`);
+  }, []);
+
+  const replyToCompanionInvite = useCallback((accepted: boolean) => {
+    const invite = incomingCompanionInvite;
+    if (!invite) return;
+    connectionRef.current?.send({
+      type: "companion_reply",
+      requesterGuestId: invite.requesterGuestId,
+      accepted
+    });
+    setIncomingCompanionInvite(null);
+    if (!accepted) {
+      setTravelStatus(`${invite.requesterNickname}님의 동행 초대를 거절했어요`);
+      return;
+    }
+    companionGuestIdRef.current = invite.requesterGuestId;
+    setCompanionGuestId(invite.requesterGuestId);
+    setCompanionRole("leader");
+    setTravelStatus(`${invite.requesterNickname}님과 동행을 시작해요`);
+    setGameMemoryAlbum(recordGameMemory({
+      kind: "companion",
+      title: `${invite.requesterNickname}님과 동행`,
+      detail: `${getWorldZone(gardenWorld, activeZoneIdRef.current).label}에서 함께 걷기 시작했어요`,
+      zoneId: activeZoneIdRef.current
+    }));
+  }, [incomingCompanionInvite]);
 
   const showNpcDialogue = useCallback((npcId: NpcId) => {
     const npc = activeZone.npcs.find((candidate) => candidate.id === npcId);
@@ -932,6 +1103,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   const beginPortalTransition = useCallback((portal: WorldPortal, approach: Point, _now: number) => {
     if (portalTransitionRef.current) return;
 
+    stopCompanion(false);
     void preloadWorldZoneAssets(portal.to, "high");
     setRouteRecalculationNotice(null);
     clearTerminalStopConfirm();
@@ -982,6 +1154,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     playFeedback,
     resetWalkCycle,
     sendRealtimeStop,
+    stopCompanion,
     setInputReleaseRequired,
     setInteractionIntent,
     setPortalIntent,
@@ -1123,7 +1296,6 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   }) => {
     if (portalTransitionRef.current) return;
 
-    setCompanionGuestId(null);
     navigationResumeRef.current = null;
     setRouteRecalculationNotice(null);
     routeGuidanceSessionRef.current += 1;
@@ -1216,7 +1388,6 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
 
   const startJourneyGuidance = useCallback((checkpoint: JourneyCheckpoint) => {
     if (portalTransitionRef.current) return;
-    setCompanionGuestId(null);
     if (activeJourneyGuideId !== checkpoint.id) playJourneyHaptic(checkpoint.id, "start");
     setActiveJourneyGuideId(checkpoint.id);
     if (checkpoint.zoneId !== activeZone.id) {
@@ -1433,6 +1604,9 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
       if (localReactionTimerRef.current !== null) window.clearTimeout(localReactionTimerRef.current);
       remoteReactionTimersRef.current.forEach((timer) => window.clearTimeout(timer));
       remoteReactionTimersRef.current.clear();
+      if (cooperativeCelebrationTimerRef.current !== null) {
+        window.clearTimeout(cooperativeCelebrationTimerRef.current);
+      }
     };
   }, []);
 
@@ -1443,6 +1617,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
       setRealtimeStatus("offline");
       setRemoteGuests([]);
       clearAllRemoteReactions();
+      clearCompanionState();
       return;
     }
 
@@ -1476,6 +1651,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
             lastSentMoveRef.current = null;
             setRemoteGuests([]);
             clearAllRemoteReactions();
+            clearCompanionState();
             setRealtimeStatus("reconnecting");
           },
           onMessage: (message) => {
@@ -1484,6 +1660,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
               currentGuestIdRef.current = null;
               setRemoteGuests([]);
               clearAllRemoteReactions();
+              clearCompanionState();
               setRealtimeStatus("full");
               return;
             }
@@ -1516,12 +1693,70 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
             if (message.type === "guest_reacted") {
               if (message.guestId !== currentGuestIdRef.current) {
                 showRemoteReaction(message.guestId, message.reaction, message.zoneId);
+                const guest = remoteGuestsRef.current.find(({ guestId }) => guestId === message.guestId);
+                registerCelebrationReaction(
+                  message.guestId,
+                  guest?.nickname ?? "하객",
+                  message.reaction,
+                  message.zoneId
+                );
               }
+              return;
+            }
+            if (message.type === "companion_invited") {
+              if (
+                message.zoneId === activeZoneIdRef.current
+                && !companionGuestIdRef.current
+                && !pendingCompanionGuestIdRef.current
+              ) {
+                setIncomingCompanionInvite({
+                  requesterGuestId: message.requesterGuestId,
+                  requesterNickname: message.requesterNickname
+                });
+                setTravelStatus(`${message.requesterNickname}님이 같이 걷기를 요청했어요`);
+              }
+              return;
+            }
+            if (message.type === "companion_replied") {
+              if (pendingCompanionGuestIdRef.current !== message.guestId) return;
+              pendingCompanionGuestIdRef.current = null;
+              setPendingCompanionGuestId(null);
+              if (!message.accepted || message.zoneId !== activeZoneIdRef.current) {
+                setTravelStatus(`${message.guestNickname}님이 동행 초대를 거절했어요`);
+                return;
+              }
+              companionGuestIdRef.current = message.guestId;
+              setCompanionGuestId(message.guestId);
+              setCompanionRole("follower");
+              setTravelStatus(`${message.guestNickname}님과 동행을 시작해요`);
+              setGameMemoryAlbum(recordGameMemory({
+                kind: "companion",
+                title: `${message.guestNickname}님과 동행`,
+                detail: `${getWorldZone(gardenWorld, message.zoneId).label}에서 함께 걷기 시작했어요`,
+                zoneId: message.zoneId
+              }));
+              return;
+            }
+            if (message.type === "companion_stopped") {
+              if (companionGuestIdRef.current === message.guestId) {
+                clearCompanionState();
+                setTravelStatus("상대 하객이 동행을 마쳤어요");
+              }
+              setIncomingCompanionInvite((current) => (
+                current?.requesterGuestId === message.guestId ? null : current
+              ));
               return;
             }
             if (message.type === "guest_left") {
               setRemoteGuests((guests) => guests.filter((guest) => guest.guestId !== message.guestId));
               clearRemoteReaction(message.guestId);
+              if (
+                companionGuestIdRef.current === message.guestId
+                || pendingCompanionGuestIdRef.current === message.guestId
+              ) clearCompanionState();
+              setIncomingCompanionInvite((current) => (
+                current?.requesterGuestId === message.guestId ? null : current
+              ));
               return;
             }
             if (message.type === "room_state") {
@@ -1532,6 +1767,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
       );
     } catch {
       clearTerminalStopConfirm();
+      clearCompanionState();
       setRealtimeStatus("offline");
       return;
     }
@@ -1552,11 +1788,13 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     };
   }, [
     clearAllRemoteReactions,
+    clearCompanionState,
     clearRemoteReaction,
     clearTerminalStopConfirm,
     profile.appearance,
     profile.nickname,
     sendMoveImmediately,
+    registerCelebrationReaction,
     showRemoteReaction
   ]);
 
@@ -1603,7 +1841,13 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
 
       if (hasDirectionalInput) {
         const input = tileInputStateRef.current ?? createTileInputState(nextDirection, now);
-        const result = advanceTileInput(input, nextDirection, now);
+        const result = advanceTileInput(
+          input,
+          nextDirection,
+          now,
+          movementStepIntervalMs,
+          movementInitialDelayMs
+        );
         tileInputStateRef.current = result.state;
         if (!result.shouldStep) {
           frame = requestAnimationFrame(tick);
@@ -1616,7 +1860,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
           frame = requestAnimationFrame(tick);
           return;
         }
-        targetStepAtRef.current = now + tileInputRepeatIntervalMs;
+        targetStepAtRef.current = now + movementStepIntervalMs;
         announceUpcomingRouteTurn(current, automaticPath);
       }
 
@@ -1672,7 +1916,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
         setTravelStatus(hasDirectionalInput
           ? "앞 타일에 다른 캐릭터가 있어 잠시 멈췄어요"
           : "다른 하객이 지나가길 기다리는 중이에요");
-        targetStepAtRef.current = now + tileInputRepeatIntervalMs;
+        targetStepAtRef.current = now + movementStepIntervalMs;
         frame = requestAnimationFrame(tick);
         return;
       }
@@ -1797,6 +2041,8 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     handleCollectCelebrationItem,
     joystickVector,
     mapPath,
+    movementInitialDelayMs,
+    movementStepIntervalMs,
     openSpot,
     openPhotoSpot,
     portalIntent,
@@ -1814,7 +2060,6 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   function handlePortalClick(portalItem: WorldPortal) {
     if (portalTransitionRef.current) return;
 
-    setCompanionGuestId(null);
     navigationResumeRef.current = null;
     setRouteRecalculationNotice(null);
     routeGuidanceSessionRef.current += 1;
@@ -1862,7 +2107,6 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   function handleMapClick(event: MouseEvent<HTMLDivElement>) {
     if (portalTransitionRef.current) return;
 
-    setCompanionGuestId(null);
     navigationResumeRef.current = null;
     setRouteRecalculationNotice(null);
     routeGuidanceSessionRef.current += 1;
@@ -1952,7 +2196,6 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
 
     if (isMoving) {
       clearTerminalStopConfirm();
-      setCompanionGuestId(null);
     }
 
     if (!isMoving) {
@@ -2205,14 +2448,23 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     () => uniquePredictedAppearances(zoneRemoteGuests.map(({ appearance }) => appearance)),
     [zoneGuestAppearanceKey]
   );
-  const sameZoneCompanionCandidates = companionCandidates(remoteGuests, activeZone.id, position);
   const activeCompanion = companionGuestId
     ? remoteGuests.find((guest) => guest.guestId === companionGuestId) ?? null
     : null;
+  const nearbyCompanionCandidates = companionCandidates(remoteGuests, activeZone.id, position);
+  const sameZoneCompanionCandidates = activeCompanion
+    && activeCompanion.zoneId === activeZone.id
+    && !nearbyCompanionCandidates.some(({ guestId }) => guestId === activeCompanion.guestId)
+    ? [activeCompanion, ...nearbyCompanionCandidates].slice(0, 3)
+    : nearbyCompanionCandidates;
   const photoCompanions = nearbyPhotoCompanions(remoteGuests, activeZone.id, position);
   const zoneCelebrationCollectibles = useMemo(
     () => celebrationCollectiblesForZone(activeZone),
     [activeZone]
+  );
+  const celebrationReward = celebrationRewardProgress(
+    collectedCelebrationIds,
+    totalCelebrationCollectibles
   );
   const activeNpcPoints = activeZone.npcs.map((npc) => npcMotionFor(
     activeZone,
@@ -2291,15 +2543,16 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   useEffect(() => {
     if (!companionGuestId) return;
     if (!activeCompanion) {
-      setCompanionGuestId(null);
+      clearCompanionState();
       setTravelStatus("동행하던 하객의 연결이 종료됐어요");
       return;
     }
     if (activeCompanion.zoneId !== activeZone.id) {
-      setCompanionGuestId(null);
+      stopCompanion(false);
       setTravelStatus(`${activeCompanion.nickname}님이 다른 맵으로 이동해 동행을 마쳤어요`);
       return;
     }
+    if (companionRole !== "follower") return;
     if (portalTransition || interactionIntent || portalIntent || hasJoystickMovement(joystickVector)) return;
     const companionPoint = snapToGrid({ x: activeCompanion.x, y: activeCompanion.y }, activeZone);
     const fullPath = findTilePath(activeZone, positionRef.current, companionPoint);
@@ -2322,6 +2575,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     targetStepAtRef.current = null;
   }, [
     companionGuestId,
+    companionRole,
     activeCompanion?.guestId,
     activeCompanion?.nickname,
     activeCompanion?.x,
@@ -2332,6 +2586,8 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     joystickVector,
     portalIntent,
     portalTransition,
+    clearCompanionState,
+    stopCompanion,
     setTarget
   ]);
 
@@ -2865,6 +3121,10 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
             totalCount={totalCelebrationCollectibles}
           />
 
+          {cooperativeCelebration ? (
+            <WorldCooperativeCelebration participantNames={cooperativeCelebration.participantNames} />
+          ) : null}
+
           <WorldMiniMap
             zone={activeZone}
             player={position}
@@ -2888,20 +3148,27 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
           <CompanionDock
             candidates={sameZoneCompanionCandidates}
             activeGuestId={companionGuestId}
-            onSelect={(guestId) => {
+            pendingGuestId={pendingCompanionGuestId}
+            role={companionRole}
+            onInvite={(guestId) => {
               pauseWorldInput();
               setPendingJourneyGuideId(null);
               setActiveJourneyGuideId(null);
-              setCompanionGuestId(guestId);
-              const guest = remoteGuests.find((candidate) => candidate.guestId === guestId);
-              setTravelStatus(`${guest?.nickname ?? "하객"}님과 동행을 시작해요`);
+              inviteCompanion(guestId);
             }}
             onStop={() => {
               pauseWorldInput();
-              setCompanionGuestId(null);
-              setTravelStatus("동행을 마쳤어요");
+              stopCompanion();
             }}
           />
+
+          {incomingCompanionInvite ? (
+            <CompanionInvitationPrompt
+              nickname={incomingCompanionInvite.requesterNickname}
+              onAccept={() => replyToCompanionInvite(true)}
+              onDecline={() => replyToCompanionInvite(false)}
+            />
+          ) : null}
 
           {viewPreferences.stepFreeRouteEnabled && destinationCheckpoint ? (
             <AccessibleDestinationCue
@@ -3065,6 +3332,17 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
                 <Images aria-hidden="true" />
                 포토앨범 {weddingPhotoAlbumProgress(photoAlbum)}/3
               </button>
+              <button
+                type="button"
+                onClick={() => {
+                  pauseWorldInput();
+                  setGameMemoryAlbum(loadGameMemoryAlbum());
+                  setGameMemoryAlbumOpen(true);
+                }}
+              >
+                <Images aria-hidden="true" />
+                게임 추억 {gameMemoryAlbum.entries.length}
+              </button>
               <button type="button" onClick={openGameGuide}>
                 <CircleHelp aria-hidden="true" />
                 게임 안내 다시 보기
@@ -3094,6 +3372,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
           nickname={profile.nickname}
           appearance={profile.appearance}
           companions={photoCompanions}
+          celebrationFrameUnlocked={celebrationReward.unlocked}
           onClose={() => setActivePhotoSpotId(null)}
           onCaptured={(memory: WeddingPhotoMemory) => {
             setPhotoAlbum(loadWeddingPhotoAlbum());
@@ -3112,6 +3391,23 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
             setActivePhotoSpotId(photoSpotId);
           }}
         />
+      ) : null}
+      {gameMemoryAlbumOpen ? (
+        <GameMemoryAlbum
+          album={gameMemoryAlbum}
+          photoAlbum={photoAlbum}
+          collectedCount={celebrationReward.collectedCount}
+          totalCollectibles={celebrationReward.totalCount}
+          rewardUnlocked={celebrationReward.unlocked}
+          onClose={() => setGameMemoryAlbumOpen(false)}
+          onOpenPhotoAlbum={() => {
+            setGameMemoryAlbumOpen(false);
+            setPhotoAlbumOpen(true);
+          }}
+        />
+      ) : null}
+      {celebrationRewardOpen ? (
+        <CelebrationRewardNotice onClose={() => setCelebrationRewardOpen(false)} />
       ) : null}
       {gameGuideOpen ? <GameFirstVisitGuide onDismiss={dismissGameGuide} /> : null}
       {journeyRouteOpen && recommendedCheckpoint ? (

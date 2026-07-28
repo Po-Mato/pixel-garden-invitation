@@ -36,6 +36,7 @@ type WeddingPhotoBoothProps = {
     nickname: string;
     appearance: CharacterAppearance;
   }[];
+  celebrationFrameUnlocked?: boolean;
 };
 
 type PhotoStatus = "ready" | "capturing" | "captured" | "saving" | "saved" | "sharing" | "shared" | "fallback" | "canceled" | "error";
@@ -68,6 +69,7 @@ export function WeddingPhotoBooth({
   nickname,
   appearance,
   companions = [],
+  celebrationFrameUnlocked = false,
   onClose,
   onCaptured
 }: WeddingPhotoBoothProps) {
@@ -101,8 +103,9 @@ export function WeddingPhotoBooth({
     companions: companions.map((companion) => ({
       guestName: companion.nickname,
       appearance: companion.appearance
-    }))
-  }), [appearance, companions, coupleOrder, event, nickname, pose, spot]);
+    })),
+    celebrationFrame: celebrationFrameUnlocked
+  }), [appearance, celebrationFrameUnlocked, companions, coupleOrder, event, nickname, pose, spot]);
 
   const releaseCaptureUrl = () => {
     if (!captureUrlRef.current) return;
@@ -204,6 +207,7 @@ export function WeddingPhotoBooth({
               backgroundPosition: spot.previewPosition
             }}
             aria-label={`${spot.sceneLabel} 촬영 미리보기`}
+            data-celebration-frame={celebrationFrameUnlocked || undefined}
           >
             <span className="wedding-photo-booth__frame" aria-hidden="true" />
             <span className="wedding-photo-booth__petals" aria-hidden="true" />
@@ -263,6 +267,10 @@ export function WeddingPhotoBooth({
           <p className="wedding-photo-booth__group-note">
             가까이 있는 {companions.map(({ nickname: companionName }) => companionName).join(", ")}님과 함께 촬영합니다.
           </p>
+        ) : null}
+
+        {celebrationFrameUnlocked && !capture ? (
+          <p className="wedding-photo-booth__reward-note">축복의 꽃 정원 한정 프레임 적용 중</p>
         ) : null}
 
         <div className="wedding-photo-booth__actions">

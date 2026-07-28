@@ -132,4 +132,24 @@ describe("WeddingPhotoBooth", () => {
       companions: [{ guestName: "친구하객", appearance: defaultCharacterAppearance }]
     })));
   });
+
+  it("applies the collection-complete limited frame to preview and capture", async () => {
+    render(
+      <WeddingPhotoBooth
+        spot={spot}
+        nickname="정원하객"
+        appearance={defaultCharacterAppearance}
+        celebrationFrameUnlocked
+        onClose={vi.fn()}
+        onCaptured={vi.fn()}
+      />
+    );
+
+    expect(screen.getByText("축복의 꽃 정원 한정 프레임 적용 중")).toBeInTheDocument();
+    expect(screen.getByLabelText(`${spot.sceneLabel} 촬영 미리보기`)).toHaveAttribute("data-celebration-frame", "true");
+    fireEvent.click(screen.getByRole("button", { name: "기념 촬영" }));
+    await waitFor(() => expect(photoMocks.create).toHaveBeenCalledWith(expect.objectContaining({
+      celebrationFrame: true
+    })));
+  });
 });

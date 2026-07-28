@@ -40,6 +40,9 @@ export type ClientMessage =
   | { type: "join"; nickname: string; appearance: CharacterAppearance; zoneId: WorldZoneId }
   | { type: "move"; x: number; y: number; direction: Direction; moving: boolean; seq: number; zoneId: WorldZoneId }
   | { type: "react"; reaction: GuestReaction }
+  | { type: "companion_invite"; targetGuestId: string }
+  | { type: "companion_reply"; requesterGuestId: string; accepted: boolean }
+  | { type: "companion_stop"; targetGuestId: string }
   | { type: "ping" }
   | { type: "leave" };
 
@@ -48,6 +51,9 @@ export type ServerMessage =
   | { type: "guest_joined"; guest: RoomGuest }
   | { type: "guest_moved"; guestId: string; position: PositionState }
   | { type: "guest_reacted"; guestId: string; reaction: GuestReaction; zoneId: WorldZoneId }
+  | { type: "companion_invited"; requesterGuestId: string; requesterNickname: string; zoneId: WorldZoneId }
+  | { type: "companion_replied"; guestId: string; guestNickname: string; accepted: boolean; zoneId: WorldZoneId }
+  | { type: "companion_stopped"; guestId: string }
   | { type: "guest_left"; guestId: string }
   | { type: "room_state"; guests: RoomGuest[] }
   | { type: "error"; code: "bad_message" | "room_full" | "rate_limited" };

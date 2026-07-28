@@ -84,6 +84,17 @@ describe("parseClientMessage", () => {
     expect(parseClientMessage({ type: "react", reaction: 1 })).toBeNull();
   });
 
+  it("validates targeted companion invitations and replies", () => {
+    expect(parseClientMessage({ type: "companion_invite", targetGuestId: "guest_two" }))
+      .toEqual({ type: "companion_invite", targetGuestId: "guest_two" });
+    expect(parseClientMessage({ type: "companion_reply", requesterGuestId: "guest_one", accepted: true }))
+      .toEqual({ type: "companion_reply", requesterGuestId: "guest_one", accepted: true });
+    expect(parseClientMessage({ type: "companion_stop", targetGuestId: "guest_two" }))
+      .toEqual({ type: "companion_stop", targetGuestId: "guest_two" });
+    expect(parseClientMessage({ type: "companion_reply", requesterGuestId: "", accepted: true })).toBeNull();
+    expect(parseClientMessage({ type: "companion_reply", requesterGuestId: "guest_one", accepted: "yes" })).toBeNull();
+  });
+
   it("rejects an unknown move zone", () => {
     expect(parseClientMessage({
       type: "move",

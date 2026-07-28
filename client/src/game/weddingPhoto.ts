@@ -18,6 +18,7 @@ export type WeddingPhotoData = {
     guestName: string;
     appearance: CharacterAppearance;
   }[];
+  celebrationFrame?: boolean;
 };
 
 export type WeddingPhotoMemory = {
@@ -472,6 +473,38 @@ function safeGuestName(guestName: string) {
   return guestName.trim().replace(/[^0-9A-Za-z가-힣_-]+/g, "-").replace(/^-+|-+$/g, "");
 }
 
+function drawCelebrationFrame(context: CanvasRenderingContext2D) {
+  context.save();
+  context.strokeStyle = "rgba(255, 238, 183, 0.96)";
+  context.lineWidth = 18;
+  context.strokeRect(28, 28, weddingPhotoWidth - 56, weddingPhotoHeight - 56);
+  context.strokeStyle = "rgba(174, 91, 116, 0.9)";
+  context.lineWidth = 6;
+  context.strokeRect(45, 45, weddingPhotoWidth - 90, weddingPhotoHeight - 90);
+
+  const corners = [[64, 64], [weddingPhotoWidth - 64, 64], [64, weddingPhotoHeight - 64], [weddingPhotoWidth - 64, weddingPhotoHeight - 64]];
+  corners.forEach(([x, y], cornerIndex) => {
+    context.save();
+    context.translate(x, y);
+    context.rotate(cornerIndex * Math.PI / 2);
+    for (let petal = 0; petal < 6; petal += 1) {
+      context.save();
+      context.rotate((Math.PI * 2 * petal) / 6);
+      context.fillStyle = petal % 2 === 0 ? "#d98fa2" : "#f4d786";
+      context.beginPath();
+      context.ellipse(0, -23, 10, 24, 0, 0, Math.PI * 2);
+      context.fill();
+      context.restore();
+    }
+    context.fillStyle = "#fff1ad";
+    context.beginPath();
+    context.arc(0, 0, 10, 0, Math.PI * 2);
+    context.fill();
+    context.restore();
+  });
+  context.restore();
+}
+
 export function weddingPhotoMemoryFilename(memory: WeddingPhotoMemory): string {
   return `wedding-photo-${memory.photoSpotId}-${safeGuestName(memory.guestName) || "guest"}.jpg`;
 }
@@ -556,6 +589,7 @@ export async function createWeddingPhotoCapture(data: WeddingPhotoData): Promise
   context.fillStyle = "#54735d";
   context.font = "800 23px sans-serif";
   context.fillText("오늘의 축하를 오래 간직할게요", weddingPhotoWidth / 2, 1314);
+  if (data.celebrationFrame) drawCelebrationFrame(context);
 
   return {
     blob: await canvasToBlob(canvas),

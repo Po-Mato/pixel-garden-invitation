@@ -51,4 +51,14 @@ describe("tile input repeat timing", () => {
     expect(tileInputInitialDelayMs).toBe(300);
     expect(tileInputRepeatIntervalMs).toBe(240);
   });
+
+  it("accepts a relaxed accessibility timing without changing the default", () => {
+    let state = createTileInputState("right", 0);
+    state = advanceTileInput(state, "right", 0, 320, 380).state;
+    expect(advanceTileInput(state, "right", 379, 320, 380).shouldStep).toBe(false);
+    const held = advanceTileInput(state, "right", 380, 320, 380);
+    expect(held.shouldStep).toBe(true);
+    expect(advanceTileInput(held.state, "right", 699, 320, 380).shouldStep).toBe(false);
+    expect(advanceTileInput(held.state, "right", 700, 320, 380).shouldStep).toBe(true);
+  });
 });

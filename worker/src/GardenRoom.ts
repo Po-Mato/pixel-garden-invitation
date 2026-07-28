@@ -16,6 +16,7 @@ type GuestAttachment = {
   lastMoveAt: number;
   lastMoveBypassAt: number;
   lastReactionAt: number;
+  lastSocialAt: number;
 };
 
 type PendingAttachment = { kind: "pending" };
@@ -23,6 +24,7 @@ type SocketAttachment = GuestAttachment | PendingAttachment;
 
 const moveThrottleMs = 100;
 const reactionThrottleMs = 800;
+const socialThrottleMs = 500;
 const roomCapacity = 100;
 const zones = new Set<WorldZoneId>(worldZoneIds);
 
@@ -118,6 +120,9 @@ function parseGuestAttachment(value: unknown): GuestAttachment | null {
       : Number.NEGATIVE_INFINITY,
     lastReactionAt: typeof value.lastReactionAt === "number"
       ? value.lastReactionAt
+      : Number.NEGATIVE_INFINITY,
+    lastSocialAt: typeof value.lastSocialAt === "number"
+      ? value.lastSocialAt
       : Number.NEGATIVE_INFINITY
   };
 }
@@ -179,7 +184,8 @@ export class GardenRoom {
         guest,
         lastMoveAt: Number.NEGATIVE_INFINITY,
         lastMoveBypassAt: Number.NEGATIVE_INFINITY,
-        lastReactionAt: Number.NEGATIVE_INFINITY
+        lastReactionAt: Number.NEGATIVE_INFINITY,
+        lastSocialAt: Number.NEGATIVE_INFINITY
       } satisfies GuestAttachment);
       socket.send(encode({ type: "welcome", guestId, guests: this.getGuests() }));
       this.broadcast({ type: "guest_joined", guest }, socket);
@@ -222,9 +228,53 @@ export class GardenRoom {
         guest,
         lastMoveAt: now,
         lastMoveBypassAt: isInsideMoveThrottle ? now : current.lastMoveBypassAt,
-        lastReactionAt: current.lastReactionAt
+        lastReactionAt: current.lastReactionAt,
+        lastSocialAt: current.lastSocialAt
       } satisfies GuestAttachment);
       this.broadcast({ type: "guest_moved", guestId: guest.guestId, position }, socket);
+      return;
+    }
+
+    if (
+      parsed.type === "companion_invite"
+      || parsed.type === "companion_reply"
+      || parsed.type === "companion_stop"
+    ) {
+      const now = Date.now();
+      if (now - current.lastSocialAt < socialThrottleMs) return;
+      socket.serializeAttachment({
+        ...current,
+        guest: { ...current.guest, lastSeenAt: now },
+        lastSocialAt: now
+      } satisfies GuestAttachment);
+
+      if (parsed.type === "companion_invite") {
+        const target = this.findGuestSocket(parsed.targetGuestId);
+        if (!target || target.attachment.guest.zoneId !== current.guest.zoneId) return;
+        target.socket.send(encode({
+          type: "companion_invited",
+          requesterGuestId: current.guest.guestId,
+          requesterNickname: current.guest.nickname,
+          zoneId: current.guest.zoneId
+        }));
+        return;
+      }
+
+      if (parsed.type === "companion_reply") {
+        const requester = this.findGuestSocket(parsed.requesterGuestId);
+        if (!requester || requester.attachment.guest.zoneId !== current.guest.zoneId) return;
+        requester.socket.send(encode({
+          type: "companion_replied",
+          guestId: current.guest.guestId,
+          guestNickname: current.guest.nickname,
+          accepted: parsed.accepted,
+          zoneId: current.guest.zoneId
+        }));
+        return;
+      }
+
+      const target = this.findGuestSocket(parsed.targetGuestId);
+      target?.socket.send(encode({ type: "companion_stopped", guestId: current.guest.guestId }));
       return;
     }
 
@@ -274,6 +324,14 @@ export class GardenRoom {
       const attachment = readGuestAttachment(socket);
       return attachment ? [attachment.guest] : [];
     });
+  }
+
+  private findGuestSocket(guestId: string): { socket: WebSocket; attachment: GuestAttachment } | null {
+    for (const socket of this.state.getWebSockets()) {
+      const attachment = readGuestAttachment(socket);
+      if (attachment?.guest.guestId === guestId) return { socket, attachment };
+    }
+    return null;
   }
 
   private broadcast(message: ServerMessage, except?: WebSocket): void {

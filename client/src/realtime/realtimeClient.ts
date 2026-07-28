@@ -138,6 +138,30 @@ function parseServerMessage(value: unknown): ServerMessage | null {
     return value as ServerMessage;
   }
 
+  if (value.type === "companion_invited") {
+    if (
+      typeof value.requesterGuestId !== "string"
+      || typeof value.requesterNickname !== "string"
+      || !zones.has(value.zoneId as WorldZoneId)
+    ) return null;
+    return value as ServerMessage;
+  }
+
+  if (value.type === "companion_replied") {
+    if (
+      typeof value.guestId !== "string"
+      || typeof value.guestNickname !== "string"
+      || typeof value.accepted !== "boolean"
+      || !zones.has(value.zoneId as WorldZoneId)
+    ) return null;
+    return value as ServerMessage;
+  }
+
+  if (value.type === "companion_stopped") {
+    if (typeof value.guestId !== "string") return null;
+    return value as ServerMessage;
+  }
+
   if (value.type === "guest_left") {
     if (typeof value.guestId !== "string") return null;
     return value as ServerMessage;

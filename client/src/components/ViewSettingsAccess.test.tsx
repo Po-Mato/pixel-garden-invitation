@@ -18,6 +18,8 @@ afterEach(() => {
   delete document.documentElement.dataset.miniMapHighContrast;
   delete document.documentElement.dataset.miniMapRouteWeight;
   delete document.documentElement.dataset.routePattern;
+  delete document.documentElement.dataset.gameMovementSpeed;
+  delete document.documentElement.dataset.gameUiScale;
 });
 
 describe("ViewSettingsAccess", () => {
@@ -58,6 +60,10 @@ describe("ViewSettingsAccess", () => {
     expect(screen.getByRole("switch", { name: "경로 선 패턴 강화" })).toBeChecked();
     expect(screen.getByRole("switch", { name: "움직임 줄이기" })).toBeChecked();
     expect(screen.getByRole("switch", { name: "데이터 절약" })).toBeChecked();
+    expect(within(screen.getByRole("group", { name: "게임 이동 속도" }))
+      .getByRole("button", { name: "느긋하게" })).toHaveAttribute("aria-pressed", "true");
+    expect(within(screen.getByRole("group", { name: "게임 UI 크기" }))
+      .getByRole("button", { name: "크게" })).toHaveAttribute("aria-pressed", "true");
     expect(document.documentElement).toHaveAttribute("data-high-contrast", "true");
     expect(document.documentElement).toHaveAttribute("data-comfortable-controls", "true");
 
@@ -66,6 +72,23 @@ describe("ViewSettingsAccess", () => {
       .getByRole("button", { name: "기본" })).toHaveAttribute("aria-pressed", "true");
     expect(document.documentElement).not.toHaveAttribute("data-high-contrast");
     expect(document.documentElement).not.toHaveAttribute("data-comfortable-controls");
+  });
+
+  it("게임 이동 속도와 UI 크기를 간편하게 바꾼다", () => {
+    render(
+      <ViewPreferencesProvider initialPreferences={defaultViewPreferences}>
+        <ViewSettingsAccess variant="icon" />
+      </ViewPreferencesProvider>
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "환경 설정" }));
+    fireEvent.click(within(screen.getByRole("group", { name: "게임 이동 속도" }))
+      .getByRole("button", { name: "빠르게" }));
+    fireEvent.click(within(screen.getByRole("group", { name: "게임 UI 크기" }))
+      .getByRole("button", { name: "크게" }));
+
+    expect(document.documentElement).toHaveAttribute("data-game-movement-speed", "brisk");
+    expect(document.documentElement).toHaveAttribute("data-game-ui-scale", "large");
   });
 
   it("미니맵 대비와 경로 굵기를 즉시 설정한다", () => {

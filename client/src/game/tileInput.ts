@@ -26,7 +26,9 @@ export function createTileInputState(direction: Direction, now: number): TileInp
 export function advanceTileInput(
   state: TileInputState,
   direction: Direction,
-  now: number
+  now: number,
+  repeatIntervalMs = tileInputRepeatIntervalMs,
+  initialDelayMs = tileInputInitialDelayMs
 ): TileInputResult {
   const current = direction === state.direction ? state : createTileInputState(direction, now);
 
@@ -39,7 +41,7 @@ export function advanceTileInput(
     state: {
       direction,
       hasStepped: true,
-      nextStepAt: now + (current.hasStepped ? tileInputRepeatIntervalMs : tileInputInitialDelayMs)
+      nextStepAt: now + (current.hasStepped ? repeatIntervalMs : initialDelayMs)
     }
   };
 }

@@ -155,6 +155,37 @@ describe("connectRealtime", () => {
     expect(onMessage).toHaveBeenNthCalledWith(2, { type: "error", code: "bad_message" });
   });
 
+  it("accepts validated companion invitation lifecycle messages", () => {
+    const onMessage = vi.fn();
+    connectRealtime("wss://worker.example.com/rooms/sample-garden", joinMessage, {
+      onOpen: vi.fn(),
+      onClose: vi.fn(),
+      onMessage
+    });
+    const socket = MockWebSocket.instances[0];
+    const messages = [{
+      type: "companion_invited",
+      requesterGuestId: "guest_requester",
+      requesterNickname: "초대 하객",
+      zoneId: "home"
+    }, {
+      type: "companion_replied",
+      guestId: "guest_invited",
+      guestNickname: "수락 하객",
+      accepted: true,
+      zoneId: "home"
+    }, {
+      type: "companion_stopped",
+      guestId: "guest_requester"
+    }];
+
+    messages.forEach((message) => socket.emit("message", new MessageEvent("message", {
+      data: JSON.stringify(message)
+    })));
+
+    messages.forEach((message, index) => expect(onMessage).toHaveBeenNthCalledWith(index + 1, message));
+  });
+
   it("normalizes room guests with invalid appearances to the default preset", () => {
     const onMessage = vi.fn();
     connectRealtime("wss://worker.example.com/rooms/sample-garden", joinMessage, {

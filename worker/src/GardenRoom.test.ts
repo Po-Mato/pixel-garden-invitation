@@ -107,6 +107,12 @@ function reactionMessage(reaction: "wave" | "heart" | "applause" | "celebrate"):
   return JSON.stringify({ type: "react", reaction });
 }
 
+function joinedGuestId(socket: TestSocket): string {
+  const welcome = socket.sent.map((payload) => JSON.parse(payload))
+    .find((message) => message.type === "welcome");
+  return welcome.guestId;
+}
+
 afterEach(() => {
   vi.restoreAllMocks();
 });
@@ -298,6 +304,74 @@ describe("GardenRoom guest reactions", () => {
       .filter((message) => message.type === "guest_reacted");
     expect(reactions.map((message) => message.reaction)).toEqual(["wave", "celebrate"]);
     expect(reacting.closed).toBe(false);
+  });
+});
+
+describe("GardenRoom companion invitations", () => {
+  it("routes invite, acceptance, and stop messages only to the selected guest", () => {
+    const state = new TestState();
+    const room = createRoom(state);
+    const requester = new TestSocket();
+    const invited = new TestSocket();
+    joinGuest(room, state, requester, "초대 하객");
+    joinGuest(room, state, invited, "수락 하객");
+    const requesterId = joinedGuestId(requester);
+    const invitedId = joinedGuestId(invited);
+    requester.sent.length = 0;
+    invited.sent.length = 0;
+    vi.spyOn(Date, "now").mockReturnValue(1_000);
+
+    room.webSocketMessage(asWebSocket(requester), JSON.stringify({
+      type: "companion_invite",
+      targetGuestId: invitedId
+    }));
+    expect(invited.sent.map((payload) => JSON.parse(payload))).toContainEqual({
+      type: "companion_invited",
+      requesterGuestId: requesterId,
+      requesterNickname: "초대 하객",
+      zoneId: "home"
+    });
+
+    room.webSocketMessage(asWebSocket(invited), JSON.stringify({
+      type: "companion_reply",
+      requesterGuestId: requesterId,
+      accepted: true
+    }));
+    expect(requester.sent.map((payload) => JSON.parse(payload))).toContainEqual({
+      type: "companion_replied",
+      guestId: invitedId,
+      guestNickname: "수락 하객",
+      accepted: true,
+      zoneId: "home"
+    });
+
+    vi.mocked(Date.now).mockReturnValue(2_000);
+    room.webSocketMessage(asWebSocket(requester), JSON.stringify({
+      type: "companion_stop",
+      targetGuestId: invitedId
+    }));
+    expect(invited.sent.map((payload) => JSON.parse(payload))).toContainEqual({
+      type: "companion_stopped",
+      guestId: requesterId
+    });
+  });
+
+  it("does not deliver an invitation across different maps", () => {
+    const state = new TestState();
+    const room = createRoom(state);
+    const requester = new TestSocket();
+    const invited = new TestSocket();
+    joinGuest(room, state, requester, "초대 하객");
+    joinGuest(room, state, invited, "다른 맵 하객");
+    const invitedId = joinedGuestId(invited);
+    room.webSocketMessage(asWebSocket(invited), moveMessage(1, 525, "lobby", 765, false));
+    invited.sent.length = 0;
+
+    room.webSocketMessage(asWebSocket(requester), JSON.stringify({
+      type: "companion_invite",
+      targetGuestId: invitedId
+    }));
+    expect(invited.sent).toEqual([]);
   });
 });
 

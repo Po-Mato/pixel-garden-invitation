@@ -12,6 +12,8 @@ export type ViewPreferences = {
   miniMapHighContrast: boolean;
   miniMapRouteWeight: "standard" | "bold";
   routePatternEnhanced: boolean;
+  gameMovementSpeed: "relaxed" | "normal" | "brisk";
+  gameUiScale: "standard" | "large";
 };
 
 type StorageLike = Pick<Storage, "getItem" | "setItem">;
@@ -30,7 +32,9 @@ export const defaultViewPreferences: ViewPreferences = {
   stepFreeRouteEnabled: false,
   miniMapHighContrast: false,
   miniMapRouteWeight: "standard",
-  routePatternEnhanced: false
+  routePatternEnhanced: false,
+  gameMovementSpeed: "normal",
+  gameUiScale: "standard"
 };
 
 export const comfortableViewPreferences: ViewPreferences = {
@@ -46,7 +50,9 @@ export const comfortableViewPreferences: ViewPreferences = {
   stepFreeRouteEnabled: true,
   miniMapHighContrast: true,
   miniMapRouteWeight: "bold",
-  routePatternEnhanced: true
+  routePatternEnhanced: true,
+  gameMovementSpeed: "relaxed",
+  gameUiScale: "large"
 };
 
 function browserStorage(): StorageLike | null {
@@ -77,7 +83,9 @@ export function isViewPreferences(value: unknown): value is ViewPreferences {
     && typeof candidate.stepFreeRouteEnabled === "boolean"
     && typeof candidate.miniMapHighContrast === "boolean"
     && (candidate.miniMapRouteWeight === "standard" || candidate.miniMapRouteWeight === "bold")
-    && typeof candidate.routePatternEnhanced === "boolean";
+    && typeof candidate.routePatternEnhanced === "boolean"
+    && (candidate.gameMovementSpeed === "relaxed" || candidate.gameMovementSpeed === "normal" || candidate.gameMovementSpeed === "brisk")
+    && (candidate.gameUiScale === "standard" || candidate.gameUiScale === "large");
 }
 
 function normalizeStoredPreferences(value: unknown): ViewPreferences | null {
@@ -117,7 +125,11 @@ function normalizeStoredPreferences(value: unknown): ViewPreferences | null {
     miniMapRouteWeight: candidate.miniMapRouteWeight === "bold" ? "bold" : "standard",
     routePatternEnhanced: typeof candidate.routePatternEnhanced === "boolean"
       ? candidate.routePatternEnhanced
-      : false
+      : false,
+    gameMovementSpeed: candidate.gameMovementSpeed === "relaxed" || candidate.gameMovementSpeed === "brisk"
+      ? candidate.gameMovementSpeed
+      : "normal",
+    gameUiScale: candidate.gameUiScale === "large" ? "large" : "standard"
   };
 }
 
@@ -180,6 +192,9 @@ export function applyViewPreferences(
 
   if (preferences.routePatternEnhanced) root.dataset.routePattern = "enhanced";
   else delete root.dataset.routePattern;
+
+  root.dataset.gameMovementSpeed = preferences.gameMovementSpeed;
+  root.dataset.gameUiScale = preferences.gameUiScale;
 }
 
 export function shouldReduceMotion(
