@@ -62,6 +62,39 @@
   }
 }
 
+html[data-joystick-side="right"] .world-control-dock {
+  flex-direction: row-reverse;
+}
+
+html[data-one-handed-controls="true"] .world-control-dock {
+  right: auto;
+  left: max(8px, env(safe-area-inset-left));
+  width: auto;
+  justify-content: flex-start;
+}
+
+html[data-one-handed-controls="true"][data-joystick-side="right"] .world-control-dock {
+  right: max(8px, env(safe-area-inset-right));
+  left: auto;
+  justify-content: flex-end;
+}
+
+html[data-one-handed-controls="true"] .world-control-actions {
+  width: 146px;
+  flex-wrap: wrap-reverse;
+  justify-content: flex-start;
+}
+
+html[data-one-handed-controls="true"][data-joystick-side="right"] .world-control-actions {
+  justify-content: flex-end;
+}
+
+@media (max-width: 360px) {
+  html[data-one-handed-controls="true"] .world-control-actions {
+    width: 132px;
+  }
+}
+
 @media (max-width: 360px) {
   .world-control-dock {
     right: 6px;

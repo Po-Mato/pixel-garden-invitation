@@ -12,6 +12,8 @@ afterEach(() => {
   delete document.documentElement.dataset.reduceMotion;
   delete document.documentElement.dataset.highContrast;
   delete document.documentElement.dataset.comfortableControls;
+  delete document.documentElement.dataset.oneHandedControls;
+  delete document.documentElement.dataset.joystickSide;
   delete document.documentElement.dataset.dataSaver;
   delete document.documentElement.dataset.miniMapHighContrast;
   delete document.documentElement.dataset.miniMapRouteWeight;
@@ -95,6 +97,23 @@ describe("ViewSettingsAccess", () => {
     const control = screen.getByRole("switch", { name: "계단 없는 길 우선" });
     fireEvent.click(control);
     expect(control).toBeChecked();
+  });
+
+  it("한 손 조작과 조이스틱 좌우 위치를 즉시 적용한다", () => {
+    render(
+      <ViewPreferencesProvider initialPreferences={defaultViewPreferences}>
+        <ViewSettingsAccess variant="icon" />
+      </ViewPreferencesProvider>
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "환경 설정" }));
+    fireEvent.click(screen.getByRole("switch", { name: "한 손 조작 모드" }));
+    const position = screen.getByRole("group", { name: "조이스틱 위치" });
+    fireEvent.click(within(position).getByRole("button", { name: "오른쪽" }));
+
+    expect(document.documentElement).toHaveAttribute("data-one-handed-controls", "true");
+    expect(document.documentElement).toHaveAttribute("data-joystick-side", "right");
+    expect(within(position).getByRole("button", { name: "오른쪽" })).toHaveAttribute("aria-pressed", "true");
   });
 
   it("메뉴형 진입점도 동일한 설정 시트를 연다", () => {

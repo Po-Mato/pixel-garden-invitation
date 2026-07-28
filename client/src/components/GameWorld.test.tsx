@@ -2308,6 +2308,33 @@ describe("GameWorld", () => {
     expect(screen.queryByLabelText("로비 하객")).not.toBeInTheDocument();
   });
 
+  it("stops before an occupied tile and continues after the remote guest moves", () => {
+    configureRealtime();
+    render(<GameWorld profile={profile} />);
+    const socket = MockWebSocket.instances[0];
+    act(() => socket.emit("open"));
+    act(() => socket.emitJson({
+      type: "welcome",
+      guestId: "guest_self",
+      guests: [serverGuest({ x: 315, y: 555 })]
+    }));
+    const joystick = screen.getByLabelText("가상 조이스틱");
+    const player = screen.getByLabelText("하객1");
+
+    fireEvent.keyDown(joystick, { key: "ArrowRight" });
+    advanceAnimation(0);
+    expect(player).toHaveStyle({ left: "285px", top: "555px" });
+    expect(screen.getByText("앞 타일에 다른 캐릭터가 있어 잠시 멈췄어요")).toBeInTheDocument();
+
+    act(() => socket.emitJson({
+      type: "guest_moved",
+      guestId: "guest_remote",
+      position: { x: 345, y: 555, direction: "right", moving: true, seq: 1, zoneId: "home" }
+    }));
+    advanceAnimation(300);
+    expect(player).toHaveStyle({ left: "315px", top: "555px" });
+  });
+
   it("renders remote guest movement with the same neutral-separated walk cycle", () => {
     configureRealtime();
     render(<GameWorld profile={profile} />);

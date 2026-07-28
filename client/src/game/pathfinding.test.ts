@@ -5,7 +5,9 @@ import {
   findNearestInteractionRoute,
   findNearestPortalRoute,
   findTilePath,
+  findTilePathAvoidingPoints,
   getPathfindingCacheStats,
+  isTileOccupied,
   resetPathfindingCache
 } from "./pathfinding";
 
@@ -84,6 +86,33 @@ describe("portal tile pathfinding", () => {
       { x: 75, y: 15 },
       { x: 105, y: 15 }
     ]);
+    expect(getPathfindingCacheStats()).toEqual({ gridBuilds: 1, routeHits: 1, routeMisses: 1 });
+  });
+
+  it("reuses the reverse direction of a cached route", () => {
+    const zone = testZone([]);
+    expect(findTilePath(zone, { x: 15, y: 15 }, { x: 105, y: 15 })).toHaveLength(3);
+
+    expect(findTilePath(zone, { x: 105, y: 15 }, { x: 15, y: 15 })).toEqual([
+      { x: 75, y: 15 },
+      { x: 45, y: 15 },
+      { x: 15, y: 15 }
+    ]);
+    expect(getPathfindingCacheStats()).toEqual({ gridBuilds: 1, routeHits: 1, routeMisses: 1 });
+  });
+
+  it("routes around a temporarily occupied character tile and caches the short-lived result", () => {
+    const zone = testZone([]);
+    const start = { x: 15, y: 15 };
+    const goal = { x: 105, y: 15 };
+    const occupied = [{ x: 45, y: 15 }];
+    const first = findTilePathAvoidingPoints(zone, start, goal, occupied, 100);
+
+    expect(first).not.toBeNull();
+    expect(first).not.toContainEqual(occupied[0]);
+    expect(first?.at(-1)).toEqual(goal);
+    expect(isTileOccupied({ x: 45, y: 15 }, occupied)).toBe(true);
+    expect(findTilePathAvoidingPoints(zone, start, goal, occupied, 200)).toEqual(first);
     expect(getPathfindingCacheStats()).toEqual({ gridBuilds: 1, routeHits: 1, routeMisses: 1 });
   });
 

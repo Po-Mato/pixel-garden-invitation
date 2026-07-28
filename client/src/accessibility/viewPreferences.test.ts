@@ -24,6 +24,8 @@ describe("보기 설정 저장", () => {
         reduceMotion: true,
         highContrast: false,
         comfortableControls: false,
+        oneHandedControls: false,
+        joystickSide: "left",
         dataSaver: false,
         routeVoiceGuidance: false,
         routeVoiceRate: "normal",
@@ -37,6 +39,8 @@ describe("보기 설정 저장", () => {
       reduceMotion: true,
       highContrast: true,
       comfortableControls: true,
+      oneHandedControls: false,
+      joystickSide: "left",
       dataSaver: true,
       routeVoiceGuidance: false,
       routeVoiceRate: "normal",
@@ -49,6 +53,8 @@ describe("보기 설정 저장", () => {
       reduceMotion: true,
       highContrast: true,
       comfortableControls: true,
+      oneHandedControls: false,
+      joystickSide: "left",
       dataSaver: true,
       routeVoiceGuidance: false,
       routeVoiceRate: "normal",
@@ -69,6 +75,8 @@ describe("보기 설정 저장", () => {
       reduceMotion: true,
       highContrast: true,
       comfortableControls: true,
+      oneHandedControls: true,
+      joystickSide: "right" as const,
       dataSaver: true,
       routeVoiceGuidance: true,
       routeVoiceRate: "fast" as const,
@@ -91,6 +99,8 @@ describe("보기 설정 저장", () => {
       reduceMotion: true,
       highContrast: true,
       comfortableControls: true,
+      oneHandedControls: true,
+      joystickSide: "right",
       dataSaver: true,
       routeVoiceGuidance: true,
       routeVoiceRate: "slow",
@@ -103,6 +113,8 @@ describe("보기 설정 저장", () => {
     expect(root).toHaveAttribute("data-reduce-motion", "true");
     expect(root).toHaveAttribute("data-high-contrast", "true");
     expect(root).toHaveAttribute("data-comfortable-controls", "true");
+    expect(root).toHaveAttribute("data-one-handed-controls", "true");
+    expect(root).toHaveAttribute("data-joystick-side", "right");
     expect(root).toHaveAttribute("data-data-saver", "true");
     expect(root).toHaveAttribute("data-route-voice-guidance", "true");
     expect(root).toHaveAttribute("data-mini-map-high-contrast", "true");
@@ -115,6 +127,8 @@ describe("보기 설정 저장", () => {
     expect(root).not.toHaveAttribute("data-reduce-motion");
     expect(root).not.toHaveAttribute("data-high-contrast");
     expect(root).not.toHaveAttribute("data-comfortable-controls");
+    expect(root).not.toHaveAttribute("data-one-handed-controls");
+    expect(root).toHaveAttribute("data-joystick-side", "left");
     expect(root).not.toHaveAttribute("data-data-saver");
     expect(root).not.toHaveAttribute("data-route-voice-guidance");
     expect(root).not.toHaveAttribute("data-mini-map-high-contrast");

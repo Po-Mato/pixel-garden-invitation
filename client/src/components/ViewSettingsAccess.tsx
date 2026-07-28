@@ -43,6 +43,8 @@ export function ViewSettingsAccess({ variant, onOpenChange }: ViewSettingsAccess
     setReduceMotion,
     setHighContrast,
     setComfortableControls,
+    setOneHandedControls,
+    setJoystickSide,
     setDataSaver,
     setRouteVoiceGuidance,
     setRouteVoiceRate,
@@ -74,6 +76,8 @@ export function ViewSettingsAccess({ variant, onOpenChange }: ViewSettingsAccess
     && preferences.reduceMotion
     && preferences.highContrast
     && preferences.comfortableControls
+    && preferences.oneHandedControls
+    && preferences.joystickSide === "left"
     && preferences.miniMapHighContrast
     && preferences.miniMapRouteWeight === "bold"
     && preferences.routePatternEnhanced;
@@ -167,6 +171,37 @@ export function ViewSettingsAccess({ variant, onOpenChange }: ViewSettingsAccess
               />
               <span aria-hidden="true" className="view-settings-sheet__switch-track" />
             </label>
+
+            <label className="view-settings-sheet__switch">
+              <span><Hand aria-hidden="true" /><strong>한 손 조작 모드</strong></span>
+              <input
+                type="checkbox"
+                role="switch"
+                checked={preferences.oneHandedControls}
+                onChange={(event) => setOneHandedControls(event.target.checked)}
+              />
+              <span aria-hidden="true" className="view-settings-sheet__switch-track" />
+            </label>
+
+            <div className="feedback-settings__volume">
+              <strong>조이스틱 위치</strong>
+              <div className="view-settings-sheet__segments" role="group" aria-label="조이스틱 위치">
+                <button
+                  type="button"
+                  aria-pressed={preferences.joystickSide === "left"}
+                  onClick={() => setJoystickSide("left")}
+                >
+                  왼쪽
+                </button>
+                <button
+                  type="button"
+                  aria-pressed={preferences.joystickSide === "right"}
+                  onClick={() => setJoystickSide("right")}
+                >
+                  오른쪽
+                </button>
+              </div>
+            </div>
 
             <label className="view-settings-sheet__switch">
               <span><Navigation aria-hidden="true" /><strong>길찾기 음성 안내</strong></span>
@@ -521,6 +556,8 @@ export function ViewSettingsAccess({ variant, onOpenChange }: ViewSettingsAccess
               글자 크기 {preferences.textScale === "default" ? "기본" : preferences.textScale === "large" ? "크게" : "아주 크게"},
               선명한 화면 {preferences.highContrast ? "켜짐" : "꺼짐"},
               큰 터치 영역 {preferences.comfortableControls ? "켜짐" : "꺼짐"},
+              한 손 조작 {preferences.oneHandedControls ? "켜짐" : "꺼짐"},
+              조이스틱 위치 {preferences.joystickSide === "left" ? "왼쪽" : "오른쪽"},
               길찾기 음성 안내 {preferences.routeVoiceGuidance ? "켜짐" : "꺼짐"},
               음성 안내 속도 {preferences.routeVoiceRate === "slow" ? "느리게" : preferences.routeVoiceRate === "fast" ? "빠르게" : "보통"},
               계단 없는 길 우선 {preferences.stepFreeRouteEnabled ? "켜짐" : "꺼짐"},

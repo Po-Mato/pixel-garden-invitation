@@ -21,6 +21,8 @@ type ViewPreferencesContextValue = {
   setReduceMotion: (reduceMotion: boolean) => void;
   setHighContrast: (highContrast: boolean) => void;
   setComfortableControls: (comfortableControls: boolean) => void;
+  setOneHandedControls: (oneHandedControls: boolean) => void;
+  setJoystickSide: (joystickSide: ViewPreferences["joystickSide"]) => void;
   setDataSaver: (dataSaver: boolean) => void;
   setRouteVoiceGuidance: (routeVoiceGuidance: boolean) => void;
   setRouteVoiceRate: (routeVoiceRate: ViewPreferences["routeVoiceRate"]) => void;
@@ -38,6 +40,8 @@ const ViewPreferencesContext = createContext<ViewPreferencesContextValue>({
   setReduceMotion: () => undefined,
   setHighContrast: () => undefined,
   setComfortableControls: () => undefined,
+  setOneHandedControls: () => undefined,
+  setJoystickSide: () => undefined,
   setDataSaver: () => undefined,
   setRouteVoiceGuidance: () => undefined,
   setRouteVoiceRate: () => undefined,
@@ -71,6 +75,11 @@ export function ViewPreferencesProvider({ children, initialPreferences }: ViewPr
       ...current,
       comfortableControls
     })),
+    setOneHandedControls: (oneHandedControls) => setPreferences((current) => ({
+      ...current,
+      oneHandedControls
+    })),
+    setJoystickSide: (joystickSide) => setPreferences((current) => ({ ...current, joystickSide })),
     setDataSaver: (dataSaver) => setPreferences((current) => ({ ...current, dataSaver })),
     setRouteVoiceGuidance: (routeVoiceGuidance) => setPreferences((current) => ({
       ...current,

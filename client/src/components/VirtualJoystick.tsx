@@ -11,6 +11,7 @@ type Point = { x: number; y: number };
 
 type VirtualJoystickProps = {
   disabled?: boolean;
+  side?: "left" | "right";
   onVectorChange: (vector: Point) => void;
 };
 
@@ -50,7 +51,7 @@ function vectorFromKey(key: string): Point | null {
   return null;
 }
 
-export function VirtualJoystick({ disabled = false, onVectorChange }: VirtualJoystickProps) {
+export function VirtualJoystick({ disabled = false, side = "left", onVectorChange }: VirtualJoystickProps) {
   const activePointerIdRef = useRef<number | null>(null);
   const activeKeysRef = useRef<string[]>([]);
   const [thumbVector, setThumbVector] = useState<Point>(zeroVector);
@@ -143,6 +144,7 @@ export function VirtualJoystick({ disabled = false, onVectorChange }: VirtualJoy
   return (
     <div
       className="virtual-joystick"
+      data-side={side}
       role="application"
       aria-label="가상 조이스틱"
       aria-disabled={disabled}

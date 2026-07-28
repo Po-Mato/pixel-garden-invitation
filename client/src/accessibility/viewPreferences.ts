@@ -3,6 +3,8 @@ export type ViewPreferences = {
   reduceMotion: boolean;
   highContrast: boolean;
   comfortableControls: boolean;
+  oneHandedControls: boolean;
+  joystickSide: "left" | "right";
   dataSaver: boolean;
   routeVoiceGuidance: boolean;
   routeVoiceRate: "slow" | "normal" | "fast";
@@ -20,6 +22,8 @@ export const defaultViewPreferences: ViewPreferences = {
   reduceMotion: false,
   highContrast: false,
   comfortableControls: false,
+  oneHandedControls: false,
+  joystickSide: "left",
   dataSaver: false,
   routeVoiceGuidance: false,
   routeVoiceRate: "normal",
@@ -34,6 +38,8 @@ export const comfortableViewPreferences: ViewPreferences = {
   reduceMotion: true,
   highContrast: true,
   comfortableControls: true,
+  oneHandedControls: true,
+  joystickSide: "left",
   dataSaver: false,
   routeVoiceGuidance: false,
   routeVoiceRate: "normal",
@@ -63,6 +69,8 @@ export function isViewPreferences(value: unknown): value is ViewPreferences {
     && typeof candidate.reduceMotion === "boolean"
     && typeof candidate.highContrast === "boolean"
     && typeof candidate.comfortableControls === "boolean"
+    && typeof candidate.oneHandedControls === "boolean"
+    && (candidate.joystickSide === "left" || candidate.joystickSide === "right")
     && typeof candidate.dataSaver === "boolean"
     && typeof candidate.routeVoiceGuidance === "boolean"
     && (candidate.routeVoiceRate === "slow" || candidate.routeVoiceRate === "normal" || candidate.routeVoiceRate === "fast")
@@ -89,6 +97,10 @@ function normalizeStoredPreferences(value: unknown): ViewPreferences | null {
     comfortableControls: typeof candidate.comfortableControls === "boolean"
       ? candidate.comfortableControls
       : false,
+    oneHandedControls: typeof candidate.oneHandedControls === "boolean"
+      ? candidate.oneHandedControls
+      : false,
+    joystickSide: candidate.joystickSide === "right" ? "right" : "left",
     dataSaver: typeof candidate.dataSaver === "boolean" ? candidate.dataSaver : false,
     routeVoiceGuidance: typeof candidate.routeVoiceGuidance === "boolean"
       ? candidate.routeVoiceGuidance
@@ -149,6 +161,11 @@ export function applyViewPreferences(
 
   if (preferences.comfortableControls) root.dataset.comfortableControls = "true";
   else delete root.dataset.comfortableControls;
+
+  if (preferences.oneHandedControls) root.dataset.oneHandedControls = "true";
+  else delete root.dataset.oneHandedControls;
+
+  root.dataset.joystickSide = preferences.joystickSide;
 
   if (preferences.dataSaver) root.dataset.dataSaver = "true";
   else delete root.dataset.dataSaver;
