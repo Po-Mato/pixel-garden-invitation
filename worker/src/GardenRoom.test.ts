@@ -75,12 +75,13 @@ function joinGuest(room: GardenRoomHarness, state: TestState, socket: TestSocket
   room.webSocketMessage(asWebSocket(socket), joinMessage(nickname));
 }
 
-function joinMessage(nickname: string): string {
+function joinMessage(nickname: string, resumeId?: string): string {
   return JSON.stringify({
     type: "join",
     nickname,
     appearance: defaultCharacterAppearance,
-    zoneId: "home"
+    zoneId: "home",
+    ...(resumeId ? { resumeId } : {})
   });
 }
 
@@ -432,6 +433,21 @@ describe("GardenRoom companion invitations", () => {
 });
 
 describe("GardenRoom socket behavior", () => {
+  it("reuses the stable guest id and replaces a stale socket on reconnect", () => {
+    const state = new TestState();
+    const room = createRoom(state);
+    const first = new TestSocket();
+    const resumed = new TestSocket();
+    state.addSocket(first);
+    room.webSocketMessage(asWebSocket(first), joinMessage("하객", "stable_guest_123456"));
+    state.addSocket(resumed);
+    room.webSocketMessage(asWebSocket(resumed), joinMessage("하객", "stable_guest_123456"));
+
+    expect(joinedGuestId(first)).toBe("guest_stable_guest_123456");
+    expect(joinedGuestId(resumed)).toBe("guest_stable_guest_123456");
+    expect(first.closed).toBe(true);
+  });
+
   it.each(worldZoneIds)("clamps only coordinates beyond the %s maximum bounds", (zoneId) => {
     vi.spyOn(Date, "now").mockReturnValue(2000);
     const state = new TestState();

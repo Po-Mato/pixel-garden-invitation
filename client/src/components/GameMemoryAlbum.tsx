@@ -5,10 +5,13 @@ import {
   Camera,
   Download,
   Flower2,
+  Frame,
+  Heart,
   LayoutGrid,
   MessageSquareText,
   PartyPopper,
   Send,
+  Sparkles,
   UsersRound,
   X
 } from "lucide-react";
@@ -29,6 +32,8 @@ import {
   saveGameMemoryKeepsakeOptions,
   shareGameMemoryKeepsake,
   type GameMemoryKeepsakeLayout,
+  type GameMemoryKeepsakeFrame,
+  type GameMemoryKeepsakeSticker,
   type GameMemoryKeepsakeData
 } from "../game/gameMemoryKeepsake";
 import { celebrationRewardLabel } from "../game/celebrationReward";
@@ -105,6 +110,15 @@ export function GameMemoryAlbum({
     setKeepsakeOptions((current) => ({ ...current, photoOrder: next }));
   };
 
+  const toggleSticker = (sticker: GameMemoryKeepsakeSticker) => {
+    setKeepsakeOptions((current) => ({
+      ...current,
+      stickers: current.stickers.includes(sticker)
+        ? current.stickers.filter((candidate) => candidate !== sticker)
+        : [...current.stickers, sticker].slice(-3)
+    }));
+  };
+
   const buildKeepsake = async (action: "save" | "share") => {
     if (!hasMemories || busy) return;
     setKeepsakeStatus(action === "save" ? "saving" : "sharing");
@@ -161,6 +175,7 @@ export function GameMemoryAlbum({
           <div
             className="game-memory-album__preview"
             data-layout={keepsakeOptions.layout}
+            data-frame={keepsakeOptions.frame}
             aria-label="포토스트립 미리보기"
           >
             <small>{formatCoupleNames(event, coupleOrder)}</small>
@@ -173,6 +188,11 @@ export function GameMemoryAlbum({
               ))}
             </div>
             <strong>{keepsakeOptions.message}</strong>
+            <span className="game-memory-album__preview-stickers" aria-hidden="true">
+              {keepsakeOptions.stickers.map((sticker) => sticker === "heart"
+                ? <Heart key={sticker} />
+                : sticker === "flower" ? <Flower2 key={sticker} /> : <Sparkles key={sticker} />)}
+            </span>
           </div>
 
           <fieldset>
@@ -192,6 +212,63 @@ export function GameMemoryAlbum({
                   {label}
                 </button>
               ))}
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend><Frame aria-hidden="true" />사진 프레임</legend>
+            <div className="game-memory-album__layout-options">
+              {([[
+                "clean", "깔끔"
+              ], [
+                "rounded", "소프트"
+              ], [
+                "postage", "우표"
+              ]] as const satisfies readonly [GameMemoryKeepsakeFrame, string][]).map(([frame, label]) => (
+                <button
+                  key={frame}
+                  type="button"
+                  aria-pressed={keepsakeOptions.frame === frame}
+                  onClick={() => setKeepsakeOptions((current) => ({ ...current, frame }))}
+                >{label}</button>
+              ))}
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend><Sparkles aria-hidden="true" />장식 스티커</legend>
+            <div className="game-memory-album__sticker-options">
+              {([[
+                "heart", "하트", Heart
+              ], [
+                "flower", "꽃", Flower2
+              ], [
+                "sparkle", "별빛", Sparkles
+              ]] as const).map(([sticker, label, Icon]) => (
+                <button
+                  key={sticker}
+                  type="button"
+                  aria-label={`${label} 스티커`}
+                  aria-pressed={keepsakeOptions.stickers.includes(sticker)}
+                  onClick={() => toggleSticker(sticker)}
+                ><Icon aria-hidden="true" /><span>{label}</span></button>
+              ))}
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend><Download aria-hidden="true" />저장 화질</legend>
+            <div className="game-memory-album__layout-options">
+              <button
+                type="button"
+                aria-pressed={keepsakeOptions.quality === "standard"}
+                onClick={() => setKeepsakeOptions((current) => ({ ...current, quality: "standard" }))}
+              >일반</button>
+              <button
+                type="button"
+                aria-pressed={keepsakeOptions.quality === "high"}
+                onClick={() => setKeepsakeOptions((current) => ({ ...current, quality: "high" }))}
+              >고화질 2배</button>
             </div>
           </fieldset>
 

@@ -171,13 +171,17 @@ export class GardenRoom {
         return;
       }
 
-      if (this.getGuests().length >= roomCapacity) {
+      const guestId = parsed.resumeId ? `guest_${parsed.resumeId}` : `guest_${crypto.randomUUID()}`;
+      const existing = this.findGuestSocket(guestId);
+      if (!existing && this.getGuests().length >= roomCapacity) {
         socket.send(encode({ type: "error", code: "room_full" }));
         socket.close(1013, "room full");
         return;
       }
-
-      const guestId = `guest_${crypto.randomUUID()}`;
+      if (existing) {
+        existing.socket.serializeAttachment({ kind: "pending" } satisfies PendingAttachment);
+        existing.socket.close(1000, "guest resumed elsewhere");
+      }
       const guest = createGuestSnapshot(guestId, parsed, Date.now());
       socket.serializeAttachment({
         kind: "guest",

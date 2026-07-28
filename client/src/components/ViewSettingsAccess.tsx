@@ -24,9 +24,9 @@ import {
   Vibrate,
   Volume2
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useViewPreferences } from "../accessibility/ViewPreferencesContext";
-import { speakRouteVoiceMessage } from "../accessibility/routeVoiceGuidance";
+import { routeVoiceAvailability, speakRouteVoiceMessage } from "../accessibility/routeVoiceGuidance";
 import { useGameFeedback } from "../feedback/GameFeedbackContext";
 import { useDevicePerformance } from "../performance/DevicePerformanceContext";
 import { BottomSheet } from "./BottomSheet";
@@ -38,6 +38,7 @@ type ViewSettingsAccessProps = {
 
 export function ViewSettingsAccess({ variant, onOpenChange }: ViewSettingsAccessProps) {
   const [open, setOpen] = useState(false);
+  const [voiceAvailability, setVoiceAvailability] = useState(routeVoiceAvailability);
   const devicePerformance = useDevicePerformance();
   const {
     preferences,
@@ -100,6 +101,14 @@ export function ViewSettingsAccess({ variant, onOpenChange }: ViewSettingsAccess
     setOpen(visible);
     onOpenChange?.(visible);
   };
+
+  useEffect(() => {
+    if (!("speechSynthesis" in window)) return;
+    const update = () => setVoiceAvailability(routeVoiceAvailability());
+    update();
+    window.speechSynthesis.addEventListener("voiceschanged", update);
+    return () => window.speechSynthesis.removeEventListener("voiceschanged", update);
+  }, []);
 
   return (
     <>
@@ -401,6 +410,14 @@ export function ViewSettingsAccess({ variant, onOpenChange }: ViewSettingsAccess
               <Play aria-hidden="true" />
               길찾기 음성 시험
             </button>
+
+            <p className="view-settings-sheet__voice-status" role="status">
+              {voiceAvailability === "korean"
+                ? "한국어 음성을 사용합니다. 구역 포함을 선택하면 가까운 랜드마크도 함께 안내합니다."
+                : voiceAvailability === "fallback"
+                  ? "한국어 전용 음성이 없어 기기의 기본 음성으로 한국어 안내를 시도합니다."
+                  : "이 브라우저는 음성 안내를 지원하지 않습니다. 미니맵의 스크린리더 랜드마크 안내를 이용해 주세요."}
+            </p>
 
             <label className="view-settings-sheet__switch">
               <span><Sparkles aria-hidden="true" /><strong>움직임 줄이기</strong></span>

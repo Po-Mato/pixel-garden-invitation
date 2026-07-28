@@ -34,10 +34,22 @@ export function parseClientMessage(value: unknown): ClientMessage | null {
 
   if (value.type === "join") {
     const nickname = sanitizeText(value.nickname, 16);
+    const resumeId = sanitizeText(value.resumeId, 64);
     if (!("appearance" in value)) return null;
     const appearance = parseCharacterAppearance(value.appearance);
-    if (!nickname || !appearance || !zones.has(value.zoneId as WorldZoneId)) return null;
-    return { type: "join", nickname, appearance, zoneId: value.zoneId as WorldZoneId };
+    if (
+      !nickname
+      || !appearance
+      || !zones.has(value.zoneId as WorldZoneId)
+      || (resumeId && !/^[A-Za-z0-9_-]{12,64}$/.test(resumeId))
+    ) return null;
+    return {
+      type: "join",
+      nickname,
+      appearance,
+      zoneId: value.zoneId as WorldZoneId,
+      ...(resumeId ? { resumeId } : {})
+    };
   }
 
   if (value.type === "move") {

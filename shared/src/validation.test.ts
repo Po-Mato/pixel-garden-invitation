@@ -84,6 +84,23 @@ describe("parseClientMessage", () => {
     expect(parseClientMessage({ type: "react", reaction: 1 })).toBeNull();
   });
 
+  it("accepts a safe reconnect id on join and rejects malformed ids", () => {
+    expect(parseClientMessage({
+      type: "join",
+      nickname: "재접속 하객",
+      appearance: defaultCharacterAppearance,
+      zoneId: "home",
+      resumeId: "stable_guest_123456"
+    })).toMatchObject({ type: "join", resumeId: "stable_guest_123456" });
+    expect(parseClientMessage({
+      type: "join",
+      nickname: "재접속 하객",
+      appearance: defaultCharacterAppearance,
+      zoneId: "home",
+      resumeId: "short"
+    })).toBeNull();
+  });
+
   it("validates targeted companion invitations and replies", () => {
     expect(parseClientMessage({ type: "companion_invite", targetGuestId: "guest_two" }))
       .toEqual({ type: "companion_invite", targetGuestId: "guest_two" });

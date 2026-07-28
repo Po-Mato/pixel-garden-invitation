@@ -6,6 +6,9 @@ export type PwaClientSnapshot = {
   completed: number;
   total: number;
   updateAvailable: boolean;
+  featureCacheState: PwaCacheState;
+  featureCompleted: number;
+  featureTotal: number;
 };
 
 type PwaWorkerMessage = {
@@ -21,7 +24,10 @@ const initialSnapshot: PwaClientSnapshot = {
   cacheState: "idle",
   completed: 0,
   total: 0,
-  updateAvailable: false
+  updateAvailable: false,
+  featureCacheState: "idle",
+  featureCompleted: 0,
+  featureTotal: 0
 };
 
 let snapshot = initialSnapshot;
@@ -57,6 +63,26 @@ export function reducePwaWorkerMessage(
   }
   if (message.type === "PWA_CACHE_ERROR") {
     return { ...current, cacheState: "error" };
+  }
+  if (message.type === "PWA_FEATURE_CACHE_PROGRESS") {
+    return {
+      ...current,
+      featureCacheState: "preparing",
+      featureCompleted: numericProgress(message.completed),
+      featureTotal: numericProgress(message.total)
+    };
+  }
+  if (message.type === "PWA_FEATURE_CACHE_READY") {
+    const total = numericProgress(message.total) || current.featureTotal;
+    return { ...current, featureCacheState: "ready", featureCompleted: total, featureTotal: total };
+  }
+  if (message.type === "PWA_FEATURE_CACHE_ERROR") {
+    return {
+      ...current,
+      featureCacheState: "error",
+      featureCompleted: numericProgress(message.completed),
+      featureTotal: numericProgress(message.total) || current.featureTotal
+    };
   }
   return current;
 }
@@ -191,6 +217,16 @@ function waitForWaitingWorker(
 export function warmPwaAssetCache(urls: readonly string[]): void {
   if (!urls.length || typeof navigator === "undefined" || !("serviceWorker" in navigator)) return;
   const message = { type: "CACHE_URLS", urls: [...new Set(urls)] };
+  if (navigator.serviceWorker.controller) {
+    navigator.serviceWorker.controller.postMessage(message);
+    return;
+  }
+  void registrationPromise?.then((registration) => registration?.active?.postMessage(message));
+}
+
+export function prepareOfflineGameFeatures(): void {
+  if (typeof navigator === "undefined" || !("serviceWorker" in navigator)) return;
+  const message = { type: "CACHE_GAME_FEATURES" };
   if (navigator.serviceWorker.controller) {
     navigator.serviceWorker.controller.postMessage(message);
     return;

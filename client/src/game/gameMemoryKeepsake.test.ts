@@ -47,11 +47,17 @@ describe("gameMemoryKeepsake", () => {
     };
     const options = normalizeGameMemoryKeepsakeOptions({
       layout: "film",
+      frame: "postage",
+      stickers: ["heart", "heart", "sparkle", "invalid"],
+      quality: "standard",
       message: "  우리들의 정원 산책  ",
       photoOrder: ["ceremony-aisle", "ceremony-aisle", "lobby-photo-wall"]
     });
     expect(options).toEqual({
       layout: "film",
+      frame: "postage",
+      stickers: ["heart", "sparkle"],
+      quality: "standard",
       message: "우리들의 정원 산책",
       photoOrder: ["ceremony-aisle", "lobby-photo-wall"]
     });

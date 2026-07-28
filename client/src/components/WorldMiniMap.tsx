@@ -14,6 +14,7 @@ import { segmentJourneyRouteBySurface } from "../game/journeyRouteVisual";
 import type { RouteRecalculationResult } from "../game/routeDeviation";
 import type { CelebrationCollectibleKind } from "../game/celebrationCollectibles";
 import { portalEntryRect, type Point, type WorldZone } from "../game/world";
+import { worldAccessibilityLandmarks } from "../game/worldAccessibility";
 import "../mini-map-expanded.css";
 
 export type MiniMapRouteKind = "preview" | "journey" | "selected";
@@ -280,6 +281,7 @@ export function WorldMiniMap({
     padding: 10
   });
   const routeStatus = routeActive ? routeContinuing ? "연속 안내" : "이동 중" : "경로 미리보기";
+  const accessibilityLandmarks = worldAccessibilityLandmarks(zone, player);
 
   useEffect(() => {
     if (!expanded) return;
@@ -421,6 +423,19 @@ export function WorldMiniMap({
         </span>
       ) : null}
       <MiniMapCanvas {...canvasProps} layout={layout} />
+      <section className="sr-only world-minimap__screen-reader-map" aria-label={`${zone.label} 주변 랜드마크`}>
+        <h2>{zone.label} 지도 안내</h2>
+        <p aria-live="polite">
+          {destinationLabel
+            ? `현재 목적지는 ${destinationLabel}입니다. ${routeProgressLabel ?? routeStatus}.`
+            : "선택된 목적지가 없습니다."}
+        </p>
+        <ol>
+          {accessibilityLandmarks.map((landmark) => (
+            <li key={landmark.id}>{landmark.phrase}</li>
+          ))}
+        </ol>
+      </section>
 
       {expanded ? createPortal(
         <div

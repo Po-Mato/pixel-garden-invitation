@@ -1,10 +1,11 @@
-import { Hand, Heart, LocateFixed, MapPinned, Route, UserPlus, UsersRound, X } from "lucide-react";
+import { Hand, Heart, LocateFixed, MapPinned, Route, Share2, UserPlus, UsersRound, X } from "lucide-react";
 import type { CompanionPing, WorldZoneId } from "@wedding-game/shared";
 import type { CompanionCandidate } from "../game/companionMode";
 
 type CompanionDockProps = {
   candidates: readonly CompanionCandidate[];
   activeGuestId: string | null;
+  activeNickname?: string | null;
   pendingGuestId?: string | null;
   role?: "leader" | "follower" | null;
   onInvite: (guestId: string) => void;
@@ -20,11 +21,14 @@ type CompanionDockProps = {
   onRequestDestination?: () => void;
   onAcceptDestinationRequest?: () => void;
   onRejoin?: () => void;
+  onShareInvite?: () => void;
+  shareStatus?: string | null;
 };
 
 export function CompanionDock({
   candidates,
   activeGuestId,
+  activeNickname = null,
   pendingGuestId = null,
   role = null,
   onInvite,
@@ -39,22 +43,27 @@ export function CompanionDock({
   onPing,
   onRequestDestination,
   onAcceptDestinationRequest,
-  onRejoin
+  onRejoin,
+  onShareInvite,
+  shareStatus = null
 }: CompanionDockProps) {
-  if (candidates.length === 0 && !activeGuestId && !pendingGuestId) return null;
+  if (candidates.length === 0 && !activeGuestId && !pendingGuestId && !onShareInvite) return null;
   const active = candidates.find(({ guestId }) => guestId === activeGuestId) ?? null;
   const pending = candidates.find(({ guestId }) => guestId === pendingGuestId) ?? null;
+  const hasActive = Boolean(activeGuestId);
   return (
     <aside className="world-companion-dock" aria-label="같이 걷기">
       <header>
         <UsersRound aria-hidden="true" />
-        <strong>{active
-          ? `${active.nickname}님과 동행 중`
+        <strong>{hasActive
+          ? active
+            ? `${active.nickname}님과 동행 중`
+            : `${activeNickname ?? "동행 하객"}님 재연결 대기`
           : pending
             ? `${pending.nickname}님의 응답 기다리는 중`
             : "근처 하객에게 동행 초대"}</strong>
       </header>
-      {active ? (
+      {hasActive ? (
         <div className="world-companion-dock__actions">
           {role === "leader" && onOpenDestination ? (
             <button
@@ -97,7 +106,7 @@ export function CompanionDock({
           ))}
         </div>
       )}
-      {active && onPing ? (
+      {hasActive && onPing ? (
         <div className="world-companion-dock__pings" role="group" aria-label="동행 핑 보내기">
           {([
             ["wait", "잠시만요", Hand],
@@ -139,7 +148,19 @@ export function CompanionDock({
             : recentPing.ping === "here" ? "여기예요" : "좋아요"}
         </p>
       ) : null}
-      {active && role ? <small>{waitingAtPortal
+      {onShareInvite ? (
+        <button
+          type="button"
+          className="world-companion-dock__share"
+          onClick={(event) => { event.stopPropagation(); onShareInvite(); }}
+        >
+          <Share2 aria-hidden="true" />동행 링크 보내기
+        </button>
+      ) : null}
+      {shareStatus ? <p className="world-companion-dock__share-status" role="status">{shareStatus}</p> : null}
+      {hasActive && role ? <small>{!active
+        ? "동행 상태를 보존하고 상대의 재접속을 기다려요"
+        : waitingAtPortal
         ? "포털에서 서로의 도착을 기다려요"
         : sharedDestinationLabel
           ? `함께 ${sharedDestinationLabel}(으)로 이동 중`

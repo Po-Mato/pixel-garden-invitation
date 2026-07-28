@@ -6,20 +6,66 @@ import {
 import type { WorldZone } from "./world";
 
 export const celebrationRewardLabel = "축복의 꽃 정원 프레임";
+export const celebrationCosmeticStorageKey = "wedding-game:celebration-cosmetic:v1";
+export const celebrationCosmeticIds = ["none", "petal-trail", "ribbon-tag", "starlight-aura"] as const;
+export type CelebrationCosmeticId = (typeof celebrationCosmeticIds)[number];
 export const celebrationKindRewards = {
   petal: {
     label: "꽃잎 발자국",
-    detail: "걸을 때마다 부드러운 꽃잎 잔상이 따라와요."
+    detail: "걸을 때마다 부드러운 꽃잎 잔상이 따라와요.",
+    cosmeticId: "petal-trail"
   },
   ribbon: {
     label: "웨딩 리본 이름표",
-    detail: "동행 이름표에 축하 리본 장식이 더해져요."
+    detail: "동행 이름표에 축하 리본 장식이 더해져요.",
+    cosmeticId: "ribbon-tag"
   },
   star: {
-    label: "별빛 미니맵",
-    detail: "미니맵 수집 표식이 더 선명하게 반짝여요."
+    label: "별빛 오라",
+    detail: "캐릭터 둘레에 은은한 별빛이 반짝여요.",
+    cosmeticId: "starlight-aura"
   }
-} as const satisfies Record<CelebrationCollectibleKind, { label: string; detail: string }>;
+} as const satisfies Record<CelebrationCollectibleKind, {
+  label: string;
+  detail: string;
+  cosmeticId: Exclude<CelebrationCosmeticId, "none">;
+}>;
+
+type CosmeticStorage = Pick<Storage, "getItem" | "setItem">;
+
+function browserCosmeticStorage(): CosmeticStorage | null {
+  try {
+    return typeof window === "undefined" ? null : window.localStorage;
+  } catch {
+    return null;
+  }
+}
+
+export function loadCelebrationCosmetic(
+  storage: CosmeticStorage | null = browserCosmeticStorage()
+): CelebrationCosmeticId {
+  try {
+    const stored = storage?.getItem(celebrationCosmeticStorageKey);
+    return celebrationCosmeticIds.includes(stored as CelebrationCosmeticId)
+      ? stored as CelebrationCosmeticId
+      : "none";
+  } catch {
+    return "none";
+  }
+}
+
+export function saveCelebrationCosmetic(
+  cosmeticId: CelebrationCosmeticId,
+  storage: CosmeticStorage | null = browserCosmeticStorage()
+) {
+  if (!celebrationCosmeticIds.includes(cosmeticId)) return false;
+  try {
+    storage?.setItem(celebrationCosmeticStorageKey, cosmeticId);
+    return storage !== null;
+  } catch {
+    return false;
+  }
+}
 
 export type CelebrationMilestone =
   | {

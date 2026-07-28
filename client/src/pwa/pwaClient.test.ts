@@ -14,7 +14,10 @@ const emptySnapshot: PwaClientSnapshot = {
   cacheState: "idle",
   completed: 0,
   total: 0,
-  updateAvailable: false
+  updateAvailable: false,
+  featureCacheState: "idle",
+  featureCompleted: 0,
+  featureTotal: 0
 };
 
 afterEach(() => {
@@ -58,6 +61,11 @@ describe("PWA client", () => {
       completed: -1,
       total: "ten"
     })).toMatchObject({ completed: 0, total: 0 });
+    expect(reducePwaWorkerMessage(emptySnapshot, {
+      type: "PWA_FEATURE_CACHE_PROGRESS",
+      completed: 2,
+      total: 6
+    })).toMatchObject({ featureCacheState: "preparing", featureCompleted: 2, featureTotal: 6 });
   });
 
   it("registers under the deployed subpath without using the HTTP cache", async () => {

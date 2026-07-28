@@ -2,7 +2,11 @@ import react from "@vitejs/plugin-react";
 import { createHash } from "node:crypto";
 import type { Plugin, Rollup } from "vite";
 import { defineConfig } from "vitest/config";
-import { createPwaServiceWorkerSource, resolvePwaPrecachePaths } from "./src/pwa/serviceWorkerSource";
+import {
+  createPwaServiceWorkerSource,
+  resolvePwaFeaturePrecachePaths,
+  resolvePwaPrecachePaths
+} from "./src/pwa/serviceWorkerSource";
 
 function outputFingerprint(output: Rollup.OutputAsset | Rollup.OutputChunk): string {
   if (output.type === "chunk") return output.code;
@@ -22,10 +26,11 @@ function pwaServiceWorkerPlugin(): Plugin {
       });
       const version = process.env.GITHUB_SHA?.slice(0, 12) ?? fingerprint.digest("hex").slice(0, 12);
       const precachePaths = resolvePwaPrecachePaths(outputs.map((output) => output.fileName));
+      const featurePaths = resolvePwaFeaturePrecachePaths(outputs.map((output) => output.fileName));
       this.emitFile({
         type: "asset",
         fileName: "service-worker.js",
-        source: createPwaServiceWorkerSource(version, precachePaths)
+        source: createPwaServiceWorkerSource(version, precachePaths, featurePaths)
       });
     }
   };

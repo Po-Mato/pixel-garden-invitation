@@ -3,8 +3,10 @@ import { gardenWorld } from "./world";
 import { allCelebrationCollectibles } from "./celebrationCollectibles";
 import {
   celebrationKindRewardProgress,
+  loadCelebrationCosmetic,
   celebrationRewardProgress,
-  newlyUnlockedCelebrationMilestones
+  newlyUnlockedCelebrationMilestones,
+  saveCelebrationCosmetic
 } from "./celebrationReward";
 
 describe("celebrationReward", () => {
@@ -40,5 +42,16 @@ describe("celebrationReward", () => {
       expect.objectContaining({ id: "zone:home", type: "zone" })
     ]));
     expect(newlyUnlockedCelebrationMilestones(next, next, items, gardenWorld.zones)).toEqual([]);
+  });
+
+  it("persists the selected unlocked cosmetic", () => {
+    const storage = {
+      value: null as string | null,
+      getItem: () => storage.value,
+      setItem: (_key: string, value: string) => { storage.value = value; }
+    };
+    expect(loadCelebrationCosmetic(storage)).toBe("none");
+    expect(saveCelebrationCosmetic("starlight-aura", storage)).toBe(true);
+    expect(loadCelebrationCosmetic(storage)).toBe("starlight-aura");
   });
 });

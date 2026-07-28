@@ -39,7 +39,7 @@ export type RoomGuest = GuestProfile & PositionState & {
 };
 
 export type ClientMessage =
-  | { type: "join"; nickname: string; appearance: CharacterAppearance; zoneId: WorldZoneId }
+  | { type: "join"; nickname: string; appearance: CharacterAppearance; zoneId: WorldZoneId; resumeId?: string }
   | { type: "move"; x: number; y: number; direction: Direction; moving: boolean; seq: number; zoneId: WorldZoneId }
   | { type: "react"; reaction: GuestReaction }
   | { type: "companion_invite"; targetGuestId: string }

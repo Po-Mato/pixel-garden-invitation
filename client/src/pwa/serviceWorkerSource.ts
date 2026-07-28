@@ -28,20 +28,36 @@ function relativeAssetPath(fileName: string): string {
 }
 
 const adminOnlyBundlePattern = /(?:AdminPage|AdminNotificationInbox|papaparse|inviteLinkAdminTokens|attendanceOperations)/i;
+const gameFeatureBundlePattern = /(?:WeddingPhotoBooth|WeddingPhotoAlbum|GameMemoryAlbum|CelebrationCollectionGuide|CompanionDestinationSheet|JourneyRouteSheet)/i;
 
 export function resolvePwaPrecachePaths(bundleFileNames: readonly string[]): string[] {
   const buildAssets = bundleFileNames
-    .filter((fileName) => /\.(?:css|js)$/i.test(fileName) && !adminOnlyBundlePattern.test(fileName))
+    .filter((fileName) => (
+      /\.(?:css|js)$/i.test(fileName)
+      && !adminOnlyBundlePattern.test(fileName)
+      && !gameFeatureBundlePattern.test(fileName)
+    ))
     .map(relativeAssetPath);
   return [...new Set([...pwaCorePrecachePaths, ...buildAssets])];
 }
 
-export function createPwaServiceWorkerSource(version: string, precachePaths: readonly string[]): string {
+export function resolvePwaFeaturePrecachePaths(bundleFileNames: readonly string[]): string[] {
+  return [...new Set(bundleFileNames
+    .filter((fileName) => /\.(?:css|js)$/i.test(fileName) && gameFeatureBundlePattern.test(fileName))
+    .map(relativeAssetPath))];
+}
+
+export function createPwaServiceWorkerSource(
+  version: string,
+  precachePaths: readonly string[],
+  featurePaths: readonly string[] = []
+): string {
   return `const VERSION = ${JSON.stringify(version)};
 const CACHE_PREFIX = "wedding-garden";
 const PRECACHE_NAME = \`${"${CACHE_PREFIX}"}-precache-${"${VERSION}"}\`;
 const RUNTIME_NAME = \`${"${CACHE_PREFIX}"}-runtime-${"${VERSION}"}\`;
 const PRECACHE_URLS = ${JSON.stringify(precachePaths)};
+const FEATURE_URLS = ${JSON.stringify(featurePaths)};
 const RUNTIME_LIMIT = 120;
 
 function scopedUrl(path) {
@@ -91,9 +107,44 @@ async function prepareOfflineCache() {
   await broadcast({ type: "PWA_CACHE_READY", total: PRECACHE_URLS.length });
 }
 
+async function prepareFeatureCache() {
+  const cache = await caches.open(PRECACHE_NAME);
+  let completed = 0;
+  let failed = 0;
+  await broadcast({ type: "PWA_FEATURE_CACHE_PROGRESS", completed, total: FEATURE_URLS.length });
+  for (const path of FEATURE_URLS) {
+    const request = new Request(scopedUrl(path), { cache: "reload" });
+    try {
+      const response = await fetch(request);
+      if (!response.ok) throw new Error(\`HTTP ${"${response.status}"}\`);
+      await cache.put(request, response);
+      completed += 1;
+      await broadcast({ type: "PWA_FEATURE_CACHE_PROGRESS", completed, total: FEATURE_URLS.length });
+    } catch {
+      failed += 1;
+    }
+  }
+  await broadcast({
+    type: failed > 0 ? "PWA_FEATURE_CACHE_ERROR" : "PWA_FEATURE_CACHE_READY",
+    completed,
+    total: FEATURE_URLS.length
+  });
+}
+
+async function reportFeatureCacheState() {
+  const matches = await Promise.all(FEATURE_URLS.map((path) => caches.match(scopedUrl(path))));
+  const completed = matches.filter(Boolean).length;
+  await broadcast({
+    type: completed === FEATURE_URLS.length ? "PWA_FEATURE_CACHE_READY" : "PWA_FEATURE_CACHE_ERROR",
+    completed,
+    total: FEATURE_URLS.length
+  });
+}
+
 self.addEventListener("install", (event) => {
   event.waitUntil((async () => {
     await prepareOfflineCache();
+    await prepareFeatureCache();
     if (!self.registration.active) await self.skipWaiting();
   })());
 });
@@ -107,6 +158,7 @@ self.addEventListener("activate", (event) => {
       .map((name) => caches.delete(name)));
     await self.clients.claim();
     await broadcast({ type: "PWA_CACHE_READY", total: PRECACHE_URLS.length });
+    await reportFeatureCacheState();
   })());
 });
 
@@ -158,6 +210,10 @@ self.addEventListener("fetch", (event) => {
 self.addEventListener("message", (event) => {
   if (event.data?.type === "SKIP_WAITING") {
     event.waitUntil(self.skipWaiting());
+    return;
+  }
+  if (event.data?.type === "CACHE_GAME_FEATURES") {
+    event.waitUntil(prepareFeatureCache());
     return;
   }
   if (event.data?.type !== "CACHE_URLS" || !Array.isArray(event.data.urls)) return;

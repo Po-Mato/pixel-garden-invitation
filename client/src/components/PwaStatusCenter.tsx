@@ -4,6 +4,7 @@ import {
   applyPwaUpdate,
   checkForPwaUpdate,
   getPwaClientSnapshot,
+  prepareOfflineGameFeatures,
   startPwaClient,
   subscribePwaClient,
   type PwaClientSnapshot
@@ -42,11 +43,13 @@ export function PwaStatusCenter({ playing, showInstall }: PwaStatusCenterProps) 
   const [online, setOnline] = useState(() => navigator.onLine !== false);
   const [recovered, setRecovered] = useState(false);
   const [prepared, setPrepared] = useState(false);
+  const [featuresPrepared, setFeaturesPrepared] = useState(false);
   const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [installDismissed, setInstallDismissed] = useState(installWasDismissed);
   const [applyingUpdate, setApplyingUpdate] = useState(false);
   const [updateError, setUpdateError] = useState(false);
   const previousCacheState = useRef(client.cacheState);
+  const previousFeatureCacheState = useRef(client.featureCacheState);
 
   useEffect(() => {
     const unsubscribe = subscribePwaClient(setClient);
@@ -113,6 +116,19 @@ export function PwaStatusCenter({ playing, showInstall }: PwaStatusCenterProps) 
     }
     previousCacheState.current = client.cacheState;
   }, [client.cacheState]);
+
+  useEffect(() => {
+    if (previousFeatureCacheState.current === "preparing" && client.featureCacheState === "ready") {
+      setFeaturesPrepared(true);
+    }
+    previousFeatureCacheState.current = client.featureCacheState;
+  }, [client.featureCacheState]);
+
+  useEffect(() => {
+    if (!featuresPrepared) return;
+    const timer = window.setTimeout(() => setFeaturesPrepared(false), 2600);
+    return () => window.clearTimeout(timer);
+  }, [featuresPrepared]);
 
   useEffect(() => {
     if (!prepared) return;
@@ -197,12 +213,34 @@ export function PwaStatusCenter({ playing, showInstall }: PwaStatusCenterProps) 
         <progress max={client.total} value={client.completed} aria-label={`오프라인 준비 ${percent}%`} />
       </>
     );
+  } else if (playing && client.featureCacheState === "error") {
+    tone = "error";
+    content = (
+      <>
+        <CloudOff aria-hidden="true" />
+        <span><strong>게임 기능 일부가 오프라인 준비 전이에요</strong><small>현재 화면은 계속 이용할 수 있어요</small></span>
+        <button type="button" onClick={prepareOfflineGameFeatures}>다시 준비</button>
+      </>
+    );
+  } else if (playing && client.featureCacheState === "preparing" && client.featureTotal > 0) {
+    tone = "preparing";
+    const percent = Math.round((client.featureCompleted / client.featureTotal) * 100);
+    content = (
+      <>
+        <div className="pwa-status__icon pwa-status__icon--spinner" aria-hidden="true"><LoaderCircle /></div>
+        <span><strong>게임 기능 오프라인 준비 중</strong><small>{percent}% · 사진·수집·동행 기능</small></span>
+        <progress max={client.featureTotal} value={client.featureCompleted} aria-label={`게임 기능 오프라인 준비 ${percent}%`} />
+      </>
+    );
   } else if (recovered) {
     tone = "online";
     content = <><Wifi aria-hidden="true" /><span><strong>연결이 복구됐어요</strong><small>최신 내용을 확인할 수 있어요</small></span></>;
   } else if (prepared) {
     tone = "online";
     content = <><Wifi aria-hidden="true" /><span><strong>오프라인 준비 완료</strong><small>핵심 초대장을 저장했어요</small></span></>;
+  } else if (playing && featuresPrepared) {
+    tone = "online";
+    content = <><Wifi aria-hidden="true" /><span><strong>게임 기능 오프라인 준비 완료</strong><small>사진·수집·동행 화면도 저장했어요</small></span></>;
   } else if (showInstall && installPrompt && !installDismissed) {
     tone = "install";
     content = (

@@ -27,6 +27,12 @@ describe("GameMemoryAlbum", () => {
     expect(screen.getByRole("dialog", { name: "게임 추억 앨범" })).toHaveTextContent("획득 완료");
     expect(screen.getByText("하객과 동행")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "저장" })).toBeEnabled();
+    fireEvent.click(screen.getByRole("button", { name: "우표" }));
+    fireEvent.click(screen.getByRole("button", { name: "별빛 스티커" }));
+    fireEvent.click(screen.getByRole("button", { name: "고화질 2배" }));
+    expect(screen.getByLabelText("포토스트립 미리보기")).toHaveAttribute("data-frame", "postage");
+    expect(screen.getByRole("button", { name: "별빛 스티커" })).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByRole("button", { name: "고화질 2배" })).toHaveAttribute("aria-pressed", "true");
     fireEvent.click(screen.getByRole("button", { name: /포토존 사진/ }));
     expect(onOpenPhotoAlbum).toHaveBeenCalledOnce();
   });
