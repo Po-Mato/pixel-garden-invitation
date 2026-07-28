@@ -4,6 +4,7 @@ import { gardenWorld, getWorldZone, type WorldZone } from "./world";
 import {
   findNearestInteractionRoute,
   findNearestPortalRoute,
+  findNearestPortalRouteAvoidingPoints,
   findTilePath,
   findTilePathAvoidingPoints,
   getPathfindingCacheStats,
@@ -163,6 +164,22 @@ describe("portal tile pathfinding", () => {
     const route = findNearestPortalRoute(home, portal.entryTiles[2], portal);
 
     expect(route).toEqual({ entry: portal.entryTiles[2], path: [] });
+  });
+
+  it("혼잡한 포털의 빈 진입 타일로 우회한다", () => {
+    const home = getWorldZone(gardenWorld, "home");
+    const portal = home.portals[0];
+    const occupied = [portal.entryTiles[1], portal.entryTiles[2]];
+    const route = findNearestPortalRouteAvoidingPoints(home, home.spawn, portal, occupied);
+
+    expect(route?.entry).toEqual(portal.entryTiles[0]);
+    expect(route?.path.at(-1)).toEqual(portal.entryTiles[0]);
+  });
+
+  it("포털 진입 타일이 모두 차면 대기한다", () => {
+    const home = getWorldZone(gardenWorld, "home");
+    const portal = home.portals[0];
+    expect(findNearestPortalRouteAvoidingPoints(home, home.spawn, portal, portal.entryTiles)).toBeNull();
   });
 
   it("returns null when all three portal entry tiles are blocked", () => {

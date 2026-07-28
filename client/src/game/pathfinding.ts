@@ -246,6 +246,32 @@ export function findNearestPortalRoute(
   return routes[0] ?? null;
 }
 
+export function findNearestPortalRouteAvoidingPoints(
+  zone: WorldZone,
+  start: Point,
+  portal: WorldPortal,
+  occupiedPoints: readonly Point[]
+): PortalRoute | null {
+  const routes = portal.entryTiles
+    .filter((entry) => !isTileOccupied(entry, occupiedPoints))
+    .map((entry) => ({
+      entry,
+      path: findTilePathAvoidingPoints(zone, start, entry, occupiedPoints)
+    }))
+    .filter((candidate): candidate is PortalRoute => candidate.path !== null);
+
+  routes.sort((a, b) => {
+    const lengthDifference = a.path.length - b.path.length;
+    if (lengthDifference !== 0) return lengthDifference;
+
+    const aIsCenter = a.entry.x === portal.approach.x && a.entry.y === portal.approach.y;
+    const bIsCenter = b.entry.x === portal.approach.x && b.entry.y === portal.approach.y;
+    return Number(bIsCenter) - Number(aIsCenter);
+  });
+
+  return routes[0] ?? null;
+}
+
 export function findNearestInteractionRoute(
   zone: WorldZone,
   start: Point,

@@ -9,11 +9,16 @@ describe("PortalDestinationPreview", () => {
     const portal = home.portals[0];
     const destination = getWorldZone(gardenWorld, portal.to);
 
-    render(<PortalDestinationPreview portal={portal} destinationZone={destination} />);
+    render(<PortalDestinationPreview
+      portal={portal}
+      destinationZone={destination}
+      congestion={{ level: "busy", label: "우회 가능", openCount: 2, totalCount: 3, entries: [] }}
+    />);
 
     expect(screen.getByLabelText("동네로 나가기 다음 맵 미리보기")).toHaveTextContent("동네 거리");
     expect(screen.getByRole("img", { name: "동네 거리 도착 지점" }))
       .toContainElement(document.querySelector(".portal-destination-preview__arrival"));
     expect(screen.getByText("도착 타일")).toBeInTheDocument();
+    expect(screen.getByText(/현재 포털 우회 가능/)).toBeInTheDocument();
   });
 });

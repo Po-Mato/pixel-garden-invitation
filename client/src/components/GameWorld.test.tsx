@@ -975,6 +975,30 @@ describe("GameWorld", () => {
     });
   });
 
+  it("목적지 방문을 마치면 다음 행동과 연속 길 안내를 연결한다", () => {
+    render(<GameWorld profile={profile} />);
+    fireEvent.click(getDirectionsWorldSpot());
+    advanceInteractionRoute();
+    fireEvent.click(within(screen.getByRole("dialog", { name: "오시는 길" })).getByRole("button", { name: "닫기" }));
+
+    const nextAction = screen.getByLabelText("도착 후 다음 행동");
+    expect(nextAction).toHaveTextContent("오시는 길 완료");
+    expect(nextAction).toHaveTextContent("다음 · 웨딩 갤러리");
+    fireEvent.click(within(nextAction).getByRole("button", { name: /이어서 안내/ }));
+
+    expect(screen.getByRole("button", { name: "동네로 나가기" })).toHaveClass("world-portal--target");
+  });
+
+  it("예식이 임박하면 HUD에서 예식홀 최단 안내를 시작한다", () => {
+    vi.setSystemTime(new Date("2027-05-01T17:00:00+09:00"));
+    render(<GameWorld profile={profile} />);
+
+    expect(screen.getByText("예식까지 10분")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: /예식홀 최단 안내/ }));
+
+    expect(screen.getByRole("button", { name: "동네로 나가기" })).toHaveClass("world-portal--target");
+  });
+
   it("restores saved stamps without reopening the completion reward", () => {
     window.localStorage.setItem(journeyProgressStorageKey, JSON.stringify({
       version: 1,
@@ -2237,6 +2261,8 @@ describe("GameWorld", () => {
     expect(portal).toHaveAccessibleName("동네로 나가기");
     expect(effect).toHaveAttribute("aria-hidden", "true");
     expect(effect?.querySelectorAll(".world-portal__tile")).toHaveLength(3);
+    expect(portal).toHaveAttribute("data-congestion", "open");
+    expect(portal.querySelector(".world-portal__congestion")).toHaveTextContent("여유 3/3");
     expect(effect?.querySelector(".world-portal__beam")).not.toBeInTheDocument();
     expect(effect?.querySelector(".world-portal__particle")).not.toBeInTheDocument();
     expect(portal.querySelector(".world-portal__label")).toHaveTextContent("동네로 나가기");

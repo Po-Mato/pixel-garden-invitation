@@ -1,9 +1,11 @@
 import { ArrowRight, MapPinned } from "lucide-react";
+import type { PortalCongestion } from "../game/portalCongestion";
 import type { Point, Rect, WorldPortal, WorldZone } from "../game/world";
 
 type PortalDestinationPreviewProps = {
   portal: WorldPortal;
   destinationZone: WorldZone;
+  congestion?: PortalCongestion;
 };
 
 const previewWidth = 156;
@@ -38,7 +40,7 @@ function projectRect(rect: Rect, zone: WorldZone) {
   };
 }
 
-export function PortalDestinationPreview({ portal, destinationZone }: PortalDestinationPreviewProps) {
+export function PortalDestinationPreview({ portal, destinationZone, congestion }: PortalDestinationPreviewProps) {
   const arrival = projectPoint(portal.spawn, destinationZone);
 
   return (
@@ -79,7 +81,11 @@ export function PortalDestinationPreview({ portal, destinationZone }: PortalDest
             <path d="M 0 -12 V -6 M 0 6 V 12 M -12 0 H -6 M 6 0 H 12" />
           </g>
         </svg>
-        <span><MapPinned aria-hidden="true" /><strong>도착 타일</strong><small>{destinationZone.subtitle}</small></span>
+        <span>
+          <MapPinned aria-hidden="true" />
+          <strong>도착 타일</strong>
+          <small>{congestion ? `현재 포털 ${congestion.label} · 빈 진입 ${congestion.openCount}/${congestion.totalCount}\n` : ""}{destinationZone.subtitle}</small>
+        </span>
       </div>
     </aside>
   );
