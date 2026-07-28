@@ -391,8 +391,9 @@ describe("GameWorld", () => {
   it("starts walking to the recommended destination in the current map", () => {
     render(<GameWorld profile={profile} />);
 
-    expect(screen.getByText(/목적지 · 오시는 길 · .*타일/)).toBeInTheDocument();
-    expect(screen.getByTestId("minimap-destination-route")).toBeInTheDocument();
+    expect(screen.getByText("목적지 · 오시는 길")).toBeInTheDocument();
+    expect(screen.getByTestId("minimap-destination-route")).toHaveAttribute("data-route-kind", "preview");
+    expect(screen.getByTestId("minimap-route-progress")).toHaveTextContent("경로 미리보기");
     expect(screen.getByTestId("minimap-journey-marker")).toHaveClass("world-minimap__journey-marker--recommended");
 
     fireEvent.click(screen.getByRole("button", { name: "다음 목적지 오시는 길, 길 안내 시작" }));
@@ -406,6 +407,8 @@ describe("GameWorld", () => {
     expect(route.querySelector(".world-journey-route__outline")).toBeInTheDocument();
     expect(route.querySelector(".world-journey-route__path")).toBeInTheDocument();
     expect(route.querySelector('[data-surface="wood"]')).toBeInTheDocument();
+    expect(screen.getByTestId("minimap-destination-route")).toHaveAttribute("data-route-kind", "selected");
+    expect(screen.getByTestId("minimap-route-progress")).toHaveTextContent("이동 중");
     expect(screen.getByRole("button", { name: /현재 위치에서 경로 다시 찾기/ })).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: /현재 위치에서 경로 다시 찾기/ }));
     act(() => vi.advanceTimersByTime(0));
@@ -1538,6 +1541,9 @@ describe("GameWorld", () => {
     expect(screen.getByText("동네로 나가기까지 경로를 다시 찾았어요")).toBeInTheDocument();
     expect(screen.getByTestId("world-journey-route")).toHaveAttribute("data-route-kind", "selected");
     expect(screen.getByTestId("world-travel-progress")).toHaveTextContent(/타일 · 약 \d+초/);
+    expect(screen.getByTestId("minimap-route-progress")).toHaveTextContent(
+      screen.getByTestId("world-travel-progress").textContent ?? ""
+    );
     expect(screen.getByTestId("world-journey-route")).toHaveAttribute("data-route-recalculation", "1");
 
     finishCurrentRoute();

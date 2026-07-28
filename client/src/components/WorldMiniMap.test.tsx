@@ -81,6 +81,15 @@ describe("WorldMiniMap", () => {
         viewport={viewport}
         targetPortalId={null}
         destinationLabel="오시는 길"
+        routeActive
+        routeKind="selected"
+        routePoints={[
+          player,
+          { x: 285, y: 525 },
+          { x: 255, y: 525 },
+          { x: 255, y: 495 }
+        ]}
+        routeProgressLabel="3타일 · 약 1초"
         journeyMarkers={[{
           id: "directions",
           point: { x: 150, y: 225 },
@@ -93,7 +102,41 @@ describe("WorldMiniMap", () => {
     const minimap = container.querySelector(".world-minimap");
     expect(minimap).not.toBeNull();
     expect(within(minimap as HTMLElement).getByText("목적지 · 오시는 길")).toBeInTheDocument();
-    expect(within(minimap as HTMLElement).getByTestId("minimap-destination-route")).toBeInTheDocument();
+    expect(within(minimap as HTMLElement).getByTestId("minimap-route-progress")).toHaveTextContent("이동 중 · 3타일 · 약 1초");
+    const route = within(minimap as HTMLElement).getByTestId("minimap-destination-route");
+    expect(route).toHaveAttribute("data-route-active", "true");
+    expect(route).toHaveAttribute("data-route-kind", "selected");
+    expect(route.querySelector('[data-surface="wood"]')).toBeInTheDocument();
+    expect(route.querySelector(".world-minimap__route-outline")).toBeInTheDocument();
+    expect(route.querySelector(".world-minimap__route-path")).toBeInTheDocument();
     expect(within(minimap as HTMLElement).getByTestId("minimap-journey-marker")).toHaveClass("world-minimap__journey-marker--recommended");
+  });
+
+  it("splits the projected route when the map material changes", () => {
+    const zone = getWorldZone(gardenWorld, "neighborhood");
+    const viewport = { width: 390, height: 520 };
+    const player = { x: 450, y: 375 };
+    const { container } = render(
+      <WorldMiniMap
+        zone={zone}
+        player={player}
+        direction="right"
+        camera={computeCameraTransform({ player, viewport, bounds: zone.bounds, zoom: 1 })}
+        viewport={viewport}
+        targetPortalId={null}
+        routePoints={[
+          player,
+          { x: 480, y: 375 },
+          { x: 510, y: 375 },
+          { x: 540, y: 375 },
+          { x: 570, y: 375 }
+        ]}
+      />
+    );
+
+    const route = container.querySelector('[data-testid="minimap-destination-route"]');
+    expect(route).not.toBeNull();
+    expect([...route!.querySelectorAll("[data-surface]")].map((segment) => segment.getAttribute("data-surface")))
+      .toEqual(["asphalt", "concrete"]);
   });
 });

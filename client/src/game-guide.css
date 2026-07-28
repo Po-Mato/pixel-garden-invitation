@@ -820,12 +820,21 @@
   white-space: nowrap;
 }
 
-.world-minimap__destination-route {
-  stroke: #b84f66;
-  stroke-width: 2;
-  stroke-dasharray: 4 3;
-  vector-effect: non-scaling-stroke;
-  animation: minimap-destination-route 800ms linear infinite;
+.world-minimap__route-progress {
+  display: block;
+  width: 100%;
+  overflow: hidden;
+  color: #8f4456;
+  font-size: 7px;
+  font-weight: 900;
+  line-height: 1.15;
+  text-align: right;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.world-minimap__route-progress[data-route-kind="selected"] {
+  color: #2f705d;
 }
 
 .world-minimap__journey-marker--recommended circle {
@@ -837,12 +846,16 @@
 
 .world-minimap__journey-marker--recommended path { stroke: #9e344d; stroke-width: 1.6; }
 
-.world-journey-route {
+.world-journey-route,
+.world-minimap__route {
   --route-outline-color: #fff8dc;
   --route-journey-color: #d5576d;
   --route-selected-color: #468268;
   --route-journey-marker-fill: #fff19c;
   --route-selected-marker-fill: #dff5c8;
+}
+
+.world-journey-route {
   position: absolute;
   inset: 0;
   z-index: 900;
@@ -852,7 +865,8 @@
   pointer-events: none;
 }
 
-.world-journey-route [data-surface="wood"] {
+.world-journey-route [data-surface="wood"],
+.world-minimap__route [data-surface="wood"] {
   --route-outline-color: #fff5d6;
   --route-journey-color: #c84261;
   --route-selected-color: #2f806c;
@@ -860,7 +874,8 @@
   --route-selected-marker-fill: #dcf3c7;
 }
 
-.world-journey-route [data-surface="asphalt"] {
+.world-journey-route [data-surface="asphalt"],
+.world-minimap__route [data-surface="asphalt"] {
   --route-outline-color: #243139;
   --route-journey-color: #ffd166;
   --route-selected-color: #86e4ce;
@@ -868,7 +883,8 @@
   --route-selected-marker-fill: #29473f;
 }
 
-.world-journey-route [data-surface="concrete"] {
+.world-journey-route [data-surface="concrete"],
+.world-minimap__route [data-surface="concrete"] {
   --route-outline-color: #fffdf5;
   --route-journey-color: #b43855;
   --route-selected-color: #226f5b;
@@ -876,7 +892,8 @@
   --route-selected-marker-fill: #d6f0ce;
 }
 
-.world-journey-route [data-surface="metal"] {
+.world-journey-route [data-surface="metal"],
+.world-minimap__route [data-surface="metal"] {
   --route-outline-color: #26333d;
   --route-journey-color: #ff9679;
   --route-selected-color: #76dfcf;
@@ -884,7 +901,8 @@
   --route-selected-marker-fill: #2d4845;
 }
 
-.world-journey-route [data-surface="gravel"] {
+.world-journey-route [data-surface="gravel"],
+.world-minimap__route [data-surface="gravel"] {
   --route-outline-color: #fff4d8;
   --route-journey-color: #d1496d;
   --route-selected-color: #207a68;
@@ -892,7 +910,8 @@
   --route-selected-marker-fill: #d9f0c3;
 }
 
-.world-journey-route [data-surface="marble"] {
+.world-journey-route [data-surface="marble"],
+.world-minimap__route [data-surface="marble"] {
   --route-outline-color: #fffdf3;
   --route-journey-color: #a93457;
   --route-selected-color: #236e61;
@@ -900,7 +919,8 @@
   --route-selected-marker-fill: #d3ecc8;
 }
 
-.world-journey-route [data-surface="carpet"] {
+.world-journey-route [data-surface="carpet"],
+.world-minimap__route [data-surface="carpet"] {
   --route-outline-color: #fff6d9;
   --route-journey-color: #b9385c;
   --route-selected-color: #2d735d;
@@ -908,7 +928,8 @@
   --route-selected-marker-fill: #d9edc6;
 }
 
-.world-journey-route [data-surface="tile"] {
+.world-journey-route [data-surface="tile"],
+.world-minimap__route [data-surface="tile"] {
   --route-outline-color: #ffffff;
   --route-journey-color: #b13b59;
   --route-selected-color: #277362;
@@ -952,6 +973,44 @@
   stroke-linecap: round;
   stroke-linejoin: round;
   vector-effect: non-scaling-stroke;
+}
+
+.world-minimap__route {
+  opacity: 0.72;
+  transition: opacity 160ms ease-out;
+}
+
+.world-minimap__route[data-route-active="true"] {
+  opacity: 1;
+}
+
+.world-minimap__route-outline,
+.world-minimap__route-path {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 4 3;
+  vector-effect: non-scaling-stroke;
+}
+
+.world-minimap__route-outline {
+  stroke: var(--route-outline-color);
+  stroke-width: 4;
+  opacity: 0.92;
+}
+
+.world-minimap__route-path {
+  stroke: var(--route-journey-color);
+  stroke-width: 2;
+}
+
+.world-minimap__route[data-route-active="true"] .world-minimap__route-outline,
+.world-minimap__route[data-route-active="true"] .world-minimap__route-path {
+  animation: minimap-destination-route 800ms linear infinite;
+}
+
+.world-minimap__route[data-route-kind="selected"] .world-minimap__route-path {
+  stroke: var(--route-selected-color);
 }
 
 @keyframes game-guide-step {
@@ -1006,13 +1065,13 @@
 @media (prefers-reduced-motion: reduce) {
   .game-guide *,
   .world-journey-route polyline,
-  .world-minimap__destination-route,
+  .world-minimap__route polyline,
   .world-minimap__journey-marker--recommended circle { animation: none !important; }
 }
 
 html[data-reduce-motion="true"] .game-guide *,
 html[data-reduce-motion="true"] .world-journey-route polyline,
-html[data-reduce-motion="true"] .world-minimap__destination-route,
+html[data-reduce-motion="true"] .world-minimap__route polyline,
 html[data-reduce-motion="true"] .world-minimap__journey-marker--recommended circle {
   animation: none !important;
 }

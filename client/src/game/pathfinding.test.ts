@@ -46,6 +46,22 @@ describe("portal tile pathfinding", () => {
     }
   });
 
+  it("prefers the fewest turns among equally short open routes", () => {
+    const start = { x: 15, y: 15 };
+    const route = findTilePath(testZone([]), start, { x: 105, y: 105 });
+    const points = [start, ...(route ?? [])];
+    const directions = points.slice(1).map((point, index) => ({
+      x: Math.sign(point.x - points[index].x),
+      y: Math.sign(point.y - points[index].y)
+    }));
+    const turnCount = directions.slice(1).filter((direction, index) => (
+      direction.x !== directions[index].x || direction.y !== directions[index].y
+    )).length;
+
+    expect(route).toHaveLength(6);
+    expect(turnCount).toBe(1);
+  });
+
   it("returns null when a goal is fully sealed", () => {
     const zone = testZone([
       { x: 75, y: 0, width: 30, height: 30 },

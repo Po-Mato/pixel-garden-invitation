@@ -6,7 +6,10 @@ import {
   projectMiniMapPoint,
   projectMiniMapRect
 } from "../game/minimap";
+import { segmentJourneyRouteBySurface } from "../game/journeyRouteVisual";
 import { portalEntryRect, type Point, type WorldZone } from "../game/world";
+
+export type MiniMapRouteKind = "preview" | "journey" | "selected";
 
 type WorldMiniMapProps = {
   zone: WorldZone;
@@ -18,6 +21,10 @@ type WorldMiniMapProps = {
   journeyMarkers?: JourneyMiniMapMarker[];
   destinationLabel?: string | null;
   destinationPoint?: Point | null;
+  routeActive?: boolean;
+  routeKind?: MiniMapRouteKind;
+  routePoints?: Point[];
+  routeProgressLabel?: string | null;
 };
 
 export type JourneyMiniMapMarker = {
@@ -34,6 +41,8 @@ const directionVectors: Record<Direction, Point> = {
   right: { x: 1, y: 0 }
 };
 
+const miniMapPolylinePoints = (points: Point[]) => points.map((point) => `${point.x},${point.y}`).join(" ");
+
 export function WorldMiniMap({
   zone,
   player,
@@ -43,18 +52,24 @@ export function WorldMiniMap({
   targetPortalId,
   journeyMarkers = [],
   destinationLabel = null,
-  destinationPoint = null
+  destinationPoint = null,
+  routeActive = false,
+  routeKind = "preview",
+  routePoints = [],
+  routeProgressLabel = null
 }: WorldMiniMapProps) {
   const layout = createMiniMapLayout(zone.bounds);
   const playerPoint = projectMiniMapPoint(player, zone.bounds, layout);
   const viewportRect = computeMiniMapViewportRect({ bounds: zone.bounds, layout, viewport, camera });
   const directionVector = directionVectors[direction];
   const recommendedMarker = journeyMarkers.find((marker) => marker.recommended);
-  const recommendedPoint = destinationPoint
-    ? projectMiniMapPoint(destinationPoint, zone.bounds, layout)
-    : recommendedMarker
-      ? projectMiniMapPoint(recommendedMarker.point, zone.bounds, layout)
-    : null;
+  const routeDestination = destinationPoint ?? recommendedMarker?.point ?? null;
+  const effectiveRoutePoints = routePoints.length > 1
+    ? routePoints
+    : routeDestination
+      ? [player, routeDestination]
+      : [];
+  const routeSegments = segmentJourneyRouteBySurface(zone, effectiveRoutePoints);
 
   return (
     <aside
@@ -65,6 +80,15 @@ export function WorldMiniMap({
     >
       <span className="world-minimap__title">{zone.label}</span>
       {destinationLabel ? <span className="world-minimap__destination-label">목적지 · {destinationLabel}</span> : null}
+      {routeProgressLabel ? (
+        <span
+          className="world-minimap__route-progress"
+          data-testid="minimap-route-progress"
+          data-route-kind={routeKind}
+        >
+          {routeActive ? "이동 중" : "경로 미리보기"} · {routeProgressLabel}
+        </span>
+      ) : null}
       <svg
         className="world-minimap__canvas"
         width={layout.width}
@@ -117,15 +141,29 @@ export function WorldMiniMap({
             {...projectMiniMapRect(portalEntryRect(portal), zone.bounds, layout)}
           />
         ))}
-        {recommendedPoint ? (
-          <line
+        {routeSegments.length > 0 ? (
+          <g
             data-testid="minimap-destination-route"
-            className="world-minimap__destination-route"
-            x1={playerPoint.x}
-            y1={playerPoint.y}
-            x2={recommendedPoint.x}
-            y2={recommendedPoint.y}
-          />
+            className="world-minimap__route"
+            data-route-active={routeActive}
+            data-route-kind={routeKind}
+          >
+            {routeSegments.map((segment, index) => {
+              const points = segment.points.map((point) => projectMiniMapPoint(point, zone.bounds, layout));
+              return (
+                <g key={`${segment.surface}-${index}`} data-surface={segment.surface}>
+                  <polyline
+                    className="world-minimap__route-outline"
+                    points={miniMapPolylinePoints(points)}
+                  />
+                  <polyline
+                    className="world-minimap__route-path"
+                    points={miniMapPolylinePoints(points)}
+                  />
+                </g>
+              );
+            })}
+          </g>
         ) : null}
         {journeyMarkers.map((marker) => {
           const point = projectMiniMapPoint(marker.point, zone.bounds, layout);

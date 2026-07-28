@@ -12,6 +12,12 @@ export type JourneyRouteTurn = {
   point: Point;
   rotation: number;
   surface: FootstepSurface;
+  tileIndex: number;
+};
+
+export type JourneyRouteTurnOptions = {
+  maxMarkers?: number;
+  minimumTileGap?: number;
 };
 
 const directionRotation: Record<Direction, number> = {
@@ -71,21 +77,33 @@ export function segmentJourneyRouteBySurface(zone: WorldZone, points: Point[]): 
   return segments;
 }
 
-export function journeyRouteTurns(zone: WorldZone, points: Point[]): JourneyRouteTurn[] {
+export function journeyRouteTurns(
+  zone: WorldZone,
+  points: Point[],
+  options: JourneyRouteTurnOptions = {}
+): JourneyRouteTurn[] {
   const routePoints = distinctRoutePoints(points);
   const turns: JourneyRouteTurn[] = [];
+  const minimumTileGap = Math.max(1, Math.floor(options.minimumTileGap ?? 1));
+  const maxMarkers = Math.max(0, Math.floor(options.maxMarkers ?? Number.POSITIVE_INFINITY));
+  let lastAcceptedTileIndex = Number.NEGATIVE_INFINITY;
+  if (maxMarkers === 0) return turns;
 
   for (let index = 1; index < routePoints.length - 1; index += 1) {
     const incoming = routeDirection(routePoints[index - 1], routePoints[index]);
     const outgoing = routeDirection(routePoints[index], routePoints[index + 1]);
     if (!incoming || !outgoing || incoming === outgoing) continue;
+    if (index - lastAcceptedTileIndex < minimumTileGap) continue;
 
     turns.push({
       direction: outgoing,
       point: routePoints[index],
       rotation: directionRotation[outgoing],
-      surface: resolveFootstepSurface(zone, routePoints[index])
+      surface: resolveFootstepSurface(zone, routePoints[index]),
+      tileIndex: index
     });
+    lastAcceptedTileIndex = index;
+    if (turns.length >= maxMarkers) break;
   }
 
   return turns;

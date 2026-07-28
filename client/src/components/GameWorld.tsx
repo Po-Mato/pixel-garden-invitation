@@ -1648,7 +1648,11 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     ? [position, ...selectedTravelPath]
     : journeyRoutePoints;
   const journeyRouteSegments = segmentJourneyRouteBySurface(activeZone, selectedTravelRoutePoints);
-  const journeyRouteTurnMarkers = journeyRouteTurns(activeZone, selectedTravelRoutePoints);
+  const compactRouteMarkers = viewport.width <= 420 || devicePerformance.mode === "lite";
+  const journeyRouteTurnMarkers = journeyRouteTurns(activeZone, selectedTravelRoutePoints, {
+    minimumTileGap: compactRouteMarkers ? 2 : 1,
+    maxMarkers: compactRouteMarkers ? 5 : 8
+  });
   const journeyRouteStart = selectedTravelRoutePoints[0];
   const journeyRouteDestination = selectedTravelRoutePoints.at(-1);
   const journeyRouteDestinationSurface = resolveFootstepSurface(
@@ -1661,6 +1665,25 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   const directTravelProgress = directTravelActive
     ? navigationProgress(selectedTravelPath.length)
     : null;
+  const miniMapPreviewRoutePoints = journeyGuidance?.available && journeyGuidance.path.length > 0
+    ? [position, ...journeyGuidance.path]
+    : [];
+  const miniMapRoutePoints = selectedTravelRoutePoints.length > 1
+    ? selectedTravelRoutePoints
+    : miniMapPreviewRoutePoints;
+  const miniMapRouteActive = directTravelActive || Boolean(activeJourneyGuideId);
+  const miniMapRouteKind = directTravelActive
+    ? "selected" as const
+    : activeJourneyGuideId
+      ? "journey" as const
+      : "preview" as const;
+  const miniMapDestinationLabel = interactionIntent?.label
+    ?? portalIntent?.portal.label
+    ?? (target ? "선택한 위치" : recommendedCheckpoint?.label ?? null);
+  const miniMapRouteProgressLabel = directTravelProgress?.label
+    ?? (journeyGuidance?.available
+      ? journeyGuidance.tileCount === 0 ? "도착" : `${journeyGuidance.tileCount}타일 남음`
+      : null);
   const zoneRemoteGuests = remoteGuests.filter((guest) => guest.zoneId === activeZone.id);
   const visibleRemoteGuests = devicePerformance.mode === "lite"
     ? [...zoneRemoteGuests]
@@ -2102,8 +2125,12 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
             viewport={viewport}
             targetPortalId={portalIntent?.portal.id ?? journeyGuidance?.portalId ?? null}
             journeyMarkers={activeJourneyMarkers}
-            destinationLabel={recommendedCheckpoint ? `${recommendedCheckpoint.label} · ${journeyDistanceLabel}` : null}
+            destinationLabel={miniMapDestinationLabel}
             destinationPoint={journeyGuidance?.destinationPoint ?? null}
+            routeActive={miniMapRouteActive}
+            routeKind={miniMapRouteKind}
+            routePoints={miniMapRoutePoints}
+            routeProgressLabel={miniMapRouteProgressLabel}
           />
 
           <div className="world-control-dock" onClick={(event) => event.stopPropagation()}>

@@ -5,12 +5,18 @@ import type { Point, Rect, WorldPortal, WorldZone } from "./world";
 
 type GridPoint = { column: number; row: number };
 
+const axisAlignmentTieBreak = 0.001;
+
 export type PortalRoute = {
   entry: Point;
   path: Point[];
 };
 
 export type InteractionRoute = PortalRoute;
+
+function minimumTurnHeuristic(dx: number, dy: number): number {
+  return dx + dy + Math.min(dx, dy) * axisAlignmentTieBreak;
+}
 
 function toGridPoint(point: Point, zone: WorldZone): GridPoint | null {
   const safe = zone.cameraSafeBounds;
@@ -67,7 +73,10 @@ export function findTilePath(zone: WorldZone, start: Point, goal: Point): Point[
     }
   }
 
-  const finder = new PF.AStarFinder({ allowDiagonal: false });
+  const finder = new PF.AStarFinder({
+    allowDiagonal: false,
+    heuristic: minimumTurnHeuristic
+  });
   const result = finder.findPath(
     startGrid.column,
     startGrid.row,

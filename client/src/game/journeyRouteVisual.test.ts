@@ -32,4 +32,19 @@ describe("journey route visuals", () => {
       { point: { x: 150, y: 150 }, direction: "right", rotation: 0, surface: "wood" }
     ]);
   });
+
+  it("limits tightly clustered corner markers for a small viewport", () => {
+    const home = getWorldZone(gardenWorld, "home");
+    const turns = journeyRouteTurns(home, [
+      { x: 120, y: 120 },
+      { x: 150, y: 120 },
+      { x: 150, y: 150 },
+      { x: 180, y: 150 },
+      { x: 180, y: 180 },
+      { x: 210, y: 180 }
+    ], { minimumTileGap: 2, maxMarkers: 2 });
+
+    expect(turns.map((turn) => turn.tileIndex)).toEqual([1, 3]);
+    expect(turns.map((turn) => turn.direction)).toEqual(["down", "down"]);
+  });
 });
