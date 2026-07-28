@@ -240,7 +240,9 @@ export class GardenRoom {
       || parsed.type === "companion_reply"
       || parsed.type === "companion_stop"
       || parsed.type === "companion_destination"
+      || parsed.type === "companion_destination_request"
       || parsed.type === "companion_portal_ready"
+      || parsed.type === "companion_ping"
     ) {
       const now = Date.now();
       if (now - current.lastSocialAt < socialThrottleMs) return;
@@ -284,6 +286,31 @@ export class GardenRoom {
           guestNickname: current.guest.nickname,
           portalId: parsed.portalId,
           destinationZoneId: parsed.destinationZoneId,
+          zoneId: current.guest.zoneId
+        }));
+        return;
+      }
+
+      if (parsed.type === "companion_destination_request") {
+        const target = this.findGuestSocket(parsed.targetGuestId);
+        if (!target || target.attachment.guest.zoneId !== current.guest.zoneId) return;
+        target.socket.send(encode({
+          type: "companion_destination_requested",
+          guestId: current.guest.guestId,
+          guestNickname: current.guest.nickname,
+          zoneId: current.guest.zoneId
+        }));
+        return;
+      }
+
+      if (parsed.type === "companion_ping") {
+        const target = this.findGuestSocket(parsed.targetGuestId);
+        if (!target || target.attachment.guest.zoneId !== current.guest.zoneId) return;
+        target.socket.send(encode({
+          type: "companion_pinged",
+          guestId: current.guest.guestId,
+          guestNickname: current.guest.nickname,
+          ping: parsed.ping,
           zoneId: current.guest.zoneId
         }));
         return;

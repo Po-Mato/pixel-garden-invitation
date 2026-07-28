@@ -43,6 +43,8 @@ describe("WorldMiniMap", () => {
     expect(within(minimap).getByTestId("minimap-journey-marker")).toHaveClass("world-minimap__journey-marker--complete");
     expect(within(minimap).getByTestId("minimap-collectible-marker"))
       .toHaveAttribute("data-highlighted", "true");
+    expect(within(minimap).getByTestId("minimap-collectible-marker"))
+      .toHaveAttribute("data-shape", "petal");
     const portal = within(minimap).getByTestId("minimap-portal");
     expect(portalEntryRect(zone.portals[0])).toEqual({ x: 240, y: 90, width: 90, height: 30 });
     const projectedPortal = projectMiniMapRect(

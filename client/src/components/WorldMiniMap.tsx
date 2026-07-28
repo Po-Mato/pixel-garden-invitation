@@ -217,12 +217,19 @@ function MiniMapCanvas({
             key={marker.id}
             data-testid="minimap-collectible-marker"
             data-kind={marker.kind}
+            data-shape={marker.kind}
             data-highlighted={marker.highlighted || undefined}
             className="world-minimap__collectible-marker"
             transform={`translate(${point.x} ${point.y})`}
           >
             <circle r={marker.highlighted ? expanded ? 8 : 5.5 : expanded ? 5 : 3.5} />
-            <path d="M -2 0 L 0 -2 L 2 0 L 0 2 Z" />
+            {marker.kind === "petal" ? (
+              <path d="M 0 -3 C 2 -3 2.8 -1.2 1.2 0 C 2.8 1.2 2 3 0 3 C -2 3 -2.8 1.2 -1.2 0 C -2.8 -1.2 -2 -3 0 -3 Z" />
+            ) : marker.kind === "ribbon" ? (
+              <path d="M -3 -2 L 0 0 L -3 2 Z M 3 -2 L 0 0 L 3 2 Z M -1 -1 L 1 -1 L 1 1 L -1 1 Z" />
+            ) : (
+              <path d="M 0 -3 L 0.8 -1 L 3 -1 L 1.2 0.5 L 2 3 L 0 1.5 L -2 3 L -1.2 0.5 L -3 -1 L -0.8 -1 Z" />
+            )}
           </g>
         );
       })}

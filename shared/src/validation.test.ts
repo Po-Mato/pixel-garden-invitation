@@ -95,6 +95,12 @@ describe("parseClientMessage", () => {
       .toEqual({ type: "companion_destination", targetGuestId: "guest_two", portalId: "home-to-neighborhood", destinationZoneId: "neighborhood" });
     expect(parseClientMessage({ type: "companion_portal_ready", targetGuestId: "guest_two", portalId: "home-to-neighborhood", destinationZoneId: "neighborhood" }))
       .toEqual({ type: "companion_portal_ready", targetGuestId: "guest_two", portalId: "home-to-neighborhood", destinationZoneId: "neighborhood" });
+    expect(parseClientMessage({ type: "companion_destination_request", targetGuestId: "guest_two" }))
+      .toEqual({ type: "companion_destination_request", targetGuestId: "guest_two" });
+    expect(parseClientMessage({ type: "companion_ping", targetGuestId: "guest_two", ping: "here" }))
+      .toEqual({ type: "companion_ping", targetGuestId: "guest_two", ping: "here" });
+    expect(parseClientMessage({ type: "companion_ping", targetGuestId: "guest_two", ping: "unknown" }))
+      .toBeNull();
     expect(parseClientMessage({ type: "companion_reply", requesterGuestId: "", accepted: true })).toBeNull();
     expect(parseClientMessage({ type: "companion_reply", requesterGuestId: "guest_one", accepted: "yes" })).toBeNull();
     expect(parseClientMessage({ type: "companion_destination", targetGuestId: "guest_two", portalId: "", destinationZoneId: "neighborhood" })).toBeNull();

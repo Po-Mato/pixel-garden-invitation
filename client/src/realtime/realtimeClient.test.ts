@@ -185,6 +185,17 @@ describe("connectRealtime", () => {
       destinationZoneId: "neighborhood",
       zoneId: "home"
     }, {
+      type: "companion_destination_requested",
+      guestId: "guest_invited",
+      guestNickname: "수락 하객",
+      zoneId: "home"
+    }, {
+      type: "companion_pinged",
+      guestId: "guest_invited",
+      guestNickname: "수락 하객",
+      ping: "here",
+      zoneId: "home"
+    }, {
       type: "companion_portal_ready",
       guestId: "guest_invited",
       portalId: "home-to-neighborhood",

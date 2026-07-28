@@ -1,5 +1,13 @@
 import { describe, expect, it, vi } from "vitest";
-import { gameMemoryKeepsakeFilename, shareGameMemoryKeepsake, type GameMemoryKeepsakeData } from "./gameMemoryKeepsake";
+import {
+  gameMemoryKeepsakeFilename,
+  loadGameMemoryKeepsakeOptions,
+  normalizeGameMemoryKeepsakeOptions,
+  orderGameMemoryKeepsakePhotos,
+  saveGameMemoryKeepsakeOptions,
+  shareGameMemoryKeepsake,
+  type GameMemoryKeepsakeData
+} from "./gameMemoryKeepsake";
 
 const data = {
   album: { version: 1 as const, entries: [] },
@@ -29,5 +37,47 @@ describe("gameMemoryKeepsake", () => {
     };
     await expect(shareGameMemoryKeepsake(new Blob(["memory"]), data, environment)).resolves.toBe("shared");
     expect(share).toHaveBeenCalledWith(expect.objectContaining({ title: "이건희 · 이승재 웨딩 가든 추억" }));
+  });
+
+  it("normalizes and persists editable layout options", () => {
+    const storage = {
+      value: "",
+      getItem: vi.fn(() => storage.value),
+      setItem: vi.fn((_key: string, value: string) => { storage.value = value; })
+    };
+    const options = normalizeGameMemoryKeepsakeOptions({
+      layout: "film",
+      message: "  우리들의 정원 산책  ",
+      photoOrder: ["ceremony-aisle", "ceremony-aisle", "lobby-photo-wall"]
+    });
+    expect(options).toEqual({
+      layout: "film",
+      message: "우리들의 정원 산책",
+      photoOrder: ["ceremony-aisle", "lobby-photo-wall"]
+    });
+    expect(saveGameMemoryKeepsakeOptions(options, storage)).toBe(true);
+    expect(loadGameMemoryKeepsakeOptions(storage)).toEqual(options);
+  });
+
+  it("orders captured photos without dropping unspecified photos", () => {
+    const photo = (photoSpotId: "lobby-photo-wall" | "bridal-flower-wall" | "ceremony-aisle") => ({
+      version: 1 as const,
+      dataUrl: `data:${photoSpotId}`,
+      photoSpotId,
+      zoneId: "lobby" as const,
+      spotLabel: photoSpotId,
+      guestName: "하객",
+      pose: "wave" as const,
+      createdAt: 1
+    });
+    const ordered = orderGameMemoryKeepsakePhotos({
+      version: 2,
+      photos: [photo("lobby-photo-wall"), photo("bridal-flower-wall"), photo("ceremony-aisle")]
+    }, ["ceremony-aisle", "lobby-photo-wall"]);
+    expect(ordered.map(({ photoSpotId }) => photoSpotId)).toEqual([
+      "ceremony-aisle",
+      "lobby-photo-wall",
+      "bridal-flower-wall"
+    ]);
   });
 });

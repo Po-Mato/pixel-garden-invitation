@@ -1,4 +1,5 @@
-import { MapPinned, UserPlus, UsersRound, X } from "lucide-react";
+import { Hand, Heart, LocateFixed, MapPinned, Route, UserPlus, UsersRound, X } from "lucide-react";
+import type { CompanionPing, WorldZoneId } from "@wedding-game/shared";
 import type { CompanionCandidate } from "../game/companionMode";
 
 type CompanionDockProps = {
@@ -11,6 +12,14 @@ type CompanionDockProps = {
   onOpenDestination?: () => void;
   sharedDestinationLabel?: string | null;
   waitingAtPortal?: boolean;
+  recentPing?: { ping: CompanionPing; nickname: string } | null;
+  destinationRequested?: boolean;
+  rejoinZoneId?: WorldZoneId | null;
+  rejoinZoneLabel?: string | null;
+  onPing?: (ping: CompanionPing) => void;
+  onRequestDestination?: () => void;
+  onAcceptDestinationRequest?: () => void;
+  onRejoin?: () => void;
 };
 
 export function CompanionDock({
@@ -22,7 +31,15 @@ export function CompanionDock({
   onStop,
   onOpenDestination,
   sharedDestinationLabel = null,
-  waitingAtPortal = false
+  waitingAtPortal = false,
+  recentPing = null,
+  destinationRequested = false,
+  rejoinZoneId = null,
+  rejoinZoneLabel = null,
+  onPing,
+  onRequestDestination,
+  onAcceptDestinationRequest,
+  onRejoin
 }: CompanionDockProps) {
   if (candidates.length === 0 && !activeGuestId && !pendingGuestId) return null;
   const active = candidates.find(({ guestId }) => guestId === activeGuestId) ?? null;
@@ -46,6 +63,15 @@ export function CompanionDock({
               aria-label="동행 공동 목적지 선택"
               onClick={(event) => { event.stopPropagation(); onOpenDestination(); }}
             ><MapPinned aria-hidden="true" /></button>
+          ) : null}
+          {role === "follower" && onRequestDestination ? (
+            <button
+              type="button"
+              className="world-companion-dock__destination"
+              aria-label="동행 목적지 변경 요청"
+              title="목적지 변경 요청"
+              onClick={(event) => { event.stopPropagation(); onRequestDestination(); }}
+            ><Route aria-hidden="true" /></button>
           ) : null}
           <button
             type="button"
@@ -71,11 +97,55 @@ export function CompanionDock({
           ))}
         </div>
       )}
+      {active && onPing ? (
+        <div className="world-companion-dock__pings" role="group" aria-label="동행 핑 보내기">
+          {([
+            ["wait", "잠시만요", Hand],
+            ["here", "여기예요", LocateFixed],
+            ["cheer", "좋아요", Heart]
+          ] as const).map(([ping, label, Icon]) => (
+            <button
+              key={ping}
+              type="button"
+              aria-label={label}
+              title={label}
+              onClick={(event) => { event.stopPropagation(); onPing(ping); }}
+            ><Icon aria-hidden="true" /></button>
+          ))}
+        </div>
+      ) : null}
+      {destinationRequested && onAcceptDestinationRequest ? (
+        <button
+          type="button"
+          className="world-companion-dock__request"
+          onClick={(event) => { event.stopPropagation(); onAcceptDestinationRequest(); }}
+        >
+          <MapPinned aria-hidden="true" />요청받은 목적지 고르기
+        </button>
+      ) : null}
+      {rejoinZoneId && onRejoin ? (
+        <button
+          type="button"
+          className="world-companion-dock__rejoin"
+          onClick={(event) => { event.stopPropagation(); onRejoin(); }}
+        >
+          <Route aria-hidden="true" />{rejoinZoneLabel ?? "다른 구역"}로 재합류
+        </button>
+      ) : null}
+      {recentPing ? (
+        <p className="world-companion-dock__ping-message" role="status">
+          {recentPing.nickname}님 · {recentPing.ping === "wait"
+            ? "잠시만요"
+            : recentPing.ping === "here" ? "여기예요" : "좋아요"}
+        </p>
+      ) : null}
       {active && role ? <small>{waitingAtPortal
         ? "포털에서 서로의 도착을 기다려요"
         : sharedDestinationLabel
           ? `함께 ${sharedDestinationLabel}(으)로 이동 중`
-          : role === "follower" ? "상대의 걸음을 따라가요" : "상대가 내 걸음을 따라와요"}</small> : null}
+          : rejoinZoneId
+            ? "서로 다른 구역에 있어 재합류 안내를 시작할 수 있어요"
+            : role === "follower" ? "상대의 걸음을 따라가요" : "상대가 내 걸음을 따라와요"}</small> : null}
     </aside>
   );
 }

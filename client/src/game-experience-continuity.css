@@ -236,6 +236,26 @@
 .world-companion-dock > .world-companion-dock__actions { position: absolute; top: 2px; right: 2px; display: flex; gap: 1px; margin: 0; overflow: visible; }
 .world-companion-dock > .world-companion-dock__actions button { position: static; display: grid; width: 25px; height: 25px; place-items: center; padding: 5px; border: 0; background: transparent; }
 .world-companion-dock > .world-companion-dock__actions .world-companion-dock__destination { color: #4e7259; }
+.world-companion-dock > .world-companion-dock__pings { display: grid; grid-template-columns: repeat(3, 30px); gap: 4px; overflow: visible; }
+.world-companion-dock > .world-companion-dock__pings button { display: grid; width: 30px; min-height: 28px; place-items: center; padding: 4px; }
+.world-companion-dock > :is(.world-companion-dock__request, .world-companion-dock__rejoin) {
+  display: inline-flex;
+  width: 100%;
+  min-height: 30px;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin-top: 5px;
+  padding: 5px 7px;
+  color: #fff;
+  background: #5f7c68;
+  border: 0;
+  border-radius: 4px;
+  font-size: 9px;
+  font-weight: 900;
+}
+.world-companion-dock > .world-companion-dock__rejoin { background: #8a6171; }
+.world-companion-dock__ping-message { margin: 5px 0 0; padding: 5px 7px; color: #654957; background: #fff3d8; border-left: 3px solid #ae6b7d; font-size: 9px; font-weight: 800; }
 
 .companion-destination-sheet,
 .celebration-collection-guide {
@@ -291,6 +311,19 @@
 .world-minimap__collectible-marker[data-kind="ribbon"] circle { stroke: #68826c; }
 .world-minimap__collectible-marker[data-kind="star"] circle { stroke: #9b7c3d; }
 .world-minimap__collectible-marker[data-highlighted="true"] circle { fill: #fff2a6; stroke-width: 2.5; }
+.game-world[data-collection-rewards~="star"] .world-minimap__collectible-marker circle {
+  filter: drop-shadow(0 0 2px rgba(255, 226, 99, 0.95));
+  stroke-width: 2;
+}
+.game-world[data-collection-rewards~="ribbon"] .world-companion-dock {
+  border-style: double;
+  border-width: 3px;
+}
+.game-world[data-collection-rewards~="petal"] .world-player > span::before {
+  margin-right: 3px;
+  content: "✿";
+  color: #b9647b;
+}
 
 .companion-invitation {
   position: absolute;
@@ -350,6 +383,41 @@
 .celebration-reward-notice__petals svg:nth-child(3n + 1) { left: 12%; top: 8%; }
 .celebration-reward-notice__petals svg:nth-child(3n + 2) { right: 18%; bottom: 5%; }
 .celebration-reward-notice__petals svg:nth-child(3n) { left: 54%; top: 18%; }
+
+.celebration-milestone-notice {
+  position: fixed;
+  z-index: 26000;
+  top: max(84px, env(safe-area-inset-top));
+  left: 50%;
+  display: grid;
+  width: min(390px, calc(100% - 24px));
+  grid-template-columns: 42px minmax(0, 1fr) 32px;
+  align-items: center;
+  gap: 9px;
+  padding: 12px;
+  transform: translateX(-50%);
+  color: #443d39;
+  background: rgba(255, 251, 234, 0.97);
+  border: 2px solid #b56d80;
+  border-radius: 6px;
+  box-shadow: 0 12px 30px rgba(55, 38, 42, 0.24);
+  overflow: hidden;
+}
+.celebration-milestone-notice[data-kind="ribbon"] { background: rgba(242, 250, 237, 0.98); border-color: #65866d; }
+.celebration-milestone-notice[data-kind="star"] { background: rgba(255, 248, 214, 0.98); border-color: #a47a35; }
+.celebration-milestone-notice[data-type="zone"] { box-shadow: 0 0 0 4px rgba(255, 237, 159, 0.4), 0 12px 30px rgba(55, 38, 42, 0.24); }
+.celebration-milestone-notice > div { position: absolute; inset: 0; pointer-events: none; }
+.celebration-milestone-notice > div svg { position: absolute; width: 15px; opacity: 0.16; }
+.celebration-milestone-notice > div svg:nth-child(2n + 1) { top: 8%; left: calc(var(--milestone-x, 1) * 14%); }
+.celebration-milestone-notice > div svg:nth-child(2n) { right: 12%; bottom: 8%; }
+.celebration-milestone-notice > svg { width: 36px; color: #ad6477; }
+.celebration-milestone-notice[data-kind="ribbon"] > svg { color: #5e8067; }
+.celebration-milestone-notice[data-kind="star"] > svg { color: #9a702c; }
+.celebration-milestone-notice p { display: grid; gap: 2px; margin: 0; }
+.celebration-milestone-notice small { font-size: 8px; font-weight: 900; }
+.celebration-milestone-notice strong { font-size: 13px; }
+.celebration-milestone-notice span { font-size: 9px; }
+.celebration-milestone-notice > button { display: grid; width: 32px; height: 32px; place-items: center; padding: 6px; background: transparent; border: 0; }
 
 .world-cooperative-celebration {
   position: absolute;
@@ -412,11 +480,36 @@
 .game-memory-album__keepsake > div:first-child { display: grid; gap: 3px; }
 .game-memory-album__keepsake strong { font-size: 13px; }
 .game-memory-album__keepsake span { color: #687165; font-size: 9px; }
-.game-memory-album__keepsake > div:nth-child(2) { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
-.game-memory-album__keepsake button { display: inline-flex; min-height: 40px; align-items: center; justify-content: center; gap: 5px; padding: 8px; color: #fff; background: #647f69; border: 0; border-radius: 4px; font-size: 10px; font-weight: 900; }
-.game-memory-album__keepsake button:last-child { background: #a45f73; }
+.game-memory-album__keepsake > .game-memory-album__editor { display: grid; gap: 11px; }
+.game-memory-album__preview { display: grid; width: min(220px, 100%); aspect-ratio: 9 / 14; justify-self: center; align-content: start; gap: 8px; padding: 14px 12px; color: #463d3a; background: #fffaf3; border-top: 5px solid #9e6974; border-bottom: 5px solid #657e6a; box-shadow: 0 4px 14px rgba(58, 42, 38, 0.16); }
+.game-memory-album__preview[data-layout="garden"] { background: #f8f3e8; border-top-color: #6f8f76; border-bottom-color: #bd727f; }
+.game-memory-album__preview[data-layout="film"] { color: #fffaf0; background: #252523; border-top-color: #c9a56d; border-bottom-color: #8f5f68; }
+.game-memory-album__preview > small { overflow: hidden; font-family: serif; font-size: 11px; font-weight: 900; text-align: center; text-overflow: ellipsis; white-space: nowrap; }
+.game-memory-album__preview > div { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; }
+.game-memory-album__preview :is(img, div > span) { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; background: #e9dfd3; border: 2px solid #fff; }
+.game-memory-album__preview div > span { display: grid; place-items: center; }
+.game-memory-album__preview div > span svg { width: 16px; }
+.game-memory-album__preview > strong { margin-top: auto; font-family: serif; font-size: 10px; text-align: center; }
+.game-memory-album__editor fieldset { display: grid; gap: 5px; margin: 0; padding: 0; border: 0; }
+.game-memory-album__editor legend,
+.game-memory-album__editor > label > span { display: flex; align-items: center; gap: 5px; margin-bottom: 5px; color: #5e5752; font-size: 10px; font-weight: 900; }
+.game-memory-album__editor legend svg,
+.game-memory-album__editor > label svg { width: 15px; }
+.game-memory-album__layout-options { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid #8d7b73; }
+.game-memory-album__layout-options button { min-height: 38px; color: #5a4f4a; background: #fff; border: 0; border-right: 1px solid #c8bcb2; font-size: 9px; font-weight: 900; }
+.game-memory-album__layout-options button:last-child { border-right: 0; }
+.game-memory-album__layout-options button[aria-pressed="true"] { color: #fff; background: #637f69; }
+.game-memory-album__editor input { width: 100%; min-height: 42px; padding: 8px 9px; color: #463d3a; background: #fff; border: 1px solid #a8998e; font-size: 11px; }
+.game-memory-album__photo-order { display: grid; gap: 5px; margin: 0; padding: 0; list-style: none; }
+.game-memory-album__photo-order li { display: grid; grid-template-columns: 34px minmax(0, 1fr) 32px 32px; align-items: center; gap: 5px; }
+.game-memory-album__photo-order img { width: 34px; height: 42px; object-fit: cover; }
+.game-memory-album__photo-order li > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.game-memory-album__photo-order button { display: grid; width: 32px; height: 32px; place-items: center; padding: 6px; color: #5c655d; background: #fff; border: 1px solid #acb5a9; }
+.game-memory-album__keepsake > .game-memory-album__keepsake-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+.game-memory-album__keepsake-actions button { display: inline-flex; min-height: 40px; align-items: center; justify-content: center; gap: 5px; padding: 8px; color: #fff; background: #647f69; border: 0; border-radius: 4px; font-size: 10px; font-weight: 900; }
+.game-memory-album__keepsake-actions button:last-child { background: #a45f73; }
 .game-memory-album__keepsake button svg { width: 15px; }
-.game-memory-album__keepsake button:disabled { background: #aaa49c; }
+.game-memory-album__keepsake button:disabled { opacity: 0.48; }
 .game-memory-album__keepsake p { margin: 0; color: #6e665f; font-size: 9px; text-align: center; }
 .game-memory-album__timeline { padding: 16px 0 24px; }
 .game-memory-album__timeline h3 { margin: 0 0 9px; font-size: 14px; }
@@ -427,6 +520,33 @@
 .game-memory-album__timeline article span { overflow: hidden; font-size: 9px; text-overflow: ellipsis; white-space: nowrap; }
 .game-memory-album__timeline time { color: #8a7770; font-size: 8px; }
 .game-memory-album__timeline > p { padding: 22px 8px; color: #7d6d66; text-align: center; font-size: 10px; }
+
+.game-feature-loading {
+  position: fixed;
+  z-index: 28000;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 9px;
+  color: #4f5e52;
+  background: rgba(248, 245, 236, 0.94);
+}
+.game-feature-loading svg { width: 28px; animation: game-feature-loading-spin 900ms linear infinite; }
+.game-feature-loading span { font-size: 12px; font-weight: 900; }
+@keyframes game-feature-loading-spin { to { transform: rotate(360deg); } }
+
+.view-settings-sheet__segments--four { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.view-settings-sheet__segments--four button:nth-child(2) { border-right: 0; }
+.view-settings-sheet__segments--four button:nth-child(-n + 2) { border-bottom: 1px solid #a99aa0; }
+
+html[data-color-vision="deuteranopia"] :is(.world-collectible[data-kind="petal"], .world-minimap__collectible-marker[data-kind="petal"]) { color: #8c4f96; }
+html[data-color-vision="deuteranopia"] .world-collectible[data-kind="ribbon"] { color: #176f8a; border-style: dashed; }
+html[data-color-vision="protanopia"] .world-collectible[data-kind="petal"] { color: #7a4fa3; border-style: double; }
+html[data-color-vision="protanopia"] .world-collectible[data-kind="ribbon"] { color: #23758a; border-style: dashed; }
+html[data-color-vision="tritanopia"] .world-collectible[data-kind="star"] { color: #b34867; border-style: dotted; }
+html[data-color-vision] .world-minimap__collectible-marker[data-kind="ribbon"] path { fill: #28758c; }
+html[data-color-vision] .world-minimap__collectible-marker[data-kind="star"] path { fill: #92517d; }
 
 .wedding-photo-booth__scene[data-celebration-frame="true"]::after {
   position: absolute;

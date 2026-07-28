@@ -20,6 +20,7 @@ afterEach(() => {
   delete document.documentElement.dataset.routePattern;
   delete document.documentElement.dataset.gameMovementSpeed;
   delete document.documentElement.dataset.gameUiScale;
+  delete document.documentElement.dataset.colorVision;
 });
 
 describe("ViewSettingsAccess", () => {
@@ -176,13 +177,33 @@ describe("ViewSettingsAccess", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "환경 설정" }));
     const voiceRate = screen.getByRole("group", { name: "길찾기 음성 속도" });
+    const voiceDetail = screen.getByRole("group", { name: "길찾기 음성 안내 내용" });
     expect(within(voiceRate).getByRole("button", { name: "빠르게" })).toBeDisabled();
+    expect(within(voiceDetail).getByRole("button", { name: "구역 포함" })).toBeDisabled();
     fireEvent.click(screen.getByRole("switch", { name: "길찾기 음성 안내" }));
     fireEvent.click(within(voiceRate).getByRole("button", { name: "빠르게" }));
+    fireEvent.click(within(voiceDetail).getByRole("button", { name: "구역 포함" }));
     fireEvent.click(screen.getByRole("switch", { name: "목적지별 안내 진동" }));
 
     expect(within(voiceRate).getByRole("button", { name: "빠르게" })).toHaveAttribute("aria-pressed", "true");
+    expect(within(voiceDetail).getByRole("button", { name: "구역 포함" })).toHaveAttribute("aria-pressed", "true");
     expect(screen.getByRole("switch", { name: "목적지별 안내 진동" })).toBeChecked();
+  });
+
+  it("색각 보정 모드를 문서 전체에 적용한다", () => {
+    render(
+      <ViewPreferencesProvider initialPreferences={defaultViewPreferences}>
+        <ViewSettingsAccess variant="icon" />
+      </ViewPreferencesProvider>
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "환경 설정" }));
+    const colorVision = screen.getByRole("group", { name: "색각 보정 모드" });
+    fireEvent.click(within(colorVision).getByRole("button", { name: "녹색 보정" }));
+
+    expect(document.documentElement).toHaveAttribute("data-color-vision", "deuteranopia");
+    expect(within(colorVision).getByRole("button", { name: "녹색 보정" }))
+      .toHaveAttribute("aria-pressed", "true");
   });
 
   it("게임 소리와 진동을 각각 설정하고 음량을 미리 선택한다", () => {

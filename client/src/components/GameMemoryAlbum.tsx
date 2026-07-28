@@ -1,5 +1,17 @@
-import { useMemo, useState } from "react";
-import { Camera, Download, Flower2, PartyPopper, Send, UsersRound, X } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  Camera,
+  Download,
+  Flower2,
+  LayoutGrid,
+  MessageSquareText,
+  PartyPopper,
+  Send,
+  UsersRound,
+  X
+} from "lucide-react";
 import { isShareAbortError } from "../invitation/browserActions";
 import { formatEventDate, formatVenueLabel } from "../invitation/calendarEvent";
 import { useCoupleOrder } from "../invitation/CoupleOrderContext";
@@ -10,8 +22,13 @@ import type { WeddingPhotoAlbum } from "../game/weddingPhoto";
 import type { GameMemoryAlbum as GameMemoryAlbumData, GameMemoryKind } from "../game/gameMemoryAlbum";
 import {
   createGameMemoryKeepsake,
+  defaultGameMemoryKeepsakeOptions,
+  loadGameMemoryKeepsakeOptions,
+  orderGameMemoryKeepsakePhotos,
   saveGameMemoryKeepsake,
+  saveGameMemoryKeepsakeOptions,
   shareGameMemoryKeepsake,
+  type GameMemoryKeepsakeLayout,
   type GameMemoryKeepsakeData
 } from "../game/gameMemoryKeepsake";
 import { celebrationRewardLabel } from "../game/celebrationReward";
@@ -56,8 +73,13 @@ export function GameMemoryAlbum({
   const { event } = usePublishedInvitationContent();
   const coupleOrder = useCoupleOrder();
   const [keepsakeStatus, setKeepsakeStatus] = useState<"idle" | "saving" | "saved" | "sharing" | "shared" | "fallback" | "canceled" | "error">("idle");
+  const [keepsakeOptions, setKeepsakeOptions] = useState(loadGameMemoryKeepsakeOptions);
   const busy = keepsakeStatus === "saving" || keepsakeStatus === "sharing";
   const hasMemories = album.entries.length > 0 || photoAlbum.photos.length > 0 || collectedCount > 0;
+  const orderedPhotos = useMemo(
+    () => orderGameMemoryKeepsakePhotos(photoAlbum, keepsakeOptions.photoOrder),
+    [keepsakeOptions.photoOrder, photoAlbum]
+  );
   const keepsakeData = useMemo<GameMemoryKeepsakeData>(() => ({
     album,
     photoAlbum,
@@ -67,8 +89,21 @@ export function GameMemoryAlbum({
     venueLabel: formatVenueLabel(event),
     publicUrl: document.querySelector<HTMLLinkElement>('link[rel="canonical"]')?.href ?? invitationPublicUrl,
     collectedCount,
-    totalCollectibles
-  }), [album, collectedCount, coupleOrder, event, nickname, photoAlbum, totalCollectibles]);
+    totalCollectibles,
+    options: keepsakeOptions
+  }), [album, collectedCount, coupleOrder, event, keepsakeOptions, nickname, photoAlbum, totalCollectibles]);
+
+  useEffect(() => {
+    saveGameMemoryKeepsakeOptions(keepsakeOptions);
+  }, [keepsakeOptions]);
+
+  const movePhoto = (index: number, delta: -1 | 1) => {
+    const target = index + delta;
+    if (target < 0 || target >= orderedPhotos.length) return;
+    const next = orderedPhotos.map(({ photoSpotId }) => photoSpotId);
+    [next[index], next[target]] = [next[target]!, next[index]!];
+    setKeepsakeOptions((current) => ({ ...current, photoOrder: next }));
+  };
 
   const buildKeepsake = async (action: "save" | "share") => {
     if (!hasMemories || busy) return;
@@ -122,7 +157,82 @@ export function GameMemoryAlbum({
 
       <section className="game-memory-album__keepsake" aria-label="게임 추억 이미지 저장과 공유">
         <div><strong>정원 추억 포토스트립</strong><span>사진과 게임 기록을 세로 이미지 한 장으로 정리합니다.</span></div>
-        <div>
+        <div className="game-memory-album__editor">
+          <div
+            className="game-memory-album__preview"
+            data-layout={keepsakeOptions.layout}
+            aria-label="포토스트립 미리보기"
+          >
+            <small>{formatCoupleNames(event, coupleOrder)}</small>
+            <div>
+              {orderedPhotos.slice(0, 3).map((photo) => (
+                <img key={photo.photoSpotId} src={photo.dataUrl} alt="" />
+              ))}
+              {Array.from({ length: Math.max(0, 3 - orderedPhotos.length) }, (_, index) => (
+                <span key={`empty-${index}`}><Camera aria-hidden="true" /></span>
+              ))}
+            </div>
+            <strong>{keepsakeOptions.message}</strong>
+          </div>
+
+          <fieldset>
+            <legend><LayoutGrid aria-hidden="true" />레이아웃</legend>
+            <div className="game-memory-album__layout-options">
+              {([
+                ["classic", "클래식"],
+                ["garden", "가든"],
+                ["film", "필름"]
+              ] as const satisfies readonly [GameMemoryKeepsakeLayout, string][]).map(([layout, label]) => (
+                <button
+                  key={layout}
+                  type="button"
+                  aria-pressed={keepsakeOptions.layout === layout}
+                  onClick={() => setKeepsakeOptions((current) => ({ ...current, layout }))}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          </fieldset>
+
+          <label>
+            <span><MessageSquareText aria-hidden="true" />한 줄 문구</span>
+            <input
+              value={keepsakeOptions.message}
+              maxLength={48}
+              onChange={(event) => setKeepsakeOptions((current) => ({
+                ...current,
+                message: event.target.value || defaultGameMemoryKeepsakeOptions.message
+              }))}
+            />
+          </label>
+
+          {orderedPhotos.length > 1 ? (
+            <ol className="game-memory-album__photo-order" aria-label="사진 순서">
+              {orderedPhotos.slice(0, 3).map((photo, index) => (
+                <li key={photo.photoSpotId}>
+                  <img src={photo.dataUrl} alt={`${index + 1}번째 ${photo.spotLabel}`} />
+                  <span>{index + 1}. {photo.spotLabel}</span>
+                  <button
+                    type="button"
+                    aria-label={`${photo.spotLabel} 앞으로 이동`}
+                    title="앞으로 이동"
+                    disabled={index === 0}
+                    onClick={() => movePhoto(index, -1)}
+                  ><ArrowLeft aria-hidden="true" /></button>
+                  <button
+                    type="button"
+                    aria-label={`${photo.spotLabel} 뒤로 이동`}
+                    title="뒤로 이동"
+                    disabled={index === Math.min(orderedPhotos.length, 3) - 1}
+                    onClick={() => movePhoto(index, 1)}
+                  ><ArrowRight aria-hidden="true" /></button>
+                </li>
+              ))}
+            </ol>
+          ) : null}
+        </div>
+        <div className="game-memory-album__keepsake-actions">
           <button type="button" disabled={!hasMemories || busy} onClick={() => void buildKeepsake("save")}><Download aria-hidden="true" />저장</button>
           <button type="button" disabled={!hasMemories || busy} onClick={() => void buildKeepsake("share")}><Send aria-hidden="true" />공유</button>
         </div>

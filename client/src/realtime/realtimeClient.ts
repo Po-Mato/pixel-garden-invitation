@@ -1,7 +1,9 @@
 import {
   parseCharacterAppearance,
+  companionPingIds,
   guestReactionIds,
   type ClientMessage,
+  type CompanionPing,
   type Direction,
   type GuestReaction,
   type RoomGuest,
@@ -16,6 +18,7 @@ type JoinMessage = Extract<ClientMessage, { type: "join" }>;
 const directions = new Set<Direction>(["up", "down", "left", "right"]);
 const zones = new Set<WorldZoneId>(worldZoneIds);
 const reactions = new Set<GuestReaction>(guestReactionIds);
+const companionPings = new Set<CompanionPing>(companionPingIds);
 const serverErrorCodes = new Set<Extract<ServerMessage, { type: "error" }>["code"]>([
   "bad_message",
   "room_full",
@@ -178,6 +181,25 @@ function parseServerMessage(value: unknown): ServerMessage | null {
       typeof value.guestId !== "string"
       || typeof value.portalId !== "string"
       || !zones.has(value.destinationZoneId as WorldZoneId)
+    ) return null;
+    return value as ServerMessage;
+  }
+
+  if (value.type === "companion_destination_requested") {
+    if (
+      typeof value.guestId !== "string"
+      || typeof value.guestNickname !== "string"
+      || !zones.has(value.zoneId as WorldZoneId)
+    ) return null;
+    return value as ServerMessage;
+  }
+
+  if (value.type === "companion_pinged") {
+    if (
+      typeof value.guestId !== "string"
+      || typeof value.guestNickname !== "string"
+      || !companionPings.has(value.ping as CompanionPing)
+      || !zones.has(value.zoneId as WorldZoneId)
     ) return null;
     return value as ServerMessage;
   }

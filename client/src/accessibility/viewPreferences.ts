@@ -8,6 +8,8 @@ export type ViewPreferences = {
   dataSaver: boolean;
   routeVoiceGuidance: boolean;
   routeVoiceRate: "slow" | "normal" | "fast";
+  routeVoiceDetail: "brief" | "detailed";
+  colorVisionMode: "standard" | "deuteranopia" | "protanopia" | "tritanopia";
   stepFreeRouteEnabled: boolean;
   miniMapHighContrast: boolean;
   miniMapRouteWeight: "standard" | "bold";
@@ -29,6 +31,8 @@ export const defaultViewPreferences: ViewPreferences = {
   dataSaver: false,
   routeVoiceGuidance: false,
   routeVoiceRate: "normal",
+  routeVoiceDetail: "brief",
+  colorVisionMode: "standard",
   stepFreeRouteEnabled: false,
   miniMapHighContrast: false,
   miniMapRouteWeight: "standard",
@@ -47,6 +51,8 @@ export const comfortableViewPreferences: ViewPreferences = {
   dataSaver: false,
   routeVoiceGuidance: false,
   routeVoiceRate: "normal",
+  routeVoiceDetail: "detailed",
+  colorVisionMode: "standard",
   stepFreeRouteEnabled: true,
   miniMapHighContrast: true,
   miniMapRouteWeight: "bold",
@@ -80,6 +86,13 @@ export function isViewPreferences(value: unknown): value is ViewPreferences {
     && typeof candidate.dataSaver === "boolean"
     && typeof candidate.routeVoiceGuidance === "boolean"
     && (candidate.routeVoiceRate === "slow" || candidate.routeVoiceRate === "normal" || candidate.routeVoiceRate === "fast")
+    && (candidate.routeVoiceDetail === "brief" || candidate.routeVoiceDetail === "detailed")
+    && (
+      candidate.colorVisionMode === "standard"
+      || candidate.colorVisionMode === "deuteranopia"
+      || candidate.colorVisionMode === "protanopia"
+      || candidate.colorVisionMode === "tritanopia"
+    )
     && typeof candidate.stepFreeRouteEnabled === "boolean"
     && typeof candidate.miniMapHighContrast === "boolean"
     && (candidate.miniMapRouteWeight === "standard" || candidate.miniMapRouteWeight === "bold")
@@ -116,6 +129,12 @@ function normalizeStoredPreferences(value: unknown): ViewPreferences | null {
     routeVoiceRate: candidate.routeVoiceRate === "slow" || candidate.routeVoiceRate === "fast"
       ? candidate.routeVoiceRate
       : "normal",
+    routeVoiceDetail: candidate.routeVoiceDetail === "detailed" ? "detailed" : "brief",
+    colorVisionMode: candidate.colorVisionMode === "deuteranopia"
+      || candidate.colorVisionMode === "protanopia"
+      || candidate.colorVisionMode === "tritanopia"
+      ? candidate.colorVisionMode
+      : "standard",
     stepFreeRouteEnabled: typeof candidate.stepFreeRouteEnabled === "boolean"
       ? candidate.stepFreeRouteEnabled
       : false,
@@ -184,6 +203,9 @@ export function applyViewPreferences(
 
   if (preferences.routeVoiceGuidance) root.dataset.routeVoiceGuidance = "true";
   else delete root.dataset.routeVoiceGuidance;
+
+  if (preferences.colorVisionMode !== "standard") root.dataset.colorVision = preferences.colorVisionMode;
+  else delete root.dataset.colorVision;
 
   if (preferences.miniMapHighContrast) root.dataset.miniMapHighContrast = "true";
   else delete root.dataset.miniMapHighContrast;

@@ -29,6 +29,8 @@ describe("보기 설정 저장", () => {
         dataSaver: false,
         routeVoiceGuidance: false,
         routeVoiceRate: "normal",
+        routeVoiceDetail: "brief",
+        colorVisionMode: "standard",
         stepFreeRouteEnabled: false,
         miniMapHighContrast: false,
         miniMapRouteWeight: "standard",
@@ -46,6 +48,8 @@ describe("보기 설정 저장", () => {
       dataSaver: true,
       routeVoiceGuidance: false,
       routeVoiceRate: "normal",
+      routeVoiceDetail: "brief",
+      colorVisionMode: "standard",
       stepFreeRouteEnabled: false,
       miniMapHighContrast: false,
       miniMapRouteWeight: "standard",
@@ -62,6 +66,8 @@ describe("보기 설정 저장", () => {
       dataSaver: true,
       routeVoiceGuidance: false,
       routeVoiceRate: "normal",
+      routeVoiceDetail: "brief",
+      colorVisionMode: "standard",
       stepFreeRouteEnabled: false,
       miniMapHighContrast: false,
       miniMapRouteWeight: "standard",
@@ -86,6 +92,8 @@ describe("보기 설정 저장", () => {
       dataSaver: true,
       routeVoiceGuidance: true,
       routeVoiceRate: "fast" as const,
+      routeVoiceDetail: "detailed" as const,
+      colorVisionMode: "deuteranopia" as const,
       stepFreeRouteEnabled: true,
       miniMapHighContrast: true,
       miniMapRouteWeight: "bold" as const,
@@ -112,6 +120,8 @@ describe("보기 설정 저장", () => {
       dataSaver: true,
       routeVoiceGuidance: true,
       routeVoiceRate: "slow",
+      routeVoiceDetail: "detailed",
+      colorVisionMode: "tritanopia",
       stepFreeRouteEnabled: true,
       miniMapHighContrast: true,
       miniMapRouteWeight: "bold",
@@ -127,6 +137,7 @@ describe("보기 설정 저장", () => {
     expect(root).toHaveAttribute("data-joystick-side", "right");
     expect(root).toHaveAttribute("data-data-saver", "true");
     expect(root).toHaveAttribute("data-route-voice-guidance", "true");
+    expect(root).toHaveAttribute("data-color-vision", "tritanopia");
     expect(root).toHaveAttribute("data-mini-map-high-contrast", "true");
     expect(root).toHaveAttribute("data-mini-map-route-weight", "bold");
     expect(root).toHaveAttribute("data-route-pattern", "enhanced");
@@ -143,6 +154,7 @@ describe("보기 설정 저장", () => {
     expect(root).toHaveAttribute("data-joystick-side", "left");
     expect(root).not.toHaveAttribute("data-data-saver");
     expect(root).not.toHaveAttribute("data-route-voice-guidance");
+    expect(root).not.toHaveAttribute("data-color-vision");
     expect(root).not.toHaveAttribute("data-mini-map-high-contrast");
     expect(root).toHaveAttribute("data-mini-map-route-weight", "standard");
     expect(root).not.toHaveAttribute("data-route-pattern");

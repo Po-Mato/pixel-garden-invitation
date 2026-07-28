@@ -5,7 +5,7 @@ import {
   invitationContent,
   type WorldZoneId
 } from "@wedding-game/shared";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { gameGuideStorageKey } from "../game/gameGuide";
 import {
   allCelebrationCollectibles,
@@ -17,7 +17,7 @@ import { journeyProgressStorageKey } from "../game/journeyProgress";
 import { copyText } from "../invitation/browserActions";
 import { GameFeedbackProvider } from "../feedback/GameFeedbackContext";
 import { defaultFeedbackPreferences } from "../feedback/feedbackPreferences";
-import { GameWorld } from "./GameWorld";
+import { GameWorld, preloadGameFeatureComponents } from "./GameWorld";
 
 vi.mock("../invitation/browserActions", () => ({
   copyText: vi.fn(),
@@ -68,6 +68,10 @@ class MockWebSocket {
   }
 }
 
+beforeAll(async () => {
+  await preloadGameFeatureComponents();
+});
+
 beforeEach(() => {
   animationFrames = new Map();
   nextAnimationFrameId = 1;
@@ -114,6 +118,13 @@ function advanceAnimation(now: number) {
   const callbacks = [...animationFrames.values()];
   animationFrames.clear();
   act(() => callbacks.forEach((callback) => callback(now)));
+}
+
+async function revealLazyGameFeature() {
+  await act(async () => {
+    await Promise.resolve();
+    await Promise.resolve();
+  });
 }
 
 function advanceRouteToPortalArrival() {
@@ -423,10 +434,11 @@ describe("GameWorld", () => {
     expect(screen.getByText("길 안내를 중단했어요")).toBeInTheDocument();
   });
 
-  it("offers a text route with the remaining journey and starts guidance from it", () => {
+  it("offers a text route with the remaining journey and starts guidance from it", async () => {
     render(<GameWorld profile={profile} />);
 
     fireEvent.click(screen.getByRole("button", { name: /쉬운 길찾기 열기/ }));
+    await revealLazyGameFeature();
 
     const dialog = screen.getByRole("dialog", { name: "쉬운 길찾기" });
     expect(within(dialog).getByLabelText("남은 전체 여정 요약")).toHaveTextContent("남은 추억");
@@ -489,7 +501,7 @@ describe("GameWorld", () => {
     expect(screen.queryByRole("dialog", { name: "게임 첫 방문 안내" })).not.toBeInTheDocument();
   });
 
-  it("walks to a photo spot before opening the camera experience", () => {
+  it("walks to a photo spot before opening the camera experience", async () => {
     render(<GameWorld profile={profile} />);
     fireEvent.click(screen.getByRole("button", { name: "예식장 로비 바로 이동" }));
 
@@ -498,6 +510,7 @@ describe("GameWorld", () => {
     expect(screen.getByText("로비 포토월 가까이 이동 중")).toBeInTheDocument();
 
     advanceInteractionRoute();
+    await revealLazyGameFeature();
 
     expect(screen.getByRole("dialog", { name: "웨딩 포토존 촬영" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "포토존 닫기" })).toHaveFocus();
@@ -845,7 +858,7 @@ describe("GameWorld", () => {
     expect(within(menu).getByRole("button", { name: "주소 복사" })).toBeInTheDocument();
   });
 
-  it("opens the same-device photo album from the invitation menu without moving the player", () => {
+  it("opens the same-device photo album from the invitation menu without moving the player", async () => {
     const { container } = render(<GameWorld profile={profile} />);
     const player = container.querySelector<HTMLElement>(".world-player");
     const before = { left: player?.style.left, top: player?.style.top };
@@ -853,6 +866,7 @@ describe("GameWorld", () => {
     fireEvent.click(screen.getByRole("button", { name: "초대장 메뉴" }));
     const menu = screen.getByRole("dialog", { name: "초대장 바로가기" });
     fireEvent.click(within(menu).getByRole("button", { name: "포토앨범 0/3" }));
+    await revealLazyGameFeature();
 
     expect(screen.getByRole("dialog", { name: "웨딩 포토앨범" })).toBeInTheDocument();
     expect(menu).toHaveAttribute("aria-hidden", "true");
@@ -2401,7 +2415,7 @@ describe("GameWorld", () => {
     expect(screen.getByText("상대가 내 걸음을 따라와요")).toBeInTheDocument();
   });
 
-  it("lets the companion leader choose a shared portal and waits for both guests", () => {
+  it("lets the companion leader choose a shared portal and waits for both guests", async () => {
     configureRealtime();
     render(<GameWorld profile={profile} />);
     const socket = MockWebSocket.instances[0];
@@ -2420,6 +2434,7 @@ describe("GameWorld", () => {
     fireEvent.click(screen.getByRole("button", { name: "수락" }));
 
     fireEvent.click(screen.getByRole("button", { name: "동행 공동 목적지 선택" }));
+    await revealLazyGameFeature();
     const destinationSheet = screen.getByRole("dialog", { name: "동행 공동 목적지 선택" });
     fireEvent.click(within(destinationSheet).getByRole("button", { name: /동네 거리/ }));
 
@@ -2460,10 +2475,11 @@ describe("GameWorld", () => {
     expect(screen.getByRole("button", { name: "축하 꽃잎 수집 완료" })).toBeDisabled();
   });
 
-  it("opens the collection map and starts guidance to a remaining item", () => {
+  it("opens the collection map and starts guidance to a remaining item", async () => {
     render(<GameWorld profile={profile} />);
 
     fireEvent.click(screen.getByRole("button", { name: /축하 아이템 0\/30, 수집 지도 열기/ }));
+    await revealLazyGameFeature();
     const guide = screen.getByRole("dialog", { name: "축하 아이템 수집 지도" });
     expect(within(guide).getByRole("region", { name: "맵별 수집 현황" })).toBeInTheDocument();
     fireEvent.click(within(guide).getByRole("button", { name: /축하 꽃잎/ }));
@@ -2488,17 +2504,18 @@ describe("GameWorld", () => {
     expect(screen.getByRole("button", { name: /축하 아이템 30\/30/ })).toBeInTheDocument();
   });
 
-  it("opens a combined game memory album from the invitation menu", () => {
+  it("opens a combined game memory album from the invitation menu", async () => {
     render(<GameWorld profile={profile} />);
     fireEvent.click(screen.getByRole("button", { name: "초대장 메뉴" }));
     fireEvent.click(within(screen.getByRole("dialog", { name: "초대장 바로가기" }))
       .getByRole("button", { name: "게임 추억 0" }));
+    await revealLazyGameFeature();
 
     expect(screen.getByRole("dialog", { name: "게임 추억 앨범" })).toBeInTheDocument();
     expect(screen.getByText("축하 아이템")).toBeInTheDocument();
   });
 
-  it("creates a cooperative flower shower when two guests celebrate in the ceremony hall", () => {
+  it("creates a cooperative flower shower when two guests celebrate in the ceremony hall", async () => {
     configureRealtime();
     render(<GameWorld profile={profile} />);
     const socket = MockWebSocket.instances[0];
@@ -2521,6 +2538,7 @@ describe("GameWorld", () => {
     expect(screen.getByRole("status", { name: "하객 협동 축하 성공" })).toHaveTextContent("함께 만든 축하 꽃비");
     expect(window.localStorage.getItem(gameMemoryAlbumStorageKey)).toContain("celebration");
     fireEvent.click(screen.getByRole("button", { name: "단체 사진 남기기" }));
+    await revealLazyGameFeature();
     expect(screen.getByRole("dialog", { name: "웨딩 포토존 촬영" })).toHaveTextContent("하객2님과 함께 촬영합니다");
   });
 

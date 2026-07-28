@@ -1,8 +1,10 @@
 import { parseCharacterAppearance } from "./characterCatalog";
 import {
+  companionPingIds,
   guestReactionIds,
   worldZoneIds,
   type ClientMessage,
+  type CompanionPing,
   type Direction,
   type GuestReaction,
   type WorldZoneId
@@ -11,6 +13,7 @@ import {
 const directions = new Set<Direction>(["up", "down", "left", "right"]);
 const zones = new Set<WorldZoneId>(worldZoneIds);
 const reactions = new Set<GuestReaction>(guestReactionIds);
+const companionPings = new Set<CompanionPing>(companionPingIds);
 
 export function sanitizeText(value: unknown, maxLength: number): string {
   if (typeof value !== "string") return "";
@@ -60,10 +63,20 @@ export function parseClientMessage(value: unknown): ClientMessage | null {
     return { type: "react", reaction: value.reaction as GuestReaction };
   }
 
-  if (value.type === "companion_invite" || value.type === "companion_stop") {
+  if (
+    value.type === "companion_invite"
+    || value.type === "companion_stop"
+    || value.type === "companion_destination_request"
+  ) {
     const targetGuestId = sanitizeText(value.targetGuestId, 80);
     if (!targetGuestId) return null;
     return { type: value.type, targetGuestId };
+  }
+
+  if (value.type === "companion_ping") {
+    const targetGuestId = sanitizeText(value.targetGuestId, 80);
+    if (!targetGuestId || !companionPings.has(value.ping as CompanionPing)) return null;
+    return { type: "companion_ping", targetGuestId, ping: value.ping as CompanionPing };
   }
 
   if (value.type === "companion_reply") {

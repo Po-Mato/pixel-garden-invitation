@@ -26,6 +26,8 @@ type ViewPreferencesContextValue = {
   setDataSaver: (dataSaver: boolean) => void;
   setRouteVoiceGuidance: (routeVoiceGuidance: boolean) => void;
   setRouteVoiceRate: (routeVoiceRate: ViewPreferences["routeVoiceRate"]) => void;
+  setRouteVoiceDetail: (routeVoiceDetail: ViewPreferences["routeVoiceDetail"]) => void;
+  setColorVisionMode: (colorVisionMode: ViewPreferences["colorVisionMode"]) => void;
   setStepFreeRouteEnabled: (stepFreeRouteEnabled: boolean) => void;
   setMiniMapHighContrast: (miniMapHighContrast: boolean) => void;
   setMiniMapRouteWeight: (miniMapRouteWeight: ViewPreferences["miniMapRouteWeight"]) => void;
@@ -47,6 +49,8 @@ const ViewPreferencesContext = createContext<ViewPreferencesContextValue>({
   setDataSaver: () => undefined,
   setRouteVoiceGuidance: () => undefined,
   setRouteVoiceRate: () => undefined,
+  setRouteVoiceDetail: () => undefined,
+  setColorVisionMode: () => undefined,
   setStepFreeRouteEnabled: () => undefined,
   setMiniMapHighContrast: () => undefined,
   setMiniMapRouteWeight: () => undefined,
@@ -90,6 +94,8 @@ export function ViewPreferencesProvider({ children, initialPreferences }: ViewPr
       routeVoiceGuidance
     })),
     setRouteVoiceRate: (routeVoiceRate) => setPreferences((current) => ({ ...current, routeVoiceRate })),
+    setRouteVoiceDetail: (routeVoiceDetail) => setPreferences((current) => ({ ...current, routeVoiceDetail })),
+    setColorVisionMode: (colorVisionMode) => setPreferences((current) => ({ ...current, colorVisionMode })),
     setStepFreeRouteEnabled: (stepFreeRouteEnabled) => setPreferences((current) => ({
       ...current,
       stepFreeRouteEnabled
@@ -115,7 +121,9 @@ export function ViewPreferencesProvider({ children, initialPreferences }: ViewPr
       ...comfortableViewPreferences,
       dataSaver: current.dataSaver,
       routeVoiceGuidance: current.routeVoiceGuidance,
-      routeVoiceRate: current.routeVoiceRate
+      routeVoiceRate: current.routeVoiceRate,
+      routeVoiceDetail: current.routeVoiceDetail,
+      colorVisionMode: current.colorVisionMode
     })),
     resetPreferences: () => setPreferences(defaultViewPreferences)
   }), [preferences]);

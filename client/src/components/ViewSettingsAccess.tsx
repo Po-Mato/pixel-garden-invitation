@@ -14,6 +14,7 @@ import {
   Music2,
   MapPinned,
   Navigation,
+  Palette,
   Play,
   RadioTower,
   RotateCcw,
@@ -25,6 +26,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { useViewPreferences } from "../accessibility/ViewPreferencesContext";
+import { speakRouteVoiceMessage } from "../accessibility/routeVoiceGuidance";
 import { useGameFeedback } from "../feedback/GameFeedbackContext";
 import { useDevicePerformance } from "../performance/DevicePerformanceContext";
 import { BottomSheet } from "./BottomSheet";
@@ -48,6 +50,8 @@ export function ViewSettingsAccess({ variant, onOpenChange }: ViewSettingsAccess
     setDataSaver,
     setRouteVoiceGuidance,
     setRouteVoiceRate,
+    setRouteVoiceDetail,
+    setColorVisionMode,
     setStepFreeRouteEnabled,
     setMiniMapHighContrast,
     setMiniMapRouteWeight,
@@ -164,6 +168,31 @@ export function ViewSettingsAccess({ variant, onOpenChange }: ViewSettingsAccess
               />
               <span aria-hidden="true" className="view-settings-sheet__switch-track" />
             </label>
+
+            <section>
+              <header><Palette aria-hidden="true" /><strong>색각 보정</strong></header>
+              <div
+                className="view-settings-sheet__segments view-settings-sheet__segments--four"
+                role="group"
+                aria-label="색각 보정 모드"
+              >
+                {([
+                  ["standard", "기본"],
+                  ["deuteranopia", "녹색 보정"],
+                  ["protanopia", "적색 보정"],
+                  ["tritanopia", "청색 보정"]
+                ] as const).map(([mode, label]) => (
+                  <button
+                    key={mode}
+                    type="button"
+                    aria-pressed={preferences.colorVisionMode === mode}
+                    onClick={() => setColorVisionMode(mode)}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </section>
 
             <label className="view-settings-sheet__switch">
                 <span><Hand aria-hidden="true" /><strong>큰 조이스틱·터치 영역</strong></span>
@@ -335,6 +364,43 @@ export function ViewSettingsAccess({ variant, onOpenChange }: ViewSettingsAccess
                 ))}
               </div>
             </div>
+
+            <div className="feedback-settings__volume">
+              <strong>음성 안내 내용</strong>
+              <div className="view-settings-sheet__segments" role="group" aria-label="길찾기 음성 안내 내용">
+                <button
+                  type="button"
+                  aria-pressed={preferences.routeVoiceDetail === "brief"}
+                  disabled={!preferences.routeVoiceGuidance}
+                  onClick={() => setRouteVoiceDetail("brief")}
+                >
+                  간단히
+                </button>
+                <button
+                  type="button"
+                  aria-pressed={preferences.routeVoiceDetail === "detailed"}
+                  disabled={!preferences.routeVoiceGuidance}
+                  onClick={() => setRouteVoiceDetail("detailed")}
+                >
+                  구역 포함
+                </button>
+              </div>
+            </div>
+
+            <button
+              className="view-settings-sheet__reset"
+              type="button"
+              disabled={!preferences.routeVoiceGuidance}
+              onClick={() => speakRouteVoiceMessage({
+                message: "오른쪽으로 이동한 뒤 목적지에 도착합니다.",
+                rate: preferences.routeVoiceRate,
+                detail: preferences.routeVoiceDetail,
+                zoneLabel: "예식장 로비"
+              })}
+            >
+              <Play aria-hidden="true" />
+              길찾기 음성 시험
+            </button>
 
             <label className="view-settings-sheet__switch">
               <span><Sparkles aria-hidden="true" /><strong>움직임 줄이기</strong></span>
@@ -606,6 +672,8 @@ export function ViewSettingsAccess({ variant, onOpenChange }: ViewSettingsAccess
               조이스틱 위치 {preferences.joystickSide === "left" ? "왼쪽" : "오른쪽"},
               길찾기 음성 안내 {preferences.routeVoiceGuidance ? "켜짐" : "꺼짐"},
               음성 안내 속도 {preferences.routeVoiceRate === "slow" ? "느리게" : preferences.routeVoiceRate === "fast" ? "빠르게" : "보통"},
+              음성 안내 내용 {preferences.routeVoiceDetail === "detailed" ? "구역 포함" : "간단히"},
+              색각 보정 {preferences.colorVisionMode === "standard" ? "기본" : preferences.colorVisionMode},
               계단 없는 길 우선 {preferences.stepFreeRouteEnabled ? "켜짐" : "꺼짐"},
               미니맵 고대비 {preferences.miniMapHighContrast ? "켜짐" : "꺼짐"},
               미니맵 경로 굵기 {preferences.miniMapRouteWeight === "bold" ? "굵게" : "기본"},

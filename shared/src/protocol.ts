@@ -3,6 +3,8 @@ import type { CharacterAppearance } from "./characterCatalog";
 export type Direction = "up" | "down" | "left" | "right";
 export const guestReactionIds = ["wave", "heart", "applause", "celebrate"] as const;
 export type GuestReaction = (typeof guestReactionIds)[number];
+export const companionPingIds = ["wait", "here", "cheer"] as const;
+export type CompanionPing = (typeof companionPingIds)[number];
 export const worldZoneIds = [
   "home",
   "neighborhood",
@@ -44,7 +46,9 @@ export type ClientMessage =
   | { type: "companion_reply"; requesterGuestId: string; accepted: boolean }
   | { type: "companion_stop"; targetGuestId: string }
   | { type: "companion_destination"; targetGuestId: string; portalId: string; destinationZoneId: WorldZoneId }
+  | { type: "companion_destination_request"; targetGuestId: string }
   | { type: "companion_portal_ready"; targetGuestId: string; portalId: string; destinationZoneId: WorldZoneId }
+  | { type: "companion_ping"; targetGuestId: string; ping: CompanionPing }
   | { type: "ping" }
   | { type: "leave" };
 
@@ -57,7 +61,9 @@ export type ServerMessage =
   | { type: "companion_replied"; guestId: string; guestNickname: string; accepted: boolean; zoneId: WorldZoneId }
   | { type: "companion_stopped"; guestId: string }
   | { type: "companion_destination_set"; guestId: string; guestNickname: string; portalId: string; destinationZoneId: WorldZoneId; zoneId: WorldZoneId }
+  | { type: "companion_destination_requested"; guestId: string; guestNickname: string; zoneId: WorldZoneId }
   | { type: "companion_portal_ready"; guestId: string; portalId: string; destinationZoneId: WorldZoneId }
+  | { type: "companion_pinged"; guestId: string; guestNickname: string; ping: CompanionPing; zoneId: WorldZoneId }
   | { type: "guest_left"; guestId: string }
   | { type: "room_state"; guests: RoomGuest[] }
   | { type: "error"; code: "bad_message" | "room_full" | "rate_limited" };
