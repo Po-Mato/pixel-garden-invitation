@@ -1,9 +1,11 @@
-import { render, screen, within } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
+import { afterEach, describe, expect, it } from "vitest";
 import { computeCameraTransform } from "../game/camera";
 import { createMiniMapLayout, projectMiniMapRect } from "../game/minimap";
 import { gardenWorld, getWorldZone, portalEntryRect } from "../game/world";
 import { WorldMiniMap } from "./WorldMiniMap";
+
+afterEach(cleanup);
 
 describe("WorldMiniMap", () => {
   it("renders the active map structure, viewport, player, and target portal", () => {
@@ -62,7 +64,7 @@ describe("WorldMiniMap", () => {
       />
     );
 
-    const svg = container.querySelector("svg");
+    const svg = container.querySelector(".world-minimap__canvas");
     expect(Number(svg?.getAttribute("width"))).toBeLessThanOrEqual(72);
     expect(Number(svg?.getAttribute("height"))).toBe(120);
     expect(screen.getByTestId("minimap-photo-spot")).toBeInTheDocument();
@@ -138,5 +140,36 @@ describe("WorldMiniMap", () => {
     expect(route).not.toBeNull();
     expect([...route!.querySelectorAll("[data-surface]")].map((segment) => segment.getAttribute("data-surface")))
       .toEqual(["asphalt", "concrete"]);
+  });
+
+  it("opens a full-route preview without forwarding map clicks", () => {
+    const zone = getWorldZone(gardenWorld, "home");
+    const viewport = { width: 390, height: 520 };
+    const player = zone.spawn;
+    render(
+      <WorldMiniMap
+        zone={zone}
+        player={player}
+        direction="up"
+        camera={computeCameraTransform({ player, viewport, bounds: zone.bounds, zoom: 1 })}
+        viewport={viewport}
+        targetPortalId="home-to-neighborhood"
+        destinationLabel="웨딩 갤러리"
+        routeActive
+        routeContinuing
+        routeKind="journey"
+        routePoints={[player, { x: 285, y: 525 }, { x: 255, y: 525 }]}
+        routeProgressLabel="2타일 남음"
+      />
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "미니맵 확대 보기" }));
+    const dialog = screen.getByRole("dialog", { name: "현재 경로 전체 미리보기" });
+    expect(within(dialog).getByText("웨딩 갤러리", { exact: false })).toBeInTheDocument();
+    expect(within(dialog).getByText("연속 안내")).toBeInTheDocument();
+    expect(within(dialog).getByTestId("minimap-destination-route")).toHaveAttribute("data-route-active", "true");
+
+    fireEvent.click(within(dialog).getByRole("button", { name: "미니맵 닫기" }));
+    expect(screen.queryByRole("dialog", { name: "현재 경로 전체 미리보기" })).not.toBeInTheDocument();
   });
 });

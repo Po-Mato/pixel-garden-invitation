@@ -1,7 +1,13 @@
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { isBlocked } from "./geometry";
 import { gardenWorld, getWorldZone, type WorldZone } from "./world";
-import { findNearestInteractionRoute, findNearestPortalRoute, findTilePath } from "./pathfinding";
+import {
+  findNearestInteractionRoute,
+  findNearestPortalRoute,
+  findTilePath,
+  getPathfindingCacheStats,
+  resetPathfindingCache
+} from "./pathfinding";
 
 function testZone(
   blocked: WorldZone["blocked"],
@@ -22,6 +28,8 @@ function testZone(
 }
 
 describe("portal tile pathfinding", () => {
+  beforeEach(() => resetPathfindingCache());
+
   it("returns cardinal tile centers without repeating the start", () => {
     expect(findTilePath(testZone([]), { x: 15, y: 15 }, { x: 105, y: 15 })).toEqual([
       { x: 45, y: 15 },
@@ -60,6 +68,34 @@ describe("portal tile pathfinding", () => {
 
     expect(route).toHaveLength(6);
     expect(turnCount).toBe(1);
+  });
+
+  it("reuses cached grids and routes without exposing the cached result to mutation", () => {
+    const zone = testZone([]);
+    const start = { x: 15, y: 15 };
+    const goal = { x: 105, y: 15 };
+    const first = findTilePath(zone, start, goal);
+
+    expect(getPathfindingCacheStats()).toEqual({ gridBuilds: 1, routeHits: 0, routeMisses: 1 });
+    first?.splice(0, first.length, { x: 999, y: 999 });
+
+    expect(findTilePath(zone, start, goal)).toEqual([
+      { x: 45, y: 15 },
+      { x: 75, y: 15 },
+      { x: 105, y: 15 }
+    ]);
+    expect(getPathfindingCacheStats()).toEqual({ gridBuilds: 1, routeHits: 1, routeMisses: 1 });
+  });
+
+  it("keeps caches isolated when map topology objects differ", () => {
+    const openZone = testZone([]);
+    const blockedZone = testZone([{ x: 45, y: 0, width: 30, height: 60 }]);
+
+    expect(findTilePath(openZone, { x: 15, y: 15 }, { x: 105, y: 15 }))
+      .toContainEqual({ x: 45, y: 15 });
+    expect(findTilePath(blockedZone, { x: 15, y: 15 }, { x: 105, y: 15 }))
+      .not.toContainEqual({ x: 45, y: 15 });
+    expect(getPathfindingCacheStats().gridBuilds).toBe(2);
   });
 
   it("returns null when a goal is fully sealed", () => {

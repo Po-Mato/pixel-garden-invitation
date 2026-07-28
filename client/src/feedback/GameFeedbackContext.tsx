@@ -8,7 +8,7 @@ import {
   useState,
   type ReactNode
 } from "react";
-import type { WorldZoneId } from "@wedding-game/shared";
+import type { Direction, WorldZoneId } from "@wedding-game/shared";
 import type { PortalAudioMix, PortalGuideDirection } from "../game/portalAudio";
 import type { JourneyCheckpointId } from "../game/journeyProgress";
 import {
@@ -23,6 +23,7 @@ import {
   triggerHaptic,
   triggerJourneyHaptic,
   triggerPortalDirectionHaptic,
+  triggerRouteTurnHaptic,
   type FeedbackCue,
   type FeedbackCueOptions,
   type JourneyHapticPhase
@@ -44,6 +45,7 @@ type GameFeedbackContextValue = {
   previewPortalAudio: () => void;
   previewPortalDirection: (direction: PortalGuideDirection) => void;
   playJourneyHaptic: (checkpointId: JourneyCheckpointId, phase: JourneyHapticPhase) => void;
+  playRouteTurnHaptic: (direction: Direction) => void;
   resetFeedbackPreferences: () => void;
   playFeedback: (cue: FeedbackCue, options?: FeedbackCueOptions) => void;
   setFeedbackZone: (zoneId: WorldZoneId) => void;
@@ -66,6 +68,7 @@ const GameFeedbackContext = createContext<GameFeedbackContextValue>({
   previewPortalAudio: () => undefined,
   previewPortalDirection: () => undefined,
   playJourneyHaptic: () => undefined,
+  playRouteTurnHaptic: () => undefined,
   resetFeedbackPreferences: () => undefined,
   playFeedback: () => undefined,
   setFeedbackZone: () => undefined,
@@ -229,6 +232,10 @@ export function GameFeedbackProvider({ children, initialPreferences }: GameFeedb
     playJourneyHaptic: (checkpointId, phase) => {
       const current = preferencesRef.current;
       if (current.hapticsEnabled && current.routeHapticsEnabled) triggerJourneyHaptic(checkpointId, phase);
+    },
+    playRouteTurnHaptic: (direction) => {
+      const current = preferencesRef.current;
+      if (current.hapticsEnabled && current.routeHapticsEnabled) triggerRouteTurnHaptic(direction);
     },
     resetFeedbackPreferences: () => applyPreferences(defaultFeedbackPreferences),
     playFeedback: (cue, options) => {

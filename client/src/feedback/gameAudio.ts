@@ -1,4 +1,4 @@
-import type { WorldZoneId } from "@wedding-game/shared";
+import type { Direction, WorldZoneId } from "@wedding-game/shared";
 import type { FootstepSurface } from "../game/footstepSurface";
 import type { PortalAudioMix, PortalGuideDirection } from "../game/portalAudio";
 import type { WalkLandingFoot } from "../game/walkTiming";
@@ -318,6 +318,13 @@ const portalDirectionHapticPatterns: Record<PortalGuideDirection, number | numbe
   arrived: [12, 24, 12, 24, 24]
 };
 
+const routeTurnHapticPatterns: Record<Direction, number | number[]> = {
+  left: [18, 20, 7],
+  right: [7, 20, 18],
+  up: [8, 16, 20],
+  down: [20, 16, 8]
+};
+
 export type JourneyHapticPhase = "start" | "arrived";
 
 const journeyHapticPatterns: Record<JourneyCheckpointId, Record<JourneyHapticPhase, number | number[]>> = {
@@ -357,6 +364,20 @@ export function triggerPortalDirectionHaptic(
   if (!vibrate) return false;
   try {
     return vibrate(portalDirectionHapticPatterns[direction]);
+  } catch {
+    return false;
+  }
+}
+
+export function triggerRouteTurnHaptic(
+  direction: Direction,
+  vibrate: ((pattern: number | number[]) => boolean) | undefined = typeof navigator === "undefined"
+    ? undefined
+    : navigator.vibrate?.bind(navigator)
+): boolean {
+  if (!vibrate) return false;
+  try {
+    return vibrate(routeTurnHapticPatterns[direction]);
   } catch {
     return false;
   }

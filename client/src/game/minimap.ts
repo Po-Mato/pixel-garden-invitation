@@ -9,6 +9,12 @@ export type MiniMapLayout = {
   content: Rect;
 };
 
+export type MiniMapLayoutOptions = {
+  regularLimit?: { width: number; height: number };
+  tallLimit?: { width: number; height: number };
+  padding?: number;
+};
+
 type MiniMapViewportInput = {
   bounds: Rect;
   layout: MiniMapLayout;
@@ -24,24 +30,27 @@ function positiveOr(value: number, fallback: number): number {
   return Number.isFinite(value) && value > 0 ? value : fallback;
 }
 
-export function createMiniMapLayout(bounds: Rect): MiniMapLayout {
+export function createMiniMapLayout(bounds: Rect, options: MiniMapLayoutOptions = {}): MiniMapLayout {
   const boundsWidth = positiveOr(bounds.width, 1);
   const boundsHeight = positiveOr(bounds.height, 1);
-  const limit = boundsHeight / boundsWidth >= 1.6 ? tallLimit : regularLimit;
-  const availableWidth = limit.width - defaultPadding * 2;
-  const availableHeight = limit.height - defaultPadding * 2;
+  const padding = positiveOr(options.padding ?? defaultPadding, defaultPadding);
+  const limit = boundsHeight / boundsWidth >= 1.6
+    ? options.tallLimit ?? tallLimit
+    : options.regularLimit ?? regularLimit;
+  const availableWidth = limit.width - padding * 2;
+  const availableHeight = limit.height - padding * 2;
   const scale = Math.min(availableWidth / boundsWidth, availableHeight / boundsHeight);
   const content = {
-    x: defaultPadding,
-    y: defaultPadding,
+    x: padding,
+    y: padding,
     width: boundsWidth * scale,
     height: boundsHeight * scale
   };
 
   return {
-    width: content.width + defaultPadding * 2,
-    height: content.height + defaultPadding * 2,
-    padding: defaultPadding,
+    width: content.width + padding * 2,
+    height: content.height + padding * 2,
+    padding,
     scale,
     content
   };

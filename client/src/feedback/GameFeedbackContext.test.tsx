@@ -9,6 +9,7 @@ function FeedbackHarness() {
   const {
     preferences,
     playFeedback,
+    playRouteTurnHaptic,
     previewPortalDirection,
     setHapticsEnabled,
     setPortalAudio,
@@ -24,6 +25,7 @@ function FeedbackHarness() {
         포털 진동 {preferences.portalHapticsEnabled ? "켜짐" : "꺼짐"}
       </button>
       <button type="button" onClick={() => previewPortalDirection("left")}>왼쪽 시험</button>
+      <button type="button" onClick={() => playRouteTurnHaptic("down")}>아래 회전 시험</button>
       <button
         type="button"
         onClick={() => setPortalAudio({
@@ -85,5 +87,21 @@ describe("GameFeedbackProvider", () => {
     fireEvent.click(screen.getByRole("button", { name: "위쪽 추적" }));
     expect(vibrate).toHaveBeenLastCalledWith([10, 28, 22]);
     expect(vibrate).toHaveBeenCalledTimes(3);
+  });
+
+  it("plays a directional haptic before a route turn", () => {
+    const vibrate = vi.fn(() => true);
+    Object.defineProperty(navigator, "vibrate", { configurable: true, value: vibrate });
+    render(
+      <GameFeedbackProvider initialPreferences={{
+        ...defaultFeedbackPreferences,
+        routeHapticsEnabled: true
+      }}>
+        <FeedbackHarness />
+      </GameFeedbackProvider>
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "아래 회전 시험" }));
+    expect(vibrate).toHaveBeenCalledWith([20, 16, 8]);
   });
 });

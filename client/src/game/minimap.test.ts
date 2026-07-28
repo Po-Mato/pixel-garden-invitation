@@ -35,6 +35,22 @@ describe("minimap projection", () => {
     expect(layout.content.width / layout.content.height).toBeCloseTo(780 / 1920);
   });
 
+  it("supports a larger full-route preview while preserving map proportions", () => {
+    const layout = createMiniMapLayout(
+      { x: 0, y: 0, width: 960, height: 540 },
+      {
+        regularLimit: { width: 320, height: 280 },
+        tallLimit: { width: 220, height: 340 },
+        padding: 10
+      }
+    );
+
+    expect(layout.width).toBe(320);
+    expect(layout.height).toBeCloseTo(188.75);
+    expect(layout.padding).toBe(10);
+    expect(layout.content.width / layout.content.height).toBeCloseTo(960 / 540);
+  });
+
   it("projects Task 12 ceremony hall route markers and portals inside the tall minimap", () => {
     const hall = getWorldZone(gardenWorld, "ceremony-hall");
     const layout = createMiniMapLayout(hall.bounds);

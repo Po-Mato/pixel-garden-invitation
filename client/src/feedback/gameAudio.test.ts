@@ -1,6 +1,12 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { defaultFeedbackPreferences } from "./feedbackPreferences";
-import { GameAudioEngine, triggerHaptic, triggerJourneyHaptic, triggerPortalDirectionHaptic } from "./gameAudio";
+import {
+  GameAudioEngine,
+  triggerHaptic,
+  triggerJourneyHaptic,
+  triggerPortalDirectionHaptic,
+  triggerRouteTurnHaptic
+} from "./gameAudio";
 
 class FakeAudioParam {
   value = 1;
@@ -546,6 +552,22 @@ describe("triggerHaptic", () => {
       [12, 24, 12, 24, 24]
     ]);
     expect(triggerPortalDirectionHaptic("left", undefined)).toBe(false);
+  });
+
+  it("uses directional route-turn patterns", () => {
+    const vibrate = vi.fn<(pattern: number | number[]) => boolean>(() => true);
+
+    (["left", "right", "up", "down"] as const).forEach((direction) => {
+      triggerRouteTurnHaptic(direction, vibrate);
+    });
+
+    expect(vibrate.mock.calls.map(([pattern]) => pattern)).toEqual([
+      [18, 20, 7],
+      [7, 20, 18],
+      [8, 16, 20],
+      [20, 16, 8]
+    ]);
+    expect(triggerRouteTurnHaptic("left", undefined)).toBe(false);
   });
 
   it("uses distinct journey destination patterns for start and arrival", () => {

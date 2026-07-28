@@ -444,7 +444,15 @@ describe("GameWorld", () => {
     fireEvent.click(screen.getByRole("button", { name: "다음 목적지 웨딩 갤러리, 예식장 로비로 이동" }));
     expect(screen.getByRole("button", { name: "동네로 나가기" })).toHaveClass("world-portal--target");
 
-    for (let index = 0; index < 5; index += 1) {
+    advanceRouteToPortalArrival();
+    expect(screen.getByTestId("world-portal-transition")).toHaveAttribute("data-continuous-journey", "true");
+    expect(screen.getByText("목적지 연속 안내")).toBeInTheDocument();
+    expect(screen.getByRole("complementary", { name: "현재 구역 미니맵" }))
+      .toHaveAttribute("data-route-continuing", "true");
+    advancePortalTransition();
+    act(() => vi.advanceTimersByTime(0));
+
+    for (let index = 1; index < 5; index += 1) {
       finishCurrentRoute();
       act(() => vi.advanceTimersByTime(0));
     }
@@ -533,12 +541,12 @@ describe("GameWorld", () => {
     });
   });
 
-  it("keeps a display-only minimap in sync with portal travel and zone changes", () => {
+  it("keeps the expandable minimap in sync with portal travel and zone changes", () => {
     render(<GameWorld profile={profile} />);
     let minimap = screen.getByRole("complementary", { name: "현재 구역 미니맵" });
 
     expect(within(minimap).getByText("우리 집")).toBeInTheDocument();
-    expect(within(minimap).queryByRole("button")).not.toBeInTheDocument();
+    expect(within(minimap).getByRole("button", { name: "미니맵 확대 보기" })).toBeInTheDocument();
     expect(within(minimap).getByTestId("minimap-portal")).not.toHaveClass("world-minimap__portal--target");
 
     fireEvent.click(screen.getByRole("button", { name: "동네로 나가기" }));
