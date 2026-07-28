@@ -7,6 +7,7 @@ import {
   Footprints,
   MapPinned,
   Navigation,
+  PhoneCall,
   Sparkles,
   X
 } from "lucide-react";
@@ -15,7 +16,10 @@ import { createPortal } from "react-dom";
 import type { JourneyGuidancePreview } from "../game/journeyGuidance";
 import { journeyDirectionLabels } from "../game/journeyGuidance";
 import type { JourneyCheckpoint, JourneyProgress } from "../game/journeyProgress";
-import { journeyAccessibilityGuide } from "../game/journeyAccessibility";
+import {
+  journeyAccessibilityGuide,
+  venueAccessibilityVerification
+} from "../game/journeyAccessibility";
 import {
   journeyDestinationInstruction,
   summarizeRemainingJourney
@@ -33,6 +37,8 @@ type JourneyRouteSheetProps = {
   onMoveWaypoint?: (checkpointId: JourneyCheckpoint["id"], direction: "up" | "down") => void;
   onOptimizeWaypoints?: () => void;
   estimatedTotalLabel?: string;
+  estimatedTileCount?: number;
+  estimatedPortalCount?: number;
   stepFreeRouteEnabled?: boolean;
   onStepFreeRouteChange?: (enabled: boolean) => void;
   onClose: () => void;
@@ -51,6 +57,8 @@ export function JourneyRouteSheet({
   onMoveWaypoint,
   onOptimizeWaypoints,
   estimatedTotalLabel,
+  estimatedTileCount,
+  estimatedPortalCount,
   stepFreeRouteEnabled = false,
   onStepFreeRouteChange,
   onClose,
@@ -123,18 +131,34 @@ export function JourneyRouteSheet({
             <span aria-hidden="true" className="journey-route-sheet__switch-track" />
           </label>
           {stepFreeRouteEnabled ? (
-            <ul>
-              <li><Footprints aria-hidden="true" /><span><strong>계단 없는 이동</strong><small>{accessibilityGuide.stepFree}</small></span></li>
-              <li><Building2 aria-hidden="true" /><span><strong>엘리베이터</strong><small>{accessibilityGuide.elevator}</small></span></li>
-              <li><Bath aria-hidden="true" /><span><strong>접근 가능한 화장실</strong><small>{accessibilityGuide.restroom}</small></span></li>
-            </ul>
+            <>
+              <ul>
+                <li><Footprints aria-hidden="true" /><span><strong>계단 없는 이동</strong><small>{accessibilityGuide.stepFree}</small></span></li>
+                <li><Building2 aria-hidden="true" /><span><strong>엘리베이터</strong><small>{accessibilityGuide.elevator}</small></span></li>
+                <li><Bath aria-hidden="true" /><span><strong>접근 가능한 화장실</strong><small>{accessibilityGuide.restroom}</small></span></li>
+              </ul>
+              <div className="journey-route-sheet__venue-check">
+                <span>
+                  <strong>{venueAccessibilityVerification.checkedLabel}</strong>
+                  <small>{venueAccessibilityVerification.confirmed}</small>
+                  <small>{venueAccessibilityVerification.needsConfirmation}</small>
+                </span>
+                <a href={venueAccessibilityVerification.phoneHref} aria-label={`${venueAccessibilityVerification.phone} 편의시설 전화 확인`}>
+                  <PhoneCall aria-hidden="true" /> 전화 확인
+                </a>
+              </div>
+            </>
           ) : null}
         </section>
 
         <fieldset className="journey-route-sheet__waypoints">
           <legend>경유지 계획</legend>
           <div className="journey-route-sheet__waypoint-tools">
-            <p>방문할 목적지를 선택하면 예식 여정 순서로 안내합니다.</p>
+            <p>
+              {typeof estimatedTileCount === "number" && typeof estimatedPortalCount === "number"
+                ? `현재 위치 기준 ${estimatedTileCount}타일 · 포털 ${estimatedPortalCount}회`
+                : "방문할 목적지를 선택하면 예식 여정 순서로 안내합니다."}
+            </p>
             {onOptimizeWaypoints ? (
               <button type="button" onClick={onOptimizeWaypoints} disabled={selectedWaypointIds.length < 2}>
                 <Sparkles aria-hidden="true" /> 빠른 순서

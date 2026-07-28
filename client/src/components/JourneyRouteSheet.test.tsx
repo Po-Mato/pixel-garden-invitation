@@ -39,6 +39,9 @@ describe("JourneyRouteSheet", () => {
         checkpoint={journeyCheckpoints[0]}
         progress={createEmptyJourneyProgress()}
         guidance={null}
+        estimatedTotalLabel="약 2분"
+        estimatedTileCount={128}
+        estimatedPortalCount={3}
         stepFreeRouteEnabled
         onStepFreeRouteChange={onStepFreeRouteChange}
         onClose={vi.fn()}
@@ -48,6 +51,9 @@ describe("JourneyRouteSheet", () => {
 
     expect(screen.getByText("엘리베이터")).toBeInTheDocument();
     expect(screen.getByText("접근 가능한 화장실")).toBeInTheDocument();
+    expect(screen.getByText(/현재 위치 기준 128타일 · 포털 3회/)).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /032-347-5500 편의시설 전화 확인/ })).toHaveAttribute("href", "tel:0323475500");
+    expect(screen.getByText(/공개 안내에 없어 방문 전 확인/)).toBeInTheDocument();
     fireEvent.click(screen.getByRole("switch", { name: "계단 없는 길 우선" }));
     expect(onStepFreeRouteChange).toHaveBeenCalledWith(false);
   });

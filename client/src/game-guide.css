@@ -619,6 +619,35 @@
 .journey-route-sheet__accessible li strong { font-size: 10px; }
 .journey-route-sheet__accessible li small { color: #5f6d65; font-size: 8px; line-height: 1.55; }
 
+.journey-route-sheet__venue-check {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  margin-top: 9px;
+  padding-top: 9px;
+  border-top: 1px solid #c7d3ca;
+}
+
+.journey-route-sheet__venue-check > span { display: grid; gap: 2px; }
+.journey-route-sheet__venue-check strong { color: #456453; font-size: 9px; }
+.journey-route-sheet__venue-check small { color: #5f6d65; font-size: 8px; line-height: 1.45; }
+.journey-route-sheet__venue-check a {
+  display: inline-flex;
+  min-height: 32px;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid #88a091;
+  padding: 5px 7px;
+  background: #fff;
+  color: #365844;
+  font-size: 9px;
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.journey-route-sheet__venue-check a svg { width: 13px; height: 13px; }
+
 .journey-route-sheet__waypoints {
   display: grid;
   gap: 7px;

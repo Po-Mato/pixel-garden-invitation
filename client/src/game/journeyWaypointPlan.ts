@@ -6,7 +6,10 @@ import {
 } from "./journeyProgress";
 import type { WorldZoneId } from "@wedding-game/shared";
 import { findWorldZonePath } from "./journeyRouteSummary";
+import { resolveJourneyCheckpointRoute } from "./journeyGuidance";
+import { findNearestPortalRoute } from "./pathfinding";
 import { walkStepIntervalMs } from "./walkTiming";
+import { gardenWorld, getWorldZone, type GardenWorld, type Point } from "./world";
 
 export function remainingJourneyWaypoints(progress: JourneyProgress): JourneyCheckpoint[] {
   const completed = new Set(progress.completedIds);
@@ -53,31 +56,110 @@ export function moveJourneyWaypoint(
   return result;
 }
 
-function routeTransitionCost(activeZoneId: WorldZoneId, checkpointIds: readonly JourneyCheckpointId[]): number {
-  let cursor = activeZoneId;
-  let cost = 0;
-  for (const checkpointId of checkpointIds) {
-    const checkpoint = journeyCheckpoints.find((candidate) => candidate.id === checkpointId);
-    if (!checkpoint) continue;
-    cost += Math.max(0, findWorldZonePath(cursor, checkpoint.zoneId).length - 1);
-    cursor = checkpoint.zoneId;
+export type JourneyRouteCursor = { zoneId: WorldZoneId; position: Point };
+
+export type JourneyRouteMetrics = {
+  tileSteps: number;
+  portalTransitions: number;
+  available: boolean;
+  end: JourneyRouteCursor;
+};
+
+const portalTransitionEstimateMs = 700;
+const checkpointInteractionEstimateMs = 900;
+
+function checkpointById(id: JourneyCheckpointId): JourneyCheckpoint | null {
+  return journeyCheckpoints.find((candidate) => candidate.id === id) ?? null;
+}
+
+export function estimateJourneyCheckpointRoute(
+  start: JourneyRouteCursor,
+  checkpoint: JourneyCheckpoint,
+  world: GardenWorld = gardenWorld
+): JourneyRouteMetrics {
+  let cursor = start;
+  let tileSteps = 0;
+  let portalTransitions = 0;
+  const zonePath = findWorldZonePath(cursor.zoneId, checkpoint.zoneId, world);
+
+  if (cursor.zoneId !== checkpoint.zoneId && zonePath.at(-1) !== checkpoint.zoneId) {
+    return { tileSteps, portalTransitions, available: false, end: cursor };
   }
-  return cost;
+
+  for (const nextZoneId of zonePath.slice(1)) {
+    const zone = getWorldZone(world, cursor.zoneId);
+    const portal = zone.portals.find((candidate) => candidate.to === nextZoneId);
+    if (!portal) return { tileSteps, portalTransitions, available: false, end: cursor };
+    const route = findNearestPortalRoute(zone, cursor.position, portal);
+    if (!route) return { tileSteps, portalTransitions, available: false, end: cursor };
+    tileSteps += route.path.length;
+    portalTransitions += 1;
+    cursor = { zoneId: nextZoneId, position: portal.spawn };
+  }
+
+  const destinationZone = getWorldZone(world, checkpoint.zoneId);
+  const destinationRoute = resolveJourneyCheckpointRoute(destinationZone, cursor.position, checkpoint);
+  if (!destinationRoute) return { tileSteps, portalTransitions, available: false, end: cursor };
+
+  tileSteps += destinationRoute.path.length;
+  return {
+    tileSteps,
+    portalTransitions,
+    available: true,
+    end: { zoneId: checkpoint.zoneId, position: destinationRoute.entry }
+  };
+}
+
+function estimateCheckpointSequence(
+  start: JourneyRouteCursor,
+  checkpointIds: readonly JourneyCheckpointId[],
+  world: GardenWorld,
+  cache?: Map<string, JourneyRouteMetrics>
+): JourneyRouteMetrics {
+  let cursor = start;
+  let tileSteps = 0;
+  let portalTransitions = 0;
+
+  for (const checkpointId of checkpointIds) {
+    const checkpoint = checkpointById(checkpointId);
+    if (!checkpoint) continue;
+    const cacheKey = `${cursor.zoneId}:${cursor.position.x}:${cursor.position.y}:${checkpoint.id}`;
+    let leg = cache?.get(cacheKey);
+    if (!leg) {
+      leg = estimateJourneyCheckpointRoute(cursor, checkpoint, world);
+      cache?.set(cacheKey, leg);
+    }
+    tileSteps += leg.tileSteps;
+    portalTransitions += leg.portalTransitions;
+    cursor = leg.end;
+    if (!leg.available) {
+      return { tileSteps, portalTransitions, available: false, end: cursor };
+    }
+  }
+
+  return { tileSteps, portalTransitions, available: true, end: cursor };
 }
 
 export function optimizeJourneyWaypointPlan(
   progress: JourneyProgress,
   checkpointIds: readonly JourneyCheckpointId[],
-  activeZoneId: WorldZoneId
+  activeZoneId: WorldZoneId,
+  position: Point = getWorldZone(gardenWorld, activeZoneId).spawn,
+  world: GardenWorld = gardenWorld
 ): JourneyCheckpointId[] {
   const normalized = normalizeJourneyWaypointPlan(progress, checkpointIds);
   if (normalized.length < 2) return normalized;
 
   let best = normalized;
-  let bestCost = routeTransitionCost(activeZoneId, normalized);
+  let bestCost = Number.POSITIVE_INFINITY;
+  const start = { zoneId: activeZoneId, position };
+  const routeCache = new Map<string, JourneyRouteMetrics>();
   const visit = (prefix: JourneyCheckpointId[], remaining: JourneyCheckpointId[]) => {
     if (remaining.length === 0) {
-      const cost = routeTransitionCost(activeZoneId, prefix);
+      const estimate = estimateCheckpointSequence(start, prefix, world, routeCache);
+      const cost = estimate.available
+        ? estimate.tileSteps * walkStepIntervalMs + estimate.portalTransitions * portalTransitionEstimateMs
+        : Number.POSITIVE_INFINITY;
       if (cost < bestCost) {
         best = prefix;
         bestCost = cost;
@@ -98,6 +180,8 @@ export function optimizeJourneyWaypointPlan(
 export type JourneyWaypointEstimate = {
   waypointCount: number;
   zoneTransitions: number;
+  tileSteps: number;
+  available: boolean;
   estimatedSeconds: number;
   label: string;
 };
@@ -106,30 +190,33 @@ export function estimateJourneyWaypointPlan(
   progress: JourneyProgress,
   checkpointIds: readonly JourneyCheckpointId[],
   activeZoneId: WorldZoneId,
-  firstLegTiles = 0
+  position: Point = getWorldZone(gardenWorld, activeZoneId).spawn,
+  world: GardenWorld = gardenWorld
 ): JourneyWaypointEstimate {
   const normalized = normalizeJourneyWaypointPlan(progress, checkpointIds);
-  const checkpoints = normalized.flatMap((id) => {
-    const checkpoint = journeyCheckpoints.find((candidate) => candidate.id === id);
-    return checkpoint ? [checkpoint] : [];
-  });
-  let cursor = activeZoneId;
-  let zoneTransitions = 0;
-  for (const checkpoint of checkpoints) {
-    zoneTransitions += Math.max(0, findWorldZonePath(cursor, checkpoint.zoneId).length - 1);
-    cursor = checkpoint.zoneId;
-  }
-  const walkingSeconds = Math.ceil(Math.max(0, firstLegTiles) * walkStepIntervalMs / 1_000);
-  const estimatedSeconds = Math.max(
-    checkpoints.length > 0 ? 10 : 0,
-    walkingSeconds + zoneTransitions * 12 + checkpoints.length * 8
-  );
-  const minutes = Math.max(1, Math.ceil(estimatedSeconds / 60));
+  const checkpoints = normalized.flatMap((id) => checkpointById(id) ? [id] : []);
+  const route = estimateCheckpointSequence({ zoneId: activeZoneId, position }, checkpoints, world);
+  const estimatedSeconds = route.available
+    ? Math.ceil((
+      route.tileSteps * walkStepIntervalMs
+      + route.portalTransitions * portalTransitionEstimateMs
+      + checkpoints.length * checkpointInteractionEstimateMs
+    ) / 1_000)
+    : 0;
+  const roundedSeconds = Math.ceil(estimatedSeconds / 5) * 5;
+  const minutes = Math.floor(roundedSeconds / 60);
+  const seconds = roundedSeconds % 60;
   return {
     waypointCount: checkpoints.length,
-    zoneTransitions,
+    zoneTransitions: route.portalTransitions,
+    tileSteps: route.tileSteps,
+    available: route.available,
     estimatedSeconds,
-    label: estimatedSeconds < 60 ? `약 ${estimatedSeconds}초` : `약 ${minutes}분`
+    label: route.available
+      ? minutes > 0
+        ? `약 ${minutes}분${seconds > 0 ? ` ${seconds}초` : ""}`
+        : `약 ${roundedSeconds}초`
+      : "경로 확인 필요"
   };
 }
 

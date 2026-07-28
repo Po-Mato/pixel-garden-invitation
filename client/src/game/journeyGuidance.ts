@@ -14,6 +14,12 @@ export type JourneyGuidancePreview = {
   available: boolean;
 };
 
+export type JourneyCheckpointRoute = {
+  entry: Point;
+  path: Point[];
+  destinationPoint: Point;
+};
+
 const npcInteractionRadius = 30;
 
 function npcRect(npc: { x: number; y: number }) {
@@ -36,6 +42,36 @@ function previewFromPath(
   };
 }
 
+export function resolveJourneyCheckpointRoute(
+  zone: WorldZone,
+  position: Point,
+  checkpoint: JourneyCheckpoint
+): JourneyCheckpointRoute | null {
+  if (checkpoint.zoneId !== zone.id) return null;
+
+  if (checkpoint.target.type === "spot") {
+    const spotId = checkpoint.target.spotId;
+    const target = zone.spots.find((spot) => spot.id === spotId);
+    if (!target) return null;
+    const route = findNearestInteractionRoute(zone, position, target, target.actionRadius);
+    return route ? {
+      entry: route.entry,
+      path: route.path,
+      destinationPoint: { x: target.x + target.width / 2, y: target.y + target.height / 2 }
+    } : null;
+  }
+
+  if (checkpoint.target.type === "npc") {
+    const npcId = checkpoint.target.npcId;
+    const target = zone.npcs.find((npc) => npc.id === npcId);
+    if (!target) return null;
+    const route = findNearestInteractionRoute(zone, position, npcRect(target), npcInteractionRadius);
+    return route ? { entry: route.entry, path: route.path, destinationPoint: target } : null;
+  }
+
+  return { entry: position, path: [], destinationPoint: position };
+}
+
 export function resolveJourneyGuidance(
   zone: WorldZone,
   position: Point,
@@ -50,29 +86,9 @@ export function resolveJourneyGuidance(
     return previewFromPath(position, portal.approach, route?.path ?? null, portal.id);
   }
 
-  if (checkpoint.target.type === "spot") {
-    const spotId = checkpoint.target.spotId;
-    const target = zone.spots.find((spot) => spot.id === spotId);
-    if (!target) return null;
-    const route = findNearestInteractionRoute(zone, position, target, target.actionRadius);
-    return previewFromPath(
-      position,
-      { x: target.x + target.width / 2, y: target.y + target.height / 2 },
-      route?.path ?? null,
-      null
-    );
-  }
-
-  if (checkpoint.target.type === "npc") {
-    const npcId = checkpoint.target.npcId;
-    const target = zone.npcs.find((npc) => npc.id === npcId);
-    if (!target) return null;
-    const route = findNearestInteractionRoute(zone, position, npcRect(target), npcInteractionRadius);
-    return previewFromPath(position, target, route?.path ?? null, null);
-  }
-
-  const destination = getWorldZone(world, checkpoint.zoneId).spawn;
-  return previewFromPath(position, destination, [], null);
+  const route = resolveJourneyCheckpointRoute(zone, position, checkpoint);
+  const destination = route?.destinationPoint ?? getWorldZone(world, checkpoint.zoneId).spawn;
+  return previewFromPath(position, destination, route?.path ?? null, null);
 }
 
 export const journeyDirectionLabels: Record<Direction, string> = {

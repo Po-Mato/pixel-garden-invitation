@@ -6,6 +6,14 @@ export type JourneyAccessibilityGuide = {
   restroom: string;
 };
 
+export const venueAccessibilityVerification = {
+  checkedLabel: "2026년 7월 공식 안내 확인",
+  confirmed: "소사역 1번 출구에서 70m · 경기 부천시 소사구 경인로 386",
+  needsConfirmation: "엘리베이터, 무단차 주출입구, 접근 가능한 화장실의 위치는 공개 안내에 없어 방문 전 확인이 필요합니다.",
+  phone: "032-347-5500",
+  phoneHref: "tel:0323475500"
+} as const;
+
 const quickSectionByCheckpoint: Record<JourneyCheckpointId, string> = {
   directions: "directions",
   gallery: "gallery",
@@ -16,29 +24,29 @@ const quickSectionByCheckpoint: Record<JourneyCheckpointId, string> = {
 
 const accessibilityGuideByCheckpoint: Record<JourneyCheckpointId, JourneyAccessibilityGuide> = {
   directions: {
-    stepFree: "소사역 출구부터 예식장까지 계단 없는 보행 동선을 우선 확인해 주세요.",
-    elevator: "역사 내 엘리베이터 운행 위치는 출발 전에 교통 안내에서 확인해 주세요.",
-    restroom: "도착 후 접근 가능한 화장실은 5층 안내 데스크에서 확인해 주세요."
+    stepFree: "공식 안내는 소사역 1번 출구에서 70m입니다. 계단 없는 보행 동선은 방문 전에 확인해 주세요.",
+    elevator: "역사와 예식장 엘리베이터의 실제 운행 위치는 출발 전에 확인해 주세요.",
+    restroom: "접근 가능한 화장실의 층과 위치는 예식장 대표전화로 확인해 주세요."
   },
   gallery: {
-    stepFree: "층과 공간을 옮길 때 계단 대신 완만한 출입구를 이용해 주세요.",
-    elevator: "층 이동이 필요하면 로비 안내 데스크에서 엘리베이터 동선을 확인해 주세요.",
-    restroom: "가까운 접근 가능 화장실 위치는 예식장 안내 데스크에서 확인해 주세요."
+    stepFree: "갤러리까지 계단·문턱과 단차가 없는 동선은 도착 후 안내 데스크에서 확인해 주세요.",
+    elevator: "층 이동에 필요한 엘리베이터 위치와 운행 여부는 예식장에 문의해 주세요.",
+    restroom: "가까운 접근 가능 화장실의 실제 위치는 예식장에 문의해 주세요."
   },
   bride: {
-    stepFree: "신부대기실까지 문턱과 계단이 적은 로비 동선을 우선 이용해 주세요.",
-    elevator: "5층 도착 후 안내 데스크에서 신부대기실까지의 엘리베이터 동선을 확인해 주세요.",
-    restroom: "접근 가능한 화장실 위치는 신부대기실 방문 전에 안내 데스크에서 확인해 주세요."
+    stepFree: "신부대기실까지 계단·문턱과 단차가 없는 동선은 방문 전에 예식장에 확인해 주세요.",
+    elevator: "5층 이동에 필요한 엘리베이터 위치와 운행 여부는 예식장에 미리 문의해 주세요.",
+    restroom: "접근 가능한 화장실의 층과 위치는 신부대기실 방문 전에 확인해 주세요."
   },
   ceremony: {
-    stepFree: "파티오볼룸 입장 시 계단 없는 중앙 출입 동선을 우선 이용해 주세요.",
-    elevator: "층 이동은 계단 대신 예식장 엘리베이터 안내를 따라 주세요.",
-    restroom: "예식 전 접근 가능한 화장실 위치를 안내 데스크에서 먼저 확인해 주세요."
+    stepFree: "5층 파티오볼룸까지 계단 없이 이어지는 출입 동선은 방문 전에 예식장에 확인해 주세요.",
+    elevator: "5층까지 이용할 엘리베이터 위치와 운행 여부는 예식장에 미리 문의해 주세요.",
+    restroom: "접근 가능한 화장실의 층과 위치는 예식 전 대표전화로 확인해 주세요."
   },
   guestbook: {
-    stepFree: "방명록으로 이동할 때 계단과 높은 문턱이 없는 로비 동선을 이용해 주세요.",
-    elevator: "다른 층에서 오시는 경우 안내 데스크에 엘리베이터 동선을 문의해 주세요.",
-    restroom: "접근 가능한 화장실은 방명록 작성 전 안내 데스크에서 위치를 확인해 주세요."
+    stepFree: "방명록까지 계단·문턱과 단차가 없는 동선은 도착 후 안내 데스크에서 확인해 주세요.",
+    elevator: "다른 층에서 오시는 경우 엘리베이터 위치와 운행 여부를 예식장에 문의해 주세요.",
+    restroom: "접근 가능한 화장실의 층과 위치는 방명록 작성 전에 확인해 주세요."
   }
 };
 

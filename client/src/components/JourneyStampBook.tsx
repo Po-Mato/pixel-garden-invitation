@@ -23,7 +23,7 @@ import {
 
 type JourneyStampBookProps = {
   progress: JourneyProgress;
-  syncStatus?: "local" | "syncing" | "synced" | "error";
+  syncStatus?: "local" | "syncing" | "synced" | "queued" | "merged" | "error";
   activeZoneId: WorldZoneId;
   highlightedCheckpointId: JourneyCheckpointId | null;
   disabled?: boolean;
@@ -99,6 +99,10 @@ export function JourneyStampBook({
             <small className="journey-stamp-book__sync" data-status={syncStatus} role="status">
               {syncStatus === "synced"
                 ? "개인 초대 링크에 저장됨"
+                : syncStatus === "merged"
+                  ? "다른 기기의 기록과 합침 · 완료 기록은 유지됨"
+                  : syncStatus === "queued"
+                    ? "오프라인 변경 대기 중 · 연결되면 자동 저장"
                 : syncStatus === "syncing"
                   ? "여정을 동기화하고 있어요"
                   : syncStatus === "error"

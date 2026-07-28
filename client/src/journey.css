@@ -155,6 +155,8 @@
 }
 
 .journey-stamp-book__sync[data-status="synced"] { color: #397158; }
+.journey-stamp-book__sync[data-status="merged"] { color: #397158; }
+.journey-stamp-book__sync[data-status="queued"] { color: #8a641f; }
 .journey-stamp-book__sync[data-status="error"] { color: #9a5960; }
 
 .journey-stamp-book__next,

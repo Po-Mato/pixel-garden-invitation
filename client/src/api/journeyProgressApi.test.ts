@@ -1,6 +1,11 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { loadStoredInvitationInvite } from "../invitation/inviteLinkStorage";
-import { fetchSyncedJourneyProgress, saveSyncedJourneyProgress } from "./journeyProgressApi";
+import {
+  canSyncJourneyProgress,
+  fetchSyncedJourneyProgress,
+  journeyProgressSyncScope,
+  saveSyncedJourneyProgress
+} from "./journeyProgressApi";
 
 vi.mock("../invitation/inviteLinkStorage", () => ({ loadStoredInvitationInvite: vi.fn() }));
 
@@ -14,6 +19,8 @@ describe("journey progress API", () => {
     vi.mocked(loadStoredInvitationInvite).mockReturnValue(null);
     const fetchMock = vi.fn();
     vi.stubGlobal("fetch", fetchMock);
+    expect(canSyncJourneyProgress()).toBe(false);
+    expect(journeyProgressSyncScope()).toBeNull();
     await expect(fetchSyncedJourneyProgress()).resolves.toBeNull();
     expect(fetchMock).not.toHaveBeenCalled();
   });
@@ -26,6 +33,9 @@ describe("journey progress API", () => {
     });
     const fetchMock = vi.fn().mockImplementation(async () => new Response(JSON.stringify(progress), { status: 200 }));
     vi.stubGlobal("fetch", fetchMock);
+
+    expect(canSyncJourneyProgress()).toBe(true);
+    expect(journeyProgressSyncScope()).toMatch(/^sample-garden:[0-9a-f]{8}$/);
 
     await expect(fetchSyncedJourneyProgress()).resolves.toEqual(progress);
     await expect(saveSyncedJourneyProgress(progress)).resolves.toEqual(progress);

@@ -1,6 +1,7 @@
 import {
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
   type MouseEvent,
@@ -17,7 +18,11 @@ import {
   type WorldZoneId
 } from "@wedding-game/shared";
 import { shouldReduceMotion } from "../accessibility/viewPreferences";
-import { fetchSyncedJourneyProgress, saveSyncedJourneyProgress } from "../api/journeyProgressApi";
+import {
+  fetchSyncedJourneyProgress,
+  journeyProgressSyncScope,
+  saveSyncedJourneyProgress
+} from "../api/journeyProgressApi";
 import { computeCameraTransform, screenToWorld, type ViewportSize } from "../game/camera";
 import { resolveFootstepSurface, type FootstepSurface } from "../game/footstepSurface";
 import { computeNextGridPosition, directionFromVector, directionTowardPoint, snapToGrid } from "../game/movement";
@@ -43,6 +48,13 @@ import {
   type JourneyCheckpoint,
   type JourneyCheckpointId
 } from "../game/journeyProgress";
+import {
+  clearJourneySyncQueue,
+  journeyProgressDiffers,
+  loadJourneySyncQueue,
+  markJourneySyncAttemptFailed,
+  queueJourneyProgress
+} from "../game/journeySyncQueue";
 import { completeGameGuide, loadGameGuideState, shouldAutoOpenGameGuide } from "../game/gameGuide";
 import { journeyDirectionLabels, resolveJourneyGuidance } from "../game/journeyGuidance";
 import { quickInvitationHashForCheckpoint } from "../game/journeyAccessibility";
@@ -261,7 +273,9 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   const [travelStatus, setTravelStatus] = useState("우리 집에서 여정을 시작해요");
   const [routeRecalculationId, setRouteRecalculationId] = useState(0);
   const [journeyProgress, setJourneyProgress] = useState(loadJourneyProgress);
-  const [journeySyncStatus, setJourneySyncStatus] = useState<"local" | "syncing" | "synced" | "error">("local");
+  const [journeySyncStatus, setJourneySyncStatus] = useState<
+    "local" | "syncing" | "synced" | "queued" | "merged" | "error"
+  >("local");
   const [plannedCheckpointIds, setPlannedCheckpointIds] = useState(() => (
     remainingJourneyWaypoints(loadJourneyProgress()).map(({ id }) => id)
   ));
@@ -392,33 +406,71 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     progress: ReturnType<typeof loadJourneyProgress>,
     loadFirst = false
   ) => {
+    const syncScope = journeyProgressSyncScope();
+    if (!syncScope) {
+      setJourneySyncStatus("local");
+      return;
+    }
+
+    const queued = loadJourneySyncQueue(syncScope);
+    const pending = queued ? mergeJourneyProgress(progress, queued.progress) : progress;
+    const queueEntry = pending.completedIds.length > 0 || queued
+      ? queueJourneyProgress(syncScope, pending)
+      : null;
+    if (typeof navigator !== "undefined" && navigator.onLine === false) {
+      setJourneySyncStatus(queueEntry ? "queued" : "error");
+      return;
+    }
+
     const requestId = ++journeySyncRequestRef.current;
     setJourneySyncStatus("syncing");
     try {
       const remote = loadFirst
         ? await fetchSyncedJourneyProgress()
-        : await saveSyncedJourneyProgress(progress);
+        : await saveSyncedJourneyProgress(pending);
       if (requestId !== journeySyncRequestRef.current) return;
       if (!remote) {
         setJourneySyncStatus("local");
         return;
       }
-      const merged = applyJourneyProgress(remote);
-      if (loadFirst && merged.completedIds.some((id) => !remote.completedIds.includes(id))) {
+
+      const shouldShowMerge = loadFirst
+        && pending.completedIds.length > 0
+        && journeyProgressDiffers(pending, remote);
+      const merged = applyJourneyProgress(loadFirst ? mergeJourneyProgress(pending, remote) : remote);
+      if (loadFirst && journeyProgressDiffers(merged, remote)) {
         const saved = await saveSyncedJourneyProgress(merged);
         if (saved && requestId === journeySyncRequestRef.current) applyJourneyProgress(saved);
       }
-      if (requestId === journeySyncRequestRef.current) setJourneySyncStatus("synced");
+      if (requestId === journeySyncRequestRef.current) {
+        if (queueEntry) clearJourneySyncQueue(syncScope, queueEntry.progress);
+        setJourneySyncStatus(shouldShowMerge ? "merged" : "synced");
+      }
     } catch {
-      if (requestId === journeySyncRequestRef.current) setJourneySyncStatus("error");
+      if (requestId === journeySyncRequestRef.current) {
+        markJourneySyncAttemptFailed(syncScope);
+        setJourneySyncStatus(queueEntry ? "queued" : "error");
+      }
     }
   }, [applyJourneyProgress]);
 
   useEffect(() => {
     void syncJourneyProgress(journeyProgressRef.current, true);
-    const retry = () => { void syncJourneyProgress(journeyProgressRef.current); };
+    const retry = () => {
+      const syncScope = journeyProgressSyncScope();
+      const queued = syncScope ? loadJourneySyncQueue(syncScope) : null;
+      void syncJourneyProgress(queued?.progress ?? journeyProgressRef.current);
+    };
+    const markOffline = () => {
+      const syncScope = journeyProgressSyncScope();
+      if (syncScope && loadJourneySyncQueue(syncScope)) setJourneySyncStatus("queued");
+    };
     window.addEventListener("online", retry);
-    return () => window.removeEventListener("online", retry);
+    window.addEventListener("offline", markOffline);
+    return () => {
+      window.removeEventListener("online", retry);
+      window.removeEventListener("offline", markOffline);
+    };
   }, [syncJourneyProgress]);
 
   const stampJourneyCheckpoint = useCallback((checkpointId: JourneyCheckpointId) => {
@@ -1581,12 +1633,9 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
       : `${journeyGuidance.direction ? `${journeyDirectionLabels[journeyGuidance.direction]} · ` : ""}${journeyGuidance.tileCount}타일`
     : "경로 확인 필요";
   const journeyOverallSummary = summarizeRemainingJourney(journeyProgress, activeZone.id);
-  const journeyPlanEstimate = estimateJourneyWaypointPlan(
-    journeyProgress,
-    plannedCheckpointIds,
-    activeZone.id,
-    journeyGuidance?.available ? journeyGuidance.tileCount : 0
-  );
+  const journeyPlanEstimate = useMemo(() => journeyRouteOpen
+    ? estimateJourneyWaypointPlan(journeyProgress, plannedCheckpointIds, activeZone.id, position)
+    : null, [activeZone.id, journeyProgress, journeyRouteOpen, plannedCheckpointIds, position]);
   const journeyRoutePoints = activeJourneyGuideId && journeyGuidance?.available
     ? [position, ...journeyGuidance.path]
     : [];
@@ -1699,7 +1748,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
             <button
               type="button"
               className="world-accessible-route"
-              aria-label={`쉬운 길찾기 열기, 남은 추억 ${journeyOverallSummary.remainingCheckpoints}개, 예상 ${journeyOverallSummary.estimatedStages}단계`}
+              aria-label={`쉬운 길찾기 열기, 남은 추억 ${journeyOverallSummary.remainingCheckpoints}개, 실제 타일 경로 확인`}
               onClick={() => {
                 pauseWorldInput();
                 setJourneyRouteOpen(true);
@@ -1707,7 +1756,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
             >
               <Accessibility aria-hidden="true" />
               <strong>쉬운 길찾기</strong>
-              <span>남은 {journeyOverallSummary.remainingCheckpoints}개 · 맵 이동 {journeyOverallSummary.zoneTransitions}회 · 예상 {journeyOverallSummary.estimatedStages}단계</span>
+              <span>남은 {journeyOverallSummary.remainingCheckpoints}개 · 맵 이동 {journeyOverallSummary.zoneTransitions}회 · 실제 타일 경로 확인</span>
             </button>
           </>
         ) : null}
@@ -2155,9 +2204,11 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
             moveJourneyWaypoint(journeyProgress, current, checkpointId, moveDirection)
           ))}
           onOptimizeWaypoints={() => setPlannedCheckpointIds((current) => (
-            optimizeJourneyWaypointPlan(journeyProgress, current, activeZone.id)
+            optimizeJourneyWaypointPlan(journeyProgress, current, activeZone.id, position)
           ))}
-          estimatedTotalLabel={journeyPlanEstimate.label}
+          estimatedTotalLabel={journeyPlanEstimate?.label}
+          estimatedTileCount={journeyPlanEstimate?.tileSteps}
+          estimatedPortalCount={journeyPlanEstimate?.zoneTransitions}
           stepFreeRouteEnabled={viewPreferences.stepFreeRouteEnabled}
           onStepFreeRouteChange={setStepFreeRouteEnabled}
           onClose={() => setJourneyRouteOpen(false)}
