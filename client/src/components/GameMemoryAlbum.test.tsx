@@ -19,12 +19,14 @@ describe("GameMemoryAlbum", () => {
       collectedCount={30}
       totalCollectibles={30}
       rewardUnlocked
+      nickname="정원하객"
       onClose={vi.fn()}
       onOpenPhotoAlbum={onOpenPhotoAlbum}
     />);
 
     expect(screen.getByRole("dialog", { name: "게임 추억 앨범" })).toHaveTextContent("획득 완료");
     expect(screen.getByText("하객과 동행")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "저장" })).toBeEnabled();
     fireEvent.click(screen.getByRole("button", { name: /포토존 사진/ }));
     expect(onOpenPhotoAlbum).toHaveBeenCalledOnce();
   });

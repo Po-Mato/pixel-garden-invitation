@@ -2401,6 +2401,52 @@ describe("GameWorld", () => {
     expect(screen.getByText("상대가 내 걸음을 따라와요")).toBeInTheDocument();
   });
 
+  it("lets the companion leader choose a shared portal and waits for both guests", () => {
+    configureRealtime();
+    render(<GameWorld profile={profile} />);
+    const socket = MockWebSocket.instances[0];
+    act(() => socket.emit("open"));
+    act(() => socket.emitJson({
+      type: "welcome",
+      guestId: "guest_self",
+      guests: [serverGuest()]
+    }));
+    act(() => socket.emitJson({
+      type: "companion_invited",
+      requesterGuestId: "guest_remote",
+      requesterNickname: "하객2",
+      zoneId: "home"
+    }));
+    fireEvent.click(screen.getByRole("button", { name: "수락" }));
+
+    fireEvent.click(screen.getByRole("button", { name: "동행 공동 목적지 선택" }));
+    const destinationSheet = screen.getByRole("dialog", { name: "동행 공동 목적지 선택" });
+    fireEvent.click(within(destinationSheet).getByRole("button", { name: /동네 거리/ }));
+
+    expect(socket.sentMessages.map((message) => JSON.parse(message))).toContainEqual({
+      type: "companion_destination",
+      targetGuestId: "guest_remote",
+      portalId: "home-to-neighborhood",
+      destinationZoneId: "neighborhood"
+    });
+    advanceRouteToPortalArrival();
+    expect(screen.getByText("포털에 도착했어요 · 동행 하객을 기다리는 중")).toBeInTheDocument();
+    expect(socket.sentMessages.map((message) => JSON.parse(message))).toContainEqual({
+      type: "companion_portal_ready",
+      targetGuestId: "guest_remote",
+      portalId: "home-to-neighborhood",
+      destinationZoneId: "neighborhood"
+    });
+
+    act(() => socket.emitJson({
+      type: "companion_portal_ready",
+      guestId: "guest_remote",
+      portalId: "home-to-neighborhood",
+      destinationZoneId: "neighborhood"
+    }));
+    expect(screen.getByTestId("world-portal-transition")).toBeInTheDocument();
+  });
+
   it("walks to a celebration item before collecting it", () => {
     render(<GameWorld profile={profile} />);
     const collectButton = screen.getByRole("button", { name: "축하 꽃잎 수집하기" });
@@ -2412,6 +2458,19 @@ describe("GameWorld", () => {
     advanceInteractionRoute();
     expect(screen.getByLabelText(/축하 아이템 1\//)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "축하 꽃잎 수집 완료" })).toBeDisabled();
+  });
+
+  it("opens the collection map and starts guidance to a remaining item", () => {
+    render(<GameWorld profile={profile} />);
+
+    fireEvent.click(screen.getByRole("button", { name: /축하 아이템 0\/30, 수집 지도 열기/ }));
+    const guide = screen.getByRole("dialog", { name: "축하 아이템 수집 지도" });
+    expect(within(guide).getByRole("region", { name: "맵별 수집 현황" })).toBeInTheDocument();
+    fireEvent.click(within(guide).getByRole("button", { name: /축하 꽃잎/ }));
+
+    expect(screen.queryByRole("dialog", { name: "축하 아이템 수집 지도" })).not.toBeInTheDocument();
+    expect(screen.getByText("축하 꽃잎 가까이 이동 중")).toBeInTheDocument();
+    expect(screen.getAllByTestId("minimap-collectible-marker")).toHaveLength(3);
   });
 
   it("unlocks the limited photo frame after collecting all thirty items", () => {
@@ -2426,7 +2485,7 @@ describe("GameWorld", () => {
 
     expect(screen.getByRole("dialog", { name: "축하 아이템 완주 보상" }))
       .toHaveTextContent("축복의 꽃 정원 프레임 획득");
-    expect(screen.getByLabelText("축하 아이템 30/30")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /축하 아이템 30\/30/ })).toBeInTheDocument();
   });
 
   it("opens a combined game memory album from the invitation menu", () => {
@@ -2461,6 +2520,8 @@ describe("GameWorld", () => {
 
     expect(screen.getByRole("status", { name: "하객 협동 축하 성공" })).toHaveTextContent("함께 만든 축하 꽃비");
     expect(window.localStorage.getItem(gameMemoryAlbumStorageKey)).toContain("celebration");
+    fireEvent.click(screen.getByRole("button", { name: "단체 사진 남기기" }));
+    expect(screen.getByRole("dialog", { name: "웨딩 포토존 촬영" })).toHaveTextContent("하객2님과 함께 촬영합니다");
   });
 
   it("stops before an occupied tile and continues after the remote guest moves", () => {

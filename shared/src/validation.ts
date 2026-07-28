@@ -72,6 +72,18 @@ export function parseClientMessage(value: unknown): ClientMessage | null {
     return { type: "companion_reply", requesterGuestId, accepted: value.accepted };
   }
 
+  if (value.type === "companion_destination" || value.type === "companion_portal_ready") {
+    const targetGuestId = sanitizeText(value.targetGuestId, 80);
+    const portalId = sanitizeText(value.portalId, 100);
+    if (!targetGuestId || !portalId || !zones.has(value.destinationZoneId as WorldZoneId)) return null;
+    return {
+      type: value.type,
+      targetGuestId,
+      portalId,
+      destinationZoneId: value.destinationZoneId as WorldZoneId
+    };
+  }
+
   if (value.type === "ping") return { type: "ping" };
   if (value.type === "leave") return { type: "leave" };
   return null;

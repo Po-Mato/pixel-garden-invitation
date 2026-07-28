@@ -10,6 +10,7 @@ type WorldCelebrationCollectiblesProps = {
 type CelebrationCollectionProgressProps = {
   collectedCount: number;
   totalCount: number;
+  onOpenGuide?: () => void;
 };
 
 const collectibleIcons = { petal: Flower2, ribbon: Gift, star: Sparkles } as const;
@@ -49,11 +50,18 @@ export function WorldCelebrationCollectibles({
 
 export function CelebrationCollectionProgress({
   collectedCount,
-  totalCount
+  totalCount,
+  onOpenGuide
 }: CelebrationCollectionProgressProps) {
-  return (
-    <div className="world-collection-progress" aria-label={`축하 아이템 ${collectedCount}/${totalCount}`}>
-      <Flower2 aria-hidden="true" /><span><strong>{collectedCount}</strong>/{totalCount}</span>
-    </div>
+  const content = <><Flower2 aria-hidden="true" /><span><strong>{collectedCount}</strong>/{totalCount}</span></>;
+  return onOpenGuide ? (
+    <button
+      type="button"
+      className="world-collection-progress"
+      aria-label={`축하 아이템 ${collectedCount}/${totalCount}, 수집 지도 열기`}
+      onClick={(event) => { event.stopPropagation(); onOpenGuide(); }}
+    >{content}</button>
+  ) : (
+    <div className="world-collection-progress" aria-label={`축하 아이템 ${collectedCount}/${totalCount}`}>{content}</div>
   );
 }

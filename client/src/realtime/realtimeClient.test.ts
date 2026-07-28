@@ -177,6 +177,18 @@ describe("connectRealtime", () => {
     }, {
       type: "companion_stopped",
       guestId: "guest_requester"
+    }, {
+      type: "companion_destination_set",
+      guestId: "guest_invited",
+      guestNickname: "수락 하객",
+      portalId: "home-to-neighborhood",
+      destinationZoneId: "neighborhood",
+      zoneId: "home"
+    }, {
+      type: "companion_portal_ready",
+      guestId: "guest_invited",
+      portalId: "home-to-neighborhood",
+      destinationZoneId: "neighborhood"
     }];
 
     messages.forEach((message) => socket.emit("message", new MessageEvent("message", {

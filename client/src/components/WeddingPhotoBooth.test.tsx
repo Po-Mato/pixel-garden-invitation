@@ -147,9 +147,11 @@ describe("WeddingPhotoBooth", () => {
 
     expect(screen.getByText("축복의 꽃 정원 한정 프레임 적용 중")).toBeInTheDocument();
     expect(screen.getByLabelText(`${spot.sceneLabel} 촬영 미리보기`)).toHaveAttribute("data-celebration-frame", "true");
+    fireEvent.click(screen.getByRole("button", { name: "로즈" }));
+    fireEvent.click(screen.getByRole("button", { name: "리본" }));
     fireEvent.click(screen.getByRole("button", { name: "기념 촬영" }));
     await waitFor(() => expect(photoMocks.create).toHaveBeenCalledWith(expect.objectContaining({
-      celebrationFrame: true
+      celebrationFrame: { palette: "rose", decoration: "ribbons" }
     })));
   });
 });

@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { defaultFeedbackPreferences } from "./feedbackPreferences";
 import {
   GameAudioEngine,
+  triggerCollectionProximityHaptic,
   triggerHaptic,
   triggerJourneyHaptic,
   triggerPortalDirectionHaptic,
@@ -582,5 +583,20 @@ describe("triggerHaptic", () => {
     const serializedPatterns = vibrate.mock.calls.map(([pattern]) => JSON.stringify(pattern));
     expect(new Set(serializedPatterns)).toHaveProperty("size", 10);
     expect(triggerJourneyHaptic("ceremony", "arrived", undefined)).toBe(false);
+  });
+
+  it("increases collection guidance haptics as the guest approaches", () => {
+    const vibrate = vi.fn<(pattern: number | number[]) => boolean>(() => true);
+
+    (["near", "close", "arrived"] as const).forEach((proximity) => {
+      triggerCollectionProximityHaptic(proximity, vibrate);
+    });
+
+    expect(vibrate.mock.calls.map(([pattern]) => pattern)).toEqual([
+      8,
+      [9, 28, 9],
+      [12, 20, 12, 20, 22]
+    ]);
+    expect(triggerCollectionProximityHaptic("near", undefined)).toBe(false);
   });
 });

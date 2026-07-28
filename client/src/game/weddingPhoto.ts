@@ -2,6 +2,10 @@ import {
   type CharacterAppearance
 } from "@wedding-game/shared";
 import { resolveCharacterPortraitUrl } from "../character/assets";
+import {
+  defaultCelebrationFrame,
+  type CelebrationFrameSelection
+} from "./celebrationFrame";
 import { resolveWorldMapAsset } from "./worldVisuals";
 import type { WorldPhotoPose, WorldPhotoSpot, WorldPhotoSpotId } from "./world";
 
@@ -18,7 +22,7 @@ export type WeddingPhotoData = {
     guestName: string;
     appearance: CharacterAppearance;
   }[];
-  celebrationFrame?: boolean;
+  celebrationFrame?: CelebrationFrameSelection | boolean;
 };
 
 export type WeddingPhotoMemory = {
@@ -473,12 +477,23 @@ function safeGuestName(guestName: string) {
   return guestName.trim().replace(/[^0-9A-Za-z가-힣_-]+/g, "-").replace(/^-+|-+$/g, "");
 }
 
-function drawCelebrationFrame(context: CanvasRenderingContext2D) {
+function drawCelebrationFrame(
+  context: CanvasRenderingContext2D,
+  selection: CelebrationFrameSelection | true
+) {
+  const frame = selection === true ? defaultCelebrationFrame : selection;
+  const palettes = {
+    garden: { outer: "rgba(224, 239, 196, 0.96)", inner: "rgba(92, 132, 96, 0.92)", accent: "#d98fa2", detail: "#f4d786" },
+    rose: { outer: "rgba(255, 221, 229, 0.96)", inner: "rgba(164, 76, 103, 0.92)", accent: "#c35f82", detail: "#f0bdc9" },
+    starlight: { outer: "rgba(225, 232, 255, 0.96)", inner: "rgba(74, 84, 135, 0.92)", accent: "#727fcb", detail: "#f1d575" },
+    "wedding-day": { outer: "rgba(255, 241, 181, 0.98)", inner: "rgba(184, 125, 52, 0.96)", accent: "#d49b42", detail: "#fff1ad" }
+  } as const;
+  const colors = palettes[frame.palette];
   context.save();
-  context.strokeStyle = "rgba(255, 238, 183, 0.96)";
+  context.strokeStyle = colors.outer;
   context.lineWidth = 18;
   context.strokeRect(28, 28, weddingPhotoWidth - 56, weddingPhotoHeight - 56);
-  context.strokeStyle = "rgba(174, 91, 116, 0.9)";
+  context.strokeStyle = colors.inner;
   context.lineWidth = 6;
   context.strokeRect(45, 45, weddingPhotoWidth - 90, weddingPhotoHeight - 90);
 
@@ -487,16 +502,32 @@ function drawCelebrationFrame(context: CanvasRenderingContext2D) {
     context.save();
     context.translate(x, y);
     context.rotate(cornerIndex * Math.PI / 2);
-    for (let petal = 0; petal < 6; petal += 1) {
-      context.save();
-      context.rotate((Math.PI * 2 * petal) / 6);
-      context.fillStyle = petal % 2 === 0 ? "#d98fa2" : "#f4d786";
-      context.beginPath();
-      context.ellipse(0, -23, 10, 24, 0, 0, Math.PI * 2);
-      context.fill();
-      context.restore();
+    if (frame.decoration === "flowers") {
+      for (let petal = 0; petal < 6; petal += 1) {
+        context.save();
+        context.rotate((Math.PI * 2 * petal) / 6);
+        context.fillStyle = petal % 2 === 0 ? colors.accent : colors.detail;
+        context.beginPath();
+        context.ellipse(0, -23, 10, 24, 0, 0, Math.PI * 2);
+        context.fill();
+        context.restore();
+      }
+    } else if (frame.decoration === "ribbons") {
+      context.fillStyle = colors.accent;
+      context.rotate(-Math.PI / 4);
+      context.fillRect(-12, -36, 24, 72);
+      context.rotate(Math.PI / 2);
+      context.fillRect(-12, -36, 24, 72);
+    } else {
+      for (let star = 0; star < 8; star += 1) {
+        context.save();
+        context.rotate((Math.PI * 2 * star) / 8);
+        context.fillStyle = star % 2 === 0 ? colors.accent : colors.detail;
+        context.fillRect(-6, -34, 12, 12);
+        context.restore();
+      }
     }
-    context.fillStyle = "#fff1ad";
+    context.fillStyle = colors.detail;
     context.beginPath();
     context.arc(0, 0, 10, 0, Math.PI * 2);
     context.fill();
@@ -589,7 +620,7 @@ export async function createWeddingPhotoCapture(data: WeddingPhotoData): Promise
   context.fillStyle = "#54735d";
   context.font = "800 23px sans-serif";
   context.fillText("오늘의 축하를 오래 간직할게요", weddingPhotoWidth / 2, 1314);
-  if (data.celebrationFrame) drawCelebrationFrame(context);
+  if (data.celebrationFrame) drawCelebrationFrame(context, data.celebrationFrame);
 
   return {
     blob: await canvasToBlob(canvas),

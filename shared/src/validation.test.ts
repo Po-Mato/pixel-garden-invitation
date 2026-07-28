@@ -91,8 +91,13 @@ describe("parseClientMessage", () => {
       .toEqual({ type: "companion_reply", requesterGuestId: "guest_one", accepted: true });
     expect(parseClientMessage({ type: "companion_stop", targetGuestId: "guest_two" }))
       .toEqual({ type: "companion_stop", targetGuestId: "guest_two" });
+    expect(parseClientMessage({ type: "companion_destination", targetGuestId: "guest_two", portalId: "home-to-neighborhood", destinationZoneId: "neighborhood" }))
+      .toEqual({ type: "companion_destination", targetGuestId: "guest_two", portalId: "home-to-neighborhood", destinationZoneId: "neighborhood" });
+    expect(parseClientMessage({ type: "companion_portal_ready", targetGuestId: "guest_two", portalId: "home-to-neighborhood", destinationZoneId: "neighborhood" }))
+      .toEqual({ type: "companion_portal_ready", targetGuestId: "guest_two", portalId: "home-to-neighborhood", destinationZoneId: "neighborhood" });
     expect(parseClientMessage({ type: "companion_reply", requesterGuestId: "", accepted: true })).toBeNull();
     expect(parseClientMessage({ type: "companion_reply", requesterGuestId: "guest_one", accepted: "yes" })).toBeNull();
+    expect(parseClientMessage({ type: "companion_destination", targetGuestId: "guest_two", portalId: "", destinationZoneId: "neighborhood" })).toBeNull();
   });
 
   it("rejects an unknown move zone", () => {

@@ -233,6 +233,64 @@
 .world-companion-dock > div button span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .world-companion-dock__stop { position: absolute; top: 2px; right: 2px; width: 25px; height: 25px; padding: 5px; border: 0; background: transparent; }
 .world-companion-dock > small { display: block; margin-top: 3px; color: #627567; font-size: 8px; }
+.world-companion-dock > .world-companion-dock__actions { position: absolute; top: 2px; right: 2px; display: flex; gap: 1px; margin: 0; overflow: visible; }
+.world-companion-dock > .world-companion-dock__actions button { position: static; display: grid; width: 25px; height: 25px; place-items: center; padding: 5px; border: 0; background: transparent; }
+.world-companion-dock > .world-companion-dock__actions .world-companion-dock__destination { color: #4e7259; }
+
+.companion-destination-sheet,
+.celebration-collection-guide {
+  position: fixed;
+  z-index: 25000;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  width: min(100%, 620px);
+  margin: 0 auto;
+  padding: max(16px, env(safe-area-inset-top)) 14px max(18px, env(safe-area-inset-bottom));
+  color: #443d39;
+  background: #f8f5ec;
+  overflow-y: auto;
+}
+.companion-destination-sheet > header,
+.celebration-collection-guide > header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding: 7px 2px 15px; border-bottom: 1px solid #d8cbc0; }
+.companion-destination-sheet > header small,
+.celebration-collection-guide > header small { color: #9e6472; font-size: 9px; font-weight: 900; }
+.companion-destination-sheet > header h2,
+.celebration-collection-guide > header h2 { margin: 3px 0 0; font-size: 21px; }
+.companion-destination-sheet > header p { margin: 5px 0 0; color: #746963; font-size: 10px; }
+.companion-destination-sheet > header > button,
+.celebration-collection-guide > header > button { display: grid; width: 40px; height: 40px; flex: 0 0 auto; place-items: center; padding: 8px; border: 1px solid #bbaa9d; border-radius: 4px; background: #fff; }
+.companion-destination-sheet > div { display: grid; gap: 8px; padding: 16px 0; }
+.companion-destination-sheet > div > button { display: grid; min-height: 68px; grid-template-columns: 34px minmax(0, 1fr) 24px; align-items: center; gap: 10px; padding: 11px; color: #415047; text-align: left; background: #fff; border: 1px solid #b9c7b8; border-radius: 6px; }
+.companion-destination-sheet > div > button > svg { width: 23px; color: #66836d; }
+.companion-destination-sheet > div > button span { display: grid; gap: 3px; min-width: 0; }
+.companion-destination-sheet > div > button strong { font-size: 13px; }
+.companion-destination-sheet > div > button small { color: #6e786f; font-size: 9px; }
+
+.celebration-collection-guide__zones { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; padding: 14px 0; }
+.celebration-collection-guide__zones > span { display: flex; align-items: center; justify-content: space-between; gap: 6px; min-width: 0; padding: 8px 9px; background: #eee9df; border: 1px solid #d6c9bd; border-radius: 4px; }
+.celebration-collection-guide__zones > span[data-current="true"] { background: #eef5ea; border-color: #78917b; }
+.celebration-collection-guide__zones > span[data-complete="true"] { color: #516a57; }
+.celebration-collection-guide__zones strong { overflow: hidden; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
+.celebration-collection-guide__zones small { flex: 0 0 auto; font-size: 9px; }
+.celebration-collection-guide__current h3 { display: flex; align-items: center; gap: 6px; margin: 4px 0 9px; font-size: 14px; }
+.celebration-collection-guide__current h3 svg { width: 18px; color: #a35f73; }
+.celebration-collection-guide__current > div { display: grid; gap: 7px; }
+.celebration-collection-guide__current button { display: grid; min-height: 60px; grid-template-columns: 30px minmax(0, 1fr) 22px; align-items: center; gap: 8px; padding: 9px; color: #514641; text-align: left; background: #fff; border: 1px solid #d5c7bb; border-radius: 5px; }
+.celebration-collection-guide__current button[data-guided="true"] { background: #fff4d9; border-color: #b88455; }
+.celebration-collection-guide__current button:disabled { color: #718072; background: #edf2e9; opacity: 1; }
+.celebration-collection-guide__current button > svg { width: 20px; color: #a76276; }
+.celebration-collection-guide__current button span { display: grid; gap: 2px; }
+.celebration-collection-guide__current button strong { font-size: 12px; }
+.celebration-collection-guide__current button small { font-size: 9px; }
+.celebration-collection-guide__next { display: flex; align-items: center; gap: 9px; margin: 14px 0 0; padding: 12px; color: #4c5e51; text-align: left; background: #edf5ea; border: 1px solid #8ca18c; border-radius: 5px; font-size: 10px; }
+.celebration-collection-guide__next svg { width: 21px; flex: 0 0 auto; }
+
+.world-minimap__collectible-marker circle { fill: rgba(255, 244, 194, 0.95); stroke: #a45f73; stroke-width: 1.5; }
+.world-minimap__collectible-marker path { fill: #b7677b; }
+.world-minimap__collectible-marker[data-kind="ribbon"] circle { stroke: #68826c; }
+.world-minimap__collectible-marker[data-kind="star"] circle { stroke: #9b7c3d; }
+.world-minimap__collectible-marker[data-highlighted="true"] circle { fill: #fff2a6; stroke-width: 2.5; }
 
 .companion-invitation {
   position: absolute;
@@ -310,9 +368,15 @@
 .world-cooperative-celebration i:nth-child(4n) { left: 87%; color: #f0d483; }
 .world-cooperative-celebration i svg { width: 13px; }
 .world-cooperative-celebration > p { display: grid; justify-items: center; gap: 2px; padding: 10px 18px; color: #6e4650; background: rgba(255, 250, 231, 0.94); border: 2px solid #bd7787; border-radius: 6px; box-shadow: 0 8px 24px rgba(67, 41, 47, 0.2); }
+.world-cooperative-celebration > p { pointer-events: auto; }
 .world-cooperative-celebration > p svg { width: 24px; }
+.world-cooperative-celebration > p small { color: #9a6873; font-size: 8px; font-weight: 900; }
 .world-cooperative-celebration > p strong { font-size: 13px; }
 .world-cooperative-celebration > p span { font-size: 9px; }
+.world-cooperative-celebration > p button { display: inline-flex; min-height: 30px; align-items: center; gap: 4px; margin-top: 5px; padding: 5px 8px; color: #fff; background: #9f5d70; border: 0; border-radius: 4px; font-size: 9px; font-weight: 900; }
+.world-cooperative-celebration > p button svg { width: 14px; }
+.world-cooperative-celebration[data-tier="chorus"] > p { border-color: #8b9a68; box-shadow: 0 8px 28px rgba(70, 84, 45, 0.28); }
+.world-cooperative-celebration[data-tier="festival"] > p { padding: 14px 22px; border-color: #b78b42; box-shadow: 0 0 0 4px rgba(255, 231, 143, 0.35), 0 12px 34px rgba(82, 54, 30, 0.3); }
 
 .game-memory-album {
   position: fixed;
@@ -344,6 +408,16 @@
 .game-memory-album__reward span { font-size: 9px; }
 .game-memory-album__photos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; margin-top: 12px; }
 .game-memory-album__photos img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border: 2px solid #fff; box-shadow: 0 2px 8px rgba(65, 46, 42, 0.16); }
+.game-memory-album__keepsake { display: grid; gap: 9px; margin-top: 12px; padding: 12px; background: #edf3e8; border: 1px solid #a9b9a2; border-radius: 6px; }
+.game-memory-album__keepsake > div:first-child { display: grid; gap: 3px; }
+.game-memory-album__keepsake strong { font-size: 13px; }
+.game-memory-album__keepsake span { color: #687165; font-size: 9px; }
+.game-memory-album__keepsake > div:nth-child(2) { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+.game-memory-album__keepsake button { display: inline-flex; min-height: 40px; align-items: center; justify-content: center; gap: 5px; padding: 8px; color: #fff; background: #647f69; border: 0; border-radius: 4px; font-size: 10px; font-weight: 900; }
+.game-memory-album__keepsake button:last-child { background: #a45f73; }
+.game-memory-album__keepsake button svg { width: 15px; }
+.game-memory-album__keepsake button:disabled { background: #aaa49c; }
+.game-memory-album__keepsake p { margin: 0; color: #6e665f; font-size: 9px; text-align: center; }
 .game-memory-album__timeline { padding: 16px 0 24px; }
 .game-memory-album__timeline h3 { margin: 0 0 9px; font-size: 14px; }
 .game-memory-album__timeline article { display: grid; grid-template-columns: 32px minmax(0, 1fr) auto; align-items: center; gap: 8px; padding: 10px 2px; border-bottom: 1px solid #dfd4c9; }
@@ -363,6 +437,20 @@
   border: 4px double rgba(255, 237, 178, 0.92);
   box-shadow: inset 0 0 0 3px rgba(178, 105, 126, 0.7), inset 0 0 22px rgba(255, 242, 192, 0.42);
 }
+.wedding-photo-booth__scene[data-frame-palette="garden"]::after { border-color: rgba(225, 239, 196, 0.96); box-shadow: inset 0 0 0 3px rgba(92, 132, 96, 0.76), inset 0 0 22px rgba(238, 247, 202, 0.5); }
+.wedding-photo-booth__scene[data-frame-palette="rose"]::after { border-color: rgba(255, 220, 228, 0.96); box-shadow: inset 0 0 0 3px rgba(164, 76, 103, 0.76), inset 0 0 22px rgba(255, 225, 233, 0.5); }
+.wedding-photo-booth__scene[data-frame-palette="starlight"]::after { border-color: rgba(225, 232, 255, 0.96); box-shadow: inset 0 0 0 3px rgba(74, 84, 135, 0.78), inset 0 0 22px rgba(229, 234, 255, 0.5); }
+.wedding-photo-booth__scene[data-frame-palette="wedding-day"]::after { border-color: rgba(255, 240, 177, 0.98); box-shadow: inset 0 0 0 3px rgba(184, 125, 52, 0.82), inset 0 0 28px rgba(255, 225, 112, 0.62); }
+.wedding-photo-booth__scene[data-frame-decoration="ribbons"]::after { border-style: dashed; }
+.wedding-photo-booth__scene[data-frame-decoration="stars"]::after { border-style: dotted; }
+.wedding-photo-booth__frame-options { display: grid; gap: 6px; margin: 4px 0; padding: 8px; background: #f7f1e6; border: 1px solid #d6c7b9; border-radius: 5px; }
+.wedding-photo-booth__frame-options > div { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 4px; }
+.wedding-photo-booth__frame-options button { display: grid; min-height: 38px; place-items: center; gap: 1px; padding: 4px; color: #625650; background: #fff; border: 1px solid #cdbfb3; border-radius: 4px; font-size: 8px; }
+.wedding-photo-booth__frame-options button[aria-pressed="true"] { color: #fff; background: #6f8974; border-color: #516b56; }
+.wedding-photo-booth__frame-options button[data-palette="rose"][aria-pressed="true"] { background: #a96476; }
+.wedding-photo-booth__frame-options button[data-palette="starlight"][aria-pressed="true"] { background: #65709e; }
+.wedding-photo-booth__frame-options button[data-palette="wedding-day"][aria-pressed="true"] { color: #493612; background: #e5bc61; }
+.wedding-photo-booth__frame-options button svg { width: 14px; height: 14px; }
 .wedding-photo-booth__reward-note { margin: 4px 0 0; color: #9c596e; font-size: 9px; font-weight: 800; text-align: center; }
 
 html[data-game-ui-scale="large"] .game-world :is(.world-journey__button, .world-menu-grid button) {

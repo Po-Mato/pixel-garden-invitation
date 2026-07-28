@@ -346,6 +346,36 @@ describe("GardenRoom companion invitations", () => {
     });
 
     vi.mocked(Date.now).mockReturnValue(2_000);
+    room.webSocketMessage(asWebSocket(invited), JSON.stringify({
+      type: "companion_destination",
+      targetGuestId: requesterId,
+      portalId: "home-to-neighborhood",
+      destinationZoneId: "neighborhood"
+    }));
+    expect(requester.sent.map((payload) => JSON.parse(payload))).toContainEqual({
+      type: "companion_destination_set",
+      guestId: invitedId,
+      guestNickname: "수락 하객",
+      portalId: "home-to-neighborhood",
+      destinationZoneId: "neighborhood",
+      zoneId: "home"
+    });
+
+    vi.mocked(Date.now).mockReturnValue(3_000);
+    room.webSocketMessage(asWebSocket(requester), JSON.stringify({
+      type: "companion_portal_ready",
+      targetGuestId: invitedId,
+      portalId: "home-to-neighborhood",
+      destinationZoneId: "neighborhood"
+    }));
+    expect(invited.sent.map((payload) => JSON.parse(payload))).toContainEqual({
+      type: "companion_portal_ready",
+      guestId: requesterId,
+      portalId: "home-to-neighborhood",
+      destinationZoneId: "neighborhood"
+    });
+
+    vi.mocked(Date.now).mockReturnValue(4_000);
     room.webSocketMessage(asWebSocket(requester), JSON.stringify({
       type: "companion_stop",
       targetGuestId: invitedId

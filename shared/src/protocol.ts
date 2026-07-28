@@ -43,6 +43,8 @@ export type ClientMessage =
   | { type: "companion_invite"; targetGuestId: string }
   | { type: "companion_reply"; requesterGuestId: string; accepted: boolean }
   | { type: "companion_stop"; targetGuestId: string }
+  | { type: "companion_destination"; targetGuestId: string; portalId: string; destinationZoneId: WorldZoneId }
+  | { type: "companion_portal_ready"; targetGuestId: string; portalId: string; destinationZoneId: WorldZoneId }
   | { type: "ping" }
   | { type: "leave" };
 
@@ -54,6 +56,8 @@ export type ServerMessage =
   | { type: "companion_invited"; requesterGuestId: string; requesterNickname: string; zoneId: WorldZoneId }
   | { type: "companion_replied"; guestId: string; guestNickname: string; accepted: boolean; zoneId: WorldZoneId }
   | { type: "companion_stopped"; guestId: string }
+  | { type: "companion_destination_set"; guestId: string; guestNickname: string; portalId: string; destinationZoneId: WorldZoneId; zoneId: WorldZoneId }
+  | { type: "companion_portal_ready"; guestId: string; portalId: string; destinationZoneId: WorldZoneId }
   | { type: "guest_left"; guestId: string }
   | { type: "room_state"; guests: RoomGuest[] }
   | { type: "error"; code: "bad_message" | "room_full" | "rate_limited" };

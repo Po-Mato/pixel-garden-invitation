@@ -12,6 +12,7 @@ import {
 } from "../game/minimap";
 import { segmentJourneyRouteBySurface } from "../game/journeyRouteVisual";
 import type { RouteRecalculationResult } from "../game/routeDeviation";
+import type { CelebrationCollectibleKind } from "../game/celebrationCollectibles";
 import { portalEntryRect, type Point, type WorldZone } from "../game/world";
 import "../mini-map-expanded.css";
 
@@ -35,6 +36,14 @@ type WorldMiniMapProps = {
   routeNotice?: RouteRecalculationResult | null;
   journeyStops?: MiniMapJourneyStop[];
   journeyDestinationLabels?: string[];
+  collectibleMarkers?: MiniMapCollectibleMarker[];
+};
+
+export type MiniMapCollectibleMarker = {
+  id: string;
+  point: Point;
+  kind: CelebrationCollectibleKind;
+  highlighted?: boolean;
 };
 
 export type JourneyMiniMapMarker = {
@@ -66,6 +75,7 @@ type MiniMapCanvasProps = {
   layout: MiniMapLayout;
   expanded?: boolean;
   viewTransform?: MiniMapViewTransform;
+  collectibleMarkers: MiniMapCollectibleMarker[];
 };
 
 type MiniMapViewTransform = {
@@ -97,7 +107,8 @@ function MiniMapCanvas({
   routePoints,
   layout,
   expanded = false,
-  viewTransform = { scale: 1, x: 0, y: 0 }
+  viewTransform = { scale: 1, x: 0, y: 0 },
+  collectibleMarkers
 }: MiniMapCanvasProps) {
   const playerPoint = projectMiniMapPoint(player, zone.bounds, layout);
   const viewportRect = computeMiniMapViewportRect({ bounds: zone.bounds, layout, viewport, camera });
@@ -199,6 +210,22 @@ function MiniMapCanvas({
           </g>
         );
       })}
+      {collectibleMarkers.map((marker) => {
+        const point = projectMiniMapPoint(marker.point, zone.bounds, layout);
+        return (
+          <g
+            key={marker.id}
+            data-testid="minimap-collectible-marker"
+            data-kind={marker.kind}
+            data-highlighted={marker.highlighted || undefined}
+            className="world-minimap__collectible-marker"
+            transform={`translate(${point.x} ${point.y})`}
+          >
+            <circle r={marker.highlighted ? expanded ? 8 : 5.5 : expanded ? 5 : 3.5} />
+            <path d="M -2 0 L 0 -2 L 2 0 L 0 2 Z" />
+          </g>
+        );
+      })}
       <rect data-testid="minimap-viewport" className="world-minimap__viewport" {...viewportRect} />
       <g data-testid="minimap-player" className="world-minimap__player" data-direction={direction}>
         <circle cx={playerPoint.x} cy={playerPoint.y} r={expanded ? 5 : 3} />
@@ -230,7 +257,8 @@ export function WorldMiniMap({
   routeProgressLabel = null,
   routeNotice = null,
   journeyStops = [],
-  journeyDestinationLabels = []
+  journeyDestinationLabels = [],
+  collectibleMarkers = []
 }: WorldMiniMapProps) {
   const [expanded, setExpanded] = useState(false);
   const [viewTransform, setViewTransform] = useState<MiniMapViewTransform>({ scale: 1, x: 0, y: 0 });
@@ -342,7 +370,8 @@ export function WorldMiniMap({
     destinationPoint,
     routeActive,
     routeKind,
-    routePoints
+    routePoints,
+    collectibleMarkers
   };
 
   return (

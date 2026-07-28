@@ -325,6 +325,14 @@ const routeTurnHapticPatterns: Record<Direction, number | number[]> = {
   down: [20, 16, 8]
 };
 
+export type CollectionProximityHaptic = "near" | "close" | "arrived";
+
+const collectionProximityHapticPatterns: Record<CollectionProximityHaptic, number | number[]> = {
+  near: 8,
+  close: [9, 28, 9],
+  arrived: [12, 20, 12, 20, 22]
+};
+
 export type JourneyHapticPhase = "start" | "arrived";
 
 const journeyHapticPatterns: Record<JourneyCheckpointId, Record<JourneyHapticPhase, number | number[]>> = {
@@ -378,6 +386,20 @@ export function triggerRouteTurnHaptic(
   if (!vibrate) return false;
   try {
     return vibrate(routeTurnHapticPatterns[direction]);
+  } catch {
+    return false;
+  }
+}
+
+export function triggerCollectionProximityHaptic(
+  proximity: CollectionProximityHaptic,
+  vibrate: ((pattern: number | number[]) => boolean) | undefined = typeof navigator === "undefined"
+    ? undefined
+    : navigator.vibrate?.bind(navigator)
+): boolean {
+  if (!vibrate) return false;
+  try {
+    return vibrate(collectionProximityHapticPatterns[proximity]);
   } catch {
     return false;
   }

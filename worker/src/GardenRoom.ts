@@ -239,6 +239,8 @@ export class GardenRoom {
       parsed.type === "companion_invite"
       || parsed.type === "companion_reply"
       || parsed.type === "companion_stop"
+      || parsed.type === "companion_destination"
+      || parsed.type === "companion_portal_ready"
     ) {
       const now = Date.now();
       if (now - current.lastSocialAt < socialThrottleMs) return;
@@ -269,6 +271,32 @@ export class GardenRoom {
           guestNickname: current.guest.nickname,
           accepted: parsed.accepted,
           zoneId: current.guest.zoneId
+        }));
+        return;
+      }
+
+      if (parsed.type === "companion_destination") {
+        const target = this.findGuestSocket(parsed.targetGuestId);
+        if (!target || target.attachment.guest.zoneId !== current.guest.zoneId) return;
+        target.socket.send(encode({
+          type: "companion_destination_set",
+          guestId: current.guest.guestId,
+          guestNickname: current.guest.nickname,
+          portalId: parsed.portalId,
+          destinationZoneId: parsed.destinationZoneId,
+          zoneId: current.guest.zoneId
+        }));
+        return;
+      }
+
+      if (parsed.type === "companion_portal_ready") {
+        const target = this.findGuestSocket(parsed.targetGuestId);
+        if (!target) return;
+        target.socket.send(encode({
+          type: "companion_portal_ready",
+          guestId: current.guest.guestId,
+          portalId: parsed.portalId,
+          destinationZoneId: parsed.destinationZoneId
         }));
         return;
       }

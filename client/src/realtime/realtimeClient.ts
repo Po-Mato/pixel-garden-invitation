@@ -162,6 +162,26 @@ function parseServerMessage(value: unknown): ServerMessage | null {
     return value as ServerMessage;
   }
 
+  if (value.type === "companion_destination_set") {
+    if (
+      typeof value.guestId !== "string"
+      || typeof value.guestNickname !== "string"
+      || typeof value.portalId !== "string"
+      || !zones.has(value.destinationZoneId as WorldZoneId)
+      || !zones.has(value.zoneId as WorldZoneId)
+    ) return null;
+    return value as ServerMessage;
+  }
+
+  if (value.type === "companion_portal_ready") {
+    if (
+      typeof value.guestId !== "string"
+      || typeof value.portalId !== "string"
+      || !zones.has(value.destinationZoneId as WorldZoneId)
+    ) return null;
+    return value as ServerMessage;
+  }
+
   if (value.type === "guest_left") {
     if (typeof value.guestId !== "string") return null;
     return value as ServerMessage;

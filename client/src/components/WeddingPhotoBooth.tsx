@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Camera, Download, Flower2, Hand, Heart, RotateCcw, Send, X } from "lucide-react";
+import { Camera, Download, Flower2, Hand, Heart, Palette, Ribbon, RotateCcw, Send, Sparkles, X } from "lucide-react";
 import type { CharacterAppearance } from "@wedding-game/shared";
 import { useGameFeedback } from "../feedback/GameFeedbackContext";
 import {
@@ -12,6 +12,12 @@ import { usePublishedInvitationContent } from "../invitation/PublishedInvitation
 import { invitationPublicUrl } from "../invitation/shareInvitation";
 import { isShareAbortError } from "../invitation/browserActions";
 import { resolveWorldMapAsset } from "../game/worldVisuals";
+import {
+  loadCelebrationFrameSelection,
+  saveCelebrationFrameSelection,
+  type CelebrationFrameDecoration,
+  type CelebrationFramePalette
+} from "../game/celebrationFrame";
 import {
   createWeddingPhotoNpcPreviewUrl,
   createWeddingPhotoCapture,
@@ -37,6 +43,7 @@ type WeddingPhotoBoothProps = {
     appearance: CharacterAppearance;
   }[];
   celebrationFrameUnlocked?: boolean;
+  weddingDayFrameAvailable?: boolean;
 };
 
 type PhotoStatus = "ready" | "capturing" | "captured" | "saving" | "saved" | "sharing" | "shared" | "fallback" | "canceled" | "error";
@@ -70,6 +77,7 @@ export function WeddingPhotoBooth({
   appearance,
   companions = [],
   celebrationFrameUnlocked = false,
+  weddingDayFrameAvailable = false,
   onClose,
   onCaptured
 }: WeddingPhotoBoothProps) {
@@ -88,6 +96,9 @@ export function WeddingPhotoBooth({
     groom: null
   });
   const [status, setStatus] = useState<PhotoStatus>("ready");
+  const [frameSelection, setFrameSelection] = useState(() => (
+    loadCelebrationFrameSelection(weddingDayFrameAvailable)
+  ));
   const busy = status === "capturing" || status === "saving" || status === "sharing";
   onCloseRef.current = onClose;
   busyRef.current = busy;
@@ -104,8 +115,8 @@ export function WeddingPhotoBooth({
       guestName: companion.nickname,
       appearance: companion.appearance
     })),
-    celebrationFrame: celebrationFrameUnlocked
-  }), [appearance, celebrationFrameUnlocked, companions, coupleOrder, event, nickname, pose, spot]);
+    celebrationFrame: celebrationFrameUnlocked ? frameSelection : undefined
+  }), [appearance, celebrationFrameUnlocked, companions, coupleOrder, event, frameSelection, nickname, pose, spot]);
 
   const releaseCaptureUrl = () => {
     if (!captureUrlRef.current) return;
@@ -146,6 +157,18 @@ export function WeddingPhotoBooth({
     setCaptureUrl(null);
     setPose(nextPose);
     setStatus("ready");
+  };
+
+  const selectFramePalette = (palette: CelebrationFramePalette) => {
+    const next = saveCelebrationFrameSelection({ ...frameSelection, palette }, weddingDayFrameAvailable);
+    setFrameSelection(next);
+    resetCapture();
+  };
+
+  const selectFrameDecoration = (decoration: CelebrationFrameDecoration) => {
+    const next = saveCelebrationFrameSelection({ ...frameSelection, decoration }, weddingDayFrameAvailable);
+    setFrameSelection(next);
+    resetCapture();
   };
 
   const takePhoto = async () => {
@@ -208,6 +231,8 @@ export function WeddingPhotoBooth({
             }}
             aria-label={`${spot.sceneLabel} 촬영 미리보기`}
             data-celebration-frame={celebrationFrameUnlocked || undefined}
+            data-frame-palette={celebrationFrameUnlocked ? frameSelection.palette : undefined}
+            data-frame-decoration={celebrationFrameUnlocked ? frameSelection.decoration : undefined}
           >
             <span className="wedding-photo-booth__frame" aria-hidden="true" />
             <span className="wedding-photo-booth__petals" aria-hidden="true" />
@@ -270,7 +295,30 @@ export function WeddingPhotoBooth({
         ) : null}
 
         {celebrationFrameUnlocked && !capture ? (
-          <p className="wedding-photo-booth__reward-note">축복의 꽃 정원 한정 프레임 적용 중</p>
+          <section className="wedding-photo-booth__frame-options" aria-label="한정 포토 프레임 설정">
+            <div role="group" aria-label="프레임 색상">
+              {([
+                ["garden", "정원"],
+                ["rose", "로즈"],
+                ["starlight", "별빛"],
+                ...(weddingDayFrameAvailable ? [["wedding-day", "예식일"]] : [])
+              ] as Array<[CelebrationFramePalette, string]>).map(([palette, label]) => (
+                <button
+                  key={palette}
+                  type="button"
+                  data-palette={palette}
+                  aria-pressed={frameSelection.palette === palette}
+                  onClick={() => selectFramePalette(palette)}
+                ><Palette aria-hidden="true" /><span>{label}</span></button>
+              ))}
+            </div>
+            <div role="group" aria-label="프레임 장식">
+              <button type="button" aria-pressed={frameSelection.decoration === "flowers"} onClick={() => selectFrameDecoration("flowers")}><Flower2 aria-hidden="true" /><span>꽃</span></button>
+              <button type="button" aria-pressed={frameSelection.decoration === "ribbons"} onClick={() => selectFrameDecoration("ribbons")}><Ribbon aria-hidden="true" /><span>리본</span></button>
+              <button type="button" aria-pressed={frameSelection.decoration === "stars"} onClick={() => selectFrameDecoration("stars")}><Sparkles aria-hidden="true" /><span>별</span></button>
+            </div>
+            <p className="wedding-photo-booth__reward-note">축복의 꽃 정원 한정 프레임 적용 중</p>
+          </section>
         ) : null}
 
         <div className="wedding-photo-booth__actions">
