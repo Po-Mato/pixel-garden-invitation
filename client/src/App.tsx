@@ -8,6 +8,7 @@ import { resolveInvitationShareText } from "./invitation/shareInvitation";
 import { setAnalyticsContext, trackAnalyticsModeOpen } from "./analytics/invitationAnalytics";
 import { useInvitationInvite } from "./invitation/useInvitationInvite";
 import { PwaStatusCenter } from "./components/PwaStatusCenter";
+import { loadGameEntrySession, saveGameEntrySession } from "./game/gameEntrySession";
 
 const homeMapUrl = `${import.meta.env.BASE_URL}assets/maps/v2/home/background.webp`;
 const quickCoverUrl = `${import.meta.env.BASE_URL}images/wedding-gallery/01-cover-640.avif`;
@@ -78,9 +79,11 @@ function updateNamedMeta(selector: string, value: string) {
 }
 
 export function App() {
-  const [profile, setProfile] = useState<EntryProfile | null>(null);
+  const [profile, setProfile] = useState<EntryProfile | null>(() => loadGameEntrySession());
   const [mode, setMode] = useState<AppMode>(() => (
-    new URLSearchParams(window.location.search).get("view") === "invitation" ? "invitation" : "entry"
+    new URLSearchParams(window.location.search).get("view") === "invitation"
+      ? "invitation"
+      : profile ? "garden" : "entry"
   ));
   const coupleOrder = useCoupleOrder();
   const { event, share } = usePublishedInvitationContent();
@@ -207,6 +210,7 @@ export function App() {
             <EntryScreen
               onEnter={(nextProfile) => {
                 trackAnalyticsModeOpen("game");
+                saveGameEntrySession(nextProfile);
                 setProfile(nextProfile);
                 setMode("garden");
               }}

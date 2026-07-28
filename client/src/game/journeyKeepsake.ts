@@ -7,6 +7,8 @@ export type JourneyKeepsakeData = {
   checkpointLabels: readonly string[];
   photoUrl: string;
   publicUrl: string;
+  visitSummary?: string;
+  photoCount?: number;
 };
 
 export type JourneyKeepsakeShareResult = "shared" | "saved";
@@ -217,6 +219,16 @@ export async function createJourneyKeepsakeBlob(data: JourneyKeepsakeData): Prom
   data.checkpointLabels.slice(0, 5).forEach((label, index) => {
     drawStamp(context, stampStart + stampGap * index, 855, index, label);
   });
+
+  if (data.visitSummary || data.photoCount) {
+    context.fillStyle = "#76665d";
+    context.font = "800 23px sans-serif";
+    context.fillText(
+      [data.visitSummary, data.photoCount ? `기념 촬영 ${data.photoCount}장` : null].filter(Boolean).join(" · "),
+      cardWidth / 2,
+      978
+    );
+  }
 
   context.strokeStyle = "#d9c9b3";
   context.lineWidth = 3;

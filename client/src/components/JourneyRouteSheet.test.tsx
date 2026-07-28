@@ -50,6 +50,8 @@ describe("JourneyRouteSheet", () => {
     );
 
     expect(screen.getByText("엘리베이터")).toBeInTheDocument();
+    expect(screen.getByText("도착 랜드마크")).toBeInTheDocument();
+    expect(screen.getByText("좌석·도착 도움")).toBeInTheDocument();
     expect(screen.getByText("접근 가능한 화장실")).toBeInTheDocument();
     expect(screen.getByText(/현재 위치 기준 128타일 · 포털 3회/)).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /032-347-5500 편의시설 전화 확인/ })).toHaveAttribute("href", "tel:0323475500");

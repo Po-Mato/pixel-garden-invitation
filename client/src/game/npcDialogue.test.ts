@@ -42,4 +42,21 @@ describe("resolveNpcDialogue", () => {
     expect(dialogue.tone).toBe("celebration");
     expect(dialogue.message).toContain("모든 순간");
   });
+
+  it("changes guidance with the live wedding phase", () => {
+    expect(resolveNpcDialogue({
+      npcId: "groom",
+      zoneId: "ceremony-hall",
+      nickname: "지민",
+      completedCheckpointIds: [],
+      weddingPhase: "ceremony"
+    }).message).toContain("예식이 진행 중");
+    expect(resolveNpcDialogue({
+      npcId: "bride",
+      zoneId: "ceremony-hall",
+      nickname: "지민",
+      completedCheckpointIds: [],
+      weddingPhase: "reception"
+    }).tone).toBe("celebration");
+  });
 });

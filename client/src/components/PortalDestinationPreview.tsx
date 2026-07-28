@@ -1,11 +1,13 @@
 import { ArrowRight, MapPinned } from "lucide-react";
 import type { PortalCongestion } from "../game/portalCongestion";
+import type { PortalWaitEstimate } from "../game/crowdDensity";
 import type { Point, Rect, WorldPortal, WorldZone } from "../game/world";
 
 type PortalDestinationPreviewProps = {
   portal: WorldPortal;
   destinationZone: WorldZone;
   congestion?: PortalCongestion;
+  waitEstimate?: PortalWaitEstimate;
 };
 
 const previewWidth = 156;
@@ -40,7 +42,7 @@ function projectRect(rect: Rect, zone: WorldZone) {
   };
 }
 
-export function PortalDestinationPreview({ portal, destinationZone, congestion }: PortalDestinationPreviewProps) {
+export function PortalDestinationPreview({ portal, destinationZone, congestion, waitEstimate }: PortalDestinationPreviewProps) {
   const arrival = projectPoint(portal.spawn, destinationZone);
 
   return (
@@ -84,7 +86,7 @@ export function PortalDestinationPreview({ portal, destinationZone, congestion }
         <span>
           <MapPinned aria-hidden="true" />
           <strong>도착 타일</strong>
-          <small>{congestion ? `현재 포털 ${congestion.label} · 빈 진입 ${congestion.openCount}/${congestion.totalCount}\n` : ""}{destinationZone.subtitle}</small>
+          <small>{congestion ? `현재 포털 ${congestion.label} · 빈 진입 ${congestion.openCount}/${congestion.totalCount}${waitEstimate ? ` · ${waitEstimate.label}` : ""}\n` : ""}{destinationZone.subtitle}</small>
         </span>
       </div>
     </aside>

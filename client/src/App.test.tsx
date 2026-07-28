@@ -1,7 +1,10 @@
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { CoupleOrderProvider } from "./invitation/CoupleOrderContext";
 import { App } from "./App";
+import { defaultCharacterAppearance } from "@wedding-game/shared";
+import { gameEntrySessionStorageKey } from "./game/gameEntrySession";
+import { installMemoryLocalStorage } from "./test/memoryStorage";
 
 vi.mock("./components/EntryScreen", () => ({
   EntryScreen: ({
@@ -56,8 +59,11 @@ vi.mock("./components/QuickInvitation", () => ({
 }));
 
 describe("App query routing", () => {
+  beforeEach(() => installMemoryLocalStorage());
+
   afterEach(() => {
     cleanup();
+    localStorage.removeItem(gameEntrySessionStorageKey);
     window.history.replaceState({}, "", "/");
   });
 
@@ -67,6 +73,20 @@ describe("App query routing", () => {
     expect(screen.getByRole("link", { name: "본문 바로가기" })).toHaveAttribute("href", "#main-content");
     expect(screen.getByRole("main")).toHaveAttribute("id", "main-content");
     expect(screen.getByRole("main")).toHaveAttribute("tabindex", "-1");
+  });
+
+  it("최근 게임 프로필이 있으면 새로고침 후 정원으로 바로 복귀한다", async () => {
+    localStorage.setItem(gameEntrySessionStorageKey, JSON.stringify({
+      version: 1,
+      nickname: "검증하객",
+      appearance: defaultCharacterAppearance,
+      updatedAt: new Date().toISOString()
+    }));
+
+    render(<App />);
+
+    expect(await screen.findByText("게임 월드")).toBeInTheDocument();
+    expect(screen.queryByText("일반 입장 화면")).not.toBeInTheDocument();
   });
 
   it("renders only the RSVP admin page for the exact admin query", async () => {

@@ -4,6 +4,7 @@ import {
   ArrowUp,
   Bath,
   Building2,
+  Armchair,
   Footprints,
   MapPinned,
   Navigation,
@@ -179,6 +180,8 @@ export function JourneyRouteSheet({
               <ul>
                 <li><Footprints aria-hidden="true" /><span><strong>계단 없는 이동</strong><small>{accessibilityGuide.stepFree}</small></span></li>
                 <li><Building2 aria-hidden="true" /><span><strong>엘리베이터</strong><small>{accessibilityGuide.elevator}</small></span></li>
+                <li><MapPinned aria-hidden="true" /><span><strong>도착 랜드마크</strong><small>{accessibilityGuide.landmark}</small></span></li>
+                <li><Armchair aria-hidden="true" /><span><strong>좌석·도착 도움</strong><small>{accessibilityGuide.seating}</small></span></li>
                 <li><Bath aria-hidden="true" /><span><strong>접근 가능한 화장실</strong><small>{accessibilityGuide.restroom}</small></span></li>
               </ul>
               <div className="journey-route-sheet__venue-check">

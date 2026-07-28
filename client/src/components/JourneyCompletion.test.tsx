@@ -2,7 +2,8 @@ import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/re
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { defaultCharacterAppearance } from "@wedding-game/shared";
 import { JourneyCompletion } from "./JourneyCompletion";
-import { weddingPhotoMemoryStorageKey } from "../game/weddingPhoto";
+import { weddingPhotoAlbumStorageKey, weddingPhotoMemoryStorageKey } from "../game/weddingPhoto";
+import { journeyVisitLogStorageKey } from "../game/journeyVisitLog";
 import { installMemoryLocalStorage } from "../test/memoryStorage";
 
 const keepsakeMocks = vi.hoisted(() => ({
@@ -94,6 +95,27 @@ describe("JourneyCompletion", () => {
     await waitFor(() => expect(keepsakeMocks.save).toHaveBeenCalledWith(expect.objectContaining({
       photoUrl: "data:image/jpeg;base64,photo"
     })));
+  });
+
+  it("combines visit times and multiple photos into the personal memory card", () => {
+    localStorage.setItem(journeyVisitLogStorageKey, JSON.stringify([
+      { checkpointId: "directions", visitedAt: "2027-05-01T08:10:00.000Z" },
+      { checkpointId: "gallery", visitedAt: "2027-05-01T08:25:00.000Z" }
+    ]));
+    localStorage.setItem(weddingPhotoAlbumStorageKey, JSON.stringify({
+      version: 2,
+      photos: [
+        { version: 1, dataUrl: "data:image/jpeg;base64,one", photoSpotId: "lobby-photo-wall", zoneId: "lobby", spotLabel: "로비 포토월", guestName: "정원하객", pose: "wave", createdAt: 1 },
+        { version: 1, dataUrl: "data:image/jpeg;base64,two", photoSpotId: "ceremony-aisle", zoneId: "ceremony-hall", spotLabel: "버진로드", guestName: "정원하객", pose: "hearts", createdAt: 2 }
+      ]
+    }));
+
+    renderCompletion();
+
+    const summary = screen.getByText("15분의 여정").closest("p");
+    expect(summary).toHaveTextContent("방문 5곳");
+    expect(summary).toHaveTextContent("촬영 2장");
+    expect(screen.getAllByRole("img", { name: /촬영한 기념 사진/ })).toHaveLength(2);
   });
 
   it("keeps RSVP, invitation sharing, photo album, close, and Escape actions available", () => {

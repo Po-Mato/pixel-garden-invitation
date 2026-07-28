@@ -1,5 +1,6 @@
 import type { WorldZoneId } from "@wedding-game/shared";
 import { journeyCheckpointIds, type JourneyCheckpointId } from "./journeyProgress";
+import type { WeddingJourneyTiming } from "./weddingJourneyTiming";
 
 export type NpcId = "groom" | "bride";
 
@@ -14,13 +15,15 @@ type ResolveNpcDialogueInput = {
   zoneId: WorldZoneId;
   nickname: string;
   completedCheckpointIds: readonly JourneyCheckpointId[];
+  weddingPhase?: WeddingJourneyTiming["phase"] | null;
 };
 
 export function resolveNpcDialogue({
   npcId,
   zoneId,
   nickname,
-  completedCheckpointIds
+  completedCheckpointIds,
+  weddingPhase = null
 }: ResolveNpcDialogueInput): NpcDialogue {
   const completed = new Set(completedCheckpointIds);
   const allComplete = journeyCheckpointIds.every((checkpointId) => completed.has(checkpointId));
@@ -31,6 +34,34 @@ export function resolveNpcDialogue({
       message: npcId === "bride"
         ? `${nickname}님, 정원의 모든 순간을 함께해 주셔서 정말 고마워요.`
         : `${nickname}님 덕분에 오늘의 여정이 더 따뜻해졌어요. 함께 축하해 주세요!`,
+      tone: "celebration"
+    };
+  }
+
+  if (weddingPhase === "soon") {
+    return {
+      npcId,
+      message: npcId === "bride"
+        ? `${nickname}님, 예식이 곧 시작돼요. 천천히 예식홀로 와주세요!`
+        : `${nickname}님, 예식홀 자리를 안내받으신 뒤 편하게 기다려 주세요.`,
+      tone: "welcome"
+    };
+  }
+
+  if (weddingPhase === "ceremony") {
+    return {
+      npcId,
+      message: `${nickname}님, 지금은 예식이 진행 중이에요. 안내선을 따라 조용히 자리로 이동해 주세요.`,
+      tone: "thanks"
+    };
+  }
+
+  if (weddingPhase === "reception") {
+    return {
+      npcId,
+      message: npcId === "groom"
+        ? `${nickname}님, 이제 연회장에서 맛있는 식사와 함께 인사 나눠요!`
+        : `${nickname}님, 오늘의 축하를 오래 기억할게요. 연회장에서도 꼭 만나요!`,
       tone: "celebration"
     };
   }

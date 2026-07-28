@@ -18,6 +18,11 @@ import {
   type JourneyKeepsakeData
 } from "../game/journeyKeepsake";
 import { loadWeddingPhotoAlbum, weddingPhotoAlbumProgress } from "../game/weddingPhoto";
+import {
+  formatJourneyVisitTime,
+  journeyVisitDurationLabel,
+  loadJourneyVisits
+} from "../game/journeyVisitLog";
 import { CharacterSprite } from "./CharacterSprite";
 
 type JourneyCompletionProps = {
@@ -70,8 +75,15 @@ export function JourneyCompletion({
   busyRef.current = busy;
   const coupleNames = formatCoupleNames(event, coupleOrder);
   const photoAlbum = useMemo(loadWeddingPhotoAlbum, []);
-  const photoMemory = [...photoAlbum.photos].sort((left, right) => right.createdAt - left.createdAt)[0] ?? null;
+  const photoMemories = useMemo(() => (
+    [...photoAlbum.photos].sort((left, right) => right.createdAt - left.createdAt).slice(0, 3)
+  ), [photoAlbum.photos]);
+  const photoMemory = photoMemories[0] ?? null;
   const photoProgress = weddingPhotoAlbumProgress(photoAlbum);
+  const visits = useMemo(loadJourneyVisits, []);
+  const visitByCheckpoint = new Map(visits.map((visit) => [visit.checkpointId, visit]));
+  const visitDuration = journeyVisitDurationLabel(visits);
+  const completedVisitCount = Math.max(visits.length, journeyCheckpoints.length);
   const finalePhoto = content.gallery.find((photo) => photo.id === "10-sunlit-finale")
     ?? content.gallery[content.gallery.length - 1];
   const keepsakeData = useMemo<JourneyKeepsakeData>(() => ({
@@ -82,8 +94,10 @@ export function JourneyCompletion({
     venueLabel: formatVenueLabel(event),
     checkpointLabels: journeyCheckpoints.map((checkpoint) => checkpoint.label),
     photoUrl: photoMemory?.dataUrl || resolveAssetUrl(finalePhoto.assetPath),
-    publicUrl: canonicalInvitationUrl()
-  }), [coupleNames, event, finalePhoto.assetPath, nickname, photoMemory?.dataUrl]);
+    publicUrl: canonicalInvitationUrl(),
+    visitSummary: `${completedVisitCount}곳 · ${visitDuration}`,
+    photoCount: photoAlbum.photos.length
+  }), [completedVisitCount, coupleNames, event, finalePhoto.assetPath, nickname, photoAlbum.photos.length, photoMemory?.dataUrl, visitDuration]);
 
   useEffect(() => {
     const previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
@@ -175,17 +189,30 @@ export function JourneyCompletion({
 
           <figure className="journey-keepsake-preview" aria-label="완주 기념 카드 미리보기">
             <figcaption><span>YOUR WEDDING TRAIL</span><strong>{coupleNames}</strong></figcaption>
-            {photoMemory ? (
-              <div className="journey-keepsake-preview__photo">
-                <img src={photoMemory.dataUrl} alt={`${photoMemory.spotLabel}에서 촬영한 기념 사진`} />
-                <span><Camera aria-hidden="true" />포토앨범 {photoProgress}/3 · {photoMemory.spotLabel}</span>
+            {photoMemories.length > 0 ? (
+              <div className="journey-keepsake-preview__photo" data-count={photoMemories.length}>
+                <div className="journey-keepsake-preview__photo-grid">
+                  {photoMemories.map((memory) => (
+                    <img key={`${memory.photoSpotId}-${memory.createdAt}`} src={memory.dataUrl} alt={`${memory.spotLabel}에서 촬영한 기념 사진`} />
+                  ))}
+                </div>
+                <span><Camera aria-hidden="true" />포토앨범 {photoProgress}/3 · 촬영 기록 {photoMemories.length}장</span>
               </div>
             ) : null}
             <div className="journey-keepsake-preview__stamps" aria-label="방문 스탬프 5개 완료">
               {journeyCheckpoints.map((checkpoint) => (
-                <span key={checkpoint.id}><Check aria-hidden="true" /><small>{checkpoint.label}</small></span>
+                <span key={checkpoint.id}>
+                  <Check aria-hidden="true" />
+                  <small>{checkpoint.label}</small>
+                  <time dateTime={visitByCheckpoint.get(checkpoint.id)?.visitedAt}>
+                    {visitByCheckpoint.has(checkpoint.id)
+                      ? formatJourneyVisitTime(visitByCheckpoint.get(checkpoint.id)!.visitedAt)
+                      : "방문 완료"}
+                  </time>
+                </span>
               ))}
             </div>
+            <p className="journey-keepsake-preview__visit-summary"><strong>{visitDuration}</strong><span>방문 {completedVisitCount}곳 · 촬영 {photoAlbum.photos.length}장</span></p>
             <p><strong>{formatEventDate(event)}</strong><span>{formatEventStartTime(event)} · {formatVenueLabel(event)}</span></p>
           </figure>
 
