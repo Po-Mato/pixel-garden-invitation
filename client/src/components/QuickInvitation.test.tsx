@@ -1,5 +1,10 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  loadInvitationViewSync,
+  saveGameViewLocation
+} from "../game/invitationViewSync";
+import { installMemoryLocalStorage } from "../test/memoryStorage";
 import { QuickInvitation } from "./QuickInvitation";
 
 vi.mock("./RsvpPanel", () => ({ RsvpPanel: () => <div>참석 답변 내용</div> }));
@@ -11,6 +16,7 @@ vi.mock("./InvitationShareAccess", () => ({
   InvitationShareAccess: ({ variant }: { variant: string }) => <button type="button">공유 {variant}</button>
 }));
 
+beforeEach(() => installMemoryLocalStorage());
 afterEach(cleanup);
 
 describe("간편 초대장", () => {
@@ -45,6 +51,21 @@ describe("간편 초대장", () => {
 
     fireEvent.click(screen.getByRole("button", { name: /정원으로 돌아가기/ }));
 
+    expect(onOpenGarden).toHaveBeenCalledOnce();
+  });
+
+  it("게임 위치에 대응하는 섹션을 유지해 정원 복귀 위치와 동기화한다", () => {
+    saveGameViewLocation("bridal-room");
+    const onOpenGarden = vi.fn();
+    render(<QuickInvitation canReturnToGarden onOpenGarden={onOpenGarden} />);
+
+    fireEvent.click(screen.getByRole("button", { name: /정원으로 돌아가기/ }));
+
+    expect(loadInvitationViewSync()).toMatchObject({
+      source: "quick",
+      sectionId: "couple",
+      checkpointId: "bride"
+    });
     expect(onOpenGarden).toHaveBeenCalledOnce();
   });
 });

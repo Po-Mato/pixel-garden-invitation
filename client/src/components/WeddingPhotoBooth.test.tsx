@@ -106,4 +106,30 @@ describe("WeddingPhotoBooth", () => {
     expect(screen.getByLabelText(`${spot.sceneLabel} 촬영 미리보기`)).toBeInTheDocument();
     expect(URL.revokeObjectURL).toHaveBeenCalledWith("blob:preview");
   });
+
+  it("adds nearby realtime guests to the preview and captured photo", async () => {
+    const companion = {
+      guestId: "nearby-friend",
+      nickname: "친구하객",
+      appearance: defaultCharacterAppearance
+    };
+    render(
+      <WeddingPhotoBooth
+        spot={spot}
+        nickname="정원하객"
+        appearance={defaultCharacterAppearance}
+        companions={[companion]}
+        onClose={vi.fn()}
+        onCaptured={vi.fn()}
+      />
+    );
+
+    expect(screen.getByText("가까이 있는 친구하객님과 함께 촬영합니다.")).toBeInTheDocument();
+    expect(document.querySelectorAll(".wedding-photo-booth__companion .character-portrait")).toHaveLength(1);
+    fireEvent.click(screen.getByRole("button", { name: "기념 촬영" }));
+
+    await waitFor(() => expect(photoMocks.create).toHaveBeenCalledWith(expect.objectContaining({
+      companions: [{ guestName: "친구하객", appearance: defaultCharacterAppearance }]
+    })));
+  });
 });

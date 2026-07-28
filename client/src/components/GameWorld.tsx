@@ -18,6 +18,7 @@ import {
   type WorldZoneId
 } from "@wedding-game/shared";
 import { shouldReduceMotion } from "../accessibility/viewPreferences";
+import { resolveCharacterPortraitUrl } from "../character/assets";
 import {
   fetchSyncedJourneyProgress,
   journeyProgressSyncScope,
@@ -80,6 +81,18 @@ import {
 import { portalCongestion } from "../game/portalCongestion";
 import { crowdDensityCells, portalWaitEstimate } from "../game/crowdDensity";
 import {
+  companionCandidates,
+  companionFollowPath,
+  nearbyPhotoCompanions
+} from "../game/companionMode";
+import {
+  allCelebrationCollectibles,
+  celebrationCollectiblesForZone,
+  collectCelebrationItem,
+  loadCelebrationCollection,
+  type CelebrationCollectible
+} from "../game/celebrationCollectibles";
+import {
   journeyArrivalAction,
   type JourneyArrivalAction
 } from "../game/journeyArrivalAction";
@@ -123,10 +136,15 @@ import {
 import { recordJourneyVisit } from "../game/journeyVisitLog";
 import { loadWorldSession, saveWorldSession } from "../game/worldSession";
 import { weddingPhaseExperience } from "../game/weddingPhaseExperience";
+import { journeyAssetPrediction, uniquePredictedAppearances } from "../game/journeyAssetPrediction";
+import { loadInvitationViewSync, saveGameViewLocation } from "../game/invitationViewSync";
+import { preloadImage } from "../performance/imagePreloader";
+import { useNetworkMode } from "../performance/networkQuality";
 import { connectRealtimeWithRetry, createMoveThrottle, getRoomUrl } from "../realtime/realtimeClient";
 import type { EntryProfile } from "./EntryScreen";
 import { CharacterSprite } from "./CharacterSprite";
 import { AccessibleDestinationCue } from "./AccessibleDestinationCue";
+import { CompanionDock } from "./CompanionDock";
 import { DirectionsSheet } from "./DirectionsSheet";
 import { FamilyContactSheet } from "./FamilyContactSheet";
 import { GameFirstVisitGuide } from "./GameFirstVisitGuide";
@@ -159,6 +177,10 @@ import { WeddingPhotoBooth } from "./WeddingPhotoBooth";
 import { WeddingPhotoAlbum } from "./WeddingPhotoAlbum";
 import { WorldMapArtwork } from "./WorldMapArtwork";
 import { WorldCrowdHeatmap } from "./WorldCrowdHeatmap";
+import {
+  CelebrationCollectionProgress,
+  WorldCelebrationCollectibles
+} from "./WorldCelebrationCollectibles";
 import { WorldDecoration } from "./WorldDecoration";
 import { WorldMiniMap } from "./WorldMiniMap";
 import { WeddingPhaseAnnouncement } from "./WeddingPhaseAnnouncement";
@@ -184,6 +206,7 @@ type PortalIntent = { portal: WorldPortal; path: Point[] };
 type WorldInteractionIntent = {
   targetId: string;
   spotId?: SpotId;
+  collectibleId?: string;
   label: string;
   path: Point[];
   target: Point;
@@ -235,6 +258,7 @@ const npcInteractionRect = (npc: { x: number; y: number }): Rect => ({
   width: 60,
   height: 75
 });
+const totalCelebrationCollectibles = allCelebrationCollectibles().length;
 
 function journeyMarkerPoint(zone: WorldZone, checkpoint: JourneyCheckpoint): Point | null {
   const checkpointTarget = checkpoint.target;
@@ -290,6 +314,7 @@ function realtimeStatusText(status: RealtimeStatus) {
 export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView }: GameWorldProps) {
   const devicePerformance = useDevicePerformance();
   const { preferences: viewPreferences, setStepFreeRouteEnabled } = useViewPreferences();
+  const networkMode = useNetworkMode(viewPreferences.dataSaver);
   const {
     playFeedback,
     playJourneyHaptic,
@@ -298,10 +323,14 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     setPortalAudio
   } = useGameFeedback();
   const restoredWorldSession = useMemo(() => loadWorldSession(), []);
+  const restoredViewSync = useMemo(() => loadInvitationViewSync(), []);
   const initialZone = getWorldZone(gardenWorld, restoredWorldSession?.zoneId ?? gardenWorld.defaultZoneId);
-  const restoredGuideId = restoredWorldSession?.guideCheckpointId
-    && journeyCheckpoints.some(({ id }) => id === restoredWorldSession.guideCheckpointId)
-    ? restoredWorldSession.guideCheckpointId as JourneyCheckpointId
+  const restoredGuideCandidate = restoredViewSync?.source === "quick" && restoredViewSync.checkpointId
+    ? restoredViewSync.checkpointId
+    : restoredWorldSession?.guideCheckpointId;
+  const restoredGuideId = restoredGuideCandidate
+    && journeyCheckpoints.some(({ id }) => id === restoredGuideCandidate)
+    ? restoredGuideCandidate as JourneyCheckpointId
     : null;
   const [activeZoneId, setActiveZoneId] = useState<WorldZoneId>(initialZone.id);
   const activeZone = getWorldZone(gardenWorld, activeZoneId);
@@ -363,6 +392,8 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   const [remoteReactions, setRemoteReactions] = useState<Record<string, ActiveGuestReaction>>({});
   const [viewport, setViewport] = useState<ViewportSize>(defaultViewport);
   const [remoteGuests, setRemoteGuests] = useState<RoomGuest[]>([]);
+  const [companionGuestId, setCompanionGuestId] = useState<string | null>(null);
+  const [collectedCelebrationIds, setCollectedCelebrationIds] = useState(loadCelebrationCollection);
   const [realtimeStatus, setRealtimeStatus] = useState<RealtimeStatus>("offline");
   const [loadedBackgroundZoneId, setLoadedBackgroundZoneId] = useState<WorldZoneId | null>(null);
   const nestedMenuSheetOpen = calendarSheetOpen
@@ -733,6 +764,14 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     playFeedback("reaction");
   }, [playFeedback]);
 
+  const handleCollectCelebrationItem = useCallback((item: CelebrationCollectible) => {
+    const next = collectCelebrationItem(collectedCelebrationIds, item.id);
+    if (next.length === collectedCelebrationIds.length) return;
+    setCollectedCelebrationIds(next);
+    setTravelStatus(`${item.label}을 모았어요 · ${next.length}/${totalCelebrationCollectibles}`);
+    playFeedback("stamp");
+  }, [collectedCelebrationIds, playFeedback]);
+
   const showNpcDialogue = useCallback((npcId: NpcId) => {
     const npc = activeZone.npcs.find((candidate) => candidate.id === npcId);
     if (!npc) return;
@@ -1075,6 +1114,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   const beginWorldInteraction = useCallback((input: {
     targetId: string;
     spotId?: SpotId;
+    collectibleId?: string;
     label: string;
     target: Rect;
     actionRadius: number;
@@ -1083,6 +1123,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   }) => {
     if (portalTransitionRef.current) return;
 
+    setCompanionGuestId(null);
     navigationResumeRef.current = null;
     setRouteRecalculationNotice(null);
     routeGuidanceSessionRef.current += 1;
@@ -1136,12 +1177,18 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
         stampWorldInteraction(input.spotId);
         openSpot(input.spotId);
       }
+      if (input.collectibleId) {
+        const collectible = celebrationCollectiblesForZone(activeZone)
+          .find((item) => item.id === input.collectibleId);
+        if (collectible) handleCollectCelebrationItem(collectible);
+      }
       return;
     }
 
     setInteractionIntent({
       targetId: input.targetId,
       spotId: input.spotId,
+      collectibleId: input.collectibleId,
       label: input.label,
       path: route.path,
       target: targetPoint,
@@ -1154,6 +1201,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   }, [
     activeZone,
     clearTerminalStopConfirm,
+    handleCollectCelebrationItem,
     openSpot,
     openPhotoSpot,
     resetWalkCycle,
@@ -1168,6 +1216,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
 
   const startJourneyGuidance = useCallback((checkpoint: JourneyCheckpoint) => {
     if (portalTransitionRef.current) return;
+    setCompanionGuestId(null);
     if (activeJourneyGuideId !== checkpoint.id) playJourneyHaptic(checkpoint.id, "start");
     setActiveJourneyGuideId(checkpoint.id);
     if (checkpoint.zoneId !== activeZone.id) {
@@ -1686,6 +1735,11 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
           stampWorldInteraction(interactionIntent.spotId);
           openSpot(interactionIntent.spotId);
         }
+        if (interactionIntent.collectibleId) {
+          const collectible = celebrationCollectiblesForZone(activeZone)
+            .find((item) => item.id === interactionIntent.collectibleId);
+          if (collectible) handleCollectCelebrationItem(collectible);
+        }
         return;
       }
 
@@ -1740,6 +1794,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     devicePerformance.mode,
     devicePerformance.reportAnimationFrame,
     interactionIntent,
+    handleCollectCelebrationItem,
     joystickVector,
     mapPath,
     openSpot,
@@ -1759,6 +1814,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   function handlePortalClick(portalItem: WorldPortal) {
     if (portalTransitionRef.current) return;
 
+    setCompanionGuestId(null);
     navigationResumeRef.current = null;
     setRouteRecalculationNotice(null);
     routeGuidanceSessionRef.current += 1;
@@ -1806,6 +1862,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   function handleMapClick(event: MouseEvent<HTMLDivElement>) {
     if (portalTransitionRef.current) return;
 
+    setCompanionGuestId(null);
     navigationResumeRef.current = null;
     setRouteRecalculationNotice(null);
     routeGuidanceSessionRef.current += 1;
@@ -1893,7 +1950,10 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     const wasMoving = joystickWasMovingRef.current;
     const isMoving = hasJoystickMovement(vector);
 
-    if (isMoving) clearTerminalStopConfirm();
+    if (isMoving) {
+      clearTerminalStopConfirm();
+      setCompanionGuestId(null);
+    }
 
     if (!isMoving) {
       setInputReleaseRequired(false);
@@ -2136,7 +2196,24 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   const miniMapRouteProgressLabel = activeJourneyGuideId
     ? destinationTravelProgress?.label ?? null
     : directTravelProgress?.label ?? destinationTravelProgress?.label ?? null;
-  const zoneRemoteGuests = remoteGuests.filter((guest) => guest.zoneId === activeZone.id);
+  const zoneRemoteGuests = useMemo(
+    () => remoteGuests.filter((guest) => guest.zoneId === activeZone.id),
+    [activeZone.id, remoteGuests]
+  );
+  const zoneGuestAppearanceKey = zoneRemoteGuests.map(({ appearance }) => JSON.stringify(appearance)).join("|");
+  const predictedGuestAppearances = useMemo(
+    () => uniquePredictedAppearances(zoneRemoteGuests.map(({ appearance }) => appearance)),
+    [zoneGuestAppearanceKey]
+  );
+  const sameZoneCompanionCandidates = companionCandidates(remoteGuests, activeZone.id, position);
+  const activeCompanion = companionGuestId
+    ? remoteGuests.find((guest) => guest.guestId === companionGuestId) ?? null
+    : null;
+  const photoCompanions = nearbyPhotoCompanions(remoteGuests, activeZone.id, position);
+  const zoneCelebrationCollectibles = useMemo(
+    () => celebrationCollectiblesForZone(activeZone),
+    [activeZone]
+  );
   const activeNpcPoints = activeZone.npcs.map((npc) => npcMotionFor(
     activeZone,
     npc,
@@ -2190,6 +2267,90 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   const previewPortalWait = previewPortal
     ? portalWaitById.get(previewPortal.id)
     : undefined;
+  const predictedNextZoneId = portalIntent?.portal.to
+    ?? (destinationCheckpoint
+      ? nextWorldZoneToward(activeZone.id, destinationCheckpoint.zoneId)
+      : activeZone.portals[0]?.to ?? null);
+  const predictedAssetPlan = useMemo(() => journeyAssetPrediction({
+    nextZoneId: predictedNextZoneId,
+    networkMode,
+    performanceMode: devicePerformance.mode
+  }), [devicePerformance.mode, networkMode, predictedNextZoneId]);
+
+  useEffect(() => {
+    saveGameViewLocation(activeZone.id, activeJourneyGuideId);
+  }, [activeJourneyGuideId, activeZone.id]);
+
+  useEffect(() => {
+    const touched = zoneCelebrationCollectibles.find((item) => (
+      !collectedCelebrationIds.includes(item.id) && samePoint(item.point, position)
+    ));
+    if (touched) handleCollectCelebrationItem(touched);
+  }, [collectedCelebrationIds, handleCollectCelebrationItem, position, zoneCelebrationCollectibles]);
+
+  useEffect(() => {
+    if (!companionGuestId) return;
+    if (!activeCompanion) {
+      setCompanionGuestId(null);
+      setTravelStatus("동행하던 하객의 연결이 종료됐어요");
+      return;
+    }
+    if (activeCompanion.zoneId !== activeZone.id) {
+      setCompanionGuestId(null);
+      setTravelStatus(`${activeCompanion.nickname}님이 다른 맵으로 이동해 동행을 마쳤어요`);
+      return;
+    }
+    if (portalTransition || interactionIntent || portalIntent || hasJoystickMovement(joystickVector)) return;
+    const companionPoint = snapToGrid({ x: activeCompanion.x, y: activeCompanion.y }, activeZone);
+    const fullPath = findTilePath(activeZone, positionRef.current, companionPoint);
+    if (!fullPath) {
+      setTravelStatus(`${activeCompanion.nickname}님에게 가는 길을 잠시 찾지 못했어요`);
+      return;
+    }
+    const followPath = companionFollowPath(fullPath);
+    if (followPath.length === 0) {
+      setTarget(null);
+      setTravelStatus(`${activeCompanion.nickname}님과 나란히 걷고 있어요`);
+      return;
+    }
+    const followTarget = followPath.at(-1)!;
+    setPendingJourneyGuideId(null);
+    setActiveJourneyGuideId(null);
+    setTarget(followTarget);
+    setMapPath(followPath);
+    setTravelStatus(`${activeCompanion.nickname}님을 따라 이동 중`);
+    targetStepAtRef.current = null;
+  }, [
+    companionGuestId,
+    activeCompanion?.guestId,
+    activeCompanion?.nickname,
+    activeCompanion?.x,
+    activeCompanion?.y,
+    activeCompanion?.zoneId,
+    activeZone,
+    interactionIntent,
+    joystickVector,
+    portalIntent,
+    portalTransition,
+    setTarget
+  ]);
+
+  useEffect(() => {
+    if (!predictedAssetPlan) return;
+    const timer = window.setTimeout(() => {
+      void preloadWorldZoneAssets(
+        predictedAssetPlan.zoneId,
+        predictedAssetPlan.priority,
+        predictedAssetPlan.detail
+      );
+      if (predictedAssetPlan.preloadGuestPortraits) {
+        predictedGuestAppearances.forEach((appearance) => {
+          void preloadImage(resolveCharacterPortraitUrl(appearance), "low");
+        });
+      }
+    }, 220);
+    return () => window.clearTimeout(timer);
+  }, [predictedAssetPlan, predictedGuestAppearances]);
 
   return (
     <section
@@ -2403,6 +2564,22 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
                 style={pixelRect(worldPath)}
               />
             ))}
+            <WorldCelebrationCollectibles
+              items={zoneCelebrationCollectibles}
+              collectedIds={collectedCelebrationIds}
+              onCollect={(item) => beginWorldInteraction({
+                targetId: `collectible:${item.id}`,
+                collectibleId: item.id,
+                label: item.label,
+                target: {
+                  x: item.point.x - 10,
+                  y: item.point.y - 10,
+                  width: 20,
+                  height: 20
+                },
+                actionRadius: 8
+              })}
+            />
             {selectedTravelRoutePoints.length > 1 ? (
               <svg
                 key={`route-${routeRecalculationId}`}
@@ -2473,6 +2650,15 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
                     r="9"
                   />
                 </g>
+              </svg>
+            ) : null}
+            {activeCompanion?.zoneId === activeZone.id ? (
+              <svg
+                className="world-companion-link"
+                viewBox={`0 0 ${activeZone.bounds.width} ${activeZone.bounds.height}`}
+                aria-hidden="true"
+              >
+                <line x1={position.x} y1={position.y} x2={activeCompanion.x} y2={activeCompanion.y} />
               </svg>
             ) : null}
             {activeZone.decorations.map((item) => (
@@ -2674,6 +2860,11 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
             </div>
           </div>
 
+          <CelebrationCollectionProgress
+            collectedCount={collectedCelebrationIds.length}
+            totalCount={totalCelebrationCollectibles}
+          />
+
           <WorldMiniMap
             zone={activeZone}
             player={position}
@@ -2692,6 +2883,24 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
             routeNotice={routeRecalculationNotice}
             journeyStops={miniMapJourneyStops}
             journeyDestinationLabels={miniMapJourneyDestinationLabels}
+          />
+
+          <CompanionDock
+            candidates={sameZoneCompanionCandidates}
+            activeGuestId={companionGuestId}
+            onSelect={(guestId) => {
+              pauseWorldInput();
+              setPendingJourneyGuideId(null);
+              setActiveJourneyGuideId(null);
+              setCompanionGuestId(guestId);
+              const guest = remoteGuests.find((candidate) => candidate.guestId === guestId);
+              setTravelStatus(`${guest?.nickname ?? "하객"}님과 동행을 시작해요`);
+            }}
+            onStop={() => {
+              pauseWorldInput();
+              setCompanionGuestId(null);
+              setTravelStatus("동행을 마쳤어요");
+            }}
           />
 
           {viewPreferences.stepFreeRouteEnabled && destinationCheckpoint ? (
@@ -2819,6 +3028,8 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
                 <button
                   type="button"
                   onClick={() => {
+                    const sync = saveGameViewLocation(activeZone.id, activeJourneyGuideId);
+                    window.location.hash = sync.sectionId;
                     closeMenu();
                     onOpenQuickView();
                   }}
@@ -2882,6 +3093,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
           spot={gardenWorld.zones.flatMap((zone) => zone.photoSpots).find((photoSpot) => photoSpot.id === activePhotoSpotId)!}
           nickname={profile.nickname}
           appearance={profile.appearance}
+          companions={photoCompanions}
           onClose={() => setActivePhotoSpotId(null)}
           onCaptured={(memory: WeddingPhotoMemory) => {
             setPhotoAlbum(loadWeddingPhotoAlbum());

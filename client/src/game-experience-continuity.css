@@ -131,3 +131,124 @@
   border-bottom: 1px solid rgba(117, 85, 74, 0.2);
   font-size: 10px;
 }
+
+.world-collectibles {
+  position: absolute;
+  inset: 0;
+  z-index: 720;
+  pointer-events: none;
+}
+
+.world-collectible {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  padding: 5px;
+  transform: translate(-50%, -50%);
+  pointer-events: auto;
+  color: #9f5465;
+  background: rgba(255, 247, 211, 0.94);
+  border: 2px solid rgba(160, 92, 105, 0.72);
+  border-radius: 50%;
+  box-shadow: 0 0 0 3px rgba(255, 240, 177, 0.25), 0 5px 9px rgba(55, 38, 42, 0.2);
+}
+
+.world-collectible[data-kind="ribbon"] { color: #557c64; border-color: rgba(77, 123, 93, 0.74); }
+.world-collectible[data-kind="star"] { color: #9a702c; border-color: rgba(183, 135, 56, 0.74); }
+.world-collectible[data-collected="true"] { visibility: hidden; pointer-events: none; }
+.world-collectible svg { width: 17px; height: 17px; }
+
+.world-collection-progress {
+  position: absolute;
+  bottom: 108px;
+  left: 9px;
+  z-index: 12000;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 54px;
+  height: 28px;
+  padding: 4px 8px;
+  color: #6c4350;
+  background: rgba(255, 251, 235, 0.95);
+  border: 1px solid rgba(142, 84, 99, 0.42);
+  border-radius: 6px;
+  box-shadow: 0 5px 12px rgba(56, 39, 43, 0.14);
+  font-size: 10px;
+}
+
+.world-collection-progress svg { width: 14px; }
+
+.world-companion-link {
+  position: absolute;
+  inset: 0;
+  z-index: 760;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.world-companion-link line {
+  stroke: rgba(255, 242, 178, 0.9);
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-dasharray: 4 8;
+  filter: drop-shadow(0 2px 1px rgba(92, 63, 55, 0.42));
+}
+
+.world-companion-dock {
+  position: absolute;
+  top: 44px;
+  left: 9px;
+  z-index: 12000;
+  width: min(210px, calc(100% - 180px));
+  padding: 7px;
+  color: #3f4a42;
+  background: rgba(249, 253, 245, 0.95);
+  border: 1px solid rgba(83, 126, 95, 0.44);
+  border-radius: 6px;
+  box-shadow: 0 6px 15px rgba(48, 68, 53, 0.15);
+}
+
+.world-companion-dock header { display: flex; align-items: center; gap: 5px; min-width: 0; }
+.world-companion-dock header svg { width: 15px; flex: 0 0 auto; }
+.world-companion-dock header strong { overflow: hidden; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
+.world-companion-dock > div { display: flex; gap: 4px; margin-top: 5px; overflow: hidden; }
+.world-companion-dock > div button {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  min-width: 0;
+  padding: 4px 5px;
+  color: #4e6756;
+  background: #fff;
+  border: 1px solid rgba(83, 126, 95, 0.35);
+  border-radius: 4px;
+  font-size: 9px;
+}
+.world-companion-dock > div button svg { width: 12px; flex: 0 0 auto; }
+.world-companion-dock > div button span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.world-companion-dock__stop { position: absolute; top: 2px; right: 2px; width: 25px; height: 25px; padding: 5px; border: 0; background: transparent; }
+
+.wedding-photo-booth__cast--group { width: min(94%, 430px); gap: 1.5%; }
+.wedding-photo-booth__cast--group :is(.wedding-photo-booth__guest, .wedding-photo-booth__companion, .wedding-photo-booth__npc) {
+  position: relative;
+  z-index: 1;
+  flex: 0 0 auto;
+  width: 64px;
+  height: 96px;
+  filter: drop-shadow(2px 3px 1px rgba(45, 34, 34, 0.4));
+}
+.wedding-photo-booth__cast--group :is(.character-sprite, .character-portrait) { display: block; width: 64px; height: 96px; }
+.wedding-photo-booth__cast--group .wedding-photo-booth__npc { background-size: 64px 96px !important; }
+.wedding-photo-booth__group-note { margin: 4px 0 0; font-size: 10px; color: #5d735f; text-align: center; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .world-collectible:not([data-collected="true"]) { animation: wedding-collectible-float 1.8s ease-in-out infinite; }
+  .world-companion-link line { animation: wedding-companion-dash 1.2s linear infinite; }
+  @keyframes wedding-collectible-float { 50% { transform: translate(-50%, -62%); } }
+  @keyframes wedding-companion-dash { to { stroke-dashoffset: -24; } }
+}

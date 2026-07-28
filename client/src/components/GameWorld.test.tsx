@@ -2334,6 +2334,39 @@ describe("GameWorld", () => {
     expect(screen.queryByLabelText("로비 하객")).not.toBeInTheDocument();
   });
 
+  it("follows a selected realtime guest and exposes a stop control", () => {
+    configureRealtime();
+    render(<GameWorld profile={profile} />);
+    const socket = MockWebSocket.instances[0];
+    act(() => socket.emit("open"));
+    act(() => socket.emitJson({
+      type: "welcome",
+      guestId: "guest_self",
+      guests: [serverGuest()]
+    }));
+
+    fireEvent.click(within(screen.getByLabelText("같이 걷기"))
+      .getByRole("button", { name: "하객2" }));
+
+    expect(screen.getByText("하객2님과 동행 중")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "동행 그만하기" })).toBeInTheDocument();
+    expect(document.querySelector(".world-companion-link")).toBeInTheDocument();
+    expect(screen.getByText("하객2님을 따라 이동 중")).toBeInTheDocument();
+  });
+
+  it("walks to a celebration item before collecting it", () => {
+    render(<GameWorld profile={profile} />);
+    const collectButton = screen.getByRole("button", { name: "축하 꽃잎 수집하기" });
+
+    fireEvent.click(collectButton);
+
+    expect(screen.getByText("축하 꽃잎 가까이 이동 중")).toBeInTheDocument();
+    expect(screen.getByLabelText(/축하 아이템 0\//)).toBeInTheDocument();
+    advanceInteractionRoute();
+    expect(screen.getByLabelText(/축하 아이템 1\//)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "축하 꽃잎 수집 완료" })).toBeDisabled();
+  });
+
   it("stops before an occupied tile and continues after the remote guest moves", () => {
     configureRealtime();
     render(<GameWorld profile={profile} />);

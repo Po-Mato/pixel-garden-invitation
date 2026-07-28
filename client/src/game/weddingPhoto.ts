@@ -14,6 +14,10 @@ export type WeddingPhotoData = {
   publicUrl: string;
   pose: WorldPhotoPose;
   spot: WorldPhotoSpot;
+  companions?: readonly {
+    guestName: string;
+    appearance: CharacterAppearance;
+  }[];
 };
 
 export type WeddingPhotoMemory = {
@@ -484,29 +488,45 @@ export async function createWeddingPhotoCapture(data: WeddingPhotoData): Promise
   if (!context) throw new Error("이 브라우저에서는 기념 사진을 만들 수 없습니다.");
 
   const baseUrl = import.meta.env.BASE_URL;
-  const [background, guest, bride, groom] = await Promise.all([
+  const companions = data.companions?.slice(0, 2) ?? [];
+  const [background, guest, bride, groom, ...companionSprites] = await Promise.all([
     loadImage(resolveWorldMapAsset(data.spot.zoneId, "background.webp", baseUrl)),
     loadImage(resolveCharacterPortraitUrl(data.appearance, baseUrl)),
     loadWeddingPhotoNpcSprite("bride", baseUrl),
-    data.spot.cast === "couple" ? loadWeddingPhotoNpcSprite("groom", baseUrl) : Promise.resolve(null)
+    data.spot.cast === "couple" ? loadWeddingPhotoNpcSprite("groom", baseUrl) : Promise.resolve(null),
+    ...companions.map((companion) => loadImage(resolveCharacterPortraitUrl(companion.appearance, baseUrl)))
   ]);
 
   drawBackground(context, background, data.spot);
   drawSceneFrame(context, data);
 
   const floorY = 932;
-  const characterWidth = data.spot.cast === "couple" ? 204 : 232;
-  const characterHeight = characterWidth * 1.5;
-  const guestX = data.spot.cast === "couple" ? 540 : 660;
-  if (data.spot.cast === "couple") {
-    drawSprite(context, bride, 300, floorY, characterWidth, characterHeight);
-    drawSprite(context, guest, guestX, floorY, characterWidth, characterHeight, false);
-    drawSprite(context, groom, 780, floorY, characterWidth, characterHeight);
+  let guestX = data.spot.cast === "couple" ? 540 : 660;
+  let characterWidth = data.spot.cast === "couple" ? 204 : 232;
+  if (companions.length > 0) {
+    const cast = data.spot.cast === "couple"
+      ? [bride, guest, ...companionSprites, groom]
+      : [bride, guest, ...companionSprites];
+    characterWidth = Math.min(176, 760 / cast.length);
+    const characterHeight = characterWidth * 1.5;
+    const gap = cast.length > 1 ? 760 / (cast.length - 1) : 0;
+    cast.forEach((sprite, index) => {
+      const centerX = 160 + gap * index;
+      if (index === 1) guestX = centerX;
+      drawSprite(context, sprite, centerX, floorY, characterWidth, characterHeight, index === 0 || index === cast.length - 1 && data.spot.cast === "couple");
+    });
   } else {
-    drawSprite(context, bride, 400, floorY, characterWidth, characterHeight);
-    drawSprite(context, guest, guestX, floorY, characterWidth, characterHeight, false);
+    const characterHeight = characterWidth * 1.5;
+    if (data.spot.cast === "couple") {
+      drawSprite(context, bride, 300, floorY, characterWidth, characterHeight);
+      drawSprite(context, guest, guestX, floorY, characterWidth, characterHeight, false);
+      drawSprite(context, groom, 780, floorY, characterWidth, characterHeight);
+    } else {
+      drawSprite(context, bride, 400, floorY, characterWidth, characterHeight);
+      drawSprite(context, guest, guestX, floorY, characterWidth, characterHeight, false);
+    }
   }
-  drawPoseEffect(context, data.pose, guestX, floorY - characterHeight);
+  drawPoseEffect(context, data.pose, guestX, floorY - characterWidth * 1.5);
 
   context.fillStyle = "#fff9eb";
   context.fillRect(0, sceneHeight, weddingPhotoWidth, weddingPhotoHeight - sceneHeight);
@@ -518,7 +538,13 @@ export async function createWeddingPhotoCapture(data: WeddingPhotoData): Promise
   context.fillText(data.coupleNames, weddingPhotoWidth / 2, 1128);
   context.fillStyle = "#7b5c55";
   context.font = "800 29px sans-serif";
-  context.fillText(`${data.guestName}님과 함께한 ${data.spot.label}`, weddingPhotoWidth / 2, 1184);
+  context.fillText(
+    companions.length > 0
+      ? `${data.guestName}님 외 ${companions.length}명과 함께한 ${data.spot.label}`
+      : `${data.guestName}님과 함께한 ${data.spot.label}`,
+    weddingPhotoWidth / 2,
+    1184
+  );
   context.font = "700 25px sans-serif";
   context.fillText(`${data.dateLabel} · ${data.venueLabel}`, weddingPhotoWidth / 2, 1234);
   context.strokeStyle = "#d8c5ae";

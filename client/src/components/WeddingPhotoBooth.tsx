@@ -31,6 +31,11 @@ type WeddingPhotoBoothProps = {
   appearance: CharacterAppearance;
   onClose: () => void;
   onCaptured: (memory: WeddingPhotoMemory) => void;
+  companions?: readonly {
+    guestId: string;
+    nickname: string;
+    appearance: CharacterAppearance;
+  }[];
 };
 
 type PhotoStatus = "ready" | "capturing" | "captured" | "saving" | "saved" | "sharing" | "shared" | "fallback" | "canceled" | "error";
@@ -62,6 +67,7 @@ export function WeddingPhotoBooth({
   spot,
   nickname,
   appearance,
+  companions = [],
   onClose,
   onCaptured
 }: WeddingPhotoBoothProps) {
@@ -91,8 +97,12 @@ export function WeddingPhotoBooth({
     venueLabel: formatVenueLabel(event),
     publicUrl: canonicalInvitationUrl(),
     pose,
-    spot
-  }), [appearance, coupleOrder, event, nickname, pose, spot]);
+    spot,
+    companions: companions.map((companion) => ({
+      guestName: companion.nickname,
+      appearance: companion.appearance
+    }))
+  }), [appearance, companions, coupleOrder, event, nickname, pose, spot]);
 
   const releaseCaptureUrl = () => {
     if (!captureUrlRef.current) return;
@@ -197,7 +207,7 @@ export function WeddingPhotoBooth({
           >
             <span className="wedding-photo-booth__frame" aria-hidden="true" />
             <span className="wedding-photo-booth__petals" aria-hidden="true" />
-            <div className={`wedding-photo-booth__cast wedding-photo-booth__cast--${spot.cast}`} aria-hidden="true">
+            <div className={`wedding-photo-booth__cast wedding-photo-booth__cast--${spot.cast}${companions.length > 0 ? " wedding-photo-booth__cast--group" : ""}`} aria-hidden="true">
               <span
                 className="wedding-photo-booth__npc wedding-photo-booth__npc--bride"
                 style={npcPreviewUrls.bride ? {
@@ -211,6 +221,11 @@ export function WeddingPhotoBooth({
                 }}
               />
               <span className="wedding-photo-booth__guest"><CharacterPortrait appearance={appearance} /></span>
+              {companions.map((companion) => (
+                <span key={companion.guestId} className="wedding-photo-booth__companion">
+                  <CharacterPortrait appearance={companion.appearance} />
+                </span>
+              ))}
               {spot.cast === "couple" ? (
                 <span
                   className="wedding-photo-booth__npc wedding-photo-booth__npc--groom"
@@ -242,6 +257,12 @@ export function WeddingPhotoBooth({
               </button>
             ))}
           </div>
+        ) : null}
+
+        {companions.length > 0 && !capture ? (
+          <p className="wedding-photo-booth__group-note">
+            가까이 있는 {companions.map(({ nickname: companionName }) => companionName).join(", ")}님과 함께 촬영합니다.
+          </p>
         ) : null}
 
         <div className="wedding-photo-booth__actions">

@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import {
   ArrowLeft,
   CalendarDays,
@@ -35,6 +35,11 @@ import { observeAnalyticsSections } from "../analytics/invitationAnalytics";
 import { journeyCheckpoints } from "../game/journeyProgress";
 import { quickInvitationHashForCheckpoint } from "../game/journeyAccessibility";
 import { InvitationPriorityActions } from "./InvitationPriorityActions";
+import {
+  loadInvitationViewSync,
+  saveQuickViewSection,
+  type QuickInvitationSectionId
+} from "../game/invitationViewSync";
 import "../invitation-priority-actions.css";
 import "../rsvp-saved-status.css";
 
@@ -95,9 +100,13 @@ export function QuickInvitation({
   const coupleOrder = useCoupleOrder();
   const cover = content.gallery[0];
   const names = formatCoupleNames(event, coupleOrder, " & ");
+  const activeSectionRef = useRef<QuickInvitationSectionId>(
+    loadInvitationViewSync()?.sectionId ?? "top"
+  );
 
   useEffect(() => {
-    const id = window.location.hash.slice(1);
+    const synced = loadInvitationViewSync();
+    const id = window.location.hash.slice(1) || (synced?.source === "game" ? synced.sectionId : "");
     if (!id) return;
     let cancelAlignment: (() => void) | undefined;
     const frame = window.requestAnimationFrame(() => {
@@ -109,6 +118,27 @@ export function QuickInvitation({
     };
   }, []);
 
+  useEffect(() => {
+    if (typeof IntersectionObserver === "undefined") return;
+    const sections = [...document.querySelectorAll<HTMLElement>(".quick-invitation section[id]")];
+    const observer = new IntersectionObserver((entries) => {
+      const visible = entries
+        .filter((entry) => entry.isIntersecting)
+        .sort((left, right) => right.intersectionRatio - left.intersectionRatio)[0];
+      const id = visible?.target.id as QuickInvitationSectionId | undefined;
+      if (!id || activeSectionRef.current === id) return;
+      activeSectionRef.current = id;
+      saveQuickViewSection(id);
+    }, { rootMargin: "-18% 0px -58%", threshold: [0.12, 0.45, 0.75] });
+    sections.forEach((section) => observer.observe(section));
+    return () => observer.disconnect();
+  }, []);
+
+  const returnToGarden = () => {
+    saveQuickViewSection(activeSectionRef.current);
+    onOpenGarden();
+  };
+
   useEffect(() => observeAnalyticsSections([
     { id: "gallery", event: "gallery_view" },
     { id: "directions", event: "directions_view" },
@@ -119,7 +149,7 @@ export function QuickInvitation({
   return (
     <article className="quick-invitation">
       <header className="quick-invitation__topbar">
-        <button type="button" onClick={onOpenGarden}>
+        <button type="button" onClick={returnToGarden}>
           <ArrowLeft aria-hidden="true" />
           {canReturnToGarden ? "정원으로 돌아가기" : "캐릭터 정원"}
         </button>
