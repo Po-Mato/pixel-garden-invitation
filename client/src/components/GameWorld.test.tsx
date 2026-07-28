@@ -399,7 +399,13 @@ describe("GameWorld", () => {
 
     expect(screen.getByText("오시는 길 가까이 이동 중")).toBeInTheDocument();
     expect(getDirectionsWorldSpot()).toHaveClass("world-spot--target");
-    expect(screen.getByTestId("world-journey-route")).toBeInTheDocument();
+    const route = screen.getByTestId("world-journey-route");
+    expect(route).toBeInTheDocument();
+    expect(route.querySelector(".world-journey-route__player-fade")).toHaveAttribute("r", "48");
+    expect(route.querySelector(".world-journey-route__visuals")).toHaveAttribute("mask");
+    expect(route.querySelector(".world-journey-route__outline")).toBeInTheDocument();
+    expect(route.querySelector(".world-journey-route__path")).toBeInTheDocument();
+    expect(route.querySelector('[data-surface="wood"]')).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /현재 위치에서 경로 다시 찾기/ })).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: /현재 위치에서 경로 다시 찾기/ }));
     act(() => vi.advanceTimersByTime(0));

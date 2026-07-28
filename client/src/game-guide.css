@@ -838,6 +838,11 @@
 .world-minimap__journey-marker--recommended path { stroke: #9e344d; stroke-width: 1.6; }
 
 .world-journey-route {
+  --route-outline-color: #fff8dc;
+  --route-journey-color: #d5576d;
+  --route-selected-color: #468268;
+  --route-journey-marker-fill: #fff19c;
+  --route-selected-marker-fill: #dff5c8;
   position: absolute;
   inset: 0;
   z-index: 900;
@@ -847,22 +852,105 @@
   pointer-events: none;
 }
 
-.world-journey-route polyline {
+.world-journey-route [data-surface="wood"] {
+  --route-outline-color: #fff5d6;
+  --route-journey-color: #c84261;
+  --route-selected-color: #2f806c;
+  --route-journey-marker-fill: #fff0a3;
+  --route-selected-marker-fill: #dcf3c7;
+}
+
+.world-journey-route [data-surface="asphalt"] {
+  --route-outline-color: #243139;
+  --route-journey-color: #ffd166;
+  --route-selected-color: #86e4ce;
+  --route-journey-marker-fill: #464137;
+  --route-selected-marker-fill: #29473f;
+}
+
+.world-journey-route [data-surface="concrete"] {
+  --route-outline-color: #fffdf5;
+  --route-journey-color: #b43855;
+  --route-selected-color: #226f5b;
+  --route-journey-marker-fill: #ffe6a1;
+  --route-selected-marker-fill: #d6f0ce;
+}
+
+.world-journey-route [data-surface="metal"] {
+  --route-outline-color: #26333d;
+  --route-journey-color: #ff9679;
+  --route-selected-color: #76dfcf;
+  --route-journey-marker-fill: #4b3e3a;
+  --route-selected-marker-fill: #2d4845;
+}
+
+.world-journey-route [data-surface="gravel"] {
+  --route-outline-color: #fff4d8;
+  --route-journey-color: #d1496d;
+  --route-selected-color: #207a68;
+  --route-journey-marker-fill: #ffe7a8;
+  --route-selected-marker-fill: #d9f0c3;
+}
+
+.world-journey-route [data-surface="marble"] {
+  --route-outline-color: #fffdf3;
+  --route-journey-color: #a93457;
+  --route-selected-color: #236e61;
+  --route-journey-marker-fill: #f9dda0;
+  --route-selected-marker-fill: #d3ecc8;
+}
+
+.world-journey-route [data-surface="carpet"] {
+  --route-outline-color: #fff6d9;
+  --route-journey-color: #b9385c;
+  --route-selected-color: #2d735d;
+  --route-journey-marker-fill: #ffe49d;
+  --route-selected-marker-fill: #d9edc6;
+}
+
+.world-journey-route [data-surface="tile"] {
+  --route-outline-color: #ffffff;
+  --route-journey-color: #b13b59;
+  --route-selected-color: #277362;
+  --route-journey-marker-fill: #ffe29a;
+  --route-selected-marker-fill: #d5efcb;
+}
+
+.world-journey-route__outline,
+.world-journey-route__path {
   fill: none;
-  stroke: rgba(213, 87, 109, 0.92);
-  stroke-width: 5;
   stroke-linecap: round;
   stroke-linejoin: round;
   stroke-dasharray: 5 9;
   vector-effect: non-scaling-stroke;
-  filter: drop-shadow(0 1px 0 #fff8dc);
   animation: game-guide-route 850ms linear infinite;
 }
 
-.world-journey-route circle {
-  fill: #fff19c;
-  stroke: #a33851;
+.world-journey-route__outline {
+  stroke: var(--route-outline-color);
+  stroke-width: 9;
+  opacity: 0.9;
+}
+
+.world-journey-route__path {
+  stroke: var(--route-journey-color);
+  stroke-width: 5;
+}
+
+.world-journey-route__destination,
+.world-journey-route__turn circle {
+  fill: var(--route-journey-marker-fill);
+  stroke: var(--route-journey-color);
   stroke-width: 3;
+  vector-effect: non-scaling-stroke;
+}
+
+.world-journey-route__turn path {
+  fill: none;
+  stroke: var(--route-journey-color);
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
   vector-effect: non-scaling-stroke;
 }
 

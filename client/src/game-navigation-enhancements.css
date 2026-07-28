@@ -37,15 +37,23 @@
   height: 30px;
 }
 
-.world-journey-route[data-route-kind="selected"] polyline {
-  stroke: rgba(70, 130, 104, 0.94);
-  filter: drop-shadow(0 1px 0 #fffdf4);
+.world-journey-route[data-route-kind="selected"] .world-journey-route__outline,
+.world-journey-route[data-route-kind="selected"] .world-journey-route__path {
   animation: selected-route-recalculated 420ms ease-out both;
 }
 
-.world-journey-route[data-route-kind="selected"] circle {
-  fill: #dff5c8;
-  stroke: #376d58;
+.world-journey-route[data-route-kind="selected"] .world-journey-route__path {
+  stroke: var(--route-selected-color);
+}
+
+.world-journey-route[data-route-kind="selected"] .world-journey-route__destination,
+.world-journey-route[data-route-kind="selected"] .world-journey-route__turn circle {
+  fill: var(--route-selected-marker-fill);
+  stroke: var(--route-selected-color);
+}
+
+.world-journey-route[data-route-kind="selected"] .world-journey-route__turn path {
+  stroke: var(--route-selected-color);
 }
 
 @keyframes selected-route-recalculated {

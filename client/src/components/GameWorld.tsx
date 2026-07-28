@@ -59,6 +59,7 @@ import { completeGameGuide, loadGameGuideState, shouldAutoOpenGameGuide } from "
 import { journeyDirectionLabels, resolveJourneyGuidance } from "../game/journeyGuidance";
 import { quickInvitationHashForCheckpoint } from "../game/journeyAccessibility";
 import { summarizeRemainingJourney } from "../game/journeyRouteSummary";
+import { journeyRouteTurns, segmentJourneyRouteBySurface } from "../game/journeyRouteVisual";
 import { resolveNpcDialogue, type NpcDialogue, type NpcId } from "../game/npcDialogue";
 import { navigationProgress } from "../game/navigationProgress";
 import {
@@ -173,6 +174,7 @@ const npcInteractionRadius = 30;
 const reactionVisibleMs = 2200;
 const defaultViewport: ViewportSize = { width: 390, height: 520 };
 const samePoint = (first: Point, second: Point) => first.x === second.x && first.y === second.y;
+const svgRoutePoints = (points: Point[]) => points.map((point) => `${point.x},${point.y}`).join(" ");
 const hasJoystickMovement = (vector: Point) => Math.hypot(vector.x, vector.y) > joystickDeadZone;
 const pixelRect = (rect: { x: number; y: number; width: number; height: number }) => ({
   left: rect.x,
@@ -1645,6 +1647,16 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   const selectedTravelRoutePoints = selectedTravelPath.length > 0
     ? [position, ...selectedTravelPath]
     : journeyRoutePoints;
+  const journeyRouteSegments = segmentJourneyRouteBySurface(activeZone, selectedTravelRoutePoints);
+  const journeyRouteTurnMarkers = journeyRouteTurns(activeZone, selectedTravelRoutePoints);
+  const journeyRouteStart = selectedTravelRoutePoints[0];
+  const journeyRouteDestination = selectedTravelRoutePoints.at(-1);
+  const journeyRouteDestinationSurface = resolveFootstepSurface(
+    activeZone,
+    journeyRouteDestination ?? position
+  );
+  const journeyRouteMaskId = `journey-route-mask-${activeZone.id}-${routeRecalculationId}`;
+  const journeyRouteFadeId = `journey-route-fade-${activeZone.id}-${routeRecalculationId}`;
   const directTravelActive = Boolean(interactionIntent || portalIntent || target);
   const directTravelProgress = directTravelActive
     ? navigationProgress(selectedTravelPath.length)
@@ -1850,8 +1862,66 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
                 viewBox={`0 0 ${activeZone.bounds.width} ${activeZone.bounds.height}`}
                 aria-hidden="true"
               >
-                <polyline points={selectedTravelRoutePoints.map((point) => `${point.x},${point.y}`).join(" ")} />
-                <circle cx={selectedTravelRoutePoints.at(-1)?.x} cy={selectedTravelRoutePoints.at(-1)?.y} r="9" />
+                <defs>
+                  <radialGradient id={journeyRouteFadeId}>
+                    <stop offset="0%" stopColor="#000" />
+                    <stop offset="32%" stopColor="#000" />
+                    <stop offset="100%" stopColor="#fff" />
+                  </radialGradient>
+                  <mask
+                    id={journeyRouteMaskId}
+                    maskUnits="userSpaceOnUse"
+                    x="0"
+                    y="0"
+                    width={activeZone.bounds.width}
+                    height={activeZone.bounds.height}
+                  >
+                    <rect width={activeZone.bounds.width} height={activeZone.bounds.height} fill="#fff" />
+                    <circle
+                      className="world-journey-route__player-fade"
+                      cx={journeyRouteStart?.x}
+                      cy={journeyRouteStart?.y}
+                      r="48"
+                      fill={`url(#${journeyRouteFadeId})`}
+                    />
+                  </mask>
+                </defs>
+                <g className="world-journey-route__visuals" mask={`url(#${journeyRouteMaskId})`}>
+                  {journeyRouteSegments.map((segment, index) => (
+                    <g
+                      key={`${segment.surface}-${index}`}
+                      className="world-journey-route__segment"
+                      data-surface={segment.surface}
+                    >
+                      <polyline
+                        className="world-journey-route__outline"
+                        points={svgRoutePoints(segment.points)}
+                      />
+                      <polyline
+                        className="world-journey-route__path"
+                        points={svgRoutePoints(segment.points)}
+                      />
+                    </g>
+                  ))}
+                  {journeyRouteTurnMarkers.map((turn, index) => (
+                    <g
+                      key={`${turn.point.x}-${turn.point.y}-${index}`}
+                      className="world-journey-route__turn"
+                      data-surface={turn.surface}
+                      transform={`translate(${turn.point.x} ${turn.point.y}) rotate(${turn.rotation})`}
+                    >
+                      <circle r="8" />
+                      <path d="M -4 0 H 3.5 M 0 -3.5 L 3.5 0 0 3.5" />
+                    </g>
+                  ))}
+                  <circle
+                    className="world-journey-route__destination"
+                    data-surface={journeyRouteDestinationSurface}
+                    cx={journeyRouteDestination?.x}
+                    cy={journeyRouteDestination?.y}
+                    r="9"
+                  />
+                </g>
               </svg>
             ) : null}
             {activeZone.decorations.map((item) => (
