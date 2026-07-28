@@ -25,6 +25,8 @@ type ViewPreferencesContextValue = {
   setRouteVoiceGuidance: (routeVoiceGuidance: boolean) => void;
   setRouteVoiceRate: (routeVoiceRate: ViewPreferences["routeVoiceRate"]) => void;
   setStepFreeRouteEnabled: (stepFreeRouteEnabled: boolean) => void;
+  setMiniMapHighContrast: (miniMapHighContrast: boolean) => void;
+  setMiniMapRouteWeight: (miniMapRouteWeight: ViewPreferences["miniMapRouteWeight"]) => void;
   enableComfortableView: () => void;
   resetPreferences: () => void;
 };
@@ -39,6 +41,8 @@ const ViewPreferencesContext = createContext<ViewPreferencesContextValue>({
   setRouteVoiceGuidance: () => undefined,
   setRouteVoiceRate: () => undefined,
   setStepFreeRouteEnabled: () => undefined,
+  setMiniMapHighContrast: () => undefined,
+  setMiniMapRouteWeight: () => undefined,
   enableComfortableView: () => undefined,
   resetPreferences: () => undefined
 });
@@ -74,6 +78,14 @@ export function ViewPreferencesProvider({ children, initialPreferences }: ViewPr
     setStepFreeRouteEnabled: (stepFreeRouteEnabled) => setPreferences((current) => ({
       ...current,
       stepFreeRouteEnabled
+    })),
+    setMiniMapHighContrast: (miniMapHighContrast) => setPreferences((current) => ({
+      ...current,
+      miniMapHighContrast
+    })),
+    setMiniMapRouteWeight: (miniMapRouteWeight) => setPreferences((current) => ({
+      ...current,
+      miniMapRouteWeight
     })),
     enableComfortableView: () => setPreferences((current) => ({
       ...comfortableViewPreferences,

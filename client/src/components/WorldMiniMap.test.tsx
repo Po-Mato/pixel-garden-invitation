@@ -159,15 +159,26 @@ describe("WorldMiniMap", () => {
         routeContinuing
         routeKind="journey"
         routePoints={[player, { x: 285, y: 525 }, { x: 255, y: 525 }]}
-        routeProgressLabel="2타일 남음"
+        routeProgressLabel="18타일 · 포털 2회 · 약 6초"
+        routeNotice={{ deltaTiles: 3, notice: "우회 +3타일", kind: "detour" }}
+        journeyStops={[
+          { id: "home-0", zoneLabel: "우리 집", portalLabel: "동네로 나가기", current: true },
+          { id: "neighborhood-1", zoneLabel: "동네 거리", portalLabel: "지하철 타기" },
+          { id: "subway-2", zoneLabel: "지하철역", portalLabel: null }
+        ]}
+        journeyDestinationLabels={["오시는 길", "웨딩 갤러리"]}
       />
     );
 
     fireEvent.click(screen.getByRole("button", { name: "미니맵 확대 보기" }));
     const dialog = screen.getByRole("dialog", { name: "현재 경로 전체 미리보기" });
-    expect(within(dialog).getByText("웨딩 갤러리", { exact: false })).toBeInTheDocument();
+    expect(within(dialog).getAllByText("웨딩 갤러리", { exact: false })).toHaveLength(2);
     expect(within(dialog).getByText("연속 안내")).toBeInTheDocument();
     expect(within(dialog).getByTestId("minimap-destination-route")).toHaveAttribute("data-route-active", "true");
+    expect(within(dialog).getByRole("region", { name: "남은 전체 여정" })).toHaveTextContent("포털 2회");
+    expect(within(dialog).getByText("동네 거리")).toBeInTheDocument();
+    expect(within(dialog).getByText("웨딩 갤러리")).toBeInTheDocument();
+    expect(within(dialog).getByText("우회 +3타일")).toBeInTheDocument();
 
     fireEvent.click(within(dialog).getByRole("button", { name: "미니맵 닫기" }));
     expect(screen.queryByRole("dialog", { name: "현재 경로 전체 미리보기" })).not.toBeInTheDocument();

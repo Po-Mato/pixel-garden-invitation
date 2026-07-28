@@ -47,6 +47,8 @@ export function ViewSettingsAccess({ variant, onOpenChange }: ViewSettingsAccess
     setRouteVoiceGuidance,
     setRouteVoiceRate,
     setStepFreeRouteEnabled,
+    setMiniMapHighContrast,
+    setMiniMapRouteWeight,
     enableComfortableView,
     resetPreferences
   } = useViewPreferences();
@@ -70,7 +72,9 @@ export function ViewSettingsAccess({ variant, onOpenChange }: ViewSettingsAccess
   const comfortableViewEnabled = preferences.textScale === "xlarge"
     && preferences.reduceMotion
     && preferences.highContrast
-    && preferences.comfortableControls;
+    && preferences.comfortableControls
+    && preferences.miniMapHighContrast
+    && preferences.miniMapRouteWeight === "bold";
   const portalDirectionAudioReady = feedbackPreferences.soundEnabled
     && feedbackPreferences.effectsEnabled
     && feedbackPreferences.portalAudioEnabled
@@ -183,6 +187,37 @@ export function ViewSettingsAccess({ variant, onOpenChange }: ViewSettingsAccess
               />
               <span aria-hidden="true" className="view-settings-sheet__switch-track" />
             </label>
+
+            <label className="view-settings-sheet__switch">
+              <span><MapPinned aria-hidden="true" /><strong>미니맵 고대비</strong></span>
+              <input
+                type="checkbox"
+                role="switch"
+                checked={preferences.miniMapHighContrast}
+                onChange={(event) => setMiniMapHighContrast(event.target.checked)}
+              />
+              <span aria-hidden="true" className="view-settings-sheet__switch-track" />
+            </label>
+
+            <div className="feedback-settings__volume">
+              <strong>미니맵 경로 굵기</strong>
+              <div className="view-settings-sheet__segments" role="group" aria-label="미니맵 경로 굵기">
+                <button
+                  type="button"
+                  aria-pressed={preferences.miniMapRouteWeight === "standard"}
+                  onClick={() => setMiniMapRouteWeight("standard")}
+                >
+                  기본
+                </button>
+                <button
+                  type="button"
+                  aria-pressed={preferences.miniMapRouteWeight === "bold"}
+                  onClick={() => setMiniMapRouteWeight("bold")}
+                >
+                  굵게
+                </button>
+              </div>
+            </div>
 
             <div className="feedback-settings__volume">
               <strong>음성 안내 속도</strong>
@@ -476,6 +511,8 @@ export function ViewSettingsAccess({ variant, onOpenChange }: ViewSettingsAccess
               길찾기 음성 안내 {preferences.routeVoiceGuidance ? "켜짐" : "꺼짐"},
               음성 안내 속도 {preferences.routeVoiceRate === "slow" ? "느리게" : preferences.routeVoiceRate === "fast" ? "빠르게" : "보통"},
               계단 없는 길 우선 {preferences.stepFreeRouteEnabled ? "켜짐" : "꺼짐"},
+              미니맵 고대비 {preferences.miniMapHighContrast ? "켜짐" : "꺼짐"},
+              미니맵 경로 굵기 {preferences.miniMapRouteWeight === "bold" ? "굵게" : "기본"},
               움직임 줄이기 {preferences.reduceMotion ? "켜짐" : "꺼짐"},
               데이터 절약 {preferences.dataSaver ? "켜짐" : "꺼짐"},
               전체 소리 {feedbackPreferences.soundEnabled ? "켜짐" : "꺼짐"},

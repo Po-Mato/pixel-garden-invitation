@@ -41,6 +41,23 @@
     3px 3px 0 rgba(42, 34, 31, 0.4);
 }
 
+.world-minimap__reroute {
+  display: block;
+  width: 100%;
+  overflow: hidden;
+  color: #8a4a36;
+  font-size: 7px;
+  font-weight: 900;
+  line-height: 1.15;
+  text-align: right;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.world-minimap__reroute[data-kind="shorter"] {
+  color: #276a55;
+}
+
 .world-minimap-expanded {
   position: fixed;
   inset: 0;
@@ -121,6 +138,113 @@
   box-shadow: inset 0 0 0 2px rgba(255, 253, 238, 0.68);
 }
 
+.world-minimap-expanded__journey {
+  display: grid;
+  gap: 9px;
+  border-top: 1px solid #cdbfa9;
+  padding-top: 10px;
+}
+
+.world-minimap-expanded__journey > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.world-minimap-expanded__journey > header strong {
+  font-size: 13px;
+}
+
+.world-minimap-expanded__journey > header span {
+  color: #8f4456;
+  font-size: 10px;
+  font-weight: 900;
+}
+
+.world-minimap-expanded__journey ol {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  overflow-x: auto;
+  list-style: none;
+  scrollbar-width: thin;
+}
+
+.world-minimap-expanded__journey li {
+  position: relative;
+  display: grid;
+  min-width: 104px;
+  grid-template-columns: 24px minmax(0, 1fr);
+  align-items: start;
+  gap: 6px;
+  padding-right: 14px;
+}
+
+.world-minimap-expanded__journey li:not(:last-child)::after {
+  position: absolute;
+  top: 11px;
+  right: 2px;
+  width: 12px;
+  border-top: 2px dotted #a04e5f;
+  content: "";
+}
+
+.world-minimap-expanded__journey-index {
+  display: grid;
+  width: 24px;
+  height: 24px;
+  place-items: center;
+  border: 2px solid #9b5967;
+  border-radius: 50%;
+  background: #fff8dc;
+  color: #713a48;
+  font-size: 10px;
+  font-weight: 900;
+}
+
+.world-minimap-expanded__journey li[data-current="true"] .world-minimap-expanded__journey-index {
+  border-color: #2f705d;
+  background: #dff5c8;
+  color: #245b4a;
+}
+
+.world-minimap-expanded__journey li > div {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+
+.world-minimap-expanded__journey li strong {
+  overflow: hidden;
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.world-minimap-expanded__journey li small {
+  color: #76655d;
+  font-size: 8px;
+  line-height: 1.25;
+}
+
+.world-minimap-expanded__destinations {
+  display: flex;
+  gap: 5px;
+  overflow-x: auto;
+}
+
+.world-minimap-expanded__destinations span {
+  flex: 0 0 auto;
+  border: 1px solid #bda88e;
+  border-radius: 4px;
+  padding: 3px 6px;
+  background: rgba(255, 253, 240, 0.86);
+  color: #5e4d46;
+  font-size: 9px;
+  font-weight: 800;
+}
+
 .world-minimap__canvas--expanded {
   max-width: 100%;
   height: auto;
@@ -157,6 +281,84 @@
 
 .world-minimap-expanded__footer strong {
   text-align: right;
+}
+
+.world-minimap-expanded__footer > div {
+  display: grid;
+  gap: 2px;
+  text-align: right;
+}
+
+.world-minimap-expanded__footer small {
+  color: #8a4a36;
+  font-size: 9px;
+  font-weight: 900;
+}
+
+.world-minimap-expanded__footer small[data-kind="shorter"] {
+  color: #276a55;
+}
+
+html[data-mini-map-route-weight="bold"] .world-minimap__route-outline {
+  stroke-width: 6;
+}
+
+html[data-mini-map-route-weight="bold"] .world-minimap__route-path {
+  stroke-width: 3.5;
+}
+
+html[data-mini-map-route-weight="bold"] .world-minimap__canvas--expanded .world-minimap__route-outline {
+  stroke-width: 8;
+}
+
+html[data-mini-map-route-weight="bold"] .world-minimap__canvas--expanded .world-minimap__route-path {
+  stroke-width: 4.5;
+}
+
+html[data-mini-map-high-contrast="true"] .world-minimap,
+html[data-mini-map-high-contrast="true"] .world-minimap-expanded__panel {
+  border-color: #171413;
+  background-color: #fff8d9;
+  color: #171413;
+}
+
+html[data-mini-map-high-contrast="true"] .world-minimap__boundary {
+  fill: #f5eed5;
+  stroke: #171413;
+  stroke-width: 2;
+}
+
+html[data-mini-map-high-contrast="true"] .world-minimap__path {
+  fill: #a8d4b8;
+  stroke: #171413;
+  stroke-width: 1;
+}
+
+html[data-mini-map-high-contrast="true"] .world-minimap__obstacle {
+  fill: rgba(23, 20, 19, 0.78);
+}
+
+html[data-mini-map-high-contrast="true"] .world-minimap__spot {
+  fill: #ffd75e;
+  stroke: #171413;
+  stroke-width: 1.5;
+}
+
+html[data-mini-map-high-contrast="true"] .world-minimap__portal {
+  fill: #f26684;
+  stroke: #171413;
+  stroke-width: 1.5;
+}
+
+html[data-mini-map-high-contrast="true"] .world-minimap__player circle {
+  fill: #ffffff;
+  stroke: #000000;
+  stroke-width: 2;
+}
+
+html[data-mini-map-high-contrast="true"] .world-minimap__player line {
+  stroke: #d21847;
+  stroke-width: 3;
 }
 
 .world-travel-progress--continuing {

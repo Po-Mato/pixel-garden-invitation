@@ -11,6 +11,7 @@ import {
   type MiniMapLayout
 } from "../game/minimap";
 import { segmentJourneyRouteBySurface } from "../game/journeyRouteVisual";
+import type { RouteRecalculationResult } from "../game/routeDeviation";
 import { portalEntryRect, type Point, type WorldZone } from "../game/world";
 import "../mini-map-expanded.css";
 
@@ -31,6 +32,9 @@ type WorldMiniMapProps = {
   routeKind?: MiniMapRouteKind;
   routePoints?: Point[];
   routeProgressLabel?: string | null;
+  routeNotice?: RouteRecalculationResult | null;
+  journeyStops?: MiniMapJourneyStop[];
+  journeyDestinationLabels?: string[];
 };
 
 export type JourneyMiniMapMarker = {
@@ -38,6 +42,13 @@ export type JourneyMiniMapMarker = {
   point: Point;
   completed: boolean;
   recommended?: boolean;
+};
+
+export type MiniMapJourneyStop = {
+  id: string;
+  zoneLabel: string;
+  portalLabel: string | null;
+  current?: boolean;
 };
 
 type MiniMapCanvasProps = {
@@ -204,7 +215,10 @@ export function WorldMiniMap({
   routeContinuing = false,
   routeKind = "preview",
   routePoints = [],
-  routeProgressLabel = null
+  routeProgressLabel = null,
+  routeNotice = null,
+  journeyStops = [],
+  journeyDestinationLabels = []
 }: WorldMiniMapProps) {
   const [expanded, setExpanded] = useState(false);
   const expandButtonRef = useRef<HTMLButtonElement | null>(null);
@@ -278,6 +292,11 @@ export function WorldMiniMap({
           {routeStatus} · {routeProgressLabel}
         </span>
       ) : null}
+      {routeNotice ? (
+        <span className="world-minimap__reroute" data-kind={routeNotice.kind}>
+          {routeNotice.notice}
+        </span>
+      ) : null}
       <MiniMapCanvas {...canvasProps} layout={layout} />
 
       {expanded ? createPortal(
@@ -315,9 +334,38 @@ export function WorldMiniMap({
             <div className="world-minimap-expanded__map">
               <MiniMapCanvas {...canvasProps} layout={expandedLayout} expanded />
             </div>
+            {journeyStops.length > 0 ? (
+              <section className="world-minimap-expanded__journey" aria-label="남은 전체 여정">
+                <header>
+                  <strong>남은 전체 여정</strong>
+                  <span>포털 {Math.max(0, journeyStops.length - 1)}회</span>
+                </header>
+                <ol>
+                  {journeyStops.map((stop, index) => (
+                    <li key={stop.id} data-current={stop.current || undefined}>
+                      <span className="world-minimap-expanded__journey-index">{index + 1}</span>
+                      <div>
+                        <strong>{stop.zoneLabel}</strong>
+                        {stop.portalLabel ? <small>{stop.portalLabel} 통과</small> : <small>여정 목적지</small>}
+                      </div>
+                    </li>
+                  ))}
+                </ol>
+                {journeyDestinationLabels.length > 0 ? (
+                  <div className="world-minimap-expanded__destinations" aria-label="남은 방문 목적지">
+                    {journeyDestinationLabels.map((label, index) => (
+                      <span key={`${label}-${index}`}>{label}</span>
+                    ))}
+                  </div>
+                ) : null}
+              </section>
+            ) : null}
             <footer className="world-minimap-expanded__footer">
               <span data-route-kind={routeKind}>{routeStatus}</span>
-              <strong>{routeProgressLabel ?? "현재 위치 확인"}</strong>
+              <div>
+                <strong>{routeProgressLabel ?? "현재 위치 확인"}</strong>
+                {routeNotice ? <small data-kind={routeNotice.kind}>{routeNotice.notice}</small> : null}
+              </div>
             </footer>
           </section>
         </div>,

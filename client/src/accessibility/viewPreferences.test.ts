@@ -27,7 +27,9 @@ describe("보기 설정 저장", () => {
         dataSaver: false,
         routeVoiceGuidance: false,
         routeVoiceRate: "normal",
-        stepFreeRouteEnabled: false
+        stepFreeRouteEnabled: false,
+        miniMapHighContrast: false,
+        miniMapRouteWeight: "standard"
       });
     expect(loadViewPreferences(storage(JSON.stringify({
       textScale: "xlarge",
@@ -37,7 +39,9 @@ describe("보기 설정 저장", () => {
       dataSaver: true,
       routeVoiceGuidance: false,
       routeVoiceRate: "normal",
-      stepFreeRouteEnabled: false
+      stepFreeRouteEnabled: false,
+      miniMapHighContrast: false,
+      miniMapRouteWeight: "standard"
     })))).toEqual({
       textScale: "xlarge",
       reduceMotion: true,
@@ -46,7 +50,9 @@ describe("보기 설정 저장", () => {
       dataSaver: true,
       routeVoiceGuidance: false,
       routeVoiceRate: "normal",
-      stepFreeRouteEnabled: false
+      stepFreeRouteEnabled: false,
+      miniMapHighContrast: false,
+      miniMapRouteWeight: "standard"
     });
     expect(loadViewPreferences(storage("{broken"))).toEqual(defaultViewPreferences);
     expect(loadViewPreferences(storage(JSON.stringify({ textScale: "huge", reduceMotion: true }))))
@@ -63,7 +69,9 @@ describe("보기 설정 저장", () => {
       dataSaver: true,
       routeVoiceGuidance: true,
       routeVoiceRate: "fast" as const,
-      stepFreeRouteEnabled: true
+      stepFreeRouteEnabled: true,
+      miniMapHighContrast: true,
+      miniMapRouteWeight: "bold" as const
     };
     expect(saveViewPreferences(preferences, target)).toBe(true);
     expect(target.setItem).toHaveBeenCalledWith(
@@ -82,7 +90,9 @@ describe("보기 설정 저장", () => {
       dataSaver: true,
       routeVoiceGuidance: true,
       routeVoiceRate: "slow",
-      stepFreeRouteEnabled: true
+      stepFreeRouteEnabled: true,
+      miniMapHighContrast: true,
+      miniMapRouteWeight: "bold"
     }, root);
     expect(root).toHaveAttribute("data-text-scale", "xlarge");
     expect(root).toHaveAttribute("data-reduce-motion", "true");
@@ -90,6 +100,8 @@ describe("보기 설정 저장", () => {
     expect(root).toHaveAttribute("data-comfortable-controls", "true");
     expect(root).toHaveAttribute("data-data-saver", "true");
     expect(root).toHaveAttribute("data-route-voice-guidance", "true");
+    expect(root).toHaveAttribute("data-mini-map-high-contrast", "true");
+    expect(root).toHaveAttribute("data-mini-map-route-weight", "bold");
     expect(shouldReduceMotion(root, vi.fn(() => ({ matches: false })) as unknown as typeof window.matchMedia)).toBe(true);
 
     applyViewPreferences(defaultViewPreferences, root);
@@ -99,6 +111,8 @@ describe("보기 설정 저장", () => {
     expect(root).not.toHaveAttribute("data-comfortable-controls");
     expect(root).not.toHaveAttribute("data-data-saver");
     expect(root).not.toHaveAttribute("data-route-voice-guidance");
+    expect(root).not.toHaveAttribute("data-mini-map-high-contrast");
+    expect(root).toHaveAttribute("data-mini-map-route-weight", "standard");
     expect(shouldReduceMotion(root, vi.fn(() => ({ matches: true })) as unknown as typeof window.matchMedia)).toBe(true);
   });
 });

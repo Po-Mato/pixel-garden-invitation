@@ -7,6 +7,8 @@ export type ViewPreferences = {
   routeVoiceGuidance: boolean;
   routeVoiceRate: "slow" | "normal" | "fast";
   stepFreeRouteEnabled: boolean;
+  miniMapHighContrast: boolean;
+  miniMapRouteWeight: "standard" | "bold";
 };
 
 type StorageLike = Pick<Storage, "getItem" | "setItem">;
@@ -20,7 +22,9 @@ export const defaultViewPreferences: ViewPreferences = {
   dataSaver: false,
   routeVoiceGuidance: false,
   routeVoiceRate: "normal",
-  stepFreeRouteEnabled: false
+  stepFreeRouteEnabled: false,
+  miniMapHighContrast: false,
+  miniMapRouteWeight: "standard"
 };
 
 export const comfortableViewPreferences: ViewPreferences = {
@@ -31,7 +35,9 @@ export const comfortableViewPreferences: ViewPreferences = {
   dataSaver: false,
   routeVoiceGuidance: false,
   routeVoiceRate: "normal",
-  stepFreeRouteEnabled: true
+  stepFreeRouteEnabled: true,
+  miniMapHighContrast: true,
+  miniMapRouteWeight: "bold"
 };
 
 function browserStorage(): StorageLike | null {
@@ -57,7 +63,9 @@ export function isViewPreferences(value: unknown): value is ViewPreferences {
     && typeof candidate.dataSaver === "boolean"
     && typeof candidate.routeVoiceGuidance === "boolean"
     && (candidate.routeVoiceRate === "slow" || candidate.routeVoiceRate === "normal" || candidate.routeVoiceRate === "fast")
-    && typeof candidate.stepFreeRouteEnabled === "boolean";
+    && typeof candidate.stepFreeRouteEnabled === "boolean"
+    && typeof candidate.miniMapHighContrast === "boolean"
+    && (candidate.miniMapRouteWeight === "standard" || candidate.miniMapRouteWeight === "bold");
 }
 
 function normalizeStoredPreferences(value: unknown): ViewPreferences | null {
@@ -86,7 +94,11 @@ function normalizeStoredPreferences(value: unknown): ViewPreferences | null {
       : "normal",
     stepFreeRouteEnabled: typeof candidate.stepFreeRouteEnabled === "boolean"
       ? candidate.stepFreeRouteEnabled
-      : false
+      : false,
+    miniMapHighContrast: typeof candidate.miniMapHighContrast === "boolean"
+      ? candidate.miniMapHighContrast
+      : false,
+    miniMapRouteWeight: candidate.miniMapRouteWeight === "bold" ? "bold" : "standard"
   };
 }
 
@@ -136,6 +148,11 @@ export function applyViewPreferences(
 
   if (preferences.routeVoiceGuidance) root.dataset.routeVoiceGuidance = "true";
   else delete root.dataset.routeVoiceGuidance;
+
+  if (preferences.miniMapHighContrast) root.dataset.miniMapHighContrast = "true";
+  else delete root.dataset.miniMapHighContrast;
+
+  root.dataset.miniMapRouteWeight = preferences.miniMapRouteWeight;
 }
 
 export function shouldReduceMotion(

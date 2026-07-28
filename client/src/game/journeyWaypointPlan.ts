@@ -16,6 +16,26 @@ export function remainingJourneyWaypoints(progress: JourneyProgress): JourneyChe
   return journeyCheckpoints.filter((checkpoint) => !completed.has(checkpoint.id));
 }
 
+export function journeyWaypointZonePath(
+  progress: JourneyProgress,
+  checkpointIds: readonly JourneyCheckpointId[],
+  activeZoneId: WorldZoneId,
+  world: GardenWorld = gardenWorld
+): WorldZoneId[] {
+  const path: WorldZoneId[] = [activeZoneId];
+  let cursor = activeZoneId;
+
+  for (const checkpointId of normalizeJourneyWaypointPlan(progress, checkpointIds)) {
+    const checkpoint = checkpointById(checkpointId);
+    if (!checkpoint) continue;
+    const leg = findWorldZonePath(cursor, checkpoint.zoneId, world);
+    path.push(...leg.slice(1));
+    cursor = checkpoint.zoneId;
+  }
+
+  return path;
+}
+
 export function normalizeJourneyWaypointPlan(
   progress: JourneyProgress,
   checkpointIds: readonly JourneyCheckpointId[]

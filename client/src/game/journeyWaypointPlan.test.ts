@@ -4,6 +4,7 @@ import {
   estimateJourneyCheckpointRoute,
   firstJourneyWaypoint,
   estimateJourneyWaypointPlan,
+  journeyWaypointZonePath,
   moveJourneyWaypoint,
   normalizeJourneyWaypointPlan,
   optimizeJourneyWaypointPlan,
@@ -72,5 +73,19 @@ describe("journeyWaypointPlan", () => {
     expect(route.portalTransitions).toBeGreaterThan(0);
     expect(route.tileSteps).toBeGreaterThan(route.portalTransitions);
     expect(route.end.zoneId).toBe("lobby");
+  });
+
+  it("계획한 모든 목적지를 포털로 잇는 전체 맵 순서를 만든다", () => {
+    const progress = createEmptyJourneyProgress();
+    const zonePath = journeyWaypointZonePath(
+      progress,
+      ["directions", "gallery", "bride"],
+      "home"
+    );
+
+    expect(zonePath[0]).toBe("home");
+    expect(zonePath).toContain("lobby");
+    expect(zonePath.at(-1)).toBe("bridal-room");
+    expect(zonePath.length - 1).toBeGreaterThan(0);
   });
 });

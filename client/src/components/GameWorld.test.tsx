@@ -1548,10 +1548,9 @@ describe("GameWorld", () => {
     expect(screen.getByLabelText("우리 집 지도")).toBeInTheDocument();
     expect(screen.getByText("동네로 나가기까지 경로를 다시 찾았어요")).toBeInTheDocument();
     expect(screen.getByTestId("world-journey-route")).toHaveAttribute("data-route-kind", "selected");
-    expect(screen.getByTestId("world-travel-progress")).toHaveTextContent(/타일 · 약 \d+초/);
-    expect(screen.getByTestId("minimap-route-progress")).toHaveTextContent(
-      screen.getByTestId("world-travel-progress").textContent ?? ""
-    );
+    expect(screen.getByTestId("world-travel-progress")).toHaveTextContent(/타일 · 포털 1회 · 약 \d+초/);
+    expect(screen.getByTestId("world-travel-progress")).toHaveTextContent("자동 재탐색 완료");
+    expect(screen.getByTestId("minimap-route-progress")).toHaveTextContent(/타일 · 포털 1회 · 약 \d+초/);
     expect(screen.getByTestId("world-journey-route")).toHaveAttribute("data-route-recalculation", "1");
 
     finishCurrentRoute();
