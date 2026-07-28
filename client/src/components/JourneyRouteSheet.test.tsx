@@ -57,4 +57,51 @@ describe("JourneyRouteSheet", () => {
     fireEvent.click(screen.getByRole("switch", { name: "계단 없는 길 우선" }));
     expect(onStepFreeRouteChange).toHaveBeenCalledWith(false);
   });
+
+  it("추천·최단·계단 없는 경로를 수치로 비교하고 선택한다", () => {
+    const onRoutePreferenceChange = vi.fn();
+    render(
+      <JourneyRouteSheet
+        activeZone={getWorldZone(gardenWorld, "home")}
+        checkpoint={journeyCheckpoints[0]}
+        progress={createEmptyJourneyProgress()}
+        guidance={null}
+        routePreference="recommended"
+        routeComparisonOptions={[
+          {
+            id: "recommended",
+            label: "추천 경로",
+            detail: "예식 흐름에 맞춘 순서",
+            tileCount: 120,
+            portalCount: 8,
+            estimatedLabel: "약 1분"
+          },
+          {
+            id: "shortest",
+            label: "최단 경로",
+            detail: "총 이동을 가장 짧게",
+            tileCount: 98,
+            portalCount: 6,
+            estimatedLabel: "약 50초"
+          },
+          {
+            id: "step-free",
+            label: "계단 없는 길",
+            detail: "엘리베이터·편의 안내 포함",
+            tileCount: 120,
+            portalCount: 8,
+            estimatedLabel: "약 1분"
+          }
+        ]}
+        onRoutePreferenceChange={onRoutePreferenceChange}
+        onClose={vi.fn()}
+        onStart={vi.fn()}
+      />
+    );
+
+    expect(screen.getByRole("button", { name: /추천 경로/ })).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByRole("button", { name: /최단 경로/ })).toHaveTextContent("98타일 · 포털 6회");
+    fireEvent.click(screen.getByRole("button", { name: /계단 없는 길 엘리베이터/ }));
+    expect(onRoutePreferenceChange).toHaveBeenCalledWith("step-free");
+  });
 });

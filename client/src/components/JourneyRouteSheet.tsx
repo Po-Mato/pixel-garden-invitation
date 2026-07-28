@@ -26,6 +26,17 @@ import {
 } from "../game/journeyRouteSummary";
 import { getWorldZone, gardenWorld, type WorldZone } from "../game/world";
 
+export type JourneyRoutePreference = "recommended" | "shortest" | "step-free" | "custom";
+
+export type JourneyRouteComparisonOption = {
+  id: Exclude<JourneyRoutePreference, "custom">;
+  label: string;
+  detail: string;
+  tileCount: number;
+  portalCount: number;
+  estimatedLabel: string;
+};
+
 type JourneyRouteSheetProps = {
   activeZone: WorldZone;
   checkpoint: JourneyCheckpoint;
@@ -41,6 +52,9 @@ type JourneyRouteSheetProps = {
   estimatedPortalCount?: number;
   stepFreeRouteEnabled?: boolean;
   onStepFreeRouteChange?: (enabled: boolean) => void;
+  routePreference?: JourneyRoutePreference;
+  routeComparisonOptions?: readonly JourneyRouteComparisonOption[];
+  onRoutePreferenceChange?: (preference: Exclude<JourneyRoutePreference, "custom">) => void;
   onClose: () => void;
   onStart: () => void;
   onOpenSimpleDestination?: (checkpoint: JourneyCheckpoint) => void;
@@ -61,6 +75,9 @@ export function JourneyRouteSheet({
   estimatedPortalCount,
   stepFreeRouteEnabled = false,
   onStepFreeRouteChange,
+  routePreference = "recommended",
+  routeComparisonOptions = [],
+  onRoutePreferenceChange,
   onClose,
   onStart,
   onOpenSimpleDestination
@@ -117,6 +134,33 @@ export function JourneyRouteSheet({
             ? `${guidance.direction ? `${journeyDirectionLabels[guidance.direction]}으로 ` : ""}${guidance.tileCount}타일`
             : checkpoint.zoneId === activeZone.id ? "현재 맵" : "포털 경로 안내"}</em>
         </div>
+
+        {routeComparisonOptions.length > 0 ? (
+          <fieldset className="journey-route-sheet__route-options">
+            <legend>경로 비교</legend>
+            {routePreference === "custom" ? <span>직접 설정한 경유지 순서</span> : null}
+            <div>
+              {routeComparisonOptions.map((option) => {
+                const Icon = option.id === "recommended"
+                  ? Sparkles
+                  : option.id === "shortest" ? Navigation : Accessibility;
+                return (
+                  <button
+                    key={option.id}
+                    type="button"
+                    aria-pressed={routePreference === option.id}
+                    onClick={() => onRoutePreferenceChange?.(option.id)}
+                  >
+                    <Icon aria-hidden="true" />
+                    <span><strong>{option.label}</strong><small>{option.detail}</small></span>
+                    <em>{option.tileCount}타일 · 포털 {option.portalCount}회</em>
+                    <b>{option.estimatedLabel}</b>
+                  </button>
+                );
+              })}
+            </div>
+          </fieldset>
+        ) : null}
 
         <section className="journey-route-sheet__accessible" aria-labelledby="journey-accessible-title">
           <label>

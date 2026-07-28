@@ -15,6 +15,7 @@ afterEach(() => {
   delete document.documentElement.dataset.dataSaver;
   delete document.documentElement.dataset.miniMapHighContrast;
   delete document.documentElement.dataset.miniMapRouteWeight;
+  delete document.documentElement.dataset.routePattern;
 });
 
 describe("ViewSettingsAccess", () => {
@@ -52,6 +53,7 @@ describe("ViewSettingsAccess", () => {
     expect(screen.getByRole("switch", { name: "계단 없는 길 우선" })).toBeChecked();
     expect(screen.getByRole("switch", { name: "미니맵 고대비" })).toBeChecked();
     expect(screen.getByRole("button", { name: "굵게" })).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByRole("switch", { name: "경로 선 패턴 강화" })).toBeChecked();
     expect(screen.getByRole("switch", { name: "움직임 줄이기" })).toBeChecked();
     expect(screen.getByRole("switch", { name: "데이터 절약" })).toBeChecked();
     expect(document.documentElement).toHaveAttribute("data-high-contrast", "true");
@@ -75,9 +77,11 @@ describe("ViewSettingsAccess", () => {
     fireEvent.click(screen.getByRole("switch", { name: "미니맵 고대비" }));
     const routeWeight = screen.getByRole("group", { name: "미니맵 경로 굵기" });
     fireEvent.click(within(routeWeight).getByRole("button", { name: "굵게" }));
+    fireEvent.click(screen.getByRole("switch", { name: "경로 선 패턴 강화" }));
 
     expect(document.documentElement).toHaveAttribute("data-mini-map-high-contrast", "true");
     expect(document.documentElement).toHaveAttribute("data-mini-map-route-weight", "bold");
+    expect(document.documentElement).toHaveAttribute("data-route-pattern", "enhanced");
   });
 
   it("계단 없는 길 우선 설정을 저장 상태에 반영한다", () => {

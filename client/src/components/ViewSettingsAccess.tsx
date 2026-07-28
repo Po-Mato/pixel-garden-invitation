@@ -49,6 +49,7 @@ export function ViewSettingsAccess({ variant, onOpenChange }: ViewSettingsAccess
     setStepFreeRouteEnabled,
     setMiniMapHighContrast,
     setMiniMapRouteWeight,
+    setRoutePatternEnhanced,
     enableComfortableView,
     resetPreferences
   } = useViewPreferences();
@@ -74,7 +75,8 @@ export function ViewSettingsAccess({ variant, onOpenChange }: ViewSettingsAccess
     && preferences.highContrast
     && preferences.comfortableControls
     && preferences.miniMapHighContrast
-    && preferences.miniMapRouteWeight === "bold";
+    && preferences.miniMapRouteWeight === "bold"
+    && preferences.routePatternEnhanced;
   const portalDirectionAudioReady = feedbackPreferences.soundEnabled
     && feedbackPreferences.effectsEnabled
     && feedbackPreferences.portalAudioEnabled
@@ -218,6 +220,17 @@ export function ViewSettingsAccess({ variant, onOpenChange }: ViewSettingsAccess
                 </button>
               </div>
             </div>
+
+            <label className="view-settings-sheet__switch">
+              <span><Navigation aria-hidden="true" /><strong>경로 선 패턴 강화</strong></span>
+              <input
+                type="checkbox"
+                role="switch"
+                checked={preferences.routePatternEnhanced}
+                onChange={(event) => setRoutePatternEnhanced(event.target.checked)}
+              />
+              <span aria-hidden="true" className="view-settings-sheet__switch-track" />
+            </label>
 
             <div className="feedback-settings__volume">
               <strong>음성 안내 속도</strong>
@@ -513,6 +526,7 @@ export function ViewSettingsAccess({ variant, onOpenChange }: ViewSettingsAccess
               계단 없는 길 우선 {preferences.stepFreeRouteEnabled ? "켜짐" : "꺼짐"},
               미니맵 고대비 {preferences.miniMapHighContrast ? "켜짐" : "꺼짐"},
               미니맵 경로 굵기 {preferences.miniMapRouteWeight === "bold" ? "굵게" : "기본"},
+              경로 선 패턴 강화 {preferences.routePatternEnhanced ? "켜짐" : "꺼짐"},
               움직임 줄이기 {preferences.reduceMotion ? "켜짐" : "꺼짐"},
               데이터 절약 {preferences.dataSaver ? "켜짐" : "꺼짐"},
               전체 소리 {feedbackPreferences.soundEnabled ? "켜짐" : "꺼짐"},

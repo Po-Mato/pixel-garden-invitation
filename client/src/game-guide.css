@@ -547,6 +547,93 @@
 .journey-route-sheet__destination strong { font-size: 12px; }
 .journey-route-sheet__destination em { color: #735e58; font-size: 9px; font-style: normal; font-weight: 800; }
 
+.journey-route-sheet__route-options {
+  display: grid;
+  gap: 7px;
+  margin: 9px 0;
+  padding: 9px;
+  border: 1px solid #c9d2c9;
+  border-radius: 6px;
+  background: #f7f8f3;
+}
+
+.journey-route-sheet__route-options legend {
+  padding: 0 5px;
+  color: #456453;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.journey-route-sheet__route-options > span {
+  color: #8f5c68;
+  font-size: 9px;
+  font-weight: 900;
+}
+
+.journey-route-sheet__route-options > div {
+  display: grid;
+  gap: 5px;
+}
+
+.journey-route-sheet__route-options button {
+  display: grid;
+  min-height: 46px;
+  grid-template-columns: 25px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 7px;
+  border: 1px solid #ccd5cd;
+  border-radius: 5px;
+  padding: 6px 8px;
+  background: #fff;
+  color: #4d5c53;
+  text-align: left;
+}
+
+.journey-route-sheet__route-options button[aria-pressed="true"] {
+  border-color: #547864;
+  background: #e6f1e8;
+  box-shadow: inset 3px 0 0 #547864;
+  color: #294b39;
+}
+
+.journey-route-sheet__route-options button > svg {
+  width: 19px;
+  height: 19px;
+  color: #8e5260;
+}
+
+.journey-route-sheet__route-options button > span {
+  display: grid;
+  min-width: 0;
+  gap: 1px;
+}
+
+.journey-route-sheet__route-options button strong {
+  font-size: 10px;
+}
+
+.journey-route-sheet__route-options button small {
+  overflow: hidden;
+  color: #708078;
+  font-size: 8px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.journey-route-sheet__route-options button em {
+  grid-column: 3;
+  color: #6f625b;
+  font-size: 8px;
+  font-style: normal;
+  font-weight: 800;
+}
+
+.journey-route-sheet__route-options button b {
+  grid-column: 2 / 4;
+  color: #8d5260;
+  font-size: 8px;
+}
+
 .journey-route-sheet__accessible {
   margin: 8px 0 10px;
   border-left: 4px solid #63806f;

@@ -9,6 +9,7 @@ export type ViewPreferences = {
   stepFreeRouteEnabled: boolean;
   miniMapHighContrast: boolean;
   miniMapRouteWeight: "standard" | "bold";
+  routePatternEnhanced: boolean;
 };
 
 type StorageLike = Pick<Storage, "getItem" | "setItem">;
@@ -24,7 +25,8 @@ export const defaultViewPreferences: ViewPreferences = {
   routeVoiceRate: "normal",
   stepFreeRouteEnabled: false,
   miniMapHighContrast: false,
-  miniMapRouteWeight: "standard"
+  miniMapRouteWeight: "standard",
+  routePatternEnhanced: false
 };
 
 export const comfortableViewPreferences: ViewPreferences = {
@@ -37,7 +39,8 @@ export const comfortableViewPreferences: ViewPreferences = {
   routeVoiceRate: "normal",
   stepFreeRouteEnabled: true,
   miniMapHighContrast: true,
-  miniMapRouteWeight: "bold"
+  miniMapRouteWeight: "bold",
+  routePatternEnhanced: true
 };
 
 function browserStorage(): StorageLike | null {
@@ -65,7 +68,8 @@ export function isViewPreferences(value: unknown): value is ViewPreferences {
     && (candidate.routeVoiceRate === "slow" || candidate.routeVoiceRate === "normal" || candidate.routeVoiceRate === "fast")
     && typeof candidate.stepFreeRouteEnabled === "boolean"
     && typeof candidate.miniMapHighContrast === "boolean"
-    && (candidate.miniMapRouteWeight === "standard" || candidate.miniMapRouteWeight === "bold");
+    && (candidate.miniMapRouteWeight === "standard" || candidate.miniMapRouteWeight === "bold")
+    && typeof candidate.routePatternEnhanced === "boolean";
 }
 
 function normalizeStoredPreferences(value: unknown): ViewPreferences | null {
@@ -98,7 +102,10 @@ function normalizeStoredPreferences(value: unknown): ViewPreferences | null {
     miniMapHighContrast: typeof candidate.miniMapHighContrast === "boolean"
       ? candidate.miniMapHighContrast
       : false,
-    miniMapRouteWeight: candidate.miniMapRouteWeight === "bold" ? "bold" : "standard"
+    miniMapRouteWeight: candidate.miniMapRouteWeight === "bold" ? "bold" : "standard",
+    routePatternEnhanced: typeof candidate.routePatternEnhanced === "boolean"
+      ? candidate.routePatternEnhanced
+      : false
   };
 }
 
@@ -153,6 +160,9 @@ export function applyViewPreferences(
   else delete root.dataset.miniMapHighContrast;
 
   root.dataset.miniMapRouteWeight = preferences.miniMapRouteWeight;
+
+  if (preferences.routePatternEnhanced) root.dataset.routePattern = "enhanced";
+  else delete root.dataset.routePattern;
 }
 
 export function shouldReduceMotion(

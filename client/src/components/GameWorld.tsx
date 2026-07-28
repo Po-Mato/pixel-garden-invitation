@@ -61,6 +61,7 @@ import { quickInvitationHashForCheckpoint } from "../game/journeyAccessibility";
 import { summarizeRemainingJourney } from "../game/journeyRouteSummary";
 import { journeyRouteTurns, segmentJourneyRouteBySurface } from "../game/journeyRouteVisual";
 import { routeTurnCueOneTileAhead } from "../game/routeTurnCue";
+import { routeArrivalCue } from "../game/routeArrivalGuidance";
 import { resolveNpcDialogue, type NpcDialogue, type NpcId } from "../game/npcDialogue";
 import { destinationNavigationProgress } from "../game/navigationProgress";
 import {
@@ -111,7 +112,11 @@ import { GuestReactionBubble, GuestReactionDock } from "./GuestReactions";
 import { GuestInformationAccess } from "./GuestInformationAccess";
 import { InvitationShareAccess } from "./InvitationShareAccess";
 import { JourneyCompletion } from "./JourneyCompletion";
-import { JourneyRouteSheet } from "./JourneyRouteSheet";
+import {
+  JourneyRouteSheet,
+  type JourneyRouteComparisonOption,
+  type JourneyRoutePreference
+} from "./JourneyRouteSheet";
 import { JourneyStampBook, JourneyStampNotice } from "./JourneyStampBook";
 import { NpcDialogueBubble } from "./NpcDialogueBubble";
 import { SpotModal } from "./SpotModal";
@@ -166,6 +171,11 @@ type ActiveGuestReaction = {
 };
 type PortalTransitionPhase = "arrival" | "fade-out" | "fade-in";
 type PortalTransition = { portal: WorldPortal; phase: PortalTransitionPhase };
+type RouteArrivalNotice = {
+  title: string;
+  detail: string;
+  kind: "portal" | "destination";
+};
 
 const joystickDeadZone = 0.05;
 const realtimeMoveIntervalMs = 100;
@@ -285,6 +295,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   const [travelStatus, setTravelStatus] = useState("우리 집에서 여정을 시작해요");
   const [routeRecalculationId, setRouteRecalculationId] = useState(0);
   const [routeRecalculationNotice, setRouteRecalculationNotice] = useState<RouteRecalculationResult | null>(null);
+  const [routeArrivalNotice, setRouteArrivalNotice] = useState<RouteArrivalNotice | null>(null);
   const [journeyProgress, setJourneyProgress] = useState(loadJourneyProgress);
   const [journeySyncStatus, setJourneySyncStatus] = useState<
     "local" | "syncing" | "synced" | "queued" | "merged" | "error"
@@ -301,6 +312,9 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   const [journeyCompletionPending, setJourneyCompletionPending] = useState(false);
   const [journeyCompletionOpen, setJourneyCompletionOpen] = useState(false);
   const [journeyRouteOpen, setJourneyRouteOpen] = useState(false);
+  const [journeyRoutePreference, setJourneyRoutePreference] = useState<JourneyRoutePreference>(
+    viewPreferences.stepFreeRouteEnabled ? "step-free" : "recommended"
+  );
   const [activeNpcDialogue, setActiveNpcDialogue] = useState<NpcDialogue | null>(null);
   const [localReaction, setLocalReaction] = useState<ActiveGuestReaction | null>(null);
   const [remoteReactions, setRemoteReactions] = useState<Record<string, ActiveGuestReaction>>({});
@@ -355,6 +369,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   const renderFrameAtRef = useRef<number | null>(null);
   const spokenTravelStatusRef = useRef("");
   const routeTurnSpokenAtRef = useRef(0);
+  const routeArrivalNoticeTimerRef = useRef<number | null>(null);
 
   useEffect(() => {
     pendingJourneyGuideIdRef.current = pendingJourneyGuideId;
@@ -437,6 +452,23 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     const foot = walkLandingFootForFrame(next.frame);
     if (foot) playFeedback("footstep", { surface, foot });
   }, [playFeedback]);
+
+  const showRouteArrivalNotice = useCallback((notice: RouteArrivalNotice) => {
+    if (routeArrivalNoticeTimerRef.current !== null) {
+      window.clearTimeout(routeArrivalNoticeTimerRef.current);
+    }
+    setRouteArrivalNotice(notice);
+    routeArrivalNoticeTimerRef.current = window.setTimeout(() => {
+      routeArrivalNoticeTimerRef.current = null;
+      setRouteArrivalNotice(null);
+    }, 1800);
+  }, []);
+
+  useEffect(() => () => {
+    if (routeArrivalNoticeTimerRef.current !== null) {
+      window.clearTimeout(routeArrivalNoticeTimerRef.current);
+    }
+  }, []);
 
   const applyJourneyProgress = useCallback((remoteProgress: ReturnType<typeof loadJourneyProgress>) => {
     const merged = mergeJourneyProgress(journeyProgressRef.current, remoteProgress);
@@ -752,6 +784,12 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     setRouteRecalculationNotice(null);
     clearTerminalStopConfirm();
     const transition: PortalTransition = { portal, phase: "arrival" };
+    const destinationZone = getWorldZone(gardenWorld, portal.to);
+    showRouteArrivalNotice({
+      title: "포털 도착",
+      detail: `${destinationZone.label} 맵으로 이동합니다`,
+      kind: "portal"
+    });
     const joystickWasMoving = joystickWasMovingRef.current;
     positionRef.current = approach;
     directionRef.current = portal.facing;
@@ -795,7 +833,8 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     setInputReleaseRequired,
     setInteractionIntent,
     setPortalIntent,
-    setPortalTransition
+    setPortalTransition,
+    showRouteArrivalNotice
   ]);
 
   const moveToZone = useCallback((zoneId: WorldZoneId, spawn?: Point) => {
@@ -967,6 +1006,11 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
       directionRef.current = nextDirection;
       setDirection(nextDirection);
       setTravelStatus(`${input.label}에 도착했어요`);
+      showRouteArrivalNotice({
+        title: `${input.label} 도착`,
+        detail: "목적지 상호작용을 시작합니다",
+        kind: "destination"
+      });
       if (input.photoSpotId) {
         openPhotoSpot(input.photoSpotId);
         return;
@@ -1004,6 +1048,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     setInputReleaseRequired,
     setInteractionIntent,
     setPortalIntent,
+    showRouteArrivalNotice,
     showNpcDialogue,
     stampWorldInteraction
   ]);
@@ -1453,6 +1498,11 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
         setActiveJourneyGuideId(null);
         setTravelStatus(`${interactionIntent.label}에 도착했어요`);
         setRouteRecalculationNotice(null);
+        showRouteArrivalNotice({
+          title: `${interactionIntent.label} 도착`,
+          detail: "목적지 상호작용을 시작합니다",
+          kind: "destination"
+        });
         targetStepAtRef.current = null;
         tileInputStateRef.current = null;
         sendRealtimeStop(next, facing, activeZone.id);
@@ -1499,6 +1549,11 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
           setTarget(null);
           setTravelStatus("선택한 위치에 도착했어요");
           setRouteRecalculationNotice(null);
+          showRouteArrivalNotice({
+            title: "선택한 위치 도착",
+            detail: "이동을 완료했어요",
+            kind: "destination"
+          });
           targetStepAtRef.current = null;
         }
         return;
@@ -1528,6 +1583,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     setInteractionIntent,
     setPortalIntent,
     showNpcDialogue,
+    showRouteArrivalNotice,
     stampWorldInteraction,
     target
   ]);
@@ -1733,6 +1789,64 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   const journeyPlanEstimate = useMemo(() => journeyRouteOpen
     ? estimateJourneyWaypointPlan(journeyProgress, plannedCheckpointIds, activeZone.id, position)
     : null, [activeZone.id, journeyProgress, journeyRouteOpen, plannedCheckpointIds, position]);
+  const journeyRouteComparison = useMemo(() => {
+    const fallback = {
+      recommendedIds: [...plannedCheckpointIds],
+      shortestIds: [...plannedCheckpointIds],
+      options: [] as JourneyRouteComparisonOption[]
+    };
+    if (!journeyRouteOpen) return fallback;
+
+    const selectedIds = new Set(normalizeJourneyWaypointPlan(journeyProgress, plannedCheckpointIds));
+    const recommendedIds = remainingJourneyWaypoints(journeyProgress)
+      .map(({ id }) => id)
+      .filter((id) => selectedIds.has(id));
+    const shortestIds = optimizeJourneyWaypointPlan(
+      journeyProgress,
+      recommendedIds,
+      activeZone.id,
+      position
+    );
+    const recommendedEstimate = estimateJourneyWaypointPlan(
+      journeyProgress,
+      recommendedIds,
+      activeZone.id,
+      position
+    );
+    const shortestEstimate = estimateJourneyWaypointPlan(
+      journeyProgress,
+      shortestIds,
+      activeZone.id,
+      position
+    );
+
+    return {
+      recommendedIds,
+      shortestIds,
+      options: [{
+        id: "recommended" as const,
+        label: "추천 경로",
+        detail: "예식 흐름에 맞춘 순서",
+        tileCount: recommendedEstimate.tileSteps,
+        portalCount: recommendedEstimate.zoneTransitions,
+        estimatedLabel: recommendedEstimate.label
+      }, {
+        id: "shortest" as const,
+        label: "최단 경로",
+        detail: "총 이동을 가장 짧게",
+        tileCount: shortestEstimate.tileSteps,
+        portalCount: shortestEstimate.zoneTransitions,
+        estimatedLabel: shortestEstimate.label
+      }, {
+        id: "step-free" as const,
+        label: "계단 없는 길",
+        detail: "엘리베이터·편의 안내 포함",
+        tileCount: recommendedEstimate.tileSteps,
+        portalCount: recommendedEstimate.zoneTransitions,
+        estimatedLabel: recommendedEstimate.label
+      }]
+    };
+  }, [activeZone.id, journeyProgress, journeyRouteOpen, plannedCheckpointIds, position]);
   const destinationRouteEstimate = useMemo(() => destinationCheckpoint
     ? estimateJourneyCheckpointRoute(
       { zoneId: activeZone.id, position },
@@ -1813,6 +1927,9 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   const miniMapDestinationLabel = interactionIntent?.label
     ?? portalIntent?.portal.label
     ?? (target ? "선택한 위치" : destinationCheckpoint?.label ?? null);
+  const activeRouteArrivalCue = directTravelActive && miniMapDestinationLabel
+    ? routeArrivalCue(selectedTravelPath.length, miniMapDestinationLabel, Boolean(portalIntent))
+    : null;
   const miniMapRouteProgressLabel = activeJourneyGuideId
     ? destinationTravelProgress?.label ?? null
     : directTravelProgress?.label ?? destinationTravelProgress?.label ?? null;
@@ -1919,6 +2036,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
               aria-label={`쉬운 길찾기 열기, 남은 추억 ${journeyOverallSummary.remainingCheckpoints}개, 실제 타일 경로 확인`}
               onClick={() => {
                 pauseWorldInput();
+                setJourneyRoutePreference(viewPreferences.stepFreeRouteEnabled ? "step-free" : "recommended");
                 setJourneyRouteOpen(true);
               }}
             >
@@ -2283,6 +2401,26 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
             journeyDestinationLabels={miniMapJourneyDestinationLabels}
           />
 
+          {activeRouteArrivalCue ? (
+            <div
+              className="world-route-arrival-cue"
+              data-remaining={activeRouteArrivalCue.remainingTiles}
+              role="status"
+              aria-live="polite"
+            >
+              <span>{activeRouteArrivalCue.eyebrow}</span>
+              <strong>{activeRouteArrivalCue.message}</strong>
+            </div>
+          ) : null}
+
+          {routeArrivalNotice ? (
+            <div className="world-route-arrival-card" data-kind={routeArrivalNotice.kind} role="status">
+              <MapPinned aria-hidden="true" />
+              <span><strong>{routeArrivalNotice.title}</strong><small>{routeArrivalNotice.detail}</small></span>
+              <ArrowRight aria-hidden="true" />
+            </div>
+          ) : null}
+
           <div className="world-control-dock" onClick={(event) => event.stopPropagation()}>
             <VirtualJoystick
               disabled={Boolean(portalTransition) || inputReleaseRequired}
@@ -2444,20 +2582,40 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
           guidance={journeyGuidance}
           waypoints={remainingWaypoints}
           selectedWaypointIds={plannedCheckpointIds}
-          onToggleWaypoint={(checkpointId) => setPlannedCheckpointIds((current) => (
-            toggleJourneyWaypoint(journeyProgress, current, checkpointId)
-          ))}
-          onMoveWaypoint={(checkpointId, moveDirection) => setPlannedCheckpointIds((current) => (
-            moveJourneyWaypoint(journeyProgress, current, checkpointId, moveDirection)
-          ))}
-          onOptimizeWaypoints={() => setPlannedCheckpointIds((current) => (
-            optimizeJourneyWaypointPlan(journeyProgress, current, activeZone.id, position)
-          ))}
+          onToggleWaypoint={(checkpointId) => {
+            setJourneyRoutePreference("custom");
+            setPlannedCheckpointIds((current) => (
+              toggleJourneyWaypoint(journeyProgress, current, checkpointId)
+            ));
+          }}
+          onMoveWaypoint={(checkpointId, moveDirection) => {
+            setJourneyRoutePreference("custom");
+            setPlannedCheckpointIds((current) => (
+              moveJourneyWaypoint(journeyProgress, current, checkpointId, moveDirection)
+            ));
+          }}
+          onOptimizeWaypoints={() => {
+            setJourneyRoutePreference("shortest");
+            setStepFreeRouteEnabled(false);
+            setPlannedCheckpointIds(journeyRouteComparison.shortestIds);
+          }}
           estimatedTotalLabel={journeyPlanEstimate?.label}
           estimatedTileCount={journeyPlanEstimate?.tileSteps}
           estimatedPortalCount={journeyPlanEstimate?.zoneTransitions}
           stepFreeRouteEnabled={viewPreferences.stepFreeRouteEnabled}
-          onStepFreeRouteChange={setStepFreeRouteEnabled}
+          onStepFreeRouteChange={(enabled) => {
+            setStepFreeRouteEnabled(enabled);
+            setJourneyRoutePreference(enabled ? "step-free" : "custom");
+          }}
+          routePreference={journeyRoutePreference}
+          routeComparisonOptions={journeyRouteComparison.options}
+          onRoutePreferenceChange={(preference) => {
+            setJourneyRoutePreference(preference);
+            setStepFreeRouteEnabled(preference === "step-free");
+            setPlannedCheckpointIds(preference === "shortest"
+              ? journeyRouteComparison.shortestIds
+              : journeyRouteComparison.recommendedIds);
+          }}
           onClose={() => setJourneyRouteOpen(false)}
           onStart={() => {
             setJourneyRouteOpen(false);

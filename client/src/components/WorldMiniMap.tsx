@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent, type WheelEvent as ReactWheelEvent } from "react";
 import { createPortal } from "react-dom";
-import { Maximize2, X } from "lucide-react";
+import { Maximize2, RotateCcw, X, ZoomIn, ZoomOut } from "lucide-react";
 import type { Direction } from "@wedding-game/shared";
 import type { CameraTransform, ViewportSize } from "../game/camera";
 import {
@@ -65,6 +65,13 @@ type MiniMapCanvasProps = {
   routePoints: Point[];
   layout: MiniMapLayout;
   expanded?: boolean;
+  viewTransform?: MiniMapViewTransform;
+};
+
+type MiniMapViewTransform = {
+  scale: number;
+  x: number;
+  y: number;
 };
 
 const directionVectors: Record<Direction, Point> = {
@@ -89,7 +96,8 @@ function MiniMapCanvas({
   routeKind,
   routePoints,
   layout,
-  expanded = false
+  expanded = false,
+  viewTransform = { scale: 1, x: 0, y: 0 }
 }: MiniMapCanvasProps) {
   const playerPoint = projectMiniMapPoint(player, zone.bounds, layout);
   const viewportRect = computeMiniMapViewportRect({ bounds: zone.bounds, layout, viewport, camera });
@@ -110,6 +118,10 @@ function MiniMapCanvas({
       height={layout.height}
       viewBox={`0 0 ${layout.width} ${layout.height}`}
       aria-hidden="true"
+      data-view-scale={viewTransform.scale}
+      style={{
+        transform: `translate(${viewTransform.x}px, ${viewTransform.y}px) scale(${viewTransform.scale})`
+      }}
     >
       <rect data-testid="minimap-map-boundary" className="world-minimap__boundary" {...layout.content} />
       {zone.paths.map((path) => (
@@ -221,8 +233,11 @@ export function WorldMiniMap({
   journeyDestinationLabels = []
 }: WorldMiniMapProps) {
   const [expanded, setExpanded] = useState(false);
+  const [viewTransform, setViewTransform] = useState<MiniMapViewTransform>({ scale: 1, x: 0, y: 0 });
   const expandButtonRef = useRef<HTMLButtonElement | null>(null);
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
+  const gesturePointersRef = useRef(new Map<number, Point>());
+  const gestureFrameRef = useRef<{ center: Point; distance: number } | null>(null);
   const layout = createMiniMapLayout(zone.bounds);
   const expandedLayout = createMiniMapLayout(zone.bounds, {
     regularLimit: { width: 320, height: 280 },
@@ -243,6 +258,78 @@ export function WorldMiniMap({
       expandButtonRef.current?.focus();
     };
   }, [expanded]);
+
+  useEffect(() => {
+    if (expanded) return;
+    setViewTransform({ scale: 1, x: 0, y: 0 });
+    gesturePointersRef.current.clear();
+    gestureFrameRef.current = null;
+  }, [expanded]);
+
+  const updateViewScale = (nextScale: number) => {
+    setViewTransform((current) => ({
+      ...current,
+      scale: Math.min(2.5, Math.max(1, Math.round(nextScale * 100) / 100))
+    }));
+  };
+
+  const gestureFrame = () => {
+    const pointers = [...gesturePointersRef.current.values()];
+    if (pointers.length === 0) return null;
+    const center = pointers.reduce((sum, point) => ({
+      x: sum.x + point.x / pointers.length,
+      y: sum.y + point.y / pointers.length
+    }), { x: 0, y: 0 });
+    const distance = pointers.length > 1
+      ? Math.hypot(pointers[0].x - pointers[1].x, pointers[0].y - pointers[1].y)
+      : 0;
+    return { center, distance };
+  };
+
+  const handleGestureStart = (event: ReactPointerEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    event.currentTarget.setPointerCapture?.(event.pointerId);
+    gesturePointersRef.current.set(event.pointerId, {
+      x: Number.isFinite(event.clientX) ? event.clientX : 0,
+      y: Number.isFinite(event.clientY) ? event.clientY : 0
+    });
+    gestureFrameRef.current = gestureFrame();
+  };
+
+  const handleGestureMove = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (!gesturePointersRef.current.has(event.pointerId)) return;
+    event.preventDefault();
+    gesturePointersRef.current.set(event.pointerId, {
+      x: Number.isFinite(event.clientX) ? event.clientX : 0,
+      y: Number.isFinite(event.clientY) ? event.clientY : 0
+    });
+    const previous = gestureFrameRef.current;
+    const next = gestureFrame();
+    if (!previous || !next) return;
+    setViewTransform((current) => {
+      const nextScale = previous.distance > 0 && next.distance > 0
+        ? Math.min(2.5, Math.max(1, current.scale * (next.distance / previous.distance)))
+        : current.scale;
+      const panLimit = 120 * nextScale;
+      return {
+        scale: Math.round(nextScale * 100) / 100,
+        x: Math.max(-panLimit, Math.min(panLimit, current.x + next.center.x - previous.center.x)),
+        y: Math.max(-panLimit, Math.min(panLimit, current.y + next.center.y - previous.center.y))
+      };
+    });
+    gestureFrameRef.current = next;
+  };
+
+  const handleGestureEnd = (event: ReactPointerEvent<HTMLDivElement>) => {
+    gesturePointersRef.current.delete(event.pointerId);
+    event.currentTarget.releasePointerCapture?.(event.pointerId);
+    gestureFrameRef.current = gestureFrame();
+  };
+
+  const handleMapWheel = (event: ReactWheelEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    updateViewScale(viewTransform.scale + (event.deltaY < 0 ? 0.25 : -0.25));
+  };
 
   const canvasProps = {
     zone,
@@ -331,8 +418,56 @@ export function WorldMiniMap({
                 <X aria-hidden="true" />
               </button>
             </header>
-            <div className="world-minimap-expanded__map">
-              <MiniMapCanvas {...canvasProps} layout={expandedLayout} expanded />
+            <div
+              className="world-minimap-expanded__map"
+              role="region"
+              aria-label="미니맵 시각 탐색"
+              onPointerDown={handleGestureStart}
+              onPointerMove={handleGestureMove}
+              onPointerUp={handleGestureEnd}
+              onPointerCancel={handleGestureEnd}
+              onWheel={handleMapWheel}
+            >
+              <div
+                className="world-minimap-expanded__map-controls"
+                role="group"
+                aria-label="미니맵 배율 조절"
+                onPointerDown={(event) => event.stopPropagation()}
+              >
+                <button
+                  type="button"
+                  aria-label="미니맵 축소"
+                  title="미니맵 축소"
+                  disabled={viewTransform.scale <= 1}
+                  onClick={() => updateViewScale(viewTransform.scale - 0.25)}
+                >
+                  <ZoomOut aria-hidden="true" />
+                </button>
+                <button
+                  type="button"
+                  aria-label="미니맵 원위치"
+                  title="미니맵 원위치"
+                  disabled={viewTransform.scale === 1 && viewTransform.x === 0 && viewTransform.y === 0}
+                  onClick={() => setViewTransform({ scale: 1, x: 0, y: 0 })}
+                >
+                  <RotateCcw aria-hidden="true" />
+                </button>
+                <button
+                  type="button"
+                  aria-label="미니맵 확대"
+                  title="미니맵 확대"
+                  disabled={viewTransform.scale >= 2.5}
+                  onClick={() => updateViewScale(viewTransform.scale + 0.25)}
+                >
+                  <ZoomIn aria-hidden="true" />
+                </button>
+              </div>
+              <MiniMapCanvas
+                {...canvasProps}
+                layout={expandedLayout}
+                expanded
+                viewTransform={viewTransform}
+              />
             </div>
             {journeyStops.length > 0 ? (
               <section className="world-minimap-expanded__journey" aria-label="남은 전체 여정">

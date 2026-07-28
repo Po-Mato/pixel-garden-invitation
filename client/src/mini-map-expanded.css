@@ -128,14 +128,53 @@
 }
 
 .world-minimap-expanded__map {
+  position: relative;
   display: grid;
   min-height: 210px;
   place-items: center;
-  overflow: auto;
+  overflow: hidden;
   border: 2px solid #685a50;
   padding: 10px;
   background: rgba(221, 220, 202, 0.9);
   box-shadow: inset 0 0 0 2px rgba(255, 253, 238, 0.68);
+  touch-action: none;
+}
+
+.world-minimap-expanded__map-controls {
+  position: absolute;
+  z-index: 3;
+  top: 7px;
+  right: 7px;
+  display: grid;
+  grid-template-columns: repeat(3, 30px);
+  gap: 4px;
+}
+
+.world-minimap-expanded__map-controls button {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  border: 1px solid #685a50;
+  border-radius: 3px;
+  padding: 0;
+  background: rgba(255, 253, 240, 0.96);
+  color: #42352f;
+  box-shadow: 1px 1px 0 rgba(42, 34, 31, 0.28);
+}
+
+.world-minimap-expanded__map-controls button:disabled {
+  opacity: 0.4;
+}
+
+.world-minimap-expanded__map-controls button:focus-visible {
+  outline: 2px solid #c84f68;
+  outline-offset: 1px;
+}
+
+.world-minimap-expanded__map-controls svg {
+  width: 15px;
+  height: 15px;
 }
 
 .world-minimap-expanded__journey {
@@ -249,6 +288,9 @@
   max-width: 100%;
   height: auto;
   shape-rendering: auto;
+  transform-origin: center;
+  transition: transform 120ms ease-out;
+  will-change: transform;
 }
 
 .world-minimap__canvas--expanded .world-minimap__route-outline {
@@ -361,6 +403,21 @@ html[data-mini-map-high-contrast="true"] .world-minimap__player line {
   stroke-width: 3;
 }
 
+html[data-route-pattern="enhanced"] .world-journey-route[data-route-kind="preview"] polyline,
+html[data-route-pattern="enhanced"] .world-minimap__route[data-route-kind="preview"] polyline {
+  stroke-dasharray: 2 8;
+}
+
+html[data-route-pattern="enhanced"] .world-journey-route[data-route-kind="journey"] polyline,
+html[data-route-pattern="enhanced"] .world-minimap__route[data-route-kind="journey"] polyline {
+  stroke-dasharray: 9 5;
+}
+
+html[data-route-pattern="enhanced"] .world-journey-route[data-route-kind="selected"] polyline,
+html[data-route-pattern="enhanced"] .world-minimap__route[data-route-kind="selected"] polyline {
+  stroke-dasharray: none;
+}
+
 .world-travel-progress--continuing {
   color: #8f4456;
 }
@@ -375,8 +432,74 @@ html[data-mini-map-high-contrast="true"] .world-minimap__player line {
   }
 }
 
+@media (orientation: landscape) and (max-height: 500px) {
+  .world-minimap {
+    top: 8px;
+    right: 8px;
+    max-height: calc(100% - 16px);
+  }
+
+  .world-minimap-expanded {
+    padding: 8px max(10px, env(safe-area-inset-right)) 8px max(10px, env(safe-area-inset-left));
+  }
+
+  .world-minimap-expanded__panel {
+    width: min(100%, 720px);
+    max-height: calc(100dvh - 16px);
+    grid-template-columns: minmax(250px, 1.1fr) minmax(230px, 0.9fr);
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    gap: 9px 12px;
+    padding: 9px;
+  }
+
+  .world-minimap-expanded__header {
+    grid-column: 1 / -1;
+  }
+
+  .world-minimap-expanded__map {
+    grid-row: 2 / 4;
+    min-height: 0;
+  }
+
+  .world-minimap-expanded__journey {
+    grid-column: 2;
+    grid-row: 2;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .world-minimap-expanded__journey ol {
+    display: grid;
+    gap: 4px;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  .world-minimap-expanded__journey li {
+    min-width: 0;
+    padding-right: 0;
+  }
+
+  .world-minimap-expanded__journey li:not(:last-child)::after {
+    display: none;
+  }
+
+  .world-minimap-expanded__footer {
+    grid-column: 2;
+    grid-row: 3;
+  }
+
+  .world-minimap__canvas--expanded {
+    max-height: 66dvh;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .world-minimap-expanded {
     backdrop-filter: none;
+  }
+
+  .world-minimap__canvas--expanded {
+    transition: none;
   }
 }

@@ -426,6 +426,13 @@ describe("GameWorld", () => {
     const dialog = screen.getByRole("dialog", { name: "쉬운 길찾기" });
     expect(within(dialog).getByLabelText("남은 전체 여정 요약")).toHaveTextContent("남은 추억");
     expect(within(dialog).getByRole("list", { name: "오시는 길까지 이동 순서" })).toBeInTheDocument();
+    const shortestRoute = within(dialog).getByRole("button", { name: /최단 경로/ });
+    expect(shortestRoute).toHaveTextContent(/타일 · 포털/);
+    fireEvent.click(shortestRoute);
+    expect(shortestRoute).toHaveAttribute("aria-pressed", "true");
+    const stepFreeRoute = within(dialog).getByRole("button", { name: /계단 없는 길 엘리베이터/ });
+    fireEvent.click(stepFreeRoute);
+    expect(stepFreeRoute).toHaveAttribute("aria-pressed", "true");
 
     fireEvent.click(within(dialog).getByRole("button", { name: "길 안내 시작" }));
 
@@ -1555,6 +1562,26 @@ describe("GameWorld", () => {
 
     finishCurrentRoute();
     expect(screen.getByLabelText("동네 거리 지도")).toBeInTheDocument();
+  });
+
+  it("shows the final three portal tiles and a compact arrival card", () => {
+    render(<GameWorld profile={profile} />);
+    fireEvent.click(screen.getByRole("button", { name: "동네로 나가기" }));
+
+    let now = 0;
+    for (let index = 0; index < 70 && !screen.queryByText("3타일 앞"); index += 1) {
+      advanceAnimation(now);
+      now += 240;
+    }
+    expect(screen.getByText("3타일 앞")).toBeInTheDocument();
+    expect(screen.getByText("포털 진입 방향을 확인하세요")).toBeInTheDocument();
+
+    for (let index = 0; index < 70 && animationFrames.size > 0; index += 1) {
+      advanceAnimation(now);
+      now += 240;
+    }
+    expect(screen.getByText("포털 도착", { selector: "strong" })).toBeInTheDocument();
+    expect(screen.getByText("동네 거리 맵으로 이동합니다")).toBeInTheDocument();
   });
 
   it("shows portal arrival before fading into the destination map", () => {

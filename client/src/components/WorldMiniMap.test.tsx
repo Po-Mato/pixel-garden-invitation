@@ -180,6 +180,17 @@ describe("WorldMiniMap", () => {
     expect(within(dialog).getByText("웨딩 갤러리")).toBeInTheDocument();
     expect(within(dialog).getByText("우회 +3타일")).toBeInTheDocument();
 
+    const visualMap = within(dialog).getByRole("region", { name: "미니맵 시각 탐색" });
+    const expandedCanvas = visualMap.querySelector(".world-minimap__canvas--expanded");
+    fireEvent.click(within(visualMap).getByRole("button", { name: "미니맵 확대" }));
+    expect(expandedCanvas).toHaveAttribute("data-view-scale", "1.25");
+    fireEvent.pointerDown(visualMap, { pointerId: 1, clientX: 120, clientY: 100 });
+    fireEvent.pointerMove(visualMap, { pointerId: 1, clientX: 145, clientY: 115 });
+    fireEvent.pointerUp(visualMap, { pointerId: 1, clientX: 145, clientY: 115 });
+    expect(expandedCanvas?.getAttribute("style")).not.toContain("NaN");
+    fireEvent.click(within(visualMap).getByRole("button", { name: "미니맵 원위치" }));
+    expect(expandedCanvas).toHaveAttribute("data-view-scale", "1");
+
     fireEvent.click(within(dialog).getByRole("button", { name: "미니맵 닫기" }));
     expect(screen.queryByRole("dialog", { name: "현재 경로 전체 미리보기" })).not.toBeInTheDocument();
   });

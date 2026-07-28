@@ -39,6 +39,106 @@
   color: #276a55;
 }
 
+.world-route-arrival-cue,
+.world-route-arrival-card {
+  position: absolute;
+  z-index: 12;
+  left: 50%;
+  pointer-events: none;
+}
+
+.world-route-arrival-cue {
+  bottom: 116px;
+  display: grid;
+  width: min(250px, calc(100% - 126px));
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 7px;
+  transform: translateX(-50%);
+  border: 2px solid #51443d;
+  border-radius: 5px;
+  padding: 6px 9px;
+  background: rgba(255, 250, 228, 0.96);
+  color: #413630;
+  box-shadow: 3px 3px 0 rgba(39, 31, 28, 0.36);
+}
+
+.world-route-arrival-cue span {
+  border-right: 1px solid #bfae9c;
+  padding-right: 7px;
+  color: #a0475e;
+  font-size: 9px;
+  font-weight: 900;
+}
+
+.world-route-arrival-cue strong {
+  overflow: hidden;
+  font-size: 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.world-route-arrival-cue[data-remaining="1"] {
+  border-color: #a0475e;
+  background: rgba(255, 240, 211, 0.98);
+}
+
+.world-route-arrival-card {
+  top: 12px;
+  left: 10px;
+  display: grid;
+  width: min(238px, calc(100% - 118px));
+  grid-template-columns: 28px minmax(0, 1fr) 16px;
+  align-items: center;
+  gap: 7px;
+  transform: none;
+  border: 2px solid #496f5b;
+  border-radius: 6px;
+  padding: 8px 9px;
+  background: rgba(242, 255, 232, 0.97);
+  color: #2f4d3d;
+  box-shadow: 4px 4px 0 rgba(36, 48, 40, 0.34);
+  animation: route-arrival-card 180ms ease-out both;
+}
+
+.world-route-arrival-card[data-kind="portal"] {
+  border-color: #9b5164;
+  background: rgba(255, 242, 212, 0.98);
+  color: #683c48;
+}
+
+.world-route-arrival-card > svg:first-child {
+  width: 25px;
+  height: 25px;
+}
+
+.world-route-arrival-card > svg:last-child {
+  width: 15px;
+  height: 15px;
+}
+
+.world-route-arrival-card > span {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+
+.world-route-arrival-card strong {
+  font-size: 11px;
+}
+
+.world-route-arrival-card small {
+  overflow: hidden;
+  font-size: 8px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@keyframes route-arrival-card {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 .world-travel-status-row .world-travel-status {
   min-width: 0;
   margin: 0;
@@ -104,6 +204,22 @@
 
 html[data-reduce-motion="true"] .world-journey-route[data-route-kind="selected"] polyline {
   animation: none;
+}
+
+html[data-reduce-motion="true"] .world-route-arrival-card {
+  animation: none;
+}
+
+@media (orientation: landscape) and (max-height: 500px) {
+  .world-route-arrival-cue {
+    bottom: 12px;
+    width: min(230px, calc(100% - 220px));
+  }
+
+  .world-route-arrival-card {
+    top: 8px;
+    width: min(220px, calc(100% - 210px));
+  }
 }
 
 html[data-comfortable-controls="true"] .virtual-joystick {
