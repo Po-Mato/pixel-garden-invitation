@@ -15,12 +15,14 @@ describe("NpcDialogueBubble", () => {
       <NpcDialogueBubble
         dialogue={{ npcId: "bride", message: "와주셔서 고마워요.", tone: "welcome" }}
         speaker="신부 이건희"
+        placement="below"
         onClose={onClose}
         onOpenProfile={onOpenProfile}
       />
     );
 
     expect(screen.getByLabelText("신부 이건희의 인사")).toHaveTextContent("와주셔서 고마워요.");
+    expect(screen.getByLabelText("신부 이건희의 인사")).toHaveAttribute("data-placement", "below");
     fireEvent.click(screen.getByRole("button", { name: "두 사람 소개" }));
     expect(onOpenProfile).toHaveBeenCalledOnce();
     fireEvent.click(screen.getByRole("button", { name: "대화 닫기" }));

@@ -15,6 +15,7 @@ import { gameMemoryAlbumStorageKey } from "../game/gameMemoryAlbum";
 import { worldDepth } from "../game/worldVisuals";
 import { journeyProgressStorageKey } from "../game/journeyProgress";
 import { gameHudAutoHideDelayMs } from "../game/gameHudVisibility";
+import { worldSessionStorageKey } from "../game/worldSession";
 import { copyText } from "../invitation/browserActions";
 import { GameFeedbackProvider } from "../feedback/GameFeedbackContext";
 import { defaultFeedbackPreferences } from "../feedback/feedbackPreferences";
@@ -2658,6 +2659,22 @@ describe("GameWorld", () => {
     const reactionButton = screen.getByRole("button", { name: "하객 리액션 열기" });
     expect(reactionButton.closest(".guest-reaction-dock")?.parentElement)
       .toHaveClass("world-control-actions");
+  });
+
+  it("가까운 포털을 상황형 HUD로 안내하고 기존 보행 경로를 시작한다", () => {
+    window.localStorage.setItem(worldSessionStorageKey, JSON.stringify({
+      version: 1,
+      zoneId: "home",
+      position: { x: 285, y: 225 },
+      direction: "up",
+      guideCheckpointId: null,
+      updatedAt: "2026-07-29T00:00:00.000Z"
+    }));
+    render(<GameWorld profile={profile} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "동네로 나가기 이동" }));
+    expect(screen.getByRole("button", { name: "동네로 나가기" })).toHaveClass("world-portal--target");
+    expect(screen.getByTestId("world-portal-transition")).toHaveAttribute("data-phase", "idle");
   });
 
   it("이동이 이어지면 상단 HUD를 접고 정지하면 바로 복원한다", () => {

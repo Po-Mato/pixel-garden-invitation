@@ -1,4 +1,5 @@
 export const gameQuickDockStorageKey = "wedding-game-quick-dock:v1";
+export const gameQuickDockSyncQueryKey = "quickDock";
 
 export const gameQuickDockActions = ["reaction", "guide", "journey", "sound"] as const;
 export type GameQuickDockAction = typeof gameQuickDockActions[number];
@@ -55,4 +56,44 @@ export function saveGameQuickDockActions(
   } catch {
     return false;
   }
+}
+
+export function resetGameQuickDockActions(storage: StorageLike | null = browserStorage()): GameQuickDockAction[] {
+  const actions = [...defaultGameQuickDockActions];
+  saveGameQuickDockActions(actions, storage);
+  return actions;
+}
+
+export function gameQuickDockSyncToken(actions: readonly GameQuickDockAction[]): string {
+  return normalizeGameQuickDockActions(actions).join(".");
+}
+
+export function gameQuickDockActionsFromSyncToken(token: string | null): GameQuickDockAction[] | null {
+  if (!token) return null;
+  const parts = token.split(".");
+  if (parts.some((part) => !gameQuickDockActions.includes(part as GameQuickDockAction))) return null;
+  return normalizeGameQuickDockActions(parts);
+}
+
+export function createGameQuickDockSyncUrl(
+  actions: readonly GameQuickDockAction[],
+  href = typeof window === "undefined" ? "https://example.com/" : window.location.href
+): string {
+  const url = new URL(href);
+  url.searchParams.set(gameQuickDockSyncQueryKey, gameQuickDockSyncToken(actions));
+  return url.toString();
+}
+
+export function gameQuickDockActionsFromUrl(
+  href = typeof window === "undefined" ? "https://example.com/" : window.location.href
+): GameQuickDockAction[] | null {
+  return gameQuickDockActionsFromSyncToken(new URL(href).searchParams.get(gameQuickDockSyncQueryKey));
+}
+
+export function clearGameQuickDockSyncQuery(
+  href = typeof window === "undefined" ? "https://example.com/" : window.location.href
+): string {
+  const url = new URL(href);
+  url.searchParams.delete(gameQuickDockSyncQueryKey);
+  return `${url.pathname}${url.search}${url.hash}`;
 }

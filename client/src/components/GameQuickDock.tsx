@@ -1,13 +1,19 @@
 import { useEffect, useState, type RefObject } from "react";
-import { Bell, BookOpen, Route, SlidersHorizontal, SmilePlus, Volume2 } from "lucide-react";
+import { Bell, BookOpen, Check, RotateCcw, Route, Share2, SlidersHorizontal, SmilePlus, Volume2 } from "lucide-react";
 import type { GuestReaction } from "@wedding-game/shared";
 import {
+  clearGameQuickDockSyncQuery,
+  createGameQuickDockSyncUrl,
   gameQuickDockActions,
+  gameQuickDockActionsFromUrl,
+  gameQuickDockStorageKey,
   loadGameQuickDockActions,
+  resetGameQuickDockActions,
   saveGameQuickDockActions,
   toggleGameQuickDockAction,
   type GameQuickDockAction
 } from "../game/gameQuickDockPreferences";
+import { copyText, isShareAbortError, shareContent } from "../invitation/browserActions";
 import { GameFeedbackToggle } from "./GameFeedbackToggle";
 import { GuestInformationAccess } from "./GuestInformationAccess";
 import { GuestReactionDock } from "./GuestReactions";
@@ -21,6 +27,7 @@ type GameQuickDockProps = {
   onGuestInformationOpenChange: (open: boolean) => void;
   onOpenJourney: () => void;
   onOpenMenu: () => void;
+  onSettingsOpenChange?: (open: boolean) => void;
 };
 
 const actionMeta: Record<GameQuickDockAction, { label: string; Icon: typeof SmilePlus }> = {
@@ -38,10 +45,12 @@ export function GameQuickDock({
   onReact,
   onGuestInformationOpenChange,
   onOpenJourney,
-  onOpenMenu
+  onOpenMenu,
+  onSettingsOpenChange
 }: GameQuickDockProps) {
   const [favorites, setFavorites] = useState(loadGameQuickDockActions);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [syncStatus, setSyncStatus] = useState("");
 
   useEffect(() => {
     saveGameQuickDockActions(favorites);
@@ -50,6 +59,46 @@ export function GameQuickDock({
   useEffect(() => {
     if (disabled || menuOpen) setSettingsOpen(false);
   }, [disabled, menuOpen]);
+
+  useEffect(() => {
+    onSettingsOpenChange?.(settingsOpen);
+    return () => onSettingsOpenChange?.(false);
+  }, [onSettingsOpenChange, settingsOpen]);
+
+  useEffect(() => {
+    const imported = gameQuickDockActionsFromUrl();
+    if (!imported) return;
+    setFavorites(imported);
+    saveGameQuickDockActions(imported);
+    window.history.replaceState({}, "", clearGameQuickDockSyncQuery());
+    setSyncStatus("다른 기기의 빠른 도구 설정을 적용했어요");
+  }, []);
+
+  useEffect(() => {
+    const syncAcrossTabs = (event: StorageEvent) => {
+      if (event.key !== gameQuickDockStorageKey) return;
+      setFavorites(loadGameQuickDockActions());
+      setSyncStatus("다른 탭의 설정을 반영했어요");
+    };
+    window.addEventListener("storage", syncAcrossTabs);
+    return () => window.removeEventListener("storage", syncAcrossTabs);
+  }, []);
+
+  const shareDockSettings = async () => {
+    const url = createGameQuickDockSyncUrl(favorites);
+    try {
+      await shareContent({ title: "모바일 청첩장 빠른 도구", text: "다른 기기에 같은 빠른 도구 설정을 적용해요.", url });
+      setSyncStatus("설정 링크를 공유했어요");
+    } catch (error) {
+      if (isShareAbortError(error)) return;
+      try {
+        await copyText(url);
+        setSyncStatus("설정 링크를 복사했어요");
+      } catch {
+        setSyncStatus("설정 링크를 만들지 못했어요");
+      }
+    }
+  };
 
   const renderAction = (action: GameQuickDockAction) => {
     if (action === "reaction") {
@@ -100,6 +149,19 @@ export function GameQuickDock({
               );
             })}
           </div>
+          <footer>
+            <button
+              type="button"
+              onClick={() => {
+                setFavorites(resetGameQuickDockActions());
+                setSyncStatus("기본 빠른 도구로 복원했어요");
+              }}
+            ><RotateCcw aria-hidden="true" /><span>초기화</span></button>
+            <button type="button" onClick={() => void shareDockSettings()}>
+              <Share2 aria-hidden="true" /><span>다른 기기로</span>
+            </button>
+          </footer>
+          {syncStatus ? <p role="status"><Check aria-hidden="true" />{syncStatus}</p> : null}
         </section>
       ) : null}
       <div className="game-quick-dock__favorites world-control-actions" aria-label="즐겨찾기 빠른 도구">

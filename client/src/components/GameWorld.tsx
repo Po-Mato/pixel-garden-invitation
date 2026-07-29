@@ -68,6 +68,8 @@ import {
 } from "../game/journeySyncQueue";
 import { completeGameGuide, loadGameGuideState, shouldAutoOpenGameGuide } from "../game/gameGuide";
 import { gameHudAutoHideDelayMs, shouldAutoHideGameHud } from "../game/gameHudVisibility";
+import { resolveContextHudAction, type ContextHudAction } from "../game/contextHudAction";
+import { resolveNpcDialoguePlacement } from "../game/gameOverlayPlacement";
 import { journeyDirectionLabels, resolveJourneyGuidance } from "../game/journeyGuidance";
 import { quickInvitationHashForCheckpoint } from "../game/journeyAccessibility";
 import { summarizeRemainingJourney } from "../game/journeyRouteSummary";
@@ -224,6 +226,7 @@ import { WeddingNpc } from "./WeddingNpc";
 import { WorldMapArtwork } from "./WorldMapArtwork";
 import { WorldCrowdHeatmap } from "./WorldCrowdHeatmap";
 import { WorldCooperativeCelebration } from "./WorldCooperativeCelebration";
+import { WorldContextAction } from "./WorldContextAction";
 import {
   CelebrationCollectionProgress,
   WorldCelebrationCollectibles
@@ -508,6 +511,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   const [menuOpen, setMenuOpen] = useState(false);
   const [hudToolsOpen, setHudToolsOpen] = useState(false);
   const [hudAutoHidden, setHudAutoHidden] = useState(false);
+  const [quickDockSettingsOpen, setQuickDockSettingsOpen] = useState(false);
   const [calendarSheetOpen, setCalendarSheetOpen] = useState(false);
   const [directionsSheetOpen, setDirectionsSheetOpen] = useState(false);
   const [giftAccountSheetOpen, setGiftAccountSheetOpen] = useState(false);
@@ -614,8 +618,10 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
 
   const gameOverlayOpen = menuOpen
     || nestedMenuSheetOpen
+    || quickDockSettingsOpen
     || activeSpotId !== null
     || activePhotoSpotId !== null
+    || activeNpcDialogue !== null
     || journeyCompletionOpen
     || celebrationRewardOpen;
 
@@ -3397,11 +3403,66 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     collectedCelebrationIds,
     celebrationCollectibles
   ).filter(({ unlocked }) => unlocked).map(({ kind }) => kind);
-  const activeNpcPoints = activeZone.npcs.map((npc) => npcMotionFor(
-    activeZone,
-    npc,
-    npcMotions
-  ).point);
+  const activeNpcContexts = activeZone.npcs.map((npc) => ({
+    id: npc.id,
+    label: npc.label,
+    point: npcMotionFor(activeZone, npc, npcMotions).point
+  }));
+  const activeNpcPoints = activeNpcContexts.map(({ point }) => point);
+  const contextHudAction = resolveContextHudAction({
+    player: position,
+    portals: activeZone.portals,
+    photoSpots: activeZone.photoSpots,
+    npcs: activeNpcContexts
+  });
+  const activeDialogueNpcPoint = activeNpcDialogue
+    ? activeNpcContexts.find(({ id }) => id === activeNpcDialogue.npcId)?.point ?? null
+    : null;
+  const npcDialoguePlacement = activeDialogueNpcPoint
+    ? resolveNpcDialoguePlacement({
+        anchor: {
+          x: camera.x + activeDialogueNpcPoint.x * camera.zoom,
+          y: camera.y + activeDialogueNpcPoint.y * camera.zoom
+        },
+        viewport,
+        destinationGuideVisible: Boolean(recommendedCheckpoint)
+      })
+    : "above";
+
+  function activateContextHudAction(action: ContextHudAction) {
+    setActiveJourneyGuideId(null);
+    setPendingJourneyGuideId(null);
+    if (action.kind === "portal") {
+      const portal = activeZone.portals.find(({ id }) => id === action.id);
+      if (!portal) return;
+      setPreviewPortalId(portal.id);
+      handlePortalClick(portal);
+      return;
+    }
+    if (action.kind === "photo") {
+      const photoSpot = activeZone.photoSpots.find(({ id }) => id === action.id);
+      if (!photoSpot) return;
+      beginWorldInteraction({
+        targetId: `photo:${photoSpot.id}`,
+        photoSpotId: photoSpot.id,
+        label: photoSpot.label,
+        target: photoSpot,
+        actionRadius: photoSpot.actionRadius
+      });
+      return;
+    }
+    const npc = activeZone.npcs.find(({ id }) => id === action.id);
+    if (!npc) return;
+    const point = npcMotionFor(activeZone, npc, npcMotionsRef.current).point;
+    beginWorldInteraction({
+      targetId: `npc:${npc.id}`,
+      spotId: "couple",
+      label: npc.label,
+      target: npcInteractionRect(point),
+      actionRadius: npcInteractionRadius,
+      npcId: npc.id
+    });
+  }
   const portalOccupiedPoints = [
     ...activeNpcPoints,
     ...zoneRemoteGuests.map((guest) => ({ x: guest.x, y: guest.y }))
@@ -3694,6 +3755,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
         className="world-hud"
         data-tools-open={hudToolsOpen || undefined}
         data-auto-hidden={hudAutoHidden || undefined}
+        data-dialogue-open={Boolean(activeNpcDialogue) || undefined}
       >
         <div className="world-hud__status">
           <div className="world-zone-summary">
@@ -3868,6 +3930,8 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
           ref={mapViewportRef}
           className={`world-map world-map--${activeZone.theme}`}
           data-testid="world-map-viewport"
+          data-dialogue-open={Boolean(activeNpcDialogue) || undefined}
+          data-dialogue-placement={activeNpcDialogue ? npcDialoguePlacement : undefined}
           onClick={handleMapClick}
         >
           <div
@@ -4146,6 +4210,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
                       speaker={npc.label}
                       onClose={closeNpcDialogue}
                       onOpenProfile={openNpcProfile}
+                      placement={npcDialoguePlacement}
                     />
                   ) : null}
                   <WeddingNpc
@@ -4239,6 +4304,15 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
             rendezvousPoint={companionRendezvous?.zoneId === activeZone.id ? companionRendezvous.point : null}
             onNavigateAccessibilityLandmark={navigateToAccessibilityLandmark}
           />
+
+          {contextHudAction
+            && !gameOverlayOpen
+            && !directTravelActive
+            && !portalTransition
+            && !routeArrivalNotice
+            && !activeRouteArrivalCue ? (
+            <WorldContextAction action={contextHudAction} onActivate={activateContextHudAction} />
+          ) : null}
 
           <CompanionDock
             candidates={sameZoneCompanionCandidates}
@@ -4387,6 +4461,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
               onGuestInformationOpenChange={handleGuestInformationOpenChange}
               onOpenJourney={() => setHudToolsOpen(true)}
               onOpenMenu={openMenu}
+              onSettingsOpenChange={setQuickDockSettingsOpen}
             />
           </div>
         </div>

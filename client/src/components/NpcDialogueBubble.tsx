@@ -1,12 +1,14 @@
 import { BookOpen, X } from "lucide-react";
 import { useEffect } from "react";
 import type { NpcDialogue } from "../game/npcDialogue";
+import type { DialoguePlacement } from "../game/gameOverlayPlacement";
 
 type NpcDialogueBubbleProps = {
   dialogue: NpcDialogue;
   speaker: string;
   onClose: () => void;
   onOpenProfile: () => void;
+  placement?: DialoguePlacement;
 };
 
 const dialogueVisibleMs = 7200;
@@ -15,7 +17,8 @@ export function NpcDialogueBubble({
   dialogue,
   speaker,
   onClose,
-  onOpenProfile
+  onOpenProfile,
+  placement = "above"
 }: NpcDialogueBubbleProps) {
   useEffect(() => {
     const timer = window.setTimeout(onClose, dialogueVisibleMs);
@@ -26,6 +29,7 @@ export function NpcDialogueBubble({
     <section
       className="npc-dialogue"
       data-tone={dialogue.tone}
+      data-placement={placement}
       aria-label={`${speaker}의 인사`}
       onClick={(event) => event.stopPropagation()}
     >

@@ -1,9 +1,13 @@
 import { describe, expect, it } from "vitest";
 import {
   defaultGameQuickDockActions,
+  clearGameQuickDockSyncQuery,
+  createGameQuickDockSyncUrl,
+  gameQuickDockActionsFromUrl,
   gameQuickDockStorageKey,
   loadGameQuickDockActions,
   saveGameQuickDockActions,
+  resetGameQuickDockActions,
   toggleGameQuickDockAction
 } from "./gameQuickDockPreferences";
 
@@ -24,5 +28,19 @@ describe("게임 빠른 도구 즐겨찾기", () => {
     expect(loadGameQuickDockActions(storage)).toEqual(["sound", "journey"]);
     values.set(gameQuickDockStorageKey, "not-json");
     expect(loadGameQuickDockActions(storage)).toEqual(defaultGameQuickDockActions);
+  });
+
+  it("초기화와 다른 기기용 동기화 링크를 지원한다", () => {
+    const values = new Map<string, string>();
+    const storage = {
+      getItem: (key: string) => values.get(key) ?? null,
+      setItem: (key: string, value: string) => { values.set(key, value); }
+    };
+    saveGameQuickDockActions(["sound", "journey"], storage);
+    expect(resetGameQuickDockActions(storage)).toEqual(defaultGameQuickDockActions);
+
+    const url = createGameQuickDockSyncUrl(["sound", "journey"], "https://invite.test/path?guest=1#game");
+    expect(gameQuickDockActionsFromUrl(url)).toEqual(["sound", "journey"]);
+    expect(clearGameQuickDockSyncQuery(url)).toBe("/path?guest=1#game");
   });
 });
