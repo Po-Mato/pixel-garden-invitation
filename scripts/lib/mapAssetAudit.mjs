@@ -33,6 +33,17 @@ function dimensionsAreValid(dimensions) {
   );
 }
 
+function projectionIsValid(projection) {
+  return (
+    projection?.mode === "parallel" &&
+    (projection.axis === "vertical" || projection.axis === "horizontal") &&
+    Number.isInteger(projection.startSpan) &&
+    projection.startSpan > 0 &&
+    Number.isInteger(projection.endSpan) &&
+    projection.endSpan > 0
+  );
+}
+
 function addDuplicateErrors(errors, values, label) {
   const seen = new Set();
 
@@ -137,6 +148,15 @@ export async function auditMapAssets({
     const sourceDir = path.join(rootDir, "map-assets/reference/v2", zone.id);
     const outputDir = path.join(rootDir, "client/public/assets/maps/v2", zone.id);
     const background = zone.background;
+
+    if (!projectionIsValid(zone.projection)) {
+      errors.push(`manifest projection must declare a parallel axis and positive spans for ${zone.id}`);
+    } else if (zone.projection.startSpan !== zone.projection.endSpan) {
+      errors.push(
+        `manifest projection spans must stay equal for ${zone.id}; ` +
+        `received ${zone.projection.startSpan} and ${zone.projection.endSpan}`
+      );
+    }
 
     if (!background || typeof background.source !== "string" || typeof background.output !== "string" || !dimensionsAreValid(background)) {
       errors.push(`manifest background is invalid for ${zone.id}`);

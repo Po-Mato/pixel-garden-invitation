@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "approvedAt": "2026-07-29T23:06:41.860Z",
+  "reason": "10개 맵 평행 투영 배경 재구성",
+  "sha256": "8c423c5484e1b5e2bc394d7538ed3ed452a51c3a315dcd9c31ac92c6a46d2f5e",
+  "width": 780,
+  "height": 3458,
+  "mapZoneIds": [
+    "home",
+    "neighborhood",
+    "subway-station",
+    "subway-train",
+    "venue-exterior",
+    "lobby",
+    "bridal-room",
+    "ceremony-hall",
+    "banquet",
+    "restroom"
+  ],
+  "characterPresetIds": [
+    "feminine-long-wave-dress",
+    "feminine-formal-hanbok",
+    "masculine-navy-suit",
+    "masculine-charcoal-blazer",
+    "feminine-sage-bolero-dress",
+    "feminine-champagne-navy-skirt",
+    "feminine-lavender-jacket-dress",
+    "feminine-teal-modern-hanbok",
+    "masculine-beige-summer-suit",
+    "masculine-charcoal-burgundy-tie",
+    "masculine-green-blazer-cream-pants",
+    "masculine-blue-modern-hanbok"
+  ],
+  "directionSampleCount": 48
+}

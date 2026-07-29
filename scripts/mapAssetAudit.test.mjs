@@ -21,6 +21,12 @@ const manifest = {
         width: 60,
         height: 90
       },
+      projection: {
+        mode: "parallel",
+        axis: "vertical",
+        startSpan: 42,
+        endSpan: 42
+      },
       overlays: [
         {
           source: "topiary-foreground-source.png",
@@ -111,6 +117,29 @@ test("allows a map zone with no foreground overlays", async () => {
     const result = await auditFixture({ rootDir, manifestPath });
 
     assert.equal(result.errors.length, 0);
+  });
+});
+
+test("rejects missing, perspective, or tapered map projection contracts", async () => {
+  await withFixture(async ({ rootDir, manifestPath }) => {
+    const [zone] = manifest.zones;
+    const invalidProjections = [
+      undefined,
+      { mode: "perspective", axis: "vertical", startSpan: 42, endSpan: 42 },
+      { mode: "parallel", axis: "vertical", startSpan: 42, endSpan: 30 }
+    ];
+
+    for (const projection of invalidProjections) {
+      await writeFile(manifestPath, `${JSON.stringify({
+        ...manifest,
+        zones: [{ ...zone, projection }]
+      }, null, 2)}\n`);
+      const result = await auditFixture({ rootDir, manifestPath });
+      assert.ok(
+        result.errors.some((error) => /projection/.test(error)),
+        `expected a projection error; received ${JSON.stringify(result.errors)}`
+      );
+    }
   });
 });
 
@@ -426,48 +455,56 @@ test("declares the ten map contracts in journey order", async () => {
     {
       id: "home",
       background: { source: "pixel-background-source.png", output: "background.webp", width: 600, height: 720 },
+      projection: { mode: "parallel", axis: "vertical", startSpan: 420, endSpan: 420 },
       overlays: [{ source: "topiary-foreground-source.png", output: "topiary-foreground.png", width: 60, height: 90 }],
       requiredArtifacts: ["window", "sofa", "table", "shoe-rack", "door", "topiary"]
     },
     {
       id: "neighborhood",
       background: { source: "pixel-background-source.png", output: "background.webp", width: 1200, height: 660 },
+      projection: { mode: "parallel", axis: "horizontal", startSpan: 270, endSpan: 270 },
       overlays: [{ source: "tree-canopy-source.png", output: "tree-canopy.png", width: 90, height: 150 }],
       requiredArtifacts: ["tree", "street-lamp", "bench", "crosswalk", "flower-bed", "station-entrance"]
     },
     {
       id: "subway-station",
       background: { source: "pixel-background-source.png", output: "background.webp", width: 900, height: 840 },
+      projection: { mode: "parallel", axis: "vertical", startSpan: 750, endSpan: 750 },
       overlays: [],
       requiredArtifacts: ["route-band", "bench", "safety-line", "platform-door"]
     },
     {
       id: "subway-train",
       background: { source: "pixel-background-source.png", output: "background.webp", width: 1440, height: 540 },
+      projection: { mode: "parallel", axis: "horizontal", startSpan: 210, endSpan: 210 },
       overlays: [{ source: "strap-row-foreground-source.png", output: "strap-row-foreground.png", width: 960, height: 120 }],
       requiredArtifacts: ["city-window", "teal-seat", "strap", "ceiling-light", "train-door"]
     },
     {
       id: "venue-exterior",
       background: { source: "pixel-background-source.png", output: "background.webp", width: 960, height: 900 },
+      projection: { mode: "parallel", axis: "vertical", startSpan: 180, endSpan: 180 },
       overlays: [{ source: "flower-arch-front-source.png", output: "flower-arch-front.png", width: 240, height: 180 }],
       requiredArtifacts: ["stone-facade", "glass-door", "flower-arch", "water-feature", "flower-bed", "tree"]
     },
     {
       id: "lobby",
       background: { source: "pixel-background-source.png", output: "background.webp", width: 1080, height: 900 },
+      projection: { mode: "parallel", axis: "vertical", startSpan: 240, endSpan: 240 },
       overlays: [{ source: "reception-desk-front-source.png", output: "reception-desk-front.png", width: 180, height: 120 }],
       requiredArtifacts: ["reception-desk", "gift-desk", "photo-wall", "sofa", "flower-arrangement", "hall-door"]
     },
     {
       id: "bridal-room",
       background: { source: "pixel-background-source.png", output: "background.webp", width: 720, height: 630 },
+      projection: { mode: "parallel", axis: "vertical", startSpan: 540, endSpan: 540 },
       overlays: [{ source: "flower-arrangement-front-source.png", output: "flower-arrangement-front.png", width: 90, height: 120 }],
       requiredArtifacts: ["flower-wall", "ivory-sofa", "vanity", "mirror", "flower-arrangement", "door"]
     },
     {
       id: "ceremony-hall",
       background: { source: "pixel-background-source.png", output: "background.webp", width: 780, height: 1920 },
+      projection: { mode: "parallel", axis: "vertical", startSpan: 180, endSpan: 180 },
       overlays: [
         { source: "ceremony-arch-front-source.png", output: "ceremony-arch-front.png", width: 420, height: 300 },
         { source: "altar-table-front-source.png", output: "altar-table-front.png", width: 180, height: 120 },
@@ -478,6 +515,7 @@ test("declares the ten map contracts in journey order", async () => {
     {
       id: "banquet",
       background: { source: "pixel-background-source.png", output: "background.webp", width: 1200, height: 930 },
+      projection: { mode: "parallel", axis: "vertical", startSpan: 1080, endSpan: 1080 },
       overlays: [
         { source: "table-floral-source.png", output: "table-floral.png", width: 240, height: 240 },
         { source: "table-dining-source.png", output: "table-dining.png", width: 240, height: 240 }
@@ -487,6 +525,7 @@ test("declares the ten map contracts in journey order", async () => {
     {
       id: "restroom",
       background: { source: "pixel-background-source.png", output: "background.webp", width: 660, height: 660 },
+      projection: { mode: "parallel", axis: "vertical", startSpan: 480, endSpan: 480 },
       overlays: [],
       requiredArtifacts: ["mirror", "sink", "terrazzo-floor", "stall", "plant", "door"]
     }
