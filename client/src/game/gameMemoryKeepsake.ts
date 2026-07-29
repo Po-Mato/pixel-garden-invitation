@@ -6,7 +6,7 @@ export const gameMemoryKeepsakeOptionsStorageKey = "wedding-game:memory-keepsake
 export const gameMemoryKeepsakeTemplatesStorageKey = "wedding-game:memory-keepsake-templates:v1";
 export const gameMemoryKeepsakeLayouts = ["classic", "garden", "film"] as const;
 export const gameMemoryKeepsakeFrames = ["clean", "rounded", "postage"] as const;
-export const gameMemoryKeepsakeStickers = ["heart", "flower", "sparkle"] as const;
+export const gameMemoryKeepsakeStickers = ["heart", "flower", "sparkle", "dove", "ring", "leaf"] as const;
 export type GameMemoryKeepsakeLayout = (typeof gameMemoryKeepsakeLayouts)[number];
 export type GameMemoryKeepsakeFrame = (typeof gameMemoryKeepsakeFrames)[number];
 export type GameMemoryKeepsakeSticker = (typeof gameMemoryKeepsakeStickers)[number];
@@ -21,6 +21,10 @@ export type GameMemoryStickerTransform = {
   scale: number;
   rotation: number;
 };
+export type GameMemoryTextSticker = GameMemoryStickerTransform & {
+  enabled: boolean;
+  text: string;
+};
 export type GameMemoryKeepsakeOptions = {
   layout: GameMemoryKeepsakeLayout;
   frame: GameMemoryKeepsakeFrame;
@@ -30,6 +34,7 @@ export type GameMemoryKeepsakeOptions = {
   photoOrder: WorldPhotoSpotId[];
   photoTransforms: Partial<Record<WorldPhotoSpotId, GameMemoryPhotoTransform>>;
   stickerTransforms: Partial<Record<GameMemoryKeepsakeSticker, GameMemoryStickerTransform>>;
+  textSticker: GameMemoryTextSticker;
 };
 
 export type GameMemoryKeepsakeTemplate = {
@@ -39,6 +44,7 @@ export type GameMemoryKeepsakeTemplate = {
   frame: GameMemoryKeepsakeFrame;
   stickers: GameMemoryKeepsakeSticker[];
   stickerTransforms: Partial<Record<GameMemoryKeepsakeSticker, GameMemoryStickerTransform>>;
+  textSticker: GameMemoryTextSticker;
   quality: "standard" | "high";
   message: string;
 };
@@ -56,8 +62,12 @@ export const defaultGameMemoryKeepsakeOptions: GameMemoryKeepsakeOptions = {
   stickerTransforms: {
     heart: { x: 0.1, y: 0.1, scale: 1, rotation: -8 },
     flower: { x: 0.9, y: 0.1, scale: 1, rotation: 8 },
-    sparkle: { x: 0.86, y: 0.35, scale: 1, rotation: 0 }
-  }
+    sparkle: { x: 0.86, y: 0.35, scale: 1, rotation: 0 },
+    dove: { x: 0.12, y: 0.35, scale: 1, rotation: -6 },
+    ring: { x: 0.5, y: 0.12, scale: 1, rotation: 0 },
+    leaf: { x: 0.88, y: 0.58, scale: 1, rotation: 18 }
+  },
+  textSticker: { enabled: false, text: "우리의 봄날", x: 0.5, y: 0.68, scale: 1, rotation: 0 }
 };
 
 export type GameMemoryKeepsakeData = {
@@ -146,6 +156,23 @@ export function normalizeGameMemoryKeepsakeOptions(value: unknown): GameMemoryKe
       rotation: Math.round(clamp(transform?.rotation, -180, 180, fallback.rotation))
     }];
   })) as Partial<Record<GameMemoryKeepsakeSticker, GameMemoryStickerTransform>>;
+  const candidateTextSticker = candidate.textSticker as Partial<GameMemoryTextSticker> | undefined;
+  const textStickerFallback = defaultGameMemoryKeepsakeOptions.textSticker;
+  const clampTextSticker = (number: unknown, minimum: number, maximum: number, fallbackValue: number) => (
+    typeof number === "number" && Number.isFinite(number)
+      ? Math.min(maximum, Math.max(minimum, number))
+      : fallbackValue
+  );
+  const textSticker: GameMemoryTextSticker = {
+    enabled: candidateTextSticker?.enabled === true,
+    text: typeof candidateTextSticker?.text === "string"
+      ? candidateTextSticker.text.replace(/[\u0000-\u001f\u007f]/g, "").trim().slice(0, 18) || textStickerFallback.text
+      : textStickerFallback.text,
+    x: Math.round(clampTextSticker(candidateTextSticker?.x, 0.08, 0.92, textStickerFallback.x) * 100) / 100,
+    y: Math.round(clampTextSticker(candidateTextSticker?.y, 0.08, 0.92, textStickerFallback.y) * 100) / 100,
+    scale: Math.round(clampTextSticker(candidateTextSticker?.scale, 0.65, 1.8, textStickerFallback.scale) * 100) / 100,
+    rotation: Math.round(clampTextSticker(candidateTextSticker?.rotation, -45, 45, textStickerFallback.rotation))
+  };
   return {
     layout,
     frame,
@@ -154,7 +181,8 @@ export function normalizeGameMemoryKeepsakeOptions(value: unknown): GameMemoryKe
     message: message || defaultGameMemoryKeepsakeOptions.message,
     photoOrder,
     photoTransforms,
-    stickerTransforms
+    stickerTransforms,
+    textSticker
   };
 }
 
@@ -172,6 +200,7 @@ function normalizeKeepsakeTemplate(value: unknown): GameMemoryKeepsakeTemplate |
     frame: normalized.frame,
     stickers: normalized.stickers,
     stickerTransforms: normalized.stickerTransforms,
+    textSticker: normalized.textSticker,
     quality: normalized.quality,
     message: normalized.message
   };
@@ -219,6 +248,7 @@ export function createGameMemoryKeepsakeTemplate(
     frame: normalized.frame,
     stickers: normalized.stickers,
     stickerTransforms: normalized.stickerTransforms,
+    textSticker: normalized.textSticker,
     quality: normalized.quality,
     message: normalized.message
   };
@@ -367,7 +397,7 @@ function drawKeepsakeSticker(
     context.beginPath();
     context.arc(0, 0, 9, 0, Math.PI * 2);
     context.fill();
-  } else {
+  } else if (sticker === "sparkle") {
     context.beginPath();
     context.moveTo(0, -30);
     context.lineTo(8, -8);
@@ -379,7 +409,69 @@ function drawKeepsakeSticker(
     context.lineTo(-8, -8);
     context.closePath();
     context.fill();
+  } else if (sticker === "dove") {
+    context.beginPath();
+    context.moveTo(-30, 4);
+    context.quadraticCurveTo(-8, -30, 2, -4);
+    context.quadraticCurveTo(20, -24, 32, -12);
+    context.quadraticCurveTo(18, -2, 10, 14);
+    context.quadraticCurveTo(-8, 23, -30, 4);
+    context.fill();
+    context.beginPath();
+    context.moveTo(24, -12);
+    context.lineTo(42, -7);
+    context.lineTo(25, -2);
+    context.closePath();
+    context.fill();
+  } else if (sticker === "ring") {
+    context.lineWidth = 9;
+    context.beginPath();
+    context.arc(0, 4, 24, 0, Math.PI * 2);
+    context.stroke();
+    context.beginPath();
+    context.moveTo(-10, -18);
+    context.lineTo(0, -34);
+    context.lineTo(10, -18);
+    context.closePath();
+    context.fill();
+  } else {
+    context.beginPath();
+    context.ellipse(0, 0, 13, 34, Math.PI / 4, 0, Math.PI * 2);
+    context.fill();
+    context.strokeStyle = "rgba(255,255,255,0.72)";
+    context.lineWidth = 3;
+    context.beginPath();
+    context.moveTo(-16, 17);
+    context.lineTo(17, -17);
+    context.stroke();
   }
+  context.restore();
+}
+
+function drawKeepsakeTextSticker(
+  context: CanvasRenderingContext2D,
+  sticker: GameMemoryTextSticker,
+  color: string,
+  cardColor: string
+) {
+  if (!sticker.enabled || !sticker.text) return;
+  context.save();
+  context.translate(sticker.x * 1080, sticker.y * 1920);
+  context.rotate(sticker.rotation * Math.PI / 180);
+  context.scale(sticker.scale, sticker.scale);
+  context.font = "900 27px serif";
+  const width = Math.min(420, Math.max(150, context.measureText(sticker.text).width + 58));
+  context.fillStyle = cardColor;
+  context.strokeStyle = color;
+  context.lineWidth = 4;
+  context.beginPath();
+  context.roundRect(-width / 2, -28, width, 56, 22);
+  context.fill();
+  context.stroke();
+  context.fillStyle = color;
+  context.textAlign = "center";
+  context.textBaseline = "middle";
+  context.fillText(sticker.text, 0, 1, width - 34);
   context.restore();
 }
 
@@ -475,6 +567,7 @@ export async function createGameMemoryKeepsake(data: GameMemoryKeepsakeData): Pr
       transform
     );
   });
+  drawKeepsakeTextSticker(context, options.textSticker, palette.accent, palette.card);
 
   const companionCount = data.album.entries.filter(({ kind }) => kind === "companion").length;
   const celebrationCount = data.album.entries.filter(({ kind }) => kind === "celebration").length;

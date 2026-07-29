@@ -4,12 +4,15 @@ import { allCelebrationCollectibles } from "./celebrationCollectibles";
 import {
   celebrationKindRewardProgress,
   celebrationCosmeticRecommendation,
+  createCelebrationCosmeticFavorite,
+  loadCelebrationCosmeticFavorites,
   loadCelebrationCosmetic,
   loadCelebrationCosmeticTone,
   celebrationRewardProgress,
   celebrationSetRewardProgress,
   newlyUnlockedCelebrationMilestones,
   saveCelebrationCosmetic,
+  saveCelebrationCosmeticFavorites,
   saveCelebrationCosmeticTone
 } from "./celebrationReward";
 
@@ -82,5 +85,22 @@ describe("celebrationReward", () => {
     };
     expect(saveCelebrationCosmeticTone("sage", storage)).toBe(true);
     expect(loadCelebrationCosmeticTone(storage)).toBe("sage");
+  });
+
+  it("stores up to three unique cosmetic favorites", () => {
+    const values = new Map<string, string>();
+    const storage = {
+      getItem: (key: string) => values.get(key) ?? null,
+      setItem: (key: string, value: string) => values.set(key, value)
+    };
+    const first = createCelebrationCosmeticFavorite("petal-trail", "rose", "look-one");
+    const duplicate = createCelebrationCosmeticFavorite("petal-trail", "rose", "look-two");
+    const others = [
+      createCelebrationCosmeticFavorite("ribbon-tag", "gold", "look-three"),
+      createCelebrationCosmeticFavorite("starlight-aura", "sage", "look-four"),
+      createCelebrationCosmeticFavorite("garden-blessing-set", "rose", "look-five")
+    ];
+    expect(saveCelebrationCosmeticFavorites([first, duplicate, ...others], storage)).toBe(true);
+    expect(loadCelebrationCosmeticFavorites(storage)).toEqual([first, others[0], others[1]]);
   });
 });

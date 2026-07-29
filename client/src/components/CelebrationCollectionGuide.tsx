@@ -1,13 +1,16 @@
-import { useState } from "react";
-import { Check, Eye, Flower2, Gift, LockKeyhole, MapPinned, Navigation, Palette, Sparkles, WandSparkles, X } from "lucide-react";
+import { useEffect, useState } from "react";
+import { BookmarkPlus, Check, Eye, Flower2, Gift, LockKeyhole, MapPinned, Navigation, Palette, Sparkles, Trash2, WandSparkles, X } from "lucide-react";
 import type { CharacterAppearance, WorldZoneId } from "@wedding-game/shared";
 import type { CelebrationCollectible } from "../game/celebrationCollectibles";
 import { celebrationZoneProgress } from "../game/celebrationCollectionGuide";
 import {
   celebrationKindRewardProgress,
   celebrationCosmeticRecommendation,
+  createCelebrationCosmeticFavorite,
   celebrationCosmeticToneLabels,
   celebrationCosmeticTones,
+  loadCelebrationCosmeticFavorites,
+  saveCelebrationCosmeticFavorites,
   celebrationSetRewardProgress,
   type CelebrationCosmeticId,
   type CelebrationCosmeticTone
@@ -51,10 +54,18 @@ export function CelebrationCollectionGuide({
   const rewardIcons = { petal: Flower2, ribbon: Gift, star: Sparkles } as const;
   const [previewCosmetic, setPreviewCosmetic] = useState<CelebrationCosmeticId>(equippedCosmetic);
   const [previewTone, setPreviewTone] = useState<CelebrationCosmeticTone>(equippedTone);
+  const [favoriteLooks, setFavoriteLooks] = useState(loadCelebrationCosmeticFavorites);
   const recommendation = celebrationCosmeticRecommendation(appearance, collectedIds, items);
   const previewLabel = previewCosmetic === "none"
     ? "기본 모습"
     : rewards.find(({ cosmeticId }) => cosmeticId === previewCosmetic)?.label ?? setReward.label;
+  const favoriteExists = favoriteLooks.some(({ cosmeticId, tone }) => (
+    cosmeticId === previewCosmetic && tone === previewTone
+  ));
+
+  useEffect(() => {
+    saveCelebrationCosmeticFavorites(favoriteLooks);
+  }, [favoriteLooks]);
 
   return (
     <div className="celebration-collection-guide" role="dialog" aria-modal="true" aria-label="축하 아이템 수집 지도">
@@ -116,6 +127,47 @@ export function CelebrationCollectionGuide({
             ))}
           </div>
         </fieldset>
+        <section className="celebration-collection-guide__favorites" aria-label="꾸미기 조합 즐겨찾기">
+          <header>
+            <span><BookmarkPlus aria-hidden="true" /><strong>즐겨찾는 조합</strong></span>
+            <button
+              type="button"
+              disabled={favoriteExists || favoriteLooks.length >= 3}
+              onClick={() => setFavoriteLooks((current) => [
+                ...current,
+                createCelebrationCosmeticFavorite(previewCosmetic, previewTone)
+              ])}
+            >{favoriteExists ? "저장됨" : favoriteLooks.length >= 3 ? "최대 3개" : "현재 조합 저장"}</button>
+          </header>
+          {favoriteLooks.length > 0 ? (
+            <div>
+              {favoriteLooks.map((favorite, index) => {
+                const cosmeticLabel = favorite.cosmeticId === "none"
+                  ? "기본 모습"
+                  : rewards.find(({ cosmeticId }) => cosmeticId === favorite.cosmeticId)?.label ?? setReward.label;
+                return (
+                  <span key={favorite.id}>
+                    <button
+                      type="button"
+                      aria-label={`즐겨찾기 ${index + 1} ${cosmeticLabel} ${celebrationCosmeticToneLabels[favorite.tone]} 적용`}
+                      onClick={() => {
+                        setPreviewCosmetic(favorite.cosmeticId);
+                        setPreviewTone(favorite.tone);
+                        onChangeTone(favorite.tone);
+                        onEquipCosmetic(favorite.cosmeticId);
+                      }}
+                    ><Sparkles aria-hidden="true" /><strong>{cosmeticLabel}</strong><small>{celebrationCosmeticToneLabels[favorite.tone]}</small></button>
+                    <button
+                      type="button"
+                      aria-label={`즐겨찾기 ${index + 1} 삭제`}
+                      onClick={() => setFavoriteLooks((current) => current.filter(({ id }) => id !== favorite.id))}
+                    ><Trash2 aria-hidden="true" /></button>
+                  </span>
+                );
+              })}
+            </div>
+          ) : <p>자주 쓰는 효과와 색상을 한 번에 다시 적용할 수 있어요.</p>}
+        </section>
         <div>
           {rewards.map((reward) => {
             const Icon = rewardIcons[reward.kind];

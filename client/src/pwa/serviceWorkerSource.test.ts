@@ -65,6 +65,7 @@ describe("PWA service worker source", () => {
     expect(source).toContain('event.data?.type === "REMOVE_ZONE_GROUPS"');
     expect(source).toContain('"outdated"');
     expect(source).toContain("__offline-zone-version__");
+    expect(source).toContain("cachedAt");
     expect(source).toContain('"PWA_FEATURE_CACHE_PROGRESS"');
     expect(source).not.toContain("POST");
   });

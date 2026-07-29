@@ -347,6 +347,22 @@
 .celebration-collection-guide__tones button[data-tone="gold"] > span { background: #c79a47; }
 .celebration-collection-guide__tones button[data-tone="sage"] > span { background: #6f8f76; }
 .celebration-collection-guide__tones button small { grid-column: 2; color: #9b6070; font-size: 7px; }
+.celebration-collection-guide__favorites { display: grid; gap: 6px; margin: 0 0 8px; padding: 9px; background: #f5f1e8; border: 1px solid #c9bdad; }
+.celebration-collection-guide__favorites > header { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.celebration-collection-guide__favorites > header > span { display: inline-flex; align-items: center; gap: 5px; font-size: 10px; }
+.celebration-collection-guide__favorites > header svg { width: 15px; color: #9a6170; }
+.celebration-collection-guide__favorites > header button { min-height: 32px; padding: 5px 8px; color: #fff; background: #6c836e; border: 0; font-size: 8px; font-weight: 900; }
+.celebration-collection-guide__favorites > header button:disabled { color: #7f766f; background: #ddd7cf; }
+.celebration-collection-guide__favorites > div { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 5px; }
+.celebration-collection-guide__favorites > div > span { display: grid; grid-template-columns: minmax(0, 1fr) 28px; background: #fff; border: 1px solid #d3c7ba; }
+.celebration-collection-guide__favorites > div button { min-width: 0; min-height: 42px; padding: 5px; color: #574f4a; background: transparent; border: 0; }
+.celebration-collection-guide__favorites > div button:first-child { display: grid; grid-template-columns: 13px minmax(0, 1fr); align-items: center; gap: 1px 3px; text-align: left; }
+.celebration-collection-guide__favorites > div button:first-child svg { grid-row: 1 / 3; width: 12px; color: #b66b7f; }
+.celebration-collection-guide__favorites > div button strong { overflow: hidden; font-size: 8px; text-overflow: ellipsis; white-space: nowrap; }
+.celebration-collection-guide__favorites > div button small { color: #84776e; font-size: 7px; }
+.celebration-collection-guide__favorites > div button:last-child { display: grid; place-items: center; color: #8d5968; border-left: 1px solid #e0d7ce; }
+.celebration-collection-guide__favorites > div button:last-child svg { width: 12px; }
+.celebration-collection-guide__favorites > p { margin: 0; color: #766e67; font-size: 8px; }
 .celebration-collection-guide__rewards > div { display: grid; gap: 6px; }
 .celebration-collection-guide__rewards article { display: grid; min-height: 66px; grid-template-columns: 34px minmax(0, 1fr) auto; align-items: center; gap: 8px; padding: 9px; color: #776c65; background: #eee9df; border: 1px solid #d1c6bb; border-radius: 5px; }
 .celebration-collection-guide__rewards article[data-unlocked="true"] { color: #4b514b; background: #fff9e8; border-color: #bd9661; }
@@ -406,6 +422,13 @@
 .companion-waiting-room__presence > span { display: grid; gap: 2px; }
 .companion-waiting-room__presence strong { font-size: 10px; }
 .companion-waiting-room__presence small { color: #758078; font-size: 8px; }
+.companion-waiting-room__status[data-status="reconnecting"] { color: #745d36; background: #fff7dc; border-color: #c5a969; }
+.companion-waiting-room__status[data-status="reconnecting"] > svg { animation: offline-map-spin 1.2s linear infinite; }
+.companion-waiting-room__meeting { display: grid; width: min(100%, 430px); grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 7px; }
+.companion-waiting-room__meeting > span { display: grid; min-width: 0; grid-template-columns: 20px minmax(0, 1fr); gap: 1px 5px; padding: 8px; background: #fff9e8; border: 1px solid #c7ad75; }
+.companion-waiting-room__meeting svg { grid-row: 1 / 3; width: 17px; color: #8e7042; }
+.companion-waiting-room__meeting small { color: #8d7e6b; font-size: 7px; }
+.companion-waiting-room__meeting strong { overflow: hidden; font-size: 9px; text-overflow: ellipsis; white-space: nowrap; }
 .companion-waiting-room__qr { position: relative; display: grid; width: min(270px, 72vw); aspect-ratio: 1; place-items: center; margin: 17px 0 10px; padding: 12px; background: #fffdf7; border: 1px solid #a99d91; box-shadow: 0 8px 24px rgba(55, 43, 39, 0.13); }
 .companion-waiting-room__qr img { width: 100%; height: 100%; image-rendering: auto; }
 .companion-waiting-room__qr > svg { width: 58px; color: #647869; }
@@ -606,6 +629,7 @@
 .game-memory-album__preview-stickers button:active { cursor: grabbing; }
 .game-memory-album__preview-stickers button[aria-pressed="true"] { outline: 2px solid #6b7f6d; outline-offset: 1px; background: rgba(255, 253, 247, 0.72); }
 .game-memory-album__preview-stickers svg { width: 18px; height: 18px; fill: rgba(255, 244, 210, 0.86); filter: drop-shadow(0 1px 1px rgba(73, 50, 45, 0.2)); }
+.game-memory-album__preview-stickers .game-memory-album__preview-text-sticker { width: auto; min-width: 76px; height: 24px; padding: 4px 9px; color: #9c5f70; background: rgba(255, 253, 247, 0.94); border: 1px solid currentColor; border-radius: 12px; font-family: serif; font-size: 7px; font-weight: 900; white-space: nowrap; }
 .game-memory-album__editor fieldset { display: grid; gap: 5px; margin: 0; padding: 0; border: 0; }
 .game-memory-album__editor legend,
 .game-memory-album__editor > label > span { display: flex; align-items: center; gap: 5px; margin-bottom: 5px; color: #5e5752; font-size: 10px; font-weight: 900; }
@@ -636,6 +660,16 @@
 .game-memory-album__sticker-editor > label svg { width: 13px; }
 .game-memory-album__sticker-editor input[type="range"] { min-height: 28px; padding: 0; accent-color: #9a6170; border: 0; }
 .game-memory-album__sticker-editor > button { display: inline-flex; min-height: 34px; align-items: center; justify-content: center; gap: 5px; color: #5d655e; background: #fff; border: 1px solid #9eaa9f; font-size: 9px; font-weight: 900; }
+.game-memory-album__text-sticker-editor { gap: 7px !important; padding: 10px !important; background: #f4f1e8; border: 1px solid #bcc5b5 !important; }
+.game-memory-album__text-sticker-row { display: grid; grid-template-columns: minmax(0, 1fr) 70px; gap: 5px; }
+.game-memory-album__text-sticker-row button { color: #fff; background: #6f8471; border: 0; font-size: 9px; font-weight: 900; }
+.game-memory-album__text-sticker-row button[aria-pressed="true"] { background: #9e6072; }
+.game-memory-album__text-sticker-controls { display: grid; gap: 5px; }
+.game-memory-album__text-sticker-controls label { display: grid; grid-template-columns: 58px minmax(0, 1fr); align-items: center; gap: 7px; }
+.game-memory-album__text-sticker-controls label span { display: inline-flex; align-items: center; gap: 4px; font-size: 9px; font-weight: 900; }
+.game-memory-album__text-sticker-controls label svg { width: 13px; }
+.game-memory-album__text-sticker-controls input[type="range"] { min-height: 28px; padding: 0; accent-color: #9a6170; border: 0; }
+.game-memory-album__text-sticker-controls > button { min-height: 34px; color: #5d655e; background: #fff; border: 1px solid #9eaa9f; font-size: 9px; font-weight: 900; }
 .game-memory-album__templates > div { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 5px; }
 .game-memory-album__templates > div > span { display: grid; min-width: 0; grid-template-columns: minmax(0, 1fr) 30px; }
 .game-memory-album__templates > div button { min-height: 36px; padding: 6px; color: #5a514d; background: #fff; border: 1px solid #b8aa9f; font-size: 8px; font-weight: 900; }
@@ -702,6 +736,16 @@
 .offline-map-download__zones article[data-state="ready"] > button { background: #936171; }
 .offline-map-download__zones article > button:disabled { opacity: 0.45; }
 .offline-map-download__zones article > button svg { width: 16px; }
+.offline-map-download__automation { display: grid; gap: 6px; margin: 0; padding: 8px; background: #fff; border: 1px solid #c8d0c4; }
+.offline-map-download__automation legend { display: flex; align-items: center; gap: 5px; padding: 0 4px; color: #5b695e; font-size: 9px; font-weight: 900; }
+.offline-map-download__automation legend svg { width: 14px; }
+.offline-map-download__automation > div { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
+.offline-map-download__automation > div button { min-height: 32px; color: #667068; background: #f0f2ee; border: 1px solid #c5cec1; font-size: 8px; font-weight: 900; }
+.offline-map-download__automation > div button[aria-pressed="true"] { color: #fff; background: #6d846f; border-color: #536a56; }
+.offline-map-download__automation > label { display: grid; min-height: 34px; grid-template-columns: 18px 16px minmax(0, 1fr); align-items: center; gap: 5px; color: #59635b; font-size: 8px; font-weight: 800; }
+.offline-map-download__automation > label input { width: 16px; height: 16px; accent-color: #6d846f; }
+.offline-map-download__automation > label svg { width: 15px; }
+.offline-map-download__automation > p { margin: 0; color: #768078; font-size: 8px; line-height: 1.35; }
 .offline-map-download__spinner { animation: offline-map-spin 900ms linear infinite; }
 @keyframes offline-map-spin { to { transform: rotate(360deg); } }
 
@@ -757,6 +801,22 @@ html[data-color-vision] .world-minimap__collectible-marker[data-kind="star"] pat
 .wedding-photo-booth__frame-options button[data-palette="wedding-day"][aria-pressed="true"] { color: #493612; background: #e5bc61; }
 .wedding-photo-booth__frame-options button svg { width: 14px; height: 14px; }
 .wedding-photo-booth__reward-note { margin: 4px 0 0; color: #9c596e; font-size: 9px; font-weight: 800; text-align: center; }
+.wedding-photo-booth__cosmetic-options { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 7px; margin: 4px 0; padding: 8px; background: #edf4e8; border: 1px solid #9bad98; }
+.wedding-photo-booth__cosmetic-options > span { display: grid; min-width: 0; grid-template-columns: 20px minmax(0, 1fr); gap: 1px 5px; }
+.wedding-photo-booth__cosmetic-options svg { grid-row: 1 / 3; width: 17px; color: #9b6271; }
+.wedding-photo-booth__cosmetic-options strong { font-size: 9px; }
+.wedding-photo-booth__cosmetic-options small { color: #728073; font-size: 8px; }
+.wedding-photo-booth__cosmetic-options button { min-height: 34px; padding: 6px 8px; color: #657266; background: #fff; border: 1px solid #9fad9d; font-size: 8px; font-weight: 900; }
+.wedding-photo-booth__cosmetic-options button[aria-pressed="true"] { color: #fff; background: #9b6271; border-color: #824c5d; }
+.wedding-photo-booth__cosmetic-effect { --photo-effect-accent: #d87891; --photo-effect-soft: #ffe0e8; position: absolute; z-index: 2; left: 50%; bottom: -2px; width: 116%; height: 104%; pointer-events: none; transform: translateX(-50%); }
+.wedding-photo-booth__scene[data-photo-tone="gold"] .wedding-photo-booth__cosmetic-effect { --photo-effect-accent: #d1a249; --photo-effect-soft: #fff0bd; }
+.wedding-photo-booth__scene[data-photo-tone="sage"] .wedding-photo-booth__cosmetic-effect { --photo-effect-accent: #6f9877; --photo-effect-soft: #def2d7; }
+.wedding-photo-booth__scene[data-photo-cosmetic="starlight-aura"] .wedding-photo-booth__cosmetic-effect,
+.wedding-photo-booth__scene[data-photo-cosmetic="garden-blessing-set"] .wedding-photo-booth__cosmetic-effect { border: 3px solid var(--photo-effect-soft); border-radius: 50%; box-shadow: 0 0 12px var(--photo-effect-accent), inset 0 0 10px var(--photo-effect-soft); }
+.wedding-photo-booth__scene[data-photo-cosmetic="petal-trail"] .wedding-photo-booth__cosmetic-effect::after,
+.wedding-photo-booth__scene[data-photo-cosmetic="garden-blessing-set"] .wedding-photo-booth__cosmetic-effect::after { position: absolute; left: 50%; bottom: -4px; content: "✿  ✦  ✿"; color: var(--photo-effect-accent); font-size: 17px; white-space: nowrap; transform: translateX(-50%); filter: drop-shadow(0 1px 2px var(--photo-effect-soft)); }
+.wedding-photo-booth__scene[data-photo-cosmetic="ribbon-tag"] .wedding-photo-booth__cosmetic-effect::before,
+.wedding-photo-booth__scene[data-photo-cosmetic="garden-blessing-set"] .wedding-photo-booth__cosmetic-effect::before { position: absolute; right: -2px; top: 16%; content: "♡"; display: grid; width: 28px; height: 22px; place-items: center; color: #fff; background: var(--photo-effect-accent); border-radius: 50% 50% 3px 3px; font-size: 12px; font-weight: 900; }
 
 html[data-game-ui-scale="large"] .game-world :is(.world-journey__button, .world-menu-grid button) {
   min-height: 48px;

@@ -77,8 +77,12 @@ describe("gameMemoryKeepsake", () => {
       stickerTransforms: {
         heart: { x: 0.04, y: 0.43, scale: 1.8, rotation: 180 },
         flower: { x: 0.9, y: 0.1, scale: 1, rotation: 8 },
-        sparkle: { x: 0.86, y: 0.35, scale: 1, rotation: 0 }
-      }
+        sparkle: { x: 0.86, y: 0.35, scale: 1, rotation: 0 },
+        dove: { x: 0.12, y: 0.35, scale: 1, rotation: -6 },
+        ring: { x: 0.5, y: 0.12, scale: 1, rotation: 0 },
+        leaf: { x: 0.88, y: 0.58, scale: 1, rotation: 18 }
+      },
+      textSticker: { enabled: false, text: "우리의 봄날", x: 0.5, y: 0.68, scale: 1, rotation: 0 }
     });
     expect(saveGameMemoryKeepsakeOptions(options, storage)).toBe(true);
     expect(loadGameMemoryKeepsakeOptions(storage)).toEqual(options);

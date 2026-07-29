@@ -53,4 +53,29 @@ describe("CelebrationCollectionGuide", () => {
     fireEvent.click(screen.getAllByRole("button", { name: "착용" }).at(-1)!);
     expect(onEquipCosmetic).toHaveBeenCalledWith("garden-blessing-set");
   });
+
+  it("saves and reapplies a favorite cosmetic and tone combination", () => {
+    const items = allCelebrationCollectibles();
+    const onEquipCosmetic = vi.fn();
+    const onChangeTone = vi.fn();
+    render(<CelebrationCollectionGuide
+      items={items}
+      collectedIds={items.map(({ id }) => id)}
+      currentZoneId="home"
+      guidedItemId={null}
+      equippedCosmetic="none"
+      equippedTone="rose"
+      onEquipCosmetic={onEquipCosmetic}
+      onChangeTone={onChangeTone}
+      appearance={defaultCharacterAppearance}
+      onGuide={vi.fn()}
+      onClose={vi.fn()}
+    />);
+    fireEvent.click(screen.getAllByRole("button", { name: "별빛 오라 미리보기" }).at(-1)!);
+    fireEvent.click(screen.getAllByRole("button", { name: "샴페인 골드 효과 색상" }).at(-1)!);
+    fireEvent.click(screen.getAllByRole("button", { name: "현재 조합 저장" }).at(-1)!);
+    fireEvent.click(screen.getAllByRole("button", { name: /즐겨찾기 1 별빛 오라 샴페인 골드 적용/ }).at(-1)!);
+    expect(onEquipCosmetic).toHaveBeenCalledWith("starlight-aura");
+    expect(onChangeTone).toHaveBeenCalledWith("gold");
+  });
 });

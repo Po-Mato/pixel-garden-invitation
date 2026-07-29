@@ -215,3 +215,40 @@ export function nearbyPhotoCompanions(
     .filter((guest) => Math.hypot(guest.x - position.x, guest.y - position.y) <= radius)
     .slice(0, limit);
 }
+
+export type CompanionArrivalEstimate = {
+  locationLabel: string;
+  distanceTiles: number | null;
+  etaLabel: string;
+};
+
+export function companionArrivalEstimate(
+  playerPosition: Point,
+  playerZoneId: WorldZoneId,
+  companion: Pick<CompanionCandidate, "x" | "y" | "zoneId"> | null,
+  companionZoneLabel: string,
+  tileSize = 24,
+  millisecondsPerTile = 260
+): CompanionArrivalEstimate {
+  if (!companion) {
+    return { locationLabel: "위치 확인 중", distanceTiles: null, etaLabel: "재접속 대기" };
+  }
+  if (companion.zoneId !== playerZoneId) {
+    return { locationLabel: companionZoneLabel, distanceTiles: null, etaLabel: "포털 이동 필요" };
+  }
+  const deltaX = companion.x - playerPosition.x;
+  const deltaY = companion.y - playerPosition.y;
+  const distanceTiles = Math.ceil(Math.hypot(deltaX, deltaY) / Math.max(1, tileSize));
+  const direction = Math.abs(deltaX) >= Math.abs(deltaY)
+    ? deltaX >= 0 ? "오른쪽" : "왼쪽"
+    : deltaY >= 0 ? "아래쪽" : "위쪽";
+  if (distanceTiles <= 1) {
+    return { locationLabel: `${companionZoneLabel} · 바로 옆`, distanceTiles, etaLabel: "도착" };
+  }
+  const seconds = Math.max(5, Math.ceil((distanceTiles * millisecondsPerTile / 1_000) / 5) * 5);
+  return {
+    locationLabel: `${companionZoneLabel} · ${direction} 약 ${distanceTiles}칸`,
+    distanceTiles,
+    etaLabel: `약 ${seconds}초`
+  };
+}

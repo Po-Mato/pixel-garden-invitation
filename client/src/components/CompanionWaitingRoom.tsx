@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Ban, Check, Clock3, Copy, Link2, QrCode, RefreshCw, Send, ShieldCheck, UsersRound, Wifi, X } from "lucide-react";
+import { Ban, Check, Clock3, Copy, Link2, MapPin, QrCode, RefreshCw, Send, ShieldCheck, Timer, UsersRound, Wifi, X } from "lucide-react";
 import QRCode from "qrcode";
 import { companionInviteRemainingLabel } from "../game/companionMode";
 
@@ -14,6 +14,9 @@ type CompanionWaitingRoomProps = {
   connectedCount: number;
   canceled?: boolean;
   used?: boolean;
+  connectionState?: "waiting" | "reconnecting" | "connected";
+  companionLocationLabel?: string;
+  companionArrivalLabel?: string;
   onCopy: (url: string) => Promise<boolean>;
   onShare: (url: string) => Promise<boolean>;
   onRenew: () => void;
@@ -32,6 +35,9 @@ export function CompanionWaitingRoom({
   connectedCount,
   canceled = false,
   used = false,
+  connectionState = "waiting",
+  companionLocationLabel = "위치 확인 중",
+  companionArrivalLabel = "상대 접속 대기",
   onCopy,
   onShare,
   onRenew,
@@ -74,6 +80,8 @@ export function CompanionWaitingRoom({
     ? "초대를 취소했어요. 이 코드로는 더 이상 기다리지 않아요"
     : used
       ? "한 번 사용한 초대예요. 새 동행은 새 코드를 만들어 주세요"
+      : connectionState === "reconnecting"
+        ? `${companionNickname ?? "동행 하객"}님이 다시 접속하고 있어요`
       : status === "connected"
     ? `${companionNickname ?? "동행 하객"}님과 연결됐어요`
     : status === "requested"
@@ -87,8 +95,8 @@ export function CompanionWaitingRoom({
         <button type="button" aria-label="동행 대기실 닫기" onClick={onClose}><X aria-hidden="true" /></button>
       </header>
 
-      <section className="companion-waiting-room__status" data-status={status}>
-        {status === "connected" ? <Check aria-hidden="true" /> : <UsersRound aria-hidden="true" />}
+      <section className="companion-waiting-room__status" data-status={connectionState === "reconnecting" ? "reconnecting" : status}>
+        {connectionState === "reconnecting" ? <RefreshCw aria-hidden="true" /> : status === "connected" ? <Check aria-hidden="true" /> : <UsersRound aria-hidden="true" />}
         <div><strong>{nickname}님 · {zoneLabel}</strong><span>{statusLabel}</span></div>
       </section>
 
@@ -96,6 +104,13 @@ export function CompanionWaitingRoom({
         <Wifi aria-hidden="true" />
         <span><strong>현재 같은 구역 {Math.max(1, connectedCount)}명 접속</strong><small>입장한 하객에게만 동행 요청이 전달됩니다.</small></span>
       </section>
+
+      {(connectionState === "connected" || connectionState === "reconnecting") ? (
+        <section className="companion-waiting-room__meeting" aria-label="동행 합류 정보">
+          <span><MapPin aria-hidden="true" /><small>상대 위치</small><strong>{companionLocationLabel}</strong></span>
+          <span><Timer aria-hidden="true" /><small>도착 예상</small><strong>{companionArrivalLabel}</strong></span>
+        </section>
+      ) : null}
 
       <div className="companion-waiting-room__qr" data-inactive={inactive || undefined}>
         {qrDataUrl ? <img src={qrDataUrl} alt="동행 초대 QR 코드" /> : <QrCode aria-label="QR 코드 준비 중" />}

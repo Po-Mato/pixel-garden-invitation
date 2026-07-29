@@ -29,6 +29,7 @@ import {
   type WeddingPhotoMemory
 } from "../game/weddingPhoto";
 import type { WorldPhotoPose, WorldPhotoSpot } from "../game/world";
+import { celebrationCosmeticToneLabels, type CelebrationCosmeticId, type CelebrationCosmeticTone } from "../game/celebrationReward";
 import { CharacterPortrait } from "./CharacterPortrait";
 
 type WeddingPhotoBoothProps = {
@@ -44,6 +45,8 @@ type WeddingPhotoBoothProps = {
   }[];
   celebrationFrameUnlocked?: boolean;
   weddingDayFrameAvailable?: boolean;
+  celebrationCosmetic?: CelebrationCosmeticId;
+  celebrationTone?: CelebrationCosmeticTone;
 };
 
 type PhotoStatus = "ready" | "capturing" | "captured" | "saving" | "saved" | "sharing" | "shared" | "fallback" | "canceled" | "error";
@@ -78,6 +81,8 @@ export function WeddingPhotoBooth({
   companions = [],
   celebrationFrameUnlocked = false,
   weddingDayFrameAvailable = false,
+  celebrationCosmetic = "none",
+  celebrationTone = "rose",
   onClose,
   onCaptured
 }: WeddingPhotoBoothProps) {
@@ -99,6 +104,7 @@ export function WeddingPhotoBooth({
   const [frameSelection, setFrameSelection] = useState(() => (
     loadCelebrationFrameSelection(weddingDayFrameAvailable)
   ));
+  const [photoEffectEnabled, setPhotoEffectEnabled] = useState(celebrationCosmetic !== "none");
   const busy = status === "capturing" || status === "saving" || status === "sharing";
   onCloseRef.current = onClose;
   busyRef.current = busy;
@@ -115,8 +121,11 @@ export function WeddingPhotoBooth({
       guestName: companion.nickname,
       appearance: companion.appearance
     })),
-    celebrationFrame: celebrationFrameUnlocked ? frameSelection : undefined
-  }), [appearance, celebrationFrameUnlocked, companions, coupleOrder, event, frameSelection, nickname, pose, spot]);
+    celebrationFrame: celebrationFrameUnlocked ? frameSelection : undefined,
+    photoCosmetic: photoEffectEnabled && celebrationCosmetic !== "none"
+      ? { cosmeticId: celebrationCosmetic, tone: celebrationTone }
+      : undefined
+  }), [appearance, celebrationCosmetic, celebrationFrameUnlocked, celebrationTone, companions, coupleOrder, event, frameSelection, nickname, photoEffectEnabled, pose, spot]);
 
   const releaseCaptureUrl = () => {
     if (!captureUrlRef.current) return;
@@ -233,6 +242,8 @@ export function WeddingPhotoBooth({
             data-celebration-frame={celebrationFrameUnlocked || undefined}
             data-frame-palette={celebrationFrameUnlocked ? frameSelection.palette : undefined}
             data-frame-decoration={celebrationFrameUnlocked ? frameSelection.decoration : undefined}
+            data-photo-cosmetic={photoEffectEnabled ? celebrationCosmetic : undefined}
+            data-photo-tone={photoEffectEnabled ? celebrationTone : undefined}
           >
             <span className="wedding-photo-booth__frame" aria-hidden="true" />
             <span className="wedding-photo-booth__petals" aria-hidden="true" />
@@ -249,7 +260,10 @@ export function WeddingPhotoBooth({
                   backgroundSize: "288px 576px"
                 }}
               />
-              <span className="wedding-photo-booth__guest"><CharacterPortrait appearance={appearance} /></span>
+              <span className="wedding-photo-booth__guest">
+                <span className="wedding-photo-booth__cosmetic-effect" aria-hidden="true" />
+                <CharacterPortrait appearance={appearance} />
+              </span>
               {companions.map((companion) => (
                 <span key={companion.guestId} className="wedding-photo-booth__companion">
                   <CharacterPortrait appearance={companion.appearance} />
@@ -292,6 +306,20 @@ export function WeddingPhotoBooth({
           <p className="wedding-photo-booth__group-note">
             가까이 있는 {companions.map(({ nickname: companionName }) => companionName).join(", ")}님과 함께 촬영합니다.
           </p>
+        ) : null}
+
+        {celebrationCosmetic !== "none" && !capture ? (
+          <section className="wedding-photo-booth__cosmetic-options" aria-label="포토존 전용 꾸미기 효과">
+            <span><Sparkles aria-hidden="true" /><strong>포토존 의상 효과</strong><small>{celebrationCosmeticToneLabels[celebrationTone]} 조합</small></span>
+            <button
+              type="button"
+              aria-pressed={photoEffectEnabled}
+              onClick={() => {
+                setPhotoEffectEnabled((current) => !current);
+                resetCapture();
+              }}
+            >{photoEffectEnabled ? "사진에 적용 중" : "사진에 적용"}</button>
+          </section>
         ) : null}
 
         {celebrationFrameUnlocked && !capture ? (

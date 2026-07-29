@@ -6,6 +6,7 @@ import {
   defaultCelebrationFrame,
   type CelebrationFrameSelection
 } from "./celebrationFrame";
+import type { CelebrationCosmeticId, CelebrationCosmeticTone } from "./celebrationReward";
 import { resolveWorldMapAsset } from "./worldVisuals";
 import type { WorldPhotoPose, WorldPhotoSpot, WorldPhotoSpotId } from "./world";
 
@@ -23,6 +24,10 @@ export type WeddingPhotoData = {
     appearance: CharacterAppearance;
   }[];
   celebrationFrame?: CelebrationFrameSelection | boolean;
+  photoCosmetic?: {
+    cosmeticId: CelebrationCosmeticId;
+    tone: CelebrationCosmeticTone;
+  };
 };
 
 export type WeddingPhotoMemory = {
@@ -536,6 +541,75 @@ function drawCelebrationFrame(
   context.restore();
 }
 
+function drawPhotoCosmetic(
+  context: CanvasRenderingContext2D,
+  selection: NonNullable<WeddingPhotoData["photoCosmetic"]>,
+  centerX: number,
+  floorY: number,
+  characterHeight: number
+) {
+  if (selection.cosmeticId === "none") return;
+  const palettes = {
+    rose: { accent: "#d87891", soft: "rgba(255, 221, 230, 0.8)", glow: "rgba(225, 132, 159, 0.5)" },
+    gold: { accent: "#d1a249", soft: "rgba(255, 239, 183, 0.82)", glow: "rgba(227, 184, 84, 0.5)" },
+    sage: { accent: "#6f9877", soft: "rgba(222, 242, 215, 0.82)", glow: "rgba(105, 157, 115, 0.46)" }
+  } as const;
+  const colors = palettes[selection.tone];
+  const showPetals = selection.cosmeticId === "petal-trail" || selection.cosmeticId === "garden-blessing-set";
+  const showRibbon = selection.cosmeticId === "ribbon-tag" || selection.cosmeticId === "garden-blessing-set";
+  const showStars = selection.cosmeticId === "starlight-aura" || selection.cosmeticId === "garden-blessing-set";
+  context.save();
+  if (showStars) {
+    context.shadowColor = colors.glow;
+    context.shadowBlur = 18;
+    context.strokeStyle = colors.soft;
+    context.lineWidth = 9;
+    context.beginPath();
+    context.ellipse(centerX, floorY - characterHeight * 0.48, characterHeight * 0.39, characterHeight * 0.53, 0, 0, Math.PI * 2);
+    context.stroke();
+    for (let index = 0; index < 7; index += 1) {
+      const angle = index * Math.PI * 2 / 7;
+      const x = centerX + Math.cos(angle) * characterHeight * 0.37;
+      const y = floorY - characterHeight * 0.5 + Math.sin(angle) * characterHeight * 0.48;
+      context.fillStyle = index % 2 ? colors.accent : colors.soft;
+      context.fillRect(x - 5, y - 14, 10, 28);
+      context.fillRect(x - 14, y - 5, 28, 10);
+    }
+  }
+  if (showPetals) {
+    context.shadowBlur = 0;
+    for (let index = 0; index < 9; index += 1) {
+      const angle = index * Math.PI * 2 / 9;
+      context.save();
+      context.translate(centerX + Math.cos(angle) * characterHeight * 0.35, floorY - 15 + Math.sin(angle) * 20);
+      context.rotate(angle);
+      context.fillStyle = index % 2 ? colors.accent : colors.soft;
+      context.beginPath();
+      context.ellipse(0, 0, 7, 16, 0, 0, Math.PI * 2);
+      context.fill();
+      context.restore();
+    }
+  }
+  if (showRibbon) {
+    const x = centerX + characterHeight * 0.23;
+    const y = floorY - characterHeight * 0.68;
+    context.fillStyle = colors.accent;
+    context.beginPath();
+    context.ellipse(x - 15, y, 18, 11, -0.45, 0, Math.PI * 2);
+    context.ellipse(x + 15, y, 18, 11, 0.45, 0, Math.PI * 2);
+    context.fill();
+    context.fillRect(x - 6, y - 7, 12, 15);
+    context.beginPath();
+    context.moveTo(x - 5, y + 7);
+    context.lineTo(x - 15, y + 38);
+    context.lineTo(x, y + 28);
+    context.lineTo(x + 15, y + 38);
+    context.lineTo(x + 5, y + 7);
+    context.fill();
+  }
+  context.restore();
+}
+
 export function weddingPhotoMemoryFilename(memory: WeddingPhotoMemory): string {
   return `wedding-photo-${memory.photoSpotId}-${safeGuestName(memory.guestName) || "guest"}.jpg`;
 }
@@ -590,6 +664,7 @@ export async function createWeddingPhotoCapture(data: WeddingPhotoData): Promise
       drawSprite(context, guest, guestX, floorY, characterWidth, characterHeight, false);
     }
   }
+  if (data.photoCosmetic) drawPhotoCosmetic(context, data.photoCosmetic, guestX, floorY, characterWidth * 1.5);
   drawPoseEffect(context, data.pose, guestX, floorY - characterWidth * 1.5);
 
   context.fillStyle = "#fff9eb";

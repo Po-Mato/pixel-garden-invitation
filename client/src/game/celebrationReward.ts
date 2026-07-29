@@ -9,6 +9,7 @@ import type { WorldZone } from "./world";
 export const celebrationRewardLabel = "축복의 꽃 정원 프레임";
 export const celebrationCosmeticStorageKey = "wedding-game:celebration-cosmetic:v1";
 export const celebrationCosmeticToneStorageKey = "wedding-game:celebration-cosmetic-tone:v1";
+export const celebrationCosmeticFavoritesStorageKey = "wedding-game:celebration-cosmetic-favorites:v1";
 export const celebrationCosmeticIds = ["none", "petal-trail", "ribbon-tag", "starlight-aura", "garden-blessing-set"] as const;
 export type CelebrationCosmeticId = (typeof celebrationCosmeticIds)[number];
 export const celebrationCosmeticTones = ["rose", "gold", "sage"] as const;
@@ -47,6 +48,12 @@ export const celebrationSetReward = {
 } as const;
 
 type CosmeticStorage = Pick<Storage, "getItem" | "setItem">;
+
+export type CelebrationCosmeticFavorite = {
+  id: string;
+  cosmeticId: CelebrationCosmeticId;
+  tone: CelebrationCosmeticTone;
+};
 
 function browserCosmeticStorage(): CosmeticStorage | null {
   try {
@@ -106,6 +113,66 @@ export function saveCelebrationCosmeticTone(
   } catch {
     return false;
   }
+}
+
+function normalizeCelebrationCosmeticFavorite(value: unknown): CelebrationCosmeticFavorite | null {
+  if (!value || typeof value !== "object") return null;
+  const candidate = value as Partial<CelebrationCosmeticFavorite>;
+  if (
+    typeof candidate.id !== "string"
+    || !/^[a-z0-9-]{3,48}$/.test(candidate.id)
+    || !celebrationCosmeticIds.includes(candidate.cosmeticId as CelebrationCosmeticId)
+    || !celebrationCosmeticTones.includes(candidate.tone as CelebrationCosmeticTone)
+  ) return null;
+  return {
+    id: candidate.id,
+    cosmeticId: candidate.cosmeticId as CelebrationCosmeticId,
+    tone: candidate.tone as CelebrationCosmeticTone
+  };
+}
+
+export function loadCelebrationCosmeticFavorites(
+  storage: CosmeticStorage | null = browserCosmeticStorage()
+): CelebrationCosmeticFavorite[] {
+  try {
+    const parsed = JSON.parse(storage?.getItem(celebrationCosmeticFavoritesStorageKey) ?? "[]") as unknown;
+    if (!Array.isArray(parsed)) return [];
+    return parsed.map(normalizeCelebrationCosmeticFavorite)
+      .filter((favorite): favorite is CelebrationCosmeticFavorite => favorite !== null)
+      .slice(0, 3);
+  } catch {
+    return [];
+  }
+}
+
+export function saveCelebrationCosmeticFavorites(
+  favorites: readonly CelebrationCosmeticFavorite[],
+  storage: CosmeticStorage | null = browserCosmeticStorage()
+) {
+  try {
+    const normalized = favorites.map(normalizeCelebrationCosmeticFavorite)
+      .filter((favorite): favorite is CelebrationCosmeticFavorite => favorite !== null)
+      .filter((favorite, index, entries) => entries.findIndex(({ cosmeticId, tone }) => (
+        cosmeticId === favorite.cosmeticId && tone === favorite.tone
+      )) === index)
+      .slice(0, 3);
+    storage?.setItem(celebrationCosmeticFavoritesStorageKey, JSON.stringify(normalized));
+    return storage !== null;
+  } catch {
+    return false;
+  }
+}
+
+export function createCelebrationCosmeticFavorite(
+  cosmeticId: CelebrationCosmeticId,
+  tone: CelebrationCosmeticTone,
+  id = `look-${Date.now().toString(36)}`
+): CelebrationCosmeticFavorite {
+  return {
+    id: id.toLowerCase().replace(/[^a-z0-9-]/g, "-").slice(0, 48),
+    cosmeticId,
+    tone
+  };
 }
 
 export type CelebrationCosmeticRecommendation = {

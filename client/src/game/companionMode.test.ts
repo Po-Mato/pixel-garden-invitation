@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   clearCompanionSession,
   companionCandidates,
+  companionArrivalEstimate,
   companionFollowPath,
   companionInviteRemainingLabel,
   createCompanionInviteCode,
@@ -35,6 +36,14 @@ describe("companionMode", () => {
   it("selects only nearby guests for a group photo", () => {
     expect(nearbyPhotoCompanions(guests, "home", { x: 0, y: 0 }).map(({ guestId }) => guestId))
       .toEqual(["near"]);
+  });
+
+  it("reports same-zone distance and cross-zone portal arrival guidance", () => {
+    expect(companionArrivalEstimate({ x: 0, y: 0 }, "home", guests[1]!, "우리 집", 24))
+      .toEqual({ locationLabel: "우리 집 · 오른쪽 약 2칸", distanceTiles: 2, etaLabel: "약 5초" });
+    expect(companionArrivalEstimate({ x: 0, y: 0 }, "home", guests[2]!, "예식장 로비", 24))
+      .toEqual({ locationLabel: "예식장 로비", distanceTiles: null, etaLabel: "포털 이동 필요" });
+    expect(companionArrivalEstimate({ x: 0, y: 0 }, "home", null, "", 24).etaLabel).toBe("재접속 대기");
   });
 
   it("keeps a stable realtime identity and restores a recent companion session", () => {

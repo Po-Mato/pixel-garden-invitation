@@ -154,4 +154,25 @@ describe("WeddingPhotoBooth", () => {
       celebrationFrame: { palette: "rose", decoration: "ribbons" }
     })));
   });
+
+  it("applies the equipped cosmetic only to the photo preview and capture", async () => {
+    render(
+      <WeddingPhotoBooth
+        spot={spot}
+        nickname="정원하객"
+        appearance={defaultCharacterAppearance}
+        celebrationCosmetic="starlight-aura"
+        celebrationTone="gold"
+        onClose={vi.fn()}
+        onCaptured={vi.fn()}
+      />
+    );
+    const preview = screen.getByLabelText(`${spot.sceneLabel} 촬영 미리보기`);
+    expect(preview).toHaveAttribute("data-photo-cosmetic", "starlight-aura");
+    expect(preview).toHaveAttribute("data-photo-tone", "gold");
+    fireEvent.click(screen.getByRole("button", { name: "기념 촬영" }));
+    await waitFor(() => expect(photoMocks.create).toHaveBeenCalledWith(expect.objectContaining({
+      photoCosmetic: { cosmeticId: "starlight-aura", tone: "gold" }
+    })));
+  });
 });

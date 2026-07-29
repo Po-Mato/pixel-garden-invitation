@@ -86,6 +86,7 @@ import { crowdDensityCells, portalWaitEstimate } from "../game/crowdDensity";
 import {
   clearCompanionSession,
   companionInviteLifetimeMs,
+  companionArrivalEstimate,
   companionCandidates,
   companionFollowPath,
   createCompanionInviteCode,
@@ -3043,6 +3044,12 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   const activeCompanion = companionGuestId
     ? remoteGuests.find((guest) => guest.guestId === companionGuestId) ?? null
     : null;
+  const companionArrival = companionArrivalEstimate(
+    position,
+    activeZone.id,
+    activeCompanion,
+    activeCompanion ? getWorldZone(gardenWorld, activeCompanion.zoneId).label : ""
+  );
   const nearbyCompanionCandidates = companionCandidates(remoteGuests, activeZone.id, position);
   const sameZoneCompanionCandidates = activeCompanion
     && activeCompanion.zoneId === activeZone.id
@@ -4163,6 +4170,8 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
             companions={boothCompanions}
             celebrationFrameUnlocked={celebrationReward.unlocked}
             weddingDayFrameAvailable={weddingDayFrameAvailable}
+            celebrationCosmetic={equippedCelebrationCosmetic}
+            celebrationTone={equippedCelebrationTone}
             onClose={() => {
               setActivePhotoSpotId(null);
               setCooperativePhotoGuestIds([]);
@@ -4265,6 +4274,9 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
             connectedCount={1 + remoteGuests.filter(({ zoneId }) => zoneId === activeZone.id).length}
             canceled={companionInviteDraft.canceled}
             used={companionInviteDraft.used}
+            connectionState={companionGuestId ? activeCompanion ? "connected" : "reconnecting" : "waiting"}
+            companionLocationLabel={companionArrival.locationLabel}
+            companionArrivalLabel={companionArrival.etaLabel}
             onCopy={copyCompanionInvite}
             onShare={shareCompanionInvite}
             onRenew={renewCompanionInvite}

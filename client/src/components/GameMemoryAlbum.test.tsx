@@ -29,9 +29,14 @@ describe("GameMemoryAlbum", () => {
     expect(screen.getByRole("button", { name: "저장" })).toBeEnabled();
     fireEvent.click(screen.getByRole("button", { name: "우표" }));
     fireEvent.click(screen.getByRole("button", { name: "별빛 스티커" }));
+    fireEvent.click(screen.getByRole("button", { name: "비둘기 스티커" }));
+    fireEvent.change(screen.getByRole("textbox", { name: "문구 스티커 내용" }), { target: { value: "건희와 승재의 봄" } });
+    fireEvent.click(screen.getByRole("button", { name: "추가" }));
     fireEvent.click(screen.getByRole("button", { name: "고화질 2배" }));
     expect(screen.getByLabelText("포토스트립 미리보기")).toHaveAttribute("data-frame", "postage");
     expect(screen.getByRole("button", { name: "별빛 스티커" })).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByRole("button", { name: "비둘기 스티커" })).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByRole("button", { name: "문구 스티커 위치 조절" })).toHaveTextContent("건희와 승재의 봄");
     expect(screen.getByRole("button", { name: "고화질 2배" })).toHaveAttribute("aria-pressed", "true");
     fireEvent.click(screen.getByRole("button", { name: /포토존 사진/ }));
     expect(onOpenPhotoAlbum).toHaveBeenCalledOnce();

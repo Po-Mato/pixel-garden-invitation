@@ -2,14 +2,17 @@ import { useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointer
 import {
   ArrowLeft,
   ArrowRight,
+  Bird,
   Camera,
   Crop,
   Download,
   Flower2,
   Frame,
   Heart,
+  Gem,
   LayoutGrid,
   MessageSquareText,
+  Leaf,
   Move,
   PartyPopper,
   RotateCw,
@@ -47,6 +50,7 @@ import {
   type GameMemoryKeepsakeSticker,
   type GameMemoryPhotoTransform,
   type GameMemoryStickerTransform,
+  type GameMemoryTextSticker,
   type GameMemoryKeepsakeData
 } from "../game/gameMemoryKeepsake";
 import { celebrationRewardLabel } from "../game/celebrationReward";
@@ -95,6 +99,7 @@ export function GameMemoryAlbum({
   const [keepsakeTemplates, setKeepsakeTemplates] = useState(loadGameMemoryKeepsakeTemplates);
   const [activePhotoId, setActivePhotoId] = useState(() => photoAlbum.photos[0]?.photoSpotId ?? null);
   const [activeSticker, setActiveSticker] = useState<GameMemoryKeepsakeSticker | null>(null);
+  const [textStickerSelected, setTextStickerSelected] = useState(false);
   const [templateStatus, setTemplateStatus] = useState("");
   const photoDragRef = useRef<{
     photoId: NonNullable<typeof activePhotoId>;
@@ -105,6 +110,12 @@ export function GameMemoryAlbum({
   } | null>(null);
   const stickerDragRef = useRef<{
     sticker: GameMemoryKeepsakeSticker;
+    startX: number;
+    startY: number;
+    initialX: number;
+    initialY: number;
+  } | null>(null);
+  const textStickerDragRef = useRef<{
     startX: number;
     startY: number;
     initialX: number;
@@ -209,12 +220,20 @@ export function GameMemoryAlbum({
     }));
   };
 
+  const updateTextSticker = (patch: Partial<GameMemoryTextSticker>) => {
+    setKeepsakeOptions((current) => ({
+      ...current,
+      textSticker: { ...current.textSticker, ...patch }
+    }));
+  };
+
   const startStickerDrag = (event: ReactPointerEvent<HTMLButtonElement>, sticker: GameMemoryKeepsakeSticker) => {
     const transform = keepsakeOptions.stickerTransforms[sticker]
       ?? defaultGameMemoryKeepsakeOptions.stickerTransforms[sticker]!;
     event.stopPropagation();
     event.currentTarget.setPointerCapture?.(event.pointerId);
     setActiveSticker(sticker);
+    setTextStickerSelected(false);
     stickerDragRef.current = {
       sticker,
       startX: event.clientX,
@@ -240,6 +259,37 @@ export function GameMemoryAlbum({
   const endStickerDrag = (event: ReactPointerEvent<HTMLButtonElement>) => {
     event.currentTarget.releasePointerCapture?.(event.pointerId);
     stickerDragRef.current = null;
+  };
+
+  const startTextStickerDrag = (event: ReactPointerEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    event.currentTarget.setPointerCapture?.(event.pointerId);
+    setActiveSticker(null);
+    setTextStickerSelected(true);
+    textStickerDragRef.current = {
+      startX: event.clientX,
+      startY: event.clientY,
+      initialX: keepsakeOptions.textSticker.x,
+      initialY: keepsakeOptions.textSticker.y
+    };
+  };
+
+  const moveTextStickerDrag = (event: ReactPointerEvent<HTMLButtonElement>) => {
+    const drag = textStickerDragRef.current;
+    const preview = event.currentTarget.closest(".game-memory-album__preview");
+    if (!drag || !preview) return;
+    event.preventDefault();
+    const rect = preview.getBoundingClientRect();
+    const clamp = (value: number) => Math.min(0.92, Math.max(0.08, value));
+    updateTextSticker({
+      x: clamp(drag.initialX + (event.clientX - drag.startX) / Math.max(1, rect.width)),
+      y: clamp(drag.initialY + (event.clientY - drag.startY) / Math.max(1, rect.height))
+    });
+  };
+
+  const endTextStickerDrag = (event: ReactPointerEvent<HTMLButtonElement>) => {
+    event.currentTarget.releasePointerCapture?.(event.pointerId);
+    textStickerDragRef.current = null;
   };
 
   const movePhoto = (index: number, delta: -1 | 1) => {
@@ -363,8 +413,16 @@ export function GameMemoryAlbum({
               {keepsakeOptions.stickers.map((sticker) => {
                 const transform = keepsakeOptions.stickerTransforms[sticker]
                   ?? defaultGameMemoryKeepsakeOptions.stickerTransforms[sticker]!;
-                const Icon = sticker === "heart" ? Heart : sticker === "flower" ? Flower2 : Sparkles;
-                const label = sticker === "heart" ? "하트" : sticker === "flower" ? "꽃" : "별빛";
+                const Icon = sticker === "heart" ? Heart
+                  : sticker === "flower" ? Flower2
+                    : sticker === "sparkle" ? Sparkles
+                      : sticker === "dove" ? Bird
+                        : sticker === "ring" ? Gem : Leaf;
+                const label = sticker === "heart" ? "하트"
+                  : sticker === "flower" ? "꽃"
+                    : sticker === "sparkle" ? "별빛"
+                      : sticker === "dove" ? "비둘기"
+                        : sticker === "ring" ? "반지" : "잎사귀";
                 return (
                   <button
                     key={sticker}
@@ -384,6 +442,23 @@ export function GameMemoryAlbum({
                   ><Icon aria-hidden="true" /></button>
                 );
               })}
+              {keepsakeOptions.textSticker.enabled ? (
+                <button
+                  type="button"
+                  className="game-memory-album__preview-text-sticker"
+                  aria-label="문구 스티커 위치 조절"
+                  aria-pressed={textStickerSelected}
+                  style={{
+                    left: `${keepsakeOptions.textSticker.x * 100}%`,
+                    top: `${keepsakeOptions.textSticker.y * 100}%`,
+                    transform: `translate(-50%, -50%) rotate(${keepsakeOptions.textSticker.rotation}deg) scale(${keepsakeOptions.textSticker.scale})`
+                  }}
+                  onPointerDown={startTextStickerDrag}
+                  onPointerMove={moveTextStickerDrag}
+                  onPointerUp={endTextStickerDrag}
+                  onPointerCancel={endTextStickerDrag}
+                >{keepsakeOptions.textSticker.text}</button>
+              ) : null}
             </div>
           </div>
 
@@ -482,6 +557,12 @@ export function GameMemoryAlbum({
                 "flower", "꽃", Flower2
               ], [
                 "sparkle", "별빛", Sparkles
+              ], [
+                "dove", "비둘기", Bird
+              ], [
+                "ring", "반지", Gem
+              ], [
+                "leaf", "잎사귀", Leaf
               ]] as const).map(([sticker, label, Icon]) => (
                 <button
                   key={sticker}
@@ -492,6 +573,62 @@ export function GameMemoryAlbum({
                 ><Icon aria-hidden="true" /><span>{label}</span></button>
               ))}
             </div>
+          </fieldset>
+
+          <fieldset className="game-memory-album__text-sticker-editor">
+            <legend><MessageSquareText aria-hidden="true" />나만의 문구 스티커</legend>
+            <div className="game-memory-album__text-sticker-row">
+              <input
+                aria-label="문구 스티커 내용"
+                maxLength={18}
+                value={keepsakeOptions.textSticker.text}
+                onFocus={() => {
+                  setActiveSticker(null);
+                  setTextStickerSelected(true);
+                }}
+                onChange={(event) => updateTextSticker({ text: event.target.value })}
+              />
+              <button
+                type="button"
+                aria-pressed={keepsakeOptions.textSticker.enabled}
+                onClick={() => {
+                  updateTextSticker({ enabled: !keepsakeOptions.textSticker.enabled });
+                  setActiveSticker(null);
+                  setTextStickerSelected(true);
+                }}
+              >{keepsakeOptions.textSticker.enabled ? "사용 중" : "추가"}</button>
+            </div>
+            {keepsakeOptions.textSticker.enabled && textStickerSelected ? (
+              <div className="game-memory-album__text-sticker-controls">
+                <label>
+                  <span><Scaling aria-hidden="true" />크기</span>
+                  <input
+                    type="range"
+                    min="0.65"
+                    max="1.8"
+                    step="0.05"
+                    aria-label="문구 스티커 크기"
+                    value={keepsakeOptions.textSticker.scale}
+                    onChange={(event) => updateTextSticker({ scale: Number(event.target.value) })}
+                  />
+                </label>
+                <label>
+                  <span><RotateCw aria-hidden="true" />회전</span>
+                  <input
+                    type="range"
+                    min="-45"
+                    max="45"
+                    step="3"
+                    aria-label="문구 스티커 회전"
+                    value={keepsakeOptions.textSticker.rotation}
+                    onChange={(event) => updateTextSticker({ rotation: Number(event.target.value) })}
+                  />
+                </label>
+                <button type="button" onClick={() => updateTextSticker(defaultGameMemoryKeepsakeOptions.textSticker)}>
+                  <RotateCcw aria-hidden="true" />문구 배치 초기화
+                </button>
+              </div>
+            ) : null}
           </fieldset>
 
           {activeSticker && keepsakeOptions.stickers.includes(activeSticker) ? (

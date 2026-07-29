@@ -106,9 +106,23 @@ function zoneMetaRequest(zoneId) {
   return new Request(scopedUrl(\`./__offline-zone-version__/${"${zoneId}"}\`));
 }
 
-async function zoneCacheIsCurrent(cache, zoneId) {
+async function zoneCacheMetadata(cache, zoneId) {
   const response = await cache.match(zoneMetaRequest(zoneId));
-  return response ? (await response.text()) === VERSION : false;
+  if (!response) return { version: "", cachedAt: 0 };
+  const text = await response.text();
+  try {
+    const parsed = JSON.parse(text);
+    return {
+      version: typeof parsed?.version === "string" ? parsed.version : "",
+      cachedAt: Number.isFinite(parsed?.cachedAt) ? Math.max(0, parsed.cachedAt) : 0
+    };
+  } catch {
+    return { version: text, cachedAt: 0 };
+  }
+}
+
+async function zoneCacheIsCurrent(cache, zoneId) {
+  return (await zoneCacheMetadata(cache, zoneId)).version === VERSION;
 }
 
 async function responseBytes(response) {
@@ -137,10 +151,11 @@ async function prepareZoneCache(zoneId, urls) {
       bytes += await responseBytes(response);
       await broadcast({ type: "PWA_ZONE_CACHE_PROGRESS", zoneId, completed, total: requests.length, bytes });
     }
-    await cache.put(zoneMetaRequest(zoneId), new Response(VERSION, {
-      headers: { "Content-Type": "text/plain; charset=utf-8" }
+    const cachedAt = Date.now();
+    await cache.put(zoneMetaRequest(zoneId), new Response(JSON.stringify({ version: VERSION, cachedAt }), {
+      headers: { "Content-Type": "application/json; charset=utf-8" }
     }));
-    await broadcast({ type: "PWA_ZONE_CACHE_READY", zoneId, completed, total: requests.length, bytes });
+    await broadcast({ type: "PWA_ZONE_CACHE_READY", zoneId, completed, total: requests.length, bytes, cachedAt });
   } catch {
     await broadcast({ type: "PWA_ZONE_CACHE_ERROR", zoneId, completed, total: requests.length, bytes });
   }
@@ -162,7 +177,8 @@ async function reportZoneCaches(groups) {
     const requests = sameOriginRequests(urls);
     const responses = await Promise.all(requests.map((request) => cache.match(request)));
     const completed = responses.filter(Boolean).length;
-    const currentVersion = await zoneCacheIsCurrent(cache, zoneId);
+    const metadata = await zoneCacheMetadata(cache, zoneId);
+    const currentVersion = metadata.version === VERSION;
     const bytes = (await Promise.all(responses.filter(Boolean).map(responseBytes)))
       .reduce((sum, value) => sum + value, 0);
     await broadcast({
@@ -173,7 +189,8 @@ async function reportZoneCaches(groups) {
         : "idle",
       completed,
       total: requests.length,
-      bytes
+      bytes,
+      cachedAt: metadata.cachedAt
     });
   }
 }

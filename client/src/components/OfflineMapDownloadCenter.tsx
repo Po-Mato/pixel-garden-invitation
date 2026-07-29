@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
-import { Check, CloudDownload, HardDrive, LoaderCircle, MapPinned, PackageCheck, RefreshCw, Trash2 } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Check, Clock3, CloudDownload, HardDrive, LoaderCircle, MapPinned, PackageCheck, RefreshCw, Trash2, Wifi } from "lucide-react";
 import type { WorldZoneId } from "@wedding-game/shared";
 import { gardenWorld } from "../game/world";
 import { resolveWorldZoneAssetUrls } from "../game/worldAssetPreloader";
@@ -16,6 +16,14 @@ import {
   subscribePwaClient,
   type PwaClientSnapshot
 } from "../pwa/pwaClient";
+import {
+  expiredOfflineZoneIds,
+  loadOfflineMapPreferences,
+  saveOfflineMapPreferences,
+  shouldAutoRefreshOfflineMaps,
+  type NetworkConnectionSnapshot,
+  type OfflineMapPreferences
+} from "../pwa/offlineMapPolicy";
 
 type OfflineMapDownloadCenterProps = {
   currentZoneId?: WorldZoneId;
@@ -31,6 +39,10 @@ export function OfflineMapDownloadCenter({ currentZoneId }: OfflineMapDownloadCe
   const [client, setClient] = useState<PwaClientSnapshot>(getPwaClientSnapshot);
   const [storage, setStorage] = useState<{ usage: number; quota: number } | null>(null);
   const [applyingUpdate, setApplyingUpdate] = useState(false);
+  const [preferences, setPreferences] = useState(loadOfflineMapPreferences);
+  const [automationStatus, setAutomationStatus] = useState("저장된 지도 상태를 확인하고 있어요.");
+  const cleanupSignatureRef = useRef("");
+  const refreshSignatureRef = useRef("");
   const groups = useMemo(() => Object.fromEntries(gardenWorld.zones.map((zone) => [
     zone.id,
     resolveWorldZoneAssetUrls(zone.id)
@@ -68,6 +80,61 @@ export function OfflineMapDownloadCenter({ currentZoneId }: OfflineMapDownloadCe
     refreshStorage();
   }, [client.zoneCaches]);
 
+  useEffect(() => {
+    saveOfflineMapPreferences(preferences);
+  }, [preferences]);
+
+  useEffect(() => {
+    const expiredZoneIds = expiredOfflineZoneIds(client.zoneCaches, currentZoneId, preferences);
+    const signature = expiredZoneIds.join("|");
+    if (!signature || cleanupSignatureRef.current === signature) return;
+    cleanupSignatureRef.current = signature;
+    expiredZoneIds.forEach((zoneId) => removeOfflineZoneAssets(zoneId, groups[zoneId] ?? []));
+    setAutomationStatus(`${expiredZoneIds.length}개 오래된 지도를 자동 정리했어요.`);
+  }, [client.zoneCaches, currentZoneId, groups, preferences]);
+
+  useEffect(() => {
+    type NetworkInformationLike = NetworkConnectionSnapshot & {
+      addEventListener?: (type: "change", listener: () => void) => void;
+      removeEventListener?: (type: "change", listener: () => void) => void;
+    };
+    const connection = (navigator as Navigator & { connection?: NetworkInformationLike }).connection;
+    const refreshOutdated = () => {
+      const outdatedGroups = Object.fromEntries(Object.entries(groups).filter(([zoneId]) => (
+        client.zoneCaches[zoneId]?.state === "outdated"
+      )));
+      const zoneIds = Object.keys(outdatedGroups);
+      if (!shouldAutoRefreshOfflineMaps(preferences, navigator.onLine, connection)) {
+        setAutomationStatus(preferences.wifiAutoRefresh
+          ? connection ? "Wi-Fi 연결을 기다리고 있어요." : "이 브라우저에서는 Wi-Fi 유형을 확인할 수 없어요."
+          : "Wi-Fi 자동 갱신을 사용하지 않아요.");
+        return;
+      }
+      if (zoneIds.length === 0) {
+        setAutomationStatus("Wi-Fi 연결됨 · 저장된 지도는 최신 상태예요.");
+        return;
+      }
+      const signature = zoneIds.join("|");
+      if (refreshSignatureRef.current === signature) return;
+      refreshSignatureRef.current = signature;
+      prepareOfflineJourneyAssets(outdatedGroups);
+      setAutomationStatus(`Wi-Fi에서 ${zoneIds.length}개 지도를 자동 갱신하고 있어요.`);
+    };
+    refreshOutdated();
+    window.addEventListener("online", refreshOutdated);
+    connection?.addEventListener?.("change", refreshOutdated);
+    return () => {
+      window.removeEventListener("online", refreshOutdated);
+      connection?.removeEventListener?.("change", refreshOutdated);
+    };
+  }, [client.zoneCaches, groups, preferences]);
+
+  const updatePreferences = (patch: Partial<OfflineMapPreferences>) => {
+    cleanupSignatureRef.current = "";
+    refreshSignatureRef.current = "";
+    setPreferences((current) => ({ ...current, ...patch }));
+  };
+
   return (
     <section className="offline-map-download" aria-labelledby="offline-map-download-title">
       <header>
@@ -81,6 +148,34 @@ export function OfflineMapDownloadCenter({ currentZoneId }: OfflineMapDownloadCe
           <progress max={storage.quota} value={storage.usage} aria-label="기기 저장 공간 사용량" />
         </div>
       ) : null}
+      <fieldset className="offline-map-download__automation">
+        <legend><Clock3 aria-hidden="true" />자동 관리</legend>
+        <div role="group" aria-label="오프라인 지도 자동 정리 시점">
+          {([[
+            "7-days", "7일"
+          ], [
+            "30-days", "30일"
+          ], [
+            "manual", "직접"
+          ]] as const).map(([retention, label]) => (
+            <button
+              key={retention}
+              type="button"
+              aria-pressed={preferences.retention === retention}
+              onClick={() => updatePreferences({ retention })}
+            >{label}</button>
+          ))}
+        </div>
+        <label>
+          <input
+            type="checkbox"
+            checked={preferences.wifiAutoRefresh}
+            onChange={(event) => updatePreferences({ wifiAutoRefresh: event.target.checked })}
+          />
+          <Wifi aria-hidden="true" />Wi-Fi 연결 시 오래된 지도 자동 갱신
+        </label>
+        <p aria-live="polite">{automationStatus}</p>
+      </fieldset>
       {client.updateAvailable ? (
         <div className="offline-map-download__update" role="status">
           <RefreshCw aria-hidden="true" />
@@ -128,7 +223,8 @@ export function OfflineMapDownloadCenter({ currentZoneId }: OfflineMapDownloadCe
             state: "idle" as const,
             completed: 0,
             total: groups[zone.id]?.length ?? 0,
-            bytes: 0
+            bytes: 0,
+            cachedAt: 0
           };
           const ready = cache.state === "ready";
           const outdated = cache.state === "outdated";

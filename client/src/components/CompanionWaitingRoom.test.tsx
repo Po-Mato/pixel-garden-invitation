@@ -71,4 +71,28 @@ describe("CompanionWaitingRoom", () => {
     fireEvent.click(screen.getAllByRole("button", { name: "초대 취소" }).at(-1)!);
     expect(onCancel).toHaveBeenCalledOnce();
   });
+
+  it("shows reconnect state, companion location, and arrival estimate", () => {
+    render(<CompanionWaitingRoom
+      inviteUrl="https://example.com/reconnect"
+      expiresAt={Date.now() + 60_000}
+      zoneLabel="예식장 로비"
+      nickname="정원하객"
+      status="connected"
+      connectionState="reconnecting"
+      companionNickname="친구하객"
+      companionLocationLabel="예식장 로비 · 오른쪽 약 4칸"
+      companionArrivalLabel="약 5초"
+      inviteCode="ABC234"
+      connectedCount={1}
+      onCopy={vi.fn(async () => true)}
+      onShare={vi.fn(async () => true)}
+      onRenew={vi.fn()}
+      onCancel={vi.fn()}
+      onClose={vi.fn()}
+    />);
+    expect(screen.getByText("친구하객님이 다시 접속하고 있어요")).toBeInTheDocument();
+    expect(screen.getByLabelText("동행 합류 정보")).toHaveTextContent("예식장 로비 · 오른쪽 약 4칸");
+    expect(screen.getByLabelText("동행 합류 정보")).toHaveTextContent("약 5초");
+  });
 });

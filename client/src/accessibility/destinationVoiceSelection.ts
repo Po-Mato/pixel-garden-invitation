@@ -56,6 +56,25 @@ export function parseDestinationVoiceNumber(transcript: string, total: number): 
   return number && number >= 1 && number <= total ? number - 1 : null;
 }
 
+export type DestinationVoiceCommand =
+  | { type: "number"; index: number }
+  | { type: "next" }
+  | { type: "move" }
+  | { type: "close" };
+
+export function parseDestinationVoiceCommand(
+  transcript: string,
+  total: number
+): DestinationVoiceCommand | null {
+  const normalized = transcript.trim().replaceAll(" ", "");
+  if (!normalized) return null;
+  if (/(?:닫기|닫아|취소|그만)/.test(normalized)) return { type: "close" };
+  if (/(?:이동|출발|안내시작|가자|여기로)/.test(normalized)) return { type: "move" };
+  if (/(?:다음|넘겨|다음목적지)/.test(normalized)) return { type: "next" };
+  const index = parseDestinationVoiceNumber(normalized, total);
+  return index === null ? null : { type: "number", index };
+}
+
 export function destinationVoiceSelectionAvailable(
   target: SpeechWindow | null = typeof window === "undefined" ? null : window
 ): boolean {
@@ -67,13 +86,23 @@ export function listenForDestinationVoiceNumber(
   target: SpeechWindow | null = typeof window === "undefined" ? null : window,
   timeoutMs = 6_000
 ): Promise<number | null> {
+  return listenForDestinationVoiceCommand(total, target, timeoutMs).then((command) => (
+    command?.type === "number" ? command.index : null
+  ));
+}
+
+export function listenForDestinationVoiceCommand(
+  total: number,
+  target: SpeechWindow | null = typeof window === "undefined" ? null : window,
+  timeoutMs = 6_000
+): Promise<DestinationVoiceCommand | null> {
   const Recognition = target?.SpeechRecognition ?? target?.webkitSpeechRecognition;
   if (!target || !Recognition || total <= 0) return Promise.resolve(null);
 
   return new Promise((resolve) => {
     const recognition = new Recognition();
     let finished = false;
-    const finish = (value: number | null) => {
+    const finish = (value: DestinationVoiceCommand | null) => {
       if (finished) return;
       finished = true;
       target.clearTimeout(timer);
@@ -84,7 +113,7 @@ export function listenForDestinationVoiceNumber(
     recognition.lang = "ko-KR";
     recognition.continuous = false;
     recognition.interimResults = false;
-    recognition.onresult = (event) => finish(parseDestinationVoiceNumber(
+    recognition.onresult = (event) => finish(parseDestinationVoiceCommand(
       event.results?.[0]?.[0]?.transcript ?? "",
       total
     ));

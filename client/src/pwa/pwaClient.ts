@@ -6,6 +6,7 @@ export type PwaZoneCacheSnapshot = {
   completed: number;
   total: number;
   bytes: number;
+  cachedAt: number;
 };
 
 export type PwaClientSnapshot = {
@@ -27,6 +28,7 @@ type PwaWorkerMessage = {
   zoneId?: unknown;
   bytes?: unknown;
   state?: unknown;
+  cachedAt?: unknown;
 };
 
 type PwaSubscriber = (snapshot: PwaClientSnapshot) => void;
@@ -107,7 +109,8 @@ export function reducePwaWorkerMessage(
       state: "idle",
       completed: 0,
       total: 0,
-      bytes: 0
+      bytes: 0,
+      cachedAt: 0
     };
     const state = message.type === "PWA_ZONE_CACHE_PROGRESS"
       ? "preparing"
@@ -132,7 +135,8 @@ export function reducePwaWorkerMessage(
           state,
           completed,
           total,
-          bytes: state === "idle" ? 0 : numericProgress(message.bytes)
+          bytes: state === "idle" ? 0 : numericProgress(message.bytes),
+          cachedAt: state === "idle" ? 0 : numericProgress(message.cachedAt) || currentZone.cachedAt
         }
       }
     };
@@ -299,10 +303,11 @@ function postPwaMessage(message: object): void {
 export function prepareOfflineZoneAssets(zoneId: string, urls: readonly string[]): void {
   const uniqueUrls = [...new Set(urls)];
   if (!uniqueUrls.length) return;
+  const cachedAt = snapshot.zoneCaches[zoneId]?.cachedAt ?? 0;
   updateSnapshot({
     zoneCaches: {
       ...snapshot.zoneCaches,
-      [zoneId]: { state: "preparing", completed: 0, total: uniqueUrls.length, bytes: 0 }
+      [zoneId]: { state: "preparing", completed: 0, total: uniqueUrls.length, bytes: 0, cachedAt }
     }
   });
   postPwaMessage({ type: "CACHE_ZONE_ASSETS", zoneId, urls: uniqueUrls });
@@ -320,11 +325,13 @@ export function prepareOfflineJourneyAssets(groups: Record<string, readonly stri
   const nextZoneCaches = { ...snapshot.zoneCaches };
   Object.entries(groups).forEach(([zoneId, urls]) => {
     const uniqueUrls = [...new Set(urls)];
+    const cachedAt = snapshot.zoneCaches[zoneId]?.cachedAt ?? 0;
     nextZoneCaches[zoneId] = {
       state: "preparing",
       completed: 0,
       total: uniqueUrls.length,
-      bytes: 0
+      bytes: 0,
+      cachedAt
     };
   });
   updateSnapshot({ zoneCaches: nextZoneCaches });

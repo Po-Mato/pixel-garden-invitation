@@ -24,7 +24,7 @@ const snapshot: PwaClientSnapshot = {
   featureCompleted: 1,
   featureTotal: 1,
   zoneCaches: {
-    lobby: { state: "ready", completed: 2, total: 2, bytes: 2 * 1024 * 1024 }
+    lobby: { state: "ready", completed: 2, total: 2, bytes: 2 * 1024 * 1024, cachedAt: Date.now() }
   }
 };
 
@@ -64,5 +64,16 @@ describe("OfflineMapDownloadCenter", () => {
     expect(mocks.prepareJourney).toHaveBeenCalledWith(expect.objectContaining({
       home: expect.arrayContaining([expect.stringContaining("/assets/maps/v2/home/background.webp")])
     }));
+  });
+
+  it("lets the guest choose cleanup timing and Wi-Fi refresh", () => {
+    render(<OfflineMapDownloadCenter currentZoneId="home" />);
+    const sevenDays = screen.getAllByRole("button", { name: "7일" }).at(-1)!;
+    fireEvent.click(sevenDays);
+    expect(sevenDays).toHaveAttribute("aria-pressed", "true");
+    const wifiRefresh = screen.getAllByRole("checkbox", { name: "Wi-Fi 연결 시 오래된 지도 자동 갱신" }).at(-1)!;
+    expect(wifiRefresh).toBeChecked();
+    fireEvent.click(wifiRefresh);
+    expect(wifiRefresh).not.toBeChecked();
   });
 });

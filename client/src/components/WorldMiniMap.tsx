@@ -17,7 +17,7 @@ import { portalEntryRect, type Point, type WorldZone } from "../game/world";
 import { worldAccessibilityLandmarks, type WorldAccessibilityLandmark } from "../game/worldAccessibility";
 import {
   destinationVoiceSelectionAvailable,
-  listenForDestinationVoiceNumber
+  listenForDestinationVoiceCommand
 } from "../accessibility/destinationVoiceSelection";
 import "../mini-map-expanded.css";
 
@@ -638,23 +638,37 @@ export function WorldMiniMap({
                     onClick={() => {
                       setAutoScan(false);
                       setVoiceStatus("listening");
-                      void listenForDestinationVoiceNumber(accessibilityLandmarks.length).then((index) => {
-                        if (index === null) {
+                      void listenForDestinationVoiceCommand(accessibilityLandmarks.length).then((command) => {
+                        if (!command) {
                           setVoiceStatus("error");
                           return;
                         }
-                        setSelectedLandmarkIndex(index);
+                        if (command.type === "close") {
+                          setExpanded(false);
+                          return;
+                        }
+                        if (command.type === "next") {
+                          setSelectedLandmarkIndex((current) => (current + 1) % accessibilityLandmarks.length);
+                          setVoiceStatus("selected");
+                          return;
+                        }
+                        if (command.type === "move") {
+                          onNavigateAccessibilityLandmark?.(selectedLandmark);
+                          setExpanded(false);
+                          return;
+                        }
+                        setSelectedLandmarkIndex(command.index);
                         setVoiceStatus("selected");
                       });
                     }}
-                  ><Mic aria-hidden="true" />{voiceStatus === "listening" ? "듣는 중" : "번호 말하기"}</button>
+                  ><Mic aria-hidden="true" />{voiceStatus === "listening" ? "듣는 중" : "음성 명령"}</button>
                 </div>
                 <p className="world-minimap-expanded__switch-status" aria-live="polite">
                   {autoScan ? "목적지가 차례로 바뀝니다. 원하는 목적지에서 스위치를 누르세요."
-                    : voiceStatus === "listening" ? `1번부터 ${accessibilityLandmarks.length}번 중 하나를 말해 주세요.`
+                    : voiceStatus === "listening" ? `번호 또는 다음·이동·닫기 중 하나를 말해 주세요.`
                       : voiceStatus === "selected" ? `${selectedLandmarkIndex + 1}번 목적지를 선택했어요.`
-                        : voiceStatus === "error" ? "번호를 듣지 못했어요. 번호 버튼이나 화살표를 이용해 주세요."
-                          : "화살표·번호·자동 스캔 중 편한 방법을 이용하세요."}
+                        : voiceStatus === "error" ? "명령을 듣지 못했어요. 버튼이나 화살표를 이용해 주세요."
+                          : "화살표·번호·자동 스캔·음성 명령 중 편한 방법을 이용하세요."}
                 </p>
               </section>
             ) : null}

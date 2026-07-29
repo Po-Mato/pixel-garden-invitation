@@ -74,13 +74,14 @@ describe("PWA client", () => {
       completed: 1,
       total: 2,
       bytes: 1024
-    }).zoneCaches.lobby).toEqual({ state: "preparing", completed: 1, total: 2, bytes: 1024 });
+    }).zoneCaches.lobby).toEqual({ state: "preparing", completed: 1, total: 2, bytes: 1024, cachedAt: 0 });
     expect(reducePwaWorkerMessage(emptySnapshot, {
       type: "PWA_ZONE_CACHE_READY",
       zoneId: "lobby",
       total: 2,
-      bytes: 2048
-    }).zoneCaches.lobby).toEqual({ state: "ready", completed: 2, total: 2, bytes: 2048 });
+      bytes: 2048,
+      cachedAt: 123456
+    }).zoneCaches.lobby).toEqual({ state: "ready", completed: 2, total: 2, bytes: 2048, cachedAt: 123456 });
     expect(reducePwaWorkerMessage(emptySnapshot, {
       type: "PWA_ZONE_CACHE_STATE",
       zoneId: "lobby",
@@ -88,7 +89,7 @@ describe("PWA client", () => {
       completed: 2,
       total: 2,
       bytes: 2048
-    }).zoneCaches.lobby).toEqual({ state: "outdated", completed: 2, total: 2, bytes: 2048 });
+    }).zoneCaches.lobby).toEqual({ state: "outdated", completed: 2, total: 2, bytes: 2048, cachedAt: 0 });
   });
 
   it("registers under the deployed subpath without using the HTTP cache", async () => {
