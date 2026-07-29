@@ -1,29 +1,41 @@
-html[data-performance-mode="lite"] .entry-screen__prism,
-html[data-performance-mode="lite"] .entry-screen__petals,
-html[data-performance-mode="lite"] .character-customizer__flowers,
-html[data-performance-mode="lite"] .world-map-effect,
-html[data-performance-mode="lite"] .journey-completion__petals,
-html[data-performance-mode="lite"] .journey-completion__sparkles {
+html[data-effects-quality="minimal"] .entry-screen__prism,
+html[data-effects-quality="minimal"] .entry-screen__petals,
+html[data-effects-quality="minimal"] .character-customizer__flowers,
+html[data-effects-quality="minimal"] .world-map-effect,
+html[data-effects-quality="minimal"] .journey-completion__petals,
+html[data-effects-quality="minimal"] .journey-completion__sparkles {
   display: none !important;
 }
 
-html[data-performance-mode="lite"] .world-portal__tile,
-html[data-performance-mode="lite"] .world-portal__tile::after,
-html[data-performance-mode="lite"] .world-minimap__portal--target,
-html[data-performance-mode="lite"] .world-minimap__route polyline,
-html[data-performance-mode="lite"] .world-minimap__journey-marker--recommended circle,
-html[data-performance-mode="lite"] .world-journey-route polyline,
-html[data-performance-mode="lite"] .character-sprite--idle-front .character-layer--base,
-html[data-performance-mode="lite"] .wedding-npc__sprite {
+html[data-effects-quality="reduced"] .world-portal__tile,
+html[data-effects-quality="reduced"] .world-minimap__portal--target,
+html[data-effects-quality="reduced"] .world-minimap__route polyline,
+html[data-effects-quality="reduced"] .world-minimap__journey-marker--recommended circle,
+html[data-effects-quality="minimal"] .world-portal__tile,
+html[data-effects-quality="minimal"] .world-portal__tile::after,
+html[data-effects-quality="minimal"] .world-minimap__portal--target,
+html[data-effects-quality="minimal"] .world-minimap__route polyline,
+html[data-effects-quality="minimal"] .world-minimap__journey-marker--recommended circle,
+html[data-effects-quality="minimal"] .world-journey-route polyline,
+html[data-effects-quality="minimal"] .character-sprite--idle-front .character-layer--base,
+html[data-effects-quality="minimal"] .wedding-npc__sprite {
   animation: none !important;
 }
 
-html[data-performance-mode="lite"] .responsive-gallery-image--loading {
+html[data-effects-quality="minimal"] .responsive-gallery-image--loading {
   filter: none;
   transform: none;
 }
 
-html[data-performance-mode="lite"] :is(
+html[data-effects-quality="reduced"] :is(
+  .bottom-sheet__backdrop,
+  .game-guide,
+  .journey-completion,
+  .wedding-day-action-bar,
+  .quick-invitation__topbar,
+  .quick-invitation__nav
+),
+html[data-effects-quality="minimal"] :is(
   .bottom-sheet__backdrop,
   .game-guide,
   .journey-completion,
@@ -50,6 +62,12 @@ html[data-performance-mode="lite"] :is(
   border-color: #a37c4f;
   background: #fff3d9;
   color: #74532e;
+}
+
+.device-performance-status[data-effects-quality="reduced"] {
+  border-color: #8f8b58;
+  background: #f7f4de;
+  color: #625f35;
 }
 
 .device-performance-status > svg { width: 19px; height: 19px; }

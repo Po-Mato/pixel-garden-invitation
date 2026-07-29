@@ -1,4 +1,4 @@
-import { cleanup, render, screen, waitFor } from "@testing-library/react";
+import { act, cleanup, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { fetchInvitationPerformanceConfig } from "../api/performanceConfigApi";
 import {
@@ -17,6 +17,7 @@ afterEach(() => {
   cleanup();
   delete document.documentElement.dataset.performanceMode;
   delete document.documentElement.dataset.performanceReason;
+  delete document.documentElement.dataset.effectsQuality;
 });
 
 describe("기기 성능 자동 최적화", () => {
@@ -30,11 +31,12 @@ describe("기기 성능 자동 최적화", () => {
   it("감지 결과를 문서와 하위 UI에 공유한다", () => {
     function Status() {
       const status = useDevicePerformance();
-      return <span>{status.mode}</span>;
+      return <span>{status.mode}:{status.effectsQuality}</span>;
     }
     render(<DevicePerformanceProvider><Status /></DevicePerformanceProvider>);
     expect(screen.getByText(/standard|lite/)).toBeInTheDocument();
     expect(document.documentElement.dataset.performanceMode).toMatch(/standard|lite/);
+    expect(document.documentElement.dataset.effectsQuality).toMatch(/full|minimal/);
   });
 
   it("실측 프레임 보고 함수를 하위 게임 UI에 제공한다", () => {
@@ -44,6 +46,23 @@ describe("기기 성능 자동 최적화", () => {
     }
     render(<DevicePerformanceProvider><Reporter /></DevicePerformanceProvider>);
     expect(screen.getByRole("button", { name: "프레임 보고" })).toBeInTheDocument();
+  });
+
+  it("지속적인 프레임 저하를 감지해 효과 단계를 자동으로 낮춘다", () => {
+    let reportFrame: ((now: number) => void) | null = null;
+    function Reporter() {
+      const status = useDevicePerformance();
+      reportFrame = status.reportAnimationFrame;
+      return <span>{status.effectsQuality}</span>;
+    }
+    render(<DevicePerformanceProvider><Reporter /></DevicePerformanceProvider>);
+
+    act(() => {
+      for (let frame = 0; frame < 140; frame += 1) reportFrame?.(frame * 35);
+    });
+
+    expect(screen.getByText(/reduced|minimal/)).toBeInTheDocument();
+    expect(document.documentElement.dataset.performanceReason).toBe("frame-rate");
   });
 
   it("익명 실기기 표본으로 보정된 원격 기준을 하위 UI에 공유한다", async () => {

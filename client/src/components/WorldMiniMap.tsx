@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent, type WheelEvent as ReactWheelEvent } from "react";
 import { createPortal } from "react-dom";
-import { ChevronLeft, ChevronRight, Maximize2, Mic, Navigation, RefreshCw, RotateCcw, ScanLine, Settings2, Volume2, X, ZoomIn, ZoomOut } from "lucide-react";
+import { ChevronLeft, ChevronRight, Compass, Mic, Navigation, RefreshCw, RotateCcw, ScanLine, Settings2, Volume2, X, ZoomIn, ZoomOut } from "lucide-react";
 import type { Direction } from "@wedding-game/shared";
 import type { CameraTransform, ViewportSize } from "../game/camera";
 import {
@@ -573,41 +573,45 @@ export function WorldMiniMap({
       className="world-minimap"
       aria-label="현재 구역 미니맵"
       data-theme={zone.theme}
+      data-compact="true"
       data-route-continuing={routeContinuing || undefined}
       onClick={(event) => event.stopPropagation()}
     >
-      <div className="world-minimap__title-row">
-        <span className="world-minimap__title">{zone.label}</span>
-        <button
-          ref={expandButtonRef}
-          type="button"
-          className="world-minimap__expand"
-          aria-label="미니맵 확대 보기"
-          title="미니맵 확대 보기"
-          onClick={(event) => {
-            event.stopPropagation();
-            setExpanded(true);
-          }}
-        >
-          <Maximize2 aria-hidden="true" />
-        </button>
+      <button
+        ref={expandButtonRef}
+        type="button"
+        className="world-minimap__compass"
+        aria-label="미니맵 확대 보기"
+        title="미니맵 확대 보기"
+        onClick={(event) => {
+          event.stopPropagation();
+          setExpanded(true);
+        }}
+      >
+        <Compass aria-hidden="true" />
+        {routeActive ? <i className="world-minimap__compass-route" data-kind={routeKind} aria-hidden="true" /> : null}
+      </button>
+      <div className="world-minimap__preview" aria-hidden="true">
+        <div className="world-minimap__title-row">
+          <span className="world-minimap__title">{zone.label}</span>
+        </div>
+        {destinationLabel ? <span className="world-minimap__destination-label">목적지 · {destinationLabel}</span> : null}
+        {routeProgressLabel ? (
+          <span
+            className="world-minimap__route-progress"
+            data-testid="minimap-route-progress"
+            data-route-kind={routeKind}
+          >
+            {routeStatus} · {routeProgressLabel}
+          </span>
+        ) : null}
+        {routeNotice ? (
+          <span className="world-minimap__reroute" data-kind={routeNotice.kind}>
+            {routeNotice.notice}
+          </span>
+        ) : null}
+        <MiniMapCanvas {...canvasProps} layout={layout} />
       </div>
-      {destinationLabel ? <span className="world-minimap__destination-label">목적지 · {destinationLabel}</span> : null}
-      {routeProgressLabel ? (
-        <span
-          className="world-minimap__route-progress"
-          data-testid="minimap-route-progress"
-          data-route-kind={routeKind}
-        >
-          {routeStatus} · {routeProgressLabel}
-        </span>
-      ) : null}
-      {routeNotice ? (
-        <span className="world-minimap__reroute" data-kind={routeNotice.kind}>
-          {routeNotice.notice}
-        </span>
-      ) : null}
-      <MiniMapCanvas {...canvasProps} layout={layout} />
       <section className="sr-only world-minimap__screen-reader-map" aria-label={`${zone.label} 주변 랜드마크`}>
         <h2>{zone.label} 지도 안내</h2>
         <p aria-live="polite">

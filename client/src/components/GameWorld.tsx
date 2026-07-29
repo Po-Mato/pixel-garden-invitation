@@ -67,6 +67,7 @@ import {
   queueJourneyProgress
 } from "../game/journeySyncQueue";
 import { completeGameGuide, loadGameGuideState, shouldAutoOpenGameGuide } from "../game/gameGuide";
+import { gameHudAutoHideDelayMs, shouldAutoHideGameHud } from "../game/gameHudVisibility";
 import { journeyDirectionLabels, resolveJourneyGuidance } from "../game/journeyGuidance";
 import { quickInvitationHashForCheckpoint } from "../game/journeyAccessibility";
 import { summarizeRemainingJourney } from "../game/journeyRouteSummary";
@@ -198,8 +199,8 @@ import { FamilyContactSheet } from "./FamilyContactSheet";
 import { GameFirstVisitGuide } from "./GameFirstVisitGuide";
 import { GiftAccountSheet } from "./GiftAccountSheet";
 import { GameFeedbackToggle } from "./GameFeedbackToggle";
-import { GuestReactionBubble, GuestReactionDock } from "./GuestReactions";
-import { GuestInformationAccess } from "./GuestInformationAccess";
+import { GuestReactionBubble } from "./GuestReactions";
+import { GameQuickDock } from "./GameQuickDock";
 import { InvitationShareAccess } from "./InvitationShareAccess";
 import { JourneyCompletion } from "./JourneyCompletion";
 import { JourneyNextActionCard } from "./JourneyNextActionCard";
@@ -506,6 +507,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   const [photoAlbumOpen, setPhotoAlbumOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [hudToolsOpen, setHudToolsOpen] = useState(false);
+  const [hudAutoHidden, setHudAutoHidden] = useState(false);
   const [calendarSheetOpen, setCalendarSheetOpen] = useState(false);
   const [directionsSheetOpen, setDirectionsSheetOpen] = useState(false);
   const [giftAccountSheetOpen, setGiftAccountSheetOpen] = useState(false);
@@ -609,6 +611,28 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     || companionWaitingRoomOpen
     || gameGuideOpen
     || journeyRouteOpen;
+
+  const gameOverlayOpen = menuOpen
+    || nestedMenuSheetOpen
+    || activeSpotId !== null
+    || activePhotoSpotId !== null
+    || journeyCompletionOpen
+    || celebrationRewardOpen;
+
+  useEffect(() => {
+    const shouldHide = shouldAutoHideGameHud({
+      moving,
+      toolsOpen: hudToolsOpen,
+      overlayOpen: gameOverlayOpen,
+      portalTransitioning: Boolean(portalTransition)
+    });
+    if (!shouldHide) {
+      setHudAutoHidden(false);
+      return;
+    }
+    const timer = window.setTimeout(() => setHudAutoHidden(true), gameHudAutoHideDelayMs);
+    return () => window.clearTimeout(timer);
+  }, [gameOverlayOpen, hudToolsOpen, moving, portalTransition]);
 
   const mapViewportRef = useRef<HTMLDivElement | null>(null);
   const menuButtonRef = useRef<HTMLButtonElement | null>(null);
@@ -3666,7 +3690,11 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
           completePortalFadeOut();
         }}
       />
-      <header className="world-hud" data-tools-open={hudToolsOpen || undefined}>
+      <header
+        className="world-hud"
+        data-tools-open={hudToolsOpen || undefined}
+        data-auto-hidden={hudAutoHidden || undefined}
+      >
         <div className="world-hud__status">
           <div className="world-zone-summary">
             <span>현재 구역 · {activeZone.journeyIndex + 1}/10</span>
@@ -4342,28 +4370,24 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
               side={viewPreferences.joystickSide}
               onVectorChange={handleJoystickVectorChange}
             />
-            <div className="world-control-actions">
-              <GuestReactionDock
-                disabled={Boolean(portalTransition)}
-                onReact={handleGuestReaction}
-              />
-              <GuestInformationAccess
-                variant="world"
-                onOpenChange={handleGuestInformationOpenChange}
-              />
-              <WeddingDayQuickAccess
-                variant="world"
-                preview={weddingDayPreview}
-                open={weddingDaySheetOpen}
-                showTrigger={false}
-                onOpenChange={handleWeddingDaySheetOpenChange}
-                onFamilyContactOpen={openFamilyContacts}
-              />
-              <button ref={menuButtonRef} type="button" className="world-menu-button" aria-expanded={menuOpen} onClick={openMenu}>
-                <span aria-hidden="true">+</span>
-                초대장 메뉴
-              </button>
-            </div>
+            <WeddingDayQuickAccess
+              variant="world"
+              preview={weddingDayPreview}
+              open={weddingDaySheetOpen}
+              showTrigger={false}
+              onOpenChange={handleWeddingDaySheetOpenChange}
+              onFamilyContactOpen={openFamilyContacts}
+            />
+            <GameQuickDock
+              disabled={Boolean(portalTransition)}
+              menuOpen={menuOpen}
+              menuButtonRef={menuButtonRef}
+              onPause={pauseWorldInput}
+              onReact={handleGuestReaction}
+              onGuestInformationOpenChange={handleGuestInformationOpenChange}
+              onOpenJourney={() => setHudToolsOpen(true)}
+              onOpenMenu={openMenu}
+            />
           </div>
         </div>
       </div>

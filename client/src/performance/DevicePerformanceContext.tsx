@@ -7,6 +7,7 @@ import { createFpsSampler } from "./realUserPerformance";
 
 export type DevicePerformanceMode = "standard" | "lite";
 export type DevicePerformanceReason = "standard" | "memory" | "processor" | "network" | "frame-rate";
+export type DeviceEffectsQuality = "full" | "reduced" | "minimal";
 
 export type DevicePerformanceStatus = {
   mode: DevicePerformanceMode;
@@ -14,6 +15,7 @@ export type DevicePerformanceStatus = {
 };
 
 export type DevicePerformanceContextValue = DevicePerformanceStatus & {
+  effectsQuality: DeviceEffectsQuality;
   reportAnimationFrame: (now: number) => void;
   tuningSource: "default" | "observed";
   tuningSampleCount: number;
@@ -44,6 +46,7 @@ export function resolveDevicePerformanceStatus(source: DeviceNavigatorLike = nav
 const DevicePerformanceContext = createContext<DevicePerformanceContextValue>({
   mode: "standard",
   reason: "standard",
+  effectsQuality: "full",
   reportAnimationFrame: () => undefined,
   tuningSource: "default",
   tuningSampleCount: 0
@@ -51,7 +54,7 @@ const DevicePerformanceContext = createContext<DevicePerformanceContextValue>({
 
 export function DevicePerformanceProvider({ children }: { children: ReactNode }) {
   const [baseStatus, setBaseStatus] = useState(() => resolveDevicePerformanceStatus());
-  const [frameConstrained, setFrameConstrained] = useState(false);
+  const [observedEffectsQuality, setObservedEffectsQuality] = useState<DeviceEffectsQuality>("full");
   const [tuning, setTuning] = useState<{ source: "default" | "observed"; sampleCount: number }>({
     source: "default",
     sampleCount: 0
@@ -79,7 +82,7 @@ export function DevicePerformanceProvider({ children }: { children: ReactNode })
         slowWindowsRequired: config.slowWindowsRequired,
         recoveryWindowsRequired: config.recoveryWindowsRequired
       });
-      setFrameConstrained(false);
+      setObservedEffectsQuality("full");
       setTuning({ source: config.source, sampleCount: config.sampleCount });
     }).catch(() => {
       // The static defaults remain active when remote tuning is unavailable.
@@ -90,7 +93,7 @@ export function DevicePerformanceProvider({ children }: { children: ReactNode })
   useEffect(() => {
     if (baseStatus.mode === "standard") return;
     frameMonitorRef.current.reset();
-    setFrameConstrained(false);
+    setObservedEffectsQuality("full");
   }, [baseStatus.mode]);
 
   const reportAnimationFrame = useCallback((now: number) => {
@@ -98,14 +101,21 @@ export function DevicePerformanceProvider({ children }: { children: ReactNode })
     if (fps !== null) {
       const current = statusRef.current;
       trackInvitationAnalytics("performance_fps", `${current.mode}:${current.reason}`, fps);
+      if (baseStatus.mode === "standard") {
+        if (fps <= 30) setObservedEffectsQuality("minimal");
+        else if (fps < 42) setObservedEffectsQuality((quality) => quality === "minimal" ? quality : "reduced");
+      }
     }
     if (baseStatus.mode !== "standard") return;
     const decision = frameMonitorRef.current.sample(now);
-    if (decision === "downgrade") setFrameConstrained(true);
-    if (decision === "restore") setFrameConstrained(false);
+    if (decision === "downgrade") {
+      setObservedEffectsQuality((quality) => quality === "minimal" ? quality : "reduced");
+    }
+    if (decision === "restore") setObservedEffectsQuality("full");
   }, [baseStatus.mode]);
 
-  const status: DevicePerformanceStatus = frameConstrained
+  const effectsQuality: DeviceEffectsQuality = baseStatus.mode === "lite" ? "minimal" : observedEffectsQuality;
+  const status: DevicePerformanceStatus = effectsQuality !== "full" && baseStatus.mode === "standard"
     ? { mode: "lite", reason: "frame-rate" }
     : baseStatus;
   statusRef.current = status;
@@ -120,18 +130,21 @@ export function DevicePerformanceProvider({ children }: { children: ReactNode })
   useEffect(() => {
     document.documentElement.dataset.performanceMode = status.mode;
     document.documentElement.dataset.performanceReason = status.reason;
+    document.documentElement.dataset.effectsQuality = effectsQuality;
     return () => {
       delete document.documentElement.dataset.performanceMode;
       delete document.documentElement.dataset.performanceReason;
+      delete document.documentElement.dataset.effectsQuality;
     };
-  }, [status]);
+  }, [effectsQuality, status]);
 
   const value = useMemo(() => ({
     ...status,
+    effectsQuality,
     reportAnimationFrame,
     tuningSource: tuning.source,
     tuningSampleCount: tuning.sampleCount
-  }), [reportAnimationFrame, status, tuning]);
+  }), [effectsQuality, reportAnimationFrame, status, tuning]);
   return <DevicePerformanceContext.Provider value={value}>{children}</DevicePerformanceContext.Provider>;
 }
 

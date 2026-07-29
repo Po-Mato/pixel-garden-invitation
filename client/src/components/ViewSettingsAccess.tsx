@@ -446,10 +446,19 @@ export function ViewSettingsAccess({ variant, onOpenChange, currentZoneId }: Vie
 
             {currentZoneId ? <OfflineMapDownloadCenter currentZoneId={currentZoneId} /> : null}
 
-            <section className="device-performance-status" data-mode={devicePerformance.mode} aria-label="기기 성능 최적화 상태">
+            <section
+              className="device-performance-status"
+              data-mode={devicePerformance.mode}
+              data-effects-quality={devicePerformance.effectsQuality}
+              aria-label="기기 성능 최적화 상태"
+            >
               <Cpu aria-hidden="true" />
               <span>
-                <strong>{devicePerformance.mode === "lite" ? "가벼운 화면 자동 적용" : "표준 화면 효과 적용"}</strong>
+                <strong>{devicePerformance.effectsQuality === "full"
+                  ? "전체 화면 효과 적용"
+                  : devicePerformance.effectsQuality === "reduced"
+                    ? "화면 효과 자동 조절"
+                    : "최소 화면 효과 적용"}</strong>
                 <small>{devicePerformance.mode === "lite"
                   ? devicePerformance.reason === "memory"
                     ? "메모리 사용량을 줄이고 있어요"

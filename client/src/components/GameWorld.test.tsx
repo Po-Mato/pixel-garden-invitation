@@ -14,6 +14,7 @@ import {
 import { gameMemoryAlbumStorageKey } from "../game/gameMemoryAlbum";
 import { worldDepth } from "../game/worldVisuals";
 import { journeyProgressStorageKey } from "../game/journeyProgress";
+import { gameHudAutoHideDelayMs } from "../game/gameHudVisibility";
 import { copyText } from "../invitation/browserActions";
 import { GameFeedbackProvider } from "../feedback/GameFeedbackContext";
 import { defaultFeedbackPreferences } from "../feedback/feedbackPreferences";
@@ -2657,6 +2658,21 @@ describe("GameWorld", () => {
     const reactionButton = screen.getByRole("button", { name: "하객 리액션 열기" });
     expect(reactionButton.closest(".guest-reaction-dock")?.parentElement)
       .toHaveClass("world-control-actions");
+  });
+
+  it("이동이 이어지면 상단 HUD를 접고 정지하면 바로 복원한다", () => {
+    render(<GameWorld profile={profile} />);
+    const joystick = screen.getByLabelText("가상 조이스틱");
+    const hud = document.querySelector(".world-hud");
+
+    fireEvent.keyDown(joystick, { key: "ArrowRight" });
+    advanceAnimation(0);
+    act(() => vi.advanceTimersByTime(gameHudAutoHideDelayMs));
+    expect(hud).toHaveAttribute("data-auto-hidden", "true");
+
+    fireEvent.keyUp(joystick, { key: "ArrowRight" });
+    advanceAnimation(300);
+    expect(hud).not.toHaveAttribute("data-auto-hidden");
   });
 
   it("shows and expires a remote guest reaction above that guest", () => {
