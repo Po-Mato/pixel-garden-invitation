@@ -11,10 +11,16 @@ vi.mock("../api/performanceConfigApi", () => ({ fetchInvitationPerformanceConfig
 
 beforeEach(() => {
   vi.mocked(fetchInvitationPerformanceConfig).mockRejectedValue(new Error("offline"));
+  Object.defineProperty(navigator, "deviceMemory", { configurable: true, value: 8 });
+  Object.defineProperty(navigator, "hardwareConcurrency", { configurable: true, value: 8 });
+  Object.defineProperty(navigator, "connection", { configurable: true, value: { effectiveType: "4g" } });
 });
 
 afterEach(() => {
   cleanup();
+  Reflect.deleteProperty(navigator, "deviceMemory");
+  Reflect.deleteProperty(navigator, "hardwareConcurrency");
+  Reflect.deleteProperty(navigator, "connection");
   delete document.documentElement.dataset.performanceMode;
   delete document.documentElement.dataset.performanceReason;
   delete document.documentElement.dataset.effectsQuality;
