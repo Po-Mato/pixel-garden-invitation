@@ -46,4 +46,31 @@ describe("NpcDialogueBubble", () => {
     act(() => vi.advanceTimersByTime(1));
     expect(onClose).toHaveBeenCalledOnce();
   });
+
+  it("대화 선택지를 전달하고 답변 이후에는 선택지를 숨긴다", () => {
+    const onChoose = vi.fn();
+    const { rerender } = render(
+      <NpcDialogueBubble
+        dialogue={{ npcId: "bride", message: "반가워요.", tone: "welcome" }}
+        speaker="신부 이건희"
+        onClose={vi.fn()}
+        onOpenProfile={vi.fn()}
+        onChoose={onChoose}
+      />
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "축하 전하기" }));
+    expect(onChoose).toHaveBeenCalledWith(expect.objectContaining({ id: "celebrate", reaction: "celebrate" }));
+
+    rerender(
+      <NpcDialogueBubble
+        dialogue={{ npcId: "bride", message: "고마워요.", tone: "celebration", responded: true }}
+        speaker="신부 이건희"
+        onClose={vi.fn()}
+        onOpenProfile={vi.fn()}
+        onChoose={onChoose}
+      />
+    );
+    expect(screen.queryByLabelText("대화 답변 선택")).not.toBeInTheDocument();
+  });
 });

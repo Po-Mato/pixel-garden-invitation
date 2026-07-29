@@ -1,6 +1,10 @@
-import { BookOpen, X } from "lucide-react";
+import { BookOpen, Hand, Heart, PartyPopper, X } from "lucide-react";
 import { useEffect } from "react";
-import type { NpcDialogue } from "../game/npcDialogue";
+import {
+  npcDialogueChoices,
+  type NpcDialogue,
+  type NpcDialogueChoice
+} from "../game/npcDialogue";
 import type { DialoguePlacement } from "../game/gameOverlayPlacement";
 
 type NpcDialogueBubbleProps = {
@@ -8,6 +12,7 @@ type NpcDialogueBubbleProps = {
   speaker: string;
   onClose: () => void;
   onOpenProfile: () => void;
+  onChoose?: (choice: NpcDialogueChoice) => void;
   placement?: DialoguePlacement;
 };
 
@@ -18,6 +23,7 @@ export function NpcDialogueBubble({
   speaker,
   onClose,
   onOpenProfile,
+  onChoose,
   placement = "above"
 }: NpcDialogueBubbleProps) {
   useEffect(() => {
@@ -38,6 +44,19 @@ export function NpcDialogueBubble({
       </button>
       <small>{speaker}</small>
       <p aria-live="polite">{dialogue.message}</p>
+      {onChoose && !dialogue.responded ? (
+        <div className="npc-dialogue__choices" aria-label="대화 답변 선택">
+          {npcDialogueChoices.map((choice) => {
+            const Icon = choice.id === "greet" ? Hand : choice.id === "heart" ? Heart : PartyPopper;
+            return (
+              <button key={choice.id} type="button" onClick={() => onChoose(choice)}>
+                <Icon aria-hidden="true" />
+                <span>{choice.label}</span>
+              </button>
+            );
+          })}
+        </div>
+      ) : null}
       <button type="button" className="npc-dialogue__profile" onClick={onOpenProfile}>
         <BookOpen aria-hidden="true" />
         두 사람 소개

@@ -14,9 +14,9 @@ export function resolveNpcDialoguePlacement({
   viewport,
   destinationGuideVisible
 }: DialoguePlacementInput): DialoguePlacement {
-  const topClearance = destinationGuideVisible ? 190 : 145;
+  const topClearance = destinationGuideVisible ? 235 : 190;
   if (anchor.y < topClearance) return "below";
-  if (anchor.y > viewport.height - 155) return "above";
+  if (anchor.y > viewport.height - 205) return "above";
   if (viewport.width >= 380 && anchor.x < 122) return "right";
   if (viewport.width >= 380 && anchor.x > viewport.width - 122) return "left";
   return "above";

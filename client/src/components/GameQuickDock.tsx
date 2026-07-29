@@ -13,6 +13,7 @@ import {
   toggleGameQuickDockAction,
   type GameQuickDockAction
 } from "../game/gameQuickDockPreferences";
+import { resolveAdaptiveQuickDockActions } from "../game/gameAdaptiveHud";
 import { copyText, isShareAbortError, shareContent } from "../invitation/browserActions";
 import { GameFeedbackToggle } from "./GameFeedbackToggle";
 import { GuestInformationAccess } from "./GuestInformationAccess";
@@ -28,6 +29,9 @@ type GameQuickDockProps = {
   onOpenJourney: () => void;
   onOpenMenu: () => void;
   onSettingsOpenChange?: (open: boolean) => void;
+  contextActive?: boolean;
+  moving?: boolean;
+  routeActive?: boolean;
 };
 
 const actionMeta: Record<GameQuickDockAction, { label: string; Icon: typeof SmilePlus }> = {
@@ -46,11 +50,16 @@ export function GameQuickDock({
   onGuestInformationOpenChange,
   onOpenJourney,
   onOpenMenu,
-  onSettingsOpenChange
+  onSettingsOpenChange,
+  contextActive = false,
+  moving = false,
+  routeActive = false
 }: GameQuickDockProps) {
   const [favorites, setFavorites] = useState(loadGameQuickDockActions);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [syncStatus, setSyncStatus] = useState("");
+  const adaptiveDock = resolveAdaptiveQuickDockActions({ favorites, contextActive, moving, routeActive });
+  const visibleFavorites = settingsOpen ? favorites : adaptiveDock.actions;
 
   useEffect(() => {
     saveGameQuickDockActions(favorites);
@@ -129,7 +138,11 @@ export function GameQuickDock({
   };
 
   return (
-    <div className="game-quick-dock" data-settings-open={settingsOpen || undefined}>
+    <div
+      className="game-quick-dock"
+      data-settings-open={settingsOpen || undefined}
+      data-adaptive-state={settingsOpen ? "settings" : adaptiveDock.state}
+    >
       {settingsOpen ? (
         <section className="game-quick-dock__settings" aria-label="빠른 도구 즐겨찾기">
           <header><strong>빠른 도구</strong><span>{favorites.length}/2</span></header>
@@ -165,7 +178,7 @@ export function GameQuickDock({
         </section>
       ) : null}
       <div className="game-quick-dock__favorites world-control-actions" aria-label="즐겨찾기 빠른 도구">
-        {favorites.map(renderAction)}
+        {visibleFavorites.map(renderAction)}
       </div>
       <button
         type="button"

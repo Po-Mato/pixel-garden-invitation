@@ -143,8 +143,8 @@
   position: absolute;
   display: grid;
   place-items: center;
-  width: 30px;
-  height: 30px;
+  width: 44px;
+  height: 44px;
   padding: 5px;
   transform: translate(-50%, -50%);
   pointer-events: auto;
@@ -168,8 +168,8 @@
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  min-width: 54px;
-  height: 28px;
+  min-width: 64px;
+  min-height: 44px;
   padding: 4px 8px;
   color: #6c4350;
   background: rgba(255, 251, 235, 0.95);
@@ -1084,7 +1084,7 @@ html[data-game-ui-scale="large"] .world-control-actions :is(button, .guest-react
 .game-quick-dock__settings footer { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 5px; margin-top: 6px; padding-top: 6px; border-top: 1px solid #ded4d5; }
 .game-quick-dock__settings button {
   display: grid;
-  min-height: 39px;
+  min-height: 44px;
   grid-template-columns: 17px minmax(0, 1fr);
   align-items: center;
   gap: 5px;
@@ -1098,7 +1098,7 @@ html[data-game-ui-scale="large"] .world-control-actions :is(button, .guest-react
 }
 .game-quick-dock__settings button svg { width: 15px; height: 15px; }
 .game-quick-dock__settings button[aria-pressed="true"] { color: #fff; background: #8d6973; border-color: #76545e; }
-.game-quick-dock__settings footer button { grid-template-columns: 15px minmax(0, 1fr); min-height: 34px; }
+.game-quick-dock__settings footer button { grid-template-columns: 15px minmax(0, 1fr); min-height: 44px; }
 .game-quick-dock__settings > p { display: flex; align-items: center; gap: 4px; margin: 6px 0 0; color: #637265; font-size: 8px; font-weight: 800; line-height: 1.35; }
 .game-quick-dock__settings > p svg { flex: 0 0 auto; width: 13px; height: 13px; }
 
@@ -1117,7 +1117,7 @@ html[data-one-handed-controls="true"][data-joystick-side="right"] .game-quick-do
     .game-quick-dock__journey,
     .game-quick-dock__settings-toggle,
     .world-menu-button
-  ) { width: 42px; min-width: 42px; height: 44px; min-height: 44px; }
+  ) { width: 44px; min-width: 44px; height: 44px; min-height: 44px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1131,7 +1131,7 @@ html[data-one-handed-controls="true"][data-joystick-side="right"] .game-quick-do
   bottom: calc(154px + env(safe-area-inset-bottom));
   display: grid;
   width: min(224px, calc(100% - 24px));
-  min-height: 42px;
+  min-height: 46px;
   grid-template-columns: 28px minmax(0, 1fr) auto;
   align-items: center;
   gap: 7px;
@@ -1147,6 +1147,8 @@ html[data-one-handed-controls="true"][data-joystick-side="right"] .game-quick-do
 .world-context-action > svg { width: 20px; height: 20px; padding: 4px; color: #fff; background: #8d6973; border-radius: 3px; }
 .world-context-action[data-kind="portal"] > svg { background: #6c8270; }
 .world-context-action[data-kind="photo"] > svg { background: #a96b7c; }
+.world-context-action[data-kind="quest"] > svg { background: #786e98; }
+.world-context-action[data-kind="quest"] { top: 94px; bottom: auto; }
 .world-context-action > span { display: grid; min-width: 0; gap: 1px; }
 .world-context-action small { color: #8a7b7e; font-size: 7px; font-weight: 800; }
 .world-context-action strong { overflow: hidden; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
@@ -1206,8 +1208,10 @@ html[data-one-handed-controls="true"][data-joystick-side="right"] .game-quick-do
 
 @media (orientation: landscape) and (max-height: 500px) {
   .world-context-action { bottom: calc(82px + env(safe-area-inset-bottom)); width: min(210px, calc(100% - 220px)); }
+  .world-context-action[data-kind="quest"] { top: 12px; bottom: auto; }
 }
 
 @media (max-width: 350px) {
-  .world-context-action { bottom: calc(148px + env(safe-area-inset-bottom)); }
+  .world-context-action { bottom: calc(158px + env(safe-area-inset-bottom)); }
+  .world-context-action[data-kind="quest"] { top: 94px; bottom: auto; }
 }

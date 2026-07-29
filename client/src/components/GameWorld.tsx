@@ -78,7 +78,13 @@ import { routeTurnCueOneTileAhead } from "../game/routeTurnCue";
 import { routeArrivalCue } from "../game/routeArrivalGuidance";
 import { smartJourneyRecommendation } from "../game/smartJourneyRecommendation";
 import { weddingJourneyTiming } from "../game/weddingJourneyTiming";
-import { resolveNpcDialogue, type NpcDialogue, type NpcId } from "../game/npcDialogue";
+import {
+  resolveNpcDialogue,
+  resolveNpcDialogueChoice,
+  type NpcDialogue,
+  type NpcDialogueChoice,
+  type NpcId
+} from "../game/npcDialogue";
 import {
   advanceNpcMotionMap,
   createNpcMotionMap,
@@ -227,6 +233,17 @@ import { WorldMapArtwork } from "./WorldMapArtwork";
 import { WorldCrowdHeatmap } from "./WorldCrowdHeatmap";
 import { WorldCooperativeCelebration } from "./WorldCooperativeCelebration";
 import { WorldContextAction } from "./WorldContextAction";
+import {
+  completeCurrentZoneMiniQuestStep,
+  completedZoneMiniQuestStepCount,
+  currentZoneMiniQuestStep,
+  loadZoneMiniQuestProgress,
+  saveZoneMiniQuestProgress,
+  zoneMiniQuestFor,
+  type ZoneMiniQuestAction,
+  type ZoneMiniQuestStep
+} from "../game/zoneMiniQuest";
+import { resolveWorldRenderBudget } from "../game/worldRenderBudget";
 import {
   CelebrationCollectionProgress,
   WorldCelebrationCollectibles
@@ -453,6 +470,10 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   const devicePerformance = useDevicePerformance();
   const { preferences: viewPreferences, setStepFreeRouteEnabled } = useViewPreferences();
   const networkMode = useNetworkMode(viewPreferences.dataSaver);
+  const renderBudget = useMemo(() => resolveWorldRenderBudget(
+    devicePerformance.mode,
+    devicePerformance.effectsQuality
+  ), [devicePerformance.effectsQuality, devicePerformance.mode]);
   const movementStepIntervalMs = viewPreferences.gameMovementSpeed === "relaxed"
     ? 320
     : viewPreferences.gameMovementSpeed === "brisk" ? 190 : 240;
@@ -530,6 +551,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   const [routeRecalculationNotice, setRouteRecalculationNotice] = useState<RouteRecalculationResult | null>(null);
   const [routeArrivalNotice, setRouteArrivalNotice] = useState<RouteArrivalNotice | null>(null);
   const [journeyProgress, setJourneyProgress] = useState(loadJourneyProgress);
+  const [zoneMiniQuestProgress, setZoneMiniQuestProgress] = useState(loadZoneMiniQuestProgress);
   const [journeySyncStatus, setJourneySyncStatus] = useState<
     "local" | "syncing" | "synced" | "queued" | "merged" | "error"
   >("local");
@@ -787,15 +809,15 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
         positionRef.current,
         pausedNpcIds
       ));
-    }, 720);
+    }, renderBudget.npcMotionIntervalMs);
     return () => window.clearInterval(timer);
-  }, [activeNpcDialogue?.npcId, activeZone, interactionIntent?.npcId, portalTransition]);
+  }, [activeNpcDialogue?.npcId, activeZone, interactionIntent?.npcId, portalTransition, renderBudget.npcMotionIntervalMs]);
 
   useEffect(() => {
-    if (!arrivalAction) return;
+    if (!arrivalAction || activeNpcDialogue) return;
     const timer = window.setTimeout(() => setArrivalAction(null), 8_000);
     return () => window.clearTimeout(timer);
-  }, [arrivalAction]);
+  }, [activeNpcDialogue, arrivalAction]);
 
   useEffect(() => {
     if (devicePerformance.mode === "lite" || viewPreferences.dataSaver) return;
@@ -1015,6 +1037,15 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     const checkpointId = journeyCheckpointForInteraction(activeZoneIdRef.current, spotId);
     if (checkpointId) stampJourneyCheckpoint(checkpointId);
   }, [stampJourneyCheckpoint]);
+
+  const completeZoneMiniQuestAction = useCallback((action: ZoneMiniQuestAction) => {
+    setZoneMiniQuestProgress((current) => {
+      const result = completeCurrentZoneMiniQuestStep(current, activeZoneIdRef.current, action);
+      if (!result.changed) return current;
+      saveZoneMiniQuestProgress(result.progress);
+      return result.progress;
+    });
+  }, []);
 
   const clearRemoteReaction = useCallback((guestId: string) => {
     const timer = remoteReactionTimersRef.current.get(guestId);
@@ -1322,10 +1353,19 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
       )?.phase
     });
     stampWorldInteraction("couple");
+    completeZoneMiniQuestAction({ type: "npc", id: npcId });
     setActiveNpcDialogue(dialogue);
     setTravelStatus(`${npc.label}와 이야기를 나눴어요`);
     playFeedback("dialogue");
-  }, [activeZone, playFeedback, profile.nickname, stampWorldInteraction]);
+  }, [activeZone, completeZoneMiniQuestAction, playFeedback, profile.nickname, stampWorldInteraction]);
+
+  const chooseNpcDialogue = useCallback((choice: NpcDialogueChoice) => {
+    if (!activeNpcDialogue) return;
+    const result = resolveNpcDialogueChoice(activeNpcDialogue, choice.id, profile.nickname);
+    handleGuestReaction(result.reaction);
+    setActiveNpcDialogue(result.dialogue);
+    setTravelStatus(result.status);
+  }, [activeNpcDialogue, handleGuestReaction, profile.nickname]);
 
   const cancelPortalWalk = useCallback(() => {
     if (!portalIntentRef.current) return;
@@ -1505,6 +1545,8 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   ) => {
     if (portalTransitionRef.current) return;
 
+    completeZoneMiniQuestAction({ type: "portal", id: portal.id });
+
     if (preserveCompanion) {
       companionZoneGraceUntilRef.current = Date.now() + 6_000;
       sharedCompanionDestinationRef.current = null;
@@ -1562,6 +1604,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     playFeedback("portal");
   }, [
     clearTerminalStopConfirm,
+    completeZoneMiniQuestAction,
     playFeedback,
     resetWalkCycle,
     sendRealtimeStop,
@@ -1734,16 +1777,18 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     restoreMenuButtonFocusRef.current = restoreMenuButtonFocus;
     pauseWorldInput();
     closeMenu();
+    completeZoneMiniQuestAction({ type: "spot", id: spotId });
     setActiveSpotId(spotId);
-  }, [closeMenu, pauseWorldInput]);
+  }, [closeMenu, completeZoneMiniQuestAction, pauseWorldInput]);
 
   const openPhotoSpot = useCallback((photoSpotId: WorldPhotoSpotId) => {
     if (portalTransitionRef.current) return;
     void loadWeddingPhotoBoothComponent();
     pauseWorldInput();
     closeMenu();
+    completeZoneMiniQuestAction({ type: "photo", id: photoSpotId });
     setActivePhotoSpotId(photoSpotId);
-  }, [closeMenu, pauseWorldInput]);
+  }, [closeMenu, completeZoneMiniQuestAction, pauseWorldInput]);
 
   const closeNpcDialogue = useCallback(() => {
     setActiveNpcDialogue(null);
@@ -2432,7 +2477,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     function tick(now: number) {
       if (inputGeneration !== inputGenerationRef.current || portalTransitionRef.current) return;
       devicePerformance.reportAnimationFrame(now);
-      if (!shouldProcessGameFrame(devicePerformance.mode, renderFrameAtRef.current, now)) {
+      if (!shouldProcessGameFrame(renderBudget.targetFps, renderFrameAtRef.current, now)) {
         frame = requestAnimationFrame(tick);
         return;
       }
@@ -2488,7 +2533,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
           Math.hypot(left.x - current.x, left.y - current.y)
           - Math.hypot(right.x - current.x, right.y - current.y)
         ))
-        .slice(0, devicePerformance.mode === "lite" ? 6 : 24);
+        .slice(0, renderBudget.remoteGuestLimit);
       const occupiedPoints = [
         ...activeZone.npcs.map((npc) => npcMotionFor(
           activeZone,
@@ -2504,7 +2549,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
         resetWalkCycle();
         sendRealtimeMove(current, false, nextDirection, activeZone.id, now);
 
-        const rerouteInterval = devicePerformance.mode === "lite" ? 480 : 240;
+        const rerouteInterval = renderBudget.targetFps === 24 ? 480 : 240;
         const routeGoal = automaticPath.at(-1);
         if (
           !hasDirectionalInput
@@ -2652,7 +2697,6 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     advanceWalkCycle,
     announceUpcomingRouteTurn,
     beginPortalTransition,
-    devicePerformance.mode,
     devicePerformance.reportAnimationFrame,
     interactionIntent,
     handleCollectCelebrationItem,
@@ -2664,6 +2708,8 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     openPhotoSpot,
     portalIntent,
     resetWalkCycle,
+    renderBudget.remoteGuestLimit,
+    renderBudget.targetFps,
     sendRealtimeMove,
     sendRealtimeStop,
     setInteractionIntent,
@@ -3409,12 +3455,26 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     point: npcMotionFor(activeZone, npc, npcMotions).point
   }));
   const activeNpcPoints = activeNpcContexts.map(({ point }) => point);
-  const contextHudAction = resolveContextHudAction({
+  const activeZoneMiniQuest = zoneMiniQuestFor(activeZone.id);
+  const activeZoneMiniQuestStep = currentZoneMiniQuestStep(activeZoneMiniQuest, zoneMiniQuestProgress);
+  const activeZoneMiniQuestCompletedCount = completedZoneMiniQuestStepCount(
+    activeZoneMiniQuest,
+    zoneMiniQuestProgress
+  );
+  const nearbyContextHudAction = resolveContextHudAction({
     player: position,
     portals: activeZone.portals,
     photoSpots: activeZone.photoSpots,
     npcs: activeNpcContexts
   });
+  const contextHudAction: ContextHudAction | null = nearbyContextHudAction ?? (activeZoneMiniQuestStep ? {
+    kind: "quest",
+    id: activeZoneMiniQuestStep.id,
+    label: activeZoneMiniQuestStep.label,
+    actionLabel: activeZoneMiniQuestStep.actionLabel,
+    distance: Number.POSITIVE_INFINITY,
+    progressLabel: `${activeZoneMiniQuest.title} · ${activeZoneMiniQuestCompletedCount + 1}/${activeZoneMiniQuest.steps.length}`
+  } : null);
   const activeDialogueNpcPoint = activeNpcDialogue
     ? activeNpcContexts.find(({ id }) => id === activeNpcDialogue.npcId)?.point ?? null
     : null;
@@ -3428,10 +3488,78 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
         destinationGuideVisible: Boolean(recommendedCheckpoint)
       })
     : "above";
+  const contextActionVisible = Boolean(
+    contextHudAction
+    && !gameOverlayOpen
+    && !hudToolsOpen
+    && !moving
+    && !directTravelActive
+    && !portalTransition
+    && !routeArrivalNotice
+    && !activeRouteArrivalCue
+  );
+
+  function guideToZoneMiniQuestStep(step: ZoneMiniQuestStep) {
+    const target = step.target;
+    if (target.type === "portal") {
+      const portal = activeZone.portals.find(({ id }) => id === target.id);
+      if (portal) handlePortalClick(portal);
+      return;
+    }
+    if (target.type === "spot") {
+      const spot = activeZone.spots.find(({ id }) => id === target.id);
+      if (!spot) return;
+      beginWorldInteraction({
+        targetId: `spot:${spot.id}`,
+        spotId: spot.id,
+        label: spot.label,
+        target: spot,
+        actionRadius: spot.actionRadius
+      });
+      return;
+    }
+    if (target.type === "photo") {
+      const photoSpot = activeZone.photoSpots.find(({ id }) => id === target.id);
+      if (!photoSpot) return;
+      beginWorldInteraction({
+        targetId: `photo:${photoSpot.id}`,
+        photoSpotId: photoSpot.id,
+        label: photoSpot.label,
+        target: photoSpot,
+        actionRadius: photoSpot.actionRadius
+      });
+      return;
+    }
+    const npc = target.id === "either"
+      ? activeZone.npcs
+        .map((candidate) => ({
+          candidate,
+          point: npcMotionFor(activeZone, candidate, npcMotionsRef.current).point
+        }))
+        .sort((left, right) => (
+          Math.hypot(left.point.x - position.x, left.point.y - position.y)
+          - Math.hypot(right.point.x - position.x, right.point.y - position.y)
+        ))[0]?.candidate
+      : activeZone.npcs.find(({ id }) => id === target.id);
+    if (!npc) return;
+    const point = npcMotionFor(activeZone, npc, npcMotionsRef.current).point;
+    beginWorldInteraction({
+      targetId: `npc:${npc.id}`,
+      spotId: "couple",
+      label: npc.label,
+      target: npcInteractionRect(point),
+      actionRadius: npcInteractionRadius,
+      npcId: npc.id
+    });
+  }
 
   function activateContextHudAction(action: ContextHudAction) {
     setActiveJourneyGuideId(null);
     setPendingJourneyGuideId(null);
+    if (action.kind === "quest") {
+      if (activeZoneMiniQuestStep?.id === action.id) guideToZoneMiniQuestStep(activeZoneMiniQuestStep);
+      return;
+    }
     if (action.kind === "portal") {
       const portal = activeZone.portals.find(({ id }) => id === action.id);
       if (!portal) return;
@@ -3480,13 +3608,13 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
       zoneRemoteGuests.map((guest) => ({ x: guest.x, y: guest.y }))
     )
   ]));
-  const visibleRemoteGuests = devicePerformance.mode === "lite"
+  const visibleRemoteGuests = zoneRemoteGuests.length > renderBudget.remoteGuestLimit
     ? [...zoneRemoteGuests]
       .sort((left, right) => (
         Math.hypot(left.x - position.x, left.y - position.y)
         - Math.hypot(right.x - position.x, right.y - position.y)
       ))
-      .slice(0, 8)
+      .slice(0, renderBudget.remoteGuestLimit)
     : zoneRemoteGuests;
   const activeJourneyMarkers = journeyCheckpoints
     .filter((checkpoint) => checkpoint.zoneId === activeZone.id)
@@ -3939,6 +4067,8 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
             aria-label={`${activeZone.label} 지도`}
             data-zone={activeZone.id}
             data-render-quality={devicePerformance.mode}
+            data-render-budget={renderBudget.ambientMotion}
+            data-render-fps={renderBudget.targetFps}
             data-logical-width={activeZone.bounds.width}
             data-logical-height={activeZone.bounds.height}
             style={{
@@ -4210,6 +4340,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
                       speaker={npc.label}
                       onClose={closeNpcDialogue}
                       onOpenProfile={openNpcProfile}
+                      onChoose={chooseNpcDialogue}
                       placement={npcDialoguePlacement}
                     />
                   ) : null}
@@ -4305,12 +4436,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
             onNavigateAccessibilityLandmark={navigateToAccessibilityLandmark}
           />
 
-          {contextHudAction
-            && !gameOverlayOpen
-            && !directTravelActive
-            && !portalTransition
-            && !routeArrivalNotice
-            && !activeRouteArrivalCue ? (
+          {contextActionVisible && contextHudAction ? (
             <WorldContextAction action={contextHudAction} onActivate={activateContextHudAction} />
           ) : null}
 
@@ -4424,7 +4550,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
             </div>
           ) : null}
 
-          {arrivalAction ? (
+          {arrivalAction && !activeNpcDialogue ? (
             <JourneyNextActionCard
               action={arrivalAction}
               disabled={Boolean(portalTransition)}
@@ -4462,6 +4588,9 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
               onOpenJourney={() => setHudToolsOpen(true)}
               onOpenMenu={openMenu}
               onSettingsOpenChange={setQuickDockSettingsOpen}
+              contextActive={contextActionVisible && contextHudAction?.kind !== "quest"}
+              moving={moving || directTravelActive}
+              routeActive={Boolean(activeJourneyGuideId || pendingJourneyGuideId)}
             />
           </div>
         </div>

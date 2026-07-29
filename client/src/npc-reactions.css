@@ -4,7 +4,7 @@
   left: 50%;
   z-index: 30;
   display: grid;
-  width: 218px;
+  width: 248px;
   gap: 5px;
   border: 3px solid #4d3c37;
   border-radius: 6px;
@@ -99,6 +99,34 @@
   width: 13px;
   height: 13px;
 }
+
+.npc-dialogue__choices {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.npc-dialogue__choices button {
+  display: grid;
+  min-width: 0;
+  min-height: 44px;
+  grid-template-rows: 16px auto;
+  place-items: center;
+  gap: 2px;
+  border: 1px solid #8b7267;
+  border-radius: 3px;
+  padding: 4px 3px;
+  background: #fffdf4;
+  color: #634c4d;
+  font-size: 7px;
+  font-weight: 900;
+  line-height: 1.15;
+  text-align: center;
+}
+
+.npc-dialogue__choices button:nth-child(2) { color: #a04e63; background: #fff0f0; }
+.npc-dialogue__choices button:nth-child(3) { color: #7a5c31; background: #fff5d7; }
+.npc-dialogue__choices svg { width: 15px; height: 15px; }
 
 .npc-dialogue button:focus-visible,
 .guest-reaction-dock button:focus-visible {

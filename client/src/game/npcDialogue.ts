@@ -1,4 +1,4 @@
-import type { WorldZoneId } from "@wedding-game/shared";
+import type { GuestReaction, WorldZoneId } from "@wedding-game/shared";
 import { journeyCheckpointIds, type JourneyCheckpointId } from "./journeyProgress";
 import type { WeddingJourneyTiming } from "./weddingJourneyTiming";
 
@@ -8,7 +8,45 @@ export type NpcDialogue = {
   npcId: NpcId;
   message: string;
   tone: "welcome" | "thanks" | "celebration";
+  responded?: boolean;
 };
+
+export type NpcDialogueChoiceId = "greet" | "heart" | "celebrate";
+
+export type NpcDialogueChoice = {
+  id: NpcDialogueChoiceId;
+  label: string;
+  reaction: GuestReaction;
+};
+
+export const npcDialogueChoices: readonly NpcDialogueChoice[] = [
+  { id: "greet", label: "반갑게 인사", reaction: "wave" },
+  { id: "heart", label: "마음 전하기", reaction: "heart" },
+  { id: "celebrate", label: "축하 전하기", reaction: "celebrate" }
+];
+
+export function resolveNpcDialogueChoice(
+  dialogue: NpcDialogue,
+  choiceId: NpcDialogueChoiceId,
+  nickname: string
+): { dialogue: NpcDialogue; reaction: GuestReaction; status: string } {
+  const choice = npcDialogueChoices.find(({ id }) => id === choiceId) ?? npcDialogueChoices[0];
+  const message = choice.id === "greet"
+    ? dialogue.npcId === "bride"
+      ? `${nickname}님, 이렇게 가까이서 인사 나눌 수 있어 더 반가워요!`
+      : `${nickname}님, 반갑게 맞아주셔서 감사해요. 오늘 편하게 즐겨주세요!`
+    : choice.id === "heart"
+      ? `${nickname}님의 따뜻한 마음, 두 사람 모두 오래도록 간직할게요.`
+      : dialogue.npcId === "bride"
+        ? `${nickname}님의 축하 덕분에 오늘이 더 환하게 빛나요!`
+        : `${nickname}님의 힘찬 축하를 받아 행복하게 잘 살겠습니다!`;
+
+  return {
+    dialogue: { ...dialogue, message, tone: choice.id === "greet" ? "thanks" : "celebration", responded: true },
+    reaction: choice.reaction,
+    status: `${choice.label}을 전했어요`
+  };
+}
 
 type ResolveNpcDialogueInput = {
   npcId: NpcId;

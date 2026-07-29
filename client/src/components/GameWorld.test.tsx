@@ -16,6 +16,7 @@ import { worldDepth } from "../game/worldVisuals";
 import { journeyProgressStorageKey } from "../game/journeyProgress";
 import { gameHudAutoHideDelayMs } from "../game/gameHudVisibility";
 import { worldSessionStorageKey } from "../game/worldSession";
+import { zoneMiniQuestStorageKey } from "../game/zoneMiniQuest";
 import { copyText } from "../invitation/browserActions";
 import { GameFeedbackProvider } from "../feedback/GameFeedbackContext";
 import { defaultFeedbackPreferences } from "../feedback/feedbackPreferences";
@@ -1937,6 +1938,11 @@ describe("GameWorld", () => {
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     advanceInteractionRoute();
     expect(screen.getByLabelText(`${brideNpcLabel}의 인사`)).toHaveTextContent("하객1님");
+    expect(screen.queryByLabelText("도착 후 다음 행동")).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "축하 전하기" }));
+    expect(screen.getByRole("status", { name: "하객1님의 축하" })).toBeInTheDocument();
+    expect(screen.getByLabelText(`${brideNpcLabel}의 인사`)).toHaveTextContent("더 환하게");
+    expect(window.localStorage.getItem(zoneMiniQuestStorageKey)).toContain("bridal-greeting");
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "두 사람 소개" }));
     expect(screen.getByRole("dialog")).toHaveTextContent("신랑신부 정원");
@@ -2675,6 +2681,13 @@ describe("GameWorld", () => {
     fireEvent.click(screen.getByRole("button", { name: "동네로 나가기 이동" }));
     expect(screen.getByRole("button", { name: "동네로 나가기" })).toHaveClass("world-portal--target");
     expect(screen.getByTestId("world-portal-transition")).toHaveAttribute("data-phase", "idle");
+  });
+
+  it("가까운 대상이 없으면 현재 맵의 짧은 퀘스트를 같은 HUD로 안내한다", () => {
+    render(<GameWorld profile={profile} />);
+
+    expect(screen.getByRole("button", { name: "오시는 길 확인" })).toHaveTextContent("출발 준비 · 1/2");
+    expect(screen.getByRole("button", { name: "하객 리액션 열기" })).toBeInTheDocument();
   });
 
   it("이동이 이어지면 상단 HUD를 접고 정지하면 바로 복원한다", () => {

@@ -2,11 +2,12 @@ import type { NpcId } from "./npcDialogue";
 import { portalEntryRect, type Point, type Rect, type WorldPhotoSpot, type WorldPortal } from "./world";
 
 export type ContextHudAction = {
-  kind: "portal" | "photo" | "npc";
+  kind: "portal" | "photo" | "npc" | "quest";
   id: string;
   label: string;
   actionLabel: string;
   distance: number;
+  progressLabel?: string;
 };
 
 export type ContextHudNpc = {

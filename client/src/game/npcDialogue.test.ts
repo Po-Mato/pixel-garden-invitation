@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { resolveNpcDialogue } from "./npcDialogue";
+import { resolveNpcDialogue, resolveNpcDialogueChoice } from "./npcDialogue";
 
 describe("resolveNpcDialogue", () => {
   it("changes the bridal-room greeting after the first bride stamp", () => {
@@ -58,5 +58,19 @@ describe("resolveNpcDialogue", () => {
       completedCheckpointIds: [],
       weddingPhase: "reception"
     }).tone).toBe("celebration");
+  });
+
+  it("대화 선택지를 하객 리액션과 NPC 답변으로 연결한다", () => {
+    const initial = resolveNpcDialogue({
+      npcId: "bride",
+      zoneId: "bridal-room",
+      nickname: "민지",
+      completedCheckpointIds: []
+    });
+    const result = resolveNpcDialogueChoice(initial, "celebrate", "민지");
+
+    expect(result.reaction).toBe("celebrate");
+    expect(result.dialogue.responded).toBe(true);
+    expect(result.dialogue.message).toContain("더 환하게");
   });
 });

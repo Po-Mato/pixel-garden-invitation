@@ -109,13 +109,13 @@ html[data-one-handed-controls="true"][data-joystick-side="right"] .world-control
   }
 
   .guest-reaction-dock__toggle {
-    width: 40px;
+    width: 44px;
     height: 44px;
   }
 
   .world-control-actions .guest-information-trigger--world {
-    width: 42px;
-    min-width: 42px;
+    width: 44px;
+    min-width: 44px;
     min-height: 44px;
   }
 

@@ -1,4 +1,4 @@
-import { Camera, DoorOpen, MessageCircle } from "lucide-react";
+import { Camera, DoorOpen, ListChecks, MessageCircle } from "lucide-react";
 import type { ContextHudAction } from "../game/contextHudAction";
 
 type WorldContextActionProps = {
@@ -7,7 +7,11 @@ type WorldContextActionProps = {
 };
 
 export function WorldContextAction({ action, onActivate }: WorldContextActionProps) {
-  const Icon = action.kind === "portal" ? DoorOpen : action.kind === "photo" ? Camera : MessageCircle;
+  const Icon = action.kind === "portal"
+    ? DoorOpen
+    : action.kind === "photo"
+      ? Camera
+      : action.kind === "npc" ? MessageCircle : ListChecks;
   return (
     <button
       type="button"
@@ -20,7 +24,7 @@ export function WorldContextAction({ action, onActivate }: WorldContextActionPro
       }}
     >
       <Icon aria-hidden="true" />
-      <span><small>가까운 장소</small><strong>{action.label}</strong></span>
+      <span><small>{action.progressLabel ?? "가까운 장소"}</small><strong>{action.label}</strong></span>
       <em>{action.actionLabel}</em>
     </button>
   );

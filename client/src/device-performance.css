@@ -27,6 +27,29 @@ html[data-effects-quality="minimal"] .responsive-gallery-image--loading {
   transform: none;
 }
 
+html[data-performance-mode="lite"] .world-map__stage[data-render-budget="minimal"] :is(
+  .world-collectible,
+  .world-companion-link line,
+  .world-crowd-heatmap__cell i,
+  .guest-reaction-bubble,
+  .wedding-npc__reaction,
+  .world-portal__tile,
+  .world-portal__tile::after,
+  .world-journey-route polyline,
+  .world-journey-route__turn
+) {
+  animation: none !important;
+  transition: none !important;
+}
+
+html[data-performance-mode="lite"] .world-map__stage[data-render-budget="minimal"] :is(
+  .character-layer,
+  .world-decoration,
+  .wedding-npc__sprite
+) {
+  will-change: auto !important;
+}
+
 html[data-effects-quality="reduced"] :is(
   .bottom-sheet__backdrop,
   .game-guide,

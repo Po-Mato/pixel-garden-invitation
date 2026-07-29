@@ -123,4 +123,41 @@ describe("게임 빠른 도구 도크", () => {
     expect(window.location.search).toBe("?guest=family");
     expect(window.location.hash).toBe("#game");
   });
+
+  it("이동과 근접 상호작용 상태에서는 보조 버튼을 자동으로 줄인다", () => {
+    const { rerender } = render(
+      <GameFeedbackProvider initialPreferences={defaultFeedbackPreferences}>
+        <GameQuickDock
+          menuOpen={false}
+          menuButtonRef={createRef<HTMLButtonElement>()}
+          onPause={vi.fn()}
+          onReact={vi.fn()}
+          onGuestInformationOpenChange={vi.fn()}
+          onOpenJourney={vi.fn()}
+          onOpenMenu={vi.fn()}
+          moving
+        />
+      </GameFeedbackProvider>
+    );
+
+    expect(screen.getByRole("button", { name: "하객 리액션 열기" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "공지·FAQ 열기" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "초대장 메뉴" })).toBeInTheDocument();
+
+    rerender(
+      <GameFeedbackProvider initialPreferences={defaultFeedbackPreferences}>
+        <GameQuickDock
+          menuOpen={false}
+          menuButtonRef={createRef<HTMLButtonElement>()}
+          onPause={vi.fn()}
+          onReact={vi.fn()}
+          onGuestInformationOpenChange={vi.fn()}
+          onOpenJourney={vi.fn()}
+          onOpenMenu={vi.fn()}
+          routeActive
+        />
+      </GameFeedbackProvider>
+    );
+    expect(screen.getByRole("button", { name: "여정 도구 열기" })).toBeInTheDocument();
+  });
 });
