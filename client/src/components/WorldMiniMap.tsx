@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent, type WheelEvent as ReactWheelEvent } from "react";
 import { createPortal } from "react-dom";
-import { ChevronLeft, ChevronRight, Maximize2, Mic, Navigation, RefreshCw, RotateCcw, ScanLine, X, ZoomIn, ZoomOut } from "lucide-react";
+import { ChevronLeft, ChevronRight, Maximize2, Mic, Navigation, RefreshCw, RotateCcw, ScanLine, Settings2, Volume2, X, ZoomIn, ZoomOut } from "lucide-react";
 import type { Direction } from "@wedding-game/shared";
 import type { CameraTransform, ViewportSize } from "../game/camera";
 import {
@@ -18,8 +18,14 @@ import { worldAccessibilityLandmarks, type WorldAccessibilityLandmark } from "..
 import {
   destinationVoiceSelectionAvailable,
   listenForDestinationVoiceResult,
-  playDestinationVoiceCue
+  playDestinationVoiceCue,
+  speakDestinationVoiceGuidance
 } from "../accessibility/destinationVoiceSelection";
+import {
+  defaultDestinationVoicePreferences,
+  loadDestinationVoicePreferences,
+  saveDestinationVoicePreferences
+} from "../accessibility/destinationVoicePreferences";
 import "../mini-map-expanded.css";
 
 export type MiniMapRouteKind = "preview" | "journey" | "selected";
@@ -320,8 +326,10 @@ export function WorldMiniMap({
   const accessibilityLandmarks = worldAccessibilityLandmarks(zone, player);
   const [selectedLandmarkIndex, setSelectedLandmarkIndex] = useState(0);
   const [autoScan, setAutoScan] = useState(false);
-  const [voiceStatus, setVoiceStatus] = useState<"idle" | "listening" | "selected" | "confirming" | "canceled" | "error">("idle");
+  const [voiceStatus, setVoiceStatus] = useState<"idle" | "listening" | "selected" | "repeated" | "confirming" | "canceled" | "error">("idle");
   const [voiceTranscript, setVoiceTranscript] = useState("");
+  const [voicePreferences, setVoicePreferences] = useState(loadDestinationVoicePreferences);
+  const [voiceSettingsOpen, setVoiceSettingsOpen] = useState(false);
   const pendingVoiceMoveRef = useRef<number | null>(null);
   const selectedLandmark = accessibilityLandmarks[Math.min(selectedLandmarkIndex, Math.max(0, accessibilityLandmarks.length - 1))] ?? null;
 
@@ -336,13 +344,22 @@ export function WorldMiniMap({
     }
   };
 
+  const repeatSelectedLandmark = () => {
+    if (!selectedLandmark) return;
+    speakDestinationVoiceGuidance(
+      `${selectedLandmark.label}, ${selectedLandmark.directionLabel}, 약 ${selectedLandmark.tileDistance}칸입니다.`
+    );
+    setVoiceStatus("repeated");
+    playDestinationVoiceCue("selected");
+  };
+
   const startVoiceRecognition = () => {
     if (!selectedLandmark || accessibilityLandmarks.length === 0) return;
     cancelPendingVoiceMove(false);
     setAutoScan(false);
     setVoiceTranscript("");
     setVoiceStatus("listening");
-    void listenForDestinationVoiceResult(accessibilityLandmarks.length).then(({ command, transcript }) => {
+    void listenForDestinationVoiceResult(accessibilityLandmarks.length, undefined, 6_000, voicePreferences).then(({ command, transcript }) => {
       setVoiceTranscript(transcript);
       if (!command) {
         setVoiceStatus("error");
@@ -364,6 +381,10 @@ export function WorldMiniMap({
         playDestinationVoiceCue("selected");
         return;
       }
+      if (command.type === "repeat") {
+        repeatSelectedLandmark();
+        return;
+      }
       if (command.type === "move") {
         const landmarkToMove = selectedLandmark;
         setVoiceStatus("confirming");
@@ -380,6 +401,10 @@ export function WorldMiniMap({
       playDestinationVoiceCue("selected");
     });
   };
+
+  useEffect(() => {
+    saveDestinationVoicePreferences(voicePreferences);
+  }, [voicePreferences]);
 
   useEffect(() => {
     if (!expanded) return;
@@ -732,6 +757,16 @@ export function WorldMiniMap({
                     disabled={!destinationVoiceSelectionAvailable() || voiceStatus === "listening" || voiceStatus === "confirming"}
                     onClick={startVoiceRecognition}
                   >{voiceStatus === "error" ? <RefreshCw aria-hidden="true" /> : <Mic aria-hidden="true" />}{voiceStatus === "listening" ? "듣는 중" : voiceStatus === "error" ? "다시 듣기" : "음성 명령"}</button>
+                  <button type="button" onClick={repeatSelectedLandmark}>
+                    <Volume2 aria-hidden="true" />안내 반복
+                  </button>
+                  <button
+                    type="button"
+                    aria-pressed={voiceSettingsOpen}
+                    aria-label="음성 명령 설정"
+                    title="음성 명령 설정"
+                    onClick={() => setVoiceSettingsOpen((current) => !current)}
+                  ><Settings2 aria-hidden="true" /></button>
                   {voiceStatus === "confirming" ? (
                     <button type="button" onClick={() => cancelPendingVoiceMove()}>
                       <X aria-hidden="true" />이동 취소
@@ -740,15 +775,42 @@ export function WorldMiniMap({
                 </div>
                 <p className="world-minimap-expanded__switch-status" aria-live="polite">
                   {autoScan ? "목적지가 차례로 바뀝니다. 원하는 목적지에서 스위치를 누르세요."
-                    : voiceStatus === "listening" ? `번호 또는 다음·이동·취소·닫기 중 하나를 말해 주세요.`
+                    : voiceStatus === "listening" ? `번호 또는 ${voicePreferences.nextPhrase}·${voicePreferences.movePhrase}·${voicePreferences.cancelPhrase}·${voicePreferences.repeatPhrase} 중 하나를 말해 주세요.`
                       : voiceStatus === "confirming" ? `${selectedLandmark.label}(으)로 2초 뒤 이동해요. 취소할 수 있어요.`
                         : voiceStatus === "canceled" ? "음성 이동을 취소했어요."
                       : voiceStatus === "selected" ? `${selectedLandmarkIndex + 1}번 목적지를 선택했어요.`
+                        : voiceStatus === "repeated" ? `${selectedLandmark.label} 안내를 다시 읽었어요.`
                         : voiceStatus === "error" ? voiceTranscript
                           ? `“${voiceTranscript}”로 들었어요. 명령을 확인한 뒤 다시 말해 주세요.`
                           : "명령을 듣지 못했어요. 다시 듣기나 화살표를 이용해 주세요."
                           : "화살표·번호·자동 스캔·음성 명령 중 편한 방법을 이용하세요."}
                 </p>
+                {voiceSettingsOpen ? (
+                  <fieldset className="world-minimap-expanded__voice-settings">
+                    <legend>음성 호출어</legend>
+                    {([
+                      ["movePhrase", "이동"],
+                      ["nextPhrase", "다음"],
+                      ["cancelPhrase", "취소"],
+                      ["repeatPhrase", "반복"]
+                    ] as const).map(([key, label]) => (
+                      <label key={key}>
+                        <span>{label}</span>
+                        <input
+                          value={voicePreferences[key]}
+                          maxLength={12}
+                          onChange={(event) => setVoicePreferences((current) => ({
+                            ...current,
+                            [key]: event.target.value
+                          }))}
+                        />
+                      </label>
+                    ))}
+                    <button type="button" onClick={() => setVoicePreferences(defaultDestinationVoicePreferences)}>
+                      <RotateCcw aria-hidden="true" />기본값
+                    </button>
+                  </fieldset>
+                ) : null}
               </section>
             ) : null}
             {journeyStops.length > 0 ? (

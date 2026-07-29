@@ -13,6 +13,7 @@ export type NetworkConnectionSnapshot = {
   type?: string;
   effectiveType?: string;
   saveData?: boolean;
+  downlink?: number;
 };
 
 type PreferencesStorage = Pick<Storage, "getItem" | "setItem">;

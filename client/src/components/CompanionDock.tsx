@@ -1,4 +1,4 @@
-import { Hand, Heart, LocateFixed, MapPinned, QrCode, Route, Target, UserPlus, UsersRound, X } from "lucide-react";
+import { Check, Hand, Heart, LocateFixed, MapPinned, QrCode, Route, Target, UserPlus, UsersRound, X } from "lucide-react";
 import type { CompanionPing, WorldZoneId } from "@wedding-game/shared";
 import type { CompanionCandidate } from "../game/companionMode";
 
@@ -24,8 +24,12 @@ type CompanionDockProps = {
   onOpenWaitingRoom?: () => void;
   shareStatus?: string | null;
   rendezvousLabel?: string | null;
+  rendezvousPending?: boolean;
+  rendezvousProposalNickname?: string | null;
   onReserveRendezvous?: () => void;
   onCancelRendezvous?: () => void;
+  onAcceptRendezvous?: () => void;
+  onDeclineRendezvous?: () => void;
 };
 
 export function CompanionDock({
@@ -50,8 +54,12 @@ export function CompanionDock({
   onOpenWaitingRoom,
   shareStatus = null,
   rendezvousLabel = null,
+  rendezvousPending = false,
+  rendezvousProposalNickname = null,
   onReserveRendezvous,
-  onCancelRendezvous
+  onCancelRendezvous,
+  onAcceptRendezvous,
+  onDeclineRendezvous
 }: CompanionDockProps) {
   if (candidates.length === 0 && !activeGuestId && !pendingGuestId && !onOpenWaitingRoom) return null;
   const active = candidates.find(({ guestId }) => guestId === activeGuestId) ?? null;
@@ -147,18 +155,36 @@ export function CompanionDock({
           <Route aria-hidden="true" />{rejoinZoneLabel ?? "다른 구역"}로 재합류
         </button>
       ) : null}
-      {hasActive && onReserveRendezvous && !rejoinZoneId ? (
+      {rendezvousProposalNickname && onAcceptRendezvous && onDeclineRendezvous ? (
+        <div className="world-companion-dock__rendezvous-prompt" role="group" aria-label="합류 지점 제안 응답">
+          <span>{rendezvousProposalNickname}님의 합류 제안</span>
+          <button type="button" onClick={(event) => { event.stopPropagation(); onAcceptRendezvous(); }}>
+            <Check aria-hidden="true" />수락
+          </button>
+          <button type="button" onClick={(event) => { event.stopPropagation(); onDeclineRendezvous(); }}>
+            <X aria-hidden="true" />거절
+          </button>
+        </div>
+      ) : null}
+      {hasActive && onReserveRendezvous && !rejoinZoneId && !rendezvousProposalNickname ? (
         <button
           type="button"
           className="world-companion-dock__rendezvous"
           onClick={(event) => {
             event.stopPropagation();
-            if (rendezvousLabel && onCancelRendezvous) onCancelRendezvous();
+            if ((rendezvousLabel || rendezvousPending) && onCancelRendezvous) onCancelRendezvous();
             else onReserveRendezvous();
           }}
         >
-          <Target aria-hidden="true" />{rendezvousLabel ? "합류 예약 취소" : "중간 타일에서 만나기"}
+          <Target aria-hidden="true" />{rendezvousLabel
+            ? "합류 예약 취소"
+            : rendezvousPending ? "합류 제안 취소" : "중간 타일에서 만나기"}
         </button>
+      ) : null}
+      {rendezvousPending ? (
+        <p className="world-companion-dock__rendezvous-status" role="status">
+          <Target aria-hidden="true" />상대의 합류 수락을 기다리는 중
+        </p>
       ) : null}
       {rendezvousLabel ? (
         <p className="world-companion-dock__rendezvous-status" role="status">

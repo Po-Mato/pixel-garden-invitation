@@ -3,8 +3,11 @@ import {
   applyGameMemoryKeepsakeTemplate,
   createGameMemoryKeepsakeTemplate,
   defaultGameMemoryKeepsakeOptions,
+  createSingleImagePdf,
   gameMemoryKeepsakeFilename,
   gameMemoryKeepsakePrintFilename,
+  gameMemoryKeepsakePdfFilename,
+  gameMemoryKeepsakePrintGuide,
   gameMemoryKeepsakePrintLayout,
   loadGameMemoryKeepsakeOptions,
   loadGameMemoryKeepsakeTemplates,
@@ -12,6 +15,7 @@ import {
   orderGameMemoryKeepsakePhotos,
   saveGameMemoryKeepsakeOptions,
   saveGameMemoryKeepsakePrint,
+  saveGameMemoryKeepsakePdf,
   saveGameMemoryKeepsakeTemplates,
   shareGameMemoryKeepsake,
   type GameMemoryKeepsakeData
@@ -35,8 +39,8 @@ describe("gameMemoryKeepsake", () => {
   });
 
   it("uses print-ready A4 and postcard canvas sizes and filenames", () => {
-    expect(gameMemoryKeepsakePrintLayout("a4")).toEqual({ width: 2480, height: 3508, margin: 150, label: "A4" });
-    expect(gameMemoryKeepsakePrintLayout("postcard")).toEqual({ width: 1200, height: 1800, margin: 72, label: "4×6 엽서" });
+    expect(gameMemoryKeepsakePrintLayout("a4")).toEqual({ width: 2480, height: 3508, margin: 150, safeInset: 96, label: "A4", pageWidthPoints: 595.28, pageHeightPoints: 841.89 });
+    expect(gameMemoryKeepsakePrintLayout("postcard")).toEqual({ width: 1200, height: 1800, margin: 72, safeInset: 54, label: "4×6 엽서", pageWidthPoints: 288, pageHeightPoints: 432 });
     expect(gameMemoryKeepsakePrintFilename(" 정원 하객 ", "a4"))
       .toBe("wedding-garden-memory-정원-하객-a4.png");
 
@@ -48,6 +52,35 @@ describe("gameMemoryKeepsake", () => {
     saveGameMemoryKeepsakePrint(new Blob(["print"]), "정원 하객", "postcard", environment);
     expect(environment.clickDownload).toHaveBeenCalledWith("blob:print", "wedding-garden-memory-정원-하객-postcard.png");
     expect(environment.revokeObjectUrl).toHaveBeenCalledWith("blob:print");
+
+    saveGameMemoryKeepsakePdf(new Blob(["pdf"]), "정원 하객", "a4", environment);
+    expect(environment.clickDownload).toHaveBeenCalledWith("blob:print", "wedding-garden-memory-정원-하객-a4.pdf");
+    expect(gameMemoryKeepsakePdfFilename(" 정원 하객 ", "postcard"))
+      .toBe("wedding-garden-memory-정원-하객-postcard.pdf");
+  });
+
+  it("keeps trim and safe guides inside the printable page", () => {
+    for (const format of ["a4", "postcard"] as const) {
+      const guide = gameMemoryKeepsakePrintGuide(format);
+      expect(guide.trim.x).toBeGreaterThan(0);
+      expect(guide.trim.y).toBeGreaterThan(0);
+      expect(guide.safe.x).toBeGreaterThan(guide.trim.x);
+      expect(guide.safe.width).toBeLessThan(guide.trim.width);
+      expect(guide.safe.y + guide.safe.height).toBeLessThan(guide.trim.y + guide.trim.height);
+    }
+  });
+
+  it("wraps a JPEG in a one-page print PDF", async () => {
+    const pdf = createSingleImagePdf(new Uint8Array([0xff, 0xd8, 0xff, 0xd9]), 1200, 1800, 288, 432);
+    expect(pdf.type).toBe("application/pdf");
+    const bytes = await new Promise<Uint8Array>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(new Uint8Array(reader.result as ArrayBuffer));
+      reader.onerror = () => reject(reader.error);
+      reader.readAsArrayBuffer(pdf);
+    });
+    expect(new TextDecoder().decode(bytes.slice(0, 8))).toBe("%PDF-1.4");
+    expect(new TextDecoder().decode(bytes.slice(-6))).toContain("%%EOF");
   });
 
   it("shares the keepsake when file sharing is available", async () => {

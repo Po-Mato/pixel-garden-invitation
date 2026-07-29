@@ -96,4 +96,40 @@ describe("CompanionDock", () => {
     fireEvent.click(screen.getByRole("button", { name: "합류 예약 취소" }));
     expect(onCancel).toHaveBeenCalledOnce();
   });
+
+  it("waits for approval and lets the invited companion accept or decline", () => {
+    const onAccept = vi.fn();
+    const onDecline = vi.fn();
+    const { rerender } = render(
+      <CompanionDock
+        candidates={[companion]}
+        activeGuestId={companion.guestId}
+        role="leader"
+        onInvite={vi.fn()}
+        onStop={vi.fn()}
+        rendezvousPending
+        onReserveRendezvous={vi.fn()}
+        onCancelRendezvous={vi.fn()}
+      />
+    );
+    expect(screen.getByRole("status")).toHaveTextContent("수락을 기다리는 중");
+
+    rerender(
+      <CompanionDock
+        candidates={[companion]}
+        activeGuestId={companion.guestId}
+        role="leader"
+        onInvite={vi.fn()}
+        onStop={vi.fn()}
+        rendezvousProposalNickname="하객2"
+        onReserveRendezvous={vi.fn()}
+        onAcceptRendezvous={onAccept}
+        onDeclineRendezvous={onDecline}
+      />
+    );
+    fireEvent.click(screen.getByRole("button", { name: "수락" }));
+    fireEvent.click(screen.getByRole("button", { name: "거절" }));
+    expect(onAccept).toHaveBeenCalledOnce();
+    expect(onDecline).toHaveBeenCalledOnce();
+  });
 });

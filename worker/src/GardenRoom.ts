@@ -247,6 +247,9 @@ export class GardenRoom {
       || parsed.type === "companion_destination_request"
       || parsed.type === "companion_portal_ready"
       || parsed.type === "companion_ping"
+      || parsed.type === "companion_rendezvous_propose"
+      || parsed.type === "companion_rendezvous_reply"
+      || parsed.type === "companion_rendezvous_cancel"
     ) {
       const now = Date.now();
       if (now - current.lastSocialAt < socialThrottleMs) return;
@@ -316,6 +319,51 @@ export class GardenRoom {
           guestNickname: current.guest.nickname,
           ping: parsed.ping,
           zoneId: current.guest.zoneId
+        }));
+        return;
+      }
+
+      if (parsed.type === "companion_rendezvous_propose") {
+        const target = this.findGuestSocket(parsed.targetGuestId);
+        if (
+          !target
+          || target.attachment.guest.zoneId !== current.guest.zoneId
+          || parsed.zoneId !== current.guest.zoneId
+        ) return;
+        const point = clampMovePosition(parsed.zoneId, parsed.x, parsed.y);
+        target.socket.send(encode({
+          type: "companion_rendezvous_proposed",
+          guestId: current.guest.guestId,
+          guestNickname: current.guest.nickname,
+          proposalId: parsed.proposalId,
+          zoneId: parsed.zoneId,
+          x: point.x,
+          y: point.y
+        }));
+        return;
+      }
+
+      if (parsed.type === "companion_rendezvous_reply") {
+        const requester = this.findGuestSocket(parsed.requesterGuestId);
+        if (!requester || requester.attachment.guest.zoneId !== current.guest.zoneId) return;
+        requester.socket.send(encode({
+          type: "companion_rendezvous_replied",
+          guestId: current.guest.guestId,
+          guestNickname: current.guest.nickname,
+          proposalId: parsed.proposalId,
+          accepted: parsed.accepted,
+          zoneId: current.guest.zoneId
+        }));
+        return;
+      }
+
+      if (parsed.type === "companion_rendezvous_cancel") {
+        const target = this.findGuestSocket(parsed.targetGuestId);
+        if (!target) return;
+        target.socket.send(encode({
+          type: "companion_rendezvous_canceled",
+          guestId: current.guest.guestId,
+          proposalId: parsed.proposalId
         }));
         return;
       }

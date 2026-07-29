@@ -18,12 +18,27 @@ describe("destination voice selection", () => {
     expect(parseDestinationVoiceNumber("목적지", 4)).toBeNull();
   });
 
-  it("understands next, move, cancel, and close game commands", () => {
+  it("understands next, move, cancel, repeat, and close game commands", () => {
     expect(parseDestinationVoiceCommand("다음 목적지", 4)).toEqual({ type: "next" });
     expect(parseDestinationVoiceCommand("여기로 이동", 4)).toEqual({ type: "move" });
     expect(parseDestinationVoiceCommand("미니맵 닫기", 4)).toEqual({ type: "close" });
     expect(parseDestinationVoiceCommand("이동 취소", 4)).toEqual({ type: "cancel" });
+    expect(parseDestinationVoiceCommand("안내 반복", 4)).toEqual({ type: "repeat" });
     expect(parseDestinationVoiceCommand("3번", 4)).toEqual({ type: "number", index: 2 });
+  });
+
+  it("honors user-defined call phrases before the built-in aliases", () => {
+    const preferences = {
+      movePhrase: "출발해",
+      nextPhrase: "넘어가",
+      cancelPhrase: "잠깐",
+      repeatPhrase: "다시 알려줘"
+    };
+    expect(parseDestinationVoiceCommand("이제 출발해", 4, preferences)).toEqual({ type: "move" });
+    expect(parseDestinationVoiceCommand("다시 알려줘", 4, preferences)).toEqual({ type: "repeat" });
+    expect(parseDestinationVoiceCommand("잠깐 멈춰", 4, preferences)).toEqual({ type: "cancel" });
+    expect(parseDestinationVoiceCommand("3번", 4, { ...preferences, cancelPhrase: "" }))
+      .toEqual({ type: "number", index: 2 });
   });
 
   it("returns the heard phrase even when it is not a valid command", async () => {

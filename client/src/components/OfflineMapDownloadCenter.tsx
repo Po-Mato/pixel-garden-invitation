@@ -26,6 +26,12 @@ import {
   type NetworkConnectionSnapshot,
   type OfflineMapPreferences
 } from "../pwa/offlineMapPolicy";
+import {
+  estimatedOfflineDownloadSeconds,
+  formatOfflineDownloadDuration,
+  measureOfflineAssetGroups,
+  type OfflineAssetGroupMeasurement
+} from "../pwa/offlineAssetMeasurement";
 
 type OfflineMapDownloadCenterProps = {
   currentZoneId?: WorldZoneId;
@@ -41,12 +47,29 @@ function formatDeletionDate(timestamp: number) {
   return new Intl.DateTimeFormat("ko-KR", { month: "short", day: "numeric" }).format(new Date(timestamp));
 }
 
+type NetworkInformationLike = NetworkConnectionSnapshot & {
+  addEventListener?: (type: "change", listener: () => void) => void;
+  removeEventListener?: (type: "change", listener: () => void) => void;
+};
+
+function currentNetworkConnection() {
+  const connection = (navigator as Navigator & { connection?: NetworkInformationLike }).connection;
+  return connection ? {
+    type: connection.type,
+    effectiveType: connection.effectiveType,
+    saveData: connection.saveData,
+    downlink: connection.downlink
+  } : null;
+}
+
 export function OfflineMapDownloadCenter({ currentZoneId }: OfflineMapDownloadCenterProps) {
   const [client, setClient] = useState<PwaClientSnapshot>(getPwaClientSnapshot);
   const [storage, setStorage] = useState<{ usage: number; quota: number } | null>(null);
   const [applyingUpdate, setApplyingUpdate] = useState(false);
   const [preferences, setPreferences] = useState(loadOfflineMapPreferences);
   const [automationStatus, setAutomationStatus] = useState("저장된 지도 상태를 확인하고 있어요.");
+  const [networkConnection, setNetworkConnection] = useState<NetworkConnectionSnapshot | null>(currentNetworkConnection);
+  const [serverMeasurements, setServerMeasurements] = useState<Record<string, OfflineAssetGroupMeasurement> | null>(null);
   const cleanupSignatureRef = useRef("");
   const refreshSignatureRef = useRef("");
   const groups = useMemo(() => Object.fromEntries(gardenWorld.zones.map((zone) => [
@@ -68,7 +91,19 @@ export function OfflineMapDownloadCenter({ currentZoneId }: OfflineMapDownloadCe
     zoneId,
     estimatedOfflineAssetGroupBytes(urls)
   ])), [groups]);
-  const estimatedJourneyBytes = Object.values(estimatedBytesByZone).reduce((sum, bytes) => sum + bytes, 0);
+  const journeyMeasurement = serverMeasurements
+    ? Object.values(serverMeasurements).reduce((summary, measurement) => ({
+      bytes: summary.bytes + measurement.bytes,
+      measuredFiles: summary.measuredFiles + measurement.measuredFiles,
+      totalFiles: summary.totalFiles + measurement.totalFiles
+    }), { bytes: 0, measuredFiles: 0, totalFiles: 0 })
+    : null;
+  const estimatedJourneyBytes = journeyMeasurement?.bytes
+    ?? Object.values(estimatedBytesByZone).reduce((sum, bytes) => sum + bytes, 0);
+  const journeyDuration = formatOfflineDownloadDuration(estimatedOfflineDownloadSeconds(
+    estimatedJourneyBytes,
+    networkConnection
+  ));
 
   const refreshStorage = () => {
     if (!navigator.storage?.estimate) return;
@@ -85,6 +120,15 @@ export function OfflineMapDownloadCenter({ currentZoneId }: OfflineMapDownloadCe
     });
     refreshStorage();
     return unsubscribe;
+  }, [groups]);
+
+  useEffect(() => {
+    if (!navigator.onLine) return;
+    let active = true;
+    void measureOfflineAssetGroups(groups).then((measurements) => {
+      if (active) setServerMeasurements(measurements);
+    });
+    return () => { active = false; };
   }, [groups]);
 
   useEffect(() => {
@@ -105,12 +149,9 @@ export function OfflineMapDownloadCenter({ currentZoneId }: OfflineMapDownloadCe
   }, [client.zoneCaches, currentZoneId, groups, preferences]);
 
   useEffect(() => {
-    type NetworkInformationLike = NetworkConnectionSnapshot & {
-      addEventListener?: (type: "change", listener: () => void) => void;
-      removeEventListener?: (type: "change", listener: () => void) => void;
-    };
     const connection = (navigator as Navigator & { connection?: NetworkInformationLike }).connection;
     const refreshOutdated = () => {
+      setNetworkConnection(currentNetworkConnection());
       const outdatedGroups = Object.fromEntries(Object.entries(groups).filter(([zoneId]) => (
         client.zoneCaches[zoneId]?.state === "outdated"
       )));
@@ -208,8 +249,8 @@ export function OfflineMapDownloadCenter({ currentZoneId }: OfflineMapDownloadCe
           <small>{journeyPreparing
             ? `${journeySaved}/${gardenWorld.zones.length}개 구역 저장 중`
             : journeyReady ? "모든 구역을 최신 상태로 저장했어요"
-              : journeyOutdated > 0 ? `${journeyOutdated}개 구역 업데이트 필요 · 예상 ${formatBytes(estimatedJourneyBytes)}`
-                : `${journeySaved}/${gardenWorld.zones.length}개 구역 저장됨 · 예상 ${formatBytes(estimatedJourneyBytes)}`}</small>
+              : journeyOutdated > 0 ? `${journeyOutdated}개 구역 업데이트 필요 · ${journeyMeasurement ? "서버 기준" : "예상"} ${formatBytes(estimatedJourneyBytes)} · ${journeyDuration}`
+                : `${journeySaved}/${gardenWorld.zones.length}개 구역 저장됨 · ${journeyMeasurement ? "서버 기준" : "예상"} ${formatBytes(estimatedJourneyBytes)} · ${journeyDuration}`}</small>
         </span>
         {journeyReady ? (
           <button
@@ -241,7 +282,14 @@ export function OfflineMapDownloadCenter({ currentZoneId }: OfflineMapDownloadCe
           const outdated = cache.state === "outdated";
           const preparing = cache.state === "preparing";
           const percent = cache.total > 0 ? Math.round((cache.completed / cache.total) * 100) : 0;
-          const estimatedBytes = estimatedBytesByZone[zone.id] ?? 0;
+          const measurement = serverMeasurements?.[zone.id];
+          const estimatedBytes = measurement?.bytes ?? estimatedBytesByZone[zone.id] ?? 0;
+          const estimateSource = measurement
+            ? measurement.measuredFiles === measurement.totalFiles
+              ? "서버 기준"
+              : `서버 ${measurement.measuredFiles}/${measurement.totalFiles} + 추정`
+            : "예상";
+          const duration = formatOfflineDownloadDuration(estimatedOfflineDownloadSeconds(estimatedBytes, networkConnection));
           const deletionAt = scheduledOfflineZoneDeletionAt(cache, zone.id, currentZoneId, preferences);
           const retentionLabel = zone.id === currentZoneId
             ? "현재 지도 보호"
@@ -253,11 +301,11 @@ export function OfflineMapDownloadCenter({ currentZoneId }: OfflineMapDownloadCe
               <MapPinned aria-hidden="true" />
               <span>
                 <strong>{zone.label}{zone.id === currentZoneId ? " · 현재" : ""}</strong>
-                <small>{preparing ? `${percent}% 저장 중 · 예상 ${formatBytes(estimatedBytes)}`
+                <small>{preparing ? `${percent}% 저장 중 · ${estimateSource} ${formatBytes(estimatedBytes)} · ${duration}`
                   : ready ? `${formatBytes(cache.bytes)} · ${retentionLabel}`
                     : outdated ? `${formatBytes(cache.bytes)} · 업데이트 필요 · ${retentionLabel}`
-                      : cache.state === "error" ? `저장 실패 · 예상 ${formatBytes(estimatedBytes)}`
-                        : `저장 안 됨 · 예상 ${formatBytes(estimatedBytes)}`}</small>
+                      : cache.state === "error" ? `저장 실패 · ${estimateSource} ${formatBytes(estimatedBytes)} · ${duration}`
+                        : `저장 안 됨 · ${estimateSource} ${formatBytes(estimatedBytes)} · ${duration}`}</small>
               </span>
               {preparing ? <LoaderCircle className="offline-map-download__spinner" aria-label={`${zone.label} 저장 중`} /> : null}
               {ready ? (

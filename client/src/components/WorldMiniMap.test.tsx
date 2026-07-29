@@ -272,4 +272,25 @@ describe("WorldMiniMap", () => {
     fireEvent.keyDown(window, { key: " " });
     expect(onNavigate).toHaveBeenCalledWith(expect.objectContaining({ id: expect.any(String) }));
   });
+
+  it("repeats landmark guidance and edits custom voice call phrases", () => {
+    const zone = getWorldZone(gardenWorld, "lobby");
+    const viewport = { width: 390, height: 520 };
+    render(<WorldMiniMap
+      zone={zone}
+      player={zone.spawn}
+      direction="down"
+      camera={computeCameraTransform({ player: zone.spawn, viewport, bounds: zone.bounds, zoom: 1 })}
+      viewport={viewport}
+      targetPortalId={null}
+    />);
+    fireEvent.click(screen.getByRole("button", { name: "미니맵 확대 보기" }));
+    fireEvent.click(screen.getByRole("button", { name: "안내 반복" }));
+    expect(screen.getByText(/안내를 다시 읽었어요/)).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "음성 명령 설정" }));
+    const movePhrase = screen.getByRole("textbox", { name: "이동" });
+    fireEvent.change(movePhrase, { target: { value: "출발해" } });
+    expect(movePhrase).toHaveValue("출발해");
+  });
 });

@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { PwaClientSnapshot } from "../pwa/pwaClient";
 import { OfflineMapDownloadCenter } from "./OfflineMapDownloadCenter";
@@ -11,7 +11,14 @@ const mocks = vi.hoisted(() => ({
   removeJourney: vi.fn(),
   applyUpdate: vi.fn(async () => true),
   checkUpdate: vi.fn(async () => undefined),
-  start: vi.fn(async () => null)
+  start: vi.fn(async () => null),
+  measure: vi.fn(async (groups: Record<string, string[]>) => Object.fromEntries(
+    Object.entries(groups).map(([zoneId, urls]) => [zoneId, {
+      bytes: urls.length * 100_000,
+      measuredFiles: urls.length,
+      totalFiles: urls.length
+    }])
+  ))
 }));
 
 const snapshot: PwaClientSnapshot = {
@@ -44,16 +51,22 @@ vi.mock("../pwa/pwaClient", () => ({
   startPwaClient: mocks.start
 }));
 
+vi.mock("../pwa/offlineAssetMeasurement", () => ({
+  measureOfflineAssetGroups: mocks.measure,
+  estimatedOfflineDownloadSeconds: () => 4,
+  formatOfflineDownloadDuration: () => "약 4초"
+}));
+
 describe("OfflineMapDownloadCenter", () => {
   beforeEach(() => vi.clearAllMocks());
 
-  it("shows saved size and manages each map independently", () => {
+  it("shows server-measured size and manages each map independently", async () => {
     render(<OfflineMapDownloadCenter currentZoneId="home" />);
     expect(screen.getByText("우리 집 · 현재")).toBeInTheDocument();
     expect(screen.getByText("저장됨 2.0MB")).toBeInTheDocument();
-    expect(screen.getAllByText(/저장 안 됨 · 예상/).length).toBeGreaterThan(0);
+    await waitFor(() => expect(screen.getAllByText(/저장 안 됨 · 서버 기준/).length).toBeGreaterThan(0));
     expect(screen.getByText(/2.0MB · .*자동 삭제 예정/)).toBeInTheDocument();
-    expect(screen.getByText(/개 구역 저장됨 · 예상/)).toBeInTheDocument();
+    expect(screen.getByText(/개 구역 저장됨 · 서버 기준 .*약 4초/)).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "우리 집 오프라인 지도 저장" }));
     expect(mocks.prepare).toHaveBeenCalledWith("home", expect.arrayContaining([

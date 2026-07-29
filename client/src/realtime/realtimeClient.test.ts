@@ -200,6 +200,25 @@ describe("connectRealtime", () => {
       guestId: "guest_invited",
       portalId: "home-to-neighborhood",
       destinationZoneId: "neighborhood"
+    }, {
+      type: "companion_rendezvous_proposed",
+      guestId: "guest_invited",
+      guestNickname: "수락 하객",
+      proposalId: "meet-123",
+      zoneId: "home",
+      x: 160,
+      y: 224
+    }, {
+      type: "companion_rendezvous_replied",
+      guestId: "guest_invited",
+      guestNickname: "수락 하객",
+      proposalId: "meet-123",
+      accepted: true,
+      zoneId: "home"
+    }, {
+      type: "companion_rendezvous_canceled",
+      guestId: "guest_invited",
+      proposalId: "meet-123"
     }];
 
     messages.forEach((message) => socket.emit("message", new MessageEvent("message", {

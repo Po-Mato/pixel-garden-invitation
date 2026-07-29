@@ -49,6 +49,9 @@ export type ClientMessage =
   | { type: "companion_destination_request"; targetGuestId: string }
   | { type: "companion_portal_ready"; targetGuestId: string; portalId: string; destinationZoneId: WorldZoneId }
   | { type: "companion_ping"; targetGuestId: string; ping: CompanionPing }
+  | { type: "companion_rendezvous_propose"; targetGuestId: string; proposalId: string; zoneId: WorldZoneId; x: number; y: number }
+  | { type: "companion_rendezvous_reply"; requesterGuestId: string; proposalId: string; accepted: boolean }
+  | { type: "companion_rendezvous_cancel"; targetGuestId: string; proposalId: string }
   | { type: "ping" }
   | { type: "leave" };
 
@@ -64,6 +67,9 @@ export type ServerMessage =
   | { type: "companion_destination_requested"; guestId: string; guestNickname: string; zoneId: WorldZoneId }
   | { type: "companion_portal_ready"; guestId: string; portalId: string; destinationZoneId: WorldZoneId }
   | { type: "companion_pinged"; guestId: string; guestNickname: string; ping: CompanionPing; zoneId: WorldZoneId }
+  | { type: "companion_rendezvous_proposed"; guestId: string; guestNickname: string; proposalId: string; zoneId: WorldZoneId; x: number; y: number }
+  | { type: "companion_rendezvous_replied"; guestId: string; guestNickname: string; proposalId: string; accepted: boolean; zoneId: WorldZoneId }
+  | { type: "companion_rendezvous_canceled"; guestId: string; proposalId: string }
   | { type: "guest_left"; guestId: string }
   | { type: "room_state"; guests: RoomGuest[] }
   | { type: "error"; code: "bad_message" | "room_full" | "rate_limited" };

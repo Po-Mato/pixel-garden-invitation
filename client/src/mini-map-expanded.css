@@ -476,6 +476,11 @@
 
 .world-minimap-expanded__switch-controls button:disabled { color: #766f68; background: #d9d3ca; }
 .world-minimap-expanded__switch-status { margin: 0; color: #626b62; font-size: 8px; line-height: 1.4; text-align: center; }
+.world-minimap-expanded__voice-settings { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 0; padding: 8px; border: 1px solid #c8d5c6; background: #f7fbf6; }
+.world-minimap-expanded__voice-settings legend { padding: 0 4px; color: #4e6251; font-size: 8px; font-weight: 900; }
+.world-minimap-expanded__voice-settings label { display: grid; grid-template-columns: 30px 1fr; align-items: center; gap: 4px; color: #626b62; font-size: 8px; font-weight: 900; }
+.world-minimap-expanded__voice-settings input { width: 100%; min-width: 0; height: 28px; box-sizing: border-box; padding: 4px 6px; border: 1px solid #aabbaa; border-radius: 3px; background: #fff; font-size: 9px; }
+.world-minimap-expanded__voice-settings > button { display: inline-flex; min-height: 28px; grid-column: 1 / -1; align-items: center; justify-content: center; gap: 4px; color: #526456; background: #fff; border: 1px solid #aabbaa; font-size: 8px; font-weight: 900; }
 
 html[data-mini-map-route-weight="bold"] .world-minimap__route-outline {
   stroke-width: 6;

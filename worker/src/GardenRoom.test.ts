@@ -388,7 +388,54 @@ describe("GardenRoom companion invitations", () => {
       zoneId: "home"
     });
 
-    vi.mocked(Date.now).mockReturnValue(5_000);
+    vi.mocked(Date.now).mockReturnValue(4_600);
+    room.webSocketMessage(asWebSocket(requester), JSON.stringify({
+      type: "companion_rendezvous_propose",
+      targetGuestId: invitedId,
+      proposalId: "meet-123",
+      zoneId: "home",
+      x: 160,
+      y: 224
+    }));
+    expect(invited.sent.map((payload) => JSON.parse(payload))).toContainEqual({
+      type: "companion_rendezvous_proposed",
+      guestId: requesterId,
+      guestNickname: "초대 하객",
+      proposalId: "meet-123",
+      zoneId: "home",
+      x: 160,
+      y: 224
+    });
+
+    vi.mocked(Date.now).mockReturnValue(5_200);
+    room.webSocketMessage(asWebSocket(invited), JSON.stringify({
+      type: "companion_rendezvous_reply",
+      requesterGuestId: requesterId,
+      proposalId: "meet-123",
+      accepted: true
+    }));
+    expect(requester.sent.map((payload) => JSON.parse(payload))).toContainEqual({
+      type: "companion_rendezvous_replied",
+      guestId: invitedId,
+      guestNickname: "수락 하객",
+      proposalId: "meet-123",
+      accepted: true,
+      zoneId: "home"
+    });
+
+    vi.mocked(Date.now).mockReturnValue(5_800);
+    room.webSocketMessage(asWebSocket(requester), JSON.stringify({
+      type: "companion_rendezvous_cancel",
+      targetGuestId: invitedId,
+      proposalId: "meet-123"
+    }));
+    expect(invited.sent.map((payload) => JSON.parse(payload))).toContainEqual({
+      type: "companion_rendezvous_canceled",
+      guestId: requesterId,
+      proposalId: "meet-123"
+    });
+
+    vi.mocked(Date.now).mockReturnValue(6_400);
     room.webSocketMessage(asWebSocket(requester), JSON.stringify({
       type: "companion_portal_ready",
       targetGuestId: invitedId,
@@ -402,7 +449,7 @@ describe("GardenRoom companion invitations", () => {
       destinationZoneId: "neighborhood"
     });
 
-    vi.mocked(Date.now).mockReturnValue(6_000);
+    vi.mocked(Date.now).mockReturnValue(7_000);
     room.webSocketMessage(asWebSocket(requester), JSON.stringify({
       type: "companion_stop",
       targetGuestId: invitedId

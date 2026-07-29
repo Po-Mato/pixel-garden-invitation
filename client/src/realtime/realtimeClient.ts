@@ -204,6 +204,36 @@ function parseServerMessage(value: unknown): ServerMessage | null {
     return value as ServerMessage;
   }
 
+  if (value.type === "companion_rendezvous_proposed") {
+    if (
+      typeof value.guestId !== "string"
+      || typeof value.guestNickname !== "string"
+      || typeof value.proposalId !== "string"
+      || !zones.has(value.zoneId as WorldZoneId)
+      || typeof value.x !== "number"
+      || !Number.isFinite(value.x)
+      || typeof value.y !== "number"
+      || !Number.isFinite(value.y)
+    ) return null;
+    return value as ServerMessage;
+  }
+
+  if (value.type === "companion_rendezvous_replied") {
+    if (
+      typeof value.guestId !== "string"
+      || typeof value.guestNickname !== "string"
+      || typeof value.proposalId !== "string"
+      || typeof value.accepted !== "boolean"
+      || !zones.has(value.zoneId as WorldZoneId)
+    ) return null;
+    return value as ServerMessage;
+  }
+
+  if (value.type === "companion_rendezvous_canceled") {
+    if (typeof value.guestId !== "string" || typeof value.proposalId !== "string") return null;
+    return value as ServerMessage;
+  }
+
   if (value.type === "guest_left") {
     if (typeof value.guestId !== "string") return null;
     return value as ServerMessage;

@@ -97,6 +97,42 @@ export function parseClientMessage(value: unknown): ClientMessage | null {
     return { type: "companion_reply", requesterGuestId, accepted: value.accepted };
   }
 
+  if (value.type === "companion_rendezvous_propose") {
+    const targetGuestId = sanitizeText(value.targetGuestId, 80);
+    const proposalId = sanitizeText(value.proposalId, 64);
+    if (
+      !targetGuestId
+      || !proposalId
+      || !zones.has(value.zoneId as WorldZoneId)
+      || typeof value.x !== "number"
+      || !Number.isFinite(value.x)
+      || typeof value.y !== "number"
+      || !Number.isFinite(value.y)
+    ) return null;
+    return {
+      type: "companion_rendezvous_propose",
+      targetGuestId,
+      proposalId,
+      zoneId: value.zoneId as WorldZoneId,
+      x: value.x,
+      y: value.y
+    };
+  }
+
+  if (value.type === "companion_rendezvous_reply") {
+    const requesterGuestId = sanitizeText(value.requesterGuestId, 80);
+    const proposalId = sanitizeText(value.proposalId, 64);
+    if (!requesterGuestId || !proposalId || typeof value.accepted !== "boolean") return null;
+    return { type: "companion_rendezvous_reply", requesterGuestId, proposalId, accepted: value.accepted };
+  }
+
+  if (value.type === "companion_rendezvous_cancel") {
+    const targetGuestId = sanitizeText(value.targetGuestId, 80);
+    const proposalId = sanitizeText(value.proposalId, 64);
+    if (!targetGuestId || !proposalId) return null;
+    return { type: "companion_rendezvous_cancel", targetGuestId, proposalId };
+  }
+
   if (value.type === "companion_destination" || value.type === "companion_portal_ready") {
     const targetGuestId = sanitizeText(value.targetGuestId, 80);
     const portalId = sanitizeText(value.portalId, 100);

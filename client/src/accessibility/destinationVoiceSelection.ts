@@ -1,3 +1,8 @@
+import {
+  defaultDestinationVoicePreferences,
+  type DestinationVoicePreferences
+} from "./destinationVoicePreferences";
+
 type DestinationSpeechRecognitionResult = {
   results?: ArrayLike<{ 0?: { transcript?: string } }>;
 };
@@ -61,6 +66,7 @@ export type DestinationVoiceCommand =
   | { type: "next" }
   | { type: "move" }
   | { type: "cancel" }
+  | { type: "repeat" }
   | { type: "close" };
 
 export type DestinationVoiceResult = {
@@ -70,12 +76,22 @@ export type DestinationVoiceResult = {
 
 export function parseDestinationVoiceCommand(
   transcript: string,
-  total: number
+  total: number,
+  preferences: DestinationVoicePreferences = defaultDestinationVoicePreferences
 ): DestinationVoiceCommand | null {
   const normalized = transcript.trim().replaceAll(" ", "");
   if (!normalized) return null;
+  const matches = (phrase: string) => {
+    const candidate = phrase.trim().replaceAll(" ", "");
+    return candidate.length > 0 && normalized.includes(candidate);
+  };
   if (/(?:닫기|닫아)/.test(normalized)) return { type: "close" };
+  if (matches(preferences.cancelPhrase)) return { type: "cancel" };
+  if (matches(preferences.repeatPhrase)) return { type: "repeat" };
+  if (matches(preferences.movePhrase)) return { type: "move" };
+  if (matches(preferences.nextPhrase)) return { type: "next" };
   if (/(?:취소|멈춰|그만)/.test(normalized)) return { type: "cancel" };
+  if (/(?:반복|다시말해|다시안내)/.test(normalized)) return { type: "repeat" };
   if (/(?:이동|출발|안내시작|가자|여기로)/.test(normalized)) return { type: "move" };
   if (/(?:다음|넘겨|다음목적지)/.test(normalized)) return { type: "next" };
   const index = parseDestinationVoiceNumber(normalized, total);
@@ -91,9 +107,10 @@ export function destinationVoiceSelectionAvailable(
 export function listenForDestinationVoiceNumber(
   total: number,
   target: SpeechWindow | null = typeof window === "undefined" ? null : window,
-  timeoutMs = 6_000
+  timeoutMs = 6_000,
+  preferences: DestinationVoicePreferences = defaultDestinationVoicePreferences
 ): Promise<number | null> {
-  return listenForDestinationVoiceCommand(total, target, timeoutMs).then((command) => (
+  return listenForDestinationVoiceCommand(total, target, timeoutMs, preferences).then((command) => (
     command?.type === "number" ? command.index : null
   ));
 }
@@ -101,15 +118,17 @@ export function listenForDestinationVoiceNumber(
 export function listenForDestinationVoiceCommand(
   total: number,
   target: SpeechWindow | null = typeof window === "undefined" ? null : window,
-  timeoutMs = 6_000
+  timeoutMs = 6_000,
+  preferences: DestinationVoicePreferences = defaultDestinationVoicePreferences
 ): Promise<DestinationVoiceCommand | null> {
-  return listenForDestinationVoiceResult(total, target, timeoutMs).then(({ command }) => command);
+  return listenForDestinationVoiceResult(total, target, timeoutMs, preferences).then(({ command }) => command);
 }
 
 export function listenForDestinationVoiceResult(
   total: number,
   target: SpeechWindow | null = typeof window === "undefined" ? null : window,
-  timeoutMs = 6_000
+  timeoutMs = 6_000,
+  preferences: DestinationVoicePreferences = defaultDestinationVoicePreferences
 ): Promise<DestinationVoiceResult> {
   const Recognition = target?.SpeechRecognition ?? target?.webkitSpeechRecognition;
   if (!target || !Recognition || total <= 0) return Promise.resolve({ command: null, transcript: "" });
@@ -130,7 +149,7 @@ export function listenForDestinationVoiceResult(
     recognition.interimResults = false;
     recognition.onresult = (event) => {
       const transcript = event.results?.[0]?.[0]?.transcript?.trim() ?? "";
-      finish({ command: parseDestinationVoiceCommand(transcript, total), transcript });
+      finish({ command: parseDestinationVoiceCommand(transcript, total, preferences), transcript });
     };
     recognition.onerror = () => finish({ command: null, transcript: "" });
     recognition.onend = () => finish({ command: null, transcript: "" });
@@ -140,6 +159,26 @@ export function listenForDestinationVoiceResult(
       finish({ command: null, transcript: "" });
     }
   });
+}
+
+export function speakDestinationVoiceGuidance(
+  phrase: string,
+  target: Window | null = typeof window === "undefined" ? null : window
+) {
+  const speechWindow = target as (Window & {
+    SpeechSynthesisUtterance?: typeof SpeechSynthesisUtterance;
+  }) | null;
+  if (!speechWindow?.speechSynthesis || !speechWindow.SpeechSynthesisUtterance) return false;
+  try {
+    const utterance = new speechWindow.SpeechSynthesisUtterance(phrase);
+    utterance.lang = "ko-KR";
+    utterance.rate = 0.92;
+    speechWindow.speechSynthesis.cancel();
+    speechWindow.speechSynthesis.speak(utterance);
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 export type DestinationVoiceCue = "confirm" | "selected" | "cancel" | "error";

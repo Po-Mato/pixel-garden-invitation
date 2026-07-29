@@ -307,6 +307,18 @@ type RealtimeConnection = ReturnType<typeof connectRealtimeWithRetry>;
 type CompanionRole = "leader" | "follower";
 type IncomingCompanionInvite = { requesterGuestId: string; requesterNickname: string };
 type ActiveCompanionPing = { ping: CompanionPing; nickname: string };
+type CompanionRendezvousProposal = {
+  proposalId: string;
+  guestId: string;
+  nickname: string;
+  zoneId: WorldZoneId;
+  point: Point;
+};
+type ActiveCompanionRendezvous = {
+  proposalId: string;
+  zoneId: WorldZoneId;
+  point: Point;
+};
 type ActiveCooperativeCelebration = {
   token: number;
   participantNames: string[];
@@ -552,7 +564,9 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   const [companionShareStatus, setCompanionShareStatus] = useState<string | null>(null);
   const [companionWaitingRoomOpen, setCompanionWaitingRoomOpen] = useState(false);
   const [companionTrailPoints, setCompanionTrailPoints] = useState<Point[]>([]);
-  const [companionRendezvous, setCompanionRendezvous] = useState<{ zoneId: WorldZoneId; point: Point } | null>(null);
+  const [companionRendezvous, setCompanionRendezvous] = useState<ActiveCompanionRendezvous | null>(null);
+  const [incomingRendezvousProposal, setIncomingRendezvousProposal] = useState<CompanionRendezvousProposal | null>(null);
+  const [outgoingRendezvousProposal, setOutgoingRendezvousProposal] = useState<ActiveCompanionRendezvous | null>(null);
   const [companionInviteDraft, setCompanionInviteDraft] = useState<{
     url: string;
     expiresAt: number;
@@ -632,6 +646,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   const companionZoneGraceUntilRef = useRef(0);
   const companionLinkInviteSentRef = useRef(false);
   const companionTrailKeyRef = useRef("");
+  const outgoingRendezvousProposalRef = useRef<ActiveCompanionRendezvous | null>(null);
   const companionInviteDraftRef = useRef(companionInviteDraft);
   const collectionProximityBandRef = useRef<CollectionProximityBand | null>(null);
   const plannedGuidedCollectibleRef = useRef<string | null>(null);
@@ -656,6 +671,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   sharedCompanionDestinationRef.current = sharedCompanionDestination;
   sharedPortalWaitRef.current = sharedPortalWait;
   companionInviteDraftRef.current = companionInviteDraft;
+  outgoingRendezvousProposalRef.current = outgoingRendezvousProposal;
 
   useEffect(() => {
     pendingJourneyGuideIdRef.current = pendingJourneyGuideId;
@@ -1123,6 +1139,9 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     setCompanionRejoinZoneId(null);
     setCompanionTrailPoints([]);
     setCompanionRendezvous(null);
+    setIncomingRendezvousProposal(null);
+    setOutgoingRendezvousProposal(null);
+    outgoingRendezvousProposalRef.current = null;
     companionTrailKeyRef.current = "";
     clearCompanionSession();
   }, []);
@@ -1408,6 +1427,33 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
 
     sendRealtimeTerminalStop(directionRef.current);
   }, [resetWalkCycle, sendRealtimeTerminalStop, setInputReleaseRequired, setInteractionIntent, setPortalIntent]);
+
+  const activateCompanionRendezvous = useCallback((
+    rendezvous: ActiveCompanionRendezvous,
+    nickname: string
+  ) => {
+    if (rendezvous.zoneId !== activeZoneIdRef.current) return false;
+    const zone = getWorldZone(gardenWorld, rendezvous.zoneId);
+    const point = snapToGrid(rendezvous.point, zone);
+    const path = findTilePath(zone, positionRef.current, point);
+    if (!path) {
+      setTravelStatus("합류할 수 있는 중간 타일을 찾지 못했어요");
+      return false;
+    }
+    pauseWorldInput();
+    setPendingJourneyGuideId(null);
+    setActiveJourneyGuideId(null);
+    setCompanionRendezvous({ ...rendezvous, point });
+    if (path.length > 0) {
+      setTarget(point);
+      setMapPath(path);
+      targetStepAtRef.current = null;
+      setTravelStatus(`${nickname}님과 약속한 합류 타일로 이동 중`);
+    } else {
+      setTravelStatus(`합류 지점에서 ${nickname}님을 기다려요`);
+    }
+    return true;
+  }, [pauseWorldInput]);
 
   const openCompanionWaitingRoom = useCallback(() => {
     void loadCompanionWaitingRoomComponent();
@@ -2201,6 +2247,48 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
                   : `${message.guestNickname}님이 응원을 보냈어요`);
               return;
             }
+            if (message.type === "companion_rendezvous_proposed") {
+              if (
+                companionGuestIdRef.current !== message.guestId
+                || message.zoneId !== activeZoneIdRef.current
+              ) return;
+              setIncomingRendezvousProposal({
+                proposalId: message.proposalId,
+                guestId: message.guestId,
+                nickname: message.guestNickname,
+                zoneId: message.zoneId,
+                point: { x: message.x, y: message.y }
+              });
+              setTravelStatus(`${message.guestNickname}님이 중간 합류 타일을 제안했어요`);
+              return;
+            }
+            if (message.type === "companion_rendezvous_replied") {
+              const proposal = outgoingRendezvousProposalRef.current;
+              if (
+                companionGuestIdRef.current !== message.guestId
+                || !proposal
+                || proposal.proposalId !== message.proposalId
+              ) return;
+              outgoingRendezvousProposalRef.current = null;
+              setOutgoingRendezvousProposal(null);
+              if (!message.accepted || message.zoneId !== proposal.zoneId) {
+                setTravelStatus(`${message.guestNickname}님이 합류 제안을 거절했어요`);
+                return;
+              }
+              activateCompanionRendezvous(proposal, message.guestNickname);
+              return;
+            }
+            if (message.type === "companion_rendezvous_canceled") {
+              if (companionGuestIdRef.current !== message.guestId) return;
+              setIncomingRendezvousProposal((current) => (
+                current?.proposalId === message.proposalId ? null : current
+              ));
+              setCompanionRendezvous((current) => (
+                current?.proposalId === message.proposalId ? null : current
+              ));
+              setTravelStatus("상대 하객이 합류 예약을 취소했어요");
+              return;
+            }
             if (message.type === "companion_portal_ready") {
               if (companionGuestIdRef.current !== message.guestId) return;
               remoteCompanionPortalReadyRef.current = {
@@ -2276,6 +2364,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     };
   }, [
     clearAllRemoteReactions,
+    activateCompanionRendezvous,
     clearCompanionState,
     clearRemoteReaction,
     clearTerminalStopConfirm,
@@ -2631,7 +2720,8 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   }
 
   function reserveCompanionRendezvous() {
-    if (!activeCompanion || activeCompanion.zoneId !== activeZone.id) return;
+    const companionId = companionGuestIdRef.current;
+    if (!companionId || !activeCompanion || activeCompanion.zoneId !== activeZone.id) return;
     const midpoint = snapToGrid(companionRendezvousPoint(
       positionRef.current,
       { x: activeCompanion.x, y: activeCompanion.y }
@@ -2641,21 +2731,57 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
       setTravelStatus("합류할 수 있는 중간 타일을 찾지 못했어요");
       return;
     }
-    pauseWorldInput();
-    setPendingJourneyGuideId(null);
-    setActiveJourneyGuideId(null);
-    setCompanionRendezvous({ zoneId: activeZone.id, point: midpoint });
-    if (path.length > 0) {
-      setTarget(midpoint);
-      setMapPath(path);
-      targetStepAtRef.current = null;
-      setTravelStatus(`${activeCompanion.nickname}님과 만날 중간 타일로 이동 중`);
-    } else {
-      setTravelStatus("합류 지점에서 동행 하객을 기다려요");
+    const proposal = {
+      proposalId: `meet-${Date.now().toString(36)}`,
+      zoneId: activeZone.id,
+      point: midpoint
+    };
+    outgoingRendezvousProposalRef.current = proposal;
+    setOutgoingRendezvousProposal(proposal);
+    connectionRef.current?.send({
+      type: "companion_rendezvous_propose",
+      targetGuestId: companionId,
+      proposalId: proposal.proposalId,
+      zoneId: proposal.zoneId,
+      x: proposal.point.x,
+      y: proposal.point.y
+    });
+    setTravelStatus(`${activeCompanion.nickname}님에게 중간 합류 타일을 제안했어요`);
+  }
+
+  function replyToRendezvousProposal(accepted: boolean) {
+    const proposal = incomingRendezvousProposal;
+    if (!proposal) return;
+    connectionRef.current?.send({
+      type: "companion_rendezvous_reply",
+      requesterGuestId: proposal.guestId,
+      proposalId: proposal.proposalId,
+      accepted
+    });
+    setIncomingRendezvousProposal(null);
+    if (!accepted) {
+      setTravelStatus(`${proposal.nickname}님의 합류 제안을 거절했어요`);
+      return;
     }
+    activateCompanionRendezvous({
+      proposalId: proposal.proposalId,
+      zoneId: proposal.zoneId,
+      point: proposal.point
+    }, proposal.nickname);
   }
 
   function cancelCompanionRendezvous() {
+    const companionId = companionGuestIdRef.current;
+    const proposal = companionRendezvous ?? outgoingRendezvousProposal;
+    if (companionId && proposal) {
+      connectionRef.current?.send({
+        type: "companion_rendezvous_cancel",
+        targetGuestId: companionId,
+        proposalId: proposal.proposalId
+      });
+    }
+    outgoingRendezvousProposalRef.current = null;
+    setOutgoingRendezvousProposal(null);
     setCompanionRendezvous(null);
     setTravelStatus("합류 지점 예약을 취소했어요");
   }
@@ -4036,12 +4162,20 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
             onOpenWaitingRoom={openCompanionWaitingRoom}
             shareStatus={companionShareStatus}
             rendezvousLabel={companionRendezvous?.zoneId === activeZone.id
-              ? `${activeZone.label} · 중간 합류 타일 예약`
+              ? `${activeZone.label} · 함께 이동할 합류 타일`
               : null}
+            rendezvousPending={Boolean(outgoingRendezvousProposal)}
+            rendezvousProposalNickname={incomingRendezvousProposal?.nickname ?? null}
             onReserveRendezvous={activeCompanion?.zoneId === activeZone.id
               ? reserveCompanionRendezvous
               : undefined}
             onCancelRendezvous={cancelCompanionRendezvous}
+            onAcceptRendezvous={incomingRendezvousProposal
+              ? () => replyToRendezvousProposal(true)
+              : undefined}
+            onDeclineRendezvous={incomingRendezvousProposal
+              ? () => replyToRendezvousProposal(false)
+              : undefined}
           />
 
           {incomingCompanionInvite ? (

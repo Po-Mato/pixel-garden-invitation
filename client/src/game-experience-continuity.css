@@ -709,6 +709,25 @@
 .game-memory-album__keepsake > .game-memory-album__print-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
 .game-memory-album__print-actions button { display: inline-flex; min-height: 38px; align-items: center; justify-content: center; gap: 5px; padding: 7px; color: #53675a; background: #fff; border: 1px solid #8fa493; border-radius: 4px; font-size: 9px; font-weight: 900; }
 .game-memory-album__print-note { color: #6e766e; font-size: 8px; text-align: center; }
+.game-memory-album__print-format { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+.game-memory-album__print-format button { min-height: 30px; color: #6a5a55; background: #fff; border: 1px solid #cbbdb3; font-size: 9px; font-weight: 900; }
+.game-memory-album__print-format button[aria-pressed="true"] { color: #fff; background: #6f8f76; border-color: #526f59; }
+.game-memory-album__print-preview { position: relative; width: min(100%, 210px); aspect-ratio: 0.707; margin: 0 auto; overflow: hidden; background: #fff; border: 1px solid #c8c0b8; box-shadow: 0 5px 15px rgb(55 45 40 / 10%); }
+.game-memory-album__print-preview[data-format="postcard"] { aspect-ratio: 2 / 3; }
+.game-memory-album__print-preview-art { position: absolute; display: flex; flex-direction: column; align-items: center; justify-content: space-between; box-sizing: border-box; overflow: hidden; padding: 7% 6%; color: #4a3935; background: #f8f3e8; font-size: 6px; text-align: center; }
+.game-memory-album__print-preview-art strong { font-family: serif; font-size: 9px; }
+.game-memory-album__print-preview-art > div { display: grid; width: 100%; grid-template-columns: repeat(3, 1fr); gap: 3px; }
+.game-memory-album__print-preview-art img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; background: #e9dfd3; }
+.game-memory-album__print-trim,
+.game-memory-album__print-safe { position: absolute; box-sizing: border-box; pointer-events: none; font-size: 6px; font-weight: 900; line-height: 1; }
+.game-memory-album__print-trim { color: transparent; border: 1px dashed #c65353; font-size: 0; }
+.game-memory-album__print-safe { color: transparent; border: 1px dashed #4c9364; font-size: 0; }
+.game-memory-album__print-trim::before,
+.game-memory-album__print-safe::before { position: absolute; z-index: 1; padding: 1px 2px; background: rgb(255 255 255 / 88%); font-size: 6px; line-height: 1; white-space: nowrap; }
+.game-memory-album__print-trim::before { top: -9px; left: -1px; color: #a54242; content: "재단선"; }
+.game-memory-album__print-safe::before { right: 2px; bottom: 2px; color: #39734d; content: "안전영역"; }
+.world-companion-dock__rendezvous-prompt { display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: 5px; padding: 6px; background: #fff7df; border: 1px solid #d7b672; font-size: 8px; font-weight: 900; }
+.world-companion-dock__rendezvous-prompt button { display: inline-flex; min-height: 28px; align-items: center; gap: 2px; padding: 4px 6px; }
 .game-memory-album__keepsake button svg { width: 15px; }
 .game-memory-album__keepsake button:disabled { opacity: 0.48; }
 .game-memory-album__keepsake p { margin: 0; color: #6e665f; font-size: 9px; text-align: center; }

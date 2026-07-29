@@ -95,8 +95,28 @@ type KeepsakeEnvironment = {
 
 export function gameMemoryKeepsakePrintLayout(format: GameMemoryKeepsakePrintFormat) {
   return format === "a4"
-    ? { width: 2480, height: 3508, margin: 150, label: "A4" }
-    : { width: 1200, height: 1800, margin: 72, label: "4×6 엽서" };
+    ? { width: 2480, height: 3508, margin: 150, safeInset: 96, label: "A4", pageWidthPoints: 595.28, pageHeightPoints: 841.89 }
+    : { width: 1200, height: 1800, margin: 72, safeInset: 54, label: "4×6 엽서", pageWidthPoints: 288, pageHeightPoints: 432 };
+}
+
+export function gameMemoryKeepsakePrintGuide(format: GameMemoryKeepsakePrintFormat) {
+  const layout = gameMemoryKeepsakePrintLayout(format);
+  const availableWidth = layout.width - layout.margin * 2;
+  const availableHeight = layout.height - layout.margin * 2;
+  const scale = Math.min(availableWidth / 1080, availableHeight / 1920);
+  const width = 1080 * scale;
+  const height = 1920 * scale;
+  const x = (layout.width - width) / 2;
+  const y = (layout.height - height) / 2;
+  return {
+    trim: { x: x / layout.width, y: y / layout.height, width: width / layout.width, height: height / layout.height },
+    safe: {
+      x: (x + layout.safeInset) / layout.width,
+      y: (y + layout.safeInset) / layout.height,
+      width: (width - layout.safeInset * 2) / layout.width,
+      height: (height - layout.safeInset * 2) / layout.height
+    }
+  };
 }
 
 export function gameMemoryKeepsakePrintFilename(
@@ -104,6 +124,13 @@ export function gameMemoryKeepsakePrintFilename(
   format: GameMemoryKeepsakePrintFormat
 ) {
   return `wedding-garden-memory-${safeName(guestName)}-${format}.png`;
+}
+
+export function gameMemoryKeepsakePdfFilename(
+  guestName: string,
+  format: GameMemoryKeepsakePrintFormat
+) {
+  return `wedding-garden-memory-${safeName(guestName)}-${format}.pdf`;
 }
 
 function safeName(name: string) {
@@ -354,6 +381,12 @@ function canvasBlob(canvas: HTMLCanvasElement): Promise<Blob> {
   return new Promise((resolve, reject) => canvas.toBlob((blob) => (
     blob ? resolve(blob) : reject(new Error("추억 이미지를 만들지 못했습니다."))
   ), "image/png"));
+}
+
+function canvasJpegBlob(canvas: HTMLCanvasElement): Promise<Blob> {
+  return new Promise((resolve, reject) => canvas.toBlob((blob) => (
+    blob ? resolve(blob) : reject(new Error("PDF 이미지를 만들지 못했습니다."))
+  ), "image/jpeg", 0.94));
 }
 
 function drawPhotoFrame(
@@ -630,10 +663,10 @@ export async function createGameMemoryKeepsake(data: GameMemoryKeepsakeData): Pr
   return canvasBlob(canvas);
 }
 
-export async function createGameMemoryKeepsakePrint(
+async function createGameMemoryKeepsakePrintCanvas(
   data: GameMemoryKeepsakeData,
   format: GameMemoryKeepsakePrintFormat
-): Promise<Blob> {
+): Promise<HTMLCanvasElement> {
   const sourceBlob = await createGameMemoryKeepsake({
     ...data,
     options: { ...normalizeGameMemoryKeepsakeOptions(data.options), quality: "high" }
@@ -666,10 +699,101 @@ export async function createGameMemoryKeepsakePrint(
     context.strokeStyle = "rgba(89, 70, 62, 0.28)";
     context.lineWidth = Math.max(2, layout.width / 1000);
     context.strokeRect(x, y, drawWidth, drawHeight);
-    return canvasBlob(canvas);
+    const mark = Math.max(24, layout.margin * 0.34);
+    const gap = Math.max(8, layout.margin * 0.07);
+    context.strokeStyle = "#2f2f2f";
+    context.lineWidth = Math.max(2, layout.width / 1200);
+    [
+      [x - gap - mark, y, x - gap, y], [x, y - gap - mark, x, y - gap],
+      [x + drawWidth + gap, y, x + drawWidth + gap + mark, y], [x + drawWidth, y - gap - mark, x + drawWidth, y - gap],
+      [x - gap - mark, y + drawHeight, x - gap, y + drawHeight], [x, y + drawHeight + gap, x, y + drawHeight + gap + mark],
+      [x + drawWidth + gap, y + drawHeight, x + drawWidth + gap + mark, y + drawHeight], [x + drawWidth, y + drawHeight + gap, x + drawWidth, y + drawHeight + gap + mark]
+    ].forEach(([fromX, fromY, toX, toY]) => {
+      context.beginPath();
+      context.moveTo(fromX!, fromY!);
+      context.lineTo(toX!, toY!);
+      context.stroke();
+    });
+    return canvas;
   } finally {
     URL.revokeObjectURL(sourceUrl);
   }
+}
+
+export async function createGameMemoryKeepsakePrint(
+  data: GameMemoryKeepsakeData,
+  format: GameMemoryKeepsakePrintFormat
+): Promise<Blob> {
+  return canvasBlob(await createGameMemoryKeepsakePrintCanvas(data, format));
+}
+
+function concatBytes(parts: readonly Uint8Array[]) {
+  const result = new Uint8Array(parts.reduce((total, part) => total + part.length, 0));
+  let offset = 0;
+  parts.forEach((part) => {
+    result.set(part, offset);
+    offset += part.length;
+  });
+  return result;
+}
+
+const pdfText = (value: string) => new TextEncoder().encode(value);
+
+export function createSingleImagePdf(
+  jpegBytes: Uint8Array,
+  imageWidth: number,
+  imageHeight: number,
+  pageWidth: number,
+  pageHeight: number
+) {
+  const content = pdfText(`q\n${pageWidth} 0 0 ${pageHeight} 0 0 cm\n/Im0 Do\nQ\n`);
+  const objects = [
+    pdfText("<< /Type /Catalog /Pages 2 0 R >>"),
+    pdfText("<< /Type /Pages /Kids [3 0 R] /Count 1 >>"),
+    pdfText(`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${pageWidth} ${pageHeight}] /Resources << /XObject << /Im0 4 0 R >> >> /Contents 5 0 R >>`),
+    concatBytes([
+      pdfText(`<< /Type /XObject /Subtype /Image /Width ${imageWidth} /Height ${imageHeight} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${jpegBytes.length} >>\nstream\n`),
+      jpegBytes,
+      pdfText("\nendstream")
+    ]),
+    concatBytes([pdfText(`<< /Length ${content.length} >>\nstream\n`), content, pdfText("endstream")])
+  ];
+  const parts: Uint8Array[] = [pdfText("%PDF-1.4\n%WGM\n")];
+  const offsets = [0];
+  let byteOffset = parts[0]!.length;
+  objects.forEach((object, index) => {
+    offsets.push(byteOffset);
+    const wrapped = concatBytes([
+      pdfText(`${index + 1} 0 obj\n`),
+      object,
+      pdfText("\nendobj\n")
+    ]);
+    parts.push(wrapped);
+    byteOffset += wrapped.length;
+  });
+  const xrefOffset = byteOffset;
+  const xref = ["xref", `0 ${objects.length + 1}`, "0000000000 65535 f "]
+    .concat(offsets.slice(1).map((offset) => `${String(offset).padStart(10, "0")} 00000 n `))
+    .join("\n");
+  parts.push(pdfText(`${xref}\ntrailer\n<< /Size ${objects.length + 1} /Root 1 0 R >>\nstartxref\n${xrefOffset}\n%%EOF\n`));
+  const pdfBytes = concatBytes(parts);
+  return new Blob([pdfBytes.buffer as ArrayBuffer], { type: "application/pdf" });
+}
+
+export async function createGameMemoryKeepsakePdf(
+  data: GameMemoryKeepsakeData,
+  format: GameMemoryKeepsakePrintFormat
+) {
+  const layout = gameMemoryKeepsakePrintLayout(format);
+  const canvas = await createGameMemoryKeepsakePrintCanvas(data, format);
+  const jpeg = new Uint8Array(await (await canvasJpegBlob(canvas)).arrayBuffer());
+  return createSingleImagePdf(
+    jpeg,
+    layout.width,
+    layout.height,
+    layout.pageWidthPoints,
+    layout.pageHeightPoints
+  );
 }
 
 export function saveGameMemoryKeepsakePrint(
@@ -681,6 +805,20 @@ export function saveGameMemoryKeepsakePrint(
   const url = environment.createObjectUrl(blob);
   try {
     environment.clickDownload(url, gameMemoryKeepsakePrintFilename(guestName, format));
+  } finally {
+    environment.revokeObjectUrl(url);
+  }
+}
+
+export function saveGameMemoryKeepsakePdf(
+  blob: Blob,
+  guestName: string,
+  format: GameMemoryKeepsakePrintFormat,
+  environment: KeepsakeEnvironment = browserEnvironment()
+) {
+  const url = environment.createObjectUrl(blob);
+  try {
+    environment.clickDownload(url, gameMemoryKeepsakePdfFilename(guestName, format));
   } finally {
     environment.revokeObjectUrl(url);
   }
