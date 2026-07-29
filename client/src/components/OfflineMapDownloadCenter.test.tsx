@@ -6,7 +6,11 @@ import { OfflineMapDownloadCenter } from "./OfflineMapDownloadCenter";
 const mocks = vi.hoisted(() => ({
   inspect: vi.fn(),
   prepare: vi.fn(),
+  prepareJourney: vi.fn(),
   remove: vi.fn(),
+  removeJourney: vi.fn(),
+  applyUpdate: vi.fn(async () => true),
+  checkUpdate: vi.fn(async () => undefined),
   start: vi.fn(async () => null)
 }));
 
@@ -25,6 +29,8 @@ const snapshot: PwaClientSnapshot = {
 };
 
 vi.mock("../pwa/pwaClient", () => ({
+  applyPwaUpdate: mocks.applyUpdate,
+  checkForPwaUpdate: mocks.checkUpdate,
   getPwaClientSnapshot: () => snapshot,
   subscribePwaClient: (subscriber: (value: PwaClientSnapshot) => void) => {
     subscriber(snapshot);
@@ -32,7 +38,9 @@ vi.mock("../pwa/pwaClient", () => ({
   },
   inspectOfflineZoneAssets: mocks.inspect,
   prepareOfflineZoneAssets: mocks.prepare,
+  prepareOfflineJourneyAssets: mocks.prepareJourney,
   removeOfflineZoneAssets: mocks.remove,
+  removeOfflineJourneyAssets: mocks.removeJourney,
   startPwaClient: mocks.start
 }));
 
@@ -51,5 +59,10 @@ describe("OfflineMapDownloadCenter", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "예식장 로비 오프라인 지도 삭제" }));
     expect(mocks.remove).toHaveBeenCalledWith("lobby", expect.any(Array));
+
+    fireEvent.click(screen.getByRole("button", { name: "전체 여정 오프라인 지도 저장" }));
+    expect(mocks.prepareJourney).toHaveBeenCalledWith(expect.objectContaining({
+      home: expect.arrayContaining([expect.stringContaining("/assets/maps/v2/home/background.webp")])
+    }));
   });
 });

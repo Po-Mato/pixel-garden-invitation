@@ -21,6 +21,7 @@ export type CompanionInviteLink = {
   targetGuestId: string;
   zoneId: WorldZoneId;
   expiresAt: number;
+  inviteCode: string;
 };
 
 export type CompanionInviteInspection =
@@ -45,6 +46,14 @@ function createIdentity() {
     return crypto.randomUUID().replaceAll("-", "");
   }
   return `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 18)}`.slice(0, 32);
+}
+
+const companionInviteCodeAlphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+
+export function createCompanionInviteCode(random: () => number = Math.random) {
+  return Array.from({ length: 6 }, () => companionInviteCodeAlphabet[
+    Math.min(companionInviteCodeAlphabet.length - 1, Math.max(0, Math.floor(random() * companionInviteCodeAlphabet.length)))
+  ]).join("");
 }
 
 export function loadRealtimeIdentity(
@@ -116,7 +125,8 @@ export function createCompanionInviteUrl(
   currentUrl: string,
   identity: string,
   zoneId: WorldZoneId,
-  expiresAt = Date.now() + companionInviteLifetimeMs
+  expiresAt = Date.now() + companionInviteLifetimeMs,
+  inviteCode = createCompanionInviteCode()
 ) {
   const url = new URL(currentUrl);
   url.searchParams.delete("admin");
@@ -124,6 +134,7 @@ export function createCompanionInviteUrl(
   url.searchParams.set("together", identity);
   url.searchParams.set("togetherZone", zoneId);
   url.searchParams.set("togetherExpires", String(Math.floor(expiresAt)));
+  url.searchParams.set("togetherCode", inviteCode);
   url.hash = "";
   return url.toString();
 }
@@ -136,6 +147,7 @@ export function inspectCompanionInviteUrl(
   const identity = url.searchParams.get("together");
   const zoneId = url.searchParams.get("togetherZone");
   const expiresAt = Number(url.searchParams.get("togetherExpires"));
+  const inviteCode = url.searchParams.get("togetherCode");
   const validZones = new Set<WorldZoneId>([
     "home", "neighborhood", "subway-station", "subway-train", "venue-exterior",
     "lobby", "bridal-room", "ceremony-hall", "banquet", "restroom"
@@ -145,11 +157,13 @@ export function inspectCompanionInviteUrl(
     || !validZones.has(zoneId as WorldZoneId)
     || !Number.isSafeInteger(expiresAt)
     || expiresAt <= 0
+    || typeof inviteCode !== "string"
+    || !/^[A-HJ-NP-Z2-9]{6}$/.test(inviteCode)
   ) return { status: "invalid" };
   if (expiresAt <= now) return { status: "expired", expiresAt };
   return {
     status: "valid",
-    invite: { targetGuestId: `guest_${identity}`, zoneId: zoneId as WorldZoneId, expiresAt }
+    invite: { targetGuestId: `guest_${identity}`, zoneId: zoneId as WorldZoneId, expiresAt, inviteCode }
   };
 }
 

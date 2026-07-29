@@ -1,7 +1,8 @@
 export type PwaCacheState = "idle" | "preparing" | "ready" | "error";
+export type PwaZoneCacheState = PwaCacheState | "outdated";
 
 export type PwaZoneCacheSnapshot = {
-  state: PwaCacheState;
+  state: PwaZoneCacheState;
   completed: number;
   total: number;
   bytes: number;
@@ -116,7 +117,9 @@ export function reducePwaWorkerMessage(
           ? "error"
           : message.type === "PWA_ZONE_CACHE_REMOVED"
             ? "idle"
-            : message.state === "ready" ? "ready" : "idle";
+            : message.state === "ready"
+              ? "ready"
+              : message.state === "outdated" ? "outdated" : "idle";
     const total = numericProgress(message.total) || currentZone.total;
     const completed = state === "idle" ? 0
       : state === "ready" ? total
@@ -311,6 +314,25 @@ export function removeOfflineZoneAssets(zoneId: string, urls: readonly string[])
 
 export function inspectOfflineZoneAssets(groups: Record<string, readonly string[]>): void {
   postPwaMessage({ type: "REPORT_ZONE_ASSETS", groups });
+}
+
+export function prepareOfflineJourneyAssets(groups: Record<string, readonly string[]>): void {
+  const nextZoneCaches = { ...snapshot.zoneCaches };
+  Object.entries(groups).forEach(([zoneId, urls]) => {
+    const uniqueUrls = [...new Set(urls)];
+    nextZoneCaches[zoneId] = {
+      state: "preparing",
+      completed: 0,
+      total: uniqueUrls.length,
+      bytes: 0
+    };
+  });
+  updateSnapshot({ zoneCaches: nextZoneCaches });
+  postPwaMessage({ type: "CACHE_ZONE_GROUPS", groups });
+}
+
+export function removeOfflineJourneyAssets(groups: Record<string, readonly string[]>): void {
+  postPwaMessage({ type: "REMOVE_ZONE_GROUPS", groups });
 }
 
 export function resetPwaClientForTests(): void {

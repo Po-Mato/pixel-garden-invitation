@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   applyPwaUpdate,
   getPwaClientSnapshot,
+  prepareOfflineJourneyAssets,
   reducePwaWorkerMessage,
   resetPwaClientForTests,
   startPwaClient,
@@ -80,6 +81,14 @@ describe("PWA client", () => {
       total: 2,
       bytes: 2048
     }).zoneCaches.lobby).toEqual({ state: "ready", completed: 2, total: 2, bytes: 2048 });
+    expect(reducePwaWorkerMessage(emptySnapshot, {
+      type: "PWA_ZONE_CACHE_STATE",
+      zoneId: "lobby",
+      state: "outdated",
+      completed: 2,
+      total: 2,
+      bytes: 2048
+    }).zoneCaches.lobby).toEqual({ state: "outdated", completed: 2, total: 2, bytes: 2048 });
   });
 
   it("registers under the deployed subpath without using the HTTP cache", async () => {
@@ -103,6 +112,11 @@ describe("PWA client", () => {
     expect(serviceWorker.controller.postMessage).toHaveBeenCalledWith({
       type: "CACHE_URLS",
       urls: ["./map.webp", "./tree.png"]
+    });
+    prepareOfflineJourneyAssets({ home: ["./home.webp"], lobby: ["./lobby.webp"] });
+    expect(serviceWorker.controller.postMessage).toHaveBeenCalledWith({
+      type: "CACHE_ZONE_GROUPS",
+      groups: { home: ["./home.webp"], lobby: ["./lobby.webp"] }
     });
 
     await expect(applyPwaUpdate()).resolves.toBe(true);

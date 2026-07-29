@@ -3,12 +3,21 @@ import {
   type CelebrationCollectible,
   type CelebrationCollectibleKind
 } from "./celebrationCollectibles";
+import type { CharacterAppearance } from "@wedding-game/shared";
 import type { WorldZone } from "./world";
 
 export const celebrationRewardLabel = "축복의 꽃 정원 프레임";
 export const celebrationCosmeticStorageKey = "wedding-game:celebration-cosmetic:v1";
+export const celebrationCosmeticToneStorageKey = "wedding-game:celebration-cosmetic-tone:v1";
 export const celebrationCosmeticIds = ["none", "petal-trail", "ribbon-tag", "starlight-aura", "garden-blessing-set"] as const;
 export type CelebrationCosmeticId = (typeof celebrationCosmeticIds)[number];
+export const celebrationCosmeticTones = ["rose", "gold", "sage"] as const;
+export type CelebrationCosmeticTone = (typeof celebrationCosmeticTones)[number];
+export const celebrationCosmeticToneLabels: Record<CelebrationCosmeticTone, string> = {
+  rose: "블러시 로즈",
+  gold: "샴페인 골드",
+  sage: "가든 세이지"
+};
 export const celebrationKindRewards = {
   petal: {
     label: "꽃잎 발자국",
@@ -71,6 +80,70 @@ export function saveCelebrationCosmetic(
   } catch {
     return false;
   }
+}
+
+export function loadCelebrationCosmeticTone(
+  storage: CosmeticStorage | null = browserCosmeticStorage()
+): CelebrationCosmeticTone {
+  try {
+    const stored = storage?.getItem(celebrationCosmeticToneStorageKey);
+    return celebrationCosmeticTones.includes(stored as CelebrationCosmeticTone)
+      ? stored as CelebrationCosmeticTone
+      : "rose";
+  } catch {
+    return "rose";
+  }
+}
+
+export function saveCelebrationCosmeticTone(
+  tone: CelebrationCosmeticTone,
+  storage: CosmeticStorage | null = browserCosmeticStorage()
+) {
+  if (!celebrationCosmeticTones.includes(tone)) return false;
+  try {
+    storage?.setItem(celebrationCosmeticToneStorageKey, tone);
+    return storage !== null;
+  } catch {
+    return false;
+  }
+}
+
+export type CelebrationCosmeticRecommendation = {
+  cosmeticId: CelebrationCosmeticId;
+  cosmeticLabel: string;
+  tone: CelebrationCosmeticTone;
+  toneLabel: string;
+  detail: string;
+};
+
+export function celebrationCosmeticRecommendation(
+  appearance: CharacterAppearance,
+  collectedIds: readonly string[],
+  items: readonly CelebrationCollectible[] = allCelebrationCollectibles()
+): CelebrationCosmeticRecommendation {
+  const presetId = appearance.presetId;
+  const coolFormal = /navy|charcoal|blue/.test(presetId);
+  const naturalLight = /sage|green|beige|cream|long-wave/.test(presetId);
+  const tone: CelebrationCosmeticTone = coolFormal ? "gold" : naturalLight ? "rose" : "sage";
+  const preferredId: CelebrationCosmeticId = coolFormal
+    ? "starlight-aura"
+    : naturalLight ? "petal-trail" : "ribbon-tag";
+  const unlockedRewards = celebrationKindRewardProgress(collectedIds, items).filter(({ unlocked }) => unlocked);
+  const preferred = unlockedRewards.find(({ cosmeticId }) => cosmeticId === preferredId) ?? unlockedRewards[0];
+  const cosmeticId = preferred?.cosmeticId ?? "none";
+  const cosmeticLabel = preferred?.label ?? "기본 모습";
+  const detail = coolFormal
+    ? "짙은 수트와 네이비 계열에는 따뜻한 골드 빛이 윤곽을 또렷하게 살려줘요."
+    : naturalLight
+      ? "크림·베이지·세이지 계열에는 로즈 꽃잎이 화사한 대비를 더해줘요."
+      : "로즈·라벤더 계열 의상에는 세이지 장식이 차분한 균형을 만들어줘요.";
+  return {
+    cosmeticId,
+    cosmeticLabel,
+    tone,
+    toneLabel: celebrationCosmeticToneLabels[tone],
+    detail
+  };
 }
 
 export type CelebrationMilestone =

@@ -224,7 +224,29 @@ describe("WorldMiniMap", () => {
     const firstLabel = within(dialog).getByRole("region", { name: "목적지 순차 탐색" }).textContent;
     fireEvent.click(within(dialog).getByRole("button", { name: "다음 목적지" }));
     expect(within(dialog).getByRole("region", { name: "목적지 순차 탐색" }).textContent).not.toBe(firstLabel);
+    expect(within(dialog).getByRole("list", { name: "목적지 번호 목록" })).toBeInTheDocument();
     fireEvent.click(within(dialog).getByRole("button", { name: "이곳으로 이동" }));
     expect(onNavigate).toHaveBeenCalledWith(expect.objectContaining({ id: expect.any(String), point: expect.any(Object) }));
+  });
+
+  it("activates the highlighted destination with a single switch during automatic scanning", () => {
+    const zone = getWorldZone(gardenWorld, "lobby");
+    const viewport = { width: 390, height: 520 };
+    const onNavigate = vi.fn();
+    render(<WorldMiniMap
+      zone={zone}
+      player={zone.spawn}
+      direction="down"
+      camera={computeCameraTransform({ player: zone.spawn, viewport, bounds: zone.bounds, zoom: 1 })}
+      viewport={viewport}
+      targetPortalId={null}
+      onNavigateAccessibilityLandmark={onNavigate}
+    />);
+    fireEvent.click(screen.getByRole("button", { name: "미니맵 확대 보기" }));
+    const autoScan = screen.getByRole("button", { name: "자동 스캔" });
+    fireEvent.click(autoScan);
+    expect(autoScan).toHaveAttribute("aria-pressed", "true");
+    fireEvent.keyDown(window, { key: " " });
+    expect(onNavigate).toHaveBeenCalledWith(expect.objectContaining({ id: expect.any(String) }));
   });
 });

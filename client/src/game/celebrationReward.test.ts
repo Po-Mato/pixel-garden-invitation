@@ -3,11 +3,14 @@ import { gardenWorld } from "./world";
 import { allCelebrationCollectibles } from "./celebrationCollectibles";
 import {
   celebrationKindRewardProgress,
+  celebrationCosmeticRecommendation,
   loadCelebrationCosmetic,
+  loadCelebrationCosmeticTone,
   celebrationRewardProgress,
   celebrationSetRewardProgress,
   newlyUnlockedCelebrationMilestones,
-  saveCelebrationCosmetic
+  saveCelebrationCosmetic,
+  saveCelebrationCosmeticTone
 } from "./celebrationReward";
 
 describe("celebrationReward", () => {
@@ -65,5 +68,19 @@ describe("celebrationReward", () => {
     });
     expect(celebrationSetRewardProgress(items.filter(({ kind }) => kind === "petal").map(({ id }) => id), items))
       .toMatchObject({ unlocked: false, completedCount: 1 });
+  });
+
+  it("recommends an unlocked effect and color that complements the selected outfit", () => {
+    const items = allCelebrationCollectibles();
+    const stars = items.filter(({ kind }) => kind === "star").map(({ id }) => id);
+    expect(celebrationCosmeticRecommendation({ presetId: "masculine-navy-suit" }, stars, items))
+      .toMatchObject({ cosmeticId: "starlight-aura", tone: "gold" });
+    const storage = {
+      value: null as string | null,
+      getItem: () => storage.value,
+      setItem: (_key: string, value: string) => { storage.value = value; }
+    };
+    expect(saveCelebrationCosmeticTone("sage", storage)).toBe(true);
+    expect(loadCelebrationCosmeticTone(storage)).toBe("sage");
   });
 });

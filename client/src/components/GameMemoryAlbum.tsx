@@ -12,9 +12,13 @@ import {
   MessageSquareText,
   Move,
   PartyPopper,
+  RotateCw,
   Send,
+  Save,
+  Scaling,
   Sparkles,
   RotateCcw,
+  Trash2,
   UsersRound,
   X
 } from "lucide-react";
@@ -28,16 +32,21 @@ import type { WeddingPhotoAlbum } from "../game/weddingPhoto";
 import type { GameMemoryAlbum as GameMemoryAlbumData, GameMemoryKind } from "../game/gameMemoryAlbum";
 import {
   createGameMemoryKeepsake,
+  createGameMemoryKeepsakeTemplate,
   defaultGameMemoryKeepsakeOptions,
+  applyGameMemoryKeepsakeTemplate,
   loadGameMemoryKeepsakeOptions,
+  loadGameMemoryKeepsakeTemplates,
   orderGameMemoryKeepsakePhotos,
   saveGameMemoryKeepsake,
   saveGameMemoryKeepsakeOptions,
+  saveGameMemoryKeepsakeTemplates,
   shareGameMemoryKeepsake,
   type GameMemoryKeepsakeLayout,
   type GameMemoryKeepsakeFrame,
   type GameMemoryKeepsakeSticker,
   type GameMemoryPhotoTransform,
+  type GameMemoryStickerTransform,
   type GameMemoryKeepsakeData
 } from "../game/gameMemoryKeepsake";
 import { celebrationRewardLabel } from "../game/celebrationReward";
@@ -83,9 +92,19 @@ export function GameMemoryAlbum({
   const coupleOrder = useCoupleOrder();
   const [keepsakeStatus, setKeepsakeStatus] = useState<"idle" | "saving" | "saved" | "sharing" | "shared" | "fallback" | "canceled" | "error">("idle");
   const [keepsakeOptions, setKeepsakeOptions] = useState(loadGameMemoryKeepsakeOptions);
+  const [keepsakeTemplates, setKeepsakeTemplates] = useState(loadGameMemoryKeepsakeTemplates);
   const [activePhotoId, setActivePhotoId] = useState(() => photoAlbum.photos[0]?.photoSpotId ?? null);
+  const [activeSticker, setActiveSticker] = useState<GameMemoryKeepsakeSticker | null>(null);
+  const [templateStatus, setTemplateStatus] = useState("");
   const photoDragRef = useRef<{
     photoId: NonNullable<typeof activePhotoId>;
+    startX: number;
+    startY: number;
+    initialX: number;
+    initialY: number;
+  } | null>(null);
+  const stickerDragRef = useRef<{
+    sticker: GameMemoryKeepsakeSticker;
     startX: number;
     startY: number;
     initialX: number;
@@ -113,6 +132,10 @@ export function GameMemoryAlbum({
   useEffect(() => {
     saveGameMemoryKeepsakeOptions(keepsakeOptions);
   }, [keepsakeOptions]);
+
+  useEffect(() => {
+    saveGameMemoryKeepsakeTemplates(keepsakeTemplates);
+  }, [keepsakeTemplates]);
 
   useEffect(() => {
     if (activePhotoId && orderedPhotos.some(({ photoSpotId }) => photoSpotId === activePhotoId)) return;
@@ -172,6 +195,53 @@ export function GameMemoryAlbum({
     photoDragRef.current = null;
   };
 
+  const updateStickerTransform = (sticker: GameMemoryKeepsakeSticker, patch: Partial<GameMemoryStickerTransform>) => {
+    setKeepsakeOptions((current) => ({
+      ...current,
+      stickerTransforms: {
+        ...current.stickerTransforms,
+        [sticker]: {
+          ...defaultGameMemoryKeepsakeOptions.stickerTransforms[sticker]!,
+          ...current.stickerTransforms[sticker],
+          ...patch
+        }
+      }
+    }));
+  };
+
+  const startStickerDrag = (event: ReactPointerEvent<HTMLButtonElement>, sticker: GameMemoryKeepsakeSticker) => {
+    const transform = keepsakeOptions.stickerTransforms[sticker]
+      ?? defaultGameMemoryKeepsakeOptions.stickerTransforms[sticker]!;
+    event.stopPropagation();
+    event.currentTarget.setPointerCapture?.(event.pointerId);
+    setActiveSticker(sticker);
+    stickerDragRef.current = {
+      sticker,
+      startX: event.clientX,
+      startY: event.clientY,
+      initialX: transform.x,
+      initialY: transform.y
+    };
+  };
+
+  const moveStickerDrag = (event: ReactPointerEvent<HTMLButtonElement>) => {
+    const drag = stickerDragRef.current;
+    const preview = event.currentTarget.closest(".game-memory-album__preview");
+    if (!drag || !preview) return;
+    event.preventDefault();
+    const rect = preview.getBoundingClientRect();
+    const clamp = (value: number) => Math.min(0.96, Math.max(0.04, value));
+    updateStickerTransform(drag.sticker, {
+      x: clamp(drag.initialX + (event.clientX - drag.startX) / Math.max(1, rect.width)),
+      y: clamp(drag.initialY + (event.clientY - drag.startY) / Math.max(1, rect.height))
+    });
+  };
+
+  const endStickerDrag = (event: ReactPointerEvent<HTMLButtonElement>) => {
+    event.currentTarget.releasePointerCapture?.(event.pointerId);
+    stickerDragRef.current = null;
+  };
+
   const movePhoto = (index: number, delta: -1 | 1) => {
     const target = index + delta;
     if (target < 0 || target >= orderedPhotos.length) return;
@@ -181,12 +251,23 @@ export function GameMemoryAlbum({
   };
 
   const toggleSticker = (sticker: GameMemoryKeepsakeSticker) => {
+    setActiveSticker(sticker);
     setKeepsakeOptions((current) => ({
       ...current,
       stickers: current.stickers.includes(sticker)
         ? current.stickers.filter((candidate) => candidate !== sticker)
         : [...current.stickers, sticker].slice(-3)
     }));
+  };
+
+  const saveCurrentTemplate = () => {
+    if (keepsakeTemplates.length >= 3) {
+      setTemplateStatus("템플릿은 최대 3개까지 저장할 수 있어요.");
+      return;
+    }
+    const template = createGameMemoryKeepsakeTemplate(keepsakeOptions, keepsakeTemplates.length);
+    setKeepsakeTemplates((current) => [...current, template]);
+    setTemplateStatus(`${template.name}을 저장했어요.`);
   };
 
   const buildKeepsake = async (action: "save" | "share") => {
@@ -278,11 +359,32 @@ export function GameMemoryAlbum({
               ))}
             </div>
             <strong>{keepsakeOptions.message}</strong>
-            <span className="game-memory-album__preview-stickers" aria-hidden="true">
-              {keepsakeOptions.stickers.map((sticker) => sticker === "heart"
-                ? <Heart key={sticker} />
-                : sticker === "flower" ? <Flower2 key={sticker} /> : <Sparkles key={sticker} />)}
-            </span>
+            <div className="game-memory-album__preview-stickers" aria-label="자유 배치 스티커">
+              {keepsakeOptions.stickers.map((sticker) => {
+                const transform = keepsakeOptions.stickerTransforms[sticker]
+                  ?? defaultGameMemoryKeepsakeOptions.stickerTransforms[sticker]!;
+                const Icon = sticker === "heart" ? Heart : sticker === "flower" ? Flower2 : Sparkles;
+                const label = sticker === "heart" ? "하트" : sticker === "flower" ? "꽃" : "별빛";
+                return (
+                  <button
+                    key={sticker}
+                    type="button"
+                    aria-label={`${label} 스티커 위치 조절`}
+                    aria-pressed={activeSticker === sticker}
+                    style={{
+                      left: `${transform.x * 100}%`,
+                      top: `${transform.y * 100}%`,
+                      transform: `translate(-50%, -50%) rotate(${transform.rotation}deg) scale(${transform.scale})`
+                    }}
+                    onClick={() => setActiveSticker(sticker)}
+                    onPointerDown={(event) => startStickerDrag(event, sticker)}
+                    onPointerMove={moveStickerDrag}
+                    onPointerUp={endStickerDrag}
+                    onPointerCancel={endStickerDrag}
+                  ><Icon aria-hidden="true" /></button>
+                );
+              })}
+            </div>
           </div>
 
           {activePhotoId ? (
@@ -390,6 +492,74 @@ export function GameMemoryAlbum({
                 ><Icon aria-hidden="true" /><span>{label}</span></button>
               ))}
             </div>
+          </fieldset>
+
+          {activeSticker && keepsakeOptions.stickers.includes(activeSticker) ? (
+            <fieldset className="game-memory-album__sticker-editor">
+              <legend><Move aria-hidden="true" />스티커 자유 배치·회전</legend>
+              <p>미리보기에서 스티커를 직접 끌어 원하는 위치에 놓으세요.</p>
+              <label>
+                <span><Scaling aria-hidden="true" />크기</span>
+                <input
+                  type="range"
+                  min="0.65"
+                  max="1.8"
+                  step="0.05"
+                  aria-label="선택 스티커 크기"
+                  value={keepsakeOptions.stickerTransforms[activeSticker]?.scale ?? 1}
+                  onChange={(event) => updateStickerTransform(activeSticker, { scale: Number(event.target.value) })}
+                />
+              </label>
+              <label>
+                <span><RotateCw aria-hidden="true" />회전</span>
+                <input
+                  type="range"
+                  min="-180"
+                  max="180"
+                  step="5"
+                  aria-label="선택 스티커 회전"
+                  value={keepsakeOptions.stickerTransforms[activeSticker]?.rotation ?? 0}
+                  onChange={(event) => updateStickerTransform(activeSticker, { rotation: Number(event.target.value) })}
+                />
+              </label>
+              <button
+                type="button"
+                onClick={() => updateStickerTransform(
+                  activeSticker,
+                  defaultGameMemoryKeepsakeOptions.stickerTransforms[activeSticker]!
+                )}
+              ><RotateCcw aria-hidden="true" />선택 스티커 초기화</button>
+            </fieldset>
+          ) : null}
+
+          <fieldset className="game-memory-album__templates">
+            <legend><Save aria-hidden="true" />내 포토스트립 템플릿</legend>
+            <div>
+              {keepsakeTemplates.map((template) => (
+                <span key={template.id}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setKeepsakeOptions((current) => applyGameMemoryKeepsakeTemplate(current, template));
+                      setTemplateStatus(`${template.name}을 적용했어요.`);
+                    }}
+                  >{template.name}</button>
+                  <button
+                    type="button"
+                    aria-label={`${template.name} 삭제`}
+                    title="템플릿 삭제"
+                    onClick={() => {
+                      setKeepsakeTemplates((current) => current.filter(({ id }) => id !== template.id));
+                      setTemplateStatus(`${template.name}을 삭제했어요.`);
+                    }}
+                  ><Trash2 aria-hidden="true" /></button>
+                </span>
+              ))}
+              <button type="button" disabled={keepsakeTemplates.length >= 3} onClick={saveCurrentTemplate}>
+                <Save aria-hidden="true" />현재 디자인 저장
+              </button>
+            </div>
+            <p aria-live="polite">{templateStatus || "레이아웃·프레임·스티커 배치를 최대 3개까지 저장합니다."}</p>
           </fieldset>
 
           <fieldset>

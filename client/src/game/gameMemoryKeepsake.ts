@@ -3,6 +3,7 @@ import type { GameMemoryAlbum } from "./gameMemoryAlbum";
 import type { WorldPhotoSpotId } from "./world";
 
 export const gameMemoryKeepsakeOptionsStorageKey = "wedding-game:memory-keepsake-options:v1";
+export const gameMemoryKeepsakeTemplatesStorageKey = "wedding-game:memory-keepsake-templates:v1";
 export const gameMemoryKeepsakeLayouts = ["classic", "garden", "film"] as const;
 export const gameMemoryKeepsakeFrames = ["clean", "rounded", "postage"] as const;
 export const gameMemoryKeepsakeStickers = ["heart", "flower", "sparkle"] as const;
@@ -14,6 +15,12 @@ export type GameMemoryPhotoTransform = {
   x: number;
   y: number;
 };
+export type GameMemoryStickerTransform = {
+  x: number;
+  y: number;
+  scale: number;
+  rotation: number;
+};
 export type GameMemoryKeepsakeOptions = {
   layout: GameMemoryKeepsakeLayout;
   frame: GameMemoryKeepsakeFrame;
@@ -22,6 +29,18 @@ export type GameMemoryKeepsakeOptions = {
   message: string;
   photoOrder: WorldPhotoSpotId[];
   photoTransforms: Partial<Record<WorldPhotoSpotId, GameMemoryPhotoTransform>>;
+  stickerTransforms: Partial<Record<GameMemoryKeepsakeSticker, GameMemoryStickerTransform>>;
+};
+
+export type GameMemoryKeepsakeTemplate = {
+  id: string;
+  name: string;
+  layout: GameMemoryKeepsakeLayout;
+  frame: GameMemoryKeepsakeFrame;
+  stickers: GameMemoryKeepsakeSticker[];
+  stickerTransforms: Partial<Record<GameMemoryKeepsakeSticker, GameMemoryStickerTransform>>;
+  quality: "standard" | "high";
+  message: string;
 };
 
 type OptionsStorage = Pick<Storage, "getItem" | "setItem">;
@@ -33,7 +52,12 @@ export const defaultGameMemoryKeepsakeOptions: GameMemoryKeepsakeOptions = {
   quality: "high",
   message: "함께 걸어 더 선명해진 결혼식의 하루",
   photoOrder: [],
-  photoTransforms: {}
+  photoTransforms: {},
+  stickerTransforms: {
+    heart: { x: 0.1, y: 0.1, scale: 1, rotation: -8 },
+    flower: { x: 0.9, y: 0.1, scale: 1, rotation: 8 },
+    sparkle: { x: 0.86, y: 0.35, scale: 1, rotation: 0 }
+  }
 };
 
 export type GameMemoryKeepsakeData = {
@@ -107,6 +131,21 @@ export function normalizeGameMemoryKeepsakeOptions(value: unknown): GameMemoryKe
         y: Math.round(clamp(candidateTransform.y, -1, 1, 0) * 100) / 100
       }];
     })) as Partial<Record<WorldPhotoSpotId, GameMemoryPhotoTransform>>;
+  const stickerTransforms = Object.fromEntries(gameMemoryKeepsakeStickers.map((sticker) => {
+    const transform = candidate.stickerTransforms?.[sticker];
+    const fallback = defaultGameMemoryKeepsakeOptions.stickerTransforms[sticker]!;
+    const clamp = (number: unknown, minimum: number, maximum: number, fallbackValue: number) => (
+      typeof number === "number" && Number.isFinite(number)
+        ? Math.min(maximum, Math.max(minimum, number))
+        : fallbackValue
+    );
+    return [sticker, {
+      x: Math.round(clamp(transform?.x, 0.04, 0.96, fallback.x) * 100) / 100,
+      y: Math.round(clamp(transform?.y, 0.04, 0.96, fallback.y) * 100) / 100,
+      scale: Math.round(clamp(transform?.scale, 0.65, 1.8, fallback.scale) * 100) / 100,
+      rotation: Math.round(clamp(transform?.rotation, -180, 180, fallback.rotation))
+    }];
+  })) as Partial<Record<GameMemoryKeepsakeSticker, GameMemoryStickerTransform>>;
   return {
     layout,
     frame,
@@ -114,8 +153,87 @@ export function normalizeGameMemoryKeepsakeOptions(value: unknown): GameMemoryKe
     quality,
     message: message || defaultGameMemoryKeepsakeOptions.message,
     photoOrder,
-    photoTransforms
+    photoTransforms,
+    stickerTransforms
   };
+}
+
+function normalizeKeepsakeTemplate(value: unknown): GameMemoryKeepsakeTemplate | null {
+  if (typeof value !== "object" || value === null) return null;
+  const candidate = value as Partial<GameMemoryKeepsakeTemplate>;
+  if (typeof candidate.id !== "string" || !/^[a-z0-9-]{3,48}$/.test(candidate.id)) return null;
+  const name = typeof candidate.name === "string" ? candidate.name.trim().slice(0, 18) : "";
+  if (!name) return null;
+  const normalized = normalizeGameMemoryKeepsakeOptions(candidate);
+  return {
+    id: candidate.id,
+    name,
+    layout: normalized.layout,
+    frame: normalized.frame,
+    stickers: normalized.stickers,
+    stickerTransforms: normalized.stickerTransforms,
+    quality: normalized.quality,
+    message: normalized.message
+  };
+}
+
+export function loadGameMemoryKeepsakeTemplates(
+  storage: OptionsStorage | null = browserOptionsStorage()
+): GameMemoryKeepsakeTemplate[] {
+  try {
+    const parsed = JSON.parse(storage?.getItem(gameMemoryKeepsakeTemplatesStorageKey) ?? "[]") as unknown;
+    if (!Array.isArray(parsed)) return [];
+    return parsed.map(normalizeKeepsakeTemplate)
+      .filter((template): template is GameMemoryKeepsakeTemplate => template !== null)
+      .slice(0, 3);
+  } catch {
+    return [];
+  }
+}
+
+export function saveGameMemoryKeepsakeTemplates(
+  templates: readonly GameMemoryKeepsakeTemplate[],
+  storage: OptionsStorage | null = browserOptionsStorage()
+) {
+  try {
+    const normalized = templates.map(normalizeKeepsakeTemplate)
+      .filter((template): template is GameMemoryKeepsakeTemplate => template !== null)
+      .slice(0, 3);
+    storage?.setItem(gameMemoryKeepsakeTemplatesStorageKey, JSON.stringify(normalized));
+    return storage !== null;
+  } catch {
+    return false;
+  }
+}
+
+export function createGameMemoryKeepsakeTemplate(
+  options: GameMemoryKeepsakeOptions,
+  index: number,
+  id = `template-${Date.now().toString(36)}`
+): GameMemoryKeepsakeTemplate {
+  const normalized = normalizeGameMemoryKeepsakeOptions(options);
+  return {
+    id: id.toLowerCase().replace(/[^a-z0-9-]/g, "-").slice(0, 48),
+    name: `내 템플릿 ${Math.min(3, Math.max(1, index + 1))}`,
+    layout: normalized.layout,
+    frame: normalized.frame,
+    stickers: normalized.stickers,
+    stickerTransforms: normalized.stickerTransforms,
+    quality: normalized.quality,
+    message: normalized.message
+  };
+}
+
+export function applyGameMemoryKeepsakeTemplate(
+  current: GameMemoryKeepsakeOptions,
+  template: GameMemoryKeepsakeTemplate
+): GameMemoryKeepsakeOptions {
+  return normalizeGameMemoryKeepsakeOptions({
+    ...current,
+    ...template,
+    photoOrder: current.photoOrder,
+    photoTransforms: current.photoTransforms
+  });
 }
 
 export function loadGameMemoryKeepsakeOptions(
@@ -222,10 +340,13 @@ function drawKeepsakeSticker(
   sticker: GameMemoryKeepsakeSticker,
   x: number,
   y: number,
-  color: string
+  color: string,
+  transform: Pick<GameMemoryStickerTransform, "scale" | "rotation"> = { scale: 1, rotation: 0 }
 ) {
   context.save();
   context.translate(x, y);
+  context.rotate(transform.rotation * Math.PI / 180);
+  context.scale(transform.scale, transform.scale);
   context.fillStyle = color;
   context.strokeStyle = color;
   context.lineWidth = 5;
@@ -342,10 +463,17 @@ export async function createGameMemoryKeepsake(data: GameMemoryKeepsakeData): Pr
     drawPhotoFrame(context, options.frame, x + 12, 242, 264, 330, palette.accent);
   }
 
-  const stickerPoints = [[82, 190], [998, 188], [972, 672]] as const;
-  options.stickers.forEach((sticker, index) => {
-    const point = stickerPoints[index];
-    if (point) drawKeepsakeSticker(context, sticker, point[0], point[1], palette.accent);
+  options.stickers.forEach((sticker) => {
+    const transform = options.stickerTransforms[sticker]
+      ?? defaultGameMemoryKeepsakeOptions.stickerTransforms[sticker]!;
+    drawKeepsakeSticker(
+      context,
+      sticker,
+      transform.x * 1080,
+      transform.y * 1920,
+      palette.accent,
+      transform
+    );
   });
 
   const companionCount = data.album.entries.filter(({ kind }) => kind === "companion").length;

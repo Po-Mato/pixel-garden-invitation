@@ -102,6 +102,15 @@ function sameOriginRequests(urls) {
   }).filter(Boolean))].map((url) => new Request(url, { cache: "reload" }));
 }
 
+function zoneMetaRequest(zoneId) {
+  return new Request(scopedUrl(\`./__offline-zone-version__/${"${zoneId}"}\`));
+}
+
+async function zoneCacheIsCurrent(cache, zoneId) {
+  const response = await cache.match(zoneMetaRequest(zoneId));
+  return response ? (await response.text()) === VERSION : false;
+}
+
 async function responseBytes(response) {
   const contentLength = Number(response.headers.get("content-length"));
   if (Number.isFinite(contentLength) && contentLength > 0) return contentLength;
@@ -112,12 +121,13 @@ async function prepareZoneCache(zoneId, urls) {
   if (!validZoneId(zoneId)) return;
   const requests = sameOriginRequests(urls);
   const cache = await caches.open(ZONE_NAME);
+  const currentVersion = await zoneCacheIsCurrent(cache, zoneId);
   let completed = 0;
   let bytes = 0;
   await broadcast({ type: "PWA_ZONE_CACHE_PROGRESS", zoneId, completed, total: requests.length, bytes });
   try {
     for (const request of requests) {
-      let response = await cache.match(request);
+      let response = currentVersion ? await cache.match(request) : null;
       if (!response) {
         response = await fetch(request);
         if (!response.ok) throw new Error(\`HTTP ${"${response.status}"}\`);
@@ -127,6 +137,9 @@ async function prepareZoneCache(zoneId, urls) {
       bytes += await responseBytes(response);
       await broadcast({ type: "PWA_ZONE_CACHE_PROGRESS", zoneId, completed, total: requests.length, bytes });
     }
+    await cache.put(zoneMetaRequest(zoneId), new Response(VERSION, {
+      headers: { "Content-Type": "text/plain; charset=utf-8" }
+    }));
     await broadcast({ type: "PWA_ZONE_CACHE_READY", zoneId, completed, total: requests.length, bytes });
   } catch {
     await broadcast({ type: "PWA_ZONE_CACHE_ERROR", zoneId, completed, total: requests.length, bytes });
@@ -137,6 +150,7 @@ async function removeZoneCache(zoneId, urls) {
   if (!validZoneId(zoneId)) return;
   const cache = await caches.open(ZONE_NAME);
   await Promise.all(sameOriginRequests(urls).map((request) => cache.delete(request)));
+  await cache.delete(zoneMetaRequest(zoneId));
   await broadcast({ type: "PWA_ZONE_CACHE_REMOVED", zoneId, completed: 0, total: 0, bytes: 0 });
 }
 
@@ -148,16 +162,33 @@ async function reportZoneCaches(groups) {
     const requests = sameOriginRequests(urls);
     const responses = await Promise.all(requests.map((request) => cache.match(request)));
     const completed = responses.filter(Boolean).length;
+    const currentVersion = await zoneCacheIsCurrent(cache, zoneId);
     const bytes = (await Promise.all(responses.filter(Boolean).map(responseBytes)))
       .reduce((sum, value) => sum + value, 0);
     await broadcast({
       type: "PWA_ZONE_CACHE_STATE",
       zoneId,
-      state: requests.length > 0 && completed === requests.length ? "ready" : "idle",
+      state: requests.length > 0 && completed === requests.length
+        ? currentVersion ? "ready" : "outdated"
+        : "idle",
       completed,
       total: requests.length,
       bytes
     });
+  }
+}
+
+async function prepareZoneGroups(groups) {
+  if (!groups || typeof groups !== "object") return;
+  for (const [zoneId, urls] of Object.entries(groups)) {
+    await prepareZoneCache(zoneId, urls);
+  }
+}
+
+async function removeZoneGroups(groups) {
+  if (!groups || typeof groups !== "object") return;
+  for (const [zoneId, urls] of Object.entries(groups)) {
+    await removeZoneCache(zoneId, urls);
   }
 }
 
@@ -302,6 +333,14 @@ self.addEventListener("message", (event) => {
   }
   if (event.data?.type === "REPORT_ZONE_ASSETS") {
     event.waitUntil(reportZoneCaches(event.data.groups));
+    return;
+  }
+  if (event.data?.type === "CACHE_ZONE_GROUPS") {
+    event.waitUntil(prepareZoneGroups(event.data.groups));
+    return;
+  }
+  if (event.data?.type === "REMOVE_ZONE_GROUPS") {
+    event.waitUntil(removeZoneGroups(event.data.groups));
     return;
   }
   if (event.data?.type !== "CACHE_URLS" || !Array.isArray(event.data.urls)) return;

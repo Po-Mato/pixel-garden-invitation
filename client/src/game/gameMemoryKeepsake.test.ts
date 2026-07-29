@@ -1,10 +1,15 @@
 import { describe, expect, it, vi } from "vitest";
 import {
+  applyGameMemoryKeepsakeTemplate,
+  createGameMemoryKeepsakeTemplate,
+  defaultGameMemoryKeepsakeOptions,
   gameMemoryKeepsakeFilename,
   loadGameMemoryKeepsakeOptions,
+  loadGameMemoryKeepsakeTemplates,
   normalizeGameMemoryKeepsakeOptions,
   orderGameMemoryKeepsakePhotos,
   saveGameMemoryKeepsakeOptions,
+  saveGameMemoryKeepsakeTemplates,
   shareGameMemoryKeepsake,
   type GameMemoryKeepsakeData
 } from "./gameMemoryKeepsake";
@@ -54,6 +59,9 @@ describe("gameMemoryKeepsake", () => {
       photoOrder: ["ceremony-aisle", "ceremony-aisle", "lobby-photo-wall"],
       photoTransforms: {
         "ceremony-aisle": { scale: 4, x: -2, y: 0.428 }
+      },
+      stickerTransforms: {
+        heart: { x: -2, y: 0.428, scale: 3, rotation: 205 }
       }
     });
     expect(options).toEqual({
@@ -65,10 +73,42 @@ describe("gameMemoryKeepsake", () => {
       photoOrder: ["ceremony-aisle", "lobby-photo-wall"],
       photoTransforms: {
         "ceremony-aisle": { scale: 2.2, x: -1, y: 0.43 }
+      },
+      stickerTransforms: {
+        heart: { x: 0.04, y: 0.43, scale: 1.8, rotation: 180 },
+        flower: { x: 0.9, y: 0.1, scale: 1, rotation: 8 },
+        sparkle: { x: 0.86, y: 0.35, scale: 1, rotation: 0 }
       }
     });
     expect(saveGameMemoryKeepsakeOptions(options, storage)).toBe(true);
     expect(loadGameMemoryKeepsakeOptions(storage)).toEqual(options);
+  });
+
+  it("stores up to three reusable design templates without replacing photo crops", () => {
+    const values = new Map<string, string>();
+    const storage = {
+      getItem: (key: string) => values.get(key) ?? null,
+      setItem: (key: string, value: string) => values.set(key, value)
+    };
+    const current = normalizeGameMemoryKeepsakeOptions({
+      ...defaultGameMemoryKeepsakeOptions,
+      layout: "film",
+      frame: "postage",
+      stickers: ["sparkle"],
+      photoOrder: ["ceremony-aisle"],
+      photoTransforms: { "ceremony-aisle": { scale: 1.4, x: 0.2, y: -0.1 } }
+    });
+    const template = createGameMemoryKeepsakeTemplate(current, 0, "template-one");
+    expect(saveGameMemoryKeepsakeTemplates([template], storage)).toBe(true);
+    expect(loadGameMemoryKeepsakeTemplates(storage)).toEqual([template]);
+
+    const applied = applyGameMemoryKeepsakeTemplate({
+      ...current,
+      layout: "garden",
+      photoTransforms: { "ceremony-aisle": { scale: 2, x: -0.3, y: 0.4 } }
+    }, template);
+    expect(applied.layout).toBe("film");
+    expect(applied.photoTransforms["ceremony-aisle"]).toEqual({ scale: 2, x: -0.3, y: 0.4 });
   });
 
   it("orders captured photos without dropping unspecified photos", () => {

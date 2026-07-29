@@ -1,12 +1,16 @@
 import { useState } from "react";
-import { Check, Eye, Flower2, Gift, LockKeyhole, MapPinned, Navigation, Sparkles, X } from "lucide-react";
+import { Check, Eye, Flower2, Gift, LockKeyhole, MapPinned, Navigation, Palette, Sparkles, WandSparkles, X } from "lucide-react";
 import type { CharacterAppearance, WorldZoneId } from "@wedding-game/shared";
 import type { CelebrationCollectible } from "../game/celebrationCollectibles";
 import { celebrationZoneProgress } from "../game/celebrationCollectionGuide";
 import {
   celebrationKindRewardProgress,
+  celebrationCosmeticRecommendation,
+  celebrationCosmeticToneLabels,
+  celebrationCosmeticTones,
   celebrationSetRewardProgress,
-  type CelebrationCosmeticId
+  type CelebrationCosmeticId,
+  type CelebrationCosmeticTone
 } from "../game/celebrationReward";
 import { gardenWorld } from "../game/world";
 import { CharacterSprite } from "./CharacterSprite";
@@ -18,7 +22,9 @@ type CelebrationCollectionGuideProps = {
   guidedItemId: string | null;
   onGuide: (item: CelebrationCollectible) => void;
   equippedCosmetic: CelebrationCosmeticId;
+  equippedTone: CelebrationCosmeticTone;
   onEquipCosmetic: (cosmeticId: CelebrationCosmeticId) => void;
+  onChangeTone: (tone: CelebrationCosmeticTone) => void;
   appearance: CharacterAppearance;
   onClose: () => void;
 };
@@ -30,7 +36,9 @@ export function CelebrationCollectionGuide({
   guidedItemId,
   onGuide,
   equippedCosmetic,
+  equippedTone,
   onEquipCosmetic,
+  onChangeTone,
   appearance,
   onClose
 }: CelebrationCollectionGuideProps) {
@@ -42,6 +50,8 @@ export function CelebrationCollectionGuide({
   const setReward = celebrationSetRewardProgress(collectedIds, items);
   const rewardIcons = { petal: Flower2, ribbon: Gift, star: Sparkles } as const;
   const [previewCosmetic, setPreviewCosmetic] = useState<CelebrationCosmeticId>(equippedCosmetic);
+  const [previewTone, setPreviewTone] = useState<CelebrationCosmeticTone>(equippedTone);
+  const recommendation = celebrationCosmeticRecommendation(appearance, collectedIds, items);
   const previewLabel = previewCosmetic === "none"
     ? "기본 모습"
     : rewards.find(({ cosmeticId }) => cosmeticId === previewCosmetic)?.label ?? setReward.label;
@@ -64,11 +74,48 @@ export function CelebrationCollectionGuide({
         <div
           className="celebration-collection-guide__cosmetic-preview"
           data-collection-cosmetic={previewCosmetic}
+          data-collection-tone={previewTone}
           aria-label={`${previewLabel} 캐릭터 미리보기`}
         >
           <span><CharacterSprite appearance={appearance} direction="down" moving={false} displayMode="preview" /></span>
           <div><small>실시간 미리보기</small><strong>{previewLabel}</strong><span>게임 캐릭터에 적용될 모습을 먼저 확인하세요.</span></div>
         </div>
+        <section className="celebration-collection-guide__recommendation" aria-label="의상별 꾸미기 추천">
+          <WandSparkles aria-hidden="true" />
+          <span>
+            <small>현재 의상 추천</small>
+            <strong>{recommendation.cosmeticLabel} · {recommendation.toneLabel}</strong>
+            <span>{recommendation.detail}</span>
+          </span>
+          <button
+            type="button"
+            disabled={recommendation.cosmeticId === "none"}
+            onClick={() => {
+              setPreviewCosmetic(recommendation.cosmeticId);
+              setPreviewTone(recommendation.tone);
+              onChangeTone(recommendation.tone);
+              onEquipCosmetic(recommendation.cosmeticId);
+            }}
+          >추천 적용</button>
+        </section>
+        <fieldset className="celebration-collection-guide__tones">
+          <legend><Palette aria-hidden="true" />효과 색상 조합</legend>
+          <div>
+            {celebrationCosmeticTones.map((tone) => (
+              <button
+                key={tone}
+                type="button"
+                aria-label={`${celebrationCosmeticToneLabels[tone]} 효과 색상`}
+                aria-pressed={previewTone === tone}
+                data-tone={tone}
+                onClick={() => {
+                  setPreviewTone(tone);
+                  onChangeTone(tone);
+                }}
+              ><span aria-hidden="true" />{celebrationCosmeticToneLabels[tone]}{recommendation.tone === tone ? <small>추천</small> : null}</button>
+            ))}
+          </div>
+        </fieldset>
         <div>
           {rewards.map((reward) => {
             const Icon = rewardIcons[reward.kind];

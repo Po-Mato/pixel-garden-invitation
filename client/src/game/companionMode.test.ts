@@ -5,6 +5,7 @@ import {
   companionCandidates,
   companionFollowPath,
   companionInviteRemainingLabel,
+  createCompanionInviteCode,
   createCompanionInviteUrl,
   inspectCompanionInviteUrl,
   loadCompanionSession,
@@ -62,16 +63,19 @@ describe("companionMode", () => {
       "https://example.com/invite/?view=invitation#gallery",
       "stable_guest_123456",
       "lobby",
-      expiresAt
+      expiresAt,
+      "ABC234"
     );
     expect(url).not.toContain("view=");
     expect(parseCompanionInviteUrl(url, expiresAt - 1)).toEqual({
       targetGuestId: "guest_stable_guest_123456",
       zoneId: "lobby",
-      expiresAt
+      expiresAt,
+      inviteCode: "ABC234"
     });
     expect(parseCompanionInviteUrl("https://example.com/?together=bad&togetherZone=lobby")).toBeNull();
     expect(inspectCompanionInviteUrl(url, expiresAt)).toEqual({ status: "expired", expiresAt });
     expect(companionInviteRemainingLabel(expiresAt, expiresAt - 65_000)).toBe("01:05");
+    expect(createCompanionInviteCode(() => 0)).toBe("AAAAAA");
   });
 });

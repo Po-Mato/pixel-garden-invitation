@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent, type WheelEvent as ReactWheelEvent } from "react";
 import { createPortal } from "react-dom";
-import { ChevronLeft, ChevronRight, Maximize2, Navigation, RotateCcw, X, ZoomIn, ZoomOut } from "lucide-react";
+import { ChevronLeft, ChevronRight, Maximize2, Mic, Navigation, RotateCcw, ScanLine, X, ZoomIn, ZoomOut } from "lucide-react";
 import type { Direction } from "@wedding-game/shared";
 import type { CameraTransform, ViewportSize } from "../game/camera";
 import {
@@ -15,6 +15,10 @@ import type { RouteRecalculationResult } from "../game/routeDeviation";
 import type { CelebrationCollectibleKind } from "../game/celebrationCollectibles";
 import { portalEntryRect, type Point, type WorldZone } from "../game/world";
 import { worldAccessibilityLandmarks, type WorldAccessibilityLandmark } from "../game/worldAccessibility";
+import {
+  destinationVoiceSelectionAvailable,
+  listenForDestinationVoiceNumber
+} from "../accessibility/destinationVoiceSelection";
 import "../mini-map-expanded.css";
 
 export type MiniMapRouteKind = "preview" | "journey" | "selected";
@@ -285,6 +289,8 @@ export function WorldMiniMap({
   const routeStatus = routeActive ? routeContinuing ? "연속 안내" : "이동 중" : "경로 미리보기";
   const accessibilityLandmarks = worldAccessibilityLandmarks(zone, player);
   const [selectedLandmarkIndex, setSelectedLandmarkIndex] = useState(0);
+  const [autoScan, setAutoScan] = useState(false);
+  const [voiceStatus, setVoiceStatus] = useState<"idle" | "listening" | "selected" | "error">("idle");
   const selectedLandmark = accessibilityLandmarks[Math.min(selectedLandmarkIndex, Math.max(0, accessibilityLandmarks.length - 1))] ?? null;
 
   useEffect(() => {
@@ -303,13 +309,38 @@ export function WorldMiniMap({
   useEffect(() => {
     if (expanded) return;
     setViewTransform({ scale: 1, x: 0, y: 0 });
+    setAutoScan(false);
+    setVoiceStatus("idle");
     gesturePointersRef.current.clear();
     gestureFrameRef.current = null;
   }, [expanded]);
 
   useEffect(() => {
     setSelectedLandmarkIndex(0);
+    setAutoScan(false);
+    setVoiceStatus("idle");
   }, [zone.id]);
+
+  useEffect(() => {
+    if (!expanded || !autoScan || accessibilityLandmarks.length < 2) return;
+    const timer = window.setInterval(() => selectLandmark(1), 1_800);
+    const activate = (event: KeyboardEvent) => {
+      if (event.key !== "Enter" && event.key !== " ") return;
+      event.preventDefault();
+      event.stopPropagation();
+      const landmark = accessibilityLandmarks[selectedLandmarkIndex % accessibilityLandmarks.length];
+      if (landmark && onNavigateAccessibilityLandmark) {
+        setAutoScan(false);
+        onNavigateAccessibilityLandmark(landmark);
+        setExpanded(false);
+      }
+    };
+    window.addEventListener("keydown", activate, true);
+    return () => {
+      window.clearInterval(timer);
+      window.removeEventListener("keydown", activate, true);
+    };
+  }, [accessibilityLandmarks, autoScan, expanded, onNavigateAccessibilityLandmark, selectedLandmarkIndex]);
 
   const selectLandmark = (delta: number) => {
     if (accessibilityLandmarks.length === 0) return;
@@ -576,6 +607,55 @@ export function WorldMiniMap({
                     <ChevronRight aria-hidden="true" />
                   </button>
                 </div>
+                <ol className="world-minimap-expanded__destination-numbers" aria-label="목적지 번호 목록">
+                  {accessibilityLandmarks.map((landmark, index) => (
+                    <li key={landmark.id}>
+                      <button
+                        type="button"
+                        aria-label={`${index + 1}번 ${landmark.label}`}
+                        aria-pressed={index === selectedLandmarkIndex}
+                        onClick={() => {
+                          setSelectedLandmarkIndex(index);
+                          setAutoScan(false);
+                          setVoiceStatus("idle");
+                        }}
+                      ><strong>{index + 1}</strong><span>{landmark.label}</span></button>
+                    </li>
+                  ))}
+                </ol>
+                <div className="world-minimap-expanded__switch-controls" role="group" aria-label="스위치와 음성 목적지 선택">
+                  <button
+                    type="button"
+                    aria-pressed={autoScan}
+                    onClick={() => {
+                      setAutoScan((current) => !current);
+                      setVoiceStatus("idle");
+                    }}
+                  ><ScanLine aria-hidden="true" />{autoScan ? "스캔 중지" : "자동 스캔"}</button>
+                  <button
+                    type="button"
+                    disabled={!destinationVoiceSelectionAvailable() || voiceStatus === "listening"}
+                    onClick={() => {
+                      setAutoScan(false);
+                      setVoiceStatus("listening");
+                      void listenForDestinationVoiceNumber(accessibilityLandmarks.length).then((index) => {
+                        if (index === null) {
+                          setVoiceStatus("error");
+                          return;
+                        }
+                        setSelectedLandmarkIndex(index);
+                        setVoiceStatus("selected");
+                      });
+                    }}
+                  ><Mic aria-hidden="true" />{voiceStatus === "listening" ? "듣는 중" : "번호 말하기"}</button>
+                </div>
+                <p className="world-minimap-expanded__switch-status" aria-live="polite">
+                  {autoScan ? "목적지가 차례로 바뀝니다. 원하는 목적지에서 스위치를 누르세요."
+                    : voiceStatus === "listening" ? `1번부터 ${accessibilityLandmarks.length}번 중 하나를 말해 주세요.`
+                      : voiceStatus === "selected" ? `${selectedLandmarkIndex + 1}번 목적지를 선택했어요.`
+                        : voiceStatus === "error" ? "번호를 듣지 못했어요. 번호 버튼이나 화살표를 이용해 주세요."
+                          : "화살표·번호·자동 스캔 중 편한 방법을 이용하세요."}
+                </p>
               </section>
             ) : null}
             {journeyStops.length > 0 ? (
