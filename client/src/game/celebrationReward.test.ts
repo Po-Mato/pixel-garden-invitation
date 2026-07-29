@@ -5,6 +5,7 @@ import {
   celebrationKindRewardProgress,
   loadCelebrationCosmetic,
   celebrationRewardProgress,
+  celebrationSetRewardProgress,
   newlyUnlockedCelebrationMilestones,
   saveCelebrationCosmetic
 } from "./celebrationReward";
@@ -53,5 +54,16 @@ describe("celebrationReward", () => {
     expect(loadCelebrationCosmetic(storage)).toBe("none");
     expect(saveCelebrationCosmetic("starlight-aura", storage)).toBe(true);
     expect(loadCelebrationCosmetic(storage)).toBe("starlight-aura");
+  });
+
+  it("unlocks the combined garden set only after every kind reward", () => {
+    const items = allCelebrationCollectibles();
+    expect(celebrationSetRewardProgress(items.map(({ id }) => id), items)).toMatchObject({
+      unlocked: true,
+      completedCount: 3,
+      cosmeticId: "garden-blessing-set"
+    });
+    expect(celebrationSetRewardProgress(items.filter(({ kind }) => kind === "petal").map(({ id }) => id), items))
+      .toMatchObject({ unlocked: false, completedCount: 1 });
   });
 });

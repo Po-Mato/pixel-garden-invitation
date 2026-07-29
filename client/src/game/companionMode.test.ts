@@ -4,7 +4,9 @@ import {
   clearCompanionSession,
   companionCandidates,
   companionFollowPath,
+  companionInviteRemainingLabel,
   createCompanionInviteUrl,
+  inspectCompanionInviteUrl,
   loadCompanionSession,
   loadRealtimeIdentity,
   nearbyPhotoCompanions,
@@ -55,16 +57,21 @@ describe("companionMode", () => {
   });
 
   it("creates and parses a same-zone companion invitation link", () => {
+    const expiresAt = Date.parse("2026-07-29T00:10:00.000Z");
     const url = createCompanionInviteUrl(
       "https://example.com/invite/?view=invitation#gallery",
       "stable_guest_123456",
-      "lobby"
+      "lobby",
+      expiresAt
     );
     expect(url).not.toContain("view=");
-    expect(parseCompanionInviteUrl(url)).toEqual({
+    expect(parseCompanionInviteUrl(url, expiresAt - 1)).toEqual({
       targetGuestId: "guest_stable_guest_123456",
-      zoneId: "lobby"
+      zoneId: "lobby",
+      expiresAt
     });
     expect(parseCompanionInviteUrl("https://example.com/?together=bad&togetherZone=lobby")).toBeNull();
+    expect(inspectCompanionInviteUrl(url, expiresAt)).toEqual({ status: "expired", expiresAt });
+    expect(companionInviteRemainingLabel(expiresAt, expiresAt - 65_000)).toBe("01:05");
   });
 });

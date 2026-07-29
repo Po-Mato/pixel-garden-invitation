@@ -7,7 +7,7 @@ import type { WorldZone } from "./world";
 
 export const celebrationRewardLabel = "축복의 꽃 정원 프레임";
 export const celebrationCosmeticStorageKey = "wedding-game:celebration-cosmetic:v1";
-export const celebrationCosmeticIds = ["none", "petal-trail", "ribbon-tag", "starlight-aura"] as const;
+export const celebrationCosmeticIds = ["none", "petal-trail", "ribbon-tag", "starlight-aura", "garden-blessing-set"] as const;
 export type CelebrationCosmeticId = (typeof celebrationCosmeticIds)[number];
 export const celebrationKindRewards = {
   petal: {
@@ -30,6 +30,12 @@ export const celebrationKindRewards = {
   detail: string;
   cosmeticId: Exclude<CelebrationCosmeticId, "none">;
 }>;
+
+export const celebrationSetReward = {
+  label: "웨딩 가든 축복 세트",
+  detail: "꽃잎 발자국·리본 이름표·별빛 오라가 하나의 축복 효과로 어우러져요.",
+  cosmeticId: "garden-blessing-set"
+} as const;
 
 type CosmeticStorage = Pick<Storage, "getItem" | "setItem">;
 
@@ -113,6 +119,19 @@ export function celebrationKindRewardProgress(
       ...celebrationKindRewards[kind]
     };
   });
+}
+
+export function celebrationSetRewardProgress(
+  collectedIds: readonly string[],
+  items: readonly CelebrationCollectible[] = allCelebrationCollectibles()
+) {
+  const kindRewards = celebrationKindRewardProgress(collectedIds, items);
+  return {
+    ...celebrationSetReward,
+    completedCount: kindRewards.filter(({ unlocked }) => unlocked).length,
+    totalCount: kindRewards.length,
+    unlocked: kindRewards.length > 0 && kindRewards.every(({ unlocked }) => unlocked)
+  };
 }
 
 export function newlyUnlockedCelebrationMilestones(

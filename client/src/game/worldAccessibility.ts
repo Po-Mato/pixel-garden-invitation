@@ -2,8 +2,10 @@ import { portalEntryRect, type Point, type Rect, type WorldZone } from "./world"
 
 export type WorldAccessibilityLandmark = {
   id: string;
+  kind: "spot" | "photo" | "portal" | "npc";
   label: string;
   kindLabel: string;
+  point: Point;
   directionLabel: string;
   tileDistance: number;
   phrase: string;
@@ -28,10 +30,10 @@ export function worldAccessibilityLandmarks(
   limit = 7
 ): WorldAccessibilityLandmark[] {
   const landmarks = [
-    ...zone.spots.map((spot) => ({ id: spot.id, label: spot.label, kindLabel: "장소", point: rectCenter(spot) })),
-    ...zone.photoSpots.map((spot) => ({ id: spot.id, label: spot.label, kindLabel: "포토존", point: rectCenter(spot) })),
-    ...zone.portals.map((portal) => ({ id: portal.id, label: portal.label, kindLabel: "이동 포털", point: rectCenter(portalEntryRect(portal)) })),
-    ...zone.npcs.map((npc) => ({ id: npc.id, label: npc.label, kindLabel: "안내 인물", point: { x: npc.x, y: npc.y } }))
+    ...zone.spots.map((spot) => ({ id: spot.id, kind: "spot" as const, label: spot.label, kindLabel: "장소", point: rectCenter(spot) })),
+    ...zone.photoSpots.map((spot) => ({ id: spot.id, kind: "photo" as const, label: spot.label, kindLabel: "포토존", point: rectCenter(spot) })),
+    ...zone.portals.map((portal) => ({ id: portal.id, kind: "portal" as const, label: portal.label, kindLabel: "이동 포털", point: rectCenter(portalEntryRect(portal)) })),
+    ...zone.npcs.map((npc) => ({ id: npc.id, kind: "npc" as const, label: npc.label, kindLabel: "안내 인물", point: { x: npc.x, y: npc.y } }))
   ];
   return landmarks
     .map((landmark) => {

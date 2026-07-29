@@ -9,6 +9,11 @@ export const gameMemoryKeepsakeStickers = ["heart", "flower", "sparkle"] as cons
 export type GameMemoryKeepsakeLayout = (typeof gameMemoryKeepsakeLayouts)[number];
 export type GameMemoryKeepsakeFrame = (typeof gameMemoryKeepsakeFrames)[number];
 export type GameMemoryKeepsakeSticker = (typeof gameMemoryKeepsakeStickers)[number];
+export type GameMemoryPhotoTransform = {
+  scale: number;
+  x: number;
+  y: number;
+};
 export type GameMemoryKeepsakeOptions = {
   layout: GameMemoryKeepsakeLayout;
   frame: GameMemoryKeepsakeFrame;
@@ -16,6 +21,7 @@ export type GameMemoryKeepsakeOptions = {
   quality: "standard" | "high";
   message: string;
   photoOrder: WorldPhotoSpotId[];
+  photoTransforms: Partial<Record<WorldPhotoSpotId, GameMemoryPhotoTransform>>;
 };
 
 type OptionsStorage = Pick<Storage, "getItem" | "setItem">;
@@ -26,7 +32,8 @@ export const defaultGameMemoryKeepsakeOptions: GameMemoryKeepsakeOptions = {
   stickers: ["heart", "flower"],
   quality: "high",
   message: "함께 걸어 더 선명해진 결혼식의 하루",
-  photoOrder: []
+  photoOrder: [],
+  photoTransforms: {}
 };
 
 export type GameMemoryKeepsakeData = {
@@ -84,13 +91,30 @@ export function normalizeGameMemoryKeepsakeOptions(value: unknown): GameMemoryKe
   const photoOrder = Array.isArray(candidate.photoOrder)
     ? [...new Set(candidate.photoOrder.filter((id): id is WorldPhotoSpotId => typeof id === "string"))].slice(0, 3)
     : [];
+  const photoTransforms = Object.fromEntries(Object.entries(candidate.photoTransforms ?? {})
+    .filter(([id, transform]) => typeof id === "string" && typeof transform === "object" && transform !== null)
+    .slice(0, 3)
+    .map(([id, transform]) => {
+      const candidateTransform = transform as Partial<GameMemoryPhotoTransform>;
+      const clamp = (number: unknown, minimum: number, maximum: number, fallback: number) => (
+        typeof number === "number" && Number.isFinite(number)
+          ? Math.min(maximum, Math.max(minimum, number))
+          : fallback
+      );
+      return [id, {
+        scale: Math.round(clamp(candidateTransform.scale, 1, 2.2, 1) * 100) / 100,
+        x: Math.round(clamp(candidateTransform.x, -1, 1, 0) * 100) / 100,
+        y: Math.round(clamp(candidateTransform.y, -1, 1, 0) * 100) / 100
+      }];
+    })) as Partial<Record<WorldPhotoSpotId, GameMemoryPhotoTransform>>;
   return {
     layout,
     frame,
     stickers,
     quality,
     message: message || defaultGameMemoryKeepsakeOptions.message,
-    photoOrder
+    photoOrder,
+    photoTransforms
   };
 }
 
@@ -238,6 +262,28 @@ function drawKeepsakeSticker(
   context.restore();
 }
 
+function drawCroppedImage(
+  context: CanvasRenderingContext2D,
+  image: HTMLImageElement,
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+  transform: GameMemoryPhotoTransform = { scale: 1, x: 0, y: 0 }
+) {
+  const destinationRatio = width / height;
+  const imageRatio = image.naturalWidth / image.naturalHeight;
+  const baseWidth = imageRatio > destinationRatio ? image.naturalHeight * destinationRatio : image.naturalWidth;
+  const baseHeight = imageRatio > destinationRatio ? image.naturalHeight : image.naturalWidth / destinationRatio;
+  const sourceWidth = baseWidth / transform.scale;
+  const sourceHeight = baseHeight / transform.scale;
+  const maxOffsetX = Math.max(0, (image.naturalWidth - sourceWidth) / 2);
+  const maxOffsetY = Math.max(0, (image.naturalHeight - sourceHeight) / 2);
+  const sourceX = (image.naturalWidth - sourceWidth) / 2 + transform.x * maxOffsetX;
+  const sourceY = (image.naturalHeight - sourceHeight) / 2 + transform.y * maxOffsetY;
+  context.drawImage(image, sourceX, sourceY, sourceWidth, sourceHeight, x, y, width, height);
+}
+
 export async function createGameMemoryKeepsake(data: GameMemoryKeepsakeData): Promise<Blob> {
   const options = normalizeGameMemoryKeepsakeOptions(data.options);
   const palette = options.layout === "film"
@@ -274,7 +320,15 @@ export async function createGameMemoryKeepsake(data: GameMemoryKeepsakeData): Pr
     context.fillStyle = palette.card;
     context.fillRect(x, 230, 288, 410);
     const image = images[index];
-    if (image) context.drawImage(image, x + 12, 242, 264, 330);
+    if (image) drawCroppedImage(
+      context,
+      image,
+      x + 12,
+      242,
+      264,
+      330,
+      photos[index] ? options.photoTransforms[photos[index]!.photoSpotId] : undefined
+    );
     else {
       context.fillStyle = options.layout === "film" ? "#5c5751" : "#e9dfd3";
       context.fillRect(x + 12, 242, 264, 330);

@@ -3,6 +3,7 @@ import type { Point } from "./world";
 
 export const realtimeIdentityStorageKey = "wedding-game:realtime-identity:v1";
 export const companionSessionStorageKey = "wedding-game:companion-session:v1";
+export const companionInviteLifetimeMs = 10 * 60 * 1000;
 const companionSessionMaxAgeMs = 12 * 60 * 60 * 1000;
 
 type CompanionStorage = Pick<Storage, "getItem" | "setItem" | "removeItem">;
@@ -19,7 +20,13 @@ export type CompanionSession = {
 export type CompanionInviteLink = {
   targetGuestId: string;
   zoneId: WorldZoneId;
+  expiresAt: number;
 };
+
+export type CompanionInviteInspection =
+  | { status: "valid"; invite: CompanionInviteLink }
+  | { status: "expired"; expiresAt: number }
+  | { status: "invalid" };
 
 function browserStorage(): CompanionStorage | null {
   try {
@@ -105,26 +112,58 @@ export function clearCompanionSession(storage: CompanionStorage | null = browser
   }
 }
 
-export function createCompanionInviteUrl(currentUrl: string, identity: string, zoneId: WorldZoneId) {
+export function createCompanionInviteUrl(
+  currentUrl: string,
+  identity: string,
+  zoneId: WorldZoneId,
+  expiresAt = Date.now() + companionInviteLifetimeMs
+) {
   const url = new URL(currentUrl);
   url.searchParams.delete("admin");
   url.searchParams.delete("view");
   url.searchParams.set("together", identity);
   url.searchParams.set("togetherZone", zoneId);
+  url.searchParams.set("togetherExpires", String(Math.floor(expiresAt)));
   url.hash = "";
   return url.toString();
 }
 
-export function parseCompanionInviteUrl(currentUrl: string): CompanionInviteLink | null {
+export function inspectCompanionInviteUrl(
+  currentUrl: string,
+  now = Date.now()
+): CompanionInviteInspection {
   const url = new URL(currentUrl);
   const identity = url.searchParams.get("together");
   const zoneId = url.searchParams.get("togetherZone");
+  const expiresAt = Number(url.searchParams.get("togetherExpires"));
   const validZones = new Set<WorldZoneId>([
     "home", "neighborhood", "subway-station", "subway-train", "venue-exterior",
     "lobby", "bridal-room", "ceremony-hall", "banquet", "restroom"
   ]);
-  if (!validIdentity(identity) || !validZones.has(zoneId as WorldZoneId)) return null;
-  return { targetGuestId: `guest_${identity}`, zoneId: zoneId as WorldZoneId };
+  if (
+    !validIdentity(identity)
+    || !validZones.has(zoneId as WorldZoneId)
+    || !Number.isSafeInteger(expiresAt)
+    || expiresAt <= 0
+  ) return { status: "invalid" };
+  if (expiresAt <= now) return { status: "expired", expiresAt };
+  return {
+    status: "valid",
+    invite: { targetGuestId: `guest_${identity}`, zoneId: zoneId as WorldZoneId, expiresAt }
+  };
+}
+
+export function parseCompanionInviteUrl(currentUrl: string, now = Date.now()): CompanionInviteLink | null {
+  const inspection = inspectCompanionInviteUrl(currentUrl, now);
+  return inspection.status === "valid" ? inspection.invite : null;
+}
+
+export function companionInviteRemainingLabel(expiresAt: number, now = Date.now()) {
+  const remaining = Math.max(0, expiresAt - now);
+  if (remaining === 0) return "만료됨";
+  const minutes = Math.floor(remaining / 60_000);
+  const seconds = Math.floor((remaining % 60_000) / 1_000);
+  return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
 }
 
 export type CompanionCandidate = Pick<RoomGuest, "guestId" | "nickname" | "x" | "y" | "zoneId" | "appearance">;

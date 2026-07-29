@@ -1,5 +1,12 @@
 export type PwaCacheState = "idle" | "preparing" | "ready" | "error";
 
+export type PwaZoneCacheSnapshot = {
+  state: PwaCacheState;
+  completed: number;
+  total: number;
+  bytes: number;
+};
+
 export type PwaClientSnapshot = {
   supported: boolean;
   cacheState: PwaCacheState;
@@ -9,12 +16,16 @@ export type PwaClientSnapshot = {
   featureCacheState: PwaCacheState;
   featureCompleted: number;
   featureTotal: number;
+  zoneCaches: Record<string, PwaZoneCacheSnapshot>;
 };
 
 type PwaWorkerMessage = {
   type?: unknown;
   completed?: unknown;
   total?: unknown;
+  zoneId?: unknown;
+  bytes?: unknown;
+  state?: unknown;
 };
 
 type PwaSubscriber = (snapshot: PwaClientSnapshot) => void;
@@ -27,7 +38,8 @@ const initialSnapshot: PwaClientSnapshot = {
   updateAvailable: false,
   featureCacheState: "idle",
   featureCompleted: 0,
-  featureTotal: 0
+  featureTotal: 0,
+  zoneCaches: {}
 };
 
 let snapshot = initialSnapshot;
@@ -82,6 +94,44 @@ export function reducePwaWorkerMessage(
       featureCacheState: "error",
       featureCompleted: numericProgress(message.completed),
       featureTotal: numericProgress(message.total) || current.featureTotal
+    };
+  }
+  if (
+    typeof message.type === "string"
+    && message.type.startsWith("PWA_ZONE_CACHE_")
+    && typeof message.zoneId === "string"
+    && /^[a-z0-9-]{2,40}$/.test(message.zoneId)
+  ) {
+    const currentZone = current.zoneCaches[message.zoneId] ?? {
+      state: "idle",
+      completed: 0,
+      total: 0,
+      bytes: 0
+    };
+    const state = message.type === "PWA_ZONE_CACHE_PROGRESS"
+      ? "preparing"
+      : message.type === "PWA_ZONE_CACHE_READY"
+        ? "ready"
+        : message.type === "PWA_ZONE_CACHE_ERROR"
+          ? "error"
+          : message.type === "PWA_ZONE_CACHE_REMOVED"
+            ? "idle"
+            : message.state === "ready" ? "ready" : "idle";
+    const total = numericProgress(message.total) || currentZone.total;
+    const completed = state === "idle" ? 0
+      : state === "ready" ? total
+        : numericProgress(message.completed);
+    return {
+      ...current,
+      zoneCaches: {
+        ...current.zoneCaches,
+        [message.zoneId]: {
+          state,
+          completed,
+          total,
+          bytes: state === "idle" ? 0 : numericProgress(message.bytes)
+        }
+      }
     };
   }
   return current;
@@ -232,6 +282,35 @@ export function prepareOfflineGameFeatures(): void {
     return;
   }
   void registrationPromise?.then((registration) => registration?.active?.postMessage(message));
+}
+
+function postPwaMessage(message: object): void {
+  if (typeof navigator === "undefined" || !("serviceWorker" in navigator)) return;
+  if (navigator.serviceWorker.controller) {
+    navigator.serviceWorker.controller.postMessage(message);
+    return;
+  }
+  void registrationPromise?.then((registration) => registration?.active?.postMessage(message));
+}
+
+export function prepareOfflineZoneAssets(zoneId: string, urls: readonly string[]): void {
+  const uniqueUrls = [...new Set(urls)];
+  if (!uniqueUrls.length) return;
+  updateSnapshot({
+    zoneCaches: {
+      ...snapshot.zoneCaches,
+      [zoneId]: { state: "preparing", completed: 0, total: uniqueUrls.length, bytes: 0 }
+    }
+  });
+  postPwaMessage({ type: "CACHE_ZONE_ASSETS", zoneId, urls: uniqueUrls });
+}
+
+export function removeOfflineZoneAssets(zoneId: string, urls: readonly string[]): void {
+  postPwaMessage({ type: "REMOVE_ZONE_ASSETS", zoneId, urls: [...new Set(urls)] });
+}
+
+export function inspectOfflineZoneAssets(groups: Record<string, readonly string[]>): void {
+  postPwaMessage({ type: "REPORT_ZONE_ASSETS", groups });
 }
 
 export function resetPwaClientForTests(): void {

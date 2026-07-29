@@ -36,4 +36,31 @@ describe("GameMemoryAlbum", () => {
     fireEvent.click(screen.getByRole("button", { name: /포토존 사진/ }));
     expect(onOpenPhotoAlbum).toHaveBeenCalledOnce();
   });
+
+  it("edits crop and free placement for a selected photo", () => {
+    render(<GameMemoryAlbum
+      album={{ version: 1, entries: [] }}
+      photoAlbum={{ version: 2, photos: [{
+        version: 1,
+        dataUrl: "data:image/png;base64,photo",
+        photoSpotId: "ceremony-aisle",
+        zoneId: "ceremony-hall",
+        spotLabel: "버진로드",
+        guestName: "정원하객",
+        pose: "wave",
+        createdAt: 1
+      }] }}
+      collectedCount={1}
+      totalCollectibles={30}
+      rewardUnlocked={false}
+      nickname="정원하객"
+      onClose={vi.fn()}
+      onOpenPhotoAlbum={vi.fn()}
+    />);
+
+    fireEvent.change(screen.getByRole("slider", { name: "선택 사진 확대" }), { target: { value: "1.5" } });
+    fireEvent.change(screen.getByRole("slider", { name: "선택 사진 좌우 위치" }), { target: { value: "0.5" } });
+    expect(screen.getByRole("button", { name: "버진로드 사진 자르기 선택" }).querySelector("img"))
+      .toHaveStyle({ transform: "translate(-9%, 0%) scale(1.5)" });
+  });
 });

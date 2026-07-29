@@ -1,4 +1,4 @@
-import { Hand, Heart, LocateFixed, MapPinned, Route, Share2, UserPlus, UsersRound, X } from "lucide-react";
+import { Hand, Heart, LocateFixed, MapPinned, QrCode, Route, UserPlus, UsersRound, X } from "lucide-react";
 import type { CompanionPing, WorldZoneId } from "@wedding-game/shared";
 import type { CompanionCandidate } from "../game/companionMode";
 
@@ -21,7 +21,7 @@ type CompanionDockProps = {
   onRequestDestination?: () => void;
   onAcceptDestinationRequest?: () => void;
   onRejoin?: () => void;
-  onShareInvite?: () => void;
+  onOpenWaitingRoom?: () => void;
   shareStatus?: string | null;
 };
 
@@ -44,10 +44,10 @@ export function CompanionDock({
   onRequestDestination,
   onAcceptDestinationRequest,
   onRejoin,
-  onShareInvite,
+  onOpenWaitingRoom,
   shareStatus = null
 }: CompanionDockProps) {
-  if (candidates.length === 0 && !activeGuestId && !pendingGuestId && !onShareInvite) return null;
+  if (candidates.length === 0 && !activeGuestId && !pendingGuestId && !onOpenWaitingRoom) return null;
   const active = candidates.find(({ guestId }) => guestId === activeGuestId) ?? null;
   const pending = candidates.find(({ guestId }) => guestId === pendingGuestId) ?? null;
   const hasActive = Boolean(activeGuestId);
@@ -148,13 +148,13 @@ export function CompanionDock({
             : recentPing.ping === "here" ? "여기예요" : "좋아요"}
         </p>
       ) : null}
-      {onShareInvite ? (
+      {onOpenWaitingRoom ? (
         <button
           type="button"
           className="world-companion-dock__share"
-          onClick={(event) => { event.stopPropagation(); onShareInvite(); }}
+          onClick={(event) => { event.stopPropagation(); onOpenWaitingRoom(); }}
         >
-          <Share2 aria-hidden="true" />동행 링크 보내기
+          <QrCode aria-hidden="true" />QR·링크로 초대
         </button>
       ) : null}
       {shareStatus ? <p className="world-companion-dock__share-status" role="status">{shareStatus}</p> : null}

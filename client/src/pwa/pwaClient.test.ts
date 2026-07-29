@@ -17,7 +17,8 @@ const emptySnapshot: PwaClientSnapshot = {
   updateAvailable: false,
   featureCacheState: "idle",
   featureCompleted: 0,
-  featureTotal: 0
+  featureTotal: 0,
+  zoneCaches: {}
 };
 
 afterEach(() => {
@@ -66,6 +67,19 @@ describe("PWA client", () => {
       completed: 2,
       total: 6
     })).toMatchObject({ featureCacheState: "preparing", featureCompleted: 2, featureTotal: 6 });
+    expect(reducePwaWorkerMessage(emptySnapshot, {
+      type: "PWA_ZONE_CACHE_PROGRESS",
+      zoneId: "lobby",
+      completed: 1,
+      total: 2,
+      bytes: 1024
+    }).zoneCaches.lobby).toEqual({ state: "preparing", completed: 1, total: 2, bytes: 1024 });
+    expect(reducePwaWorkerMessage(emptySnapshot, {
+      type: "PWA_ZONE_CACHE_READY",
+      zoneId: "lobby",
+      total: 2,
+      bytes: 2048
+    }).zoneCaches.lobby).toEqual({ state: "ready", completed: 2, total: 2, bytes: 2048 });
   });
 
   it("registers under the deployed subpath without using the HTTP cache", async () => {

@@ -51,7 +51,10 @@ describe("gameMemoryKeepsake", () => {
       stickers: ["heart", "heart", "sparkle", "invalid"],
       quality: "standard",
       message: "  우리들의 정원 산책  ",
-      photoOrder: ["ceremony-aisle", "ceremony-aisle", "lobby-photo-wall"]
+      photoOrder: ["ceremony-aisle", "ceremony-aisle", "lobby-photo-wall"],
+      photoTransforms: {
+        "ceremony-aisle": { scale: 4, x: -2, y: 0.428 }
+      }
     });
     expect(options).toEqual({
       layout: "film",
@@ -59,7 +62,10 @@ describe("gameMemoryKeepsake", () => {
       stickers: ["heart", "sparkle"],
       quality: "standard",
       message: "우리들의 정원 산책",
-      photoOrder: ["ceremony-aisle", "lobby-photo-wall"]
+      photoOrder: ["ceremony-aisle", "lobby-photo-wall"],
+      photoTransforms: {
+        "ceremony-aisle": { scale: 2.2, x: -1, y: 0.43 }
+      }
     });
     expect(saveGameMemoryKeepsakeOptions(options, storage)).toBe(true);
     expect(loadGameMemoryKeepsakeOptions(storage)).toEqual(options);

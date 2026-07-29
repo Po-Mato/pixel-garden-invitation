@@ -1,5 +1,5 @@
 import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { computeCameraTransform } from "../game/camera";
 import { createMiniMapLayout, projectMiniMapRect } from "../game/minimap";
 import { gardenWorld, getWorldZone, portalEntryRect } from "../game/world";
@@ -204,5 +204,27 @@ describe("WorldMiniMap", () => {
 
     fireEvent.click(within(dialog).getByRole("button", { name: "미니맵 닫기" }));
     expect(screen.queryByRole("dialog", { name: "현재 경로 전체 미리보기" })).not.toBeInTheDocument();
+  });
+
+  it("cycles landmarks with switch-friendly controls and starts navigation", () => {
+    const zone = getWorldZone(gardenWorld, "lobby");
+    const viewport = { width: 390, height: 520 };
+    const onNavigate = vi.fn();
+    render(<WorldMiniMap
+      zone={zone}
+      player={zone.spawn}
+      direction="down"
+      camera={computeCameraTransform({ player: zone.spawn, viewport, bounds: zone.bounds, zoom: 1 })}
+      viewport={viewport}
+      targetPortalId={null}
+      onNavigateAccessibilityLandmark={onNavigate}
+    />);
+    fireEvent.click(screen.getByRole("button", { name: "미니맵 확대 보기" }));
+    const dialog = screen.getByRole("dialog", { name: "현재 경로 전체 미리보기" });
+    const firstLabel = within(dialog).getByRole("region", { name: "목적지 순차 탐색" }).textContent;
+    fireEvent.click(within(dialog).getByRole("button", { name: "다음 목적지" }));
+    expect(within(dialog).getByRole("region", { name: "목적지 순차 탐색" }).textContent).not.toBe(firstLabel);
+    fireEvent.click(within(dialog).getByRole("button", { name: "이곳으로 이동" }));
+    expect(onNavigate).toHaveBeenCalledWith(expect.objectContaining({ id: expect.any(String), point: expect.any(Object) }));
   });
 });

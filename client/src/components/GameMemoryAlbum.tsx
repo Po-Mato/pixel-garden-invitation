@@ -1,17 +1,20 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
 import {
   ArrowLeft,
   ArrowRight,
   Camera,
+  Crop,
   Download,
   Flower2,
   Frame,
   Heart,
   LayoutGrid,
   MessageSquareText,
+  Move,
   PartyPopper,
   Send,
   Sparkles,
+  RotateCcw,
   UsersRound,
   X
 } from "lucide-react";
@@ -34,6 +37,7 @@ import {
   type GameMemoryKeepsakeLayout,
   type GameMemoryKeepsakeFrame,
   type GameMemoryKeepsakeSticker,
+  type GameMemoryPhotoTransform,
   type GameMemoryKeepsakeData
 } from "../game/gameMemoryKeepsake";
 import { celebrationRewardLabel } from "../game/celebrationReward";
@@ -79,6 +83,14 @@ export function GameMemoryAlbum({
   const coupleOrder = useCoupleOrder();
   const [keepsakeStatus, setKeepsakeStatus] = useState<"idle" | "saving" | "saved" | "sharing" | "shared" | "fallback" | "canceled" | "error">("idle");
   const [keepsakeOptions, setKeepsakeOptions] = useState(loadGameMemoryKeepsakeOptions);
+  const [activePhotoId, setActivePhotoId] = useState(() => photoAlbum.photos[0]?.photoSpotId ?? null);
+  const photoDragRef = useRef<{
+    photoId: NonNullable<typeof activePhotoId>;
+    startX: number;
+    startY: number;
+    initialX: number;
+    initialY: number;
+  } | null>(null);
   const busy = keepsakeStatus === "saving" || keepsakeStatus === "sharing";
   const hasMemories = album.entries.length > 0 || photoAlbum.photos.length > 0 || collectedCount > 0;
   const orderedPhotos = useMemo(
@@ -101,6 +113,64 @@ export function GameMemoryAlbum({
   useEffect(() => {
     saveGameMemoryKeepsakeOptions(keepsakeOptions);
   }, [keepsakeOptions]);
+
+  useEffect(() => {
+    if (activePhotoId && orderedPhotos.some(({ photoSpotId }) => photoSpotId === activePhotoId)) return;
+    setActivePhotoId(orderedPhotos[0]?.photoSpotId ?? null);
+  }, [activePhotoId, orderedPhotos]);
+
+  const updatePhotoTransformFor = (
+    photoId: NonNullable<typeof activePhotoId>,
+    patch: Partial<GameMemoryPhotoTransform>
+  ) => {
+    setKeepsakeOptions((current) => ({
+      ...current,
+      photoTransforms: {
+        ...current.photoTransforms,
+        [photoId]: {
+          scale: 1,
+          x: 0,
+          y: 0,
+          ...current.photoTransforms[photoId],
+          ...patch
+        }
+      }
+    }));
+  };
+
+  const updatePhotoTransform = (patch: Partial<GameMemoryPhotoTransform>) => {
+    if (activePhotoId) updatePhotoTransformFor(activePhotoId, patch);
+  };
+
+  const startPhotoDrag = (event: ReactPointerEvent<HTMLButtonElement>, photoId: NonNullable<typeof activePhotoId>) => {
+    const transform = keepsakeOptions.photoTransforms[photoId];
+    event.currentTarget.setPointerCapture?.(event.pointerId);
+    setActivePhotoId(photoId);
+    photoDragRef.current = {
+      photoId,
+      startX: event.clientX,
+      startY: event.clientY,
+      initialX: transform?.x ?? 0,
+      initialY: transform?.y ?? 0
+    };
+  };
+
+  const movePhotoDrag = (event: ReactPointerEvent<HTMLButtonElement>) => {
+    const drag = photoDragRef.current;
+    if (!drag) return;
+    event.preventDefault();
+    const rect = event.currentTarget.getBoundingClientRect();
+    const clamp = (value: number) => Math.min(1, Math.max(-1, value));
+    updatePhotoTransformFor(drag.photoId, {
+      x: clamp(drag.initialX - (event.clientX - drag.startX) / Math.max(1, rect.width / 2)),
+      y: clamp(drag.initialY - (event.clientY - drag.startY) / Math.max(1, rect.height / 2))
+    });
+  };
+
+  const endPhotoDrag = (event: ReactPointerEvent<HTMLButtonElement>) => {
+    event.currentTarget.releasePointerCapture?.(event.pointerId);
+    photoDragRef.current = null;
+  };
 
   const movePhoto = (index: number, delta: -1 | 1) => {
     const target = index + delta;
@@ -179,9 +249,29 @@ export function GameMemoryAlbum({
             aria-label="포토스트립 미리보기"
           >
             <small>{formatCoupleNames(event, coupleOrder)}</small>
-            <div>
+            <div className="game-memory-album__preview-photos">
               {orderedPhotos.slice(0, 3).map((photo) => (
-                <img key={photo.photoSpotId} src={photo.dataUrl} alt="" />
+                <button
+                  key={photo.photoSpotId}
+                  type="button"
+                  aria-label={`${photo.spotLabel} 사진 자르기 선택`}
+                  aria-pressed={activePhotoId === photo.photoSpotId}
+                  onClick={() => setActivePhotoId(photo.photoSpotId)}
+                  onPointerDown={(event) => startPhotoDrag(event, photo.photoSpotId)}
+                  onPointerMove={movePhotoDrag}
+                  onPointerUp={endPhotoDrag}
+                  onPointerCancel={endPhotoDrag}
+                >
+                  <span>
+                    <img
+                      src={photo.dataUrl}
+                      alt=""
+                      style={{
+                        transform: `translate(${-(keepsakeOptions.photoTransforms[photo.photoSpotId]?.x ?? 0) * 18}%, ${-(keepsakeOptions.photoTransforms[photo.photoSpotId]?.y ?? 0) * 18}%) scale(${keepsakeOptions.photoTransforms[photo.photoSpotId]?.scale ?? 1})`
+                      }}
+                    />
+                  </span>
+                </button>
               ))}
               {Array.from({ length: Math.max(0, 3 - orderedPhotos.length) }, (_, index) => (
                 <span key={`empty-${index}`}><Camera aria-hidden="true" /></span>
@@ -194,6 +284,52 @@ export function GameMemoryAlbum({
                 : sticker === "flower" ? <Flower2 key={sticker} /> : <Sparkles key={sticker} />)}
             </span>
           </div>
+
+          {activePhotoId ? (
+            <fieldset className="game-memory-album__crop-editor">
+              <legend><Crop aria-hidden="true" />사진 자르기·자유 배치</legend>
+              <p><Move aria-hidden="true" />사진을 직접 끌거나 확대와 중심 슬라이더를 조절하세요.</p>
+              <label>
+                <span>확대</span>
+                <input
+                  type="range"
+                  min="1"
+                  max="2.2"
+                  step="0.05"
+                  aria-label="선택 사진 확대"
+                  value={keepsakeOptions.photoTransforms[activePhotoId]?.scale ?? 1}
+                  onChange={(event) => updatePhotoTransform({ scale: Number(event.target.value) })}
+                />
+              </label>
+              <label>
+                <span>좌우</span>
+                <input
+                  type="range"
+                  min="-1"
+                  max="1"
+                  step="0.05"
+                  aria-label="선택 사진 좌우 위치"
+                  value={keepsakeOptions.photoTransforms[activePhotoId]?.x ?? 0}
+                  onChange={(event) => updatePhotoTransform({ x: Number(event.target.value) })}
+                />
+              </label>
+              <label>
+                <span>상하</span>
+                <input
+                  type="range"
+                  min="-1"
+                  max="1"
+                  step="0.05"
+                  aria-label="선택 사진 상하 위치"
+                  value={keepsakeOptions.photoTransforms[activePhotoId]?.y ?? 0}
+                  onChange={(event) => updatePhotoTransform({ y: Number(event.target.value) })}
+                />
+              </label>
+              <button type="button" onClick={() => updatePhotoTransform({ scale: 1, x: 0, y: 0 })}>
+                <RotateCcw aria-hidden="true" />선택 사진 초기화
+              </button>
+            </fieldset>
+          ) : null}
 
           <fieldset>
             <legend><LayoutGrid aria-hidden="true" />레이아웃</legend>

@@ -28,7 +28,7 @@ function relativeAssetPath(fileName: string): string {
 }
 
 const adminOnlyBundlePattern = /(?:AdminPage|AdminNotificationInbox|papaparse|inviteLinkAdminTokens|attendanceOperations)/i;
-const gameFeatureBundlePattern = /(?:WeddingPhotoBooth|WeddingPhotoAlbum|GameMemoryAlbum|CelebrationCollectionGuide|CompanionDestinationSheet|JourneyRouteSheet)/i;
+const gameFeatureBundlePattern = /(?:WeddingPhotoBooth|WeddingPhotoAlbum|GameMemoryAlbum|CelebrationCollectionGuide|CompanionDestinationSheet|CompanionWaitingRoom|JourneyRouteSheet)/i;
 
 export function resolvePwaPrecachePaths(bundleFileNames: readonly string[]): string[] {
   const buildAssets = bundleFileNames
@@ -56,6 +56,7 @@ export function createPwaServiceWorkerSource(
 const CACHE_PREFIX = "wedding-garden";
 const PRECACHE_NAME = \`${"${CACHE_PREFIX}"}-precache-${"${VERSION}"}\`;
 const RUNTIME_NAME = \`${"${CACHE_PREFIX}"}-runtime-${"${VERSION}"}\`;
+const ZONE_NAME = \`${"${CACHE_PREFIX}"}-zones-v1\`;
 const PRECACHE_URLS = ${JSON.stringify(precachePaths)};
 const FEATURE_URLS = ${JSON.stringify(featurePaths)};
 const RUNTIME_LIMIT = 120;
@@ -83,6 +84,81 @@ async function fetchAndCache(cache, request) {
     await cache.put(request, response.clone());
   }
   return response;
+}
+
+function validZoneId(value) {
+  return typeof value === "string" && /^[a-z0-9-]{2,40}$/.test(value);
+}
+
+function sameOriginRequests(urls) {
+  if (!Array.isArray(urls)) return [];
+  return [...new Set(urls.map((value) => {
+    try {
+      const url = new URL(String(value), self.registration.scope);
+      return url.origin === self.location.origin ? url.href : null;
+    } catch {
+      return null;
+    }
+  }).filter(Boolean))].map((url) => new Request(url, { cache: "reload" }));
+}
+
+async function responseBytes(response) {
+  const contentLength = Number(response.headers.get("content-length"));
+  if (Number.isFinite(contentLength) && contentLength > 0) return contentLength;
+  try { return (await response.clone().arrayBuffer()).byteLength; } catch { return 0; }
+}
+
+async function prepareZoneCache(zoneId, urls) {
+  if (!validZoneId(zoneId)) return;
+  const requests = sameOriginRequests(urls);
+  const cache = await caches.open(ZONE_NAME);
+  let completed = 0;
+  let bytes = 0;
+  await broadcast({ type: "PWA_ZONE_CACHE_PROGRESS", zoneId, completed, total: requests.length, bytes });
+  try {
+    for (const request of requests) {
+      let response = await cache.match(request);
+      if (!response) {
+        response = await fetch(request);
+        if (!response.ok) throw new Error(\`HTTP ${"${response.status}"}\`);
+        await cache.put(request, response.clone());
+      }
+      completed += 1;
+      bytes += await responseBytes(response);
+      await broadcast({ type: "PWA_ZONE_CACHE_PROGRESS", zoneId, completed, total: requests.length, bytes });
+    }
+    await broadcast({ type: "PWA_ZONE_CACHE_READY", zoneId, completed, total: requests.length, bytes });
+  } catch {
+    await broadcast({ type: "PWA_ZONE_CACHE_ERROR", zoneId, completed, total: requests.length, bytes });
+  }
+}
+
+async function removeZoneCache(zoneId, urls) {
+  if (!validZoneId(zoneId)) return;
+  const cache = await caches.open(ZONE_NAME);
+  await Promise.all(sameOriginRequests(urls).map((request) => cache.delete(request)));
+  await broadcast({ type: "PWA_ZONE_CACHE_REMOVED", zoneId, completed: 0, total: 0, bytes: 0 });
+}
+
+async function reportZoneCaches(groups) {
+  if (!groups || typeof groups !== "object") return;
+  const cache = await caches.open(ZONE_NAME);
+  for (const [zoneId, urls] of Object.entries(groups)) {
+    if (!validZoneId(zoneId)) continue;
+    const requests = sameOriginRequests(urls);
+    const responses = await Promise.all(requests.map((request) => cache.match(request)));
+    const completed = responses.filter(Boolean).length;
+    const bytes = (await Promise.all(responses.filter(Boolean).map(responseBytes)))
+      .reduce((sum, value) => sum + value, 0);
+    await broadcast({
+      type: "PWA_ZONE_CACHE_STATE",
+      zoneId,
+      state: requests.length > 0 && completed === requests.length ? "ready" : "idle",
+      completed,
+      total: requests.length,
+      bytes
+    });
+  }
 }
 
 async function prepareOfflineCache() {
@@ -151,7 +227,7 @@ self.addEventListener("install", (event) => {
 
 self.addEventListener("activate", (event) => {
   event.waitUntil((async () => {
-    const currentCaches = new Set([PRECACHE_NAME, RUNTIME_NAME]);
+    const currentCaches = new Set([PRECACHE_NAME, RUNTIME_NAME, ZONE_NAME]);
     const names = await caches.keys();
     await Promise.all(names
       .filter((name) => name.startsWith(CACHE_PREFIX) && !currentCaches.has(name))
@@ -214,6 +290,18 @@ self.addEventListener("message", (event) => {
   }
   if (event.data?.type === "CACHE_GAME_FEATURES") {
     event.waitUntil(prepareFeatureCache());
+    return;
+  }
+  if (event.data?.type === "CACHE_ZONE_ASSETS") {
+    event.waitUntil(prepareZoneCache(event.data.zoneId, event.data.urls));
+    return;
+  }
+  if (event.data?.type === "REMOVE_ZONE_ASSETS") {
+    event.waitUntil(removeZoneCache(event.data.zoneId, event.data.urls));
+    return;
+  }
+  if (event.data?.type === "REPORT_ZONE_ASSETS") {
+    event.waitUntil(reportZoneCaches(event.data.groups));
     return;
   }
   if (event.data?.type !== "CACHE_URLS" || !Array.isArray(event.data.urls)) return;

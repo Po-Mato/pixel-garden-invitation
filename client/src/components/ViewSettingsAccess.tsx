@@ -30,13 +30,16 @@ import { routeVoiceAvailability, speakRouteVoiceMessage } from "../accessibility
 import { useGameFeedback } from "../feedback/GameFeedbackContext";
 import { useDevicePerformance } from "../performance/DevicePerformanceContext";
 import { BottomSheet } from "./BottomSheet";
+import { OfflineMapDownloadCenter } from "./OfflineMapDownloadCenter";
+import type { WorldZoneId } from "@wedding-game/shared";
 
 type ViewSettingsAccessProps = {
   variant: "icon" | "menu";
   onOpenChange?: (open: boolean) => void;
+  currentZoneId?: WorldZoneId;
 };
 
-export function ViewSettingsAccess({ variant, onOpenChange }: ViewSettingsAccessProps) {
+export function ViewSettingsAccess({ variant, onOpenChange, currentZoneId }: ViewSettingsAccessProps) {
   const [open, setOpen] = useState(false);
   const [voiceAvailability, setVoiceAvailability] = useState(routeVoiceAvailability);
   const devicePerformance = useDevicePerformance();
@@ -440,6 +443,8 @@ export function ViewSettingsAccess({ variant, onOpenChange }: ViewSettingsAccess
               />
               <span aria-hidden="true" className="view-settings-sheet__switch-track" />
             </label>
+
+            {currentZoneId ? <OfflineMapDownloadCenter currentZoneId={currentZoneId} /> : null}
 
             <section className="device-performance-status" data-mode={devicePerformance.mode} aria-label="기기 성능 최적화 상태">
               <Cpu aria-hidden="true" />

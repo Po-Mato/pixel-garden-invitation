@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent, type WheelEvent as ReactWheelEvent } from "react";
 import { createPortal } from "react-dom";
-import { Maximize2, RotateCcw, X, ZoomIn, ZoomOut } from "lucide-react";
+import { ChevronLeft, ChevronRight, Maximize2, Navigation, RotateCcw, X, ZoomIn, ZoomOut } from "lucide-react";
 import type { Direction } from "@wedding-game/shared";
 import type { CameraTransform, ViewportSize } from "../game/camera";
 import {
@@ -14,7 +14,7 @@ import { segmentJourneyRouteBySurface } from "../game/journeyRouteVisual";
 import type { RouteRecalculationResult } from "../game/routeDeviation";
 import type { CelebrationCollectibleKind } from "../game/celebrationCollectibles";
 import { portalEntryRect, type Point, type WorldZone } from "../game/world";
-import { worldAccessibilityLandmarks } from "../game/worldAccessibility";
+import { worldAccessibilityLandmarks, type WorldAccessibilityLandmark } from "../game/worldAccessibility";
 import "../mini-map-expanded.css";
 
 export type MiniMapRouteKind = "preview" | "journey" | "selected";
@@ -38,6 +38,7 @@ type WorldMiniMapProps = {
   journeyStops?: MiniMapJourneyStop[];
   journeyDestinationLabels?: string[];
   collectibleMarkers?: MiniMapCollectibleMarker[];
+  onNavigateAccessibilityLandmark?: (landmark: WorldAccessibilityLandmark) => void;
 };
 
 export type MiniMapCollectibleMarker = {
@@ -266,7 +267,8 @@ export function WorldMiniMap({
   routeNotice = null,
   journeyStops = [],
   journeyDestinationLabels = [],
-  collectibleMarkers = []
+  collectibleMarkers = [],
+  onNavigateAccessibilityLandmark
 }: WorldMiniMapProps) {
   const [expanded, setExpanded] = useState(false);
   const [viewTransform, setViewTransform] = useState<MiniMapViewTransform>({ scale: 1, x: 0, y: 0 });
@@ -282,6 +284,8 @@ export function WorldMiniMap({
   });
   const routeStatus = routeActive ? routeContinuing ? "연속 안내" : "이동 중" : "경로 미리보기";
   const accessibilityLandmarks = worldAccessibilityLandmarks(zone, player);
+  const [selectedLandmarkIndex, setSelectedLandmarkIndex] = useState(0);
+  const selectedLandmark = accessibilityLandmarks[Math.min(selectedLandmarkIndex, Math.max(0, accessibilityLandmarks.length - 1))] ?? null;
 
   useEffect(() => {
     if (!expanded) return;
@@ -302,6 +306,17 @@ export function WorldMiniMap({
     gesturePointersRef.current.clear();
     gestureFrameRef.current = null;
   }, [expanded]);
+
+  useEffect(() => {
+    setSelectedLandmarkIndex(0);
+  }, [zone.id]);
+
+  const selectLandmark = (delta: number) => {
+    if (accessibilityLandmarks.length === 0) return;
+    setSelectedLandmarkIndex((current) => (
+      (current + delta + accessibilityLandmarks.length) % accessibilityLandmarks.length
+    ));
+  };
 
   const updateViewScale = (nextScale: number) => {
     setViewTransform((current) => ({
@@ -452,6 +467,24 @@ export function WorldMiniMap({
             aria-label="현재 경로 전체 미리보기"
             data-theme={zone.theme}
             onClick={(event) => event.stopPropagation()}
+            onKeyDown={(event) => {
+              if (event.key === "ArrowLeft") {
+                event.preventDefault();
+                selectLandmark(-1);
+              } else if (event.key === "ArrowRight") {
+                event.preventDefault();
+                selectLandmark(1);
+              } else if (
+                event.target === event.currentTarget
+                && (event.key === "Enter" || event.key === " ")
+                && selectedLandmark
+                && onNavigateAccessibilityLandmark
+              ) {
+                event.preventDefault();
+                onNavigateAccessibilityLandmark(selectedLandmark);
+                setExpanded(false);
+              }
+            }}
           >
             <header className="world-minimap-expanded__header">
               <div>
@@ -520,6 +553,31 @@ export function WorldMiniMap({
                 viewTransform={viewTransform}
               />
             </div>
+            {selectedLandmark ? (
+              <section className="world-minimap-expanded__accessible-nav" aria-label="목적지 순차 탐색">
+                <header>
+                  <span>목적지 {selectedLandmarkIndex + 1}/{accessibilityLandmarks.length}</span>
+                  <strong aria-live="polite">{selectedLandmark.kindLabel} · {selectedLandmark.label}</strong>
+                  <small>{selectedLandmark.directionLabel} · 약 {selectedLandmark.tileDistance}칸</small>
+                </header>
+                <div role="group" aria-label="목적지 순서와 이동">
+                  <button type="button" aria-label="이전 목적지" title="이전 목적지" onClick={() => selectLandmark(-1)}>
+                    <ChevronLeft aria-hidden="true" />
+                  </button>
+                  <button
+                    type="button"
+                    disabled={!onNavigateAccessibilityLandmark}
+                    onClick={() => {
+                      onNavigateAccessibilityLandmark?.(selectedLandmark);
+                      setExpanded(false);
+                    }}
+                  ><Navigation aria-hidden="true" />이곳으로 이동</button>
+                  <button type="button" aria-label="다음 목적지" title="다음 목적지" onClick={() => selectLandmark(1)}>
+                    <ChevronRight aria-hidden="true" />
+                  </button>
+                </div>
+              </section>
+            ) : null}
             {journeyStops.length > 0 ? (
               <section className="world-minimap-expanded__journey" aria-label="남은 전체 여정">
                 <header>

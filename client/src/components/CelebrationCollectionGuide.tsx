@@ -1,12 +1,15 @@
-import { Check, Flower2, Gift, LockKeyhole, MapPinned, Navigation, Sparkles, X } from "lucide-react";
-import type { WorldZoneId } from "@wedding-game/shared";
+import { useState } from "react";
+import { Check, Eye, Flower2, Gift, LockKeyhole, MapPinned, Navigation, Sparkles, X } from "lucide-react";
+import type { CharacterAppearance, WorldZoneId } from "@wedding-game/shared";
 import type { CelebrationCollectible } from "../game/celebrationCollectibles";
 import { celebrationZoneProgress } from "../game/celebrationCollectionGuide";
 import {
   celebrationKindRewardProgress,
+  celebrationSetRewardProgress,
   type CelebrationCosmeticId
 } from "../game/celebrationReward";
 import { gardenWorld } from "../game/world";
+import { CharacterSprite } from "./CharacterSprite";
 
 type CelebrationCollectionGuideProps = {
   items: readonly CelebrationCollectible[];
@@ -16,6 +19,7 @@ type CelebrationCollectionGuideProps = {
   onGuide: (item: CelebrationCollectible) => void;
   equippedCosmetic: CelebrationCosmeticId;
   onEquipCosmetic: (cosmeticId: CelebrationCosmeticId) => void;
+  appearance: CharacterAppearance;
   onClose: () => void;
 };
 
@@ -27,6 +31,7 @@ export function CelebrationCollectionGuide({
   onGuide,
   equippedCosmetic,
   onEquipCosmetic,
+  appearance,
   onClose
 }: CelebrationCollectionGuideProps) {
   const collected = new Set(collectedIds);
@@ -34,7 +39,12 @@ export function CelebrationCollectionGuide({
   const currentItems = items.filter(({ zoneId }) => zoneId === currentZoneId);
   const nextItem = items.find(({ id }) => !collected.has(id)) ?? null;
   const rewards = celebrationKindRewardProgress(collectedIds, items);
+  const setReward = celebrationSetRewardProgress(collectedIds, items);
   const rewardIcons = { petal: Flower2, ribbon: Gift, star: Sparkles } as const;
+  const [previewCosmetic, setPreviewCosmetic] = useState<CelebrationCosmeticId>(equippedCosmetic);
+  const previewLabel = previewCosmetic === "none"
+    ? "기본 모습"
+    : rewards.find(({ cosmeticId }) => cosmeticId === previewCosmetic)?.label ?? setReward.label;
 
   return (
     <div className="celebration-collection-guide" role="dialog" aria-modal="true" aria-label="축하 아이템 수집 지도">
@@ -51,6 +61,14 @@ export function CelebrationCollectionGuide({
       </section>
       <section className="celebration-collection-guide__rewards" aria-labelledby="celebration-reward-catalog-title">
         <h3 id="celebration-reward-catalog-title"><Gift aria-hidden="true" />수집 보상 도감</h3>
+        <div
+          className="celebration-collection-guide__cosmetic-preview"
+          data-collection-cosmetic={previewCosmetic}
+          aria-label={`${previewLabel} 캐릭터 미리보기`}
+        >
+          <span><CharacterSprite appearance={appearance} direction="down" moving={false} displayMode="preview" /></span>
+          <div><small>실시간 미리보기</small><strong>{previewLabel}</strong><span>게임 캐릭터에 적용될 모습을 먼저 확인하세요.</span></div>
+        </div>
         <div>
           {rewards.map((reward) => {
             const Icon = rewardIcons[reward.kind];
@@ -62,18 +80,58 @@ export function CelebrationCollectionGuide({
                   <strong>{reward.label}</strong>
                   <small>{reward.collectedCount}/{reward.totalCount} · {reward.detail}</small>
                 </span>
-                <button
-                  type="button"
-                  disabled={!reward.unlocked}
-                  aria-pressed={equipped}
-                  onClick={() => onEquipCosmetic(equipped ? "none" : reward.cosmeticId)}
-                >
-                  {!reward.unlocked ? <LockKeyhole aria-hidden="true" /> : equipped ? <Check aria-hidden="true" /> : <Sparkles aria-hidden="true" />}
-                  {!reward.unlocked ? "잠김" : equipped ? "착용 중" : "착용"}
-                </button>
+                <div>
+                  <button
+                    type="button"
+                    aria-label={`${reward.label} 미리보기`}
+                    disabled={!reward.unlocked}
+                    onClick={() => setPreviewCosmetic(reward.cosmeticId)}
+                  ><Eye aria-hidden="true" /></button>
+                  <button
+                    type="button"
+                    disabled={!reward.unlocked}
+                    aria-pressed={equipped}
+                    onClick={() => {
+                      const cosmetic = equipped ? "none" : reward.cosmeticId;
+                      setPreviewCosmetic(cosmetic);
+                      onEquipCosmetic(cosmetic);
+                    }}
+                  >
+                    {!reward.unlocked ? <LockKeyhole aria-hidden="true" /> : equipped ? <Check aria-hidden="true" /> : <Sparkles aria-hidden="true" />}
+                    {!reward.unlocked ? "잠김" : equipped ? "착용 중" : "착용"}
+                  </button>
+                </div>
               </article>
             );
           })}
+          <article data-unlocked={setReward.unlocked || undefined} data-equipped={equippedCosmetic === setReward.cosmeticId || undefined} data-set-bonus="true">
+            <Sparkles aria-hidden="true" />
+            <span>
+              <strong>{setReward.label}</strong>
+              <small>{setReward.completedCount}/{setReward.totalCount} 세트 · {setReward.detail}</small>
+            </span>
+            <div>
+              <button
+                type="button"
+                aria-label={`${setReward.label} 미리보기`}
+                disabled={!setReward.unlocked}
+                onClick={() => setPreviewCosmetic(setReward.cosmeticId)}
+              ><Eye aria-hidden="true" /></button>
+              <button
+                type="button"
+                disabled={!setReward.unlocked}
+                aria-pressed={equippedCosmetic === setReward.cosmeticId}
+                onClick={() => {
+                  const cosmetic = equippedCosmetic === setReward.cosmeticId ? "none" : setReward.cosmeticId;
+                  setPreviewCosmetic(cosmetic);
+                  onEquipCosmetic(cosmetic);
+                }}
+              >
+                {!setReward.unlocked ? <LockKeyhole aria-hidden="true" /> : equippedCosmetic === setReward.cosmeticId ? <Check aria-hidden="true" /> : <Sparkles aria-hidden="true" />}
+                {!setReward.unlocked ? "잠김" : equippedCosmetic === setReward.cosmeticId ? "착용 중" : "착용"}
+              </button>
+            </div>
+          </article>
         </div>
       </section>
       <section className="celebration-collection-guide__current">

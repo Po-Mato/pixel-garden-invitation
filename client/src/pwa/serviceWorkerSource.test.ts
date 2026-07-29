@@ -34,10 +34,12 @@ describe("PWA service worker source", () => {
     expect(resolvePwaFeaturePrecachePaths([
       "assets/index-abc.js",
       "assets/GameMemoryAlbum-feature.js",
-      "assets/CompanionDestinationSheet-feature.js"
+      "assets/CompanionDestinationSheet-feature.js",
+      "assets/CompanionWaitingRoom-feature.js"
     ])).toEqual([
       "./assets/GameMemoryAlbum-feature.js",
-      "./assets/CompanionDestinationSheet-feature.js"
+      "./assets/CompanionDestinationSheet-feature.js",
+      "./assets/CompanionWaitingRoom-feature.js"
     ]);
   });
 
@@ -57,6 +59,8 @@ describe("PWA service worker source", () => {
     expect(source).toContain('event.data?.type === "SKIP_WAITING"');
     expect(source).toContain('event.data?.type !== "CACHE_URLS"');
     expect(source).toContain('event.data?.type === "CACHE_GAME_FEATURES"');
+    expect(source).toContain('event.data?.type === "CACHE_ZONE_ASSETS"');
+    expect(source).toContain('event.data?.type === "REMOVE_ZONE_ASSETS"');
     expect(source).toContain('"PWA_FEATURE_CACHE_PROGRESS"');
     expect(source).not.toContain("POST");
   });
