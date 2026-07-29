@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   applyPwaUpdate,
   getPwaClientSnapshot,
+  pauseOfflineJourneyAssets,
   prepareOfflineJourneyAssets,
   reducePwaWorkerMessage,
   resetPwaClientForTests,
@@ -90,6 +91,13 @@ describe("PWA client", () => {
       total: 2,
       bytes: 2048
     }).zoneCaches.lobby).toEqual({ state: "outdated", completed: 2, total: 2, bytes: 2048, cachedAt: 0 });
+    expect(reducePwaWorkerMessage(emptySnapshot, {
+      type: "PWA_ZONE_CACHE_PAUSED",
+      zoneId: "home",
+      completed: 2,
+      total: 5,
+      bytes: 1024
+    }).zoneCaches.home).toEqual({ state: "paused", completed: 2, total: 5, bytes: 1024, cachedAt: 0 });
   });
 
   it("registers under the deployed subpath without using the HTTP cache", async () => {
@@ -113,6 +121,11 @@ describe("PWA client", () => {
     expect(serviceWorker.controller.postMessage).toHaveBeenCalledWith({
       type: "CACHE_URLS",
       urls: ["./map.webp", "./tree.png"]
+    });
+    pauseOfflineJourneyAssets({ home: ["./home.webp"], lobby: ["./lobby.webp"] });
+    expect(serviceWorker.controller.postMessage).toHaveBeenCalledWith({
+      type: "PAUSE_ZONE_GROUPS",
+      groups: { home: ["./home.webp"], lobby: ["./lobby.webp"] }
     });
     prepareOfflineJourneyAssets({ home: ["./home.webp"], lobby: ["./lobby.webp"] });
     expect(serviceWorker.controller.postMessage).toHaveBeenCalledWith({

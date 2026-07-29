@@ -224,6 +224,20 @@ export function companionRendezvousPoint(player: Point, companion: Point): Point
   };
 }
 
+export function companionRendezvousReplanPoint(
+  currentPoint: Point,
+  player: Point,
+  companion: Point,
+  tileSize = 30,
+  thresholdTiles = 4
+): Point | null {
+  const nextPoint = companionRendezvousPoint(player, companion);
+  return Math.hypot(nextPoint.x - currentPoint.x, nextPoint.y - currentPoint.y)
+    >= Math.max(1, tileSize) * Math.max(1, thresholdTiles)
+    ? nextPoint
+    : null;
+}
+
 export function nearbyPhotoCompanions(
   guests: readonly CompanionCandidate[],
   zoneId: WorldZoneId,

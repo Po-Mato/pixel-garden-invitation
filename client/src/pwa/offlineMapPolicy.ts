@@ -2,11 +2,13 @@ import type { PwaZoneCacheSnapshot } from "./pwaClient";
 
 export const offlineMapPreferencesStorageKey = "wedding-game:offline-map-preferences:v1";
 export const offlineMapRetentionPolicies = ["7-days", "30-days", "manual"] as const;
+export const offlineMapDataLimitsMb = [20, 50, 0] as const;
 export type OfflineMapRetentionPolicy = (typeof offlineMapRetentionPolicies)[number];
 
 export type OfflineMapPreferences = {
   retention: OfflineMapRetentionPolicy;
   wifiAutoRefresh: boolean;
+  dataLimitMb: (typeof offlineMapDataLimitsMb)[number];
 };
 
 export type NetworkConnectionSnapshot = {
@@ -20,7 +22,8 @@ type PreferencesStorage = Pick<Storage, "getItem" | "setItem">;
 
 export const defaultOfflineMapPreferences: OfflineMapPreferences = {
   retention: "30-days",
-  wifiAutoRefresh: true
+  wifiAutoRefresh: true,
+  dataLimitMb: 50
 };
 
 const offlineMapEstimatedBackgroundBytes = 320 * 1024;
@@ -69,7 +72,10 @@ export function normalizeOfflineMapPreferences(value: unknown): OfflineMapPrefer
     retention: offlineMapRetentionPolicies.includes(candidate.retention as OfflineMapRetentionPolicy)
       ? candidate.retention as OfflineMapRetentionPolicy
       : defaultOfflineMapPreferences.retention,
-    wifiAutoRefresh: candidate.wifiAutoRefresh !== false
+    wifiAutoRefresh: candidate.wifiAutoRefresh !== false,
+    dataLimitMb: offlineMapDataLimitsMb.includes(candidate.dataLimitMb as OfflineMapPreferences["dataLimitMb"])
+      ? candidate.dataLimitMb as OfflineMapPreferences["dataLimitMb"]
+      : defaultOfflineMapPreferences.dataLimitMb
   };
 }
 
@@ -124,4 +130,8 @@ export function shouldAutoRefreshOfflineMaps(
   connection: NetworkConnectionSnapshot | null | undefined
 ) {
   return preferences.wifiAutoRefresh && online && isWifiConnection(connection);
+}
+
+export function offlineDownloadWithinDataLimit(bytes: number, preferences: OfflineMapPreferences) {
+  return preferences.dataLimitMb === 0 || Math.max(0, bytes) <= preferences.dataLimitMb * 1024 * 1024;
 }

@@ -7,6 +7,7 @@ import {
   companionArrivalEstimate,
   companionFollowPath,
   companionRendezvousPoint,
+  companionRendezvousReplanPoint,
   companionInviteRemainingLabel,
   createCompanionInviteCode,
   createCompanionInviteUrl,
@@ -46,6 +47,16 @@ describe("companionMode", () => {
     ], { x: 24, y: 0 }, 12, 2)).toEqual([{ x: 12, y: 0 }, { x: 24, y: 0 }]);
     expect(companionRendezvousPoint({ x: 30, y: 90 }, { x: 90, y: 30 }))
       .toEqual({ x: 60, y: 60 });
+    expect(companionRendezvousReplanPoint(
+      { x: 60, y: 60 },
+      { x: 30, y: 90 },
+      { x: 110, y: 30 }
+    )).toBeNull();
+    expect(companionRendezvousReplanPoint(
+      { x: 60, y: 60 },
+      { x: 300, y: 90 },
+      { x: 420, y: 150 }
+    )).toEqual({ x: 360, y: 120 });
   });
 
   it("selects only nearby guests for a group photo", () => {

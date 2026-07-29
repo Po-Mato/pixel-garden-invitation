@@ -60,6 +60,7 @@ const ZONE_NAME = \`${"${CACHE_PREFIX}"}-zones-v1\`;
 const PRECACHE_URLS = ${JSON.stringify(precachePaths)};
 const FEATURE_URLS = ${JSON.stringify(featurePaths)};
 const RUNTIME_LIMIT = 120;
+const pausedZoneIds = new Set();
 
 function scopedUrl(path) {
   return new URL(path, self.registration.scope).href;
@@ -136,12 +137,21 @@ async function prepareZoneCache(zoneId, urls) {
   const requests = sameOriginRequests(urls);
   const cache = await caches.open(ZONE_NAME);
   const currentVersion = await zoneCacheIsCurrent(cache, zoneId);
+  if (!currentVersion) await Promise.all(requests.map((request) => cache.delete(request)));
   let completed = 0;
   let bytes = 0;
   await broadcast({ type: "PWA_ZONE_CACHE_PROGRESS", zoneId, completed, total: requests.length, bytes });
   try {
     for (const request of requests) {
+      if (pausedZoneIds.has(zoneId)) {
+        await cache.put(zoneMetaRequest(zoneId), new Response(JSON.stringify({ version: VERSION, cachedAt: 0, partial: true }), {
+          headers: { "Content-Type": "application/json; charset=utf-8" }
+        }));
+        await broadcast({ type: "PWA_ZONE_CACHE_PAUSED", zoneId, completed, total: requests.length, bytes });
+        return;
+      }
       let response = currentVersion ? await cache.match(request) : null;
+      if (!response) response = await cache.match(request);
       if (!response) {
         response = await fetch(request);
         if (!response.ok) throw new Error(\`HTTP ${"${response.status}"}\`);
@@ -341,7 +351,12 @@ self.addEventListener("message", (event) => {
     return;
   }
   if (event.data?.type === "CACHE_ZONE_ASSETS") {
+    pausedZoneIds.delete(event.data.zoneId);
     event.waitUntil(prepareZoneCache(event.data.zoneId, event.data.urls));
+    return;
+  }
+  if (event.data?.type === "PAUSE_ZONE_ASSETS") {
+    if (validZoneId(event.data.zoneId)) pausedZoneIds.add(event.data.zoneId);
     return;
   }
   if (event.data?.type === "REMOVE_ZONE_ASSETS") {
@@ -353,7 +368,16 @@ self.addEventListener("message", (event) => {
     return;
   }
   if (event.data?.type === "CACHE_ZONE_GROUPS") {
+    if (event.data.groups && typeof event.data.groups === "object") {
+      Object.keys(event.data.groups).filter(validZoneId).forEach((zoneId) => pausedZoneIds.delete(zoneId));
+    }
     event.waitUntil(prepareZoneGroups(event.data.groups));
+    return;
+  }
+  if (event.data?.type === "PAUSE_ZONE_GROUPS") {
+    if (event.data.groups && typeof event.data.groups === "object") {
+      Object.keys(event.data.groups).filter(validZoneId).forEach((zoneId) => pausedZoneIds.add(zoneId));
+    }
     return;
   }
   if (event.data?.type === "REMOVE_ZONE_GROUPS") {

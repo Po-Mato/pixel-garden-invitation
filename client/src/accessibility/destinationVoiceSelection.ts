@@ -3,6 +3,8 @@ import {
   type DestinationVoicePreferences
 } from "./destinationVoicePreferences";
 
+type DestinationVoiceCommandPreferences = Omit<DestinationVoicePreferences, "profileId">;
+
 type DestinationSpeechRecognitionResult = {
   results?: ArrayLike<{ 0?: { transcript?: string } }>;
 };
@@ -77,7 +79,7 @@ export type DestinationVoiceResult = {
 export function parseDestinationVoiceCommand(
   transcript: string,
   total: number,
-  preferences: DestinationVoicePreferences = defaultDestinationVoicePreferences
+  preferences: DestinationVoiceCommandPreferences = defaultDestinationVoicePreferences
 ): DestinationVoiceCommand | null {
   const normalized = transcript.trim().replaceAll(" ", "");
   if (!normalized) return null;
@@ -108,7 +110,7 @@ export function listenForDestinationVoiceNumber(
   total: number,
   target: SpeechWindow | null = typeof window === "undefined" ? null : window,
   timeoutMs = 6_000,
-  preferences: DestinationVoicePreferences = defaultDestinationVoicePreferences
+  preferences: DestinationVoiceCommandPreferences = defaultDestinationVoicePreferences
 ): Promise<number | null> {
   return listenForDestinationVoiceCommand(total, target, timeoutMs, preferences).then((command) => (
     command?.type === "number" ? command.index : null
@@ -119,7 +121,7 @@ export function listenForDestinationVoiceCommand(
   total: number,
   target: SpeechWindow | null = typeof window === "undefined" ? null : window,
   timeoutMs = 6_000,
-  preferences: DestinationVoicePreferences = defaultDestinationVoicePreferences
+  preferences: DestinationVoiceCommandPreferences = defaultDestinationVoicePreferences
 ): Promise<DestinationVoiceCommand | null> {
   return listenForDestinationVoiceResult(total, target, timeoutMs, preferences).then(({ command }) => command);
 }
@@ -128,7 +130,7 @@ export function listenForDestinationVoiceResult(
   total: number,
   target: SpeechWindow | null = typeof window === "undefined" ? null : window,
   timeoutMs = 6_000,
-  preferences: DestinationVoicePreferences = defaultDestinationVoicePreferences
+  preferences: DestinationVoiceCommandPreferences = defaultDestinationVoicePreferences
 ): Promise<DestinationVoiceResult> {
   const Recognition = target?.SpeechRecognition ?? target?.webkitSpeechRecognition;
   if (!target || !Recognition || total <= 0) return Promise.resolve({ command: null, transcript: "" });

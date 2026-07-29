@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Check, Clock3, CloudDownload, HardDrive, LoaderCircle, MapPinned, PackageCheck, RefreshCw, Trash2, Wifi } from "lucide-react";
+import { Clock3, CloudDownload, HardDrive, MapPinned, PackageCheck, Pause, Play, RefreshCw, Trash2, Wifi } from "lucide-react";
 import type { WorldZoneId } from "@wedding-game/shared";
 import { gardenWorld } from "../game/world";
 import { resolveWorldZoneAssetUrls } from "../game/worldAssetPreloader";
@@ -8,6 +8,8 @@ import {
   checkForPwaUpdate,
   getPwaClientSnapshot,
   inspectOfflineZoneAssets,
+  pauseOfflineJourneyAssets,
+  pauseOfflineZoneAssets,
   prepareOfflineJourneyAssets,
   prepareOfflineZoneAssets,
   removeOfflineZoneAssets,
@@ -20,6 +22,8 @@ import {
   expiredOfflineZoneIds,
   estimatedOfflineAssetGroupBytes,
   loadOfflineMapPreferences,
+  offlineDownloadWithinDataLimit,
+  offlineMapDataLimitsMb,
   saveOfflineMapPreferences,
   scheduledOfflineZoneDeletionAt,
   shouldAutoRefreshOfflineMaps,
@@ -85,6 +89,7 @@ export function OfflineMapDownloadCenter({ currentZoneId }: OfflineMapDownloadCe
   const zoneStates = gardenWorld.zones.map(({ id }) => client.zoneCaches[id]?.state ?? "idle");
   const journeyReady = zoneStates.every((state) => state === "ready");
   const journeyPreparing = zoneStates.some((state) => state === "preparing");
+  const journeyPaused = zoneStates.some((state) => state === "paused");
   const journeyOutdated = zoneStates.filter((state) => state === "outdated").length;
   const journeySaved = zoneStates.filter((state) => state === "ready" || state === "outdated").length;
   const estimatedBytesByZone = useMemo(() => Object.fromEntries(Object.entries(groups).map(([zoneId, urls]) => [
@@ -104,6 +109,7 @@ export function OfflineMapDownloadCenter({ currentZoneId }: OfflineMapDownloadCe
     estimatedJourneyBytes,
     networkConnection
   ));
+  const journeyWithinLimit = offlineDownloadWithinDataLimit(estimatedJourneyBytes, preferences);
 
   const refreshStorage = () => {
     if (!navigator.storage?.estimate) return;
@@ -226,6 +232,16 @@ export function OfflineMapDownloadCenter({ currentZoneId }: OfflineMapDownloadCe
           />
           <Wifi aria-hidden="true" />Wi-Fi 연결 시 오래된 지도 자동 갱신
         </label>
+        <div role="group" aria-label="오프라인 다운로드 데이터 한도">
+          {offlineMapDataLimitsMb.map((limit) => (
+            <button
+              key={limit}
+              type="button"
+              aria-pressed={preferences.dataLimitMb === limit}
+              onClick={() => updatePreferences({ dataLimitMb: limit })}
+            >{limit === 0 ? "무제한" : `${limit}MB`}</button>
+          ))}
+        </div>
         <p aria-live="polite">{automationStatus}</p>
       </fieldset>
       {client.updateAvailable ? (
@@ -248,11 +264,20 @@ export function OfflineMapDownloadCenter({ currentZoneId }: OfflineMapDownloadCe
           <strong>전체 여정 한 번에 저장</strong>
           <small>{journeyPreparing
             ? `${journeySaved}/${gardenWorld.zones.length}개 구역 저장 중`
+            : journeyPaused ? `${journeySaved}/${gardenWorld.zones.length}개 구역 일시정지 · 이어받기 가능`
             : journeyReady ? "모든 구역을 최신 상태로 저장했어요"
+              : !journeyWithinLimit ? `${formatBytes(estimatedJourneyBytes)} · 설정한 ${preferences.dataLimitMb}MB 한도 초과`
               : journeyOutdated > 0 ? `${journeyOutdated}개 구역 업데이트 필요 · ${journeyMeasurement ? "서버 기준" : "예상"} ${formatBytes(estimatedJourneyBytes)} · ${journeyDuration}`
                 : `${journeySaved}/${gardenWorld.zones.length}개 구역 저장됨 · ${journeyMeasurement ? "서버 기준" : "예상"} ${formatBytes(estimatedJourneyBytes)} · ${journeyDuration}`}</small>
         </span>
-        {journeyReady ? (
+        {journeyPreparing ? (
+          <button
+            type="button"
+            aria-label="전체 여정 오프라인 저장 일시정지"
+            title="저장 일시정지"
+            onClick={() => pauseOfflineJourneyAssets(groups)}
+          ><Pause aria-hidden="true" /></button>
+        ) : journeyReady ? (
           <button
             type="button"
             aria-label="전체 여정 오프라인 지도 삭제"
@@ -262,11 +287,11 @@ export function OfflineMapDownloadCenter({ currentZoneId }: OfflineMapDownloadCe
         ) : (
           <button
             type="button"
-            disabled={journeyPreparing || !client.supported}
-            aria-label={journeyOutdated > 0 ? "전체 여정 오프라인 지도 업데이트" : "전체 여정 오프라인 지도 저장"}
-            title={journeyOutdated > 0 ? "전체 지도 업데이트" : "전체 지도 저장"}
+            disabled={!client.supported || !journeyWithinLimit}
+            aria-label={journeyPaused ? "전체 여정 오프라인 저장 이어받기" : journeyOutdated > 0 ? "전체 여정 오프라인 지도 업데이트" : "전체 여정 오프라인 지도 저장"}
+            title={journeyPaused ? "저장 이어받기" : journeyOutdated > 0 ? "전체 지도 업데이트" : "전체 지도 저장"}
             onClick={() => prepareOfflineJourneyAssets(groups)}
-          >{journeyPreparing ? <LoaderCircle className="offline-map-download__spinner" aria-hidden="true" /> : <CloudDownload aria-hidden="true" />}</button>
+          >{journeyPaused ? <Play aria-hidden="true" /> : <CloudDownload aria-hidden="true" />}</button>
         )}
       </section>
       <div className="offline-map-download__zones">
@@ -281,6 +306,7 @@ export function OfflineMapDownloadCenter({ currentZoneId }: OfflineMapDownloadCe
           const ready = cache.state === "ready";
           const outdated = cache.state === "outdated";
           const preparing = cache.state === "preparing";
+          const paused = cache.state === "paused";
           const percent = cache.total > 0 ? Math.round((cache.completed / cache.total) * 100) : 0;
           const measurement = serverMeasurements?.[zone.id];
           const estimatedBytes = measurement?.bytes ?? estimatedBytesByZone[zone.id] ?? 0;
@@ -290,6 +316,7 @@ export function OfflineMapDownloadCenter({ currentZoneId }: OfflineMapDownloadCe
               : `서버 ${measurement.measuredFiles}/${measurement.totalFiles} + 추정`
             : "예상";
           const duration = formatOfflineDownloadDuration(estimatedOfflineDownloadSeconds(estimatedBytes, networkConnection));
+          const withinLimit = offlineDownloadWithinDataLimit(estimatedBytes, preferences);
           const deletionAt = scheduledOfflineZoneDeletionAt(cache, zone.id, currentZoneId, preferences);
           const retentionLabel = zone.id === currentZoneId
             ? "현재 지도 보호"
@@ -302,13 +329,21 @@ export function OfflineMapDownloadCenter({ currentZoneId }: OfflineMapDownloadCe
               <span>
                 <strong>{zone.label}{zone.id === currentZoneId ? " · 현재" : ""}</strong>
                 <small>{preparing ? `${percent}% 저장 중 · ${estimateSource} ${formatBytes(estimatedBytes)} · ${duration}`
+                  : paused ? `${percent}%에서 일시정지 · 이어받기 가능`
                   : ready ? `${formatBytes(cache.bytes)} · ${retentionLabel}`
                     : outdated ? `${formatBytes(cache.bytes)} · 업데이트 필요 · ${retentionLabel}`
                       : cache.state === "error" ? `저장 실패 · ${estimateSource} ${formatBytes(estimatedBytes)} · ${duration}`
-                        : `저장 안 됨 · ${estimateSource} ${formatBytes(estimatedBytes)} · ${duration}`}</small>
+                        : !withinLimit ? `설정한 ${preferences.dataLimitMb}MB 한도 초과 · ${formatBytes(estimatedBytes)}`
+                          : `저장 안 됨 · ${estimateSource} ${formatBytes(estimatedBytes)} · ${duration}`}</small>
               </span>
-              {preparing ? <LoaderCircle className="offline-map-download__spinner" aria-label={`${zone.label} 저장 중`} /> : null}
-              {ready ? (
+              {preparing ? (
+                <button
+                  type="button"
+                  aria-label={`${zone.label} 오프라인 지도 저장 일시정지`}
+                  title="저장 일시정지"
+                  onClick={() => pauseOfflineZoneAssets(zone.id)}
+                ><Pause aria-hidden="true" /></button>
+              ) : ready ? (
                 <button
                   type="button"
                   aria-label={`${zone.label} 오프라인 지도 삭제`}
@@ -318,11 +353,11 @@ export function OfflineMapDownloadCenter({ currentZoneId }: OfflineMapDownloadCe
               ) : (
                 <button
                   type="button"
-                  disabled={preparing || !client.supported}
-                  aria-label={`${zone.label} 오프라인 지도 ${outdated ? "업데이트" : cache.state === "error" ? "다시 저장" : "저장"}`}
-                  title={outdated ? "지도 업데이트" : cache.state === "error" ? "다시 저장" : "오프라인 저장"}
+                  disabled={!client.supported || !withinLimit}
+                  aria-label={`${zone.label} 오프라인 지도 ${paused ? "이어받기" : outdated ? "업데이트" : cache.state === "error" ? "다시 저장" : "저장"}`}
+                  title={paused ? "저장 이어받기" : outdated ? "지도 업데이트" : cache.state === "error" ? "다시 저장" : "오프라인 저장"}
                   onClick={() => prepareOfflineZoneAssets(zone.id, groups[zone.id] ?? [])}
-                >{outdated || cache.state === "error" ? <RefreshCw aria-hidden="true" /> : ready ? <Check aria-hidden="true" /> : <CloudDownload aria-hidden="true" />}</button>
+                >{paused ? <Play aria-hidden="true" /> : outdated || cache.state === "error" ? <RefreshCw aria-hidden="true" /> : <CloudDownload aria-hidden="true" />}</button>
               )}
             </article>
           );

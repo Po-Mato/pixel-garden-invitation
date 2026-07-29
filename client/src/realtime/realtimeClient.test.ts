@@ -207,7 +207,8 @@ describe("connectRealtime", () => {
       proposalId: "meet-123",
       zoneId: "home",
       x: 160,
-      y: 224
+      y: 224,
+      expiresAt: 34_600
     }, {
       type: "companion_rendezvous_replied",
       guestId: "guest_invited",

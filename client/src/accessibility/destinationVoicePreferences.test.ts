@@ -20,6 +20,7 @@ describe("destinationVoicePreferences", () => {
       repeatPhrase: "다시 알려줘"
     });
     expect(preferences).toEqual({
+      profileId: "standard",
       movePhrase: "출발해",
       nextPhrase: "다음 장소",
       cancelPhrase: defaultDestinationVoicePreferences.cancelPhrase,

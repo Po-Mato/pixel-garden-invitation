@@ -9,8 +9,9 @@ import {
   type MouseEvent,
   type TransitionEvent as ReactTransitionEvent
 } from "react";
-import { Accessibility, ArrowRight, Camera, CircleHelp, Images, MapPinned, RefreshCw, Share2, X } from "lucide-react";
+import { Accessibility, ArrowRight, Camera, ChevronDown, CircleHelp, Images, MapPinned, RefreshCw, Share2, SlidersHorizontal, X } from "lucide-react";
 import {
+  companionRendezvousProposalLifetimeMs,
   invitationContent,
   type ClientMessage,
   type CompanionPing,
@@ -91,6 +92,7 @@ import {
   companionCandidates,
   companionFollowPath,
   companionRendezvousPoint,
+  companionRendezvousReplanPoint,
   createCompanionInviteCode,
   createCompanionInviteUrl,
   inspectCompanionInviteUrl,
@@ -313,11 +315,13 @@ type CompanionRendezvousProposal = {
   nickname: string;
   zoneId: WorldZoneId;
   point: Point;
+  expiresAt: number;
 };
 type ActiveCompanionRendezvous = {
   proposalId: string;
   zoneId: WorldZoneId;
   point: Point;
+  expiresAt: number;
 };
 type ActiveCooperativeCelebration = {
   token: number;
@@ -501,6 +505,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   const [photoAlbum, setPhotoAlbum] = useState(loadWeddingPhotoAlbum);
   const [photoAlbumOpen, setPhotoAlbumOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [hudToolsOpen, setHudToolsOpen] = useState(false);
   const [calendarSheetOpen, setCalendarSheetOpen] = useState(false);
   const [directionsSheetOpen, setDirectionsSheetOpen] = useState(false);
   const [giftAccountSheetOpen, setGiftAccountSheetOpen] = useState(false);
@@ -514,6 +519,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     : restoredWorldSession
       ? `${initialZone.label}의 이전 위치에서 이어서 시작해요`
       : "우리 집에서 여정을 시작해요");
+  const [travelStatusVisible, setTravelStatusVisible] = useState(true);
   const [routeRecalculationId, setRouteRecalculationId] = useState(0);
   const [routeRecalculationNotice, setRouteRecalculationNotice] = useState<RouteRecalculationResult | null>(null);
   const [routeArrivalNotice, setRouteArrivalNotice] = useState<RouteArrivalNotice | null>(null);
@@ -2257,7 +2263,8 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
                 guestId: message.guestId,
                 nickname: message.guestNickname,
                 zoneId: message.zoneId,
-                point: { x: message.x, y: message.y }
+                point: { x: message.x, y: message.y },
+                expiresAt: message.expiresAt
               });
               setTravelStatus(`${message.guestNickname}님이 중간 합류 타일을 제안했어요`);
               return;
@@ -2275,7 +2282,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
                 setTravelStatus(`${message.guestNickname}님이 합류 제안을 거절했어요`);
                 return;
               }
-              activateCompanionRendezvous(proposal, message.guestNickname);
+              activateCompanionRendezvous({ ...proposal, expiresAt: Date.now() + 2 * 60_000 }, message.guestNickname);
               return;
             }
             if (message.type === "companion_rendezvous_canceled") {
@@ -2734,7 +2741,8 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     const proposal = {
       proposalId: `meet-${Date.now().toString(36)}`,
       zoneId: activeZone.id,
-      point: midpoint
+      point: midpoint,
+      expiresAt: Date.now() + companionRendezvousProposalLifetimeMs
     };
     outgoingRendezvousProposalRef.current = proposal;
     setOutgoingRendezvousProposal(proposal);
@@ -2766,7 +2774,8 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     activateCompanionRendezvous({
       proposalId: proposal.proposalId,
       zoneId: proposal.zoneId,
-      point: proposal.point
+      point: proposal.point,
+      expiresAt: Date.now() + 2 * 60_000
     }, proposal.nickname);
   }
 
@@ -3241,6 +3250,23 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
       setCompanionRendezvous(null);
       return;
     }
+    if (Date.now() >= companionRendezvous.expiresAt) {
+      setCompanionRendezvous(null);
+      setTravelStatus("합류 예약 시간이 지나 취소됐어요");
+      return;
+    }
+    const replannedPoint = companionRendezvousReplanPoint(
+      companionRendezvous.point,
+      position,
+      { x: activeCompanion.x, y: activeCompanion.y }
+    );
+    if (replannedPoint) {
+      const nextPoint = snapToGrid(replannedPoint, activeZone);
+      if (activateCompanionRendezvous({ ...companionRendezvous, point: nextPoint }, activeCompanion.nickname)) {
+        setTravelStatus(`${activeCompanion.nickname}님과의 거리 변화에 맞춰 합류 지점을 다시 잡았어요`);
+      }
+      return;
+    }
     const playerArrived = Math.hypot(
       position.x - companionRendezvous.point.x,
       position.y - companionRendezvous.point.y
@@ -3255,7 +3281,53 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     } else if (playerArrived) {
       setTravelStatus(`합류 지점에서 ${activeCompanion.nickname}님을 기다려요`);
     }
-  }, [activeCompanion, activeZone.id, companionRendezvous, position]);
+  }, [activateCompanionRendezvous, activeCompanion, activeZone, companionRendezvous, position]);
+
+  useEffect(() => {
+    const proposal = outgoingRendezvousProposal;
+    if (!proposal) return;
+    const expire = () => {
+      if (outgoingRendezvousProposalRef.current?.proposalId !== proposal.proposalId) return;
+      const companionId = companionGuestIdRef.current;
+      if (companionId) connectionRef.current?.send({
+        type: "companion_rendezvous_cancel",
+        targetGuestId: companionId,
+        proposalId: proposal.proposalId
+      });
+      outgoingRendezvousProposalRef.current = null;
+      setOutgoingRendezvousProposal(null);
+      setTravelStatus("합류 제안 응답 시간이 지났어요");
+    };
+    const remaining = proposal.expiresAt - Date.now();
+    if (remaining <= 0) {
+      expire();
+      return;
+    }
+    const timer = window.setTimeout(expire, remaining);
+    return () => window.clearTimeout(timer);
+  }, [outgoingRendezvousProposal]);
+
+  useEffect(() => {
+    const proposal = incomingRendezvousProposal;
+    if (!proposal) return;
+    const expire = () => {
+      setIncomingRendezvousProposal((current) => current?.proposalId === proposal.proposalId ? null : current);
+      connectionRef.current?.send({
+        type: "companion_rendezvous_reply",
+        requesterGuestId: proposal.guestId,
+        proposalId: proposal.proposalId,
+        accepted: false
+      });
+      setTravelStatus("합류 제안이 만료됐어요");
+    };
+    const remaining = proposal.expiresAt - Date.now();
+    if (remaining <= 0) {
+      expire();
+      return;
+    }
+    const timer = window.setTimeout(expire, remaining);
+    return () => window.clearTimeout(timer);
+  }, [incomingRendezvousProposal]);
   const nearbyCompanionCandidates = companionCandidates(remoteGuests, activeZone.id, position);
   const sameZoneCompanionCandidates = activeCompanion
     && activeCompanion.zoneId === activeZone.id
@@ -3520,6 +3592,12 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   ]);
 
   useEffect(() => {
+    setTravelStatusVisible(true);
+    const timer = window.setTimeout(() => setTravelStatusVisible(false), 2_800);
+    return () => window.clearTimeout(timer);
+  }, [travelStatus]);
+
+  useEffect(() => {
     if (!companionInviteLink) return;
     const remaining = companionInviteLink.expiresAt - Date.now();
     if (remaining <= 0) return;
@@ -3588,19 +3666,74 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
           completePortalFadeOut();
         }}
       />
-      <header className="world-hud">
+      <header className="world-hud" data-tools-open={hudToolsOpen || undefined}>
         <div className="world-hud__status">
           <div className="world-zone-summary">
             <span>현재 구역 · {activeZone.journeyIndex + 1}/10</span>
             <strong>{activeZone.label}</strong>
             <small>{activeZone.subtitle}</small>
           </div>
+          <button
+            type="button"
+            className="world-hud__tools-toggle"
+            aria-expanded={hudToolsOpen}
+            aria-label={hudToolsOpen ? "여정 도구 닫기" : "여정 도구 열기"}
+            onClick={() => {
+              pauseWorldInput();
+              setHudToolsOpen((current) => !current);
+            }}
+          >
+            <SlidersHorizontal aria-hidden="true" />
+            <span>여정</span>
+            <i className={`realtime-pill realtime-pill--${realtimeStatus}`} aria-label={realtimeStatusText(realtimeStatus)} />
+            <ChevronDown aria-hidden="true" />
+          </button>
+        </div>
+        {recommendedCheckpoint && recommendedZone ? (
+          <div
+            className="world-destination-guide-row"
+            data-active={activeJourneyGuideId === recommendedCheckpoint.id || undefined}
+            data-smart-phase={smartJourney?.phase}
+          >
+            <button
+              type="button"
+              className="world-destination-guide"
+              aria-label={activeJourneyGuideId === recommendedCheckpoint.id
+                ? `다음 목적지 ${recommendedCheckpoint.label}, 현재 위치에서 경로 다시 찾기`
+                : `다음 목적지 ${recommendedCheckpoint.label}, ${recommendedCheckpoint.zoneId === activeZone.id ? "길 안내 시작" : `${recommendedZone.label}로 이동`}`}
+              disabled={Boolean(portalTransition)}
+              onClick={() => activeJourneyGuideId === recommendedCheckpoint.id
+                ? restartJourneyGuidance(recommendedCheckpoint)
+                : startJourneyGuidance(recommendedCheckpoint)}
+            >
+              <MapPinned aria-hidden="true" />
+              <span>
+                <small>{activeJourneyGuideId === recommendedCheckpoint.id ? "안내 중" : "다음"}</small>
+                <strong>{recommendedCheckpoint.label}</strong>
+                <em>{recommendedCheckpoint.zoneId === activeZone.id ? "현재 맵" : recommendedZone.label} · {journeyDistanceLabel}</em>
+              </span>
+              {activeJourneyGuideId === recommendedCheckpoint.id ? <RefreshCw aria-hidden="true" /> : <ArrowRight aria-hidden="true" />}
+            </button>
+            {activeJourneyGuideId === recommendedCheckpoint.id ? (
+              <button
+                type="button"
+                className="world-destination-guide__cancel"
+                aria-label="길 안내 중단"
+                title="길 안내 중단"
+                disabled={Boolean(portalTransition)}
+                onClick={() => stopJourneyGuidance()}
+              >
+                <X aria-hidden="true" />
+              </button>
+            ) : null}
+          </div>
+        ) : null}
+        {hudToolsOpen ? <div className="world-hud__tools">
           <div className="world-hud__realtime-controls">
             <OneHandControlQuickToggle />
             <GameFeedbackToggle />
             <div className={`realtime-pill realtime-pill--${realtimeStatus}`}>{realtimeStatusText(realtimeStatus)}</div>
           </div>
-        </div>
         {weddingTiming ? (
           <WeddingJourneyClock
             timing={weddingTiming}
@@ -3626,45 +3759,6 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
         />
         {recommendedCheckpoint && recommendedZone ? (
           <>
-            <div
-              className="world-destination-guide-row"
-              data-active={activeJourneyGuideId === recommendedCheckpoint.id || undefined}
-              data-smart-phase={smartJourney?.phase}
-            >
-              <button
-                type="button"
-                className="world-destination-guide"
-                aria-label={activeJourneyGuideId === recommendedCheckpoint.id
-                  ? `다음 목적지 ${recommendedCheckpoint.label}, 현재 위치에서 경로 다시 찾기`
-                  : `다음 목적지 ${recommendedCheckpoint.label}, ${recommendedCheckpoint.zoneId === activeZone.id ? "길 안내 시작" : `${recommendedZone.label}로 이동`}`}
-                disabled={Boolean(portalTransition)}
-                onClick={() => activeJourneyGuideId === recommendedCheckpoint.id
-                  ? restartJourneyGuidance(recommendedCheckpoint)
-                  : startJourneyGuidance(recommendedCheckpoint)}
-              >
-                <MapPinned aria-hidden="true" />
-                <span>
-                  <small>{activeJourneyGuideId === recommendedCheckpoint.id
-                    ? "GUIDING NOW"
-                    : smartJourney?.eyebrow ?? "NEXT DESTINATION"}</small>
-                  <strong>{recommendedCheckpoint.label}</strong>
-                  <em>{smartJourney ? `${smartJourney.reason} · ` : ""}{recommendedCheckpoint.zoneId === activeZone.id ? "현재 맵" : recommendedZone.label} · {journeyDistanceLabel} · {activeJourneyGuideId === recommendedCheckpoint.id ? "재탐색 가능" : "자동 이동"}</em>
-                </span>
-                {activeJourneyGuideId === recommendedCheckpoint.id ? <RefreshCw aria-hidden="true" /> : <ArrowRight aria-hidden="true" />}
-              </button>
-              {activeJourneyGuideId === recommendedCheckpoint.id ? (
-                <button
-                  type="button"
-                  className="world-destination-guide__cancel"
-                  aria-label="길 안내 중단"
-                  title="길 안내 중단"
-                  disabled={Boolean(portalTransition)}
-                  onClick={() => stopJourneyGuidance()}
-                >
-                  <X aria-hidden="true" />
-                </button>
-              ) : null}
-            </div>
             <button
               type="button"
               className="world-accessible-route"
@@ -3706,7 +3800,8 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
             );
           })}
         </ol>
-        <div className="world-travel-status-row">
+        </div> : null}
+        <div className="world-travel-status-row" data-visible={travelStatusVisible || visibleTravelProgress || undefined}>
           <p className="world-travel-status" aria-live="polite">{travelStatus}</p>
           {visibleTravelProgress && !portalTransition ? (
             <span className="world-travel-progress" data-testid="world-travel-progress">

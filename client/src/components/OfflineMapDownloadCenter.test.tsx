@@ -7,6 +7,8 @@ const mocks = vi.hoisted(() => ({
   inspect: vi.fn(),
   prepare: vi.fn(),
   prepareJourney: vi.fn(),
+  pause: vi.fn(),
+  pauseJourney: vi.fn(),
   remove: vi.fn(),
   removeJourney: vi.fn(),
   applyUpdate: vi.fn(async () => true),
@@ -46,6 +48,8 @@ vi.mock("../pwa/pwaClient", () => ({
   inspectOfflineZoneAssets: mocks.inspect,
   prepareOfflineZoneAssets: mocks.prepare,
   prepareOfflineJourneyAssets: mocks.prepareJourney,
+  pauseOfflineZoneAssets: mocks.pause,
+  pauseOfflineJourneyAssets: mocks.pauseJourney,
   removeOfflineZoneAssets: mocks.remove,
   removeOfflineJourneyAssets: mocks.removeJourney,
   startPwaClient: mocks.start
@@ -91,5 +95,8 @@ describe("OfflineMapDownloadCenter", () => {
     expect(wifiRefresh).toBeChecked();
     fireEvent.click(wifiRefresh);
     expect(wifiRefresh).not.toBeChecked();
+    const twentyMb = screen.getAllByRole("button", { name: "20MB" }).at(-1)!;
+    fireEvent.click(twentyMb);
+    expect(twentyMb).toHaveAttribute("aria-pressed", "true");
   });
 });

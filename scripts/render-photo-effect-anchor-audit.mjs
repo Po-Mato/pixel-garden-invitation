@@ -6,6 +6,11 @@ import sharp from "sharp";
 const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const catalogPath = path.join(projectRoot, "character-assets/guest-character-presets.json");
 const portraitRoot = path.join(projectRoot, "client/public/characters/generated/guests/portraits");
+const walkRoot = path.join(projectRoot, "client/public/characters/generated/guests/world");
+const photoZoneBackgroundPath = path.join(projectRoot, "client/public/assets/maps/v2/ceremony-hall/background.webp");
+const walkDirections = ["down", "left", "right", "up"];
+const walkFrameWidth = 48;
+const walkFrameHeight = 72;
 export const defaultPhotoEffectAuditPath = path.join(
   projectRoot,
   ".superpowers/character-review/photo-effect-anchor-audit.png"
@@ -51,31 +56,86 @@ export async function auditPhotoEffectPortrait(filePath, guestId, presetId) {
   return { guestId, presetId, filePath, width: info.width, height: info.height, bounds, anchors };
 }
 
+export async function auditPhotoEffectWalkSheet(filePath, guestId) {
+  const metadata = await sharp(filePath).metadata();
+  if (metadata.width !== walkFrameWidth * 3 || metadata.height !== walkFrameHeight * 4) {
+    throw new Error(`${guestId}: walk sheet must be 144x288`);
+  }
+  const frames = [];
+  for (let row = 0; row < walkDirections.length; row += 1) {
+    for (let column = 0; column < 3; column += 1) {
+      const { data, info } = await sharp(filePath)
+        .extract({ left: column * walkFrameWidth, top: row * walkFrameHeight, width: walkFrameWidth, height: walkFrameHeight })
+        .ensureAlpha()
+        .raw()
+        .toBuffer({ resolveWithObject: true });
+      const bounds = opaqueBounds(data, info.width, info.height);
+      if (!bounds) throw new Error(`${guestId}/${walkDirections[row]}/step-${column + 1}: frame is transparent`);
+      if (bounds.height < 60 || bounds.height > 66) {
+        throw new Error(`${guestId}/${walkDirections[row]}/step-${column + 1}: visible height ${bounds.height} is outside 60..66`);
+      }
+      frames.push({
+        direction: walkDirections[row],
+        step: column + 1,
+        row,
+        column,
+        bounds,
+        anchors: photoEffectAnchors(bounds)
+      });
+    }
+  }
+  return { filePath, width: metadata.width, height: metadata.height, frames };
+}
+
 function escapeXml(value) {
   return String(value).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 }
 
 async function renderCard(report, cardWidth, cardHeight) {
-  const imageX = 44;
-  const imageY = 64;
-  const scale = 1;
-  const { bounds, anchors } = report;
+  const portraitScale = 0.75;
+  const portraitX = 73;
+  const portraitY = 189;
+  const walkX = 310;
+  const walkY = 60;
+  const walkScale = 2;
+  const { bounds, anchors, walk } = report;
+  const photoBackground = await sharp(photoZoneBackgroundPath)
+    .extract({ left: 120, top: 30, width: 540, height: 510 })
+    .resize(240, 330, { fit: "cover" })
+    .modulate({ brightness: 0.98, saturation: 0.92 })
+    .toBuffer();
+  const portrait = await sharp(report.filePath).resize(144, 216, { fit: "fill" }).toBuffer();
+  const walkSheet = await sharp(walk.filePath).resize(288, 576, { kernel: "nearest" }).toBuffer();
+  const walkGuides = walk.frames.map((frame) => {
+    const frameX = walkX + frame.column * walkFrameWidth * walkScale;
+    const frameY = walkY + frame.row * walkFrameHeight * walkScale;
+    const left = frameX + frame.bounds.left * walkScale;
+    const right = frameX + frame.bounds.right * walkScale;
+    return `<rect x="${left}" y="${frameY + frame.bounds.top * walkScale}" width="${frame.bounds.width * walkScale}" height="${frame.bounds.height * walkScale}" fill="none" stroke="#ba6b77" stroke-width="1" stroke-dasharray="3 2"/>
+      <line x1="${left}" y1="${frameY + frame.anchors.head.y * walkScale}" x2="${right}" y2="${frameY + frame.anchors.head.y * walkScale}" stroke="#d44f75" stroke-width="1"/>
+      <line x1="${left}" y1="${frameY + frame.anchors.feet.y * walkScale}" x2="${right}" y2="${frameY + frame.anchors.feet.y * walkScale}" stroke="#47895c" stroke-width="1"/>`;
+  }).join("\n");
   const overlay = Buffer.from(`<svg width="${cardWidth}" height="${cardHeight}" xmlns="http://www.w3.org/2000/svg">
     <rect x="0.5" y="0.5" width="${cardWidth - 1}" height="${cardHeight - 1}" fill="none" stroke="#c9c0b8"/>
     <text x="18" y="21" font-family="sans-serif" font-size="13" font-weight="700" fill="#493d38">${escapeXml(report.guestId)}</text>
     <text x="18" y="39" font-family="sans-serif" font-size="10" font-weight="600" fill="#6d625c">${escapeXml(report.presetId)}</text>
-    <rect x="${imageX + bounds.left * scale}" y="${imageY + bounds.top * scale}" width="${bounds.width * scale}" height="${bounds.height * scale}" fill="none" stroke="#c54d59" stroke-width="1.5" stroke-dasharray="5 3"/>
-    <line x1="${imageX + bounds.left}" y1="${imageY + anchors.head.y}" x2="${imageX + bounds.right}" y2="${imageY + anchors.head.y}" stroke="#d44f75" stroke-width="2"/>
-    <line x1="${imageX + bounds.left}" y1="${imageY + anchors.chest.y}" x2="${imageX + bounds.right}" y2="${imageY + anchors.chest.y}" stroke="#4778c4" stroke-width="2"/>
-    <line x1="${imageX + bounds.left}" y1="${imageY + anchors.feet.y}" x2="${imageX + bounds.right}" y2="${imageY + anchors.feet.y}" stroke="#47895c" stroke-width="2"/>
-    <circle cx="${imageX + anchors.head.x}" cy="${imageY + anchors.head.y}" r="5" fill="#d44f75" stroke="#fff" stroke-width="2"/>
-    <circle cx="${imageX + anchors.chest.x}" cy="${imageY + anchors.chest.y}" r="5" fill="#4778c4" stroke="#fff" stroke-width="2"/>
-    <circle cx="${imageX + anchors.feet.x}" cy="${imageY + anchors.feet.y}" r="5" fill="#47895c" stroke="#fff" stroke-width="2"/>
-    <text x="18" y="${cardHeight - 21}" font-family="sans-serif" font-size="11" fill="#6d625c">head ●  chest ●  feet ●  visible ${bounds.width}×${bounds.height}</text>
+    <text x="22" y="62" font-family="sans-serif" font-size="9" font-weight="700" fill="#725e63">ACTUAL PHOTOZONE EFFECT</text>
+    <rect x="24" y="74" width="242" height="332" fill="none" stroke="#8f7d76"/>
+    <ellipse cx="${portraitX + anchors.head.x * portraitScale}" cy="${portraitY + (bounds.top + bounds.height * 0.5) * portraitScale}" rx="58" ry="86" fill="none" stroke="#f3d178" stroke-width="4" opacity="0.82"/>
+    <circle cx="${portraitX + anchors.head.x * portraitScale}" cy="${portraitY + anchors.head.y * portraitScale}" r="7" fill="#d44f75" stroke="#fff" stroke-width="2"/>
+    <circle cx="${portraitX + anchors.chest.x * portraitScale}" cy="${portraitY + anchors.chest.y * portraitScale}" r="7" fill="#4778c4" stroke="#fff" stroke-width="2"/>
+    <circle cx="${portraitX + anchors.feet.x * portraitScale}" cy="${portraitY + anchors.feet.y * portraitScale}" r="7" fill="#47895c" stroke="#fff" stroke-width="2"/>
+    <text x="22" y="430" font-family="sans-serif" font-size="9" fill="#6d625c">portrait visible ${bounds.width}×${bounds.height} · effect anchors</text>
+    <text x="310" y="50" font-family="sans-serif" font-size="9" font-weight="700" fill="#725e63">12-FRAME WALK SOURCE AUDIT</text>
+    ${walkDirections.map((direction, row) => `<text x="282" y="${walkY + row * 144 + 76}" font-family="sans-serif" font-size="8" font-weight="700" fill="#66555a">${direction}</text>`).join("\n")}
+    ${walkGuides}
+    <text x="18" y="${cardHeight - 20}" font-family="sans-serif" font-size="10" fill="#6d625c">12 walk frames · head/feet guides · photo effect composite</text>
   </svg>`);
   return sharp({ create: { width: cardWidth, height: cardHeight, channels: 4, background: "#fffdf8" } })
     .composite([
-      { input: report.filePath, left: imageX, top: imageY },
+      { input: photoBackground, left: 25, top: 75 },
+      { input: portrait, left: portraitX, top: portraitY },
+      { input: walkSheet, left: walkX, top: walkY },
       { input: overlay, left: 0, top: 0 }
     ])
     .png()
@@ -87,33 +147,37 @@ export async function collectPhotoEffectAuditReports() {
   if (!Array.isArray(catalog.presets) || catalog.presets.length !== 12) {
     throw new Error(`photo effect audit requires 12 presets, received ${catalog.presets?.length ?? 0}`);
   }
-  return Promise.all(catalog.presets.map((preset, index) => auditPhotoEffectPortrait(
-    path.join(portraitRoot, `${preset.id}.png`),
-    `guest-${String(index + 1).padStart(2, "0")}`,
-    preset.id
-  )));
+  return Promise.all(catalog.presets.map(async (preset, index) => {
+    const guestId = `guest-${String(index + 1).padStart(2, "0")}`;
+    const portrait = await auditPhotoEffectPortrait(path.join(portraitRoot, `${preset.id}.png`), guestId, preset.id);
+    const walk = await auditPhotoEffectWalkSheet(path.join(walkRoot, `${preset.id}__walk.png`), guestId);
+    return { ...portrait, walk };
+  }));
 }
 
 export async function renderPhotoEffectAnchorAudit(outputPath = defaultPhotoEffectAuditPath) {
   const reports = await collectPhotoEffectAuditReports();
-  const cardWidth = 280;
-  const cardHeight = 390;
-  const columns = 4;
+  const cardWidth = 620;
+  const cardHeight = 670;
+  const columns = 2;
   const cards = await Promise.all(reports.map((report) => renderCard(report, cardWidth, cardHeight)));
   await fs.mkdir(path.dirname(outputPath), { recursive: true });
   await sharp({
-    create: { width: cardWidth * columns, height: cardHeight * 3, channels: 4, background: "#f1eee9" }
+    create: { width: cardWidth * columns, height: cardHeight * 6, channels: 4, background: "#f1eee9" }
   }).composite(cards.map((input, index) => ({
     input,
     left: (index % columns) * cardWidth,
     top: Math.floor(index / columns) * cardHeight
   }))).png().toFile(outputPath);
-  await fs.writeFile(outputPath.replace(/\.png$/, ".json"), `${JSON.stringify(reports.map(({ filePath, ...report }) => report), null, 2)}\n`);
+  await fs.writeFile(outputPath.replace(/\.png$/, ".json"), `${JSON.stringify(reports.map(({ filePath, walk, ...report }) => ({
+    ...report,
+    walk: { ...walk, filePath: undefined }
+  })), null, 2)}\n`);
   return reports;
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const reports = await renderPhotoEffectAnchorAudit();
-  console.log(`Photo effect anchor audit passed: ${reports.length} guests`);
+  console.log(`Photo effect anchor audit passed: ${reports.length} guests / ${reports.reduce((sum, report) => sum + report.walk.frames.length, 0)} walk frames`);
   console.log(defaultPhotoEffectAuditPath);
 }

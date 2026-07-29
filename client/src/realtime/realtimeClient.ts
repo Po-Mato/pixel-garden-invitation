@@ -214,6 +214,9 @@ function parseServerMessage(value: unknown): ServerMessage | null {
       || !Number.isFinite(value.x)
       || typeof value.y !== "number"
       || !Number.isFinite(value.y)
+      || typeof value.expiresAt !== "number"
+      || !Number.isSafeInteger(value.expiresAt)
+      || value.expiresAt <= 0
     ) return null;
     return value as ServerMessage;
   }

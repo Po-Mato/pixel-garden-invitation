@@ -4,6 +4,7 @@ import {
   createGameMemoryKeepsakeTemplate,
   defaultGameMemoryKeepsakeOptions,
   createSingleImagePdf,
+  createImagePagesPdf,
   gameMemoryKeepsakeFilename,
   gameMemoryKeepsakePrintFilename,
   gameMemoryKeepsakePdfFilename,
@@ -39,8 +40,10 @@ describe("gameMemoryKeepsake", () => {
   });
 
   it("uses print-ready A4 and postcard canvas sizes and filenames", () => {
-    expect(gameMemoryKeepsakePrintLayout("a4")).toEqual({ width: 2480, height: 3508, margin: 150, safeInset: 96, label: "A4", pageWidthPoints: 595.28, pageHeightPoints: 841.89 });
-    expect(gameMemoryKeepsakePrintLayout("postcard")).toEqual({ width: 1200, height: 1800, margin: 72, safeInset: 54, label: "4×6 엽서", pageWidthPoints: 288, pageHeightPoints: 432 });
+    expect(gameMemoryKeepsakePrintLayout("a4")).toEqual({ width: 2480, height: 3508, margin: 150, safeInset: 96, label: "A4", pageWidthPoints: 595.28, pageHeightPoints: 841.89, vendor: "standard-lab" });
+    expect(gameMemoryKeepsakePrintLayout("postcard")).toEqual({ width: 1200, height: 1800, margin: 72, safeInset: 54, label: "4×6 엽서", pageWidthPoints: 288, pageHeightPoints: 432, vendor: "standard-lab" });
+    expect(gameMemoryKeepsakePrintLayout("postcard", "postcard-maker"))
+      .toMatchObject({ margin: 62, safeInset: 78, vendor: "postcard-maker" });
     expect(gameMemoryKeepsakePrintFilename(" 정원 하객 ", "a4"))
       .toBe("wedding-garden-memory-정원-하객-a4.png");
 
@@ -57,6 +60,8 @@ describe("gameMemoryKeepsake", () => {
     expect(environment.clickDownload).toHaveBeenCalledWith("blob:print", "wedding-garden-memory-정원-하객-a4.pdf");
     expect(gameMemoryKeepsakePdfFilename(" 정원 하객 ", "postcard"))
       .toBe("wedding-garden-memory-정원-하객-postcard.pdf");
+    expect(gameMemoryKeepsakePdfFilename(" 정원 하객 ", "postcard", true))
+      .toBe("wedding-garden-memory-정원-하객-postcard-duplex.pdf");
   });
 
   it("keeps trim and safe guides inside the printable page", () => {
@@ -81,6 +86,23 @@ describe("gameMemoryKeepsake", () => {
     });
     expect(new TextDecoder().decode(bytes.slice(0, 8))).toBe("%PDF-1.4");
     expect(new TextDecoder().decode(bytes.slice(-6))).toContain("%%EOF");
+  });
+
+  it("creates a two-page duplex postcard PDF", async () => {
+    const jpegBytes = new Uint8Array([0xff, 0xd8, 0xff, 0xd9]);
+    const pdf = createImagePagesPdf([
+      { jpegBytes, imageWidth: 1200, imageHeight: 1800, pageWidth: 288, pageHeight: 432 },
+      { jpegBytes, imageWidth: 1200, imageHeight: 1800, pageWidth: 288, pageHeight: 432 }
+    ]);
+    const bytes = await new Promise<ArrayBuffer>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as ArrayBuffer);
+      reader.onerror = () => reject(reader.error);
+      reader.readAsArrayBuffer(pdf);
+    });
+    const text = new TextDecoder().decode(bytes);
+    expect(text).toContain("/Count 2");
+    expect(text.match(/\/Type \/Page\b/g)).toHaveLength(2);
   });
 
   it("shares the keepsake when file sharing is available", async () => {

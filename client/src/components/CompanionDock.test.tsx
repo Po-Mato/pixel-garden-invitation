@@ -37,6 +37,8 @@ describe("CompanionDock", () => {
       />
     );
 
+    expect(screen.queryByRole("button", { name: "여기예요" })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: /같이 걷기 열기/ }));
     fireEvent.click(screen.getByRole("button", { name: "여기예요" }));
     fireEvent.click(screen.getByRole("button", { name: "동행 목적지 변경 요청" }));
     expect(onPing).toHaveBeenCalledWith("here");
@@ -77,6 +79,7 @@ describe("CompanionDock", () => {
         onReserveRendezvous={onReserve}
       />
     );
+    fireEvent.click(screen.getByRole("button", { name: /같이 걷기 열기/ }));
     fireEvent.click(screen.getByRole("button", { name: "중간 타일에서 만나기" }));
     expect(onReserve).toHaveBeenCalledOnce();
 

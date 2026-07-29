@@ -290,6 +290,9 @@ describe("WorldMiniMap", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "음성 명령 설정" }));
     const movePhrase = screen.getByRole("textbox", { name: "이동" });
+    expect(screen.getByRole("group", { name: "음성 명령 프로필" })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "짧은 명령" }));
+    expect(movePhrase).toHaveValue("가자");
     fireEvent.change(movePhrase, { target: { value: "출발해" } });
     expect(movePhrase).toHaveValue("출발해");
   });

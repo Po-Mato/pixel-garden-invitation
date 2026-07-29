@@ -44,6 +44,7 @@ import {
   loadGameMemoryKeepsakeOptions,
   loadGameMemoryKeepsakeTemplates,
   gameMemoryKeepsakePrintGuide,
+  gameMemoryKeepsakePrintVendorProfiles,
   orderGameMemoryKeepsakePhotos,
   saveGameMemoryKeepsake,
   saveGameMemoryKeepsakePdf,
@@ -58,7 +59,8 @@ import {
   type GameMemoryStickerTransform,
   type GameMemoryTextSticker,
   type GameMemoryKeepsakeData,
-  type GameMemoryKeepsakePrintFormat
+  type GameMemoryKeepsakePrintFormat,
+  type GameMemoryKeepsakePrintVendor
 } from "../game/gameMemoryKeepsake";
 import { celebrationRewardLabel } from "../game/celebrationReward";
 
@@ -109,6 +111,9 @@ export function GameMemoryAlbum({
   const [textStickerSelected, setTextStickerSelected] = useState(false);
   const [templateStatus, setTemplateStatus] = useState("");
   const [printPreviewFormat, setPrintPreviewFormat] = useState<GameMemoryKeepsakePrintFormat>("a4");
+  const [printVendor, setPrintVendor] = useState<GameMemoryKeepsakePrintVendor>("standard-lab");
+  const [postcardDuplex, setPostcardDuplex] = useState(true);
+  const [printPreviewSide, setPrintPreviewSide] = useState<"front" | "back">("front");
   const photoDragRef = useRef<{
     photoId: NonNullable<typeof activePhotoId>;
     startX: number;
@@ -135,7 +140,10 @@ export function GameMemoryAlbum({
     () => orderGameMemoryKeepsakePhotos(photoAlbum, keepsakeOptions.photoOrder),
     [keepsakeOptions.photoOrder, photoAlbum]
   );
-  const printGuide = useMemo(() => gameMemoryKeepsakePrintGuide(printPreviewFormat), [printPreviewFormat]);
+  const printGuide = useMemo(
+    () => gameMemoryKeepsakePrintGuide(printPreviewFormat, printVendor),
+    [printPreviewFormat, printVendor]
+  );
   const keepsakeData = useMemo<GameMemoryKeepsakeData>(() => ({
     album,
     photoAlbum,
@@ -351,11 +359,12 @@ export function GameMemoryAlbum({
     setKeepsakeStatus("printing");
     try {
       if (output === "pdf") {
-        const blob = await createGameMemoryKeepsakePdf(keepsakeData, format);
-        saveGameMemoryKeepsakePdf(blob, nickname, format);
+        const duplex = format === "postcard" && postcardDuplex;
+        const blob = await createGameMemoryKeepsakePdf(keepsakeData, format, { vendor: printVendor, duplex });
+        saveGameMemoryKeepsakePdf(blob, nickname, format, undefined, duplex);
         setKeepsakeStatus(format === "a4" ? "printed-pdf-a4" : "printed-pdf-postcard");
       } else {
-        const blob = await createGameMemoryKeepsakePrint(keepsakeData, format);
+        const blob = await createGameMemoryKeepsakePrint(keepsakeData, format, printVendor);
         saveGameMemoryKeepsakePrint(blob, nickname, format);
         setKeepsakeStatus(format === "a4" ? "printed-a4" : "printed-postcard");
       }
@@ -371,7 +380,7 @@ export function GameMemoryAlbum({
           : keepsakeStatus === "printed-a4" ? "A4 인쇄용 PNG를 저장했어요."
             : keepsakeStatus === "printed-postcard" ? "4×6 엽서 인쇄용 PNG를 저장했어요."
               : keepsakeStatus === "printed-pdf-a4" ? "A4 인쇄용 PDF를 저장했어요."
-                : keepsakeStatus === "printed-pdf-postcard" ? "4×6 엽서 인쇄용 PDF를 저장했어요."
+                : keepsakeStatus === "printed-pdf-postcard" ? `4×6 엽서 ${postcardDuplex ? "양면 " : ""}인쇄용 PDF를 저장했어요.`
         : keepsakeStatus === "shared" ? "공유 앱으로 추억을 보냈어요."
           : keepsakeStatus === "fallback" ? "공유를 지원하지 않아 이미지로 저장했어요."
             : keepsakeStatus === "canceled" ? "공유를 취소했어요."
@@ -789,25 +798,54 @@ export function GameMemoryAlbum({
           <button type="button" disabled={!hasMemories || busy} onClick={() => void buildKeepsake("share")}><Send aria-hidden="true" />공유</button>
         </div>
         <div className="game-memory-album__print-format" role="group" aria-label="인쇄 미리보기 크기">
-          <button type="button" aria-pressed={printPreviewFormat === "a4"} onClick={() => setPrintPreviewFormat("a4")}>A4</button>
+          <button type="button" aria-pressed={printPreviewFormat === "a4"} onClick={() => { setPrintPreviewFormat("a4"); setPrintPreviewSide("front"); }}>A4</button>
           <button type="button" aria-pressed={printPreviewFormat === "postcard"} onClick={() => setPrintPreviewFormat("postcard")}>4×6</button>
         </div>
-        <div className="game-memory-album__print-preview" data-format={printPreviewFormat} aria-label={`${printPreviewFormat === "a4" ? "A4" : "4×6 엽서"} 재단 미리보기`}>
-          <div
-            className="game-memory-album__print-preview-art"
-            style={{
+        <div className="game-memory-album__print-vendors" role="group" aria-label="인화 업체 규격">
+          {(Object.entries(gameMemoryKeepsakePrintVendorProfiles) as Array<[GameMemoryKeepsakePrintVendor, (typeof gameMemoryKeepsakePrintVendorProfiles)[GameMemoryKeepsakePrintVendor]]>).map(([vendor, profile]) => (
+            <button key={vendor} type="button" aria-pressed={printVendor === vendor} title={profile.note} onClick={() => setPrintVendor(vendor)}>
+              <strong>{profile.label}</strong><small>{profile.note}</small>
+            </button>
+          ))}
+        </div>
+        {printPreviewFormat === "postcard" ? (
+          <div className="game-memory-album__print-sides">
+            <div role="group" aria-label="엽서 미리보기 면">
+              <button type="button" aria-pressed={printPreviewSide === "front"} onClick={() => setPrintPreviewSide("front")}>앞면</button>
+              <button type="button" aria-pressed={printPreviewSide === "back"} onClick={() => setPrintPreviewSide("back")}>뒷면</button>
+            </div>
+            <label><input type="checkbox" checked={postcardDuplex} onChange={(event) => setPostcardDuplex(event.target.checked)} />양면 PDF</label>
+          </div>
+        ) : null}
+        <div className="game-memory-album__print-preview" data-format={printPreviewFormat} data-side={printPreviewSide} aria-label={`${printPreviewFormat === "a4" ? "A4" : "4×6 엽서"} ${printPreviewSide === "back" ? "뒷면 " : ""}재단 미리보기`}>
+          {printPreviewSide === "back" && printPreviewFormat === "postcard" ? (
+            <div className="game-memory-album__postcard-back" style={{
               left: `${printGuide.trim.x * 100}%`,
               top: `${printGuide.trim.y * 100}%`,
               width: `${printGuide.trim.width * 100}%`,
               height: `${printGuide.trim.height * 100}%`
-            }}
-          >
-            <strong>{formatCoupleNames(event, coupleOrder)}</strong>
-            <div>{orderedPhotos.slice(0, 3).map((photo) => (
-              <img key={photo.photoSpotId} src={photo.dataUrl} alt="" />
-            ))}</div>
-            <span>{keepsakeOptions.message}</span>
-          </div>
+            }}>
+              <span><strong>{formatCoupleNames(event, coupleOrder)}</strong><small>{keepsakeOptions.message}</small></span>
+              <i />
+              <span className="game-memory-album__postcard-address"><b>STAMP</b><em /><em /><em /><em /></span>
+            </div>
+          ) : (
+            <div
+              className="game-memory-album__print-preview-art"
+              style={{
+                left: `${printGuide.trim.x * 100}%`,
+                top: `${printGuide.trim.y * 100}%`,
+                width: `${printGuide.trim.width * 100}%`,
+                height: `${printGuide.trim.height * 100}%`
+              }}
+            >
+              <strong>{formatCoupleNames(event, coupleOrder)}</strong>
+              <div>{orderedPhotos.slice(0, 3).map((photo) => (
+                <img key={photo.photoSpotId} src={photo.dataUrl} alt="" />
+              ))}</div>
+              <span>{keepsakeOptions.message}</span>
+            </div>
+          )}
           <span
             className="game-memory-album__print-trim"
             style={{
@@ -841,7 +879,7 @@ export function GameMemoryAlbum({
             <Download aria-hidden="true" />엽서 PNG
           </button>
         </div>
-        <small className="game-memory-album__print-note">300dpi · PDF/PNG · 재단 표시 포함</small>
+        <small className="game-memory-album__print-note">300dpi · {gameMemoryKeepsakePrintVendorProfiles[printVendor].label} 규격 · 재단/안전영역 포함</small>
         <p aria-live="polite">{keepsakeStatusLabel}</p>
       </section>
 

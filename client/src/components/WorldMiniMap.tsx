@@ -23,9 +23,14 @@ import {
 } from "../accessibility/destinationVoiceSelection";
 import {
   defaultDestinationVoicePreferences,
+  destinationVoicePreferencesForProfile,
   loadDestinationVoicePreferences,
   saveDestinationVoicePreferences
 } from "../accessibility/destinationVoicePreferences";
+import {
+  measureDestinationVoiceNoise,
+  type DestinationVoiceNoiseAssessment
+} from "../accessibility/destinationVoiceNoiseCheck";
 import "../mini-map-expanded.css";
 
 export type MiniMapRouteKind = "preview" | "journey" | "selected";
@@ -330,6 +335,8 @@ export function WorldMiniMap({
   const [voiceTranscript, setVoiceTranscript] = useState("");
   const [voicePreferences, setVoicePreferences] = useState(loadDestinationVoicePreferences);
   const [voiceSettingsOpen, setVoiceSettingsOpen] = useState(false);
+  const [noiseStatus, setNoiseStatus] = useState<"idle" | "checking" | "error">("idle");
+  const [noiseAssessment, setNoiseAssessment] = useState<DestinationVoiceNoiseAssessment | null>(null);
   const pendingVoiceMoveRef = useRef<number | null>(null);
   const selectedLandmark = accessibilityLandmarks[Math.min(selectedLandmarkIndex, Math.max(0, accessibilityLandmarks.length - 1))] ?? null;
 
@@ -399,6 +406,18 @@ export function WorldMiniMap({
       setSelectedLandmarkIndex(command.index);
       setVoiceStatus("selected");
       playDestinationVoiceCue("selected");
+    });
+  };
+
+  const checkMicrophoneNoise = () => {
+    if (noiseStatus === "checking") return;
+    setNoiseStatus("checking");
+    setNoiseAssessment(null);
+    void measureDestinationVoiceNoise().then((assessment) => {
+      setNoiseAssessment(assessment);
+      setNoiseStatus("idle");
+    }).catch(() => {
+      setNoiseStatus("error");
     });
   };
 
@@ -787,7 +806,23 @@ export function WorldMiniMap({
                 </p>
                 {voiceSettingsOpen ? (
                   <fieldset className="world-minimap-expanded__voice-settings">
-                    <legend>음성 호출어</legend>
+                    <legend>내 음성 명령</legend>
+                    <div className="world-minimap-expanded__voice-profiles" role="group" aria-label="음성 명령 프로필">
+                      {([[
+                        "standard", "기본"
+                      ], [
+                        "short", "짧은 명령"
+                      ], [
+                        "custom", "내 설정"
+                      ]] as const).map(([profileId, label]) => (
+                        <button
+                          key={profileId}
+                          type="button"
+                          aria-pressed={voicePreferences.profileId === profileId}
+                          onClick={() => setVoicePreferences((current) => destinationVoicePreferencesForProfile(profileId, current))}
+                        >{label}</button>
+                      ))}
+                    </div>
                     {([
                       ["movePhrase", "이동"],
                       ["nextPhrase", "다음"],
@@ -801,6 +836,7 @@ export function WorldMiniMap({
                           maxLength={12}
                           onChange={(event) => setVoicePreferences((current) => ({
                             ...current,
+                            profileId: "custom",
                             [key]: event.target.value
                           }))}
                         />
@@ -809,6 +845,15 @@ export function WorldMiniMap({
                     <button type="button" onClick={() => setVoicePreferences(defaultDestinationVoicePreferences)}>
                       <RotateCcw aria-hidden="true" />기본값
                     </button>
+                    <button type="button" disabled={noiseStatus === "checking"} onClick={checkMicrophoneNoise}>
+                      <Mic aria-hidden="true" />{noiseStatus === "checking" ? "주변 소음 측정 중" : "주변 소음 점검"}
+                    </button>
+                    <p className="world-minimap-expanded__noise-result" data-level={noiseAssessment?.level} role="status">
+                      {noiseAssessment
+                        ? <><strong>{noiseAssessment.label}</strong><span>{noiseAssessment.tip}</span></>
+                        : noiseStatus === "error" ? "마이크를 사용할 수 없어요. 브라우저 권한을 확인해 주세요."
+                          : "약 1초간 주변 소음을 확인해 알맞은 명령 방식을 추천합니다."}
+                    </p>
                   </fieldset>
                 ) : null}
               </section>

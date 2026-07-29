@@ -1,5 +1,6 @@
 import {
   clampNumber,
+  companionRendezvousProposalLifetimeMs,
   parseCharacterAppearance,
   parseClientMessage,
   realtimeWorldContract,
@@ -338,7 +339,8 @@ export class GardenRoom {
           proposalId: parsed.proposalId,
           zoneId: parsed.zoneId,
           x: point.x,
-          y: point.y
+          y: point.y,
+          expiresAt: now + companionRendezvousProposalLifetimeMs
         }));
         return;
       }

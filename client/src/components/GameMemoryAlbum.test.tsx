@@ -29,11 +29,15 @@ describe("GameMemoryAlbum", () => {
     expect(screen.getByRole("button", { name: "저장" })).toBeEnabled();
     expect(screen.getByRole("button", { name: "A4 PDF" })).toBeEnabled();
     expect(screen.getByRole("button", { name: "엽서 PDF" })).toBeEnabled();
+    expect(screen.getByRole("group", { name: "인화 업체 규격" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "A4 PNG" })).toBeEnabled();
     expect(screen.getByLabelText("A4 재단 미리보기")).toBeInTheDocument();
-    expect(screen.getByText("300dpi · PDF/PNG · 재단 표시 포함")).toBeInTheDocument();
+    expect(screen.getByText(/300dpi · 일반 사진관 규격 · 재단\/안전영역 포함/)).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "4×6" }));
     expect(screen.getByLabelText("4×6 엽서 재단 미리보기")).toBeInTheDocument();
+    expect(screen.getByRole("checkbox", { name: "양면 PDF" })).toBeChecked();
+    fireEvent.click(screen.getByRole("button", { name: "뒷면" }));
+    expect(screen.getByLabelText("4×6 엽서 뒷면 재단 미리보기")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "우표" }));
     fireEvent.click(screen.getByRole("button", { name: "별빛 스티커" }));
     fireEvent.click(screen.getByRole("button", { name: "비둘기 스티커" }));

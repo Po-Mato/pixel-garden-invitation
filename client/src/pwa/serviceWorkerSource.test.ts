@@ -60,8 +60,10 @@ describe("PWA service worker source", () => {
     expect(source).toContain('event.data?.type !== "CACHE_URLS"');
     expect(source).toContain('event.data?.type === "CACHE_GAME_FEATURES"');
     expect(source).toContain('event.data?.type === "CACHE_ZONE_ASSETS"');
+    expect(source).toContain('event.data?.type === "PAUSE_ZONE_ASSETS"');
     expect(source).toContain('event.data?.type === "REMOVE_ZONE_ASSETS"');
     expect(source).toContain('event.data?.type === "CACHE_ZONE_GROUPS"');
+    expect(source).toContain('event.data?.type === "PAUSE_ZONE_GROUPS"');
     expect(source).toContain('event.data?.type === "REMOVE_ZONE_GROUPS"');
     expect(source).toContain('"outdated"');
     expect(source).toContain("__offline-zone-version__");

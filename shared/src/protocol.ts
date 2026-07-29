@@ -5,6 +5,7 @@ export const guestReactionIds = ["wave", "heart", "applause", "celebrate"] as co
 export type GuestReaction = (typeof guestReactionIds)[number];
 export const companionPingIds = ["wait", "here", "cheer"] as const;
 export type CompanionPing = (typeof companionPingIds)[number];
+export const companionRendezvousProposalLifetimeMs = 30_000;
 export const worldZoneIds = [
   "home",
   "neighborhood",
@@ -67,7 +68,7 @@ export type ServerMessage =
   | { type: "companion_destination_requested"; guestId: string; guestNickname: string; zoneId: WorldZoneId }
   | { type: "companion_portal_ready"; guestId: string; portalId: string; destinationZoneId: WorldZoneId }
   | { type: "companion_pinged"; guestId: string; guestNickname: string; ping: CompanionPing; zoneId: WorldZoneId }
-  | { type: "companion_rendezvous_proposed"; guestId: string; guestNickname: string; proposalId: string; zoneId: WorldZoneId; x: number; y: number }
+  | { type: "companion_rendezvous_proposed"; guestId: string; guestNickname: string; proposalId: string; zoneId: WorldZoneId; x: number; y: number; expiresAt: number }
   | { type: "companion_rendezvous_replied"; guestId: string; guestNickname: string; proposalId: string; accepted: boolean; zoneId: WorldZoneId }
   | { type: "companion_rendezvous_canceled"; guestId: string; proposalId: string }
   | { type: "guest_left"; guestId: string }

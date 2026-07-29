@@ -1,5 +1,5 @@
 export type PwaCacheState = "idle" | "preparing" | "ready" | "error";
-export type PwaZoneCacheState = PwaCacheState | "outdated";
+export type PwaZoneCacheState = PwaCacheState | "outdated" | "paused";
 
 export type PwaZoneCacheSnapshot = {
   state: PwaZoneCacheState;
@@ -114,6 +114,8 @@ export function reducePwaWorkerMessage(
     };
     const state = message.type === "PWA_ZONE_CACHE_PROGRESS"
       ? "preparing"
+      : message.type === "PWA_ZONE_CACHE_PAUSED"
+        ? "paused"
       : message.type === "PWA_ZONE_CACHE_READY"
         ? "ready"
         : message.type === "PWA_ZONE_CACHE_ERROR"
@@ -317,6 +319,15 @@ export function removeOfflineZoneAssets(zoneId: string, urls: readonly string[])
   postPwaMessage({ type: "REMOVE_ZONE_ASSETS", zoneId, urls: [...new Set(urls)] });
 }
 
+export function pauseOfflineZoneAssets(zoneId: string): void {
+  const current = snapshot.zoneCaches[zoneId];
+  if (!current || current.state !== "preparing") return;
+  updateSnapshot({
+    zoneCaches: { ...snapshot.zoneCaches, [zoneId]: { ...current, state: "paused" } }
+  });
+  postPwaMessage({ type: "PAUSE_ZONE_ASSETS", zoneId });
+}
+
 export function inspectOfflineZoneAssets(groups: Record<string, readonly string[]>): void {
   postPwaMessage({ type: "REPORT_ZONE_ASSETS", groups });
 }
@@ -336,6 +347,16 @@ export function prepareOfflineJourneyAssets(groups: Record<string, readonly stri
   });
   updateSnapshot({ zoneCaches: nextZoneCaches });
   postPwaMessage({ type: "CACHE_ZONE_GROUPS", groups });
+}
+
+export function pauseOfflineJourneyAssets(groups: Record<string, readonly string[]>): void {
+  const nextZoneCaches = { ...snapshot.zoneCaches };
+  Object.keys(groups).forEach((zoneId) => {
+    const current = nextZoneCaches[zoneId];
+    if (current?.state === "preparing") nextZoneCaches[zoneId] = { ...current, state: "paused" };
+  });
+  updateSnapshot({ zoneCaches: nextZoneCaches });
+  postPwaMessage({ type: "PAUSE_ZONE_GROUPS", groups });
 }
 
 export function removeOfflineJourneyAssets(groups: Record<string, readonly string[]>): void {

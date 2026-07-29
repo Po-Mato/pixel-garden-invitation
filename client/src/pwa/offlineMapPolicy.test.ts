@@ -3,6 +3,7 @@ import {
   expiredOfflineZoneIds,
   estimatedOfflineAssetGroupBytes,
   loadOfflineMapPreferences,
+  offlineDownloadWithinDataLimit,
   saveOfflineMapPreferences,
   scheduledOfflineZoneDeletionAt,
   shouldAutoRefreshOfflineMaps
@@ -17,14 +18,14 @@ describe("offline map policy", () => {
       lobby: { state: "outdated" as const, completed: 1, total: 1, bytes: 10, cachedAt: old },
       banquet: { state: "ready" as const, completed: 1, total: 1, bytes: 10, cachedAt: now }
     };
-    expect(expiredOfflineZoneIds(caches, "home", { retention: "30-days", wifiAutoRefresh: true }, now))
+    expect(expiredOfflineZoneIds(caches, "home", { retention: "30-days", wifiAutoRefresh: true, dataLimitMb: 50 }, now))
       .toEqual(["lobby"]);
-    expect(expiredOfflineZoneIds(caches, "home", { retention: "manual", wifiAutoRefresh: true }, now))
+    expect(expiredOfflineZoneIds(caches, "home", { retention: "manual", wifiAutoRefresh: true, dataLimitMb: 50 }, now))
       .toEqual([]);
   });
 
   it("auto refreshes only on explicit Wi-Fi without data saver", () => {
-    const preferences = { retention: "30-days" as const, wifiAutoRefresh: true };
+    const preferences = { retention: "30-days" as const, wifiAutoRefresh: true, dataLimitMb: 50 as const };
     expect(shouldAutoRefreshOfflineMaps(preferences, true, { type: "wifi" })).toBe(true);
     expect(shouldAutoRefreshOfflineMaps(preferences, true, { type: "cellular", effectiveType: "4g" })).toBe(false);
     expect(shouldAutoRefreshOfflineMaps(preferences, true, { type: "wifi", saveData: true })).toBe(false);
@@ -42,13 +43,13 @@ describe("offline map policy", () => {
       cache,
       "lobby",
       "home",
-      { retention: "7-days", wifiAutoRefresh: true }
+      { retention: "7-days", wifiAutoRefresh: true, dataLimitMb: 50 }
     )).toBe(cachedAt + 7 * 24 * 60 * 60 * 1_000);
     expect(scheduledOfflineZoneDeletionAt(
       cache,
       "home",
       "home",
-      { retention: "7-days", wifiAutoRefresh: true }
+      { retention: "7-days", wifiAutoRefresh: true, dataLimitMb: 50 }
     )).toBeNull();
   });
 
@@ -58,7 +59,14 @@ describe("offline map policy", () => {
       getItem: vi.fn((key: string) => values.get(key) ?? null),
       setItem: vi.fn((key: string, value: string) => values.set(key, value))
     };
-    expect(saveOfflineMapPreferences({ retention: "7-days", wifiAutoRefresh: false }, storage)).toBe(true);
-    expect(loadOfflineMapPreferences(storage)).toEqual({ retention: "7-days", wifiAutoRefresh: false });
+    expect(saveOfflineMapPreferences({ retention: "7-days", wifiAutoRefresh: false, dataLimitMb: 20 }, storage)).toBe(true);
+    expect(loadOfflineMapPreferences(storage)).toEqual({ retention: "7-days", wifiAutoRefresh: false, dataLimitMb: 20 });
+  });
+
+  it("enforces the selected download data budget", () => {
+    const preferences = { retention: "30-days" as const, wifiAutoRefresh: true, dataLimitMb: 20 as const };
+    expect(offlineDownloadWithinDataLimit(19 * 1024 * 1024, preferences)).toBe(true);
+    expect(offlineDownloadWithinDataLimit(21 * 1024 * 1024, preferences)).toBe(false);
+    expect(offlineDownloadWithinDataLimit(200 * 1024 * 1024, { ...preferences, dataLimitMb: 0 })).toBe(true);
   });
 });

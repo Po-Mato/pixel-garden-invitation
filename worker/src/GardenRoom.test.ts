@@ -404,7 +404,8 @@ describe("GardenRoom companion invitations", () => {
       proposalId: "meet-123",
       zoneId: "home",
       x: 160,
-      y: 224
+      y: 224,
+      expiresAt: 34_600
     });
 
     vi.mocked(Date.now).mockReturnValue(5_200);

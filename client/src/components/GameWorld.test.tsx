@@ -235,6 +235,17 @@ function travelFromHomeToLobby() {
   }
 }
 
+function openJourneyTools() {
+  const toggle = screen.getByRole("button", { name: /여정 도구 (열기|닫기)/ });
+  if (toggle.getAttribute("aria-expanded") !== "true") fireEvent.click(toggle);
+}
+
+function openCompanionDock() {
+  const dock = screen.getByLabelText("같이 걷기");
+  const toggle = within(dock).getByRole("button", { name: /같이 걷기 (열기|닫기)$/ });
+  if (toggle.getAttribute("aria-expanded") !== "true") fireEvent.click(toggle);
+}
+
 function openDirectionsFromMenu() {
   fireEvent.click(screen.getByRole("button", { name: "초대장 메뉴" }));
   fireEvent.click(within(screen.getByRole("dialog", { name: "초대장 바로가기" }))
@@ -290,6 +301,8 @@ describe("GameWorld", () => {
 
   it("starts at home and jumps directly to a selected journey zone", () => {
     render(<GameWorld profile={profile} />);
+    expect(screen.queryByLabelText("하객 여정")).not.toBeInTheDocument();
+    openJourneyTools();
     const journey = screen.getByLabelText("하객 여정");
 
     expect(screen.getByLabelText("우리 집 지도")).toHaveAttribute("data-zone", "home");
@@ -437,6 +450,7 @@ describe("GameWorld", () => {
   it("offers a text route with the remaining journey and starts guidance from it", async () => {
     render(<GameWorld profile={profile} />);
 
+    openJourneyTools();
     fireEvent.click(screen.getByRole("button", { name: /쉬운 길찾기 열기/ }));
     await revealLazyGameFeature();
 
@@ -503,6 +517,7 @@ describe("GameWorld", () => {
 
   it("walks to a photo spot before opening the camera experience", async () => {
     render(<GameWorld profile={profile} />);
+    openJourneyTools();
     fireEvent.click(screen.getByRole("button", { name: "예식장 로비 바로 이동" }));
 
     fireEvent.click(screen.getByRole("button", { name: "로비 포토월 기념 촬영" }));
@@ -664,6 +679,7 @@ describe("GameWorld", () => {
       fireEvent.click(within(screen.getByRole("dialog", { name: "초대장 바로가기" })).getByRole("button", { name: "답변하기" }));
     }],
     ["world spot", () => {
+      openJourneyTools();
       fireEvent.click(screen.getByRole("button", { name: "예식장 로비 바로 이동" }));
       fireEvent.click(screen.getByRole("button", { name: "축의대 답변하기" }));
     }]
@@ -825,6 +841,7 @@ describe("GameWorld", () => {
 
   it("restores a world spot trigger without forcing focus to the menu button", () => {
     render(<GameWorld profile={profile} />);
+    openJourneyTools();
     fireEvent.click(screen.getByRole("button", { name: "예식장 로비 바로 이동" }));
     const worldSpot = screen.getByRole("button", { name: "축의대 답변하기" });
     const menuButton = screen.getByRole("button", { name: "초대장 메뉴" });
@@ -978,6 +995,7 @@ describe("GameWorld", () => {
 
   it("opens the directions sheet from the world directions spot", () => {
     render(<GameWorld profile={profile} />);
+    openJourneyTools();
     fireEvent.click(getDirectionsWorldSpot());
     expect(screen.queryByRole("dialog", { name: "오시는 길" })).not.toBeInTheDocument();
     expect(screen.getByText("오시는 길 가까이 이동 중")).toBeInTheDocument();
@@ -1012,6 +1030,7 @@ describe("GameWorld", () => {
     vi.setSystemTime(new Date("2027-05-01T17:00:00+09:00"));
     render(<GameWorld profile={profile} />);
 
+    openJourneyTools();
     expect(screen.getByText("예식까지 10분")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: /예식홀 최단 안내/ }));
 
@@ -1026,6 +1045,7 @@ describe("GameWorld", () => {
     }));
 
     render(<GameWorld profile={profile} />);
+    openJourneyTools();
     fireEvent.click(screen.getByRole("button", { name: "방문 스탬프 2/5, 열기" }));
 
     expect(screen.getByRole("button", { name: "오시는 길 완료" })).toBeInTheDocument();
@@ -1042,6 +1062,7 @@ describe("GameWorld", () => {
     }));
     render(<GameWorld profile={profile} />);
 
+    openJourneyTools();
     fireEvent.click(screen.getByRole("button", { name: "방문 스탬프 1/5, 열기" }));
     const stampPanel = document.getElementById("journey-stamp-panel");
     expect(stampPanel).not.toBeNull();
@@ -1059,6 +1080,7 @@ describe("GameWorld", () => {
     }));
     render(<GameWorld profile={profile} />);
 
+    openJourneyTools();
     fireEvent.click(screen.getByRole("button", { name: "방문 스탬프 5/5, 열기" }));
     fireEvent.click(screen.getByRole("button", { name: /기념 카드 다시 보기/ }));
 
@@ -1073,6 +1095,7 @@ describe("GameWorld", () => {
     }));
     render(<GameWorld profile={profile} />);
 
+    openJourneyTools();
     fireEvent.click(screen.getByRole("button", { name: "예식홀 바로 이동" }));
 
     expect(screen.getByRole("dialog", { name: "방문 여정 완주" })).toBeInTheDocument();
@@ -1093,6 +1116,7 @@ describe("GameWorld", () => {
     }));
     render(<GameWorld profile={profile} />);
 
+    openJourneyTools();
     fireEvent.click(screen.getByRole("button", { name: "예식홀 바로 이동" }));
     fireEvent.click(within(screen.getByRole("dialog", { name: "방문 여정 완주" }))
       .getByRole("button", { name: "초대장 공유" }));
@@ -1119,6 +1143,7 @@ describe("GameWorld", () => {
 
   it("replaces a guided interaction when another world spot is selected", () => {
     render(<GameWorld profile={profile} />);
+    openJourneyTools();
     fireEvent.click(screen.getByRole("button", { name: "예식장 로비 바로 이동" }));
     const rsvpSpot = screen.getByRole("button", { name: "축의대 답변하기" });
     const gallerySpot = screen.getByRole("button", { name: "웨딩 갤러리 사진 보기" });
@@ -2364,6 +2389,7 @@ describe("GameWorld", () => {
       guests: [serverGuest()]
     }));
 
+    openCompanionDock();
     fireEvent.click(within(screen.getByLabelText("같이 걷기"))
       .getByRole("button", { name: "하객2" }));
 
@@ -2405,6 +2431,7 @@ describe("GameWorld", () => {
 
     expect(screen.getByRole("dialog", { name: "동행 초대" })).toHaveTextContent("하객2님의 같이 걷기 초대");
     fireEvent.click(screen.getByRole("button", { name: "수락" }));
+    openCompanionDock();
 
     expect(socket.sentMessages.map((message) => JSON.parse(message))).toContainEqual({
       type: "companion_reply",
@@ -2433,6 +2460,7 @@ describe("GameWorld", () => {
     }));
     fireEvent.click(screen.getByRole("button", { name: "수락" }));
 
+    openCompanionDock();
     fireEvent.click(screen.getByRole("button", { name: "동행 공동 목적지 선택" }));
     await revealLazyGameFeature();
     const destinationSheet = screen.getByRole("dialog", { name: "동행 공동 목적지 선택" });
@@ -2525,6 +2553,7 @@ describe("GameWorld", () => {
       guestId: "guest_self",
       guests: [serverGuest({ zoneId: "ceremony-hall" })]
     }));
+    openJourneyTools();
     fireEvent.click(screen.getByRole("button", { name: "예식홀 바로 이동" }));
     fireEvent.click(screen.getByRole("button", { name: "하객 리액션 열기" }));
     fireEvent.click(screen.getByRole("button", { name: "축하 보내기" }));
@@ -2746,7 +2775,7 @@ describe("GameWorld", () => {
     act(() => socket.emit("open"));
     act(() => socket.emitJson({ type: "error", code: "room_full" }));
 
-    expect(screen.getByText("실시간 만석 · 솔로 모드")).toBeInTheDocument();
+    expect(screen.getByLabelText("실시간 만석 · 솔로 모드")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "동네로 나가기" }));
     finishCurrentRoute();
     expect(screen.getByLabelText("동네 거리 지도")).toBeInTheDocument();

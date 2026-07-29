@@ -5,11 +5,78 @@
 }
 
 .world-hud {
-  gap: 7px;
+  gap: 5px;
   border-bottom: 1px solid rgba(94, 75, 81, 0.32);
   background: rgba(255, 253, 249, 0.96);
   box-shadow: 0 6px 20px rgba(64, 49, 54, 0.11);
 }
+
+.world-hud__tools-toggle {
+  display: grid;
+  min-width: 74px;
+  min-height: 34px;
+  grid-template-columns: 16px auto 7px 13px;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 7px;
+  color: #55464b;
+  background: #fff;
+  border: 1px solid rgba(93, 73, 80, 0.3);
+  border-radius: 4px;
+  box-shadow: 0 4px 12px rgba(77, 58, 64, 0.08);
+  font-size: 10px;
+  font-weight: 900;
+}
+
+.world-hud__tools-toggle > svg { width: 15px; }
+.world-hud__tools-toggle > svg:last-child { width: 13px; transition: transform 160ms ease; }
+.world-hud[data-tools-open] .world-hud__tools-toggle > svg:last-child { transform: rotate(180deg); }
+.world-hud__tools-toggle .realtime-pill { width: 7px; min-width: 7px; height: 7px; padding: 0; border: 0; border-radius: 50%; background: #b28c52; box-shadow: none; }
+.world-hud__tools-toggle .realtime-pill--online { background: #5a9569; }
+.world-hud__tools-toggle .realtime-pill--reconnecting { background: #c58a4d; }
+.world-hud__tools-toggle .realtime-pill--full { background: #a45663; }
+
+.world-hud__tools {
+  display: grid;
+  max-height: 0;
+  gap: 6px;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transition: max-height 220ms ease, opacity 150ms ease;
+}
+
+.world-hud[data-tools-open] .world-hud__tools {
+  max-height: min(56dvh, 520px);
+  overflow-y: auto;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.world-hud:not([data-tools-open]) .world-zone-summary small { display: none; }
+.world-hud:not([data-tools-open]) .world-zone-summary { grid-template-areas: "step title"; }
+.world-hud:not([data-tools-open]) .world-destination-guide em { display: none; }
+.world-hud:not([data-tools-open]) .world-destination-guide { min-height: 36px; padding-block: 5px; }
+.world-travel-status-row {
+  position: absolute;
+  top: calc(100% + 7px);
+  left: 50%;
+  z-index: 14000;
+  width: max-content;
+  max-width: calc(100vw - 28px);
+  min-height: 28px;
+  padding: 6px 9px;
+  transform: translateX(-50%);
+  color: #5b494f;
+  background: rgba(255, 253, 249, 0.94);
+  border: 1px solid rgba(93, 73, 80, 0.24);
+  border-radius: 4px;
+  box-shadow: 0 6px 18px rgba(56, 42, 47, 0.14);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 140ms ease, transform 140ms ease;
+}
+.world-travel-status-row[data-visible] { transform: translate(-50%, 2px); opacity: 1; pointer-events: auto; }
 
 .world-zone-summary span,
 .world-zone-summary small,
