@@ -22,6 +22,37 @@ export const defaultOfflineMapPreferences: OfflineMapPreferences = {
   wifiAutoRefresh: true
 };
 
+const offlineMapEstimatedBackgroundBytes = 320 * 1024;
+const offlineMapEstimatedDecorationBytes = 48 * 1024;
+
+export function estimatedOfflineAssetBytes(url: string) {
+  const path = url.split(/[?#]/, 1)[0]?.toLowerCase() ?? "";
+  if (path.endsWith("/background.webp")) return offlineMapEstimatedBackgroundBytes;
+  if (path.endsWith(".webp")) return 220 * 1024;
+  if (path.endsWith(".png")) return offlineMapEstimatedDecorationBytes;
+  return 32 * 1024;
+}
+
+export function estimatedOfflineAssetGroupBytes(urls: readonly string[]) {
+  return [...new Set(urls)].reduce((sum, url) => sum + estimatedOfflineAssetBytes(url), 0);
+}
+
+export function scheduledOfflineZoneDeletionAt(
+  cache: Pick<PwaZoneCacheSnapshot, "state" | "cachedAt">,
+  zoneId: string,
+  currentZoneId: string | undefined,
+  preferences: OfflineMapPreferences
+): number | null {
+  if (
+    zoneId === currentZoneId
+    || preferences.retention === "manual"
+    || (cache.state !== "ready" && cache.state !== "outdated")
+    || cache.cachedAt <= 0
+  ) return null;
+  const retentionDays = preferences.retention === "7-days" ? 7 : 30;
+  return cache.cachedAt + retentionDays * 24 * 60 * 60 * 1_000;
+}
+
 function browserStorage(): PreferencesStorage | null {
   try {
     return typeof window === "undefined" ? null : window.localStorage;

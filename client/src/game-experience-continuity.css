@@ -255,6 +255,24 @@
   font-weight: 900;
 }
 .world-companion-dock > .world-companion-dock__rejoin { background: #8a6171; }
+.world-companion-dock > .world-companion-dock__rendezvous {
+  display: inline-flex;
+  width: 100%;
+  min-height: 30px;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin-top: 5px;
+  padding: 5px 7px;
+  color: #fff;
+  background: #587b69;
+  border: 0;
+  border-radius: 4px;
+  font-size: 9px;
+  font-weight: 900;
+}
+.world-companion-dock__rendezvous-status { display: flex; align-items: center; gap: 4px; margin: 5px 0 0; color: #4c6656; font-size: 8px; font-weight: 900; }
+.world-companion-dock__rendezvous-status svg { width: 12px; flex: 0 0 auto; }
 .world-companion-dock__ping-message { margin: 5px 0 0; padding: 5px 7px; color: #654957; background: #fff3d8; border-left: 3px solid #ae6b7d; font-size: 9px; font-weight: 800; }
 .world-companion-dock > .world-companion-dock__share { display: inline-flex; width: 100%; min-height: 30px; align-items: center; justify-content: center; gap: 4px; margin-top: 5px; padding: 5px 7px; color: #fff; background: #8a6171; border: 0; border-radius: 4px; font-size: 9px; font-weight: 900; }
 .world-companion-dock > .world-companion-dock__share svg { width: 13px; }
@@ -394,6 +412,9 @@
 .world-minimap__collectible-marker[data-kind="ribbon"] circle { stroke: #68826c; }
 .world-minimap__collectible-marker[data-kind="star"] circle { stroke: #9b7c3d; }
 .world-minimap__collectible-marker[data-highlighted="true"] circle { fill: #fff2a6; stroke-width: 2.5; }
+.world-minimap__companion-trail { fill: none; stroke: rgba(64, 118, 91, 0.9); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 3 3; }
+.world-minimap__rendezvous circle { fill: #fff3b5; stroke: #49745d; stroke-width: 2; }
+.world-minimap__rendezvous path { fill: none; stroke: #49745d; stroke-width: 1.6; stroke-linecap: round; }
 .game-world[data-collection-cosmetic="petal-trail"] .world-player::before { position: absolute; z-index: -1; left: 50%; bottom: -2px; content: "✿  ·  ✿"; color: rgba(185, 100, 123, 0.8); font-size: 9px; transform: translateX(-50%) rotate(-5deg); pointer-events: none; }
 .game-world[data-collection-cosmetic="ribbon-tag"] .world-player > span { padding-inline: 5px; border: 2px double #a45f73; }
 .game-world[data-collection-cosmetic="ribbon-tag"] .world-player > span::before { margin-right: 3px; content: "◆"; color: #a45f73; }
@@ -685,6 +706,9 @@
 .game-memory-album__keepsake > .game-memory-album__keepsake-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
 .game-memory-album__keepsake-actions button { display: inline-flex; min-height: 40px; align-items: center; justify-content: center; gap: 5px; padding: 8px; color: #fff; background: #647f69; border: 0; border-radius: 4px; font-size: 10px; font-weight: 900; }
 .game-memory-album__keepsake-actions button:last-child { background: #a45f73; }
+.game-memory-album__keepsake > .game-memory-album__print-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+.game-memory-album__print-actions button { display: inline-flex; min-height: 38px; align-items: center; justify-content: center; gap: 5px; padding: 7px; color: #53675a; background: #fff; border: 1px solid #8fa493; border-radius: 4px; font-size: 9px; font-weight: 900; }
+.game-memory-album__print-note { color: #6e766e; font-size: 8px; text-align: center; }
 .game-memory-album__keepsake button svg { width: 15px; }
 .game-memory-album__keepsake button:disabled { opacity: 0.48; }
 .game-memory-album__keepsake p { margin: 0; color: #6e665f; font-size: 9px; text-align: center; }
@@ -808,7 +832,7 @@ html[data-color-vision] .world-minimap__collectible-marker[data-kind="star"] pat
 .wedding-photo-booth__cosmetic-options small { color: #728073; font-size: 8px; }
 .wedding-photo-booth__cosmetic-options button { min-height: 34px; padding: 6px 8px; color: #657266; background: #fff; border: 1px solid #9fad9d; font-size: 8px; font-weight: 900; }
 .wedding-photo-booth__cosmetic-options button[aria-pressed="true"] { color: #fff; background: #9b6271; border-color: #824c5d; }
-.wedding-photo-booth__cosmetic-effect { --photo-effect-accent: #d87891; --photo-effect-soft: #ffe0e8; position: absolute; z-index: 2; left: 50%; bottom: -2px; width: 116%; height: 104%; pointer-events: none; transform: translateX(-50%); }
+.wedding-photo-booth__cosmetic-effect { --photo-effect-accent: #d87891; --photo-effect-soft: #ffe0e8; position: absolute; z-index: 2; inset: 3% 7% 0; pointer-events: none; }
 .wedding-photo-booth__scene[data-photo-tone="gold"] .wedding-photo-booth__cosmetic-effect { --photo-effect-accent: #d1a249; --photo-effect-soft: #fff0bd; }
 .wedding-photo-booth__scene[data-photo-tone="sage"] .wedding-photo-booth__cosmetic-effect { --photo-effect-accent: #6f9877; --photo-effect-soft: #def2d7; }
 .wedding-photo-booth__scene[data-photo-cosmetic="starlight-aura"] .wedding-photo-booth__cosmetic-effect,
@@ -816,7 +840,7 @@ html[data-color-vision] .world-minimap__collectible-marker[data-kind="star"] pat
 .wedding-photo-booth__scene[data-photo-cosmetic="petal-trail"] .wedding-photo-booth__cosmetic-effect::after,
 .wedding-photo-booth__scene[data-photo-cosmetic="garden-blessing-set"] .wedding-photo-booth__cosmetic-effect::after { position: absolute; left: 50%; bottom: -4px; content: "✿  ✦  ✿"; color: var(--photo-effect-accent); font-size: 17px; white-space: nowrap; transform: translateX(-50%); filter: drop-shadow(0 1px 2px var(--photo-effect-soft)); }
 .wedding-photo-booth__scene[data-photo-cosmetic="ribbon-tag"] .wedding-photo-booth__cosmetic-effect::before,
-.wedding-photo-booth__scene[data-photo-cosmetic="garden-blessing-set"] .wedding-photo-booth__cosmetic-effect::before { position: absolute; right: -2px; top: 16%; content: "♡"; display: grid; width: 28px; height: 22px; place-items: center; color: #fff; background: var(--photo-effect-accent); border-radius: 50% 50% 3px 3px; font-size: 12px; font-weight: 900; }
+.wedding-photo-booth__scene[data-photo-cosmetic="garden-blessing-set"] .wedding-photo-booth__cosmetic-effect::before { position: absolute; right: -8px; top: 41%; content: "♡"; display: grid; width: 28px; height: 22px; place-items: center; color: #fff; background: var(--photo-effect-accent); border-radius: 50% 50% 3px 3px; font-size: 12px; font-weight: 900; }
 
 html[data-game-ui-scale="large"] .game-world :is(.world-journey__button, .world-menu-grid button) {
   min-height: 48px;

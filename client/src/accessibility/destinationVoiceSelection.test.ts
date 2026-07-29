@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { parseDestinationVoiceCommand, parseDestinationVoiceNumber } from "./destinationVoiceSelection";
+import {
+  listenForDestinationVoiceResult,
+  parseDestinationVoiceCommand,
+  parseDestinationVoiceNumber
+} from "./destinationVoiceSelection";
 
 describe("destination voice selection", () => {
   it("understands spoken digits and common Korean number forms", () => {
@@ -14,10 +18,33 @@ describe("destination voice selection", () => {
     expect(parseDestinationVoiceNumber("목적지", 4)).toBeNull();
   });
 
-  it("understands next, move, and close game commands", () => {
+  it("understands next, move, cancel, and close game commands", () => {
     expect(parseDestinationVoiceCommand("다음 목적지", 4)).toEqual({ type: "next" });
     expect(parseDestinationVoiceCommand("여기로 이동", 4)).toEqual({ type: "move" });
     expect(parseDestinationVoiceCommand("미니맵 닫기", 4)).toEqual({ type: "close" });
+    expect(parseDestinationVoiceCommand("이동 취소", 4)).toEqual({ type: "cancel" });
     expect(parseDestinationVoiceCommand("3번", 4)).toEqual({ type: "number", index: 2 });
+  });
+
+  it("returns the heard phrase even when it is not a valid command", async () => {
+    class Recognition {
+      lang = "";
+      continuous = false;
+      interimResults = false;
+      onresult: ((event: { results: Array<{ 0: { transcript: string } }> }) => void) | null = null;
+      onerror: (() => void) | null = null;
+      onend: (() => void) | null = null;
+      start() { this.onresult?.({ results: [{ 0: { transcript: "근처 화장실" } }] }); }
+      stop() { /* no-op */ }
+    }
+    const target = {
+      SpeechRecognition: Recognition,
+      setTimeout: window.setTimeout.bind(window),
+      clearTimeout: window.clearTimeout.bind(window)
+    };
+    await expect(listenForDestinationVoiceResult(4, target as never)).resolves.toEqual({
+      command: null,
+      transcript: "근처 화장실"
+    });
   });
 });

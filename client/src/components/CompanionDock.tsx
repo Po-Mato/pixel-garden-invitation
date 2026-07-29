@@ -1,4 +1,4 @@
-import { Hand, Heart, LocateFixed, MapPinned, QrCode, Route, UserPlus, UsersRound, X } from "lucide-react";
+import { Hand, Heart, LocateFixed, MapPinned, QrCode, Route, Target, UserPlus, UsersRound, X } from "lucide-react";
 import type { CompanionPing, WorldZoneId } from "@wedding-game/shared";
 import type { CompanionCandidate } from "../game/companionMode";
 
@@ -23,6 +23,9 @@ type CompanionDockProps = {
   onRejoin?: () => void;
   onOpenWaitingRoom?: () => void;
   shareStatus?: string | null;
+  rendezvousLabel?: string | null;
+  onReserveRendezvous?: () => void;
+  onCancelRendezvous?: () => void;
 };
 
 export function CompanionDock({
@@ -45,7 +48,10 @@ export function CompanionDock({
   onAcceptDestinationRequest,
   onRejoin,
   onOpenWaitingRoom,
-  shareStatus = null
+  shareStatus = null,
+  rendezvousLabel = null,
+  onReserveRendezvous,
+  onCancelRendezvous
 }: CompanionDockProps) {
   if (candidates.length === 0 && !activeGuestId && !pendingGuestId && !onOpenWaitingRoom) return null;
   const active = candidates.find(({ guestId }) => guestId === activeGuestId) ?? null;
@@ -140,6 +146,24 @@ export function CompanionDock({
         >
           <Route aria-hidden="true" />{rejoinZoneLabel ?? "다른 구역"}로 재합류
         </button>
+      ) : null}
+      {hasActive && onReserveRendezvous && !rejoinZoneId ? (
+        <button
+          type="button"
+          className="world-companion-dock__rendezvous"
+          onClick={(event) => {
+            event.stopPropagation();
+            if (rendezvousLabel && onCancelRendezvous) onCancelRendezvous();
+            else onReserveRendezvous();
+          }}
+        >
+          <Target aria-hidden="true" />{rendezvousLabel ? "합류 예약 취소" : "중간 타일에서 만나기"}
+        </button>
+      ) : null}
+      {rendezvousLabel ? (
+        <p className="world-companion-dock__rendezvous-status" role="status">
+          <MapPinned aria-hidden="true" />{rendezvousLabel}
+        </p>
       ) : null}
       {recentPing ? (
         <p className="world-companion-dock__ping-message" role="status">

@@ -261,7 +261,7 @@ export function WeddingPhotoBooth({
                 }}
               />
               <span className="wedding-photo-booth__guest">
-                <span className="wedding-photo-booth__cosmetic-effect" aria-hidden="true" />
+                <span className="wedding-photo-booth__cosmetic-effect" data-effect-anchor="character" aria-hidden="true" />
                 <CharacterPortrait appearance={appearance} />
               </span>
               {companions.map((companion) => (

@@ -18,8 +18,10 @@ import {
 } from "../pwa/pwaClient";
 import {
   expiredOfflineZoneIds,
+  estimatedOfflineAssetGroupBytes,
   loadOfflineMapPreferences,
   saveOfflineMapPreferences,
+  scheduledOfflineZoneDeletionAt,
   shouldAutoRefreshOfflineMaps,
   type NetworkConnectionSnapshot,
   type OfflineMapPreferences
@@ -33,6 +35,10 @@ function formatBytes(bytes: number) {
   if (bytes <= 0) return "용량 확인 전";
   if (bytes < 1024 * 1024) return `${Math.max(1, Math.round(bytes / 1024))}KB`;
   return `${(bytes / (1024 * 1024)).toFixed(1)}MB`;
+}
+
+function formatDeletionDate(timestamp: number) {
+  return new Intl.DateTimeFormat("ko-KR", { month: "short", day: "numeric" }).format(new Date(timestamp));
 }
 
 export function OfflineMapDownloadCenter({ currentZoneId }: OfflineMapDownloadCenterProps) {
@@ -58,6 +64,11 @@ export function OfflineMapDownloadCenter({ currentZoneId }: OfflineMapDownloadCe
   const journeyPreparing = zoneStates.some((state) => state === "preparing");
   const journeyOutdated = zoneStates.filter((state) => state === "outdated").length;
   const journeySaved = zoneStates.filter((state) => state === "ready" || state === "outdated").length;
+  const estimatedBytesByZone = useMemo(() => Object.fromEntries(Object.entries(groups).map(([zoneId, urls]) => [
+    zoneId,
+    estimatedOfflineAssetGroupBytes(urls)
+  ])), [groups]);
+  const estimatedJourneyBytes = Object.values(estimatedBytesByZone).reduce((sum, bytes) => sum + bytes, 0);
 
   const refreshStorage = () => {
     if (!navigator.storage?.estimate) return;
@@ -197,8 +208,8 @@ export function OfflineMapDownloadCenter({ currentZoneId }: OfflineMapDownloadCe
           <small>{journeyPreparing
             ? `${journeySaved}/${gardenWorld.zones.length}개 구역 저장 중`
             : journeyReady ? "모든 구역을 최신 상태로 저장했어요"
-              : journeyOutdated > 0 ? `${journeyOutdated}개 구역 업데이트 필요`
-                : `${journeySaved}/${gardenWorld.zones.length}개 구역 저장됨`}</small>
+              : journeyOutdated > 0 ? `${journeyOutdated}개 구역 업데이트 필요 · 예상 ${formatBytes(estimatedJourneyBytes)}`
+                : `${journeySaved}/${gardenWorld.zones.length}개 구역 저장됨 · 예상 ${formatBytes(estimatedJourneyBytes)}`}</small>
         </span>
         {journeyReady ? (
           <button
@@ -230,12 +241,23 @@ export function OfflineMapDownloadCenter({ currentZoneId }: OfflineMapDownloadCe
           const outdated = cache.state === "outdated";
           const preparing = cache.state === "preparing";
           const percent = cache.total > 0 ? Math.round((cache.completed / cache.total) * 100) : 0;
+          const estimatedBytes = estimatedBytesByZone[zone.id] ?? 0;
+          const deletionAt = scheduledOfflineZoneDeletionAt(cache, zone.id, currentZoneId, preferences);
+          const retentionLabel = zone.id === currentZoneId
+            ? "현재 지도 보호"
+            : preferences.retention === "manual"
+              ? "직접 삭제"
+              : deletionAt ? `${formatDeletionDate(deletionAt)} 자동 삭제 예정` : null;
           return (
             <article key={zone.id} data-state={cache.state}>
               <MapPinned aria-hidden="true" />
               <span>
                 <strong>{zone.label}{zone.id === currentZoneId ? " · 현재" : ""}</strong>
-                <small>{preparing ? `${percent}% 저장 중` : ready ? formatBytes(cache.bytes) : outdated ? `${formatBytes(cache.bytes)} · 업데이트 필요` : cache.state === "error" ? "저장 실패" : "저장 안 됨"}</small>
+                <small>{preparing ? `${percent}% 저장 중 · 예상 ${formatBytes(estimatedBytes)}`
+                  : ready ? `${formatBytes(cache.bytes)} · ${retentionLabel}`
+                    : outdated ? `${formatBytes(cache.bytes)} · 업데이트 필요 · ${retentionLabel}`
+                      : cache.state === "error" ? `저장 실패 · 예상 ${formatBytes(estimatedBytes)}`
+                        : `저장 안 됨 · 예상 ${formatBytes(estimatedBytes)}`}</small>
               </span>
               {preparing ? <LoaderCircle className="offline-map-download__spinner" aria-label={`${zone.label} 저장 중`} /> : null}
               {ready ? (

@@ -51,6 +51,9 @@ describe("OfflineMapDownloadCenter", () => {
     render(<OfflineMapDownloadCenter currentZoneId="home" />);
     expect(screen.getByText("우리 집 · 현재")).toBeInTheDocument();
     expect(screen.getByText("저장됨 2.0MB")).toBeInTheDocument();
+    expect(screen.getAllByText(/저장 안 됨 · 예상/).length).toBeGreaterThan(0);
+    expect(screen.getByText(/2.0MB · .*자동 삭제 예정/)).toBeInTheDocument();
+    expect(screen.getByText(/개 구역 저장됨 · 예상/)).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "우리 집 오프라인 지도 저장" }));
     expect(mocks.prepare).toHaveBeenCalledWith("home", expect.arrayContaining([

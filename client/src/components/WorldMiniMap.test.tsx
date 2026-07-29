@@ -125,6 +125,29 @@ describe("WorldMiniMap", () => {
     expect(within(minimap as HTMLElement).getByTestId("minimap-journey-marker")).toHaveClass("world-minimap__journey-marker--recommended");
   });
 
+  it("draws the companion trail and reserved rendezvous on both map sizes", () => {
+    const zone = getWorldZone(gardenWorld, "home");
+    const viewport = { width: 390, height: 520 };
+    render(
+      <WorldMiniMap
+        zone={zone}
+        player={zone.spawn}
+        direction="right"
+        camera={computeCameraTransform({ player: zone.spawn, viewport, bounds: zone.bounds, zoom: 1 })}
+        viewport={viewport}
+        targetPortalId={null}
+        companionTrailPoints={[zone.spawn, { x: zone.spawn.x + 30, y: zone.spawn.y }]}
+        rendezvousPoint={{ x: zone.spawn.x + 60, y: zone.spawn.y }}
+      />
+    );
+
+    expect(screen.getByTestId("minimap-companion-trail")).toBeInTheDocument();
+    expect(screen.getByTestId("minimap-rendezvous")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "미니맵 확대 보기" }));
+    expect(screen.getAllByTestId("minimap-companion-trail")).toHaveLength(2);
+    expect(screen.getAllByTestId("minimap-rendezvous")).toHaveLength(2);
+  });
+
   it("splits the projected route when the map material changes", () => {
     const zone = getWorldZone(gardenWorld, "neighborhood");
     const viewport = { width: 390, height: 520 };

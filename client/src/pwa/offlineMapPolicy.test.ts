@@ -1,8 +1,10 @@
 import { describe, expect, it, vi } from "vitest";
 import {
   expiredOfflineZoneIds,
+  estimatedOfflineAssetGroupBytes,
   loadOfflineMapPreferences,
   saveOfflineMapPreferences,
+  scheduledOfflineZoneDeletionAt,
   shouldAutoRefreshOfflineMaps
 } from "./offlineMapPolicy";
 
@@ -26,6 +28,28 @@ describe("offline map policy", () => {
     expect(shouldAutoRefreshOfflineMaps(preferences, true, { type: "wifi" })).toBe(true);
     expect(shouldAutoRefreshOfflineMaps(preferences, true, { type: "cellular", effectiveType: "4g" })).toBe(false);
     expect(shouldAutoRefreshOfflineMaps(preferences, true, { type: "wifi", saveData: true })).toBe(false);
+  });
+
+  it("estimates map assets and schedules deletion from the saved time", () => {
+    expect(estimatedOfflineAssetGroupBytes([
+      "/assets/maps/home/background.webp",
+      "/assets/maps/home/table.png",
+      "/assets/maps/home/table.png"
+    ])).toBe(368 * 1024);
+    const cachedAt = Date.UTC(2026, 6, 29);
+    const cache = { state: "ready" as const, cachedAt };
+    expect(scheduledOfflineZoneDeletionAt(
+      cache,
+      "lobby",
+      "home",
+      { retention: "7-days", wifiAutoRefresh: true }
+    )).toBe(cachedAt + 7 * 24 * 60 * 60 * 1_000);
+    expect(scheduledOfflineZoneDeletionAt(
+      cache,
+      "home",
+      "home",
+      { retention: "7-days", wifiAutoRefresh: true }
+    )).toBeNull();
   });
 
   it("persists normalized preferences", () => {

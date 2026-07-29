@@ -60,7 +60,13 @@ export type DestinationVoiceCommand =
   | { type: "number"; index: number }
   | { type: "next" }
   | { type: "move" }
+  | { type: "cancel" }
   | { type: "close" };
+
+export type DestinationVoiceResult = {
+  command: DestinationVoiceCommand | null;
+  transcript: string;
+};
 
 export function parseDestinationVoiceCommand(
   transcript: string,
@@ -68,7 +74,8 @@ export function parseDestinationVoiceCommand(
 ): DestinationVoiceCommand | null {
   const normalized = transcript.trim().replaceAll(" ", "");
   if (!normalized) return null;
-  if (/(?:닫기|닫아|취소|그만)/.test(normalized)) return { type: "close" };
+  if (/(?:닫기|닫아)/.test(normalized)) return { type: "close" };
+  if (/(?:취소|멈춰|그만)/.test(normalized)) return { type: "cancel" };
   if (/(?:이동|출발|안내시작|가자|여기로)/.test(normalized)) return { type: "move" };
   if (/(?:다음|넘겨|다음목적지)/.test(normalized)) return { type: "next" };
   const index = parseDestinationVoiceNumber(normalized, total);
@@ -96,33 +103,83 @@ export function listenForDestinationVoiceCommand(
   target: SpeechWindow | null = typeof window === "undefined" ? null : window,
   timeoutMs = 6_000
 ): Promise<DestinationVoiceCommand | null> {
+  return listenForDestinationVoiceResult(total, target, timeoutMs).then(({ command }) => command);
+}
+
+export function listenForDestinationVoiceResult(
+  total: number,
+  target: SpeechWindow | null = typeof window === "undefined" ? null : window,
+  timeoutMs = 6_000
+): Promise<DestinationVoiceResult> {
   const Recognition = target?.SpeechRecognition ?? target?.webkitSpeechRecognition;
-  if (!target || !Recognition || total <= 0) return Promise.resolve(null);
+  if (!target || !Recognition || total <= 0) return Promise.resolve({ command: null, transcript: "" });
 
   return new Promise((resolve) => {
     const recognition = new Recognition();
     let finished = false;
-    const finish = (value: DestinationVoiceCommand | null) => {
+    const finish = (value: DestinationVoiceResult) => {
       if (finished) return;
       finished = true;
       target.clearTimeout(timer);
       try { recognition.stop(); } catch { /* Some engines end before firing onend. */ }
       resolve(value);
     };
-    const timer = target.setTimeout(() => finish(null), timeoutMs);
+    const timer = target.setTimeout(() => finish({ command: null, transcript: "" }), timeoutMs);
     recognition.lang = "ko-KR";
     recognition.continuous = false;
     recognition.interimResults = false;
-    recognition.onresult = (event) => finish(parseDestinationVoiceCommand(
-      event.results?.[0]?.[0]?.transcript ?? "",
-      total
-    ));
-    recognition.onerror = () => finish(null);
-    recognition.onend = () => finish(null);
+    recognition.onresult = (event) => {
+      const transcript = event.results?.[0]?.[0]?.transcript?.trim() ?? "";
+      finish({ command: parseDestinationVoiceCommand(transcript, total), transcript });
+    };
+    recognition.onerror = () => finish({ command: null, transcript: "" });
+    recognition.onend = () => finish({ command: null, transcript: "" });
     try {
       recognition.start();
     } catch {
-      finish(null);
+      finish({ command: null, transcript: "" });
     }
   });
+}
+
+export type DestinationVoiceCue = "confirm" | "selected" | "cancel" | "error";
+
+export function playDestinationVoiceCue(
+  cue: DestinationVoiceCue,
+  target: Window | null = typeof window === "undefined" ? null : window
+) {
+  if (!target) return false;
+  const audioWindow = target as Window & {
+    AudioContext?: typeof AudioContext;
+    webkitAudioContext?: typeof AudioContext;
+  };
+  const AudioContextConstructor = audioWindow.AudioContext ?? audioWindow.webkitAudioContext;
+  if (!AudioContextConstructor) return false;
+  try {
+    const context = new AudioContextConstructor();
+    const oscillator = context.createOscillator();
+    const gain = context.createGain();
+    const now = context.currentTime;
+    const frequencies: Record<DestinationVoiceCue, [number, number]> = {
+      confirm: [620, 820],
+      selected: [520, 660],
+      cancel: [440, 330],
+      error: [240, 210]
+    };
+    const [start, end] = frequencies[cue];
+    oscillator.type = "sine";
+    oscillator.frequency.setValueAtTime(start, now);
+    oscillator.frequency.linearRampToValueAtTime(end, now + 0.12);
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.exponentialRampToValueAtTime(0.08, now + 0.015);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.16);
+    oscillator.connect(gain);
+    gain.connect(context.destination);
+    oscillator.start(now);
+    oscillator.stop(now + 0.17);
+    oscillator.addEventListener("ended", () => void context.close(), { once: true });
+    return true;
+  } catch {
+    return false;
+  }
 }

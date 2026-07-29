@@ -27,6 +27,9 @@ describe("GameMemoryAlbum", () => {
     expect(screen.getByRole("dialog", { name: "게임 추억 앨범" })).toHaveTextContent("획득 완료");
     expect(screen.getByText("하객과 동행")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "저장" })).toBeEnabled();
+    expect(screen.getByRole("button", { name: "A4 인쇄용" })).toBeEnabled();
+    expect(screen.getByRole("button", { name: "엽서 인쇄용" })).toBeEnabled();
+    expect(screen.getByText("300dpi 권장 크기 PNG · 여백 포함")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "우표" }));
     fireEvent.click(screen.getByRole("button", { name: "별빛 스티커" }));
     fireEvent.click(screen.getByRole("button", { name: "비둘기 스티커" }));

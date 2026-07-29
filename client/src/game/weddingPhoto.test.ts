@@ -4,9 +4,11 @@ import { getWorldZone, gardenWorld } from "./world";
 import { memoryStorage } from "../test/memoryStorage";
 import {
   createEmptyWeddingPhotoAlbum,
+  detectOpaqueSpriteBounds,
   isWeddingPhotoAlbumComplete,
   loadWeddingPhotoAlbum,
   removeGroomLegBackground,
+  resolvePhotoCosmeticAnchors,
   loadWeddingPhotoMemory,
   saveWeddingPhotoBlob,
   saveWeddingPhotoMemory,
@@ -80,6 +82,23 @@ describe("wedding photo", () => {
     expect(pixels[(5 * width + 0) * 4 + 3]).toBe(255);
     expect(pixels[(5 * width + 2) * 4 + 3]).toBe(0);
     expect(pixels[(7 * width + 1) * 4 + 3]).toBe(0);
+  });
+
+  it("aligns photo effects to the opaque head, chest, and feet instead of transparent padding", () => {
+    const width = 10;
+    const height = 20;
+    const pixels = new Uint8ClampedArray(width * height * 4);
+    for (let y = 4; y < 18; y += 1) {
+      for (let x = 2; x < 8; x += 1) pixels[(y * width + x) * 4 + 3] = 255;
+    }
+    const bounds = detectOpaqueSpriteBounds(pixels, width, height);
+    expect(bounds).toEqual({ left: 2, top: 4, right: 8, bottom: 18, width: 6, height: 14 });
+    expect(resolvePhotoCosmeticAnchors(bounds!, width, height, 100, 300, 100, 200)).toEqual({
+      head: { x: 100, y: 165.2 },
+      chest: { x: 100, y: 208.6 },
+      feet: { x: 100, y: 280 },
+      visible: { left: 70, top: 140, right: 130, bottom: 280, width: 60, height: 140 }
+    });
   });
 
   it("uses a safe personalized PNG filename", () => {

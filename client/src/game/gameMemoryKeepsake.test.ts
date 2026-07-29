@@ -4,11 +4,14 @@ import {
   createGameMemoryKeepsakeTemplate,
   defaultGameMemoryKeepsakeOptions,
   gameMemoryKeepsakeFilename,
+  gameMemoryKeepsakePrintFilename,
+  gameMemoryKeepsakePrintLayout,
   loadGameMemoryKeepsakeOptions,
   loadGameMemoryKeepsakeTemplates,
   normalizeGameMemoryKeepsakeOptions,
   orderGameMemoryKeepsakePhotos,
   saveGameMemoryKeepsakeOptions,
+  saveGameMemoryKeepsakePrint,
   saveGameMemoryKeepsakeTemplates,
   shareGameMemoryKeepsake,
   type GameMemoryKeepsakeData
@@ -29,6 +32,22 @@ const data = {
 describe("gameMemoryKeepsake", () => {
   it("creates a stable Korean-safe filename", () => {
     expect(gameMemoryKeepsakeFilename(" 정원 하객 ")).toBe("wedding-garden-memory-정원-하객.png");
+  });
+
+  it("uses print-ready A4 and postcard canvas sizes and filenames", () => {
+    expect(gameMemoryKeepsakePrintLayout("a4")).toEqual({ width: 2480, height: 3508, margin: 150, label: "A4" });
+    expect(gameMemoryKeepsakePrintLayout("postcard")).toEqual({ width: 1200, height: 1800, margin: 72, label: "4×6 엽서" });
+    expect(gameMemoryKeepsakePrintFilename(" 정원 하객 ", "a4"))
+      .toBe("wedding-garden-memory-정원-하객-a4.png");
+
+    const environment = {
+      createObjectUrl: vi.fn(() => "blob:print"),
+      clickDownload: vi.fn(),
+      revokeObjectUrl: vi.fn()
+    };
+    saveGameMemoryKeepsakePrint(new Blob(["print"]), "정원 하객", "postcard", environment);
+    expect(environment.clickDownload).toHaveBeenCalledWith("blob:print", "wedding-garden-memory-정원-하객-postcard.png");
+    expect(environment.revokeObjectUrl).toHaveBeenCalledWith("blob:print");
   });
 
   it("shares the keepsake when file sharing is available", async () => {

@@ -15,6 +15,7 @@ import {
   Leaf,
   Move,
   PartyPopper,
+  Printer,
   RotateCw,
   Send,
   Save,
@@ -35,6 +36,7 @@ import type { WeddingPhotoAlbum } from "../game/weddingPhoto";
 import type { GameMemoryAlbum as GameMemoryAlbumData, GameMemoryKind } from "../game/gameMemoryAlbum";
 import {
   createGameMemoryKeepsake,
+  createGameMemoryKeepsakePrint,
   createGameMemoryKeepsakeTemplate,
   defaultGameMemoryKeepsakeOptions,
   applyGameMemoryKeepsakeTemplate,
@@ -42,6 +44,7 @@ import {
   loadGameMemoryKeepsakeTemplates,
   orderGameMemoryKeepsakePhotos,
   saveGameMemoryKeepsake,
+  saveGameMemoryKeepsakePrint,
   saveGameMemoryKeepsakeOptions,
   saveGameMemoryKeepsakeTemplates,
   shareGameMemoryKeepsake,
@@ -51,7 +54,8 @@ import {
   type GameMemoryPhotoTransform,
   type GameMemoryStickerTransform,
   type GameMemoryTextSticker,
-  type GameMemoryKeepsakeData
+  type GameMemoryKeepsakeData,
+  type GameMemoryKeepsakePrintFormat
 } from "../game/gameMemoryKeepsake";
 import { celebrationRewardLabel } from "../game/celebrationReward";
 
@@ -94,7 +98,7 @@ export function GameMemoryAlbum({
 }: GameMemoryAlbumProps) {
   const { event } = usePublishedInvitationContent();
   const coupleOrder = useCoupleOrder();
-  const [keepsakeStatus, setKeepsakeStatus] = useState<"idle" | "saving" | "saved" | "sharing" | "shared" | "fallback" | "canceled" | "error">("idle");
+  const [keepsakeStatus, setKeepsakeStatus] = useState<"idle" | "saving" | "saved" | "sharing" | "shared" | "printing" | "printed-a4" | "printed-postcard" | "fallback" | "canceled" | "error">("idle");
   const [keepsakeOptions, setKeepsakeOptions] = useState(loadGameMemoryKeepsakeOptions);
   const [keepsakeTemplates, setKeepsakeTemplates] = useState(loadGameMemoryKeepsakeTemplates);
   const [activePhotoId, setActivePhotoId] = useState(() => photoAlbum.photos[0]?.photoSpotId ?? null);
@@ -121,7 +125,7 @@ export function GameMemoryAlbum({
     initialX: number;
     initialY: number;
   } | null>(null);
-  const busy = keepsakeStatus === "saving" || keepsakeStatus === "sharing";
+  const busy = keepsakeStatus === "saving" || keepsakeStatus === "sharing" || keepsakeStatus === "printing";
   const hasMemories = album.entries.length > 0 || photoAlbum.photos.length > 0 || collectedCount > 0;
   const orderedPhotos = useMemo(
     () => orderGameMemoryKeepsakePhotos(photoAlbum, keepsakeOptions.photoOrder),
@@ -337,9 +341,24 @@ export function GameMemoryAlbum({
     }
   };
 
+  const buildPrintKeepsake = async (format: GameMemoryKeepsakePrintFormat) => {
+    if (!hasMemories || busy) return;
+    setKeepsakeStatus("printing");
+    try {
+      const blob = await createGameMemoryKeepsakePrint(keepsakeData, format);
+      saveGameMemoryKeepsakePrint(blob, nickname, format);
+      setKeepsakeStatus(format === "a4" ? "printed-a4" : "printed-postcard");
+    } catch {
+      setKeepsakeStatus("error");
+    }
+  };
+
   const keepsakeStatusLabel = keepsakeStatus === "saving" ? "추억 이미지를 만들고 있어요."
     : keepsakeStatus === "saved" ? "추억 이미지를 기기에 저장했어요."
       : keepsakeStatus === "sharing" ? "공유 이미지를 준비하고 있어요."
+        : keepsakeStatus === "printing" ? "300dpi 인쇄용 이미지를 만들고 있어요."
+          : keepsakeStatus === "printed-a4" ? "A4 인쇄용 PNG를 저장했어요."
+            : keepsakeStatus === "printed-postcard" ? "4×6 엽서 인쇄용 PNG를 저장했어요."
         : keepsakeStatus === "shared" ? "공유 앱으로 추억을 보냈어요."
           : keepsakeStatus === "fallback" ? "공유를 지원하지 않아 이미지로 저장했어요."
             : keepsakeStatus === "canceled" ? "공유를 취소했어요."
@@ -756,6 +775,15 @@ export function GameMemoryAlbum({
           <button type="button" disabled={!hasMemories || busy} onClick={() => void buildKeepsake("save")}><Download aria-hidden="true" />저장</button>
           <button type="button" disabled={!hasMemories || busy} onClick={() => void buildKeepsake("share")}><Send aria-hidden="true" />공유</button>
         </div>
+        <div className="game-memory-album__print-actions" role="group" aria-label="인쇄용 포토스트립 내보내기">
+          <button type="button" disabled={!hasMemories || busy} onClick={() => void buildPrintKeepsake("a4")}>
+            <Printer aria-hidden="true" />A4 인쇄용
+          </button>
+          <button type="button" disabled={!hasMemories || busy} onClick={() => void buildPrintKeepsake("postcard")}>
+            <Printer aria-hidden="true" />엽서 인쇄용
+          </button>
+        </div>
+        <small className="game-memory-album__print-note">300dpi 권장 크기 PNG · 여백 포함</small>
         <p aria-live="polite">{keepsakeStatusLabel}</p>
       </section>
 

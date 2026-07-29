@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent, type WheelEvent as ReactWheelEvent } from "react";
 import { createPortal } from "react-dom";
-import { ChevronLeft, ChevronRight, Maximize2, Mic, Navigation, RotateCcw, ScanLine, X, ZoomIn, ZoomOut } from "lucide-react";
+import { ChevronLeft, ChevronRight, Maximize2, Mic, Navigation, RefreshCw, RotateCcw, ScanLine, X, ZoomIn, ZoomOut } from "lucide-react";
 import type { Direction } from "@wedding-game/shared";
 import type { CameraTransform, ViewportSize } from "../game/camera";
 import {
@@ -17,7 +17,8 @@ import { portalEntryRect, type Point, type WorldZone } from "../game/world";
 import { worldAccessibilityLandmarks, type WorldAccessibilityLandmark } from "../game/worldAccessibility";
 import {
   destinationVoiceSelectionAvailable,
-  listenForDestinationVoiceCommand
+  listenForDestinationVoiceResult,
+  playDestinationVoiceCue
 } from "../accessibility/destinationVoiceSelection";
 import "../mini-map-expanded.css";
 
@@ -42,6 +43,8 @@ type WorldMiniMapProps = {
   journeyStops?: MiniMapJourneyStop[];
   journeyDestinationLabels?: string[];
   collectibleMarkers?: MiniMapCollectibleMarker[];
+  companionTrailPoints?: Point[];
+  rendezvousPoint?: Point | null;
   onNavigateAccessibilityLandmark?: (landmark: WorldAccessibilityLandmark) => void;
 };
 
@@ -82,6 +85,8 @@ type MiniMapCanvasProps = {
   expanded?: boolean;
   viewTransform?: MiniMapViewTransform;
   collectibleMarkers: MiniMapCollectibleMarker[];
+  companionTrailPoints: Point[];
+  rendezvousPoint: Point | null;
 };
 
 type MiniMapViewTransform = {
@@ -114,7 +119,9 @@ function MiniMapCanvas({
   layout,
   expanded = false,
   viewTransform = { scale: 1, x: 0, y: 0 },
-  collectibleMarkers
+  collectibleMarkers,
+  companionTrailPoints,
+  rendezvousPoint
 }: MiniMapCanvasProps) {
   const playerPoint = projectMiniMapPoint(player, zone.bounds, layout);
   const viewportRect = computeMiniMapViewportRect({ bounds: zone.bounds, layout, viewport, camera });
@@ -127,6 +134,10 @@ function MiniMapCanvas({
       ? [player, routeDestination]
       : [];
   const routeSegments = segmentJourneyRouteBySurface(zone, effectiveRoutePoints);
+  const projectedCompanionTrail = companionTrailPoints.map((point) => projectMiniMapPoint(point, zone.bounds, layout));
+  const projectedRendezvousPoint = rendezvousPoint
+    ? projectMiniMapPoint(rendezvousPoint, zone.bounds, layout)
+    : null;
 
   return (
     <svg
@@ -181,6 +192,23 @@ function MiniMapCanvas({
           {...projectMiniMapRect(portalEntryRect(portal), zone.bounds, layout)}
         />
       ))}
+      {projectedCompanionTrail.length > 1 ? (
+        <polyline
+          data-testid="minimap-companion-trail"
+          className="world-minimap__companion-trail"
+          points={miniMapPolylinePoints(projectedCompanionTrail)}
+        />
+      ) : null}
+      {projectedRendezvousPoint ? (
+        <g
+          data-testid="minimap-rendezvous"
+          className="world-minimap__rendezvous"
+          transform={`translate(${projectedRendezvousPoint.x} ${projectedRendezvousPoint.y})`}
+        >
+          <circle r={expanded ? 8 : 5.5} />
+          <path d="M -3 0 L 3 0 M 0 -3 L 0 3" />
+        </g>
+      ) : null}
       {routeSegments.length > 0 ? (
         <g
           data-testid="minimap-destination-route"
@@ -272,6 +300,8 @@ export function WorldMiniMap({
   journeyStops = [],
   journeyDestinationLabels = [],
   collectibleMarkers = [],
+  companionTrailPoints = [],
+  rendezvousPoint = null,
   onNavigateAccessibilityLandmark
 }: WorldMiniMapProps) {
   const [expanded, setExpanded] = useState(false);
@@ -290,8 +320,66 @@ export function WorldMiniMap({
   const accessibilityLandmarks = worldAccessibilityLandmarks(zone, player);
   const [selectedLandmarkIndex, setSelectedLandmarkIndex] = useState(0);
   const [autoScan, setAutoScan] = useState(false);
-  const [voiceStatus, setVoiceStatus] = useState<"idle" | "listening" | "selected" | "error">("idle");
+  const [voiceStatus, setVoiceStatus] = useState<"idle" | "listening" | "selected" | "confirming" | "canceled" | "error">("idle");
+  const [voiceTranscript, setVoiceTranscript] = useState("");
+  const pendingVoiceMoveRef = useRef<number | null>(null);
   const selectedLandmark = accessibilityLandmarks[Math.min(selectedLandmarkIndex, Math.max(0, accessibilityLandmarks.length - 1))] ?? null;
+
+  const cancelPendingVoiceMove = (announce = true) => {
+    if (pendingVoiceMoveRef.current !== null) {
+      window.clearTimeout(pendingVoiceMoveRef.current);
+      pendingVoiceMoveRef.current = null;
+    }
+    if (announce) {
+      setVoiceStatus("canceled");
+      playDestinationVoiceCue("cancel");
+    }
+  };
+
+  const startVoiceRecognition = () => {
+    if (!selectedLandmark || accessibilityLandmarks.length === 0) return;
+    cancelPendingVoiceMove(false);
+    setAutoScan(false);
+    setVoiceTranscript("");
+    setVoiceStatus("listening");
+    void listenForDestinationVoiceResult(accessibilityLandmarks.length).then(({ command, transcript }) => {
+      setVoiceTranscript(transcript);
+      if (!command) {
+        setVoiceStatus("error");
+        playDestinationVoiceCue("error");
+        return;
+      }
+      if (command.type === "close") {
+        playDestinationVoiceCue("cancel");
+        setExpanded(false);
+        return;
+      }
+      if (command.type === "cancel") {
+        cancelPendingVoiceMove();
+        return;
+      }
+      if (command.type === "next") {
+        setSelectedLandmarkIndex((current) => (current + 1) % accessibilityLandmarks.length);
+        setVoiceStatus("selected");
+        playDestinationVoiceCue("selected");
+        return;
+      }
+      if (command.type === "move") {
+        const landmarkToMove = selectedLandmark;
+        setVoiceStatus("confirming");
+        playDestinationVoiceCue("confirm");
+        pendingVoiceMoveRef.current = window.setTimeout(() => {
+          pendingVoiceMoveRef.current = null;
+          onNavigateAccessibilityLandmark?.(landmarkToMove);
+          setExpanded(false);
+        }, 2_000);
+        return;
+      }
+      setSelectedLandmarkIndex(command.index);
+      setVoiceStatus("selected");
+      playDestinationVoiceCue("selected");
+    });
+  };
 
   useEffect(() => {
     if (!expanded) return;
@@ -308,17 +396,22 @@ export function WorldMiniMap({
 
   useEffect(() => {
     if (expanded) return;
+    cancelPendingVoiceMove(false);
     setViewTransform({ scale: 1, x: 0, y: 0 });
     setAutoScan(false);
     setVoiceStatus("idle");
+    setVoiceTranscript("");
     gesturePointersRef.current.clear();
     gestureFrameRef.current = null;
   }, [expanded]);
+
+  useEffect(() => () => cancelPendingVoiceMove(false), []);
 
   useEffect(() => {
     setSelectedLandmarkIndex(0);
     setAutoScan(false);
     setVoiceStatus("idle");
+    setVoiceTranscript("");
   }, [zone.id]);
 
   useEffect(() => {
@@ -426,7 +519,9 @@ export function WorldMiniMap({
     routeActive,
     routeKind,
     routePoints,
-    collectibleMarkers
+    collectibleMarkers,
+    companionTrailPoints,
+    rendezvousPoint
   };
 
   return (
@@ -634,40 +729,24 @@ export function WorldMiniMap({
                   ><ScanLine aria-hidden="true" />{autoScan ? "스캔 중지" : "자동 스캔"}</button>
                   <button
                     type="button"
-                    disabled={!destinationVoiceSelectionAvailable() || voiceStatus === "listening"}
-                    onClick={() => {
-                      setAutoScan(false);
-                      setVoiceStatus("listening");
-                      void listenForDestinationVoiceCommand(accessibilityLandmarks.length).then((command) => {
-                        if (!command) {
-                          setVoiceStatus("error");
-                          return;
-                        }
-                        if (command.type === "close") {
-                          setExpanded(false);
-                          return;
-                        }
-                        if (command.type === "next") {
-                          setSelectedLandmarkIndex((current) => (current + 1) % accessibilityLandmarks.length);
-                          setVoiceStatus("selected");
-                          return;
-                        }
-                        if (command.type === "move") {
-                          onNavigateAccessibilityLandmark?.(selectedLandmark);
-                          setExpanded(false);
-                          return;
-                        }
-                        setSelectedLandmarkIndex(command.index);
-                        setVoiceStatus("selected");
-                      });
-                    }}
-                  ><Mic aria-hidden="true" />{voiceStatus === "listening" ? "듣는 중" : "음성 명령"}</button>
+                    disabled={!destinationVoiceSelectionAvailable() || voiceStatus === "listening" || voiceStatus === "confirming"}
+                    onClick={startVoiceRecognition}
+                  >{voiceStatus === "error" ? <RefreshCw aria-hidden="true" /> : <Mic aria-hidden="true" />}{voiceStatus === "listening" ? "듣는 중" : voiceStatus === "error" ? "다시 듣기" : "음성 명령"}</button>
+                  {voiceStatus === "confirming" ? (
+                    <button type="button" onClick={() => cancelPendingVoiceMove()}>
+                      <X aria-hidden="true" />이동 취소
+                    </button>
+                  ) : null}
                 </div>
                 <p className="world-minimap-expanded__switch-status" aria-live="polite">
                   {autoScan ? "목적지가 차례로 바뀝니다. 원하는 목적지에서 스위치를 누르세요."
-                    : voiceStatus === "listening" ? `번호 또는 다음·이동·닫기 중 하나를 말해 주세요.`
+                    : voiceStatus === "listening" ? `번호 또는 다음·이동·취소·닫기 중 하나를 말해 주세요.`
+                      : voiceStatus === "confirming" ? `${selectedLandmark.label}(으)로 2초 뒤 이동해요. 취소할 수 있어요.`
+                        : voiceStatus === "canceled" ? "음성 이동을 취소했어요."
                       : voiceStatus === "selected" ? `${selectedLandmarkIndex + 1}번 목적지를 선택했어요.`
-                        : voiceStatus === "error" ? "명령을 듣지 못했어요. 버튼이나 화살표를 이용해 주세요."
+                        : voiceStatus === "error" ? voiceTranscript
+                          ? `“${voiceTranscript}”로 들었어요. 명령을 확인한 뒤 다시 말해 주세요.`
+                          : "명령을 듣지 못했어요. 다시 듣기나 화살표를 이용해 주세요."
                           : "화살표·번호·자동 스캔·음성 명령 중 편한 방법을 이용하세요."}
                 </p>
               </section>

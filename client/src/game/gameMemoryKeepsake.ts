@@ -7,6 +7,8 @@ export const gameMemoryKeepsakeTemplatesStorageKey = "wedding-game:memory-keepsa
 export const gameMemoryKeepsakeLayouts = ["classic", "garden", "film"] as const;
 export const gameMemoryKeepsakeFrames = ["clean", "rounded", "postage"] as const;
 export const gameMemoryKeepsakeStickers = ["heart", "flower", "sparkle", "dove", "ring", "leaf"] as const;
+export const gameMemoryKeepsakePrintFormats = ["a4", "postcard"] as const;
+export type GameMemoryKeepsakePrintFormat = (typeof gameMemoryKeepsakePrintFormats)[number];
 export type GameMemoryKeepsakeLayout = (typeof gameMemoryKeepsakeLayouts)[number];
 export type GameMemoryKeepsakeFrame = (typeof gameMemoryKeepsakeFrames)[number];
 export type GameMemoryKeepsakeSticker = (typeof gameMemoryKeepsakeStickers)[number];
@@ -90,6 +92,19 @@ type KeepsakeEnvironment = {
   share?: (data: ShareData) => Promise<void>;
   canShare?: (data: ShareData) => boolean;
 };
+
+export function gameMemoryKeepsakePrintLayout(format: GameMemoryKeepsakePrintFormat) {
+  return format === "a4"
+    ? { width: 2480, height: 3508, margin: 150, label: "A4" }
+    : { width: 1200, height: 1800, margin: 72, label: "4×6 엽서" };
+}
+
+export function gameMemoryKeepsakePrintFilename(
+  guestName: string,
+  format: GameMemoryKeepsakePrintFormat
+) {
+  return `wedding-garden-memory-${safeName(guestName)}-${format}.png`;
+}
 
 function safeName(name: string) {
   return name.trim().replace(/[^0-9A-Za-z가-힣_-]+/g, "-").replace(/^-+|-+$/g, "") || "guest";
@@ -613,6 +628,62 @@ export async function createGameMemoryKeepsake(data: GameMemoryKeepsakeData): Pr
   context.font = "800 22px sans-serif";
   context.fillText(`${data.dateLabel} · ${data.venueLabel}`, 540, 1790);
   return canvasBlob(canvas);
+}
+
+export async function createGameMemoryKeepsakePrint(
+  data: GameMemoryKeepsakeData,
+  format: GameMemoryKeepsakePrintFormat
+): Promise<Blob> {
+  const sourceBlob = await createGameMemoryKeepsake({
+    ...data,
+    options: { ...normalizeGameMemoryKeepsakeOptions(data.options), quality: "high" }
+  });
+  const sourceUrl = URL.createObjectURL(sourceBlob);
+  try {
+    const image = await loadImage(sourceUrl);
+    if (!image) throw new Error("인쇄용 이미지를 불러오지 못했습니다.");
+    const layout = gameMemoryKeepsakePrintLayout(format);
+    const canvas = document.createElement("canvas");
+    canvas.width = layout.width;
+    canvas.height = layout.height;
+    const context = canvas.getContext("2d");
+    if (!context) throw new Error("이 브라우저에서는 인쇄용 이미지를 만들 수 없습니다.");
+    context.fillStyle = "#ffffff";
+    context.fillRect(0, 0, layout.width, layout.height);
+    const availableWidth = layout.width - layout.margin * 2;
+    const availableHeight = layout.height - layout.margin * 2;
+    const scale = Math.min(availableWidth / image.naturalWidth, availableHeight / image.naturalHeight);
+    const drawWidth = image.naturalWidth * scale;
+    const drawHeight = image.naturalHeight * scale;
+    const x = (layout.width - drawWidth) / 2;
+    const y = (layout.height - drawHeight) / 2;
+    context.imageSmoothingEnabled = true;
+    context.imageSmoothingQuality = "high";
+    context.shadowColor = "rgba(45, 38, 34, 0.16)";
+    context.shadowBlur = Math.max(14, layout.margin * 0.12);
+    context.drawImage(image, x, y, drawWidth, drawHeight);
+    context.shadowColor = "transparent";
+    context.strokeStyle = "rgba(89, 70, 62, 0.28)";
+    context.lineWidth = Math.max(2, layout.width / 1000);
+    context.strokeRect(x, y, drawWidth, drawHeight);
+    return canvasBlob(canvas);
+  } finally {
+    URL.revokeObjectURL(sourceUrl);
+  }
+}
+
+export function saveGameMemoryKeepsakePrint(
+  blob: Blob,
+  guestName: string,
+  format: GameMemoryKeepsakePrintFormat,
+  environment: KeepsakeEnvironment = browserEnvironment()
+) {
+  const url = environment.createObjectUrl(blob);
+  try {
+    environment.clickDownload(url, gameMemoryKeepsakePrintFilename(guestName, format));
+  } finally {
+    environment.revokeObjectUrl(url);
+  }
 }
 
 export function saveGameMemoryKeepsake(

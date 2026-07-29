@@ -204,6 +204,26 @@ export function companionFollowPath<PointType>(
   return path.slice(0, Math.max(0, path.length - trailingTiles));
 }
 
+export function appendCompanionTrailPoint(
+  points: readonly Point[],
+  next: Point,
+  minimumDistance = 12,
+  limit = 14
+): Point[] {
+  const previous = points.at(-1);
+  if (previous && Math.hypot(next.x - previous.x, next.y - previous.y) < minimumDistance) {
+    return [...points];
+  }
+  return [...points, { x: next.x, y: next.y }].slice(-Math.max(2, limit));
+}
+
+export function companionRendezvousPoint(player: Point, companion: Point): Point {
+  return {
+    x: (player.x + companion.x) / 2,
+    y: (player.y + companion.y) / 2
+  };
+}
+
 export function nearbyPhotoCompanions(
   guests: readonly CompanionCandidate[],
   zoneId: WorldZoneId,

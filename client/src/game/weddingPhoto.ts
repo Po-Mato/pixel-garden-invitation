@@ -104,7 +104,121 @@ export const weddingPhotoNpcFrames = {
 
 type SpriteImage = HTMLImageElement | HTMLCanvasElement;
 
+export type SpriteOpaqueBounds = {
+  left: number;
+  top: number;
+  right: number;
+  bottom: number;
+  width: number;
+  height: number;
+};
+
+export type PhotoCosmeticAnchors = {
+  head: Point2D;
+  chest: Point2D;
+  feet: Point2D;
+  visible: { left: number; top: number; right: number; bottom: number; width: number; height: number };
+};
+
+type Point2D = { x: number; y: number };
+
 const weddingPhotoNpcSpriteCache = new Map<string, Promise<HTMLCanvasElement | null>>();
+
+export function detectOpaqueSpriteBounds(
+  data: Uint8ClampedArray,
+  width: number,
+  height: number,
+  alphaThreshold = 8
+): SpriteOpaqueBounds | null {
+  if (width <= 0 || height <= 0 || data.length < width * height * 4) return null;
+  let left = width;
+  let top = height;
+  let right = -1;
+  let bottom = -1;
+  for (let y = 0; y < height; y += 1) {
+    for (let x = 0; x < width; x += 1) {
+      if (data[(y * width + x) * 4 + 3] <= alphaThreshold) continue;
+      left = Math.min(left, x);
+      top = Math.min(top, y);
+      right = Math.max(right, x);
+      bottom = Math.max(bottom, y);
+    }
+  }
+  if (right < left || bottom < top) return null;
+  return {
+    left,
+    top,
+    right: right + 1,
+    bottom: bottom + 1,
+    width: right - left + 1,
+    height: bottom - top + 1
+  };
+}
+
+export function resolvePhotoCosmeticAnchors(
+  bounds: SpriteOpaqueBounds,
+  sourceWidth: number,
+  sourceHeight: number,
+  centerX: number,
+  floorY: number,
+  destinationWidth: number,
+  destinationHeight: number
+): PhotoCosmeticAnchors {
+  const destinationLeft = centerX - destinationWidth / 2;
+  const destinationTop = floorY - destinationHeight;
+  const scaleX = destinationWidth / Math.max(1, sourceWidth);
+  const scaleY = destinationHeight / Math.max(1, sourceHeight);
+  const visible = {
+    left: destinationLeft + bounds.left * scaleX,
+    top: destinationTop + bounds.top * scaleY,
+    right: destinationLeft + bounds.right * scaleX,
+    bottom: destinationTop + bounds.bottom * scaleY,
+    width: bounds.width * scaleX,
+    height: bounds.height * scaleY
+  };
+  const visibleCenterX = (visible.left + visible.right) / 2;
+  return {
+    head: { x: visibleCenterX, y: visible.top + visible.height * 0.18 },
+    chest: { x: visibleCenterX, y: visible.top + visible.height * 0.49 },
+    feet: { x: visibleCenterX, y: visible.bottom },
+    visible
+  };
+}
+
+function photoCosmeticAnchorsForSprite(
+  image: SpriteImage | null,
+  centerX: number,
+  floorY: number,
+  destinationWidth: number,
+  destinationHeight: number
+) {
+  const sourceWidth = image instanceof HTMLImageElement ? image.naturalWidth : image?.width ?? 1;
+  const sourceHeight = image instanceof HTMLImageElement ? image.naturalHeight : image?.height ?? 1;
+  let bounds: SpriteOpaqueBounds | null = null;
+  if (image) {
+    try {
+      const canvas = document.createElement("canvas");
+      canvas.width = sourceWidth;
+      canvas.height = sourceHeight;
+      const context = canvas.getContext("2d", { willReadFrequently: true });
+      if (context) {
+        context.drawImage(image, 0, 0, sourceWidth, sourceHeight);
+        bounds = detectOpaqueSpriteBounds(context.getImageData(0, 0, sourceWidth, sourceHeight).data, sourceWidth, sourceHeight);
+      }
+    } catch {
+      // The full image box remains a safe fallback when a browser blocks pixel reads.
+    }
+  }
+  return resolvePhotoCosmeticAnchors(
+    bounds ?? { left: 0, top: 0, right: sourceWidth, bottom: sourceHeight, width: sourceWidth, height: sourceHeight },
+    sourceWidth,
+    sourceHeight,
+    centerX,
+    floorY,
+    destinationWidth,
+    destinationHeight
+  );
+}
 
 const browserDownloadEnvironment: PhotoDownloadEnvironment = {
   createObjectUrl: (blob) => URL.createObjectURL(blob),
@@ -544,9 +658,7 @@ function drawCelebrationFrame(
 function drawPhotoCosmetic(
   context: CanvasRenderingContext2D,
   selection: NonNullable<WeddingPhotoData["photoCosmetic"]>,
-  centerX: number,
-  floorY: number,
-  characterHeight: number
+  anchors: PhotoCosmeticAnchors
 ) {
   if (selection.cosmeticId === "none") return;
   const palettes = {
@@ -558,6 +670,9 @@ function drawPhotoCosmetic(
   const showPetals = selection.cosmeticId === "petal-trail" || selection.cosmeticId === "garden-blessing-set";
   const showRibbon = selection.cosmeticId === "ribbon-tag" || selection.cosmeticId === "garden-blessing-set";
   const showStars = selection.cosmeticId === "starlight-aura" || selection.cosmeticId === "garden-blessing-set";
+  const auraRadiusX = Math.max(54, anchors.visible.width * 0.7);
+  const auraRadiusY = Math.max(90, anchors.visible.height * 0.55);
+  const auraCenterY = anchors.visible.top + anchors.visible.height * 0.5;
   context.save();
   if (showStars) {
     context.shadowColor = colors.glow;
@@ -565,12 +680,12 @@ function drawPhotoCosmetic(
     context.strokeStyle = colors.soft;
     context.lineWidth = 9;
     context.beginPath();
-    context.ellipse(centerX, floorY - characterHeight * 0.48, characterHeight * 0.39, characterHeight * 0.53, 0, 0, Math.PI * 2);
+    context.ellipse(anchors.head.x, auraCenterY, auraRadiusX, auraRadiusY, 0, 0, Math.PI * 2);
     context.stroke();
     for (let index = 0; index < 7; index += 1) {
       const angle = index * Math.PI * 2 / 7;
-      const x = centerX + Math.cos(angle) * characterHeight * 0.37;
-      const y = floorY - characterHeight * 0.5 + Math.sin(angle) * characterHeight * 0.48;
+      const x = anchors.head.x + Math.cos(angle) * auraRadiusX * 0.95;
+      const y = auraCenterY + Math.sin(angle) * auraRadiusY * 0.94;
       context.fillStyle = index % 2 ? colors.accent : colors.soft;
       context.fillRect(x - 5, y - 14, 10, 28);
       context.fillRect(x - 14, y - 5, 28, 10);
@@ -581,7 +696,7 @@ function drawPhotoCosmetic(
     for (let index = 0; index < 9; index += 1) {
       const angle = index * Math.PI * 2 / 9;
       context.save();
-      context.translate(centerX + Math.cos(angle) * characterHeight * 0.35, floorY - 15 + Math.sin(angle) * 20);
+      context.translate(anchors.feet.x + Math.cos(angle) * anchors.visible.width * 0.62, anchors.feet.y - 14 + Math.sin(angle) * 18);
       context.rotate(angle);
       context.fillStyle = index % 2 ? colors.accent : colors.soft;
       context.beginPath();
@@ -591,8 +706,8 @@ function drawPhotoCosmetic(
     }
   }
   if (showRibbon) {
-    const x = centerX + characterHeight * 0.23;
-    const y = floorY - characterHeight * 0.68;
+    const x = anchors.chest.x + anchors.visible.width * 0.38;
+    const y = anchors.chest.y;
     context.fillStyle = colors.accent;
     context.beginPath();
     context.ellipse(x - 15, y, 18, 11, -0.45, 0, Math.PI * 2);
@@ -664,7 +779,13 @@ export async function createWeddingPhotoCapture(data: WeddingPhotoData): Promise
       drawSprite(context, guest, guestX, floorY, characterWidth, characterHeight, false);
     }
   }
-  if (data.photoCosmetic) drawPhotoCosmetic(context, data.photoCosmetic, guestX, floorY, characterWidth * 1.5);
+  if (data.photoCosmetic) {
+    drawPhotoCosmetic(
+      context,
+      data.photoCosmetic,
+      photoCosmeticAnchorsForSprite(guest, guestX, floorY, characterWidth, characterWidth * 1.5)
+    );
+  }
   drawPoseEffect(context, data.pose, guestX, floorY - characterWidth * 1.5);
 
   context.fillStyle = "#fff9eb";

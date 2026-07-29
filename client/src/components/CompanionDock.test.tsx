@@ -1,5 +1,5 @@
-import { fireEvent, render, screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { CompanionDock } from "./CompanionDock";
 
 const companion = {
@@ -18,6 +18,8 @@ const companion = {
     presetId: "guest-02"
   }
 };
+
+afterEach(cleanup);
 
 describe("CompanionDock", () => {
   it("sends quick pings and exposes destination requests for a follower", () => {
@@ -60,5 +62,38 @@ describe("CompanionDock", () => {
     expect(screen.getByRole("status")).toHaveTextContent("하객2님 · 잠시만요");
     fireEvent.click(screen.getByRole("button", { name: "예식장 로비로 재합류" }));
     expect(onRejoin).toHaveBeenCalledOnce();
+  });
+
+  it("reserves and cancels a same-zone rendezvous", () => {
+    const onReserve = vi.fn();
+    const onCancel = vi.fn();
+    const { rerender } = render(
+      <CompanionDock
+        candidates={[companion]}
+        activeGuestId={companion.guestId}
+        role="leader"
+        onInvite={vi.fn()}
+        onStop={vi.fn()}
+        onReserveRendezvous={onReserve}
+      />
+    );
+    fireEvent.click(screen.getByRole("button", { name: "중간 타일에서 만나기" }));
+    expect(onReserve).toHaveBeenCalledOnce();
+
+    rerender(
+      <CompanionDock
+        candidates={[companion]}
+        activeGuestId={companion.guestId}
+        role="leader"
+        onInvite={vi.fn()}
+        onStop={vi.fn()}
+        rendezvousLabel="우리 집 · 중간 합류 타일 예약"
+        onReserveRendezvous={onReserve}
+        onCancelRendezvous={onCancel}
+      />
+    );
+    expect(screen.getByRole("status")).toHaveTextContent("중간 합류 타일 예약");
+    fireEvent.click(screen.getByRole("button", { name: "합류 예약 취소" }));
+    expect(onCancel).toHaveBeenCalledOnce();
   });
 });

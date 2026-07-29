@@ -85,10 +85,12 @@ import { portalCongestion } from "../game/portalCongestion";
 import { crowdDensityCells, portalWaitEstimate } from "../game/crowdDensity";
 import {
   clearCompanionSession,
+  appendCompanionTrailPoint,
   companionInviteLifetimeMs,
   companionArrivalEstimate,
   companionCandidates,
   companionFollowPath,
+  companionRendezvousPoint,
   createCompanionInviteCode,
   createCompanionInviteUrl,
   inspectCompanionInviteUrl,
@@ -549,6 +551,8 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   const [companionRejoinZoneId, setCompanionRejoinZoneId] = useState<WorldZoneId | null>(null);
   const [companionShareStatus, setCompanionShareStatus] = useState<string | null>(null);
   const [companionWaitingRoomOpen, setCompanionWaitingRoomOpen] = useState(false);
+  const [companionTrailPoints, setCompanionTrailPoints] = useState<Point[]>([]);
+  const [companionRendezvous, setCompanionRendezvous] = useState<{ zoneId: WorldZoneId; point: Point } | null>(null);
   const [companionInviteDraft, setCompanionInviteDraft] = useState<{
     url: string;
     expiresAt: number;
@@ -627,6 +631,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   const companionPingTimerRef = useRef<number | null>(null);
   const companionZoneGraceUntilRef = useRef(0);
   const companionLinkInviteSentRef = useRef(false);
+  const companionTrailKeyRef = useRef("");
   const companionInviteDraftRef = useRef(companionInviteDraft);
   const collectionProximityBandRef = useRef<CollectionProximityBand | null>(null);
   const plannedGuidedCollectibleRef = useRef<string | null>(null);
@@ -1116,6 +1121,9 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     setRecentCompanionPing(null);
     setCompanionDestinationRequested(false);
     setCompanionRejoinZoneId(null);
+    setCompanionTrailPoints([]);
+    setCompanionRendezvous(null);
+    companionTrailKeyRef.current = "";
     clearCompanionSession();
   }, []);
 
@@ -2622,6 +2630,36 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     setTravelStatus(`${activeCompanion.nickname}님과 재합류하기 위해 ${portal.label}(으)로 이동 중`);
   }
 
+  function reserveCompanionRendezvous() {
+    if (!activeCompanion || activeCompanion.zoneId !== activeZone.id) return;
+    const midpoint = snapToGrid(companionRendezvousPoint(
+      positionRef.current,
+      { x: activeCompanion.x, y: activeCompanion.y }
+    ), activeZone);
+    const path = findTilePath(activeZone, positionRef.current, midpoint);
+    if (!path) {
+      setTravelStatus("합류할 수 있는 중간 타일을 찾지 못했어요");
+      return;
+    }
+    pauseWorldInput();
+    setPendingJourneyGuideId(null);
+    setActiveJourneyGuideId(null);
+    setCompanionRendezvous({ zoneId: activeZone.id, point: midpoint });
+    if (path.length > 0) {
+      setTarget(midpoint);
+      setMapPath(path);
+      targetStepAtRef.current = null;
+      setTravelStatus(`${activeCompanion.nickname}님과 만날 중간 타일로 이동 중`);
+    } else {
+      setTravelStatus("합류 지점에서 동행 하객을 기다려요");
+    }
+  }
+
+  function cancelCompanionRendezvous() {
+    setCompanionRendezvous(null);
+    setTravelStatus("합류 지점 예약을 취소했어요");
+  }
+
   function navigateToAccessibilityLandmark(landmark: WorldAccessibilityLandmark) {
     pauseWorldInput();
     setPendingJourneyGuideId(null);
@@ -3050,6 +3088,48 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     activeCompanion,
     activeCompanion ? getWorldZone(gardenWorld, activeCompanion.zoneId).label : ""
   );
+
+  useEffect(() => {
+    if (!activeCompanion || activeCompanion.zoneId !== activeZone.id) {
+      companionTrailKeyRef.current = "";
+      setCompanionTrailPoints([]);
+      return;
+    }
+    const trailKey = `${activeCompanion.guestId}:${activeZone.id}`;
+    if (companionTrailKeyRef.current !== trailKey) {
+      companionTrailKeyRef.current = trailKey;
+      setCompanionTrailPoints([{ x: activeCompanion.x, y: activeCompanion.y }]);
+      return;
+    }
+    setCompanionTrailPoints((current) => appendCompanionTrailPoint(
+      current,
+      { x: activeCompanion.x, y: activeCompanion.y },
+      18,
+      14
+    ));
+  }, [activeCompanion?.guestId, activeCompanion?.x, activeCompanion?.y, activeCompanion?.zoneId, activeZone.id]);
+
+  useEffect(() => {
+    if (!companionRendezvous) return;
+    if (!activeCompanion || companionRendezvous.zoneId !== activeZone.id || activeCompanion.zoneId !== activeZone.id) {
+      setCompanionRendezvous(null);
+      return;
+    }
+    const playerArrived = Math.hypot(
+      position.x - companionRendezvous.point.x,
+      position.y - companionRendezvous.point.y
+    ) <= 30;
+    const companionArrived = Math.hypot(
+      activeCompanion.x - companionRendezvous.point.x,
+      activeCompanion.y - companionRendezvous.point.y
+    ) <= 42;
+    if (playerArrived && companionArrived) {
+      setCompanionRendezvous(null);
+      setTravelStatus(`${activeCompanion.nickname}님과 합류했어요`);
+    } else if (playerArrived) {
+      setTravelStatus(`합류 지점에서 ${activeCompanion.nickname}님을 기다려요`);
+    }
+  }, [activeCompanion, activeZone.id, companionRendezvous, position]);
   const nearbyCompanionCandidates = companionCandidates(remoteGuests, activeZone.id, position);
   const sameZoneCompanionCandidates = activeCompanion
     && activeCompanion.zoneId === activeZone.id
@@ -3232,7 +3312,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     }
     companionZoneGraceUntilRef.current = 0;
     setCompanionRejoinZoneId(null);
-    if (companionRole !== "follower") return;
+    if (companionRole !== "follower" || companionRendezvous) return;
     if (portalTransition || interactionIntent || portalIntent || hasJoystickMovement(joystickVector)) return;
     const companionPoint = snapToGrid({ x: activeCompanion.x, y: activeCompanion.y }, activeZone);
     const fullPath = findTilePath(activeZone, positionRef.current, companionPoint);
@@ -3268,6 +3348,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     portalIntent,
     portalTransition,
     realtimeStatus,
+    companionRendezvous,
     setTarget
   ]);
 
@@ -3905,6 +3986,8 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
             journeyStops={miniMapJourneyStops}
             journeyDestinationLabels={miniMapJourneyDestinationLabels}
             collectibleMarkers={miniMapCollectibleMarkers}
+            companionTrailPoints={activeCompanion?.zoneId === activeZone.id ? companionTrailPoints : []}
+            rendezvousPoint={companionRendezvous?.zoneId === activeZone.id ? companionRendezvous.point : null}
             onNavigateAccessibilityLandmark={navigateToAccessibilityLandmark}
           />
 
@@ -3952,6 +4035,13 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
             }}
             onOpenWaitingRoom={openCompanionWaitingRoom}
             shareStatus={companionShareStatus}
+            rendezvousLabel={companionRendezvous?.zoneId === activeZone.id
+              ? `${activeZone.label} · 중간 합류 타일 예약`
+              : null}
+            onReserveRendezvous={activeCompanion?.zoneId === activeZone.id
+              ? reserveCompanionRendezvous
+              : undefined}
+            onCancelRendezvous={cancelCompanionRendezvous}
           />
 
           {incomingCompanionInvite ? (

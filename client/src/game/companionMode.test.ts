@@ -2,9 +2,11 @@ import { defaultCharacterAppearance } from "@wedding-game/shared";
 import { describe, expect, it } from "vitest";
 import {
   clearCompanionSession,
+  appendCompanionTrailPoint,
   companionCandidates,
   companionArrivalEstimate,
   companionFollowPath,
+  companionRendezvousPoint,
   companionInviteRemainingLabel,
   createCompanionInviteCode,
   createCompanionInviteUrl,
@@ -31,6 +33,19 @@ describe("companionMode", () => {
   it("keeps a two-tile following distance", () => {
     expect(companionFollowPath([1, 2, 3, 4, 5])).toEqual([1, 2, 3]);
     expect(companionFollowPath([1, 2])).toEqual([]);
+  });
+
+  it("keeps a compact companion trail and finds the midpoint for rendezvous", () => {
+    expect(appendCompanionTrailPoint([{ x: 0, y: 0 }], { x: 4, y: 3 }, 12))
+      .toEqual([{ x: 0, y: 0 }]);
+    expect(appendCompanionTrailPoint([{ x: 0, y: 0 }], { x: 12, y: 0 }, 12))
+      .toEqual([{ x: 0, y: 0 }, { x: 12, y: 0 }]);
+    expect(appendCompanionTrailPoint([
+      { x: 0, y: 0 },
+      { x: 12, y: 0 }
+    ], { x: 24, y: 0 }, 12, 2)).toEqual([{ x: 12, y: 0 }, { x: 24, y: 0 }]);
+    expect(companionRendezvousPoint({ x: 30, y: 90 }, { x: 90, y: 30 }))
+      .toEqual({ x: 60, y: 60 });
   });
 
   it("selects only nearby guests for a group photo", () => {
