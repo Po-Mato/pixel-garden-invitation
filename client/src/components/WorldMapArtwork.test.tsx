@@ -45,3 +45,12 @@ it("reports whether the background image loaded or failed", () => {
 
   expect(onLoadStateChange.mock.calls).toEqual([[true], [false]]);
 });
+
+it("renders map-specific texture and quality-budgeted atmosphere independently", () => {
+  const { container, rerender } = render(<WorldMapArtwork zoneId="venue-exterior" ambientMotion="full" />);
+  expect(container.querySelector("[data-texture='garden-path']")).toBeInTheDocument();
+  expect(container.querySelectorAll(".world-map-atmosphere__particle")).toHaveLength(16);
+
+  rerender(<WorldMapArtwork zoneId="venue-exterior" ambientMotion="minimal" />);
+  expect(container.querySelectorAll(".world-map-atmosphere__particle")).toHaveLength(0);
+});

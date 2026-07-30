@@ -2,9 +2,18 @@ html[data-effects-quality="minimal"] .entry-screen__prism,
 html[data-effects-quality="minimal"] .entry-screen__petals,
 html[data-effects-quality="minimal"] .character-customizer__flowers,
 html[data-effects-quality="minimal"] .world-map-effect,
+html[data-effects-quality="minimal"] .world-map-atmosphere,
 html[data-effects-quality="minimal"] .journey-completion__petals,
 html[data-effects-quality="minimal"] .journey-completion__sparkles {
   display: none !important;
+}
+
+html[data-effects-quality="reduced"] .world-map-artwork__texture {
+  opacity: 0.08;
+}
+
+html[data-effects-quality="minimal"] .world-map-artwork__texture {
+  opacity: 0.045;
 }
 
 html[data-effects-quality="reduced"] .world-portal__tile,

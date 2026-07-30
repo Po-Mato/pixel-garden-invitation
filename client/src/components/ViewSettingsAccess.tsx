@@ -446,6 +446,34 @@ export function ViewSettingsAccess({ variant, onOpenChange, currentZoneId }: Vie
 
             {currentZoneId ? <OfflineMapDownloadCenter currentZoneId={currentZoneId} /> : null}
 
+            <section>
+              <header><Sparkles aria-hidden="true" /><strong>맵 화면 효과</strong></header>
+              <div
+                className="view-settings-sheet__segments view-settings-sheet__segments--four"
+                role="group"
+                aria-label="맵 화면 효과 품질"
+              >
+                {([
+                  ["auto", "자동"],
+                  ["full", "풍부"],
+                  ["reduced", "균형"],
+                  ["minimal", "절약"]
+                ] as const).map(([quality, label]) => (
+                  <button
+                    key={quality}
+                    type="button"
+                    aria-pressed={devicePerformance.effectsPreference === quality}
+                    onClick={() => devicePerformance.setEffectsPreference(quality)}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+              <p className="view-settings-sheet__hint">
+                기기 상태가 불안정하면 선택한 단계보다 효과가 자동으로 줄어듭니다.
+              </p>
+            </section>
+
             <section
               className="device-performance-status"
               data-mode={devicePerformance.mode}
@@ -459,6 +487,9 @@ export function ViewSettingsAccess({ variant, onOpenChange, currentZoneId }: Vie
                   : devicePerformance.effectsQuality === "reduced"
                     ? "화면 효과 자동 조절"
                     : "최소 화면 효과 적용"}</strong>
+                <small>{devicePerformance.effectsPreference === "auto"
+                  ? "기기 상태에 따라 맵 효과를 자동 선택해요"
+                  : `선택한 ${devicePerformance.effectsPreference === "full" ? "풍부" : devicePerformance.effectsPreference === "reduced" ? "균형" : "절약"} 단계로 표시해요`}</small>
                 <small>{devicePerformance.mode === "lite"
                   ? devicePerformance.reason === "memory"
                     ? "메모리 사용량을 줄이고 있어요"

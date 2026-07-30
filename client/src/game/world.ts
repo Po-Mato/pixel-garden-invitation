@@ -205,14 +205,22 @@ function createZone(input: ZoneInput): WorldZone {
   };
 }
 
-const spot = (id: SpotId, label: string, x: number, y: number, width = 90, height = 72): WorldSpot => ({
+const spot = (
+  id: SpotId,
+  label: string,
+  x: number,
+  y: number,
+  width = 90,
+  height = 72,
+  actionRadius = 72
+): WorldSpot => ({
   id,
   label,
   x,
   y,
   width,
   height,
-  actionRadius: 72
+  actionRadius
 });
 
 const photoSpot = (
@@ -357,7 +365,7 @@ const subwayStationZone = createZone({
     path("station-platform-approach", "corridor", 330, 240, 240, 390),
     path("station-platform", "platform", 600, 120, 210, 600)
   ],
-  spots: [spot("directions", "지하철 오시는 길", 120, 150, 120, 90)],
+  spots: [spot("directions", "지하철 오시는 길", 120, 150, 120, 90, 90)],
   npcs: [],
   portals: [
     portal("station-to-neighborhood", "거리로 나가기", "neighborhood", { x: 30, y: 375, width: 90, height: 120 }, { x: 105, y: 435 }, "left", { x: 1065, y: 375 }),

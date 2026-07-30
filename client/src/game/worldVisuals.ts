@@ -5,22 +5,88 @@ export type WorldVisualEffect =
   | "garden-petals" | "lobby-glint" | "bridal-sparkle"
   | "aisle-light" | "mirror-glint" | "banquet-light";
 
+export type WorldSurfaceTexture =
+  | "warm-wood"
+  | "garden-stone"
+  | "station-terrazzo"
+  | "train-metal"
+  | "garden-path"
+  | "lobby-marble"
+  | "bridal-carpet"
+  | "ceremony-velvet"
+  | "banquet-parquet"
+  | "restroom-tile";
+
+export type WorldAtmosphereKind = "mote" | "petal" | "glint" | "streak" | "shimmer";
+
 type WorldVisualDefinition = {
   fallbackColor: string;
   effects: WorldVisualEffect[];
+  texture: WorldSurfaceTexture;
+  atmosphere: WorldAtmosphereKind[];
 };
 
 const definitions: Record<WorldZoneId, WorldVisualDefinition> = {
-  home: { fallbackColor: "#d8c6b4", effects: ["window-light"] },
-  neighborhood: { fallbackColor: "#9eb79e", effects: ["leaf-shadow"] },
-  "subway-station": { fallbackColor: "#c8d2cf", effects: ["station-glow"] },
-  "subway-train": { fallbackColor: "#d8ddd7", effects: ["city-motion"] },
-  "venue-exterior": { fallbackColor: "#adc49f", effects: ["garden-petals"] },
-  lobby: { fallbackColor: "#dedbd2", effects: ["lobby-glint"] },
-  "bridal-room": { fallbackColor: "#e7d8d8", effects: ["bridal-sparkle"] },
-  "ceremony-hall": { fallbackColor: "#536e5e", effects: ["aisle-light"] },
-  restroom: { fallbackColor: "#d6e5e1", effects: ["mirror-glint"] },
-  banquet: { fallbackColor: "#d9cfb9", effects: ["banquet-light"] }
+  home: {
+    fallbackColor: "#d8c6b4",
+    effects: ["window-light"],
+    texture: "warm-wood",
+    atmosphere: ["mote", "glint"]
+  },
+  neighborhood: {
+    fallbackColor: "#9eb79e",
+    effects: ["leaf-shadow"],
+    texture: "garden-stone",
+    atmosphere: ["petal", "mote"]
+  },
+  "subway-station": {
+    fallbackColor: "#c8d2cf",
+    effects: ["station-glow"],
+    texture: "station-terrazzo",
+    atmosphere: ["streak", "glint"]
+  },
+  "subway-train": {
+    fallbackColor: "#d8ddd7",
+    effects: ["city-motion"],
+    texture: "train-metal",
+    atmosphere: ["streak", "shimmer"]
+  },
+  "venue-exterior": {
+    fallbackColor: "#adc49f",
+    effects: ["garden-petals"],
+    texture: "garden-path",
+    atmosphere: ["petal", "glint"]
+  },
+  lobby: {
+    fallbackColor: "#dedbd2",
+    effects: ["lobby-glint"],
+    texture: "lobby-marble",
+    atmosphere: ["glint", "shimmer"]
+  },
+  "bridal-room": {
+    fallbackColor: "#e7d8d8",
+    effects: ["bridal-sparkle"],
+    texture: "bridal-carpet",
+    atmosphere: ["petal", "glint"]
+  },
+  "ceremony-hall": {
+    fallbackColor: "#536e5e",
+    effects: ["aisle-light"],
+    texture: "ceremony-velvet",
+    atmosphere: ["mote", "glint"]
+  },
+  restroom: {
+    fallbackColor: "#d6e5e1",
+    effects: ["mirror-glint"],
+    texture: "restroom-tile",
+    atmosphere: ["shimmer", "glint"]
+  },
+  banquet: {
+    fallbackColor: "#d9cfb9",
+    effects: ["banquet-light"],
+    texture: "banquet-parquet",
+    atmosphere: ["glint", "mote"]
+  }
 };
 
 const withTrailingSlash = (baseUrl: string) => baseUrl.endsWith("/") ? baseUrl : `${baseUrl}/`;

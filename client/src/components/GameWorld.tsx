@@ -181,7 +181,11 @@ import {
   preloadWorldZoneAssets
 } from "../game/worldAssetPreloader";
 import { worldDepth } from "../game/worldVisuals";
-import { nearestWorldLandmark, type WorldAccessibilityLandmark } from "../game/worldAccessibility";
+import {
+  nearestWorldLandmark,
+  worldPortalAccessibilityLabel,
+  type WorldAccessibilityLandmark
+} from "../game/worldAccessibility";
 import {
   loadWeddingPhotoAlbum,
   weddingPhotoAlbumProgress,
@@ -230,6 +234,8 @@ import { WeddingDayQuickAccess } from "./WeddingDayQuickAccess";
 import { WeddingDayActionBar } from "./WeddingDayActionBar";
 import { WeddingNpc } from "./WeddingNpc";
 import { WorldMapArtwork } from "./WorldMapArtwork";
+import { WorldGeometryAuditOverlay } from "./WorldGeometryAuditOverlay";
+import { WorldDestinationBeacon } from "./WorldDestinationBeacon";
 import { WorldCrowdHeatmap } from "./WorldCrowdHeatmap";
 import { WorldCooperativeCelebration } from "./WorldCooperativeCelebration";
 import { WorldContextAction } from "./WorldContextAction";
@@ -260,6 +266,7 @@ import "../game-luxe-theme.css";
 import "../game-navigation-enhancements.css";
 import "../game-wedding-day-operations.css";
 import "../game-experience-continuity.css";
+import "../map-visual-enhancements.css";
 
 const loadWeddingPhotoBoothComponent = () => import("./WeddingPhotoBooth");
 const loadWeddingPhotoAlbumComponent = () => import("./WeddingPhotoAlbum");
@@ -474,6 +481,9 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     devicePerformance.mode,
     devicePerformance.effectsQuality
   ), [devicePerformance.effectsQuality, devicePerformance.mode]);
+  const geometryAuditEnabled = useMemo(() => (
+    new URLSearchParams(window.location.search).get("mapAudit") === "1"
+  ), []);
   const movementStepIntervalMs = viewPreferences.gameMovementSpeed === "relaxed"
     ? 320
     : viewPreferences.gameMovementSpeed === "brisk" ? 190 : 240;
@@ -3275,6 +3285,10 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   const miniMapDestinationLabel = interactionIntent?.label
     ?? portalIntent?.portal.label
     ?? (target ? "선택한 위치" : destinationCheckpoint?.label ?? null);
+  const accessibleDestinationPoint = journeyRouteDestination ?? journeyGuidance?.destinationPoint ?? null;
+  const accessibleDestinationRemainingTiles = selectedTravelPath.length > 0
+    ? selectedTravelPath.length
+    : journeyGuidance?.tileCount ?? 0;
   const activeRouteArrivalCue = directTravelActive && miniMapDestinationLabel
     ? routeArrivalCue(selectedTravelPath.length, miniMapDestinationLabel, Boolean(portalIntent))
     : null;
@@ -4079,6 +4093,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
           >
             <WorldMapArtwork
               zoneId={activeZone.id}
+              ambientMotion={renderBudget.ambientMotion}
               onLoadStateChange={(loaded) => {
                 setLoadedBackgroundZoneId((current) => (
                   loaded ? activeZone.id : current === activeZone.id ? null : current
@@ -4093,6 +4108,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
                 style={pixelRect(worldPath)}
               />
             ))}
+            <WorldGeometryAuditOverlay zone={activeZone} enabled={geometryAuditEnabled} />
             <WorldCelebrationCollectibles
               items={zoneCelebrationCollectibles}
               collectedIds={collectedCelebrationIds}
@@ -4181,6 +4197,14 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
                 </g>
               </svg>
             ) : null}
+            {accessibleDestinationPoint && miniMapDestinationLabel ? (
+              <WorldDestinationBeacon
+                point={accessibleDestinationPoint}
+                label={miniMapDestinationLabel}
+                remainingTiles={accessibleDestinationRemainingTiles}
+                kind={portalIntent ? "portal" : "destination"}
+              />
+            ) : null}
             {activeCompanion?.zoneId === activeZone.id ? (
               <svg
                 className="world-companion-link"
@@ -4253,6 +4277,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
               const targetEntry = portalIntent?.portal.id === portalItem.id
                 ? portalIntent.path.at(-1)
                 : null;
+              const destinationZone = getWorldZone(gardenWorld, portalItem.to);
 
               return (
                 <button
@@ -4260,6 +4285,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
                   type="button"
                   className={`world-portal world-portal--${horizontal ? "horizontal" : "vertical"}${portalIntent?.portal.id === portalItem.id ? " world-portal--target" : ""}${journeyGuidance?.portalId === portalItem.id ? " world-portal--recommended" : ""}`}
                   aria-label={portalItem.label}
+                  aria-describedby={`portal-accessibility-${portalItem.id}`}
                   data-congestion={congestion.level}
                   style={{
                     ...pixelRect(portalEntryRect(portalItem)),
@@ -4277,6 +4303,14 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
                     handlePortalClick(portalItem);
                   }}
                 >
+                  <span id={`portal-accessibility-${portalItem.id}`} className="sr-only">
+                    {worldPortalAccessibilityLabel(
+                      portalItem,
+                      destinationZone,
+                      position,
+                      `${congestion.label}, ${waitEstimate.label}`
+                    )}
+                  </span>
                   <span className="world-portal__effect" aria-hidden="true">
                     <span className="world-portal__tiles">
                       {congestion.entries.map((entry) => (

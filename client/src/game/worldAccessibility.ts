@@ -1,4 +1,4 @@
-import { portalEntryRect, type Point, type Rect, type WorldZone } from "./world";
+import { portalEntryRect, type Point, type Rect, type WorldPortal, type WorldZone } from "./world";
 
 export type WorldAccessibilityLandmark = {
   id: string;
@@ -53,4 +53,21 @@ export function worldAccessibilityLandmarks(
 
 export function nearestWorldLandmark(zone: WorldZone, player: Point) {
   return worldAccessibilityLandmarks(zone, player, 1)[0] ?? null;
+}
+
+export function worldPortalAccessibilityLabel(
+  portal: WorldPortal,
+  destinationZone: Pick<WorldZone, "label">,
+  player: Point,
+  availability?: string
+): string {
+  const entry = rectCenter(portalEntryRect(portal));
+  const direction = relativeWorldDirection(player, entry);
+  const tileDistance = Math.max(0, Math.round(Math.hypot(entry.x - player.x, entry.y - player.y) / 30));
+  return [
+    portal.label,
+    `${destinationZone.label} 이동 포털`,
+    `${direction} 약 ${tileDistance}칸`,
+    availability
+  ].filter(Boolean).join(", ");
 }

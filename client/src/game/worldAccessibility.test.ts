@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { gardenWorld, getWorldZone } from "./world";
-import { nearestWorldLandmark, relativeWorldDirection, worldAccessibilityLandmarks } from "./worldAccessibility";
+import {
+  nearestWorldLandmark,
+  relativeWorldDirection,
+  worldAccessibilityLandmarks,
+  worldPortalAccessibilityLabel
+} from "./worldAccessibility";
 
 describe("worldAccessibility", () => {
   it("describes relative directions without relying on the visual map", () => {
@@ -15,5 +20,13 @@ describe("worldAccessibility", () => {
     expect(landmarks.length).toBeGreaterThan(0);
     expect(landmarks[0]!.phrase).toMatch(/약 \d+칸/);
     expect(nearestWorldLandmark(zone, zone.spawn)).toEqual(landmarks[0]);
+  });
+
+  it("포털 이름과 도착 맵, 방향, 거리, 혼잡 상태를 한 문장으로 안내한다", () => {
+    const zone = getWorldZone(gardenWorld, "home");
+    const portal = zone.portals[0];
+    const destination = getWorldZone(gardenWorld, portal.to);
+    expect(worldPortalAccessibilityLabel(portal, destination, zone.spawn, "여유, 바로 이동 가능"))
+      .toMatch(/동네로 나가기, 동네 거리 이동 포털, 위쪽 약 \d+칸, 여유, 바로 이동 가능/);
   });
 });

@@ -4,21 +4,29 @@ import { resolveWorldMapAsset, resolveWorldVisual, worldDepth, worldVisualZoneId
 
 describe("world visuals", () => {
   it.each([
-    ["home", "#d8c6b4", ["window-light"]],
-    ["neighborhood", "#9eb79e", ["leaf-shadow"]],
-    ["subway-station", "#c8d2cf", ["station-glow"]],
-    ["subway-train", "#d8ddd7", ["city-motion"]],
-    ["venue-exterior", "#adc49f", ["garden-petals"]],
-    ["lobby", "#dedbd2", ["lobby-glint"]],
-    ["bridal-room", "#e7d8d8", ["bridal-sparkle"]],
-    ["ceremony-hall", "#536e5e", ["aisle-light"]],
-    ["restroom", "#d6e5e1", ["mirror-glint"]],
-    ["banquet", "#d9cfb9", ["banquet-light"]]
-  ] as const)("resolves the %s background and visual settings", (zoneId, fallbackColor, effects) => {
+    ["home", "#d8c6b4", ["window-light"], "warm-wood", ["mote", "glint"]],
+    ["neighborhood", "#9eb79e", ["leaf-shadow"], "garden-stone", ["petal", "mote"]],
+    ["subway-station", "#c8d2cf", ["station-glow"], "station-terrazzo", ["streak", "glint"]],
+    ["subway-train", "#d8ddd7", ["city-motion"], "train-metal", ["streak", "shimmer"]],
+    ["venue-exterior", "#adc49f", ["garden-petals"], "garden-path", ["petal", "glint"]],
+    ["lobby", "#dedbd2", ["lobby-glint"], "lobby-marble", ["glint", "shimmer"]],
+    ["bridal-room", "#e7d8d8", ["bridal-sparkle"], "bridal-carpet", ["petal", "glint"]],
+    ["ceremony-hall", "#536e5e", ["aisle-light"], "ceremony-velvet", ["mote", "glint"]],
+    ["restroom", "#d6e5e1", ["mirror-glint"], "restroom-tile", ["shimmer", "glint"]],
+    ["banquet", "#d9cfb9", ["banquet-light"], "banquet-parquet", ["glint", "mote"]]
+  ] as const)("resolves the %s background and visual settings", (
+    zoneId,
+    fallbackColor,
+    effects,
+    texture,
+    atmosphere
+  ) => {
     expect(resolveWorldVisual(zoneId, "./base/")).toEqual({
       backgroundUrl: `./base/assets/maps/v2/${zoneId}/background.webp`,
       fallbackColor,
-      effects
+      effects,
+      texture,
+      atmosphere
     });
   });
 

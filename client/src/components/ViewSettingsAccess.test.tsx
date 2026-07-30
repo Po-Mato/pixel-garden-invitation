@@ -33,10 +33,12 @@ describe("ViewSettingsAccess", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "환경 설정" }));
     const textScale = screen.getByRole("group", { name: "글자 크기" });
+    const mapEffects = screen.getByRole("group", { name: "맵 화면 효과 품질" });
     fireEvent.click(within(textScale).getByRole("button", { name: "크게" }));
     fireEvent.click(screen.getByRole("switch", { name: "움직임 줄이기" }));
 
     expect(within(textScale).getByRole("button", { name: "크게" })).toHaveAttribute("aria-pressed", "true");
+    expect(within(mapEffects).getByRole("button", { name: "자동" })).toHaveAttribute("aria-pressed", "true");
     expect(document.documentElement).toHaveAttribute("data-text-scale", "large");
     expect(document.documentElement).toHaveAttribute("data-reduce-motion", "true");
   });

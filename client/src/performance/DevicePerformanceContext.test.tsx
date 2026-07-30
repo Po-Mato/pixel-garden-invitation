@@ -3,6 +3,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { fetchInvitationPerformanceConfig } from "../api/performanceConfigApi";
 import {
   DevicePerformanceProvider,
+  effectsPreferenceStorageKey,
+  loadEffectsPreference,
+  resolvePreferredEffectsQuality,
+  saveEffectsPreference,
   resolveDevicePerformanceStatus,
   useDevicePerformance
 } from "./DevicePerformanceContext";
@@ -24,6 +28,7 @@ afterEach(() => {
   delete document.documentElement.dataset.performanceMode;
   delete document.documentElement.dataset.performanceReason;
   delete document.documentElement.dataset.effectsQuality;
+  delete document.documentElement.dataset.effectsPreference;
 });
 
 describe("기기 성능 자동 최적화", () => {
@@ -90,5 +95,38 @@ describe("기기 성능 자동 최적화", () => {
 
     render(<DevicePerformanceProvider><TuningStatus /></DevicePerformanceProvider>);
     await waitFor(() => expect(screen.getByText("observed:87")).toBeInTheDocument());
+  });
+
+  it("사용자가 자동보다 낮은 효과 단계를 선택하고 기기에 저장한다", () => {
+    const values = new Map<string, string>();
+    const storage = {
+      getItem: vi.fn((key: string) => values.get(key) ?? null),
+      setItem: vi.fn((key: string, value: string) => { values.set(key, value); })
+    };
+    expect(loadEffectsPreference(storage)).toBe("auto");
+    expect(saveEffectsPreference("reduced", storage)).toBe(true);
+    expect(values.get(effectsPreferenceStorageKey)).toBe("reduced");
+    expect(loadEffectsPreference(storage)).toBe("reduced");
+    expect(resolvePreferredEffectsQuality("full", "reduced")).toBe("reduced");
+    expect(resolvePreferredEffectsQuality("minimal", "full")).toBe("minimal");
+  });
+
+  it("환경 설정에서 선택한 효과 단계를 즉시 공유한다", () => {
+    function Quality() {
+      const status = useDevicePerformance();
+      return (
+        <button type="button" onClick={() => status.setEffectsPreference("minimal")}>
+          {status.effectsPreference}:{status.effectsQuality}
+        </button>
+      );
+    }
+    render(
+      <DevicePerformanceProvider initialEffectsPreference="auto">
+        <Quality />
+      </DevicePerformanceProvider>
+    );
+    act(() => { screen.getByRole("button").click(); });
+    expect(screen.getByText("minimal:minimal")).toBeInTheDocument();
+    expect(document.documentElement.dataset.effectsPreference).toBe("minimal");
   });
 });
