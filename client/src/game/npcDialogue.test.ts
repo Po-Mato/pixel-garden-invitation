@@ -82,7 +82,7 @@ describe("resolveNpcDialogue", () => {
       zoneId: "bridal-room",
       nickname: "민지",
       completedCheckpointIds: [],
-      conversation: { interactionCount: 1, lastChoiceId: "heart", relationshipLabel: "반가운 재회" }
+      conversation: { interactionCount: 1, affinityPoints: 2, affinityLevel: 1, lastChoiceId: "heart", relationshipLabel: "반가운 재회", specialRewardLabel: null }
     });
     expect(returning.message).toContain("따뜻한 마음");
     expect(returning.relationshipLabel).toBe("반가운 재회");
@@ -92,7 +92,7 @@ describe("resolveNpcDialogue", () => {
       zoneId: "ceremony-hall",
       nickname: "민지",
       completedCheckpointIds: [],
-      conversation: { interactionCount: 3, lastChoiceId: "celebrate", relationshipLabel: "소중한 인연" }
+      conversation: { interactionCount: 3, affinityPoints: 6, affinityLevel: 3, lastChoiceId: "celebrate", relationshipLabel: "소중한 인연", specialRewardLabel: "신랑의 축배 메시지" }
     });
     expect(ending.message).toContain("힘차게 축하");
     expect(ending.relationshipLabel).toBe("소중한 인연");

@@ -1,0 +1,54 @@
+import { describe, expect, it, vi } from "vitest";
+import { createGameSaveBackup, parseGameSaveBackup, restoreGameSaveBackup } from "./gameSaveBackup";
+
+function storage(initial: Record<string, string> = {}) {
+  const values = new Map(Object.entries(initial));
+  return {
+    get length() { return values.size; },
+    key: (index: number) => [...values.keys()][index] ?? null,
+    getItem: (key: string) => values.get(key) ?? null,
+    setItem: (key: string, value: string) => { values.set(key, value); },
+    removeItem: (key: string) => { values.delete(key); }
+  };
+}
+
+describe("gameSaveBackup", () => {
+  it("게임 진행만 백업하고 관리자·RSVP 데이터는 제외한다", () => {
+    const source = storage({
+      "wedding-game:journey-progress:v1": "journey",
+      "wedding-world-secrets:v1": "secrets",
+      "wedding-admin-session:v1": "admin",
+      "wedding-rsvp-draft:v1": "rsvp"
+    });
+    expect(createGameSaveBackup(source, "2027-05-01T00:00:00.000Z").entries).toEqual({
+      "wedding-game:journey-progress:v1": "journey",
+      "wedding-world-secrets:v1": "secrets"
+    });
+  });
+
+  it("허용된 백업만 복원하고 실패하면 기존 값을 되돌린다", () => {
+    const target = storage({ "wedding-game:journey-progress:v1": "old" });
+    const backup = parseGameSaveBackup(JSON.stringify({
+      schema: "wedding-game-save",
+      version: 1,
+      createdAt: "2027-05-01T00:00:00.000Z",
+      entries: { "wedding-game:journey-progress:v1": "new", "wedding-world-secrets:v1": "secret" }
+    }));
+    expect(restoreGameSaveBackup(backup, target)).toBe(2);
+    expect(target.getItem("wedding-game:journey-progress:v1")).toBe("new");
+
+    const failing = { ...target, setItem: vi.fn((key: string, value: string) => {
+      if (key === "wedding-world-secrets:v1" && value === "secret") throw new Error("quota");
+      target.setItem(key, value);
+    }) };
+    target.setItem("wedding-game:journey-progress:v1", "old");
+    expect(() => restoreGameSaveBackup(backup, failing)).toThrow("quota");
+    expect(target.getItem("wedding-game:journey-progress:v1")).toBe("old");
+  });
+
+  it("알 수 없는 항목이 든 파일을 거부한다", () => {
+    expect(() => parseGameSaveBackup(JSON.stringify({
+      schema: "wedding-game-save", version: 1, createdAt: "now", entries: { "admin-token": "secret" }
+    }))).toThrow("허용되지 않은");
+  });
+});

@@ -78,6 +78,33 @@
   word-break: keep-all;
 }
 
+.npc-dialogue__affinity {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.npc-dialogue__affinity > span { display: flex; gap: 3px; }
+.npc-dialogue__affinity i { width: 15px; height: 5px; border: 1px solid #b99b9c; background: #e8ddd2; }
+.npc-dialogue__affinity i[data-filled] { border-color: #a75f73; background: #d98091; }
+.npc-dialogue__affinity small { color: #7b6667; font-size: 7px; font-weight: 900; }
+
+.npc-dialogue__reward {
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr);
+  align-items: center;
+  gap: 6px;
+  border: 1px solid #c99e54;
+  padding: 5px 6px;
+  background: #fff7d9;
+  color: #795629;
+}
+.npc-dialogue__reward[data-new] { box-shadow: inset 0 0 0 2px #f2d58d; }
+.npc-dialogue__reward > svg { width: 17px; height: 17px; }
+.npc-dialogue__reward > span { display: grid; gap: 1px; }
+.npc-dialogue__reward small { font-size: 6px; font-weight: 800; }
+.npc-dialogue__reward strong { font-size: 8px; }
+
 .npc-dialogue__crowd {
   display: grid;
   grid-template-columns: 16px minmax(0, 1fr);

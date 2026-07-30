@@ -5,6 +5,7 @@ export type JourneyKeepsakeData = {
   timeLabel: string;
   venueLabel: string;
   checkpointLabels: readonly string[];
+  checkpointStates?: readonly { label: string; complete: boolean }[];
   photoUrl: string;
   publicUrl: string;
   visitSummary?: string;
@@ -134,28 +135,29 @@ function drawStamp(
   centerX: number,
   centerY: number,
   index: number,
-  label: string
+  label: string,
+  complete = true
 ) {
   const colors = ["#bd6673", "#d69b4f", "#67947d", "#6384a5", "#94719b"];
   context.save();
   context.translate(centerX, centerY);
   context.rotate((index % 2 === 0 ? -1 : 1) * 0.045);
-  context.strokeStyle = colors[index % colors.length];
+  context.strokeStyle = complete ? colors[index % colors.length] : "#b8aea3";
   context.lineWidth = 7;
   context.setLineDash([8, 7]);
   context.beginPath();
   context.arc(0, 0, 58, 0, Math.PI * 2);
   context.stroke();
   context.setLineDash([]);
-  context.fillStyle = "#fffaf0";
+  context.fillStyle = complete ? "#fffaf0" : "#eee8df";
   context.beginPath();
   context.arc(0, 0, 45, 0, Math.PI * 2);
   context.fill();
-  context.fillStyle = colors[index % colors.length];
+  context.fillStyle = complete ? colors[index % colors.length] : "#a69b91";
   context.font = "900 34px sans-serif";
   context.textAlign = "center";
   context.textBaseline = "middle";
-  context.fillText("✓", 0, -2);
+  context.fillText(complete ? "✓" : "·", 0, -2);
   context.font = "800 19px sans-serif";
   context.fillText(label.replace("웨딩 ", "").slice(0, 6), 0, 79);
   context.restore();
@@ -210,17 +212,20 @@ export async function createJourneyKeepsakeBlob(data: JourneyKeepsakeData): Prom
   context.lineWidth = 5;
   context.stroke();
 
+  const checkpointStates = data.checkpointStates ?? data.checkpointLabels.map((label) => ({ label, complete: true }));
+  const completedCount = checkpointStates.filter(({ complete }) => complete).length;
+  const journeyComplete = checkpointStates.length > 0 && completedCount === checkpointStates.length;
   context.fillStyle = "#a75c68";
   context.font = "900 24px sans-serif";
-  context.fillText("TRAIL COMPLETE · 5 / 5", cardWidth / 2, 666);
+  context.fillText(`${journeyComplete ? "TRAIL COMPLETE" : "TRAIL IN PROGRESS"} · ${completedCount} / ${checkpointStates.length}`, cardWidth / 2, 666);
   context.fillStyle = "#3f3430";
   context.font = "900 48px serif";
-  context.fillText("두 사람의 모든 순간을 만났어요", cardWidth / 2, 731);
+  context.fillText(journeyComplete ? "두 사람의 모든 순간을 만났어요" : "축하의 정원을 함께 걷고 있어요", cardWidth / 2, 731);
 
   const stampGap = 178;
   const stampStart = cardWidth / 2 - stampGap * 2;
-  data.checkpointLabels.slice(0, 5).forEach((label, index) => {
-    drawStamp(context, stampStart + stampGap * index, 855, index, label);
+  checkpointStates.slice(0, 5).forEach(({ label, complete }, index) => {
+    drawStamp(context, stampStart + stampGap * index, 855, index, label, complete);
   });
 
   if (data.travelLabels?.length) {
@@ -261,7 +266,7 @@ export async function createJourneyKeepsakeBlob(data: JourneyKeepsakeData): Prom
 
   context.fillStyle = "#56745f";
   context.font = "800 24px sans-serif";
-  context.fillText("함께 걸어주셔서 고맙습니다", cardWidth / 2, 1250);
+  context.fillText(journeyComplete ? "함께 걸어주셔서 고맙습니다" : "다음 추억도 천천히 만나보세요", cardWidth / 2, 1250);
 
   return canvasToBlob(canvas);
 }
@@ -290,7 +295,7 @@ export async function shareJourneyKeepsake(
   const shareData: ShareData = {
     files: [file],
     title: `${data.coupleNames} 결혼식 여정 카드`,
-    text: `${data.guestName}님이 두 사람의 축하 여정을 완주했어요.`,
+    text: `${data.guestName}님의 축하 여정을 담았어요.`,
     url: data.publicUrl
   };
 

@@ -11,6 +11,9 @@ export type NpcDialogue = {
   tone: "welcome" | "thanks" | "celebration";
   personalityLabel?: string;
   relationshipLabel?: NpcConversationSnapshot["relationshipLabel"];
+  affinityLevel?: NpcConversationSnapshot["affinityLevel"];
+  specialRewardLabel?: string | null;
+  rewardUnlocked?: boolean;
   crowdMessage?: string;
   responded?: boolean;
 };
@@ -83,12 +86,14 @@ export function resolveNpcDialogue({
   nickname,
   completedCheckpointIds,
   weddingPhase = null,
-  conversation = { interactionCount: 0, lastChoiceId: null, relationshipLabel: "첫 만남" }
+  conversation = { interactionCount: 0, affinityPoints: 0, affinityLevel: 0, lastChoiceId: null, relationshipLabel: "첫 만남", specialRewardLabel: null }
 }: ResolveNpcDialogueInput): NpcDialogue {
   const completed = new Set(completedCheckpointIds);
   const allComplete = journeyCheckpointIds.every((checkpointId) => completed.has(checkpointId));
   const personalityLabel = npcPersonalityLabels[npcId];
   const relationshipLabel = conversation.relationshipLabel;
+  const affinityLevel = conversation.affinityLevel;
+  const specialRewardLabel = conversation.specialRewardLabel;
 
   if (allComplete) {
     return {

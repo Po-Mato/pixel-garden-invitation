@@ -142,6 +142,12 @@ const interactionsByZone: Record<WorldZoneId, readonly WorldPropInteraction[]> =
 export const totalWorldSecrets = Object.values(interactionsByZone)
   .reduce((total, interactions) => total + interactions.length, 0);
 
+export type WorldSecretCatalogEntry = WorldPropInteraction & { zoneId: WorldZoneId };
+
+export const worldSecretCatalog: readonly WorldSecretCatalogEntry[] = (
+  Object.entries(interactionsByZone) as Array<[WorldZoneId, readonly WorldPropInteraction[]]>
+).flatMap(([zoneId, interactions]) => interactions.map((interaction) => ({ ...interaction, zoneId })));
+
 export function worldPropInteractionsForZone(zone: WorldZone): Array<{
   decoration: WorldDecoration;
   interaction: WorldPropInteraction;

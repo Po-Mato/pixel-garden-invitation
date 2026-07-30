@@ -51,7 +51,10 @@
 }
 
 .world-secret-progress,
+.world-secret-book,
 .world-travel-timeline,
+.journey-memory-card-access,
+.game-save-data-center,
 .game-performance-status {
   box-sizing: border-box;
   border: 1px solid #d5cac4;
@@ -60,6 +63,56 @@
   background: rgba(255, 253, 244, 0.96);
   color: #514748;
 }
+
+.game-save-data-center > summary { display: flex; min-height: 32px; align-items: center; cursor: pointer; list-style: none; }
+.game-save-data-center > summary::-webkit-details-marker { display: none; }
+.game-save-data-center > summary span { display: grid; grid-template-columns: 18px minmax(0, 1fr); align-items: center; gap: 1px 5px; }
+.game-save-data-center > summary svg { grid-row: 1 / 3; width: 14px; height: 14px; color: #657c72; }
+.game-save-data-center > summary strong { color: #5c6762; font-size: 9px; }
+.game-save-data-center > summary small { color: #89908b; font-size: 7px; }
+.game-save-data-center > p { margin: 6px 0; color: #6d6864; font-size: 8px; font-weight: 800; }
+.game-save-data-center > div { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 5px; }
+.game-save-data-center button { display: inline-flex; min-height: 30px; align-items: center; justify-content: center; gap: 4px; border: 1px solid #8c9d94; border-radius: 3px; background: #f4f8ef; color: #526d61; font-size: 8px; font-weight: 900; }
+.game-save-data-center button svg { width: 12px; height: 12px; }
+.game-save-data-center input { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; }
+.game-save-data-center > small { display: block; margin-top: 6px; color: #8a7c76; font-size: 7px; line-height: 1.35; }
+
+.journey-memory-card-access > header { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.journey-memory-card-access > header span { display: inline-flex; align-items: center; gap: 4px; color: #78636a; font-size: 9px; font-weight: 900; }
+.journey-memory-card-access > header svg { width: 13px; height: 13px; }
+.journey-memory-card-access > header strong { color: #9a586b; font-size: 9px; }
+.journey-memory-card-access > p { margin: 5px 0 0; color: #6a6160; font-size: 8px; font-weight: 800; }
+.journey-memory-card-access > div { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 5px; margin-top: 7px; }
+.journey-memory-card-access button { display: inline-flex; min-height: 30px; align-items: center; justify-content: center; gap: 4px; border: 1px solid #9c7580; border-radius: 3px; background: #fff7e6; color: #855568; font-size: 8px; font-weight: 900; }
+.journey-memory-card-access button svg { width: 12px; height: 12px; }
+.journey-memory-card-access button:disabled { border-color: #d1c7c1; background: #eeeae4; color: #a59a94; }
+
+.world-secret-book > summary {
+  display: flex;
+  min-height: 34px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  cursor: pointer;
+  list-style: none;
+}
+.world-secret-book > summary::-webkit-details-marker { display: none; }
+.world-secret-book > summary > span { display: grid; grid-template-columns: 16px minmax(0, 1fr); align-items: center; gap: 1px 5px; }
+.world-secret-book > summary svg { grid-row: 1 / 3; width: 14px; height: 14px; color: #936277; }
+.world-secret-book > summary strong { color: #67575b; font-size: 9px; }
+.world-secret-book > summary small { color: #8d7d7d; font-size: 7px; }
+.world-secret-book > summary em { color: #9a586b; font-size: 9px; font-style: normal; font-weight: 900; }
+.world-secret-book ol { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 5px; max-height: 230px; overflow-y: auto; margin: 7px 0 0; padding: 0; list-style: none; }
+.world-secret-book button { display: grid; width: 100%; min-height: 82px; grid-template-columns: 18px minmax(0, 1fr); align-content: start; gap: 3px 5px; border: 1px solid #d6caca; border-radius: 3px; padding: 6px; background: #f0ece6; color: #746a69; text-align: left; }
+.world-secret-book button > span { display: grid; grid-row: 1 / 3; width: 18px; height: 18px; place-items: center; background: #ddd5cd; }
+.world-secret-book button > span svg { width: 11px; height: 11px; }
+.world-secret-book button > strong { overflow: hidden; font-size: 8px; text-overflow: ellipsis; white-space: nowrap; }
+.world-secret-book button > small { display: flex; align-items: center; gap: 2px; color: #8a7d7a; font-size: 7px; }
+.world-secret-book button > small svg { width: 9px; height: 9px; }
+.world-secret-book button > p { display: -webkit-box; grid-column: 1 / -1; overflow: hidden; margin: 2px 0 0; font-size: 7px; line-height: 1.35; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+.world-secret-book li[data-found] button { border-color: #c49aa6; background: #fff8e8; color: #6f4f5b; }
+.world-secret-book li[data-found] button > span { background: #b96f83; color: #fff; }
+.world-secret-book button:disabled { opacity: 1; cursor: default; }
 
 .world-secret-progress > header,
 .world-travel-timeline > header,

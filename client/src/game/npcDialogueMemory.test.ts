@@ -16,8 +16,11 @@ describe("npcDialogueMemory", () => {
 
     expect(npcConversationSnapshot(memory, "bride")).toEqual({
       interactionCount: 3,
+      affinityPoints: 5,
+      affinityLevel: 2,
       lastChoiceId: "celebrate",
-      relationshipLabel: "소중한 인연"
+      relationshipLabel: "반가운 재회",
+      specialRewardLabel: null
     });
     expect(npcConversationSnapshot(memory, "groom").relationshipLabel).toBe("첫 만남");
     expect(storage.setItem).toHaveBeenLastCalledWith(npcDialogueMemoryStorageKey, expect.any(String));
@@ -30,5 +33,18 @@ describe("npcDialogueMemory", () => {
     });
     expect(memory.records.bride?.choiceIds).toEqual(["heart"]);
     expect(npcConversationSnapshot(memory, "bride").interactionCount).toBe(4);
+  });
+
+  it("호감도 6점에서 NPC 고유 특별 보상을 연다", () => {
+    let memory = loadNpcDialogueMemory(null);
+    memory = rememberNpcDialogueChoice(memory, "groom", "heart", null);
+    memory = rememberNpcDialogueChoice(memory, "groom", "celebrate", null);
+    memory = rememberNpcDialogueChoice(memory, "groom", "heart", null);
+    expect(npcConversationSnapshot(memory, "groom")).toMatchObject({
+      affinityPoints: 6,
+      affinityLevel: 3,
+      relationshipLabel: "소중한 인연",
+      specialRewardLabel: "신랑의 축배 메시지"
+    });
   });
 });

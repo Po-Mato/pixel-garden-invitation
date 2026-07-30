@@ -101,6 +101,7 @@ export function JourneyCompletion({
     timeLabel: formatEventStartTime(event),
     venueLabel: formatVenueLabel(event),
     checkpointLabels: journeyCheckpoints.map((checkpoint) => checkpoint.label),
+    checkpointStates: journeyCheckpoints.map((checkpoint) => ({ label: checkpoint.label, complete: true })),
     photoUrl: photoMemory?.dataUrl || resolveAssetUrl(finalePhoto.assetPath),
     publicUrl: canonicalInvitationUrl(),
     visitSummary: `${completedVisitCount}곳 · ${visitDuration}`,

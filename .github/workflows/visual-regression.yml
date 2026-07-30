@@ -65,10 +65,12 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm visual:test
-      - name: Install Chromium for mobile HUD audit
-        run: pnpm exec playwright install --with-deps chromium
+      - name: Install mobile browser engines
+        run: pnpm exec playwright install --with-deps chromium webkit
       - name: Audit live mobile HUD screenshots
         run: pnpm visual:hud-browser
+      - name: Audit Android and iOS long-session stability
+        run: pnpm visual:mobile-soak
       - name: Upload visual region report
         if: always()
         uses: actions/upload-artifact@v7
@@ -109,5 +111,13 @@ jobs:
         with:
           name: mobile-hud-browser-${{ github.run_id }}
           path: .superpowers/visual-regression/mobile-hud-browser
+          if-no-files-found: ignore
+          retention-days: 14
+      - name: Upload mobile device soak audit
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: mobile-device-soak-${{ github.run_id }}
+          path: .superpowers/visual-regression/mobile-device-soak
           if-no-files-found: ignore
           retention-days: 14

@@ -1,4 +1,4 @@
-import { BookOpen, Hand, Heart, PartyPopper, Users, X } from "lucide-react";
+import { BookOpen, Gift, Hand, Heart, PartyPopper, Users, X } from "lucide-react";
 import { useEffect } from "react";
 import {
   npcDialogueChoices,
@@ -26,6 +26,7 @@ export function NpcDialogueBubble({
   onChoose,
   placement = "above"
 }: NpcDialogueBubbleProps) {
+  const affinityLevel = dialogue.affinityLevel ?? 0;
   useEffect(() => {
     const timer = window.setTimeout(onClose, dialogueVisibleMs);
     return () => window.clearTimeout(timer);
@@ -47,7 +48,19 @@ export function NpcDialogueBubble({
         {dialogue.personalityLabel ? <i>{dialogue.personalityLabel}</i> : null}
         {dialogue.relationshipLabel ? <i data-relationship>{dialogue.relationshipLabel}</i> : null}
       </small>
+      {typeof dialogue.affinityLevel === "number" ? (
+        <div className="npc-dialogue__affinity" aria-label={`인연 ${affinityLevel}/3단계`}>
+          <span aria-hidden="true">{Array.from({ length: 3 }, (_, index) => <i key={index} data-filled={index < affinityLevel || undefined} />)}</span>
+          <small>인연 {affinityLevel}/3</small>
+        </div>
+      ) : null}
       <p aria-live="polite">{dialogue.message}</p>
+      {dialogue.specialRewardLabel ? (
+        <div className="npc-dialogue__reward" data-new={dialogue.rewardUnlocked || undefined} role={dialogue.rewardUnlocked ? "status" : undefined}>
+          <Gift aria-hidden="true" />
+          <span><small>{dialogue.rewardUnlocked ? "새 특별 보상" : "특별 보상"}</small><strong>{dialogue.specialRewardLabel}</strong></span>
+        </div>
+      ) : null}
       {dialogue.crowdMessage ? (
         <div className="npc-dialogue__crowd" role="status">
           <Users aria-hidden="true" />

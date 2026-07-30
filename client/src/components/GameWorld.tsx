@@ -235,6 +235,7 @@ import { GameQuickDock } from "./GameQuickDock";
 import { InvitationShareAccess } from "./InvitationShareAccess";
 import { JourneyCompletion } from "./JourneyCompletion";
 import { JourneyNextActionCard } from "./JourneyNextActionCard";
+import { JourneyMemoryCardAccess } from "./JourneyMemoryCardAccess";
 import type {
   JourneyRouteComparisonOption,
   JourneyRoutePreference
@@ -277,8 +278,10 @@ import { WorldDecoration } from "./WorldDecoration";
 import { WorldInteractiveProp, WorldPropMoment } from "./WorldInteractiveProp";
 import { WorldMiniMap } from "./WorldMiniMap";
 import { WorldSecretProgress } from "./WorldSecretProgress";
+import { WorldSecretCollectionBook } from "./WorldSecretCollectionBook";
 import { WorldTravelTimeline } from "./WorldTravelTimeline";
 import { GamePerformanceStatus } from "./GamePerformanceStatus";
+import { GameSaveDataCenter } from "./GameSaveDataCenter";
 import { WeddingPhaseAnnouncement } from "./WeddingPhaseAnnouncement";
 import "../journey.css";
 import "../game-guide.css";
@@ -1433,6 +1436,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   const showNpcDialogue = useCallback((npcId: NpcId) => {
     const npc = activeZone.npcs.find((candidate) => candidate.id === npcId);
     if (!npc) return;
+    const conversation = npcConversationSnapshot(npcDialogueMemory, npcId);
     const dialogue = resolveNpcDialogue({
       npcId,
       zoneId: activeZone.id,
@@ -1443,11 +1447,15 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
         new Date(),
         journeyProgressRef.current.completedIds.includes("ceremony")
       )?.phase,
-      conversation: npcConversationSnapshot(npcDialogueMemory, npcId)
+      conversation
     });
     stampWorldInteraction("couple");
     completeZoneMiniQuestAction({ type: "npc", id: npcId });
-    setActiveNpcDialogue(dialogue);
+    setActiveNpcDialogue({
+      ...dialogue,
+      affinityLevel: conversation.affinityLevel,
+      specialRewardLabel: conversation.specialRewardLabel
+    });
     setTravelStatus(`${npc.label}와 이야기를 나눴어요`);
     playFeedback("dialogue");
   }, [activeZone, completeZoneMiniQuestAction, npcDialogueMemory, playFeedback, profile.nickname, stampWorldInteraction]);
@@ -1455,11 +1463,21 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   const chooseNpcDialogue = useCallback((choice: NpcDialogueChoice) => {
     if (!activeNpcDialogue) return;
     const result = resolveNpcDialogueChoice(activeNpcDialogue, choice.id, profile.nickname);
-    setNpcDialogueMemory((memory) => rememberNpcDialogueChoice(memory, activeNpcDialogue.npcId, choice.id));
+    const previousConversation = npcConversationSnapshot(npcDialogueMemory, activeNpcDialogue.npcId);
+    const nextMemory = rememberNpcDialogueChoice(npcDialogueMemory, activeNpcDialogue.npcId, choice.id);
+    const nextConversation = npcConversationSnapshot(nextMemory, activeNpcDialogue.npcId);
+    const rewardUnlocked = previousConversation.specialRewardLabel === null && nextConversation.specialRewardLabel !== null;
+    setNpcDialogueMemory(nextMemory);
     handleGuestReaction(result.reaction);
-    setActiveNpcDialogue(result.dialogue);
-    setTravelStatus(result.status);
-  }, [activeNpcDialogue, handleGuestReaction, profile.nickname]);
+    setActiveNpcDialogue({
+      ...result.dialogue,
+      relationshipLabel: nextConversation.relationshipLabel,
+      affinityLevel: nextConversation.affinityLevel,
+      specialRewardLabel: nextConversation.specialRewardLabel,
+      rewardUnlocked
+    });
+    setTravelStatus(rewardUnlocked ? `${nextConversation.specialRewardLabel}을 받았어요` : result.status);
+  }, [activeNpcDialogue, handleGuestReaction, npcDialogueMemory, profile.nickname]);
 
   const cancelPortalWalk = useCallback(() => {
     if (!portalIntentRef.current) return;
@@ -4135,6 +4153,12 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
           currentHint={activeWorldSecretHint}
           currentClue={activeWorldSecretClue}
         />
+        <WorldSecretCollectionBook
+          collection={worldSecretCollection}
+          activeZoneId={activeZone.id}
+          disabled={Boolean(portalTransition)}
+          onSelectZone={handleJourneySelect}
+        />
         <WorldTravelTimeline
           zones={gardenWorld.zones}
           history={worldTravelHistory}
@@ -4142,6 +4166,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
           disabled={Boolean(portalTransition)}
           onSelectZone={handleJourneySelect}
         />
+        <JourneyMemoryCardAccess nickname={profile.nickname} progress={journeyProgress} />
         <ol className="world-journey" aria-label="하객 여정">
           {gardenWorld.zones.map((zone) => {
             const checkpoints = journeyCheckpoints.filter((checkpoint) => checkpoint.zoneId === zone.id);
@@ -4167,6 +4192,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
           })}
         </ol>
         <GamePerformanceStatus performance={devicePerformance} />
+        <GameSaveDataCenter />
         {recommendedCheckpoint && recommendedZone ? (
           <>
             <button
