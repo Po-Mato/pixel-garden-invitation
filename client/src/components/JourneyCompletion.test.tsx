@@ -122,7 +122,8 @@ describe("JourneyCompletion", () => {
     localStorage.setItem(worldSecretCollectionStorageKey, JSON.stringify({
       version: 1,
       discoveredIds: ["first-invitation", "aisle-light"],
-      unlockedAchievementIds: ["first-discovery"]
+      unlockedAchievementIds: ["first-discovery"],
+      equippedRewardId: "none"
     }));
 
     renderCompletion();

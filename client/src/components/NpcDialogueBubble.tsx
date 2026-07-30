@@ -55,6 +55,7 @@ export function NpcDialogueBubble({
         </div>
       ) : null}
       <p aria-live="polite">{dialogue.message}</p>
+      {dialogue.branchLabel ? <span className="npc-dialogue__branch">{dialogue.branchLabel}</span> : null}
       {dialogue.specialRewardLabel ? (
         <div className="npc-dialogue__reward" data-new={dialogue.rewardUnlocked || undefined} role={dialogue.rewardUnlocked ? "status" : undefined}>
           <Gift aria-hidden="true" />
@@ -66,6 +67,9 @@ export function NpcDialogueBubble({
           <Users aria-hidden="true" />
           <span>{dialogue.crowdMessage}</span>
         </div>
+      ) : null}
+      {dialogue.groupEventMessage ? (
+        <div className="npc-dialogue__group-event" role="status"><PartyPopper aria-hidden="true" /><strong>{dialogue.groupEventMessage}</strong></div>
       ) : null}
       {onChoose && !dialogue.responded ? (
         <div className="npc-dialogue__choices" aria-label="대화 답변 선택">

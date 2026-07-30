@@ -99,8 +99,14 @@ describe("WeddingPhotoAlbum", () => {
 
     expect(screen.getByLabelText("포토앨범 3 / 3 장")).toBeInTheDocument();
     expect(screen.getByText("세 장의 축하가 완성됐어요")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "나이트" }));
+    fireEvent.click(screen.getByRole("button", { name: "1번 사진 아래로 이동" }));
     fireEvent.click(screen.getByRole("button", { name: "저장" }));
-    await waitFor(() => expect(photoMocks.createStrip).toHaveBeenCalledWith(expect.objectContaining({ album: completeAlbum })));
+    await waitFor(() => expect(photoMocks.createStrip).toHaveBeenCalledWith(expect.objectContaining({
+      album: completeAlbum,
+      theme: "night",
+      photoOrder: ["bridal-flower-wall", "lobby-photo-wall", "ceremony-aisle"]
+    })));
     expect(photoMocks.saveStrip).toHaveBeenCalledWith(expect.any(Blob), "정원하객");
 
     fireEvent.click(screen.getByRole("button", { name: "공유" }));

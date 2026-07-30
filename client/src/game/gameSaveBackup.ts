@@ -9,6 +9,7 @@ type GameSaveStorage = Pick<Storage, "getItem" | "setItem" | "removeItem" | "key
 
 const exactKeys = new Set([
   "wedding-game-feedback:v1",
+  "wedding-game:device-qa:v1",
   "wedding-game-quick-dock:v1",
   "wedding-view-preferences:v1",
   "wedding-map-effects-quality:v1",

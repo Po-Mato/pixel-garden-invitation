@@ -1,4 +1,4 @@
-import { Download, Map, Send } from "lucide-react";
+import { Download, Image as ImageIcon, Map, Palette, Send } from "lucide-react";
 import { useMemo, useState } from "react";
 import { formatEventDate, formatEventStartTime, formatVenueLabel } from "../invitation/calendarEvent";
 import { useCoupleOrder } from "../invitation/CoupleOrderContext";
@@ -6,7 +6,13 @@ import { formatCoupleNames } from "../invitation/coupleOrder";
 import { usePublishedInvitationContent } from "../invitation/PublishedInvitationContentContext";
 import { invitationPublicUrl } from "../invitation/shareInvitation";
 import { journeyCheckpoints, type JourneyProgress } from "../game/journeyProgress";
-import { saveJourneyKeepsake, shareJourneyKeepsake, type JourneyKeepsakeData } from "../game/journeyKeepsake";
+import {
+  journeyKeepsakeThemeLabels,
+  saveJourneyKeepsake,
+  shareJourneyKeepsake,
+  type JourneyKeepsakeData,
+  type JourneyKeepsakeTheme
+} from "../game/journeyKeepsake";
 import { journeyVisitDurationLabel, loadJourneyVisits } from "../game/journeyVisitLog";
 import { gardenWorld, getWorldZone } from "../game/world";
 import { loadWeddingPhotoAlbum } from "../game/weddingPhoto";
@@ -30,11 +36,19 @@ export function JourneyMemoryCardAccess({ nickname, progress }: JourneyMemoryCar
   const { event, content } = usePublishedInvitationContent();
   const coupleOrder = useCoupleOrder();
   const [status, setStatus] = useState<CardStatus>("idle");
+  const [theme, setTheme] = useState<JourneyKeepsakeTheme>("garden");
+  const photoOptions = useMemo(() => {
+    const album = [...loadWeddingPhotoAlbum().photos]
+      .sort((left, right) => right.createdAt - left.createdAt)
+      .map((photo) => ({ id: `album:${photo.photoSpotId}`, label: photo.spotLabel, url: photo.dataUrl }));
+    const gallery = content.gallery.slice(-3).reverse().map((photo) => ({ id: `gallery:${photo.id}`, label: photo.alt, url: resolveAssetUrl(photo.assetPath) }));
+    return [...album, ...gallery].slice(0, 4);
+  }, [content.gallery]);
+  const [selectedPhotoId, setSelectedPhotoId] = useState<string | null>(null);
   const busy = status === "saving" || status === "sharing";
   const data = useMemo<JourneyKeepsakeData>(() => {
     const photoAlbum = loadWeddingPhotoAlbum();
-    const latestPhoto = [...photoAlbum.photos].sort((left, right) => right.createdAt - left.createdAt)[0];
-    const finalePhoto = content.gallery.find((photo) => photo.id === "10-sunlit-finale") ?? content.gallery.at(-1)!;
+    const selectedPhoto = photoOptions.find(({ id }) => id === selectedPhotoId) ?? photoOptions[0];
     const visits = loadJourneyVisits();
     const travelHistory = loadWorldTravelHistory("home");
     const secrets = loadWorldSecretCollection();
@@ -46,15 +60,16 @@ export function JourneyMemoryCardAccess({ nickname, progress }: JourneyMemoryCar
       venueLabel: formatVenueLabel(event),
       checkpointLabels: journeyCheckpoints.map(({ label }) => label),
       checkpointStates: journeyCheckpoints.map(({ id, label }) => ({ label, complete: progress.completedIds.includes(id) })),
-      photoUrl: latestPhoto?.dataUrl || resolveAssetUrl(finalePhoto.assetPath),
+      photoUrl: selectedPhoto.url,
       publicUrl: document.querySelector<HTMLLinkElement>('link[rel="canonical"]')?.href ?? invitationPublicUrl,
       visitSummary: `${progress.completedIds.length}곳 · ${journeyVisitDurationLabel(visits)}`,
       photoCount: photoAlbum.photos.length,
       travelLabels: worldTravelTimelineStops(travelHistory, 5).map(({ zoneId }) => getWorldZone(gardenWorld, zoneId).label),
       secretCount: secrets.discoveredIds.length,
-      totalSecretCount: totalWorldSecrets
+      totalSecretCount: totalWorldSecrets,
+      theme
     };
-  }, [content.gallery, coupleOrder, event, nickname, progress.completedIds]);
+  }, [coupleOrder, event, nickname, photoOptions, progress.completedIds, selectedPhotoId, theme]);
 
   const save = async () => {
     setStatus("saving");
@@ -85,7 +100,22 @@ export function JourneyMemoryCardAccess({ nickname, progress }: JourneyMemoryCar
     <section className="journey-memory-card-access" aria-label="중간 여정 카드">
       <header><span><Map aria-hidden="true" />중간 여정 카드</span><strong>{progress.completedIds.length}/{journeyCheckpoints.length}</strong></header>
       <p>{statusLabel}</p>
-      <div>
+      <details className="journey-memory-card-access__editor">
+        <summary><Palette aria-hidden="true" />카드 꾸미기</summary>
+        <div className="journey-memory-card-access__themes" aria-label="여정 카드 테마">
+          <span><Palette aria-hidden="true" />테마</span>
+          {(Object.keys(journeyKeepsakeThemeLabels) as JourneyKeepsakeTheme[]).map((candidate) => (
+            <button key={candidate} type="button" data-theme={candidate} aria-pressed={theme === candidate} onClick={() => setTheme(candidate)}>{journeyKeepsakeThemeLabels[candidate]}</button>
+          ))}
+        </div>
+        <div className="journey-memory-card-access__photos" aria-label="여정 카드 대표 사진">
+          <span><ImageIcon aria-hidden="true" />대표 사진</span>
+          {photoOptions.map((photo) => (
+            <button key={photo.id} type="button" aria-label={`${photo.label} 대표 사진 선택`} aria-pressed={(selectedPhotoId ?? photoOptions[0]?.id) === photo.id} onClick={() => setSelectedPhotoId(photo.id)}><img src={photo.url} alt="" /></button>
+          ))}
+        </div>
+      </details>
+      <div className="journey-memory-card-access__actions">
         <button type="button" disabled={busy || progress.completedIds.length === 0} onClick={() => void save()}><Download aria-hidden="true" />저장</button>
         <button type="button" disabled={busy || progress.completedIds.length === 0} onClick={() => void share()}><Send aria-hidden="true" />공유</button>
       </div>

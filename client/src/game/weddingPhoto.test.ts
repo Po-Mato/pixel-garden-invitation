@@ -7,6 +7,7 @@ import {
   detectOpaqueSpriteBounds,
   isWeddingPhotoAlbumComplete,
   loadWeddingPhotoAlbum,
+  normalizeWeddingPhotoStripOrder,
   removeGroomLegBackground,
   resolvePhotoCosmeticAnchors,
   loadWeddingPhotoMemory,
@@ -55,6 +56,14 @@ function downloadEnvironment() {
 }
 
 describe("wedding photo", () => {
+  it("포토스트립 순서를 중복 없이 정리하고 빠진 사진을 뒤에 채운다", () => {
+    expect(normalizeWeddingPhotoStripOrder(["ceremony-aisle", "lobby-photo-wall", "ceremony-aisle"])).toEqual([
+      "ceremony-aisle",
+      "lobby-photo-wall",
+      "bridal-flower-wall"
+    ]);
+  });
+
   it("uses the complete neutral walking frame for the bride photo sprite", () => {
     expect(weddingPhotoNpcFrames.bride).toEqual({
       file: "bride__walk.png",

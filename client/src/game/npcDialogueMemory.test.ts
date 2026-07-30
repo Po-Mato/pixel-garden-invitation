@@ -1,6 +1,8 @@
 import { describe, expect, it, vi } from "vitest";
 import {
   loadNpcDialogueMemory,
+  markNpcGroupCelebrationSeen,
+  npcGroupCelebrationReady,
   npcConversationSnapshot,
   npcDialogueMemoryStorageKey,
   rememberNpcDialogueChoice
@@ -46,5 +48,17 @@ describe("npcDialogueMemory", () => {
       relationshipLabel: "소중한 인연",
       specialRewardLabel: "신랑의 축배 메시지"
     });
+  });
+
+  it("두 NPC와 모두 소중한 인연이 되면 단체 축하를 한 번 연다", () => {
+    let memory = loadNpcDialogueMemory(null);
+    for (const npcId of ["bride", "groom"] as const) {
+      memory = rememberNpcDialogueChoice(memory, npcId, "heart", null);
+      memory = rememberNpcDialogueChoice(memory, npcId, "celebrate", null);
+      memory = rememberNpcDialogueChoice(memory, npcId, "heart", null);
+    }
+    expect(npcGroupCelebrationReady(memory)).toBe(true);
+    expect(memory.groupCelebrationSeen).toBe(false);
+    expect(markNpcGroupCelebrationSeen(memory, null).groupCelebrationSeen).toBe(true);
   });
 });

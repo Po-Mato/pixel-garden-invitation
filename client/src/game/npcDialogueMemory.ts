@@ -13,6 +13,7 @@ export type NpcAffinityRewardId = "bride-gratitude-letter" | "groom-toast-messag
 export type NpcDialogueMemory = {
   version: 1;
   records: Partial<Record<NpcId, NpcConversationRecord>>;
+  groupCelebrationSeen: boolean;
 };
 
 export type NpcConversationSnapshot = {
@@ -47,7 +48,7 @@ function browserStorage(): DialogueMemoryStorage | null {
 }
 
 function emptyMemory(): NpcDialogueMemory {
-  return { version: 1, records: {} };
+  return { version: 1, records: {}, groupCelebrationSeen: false };
 }
 
 function parseRecord(value: unknown): NpcConversationRecord | null {
@@ -82,7 +83,7 @@ export function loadNpcDialogueMemory(
       const record = parseRecord(parsed.records?.[npcId]);
       if (record) records[npcId] = record;
     });
-    return { version: 1, records };
+    return { version: 1, records, groupCelebrationSeen: parsed.groupCelebrationSeen === true };
   } catch {
     return emptyMemory();
   }
@@ -103,6 +104,7 @@ export function rememberNpcDialogueChoice(
     : current.unlockedRewardIds;
   const next: NpcDialogueMemory = {
     version: 1,
+    groupCelebrationSeen: memory.groupCelebrationSeen,
     records: {
       ...memory.records,
       [npcId]: {
@@ -118,6 +120,23 @@ export function rememberNpcDialogueChoice(
     storage?.setItem(npcDialogueMemoryStorageKey, JSON.stringify(next));
   } catch {
     // The current conversation still continues when private storage is unavailable.
+  }
+  return next;
+}
+
+export function npcGroupCelebrationReady(memory: NpcDialogueMemory): boolean {
+  return (["bride", "groom"] as const).every((npcId) => npcConversationSnapshot(memory, npcId).affinityLevel === 3);
+}
+
+export function markNpcGroupCelebrationSeen(
+  memory: NpcDialogueMemory,
+  storage: DialogueMemoryStorage | null = browserStorage()
+): NpcDialogueMemory {
+  const next = { ...memory, groupCelebrationSeen: true };
+  try {
+    storage?.setItem(npcDialogueMemoryStorageKey, JSON.stringify(next));
+  } catch {
+    // The celebration remains visible for the current session.
   }
   return next;
 }

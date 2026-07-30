@@ -97,4 +97,18 @@ describe("resolveNpcDialogue", () => {
     expect(ending.message).toContain("힘차게 축하");
     expect(ending.relationshipLabel).toBe("소중한 인연");
   });
+
+  it("높아진 인연과 반복 선택에 전용 답변을 제공한다", () => {
+    const initial = resolveNpcDialogue({ npcId: "bride", zoneId: "bridal-room", nickname: "민지", completedCheckpointIds: [] });
+    const result = resolveNpcDialogueChoice(initial, "heart", "민지", {
+      interactionCount: 3,
+      affinityPoints: 6,
+      affinityLevel: 3,
+      lastChoiceId: "heart",
+      relationshipLabel: "소중한 인연",
+      specialRewardLabel: "신부의 감사 편지"
+    });
+    expect(result.dialogue.branchLabel).toBe("소중한 인연 전용 대화");
+    expect(result.dialogue.message).toContain("눈빛만 봐도");
+  });
 });

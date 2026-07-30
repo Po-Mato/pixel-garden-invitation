@@ -87,6 +87,8 @@ import {
 } from "../game/npcDialogue";
 import {
   loadNpcDialogueMemory,
+  markNpcGroupCelebrationSeen,
+  npcGroupCelebrationReady,
   npcConversationSnapshot,
   rememberNpcDialogueChoice
 } from "../game/npcDialogueMemory";
@@ -210,7 +212,7 @@ import {
   worldPropInteractionsForZone,
   totalWorldSecrets
 } from "../game/worldPropInteractions";
-import { discoverWorldSecret, loadWorldSecretCollection } from "../game/worldSecretCollection";
+import { discoverWorldSecret, equipWorldSecretReward, loadWorldSecretCollection } from "../game/worldSecretCollection";
 import { resolveWorldSecretClue } from "../game/worldSecretClue";
 import { weddingPhaseExperience } from "../game/weddingPhaseExperience";
 import { journeyAssetPrediction, uniquePredictedAppearances } from "../game/journeyAssetPrediction";
@@ -242,6 +244,7 @@ import type {
 } from "./JourneyRouteSheet";
 import { JourneyStampBook, JourneyStampNotice } from "./JourneyStampBook";
 import { NpcDialogueBubble } from "./NpcDialogueBubble";
+import { NpcGroupCelebrationNotice } from "./NpcGroupCelebrationNotice";
 import { OneHandControlQuickToggle } from "./OneHandControlQuickToggle";
 import { PortalDestinationPreview } from "./PortalDestinationPreview";
 import { SpotModal } from "./SpotModal";
@@ -282,6 +285,8 @@ import { WorldSecretCollectionBook } from "./WorldSecretCollectionBook";
 import { WorldTravelTimeline } from "./WorldTravelTimeline";
 import { GamePerformanceStatus } from "./GamePerformanceStatus";
 import { GameSaveDataCenter } from "./GameSaveDataCenter";
+import { GameDeviceReadinessCenter } from "./GameDeviceReadinessCenter";
+import { WorldSecretMemorial } from "./WorldSecretMemorial";
 import { WeddingPhaseAnnouncement } from "./WeddingPhaseAnnouncement";
 import "../journey.css";
 import "../game-guide.css";
@@ -575,7 +580,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   const [photoAlbum, setPhotoAlbum] = useState(loadWeddingPhotoAlbum);
   const [photoAlbumOpen, setPhotoAlbumOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [hudToolsOpen, setHudToolsOpen] = useState(false);
+  const [hudToolsOpen, setHudToolsOpen] = useState(() => window.location.hash.startsWith("#game-transfer="));
   const [hudAutoHidden, setHudAutoHidden] = useState(false);
   const [quickDockSettingsOpen, setQuickDockSettingsOpen] = useState(false);
   const [calendarSheetOpen, setCalendarSheetOpen] = useState(false);
@@ -621,6 +626,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   const [journeyClock, setJourneyClock] = useState(() => new Date());
   const [activeNpcDialogue, setActiveNpcDialogue] = useState<NpcDialogue | null>(null);
   const [npcDialogueMemory, setNpcDialogueMemory] = useState(loadNpcDialogueMemory);
+  const [npcGroupCelebrationActive, setNpcGroupCelebrationActive] = useState(false);
   const [npcMotions, setNpcMotions] = useState<NpcMotionMap>(() => createNpcMotionMap(initialZone));
   const [localReaction, setLocalReaction] = useState<ActiveGuestReaction | null>(null);
   const [activePropMoment, setActivePropMoment] = useState<ActiveWorldPropMoment | null>(null);
@@ -1462,11 +1468,13 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
 
   const chooseNpcDialogue = useCallback((choice: NpcDialogueChoice) => {
     if (!activeNpcDialogue) return;
-    const result = resolveNpcDialogueChoice(activeNpcDialogue, choice.id, profile.nickname);
     const previousConversation = npcConversationSnapshot(npcDialogueMemory, activeNpcDialogue.npcId);
-    const nextMemory = rememberNpcDialogueChoice(npcDialogueMemory, activeNpcDialogue.npcId, choice.id);
+    const result = resolveNpcDialogueChoice(activeNpcDialogue, choice.id, profile.nickname, previousConversation);
+    let nextMemory = rememberNpcDialogueChoice(npcDialogueMemory, activeNpcDialogue.npcId, choice.id);
     const nextConversation = npcConversationSnapshot(nextMemory, activeNpcDialogue.npcId);
     const rewardUnlocked = previousConversation.specialRewardLabel === null && nextConversation.specialRewardLabel !== null;
+    const groupEventUnlocked = npcGroupCelebrationReady(nextMemory) && !nextMemory.groupCelebrationSeen;
+    if (groupEventUnlocked) nextMemory = markNpcGroupCelebrationSeen(nextMemory);
     setNpcDialogueMemory(nextMemory);
     handleGuestReaction(result.reaction);
     setActiveNpcDialogue({
@@ -1474,10 +1482,18 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
       relationshipLabel: nextConversation.relationshipLabel,
       affinityLevel: nextConversation.affinityLevel,
       specialRewardLabel: nextConversation.specialRewardLabel,
-      rewardUnlocked
+      rewardUnlocked,
+      groupEventMessage: groupEventUnlocked ? "두 사람과 주변 하객이 함께 축하하는 인연 피날레가 열렸어요" : undefined
     });
-    setTravelStatus(rewardUnlocked ? `${nextConversation.specialRewardLabel}을 받았어요` : result.status);
+    if (groupEventUnlocked) setNpcGroupCelebrationActive(true);
+    setTravelStatus(groupEventUnlocked ? "인연 피날레 이벤트가 열렸어요" : rewardUnlocked ? `${nextConversation.specialRewardLabel}을 받았어요` : result.status);
   }, [activeNpcDialogue, handleGuestReaction, npcDialogueMemory, profile.nickname]);
+
+  useEffect(() => {
+    if (!npcGroupCelebrationActive) return;
+    const timer = window.setTimeout(() => setNpcGroupCelebrationActive(false), 5_200);
+    return () => window.clearTimeout(timer);
+  }, [npcGroupCelebrationActive]);
 
   const cancelPortalWalk = useCallback(() => {
     if (!portalIntentRef.current) return;
@@ -4031,9 +4047,12 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
       data-collection-rewards={unlockedCelebrationKinds.join(" ") || undefined}
       data-collection-cosmetic={equippedCelebrationCosmetic}
       data-collection-tone={equippedCelebrationTone}
+      data-secret-reward={worldSecretCollection.equippedRewardId}
+      data-group-celebration={npcGroupCelebrationActive || undefined}
       aria-label="모바일 청첩장 월드"
       aria-busy={portalTransition ? "true" : undefined}
     >
+      {npcGroupCelebrationActive ? <NpcGroupCelebrationNotice onClose={() => setNpcGroupCelebrationActive(false)} /> : null}
       <div
         className={`world-portal-transition world-portal-transition--${portalTransition?.phase ?? "idle"}`}
         data-testid="world-portal-transition"
@@ -4158,6 +4177,11 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
           activeZoneId={activeZone.id}
           disabled={Boolean(portalTransition)}
           onSelectZone={handleJourneySelect}
+          onEquipReward={(rewardId) => {
+            const next = equipWorldSecretReward(worldSecretCollection, rewardId);
+            setWorldSecretCollection(next);
+            setTravelStatus(rewardId === "none" ? "숨은 추억 장식을 해제했어요" : "숨은 추억 장식을 착용했어요");
+          }}
         />
         <WorldTravelTimeline
           zones={gardenWorld.zones}
@@ -4193,6 +4217,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
         </ol>
         <GamePerformanceStatus performance={devicePerformance} />
         <GameSaveDataCenter />
+        <GameDeviceReadinessCenter />
         {recommendedCheckpoint && recommendedZone ? (
           <>
             <button
@@ -4397,6 +4422,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
             {activeZone.decorations.map((item) => (
               <WorldDecoration key={item.id} zoneId={activeZone.id} decoration={item} />
             ))}
+            {activeZone.id === "home" && worldSecretCollection.unlockedAchievementIds.includes("wedding-archivist") ? <WorldSecretMemorial /> : null}
             {activeWorldPropInteractions.map(({ decoration, interaction }) => (
               <WorldInteractiveProp
                 key={`interaction:${decoration.id}`}

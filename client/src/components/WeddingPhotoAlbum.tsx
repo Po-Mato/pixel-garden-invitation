@@ -1,11 +1,14 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Camera,
+  ChevronDown,
+  ChevronUp,
   Download,
   Film,
   Image as ImageIcon,
   LockKeyhole,
   Maximize2,
+  Palette,
   RotateCcw,
   Send,
   X
@@ -24,10 +27,12 @@ import {
   shareWeddingPhotoMemoryImage,
   shareWeddingPhotoStripBlob,
   weddingPhotoAlbumProgress,
+  weddingPhotoStripThemeLabels,
   weddingPhotoSpotOrder,
   type WeddingPhotoAlbum as WeddingPhotoAlbumData,
   type WeddingPhotoMemory,
-  type WeddingPhotoStripData
+  type WeddingPhotoStripData,
+  type WeddingPhotoStripTheme
 } from "../game/weddingPhoto";
 import { gardenWorld, type WorldPhotoSpot, type WorldPhotoSpotId } from "../game/world";
 
@@ -81,18 +86,23 @@ export function WeddingPhotoAlbum({ album, nickname, onClose, onRetake }: Weddin
   );
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [status, setStatus] = useState<AlbumStatus>("idle");
+  const [stripTheme, setStripTheme] = useState<WeddingPhotoStripTheme>("garden");
+  const [stripOrder, setStripOrder] = useState<WorldPhotoSpotId[]>([...weddingPhotoSpotOrder]);
   const busy = status === "saving" || status === "sharing";
   const selectedPhoto = memoryForSpot(album, selectedSpotId);
   const selectedSpot = photoSpots.find((spot) => spot.id === selectedSpotId)!;
   const coupleNames = formatCoupleNames(event, coupleOrder);
+  const orderedSpots = stripOrder.map((spotId) => photoSpots.find((spot) => spot.id === spotId)!);
   const stripData = useMemo<WeddingPhotoStripData>(() => ({
     album,
     coupleNames,
     guestName: nickname,
     dateLabel: formatEventDate(event),
     venueLabel: formatVenueLabel(event),
-    publicUrl: canonicalInvitationUrl()
-  }), [album, coupleNames, event, nickname]);
+    publicUrl: canonicalInvitationUrl(),
+    theme: stripTheme,
+    photoOrder: stripOrder
+  }), [album, coupleNames, event, nickname, stripOrder, stripTheme]);
   onCloseRef.current = onClose;
   busyRef.current = busy;
   lightboxOpenRef.current = lightboxOpen;
@@ -158,6 +168,17 @@ export function WeddingPhotoAlbum({ album, nickname, onClose, onRetake }: Weddin
   const retake = (spot: WorldPhotoSpot) => {
     if (busy) return;
     onRetake(spot.id);
+  };
+
+  const moveStripPhoto = (spotId: WorldPhotoSpotId, direction: -1 | 1) => {
+    setStripOrder((current) => {
+      const index = current.indexOf(spotId);
+      const destination = index + direction;
+      if (index < 0 || destination < 0 || destination >= current.length) return current;
+      const next = [...current];
+      [next[index], next[destination]] = [next[destination], next[index]];
+      return next;
+    });
   };
 
   return (
@@ -229,10 +250,10 @@ export function WeddingPhotoAlbum({ album, nickname, onClose, onRetake }: Weddin
             })}
           </div>
 
-          <section className={`wedding-photo-strip${complete ? " is-complete" : ""}`} aria-label="세로 포토스트립">
+          <section className={`wedding-photo-strip${complete ? " is-complete" : ""}`} aria-label="세로 포토스트립" data-theme={stripTheme}>
             <div className="wedding-photo-strip__preview" aria-hidden="true">
               <span className="wedding-photo-strip__title">GARDEN<br />PHOTO</span>
-              {photoSpots.map((spot) => {
+              {orderedSpots.map((spot) => {
                 const photo = memoryForSpot(album, spot.id);
                 return photo
                   ? <img key={spot.id} src={photo.dataUrl} alt="" />
@@ -244,6 +265,12 @@ export function WeddingPhotoAlbum({ album, nickname, onClose, onRetake }: Weddin
               <span><Film aria-hidden="true" /> PHOTO STRIP</span>
               <h3>{complete ? "세 장의 축하가 완성됐어요" : `${3 - progress}장을 더 촬영해주세요`}</h3>
               <p>{complete ? "세로 포토스트립으로 한 번에 간직해보세요." : "세 포토존을 모두 채우면 포토스트립이 열립니다."}</p>
+              <section className="wedding-photo-strip__editor" aria-label="포토스트립 편집">
+                <div className="wedding-photo-strip__themes"><span><Palette aria-hidden="true" />테마</span>{(Object.keys(weddingPhotoStripThemeLabels) as WeddingPhotoStripTheme[]).map((theme) => <button key={theme} type="button" aria-pressed={stripTheme === theme} data-theme={theme} onClick={() => setStripTheme(theme)}>{weddingPhotoStripThemeLabels[theme]}</button>)}</div>
+                <ol aria-label="포토스트립 사진 순서">
+                  {orderedSpots.map((spot, index) => <li key={spot.id}><span><strong>{index + 1}</strong>{spot.label}</span><div><button type="button" aria-label={`${index + 1}번 사진 위로 이동`} title={`${spot.label} 위로 이동`} disabled={index === 0} onClick={() => moveStripPhoto(spot.id, -1)}><ChevronUp aria-hidden="true" /></button><button type="button" aria-label={`${index + 1}번 사진 아래로 이동`} title={`${spot.label} 아래로 이동`} disabled={index === orderedSpots.length - 1} onClick={() => moveStripPhoto(spot.id, 1)}><ChevronDown aria-hidden="true" /></button></div></li>)}
+                </ol>
+              </section>
               <div>
                 <button type="button" disabled={!complete || busy} onClick={() => void buildStrip("save")}>
                   {complete ? <Download aria-hidden="true" /> : <LockKeyhole aria-hidden="true" />}저장

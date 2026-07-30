@@ -120,6 +120,25 @@
 }
 
 .npc-dialogue__crowd svg { width: 14px; height: 14px; color: #a85e70; }
+.npc-dialogue__branch { width: max-content; max-width: 100%; padding: 2px 5px; background: #6f728e; color: #fff; font-size: 6px; font-weight: 900; }
+.npc-dialogue__group-event { display: grid; grid-template-columns: 18px minmax(0, 1fr); align-items: center; gap: 5px; border: 2px solid #d1a94f; padding: 5px; background: #fff1b9; color: #754d38; font-size: 7px; }
+.npc-dialogue__group-event svg { width: 15px; height: 15px; }
+
+.npc-group-celebration { position: absolute; z-index: 9500; top: calc(78px + env(safe-area-inset-top)); left: 50%; display: grid; width: min(330px, calc(100% - 32px)); gap: 5px; border: 3px solid #5b4344; border-radius: 5px; padding: 11px 38px 11px 12px; background: #fff2c9; color: #4e3c3c; box-shadow: inset 0 0 0 2px #e9c97b, 5px 5px 0 rgba(52, 39, 39, 0.4); transform: translateX(-50%); animation: npc-group-event-in 320ms steps(4, end) both; }
+.npc-group-celebration > button { position: absolute; top: 7px; right: 7px; display: grid; width: 27px; height: 27px; place-items: center; border: 1px solid #73565a; border-radius: 50%; background: #f8dbac; color: #5d4448; }
+.npc-group-celebration > button svg { width: 14px; height: 14px; }
+.npc-group-celebration > span,
+.npc-group-celebration > p,
+.npc-group-celebration > small { display: flex; align-items: center; gap: 5px; margin: 0; }
+.npc-group-celebration > span { color: #a05266; font-size: 7px; font-weight: 900; }
+.npc-group-celebration > strong { font-family: Georgia, serif; font-size: 14px; }
+.npc-group-celebration > p { font-size: 8px; font-weight: 800; }
+.npc-group-celebration > small { color: #7e654f; font-size: 7px; font-weight: 900; }
+.npc-group-celebration svg { width: 13px; height: 13px; }
+.game-world[data-group-celebration] .world-npc,
+.game-world[data-group-celebration] .world-player { animation: npc-group-bounce 700ms steps(4, end) 3; }
+@keyframes npc-group-event-in { from { opacity: 0; transform: translate(-50%, -10px); } to { opacity: 1; transform: translate(-50%, 0); } }
+@keyframes npc-group-bounce { 50% { margin-top: -8px; filter: brightness(1.12); } }
 
 .npc-dialogue__close {
   position: absolute;
@@ -362,7 +381,10 @@
 
 html[data-reduce-motion="true"] .npc-dialogue,
 html[data-reduce-motion="true"] .guest-reaction-dock__options,
-html[data-reduce-motion="true"] .guest-reaction-bubble {
+html[data-reduce-motion="true"] .guest-reaction-bubble,
+html[data-reduce-motion="true"] .npc-group-celebration,
+html[data-reduce-motion="true"] .game-world[data-group-celebration] .world-player,
+html[data-reduce-motion="true"] .game-world[data-group-celebration] .world-npc {
   animation: none;
   transition: none;
 }
@@ -370,7 +392,10 @@ html[data-reduce-motion="true"] .guest-reaction-bubble {
 @media (prefers-reduced-motion: reduce) {
   .npc-dialogue,
   .guest-reaction-dock__options,
-  .guest-reaction-bubble {
+  .guest-reaction-bubble,
+  .npc-group-celebration,
+  .game-world[data-group-celebration] .world-player,
+  .game-world[data-group-celebration] .world-npc {
     animation: none;
     transition: none;
   }

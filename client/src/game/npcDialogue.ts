@@ -15,6 +15,8 @@ export type NpcDialogue = {
   specialRewardLabel?: string | null;
   rewardUnlocked?: boolean;
   crowdMessage?: string;
+  branchLabel?: string;
+  groupEventMessage?: string;
   responded?: boolean;
 };
 
@@ -40,10 +42,13 @@ const npcPersonalityLabels: Record<NpcId, string> = {
 export function resolveNpcDialogueChoice(
   dialogue: NpcDialogue,
   choiceId: NpcDialogueChoiceId,
-  nickname: string
+  nickname: string,
+  conversation: NpcConversationSnapshot = { interactionCount: 0, affinityPoints: 0, affinityLevel: 0, lastChoiceId: null, relationshipLabel: "첫 만남", specialRewardLabel: null }
 ): { dialogue: NpcDialogue; reaction: GuestReaction; status: string } {
   const choice = npcDialogueChoices.find(({ id }) => id === choiceId) ?? npcDialogueChoices[0];
-  const message = choice.id === "greet"
+  const repeatedChoice = conversation.affinityLevel >= 2 && conversation.lastChoiceId === choice.id;
+  const closeFriend = conversation.affinityLevel === 3;
+  const defaultMessage = choice.id === "greet"
     ? dialogue.npcId === "bride"
       ? `${nickname}님, 이렇게 가까이서 인사 나눌 수 있어 더 반가워요!`
       : `${nickname}님, 반갑게 맞아주셔서 감사해요. 오늘 편하게 즐겨주세요!`
@@ -52,6 +57,13 @@ export function resolveNpcDialogueChoice(
       : dialogue.npcId === "bride"
         ? `${nickname}님의 축하 덕분에 오늘이 더 환하게 빛나요!`
         : `${nickname}님의 힘찬 축하를 받아 행복하게 잘 살겠습니다!`;
+  const message = closeFriend
+    ? dialogue.npcId === "bride"
+      ? `${nickname}님, 이제 눈빛만 봐도 어떤 마음인지 알 것 같아요. 오늘의 설렘을 오래 함께 기억해 주세요.`
+      : `${nickname}님, 여러 번 나눈 인사가 든든한 응원이 됐어요. 연회장에서도 꼭 다시 만나요.`
+    : repeatedChoice
+      ? `${nickname}님이 같은 마음을 다시 전해주셔서 더 진심으로 느껴져요. 소중히 간직할게요.`
+      : defaultMessage;
   const crowdMessage = choice.id === "greet"
     ? "곁에 있던 하객들도 미소로 인사를 건넸어요"
     : choice.id === "heart"
@@ -63,6 +75,7 @@ export function resolveNpcDialogueChoice(
       ...dialogue,
       message,
       crowdMessage,
+      branchLabel: closeFriend ? "소중한 인연 전용 대화" : repeatedChoice ? "기억한 답변의 후속 대화" : undefined,
       tone: choice.id === "greet" ? "thanks" : "celebration",
       responded: true
     },

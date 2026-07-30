@@ -1,14 +1,18 @@
 import { fireEvent, render, screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { cleanup } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { WorldSecretCollectionBook } from "./WorldSecretCollectionBook";
+
+afterEach(() => cleanup());
 
 describe("WorldSecretCollectionBook", () => {
   it("발견한 추억만 이름을 공개하고 장소 이동을 제공한다", () => {
     const onSelectZone = vi.fn();
     render(<WorldSecretCollectionBook
-      collection={{ version: 1, discoveredIds: ["first-invitation"], unlockedAchievementIds: ["first-discovery"] }}
+      collection={{ version: 1, discoveredIds: ["first-invitation"], unlockedAchievementIds: ["first-discovery"], equippedRewardId: "none" }}
       activeZoneId="home"
       onSelectZone={onSelectZone}
+      onEquipReward={vi.fn()}
     />);
     fireEvent.click(screen.getByText("숨은 추억 컬렉션북"));
     expect(screen.getByRole("list", { name: "숨은 추억 목록" }).children).toHaveLength(10);
@@ -16,5 +20,19 @@ describe("WorldSecretCollectionBook", () => {
     expect(screen.getAllByText("미발견 추억")).toHaveLength(9);
     fireEvent.click(screen.getByRole("button", { name: /2번 미발견 추억, 동네 거리로 이동/ }));
     expect(onSelectZone).toHaveBeenCalledWith("neighborhood");
+  });
+
+  it("발견 단계에 맞는 캐릭터 장식을 착용한다", () => {
+    const onEquipReward = vi.fn();
+    render(<WorldSecretCollectionBook
+      collection={{ version: 1, discoveredIds: ["first-invitation"], unlockedAchievementIds: ["first-discovery"], equippedRewardId: "none" }}
+      activeZoneId="home"
+      onSelectZone={vi.fn()}
+      onEquipReward={onEquipReward}
+    />);
+    fireEvent.click(screen.getByText("숨은 추억 컬렉션북"));
+    fireEvent.click(screen.getByRole("button", { name: /추억 꽃잎 핀/ }));
+    expect(onEquipReward).toHaveBeenCalledWith("memory-petal-pin");
+    expect(screen.getByRole("button", { name: /웨딩 추억 화관/ })).toBeDisabled();
   });
 });

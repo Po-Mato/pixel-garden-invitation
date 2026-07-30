@@ -53,6 +53,16 @@ export type WeddingPhotoStripData = {
   dateLabel: string;
   venueLabel: string;
   publicUrl: string;
+  theme?: WeddingPhotoStripTheme;
+  photoOrder?: readonly WorldPhotoSpotId[];
+};
+
+export type WeddingPhotoStripTheme = "garden" | "rose" | "night";
+
+export const weddingPhotoStripThemeLabels: Record<WeddingPhotoStripTheme, string> = {
+  garden: "정원",
+  rose: "로즈",
+  night: "나이트"
 };
 
 export type WeddingPhotoCapture = {
@@ -80,6 +90,13 @@ export const weddingPhotoSpotOrder = [
   "bridal-flower-wall",
   "ceremony-aisle"
 ] as const satisfies readonly WorldPhotoSpotId[];
+
+export function normalizeWeddingPhotoStripOrder(order?: readonly WorldPhotoSpotId[]): WorldPhotoSpotId[] {
+  const valid = new Set<WorldPhotoSpotId>(weddingPhotoSpotOrder);
+  const result = Array.from(new Set((order ?? []).filter((spotId) => valid.has(spotId))));
+  weddingPhotoSpotOrder.forEach((spotId) => { if (!result.includes(spotId)) result.push(spotId); });
+  return result;
+}
 export const weddingPhotoWidth = 1080;
 export const weddingPhotoHeight = 1350;
 export const weddingPhotoStripWidth = 1080;
@@ -993,7 +1010,7 @@ function drawImageCover(
 
 export async function createWeddingPhotoStrip(data: WeddingPhotoStripData): Promise<Blob> {
   if (!isWeddingPhotoAlbumComplete(data.album)) throw new Error("포토존 세 곳의 사진이 모두 필요합니다.");
-  const photos = weddingPhotoSpotOrder.map((spotId) => data.album.photos.find((photo) => photo.photoSpotId === spotId)!);
+  const photos = normalizeWeddingPhotoStripOrder(data.photoOrder).map((spotId) => data.album.photos.find((photo) => photo.photoSpotId === spotId)!);
   const images = await Promise.all(photos.map((photo) => loadImage(photo.dataUrl)));
   if (images.some((image) => !image)) throw new Error("포토앨범 사진을 불러오지 못했습니다.");
 
@@ -1003,21 +1020,27 @@ export async function createWeddingPhotoStrip(data: WeddingPhotoStripData): Prom
   const context = canvas.getContext("2d");
   if (!context) throw new Error("이 브라우저에서는 포토스트립을 만들 수 없습니다.");
 
-  context.fillStyle = "#f7f0df";
+  const theme = data.theme ?? "garden";
+  const palette = theme === "rose"
+    ? { paper: "#f8e9e8", left: "#9f5c6b", right: "#d3a25c", ink: "#53363d", accent: "#aa5367", closing: "#64795f" }
+    : theme === "night"
+      ? { paper: "#242b3c", left: "#546f72", right: "#86688e", ink: "#f7eedf", accent: "#e0b86a", closing: "#b9dbc5" }
+      : { paper: "#f7f0df", left: "#6f8f76", right: "#bd727f", ink: "#4a3935", accent: "#a35f6d", closing: "#5b7f68" };
+  context.fillStyle = palette.paper;
   context.fillRect(0, 0, canvas.width, canvas.height);
-  context.fillStyle = "#6f8f76";
+  context.fillStyle = palette.left;
   context.fillRect(0, 0, 54, canvas.height);
-  context.fillStyle = "#bd727f";
+  context.fillStyle = palette.right;
   context.fillRect(canvas.width - 54, 0, 54, canvas.height);
   context.strokeStyle = "#9a765e";
   context.lineWidth = 4;
   context.strokeRect(78, 78, canvas.width - 156, canvas.height - 156);
 
   context.textAlign = "center";
-  context.fillStyle = "#4a3935";
+  context.fillStyle = palette.ink;
   context.font = "900 58px serif";
   context.fillText(data.coupleNames, canvas.width / 2, 150);
-  context.fillStyle = "#a35f6d";
+  context.fillStyle = palette.accent;
   context.font = "900 24px sans-serif";
   context.fillText("WEDDING GARDEN PHOTO STRIP", canvas.width / 2, 198);
 
@@ -1037,13 +1060,13 @@ export async function createWeddingPhotoStrip(data: WeddingPhotoStripData): Prom
   });
 
   context.textAlign = "center";
-  context.fillStyle = "#4a3935";
+  context.fillStyle = palette.ink;
   context.font = "900 34px serif";
   context.fillText(`${data.guestName}님과 함께한 세 장의 축하`, canvas.width / 2, 1940);
   context.fillStyle = "#755e55";
   context.font = "800 25px sans-serif";
   context.fillText(`${data.dateLabel} · ${data.venueLabel}`, canvas.width / 2, 1995);
-  context.fillStyle = "#5b7f68";
+  context.fillStyle = palette.closing;
   context.font = "900 22px sans-serif";
   context.fillText("우리의 소중한 날을 함께해주셔서 고맙습니다", canvas.width / 2, 2050);
 

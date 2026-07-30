@@ -34,5 +34,8 @@ describe("JourneyMemoryCardAccess", () => {
       ])
     })));
     expect(screen.getByText("중간 여정 카드를 저장했어요")).toBeInTheDocument();
+    fireEvent.click(screen.getByText("카드 꾸미기"));
+    expect(screen.getByRole("button", { name: "별빛" })).toBeInTheDocument();
+    expect(screen.getByLabelText("여정 카드 대표 사진")).toBeInTheDocument();
   });
 });

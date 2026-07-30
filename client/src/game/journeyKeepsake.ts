@@ -13,7 +13,22 @@ export type JourneyKeepsakeData = {
   travelLabels?: readonly string[];
   secretCount?: number;
   totalSecretCount?: number;
+  theme?: JourneyKeepsakeTheme;
 };
+
+export type JourneyKeepsakeTheme = "garden" | "blossom" | "midnight";
+
+export const journeyKeepsakeThemeLabels: Record<JourneyKeepsakeTheme, string> = {
+  garden: "정원",
+  blossom: "블라썸",
+  midnight: "별빛"
+};
+
+const journeyKeepsakePalettes = {
+  garden: { paper: "#f7f0df", panel: "#fffaf0", ink: "#3f3430", accent: "#a75c68", border: "#73544e", closing: "#56745f" },
+  blossom: { paper: "#f8ecea", panel: "#fff9f4", ink: "#493338", accent: "#b8506d", border: "#925968", closing: "#6f7d62" },
+  midnight: { paper: "#202939", panel: "#f5efe4", ink: "#292d3a", accent: "#765f9b", border: "#4d536b", closing: "#4f786f" }
+} as const;
 
 export type JourneyKeepsakeShareResult = "shared" | "saved";
 
@@ -103,11 +118,11 @@ function loadImage(url: string, timeoutMs = 5000): Promise<HTMLImageElement | nu
   });
 }
 
-function drawFallbackGarden(context: CanvasRenderingContext2D) {
+function drawFallbackGarden(context: CanvasRenderingContext2D, theme: JourneyKeepsakeTheme) {
   const sky = context.createLinearGradient(0, 0, 0, 620);
-  sky.addColorStop(0, "#fff1d4");
-  sky.addColorStop(0.48, "#f5c7bd");
-  sky.addColorStop(1, "#95b79a");
+  sky.addColorStop(0, theme === "midnight" ? "#27324c" : theme === "blossom" ? "#ffe7eb" : "#fff1d4");
+  sky.addColorStop(0.48, theme === "midnight" ? "#6b658f" : theme === "blossom" ? "#edb4c0" : "#f5c7bd");
+  sky.addColorStop(1, theme === "midnight" ? "#496c67" : "#95b79a");
   context.fillStyle = sky;
   context.fillRect(0, 0, cardWidth, 620);
 
@@ -184,11 +199,13 @@ export async function createJourneyKeepsakeBlob(data: JourneyKeepsakeData): Prom
   const context = canvas.getContext("2d");
   if (!context) throw new Error("이 브라우저에서는 기념 카드를 만들 수 없습니다.");
 
-  context.fillStyle = "#f7f0df";
+  const theme = data.theme ?? "garden";
+  const palette = journeyKeepsakePalettes[theme];
+  context.fillStyle = palette.paper;
   context.fillRect(0, 0, cardWidth, cardHeight);
   const photo = await loadImage(data.photoUrl);
   if (photo) drawCoverImage(context, photo, 0, 0, cardWidth, 620);
-  else drawFallbackGarden(context);
+  else drawFallbackGarden(context, theme);
 
   const shade = context.createLinearGradient(0, 110, 0, 620);
   shade.addColorStop(0, "rgba(45, 37, 34, 0.06)");
@@ -206,19 +223,19 @@ export async function createJourneyKeepsakeBlob(data: JourneyKeepsakeData): Prom
   context.fillText(data.coupleNames, cardWidth / 2, 582);
 
   roundedRect(context, 48, 582, cardWidth - 96, 710, 30);
-  context.fillStyle = "#fffaf0";
+  context.fillStyle = palette.panel;
   context.fill();
-  context.strokeStyle = "#73544e";
+  context.strokeStyle = palette.border;
   context.lineWidth = 5;
   context.stroke();
 
   const checkpointStates = data.checkpointStates ?? data.checkpointLabels.map((label) => ({ label, complete: true }));
   const completedCount = checkpointStates.filter(({ complete }) => complete).length;
   const journeyComplete = checkpointStates.length > 0 && completedCount === checkpointStates.length;
-  context.fillStyle = "#a75c68";
+  context.fillStyle = palette.accent;
   context.font = "900 24px sans-serif";
   context.fillText(`${journeyComplete ? "TRAIL COMPLETE" : "TRAIL IN PROGRESS"} · ${completedCount} / ${checkpointStates.length}`, cardWidth / 2, 666);
-  context.fillStyle = "#3f3430";
+  context.fillStyle = palette.ink;
   context.font = "900 48px serif";
   context.fillText(journeyComplete ? "두 사람의 모든 순간을 만났어요" : "축하의 정원을 함께 걷고 있어요", cardWidth / 2, 731);
 
@@ -255,7 +272,7 @@ export async function createJourneyKeepsakeBlob(data: JourneyKeepsakeData): Prom
   context.lineTo(cardWidth - 105, 1007);
   context.stroke();
 
-  context.fillStyle = "#3f3430";
+  context.fillStyle = palette.ink;
   context.font = "900 37px sans-serif";
   context.fillText(data.dateLabel, cardWidth / 2, 1072);
   context.fillStyle = "#725a52";
@@ -264,7 +281,7 @@ export async function createJourneyKeepsakeBlob(data: JourneyKeepsakeData): Prom
   context.font = "800 31px sans-serif";
   context.fillText(data.venueLabel, cardWidth / 2, 1182);
 
-  context.fillStyle = "#56745f";
+  context.fillStyle = palette.closing;
   context.font = "800 24px sans-serif";
   context.fillText(journeyComplete ? "함께 걸어주셔서 고맙습니다" : "다음 추억도 천천히 만나보세요", cardWidth / 2, 1250);
 

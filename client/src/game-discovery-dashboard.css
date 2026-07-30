@@ -55,6 +55,7 @@
 .world-travel-timeline,
 .journey-memory-card-access,
 .game-save-data-center,
+.game-device-readiness,
 .game-performance-status {
   box-sizing: border-box;
   border: 1px solid #d5cac4;
@@ -64,28 +65,60 @@
   color: #514748;
 }
 
-.game-save-data-center > summary { display: flex; min-height: 32px; align-items: center; cursor: pointer; list-style: none; }
-.game-save-data-center > summary::-webkit-details-marker { display: none; }
-.game-save-data-center > summary span { display: grid; grid-template-columns: 18px minmax(0, 1fr); align-items: center; gap: 1px 5px; }
-.game-save-data-center > summary svg { grid-row: 1 / 3; width: 14px; height: 14px; color: #657c72; }
-.game-save-data-center > summary strong { color: #5c6762; font-size: 9px; }
-.game-save-data-center > summary small { color: #89908b; font-size: 7px; }
-.game-save-data-center > p { margin: 6px 0; color: #6d6864; font-size: 8px; font-weight: 800; }
-.game-save-data-center > div { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 5px; }
+.game-save-data-center > summary,
+.game-device-readiness > summary { display: flex; min-height: 32px; align-items: center; cursor: pointer; list-style: none; }
+.game-save-data-center > summary::-webkit-details-marker,
+.game-device-readiness > summary::-webkit-details-marker { display: none; }
+.game-save-data-center > summary span,
+.game-device-readiness > summary span { display: grid; grid-template-columns: 18px minmax(0, 1fr); align-items: center; gap: 1px 5px; }
+.game-save-data-center > summary svg,
+.game-device-readiness > summary svg { grid-row: 1 / 3; width: 14px; height: 14px; color: #657c72; }
+.game-save-data-center > summary strong,
+.game-device-readiness > summary strong { color: #5c6762; font-size: 9px; }
+.game-save-data-center > summary small,
+.game-device-readiness > summary small { color: #89908b; font-size: 7px; }
+.game-save-data-center > p,
+.game-device-readiness > p { margin: 6px 0; color: #6d6864; font-size: 8px; font-weight: 800; }
+.game-save-data-center__basic { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 5px; }
 .game-save-data-center button { display: inline-flex; min-height: 30px; align-items: center; justify-content: center; gap: 4px; border: 1px solid #8c9d94; border-radius: 3px; background: #f4f8ef; color: #526d61; font-size: 8px; font-weight: 900; }
 .game-save-data-center button svg { width: 12px; height: 12px; }
-.game-save-data-center input { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; }
+.game-save-data-center input[type="file"] { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; }
 .game-save-data-center > small { display: block; margin-top: 6px; color: #8a7c76; font-size: 7px; line-height: 1.35; }
+.game-save-data-center__secure { display: grid; gap: 6px; margin-top: 8px; border-top: 1px solid #d6d0c8; padding-top: 8px; }
+.game-save-data-center__secure > label { display: grid; grid-template-columns: 14px 54px minmax(0, 1fr); align-items: center; gap: 5px; color: #655c58; font-size: 8px; font-weight: 900; }
+.game-save-data-center__secure > label svg { width: 13px; height: 13px; }
+.game-save-data-center__secure input[type="password"] { min-width: 0; height: 30px; border: 1px solid #9c9188; border-radius: 3px; padding: 0 7px; background: #fff; color: #443b38; font-size: 9px; }
+.game-save-data-center__secure > div { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; }
+.game-save-data-center__secure figure { display: grid; justify-items: center; gap: 4px; margin: 0; }
+.game-save-data-center__secure figure img { width: min(100%, 280px); height: auto; image-rendering: auto; }
+.game-save-data-center__secure figcaption { color: #7b6d68; font-size: 7px; font-weight: 850; }
+.game-save-data-center__incoming { border-color: #a56b7c !important; background: #fff0ed !important; color: #8c4f63 !important; }
 
 .journey-memory-card-access > header { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .journey-memory-card-access > header span { display: inline-flex; align-items: center; gap: 4px; color: #78636a; font-size: 9px; font-weight: 900; }
 .journey-memory-card-access > header svg { width: 13px; height: 13px; }
 .journey-memory-card-access > header strong { color: #9a586b; font-size: 9px; }
 .journey-memory-card-access > p { margin: 5px 0 0; color: #6a6160; font-size: 8px; font-weight: 800; }
-.journey-memory-card-access > div { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 5px; margin-top: 7px; }
+.journey-memory-card-access__actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 5px; margin-top: 7px; }
 .journey-memory-card-access button { display: inline-flex; min-height: 30px; align-items: center; justify-content: center; gap: 4px; border: 1px solid #9c7580; border-radius: 3px; background: #fff7e6; color: #855568; font-size: 8px; font-weight: 900; }
 .journey-memory-card-access button svg { width: 12px; height: 12px; }
 .journey-memory-card-access button:disabled { border-color: #d1c7c1; background: #eeeae4; color: #a59a94; }
+.journey-memory-card-access__editor { display: grid; gap: 6px; margin-top: 7px; border-top: 1px solid #ded3cb; padding-top: 7px; }
+.journey-memory-card-access__editor > summary { display: flex; min-height: 24px; align-items: center; gap: 4px; color: #78686b; font-size: 7px; font-weight: 900; cursor: pointer; list-style: none; }
+.journey-memory-card-access__editor > summary::-webkit-details-marker { display: none; }
+.journey-memory-card-access__editor > summary svg { width: 11px; height: 11px; }
+.journey-memory-card-access__editor[open] > summary { margin-bottom: 6px; color: #92556a; }
+.journey-memory-card-access__themes,
+.journey-memory-card-access__photos { display: flex; align-items: center; gap: 4px; overflow-x: auto; }
+.journey-memory-card-access__themes > span,
+.journey-memory-card-access__photos > span { display: inline-flex; flex: 0 0 auto; align-items: center; gap: 3px; color: #76686a; font-size: 7px; font-weight: 900; }
+.journey-memory-card-access__themes button { min-height: 24px; padding: 3px 7px; }
+.journey-memory-card-access__themes button[aria-pressed="true"] { border-color: #80596a; background: #9f6174; color: #fff; }
+.journey-memory-card-access__themes button[data-theme="midnight"] { box-shadow: inset 0 -4px 0 #38445e; }
+.journey-memory-card-access__themes button[data-theme="blossom"] { box-shadow: inset 0 -4px 0 #dc859b; }
+.journey-memory-card-access__photos button { width: 34px; height: 28px; min-height: 28px; flex: 0 0 34px; overflow: hidden; padding: 2px; }
+.journey-memory-card-access__photos button[aria-pressed="true"] { border: 2px solid #9b596c; }
+.journey-memory-card-access__photos img { width: 100%; height: 100%; object-fit: cover; }
 
 .world-secret-book > summary {
   display: flex;
@@ -113,6 +146,49 @@
 .world-secret-book li[data-found] button { border-color: #c49aa6; background: #fff8e8; color: #6f4f5b; }
 .world-secret-book li[data-found] button > span { background: #b96f83; color: #fff; }
 .world-secret-book button:disabled { opacity: 1; cursor: default; }
+.world-secret-book__rewards { display: grid; gap: 5px; margin-top: 6px; border-top: 1px solid #ddd1cc; padding-top: 6px; }
+.world-secret-book__rewards > header { display: flex; align-items: center; gap: 4px; }
+.world-secret-book__rewards > header svg { width: 12px; height: 12px; color: #9b6b45; }
+.world-secret-book__rewards > header strong { color: #6c584d; font-size: 8px; }
+.world-secret-book__rewards > header small { color: #918078; font-size: 7px; }
+.world-secret-book__rewards > div { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; }
+.world-secret-book__rewards button { min-height: 48px; grid-template-columns: 14px minmax(0, 1fr); align-items: center; padding: 5px; }
+.world-secret-book__rewards button > svg { width: 12px; height: 12px; }
+.world-secret-book__rewards button > span { display: grid; grid-row: auto; width: auto; height: auto; min-width: 0; background: transparent; }
+.world-secret-book__rewards button > span strong,
+.world-secret-book__rewards button > span small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.world-secret-book__rewards button > span strong { font-size: 7px; }
+.world-secret-book__rewards button > span small { font-size: 6px; }
+.world-secret-book__rewards button[data-equipped] { border-color: #a36276; background: #f8e4e6; color: #864d61; }
+
+.game-device-readiness { display: grid; gap: 6px; }
+.game-device-readiness > button { display: inline-flex; min-height: 30px; align-items: center; justify-content: center; gap: 4px; border: 1px solid #82988e; border-radius: 3px; background: #edf4eb; color: #506d60; font-size: 8px; font-weight: 900; }
+.game-device-readiness > button svg { width: 12px; height: 12px; }
+.game-device-readiness__report { display: grid; gap: 5px; }
+.game-device-readiness__report > header { display: flex; justify-content: space-between; gap: 6px; font-size: 8px; }
+.game-device-readiness__report > header small { color: #807774; font-size: 7px; }
+.game-device-readiness__report ul { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 3px; margin: 0; padding: 0; list-style: none; }
+.game-device-readiness__report li { display: grid; min-width: 0; grid-template-columns: 13px minmax(0, 1fr); align-items: center; gap: 3px; padding: 4px; background: #edf4eb; }
+.game-device-readiness__report li[data-status="warning"] { background: #fff0df; color: #966033; }
+.game-device-readiness__report li > svg { width: 11px; height: 11px; }
+.game-device-readiness__report li > span { display: grid; min-width: 0; }
+.game-device-readiness__report li strong { font-size: 7px; }
+.game-device-readiness__report li small { overflow: hidden; color: #7f7772; font-size: 6px; text-overflow: ellipsis; white-space: nowrap; }
+.game-device-readiness fieldset { display: grid; gap: 4px; margin: 0; border: 1px solid #d4cbc4; padding: 6px; }
+.game-device-readiness legend { padding: 0 3px; color: #796c68; font-size: 7px; font-weight: 900; }
+.game-device-readiness label { display: flex; align-items: center; gap: 5px; color: #655d5a; font-size: 7px; font-weight: 800; }
+.game-device-readiness input { width: 15px; height: 15px; accent-color: #687f73; }
+
+.game-world[data-secret-reward="memory-petal-pin"] .world-player::after,
+.game-world[data-secret-reward="wedding-memory-crown"] .world-player::after { position: absolute; z-index: 3; top: 6px; left: 50%; color: #d25d79; font-size: 12px; text-shadow: 1px 1px 0 #fff5cd; content: "✿"; transform: translateX(10px); }
+.game-world[data-secret-reward="wedding-memory-crown"] .world-player::after { top: 1px; color: #d7a13e; font-size: 17px; content: "♛"; transform: translateX(-50%); }
+.game-world[data-secret-reward="garden-lantern-aura"] .world-player .character-sprite { filter: drop-shadow(0 0 4px #ffe59a) drop-shadow(0 0 8px rgba(94, 151, 112, 0.9)); }
+.world-secret-memorial { position: absolute; display: grid; width: 64px; justify-items: center; gap: 2px; color: #fff4c2; text-shadow: 1px 1px 0 #563f48; transform: translate(-50%, -50%); pointer-events: none; }
+.world-secret-memorial > span { position: relative; display: grid; width: 46px; height: 54px; place-items: center; border: 4px solid #815b6a; background: #f5c977; box-shadow: inset 0 0 0 4px #fff1a8, 0 0 10px rgba(255, 222, 126, 0.82); }
+.world-secret-memorial > span::before { position: absolute; top: -12px; width: 26px; height: 10px; border: 4px solid #815b6a; border-bottom: 0; content: ""; }
+.world-secret-memorial > span svg { width: 22px; height: 22px; color: #a2546c; }
+.world-secret-memorial > span i { position: absolute; width: 6px; height: 6px; background: #fff8cf; box-shadow: 12px -8px 0 #fff8cf, -13px 9px 0 #fff8cf; }
+.world-secret-memorial > strong { padding: 2px 4px; background: rgba(82, 61, 70, 0.84); font-size: 7px; }
 
 .world-secret-progress > header,
 .world-travel-timeline > header,
