@@ -10,6 +10,10 @@ vi.mock("./invitationPerformanceConfig", () => ({
   getInvitationPerformanceAdminState: vi.fn(),
   setInvitationPerformanceMode: vi.fn()
 }));
+vi.mock("./deviceQaReportRepository", () => ({
+  getDeviceQaDetailAdminState: vi.fn(),
+  updateDeviceQaAlertSettings: vi.fn()
+}));
 
 import {
   handleAdminInvitationAnalyticsRequest,
@@ -17,11 +21,13 @@ import {
 } from "./invitationAnalyticsHttp";
 import * as repository from "./invitationAnalyticsRepository";
 import * as performanceConfig from "./invitationPerformanceConfig";
+import * as deviceQaRepository from "./deviceQaReportRepository";
 import { verifyAdminToken } from "./security";
 import type { Env } from "./index";
 
 const mockedRepository = vi.mocked(repository);
 const mockedPerformance = vi.mocked(performanceConfig);
+const mockedDeviceQa = vi.mocked(deviceQaRepository);
 const mockedVerify = vi.mocked(verifyAdminToken);
 const env = {
   DB: {} as D1Database,
@@ -63,6 +69,11 @@ describe("invitation analytics HTTP", () => {
       },
       updatedAt: null
     });
+    mockedDeviceQa.getDeviceQaDetailAdminState.mockResolvedValue({
+      profiles: [], latestAlert: null, recentAlerts: [], emailConfigured: false,
+      emailEnabled: false, warningThreshold: 3, generatedAt: "2026-07-22T00:00:00.000Z"
+    });
+    mockedDeviceQa.updateDeviceQaAlertSettings.mockResolvedValue(true);
     mockedPerformance.setInvitationPerformanceMode.mockImplementation(async (_db, _id, mode) => ({
       ...(await mockedPerformance.getInvitationPerformanceAdminState(env.DB, "sample-garden")),
       mode
@@ -137,6 +148,22 @@ describe("invitation analytics HTTP", () => {
       "sample-garden",
       "safe-default"
     );
+  });
+
+  it("관리자가 기기별 반복 경고 기준을 서버에 저장한다", async () => {
+    const response = await handleAdminInvitationAnalyticsRequest(new Request(
+      "https://worker.test/api/invitations/sample-garden/admin/analytics",
+      {
+        method: "POST",
+        headers: { authorization: "Bearer admin-token", "content-type": "application/json" },
+        body: JSON.stringify({ deviceQaAlerts: { emailEnabled: false, warningThreshold: 5 } })
+      }
+    ), env, "sample-garden");
+    expect(response.status).toBe(200);
+    expect(mockedDeviceQa.updateDeviceQaAlertSettings).toHaveBeenCalledWith(env.DB, "sample-garden", {
+      emailEnabled: false,
+      warningThreshold: 5
+    });
   });
 
   it("인증 실패와 잘못된 기간을 구분한다", async () => {

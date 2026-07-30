@@ -238,6 +238,7 @@ export function WeddingPhotoAlbum({ album, nickname, onClose, onRetake }: Weddin
   });
   const applyTemplate = (template: PhotoCompositionTemplate) => {
     setStripTransformHistories(Object.fromEntries(photoSpots.map(({ id }) => [id, createPhotoFrameHistory(template.photoTransform)])));
+    setStripStickerText(template.stickerText);
     setStripStickerStyle(template.stickerStyle);
     setStripStickerTransform(template.stickerTransform);
   };
@@ -328,7 +329,7 @@ export function WeddingPhotoAlbum({ album, nickname, onClose, onRetake }: Weddin
               <h3>{complete ? "세 장의 축하가 완성됐어요" : `${3 - progress}장을 더 촬영해주세요`}</h3>
               <p>{complete ? "세로 포토스트립으로 한 번에 간직해보세요." : "세 포토존을 모두 채우면 포토스트립이 열립니다."}</p>
               <section className="wedding-photo-strip__editor" aria-label="포토스트립 편집">
-                <PhotoCompositionTemplateControls photoTransform={selectedTransform} stickerStyle={stripStickerStyle} stickerTransform={stripStickerTransform} onApply={applyTemplate} />
+                <PhotoCompositionTemplateControls photoTransform={selectedTransform} stickerText={stripStickerText} stickerStyle={stripStickerStyle} stickerTransform={stripStickerTransform} onApply={applyTemplate} />
                 <div className="wedding-photo-strip__themes"><span><Palette aria-hidden="true" />테마</span>{(Object.keys(weddingPhotoStripThemeLabels) as WeddingPhotoStripTheme[]).map((theme) => <button key={theme} type="button" aria-pressed={stripTheme === theme} data-theme={theme} onClick={() => setStripTheme(theme)}>{weddingPhotoStripThemeLabels[theme]}</button>)}</div>
                 <ol aria-label="포토스트립 사진 순서">
                   {orderedSpots.map((spot, index) => <li key={spot.id}><span><strong>{index + 1}</strong>{spot.label}</span><div><button type="button" aria-label={`${index + 1}번 사진 위로 이동`} title={`${spot.label} 위로 이동`} disabled={index === 0} onClick={() => moveStripPhoto(spot.id, -1)}><ChevronUp aria-hidden="true" /></button><button type="button" aria-label={`${index + 1}번 사진 아래로 이동`} title={`${spot.label} 아래로 이동`} disabled={index === orderedSpots.length - 1} onClick={() => moveStripPhoto(spot.id, 1)}><ChevronDown aria-hidden="true" /></button></div></li>)}

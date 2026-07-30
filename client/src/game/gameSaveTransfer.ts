@@ -9,6 +9,10 @@ export type EncryptedGameSaveEnvelope = {
   iv: string;
   ciphertext: string;
   expiresAt?: string;
+  transferReceipt?: {
+    id: string;
+    claimToken: string;
+  };
 };
 
 type CryptoProvider = Pick<Crypto, "getRandomValues" | "subtle">;
@@ -102,6 +106,12 @@ export function parseEncryptedGameSaveEnvelope(source: string): EncryptedGameSav
     || typeof value.iv !== "string"
     || typeof value.ciphertext !== "string"
     || (value.expiresAt !== undefined && (typeof value.expiresAt !== "string" || Number.isNaN(Date.parse(value.expiresAt))))
+    || (value.transferReceipt !== undefined && (
+      typeof value.transferReceipt !== "object"
+      || value.transferReceipt === null
+      || !/^transfer_[0-9a-f-]+$/.test(value.transferReceipt.id)
+      || !/^[A-Za-z0-9_-]{32,64}$/.test(value.transferReceipt.claimToken)
+    ))
   ) throw new Error("지원하지 않는 암호화 백업 파일입니다.");
   return value as EncryptedGameSaveEnvelope;
 }

@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   commitPhotoFrameHistory,
   createPhotoCompositionTemplate,
+  createPhotoCompositionTemplateShareUrl,
   createPhotoFrameHistory,
   loadPhotoCompositionTemplates,
   normalizePhotoFrameTransform,
@@ -11,6 +12,7 @@ import {
   photoFramePresetTransform,
   photoFramePreviewStyle,
   redoPhotoFrameHistory,
+  readPhotoCompositionTemplateFromUrl,
   resolveCoverCrop,
   rotatePhotoFrameTransform,
   savePhotoCompositionTemplates,
@@ -57,9 +59,32 @@ describe("photoFrameEditor", () => {
       { tone: "sage", font: "hand" },
       { x: 0.3, y: 0.7, scale: 1.1, rotation: -5 },
       0,
-      "frame-test"
+      "frame-test",
+      "오늘을 기억해요"
     );
     expect(savePhotoCompositionTemplates([template], { getItem: () => saved, setItem: (_key, value) => { saved = value; } })).toBe(true);
     expect(loadPhotoCompositionTemplates({ getItem: () => saved, setItem: () => undefined })).toEqual([template]);
+    expect(template.stickerText).toBe("오늘을 기억해요");
+  });
+
+  it("웨딩 프레임을 URL로 내보내 다른 기기에서 같은 문구와 구도로 읽는다", () => {
+    const template = createPhotoCompositionTemplate(
+      { zoom: 1.3, offsetX: -0.2, offsetY: 0.1, rotation: -3 },
+      { tone: "rose", font: "serif" },
+      { x: 0.7, y: 0.2, scale: 0.9, rotation: 5 },
+      0,
+      "frame-share",
+      "두 사람의 봄날"
+    );
+    const url = createPhotoCompositionTemplateShareUrl(template, "https://example.test/invitation/?mode=game#game");
+    const imported = readPhotoCompositionTemplateFromUrl(url);
+    expect(url).toContain("wedding-frame=");
+    expect(imported).toMatchObject({
+      label: "받은 프레임",
+      stickerText: "두 사람의 봄날",
+      photoTransform: template.photoTransform,
+      stickerStyle: template.stickerStyle,
+      stickerTransform: template.stickerTransform
+    });
   });
 });

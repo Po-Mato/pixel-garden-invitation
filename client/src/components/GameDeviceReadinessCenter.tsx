@@ -1,6 +1,8 @@
 import { Check, ClipboardCheck, Download, Play, Send, TriangleAlert } from "lucide-react";
 import { useState } from "react";
 import { flushInvitationAnalytics, trackInvitationAnalytics } from "../analytics/invitationAnalytics";
+import { postDeviceQaDetailReport } from "../api/deviceQaReportApi";
+import { currentDeviceQaProfile } from "../invitation/deviceQaProfile";
 import {
   collectDeviceReadinessReport,
   deviceQaChecks,
@@ -46,7 +48,8 @@ export function GameDeviceReadinessCenter() {
   const submitAnonymousReport = async () => {
     if (!report || submitting) return;
     setSubmitting(true);
-    const device = report.deviceFamily === "iPhone/iPad" ? "ios" : report.deviceFamily === "Android" ? "android" : "other";
+    const profile = currentDeviceQaProfile();
+    const device = profile.platform;
     const automaticIssues = report.items
       .filter(({ status, id }) => status === "warning" && ["viewport", "touch", "storage", "audio"].includes(id))
       .map(({ id }) => id);
@@ -54,9 +57,14 @@ export function GameDeviceReadinessCenter() {
     const issues = Array.from(new Set([...automaticIssues, ...manualIssues]));
     trackInvitationAnalytics("device_qa", `${device}:${issues.length > 0 ? "warning" : "complete"}`);
     issues.forEach((id) => trackInvitationAnalytics("device_qa", `${device}:issue-${id}`));
-    await flushInvitationAnalytics();
+    const [, detailed] = await Promise.allSettled([
+      flushInvitationAnalytics(),
+      postDeviceQaDetailReport({ ...profile, status: issues.length > 0 ? "warning" : "complete", issues })
+    ]);
     setSubmitting(false);
-    setSubmitStatus("개인정보 없이 점검 결과를 보냈어요");
+    setSubmitStatus(detailed.status === "fulfilled"
+      ? `개인정보 없이 ${profile.osName} ${profile.osVersion} · ${profile.browserName} ${profile.browserVersion} 익명 점검을 보냈어요`
+      : "기본 익명 점검을 보냈어요 · 상세 기기 집계는 다음에 다시 시도합니다");
   };
 
   return (

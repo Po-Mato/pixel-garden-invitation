@@ -1,5 +1,6 @@
-import { ArrowRight, Clock3, Download, Eye, HardDriveDownload, History, KeyRound, QrCode, RotateCcw, ScanLine, Share2, ShieldCheck, Trash2, Upload } from "lucide-react";
+import { ArrowRight, Clock3, Download, Eye, HardDriveDownload, History, KeyRound, QrCode, RefreshCw, RotateCcw, ScanLine, Share2, ShieldCheck, Trash2, Upload } from "lucide-react";
 import { useRef, useState, type ChangeEvent } from "react";
+import { claimServerGameTransfer, createServerGameTransfer, fetchServerGameTransfer, revokeServerGameTransfer, type GameTransferStatus } from "../api/gameTransferApi";
 import {
   createGameSaveBackup,
   createGameSaveRollback,
@@ -19,12 +20,14 @@ import {
   downloadEncryptedGameSave,
   encryptGameSaveBackup,
   gameTransferExpiresAt,
+  gameTransferLifetimeMs,
   assertGameTransferActive,
   parseEncryptedGameSaveEnvelope,
   readGameTransferFromUrl,
   shareEncryptedGameSaveNearby,
   type EncryptedGameSaveEnvelope
 } from "../game/gameSaveTransfer";
+import { loadGameTransferReceiptHistory, rememberCreatedGameTransfer, updateGameTransferReceiptState } from "../game/gameTransferReceiptHistory";
 import { GameSaveQrScanner } from "./GameSaveQrScanner";
 
 function incomingTransfer(): { envelope: EncryptedGameSaveEnvelope | null; error: string | null } {
@@ -41,6 +44,12 @@ function expiryLabel(expiresAt: number | null) {
 }
 
 const restoreRollbackKey = "wedding-game:restore-rollback-session:v1";
+const transferStatusLabels: Record<GameTransferStatus, string> = {
+  active: "전송 대기",
+  claimed: "복원 완료",
+  revoked: "전송 취소",
+  expired: "기간 만료"
+};
 
 function storedRollback(): GameSaveRollback | null {
   try {
@@ -66,6 +75,7 @@ export function GameSaveDataCenter() {
   const [scannerOpen, setScannerOpen] = useState(false);
   const [expanded, setExpanded] = useState(Boolean(incomingEnvelope || rollback));
   const [busy, setBusy] = useState(false);
+  const [transferReceipts, setTransferReceipts] = useState(loadGameTransferReceiptHistory);
 
   const backup = () => {
     try {
@@ -150,13 +160,21 @@ export function GameSaveDataCenter() {
     setBusy(true);
     try {
       const compact = createCompactGameSaveBackup(localStorage);
-      const url = createGameTransferUrl(await encryptGameSaveBackup(compact, passphrase), window.location.href);
+      const expiresAt = new Date(Date.now() + gameTransferLifetimeMs).toISOString();
+      const created = await createServerGameTransfer(Object.keys(compact.entries).length, expiresAt);
+      const encrypted = await encryptGameSaveBackup(compact, passphrase);
+      const url = createGameTransferUrl({
+        ...encrypted,
+        expiresAt,
+        transferReceipt: { id: created.id, claimToken: created.claimToken }
+      }, window.location.href);
       if (url.length > 2_900) throw new Error("진행 데이터가 커서 QR 대신 암호화 파일을 사용해 주세요.");
       const { default: QRCode } = await import("qrcode");
       setQrImage(await QRCode.toDataURL(url, { width: 360, margin: 2, errorCorrectionLevel: "L", color: { dark: "#3f3430", light: "#fffdf5" } }));
       setQrEntryCount(Object.keys(compact.entries).length);
       setQrExpiresAt(gameTransferExpiresAt(readGameTransferFromUrl(url)!));
-      setStatus("다른 휴대폰으로 QR을 스캔한 뒤 같은 암호를 입력하세요");
+      setTransferReceipts(rememberCreatedGameTransfer(created));
+      setStatus("한 번만 복원할 수 있는 QR을 만들었어요");
     } catch (error) {
       setStatus(error instanceof Error ? error.message : "기기 이전 QR을 만들지 못했어요");
     } finally {
@@ -189,6 +207,10 @@ export function GameSaveDataCenter() {
     setBusy(true);
     try {
       assertGameTransferActive(incomingEnvelope);
+      if (incomingEnvelope.transferReceipt) {
+        const receipt = await fetchServerGameTransfer(incomingEnvelope.transferReceipt.id, incomingEnvelope.transferReceipt.claimToken);
+        if (receipt.status !== "active") throw new Error(receipt.status === "claimed" ? "이미 다른 기기에서 복원한 QR입니다." : receipt.status === "revoked" ? "보내는 기기에서 취소한 QR입니다." : "사용 시간이 지난 QR입니다.");
+      }
       const backup = await decryptGameSaveBackup(incomingEnvelope, passphrase);
       setPendingBackup(backup);
       setStatus("복원될 내용을 확인한 뒤 적용해 주세요");
@@ -199,14 +221,53 @@ export function GameSaveDataCenter() {
     }
   };
 
-  const confirmIncomingRestore = () => {
+  const confirmIncomingRestore = async () => {
     if (!pendingBackup) return;
+    setBusy(true);
     try {
       if (incomingEnvelope) assertGameTransferActive(incomingEnvelope);
+      if (incomingEnvelope?.transferReceipt) {
+        await claimServerGameTransfer(incomingEnvelope.transferReceipt.id, incomingEnvelope.transferReceipt.claimToken);
+      }
       window.history.replaceState(null, "", `${window.location.pathname}${window.location.search}`);
       restoreWithRollback(pendingBackup);
     } catch (error) {
-      setStatus(error instanceof Error ? error.message : "QR 데이터를 복원하지 못했어요");
+      const code = typeof error === "object" && error !== null && "code" in error ? String(error.code) : "";
+      setStatus(code === "transfer_claimed" ? "이미 다른 기기에서 복원한 QR입니다."
+        : code === "transfer_revoked" ? "보내는 기기에서 취소한 QR입니다."
+          : code === "transfer_expired" ? "사용 시간이 지난 QR입니다."
+            : error instanceof Error ? error.message : "QR 데이터를 복원하지 못했어요");
+      setBusy(false);
+    }
+  };
+
+  const refreshTransferReceipts = async () => {
+    setBusy(true);
+    let next = transferReceipts;
+    try {
+      const states = await Promise.all(transferReceipts.map(async (receipt) => {
+        try { return await fetchServerGameTransfer(receipt.id, receipt.manageToken); } catch { return null; }
+      }));
+      states.forEach((state) => { if (state) next = updateGameTransferReceiptState(next, state); });
+      setTransferReceipts(next);
+      setStatus("기기 이전 이력을 서버 상태와 맞췄어요");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const revokeTransfer = async (id: string, manageToken: string) => {
+    setBusy(true);
+    try {
+      const state = await revokeServerGameTransfer(id, manageToken);
+      setTransferReceipts((current) => updateGameTransferReceiptState(current, state));
+      setQrImage(null);
+      setStatus("아직 복원되지 않은 기기 이전 QR을 취소했어요");
+    } catch (error) {
+      const code = typeof error === "object" && error !== null && "code" in error ? String(error.code) : "";
+      setStatus(code === "transfer_claimed" ? "이미 복원된 QR은 취소할 수 없어요" : "기기 이전을 취소하지 못했어요");
+    } finally {
+      setBusy(false);
     }
   };
 
@@ -227,7 +288,7 @@ export function GameSaveDataCenter() {
         {incomingEnvelope && !preview ? (
           <button type="button" disabled={busy} className="game-save-data-center__incoming" onClick={() => void restoreIncomingTransfer()}><Eye aria-hidden="true" />스캔 내용 확인</button>
         ) : null}
-        {preview ? <section className="game-save-data-center__preview" aria-label="QR 복원 미리보기"><header><QrCode aria-hidden="true" /><span><strong>핵심 진행 {preview.totalEntries}개</strong><small>{new Date(preview.createdAt).toLocaleString("ko-KR")}</small>{expiryLabel(gameTransferExpiresAt(incomingEnvelope!)) ? <small className="game-save-data-center__expiry"><Clock3 aria-hidden="true" />{expiryLabel(gameTransferExpiresAt(incomingEnvelope!))}</small> : null}</span></header><dl><div><dt>새로 추가</dt><dd>{preview.newEntries}</dd></div><div><dt>내용 변경</dt><dd>{preview.changedEntries}</dd></div><div><dt>동일 유지</dt><dd>{preview.unchangedEntries}</dd></div></dl><ul>{preview.categories.map((category) => <li key={category.id}><span>{category.label}</span><strong>{category.count}</strong></li>)}</ul><ol className="game-save-data-center__changes" aria-label="복원 전후 세부 비교">{preview.changes.map((change) => <li key={change.key} data-status={change.status}><header><strong>{change.label}</strong><small>{change.categoryLabel} · {change.status === "new" ? "새 항목" : change.status === "changed" ? "변경" : "동일"}</small></header><span>{change.before}<ArrowRight aria-hidden="true" />{change.after}</span></li>)}</ol><div><button type="button" disabled={busy} onClick={confirmIncomingRestore}><ShieldCheck aria-hidden="true" />확인하고 복원</button><button type="button" disabled={busy} onClick={() => { setPendingBackup(null); setIncomingEnvelope(null); setStatus("QR 복원을 취소했어요"); }}><Trash2 aria-hidden="true" />취소</button></div></section> : null}
+        {preview ? <section className="game-save-data-center__preview" aria-label="QR 복원 미리보기"><header><QrCode aria-hidden="true" /><span><strong>핵심 진행 {preview.totalEntries}개 · 일회용</strong><small>{new Date(preview.createdAt).toLocaleString("ko-KR")}</small>{expiryLabel(gameTransferExpiresAt(incomingEnvelope!)) ? <small className="game-save-data-center__expiry"><Clock3 aria-hidden="true" />{expiryLabel(gameTransferExpiresAt(incomingEnvelope!))}</small> : null}</span></header><dl><div><dt>새로 추가</dt><dd>{preview.newEntries}</dd></div><div><dt>내용 변경</dt><dd>{preview.changedEntries}</dd></div><div><dt>동일 유지</dt><dd>{preview.unchangedEntries}</dd></div></dl><ul>{preview.categories.map((category) => <li key={category.id}><span>{category.label}</span><strong>{category.count}</strong></li>)}</ul><ol className="game-save-data-center__changes" aria-label="복원 전후 세부 비교">{preview.changes.map((change) => <li key={change.key} data-status={change.status}><header><strong>{change.label}</strong><small>{change.categoryLabel} · {change.status === "new" ? "새 항목" : change.status === "changed" ? "변경" : "동일"}</small></header><span>{change.before}<ArrowRight aria-hidden="true" />{change.after}</span></li>)}</ol><div><button type="button" disabled={busy} onClick={() => void confirmIncomingRestore()}><ShieldCheck aria-hidden="true" />확인하고 한 번 복원</button><button type="button" disabled={busy} onClick={() => { setPendingBackup(null); setIncomingEnvelope(null); setStatus("QR 복원을 취소했어요"); }}><Trash2 aria-hidden="true" />취소</button></div></section> : null}
         <div>
           <button type="button" disabled={busy} onClick={() => void saveEncrypted()}><ShieldCheck aria-hidden="true" />암호화 저장</button>
           <button type="button" disabled={busy} onClick={() => encryptedInputRef.current?.click()}><Upload aria-hidden="true" />암호화 복원</button>
@@ -237,6 +298,7 @@ export function GameSaveDataCenter() {
         </div>
         <input ref={encryptedInputRef} type="file" accept=".wgsave,application/json" aria-label="암호화 게임 백업 파일 선택" onChange={(event) => void restoreEncrypted(event)} />
         {qrImage ? <figure><img src={qrImage} alt="암호화된 게임 진행 기기 이전 QR" /><figcaption>핵심 진행 {qrEntryCount}개 · 사진 제외{expiryLabel(qrExpiresAt) ? <small><Clock3 aria-hidden="true" />{expiryLabel(qrExpiresAt)}</small> : null}</figcaption></figure> : null}
+        {transferReceipts.length > 0 ? <section className="game-save-data-center__transfer-history" aria-label="기기 이전 서버 이력"><header><History aria-hidden="true" /><span><strong>기기 이전 이력</strong><small>복원·취소 상태는 서버에서 확인</small></span><button type="button" aria-label="기기 이전 이력 새로고침" title="서버 상태 새로고침" disabled={busy} onClick={() => void refreshTransferReceipts()}><RefreshCw aria-hidden="true" /></button></header><ol>{transferReceipts.slice(0, 4).map((receipt) => <li key={receipt.id} data-status={receipt.status}><span><strong>{transferStatusLabels[receipt.status]}</strong><small>{new Date(receipt.createdAt).toLocaleString("ko-KR")} · {receipt.entryCount}개</small></span>{receipt.status === "active" ? <button type="button" disabled={busy} onClick={() => void revokeTransfer(receipt.id, receipt.manageToken)}><Trash2 aria-hidden="true" />취소</button> : <small>{receipt.status === "claimed" && receipt.claimedAt ? new Date(receipt.claimedAt).toLocaleTimeString("ko-KR", { hour: "numeric", minute: "2-digit" }) : receipt.status === "revoked" ? "발신 취소" : "15분 종료"}</small>}</li>)}</ol></section> : null}
       </section>
       <small>QR은 핵심 진행만, 근거리 전송은 촬영 사진까지 포함합니다. 참석 답변·방명록·관리자 정보는 포함하지 않습니다.</small>
       {scannerOpen ? <GameSaveQrScanner onClose={() => setScannerOpen(false)} onDetected={(envelope) => { setIncomingEnvelope(envelope); setPendingBackup(null); setScannerOpen(false); setExpanded(true); setStatus("QR 진행을 읽었어요 · 같은 암호를 입력해 내용을 확인하세요"); }} /> : null}

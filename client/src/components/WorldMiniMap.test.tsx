@@ -27,6 +27,13 @@ describe("WorldMiniMap", () => {
           kind: "petal",
           highlighted: true
         }]}
+        relationshipStampMarkers={[{
+          id: "bride:bridal-room",
+          label: "신부 대기실의 인사",
+          point: { x: 210, y: 330 },
+          unlocked: false,
+          recommended: true
+        }]}
       />
     );
 
@@ -45,6 +52,8 @@ describe("WorldMiniMap", () => {
       .toHaveAttribute("data-highlighted", "true");
     expect(within(minimap).getByTestId("minimap-collectible-marker"))
       .toHaveAttribute("data-shape", "petal");
+    expect(within(minimap).getByTestId("minimap-relationship-stamp"))
+      .toHaveAttribute("data-recommended", "true");
     expect(within(minimap).getByRole("heading", { name: "우리 집 지도 안내" })).toBeInTheDocument();
     const portal = within(minimap).getByTestId("minimap-portal");
     expect(portalEntryRect(zone.portals[0])).toEqual({ x: 240, y: 90, width: 90, height: 30 });

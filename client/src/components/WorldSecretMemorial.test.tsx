@@ -21,6 +21,7 @@ describe("WorldSecretMemorial", () => {
     expect(screen.getByLabelText("음성 해설 속도")).toHaveValue("0.92");
     expect(screen.getByLabelText("음성 해설 목소리")).toHaveValue("");
     expect(screen.getByLabelText("추억 배경음 테마")).toHaveValue("scene");
+    expect(screen.getByLabelText("추억 배경음 음량")).toHaveValue("0.65");
     fireEvent.change(screen.getByLabelText("추억 배경음 테마"), { target: { value: "starlight" } });
     expect(screen.getByLabelText("추억 배경음 테마")).toHaveValue("starlight");
     expect(screen.getByText("해설 자막")).toBeInTheDocument();

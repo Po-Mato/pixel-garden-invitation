@@ -43,13 +43,21 @@
 .photo-composition-templates__presets button:nth-child(2) { box-shadow: inset 0 -3px 0 #6c9478; }
 .photo-composition-templates__presets button:nth-child(3) { box-shadow: inset 0 -3px 0 #b55e76; }
 .photo-composition-templates__custom { display: flex; gap: 4px; overflow-x: auto; }
-.photo-composition-templates__custom > span { display: inline-grid; min-width: 88px; grid-template-columns: 1fr 25px; }
+.photo-composition-templates__custom > span { display: inline-grid; min-width: 116px; grid-template-columns: 1fr 25px 25px; }
 .photo-composition-templates__custom > span button:first-child { border-radius: 3px 0 0 3px; }
-.photo-composition-templates__custom > span button:last-child { display: grid; min-height: 27px; place-items: center; border-left: 0; border-radius: 0 3px 3px 0; padding: 2px; }
+.photo-composition-templates__custom > span button:not(:first-child) { display: grid; min-height: 27px; place-items: center; border-left: 0; border-radius: 0; padding: 2px; }
+.photo-composition-templates__custom > span button:last-child { border-radius: 0 3px 3px 0; }
 .photo-composition-templates__custom svg,
 .photo-composition-templates > .photo-composition-templates__save svg { width: 11px; height: 11px; }
 .photo-composition-templates > .photo-composition-templates__save { display: inline-flex; min-height: 29px; align-items: center; justify-content: center; gap: 4px; background: #8b6170; color: #fff; }
 .photo-composition-templates > .photo-composition-templates__save:disabled { opacity: .45; }
+.photo-composition-templates__share { display: grid; grid-template-columns: 76px minmax(0, 1fr); align-items: center; gap: 7px; margin: 0; border: 1px solid #c7b2a7; padding: 5px; background: #fffaf2; }
+.photo-composition-templates__share img { width: 76px; height: 76px; image-rendering: auto; }
+.photo-composition-templates__share figcaption { display: grid; gap: 3px; }
+.photo-composition-templates__share strong { color: #6e565d; font-size: 8px; }
+.photo-composition-templates__share small { color: #8b7972; font-size: 6px; }
+.photo-composition-templates__share button { display: inline-flex; min-height: 27px; align-items: center; justify-content: center; gap: 3px; border: 1px solid #9c7b86; border-radius: 3px; background: #fff; color: #795361; font-size: 7px; font-weight: 900; }
+.photo-composition-templates__share button svg { width: 11px; }
 .photo-composition-templates > small[role="status"] { color: #76665f; font-size: 6px; font-weight: 800; }
 
 @media (max-width: 420px) {

@@ -54,6 +54,7 @@ type WorldMiniMapProps = {
   journeyStops?: MiniMapJourneyStop[];
   journeyDestinationLabels?: string[];
   collectibleMarkers?: MiniMapCollectibleMarker[];
+  relationshipStampMarkers?: MiniMapRelationshipStampMarker[];
   companionTrailPoints?: Point[];
   rendezvousPoint?: Point | null;
   onNavigateAccessibilityLandmark?: (landmark: WorldAccessibilityLandmark) => void;
@@ -64,6 +65,14 @@ export type MiniMapCollectibleMarker = {
   point: Point;
   kind: CelebrationCollectibleKind;
   highlighted?: boolean;
+};
+
+export type MiniMapRelationshipStampMarker = {
+  id: string;
+  label: string;
+  point: Point;
+  unlocked: boolean;
+  recommended?: boolean;
 };
 
 export type JourneyMiniMapMarker = {
@@ -96,6 +105,7 @@ type MiniMapCanvasProps = {
   expanded?: boolean;
   viewTransform?: MiniMapViewTransform;
   collectibleMarkers: MiniMapCollectibleMarker[];
+  relationshipStampMarkers: MiniMapRelationshipStampMarker[];
   companionTrailPoints: Point[];
   rendezvousPoint: Point | null;
 };
@@ -131,6 +141,7 @@ function MiniMapCanvas({
   expanded = false,
   viewTransform = { scale: 1, x: 0, y: 0 },
   collectibleMarkers,
+  relationshipStampMarkers,
   companionTrailPoints,
   rendezvousPoint
 }: MiniMapCanvasProps) {
@@ -255,6 +266,24 @@ function MiniMapCanvas({
           </g>
         );
       })}
+      {relationshipStampMarkers.map((marker) => {
+        const point = projectMiniMapPoint(marker.point, zone.bounds, layout);
+        return (
+          <g
+            key={marker.id}
+            data-testid="minimap-relationship-stamp"
+            data-unlocked={marker.unlocked || undefined}
+            data-recommended={marker.recommended || undefined}
+            className="world-minimap__relationship-stamp"
+            transform={`translate(${point.x} ${point.y})`}
+          >
+            <circle r={expanded ? 8 : 5.5} />
+            {marker.unlocked
+              ? <path d="M -3 0 L -0.6 2.6 L 3.8 -2.8" />
+              : <path d="M 0 3 C -5 -0.3 -3.5 -4 0 -1.8 C 3.5 -4 5 -0.3 0 3 Z" />}
+          </g>
+        );
+      })}
       {collectibleMarkers.map((marker) => {
         const point = projectMiniMapPoint(marker.point, zone.bounds, layout);
         return (
@@ -311,6 +340,7 @@ export function WorldMiniMap({
   journeyStops = [],
   journeyDestinationLabels = [],
   collectibleMarkers = [],
+  relationshipStampMarkers = [],
   companionTrailPoints = [],
   rendezvousPoint = null,
   onNavigateAccessibilityLandmark
@@ -564,6 +594,7 @@ export function WorldMiniMap({
     routeKind,
     routePoints,
     collectibleMarkers,
+    relationshipStampMarkers,
     companionTrailPoints,
     rendezvousPoint
   };
@@ -727,6 +758,7 @@ export function WorldMiniMap({
                 viewTransform={viewTransform}
               />
             </div>
+            {relationshipStampMarkers.length > 0 ? <section className="world-minimap-expanded__stamp-guide" aria-label="현재 구역 인연 도장 목적지"><strong>인연 도장 목적지</strong><ul>{relationshipStampMarkers.map((marker) => <li key={marker.id} data-complete={marker.unlocked || undefined}><i aria-hidden="true" />{marker.label}<small>{marker.unlocked ? "완료" : marker.recommended ? "다음 추천" : "미완료"}</small></li>)}</ul></section> : null}
             {selectedLandmark ? (
               <section className="world-minimap-expanded__accessible-nav" aria-label="목적지 순차 탐색">
                 <header>

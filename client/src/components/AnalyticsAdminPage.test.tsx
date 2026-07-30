@@ -7,6 +7,7 @@ const analyticsApi = vi.hoisted(() => ({
   fetchAdminInvitationAnalytics: vi.fn(),
   updateAdminInvitationPerformanceMode: vi.fn()
 }));
+const deviceQaApi = vi.hoisted(() => ({ updateAdminDeviceQaAlertSettings: vi.fn() }));
 const authApi = vi.hoisted(() => ({ createAdminSession: vi.fn() }));
 const storage = vi.hoisted(() => ({
   loadAdminSession: vi.fn(),
@@ -15,6 +16,7 @@ const storage = vi.hoisted(() => ({
 }));
 
 vi.mock("../api/invitationAnalyticsApi", () => analyticsApi);
+vi.mock("../api/deviceQaReportApi", () => deviceQaApi);
 vi.mock("../api/weddingApi", async (importOriginal) => ({
   ...await importOriginal<typeof import("../api/weddingApi")>(),
   createAdminSession: authApi.createAdminSession
@@ -50,6 +52,25 @@ function result(): InvitationAnalyticsAdminResponse {
         generatedAt: "2026-07-22T03:00:00.000Z"
       },
       updatedAt: null
+    },
+    deviceQaDetail: {
+      profiles: [{
+        key: "android|Android|14|Chrome|126",
+        platform: "android",
+        osLabel: "Android 14",
+        browserLabel: "Chrome 126",
+        reports: 3,
+        warnings: 2,
+        issues: 2,
+        issueRate: 2 / 3,
+        topIssues: [{ key: "layout", count: 2 }]
+      }],
+      latestAlert: null,
+      recentAlerts: [],
+      emailConfigured: false,
+      emailEnabled: false,
+      warningThreshold: 3,
+      generatedAt: "2026-07-22T03:00:00.000Z"
     },
     daily: Array.from({ length: 7 }, (_, index) => ({
       date: `2026-07-${String(16 + index).padStart(2, "0")}`,
@@ -92,6 +113,7 @@ describe("AnalyticsAdminPage", () => {
       effective: { ...result().performance.effective, source: "default", slowFpsThreshold: 42, recoveryFpsThreshold: 52 },
       updatedAt: "2026-07-22T04:00:00.000Z"
     });
+    deviceQaApi.updateAdminDeviceQaAlertSettings.mockResolvedValue(result().deviceQaDetail);
   });
 
   afterEach(cleanup);
@@ -113,6 +135,7 @@ describe("AnalyticsAdminPage", () => {
     expect(screen.getByRole("heading", { name: "실기기 성능 기준 운영" })).toBeInTheDocument();
     expect(screen.getByText("실측 표본 자동 보정 중")).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "실제 휴대폰 점검 현황" })).toBeInTheDocument();
+    expect(screen.getByRole("region", { name: "운영체제와 브라우저별 점검" })).toHaveTextContent("Android 14");
     expect(screen.getByText("8회 점검 · 2건 불편")).toBeInTheDocument();
     expect(screen.getByText("비교 가능한 표본을 더 모으는 중입니다")).toBeInTheDocument();
     expect(screen.getByRole("region", { name: "기기 QA 이상 알림" })).toHaveTextContent("새로운 기기 이상 추세 없음");

@@ -125,6 +125,22 @@
 .game-save-data-center__changes > li > span { display: grid; grid-template-columns: 1fr 11px 1fr; align-items: center; gap: 3px; color: #766661; font-size: 6px; text-align: center; }
 .game-save-data-center__changes > li > span svg { width: 9px; height: 9px; }
 .game-save-data-center__preview > div { display: grid; grid-template-columns: 1fr 74px; gap: 4px; }
+.game-save-data-center__transfer-history { display: grid; gap: 5px; border: 1px solid #c9bcae; padding: 6px; background: #f8f5ee; }
+.game-save-data-center__transfer-history > header { display: grid; grid-template-columns: 16px minmax(0, 1fr) 28px; align-items: center; gap: 5px; color: #695d58; }
+.game-save-data-center__transfer-history > header > svg { width: 13px; }
+.game-save-data-center__transfer-history > header span { display: grid; }
+.game-save-data-center__transfer-history > header strong { font-size: 8px; }
+.game-save-data-center__transfer-history > header small { color: #8b7e77; font-size: 6px; }
+.game-save-data-center__transfer-history > header button { width: 28px; min-height: 28px; padding: 2px; }
+.game-save-data-center__transfer-history ol { display: grid; gap: 3px; margin: 0; padding: 0; list-style: none; }
+.game-save-data-center__transfer-history li { display: grid; min-height: 36px; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 5px; border-left: 3px solid #7d987f; padding: 4px 5px; background: #fff; }
+.game-save-data-center__transfer-history li[data-status="claimed"] { border-left-color: #a16a83; }
+.game-save-data-center__transfer-history li[data-status="revoked"],
+.game-save-data-center__transfer-history li[data-status="expired"] { border-left-color: #9c938a; }
+.game-save-data-center__transfer-history li > span { display: grid; }
+.game-save-data-center__transfer-history li strong { color: #64585a; font-size: 7px; }
+.game-save-data-center__transfer-history li small { color: #8c817b; font-size: 6px; }
+.game-save-data-center__transfer-history li button { min-height: 26px; border-color: #bd8d93; background: #fff5f3; color: #875766; font-size: 6px; }
 .game-save-qr-scanner { position: fixed; z-index: 2147483100; inset: 0; display: grid; place-items: center; padding: 14px; background: rgba(35, 31, 32, .76); }
 .game-save-qr-scanner > section { display: grid; width: min(100%, 420px); max-height: calc(100dvh - 28px); gap: 10px; overflow: auto; border: 2px solid #d7b979; border-radius: 6px; padding: 13px; background: #fffaf0; color: #4f4340; }
 .game-save-qr-scanner header { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
@@ -275,6 +291,22 @@
 .npc-relationship-journal__hidden-letter strong { font-size: 8px; }
 .npc-relationship-journal__hidden-letter:disabled { filter: grayscale(.7); opacity: .58; }
 .npc-relationship-journal__stamp-book[data-complete] { border-color: #b4814f; box-shadow: inset 0 0 0 2px rgba(225, 190, 111, .18); }
+.npc-relationship-journal__completion { position: relative; z-index: 1; display: grid; justify-items: center; gap: 2px; overflow: hidden; border: 1px solid #c59152; padding: 9px 6px; background: #fff3c8; color: #765143; text-align: center; animation: npc-stamp-reward-in .45s ease-out both; }
+.npc-relationship-journal__completion::before,
+.npc-relationship-journal__completion::after { position: absolute; width: 5px; height: 5px; border-radius: 50%; background: #d69478; box-shadow: 24px 8px #8ca77e, 51px -2px #e2bc64, 78px 10px #b77a96, 108px 1px #71937b; content: ""; animation: npc-stamp-confetti 1.3s ease-out infinite; }
+.npc-relationship-journal__completion::before { top: -5px; left: 12px; }
+.npc-relationship-journal__completion::after { top: -2px; right: 22px; animation-delay: .35s; }
+.npc-relationship-journal__completion > span { display: flex; align-items: center; gap: 5px; }
+.npc-relationship-journal__completion svg { width: 15px; }
+.npc-relationship-journal__completion strong { font-size: 9px; }
+.npc-relationship-journal__completion small { font-size: 6px; }
+@keyframes npc-stamp-reward-in { from { opacity: 0; transform: scale(.86); } to { opacity: 1; transform: scale(1); } }
+@keyframes npc-stamp-confetti { from { transform: translateY(0) rotate(0); opacity: 1; } to { transform: translateY(38px) rotate(180deg); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .npc-relationship-journal__completion,
+  .npc-relationship-journal__completion::before,
+  .npc-relationship-journal__completion::after { animation: none; }
+}
 .npc-relationship-journal__tabs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; margin-top: 6px; }
 .npc-relationship-journal__tabs button { min-height: 28px; border: 1px solid #d5c8c6; border-radius: 3px; background: #fff; color: #706467; font-size: 8px; font-weight: 900; }
 .npc-relationship-journal__tabs button[aria-selected="true"] { border-color: #a96373; background: #fff0f0; color: #8f4f61; }
@@ -356,6 +388,7 @@
 .world-secret-memorial-dialog__scene h2 { margin: 5px 0; font-size: 22px; }
 .world-secret-memorial-dialog__scene p { max-width: 320px; margin: 0; font-size: 13px; line-height: 1.6; }
 .world-secret-memorial-dialog__scene small { font-size: 10px; font-weight: 900; }
+.world-secret-memorial-dialog__scene [data-narration-active] { border-radius: 2px; outline: 2px solid rgba(255, 224, 137, .9); outline-offset: 3px; background: rgba(55, 42, 57, .38); }
 .world-secret-memorial-dialog__scene[data-replaying] > span { animation: memorial-replay 1.1s ease both; }
 .world-secret-memorial-dialog__paging { display: grid; grid-template-columns: 40px minmax(0, 1fr) 40px; gap: 6px; margin-top: 8px; }
 .world-secret-memorial-dialog__paging button { display: inline-flex; min-height: 40px; align-items: center; justify-content: center; gap: 5px; border: 1px solid #bca57e; border-radius: 4px; background: #fff6df; color: #6e4d52; font-weight: 900; }
@@ -365,12 +398,21 @@
 .world-secret-memorial-dialog__playback svg { width: 14px; }
 .world-secret-memorial-dialog__accessibility { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 5px; margin-top: 6px; }
 .world-secret-memorial-dialog__accessibility label { display: grid; grid-template-columns: 16px minmax(0, 1fr) 72px; align-items: center; gap: 4px; border: 1px solid #c9b99e; padding: 4px 6px; background: #fffdf7; color: #705b5f; font-size: 8px; font-weight: 900; }
-.world-secret-memorial-dialog__accessibility label:nth-of-type(3) { grid-column: 1 / -1; }
+.world-secret-memorial-dialog__accessibility label:nth-of-type(3),
+.world-secret-memorial-dialog__accessibility label:nth-of-type(4) { grid-column: 1 / -1; }
 .world-secret-memorial-dialog__accessibility label svg { width: 13px; }
 .world-secret-memorial-dialog__accessibility select { min-width: 0; height: 28px; border: 1px solid #baa99f; background: #fff; color: #5f4d50; font-size: 8px; }
+.world-secret-memorial-dialog__accessibility input[type="range"] { width: 100%; accent-color: #966177; }
 .world-secret-memorial-dialog__accessibility button { display: inline-flex; min-height: 38px; align-items: center; justify-content: center; gap: 4px; border: 1px solid #c9b99e; background: #fff; color: #705b5f; font-size: 8px; font-weight: 900; }
 .world-secret-memorial-dialog__accessibility button[aria-pressed="true"] { border-color: #956176; background: #f8e5e6; color: #824f61; }
 .world-secret-memorial-dialog__accessibility button svg { width: 13px; }
+.world-secret-memorial-dialog__narration-order { display: grid; grid-template-columns: 34px minmax(0, 1fr) 34px; align-items: center; gap: 5px; margin-top: 6px; border: 1px solid #c8b399; padding: 5px; background: #fff6df; }
+.world-secret-memorial-dialog__narration-order button { display: grid; min-height: 31px; place-items: center; border: 1px solid #a9877f; background: #fff; color: #775562; }
+.world-secret-memorial-dialog__narration-order button:disabled { opacity: .4; }
+.world-secret-memorial-dialog__narration-order button svg { width: 13px; }
+.world-secret-memorial-dialog__narration-order span { display: flex; align-items: center; justify-content: center; gap: 6px; }
+.world-secret-memorial-dialog__narration-order strong { color: #845769; font-size: 9px; }
+.world-secret-memorial-dialog__narration-order small { color: #796c66; font-size: 8px; font-weight: 850; }
 .world-secret-memorial-dialog__caption { display: grid; grid-template-columns: 20px minmax(0, 1fr); gap: 6px; margin: 6px 0 0; border-left: 3px solid #9b6877; padding: 7px 8px; background: #f5eee5; color: #665456; font-size: 9px; line-height: 1.45; }
 .world-secret-memorial-dialog__caption svg { width: 16px; }
 .world-secret-memorial-dialog__caption span { display: grid; }

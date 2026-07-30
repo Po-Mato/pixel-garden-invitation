@@ -44,6 +44,7 @@ describe("NpcRelationshipJournal", () => {
     }} />);
     fireEvent.click(screen.getByText("두 사람과의 인연 일지"));
     expect(screen.getByRole("region", { name: "두 사람 전체 장소 도장책" })).toHaveTextContent("3/3");
+    expect(screen.getByRole("status")).toHaveTextContent("두 사람의 약속 봉인");
     fireEvent.click(screen.getByRole("button", { name: /정원 끝에 남긴 편지/ }));
     expect(screen.getByText(/오늘 건넨 세 번의 인사/)).toBeInTheDocument();
   });

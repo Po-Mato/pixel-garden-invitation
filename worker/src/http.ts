@@ -793,9 +793,30 @@ async function handleApiRequestWithoutCors(
     return handlePublicInvitationAnalyticsRequest(request, env, publicAnalyticsMatch[1]);
   }
 
+  const publicDeviceQaMatch = url.pathname.match(/^\/api\/invitations\/([^/]+)\/device-qa-reports$/);
+  if (publicDeviceQaMatch) {
+    const { handleDeviceQaReportRequest } = await import("./deviceQaReportHttp");
+    return handleDeviceQaReportRequest(request, env, clientKey, publicDeviceQaMatch[1]);
+  }
+
   const publicPerformanceConfigMatch = url.pathname.match(/^\/api\/invitations\/([^/]+)\/performance-config$/);
   if (publicPerformanceConfigMatch) {
     return handleInvitationPerformanceConfigRequest(request, env, publicPerformanceConfigMatch[1]);
+  }
+
+  const gameTransferMatch = url.pathname.match(
+    /^\/api\/invitations\/([^/]+)\/game-transfers(?:\/(transfer_[0-9a-f-]+)(?:\/(claim))?)?$/
+  );
+  if (gameTransferMatch) {
+    const { handleGameTransferRequest } = await import("./gameTransferHttp");
+    return handleGameTransferRequest(
+      request,
+      env,
+      clientKey,
+      gameTransferMatch[1],
+      gameTransferMatch[2],
+      gameTransferMatch[3]
+    );
   }
 
   const journeyProgressMatch = url.pathname.match(/^\/api\/invitations\/([^/]+)\/journey-progress$/);

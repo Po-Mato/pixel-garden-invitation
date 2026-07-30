@@ -14,6 +14,8 @@ import {
   getInvitationPerformanceAdminState,
   setInvitationPerformanceMode
 } from "./invitationPerformanceConfig";
+import { adminNotificationEmailConfigured } from "./adminNotificationEmail";
+import { getDeviceQaDetailAdminState, updateDeviceQaAlertSettings } from "./deviceQaReportRepository";
 
 const eventNames = new Set<string>(invitationAnalyticsEventNames);
 const contextPattern = /^(entry|game|simple)$/;
@@ -125,6 +127,26 @@ export async function handleAdminInvitationAnalyticsRequest(
     } catch {
       return json({ error: "invalid_request" }, 400);
     }
+    const deviceQaAlerts = body && typeof body === "object" && "deviceQaAlerts" in body
+      ? (body as { deviceQaAlerts?: unknown }).deviceQaAlerts
+      : null;
+    if (deviceQaAlerts && typeof deviceQaAlerts === "object") {
+      const candidate = deviceQaAlerts as { emailEnabled?: unknown; warningThreshold?: unknown };
+      if (typeof candidate.emailEnabled !== "boolean" || !Number.isInteger(candidate.warningThreshold) || (candidate.warningThreshold as number) < 2 || (candidate.warningThreshold as number) > 20) {
+        return json({ error: "invalid_request" }, 400);
+      }
+      if (candidate.emailEnabled && !adminNotificationEmailConfigured(env)) return json({ error: "email_not_configured" }, 409);
+      try {
+        const updated = await updateDeviceQaAlertSettings(env.DB, invitationId, {
+          emailEnabled: candidate.emailEnabled,
+          warningThreshold: candidate.warningThreshold as number
+        });
+        if (!updated) return json({ error: "not_found" }, 404);
+        return json(await getDeviceQaDetailAdminState(env.DB, invitationId, adminNotificationEmailConfigured(env)));
+      } catch {
+        return json({ error: "internal_error" }, 500);
+      }
+    }
     const performanceMode = body && typeof body === "object" && "performanceMode" in body
       ? (body as { performanceMode?: unknown }).performanceMode
       : null;
@@ -147,11 +169,12 @@ export async function handleAdminInvitationAnalyticsRequest(
   }
 
   try {
-    const [result, performance] = await Promise.all([
+    const [result, performance, deviceQaDetail] = await Promise.all([
       getInvitationAnalytics(env.DB, invitationId, { from, to }),
-      getInvitationPerformanceAdminState(env.DB, invitationId)
+      getInvitationPerformanceAdminState(env.DB, invitationId),
+      getDeviceQaDetailAdminState(env.DB, invitationId, adminNotificationEmailConfigured(env))
     ]);
-    return result && performance ? json({ ...result, performance }) : json({ error: "not_found" }, 404);
+    return result && performance && deviceQaDetail ? json({ ...result, performance, deviceQaDetail }) : json({ error: "not_found" }, 404);
   } catch {
     return json({ error: "internal_error" }, 500);
   }

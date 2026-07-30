@@ -3,7 +3,9 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { GameDeviceReadinessCenter } from "./GameDeviceReadinessCenter";
 
 const analytics = vi.hoisted(() => ({ trackInvitationAnalytics: vi.fn(), flushInvitationAnalytics: vi.fn() }));
+const detailApi = vi.hoisted(() => ({ postDeviceQaDetailReport: vi.fn() }));
 vi.mock("../analytics/invitationAnalytics", () => analytics);
+vi.mock("../api/deviceQaReportApi", () => detailApi);
 afterEach(cleanup);
 
 describe("GameDeviceReadinessCenter", () => {
@@ -19,6 +21,7 @@ describe("GameDeviceReadinessCenter", () => {
 
   it("선택한 불편 항목만 익명 집계 이벤트로 보낸다", async () => {
     analytics.flushInvitationAnalytics.mockResolvedValue(undefined);
+    detailApi.postDeviceQaDetailReport.mockResolvedValue({ accepted: true });
     render(<GameDeviceReadinessCenter />);
     fireEvent.click(screen.getByText("내 휴대폰 최종 점검"));
     fireEvent.click(screen.getByRole("button", { name: "자동 점검 실행" }));

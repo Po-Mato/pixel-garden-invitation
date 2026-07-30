@@ -26,6 +26,7 @@ import {
   fetchAdminInvitationAnalytics,
   updateAdminInvitationPerformanceMode
 } from "../api/invitationAnalyticsApi";
+import { updateAdminDeviceQaAlertSettings } from "../api/deviceQaReportApi";
 import { createAdminSession, WeddingApiError, type AdminSession } from "../api/weddingApi";
 import { downloadInvitationAnalyticsCsv } from "../invitation/analyticsCsv";
 import { analyzeDeviceQaTrend } from "../invitation/deviceQaTrend";
@@ -421,7 +422,18 @@ export function AnalyticsAdminPage() {
                   ))}
                 </div>
               </section>
-              <DeviceQaAdminAlert trend={deviceQaTrend} deviceResults={analytics.breakdowns.deviceQaDevices} issueResults={analytics.breakdowns.deviceQaIssues} generatedAt={analytics.generatedAt} />
+              <DeviceQaAdminAlert
+                trend={deviceQaTrend}
+                deviceResults={analytics.breakdowns.deviceQaDevices}
+                issueResults={analytics.breakdowns.deviceQaIssues}
+                generatedAt={analytics.generatedAt}
+                serverState={analytics.deviceQaDetail}
+                onUpdateServerSettings={async (input) => {
+                  const deviceQaDetail = await updateAdminDeviceQaAlertSettings(session.token, input);
+                  setAnalytics((current) => current ? { ...current, deviceQaDetail } : current);
+                  return deviceQaDetail;
+                }}
+              />
               <div>
                 <BreakdownList title="기기별 점검 결과" items={analytics.breakdowns.deviceQaDevices} labels={qaDeviceLabels} />
                 <BreakdownList title="기기별 불편 항목" items={analytics.breakdowns.deviceQaIssues} labels={qaIssueLabels} />

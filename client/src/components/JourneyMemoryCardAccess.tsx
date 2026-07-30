@@ -100,6 +100,7 @@ export function JourneyMemoryCardAccess({ nickname, progress }: JourneyMemoryCar
 
   const applyTemplate = (template: PhotoCompositionTemplate) => {
     updatePhotoTransform(template.photoTransform);
+    setStickerText(template.stickerText);
     setStickerStyle(template.stickerStyle);
     setStickerTransform(template.stickerTransform);
   };
@@ -141,7 +142,7 @@ export function JourneyMemoryCardAccess({ nickname, progress }: JourneyMemoryCar
             <button key={candidate} type="button" data-theme={candidate} aria-pressed={theme === candidate} onClick={() => setTheme(candidate)}>{journeyKeepsakeThemeLabels[candidate]}</button>
           ))}
         </div>
-        <PhotoCompositionTemplateControls photoTransform={photoTransform} stickerStyle={stickerStyle} stickerTransform={stickerTransform} onApply={applyTemplate} />
+        <PhotoCompositionTemplateControls photoTransform={photoTransform} stickerText={stickerText} stickerStyle={stickerStyle} stickerTransform={stickerTransform} onApply={applyTemplate} />
         <div className="journey-memory-card-access__photos" aria-label="여정 카드 대표 사진">
           <span><ImageIcon aria-hidden="true" />대표 사진</span>
           {photoOptions.map((photo) => (

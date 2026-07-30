@@ -49,3 +49,19 @@ export async function sendAdminNotificationEmail(
   });
   return true;
 }
+
+export async function sendDeviceQaAlertEmail(env: Env, title: string, body: string): Promise<boolean> {
+  if (!adminNotificationEmailConfigured(env)) return false;
+  const base = configuredValue(env.ADMIN_NOTIFICATION_BASE_URL)
+    ? env.ADMIN_NOTIFICATION_BASE_URL.replace(/\/$/, "")
+    : "https://po-mato.github.io/pixel-garden-invitation";
+  const url = `${base}/?admin=analytics`;
+  await env.EMAIL!.send({
+    to: env.ADMIN_NOTIFICATION_EMAIL_TO!,
+    from: { email: env.ADMIN_NOTIFICATION_EMAIL_FROM!, name: "건희·승재 모바일 청첩장" },
+    subject: `[모바일 청첩장] ${title}`,
+    text: `${title}\n${body}\n\n기기별 현황 확인: ${url}`,
+    html: `<!doctype html><html lang="ko"><body style="font-family:Arial,sans-serif;color:#263129"><h1>${escapeHtml(title)}</h1><p>${escapeHtml(body)}</p><p><a href="${escapeHtml(url)}">기기별 현황 확인</a></p></body></html>`
+  });
+  return true;
+}

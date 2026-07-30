@@ -123,6 +123,38 @@ export type InvitationPerformanceAdminState = {
   updatedAt: string | null;
 };
 
+export type DeviceQaProfileBreakdown = {
+  key: string;
+  platform: "ios" | "android" | "other";
+  osLabel: string;
+  browserLabel: string;
+  reports: number;
+  warnings: number;
+  issues: number;
+  issueRate: number;
+  topIssues: InvitationAnalyticsBreakdown[];
+};
+
+export type DeviceQaServerAlert = {
+  id: string;
+  severity: "watch" | "regression";
+  title: string;
+  body: string;
+  createdAt: string;
+  emailStatus: "disabled" | "pending" | "sent" | "failed";
+};
+
+export type DeviceQaDetailAdminState = {
+  profiles: DeviceQaProfileBreakdown[];
+  latestAlert: DeviceQaServerAlert | null;
+  recentAlerts: DeviceQaServerAlert[];
+  emailConfigured: boolean;
+  emailEnabled: boolean;
+  warningThreshold: number;
+  generatedAt: string;
+};
+
 export type InvitationAnalyticsAdminResponse = InvitationAnalyticsAdminResult & {
   performance: InvitationPerformanceAdminState;
+  deviceQaDetail?: DeviceQaDetailAdminState;
 };

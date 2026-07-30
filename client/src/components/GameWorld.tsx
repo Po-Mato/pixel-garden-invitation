@@ -92,6 +92,7 @@ import {
   npcConversationSnapshot,
   rememberNpcDialogueChoice
 } from "../game/npcDialogueMemory";
+import { buildNpcRelationshipStampBook } from "../game/npcRelationshipJournal";
 import {
   advanceNpcMotionMap,
   createNpcMotionMap,
@@ -3620,6 +3621,20 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     label: npc.label,
     point: npcMotionFor(activeZone, npc, npcMotions).point
   }));
+  const relationshipStampBook = buildNpcRelationshipStampBook(npcDialogueMemory);
+  const nextRelationshipStamp = relationshipStampBook.stamps.find(({ unlocked }) => !unlocked);
+  const miniMapRelationshipStampMarkers = relationshipStampBook.stamps
+    .filter(({ zoneId }) => zoneId === activeZone.id)
+    .flatMap((stamp) => {
+      const npc = activeNpcContexts.find(({ id }) => id === stamp.npcId);
+      return npc ? [{
+        id: stamp.id,
+        label: stamp.label,
+        point: npc.point,
+        unlocked: stamp.unlocked,
+        recommended: stamp.id === nextRelationshipStamp?.id
+      }] : [];
+    });
   const activeNpcPoints = activeNpcContexts.map(({ point }) => point);
   const activeZoneMiniQuest = zoneMiniQuestFor(activeZone.id);
   const activeZoneMiniQuestStep = currentZoneMiniQuestStep(activeZoneMiniQuest, zoneMiniQuestProgress);
@@ -4717,6 +4732,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
             journeyStops={miniMapJourneyStops}
             journeyDestinationLabels={miniMapJourneyDestinationLabels}
             collectibleMarkers={miniMapCollectibleMarkers}
+            relationshipStampMarkers={miniMapRelationshipStampMarkers}
             companionTrailPoints={activeCompanion?.zoneId === activeZone.id ? companionTrailPoints : []}
             rendezvousPoint={companionRendezvous?.zoneId === activeZone.id ? companionRendezvous.point : null}
             onNavigateAccessibilityLandmark={navigateToAccessibilityLandmark}

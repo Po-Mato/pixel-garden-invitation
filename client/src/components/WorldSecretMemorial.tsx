@@ -32,10 +32,12 @@ export function WorldSecretMemorial({ collection }: WorldSecretMemorialProps) {
   const [narrationEnabled, setNarrationEnabled] = useState(false);
   const [narrationRate, setNarrationRate] = useState(0.92);
   const [narrationVoiceUri, setNarrationVoiceUri] = useState("");
+  const [narrationPart, setNarrationPart] = useState(0);
   const [speechVoices, setSpeechVoices] = useState<SpeechSynthesisVoice[]>([]);
   const [captionsEnabled, setCaptionsEnabled] = useState(true);
   const [ambienceEnabled, setAmbienceEnabled] = useState(false);
   const [ambienceMode, setAmbienceMode] = useState<MemorialAmbienceMode>("scene");
+  const [ambienceVolume, setAmbienceVolume] = useState(0.65);
   const ambienceRef = useRef<MemorialAmbienceController | null>(null);
   const memories = worldSecretCatalog.filter(({ secretId }) => collection.discoveredIds.includes(secretId));
   const memory = memories[memoryIndex] ?? memories[0];
@@ -45,15 +47,22 @@ export function WorldSecretMemorial({ collection }: WorldSecretMemorialProps) {
     return (korean.length > 0 ? korean : speechVoices).slice(0, 8);
   }, [speechVoices]);
   const resolvedAmbienceTheme = memory && ambienceMode === "scene" ? sceneAmbienceTheme(memory.zoneId) : ambienceMode === "scene" ? "garden" : ambienceMode;
+  const narrationParts = memory ? [
+    getWorldZone(gardenWorld, memory.zoneId).label,
+    memory.secretLabel,
+    memory.resultMessage
+  ] : [];
 
   useEffect(() => {
-    if (!open || !autoPlaying || memories.length < 2) return;
+    if (!open || !autoPlaying || narrationEnabled || memories.length < 2) return;
     const timer = window.setInterval(() => {
       setMemoryIndex((index) => (index + 1) % memories.length);
       setReplayCount((count) => count + 1);
     }, 4_800);
     return () => window.clearInterval(timer);
-  }, [autoPlaying, memories.length, open]);
+  }, [autoPlaying, memories.length, narrationEnabled, open]);
+
+  useEffect(() => setNarrationPart(0), [memoryIndex]);
 
   useEffect(() => {
     if (!speechSupported) return;
@@ -66,20 +75,29 @@ export function WorldSecretMemorial({ collection }: WorldSecretMemorialProps) {
   useEffect(() => {
     if (!open || !narrationEnabled || !memory || !speechSupported) return;
     window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(
-      `${getWorldZone(gardenWorld, memory.zoneId).label}. ${memory.secretLabel}. ${memory.resultMessage}`
-    );
+    const utterance = new SpeechSynthesisUtterance(narrationParts[narrationPart] ?? "");
     utterance.lang = "ko-KR";
     utterance.rate = narrationRate;
     const selectedVoice = narrationVoices.find(({ voiceURI }) => voiceURI === narrationVoiceUri);
     if (selectedVoice) utterance.voice = selectedVoice;
+    utterance.onend = () => {
+      if (narrationPart < narrationParts.length - 1) setNarrationPart((part) => part + 1);
+      else if (autoPlaying && memories.length > 1) {
+        setMemoryIndex((index) => (index + 1) % memories.length);
+        setReplayCount((count) => count + 1);
+      }
+    };
     window.speechSynthesis.speak(utterance);
     return () => window.speechSynthesis.cancel();
-  }, [memory, narrationEnabled, narrationRate, narrationVoiceUri, narrationVoices, open, speechSupported]);
+  }, [autoPlaying, memories.length, memory, narrationEnabled, narrationPart, narrationRate, narrationVoiceUri, narrationVoices, open, speechSupported]);
 
   useEffect(() => {
     if (ambienceEnabled) ambienceRef.current?.setTheme(resolvedAmbienceTheme);
   }, [ambienceEnabled, resolvedAmbienceTheme]);
+
+  useEffect(() => {
+    if (ambienceEnabled) ambienceRef.current?.setVolume(ambienceVolume);
+  }, [ambienceEnabled, ambienceVolume]);
 
   useEffect(() => () => ambienceRef.current?.stop(), []);
 
@@ -90,7 +108,7 @@ export function WorldSecretMemorial({ collection }: WorldSecretMemorialProps) {
       setAmbienceEnabled(false);
       return;
     }
-    const controller = startMemorialAmbience(resolvedAmbienceTheme);
+    const controller = startMemorialAmbience(resolvedAmbienceTheme, ambienceVolume);
     if (!controller) return;
     ambienceRef.current = controller;
     setAmbienceEnabled(true);
@@ -126,9 +144,9 @@ export function WorldSecretMemorial({ collection }: WorldSecretMemorialProps) {
             </header>
             <section className="world-secret-memorial-dialog__scene" data-replaying={replayCount > 0 || undefined} key={replayCount} aria-live={autoPlaying ? "polite" : "off"}>
               <span aria-hidden="true"><i /><Sparkles /><i /></span>
-              <small>{memoryIndex + 1} / {memories.length} · {getWorldZone(gardenWorld, memory.zoneId).label}</small>
-              <h2>{memory.secretLabel}</h2>
-              <p>{memory.resultMessage}</p>
+              <small data-narration-active={narrationEnabled && narrationPart === 0 || undefined}>{memoryIndex + 1} / {memories.length} · {getWorldZone(gardenWorld, memory.zoneId).label}</small>
+              <h2 data-narration-active={narrationEnabled && narrationPart === 1 || undefined}>{memory.secretLabel}</h2>
+              <p data-narration-active={narrationEnabled && narrationPart === 2 || undefined}>{memory.resultMessage}</p>
             </section>
             <div className="world-secret-memorial-dialog__paging">
               <button type="button" aria-label="이전 추억" disabled={memoryIndex === 0} onClick={() => { setMemoryIndex((index) => Math.max(0, index - 1)); setReplayCount((count) => count + 1); }}><ChevronLeft aria-hidden="true" /></button>
@@ -143,9 +161,11 @@ export function WorldSecretMemorial({ collection }: WorldSecretMemorialProps) {
               <label><Volume2 aria-hidden="true" /><span>해설 속도</span><select aria-label="음성 해설 속도" value={narrationRate} onChange={(event) => setNarrationRate(Number(event.target.value))}><option value="0.8">천천히</option><option value="0.92">보통</option><option value="1.1">빠르게</option></select></label>
               <label><Volume2 aria-hidden="true" /><span>해설 음성</span><select aria-label="음성 해설 목소리" value={narrationVoiceUri} onChange={(event) => setNarrationVoiceUri(event.target.value)}><option value="">기기 기본</option>{narrationVoices.map((voice) => <option key={voice.voiceURI} value={voice.voiceURI}>{voice.name}</option>)}</select></label>
               <label><Music2 aria-hidden="true" /><span>배경음 테마</span><select aria-label="추억 배경음 테마" value={ambienceMode} onChange={(event) => setAmbienceMode(event.target.value as MemorialAmbienceMode)}>{(Object.keys(ambienceModeLabels) as MemorialAmbienceMode[]).map((mode) => <option key={mode} value={mode}>{ambienceModeLabels[mode]}</option>)}</select></label>
+              <label><Volume2 aria-hidden="true" /><span>배경음 음량</span><input aria-label="추억 배경음 음량" type="range" min="0.2" max="1" step="0.1" value={ambienceVolume} onChange={(event) => setAmbienceVolume(Number(event.target.value))} /></label>
               <button type="button" aria-pressed={captionsEnabled} onClick={() => setCaptionsEnabled((value) => !value)}><Captions aria-hidden="true" />{captionsEnabled ? "자막 끄기" : "자막 켜기"}</button>
               <button type="button" aria-pressed={ambienceEnabled} disabled={!memorialAmbienceSupported()} onClick={toggleAmbience}><Music2 aria-hidden="true" />{ambienceEnabled ? "배경음 끄기" : "배경음 듣기"}</button>
             </section>
+            {narrationEnabled ? <nav className="world-secret-memorial-dialog__narration-order" aria-label="음성 해설 읽기 순서"><button type="button" aria-label="이전 해설 부분" disabled={narrationPart === 0} onClick={() => setNarrationPart((part) => Math.max(0, part - 1))}><ChevronLeft aria-hidden="true" /></button><span><strong>{narrationPart + 1}/3</strong><small>{["장소", "추억 제목", "추억 이야기"][narrationPart]}</small></span><button type="button" aria-label="다음 해설 부분" disabled={narrationPart === 2} onClick={() => setNarrationPart((part) => Math.min(2, part + 1))}><ChevronRight aria-hidden="true" /></button></nav> : null}
             {captionsEnabled ? <p className="world-secret-memorial-dialog__caption" aria-live="polite"><Captions aria-hidden="true" /><span><strong>해설 자막</strong>{getWorldZone(gardenWorld, memory.zoneId).label}. {memory.secretLabel}. {memory.resultMessage}</span></p> : null}
             <nav className="world-secret-memorial-dialog__chapters" aria-label="추억 장면 선택">
               {memories.map((entry, index) => <button key={entry.secretId} type="button" aria-current={index === memoryIndex ? "true" : undefined} aria-label={`${index + 1}장 ${entry.secretLabel}`} onClick={() => { setMemoryIndex(index); setReplayCount((count) => count + 1); }}><span>{String(index + 1).padStart(2, "0")}</span><small>{entry.secretLabel}</small></button>)}

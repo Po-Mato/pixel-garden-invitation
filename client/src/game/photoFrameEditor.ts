@@ -29,6 +29,7 @@ export type PhotoCompositionTemplate = {
   id: string;
   label: string;
   photoTransform: PhotoFrameTransform;
+  stickerText: string;
   stickerStyle: PhotoStickerStyle;
   stickerTransform: PhotoStickerTransform;
   custom?: boolean;
@@ -44,6 +45,7 @@ export const builtInPhotoCompositionTemplates: readonly PhotoCompositionTemplate
     id: "classic",
     label: "클래식",
     photoTransform: { zoom: 1.08, offsetX: 0, offsetY: -0.12, rotation: 0 },
+    stickerText: "우리의 봄날",
     stickerStyle: { tone: "ivory", font: "serif" },
     stickerTransform: { x: 0.5, y: 0.34, scale: 1, rotation: 0 }
   },
@@ -51,6 +53,7 @@ export const builtInPhotoCompositionTemplates: readonly PhotoCompositionTemplate
     id: "garden-note",
     label: "정원 편지",
     photoTransform: { zoom: 1.2, offsetX: -0.08, offsetY: -0.2, rotation: -2 },
+    stickerText: "정원에서 만난 오늘",
     stickerStyle: { tone: "sage", font: "hand" },
     stickerTransform: { x: 0.3, y: 0.72, scale: 1.08, rotation: -6 }
   },
@@ -58,12 +61,14 @@ export const builtInPhotoCompositionTemplates: readonly PhotoCompositionTemplate
     id: "celebration",
     label: "축하 리본",
     photoTransform: { zoom: 1.25, offsetX: 0.1, offsetY: -0.08, rotation: 2 },
+    stickerText: "오래 행복하세요",
     stickerStyle: { tone: "rose", font: "sans" },
     stickerTransform: { x: 0.7, y: 0.2, scale: 0.92, rotation: 5 }
   }
 ] as const;
 
 export const photoCompositionTemplateStorageKey = "wedding-game:photo-composition-templates:v1";
+export const photoCompositionTemplateShareParam = "wedding-frame";
 
 const stickerTones: Record<PhotoStickerTone, { background: string; color: string }> = {
   ivory: { background: "rgba(255, 248, 224, .96)", color: "#714d59" },
@@ -263,6 +268,7 @@ function normalizePhotoCompositionTemplate(value: unknown): PhotoCompositionTemp
     id: candidate.id,
     label,
     photoTransform: normalizePhotoFrameTransform(candidate.photoTransform),
+    stickerText: normalizePhotoStickerText(typeof candidate.stickerText === "string" ? candidate.stickerText : ""),
     stickerStyle: normalizePhotoStickerStyle(candidate.stickerStyle),
     stickerTransform: normalizePhotoStickerTransform(candidate.stickerTransform),
     custom: candidate.custom === true
@@ -305,16 +311,63 @@ export function createPhotoCompositionTemplate(
   stickerStyle: PhotoStickerStyle,
   stickerTransform: PhotoStickerTransform,
   index: number,
-  id = `frame-${Date.now().toString(36)}`
+  id = `frame-${Date.now().toString(36)}`,
+  stickerText = ""
 ): PhotoCompositionTemplate {
   return {
     id: id.toLowerCase().replace(/[^a-z0-9-]/g, "-").slice(0, 48),
     label: `내 프레임 ${Math.min(3, Math.max(1, index + 1))}`,
     photoTransform: normalizePhotoFrameTransform(photoTransform),
+    stickerText: normalizePhotoStickerText(stickerText),
     stickerStyle: normalizePhotoStickerStyle(stickerStyle),
     stickerTransform: normalizePhotoStickerTransform(stickerTransform),
     custom: true
   };
+}
+
+function encodeBase64Url(value: string) {
+  const bytes = new TextEncoder().encode(value);
+  let binary = "";
+  bytes.forEach((byte) => { binary += String.fromCharCode(byte); });
+  return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
+}
+
+function decodeBase64Url(value: string) {
+  if (!/^[A-Za-z0-9_-]+$/.test(value)) throw new Error("invalid_template");
+  const binary = atob(value.replace(/-/g, "+").replace(/_/g, "/") + "=".repeat((4 - value.length % 4) % 4));
+  return new TextDecoder().decode(Uint8Array.from(binary, (character) => character.charCodeAt(0)));
+}
+
+export function createPhotoCompositionTemplateShareUrl(template: PhotoCompositionTemplate, href: string) {
+  const normalized = normalizePhotoCompositionTemplate({ ...template, custom: true });
+  if (!normalized) throw new Error("invalid_template");
+  const url = new URL(href);
+  url.searchParams.set(photoCompositionTemplateShareParam, encodeBase64Url(JSON.stringify({
+    version: 1,
+    template: { ...normalized, id: "shared-frame", label: "공유 프레임", custom: true }
+  })));
+  url.hash = "";
+  return url.toString();
+}
+
+export function readPhotoCompositionTemplateFromUrl(href: string): PhotoCompositionTemplate | null {
+  try {
+    const url = new URL(href);
+    const encoded = url.searchParams.get(photoCompositionTemplateShareParam);
+    if (!encoded || encoded.length > 2_000) return null;
+    const payload = JSON.parse(decodeBase64Url(encoded)) as { version?: unknown; template?: unknown };
+    if (payload.version !== 1) return null;
+    const template = normalizePhotoCompositionTemplate(payload.template);
+    return template ? { ...template, id: `shared-${Date.now().toString(36)}`, label: "받은 프레임", custom: true } : null;
+  } catch {
+    return null;
+  }
+}
+
+export function removePhotoCompositionTemplateFromUrl(href: string) {
+  const url = new URL(href);
+  url.searchParams.delete(photoCompositionTemplateShareParam);
+  return `${url.pathname}${url.search}${url.hash}`;
 }
 
 export function photoStickerPreviewStyle(value?: Partial<PhotoStickerStyle> | null) {
