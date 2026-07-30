@@ -16,6 +16,7 @@ import { worldDepth } from "../game/worldVisuals";
 import { journeyProgressStorageKey } from "../game/journeyProgress";
 import { gameHudAutoHideDelayMs } from "../game/gameHudVisibility";
 import { worldSessionStorageKey } from "../game/worldSession";
+import { worldTravelHistoryStorageKey } from "../game/worldTravelHistory";
 import { zoneMiniQuestStorageKey } from "../game/zoneMiniQuest";
 import { copyText } from "../invitation/browserActions";
 import { GameFeedbackProvider } from "../feedback/GameFeedbackContext";
@@ -1597,6 +1598,33 @@ describe("GameWorld", () => {
     finishCurrentRoute();
     expect(screen.getByLabelText("동네 거리 지도")).toHaveAttribute("data-zone", "neighborhood");
     expect(screen.getByText("동네 거리 도착")).toBeInTheDocument();
+  });
+
+  it("첫 포털 목적지를 안내하고 도착한 이동 기록을 저장한다", () => {
+    render(<GameWorld profile={profile} />);
+    fireEvent.click(screen.getByRole("button", { name: "동네로 나가기" }));
+
+    expect(screen.getByText("첫 방문")).toBeInTheDocument();
+    expect(screen.getByText("새로운 장소예요")).toBeInTheDocument();
+    finishCurrentRoute();
+
+    const history = JSON.parse(window.localStorage.getItem(worldTravelHistoryStorageKey) ?? "null");
+    expect(history.visitedZoneIds).toContain("neighborhood");
+    expect(history.records.at(-1)).toMatchObject({
+      from: "home",
+      to: "neighborhood",
+      portalId: "home-to-neighborhood",
+      method: "portal"
+    });
+  });
+
+  it("대표 소품을 누르면 가까이 걸어가 짧은 반응을 보여준다", () => {
+    render(<GameWorld profile={profile} />);
+    fireEvent.click(screen.getByRole("button", { name: "청첩장 보관함, 청첩장 살펴보기" }));
+    advanceInteractionRoute();
+
+    expect(screen.getByRole("status", { name: "하객1님의 하트" })).toBeInTheDocument();
+    expect(screen.getAllByText("두 사람의 초대장을 다시 한번 정성껏 펼쳐봤어요")).toHaveLength(2);
   });
 
   it("cancels portal walking when another map point is clicked", () => {

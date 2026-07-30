@@ -490,15 +490,19 @@ export function ViewSettingsAccess({ variant, onOpenChange, currentZoneId }: Vie
                 <small>{devicePerformance.effectsPreference === "auto"
                   ? "기기 상태에 따라 맵 효과를 자동 선택해요"
                   : `선택한 ${devicePerformance.effectsPreference === "full" ? "풍부" : devicePerformance.effectsPreference === "reduced" ? "균형" : "절약"} 단계로 표시해요`}</small>
-                <small>{devicePerformance.mode === "lite"
-                  ? devicePerformance.reason === "memory"
+                <small>{devicePerformance.energySavingReason === "battery"
+                  ? `배터리 ${Math.round((devicePerformance.batteryLevel ?? 0) * 100)}%에 맞춰 화면 효과를 절약해요`
+                  : devicePerformance.energySavingReason === "background"
+                    ? "다른 화면을 보는 동안 효과를 잠시 멈췄어요"
+                    : devicePerformance.mode === "lite"
+                      ? devicePerformance.reason === "memory"
                     ? "메모리 사용량을 줄이고 있어요"
                     : devicePerformance.reason === "processor"
                       ? "장식 애니메이션을 줄이고 있어요"
                       : devicePerformance.reason === "frame-rate"
                         ? "프레임 저하를 감지해 화면 효과를 자동 조절했어요"
                         : "느린 연결에 맞춰 화면 효과를 줄이고 있어요"
-                  : "현재 기기에서 전체 화면 효과를 사용해요"}</small>
+                      : "현재 기기에서 전체 화면 효과를 사용해요"}</small>
                 <small>{devicePerformance.tuningSource === "observed"
                   ? `실사용 성능 표본 ${devicePerformance.tuningSampleCount}개로 자동 기준을 보정했어요`
                   : "안정적인 기본 성능 기준을 사용하고 있어요"}</small>

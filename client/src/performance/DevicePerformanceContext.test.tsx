@@ -5,6 +5,7 @@ import {
   DevicePerformanceProvider,
   effectsPreferenceStorageKey,
   loadEffectsPreference,
+  resolveEnergySavingEffectsQuality,
   resolvePreferredEffectsQuality,
   saveEffectsPreference,
   resolveDevicePerformanceStatus,
@@ -25,10 +26,12 @@ afterEach(() => {
   Reflect.deleteProperty(navigator, "deviceMemory");
   Reflect.deleteProperty(navigator, "hardwareConcurrency");
   Reflect.deleteProperty(navigator, "connection");
+  Reflect.deleteProperty(navigator, "getBattery");
   delete document.documentElement.dataset.performanceMode;
   delete document.documentElement.dataset.performanceReason;
   delete document.documentElement.dataset.effectsQuality;
   delete document.documentElement.dataset.effectsPreference;
+  Object.defineProperty(document, "visibilityState", { configurable: true, value: "visible" });
 });
 
 describe("기기 성능 자동 최적화", () => {
@@ -109,6 +112,9 @@ describe("기기 성능 자동 최적화", () => {
     expect(loadEffectsPreference(storage)).toBe("reduced");
     expect(resolvePreferredEffectsQuality("full", "reduced")).toBe("reduced");
     expect(resolvePreferredEffectsQuality("minimal", "full")).toBe("minimal");
+    expect(resolveEnergySavingEffectsQuality("full", "battery", 0.18)).toBe("reduced");
+    expect(resolveEnergySavingEffectsQuality("full", "battery", 0.08)).toBe("minimal");
+    expect(resolveEnergySavingEffectsQuality("full", "background", null)).toBe("minimal");
   });
 
   it("환경 설정에서 선택한 효과 단계를 즉시 공유한다", () => {
@@ -128,5 +134,45 @@ describe("기기 성능 자동 최적화", () => {
     act(() => { screen.getByRole("button").click(); });
     expect(screen.getByText("minimal:minimal")).toBeInTheDocument();
     expect(document.documentElement.dataset.effectsPreference).toBe("minimal");
+  });
+
+  it("배터리가 낮고 충전 중이 아니면 효과를 낮추고 충전 시 복구한다", async () => {
+    const listeners = new Map<string, () => void>();
+    const battery = {
+      charging: false,
+      level: 0.18,
+      addEventListener: vi.fn((type: string, listener: () => void) => listeners.set(type, listener)),
+      removeEventListener: vi.fn()
+    };
+    Object.defineProperty(navigator, "getBattery", {
+      configurable: true,
+      value: vi.fn(async () => battery)
+    });
+    function Status() {
+      const status = useDevicePerformance();
+      return <span>{status.energySavingReason}:{status.effectsQuality}</span>;
+    }
+    render(<DevicePerformanceProvider><Status /></DevicePerformanceProvider>);
+    await waitFor(() => expect(screen.getByText("battery:reduced")).toBeInTheDocument());
+
+    battery.charging = true;
+    act(() => listeners.get("chargingchange")?.());
+    await waitFor(() => expect(screen.getByText("none:full")).toBeInTheDocument());
+  });
+
+  it("백그라운드에서는 최소 효과로 전환하고 화면 복귀 시 복구한다", async () => {
+    function Status() {
+      const status = useDevicePerformance();
+      return <span>{status.energySavingReason}:{status.effectsQuality}</span>;
+    }
+    render(<DevicePerformanceProvider><Status /></DevicePerformanceProvider>);
+
+    Object.defineProperty(document, "visibilityState", { configurable: true, value: "hidden" });
+    act(() => document.dispatchEvent(new Event("visibilitychange")));
+    await waitFor(() => expect(screen.getByText("background:minimal")).toBeInTheDocument());
+
+    Object.defineProperty(document, "visibilityState", { configurable: true, value: "visible" });
+    act(() => document.dispatchEvent(new Event("visibilitychange")));
+    await waitFor(() => expect(screen.getByText("none:full")).toBeInTheDocument());
   });
 });

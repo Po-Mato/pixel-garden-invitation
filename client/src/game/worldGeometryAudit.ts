@@ -1,6 +1,7 @@
 import { isBlocked } from "./geometry";
 import { gridTileSize } from "./movement";
 import type { Point, Rect, WorldZone } from "./world";
+import { worldPropInteractionsForZone } from "./worldPropInteractions";
 
 export type WorldGeometryTileState = "reachable" | "blocked" | "unreachable";
 
@@ -100,6 +101,11 @@ export function auditWorldGeometry(zone: WorldZone): WorldGeometryAudit {
   const interactionTargets = [
     ...zone.spots.map((target) => ({ label: target.label, rect: target, radius: target.actionRadius })),
     ...zone.photoSpots.map((target) => ({ label: target.label, rect: target, radius: target.actionRadius })),
+    ...worldPropInteractionsForZone(zone).map(({ decoration, interaction }) => ({
+      label: decoration.label,
+      rect: decoration,
+      radius: interaction.actionRadius
+    })),
     ...zone.npcs.map((target) => ({
       label: target.label,
       rect: { x: target.x, y: target.y, width: 0, height: 0 },

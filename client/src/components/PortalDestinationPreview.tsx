@@ -8,6 +8,9 @@ type PortalDestinationPreviewProps = {
   destinationZone: WorldZone;
   congestion?: PortalCongestion;
   waitEstimate?: PortalWaitEstimate;
+  firstVisit?: boolean;
+  visitCount?: number;
+  recentDestinations?: string[];
 };
 
 const previewWidth = 156;
@@ -42,7 +45,15 @@ function projectRect(rect: Rect, zone: WorldZone) {
   };
 }
 
-export function PortalDestinationPreview({ portal, destinationZone, congestion, waitEstimate }: PortalDestinationPreviewProps) {
+export function PortalDestinationPreview({
+  portal,
+  destinationZone,
+  congestion,
+  waitEstimate,
+  firstVisit = false,
+  visitCount = 0,
+  recentDestinations = []
+}: PortalDestinationPreviewProps) {
   const arrival = projectPoint(portal.spawn, destinationZone);
 
   return (
@@ -52,7 +63,7 @@ export function PortalDestinationPreview({ portal, destinationZone, congestion, 
       onClick={(event) => event.stopPropagation()}
     >
       <header>
-        <span>{portal.label}</span>
+        <span>{firstVisit ? "첫 방문" : portal.label}</span>
         <ArrowRight aria-hidden="true" />
         <strong>{destinationZone.label}</strong>
       </header>
@@ -89,6 +100,12 @@ export function PortalDestinationPreview({ portal, destinationZone, congestion, 
           <small>{congestion ? `현재 포털 ${congestion.label} · 빈 진입 ${congestion.openCount}/${congestion.totalCount}${waitEstimate ? ` · ${waitEstimate.label}` : ""}\n` : ""}{destinationZone.subtitle}</small>
         </span>
       </div>
+      <footer>
+        <strong>{firstVisit ? "새로운 장소예요" : `${visitCount}번 방문한 장소예요`}</strong>
+        {recentDestinations.length > 0 ? (
+          <small>최근 이동 · {recentDestinations.join(" → ")}</small>
+        ) : <small>포털에 도착하면 이동 기록이 시작돼요</small>}
+      </footer>
     </aside>
   );
 }

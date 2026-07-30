@@ -6,9 +6,10 @@ import { createFrameQualityMonitor } from "./frameQualityMonitor";
 import { createFpsSampler } from "./realUserPerformance";
 
 export type DevicePerformanceMode = "standard" | "lite";
-export type DevicePerformanceReason = "standard" | "memory" | "processor" | "network" | "frame-rate";
+export type DevicePerformanceReason = "standard" | "memory" | "processor" | "network" | "frame-rate" | "battery" | "background";
 export type DeviceEffectsQuality = "full" | "reduced" | "minimal";
 export type DeviceEffectsPreference = "auto" | DeviceEffectsQuality;
+export type DeviceEnergySavingReason = "none" | "battery" | "background";
 
 export type DevicePerformanceStatus = {
   mode: DevicePerformanceMode;
@@ -21,6 +22,8 @@ export type DevicePerformanceContextValue = DevicePerformanceStatus & {
   effectsPreference: DeviceEffectsPreference;
   setEffectsPreference: (preference: DeviceEffectsPreference) => void;
   reportAnimationFrame: (now: number) => void;
+  energySavingReason: DeviceEnergySavingReason;
+  batteryLevel: number | null;
   tuningSource: "default" | "observed";
   tuningSampleCount: number;
 };
@@ -31,6 +34,17 @@ export type DeviceNavigatorLike = {
   connection?: NetworkConnectionLike;
   mozConnection?: NetworkConnectionLike;
   webkitConnection?: NetworkConnectionLike;
+};
+
+type BatteryManagerLike = {
+  charging: boolean;
+  level: number;
+  addEventListener?: (type: "chargingchange" | "levelchange", listener: () => void) => void;
+  removeEventListener?: (type: "chargingchange" | "levelchange", listener: () => void) => void;
+};
+
+type BatteryNavigatorLike = Navigator & {
+  getBattery?: () => Promise<BatteryManagerLike>;
 };
 
 type EffectsPreferenceStorage = Pick<Storage, "getItem" | "setItem">;
@@ -83,6 +97,17 @@ export function resolvePreferredEffectsQuality(
   return effectsQualityRank[preference] < effectsQualityRank[automatic] ? preference : automatic;
 }
 
+export function resolveEnergySavingEffectsQuality(
+  quality: DeviceEffectsQuality,
+  reason: DeviceEnergySavingReason,
+  batteryLevel: number | null
+): DeviceEffectsQuality {
+  if (reason === "background") return "minimal";
+  if (reason !== "battery") return quality;
+  const limit: DeviceEffectsQuality = batteryLevel !== null && batteryLevel <= 0.1 ? "minimal" : "reduced";
+  return effectsQualityRank[limit] < effectsQualityRank[quality] ? limit : quality;
+}
+
 export function resolveDevicePerformanceStatus(source: DeviceNavigatorLike = navigator): DevicePerformanceStatus {
   if (typeof source.deviceMemory === "number" && source.deviceMemory > 0 && source.deviceMemory <= 4) {
     return { mode: "lite", reason: "memory" };
@@ -105,6 +130,8 @@ const DevicePerformanceContext = createContext<DevicePerformanceContextValue>({
   effectsPreference: "auto",
   setEffectsPreference: () => undefined,
   reportAnimationFrame: () => undefined,
+  energySavingReason: "none",
+  batteryLevel: null,
   tuningSource: "default",
   tuningSampleCount: 0
 });
@@ -121,6 +148,12 @@ export function DevicePerformanceProvider({
   const [effectsPreference, setEffectsPreferenceState] = useState<DeviceEffectsPreference>(() => (
     initialEffectsPreference ?? loadEffectsPreference()
   ));
+  const [visibilityState, setVisibilityState] = useState<DocumentVisibilityState>(() => document.visibilityState);
+  const [batteryState, setBatteryState] = useState<{ available: boolean; charging: boolean; level: number }>({
+    available: false,
+    charging: true,
+    level: 1
+  });
   const [tuning, setTuning] = useState<{ source: "default" | "observed"; sampleCount: number }>({
     source: "default",
     sampleCount: 0
@@ -136,6 +169,36 @@ export function DevicePerformanceProvider({
     connection?.addEventListener?.("change", update);
     update();
     return () => connection?.removeEventListener?.("change", update);
+  }, []);
+
+  useEffect(() => {
+    const update = () => setVisibilityState(document.visibilityState);
+    document.addEventListener("visibilitychange", update);
+    update();
+    return () => document.removeEventListener("visibilitychange", update);
+  }, []);
+
+  useEffect(() => {
+    const getBattery = (navigator as BatteryNavigatorLike).getBattery;
+    if (typeof getBattery !== "function") return;
+    let active = true;
+    let battery: BatteryManagerLike | null = null;
+    const update = () => {
+      if (!active || !battery) return;
+      setBatteryState({ available: true, charging: battery.charging, level: battery.level });
+    };
+    void getBattery.call(navigator).then((manager) => {
+      if (!active) return;
+      battery = manager;
+      update();
+      battery.addEventListener?.("chargingchange", update);
+      battery.addEventListener?.("levelchange", update);
+    }).catch(() => undefined);
+    return () => {
+      active = false;
+      battery?.removeEventListener?.("chargingchange", update);
+      battery?.removeEventListener?.("levelchange", update);
+    };
   }, []);
 
   useEffect(() => {
@@ -180,11 +243,25 @@ export function DevicePerformanceProvider({
     if (decision === "restore") setObservedEffectsQuality("full");
   }, [baseStatus.mode]);
 
-  const autoEffectsQuality: DeviceEffectsQuality = baseStatus.mode === "lite" ? "minimal" : observedEffectsQuality;
+  const energySavingReason: DeviceEnergySavingReason = visibilityState === "hidden"
+    ? "background"
+    : batteryState.available && !batteryState.charging && batteryState.level <= 0.2
+      ? "battery"
+      : "none";
+  const deviceEffectsQuality: DeviceEffectsQuality = baseStatus.mode === "lite" ? "minimal" : observedEffectsQuality;
+  const autoEffectsQuality = resolveEnergySavingEffectsQuality(
+    deviceEffectsQuality,
+    energySavingReason,
+    batteryState.available ? batteryState.level : null
+  );
   const effectsQuality = resolvePreferredEffectsQuality(autoEffectsQuality, effectsPreference);
-  const status: DevicePerformanceStatus = autoEffectsQuality !== "full" && baseStatus.mode === "standard"
-    ? { mode: "lite", reason: "frame-rate" }
-    : baseStatus;
+  const status: DevicePerformanceStatus = energySavingReason === "background"
+    ? { mode: "lite", reason: "background" }
+    : energySavingReason === "battery"
+      ? { mode: baseStatus.mode, reason: "battery" }
+    : autoEffectsQuality !== "full" && baseStatus.mode === "standard"
+      ? { mode: "lite", reason: "frame-rate" }
+      : baseStatus;
   statusRef.current = status;
 
   useEffect(() => {
@@ -219,9 +296,11 @@ export function DevicePerformanceProvider({
     effectsPreference,
     setEffectsPreference,
     reportAnimationFrame,
+    energySavingReason,
+    batteryLevel: batteryState.available ? batteryState.level : null,
     tuningSource: tuning.source,
     tuningSampleCount: tuning.sampleCount
-  }), [autoEffectsQuality, effectsPreference, effectsQuality, reportAnimationFrame, setEffectsPreference, status, tuning]);
+  }), [autoEffectsQuality, batteryState.available, batteryState.level, effectsPreference, effectsQuality, energySavingReason, reportAnimationFrame, setEffectsPreference, status, tuning]);
   return <DevicePerformanceContext.Provider value={value}>{children}</DevicePerformanceContext.Provider>;
 }
 

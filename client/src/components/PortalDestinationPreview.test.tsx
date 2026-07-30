@@ -14,6 +14,8 @@ describe("PortalDestinationPreview", () => {
       destinationZone={destination}
       congestion={{ level: "busy", label: "우회 가능", openCount: 2, totalCount: 3, entries: [] }}
       waitEstimate={{ seconds: 5, label: "예상 5초" }}
+      firstVisit
+      recentDestinations={["우리 집", "동네 거리"]}
     />);
 
     expect(screen.getByLabelText("동네로 나가기 다음 맵 미리보기")).toHaveTextContent("동네 거리");
@@ -22,5 +24,8 @@ describe("PortalDestinationPreview", () => {
     expect(screen.getByText("도착 타일")).toBeInTheDocument();
     expect(screen.getByText(/현재 포털 우회 가능/)).toBeInTheDocument();
     expect(screen.getByText(/예상 5초/)).toBeInTheDocument();
+    expect(screen.getByText("첫 방문")).toBeInTheDocument();
+    expect(screen.getByText("새로운 장소예요")).toBeInTheDocument();
+    expect(screen.getByText(/우리 집 → 동네 거리/)).toBeInTheDocument();
   });
 });

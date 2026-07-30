@@ -6,6 +6,13 @@ on:
     paths:
       - "client/public/assets/maps/**"
       - "client/public/characters/**"
+      - "client/src/components/GameWorld.tsx"
+      - "client/src/components/PortalDestinationPreview.tsx"
+      - "client/src/components/World*.tsx"
+      - "client/src/game/world*.ts"
+      - "client/src/game/npcMotion.ts"
+      - "client/src/map-visual-enhancements.css"
+      - "client/src/game-navigation-enhancements.css"
       - "character-assets/**"
       - "map-assets/**"
       - "scripts/**"
@@ -16,6 +23,13 @@ on:
     paths:
       - "client/public/assets/maps/**"
       - "client/public/characters/**"
+      - "client/src/components/GameWorld.tsx"
+      - "client/src/components/PortalDestinationPreview.tsx"
+      - "client/src/components/World*.tsx"
+      - "client/src/game/world*.ts"
+      - "client/src/game/npcMotion.ts"
+      - "client/src/map-visual-enhancements.css"
+      - "client/src/game-navigation-enhancements.css"
       - "character-assets/**"
       - "map-assets/**"
       - "scripts/**"
@@ -38,7 +52,7 @@ jobs:
           node-version: 24
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm visual:check
+      - run: pnpm visual:test
       - name: Upload visual region report
         if: always()
         uses: actions/upload-artifact@v7
@@ -53,5 +67,23 @@ jobs:
         with:
           name: mobile-visual-regression-${{ github.run_id }}
           path: .superpowers/visual-regression
+          if-no-files-found: ignore
+          retention-days: 14
+      - name: Upload world layout report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: world-layout-region-report-${{ github.run_id }}
+          path: .superpowers/visual-regression/world-layout-regions.json
+          if-no-files-found: ignore
+          retention-days: 14
+      - name: Upload world layout difference
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: world-layout-regression-${{ github.run_id }}
+          path: |
+            .superpowers/visual-regression/world-layout-current.png
+            .superpowers/visual-regression/world-layout-diff.png
           if-no-files-found: ignore
           retention-days: 14

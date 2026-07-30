@@ -12,6 +12,7 @@ export type NpcMotionState = {
   stepFrame: number;
   waypointIndex: number;
   reaction: NpcReaction;
+  yieldHoldTicks: number;
 };
 
 export type NpcMotionMap = Record<string, NpcMotionState>;
@@ -87,7 +88,8 @@ export function createNpcMotionMap(zone: WorldZone): NpcMotionMap {
       moving: false,
       stepFrame: 1,
       waypointIndex: index % Math.max(1, patrolPoints(zone, npc).length),
-      reaction: "idle" as const
+      reaction: "idle" as const,
+      yieldHoldTicks: 0
     }
   ]));
 }
@@ -99,7 +101,8 @@ export function npcMotionFor(zone: WorldZone, npc: WorldNpc, motions: NpcMotionM
     moving: false,
     stepFrame: 1,
     waypointIndex: 0,
-    reaction: "idle"
+    reaction: "idle",
+    yieldHoldTicks: 0
   };
 }
 
@@ -127,7 +130,21 @@ export function advanceNpcMotionMap(
         direction: directionToward(current.point, player),
         moving: false,
         stepFrame: 1,
-        reaction: "greet"
+        reaction: "greet",
+        yieldHoldTicks: 0
+      };
+      occupied.push(current.point);
+      continue;
+    }
+
+    if (current.yieldHoldTicks > 0) {
+      next[key] = {
+        ...current,
+        direction: directionToward(current.point, player),
+        moving: false,
+        stepFrame: 1,
+        reaction: "yield",
+        yieldHoldTicks: current.yieldHoldTicks - 1
       };
       occupied.push(current.point);
       continue;
@@ -144,13 +161,15 @@ export function advanceNpcMotionMap(
         direction: directionToward(current.point, yieldTo),
         moving: true,
         stepFrame: current.stepFrame === 0 ? 2 : 0,
-        reaction: "yield"
+        reaction: "yield",
+        yieldHoldTicks: 2
       } : {
         ...current,
         direction: directionToward(current.point, player),
         moving: false,
         stepFrame: 1,
-        reaction: "yield"
+        reaction: "yield",
+        yieldHoldTicks: 1
       };
       occupied.push(next[key].point);
       continue;
@@ -162,7 +181,8 @@ export function advanceNpcMotionMap(
         direction: directionToward(current.point, player),
         moving: false,
         stepFrame: 1,
-        reaction: "greet"
+        reaction: "greet",
+        yieldHoldTicks: Math.max(0, current.yieldHoldTicks - 1)
       };
       occupied.push(current.point);
       continue;
@@ -175,7 +195,13 @@ export function advanceNpcMotionMap(
     const targetIndex = reachedGoal ? (goalIndex + 1) % waypoints.length : goalIndex;
     const target = waypoints[targetIndex];
     const candidate = stepToward(current.point, target);
-    const canStep = waypoints.length > 1 && validNpcPoint(zone, candidate);
+    const reservedPoints = [
+      ...occupied,
+      ...currentNpcPoints.filter(({ id }) => id !== npc.id).map(({ point }) => point)
+    ];
+    const canStep = waypoints.length > 1
+      && validNpcPoint(zone, candidate)
+      && reservedPoints.every((point) => Math.hypot(candidate.x - point.x, candidate.y - point.y) >= gridTileSize * 0.85);
 
     next[key] = canStep ? {
       ...current,
@@ -184,13 +210,15 @@ export function advanceNpcMotionMap(
       moving: true,
       stepFrame: current.stepFrame === 0 ? 2 : 0,
       waypointIndex: targetIndex,
-      reaction: "idle"
+      reaction: "idle",
+      yieldHoldTicks: 0
     } : {
       ...current,
       moving: false,
       stepFrame: 1,
       waypointIndex: targetIndex,
-      reaction: "idle"
+      reaction: "idle",
+      yieldHoldTicks: 0
     };
     occupied.push(next[key].point);
   }
