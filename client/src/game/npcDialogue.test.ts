@@ -17,6 +17,7 @@ describe("resolveNpcDialogue", () => {
     });
 
     expect(first.message).toContain("와주셨군요");
+    expect(first.personalityLabel).toBe("다정한 공감형");
     expect(returning.message).toContain("다시 인사");
     expect(first.tone).toBe("welcome");
     expect(returning.tone).toBe("thanks");
@@ -72,5 +73,6 @@ describe("resolveNpcDialogue", () => {
     expect(result.reaction).toBe("celebrate");
     expect(result.dialogue.responded).toBe(true);
     expect(result.dialogue.message).toContain("더 환하게");
+    expect(result.dialogue.crowdMessage).toContain("박수와 축하");
   });
 });

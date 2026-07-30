@@ -201,8 +201,10 @@ import {
 } from "../game/worldTravelHistory";
 import {
   worldPropInteractionFor,
-  worldPropInteractionsForZone
+  worldPropInteractionsForZone,
+  totalWorldSecrets
 } from "../game/worldPropInteractions";
+import { discoverWorldSecret, loadWorldSecretCollection } from "../game/worldSecretCollection";
 import { weddingPhaseExperience } from "../game/weddingPhaseExperience";
 import { journeyAssetPrediction, uniquePredictedAppearances } from "../game/journeyAssetPrediction";
 import { loadInvitationViewSync, saveGameViewLocation } from "../game/invitationViewSync";
@@ -267,6 +269,9 @@ import {
 import { WorldDecoration } from "./WorldDecoration";
 import { WorldInteractiveProp, WorldPropMoment } from "./WorldInteractiveProp";
 import { WorldMiniMap } from "./WorldMiniMap";
+import { WorldSecretProgress } from "./WorldSecretProgress";
+import { WorldTravelTimeline } from "./WorldTravelTimeline";
+import { GamePerformanceStatus } from "./GamePerformanceStatus";
 import { WeddingPhaseAnnouncement } from "./WeddingPhaseAnnouncement";
 import "../journey.css";
 import "../game-guide.css";
@@ -278,6 +283,7 @@ import "../game-navigation-enhancements.css";
 import "../game-wedding-day-operations.css";
 import "../game-experience-continuity.css";
 import "../map-visual-enhancements.css";
+import "../game-discovery-dashboard.css";
 
 const loadWeddingPhotoBoothComponent = () => import("./WeddingPhotoBooth");
 const loadWeddingPhotoAlbumComponent = () => import("./WeddingPhotoAlbum");
@@ -401,6 +407,8 @@ type ActiveWorldPropMoment = {
   token: number;
   zoneId: WorldZoneId;
   decorationId: string;
+  isNewSecret: boolean;
+  achievementLabel?: string;
 };
 type PortalTransitionPhase = "arrival" | "fade-out" | "fade-in";
 type PortalTransition = { portal: WorldPortal; phase: PortalTransitionPhase };
@@ -579,6 +587,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   const [routeArrivalNotice, setRouteArrivalNotice] = useState<RouteArrivalNotice | null>(null);
   const [journeyProgress, setJourneyProgress] = useState(loadJourneyProgress);
   const [worldTravelHistory, setWorldTravelHistory] = useState(() => loadWorldTravelHistory(initialZone.id));
+  const [worldSecretCollection, setWorldSecretCollection] = useState(loadWorldSecretCollection);
   const [zoneMiniQuestProgress, setZoneMiniQuestProgress] = useState(loadZoneMiniQuestProgress);
   const [journeySyncStatus, setJourneySyncStatus] = useState<
     "local" | "syncing" | "synced" | "queued" | "merged" | "error"
@@ -1185,15 +1194,23 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     if (worldPropMomentTimerRef.current !== null) {
       window.clearTimeout(worldPropMomentTimerRef.current);
     }
+    const discovery = discoverWorldSecret(worldSecretCollection, interaction.secretId);
+    setWorldSecretCollection(discovery.collection);
     const token = ++worldPropMomentTokenRef.current;
-    setActivePropMoment({ token, zoneId: activeZone.id, decorationId });
+    setActivePropMoment({
+      token,
+      zoneId: activeZone.id,
+      decorationId,
+      isNewSecret: discovery.isNew,
+      achievementLabel: discovery.newAchievements.at(-1)?.label
+    });
     setTravelStatus(interaction.resultMessage);
     handleGuestReaction(interaction.reaction);
     worldPropMomentTimerRef.current = window.setTimeout(() => {
       worldPropMomentTimerRef.current = null;
       setActivePropMoment((current) => current?.token === token ? null : current);
     }, 3_200);
-  }, [activeZone, handleGuestReaction]);
+  }, [activeZone, handleGuestReaction, worldSecretCollection]);
 
   const handleCollectCelebrationItem = useCallback((item: CelebrationCollectible) => {
     const next = collectCelebrationItem(collectedCelebrationIds, item.id);
@@ -3740,6 +3757,9 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   const activeWorldPropMomentEntry = activePropMoment?.zoneId === activeZone.id
     ? activeWorldPropInteractions.find(({ decoration }) => decoration.id === activePropMoment.decorationId) ?? null
     : null;
+  const activeWorldSecretHint = activeWorldPropInteractions
+    .find(({ interaction }) => !worldSecretCollection.discoveredIds.includes(interaction.secretId))
+    ?.interaction ?? null;
   const predictedNextZoneId = portalIntent?.portal.to
     ?? (destinationCheckpoint
       ? nextWorldZoneToward(activeZone.id, destinationCheckpoint.zoneId)
@@ -4076,6 +4096,43 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
           onOpenCompletion={openJourneyCompletion}
           onSelectZone={handleJourneySelect}
         />
+        <WorldSecretProgress
+          collection={worldSecretCollection}
+          totalCount={totalWorldSecrets}
+          currentHint={activeWorldSecretHint}
+        />
+        <WorldTravelTimeline
+          zones={gardenWorld.zones}
+          history={worldTravelHistory}
+          activeZoneId={activeZone.id}
+          disabled={Boolean(portalTransition)}
+          onSelectZone={handleJourneySelect}
+        />
+        <ol className="world-journey" aria-label="하객 여정">
+          {gardenWorld.zones.map((zone) => {
+            const checkpoints = journeyCheckpoints.filter((checkpoint) => checkpoint.zoneId === zone.id);
+            const stamped = checkpoints.length > 0 && checkpoints.every((checkpoint) => completedJourneyIds.has(checkpoint.id));
+            return (
+              <li
+                key={zone.id}
+                aria-current={zone.id === activeZone.id ? "location" : undefined}
+                data-stamped={stamped || undefined}
+              >
+                <button
+                  type="button"
+                  className="world-journey__button"
+                  aria-label={`${zone.label} 바로 이동`}
+                  disabled={Boolean(portalTransition)}
+                  onClick={() => { handleJourneySelect(zone.id); }}
+                >
+                  {zone.label}
+                  {stamped ? <span className="world-journey__stamp" aria-label="방문 완료">✓</span> : null}
+                </button>
+              </li>
+            );
+          })}
+        </ol>
+        <GamePerformanceStatus performance={devicePerformance} />
         {recommendedCheckpoint && recommendedZone ? (
           <>
             <button
@@ -4095,30 +4152,6 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
             </button>
           </>
         ) : null}
-        <ol className="world-journey" aria-label="하객 여정">
-          {gardenWorld.zones.map((zone) => {
-            const checkpoints = journeyCheckpoints.filter((checkpoint) => checkpoint.zoneId === zone.id);
-            const stamped = checkpoints.length > 0 && checkpoints.every((checkpoint) => completedJourneyIds.has(checkpoint.id));
-            return (
-            <li
-              key={zone.id}
-              aria-current={zone.id === activeZone.id ? "location" : undefined}
-              data-stamped={stamped || undefined}
-            >
-              <button
-                type="button"
-                className="world-journey__button"
-                aria-label={`${zone.label} 바로 이동`}
-                disabled={Boolean(portalTransition)}
-                onClick={() => { handleJourneySelect(zone.id); }}
-              >
-                {zone.label}
-                {stamped ? <span className="world-journey__stamp" aria-label="방문 완료">✓</span> : null}
-              </button>
-            </li>
-            );
-          })}
-        </ol>
         </div> : null}
         <div className="world-travel-status-row" data-visible={travelStatusVisible || visibleTravelProgress || undefined}>
           <p className="world-travel-status" aria-live="polite">{travelStatus}</p>
@@ -4310,6 +4343,11 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
                 decoration={decoration}
                 interaction={interaction}
                 active={interactionIntent?.decorationId === decoration.id}
+                discovered={worldSecretCollection.discoveredIds.includes(interaction.secretId)}
+                nearby={Math.hypot(
+                  decoration.x + decoration.width / 2 - position.x,
+                  decoration.y + decoration.height / 2 - position.y
+                ) <= interaction.actionRadius + 90}
                 onSelect={() => {
                   setActiveJourneyGuideId(null);
                   setPendingJourneyGuideId(null);
@@ -4535,6 +4573,8 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
             <WorldPropMoment
               decoration={activeWorldPropMomentEntry.decoration}
               interaction={activeWorldPropMomentEntry.interaction}
+              isNewSecret={activePropMoment?.isNewSecret}
+              achievementLabel={activePropMoment?.achievementLabel}
             />
           ) : null}
 

@@ -28,8 +28,9 @@
     "visual:baseline:approve": "node scripts/approve-mobile-game-visual-baseline.mjs",
     "visual:world-layout": "node scripts/check-world-layout-visual-regression.mjs",
     "visual:world-layout:approve": "node scripts/check-world-layout-visual-regression.mjs --approve",
+    "visual:hud-browser": "node scripts/check-mobile-hud-browser.mjs",
     "visual:check": "pnpm characters:generate && node scripts/check-mobile-game-visual-regression.mjs",
-    "visual:test": "pnpm visual:check && pnpm visual:world-layout && node --test scripts/mobileGameVisualAuditRenderer.test.mjs scripts/mobileVisualBaselineApproval.test.mjs",
+    "visual:test": "pnpm visual:check && pnpm visual:world-layout && node --test scripts/mobileGameVisualAuditRenderer.test.mjs scripts/mobileVisualBaselineApproval.test.mjs scripts/mobileHudBrowserAudit.test.mjs",
     "gallery:build": "node scripts/build-wedding-gallery-assets.mjs",
     "gallery:audit": "node scripts/audit-wedding-gallery-assets.mjs",
     "gallery:test": "node --test scripts/weddingGalleryAssets.test.mjs",
@@ -39,6 +40,7 @@
   },
   "devDependencies": {
     "@types/node": "^20.14.0",
+    "playwright": "1.62.0",
     "sharp": "^0.34.5",
     "typescript": "^5.5.0"
   },

@@ -46,9 +46,20 @@
 .npc-dialogue[data-tone="celebration"]::after { background: #f9e5e1; }
 
 .npc-dialogue > small {
+  display: flex;
+  align-items: center;
+  gap: 5px;
   color: #a24f5d;
   font-size: 8px;
   font-weight: 900;
+}
+
+.npc-dialogue > small i {
+  border-left: 1px solid rgba(121, 76, 83, 0.34);
+  padding-left: 5px;
+  color: #76645d;
+  font-size: 7px;
+  font-style: normal;
 }
 
 .npc-dialogue > p {
@@ -58,6 +69,22 @@
   line-height: 1.45;
   word-break: keep-all;
 }
+
+.npc-dialogue__crowd {
+  display: grid;
+  grid-template-columns: 16px minmax(0, 1fr);
+  align-items: center;
+  gap: 5px;
+  border-left: 3px solid #b2727e;
+  padding: 5px 6px;
+  background: rgba(255, 255, 246, 0.72);
+  color: #69565a;
+  font-size: 7px;
+  font-weight: 850;
+  line-height: 1.35;
+}
+
+.npc-dialogue__crowd svg { width: 14px; height: 14px; color: #a85e70; }
 
 .npc-dialogue__close {
   position: absolute;

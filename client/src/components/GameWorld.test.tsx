@@ -17,6 +17,7 @@ import { journeyProgressStorageKey } from "../game/journeyProgress";
 import { gameHudAutoHideDelayMs } from "../game/gameHudVisibility";
 import { worldSessionStorageKey } from "../game/worldSession";
 import { worldTravelHistoryStorageKey } from "../game/worldTravelHistory";
+import { worldSecretCollectionStorageKey } from "../game/worldSecretCollection";
 import { zoneMiniQuestStorageKey } from "../game/zoneMiniQuest";
 import { copyText } from "../invitation/browserActions";
 import { GameFeedbackProvider } from "../feedback/GameFeedbackContext";
@@ -1625,6 +1626,9 @@ describe("GameWorld", () => {
 
     expect(screen.getByRole("status", { name: "하객1님의 하트" })).toBeInTheDocument();
     expect(screen.getAllByText("두 사람의 초대장을 다시 한번 정성껏 펼쳐봤어요")).toHaveLength(2);
+    expect(screen.getByText("숨은 추억 · 첫 초대의 설렘")).toBeInTheDocument();
+    expect(screen.getByText("업적 달성 · 첫 비밀 발견")).toBeInTheDocument();
+    expect(window.localStorage.getItem(worldSecretCollectionStorageKey)).toContain("first-invitation");
   });
 
   it("cancels portal walking when another map point is clicked", () => {

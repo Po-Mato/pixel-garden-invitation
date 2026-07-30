@@ -4,6 +4,12 @@ import { fetchInvitationPerformanceConfig } from "../api/performanceConfigApi";
 import { networkConnection, type NetworkConnectionLike } from "./networkQuality";
 import { createFrameQualityMonitor } from "./frameQualityMonitor";
 import { createFpsSampler } from "./realUserPerformance";
+import {
+  createDeviceRuntimeDiagnosticsMonitor,
+  initialDeviceRuntimeDiagnostics,
+  readRuntimeMemorySnapshot,
+  type DeviceRuntimeDiagnostics
+} from "./deviceRuntimeDiagnostics";
 
 export type DevicePerformanceMode = "standard" | "lite";
 export type DevicePerformanceReason = "standard" | "memory" | "processor" | "network" | "frame-rate" | "battery" | "background";
@@ -26,6 +32,7 @@ export type DevicePerformanceContextValue = DevicePerformanceStatus & {
   batteryLevel: number | null;
   tuningSource: "default" | "observed";
   tuningSampleCount: number;
+  diagnostics: DeviceRuntimeDiagnostics;
 };
 
 export type DeviceNavigatorLike = {
@@ -133,7 +140,8 @@ const DevicePerformanceContext = createContext<DevicePerformanceContextValue>({
   energySavingReason: "none",
   batteryLevel: null,
   tuningSource: "default",
-  tuningSampleCount: 0
+  tuningSampleCount: 0,
+  diagnostics: initialDeviceRuntimeDiagnostics
 });
 
 export function DevicePerformanceProvider({
@@ -158,8 +166,10 @@ export function DevicePerformanceProvider({
     source: "default",
     sampleCount: 0
   });
+  const [diagnostics, setDiagnostics] = useState(initialDeviceRuntimeDiagnostics);
   const frameMonitorRef = useRef(createFrameQualityMonitor());
   const fpsSamplerRef = useRef(createFpsSampler());
+  const diagnosticsMonitorRef = useRef(createDeviceRuntimeDiagnosticsMonitor());
   const statusRef = useRef<DevicePerformanceStatus>(baseStatus);
   const previousStatusRef = useRef<DevicePerformanceStatus | null>(null);
 
@@ -226,6 +236,8 @@ export function DevicePerformanceProvider({
   }, [baseStatus.mode]);
 
   const reportAnimationFrame = useCallback((now: number) => {
+    const nextDiagnostics = diagnosticsMonitorRef.current.sample(now, readRuntimeMemorySnapshot());
+    if (nextDiagnostics) setDiagnostics(nextDiagnostics);
     const fps = fpsSamplerRef.current.sample(now);
     if (fps !== null) {
       const current = statusRef.current;
@@ -248,7 +260,12 @@ export function DevicePerformanceProvider({
     : batteryState.available && !batteryState.charging && batteryState.level <= 0.2
       ? "battery"
       : "none";
-  const deviceEffectsQuality: DeviceEffectsQuality = baseStatus.mode === "lite" ? "minimal" : observedEffectsQuality;
+  const diagnosticEffectsQuality: DeviceEffectsQuality = diagnostics.health === "protected"
+    ? "minimal"
+    : diagnostics.health === "watch" && observedEffectsQuality === "full"
+      ? "reduced"
+      : observedEffectsQuality;
+  const deviceEffectsQuality: DeviceEffectsQuality = baseStatus.mode === "lite" ? "minimal" : diagnosticEffectsQuality;
   const autoEffectsQuality = resolveEnergySavingEffectsQuality(
     deviceEffectsQuality,
     energySavingReason,
@@ -276,13 +293,15 @@ export function DevicePerformanceProvider({
     document.documentElement.dataset.performanceReason = status.reason;
     document.documentElement.dataset.effectsQuality = effectsQuality;
     document.documentElement.dataset.effectsPreference = effectsPreference;
+    document.documentElement.dataset.runtimeHealth = diagnostics.health;
     return () => {
       delete document.documentElement.dataset.performanceMode;
       delete document.documentElement.dataset.performanceReason;
       delete document.documentElement.dataset.effectsQuality;
       delete document.documentElement.dataset.effectsPreference;
+      delete document.documentElement.dataset.runtimeHealth;
     };
-  }, [effectsPreference, effectsQuality, status]);
+  }, [diagnostics.health, effectsPreference, effectsQuality, status]);
 
   const setEffectsPreference = useCallback((preference: DeviceEffectsPreference) => {
     setEffectsPreferenceState(preference);
@@ -299,8 +318,9 @@ export function DevicePerformanceProvider({
     energySavingReason,
     batteryLevel: batteryState.available ? batteryState.level : null,
     tuningSource: tuning.source,
-    tuningSampleCount: tuning.sampleCount
-  }), [autoEffectsQuality, batteryState.available, batteryState.level, effectsPreference, effectsQuality, energySavingReason, reportAnimationFrame, setEffectsPreference, status, tuning]);
+    tuningSampleCount: tuning.sampleCount,
+    diagnostics
+  }), [autoEffectsQuality, batteryState.available, batteryState.level, diagnostics, effectsPreference, effectsQuality, energySavingReason, reportAnimationFrame, setEffectsPreference, status, tuning]);
   return <DevicePerformanceContext.Provider value={value}>{children}</DevicePerformanceContext.Provider>;
 }
 

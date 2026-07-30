@@ -4,6 +4,7 @@ import {
   loadWorldTravelHistory,
   recentWorldTravelRecords,
   recordWorldTravel,
+  worldTravelTimelineStops,
   worldTravelHistoryStorageKey
 } from "./worldTravelHistory";
 
@@ -35,6 +36,11 @@ describe("worldTravelHistory", () => {
     expect(isFirstWorldVisit(history, "subway-station")).toBe(false);
     expect(recentWorldTravelRecords(history, 1)[0]).toMatchObject({ to: "subway-station" });
     expect(storage.setItem).toHaveBeenLastCalledWith(worldTravelHistoryStorageKey, expect.any(String));
+    expect(worldTravelTimelineStops(history)).toEqual([
+      { zoneId: "home", method: "start", visitedAt: null },
+      { zoneId: "neighborhood", method: "portal", visitedAt: "2026-07-30T10:00:00.000Z" },
+      { zoneId: "subway-station", method: "portal", visitedAt: "2026-07-30T10:01:00.000Z" }
+    ]);
   });
 
   it("깨진 저장값은 안전하게 초기화한다", () => {

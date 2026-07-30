@@ -9,6 +9,8 @@ describe("worldPropInteractions", () => {
       expect(entries, zone.id).toHaveLength(1);
       expect(entries[0].decoration.id).toBe(entries[0].interaction.decorationId);
       expect(entries[0].interaction.actionRadius).toBeGreaterThanOrEqual(42);
+      expect(entries[0].interaction.secretId).toBeTruthy();
+      expect(entries[0].interaction.secretHint).toBeTruthy();
     }
   });
 

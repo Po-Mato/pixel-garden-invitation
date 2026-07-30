@@ -64,7 +64,14 @@ describe("NpcDialogueBubble", () => {
 
     rerender(
       <NpcDialogueBubble
-        dialogue={{ npcId: "bride", message: "고마워요.", tone: "celebration", responded: true }}
+        dialogue={{
+          npcId: "bride",
+          message: "고마워요.",
+          tone: "celebration",
+          personalityLabel: "다정한 공감형",
+          crowdMessage: "주변에서 박수가 이어졌어요",
+          responded: true
+        }}
         speaker="신부 이건희"
         onClose={vi.fn()}
         onOpenProfile={vi.fn()}
@@ -72,5 +79,7 @@ describe("NpcDialogueBubble", () => {
       />
     );
     expect(screen.queryByLabelText("대화 답변 선택")).not.toBeInTheDocument();
+    expect(screen.getByText("다정한 공감형")).toBeInTheDocument();
+    expect(screen.getByRole("status")).toHaveTextContent("주변에서 박수");
   });
 });

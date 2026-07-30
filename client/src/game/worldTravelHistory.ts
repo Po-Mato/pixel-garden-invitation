@@ -17,6 +17,12 @@ export type WorldTravelHistory = {
   records: WorldTravelRecord[];
 };
 
+export type WorldTravelTimelineStop = {
+  zoneId: WorldZoneId;
+  method: WorldTravelMethod | "start";
+  visitedAt: string | null;
+};
+
 type TravelHistoryStorage = Pick<Storage, "getItem" | "setItem">;
 
 export const worldTravelHistoryStorageKey = "wedding-world-travel-history:v1";
@@ -87,4 +93,33 @@ export function isFirstWorldVisit(history: WorldTravelHistory, zoneId: WorldZone
 
 export function recentWorldTravelRecords(history: WorldTravelHistory, limit = 3): WorldTravelRecord[] {
   return history.records.slice(-Math.max(0, limit)).reverse();
+}
+
+export function worldTravelTimelineStops(
+  history: WorldTravelHistory,
+  limit = 7
+): WorldTravelTimelineStop[] {
+  const records = history.records.slice(-Math.max(0, limit - 1));
+  if (records.length === 0) {
+    return history.visitedZoneIds.slice(-Math.max(1, limit)).map((zoneId, index) => ({
+      zoneId,
+      method: index === 0 ? "start" : "journey",
+      visitedAt: null
+    }));
+  }
+  const stops: WorldTravelTimelineStop[] = [{
+    zoneId: records[0].from,
+    method: "start",
+    visitedAt: null
+  }];
+  records.forEach((record) => {
+    const previous = stops.at(-1);
+    if (previous?.zoneId === record.to) {
+      previous.method = record.method;
+      previous.visitedAt = record.visitedAt;
+      return;
+    }
+    stops.push({ zoneId: record.to, method: record.method, visitedAt: record.visitedAt });
+  });
+  return stops.slice(-Math.max(1, limit));
 }

@@ -1,4 +1,4 @@
-import { BookOpen, Hand, Heart, PartyPopper, X } from "lucide-react";
+import { BookOpen, Hand, Heart, PartyPopper, Users, X } from "lucide-react";
 import { useEffect } from "react";
 import {
   npcDialogueChoices,
@@ -42,8 +42,14 @@ export function NpcDialogueBubble({
       <button type="button" className="npc-dialogue__close" aria-label="대화 닫기" onClick={onClose}>
         <X aria-hidden="true" />
       </button>
-      <small>{speaker}</small>
+      <small>{speaker}{dialogue.personalityLabel ? <i>{dialogue.personalityLabel}</i> : null}</small>
       <p aria-live="polite">{dialogue.message}</p>
+      {dialogue.crowdMessage ? (
+        <div className="npc-dialogue__crowd" role="status">
+          <Users aria-hidden="true" />
+          <span>{dialogue.crowdMessage}</span>
+        </div>
+      ) : null}
       {onChoose && !dialogue.responded ? (
         <div className="npc-dialogue__choices" aria-label="대화 답변 선택">
           {npcDialogueChoices.map((choice) => {

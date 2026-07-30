@@ -8,11 +8,17 @@ on:
       - "client/public/characters/**"
       - "client/src/components/GameWorld.tsx"
       - "client/src/components/PortalDestinationPreview.tsx"
+      - "client/src/components/Npc*.tsx"
+      - "client/src/components/GamePerformanceStatus.tsx"
       - "client/src/components/World*.tsx"
       - "client/src/game/world*.ts"
       - "client/src/game/npcMotion.ts"
+      - "client/src/game/npcDialogue.ts"
+      - "client/src/performance/**"
       - "client/src/map-visual-enhancements.css"
       - "client/src/game-navigation-enhancements.css"
+      - "client/src/game-discovery-dashboard.css"
+      - "client/src/npc-reactions.css"
       - "character-assets/**"
       - "map-assets/**"
       - "scripts/**"
@@ -25,11 +31,17 @@ on:
       - "client/public/characters/**"
       - "client/src/components/GameWorld.tsx"
       - "client/src/components/PortalDestinationPreview.tsx"
+      - "client/src/components/Npc*.tsx"
+      - "client/src/components/GamePerformanceStatus.tsx"
       - "client/src/components/World*.tsx"
       - "client/src/game/world*.ts"
       - "client/src/game/npcMotion.ts"
+      - "client/src/game/npcDialogue.ts"
+      - "client/src/performance/**"
       - "client/src/map-visual-enhancements.css"
       - "client/src/game-navigation-enhancements.css"
+      - "client/src/game-discovery-dashboard.css"
+      - "client/src/npc-reactions.css"
       - "character-assets/**"
       - "map-assets/**"
       - "scripts/**"
@@ -53,6 +65,10 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm visual:test
+      - name: Install Chromium for mobile HUD audit
+        run: pnpm exec playwright install --with-deps chromium
+      - name: Audit live mobile HUD screenshots
+        run: pnpm visual:hud-browser
       - name: Upload visual region report
         if: always()
         uses: actions/upload-artifact@v7
@@ -85,5 +101,13 @@ jobs:
           path: |
             .superpowers/visual-regression/world-layout-current.png
             .superpowers/visual-regression/world-layout-diff.png
+          if-no-files-found: ignore
+          retention-days: 14
+      - name: Upload mobile HUD browser audit
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: mobile-hud-browser-${{ github.run_id }}
+          path: .superpowers/visual-regression/mobile-hud-browser
           if-no-files-found: ignore
           retention-days: 14

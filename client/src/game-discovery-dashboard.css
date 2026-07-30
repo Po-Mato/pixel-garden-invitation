@@ -1,0 +1,182 @@
+.world-interactive-prop:not([data-discovered]):not([data-nearby]):not([data-active]) > span {
+  opacity: 0.2;
+  filter: grayscale(0.6);
+  transform: scale(0.66);
+  animation: none;
+}
+
+.world-interactive-prop:not([data-discovered])[data-nearby] > span {
+  background: rgba(112, 88, 137, 0.92);
+  box-shadow: 0 0 0 3px rgba(56, 42, 62, 0.42), 0 0 10px rgba(238, 214, 255, 0.82);
+}
+
+.world-interactive-prop[data-discovered] > span {
+  border-color: rgba(246, 232, 171, 0.94);
+  background: rgba(73, 121, 92, 0.9);
+}
+
+.world-prop-moment em {
+  width: max-content;
+  max-width: 100%;
+  padding: 2px 5px;
+  color: #fffdf3;
+  background: #9b6476;
+  font-size: 7px;
+  font-style: normal;
+  font-weight: 900;
+}
+
+.world-secret-progress,
+.world-travel-timeline,
+.game-performance-status {
+  box-sizing: border-box;
+  border: 1px solid #d5cac4;
+  border-radius: 5px;
+  padding: 8px;
+  background: rgba(255, 253, 244, 0.96);
+  color: #514748;
+}
+
+.world-secret-progress > header,
+.world-travel-timeline > header,
+.game-performance-status > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.world-secret-progress > header span,
+.world-travel-timeline > header span,
+.game-performance-status > header span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #78636a;
+  font-size: 9px;
+  font-weight: 900;
+}
+
+.world-secret-progress > header svg,
+.world-travel-timeline > header svg,
+.game-performance-status > header svg {
+  width: 13px;
+  height: 13px;
+}
+
+.world-secret-progress > header strong,
+.world-travel-timeline > header strong,
+.game-performance-status > header strong {
+  color: #9a586b;
+  font-size: 9px;
+}
+
+.world-secret-progress__meter {
+  height: 5px;
+  overflow: hidden;
+  margin-top: 6px;
+  border: 1px solid #cfbfc0;
+  background: #eee8df;
+}
+
+.world-secret-progress__meter i {
+  display: block;
+  height: 100%;
+  background: #b67385;
+  transition: width 180ms ease;
+}
+
+.world-secret-progress > p,
+.game-performance-status > p {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 5px 0 0;
+  color: #6a6160;
+  font-size: 8px;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.world-secret-progress > p svg { width: 12px; height: 12px; flex: 0 0 auto; color: #a36376; }
+
+.world-travel-timeline ol {
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  margin: 7px 0 0;
+  padding: 0 0 2px;
+  list-style: none;
+  scrollbar-width: thin;
+}
+
+.world-travel-timeline li {
+  position: relative;
+  flex: 0 0 76px;
+}
+
+.world-travel-timeline li:not(:last-child)::after {
+  position: absolute;
+  z-index: 2;
+  top: 16px;
+  right: -5px;
+  width: 7px;
+  border-top: 2px dotted #b89aa2;
+  content: "";
+}
+
+.world-travel-timeline button {
+  display: grid;
+  width: 100%;
+  min-height: 52px;
+  grid-template-columns: 16px minmax(0, 1fr);
+  align-items: center;
+  gap: 4px;
+  border: 1px solid #d7cbca;
+  border-radius: 4px;
+  padding: 5px;
+  background: #fff;
+  color: #65585a;
+  text-align: left;
+}
+
+.world-travel-timeline button > svg { width: 14px; color: #9a6674; }
+.world-travel-timeline button > span { display: grid; min-width: 0; gap: 2px; }
+.world-travel-timeline button strong { overflow: hidden; font-size: 8px; text-overflow: ellipsis; white-space: nowrap; }
+.world-travel-timeline button small { color: #887b79; font-size: 7px; }
+.world-travel-timeline li[data-current] button { border-color: #9e6576; background: #f7e9e9; }
+.world-travel-timeline button:disabled { opacity: 1; cursor: default; }
+
+.game-performance-status > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 6px;
+}
+
+.game-performance-status > div span {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px 5px;
+  background: #eee9e2;
+  color: #6a6060;
+  font-size: 7px;
+  font-weight: 900;
+}
+
+.game-performance-status > div svg { width: 10px; height: 10px; }
+.game-performance-status[data-health="good"] > header strong { color: #4f8061; }
+.game-performance-status[data-health="watch"] > header strong { color: #a06d35; }
+.game-performance-status[data-health="protected"] > header strong { color: #a04d5d; }
+
+@media (max-width: 360px), (max-height: 520px) {
+  .world-secret-progress,
+  .world-travel-timeline,
+  .game-performance-status { padding: 6px; }
+  .world-travel-timeline li { flex-basis: 70px; }
+  .world-travel-timeline button { min-height: 48px; }
+}
+
+html[data-reduce-motion="true"] .world-secret-progress__meter i,
+html[data-effects-quality="minimal"] .world-secret-progress__meter i { transition: none; }
