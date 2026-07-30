@@ -47,7 +47,7 @@ describe("기기 성능 자동 최적화", () => {
       const status = useDevicePerformance();
       return <span>{status.mode}:{status.effectsQuality}</span>;
     }
-    render(<DevicePerformanceProvider><Status /></DevicePerformanceProvider>);
+    render(<DevicePerformanceProvider initialEffectsPreference="auto"><Status /></DevicePerformanceProvider>);
     expect(screen.getByText(/standard|lite/)).toBeInTheDocument();
     expect(document.documentElement.dataset.performanceMode).toMatch(/standard|lite/);
     expect(document.documentElement.dataset.effectsQuality).toMatch(/full|minimal/);
@@ -152,7 +152,7 @@ describe("기기 성능 자동 최적화", () => {
       const status = useDevicePerformance();
       return <span>{status.energySavingReason}:{status.effectsQuality}</span>;
     }
-    render(<DevicePerformanceProvider><Status /></DevicePerformanceProvider>);
+    render(<DevicePerformanceProvider initialEffectsPreference="auto"><Status /></DevicePerformanceProvider>);
     await waitFor(() => expect(screen.getByText("battery:reduced")).toBeInTheDocument());
 
     battery.charging = true;
@@ -165,7 +165,7 @@ describe("기기 성능 자동 최적화", () => {
       const status = useDevicePerformance();
       return <span>{status.energySavingReason}:{status.effectsQuality}</span>;
     }
-    render(<DevicePerformanceProvider><Status /></DevicePerformanceProvider>);
+    render(<DevicePerformanceProvider initialEffectsPreference="auto"><Status /></DevicePerformanceProvider>);
 
     Object.defineProperty(document, "visibilityState", { configurable: true, value: "hidden" });
     act(() => document.dispatchEvent(new Event("visibilitychange")));
