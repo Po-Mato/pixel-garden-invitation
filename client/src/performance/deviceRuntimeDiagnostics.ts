@@ -5,6 +5,9 @@ export type DeviceRuntimeDiagnostics = {
   averageFps: number | null;
   memoryUsageRatio: number | null;
   sampleCount: number;
+  sessionMinutes: number;
+  memoryTrend: "unknown" | "stable" | "rising";
+  recoveryCount: number;
   recommendation: string;
 };
 
@@ -18,8 +21,13 @@ export const initialDeviceRuntimeDiagnostics: DeviceRuntimeDiagnostics = {
   averageFps: null,
   memoryUsageRatio: null,
   sampleCount: 0,
+  sessionMinutes: 0,
+  memoryTrend: "unknown",
+  recoveryCount: 0,
   recommendation: "기기 상태를 확인하고 있어요"
 };
+
+export const runtimeProtectionEventName = "wedding-game:runtime-protection";
 
 export function readRuntimeMemorySnapshot(
   source: Performance = performance
@@ -50,11 +58,17 @@ export function resolveRuntimePerformanceHealth(
 
 export function createDeviceRuntimeDiagnosticsMonitor(sampleSize = 30) {
   let previousAt: number | null = null;
+  let startedAt: number | null = null;
   let frameDurations: number[] = [];
+  let memoryRatios: number[] = [];
   let sampleCount = 0;
+  let lastHealth: RuntimePerformanceHealth = "good";
+  let healthyWindowsAfterProtection = 0;
+  let recoveryCount = 0;
 
   return {
     sample(now: number, memory: RuntimeMemorySnapshot | null): DeviceRuntimeDiagnostics | null {
+      if (startedAt === null) startedAt = now;
       if (previousAt !== null) {
         const duration = now - previousAt;
         if (duration > 0 && duration < 1_000) frameDurations.push(duration);
@@ -68,14 +82,52 @@ export function createDeviceRuntimeDiagnosticsMonitor(sampleSize = 30) {
       const memoryUsageRatio = memory
         ? Math.round(memory.usedBytes / memory.limitBytes * 100) / 100
         : null;
-      const health = resolveRuntimePerformanceHealth(averageFps, memoryUsageRatio);
+      if (memoryUsageRatio !== null) memoryRatios = [...memoryRatios, memoryUsageRatio].slice(-4);
+      const memoryTrend = memoryRatios.length < 3
+        ? "unknown"
+        : memoryRatios.at(-1)! - memoryRatios[0] >= 0.08 ? "rising" : "stable";
+      const rawHealth = resolveRuntimePerformanceHealth(averageFps, memoryUsageRatio);
+      if (memoryTrend === "rising" && rawHealth.health === "good") {
+        rawHealth.health = "watch";
+        rawHealth.recommendation = "메모리 증가 추세를 살피며 효과를 조정 중이에요";
+      }
+      let health = rawHealth.health;
+      let recommendation = rawHealth.recommendation;
+      if (lastHealth === "protected" && rawHealth.health !== "protected") {
+        healthyWindowsAfterProtection += 1;
+        if (healthyWindowsAfterProtection < 2) {
+          health = "protected";
+          recommendation = "안정적인 상태가 유지되는지 한 번 더 확인하고 있어요";
+        } else {
+          recoveryCount += 1;
+          healthyWindowsAfterProtection = 0;
+          recommendation = "자동 정리를 마치고 안정적인 효과로 복귀했어요";
+        }
+      } else if (rawHealth.health === "protected") {
+        healthyWindowsAfterProtection = 0;
+      }
+      lastHealth = health;
       frameDurations = [];
-      return { ...health, averageFps, memoryUsageRatio, sampleCount };
+      return {
+        health,
+        recommendation,
+        averageFps,
+        memoryUsageRatio,
+        memoryTrend,
+        sessionMinutes: Math.max(0, Math.floor((now - startedAt) / 60_000)),
+        recoveryCount,
+        sampleCount
+      };
     },
     reset() {
       previousAt = null;
+      startedAt = null;
       frameDurations = [];
+      memoryRatios = [];
       sampleCount = 0;
+      lastHealth = "good";
+      healthyWindowsAfterProtection = 0;
+      recoveryCount = 0;
     }
   };
 }

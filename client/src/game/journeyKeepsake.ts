@@ -9,6 +9,9 @@ export type JourneyKeepsakeData = {
   publicUrl: string;
   visitSummary?: string;
   photoCount?: number;
+  travelLabels?: readonly string[];
+  secretCount?: number;
+  totalSecretCount?: number;
 };
 
 export type JourneyKeepsakeShareResult = "shared" | "saved";
@@ -220,11 +223,21 @@ export async function createJourneyKeepsakeBlob(data: JourneyKeepsakeData): Prom
     drawStamp(context, stampStart + stampGap * index, 855, index, label);
   });
 
-  if (data.visitSummary || data.photoCount) {
+  if (data.travelLabels?.length) {
+    context.fillStyle = "#6f5960";
+    context.font = "900 22px sans-serif";
+    context.fillText(`여정  ${data.travelLabels.slice(0, 5).join("  ·  ")}`, cardWidth / 2, 948, cardWidth - 170);
+  }
+
+  if (data.visitSummary || data.photoCount || typeof data.secretCount === "number") {
     context.fillStyle = "#76665d";
     context.font = "800 23px sans-serif";
     context.fillText(
-      [data.visitSummary, data.photoCount ? `기념 촬영 ${data.photoCount}장` : null].filter(Boolean).join(" · "),
+      [
+        data.visitSummary,
+        data.photoCount ? `기념 촬영 ${data.photoCount}장` : null,
+        typeof data.secretCount === "number" ? `숨은 추억 ${data.secretCount}/${data.totalSecretCount ?? data.secretCount}` : null
+      ].filter(Boolean).join(" · "),
       cardWidth / 2,
       978
     );

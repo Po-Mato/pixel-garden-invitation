@@ -22,4 +22,12 @@ describe("deviceRuntimeDiagnostics", () => {
       health: "watch"
     });
   });
+
+  it("보호 모드에서 두 번의 안정 구간을 확인한 뒤 자동 회복한다", () => {
+    const monitor = createDeviceRuntimeDiagnosticsMonitor(1);
+    expect(monitor.sample(0, null)).toBeNull();
+    expect(monitor.sample(20, { usedBytes: 90, limitBytes: 100 })).toMatchObject({ health: "protected" });
+    expect(monitor.sample(40, { usedBytes: 40, limitBytes: 100 })).toMatchObject({ health: "protected", recoveryCount: 0 });
+    expect(monitor.sample(60, { usedBytes: 40, limitBytes: 100 })).toMatchObject({ health: "good", recoveryCount: 1 });
+  });
 });

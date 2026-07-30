@@ -1,6 +1,7 @@
 import type { GuestReaction, WorldZoneId } from "@wedding-game/shared";
 import { journeyCheckpointIds, type JourneyCheckpointId } from "./journeyProgress";
 import type { WeddingJourneyTiming } from "./weddingJourneyTiming";
+import type { NpcConversationSnapshot } from "./npcDialogueMemory";
 
 export type NpcId = "groom" | "bride";
 
@@ -9,6 +10,7 @@ export type NpcDialogue = {
   message: string;
   tone: "welcome" | "thanks" | "celebration";
   personalityLabel?: string;
+  relationshipLabel?: NpcConversationSnapshot["relationshipLabel"];
   crowdMessage?: string;
   responded?: boolean;
 };
@@ -72,6 +74,7 @@ type ResolveNpcDialogueInput = {
   nickname: string;
   completedCheckpointIds: readonly JourneyCheckpointId[];
   weddingPhase?: WeddingJourneyTiming["phase"] | null;
+  conversation?: NpcConversationSnapshot;
 };
 
 export function resolveNpcDialogue({
@@ -79,11 +82,13 @@ export function resolveNpcDialogue({
   zoneId,
   nickname,
   completedCheckpointIds,
-  weddingPhase = null
+  weddingPhase = null,
+  conversation = { interactionCount: 0, lastChoiceId: null, relationshipLabel: "첫 만남" }
 }: ResolveNpcDialogueInput): NpcDialogue {
   const completed = new Set(completedCheckpointIds);
   const allComplete = journeyCheckpointIds.every((checkpointId) => completed.has(checkpointId));
   const personalityLabel = npcPersonalityLabels[npcId];
+  const relationshipLabel = conversation.relationshipLabel;
 
   if (allComplete) {
     return {
@@ -92,6 +97,7 @@ export function resolveNpcDialogue({
         ? `${nickname}님, 정원의 모든 순간을 함께해 주셔서 정말 고마워요.`
         : `${nickname}님 덕분에 오늘의 여정이 더 따뜻해졌어요. 함께 축하해 주세요!`,
       personalityLabel,
+      relationshipLabel,
       tone: "celebration"
     };
   }
@@ -103,6 +109,7 @@ export function resolveNpcDialogue({
         ? `${nickname}님, 예식이 곧 시작돼요. 천천히 예식홀로 와주세요!`
         : `${nickname}님, 예식홀 자리를 안내받으신 뒤 편하게 기다려 주세요.`,
       personalityLabel,
+      relationshipLabel,
       tone: "welcome"
     };
   }
@@ -112,6 +119,7 @@ export function resolveNpcDialogue({
       npcId,
       message: `${nickname}님, 지금은 예식이 진행 중이에요. 안내선을 따라 조용히 자리로 이동해 주세요.`,
       personalityLabel,
+      relationshipLabel,
       tone: "thanks"
     };
   }
@@ -123,7 +131,55 @@ export function resolveNpcDialogue({
         ? `${nickname}님, 이제 연회장에서 맛있는 식사와 함께 인사 나눠요!`
         : `${nickname}님, 오늘의 축하를 오래 기억할게요. 연회장에서도 꼭 만나요!`,
       personalityLabel,
+      relationshipLabel,
       tone: "celebration"
+    };
+  }
+
+  if (zoneId === "bridal-room" && completed.has("bride")) {
+    const remembered = conversation.interactionCount === 0
+      ? ""
+      : conversation.lastChoiceId === "heart"
+        ? " 아까 전해주신 따뜻한 마음도 잘 간직하고 있어요."
+        : conversation.lastChoiceId === "celebrate"
+          ? " 아까 보내주신 힘찬 축하 덕분에 더 환하게 웃고 있어요!"
+          : " 다시 만나 인사를 나누니 더 반가워요.";
+    return {
+      npcId,
+      message: `${nickname}님, 다시 인사해 주셨네요. 예식홀에서도 반갑게 만나요!${remembered}`,
+      personalityLabel,
+      relationshipLabel,
+      tone: "thanks"
+    };
+  }
+
+  if (conversation.interactionCount >= 3) {
+    const branchMessage = conversation.lastChoiceId === "heart"
+      ? "여러 번 전해주신 따뜻한 마음을 두 사람의 소중한 기억으로 간직하고 있어요."
+      : conversation.lastChoiceId === "celebrate"
+        ? "만날 때마다 힘차게 축하해 주신 덕분에 오늘이 더 즐거워졌어요!"
+        : "여정에서 여러 번 마주쳐 인사를 나누니 정말 가까운 친구처럼 반가워요.";
+    return {
+      npcId,
+      message: `${nickname}님, ${branchMessage}`,
+      personalityLabel,
+      relationshipLabel,
+      tone: "celebration"
+    };
+  }
+
+  if (conversation.interactionCount > 0) {
+    const rememberedMessage = conversation.lastChoiceId === "heart"
+      ? "아까 전해주신 따뜻한 마음, 아직도 마음에 남아 있어요."
+      : conversation.lastChoiceId === "celebrate"
+        ? "아까 보내주신 힘찬 축하 덕분에 기분이 한층 더 밝아졌어요!"
+        : "다시 만나 인사를 나누니 더 반갑고 든든해요.";
+    return {
+      npcId,
+      message: `${nickname}님, ${rememberedMessage}`,
+      personalityLabel,
+      relationshipLabel,
+      tone: "thanks"
     };
   }
 
@@ -133,12 +189,14 @@ export function resolveNpcDialogue({
           npcId,
           message: `${nickname}님, 다시 인사해 주셨네요. 예식홀에서도 반갑게 만나요!`,
           personalityLabel,
+          relationshipLabel,
           tone: "thanks"
         }
       : {
           npcId,
           message: `${nickname}님, 와주셨군요! 오늘 이 순간을 함께해 주셔서 정말 든든해요.`,
           personalityLabel,
+          relationshipLabel,
           tone: "welcome"
         };
   }
@@ -149,12 +207,14 @@ export function resolveNpcDialogue({
           npcId,
           message: `${nickname}님, 축하 메시지까지 잘 받았어요. 오래도록 소중히 간직할게요.`,
           personalityLabel,
+          relationshipLabel,
           tone: "thanks"
         }
       : {
           npcId,
           message: `${nickname}님, 먼 길 와주셔서 감사합니다. 예식 후 연회장에서 꼭 인사 나눠요!`,
           personalityLabel,
+          relationshipLabel,
           tone: "welcome"
         };
   }
@@ -164,12 +224,14 @@ export function resolveNpcDialogue({
         npcId,
         message: `${nickname}님, 사진도 보고 오셨군요. 이제 가장 설레는 순간을 함께해 주세요.`,
         personalityLabel,
+        relationshipLabel,
         tone: "thanks"
       }
     : {
         npcId,
         message: `${nickname}님, 이 자리까지 와주셔서 고마워요. 오늘의 약속을 함께 지켜봐 주세요.`,
         personalityLabel,
+        relationshipLabel,
         tone: "welcome"
       };
 }

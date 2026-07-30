@@ -759,6 +759,22 @@ li[data-complete="true"] .journey-stamp-book__stamp {
   white-space: nowrap;
 }
 
+.journey-keepsake-preview__route {
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr);
+  align-items: center;
+  gap: 6px;
+  border: 1px solid #d4c1aa;
+  padding: 6px 7px;
+  background: rgba(255, 255, 255, 0.56);
+  color: #765863;
+}
+
+.journey-keepsake-preview__route > svg { width: 15px; height: 15px; }
+.journey-keepsake-preview__route > span { display: flex; min-width: 0; align-items: center; gap: 4px; overflow: hidden; }
+.journey-keepsake-preview__route em { display: inline-flex; align-items: center; color: #685959; font-size: 7px; font-style: normal; font-weight: 900; white-space: nowrap; }
+.journey-keepsake-preview__route em:not(:last-child)::after { margin-left: 4px; color: #b47483; content: "›"; }
+
 .journey-keepsake-preview > p {
   display: grid;
   gap: 2px;
@@ -769,6 +785,15 @@ li[data-complete="true"] .journey-stamp-book__stamp {
 
 .journey-keepsake-preview > p strong { font-size: 10px; }
 .journey-keepsake-preview > p span { color: #715b53; font-size: 8px; font-weight: 800; }
+.journey-keepsake-preview > p.journey-keepsake-preview__secret {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  border-top: 0;
+  padding-top: 0;
+  color: #976075;
+}
+.journey-keepsake-preview__secret svg { width: 13px; height: 13px; }
 
 .journey-completion__keepsake-actions,
 .journey-completion__next-actions {

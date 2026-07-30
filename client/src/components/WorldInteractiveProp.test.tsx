@@ -16,6 +16,7 @@ const interaction = {
   secretId: "fountain-wish",
   secretLabel: "분수의 소원",
   secretHint: "반짝이는 물빛을 찾아보세요",
+  clueLabel: "물빛이 반짝여요",
   actionLabel: "소원 빌기",
   resultMessage: "두 사람의 행복을 빌었어요",
   reaction: "heart" as const,
@@ -32,11 +33,13 @@ describe("WorldInteractiveProp", () => {
         interaction={interaction}
         active={false}
         nearby
+        clue={{ band: "near", distance: 38, directionLabel: "바로 근처", message: "단서가 아주 선명해요 · 물빛이 반짝여요" }}
         onSelect={onSelect}
       />
     );
     const button = screen.getByRole("button", { name: "작은 수경 요소, 소원 빌기" });
     expect(button).toHaveAttribute("data-nearby", "true");
+    expect(button).toHaveAccessibleDescription("단서가 아주 선명해요 · 물빛이 반짝여요");
     expect(button).toHaveStyle({ left: "240px", top: "450px", width: "120px", height: "120px" });
     fireEvent.click(button);
     expect(onSelect).toHaveBeenCalledOnce();

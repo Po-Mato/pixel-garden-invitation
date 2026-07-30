@@ -75,4 +75,26 @@ describe("resolveNpcDialogue", () => {
     expect(result.dialogue.message).toContain("더 환하게");
     expect(result.dialogue.crowdMessage).toContain("박수와 축하");
   });
+
+  it("이전 답변을 기억하고 관계별 후속 대화를 연다", () => {
+    const returning = resolveNpcDialogue({
+      npcId: "bride",
+      zoneId: "bridal-room",
+      nickname: "민지",
+      completedCheckpointIds: [],
+      conversation: { interactionCount: 1, lastChoiceId: "heart", relationshipLabel: "반가운 재회" }
+    });
+    expect(returning.message).toContain("따뜻한 마음");
+    expect(returning.relationshipLabel).toBe("반가운 재회");
+
+    const ending = resolveNpcDialogue({
+      npcId: "groom",
+      zoneId: "ceremony-hall",
+      nickname: "민지",
+      completedCheckpointIds: [],
+      conversation: { interactionCount: 3, lastChoiceId: "celebrate", relationshipLabel: "소중한 인연" }
+    });
+    expect(ending.message).toContain("힘차게 축하");
+    expect(ending.relationshipLabel).toBe("소중한 인연");
+  });
 });

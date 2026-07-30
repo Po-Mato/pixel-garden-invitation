@@ -1,6 +1,7 @@
 import { Eye, Hand, Search, Sparkles } from "lucide-react";
 import type { WorldDecoration } from "../game/world";
 import type { WorldPropInteraction } from "../game/worldPropInteractions";
+import type { WorldSecretClue } from "../game/worldSecretClue";
 import { worldDepth } from "../game/worldVisuals";
 
 type WorldInteractivePropProps = {
@@ -9,6 +10,7 @@ type WorldInteractivePropProps = {
   active: boolean;
   discovered?: boolean;
   nearby?: boolean;
+  clue?: WorldSecretClue | null;
   onSelect: () => void;
 };
 
@@ -18,10 +20,12 @@ export function WorldInteractiveProp({
   active,
   discovered = false,
   nearby = false,
+  clue = null,
   onSelect
 }: WorldInteractivePropProps) {
   const Icon = !discovered ? Search : interaction.effect === "scenery" ? Eye : interaction.effect === "rest" ? Hand : Sparkles;
   const depthY = decoration.depthY ?? decoration.y + decoration.height;
+  const clueDescriptionId = `world-secret-clue-${decoration.id}`;
 
   return (
     <button
@@ -31,7 +35,9 @@ export function WorldInteractiveProp({
       data-active={active || undefined}
       data-discovered={discovered || undefined}
       data-nearby={nearby || undefined}
+      data-clue-band={!discovered ? clue?.band : undefined}
       aria-label={`${decoration.label}, ${interaction.actionLabel}`}
+      aria-describedby={!discovered && clue ? clueDescriptionId : undefined}
       title={interaction.actionLabel}
       style={{
         left: decoration.x,
@@ -46,6 +52,8 @@ export function WorldInteractiveProp({
       }}
     >
       <span aria-hidden="true"><Icon /></span>
+      {!discovered && clue ? <i className="world-interactive-prop__clue" aria-hidden="true"><Sparkles /></i> : null}
+      {!discovered && clue ? <small id={clueDescriptionId} className="sr-only">{clue.message}</small> : null}
     </button>
   );
 }

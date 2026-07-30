@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Camera, Check, Download, Images, MessageCircleHeart, Send, Share2, Sparkles, X } from "lucide-react";
+import { Camera, Check, Download, Images, MessageCircleHeart, Route, Send, Share2, Sparkles, X } from "lucide-react";
 import type { CharacterAppearance } from "@wedding-game/shared";
 import { isShareAbortError } from "../invitation/browserActions";
 import {
@@ -12,6 +12,10 @@ import { formatCoupleNames } from "../invitation/coupleOrder";
 import { usePublishedInvitationContent } from "../invitation/PublishedInvitationContentContext";
 import { invitationPublicUrl } from "../invitation/shareInvitation";
 import { journeyCheckpoints } from "../game/journeyProgress";
+import { gardenWorld, getWorldZone } from "../game/world";
+import { loadWorldSecretCollection } from "../game/worldSecretCollection";
+import { totalWorldSecrets } from "../game/worldPropInteractions";
+import { loadWorldTravelHistory, worldTravelTimelineStops } from "../game/worldTravelHistory";
 import {
   saveJourneyKeepsake,
   shareJourneyKeepsake,
@@ -81,6 +85,10 @@ export function JourneyCompletion({
   const photoMemory = photoMemories[0] ?? null;
   const photoProgress = weddingPhotoAlbumProgress(photoAlbum);
   const visits = useMemo(loadJourneyVisits, []);
+  const travelHistory = useMemo(() => loadWorldTravelHistory("home"), []);
+  const travelLabels = useMemo(() => worldTravelTimelineStops(travelHistory, 5)
+    .map(({ zoneId }) => getWorldZone(gardenWorld, zoneId).label), [travelHistory]);
+  const secretCollection = useMemo(loadWorldSecretCollection, []);
   const visitByCheckpoint = new Map(visits.map((visit) => [visit.checkpointId, visit]));
   const visitDuration = journeyVisitDurationLabel(visits);
   const completedVisitCount = Math.max(visits.length, journeyCheckpoints.length);
@@ -96,8 +104,11 @@ export function JourneyCompletion({
     photoUrl: photoMemory?.dataUrl || resolveAssetUrl(finalePhoto.assetPath),
     publicUrl: canonicalInvitationUrl(),
     visitSummary: `${completedVisitCount}곳 · ${visitDuration}`,
-    photoCount: photoAlbum.photos.length
-  }), [completedVisitCount, coupleNames, event, finalePhoto.assetPath, nickname, photoAlbum.photos.length, photoMemory?.dataUrl, visitDuration]);
+    photoCount: photoAlbum.photos.length,
+    travelLabels,
+    secretCount: secretCollection.discoveredIds.length,
+    totalSecretCount: totalWorldSecrets
+  }), [completedVisitCount, coupleNames, event, finalePhoto.assetPath, nickname, photoAlbum.photos.length, photoMemory?.dataUrl, secretCollection.discoveredIds.length, travelLabels, visitDuration]);
 
   useEffect(() => {
     const previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
@@ -212,7 +223,12 @@ export function JourneyCompletion({
                 </span>
               ))}
             </div>
+            <div className="journey-keepsake-preview__route" aria-label="방문 여정 요약">
+              <Route aria-hidden="true" />
+              <span>{travelLabels.map((label, index) => <em key={`${label}-${index}`}>{label}</em>)}</span>
+            </div>
             <p className="journey-keepsake-preview__visit-summary"><strong>{visitDuration}</strong><span>방문 {completedVisitCount}곳 · 촬영 {photoAlbum.photos.length}장</span></p>
+            <p className="journey-keepsake-preview__secret"><Sparkles aria-hidden="true" /><span>숨은 추억 {secretCollection.discoveredIds.length}/{totalWorldSecrets}</span></p>
             <p><strong>{formatEventDate(event)}</strong><span>{formatEventStartTime(event)} · {formatVenueLabel(event)}</span></p>
           </figure>
 

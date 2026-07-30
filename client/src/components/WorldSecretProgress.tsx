@@ -1,5 +1,6 @@
 import { Award, Search, Sparkles } from "lucide-react";
 import type { WorldPropInteraction } from "../game/worldPropInteractions";
+import type { WorldSecretClue } from "../game/worldSecretClue";
 import {
   worldSecretAchievements,
   type WorldSecretCollection
@@ -9,9 +10,10 @@ type WorldSecretProgressProps = {
   collection: WorldSecretCollection;
   totalCount: number;
   currentHint?: Pick<WorldPropInteraction, "secretHint"> | null;
+  currentClue?: WorldSecretClue | null;
 };
 
-export function WorldSecretProgress({ collection, totalCount, currentHint = null }: WorldSecretProgressProps) {
+export function WorldSecretProgress({ collection, totalCount, currentHint = null, currentClue = null }: WorldSecretProgressProps) {
   const nextAchievement = worldSecretAchievements.find(({ id }) => (
     !collection.unlockedAchievementIds.includes(id)
   ));
@@ -24,8 +26,8 @@ export function WorldSecretProgress({ collection, totalCount, currentHint = null
       <div className="world-secret-progress__meter" aria-hidden="true">
         <i style={{ width: `${Math.min(100, collection.discoveredIds.length / Math.max(1, totalCount) * 100)}%` }} />
       </div>
-      <p>
-        {currentHint ? <><Sparkles aria-hidden="true" /> {currentHint.secretHint}</> : nextAchievement
+      <p aria-live="polite" data-clue-band={currentClue?.band}>
+        {currentHint ? <><Sparkles aria-hidden="true" /> {currentClue?.message ?? currentHint.secretHint}</> : nextAchievement
           ? <><Award aria-hidden="true" /> 다음 업적 · {nextAchievement.label} {nextAchievement.requirement}개</>
           : <><Award aria-hidden="true" /> 모든 숨은 추억을 발견했어요</>}
       </p>

@@ -8,6 +8,7 @@ import {
   createDeviceRuntimeDiagnosticsMonitor,
   initialDeviceRuntimeDiagnostics,
   readRuntimeMemorySnapshot,
+  runtimeProtectionEventName,
   type DeviceRuntimeDiagnostics
 } from "./deviceRuntimeDiagnostics";
 
@@ -172,6 +173,7 @@ export function DevicePerformanceProvider({
   const diagnosticsMonitorRef = useRef(createDeviceRuntimeDiagnosticsMonitor());
   const statusRef = useRef<DevicePerformanceStatus>(baseStatus);
   const previousStatusRef = useRef<DevicePerformanceStatus | null>(null);
+  const previousRuntimeHealthRef = useRef(diagnostics.health);
 
   useEffect(() => {
     const update = () => setBaseStatus(resolveDevicePerformanceStatus());
@@ -287,6 +289,15 @@ export function DevicePerformanceProvider({
     if (!previous || (previous.mode === status.mode && previous.reason === status.reason)) return;
     trackInvitationAnalytics("performance_quality_change", `${status.mode}:${status.reason}`);
   }, [status]);
+
+  useEffect(() => {
+    const previousHealth = previousRuntimeHealthRef.current;
+    previousRuntimeHealthRef.current = diagnostics.health;
+    if (diagnostics.health !== "protected" || previousHealth === "protected") return;
+    window.dispatchEvent(new CustomEvent(runtimeProtectionEventName, {
+      detail: { averageFps: diagnostics.averageFps, memoryUsageRatio: diagnostics.memoryUsageRatio }
+    }));
+  }, [diagnostics]);
 
   useEffect(() => {
     document.documentElement.dataset.performanceMode = status.mode;

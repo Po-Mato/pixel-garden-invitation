@@ -8,8 +8,9 @@ describe("WorldSecretProgress", () => {
       collection={{ version: 1, discoveredIds: ["one"], unlockedAchievementIds: ["first-discovery"] }}
       totalCount={10}
       currentHint={{ secretHint: "분수의 물빛을 찾아보세요" }}
+      currentClue={{ band: "near", distance: 48, directionLabel: "바로 근처", message: "단서가 아주 선명해요 · 물빛이 반짝여요" }}
     />);
     expect(screen.getByLabelText("숨은 추억 수집 현황")).toHaveTextContent("1/10");
-    expect(screen.getByText(/분수의 물빛/)).toBeInTheDocument();
+    expect(screen.getByText(/단서가 아주 선명/)).toBeInTheDocument();
   });
 });

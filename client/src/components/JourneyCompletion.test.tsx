@@ -4,6 +4,8 @@ import { defaultCharacterAppearance } from "@wedding-game/shared";
 import { JourneyCompletion } from "./JourneyCompletion";
 import { weddingPhotoAlbumStorageKey, weddingPhotoMemoryStorageKey } from "../game/weddingPhoto";
 import { journeyVisitLogStorageKey } from "../game/journeyVisitLog";
+import { worldTravelHistoryStorageKey } from "../game/worldTravelHistory";
+import { worldSecretCollectionStorageKey } from "../game/worldSecretCollection";
 import { installMemoryLocalStorage } from "../test/memoryStorage";
 
 const keepsakeMocks = vi.hoisted(() => ({
@@ -109,6 +111,19 @@ describe("JourneyCompletion", () => {
         { version: 1, dataUrl: "data:image/jpeg;base64,two", photoSpotId: "ceremony-aisle", zoneId: "ceremony-hall", spotLabel: "버진로드", guestName: "정원하객", pose: "hearts", createdAt: 2 }
       ]
     }));
+    localStorage.setItem(worldTravelHistoryStorageKey, JSON.stringify({
+      version: 1,
+      visitedZoneIds: ["home", "lobby", "ceremony-hall"],
+      records: [
+        { id: "one", from: "home", to: "lobby", method: "journey", visitedAt: "2027-05-01T08:11:00.000Z" },
+        { id: "two", from: "lobby", to: "ceremony-hall", method: "portal", visitedAt: "2027-05-01T08:18:00.000Z" }
+      ]
+    }));
+    localStorage.setItem(worldSecretCollectionStorageKey, JSON.stringify({
+      version: 1,
+      discoveredIds: ["first-invitation", "aisle-light"],
+      unlockedAchievementIds: ["first-discovery"]
+    }));
 
     renderCompletion();
 
@@ -116,6 +131,8 @@ describe("JourneyCompletion", () => {
     expect(summary).toHaveTextContent("방문 5곳");
     expect(summary).toHaveTextContent("촬영 2장");
     expect(screen.getAllByRole("img", { name: /촬영한 기념 사진/ })).toHaveLength(2);
+    expect(screen.getByLabelText("방문 여정 요약")).toHaveTextContent("우리 집예식장 로비예식홀");
+    expect(screen.getByText("숨은 추억 2/10")).toBeInTheDocument();
   });
 
   it("keeps RSVP, invitation sharing, photo album, close, and Escape actions available", () => {

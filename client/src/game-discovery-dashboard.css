@@ -15,6 +15,30 @@
   background: rgba(73, 121, 92, 0.9);
 }
 
+.world-interactive-prop__clue {
+  position: absolute;
+  top: 10%;
+  left: 50%;
+  display: grid;
+  width: 18px;
+  height: 18px;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(255, 244, 172, 0.78);
+  color: #9d6679;
+  opacity: 0.18;
+  transform: translateX(-50%) scale(0.68);
+  pointer-events: none;
+}
+
+.world-interactive-prop__clue svg { width: 11px; height: 11px; }
+.world-interactive-prop[data-clue-band="warm"] .world-interactive-prop__clue { opacity: 0.62; animation: world-secret-clue 1.5s ease-in-out infinite; }
+.world-interactive-prop[data-clue-band="near"] .world-interactive-prop__clue { opacity: 1; animation: world-secret-clue 850ms ease-in-out infinite; }
+
+@keyframes world-secret-clue {
+  50% { box-shadow: 0 0 0 7px rgba(255, 241, 164, 0); transform: translateX(-50%) scale(1); }
+}
+
 .world-prop-moment em {
   width: max-content;
   max-width: 100%;
@@ -99,6 +123,8 @@
 }
 
 .world-secret-progress > p svg { width: 12px; height: 12px; flex: 0 0 auto; color: #a36376; }
+.world-secret-progress > p[data-clue-band="warm"] { color: #8b6738; }
+.world-secret-progress > p[data-clue-band="near"] { color: #995064; }
 
 .world-travel-timeline ol {
   display: flex;
@@ -180,3 +206,5 @@
 
 html[data-reduce-motion="true"] .world-secret-progress__meter i,
 html[data-effects-quality="minimal"] .world-secret-progress__meter i { transition: none; }
+html[data-reduce-motion="true"] .world-interactive-prop__clue,
+html[data-effects-quality="minimal"] .world-interactive-prop__clue { animation: none; }

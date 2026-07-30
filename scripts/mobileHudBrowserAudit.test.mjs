@@ -1,6 +1,16 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { auditMobileHudRectangles } from "./lib/mobileHudBrowserAudit.mjs";
+import { auditMobileHudRectangles, mobileHudAuditViewports } from "./lib/mobileHudBrowserAudit.mjs";
+
+test("mobile HUD audit covers phones and tablets in both orientations", () => {
+  assert.deepEqual(mobileHudAuditViewports.map(({ id }) => id), [
+    "iphone-portrait",
+    "small-android",
+    "phone-landscape",
+    "tablet-portrait",
+    "tablet-landscape"
+  ]);
+});
 
 test("mobile HUD rectangle audit accepts separated controls", () => {
   assert.deepEqual(auditMobileHudRectangles({

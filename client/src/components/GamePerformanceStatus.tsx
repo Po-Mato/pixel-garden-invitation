@@ -26,6 +26,9 @@ export function GamePerformanceStatus({ performance }: GamePerformanceStatusProp
         <span>{diagnostics.averageFps === null ? "측정 중" : `${diagnostics.averageFps} FPS`}</span>
         <span><MemoryStick aria-hidden="true" /> {diagnostics.memoryUsageRatio === null ? "메모리 자동 감지" : `메모리 ${Math.round(diagnostics.memoryUsageRatio * 100)}%`}</span>
         <span>효과 {performance.effectsQuality === "full" ? "전체" : performance.effectsQuality === "reduced" ? "절약" : "최소"}</span>
+        {diagnostics.sessionMinutes > 0 ? <span>세션 {diagnostics.sessionMinutes}분</span> : null}
+        {diagnostics.memoryTrend === "rising" ? <span>메모리 증가 감지</span> : null}
+        {diagnostics.recoveryCount > 0 ? <span>자동 회복 {diagnostics.recoveryCount}회</span> : null}
       </div>
       <p>{diagnostics.recommendation}</p>
     </section>

@@ -86,6 +86,11 @@ import {
   type NpcId
 } from "../game/npcDialogue";
 import {
+  loadNpcDialogueMemory,
+  npcConversationSnapshot,
+  rememberNpcDialogueChoice
+} from "../game/npcDialogueMemory";
+import {
   advanceNpcMotionMap,
   createNpcMotionMap,
   npcMotionFor,
@@ -164,6 +169,7 @@ import {
 import { routeRecalculationResult, type RouteRecalculationResult } from "../game/routeDeviation";
 import { useGameFeedback } from "../feedback/GameFeedbackContext";
 import { useDevicePerformance } from "../performance/DevicePerformanceContext";
+import { runtimeProtectionEventName } from "../performance/deviceRuntimeDiagnostics";
 import {
   gardenWorld,
   getWorldZone,
@@ -205,6 +211,7 @@ import {
   totalWorldSecrets
 } from "../game/worldPropInteractions";
 import { discoverWorldSecret, loadWorldSecretCollection } from "../game/worldSecretCollection";
+import { resolveWorldSecretClue } from "../game/worldSecretClue";
 import { weddingPhaseExperience } from "../game/weddingPhaseExperience";
 import { journeyAssetPrediction, uniquePredictedAppearances } from "../game/journeyAssetPrediction";
 import { loadInvitationViewSync, saveGameViewLocation } from "../game/invitationViewSync";
@@ -610,6 +617,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   );
   const [journeyClock, setJourneyClock] = useState(() => new Date());
   const [activeNpcDialogue, setActiveNpcDialogue] = useState<NpcDialogue | null>(null);
+  const [npcDialogueMemory, setNpcDialogueMemory] = useState(loadNpcDialogueMemory);
   const [npcMotions, setNpcMotions] = useState<NpcMotionMap>(() => createNpcMotionMap(initialZone));
   const [localReaction, setLocalReaction] = useState<ActiveGuestReaction | null>(null);
   const [activePropMoment, setActivePropMoment] = useState<ActiveWorldPropMoment | null>(null);
@@ -770,6 +778,26 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   sharedPortalWaitRef.current = sharedPortalWait;
   companionInviteDraftRef.current = companionInviteDraft;
   outgoingRendezvousProposalRef.current = outgoingRendezvousProposal;
+
+  useEffect(() => {
+    const handleRuntimeProtection = () => {
+      remoteReactionTimersRef.current.forEach((timer) => window.clearTimeout(timer));
+      remoteReactionTimersRef.current.clear();
+      if (worldPropMomentTimerRef.current !== null) window.clearTimeout(worldPropMomentTimerRef.current);
+      if (cooperativeCelebrationTimerRef.current !== null) window.clearTimeout(cooperativeCelebrationTimerRef.current);
+      worldPropMomentTimerRef.current = null;
+      cooperativeCelebrationTimerRef.current = null;
+      cooperativeCelebrationPulsesRef.current = [];
+      cooperativeCelebrationSessionRef.current = null;
+      setRemoteReactions({});
+      setActivePropMoment(null);
+      setCooperativeCelebration(null);
+      setCompanionTrailPoints((points) => points.slice(-12));
+      setTravelStatus("기기 안정화를 위해 지나간 장식 효과를 정리했어요");
+    };
+    window.addEventListener(runtimeProtectionEventName, handleRuntimeProtection);
+    return () => window.removeEventListener(runtimeProtectionEventName, handleRuntimeProtection);
+  }, []);
 
   useEffect(() => {
     pendingJourneyGuideIdRef.current = pendingJourneyGuideId;
@@ -1414,18 +1442,20 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
         invitationContent.event,
         new Date(),
         journeyProgressRef.current.completedIds.includes("ceremony")
-      )?.phase
+      )?.phase,
+      conversation: npcConversationSnapshot(npcDialogueMemory, npcId)
     });
     stampWorldInteraction("couple");
     completeZoneMiniQuestAction({ type: "npc", id: npcId });
     setActiveNpcDialogue(dialogue);
     setTravelStatus(`${npc.label}와 이야기를 나눴어요`);
     playFeedback("dialogue");
-  }, [activeZone, completeZoneMiniQuestAction, playFeedback, profile.nickname, stampWorldInteraction]);
+  }, [activeZone, completeZoneMiniQuestAction, npcDialogueMemory, playFeedback, profile.nickname, stampWorldInteraction]);
 
   const chooseNpcDialogue = useCallback((choice: NpcDialogueChoice) => {
     if (!activeNpcDialogue) return;
     const result = resolveNpcDialogueChoice(activeNpcDialogue, choice.id, profile.nickname);
+    setNpcDialogueMemory((memory) => rememberNpcDialogueChoice(memory, activeNpcDialogue.npcId, choice.id));
     handleGuestReaction(result.reaction);
     setActiveNpcDialogue(result.dialogue);
     setTravelStatus(result.status);
@@ -3757,9 +3787,12 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   const activeWorldPropMomentEntry = activePropMoment?.zoneId === activeZone.id
     ? activeWorldPropInteractions.find(({ decoration }) => decoration.id === activePropMoment.decorationId) ?? null
     : null;
-  const activeWorldSecretHint = activeWorldPropInteractions
-    .find(({ interaction }) => !worldSecretCollection.discoveredIds.includes(interaction.secretId))
-    ?.interaction ?? null;
+  const activeWorldSecretTarget = activeWorldPropInteractions
+    .find(({ interaction }) => !worldSecretCollection.discoveredIds.includes(interaction.secretId)) ?? null;
+  const activeWorldSecretHint = activeWorldSecretTarget?.interaction ?? null;
+  const activeWorldSecretClue = activeWorldSecretTarget
+    ? resolveWorldSecretClue(activeWorldSecretTarget.interaction, activeWorldSecretTarget.decoration, position)
+    : null;
   const predictedNextZoneId = portalIntent?.portal.to
     ?? (destinationCheckpoint
       ? nextWorldZoneToward(activeZone.id, destinationCheckpoint.zoneId)
@@ -4100,6 +4133,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
           collection={worldSecretCollection}
           totalCount={totalWorldSecrets}
           currentHint={activeWorldSecretHint}
+          currentClue={activeWorldSecretClue}
         />
         <WorldTravelTimeline
           zones={gardenWorld.zones}
@@ -4348,6 +4382,9 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
                   decoration.x + decoration.width / 2 - position.x,
                   decoration.y + decoration.height / 2 - position.y
                 ) <= interaction.actionRadius + 90}
+                clue={worldSecretCollection.discoveredIds.includes(interaction.secretId)
+                  ? null
+                  : resolveWorldSecretClue(interaction, decoration, position)}
                 onSelect={() => {
                   setActiveJourneyGuideId(null);
                   setPendingJourneyGuideId(null);

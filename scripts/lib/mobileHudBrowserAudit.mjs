@@ -4,7 +4,10 @@ import { spawn } from "node:child_process";
 
 export const mobileHudAuditViewports = Object.freeze([
   { id: "iphone-portrait", width: 390, height: 844 },
-  { id: "small-android", width: 360, height: 640 }
+  { id: "small-android", width: 360, height: 640 },
+  { id: "phone-landscape", width: 844, height: 390 },
+  { id: "tablet-portrait", width: 768, height: 1024 },
+  { id: "tablet-landscape", width: 1024, height: 768 }
 ]);
 
 const overlapPairs = [
@@ -80,6 +83,32 @@ async function visibleRectangles(page) {
   });
 }
 
+async function measureJoystickTouchResponse(page, context) {
+  const box = await page.locator(".virtual-joystick").boundingBox();
+  if (!box) return { latencyMs: null, responded: false };
+  const x = box.x + box.width - 4;
+  const y = box.y + box.height / 2;
+  const session = await context.newCDPSession(page);
+  const startedAt = performance.now();
+  let responded = false;
+  try {
+    await session.send("Input.dispatchTouchEvent", {
+      type: "touchStart",
+      touchPoints: [{ x, y, radiusX: 2, radiusY: 2, force: 1, id: 1 }]
+    });
+    await page.waitForFunction(() => (
+      document.querySelector(".virtual-joystick__thumb")?.style.getPropertyValue("--joystick-x").trim() === "1"
+    ), undefined, { timeout: 500 });
+    responded = true;
+  } catch {
+    responded = false;
+  } finally {
+    await session.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] }).catch(() => undefined);
+    await session.detach().catch(() => undefined);
+  }
+  return { latencyMs: Math.round((performance.now() - startedAt) * 10) / 10, responded };
+}
+
 export async function runMobileHudBrowserAudit({ rootDir, outputDir, port = 4178 }) {
   const server = spawn(
     "pnpm",
@@ -95,7 +124,13 @@ export async function runMobileHudBrowserAudit({ rootDir, outputDir, port = 4178
     const reports = [];
     try {
       for (const viewport of mobileHudAuditViewports) {
-        const page = await browser.newPage({ viewport: { width: viewport.width, height: viewport.height } });
+        const context = await browser.newContext({
+          viewport: { width: viewport.width, height: viewport.height },
+          hasTouch: true,
+          isMobile: true,
+          deviceScaleFactor: viewport.id.startsWith("tablet") ? 1.5 : 2
+        });
+        const page = await context.newPage();
         await page.addInitScript(() => {
           localStorage.setItem("wedding-game:entry-session:v1", JSON.stringify({
             version: 1,
@@ -114,6 +149,9 @@ export async function runMobileHudBrowserAudit({ rootDir, outputDir, port = 4178
         await page.locator(".world-map__stage--background-loaded").waitFor({ state: "visible", timeout: 15_000 });
         const rectangles = await visibleRectangles(page);
         const issues = auditMobileHudRectangles(rectangles, viewport);
+        const touchResponse = await measureJoystickTouchResponse(page, context);
+        if (!touchResponse.responded) issues.push("joystick 터치 무응답");
+        if (touchResponse.latencyMs !== null && touchResponse.latencyMs > 120) issues.push(`joystick 터치 지연 ${touchResponse.latencyMs}ms`);
         const screenshotPath = path.join(outputDir, `mobile-hud-${viewport.id}.png`);
         await page.screenshot({ path: screenshotPath, fullPage: false });
         await page.locator(".world-hud__tools-toggle").click();
@@ -129,8 +167,8 @@ export async function runMobileHudBrowserAudit({ rootDir, outputDir, port = 4178
         ) issues.push("expanded-tools 화면 이탈");
         const toolsScreenshotPath = path.join(outputDir, `mobile-hud-${viewport.id}-tools.png`);
         await page.screenshot({ path: toolsScreenshotPath, fullPage: false });
-        reports.push({ ...viewport, rectangles, toolsRect, issues, screenshotPath, toolsScreenshotPath });
-        await page.close();
+        reports.push({ ...viewport, rectangles, toolsRect, touchResponse, issues, screenshotPath, toolsScreenshotPath });
+        await context.close();
       }
     } finally {
       await browser.close();
