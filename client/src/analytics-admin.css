@@ -211,10 +211,26 @@
 .analytics-device-qa header p { margin: 0; color: var(--analytics-gold); font-size: 10px; font-weight: 900; }
 .analytics-device-qa header span { color: var(--analytics-muted); font-size: 11px; }
 .analytics-device-qa header > strong { color: var(--analytics-green); font-size: 13px; white-space: nowrap; }
+.analytics-device-qa__trend { margin-top: 14px; border: 1px solid var(--analytics-line); padding: 12px; background: #f7faf8; }
+.analytics-device-qa__trend > header { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.analytics-device-qa__trend > header > span { display: flex; align-items: center; gap: 7px; color: var(--analytics-green); }
+.analytics-device-qa__trend > header svg { width: 16px; height: 16px; }
+.analytics-device-qa__trend > header strong { font-size: 11px; }
+.analytics-device-qa__trend > header small { color: var(--analytics-muted); font-size: 10px; }
+.analytics-device-qa__trend[data-status="watch"] > header > span { color: var(--analytics-gold); }
+.analytics-device-qa__trend[data-status="regression"] { border-color: #dca7a7; background: #fff7f5; }
+.analytics-device-qa__trend[data-status="regression"] > header > span { color: #a14747; }
+.analytics-device-qa__trend > div { display: grid; height: 76px; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; margin-top: 9px; }
+.analytics-device-qa__trend > div > span { display: grid; min-width: 0; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 15px; align-items: end; gap: 2px; border-bottom: 1px solid #d6e0da; }
+.analytics-device-qa__trend > div i,
+.analytics-device-qa__trend > div em { display: block; min-height: 2px; background: var(--analytics-green); }
+.analytics-device-qa__trend > div em { background: var(--analytics-rose); }
+.analytics-device-qa__trend > div small { grid-column: 1 / -1; overflow: hidden; color: var(--analytics-muted); font-size: 8px; font-style: normal; text-align: center; white-space: nowrap; }
 .analytics-device-qa > div { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 14px; }
 @media (max-width: 700px) {
   .analytics-device-qa > header { grid-template-columns: auto minmax(0, 1fr); }
   .analytics-device-qa header > strong { grid-column: 1 / -1; }
+  .analytics-device-qa__trend > header { align-items: flex-start; flex-direction: column; }
   .analytics-device-qa > div { grid-template-columns: 1fr; }
 }
 

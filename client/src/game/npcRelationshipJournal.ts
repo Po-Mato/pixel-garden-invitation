@@ -1,3 +1,4 @@
+import type { WorldZoneId } from "@wedding-game/shared";
 import type { NpcDialogueChoiceId, NpcId } from "./npcDialogue";
 import { npcConversationSnapshot, type NpcDialogueMemory } from "./npcDialogueMemory";
 
@@ -15,6 +16,9 @@ export type NpcRelationshipJournal = {
   interactionCount: number;
   recentChoiceLabels: string[];
   rewardLabel: string | null;
+  rewardActionLabel: string | null;
+  rewardMessage: string | null;
+  locations: Array<{ zoneId: WorldZoneId; label: string; count: number; message: string }>;
   entries: NpcRelationshipJournalEntry[];
 };
 
@@ -23,6 +27,42 @@ const choiceLabels: Record<NpcDialogueChoiceId, string> = {
   heart: "따뜻한 마음",
   celebrate: "힘찬 축하"
 };
+
+const zoneLabels: Record<WorldZoneId, string> = {
+  home: "우리 집",
+  neighborhood: "꽃길 골목",
+  "subway-station": "소사역",
+  "subway-train": "웨딩 열차",
+  "venue-exterior": "예식장 앞",
+  lobby: "예식장 로비",
+  "bridal-room": "신부 대기실",
+  "ceremony-hall": "파티오볼룸",
+  restroom: "예식장 편의 공간",
+  banquet: "연회장"
+};
+
+function locationEntries(memory: NpcDialogueMemory, npcId: NpcId) {
+  const record = memory.records[npcId];
+  if (!record || record.interactionCount === 0) return [];
+  const encounters = record.encounters?.length
+    ? record.encounters
+    : [{
+        zoneId: npcId === "bride" ? "bridal-room" as const : "ceremony-hall" as const,
+        choiceId: record.choiceIds.at(-1) ?? "greet" as const,
+        interactedAt: record.lastInteractedAt ?? ""
+      }];
+  const grouped = new Map<WorldZoneId, typeof encounters>();
+  encounters.forEach((encounter) => grouped.set(encounter.zoneId, [...(grouped.get(encounter.zoneId) ?? []), encounter]));
+  return [...grouped.entries()].map(([zoneId, values]) => {
+    const latest = values.at(-1)!;
+    return {
+      zoneId,
+      label: zoneLabels[zoneId],
+      count: record.encounters?.length ? values.length : record.interactionCount,
+      message: `${zoneLabels[zoneId]}에서 ${choiceLabels[latest.choiceId]}을 전한 순간을 기억하고 있어요.`
+    };
+  });
+}
 
 export function buildNpcRelationshipJournal(memory: NpcDialogueMemory, npcId: NpcId): NpcRelationshipJournal {
   const snapshot = npcConversationSnapshot(memory, npcId);
@@ -41,6 +81,13 @@ export function buildNpcRelationshipJournal(memory: NpcDialogueMemory, npcId: Np
     interactionCount: snapshot.interactionCount,
     recentChoiceLabels: (record?.choiceIds ?? []).slice(-4).map((choice) => choiceLabels[choice]),
     rewardLabel: snapshot.specialRewardLabel,
+    rewardActionLabel: snapshot.specialRewardLabel ? (isBride ? "감사 편지 펼치기" : "축배 메시지 듣기") : null,
+    rewardMessage: snapshot.specialRewardLabel
+      ? isBride
+        ? "함께해 주신 마음 덕분에 오늘이 더 따뜻해졌어요. 이 편지를 오래 간직해 주세요."
+        : "우리의 새로운 시작을 위해 잔을 들어주세요. 보내주신 축하를 힘으로 삼아 행복하게 살겠습니다."
+      : null,
+    locations: locationEntries(memory, npcId),
     entries: [
       {
         id: "first-greeting",

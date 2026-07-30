@@ -60,7 +60,9 @@ function result(): InvitationAnalyticsAdminResponse {
       rsvpResponses: index === 6 ? 1 : 0,
       guestbookMessages: 0,
       shares: 1,
-      clientErrors: 0
+      clientErrors: 0,
+      deviceQaReports: index < 4 ? 1 : 0,
+      deviceQaIssues: index === 6 ? 1 : 0
     })),
     breakdowns: {
       devices: [{ key: "mobile", count: 8 }, { key: "desktop", count: 2 }],
@@ -112,6 +114,7 @@ describe("AnalyticsAdminPage", () => {
     expect(screen.getByText("실측 표본 자동 보정 중")).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "실제 휴대폰 점검 현황" })).toBeInTheDocument();
     expect(screen.getByText("8회 점검 · 2건 불편")).toBeInTheDocument();
+    expect(screen.getByText("비교 가능한 표본을 더 모으는 중입니다")).toBeInTheDocument();
   });
 
   it("기간 버튼을 바꾸면 해당 기간으로 다시 조회한다", async () => {

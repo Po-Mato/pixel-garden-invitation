@@ -177,7 +177,9 @@ export async function getInvitationAnalytics(
       rsvpResponses: 0,
       guestbookMessages: 0,
       shares: 0,
-      clientErrors: 0
+      clientErrors: 0,
+      deviceQaReports: 0,
+      deviceQaIssues: 0
     });
   }
 
@@ -290,9 +292,11 @@ export async function getInvitationAnalytics(
         const [device, result] = row.dimension.split(":");
         if (result?.startsWith("issue-")) {
           totals.deviceQaIssues += count;
+          item.deviceQaIssues += count;
           increment(deviceQaIssues, `${device}:${result.slice("issue-".length)}`, count);
         } else {
           totals.deviceQaReports += count;
+          item.deviceQaReports += count;
           increment(deviceQaDevices, `${device}:${result}`, count);
         }
         break;

@@ -1,4 +1,4 @@
-import { Download, HardDriveDownload, KeyRound, QrCode, Share2, ShieldCheck, Upload } from "lucide-react";
+import { Download, HardDriveDownload, KeyRound, QrCode, ScanLine, Share2, ShieldCheck, Upload } from "lucide-react";
 import { useRef, useState, type ChangeEvent } from "react";
 import { createGameSaveBackup, downloadGameSaveBackup, parseGameSaveBackup, restoreGameSaveBackup } from "../game/gameSaveBackup";
 import {
@@ -12,6 +12,7 @@ import {
   shareEncryptedGameSaveNearby,
   type EncryptedGameSaveEnvelope
 } from "../game/gameSaveTransfer";
+import { GameSaveQrScanner } from "./GameSaveQrScanner";
 
 function incomingTransfer(): EncryptedGameSaveEnvelope | null {
   try {
@@ -28,7 +29,8 @@ export function GameSaveDataCenter() {
   const [passphrase, setPassphrase] = useState("");
   const [qrImage, setQrImage] = useState<string | null>(null);
   const [qrEntryCount, setQrEntryCount] = useState(0);
-  const [incomingEnvelope] = useState(incomingTransfer);
+  const [incomingEnvelope, setIncomingEnvelope] = useState(incomingTransfer);
+  const [scannerOpen, setScannerOpen] = useState(false);
   const [expanded, setExpanded] = useState(Boolean(incomingEnvelope));
   const [busy, setBusy] = useState(false);
 
@@ -155,12 +157,14 @@ export function GameSaveDataCenter() {
           <button type="button" disabled={busy} onClick={() => void saveEncrypted()}><ShieldCheck aria-hidden="true" />암호화 저장</button>
           <button type="button" disabled={busy} onClick={() => encryptedInputRef.current?.click()}><Upload aria-hidden="true" />암호화 복원</button>
           <button type="button" disabled={busy} onClick={() => void makeTransferQr()}><QrCode aria-hidden="true" />기기 이전 QR</button>
+          <button type="button" disabled={busy} onClick={() => setScannerOpen(true)}><ScanLine aria-hidden="true" />QR 스캔 받기</button>
           <button type="button" disabled={busy} onClick={() => void shareFullSaveNearby()}><Share2 aria-hidden="true" />사진 포함 근거리 전송</button>
         </div>
         <input ref={encryptedInputRef} type="file" accept=".wgsave,application/json" aria-label="암호화 게임 백업 파일 선택" onChange={(event) => void restoreEncrypted(event)} />
         {qrImage ? <figure><img src={qrImage} alt="암호화된 게임 진행 기기 이전 QR" /><figcaption>핵심 진행 {qrEntryCount}개 · 사진 제외</figcaption></figure> : null}
       </section>
       <small>QR은 핵심 진행만, 근거리 전송은 촬영 사진까지 포함합니다. 참석 답변·방명록·관리자 정보는 포함하지 않습니다.</small>
+      {scannerOpen ? <GameSaveQrScanner onClose={() => setScannerOpen(false)} onDetected={(envelope) => { setIncomingEnvelope(envelope); setScannerOpen(false); setExpanded(true); setStatus("QR 진행을 읽었어요 · 같은 암호를 입력해 복원하세요"); }} /> : null}
     </details>
   );
 }

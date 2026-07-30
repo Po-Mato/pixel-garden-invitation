@@ -1471,7 +1471,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     if (!activeNpcDialogue) return;
     const previousConversation = npcConversationSnapshot(npcDialogueMemory, activeNpcDialogue.npcId);
     const result = resolveNpcDialogueChoice(activeNpcDialogue, choice.id, profile.nickname, previousConversation);
-    let nextMemory = rememberNpcDialogueChoice(npcDialogueMemory, activeNpcDialogue.npcId, choice.id);
+    let nextMemory = rememberNpcDialogueChoice(npcDialogueMemory, activeNpcDialogue.npcId, choice.id, undefined, undefined, activeZone.id);
     const nextConversation = npcConversationSnapshot(nextMemory, activeNpcDialogue.npcId);
     const rewardUnlocked = previousConversation.specialRewardLabel === null && nextConversation.specialRewardLabel !== null;
     const groupEventUnlocked = npcGroupCelebrationReady(nextMemory) && !nextMemory.groupCelebrationSeen;
@@ -1488,7 +1488,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     });
     if (groupEventUnlocked) setNpcGroupCelebrationActive(true);
     setTravelStatus(groupEventUnlocked ? "인연 피날레 이벤트가 열렸어요" : rewardUnlocked ? `${nextConversation.specialRewardLabel}을 받았어요` : result.status);
-  }, [activeNpcDialogue, handleGuestReaction, npcDialogueMemory, profile.nickname]);
+  }, [activeNpcDialogue, activeZone.id, handleGuestReaction, npcDialogueMemory, profile.nickname]);
 
   useEffect(() => {
     if (!npcGroupCelebrationActive) return;
@@ -4195,6 +4195,11 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
         <NpcRelationshipJournal
           memory={npcDialogueMemory}
           names={{ bride: invitationContent.event.couple.bride, groom: invitationContent.event.couple.groom }}
+          onRewardInteraction={(npcId, rewardLabel) => {
+            handleGuestReaction(npcId === "bride" ? "heart" : "celebrate");
+            playFeedback("complete");
+            setTravelStatus(`${rewardLabel}을 다시 펼쳐봤어요`);
+          }}
         />
         <ol className="world-journey" aria-label="하객 여정">
           {gardenWorld.zones.map((zone) => {

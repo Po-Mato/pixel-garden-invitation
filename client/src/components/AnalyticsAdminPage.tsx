@@ -28,6 +28,7 @@ import {
 } from "../api/invitationAnalyticsApi";
 import { createAdminSession, WeddingApiError, type AdminSession } from "../api/weddingApi";
 import { downloadInvitationAnalyticsCsv } from "../invitation/analyticsCsv";
+import { analyzeDeviceQaTrend } from "../invitation/deviceQaTrend";
 import { clearAdminSession, loadAdminSession, saveAdminSession } from "../invitation/rsvpStorage";
 import "../analytics-admin.css";
 
@@ -253,6 +254,16 @@ export function AnalyticsAdminPage() {
   const maxVisits = Math.max(1, ...recentDays.map((day) => day.visits));
   const repeatRate = analytics ? percentage(analytics.totals.returningVisits, analytics.totals.visits) : "0%";
   const rsvpConversion = analytics ? percentage(analytics.totals.rsvpSubmits, analytics.totals.rsvpViews) : "0%";
+  const deviceQaTrend = useMemo(() => analyzeDeviceQaTrend(analytics?.daily ?? []), [analytics?.daily]);
+  const deviceQaRecentDays = analytics?.daily.slice(-7) ?? [];
+  const deviceQaMax = Math.max(1, ...deviceQaRecentDays.flatMap((day) => [day.deviceQaReports, day.deviceQaIssues]));
+  const deviceQaTrendCopy = deviceQaTrend.status === "regression"
+    ? "최근 불편 빈도가 기준보다 크게 상승했습니다"
+    : deviceQaTrend.status === "watch"
+      ? "불편 빈도 상승을 관찰하고 있습니다"
+      : deviceQaTrend.status === "stable"
+        ? "최근 기기 점검 흐름이 안정적입니다"
+        : "비교 가능한 표본을 더 모으는 중입니다";
   const periodLabel = analytics ? `${analytics.range.from} - ${analytics.range.to}` : "조회 중";
   const metricCards = useMemo(() => analytics ? [
     { label: "방문", value: formatNumber(analytics.totals.visits), detail: `재방문 ${repeatRate}`, icon: Users },
@@ -394,6 +405,21 @@ export function AnalyticsAdminPage() {
                 <div><p>ANONYMOUS DEVICE QA</p><h2 id="analytics-device-qa-title">실제 휴대폰 점검 현황</h2><span>개인정보 없이 기기 종류와 선택한 불편 항목의 합계만 표시합니다.</span></div>
                 <strong>{formatNumber(analytics.totals.deviceQaReports)}회 점검 · {formatNumber(analytics.totals.deviceQaIssues)}건 불편</strong>
               </header>
+              <section className="analytics-device-qa__trend" data-status={deviceQaTrend.status} aria-label="최근 기기 점검 추세">
+                <header>
+                  <span><Activity aria-hidden="true" /><strong>{deviceQaTrendCopy}</strong></span>
+                  <small>최근 {Math.round(deviceQaTrend.currentRate * 100)}% · 직전 {Math.round(deviceQaTrend.previousRate * 100)}%</small>
+                </header>
+                <div role="img" aria-label="최근 7일 날짜별 기기 점검과 불편 항목 막대 차트">
+                  {deviceQaRecentDays.map((day) => (
+                    <span key={day.date} title={`${day.date} 점검 ${day.deviceQaReports}회, 불편 ${day.deviceQaIssues}건`}>
+                      <i style={{ height: `${Math.max(day.deviceQaReports > 0 ? 8 : 2, day.deviceQaReports / deviceQaMax * 100)}%` }} />
+                      <em style={{ height: `${Math.max(day.deviceQaIssues > 0 ? 8 : 2, day.deviceQaIssues / deviceQaMax * 100)}%` }} />
+                      <small>{day.date.slice(5).replace("-", ".")}</small>
+                    </span>
+                  ))}
+                </div>
+              </section>
               <div>
                 <BreakdownList title="기기별 점검 결과" items={analytics.breakdowns.deviceQaDevices} labels={qaDeviceLabels} />
                 <BreakdownList title="기기별 불편 항목" items={analytics.breakdowns.deviceQaIssues} labels={qaIssueLabels} />

@@ -9,7 +9,7 @@ import {
 import type { CelebrationCosmeticId, CelebrationCosmeticTone } from "./celebrationReward";
 import { resolveWorldMapAsset } from "./worldVisuals";
 import type { WorldPhotoPose, WorldPhotoSpot, WorldPhotoSpotId } from "./world";
-import { normalizePhotoStickerText, resolveCoverCrop, type PhotoFrameTransform } from "./photoFrameEditor";
+import { normalizePhotoStickerText, photoStickerCanvasStyle, resolveCoverCrop, type PhotoFrameTransform, type PhotoStickerStyle } from "./photoFrameEditor";
 
 export type WeddingPhotoData = {
   guestName: string;
@@ -58,6 +58,7 @@ export type WeddingPhotoStripData = {
   photoOrder?: readonly WorldPhotoSpotId[];
   photoTransforms?: Partial<Record<WorldPhotoSpotId, PhotoFrameTransform>>;
   stickerText?: string;
+  stickerStyle?: PhotoStickerStyle;
 };
 
 export type WeddingPhotoStripTheme = "garden" | "rose" | "night";
@@ -1061,11 +1062,12 @@ export async function createWeddingPhotoStrip(data: WeddingPhotoStripData): Prom
   const stickerText = normalizePhotoStickerText(data.stickerText ?? "");
   if (stickerText) {
     context.textAlign = "center";
-    context.font = "900 24px sans-serif";
+    const stickerStyle = photoStickerCanvasStyle(data.stickerStyle, 24);
+    context.font = stickerStyle.font;
     const stickerWidth = Math.min(780, context.measureText(stickerText).width + 54);
-    context.fillStyle = theme === "night" ? "rgba(246, 225, 171, .94)" : "rgba(255, 248, 224, .96)";
+    context.fillStyle = stickerStyle.background;
     context.fillRect((canvas.width - stickerWidth) / 2, 211, stickerWidth, 34);
-    context.fillStyle = "#714d59";
+    context.fillStyle = stickerStyle.color;
     context.fillText(stickerText, canvas.width / 2, 237);
   }
 

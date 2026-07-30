@@ -862,6 +862,7 @@ html[data-reduce-motion="true"] .wedding-photo-booth__pose-effect::after {
 .wedding-photo-strip__editor li button svg { width: 13px; height: 13px; }
 .wedding-photo-strip__crop { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)) 27px; gap: 4px; align-items: end; }
 .wedding-photo-strip__crop > strong { grid-column: 1 / -1; color: #755f5e; font-size: 7px; }
+.wedding-photo-strip__crop > .photo-frame-touch-editor { grid-column: 1 / -1; }
 .wedding-photo-strip__crop label { display: grid; min-width: 0; grid-template-columns: 11px 1fr; gap: 2px; color: #7c6a65; font-size: 6px; font-weight: 900; }
 .wedding-photo-strip__crop label svg { width: 10px; }
 .wedding-photo-strip__crop input { width: 100%; grid-column: 1 / -1; accent-color: #9d5d70; }

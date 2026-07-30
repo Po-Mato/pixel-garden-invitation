@@ -7,6 +7,7 @@ import {
   decryptGameSaveBackup,
   encodeGameTransferEnvelope,
   encryptGameSaveBackup,
+  readGameTransferFromScannedValue,
   readGameTransferFromUrl,
   shareEncryptedGameSaveNearby
 } from "./gameSaveTransfer";
@@ -34,6 +35,8 @@ describe("gameSaveTransfer", () => {
     expect(url).toContain("#game-transfer=");
     expect(url).not.toContain("invite=guest");
     expect(readGameTransferFromUrl(url)).toEqual(envelope);
+    expect(readGameTransferFromScannedValue(url)).toEqual(envelope);
+    expect(readGameTransferFromScannedValue(`game-transfer=${url.split("game-transfer=")[1]}`)).toEqual(envelope);
   });
 
   it("QR 이전에는 사진과 민감 데이터를 제외하고 핵심 진행만 담는다", () => {

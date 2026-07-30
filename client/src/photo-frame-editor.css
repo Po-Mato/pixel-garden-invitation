@@ -1,0 +1,19 @@
+.photo-frame-touch-editor { position: relative; display: grid; width: 100%; aspect-ratio: 16 / 9; place-items: center; overflow: hidden; border: 1px solid #bca9a1; border-radius: 3px; background: #d8d0c6; cursor: grab; touch-action: none; }
+.photo-frame-touch-editor:active { cursor: grabbing; }
+.photo-frame-touch-editor > img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; user-select: none; }
+.photo-frame-touch-editor > span { position: absolute; right: 5px; bottom: 5px; display: flex; gap: 3px; padding: 3px 4px; background: rgba(49, 42, 40, .72); color: #fff8e8; }
+.photo-frame-touch-editor > span svg { width: 10px; height: 10px; }
+.photo-sticker-style-controls { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 5px; }
+.photo-sticker-style-controls__tones,
+.photo-sticker-style-controls__fonts { display: flex; align-items: center; gap: 3px; }
+.photo-sticker-style-controls__tones button { display: grid; width: 25px; min-height: 25px; place-items: center; border: 1px solid #b7a39b; border-radius: 3px; padding: 2px; background: #fff; }
+.photo-sticker-style-controls__tones button i { width: 14px; height: 14px; border: 1px solid rgba(70, 55, 54, .25); border-radius: 50%; background: #fff1c8; }
+.photo-sticker-style-controls__tones button[data-tone="rose"] i { background: #a65369; }
+.photo-sticker-style-controls__tones button[data-tone="sage"] i { background: #547763; }
+.photo-sticker-style-controls__tones button[aria-pressed="true"] { border: 2px solid #774f5d; }
+.photo-sticker-style-controls__fonts { justify-content: end; }
+.photo-sticker-style-controls__fonts > svg { width: 11px; color: #765e65; }
+.photo-sticker-style-controls__fonts button { min-height: 25px; border: 1px solid #b7a49e; border-radius: 3px; padding: 3px 6px; background: #fff; color: #715f5d; font-size: 7px; font-weight: 850; }
+.photo-sticker-style-controls__fonts button[aria-pressed="true"] { border-color: #805666; background: #915d6e; color: #fff; }
+.photo-sticker-style-controls__fonts button[data-font="serif"] { font-family: Georgia, serif; }
+.photo-sticker-style-controls__fonts button[data-font="hand"] { font-family: "Nanum Pen Script", "Comic Sans MS", cursive; }

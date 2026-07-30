@@ -11,6 +11,7 @@ describe("GameSaveDataCenter", () => {
     expect(screen.getByLabelText("이전 암호")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "암호화 저장" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "기기 이전 QR" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "QR 스캔 받기" })).toBeInTheDocument();
     expect(screen.getByText(/참석 답변·방명록·관리자 정보는 포함하지 않습니다/)).toBeInTheDocument();
   });
 });

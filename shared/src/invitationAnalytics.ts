@@ -48,6 +48,8 @@ export type InvitationAnalyticsDaily = {
   guestbookMessages: number;
   shares: number;
   clientErrors: number;
+  deviceQaReports: number;
+  deviceQaIssues: number;
 };
 
 export type InvitationAnalyticsBreakdown = {

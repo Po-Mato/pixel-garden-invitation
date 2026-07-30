@@ -1,4 +1,4 @@
-import { normalizePhotoFrameTransform, normalizePhotoStickerText, resolveCoverCrop, type PhotoFrameTransform } from "./photoFrameEditor";
+import { normalizePhotoFrameTransform, normalizePhotoStickerText, photoStickerCanvasStyle, resolveCoverCrop, type PhotoFrameTransform, type PhotoStickerStyle } from "./photoFrameEditor";
 
 export type JourneyKeepsakeData = {
   guestName: string;
@@ -18,6 +18,7 @@ export type JourneyKeepsakeData = {
   theme?: JourneyKeepsakeTheme;
   photoTransform?: PhotoFrameTransform;
   stickerText?: string;
+  stickerStyle?: PhotoStickerStyle;
 };
 
 export type JourneyKeepsakeTheme = "garden" | "blossom" | "midnight";
@@ -220,12 +221,13 @@ export async function createJourneyKeepsakeBlob(data: JourneyKeepsakeData): Prom
   context.fillText("WEDDING GARDEN JOURNEY", cardWidth / 2, 74);
   const stickerText = normalizePhotoStickerText(data.stickerText ?? "");
   if (stickerText) {
-    context.font = "900 26px sans-serif";
+    const stickerStyle = photoStickerCanvasStyle(data.stickerStyle, 26);
+    context.font = stickerStyle.font;
     const stickerWidth = Math.min(cardWidth - 180, context.measureText(stickerText).width + 54);
     roundedRect(context, (cardWidth - stickerWidth) / 2, 426, stickerWidth, 52, 18);
-    context.fillStyle = "rgba(255, 249, 226, 0.92)";
+    context.fillStyle = stickerStyle.background;
     context.fill();
-    context.fillStyle = "#7b4e5a";
+    context.fillStyle = stickerStyle.color;
     context.fillText(stickerText, cardWidth / 2, 461);
   }
   context.font = "700 31px sans-serif";

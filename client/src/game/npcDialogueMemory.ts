@@ -1,4 +1,11 @@
+import { worldZoneIds, type WorldZoneId } from "@wedding-game/shared";
 import type { NpcDialogueChoiceId, NpcId } from "./npcDialogue";
+
+export type NpcDialogueEncounter = {
+  zoneId: WorldZoneId;
+  choiceId: NpcDialogueChoiceId;
+  interactedAt: string;
+};
 
 export type NpcConversationRecord = {
   interactionCount: number;
@@ -6,6 +13,7 @@ export type NpcConversationRecord = {
   choiceIds: NpcDialogueChoiceId[];
   unlockedRewardIds: NpcAffinityRewardId[];
   lastInteractedAt: string | null;
+  encounters?: NpcDialogueEncounter[];
 };
 
 export type NpcAffinityRewardId = "bride-gratitude-letter" | "groom-toast-message";
@@ -31,6 +39,7 @@ export const npcDialogueMemoryStorageKey = "wedding-game:npc-dialogue-memory:v1"
 
 const validChoices = new Set<NpcDialogueChoiceId>(["greet", "heart", "celebrate"]);
 const validRewards = new Set<NpcAffinityRewardId>(["bride-gratitude-letter", "groom-toast-message"]);
+const validZones = new Set<WorldZoneId>(worldZoneIds);
 
 const choiceAffinity: Record<NpcDialogueChoiceId, number> = { greet: 1, heart: 2, celebrate: 2 };
 
@@ -63,12 +72,24 @@ function parseRecord(value: unknown): NpcConversationRecord | null {
   const unlockedRewardIds = Array.isArray(record.unlockedRewardIds)
     ? record.unlockedRewardIds.filter((reward): reward is NpcAffinityRewardId => validRewards.has(reward as NpcAffinityRewardId))
     : [];
+  const encounters = Array.isArray(record.encounters)
+    ? record.encounters.flatMap((value) => {
+        if (!value || typeof value !== "object") return [];
+        const encounter = value as Partial<NpcDialogueEncounter>;
+        return validZones.has(encounter.zoneId as WorldZoneId)
+          && validChoices.has(encounter.choiceId as NpcDialogueChoiceId)
+          && typeof encounter.interactedAt === "string"
+          ? [{ zoneId: encounter.zoneId as WorldZoneId, choiceId: encounter.choiceId as NpcDialogueChoiceId, interactedAt: encounter.interactedAt }]
+          : [];
+      }).slice(-12)
+    : [];
   return {
     interactionCount: Math.max(choiceIds.length, Number.isFinite(record.interactionCount) ? Math.max(0, Math.floor(record.interactionCount!)) : 0),
     affinityPoints,
     choiceIds,
     unlockedRewardIds,
-    lastInteractedAt: typeof record.lastInteractedAt === "string" ? record.lastInteractedAt : null
+    lastInteractedAt: typeof record.lastInteractedAt === "string" ? record.lastInteractedAt : null,
+    encounters
   };
 }
 
@@ -94,9 +115,10 @@ export function rememberNpcDialogueChoice(
   npcId: NpcId,
   choiceId: NpcDialogueChoiceId,
   storage: DialogueMemoryStorage | null = browserStorage(),
-  interactedAt = new Date().toISOString()
+  interactedAt = new Date().toISOString(),
+  zoneId: WorldZoneId | null = null
 ): NpcDialogueMemory {
-  const current = memory.records[npcId] ?? { interactionCount: 0, affinityPoints: 0, choiceIds: [], unlockedRewardIds: [], lastInteractedAt: null };
+  const current = memory.records[npcId] ?? { interactionCount: 0, affinityPoints: 0, choiceIds: [], unlockedRewardIds: [], lastInteractedAt: null, encounters: [] };
   const affinityPoints = current.affinityPoints + choiceAffinity[choiceId];
   const rewardId: NpcAffinityRewardId = npcId === "bride" ? "bride-gratitude-letter" : "groom-toast-message";
   const unlockedRewardIds = affinityPoints >= 6
@@ -112,7 +134,10 @@ export function rememberNpcDialogueChoice(
         affinityPoints,
         choiceIds: [...current.choiceIds, choiceId].slice(-8),
         unlockedRewardIds,
-        lastInteractedAt: interactedAt
+        lastInteractedAt: interactedAt,
+        encounters: zoneId
+          ? [...(current.encounters ?? []), { zoneId, choiceId, interactedAt }].slice(-12)
+          : current.encounters ?? []
       }
     }
   };

@@ -16,5 +16,7 @@ describe("WorldSecretMemorial", () => {
     expect(screen.getByRole("dialog", { name: "기억의 등불 추억 다시 보기" })).toHaveTextContent("첫 초대의 설렘");
     fireEvent.click(screen.getByRole("button", { name: "다음 추억" }));
     expect(screen.getByRole("dialog")).toHaveTextContent("꽃길의 쉼표");
+    expect(screen.getByRole("button", { name: "자동 감상 시작" })).toBeInTheDocument();
+    expect(screen.getByRole("navigation", { name: "추억 장면 선택" })).toBeInTheDocument();
   });
 });

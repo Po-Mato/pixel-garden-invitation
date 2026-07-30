@@ -13,5 +13,6 @@ describe("NpcRelationshipJournal", () => {
     fireEvent.click(screen.getByRole("button", { name: /기억한 마음/ }));
     expect(screen.getByText(/아까 전해주신 따뜻한 마음/)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /소중한 인연 전용 대화/ })).toBeDisabled();
+    expect(screen.getByRole("region", { name: "이건희 장소별 인연 기록" })).toHaveTextContent("신부 대기실");
   });
 });

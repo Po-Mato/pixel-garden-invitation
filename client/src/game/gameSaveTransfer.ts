@@ -175,6 +175,17 @@ export function readGameTransferFromUrl(url: string): EncryptedGameSaveEnvelope 
   return decodeGameTransferEnvelope(hash.slice("game-transfer=".length));
 }
 
+export function readGameTransferFromScannedValue(value: string): EncryptedGameSaveEnvelope {
+  const trimmed = value.trim();
+  if (!trimmed) throw new Error("QR 데이터가 비어 있습니다.");
+  const directPayload = trimmed.startsWith("game-transfer=") ? trimmed.slice("game-transfer=".length) : null;
+  const envelope = directPayload
+    ? decodeGameTransferEnvelope(directPayload)
+    : readGameTransferFromUrl(trimmed);
+  if (!envelope) throw new Error("웨딩 가든 기기 이전 QR이 아닙니다.");
+  return envelope;
+}
+
 export function encryptedGameSaveFilename(createdAt = new Date()): string {
   return `wedding-game-encrypted-${createdAt.toISOString().slice(0, 10)}.wgsave`;
 }
