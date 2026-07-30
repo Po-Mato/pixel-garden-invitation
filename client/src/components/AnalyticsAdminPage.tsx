@@ -29,6 +29,7 @@ import {
 import { createAdminSession, WeddingApiError, type AdminSession } from "../api/weddingApi";
 import { downloadInvitationAnalyticsCsv } from "../invitation/analyticsCsv";
 import { analyzeDeviceQaTrend } from "../invitation/deviceQaTrend";
+import { DeviceQaAdminAlert } from "./DeviceQaAdminAlert";
 import { clearAdminSession, loadAdminSession, saveAdminSession } from "../invitation/rsvpStorage";
 import "../analytics-admin.css";
 
@@ -420,6 +421,7 @@ export function AnalyticsAdminPage() {
                   ))}
                 </div>
               </section>
+              <DeviceQaAdminAlert trend={deviceQaTrend} />
               <div>
                 <BreakdownList title="기기별 점검 결과" items={analytics.breakdowns.deviceQaDevices} labels={qaDeviceLabels} />
                 <BreakdownList title="기기별 불편 항목" items={analytics.breakdowns.deviceQaIssues} labels={qaIssueLabels} />

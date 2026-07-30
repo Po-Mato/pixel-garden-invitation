@@ -18,5 +18,10 @@ describe("WorldSecretMemorial", () => {
     expect(screen.getByRole("dialog")).toHaveTextContent("꽃길의 쉼표");
     expect(screen.getByRole("button", { name: "자동 감상 시작" })).toBeInTheDocument();
     expect(screen.getByRole("navigation", { name: "추억 장면 선택" })).toBeInTheDocument();
+    expect(screen.getByLabelText("음성 해설 속도")).toHaveValue("0.92");
+    expect(screen.getByText("해설 자막")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "자막 끄기" }));
+    expect(screen.queryByText("해설 자막")).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "배경음 듣기" })).toBeInTheDocument();
   });
 });

@@ -1,5 +1,13 @@
 import { describe, expect, it, vi } from "vitest";
-import { createGameSaveBackup, parseGameSaveBackup, restoreGameSaveBackup } from "./gameSaveBackup";
+import {
+  createGameSaveBackup,
+  createGameSaveRollback,
+  parseGameSaveBackup,
+  parseGameSaveRollback,
+  restoreGameSaveBackup,
+  restoreGameSaveRollback,
+  summarizeGameSaveBackup
+} from "./gameSaveBackup";
 
 function storage(initial: Record<string, string> = {}) {
   const values = new Map(Object.entries(initial));
@@ -50,5 +58,42 @@ describe("gameSaveBackup", () => {
     expect(() => parseGameSaveBackup(JSON.stringify({
       schema: "wedding-game-save", version: 1, createdAt: "now", entries: { "admin-token": "secret" }
     }))).toThrow("허용되지 않은");
+  });
+
+  it("복원 전에 신규·교체 항목을 요약하고 직전 상태로 되돌린다", () => {
+    const target = storage({ "wedding-game:journey-progress:v1": "old" });
+    const backup = parseGameSaveBackup(JSON.stringify({
+      schema: "wedding-game-save",
+      version: 1,
+      createdAt: "2027-05-01T00:00:00.000Z",
+      entries: {
+        "wedding-game:journey-progress:v1": "new",
+        "wedding-game:npc-dialogue-memory:guest": "npc"
+      }
+    }));
+    expect(summarizeGameSaveBackup(backup, target)).toEqual(expect.objectContaining({
+      totalEntries: 2,
+      newEntries: 1,
+      overwrittenEntries: 1,
+      categories: expect.arrayContaining([
+        expect.objectContaining({ id: "journey", count: 1 }),
+        expect.objectContaining({ id: "relationship", count: 1 })
+      ])
+    }));
+
+    const rollback = parseGameSaveRollback(JSON.stringify(createGameSaveRollback(backup, target, "2027-05-02T00:00:00.000Z")));
+    restoreGameSaveBackup(backup, target);
+    expect(target.getItem("wedding-game:journey-progress:v1")).toBe("new");
+    restoreGameSaveRollback(rollback, target);
+    expect(target.getItem("wedding-game:journey-progress:v1")).toBe("old");
+    expect(target.getItem("wedding-game:npc-dialogue-memory:guest")).toBeNull();
+
+    restoreGameSaveBackup(backup, target);
+    const failingRollback = { ...target, setItem: vi.fn((key: string, value: string) => {
+      if (key === "wedding-game:journey-progress:v1" && value === "old") throw new Error("quota");
+      target.setItem(key, value);
+    }) };
+    expect(() => restoreGameSaveRollback(rollback, failingRollback)).toThrow("quota");
+    expect(target.getItem("wedding-game:journey-progress:v1")).toBe("new");
   });
 });

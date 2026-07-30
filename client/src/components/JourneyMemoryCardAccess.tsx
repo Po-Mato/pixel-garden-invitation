@@ -19,8 +19,17 @@ import { loadWeddingPhotoAlbum } from "../game/weddingPhoto";
 import { loadWorldSecretCollection } from "../game/worldSecretCollection";
 import { totalWorldSecrets } from "../game/worldPropInteractions";
 import { loadWorldTravelHistory, worldTravelTimelineStops } from "../game/worldTravelHistory";
-import { defaultPhotoFrameTransform, type PhotoFrameTransform } from "../game/photoFrameEditor";
-import { defaultPhotoStickerStyle, type PhotoStickerStyle } from "../game/photoFrameEditor";
+import {
+  commitPhotoFrameHistory,
+  createPhotoFrameHistory,
+  defaultPhotoFrameTransform,
+  defaultPhotoStickerStyle,
+  redoPhotoFrameHistory,
+  undoPhotoFrameHistory,
+  type PhotoFrameTransform,
+  type PhotoStickerStyle
+} from "../game/photoFrameEditor";
+import { PhotoFrameActionControls } from "./PhotoFrameActionControls";
 import { PhotoFrameTouchEditor } from "./PhotoFrameTouchEditor";
 import { PhotoStickerStyleControls } from "./PhotoStickerStyleControls";
 
@@ -49,9 +58,11 @@ export function JourneyMemoryCardAccess({ nickname, progress }: JourneyMemoryCar
     return [...album, ...gallery].slice(0, 4);
   }, [content.gallery]);
   const [selectedPhotoId, setSelectedPhotoId] = useState<string | null>(null);
-  const [photoTransform, setPhotoTransform] = useState<PhotoFrameTransform>(defaultPhotoFrameTransform);
+  const [photoHistory, setPhotoHistory] = useState(() => createPhotoFrameHistory());
   const [stickerText, setStickerText] = useState("");
   const [stickerStyle, setStickerStyle] = useState<PhotoStickerStyle>(defaultPhotoStickerStyle);
+  const photoTransform = photoHistory.current;
+  const updatePhotoTransform = (value: PhotoFrameTransform) => setPhotoHistory((current) => commitPhotoFrameHistory(current, value));
   const selectedPhotoOption = photoOptions.find(({ id }) => id === selectedPhotoId) ?? photoOptions[0];
   const busy = status === "saving" || status === "sharing";
   const data = useMemo<JourneyKeepsakeData>(() => {
@@ -125,11 +136,12 @@ export function JourneyMemoryCardAccess({ nickname, progress }: JourneyMemoryCar
           ))}
         </div>
         <div className="journey-memory-card-access__crop" aria-label="대표 사진 초점 편집">
-          <PhotoFrameTouchEditor src={selectedPhotoOption.url} alt="" transform={photoTransform} onChange={setPhotoTransform} ariaLabel="대표 사진 직접 구도 편집" />
-          <label><ZoomIn aria-hidden="true" /><span>확대</span><input type="range" min="1" max="1.6" step="0.05" value={photoTransform.zoom} onChange={(event) => setPhotoTransform((current) => ({ ...current, zoom: Number(event.target.value) }))} /></label>
-          <label><MoveHorizontal aria-hidden="true" /><span>좌우</span><input type="range" min="-1" max="1" step="0.1" value={photoTransform.offsetX} onChange={(event) => setPhotoTransform((current) => ({ ...current, offsetX: Number(event.target.value) }))} /></label>
-          <label><MoveVertical aria-hidden="true" /><span>상하</span><input type="range" min="-1" max="1" step="0.1" value={photoTransform.offsetY} onChange={(event) => setPhotoTransform((current) => ({ ...current, offsetY: Number(event.target.value) }))} /></label>
-          <button type="button" aria-label="대표 사진 초점 초기화" title="초점 초기화" onClick={() => setPhotoTransform(defaultPhotoFrameTransform)}><RotateCcw aria-hidden="true" /></button>
+          <PhotoFrameTouchEditor src={selectedPhotoOption.url} alt="" transform={photoTransform} onChange={updatePhotoTransform} ariaLabel="대표 사진 직접 구도 편집" />
+          <PhotoFrameActionControls value={photoTransform} onChange={updatePhotoTransform} canUndo={photoHistory.past.length > 0} canRedo={photoHistory.future.length > 0} onUndo={() => setPhotoHistory(undoPhotoFrameHistory)} onRedo={() => setPhotoHistory(redoPhotoFrameHistory)} />
+          <label><ZoomIn aria-hidden="true" /><span>확대</span><input type="range" min="1" max="1.6" step="0.05" value={photoTransform.zoom} onChange={(event) => updatePhotoTransform({ ...photoTransform, zoom: Number(event.target.value) })} /></label>
+          <label><MoveHorizontal aria-hidden="true" /><span>좌우</span><input type="range" min="-1" max="1" step="0.1" value={photoTransform.offsetX} onChange={(event) => updatePhotoTransform({ ...photoTransform, offsetX: Number(event.target.value) })} /></label>
+          <label><MoveVertical aria-hidden="true" /><span>상하</span><input type="range" min="-1" max="1" step="0.1" value={photoTransform.offsetY} onChange={(event) => updatePhotoTransform({ ...photoTransform, offsetY: Number(event.target.value) })} /></label>
+          <button type="button" aria-label="대표 사진 초점 초기화" title="초점 초기화" onClick={() => updatePhotoTransform(defaultPhotoFrameTransform)}><RotateCcw aria-hidden="true" /></button>
         </div>
         <label className="journey-memory-card-access__sticker"><Type aria-hidden="true" /><span>짧은 문구</span><input value={stickerText} maxLength={24} placeholder="예: 오래 행복하세요" onChange={(event) => setStickerText(event.target.value)} /></label>
         <PhotoStickerStyleControls value={stickerStyle} onChange={setStickerStyle} />

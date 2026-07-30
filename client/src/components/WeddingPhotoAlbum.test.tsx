@@ -101,6 +101,8 @@ describe("WeddingPhotoAlbum", () => {
     expect(screen.getByText("세 장의 축하가 완성됐어요")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "나이트" }));
     fireEvent.click(screen.getByRole("button", { name: /로비 포토월/ }));
+    fireEvent.click(screen.getByRole("button", { name: "상단" }));
+    fireEvent.click(screen.getByRole("button", { name: "왼쪽으로 3도 회전" }));
     fireEvent.change(screen.getByLabelText("확대"), { target: { value: "1.3" } });
     fireEvent.change(screen.getByLabelText("문구 스티커"), { target: { value: "두 사람의 날" } });
     fireEvent.click(screen.getByRole("button", { name: "세이지 스티커 색상" }));
@@ -111,7 +113,7 @@ describe("WeddingPhotoAlbum", () => {
       album: completeAlbum,
       theme: "night",
       photoOrder: ["bridal-flower-wall", "lobby-photo-wall", "ceremony-aisle"],
-      photoTransforms: { "lobby-photo-wall": expect.objectContaining({ zoom: 1.3 }) },
+      photoTransforms: { "lobby-photo-wall": expect.objectContaining({ zoom: 1.3, rotation: -3 }) },
       stickerText: "두 사람의 날",
       stickerStyle: { tone: "sage", font: "hand" }
     })));

@@ -1,6 +1,17 @@
-import { Download, HardDriveDownload, KeyRound, QrCode, ScanLine, Share2, ShieldCheck, Upload } from "lucide-react";
+import { Download, Eye, HardDriveDownload, History, KeyRound, QrCode, RotateCcw, ScanLine, Share2, ShieldCheck, Trash2, Upload } from "lucide-react";
 import { useRef, useState, type ChangeEvent } from "react";
-import { createGameSaveBackup, downloadGameSaveBackup, parseGameSaveBackup, restoreGameSaveBackup } from "../game/gameSaveBackup";
+import {
+  createGameSaveBackup,
+  createGameSaveRollback,
+  downloadGameSaveBackup,
+  parseGameSaveBackup,
+  parseGameSaveRollback,
+  restoreGameSaveBackup,
+  restoreGameSaveRollback,
+  summarizeGameSaveBackup,
+  type GameSaveBackup,
+  type GameSaveRollback
+} from "../game/gameSaveBackup";
 import {
   createCompactGameSaveBackup,
   createGameTransferUrl,
@@ -22,6 +33,17 @@ function incomingTransfer(): EncryptedGameSaveEnvelope | null {
   }
 }
 
+const restoreRollbackKey = "wedding-game:restore-rollback-session:v1";
+
+function storedRollback(): GameSaveRollback | null {
+  try {
+    const value = sessionStorage.getItem(restoreRollbackKey);
+    return value ? parseGameSaveRollback(value) : null;
+  } catch {
+    return null;
+  }
+}
+
 export function GameSaveDataCenter() {
   const inputRef = useRef<HTMLInputElement>(null);
   const encryptedInputRef = useRef<HTMLInputElement>(null);
@@ -30,8 +52,10 @@ export function GameSaveDataCenter() {
   const [qrImage, setQrImage] = useState<string | null>(null);
   const [qrEntryCount, setQrEntryCount] = useState(0);
   const [incomingEnvelope, setIncomingEnvelope] = useState(incomingTransfer);
+  const [pendingBackup, setPendingBackup] = useState<GameSaveBackup | null>(null);
+  const [rollback, setRollback] = useState(storedRollback);
   const [scannerOpen, setScannerOpen] = useState(false);
-  const [expanded, setExpanded] = useState(Boolean(incomingEnvelope));
+  const [expanded, setExpanded] = useState(Boolean(incomingEnvelope || rollback));
   const [busy, setBusy] = useState(false);
 
   const backup = () => {
@@ -49,12 +73,37 @@ export function GameSaveDataCenter() {
     window.setTimeout(() => window.location.reload(), 700);
   };
 
+  const restoreWithRollback = (data: GameSaveBackup) => {
+    const checkpoint = createGameSaveRollback(data, localStorage);
+    try {
+      sessionStorage.setItem(restoreRollbackKey, JSON.stringify(checkpoint));
+      const count = restoreGameSaveBackup(data, localStorage);
+      setRollback(checkpoint);
+      finishRestore(count);
+    } catch (error) {
+      sessionStorage.removeItem(restoreRollbackKey);
+      throw error;
+    }
+  };
+
+  const undoLastRestore = () => {
+    if (!rollback) return;
+    try {
+      const count = restoreGameSaveRollback(rollback, localStorage);
+      sessionStorage.removeItem(restoreRollbackKey);
+      setRollback(null);
+      finishRestore(count);
+    } catch {
+      setStatus("이전 진행으로 되돌리지 못했어요");
+    }
+  };
+
   const restore = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     event.target.value = "";
     if (!file) return;
     try {
-      finishRestore(restoreGameSaveBackup(parseGameSaveBackup(await file.text()), localStorage));
+      restoreWithRollback(parseGameSaveBackup(await file.text()));
     } catch {
       setStatus("올바른 게임 백업 파일인지 확인해 주세요");
     }
@@ -80,7 +129,7 @@ export function GameSaveDataCenter() {
     setBusy(true);
     try {
       const envelope = parseEncryptedGameSaveEnvelope(await file.text());
-      finishRestore(restoreGameSaveBackup(await decryptGameSaveBackup(envelope, passphrase), localStorage));
+      restoreWithRollback(await decryptGameSaveBackup(envelope, passphrase));
     } catch (error) {
       setStatus(error instanceof Error ? error.message : "암호화 백업을 복원하지 못했어요");
     } finally {
@@ -130,8 +179,8 @@ export function GameSaveDataCenter() {
     setBusy(true);
     try {
       const backup = await decryptGameSaveBackup(incomingEnvelope, passphrase);
-      window.history.replaceState(null, "", `${window.location.pathname}${window.location.search}`);
-      finishRestore(restoreGameSaveBackup(backup, localStorage));
+      setPendingBackup(backup);
+      setStatus("복원될 내용을 확인한 뒤 적용해 주세요");
     } catch (error) {
       setStatus(error instanceof Error ? error.message : "QR 데이터를 복원하지 못했어요");
     } finally {
@@ -139,10 +188,23 @@ export function GameSaveDataCenter() {
     }
   };
 
+  const confirmIncomingRestore = () => {
+    if (!pendingBackup) return;
+    try {
+      window.history.replaceState(null, "", `${window.location.pathname}${window.location.search}`);
+      restoreWithRollback(pendingBackup);
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : "QR 데이터를 복원하지 못했어요");
+    }
+  };
+
+  const preview = pendingBackup ? summarizeGameSaveBackup(pendingBackup, localStorage) : null;
+
   return (
     <details className="game-save-data-center" open={expanded} onToggle={(event) => setExpanded(event.currentTarget.open)}>
       <summary><span><HardDriveDownload aria-hidden="true" /><strong>게임 저장 백업</strong><small>{incomingEnvelope ? "QR 진행 도착" : "기기 변경 대비"}</small></span></summary>
       <p aria-live="polite">{status}</p>
+      {rollback ? <section className="game-save-data-center__rollback" aria-label="최근 복원 되돌리기"><History aria-hidden="true" /><span><strong>방금 복원한 진행</strong><small>이 탭을 닫기 전까지 이전 상태로 되돌릴 수 있어요</small></span><button type="button" disabled={busy} onClick={undoLastRestore}><RotateCcw aria-hidden="true" />되돌리기</button><button type="button" aria-label="되돌리기 기록 지우기" title="기록 지우기" onClick={() => { sessionStorage.removeItem(restoreRollbackKey); setRollback(null); }}><Trash2 aria-hidden="true" /></button></section> : null}
       <div className="game-save-data-center__basic">
         <button type="button" disabled={busy} onClick={backup}><Download aria-hidden="true" />백업 저장</button>
         <button type="button" disabled={busy} onClick={() => inputRef.current?.click()}><Upload aria-hidden="true" />백업 복원</button>
@@ -150,9 +212,10 @@ export function GameSaveDataCenter() {
       </div>
       <section className="game-save-data-center__secure" aria-label="암호화 기기 이전">
         <label><KeyRound aria-hidden="true" /><span>이전 암호</span><input type="password" minLength={6} autoComplete="new-password" value={passphrase} onChange={(event) => setPassphrase(event.target.value)} placeholder="6자 이상" /></label>
-        {incomingEnvelope ? (
-          <button type="button" disabled={busy} className="game-save-data-center__incoming" onClick={() => void restoreIncomingTransfer()}><QrCode aria-hidden="true" />스캔한 진행 복원</button>
+        {incomingEnvelope && !preview ? (
+          <button type="button" disabled={busy} className="game-save-data-center__incoming" onClick={() => void restoreIncomingTransfer()}><Eye aria-hidden="true" />스캔 내용 확인</button>
         ) : null}
+        {preview ? <section className="game-save-data-center__preview" aria-label="QR 복원 미리보기"><header><QrCode aria-hidden="true" /><span><strong>핵심 진행 {preview.totalEntries}개</strong><small>{new Date(preview.createdAt).toLocaleString("ko-KR")}</small></span></header><dl><div><dt>새로 추가</dt><dd>{preview.newEntries}</dd></div><div><dt>기존 진행 교체</dt><dd>{preview.overwrittenEntries}</dd></div></dl><ul>{preview.categories.map((category) => <li key={category.id}><span>{category.label}</span><strong>{category.count}</strong></li>)}</ul><div><button type="button" disabled={busy} onClick={confirmIncomingRestore}><ShieldCheck aria-hidden="true" />확인하고 복원</button><button type="button" disabled={busy} onClick={() => { setPendingBackup(null); setIncomingEnvelope(null); setStatus("QR 복원을 취소했어요"); }}><Trash2 aria-hidden="true" />취소</button></div></section> : null}
         <div>
           <button type="button" disabled={busy} onClick={() => void saveEncrypted()}><ShieldCheck aria-hidden="true" />암호화 저장</button>
           <button type="button" disabled={busy} onClick={() => encryptedInputRef.current?.click()}><Upload aria-hidden="true" />암호화 복원</button>
@@ -164,7 +227,7 @@ export function GameSaveDataCenter() {
         {qrImage ? <figure><img src={qrImage} alt="암호화된 게임 진행 기기 이전 QR" /><figcaption>핵심 진행 {qrEntryCount}개 · 사진 제외</figcaption></figure> : null}
       </section>
       <small>QR은 핵심 진행만, 근거리 전송은 촬영 사진까지 포함합니다. 참석 답변·방명록·관리자 정보는 포함하지 않습니다.</small>
-      {scannerOpen ? <GameSaveQrScanner onClose={() => setScannerOpen(false)} onDetected={(envelope) => { setIncomingEnvelope(envelope); setScannerOpen(false); setExpanded(true); setStatus("QR 진행을 읽었어요 · 같은 암호를 입력해 복원하세요"); }} /> : null}
+      {scannerOpen ? <GameSaveQrScanner onClose={() => setScannerOpen(false)} onDetected={(envelope) => { setIncomingEnvelope(envelope); setPendingBackup(null); setScannerOpen(false); setExpanded(true); setStatus("QR 진행을 읽었어요 · 같은 암호를 입력해 내용을 확인하세요"); }} /> : null}
     </details>
   );
 }

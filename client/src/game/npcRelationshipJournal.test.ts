@@ -25,6 +25,8 @@ describe("npcRelationshipJournal", () => {
     expect(journal.entries.every(({ unlocked }) => unlocked)).toBe(true);
     expect(journal.recentChoiceLabels).toEqual(["반갑게 인사", "따뜻한 마음", "따뜻한 마음", "힘찬 축하"]);
     expect(journal.locations.map(({ label }) => label)).toEqual(["신부 대기실", "파티오볼룸"]);
+    expect(journal.locations.map(({ stampCode }) => stampCode)).toEqual(["BRIDE", "PATIO"]);
     expect(journal.rewardActionLabel).toBe("감사 편지 펼치기");
+    expect(journal.keepsakes).toEqual([expect.objectContaining({ label: "꽃잎 감사 편지", unlocked: true, illustration: "flowers" })]);
   });
 });

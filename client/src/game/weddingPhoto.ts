@@ -9,7 +9,7 @@ import {
 import type { CelebrationCosmeticId, CelebrationCosmeticTone } from "./celebrationReward";
 import { resolveWorldMapAsset } from "./worldVisuals";
 import type { WorldPhotoPose, WorldPhotoSpot, WorldPhotoSpotId } from "./world";
-import { normalizePhotoStickerText, photoStickerCanvasStyle, resolveCoverCrop, type PhotoFrameTransform, type PhotoStickerStyle } from "./photoFrameEditor";
+import { drawPhotoFrameCover, normalizePhotoStickerText, photoStickerCanvasStyle, type PhotoFrameTransform, type PhotoStickerStyle } from "./photoFrameEditor";
 
 export type WeddingPhotoData = {
   guestName: string;
@@ -1004,8 +1004,7 @@ function drawImageCover(
   height: number,
   transform?: PhotoFrameTransform
 ) {
-  const crop = resolveCoverCrop({ sourceWidth: image.naturalWidth, sourceHeight: image.naturalHeight, targetWidth: width, targetHeight: height, transform });
-  context.drawImage(image, crop.x, crop.y, crop.width, crop.height, x, y, width, height);
+  drawPhotoFrameCover(context, image, x, y, width, height, transform);
 }
 
 export async function createWeddingPhotoStrip(data: WeddingPhotoStripData): Promise<Blob> {

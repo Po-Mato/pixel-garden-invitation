@@ -38,9 +38,22 @@ import {
   type WeddingPhotoStripData,
   type WeddingPhotoStripTheme
 } from "../game/weddingPhoto";
-import { defaultPhotoFrameTransform, defaultPhotoStickerStyle, photoFramePreviewStyle, photoStickerPreviewStyle, type PhotoFrameTransform, type PhotoStickerStyle } from "../game/photoFrameEditor";
+import {
+  commitPhotoFrameHistory,
+  createPhotoFrameHistory,
+  defaultPhotoFrameTransform,
+  defaultPhotoStickerStyle,
+  photoFramePreviewStyle,
+  photoStickerPreviewStyle,
+  redoPhotoFrameHistory,
+  undoPhotoFrameHistory,
+  type PhotoFrameHistory,
+  type PhotoFrameTransform,
+  type PhotoStickerStyle
+} from "../game/photoFrameEditor";
 import { gardenWorld, type WorldPhotoSpot, type WorldPhotoSpotId } from "../game/world";
 import { PhotoFrameTouchEditor } from "./PhotoFrameTouchEditor";
+import { PhotoFrameActionControls } from "./PhotoFrameActionControls";
 import { PhotoStickerStyleControls } from "./PhotoStickerStyleControls";
 
 type WeddingPhotoAlbumProps = {
@@ -95,7 +108,7 @@ export function WeddingPhotoAlbum({ album, nickname, onClose, onRetake }: Weddin
   const [status, setStatus] = useState<AlbumStatus>("idle");
   const [stripTheme, setStripTheme] = useState<WeddingPhotoStripTheme>("garden");
   const [stripOrder, setStripOrder] = useState<WorldPhotoSpotId[]>([...weddingPhotoSpotOrder]);
-  const [stripTransforms, setStripTransforms] = useState<Partial<Record<WorldPhotoSpotId, PhotoFrameTransform>>>({});
+  const [stripTransformHistories, setStripTransformHistories] = useState<Partial<Record<WorldPhotoSpotId, PhotoFrameHistory>>>({});
   const [stripStickerText, setStripStickerText] = useState("");
   const [stripStickerStyle, setStripStickerStyle] = useState<PhotoStickerStyle>(defaultPhotoStickerStyle);
   const busy = status === "saving" || status === "sharing";
@@ -103,6 +116,9 @@ export function WeddingPhotoAlbum({ album, nickname, onClose, onRetake }: Weddin
   const selectedSpot = photoSpots.find((spot) => spot.id === selectedSpotId)!;
   const coupleNames = formatCoupleNames(event, coupleOrder);
   const orderedSpots = stripOrder.map((spotId) => photoSpots.find((spot) => spot.id === spotId)!);
+  const stripTransforms = useMemo<Partial<Record<WorldPhotoSpotId, PhotoFrameTransform>>>(() => Object.fromEntries(
+    Object.entries(stripTransformHistories).map(([spotId, history]) => [spotId, history?.current])
+  ), [stripTransformHistories]);
   const stripData = useMemo<WeddingPhotoStripData>(() => ({
     album,
     coupleNames,
@@ -195,12 +211,24 @@ export function WeddingPhotoAlbum({ album, nickname, onClose, onRetake }: Weddin
   };
 
   const updateStripTransform = (field: keyof PhotoFrameTransform, value: number) => {
-    setStripTransforms((current) => ({
+    setStripTransformHistories((current) => ({
       ...current,
-      [selectedSpotId]: { ...(current[selectedSpotId] ?? defaultPhotoFrameTransform), [field]: value }
+      [selectedSpotId]: commitPhotoFrameHistory(current[selectedSpotId] ?? createPhotoFrameHistory(), {
+        ...(current[selectedSpotId]?.current ?? defaultPhotoFrameTransform),
+        [field]: value
+      })
     }));
   };
-  const selectedTransform = stripTransforms[selectedSpotId] ?? defaultPhotoFrameTransform;
+  const selectedTransformHistory = stripTransformHistories[selectedSpotId] ?? createPhotoFrameHistory();
+  const selectedTransform = selectedTransformHistory.current;
+  const commitSelectedTransform = (transform: PhotoFrameTransform) => setStripTransformHistories((current) => ({
+    ...current,
+    [selectedSpotId]: commitPhotoFrameHistory(current[selectedSpotId] ?? createPhotoFrameHistory(), transform)
+  }));
+  const changeSelectedTransformHistory = (action: "undo" | "redo") => setStripTransformHistories((current) => {
+    const history = current[selectedSpotId] ?? createPhotoFrameHistory();
+    return { ...current, [selectedSpotId]: action === "undo" ? undoPhotoFrameHistory(history) : redoPhotoFrameHistory(history) };
+  });
 
   return (
     <div className="wedding-photo-album" role="dialog" aria-modal="true" aria-label="웨딩 포토앨범">
@@ -294,11 +322,12 @@ export function WeddingPhotoAlbum({ album, nickname, onClose, onRetake }: Weddin
                 </ol>
                 <section className="wedding-photo-strip__crop" aria-label={`${selectedSpot.label} 사진 초점 편집`}>
                   <strong>{selectedSpot.label} 초점</strong>
-                  {selectedPhoto ? <PhotoFrameTouchEditor src={selectedPhoto.dataUrl} alt="" transform={selectedTransform} onChange={(transform) => setStripTransforms((current) => ({ ...current, [selectedSpotId]: transform }))} ariaLabel={`${selectedSpot.label} 직접 구도 편집`} /> : null}
+                  {selectedPhoto ? <PhotoFrameTouchEditor src={selectedPhoto.dataUrl} alt="" transform={selectedTransform} onChange={commitSelectedTransform} ariaLabel={`${selectedSpot.label} 직접 구도 편집`} /> : null}
+                  <PhotoFrameActionControls value={selectedTransform} onChange={commitSelectedTransform} canUndo={selectedTransformHistory.past.length > 0} canRedo={selectedTransformHistory.future.length > 0} onUndo={() => changeSelectedTransformHistory("undo")} onRedo={() => changeSelectedTransformHistory("redo")} disabled={!selectedPhoto} />
                   <label><ZoomIn aria-hidden="true" /><span>확대</span><input type="range" min="1" max="1.6" step="0.05" value={selectedTransform.zoom} disabled={!selectedPhoto} onChange={(event) => updateStripTransform("zoom", Number(event.target.value))} /></label>
                   <label><MoveHorizontal aria-hidden="true" /><span>좌우</span><input type="range" min="-1" max="1" step="0.1" value={selectedTransform.offsetX} disabled={!selectedPhoto} onChange={(event) => updateStripTransform("offsetX", Number(event.target.value))} /></label>
                   <label><MoveVertical aria-hidden="true" /><span>상하</span><input type="range" min="-1" max="1" step="0.1" value={selectedTransform.offsetY} disabled={!selectedPhoto} onChange={(event) => updateStripTransform("offsetY", Number(event.target.value))} /></label>
-                  <button type="button" aria-label="선택 사진 초점 초기화" title="초점 초기화" disabled={!selectedPhoto} onClick={() => setStripTransforms((current) => ({ ...current, [selectedSpotId]: defaultPhotoFrameTransform }))}><RotateCcw aria-hidden="true" /></button>
+                  <button type="button" aria-label="선택 사진 초점 초기화" title="초점 초기화" disabled={!selectedPhoto} onClick={() => commitSelectedTransform(defaultPhotoFrameTransform)}><RotateCcw aria-hidden="true" /></button>
                 </section>
                 <label className="wedding-photo-strip__sticker"><Type aria-hidden="true" /><span>문구 스티커</span><input value={stripStickerText} maxLength={24} placeholder="예: 두 사람의 날" onChange={(event) => setStripStickerText(event.target.value)} /></label>
                 <PhotoStickerStyleControls value={stripStickerStyle} onChange={setStripStickerStyle} />

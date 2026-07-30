@@ -115,6 +115,8 @@ describe("AnalyticsAdminPage", () => {
     expect(screen.getByRole("heading", { name: "실제 휴대폰 점검 현황" })).toBeInTheDocument();
     expect(screen.getByText("8회 점검 · 2건 불편")).toBeInTheDocument();
     expect(screen.getByText("비교 가능한 표본을 더 모으는 중입니다")).toBeInTheDocument();
+    expect(screen.getByRole("region", { name: "기기 QA 이상 알림" })).toHaveTextContent("새로운 기기 이상 추세 없음");
+    expect(screen.getByLabelText("알림 기준")).toHaveValue("regression");
   });
 
   it("기간 버튼을 바꾸면 해당 기간으로 다시 조회한다", async () => {

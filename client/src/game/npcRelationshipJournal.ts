@@ -18,7 +18,8 @@ export type NpcRelationshipJournal = {
   rewardLabel: string | null;
   rewardActionLabel: string | null;
   rewardMessage: string | null;
-  locations: Array<{ zoneId: WorldZoneId; label: string; count: number; message: string }>;
+  locations: Array<{ zoneId: WorldZoneId; label: string; count: number; message: string; stampCode: string; stampTone: "rose" | "sage" | "gold" }>;
+  keepsakes: Array<{ id: string; label: string; detail: string; message: string; unlocked: boolean; illustration: "flowers" | "toast" }>;
   entries: NpcRelationshipJournalEntry[];
 };
 
@@ -41,6 +42,25 @@ const zoneLabels: Record<WorldZoneId, string> = {
   banquet: "연회장"
 };
 
+const zoneStampCodes: Record<WorldZoneId, string> = {
+  home: "HOME",
+  neighborhood: "GARDEN",
+  "subway-station": "SOSA",
+  "subway-train": "LINE 1",
+  "venue-exterior": "WELCOME",
+  lobby: "LOBBY",
+  "bridal-room": "BRIDE",
+  "ceremony-hall": "PATIO",
+  restroom: "REST",
+  banquet: "DINNER"
+};
+
+function zoneStampTone(zoneId: WorldZoneId): "rose" | "sage" | "gold" {
+  if (zoneId === "bridal-room" || zoneId === "lobby") return "rose";
+  if (zoneId === "ceremony-hall" || zoneId === "banquet") return "gold";
+  return "sage";
+}
+
 function locationEntries(memory: NpcDialogueMemory, npcId: NpcId) {
   const record = memory.records[npcId];
   if (!record || record.interactionCount === 0) return [];
@@ -59,7 +79,9 @@ function locationEntries(memory: NpcDialogueMemory, npcId: NpcId) {
       zoneId,
       label: zoneLabels[zoneId],
       count: record.encounters?.length ? values.length : record.interactionCount,
-      message: `${zoneLabels[zoneId]}에서 ${choiceLabels[latest.choiceId]}을 전한 순간을 기억하고 있어요.`
+      message: `${zoneLabels[zoneId]}에서 ${choiceLabels[latest.choiceId]}을 전한 순간을 기억하고 있어요.`,
+      stampCode: zoneStampCodes[zoneId],
+      stampTone: zoneStampTone(zoneId)
     };
   });
 }
@@ -88,6 +110,16 @@ export function buildNpcRelationshipJournal(memory: NpcDialogueMemory, npcId: Np
         : "우리의 새로운 시작을 위해 잔을 들어주세요. 보내주신 축하를 힘으로 삼아 행복하게 살겠습니다."
       : null,
     locations: locationEntries(memory, npcId),
+    keepsakes: [{
+      id: isBride ? "bride-illustrated-letter" : "groom-illustrated-toast",
+      label: isBride ? "꽃잎 감사 편지" : "축배 약속 카드",
+      detail: isBride ? "신부의 부케 삽화와 감사 인사" : "신랑의 잔과 리본 삽화 메시지",
+      message: isBride
+        ? "꽃잎마다 오늘 함께해 주신 고마운 마음을 담았어요. 두 사람의 정원을 오래 기억해 주세요."
+        : "축배의 반짝임처럼 보내주신 응원을 오래 간직하며 행복한 약속을 지켜가겠습니다.",
+      unlocked: snapshot.specialRewardLabel !== null,
+      illustration: isBride ? "flowers" : "toast"
+    }],
     entries: [
       {
         id: "first-greeting",

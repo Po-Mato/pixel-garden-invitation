@@ -1,4 +1,4 @@
-import { normalizePhotoFrameTransform, normalizePhotoStickerText, photoStickerCanvasStyle, resolveCoverCrop, type PhotoFrameTransform, type PhotoStickerStyle } from "./photoFrameEditor";
+import { drawPhotoFrameCover, normalizePhotoFrameTransform, normalizePhotoStickerText, photoStickerCanvasStyle, type PhotoFrameTransform, type PhotoStickerStyle } from "./photoFrameEditor";
 
 export type JourneyKeepsakeData = {
   guestName: string;
@@ -100,8 +100,7 @@ function drawCoverImage(
   height: number,
   transform?: PhotoFrameTransform
 ) {
-  const crop = resolveCoverCrop({ sourceWidth: image.naturalWidth, sourceHeight: image.naturalHeight, targetWidth: width, targetHeight: height, transform });
-  context.drawImage(image, crop.x, crop.y, crop.width, crop.height, x, y, width, height);
+  drawPhotoFrameCover(context, image, x, y, width, height, transform);
 }
 
 function loadImage(url: string, timeoutMs = 5000): Promise<HTMLImageElement | null> {
