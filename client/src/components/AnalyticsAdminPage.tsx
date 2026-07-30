@@ -5,6 +5,7 @@ import {
   BarChart3,
   BookOpen,
   CalendarRange,
+  ClipboardCheck,
   Download,
   Gamepad2,
   Gauge,
@@ -44,6 +45,31 @@ const modeLabels: Record<string, string> = { game: "게임 정원", simple: "간
 const mapLabels: Record<string, string> = { naver: "네이버지도", kakao: "카카오맵", google: "Google 지도" };
 const shareLabels: Record<string, string> = { native: "공유 앱", copy: "링크 복사", fallback: "자동 링크 복사" };
 const calendarLabels: Record<string, string> = { ics: "기본 캘린더", google: "Google 캘린더", copy: "일정 복사" };
+const qaDeviceLabels: Record<string, string> = {
+  "ios:complete": "iPhone/iPad 정상",
+  "ios:warning": "iPhone/iPad 확인 필요",
+  "android:complete": "Android 정상",
+  "android:warning": "Android 확인 필요",
+  "other:complete": "기타 기기 정상",
+  "other:warning": "기타 기기 확인 필요"
+};
+const qaIssueNames: Record<string, string> = {
+  viewport: "화면 크기",
+  touch: "터치 입력",
+  storage: "진행 저장",
+  audio: "게임 사운드",
+  movement: "조이스틱·이동",
+  portal: "포털 전환",
+  feedback: "소리·진동",
+  layout: "화면 배치",
+  photo: "사진 저장·공유"
+};
+const qaIssueLabels = Object.fromEntries(
+  ["ios", "android", "other"].flatMap((device) => Object.entries(qaIssueNames).map(([issue, label]) => [
+    `${device}:${issue}`,
+    `${device === "ios" ? "iPhone/iPad" : device === "android" ? "Android" : "기타"} · ${label}`
+  ]))
+);
 
 function invitationId(): string {
   return import.meta.env.VITE_INVITATION_ID ?? "sample-garden";
@@ -360,6 +386,18 @@ export function AnalyticsAdminPage() {
               <Gauge aria-hidden="true" />
               <div><p>EXPERIENCE QUALITY</p><h2 id="analytics-quality-title">로딩·게임 성능</h2><span>로딩 {analytics.totals.averagePageLoadMs === null ? "집계 전" : `${(analytics.totals.averagePageLoadMs / 1000).toFixed(1)}초`} · FPS {analytics.totals.averageFps ?? "집계 전"}</span><small>FPS 표본 {formatNumber(analytics.totals.fpsSamples)}회 · 긴 작업 {formatNumber(analytics.totals.longTaskCount)}건{analytics.totals.averageLongTaskMs === null ? "" : `, 평균 ${analytics.totals.averageLongTaskMs}ms`} · 자동 경량화 {formatNumber(analytics.totals.qualityDowngrades)}회</small></div>
               <strong className={analytics.totals.clientErrors > 0 ? "has-errors" : ""}><AlertTriangle aria-hidden="true" /> 오류 {formatNumber(analytics.totals.clientErrors)}건</strong>
+            </section>
+
+            <section className="analytics-device-qa" aria-labelledby="analytics-device-qa-title">
+              <header>
+                <ClipboardCheck aria-hidden="true" />
+                <div><p>ANONYMOUS DEVICE QA</p><h2 id="analytics-device-qa-title">실제 휴대폰 점검 현황</h2><span>개인정보 없이 기기 종류와 선택한 불편 항목의 합계만 표시합니다.</span></div>
+                <strong>{formatNumber(analytics.totals.deviceQaReports)}회 점검 · {formatNumber(analytics.totals.deviceQaIssues)}건 불편</strong>
+              </header>
+              <div>
+                <BreakdownList title="기기별 점검 결과" items={analytics.breakdowns.deviceQaDevices} labels={qaDeviceLabels} />
+                <BreakdownList title="기기별 불편 항목" items={analytics.breakdowns.deviceQaIssues} labels={qaIssueLabels} />
+              </div>
             </section>
 
             <section className="analytics-performance-admin" aria-labelledby="analytics-performance-admin-title">

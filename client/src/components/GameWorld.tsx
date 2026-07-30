@@ -287,6 +287,7 @@ import { GamePerformanceStatus } from "./GamePerformanceStatus";
 import { GameSaveDataCenter } from "./GameSaveDataCenter";
 import { GameDeviceReadinessCenter } from "./GameDeviceReadinessCenter";
 import { WorldSecretMemorial } from "./WorldSecretMemorial";
+import { NpcRelationshipJournal } from "./NpcRelationshipJournal";
 import { WeddingPhaseAnnouncement } from "./WeddingPhaseAnnouncement";
 import "../journey.css";
 import "../game-guide.css";
@@ -4191,6 +4192,10 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
           onSelectZone={handleJourneySelect}
         />
         <JourneyMemoryCardAccess nickname={profile.nickname} progress={journeyProgress} />
+        <NpcRelationshipJournal
+          memory={npcDialogueMemory}
+          names={{ bride: invitationContent.event.couple.bride, groom: invitationContent.event.couple.groom }}
+        />
         <ol className="world-journey" aria-label="하객 여정">
           {gardenWorld.zones.map((zone) => {
             const checkpoints = journeyCheckpoints.filter((checkpoint) => checkpoint.zoneId === zone.id);
@@ -4422,7 +4427,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
             {activeZone.decorations.map((item) => (
               <WorldDecoration key={item.id} zoneId={activeZone.id} decoration={item} />
             ))}
-            {activeZone.id === "home" && worldSecretCollection.unlockedAchievementIds.includes("wedding-archivist") ? <WorldSecretMemorial /> : null}
+            {activeZone.id === "home" && worldSecretCollection.unlockedAchievementIds.includes("wedding-archivist") ? <WorldSecretMemorial collection={worldSecretCollection} /> : null}
             {activeWorldPropInteractions.map(({ decoration, interaction }) => (
               <WorldInteractiveProp
                 key={`interaction:${decoration.id}`}

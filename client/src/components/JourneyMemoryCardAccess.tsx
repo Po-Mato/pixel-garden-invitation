@@ -1,4 +1,4 @@
-import { Download, Image as ImageIcon, Map, Palette, Send } from "lucide-react";
+import { Download, Image as ImageIcon, Map, MoveHorizontal, MoveVertical, Palette, RotateCcw, Send, Type, ZoomIn } from "lucide-react";
 import { useMemo, useState } from "react";
 import { formatEventDate, formatEventStartTime, formatVenueLabel } from "../invitation/calendarEvent";
 import { useCoupleOrder } from "../invitation/CoupleOrderContext";
@@ -19,6 +19,7 @@ import { loadWeddingPhotoAlbum } from "../game/weddingPhoto";
 import { loadWorldSecretCollection } from "../game/worldSecretCollection";
 import { totalWorldSecrets } from "../game/worldPropInteractions";
 import { loadWorldTravelHistory, worldTravelTimelineStops } from "../game/worldTravelHistory";
+import { defaultPhotoFrameTransform, type PhotoFrameTransform } from "../game/photoFrameEditor";
 
 type JourneyMemoryCardAccessProps = {
   nickname: string;
@@ -45,6 +46,8 @@ export function JourneyMemoryCardAccess({ nickname, progress }: JourneyMemoryCar
     return [...album, ...gallery].slice(0, 4);
   }, [content.gallery]);
   const [selectedPhotoId, setSelectedPhotoId] = useState<string | null>(null);
+  const [photoTransform, setPhotoTransform] = useState<PhotoFrameTransform>(defaultPhotoFrameTransform);
+  const [stickerText, setStickerText] = useState("");
   const busy = status === "saving" || status === "sharing";
   const data = useMemo<JourneyKeepsakeData>(() => {
     const photoAlbum = loadWeddingPhotoAlbum();
@@ -67,9 +70,11 @@ export function JourneyMemoryCardAccess({ nickname, progress }: JourneyMemoryCar
       travelLabels: worldTravelTimelineStops(travelHistory, 5).map(({ zoneId }) => getWorldZone(gardenWorld, zoneId).label),
       secretCount: secrets.discoveredIds.length,
       totalSecretCount: totalWorldSecrets,
-      theme
+      theme,
+      photoTransform,
+      stickerText
     };
-  }, [coupleOrder, event, nickname, photoOptions, progress.completedIds, selectedPhotoId, theme]);
+  }, [coupleOrder, event, nickname, photoOptions, photoTransform, progress.completedIds, selectedPhotoId, stickerText, theme]);
 
   const save = async () => {
     setStatus("saving");
@@ -114,6 +119,13 @@ export function JourneyMemoryCardAccess({ nickname, progress }: JourneyMemoryCar
             <button key={photo.id} type="button" aria-label={`${photo.label} 대표 사진 선택`} aria-pressed={(selectedPhotoId ?? photoOptions[0]?.id) === photo.id} onClick={() => setSelectedPhotoId(photo.id)}><img src={photo.url} alt="" /></button>
           ))}
         </div>
+        <div className="journey-memory-card-access__crop" aria-label="대표 사진 초점 편집">
+          <label><ZoomIn aria-hidden="true" /><span>확대</span><input type="range" min="1" max="1.6" step="0.05" value={photoTransform.zoom} onChange={(event) => setPhotoTransform((current) => ({ ...current, zoom: Number(event.target.value) }))} /></label>
+          <label><MoveHorizontal aria-hidden="true" /><span>좌우</span><input type="range" min="-1" max="1" step="0.1" value={photoTransform.offsetX} onChange={(event) => setPhotoTransform((current) => ({ ...current, offsetX: Number(event.target.value) }))} /></label>
+          <label><MoveVertical aria-hidden="true" /><span>상하</span><input type="range" min="-1" max="1" step="0.1" value={photoTransform.offsetY} onChange={(event) => setPhotoTransform((current) => ({ ...current, offsetY: Number(event.target.value) }))} /></label>
+          <button type="button" aria-label="대표 사진 초점 초기화" title="초점 초기화" onClick={() => setPhotoTransform(defaultPhotoFrameTransform)}><RotateCcw aria-hidden="true" /></button>
+        </div>
+        <label className="journey-memory-card-access__sticker"><Type aria-hidden="true" /><span>짧은 문구</span><input value={stickerText} maxLength={24} placeholder="예: 오래 행복하세요" onChange={(event) => setStickerText(event.target.value)} /></label>
       </details>
       <div className="journey-memory-card-access__actions">
         <button type="button" disabled={busy || progress.completedIds.length === 0} onClick={() => void save()}><Download aria-hidden="true" />저장</button>

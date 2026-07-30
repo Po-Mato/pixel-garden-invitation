@@ -16,7 +16,8 @@ export const invitationAnalyticsEventNames = [
   "client_error",
   "performance_fps",
   "performance_long_task",
-  "performance_quality_change"
+  "performance_quality_change",
+  "device_qa"
 ] as const;
 
 export type InvitationAnalyticsEventName = typeof invitationAnalyticsEventNames[number];
@@ -84,6 +85,8 @@ export type InvitationAnalyticsAdminResult = {
     averageLongTaskMs: number | null;
     qualityDowngrades: number;
     qualityRecoveries: number;
+    deviceQaReports: number;
+    deviceQaIssues: number;
   };
   daily: InvitationAnalyticsDaily[];
   breakdowns: {
@@ -93,6 +96,8 @@ export type InvitationAnalyticsAdminResult = {
     shares: InvitationAnalyticsBreakdown[];
     calendars: InvitationAnalyticsBreakdown[];
     qualityModes: InvitationAnalyticsBreakdown[];
+    deviceQaDevices: InvitationAnalyticsBreakdown[];
+    deviceQaIssues: InvitationAnalyticsBreakdown[];
   };
   generatedAt: string;
 };

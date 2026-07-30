@@ -1,3 +1,5 @@
+import { normalizePhotoFrameTransform, normalizePhotoStickerText, resolveCoverCrop, type PhotoFrameTransform } from "./photoFrameEditor";
+
 export type JourneyKeepsakeData = {
   guestName: string;
   coupleNames: string;
@@ -14,6 +16,8 @@ export type JourneyKeepsakeData = {
   secretCount?: number;
   totalSecretCount?: number;
   theme?: JourneyKeepsakeTheme;
+  photoTransform?: PhotoFrameTransform;
+  stickerText?: string;
 };
 
 export type JourneyKeepsakeTheme = "garden" | "blossom" | "midnight";
@@ -92,14 +96,11 @@ function drawCoverImage(
   x: number,
   y: number,
   width: number,
-  height: number
+  height: number,
+  transform?: PhotoFrameTransform
 ) {
-  const scale = Math.max(width / image.naturalWidth, height / image.naturalHeight);
-  const sourceWidth = width / scale;
-  const sourceHeight = height / scale;
-  const sourceX = (image.naturalWidth - sourceWidth) / 2;
-  const sourceY = (image.naturalHeight - sourceHeight) / 2;
-  context.drawImage(image, sourceX, sourceY, sourceWidth, sourceHeight, x, y, width, height);
+  const crop = resolveCoverCrop({ sourceWidth: image.naturalWidth, sourceHeight: image.naturalHeight, targetWidth: width, targetHeight: height, transform });
+  context.drawImage(image, crop.x, crop.y, crop.width, crop.height, x, y, width, height);
 }
 
 function loadImage(url: string, timeoutMs = 5000): Promise<HTMLImageElement | null> {
@@ -204,7 +205,7 @@ export async function createJourneyKeepsakeBlob(data: JourneyKeepsakeData): Prom
   context.fillStyle = palette.paper;
   context.fillRect(0, 0, cardWidth, cardHeight);
   const photo = await loadImage(data.photoUrl);
-  if (photo) drawCoverImage(context, photo, 0, 0, cardWidth, 620);
+  if (photo) drawCoverImage(context, photo, 0, 0, cardWidth, 620, normalizePhotoFrameTransform(data.photoTransform));
   else drawFallbackGarden(context, theme);
 
   const shade = context.createLinearGradient(0, 110, 0, 620);
@@ -217,6 +218,16 @@ export async function createJourneyKeepsakeBlob(data: JourneyKeepsakeData): Prom
   context.fillStyle = "#fff9e9";
   context.font = "800 28px sans-serif";
   context.fillText("WEDDING GARDEN JOURNEY", cardWidth / 2, 74);
+  const stickerText = normalizePhotoStickerText(data.stickerText ?? "");
+  if (stickerText) {
+    context.font = "900 26px sans-serif";
+    const stickerWidth = Math.min(cardWidth - 180, context.measureText(stickerText).width + 54);
+    roundedRect(context, (cardWidth - stickerWidth) / 2, 426, stickerWidth, 52, 18);
+    context.fillStyle = "rgba(255, 249, 226, 0.92)";
+    context.fill();
+    context.fillStyle = "#7b4e5a";
+    context.fillText(stickerText, cardWidth / 2, 461);
+  }
   context.font = "700 31px sans-serif";
   context.fillText(`${data.guestName}님의 축하 여정`, cardWidth / 2, 520);
   context.font = "900 68px serif";

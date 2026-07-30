@@ -208,7 +208,9 @@ export async function getInvitationAnalytics(
     longTaskCount: 0,
     averageLongTaskMs: null,
     qualityDowngrades: 0,
-    qualityRecoveries: 0
+    qualityRecoveries: 0,
+    deviceQaReports: 0,
+    deviceQaIssues: 0
   };
   const devices = new Map<string, number>();
   const modes = new Map<string, number>();
@@ -216,6 +218,8 @@ export async function getInvitationAnalytics(
   const shares = new Map<string, number>();
   const calendars = new Map<string, number>();
   const qualityModes = new Map<string, number>();
+  const deviceQaDevices = new Map<string, number>();
+  const deviceQaIssues = new Map<string, number>();
   let pageLoadValueSum = 0;
   let fpsValueSum = 0;
   let longTaskValueSum = 0;
@@ -282,6 +286,17 @@ export async function getInvitationAnalytics(
         if (row.dimension.startsWith("lite:")) totals.qualityDowngrades += count;
         else totals.qualityRecoveries += count;
         break;
+      case "device_qa": {
+        const [device, result] = row.dimension.split(":");
+        if (result?.startsWith("issue-")) {
+          totals.deviceQaIssues += count;
+          increment(deviceQaIssues, `${device}:${result.slice("issue-".length)}`, count);
+        } else {
+          totals.deviceQaReports += count;
+          increment(deviceQaDevices, `${device}:${result}`, count);
+        }
+        break;
+      }
     }
   }
 
@@ -312,7 +327,9 @@ export async function getInvitationAnalytics(
       maps: breakdown(maps),
       shares: breakdown(shares),
       calendars: breakdown(calendars),
-      qualityModes: breakdown(qualityModes)
+      qualityModes: breakdown(qualityModes),
+      deviceQaDevices: breakdown(deviceQaDevices),
+      deviceQaIssues: breakdown(deviceQaIssues)
     },
     generatedAt: (input.now ?? new Date()).toISOString()
   };

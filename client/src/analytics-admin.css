@@ -204,6 +204,19 @@
 .analytics-quality > strong { display: flex; gap: 6px; align-items: center; color: var(--analytics-green); font-size: 13px; }
 .analytics-quality > strong.has-errors { color: #a14747; }
 .analytics-quality > strong svg { width: 16px; height: 16px; }
+.analytics-device-qa { margin-top: 16px; border: 1px solid var(--analytics-line); padding: 20px; background: #fff; }
+.analytics-device-qa > header { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 14px; }
+.analytics-device-qa > header > svg { width: 28px; height: 28px; color: var(--analytics-green); }
+.analytics-device-qa h2 { margin: 2px 0 0; font-size: 18px; }
+.analytics-device-qa header p { margin: 0; color: var(--analytics-gold); font-size: 10px; font-weight: 900; }
+.analytics-device-qa header span { color: var(--analytics-muted); font-size: 11px; }
+.analytics-device-qa header > strong { color: var(--analytics-green); font-size: 13px; white-space: nowrap; }
+.analytics-device-qa > div { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 14px; }
+@media (max-width: 700px) {
+  .analytics-device-qa > header { grid-template-columns: auto minmax(0, 1fr); }
+  .analytics-device-qa header > strong { grid-column: 1 / -1; }
+  .analytics-device-qa > div { grid-template-columns: 1fr; }
+}
 
 .analytics-performance-admin {
   margin-top: 14px;

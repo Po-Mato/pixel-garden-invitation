@@ -41,10 +41,10 @@ describe("invitation analytics HTTP", () => {
         guestbookViews: 0, guestbookMessages: 0, galleryViews: 0, galleryZooms: 0,
         clientErrors: 0, pageLoadSamples: 0, averagePageLoadMs: null,
         fpsSamples: 0, averageFps: null, longTaskCount: 0, averageLongTaskMs: null,
-        qualityDowngrades: 0, qualityRecoveries: 0
+        qualityDowngrades: 0, qualityRecoveries: 0, deviceQaReports: 0, deviceQaIssues: 0
       },
       daily: [],
-      breakdowns: { devices: [], modes: [], maps: [], shares: [], calendars: [], qualityModes: [] },
+      breakdowns: { devices: [], modes: [], maps: [], shares: [], calendars: [], qualityModes: [], deviceQaDevices: [], deviceQaIssues: [] },
       generatedAt: "2026-07-22T00:00:00.000Z"
     });
     mockedPerformance.getInvitationPerformanceAdminState.mockResolvedValue({
@@ -78,7 +78,9 @@ describe("invitation analytics HTTP", () => {
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ events: [
           { name: "visit", dimension: "entry:new:mobile" },
-          { name: "page_load", dimension: "mobile", value: 900 }
+          { name: "page_load", dimension: "mobile", value: 900 },
+          { name: "device_qa", dimension: "ios:warning" },
+          { name: "device_qa", dimension: "ios:issue-layout" }
         ] })
       }
     ), env, "sample-garden");
@@ -94,7 +96,8 @@ describe("invitation analytics HTTP", () => {
     for (const event of [
       { name: "unknown", dimension: "x" },
       { name: "map_click", dimension: "unknown" },
-      { name: "page_load", dimension: "mobile", value: 60_001 }
+      { name: "page_load", dimension: "mobile", value: 60_001 },
+      { name: "device_qa", dimension: "ios:issue-free-text" }
     ]) {
       const response = await handlePublicInvitationAnalyticsRequest(new Request("https://worker.test", {
         method: "POST",

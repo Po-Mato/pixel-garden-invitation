@@ -1,5 +1,5 @@
 import { webcrypto } from "node:crypto";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import {
   createCompactGameSaveBackup,
   createGameTransferUrl,
@@ -7,7 +7,8 @@ import {
   decryptGameSaveBackup,
   encodeGameTransferEnvelope,
   encryptGameSaveBackup,
-  readGameTransferFromUrl
+  readGameTransferFromUrl,
+  shareEncryptedGameSaveNearby
 } from "./gameSaveTransfer";
 import { memoryStorage } from "../test/memoryStorage";
 
@@ -48,5 +49,19 @@ describe("gameSaveTransfer", () => {
     });
     expect(Object.keys(compact.entries)).not.toContain("wedding-game:photo-album:v2");
     expect(Object.keys(compact.entries)).not.toContain("wedding-admin-session:v1");
+  });
+
+  it("사진이 포함된 전체 암호화 백업을 운영체제 근거리 공유창으로 보낸다", async () => {
+    const share = vi.fn().mockResolvedValue(undefined);
+    const environment = {
+      share,
+      canShare: vi.fn(() => true),
+      createObjectUrl: vi.fn(() => "blob:save"),
+      clickDownload: vi.fn(),
+      revokeObjectUrl: vi.fn()
+    };
+    await expect(shareEncryptedGameSaveNearby(backup, "garden12", environment, webcrypto as unknown as Crypto)).resolves.toBe("shared");
+    expect(share).toHaveBeenCalledWith(expect.objectContaining({ files: [expect.any(File)] }));
+    expect(environment.clickDownload).not.toHaveBeenCalled();
   });
 });

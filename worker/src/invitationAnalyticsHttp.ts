@@ -35,7 +35,8 @@ const dimensionRules: Record<InvitationAnalyticsEventName, RegExp> = {
   client_error: /^(script|promise|resource)$/,
   performance_fps: /^(standard|lite):(standard|memory|processor|network|frame-rate)$/,
   performance_long_task: /^(mobile|tablet|desktop)$/,
-  performance_quality_change: /^(standard|lite):(standard|memory|processor|network|frame-rate)$/
+  performance_quality_change: /^(standard|lite):(standard|memory|processor|network|frame-rate)$/,
+  device_qa: /^(ios|android|other):(complete|warning|issue-(viewport|touch|storage|audio|movement|portal|feedback|layout|photo))$/
 };
 
 function json(body: unknown, status = 200): Response {

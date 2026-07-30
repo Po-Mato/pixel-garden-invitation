@@ -9,6 +9,7 @@ import {
 import type { CelebrationCosmeticId, CelebrationCosmeticTone } from "./celebrationReward";
 import { resolveWorldMapAsset } from "./worldVisuals";
 import type { WorldPhotoPose, WorldPhotoSpot, WorldPhotoSpotId } from "./world";
+import { normalizePhotoStickerText, resolveCoverCrop, type PhotoFrameTransform } from "./photoFrameEditor";
 
 export type WeddingPhotoData = {
   guestName: string;
@@ -55,6 +56,8 @@ export type WeddingPhotoStripData = {
   publicUrl: string;
   theme?: WeddingPhotoStripTheme;
   photoOrder?: readonly WorldPhotoSpotId[];
+  photoTransforms?: Partial<Record<WorldPhotoSpotId, PhotoFrameTransform>>;
+  stickerText?: string;
 };
 
 export type WeddingPhotoStripTheme = "garden" | "rose" | "night";
@@ -997,15 +1000,11 @@ function drawImageCover(
   x: number,
   y: number,
   width: number,
-  height: number
+  height: number,
+  transform?: PhotoFrameTransform
 ) {
-  const sourceRatio = image.naturalWidth / image.naturalHeight;
-  const targetRatio = width / height;
-  const sourceWidth = sourceRatio > targetRatio ? image.naturalHeight * targetRatio : image.naturalWidth;
-  const sourceHeight = sourceRatio > targetRatio ? image.naturalHeight : image.naturalWidth / targetRatio;
-  const sourceX = (image.naturalWidth - sourceWidth) / 2;
-  const sourceY = (image.naturalHeight - sourceHeight) / 2;
-  context.drawImage(image, sourceX, sourceY, sourceWidth, sourceHeight, x, y, width, height);
+  const crop = resolveCoverCrop({ sourceWidth: image.naturalWidth, sourceHeight: image.naturalHeight, targetWidth: width, targetHeight: height, transform });
+  context.drawImage(image, crop.x, crop.y, crop.width, crop.height, x, y, width, height);
 }
 
 export async function createWeddingPhotoStrip(data: WeddingPhotoStripData): Promise<Blob> {
@@ -1048,7 +1047,7 @@ export async function createWeddingPhotoStrip(data: WeddingPhotoStripData): Prom
     const y = 250 + index * 555;
     context.fillStyle = "#fffaf0";
     context.fillRect(108, y - 12, 864, 512);
-    drawImageCover(context, images[index]!, 126, y + 6, 828, 438);
+    drawImageCover(context, images[index]!, 126, y + 6, 828, 438, data.photoTransforms?.[photo.photoSpotId]);
     context.fillStyle = "#574640";
     context.textAlign = "left";
     context.font = "900 25px sans-serif";
@@ -1058,6 +1057,17 @@ export async function createWeddingPhotoStrip(data: WeddingPhotoStripData): Prom
     context.font = "800 20px sans-serif";
     context.fillText(photo.guestName, 950, y + 480);
   });
+
+  const stickerText = normalizePhotoStickerText(data.stickerText ?? "");
+  if (stickerText) {
+    context.textAlign = "center";
+    context.font = "900 24px sans-serif";
+    const stickerWidth = Math.min(780, context.measureText(stickerText).width + 54);
+    context.fillStyle = theme === "night" ? "rgba(246, 225, 171, .94)" : "rgba(255, 248, 224, .96)";
+    context.fillRect((canvas.width - stickerWidth) / 2, 211, stickerWidth, 34);
+    context.fillStyle = "#714d59";
+    context.fillText(stickerText, canvas.width / 2, 237);
+  }
 
   context.textAlign = "center";
   context.fillStyle = palette.ink;

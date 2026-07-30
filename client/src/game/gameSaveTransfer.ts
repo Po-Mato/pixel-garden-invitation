@@ -12,6 +12,14 @@ export type EncryptedGameSaveEnvelope = {
 
 type CryptoProvider = Pick<Crypto, "getRandomValues" | "subtle">;
 
+type NearbyShareEnvironment = {
+  share?: (data: ShareData) => Promise<void>;
+  canShare?: (data: ShareData) => boolean;
+  createObjectUrl: (blob: Blob) => string;
+  clickDownload: (url: string, filename: string) => void;
+  revokeObjectUrl: (url: string) => void;
+};
+
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
 const defaultIterations = 120_000;
@@ -169,6 +177,56 @@ export function readGameTransferFromUrl(url: string): EncryptedGameSaveEnvelope 
 
 export function encryptedGameSaveFilename(createdAt = new Date()): string {
   return `wedding-game-encrypted-${createdAt.toISOString().slice(0, 10)}.wgsave`;
+}
+
+function browserNearbyShareEnvironment(): NearbyShareEnvironment {
+  return {
+    share: typeof navigator.share === "function" ? navigator.share.bind(navigator) : undefined,
+    canShare: typeof navigator.canShare === "function" ? navigator.canShare.bind(navigator) : undefined,
+    createObjectUrl: (blob) => URL.createObjectURL(blob),
+    clickDownload: (url, filename) => {
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = filename;
+      anchor.hidden = true;
+      document.body.append(anchor);
+      anchor.click();
+      anchor.remove();
+    },
+    revokeObjectUrl: (url) => URL.revokeObjectURL(url)
+  };
+}
+
+export async function shareEncryptedGameSaveNearby(
+  backup: GameSaveBackup,
+  passphrase: string,
+  environment: NearbyShareEnvironment = browserNearbyShareEnvironment(),
+  provider: CryptoProvider = browserCrypto()
+): Promise<"shared" | "saved"> {
+  const envelope = await encryptGameSaveBackup(backup, passphrase, provider);
+  const filename = encryptedGameSaveFilename(new Date(envelope.createdAt));
+  const blob = new Blob([JSON.stringify(envelope)], { type: "application/json" });
+  const file = new File([blob], filename, { type: blob.type });
+  const shareData: ShareData = {
+    files: [file],
+    title: "웨딩 가든 전체 게임 저장",
+    text: "사진과 여정이 포함된 암호화 저장 파일입니다. 받는 기기에서 같은 암호로 복원해 주세요."
+  };
+  if (environment.share && (!environment.canShare || environment.canShare(shareData))) {
+    try {
+      await environment.share(shareData);
+      return "shared";
+    } catch (error) {
+      if (typeof error === "object" && error !== null && "name" in error && error.name === "AbortError") throw error;
+    }
+  }
+  const url = environment.createObjectUrl(blob);
+  try {
+    environment.clickDownload(url, filename);
+  } finally {
+    environment.revokeObjectUrl(url);
+  }
+  return "saved";
 }
 
 export function downloadEncryptedGameSave(envelope: EncryptedGameSaveEnvelope) {

@@ -42,6 +42,7 @@ function testDatabase(): { sqlite: SqliteDatabase; db: D1Database } {
     INSERT INTO invitations (id) VALUES ('sample-garden');
   `);
   sqlite.exec(readFileSync(new URL("../migrations/0012_invitation_analytics.sql", import.meta.url), "utf8"));
+  sqlite.exec(readFileSync(new URL("../migrations/0020_device_qa_analytics.sql", import.meta.url), "utf8"));
 
   const prepare = (sql: string) => ({
     bind: (...values: unknown[]) => ({
@@ -80,7 +81,9 @@ describe("invitation analytics repository", () => {
         { name: "rsvp_start", dimension: "simple" },
         { name: "rsvp_submit", dimension: "simple" },
         { name: "share_click", dimension: "copy" },
-        { name: "page_load", dimension: "mobile", value: 1200 }
+        { name: "page_load", dimension: "mobile", value: 1200 },
+        { name: "device_qa", dimension: "android:warning" },
+        { name: "device_qa", dimension: "android:issue-portal" }
       ], new Date("2026-07-21T16:00:00.000Z"));
       sqlite.exec(`
         INSERT INTO rsvps VALUES ('rsvp_1', 'sample-garden', 'yes', 2, '2026-07-21T16:10:00.000Z');
@@ -103,7 +106,9 @@ describe("invitation analytics repository", () => {
         attendingGuests: 2,
         guestbookMessages: 1,
         shareClicks: 1,
-        averagePageLoadMs: 1200
+        averagePageLoadMs: 1200,
+        deviceQaReports: 1,
+        deviceQaIssues: 1
       });
       expect(result?.daily).toEqual([expect.objectContaining({
         date: "2026-07-22",
@@ -112,7 +117,9 @@ describe("invitation analytics repository", () => {
         guestbookMessages: 1
       })]);
       expect(result?.breakdowns.devices).toEqual([{ key: "mobile", count: 2 }]);
-      expect(sqlite.prepare("SELECT COUNT(*) AS count FROM invitation_analytics_daily").get()).toEqual({ count: 7 });
+      expect(result?.breakdowns.deviceQaDevices).toEqual([{ key: "android:warning", count: 1 }]);
+      expect(result?.breakdowns.deviceQaIssues).toEqual([{ key: "android:portal", count: 1 }]);
+      expect(sqlite.prepare("SELECT COUNT(*) AS count FROM invitation_analytics_daily").get()).toEqual({ count: 9 });
     } finally {
       sqlite.close();
     }

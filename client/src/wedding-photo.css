@@ -824,7 +824,7 @@ html[data-reduce-motion="true"] .wedding-photo-booth__pose-effect::after {
   text-align: center;
 }
 
-.wedding-photo-strip__preview img,
+.wedding-photo-strip__frame,
 .wedding-photo-strip__blank {
   display: grid;
   width: 100%;
@@ -832,9 +832,10 @@ html[data-reduce-motion="true"] .wedding-photo-booth__pose-effect::after {
   place-items: center;
   border: 1px solid #b9a18d;
   background: #dcd2c4;
-  object-fit: cover;
-  object-position: center 38%;
 }
+.wedding-photo-strip__frame { display: block; overflow: hidden; }
+.wedding-photo-strip__frame img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center 38%; }
+.wedding-photo-strip__preview > em { overflow: hidden; padding: 3px 4px; background: #f8dfaf; color: #76505c; font-size: 6px; font-style: normal; font-weight: 900; text-align: center; text-overflow: ellipsis; white-space: nowrap; }
 
 .wedding-photo-strip__blank svg { width: 19px; height: 19px; color: #927d70; }
 .wedding-photo-strip__preview > small { font-family: Georgia, serif; font-size: 6px; font-weight: 900; text-align: center; }
@@ -859,6 +860,15 @@ html[data-reduce-motion="true"] .wedding-photo-booth__pose-effect::after {
 .wedding-photo-strip__editor li > div { display: flex; flex: 0 0 auto; gap: 3px; }
 .wedding-photo-strip__editor li button { width: 26px; min-height: 24px; padding: 2px; box-shadow: none; }
 .wedding-photo-strip__editor li button svg { width: 13px; height: 13px; }
+.wedding-photo-strip__crop { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)) 27px; gap: 4px; align-items: end; }
+.wedding-photo-strip__crop > strong { grid-column: 1 / -1; color: #755f5e; font-size: 7px; }
+.wedding-photo-strip__crop label { display: grid; min-width: 0; grid-template-columns: 11px 1fr; gap: 2px; color: #7c6a65; font-size: 6px; font-weight: 900; }
+.wedding-photo-strip__crop label svg { width: 10px; }
+.wedding-photo-strip__crop input { width: 100%; grid-column: 1 / -1; accent-color: #9d5d70; }
+.wedding-photo-strip__crop > button { width: 27px; min-height: 27px; padding: 0; }
+.wedding-photo-strip__sticker { display: grid; grid-template-columns: 13px 62px minmax(0, 1fr); align-items: center; gap: 4px; color: #796763; font-size: 7px; font-weight: 900; }
+.wedding-photo-strip__sticker svg { width: 11px; }
+.wedding-photo-strip__sticker input { min-width: 0; height: 28px; border: 1px solid #b7a49e; border-radius: 3px; padding: 0 6px; background: #fff; font-size: 8px; }
 .wedding-photo-strip[data-theme="rose"] .wedding-photo-strip__preview { border-color: #8f5263; background: #fff0ef; }
 .wedding-photo-strip[data-theme="night"] .wedding-photo-strip__preview { border-color: #252d42; background: #343e57; color: #fff5db; }
 .wedding-photo-strip[data-theme="night"] .wedding-photo-strip__title { color: #f2c978; }
@@ -929,7 +939,7 @@ html[data-reduce-motion="true"] .wedding-photo-booth__pose-effect::after {
   .wedding-photo-album__slots small { font-size: 8px; }
   .wedding-photo-strip { grid-template-columns: 150px minmax(0, 1fr); gap: 24px; padding-top: 20px; }
   .wedding-photo-strip__preview { width: 150px; gap: 7px; padding: 11px; }
-  .wedding-photo-strip__preview img,
+  .wedding-photo-strip__frame,
   .wedding-photo-strip__blank { height: 92px; }
   .wedding-photo-strip__copy h3 { font-size: 23px; }
   .wedding-photo-strip__copy p { font-size: 11px; }

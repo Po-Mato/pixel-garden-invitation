@@ -33,7 +33,7 @@ function result(): InvitationAnalyticsAdminResponse {
       guestbookViews: 6, guestbookMessages: 3, galleryViews: 8, galleryZooms: 5,
       clientErrors: 1, pageLoadSamples: 10, averagePageLoadMs: 1400,
       fpsSamples: 4, averageFps: 54, longTaskCount: 2, averageLongTaskMs: 82,
-      qualityDowngrades: 1, qualityRecoveries: 1
+      qualityDowngrades: 1, qualityRecoveries: 1, deviceQaReports: 8, deviceQaIssues: 2
     },
     performance: {
       mode: "adaptive",
@@ -68,7 +68,9 @@ function result(): InvitationAnalyticsAdminResponse {
       maps: [{ key: "naver", count: 5 }],
       shares: [{ key: "copy", count: 3 }],
       calendars: [{ key: "ics", count: 2 }],
-      qualityModes: [{ key: "lite:frame-rate", count: 1 }]
+      qualityModes: [{ key: "lite:frame-rate", count: 1 }],
+      deviceQaDevices: [{ key: "ios:complete", count: 5 }, { key: "android:warning", count: 3 }],
+      deviceQaIssues: [{ key: "android:layout", count: 2 }]
     },
     generatedAt: "2026-07-22T03:00:00.000Z"
   };
@@ -108,6 +110,8 @@ describe("AnalyticsAdminPage", () => {
     expect(screen.getByText(/FPS 표본 4회/)).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "실기기 성능 기준 운영" })).toBeInTheDocument();
     expect(screen.getByText("실측 표본 자동 보정 중")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "실제 휴대폰 점검 현황" })).toBeInTheDocument();
+    expect(screen.getByText("8회 점검 · 2건 불편")).toBeInTheDocument();
   });
 
   it("기간 버튼을 바꾸면 해당 기간으로 다시 조회한다", async () => {

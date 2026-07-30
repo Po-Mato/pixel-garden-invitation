@@ -1,4 +1,4 @@
-import { Download, HardDriveDownload, KeyRound, QrCode, ShieldCheck, Upload } from "lucide-react";
+import { Download, HardDriveDownload, KeyRound, QrCode, Share2, ShieldCheck, Upload } from "lucide-react";
 import { useRef, useState, type ChangeEvent } from "react";
 import { createGameSaveBackup, downloadGameSaveBackup, parseGameSaveBackup, restoreGameSaveBackup } from "../game/gameSaveBackup";
 import {
@@ -9,6 +9,7 @@ import {
   encryptGameSaveBackup,
   parseEncryptedGameSaveEnvelope,
   readGameTransferFromUrl,
+  shareEncryptedGameSaveNearby,
   type EncryptedGameSaveEnvelope
 } from "../game/gameSaveTransfer";
 
@@ -102,6 +103,26 @@ export function GameSaveDataCenter() {
     }
   };
 
+  const shareFullSaveNearby = async () => {
+    setBusy(true);
+    try {
+      const data = createGameSaveBackup(localStorage);
+      const photoCount = Object.keys(data.entries).filter((key) => key.startsWith("wedding-game:photo-")).length;
+      const result = await shareEncryptedGameSaveNearby(data, passphrase);
+      setStatus(result === "shared"
+        ? `사진 저장 ${photoCount}개를 포함해 근거리 공유창으로 보냈어요`
+        : `사진 저장 ${photoCount}개를 포함한 암호화 파일을 저장했어요`);
+    } catch (error) {
+      if (typeof error === "object" && error !== null && "name" in error && error.name === "AbortError") {
+        setStatus("근거리 전송을 취소했어요");
+      } else {
+        setStatus(error instanceof Error ? error.message : "사진 포함 전송 파일을 만들지 못했어요");
+      }
+    } finally {
+      setBusy(false);
+    }
+  };
+
   const restoreIncomingTransfer = async () => {
     if (!incomingEnvelope) return;
     setBusy(true);
@@ -134,11 +155,12 @@ export function GameSaveDataCenter() {
           <button type="button" disabled={busy} onClick={() => void saveEncrypted()}><ShieldCheck aria-hidden="true" />암호화 저장</button>
           <button type="button" disabled={busy} onClick={() => encryptedInputRef.current?.click()}><Upload aria-hidden="true" />암호화 복원</button>
           <button type="button" disabled={busy} onClick={() => void makeTransferQr()}><QrCode aria-hidden="true" />기기 이전 QR</button>
+          <button type="button" disabled={busy} onClick={() => void shareFullSaveNearby()}><Share2 aria-hidden="true" />사진 포함 근거리 전송</button>
         </div>
         <input ref={encryptedInputRef} type="file" accept=".wgsave,application/json" aria-label="암호화 게임 백업 파일 선택" onChange={(event) => void restoreEncrypted(event)} />
         {qrImage ? <figure><img src={qrImage} alt="암호화된 게임 진행 기기 이전 QR" /><figcaption>핵심 진행 {qrEntryCount}개 · 사진 제외</figcaption></figure> : null}
       </section>
-      <small>참석 답변·방명록·관리자 정보는 포함하지 않습니다.</small>
+      <small>QR은 핵심 진행만, 근거리 전송은 촬영 사진까지 포함합니다. 참석 답변·방명록·관리자 정보는 포함하지 않습니다.</small>
     </details>
   );
 }
