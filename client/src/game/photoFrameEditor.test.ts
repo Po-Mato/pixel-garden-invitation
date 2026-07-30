@@ -1,8 +1,11 @@
 import { describe, expect, it } from "vitest";
 import {
   commitPhotoFrameHistory,
+  createPhotoCompositionTemplate,
   createPhotoFrameHistory,
+  loadPhotoCompositionTemplates,
   normalizePhotoFrameTransform,
+  normalizePhotoStickerTransform,
   normalizePhotoStickerText,
   panPhotoFrameTransform,
   photoFramePresetTransform,
@@ -10,6 +13,7 @@ import {
   redoPhotoFrameHistory,
   resolveCoverCrop,
   rotatePhotoFrameTransform,
+  savePhotoCompositionTemplates,
   undoPhotoFrameHistory,
   zoomPhotoFrameTransform
 } from "./photoFrameEditor";
@@ -43,5 +47,19 @@ describe("photoFrameEditor", () => {
     expect(undone.current.rotation).toBe(0);
     expect(redoPhotoFrameHistory(undone).current.rotation).toBe(3);
     expect(photoFramePreviewStyle({ ...rotated, rotation: 12 }).transform).toMatch(/scale\(1\.[3-9]/);
+  });
+
+  it("문구 스티커 좌표를 제한하고 사용자 웨딩 프레임을 다시 불러온다", () => {
+    expect(normalizePhotoStickerTransform({ x: -1, y: 3, scale: 4, rotation: -90 })).toEqual({ x: 0.08, y: 0.92, scale: 1.5, rotation: -30 });
+    let saved = "";
+    const template = createPhotoCompositionTemplate(
+      { zoom: 1.2, offsetX: 0.1, offsetY: -0.2, rotation: 2 },
+      { tone: "sage", font: "hand" },
+      { x: 0.3, y: 0.7, scale: 1.1, rotation: -5 },
+      0,
+      "frame-test"
+    );
+    expect(savePhotoCompositionTemplates([template], { getItem: () => saved, setItem: (_key, value) => { saved = value; } })).toBe(true);
+    expect(loadPhotoCompositionTemplates({ getItem: () => saved, setItem: () => undefined })).toEqual([template]);
   });
 });

@@ -1,4 +1,5 @@
 import type { DeviceQaTrend } from "./deviceQaTrend";
+import type { DeviceQaDeviceDetail } from "./deviceQaBreakdown";
 
 export type DeviceQaAlertThreshold = "watch" | "regression";
 export type DeviceQaAdminAlertPreferences = {
@@ -23,15 +24,20 @@ export const defaultDeviceQaAdminAlertPreferences: DeviceQaAdminAlertPreferences
   acknowledgedSignature: null
 };
 
-export function createDeviceQaAdminAlert(trend: DeviceQaTrend): DeviceQaAdminAlert | null {
+export function createDeviceQaAdminAlert(trend: DeviceQaTrend, details: readonly DeviceQaDeviceDetail[] = []): DeviceQaAdminAlert | null {
   if (trend.status !== "watch" && trend.status !== "regression") return null;
   const currentPercent = Math.round(trend.currentRate * 100);
   const previousPercent = Math.round(trend.previousRate * 100);
+  const leadingDevice = details.find(({ issues }) => issues > 0);
+  const detailSignature = details.map(({ id, reports, warnings, issues }) => `${id}-${reports}-${warnings}-${issues}`).join(":");
+  const leadingCopy = leadingDevice
+    ? ` · ${leadingDevice.label} ${leadingDevice.topIssues[0]?.label ?? "불편"} ${leadingDevice.topIssues[0]?.count ?? leadingDevice.issues}건`
+    : "";
   return {
     severity: trend.status,
-    signature: `${trend.status}:${trend.currentReports}:${trend.currentIssues}:${trend.previousReports}:${trend.previousIssues}`,
+    signature: `${trend.status}:${trend.currentReports}:${trend.currentIssues}:${trend.previousReports}:${trend.previousIssues}:${detailSignature}`,
     title: trend.status === "regression" ? "기기 QA 회귀 경고" : "기기 QA 주의 추세",
-    body: `최근 불편 ${currentPercent}% · 직전 ${previousPercent}% · 최근 점검 ${trend.currentReports}회`
+    body: `최근 불편 ${currentPercent}% · 직전 ${previousPercent}% · 최근 점검 ${trend.currentReports}회${leadingCopy}`
   };
 }
 

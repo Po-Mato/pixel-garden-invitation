@@ -26,6 +26,9 @@ describe("GameSaveQrScanner", () => {
     render(<GameSaveQrScanner onDetected={onDetected} onClose={vi.fn()} />);
     fireEvent.change(screen.getByLabelText("QR 링크"), { target: { value: createGameTransferUrl(envelope, "https://example.test/") } });
     fireEvent.click(screen.getByRole("button", { name: "읽기" }));
-    expect(onDetected).toHaveBeenCalledWith(envelope);
+    expect(onDetected).toHaveBeenCalledWith(expect.objectContaining({
+      ...envelope,
+      expiresAt: expect.any(String)
+    }));
   });
 });

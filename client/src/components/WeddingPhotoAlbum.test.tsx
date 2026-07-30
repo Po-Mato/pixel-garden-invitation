@@ -107,6 +107,8 @@ describe("WeddingPhotoAlbum", () => {
     fireEvent.change(screen.getByLabelText("문구 스티커"), { target: { value: "두 사람의 날" } });
     fireEvent.click(screen.getByRole("button", { name: "세이지 스티커 색상" }));
     fireEvent.click(screen.getByRole("button", { name: "손글씨" }));
+    fireEvent.click(screen.getByRole("button", { name: "스티커 왼쪽으로" }));
+    fireEvent.click(screen.getByRole("button", { name: "스티커 오른쪽 회전" }));
     fireEvent.click(screen.getByRole("button", { name: "1번 사진 아래로 이동" }));
     fireEvent.click(screen.getByRole("button", { name: "저장" }));
     await waitFor(() => expect(photoMocks.createStrip).toHaveBeenCalledWith(expect.objectContaining({
@@ -115,7 +117,8 @@ describe("WeddingPhotoAlbum", () => {
       photoOrder: ["bridal-flower-wall", "lobby-photo-wall", "ceremony-aisle"],
       photoTransforms: { "lobby-photo-wall": expect.objectContaining({ zoom: 1.3, rotation: -3 }) },
       stickerText: "두 사람의 날",
-      stickerStyle: { tone: "sage", font: "hand" }
+      stickerStyle: { tone: "sage", font: "hand" },
+      stickerTransform: expect.objectContaining({ x: 0.42, y: 0.34, rotation: 5 })
     })));
     expect(photoMocks.saveStrip).toHaveBeenCalledWith(expect.any(Blob), "정원하객");
 

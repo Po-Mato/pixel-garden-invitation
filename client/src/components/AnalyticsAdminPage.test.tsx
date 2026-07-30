@@ -117,6 +117,9 @@ describe("AnalyticsAdminPage", () => {
     expect(screen.getByText("비교 가능한 표본을 더 모으는 중입니다")).toBeInTheDocument();
     expect(screen.getByRole("region", { name: "기기 QA 이상 알림" })).toHaveTextContent("새로운 기기 이상 추세 없음");
     expect(screen.getByLabelText("알림 기준")).toHaveValue("regression");
+    expect(screen.getByRole("region", { name: "기기별 QA 상세 분석" })).toHaveTextContent("서버 집계 알림 연결");
+    expect(screen.getByRole("region", { name: "기기별 QA 상세 분석" })).toHaveTextContent("Android");
+    expect(screen.getByRole("region", { name: "기기별 QA 상세 분석" })).toHaveTextContent("화면 배치 2");
   });
 
   it("기간 버튼을 바꾸면 해당 기간으로 다시 조회한다", async () => {

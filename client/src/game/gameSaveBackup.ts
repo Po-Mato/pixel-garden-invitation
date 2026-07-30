@@ -17,7 +17,18 @@ export type GameSaveBackupPreview = {
   totalEntries: number;
   newEntries: number;
   overwrittenEntries: number;
+  changedEntries: number;
+  unchangedEntries: number;
   categories: { id: string; label: string; count: number }[];
+  changes: Array<{
+    key: string;
+    label: string;
+    categoryId: string;
+    categoryLabel: string;
+    status: "new" | "changed" | "unchanged";
+    before: string;
+    after: string;
+  }>;
 };
 
 type GameSaveStorage = Pick<Storage, "getItem" | "setItem" | "removeItem" | "key" | "length">;
@@ -56,6 +67,54 @@ const backupCategories = [
   { id: "relationship", label: "인연 기록", matches: (key: string) => key.includes("npc-dialogue-memory") },
   { id: "settings", label: "게임 설정", matches: () => true }
 ] as const;
+
+function backupEntryLabel(key: string) {
+  if (key.includes("journey-progress")) return "여정 진행";
+  if (key.includes("journey-visits")) return "장소 방문 기록";
+  if (key.includes("travel-history")) return "이동 여정";
+  if (key.includes("destination")) return "목적지 안내";
+  if (key.includes("world-session")) return "현재 맵 위치";
+  if (key.includes("first-visit-guide")) return "첫 방문 안내";
+  if (key.includes("zone-mini-quest")) return "맵별 미니 퀘스트";
+  if (key.includes("world-secrets")) return "숨은 추억";
+  if (key.includes("celebration")) return "완주 보상";
+  if (key.includes("npc-dialogue-memory")) return "두 사람과의 인연";
+  if (key.includes(":photo-")) return "웨딩 사진";
+  if (key.includes(":memory-")) return "추억 카드 설정";
+  if (key.includes("device-qa")) return "기기 점검 설정";
+  if (key.includes("quick-dock")) return "빠른 메뉴 설정";
+  if (key.includes("view-preferences") || key.includes("effects-quality")) return "화면 설정";
+  return "게임 설정";
+}
+
+function storedValueSummary(value: string | null) {
+  if (value === null) return "저장 없음";
+  try {
+    const parsed = JSON.parse(value) as unknown;
+    if (typeof parsed === "boolean") return parsed ? "사용" : "사용 안 함";
+    if (typeof parsed === "number") return `${parsed}`;
+    if (Array.isArray(parsed)) return `${parsed.length}개 기록`;
+    if (typeof parsed === "object" && parsed !== null) {
+      const record = parsed as Record<string, unknown>;
+      const counters: Array<[string, string]> = [
+        ["completedIds", "곳 완료"],
+        ["discoveredIds", "개 발견"],
+        ["photos", "장 촬영"],
+        ["visits", "곳 방문"],
+        ["entries", "개 기록"]
+      ];
+      const counter = counters.find(([key]) => Array.isArray(record[key]));
+      if (counter) return `${(record[counter[0]] as unknown[]).length}${counter[1]}`;
+      if (record.records && typeof record.records === "object") {
+        return `${Object.keys(record.records as object).length}명 인연 기록`;
+      }
+      return `${Object.keys(record).length}개 설정`;
+    }
+  } catch {
+    // Non-JSON settings are summarized without exposing their raw value.
+  }
+  return `${new Blob([value]).size}B 데이터`;
+}
 
 export function isGameSaveStorageKey(key: string): boolean {
   return exactKeys.has(key) || gameKeyPrefixes.some((prefix) => key.startsWith(prefix));
@@ -116,21 +175,40 @@ export function summarizeGameSaveBackup(backup: GameSaveBackup, storage: Pick<St
   const categoryCounts = new Map<string, number>();
   let newEntries = 0;
   let overwrittenEntries = 0;
-  Object.keys(backup.entries).forEach((key) => {
-    if (storage.getItem(key) === null) newEntries += 1;
+  let changedEntries = 0;
+  let unchangedEntries = 0;
+  const changes = Object.keys(backup.entries).map((key) => {
+    const previous = storage.getItem(key);
+    const incoming = backup.entries[key];
+    const status: GameSaveBackupPreview["changes"][number]["status"] = previous === null ? "new" : previous === incoming ? "unchanged" : "changed";
+    if (status === "new") newEntries += 1;
     else overwrittenEntries += 1;
+    if (status === "changed") changedEntries += 1;
+    if (status === "unchanged") unchangedEntries += 1;
     const category = backupCategories.find((candidate) => candidate.matches(key))!;
     categoryCounts.set(category.id, (categoryCounts.get(category.id) ?? 0) + 1);
+    return {
+      key,
+      label: backupEntryLabel(key),
+      categoryId: category.id,
+      categoryLabel: category.label,
+      status,
+      before: storedValueSummary(previous),
+      after: storedValueSummary(incoming)
+    };
   });
   return {
     createdAt: backup.createdAt,
     totalEntries: Object.keys(backup.entries).length,
     newEntries,
     overwrittenEntries,
+    changedEntries,
+    unchangedEntries,
     categories: backupCategories.flatMap((category) => {
       const count = categoryCounts.get(category.id) ?? 0;
       return count > 0 ? [{ id: category.id, label: category.label, count }] : [];
-    })
+    }),
+    changes
   };
 }
 

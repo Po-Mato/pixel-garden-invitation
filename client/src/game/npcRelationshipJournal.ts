@@ -23,6 +23,25 @@ export type NpcRelationshipJournal = {
   entries: NpcRelationshipJournalEntry[];
 };
 
+export type NpcRelationshipStampBook = {
+  completedCount: number;
+  totalCount: number;
+  complete: boolean;
+  rewardLabel: string;
+  hiddenLetterTitle: string;
+  hiddenLetterMessage: string;
+  stamps: Array<{
+    id: string;
+    npcId: NpcId;
+    zoneId: WorldZoneId;
+    label: string;
+    stampCode: string;
+    stampTone: "rose" | "sage" | "gold";
+    unlocked: boolean;
+    count: number;
+  }>;
+};
+
 const choiceLabels: Record<NpcDialogueChoiceId, string> = {
   greet: "반갑게 인사",
   heart: "따뜻한 마음",
@@ -59,6 +78,44 @@ function zoneStampTone(zoneId: WorldZoneId): "rose" | "sage" | "gold" {
   if (zoneId === "bridal-room" || zoneId === "lobby") return "rose";
   if (zoneId === "ceremony-hall" || zoneId === "banquet") return "gold";
   return "sage";
+}
+
+const relationshipStampTargets: ReadonlyArray<{ npcId: NpcId; zoneId: WorldZoneId; label: string }> = [
+  { npcId: "bride", zoneId: "bridal-room", label: "신부 대기실의 인사" },
+  { npcId: "bride", zoneId: "ceremony-hall", label: "예식홀의 신부" },
+  { npcId: "groom", zoneId: "ceremony-hall", label: "예식홀의 신랑" }
+];
+
+function encounterCount(memory: NpcDialogueMemory, npcId: NpcId, zoneId: WorldZoneId) {
+  const record = memory.records[npcId];
+  if (!record) return 0;
+  if (record.encounters?.length) return record.encounters.filter((encounter) => encounter.zoneId === zoneId).length;
+  const fallbackZone = npcId === "bride" ? "bridal-room" : "ceremony-hall";
+  return zoneId === fallbackZone ? record.interactionCount : 0;
+}
+
+export function buildNpcRelationshipStampBook(memory: NpcDialogueMemory): NpcRelationshipStampBook {
+  const stamps = relationshipStampTargets.map((target) => {
+    const count = encounterCount(memory, target.npcId, target.zoneId);
+    return {
+      id: `${target.npcId}:${target.zoneId}`,
+      ...target,
+      stampCode: `${target.npcId === "bride" ? "B" : "G"}-${zoneStampCodes[target.zoneId]}`,
+      stampTone: zoneStampTone(target.zoneId),
+      unlocked: count > 0,
+      count
+    };
+  });
+  const completedCount = stamps.filter(({ unlocked }) => unlocked).length;
+  return {
+    completedCount,
+    totalCount: stamps.length,
+    complete: completedCount === stamps.length,
+    rewardLabel: "두 사람의 약속 봉인",
+    hiddenLetterTitle: "정원 끝에 남긴 편지",
+    hiddenLetterMessage: "신부 대기실의 설렘과 예식홀의 약속을 모두 지켜봐 주셔서 고마워요. 오늘 건넨 세 번의 인사를 두 사람의 정원에 오래 간직할게요.",
+    stamps
+  };
 }
 
 function locationEntries(memory: NpcDialogueMemory, npcId: NpcId) {

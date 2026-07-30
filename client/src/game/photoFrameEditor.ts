@@ -23,10 +23,47 @@ export type PhotoFrameHistory = {
 export type PhotoStickerTone = "ivory" | "rose" | "sage";
 export type PhotoStickerFont = "serif" | "hand" | "sans";
 export type PhotoStickerStyle = { tone: PhotoStickerTone; font: PhotoStickerFont };
+export type PhotoStickerTransform = { x: number; y: number; scale: number; rotation: number };
+
+export type PhotoCompositionTemplate = {
+  id: string;
+  label: string;
+  photoTransform: PhotoFrameTransform;
+  stickerStyle: PhotoStickerStyle;
+  stickerTransform: PhotoStickerTransform;
+  custom?: boolean;
+};
 
 export const defaultPhotoStickerStyle: PhotoStickerStyle = { tone: "ivory", font: "serif" };
+export const defaultPhotoStickerTransform: PhotoStickerTransform = { x: 0.5, y: 0.34, scale: 1, rotation: 0 };
 export const photoStickerToneLabels: Record<PhotoStickerTone, string> = { ivory: "아이보리", rose: "로즈", sage: "세이지" };
 export const photoStickerFontLabels: Record<PhotoStickerFont, string> = { serif: "명조", hand: "손글씨", sans: "고딕" };
+
+export const builtInPhotoCompositionTemplates: readonly PhotoCompositionTemplate[] = [
+  {
+    id: "classic",
+    label: "클래식",
+    photoTransform: { zoom: 1.08, offsetX: 0, offsetY: -0.12, rotation: 0 },
+    stickerStyle: { tone: "ivory", font: "serif" },
+    stickerTransform: { x: 0.5, y: 0.34, scale: 1, rotation: 0 }
+  },
+  {
+    id: "garden-note",
+    label: "정원 편지",
+    photoTransform: { zoom: 1.2, offsetX: -0.08, offsetY: -0.2, rotation: -2 },
+    stickerStyle: { tone: "sage", font: "hand" },
+    stickerTransform: { x: 0.3, y: 0.72, scale: 1.08, rotation: -6 }
+  },
+  {
+    id: "celebration",
+    label: "축하 리본",
+    photoTransform: { zoom: 1.25, offsetX: 0.1, offsetY: -0.08, rotation: 2 },
+    stickerStyle: { tone: "rose", font: "sans" },
+    stickerTransform: { x: 0.7, y: 0.2, scale: 0.92, rotation: 5 }
+  }
+] as const;
+
+export const photoCompositionTemplateStorageKey = "wedding-game:photo-composition-templates:v1";
 
 const stickerTones: Record<PhotoStickerTone, { background: string; color: string }> = {
   ivory: { background: "rgba(255, 248, 224, .96)", color: "#714d59" },
@@ -207,12 +244,95 @@ export function normalizePhotoStickerStyle(value?: Partial<PhotoStickerStyle> | 
   };
 }
 
+export function normalizePhotoStickerTransform(value?: Partial<PhotoStickerTransform> | null): PhotoStickerTransform {
+  return {
+    x: Math.round(clamp(value?.x ?? defaultPhotoStickerTransform.x, 0.08, 0.92) * 100) / 100,
+    y: Math.round(clamp(value?.y ?? defaultPhotoStickerTransform.y, 0.08, 0.92) * 100) / 100,
+    scale: Math.round(clamp(value?.scale ?? defaultPhotoStickerTransform.scale, 0.7, 1.5) * 100) / 100,
+    rotation: Math.round(clamp(value?.rotation ?? defaultPhotoStickerTransform.rotation, -30, 30))
+  };
+}
+
+function normalizePhotoCompositionTemplate(value: unknown): PhotoCompositionTemplate | null {
+  if (typeof value !== "object" || value === null) return null;
+  const candidate = value as Partial<PhotoCompositionTemplate>;
+  if (typeof candidate.id !== "string" || !/^[a-z0-9-]{3,48}$/.test(candidate.id)) return null;
+  const label = typeof candidate.label === "string" ? candidate.label.trim().slice(0, 16) : "";
+  if (!label) return null;
+  return {
+    id: candidate.id,
+    label,
+    photoTransform: normalizePhotoFrameTransform(candidate.photoTransform),
+    stickerStyle: normalizePhotoStickerStyle(candidate.stickerStyle),
+    stickerTransform: normalizePhotoStickerTransform(candidate.stickerTransform),
+    custom: candidate.custom === true
+  };
+}
+
+type TemplateStorage = Pick<Storage, "getItem" | "setItem">;
+
+function browserTemplateStorage(): TemplateStorage | null {
+  if (typeof window === "undefined") return null;
+  try { return window.localStorage; } catch { return null; }
+}
+
+export function loadPhotoCompositionTemplates(storage: TemplateStorage | null = browserTemplateStorage()) {
+  try {
+    const value = JSON.parse(storage?.getItem(photoCompositionTemplateStorageKey) ?? "[]") as unknown;
+    if (!Array.isArray(value)) return [];
+    return value.map(normalizePhotoCompositionTemplate)
+      .filter((template): template is PhotoCompositionTemplate => Boolean(template?.custom))
+      .slice(0, 3);
+  } catch {
+    return [];
+  }
+}
+
+export function savePhotoCompositionTemplates(templates: readonly PhotoCompositionTemplate[], storage: TemplateStorage | null = browserTemplateStorage()) {
+  try {
+    const normalized = templates.map(normalizePhotoCompositionTemplate)
+      .filter((template): template is PhotoCompositionTemplate => Boolean(template?.custom))
+      .slice(0, 3);
+    storage?.setItem(photoCompositionTemplateStorageKey, JSON.stringify(normalized));
+    return storage !== null;
+  } catch {
+    return false;
+  }
+}
+
+export function createPhotoCompositionTemplate(
+  photoTransform: PhotoFrameTransform,
+  stickerStyle: PhotoStickerStyle,
+  stickerTransform: PhotoStickerTransform,
+  index: number,
+  id = `frame-${Date.now().toString(36)}`
+): PhotoCompositionTemplate {
+  return {
+    id: id.toLowerCase().replace(/[^a-z0-9-]/g, "-").slice(0, 48),
+    label: `내 프레임 ${Math.min(3, Math.max(1, index + 1))}`,
+    photoTransform: normalizePhotoFrameTransform(photoTransform),
+    stickerStyle: normalizePhotoStickerStyle(stickerStyle),
+    stickerTransform: normalizePhotoStickerTransform(stickerTransform),
+    custom: true
+  };
+}
+
 export function photoStickerPreviewStyle(value?: Partial<PhotoStickerStyle> | null) {
   const style = normalizePhotoStickerStyle(value);
   return {
     background: stickerTones[style.tone].background,
     color: stickerTones[style.tone].color,
     fontFamily: stickerFonts[style.font]
+  };
+}
+
+export function photoStickerTransformPreviewStyle(value?: Partial<PhotoStickerTransform> | null) {
+  const transform = normalizePhotoStickerTransform(value);
+  return {
+    left: `${transform.x * 100}%`,
+    top: `${transform.y * 100}%`,
+    transform: `translate(-50%, -50%) rotate(${transform.rotation}deg) scale(${transform.scale})`,
+    transformOrigin: "center"
   };
 }
 

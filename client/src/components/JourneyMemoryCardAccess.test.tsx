@@ -37,6 +37,10 @@ describe("JourneyMemoryCardAccess", () => {
     fireEvent.click(screen.getByText("카드 꾸미기"));
     expect(screen.getByRole("button", { name: "별빛" })).toBeInTheDocument();
     expect(screen.getByLabelText("여정 카드 대표 사진")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "정원 편지" }));
+    fireEvent.click(screen.getByRole("button", { name: "스티커 오른쪽으로" }));
+    fireEvent.click(screen.getByRole("button", { name: "현재 구도 저장" }));
+    expect(screen.getByText("내 프레임 1을 저장했어요.")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "인물" }));
     fireEvent.click(screen.getByRole("button", { name: "오른쪽으로 3도 회전" }));
     expect(screen.getByRole("button", { name: "사진 편집 실행 취소" })).toBeEnabled();
@@ -48,7 +52,8 @@ describe("JourneyMemoryCardAccess", () => {
     await waitFor(() => expect(keepsakeMocks.save).toHaveBeenLastCalledWith(expect.objectContaining({
       photoTransform: expect.objectContaining({ zoom: 1.25, rotation: 3 }),
       stickerText: "오래 행복하세요",
-      stickerStyle: { tone: "rose", font: "hand" }
+      stickerStyle: { tone: "rose", font: "hand" },
+      stickerTransform: expect.objectContaining({ x: 0.38, y: 0.72, rotation: -6 })
     })));
   });
 });

@@ -8,6 +8,7 @@ export type EncryptedGameSaveEnvelope = {
   salt: string;
   iv: string;
   ciphertext: string;
+  expiresAt?: string;
 };
 
 type CryptoProvider = Pick<Crypto, "getRandomValues" | "subtle">;
@@ -24,6 +25,7 @@ const encoder = new TextEncoder();
 const decoder = new TextDecoder();
 const defaultIterations = 120_000;
 const maximumQrSourceBytes = 520;
+export const gameTransferLifetimeMs = 15 * 60 * 1_000;
 
 function browserCrypto(): CryptoProvider {
   if (!globalThis.crypto?.subtle) throw new Error("이 브라우저는 암호화 백업을 지원하지 않습니다.");
@@ -99,6 +101,7 @@ export function parseEncryptedGameSaveEnvelope(source: string): EncryptedGameSav
     || typeof value.salt !== "string"
     || typeof value.iv !== "string"
     || typeof value.ciphertext !== "string"
+    || (value.expiresAt !== undefined && (typeof value.expiresAt !== "string" || Number.isNaN(Date.parse(value.expiresAt))))
   ) throw new Error("지원하지 않는 암호화 백업 파일입니다.");
   return value as EncryptedGameSaveEnvelope;
 }
@@ -162,28 +165,44 @@ export function decodeGameTransferEnvelope(payload: string): EncryptedGameSaveEn
   return parseEncryptedGameSaveEnvelope(decoder.decode(base64UrlToBytes(payload)));
 }
 
-export function createGameTransferUrl(envelope: EncryptedGameSaveEnvelope, currentUrl: string): string {
+export function gameTransferExpiresAt(envelope: EncryptedGameSaveEnvelope): number | null {
+  if (!envelope.expiresAt) return null;
+  const expiresAt = Date.parse(envelope.expiresAt);
+  return Number.isFinite(expiresAt) ? expiresAt : null;
+}
+
+export function assertGameTransferActive(envelope: EncryptedGameSaveEnvelope, now = Date.now()) {
+  const expiresAt = gameTransferExpiresAt(envelope);
+  if (expiresAt !== null && expiresAt <= now) throw new Error("기기 이전 QR의 15분 사용 시간이 지났습니다. 보내는 기기에서 새 QR을 만들어 주세요.");
+  return envelope;
+}
+
+export function createGameTransferUrl(envelope: EncryptedGameSaveEnvelope, currentUrl: string, now = Date.now()): string {
   const url = new URL(currentUrl);
+  const transferEnvelope = envelope.expiresAt ? envelope : {
+    ...envelope,
+    expiresAt: new Date(now + gameTransferLifetimeMs).toISOString()
+  };
   url.search = "";
-  url.hash = `game-transfer=${encodeGameTransferEnvelope(envelope)}`;
+  url.hash = `game-transfer=${encodeGameTransferEnvelope(transferEnvelope)}`;
   return url.href;
 }
 
-export function readGameTransferFromUrl(url: string): EncryptedGameSaveEnvelope | null {
+export function readGameTransferFromUrl(url: string, now = Date.now()): EncryptedGameSaveEnvelope | null {
   const hash = new URL(url).hash.slice(1);
   if (!hash.startsWith("game-transfer=")) return null;
-  return decodeGameTransferEnvelope(hash.slice("game-transfer=".length));
+  return assertGameTransferActive(decodeGameTransferEnvelope(hash.slice("game-transfer=".length)), now);
 }
 
-export function readGameTransferFromScannedValue(value: string): EncryptedGameSaveEnvelope {
+export function readGameTransferFromScannedValue(value: string, now = Date.now()): EncryptedGameSaveEnvelope {
   const trimmed = value.trim();
   if (!trimmed) throw new Error("QR 데이터가 비어 있습니다.");
   const directPayload = trimmed.startsWith("game-transfer=") ? trimmed.slice("game-transfer=".length) : null;
   const envelope = directPayload
     ? decodeGameTransferEnvelope(directPayload)
-    : readGameTransferFromUrl(trimmed);
+    : readGameTransferFromUrl(trimmed, now);
   if (!envelope) throw new Error("웨딩 가든 기기 이전 QR이 아닙니다.");
-  return envelope;
+  return assertGameTransferActive(envelope, now);
 }
 
 export function encryptedGameSaveFilename(createdAt = new Date()): string {

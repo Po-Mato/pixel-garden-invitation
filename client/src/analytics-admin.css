@@ -243,6 +243,23 @@
 .device-qa-admin-alert[data-severity="watch"] > span { background: #f4e8c5; color: var(--analytics-gold); }
 .device-qa-admin-alert[data-severity="regression"] > span { background: #f5dddd; color: #a14747; }
 .device-qa-admin-alert[data-acknowledged] { opacity: .72; }
+.device-qa-admin-alert__server { display: grid; grid-column: 1 / -1; gap: 7px; border-top: 1px solid var(--analytics-line); padding-top: 9px; }
+.device-qa-admin-alert__server > header { display: flex; align-items: center; gap: 6px; }
+.device-qa-admin-alert__server > header > svg { width: 15px; color: #47705e; }
+.device-qa-admin-alert__server > header span { display: flex; min-width: 0; align-items: baseline; gap: 6px; }
+.device-qa-admin-alert__server > header strong { font-size: 10px; }
+.device-qa-admin-alert__server > header small { font-size: 8px; }
+.device-qa-admin-alert__server > div { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+.device-qa-admin-alert__server article { display: grid; min-width: 0; grid-template-columns: 24px minmax(0, 1fr); gap: 4px 6px; border-left: 3px solid #7a9b89; padding: 7px 8px; background: rgba(255, 255, 255, .72); }
+.device-qa-admin-alert__server article[data-warning] { border-left-color: #b46b67; }
+.device-qa-admin-alert__server article > svg { width: 16px; grid-row: 1 / 3; color: #668174; }
+.device-qa-admin-alert__server article > span { display: grid; gap: 1px; }
+.device-qa-admin-alert__server article > span strong { font-size: 9px; }
+.device-qa-admin-alert__server article > span small { font-size: 7px; }
+.device-qa-admin-alert__server ul { display: flex; grid-column: 1 / -1; flex-wrap: wrap; gap: 3px; margin: 2px 0 0; padding: 0; list-style: none; }
+.device-qa-admin-alert__server li { padding: 3px 5px; background: #edf2ed; color: #5d6d64; font-size: 7px; }
+.device-qa-admin-alert__server li strong { font-size: 7px; }
+.device-qa-admin-alert__server p { margin: 0; color: var(--analytics-muted); font-size: 9px; }
 .analytics-device-qa > div { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 14px; }
 @media (max-width: 700px) {
   .analytics-device-qa > header { grid-template-columns: auto minmax(0, 1fr); }
@@ -252,6 +269,7 @@
   .device-qa-admin-alert > label,
   .device-qa-admin-alert__actions { grid-column: 1 / -1; }
   .device-qa-admin-alert__actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .device-qa-admin-alert__server > div { grid-template-columns: 1fr; }
   .analytics-device-qa > div { grid-template-columns: 1fr; }
 }
 

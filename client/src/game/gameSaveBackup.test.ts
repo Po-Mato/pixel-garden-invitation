@@ -75,11 +75,17 @@ describe("gameSaveBackup", () => {
       totalEntries: 2,
       newEntries: 1,
       overwrittenEntries: 1,
+      changedEntries: 1,
+      unchangedEntries: 0,
       categories: expect.arrayContaining([
         expect.objectContaining({ id: "journey", count: 1 }),
         expect.objectContaining({ id: "relationship", count: 1 })
       ])
     }));
+    expect(summarizeGameSaveBackup(backup, target).changes).toEqual(expect.arrayContaining([
+      expect.objectContaining({ label: "여정 진행", status: "changed", before: "3B 데이터", after: "3B 데이터" }),
+      expect.objectContaining({ label: "두 사람과의 인연", status: "new", before: "저장 없음" })
+    ]));
 
     const rollback = parseGameSaveRollback(JSON.stringify(createGameSaveRollback(backup, target, "2027-05-02T00:00:00.000Z")));
     restoreGameSaveBackup(backup, target);

@@ -24,11 +24,15 @@ import {
   createPhotoFrameHistory,
   defaultPhotoFrameTransform,
   defaultPhotoStickerStyle,
+  defaultPhotoStickerTransform,
   redoPhotoFrameHistory,
   undoPhotoFrameHistory,
+  type PhotoCompositionTemplate,
   type PhotoFrameTransform,
-  type PhotoStickerStyle
+  type PhotoStickerStyle,
+  type PhotoStickerTransform
 } from "../game/photoFrameEditor";
+import { PhotoCompositionTemplateControls, PhotoStickerTransformControls } from "./PhotoCompositionTemplateControls";
 import { PhotoFrameActionControls } from "./PhotoFrameActionControls";
 import { PhotoFrameTouchEditor } from "./PhotoFrameTouchEditor";
 import { PhotoStickerStyleControls } from "./PhotoStickerStyleControls";
@@ -61,6 +65,7 @@ export function JourneyMemoryCardAccess({ nickname, progress }: JourneyMemoryCar
   const [photoHistory, setPhotoHistory] = useState(() => createPhotoFrameHistory());
   const [stickerText, setStickerText] = useState("");
   const [stickerStyle, setStickerStyle] = useState<PhotoStickerStyle>(defaultPhotoStickerStyle);
+  const [stickerTransform, setStickerTransform] = useState<PhotoStickerTransform>(defaultPhotoStickerTransform);
   const photoTransform = photoHistory.current;
   const updatePhotoTransform = (value: PhotoFrameTransform) => setPhotoHistory((current) => commitPhotoFrameHistory(current, value));
   const selectedPhotoOption = photoOptions.find(({ id }) => id === selectedPhotoId) ?? photoOptions[0];
@@ -88,9 +93,16 @@ export function JourneyMemoryCardAccess({ nickname, progress }: JourneyMemoryCar
       theme,
       photoTransform,
       stickerText,
-      stickerStyle
+      stickerStyle,
+      stickerTransform
     };
-  }, [coupleOrder, event, nickname, photoTransform, progress.completedIds, selectedPhotoOption.url, stickerStyle, stickerText, theme]);
+  }, [coupleOrder, event, nickname, photoTransform, progress.completedIds, selectedPhotoOption.url, stickerStyle, stickerText, stickerTransform, theme]);
+
+  const applyTemplate = (template: PhotoCompositionTemplate) => {
+    updatePhotoTransform(template.photoTransform);
+    setStickerStyle(template.stickerStyle);
+    setStickerTransform(template.stickerTransform);
+  };
 
   const save = async () => {
     setStatus("saving");
@@ -129,6 +141,7 @@ export function JourneyMemoryCardAccess({ nickname, progress }: JourneyMemoryCar
             <button key={candidate} type="button" data-theme={candidate} aria-pressed={theme === candidate} onClick={() => setTheme(candidate)}>{journeyKeepsakeThemeLabels[candidate]}</button>
           ))}
         </div>
+        <PhotoCompositionTemplateControls photoTransform={photoTransform} stickerStyle={stickerStyle} stickerTransform={stickerTransform} onApply={applyTemplate} />
         <div className="journey-memory-card-access__photos" aria-label="여정 카드 대표 사진">
           <span><ImageIcon aria-hidden="true" />대표 사진</span>
           {photoOptions.map((photo) => (
@@ -145,6 +158,7 @@ export function JourneyMemoryCardAccess({ nickname, progress }: JourneyMemoryCar
         </div>
         <label className="journey-memory-card-access__sticker"><Type aria-hidden="true" /><span>짧은 문구</span><input value={stickerText} maxLength={24} placeholder="예: 오래 행복하세요" onChange={(event) => setStickerText(event.target.value)} /></label>
         <PhotoStickerStyleControls value={stickerStyle} onChange={setStickerStyle} />
+        <PhotoStickerTransformControls value={stickerTransform} onChange={setStickerTransform} />
       </details>
       <div className="journey-memory-card-access__actions">
         <button type="button" disabled={busy || progress.completedIds.length === 0} onClick={() => void save()}><Download aria-hidden="true" />저장</button>

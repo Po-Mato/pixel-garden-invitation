@@ -7,6 +7,7 @@ import {
   decryptGameSaveBackup,
   encodeGameTransferEnvelope,
   encryptGameSaveBackup,
+  gameTransferLifetimeMs,
   readGameTransferFromScannedValue,
   readGameTransferFromUrl,
   shareEncryptedGameSaveNearby
@@ -31,12 +32,15 @@ describe("gameSaveTransfer", () => {
   it("암호화 데이터를 QR URL 조각으로 왕복한다", async () => {
     const envelope = await encryptGameSaveBackup(backup, "garden12", webcrypto as unknown as Crypto, 10_000);
     expect(decodeGameTransferEnvelope(encodeGameTransferEnvelope(envelope))).toEqual(envelope);
-    const url = createGameTransferUrl(envelope, "https://example.test/invitation/?invite=guest");
+    const now = Date.parse("2026-07-30T01:00:00.000Z");
+    const url = createGameTransferUrl(envelope, "https://example.test/invitation/?invite=guest", now);
     expect(url).toContain("#game-transfer=");
     expect(url).not.toContain("invite=guest");
-    expect(readGameTransferFromUrl(url)).toEqual(envelope);
-    expect(readGameTransferFromScannedValue(url)).toEqual(envelope);
-    expect(readGameTransferFromScannedValue(`game-transfer=${url.split("game-transfer=")[1]}`)).toEqual(envelope);
+    const transferEnvelope = expect.objectContaining({ ...envelope, expiresAt: new Date(now + gameTransferLifetimeMs).toISOString() });
+    expect(readGameTransferFromUrl(url, now + 1_000)).toEqual(transferEnvelope);
+    expect(readGameTransferFromScannedValue(url, now + 1_000)).toEqual(transferEnvelope);
+    expect(readGameTransferFromScannedValue(`game-transfer=${url.split("game-transfer=")[1]}`, now + 1_000)).toEqual(transferEnvelope);
+    expect(() => readGameTransferFromUrl(url, now + gameTransferLifetimeMs)).toThrow(/15분 사용 시간이 지났습니다/);
   });
 
   it("QR 이전에는 사진과 민감 데이터를 제외하고 핵심 진행만 담는다", () => {

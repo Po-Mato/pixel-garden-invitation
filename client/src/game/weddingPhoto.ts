@@ -9,7 +9,7 @@ import {
 import type { CelebrationCosmeticId, CelebrationCosmeticTone } from "./celebrationReward";
 import { resolveWorldMapAsset } from "./worldVisuals";
 import type { WorldPhotoPose, WorldPhotoSpot, WorldPhotoSpotId } from "./world";
-import { drawPhotoFrameCover, normalizePhotoStickerText, photoStickerCanvasStyle, type PhotoFrameTransform, type PhotoStickerStyle } from "./photoFrameEditor";
+import { drawPhotoFrameCover, normalizePhotoStickerText, normalizePhotoStickerTransform, photoStickerCanvasStyle, type PhotoFrameTransform, type PhotoStickerStyle, type PhotoStickerTransform } from "./photoFrameEditor";
 
 export type WeddingPhotoData = {
   guestName: string;
@@ -59,6 +59,7 @@ export type WeddingPhotoStripData = {
   photoTransforms?: Partial<Record<WorldPhotoSpotId, PhotoFrameTransform>>;
   stickerText?: string;
   stickerStyle?: PhotoStickerStyle;
+  stickerTransform?: PhotoStickerTransform;
 };
 
 export type WeddingPhotoStripTheme = "garden" | "rose" | "night";
@@ -1060,14 +1061,21 @@ export async function createWeddingPhotoStrip(data: WeddingPhotoStripData): Prom
 
   const stickerText = normalizePhotoStickerText(data.stickerText ?? "");
   if (stickerText) {
+    const stickerTransform = normalizePhotoStickerTransform(data.stickerTransform);
     context.textAlign = "center";
     const stickerStyle = photoStickerCanvasStyle(data.stickerStyle, 24);
+    context.save();
     context.font = stickerStyle.font;
     const stickerWidth = Math.min(780, context.measureText(stickerText).width + 54);
+    context.translate(canvas.width * stickerTransform.x, canvas.height * stickerTransform.y);
+    context.rotate(stickerTransform.rotation * Math.PI / 180);
+    context.scale(stickerTransform.scale, stickerTransform.scale);
     context.fillStyle = stickerStyle.background;
-    context.fillRect((canvas.width - stickerWidth) / 2, 211, stickerWidth, 34);
+    context.fillRect(-stickerWidth / 2, -17, stickerWidth, 34);
     context.fillStyle = stickerStyle.color;
-    context.fillText(stickerText, canvas.width / 2, 237);
+    context.textBaseline = "middle";
+    context.fillText(stickerText, 0, 2);
+    context.restore();
   }
 
   context.textAlign = "center";

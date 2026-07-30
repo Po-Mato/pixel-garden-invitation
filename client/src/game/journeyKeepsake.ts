@@ -1,4 +1,4 @@
-import { drawPhotoFrameCover, normalizePhotoFrameTransform, normalizePhotoStickerText, photoStickerCanvasStyle, type PhotoFrameTransform, type PhotoStickerStyle } from "./photoFrameEditor";
+import { drawPhotoFrameCover, normalizePhotoFrameTransform, normalizePhotoStickerText, normalizePhotoStickerTransform, photoStickerCanvasStyle, type PhotoFrameTransform, type PhotoStickerStyle, type PhotoStickerTransform } from "./photoFrameEditor";
 
 export type JourneyKeepsakeData = {
   guestName: string;
@@ -19,6 +19,7 @@ export type JourneyKeepsakeData = {
   photoTransform?: PhotoFrameTransform;
   stickerText?: string;
   stickerStyle?: PhotoStickerStyle;
+  stickerTransform?: PhotoStickerTransform;
 };
 
 export type JourneyKeepsakeTheme = "garden" | "blossom" | "midnight";
@@ -220,14 +221,21 @@ export async function createJourneyKeepsakeBlob(data: JourneyKeepsakeData): Prom
   context.fillText("WEDDING GARDEN JOURNEY", cardWidth / 2, 74);
   const stickerText = normalizePhotoStickerText(data.stickerText ?? "");
   if (stickerText) {
+    const stickerTransform = normalizePhotoStickerTransform(data.stickerTransform);
     const stickerStyle = photoStickerCanvasStyle(data.stickerStyle, 26);
+    context.save();
     context.font = stickerStyle.font;
     const stickerWidth = Math.min(cardWidth - 180, context.measureText(stickerText).width + 54);
-    roundedRect(context, (cardWidth - stickerWidth) / 2, 426, stickerWidth, 52, 18);
+    context.translate(cardWidth * stickerTransform.x, cardHeight * stickerTransform.y);
+    context.rotate(stickerTransform.rotation * Math.PI / 180);
+    context.scale(stickerTransform.scale, stickerTransform.scale);
+    roundedRect(context, -stickerWidth / 2, -26, stickerWidth, 52, 18);
     context.fillStyle = stickerStyle.background;
     context.fill();
     context.fillStyle = stickerStyle.color;
-    context.fillText(stickerText, cardWidth / 2, 461);
+    context.textBaseline = "middle";
+    context.fillText(stickerText, 0, 2);
+    context.restore();
   }
   context.font = "700 31px sans-serif";
   context.fillText(`${data.guestName}님의 축하 여정`, cardWidth / 2, 520);

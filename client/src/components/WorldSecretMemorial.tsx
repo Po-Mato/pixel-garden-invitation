@@ -1,13 +1,27 @@
 import { Captions, ChevronLeft, ChevronRight, Crown, Music2, Pause, Play, Sparkles, Volume2, VolumeX, X } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { worldDepth } from "../game/worldVisuals";
 import { getWorldZone, gardenWorld } from "../game/world";
 import { worldSecretCatalog } from "../game/worldPropInteractions";
 import { worldSecretAchievements, type WorldSecretCollection } from "../game/worldSecretCollection";
-import { memorialAmbienceSupported, startMemorialAmbience, type MemorialAmbienceController } from "../game/worldSecretMemorialAudio";
+import { memorialAmbienceSupported, startMemorialAmbience, type MemorialAmbienceController, type MemorialAmbienceTheme } from "../game/worldSecretMemorialAudio";
 
 type WorldSecretMemorialProps = { collection: WorldSecretCollection };
+
+type MemorialAmbienceMode = "scene" | MemorialAmbienceTheme;
+const ambienceModeLabels: Record<MemorialAmbienceMode, string> = {
+  scene: "장면 맞춤",
+  garden: "정원 산책",
+  starlight: "별빛 기억",
+  promise: "약속의 순간"
+};
+
+function sceneAmbienceTheme(zoneId: string): MemorialAmbienceTheme {
+  if (zoneId === "subway-train" || zoneId === "ceremony-hall") return "promise";
+  if (zoneId === "home" || zoneId === "restroom" || zoneId === "banquet") return "starlight";
+  return "garden";
+}
 
 export function WorldSecretMemorial({ collection }: WorldSecretMemorialProps) {
   const point = { x: 520, y: 620 };
@@ -17,12 +31,20 @@ export function WorldSecretMemorial({ collection }: WorldSecretMemorialProps) {
   const [autoPlaying, setAutoPlaying] = useState(false);
   const [narrationEnabled, setNarrationEnabled] = useState(false);
   const [narrationRate, setNarrationRate] = useState(0.92);
+  const [narrationVoiceUri, setNarrationVoiceUri] = useState("");
+  const [speechVoices, setSpeechVoices] = useState<SpeechSynthesisVoice[]>([]);
   const [captionsEnabled, setCaptionsEnabled] = useState(true);
   const [ambienceEnabled, setAmbienceEnabled] = useState(false);
+  const [ambienceMode, setAmbienceMode] = useState<MemorialAmbienceMode>("scene");
   const ambienceRef = useRef<MemorialAmbienceController | null>(null);
   const memories = worldSecretCatalog.filter(({ secretId }) => collection.discoveredIds.includes(secretId));
   const memory = memories[memoryIndex] ?? memories[0];
   const speechSupported = typeof window !== "undefined" && "speechSynthesis" in window && "SpeechSynthesisUtterance" in window;
+  const narrationVoices = useMemo(() => {
+    const korean = speechVoices.filter(({ lang }) => lang.toLowerCase().startsWith("ko"));
+    return (korean.length > 0 ? korean : speechVoices).slice(0, 8);
+  }, [speechVoices]);
+  const resolvedAmbienceTheme = memory && ambienceMode === "scene" ? sceneAmbienceTheme(memory.zoneId) : ambienceMode === "scene" ? "garden" : ambienceMode;
 
   useEffect(() => {
     if (!open || !autoPlaying || memories.length < 2) return;
@@ -34,6 +56,14 @@ export function WorldSecretMemorial({ collection }: WorldSecretMemorialProps) {
   }, [autoPlaying, memories.length, open]);
 
   useEffect(() => {
+    if (!speechSupported) return;
+    const updateVoices = () => setSpeechVoices(window.speechSynthesis.getVoices());
+    updateVoices();
+    window.speechSynthesis.addEventListener?.("voiceschanged", updateVoices);
+    return () => window.speechSynthesis.removeEventListener?.("voiceschanged", updateVoices);
+  }, [speechSupported]);
+
+  useEffect(() => {
     if (!open || !narrationEnabled || !memory || !speechSupported) return;
     window.speechSynthesis.cancel();
     const utterance = new SpeechSynthesisUtterance(
@@ -41,9 +71,15 @@ export function WorldSecretMemorial({ collection }: WorldSecretMemorialProps) {
     );
     utterance.lang = "ko-KR";
     utterance.rate = narrationRate;
+    const selectedVoice = narrationVoices.find(({ voiceURI }) => voiceURI === narrationVoiceUri);
+    if (selectedVoice) utterance.voice = selectedVoice;
     window.speechSynthesis.speak(utterance);
     return () => window.speechSynthesis.cancel();
-  }, [memory, narrationEnabled, narrationRate, open, speechSupported]);
+  }, [memory, narrationEnabled, narrationRate, narrationVoiceUri, narrationVoices, open, speechSupported]);
+
+  useEffect(() => {
+    if (ambienceEnabled) ambienceRef.current?.setTheme(resolvedAmbienceTheme);
+  }, [ambienceEnabled, resolvedAmbienceTheme]);
 
   useEffect(() => () => ambienceRef.current?.stop(), []);
 
@@ -54,7 +90,7 @@ export function WorldSecretMemorial({ collection }: WorldSecretMemorialProps) {
       setAmbienceEnabled(false);
       return;
     }
-    const controller = startMemorialAmbience();
+    const controller = startMemorialAmbience(resolvedAmbienceTheme);
     if (!controller) return;
     ambienceRef.current = controller;
     setAmbienceEnabled(true);
@@ -105,6 +141,8 @@ export function WorldSecretMemorial({ collection }: WorldSecretMemorialProps) {
             </div>
             <section className="world-secret-memorial-dialog__accessibility" aria-label="추억 감상 접근성 설정">
               <label><Volume2 aria-hidden="true" /><span>해설 속도</span><select aria-label="음성 해설 속도" value={narrationRate} onChange={(event) => setNarrationRate(Number(event.target.value))}><option value="0.8">천천히</option><option value="0.92">보통</option><option value="1.1">빠르게</option></select></label>
+              <label><Volume2 aria-hidden="true" /><span>해설 음성</span><select aria-label="음성 해설 목소리" value={narrationVoiceUri} onChange={(event) => setNarrationVoiceUri(event.target.value)}><option value="">기기 기본</option>{narrationVoices.map((voice) => <option key={voice.voiceURI} value={voice.voiceURI}>{voice.name}</option>)}</select></label>
+              <label><Music2 aria-hidden="true" /><span>배경음 테마</span><select aria-label="추억 배경음 테마" value={ambienceMode} onChange={(event) => setAmbienceMode(event.target.value as MemorialAmbienceMode)}>{(Object.keys(ambienceModeLabels) as MemorialAmbienceMode[]).map((mode) => <option key={mode} value={mode}>{ambienceModeLabels[mode]}</option>)}</select></label>
               <button type="button" aria-pressed={captionsEnabled} onClick={() => setCaptionsEnabled((value) => !value)}><Captions aria-hidden="true" />{captionsEnabled ? "자막 끄기" : "자막 켜기"}</button>
               <button type="button" aria-pressed={ambienceEnabled} disabled={!memorialAmbienceSupported()} onClick={toggleAmbience}><Music2 aria-hidden="true" />{ambienceEnabled ? "배경음 끄기" : "배경음 듣기"}</button>
             </section>

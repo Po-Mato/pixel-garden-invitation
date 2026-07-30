@@ -19,6 +19,10 @@ describe("WorldSecretMemorial", () => {
     expect(screen.getByRole("button", { name: "자동 감상 시작" })).toBeInTheDocument();
     expect(screen.getByRole("navigation", { name: "추억 장면 선택" })).toBeInTheDocument();
     expect(screen.getByLabelText("음성 해설 속도")).toHaveValue("0.92");
+    expect(screen.getByLabelText("음성 해설 목소리")).toHaveValue("");
+    expect(screen.getByLabelText("추억 배경음 테마")).toHaveValue("scene");
+    fireEvent.change(screen.getByLabelText("추억 배경음 테마"), { target: { value: "starlight" } });
+    expect(screen.getByLabelText("추억 배경음 테마")).toHaveValue("starlight");
     expect(screen.getByText("해설 자막")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "자막 끄기" }));
     expect(screen.queryByText("해설 자막")).not.toBeInTheDocument();

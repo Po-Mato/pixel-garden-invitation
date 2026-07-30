@@ -23,3 +23,35 @@
 .photo-sticker-style-controls__fonts button[aria-pressed="true"] { border-color: #805666; background: #915d6e; color: #fff; }
 .photo-sticker-style-controls__fonts button[data-font="serif"] { font-family: Georgia, serif; }
 .photo-sticker-style-controls__fonts button[data-font="hand"] { font-family: "Nanum Pen Script", "Comic Sans MS", cursive; }
+
+.photo-sticker-transform-controls { display: grid; grid-template-columns: auto repeat(4, 27px) 1fr repeat(5, 27px); align-items: center; gap: 3px; overflow-x: auto; }
+.photo-sticker-transform-controls > span { color: #765f63; font-size: 7px; font-weight: 900; }
+.photo-sticker-transform-controls > i { min-width: 3px; }
+.photo-sticker-transform-controls button { display: grid; width: 27px; min-height: 27px; place-items: center; border: 1px solid #b7a49e; border-radius: 3px; padding: 2px; background: #fffaf1; color: #765765; }
+.photo-sticker-transform-controls button svg { width: 12px; height: 12px; }
+
+.photo-composition-templates { display: grid; gap: 5px; border: 1px solid #d4c5ba; padding: 6px; background: #f8f2e9; }
+.photo-composition-templates > header { display: flex; min-width: 0; align-items: center; gap: 4px; color: #745e61; }
+.photo-composition-templates > header svg { width: 12px; height: 12px; }
+.photo-composition-templates > header strong { font-size: 8px; }
+.photo-composition-templates > header small { min-width: 0; margin-left: auto; overflow: hidden; color: #8d7a74; font-size: 6px; text-overflow: ellipsis; white-space: nowrap; }
+.photo-composition-templates__presets { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; }
+.photo-composition-templates__presets button,
+.photo-composition-templates__custom button,
+.photo-composition-templates > .photo-composition-templates__save { min-height: 27px; border: 1px solid #ad918c; border-radius: 3px; padding: 3px 5px; background: #fffaf1; color: #76525f; font-size: 7px; font-weight: 900; }
+.photo-composition-templates__presets button:first-child { box-shadow: inset 0 -3px 0 #d2b56d; }
+.photo-composition-templates__presets button:nth-child(2) { box-shadow: inset 0 -3px 0 #6c9478; }
+.photo-composition-templates__presets button:nth-child(3) { box-shadow: inset 0 -3px 0 #b55e76; }
+.photo-composition-templates__custom { display: flex; gap: 4px; overflow-x: auto; }
+.photo-composition-templates__custom > span { display: inline-grid; min-width: 88px; grid-template-columns: 1fr 25px; }
+.photo-composition-templates__custom > span button:first-child { border-radius: 3px 0 0 3px; }
+.photo-composition-templates__custom > span button:last-child { display: grid; min-height: 27px; place-items: center; border-left: 0; border-radius: 0 3px 3px 0; padding: 2px; }
+.photo-composition-templates__custom svg,
+.photo-composition-templates > .photo-composition-templates__save svg { width: 11px; height: 11px; }
+.photo-composition-templates > .photo-composition-templates__save { display: inline-flex; min-height: 29px; align-items: center; justify-content: center; gap: 4px; background: #8b6170; color: #fff; }
+.photo-composition-templates > .photo-composition-templates__save:disabled { opacity: .45; }
+.photo-composition-templates > small[role="status"] { color: #76665f; font-size: 6px; font-weight: 800; }
+
+@media (max-width: 420px) {
+  .photo-sticker-transform-controls { grid-template-columns: auto repeat(4, 28px) 8px repeat(5, 28px); }
+}

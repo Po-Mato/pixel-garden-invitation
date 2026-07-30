@@ -2,7 +2,7 @@ import { BadgeCheck, BookHeart, Flower2, Gift, Heart, LockKeyhole, Mail, MapPin,
 import { useMemo, useState } from "react";
 import type { NpcId } from "../game/npcDialogue";
 import type { NpcDialogueMemory } from "../game/npcDialogueMemory";
-import { buildNpcRelationshipJournal } from "../game/npcRelationshipJournal";
+import { buildNpcRelationshipJournal, buildNpcRelationshipStampBook } from "../game/npcRelationshipJournal";
 
 type NpcRelationshipJournalProps = {
   memory: NpcDialogueMemory;
@@ -13,10 +13,16 @@ type NpcRelationshipJournalProps = {
 export function NpcRelationshipJournal({ memory, names, onRewardInteraction }: NpcRelationshipJournalProps) {
   const [npcId, setNpcId] = useState<NpcId>("bride");
   const journal = useMemo(() => buildNpcRelationshipJournal(memory, npcId), [memory, npcId]);
-  const [replay, setReplay] = useState<{ title: string; message: string; illustration?: "flowers" | "toast" } | null>(null);
+  const stampBook = useMemo(() => buildNpcRelationshipStampBook(memory), [memory]);
+  const [replay, setReplay] = useState<{ title: string; message: string; illustration?: "flowers" | "toast" | "letter" } | null>(null);
   return (
     <details className="npc-relationship-journal">
       <summary><span><BookHeart aria-hidden="true" /><strong>두 사람과의 인연 일지</strong><small>해금 대화와 선택 기록</small></span></summary>
+      <section className="npc-relationship-journal__stamp-book" aria-label="두 사람 전체 장소 도장책" data-complete={stampBook.complete || undefined}>
+        <header><BadgeCheck aria-hidden="true" /><span><strong>두 사람의 장소 도장책</strong><small>{stampBook.completedCount}/{stampBook.totalCount} · 세 만남을 모두 기록해요</small></span></header>
+        <div>{stampBook.stamps.map((stamp) => <button key={stamp.id} type="button" disabled={!stamp.unlocked} data-unlocked={stamp.unlocked || undefined} onClick={() => setReplay({ title: stamp.label, message: `${stamp.label}을 ${stamp.count}번 기록했어요.` })}><i data-tone={stamp.stampTone} aria-hidden="true">{stamp.unlocked ? <BadgeCheck /> : <LockKeyhole />}{stamp.stampCode}</i><span>{stamp.label}</span></button>)}</div>
+        <button className="npc-relationship-journal__hidden-letter" type="button" disabled={!stampBook.complete} onClick={() => setReplay({ title: stampBook.hiddenLetterTitle, message: stampBook.hiddenLetterMessage, illustration: "letter" })}>{stampBook.complete ? <Mail aria-hidden="true" /> : <LockKeyhole aria-hidden="true" />}<span><small>완성 보상 · {stampBook.rewardLabel}</small><strong>{stampBook.hiddenLetterTitle}</strong></span></button>
+      </section>
       <div className="npc-relationship-journal__tabs" role="tablist" aria-label="인연 일지 인물">
         {(["bride", "groom"] as const).map((candidate) => <button key={candidate} type="button" role="tab" aria-selected={npcId === candidate} onClick={() => { setNpcId(candidate); setReplay(null); }}>{candidate === "bride" ? "신부" : "신랑"} {names[candidate]}</button>)}
       </div>
@@ -31,7 +37,7 @@ export function NpcRelationshipJournal({ memory, names, onRewardInteraction }: N
       <ol>
         {journal.entries.map((entry) => <li key={entry.id} data-unlocked={entry.unlocked || undefined}><button type="button" disabled={!entry.unlocked} onClick={() => setReplay({ title: entry.title, message: entry.message })}>{entry.unlocked ? <MessageCircle aria-hidden="true" /> : <LockKeyhole aria-hidden="true" />}<span><strong>{entry.title}</strong><small>{entry.unlocked ? "다시 읽기" : "인연을 쌓으면 해금"}</small></span></button></li>)}
       </ol>
-      {replay ? <blockquote aria-live="polite" data-illustration={replay.illustration}><span aria-hidden="true">{replay.illustration === "flowers" ? <Flower2 /> : replay.illustration === "toast" ? <Wine /> : null}</span><strong>{replay.title}</strong><p>{replay.message}</p></blockquote> : null}
+      {replay ? <blockquote aria-live="polite" data-illustration={replay.illustration}><span aria-hidden="true">{replay.illustration === "flowers" ? <Flower2 /> : replay.illustration === "toast" ? <Wine /> : replay.illustration === "letter" ? <Mail /> : null}</span><strong>{replay.title}</strong><p>{replay.message}</p></blockquote> : null}
     </details>
   );
 }

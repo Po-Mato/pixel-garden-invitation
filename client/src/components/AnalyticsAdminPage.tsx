@@ -421,7 +421,7 @@ export function AnalyticsAdminPage() {
                   ))}
                 </div>
               </section>
-              <DeviceQaAdminAlert trend={deviceQaTrend} />
+              <DeviceQaAdminAlert trend={deviceQaTrend} deviceResults={analytics.breakdowns.deviceQaDevices} issueResults={analytics.breakdowns.deviceQaIssues} generatedAt={analytics.generatedAt} />
               <div>
                 <BreakdownList title="기기별 점검 결과" items={analytics.breakdowns.deviceQaDevices} labels={qaDeviceLabels} />
                 <BreakdownList title="기기별 불편 항목" items={analytics.breakdowns.deviceQaIssues} labels={qaIssueLabels} />

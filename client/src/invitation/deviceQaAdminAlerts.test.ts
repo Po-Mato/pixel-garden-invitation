@@ -20,9 +20,10 @@ describe("deviceQaAdminAlerts", () => {
   };
 
   it("회귀 추세를 중복 없는 관리자 알림으로 만든다", () => {
-    const alert = createDeviceQaAdminAlert(regressionTrend)!;
+    const alert = createDeviceQaAdminAlert(regressionTrend, [{ id: "android", label: "Android", reports: 8, warnings: 4, issues: 4, issueRate: 0.5, topIssues: [{ id: "layout", label: "화면 배치", count: 3 }] }])!;
     const enabled = { ...defaultDeviceQaAdminAlertPreferences, enabled: true };
     expect(alert.title).toBe("기기 QA 회귀 경고");
+    expect(alert.body).toContain("Android 화면 배치 3건");
     expect(shouldNotifyDeviceQaAlert(alert, enabled)).toBe(true);
     expect(shouldNotifyDeviceQaAlert(alert, { ...enabled, lastNotifiedSignature: alert.signature })).toBe(false);
   });
