@@ -4,6 +4,7 @@ import {
   claimGameTransfer,
   createGameTransfer,
   loadGameTransfer,
+  reportGameTransferProgress,
   revokeGameTransfer
 } from "./gameTransferRepository";
 
@@ -61,6 +62,20 @@ export async function handleGameTransferRequest(
     if (action === "claim") {
       if (request.method !== "POST") return json({ error: "not_found" }, 404);
       const result = await claimGameTransfer(env.DB, invitationId, transferId, token);
+      if (!result) return json({ error: "not_found" }, 404);
+      return result.changed
+        ? json(result.state)
+        : json({ error: result.state.status === "expired" ? "transfer_expired" : `transfer_${result.state.status}` }, 409);
+    }
+    if (action === "progress") {
+      if (request.method !== "POST") return json({ error: "not_found" }, 404);
+      let body: unknown;
+      try { body = await request.json(); } catch { return json({ error: "invalid_request" }, 400); }
+      const phase = body && typeof body === "object" && "phase" in body ? body.phase : null;
+      if (phase !== "opened" && phase !== "previewing" && phase !== "restoring") {
+        return json({ error: "invalid_request" }, 400);
+      }
+      const result = await reportGameTransferProgress(env.DB, invitationId, transferId, token, phase);
       if (!result) return json({ error: "not_found" }, 404);
       return result.changed
         ? json(result.state)

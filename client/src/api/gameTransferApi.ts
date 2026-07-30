@@ -1,6 +1,7 @@
 import { WeddingApiError } from "./weddingApi";
 
 export type GameTransferStatus = "active" | "claimed" | "revoked" | "expired";
+export type GameTransferProgressPhase = "opened" | "previewing" | "restoring";
 export type GameTransferState = {
   id: string;
   status: GameTransferStatus;
@@ -9,6 +10,9 @@ export type GameTransferState = {
   expiresAt: string;
   claimedAt: string | null;
   revokedAt: string | null;
+  receiverPhase: GameTransferProgressPhase | null;
+  receiverSeenAt: string | null;
+  updatedAt: string;
 };
 
 export type CreatedGameTransfer = GameTransferState & { claimToken: string; manageToken: string };
@@ -21,7 +25,7 @@ function invitationId() {
   return import.meta.env.VITE_INVITATION_ID ?? "sample-garden";
 }
 
-function path(id?: string, action?: "claim") {
+function path(id?: string, action?: "claim" | "progress") {
   const root = `${baseUrl()}/api/invitations/${encodeURIComponent(invitationId())}/game-transfers`;
   return id ? `${root}/${encodeURIComponent(id)}${action ? `/${action}` : ""}` : root;
 }
@@ -57,4 +61,16 @@ export function claimServerGameTransfer(id: string, claimToken: string) {
 
 export function revokeServerGameTransfer(id: string, manageToken: string) {
   return request<GameTransferState>(path(id), { method: "DELETE", headers: { authorization: `Bearer ${manageToken}` } });
+}
+
+export function reportServerGameTransferProgress(
+  id: string,
+  claimToken: string,
+  phase: GameTransferProgressPhase
+) {
+  return request<GameTransferState>(path(id, "progress"), {
+    method: "POST",
+    headers: { authorization: `Bearer ${claimToken}`, "content-type": "application/json" },
+    body: JSON.stringify({ phase })
+  });
 }

@@ -2729,12 +2729,14 @@ describe("GameWorld", () => {
 
     fireEvent.keyDown(joystick, { key: "ArrowRight" });
     advanceAnimation(0);
+    expect(hud).toHaveAttribute("data-density", "moving");
     act(() => vi.advanceTimersByTime(gameHudAutoHideDelayMs));
     expect(hud).toHaveAttribute("data-auto-hidden", "true");
 
     fireEvent.keyUp(joystick, { key: "ArrowRight" });
     advanceAnimation(300);
     expect(hud).not.toHaveAttribute("data-auto-hidden");
+    expect(hud).not.toHaveAttribute("data-density", "moving");
   });
 
   it("shows and expires a remote guest reaction above that guest", () => {

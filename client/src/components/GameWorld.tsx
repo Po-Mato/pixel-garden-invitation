@@ -60,6 +60,12 @@ import {
   type JourneyCheckpointId
 } from "../game/journeyProgress";
 import {
+  isJourneyStampRewardUnlocked,
+  journeyStampRewards,
+  loadJourneyStampReward,
+  saveJourneyStampReward
+} from "../game/journeyStampReward";
+import {
   clearJourneySyncQueue,
   journeyProgressDiffers,
   loadJourneySyncQueue,
@@ -67,7 +73,7 @@ import {
   queueJourneyProgress
 } from "../game/journeySyncQueue";
 import { completeGameGuide, loadGameGuideState, shouldAutoOpenGameGuide } from "../game/gameGuide";
-import { gameHudAutoHideDelayMs, shouldAutoHideGameHud } from "../game/gameHudVisibility";
+import { gameHudAutoHideDelayMs, resolveGameHudDensity, shouldAutoHideGameHud } from "../game/gameHudVisibility";
 import { resolveContextHudAction, type ContextHudAction } from "../game/contextHudAction";
 import { resolveNpcDialoguePlacement } from "../game/gameOverlayPlacement";
 import { journeyDirectionLabels, resolveJourneyGuidance } from "../game/journeyGuidance";
@@ -301,6 +307,7 @@ import "../game-wedding-day-operations.css";
 import "../game-experience-continuity.css";
 import "../map-visual-enhancements.css";
 import "../game-discovery-dashboard.css";
+import "../game-hud-density.css";
 
 const loadWeddingPhotoBoothComponent = () => import("./WeddingPhotoBooth");
 const loadWeddingPhotoAlbumComponent = () => import("./WeddingPhotoAlbum");
@@ -673,6 +680,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   const [celebrationMilestones, setCelebrationMilestones] = useState<CelebrationMilestone[]>([]);
   const [equippedCelebrationCosmetic, setEquippedCelebrationCosmetic] = useState(loadCelebrationCosmetic);
   const [equippedCelebrationTone, setEquippedCelebrationTone] = useState(loadCelebrationCosmeticTone);
+  const [equippedJourneyStampReward, setEquippedJourneyStampReward] = useState(loadJourneyStampReward);
   const [gameMemoryAlbum, setGameMemoryAlbum] = useState<GameMemoryAlbumData>(loadGameMemoryAlbum);
   const [gameMemoryAlbumOpen, setGameMemoryAlbumOpen] = useState(false);
   const [cooperativeCelebration, setCooperativeCelebration] = useState<ActiveCooperativeCelebration | null>(null);
@@ -718,6 +726,12 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     const timer = window.setTimeout(() => setHudAutoHidden(true), gameHudAutoHideDelayMs);
     return () => window.clearTimeout(timer);
   }, [gameOverlayOpen, hudToolsOpen, moving, portalTransition]);
+
+  useEffect(() => {
+    if (isJourneyStampRewardUnlocked(equippedJourneyStampReward, journeyProgress)) return;
+    saveJourneyStampReward("none");
+    setEquippedJourneyStampReward("none");
+  }, [equippedJourneyStampReward, journeyProgress]);
 
   const mapViewportRef = useRef<HTMLDivElement | null>(null);
   const menuButtonRef = useRef<HTMLButtonElement | null>(null);
@@ -3078,6 +3092,24 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     });
   }
 
+  function navigateToRelationshipStamp(npcId: string, label: string) {
+    const npc = activeZone.npcs.find(({ id }) => id === npcId);
+    if (!npc) return;
+    pauseWorldInput();
+    setPendingJourneyGuideId(null);
+    setActiveJourneyGuideId(null);
+    const point = npcMotionFor(activeZone, npc, npcMotionsRef.current).point;
+    beginWorldInteraction({
+      targetId: `npc:${npc.id}`,
+      npcId: npc.id,
+      spotId: "couple",
+      label: npc.label,
+      target: npcInteractionRect(point),
+      actionRadius: npcInteractionRadius
+    });
+    setTravelStatus(`${label} 도장 주인공에게 자동 길찾기를 시작했어요`);
+  }
+
   function guideToCelebrationItem(item: CelebrationCollectible) {
     if (collectedCelebrationIds.includes(item.id)) return;
     setCollectionGuideOpen(false);
@@ -3629,6 +3661,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
       const npc = activeNpcContexts.find(({ id }) => id === stamp.npcId);
       return npc ? [{
         id: stamp.id,
+        npcId: stamp.npcId,
         label: stamp.label,
         point: npc.point,
         unlocked: stamp.unlocked,
@@ -3679,6 +3712,14 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     && !routeArrivalNotice
     && !activeRouteArrivalCue
   );
+  const hudDensity = resolveGameHudDensity({
+    moving,
+    routeActive: miniMapRouteActive,
+    contextActive: contextActionVisible,
+    toolsOpen: hudToolsOpen,
+    overlayOpen: gameOverlayOpen,
+    dialogueOpen: Boolean(activeNpcDialogue)
+  });
 
   function guideToZoneMiniQuestStep(step: ZoneMiniQuestStep) {
     const target = step.target;
@@ -4063,6 +4104,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
       data-collection-rewards={unlockedCelebrationKinds.join(" ") || undefined}
       data-collection-cosmetic={equippedCelebrationCosmetic}
       data-collection-tone={equippedCelebrationTone}
+      data-journey-stamp-reward={equippedJourneyStampReward}
       data-secret-reward={worldSecretCollection.equippedRewardId}
       data-group-celebration={npcGroupCelebrationActive || undefined}
       aria-label="모바일 청첩장 월드"
@@ -4090,6 +4132,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
         className="world-hud"
         data-tools-open={hudToolsOpen || undefined}
         data-auto-hidden={hudAutoHidden || undefined}
+        data-density={hudDensity}
         data-dialogue-open={Boolean(activeNpcDialogue) || undefined}
       >
         <div className="world-hud__status">
@@ -4178,7 +4221,16 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
           activeZoneId={activeZone.id}
           highlightedCheckpointId={stampedCheckpointId}
           disabled={Boolean(portalTransition)}
+          appearance={profile.appearance}
+          equippedReward={equippedJourneyStampReward}
           onOpenChange={(open) => { if (open) pauseWorldInput(); }}
+          onEquipReward={(rewardId) => {
+            if (!isJourneyStampRewardUnlocked(rewardId, journeyProgress)) return;
+            saveJourneyStampReward(rewardId);
+            setEquippedJourneyStampReward(rewardId);
+            const reward = journeyStampRewards.find(({ id }) => id === rewardId);
+            setTravelStatus(rewardId === "none" ? "방문 스탬프 장식을 해제했어요" : `${reward?.label ?? "스탬프 장식"}을 착용했어요`);
+          }}
           onOpenCompletion={openJourneyCompletion}
           onSelectZone={handleJourneySelect}
         />
@@ -4736,6 +4788,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
             companionTrailPoints={activeCompanion?.zoneId === activeZone.id ? companionTrailPoints : []}
             rendezvousPoint={companionRendezvous?.zoneId === activeZone.id ? companionRendezvous.point : null}
             onNavigateAccessibilityLandmark={navigateToAccessibilityLandmark}
+            onNavigateRelationshipStamp={(marker) => navigateToRelationshipStamp(marker.npcId, marker.label)}
           />
 
           {contextActionVisible && contextHudAction ? (

@@ -1,6 +1,6 @@
-import { ArrowRight, Clock3, Download, Eye, HardDriveDownload, History, KeyRound, QrCode, RefreshCw, RotateCcw, ScanLine, Share2, ShieldCheck, Trash2, Upload } from "lucide-react";
-import { useRef, useState, type ChangeEvent } from "react";
-import { claimServerGameTransfer, createServerGameTransfer, fetchServerGameTransfer, revokeServerGameTransfer, type GameTransferStatus } from "../api/gameTransferApi";
+import { ArrowRight, Check, Clock3, Download, Eye, HardDriveDownload, History, KeyRound, QrCode, RefreshCw, RotateCcw, ScanLine, Share2, ShieldCheck, Trash2, Upload, Wifi } from "lucide-react";
+import { useEffect, useRef, useState, type ChangeEvent } from "react";
+import { claimServerGameTransfer, createServerGameTransfer, fetchServerGameTransfer, reportServerGameTransferProgress, revokeServerGameTransfer, type GameTransferState, type GameTransferStatus } from "../api/gameTransferApi";
 import {
   createGameSaveBackup,
   createGameSaveRollback,
@@ -28,7 +28,9 @@ import {
   type EncryptedGameSaveEnvelope
 } from "../game/gameSaveTransfer";
 import { loadGameTransferReceiptHistory, rememberCreatedGameTransfer, updateGameTransferReceiptState } from "../game/gameTransferReceiptHistory";
+import { gameTransferLiveStatusLabel, gameTransferLiveSteps, type GameTransferLiveRole } from "../game/gameTransferLiveProgress";
 import { GameSaveQrScanner } from "./GameSaveQrScanner";
+import "../game-transfer-live.css";
 
 function incomingTransfer(): { envelope: EncryptedGameSaveEnvelope | null; error: string | null } {
   try {
@@ -60,6 +62,16 @@ function storedRollback(): GameSaveRollback | null {
   }
 }
 
+function TransferLiveProgress({ role, state }: { role: GameTransferLiveRole; state: GameTransferState }) {
+  const steps = gameTransferLiveSteps(role, state);
+  return (
+    <section className="game-transfer-live" data-role={role} data-status={state.status} aria-label={`${role === "sender" ? "보내는" : "받는"} 기기 실시간 이전 상태`}>
+      <header><Wifi aria-hidden="true" /><span><strong>{role === "sender" ? "보내는 기기" : "받는 기기"} 실시간 연결</strong><small aria-live="polite">{gameTransferLiveStatusLabel(role, state)}</small></span><i aria-hidden="true" /></header>
+      <ol>{steps.map((step) => <li key={step.id} data-complete={step.complete || undefined} data-current={step.current || undefined}><i>{step.complete ? <Check aria-hidden="true" /> : null}</i><span>{step.label}</span></li>)}</ol>
+    </section>
+  );
+}
+
 export function GameSaveDataCenter() {
   const [initialIncoming] = useState(incomingTransfer);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -76,6 +88,54 @@ export function GameSaveDataCenter() {
   const [expanded, setExpanded] = useState(Boolean(incomingEnvelope || rollback));
   const [busy, setBusy] = useState(false);
   const [transferReceipts, setTransferReceipts] = useState(loadGameTransferReceiptHistory);
+  const [activeTransferId, setActiveTransferId] = useState<string | null>(null);
+  const [incomingServerState, setIncomingServerState] = useState<GameTransferState | null>(null);
+
+  const activeOutgoingReceipt = (activeTransferId
+    ? transferReceipts.find(({ id }) => id === activeTransferId)
+    : transferReceipts.find(({ status }) => status === "active")) ?? null;
+
+  useEffect(() => {
+    const receipt = incomingEnvelope?.transferReceipt;
+    if (!receipt) {
+      setIncomingServerState(null);
+      return;
+    }
+    let canceled = false;
+    const sync = async (markOpened = false) => {
+      try {
+        const next = markOpened
+          ? await reportServerGameTransferProgress(receipt.id, receipt.claimToken, "opened")
+          : await fetchServerGameTransfer(receipt.id, receipt.claimToken);
+        if (!canceled) setIncomingServerState(next);
+      } catch (error) {
+        const code = typeof error === "object" && error !== null && "code" in error ? String(error.code) : "";
+        if (!canceled && code === "transfer_revoked") setStatus("보내는 기기에서 이전을 취소했어요");
+      }
+    };
+    void sync(true);
+    const timer = window.setInterval(() => void sync(), 2_000);
+    return () => { canceled = true; window.clearInterval(timer); };
+  }, [incomingEnvelope?.transferReceipt?.claimToken, incomingEnvelope?.transferReceipt?.id]);
+
+  useEffect(() => {
+    const activeReceipts = transferReceipts.filter(({ status }) => status === "active");
+    if (!expanded || activeReceipts.length === 0) return;
+    let canceled = false;
+    const sync = async () => {
+      const states = await Promise.all(activeReceipts.map(async (receipt) => {
+        try { return await fetchServerGameTransfer(receipt.id, receipt.manageToken); } catch { return null; }
+      }));
+      if (canceled) return;
+      setTransferReceipts((current) => states.reduce(
+        (next, state) => state ? updateGameTransferReceiptState(next, state) : next,
+        current
+      ));
+    };
+    void sync();
+    const timer = window.setInterval(() => void sync(), 2_000);
+    return () => { canceled = true; window.clearInterval(timer); };
+  }, [expanded, transferReceipts.map(({ id, manageToken, status }) => `${id}:${manageToken}:${status}`).join("|")]);
 
   const backup = () => {
     try {
@@ -174,6 +234,7 @@ export function GameSaveDataCenter() {
       setQrEntryCount(Object.keys(compact.entries).length);
       setQrExpiresAt(gameTransferExpiresAt(readGameTransferFromUrl(url)!));
       setTransferReceipts(rememberCreatedGameTransfer(created));
+      setActiveTransferId(created.id);
       setStatus("한 번만 복원할 수 있는 QR을 만들었어요");
     } catch (error) {
       setStatus(error instanceof Error ? error.message : "기기 이전 QR을 만들지 못했어요");
@@ -212,6 +273,10 @@ export function GameSaveDataCenter() {
         if (receipt.status !== "active") throw new Error(receipt.status === "claimed" ? "이미 다른 기기에서 복원한 QR입니다." : receipt.status === "revoked" ? "보내는 기기에서 취소한 QR입니다." : "사용 시간이 지난 QR입니다.");
       }
       const backup = await decryptGameSaveBackup(incomingEnvelope, passphrase);
+      if (incomingEnvelope.transferReceipt) {
+        const next = await reportServerGameTransferProgress(incomingEnvelope.transferReceipt.id, incomingEnvelope.transferReceipt.claimToken, "previewing");
+        setIncomingServerState(next);
+      }
       setPendingBackup(backup);
       setStatus("복원될 내용을 확인한 뒤 적용해 주세요");
     } catch (error) {
@@ -227,7 +292,8 @@ export function GameSaveDataCenter() {
     try {
       if (incomingEnvelope) assertGameTransferActive(incomingEnvelope);
       if (incomingEnvelope?.transferReceipt) {
-        await claimServerGameTransfer(incomingEnvelope.transferReceipt.id, incomingEnvelope.transferReceipt.claimToken);
+        setIncomingServerState(await reportServerGameTransferProgress(incomingEnvelope.transferReceipt.id, incomingEnvelope.transferReceipt.claimToken, "restoring"));
+        setIncomingServerState(await claimServerGameTransfer(incomingEnvelope.transferReceipt.id, incomingEnvelope.transferReceipt.claimToken));
       }
       window.history.replaceState(null, "", `${window.location.pathname}${window.location.search}`);
       restoreWithRollback(pendingBackup);
@@ -288,6 +354,7 @@ export function GameSaveDataCenter() {
         {incomingEnvelope && !preview ? (
           <button type="button" disabled={busy} className="game-save-data-center__incoming" onClick={() => void restoreIncomingTransfer()}><Eye aria-hidden="true" />스캔 내용 확인</button>
         ) : null}
+        {incomingServerState ? <TransferLiveProgress role="receiver" state={incomingServerState} /> : null}
         {preview ? <section className="game-save-data-center__preview" aria-label="QR 복원 미리보기"><header><QrCode aria-hidden="true" /><span><strong>핵심 진행 {preview.totalEntries}개 · 일회용</strong><small>{new Date(preview.createdAt).toLocaleString("ko-KR")}</small>{expiryLabel(gameTransferExpiresAt(incomingEnvelope!)) ? <small className="game-save-data-center__expiry"><Clock3 aria-hidden="true" />{expiryLabel(gameTransferExpiresAt(incomingEnvelope!))}</small> : null}</span></header><dl><div><dt>새로 추가</dt><dd>{preview.newEntries}</dd></div><div><dt>내용 변경</dt><dd>{preview.changedEntries}</dd></div><div><dt>동일 유지</dt><dd>{preview.unchangedEntries}</dd></div></dl><ul>{preview.categories.map((category) => <li key={category.id}><span>{category.label}</span><strong>{category.count}</strong></li>)}</ul><ol className="game-save-data-center__changes" aria-label="복원 전후 세부 비교">{preview.changes.map((change) => <li key={change.key} data-status={change.status}><header><strong>{change.label}</strong><small>{change.categoryLabel} · {change.status === "new" ? "새 항목" : change.status === "changed" ? "변경" : "동일"}</small></header><span>{change.before}<ArrowRight aria-hidden="true" />{change.after}</span></li>)}</ol><div><button type="button" disabled={busy} onClick={() => void confirmIncomingRestore()}><ShieldCheck aria-hidden="true" />확인하고 한 번 복원</button><button type="button" disabled={busy} onClick={() => { setPendingBackup(null); setIncomingEnvelope(null); setStatus("QR 복원을 취소했어요"); }}><Trash2 aria-hidden="true" />취소</button></div></section> : null}
         <div>
           <button type="button" disabled={busy} onClick={() => void saveEncrypted()}><ShieldCheck aria-hidden="true" />암호화 저장</button>
@@ -298,6 +365,7 @@ export function GameSaveDataCenter() {
         </div>
         <input ref={encryptedInputRef} type="file" accept=".wgsave,application/json" aria-label="암호화 게임 백업 파일 선택" onChange={(event) => void restoreEncrypted(event)} />
         {qrImage ? <figure><img src={qrImage} alt="암호화된 게임 진행 기기 이전 QR" /><figcaption>핵심 진행 {qrEntryCount}개 · 사진 제외{expiryLabel(qrExpiresAt) ? <small><Clock3 aria-hidden="true" />{expiryLabel(qrExpiresAt)}</small> : null}</figcaption></figure> : null}
+        {activeOutgoingReceipt ? <TransferLiveProgress role="sender" state={{ ...activeOutgoingReceipt, receiverPhase: activeOutgoingReceipt.receiverPhase ?? null, receiverSeenAt: activeOutgoingReceipt.receiverSeenAt ?? null, updatedAt: activeOutgoingReceipt.updatedAt ?? activeOutgoingReceipt.createdAt }} /> : null}
         {transferReceipts.length > 0 ? <section className="game-save-data-center__transfer-history" aria-label="기기 이전 서버 이력"><header><History aria-hidden="true" /><span><strong>기기 이전 이력</strong><small>복원·취소 상태는 서버에서 확인</small></span><button type="button" aria-label="기기 이전 이력 새로고침" title="서버 상태 새로고침" disabled={busy} onClick={() => void refreshTransferReceipts()}><RefreshCw aria-hidden="true" /></button></header><ol>{transferReceipts.slice(0, 4).map((receipt) => <li key={receipt.id} data-status={receipt.status}><span><strong>{transferStatusLabels[receipt.status]}</strong><small>{new Date(receipt.createdAt).toLocaleString("ko-KR")} · {receipt.entryCount}개</small></span>{receipt.status === "active" ? <button type="button" disabled={busy} onClick={() => void revokeTransfer(receipt.id, receipt.manageToken)}><Trash2 aria-hidden="true" />취소</button> : <small>{receipt.status === "claimed" && receipt.claimedAt ? new Date(receipt.claimedAt).toLocaleTimeString("ko-KR", { hour: "numeric", minute: "2-digit" }) : receipt.status === "revoked" ? "발신 취소" : "15분 종료"}</small>}</li>)}</ol></section> : null}
       </section>
       <small>QR은 핵심 진행만, 근거리 전송은 촬영 사진까지 포함합니다. 참석 답변·방명록·관리자 정보는 포함하지 않습니다.</small>

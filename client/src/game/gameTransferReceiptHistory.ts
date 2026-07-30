@@ -1,4 +1,4 @@
-import type { CreatedGameTransfer, GameTransferState, GameTransferStatus } from "../api/gameTransferApi";
+import type { CreatedGameTransfer, GameTransferProgressPhase, GameTransferState, GameTransferStatus } from "../api/gameTransferApi";
 
 export const gameTransferReceiptHistoryStorageKey = "wedding-game:transfer-receipts:v1";
 
@@ -11,6 +11,9 @@ export type GameTransferReceipt = {
   status: GameTransferStatus;
   claimedAt: string | null;
   revokedAt: string | null;
+  receiverPhase?: GameTransferProgressPhase | null;
+  receiverSeenAt?: string | null;
+  updatedAt?: string;
 };
 
 type StorageReader = Pick<Storage, "getItem">;
@@ -51,7 +54,10 @@ export function rememberCreatedGameTransfer(created: CreatedGameTransfer, storag
     expiresAt: created.expiresAt,
     status: created.status,
     claimedAt: created.claimedAt,
-    revokedAt: created.revokedAt
+    revokedAt: created.revokedAt,
+    receiverPhase: created.receiverPhase,
+    receiverSeenAt: created.receiverSeenAt,
+    updatedAt: created.updatedAt
   };
   const next = [receipt, ...loadGameTransferReceiptHistory(storage).filter(({ id }) => id !== receipt.id)].slice(0, 8);
   saveGameTransferReceiptHistory(next, storage);
@@ -67,7 +73,10 @@ export function updateGameTransferReceiptState(
     ...receipt,
     status: state.status,
     claimedAt: state.claimedAt,
-    revokedAt: state.revokedAt
+    revokedAt: state.revokedAt,
+    receiverPhase: state.receiverPhase,
+    receiverSeenAt: state.receiverSeenAt,
+    updatedAt: state.updatedAt
   } : receipt);
   saveGameTransferReceiptHistory(next, storage);
   return next;

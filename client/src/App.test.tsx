@@ -37,6 +37,9 @@ vi.mock("./components/ContentAdminPage", () => ({
 vi.mock("./components/GalleryAdminPage", () => ({
   GalleryAdminPage: () => <div>사진 갤러리 관리 화면</div>
 }));
+vi.mock("./components/PhotoFrameGalleryAdminPage", () => ({
+  PhotoFrameGalleryAdminPage: () => <div>공동 포토프레임 승인 화면</div>
+}));
 vi.mock("./components/ReleaseAdminPage", () => ({
   ReleaseAdminPage: () => <div>통합 공개 관리 화면</div>
 }));
@@ -121,6 +124,13 @@ describe("App query routing", () => {
     window.history.replaceState({}, "", "/?admin=gallery");
     render(<App />);
     expect(await screen.findByText("사진 갤러리 관리 화면")).toBeInTheDocument();
+    expect(screen.queryByText("일반 입장 화면")).not.toBeInTheDocument();
+  });
+
+  it("공동 포토프레임 승인 화면을 전용 관리자 쿼리로 연다", async () => {
+    window.history.replaceState({}, "", "/?admin=frames");
+    render(<App />);
+    expect(await screen.findByText("공동 포토프레임 승인 화면")).toBeInTheDocument();
     expect(screen.queryByText("일반 입장 화면")).not.toBeInTheDocument();
   });
 

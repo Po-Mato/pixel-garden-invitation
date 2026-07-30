@@ -7,6 +7,7 @@ export * from "./invitationInviteLinks";
 export * from "./guestInformation";
 export * from "./invitationReminders";
 export * from "./adminNotifications";
+export * from "./photoFrameGallery";
 export * from "./guestbook";
 export * from "./weddingContent";
 export * from "./guestCharacterPresets";

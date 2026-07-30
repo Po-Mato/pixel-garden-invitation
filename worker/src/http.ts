@@ -665,6 +665,19 @@ async function handleApiRequestWithoutCors(
   const adminSessionMatch = url.pathname.match(/^\/api\/invitations\/([^/]+)\/admin\/session$/);
   if (adminSessionMatch) return handleAdminSession(request, env, clientKey, adminSessionMatch[1]);
 
+  const adminPhotoFrameGalleryMatch = url.pathname.match(
+    /^\/api\/invitations\/([^/]+)\/admin\/photo-frame-gallery(?:\/(frame_[0-9a-f-]+))?$/
+  );
+  if (adminPhotoFrameGalleryMatch) {
+    const { handleAdminPhotoFrameGalleryRequest } = await import("./photoFrameGalleryHttp");
+    return handleAdminPhotoFrameGalleryRequest(
+      request,
+      env,
+      adminPhotoFrameGalleryMatch[1],
+      adminPhotoFrameGalleryMatch[2]
+    );
+  }
+
   const adminGalleryAssetMatch = url.pathname.match(
     /^\/api\/invitations\/([^/]+)\/admin\/gallery\/assets\/([0-9a-f-]+)\/(640|1024)$/
   );
@@ -783,6 +796,14 @@ async function handleApiRequestWithoutCors(
     return handlePublicInvitationGalleryRequest(request, env, publicGalleryMatch[1]);
   }
 
+  const publicPhotoFrameGalleryMatch = url.pathname.match(
+    /^\/api\/invitations\/([^/]+)\/photo-frame-gallery$/
+  );
+  if (publicPhotoFrameGalleryMatch) {
+    const { handlePublicPhotoFrameGalleryRequest } = await import("./photoFrameGalleryHttp");
+    return handlePublicPhotoFrameGalleryRequest(request, env, clientKey, publicPhotoFrameGalleryMatch[1]);
+  }
+
   const publicReleaseMatch = url.pathname.match(/^\/api\/invitations\/([^/]+)\/release$/);
   if (publicReleaseMatch) {
     return handlePublicInvitationReleaseRequest(request, env, publicReleaseMatch[1]);
@@ -805,7 +826,7 @@ async function handleApiRequestWithoutCors(
   }
 
   const gameTransferMatch = url.pathname.match(
-    /^\/api\/invitations\/([^/]+)\/game-transfers(?:\/(transfer_[0-9a-f-]+)(?:\/(claim))?)?$/
+    /^\/api\/invitations\/([^/]+)\/game-transfers(?:\/(transfer_[0-9a-f-]+)(?:\/(claim|progress))?)?$/
   );
   if (gameTransferMatch) {
     const { handleGameTransferRequest } = await import("./gameTransferHttp");

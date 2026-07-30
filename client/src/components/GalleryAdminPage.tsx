@@ -496,6 +496,7 @@ export function GalleryAdminPage() {
             <a className="rsvp-admin-nav-link" href="?admin=analytics">방문 통계</a>
             <a className="rsvp-admin-nav-link" href="?admin=release">통합 공개</a>
             <a className="rsvp-admin-nav-link" href="?admin=content">실데이터</a>
+            <a className="rsvp-admin-nav-link" href="?admin=frames">공동 프레임</a>
             <a className="rsvp-admin-nav-link" href="?admin=readiness">공개 준비</a>
             <a className="rsvp-admin-nav-link" href="?admin=rsvp">참석 답변</a>
             <a className="rsvp-admin-nav-link" href="?admin=guestbook">방명록</a>

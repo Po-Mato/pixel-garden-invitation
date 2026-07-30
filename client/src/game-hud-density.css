@@ -1,0 +1,61 @@
+/* Situation-aware HUD density: preserve the current task and release map space. */
+.game-world .world-hud[data-density="route"] .world-zone-summary > :is(span, small),
+.game-world .world-hud[data-density="moving"] .world-zone-summary > :is(span, small),
+.game-world .world-hud[data-density="context"] .world-zone-summary > :is(span, small) {
+  display: none;
+}
+
+.game-world .world-hud[data-density="route"] .world-zone-summary,
+.game-world .world-hud[data-density="moving"] .world-zone-summary,
+.game-world .world-hud[data-density="context"] .world-zone-summary {
+  gap: 0;
+}
+
+.game-world .world-hud[data-density="route"] .world-destination-guide em,
+.game-world .world-hud[data-density="moving"] .world-destination-guide em,
+.game-world .world-hud[data-density="context"] .world-destination-guide-row {
+  display: none;
+}
+
+.game-world .world-hud[data-density="route"] {
+  padding-top: 6px;
+  padding-bottom: 6px;
+}
+
+.game-world .world-hud[data-density="route"] .world-destination-guide {
+  min-height: 38px;
+}
+
+.game-world .world-hud[data-density="moving"] {
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+.game-world .world-hud[data-density="context"] {
+  width: min(58%, 240px);
+  padding: 5px 7px;
+  border-right: 1px solid rgba(96, 72, 76, 0.22);
+  box-shadow: 0 5px 14px rgba(52, 42, 45, 0.13);
+}
+
+.game-world .world-hud[data-density="context"] .world-zone-summary strong {
+  max-width: 126px;
+  overflow: hidden;
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.game-world .world-hud[data-density="context"] .world-travel-status-row:not([data-visible]) {
+  display: none;
+}
+
+@media (min-width: 760px) and (orientation: landscape) {
+  .game-world .world-hud[data-density="context"] { width: min(180px, 22vw); }
+}
+
+html[data-reduce-motion="true"] .game-world .world-hud { transition-duration: 0.01ms; }
+
+@media (prefers-reduced-motion: reduce) {
+  .game-world .world-hud { transition-duration: 0.01ms; }
+}

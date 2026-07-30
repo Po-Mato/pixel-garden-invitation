@@ -29,6 +29,7 @@ describe("WorldMiniMap", () => {
         }]}
         relationshipStampMarkers={[{
           id: "bride:bridal-room",
+          npcId: "bride",
           label: "신부 대기실의 인사",
           point: { x: 210, y: 330 },
           unlocked: false,
@@ -67,6 +68,37 @@ describe("WorldMiniMap", () => {
     expect(portal).toHaveAttribute("y", String(projectedPortal.y));
     expect(portal).toHaveAttribute("width", String(projectedPortal.width));
     expect(portal).toHaveAttribute("height", String(projectedPortal.height));
+  });
+
+  it("인연 도장을 누르면 해당 NPC 자동 길찾기를 시작하고 지도를 닫는다", () => {
+    const zone = getWorldZone(gardenWorld, "bridal-room");
+    const viewport = { width: 390, height: 640 };
+    const onNavigate = vi.fn();
+    const marker = {
+      id: "bride:bridal-room",
+      npcId: "bride",
+      label: "신부와의 인연",
+      point: { x: 300, y: 300 },
+      unlocked: false,
+      recommended: true
+    };
+    render(
+      <WorldMiniMap
+        zone={zone}
+        player={zone.spawn}
+        direction="down"
+        camera={computeCameraTransform({ player: zone.spawn, viewport, bounds: zone.bounds, zoom: 1 })}
+        viewport={viewport}
+        targetPortalId={null}
+        relationshipStampMarkers={[marker]}
+        onNavigateRelationshipStamp={onNavigate}
+      />
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "미니맵 확대 보기" }));
+    fireEvent.click(screen.getByRole("button", { name: /신부와의 인연 자동 길찾기/ }));
+    expect(onNavigate).toHaveBeenCalledWith(marker);
+    expect(screen.queryByRole("dialog", { name: "현재 경로 전체 미리보기" })).not.toBeInTheDocument();
   });
 
   it("preserves the tall ceremony hall shape", () => {

@@ -58,6 +58,7 @@ type WorldMiniMapProps = {
   companionTrailPoints?: Point[];
   rendezvousPoint?: Point | null;
   onNavigateAccessibilityLandmark?: (landmark: WorldAccessibilityLandmark) => void;
+  onNavigateRelationshipStamp?: (marker: MiniMapRelationshipStampMarker) => void;
 };
 
 export type MiniMapCollectibleMarker = {
@@ -69,6 +70,7 @@ export type MiniMapCollectibleMarker = {
 
 export type MiniMapRelationshipStampMarker = {
   id: string;
+  npcId: string;
   label: string;
   point: Point;
   unlocked: boolean;
@@ -343,7 +345,8 @@ export function WorldMiniMap({
   relationshipStampMarkers = [],
   companionTrailPoints = [],
   rendezvousPoint = null,
-  onNavigateAccessibilityLandmark
+  onNavigateAccessibilityLandmark,
+  onNavigateRelationshipStamp
 }: WorldMiniMapProps) {
   const [expanded, setExpanded] = useState(false);
   const [viewTransform, setViewTransform] = useState<MiniMapViewTransform>({ scale: 1, x: 0, y: 0 });
@@ -758,7 +761,30 @@ export function WorldMiniMap({
                 viewTransform={viewTransform}
               />
             </div>
-            {relationshipStampMarkers.length > 0 ? <section className="world-minimap-expanded__stamp-guide" aria-label="현재 구역 인연 도장 목적지"><strong>인연 도장 목적지</strong><ul>{relationshipStampMarkers.map((marker) => <li key={marker.id} data-complete={marker.unlocked || undefined}><i aria-hidden="true" />{marker.label}<small>{marker.unlocked ? "완료" : marker.recommended ? "다음 추천" : "미완료"}</small></li>)}</ul></section> : null}
+            {relationshipStampMarkers.length > 0 ? (
+              <section className="world-minimap-expanded__stamp-guide" aria-label="현재 구역 인연 도장 목적지">
+                <strong>인연 도장 목적지</strong>
+                <ul>
+                  {relationshipStampMarkers.map((marker) => (
+                    <li key={marker.id} data-complete={marker.unlocked || undefined}>
+                      <button
+                        type="button"
+                        disabled={!onNavigateRelationshipStamp}
+                        aria-label={`${marker.label} 자동 길찾기${marker.unlocked ? ", 완료한 도장" : marker.recommended ? ", 다음 추천" : ""}`}
+                        onClick={() => {
+                          onNavigateRelationshipStamp?.(marker);
+                          setExpanded(false);
+                        }}
+                      >
+                        <i aria-hidden="true" />
+                        <span>{marker.label}<small>{marker.unlocked ? "완료 · 다시 만나기" : marker.recommended ? "다음 추천" : "미완료"}</small></span>
+                        <Navigation aria-hidden="true" />
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            ) : null}
             {selectedLandmark ? (
               <section className="world-minimap-expanded__accessible-nav" aria-label="목적지 순차 탐색">
                 <header>

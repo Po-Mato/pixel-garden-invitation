@@ -1,6 +1,7 @@
 import { createEditCredential, hashEditToken } from "./security";
 
 export type GameTransferStatus = "active" | "claimed" | "revoked" | "expired";
+export type GameTransferProgressPhase = "opened" | "previewing" | "restoring";
 
 export type GameTransferState = {
   id: string;
@@ -10,6 +11,9 @@ export type GameTransferState = {
   expiresAt: string;
   claimedAt: string | null;
   revokedAt: string | null;
+  receiverPhase: GameTransferProgressPhase | null;
+  receiverSeenAt: string | null;
+  updatedAt: string;
 };
 
 export type CreatedGameTransfer = GameTransferState & {
@@ -25,6 +29,9 @@ type GameTransferRow = {
   expires_at: string;
   claimed_at: string | null;
   revoked_at: string | null;
+  receiver_phase: GameTransferProgressPhase | null;
+  receiver_seen_at: string | null;
+  updated_at: string | null;
 };
 
 function state(row: GameTransferRow, now: Date): GameTransferState {
@@ -35,11 +42,14 @@ function state(row: GameTransferRow, now: Date): GameTransferState {
     createdAt: row.created_at,
     expiresAt: row.expires_at,
     claimedAt: row.claimed_at,
-    revokedAt: row.revoked_at
+    revokedAt: row.revoked_at,
+    receiverPhase: row.receiver_phase,
+    receiverSeenAt: row.receiver_seen_at,
+    updatedAt: row.updated_at ?? row.created_at
   };
 }
 
-const transferColumns = "id, status, entry_count, created_at, expires_at, claimed_at, revoked_at";
+const transferColumns = "id, status, entry_count, created_at, expires_at, claimed_at, revoked_at, receiver_phase, receiver_seen_at, updated_at";
 
 export async function createGameTransfer(
   db: D1Database,
@@ -63,8 +73,8 @@ export async function createGameTransfer(
   const row = await db.prepare(`
     INSERT INTO game_save_transfers (
       id, invitation_id, claim_token_hash, manage_token_hash, client_hash,
-      entry_count, created_at, expires_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      entry_count, created_at, expires_at, updated_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     RETURNING ${transferColumns}
   `).bind(
     id,
@@ -74,7 +84,8 @@ export async function createGameTransfer(
     input.clientHash,
     input.entryCount,
     createdAt,
-    input.expiresAt
+    input.expiresAt,
+    createdAt
   ).first<GameTransferRow>();
   if (!row) return "not_found";
   return { ...state(row, now), claimToken: claim.editToken, manageToken: manage.editToken };
@@ -117,11 +128,11 @@ export async function claimGameTransfer(
   const claimedAt = now.toISOString();
   const row = await db.prepare(`
     UPDATE game_save_transfers
-    SET status = 'claimed', claimed_at = ?
+    SET status = 'claimed', claimed_at = ?, updated_at = ?
     WHERE invitation_id = ? AND id = ? AND claim_token_hash = ?
       AND status = 'active' AND expires_at > ?
     RETURNING ${transferColumns}
-  `).bind(claimedAt, invitationId, transferId, tokenHash, claimedAt).first<GameTransferRow>();
+  `).bind(claimedAt, claimedAt, invitationId, transferId, tokenHash, claimedAt).first<GameTransferRow>();
   if (row) return { state: state(row, now), changed: true };
   const existing = await authorizedTransfer(db, invitationId, transferId, token, "claim");
   return existing ? { state: state(existing, now), changed: false } : null;
@@ -138,12 +149,49 @@ export async function revokeGameTransfer(
   const revokedAt = now.toISOString();
   const row = await db.prepare(`
     UPDATE game_save_transfers
-    SET status = 'revoked', revoked_at = ?
+    SET status = 'revoked', revoked_at = ?, updated_at = ?
     WHERE invitation_id = ? AND id = ? AND manage_token_hash = ?
       AND status = 'active' AND expires_at > ?
     RETURNING ${transferColumns}
-  `).bind(revokedAt, invitationId, transferId, tokenHash, revokedAt).first<GameTransferRow>();
+  `).bind(revokedAt, revokedAt, invitationId, transferId, tokenHash, revokedAt).first<GameTransferRow>();
   if (row) return { state: state(row, now), changed: true };
   const existing = await authorizedTransfer(db, invitationId, transferId, token, "manage");
+  return existing ? { state: state(existing, now), changed: false } : null;
+}
+
+export async function reportGameTransferProgress(
+  db: D1Database,
+  invitationId: string,
+  transferId: string,
+  token: string,
+  phase: GameTransferProgressPhase,
+  now = new Date()
+): Promise<{ state: GameTransferState; changed: boolean } | null> {
+  const tokenHash = await hashEditToken(token);
+  const updatedAt = now.toISOString();
+  const row = await db.prepare(`
+    UPDATE game_save_transfers
+    SET receiver_phase = CASE
+          WHEN receiver_phase = 'restoring' THEN receiver_phase
+          WHEN receiver_phase = 'previewing' AND ? = 'opened' THEN receiver_phase
+          ELSE ?
+        END,
+        receiver_seen_at = COALESCE(receiver_seen_at, ?),
+        updated_at = ?
+    WHERE invitation_id = ? AND id = ? AND claim_token_hash = ?
+      AND status = 'active' AND expires_at > ?
+    RETURNING ${transferColumns}
+  `).bind(
+    phase,
+    phase,
+    updatedAt,
+    updatedAt,
+    invitationId,
+    transferId,
+    tokenHash,
+    updatedAt
+  ).first<GameTransferRow>();
+  if (row) return { state: state(row, now), changed: true };
+  const existing = await authorizedTransfer(db, invitationId, transferId, token, "claim");
   return existing ? { state: state(existing, now), changed: false } : null;
 }

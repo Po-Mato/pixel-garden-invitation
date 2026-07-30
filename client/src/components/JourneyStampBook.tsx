@@ -3,16 +3,19 @@ import {
   CalendarHeart,
   Check,
   ChevronDown,
+  Eye,
   Flower2,
   Footprints,
   Gift,
   Images,
+  LockKeyhole,
   MapPinned,
   MessageCircleHeart,
+  Sparkles,
   type LucideIcon
 } from "lucide-react";
-import { useState } from "react";
-import type { WorldZoneId } from "@wedding-game/shared";
+import { useEffect, useState } from "react";
+import type { CharacterAppearance, WorldZoneId } from "@wedding-game/shared";
 import {
   journeyCheckpoints,
   journeyCheckpointIds,
@@ -20,6 +23,13 @@ import {
   type JourneyCheckpointId,
   type JourneyProgress
 } from "../game/journeyProgress";
+import {
+  isJourneyStampRewardUnlocked,
+  journeyStampRewards,
+  type JourneyStampRewardId
+} from "../game/journeyStampReward";
+import { CharacterSprite } from "./CharacterSprite";
+import "../journey-stamp-rewards.css";
 
 type JourneyStampBookProps = {
   progress: JourneyProgress;
@@ -27,7 +37,10 @@ type JourneyStampBookProps = {
   activeZoneId: WorldZoneId;
   highlightedCheckpointId: JourneyCheckpointId | null;
   disabled?: boolean;
+  appearance: CharacterAppearance;
+  equippedReward: JourneyStampRewardId;
   onOpenChange?: (open: boolean) => void;
+  onEquipReward: (rewardId: JourneyStampRewardId) => void;
   onOpenCompletion: () => void;
   onSelectZone: (zoneId: WorldZoneId) => void;
 };
@@ -50,13 +63,23 @@ export function JourneyStampBook({
   activeZoneId,
   highlightedCheckpointId,
   disabled = false,
+  appearance,
+  equippedReward,
   onOpenChange,
+  onEquipReward,
   onOpenCompletion,
   onSelectZone
 }: JourneyStampBookProps) {
   const [open, setOpen] = useState(false);
+  const [previewRewardId, setPreviewRewardId] = useState<JourneyStampRewardId>(equippedReward);
   const completed = new Set(progress.completedIds);
   const nextCheckpoint = nextJourneyCheckpoint(progress);
+  const previewReward = journeyStampRewards.find(({ id }) => id === previewRewardId) ?? journeyStampRewards[0];
+  const previewUnlocked = isJourneyStampRewardUnlocked(previewReward.id, progress);
+
+  useEffect(() => {
+    setPreviewRewardId(equippedReward);
+  }, [equippedReward]);
 
   const updateOpen = (nextOpen: boolean) => {
     setOpen(nextOpen);
@@ -110,6 +133,64 @@ export function JourneyStampBook({
                     : "이 기기에 안전하게 저장됨"}
             </small>
           </header>
+          <section className="journey-stamp-wardrobe" aria-labelledby="journey-stamp-wardrobe-title">
+            <header>
+              <span><Sparkles aria-hidden="true" /></span>
+              <div>
+                <strong id="journey-stamp-wardrobe-title">스탬프 장식함</strong>
+                <small>모은 추억을 캐릭터에 미리 입혀보세요</small>
+              </div>
+            </header>
+            <div
+              className="journey-stamp-wardrobe__preview"
+              data-journey-stamp-reward={previewReward.id}
+              data-locked={!previewUnlocked || undefined}
+              aria-label={`${previewReward.label} 캐릭터 미리보기`}
+            >
+              <span aria-hidden="true">
+                <CharacterSprite appearance={appearance} direction="down" moving={false} displayMode="preview" />
+              </span>
+              <div>
+                <small><Eye aria-hidden="true" /> 실시간 미리보기</small>
+                <strong>{previewReward.label}</strong>
+                <p>{previewReward.detail}</p>
+                <button
+                  type="button"
+                  disabled={disabled || !previewUnlocked}
+                  aria-pressed={equippedReward === previewReward.id}
+                  onClick={() => onEquipReward(equippedReward === previewReward.id ? "none" : previewReward.id)}
+                >
+                  {!previewUnlocked
+                    ? <><LockKeyhole aria-hidden="true" />스탬프를 모으면 해금</>
+                    : equippedReward === previewReward.id
+                      ? <><Check aria-hidden="true" />착용 중 · 해제</>
+                      : <><Sparkles aria-hidden="true" />이 장식 착용</>}
+                </button>
+              </div>
+            </div>
+            <div className="journey-stamp-wardrobe__catalog" role="list" aria-label="스탬프 장식 목록">
+              {journeyStampRewards.map((reward) => {
+                const unlocked = isJourneyStampRewardUnlocked(reward.id, progress);
+                return (
+                  <span key={reward.id} role="listitem">
+                    <button
+                      type="button"
+                      data-reward={reward.id}
+                      data-unlocked={unlocked || undefined}
+                      data-selected={previewRewardId === reward.id || undefined}
+                      aria-label={`${reward.label}, ${unlocked ? reward.unlockLabel : `${reward.unlockLabel} 필요`}`}
+                      aria-pressed={previewRewardId === reward.id}
+                      onClick={() => setPreviewRewardId(reward.id)}
+                    >
+                      <i aria-hidden="true" />
+                      <span><strong>{reward.label}</strong><small>{unlocked ? reward.unlockLabel : `${reward.unlockLabel} 필요`}</small></span>
+                      {unlocked ? <Check aria-hidden="true" /> : <LockKeyhole aria-hidden="true" />}
+                    </button>
+                  </span>
+                );
+              })}
+            </div>
+          </section>
           {nextCheckpoint ? (
             <button
               type="button"

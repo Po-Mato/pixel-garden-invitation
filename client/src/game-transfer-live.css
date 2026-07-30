@@ -1,0 +1,26 @@
+.game-transfer-live { display: grid; gap: 7px; padding: 8px; color: #5b5150; background: linear-gradient(135deg, #fffaf0, #eaf1e8); border: 1px solid #9da995; }
+.game-transfer-live > header { display: grid; grid-template-columns: 23px minmax(0, 1fr) auto; align-items: center; gap: 6px; }
+.game-transfer-live > header > svg { width: 20px; color: #63806a; }
+.game-transfer-live > header span { display: grid; gap: 1px; }
+.game-transfer-live > header strong { font-size: 9px; }
+.game-transfer-live > header small { color: #758074; font-size: 7px; }
+.game-transfer-live > header > i { width: 8px; height: 8px; background: #5d8d69; border: 2px solid #fff; border-radius: 50%; box-shadow: 0 0 0 1px #6e876f; }
+.game-transfer-live[data-status="revoked"] > header > i,
+.game-transfer-live[data-status="expired"] > header > i { background: #a56866; box-shadow: 0 0 0 1px #98615f; }
+.game-transfer-live ol { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 3px; margin: 0; padding: 0; list-style: none; }
+.game-transfer-live li { position: relative; display: grid; min-width: 0; gap: 3px; justify-items: center; color: #988d87; font-size: 6px; font-weight: 850; text-align: center; }
+.game-transfer-live li::before { position: absolute; z-index: 0; top: 7px; left: calc(-50% + 9px); width: calc(100% - 6px); height: 2px; content: ""; background: #d3cec5; }
+.game-transfer-live li:first-child::before { display: none; }
+.game-transfer-live li i { position: relative; z-index: 1; display: grid; width: 15px; height: 15px; place-items: center; background: #e0ddd6; border: 1px solid #bbb5ac; border-radius: 50%; }
+.game-transfer-live li i svg { width: 9px; }
+.game-transfer-live li[data-complete] { color: #536b58; }
+.game-transfer-live li[data-complete]::before { background: #7f9b82; }
+.game-transfer-live li[data-complete] i { color: #fff; background: #6f8f75; border-color: #58765f; }
+.game-transfer-live li[data-current] i { background: #fff; border: 2px solid #a56a79; box-shadow: 0 0 0 3px rgba(165, 106, 121, .15); }
+.game-transfer-live li span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .game-transfer-live > header > i,
+  .game-transfer-live li[data-current] i { animation: game-transfer-live-pulse 1.4s ease-in-out infinite; }
+  @keyframes game-transfer-live-pulse { 50% { transform: scale(.82); opacity: .58; } }
+}

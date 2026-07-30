@@ -25,7 +25,10 @@ describe("gameTransferReceiptHistory", () => {
       createdAt: "2026-07-30T10:00:00.000Z",
       expiresAt: "2026-07-30T10:15:00.000Z",
       claimedAt: null,
-      revokedAt: null
+      revokedAt: null,
+      receiverPhase: null,
+      receiverSeenAt: null,
+      updatedAt: "2026-07-30T10:00:00.000Z"
     };
     const receipts = rememberCreatedGameTransfer(created, store);
     expect(loadGameTransferReceiptHistory(store)).toEqual(receipts);

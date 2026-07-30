@@ -1,0 +1,102 @@
+.journey-stamp-wardrobe {
+  display: grid;
+  gap: 8px;
+  padding: 9px;
+  color: #59464c;
+  background:
+    radial-gradient(circle at 92% 8%, rgba(207, 153, 120, 0.2), transparent 34%),
+    linear-gradient(145deg, #fffaf0, #f3eadf);
+  border: 1px solid #c8aa94;
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.58);
+}
+
+.journey-stamp-wardrobe > header { display: grid; grid-template-columns: 28px minmax(0, 1fr); align-items: center; gap: 7px; }
+.journey-stamp-wardrobe > header > span { display: grid; width: 28px; height: 28px; place-items: center; color: #fff9ed; background: #9a6673; border-radius: 50%; }
+.journey-stamp-wardrobe > header svg { width: 15px; }
+.journey-stamp-wardrobe > header div { display: grid; gap: 1px; }
+.journey-stamp-wardrobe > header strong { font-family: Georgia, "Times New Roman", serif; font-size: 12px; }
+.journey-stamp-wardrobe > header small { color: #90777b; font-size: 8px; font-weight: 750; }
+
+.journey-stamp-wardrobe__preview {
+  --stamp-reward-accent: #a16476;
+  display: grid;
+  min-height: 146px;
+  grid-template-columns: 112px minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.74);
+  border: 1px solid rgba(131, 99, 101, 0.34);
+}
+
+.journey-stamp-wardrobe__preview[data-locked] { filter: saturate(0.45); }
+.journey-stamp-wardrobe__preview > span { position: relative; display: grid; width: 108px; height: 132px; place-items: center; overflow: hidden; }
+.journey-stamp-wardrobe__preview .character-sprite { transform: scale(0.67); transform-origin: center; }
+.journey-stamp-wardrobe__preview > div { display: grid; gap: 4px; min-width: 0; }
+.journey-stamp-wardrobe__preview > div > small { display: flex; align-items: center; gap: 3px; color: #996778; font-size: 7px; font-weight: 900; }
+.journey-stamp-wardrobe__preview > div > small svg { width: 11px; }
+.journey-stamp-wardrobe__preview > div > strong { font-family: Georgia, "Times New Roman", serif; font-size: 13px; }
+.journey-stamp-wardrobe__preview p { margin: 0; color: #78676a; font-size: 8px; line-height: 1.45; }
+.journey-stamp-wardrobe__preview button { display: flex; min-height: 34px; align-items: center; justify-content: center; gap: 4px; padding: 6px; color: #fff; background: #76535e; border: 1px solid #65444f; font-size: 8px; font-weight: 900; }
+.journey-stamp-wardrobe__preview button:disabled { color: #7f7472; background: #e3ddd4; border-color: #bdb2a8; opacity: 1; }
+.journey-stamp-wardrobe__preview button svg { width: 13px; }
+
+.journey-stamp-wardrobe__catalog { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; }
+.journey-stamp-wardrobe__catalog > span { display: contents; }
+.journey-stamp-wardrobe__catalog button { display: grid; width: 100%; min-height: 46px; grid-template-columns: 18px minmax(0, 1fr) 13px; align-items: center; gap: 5px; padding: 5px; color: #76686a; text-align: left; background: #eee8df; border: 1px solid #cbc0b6; }
+.journey-stamp-wardrobe__catalog button[data-unlocked] { color: #58484d; background: #fffaf0; border-color: #b99988; }
+.journey-stamp-wardrobe__catalog button[data-selected] { outline: 2px solid #9e6675; outline-offset: -2px; }
+.journey-stamp-wardrobe__catalog button > i { display: grid; width: 18px; height: 18px; place-items: center; color: #fff; background: #a77882; border-radius: 50%; }
+.journey-stamp-wardrobe__catalog button > i::before { content: "·"; font-size: 18px; line-height: 1; }
+.journey-stamp-wardrobe__catalog button[data-reward="garden-map-pin"] > i::before { content: "✦"; font-size: 9px; }
+.journey-stamp-wardrobe__catalog button[data-reward="gallery-ribbon"] > i::before { content: "▰"; font-size: 8px; }
+.journey-stamp-wardrobe__catalog button[data-reward="bridal-corsage"] > i::before { content: "✿"; font-size: 10px; }
+.journey-stamp-wardrobe__catalog button[data-reward="promise-tiara"] > i::before { content: "♛"; font-size: 10px; }
+.journey-stamp-wardrobe__catalog button[data-reward="guestbook-sparkle"] > i::before { content: "★"; font-size: 9px; }
+.journey-stamp-wardrobe__catalog button span { display: grid; gap: 1px; min-width: 0; }
+.journey-stamp-wardrobe__catalog button strong { overflow: hidden; font-size: 8px; text-overflow: ellipsis; white-space: nowrap; }
+.journey-stamp-wardrobe__catalog button small { overflow: hidden; color: #96878a; font-size: 6px; text-overflow: ellipsis; white-space: nowrap; }
+.journey-stamp-wardrobe__catalog button > svg { width: 12px; }
+
+.journey-stamp-wardrobe__preview[data-journey-stamp-reward="garden-map-pin"] > span::after,
+.game-world[data-journey-stamp-reward="garden-map-pin"] .world-player:not(.player--remote) .character-sprite::after { content: "✦"; color: #cf9a41; }
+.journey-stamp-wardrobe__preview[data-journey-stamp-reward="gallery-ribbon"] > span::after,
+.game-world[data-journey-stamp-reward="gallery-ribbon"] .world-player:not(.player--remote) .character-sprite::after { content: "▰"; color: #ae6479; transform: rotate(-12deg); }
+.journey-stamp-wardrobe__preview[data-journey-stamp-reward="bridal-corsage"] > span::after,
+.game-world[data-journey-stamp-reward="bridal-corsage"] .world-player:not(.player--remote) .character-sprite::after { content: "✿"; color: #d97990; }
+.journey-stamp-wardrobe__preview[data-journey-stamp-reward="promise-tiara"] > span::after,
+.game-world[data-journey-stamp-reward="promise-tiara"] .world-player:not(.player--remote) .character-sprite::after { content: "♛"; color: #d7a13e; }
+.journey-stamp-wardrobe__preview[data-journey-stamp-reward="guestbook-sparkle"] > span::after,
+.game-world[data-journey-stamp-reward="guestbook-sparkle"] .world-player:not(.player--remote) .character-sprite::after { content: "★"; color: #7f77b5; text-shadow: -7px 7px 0 #d695a4; }
+
+.journey-stamp-wardrobe__preview[data-journey-stamp-reward]:not([data-journey-stamp-reward="none"]) > span::after {
+  position: absolute;
+  z-index: 5;
+  top: 18px;
+  left: calc(50% + 16px);
+  font-size: 17px;
+  line-height: 1;
+  filter: drop-shadow(1px 1px 0 #fff8dc);
+  pointer-events: none;
+}
+
+.game-world[data-journey-stamp-reward]:not([data-journey-stamp-reward="none"]) .world-player:not(.player--remote) .character-sprite::after {
+  position: absolute;
+  z-index: 6;
+  top: 3px;
+  left: calc(50% + 8px);
+  font-size: 12px;
+  line-height: 1;
+  filter: drop-shadow(1px 1px 0 #fff8dc);
+  pointer-events: none;
+}
+
+@media (max-width: 360px) {
+  .journey-stamp-wardrobe__preview { grid-template-columns: 96px minmax(0, 1fr); }
+  .journey-stamp-wardrobe__preview > span { width: 92px; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .game-world[data-journey-stamp-reward="guestbook-sparkle"] .world-player:not(.player--remote) .character-sprite::after { animation: stamp-reward-sparkle 1.8s ease-in-out infinite; }
+  @keyframes stamp-reward-sparkle { 50% { opacity: 0.45; transform: translateY(-2px) scale(0.85); } }
+}
