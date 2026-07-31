@@ -133,4 +133,17 @@ describe("tracking camera", () => {
 
     expect(camera).toEqual({ x: 0, y: 0, zoom: 1 });
   });
+
+  it("aligns an odd-sized viewport camera to whole CSS pixels", () => {
+    const camera = computeCameraTransform({
+      player: { x: 315, y: 900 },
+      viewport: { width: 391, height: 521 },
+      bounds: { width: 780, height: 1920 },
+      zoom: 1
+    });
+
+    expect(camera).toEqual({ x: -119, y: -639, zoom: 1 });
+    expect(Number.isInteger(camera.x)).toBe(true);
+    expect(Number.isInteger(camera.y)).toBe(true);
+  });
 });

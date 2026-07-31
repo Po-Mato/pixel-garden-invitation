@@ -14,7 +14,6 @@ import {
 import { gameMemoryAlbumStorageKey } from "../game/gameMemoryAlbum";
 import { worldDepth } from "../game/worldVisuals";
 import { journeyProgressStorageKey } from "../game/journeyProgress";
-import { gameHudAutoHideDelayMs } from "../game/gameHudVisibility";
 import { worldSessionStorageKey } from "../game/worldSession";
 import { worldTravelHistoryStorageKey } from "../game/worldTravelHistory";
 import { worldSecretCollectionStorageKey } from "../game/worldSecretCollection";
@@ -2760,7 +2759,7 @@ describe("GameWorld", () => {
     expect(screen.getByRole("button", { name: "초대장 메뉴" })).toBeInTheDocument();
   });
 
-  it("이동이 이어지면 상단 HUD를 접고 정지하면 바로 복원한다", () => {
+  it("이동 중에도 상단 HUD 골격을 유지하고 상태 밀도만 갱신한다", () => {
     render(<GameWorld profile={profile} />);
     const joystick = screen.getByLabelText("가상 조이스틱");
     const hud = document.querySelector(".world-hud");
@@ -2768,12 +2767,11 @@ describe("GameWorld", () => {
     fireEvent.keyDown(joystick, { key: "ArrowRight" });
     advanceAnimation(0);
     expect(hud).toHaveAttribute("data-density", "moving");
-    act(() => vi.advanceTimersByTime(gameHudAutoHideDelayMs));
-    expect(hud).toHaveAttribute("data-auto-hidden", "true");
+    act(() => vi.advanceTimersByTime(800));
+    expect(hud).not.toHaveAttribute("data-auto-hidden");
 
     fireEvent.keyUp(joystick, { key: "ArrowRight" });
     advanceAnimation(300);
-    expect(hud).not.toHaveAttribute("data-auto-hidden");
     expect(hud).not.toHaveAttribute("data-density", "moving");
   });
 

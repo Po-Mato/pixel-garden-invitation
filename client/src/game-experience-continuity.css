@@ -976,17 +976,6 @@ html[data-game-ui-scale="large"] .world-control-actions :is(button, .guest-react
     border-color 160ms ease;
 }
 
-.game-world .world-hud[data-auto-hidden] {
-  max-height: 0;
-  overflow: hidden;
-  padding-top: 0;
-  padding-bottom: 0;
-  border-bottom-color: transparent;
-  opacity: 0;
-  transform: translateY(-10px);
-  pointer-events: none;
-}
-
 .game-world .world-minimap[data-compact="true"] {
   display: block;
   width: 48px;

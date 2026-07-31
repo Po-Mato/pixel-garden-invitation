@@ -22,8 +22,10 @@ function positiveOr(value: number, fallback: number): number {
 
 function cameraAxis(desired: number, viewportSize: number, mapSize: number, zoom: number): number {
   const scaledMapSize = positiveOr(mapSize, viewportSize / zoom) * zoom;
-  if (scaledMapSize <= viewportSize) return (viewportSize - scaledMapSize) / 2;
-  return Math.min(0, Math.max(viewportSize - scaledMapSize, desired));
+  const aligned = scaledMapSize <= viewportSize
+    ? (viewportSize - scaledMapSize) / 2
+    : Math.min(0, Math.max(viewportSize - scaledMapSize, desired));
+  return Math.round(aligned);
 }
 
 export function computeCameraTransform(input: CameraInput): CameraTransform {

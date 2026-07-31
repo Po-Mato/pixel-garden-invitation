@@ -13,7 +13,7 @@
 
 .game-world .world-hud[data-density="route"] .world-destination-guide em,
 .game-world .world-hud[data-density="moving"] .world-destination-guide em,
-.game-world .world-hud[data-density="context"] .world-destination-guide-row {
+.game-world .world-hud[data-density="context"] .world-destination-guide em {
   display: none;
 }
 
@@ -50,8 +50,27 @@
   display: none;
 }
 
-@media (min-width: 760px) and (orientation: landscape) {
-  .game-world .world-hud[data-density="context"] { width: min(180px, 22vw); }
+/* Keep the map viewport and camera origin fixed while movement density changes. */
+.game-world .world-hud:not([data-tools-open]) {
+  box-sizing: border-box;
+  flex: 0 0 96px;
+  width: 100%;
+  min-height: 96px;
+  max-height: 96px;
+  padding: 8px 10px 9px;
+  border-right: 0;
+}
+
+@media (orientation: landscape) and (max-height: 500px) {
+  .game-world .world-hud:not([data-tools-open]) {
+    flex: initial;
+    width: 100%;
+    min-height: 0;
+    max-height: none;
+    padding: 10px 9px;
+    border-right: 4px solid var(--ink);
+    border-bottom: 0;
+  }
 }
 
 html[data-reduce-motion="true"] .game-world .world-hud { transition-duration: 0.01ms; }

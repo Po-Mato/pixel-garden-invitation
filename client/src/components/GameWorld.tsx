@@ -73,7 +73,7 @@ import {
   queueJourneyProgress
 } from "../game/journeySyncQueue";
 import { completeGameGuide, loadGameGuideState, shouldAutoOpenGameGuide } from "../game/gameGuide";
-import { gameHudAutoHideDelayMs, resolveGameHudDensity, shouldAutoHideGameHud } from "../game/gameHudVisibility";
+import { resolveGameHudDensity } from "../game/gameHudVisibility";
 import { resolveContextHudAction, type ContextHudAction } from "../game/contextHudAction";
 import { resolveNpcDialoguePlacement } from "../game/gameOverlayPlacement";
 import { journeyDirectionLabels, resolveJourneyGuidance } from "../game/journeyGuidance";
@@ -591,7 +591,6 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   const [photoAlbumOpen, setPhotoAlbumOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [hudToolsOpen, setHudToolsOpen] = useState(() => window.location.hash.startsWith("#game-transfer="));
-  const [hudAutoHidden, setHudAutoHidden] = useState(false);
   const [quickDockSettingsOpen, setQuickDockSettingsOpen] = useState(false);
   const [calendarSheetOpen, setCalendarSheetOpen] = useState(false);
   const [directionsSheetOpen, setDirectionsSheetOpen] = useState(false);
@@ -712,21 +711,6 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     || activeNpcDialogue !== null
     || journeyCompletionOpen
     || celebrationRewardOpen;
-
-  useEffect(() => {
-    const shouldHide = shouldAutoHideGameHud({
-      moving,
-      toolsOpen: hudToolsOpen,
-      overlayOpen: gameOverlayOpen,
-      portalTransitioning: Boolean(portalTransition)
-    });
-    if (!shouldHide) {
-      setHudAutoHidden(false);
-      return;
-    }
-    const timer = window.setTimeout(() => setHudAutoHidden(true), gameHudAutoHideDelayMs);
-    return () => window.clearTimeout(timer);
-  }, [gameOverlayOpen, hudToolsOpen, moving, portalTransition]);
 
   useEffect(() => {
     if (isJourneyStampRewardUnlocked(equippedJourneyStampReward, journeyProgress)) return;
@@ -4142,7 +4126,6 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
       <header
         className="world-hud"
         data-tools-open={hudToolsOpen || undefined}
-        data-auto-hidden={hudAutoHidden || undefined}
         data-density={hudDensity}
         data-dialogue-open={Boolean(activeNpcDialogue) || undefined}
       >

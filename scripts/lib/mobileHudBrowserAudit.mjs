@@ -83,6 +83,38 @@ async function visibleRectangles(page) {
   });
 }
 
+async function measureMovementLayoutStability(page) {
+  const readLayout = () => page.evaluate(() => {
+    const read = (selector) => {
+      const element = document.querySelector(selector);
+      if (!(element instanceof HTMLElement)) return null;
+      const rect = element.getBoundingClientRect();
+      return { x: rect.x, y: rect.y, width: rect.width, height: rect.height };
+    };
+    return { hud: read(".world-hud"), map: read(".world-map") };
+  });
+  const before = await readLayout();
+  const joystick = page.locator(".virtual-joystick");
+  await joystick.focus();
+  try {
+    await page.keyboard.down("ArrowRight");
+    await page.waitForTimeout(700);
+  } finally {
+    await page.keyboard.up("ArrowRight").catch(() => undefined);
+  }
+  const during = await readLayout();
+  await page.waitForTimeout(120);
+  const after = await readLayout();
+  const stable = ["hud", "map"].every((name) => {
+    const baseline = before[name];
+    return baseline && [during[name], after[name]].every((rect) => (
+      rect
+      && ["x", "y", "width", "height"].every((key) => Math.abs(rect[key] - baseline[key]) <= 1)
+    ));
+  });
+  return { before, during, after, stable };
+}
+
 async function measureJoystickTouchResponse(page, context) {
   const box = await page.locator(".virtual-joystick").boundingBox();
   if (!box) return { latencyMs: null, responded: false };
@@ -153,6 +185,8 @@ export async function runMobileHudBrowserAudit({ rootDir, outputDir, port = 4178
         await page.locator(".world-map__stage--background-loaded").waitFor({ state: "visible", timeout: 15_000 });
         const rectangles = await visibleRectangles(page);
         const issues = auditMobileHudRectangles(rectangles, viewport);
+        const movementLayout = await measureMovementLayoutStability(page);
+        if (!movementLayout.stable) issues.push("이동 중 HUD 또는 맵 화면 틀어짐");
         const touchResponse = await measureJoystickTouchResponse(page, context);
         if (!touchResponse.responded) issues.push("joystick 터치 무응답");
         if (touchResponse.latencyMs !== null && touchResponse.latencyMs > 120) issues.push(`joystick 터치 지연 ${touchResponse.latencyMs}ms`);
@@ -171,7 +205,7 @@ export async function runMobileHudBrowserAudit({ rootDir, outputDir, port = 4178
         ) issues.push("expanded-tools 화면 이탈");
         const toolsScreenshotPath = path.join(outputDir, `mobile-hud-${viewport.id}-tools.png`);
         await page.screenshot({ path: toolsScreenshotPath, fullPage: false });
-        reports.push({ ...viewport, rectangles, toolsRect, touchResponse, issues, screenshotPath, toolsScreenshotPath });
+        reports.push({ ...viewport, rectangles, movementLayout, toolsRect, touchResponse, issues, screenshotPath, toolsScreenshotPath });
         await context.close();
       }
     } finally {
