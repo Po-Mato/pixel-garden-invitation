@@ -145,6 +145,10 @@ export async function runMobileHudBrowserAudit({ rootDir, outputDir, port = 4178
           }));
         });
         await page.goto(url, { waitUntil: "networkidle" });
+        const resumeGarden = page.locator(".entry-screen__resume-access");
+        if (await resumeGarden.isVisible().catch(() => false)) {
+          await resumeGarden.click();
+        }
         await page.locator(".game-world").waitFor({ state: "visible" });
         await page.locator(".world-map__stage--background-loaded").waitFor({ state: "visible", timeout: 15_000 });
         const rectangles = await visibleRectangles(page);
