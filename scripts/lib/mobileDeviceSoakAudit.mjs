@@ -92,8 +92,17 @@ export async function runMobileDeviceSoakAudit({ rootDir, outputDir, port = 4179
         localStorage.setItem("wedding-game:first-visit-guide:v1", JSON.stringify({ version: 1, completed: true }));
       });
       await page.goto(url, { waitUntil: "networkidle" });
+      const resumeGarden = page.locator(".entry-screen__resume-access");
+      if (await resumeGarden.isVisible().catch(() => false)) {
+        await resumeGarden.click();
+      }
       await page.locator(".game-world").waitFor({ state: "visible" });
       await page.locator(".world-map__stage--background-loaded").waitFor({ state: "visible", timeout: 15_000 });
+      await page.locator(".world-hud__tools-toggle").tap();
+      await page.locator(".world-game-vault > summary").tap();
+      await page.getByRole("button", { name: /빠른 도구 편집/ }).tap();
+      await page.locator(".game-quick-dock__settings").waitFor({ state: "visible" });
+      await page.getByRole("button", { name: "게임 도구 닫기" }).tap();
       const beforeHeap = await heapUsed(page);
       let touchResponded = true;
       for (let index = 0; index < interactionCount; index += 1) {
@@ -102,7 +111,6 @@ export async function runMobileDeviceSoakAudit({ rootDir, outputDir, port = 4179
         touchResponded = touchResponded && await toggle.getAttribute("aria-expanded") === "true";
         await toggle.tap();
         touchResponded = touchResponded && await toggle.getAttribute("aria-expanded") === "false";
-        if (index % 3 === 0) await page.locator(".game-quick-dock__settings-toggle").tap().catch(() => undefined);
       }
       const averageFps = await sampleFrames(page, durationMs);
       const afterHeap = await heapUsed(page);
