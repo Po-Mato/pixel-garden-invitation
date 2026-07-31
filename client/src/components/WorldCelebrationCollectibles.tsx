@@ -58,10 +58,15 @@ export function CelebrationCollectionProgress({
     <button
       type="button"
       className="world-collection-progress"
+      data-empty={collectedCount === 0 || undefined}
       aria-label={`축하 아이템 ${collectedCount}/${totalCount}, 수집 지도 열기`}
       onClick={(event) => { event.stopPropagation(); onOpenGuide(); }}
     >{content}</button>
   ) : (
-    <div className="world-collection-progress" aria-label={`축하 아이템 ${collectedCount}/${totalCount}`}>{content}</div>
+    <div
+      className="world-collection-progress"
+      data-empty={collectedCount === 0 || undefined}
+      aria-label={`축하 아이템 ${collectedCount}/${totalCount}`}
+    >{content}</div>
   );
 }

@@ -67,6 +67,7 @@ export function CompanionDock({
   const pending = candidates.find(({ guestId }) => guestId === pendingGuestId) ?? null;
   const hasActive = Boolean(activeGuestId);
   const urgent = Boolean(rendezvousProposalNickname || rendezvousPending || destinationRequested || recentPing || shareStatus);
+  const passive = candidates.length === 0 && !hasActive && !pendingGuestId && !urgent;
   const [expanded, setExpanded] = useState(urgent);
 
   useEffect(() => {
@@ -80,7 +81,13 @@ export function CompanionDock({
   if (!available) return null;
 
   return (
-    <aside className="world-companion-dock" aria-label="같이 걷기" data-expanded={expanded || undefined} data-urgent={urgent || undefined}>
+    <aside
+      className="world-companion-dock"
+      aria-label="같이 걷기"
+      data-expanded={expanded || undefined}
+      data-urgent={urgent || undefined}
+      data-passive={passive || undefined}
+    >
       <button
         type="button"
         className="world-companion-dock__toggle"

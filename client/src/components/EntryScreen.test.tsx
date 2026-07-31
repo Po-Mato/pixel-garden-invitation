@@ -35,15 +35,13 @@ describe("EntryScreen", () => {
     expect(screen.queryByText("오후 6시 40분")).not.toBeInTheDocument();
     expect(screen.getByText("MJ컨벤션 5층 파티오볼룸")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /입장 캐릭터/ })).toBeInTheDocument();
-    expect(screen.getByRole("navigation", { name: "빠른 도구" })).toContainElement(
-      screen.getByRole("button", { name: "예식 도움말" })
-    );
-    expect(screen.getByRole("navigation", { name: "빠른 도구" })).toContainElement(
-      screen.getByRole("button", { name: "초대장 공유" })
-    );
-    expect(screen.getByRole("navigation", { name: "빠른 도구" })).toContainElement(
-      screen.getByRole("button", { name: "환경 설정" })
-    );
+    expect(screen.getByRole("button", { name: "도구 더보기" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "예식 도움말" })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "도구 더보기" }));
+    const utilityGroup = screen.getByRole("group", { name: "도움말·공유·설정" });
+    expect(utilityGroup).toContainElement(screen.getByRole("button", { name: "예식 도움말" }));
+    expect(utilityGroup).toContainElement(screen.getByRole("button", { name: "초대장 공유" }));
+    expect(utilityGroup).toContainElement(screen.getByRole("button", { name: "환경 설정" }));
     expect(container.querySelector(".entry-screen__hero")).toContainElement(
       screen.getByRole("heading", { name: `${couple.bride} & ${couple.groom}의 정원` })
     );
@@ -75,6 +73,7 @@ describe("EntryScreen", () => {
   it("빠른 도구의 도움말 아이콘에서 예식 상세를 연다", () => {
     render(<EntryScreen onEnter={vi.fn()} />);
 
+    fireEvent.click(screen.getByRole("button", { name: "도구 더보기" }));
     fireEvent.click(screen.getByRole("button", { name: "예식 도움말" }));
 
     expect(screen.getByRole("dialog", { name: "예식 정보" })).toBeInTheDocument();
@@ -174,6 +173,16 @@ describe("EntryScreen", () => {
     expect(onQuickViewIntent).toHaveBeenCalled();
     expect(onQuickView).toHaveBeenCalledOnce();
     expect(screen.queryByRole("button", { name: "정원 입장" })).not.toBeInTheDocument();
+  });
+
+  it("청첩장 보기를 게임 입장보다 먼저 제안한다", () => {
+    const { container } = render(<EntryScreen onEnter={vi.fn()} onQuickView={vi.fn()} />);
+    const actions = container.querySelector(".entry-screen__actions");
+    const quickView = screen.getByRole("button", { name: /초대장 바로 보기/ });
+    const gameEntry = screen.getByRole("button", { name: /입장 캐릭터/ });
+
+    expect(actions).toContainElement(quickView);
+    expect(quickView.compareDocumentPosition(gameEntry) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 
   it("submits nickname and customized appearance", () => {

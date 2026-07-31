@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { BookOpen, CalendarDays, ChevronRight, CircleHelp, MapPin, Sparkles } from "lucide-react";
+import { BookOpen, CalendarDays, ChevronRight, CircleHelp, Ellipsis, MapPin, Sparkles } from "lucide-react";
 import {
   defaultCharacterAppearance,
   resolveGuestPreset,
@@ -62,6 +62,7 @@ export function EntryScreen({
   );
   const [familyContactOpen, setFamilyContactOpen] = useState(false);
   const [eventInfoOpen, setEventInfoOpen] = useState(false);
+  const [utilitiesOpen, setUtilitiesOpen] = useState(false);
   const [characterPickerOpen, setCharacterPickerOpen] = useState(false);
   const [puppetMotionEnabled, setPuppetMotionEnabled] = useState(false);
   const [characterReady, setCharacterReady] = useState(() => import.meta.env.MODE === "test");
@@ -108,16 +109,35 @@ export function EntryScreen({
       </div>
       <nav className="entry-screen__utilities" aria-label="빠른 도구">
         <button
-          className="entry-screen__utility-button entry-screen__utility-button--help"
+          className="entry-screen__utility-button entry-screen__utility-button--more"
           type="button"
-          aria-label="예식 도움말"
-          title="예식 도움말"
-          onClick={() => setEventInfoOpen(true)}
+          aria-label={utilitiesOpen ? "도구 더보기 닫기" : "도구 더보기"}
+          aria-expanded={utilitiesOpen}
+          title="도구 더보기"
+          onClick={() => setUtilitiesOpen((current) => !current)}
         >
-          <CircleHelp aria-hidden="true" />
+          <Ellipsis aria-hidden="true" />
         </button>
-        <InvitationShareAccess variant="icon" />
-        <ViewSettingsAccess variant="icon" />
+        {utilitiesOpen ? (
+          <div
+            className="entry-screen__utility-menu"
+            role="group"
+            aria-label="도움말·공유·설정"
+            onClickCapture={() => setUtilitiesOpen(false)}
+          >
+            <button
+              className="entry-screen__utility-button entry-screen__utility-button--help"
+              type="button"
+              aria-label="예식 도움말"
+              title="예식 도움말"
+              onClick={() => setEventInfoOpen(true)}
+            >
+              <CircleHelp aria-hidden="true" />
+            </button>
+            <InvitationShareAccess variant="icon" />
+            <ViewSettingsAccess variant="icon" />
+          </div>
+        ) : null}
       </nav>
       <div className="entry-screen__hero">
         <header className="entry-screen__header">
@@ -163,9 +183,24 @@ export function EntryScreen({
           </span>
           <ChevronRight aria-hidden="true" />
         </button>
+        {onQuickView ? (
+          <button
+            className="entry-screen__quick-access entry-screen__quick-access--primary"
+            type="button"
+            onFocus={onQuickViewIntent}
+            onPointerEnter={onQuickViewIntent}
+            onPointerDown={onQuickViewIntent}
+            onClick={onQuickView}
+          >
+            <BookOpen aria-hidden="true" />
+            <span><small>먼저 확인하기</small><strong>초대장 바로 보기</strong></span>
+            <ChevronRight aria-hidden="true" />
+          </button>
+        ) : null}
         <button
           className="entry-screen__character-access"
           type="button"
+          aria-label={`입장 캐릭터 ${selectedPreset.label} 설정하고 게임으로 둘러보기`}
           onFocus={prepareGarden}
           onPointerEnter={prepareGarden}
           onPointerDown={prepareGarden}
@@ -180,28 +215,14 @@ export function EntryScreen({
             />
           </span>
           <span>
-            <small>입장 캐릭터</small>
-            <strong>{selectedPreset.label}</strong>
+            <small>게임으로 둘러보기</small>
+            <strong>{selectedPreset.label}로 정원 입장</strong>
           </span>
           <span className="entry-screen__character-command">
             <Sparkles aria-hidden="true" />
-            선택하기
+            설정
           </span>
         </button>
-        {onQuickView ? (
-          <button
-            className="entry-screen__quick-access"
-            type="button"
-            onFocus={onQuickViewIntent}
-            onPointerEnter={onQuickViewIntent}
-            onPointerDown={onQuickViewIntent}
-            onClick={onQuickView}
-          >
-            <BookOpen aria-hidden="true" />
-            <span><small>게임 없이</small><strong>초대장 바로 보기</strong></span>
-            <ChevronRight aria-hidden="true" />
-          </button>
-        ) : null}
       </div>
       {eventInfoOpen ? (
         <BottomSheet title="예식 정보" className="entry-event-sheet" onClose={() => setEventInfoOpen(false)}>

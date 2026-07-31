@@ -245,6 +245,26 @@ function openJourneyTools() {
   if (toggle.getAttribute("aria-expanded") !== "true") fireEvent.click(toggle);
 }
 
+function openGameVault() {
+  openJourneyTools();
+  const summary = screen.getByText("게임 보관함").closest("summary");
+  if (!summary) throw new Error("게임 보관함 요약을 찾지 못했습니다.");
+  const details = summary.closest("details");
+  if (!details?.hasAttribute("open")) fireEvent.click(summary);
+}
+
+function openMenuGameTools() {
+  const summary = screen.getByText("게임 도구와 설정").closest("summary");
+  if (!summary) throw new Error("게임 도구와 설정 요약을 찾지 못했습니다.");
+  const details = summary.closest("details");
+  if (!details?.hasAttribute("open")) fireEvent.click(summary);
+}
+
+function openQuickGameTools() {
+  const toggle = screen.getByRole("button", { name: /게임 도구 (열기|닫기)/ });
+  if (toggle.getAttribute("aria-expanded") !== "true") fireEvent.click(toggle);
+}
+
 function openCompanionDock() {
   const dock = screen.getByLabelText("같이 걷기");
   const toggle = within(dock).getByRole("button", { name: /같이 걷기 (열기|닫기)$/ });
@@ -307,7 +327,7 @@ describe("GameWorld", () => {
   it("starts at home and jumps directly to a selected journey zone", () => {
     render(<GameWorld profile={profile} />);
     expect(screen.queryByLabelText("하객 여정")).not.toBeInTheDocument();
-    openJourneyTools();
+    openGameVault();
     const journey = screen.getByLabelText("하객 여정");
 
     expect(screen.getByLabelText("우리 집 지도")).toHaveAttribute("data-zone", "home");
@@ -511,6 +531,7 @@ describe("GameWorld", () => {
     const startingPosition = { left: player.style.left, top: player.style.top };
 
     fireEvent.click(screen.getByRole("button", { name: "초대장 메뉴" }));
+    openMenuGameTools();
     fireEvent.click(within(screen.getByRole("dialog", { name: "초대장 바로가기" }))
       .getByRole("button", { name: "게임 안내 다시 보기" }));
 
@@ -522,7 +543,7 @@ describe("GameWorld", () => {
 
   it("walks to a photo spot before opening the camera experience", async () => {
     render(<GameWorld profile={profile} />);
-    openJourneyTools();
+    openGameVault();
     fireEvent.click(screen.getByRole("button", { name: "예식장 로비 바로 이동" }));
 
     fireEvent.click(screen.getByRole("button", { name: "로비 포토월 기념 촬영" }));
@@ -684,7 +705,7 @@ describe("GameWorld", () => {
       fireEvent.click(within(screen.getByRole("dialog", { name: "초대장 바로가기" })).getByRole("button", { name: "답변하기" }));
     }],
     ["world spot", () => {
-      openJourneyTools();
+      openGameVault();
       fireEvent.click(screen.getByRole("button", { name: "예식장 로비 바로 이동" }));
       fireEvent.click(screen.getByRole("button", { name: "축의대 답변하기" }));
     }]
@@ -846,7 +867,7 @@ describe("GameWorld", () => {
 
   it("restores a world spot trigger without forcing focus to the menu button", () => {
     render(<GameWorld profile={profile} />);
-    openJourneyTools();
+    openGameVault();
     fireEvent.click(screen.getByRole("button", { name: "예식장 로비 바로 이동" }));
     const worldSpot = screen.getByRole("button", { name: "축의대 답변하기" });
     const menuButton = screen.getByRole("button", { name: "초대장 메뉴" });
@@ -887,6 +908,7 @@ describe("GameWorld", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "초대장 메뉴" }));
     const menu = screen.getByRole("dialog", { name: "초대장 바로가기" });
+    openMenuGameTools();
     fireEvent.click(within(menu).getByRole("button", { name: "포토앨범 0/3" }));
     await revealLazyGameFeature();
 
@@ -1100,7 +1122,7 @@ describe("GameWorld", () => {
     }));
     render(<GameWorld profile={profile} />);
 
-    openJourneyTools();
+    openGameVault();
     fireEvent.click(screen.getByRole("button", { name: "예식홀 바로 이동" }));
 
     expect(screen.getByRole("dialog", { name: "방문 여정 완주" })).toBeInTheDocument();
@@ -1121,7 +1143,7 @@ describe("GameWorld", () => {
     }));
     render(<GameWorld profile={profile} />);
 
-    openJourneyTools();
+    openGameVault();
     fireEvent.click(screen.getByRole("button", { name: "예식홀 바로 이동" }));
     fireEvent.click(within(screen.getByRole("dialog", { name: "방문 여정 완주" }))
       .getByRole("button", { name: "초대장 공유" }));
@@ -1148,7 +1170,7 @@ describe("GameWorld", () => {
 
   it("replaces a guided interaction when another world spot is selected", () => {
     render(<GameWorld profile={profile} />);
-    openJourneyTools();
+    openGameVault();
     fireEvent.click(screen.getByRole("button", { name: "예식장 로비 바로 이동" }));
     const rsvpSpot = screen.getByRole("button", { name: "축의대 답변하기" });
     const gallerySpot = screen.getByRole("button", { name: "웨딩 갤러리 사진 보기" });
@@ -1575,6 +1597,7 @@ describe("GameWorld", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "초대장 메뉴" }));
     const menu = screen.getByRole("dialog", { name: "초대장 바로가기" });
+    openMenuGameTools();
     fireEvent.click(within(menu).getByRole("button", { name: "환경 설정" }));
 
     expect(screen.getByRole("dialog", { name: "환경 설정" })).toBeInTheDocument();
@@ -2575,6 +2598,7 @@ describe("GameWorld", () => {
   it("opens a combined game memory album from the invitation menu", async () => {
     render(<GameWorld profile={profile} />);
     fireEvent.click(screen.getByRole("button", { name: "초대장 메뉴" }));
+    openMenuGameTools();
     fireEvent.click(within(screen.getByRole("dialog", { name: "초대장 바로가기" }))
       .getByRole("button", { name: "게임 추억 0" }));
     await revealLazyGameFeature();
@@ -2593,8 +2617,9 @@ describe("GameWorld", () => {
       guestId: "guest_self",
       guests: [serverGuest({ zoneId: "ceremony-hall" })]
     }));
-    openJourneyTools();
+    openGameVault();
     fireEvent.click(screen.getByRole("button", { name: "예식홀 바로 이동" }));
+    openQuickGameTools();
     fireEvent.click(screen.getByRole("button", { name: "하객 리액션 열기" }));
     fireEvent.click(screen.getByRole("button", { name: "축하 보내기" }));
     act(() => socket.emitJson({
@@ -2676,6 +2701,7 @@ describe("GameWorld", () => {
 
     const joystick = screen.getByLabelText("가상 조이스틱");
     const player = screen.getByLabelText("하객1");
+    openQuickGameTools();
     fireEvent.keyDown(joystick, { key: "ArrowRight" });
     fireEvent.click(screen.getByRole("button", { name: "하객 리액션 열기" }));
     fireEvent.click(screen.getByRole("button", { name: "하트 보내기" }));
@@ -2694,6 +2720,7 @@ describe("GameWorld", () => {
   it("keeps the reaction control inside the bottom action dock", () => {
     render(<GameWorld profile={profile} />);
 
+    openQuickGameTools();
     const reactionButton = screen.getByRole("button", { name: "하객 리액션 열기" });
     expect(reactionButton.closest(".guest-reaction-dock")?.parentElement)
       .toHaveClass("world-control-actions");
@@ -2719,7 +2746,8 @@ describe("GameWorld", () => {
     render(<GameWorld profile={profile} />);
 
     expect(screen.getByRole("button", { name: "오시는 길 확인" })).toHaveTextContent("출발 준비 · 1/2");
-    expect(screen.getByRole("button", { name: "하객 리액션 열기" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "하객 리액션 열기" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "게임 도구 열기" })).toBeInTheDocument();
   });
 
   it("이동이 이어지면 상단 HUD를 접고 정지하면 바로 복원한다", () => {

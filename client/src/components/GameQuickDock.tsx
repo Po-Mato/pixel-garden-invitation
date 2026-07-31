@@ -59,7 +59,9 @@ export function GameQuickDock({
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [syncStatus, setSyncStatus] = useState("");
   const adaptiveDock = resolveAdaptiveQuickDockActions({ favorites, contextActive, moving, routeActive });
-  const visibleFavorites = settingsOpen ? favorites : adaptiveDock.actions;
+  const visibleFavorites = settingsOpen
+    ? favorites
+    : routeActive ? adaptiveDock.actions.filter((action) => action === "journey") : [];
 
   useEffect(() => {
     saveGameQuickDockActions(favorites);
@@ -144,8 +146,9 @@ export function GameQuickDock({
       data-adaptive-state={settingsOpen ? "settings" : adaptiveDock.state}
     >
       {settingsOpen ? (
-        <section className="game-quick-dock__settings" aria-label="빠른 도구 즐겨찾기">
-          <header><strong>빠른 도구</strong><span>{favorites.length}/2</span></header>
+        <section className="game-quick-dock__settings" aria-label="게임 도구 보관함">
+          <header><strong>게임 도구</strong><span>선택 {favorites.length}/2</span></header>
+          <p className="game-quick-dock__settings-description">필요한 기능만 아래 도크에 꺼내 쓰세요.</p>
           <div>
             {gameQuickDockActions.map((action) => {
               const { label, Icon } = actionMeta[action];
@@ -169,9 +172,9 @@ export function GameQuickDock({
                 setFavorites(resetGameQuickDockActions());
                 setSyncStatus("기본 빠른 도구로 복원했어요");
               }}
-            ><RotateCcw aria-hidden="true" /><span>초기화</span></button>
+            ><RotateCcw aria-hidden="true" /><span>기본값</span></button>
             <button type="button" onClick={() => void shareDockSettings()}>
-              <Share2 aria-hidden="true" /><span>다른 기기로</span>
+              <Share2 aria-hidden="true" /><span>도구 옮기기</span>
             </button>
           </footer>
           {syncStatus ? <p role="status"><Check aria-hidden="true" />{syncStatus}</p> : null}
@@ -183,9 +186,9 @@ export function GameQuickDock({
       <button
         type="button"
         className="game-quick-dock__settings-toggle"
-        aria-label={settingsOpen ? "빠른 도구 설정 닫기" : "빠른 도구 설정"}
+        aria-label={settingsOpen ? "게임 도구 닫기" : "게임 도구 열기"}
         aria-expanded={settingsOpen}
-        title="빠른 도구 설정"
+        title="게임 도구"
         onClick={() => {
           onPause();
           setSettingsOpen((current) => !current);

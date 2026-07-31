@@ -33,7 +33,7 @@ describe("게임 빠른 도구 도크", () => {
     window.history.replaceState({}, "", "/");
   });
 
-  it("기본 즐겨찾기와 메뉴만 간결하게 표시한다", () => {
+  it("기본 화면에는 초대장과 게임 도구 진입만 표시한다", () => {
     render(
       <GameFeedbackProvider initialPreferences={defaultFeedbackPreferences}>
         <GameQuickDock
@@ -48,8 +48,9 @@ describe("게임 빠른 도구 도크", () => {
       </GameFeedbackProvider>
     );
 
-    expect(screen.getByRole("button", { name: "하객 리액션 열기" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "공지·FAQ 열기" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "하객 리액션 열기" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "공지·FAQ 열기" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "게임 도구 열기" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "초대장 메뉴" })).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "여정 도구 열기" })).not.toBeInTheDocument();
   });
@@ -70,7 +71,7 @@ describe("게임 빠른 도구 도크", () => {
       </GameFeedbackProvider>
     );
 
-    fireEvent.click(screen.getByRole("button", { name: "빠른 도구 설정" }));
+    fireEvent.click(screen.getByRole("button", { name: "게임 도구 열기" }));
     fireEvent.click(screen.getByRole("button", { name: "여정" }));
     fireEvent.click(screen.getByRole("button", { name: "여정 도구 열기" }));
     expect(onOpenJourney).toHaveBeenCalledOnce();
@@ -92,11 +93,11 @@ describe("게임 빠른 도구 도크", () => {
       </GameFeedbackProvider>
     );
 
-    fireEvent.click(screen.getByRole("button", { name: "빠른 도구 설정" }));
+    fireEvent.click(screen.getByRole("button", { name: "게임 도구 열기" }));
     fireEvent.click(screen.getByRole("button", { name: "사운드" }));
-    fireEvent.click(screen.getByRole("button", { name: "초기화" }));
+    fireEvent.click(screen.getByRole("button", { name: "기본값" }));
     expect(screen.getByRole("button", { name: "리액션" })).toHaveAttribute("aria-pressed", "true");
-    fireEvent.click(screen.getByRole("button", { name: "다른 기기로" }));
+    fireEvent.click(screen.getByRole("button", { name: "도구 옮기기" }));
     await waitFor(() => expect(shareContent).toHaveBeenCalledWith(expect.objectContaining({
       url: expect.stringContaining("quickDock=")
     })));
@@ -118,6 +119,7 @@ describe("게임 빠른 도구 도크", () => {
       </GameFeedbackProvider>
     );
 
+    fireEvent.click(screen.getByRole("button", { name: "게임 도구 열기" }));
     expect(screen.getByRole("button", { name: /게임 사운드 (켜기|끄기)/ })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "여정 도구 열기" })).toBeInTheDocument();
     expect(window.location.search).toBe("?guest=family");
@@ -140,7 +142,7 @@ describe("게임 빠른 도구 도크", () => {
       </GameFeedbackProvider>
     );
 
-    expect(screen.getByRole("button", { name: "하객 리액션 열기" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "하객 리액션 열기" })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "공지·FAQ 열기" })).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "초대장 메뉴" })).toBeInTheDocument();
 

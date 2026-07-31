@@ -13,6 +13,7 @@ import {
 type PwaStatusCenterProps = {
   playing: boolean;
   showInstall: boolean;
+  showBackgroundProgress?: boolean;
 };
 
 type BeforeInstallPromptEvent = Event & {
@@ -38,7 +39,11 @@ function rememberInstallDismissal() {
   }
 }
 
-export function PwaStatusCenter({ playing, showInstall }: PwaStatusCenterProps) {
+export function PwaStatusCenter({
+  playing,
+  showInstall,
+  showBackgroundProgress = false
+}: PwaStatusCenterProps) {
   const [client, setClient] = useState<PwaClientSnapshot>(getPwaClientSnapshot);
   const [online, setOnline] = useState(() => navigator.onLine !== false);
   const [recovered, setRecovered] = useState(false);
@@ -201,7 +206,7 @@ export function PwaStatusCenter({ playing, showInstall }: PwaStatusCenterProps) 
         <button type="button" onClick={() => window.location.reload()}>다시 시도</button>
       </>
     );
-  } else if (client.cacheState === "preparing" && client.total > 0) {
+  } else if (showBackgroundProgress && client.cacheState === "preparing" && client.total > 0) {
     tone = "preparing";
     const percent = Math.round((client.completed / client.total) * 100);
     content = (
@@ -222,7 +227,7 @@ export function PwaStatusCenter({ playing, showInstall }: PwaStatusCenterProps) 
         <button type="button" onClick={prepareOfflineGameFeatures}>다시 준비</button>
       </>
     );
-  } else if (playing && client.featureCacheState === "preparing" && client.featureTotal > 0) {
+  } else if (showBackgroundProgress && playing && client.featureCacheState === "preparing" && client.featureTotal > 0) {
     tone = "preparing";
     const percent = Math.round((client.featureCompleted / client.featureTotal) * 100);
     content = (
@@ -235,10 +240,10 @@ export function PwaStatusCenter({ playing, showInstall }: PwaStatusCenterProps) 
   } else if (recovered) {
     tone = "online";
     content = <><Wifi aria-hidden="true" /><span><strong>연결이 복구됐어요</strong><small>최신 내용을 확인할 수 있어요</small></span></>;
-  } else if (prepared) {
+  } else if (showBackgroundProgress && prepared) {
     tone = "online";
     content = <><Wifi aria-hidden="true" /><span><strong>오프라인 준비 완료</strong><small>핵심 초대장을 저장했어요</small></span></>;
-  } else if (playing && featuresPrepared) {
+  } else if (showBackgroundProgress && playing && featuresPrepared) {
     tone = "online";
     content = <><Wifi aria-hidden="true" /><span><strong>게임 기능 오프라인 준비 완료</strong><small>사진·수집·동행 화면도 저장했어요</small></span></>;
   } else if (showInstall && installPrompt && !installDismissed) {

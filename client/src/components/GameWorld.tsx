@@ -9,7 +9,7 @@ import {
   type MouseEvent,
   type TransitionEvent as ReactTransitionEvent
 } from "react";
-import { Accessibility, ArrowRight, Camera, ChevronDown, CircleHelp, Images, MapPinned, RefreshCw, Share2, SlidersHorizontal, X } from "lucide-react";
+import { Accessibility, Archive, ArrowRight, Camera, ChevronDown, CircleHelp, Flower2, Images, MapPinned, RefreshCw, Share2, SlidersHorizontal, UsersRound, X } from "lucide-react";
 import {
   companionRendezvousProposalLifetimeMs,
   invitationContent,
@@ -4234,86 +4234,122 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
           onOpenCompletion={openJourneyCompletion}
           onSelectZone={handleJourneySelect}
         />
-        <WorldSecretProgress
-          collection={worldSecretCollection}
-          totalCount={totalWorldSecrets}
-          currentHint={activeWorldSecretHint}
-          currentClue={activeWorldSecretClue}
-        />
-        <WorldSecretCollectionBook
-          collection={worldSecretCollection}
-          activeZoneId={activeZone.id}
-          disabled={Boolean(portalTransition)}
-          onSelectZone={handleJourneySelect}
-          onEquipReward={(rewardId) => {
-            const next = equipWorldSecretReward(worldSecretCollection, rewardId);
-            setWorldSecretCollection(next);
-            setTravelStatus(rewardId === "none" ? "숨은 추억 장식을 해제했어요" : "숨은 추억 장식을 착용했어요");
-          }}
-        />
-        <WorldTravelTimeline
-          zones={gardenWorld.zones}
-          history={worldTravelHistory}
-          activeZoneId={activeZone.id}
-          disabled={Boolean(portalTransition)}
-          onSelectZone={handleJourneySelect}
-        />
-        <JourneyMemoryCardAccess nickname={profile.nickname} progress={journeyProgress} />
-        <NpcRelationshipJournal
-          memory={npcDialogueMemory}
-          names={{ bride: invitationContent.event.couple.bride, groom: invitationContent.event.couple.groom }}
-          onRewardInteraction={(npcId, rewardLabel) => {
-            handleGuestReaction(npcId === "bride" ? "heart" : "celebrate");
-            playFeedback("complete");
-            setTravelStatus(`${rewardLabel}을 다시 펼쳐봤어요`);
-          }}
-        />
-        <ol className="world-journey" aria-label="하객 여정">
-          {gardenWorld.zones.map((zone) => {
-            const checkpoints = journeyCheckpoints.filter((checkpoint) => checkpoint.zoneId === zone.id);
-            const stamped = checkpoints.length > 0 && checkpoints.every((checkpoint) => completedJourneyIds.has(checkpoint.id));
-            return (
-              <li
-                key={zone.id}
-                aria-current={zone.id === activeZone.id ? "location" : undefined}
-                data-stamped={stamped || undefined}
-              >
+        {recommendedCheckpoint && recommendedZone ? (
+          <button
+            type="button"
+            className="world-accessible-route"
+            aria-label={`쉬운 길찾기 열기, 남은 추억 ${journeyOverallSummary.remainingCheckpoints}개, 실제 타일 경로 확인`}
+            onClick={() => {
+              void loadJourneyRouteSheetComponent();
+              pauseWorldInput();
+              setJourneyRoutePreference(viewPreferences.stepFreeRouteEnabled ? "step-free" : "recommended");
+              setJourneyRouteOpen(true);
+            }}
+          >
+            <Accessibility aria-hidden="true" />
+            <strong>쉬운 길찾기</strong>
+            <span>남은 {journeyOverallSummary.remainingCheckpoints}개 · 맵 이동 {journeyOverallSummary.zoneTransitions}회 · 실제 타일 경로 확인</span>
+          </button>
+        ) : null}
+        <details className="world-game-vault">
+          <summary>
+            <Archive aria-hidden="true" />
+            <span><strong>게임 보관함</strong><small>수집·동행·저장·기기 도구</small></span>
+            <ChevronDown aria-hidden="true" />
+          </summary>
+          <div className="world-game-vault__body">
+            <section className="world-game-vault__section" aria-label="함께하고 수집하기">
+              <h3>함께하고 수집하기</h3>
+              <div className="world-game-vault__shortcuts">
                 <button
                   type="button"
-                  className="world-journey__button"
-                  aria-label={`${zone.label} 바로 이동`}
-                  disabled={Boolean(portalTransition)}
-                  onClick={() => { handleJourneySelect(zone.id); }}
+                  onClick={() => {
+                    void loadCelebrationCollectionGuideComponent();
+                    pauseWorldInput();
+                    setCollectionGuideOpen(true);
+                  }}
                 >
-                  {zone.label}
-                  {stamped ? <span className="world-journey__stamp" aria-label="방문 완료">✓</span> : null}
+                  <Flower2 aria-hidden="true" />
+                  <span><strong>축하 아이템 지도</strong><small>{collectedCelebrationIds.length}/{totalCelebrationCollectibles} 수집</small></span>
                 </button>
-              </li>
-            );
-          })}
-        </ol>
-        <GamePerformanceStatus performance={devicePerformance} />
-        <GameSaveDataCenter />
-        <GameDeviceReadinessCenter />
-        {recommendedCheckpoint && recommendedZone ? (
-          <>
-            <button
-              type="button"
-              className="world-accessible-route"
-              aria-label={`쉬운 길찾기 열기, 남은 추억 ${journeyOverallSummary.remainingCheckpoints}개, 실제 타일 경로 확인`}
-              onClick={() => {
-                void loadJourneyRouteSheetComponent();
-                pauseWorldInput();
-                setJourneyRoutePreference(viewPreferences.stepFreeRouteEnabled ? "step-free" : "recommended");
-                setJourneyRouteOpen(true);
-              }}
-            >
-              <Accessibility aria-hidden="true" />
-              <strong>쉬운 길찾기</strong>
-              <span>남은 {journeyOverallSummary.remainingCheckpoints}개 · 맵 이동 {journeyOverallSummary.zoneTransitions}회 · 실제 타일 경로 확인</span>
-            </button>
-          </>
-        ) : null}
+                <button type="button" onClick={openCompanionWaitingRoom}>
+                  <UsersRound aria-hidden="true" />
+                  <span><strong>같이 걷기</strong><small>QR·링크로 하객 초대</small></span>
+                </button>
+              </div>
+            </section>
+            <section className="world-game-vault__section" aria-label="추억과 기록">
+              <h3>추억과 기록</h3>
+              <WorldSecretProgress
+                collection={worldSecretCollection}
+                totalCount={totalWorldSecrets}
+                currentHint={activeWorldSecretHint}
+                currentClue={activeWorldSecretClue}
+              />
+              <WorldSecretCollectionBook
+                collection={worldSecretCollection}
+                activeZoneId={activeZone.id}
+                disabled={Boolean(portalTransition)}
+                onSelectZone={handleJourneySelect}
+                onEquipReward={(rewardId) => {
+                  const next = equipWorldSecretReward(worldSecretCollection, rewardId);
+                  setWorldSecretCollection(next);
+                  setTravelStatus(rewardId === "none" ? "숨은 추억 장식을 해제했어요" : "숨은 추억 장식을 착용했어요");
+                }}
+              />
+              <WorldTravelTimeline
+                zones={gardenWorld.zones}
+                history={worldTravelHistory}
+                activeZoneId={activeZone.id}
+                disabled={Boolean(portalTransition)}
+                onSelectZone={handleJourneySelect}
+              />
+              <JourneyMemoryCardAccess nickname={profile.nickname} progress={journeyProgress} />
+              <NpcRelationshipJournal
+                memory={npcDialogueMemory}
+                names={{ bride: invitationContent.event.couple.bride, groom: invitationContent.event.couple.groom }}
+                onRewardInteraction={(npcId, rewardLabel) => {
+                  handleGuestReaction(npcId === "bride" ? "heart" : "celebrate");
+                  playFeedback("complete");
+                  setTravelStatus(`${rewardLabel}을 다시 펼쳐봤어요`);
+                }}
+              />
+            </section>
+            <section className="world-game-vault__section" aria-label="장소 바로가기">
+              <h3>장소 바로가기</h3>
+              <ol className="world-journey" aria-label="하객 여정">
+                {gardenWorld.zones.map((zone) => {
+                  const checkpoints = journeyCheckpoints.filter((checkpoint) => checkpoint.zoneId === zone.id);
+                  const stamped = checkpoints.length > 0 && checkpoints.every((checkpoint) => completedJourneyIds.has(checkpoint.id));
+                  return (
+                    <li
+                      key={zone.id}
+                      aria-current={zone.id === activeZone.id ? "location" : undefined}
+                      data-stamped={stamped || undefined}
+                    >
+                      <button
+                        type="button"
+                        className="world-journey__button"
+                        aria-label={`${zone.label} 바로 이동`}
+                        disabled={Boolean(portalTransition)}
+                        onClick={() => { handleJourneySelect(zone.id); }}
+                      >
+                        {zone.label}
+                        {stamped ? <span className="world-journey__stamp" aria-label="방문 완료">✓</span> : null}
+                      </button>
+                    </li>
+                  );
+                })}
+              </ol>
+            </section>
+            <section className="world-game-vault__section" aria-label="기기와 저장">
+              <h3>기기와 저장</h3>
+              <GamePerformanceStatus performance={devicePerformance} />
+              <GameSaveDataCenter />
+              <GameDeviceReadinessCenter />
+            </section>
+          </div>
+        </details>
         </div> : null}
         <div className="world-travel-status-row" data-visible={travelStatusVisible || visibleTravelProgress || undefined}>
           <p className="world-travel-status" aria-live="polite">{travelStatus}</p>
@@ -5027,31 +5063,40 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
                 <Share2 aria-hidden="true" />
                 초대장 공유
               </button>
-              <button type="button" onClick={() => handlePhotoAlbumOpenChange(true)}>
-                <Images aria-hidden="true" />
-                포토앨범 {weddingPhotoAlbumProgress(photoAlbum)}/3
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  pauseWorldInput();
-                  setGameMemoryAlbum(loadGameMemoryAlbum());
-                  setGameMemoryAlbumOpen(true);
-                }}
-              >
-                <Images aria-hidden="true" />
-                게임 추억 {gameMemoryAlbum.entries.length}
-              </button>
-              <button type="button" onClick={openGameGuide}>
-                <CircleHelp aria-hidden="true" />
-                게임 안내 다시 보기
-              </button>
-              <ViewSettingsAccess
-                variant="menu"
-                currentZoneId={activeZone.id}
-                onOpenChange={handleViewSettingsOpenChange}
-              />
             </div>
+            <details className="world-menu-more">
+              <summary>
+                <SlidersHorizontal aria-hidden="true" />
+                <span><strong>게임 도구와 설정</strong><small>포토앨범·추억·이용 설정</small></span>
+                <ChevronDown aria-hidden="true" />
+              </summary>
+              <div className="world-menu-grid world-menu-grid--secondary">
+                <button type="button" onClick={() => handlePhotoAlbumOpenChange(true)}>
+                  <Images aria-hidden="true" />
+                  포토앨범 {weddingPhotoAlbumProgress(photoAlbum)}/3
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    pauseWorldInput();
+                    setGameMemoryAlbum(loadGameMemoryAlbum());
+                    setGameMemoryAlbumOpen(true);
+                  }}
+                >
+                  <Images aria-hidden="true" />
+                  게임 추억 {gameMemoryAlbum.entries.length}
+                </button>
+                <button type="button" onClick={openGameGuide}>
+                  <CircleHelp aria-hidden="true" />
+                  게임 안내 다시 보기
+                </button>
+                <ViewSettingsAccess
+                  variant="menu"
+                  currentZoneId={activeZone.id}
+                  onOpenChange={handleViewSettingsOpenChange}
+                />
+              </div>
+            </details>
           </section>
         </>
       ) : null}
