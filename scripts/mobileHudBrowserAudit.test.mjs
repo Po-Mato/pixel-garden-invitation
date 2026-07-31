@@ -1,6 +1,10 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { auditMobileHudRectangles, mobileHudAuditViewports } from "./lib/mobileHudBrowserAudit.mjs";
+import {
+  auditMobileHudRectangles,
+  compactDynamicViewport,
+  mobileHudAuditViewports
+} from "./lib/mobileHudBrowserAudit.mjs";
 
 test("mobile HUD audit covers phones and tablets in both orientations", () => {
   assert.deepEqual(mobileHudAuditViewports.map(({ id }) => id), [
@@ -32,4 +36,9 @@ test("mobile HUD rectangle audit catches clipping and meaningful overlap", () =>
     "minimap 화면 이탈",
     "context/controls 겹침"
   ]);
+});
+
+test("dynamic viewport audit covers address-bar contraction without creating unusably short screens", () => {
+  assert.deepEqual(compactDynamicViewport({ width: 390, height: 844 }), { width: 390, height: 724 });
+  assert.deepEqual(compactDynamicViewport({ width: 844, height: 390 }), { width: 844, height: 342 });
 });

@@ -33,6 +33,15 @@ export function CharacterSprite({
   const displaySize = layers[0].displaySize[displayMode];
   const renderedStepFrame = moving ? ((stepFrame % 3) + 3) % 3 : 1;
   const frame = getWalkFrameStyle(direction, renderedStepFrame, sourceSize);
+  const renderedLayers = layers.flatMap((layer) => {
+    const preferredUrl = useFrontIdle && layer.idleUrl ? layer.idleUrl : layer.walkUrl;
+    const fallbackUrl = useFrontIdle && layer.fallbackIdleUrl
+      ? layer.fallbackIdleUrl
+      : layer.fallbackWalkUrl;
+    const preferredFailed = failedUrls.has(preferredUrl);
+    const url = preferredFailed ? fallbackUrl : preferredUrl;
+    return failedUrls.has(url) ? [] : [{ layer, url, fallback: preferredFailed }];
+  });
   const spriteStyle = {
     "--character-source-width": `${sourceSize.width}px`,
     "--character-source-height": `${sourceSize.height}px`,
@@ -59,15 +68,15 @@ export function CharacterSprite({
       aria-label={label}
       data-moving={moving ? "true" : "false"}
       data-walk-frame={renderedStepFrame}
+      data-character-fallback={renderedLayers.some(({ fallback }) => fallback) || undefined}
       style={spriteStyle}
     >
-      {layers.map((layer) => {
-        const url = useFrontIdle && layer.idleUrl ? layer.idleUrl : layer.walkUrl;
-        if (failedUrls.has(url)) return null;
+      {renderedLayers.map(({ layer, url, fallback }) => {
         return (
           <span
             key={`${layer.slot}:${layer.walkUrl}`}
             data-character-layer={layer.slot}
+            data-character-fallback={fallback || undefined}
             className={`character-layer character-layer--${layer.slot}`}
             style={{
               backgroundImage: `url("${url}")`,

@@ -105,11 +105,11 @@ it("선택 목록 썸네일은 고해상도 원본을 48x72로 표시한다", ()
   });
 });
 
-it("완성 프리셋 이미지 로드 실패 시 해당 레이어만 숨긴다", () => {
+it("선택한 프리셋 이미지 로드 실패 시 기본 캐릭터로 대체한다", () => {
   const errorSpy = vi.spyOn(console, "error").mockImplementation(() => undefined);
   render(
     <CharacterSprite
-      appearance={defaultCharacterAppearance}
+      appearance={{ presetId: "feminine-teal-modern-hanbok" }}
       direction="down"
       moving={false}
       label="캐릭터"
@@ -123,6 +123,13 @@ it("완성 프리셋 이미지 로드 실패 시 해당 레이어만 숨긴다",
 
   fireEvent.error(failedImage as HTMLImageElement);
 
+  const fallbackLayer = sprite.querySelector('[data-character-layer="base"]');
+  const fallbackImage = fallbackLayer?.querySelector("img");
+  expect(sprite).toHaveAttribute("data-character-fallback", "true");
+  expect(fallbackLayer).toHaveAttribute("data-character-fallback", "true");
+  expect(fallbackImage?.getAttribute("src")).toContain("feminine-long-wave-dress__idle.png");
+
+  fireEvent.error(fallbackImage as HTMLImageElement);
   expect(sprite.querySelector('[data-character-layer="base"]')).not.toBeInTheDocument();
   errorSpy.mockRestore();
 });

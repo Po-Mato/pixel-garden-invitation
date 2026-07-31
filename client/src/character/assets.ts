@@ -1,4 +1,5 @@
 import {
+  defaultCharacterAppearance,
   type CharacterAppearance,
   guestPresetFrame,
   resolveGuestPreset
@@ -10,6 +11,8 @@ export type ResolvedCharacterLayer = {
   slot: "base";
   walkUrl: string;
   idleUrl?: string;
+  fallbackWalkUrl: string;
+  fallbackIdleUrl?: string;
   sourceSize: { width: number; height: number };
   displaySize: Record<CharacterDisplayMode, { width: number; height: number }>;
 };
@@ -31,10 +34,13 @@ export function resolveCharacterLayers(
   _displayMode: CharacterDisplayMode = "world"
 ): ResolvedCharacterLayer[] {
   const preset = resolveGuestPreset(appearance);
+  const fallbackPreset = resolveGuestPreset(defaultCharacterAppearance);
   return [{
     slot: "base",
     walkUrl: assetUrl(baseUrl, preset.generated.walk),
     idleUrl: assetUrl(baseUrl, preset.generated.idle),
+    fallbackWalkUrl: assetUrl(baseUrl, fallbackPreset.generated.walk),
+    fallbackIdleUrl: assetUrl(baseUrl, fallbackPreset.generated.idle),
     sourceSize: guestPresetFrame.source,
     displaySize: guestPresetFrame.display
   }];

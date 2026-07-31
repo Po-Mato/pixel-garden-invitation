@@ -246,8 +246,8 @@ function openJourneyTools() {
 
 function openGameVault() {
   openJourneyTools();
-  const summary = screen.getByText("게임 보관함").closest("summary");
-  if (!summary) throw new Error("게임 보관함 요약을 찾지 못했습니다.");
+  const summary = screen.getByText("선택 기능").closest("summary");
+  if (!summary) throw new Error("선택 기능 요약을 찾지 못했습니다.");
   const details = summary.closest("details");
   if (!details?.hasAttribute("open")) fireEvent.click(summary);
 }
@@ -1589,7 +1589,7 @@ describe("GameWorld", () => {
     expect(player).toHaveStyle(initialPosition);
   });
 
-  it("게임 보관함에서 환경 설정을 열면 월드 입력을 중지한다", () => {
+  it("선택 기능에서 환경 설정을 열면 월드 입력을 중지한다", () => {
     render(<GameWorld profile={profile} />);
     const player = screen.getByLabelText("하객1");
     const initialPosition = { left: player.style.left, top: player.style.top };
@@ -2750,13 +2750,31 @@ describe("GameWorld", () => {
     expect(screen.getByTestId("world-portal-transition")).toHaveAttribute("data-phase", "idle");
   });
 
-  it("가까운 대상이 없으면 현재 맵의 짧은 퀘스트를 같은 HUD로 안내한다", () => {
+  it("상단 다음 목적지와 같은 짧은 퀘스트 카드는 중복해서 표시하지 않는다", () => {
     render(<GameWorld profile={profile} />);
 
-    expect(screen.getByRole("button", { name: "오시는 길 확인" })).toHaveTextContent("출발 준비 · 1/2");
+    expect(screen.queryByRole("button", { name: "오시는 길 확인" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "다음 목적지 오시는 길, 길 안내 시작" })).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "하객 리액션 열기" })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "게임 도구 열기" })).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "초대장 메뉴" })).toBeInTheDocument();
+  });
+
+  it("보조 게임 기능은 여정 안의 닫힌 선택 기능에 보관한다", () => {
+    render(<GameWorld profile={profile} />);
+    openJourneyTools();
+
+    const summary = screen.getByText("선택 기능").closest("summary");
+    const vault = summary?.closest("details");
+    expect(vault).toHaveAttribute("data-optional-features", "true");
+    expect(vault).not.toHaveAttribute("open");
+    expect(screen.getByRole("button", { name: /축하 아이템 지도/ }).closest("details")).toBe(vault);
+    expect(screen.getByRole("button", { name: /게임 추억/ }).closest("details")).toBe(vault);
+
+    fireEvent.click(summary as HTMLElement);
+    expect(vault).toHaveAttribute("open");
+    expect(screen.getByRole("button", { name: /축하 아이템 지도/ })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /게임 추억/ })).toBeInTheDocument();
   });
 
   it("이동 중에도 상단 HUD 골격을 유지하고 상태 밀도만 갱신한다", () => {

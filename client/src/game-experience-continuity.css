@@ -1127,6 +1127,14 @@ html[data-game-ui-scale="large"] .world-control-actions :is(button, .guest-react
   background: rgba(255, 253, 249, 0.9);
 }
 
+.world-game-vault[data-optional-features="true"] {
+  background: rgba(250, 247, 244, 0.72);
+}
+
+.world-game-vault[data-optional-features="true"] > summary {
+  color: #6d6265;
+}
+
 .world-game-vault > summary,
 .world-menu-more > summary {
   display: grid;

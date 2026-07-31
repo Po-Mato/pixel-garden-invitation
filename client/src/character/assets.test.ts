@@ -10,6 +10,8 @@ it("월드에서도 96x144 고밀도 generated 경로를 48x72로 표시한다",
       slot: "base",
       walkUrl: "./characters/generated/guests/feminine-long-wave-dress__walk.png",
       idleUrl: "./characters/generated/guests/feminine-long-wave-dress__idle.png",
+      fallbackWalkUrl: "./characters/generated/guests/feminine-long-wave-dress__walk.png",
+      fallbackIdleUrl: "./characters/generated/guests/feminine-long-wave-dress__idle.png",
       sourceSize: { width: 96, height: 144 },
       displaySize: {
         world: { width: 48, height: 72 },

@@ -5,8 +5,10 @@ import {
   currentZoneMiniQuestStep,
   loadZoneMiniQuestProgress,
   zoneMiniQuestFor,
+  zoneMiniQuestStepDuplicatesCheckpoint,
   zoneMiniQuests
 } from "./zoneMiniQuest";
+import { journeyCheckpoints } from "./journeyProgress";
 
 describe("zoneMiniQuest", () => {
   it("모든 맵에 한 개 이상의 순차 목표를 제공한다", () => {
@@ -39,5 +41,14 @@ describe("zoneMiniQuest", () => {
       setItem: () => undefined
     };
     expect(loadZoneMiniQuestProgress(storage)).toEqual({ version: 1, completedStepIds: ["home-directions"] });
+  });
+
+  it("상단 다음 목적지와 같은 짧은 퀘스트를 중복 안내로 판별한다", () => {
+    const homeStep = zoneMiniQuestFor("home").steps[0];
+    const directions = journeyCheckpoints.find(({ id }) => id === "directions")!;
+    const gallery = journeyCheckpoints.find(({ id }) => id === "gallery")!;
+
+    expect(zoneMiniQuestStepDuplicatesCheckpoint(homeStep, directions)).toBe(true);
+    expect(zoneMiniQuestStepDuplicatesCheckpoint(homeStep, gallery)).toBe(false);
   });
 });

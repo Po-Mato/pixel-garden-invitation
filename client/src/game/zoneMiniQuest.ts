@@ -1,5 +1,6 @@
 import type { SpotId, WorldZoneId } from "@wedding-game/shared";
 import type { NpcId } from "./npcDialogue";
+import type { JourneyCheckpoint } from "./journeyProgress";
 import type { WorldPhotoSpotId } from "./world";
 
 export const zoneMiniQuestStorageKey = "wedding-game:zone-mini-quest:v1";
@@ -135,6 +136,19 @@ export function zoneMiniQuestStepMatches(step: ZoneMiniQuestStep, action: ZoneMi
   if (step.target.type !== action.type) return false;
   if (step.target.type === "npc" && step.target.id === "either") return true;
   return step.target.id === action.id;
+}
+
+export function zoneMiniQuestStepDuplicatesCheckpoint(
+  step: ZoneMiniQuestStep,
+  checkpoint: JourneyCheckpoint
+): boolean {
+  if (step.target.type === "spot" && checkpoint.target.type === "spot") {
+    return step.target.id === checkpoint.target.spotId;
+  }
+  if (step.target.type === "npc" && checkpoint.target.type === "npc") {
+    return step.target.id === checkpoint.target.npcId;
+  }
+  return false;
 }
 
 export function completeCurrentZoneMiniQuestStep(

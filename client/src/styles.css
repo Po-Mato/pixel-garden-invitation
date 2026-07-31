@@ -147,6 +147,7 @@ select,
   position: fixed;
   inset: 0;
   width: 100%;
+  height: 100vh;
   height: 100dvh;
   min-height: 0;
   padding: 0;
@@ -168,6 +169,7 @@ select,
 }
 
 .phone-frame--playing {
+  height: min(860px, calc(100vh - 32px));
   height: min(860px, calc(100dvh - 32px));
   min-height: 0;
   padding: 0;
@@ -2005,6 +2007,7 @@ select,
   left: 0;
   transform-origin: 0 0;
   will-change: transform;
+  transition: transform 180ms cubic-bezier(0.22, 0.78, 0.28, 1);
 }
 
 .world-map-artwork,
@@ -4075,11 +4078,13 @@ select,
   }
 
   .app-shell--playing {
+    height: 100vh;
     height: 100dvh;
     padding: 0;
   }
 
   .phone-frame--playing {
+    height: 100vh;
     height: 100dvh;
     min-height: 0;
     padding: 0;

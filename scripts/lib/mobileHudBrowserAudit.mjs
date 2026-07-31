@@ -10,6 +10,11 @@ export const mobileHudAuditViewports = Object.freeze([
   { id: "tablet-landscape", width: 1024, height: 768 }
 ]);
 
+export function compactDynamicViewport(viewport) {
+  const reduction = viewport.height >= 600 ? 120 : 48;
+  return { width: viewport.width, height: Math.max(320, viewport.height - reduction) };
+}
+
 const overlapPairs = [
   ["hud", "controls"],
   ["hud", "minimap"],
@@ -115,6 +120,29 @@ async function measureMovementLayoutStability(page) {
   return { before, during, after, stable };
 }
 
+async function measureDynamicViewportAdaptation(page, viewport) {
+  const readWorld = () => page.evaluate(() => {
+    const element = document.querySelector(".game-world");
+    if (!(element instanceof HTMLElement)) return null;
+    const rect = element.getBoundingClientRect();
+    return { x: rect.x, y: rect.y, width: rect.width, height: rect.height };
+  });
+  const before = await readWorld();
+  const compact = compactDynamicViewport(viewport);
+  await page.setViewportSize(compact);
+  await page.waitForTimeout(240);
+  const compactWorld = await readWorld();
+  const compactRectangles = await visibleRectangles(page);
+  const compactIssues = auditMobileHudRectangles(compactRectangles, compact);
+  await page.setViewportSize({ width: viewport.width, height: viewport.height });
+  await page.waitForTimeout(240);
+  const after = await readWorld();
+  const restored = Boolean(before && after && ["x", "y", "width", "height"].every(
+    (key) => Math.abs(before[key] - after[key]) <= 1
+  ));
+  return { before, compact, compactWorld, compactRectangles, compactIssues, after, restored };
+}
+
 async function measureJoystickTouchResponse(page, context) {
   const box = await page.locator(".virtual-joystick").boundingBox();
   if (!box) return { latencyMs: null, responded: false };
@@ -187,6 +215,9 @@ export async function runMobileHudBrowserAudit({ rootDir, outputDir, port = 4178
         const issues = auditMobileHudRectangles(rectangles, viewport);
         const movementLayout = await measureMovementLayoutStability(page);
         if (!movementLayout.stable) issues.push("이동 중 HUD 또는 맵 화면 틀어짐");
+        const dynamicViewport = await measureDynamicViewportAdaptation(page, viewport);
+        dynamicViewport.compactIssues.forEach((issue) => issues.push(`주소창 축소 화면 ${issue}`));
+        if (!dynamicViewport.restored) issues.push("주소창·회전 후 화면 복원 실패");
         const touchResponse = await measureJoystickTouchResponse(page, context);
         if (!touchResponse.responded) issues.push("joystick 터치 무응답");
         if (touchResponse.latencyMs !== null && touchResponse.latencyMs > 120) issues.push(`joystick 터치 지연 ${touchResponse.latencyMs}ms`);
@@ -205,7 +236,7 @@ export async function runMobileHudBrowserAudit({ rootDir, outputDir, port = 4178
         ) issues.push("expanded-tools 화면 이탈");
         const toolsScreenshotPath = path.join(outputDir, `mobile-hud-${viewport.id}-tools.png`);
         await page.screenshot({ path: toolsScreenshotPath, fullPage: false });
-        reports.push({ ...viewport, rectangles, movementLayout, toolsRect, touchResponse, issues, screenshotPath, toolsScreenshotPath });
+        reports.push({ ...viewport, rectangles, movementLayout, dynamicViewport, toolsRect, touchResponse, issues, screenshotPath, toolsScreenshotPath });
         await context.close();
       }
     } finally {

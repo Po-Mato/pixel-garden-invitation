@@ -10,6 +10,11 @@ type CameraInput = {
   zoom: number;
 };
 
+type TrackingCameraInput = CameraInput & {
+  previous: CameraTransform | null;
+  deadZone: ViewportSize;
+};
+
 type ScreenToWorldInput = {
   client: Point;
   viewportRect: { left: number; top: number };
@@ -37,6 +42,54 @@ export function computeCameraTransform(input: CameraInput): CameraTransform {
   return {
     x: cameraAxis(desiredX, width, input.bounds.width, zoom),
     y: cameraAxis(desiredY, height, input.bounds.height, zoom),
+    zoom
+  };
+}
+
+function trackedAxis(
+  player: number,
+  previous: number,
+  viewportSize: number,
+  mapSize: number,
+  zoom: number,
+  deadZoneSize: number
+): number {
+  const safeDeadZone = Math.min(viewportSize, positiveOr(deadZoneSize, viewportSize * 0.3));
+  const minimum = (viewportSize - safeDeadZone) / 2;
+  const maximum = minimum + safeDeadZone;
+  const screenPosition = player * zoom + previous;
+  const desired = screenPosition < minimum
+    ? previous + minimum - screenPosition
+    : screenPosition > maximum
+      ? previous - (screenPosition - maximum)
+      : previous;
+  return cameraAxis(desired, viewportSize, mapSize, zoom);
+}
+
+export function cameraDeadZone(viewport: ViewportSize): ViewportSize {
+  const width = positiveOr(viewport.width, 390);
+  const height = positiveOr(viewport.height, 520);
+  return {
+    width: Math.round(Math.min(132, Math.max(84, width * 0.32))),
+    height: Math.round(Math.min(168, Math.max(108, height * 0.28)))
+  };
+}
+
+export function computeTrackingCameraTransform(input: TrackingCameraInput): CameraTransform {
+  const width = positiveOr(input.viewport.width, 390);
+  const height = positiveOr(input.viewport.height, 520);
+  const zoom = positiveOr(input.zoom, 1);
+  const previous = input.previous;
+  if (
+    !previous
+    || !Number.isFinite(previous.x)
+    || !Number.isFinite(previous.y)
+    || previous.zoom !== zoom
+  ) return computeCameraTransform(input);
+
+  return {
+    x: trackedAxis(input.player.x, previous.x, width, input.bounds.width, zoom, input.deadZone.width),
+    y: trackedAxis(input.player.y, previous.y, height, input.bounds.height, zoom, input.deadZone.height),
     zoom
   };
 }

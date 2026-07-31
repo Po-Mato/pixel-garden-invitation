@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 const styles = readFileSync("src/styles.css", "utf8");
+const hudDensityStyles = readFileSync("src/game-hud-density.css", "utf8");
 const worldZones = [
   "home",
   "neighborhood",
@@ -313,9 +314,18 @@ describe("mobile world controls", () => {
     expect(mapRule).toContain("overflow: hidden;");
     expect(stageRule).toContain("transform-origin: 0 0;");
     expect(stageRule).toContain("will-change: transform;");
+    expect(stageRule).toContain("transition: transform 180ms");
     expect(stageRule).not.toContain("width: 390px;");
     expect(stageRule).not.toContain("height: 720px;");
     expect(stageRule).not.toContain("scale: calc(");
+  });
+
+  it("adapts the game shell and fixed HUD to dynamic viewport and safe-area changes", () => {
+    expect(styles).toMatch(/\.app-shell--playing\s*\{[^}]*height:\s*100vh;[^}]*height:\s*100dvh;/s);
+    expect(hudDensityStyles).toContain("calc(96px + env(safe-area-inset-top))");
+    expect(hudDensityStyles).toContain("env(safe-area-inset-right)");
+    expect(hudDensityStyles).toContain("env(safe-area-inset-bottom)");
+    expect(hudDensityStyles).toContain("env(safe-area-inset-left)");
   });
 
   it("pins a display-only minimap to the upper-right map corner", () => {

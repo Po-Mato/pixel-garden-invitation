@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { computeCameraTransform, screenToWorld } from "./camera";
+import {
+  cameraDeadZone,
+  computeCameraTransform,
+  computeTrackingCameraTransform,
+  screenToWorld
+} from "./camera";
 
 describe("tracking camera", () => {
   it("projects the player onto the exact viewport center", () => {
@@ -145,5 +150,39 @@ describe("tracking camera", () => {
     expect(camera).toEqual({ x: -119, y: -639, zoom: 1 });
     expect(Number.isInteger(camera.x)).toBe(true);
     expect(Number.isInteger(camera.y)).toBe(true);
+  });
+
+  it("keeps the camera still while the player remains inside the dead zone", () => {
+    const previous = { x: -120, y: -940, zoom: 1 };
+    const camera = computeTrackingCameraTransform({
+      player: { x: 345, y: 1230 },
+      previous,
+      deadZone: { width: 120, height: 160 },
+      viewport: { width: 390, height: 520 },
+      bounds: { width: 780, height: 1920 },
+      zoom: 1
+    });
+
+    expect(camera).toEqual(previous);
+  });
+
+  it("moves only enough to return the player to the dead-zone edge", () => {
+    const camera = computeTrackingCameraTransform({
+      player: { x: 405, y: 1320 },
+      previous: { x: -120, y: -940, zoom: 1 },
+      deadZone: { width: 120, height: 160 },
+      viewport: { width: 390, height: 520 },
+      bounds: { width: 780, height: 1920 },
+      zoom: 1
+    });
+
+    expect(camera).toEqual({ x: -150, y: -980, zoom: 1 });
+    expect(405 + camera.x).toBe(255);
+    expect(1320 + camera.y).toBe(340);
+  });
+
+  it("derives a bounded dead zone for phone and tablet viewports", () => {
+    expect(cameraDeadZone({ width: 390, height: 748 })).toEqual({ width: 125, height: 168 });
+    expect(cameraDeadZone({ width: 1024, height: 768 })).toEqual({ width: 132, height: 168 });
   });
 });

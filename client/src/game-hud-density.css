@@ -53,11 +53,15 @@
 /* Keep the map viewport and camera origin fixed while movement density changes. */
 .game-world .world-hud:not([data-tools-open]) {
   box-sizing: border-box;
-  flex: 0 0 96px;
+  flex: 0 0 calc(96px + env(safe-area-inset-top));
   width: 100%;
-  min-height: 96px;
-  max-height: 96px;
-  padding: 8px 10px 9px;
+  min-height: calc(96px + env(safe-area-inset-top));
+  max-height: calc(96px + env(safe-area-inset-top));
+  padding:
+    calc(8px + env(safe-area-inset-top))
+    calc(10px + env(safe-area-inset-right))
+    9px
+    calc(10px + env(safe-area-inset-left));
   border-right: 0;
 }
 
@@ -67,7 +71,11 @@
     width: 100%;
     min-height: 0;
     max-height: none;
-    padding: 10px 9px;
+    padding:
+      calc(10px + env(safe-area-inset-top))
+      calc(9px + env(safe-area-inset-right))
+      calc(10px + env(safe-area-inset-bottom))
+      calc(9px + env(safe-area-inset-left));
     border-right: 4px solid var(--ink);
     border-bottom: 0;
   }

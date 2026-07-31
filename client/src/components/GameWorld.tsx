@@ -29,7 +29,13 @@ import {
   journeyProgressSyncScope,
   saveSyncedJourneyProgress
 } from "../api/journeyProgressApi";
-import { computeCameraTransform, screenToWorld, type ViewportSize } from "../game/camera";
+import {
+  cameraDeadZone,
+  computeCameraTransform,
+  computeTrackingCameraTransform,
+  screenToWorld,
+  type ViewportSize
+} from "../game/camera";
 import { resolveFootstepSurface, type FootstepSurface } from "../game/footstepSurface";
 import { computeNextGridPosition, directionFromVector, directionTowardPoint, snapToGrid } from "../game/movement";
 import {
@@ -277,6 +283,7 @@ import {
   loadZoneMiniQuestProgress,
   saveZoneMiniQuestProgress,
   zoneMiniQuestFor,
+  zoneMiniQuestStepDuplicatesCheckpoint,
   type ZoneMiniQuestAction,
   type ZoneMiniQuestStep
 } from "../game/zoneMiniQuest";
@@ -641,6 +648,13 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   const [activePropMoment, setActivePropMoment] = useState<ActiveWorldPropMoment | null>(null);
   const [remoteReactions, setRemoteReactions] = useState<Record<string, ActiveGuestReaction>>({});
   const [viewport, setViewport] = useState<ViewportSize>(defaultViewport);
+  const [camera, setCamera] = useState(() => computeCameraTransform({
+    player: position,
+    viewport: defaultViewport,
+    bounds: initialZone.bounds,
+    zoom: 1
+  }));
+  const cameraZoneRef = useRef<WorldZoneId>(initialZone.id);
   const [remoteGuests, setRemoteGuests] = useState<RoomGuest[]>([]);
   const [companionGuestId, setCompanionGuestId] = useState<string | null>(
     restoredCompanionSession?.companionGuestId ?? null
@@ -2213,7 +2227,11 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     const update = () => {
       const rect = element.getBoundingClientRect();
       if (rect.width > 0 && rect.height > 0) {
-        setViewport({ width: rect.width, height: rect.height });
+        setViewport((current) => (
+          current.width === rect.width && current.height === rect.height
+            ? current
+            : { width: rect.width, height: rect.height }
+        ));
       }
     };
     update();
@@ -2223,6 +2241,24 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     observer.observe(element);
     return () => observer.disconnect();
   }, [activeZoneId]);
+
+  useEffect(() => {
+    const zoneChanged = cameraZoneRef.current !== activeZone.id;
+    cameraZoneRef.current = activeZone.id;
+    setCamera((current) => {
+      const next = computeTrackingCameraTransform({
+        player: position,
+        viewport,
+        bounds: activeZone.bounds,
+        zoom: 1,
+        previous: zoneChanged ? null : current,
+        deadZone: cameraDeadZone(viewport)
+      });
+      return next.x === current.x && next.y === current.y && next.zoom === current.zoom
+        ? current
+        : next;
+    });
+  }, [activeZone.bounds.height, activeZone.bounds.width, activeZone.id, position.x, position.y, viewport.height, viewport.width]);
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -3275,7 +3311,6 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     }
   }
 
-  const camera = computeCameraTransform({ player: position, viewport, bounds: activeZone.bounds, zoom: 1 });
   const completedJourneyIds = new Set(journeyProgress.completedIds);
   const remainingWaypoints = remainingJourneyWaypoints(journeyProgress);
   const weddingTiming = useMemo(() => weddingJourneyTiming(
@@ -3684,6 +3719,12 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     distance: Number.POSITIVE_INFINITY,
     progressLabel: `${activeZoneMiniQuest.title} · ${activeZoneMiniQuestCompletedCount + 1}/${activeZoneMiniQuest.steps.length}`
   } : null);
+  const contextQuestDuplicatesDestination = Boolean(
+    contextHudAction?.kind === "quest"
+    && activeZoneMiniQuestStep
+    && recommendedCheckpoint
+    && zoneMiniQuestStepDuplicatesCheckpoint(activeZoneMiniQuestStep, recommendedCheckpoint)
+  );
   const activeDialogueNpcPoint = activeNpcDialogue
     ? activeNpcContexts.find(({ id }) => id === activeNpcDialogue.npcId)?.point ?? null
     : null;
@@ -3706,6 +3747,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     && !portalTransition
     && !routeArrivalNotice
     && !activeRouteArrivalCue
+    && !contextQuestDuplicatesDestination
   );
   const hudDensity = resolveGameHudDensity({
     moving,
@@ -4245,10 +4287,10 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
             <span>남은 {journeyOverallSummary.remainingCheckpoints}개 · 맵 이동 {journeyOverallSummary.zoneTransitions}회 · 실제 타일 경로 확인</span>
           </button>
         ) : null}
-        <details className="world-game-vault">
+        <details className="world-game-vault" data-optional-features="true">
           <summary>
             <Archive aria-hidden="true" />
-            <span><strong>게임 보관함</strong><small>수집·동행·저장·기기 도구</small></span>
+            <span><strong>선택 기능</strong><small>사진·수집·같이 걷기는 필요할 때만</small></span>
             <ChevronDown aria-hidden="true" />
           </summary>
           <div className="world-game-vault__body">
