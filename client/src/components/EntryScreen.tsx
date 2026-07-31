@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { BookOpen, CalendarDays, ChevronRight, CircleHelp, Ellipsis, MapPin, Sparkles } from "lucide-react";
+import { BookOpen, CalendarDays, ChevronRight, CircleHelp, Ellipsis, MapPin, RotateCcw, Sparkles } from "lucide-react";
 import {
   defaultCharacterAppearance,
   resolveGuestPreset,
@@ -36,6 +36,8 @@ type EntryScreenProps = {
   onEnterIntent?: () => void;
   onQuickView?: () => void;
   onQuickViewIntent?: () => void;
+  returningProfile?: EntryProfile | null;
+  onResumeGarden?: () => void;
   weddingDayPreview?: boolean;
   invitedGuest?: PublicInvitationInvite | null;
   inviteNotice?: string;
@@ -46,6 +48,8 @@ export function EntryScreen({
   onEnterIntent,
   onQuickView,
   onQuickViewIntent,
+  returningProfile = null,
+  onResumeGarden,
   weddingDayPreview = false,
   invitedGuest = null,
   inviteNotice = ""
@@ -193,7 +197,24 @@ export function EntryScreen({
             onClick={onQuickView}
           >
             <BookOpen aria-hidden="true" />
-            <span><small>먼저 확인하기</small><strong>초대장 바로 보기</strong></span>
+            <span><small>게임 없이 가볍게</small><strong>초대장 바로 보기</strong></span>
+            <ChevronRight aria-hidden="true" />
+          </button>
+        ) : null}
+        {returningProfile && onResumeGarden ? (
+          <button
+            className="entry-screen__resume-access"
+            type="button"
+            onFocus={onEnterIntent}
+            onPointerEnter={onEnterIntent}
+            onPointerDown={onEnterIntent}
+            onClick={onResumeGarden}
+          >
+            <RotateCcw aria-hidden="true" />
+            <span>
+              <small>{returningProfile.nickname}님의 저장된 여정</small>
+              <strong>지난 정원 이어가기</strong>
+            </span>
             <ChevronRight aria-hidden="true" />
           </button>
         ) : null}

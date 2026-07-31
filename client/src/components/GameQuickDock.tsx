@@ -1,5 +1,5 @@
 import { useEffect, useState, type RefObject } from "react";
-import { Bell, BookOpen, Check, RotateCcw, Route, Share2, SlidersHorizontal, SmilePlus, Volume2 } from "lucide-react";
+import { Bell, BookOpen, Check, RotateCcw, Route, Share2, SlidersHorizontal, SmilePlus, Volume2, X } from "lucide-react";
 import type { GuestReaction } from "@wedding-game/shared";
 import {
   clearGameQuickDockSyncQuery,
@@ -29,6 +29,8 @@ type GameQuickDockProps = {
   onOpenJourney: () => void;
   onOpenMenu: () => void;
   onSettingsOpenChange?: (open: boolean) => void;
+  settingsOpen?: boolean;
+  showSettingsTrigger?: boolean;
   contextActive?: boolean;
   moving?: boolean;
   routeActive?: boolean;
@@ -51,30 +53,36 @@ export function GameQuickDock({
   onOpenJourney,
   onOpenMenu,
   onSettingsOpenChange,
+  settingsOpen: controlledSettingsOpen,
+  showSettingsTrigger = true,
   contextActive = false,
   moving = false,
   routeActive = false
 }: GameQuickDockProps) {
   const [favorites, setFavorites] = useState(loadGameQuickDockActions);
-  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [internalSettingsOpen, setInternalSettingsOpen] = useState(false);
+  const settingsOpen = controlledSettingsOpen ?? internalSettingsOpen;
   const [syncStatus, setSyncStatus] = useState("");
   const adaptiveDock = resolveAdaptiveQuickDockActions({ favorites, contextActive, moving, routeActive });
   const visibleFavorites = settingsOpen
     ? favorites
     : routeActive ? adaptiveDock.actions.filter((action) => action === "journey") : [];
+  const setSettingsVisibility = (open: boolean) => {
+    if (controlledSettingsOpen === undefined) setInternalSettingsOpen(open);
+    onSettingsOpenChange?.(open);
+  };
 
   useEffect(() => {
     saveGameQuickDockActions(favorites);
   }, [favorites]);
 
   useEffect(() => {
-    if (disabled || menuOpen) setSettingsOpen(false);
+    if (disabled || menuOpen) setSettingsVisibility(false);
   }, [disabled, menuOpen]);
 
   useEffect(() => {
-    onSettingsOpenChange?.(settingsOpen);
     return () => onSettingsOpenChange?.(false);
-  }, [onSettingsOpenChange, settingsOpen]);
+  }, [onSettingsOpenChange]);
 
   useEffect(() => {
     const imported = gameQuickDockActionsFromUrl();
@@ -147,7 +155,13 @@ export function GameQuickDock({
     >
       {settingsOpen ? (
         <section className="game-quick-dock__settings" aria-label="게임 도구 보관함">
-          <header><strong>게임 도구</strong><span>선택 {favorites.length}/2</span></header>
+          <header>
+            <strong>게임 도구</strong>
+            <span>선택 {favorites.length}/2</span>
+            <button type="button" aria-label="게임 도구 닫기" onClick={() => setSettingsVisibility(false)}>
+              <X aria-hidden="true" />
+            </button>
+          </header>
           <p className="game-quick-dock__settings-description">필요한 기능만 아래 도크에 꺼내 쓰세요.</p>
           <div>
             {gameQuickDockActions.map((action) => {
@@ -183,19 +197,21 @@ export function GameQuickDock({
       <div className="game-quick-dock__favorites world-control-actions" aria-label="즐겨찾기 빠른 도구">
         {visibleFavorites.map(renderAction)}
       </div>
-      <button
-        type="button"
-        className="game-quick-dock__settings-toggle"
-        aria-label={settingsOpen ? "게임 도구 닫기" : "게임 도구 열기"}
-        aria-expanded={settingsOpen}
-        title="게임 도구"
-        onClick={() => {
-          onPause();
-          setSettingsOpen((current) => !current);
-        }}
-      >
-        <SlidersHorizontal aria-hidden="true" />
-      </button>
+      {showSettingsTrigger ? (
+        <button
+          type="button"
+          className="game-quick-dock__settings-toggle"
+          aria-label={settingsOpen ? "게임 도구 닫기" : "게임 도구 열기"}
+          aria-expanded={settingsOpen}
+          title="게임 도구"
+          onClick={() => {
+            onPause();
+            setSettingsVisibility(!settingsOpen);
+          }}
+        >
+          <SlidersHorizontal aria-hidden="true" />
+        </button>
+      ) : null}
       <button
         ref={menuButtonRef}
         type="button"

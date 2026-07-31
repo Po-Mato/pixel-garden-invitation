@@ -185,6 +185,23 @@ describe("EntryScreen", () => {
     expect(quickView.compareDocumentPosition(gameEntry) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 
+  it("저장된 게임은 자동 입장하지 않고 별도 이어가기 선택지로 제공한다", () => {
+    const onResumeGarden = vi.fn();
+    render(
+      <EntryScreen
+        onEnter={vi.fn()}
+        onQuickView={vi.fn()}
+        returningProfile={{ nickname: "돌아온하객", appearance: defaultCharacterAppearance }}
+        onResumeGarden={onResumeGarden}
+      />
+    );
+
+    const resume = screen.getByRole("button", { name: /지난 정원 이어가기/ });
+    expect(resume).toHaveTextContent("돌아온하객님의 저장된 여정");
+    fireEvent.click(resume);
+    expect(onResumeGarden).toHaveBeenCalledOnce();
+  });
+
   it("submits nickname and customized appearance", () => {
     const onEnter = vi.fn();
     render(<EntryScreen onEnter={onEnter} />);

@@ -129,6 +129,7 @@ import {
   celebrationCollectiblesForZone,
   collectCelebrationItem,
   loadCelebrationCollection,
+  visibleCelebrationCollectibles,
   type CelebrationCollectible
 } from "../game/celebrationCollectibles";
 import {
@@ -3631,8 +3632,18 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     activeZone.id,
     position
   );
+  const nearbyCelebrationItems = visibleCelebrationCollectibles(
+    zoneCelebrationCollectibles,
+    collectedCelebrationIds,
+    position,
+    guidedCollectibleId
+  );
+  const nearbyCelebrationIds = new Set(nearbyCelebrationItems.map(({ id }) => id));
   const miniMapCollectibleMarkers = zoneCelebrationCollectibles
-    .filter(({ id }) => !collectedCelebrationIds.includes(id))
+    .filter(({ id }) => (
+      !collectedCelebrationIds.includes(id)
+      && (collectionGuideOpen || id === guidedCollectibleId || nearbyCelebrationIds.has(id))
+    ))
     .map((item) => ({
       id: item.id,
       point: item.point,
@@ -4280,6 +4291,30 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
             </section>
             <section className="world-game-vault__section" aria-label="추억과 기록">
               <h3>추억과 기록</h3>
+              <div className="world-game-vault__shortcuts">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setHudToolsOpen(false);
+                    handlePhotoAlbumOpenChange(true);
+                  }}
+                >
+                  <Images aria-hidden="true" />
+                  <span><strong>포토앨범</strong><small>{weddingPhotoAlbumProgress(photoAlbum)}/3개 사진</small></span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setHudToolsOpen(false);
+                    pauseWorldInput();
+                    setGameMemoryAlbum(loadGameMemoryAlbum());
+                    setGameMemoryAlbumOpen(true);
+                  }}
+                >
+                  <Images aria-hidden="true" />
+                  <span><strong>게임 추억</strong><small>{gameMemoryAlbum.entries.length}개 기록</small></span>
+                </button>
+              </div>
               <WorldSecretProgress
                 collection={worldSecretCollection}
                 totalCount={totalWorldSecrets}
@@ -4341,6 +4376,37 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
                   );
                 })}
               </ol>
+            </section>
+            <section className="world-game-vault__section" aria-label="게임 이용 설정">
+              <h3>게임 이용 설정</h3>
+              <div className="world-game-vault__shortcuts">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setHudToolsOpen(false);
+                    setQuickDockSettingsOpen(true);
+                    pauseWorldInput();
+                  }}
+                >
+                  <SlidersHorizontal aria-hidden="true" />
+                  <span><strong>빠른 도구 편집</strong><small>반응·안내·소리 선택</small></span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setHudToolsOpen(false);
+                    openGameGuide();
+                  }}
+                >
+                  <CircleHelp aria-hidden="true" />
+                  <span><strong>게임 안내</strong><small>조작 방법 다시 보기</small></span>
+                </button>
+                <ViewSettingsAccess
+                  variant="menu"
+                  currentZoneId={activeZone.id}
+                  onOpenChange={handleViewSettingsOpenChange}
+                />
+              </div>
             </section>
             <section className="world-game-vault__section" aria-label="기기와 저장">
               <h3>기기와 저장</h3>
@@ -4430,6 +4496,8 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
             <WorldCelebrationCollectibles
               items={zoneCelebrationCollectibles}
               collectedIds={collectedCelebrationIds}
+              player={position}
+              guidedCollectibleId={guidedCollectibleId}
               onCollect={(item) => beginWorldInteraction({
                 targetId: `collectible:${item.id}`,
                 collectibleId: item.id,
@@ -4982,6 +5050,8 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
               onOpenJourney={() => setHudToolsOpen(true)}
               onOpenMenu={openMenu}
               onSettingsOpenChange={setQuickDockSettingsOpen}
+              settingsOpen={quickDockSettingsOpen}
+              showSettingsTrigger={false}
               contextActive={contextActionVisible && contextHudAction?.kind !== "quest"}
               moving={moving || directTravelActive}
               routeActive={Boolean(activeJourneyGuideId || pendingJourneyGuideId)}
@@ -5064,39 +5134,6 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
                 초대장 공유
               </button>
             </div>
-            <details className="world-menu-more">
-              <summary>
-                <SlidersHorizontal aria-hidden="true" />
-                <span><strong>게임 도구와 설정</strong><small>포토앨범·추억·이용 설정</small></span>
-                <ChevronDown aria-hidden="true" />
-              </summary>
-              <div className="world-menu-grid world-menu-grid--secondary">
-                <button type="button" onClick={() => handlePhotoAlbumOpenChange(true)}>
-                  <Images aria-hidden="true" />
-                  포토앨범 {weddingPhotoAlbumProgress(photoAlbum)}/3
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    pauseWorldInput();
-                    setGameMemoryAlbum(loadGameMemoryAlbum());
-                    setGameMemoryAlbumOpen(true);
-                  }}
-                >
-                  <Images aria-hidden="true" />
-                  게임 추억 {gameMemoryAlbum.entries.length}
-                </button>
-                <button type="button" onClick={openGameGuide}>
-                  <CircleHelp aria-hidden="true" />
-                  게임 안내 다시 보기
-                </button>
-                <ViewSettingsAccess
-                  variant="menu"
-                  currentZoneId={activeZone.id}
-                  onOpenChange={handleViewSettingsOpenChange}
-                />
-              </div>
-            </details>
           </section>
         </>
       ) : null}

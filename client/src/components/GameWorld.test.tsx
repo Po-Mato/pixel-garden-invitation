@@ -253,16 +253,22 @@ function openGameVault() {
   if (!details?.hasAttribute("open")) fireEvent.click(summary);
 }
 
-function openMenuGameTools() {
-  const summary = screen.getByText("게임 도구와 설정").closest("summary");
-  if (!summary) throw new Error("게임 도구와 설정 요약을 찾지 못했습니다.");
-  const details = summary.closest("details");
-  if (!details?.hasAttribute("open")) fireEvent.click(summary);
+function openQuickGameTools() {
+  openGameVault();
+  fireEvent.click(screen.getByRole("button", { name: /빠른 도구 편집/ }));
 }
 
-function openQuickGameTools() {
-  const toggle = screen.getByRole("button", { name: /게임 도구 (열기|닫기)/ });
-  if (toggle.getAttribute("aria-expanded") !== "true") fireEvent.click(toggle);
+function startNearCelebrationItem(itemId = "home-petal") {
+  const item = allCelebrationCollectibles().find(({ id }) => id === itemId);
+  if (!item) throw new Error(`축하 아이템을 찾지 못했습니다: ${itemId}`);
+  window.localStorage.setItem(worldSessionStorageKey, JSON.stringify({
+    version: 1,
+    zoneId: item.zoneId,
+    position: { x: item.point.x + 30, y: item.point.y },
+    direction: "left",
+    guideCheckpointId: null,
+    updatedAt: new Date().toISOString()
+  }));
 }
 
 function openCompanionDock() {
@@ -525,15 +531,13 @@ describe("GameWorld", () => {
     expect(screen.getByRole("button", { name: "웨딩 갤러리 사진 보기" })).toHaveClass("world-spot--target");
   });
 
-  it("reopens the guide from the invitation menu without moving the guest", () => {
+  it("reopens the guide from the game vault without moving the guest", () => {
     render(<GameWorld profile={profile} />);
     const player = screen.getByLabelText("하객1");
     const startingPosition = { left: player.style.left, top: player.style.top };
 
-    fireEvent.click(screen.getByRole("button", { name: "초대장 메뉴" }));
-    openMenuGameTools();
-    fireEvent.click(within(screen.getByRole("dialog", { name: "초대장 바로가기" }))
-      .getByRole("button", { name: "게임 안내 다시 보기" }));
+    openGameVault();
+    fireEvent.click(screen.getByRole("button", { name: /게임 안내/ }));
 
     expect(screen.getByRole("dialog", { name: "게임 첫 방문 안내" })).toBeInTheDocument();
     expect(player).toHaveStyle(startingPosition);
@@ -901,25 +905,21 @@ describe("GameWorld", () => {
     expect(within(menu).getByRole("button", { name: "주소 복사" })).toBeInTheDocument();
   });
 
-  it("opens the same-device photo album from the invitation menu without moving the player", async () => {
+  it("opens the same-device photo album from the game vault without moving the player", async () => {
     const { container } = render(<GameWorld profile={profile} />);
     const player = container.querySelector<HTMLElement>(".world-player");
     const before = { left: player?.style.left, top: player?.style.top };
 
-    fireEvent.click(screen.getByRole("button", { name: "초대장 메뉴" }));
-    const menu = screen.getByRole("dialog", { name: "초대장 바로가기" });
-    openMenuGameTools();
-    fireEvent.click(within(menu).getByRole("button", { name: "포토앨범 0/3" }));
+    openGameVault();
+    fireEvent.click(screen.getByRole("button", { name: /포토앨범/ }));
     await revealLazyGameFeature();
 
     expect(screen.getByRole("dialog", { name: "웨딩 포토앨범" })).toBeInTheDocument();
-    expect(menu).toHaveAttribute("aria-hidden", "true");
     expect(player?.style.left).toBe(before.left);
     expect(player?.style.top).toBe(before.top);
 
     fireEvent.click(screen.getByRole("button", { name: "포토앨범 닫기" }));
     expect(screen.queryByRole("dialog", { name: "웨딩 포토앨범" })).not.toBeInTheDocument();
-    expect(menu).not.toHaveAttribute("aria-hidden");
   });
 
   it("opens calendar choices from the menu without moving the player", () => {
@@ -1590,22 +1590,18 @@ describe("GameWorld", () => {
     expect(player).toHaveStyle(initialPosition);
   });
 
-  it("초대장 메뉴에서 환경 설정을 열면 월드 입력을 중지한다", () => {
+  it("게임 보관함에서 환경 설정을 열면 월드 입력을 중지한다", () => {
     render(<GameWorld profile={profile} />);
     const player = screen.getByLabelText("하객1");
     const initialPosition = { left: player.style.left, top: player.style.top };
 
-    fireEvent.click(screen.getByRole("button", { name: "초대장 메뉴" }));
-    const menu = screen.getByRole("dialog", { name: "초대장 바로가기" });
-    openMenuGameTools();
-    fireEvent.click(within(menu).getByRole("button", { name: "환경 설정" }));
+    openGameVault();
+    fireEvent.click(screen.getByRole("button", { name: "환경 설정" }));
 
     expect(screen.getByRole("dialog", { name: "환경 설정" })).toBeInTheDocument();
-    expect(menu).toHaveAttribute("aria-hidden", "true");
     expect(player).toHaveStyle(initialPosition);
 
     fireEvent.click(screen.getByRole("button", { name: "닫기" }));
-    expect(menu).not.toHaveAttribute("aria-hidden");
     expect(player).toHaveStyle(initialPosition);
   });
 
@@ -2554,22 +2550,22 @@ describe("GameWorld", () => {
   });
 
   it("walks to a celebration item before collecting it", () => {
+    startNearCelebrationItem();
     render(<GameWorld profile={profile} />);
     const collectButton = screen.getByRole("button", { name: "축하 꽃잎 수집하기" });
 
     fireEvent.click(collectButton);
 
-    expect(screen.getByText("축하 꽃잎 가까이 이동 중")).toBeInTheDocument();
-    expect(screen.getByLabelText(/축하 아이템 0\//)).toBeInTheDocument();
     advanceInteractionRoute();
     expect(screen.getByLabelText(/축하 아이템 1\//)).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "축하 꽃잎 수집 완료" })).toBeDisabled();
+    expect(screen.queryByRole("button", { name: "축하 꽃잎 수집하기" })).not.toBeInTheDocument();
   });
 
   it("opens the collection map and starts guidance to a remaining item", async () => {
     render(<GameWorld profile={profile} />);
 
-    fireEvent.click(screen.getByRole("button", { name: /축하 아이템 0\/30, 수집 지도 열기/ }));
+    openGameVault();
+    fireEvent.click(screen.getByRole("button", { name: /축하 아이템 지도/ }));
     await revealLazyGameFeature();
     const guide = screen.getByRole("dialog", { name: "축하 아이템 수집 지도" });
     expect(within(guide).getByRole("region", { name: "맵별 수집 현황" })).toBeInTheDocument();
@@ -2577,7 +2573,21 @@ describe("GameWorld", () => {
 
     expect(screen.queryByRole("dialog", { name: "축하 아이템 수집 지도" })).not.toBeInTheDocument();
     expect(screen.getByText("축하 꽃잎 가까이 이동 중")).toBeInTheDocument();
-    expect(screen.getAllByTestId("minimap-collectible-marker")).toHaveLength(3);
+    expect(screen.getAllByTestId("minimap-collectible-marker")).toHaveLength(1);
+  });
+
+  it("수집 아이템은 가까이 가거나 안내를 시작했을 때만 나타난다", async () => {
+    render(<GameWorld profile={profile} />);
+    expect(screen.queryByRole("button", { name: /수집하기/ })).not.toBeInTheDocument();
+    expect(screen.queryAllByTestId("minimap-collectible-marker")).toHaveLength(0);
+
+    openGameVault();
+    fireEvent.click(screen.getByRole("button", { name: /축하 아이템 지도/ }));
+    await revealLazyGameFeature();
+    const guide = screen.getByRole("dialog", { name: "축하 아이템 수집 지도" });
+    fireEvent.click(within(guide).getByRole("button", { name: /축하 꽃잎/ }));
+
+    expect(screen.getByRole("button", { name: "축하 꽃잎 수집하기" })).toBeInTheDocument();
   });
 
   it("unlocks the limited photo frame after collecting all thirty items", () => {
@@ -2585,6 +2595,7 @@ describe("GameWorld", () => {
     window.localStorage.setItem(celebrationCollectionStorageKey, JSON.stringify(
       allCelebrationCollectibles().map(({ id }) => id).filter((id) => id !== remainingId)
     ));
+    startNearCelebrationItem(remainingId);
     render(<GameWorld profile={profile} />);
 
     fireEvent.click(screen.getByRole("button", { name: "축하 꽃잎 수집하기" }));
@@ -2595,12 +2606,10 @@ describe("GameWorld", () => {
     expect(screen.getByRole("button", { name: /축하 아이템 30\/30/ })).toBeInTheDocument();
   });
 
-  it("opens a combined game memory album from the invitation menu", async () => {
+  it("opens a combined game memory album from the game vault", async () => {
     render(<GameWorld profile={profile} />);
-    fireEvent.click(screen.getByRole("button", { name: "초대장 메뉴" }));
-    openMenuGameTools();
-    fireEvent.click(within(screen.getByRole("dialog", { name: "초대장 바로가기" }))
-      .getByRole("button", { name: "게임 추억 0" }));
+    openGameVault();
+    fireEvent.click(screen.getByRole("button", { name: /게임 추억/ }));
     await revealLazyGameFeature();
 
     expect(screen.getByRole("dialog", { name: "게임 추억 앨범" })).toBeInTheDocument();
@@ -2747,7 +2756,8 @@ describe("GameWorld", () => {
 
     expect(screen.getByRole("button", { name: "오시는 길 확인" })).toHaveTextContent("출발 준비 · 1/2");
     expect(screen.queryByRole("button", { name: "하객 리액션 열기" })).not.toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "게임 도구 열기" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "게임 도구 열기" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "초대장 메뉴" })).toBeInTheDocument();
   });
 
   it("이동이 이어지면 상단 HUD를 접고 정지하면 바로 복원한다", () => {

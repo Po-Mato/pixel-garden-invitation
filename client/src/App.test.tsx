@@ -9,11 +9,21 @@ import { installMemoryLocalStorage } from "./test/memoryStorage";
 vi.mock("./components/EntryScreen", () => ({
   EntryScreen: ({
     weddingDayPreview,
-    onQuickView
-  }: { weddingDayPreview?: boolean; onQuickView?: () => void }) => (
+    onQuickView,
+    returningProfile,
+    onResumeGarden
+  }: {
+    weddingDayPreview?: boolean;
+    onQuickView?: () => void;
+    returningProfile?: { nickname: string } | null;
+    onResumeGarden?: () => void;
+  }) => (
     <div data-wedding-day-preview={weddingDayPreview || undefined}>
       일반 입장 화면
       <button type="button" onClick={onQuickView}>간편 모드 열기</button>
+      {returningProfile ? (
+        <button type="button" onClick={onResumeGarden}>{returningProfile.nickname} 게임 이어가기</button>
+      ) : null}
     </div>
   )
 }));
@@ -78,7 +88,7 @@ describe("App query routing", () => {
     expect(screen.getByRole("main")).toHaveAttribute("tabindex", "-1");
   });
 
-  it("최근 게임 프로필이 있으면 새로고침 후 정원으로 바로 복귀한다", async () => {
+  it("최근 게임 프로필이 있어도 입장 선택을 먼저 보여주고 명시적으로 이어간다", async () => {
     localStorage.setItem(gameEntrySessionStorageKey, JSON.stringify({
       version: 1,
       nickname: "검증하객",
@@ -88,8 +98,11 @@ describe("App query routing", () => {
 
     render(<App />);
 
+    expect(screen.getByText("일반 입장 화면")).toBeInTheDocument();
+    expect(screen.queryByText("게임 월드")).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "검증하객 게임 이어가기" }));
     expect(await screen.findByText("게임 월드")).toBeInTheDocument();
-    expect(screen.queryByText("일반 입장 화면")).not.toBeInTheDocument();
   });
 
   it("renders only the RSVP admin page for the exact admin query", async () => {

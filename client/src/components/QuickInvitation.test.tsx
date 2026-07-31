@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   loadInvitationViewSync,
@@ -43,6 +43,24 @@ describe("간편 초대장", () => {
 
     const actions = screen.getByRole("navigation", { name: "지금 필요한 안내" });
     expect(actions.querySelector("button")?.textContent).toContain("참석 답변");
+  });
+
+  it("일정·길 찾기·참석·공유를 항상 보이는 핵심 동선으로 제공한다", () => {
+    render(<QuickInvitation onOpenGarden={vi.fn()} />);
+
+    const dock = screen.getByRole("navigation", { name: "초대장 핵심 바로가기" });
+    expect(within(dock).getByRole("button", { name: "일정" })).toBeInTheDocument();
+    expect(within(dock).getByRole("button", { name: "길 찾기" })).toBeInTheDocument();
+    expect(within(dock).getByRole("button", { name: "참석" })).toBeInTheDocument();
+    expect(dock).toHaveTextContent("공유 menu");
+  });
+
+  it("게임에서 온 방문자가 아니면 입장 선택으로 돌아간다", () => {
+    const onOpenGarden = vi.fn();
+    render(<QuickInvitation onOpenGarden={onOpenGarden} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "입장 선택" }));
+    expect(onOpenGarden).toHaveBeenCalledOnce();
   });
 
   it("정원 이동 명령을 제공한다", () => {

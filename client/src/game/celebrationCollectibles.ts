@@ -1,6 +1,6 @@
 import type { WorldZoneId } from "@wedding-game/shared";
 import { isBlocked } from "./geometry";
-import { snapToGrid } from "./movement";
+import { gridTileSize, snapToGrid } from "./movement";
 import { gardenWorld, type Point, type WorldZone } from "./world";
 
 export const celebrationCollectionStorageKey = "wedding-game:celebration-collection:v1";
@@ -14,6 +14,23 @@ export type CelebrationCollectible = {
   kind: CelebrationCollectibleKind;
   label: string;
 };
+
+export const celebrationCollectibleRevealRadius = gridTileSize * 4;
+
+export function visibleCelebrationCollectibles(
+  items: readonly CelebrationCollectible[],
+  collectedIds: readonly string[],
+  player: Point,
+  guidedCollectibleId: string | null = null,
+  revealRadius = celebrationCollectibleRevealRadius
+): CelebrationCollectible[] {
+  const collected = new Set(collectedIds);
+  return items.filter((item) => {
+    if (collected.has(item.id)) return false;
+    if (item.id === guidedCollectibleId) return true;
+    return Math.hypot(item.point.x - player.x, item.point.y - player.y) <= revealRadius;
+  });
+}
 
 type CollectionStorage = Pick<Storage, "getItem" | "setItem">;
 

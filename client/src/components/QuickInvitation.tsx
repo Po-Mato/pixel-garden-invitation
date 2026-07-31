@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   ArrowLeft,
   CalendarDays,
@@ -28,7 +28,6 @@ import { RsvpPanel } from "./RsvpPanel";
 import { RsvpSavedStatus } from "./RsvpSavedStatus";
 import { ViewSettingsAccess } from "./ViewSettingsAccess";
 import { WeddingEventSummary } from "./WeddingEventSummary";
-import { WeddingDayActionBar } from "./WeddingDayActionBar";
 import { WeddingGallery } from "./WeddingGallery";
 import { WeddingStoryTimeline } from "./WeddingStoryTimeline";
 import { observeAnalyticsSections } from "../analytics/invitationAnalytics";
@@ -41,6 +40,7 @@ import {
   type QuickInvitationSectionId
 } from "../game/invitationViewSync";
 import "../invitation-priority-actions.css";
+import "../quick-invitation-continuity.css";
 import "../rsvp-saved-status.css";
 
 type QuickInvitationProps = {
@@ -78,10 +78,17 @@ function SectionHeading({ eyebrow, title, body }: SectionHeadingProps) {
 
 function scrollToSection(id: string) {
   const timers: number[] = [];
-  const align = (smooth: boolean) => document.getElementById(id)?.scrollIntoView({
-    behavior: smooth && !shouldReduceMotion() ? "smooth" : "auto",
-    block: "start"
-  });
+  const align = (smooth: boolean) => {
+    const target = document.getElementById(id);
+    target?.scrollIntoView({
+      behavior: smooth && !shouldReduceMotion() ? "smooth" : "auto",
+      block: "start"
+    });
+    if (smooth && target) {
+      target.setAttribute("tabindex", "-1");
+      target.focus({ preventScroll: true });
+    }
+  };
   align(true);
   [180, 520, 1_200].forEach((delay) => {
     timers.push(window.setTimeout(() => align(false), delay));
@@ -103,6 +110,7 @@ export function QuickInvitation({
   const activeSectionRef = useRef<QuickInvitationSectionId>(
     loadInvitationViewSync()?.sectionId ?? "top"
   );
+  const [activeSection, setActiveSection] = useState<QuickInvitationSectionId>(activeSectionRef.current);
 
   useEffect(() => {
     const synced = loadInvitationViewSync();
@@ -128,6 +136,7 @@ export function QuickInvitation({
       const id = visible?.target.id as QuickInvitationSectionId | undefined;
       if (!id || activeSectionRef.current === id) return;
       activeSectionRef.current = id;
+      setActiveSection(id);
       saveQuickViewSection(id);
     }, { rootMargin: "-18% 0px -58%", threshold: [0.12, 0.45, 0.75] });
     sections.forEach((section) => observer.observe(section));
@@ -151,7 +160,7 @@ export function QuickInvitation({
       <header className="quick-invitation__topbar">
         <button type="button" onClick={returnToGarden}>
           <ArrowLeft aria-hidden="true" />
-          {canReturnToGarden ? "정원으로 돌아가기" : "캐릭터 정원"}
+          {canReturnToGarden ? "정원으로 돌아가기" : "입장 선택"}
         </button>
         <div className="quick-invitation__topbar-actions">
           <GuestInformationAccess variant="quick" />
@@ -310,12 +319,33 @@ export function QuickInvitation({
         <strong>{names}</strong>
         <button type="button" onClick={() => scrollToSection("top")}>맨 위로</button>
       </footer>
-      <WeddingDayActionBar
-        variant="quick"
-        preview={weddingDayPreview}
-        onSchedule={() => scrollToSection("schedule")}
-        onRsvp={() => scrollToSection("rsvp")}
-      />
+      <nav className="quick-core-actions" aria-label="초대장 핵심 바로가기">
+        <button
+          type="button"
+          aria-current={activeSection === "schedule" ? "page" : undefined}
+          onClick={() => scrollToSection("schedule")}
+        >
+          <CalendarDays aria-hidden="true" />
+          <span>일정</span>
+        </button>
+        <button
+          type="button"
+          aria-current={activeSection === "directions" ? "page" : undefined}
+          onClick={() => scrollToSection("directions")}
+        >
+          <MapPin aria-hidden="true" />
+          <span>길 찾기</span>
+        </button>
+        <button
+          type="button"
+          aria-current={activeSection === "rsvp" ? "page" : undefined}
+          onClick={() => scrollToSection("rsvp")}
+        >
+          <Send aria-hidden="true" />
+          <span>참석</span>
+        </button>
+        <InvitationShareAccess variant="menu" />
+      </nav>
     </article>
   );
 }

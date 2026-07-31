@@ -85,8 +85,9 @@ export function App() {
   const [mode, setMode] = useState<AppMode>(() => (
     new URLSearchParams(window.location.search).get("view") === "invitation"
       ? "invitation"
-      : profile ? "garden" : "entry"
+      : "entry"
   ));
+  const [invitationReturnMode, setInvitationReturnMode] = useState<"entry" | "garden">("entry");
   const coupleOrder = useCoupleOrder();
   const { event, share } = usePublishedInvitationContent();
   const searchParams = new URLSearchParams(window.location.search);
@@ -119,30 +120,45 @@ export function App() {
     window.history.pushState({}, "", `${url.pathname}${url.search}${url.hash}`);
   }, []);
 
-  const openQuickInvitation = useCallback(() => {
+  const openQuickInvitation = useCallback((returnMode: "entry" | "garden") => {
     void loadQuickInvitation();
     trackAnalyticsModeOpen("simple");
+    setInvitationReturnMode(returnMode);
     setMode("invitation");
     if (new URLSearchParams(window.location.search).get("view") !== "invitation") {
       setInvitationUrl(true);
     }
   }, [setInvitationUrl]);
 
-  const openGardenExperience = useCallback(() => {
-    if (profile) trackAnalyticsModeOpen("game");
-    else setAnalyticsContext("entry");
-    setMode(profile ? "garden" : "entry");
+  const resumeGardenExperience = useCallback(() => {
+    if (!profile) {
+      setAnalyticsContext("entry");
+      setMode("entry");
+      return;
+    }
+    void loadGameWorld();
+    trackAnalyticsModeOpen("game");
+    setMode("garden");
     if (new URLSearchParams(window.location.search).has("view")) setInvitationUrl(false);
   }, [profile, setInvitationUrl]);
+
+  const returnFromQuickInvitation = useCallback(() => {
+    const canResumeGarden = invitationReturnMode === "garden" && profile !== null;
+    if (canResumeGarden) void loadGameWorld();
+    setMode(canResumeGarden ? "garden" : "entry");
+    if (new URLSearchParams(window.location.search).has("view")) setInvitationUrl(false);
+  }, [invitationReturnMode, profile, setInvitationUrl]);
 
   useEffect(() => {
     const handlePopState = () => {
       const quickView = new URLSearchParams(window.location.search).get("view") === "invitation";
-      setMode(quickView ? "invitation" : profile ? "garden" : "entry");
+      setMode(quickView
+        ? "invitation"
+        : invitationReturnMode === "garden" && profile ? "garden" : "entry");
     };
     window.addEventListener("popstate", handlePopState);
     return () => window.removeEventListener("popstate", handlePopState);
-  }, [profile]);
+  }, [invitationReturnMode, profile]);
 
   const weddingDayPreview = searchParams.get("preview") === "wedding-day";
   if (adminPage === "rsvp") {
@@ -198,8 +214,8 @@ export function App() {
             <Suspense fallback={<ScreenLoadingFallback mode="invitation" />}>
               <QuickInvitation
                 nickname={profile?.nickname ?? invitationInvite.invite?.guestName}
-                canReturnToGarden={profile !== null}
-                onOpenGarden={openGardenExperience}
+                canReturnToGarden={invitationReturnMode === "garden" && profile !== null}
+                onOpenGarden={returnFromQuickInvitation}
                 weddingDayPreview={weddingDayPreview}
               />
             </Suspense>
@@ -208,7 +224,7 @@ export function App() {
               <GameWorld
                 profile={profile}
                 weddingDayPreview={weddingDayPreview}
-                onOpenQuickView={openQuickInvitation}
+                onOpenQuickView={() => openQuickInvitation("garden")}
               />
             </Suspense>
           ) : (
@@ -220,7 +236,9 @@ export function App() {
                 setMode("garden");
               }}
               onEnterIntent={() => { void loadGameWorld(); }}
-              onQuickView={openQuickInvitation}
+              returningProfile={profile}
+              onResumeGarden={resumeGardenExperience}
+              onQuickView={() => openQuickInvitation("entry")}
               onQuickViewIntent={() => { void loadQuickInvitation(); }}
               weddingDayPreview={weddingDayPreview}
               invitedGuest={invitationInvite.invite}

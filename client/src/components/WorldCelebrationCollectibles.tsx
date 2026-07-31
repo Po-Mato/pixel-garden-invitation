@@ -1,9 +1,15 @@
 import { Flower2, Gift, Sparkles } from "lucide-react";
-import type { CelebrationCollectible } from "../game/celebrationCollectibles";
+import {
+  visibleCelebrationCollectibles,
+  type CelebrationCollectible
+} from "../game/celebrationCollectibles";
+import type { Point } from "../game/world";
 
 type WorldCelebrationCollectiblesProps = {
   items: readonly CelebrationCollectible[];
   collectedIds: readonly string[];
+  player: Point;
+  guidedCollectibleId?: string | null;
   onCollect: (item: CelebrationCollectible) => void;
 };
 
@@ -18,24 +24,33 @@ const collectibleIcons = { petal: Flower2, ribbon: Gift, star: Sparkles } as con
 export function WorldCelebrationCollectibles({
   items,
   collectedIds,
+  player,
+  guidedCollectibleId = null,
   onCollect
 }: WorldCelebrationCollectiblesProps) {
-  const collected = new Set(collectedIds);
+  const visibleItems = visibleCelebrationCollectibles(
+    items,
+    collectedIds,
+    player,
+    guidedCollectibleId
+  );
   return (
     <>
-      <div className="world-collectibles" aria-label="웨딩 축하 아이템">
-        {items.map((item) => {
+      <div
+        className="world-collectibles"
+        aria-label="가까이 있는 웨딩 축하 아이템"
+        data-empty={visibleItems.length === 0 || undefined}
+      >
+        {visibleItems.map((item) => {
           const Icon = collectibleIcons[item.kind];
-          const complete = collected.has(item.id);
           return (
             <button
               key={item.id}
               type="button"
               className="world-collectible"
               data-kind={item.kind}
-              data-collected={complete || undefined}
-              aria-label={`${item.label} ${complete ? "수집 완료" : "수집하기"}`}
-              disabled={complete}
+              data-guided={item.id === guidedCollectibleId || undefined}
+              aria-label={`${item.label} 수집하기`}
               style={{ left: item.point.x, top: item.point.y }}
               onClick={(event) => { event.stopPropagation(); onCollect(item); }}
             >
