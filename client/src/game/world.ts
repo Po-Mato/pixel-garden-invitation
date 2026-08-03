@@ -484,11 +484,11 @@ const lobbyZone = createZone({
     portal("lobby-to-banquet", "연회장", "banquet", { x: 960, y: 345, width: 90, height: 120 }, { x: 975, y: 405 }, "right", { x: 135, y: 465 }),
     portal("lobby-to-hall", "예식홀", "ceremony-hall", { x: 480, y: 30, width: 120, height: 90 }, { x: 525, y: 105 }, "up", { x: 375, y: 1785 })
   ],
-  blocked: [{ x: 450, y: 300, width: 180, height: 120 }],
+  blocked: [{ x: 450, y: 390, width: 180, height: 90 }],
   decorations: [
-    decoration("lobby-desk", "reception-desk", "안내 데스크", 450, 320, 180, 120, {
+    decoration("lobby-desk", "reception-desk", "안내 데스크", 450, 360, 180, 120, {
       asset: "reception-desk-front.png",
-      depthY: 420
+      depthY: 480
     }),
     decoration("lobby-photo", "photo-wall", "꽃 포토월", 610, 180, 165, 96),
     decoration("lobby-sofa-1", "sofa", "로비 소파", 120, 520, 130, 72),

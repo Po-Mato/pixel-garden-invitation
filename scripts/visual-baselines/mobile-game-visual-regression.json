@@ -1,8 +1,8 @@
 {
   "version": 1,
-  "approvedAt": "2026-07-29T23:06:41.860Z",
-  "reason": "10개 맵 평행 투영 배경 재구성",
-  "sha256": "8c423c5484e1b5e2bc394d7538ed3ed452a51c3a315dcd9c31ac92c6a46d2f5e",
+  "approvedAt": "2026-08-03T22:02:59.662Z",
+  "reason": "로비 안내데스크 전면과 충돌·깊이 좌표 정렬",
+  "sha256": "f2a395352e602657a8ebff82654ab94857ee94d7a57a4ec8e748e25dac1c3c7f",
   "width": 780,
   "height": 3458,
   "mapZoneIds": [

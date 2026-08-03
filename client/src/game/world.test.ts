@@ -567,7 +567,7 @@ describe("guest route world", () => {
       expect.objectContaining({ id: "story", x: 780, y: 630, width: 120, height: 90 })
     ]);
     expect(lobby.blocked).toEqual([
-      { x: 450, y: 300, width: 180, height: 120 },
+      { x: 450, y: 390, width: 180, height: 90 },
       weddingInfo,
       rsvp,
       gallery,
@@ -623,11 +623,11 @@ describe("guest route world", () => {
       id: "lobby-desk",
       kind: "reception-desk",
       x: 450,
-      y: 320,
+      y: 360,
       width: 180,
       height: 120,
       asset: "reception-desk-front.png",
-      depthY: 420
+      depthY: 480
     }));
 
     for (const portalItem of lobby.portals) {

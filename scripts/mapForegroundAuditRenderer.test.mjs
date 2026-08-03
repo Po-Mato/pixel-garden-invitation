@@ -20,6 +20,12 @@ test("keeps the subway platform free of foreground ticket gates", () => {
   assert.deepEqual(DEFAULT_FOREGROUND_PLACEMENTS["subway-station"], []);
 });
 
+test("aligns the lobby reception front with the built-in desk base", () => {
+  assert.deepEqual(DEFAULT_FOREGROUND_PLACEMENTS.lobby, [
+    { asset: "reception-desk-front.png", x: 450, y: 360 }
+  ]);
+});
+
 test("composes the ceremony arch above the hall background", () => {
   assert.deepEqual(DEFAULT_FOREGROUND_PLACEMENTS["ceremony-hall"], [
     { asset: "ceremony-arch-front.png", x: 180, y: 30 },

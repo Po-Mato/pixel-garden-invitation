@@ -12,7 +12,7 @@ export const DEFAULT_FOREGROUND_PLACEMENTS = Object.freeze({
   "subway-station": [],
   "subway-train": [{ asset: "strap-row-foreground.png", x: 240, y: 105 }],
   "venue-exterior": [{ asset: "flower-arch-front.png", x: 360, y: 180 }],
-  lobby: [{ asset: "reception-desk-front.png", x: 450, y: 320 }],
+  lobby: [{ asset: "reception-desk-front.png", x: 450, y: 360 }],
   "bridal-room": [{ asset: "flower-arrangement-front.png", x: 240, y: 300 }],
   "ceremony-hall": [
     { asset: "ceremony-arch-front.png", x: 180, y: 30 },
