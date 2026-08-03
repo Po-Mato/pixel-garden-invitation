@@ -2,9 +2,15 @@ import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { defaultCharacterAppearance } from "@wedding-game/shared";
 import { afterEach, expect, it, vi } from "vitest";
 import { CharacterSprite } from "./CharacterSprite";
+import { trackInvitationAnalytics } from "../analytics/invitationAnalytics";
+
+vi.mock("../analytics/invitationAnalytics", () => ({
+  trackInvitationAnalytics: vi.fn()
+}));
 
 afterEach(() => {
   cleanup();
+  vi.clearAllMocks();
 });
 
 it("완성 프리셋 단일 레이어만 렌더링한다", () => {
@@ -123,6 +129,11 @@ it("선택한 프리셋 이미지 로드 실패 시 기본 캐릭터로 대체�
 
   fireEvent.error(failedImage as HTMLImageElement);
 
+  expect(trackInvitationAnalytics).toHaveBeenCalledWith(
+    "character_asset_fallback",
+    "feminine-teal-modern-hanbok"
+  );
+
   const fallbackLayer = sprite.querySelector('[data-character-layer="base"]');
   const fallbackImage = fallbackLayer?.querySelector("img");
   expect(sprite).toHaveAttribute("data-character-fallback", "true");
@@ -131,5 +142,6 @@ it("선택한 프리셋 이미지 로드 실패 시 기본 캐릭터로 대체�
 
   fireEvent.error(fallbackImage as HTMLImageElement);
   expect(sprite.querySelector('[data-character-layer="base"]')).not.toBeInTheDocument();
+  expect(trackInvitationAnalytics).toHaveBeenCalledTimes(1);
   errorSpy.mockRestore();
 });

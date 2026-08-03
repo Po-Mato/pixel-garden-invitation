@@ -45,12 +45,12 @@ describe("invitation analytics HTTP", () => {
         directionsViews: 0, mapClicks: 0, callClicks: 0, shareClicks: 0, calendarClicks: 0,
         rsvpViews: 0, rsvpStarts: 0, rsvpSubmits: 0, rsvpResponses: 0, attendingGuests: 0,
         guestbookViews: 0, guestbookMessages: 0, galleryViews: 0, galleryZooms: 0,
-        clientErrors: 0, pageLoadSamples: 0, averagePageLoadMs: null,
+        clientErrors: 0, characterAssetFallbacks: 0, pageLoadSamples: 0, averagePageLoadMs: null,
         fpsSamples: 0, averageFps: null, longTaskCount: 0, averageLongTaskMs: null,
         qualityDowngrades: 0, qualityRecoveries: 0, deviceQaReports: 0, deviceQaIssues: 0
       },
       daily: [],
-      breakdowns: { devices: [], modes: [], maps: [], shares: [], calendars: [], qualityModes: [], deviceQaDevices: [], deviceQaIssues: [] },
+      breakdowns: { devices: [], modes: [], maps: [], shares: [], calendars: [], qualityModes: [], characterFallbacks: [], deviceQaDevices: [], deviceQaIssues: [] },
       generatedAt: "2026-07-22T00:00:00.000Z"
     });
     mockedPerformance.getInvitationPerformanceAdminState.mockResolvedValue({
@@ -90,6 +90,7 @@ describe("invitation analytics HTTP", () => {
         body: JSON.stringify({ events: [
           { name: "visit", dimension: "entry:new:mobile" },
           { name: "page_load", dimension: "mobile", value: 900 },
+          { name: "character_asset_fallback", dimension: "feminine-teal-modern-hanbok" },
           { name: "device_qa", dimension: "ios:warning" },
           { name: "device_qa", dimension: "ios:issue-layout" }
         ] })
@@ -108,6 +109,7 @@ describe("invitation analytics HTTP", () => {
       { name: "unknown", dimension: "x" },
       { name: "map_click", dimension: "unknown" },
       { name: "page_load", dimension: "mobile", value: 60_001 },
+      { name: "character_asset_fallback", dimension: "../../secrets" },
       { name: "device_qa", dimension: "ios:issue-free-text" }
     ]) {
       const response = await handlePublicInvitationAnalyticsRequest(new Request("https://worker.test", {

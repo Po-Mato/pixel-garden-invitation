@@ -16,11 +16,12 @@ describe("analytics CSV", () => {
         guestbookMessages: 2,
         shares: 1,
         clientErrors: 0,
+        characterAssetFallbacks: 2,
         deviceQaReports: 2,
         deviceQaIssues: 1
       }]
     } as InvitationAnalyticsAdminResult;
     expect(buildInvitationAnalyticsCsv(result)).toContain("날짜,방문,재방문");
-    expect(buildInvitationAnalyticsCsv(result)).toContain("2026-07-22,3,1,2,1,1,2,1,0,2,1");
+    expect(buildInvitationAnalyticsCsv(result)).toContain("2026-07-22,3,1,2,1,1,2,1,0,2,2,1");
   });
 });

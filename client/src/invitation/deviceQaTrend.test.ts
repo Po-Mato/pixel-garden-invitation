@@ -13,6 +13,7 @@ function day(date: string, reports: number, issues: number): InvitationAnalytics
     guestbookMessages: 0,
     shares: 0,
     clientErrors: 0,
+    characterAssetFallbacks: 0,
     deviceQaReports: reports,
     deviceQaIssues: issues
   };

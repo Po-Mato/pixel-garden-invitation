@@ -36,6 +36,7 @@ describe("보기 설정 저장", () => {
         miniMapRouteWeight: "standard",
         routePatternEnhanced: false,
         gameMovementSpeed: "normal",
+        cameraTracking: "steady",
         gameUiScale: "standard"
       });
     expect(loadViewPreferences(storage(JSON.stringify({
@@ -55,6 +56,7 @@ describe("보기 설정 저장", () => {
       miniMapRouteWeight: "standard",
       routePatternEnhanced: false,
       gameMovementSpeed: "normal",
+      cameraTracking: "responsive",
       gameUiScale: "standard"
     })))).toEqual({
       textScale: "xlarge",
@@ -73,6 +75,7 @@ describe("보기 설정 저장", () => {
       miniMapRouteWeight: "standard",
       routePatternEnhanced: false,
       gameMovementSpeed: "normal",
+      cameraTracking: "responsive",
       gameUiScale: "standard"
     });
     expect(loadViewPreferences(storage("{broken"))).toEqual(defaultViewPreferences);
@@ -99,6 +102,7 @@ describe("보기 설정 저장", () => {
       miniMapRouteWeight: "bold" as const,
       routePatternEnhanced: true,
       gameMovementSpeed: "brisk" as const,
+      cameraTracking: "responsive" as const,
       gameUiScale: "large" as const
     };
     expect(saveViewPreferences(preferences, target)).toBe(true);
@@ -127,6 +131,7 @@ describe("보기 설정 저장", () => {
       miniMapRouteWeight: "bold",
       routePatternEnhanced: true,
       gameMovementSpeed: "relaxed",
+      cameraTracking: "responsive",
       gameUiScale: "large"
     }, root);
     expect(root).toHaveAttribute("data-text-scale", "xlarge");
@@ -142,6 +147,7 @@ describe("보기 설정 저장", () => {
     expect(root).toHaveAttribute("data-mini-map-route-weight", "bold");
     expect(root).toHaveAttribute("data-route-pattern", "enhanced");
     expect(root).toHaveAttribute("data-game-movement-speed", "relaxed");
+    expect(root).toHaveAttribute("data-camera-tracking", "responsive");
     expect(root).toHaveAttribute("data-game-ui-scale", "large");
     expect(shouldReduceMotion(root, vi.fn(() => ({ matches: false })) as unknown as typeof window.matchMedia)).toBe(true);
 
@@ -159,6 +165,7 @@ describe("보기 설정 저장", () => {
     expect(root).toHaveAttribute("data-mini-map-route-weight", "standard");
     expect(root).not.toHaveAttribute("data-route-pattern");
     expect(root).toHaveAttribute("data-game-movement-speed", "normal");
+    expect(root).toHaveAttribute("data-camera-tracking", "steady");
     expect(root).toHaveAttribute("data-game-ui-scale", "standard");
     expect(shouldReduceMotion(root, vi.fn(() => ({ matches: true })) as unknown as typeof window.matchMedia)).toBe(true);
   });

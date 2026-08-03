@@ -14,6 +14,7 @@ export const invitationAnalyticsEventNames = [
   "gallery_zoom",
   "page_load",
   "client_error",
+  "character_asset_fallback",
   "performance_fps",
   "performance_long_task",
   "performance_quality_change",
@@ -48,6 +49,7 @@ export type InvitationAnalyticsDaily = {
   guestbookMessages: number;
   shares: number;
   clientErrors: number;
+  characterAssetFallbacks: number;
   deviceQaReports: number;
   deviceQaIssues: number;
 };
@@ -79,6 +81,7 @@ export type InvitationAnalyticsAdminResult = {
     galleryViews: number;
     galleryZooms: number;
     clientErrors: number;
+    characterAssetFallbacks: number;
     pageLoadSamples: number;
     averagePageLoadMs: number | null;
     fpsSamples: number;
@@ -98,6 +101,7 @@ export type InvitationAnalyticsAdminResult = {
     shares: InvitationAnalyticsBreakdown[];
     calendars: InvitationAnalyticsBreakdown[];
     qualityModes: InvitationAnalyticsBreakdown[];
+    characterFallbacks: InvitationAnalyticsBreakdown[];
     deviceQaDevices: InvitationAnalyticsBreakdown[];
     deviceQaIssues: InvitationAnalyticsBreakdown[];
   };

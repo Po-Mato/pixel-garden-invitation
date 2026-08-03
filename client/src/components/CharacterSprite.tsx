@@ -7,6 +7,7 @@ import {
 } from "@wedding-game/shared";
 import { resolveCharacterLayers, type CharacterDisplayMode } from "../character/assets";
 import { getWalkFrameStyle } from "../character/frame";
+import { trackInvitationAnalytics } from "../analytics/invitationAnalytics";
 
 type Props = {
   appearance: CharacterAppearance;
@@ -40,7 +41,12 @@ export function CharacterSprite({
       : layer.fallbackWalkUrl;
     const preferredFailed = failedUrls.has(preferredUrl);
     const url = preferredFailed ? fallbackUrl : preferredUrl;
-    return failedUrls.has(url) ? [] : [{ layer, url, fallback: preferredFailed }];
+    return failedUrls.has(url) ? [] : [{
+      layer,
+      url,
+      fallback: preferredFailed,
+      fallbackAvailable: preferredUrl !== fallbackUrl
+    }];
   });
   const spriteStyle = {
     "--character-source-width": `${sourceSize.width}px`,
@@ -50,9 +56,12 @@ export function CharacterSprite({
     "--character-display-scale-x": String(displaySize.width / sourceSize.width),
     "--character-display-scale-y": String(displaySize.height / sourceSize.height)
   } as CSSProperties;
-  const markFailed = (url: string) => {
+  const markFailed = (url: string, fallbackActivated: boolean) => {
     if (import.meta.env.DEV) {
       console.error(`Character asset failed: ${url}`);
+    }
+    if (fallbackActivated && !failedUrls.has(url)) {
+      trackInvitationAnalytics("character_asset_fallback", safeAppearance.presetId);
     }
     setFailedUrls((current) => {
       if (current.has(url)) return current;
@@ -71,7 +80,7 @@ export function CharacterSprite({
       data-character-fallback={renderedLayers.some(({ fallback }) => fallback) || undefined}
       style={spriteStyle}
     >
-      {renderedLayers.map(({ layer, url, fallback }) => {
+      {renderedLayers.map(({ layer, url, fallback, fallbackAvailable }) => {
         return (
           <span
             key={`${layer.slot}:${layer.walkUrl}`}
@@ -88,7 +97,7 @@ export function CharacterSprite({
               src={url}
               alt=""
               aria-hidden="true"
-              onError={() => markFailed(url)}
+              onError={() => markFailed(url, !fallback && fallbackAvailable)}
             />
           </span>
         );

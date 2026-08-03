@@ -61,6 +61,7 @@ export function ViewSettingsAccess({ variant, onOpenChange, currentZoneId }: Vie
     setMiniMapRouteWeight,
     setRoutePatternEnhanced,
     setGameMovementSpeed,
+    setCameraTracking,
     setGameUiScale,
     enableComfortableView,
     resetPreferences
@@ -92,6 +93,7 @@ export function ViewSettingsAccess({ variant, onOpenChange, currentZoneId }: Vie
     && preferences.miniMapRouteWeight === "bold"
     && preferences.routePatternEnhanced
     && preferences.gameMovementSpeed === "relaxed"
+    && preferences.cameraTracking === "steady"
     && preferences.gameUiScale === "large";
   const portalDirectionAudioReady = feedbackPreferences.soundEnabled
     && feedbackPreferences.effectsEnabled
@@ -288,6 +290,27 @@ export function ViewSettingsAccess({ variant, onOpenChange, currentZoneId }: Vie
                   크게
                 </button>
               </div>
+            </div>
+
+            <div className="feedback-settings__volume">
+              <strong>카메라 움직임</strong>
+              <div className="view-settings-sheet__segments" role="group" aria-label="카메라 움직임">
+                <button
+                  type="button"
+                  aria-pressed={preferences.cameraTracking === "steady"}
+                  onClick={() => setCameraTracking("steady")}
+                >
+                  안정적으로
+                </button>
+                <button
+                  type="button"
+                  aria-pressed={preferences.cameraTracking === "responsive"}
+                  onClick={() => setCameraTracking("responsive")}
+                >
+                  빠르게 따라오기
+                </button>
+              </div>
+              <p className="view-settings-sheet__hint">빠르게 따라오기는 캐릭터가 화면 가장자리로 가기 전에 지도를 움직여요.</p>
             </div>
 
             <label className="view-settings-sheet__switch">

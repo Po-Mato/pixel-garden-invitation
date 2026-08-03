@@ -43,6 +43,7 @@ function testDatabase(): { sqlite: SqliteDatabase; db: D1Database } {
   `);
   sqlite.exec(readFileSync(new URL("../migrations/0012_invitation_analytics.sql", import.meta.url), "utf8"));
   sqlite.exec(readFileSync(new URL("../migrations/0020_device_qa_analytics.sql", import.meta.url), "utf8"));
+  sqlite.exec(readFileSync(new URL("../migrations/0023_character_asset_fallback_analytics.sql", import.meta.url), "utf8"));
 
   const prepare = (sql: string) => ({
     bind: (...values: unknown[]) => ({
@@ -82,6 +83,7 @@ describe("invitation analytics repository", () => {
         { name: "rsvp_submit", dimension: "simple" },
         { name: "share_click", dimension: "copy" },
         { name: "page_load", dimension: "mobile", value: 1200 },
+        { name: "character_asset_fallback", dimension: "feminine-teal-modern-hanbok" },
         { name: "device_qa", dimension: "android:warning" },
         { name: "device_qa", dimension: "android:issue-portal" }
       ], new Date("2026-07-21T16:00:00.000Z"));
@@ -107,6 +109,7 @@ describe("invitation analytics repository", () => {
         guestbookMessages: 1,
         shareClicks: 1,
         averagePageLoadMs: 1200,
+        characterAssetFallbacks: 1,
         deviceQaReports: 1,
         deviceQaIssues: 1
       });
@@ -117,9 +120,13 @@ describe("invitation analytics repository", () => {
         guestbookMessages: 1
       })]);
       expect(result?.breakdowns.devices).toEqual([{ key: "mobile", count: 2 }]);
+      expect(result?.breakdowns.characterFallbacks).toEqual([{
+        key: "feminine-teal-modern-hanbok",
+        count: 1
+      }]);
       expect(result?.breakdowns.deviceQaDevices).toEqual([{ key: "android:warning", count: 1 }]);
       expect(result?.breakdowns.deviceQaIssues).toEqual([{ key: "android:portal", count: 1 }]);
-      expect(sqlite.prepare("SELECT COUNT(*) AS count FROM invitation_analytics_daily").get()).toEqual({ count: 9 });
+      expect(sqlite.prepare("SELECT COUNT(*) AS count FROM invitation_analytics_daily").get()).toEqual({ count: 10 });
     } finally {
       sqlite.close();
     }

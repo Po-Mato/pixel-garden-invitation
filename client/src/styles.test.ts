@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 
 const styles = readFileSync("src/styles.css", "utf8");
 const hudDensityStyles = readFileSync("src/game-hud-density.css", "utf8");
+const experienceStyles = readFileSync("src/game-experience-continuity.css", "utf8");
 const worldZones = [
   "home",
   "neighborhood",
@@ -315,6 +316,8 @@ describe("mobile world controls", () => {
     expect(stageRule).toContain("transform-origin: 0 0;");
     expect(stageRule).toContain("will-change: transform;");
     expect(stageRule).toContain("transition: transform 180ms");
+    expect(styles).toContain('html[data-camera-tracking="responsive"] .world-map__stage');
+    expect(styles).toContain("transition-duration: 110ms;");
     expect(stageRule).not.toContain("width: 390px;");
     expect(stageRule).not.toContain("height: 720px;");
     expect(stageRule).not.toContain("scale: calc(");
@@ -326,6 +329,10 @@ describe("mobile world controls", () => {
     expect(hudDensityStyles).toContain("env(safe-area-inset-right)");
     expect(hudDensityStyles).toContain("env(safe-area-inset-bottom)");
     expect(hudDensityStyles).toContain("env(safe-area-inset-left)");
+    expect(hudDensityStyles).toContain("calc(84px + env(safe-area-inset-top))");
+    expect(hudDensityStyles).toContain(".world-journey-complete-actions");
+    expect(experienceStyles).toContain('.world-game-vault__shortcuts > button[data-recent="true"]');
+    expect(styles).toContain(".world-spot[data-edge-shifted]");
   });
 
   it("pins a display-only minimap to the upper-right map corner", () => {

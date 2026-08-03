@@ -14,6 +14,7 @@ import {
 import { gameMemoryAlbumStorageKey } from "../game/gameMemoryAlbum";
 import { worldDepth } from "../game/worldVisuals";
 import { journeyProgressStorageKey } from "../game/journeyProgress";
+import { optionalFeatureUsageStorageKey } from "../game/optionalFeatureUsage";
 import { worldSessionStorageKey } from "../game/worldSession";
 import { worldTravelHistoryStorageKey } from "../game/worldTravelHistory";
 import { worldSecretCollectionStorageKey } from "../game/worldSecretCollection";
@@ -2775,6 +2776,51 @@ describe("GameWorld", () => {
     expect(vault).toHaveAttribute("open");
     expect(screen.getByRole("button", { name: /축하 아이템 지도/ })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /게임 추억/ })).toBeInTheDocument();
+  });
+
+  it("최근 사용한 선택 기능만 다음 방문에 은은하게 강조한다", async () => {
+    render(<GameWorld profile={profile} />);
+    openGameVault();
+    fireEvent.click(screen.getByRole("button", { name: /포토앨범/ }));
+    await revealLazyGameFeature();
+    fireEvent.click(screen.getByRole("button", { name: "포토앨범 닫기" }));
+
+    openJourneyTools();
+    expect(screen.getByText("최근 사용 · 포토앨범")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /포토앨범/ })).toHaveAttribute("data-recent", "true");
+    expect(JSON.parse(window.localStorage.getItem(optionalFeatureUsageStorageKey) ?? "null"))
+      .toMatchObject({ recentId: "photo-album", usedIds: ["photo-album"] });
+  });
+
+  it("완주 후 HUD를 예식 정보와 방명록 중심으로 전환한다", () => {
+    window.localStorage.setItem(journeyProgressStorageKey, JSON.stringify({
+      version: 1,
+      completedIds: ["directions", "gallery", "bride", "ceremony", "guestbook"],
+      updatedAt: "2026-08-03T00:00:00.000Z"
+    }));
+    render(<GameWorld profile={profile} />);
+
+    const hud = document.querySelector(".world-hud");
+    expect(hud).toHaveAttribute("data-journey-complete", "true");
+    expect(hud).toHaveAttribute("data-density", "complete");
+    expect(screen.getByRole("navigation", { name: "완주 후 초대장 바로가기" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /예식 정보/ })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /방명록/ })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /다음 목적지/ })).not.toBeInTheDocument();
+  });
+
+  it("카메라 가장자리에서 장소 버튼을 화면 안쪽으로 자동 배치한다", () => {
+    window.localStorage.setItem(worldSessionStorageKey, JSON.stringify({
+      version: 1,
+      zoneId: "home",
+      position: { x: 735, y: 360 },
+      direction: "right",
+      guideCheckpointId: null,
+      updatedAt: "2026-08-03T00:00:00.000Z"
+    }));
+    render(<GameWorld profile={profile} />);
+
+    expect(getDirectionsWorldSpot()).toHaveAttribute("data-edge-shifted", expect.stringContaining("left"));
   });
 
   it("이동 중에도 상단 HUD 골격을 유지하고 상태 밀도만 갱신한다", () => {

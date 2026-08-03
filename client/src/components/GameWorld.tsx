@@ -9,7 +9,7 @@ import {
   type MouseEvent,
   type TransitionEvent as ReactTransitionEvent
 } from "react";
-import { Accessibility, Archive, ArrowRight, Camera, ChevronDown, CircleHelp, Flower2, Images, MapPinned, RefreshCw, Share2, SlidersHorizontal, UsersRound, X } from "lucide-react";
+import { Accessibility, Archive, ArrowRight, CalendarDays, Camera, ChevronDown, CircleHelp, Flower2, Images, MapPinned, MessageCircle, RefreshCw, Share2, SlidersHorizontal, UsersRound, X } from "lucide-react";
 import {
   companionRendezvousProposalLifetimeMs,
   invitationContent,
@@ -80,6 +80,13 @@ import {
 } from "../game/journeySyncQueue";
 import { completeGameGuide, loadGameGuideState, shouldAutoOpenGameGuide } from "../game/gameGuide";
 import { resolveGameHudDensity } from "../game/gameHudVisibility";
+import {
+  loadOptionalFeatureUsage,
+  optionalFeatureSummary,
+  recordOptionalFeatureUse,
+  type OptionalFeatureId
+} from "../game/optionalFeatureUsage";
+import { placeWorldOverlayInsideViewport } from "../game/worldOverlayPlacement";
 import { resolveContextHudAction, type ContextHudAction } from "../game/contextHudAction";
 import { resolveNpcDialoguePlacement } from "../game/gameOverlayPlacement";
 import { journeyDirectionLabels, resolveJourneyGuidance } from "../game/journeyGuidance";
@@ -598,6 +605,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   const [photoAlbumOpen, setPhotoAlbumOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [hudToolsOpen, setHudToolsOpen] = useState(() => window.location.hash.startsWith("#game-transfer="));
+  const [optionalFeatureUsage, setOptionalFeatureUsage] = useState(loadOptionalFeatureUsage);
   const [quickDockSettingsOpen, setQuickDockSettingsOpen] = useState(false);
   const [calendarSheetOpen, setCalendarSheetOpen] = useState(false);
   const [directionsSheetOpen, setDirectionsSheetOpen] = useState(false);
@@ -617,6 +625,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   const [routeRecalculationNotice, setRouteRecalculationNotice] = useState<RouteRecalculationResult | null>(null);
   const [routeArrivalNotice, setRouteArrivalNotice] = useState<RouteArrivalNotice | null>(null);
   const [journeyProgress, setJourneyProgress] = useState(loadJourneyProgress);
+  const journeyCompleted = journeyCheckpoints.every(({ id }) => journeyProgress.completedIds.includes(id));
   const [worldTravelHistory, setWorldTravelHistory] = useState(() => loadWorldTravelHistory(initialZone.id));
   const [worldSecretCollection, setWorldSecretCollection] = useState(loadWorldSecretCollection);
   const [zoneMiniQuestProgress, setZoneMiniQuestProgress] = useState(loadZoneMiniQuestProgress);
@@ -2183,6 +2192,10 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     setPhotoAlbumOpen(open);
   }, [pauseWorldInput]);
 
+  const markOptionalFeatureUsed = useCallback((id: OptionalFeatureId) => {
+    setOptionalFeatureUsage(recordOptionalFeatureUse(id));
+  }, []);
+
   const openGameGuide = useCallback(() => {
     pauseWorldInput();
     setGameGuideOpen(true);
@@ -2252,13 +2265,13 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
         bounds: activeZone.bounds,
         zoom: 1,
         previous: zoneChanged ? null : current,
-        deadZone: cameraDeadZone(viewport)
+        deadZone: cameraDeadZone(viewport, viewPreferences.cameraTracking)
       });
       return next.x === current.x && next.y === current.y && next.zoom === current.zoom
         ? current
         : next;
     });
-  }, [activeZone.bounds.height, activeZone.bounds.width, activeZone.id, position.x, position.y, viewport.height, viewport.width]);
+  }, [activeZone.bounds.height, activeZone.bounds.width, activeZone.id, position.x, position.y, viewPreferences.cameraTracking, viewport.height, viewport.width]);
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -3748,6 +3761,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     && !routeArrivalNotice
     && !activeRouteArrivalCue
     && !contextQuestDuplicatesDestination
+    && !journeyCompleted
   );
   const hudDensity = resolveGameHudDensity({
     moving,
@@ -3755,7 +3769,8 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     contextActive: contextActionVisible,
     toolsOpen: hudToolsOpen,
     overlayOpen: gameOverlayOpen,
-    dialogueOpen: Boolean(activeNpcDialogue)
+    dialogueOpen: Boolean(activeNpcDialogue),
+    journeyComplete: journeyCompleted
   });
 
   function guideToZoneMiniQuestStep(step: ZoneMiniQuestStep) {
@@ -4169,6 +4184,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
         className="world-hud"
         data-tools-open={hudToolsOpen || undefined}
         data-density={hudDensity}
+        data-journey-complete={journeyCompleted || undefined}
         data-dialogue-open={Boolean(activeNpcDialogue) || undefined}
       >
         <div className="world-hud__status">
@@ -4188,11 +4204,23 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
             }}
           >
             <SlidersHorizontal aria-hidden="true" />
-            <span>여정</span>
+            <span>{journeyCompleted ? "추억" : "여정"}</span>
             <i className={`realtime-pill realtime-pill--${realtimeStatus}`} aria-label={realtimeStatusText(realtimeStatus)} />
             <ChevronDown aria-hidden="true" />
           </button>
         </div>
+        {journeyCompleted && !hudToolsOpen ? (
+          <nav className="world-journey-complete-actions" aria-label="완주 후 초대장 바로가기">
+            <button type="button" onClick={() => openSpot("wedding-info")}>
+              <CalendarDays aria-hidden="true" />
+              <span><strong>예식 정보</strong><small>날짜·장소 확인</small></span>
+            </button>
+            <button type="button" onClick={() => openSpot("guestbook")}>
+              <MessageCircle aria-hidden="true" />
+              <span><strong>방명록</strong><small>축하 인사 남기기</small></span>
+            </button>
+          </nav>
+        ) : null}
         {recommendedCheckpoint && recommendedZone ? (
           <div
             className="world-destination-guide-row"
@@ -4290,7 +4318,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
         <details className="world-game-vault" data-optional-features="true">
           <summary>
             <Archive aria-hidden="true" />
-            <span><strong>선택 기능</strong><small>사진·수집·같이 걷기는 필요할 때만</small></span>
+            <span><strong>선택 기능</strong><small>{optionalFeatureSummary(optionalFeatureUsage)}</small></span>
             <ChevronDown aria-hidden="true" />
           </summary>
           <div className="world-game-vault__body">
@@ -4299,7 +4327,10 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
               <div className="world-game-vault__shortcuts">
                 <button
                   type="button"
+                  data-optional-feature="collection"
+                  data-recent={optionalFeatureUsage.recentId === "collection" || undefined}
                   onClick={() => {
+                    markOptionalFeatureUsed("collection");
                     void loadCelebrationCollectionGuideComponent();
                     pauseWorldInput();
                     setCollectionGuideOpen(true);
@@ -4308,7 +4339,15 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
                   <Flower2 aria-hidden="true" />
                   <span><strong>축하 아이템 지도</strong><small>{collectedCelebrationIds.length}/{totalCelebrationCollectibles} 수집</small></span>
                 </button>
-                <button type="button" onClick={openCompanionWaitingRoom}>
+                <button
+                  type="button"
+                  data-optional-feature="companion"
+                  data-recent={optionalFeatureUsage.recentId === "companion" || undefined}
+                  onClick={() => {
+                    markOptionalFeatureUsed("companion");
+                    openCompanionWaitingRoom();
+                  }}
+                >
                   <UsersRound aria-hidden="true" />
                   <span><strong>같이 걷기</strong><small>QR·링크로 하객 초대</small></span>
                 </button>
@@ -4319,7 +4358,10 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
               <div className="world-game-vault__shortcuts">
                 <button
                   type="button"
+                  data-optional-feature="photo-album"
+                  data-recent={optionalFeatureUsage.recentId === "photo-album" || undefined}
                   onClick={() => {
+                    markOptionalFeatureUsed("photo-album");
                     setHudToolsOpen(false);
                     handlePhotoAlbumOpenChange(true);
                   }}
@@ -4329,7 +4371,10 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
                 </button>
                 <button
                   type="button"
+                  data-optional-feature="game-memory"
+                  data-recent={optionalFeatureUsage.recentId === "game-memory" || undefined}
                   onClick={() => {
+                    markOptionalFeatureUsed("game-memory");
                     setHudToolsOpen(false);
                     pauseWorldInput();
                     setGameMemoryAlbum(loadGameMemoryAlbum());
@@ -4658,12 +4703,18 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
             ))}
             {activeZone.spots.map((worldSpot) => {
               const content = invitationContent.spots.find((candidate) => candidate.id === worldSpot.id);
+              const overlayPlacement = placeWorldOverlayInsideViewport({
+                rect: worldSpot,
+                camera,
+                viewport
+              });
               return (
                 <button
                   key={worldSpot.id}
                   type="button"
                   className={`world-spot world-spot--${worldSpot.id}${interactionIntent?.targetId === `spot:${worldSpot.id}` ? " world-spot--target" : ""}${recommendedCheckpoint?.zoneId === activeZone.id && recommendedCheckpoint.target.type === "spot" && recommendedCheckpoint.target.spotId === worldSpot.id ? " world-spot--recommended" : ""}`}
-                  style={{ ...pixelRect(worldSpot), zIndex: 9000 }}
+                  data-edge-shifted={overlayPlacement.shiftedEdges.join(" ") || undefined}
+                  style={{ ...pixelRect(overlayPlacement.rect), zIndex: 9000 }}
                   onClick={(event) => {
                     event.stopPropagation();
                     setActiveJourneyGuideId(null);
@@ -5375,18 +5426,24 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
         <JourneyCompletion
           nickname={profile.nickname}
           appearance={profile.appearance}
-          onClose={() => setJourneyCompletionOpen(false)}
+          onClose={() => {
+            setJourneyCompletionOpen(false);
+            setHudToolsOpen(false);
+          }}
           onOpenRsvp={() => {
             setJourneyCompletionOpen(false);
+            setHudToolsOpen(false);
             openSpot("rsvp");
           }}
           onOpenShare={() => {
             setJourneyCompletionOpen(false);
+            setHudToolsOpen(false);
             pauseWorldInput();
             setShareSheetOpen(true);
           }}
           onOpenPhotoAlbum={() => {
             setJourneyCompletionOpen(false);
+            setHudToolsOpen(false);
             pauseWorldInput();
             setPhotoAlbumOpen(true);
           }}

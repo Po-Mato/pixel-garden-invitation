@@ -2,7 +2,7 @@ import type { InvitationAnalyticsAdminResult } from "@wedding-game/shared";
 
 export function buildInvitationAnalyticsCsv(result: InvitationAnalyticsAdminResult): string {
   const rows = [
-    ["날짜", "방문", "재방문", "게임 진입", "간편 초대장 진입", "참석 답변", "방명록", "공유", "오류", "기기 점검", "기기 불편"],
+    ["날짜", "방문", "재방문", "게임 진입", "간편 초대장 진입", "참석 답변", "방명록", "공유", "오류", "캐릭터 자동 대체", "기기 점검", "기기 불편"],
     ...result.daily.map((day) => [
       day.date,
       day.visits,
@@ -13,6 +13,7 @@ export function buildInvitationAnalyticsCsv(result: InvitationAnalyticsAdminResu
       day.guestbookMessages,
       day.shares,
       day.clientErrors,
+      day.characterAssetFallbacks,
       day.deviceQaReports,
       day.deviceQaIssues
     ])

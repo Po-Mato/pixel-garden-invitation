@@ -42,15 +42,17 @@ describe("invitation analytics migration", () => {
     }
   });
 
-  it("기존 합계를 보존하면서 성능·기기 점검 이벤트 제약을 확장한다", () => {
+  it("기존 합계를 보존하면서 성능·기기·캐릭터 대체 이벤트 제약을 확장한다", () => {
     const database = new DatabaseSync(":memory:");
     try {
       database.exec("CREATE TABLE invitations (id TEXT PRIMARY KEY); INSERT INTO invitations VALUES ('sample-garden');");
       database.exec(readFileSync(new URL("../migrations/0012_invitation_analytics.sql", import.meta.url), "utf8"));
       database.exec("INSERT INTO invitation_analytics_daily VALUES ('sample-garden', '2026-07-30', 'visit', 'entry:new:mobile', 3, 0, '2026-07-30T00:00:00.000Z');");
       database.exec(readFileSync(new URL("../migrations/0020_device_qa_analytics.sql", import.meta.url), "utf8"));
+      database.exec(readFileSync(new URL("../migrations/0023_character_asset_fallback_analytics.sql", import.meta.url), "utf8"));
       expect(database.prepare("SELECT event_count FROM invitation_analytics_daily WHERE event_name = 'visit'").get()).toEqual({ event_count: 3 });
       expect(() => database.exec("INSERT INTO invitation_analytics_daily VALUES ('sample-garden', '2026-07-30', 'device_qa', 'ios:warning', 1, 0, '2026-07-30T00:00:00.000Z');")).not.toThrow();
+      expect(() => database.exec("INSERT INTO invitation_analytics_daily VALUES ('sample-garden', '2026-07-30', 'character_asset_fallback', 'feminine-teal-modern-hanbok', 1, 0, '2026-07-30T00:00:00.000Z');")).not.toThrow();
       expect(() => database.exec("INSERT INTO invitation_analytics_daily VALUES ('sample-garden', '2026-07-30', 'unknown', 'x', 1, 0, '2026-07-30T00:00:00.000Z');")).toThrow(/CHECK constraint failed/);
     } finally {
       database.close();

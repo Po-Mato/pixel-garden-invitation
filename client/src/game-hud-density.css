@@ -65,6 +65,71 @@
   border-right: 0;
 }
 
+.game-world .world-hud[data-journey-complete]:not([data-tools-open]) {
+  flex-basis: calc(84px + env(safe-area-inset-top));
+  min-height: calc(84px + env(safe-area-inset-top));
+  max-height: calc(84px + env(safe-area-inset-top));
+  gap: 5px;
+  padding-top: calc(5px + env(safe-area-inset-top));
+  padding-bottom: 5px;
+}
+
+.game-world .world-hud[data-density="complete"] .world-zone-summary > :is(span, small) {
+  display: none;
+}
+
+.game-world .world-hud[data-density="complete"] .world-zone-summary {
+  gap: 0;
+}
+
+.game-world .world-hud[data-density="complete"] .world-zone-summary strong {
+  font-size: 13px;
+}
+
+.world-journey-complete-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.world-journey-complete-actions button {
+  display: grid;
+  min-width: 0;
+  min-height: 38px;
+  grid-template-columns: 18px minmax(0, 1fr);
+  align-items: center;
+  gap: 6px;
+  border: 1px solid rgba(112, 78, 84, 0.45);
+  border-radius: 4px;
+  padding: 4px 7px;
+  background: linear-gradient(135deg, #fff8de, #f5e6e3);
+  color: #4e3c3c;
+  text-align: left;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 246, 0.72);
+}
+
+.world-journey-complete-actions svg {
+  width: 17px;
+  height: 17px;
+  color: #9d6572;
+}
+
+.world-journey-complete-actions span {
+  display: grid;
+  min-width: 0;
+  gap: 1px;
+}
+
+.world-journey-complete-actions strong,
+.world-journey-complete-actions small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.world-journey-complete-actions strong { font-size: 9px; }
+.world-journey-complete-actions small { color: #7b6668; font-size: 7px; font-weight: 800; }
+
 @media (orientation: landscape) and (max-height: 500px) {
   .game-world .world-hud:not([data-tools-open]) {
     flex: initial;

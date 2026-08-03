@@ -178,6 +178,7 @@ export async function getInvitationAnalytics(
       guestbookMessages: 0,
       shares: 0,
       clientErrors: 0,
+      characterAssetFallbacks: 0,
       deviceQaReports: 0,
       deviceQaIssues: 0
     });
@@ -203,6 +204,7 @@ export async function getInvitationAnalytics(
     galleryViews: 0,
     galleryZooms: 0,
     clientErrors: 0,
+    characterAssetFallbacks: 0,
     pageLoadSamples: 0,
     averagePageLoadMs: null,
     fpsSamples: 0,
@@ -220,6 +222,7 @@ export async function getInvitationAnalytics(
   const shares = new Map<string, number>();
   const calendars = new Map<string, number>();
   const qualityModes = new Map<string, number>();
+  const characterFallbacks = new Map<string, number>();
   const deviceQaDevices = new Map<string, number>();
   const deviceQaIssues = new Map<string, number>();
   let pageLoadValueSum = 0;
@@ -274,6 +277,11 @@ export async function getInvitationAnalytics(
       case "client_error":
         totals.clientErrors += count;
         item.clientErrors += count;
+        break;
+      case "character_asset_fallback":
+        totals.characterAssetFallbacks += count;
+        item.characterAssetFallbacks += count;
+        increment(characterFallbacks, row.dimension, count);
         break;
       case "performance_fps":
         totals.fpsSamples += count;
@@ -332,6 +340,7 @@ export async function getInvitationAnalytics(
       shares: breakdown(shares),
       calendars: breakdown(calendars),
       qualityModes: breakdown(qualityModes),
+      characterFallbacks: breakdown(characterFallbacks),
       deviceQaDevices: breakdown(deviceQaDevices),
       deviceQaIssues: breakdown(deviceQaIssues)
     },

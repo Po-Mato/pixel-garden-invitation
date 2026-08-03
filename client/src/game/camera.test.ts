@@ -185,4 +185,9 @@ describe("tracking camera", () => {
     expect(cameraDeadZone({ width: 390, height: 748 })).toEqual({ width: 125, height: 168 });
     expect(cameraDeadZone({ width: 1024, height: 768 })).toEqual({ width: 132, height: 168 });
   });
+
+  it("uses a smaller dead zone when the guest prefers responsive tracking", () => {
+    expect(cameraDeadZone({ width: 390, height: 748 }, "responsive")).toEqual({ width: 70, height: 112 });
+    expect(cameraDeadZone({ width: 320, height: 400 }, "responsive")).toEqual({ width: 58, height: 72 });
+  });
 });

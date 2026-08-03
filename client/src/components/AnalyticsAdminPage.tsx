@@ -18,9 +18,10 @@ import {
   ShieldCheck,
   Users
 } from "lucide-react";
-import type {
-  InvitationAnalyticsAdminResponse,
-  InvitationAnalyticsBreakdown
+import {
+  guestCharacterPresets,
+  type InvitationAnalyticsAdminResponse,
+  type InvitationAnalyticsBreakdown
 } from "@wedding-game/shared";
 import {
   fetchAdminInvitationAnalytics,
@@ -48,6 +49,9 @@ const modeLabels: Record<string, string> = { game: "게임 정원", simple: "간
 const mapLabels: Record<string, string> = { naver: "네이버지도", kakao: "카카오맵", google: "Google 지도" };
 const shareLabels: Record<string, string> = { native: "공유 앱", copy: "링크 복사", fallback: "자동 링크 복사" };
 const calendarLabels: Record<string, string> = { ics: "기본 캘린더", google: "Google 캘린더", copy: "일정 복사" };
+const characterFallbackLabels = Object.fromEntries(
+  guestCharacterPresets.map((preset) => [preset.id, preset.label])
+);
 const qaDeviceLabels: Record<string, string> = {
   "ios:complete": "iPhone/iPad 정상",
   "ios:warning": "iPhone/iPad 확인 필요",
@@ -393,11 +397,12 @@ export function AnalyticsAdminPage() {
               <BreakdownList title="지도 선택" items={analytics.breakdowns.maps} labels={mapLabels} />
               <BreakdownList title="공유 방식" items={analytics.breakdowns.shares} labels={shareLabels} />
               <BreakdownList title="캘린더 저장" items={analytics.breakdowns.calendars} labels={calendarLabels} />
+              <BreakdownList title="대체된 캐릭터 이미지" items={analytics.breakdowns.characterFallbacks} labels={characterFallbackLabels} />
             </section>
 
             <section className="analytics-quality" aria-labelledby="analytics-quality-title">
               <Gauge aria-hidden="true" />
-              <div><p>EXPERIENCE QUALITY</p><h2 id="analytics-quality-title">로딩·게임 성능</h2><span>로딩 {analytics.totals.averagePageLoadMs === null ? "집계 전" : `${(analytics.totals.averagePageLoadMs / 1000).toFixed(1)}초`} · FPS {analytics.totals.averageFps ?? "집계 전"}</span><small>FPS 표본 {formatNumber(analytics.totals.fpsSamples)}회 · 긴 작업 {formatNumber(analytics.totals.longTaskCount)}건{analytics.totals.averageLongTaskMs === null ? "" : `, 평균 ${analytics.totals.averageLongTaskMs}ms`} · 자동 경량화 {formatNumber(analytics.totals.qualityDowngrades)}회</small></div>
+              <div><p>EXPERIENCE QUALITY</p><h2 id="analytics-quality-title">로딩·게임 성능</h2><span>로딩 {analytics.totals.averagePageLoadMs === null ? "집계 전" : `${(analytics.totals.averagePageLoadMs / 1000).toFixed(1)}초`} · FPS {analytics.totals.averageFps ?? "집계 전"}</span><small>FPS 표본 {formatNumber(analytics.totals.fpsSamples)}회 · 긴 작업 {formatNumber(analytics.totals.longTaskCount)}건{analytics.totals.averageLongTaskMs === null ? "" : `, 평균 ${analytics.totals.averageLongTaskMs}ms`} · 캐릭터 자동 대체 {formatNumber(analytics.totals.characterAssetFallbacks)}회 · 자동 경량화 {formatNumber(analytics.totals.qualityDowngrades)}회</small></div>
               <strong className={analytics.totals.clientErrors > 0 ? "has-errors" : ""}><AlertTriangle aria-hidden="true" /> 오류 {formatNumber(analytics.totals.clientErrors)}건</strong>
             </section>
 

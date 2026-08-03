@@ -33,7 +33,7 @@ function result(): InvitationAnalyticsAdminResponse {
       directionsViews: 7, mapClicks: 5, callClicks: 1, shareClicks: 3, calendarClicks: 2,
       rsvpViews: 8, rsvpStarts: 6, rsvpSubmits: 4, rsvpResponses: 5, attendingGuests: 9,
       guestbookViews: 6, guestbookMessages: 3, galleryViews: 8, galleryZooms: 5,
-      clientErrors: 1, pageLoadSamples: 10, averagePageLoadMs: 1400,
+      clientErrors: 1, characterAssetFallbacks: 2, pageLoadSamples: 10, averagePageLoadMs: 1400,
       fpsSamples: 4, averageFps: 54, longTaskCount: 2, averageLongTaskMs: 82,
       qualityDowngrades: 1, qualityRecoveries: 1, deviceQaReports: 8, deviceQaIssues: 2
     },
@@ -82,6 +82,7 @@ function result(): InvitationAnalyticsAdminResponse {
       guestbookMessages: 0,
       shares: 1,
       clientErrors: 0,
+      characterAssetFallbacks: index === 6 ? 2 : 0,
       deviceQaReports: index < 4 ? 1 : 0,
       deviceQaIssues: index === 6 ? 1 : 0
     })),
@@ -92,6 +93,7 @@ function result(): InvitationAnalyticsAdminResponse {
       shares: [{ key: "copy", count: 3 }],
       calendars: [{ key: "ics", count: 2 }],
       qualityModes: [{ key: "lite:frame-rate", count: 1 }],
+      characterFallbacks: [{ key: "feminine-teal-modern-hanbok", count: 2 }],
       deviceQaDevices: [{ key: "ios:complete", count: 5 }, { key: "android:warning", count: 3 }],
       deviceQaIssues: [{ key: "android:layout", count: 2 }]
     },
@@ -132,6 +134,8 @@ describe("AnalyticsAdminPage", () => {
     expect(screen.getByText("완료율 50%")).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "로딩·게임 성능" })).toBeInTheDocument();
     expect(screen.getByText(/FPS 표본 4회/)).toBeInTheDocument();
+    expect(screen.getByText(/캐릭터 자동 대체 2회/)).toBeInTheDocument();
+    expect(screen.getByRole("region", { name: "대체된 캐릭터 이미지" })).toHaveTextContent("더스티 로즈 원피스");
     expect(screen.getByRole("heading", { name: "실기기 성능 기준 운영" })).toBeInTheDocument();
     expect(screen.getByText("실측 표본 자동 보정 중")).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "실제 휴대폰 점검 현황" })).toBeInTheDocument();

@@ -66,9 +66,18 @@ function trackedAxis(
   return cameraAxis(desired, viewportSize, mapSize, zoom);
 }
 
-export function cameraDeadZone(viewport: ViewportSize): ViewportSize {
+export function cameraDeadZone(
+  viewport: ViewportSize,
+  tracking: "steady" | "responsive" = "steady"
+): ViewportSize {
   const width = positiveOr(viewport.width, 390);
   const height = positiveOr(viewport.height, 520);
+  if (tracking === "responsive") {
+    return {
+      width: Math.round(Math.min(88, Math.max(56, width * 0.18))),
+      height: Math.round(Math.min(112, Math.max(72, height * 0.18)))
+    };
+  }
   return {
     width: Math.round(Math.min(132, Math.max(84, width * 0.32))),
     height: Math.round(Math.min(168, Math.max(108, height * 0.28)))

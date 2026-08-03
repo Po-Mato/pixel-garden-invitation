@@ -33,6 +33,7 @@ type ViewPreferencesContextValue = {
   setMiniMapRouteWeight: (miniMapRouteWeight: ViewPreferences["miniMapRouteWeight"]) => void;
   setRoutePatternEnhanced: (routePatternEnhanced: boolean) => void;
   setGameMovementSpeed: (gameMovementSpeed: ViewPreferences["gameMovementSpeed"]) => void;
+  setCameraTracking: (cameraTracking: ViewPreferences["cameraTracking"]) => void;
   setGameUiScale: (gameUiScale: ViewPreferences["gameUiScale"]) => void;
   enableComfortableView: () => void;
   resetPreferences: () => void;
@@ -56,6 +57,7 @@ const ViewPreferencesContext = createContext<ViewPreferencesContextValue>({
   setMiniMapRouteWeight: () => undefined,
   setRoutePatternEnhanced: () => undefined,
   setGameMovementSpeed: () => undefined,
+  setCameraTracking: () => undefined,
   setGameUiScale: () => undefined,
   enableComfortableView: () => undefined,
   resetPreferences: () => undefined
@@ -115,6 +117,10 @@ export function ViewPreferencesProvider({ children, initialPreferences }: ViewPr
     setGameMovementSpeed: (gameMovementSpeed) => setPreferences((current) => ({
       ...current,
       gameMovementSpeed
+    })),
+    setCameraTracking: (cameraTracking) => setPreferences((current) => ({
+      ...current,
+      cameraTracking
     })),
     setGameUiScale: (gameUiScale) => setPreferences((current) => ({ ...current, gameUiScale })),
     enableComfortableView: () => setPreferences((current) => ({

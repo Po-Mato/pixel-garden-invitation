@@ -23,4 +23,10 @@ describe("게임 HUD 상황별 밀도", () => {
     expect(resolveGameHudDensity({ ...base, overlayOpen: true, routeActive: true })).toBe("expanded");
     expect(resolveGameHudDensity(base)).toBe("idle");
   });
+
+  it("완주 후에는 다른 상호작용이 없을 때 청첩장 중심 밀도로 전환한다", () => {
+    expect(resolveGameHudDensity({ ...base, journeyComplete: true })).toBe("complete");
+    expect(resolveGameHudDensity({ ...base, journeyComplete: true, toolsOpen: true })).toBe("expanded");
+    expect(resolveGameHudDensity({ ...base, journeyComplete: true, contextActive: true })).toBe("context");
+  });
 });

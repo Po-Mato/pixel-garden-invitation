@@ -35,6 +35,7 @@ const dimensionRules: Record<InvitationAnalyticsEventName, RegExp> = {
   gallery_zoom: contextPattern,
   page_load: /^(mobile|tablet|desktop)$/,
   client_error: /^(script|promise|resource)$/,
+  character_asset_fallback: /^[a-z0-9-]{3,40}$/,
   performance_fps: /^(standard|lite):(standard|memory|processor|network|frame-rate)$/,
   performance_long_task: /^(mobile|tablet|desktop)$/,
   performance_quality_change: /^(standard|lite):(standard|memory|processor|network|frame-rate)$/,
