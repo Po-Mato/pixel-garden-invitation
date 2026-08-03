@@ -5,6 +5,7 @@ import {
   type SpotId,
   type WorldZoneId
 } from "@wedding-game/shared";
+import worldForegroundPlacementData from "./worldForegroundPlacements.json";
 
 export type Point = { x: number; y: number };
 export type Rect = { x: number; y: number; width: number; height: number };
@@ -91,6 +92,19 @@ export type WorldDecoration = Rect & {
   asset?: string;
   depthY?: number;
 };
+
+export type WorldForegroundPlacement = Rect & {
+  decorationId: string;
+  asset: string;
+  depthY: number;
+  depthMode: "floor" | "overhead";
+  collision?: Rect;
+};
+
+export const worldForegroundPlacements = worldForegroundPlacementData.zones as unknown as Record<
+  WorldZoneId,
+  WorldForegroundPlacement[]
+>;
 
 export type WorldPathKind =
   | "floor"
@@ -264,6 +278,37 @@ const decoration = (
   visual?: { asset: string; depthY: number }
 ): WorldDecoration => ({ id, kind, label, x, y, width, height, ...visual });
 
+function getWorldForegroundPlacement(zoneId: WorldZoneId, decorationId: string): WorldForegroundPlacement {
+  const placement = worldForegroundPlacements[zoneId].find((item) => item.decorationId === decorationId);
+  if (!placement) throw new Error(`Missing foreground placement: ${zoneId}/${decorationId}`);
+  return placement;
+}
+
+const foregroundDecoration = (
+  zoneId: WorldZoneId,
+  decorationId: string,
+  kind: WorldDecorationKind,
+  label: string
+): WorldDecoration => {
+  const placement = getWorldForegroundPlacement(zoneId, decorationId);
+  return decoration(
+    decorationId,
+    kind,
+    label,
+    placement.x,
+    placement.y,
+    placement.width,
+    placement.height,
+    { asset: placement.asset, depthY: placement.depthY }
+  );
+};
+
+function foregroundCollision(zoneId: WorldZoneId, decorationId: string): Rect {
+  const collision = getWorldForegroundPlacement(zoneId, decorationId).collision;
+  if (!collision) throw new Error(`Missing foreground collision: ${zoneId}/${decorationId}`);
+  return { ...collision };
+}
+
 const portal = (
   id: string,
   label: string,
@@ -301,7 +346,7 @@ const homeZone = createZone({
     { x: 400, y: 110, width: 140, height: 290 },
     { x: 340, y: 290, width: 65, height: 135 },
     { x: 15, y: 565, width: 115, height: 130 },
-    { x: 420, y: 480, width: 60, height: 90 }
+    foregroundCollision("home", "home-plant")
   ],
   decorations: [
     decoration("home-window", "window", "아침빛 창문", 90, 600, 180, 90),
@@ -309,10 +354,7 @@ const homeZone = createZone({
     decoration("home-table", "table", "작은 탁자", 340, 290, 65, 135),
     decoration("home-rack", "shoe-rack", "현관 신발장", 15, 565, 115, 130),
     decoration("home-door", "door", "현관문", 240, 30, 120, 90),
-    decoration("home-plant", "topiary", "현관 화분", 420, 480, 60, 90, {
-      asset: "topiary-foreground.png",
-      depthY: 555
-    }),
+    foregroundDecoration("home", "home-plant", "topiary", "현관 화분"),
     decoration("home-mail", "mailbox", "청첩장 보관함", 90, 300, 90, 90),
     decoration("home-lamp", "lamp", "거실 조명", 450, 150, 30, 60)
   ]
@@ -334,18 +376,9 @@ const neighborhoodZone = createZone({
     portal("neighborhood-to-station", "지하철역 들어가기", "subway-station", { x: 1080, y: 300, width: 90, height: 150 }, { x: 1095, y: 375 }, "right", { x: 135, y: 435 })
   ],
   decorations: [
-    decoration("street-tree-1", "tree", "가로수", 214, 90, 90, 150, {
-      asset: "tree-canopy.png",
-      depthY: 240
-    }),
-    decoration("street-tree-2", "tree", "가로수", 513, 90, 90, 150, {
-      asset: "tree-canopy.png",
-      depthY: 240
-    }),
-    decoration("street-tree-3", "tree", "가로수", 860, 90, 90, 150, {
-      asset: "tree-canopy.png",
-      depthY: 240
-    }),
+    foregroundDecoration("neighborhood", "street-tree-1", "tree", "가로수"),
+    foregroundDecoration("neighborhood", "street-tree-2", "tree", "가로수"),
+    foregroundDecoration("neighborhood", "street-tree-3", "tree", "가로수"),
     decoration("street-lamp-1", "lamp", "가로등", 450, 120, 30, 75),
     decoration("street-lamp-2", "lamp", "가로등", 825, 120, 30, 75),
     decoration("street-bench", "bench", "골목 벤치", 210, 195, 90, 45),
@@ -404,10 +437,7 @@ const subwayTrainZone = createZone({
     decoration("train-seat-3", "train-seat", "청록 좌석", 630, 390, 168, 58),
     decoration("train-seat-4", "train-seat", "청록 좌석", 870, 390, 168, 58),
     decoration("train-seat-5", "train-seat", "청록 좌석", 1110, 390, 168, 58),
-    decoration("train-straps", "string-lights", "객차 손잡이", 240, 105, 960, 120, {
-      asset: "strap-row-foreground.png",
-      depthY: 420
-    }),
+    foregroundDecoration("subway-train", "train-straps", "string-lights", "객차 손잡이"),
     decoration("train-door-1", "door", "객차 문", 30, 210, 90, 150),
     decoration("train-door-2", "door", "객차 문", 1320, 210, 90, 150)
   ]
@@ -433,10 +463,7 @@ const venueExteriorZone = createZone({
   decorations: [
     decoration("venue-building", "venue-sign", "예식장 유리 파사드", 300, 60, 360, 120),
     decoration("venue-door", "door", "예식장 유리문", 405, 30, 120, 90),
-    decoration("venue-arch", "flower-arch", "코랄 꽃 아치", 360, 180, 240, 180, {
-      asset: "flower-arch-front.png",
-      depthY: 360
-    }),
+    foregroundDecoration("venue-exterior", "venue-arch", "flower-arch", "코랄 꽃 아치"),
     decoration("venue-fountain", "fountain", "작은 수경 요소", 240, 450, 120, 120),
     decoration("venue-tree-1", "tree", "예식장 나무", 120, 330, 90, 135),
     decoration("venue-tree-2", "tree", "예식장 나무", 750, 330, 90, 135),
@@ -484,12 +511,9 @@ const lobbyZone = createZone({
     portal("lobby-to-banquet", "연회장", "banquet", { x: 960, y: 345, width: 90, height: 120 }, { x: 975, y: 405 }, "right", { x: 135, y: 465 }),
     portal("lobby-to-hall", "예식홀", "ceremony-hall", { x: 480, y: 30, width: 120, height: 90 }, { x: 525, y: 105 }, "up", { x: 375, y: 1785 })
   ],
-  blocked: [{ x: 450, y: 390, width: 180, height: 90 }],
+  blocked: [foregroundCollision("lobby", "lobby-desk")],
   decorations: [
-    decoration("lobby-desk", "reception-desk", "안내 데스크", 450, 360, 180, 120, {
-      asset: "reception-desk-front.png",
-      depthY: 480
-    }),
+    foregroundDecoration("lobby", "lobby-desk", "reception-desk", "안내 데스크"),
     decoration("lobby-photo", "photo-wall", "꽃 포토월", 610, 180, 165, 96),
     decoration("lobby-sofa-1", "sofa", "로비 소파", 120, 520, 130, 72),
     decoration("lobby-sofa-2", "sofa", "로비 소파", 620, 500, 130, 72),
@@ -532,10 +556,7 @@ const bridalRoomZone = createZone({
     { x: 510, y: 240, width: 90, height: 120 }
   ],
   decorations: [
-    decoration("bridal-flower-front", "flower-bed", "대기실 전경 꽃장식", 240, 300, 90, 120, {
-      asset: "flower-arrangement-front.png",
-      depthY: 420
-    })
+    foregroundDecoration("bridal-room", "bridal-flower-front", "flower-bed", "대기실 전경 꽃장식")
   ]
 });
 
@@ -570,14 +591,8 @@ const ceremonyHallZone = createZone({
     portal("hall-to-lobby", "로비로 돌아가기", "lobby", { x: 330, y: 1830, width: 120, height: 60 }, { x: 375, y: 1815 }, "down", { x: 525, y: 135 })
   ],
   decorations: [
-    decoration("hall-ceremony-arch", "flower-arch", "예식홀 꽃 아치", 180, 30, 420, 300, {
-      asset: "ceremony-arch-front.png",
-      depthY: 330
-    }),
-    decoration("hall-altar-table-front", "altar", "예식홀 중앙 꽃 테이블", 300, 165, 180, 120, {
-      asset: "altar-table-front.png",
-      depthY: 240
-    }),
+    foregroundDecoration("ceremony-hall", "hall-ceremony-arch", "flower-arch", "예식홀 꽃 아치"),
+    foregroundDecoration("ceremony-hall", "hall-altar-table-front", "altar", "예식홀 중앙 꽃 테이블"),
     decoration("hall-altar", "altar", "웨딩 단상", 195, 105, 270, 105),
     decoration("hall-seat-l1", "ceremony-seat", "하객 좌석", 45, 360, 150, 120),
     decoration("hall-seat-r1", "ceremony-seat", "하객 좌석", 465, 360, 150, 120),
@@ -587,22 +602,10 @@ const ceremonyHallZone = createZone({
     decoration("hall-seat-r3", "ceremony-seat", "하객 좌석", 465, 1020, 150, 120),
     decoration("hall-seat-l4", "ceremony-seat", "하객 좌석", 45, 1350, 150, 120),
     decoration("hall-seat-r4", "ceremony-seat", "하객 좌석", 465, 1350, 150, 120),
-    decoration("hall-flowers-1", "aisle-bouquet", "버진로드 꽃장식", 240, 480, 60, 90, {
-      asset: "aisle-bouquet-front.png",
-      depthY: 570
-    }),
-    decoration("hall-flowers-2", "aisle-bouquet", "버진로드 꽃장식", 480, 720, 60, 90, {
-      asset: "aisle-bouquet-front.png",
-      depthY: 810
-    }),
-    decoration("hall-flowers-3", "aisle-bouquet", "버진로드 꽃장식", 240, 960, 60, 90, {
-      asset: "aisle-bouquet-front.png",
-      depthY: 1050
-    }),
-    decoration("hall-flowers-4", "aisle-bouquet", "버진로드 꽃장식", 480, 1200, 60, 90, {
-      asset: "aisle-bouquet-front.png",
-      depthY: 1290
-    }),
+    foregroundDecoration("ceremony-hall", "hall-flowers-1", "aisle-bouquet", "버진로드 꽃장식"),
+    foregroundDecoration("ceremony-hall", "hall-flowers-2", "aisle-bouquet", "버진로드 꽃장식"),
+    foregroundDecoration("ceremony-hall", "hall-flowers-3", "aisle-bouquet", "버진로드 꽃장식"),
+    foregroundDecoration("ceremony-hall", "hall-flowers-4", "aisle-bouquet", "버진로드 꽃장식"),
     decoration("hall-lights", "string-lights", "예식홀 조명", 105, 260, 450, 32)
   ]
 });
@@ -652,29 +655,17 @@ const banquetZone = createZone({
     portal("banquet-to-restroom", "화장실", "restroom", { x: 1080, y: 405, width: 90, height: 120 }, { x: 1095, y: 465 }, "right", { x: 135, y: 345 })
   ],
   blocked: [
-    { x: 210, y: 270, width: 240, height: 240 },
-    { x: 690, y: 270, width: 240, height: 240 },
-    { x: 210, y: 570, width: 240, height: 240 },
-    { x: 690, y: 570, width: 240, height: 240 },
+    foregroundCollision("banquet", "banquet-table-1"),
+    foregroundCollision("banquet", "banquet-table-2"),
+    foregroundCollision("banquet", "banquet-table-3"),
+    foregroundCollision("banquet", "banquet-table-4"),
     { x: 450, y: 90, width: 300, height: 90 }
   ],
   decorations: [
-    decoration("banquet-table-1", "banquet-table", "꽃장식 하객 테이블", 210, 270, 240, 240, {
-      asset: "table-floral.png",
-      depthY: 510
-    }),
-    decoration("banquet-table-2", "banquet-table", "식사 하객 테이블", 690, 270, 240, 240, {
-      asset: "table-dining.png",
-      depthY: 510
-    }),
-    decoration("banquet-table-3", "banquet-table", "식사 하객 테이블", 210, 570, 240, 240, {
-      asset: "table-dining.png",
-      depthY: 810
-    }),
-    decoration("banquet-table-4", "banquet-table", "꽃장식 하객 테이블", 690, 570, 240, 240, {
-      asset: "table-floral.png",
-      depthY: 810
-    }),
+    foregroundDecoration("banquet", "banquet-table-1", "banquet-table", "꽃장식 하객 테이블"),
+    foregroundDecoration("banquet", "banquet-table-2", "banquet-table", "식사 하객 테이블"),
+    foregroundDecoration("banquet", "banquet-table-3", "banquet-table", "식사 하객 테이블"),
+    foregroundDecoration("banquet", "banquet-table-4", "banquet-table", "꽃장식 하객 테이블"),
     decoration("banquet-buffet", "buffet", "웨딩 뷔페", 450, 90, 300, 90),
     decoration("banquet-banner", "party-flag", "축하 가랜드", 360, 60, 480, 36),
     decoration("banquet-guestbook", "dessert-cart", "축하 메시지 콘솔", 990, 690, 120, 90),

@@ -536,6 +536,10 @@ test("wires gallery, map, character, photo-effect, and mobile visual audits into
   const packageJson = JSON.parse(await readFile(join(root, "package.json"), "utf8"));
 
   assert.equal(
+    packageJson.scripts["maps:audit"],
+    "node scripts/audit-map-assets.mjs && node scripts/audit-map-foreground-placements.mjs"
+  );
+  assert.equal(
     packageJson.scripts.build,
     "pnpm gallery:audit && pnpm maps:audit && pnpm characters:audit && pnpm characters:generate && pnpm photo-effects:audit && pnpm characters:build-couple-puppets && pnpm --filter @wedding-game/shared build && pnpm --filter @wedding-game/client build && pnpm --filter @wedding-game/worker build"
   );

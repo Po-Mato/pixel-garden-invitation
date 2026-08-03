@@ -1967,6 +1967,22 @@ describe("GameWorld", () => {
     expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "465px", top: "135px" });
   });
 
+  it("switches the guest behind and in front of the aligned lobby reception desk", () => {
+    const { container } = render(<GameWorld profile={profile} />);
+    travelFromHomeToLobby();
+
+    const player = screen.getByLabelText("하객1");
+    const desk = container.querySelector<HTMLElement>('img[data-decoration="reception-desk"]');
+    expect(desk).toHaveStyle({ left: "450px", top: "360px", width: "180px", height: "120px", zIndex: "1480" });
+    expect(Number(player.style.zIndex)).toBeGreaterThan(Number(desk?.style.zIndex));
+
+    fireEvent.click(screen.getByRole("button", { name: "예식홀" }));
+    advanceRouteToPortalArrival();
+
+    expect(player).toHaveStyle({ left: "495px", top: "105px", zIndex: "1105" });
+    expect(Number(player.style.zIndex)).toBeLessThan(Number(desk?.style.zIndex));
+  });
+
   it("renders the exact Task 11 bridal room stage, foreground depth, NPC modal, and lobby return", () => {
     const { container } = render(<GameWorld profile={profile} />);
     travelFromHomeToLobby();
@@ -2114,7 +2130,7 @@ describe("GameWorld", () => {
       top: "165px",
       width: "180px",
       height: "120px",
-      zIndex: "1240"
+      zIndex: "1285"
     });
     expect(bouquets).toHaveLength(4);
     [

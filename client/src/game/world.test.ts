@@ -9,7 +9,8 @@ import {
   getWorldZone,
   pointInPortalEntry,
   portalEntryRect,
-  portalEntryTileSize
+  portalEntryTileSize,
+  worldForegroundPlacements
 } from "./world";
 
 const expectedSizes = {
@@ -78,6 +79,30 @@ describe("guest route world", () => {
           assetDecorations.some((decoration) => decoration.asset === output),
           `${zone.id} manifest overlay ${output}`
         ).toBe(true);
+      }
+    }
+  });
+
+  it("materializes all foreground geometry and collision contracts in the runtime world", () => {
+    const placements = Object.entries(worldForegroundPlacements).flatMap(([zoneId, zonePlacements]) => (
+      zonePlacements.map((placement) => ({ zoneId, placement }))
+    ));
+    expect(placements).toHaveLength(18);
+
+    for (const { zoneId, placement } of placements) {
+      const zone = getWorldZone(gardenWorld, zoneId as keyof typeof worldForegroundPlacements);
+      expect(zone.decorations.find(({ id }) => id === placement.decorationId), `${zoneId}/${placement.decorationId}`)
+        .toMatchObject({
+          id: placement.decorationId,
+          asset: placement.asset,
+          x: placement.x,
+          y: placement.y,
+          width: placement.width,
+          height: placement.height,
+          depthY: placement.depthY
+        });
+      if (placement.collision) {
+        expect(zone.blocked, `${zoneId}/${placement.decorationId} collision`).toContainEqual(placement.collision);
       }
     }
   });
@@ -839,7 +864,7 @@ describe("guest route world", () => {
         width: 180,
         height: 120,
         asset: "altar-table-front.png",
-        depthY: 240
+        depthY: 285
       })
     );
   });

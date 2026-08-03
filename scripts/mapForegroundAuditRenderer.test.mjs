@@ -6,6 +6,7 @@ import test from "node:test";
 import sharp from "sharp";
 import {
   DEFAULT_FOREGROUND_PLACEMENTS,
+  auditForegroundPlacementGeometry,
   renderMapForegroundAuditSheet
 } from "./lib/mapForegroundAuditRenderer.mjs";
 
@@ -16,18 +17,34 @@ async function writePng(file, width, height, background) {
   }).png().toFile(file);
 }
 
+const visualPlacement = ({ asset, x, y }) => ({ asset, x, y });
+
 test("keeps the subway platform free of foreground ticket gates", () => {
   assert.deepEqual(DEFAULT_FOREGROUND_PLACEMENTS["subway-station"], []);
 });
 
 test("aligns the lobby reception front with the built-in desk base", () => {
-  assert.deepEqual(DEFAULT_FOREGROUND_PLACEMENTS.lobby, [
+  assert.deepEqual(DEFAULT_FOREGROUND_PLACEMENTS.lobby.map(visualPlacement), [
     { asset: "reception-desk-front.png", x: 450, y: 360 }
   ]);
 });
 
+test("covers every foreground instance with one shared geometry and depth contract", () => {
+  const placements = Object.values(DEFAULT_FOREGROUND_PLACEMENTS).flat();
+  assert.equal(placements.length, 18);
+  assert.equal(new Set(placements.map(({ decorationId }) => decorationId)).size, 18);
+  assert.deepEqual(
+    placements.filter(({ depthMode }) => depthMode === "overhead").map(({ decorationId }) => decorationId),
+    ["train-straps"]
+  );
+  for (const placement of placements) {
+    assert.ok(placement.width > 0 && placement.height > 0, placement.decorationId);
+    assert.ok(placement.depthY > 0, placement.decorationId);
+  }
+});
+
 test("composes the ceremony arch above the hall background", () => {
-  assert.deepEqual(DEFAULT_FOREGROUND_PLACEMENTS["ceremony-hall"], [
+  assert.deepEqual(DEFAULT_FOREGROUND_PLACEMENTS["ceremony-hall"].map(visualPlacement), [
     { asset: "ceremony-arch-front.png", x: 180, y: 30 },
     { asset: "altar-table-front.png", x: 300, y: 165 },
     { asset: "aisle-bouquet-front.png", x: 240, y: 480 },
@@ -38,7 +55,7 @@ test("composes the ceremony arch above the hall background", () => {
 });
 
 test("composes four complete banquet tables without legacy split fronts", () => {
-  assert.deepEqual(DEFAULT_FOREGROUND_PLACEMENTS.banquet, [
+  assert.deepEqual(DEFAULT_FOREGROUND_PLACEMENTS.banquet.map(visualPlacement), [
     { asset: "table-floral.png", x: 210, y: 270 },
     { asset: "table-dining.png", x: 690, y: 270 },
     { asset: "table-dining.png", x: 210, y: 570 },
@@ -48,6 +65,55 @@ test("composes four complete banquet tables without legacy split fronts", () => 
     DEFAULT_FOREGROUND_PLACEMENTS.banquet.some(({ asset }) => asset === "table-front.png"),
     false
   );
+});
+
+test("rejects foreground pixels that cross their floor depth or leave the map", async () => {
+  const rootDir = await mkdtemp(join(tmpdir(), "map-foreground-geometry-"));
+  const assetPath = join(rootDir, "front.png");
+  const placement = {
+    decorationId: "test-front",
+    asset: "front.png",
+    x: 5,
+    y: 5,
+    width: 10,
+    height: 10,
+    depthY: 14,
+    depthMode: "floor"
+  };
+
+  try {
+    await writePng(assetPath, 10, 10, "#ff0000ff");
+    await assert.rejects(
+      auditForegroundPlacementGeometry({ zoneId: "alpha", placement, assetPath, mapWidth: 40, mapHeight: 30 }),
+      /visible pixels cross the configured floor depth line/
+    );
+    await assert.rejects(
+      auditForegroundPlacementGeometry({
+        zoneId: "alpha",
+        placement: { ...placement, x: 35, depthY: 15 },
+        assetPath,
+        mapWidth: 40,
+        mapHeight: 30
+      }),
+      /extends outside the map bounds/
+    );
+    await assert.rejects(
+      auditForegroundPlacementGeometry({
+        zoneId: "alpha",
+        placement: {
+          ...placement,
+          depthY: 15,
+          collision: { x: 5, y: 5, width: 10, height: 5 }
+        },
+        assetPath,
+        mapWidth: 40,
+        mapHeight: 30
+      }),
+      /collision does not contain its visible foreground pixels/
+    );
+  } finally {
+    await rm(rootDir, { recursive: true, force: true });
+  }
 });
 
 test("renders every manifest zone with its foreground placements", async () => {
@@ -83,8 +149,8 @@ test("renders every manifest zone with its foreground placements", async () => {
       manifestPath,
       outputPath,
       placementsByZone: {
-        alpha: [{ asset: "front.png", x: 5, y: 6 }],
-        beta: [{ asset: "front.png", x: 12, y: 15 }]
+        alpha: [{ decorationId: "alpha-front", asset: "front.png", x: 5, y: 6, width: 10, height: 10, depthY: 16, depthMode: "floor" }],
+        beta: [{ decorationId: "beta-front", asset: "front.png", x: 12, y: 15, width: 8, height: 12, depthY: 27, depthMode: "floor" }]
       },
       cellWidth: 120,
       cellHeight: 100,
@@ -94,6 +160,7 @@ test("renders every manifest zone with its foreground placements", async () => {
     const metadata = await sharp(outputPath).metadata();
     assert.deepEqual(result.zoneIds, ["alpha", "beta"]);
     assert.equal(result.instanceCount, 2);
+    assert.equal(result.placementMetrics.length, 2);
     assert.equal(metadata.width, 240);
     assert.equal(metadata.height, 100);
     assert.ok((await readFile(outputPath)).length > 100);

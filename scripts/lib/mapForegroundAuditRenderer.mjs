@@ -1,35 +1,163 @@
+import { readFileSync } from "node:fs";
 import { mkdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import sharp from "sharp";
 
-export const DEFAULT_FOREGROUND_PLACEMENTS = Object.freeze({
-  home: [{ asset: "topiary-foreground.png", x: 420, y: 480 }],
-  neighborhood: [
-    { asset: "tree-canopy.png", x: 214, y: 90 },
-    { asset: "tree-canopy.png", x: 513, y: 90 },
-    { asset: "tree-canopy.png", x: 860, y: 90 }
-  ],
-  "subway-station": [],
-  "subway-train": [{ asset: "strap-row-foreground.png", x: 240, y: 105 }],
-  "venue-exterior": [{ asset: "flower-arch-front.png", x: 360, y: 180 }],
-  lobby: [{ asset: "reception-desk-front.png", x: 450, y: 360 }],
-  "bridal-room": [{ asset: "flower-arrangement-front.png", x: 240, y: 300 }],
-  "ceremony-hall": [
-    { asset: "ceremony-arch-front.png", x: 180, y: 30 },
-    { asset: "altar-table-front.png", x: 300, y: 165 },
-    { asset: "aisle-bouquet-front.png", x: 240, y: 480 },
-    { asset: "aisle-bouquet-front.png", x: 480, y: 720 },
-    { asset: "aisle-bouquet-front.png", x: 240, y: 960 },
-    { asset: "aisle-bouquet-front.png", x: 480, y: 1200 }
-  ],
-  restroom: [],
-  banquet: [
-    { asset: "table-floral.png", x: 210, y: 270 },
-    { asset: "table-dining.png", x: 690, y: 270 },
-    { asset: "table-dining.png", x: 210, y: 570 },
-    { asset: "table-floral.png", x: 690, y: 570 }
-  ]
-});
+const placementContract = JSON.parse(readFileSync(
+  new URL("../../client/src/game/worldForegroundPlacements.json", import.meta.url),
+  "utf8"
+));
+
+export const DEFAULT_FOREGROUND_PLACEMENTS = Object.freeze(Object.fromEntries(
+  Object.entries(placementContract.zones).map(([zoneId, placements]) => [
+    zoneId,
+    Object.freeze(placements.map((placement) => Object.freeze(placement)))
+  ])
+));
+
+function containsRect(outer, inner) {
+  return inner.x >= outer.x && inner.y >= outer.y &&
+    inner.x + inner.width <= outer.x + outer.width &&
+    inner.y + inner.height <= outer.y + outer.height;
+}
+
+export async function inspectForegroundAlphaBounds(assetPath, alphaThreshold = 8) {
+  const { data, info } = await sharp(assetPath).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+  let minX = info.width;
+  let minY = info.height;
+  let maxX = -1;
+  let maxY = -1;
+
+  for (let y = 0; y < info.height; y += 1) {
+    for (let x = 0; x < info.width; x += 1) {
+      const alpha = data[(y * info.width + x) * info.channels + 3];
+      if (alpha < alphaThreshold) continue;
+      minX = Math.min(minX, x);
+      minY = Math.min(minY, y);
+      maxX = Math.max(maxX, x);
+      maxY = Math.max(maxY, y);
+    }
+  }
+
+  if (maxX < minX || maxY < minY) throw new Error(`${assetPath} has no visible foreground pixels`);
+  return {
+    canvasWidth: info.width,
+    canvasHeight: info.height,
+    x: minX,
+    y: minY,
+    width: maxX - minX + 1,
+    height: maxY - minY + 1
+  };
+}
+
+export async function auditForegroundPlacementGeometry({
+  zoneId,
+  placement,
+  assetPath,
+  mapWidth,
+  mapHeight
+}) {
+  const prefix = `${zoneId}/${placement.decorationId}`;
+  const alphaBounds = await inspectForegroundAlphaBounds(assetPath);
+  if (alphaBounds.canvasWidth !== placement.width || alphaBounds.canvasHeight !== placement.height) {
+    throw new Error(`${prefix} asset dimensions do not match the placement contract`);
+  }
+
+  const placementBounds = {
+    x: placement.x,
+    y: placement.y,
+    width: placement.width,
+    height: placement.height
+  };
+  const visibleBounds = {
+    x: placement.x + alphaBounds.x,
+    y: placement.y + alphaBounds.y,
+    width: alphaBounds.width,
+    height: alphaBounds.height
+  };
+  const mapBounds = { x: 0, y: 0, width: mapWidth, height: mapHeight };
+  if (!containsRect(mapBounds, placementBounds) || !containsRect(mapBounds, visibleBounds)) {
+    throw new Error(`${prefix} foreground placement extends outside the map bounds`);
+  }
+
+  const canvasCenter = placement.width / 2;
+  const visibleCenter = alphaBounds.x + alphaBounds.width / 2;
+  const centerTolerance = Math.max(6, placement.width * 0.08);
+  if (Math.abs(visibleCenter - canvasCenter) > centerTolerance) {
+    throw new Error(`${prefix} visible pixels are not horizontally centered in the placement canvas`);
+  }
+
+  const visibleBottom = visibleBounds.y + visibleBounds.height;
+  const placementBottom = placement.y + placement.height;
+  if (placement.depthMode === "floor") {
+    if (placement.depthY < visibleBottom || placement.depthY > placementBottom) {
+      throw new Error(`${prefix} visible pixels cross the configured floor depth line`);
+    }
+  } else if (placement.depthMode === "overhead") {
+    if (placement.depthY < placementBottom) {
+      throw new Error(`${prefix} overhead depth line must stay below its placement canvas`);
+    }
+  } else {
+    throw new Error(`${prefix} has an unsupported depth mode`);
+  }
+
+  if (placement.collision) {
+    if (!containsRect(placement.collision, visibleBounds)) {
+      throw new Error(`${prefix} collision does not contain its visible foreground pixels`);
+    }
+    const collisionBottom = placement.collision.y + placement.collision.height;
+    if (placement.depthY < placement.collision.y || placement.depthY > collisionBottom) {
+      throw new Error(`${prefix} depth line falls outside its collision region`);
+    }
+  }
+
+  return { zoneId, placement, alphaBounds, visibleBounds };
+}
+
+async function auditForegroundPlacementSet({ rootDir, manifest, placementsByZone }) {
+  const manifestZoneIds = manifest.zones.map((zone) => zone.id);
+  const placementZoneIds = Object.keys(placementsByZone);
+  if (JSON.stringify(placementZoneIds) !== JSON.stringify(manifestZoneIds)) {
+    throw new Error("foreground placement zones must match the map manifest order");
+  }
+
+  const metrics = [];
+  const decorationIds = new Set();
+  for (const zone of manifest.zones) {
+    const placements = placementsByZone[zone.id] ?? [];
+    const declaredAssets = new Set(zone.overlays.map((overlay) => overlay.output));
+    const placedAssets = new Set(placements.map((placement) => placement.asset));
+    for (const asset of declaredAssets) {
+      if (!placedAssets.has(asset)) throw new Error(`${zone.id} foreground asset has no placement contract: ${asset}`);
+    }
+    for (const placement of placements) {
+      if (!declaredAssets.has(placement.asset)) {
+        throw new Error(`${zone.id} foreground asset is not declared in the manifest: ${placement.asset}`);
+      }
+      if (decorationIds.has(placement.decorationId)) {
+        throw new Error(`duplicate foreground decoration id: ${placement.decorationId}`);
+      }
+      decorationIds.add(placement.decorationId);
+      metrics.push(await auditForegroundPlacementGeometry({
+        zoneId: zone.id,
+        placement,
+        assetPath: path.join(rootDir, "client/public/assets/maps/v2", zone.id, placement.asset),
+        mapWidth: zone.background.width,
+        mapHeight: zone.background.height
+      }));
+    }
+  }
+  return { zoneIds: manifestZoneIds, instanceCount: metrics.length, metrics };
+}
+
+export async function auditMapForegroundPlacements({
+  rootDir,
+  manifestPath,
+  placementsByZone = DEFAULT_FOREGROUND_PLACEMENTS
+}) {
+  const manifest = JSON.parse(await readFile(manifestPath, "utf8"));
+  return auditForegroundPlacementSet({ rootDir, manifest, placementsByZone });
+}
 
 function escapeXml(value) {
   return value.replace(/[<>&'\"]/g, (character) => ({
@@ -60,6 +188,7 @@ export async function renderMapForegroundAuditSheet({
   columns = 2
 }) {
   const manifest = JSON.parse(await readFile(manifestPath, "utf8"));
+  const placementAudit = await auditForegroundPlacementSet({ rootDir, manifest, placementsByZone });
   const labelHeight = 34;
   const rows = Math.ceil(manifest.zones.length / columns);
   const cells = [];
@@ -126,6 +255,7 @@ export async function renderMapForegroundAuditSheet({
   return {
     zoneIds: manifest.zones.map((zone) => zone.id),
     instanceCount,
+    placementMetrics: placementAudit.metrics,
     outputPath
   };
 }
