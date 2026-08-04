@@ -32,6 +32,8 @@ export function auditMapDiagnosticsSnapshot(snapshot, viewport, expectedDepthCou
   if (snapshot.depthCount !== expectedDepthCount) {
     issues.push(`깊이선 수 불일치 ${snapshot.depthCount}/${expectedDepthCount}`);
   }
+  if (snapshot.activeLayerCount !== 4) issues.push(`활성 진단 필터 수 불일치 ${snapshot.activeLayerCount}/4`);
+  if (!snapshot.layers.every(Boolean)) issues.push("기본 진단 필터 비활성");
   if (snapshot.issueCount > 0) issues.push(`맵 지오메트리 문제 ${snapshot.issueCount}건`);
   return issues;
 }
@@ -69,7 +71,9 @@ async function readSnapshot(page, selectedZoneId) {
       controlsRect: rect(".world-geometry-audit-controls"),
       depthCount: document.querySelectorAll(".world-geometry-audit__depth").length,
       collisionCount: document.querySelectorAll(".world-geometry-audit__collision").length,
-      issueCount: Number(overlay?.getAttribute("data-issue-count") ?? -1)
+      issueCount: Number(overlay?.getAttribute("data-issue-count") ?? -1),
+      activeLayerCount: document.querySelectorAll(".world-geometry-audit-layers button[aria-pressed=\"true\"]").length,
+      layers: ["grid", "collision", "depth", "labels"].map((layer) => overlay?.getAttribute(`data-${layer}`) === "true")
     };
   }, selectedZoneId);
 }
@@ -80,7 +84,7 @@ export async function runMapDiagnosticsBrowserAudit({ rootDir, outputDir, port =
     ["--filter", "@wedding-game/client", "exec", "vite", "--host", "127.0.0.1", "--port", String(port), "--strictPort"],
     { cwd: rootDir, env: { ...process.env, BROWSER: "none" }, stdio: "pipe" }
   );
-  const url = `http://127.0.0.1:${port}/?mapAudit=1`;
+  const url = `http://127.0.0.1:${port}/?mapAudit=1&mapAuditZone=lobby`;
   await mkdir(outputDir, { recursive: true });
   try {
     await waitForServer(url, server);
@@ -116,6 +120,15 @@ export async function runMapDiagnosticsBrowserAudit({ rootDir, outputDir, port =
         await page.locator(".world-map__stage--background-loaded").waitFor({ state: "visible", timeout: 15_000 });
         const selector = page.getByRole("combobox", { name: "진단 구역 즉시 이동" });
         await selector.waitFor({ state: "visible" });
+        if (await selector.inputValue() !== "lobby") throw new Error(`${viewport.id}: 진단 공유 링크 초기 구역 불일치`);
+        await page.keyboard.press("0");
+        await page.waitForFunction(() => document.querySelector(".world-map__stage")?.getAttribute("data-zone") === "restroom");
+        const gridFilter = page.getByRole("button", { name: "이동 격자 숨기기" });
+        await gridFilter.click();
+        if (await page.locator(".world-geometry-audit__tile").count() !== 0) {
+          throw new Error(`${viewport.id}: 이동 격자 필터 비활성 실패`);
+        }
+        await page.getByRole("button", { name: "이동 격자 표시" }).click();
 
         for (const zoneId of mapDiagnosticsZoneIds) {
           await selector.selectOption(zoneId);

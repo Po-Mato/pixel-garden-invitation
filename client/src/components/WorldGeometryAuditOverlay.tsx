@@ -2,13 +2,22 @@ import { useMemo } from "react";
 import { gridTileSize } from "../game/movement";
 import { auditWorldGeometry } from "../game/worldGeometryAudit";
 import { worldForegroundPlacements, type WorldZone } from "../game/world";
+import {
+  defaultWorldGeometryAuditLayers,
+  type WorldGeometryAuditLayers
+} from "../game/worldGeometryAuditLayers";
 
 type WorldGeometryAuditOverlayProps = {
   zone: WorldZone;
   enabled: boolean;
+  layers?: WorldGeometryAuditLayers;
 };
 
-export function WorldGeometryAuditOverlay({ zone, enabled }: WorldGeometryAuditOverlayProps) {
+export function WorldGeometryAuditOverlay({
+  zone,
+  enabled,
+  layers = defaultWorldGeometryAuditLayers
+}: WorldGeometryAuditOverlayProps) {
   const audit = useMemo(() => auditWorldGeometry(zone), [zone]);
   const foregrounds = worldForegroundPlacements[zone.id];
   if (!enabled) return null;
@@ -19,9 +28,13 @@ export function WorldGeometryAuditOverlay({ zone, enabled }: WorldGeometryAuditO
       data-testid="world-geometry-audit"
       data-zone={zone.id}
       data-issue-count={audit.issues.length}
+      data-grid={layers.grid}
+      data-collision={layers.collision}
+      data-depth={layers.depth}
+      data-labels={layers.labels}
       aria-hidden="true"
     >
-      {audit.tiles.map((tile) => (
+      {layers.grid ? audit.tiles.map((tile) => (
         <i
           key={`${tile.column}-${tile.row}`}
           className={`world-geometry-audit__tile world-geometry-audit__tile--${tile.state}`}
@@ -32,8 +45,8 @@ export function WorldGeometryAuditOverlay({ zone, enabled }: WorldGeometryAuditO
             height: gridTileSize
           }}
         />
-      ))}
-      {zone.blocked.map((collision, index) => (
+      )) : null}
+      {layers.collision ? zone.blocked.map((collision, index) => (
         <i
           key={`collision-${index}`}
           className="world-geometry-audit__collision"
@@ -45,11 +58,11 @@ export function WorldGeometryAuditOverlay({ zone, enabled }: WorldGeometryAuditO
             height: collision.height
           }}
         />
-      ))}
-      {foregrounds.map((placement) => (
+      )) : null}
+      {layers.depth || layers.labels ? foregrounds.map((placement) => (
         <div
           key={placement.decorationId}
-          className="world-geometry-audit__foreground"
+          className={`world-geometry-audit__foreground${layers.depth ? "" : " world-geometry-audit__foreground--label-only"}`}
           data-decoration-id={placement.decorationId}
           data-depth-mode={placement.depthMode}
           style={{
@@ -59,14 +72,16 @@ export function WorldGeometryAuditOverlay({ zone, enabled }: WorldGeometryAuditO
             height: placement.height
           }}
         >
-          <i
-            className="world-geometry-audit__depth"
-            data-depth-y={placement.depthY}
-            style={{ top: placement.depthY - placement.y }}
-          />
-          <small>{placement.decorationId}</small>
+          {layers.depth ? (
+            <i
+              className="world-geometry-audit__depth"
+              data-depth-y={placement.depthY}
+              style={{ top: placement.depthY - placement.y }}
+            />
+          ) : null}
+          {layers.labels ? <small>{placement.decorationId}</small> : null}
         </div>
-      ))}
+      )) : null}
       <span className="world-geometry-audit__summary">
         <strong>MAP DIAGNOSTICS</strong>
         <em>이동 {audit.reachableCount} · 충돌 타일 {audit.blockedCount} · 단절 {audit.unreachableCount}</em>

@@ -205,6 +205,11 @@
   background: rgba(77, 242, 255, 0.07);
 }
 
+.world-geometry-audit__foreground--label-only {
+  border-color: transparent;
+  background: transparent;
+}
+
 .world-geometry-audit__depth {
   z-index: 1;
   left: -2px;
@@ -325,6 +330,46 @@
 
 .world-geometry-audit-zone select:focus-visible { outline: 2px solid #fff1a8; outline-offset: 2px; }
 .world-geometry-audit-zone > small { color: #ffc857; font-size: 7px; font-weight: 900; white-space: nowrap; }
+
+.world-geometry-audit-layers {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 3px;
+  border: 2px solid #342d2b;
+  border-radius: 4px;
+  padding: 4px;
+  background: rgba(23, 23, 23, 0.94);
+  box-shadow: 3px 3px 0 rgba(35, 28, 27, 0.42);
+  pointer-events: auto;
+}
+
+.world-geometry-audit-layers > button {
+  min-width: 0;
+  border: 1px solid #5f5956;
+  border-radius: 2px;
+  padding: 4px 2px;
+  background: #252323;
+  color: #8c8580;
+  font: 900 7px/1 ui-monospace, monospace;
+  letter-spacing: 0.03em;
+}
+
+.world-geometry-audit-layers > button[aria-pressed="true"] {
+  border-color: #4df2ff;
+  background: #133a3e;
+  color: #d7fbff;
+  box-shadow: inset 0 -2px 0 #ff4d98;
+}
+
+.world-geometry-audit-layers > button:focus-visible { outline: 2px solid #fff1a8; outline-offset: 1px; }
+
+.world-geometry-audit-layers > small {
+  grid-column: 1 / -1;
+  color: #ffc857;
+  font: 800 7px/1.1 ui-monospace, monospace;
+  letter-spacing: 0.04em;
+  text-align: right;
+}
 
 .world-destination-beacon {
   position: absolute;

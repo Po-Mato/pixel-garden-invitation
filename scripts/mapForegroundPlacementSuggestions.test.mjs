@@ -1,9 +1,13 @@
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 import path from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 import { auditMapForegroundPlacements } from "./lib/mapForegroundAuditRenderer.mjs";
 import {
+  applyForegroundPlacementJsonPatch,
+  buildForegroundPlacementJsonPatch,
+  buildForegroundPlacementPatchPreview,
   buildMapForegroundPlacementSuggestions,
   clampRectToBounds,
   recommendForegroundPlacementGeometry
@@ -85,4 +89,74 @@ test("production floor recommendations contain alpha pixels and their recommende
     assert.ok(suggestion.recommended.depthY >= collision.y);
     assert.ok(suggestion.recommended.depthY <= collision.y + collision.height);
   }
+
+  const contract = JSON.parse(await readFile(
+    path.join(rootDir, "client/src/game/worldForegroundPlacements.json"),
+    "utf8"
+  ));
+  for (const includeOptionalCollisions of [false, true]) {
+    const preview = buildForegroundPlacementPatchPreview(contract, report.suggestions, { includeOptionalCollisions });
+    const proposedAudit = await auditMapForegroundPlacements({
+      rootDir,
+      manifestPath: path.join(rootDir, "map-assets/reference/v2/manifest.json"),
+      placementsByZone: preview.proposedContract.zones
+    });
+    assert.equal(proposedAudit.instanceCount, 18);
+  }
+});
+
+test("foreground JSON patch previews reviewed updates without optional collision additions", () => {
+  const contract = {
+    version: 1,
+    zones: {
+      home: [{ decorationId: "plant", depthY: 58, collision: { x: 10, y: 20, width: 30, height: 40 } }],
+      lobby: [{ decorationId: "desk", depthY: 100 }]
+    }
+  };
+  const suggestions = [
+    {
+      zoneId: "home",
+      decorationId: "plant",
+      depthAction: "review-update",
+      collisionAction: "review-update",
+      recommended: { depthY: 54, collision: { x: 11, y: 21, width: 28, height: 33 } }
+    },
+    {
+      zoneId: "lobby",
+      decorationId: "desk",
+      depthAction: "keep",
+      collisionAction: "optional-add",
+      recommended: { depthY: 100, collision: { x: 2, y: 3, width: 4, height: 5 } }
+    }
+  ];
+
+  const operations = buildForegroundPlacementJsonPatch(contract, suggestions);
+  assert.deepEqual(operations, [
+    { op: "replace", path: "/zones/home/0/depthY", value: 54 },
+    { op: "replace", path: "/zones/home/0/collision", value: { x: 11, y: 21, width: 28, height: 33 } }
+  ]);
+  const preview = buildForegroundPlacementPatchPreview(contract, suggestions);
+  assert.equal(preview.operationCount, 2);
+  assert.equal(preview.proposedContract.zones.home[0].depthY, 54);
+  assert.equal(preview.proposedContract.zones.lobby[0].collision, undefined);
+  assert.equal(contract.zones.home[0].depthY, 58);
+});
+
+test("explicit optional collision patch can be applied and rejects invalid replacement paths", () => {
+  const contract = { version: 1, zones: { lobby: [{ decorationId: "desk", depthY: 100 }] } };
+  const suggestions = [{
+    zoneId: "lobby",
+    decorationId: "desk",
+    depthAction: "keep",
+    collisionAction: "optional-add",
+    recommended: { depthY: 100, collision: { x: 2, y: 3, width: 4, height: 5 } }
+  }];
+  const operations = buildForegroundPlacementJsonPatch(contract, suggestions, { includeOptionalCollisions: true });
+  assert.equal(operations[0].op, "add");
+  assert.deepEqual(applyForegroundPlacementJsonPatch(contract, operations).zones.lobby[0].collision, {
+    x: 2, y: 3, width: 4, height: 5
+  });
+  assert.throws(() => applyForegroundPlacementJsonPatch(contract, [
+    { op: "replace", path: "/zones/lobby/0/missing", value: 1 }
+  ]), /교체할.*값이 없습니다/);
 });

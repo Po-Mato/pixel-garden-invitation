@@ -22,9 +22,20 @@ const threshold = Number(argumentValue("--threshold", "8"));
 if (!Number.isFinite(threshold) || threshold < 0) throw new Error("threshold는 0 이상의 숫자여야 합니다");
 
 const report = JSON.parse(await readFile(reportPath, "utf8"));
+const trendPath = path.resolve(rootDir, argumentValue(
+  "--trend",
+  ".superpowers/visual-regression/map-foreground-depth-trend.json"
+));
+let trend = null;
+try {
+  trend = JSON.parse(await readFile(trendPath, "utf8"));
+} catch (error) {
+  if (error?.code !== "ENOENT") throw error;
+}
 const summary = buildMapForegroundPrSummary(report, {
   runUrl: argumentValue("--run-url", ""),
-  threshold
+  threshold,
+  trend
 });
 await mkdir(path.dirname(outputPath), { recursive: true });
 await writeFile(outputPath, summary);

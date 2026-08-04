@@ -211,6 +211,10 @@ import {
 } from "../game/worldAssetPreloader";
 import { worldDepth } from "../game/worldVisuals";
 import {
+  defaultWorldGeometryAuditLayers,
+  type WorldGeometryAuditLayerKey
+} from "../game/worldGeometryAuditLayers";
+import {
   nearestWorldLandmark,
   worldPortalAccessibilityLabel,
   type WorldAccessibilityLandmark
@@ -552,10 +556,17 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     devicePerformance.effectsQuality
   ), [devicePerformance.effectsQuality, devicePerformance.mode]);
   const mapAuditMode = useMemo(() => {
-    const parameter = new URLSearchParams(window.location.search).get("mapAudit");
-    return { available: parameter !== null, initiallyEnabled: parameter === "1" };
+    const parameters = new URLSearchParams(window.location.search);
+    const parameter = parameters.get("mapAudit");
+    const requestedZoneId = parameters.get("mapAuditZone");
+    const initialZoneId = parameter === "1"
+      && gardenWorld.zones.some((zone) => zone.id === requestedZoneId)
+      ? requestedZoneId as WorldZoneId
+      : null;
+    return { available: parameter !== null, initiallyEnabled: parameter === "1", initialZoneId };
   }, []);
   const [geometryAuditEnabled, setGeometryAuditEnabled] = useState(mapAuditMode.initiallyEnabled);
+  const [geometryAuditLayers, setGeometryAuditLayers] = useState(defaultWorldGeometryAuditLayers);
   const movementStepIntervalMs = viewPreferences.gameMovementSpeed === "relaxed"
     ? 320
     : viewPreferences.gameMovementSpeed === "brisk" ? 190 : 240;
@@ -574,13 +585,17 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   const companionInviteLink = companionInviteInspection.status === "valid"
     ? companionInviteInspection.invite
     : null;
+  const diagnosticInitialZoneId = companionInviteLink ? null : mapAuditMode.initialZoneId;
   const realtimeIdentity = useMemo(() => loadRealtimeIdentity(), []);
   const restoredCompanionSession = useMemo(() => loadCompanionSession(), []);
   const restoredWorldSession = useMemo(() => loadWorldSession(), []);
   const restoredViewSync = useMemo(() => loadInvitationViewSync(), []);
   const initialZone = getWorldZone(
     gardenWorld,
-    companionInviteLink?.zoneId ?? restoredWorldSession?.zoneId ?? gardenWorld.defaultZoneId
+    companionInviteLink?.zoneId
+      ?? diagnosticInitialZoneId
+      ?? restoredWorldSession?.zoneId
+      ?? gardenWorld.defaultZoneId
   );
   const restoredGuideCandidate = restoredViewSync?.source === "quick" && restoredViewSync.checkpointId
     ? restoredViewSync.checkpointId
@@ -589,10 +604,13 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     && journeyCheckpoints.some(({ id }) => id === restoredGuideCandidate)
     ? restoredGuideCandidate as JourneyCheckpointId
     : null;
+  const initialGuideId = mapAuditMode.available ? null : restoredGuideId;
   const [activeZoneId, setActiveZoneId] = useState<WorldZoneId>(initialZone.id);
   const activeZone = getWorldZone(gardenWorld, activeZoneId);
   const [position, setPosition] = useState<Point>(
-    companionInviteLink ? initialZone.spawn : restoredWorldSession?.position ?? initialZone.spawn
+    companionInviteLink || diagnosticInitialZoneId
+      ? initialZone.spawn
+      : restoredWorldSession?.position ?? initialZone.spawn
   );
   const [target, setTargetState] = useState<Point | null>(null);
   const [mapPath, setMapPath] = useState<Point[]>([]);
@@ -603,7 +621,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   const [inputReleaseRequired, setInputReleaseRequiredState] = useState(false);
   const [joystickVector, setJoystickVector] = useState<Point>({ x: 0, y: 0 });
   const [direction, setDirection] = useState<Direction>(
-    companionInviteLink ? "down" : restoredWorldSession?.direction ?? "down"
+    companionInviteLink || diagnosticInitialZoneId ? "down" : restoredWorldSession?.direction ?? "down"
   );
   const [moving, setMoving] = useState(false);
   const [stepFrame, setStepFrame] = useState(neutralWalkFrame);
@@ -625,6 +643,8 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   const [viewSettingsOpen, setViewSettingsOpen] = useState(false);
   const [travelStatus, setTravelStatus] = useState(companionInviteInspection.status === "expired"
     ? "동행 초대 링크가 만료됐어요 · 새 링크를 받아주세요"
+    : diagnosticInitialZoneId
+      ? `${initialZone.label} 진단 링크로 바로 이동했어요`
     : restoredWorldSession
       ? `${initialZone.label}의 이전 위치에서 이어서 시작해요`
       : "우리 집에서 여정을 시작해요");
@@ -646,8 +666,8 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   const [gameGuideOpen, setGameGuideOpen] = useState(() => (
     shouldAutoOpenGameGuide(loadGameGuideState(), journeyProgress)
   ));
-  const [pendingJourneyGuideId, setPendingJourneyGuideId] = useState<JourneyCheckpointId | null>(restoredGuideId);
-  const [activeJourneyGuideId, setActiveJourneyGuideId] = useState<JourneyCheckpointId | null>(restoredGuideId);
+  const [pendingJourneyGuideId, setPendingJourneyGuideId] = useState<JourneyCheckpointId | null>(initialGuideId);
+  const [activeJourneyGuideId, setActiveJourneyGuideId] = useState<JourneyCheckpointId | null>(initialGuideId);
   const [stampedCheckpointId, setStampedCheckpointId] = useState<JourneyCheckpointId | null>(null);
   const [journeyCompletionPending, setJourneyCompletionPending] = useState(false);
   const [journeyCompletionOpen, setJourneyCompletionOpen] = useState(false);
@@ -888,13 +908,14 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   }, [incomingCompanionInvite]);
 
   useEffect(() => {
+    if (mapAuditMode.available) return;
     saveWorldSession({
       zoneId: activeZoneId,
       position,
       direction,
       guideCheckpointId: activeJourneyGuideId ?? pendingJourneyGuideId
     });
-  }, [activeJourneyGuideId, activeZoneId, direction, pendingJourneyGuideId, position]);
+  }, [activeJourneyGuideId, activeZoneId, direction, mapAuditMode.available, pendingJourneyGuideId, position]);
 
   useEffect(() => {
     const timer = window.setInterval(() => setJourneyClock(new Date()), 60_000);
@@ -1907,6 +1928,34 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     url.searchParams.set("mapAuditZone", zoneId);
     window.history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
   }, [mapAuditMode.available, moveToZone, setInputReleaseRequired, setPortalTransition]);
+
+  useEffect(() => {
+    if (!mapAuditMode.available || !geometryAuditEnabled) return;
+    const handleDiagnosticShortcut = (event: KeyboardEvent) => {
+      if (event.altKey || event.ctrlKey || event.metaKey) return;
+      const target = event.target;
+      if (
+        target instanceof HTMLInputElement
+        || target instanceof HTMLSelectElement
+        || target instanceof HTMLTextAreaElement
+        || (target instanceof HTMLElement && target.isContentEditable)
+      ) return;
+
+      let nextIndex: number | null = null;
+      if (/^[1-9]$/.test(event.key)) nextIndex = Number(event.key) - 1;
+      else if (event.key === "0") nextIndex = 9;
+      else if (event.key === "[" || event.key === "]") {
+        const activeIndex = gardenWorld.zones.findIndex((zone) => zone.id === activeZoneId);
+        const offset = event.key === "[" ? -1 : 1;
+        nextIndex = (activeIndex + offset + gardenWorld.zones.length) % gardenWorld.zones.length;
+      }
+      if (nextIndex === null || nextIndex >= gardenWorld.zones.length) return;
+      event.preventDefault();
+      handleDiagnosticZoneChange(gardenWorld.zones[nextIndex].id);
+    };
+    window.addEventListener("keydown", handleDiagnosticShortcut);
+    return () => window.removeEventListener("keydown", handleDiagnosticShortcut);
+  }, [activeZoneId, geometryAuditEnabled, handleDiagnosticZoneChange, mapAuditMode.available]);
 
   const handleJourneySelect = useCallback((zoneId: WorldZoneId) => {
     if (portalTransitionRef.current || zoneId === activeZoneIdRef.current) return;
@@ -4557,12 +4606,16 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
             zones={gardenWorld.zones}
             activeZoneId={activeZone.id}
             enabled={geometryAuditEnabled}
+            layers={geometryAuditLayers}
             onEnabledChange={(nextEnabled) => {
               const url = new URL(window.location.href);
               url.searchParams.set("mapAudit", nextEnabled ? "1" : "0");
               if (!nextEnabled) url.searchParams.delete("mapAuditZone");
               window.history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
               setGeometryAuditEnabled(nextEnabled);
+            }}
+            onLayerChange={(layer: WorldGeometryAuditLayerKey, nextEnabled: boolean) => {
+              setGeometryAuditLayers((current) => ({ ...current, [layer]: nextEnabled }));
             }}
             onZoneChange={handleDiagnosticZoneChange}
           />
@@ -4607,7 +4660,11 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
                 style={pixelRect(worldPath)}
               />
             ))}
-            <WorldGeometryAuditOverlay zone={activeZone} enabled={geometryAuditEnabled} />
+            <WorldGeometryAuditOverlay
+              zone={activeZone}
+              enabled={geometryAuditEnabled}
+              layers={geometryAuditLayers}
+            />
             <WorldCelebrationCollectibles
               items={zoneCelebrationCollectibles}
               collectedIds={collectedCelebrationIds}

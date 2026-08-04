@@ -65,14 +65,30 @@ jobs:
           node-version: 24
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      - name: Restore foreground depth history
+        id: foreground-depth-history
+        uses: actions/cache/restore@v4
+        with:
+          path: .superpowers/visual-regression/map-foreground-depth-history.json
+          key: map-foreground-depth-${{ runner.os }}-${{ github.base_ref || github.ref_name }}-${{ github.sha }}
+          restore-keys: |
+            map-foreground-depth-${{ runner.os }}-${{ github.base_ref || github.ref_name }}-
       - run: pnpm visual:test
       - name: Render map foreground diagnostics
         run: pnpm maps:foreground-audit
       - name: Suggest foreground depth and collision geometry
-        run: pnpm maps:foreground-suggest
+        run: pnpm maps:foreground-suggest -- --preview-patch
+      - name: Track foreground depth gap history
+        run: pnpm maps:foreground-trend -- --sha "${{ github.sha }}"
       - name: Summarize foreground diagnostics for pull requests
         if: always()
         run: pnpm maps:foreground-summary -- --run-url "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+      - name: Save foreground depth history
+        if: success() && steps.foreground-depth-history.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: .superpowers/visual-regression/map-foreground-depth-history.json
+          key: map-foreground-depth-${{ runner.os }}-${{ github.base_ref || github.ref_name }}-${{ github.sha }}
       - name: Install mobile browser engines
         run: pnpm exec playwright install --with-deps chromium webkit
       - name: Audit live mobile HUD screenshots
@@ -148,6 +164,10 @@ jobs:
             .superpowers/visual-regression/map-foreground-audit.png
             .superpowers/visual-regression/map-foreground-audit.json
             .superpowers/visual-regression/map-foreground-suggestions.json
+            .superpowers/visual-regression/map-foreground-suggestions.patch.json
+            .superpowers/visual-regression/map-foreground-depth-history.json
+            .superpowers/visual-regression/map-foreground-depth-trend.json
+            .superpowers/visual-regression/map-foreground-depth-trend.md
             .superpowers/visual-regression/map-foreground-pr-summary.md
           if-no-files-found: ignore
           retention-days: 14

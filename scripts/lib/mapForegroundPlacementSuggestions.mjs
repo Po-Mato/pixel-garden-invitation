@@ -86,3 +86,68 @@ export function buildMapForegroundPlacementSuggestions(audit, options = {}) {
     suggestions
   };
 }
+
+function escapeJsonPointerSegment(segment) {
+  return String(segment).replaceAll("~", "~0").replaceAll("/", "~1");
+}
+
+function unescapeJsonPointerSegment(segment) {
+  return segment.replaceAll("~1", "/").replaceAll("~0", "~");
+}
+
+export function buildForegroundPlacementJsonPatch(contract, suggestions, {
+  includeOptionalCollisions = false
+} = {}) {
+  const suggestionById = new Map(suggestions.map((suggestion) => [suggestion.decorationId, suggestion]));
+  const operations = [];
+  for (const [zoneId, placements] of Object.entries(contract.zones)) {
+    placements.forEach((placement, index) => {
+      const suggestion = suggestionById.get(placement.decorationId);
+      if (!suggestion || suggestion.zoneId !== zoneId) return;
+      const basePath = `/zones/${escapeJsonPointerSegment(zoneId)}/${index}`;
+      if (suggestion.depthAction === "review-update") {
+        operations.push({ op: "replace", path: `${basePath}/depthY`, value: suggestion.recommended.depthY });
+      }
+      if (suggestion.collisionAction === "review-update") {
+        operations.push({ op: "replace", path: `${basePath}/collision`, value: suggestion.recommended.collision });
+      } else if (includeOptionalCollisions && suggestion.collisionAction === "optional-add") {
+        operations.push({ op: "add", path: `${basePath}/collision`, value: suggestion.recommended.collision });
+      }
+    });
+  }
+  return operations;
+}
+
+export function applyForegroundPlacementJsonPatch(contract, operations) {
+  const nextContract = structuredClone(contract);
+  for (const operation of operations) {
+    if (operation.op !== "add" && operation.op !== "replace") {
+      throw new Error(`지원하지 않는 전경 JSON patch 연산: ${operation.op}`);
+    }
+    const segments = operation.path.split("/").slice(1).map(unescapeJsonPointerSegment);
+    if (segments.length === 0) throw new Error("전경 JSON patch 경로가 비어 있습니다");
+    let target = nextContract;
+    for (const segment of segments.slice(0, -1)) {
+      if (target?.[segment] === undefined) throw new Error(`전경 JSON patch 경로가 없습니다: ${operation.path}`);
+      target = target[segment];
+    }
+    const property = segments.at(-1);
+    if (operation.op === "replace" && target?.[property] === undefined) {
+      throw new Error(`교체할 전경 JSON patch 값이 없습니다: ${operation.path}`);
+    }
+    target[property] = structuredClone(operation.value);
+  }
+  return nextContract;
+}
+
+export function buildForegroundPlacementPatchPreview(contract, suggestions, options = {}) {
+  const operations = buildForegroundPlacementJsonPatch(contract, suggestions, options);
+  return {
+    version: 1,
+    target: "client/src/game/worldForegroundPlacements.json",
+    operationCount: operations.length,
+    includesOptionalCollisions: options.includeOptionalCollisions === true,
+    operations,
+    proposedContract: applyForegroundPlacementJsonPatch(contract, operations)
+  };
+}

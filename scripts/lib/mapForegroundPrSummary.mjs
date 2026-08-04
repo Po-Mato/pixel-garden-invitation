@@ -4,7 +4,7 @@ function artifactLink(runUrl, label) {
   return runUrl ? `[${label}](${runUrl}#artifacts)` : label;
 }
 
-export function buildMapForegroundPrSummary(report, { runUrl = "", threshold = 8 } = {}) {
+export function buildMapForegroundPrSummary(report, { runUrl = "", threshold = 8, trend = null } = {}) {
   const placements = Array.isArray(report.placements) ? report.placements : [];
   const closeDepths = placements.filter((placement) => (
     placement.depthMode === "floor" && placement.depthGap >= 0 && placement.depthGap <= threshold
@@ -35,7 +35,13 @@ export function buildMapForegroundPrSummary(report, { runUrl = "", threshold = 8
   }
 
   lines.push(
-    `${artifactLink(runUrl, "감사 시트·JSON")} · ${artifactLink(runUrl, "모바일 진단 스크린샷")} · ${artifactLink(runUrl, "추천값 JSON")}`,
+    trend?.status === "warning"
+      ? `⚠️ 이전 커밋 대비 depthGap 급변 **${trend.warningCount}개** (기준 ±${trend.warningDelta}px)`
+      : trend?.status === "stable"
+        ? `✅ 이전 커밋 대비 depthGap 급변 없음 · 일반 변경 ${trend.changeCount}개`
+        : "ℹ️ depthGap 추세 기준 스냅샷을 준비했습니다.",
+    "",
+    `${artifactLink(runUrl, "감사 시트·JSON")} · ${artifactLink(runUrl, "모바일 진단 스크린샷")} · ${artifactLink(runUrl, "추천값·패치 JSON")} · ${artifactLink(runUrl, "depthGap 추세")}`,
     "",
     "> 추천값은 검토용이며 배치 계약을 자동 수정하지 않습니다."
   );

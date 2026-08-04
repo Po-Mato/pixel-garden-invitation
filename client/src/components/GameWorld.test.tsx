@@ -2018,10 +2018,40 @@ describe("GameWorld", () => {
       expect(screen.getByText("예식홀 진단 위치로 이동했어요")).toBeInTheDocument();
       expect(window.location.search).toContain("mapAuditZone=ceremony-hall");
       expect(window.localStorage.getItem(journeyProgressStorageKey)).toBeNull();
+      expect(window.localStorage.getItem(worldSessionStorageKey)).toBeNull();
 
       fireEvent.click(screen.getByRole("button", { name: "지도 진단 끄기" }));
       expect(screen.queryByTestId("world-geometry-audit")).not.toBeInTheDocument();
       expect(window.location.search).toBe("?mapAudit=0");
+    } finally {
+      window.history.replaceState({}, "", originalUrl);
+    }
+  });
+
+  it("opens shared diagnostic zone links and cycles zones with developer shortcuts", () => {
+    const originalUrl = window.location.href;
+    window.history.replaceState({}, "", "/?mapAudit=1&mapAuditZone=banquet");
+    try {
+      render(<GameWorld profile={profile} />);
+
+      const selector = screen.getByRole("combobox", { name: "진단 구역 즉시 이동" });
+      expect(selector).toHaveValue("banquet");
+      expect(screen.getByLabelText("연회장 지도")).toBeInTheDocument();
+      expect(screen.getByText("연회장 진단 링크로 바로 이동했어요")).toBeInTheDocument();
+      expect(window.localStorage.getItem(worldSessionStorageKey)).toBeNull();
+
+      fireEvent.keyDown(window, { key: "[" });
+      expect(selector).toHaveValue("ceremony-hall");
+      expect(screen.getByLabelText("예식홀 지도")).toBeInTheDocument();
+
+      fireEvent.keyDown(window, { key: "0" });
+      expect(selector).toHaveValue("restroom");
+      expect(screen.getByLabelText("화장실 지도")).toBeInTheDocument();
+      expect(window.location.search).toContain("mapAuditZone=restroom");
+
+      selector.focus();
+      fireEvent.keyDown(selector, { key: "1" });
+      expect(selector).toHaveValue("restroom");
     } finally {
       window.history.replaceState({}, "", originalUrl);
     }

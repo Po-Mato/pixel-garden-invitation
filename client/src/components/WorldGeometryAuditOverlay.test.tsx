@@ -5,6 +5,7 @@ import {
   getWorldZone,
   worldForegroundPlacements
 } from "../game/world";
+import { defaultWorldGeometryAuditLayers } from "../game/worldGeometryAuditLayers";
 import { WorldGeometryAuditOverlay } from "./WorldGeometryAuditOverlay";
 
 afterEach(cleanup);
@@ -32,5 +33,31 @@ describe("WorldGeometryAuditOverlay", () => {
     expect(depthLine).toHaveAttribute("data-depth-y", "480");
     expect(depthLine).toHaveStyle({ top: "120px" });
     expect(screen.getByText(/청록 전경 · 금색 충돌 · 분홍 깊이선/)).toBeInTheDocument();
+  });
+
+  it("independently filters the grid, collision, depth, and identifier layers", () => {
+    const lobby = getWorldZone(gardenWorld, "lobby");
+    const { container, rerender } = render(
+      <WorldGeometryAuditOverlay
+        zone={lobby}
+        enabled
+        layers={{ ...defaultWorldGeometryAuditLayers, grid: false, collision: false }}
+      />
+    );
+
+    expect(container.querySelectorAll(".world-geometry-audit__tile")).toHaveLength(0);
+    expect(container.querySelectorAll(".world-geometry-audit__collision")).toHaveLength(0);
+    expect(container.querySelectorAll(".world-geometry-audit__depth")).toHaveLength(1);
+    expect(screen.getByText("lobby-desk")).toBeInTheDocument();
+
+    rerender(
+      <WorldGeometryAuditOverlay
+        zone={lobby}
+        enabled
+        layers={{ ...defaultWorldGeometryAuditLayers, depth: false, labels: false }}
+      />
+    );
+    expect(container.querySelectorAll(".world-geometry-audit__depth")).toHaveLength(0);
+    expect(screen.queryByText("lobby-desk")).not.toBeInTheDocument();
   });
 });
