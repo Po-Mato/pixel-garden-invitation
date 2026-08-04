@@ -2,39 +2,237 @@
   "version": 1,
   "zones": {
     "home": [
-      { "decorationId": "home-plant", "asset": "topiary-foreground.png", "x": 420, "y": 480, "width": 60, "height": 90, "depthY": 555, "depthMode": "floor", "collision": { "x": 420, "y": 480, "width": 60, "height": 90 } }
+      {
+        "decorationId": "home-plant",
+        "asset": "topiary-foreground.png",
+        "x": 420,
+        "y": 480,
+        "width": 60,
+        "height": 90,
+        "depthY": 555,
+        "depthMode": "floor",
+        "collision": {
+          "x": 426,
+          "y": 491,
+          "width": 47,
+          "height": 68
+        }
+      }
     ],
     "neighborhood": [
-      { "decorationId": "street-tree-1", "asset": "tree-canopy.png", "x": 214, "y": 90, "width": 90, "height": 150, "depthY": 240, "depthMode": "floor" },
-      { "decorationId": "street-tree-2", "asset": "tree-canopy.png", "x": 513, "y": 90, "width": 90, "height": 150, "depthY": 240, "depthMode": "floor" },
-      { "decorationId": "street-tree-3", "asset": "tree-canopy.png", "x": 860, "y": 90, "width": 90, "height": 150, "depthY": 240, "depthMode": "floor" }
+      {
+        "decorationId": "street-tree-1",
+        "asset": "tree-canopy.png",
+        "x": 214,
+        "y": 90,
+        "width": 90,
+        "height": 150,
+        "depthY": 210,
+        "depthMode": "floor"
+      },
+      {
+        "decorationId": "street-tree-2",
+        "asset": "tree-canopy.png",
+        "x": 513,
+        "y": 90,
+        "width": 90,
+        "height": 150,
+        "depthY": 210,
+        "depthMode": "floor"
+      },
+      {
+        "decorationId": "street-tree-3",
+        "asset": "tree-canopy.png",
+        "x": 860,
+        "y": 90,
+        "width": 90,
+        "height": 150,
+        "depthY": 210,
+        "depthMode": "floor"
+      }
     ],
     "subway-station": [],
     "subway-train": [
-      { "decorationId": "train-straps", "asset": "strap-row-foreground.png", "x": 240, "y": 105, "width": 960, "height": 120, "depthY": 420, "depthMode": "overhead" }
+      {
+        "decorationId": "train-straps",
+        "asset": "strap-row-foreground.png",
+        "x": 240,
+        "y": 105,
+        "width": 960,
+        "height": 120,
+        "depthY": 420,
+        "depthMode": "overhead"
+      }
     ],
     "venue-exterior": [
-      { "decorationId": "venue-arch", "asset": "flower-arch-front.png", "x": 360, "y": 180, "width": 240, "height": 180, "depthY": 360, "depthMode": "floor" }
+      {
+        "decorationId": "venue-arch",
+        "asset": "flower-arch-front.png",
+        "x": 360,
+        "y": 180,
+        "width": 240,
+        "height": 180,
+        "depthY": 339,
+        "depthMode": "floor"
+      }
     ],
     "lobby": [
-      { "decorationId": "lobby-desk", "asset": "reception-desk-front.png", "x": 450, "y": 360, "width": 180, "height": 120, "depthY": 480, "depthMode": "floor", "collision": { "x": 450, "y": 390, "width": 180, "height": 90 } }
+      {
+        "decorationId": "lobby-desk",
+        "asset": "reception-desk-front.png",
+        "x": 450,
+        "y": 360,
+        "width": 180,
+        "height": 120,
+        "depthY": 475,
+        "depthMode": "floor",
+        "collision": {
+          "x": 456,
+          "y": 437,
+          "width": 158,
+          "height": 42
+        }
+      }
     ],
     "bridal-room": [
-      { "decorationId": "bridal-flower-front", "asset": "flower-arrangement-front.png", "x": 240, "y": 300, "width": 90, "height": 120, "depthY": 420, "depthMode": "floor" }
+      {
+        "decorationId": "bridal-flower-front",
+        "asset": "flower-arrangement-front.png",
+        "x": 240,
+        "y": 300,
+        "width": 90,
+        "height": 120,
+        "depthY": 397,
+        "depthMode": "floor"
+      }
     ],
     "ceremony-hall": [
-      { "decorationId": "hall-ceremony-arch", "asset": "ceremony-arch-front.png", "x": 180, "y": 30, "width": 420, "height": 300, "depthY": 330, "depthMode": "floor" },
-      { "decorationId": "hall-altar-table-front", "asset": "altar-table-front.png", "x": 300, "y": 165, "width": 180, "height": 120, "depthY": 285, "depthMode": "floor" },
-      { "decorationId": "hall-flowers-1", "asset": "aisle-bouquet-front.png", "x": 240, "y": 480, "width": 60, "height": 90, "depthY": 570, "depthMode": "floor" },
-      { "decorationId": "hall-flowers-2", "asset": "aisle-bouquet-front.png", "x": 480, "y": 720, "width": 60, "height": 90, "depthY": 810, "depthMode": "floor" },
-      { "decorationId": "hall-flowers-3", "asset": "aisle-bouquet-front.png", "x": 240, "y": 960, "width": 60, "height": 90, "depthY": 1050, "depthMode": "floor" },
-      { "decorationId": "hall-flowers-4", "asset": "aisle-bouquet-front.png", "x": 480, "y": 1200, "width": 60, "height": 90, "depthY": 1290, "depthMode": "floor" }
+      {
+        "decorationId": "hall-ceremony-arch",
+        "asset": "ceremony-arch-front.png",
+        "x": 180,
+        "y": 30,
+        "width": 420,
+        "height": 300,
+        "depthY": 330,
+        "depthMode": "floor"
+      },
+      {
+        "decorationId": "hall-altar-table-front",
+        "asset": "altar-table-front.png",
+        "x": 300,
+        "y": 165,
+        "width": 180,
+        "height": 120,
+        "depthY": 277,
+        "depthMode": "floor"
+      },
+      {
+        "decorationId": "hall-flowers-1",
+        "asset": "aisle-bouquet-front.png",
+        "x": 240,
+        "y": 480,
+        "width": 60,
+        "height": 90,
+        "depthY": 555,
+        "depthMode": "floor"
+      },
+      {
+        "decorationId": "hall-flowers-2",
+        "asset": "aisle-bouquet-front.png",
+        "x": 480,
+        "y": 720,
+        "width": 60,
+        "height": 90,
+        "depthY": 795,
+        "depthMode": "floor"
+      },
+      {
+        "decorationId": "hall-flowers-3",
+        "asset": "aisle-bouquet-front.png",
+        "x": 240,
+        "y": 960,
+        "width": 60,
+        "height": 90,
+        "depthY": 1035,
+        "depthMode": "floor"
+      },
+      {
+        "decorationId": "hall-flowers-4",
+        "asset": "aisle-bouquet-front.png",
+        "x": 480,
+        "y": 1200,
+        "width": 60,
+        "height": 90,
+        "depthY": 1275,
+        "depthMode": "floor"
+      }
     ],
     "banquet": [
-      { "decorationId": "banquet-table-1", "asset": "table-floral.png", "x": 210, "y": 270, "width": 240, "height": 240, "depthY": 510, "depthMode": "floor", "collision": { "x": 210, "y": 270, "width": 240, "height": 240 } },
-      { "decorationId": "banquet-table-2", "asset": "table-dining.png", "x": 690, "y": 270, "width": 240, "height": 240, "depthY": 510, "depthMode": "floor", "collision": { "x": 690, "y": 270, "width": 240, "height": 240 } },
-      { "decorationId": "banquet-table-3", "asset": "table-dining.png", "x": 210, "y": 570, "width": 240, "height": 240, "depthY": 810, "depthMode": "floor", "collision": { "x": 210, "y": 570, "width": 240, "height": 240 } },
-      { "decorationId": "banquet-table-4", "asset": "table-floral.png", "x": 690, "y": 570, "width": 240, "height": 240, "depthY": 810, "depthMode": "floor", "collision": { "x": 690, "y": 570, "width": 240, "height": 240 } }
+      {
+        "decorationId": "banquet-table-1",
+        "asset": "table-floral.png",
+        "x": 210,
+        "y": 270,
+        "width": 240,
+        "height": 240,
+        "depthY": 490,
+        "depthMode": "floor",
+        "collision": {
+          "x": 218,
+          "y": 290,
+          "width": 224,
+          "height": 204
+        }
+      },
+      {
+        "decorationId": "banquet-table-2",
+        "asset": "table-dining.png",
+        "x": 690,
+        "y": 270,
+        "width": 240,
+        "height": 240,
+        "depthY": 468,
+        "depthMode": "floor",
+        "collision": {
+          "x": 694,
+          "y": 294,
+          "width": 232,
+          "height": 178
+        }
+      },
+      {
+        "decorationId": "banquet-table-3",
+        "asset": "table-dining.png",
+        "x": 210,
+        "y": 570,
+        "width": 240,
+        "height": 240,
+        "depthY": 768,
+        "depthMode": "floor",
+        "collision": {
+          "x": 214,
+          "y": 594,
+          "width": 232,
+          "height": 178
+        }
+      },
+      {
+        "decorationId": "banquet-table-4",
+        "asset": "table-floral.png",
+        "x": 690,
+        "y": 570,
+        "width": 240,
+        "height": 240,
+        "depthY": 790,
+        "depthMode": "floor",
+        "collision": {
+          "x": 698,
+          "y": 590,
+          "width": 224,
+          "height": 204
+        }
+      }
     ],
     "restroom": []
   }
