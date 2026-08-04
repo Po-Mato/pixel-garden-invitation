@@ -1,6 +1,17 @@
 name: Apply approved map foreground patch
+run-name: Apply approved map patch #${{ inputs.source_pr || github.event.pull_request.number }}
 
 on:
+  workflow_dispatch:
+    inputs:
+      source_pr:
+        description: Same-repository PR carrying the approval label
+        required: true
+        type: number
+      evidence_run:
+        description: Successful visual-regression run for the PR head SHA
+        required: true
+        type: number
   pull_request_target:
     types: [labeled]
 
@@ -10,14 +21,31 @@ permissions:
   pull-requests: write
 
 concurrency:
-  group: approved-map-patch-${{ github.event.pull_request.number }}
+  group: approved-map-patch-${{ inputs.source_pr || github.event.pull_request.number }}
   cancel-in-progress: false
 
 jobs:
   create-application-pr:
-    if: github.event.label.name == 'map-foreground-patch-approved' && github.event.pull_request.head.repo.full_name == github.repository
+    if: github.event_name == 'workflow_dispatch' || (github.event.label.name == 'map-foreground-patch-approved' && github.event.pull_request.head.repo.full_name == github.repository)
     runs-on: ubuntu-latest
     steps:
+      - name: Resolve and validate approved source PR
+        id: source
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const pullNumber = context.eventName === "workflow_dispatch"
+              ? Number(context.payload.inputs.source_pr)
+              : context.payload.pull_request.number;
+            const { data: pull } = await github.rest.pulls.get({ owner: context.repo.owner, repo: context.repo.repo, pull_number: pullNumber });
+            if (pull.state !== "open") return core.setFailed("The approved source PR must be open");
+            if (pull.head.repo?.full_name !== `${context.repo.owner}/${context.repo.repo}`) return core.setFailed("Only same-repository PRs are trusted");
+            if (context.eventName === "workflow_dispatch" && !pull.labels.some(({ name }) => name === "map-foreground-patch-approved")) {
+              return core.setFailed("The source PR does not carry map-foreground-patch-approved");
+            }
+            core.setOutput("number", String(pull.number));
+            core.setOutput("head-sha", pull.head.sha);
+            core.setOutput("head-ref", pull.head.ref);
       # Only trusted default-branch tooling is executed with the write token.
       - name: Checkout trusted automation tools
         uses: actions/checkout@v6
@@ -29,10 +57,17 @@ jobs:
         id: evidence
         env:
           GH_TOKEN: ${{ github.token }}
-          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          HEAD_SHA: ${{ steps.source.outputs.head-sha }}
+          REQUESTED_RUN: ${{ inputs.evidence_run }}
           REPOSITORY: ${{ github.repository }}
         run: |
-          run_id=$(gh run list --repo "$REPOSITORY" --workflow visual-regression.yml --commit "$HEAD_SHA" --event pull_request --status success --limit 1 --json databaseId --jq '.[0].databaseId')
+          if test -n "$REQUESTED_RUN"; then
+            run_id="$REQUESTED_RUN"
+            gh api "repos/$REPOSITORY/actions/runs/$run_id" > "$RUNNER_TEMP/approved-evidence-run.json"
+            jq -e --arg sha "$HEAD_SHA" '.path == ".github/workflows/visual-regression.yml" and .head_sha == $sha and .status == "completed" and .conclusion == "success" and (.event == "workflow_dispatch" or .event == "pull_request")' "$RUNNER_TEMP/approved-evidence-run.json"
+          else
+            run_id=$(gh run list --repo "$REPOSITORY" --workflow visual-regression.yml --commit "$HEAD_SHA" --event pull_request --status success --limit 1 --json databaseId --jq '.[0].databaseId')
+          fi
           test -n "$run_id"
           mkdir -p "$GITHUB_WORKSPACE/approved-artifact"
           gh run download "$run_id" --repo "$REPOSITORY" --name "map-foreground-diagnostics-$run_id" --dir "$GITHUB_WORKSPACE/approved-artifact"
@@ -41,13 +76,13 @@ jobs:
       - name: Checkout pull request head without executing it
         uses: actions/checkout@v6
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: ${{ steps.source.outputs.head-sha }}
           path: patch-work
           fetch-depth: 0
       - name: Apply checksum-bound patch with trusted script
         env:
-          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
+          HEAD_SHA: ${{ steps.source.outputs.head-sha }}
+          PR_NUMBER: ${{ steps.source.outputs.number }}
           APPROVED_BY: ${{ github.actor }}
         run: |
           node "$GITHUB_WORKSPACE/trusted-tools/scripts/apply-approved-map-patch-bot.mjs" \
@@ -61,8 +96,8 @@ jobs:
       - name: Publish isolated application branch
         id: publish
         env:
-          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
+          HEAD_SHA: ${{ steps.source.outputs.head-sha }}
+          PR_NUMBER: ${{ steps.source.outputs.number }}
         run: |
           branch="automation/map-foreground-pr-${PR_NUMBER}-${HEAD_SHA:0:7}"
           if git -C "$GITHUB_WORKSPACE/patch-work" ls-remote --exit-code --heads origin "refs/heads/$branch" >/dev/null; then
@@ -82,8 +117,8 @@ jobs:
         uses: actions/github-script@v8
         env:
           APPLICATION_BRANCH: ${{ steps.publish.outputs.branch }}
-          BASE_BRANCH: ${{ github.event.pull_request.head.ref }}
-          SOURCE_PR: ${{ github.event.pull_request.number }}
+          BASE_BRANCH: ${{ steps.source.outputs.head-ref }}
+          SOURCE_PR: ${{ steps.source.outputs.number }}
           EVIDENCE_RUN: ${{ steps.evidence.outputs.run-id }}
         with:
           script: |

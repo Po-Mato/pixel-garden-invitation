@@ -6,7 +6,7 @@ on:
     - cron: "23 4 * * 1"
 
 permissions:
-  actions: read
+  actions: write
   contents: write
   issues: write
   pull-requests: write
@@ -47,17 +47,22 @@ jobs:
           echo "url=$pr_url" >> "$GITHUB_OUTPUT"
           echo "number=$pr_number" >> "$GITHUB_OUTPUT"
       - name: Wait for successful visual evidence
+        id: evidence
         env:
           GH_TOKEN: ${{ github.token }}
           HEAD_SHA: ${{ steps.source.outputs.sha }}
         run: |
+          started_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+          gh workflow run visual-regression.yml --ref "$E2E_BRANCH"
           for attempt in $(seq 1 300); do
-            run=$(gh run list --workflow visual-regression.yml --commit "$HEAD_SHA" --event pull_request --limit 1 --json databaseId,status,conclusion,url)
-            status=$(jq -r '.[0].status // "waiting"' <<< "$run")
-            conclusion=$(jq -r '.[0].conclusion // ""' <<< "$run")
+            run=$(gh run list --workflow visual-regression.yml --commit "$HEAD_SHA" --event workflow_dispatch --limit 10 --json databaseId,status,conclusion,url,createdAt 2>/dev/null || printf '[]')
+            run=$(jq -c --arg started "$started_at" '[.[] | select(.createdAt >= $started)] | first // {}' <<< "$run")
+            status=$(jq -r '.status // "waiting"' <<< "$run")
+            conclusion=$(jq -r '.conclusion // ""' <<< "$run")
             if test "$status" = "completed"; then
               test "$conclusion" = "success"
-              jq -r '.[0].url' <<< "$run"
+              jq -r '.url' <<< "$run"
+              echo "run-id=$(jq -r .databaseId <<< "$run")" >> "$GITHUB_OUTPUT"
               exit 0
             fi
             sleep 10
@@ -68,11 +73,13 @@ jobs:
         id: approval
         env:
           GH_TOKEN: ${{ github.token }}
+          EVIDENCE_RUN: ${{ steps.evidence.outputs.run-id }}
           SOURCE_PR: ${{ steps.source-pr.outputs.number }}
         run: |
           gh label create map-foreground-patch-approved --color 2f81f7 --description "Apply a checksum-bound visual audit patch in an isolated PR" 2>/dev/null || true
           echo "started-at=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> "$GITHUB_OUTPUT"
           gh pr edit "$SOURCE_PR" --add-label map-foreground-patch-approved
+          gh workflow run apply-approved-map-patch.yml --ref "${{ github.event.repository.default_branch }}" -f source_pr="$SOURCE_PR" -f evidence_run="$EVIDENCE_RUN"
       - name: Wait for trusted approval automation
         id: application
         env:
@@ -82,8 +89,8 @@ jobs:
           STARTED_AT: ${{ steps.approval.outputs.started-at }}
         run: |
           for attempt in $(seq 1 180); do
-            runs=$(gh run list --workflow apply-approved-map-patch.yml --event pull_request_target --limit 30 --json databaseId,status,conclusion,url,displayTitle,createdAt)
-            run=$(jq -c --arg title "$E2E_TITLE" --arg started "$STARTED_AT" '[.[] | select(.displayTitle == $title and .createdAt >= $started)] | first // {}' <<< "$runs")
+            runs=$(gh run list --workflow apply-approved-map-patch.yml --event workflow_dispatch --limit 30 --json databaseId,status,conclusion,url,displayTitle,createdAt 2>/dev/null || printf '[]')
+            run=$(jq -c --arg title "Apply approved map patch #$SOURCE_PR" --arg started "$STARTED_AT" '[.[] | select(.displayTitle == $title and .createdAt >= $started)] | first // {}' <<< "$runs")
             status=$(jq -r '.status // "waiting"' <<< "$run")
             conclusion=$(jq -r '.conclusion // ""' <<< "$run")
             if test "$status" = "completed"; then
