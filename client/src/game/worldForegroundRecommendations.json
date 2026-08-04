@@ -1,5 +1,6 @@
 {
   "version": 1,
+  "sourceChecksum": "f9ad528aecb7b789ea4eb309b9d6c5bd8f78edce9a35ba0df7af8198b7793e25",
   "zones": {
     "home": [
       { "decorationId": "home-plant", "depthY": 555, "collision": { "x": 426, "y": 491, "width": 47, "height": 68 } }

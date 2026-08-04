@@ -223,13 +223,19 @@ import {
   captureWorldDiagnosticScreenshot,
   createWorldDiagnosticBundle,
   downloadJsonArtifact,
-  worldDiagnosticArtifactFilename
+  worldDiagnosticArtifactFilename,
+  worldDiagnosticBundleViewerUrl
 } from "../game/worldDiagnosticBundle";
 import {
   buildWorldForegroundRecommendationPatch,
   foregroundRecommendationReviewsForZone,
   type ForegroundRecommendationDecision
 } from "../game/worldForegroundRecommendations";
+import {
+  loadWorldForegroundReviewDecisions,
+  saveWorldForegroundReviewDecisions,
+  writeWorldForegroundReviewDecisionsToUrl
+} from "../game/worldForegroundReviewState";
 import {
   nearestWorldLandmark,
   worldPortalAccessibilityLabel,
@@ -583,7 +589,11 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
       available: parameter !== null,
       initiallyEnabled: parameter === "1",
       initialZoneId,
-      initialLayers: parseWorldGeometryAuditLayers(parameters.get("mapAuditLayers"))
+      initialLayers: parseWorldGeometryAuditLayers(parameters.get("mapAuditLayers")),
+      initialRecommendationDecisions: loadWorldForegroundReviewDecisions(
+        parameters.get("mapAuditReview"),
+        window.localStorage
+      )
     };
   }, []);
   const [geometryAuditEnabled, setGeometryAuditEnabled] = useState(mapAuditMode.initiallyEnabled);
@@ -593,7 +603,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   const [diagnosticBundleStatus, setDiagnosticBundleStatus] = useState<"idle" | "capturing" | "saved" | "error">("idle");
   const [foregroundRecommendationDecisions, setForegroundRecommendationDecisions] = useState<
     Partial<Record<string, ForegroundRecommendationDecision>>
-  >({});
+  >(mapAuditMode.initialRecommendationDecisions);
   const movementStepIntervalMs = viewPreferences.gameMovementSpeed === "relaxed"
     ? 320
     : viewPreferences.gameMovementSpeed === "brisk" ? 190 : 240;
@@ -1995,13 +2005,14 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     url.searchParams.set("mapAudit", "1");
     url.searchParams.set("mapAuditZone", activeZoneId);
     url.searchParams.set("mapAuditLayers", serializeWorldGeometryAuditLayers(geometryAuditLayers));
+    writeWorldForegroundReviewDecisionsToUrl(url, foregroundRecommendationDecisions);
     try {
       await copyText(url.toString());
       setDiagnosticCopyStatus("copied");
     } catch {
       setDiagnosticCopyStatus("error");
     }
-  }, [activeZoneId, geometryAuditLayers]);
+  }, [activeZoneId, foregroundRecommendationDecisions, geometryAuditLayers]);
 
   const handleForegroundRecommendationDecision = useCallback((
     key: string,
@@ -2011,6 +2022,9 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
       const next = { ...current };
       if (decision === "pending") delete next[key];
       else next[key] = decision;
+      saveWorldForegroundReviewDecisions(next, window.localStorage);
+      const url = writeWorldForegroundReviewDecisionsToUrl(new URL(window.location.href), next);
+      window.history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
       return next;
     });
     setDiagnosticPatchStatus("idle");
@@ -2050,6 +2064,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
         generatedAt: generatedAt.toISOString(),
         zone: { id: activeZone.id, label: activeZone.label },
         diagnosticUrl: window.location.href,
+        viewerUrl: worldDiagnosticBundleViewerUrl(),
         viewport: {
           width: window.innerWidth,
           height: window.innerHeight,
@@ -4767,15 +4782,20 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
             recommendationDecisions={foregroundRecommendationDecisions}
             onDownloadBundle={() => { void handleDownloadDiagnosticBundle(); }}
             onDownloadPatch={handleDownloadDiagnosticPatch}
+            onOpenBundleViewer={() => {
+              window.open(worldDiagnosticBundleViewerUrl(), "_blank", "noopener,noreferrer");
+            }}
             onCopyLink={() => { void handleCopyDiagnosticLink(); }}
             onEnabledChange={(nextEnabled) => {
               const url = new URL(window.location.href);
               url.searchParams.set("mapAudit", nextEnabled ? "1" : "0");
               if (nextEnabled) {
                 url.searchParams.set("mapAuditLayers", serializeWorldGeometryAuditLayers(geometryAuditLayers));
+                writeWorldForegroundReviewDecisionsToUrl(url, foregroundRecommendationDecisions);
               } else {
                 url.searchParams.delete("mapAuditZone");
                 url.searchParams.delete("mapAuditLayers");
+                url.searchParams.delete("mapAuditReview");
               }
               window.history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
               setGeometryAuditEnabled(nextEnabled);

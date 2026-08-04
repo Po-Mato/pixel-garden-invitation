@@ -188,12 +188,26 @@
 
 .world-geometry-audit__collision,
 .world-geometry-audit__foreground-collision,
+.world-geometry-audit__heatmap,
 .world-geometry-audit__foreground,
 .world-geometry-audit__depth {
   position: absolute;
   box-sizing: border-box;
   pointer-events: none;
 }
+
+.world-geometry-audit__heatmap {
+  z-index: 2;
+  border: 1px solid currentColor;
+  background: repeating-linear-gradient(135deg, currentColor 0 3px, transparent 3px 8px);
+  opacity: 0.26;
+  mix-blend-mode: multiply;
+}
+
+.world-geometry-audit__heatmap--depth { border-style: dashed; opacity: 0.42; }
+.world-geometry-audit__heatmap[data-delta-intensity="low"] { color: #4df2ff; }
+.world-geometry-audit__heatmap[data-delta-intensity="medium"] { color: #ffc857; }
+.world-geometry-audit__heatmap[data-delta-intensity="high"] { color: #ff4d98; }
 
 .world-geometry-audit__depth--recommended {
   z-index: 2;
@@ -377,7 +391,7 @@
 
 .world-geometry-audit-layers {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 3px;
   border: 2px solid #342d2b;
   border-radius: 4px;
@@ -484,7 +498,9 @@
 
 .world-geometry-audit-review button:focus-visible { outline: 2px solid #fff1a8; outline-offset: 1px; }
 .world-geometry-audit-review button:disabled { color: #77706c; }
-.world-geometry-audit-review > header button:not(:disabled) { border-color: #68f5a6; color: #68f5a6; }
+.world-geometry-audit-review__tools { display: flex; gap: 3px; }
+.world-geometry-audit-review__tools button:first-child { border-color: #b89cff; color: #b89cff; }
+.world-geometry-audit-review__tools button:last-child:not(:disabled) { border-color: #68f5a6; color: #68f5a6; }
 
 .world-geometry-audit-review ul {
   display: grid;

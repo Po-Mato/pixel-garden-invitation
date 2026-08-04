@@ -24,6 +24,8 @@ export type WorldForegroundRecommendationReview = {
   collisionChanged: boolean;
 };
 
+export type ForegroundGeometryDeltaIntensity = "low" | "medium" | "high";
+
 export type WorldForegroundJsonPatchOperation = {
   op: "add" | "remove" | "replace";
   path: string;
@@ -34,6 +36,7 @@ export type WorldForegroundRecommendationPatch = {
   version: 1;
   target: "client/src/game/worldForegroundPlacements.json";
   sourceContractVersion: number;
+  sourceChecksum: string;
   generatedAt: string;
   acceptedPlacementKeys: string[];
   operationCount: number;
@@ -89,6 +92,25 @@ export function recommendedForegroundGeometry(
     .find((recommendation) => recommendation.decorationId === decorationId) ?? null;
 }
 
+export function foregroundGeometryDeltaScore(review: WorldForegroundRecommendationReview): number {
+  const current = review.current.collision;
+  const recommended = review.recommended.collision;
+  const collisionScore = current && recommended
+    ? Math.abs(current.x - recommended.x)
+      + Math.abs(current.y - recommended.y)
+      + Math.abs(current.width - recommended.width)
+      + Math.abs(current.height - recommended.height)
+    : current || recommended ? 160 : 0;
+  return Math.abs(review.current.depthY - review.recommended.depthY) * 2 + collisionScore;
+}
+
+export function foregroundGeometryDeltaIntensity(
+  review: WorldForegroundRecommendationReview
+): ForegroundGeometryDeltaIntensity {
+  const score = foregroundGeometryDeltaScore(review);
+  return score >= 100 ? "high" : score >= 36 ? "medium" : "low";
+}
+
 export function buildWorldForegroundRecommendationPatch(
   decisions: Partial<Record<string, ForegroundRecommendationDecision>>,
   generatedAt = new Date().toISOString()
@@ -130,6 +152,7 @@ export function buildWorldForegroundRecommendationPatch(
     version: 1,
     target: "client/src/game/worldForegroundPlacements.json",
     sourceContractVersion: recommendationData.version,
+    sourceChecksum: recommendationData.sourceChecksum,
     generatedAt,
     acceptedPlacementKeys,
     operationCount: operations.length,

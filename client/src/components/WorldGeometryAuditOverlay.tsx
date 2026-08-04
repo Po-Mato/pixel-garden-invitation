@@ -4,6 +4,7 @@ import { auditWorldGeometry } from "../game/worldGeometryAudit";
 import { evaluateWorldGeometryAuditPolicy } from "../game/worldGeometryAuditPolicy";
 import { worldForegroundPlacements, type WorldZone } from "../game/world";
 import {
+  foregroundGeometryDeltaIntensity,
   foregroundRecommendationReviewsForZone,
   type ForegroundRecommendationDecision
 } from "../game/worldForegroundRecommendations";
@@ -11,6 +12,22 @@ import {
   defaultWorldGeometryAuditLayers,
   type WorldGeometryAuditLayers
 } from "../game/worldGeometryAuditLayers";
+
+function unionRect(
+  left: { x: number; y: number; width: number; height: number } | null | undefined,
+  right: { x: number; y: number; width: number; height: number } | null | undefined
+) {
+  if (!left) return right ?? null;
+  if (!right) return left;
+  const x = Math.min(left.x, right.x);
+  const y = Math.min(left.y, right.y);
+  return {
+    x,
+    y,
+    width: Math.max(left.x + left.width, right.x + right.width) - x,
+    height: Math.max(left.y + left.height, right.y + right.height) - y
+  };
+}
 
 type WorldGeometryAuditOverlayProps = {
   zone: WorldZone;
@@ -46,6 +63,7 @@ export function WorldGeometryAuditOverlay({
       data-grid={layers.grid}
       data-collision={layers.collision}
       data-depth={layers.depth}
+      data-heatmap={layers.heatmap}
       data-labels={layers.labels}
       aria-hidden="true"
     >
@@ -109,6 +127,38 @@ export function WorldGeometryAuditOverlay({
           ) : null
         ].filter(Boolean);
       }) : null}
+      {layers.heatmap ? recommendationReviews.flatMap((review) => {
+        const intensity = foregroundGeometryDeltaIntensity(review);
+        const placement = foregrounds.find((candidate) => candidate.decorationId === review.decorationId);
+        const collisionDelta = review.collisionChanged
+          ? unionRect(review.current.collision, review.recommended.collision)
+          : null;
+        return [
+          collisionDelta ? (
+            <i
+              key={`${review.key}-collision-heatmap`}
+              className="world-geometry-audit__heatmap world-geometry-audit__heatmap--collision"
+              data-decoration-id={review.decorationId}
+              data-delta-intensity={intensity}
+              style={{ left: collisionDelta.x, top: collisionDelta.y, width: collisionDelta.width, height: collisionDelta.height }}
+            />
+          ) : null,
+          review.depthChanged && placement ? (
+            <i
+              key={`${review.key}-depth-heatmap`}
+              className="world-geometry-audit__heatmap world-geometry-audit__heatmap--depth"
+              data-decoration-id={review.decorationId}
+              data-delta-intensity={intensity}
+              style={{
+                left: placement.x,
+                top: Math.min(review.current.depthY, review.recommended.depthY) - 2,
+                width: placement.width,
+                height: Math.max(5, Math.abs(review.current.depthY - review.recommended.depthY) + 4)
+              }}
+            />
+          ) : null
+        ].filter(Boolean);
+      }) : null}
       {layers.depth || layers.labels ? foregrounds.map((placement) => {
         const review = recommendationById.get(placement.decorationId);
         const recommendedDepthY = review?.recommended.depthY ?? null;
@@ -153,7 +203,7 @@ export function WorldGeometryAuditOverlay({
         <small
           className={audit.findings.length > 0 ? `world-geometry-audit__summary-issue world-geometry-audit__summary-issue--${audit.findings[0].severity}` : undefined}
         >
-          {audit.findings[0]?.message ?? "깊이 분홍/보라 · 충돌 청록/보라 추천"}
+          {audit.findings[0]?.message ?? "깊이 분홍/보라 · 충돌 청록/보라 · 차이 히트 Δ"}
         </small>
       </span>
     </div>

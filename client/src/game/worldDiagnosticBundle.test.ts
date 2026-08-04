@@ -4,7 +4,8 @@ import {
   createWorldDiagnosticBundle,
   downloadJsonArtifact,
   normalizeSrgbColorFunctions,
-  worldDiagnosticArtifactFilename
+  worldDiagnosticArtifactFilename,
+  worldDiagnosticBundleViewerUrl
 } from "./worldDiagnosticBundle";
 
 describe("맵 진단 번들", () => {
@@ -40,9 +41,10 @@ describe("맵 진단 번들", () => {
       generatedAt: "2026-08-04T00:00:00.000Z",
       zone: { id: "lobby", label: "예식장 로비" },
       diagnosticUrl: "https://example.test/?mapAudit=1&mapAuditZone=lobby",
+      viewerUrl: "https://example.test/map-diagnostic-bundle-viewer.html",
       viewport: { width: 390, height: 844, devicePixelRatio: 2 },
       userAgent: "test",
-      layers: { grid: true, collision: true, depth: true, labels: true },
+      layers: { grid: true, collision: true, depth: true, heatmap: true, labels: true },
       findings: [],
       policy: { status: "passed", blockingCount: 0, warningCount: 0, maxWarnings: 0, violations: [] },
       recommendationDecisions: { "lobby/lobby-desk": "accepted" },
@@ -50,6 +52,7 @@ describe("맵 진단 번들", () => {
         version: 1,
         target: "client/src/game/worldForegroundPlacements.json",
         sourceContractVersion: 1,
+        sourceChecksum: "f9ad528aecb7b789ea4eb309b9d6c5bd8f78edce9a35ba0df7af8198b7793e25",
         generatedAt: "2026-08-04T00:00:00.000Z",
         acceptedPlacementKeys: ["lobby/lobby-desk"],
         operationCount: 1,
@@ -70,5 +73,7 @@ describe("맵 진단 번들", () => {
     expect(serialized).toContain('"diagnosticUrl": "https://example.test/');
     expect(worldDiagnosticArtifactFilename("bundle", "lobby", new Date("2026-08-04T12:34:56.000Z")))
       .toBe("wedding-map-lobby-bundle-2026-08-04T12-34-56Z.json");
+    expect(worldDiagnosticBundleViewerUrl("/invitation/", "https://example.test"))
+      .toBe("https://example.test/invitation/map-diagnostic-bundle-viewer.html");
   });
 });

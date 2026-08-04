@@ -8,12 +8,13 @@ import {
 describe("worldGeometryAuditLayers", () => {
   it("serializes and restores active diagnostic filters in stable order", () => {
     const layers = parseWorldGeometryAuditLayers("depth,grid,unknown");
-    expect(layers).toEqual({ grid: true, collision: false, depth: true, labels: false });
+    expect(layers).toEqual({ grid: true, collision: false, depth: true, heatmap: false, labels: false });
     expect(serializeWorldGeometryAuditLayers(layers)).toBe("grid,depth");
     expect(parseWorldGeometryAuditLayers("")).toEqual({
       grid: false,
       collision: false,
       depth: false,
+      heatmap: false,
       labels: false
     });
   });

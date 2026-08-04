@@ -46,7 +46,9 @@ describe("WorldGeometryAuditOverlay", () => {
     expect(currentCollision).toHaveStyle({ left: "450px", top: "390px", width: "180px", height: "90px" });
     expect(recommendedCollision).toHaveStyle({ left: "456px", top: "437px", width: "158px", height: "42px" });
     expect(recommendedCollision).toHaveAttribute("data-review-decision", "pending");
-    expect(screen.getByText(/깊이 분홍\/보라 · 충돌 청록\/보라 추천/)).toBeInTheDocument();
+    expect(container.querySelectorAll('.world-geometry-audit__heatmap[data-decoration-id="lobby-desk"]')).toHaveLength(2);
+    expect(container.querySelector(".world-geometry-audit__heatmap--collision")).toHaveAttribute("data-delta-intensity", "high");
+    expect(screen.getByText(/차이 히트 Δ/)).toBeInTheDocument();
   });
 
   it("independently filters the grid, collision, depth, and identifier layers", () => {
@@ -55,13 +57,14 @@ describe("WorldGeometryAuditOverlay", () => {
       <WorldGeometryAuditOverlay
         zone={lobby}
         enabled
-        layers={{ ...defaultWorldGeometryAuditLayers, grid: false, collision: false }}
+        layers={{ ...defaultWorldGeometryAuditLayers, grid: false, collision: false, heatmap: false }}
       />
     );
 
     expect(container.querySelectorAll(".world-geometry-audit__tile")).toHaveLength(0);
     expect(container.querySelectorAll(".world-geometry-audit__collision")).toHaveLength(0);
     expect(container.querySelectorAll(".world-geometry-audit__foreground-collision")).toHaveLength(0);
+    expect(container.querySelectorAll(".world-geometry-audit__heatmap")).toHaveLength(0);
     expect(container.querySelectorAll(".world-geometry-audit__depth")).toHaveLength(2);
     expect(screen.getByText("lobby-desk")).toBeInTheDocument();
 

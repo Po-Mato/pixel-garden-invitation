@@ -6,6 +6,7 @@ on:
     paths:
       - "client/public/assets/maps/**"
       - "client/public/characters/**"
+      - "client/public/map-diagnostic-bundle-viewer.html"
       - "client/src/components/GameWorld.tsx"
       - "client/src/components/PortalDestinationPreview.tsx"
       - "client/src/components/Npc*.tsx"
@@ -31,6 +32,7 @@ on:
     paths:
       - "client/public/assets/maps/**"
       - "client/public/characters/**"
+      - "client/public/map-diagnostic-bundle-viewer.html"
       - "client/src/components/GameWorld.tsx"
       - "client/src/components/PortalDestinationPreview.tsx"
       - "client/src/components/Npc*.tsx"
@@ -68,7 +70,7 @@ jobs:
           node-version: 24
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - name: Restore foreground depth history
+      - name: Restore map foreground depth history
         id: foreground-depth-history
         uses: actions/cache/restore@v5
         with:
@@ -76,6 +78,14 @@ jobs:
           key: map-foreground-depth-${{ runner.os }}-${{ github.base_ref || github.ref_name }}-${{ github.sha }}
           restore-keys: |
             map-foreground-depth-${{ runner.os }}-${{ github.base_ref || github.ref_name }}-
+      - name: Restore world geometry policy history
+        id: geometry-policy-history
+        uses: actions/cache/restore@v5
+        with:
+          path: .superpowers/visual-regression/world-geometry-policy-history.json
+          key: world-geometry-policy-${{ runner.os }}-${{ github.base_ref || github.ref_name }}-${{ github.sha }}
+          restore-keys: |
+            world-geometry-policy-${{ runner.os }}-${{ github.base_ref || github.ref_name }}-
       - run: pnpm visual:test
       - name: Render map foreground diagnostics
         run: pnpm maps:foreground-audit
@@ -83,15 +93,23 @@ jobs:
         run: pnpm maps:foreground-suggest -- --preview-patch
       - name: Track foreground depth gap history
         run: pnpm maps:foreground-trend -- --sha "${{ github.sha }}" --ref-label "${{ github.ref_type }}:${{ github.ref_name }}"
+      - name: Recommend world geometry policy tuning
+        run: pnpm maps:geometry-policy-trend -- --sha "${{ github.sha }}" --ref-label "${{ github.ref_type }}:${{ github.ref_name }}"
       - name: Summarize foreground diagnostics for pull requests
         if: always()
         run: pnpm maps:foreground-summary -- --run-url "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-      - name: Save foreground depth history
+      - name: Save map foreground depth history
         if: success() && steps.foreground-depth-history.outputs.cache-hit != 'true'
         uses: actions/cache/save@v5
         with:
           path: .superpowers/visual-regression/map-foreground-depth-history.json
           key: map-foreground-depth-${{ runner.os }}-${{ github.base_ref || github.ref_name }}-${{ github.sha }}
+      - name: Save world geometry policy history
+        if: success() && steps.geometry-policy-history.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v5
+        with:
+          path: .superpowers/visual-regression/world-geometry-policy-history.json
+          key: world-geometry-policy-${{ runner.os }}-${{ github.base_ref || github.ref_name }}-${{ github.sha }}
       - name: Install mobile browser engines
         run: pnpm exec playwright install --with-deps chromium webkit
       - name: Audit live mobile HUD screenshots
@@ -124,6 +142,9 @@ jobs:
           path: |
             .superpowers/visual-regression/world-layout-regions.json
             .superpowers/visual-regression/world-geometry-policy-report.json
+            .superpowers/visual-regression/world-geometry-policy-history.json
+            .superpowers/visual-regression/world-geometry-policy-tuning.json
+            .superpowers/visual-regression/world-geometry-policy-tuning.html
           if-no-files-found: ignore
           retention-days: 14
       - name: Upload world layout difference

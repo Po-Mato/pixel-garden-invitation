@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data:; style-src 'unsafe-inline'; script-src 'unsafe-inline'">
+  <title>맵 진단 번들 뷰어</title>
+  <style>
+    :root { color-scheme: dark; --ink:#0c0c0b; --panel:#171715; --line:#403d38; --paper:#fff2c7; --cyan:#4df2ff; --pink:#ff4d98; --amber:#ffc857; --green:#68f5a6; }
+    * { box-sizing:border-box; }
+    body { min-height:100vh; margin:0; background:var(--ink); color:var(--paper); font-family:"Courier New",monospace; }
+    body::before { position:fixed; inset:0; pointer-events:none; content:""; opacity:.18; background:repeating-linear-gradient(0deg,transparent 0 15px,#384644 16px),repeating-linear-gradient(90deg,transparent 0 63px,#382b33 64px); }
+    main { position:relative; width:min(1180px,calc(100% - 28px)); margin:auto; padding:28px 0 64px; }
+    header { display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:end; gap:18px; border-bottom:3px solid var(--pink); padding-bottom:15px; }
+    h1 { margin:0; font:900 clamp(25px,5vw,52px)/.9 Georgia,serif; letter-spacing:-.06em; text-transform:uppercase; }
+    header p { margin:8px 0 0; color:#a9a39b; font-size:11px; }
+    .privacy { border:1px solid var(--green); padding:7px 9px; color:var(--green); font-size:10px; font-weight:900; }
+    .drop { display:grid; min-height:188px; margin-top:18px; place-items:center; border:2px dashed var(--cyan); background:rgba(23,23,21,.94); cursor:pointer; text-align:center; transition:transform .12s,background .12s; }
+    .drop[data-active="true"] { transform:translateY(-3px); background:#123236; }
+    .drop strong { display:block; color:var(--cyan); font-size:18px; }
+    .drop small { display:block; margin-top:8px; color:#a9a39b; }
+    .drop input { position:absolute; width:1px; height:1px; overflow:hidden; opacity:0; }
+    .error { margin:10px 0 0; color:#ff7cae; font-size:11px; }
+    .report[hidden],.error:empty { display:none; }
+    .report { display:grid; gap:14px; margin-top:18px; animation:reveal .28s steps(4,end); }
+    .stamp { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); border:1px solid var(--line); background:var(--panel); }
+    .stamp div { min-width:0; border-right:1px solid var(--line); padding:10px; }
+    .stamp div:last-child { border:0; }
+    dt { color:var(--pink); font-size:9px; font-weight:900; }
+    dd { overflow:hidden; margin:5px 0 0; color:var(--paper); font-size:12px; text-overflow:ellipsis; white-space:nowrap; }
+    .evidence { display:grid; grid-template-columns:minmax(0,1.45fr) minmax(260px,.55fr); gap:14px; }
+    figure,.ledger { margin:0; border:1px solid var(--line); background:var(--panel); box-shadow:5px 5px 0 #030303; }
+    figure { display:grid; min-height:420px; place-items:center; overflow:hidden; background:#10100f; }
+    figure img { display:block; width:100%; max-height:72vh; object-fit:contain; image-rendering:auto; }
+    .ledger { display:grid; align-content:start; }
+    .ledger section { border-bottom:1px solid var(--line); padding:12px; }
+    .ledger section:last-child { border:0; }
+    h2 { margin:0 0 9px; color:var(--amber); font-size:11px; letter-spacing:.08em; }
+    .score { display:flex; align-items:baseline; gap:8px; }
+    .score b { color:var(--green); font-size:27px; }
+    .score[data-status="blocked"] b { color:var(--pink); }
+    ul { display:grid; gap:5px; margin:0; padding:0; list-style:none; }
+    li { border-left:2px solid var(--cyan); padding-left:7px; color:#b8b3ab; font-size:10px; }
+    .patch { overflow:auto; border:1px solid var(--line); background:var(--panel); }
+    .patch header { display:flex; align-items:center; justify-content:space-between; border:0; padding:12px; }
+    table { width:100%; border-collapse:collapse; font-size:10px; }
+    th,td { border-top:1px solid var(--line); padding:9px 11px; text-align:left; vertical-align:top; }
+    th { color:var(--pink); }
+    td:nth-child(1) { color:var(--green); font-weight:900; }
+    td:nth-child(2) { color:var(--cyan); }
+    td code { white-space:pre-wrap; word-break:break-all; }
+    .reset { border:1px solid var(--amber); padding:6px 9px; background:transparent; color:var(--amber); font:900 9px "Courier New",monospace; cursor:pointer; }
+    @keyframes reveal { from { opacity:0; transform:translateY(8px); } }
+    @media (max-width:760px) { header,.evidence { grid-template-columns:1fr; } .privacy { width:max-content; } .stamp { grid-template-columns:repeat(2,minmax(0,1fr)); } .stamp div:nth-child(2) { border-right:0; } figure { min-height:260px; } }
+  </style>
+</head>
+<body>
+  <main>
+    <header><div><h1>Map Evidence Room</h1><p>맵 진단 번들을 로컬에서만 해독합니다.</p></div><span class="privacy">NO UPLOAD · LOCAL ONLY</span></header>
+    <label class="drop" id="drop-zone"><span><strong>DROP DIAGNOSTIC JSON</strong><small>클릭해서 파일을 선택하거나 이곳에 놓으세요</small></span><input id="file-input" type="file" accept="application/json,.json"></label>
+    <p class="error" id="error" role="alert"></p>
+    <section class="report" id="report" hidden>
+      <dl class="stamp"><div><dt>FILE</dt><dd id="file-name"></dd></div><div><dt>ZONE</dt><dd id="zone"></dd></div><div><dt>CAPTURED</dt><dd id="captured"></dd></div><div><dt>VIEWPORT</dt><dd id="viewport"></dd></div></dl>
+      <div class="evidence">
+        <figure><img id="screenshot" alt="진단 번들에 포함된 맵 화면"></figure>
+        <aside class="ledger">
+          <section><h2>POLICY VERDICT</h2><div class="score" id="score"><b id="status"></b><span id="counts"></span></div></section>
+          <section><h2>REVIEW DECISIONS</h2><ul id="decisions"></ul></section>
+          <section><h2>FINDINGS</h2><ul id="findings"></ul></section>
+          <section><h2>TRACE</h2><ul><li id="diagnostic-url"></li><li id="user-agent"></li></ul></section>
+        </aside>
+      </div>
+      <section class="patch"><header><h2>SELECTED JSON PATCH</h2><button class="reset" id="reset" type="button">LOAD ANOTHER</button></header><table><thead><tr><th>OP</th><th>PATH</th><th>VALUE</th></tr></thead><tbody id="operations"></tbody></table></section>
+    </section>
+  </main>
+  <script>
+    (() => {
+      const byId = (id) => document.getElementById(id);
+      const drop = byId("drop-zone");
+      const input = byId("file-input");
+      const error = byId("error");
+      const report = byId("report");
+      const list = (target, values, empty) => {
+        target.replaceChildren(...(values.length ? values : [empty]).map((value) => {
+          const item = document.createElement("li"); item.textContent = value; return item;
+        }));
+      };
+      function validate(bundle) {
+        if (!bundle || bundle.version !== 1 || !bundle.zone?.id || !bundle.policy || !bundle.selectedPatch) throw new Error("지원하는 맵 진단 번들이 아닙니다.");
+        if (!bundle.screenshot?.dataUrl?.startsWith("data:image/png;base64,")) throw new Error("PNG 스크린샷이 없는 번들입니다.");
+        return bundle;
+      }
+      function render(bundle, filename) {
+        byId("file-name").textContent = filename;
+        byId("zone").textContent = `${bundle.zone.label} · ${bundle.zone.id}`;
+        byId("captured").textContent = new Date(bundle.generatedAt).toLocaleString("ko-KR");
+        byId("viewport").textContent = `${bundle.viewport.width}×${bundle.viewport.height} @${bundle.viewport.devicePixelRatio}`;
+        byId("screenshot").src = bundle.screenshot.dataUrl;
+        byId("score").dataset.status = bundle.policy.status;
+        byId("status").textContent = bundle.policy.status.toUpperCase();
+        byId("counts").textContent = `B${bundle.policy.blockingCount} · W${bundle.policy.warningCount}/${bundle.policy.maxWarnings}`;
+        list(byId("decisions"), Object.entries(bundle.recommendationDecisions || {}).map(([key,value]) => `${value === "accepted" ? "A" : "R"} · ${key}`), "결정 없음");
+        list(byId("findings"), (bundle.findings || []).map((finding) => `${finding.severity.toUpperCase()} · ${finding.message}`), "발견 사항 없음");
+        byId("diagnostic-url").textContent = bundle.diagnosticUrl;
+        byId("user-agent").textContent = bundle.userAgent;
+        byId("operations").replaceChildren(...(bundle.selectedPatch.operations || []).map((operation) => {
+          const row = document.createElement("tr");
+          [operation.op, operation.path, operation.value === undefined ? "—" : JSON.stringify(operation.value)].forEach((value) => {
+            const cell = document.createElement("td"); const code = document.createElement("code"); code.textContent = value; cell.append(code); row.append(cell);
+          });
+          return row;
+        }));
+        error.textContent = ""; report.hidden = false; drop.hidden = true;
+      }
+      async function load(file) {
+        try { render(validate(JSON.parse(await file.text())), file.name); }
+        catch (caught) { error.textContent = caught instanceof Error ? caught.message : "번들을 읽지 못했습니다."; }
+      }
+      input.addEventListener("change", () => input.files?.[0] && load(input.files[0]));
+      ["dragenter","dragover"].forEach((name) => drop.addEventListener(name, (event) => { event.preventDefault(); drop.dataset.active = "true"; }));
+      ["dragleave","drop"].forEach((name) => drop.addEventListener(name, (event) => { event.preventDefault(); drop.dataset.active = "false"; }));
+      drop.addEventListener("drop", (event) => event.dataTransfer?.files?.[0] && load(event.dataTransfer.files[0]));
+      byId("reset").addEventListener("click", () => { report.hidden = true; drop.hidden = false; input.value = ""; error.textContent = ""; });
+    })();
+  </script>
+</body>
+</html>

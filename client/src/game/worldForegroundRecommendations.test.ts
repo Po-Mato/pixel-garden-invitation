@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
   buildWorldForegroundRecommendationPatch,
+  foregroundGeometryDeltaIntensity,
+  foregroundGeometryDeltaScore,
   foregroundRecommendationReviewsForZone,
   worldForegroundRecommendationKey
 } from "./worldForegroundRecommendations";
@@ -17,6 +19,8 @@ describe("전경 추천 검토 계약", () => {
         collision: { x: 456, y: 437, width: 158, height: 42 }
       }
     })]);
+    expect(foregroundGeometryDeltaScore(lobby[0]!)).toBe(133);
+    expect(foregroundGeometryDeltaIntensity(lobby[0]!)).toBe("high");
     expect(foregroundRecommendationReviewsForZone("subway-train")).toEqual([]);
   });
 
@@ -38,6 +42,7 @@ describe("전경 추천 검토 계약", () => {
       { op: "replace", path: "/zones/lobby/0/collision", value: { x: 456, y: 437, width: 158, height: 42 } }
     ]);
     expect(patch.operationCount).toBe(4);
+    expect(patch.sourceChecksum).toMatch(/^[a-f0-9]{64}$/);
     expect(patch.generatedAt).toBe("2026-08-04T00:00:00.000Z");
   });
 });

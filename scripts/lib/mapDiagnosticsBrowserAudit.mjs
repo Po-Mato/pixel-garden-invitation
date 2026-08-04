@@ -26,7 +26,8 @@ export function auditMapDiagnosticsSnapshot(
   expectedDepthCount,
   expectedRecommendedDepthCount = 0,
   expectedCurrentCollisionCount = 0,
-  expectedRecommendedCollisionCount = 0
+  expectedRecommendedCollisionCount = 0,
+  expectedHeatmapCount = 0
 ) {
   const issues = [];
   const controls = snapshot.controlsRect;
@@ -52,7 +53,8 @@ export function auditMapDiagnosticsSnapshot(
   if (snapshot.recommendedForegroundCollisionCount !== expectedRecommendedCollisionCount) {
     issues.push(`추천 전경 충돌 수 불일치 ${snapshot.recommendedForegroundCollisionCount}/${expectedRecommendedCollisionCount}`);
   }
-  if (snapshot.activeLayerCount !== 4) issues.push(`활성 진단 필터 수 불일치 ${snapshot.activeLayerCount}/4`);
+  if (snapshot.heatmapCount !== expectedHeatmapCount) issues.push(`차이 히트맵 수 불일치 ${snapshot.heatmapCount}/${expectedHeatmapCount}`);
+  if (snapshot.activeLayerCount !== 5) issues.push(`활성 진단 필터 수 불일치 ${snapshot.activeLayerCount}/5`);
   if (!snapshot.layers.every(Boolean)) issues.push("기본 진단 필터 비활성");
   if (snapshot.policyStatus !== "passed") {
     issues.push(`맵 지오메트리 정책 차단 B${snapshot.blockingCount}/W${snapshot.warningCount}`);
@@ -95,13 +97,14 @@ async function readSnapshot(page, selectedZoneId) {
       recommendedDepthCount: document.querySelectorAll(".world-geometry-audit__depth--recommended").length,
       currentForegroundCollisionCount: document.querySelectorAll(".world-geometry-audit__foreground-collision--current").length,
       recommendedForegroundCollisionCount: document.querySelectorAll(".world-geometry-audit__foreground-collision--recommended").length,
+      heatmapCount: document.querySelectorAll(".world-geometry-audit__heatmap").length,
       collisionCount: document.querySelectorAll(".world-geometry-audit__collision").length,
       issueCount: Number(overlay?.getAttribute("data-issue-count") ?? -1),
       blockingCount: Number(overlay?.getAttribute("data-blocking-count") ?? -1),
       warningCount: Number(overlay?.getAttribute("data-warning-count") ?? -1),
       policyStatus: overlay?.getAttribute("data-policy-status") ?? null,
       activeLayerCount: document.querySelectorAll(".world-geometry-audit-layers button[aria-pressed=\"true\"]").length,
-      layers: ["grid", "collision", "depth", "labels"].map((layer) => overlay?.getAttribute(`data-${layer}`) === "true")
+      layers: ["grid", "collision", "depth", "heatmap", "labels"].map((layer) => overlay?.getAttribute(`data-${layer}`) === "true")
     };
   }, selectedZoneId);
 }
@@ -163,6 +166,13 @@ export async function runMapDiagnosticsBrowserAudit({ rootDir, outputDir, port =
           await selector.selectOption("lobby");
           await page.getByRole("button", { name: "전경 추천 검토 열기" }).click();
           await page.getByRole("button", { name: "lobby-desk 추천 승인" }).click();
+          const reviewState = await page.evaluate(() => ({
+            query: new URL(window.location.href).searchParams.get("mapAuditReview"),
+            stored: localStorage.getItem("wedding-game:map-foreground-review:v1")
+          }));
+          if (!reviewState.query?.includes("a:lobby/lobby-desk") || !reviewState.stored?.includes("accepted")) {
+            throw new Error(`${viewport.id}: 추천 승인 상태 URL·로컬 저장 실패`);
+          }
           const acceptedGhost = page.locator(
             '.world-geometry-audit__foreground-collision--recommended[data-decoration-id="lobby-desk"]'
           );
@@ -174,7 +184,11 @@ export async function runMapDiagnosticsBrowserAudit({ rootDir, outputDir, port =
           const patchDownload = await patchDownloadPromise;
           const patchPath = await patchDownload.path();
           const patch = JSON.parse(await readFile(patchPath, "utf8"));
-          if (patch.acceptedPlacementKeys?.[0] !== "lobby/lobby-desk" || patch.operationCount !== 2) {
+          if (
+            patch.acceptedPlacementKeys?.[0] !== "lobby/lobby-desk"
+            || patch.operationCount !== 2
+            || !/^[a-f0-9]{64}$/.test(patch.sourceChecksum ?? "")
+          ) {
             throw new Error(`${viewport.id}: 선택 patch 내용 불일치`);
           }
           const bundleDownloadPromise = page.waitForEvent("download", { timeout: 30_000 });
@@ -186,8 +200,36 @@ export async function runMapDiagnosticsBrowserAudit({ rootDir, outputDir, port =
             bundle.zone?.id !== "lobby"
             || bundle.selectedPatch?.operationCount !== 2
             || !bundle.screenshot?.dataUrl?.startsWith("data:image/png;base64,")
+            || !bundle.viewerUrl?.endsWith("/map-diagnostic-bundle-viewer.html")
           ) throw new Error(`${viewport.id}: 화면 진단 번들 내용 불일치`);
+          const viewerPagePromise = context.waitForEvent("page");
+          await page.getByRole("button", { name: "진단 번들 뷰어 열기" }).click();
+          const viewerPage = await viewerPagePromise;
+          await viewerPage.getByText("DROP DIAGNOSTIC JSON").waitFor({ state: "visible" });
+          await viewerPage.locator("#file-input").setInputFiles(bundlePath);
+          await viewerPage.getByText("PASSED", { exact: true }).waitFor({ state: "visible" });
+          if (await viewerPage.locator("#operations tr").count() !== 2) {
+            throw new Error(`${viewport.id}: 진단 번들 뷰어 patch 렌더링 불일치`);
+          }
+          const viewerState = await viewerPage.evaluate(() => ({
+            reportHidden: document.querySelector("#report")?.hasAttribute("hidden"),
+            dropHidden: document.querySelector("#drop-zone")?.hasAttribute("hidden"),
+            screenshotLoaded: Boolean(document.querySelector("#screenshot")?.complete)
+          }));
+          if (viewerState.reportHidden || !viewerState.dropHidden || !viewerState.screenshotLoaded) {
+            throw new Error(`${viewport.id}: 진단 번들 뷰어 로드 상태 불일치`);
+          }
+          await viewerPage.waitForTimeout(350);
+          await viewerPage.screenshot({ path: path.join(outputDir, "map-diagnostic-bundle-viewer-loaded.png"), fullPage: true });
+          await viewerPage.close();
           await page.getByRole("button", { name: "lobby-desk 추천 승인" }).click();
+          const clearedReviewState = await page.evaluate(() => ({
+            query: new URL(window.location.href).searchParams.has("mapAuditReview"),
+            stored: localStorage.getItem("wedding-game:map-foreground-review:v1")
+          }));
+          if (clearedReviewState.query || clearedReviewState.stored !== null) {
+            throw new Error(`${viewport.id}: 추천 검토 상태 초기화 실패`);
+          }
           await page.getByRole("button", { name: "전경 추천 검토 열기" }).click();
         }
 
@@ -218,13 +260,21 @@ export async function runMapDiagnosticsBrowserAudit({ rootDir, outputDir, port =
             .filter((placement) => collisionChanged(placement) && placement.collision).length;
           const expectedRecommendedCollisionCount = placementContract.zones[zoneId]
             .filter((placement) => collisionChanged(placement) && recommendations.get(placement.decorationId)?.collision).length;
+          const expectedHeatmapCount = placementContract.zones[zoneId].reduce((count, placement) => {
+            const recommendation = recommendations.get(placement.decorationId);
+            if (!recommendation) return count;
+            return count
+              + (recommendation.depthY !== placement.depthY ? 1 : 0)
+              + (collisionChanged(placement) ? 1 : 0);
+          }, 0);
           const issues = auditMapDiagnosticsSnapshot(
             snapshot,
             viewport,
             expectedDepthCount,
             expectedRecommendedDepthCount,
             expectedCurrentCollisionCount,
-            expectedRecommendedCollisionCount
+            expectedRecommendedCollisionCount,
+            expectedHeatmapCount
           );
           const screenshotPath = path.join(outputDir, `map-diagnostics-${viewport.id}-${zoneId}.png`);
           await page.screenshot({ path: screenshotPath, fullPage: false });
@@ -235,6 +285,7 @@ export async function runMapDiagnosticsBrowserAudit({ rootDir, outputDir, port =
             expectedRecommendedDepthCount,
             expectedCurrentCollisionCount,
             expectedRecommendedCollisionCount,
+            expectedHeatmapCount,
             snapshot,
             issues,
             screenshotPath

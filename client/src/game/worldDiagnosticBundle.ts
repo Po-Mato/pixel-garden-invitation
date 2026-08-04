@@ -19,6 +19,7 @@ export type WorldDiagnosticBundle = {
   generatedAt: string;
   zone: { id: WorldZoneId; label: string };
   diagnosticUrl: string;
+  viewerUrl: string;
   viewport: { width: number; height: number; devicePixelRatio: number };
   userAgent: string;
   layers: WorldGeometryAuditLayers;
@@ -120,6 +121,14 @@ export function worldDiagnosticArtifactFilename(
 ): string {
   const timestamp = generatedAt.toISOString().replaceAll(":", "-").replace(/\.\d{3}Z$/, "Z");
   return `wedding-map-${zoneId}-${kind}-${timestamp}.json`;
+}
+
+export function worldDiagnosticBundleViewerUrl(
+  baseUrl = import.meta.env.BASE_URL,
+  origin = window.location.origin
+): string {
+  const normalizedBase = baseUrl.endsWith("/") ? baseUrl : `${baseUrl}/`;
+  return new URL(`${normalizedBase}map-diagnostic-bundle-viewer.html`, origin).toString();
 }
 
 export async function captureWorldDiagnosticScreenshot(

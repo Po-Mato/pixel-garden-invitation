@@ -548,12 +548,23 @@ test("wires gallery, map, character, photo-effect, and mobile visual audits into
     packageJson.scripts.test,
     "pnpm gallery:audit && pnpm gallery:test && pnpm maps:audit && pnpm maps:test && pnpm characters:audit && pnpm characters:test && pnpm photo-effects:audit && pnpm photo-effects:test && pnpm visual:test && pnpm --filter @wedding-game/shared test && pnpm --filter @wedding-game/client test && pnpm --filter @wedding-game/worker test"
   );
+  assert.equal(
+    packageJson.scripts["maps:foreground-apply"],
+    "node scripts/apply-reviewed-map-foreground-patch.mjs"
+  );
+  assert.equal(
+    packageJson.scripts["maps:geometry-policy-trend"],
+    "node scripts/track-world-geometry-policy.mjs"
+  );
   assert.match(visualWorkflow, /run: pnpm maps:foreground-audit/);
   assert.match(visualWorkflow, /run: pnpm maps:foreground-suggest/);
   assert.match(visualWorkflow, /--preview-patch/);
   assert.match(visualWorkflow, /actions\/cache\/restore@v5/);
+  assert.match(visualWorkflow, /map-foreground-depth-/);
+  assert.match(visualWorkflow, /world-geometry-policy-/);
   assert.match(visualWorkflow, /run: pnpm maps:foreground-trend/);
   assert.match(visualWorkflow, /--ref-label/);
+  assert.match(visualWorkflow, /run: pnpm maps:geometry-policy-trend/);
   assert.match(visualWorkflow, /actions\/cache\/save@v5/);
   assert.match(visualWorkflow, /run: pnpm maps:foreground-summary/);
   assert.match(visualWorkflow, /run: pnpm visual:map-diagnostics/);
@@ -569,5 +580,8 @@ test("wires gallery, map, character, photo-effect, and mobile visual audits into
   assert.match(visualWorkflow, /map-foreground-depth-trend\.json/);
   assert.match(visualWorkflow, /map-foreground-depth-trend\.html/);
   assert.match(visualWorkflow, /world-geometry-policy-report\.json/);
+  assert.match(visualWorkflow, /world-geometry-policy-history\.json/);
+  assert.match(visualWorkflow, /world-geometry-policy-tuning\.json/);
+  assert.match(visualWorkflow, /world-geometry-policy-tuning\.html/);
   assert.match(visualWorkflow, /map-foreground-pr-summary\.md/);
 });

@@ -23,6 +23,7 @@ describe("WorldGeometryAuditControls", () => {
         recommendationDecisions={{}}
         onDownloadBundle={vi.fn()}
         onDownloadPatch={vi.fn()}
+        onOpenBundleViewer={vi.fn()}
         onCopyLink={vi.fn()}
         onEnabledChange={vi.fn()}
         onLayerChange={vi.fn()}
@@ -43,6 +44,7 @@ describe("WorldGeometryAuditControls", () => {
     const onNextIssue = vi.fn();
     const onDownloadBundle = vi.fn();
     const onDownloadPatch = vi.fn();
+    const onOpenBundleViewer = vi.fn();
     const onRecommendationDecision = vi.fn();
     render(
       <WorldGeometryAuditControls
@@ -61,6 +63,7 @@ describe("WorldGeometryAuditControls", () => {
         recommendationDecisions={{ "home/home-plant": "accepted" }}
         onDownloadBundle={onDownloadBundle}
         onDownloadPatch={onDownloadPatch}
+        onOpenBundleViewer={onOpenBundleViewer}
         onCopyLink={onCopyLink}
         onEnabledChange={vi.fn()}
         onLayerChange={onLayerChange}
@@ -81,6 +84,7 @@ describe("WorldGeometryAuditControls", () => {
     expect(gridFilter).toHaveAttribute("aria-pressed", "true");
     fireEvent.click(gridFilter);
     expect(onLayerChange).toHaveBeenCalledWith("grid", false);
+    expect(screen.getByRole("button", { name: "추천 차이 히트맵 숨기기" })).toHaveAttribute("aria-pressed", "true");
     expect(selector.querySelector('option[value="home"]')).toHaveTextContent("B2");
     expect(selector.querySelector('option[value="banquet"]')).toHaveTextContent("W1");
 
@@ -98,5 +102,7 @@ describe("WorldGeometryAuditControls", () => {
     expect(onRecommendationDecision).toHaveBeenCalledWith("home/home-plant", "rejected");
     fireEvent.click(screen.getByRole("button", { name: "승인 추천 JSON patch 저장, 1개 선택" }));
     expect(onDownloadPatch).toHaveBeenCalledOnce();
+    fireEvent.click(screen.getByRole("button", { name: "진단 번들 뷰어 열기" }));
+    expect(onOpenBundleViewer).toHaveBeenCalledOnce();
   });
 });

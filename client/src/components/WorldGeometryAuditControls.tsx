@@ -26,6 +26,7 @@ type WorldGeometryAuditControlsProps = {
   recommendationDecisions: Partial<Record<string, ForegroundRecommendationDecision>>;
   onDownloadBundle: () => void;
   onDownloadPatch: () => void;
+  onOpenBundleViewer: () => void;
   onCopyLink: () => void;
   onEnabledChange: (enabled: boolean) => void;
   onLayerChange: (layer: WorldGeometryAuditLayerKey, enabled: boolean) => void;
@@ -38,6 +39,7 @@ const layerLabels: Record<WorldGeometryAuditLayerKey, { short: string; accessibl
   grid: { short: "GRID", accessible: "이동 격자" },
   collision: { short: "HIT", accessible: "충돌 영역" },
   depth: { short: "DEPTH", accessible: "전경 깊이선" },
+  heatmap: { short: "Δ", accessible: "추천 차이 히트맵" },
   labels: { short: "ID", accessible: "전경 식별자" }
 };
 
@@ -54,6 +56,7 @@ export function WorldGeometryAuditControls({
   recommendationDecisions,
   onDownloadBundle,
   onDownloadPatch,
+  onOpenBundleViewer,
   onCopyLink,
   onEnabledChange,
   onLayerChange,
@@ -169,14 +172,17 @@ export function WorldGeometryAuditControls({
             <section className="world-geometry-audit-review" aria-label="현재 구역 전경 추천 검토">
               <header>
                 <span>RECOMMENDATION QUEUE</span>
-                <button
-                  type="button"
-                  aria-label={`승인 추천 JSON patch 저장, ${acceptedTotal}개 선택`}
-                  disabled={acceptedTotal === 0}
-                  onClick={onDownloadPatch}
-                >
-                  {patchStatus === "saved" ? "PATCH ✓" : patchStatus === "error" ? "PATCH !" : `PATCH ${acceptedTotal}`}
-                </button>
+                <div className="world-geometry-audit-review__tools">
+                  <button type="button" aria-label="진단 번들 뷰어 열기" onClick={onOpenBundleViewer}>VIEW</button>
+                  <button
+                    type="button"
+                    aria-label={`승인 추천 JSON patch 저장, ${acceptedTotal}개 선택`}
+                    disabled={acceptedTotal === 0}
+                    onClick={onDownloadPatch}
+                  >
+                    {patchStatus === "saved" ? "PATCH ✓" : patchStatus === "error" ? "PATCH !" : `PATCH ${acceptedTotal}`}
+                  </button>
+                </div>
               </header>
               {recommendations.length > 0 ? (
                 <ul>

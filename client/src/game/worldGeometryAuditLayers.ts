@@ -1,7 +1,7 @@
 import type { WorldZoneId } from "@wedding-game/shared";
 import type { WorldGeometryAuditSeverityCounts } from "./worldGeometryAudit";
 
-export const worldGeometryAuditLayerKeys = ["grid", "collision", "depth", "labels"] as const;
+export const worldGeometryAuditLayerKeys = ["grid", "collision", "depth", "heatmap", "labels"] as const;
 
 export type WorldGeometryAuditLayerKey = typeof worldGeometryAuditLayerKeys[number];
 export type WorldGeometryAuditLayers = Record<WorldGeometryAuditLayerKey, boolean>;
@@ -10,6 +10,7 @@ export const defaultWorldGeometryAuditLayers: WorldGeometryAuditLayers = {
   grid: true,
   collision: true,
   depth: true,
+  heatmap: true,
   labels: true
 };
 

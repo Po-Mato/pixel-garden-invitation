@@ -30,6 +30,13 @@ export function verifyForegroundContractChecksum(expected, actual) {
 export function buildForegroundPlacementRollbackJsonPatch(contract, forwardOperations) {
   return [...forwardOperations].reverse().map((operation) => {
     if (operation.op === "add") return { op: "remove", path: operation.path };
+    if (operation.op === "remove") {
+      return {
+        op: "add",
+        path: operation.path,
+        value: structuredClone(valueAtJsonPointer(contract, operation.path))
+      };
+    }
     if (operation.op === "replace") {
       return {
         op: "replace",
