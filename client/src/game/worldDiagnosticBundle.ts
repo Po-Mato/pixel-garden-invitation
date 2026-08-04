@@ -137,10 +137,10 @@ export function worldDiagnosticArtifactFilename(
 
 export function worldDiagnosticBundleViewerUrl(
   baseUrl = import.meta.env.BASE_URL,
-  origin = window.location.origin
+  locationUrl = window.location.href
 ): string {
   const normalizedBase = baseUrl.endsWith("/") ? baseUrl : `${baseUrl}/`;
-  return new URL(`${normalizedBase}map-diagnostic-bundle-viewer.html`, origin).toString();
+  return new URL(`${normalizedBase}map-diagnostic-bundle-viewer.html`, locationUrl).toString();
 }
 
 export async function captureWorldDiagnosticScreenshot(

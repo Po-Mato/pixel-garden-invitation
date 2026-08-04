@@ -89,6 +89,10 @@ describe("맵 진단 번들", () => {
       .toBe("wedding-map-lobby-bundle-2026-08-04T12-34-56Z.json");
     expect(worldDiagnosticBundleViewerUrl("/invitation/", "https://example.test"))
       .toBe("https://example.test/invitation/map-diagnostic-bundle-viewer.html");
+    expect(worldDiagnosticBundleViewerUrl(
+      "./",
+      "https://example.test/pixel-garden-invitation/?mapAudit=1"
+    )).toBe("https://example.test/pixel-garden-invitation/map-diagnostic-bundle-viewer.html");
   });
 
   it("객체 키 순서와 무관한 정렬 JSON을 무결성 입력으로 사용한다", () => {
