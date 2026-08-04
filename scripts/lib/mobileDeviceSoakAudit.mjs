@@ -7,6 +7,18 @@ export const mobileSoakProfiles = Object.freeze([
   { id: "ios-webkit", engine: "webkit", device: "iPhone 13" }
 ]);
 
+export function summarizeFrameSamples(samples) {
+  if (!Array.isArray(samples) || samples.length === 0) {
+    throw new TypeError("Frame samples must contain at least one value");
+  }
+  const sorted = samples.map(Number).sort((left, right) => left - right);
+  const middle = Math.floor(sorted.length / 2);
+  const medianFps = sorted.length % 2 === 0
+    ? Math.round((sorted[middle - 1] + sorted[middle]) / 2)
+    : sorted[middle];
+  return { samples: [...samples], medianFps, minimumFps: sorted[0], maximumFps: sorted.at(-1) };
+}
+
 export function assessMobileSoakMetrics(metrics) {
   const issues = [];
   if (metrics.pageErrors.length > 0) issues.push(`페이지 오류 ${metrics.pageErrors.length}개`);
@@ -15,7 +27,11 @@ export function assessMobileSoakMetrics(metrics) {
   if (!metrics.layoutStable) issues.push("반복 조작 후 HUD 또는 맵 화면 틀어짐");
   if (!metrics.typographyFallbackReady) issues.push("안드로이드 한글 폰트 대체 누락");
   if (!metrics.sheetContained) issues.push("큰 글자 바텀시트 화면 이탈");
-  if (metrics.averageFps < 25) issues.push(`낮은 프레임 ${metrics.averageFps} FPS`);
+  const baselineFps = Number.isFinite(metrics.baselineFps) ? metrics.baselineFps : 60;
+  const relativeFps = baselineFps > 0 ? metrics.averageFps / baselineFps : 0;
+  if ((baselineFps >= 25 && metrics.averageFps < 25) || (baselineFps < 25 && relativeFps < 0.75)) {
+    issues.push(`낮은 프레임 ${metrics.averageFps} FPS (러너 기준 ${baselineFps} FPS)`);
+  }
   if (metrics.heapGrowthRatio !== null && metrics.heapGrowthRatio > 0.35) issues.push(`메모리 증가 ${Math.round(metrics.heapGrowthRatio * 100)}%`);
   return issues;
 }
@@ -50,6 +66,16 @@ async function sampleFrames(page, durationMs) {
   }), durationMs);
 }
 
+async function sampleFrameSeries(page, durationMs, sampleCount = 3) {
+  const sampleDurationMs = Math.max(750, Math.floor(durationMs / sampleCount));
+  await page.waitForTimeout(250);
+  const samples = [];
+  for (let index = 0; index < sampleCount; index += 1) {
+    samples.push(await sampleFrames(page, sampleDurationMs));
+  }
+  return summarizeFrameSamples(samples);
+}
+
 async function heapUsed(page) {
   return page.evaluate(() => {
     const memory = performance.memory;
@@ -78,6 +104,7 @@ export async function runMobileDeviceSoakAudit({ rootDir, outputDir, port = 4179
         body: "{}"
       }));
       const page = await context.newPage();
+      const baselineFrames = await sampleFrameSeries(page, durationMs);
       const pageErrors = [];
       const failedRequests = [];
       page.on("pageerror", (error) => pageErrors.push(error.message));
@@ -156,7 +183,9 @@ export async function runMobileDeviceSoakAudit({ rootDir, outputDir, port = 4179
       await page.locator(".bottom-sheet__header button").tap();
       await sheet.waitFor({ state: "hidden" });
       await page.evaluate(() => { delete document.documentElement.dataset.textScale; });
-      const averageFps = await sampleFrames(page, durationMs);
+      const applicationFrames = await sampleFrameSeries(page, durationMs);
+      const averageFps = applicationFrames.medianFps;
+      const baselineFps = baselineFrames.medianFps;
       const afterHeap = await heapUsed(page);
       const heapGrowthRatio = beforeHeap && afterHeap ? Math.max(0, (afterHeap - beforeHeap) / beforeHeap) : null;
       const metrics = {
@@ -166,6 +195,10 @@ export async function runMobileDeviceSoakAudit({ rootDir, outputDir, port = 4179
         layoutStable,
         ...invitationMetrics,
         averageFps,
+        baselineFps,
+        frameRatio: baselineFps > 0 ? averageFps / baselineFps : null,
+        frameSamples: applicationFrames.samples,
+        baselineFrameSamples: baselineFrames.samples,
         beforeHeap,
         afterHeap,
         heapGrowthRatio
