@@ -21,7 +21,7 @@
     .drop small { display:block; margin-top:8px; color:#a9a39b; }
     input[type="file"] { position:absolute; width:1px; height:1px; overflow:hidden; opacity:0; }
     .error { margin:10px 0 0; color:#ff7cae; font-size:11px; }
-    .drop[hidden],.report[hidden],.comparison[hidden],.error:empty { display:none; }
+    .drop[hidden],.report[hidden],.comparison[hidden],.delta-report[hidden],.error:empty { display:none; }
     .report { display:grid; gap:14px; margin-top:18px; animation:reveal .28s steps(4,end); }
     .stamp { display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); border:1px solid var(--line); background:var(--panel); }
     .stamp div { min-width:0; border-right:1px solid var(--line); padding:10px; }
@@ -61,15 +61,44 @@
     .comparison figure { min-height:220px; box-shadow:none; }
     .comparison figcaption { align-self:start; justify-self:start; padding:8px; color:var(--pink); font-size:9px; font-weight:900; }
     .comparison__changes { grid-column:1/-1; border-top:1px solid var(--line); padding-top:10px; }
+    .comparison__toolbar { display:flex; flex-wrap:wrap; align-items:center; gap:7px; margin:0 0 12px; padding:9px; border:1px solid var(--line); background:#11110f; }
+    .comparison__toolbar .action[aria-pressed="true"] { background:var(--cyan); color:var(--ink); box-shadow:3px 3px 0 var(--pink); }
+    .comparison__toolbar label { display:flex; align-items:center; gap:7px; color:#aaa39a; font-size:9px; font-weight:900; }
+    .comparison__toolbar input[type="range"] { position:static; width:118px; height:auto; opacity:1; accent-color:var(--pink); }
+    .comparison__toolbar output { margin-left:auto; color:var(--green); font-size:9px; font-weight:900; }
+    .visual-lab { display:grid; grid-template-columns:minmax(0,1fr) 165px; gap:10px; margin-bottom:12px; }
+    .visual-lab__stage { --mix:.5; position:relative; min-height:320px; overflow:hidden; border:1px solid var(--cyan); background-color:#070706; background-image:linear-gradient(rgba(77,242,255,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(255,77,152,.07) 1px,transparent 1px); background-size:24px 24px; }
+    .visual-lab__stage img,.visual-lab__stage canvas { position:absolute; inset:0; width:100%; height:100%; object-fit:contain; }
+    .visual-lab__stage #visual-b { opacity:var(--mix); }
+    .visual-lab__stage canvas { display:none; image-rendering:pixelated; }
+    .visual-lab__stage[data-mode="blink"] #visual-b { animation:evidence-blink .72s steps(1,end) infinite; }
+    .visual-lab__stage[data-mode="diff"] img { visibility:hidden; }
+    .visual-lab__stage[data-mode="diff"] canvas { display:block; }
+    .visual-lab__legend { display:grid; align-content:start; gap:8px; border:1px solid var(--line); padding:10px; background:#121210; }
+    .visual-lab__legend strong { color:var(--amber); font-size:10px; }
+    .visual-lab__legend span { color:#aaa39a; font-size:9px; line-height:1.5; }
+    .delta-report { display:grid; gap:12px; margin-top:18px; border:1px solid var(--cyan); border-top:3px solid var(--pink); padding:14px; background:var(--panel); box-shadow:5px 5px 0 #030303; }
+    .delta-report__stamp { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:1px; background:var(--line); }
+    .delta-report__stamp div { min-width:0; padding:10px; background:#131311; }
+    .delta-report__actions { display:flex; flex-wrap:wrap; gap:7px; }
+    .delta-report a,.comparison a { text-decoration:none; }
+    @keyframes evidence-blink { 0%,49% { opacity:0; } 50%,100% { opacity:1; } }
     @keyframes reveal { from { opacity:0; transform:translateY(8px); } }
-    @media (max-width:760px) { .masthead,.evidence,.comparison__grid { grid-template-columns:1fr; } .privacy { width:max-content; } .stamp { grid-template-columns:repeat(2,minmax(0,1fr)); } .stamp div:nth-child(even) { border-right:0; } figure { min-height:260px; } .comparison__changes { grid-column:1; } }
+    @media (prefers-reduced-motion:reduce) { .visual-lab__stage[data-mode="blink"] #visual-b { animation-duration:1.6s; } }
+    @media (max-width:760px) { .masthead,.evidence,.comparison__grid,.visual-lab { grid-template-columns:1fr; } .privacy { width:max-content; } .stamp,.delta-report__stamp { grid-template-columns:repeat(2,minmax(0,1fr)); } .stamp div:nth-child(even) { border-right:0; } figure { min-height:260px; } .comparison__changes { grid-column:1; } .visual-lab__stage { min-height:280px; } .comparison__toolbar output { width:100%; margin-left:0; } }
   </style>
 </head>
 <body>
   <main>
     <header class="masthead"><div><h1>Map Evidence Room</h1><p>맵 진단 번들을 로컬에서 검증하고 서로 비교합니다.</p></div><span class="privacy">NO UPLOAD · LOCAL ONLY</span></header>
-    <label class="drop" id="drop-zone"><span><strong>DROP 1–2 DIAGNOSTIC JSON</strong><small>한 개는 검증, 두 개는 전후 비교 · 파일은 전송되지 않습니다</small></span><input id="file-input" type="file" accept="application/json,.json" multiple></label>
+    <label class="drop" id="drop-zone"><span><strong>DROP 1–2 DIAGNOSTIC JSON</strong><small>원본 번들 검증·두 화면 비교·경량 DELTA 열기 · 파일은 전송되지 않습니다</small></span><input id="file-input" type="file" accept="application/json,.json" multiple></label>
     <p class="error" id="error" role="alert"></p>
+    <section class="delta-report" id="delta-report" aria-label="경량 차이 번들" hidden>
+      <div class="section-head"><h2>LIGHTWEIGHT DELTA EVIDENCE</h2><button class="action" id="delta-reset" type="button">LOAD ANOTHER</button></div>
+      <dl class="delta-report__stamp"><div><dt>FILE</dt><dd id="delta-file"></dd></div><div><dt>BASE → CANDIDATE</dt><dd id="delta-route"></dd></div><div><dt>CHANGES</dt><dd id="delta-count"></dd></div><div><dt>INTEGRITY</dt><dd id="delta-integrity"></dd></div></dl>
+      <ul id="delta-changes"></ul>
+      <div class="delta-report__actions"><a class="action action--compare" id="delta-reproduction" target="_blank" rel="noopener noreferrer">OPEN REPRO ↗</a><button class="action" id="delta-copy" type="button">COPY REPRO URL</button></div>
+    </section>
     <section class="report" id="report" hidden>
       <dl class="stamp"><div><dt>FILE</dt><dd id="file-name"></dd></div><div><dt>ZONE</dt><dd id="zone"></dd></div><div><dt>CAPTURED</dt><dd id="captured"></dd></div><div><dt>VIEWPORT</dt><dd id="viewport"></dd></div><div><dt>CONTRACT</dt><dd id="contract"></dd></div><div><dt>INTEGRITY</dt><dd id="integrity"></dd></div></dl>
       <div class="evidence">
@@ -84,6 +113,8 @@
       <section class="comparison" id="comparison" aria-label="두 진단 번들 비교" hidden>
         <div class="section-head"><h2>A / B EVIDENCE COMPARE</h2><button class="action" id="remove-comparison" type="button">REMOVE B</button></div>
         <p class="comparison__verdict"><b id="comparison-count"></b><span id="comparison-label"></span></p>
+        <div class="comparison__toolbar" aria-label="이미지 비교 도구"><button class="action action--compare" id="blink-toggle" type="button" aria-pressed="false" aria-keyshortcuts="b">BLINK · B</button><button class="action action--compare" id="diff-toggle" type="button" aria-pressed="false" aria-keyshortcuts="d">PIXEL DIFF · D</button><label>B OPACITY <input id="mix-range" type="range" min="0" max="100" value="50" aria-label="비교 화면 B 투명도"></label><button class="action" id="download-delta" type="button">DOWNLOAD DELTA</button><button class="action" id="copy-repro" type="button">COPY REPRO</button><a class="action" id="open-repro" target="_blank" rel="noopener noreferrer">OPEN REPRO ↗</a><output id="visual-status" aria-live="polite">OVERLAY 50% · ← →</output></div>
+        <div class="visual-lab"><div class="visual-lab__stage" id="visual-stage" data-mode="overlay"><img id="visual-a" alt="기준 진단 화면 오버레이"><img id="visual-b" alt="비교 진단 화면 오버레이"><canvas id="pixel-diff" aria-label="두 진단 화면의 픽셀 차이"></canvas></div><aside class="visual-lab__legend"><strong>FORENSIC LIGHT TABLE</strong><span>B: 깜빡임 전환<br>D: 픽셀 차이<br>← →: 투명도 5% 조절</span><span id="pixel-score">DIFF 대기</span></aside></div>
         <div class="comparison__grid"><figure><figcaption>A · BASE</figcaption><img id="comparison-a" alt="기준 진단 화면"></figure><figure><figcaption>B · CANDIDATE</figcaption><img id="comparison-b" alt="비교 진단 화면"></figure><ul class="comparison__changes" id="comparison-changes"></ul></div>
       </section>
       <section class="patch"><div class="section-head"><h2>SELECTED JSON PATCH</h2><div class="tools"><label class="action action--compare">LOAD COMPARISON<input id="compare-input" type="file" accept="application/json,.json"></label><button class="action" id="reset" type="button">LOAD ANOTHER</button></div></div><table><thead><tr><th>OP</th><th>PATH</th><th>VALUE</th></tr></thead><tbody id="operations"></tbody></table></section>
@@ -93,7 +124,7 @@
     (() => {
       const byId = (id) => document.getElementById(id);
       const drop = byId("drop-zone"); const input = byId("file-input"); const compareInput = byId("compare-input");
-      const error = byId("error"); const report = byId("report"); const comparison = byId("comparison");
+      const error = byId("error"); const report = byId("report"); const comparison = byId("comparison"); const deltaReport = byId("delta-report");
       let primary = null; let secondary = null;
       const list = (target, values, empty) => target.replaceChildren(...(values.length ? values : [empty]).map((value) => { const item = document.createElement("li"); item.textContent = value; return item; }));
       const canonicalJson = (value) => {
@@ -111,6 +142,14 @@
         if (integrity.checksum !== await sha256(canonicalJson(payload))) throw new Error("무결성 검증에 실패했습니다. 번들이 변경되었습니다.");
         return bundle;
       }
+      async function validateDelta(bundle) {
+        if (!bundle || bundle.kind !== "world-diagnostic-delta" || bundle.version !== 1 || !Array.isArray(bundle.changes) || !bundle.reproductionUrl || !bundle.screenshots) throw new Error("지원하는 경량 DELTA 번들이 아닙니다.");
+        if (bundle.integrity?.algorithm !== "SHA-256" || bundle.integrity?.canonicalization !== "json-sort-v1") throw new Error("지원하는 DELTA 무결성 봉인이 없습니다.");
+        const { integrity, ...payload } = bundle;
+        if (integrity.checksum !== await sha256(canonicalJson(payload))) throw new Error("DELTA 무결성 검증에 실패했습니다.");
+        if (JSON.stringify(bundle).includes("data:image/png;base64,")) throw new Error("경량 DELTA에 스크린샷 원문이 포함되어 있습니다.");
+        return bundle;
+      }
       function render(bundle, filename) {
         byId("file-name").textContent = filename; byId("zone").textContent = `${bundle.zone.label} · ${bundle.zone.id}`;
         byId("captured").textContent = new Date(bundle.generatedAt).toLocaleString("ko-KR"); byId("viewport").textContent = `${bundle.viewport.width}×${bundle.viewport.height} @${bundle.viewport.devicePixelRatio}`;
@@ -125,20 +164,43 @@
       }
       function comparisonFacts(left, right) {
         const screenshotChanged = left.screenshot.dataUrl !== right.screenshot.dataUrl;
-        const facts = [["ZONE", left.zone.id, right.zone.id],["VIEWPORT", `${left.viewport.width}×${left.viewport.height}`, `${right.viewport.width}×${right.viewport.height}`],["POLICY", `${left.policy.status}:B${left.policy.blockingCount}/W${left.policy.warningCount}`, `${right.policy.status}:B${right.policy.blockingCount}/W${right.policy.warningCount}`],["HEATMAP", left.heatmapMode, right.heatmapMode],["DECISIONS", canonicalJson(left.recommendationDecisions), canonicalJson(right.recommendationDecisions)],["PATCH", canonicalJson(left.selectedPatch.operations), canonicalJson(right.selectedPatch.operations)],["SCREENSHOT", screenshotChanged ? "BASE" : "SAME", screenshotChanged ? "CHANGED" : "SAME"]];
-        return facts.filter(([,a,b]) => a !== b).map(([label,a,b]) => `${label} · ${String(a).slice(0,72)} → ${String(b).slice(0,72)}`);
+        const facts = [["ZONE", left.zone.id, right.zone.id],["VIEWPORT", `${left.viewport.width}×${left.viewport.height}@${left.viewport.devicePixelRatio}`, `${right.viewport.width}×${right.viewport.height}@${right.viewport.devicePixelRatio}`],["POLICY", `${left.policy.status}:B${left.policy.blockingCount}/W${left.policy.warningCount}`, `${right.policy.status}:B${right.policy.blockingCount}/W${right.policy.warningCount}`],["HEATMAP", left.heatmapMode, right.heatmapMode],["CONTRACT", canonicalJson(left.sourceContract), canonicalJson(right.sourceContract)],["DECISIONS", canonicalJson(left.recommendationDecisions), canonicalJson(right.recommendationDecisions)],["FINDINGS", canonicalJson(left.findings), canonicalJson(right.findings)],["PATCH", canonicalJson(left.selectedPatch.operations), canonicalJson(right.selectedPatch.operations)],["SCREENSHOT", screenshotChanged ? "BASE" : "SAME", screenshotChanged ? "CHANGED" : "SAME"]];
+        return facts.filter(([,before,after]) => before !== after).map(([field,before,after]) => ({ field, before, after }));
       }
-      function renderComparison() {
+      const waitImage = async (image) => { if (!image.complete) await new Promise((resolve,reject) => { image.addEventListener("load",resolve,{once:true}); image.addEventListener("error",reject,{once:true}); }); if (image.decode) await image.decode().catch(() => undefined); };
+      async function renderPixelDiff() {
+        const left = byId("visual-a"); const right = byId("visual-b"); await Promise.all([waitImage(left),waitImage(right)]);
+        const width = Math.max(1,left.naturalWidth,right.naturalWidth); const height = Math.max(1,left.naturalHeight,right.naturalHeight); const canvas = byId("pixel-diff"); canvas.width = width; canvas.height = height;
+        const scratchA = document.createElement("canvas"); const scratchB = document.createElement("canvas"); scratchA.width = scratchB.width = width; scratchA.height = scratchB.height = height;
+        const contextA = scratchA.getContext("2d",{willReadFrequently:true}); const contextB = scratchB.getContext("2d",{willReadFrequently:true}); const output = canvas.getContext("2d");
+        contextA.drawImage(left,0,0,width,height); contextB.drawImage(right,0,0,width,height); const a = contextA.getImageData(0,0,width,height); const b = contextB.getImageData(0,0,width,height); const diff = output.createImageData(width,height); let changed = 0;
+        for (let index=0; index<a.data.length; index+=4) { const delta=Math.max(Math.abs(a.data[index]-b.data[index]),Math.abs(a.data[index+1]-b.data[index+1]),Math.abs(a.data[index+2]-b.data[index+2]),Math.abs(a.data[index+3]-b.data[index+3])); if (delta>16) { changed+=1; diff.data[index]=255; diff.data[index+1]=36; diff.data[index+2]=132; diff.data[index+3]=255; } else { const gray=Math.round((a.data[index]+a.data[index+1]+a.data[index+2])/9); diff.data[index]=diff.data[index+1]=diff.data[index+2]=gray; diff.data[index+3]=110; } }
+        output.putImageData(diff,0,0); const ratio=changed/(width*height); byId("pixel-score").textContent=`PIXEL Δ ${(ratio*100).toFixed(2)}% · ${changed.toLocaleString("ko-KR")} px`; return ratio;
+      }
+      function setVisualMode(mode) { const stage=byId("visual-stage"); stage.dataset.mode=mode; byId("blink-toggle").setAttribute("aria-pressed",String(mode==="blink")); byId("diff-toggle").setAttribute("aria-pressed",String(mode==="diff")); byId("visual-status").textContent=mode==="blink"?"BLINK ACTIVE · B":mode==="diff"?"PIXEL DIFF ACTIVE · D":`OVERLAY ${byId("mix-range").value}% · ← →`; }
+      async function createDelta() {
+        const left=primary.bundle; const right=secondary.bundle; const payload={kind:"world-diagnostic-delta",version:1,generatedAt:new Date().toISOString(),base:{generatedAt:left.generatedAt,zoneId:left.zone.id,integrityChecksum:left.integrity.checksum},candidate:{generatedAt:right.generatedAt,zoneId:right.zone.id,integrityChecksum:right.integrity.checksum},reproductionUrl:right.diagnosticUrl,sourceContract:right.sourceContract,changes:comparisonFacts(left,right),screenshots:{changed:left.screenshot.dataUrl!==right.screenshot.dataUrl,baseChecksum:await sha256(left.screenshot.dataUrl),candidateChecksum:await sha256(right.screenshot.dataUrl)}}; return {...payload,integrity:{algorithm:"SHA-256",canonicalization:"json-sort-v1",checksum:await sha256(canonicalJson(payload))}};
+      }
+      function downloadJson(value,filename) { const url=URL.createObjectURL(new Blob([`${JSON.stringify(value,null,2)}\n`],{type:"application/json"})); const anchor=document.createElement("a"); anchor.href=url; anchor.download=filename; anchor.click(); setTimeout(()=>URL.revokeObjectURL(url),0); }
+      async function copyReproduction(url) { await navigator.clipboard.writeText(url); byId("visual-status").textContent="REPRO URL COPIED"; }
+      async function renderComparison() {
         if (!primary || !secondary) { comparison.hidden = true; return; }
         const changes = comparisonFacts(primary.bundle, secondary.bundle); byId("comparison-count").textContent = `${changes.length} CHANGES`; byId("comparison-label").textContent = changes.length ? `${primary.filename} → ${secondary.filename}` : "NO MATERIAL CHANGE";
-        byId("comparison-a").src = primary.bundle.screenshot.dataUrl; byId("comparison-b").src = secondary.bundle.screenshot.dataUrl; list(byId("comparison-changes"), changes, "두 번들의 진단 증거가 같습니다."); comparison.hidden = false;
+        const left=primary.bundle.screenshot.dataUrl; const right=secondary.bundle.screenshot.dataUrl; byId("comparison-a").src=left; byId("comparison-b").src=right; byId("visual-a").src=left; byId("visual-b").src=right; byId("open-repro").href=secondary.bundle.diagnosticUrl; list(byId("comparison-changes"),changes.map(({field,before,after})=>`${field} · ${String(before).slice(0,72)} → ${String(after).slice(0,72)}`),"두 번들의 진단 증거가 같습니다."); comparison.hidden=false; setVisualMode("overlay"); await renderPixelDiff();
       }
-      async function read(file) { return { filename:file.name, bundle:await validate(JSON.parse(await file.text())) }; }
-      async function loadFiles(files) { try { const entries = await Promise.all([...files].slice(0,2).map(read)); if (!entries.length) return; primary = entries[0]; secondary = entries[1] || null; render(primary.bundle, primary.filename); renderComparison(); } catch (caught) { error.textContent = caught instanceof Error ? caught.message : "번들을 읽지 못했습니다."; } }
-      input.addEventListener("change", () => loadFiles(input.files || [])); compareInput.addEventListener("change", async () => { try { if (!compareInput.files?.[0]) return; secondary = await read(compareInput.files[0]); renderComparison(); error.textContent = ""; } catch (caught) { error.textContent = caught instanceof Error ? caught.message : "비교 번들을 읽지 못했습니다."; } });
+      function renderDelta(bundle,filename) { byId("delta-file").textContent=filename; byId("delta-route").textContent=`${bundle.base.zoneId} → ${bundle.candidate.zoneId}`; byId("delta-count").textContent=`${bundle.changes.length} CHANGES`; byId("delta-integrity").textContent=`VERIFIED · ${bundle.integrity.checksum.slice(0,12)}`; list(byId("delta-changes"),bundle.changes.map(({field,before,after})=>`${field} · ${String(before).slice(0,72)} → ${String(after).slice(0,72)}`),"변경 없음"); byId("delta-reproduction").href=bundle.reproductionUrl; byId("delta-copy").onclick=()=>copyReproduction(bundle.reproductionUrl).catch(()=>{error.textContent="재현 URL을 복사하지 못했습니다.";}); deltaReport.hidden=false; report.hidden=true; drop.hidden=true; error.textContent=""; }
+      async function read(file) { const parsed=JSON.parse(await file.text()); if (parsed?.kind==="world-diagnostic-delta") return {filename:file.name,delta:await validateDelta(parsed)}; return { filename:file.name, bundle:await validate(parsed) }; }
+      async function loadFiles(files) { try { const entries = await Promise.all([...files].slice(0,2).map(read)); if (!entries.length) return; if (entries[0].delta) { renderDelta(entries[0].delta,entries[0].filename); return; } if (entries.some((entry)=>entry.delta)) throw new Error("DELTA와 원본 진단 번들은 함께 비교할 수 없습니다."); primary=entries[0]; secondary=entries[1]||null; deltaReport.hidden=true; render(primary.bundle,primary.filename); await renderComparison(); } catch (caught) { error.textContent = caught instanceof Error ? caught.message : "번들을 읽지 못했습니다."; } }
+      input.addEventListener("change", () => loadFiles(input.files || [])); compareInput.addEventListener("change", async () => { try { if (!compareInput.files?.[0]) return; const entry=await read(compareInput.files[0]); if (entry.delta) throw new Error("비교 대상으로는 원본 진단 번들이 필요합니다."); secondary=entry; await renderComparison(); error.textContent=""; } catch (caught) { error.textContent = caught instanceof Error ? caught.message : "비교 번들을 읽지 못했습니다."; } });
       ["dragenter","dragover"].forEach((name) => drop.addEventListener(name, (event) => { event.preventDefault(); drop.dataset.active = "true"; })); ["dragleave","drop"].forEach((name) => drop.addEventListener(name, (event) => { event.preventDefault(); drop.dataset.active = "false"; })); drop.addEventListener("drop", (event) => loadFiles(event.dataTransfer?.files || []));
+      byId("blink-toggle").addEventListener("click",()=>setVisualMode(byId("visual-stage").dataset.mode==="blink"?"overlay":"blink")); byId("diff-toggle").addEventListener("click",()=>setVisualMode(byId("visual-stage").dataset.mode==="diff"?"overlay":"diff"));
+      byId("mix-range").addEventListener("input",()=>{byId("visual-stage").style.setProperty("--mix",String(Number(byId("mix-range").value)/100)); if(byId("visual-stage").dataset.mode!=="overlay")setVisualMode("overlay"); else setVisualMode("overlay");});
+      byId("download-delta").addEventListener("click",async()=>{const delta=await createDelta(); const stamp=delta.generatedAt.replaceAll(":","-").replace(/\.\d{3}Z$/,"Z"); downloadJson(delta,`wedding-map-${delta.candidate.zoneId}-delta-${stamp}.json`); byId("visual-status").textContent="DELTA DOWNLOADED";});
+      byId("copy-repro").addEventListener("click",()=>copyReproduction(secondary.bundle.diagnosticUrl).catch(()=>{error.textContent="재현 URL을 복사하지 못했습니다.";}));
+      document.addEventListener("keydown",(event)=>{if(!secondary||/INPUT|SELECT|TEXTAREA/.test(event.target?.tagName||""))return; if(event.key.toLowerCase()==="b")setVisualMode(byId("visual-stage").dataset.mode==="blink"?"overlay":"blink"); if(event.key.toLowerCase()==="d")setVisualMode(byId("visual-stage").dataset.mode==="diff"?"overlay":"diff"); if(event.key==="ArrowLeft"||event.key==="ArrowRight"){event.preventDefault(); const next=Math.max(0,Math.min(100,Number(byId("mix-range").value)+(event.key==="ArrowRight"?5:-5))); byId("mix-range").value=String(next); byId("mix-range").dispatchEvent(new Event("input"));}});
+      const resetAll=()=>{primary=null;secondary=null;report.hidden=true;comparison.hidden=true;deltaReport.hidden=true;drop.hidden=false;input.value="";compareInput.value="";error.textContent="";};
       byId("remove-comparison").addEventListener("click", () => { secondary = null; compareInput.value = ""; renderComparison(); });
-      byId("reset").addEventListener("click", () => { primary = null; secondary = null; report.hidden = true; comparison.hidden = true; drop.hidden = false; input.value = ""; compareInput.value = ""; error.textContent = ""; });
+      byId("reset").addEventListener("click",resetAll); byId("delta-reset").addEventListener("click",resetAll);
     })();
   </script>
 </body>

@@ -28,6 +28,8 @@ test("PR summary lists only small non-negative floor depth gaps and artifact lin
   assert.doesNotMatch(summary, /`arch`/);
   assert.match(summary, /actions\/runs\/12#artifacts/);
   assert.match(summary, /depthGap 급변 없음.*일반 변경 2개/);
+  assert.match(summary, /map-foreground-patch-approved/);
+  assert.match(summary, /별도 적용 PR/);
 });
 
 test("PR summary renders failed audit details without placements", () => {

@@ -7,11 +7,13 @@ function artifactLink(runUrl, label) {
 export function buildWorldGeometryPolicyPrSummary(report, {
   approved = false,
   approvalLabel = "geometry-policy-approved",
-  runUrl = ""
+  runUrl = "",
+  governance = null
 } = {}) {
   const recommendations = Array.isArray(report?.recommendations) ? report.recommendations : [];
   const reviewItems = recommendations.filter(({ action }) => action !== "keep");
   const approvalStatus = reviewItems.length === 0 ? "not-required" : approved ? "approved" : "awaiting-approval";
+  const governanceByZone = new Map((governance?.items ?? []).map((item) => [item.zoneId, item]));
   const lines = [
     worldGeometryPolicySummaryMarker,
     "## 월드 지오메트리 정책 추세",
@@ -21,13 +23,23 @@ export function buildWorldGeometryPolicyPrSummary(report, {
   ];
   if (reviewItems.length > 0) {
     lines.push(
-      "| 구역 | 판정 | 현재 한도 | 추천 한도 | P90 | 경고 실행 | 차단 실행 |",
-      "| --- | --- | ---: | ---: | ---: | ---: | ---: |",
-      ...reviewItems.map((item) => (
-        `| \`${item.zoneId}\` | \`${item.action}\` | ${item.currentMaxWarnings} | ${item.recommendedMaxWarnings} | ${item.p90Warnings} | ${Math.round(item.warningRunRate * 100)}% | ${item.blockingRuns} |`
-      )),
+      "| 구역 | 판정 | 담당자 | 검토 시계 | 현재→추천 | P90 | 경고 실행 | 차단 실행 |",
+      "| --- | --- | --- | --- | ---: | ---: | ---: | ---: |",
+      ...reviewItems.map((item) => {
+        const tracking = governanceByZone.get(item.zoneId);
+        const clock = tracking
+          ? `${tracking.status} · ${tracking.dueAt.slice(0, 10)} / ${tracking.expiresAt.slice(0, 10)}`
+          : "미추적";
+        return `| \`${item.zoneId}\` | \`${item.action}\` | ${tracking?.owner ?? "미지정"} | \`${clock}\` | ${item.currentMaxWarnings}→${item.recommendedMaxWarnings} | ${item.p90Warnings} | ${Math.round(item.warningRunRate * 100)}% | ${item.blockingRuns} |`;
+      }),
       ""
     );
+    if ((governance?.expiredCount ?? 0) > 0 || (governance?.overdueCount ?? 0) > 0) {
+      lines.push(
+        `⚠️ 검토 만료 **${governance.expiredCount ?? 0}개** · 기한 초과 **${governance.overdueCount ?? 0}개**입니다. 담당자가 증거를 우선 확인해야 합니다.`,
+        ""
+      );
+    }
     if (approved) {
       lines.push(`✅ PR 라벨 \`${approvalLabel}\`로 수동 검토 승인이 기록되었습니다.`, "");
     } else {

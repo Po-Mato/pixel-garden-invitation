@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "defaultOwner": "@Po-Mato",
+  "reviewAfterDays": 7,
+  "expireAfterDays": 21,
+  "dueSoonDays": 2,
+  "zones": {
+    "lobby": {
+      "owner": "@Po-Mato",
+      "reviewAfterDays": 3,
+      "expireAfterDays": 10
+    },
+    "ceremony-hall": {
+      "owner": "@Po-Mato",
+      "reviewAfterDays": 3,
+      "expireAfterDays": 10
+    }
+  }
+}

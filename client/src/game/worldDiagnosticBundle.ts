@@ -42,6 +42,37 @@ export type WorldDiagnosticBundle = {
   };
 };
 
+export type WorldDiagnosticDifference = {
+  field: "ZONE" | "VIEWPORT" | "POLICY" | "HEATMAP" | "CONTRACT" | "DECISIONS" | "FINDINGS" | "PATCH" | "SCREENSHOT";
+  before: string;
+  after: string;
+};
+
+export type WorldDiagnosticDeltaBundle = {
+  kind: "world-diagnostic-delta";
+  version: 1;
+  generatedAt: string;
+  base: {
+    generatedAt: string;
+    zoneId: WorldZoneId;
+    integrityChecksum: string;
+  };
+  candidate: {
+    generatedAt: string;
+    zoneId: WorldZoneId;
+    integrityChecksum: string;
+  };
+  reproductionUrl: string;
+  sourceContract: WorldDiagnosticBundle["sourceContract"];
+  changes: WorldDiagnosticDifference[];
+  screenshots: {
+    changed: boolean;
+    baseChecksum: string;
+    candidateChecksum: string;
+  };
+  integrity: WorldDiagnosticBundle["integrity"];
+};
+
 type ScreenshotRenderer = (
   element: HTMLElement,
   options: {
@@ -127,7 +158,7 @@ const browserDownloadEnvironment: JsonDownloadEnvironment = {
 };
 
 export function worldDiagnosticArtifactFilename(
-  kind: "bundle" | "patch",
+  kind: "bundle" | "patch" | "delta",
   zoneId: WorldZoneId,
   generatedAt = new Date()
 ): string {
@@ -172,6 +203,32 @@ export function canonicalDiagnosticJson(value: unknown): string {
   )).join(",")}}`;
 }
 
+function policyLabel(bundle: WorldDiagnosticBundle): string {
+  return `${bundle.policy.status}:B${bundle.policy.blockingCount}/W${bundle.policy.warningCount}`;
+}
+
+export function worldDiagnosticBundleDifferences(
+  base: WorldDiagnosticBundle,
+  candidate: WorldDiagnosticBundle
+): WorldDiagnosticDifference[] {
+  const facts: Array<[WorldDiagnosticDifference["field"], string, string]> = [
+    ["ZONE", base.zone.id, candidate.zone.id],
+    ["VIEWPORT", `${base.viewport.width}×${base.viewport.height}@${base.viewport.devicePixelRatio}`, `${candidate.viewport.width}×${candidate.viewport.height}@${candidate.viewport.devicePixelRatio}`],
+    ["POLICY", policyLabel(base), policyLabel(candidate)],
+    ["HEATMAP", base.heatmapMode, candidate.heatmapMode],
+    ["CONTRACT", canonicalDiagnosticJson(base.sourceContract), canonicalDiagnosticJson(candidate.sourceContract)],
+    ["DECISIONS", canonicalDiagnosticJson(base.recommendationDecisions), canonicalDiagnosticJson(candidate.recommendationDecisions)],
+    ["FINDINGS", canonicalDiagnosticJson(base.findings), canonicalDiagnosticJson(candidate.findings)],
+    ["PATCH", canonicalDiagnosticJson(base.selectedPatch.operations), canonicalDiagnosticJson(candidate.selectedPatch.operations)],
+    ["SCREENSHOT", base.screenshot.dataUrl === candidate.screenshot.dataUrl ? "SAME" : "BASE", base.screenshot.dataUrl === candidate.screenshot.dataUrl ? "SAME" : "CHANGED"]
+  ];
+  return facts.filter(([, before, after]) => before !== after).map(([field, before, after]) => ({
+    field,
+    before,
+    after
+  }));
+}
+
 async function sha256Hex(value: string): Promise<string> {
   const digest = await globalThis.crypto.subtle.digest("SHA-256", new TextEncoder().encode(value));
   return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
@@ -194,6 +251,59 @@ export async function createWorldDiagnosticBundle(
 export async function verifyWorldDiagnosticBundleIntegrity(bundle: WorldDiagnosticBundle): Promise<boolean> {
   if (
     bundle.version !== 2
+    || bundle.integrity?.algorithm !== "SHA-256"
+    || bundle.integrity?.canonicalization !== "json-sort-v1"
+  ) return false;
+  const { integrity, ...payload } = bundle;
+  return integrity.checksum === await sha256Hex(canonicalDiagnosticJson(payload));
+}
+
+export async function createWorldDiagnosticDeltaBundle(
+  base: WorldDiagnosticBundle,
+  candidate: WorldDiagnosticBundle,
+  generatedAt = new Date().toISOString()
+): Promise<WorldDiagnosticDeltaBundle> {
+  const [baseChecksum, candidateChecksum] = await Promise.all([
+    sha256Hex(base.screenshot.dataUrl),
+    sha256Hex(candidate.screenshot.dataUrl)
+  ]);
+  const payload = {
+    kind: "world-diagnostic-delta" as const,
+    version: 1 as const,
+    generatedAt,
+    base: {
+      generatedAt: base.generatedAt,
+      zoneId: base.zone.id,
+      integrityChecksum: base.integrity.checksum
+    },
+    candidate: {
+      generatedAt: candidate.generatedAt,
+      zoneId: candidate.zone.id,
+      integrityChecksum: candidate.integrity.checksum
+    },
+    reproductionUrl: candidate.diagnosticUrl,
+    sourceContract: candidate.sourceContract,
+    changes: worldDiagnosticBundleDifferences(base, candidate),
+    screenshots: {
+      changed: baseChecksum !== candidateChecksum,
+      baseChecksum,
+      candidateChecksum
+    }
+  };
+  return {
+    ...payload,
+    integrity: {
+      algorithm: "SHA-256",
+      canonicalization: "json-sort-v1",
+      checksum: await sha256Hex(canonicalDiagnosticJson(payload))
+    }
+  };
+}
+
+export async function verifyWorldDiagnosticDeltaBundleIntegrity(bundle: WorldDiagnosticDeltaBundle): Promise<boolean> {
+  if (
+    bundle.kind !== "world-diagnostic-delta"
+    || bundle.version !== 1
     || bundle.integrity?.algorithm !== "SHA-256"
     || bundle.integrity?.canonicalization !== "json-sort-v1"
   ) return false;

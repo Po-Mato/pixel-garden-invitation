@@ -1,0 +1,100 @@
+name: Apply approved map foreground patch
+
+on:
+  pull_request_target:
+    types: [labeled]
+
+permissions:
+  actions: read
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: approved-map-patch-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+jobs:
+  create-application-pr:
+    if: github.event.label.name == 'map-foreground-patch-approved' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      # Only trusted default-branch tooling is executed with the write token.
+      - name: Checkout trusted automation tools
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          path: trusted-tools
+          persist-credentials: false
+      - name: Download successful visual audit patch
+        id: evidence
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          run_id=$(gh run list --repo "$REPOSITORY" --workflow visual-regression.yml --commit "$HEAD_SHA" --event pull_request --status success --limit 1 --json databaseId --jq '.[0].databaseId')
+          test -n "$run_id"
+          mkdir -p "$GITHUB_WORKSPACE/approved-artifact"
+          gh run download "$run_id" --repo "$REPOSITORY" --name "map-foreground-diagnostics-$run_id" --dir "$GITHUB_WORKSPACE/approved-artifact"
+          test -f "$GITHUB_WORKSPACE/approved-artifact/map-foreground-suggestions.patch.json"
+          echo "run-id=$run_id" >> "$GITHUB_OUTPUT"
+      - name: Checkout pull request head without executing it
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          path: patch-work
+          fetch-depth: 0
+      - name: Apply checksum-bound patch with trusted script
+        env:
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          APPROVED_BY: ${{ github.actor }}
+        run: |
+          node "$GITHUB_WORKSPACE/trusted-tools/scripts/apply-approved-map-patch-bot.mjs" \
+            --workspace "$GITHUB_WORKSPACE/patch-work" \
+            --patch "$GITHUB_WORKSPACE/approved-artifact/map-foreground-suggestions.patch.json" \
+            --approved-by "$APPROVED_BY" \
+            --pr-number "$PR_NUMBER" \
+            --head-sha "$HEAD_SHA"
+          test "$(git -C "$GITHUB_WORKSPACE/patch-work" status --short | wc -l)" -eq 1
+          test "$(git -C "$GITHUB_WORKSPACE/patch-work" status --short | sed 's/^...//')" = "client/src/game/worldForegroundPlacements.json"
+      - name: Publish isolated application branch
+        id: publish
+        env:
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          branch="automation/map-foreground-pr-${PR_NUMBER}-${HEAD_SHA:0:7}"
+          if git -C "$GITHUB_WORKSPACE/patch-work" ls-remote --exit-code --heads origin "refs/heads/$branch" >/dev/null; then
+            echo "branch=$branch" >> "$GITHUB_OUTPUT"
+            echo "existing=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          git -C "$GITHUB_WORKSPACE/patch-work" switch -c "$branch"
+          git -C "$GITHUB_WORKSPACE/patch-work" config user.name "github-actions[bot]"
+          git -C "$GITHUB_WORKSPACE/patch-work" config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git -C "$GITHUB_WORKSPACE/patch-work" add -- client/src/game/worldForegroundPlacements.json
+          git -C "$GITHUB_WORKSPACE/patch-work" commit -m "fix: apply approved map foreground patch"
+          git -C "$GITHUB_WORKSPACE/patch-work" push origin "HEAD:refs/heads/$branch"
+          echo "branch=$branch" >> "$GITHUB_OUTPUT"
+          echo "existing=false" >> "$GITHUB_OUTPUT"
+      - name: Open stacked application pull request
+        uses: actions/github-script@v8
+        env:
+          APPLICATION_BRANCH: ${{ steps.publish.outputs.branch }}
+          BASE_BRANCH: ${{ github.event.pull_request.head.ref }}
+          SOURCE_PR: ${{ github.event.pull_request.number }}
+          EVIDENCE_RUN: ${{ steps.evidence.outputs.run-id }}
+        with:
+          script: |
+            const existing = await github.rest.pulls.list({ owner: context.repo.owner, repo: context.repo.repo, state: "open", head: `${context.repo.owner}:${process.env.APPLICATION_BRANCH}`, base: process.env.BASE_BRANCH });
+            if (existing.data.length) return core.notice(`Application PR already exists: ${existing.data[0].html_url}`);
+            const created = await github.rest.pulls.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              head: process.env.APPLICATION_BRANCH,
+              base: process.env.BASE_BRANCH,
+              title: `fix: apply approved map patch for #${process.env.SOURCE_PR}`,
+              body: `검토 라벨 \`map-foreground-patch-approved\`에 따라 생성된 격리 적용 PR입니다.\n\n- 원 PR: #${process.env.SOURCE_PR}\n- 시각 증거 실행: ${process.env.EVIDENCE_RUN}\n- 변경 범위: \`client/src/game/worldForegroundPlacements.json\` 한 파일\n- 체크섬이 다르면 적용하지 않습니다.`
+            });
+            core.notice(`Created ${created.data.html_url}`);

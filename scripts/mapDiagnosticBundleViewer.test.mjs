@@ -14,6 +14,13 @@ test("standalone diagnostic bundle viewer stays local and renders every evidence
   assert.match(html, /무결성 검증에 실패했습니다/);
   assert.match(html, /A \/ B EVIDENCE COMPARE/);
   assert.match(html, /LOAD COMPARISON/);
+  assert.match(html, /FORENSIC LIGHT TABLE/);
+  assert.match(html, /PIXEL DIFF · D/);
+  assert.match(html, /DOWNLOAD DELTA/);
+  assert.match(html, /world-diagnostic-delta/);
+  assert.match(html, /COPY REPRO/);
+  assert.match(html, /aria-keyshortcuts="b"/);
+  assert.match(html, /DELTA 무결성 검증에 실패했습니다/);
   assert.match(html, /REVIEW DECISIONS/);
   assert.match(html, /SELECTED JSON PATCH/);
   assert.match(html, /dataTransfer\?\.files/);

@@ -43,7 +43,7 @@ export function buildMapForegroundPrSummary(report, { runUrl = "", threshold = 8
     "",
     `${artifactLink(runUrl, "감사 시트·JSON")} · ${artifactLink(runUrl, "모바일 진단 스크린샷")} · ${artifactLink(runUrl, "추천값·패치 JSON")} · ${artifactLink(runUrl, "depthGap 추세")}`,
     "",
-    "> 추천값은 검토용이며 배치 계약을 자동 수정하지 않습니다."
+    "> 추천값은 검토용입니다. 적용을 승인하려면 PR에 `map-foreground-patch-approved` 라벨을 추가하세요. 봇은 원 PR에 직접 쓰지 않고 체크섬 검증 후 별도 적용 PR을 만듭니다."
   );
   return `${lines.join("\n")}\n`;
 }

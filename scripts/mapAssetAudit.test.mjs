@@ -560,6 +560,18 @@ test("wires gallery, map, character, photo-effect, and mobile visual audits into
     packageJson.scripts["maps:geometry-policy-summary"],
     "node scripts/summarize-world-geometry-policy.mjs"
   );
+  assert.equal(
+    packageJson.scripts["maps:geometry-policy-governance"],
+    "node scripts/track-world-geometry-policy-governance.mjs"
+  );
+  assert.equal(
+    packageJson.scripts["maps:diagnostics-provenance"],
+    "node scripts/build-map-diagnostics-provenance.mjs"
+  );
+  assert.equal(
+    packageJson.scripts["maps:diagnostics-provenance-verify"],
+    "node scripts/verify-map-diagnostics-provenance.mjs"
+  );
   assert.match(visualWorkflow, /run: pnpm maps:foreground-audit/);
   assert.match(visualWorkflow, /run: pnpm maps:foreground-suggest/);
   assert.match(visualWorkflow, /--preview-patch/);
@@ -569,6 +581,7 @@ test("wires gallery, map, character, photo-effect, and mobile visual audits into
   assert.match(visualWorkflow, /run: pnpm maps:foreground-trend/);
   assert.match(visualWorkflow, /--ref-label/);
   assert.match(visualWorkflow, /run: pnpm maps:geometry-policy-trend/);
+  assert.match(visualWorkflow, /run: pnpm maps:geometry-policy-governance/);
   assert.match(visualWorkflow, /run: pnpm maps:geometry-policy-summary/);
   assert.match(visualWorkflow, /geometry-policy-approved/);
   assert.match(visualWorkflow, /actions\/cache\/save@v5/);
@@ -589,6 +602,13 @@ test("wires gallery, map, character, photo-effect, and mobile visual audits into
   assert.match(visualWorkflow, /world-geometry-policy-history\.json/);
   assert.match(visualWorkflow, /world-geometry-policy-tuning\.json/);
   assert.match(visualWorkflow, /world-geometry-policy-tuning\.html/);
+  assert.match(visualWorkflow, /world-geometry-policy-governance\.json/);
+  assert.match(visualWorkflow, /world-geometry-policy-review-state\.json/);
   assert.match(visualWorkflow, /world-geometry-policy-pr-summary\.md/);
+  assert.match(visualWorkflow, /actions\/attest@v4/);
+  assert.match(visualWorkflow, /gh attestation verify/);
+  assert.match(visualWorkflow, /run: pnpm maps:diagnostics-provenance-verify/);
+  assert.match(visualWorkflow, /map-diagnostics-provenance\.json/);
+  assert.match(visualWorkflow, /map-diagnostics-provenance\.md/);
   assert.match(visualWorkflow, /map-foreground-pr-summary\.md/);
 });

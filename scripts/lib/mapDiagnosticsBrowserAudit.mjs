@@ -226,6 +226,18 @@ export async function runMapDiagnosticsBrowserAudit({ rootDir, outputDir, port =
             || bundle.sourceContract?.checksum !== bundle.selectedPatch?.sourceChecksum
             || !/^[a-f0-9]{64}$/.test(bundle.integrity?.checksum ?? "")
           ) throw new Error(`${viewport.id}: 화면 진단 번들 내용 불일치`);
+          await heatmapMode.selectOption("contrast");
+          const candidateDownloadPromise = page.waitForEvent("download", { timeout: 30_000 });
+          await page.getByRole("button", { name: "현재 화면 진단 번들 저장" }).click();
+          const candidateDownload = await candidateDownloadPromise;
+          const candidatePath = await candidateDownload.path();
+          const candidateBundle = JSON.parse(await readFile(candidatePath, "utf8"));
+          if (
+            candidateBundle.heatmapMode !== "contrast"
+            || candidateBundle.integrity?.checksum === bundle.integrity.checksum
+            || candidateBundle.diagnosticUrl === bundle.diagnosticUrl
+          ) throw new Error(`${viewport.id}: 비교용 고대비 진단 번들 내용 불일치`);
+          await heatmapMode.selectOption("pattern");
           const viewerPagePromise = context.waitForEvent("page");
           await page.getByRole("button", { name: "진단 번들 뷰어 열기" }).click();
           const viewerPage = await viewerPagePromise;
@@ -249,13 +261,63 @@ export async function runMapDiagnosticsBrowserAudit({ rootDir, outputDir, port =
           if (viewerState.reportHidden || !viewerState.dropHidden || !viewerState.screenshotLoaded) {
             throw new Error(`${viewport.id}: 진단 번들 뷰어 로드 상태 불일치`);
           }
-          await viewerPage.locator("#compare-input").setInputFiles(bundlePath);
-          await viewerPage.getByText("0 CHANGES", { exact: true }).waitFor({ state: "visible" });
+          await viewerPage.locator("#compare-input").setInputFiles(candidatePath);
+          await viewerPage.locator("#comparison-count").waitFor({ state: "visible" });
+          const comparisonCount = Number.parseInt(await viewerPage.locator("#comparison-count").textContent() ?? "0", 10);
+          if (comparisonCount < 2) throw new Error(`${viewport.id}: 진단 번들 차이 항목 누락`);
+          const comparisonChanges = await viewerPage.locator("#comparison-changes").textContent();
+          if (!comparisonChanges?.includes("HEATMAP") || !comparisonChanges.includes("SCREENSHOT")) {
+            throw new Error(`${viewport.id}: 히트맵·스크린샷 차이 분류 누락`);
+          }
           if (await viewerPage.locator("#comparison").getAttribute("hidden") !== null) {
             throw new Error(`${viewport.id}: 진단 번들 A/B 비교 렌더링 실패`);
           }
+          await viewerPage.locator("#blink-toggle").dispatchEvent("click");
+          if (await viewerPage.locator("#blink-toggle").getAttribute("aria-pressed") !== "true") {
+            throw new Error(`${viewport.id}: 번들 깜빡임 비교 활성화 실패`);
+          }
+          await viewerPage.evaluate(() => document.activeElement instanceof HTMLElement && document.activeElement.blur());
+          await viewerPage.keyboard.press("b");
+          await viewerPage.locator("#mix-range").evaluate((element) => {
+            element.value = "65";
+            element.dispatchEvent(new Event("input", { bubbles: true }));
+          });
+          if (!await viewerPage.locator("#visual-status").textContent().then((text) => text?.includes("65%"))) {
+            throw new Error(`${viewport.id}: 비교 투명도 조절 실패`);
+          }
+          await viewerPage.keyboard.press("d");
+          if (
+            await viewerPage.locator("#diff-toggle").getAttribute("aria-pressed") !== "true"
+            || !await viewerPage.locator("#pixel-score").textContent().then((text) => text?.includes("PIXEL Δ"))
+          ) throw new Error(`${viewport.id}: 픽셀 차이 비교 활성화 실패`);
+          const deltaDownloadPromise = viewerPage.waitForEvent("download", { timeout: 30_000 });
+          await viewerPage.locator("#download-delta").dispatchEvent("click");
+          const deltaDownload = await deltaDownloadPromise;
+          const deltaPath = await deltaDownload.path();
+          const deltaBundleText = await readFile(deltaPath, "utf8");
+          const deltaBundle = JSON.parse(deltaBundleText);
+          if (
+            deltaBundle.kind !== "world-diagnostic-delta"
+            || deltaBundle.changes.length !== comparisonCount
+            || deltaBundle.reproductionUrl !== candidateBundle.diagnosticUrl
+            || deltaBundleText.includes("data:image/png;base64,")
+            || !/^[a-f0-9]{64}$/.test(deltaBundle.integrity?.checksum ?? "")
+          ) throw new Error(`${viewport.id}: 경량 차이 번들 내용 불일치`);
+          await context.grantPermissions(["clipboard-write"], { origin: new URL(viewerPage.url()).origin });
+          await viewerPage.locator("#copy-repro").focus();
+          await viewerPage.keyboard.press("Enter");
+          await viewerPage.getByText("REPRO URL COPIED", { exact: true }).waitFor({ state: "visible" });
+          if (await viewerPage.locator("#open-repro").getAttribute("href") !== candidateBundle.diagnosticUrl) {
+            throw new Error(`${viewport.id}: 비교 재현 링크 불일치`);
+          }
           await viewerPage.waitForTimeout(350);
           await viewerPage.screenshot({ path: path.join(outputDir, "map-diagnostic-bundle-viewer-loaded.png"), fullPage: true });
+          await viewerPage.locator("#reset").dispatchEvent("click");
+          await viewerPage.locator("#file-input").setInputFiles(deltaPath);
+          await viewerPage.getByText("LIGHTWEIGHT DELTA EVIDENCE", { exact: true }).waitFor({ state: "visible" });
+          if (!await viewerPage.locator("#delta-integrity").textContent().then((text) => text?.startsWith("VERIFIED"))) {
+            throw new Error(`${viewport.id}: 경량 차이 번들 다시 열기 실패`);
+          }
           await viewerPage.close();
           await page.getByRole("button", { name: "불러온 Patch 미리보기 지우기" }).click();
           await page.getByRole("button", { name: "lobby-desk 추천 승인" }).click();

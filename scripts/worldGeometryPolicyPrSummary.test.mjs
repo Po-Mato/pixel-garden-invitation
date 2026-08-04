@@ -31,3 +31,19 @@ test("stable policy does not require manual approval", () => {
   assert.equal(result.approvalStatus, "not-required");
   assert.equal(result.reviewCount, 0);
 });
+
+test("policy summary exposes owner, due date, and stale review state", () => {
+  const result = buildWorldGeometryPolicyPrSummary({
+    snapshotCount: 7,
+    recommendations: [{ zoneId: "lobby", action: "review-raise", currentMaxWarnings: 0, recommendedMaxWarnings: 2, p90Warnings: 2, warningRunRate: 0.7, blockingRuns: 0 }]
+  }, {
+    governance: {
+      expiredCount: 0,
+      overdueCount: 1,
+      items: [{ zoneId: "lobby", owner: "@map-owner", status: "overdue", dueAt: "2026-08-04T00:00:00.000Z", expiresAt: "2026-08-10T00:00:00.000Z" }]
+    }
+  });
+  assert.match(result.markdown, /@map-owner/);
+  assert.match(result.markdown, /overdue.*2026-08-04.*2026-08-10/);
+  assert.match(result.markdown, /기한 초과 \*\*1개\*\*/);
+});

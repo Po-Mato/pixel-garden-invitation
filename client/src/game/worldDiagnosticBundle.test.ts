@@ -2,10 +2,13 @@ import { describe, expect, it, vi } from "vitest";
 import {
   captureWorldDiagnosticScreenshot,
   canonicalDiagnosticJson,
+  createWorldDiagnosticDeltaBundle,
   createWorldDiagnosticBundle,
   downloadJsonArtifact,
   normalizeSrgbColorFunctions,
   verifyWorldDiagnosticBundleIntegrity,
+  verifyWorldDiagnosticDeltaBundleIntegrity,
+  worldDiagnosticBundleDifferences,
   worldDiagnosticArtifactFilename,
   worldDiagnosticBundleViewerUrl
 } from "./worldDiagnosticBundle";
@@ -98,5 +101,45 @@ describe("맵 진단 번들", () => {
   it("객체 키 순서와 무관한 정렬 JSON을 무결성 입력으로 사용한다", () => {
     expect(canonicalDiagnosticJson({ beta: [2, { z: true, a: null }], alpha: "x" }))
       .toBe('{"alpha":"x","beta":[2,{"a":null,"z":true}]}');
+  });
+
+  it("A/B 차이만 담고 스크린샷 원문은 제외한 경량 번들을 만든다", async () => {
+    const base = await createWorldDiagnosticBundle({
+      generatedAt: "2026-08-04T00:00:00.000Z",
+      zone: { id: "lobby", label: "예식장 로비" },
+      diagnosticUrl: "https://example.test/?mapAudit=1&mapAuditZone=lobby&mapAuditHeatmap=color",
+      viewerUrl: "https://example.test/map-diagnostic-bundle-viewer.html",
+      viewport: { width: 390, height: 844, devicePixelRatio: 2 },
+      userAgent: "test",
+      layers: { grid: true, collision: true, depth: true, heatmap: true, labels: true },
+      heatmapMode: "color",
+      sourceContract: { target: "client/src/game/worldForegroundPlacements.json", version: 1, checksum: "a".repeat(64) },
+      findings: [],
+      policy: { status: "passed", blockingCount: 0, warningCount: 0, maxWarnings: 0, violations: [] },
+      recommendationDecisions: {},
+      selectedPatch: { version: 1, target: "client/src/game/worldForegroundPlacements.json", sourceContractVersion: 1, sourceChecksum: "a".repeat(64), generatedAt: "2026-08-04T00:00:00.000Z", acceptedPlacementKeys: [], operationCount: 0, operations: [] },
+      screenshot: { mimeType: "image/png", dataUrl: "data:image/png;base64,base", width: 780, height: 1688 }
+    });
+    const { version: _version, integrity: _integrity, ...baseInput } = base;
+    const candidate = await createWorldDiagnosticBundle({
+      ...baseInput,
+      generatedAt: "2026-08-05T00:00:00.000Z",
+      diagnosticUrl: "https://example.test/?mapAudit=1&mapAuditZone=lobby&mapAuditHeatmap=contrast",
+      heatmapMode: "contrast",
+      screenshot: { ...base.screenshot, dataUrl: "data:image/png;base64,candidate" }
+    });
+    const delta = await createWorldDiagnosticDeltaBundle(base, candidate, "2026-08-05T01:00:00.000Z");
+    expect(worldDiagnosticBundleDifferences(base, candidate).map(({ field }) => field)).toEqual(["HEATMAP", "SCREENSHOT"]);
+    expect(delta.reproductionUrl).toBe(candidate.diagnosticUrl);
+    expect(delta.changes.map(({ field }) => field)).toEqual(["HEATMAP", "SCREENSHOT"]);
+    expect(JSON.stringify(delta)).not.toContain("data:image/png;base64");
+    expect(delta.screenshots.baseChecksum).toMatch(/^[a-f0-9]{64}$/);
+    await expect(verifyWorldDiagnosticDeltaBundleIntegrity(delta)).resolves.toBe(true);
+    await expect(verifyWorldDiagnosticDeltaBundleIntegrity({
+      ...delta,
+      reproductionUrl: "https://example.test/tampered"
+    })).resolves.toBe(false);
+    expect(worldDiagnosticArtifactFilename("delta", "lobby", new Date("2026-08-05T01:02:03.000Z")))
+      .toBe("wedding-map-lobby-delta-2026-08-05T01-02-03Z.json");
   });
 });
