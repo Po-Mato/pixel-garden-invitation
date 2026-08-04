@@ -21,9 +21,22 @@ describe("WorldDecoration", () => {
       <WorldDecoration zoneId="neighborhood" decoration={assetDecoration as WorldDecorationData} />
     );
     const decoration = container.querySelector("img");
+    const shadow = container.querySelector('[data-shadow-for="tree-canopy"]');
 
     expect(decoration).toHaveAttribute("src", "/assets/maps/v2/neighborhood/tree-canopy.png");
     expect(decoration).toHaveStyle({ zIndex: "1390" });
+    expect(shadow).toHaveStyle({ left: "132.6px", top: "384px", width: "64.8px", height: "12px", zIndex: "1389" });
+  });
+
+  it("keeps overhead foreground assets free of a ground shadow", () => {
+    const { container } = render(
+      <WorldDecoration
+        zoneId="subway-train"
+        decoration={{ ...assetDecoration, depthMode: "overhead" } as WorldDecorationData}
+      />
+    );
+
+    expect(container.querySelector(".world-decoration-ground-shadow")).not.toBeInTheDocument();
   });
 
   it("does not create DOM for a decoration without an asset", () => {

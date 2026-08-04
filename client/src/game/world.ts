@@ -91,6 +91,7 @@ export type WorldDecoration = Rect & {
   label: string;
   asset?: string;
   depthY?: number;
+  depthMode?: "floor" | "overhead";
 };
 
 export type WorldForegroundPlacement = Rect & {
@@ -275,7 +276,7 @@ const decoration = (
   y: number,
   width: number,
   height: number,
-  visual?: { asset: string; depthY: number }
+  visual?: { asset: string; depthY: number; depthMode?: "floor" | "overhead" }
 ): WorldDecoration => ({ id, kind, label, x, y, width, height, ...visual });
 
 function getWorldForegroundPlacement(zoneId: WorldZoneId, decorationId: string): WorldForegroundPlacement {
@@ -299,7 +300,7 @@ const foregroundDecoration = (
     placement.y,
     placement.width,
     placement.height,
-    { asset: placement.asset, depthY: placement.depthY }
+    { asset: placement.asset, depthY: placement.depthY, depthMode: placement.depthMode }
   );
 };
 

@@ -17,8 +17,15 @@
   --foreground-ground-shadow: rgba(31, 49, 52, 0.22);
 }
 
+.world-decoration-ground-shadow {
+  position: absolute;
+  display: block;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, var(--foreground-ground-shadow) 0 34%, transparent 74%);
+  pointer-events: none;
+}
+
 .world-decoration--asset {
-  filter: drop-shadow(0 2px 1px var(--foreground-ground-shadow));
   backface-visibility: hidden;
 }
 
