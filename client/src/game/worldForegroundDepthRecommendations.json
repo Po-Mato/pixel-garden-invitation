@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "zones": {
+    "home": [{ "decorationId": "home-plant", "depthY": 555 }],
+    "neighborhood": [
+      { "decorationId": "street-tree-1", "depthY": 210 },
+      { "decorationId": "street-tree-2", "depthY": 210 },
+      { "decorationId": "street-tree-3", "depthY": 210 }
+    ],
+    "subway-station": [],
+    "subway-train": [{ "decorationId": "train-straps", "depthY": 420 }],
+    "venue-exterior": [{ "decorationId": "venue-arch", "depthY": 339 }],
+    "lobby": [{ "decorationId": "lobby-desk", "depthY": 475 }],
+    "bridal-room": [{ "decorationId": "bridal-flower-front", "depthY": 397 }],
+    "ceremony-hall": [
+      { "decorationId": "hall-ceremony-arch", "depthY": 330 },
+      { "decorationId": "hall-altar-table-front", "depthY": 277 },
+      { "decorationId": "hall-flowers-1", "depthY": 555 },
+      { "decorationId": "hall-flowers-2", "depthY": 795 },
+      { "decorationId": "hall-flowers-3", "depthY": 1035 },
+      { "decorationId": "hall-flowers-4", "depthY": 1275 }
+    ],
+    "banquet": [
+      { "decorationId": "banquet-table-1", "depthY": 490 },
+      { "decorationId": "banquet-table-2", "depthY": 468 },
+      { "decorationId": "banquet-table-3", "depthY": 768 },
+      { "decorationId": "banquet-table-4", "depthY": 790 }
+    ],
+    "restroom": []
+  }
+}

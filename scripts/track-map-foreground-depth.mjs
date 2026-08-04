@@ -3,6 +3,7 @@ import { appendFile, mkdir, readFile, writeFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import {
   buildMapForegroundDepthTrend,
+  renderMapForegroundDepthTrendHtml,
   renderMapForegroundDepthTrendMarkdown
 } from "./lib/mapForegroundDepthTrend.mjs";
 
@@ -38,6 +39,10 @@ const summaryPath = path.resolve(rootDir, argumentValue(
   "--summary",
   ".superpowers/visual-regression/map-foreground-depth-trend.md"
 ));
+const htmlPath = path.resolve(rootDir, argumentValue(
+  "--html",
+  ".superpowers/visual-regression/map-foreground-depth-trend.html"
+));
 const warningDelta = Number(argumentValue("--warning-delta", "12"));
 const sha = argumentValue("--sha", process.env.GITHUB_SHA ?? "local");
 
@@ -46,13 +51,16 @@ if (audit.status !== "passed") throw new Error("통과한 전경 감사 보고�
 const history = await readJsonIfPresent(historyPath, { version: 1, snapshots: [] });
 const result = buildMapForegroundDepthTrend(audit, history, { sha, warningDelta });
 const markdown = renderMapForegroundDepthTrendMarkdown(result.report);
+const html = renderMapForegroundDepthTrendHtml(result.history, result.report);
 
 await mkdir(path.dirname(historyPath), { recursive: true });
 await mkdir(path.dirname(trendPath), { recursive: true });
 await mkdir(path.dirname(summaryPath), { recursive: true });
+await mkdir(path.dirname(htmlPath), { recursive: true });
 await writeFile(historyPath, `${JSON.stringify(result.history, null, 2)}\n`);
 await writeFile(trendPath, `${JSON.stringify(result.report, null, 2)}\n`);
 await writeFile(summaryPath, markdown);
+await writeFile(htmlPath, html);
 if (process.env.GITHUB_STEP_SUMMARY) await appendFile(process.env.GITHUB_STEP_SUMMARY, `\n${markdown}`);
 
 for (const warning of result.report.warnings) {
@@ -60,3 +68,4 @@ for (const warning of result.report.warnings) {
 }
 console.log(`전경 depthGap 추세: ${result.report.status} · 변경 ${result.report.changeCount}개 · 경고 ${result.report.warningCount}개`);
 console.log(trendPath);
+console.log(htmlPath);

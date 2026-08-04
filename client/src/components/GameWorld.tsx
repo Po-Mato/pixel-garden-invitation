@@ -173,6 +173,7 @@ import {
 } from "../game/cooperativeCelebration";
 import { triggerCollectionProximityHaptic } from "../feedback/gameAudio";
 import { getWeddingDayPreviewNow, getWeddingDayStatus } from "../invitation/weddingDay";
+import { copyText } from "../invitation/browserActions";
 import {
   journeyArrivalAction,
   type JourneyArrivalAction
@@ -211,9 +212,12 @@ import {
 } from "../game/worldAssetPreloader";
 import { worldDepth } from "../game/worldVisuals";
 import {
-  defaultWorldGeometryAuditLayers,
+  nextWorldGeometryIssueZone,
+  parseWorldGeometryAuditLayers,
+  serializeWorldGeometryAuditLayers,
   type WorldGeometryAuditLayerKey
 } from "../game/worldGeometryAuditLayers";
+import { auditWorldGeometry } from "../game/worldGeometryAudit";
 import {
   nearestWorldLandmark,
   worldPortalAccessibilityLabel,
@@ -563,10 +567,16 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
       && gardenWorld.zones.some((zone) => zone.id === requestedZoneId)
       ? requestedZoneId as WorldZoneId
       : null;
-    return { available: parameter !== null, initiallyEnabled: parameter === "1", initialZoneId };
+    return {
+      available: parameter !== null,
+      initiallyEnabled: parameter === "1",
+      initialZoneId,
+      initialLayers: parseWorldGeometryAuditLayers(parameters.get("mapAuditLayers"))
+    };
   }, []);
   const [geometryAuditEnabled, setGeometryAuditEnabled] = useState(mapAuditMode.initiallyEnabled);
-  const [geometryAuditLayers, setGeometryAuditLayers] = useState(defaultWorldGeometryAuditLayers);
+  const [geometryAuditLayers, setGeometryAuditLayers] = useState(mapAuditMode.initialLayers);
+  const [diagnosticCopyStatus, setDiagnosticCopyStatus] = useState<"idle" | "copied" | "error">("idle");
   const movementStepIntervalMs = viewPreferences.gameMovementSpeed === "relaxed"
     ? 320
     : viewPreferences.gameMovementSpeed === "brisk" ? 190 : 240;
@@ -607,6 +617,11 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   const initialGuideId = mapAuditMode.available ? null : restoredGuideId;
   const [activeZoneId, setActiveZoneId] = useState<WorldZoneId>(initialZone.id);
   const activeZone = getWorldZone(gardenWorld, activeZoneId);
+  const geometryAuditIssueCounts = useMemo(() => (
+    mapAuditMode.available
+      ? Object.fromEntries(gardenWorld.zones.map((zone) => [zone.id, auditWorldGeometry(zone).issues.length]))
+      : {}
+  ) as Partial<Record<WorldZoneId, number>>, [mapAuditMode.available]);
   const [position, setPosition] = useState<Point>(
     companionInviteLink || diagnosticInitialZoneId
       ? initialZone.spawn
@@ -1927,7 +1942,39 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     const url = new URL(window.location.href);
     url.searchParams.set("mapAuditZone", zoneId);
     window.history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
+    setDiagnosticCopyStatus("idle");
   }, [mapAuditMode.available, moveToZone, setInputReleaseRequired, setPortalTransition]);
+
+  const handleDiagnosticLayerChange = useCallback((layer: WorldGeometryAuditLayerKey, enabled: boolean) => {
+    const nextLayers = { ...geometryAuditLayers, [layer]: enabled };
+    setGeometryAuditLayers(nextLayers);
+    const url = new URL(window.location.href);
+    url.searchParams.set("mapAuditLayers", serializeWorldGeometryAuditLayers(nextLayers));
+    window.history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
+    setDiagnosticCopyStatus("idle");
+  }, [geometryAuditLayers]);
+
+  const handleNextDiagnosticIssue = useCallback(() => {
+    const zoneId = nextWorldGeometryIssueZone(
+      gardenWorld.zones.map((zone) => zone.id),
+      geometryAuditIssueCounts,
+      activeZoneId
+    );
+    if (zoneId) handleDiagnosticZoneChange(zoneId);
+  }, [activeZoneId, geometryAuditIssueCounts, handleDiagnosticZoneChange]);
+
+  const handleCopyDiagnosticLink = useCallback(async () => {
+    const url = new URL(window.location.href);
+    url.searchParams.set("mapAudit", "1");
+    url.searchParams.set("mapAuditZone", activeZoneId);
+    url.searchParams.set("mapAuditLayers", serializeWorldGeometryAuditLayers(geometryAuditLayers));
+    try {
+      await copyText(url.toString());
+      setDiagnosticCopyStatus("copied");
+    } catch {
+      setDiagnosticCopyStatus("error");
+    }
+  }, [activeZoneId, geometryAuditLayers]);
 
   useEffect(() => {
     if (!mapAuditMode.available || !geometryAuditEnabled) return;
@@ -4606,17 +4653,24 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
             zones={gardenWorld.zones}
             activeZoneId={activeZone.id}
             enabled={geometryAuditEnabled}
+            issueCounts={geometryAuditIssueCounts}
             layers={geometryAuditLayers}
+            copyStatus={diagnosticCopyStatus}
+            onCopyLink={() => { void handleCopyDiagnosticLink(); }}
             onEnabledChange={(nextEnabled) => {
               const url = new URL(window.location.href);
               url.searchParams.set("mapAudit", nextEnabled ? "1" : "0");
-              if (!nextEnabled) url.searchParams.delete("mapAuditZone");
+              if (nextEnabled) {
+                url.searchParams.set("mapAuditLayers", serializeWorldGeometryAuditLayers(geometryAuditLayers));
+              } else {
+                url.searchParams.delete("mapAuditZone");
+                url.searchParams.delete("mapAuditLayers");
+              }
               window.history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
               setGeometryAuditEnabled(nextEnabled);
             }}
-            onLayerChange={(layer: WorldGeometryAuditLayerKey, nextEnabled: boolean) => {
-              setGeometryAuditLayers((current) => ({ ...current, [layer]: nextEnabled }));
-            }}
+            onLayerChange={handleDiagnosticLayerChange}
+            onNextIssue={handleNextDiagnosticIssue}
             onZoneChange={handleDiagnosticZoneChange}
           />
         ) : null}

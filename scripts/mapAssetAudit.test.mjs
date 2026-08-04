@@ -564,6 +564,8 @@ test("wires gallery, map, character, photo-effect, and mobile visual audits into
   assert.match(visualWorkflow, /map-foreground-audit\.json/);
   assert.match(visualWorkflow, /map-foreground-suggestions\.json/);
   assert.match(visualWorkflow, /map-foreground-suggestions\.patch\.json/);
+  assert.match(visualWorkflow, /map-foreground-rollback\.patch\.json/);
   assert.match(visualWorkflow, /map-foreground-depth-trend\.json/);
+  assert.match(visualWorkflow, /map-foreground-depth-trend\.html/);
   assert.match(visualWorkflow, /map-foreground-pr-summary\.md/);
 });

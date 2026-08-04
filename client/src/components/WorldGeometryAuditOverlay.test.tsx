@@ -32,7 +32,10 @@ describe("WorldGeometryAuditOverlay", () => {
     expect(desk).toHaveStyle({ left: "450px", top: "360px", width: "180px", height: "120px" });
     expect(depthLine).toHaveAttribute("data-depth-y", "480");
     expect(depthLine).toHaveStyle({ top: "120px" });
-    expect(screen.getByText(/청록 전경 · 금색 충돌 · 분홍 깊이선/)).toBeInTheDocument();
+    const recommendedDepthLine = desk?.querySelector<HTMLElement>(".world-geometry-audit__depth--recommended");
+    expect(recommendedDepthLine).toHaveAttribute("data-recommended-depth-y", "475");
+    expect(recommendedDepthLine).toHaveStyle({ top: "115px" });
+    expect(screen.getByText(/분홍 현재 · 보라 점선 추천 · 금색 충돌/)).toBeInTheDocument();
   });
 
   it("independently filters the grid, collision, depth, and identifier layers", () => {
@@ -47,7 +50,7 @@ describe("WorldGeometryAuditOverlay", () => {
 
     expect(container.querySelectorAll(".world-geometry-audit__tile")).toHaveLength(0);
     expect(container.querySelectorAll(".world-geometry-audit__collision")).toHaveLength(0);
-    expect(container.querySelectorAll(".world-geometry-audit__depth")).toHaveLength(1);
+    expect(container.querySelectorAll(".world-geometry-audit__depth")).toHaveLength(2);
     expect(screen.getByText("lobby-desk")).toBeInTheDocument();
 
     rerender(

@@ -7,6 +7,10 @@ const placementContract = JSON.parse(readFileSync(
   new URL("../../client/src/game/worldForegroundPlacements.json", import.meta.url),
   "utf8"
 ));
+const depthRecommendations = JSON.parse(readFileSync(
+  new URL("../../client/src/game/worldForegroundDepthRecommendations.json", import.meta.url),
+  "utf8"
+));
 
 export const mapDiagnosticsAuditViewports = Object.freeze([
   { id: "small-android", width: 360, height: 640 },
@@ -16,7 +20,12 @@ export const mapDiagnosticsAuditViewports = Object.freeze([
 
 export const mapDiagnosticsZoneIds = Object.freeze(Object.keys(placementContract.zones));
 
-export function auditMapDiagnosticsSnapshot(snapshot, viewport, expectedDepthCount) {
+export function auditMapDiagnosticsSnapshot(
+  snapshot,
+  viewport,
+  expectedDepthCount,
+  expectedRecommendedDepthCount = 0
+) {
   const issues = [];
   const controls = snapshot.controlsRect;
   if (
@@ -31,6 +40,9 @@ export function auditMapDiagnosticsSnapshot(snapshot, viewport, expectedDepthCou
   if (snapshot.overlayZoneId !== snapshot.selectedZoneId) issues.push("선택 구역과 오버레이 구역 불일치");
   if (snapshot.depthCount !== expectedDepthCount) {
     issues.push(`깊이선 수 불일치 ${snapshot.depthCount}/${expectedDepthCount}`);
+  }
+  if (snapshot.recommendedDepthCount !== expectedRecommendedDepthCount) {
+    issues.push(`추천 깊이선 수 불일치 ${snapshot.recommendedDepthCount}/${expectedRecommendedDepthCount}`);
   }
   if (snapshot.activeLayerCount !== 4) issues.push(`활성 진단 필터 수 불일치 ${snapshot.activeLayerCount}/4`);
   if (!snapshot.layers.every(Boolean)) issues.push("기본 진단 필터 비활성");
@@ -69,7 +81,8 @@ async function readSnapshot(page, selectedZoneId) {
       overlayZoneId: overlay?.getAttribute("data-zone") ?? null,
       overlayVisible: overlay instanceof HTMLElement && getComputedStyle(overlay).display !== "none",
       controlsRect: rect(".world-geometry-audit-controls"),
-      depthCount: document.querySelectorAll(".world-geometry-audit__depth").length,
+      depthCount: document.querySelectorAll(".world-geometry-audit__depth[data-depth-y]").length,
+      recommendedDepthCount: document.querySelectorAll(".world-geometry-audit__depth--recommended").length,
       collisionCount: document.querySelectorAll(".world-geometry-audit__collision").length,
       issueCount: Number(overlay?.getAttribute("data-issue-count") ?? -1),
       activeLayerCount: document.querySelectorAll(".world-geometry-audit-layers button[aria-pressed=\"true\"]").length,
@@ -141,10 +154,30 @@ export async function runMapDiagnosticsBrowserAudit({ rootDir, outputDir, port =
 
           const snapshot = await readSnapshot(page, zoneId);
           const expectedDepthCount = placementContract.zones[zoneId].length;
-          const issues = auditMapDiagnosticsSnapshot(snapshot, viewport, expectedDepthCount);
+          const recommendations = new Map(
+            depthRecommendations.zones[zoneId].map(({ decorationId, depthY }) => [decorationId, depthY])
+          );
+          const expectedRecommendedDepthCount = placementContract.zones[zoneId].filter((placement) => (
+            recommendations.get(placement.decorationId) !== undefined
+            && recommendations.get(placement.decorationId) !== placement.depthY
+          )).length;
+          const issues = auditMapDiagnosticsSnapshot(
+            snapshot,
+            viewport,
+            expectedDepthCount,
+            expectedRecommendedDepthCount
+          );
           const screenshotPath = path.join(outputDir, `map-diagnostics-${viewport.id}-${zoneId}.png`);
           await page.screenshot({ path: screenshotPath, fullPage: false });
-          reports.push({ ...viewport, zoneId, expectedDepthCount, snapshot, issues, screenshotPath });
+          reports.push({
+            ...viewport,
+            zoneId,
+            expectedDepthCount,
+            expectedRecommendedDepthCount,
+            snapshot,
+            issues,
+            screenshotPath
+          });
         }
         await context.close();
       }

@@ -165,9 +165,11 @@ jobs:
             .superpowers/visual-regression/map-foreground-audit.json
             .superpowers/visual-regression/map-foreground-suggestions.json
             .superpowers/visual-regression/map-foreground-suggestions.patch.json
+            .superpowers/visual-regression/map-foreground-rollback.patch.json
             .superpowers/visual-regression/map-foreground-depth-history.json
             .superpowers/visual-regression/map-foreground-depth-trend.json
             .superpowers/visual-regression/map-foreground-depth-trend.md
+            .superpowers/visual-regression/map-foreground-depth-trend.html
             .superpowers/visual-regression/map-foreground-pr-summary.md
           if-no-files-found: ignore
           retention-days: 14

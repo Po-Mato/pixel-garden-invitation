@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { gridTileSize } from "../game/movement";
 import { auditWorldGeometry } from "../game/worldGeometryAudit";
 import { worldForegroundPlacements, type WorldZone } from "../game/world";
+import { recommendedForegroundDepthY } from "../game/worldForegroundDepthRecommendations";
 import {
   defaultWorldGeometryAuditLayers,
   type WorldGeometryAuditLayers
@@ -59,33 +60,47 @@ export function WorldGeometryAuditOverlay({
           }}
         />
       )) : null}
-      {layers.depth || layers.labels ? foregrounds.map((placement) => (
-        <div
-          key={placement.decorationId}
-          className={`world-geometry-audit__foreground${layers.depth ? "" : " world-geometry-audit__foreground--label-only"}`}
-          data-decoration-id={placement.decorationId}
-          data-depth-mode={placement.depthMode}
-          style={{
-            left: placement.x,
-            top: placement.y,
-            width: placement.width,
-            height: placement.height
-          }}
-        >
-          {layers.depth ? (
-            <i
-              className="world-geometry-audit__depth"
-              data-depth-y={placement.depthY}
-              style={{ top: placement.depthY - placement.y }}
-            />
-          ) : null}
-          {layers.labels ? <small>{placement.decorationId}</small> : null}
-        </div>
-      )) : null}
+      {layers.depth || layers.labels ? foregrounds.map((placement) => {
+        const recommendedDepthY = recommendedForegroundDepthY(zone.id, placement.decorationId);
+        return (
+          <div
+            key={placement.decorationId}
+            className={`world-geometry-audit__foreground${layers.depth ? "" : " world-geometry-audit__foreground--label-only"}`}
+            data-decoration-id={placement.decorationId}
+            data-depth-mode={placement.depthMode}
+            style={{
+              left: placement.x,
+              top: placement.y,
+              width: placement.width,
+              height: placement.height
+            }}
+          >
+            {layers.depth ? (
+              <>
+                <i
+                  className="world-geometry-audit__depth"
+                  data-depth-y={placement.depthY}
+                  style={{ top: placement.depthY - placement.y }}
+                />
+                {recommendedDepthY !== null && recommendedDepthY !== placement.depthY ? (
+                  <i
+                    className="world-geometry-audit__depth world-geometry-audit__depth--recommended"
+                    data-recommended-depth-y={recommendedDepthY}
+                    style={{ top: recommendedDepthY - placement.y }}
+                  />
+                ) : null}
+              </>
+            ) : null}
+            {layers.labels ? <small>{placement.decorationId}</small> : null}
+          </div>
+        );
+      }) : null}
       <span className="world-geometry-audit__summary">
         <strong>MAP DIAGNOSTICS</strong>
         <em>이동 {audit.reachableCount} · 충돌 타일 {audit.blockedCount} · 단절 {audit.unreachableCount}</em>
-        <small>청록 전경 · 금색 충돌 · 분홍 깊이선</small>
+        <small className={audit.issues.length > 0 ? "world-geometry-audit__summary-issue" : undefined}>
+          {audit.issues[0] ?? "분홍 현재 · 보라 점선 추천 · 금색 충돌"}
+        </small>
       </span>
     </div>
   );

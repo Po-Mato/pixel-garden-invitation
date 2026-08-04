@@ -121,7 +121,7 @@ export function buildForegroundPlacementJsonPatch(contract, suggestions, {
 export function applyForegroundPlacementJsonPatch(contract, operations) {
   const nextContract = structuredClone(contract);
   for (const operation of operations) {
-    if (operation.op !== "add" && operation.op !== "replace") {
+    if (operation.op !== "add" && operation.op !== "replace" && operation.op !== "remove") {
       throw new Error(`지원하지 않는 전경 JSON patch 연산: ${operation.op}`);
     }
     const segments = operation.path.split("/").slice(1).map(unescapeJsonPointerSegment);
@@ -132,10 +132,11 @@ export function applyForegroundPlacementJsonPatch(contract, operations) {
       target = target[segment];
     }
     const property = segments.at(-1);
-    if (operation.op === "replace" && target?.[property] === undefined) {
+    if ((operation.op === "replace" || operation.op === "remove") && target?.[property] === undefined) {
       throw new Error(`교체할 전경 JSON patch 값이 없습니다: ${operation.path}`);
     }
-    target[property] = structuredClone(operation.value);
+    if (operation.op === "remove") delete target[property];
+    else target[property] = structuredClone(operation.value);
   }
   return nextContract;
 }

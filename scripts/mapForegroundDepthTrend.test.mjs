@@ -3,6 +3,7 @@ import test from "node:test";
 import {
   buildMapForegroundDepthTrend,
   createMapForegroundDepthSnapshot,
+  renderMapForegroundDepthTrendHtml,
   renderMapForegroundDepthTrendMarkdown
 } from "./lib/mapForegroundDepthTrend.mjs";
 
@@ -67,4 +68,10 @@ test("depth trend deduplicates rerun SHAs and retains bounded history", () => {
   });
   assert.deepEqual(result.history.snapshots.map(({ sha }) => sha), ["sha-1", "sha-2", "sha-3"]);
   assert.equal(result.report.baselineSha, "sha-2");
+  const html = renderMapForegroundDepthTrendHtml(result.history, result.report);
+  assert.match(html, /<!doctype html>/);
+  assert.match(html, /MAP DEPTH TRACE/);
+  assert.match(html, /desk/);
+  assert.match(html, /<polyline/);
+  assert.doesNotMatch(html, /https?:\/\//);
 });

@@ -194,6 +194,13 @@
   pointer-events: none;
 }
 
+.world-geometry-audit__depth--recommended {
+  z-index: 2;
+  height: 3px;
+  background: repeating-linear-gradient(90deg, #b89cff 0 8px, transparent 8px 13px);
+  box-shadow: 0 1px 0 rgba(34, 24, 55, 0.82);
+}
+
 .world-geometry-audit__collision {
   border: 3px dashed #ffc857;
   background: rgba(255, 200, 87, 0.2);
@@ -260,6 +267,7 @@
 .world-geometry-audit__summary strong { color: #7f4858; font-size: 9px; letter-spacing: 0.08em; }
 .world-geometry-audit__summary em { font-size: 9px; }
 .world-geometry-audit__summary small { color: #5d5550; font-size: 8px; }
+.world-geometry-audit__summary .world-geometry-audit__summary-issue { color: #a3264c; }
 
 .world-geometry-audit-controls {
   position: absolute;
@@ -370,6 +378,30 @@
   letter-spacing: 0.04em;
   text-align: right;
 }
+
+.world-geometry-audit-actions {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 3px;
+  pointer-events: auto;
+}
+
+.world-geometry-audit-actions > button {
+  min-height: 25px;
+  border: 2px solid #342d2b;
+  border-radius: 4px;
+  padding: 4px 6px;
+  background: rgba(23, 23, 23, 0.94);
+  color: #d7fbff;
+  font: 900 7px/1 ui-monospace, monospace;
+  letter-spacing: 0.04em;
+  box-shadow: 3px 3px 0 rgba(35, 28, 27, 0.42);
+}
+
+.world-geometry-audit-actions > button:focus-visible { outline: 2px solid #fff1a8; outline-offset: 1px; }
+.world-geometry-audit-issues > span { color: #ff4d98; }
+.world-geometry-audit-issues:disabled { color: #8b8581; opacity: 0.78; }
+.world-geometry-audit-copy { border-color: #4df2ff !important; color: #ffc857 !important; }
 
 .world-destination-beacon {
   position: absolute;

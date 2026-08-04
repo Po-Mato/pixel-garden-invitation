@@ -11,9 +11,13 @@ type WorldGeometryAuditControlsProps = {
   zones: WorldZone[];
   activeZoneId: WorldZoneId;
   enabled: boolean;
+  issueCounts: Partial<Record<WorldZoneId, number>>;
   layers: WorldGeometryAuditLayers;
+  copyStatus: "idle" | "copied" | "error";
+  onCopyLink: () => void;
   onEnabledChange: (enabled: boolean) => void;
   onLayerChange: (layer: WorldGeometryAuditLayerKey, enabled: boolean) => void;
+  onNextIssue: () => void;
   onZoneChange: (zoneId: WorldZoneId) => void;
 };
 
@@ -28,11 +32,16 @@ export function WorldGeometryAuditControls({
   zones,
   activeZoneId,
   enabled,
+  issueCounts,
   layers,
+  copyStatus,
+  onCopyLink,
   onEnabledChange,
   onLayerChange,
+  onNextIssue,
   onZoneChange
 }: WorldGeometryAuditControlsProps) {
+  const issueTotal = zones.reduce((total, zone) => total + (issueCounts[zone.id] ?? 0), 0);
   return (
     <aside
       className="world-geometry-audit-controls"
@@ -62,6 +71,7 @@ export function WorldGeometryAuditControls({
               {zones.map((zone) => (
                 <option key={zone.id} value={zone.id}>
                   {zone.journeyIndex + 1}. {zone.label}
+                  {(issueCounts[zone.id] ?? 0) > 0 ? ` · !${issueCounts[zone.id]}` : ""}
                 </option>
               ))}
             </select>
@@ -80,6 +90,25 @@ export function WorldGeometryAuditControls({
               </button>
             ))}
             <small aria-label="구역 단축키">KEY 1–0 · [ ]</small>
+          </div>
+          <div className="world-geometry-audit-actions">
+            <button
+              type="button"
+              className="world-geometry-audit-issues"
+              aria-label={issueTotal > 0 ? `다음 진단 오류 구역으로 이동, 총 ${issueTotal}건` : "진단 오류 없음"}
+              disabled={issueTotal === 0}
+              onClick={onNextIssue}
+            >
+              <span>ERR</span> {issueTotal > 0 ? `${issueTotal} · NEXT` : "0 · CLEAR"}
+            </button>
+            <button
+              type="button"
+              className="world-geometry-audit-copy"
+              aria-label="현재 진단 링크 복사"
+              onClick={onCopyLink}
+            >
+              {copyStatus === "copied" ? "COPIED" : copyStatus === "error" ? "RETRY" : "COPY URL"}
+            </button>
           </div>
         </>
       ) : null}

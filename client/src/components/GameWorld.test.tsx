@@ -1995,7 +1995,7 @@ describe("GameWorld", () => {
     expect(Number(player.style.zIndex)).toBeLessThan(Number(desk?.style.zIndex));
   });
 
-  it("keeps map diagnostics hidden behind an explicit developer URL toggle", () => {
+  it("keeps map diagnostics hidden behind an explicit developer URL toggle", async () => {
     const originalUrl = window.location.href;
     window.history.replaceState({}, "", "/?mapAudit=0");
     try {
@@ -2008,7 +2008,14 @@ describe("GameWorld", () => {
       fireEvent.click(toggle);
       expect(screen.getByTestId("world-geometry-audit")).toBeInTheDocument();
       expect(screen.getByRole("button", { name: "지도 진단 끄기" })).toHaveAttribute("aria-pressed", "true");
-      expect(window.location.search).toBe("?mapAudit=1");
+      expect(new URLSearchParams(window.location.search).get("mapAudit")).toBe("1");
+      expect(new URLSearchParams(window.location.search).get("mapAuditLayers"))
+        .toBe("grid,collision,depth,labels");
+      expect(screen.getByRole("button", { name: "진단 오류 없음" })).toBeDisabled();
+
+      fireEvent.click(screen.getByRole("button", { name: "충돌 영역 숨기기" }));
+      expect(screen.getByTestId("world-geometry-audit")).toHaveAttribute("data-collision", "false");
+      expect(new URLSearchParams(window.location.search).get("mapAuditLayers")).toBe("grid,depth,labels");
 
       fireEvent.change(screen.getByRole("combobox", { name: "진단 구역 즉시 이동" }), {
         target: { value: "ceremony-hall" }
@@ -2020,6 +2027,15 @@ describe("GameWorld", () => {
       expect(window.localStorage.getItem(journeyProgressStorageKey)).toBeNull();
       expect(window.localStorage.getItem(worldSessionStorageKey)).toBeNull();
 
+      await act(async () => {
+        fireEvent.click(screen.getByRole("button", { name: "현재 진단 링크 복사" }));
+      });
+      expect(copyText).toHaveBeenCalled();
+      const copiedDiagnosticUrl = new URL(vi.mocked(copyText).mock.calls.at(-1)?.[0] ?? "", window.location.origin);
+      expect(copiedDiagnosticUrl.searchParams.get("mapAuditZone")).toBe("ceremony-hall");
+      expect(copiedDiagnosticUrl.searchParams.get("mapAuditLayers")).toBe("grid,depth,labels");
+      expect(screen.getByRole("button", { name: "현재 진단 링크 복사" })).toHaveTextContent("COPIED");
+
       fireEvent.click(screen.getByRole("button", { name: "지도 진단 끄기" }));
       expect(screen.queryByTestId("world-geometry-audit")).not.toBeInTheDocument();
       expect(window.location.search).toBe("?mapAudit=0");
@@ -2030,7 +2046,7 @@ describe("GameWorld", () => {
 
   it("opens shared diagnostic zone links and cycles zones with developer shortcuts", () => {
     const originalUrl = window.location.href;
-    window.history.replaceState({}, "", "/?mapAudit=1&mapAuditZone=banquet");
+    window.history.replaceState({}, "", "/?mapAudit=1&mapAuditZone=banquet&mapAuditLayers=grid,depth");
     try {
       render(<GameWorld profile={profile} />);
 
@@ -2039,6 +2055,8 @@ describe("GameWorld", () => {
       expect(screen.getByLabelText("연회장 지도")).toBeInTheDocument();
       expect(screen.getByText("연회장 진단 링크로 바로 이동했어요")).toBeInTheDocument();
       expect(window.localStorage.getItem(worldSessionStorageKey)).toBeNull();
+      expect(screen.getByRole("button", { name: "충돌 영역 표시" })).toHaveAttribute("aria-pressed", "false");
+      expect(screen.getByRole("button", { name: "전경 식별자 표시" })).toHaveAttribute("aria-pressed", "false");
 
       fireEvent.keyDown(window, { key: "[" });
       expect(selector).toHaveValue("ceremony-hall");
