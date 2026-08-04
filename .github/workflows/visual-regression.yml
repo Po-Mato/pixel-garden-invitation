@@ -2,14 +2,18 @@ name: Mobile visual regression
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: "41 3 * * 1"
   pull_request:
     types: [opened, synchronize, reopened, labeled, unlabeled]
     paths:
       - "client/public/assets/maps/**"
       - "client/public/characters/**"
       - "client/public/map-diagnostic-bundle-viewer.html"
+      - "client/public/map-diagnostic-delta.schema.json"
       - ".github/world-geometry-policy-owners.json"
       - ".github/workflows/apply-approved-map-patch.yml"
+      - ".github/workflows/map-patch-automation-e2e.yml"
       - "client/src/components/GameWorld.tsx"
       - "client/src/components/PortalDestinationPreview.tsx"
       - "client/src/components/Npc*.tsx"
@@ -36,8 +40,10 @@ on:
       - "client/public/assets/maps/**"
       - "client/public/characters/**"
       - "client/public/map-diagnostic-bundle-viewer.html"
+      - "client/public/map-diagnostic-delta.schema.json"
       - ".github/world-geometry-policy-owners.json"
       - ".github/workflows/apply-approved-map-patch.yml"
+      - ".github/workflows/map-patch-automation-e2e.yml"
       - "client/src/components/GameWorld.tsx"
       - "client/src/components/PortalDestinationPreview.tsx"
       - "client/src/components/Npc*.tsx"
@@ -61,6 +67,7 @@ on:
 permissions:
   contents: read
   pull-requests: write
+  issues: write
   id-token: write
   attestations: write
   artifact-metadata: write
@@ -115,6 +122,39 @@ jobs:
         run: pnpm maps:geometry-policy-governance
       - name: Summarize world geometry policy review
         run: pnpm maps:geometry-policy-summary -- --approved "${{ contains(github.event.pull_request.labels.*.name, 'geometry-policy-approved') }}" --run-url "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+      - name: Prepare expired policy issue request
+        run: pnpm maps:geometry-policy-issue -- --run-url "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+      - name: Open, update, or close the expired policy issue
+        if: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' }}
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const fs = require("fs");
+            const request = JSON.parse(fs.readFileSync(".superpowers/visual-regression/world-geometry-policy-issue.json", "utf8"));
+            const marker = "<!-- world-geometry-policy-expiry -->";
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const issues = await github.paginate(github.rest.issues.listForRepo, { owner, repo, state: "all", per_page: 100 });
+            const managed = issues
+              .filter((issue) => !issue.pull_request && issue.body?.includes(marker))
+              .sort((left, right) => right.number - left.number)[0];
+            if (request.action === "close") {
+              if (managed?.state === "open") {
+                await github.rest.issues.update({ owner, repo, issue_number: managed.number, state: "closed", title: request.issue.title, body: request.issue.body });
+              }
+              return;
+            }
+            try {
+              await github.rest.issues.getLabel({ owner, repo, name: request.issue.label });
+            } catch (error) {
+              if (error.status !== 404) throw error;
+              await github.rest.issues.createLabel({ owner, repo, name: request.issue.label, color: "c84b31", description: "CI-managed expired world geometry recommendations" });
+            }
+            if (managed) {
+              await github.rest.issues.update({ owner, repo, issue_number: managed.number, state: "open", title: request.issue.title, body: request.issue.body, labels: [request.issue.label] });
+            } else {
+              await github.rest.issues.create({ owner, repo, title: request.issue.title, body: request.issue.body, labels: [request.issue.label] });
+            }
       - name: Summarize foreground diagnostics for pull requests
         if: always()
         run: pnpm maps:foreground-summary -- --run-url "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
@@ -136,8 +176,17 @@ jobs:
         with:
           path: .superpowers/visual-regression/world-geometry-policy-review-state.json
           key: world-geometry-policy-review-${{ runner.os }}-${{ github.base_ref || github.ref_name }}-${{ github.sha }}
-      - name: Install mobile browser engines
-        run: pnpm exec playwright install --with-deps chromium webkit
+      - name: Restore Playwright browser cache
+        id: playwright-browser-cache
+        uses: actions/cache@v5
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ runner.arch }}-1.62.0
+      - name: Install mobile browser system dependencies
+        run: pnpm exec playwright install-deps chromium webkit
+      - name: Install mobile browser engines on cache miss
+        if: steps.playwright-browser-cache.outputs.cache-hit != 'true'
+        run: pnpm exec playwright install chromium webkit
       - name: Audit live mobile HUD screenshots
         run: pnpm visual:hud-browser
       - name: Audit map diagnostic screenshots
@@ -148,17 +197,29 @@ jobs:
         run: pnpm maps:diagnostics-provenance -- --sha "${{ github.sha }}" --run-id "${{ github.run_id }}" --repository "${{ github.repository }}"
       - name: Verify diagnostics provenance subjects
         run: pnpm maps:diagnostics-provenance-verify
-      - name: Sign map diagnostics provenance with GitHub OIDC
+      - name: Build one-click diagnostics Evidence Pack
+        run: pnpm maps:diagnostics-evidence-pack
+      - name: Verify diagnostics Evidence Pack offline
+        run: pnpm maps:diagnostics-evidence-pack-verify
+      - name: Sign map diagnostics Evidence Pack with GitHub OIDC
         id: diagnostics-attestation
         if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
         uses: actions/attest@v4
         with:
-          subject-path: .superpowers/visual-regression/map-diagnostics-provenance.json
+          subject-path: .superpowers/visual-regression/map-diagnostics-evidence-pack.tgz
       - name: Verify signed diagnostics provenance
         if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh attestation verify .superpowers/visual-regression/map-diagnostics-provenance.json --repo "${{ github.repository }}" --signer-workflow "${{ github.repository }}/.github/workflows/visual-regression.yml"
+        run: gh attestation verify .superpowers/visual-regression/map-diagnostics-evidence-pack.tgz --repo "${{ github.repository }}" --signer-workflow "${{ github.repository }}/.github/workflows/visual-regression.yml"
+      - name: Bundle offline signature verification material
+        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cp "${{ steps.diagnostics-attestation.outputs.bundle-path }}" .superpowers/visual-regression/map-diagnostics-attestation.json
+          gh attestation trusted-root > .superpowers/visual-regression/trusted_root.jsonl
+          gh attestation verify .superpowers/visual-regression/map-diagnostics-evidence-pack.tgz --repo "${{ github.repository }}" --signer-workflow "${{ github.repository }}/.github/workflows/visual-regression.yml" --bundle .superpowers/visual-regression/map-diagnostics-attestation.json --custom-trusted-root .superpowers/visual-regression/trusted_root.jsonl
       - name: Summarize diagnostics provenance
         if: always() && hashFiles('.superpowers/visual-regression/map-diagnostics-provenance.json') != ''
         run: pnpm maps:diagnostics-provenance-summary -- --attestation-url "${{ steps.diagnostics-attestation.outputs.attestation-url }}" --run-url "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
@@ -170,6 +231,20 @@ jobs:
           path: .superpowers/visual-regression/mobile-game-regions.json
           if-no-files-found: ignore
           retention-days: 14
+      - name: Upload signed diagnostics Evidence Pack
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: map-diagnostics-evidence-pack-${{ github.run_id }}
+          path: |
+            .superpowers/visual-regression/map-diagnostics-evidence-pack.tgz
+            .superpowers/visual-regression/map-diagnostics-evidence-pack-VERIFY.md
+            .superpowers/visual-regression/map-diagnostics-attestation.json
+            .superpowers/visual-regression/trusted_root.jsonl
+            .superpowers/visual-regression/map-diagnostics-provenance.json
+            .superpowers/visual-regression/map-diagnostics-provenance.md
+          if-no-files-found: ignore
+          retention-days: 30
       - name: Upload visual difference
         if: failure()
         uses: actions/upload-artifact@v7
@@ -192,10 +267,12 @@ jobs:
             .superpowers/visual-regression/world-geometry-policy-governance.json
             .superpowers/visual-regression/world-geometry-policy-review-state.json
             .superpowers/visual-regression/world-geometry-policy-pr-summary.md
+            .superpowers/visual-regression/world-geometry-policy-issue.json
+            .superpowers/visual-regression/world-geometry-policy-issue.md
             .superpowers/visual-regression/map-diagnostics-provenance.json
             .superpowers/visual-regression/map-diagnostics-provenance.md
           if-no-files-found: ignore
-          retention-days: 14
+          retention-days: 30
       - name: Upload world layout difference
         if: failure()
         uses: actions/upload-artifact@v7

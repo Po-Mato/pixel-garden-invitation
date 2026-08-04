@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://po-mato.github.io/pixel-garden-invitation/map-diagnostic-delta.schema.json",
+  "title": "Wedding Map Diagnostic Delta",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["kind", "version", "generatedAt", "base", "candidate", "reproductionUrl", "sourceContract", "changes", "screenshots", "integrity"],
+  "properties": {
+    "kind": { "const": "world-diagnostic-delta" },
+    "version": { "const": 1 },
+    "generatedAt": { "type": "string", "format": "date-time" },
+    "base": { "$ref": "#/$defs/endpoint" },
+    "candidate": { "$ref": "#/$defs/endpoint" },
+    "reproductionUrl": { "type": "string", "format": "uri", "pattern": "^https?://" },
+    "sourceContract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["target", "version", "checksum"],
+      "properties": {
+        "target": { "const": "client/src/game/worldForegroundPlacements.json" },
+        "version": { "type": "integer", "minimum": 1 },
+        "checksum": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "changes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["field", "before", "after"],
+        "properties": {
+          "field": { "enum": ["ZONE", "VIEWPORT", "POLICY", "HEATMAP", "CONTRACT", "DECISIONS", "FINDINGS", "PATCH", "SCREENSHOT"] },
+          "before": { "type": "string" },
+          "after": { "type": "string" }
+        }
+      }
+    },
+    "screenshots": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["changed", "baseChecksum", "candidateChecksum"],
+      "properties": {
+        "changed": { "type": "boolean" },
+        "baseChecksum": { "$ref": "#/$defs/sha256" },
+        "candidateChecksum": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "integrity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["algorithm", "canonicalization", "checksum"],
+      "properties": {
+        "algorithm": { "const": "SHA-256" },
+        "canonicalization": { "const": "json-sort-v1" },
+        "checksum": { "$ref": "#/$defs/sha256" }
+      }
+    }
+  },
+  "$defs": {
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "zoneId": { "enum": ["home", "neighborhood", "subway-station", "subway-train", "venue-exterior", "lobby", "bridal-room", "ceremony-hall", "banquet", "restroom"] },
+    "endpoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["generatedAt", "zoneId", "integrityChecksum"],
+      "properties": {
+        "generatedAt": { "type": "string", "format": "date-time" },
+        "zoneId": { "$ref": "#/$defs/zoneId" },
+        "integrityChecksum": { "$ref": "#/$defs/sha256" }
+      }
+    }
+  }
+}

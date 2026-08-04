@@ -1,4 +1,4 @@
-import type { WorldZoneId } from "@wedding-game/shared";
+import { worldZoneIds, type WorldZoneId } from "@wedding-game/shared";
 import type { WorldGeometryAuditFinding } from "./worldGeometryAudit";
 import type { WorldGeometryAuditPolicyResult } from "./worldGeometryAuditPolicy";
 import type { WorldGeometryAuditLayers } from "./worldGeometryAuditLayers";
@@ -42,8 +42,12 @@ export type WorldDiagnosticBundle = {
   };
 };
 
+export const worldDiagnosticDeltaFields = [
+  "ZONE", "VIEWPORT", "POLICY", "HEATMAP", "CONTRACT", "DECISIONS", "FINDINGS", "PATCH", "SCREENSHOT"
+] as const;
+
 export type WorldDiagnosticDifference = {
-  field: "ZONE" | "VIEWPORT" | "POLICY" | "HEATMAP" | "CONTRACT" | "DECISIONS" | "FINDINGS" | "PATCH" | "SCREENSHOT";
+  field: (typeof worldDiagnosticDeltaFields)[number];
   before: string;
   after: string;
 };
@@ -300,12 +304,79 @@ export async function createWorldDiagnosticDeltaBundle(
   };
 }
 
-export async function verifyWorldDiagnosticDeltaBundleIntegrity(bundle: WorldDiagnosticDeltaBundle): Promise<boolean> {
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return value !== null && typeof value === "object" && !Array.isArray(value);
+}
+
+function hasExactKeys(value: Record<string, unknown>, keys: readonly string[]): boolean {
+  const actual = Object.keys(value).sort();
+  const expected = [...keys].sort();
+  return actual.length === expected.length && actual.every((key, index) => key === expected[index]);
+}
+
+function isIsoDate(value: unknown): value is string {
+  return typeof value === "string" && value !== "" && Number.isFinite(Date.parse(value));
+}
+
+function isSha256(value: unknown): value is string {
+  return typeof value === "string" && /^[a-f0-9]{64}$/.test(value);
+}
+
+function isDeltaEndpoint(value: unknown): boolean {
+  return isRecord(value)
+    && hasExactKeys(value, ["generatedAt", "zoneId", "integrityChecksum"])
+    && isIsoDate(value.generatedAt)
+    && typeof value.zoneId === "string"
+    && (worldZoneIds as readonly string[]).includes(value.zoneId)
+    && isSha256(value.integrityChecksum);
+}
+
+export function isWorldDiagnosticDeltaBundle(value: unknown): value is WorldDiagnosticDeltaBundle {
+  if (!isRecord(value) || !hasExactKeys(value, [
+    "kind", "version", "generatedAt", "base", "candidate", "reproductionUrl",
+    "sourceContract", "changes", "screenshots", "integrity"
+  ])) return false;
+  if (value.kind !== "world-diagnostic-delta" || value.version !== 1 || !isIsoDate(value.generatedAt)) return false;
+  if (!isDeltaEndpoint(value.base) || !isDeltaEndpoint(value.candidate)) return false;
+  if (typeof value.reproductionUrl !== "string") return false;
+  try {
+    const reproductionUrl = new URL(value.reproductionUrl);
+    if (!["http:", "https:"].includes(reproductionUrl.protocol)) return false;
+  } catch {
+    return false;
+  }
+  if (!isRecord(value.sourceContract)
+    || !hasExactKeys(value.sourceContract, ["target", "version", "checksum"])
+    || value.sourceContract.target !== "client/src/game/worldForegroundPlacements.json"
+    || !Number.isInteger(value.sourceContract.version) || Number(value.sourceContract.version) < 1
+    || !isSha256(value.sourceContract.checksum)) return false;
+  if (!Array.isArray(value.changes) || !value.changes.every((change) => (
+    isRecord(change)
+    && hasExactKeys(change, ["field", "before", "after"])
+    && typeof change.field === "string"
+    && (worldDiagnosticDeltaFields as readonly string[]).includes(change.field)
+    && typeof change.before === "string"
+    && typeof change.after === "string"
+  ))) return false;
+  if (!isRecord(value.screenshots)
+    || !hasExactKeys(value.screenshots, ["changed", "baseChecksum", "candidateChecksum"])
+    || typeof value.screenshots.changed !== "boolean"
+    || !isSha256(value.screenshots.baseChecksum)
+    || !isSha256(value.screenshots.candidateChecksum)
+    || value.screenshots.changed !== (value.screenshots.baseChecksum !== value.screenshots.candidateChecksum)) return false;
+  if (!isRecord(value.integrity)
+    || !hasExactKeys(value.integrity, ["algorithm", "canonicalization", "checksum"])
+    || value.integrity.algorithm !== "SHA-256"
+    || value.integrity.canonicalization !== "json-sort-v1"
+    || !isSha256(value.integrity.checksum)) return false;
+  return !JSON.stringify(value).includes("data:image/png;base64,");
+}
+
+export async function verifyWorldDiagnosticDeltaBundleIntegrity(bundle: unknown): Promise<boolean> {
+  if (!isWorldDiagnosticDeltaBundle(bundle)) return false;
   if (
-    bundle.kind !== "world-diagnostic-delta"
-    || bundle.version !== 1
-    || bundle.integrity?.algorithm !== "SHA-256"
-    || bundle.integrity?.canonicalization !== "json-sort-v1"
+    bundle.integrity.algorithm !== "SHA-256"
+    || bundle.integrity.canonicalization !== "json-sort-v1"
   ) return false;
   const { integrity, ...payload } = bundle;
   return integrity.checksum === await sha256Hex(canonicalDiagnosticJson(payload));

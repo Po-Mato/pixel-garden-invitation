@@ -7,7 +7,10 @@ import { fileURLToPath } from "node:url";
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
 
 test("standalone diagnostic bundle viewer stays local and renders every evidence section", async () => {
-  const html = await readFile(path.join(root, "client/public/map-diagnostic-bundle-viewer.html"), "utf8");
+  const [html, schema] = await Promise.all([
+    readFile(path.join(root, "client/public/map-diagnostic-bundle-viewer.html"), "utf8"),
+    readFile(path.join(root, "client/public/map-diagnostic-delta.schema.json"), "utf8").then(JSON.parse)
+  ]);
   assert.match(html, /NO UPLOAD · LOCAL ONLY/);
   assert.match(html, /data:image\/png;base64/);
   assert.match(html, /crypto\.subtle\.digest\("SHA-256"/);
@@ -22,6 +25,9 @@ test("standalone diagnostic bundle viewer stays local and renders every evidence
   assert.match(html, /COPY REPRO/);
   assert.match(html, /aria-keyshortcuts="b"/);
   assert.match(html, /DELTA 무결성 검증에 실패했습니다/);
+  assert.match(html, /exactKeys\(bundle,/);
+  assert.equal(schema.$schema, "https://json-schema.org/draft/2020-12/schema");
+  assert.equal(schema.properties.kind.const, "world-diagnostic-delta");
   assert.match(html, /REVIEW DECISIONS/);
   assert.match(html, /SELECTED JSON PATCH/);
   assert.match(html, /dataTransfer\?\.files/);

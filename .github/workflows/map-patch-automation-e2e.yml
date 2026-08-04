@@ -1,0 +1,135 @@
+name: Map patch approval E2E
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "23 4 * * 1"
+
+permissions:
+  actions: read
+  contents: write
+  issues: write
+  pull-requests: write
+
+concurrency:
+  group: map-patch-automation-e2e
+  cancel-in-progress: false
+
+jobs:
+  draft-pr-lifecycle:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      E2E_BRANCH: automation/e2e-map-patch-${{ github.run_id }}-${{ github.run_attempt }}
+      E2E_TITLE: test-map-patch-approval-e2e-${{ github.run_id }}-${{ github.run_attempt }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Publish temporary source branch
+        id: source
+        run: |
+          git switch -c "$E2E_BRANCH"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          printf '%s\n' "run=${{ github.run_id }} attempt=${{ github.run_attempt }}" > scripts/fixtures/map-patch-automation-e2e-trigger.txt
+          git add -- scripts/fixtures/map-patch-automation-e2e-trigger.txt
+          git commit -m "test: trigger map patch approval e2e"
+          git push origin "HEAD:refs/heads/$E2E_BRANCH"
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+      - name: Open temporary draft pull request
+        id: source-pr
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          pr_url=$(gh pr create --draft --base "${{ github.event.repository.default_branch }}" --head "$E2E_BRANCH" --title "$E2E_TITLE" --body "승인 라벨 자동화의 실제 수명주기 검증용 임시 PR입니다. 워크플로가 항상 닫고 브랜치를 삭제합니다.")
+          pr_number=$(gh pr view "$pr_url" --json number --jq .number)
+          echo "url=$pr_url" >> "$GITHUB_OUTPUT"
+          echo "number=$pr_number" >> "$GITHUB_OUTPUT"
+      - name: Wait for successful visual evidence
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HEAD_SHA: ${{ steps.source.outputs.sha }}
+        run: |
+          for attempt in $(seq 1 300); do
+            run=$(gh run list --workflow visual-regression.yml --commit "$HEAD_SHA" --event pull_request --limit 1 --json databaseId,status,conclusion,url)
+            status=$(jq -r '.[0].status // "waiting"' <<< "$run")
+            conclusion=$(jq -r '.[0].conclusion // ""' <<< "$run")
+            if test "$status" = "completed"; then
+              test "$conclusion" = "success"
+              jq -r '.[0].url' <<< "$run"
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "Visual evidence timed out" >&2
+          exit 1
+      - name: Add the real approval label
+        id: approval
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_PR: ${{ steps.source-pr.outputs.number }}
+        run: |
+          gh label create map-foreground-patch-approved --color 2f81f7 --description "Apply a checksum-bound visual audit patch in an isolated PR" 2>/dev/null || true
+          echo "started-at=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> "$GITHUB_OUTPUT"
+          gh pr edit "$SOURCE_PR" --add-label map-foreground-patch-approved
+      - name: Wait for trusted approval automation
+        id: application
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HEAD_SHA: ${{ steps.source.outputs.sha }}
+          SOURCE_PR: ${{ steps.source-pr.outputs.number }}
+          STARTED_AT: ${{ steps.approval.outputs.started-at }}
+        run: |
+          for attempt in $(seq 1 180); do
+            runs=$(gh run list --workflow apply-approved-map-patch.yml --event pull_request_target --limit 30 --json databaseId,status,conclusion,url,displayTitle,createdAt)
+            run=$(jq -c --arg title "$E2E_TITLE" --arg started "$STARTED_AT" '[.[] | select(.displayTitle == $title and .createdAt >= $started)] | first // {}' <<< "$runs")
+            status=$(jq -r '.status // "waiting"' <<< "$run")
+            conclusion=$(jq -r '.conclusion // ""' <<< "$run")
+            if test "$status" = "completed"; then
+              test "$conclusion" = "success"
+              break
+            fi
+            sleep 10
+          done
+          test "$status" = "completed"
+          application_branch="automation/map-foreground-pr-${SOURCE_PR}-${HEAD_SHA:0:7}"
+          for attempt in $(seq 1 30); do
+            application_pr=$(gh pr list --state open --head "$application_branch" --json number --jq '.[0].number // empty')
+            test -n "$application_pr" && break
+            sleep 5
+          done
+          test -n "$application_pr"
+          echo "branch=$application_branch" >> "$GITHUB_OUTPUT"
+          echo "number=$application_pr" >> "$GITHUB_OUTPUT"
+      - name: Verify isolated application pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
+          APPLICATION_PR: ${{ steps.application.outputs.number }}
+        run: |
+          gh pr view "$APPLICATION_PR" --json isDraft,state,headRefName,baseRefName,files > "$RUNNER_TEMP/map-patch-e2e-application-pr.json"
+          jq -e --arg source "$E2E_BRANCH" '.isDraft == false and .state == "OPEN" and .baseRefName == $source and (.files | length) == 1 and .files[0].path == "client/src/game/worldForegroundPlacements.json"' "$RUNNER_TEMP/map-patch-e2e-application-pr.json"
+      - name: Close temporary pull requests and delete branches
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          APPLICATION_PR: ${{ steps.application.outputs.number }}
+          APPLICATION_BRANCH: ${{ steps.application.outputs.branch }}
+          SOURCE_PR: ${{ steps.source-pr.outputs.number }}
+        run: |
+          if test -z "$APPLICATION_BRANCH" && test -n "$SOURCE_PR"; then
+            short_sha=$(printf '%s' '${{ steps.source.outputs.sha }}' | cut -c1-7)
+            APPLICATION_BRANCH="automation/map-foreground-pr-${SOURCE_PR}-${short_sha}"
+          fi
+          if test -z "$APPLICATION_PR" && test -n "$APPLICATION_BRANCH"; then
+            APPLICATION_PR=$(gh pr list --state open --head "$APPLICATION_BRANCH" --json number --jq '.[0].number // empty')
+          fi
+          if test -n "$APPLICATION_PR"; then
+            gh pr close "$APPLICATION_PR" --delete-branch --comment "E2E 적용 PR 검증이 끝나 자동으로 닫았습니다." || true
+          elif test -n "$APPLICATION_BRANCH"; then
+            git push origin --delete "$APPLICATION_BRANCH" >/dev/null 2>&1 || true
+          fi
+          if test -n "$SOURCE_PR"; then
+            gh pr close "$SOURCE_PR" --delete-branch --comment "E2E 승인 라벨 검증이 끝나 자동으로 닫았습니다." || true
+          fi
+          git push origin --delete "$E2E_BRANCH" >/dev/null 2>&1 || true

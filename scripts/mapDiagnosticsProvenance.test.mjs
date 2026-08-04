@@ -18,9 +18,12 @@ test("diagnostic provenance hashes sorted subjects and emits a strict verificati
   });
   assert.deepEqual(manifest.subjects.map(({ path }) => path), ["reports/a.json", "reports/z.json"]);
   assert.match(manifest.subjects[0].sha256, /^[a-f0-9]{64}$/);
+  assert.match(manifest.verification.command, /map-diagnostics-evidence-pack\.tgz/);
+  assert.match(manifest.verification.offlineCommand, /--bundle map-diagnostics-attestation\.json/);
+  assert.match(manifest.verification.offlineCommand, /--custom-trusted-root trusted_root\.jsonl/);
   assert.match(manifest.verification.command, /--repo Po-Mato\/pixel-garden-invitation/);
   assert.match(manifest.verification.command, /--signer-workflow Po-Mato\/pixel-garden-invitation\/.github\/workflows\/visual-regression.yml/);
-  assert.match(manifest.verification.subjectCommand, /maps:diagnostics-provenance-verify/);
+  assert.match(manifest.verification.subjectCommand, /maps:diagnostics-evidence-pack-verify/);
   assert.deepEqual(verifyMapDiagnosticsProvenanceSubjects(manifest, [
     { path: "reports/a.json", source: "a" },
     { path: "reports/z.json", source: "z" }

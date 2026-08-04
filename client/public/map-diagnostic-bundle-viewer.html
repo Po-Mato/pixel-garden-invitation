@@ -133,6 +133,12 @@
         if (Array.isArray(value)) return `[${value.map(canonicalJson).join(",")}]`;
         return `{${Object.keys(value).sort().map((key) => `${JSON.stringify(key)}:${canonicalJson(value[key])}`).join(",")}}`;
       };
+      const deltaFields = Object.freeze(["ZONE","VIEWPORT","POLICY","HEATMAP","CONTRACT","DECISIONS","FINDINGS","PATCH","SCREENSHOT"]);
+      const deltaZones = Object.freeze(["home","neighborhood","subway-station","subway-train","venue-exterior","lobby","bridal-room","ceremony-hall","banquet","restroom"]);
+      const exactKeys = (value,keys) => value && typeof value === "object" && !Array.isArray(value) && Object.keys(value).sort().join("\0") === [...keys].sort().join("\0");
+      const isoDate = (value) => typeof value === "string" && value !== "" && Number.isFinite(Date.parse(value));
+      const sha256Checksum = (value) => typeof value === "string" && /^[a-f0-9]{64}$/.test(value);
+      const deltaEndpoint = (value) => exactKeys(value,["generatedAt","zoneId","integrityChecksum"]) && isoDate(value.generatedAt) && deltaZones.includes(value.zoneId) && sha256Checksum(value.integrityChecksum);
       const sha256 = async (value) => [...new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(value)))].map((byte) => byte.toString(16).padStart(2,"0")).join("");
       async function validate(bundle) {
         if (!bundle || bundle.version !== 2 || !bundle.zone?.id || !bundle.policy || !bundle.selectedPatch || !bundle.sourceContract) throw new Error("지원하는 맵 진단 번들이 아닙니다.");
@@ -144,8 +150,12 @@
         return bundle;
       }
       async function validateDelta(bundle) {
-        if (!bundle || bundle.kind !== "world-diagnostic-delta" || bundle.version !== 1 || !Array.isArray(bundle.changes) || !bundle.reproductionUrl || !bundle.screenshots) throw new Error("지원하는 경량 DELTA 번들이 아닙니다.");
-        if (bundle.integrity?.algorithm !== "SHA-256" || bundle.integrity?.canonicalization !== "json-sort-v1") throw new Error("지원하는 DELTA 무결성 봉인이 없습니다.");
+        if (!exactKeys(bundle,["kind","version","generatedAt","base","candidate","reproductionUrl","sourceContract","changes","screenshots","integrity"]) || bundle.kind !== "world-diagnostic-delta" || bundle.version !== 1 || !isoDate(bundle.generatedAt) || !deltaEndpoint(bundle.base) || !deltaEndpoint(bundle.candidate)) throw new Error("지원하는 경량 DELTA 번들이 아닙니다.");
+        try { const reproductionUrl=new URL(bundle.reproductionUrl); if(!["http:","https:"].includes(reproductionUrl.protocol)) throw new Error(); } catch { throw new Error("DELTA 재현 URL이 올바르지 않습니다."); }
+        if (!exactKeys(bundle.sourceContract,["target","version","checksum"]) || bundle.sourceContract.target !== "client/src/game/worldForegroundPlacements.json" || !Number.isInteger(bundle.sourceContract.version) || bundle.sourceContract.version < 1 || !sha256Checksum(bundle.sourceContract.checksum)) throw new Error("DELTA 원본 계약이 올바르지 않습니다.");
+        if (!Array.isArray(bundle.changes) || !bundle.changes.every((change)=>exactKeys(change,["field","before","after"]) && deltaFields.includes(change.field) && typeof change.before === "string" && typeof change.after === "string")) throw new Error("DELTA 변경 목록이 올바르지 않습니다.");
+        if (!exactKeys(bundle.screenshots,["changed","baseChecksum","candidateChecksum"]) || typeof bundle.screenshots.changed !== "boolean" || !sha256Checksum(bundle.screenshots.baseChecksum) || !sha256Checksum(bundle.screenshots.candidateChecksum) || bundle.screenshots.changed !== (bundle.screenshots.baseChecksum !== bundle.screenshots.candidateChecksum)) throw new Error("DELTA 스크린샷 체크섬이 올바르지 않습니다.");
+        if (!exactKeys(bundle.integrity,["algorithm","canonicalization","checksum"]) || bundle.integrity.algorithm !== "SHA-256" || bundle.integrity.canonicalization !== "json-sort-v1" || !sha256Checksum(bundle.integrity.checksum)) throw new Error("지원하는 DELTA 무결성 봉인이 없습니다.");
         const { integrity, ...payload } = bundle;
         if (integrity.checksum !== await sha256(canonicalJson(payload))) throw new Error("DELTA 무결성 검증에 실패했습니다.");
         if (JSON.stringify(bundle).includes("data:image/png;base64,")) throw new Error("경량 DELTA에 스크린샷 원문이 포함되어 있습니다.");

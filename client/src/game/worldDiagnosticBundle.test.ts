@@ -5,6 +5,7 @@ import {
   createWorldDiagnosticDeltaBundle,
   createWorldDiagnosticBundle,
   downloadJsonArtifact,
+  isWorldDiagnosticDeltaBundle,
   normalizeSrgbColorFunctions,
   verifyWorldDiagnosticBundleIntegrity,
   verifyWorldDiagnosticDeltaBundleIntegrity,
@@ -134,11 +135,17 @@ describe("맵 진단 번들", () => {
     expect(delta.changes.map(({ field }) => field)).toEqual(["HEATMAP", "SCREENSHOT"]);
     expect(JSON.stringify(delta)).not.toContain("data:image/png;base64");
     expect(delta.screenshots.baseChecksum).toMatch(/^[a-f0-9]{64}$/);
+    expect(isWorldDiagnosticDeltaBundle(delta)).toBe(true);
     await expect(verifyWorldDiagnosticDeltaBundleIntegrity(delta)).resolves.toBe(true);
     await expect(verifyWorldDiagnosticDeltaBundleIntegrity({
       ...delta,
       reproductionUrl: "https://example.test/tampered"
     })).resolves.toBe(false);
+    expect(isWorldDiagnosticDeltaBundle({ ...delta, surprise: true })).toBe(false);
+    expect(isWorldDiagnosticDeltaBundle({
+      ...delta,
+      screenshots: { ...delta.screenshots, changed: false }
+    })).toBe(false);
     expect(worldDiagnosticArtifactFilename("delta", "lobby", new Date("2026-08-05T01:02:03.000Z")))
       .toBe("wedding-map-lobby-delta-2026-08-05T01-02-03Z.json");
   });

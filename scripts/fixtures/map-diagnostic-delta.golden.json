@@ -1,0 +1,35 @@
+{
+  "kind": "world-diagnostic-delta",
+  "version": 1,
+  "generatedAt": "2026-08-05T01:00:00.000Z",
+  "base": {
+    "generatedAt": "2026-08-04T00:00:00.000Z",
+    "zoneId": "lobby",
+    "integrityChecksum": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  },
+  "candidate": {
+    "generatedAt": "2026-08-05T00:00:00.000Z",
+    "zoneId": "lobby",
+    "integrityChecksum": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+  },
+  "reproductionUrl": "https://po-mato.github.io/pixel-garden-invitation/?mapAudit=1&mapAuditZone=lobby&mapAuditHeatmap=contrast",
+  "sourceContract": {
+    "target": "client/src/game/worldForegroundPlacements.json",
+    "version": 1,
+    "checksum": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+  },
+  "changes": [
+    { "field": "HEATMAP", "before": "color", "after": "contrast" },
+    { "field": "SCREENSHOT", "before": "BASE", "after": "CHANGED" }
+  ],
+  "screenshots": {
+    "changed": true,
+    "baseChecksum": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+    "candidateChecksum": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+  },
+  "integrity": {
+    "algorithm": "SHA-256",
+    "canonicalization": "json-sort-v1",
+    "checksum": "f3dcc1b3ec13298b6d8382be0e745b7092a68c859699431ad03267a3a483b730"
+  }
+}

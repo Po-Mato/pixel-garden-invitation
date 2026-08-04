@@ -35,8 +35,9 @@ export function buildMapDiagnosticsProvenance(subjects, {
     source: { repository, sha, workflow, runId: String(runId ?? "local") },
     subjects: entries,
     verification: {
-      command: `gh attestation verify map-diagnostics-provenance.json --repo ${repository} --signer-workflow ${repository}/${workflow}`,
-      subjectCommand: "pnpm maps:diagnostics-provenance-verify -- --manifest map-diagnostics-provenance.json",
+      command: `gh attestation verify map-diagnostics-evidence-pack.tgz --repo ${repository} --signer-workflow ${repository}/${workflow}`,
+      offlineCommand: `gh attestation verify map-diagnostics-evidence-pack.tgz --repo ${repository} --signer-workflow ${repository}/${workflow} --bundle map-diagnostics-attestation.json --custom-trusted-root trusted_root.jsonl`,
+      subjectCommand: "pnpm maps:diagnostics-evidence-pack-verify -- --pack map-diagnostics-evidence-pack.tgz",
       issuer: "https://token.actions.githubusercontent.com",
       signature: "Sigstore keyless OIDC"
     }

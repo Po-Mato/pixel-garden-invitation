@@ -572,6 +572,9 @@ test("wires gallery, map, character, photo-effect, and mobile visual audits into
     packageJson.scripts["maps:diagnostics-provenance-verify"],
     "node scripts/verify-map-diagnostics-provenance.mjs"
   );
+  assert.equal(packageJson.scripts["maps:diagnostics-evidence-pack"], "node scripts/build-map-diagnostics-evidence-pack.mjs");
+  assert.equal(packageJson.scripts["maps:diagnostics-evidence-pack-verify"], "node scripts/verify-map-diagnostics-evidence-pack.mjs");
+  assert.equal(packageJson.scripts["maps:geometry-policy-issue"], "node scripts/summarize-world-geometry-policy-issue.mjs");
   assert.match(visualWorkflow, /run: pnpm maps:foreground-audit/);
   assert.match(visualWorkflow, /run: pnpm maps:foreground-suggest/);
   assert.match(visualWorkflow, /--preview-patch/);
@@ -588,6 +591,12 @@ test("wires gallery, map, character, photo-effect, and mobile visual audits into
   assert.match(visualWorkflow, /run: pnpm maps:foreground-summary/);
   assert.match(visualWorkflow, /run: pnpm visual:map-diagnostics/);
   assert.match(visualWorkflow, /pull-requests: write/);
+  assert.match(visualWorkflow, /issues: write/);
+  assert.match(visualWorkflow, /cron: "41 3 \* \* 1"/);
+  assert.match(visualWorkflow, /actions\/cache@v5/);
+  assert.match(visualWorkflow, new RegExp(`playwright-\\$\\{\\{ runner\\.os \\}\\}-\\$\\{\\{ runner\\.arch \\}\\}-${packageJson.devDependencies.playwright.replaceAll(".", "\\.")}`));
+  assert.match(visualWorkflow, /playwright install-deps chromium webkit/);
+  assert.match(visualWorkflow, /steps\.playwright-browser-cache\.outputs\.cache-hit != 'true'/);
   assert.match(visualWorkflow, /<!-- map-foreground-diagnostics -->/);
   assert.match(visualWorkflow, /name: map-diagnostics-browser-\$\{\{ github\.run_id \}\}/);
   assert.match(visualWorkflow, /name: map-foreground-diagnostics-\$\{\{ github\.run_id \}\}/);
@@ -605,10 +614,21 @@ test("wires gallery, map, character, photo-effect, and mobile visual audits into
   assert.match(visualWorkflow, /world-geometry-policy-governance\.json/);
   assert.match(visualWorkflow, /world-geometry-policy-review-state\.json/);
   assert.match(visualWorkflow, /world-geometry-policy-pr-summary\.md/);
+  assert.match(visualWorkflow, /run: pnpm maps:geometry-policy-issue/);
+  assert.match(visualWorkflow, /<!-- world-geometry-policy-expiry -->/);
+  assert.match(visualWorkflow, /world-geometry-policy-issue\.json/);
   assert.match(visualWorkflow, /actions\/attest@v4/);
   assert.match(visualWorkflow, /gh attestation verify/);
   assert.match(visualWorkflow, /run: pnpm maps:diagnostics-provenance-verify/);
+  assert.match(visualWorkflow, /run: pnpm maps:diagnostics-evidence-pack/);
+  assert.match(visualWorkflow, /run: pnpm maps:diagnostics-evidence-pack-verify/);
+  assert.match(visualWorkflow, /subject-path: \.superpowers\/visual-regression\/map-diagnostics-evidence-pack\.tgz/);
+  assert.match(visualWorkflow, /outputs\.bundle-path/);
+  assert.match(visualWorkflow, /gh attestation trusted-root/);
+  assert.match(visualWorkflow, /--custom-trusted-root/);
+  assert.match(visualWorkflow, /name: map-diagnostics-evidence-pack-\$\{\{ github\.run_id \}\}/);
   assert.match(visualWorkflow, /map-diagnostics-provenance\.json/);
   assert.match(visualWorkflow, /map-diagnostics-provenance\.md/);
   assert.match(visualWorkflow, /map-foreground-pr-summary\.md/);
+  assert.match(visualWorkflow, /client\/public\/map-diagnostic-delta\.schema\.json/);
 });

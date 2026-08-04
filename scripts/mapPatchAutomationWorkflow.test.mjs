@@ -23,3 +23,20 @@ test("approved patch workflow isolates untrusted PR code and limits the write sc
   assert.match(workflow, /existing=true/);
   assert.doesNotMatch(workflow, /pnpm (?:install|run|exec)/);
 });
+
+test("sandbox E2E exercises the real approval label and cleans every temporary ref", async () => {
+  const workflow = await readFile(path.join(rootDir, ".github/workflows/map-patch-automation-e2e.yml"), "utf8");
+  assert.match(workflow, /workflow_dispatch/);
+  assert.match(workflow, /schedule:/);
+  assert.match(workflow, /gh pr create --draft/);
+  assert.match(workflow, /--add-label map-foreground-patch-approved/);
+  assert.match(workflow, /gh label create map-foreground-patch-approved/);
+  assert.match(workflow, /apply-approved-map-patch\.yml/);
+  assert.match(workflow, /pull_request_target/);
+  assert.match(workflow, /visual-regression\.yml/);
+  assert.match(workflow, /client\/src\/game\/worldForegroundPlacements\.json/);
+  assert.match(workflow, /if: always\(\)/);
+  assert.match(workflow, /gh pr close "\$APPLICATION_PR" --delete-branch/);
+  assert.match(workflow, /gh pr close "\$SOURCE_PR" --delete-branch/);
+  assert.match(workflow, /automation\/e2e-map-patch-/);
+});
