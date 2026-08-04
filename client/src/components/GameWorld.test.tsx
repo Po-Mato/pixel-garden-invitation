@@ -2010,6 +2010,15 @@ describe("GameWorld", () => {
       expect(screen.getByRole("button", { name: "지도 진단 끄기" })).toHaveAttribute("aria-pressed", "true");
       expect(window.location.search).toBe("?mapAudit=1");
 
+      fireEvent.change(screen.getByRole("combobox", { name: "진단 구역 즉시 이동" }), {
+        target: { value: "ceremony-hall" }
+      });
+      expect(screen.getByLabelText("예식홀 지도")).toBeInTheDocument();
+      expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "375px", top: "1785px" });
+      expect(screen.getByText("예식홀 진단 위치로 이동했어요")).toBeInTheDocument();
+      expect(window.location.search).toContain("mapAuditZone=ceremony-hall");
+      expect(window.localStorage.getItem(journeyProgressStorageKey)).toBeNull();
+
       fireEvent.click(screen.getByRole("button", { name: "지도 진단 끄기" }));
       expect(screen.queryByTestId("world-geometry-audit")).not.toBeInTheDocument();
       expect(window.location.search).toBe("?mapAudit=0");

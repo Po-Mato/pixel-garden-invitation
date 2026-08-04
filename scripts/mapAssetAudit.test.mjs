@@ -549,7 +549,15 @@ test("wires gallery, map, character, photo-effect, and mobile visual audits into
     "pnpm gallery:audit && pnpm gallery:test && pnpm maps:audit && pnpm maps:test && pnpm characters:audit && pnpm characters:test && pnpm photo-effects:audit && pnpm photo-effects:test && pnpm visual:test && pnpm --filter @wedding-game/shared test && pnpm --filter @wedding-game/client test && pnpm --filter @wedding-game/worker test"
   );
   assert.match(visualWorkflow, /run: pnpm maps:foreground-audit/);
+  assert.match(visualWorkflow, /run: pnpm maps:foreground-suggest/);
+  assert.match(visualWorkflow, /run: pnpm maps:foreground-summary/);
+  assert.match(visualWorkflow, /run: pnpm visual:map-diagnostics/);
+  assert.match(visualWorkflow, /pull-requests: write/);
+  assert.match(visualWorkflow, /<!-- map-foreground-diagnostics -->/);
+  assert.match(visualWorkflow, /name: map-diagnostics-browser-\$\{\{ github\.run_id \}\}/);
   assert.match(visualWorkflow, /name: map-foreground-diagnostics-\$\{\{ github\.run_id \}\}/);
   assert.match(visualWorkflow, /map-foreground-audit\.png/);
   assert.match(visualWorkflow, /map-foreground-audit\.json/);
+  assert.match(visualWorkflow, /map-foreground-suggestions\.json/);
+  assert.match(visualWorkflow, /map-foreground-pr-summary\.md/);
 });

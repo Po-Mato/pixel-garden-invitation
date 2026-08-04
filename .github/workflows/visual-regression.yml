@@ -50,6 +50,7 @@ on:
 
 permissions:
   contents: read
+  pull-requests: write
 
 jobs:
   compare:
@@ -67,10 +68,17 @@ jobs:
       - run: pnpm visual:test
       - name: Render map foreground diagnostics
         run: pnpm maps:foreground-audit
+      - name: Suggest foreground depth and collision geometry
+        run: pnpm maps:foreground-suggest
+      - name: Summarize foreground diagnostics for pull requests
+        if: always()
+        run: pnpm maps:foreground-summary -- --run-url "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
       - name: Install mobile browser engines
         run: pnpm exec playwright install --with-deps chromium webkit
       - name: Audit live mobile HUD screenshots
         run: pnpm visual:hud-browser
+      - name: Audit map diagnostic screenshots
+        run: pnpm visual:map-diagnostics
       - name: Audit Android and iOS long-session stability
         run: pnpm visual:mobile-soak
       - name: Upload visual region report
@@ -123,6 +131,14 @@ jobs:
           path: .superpowers/visual-regression/mobile-device-soak
           if-no-files-found: ignore
           retention-days: 14
+      - name: Upload map diagnostics browser audit
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: map-diagnostics-browser-${{ github.run_id }}
+          path: .superpowers/visual-regression/map-diagnostics-browser
+          if-no-files-found: ignore
+          retention-days: 14
       - name: Upload map foreground diagnostics
         if: always()
         uses: actions/upload-artifact@v7
@@ -131,5 +147,38 @@ jobs:
           path: |
             .superpowers/visual-regression/map-foreground-audit.png
             .superpowers/visual-regression/map-foreground-audit.json
+            .superpowers/visual-regression/map-foreground-suggestions.json
+            .superpowers/visual-regression/map-foreground-pr-summary.md
           if-no-files-found: ignore
           retention-days: 14
+      - name: Comment map foreground diagnostics on the pull request
+        if: always() && github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const fs = require("fs");
+            const summaryPath = ".superpowers/visual-regression/map-foreground-pr-summary.md";
+            if (!fs.existsSync(summaryPath)) return;
+            const body = fs.readFileSync(summaryPath, "utf8");
+            const marker = "<!-- map-foreground-diagnostics -->";
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number
+            });
+            const existing = comments.find((comment) => comment.user?.type === "Bot" && comment.body?.includes(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body
+              });
+            }

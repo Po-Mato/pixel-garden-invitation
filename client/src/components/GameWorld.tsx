@@ -279,6 +279,7 @@ import { WeddingDayActionBar } from "./WeddingDayActionBar";
 import { WeddingNpc } from "./WeddingNpc";
 import { WorldMapArtwork } from "./WorldMapArtwork";
 import { WorldGeometryAuditOverlay } from "./WorldGeometryAuditOverlay";
+import { WorldGeometryAuditControls } from "./WorldGeometryAuditControls";
 import { WorldDestinationBeacon } from "./WorldDestinationBeacon";
 import { WorldCrowdHeatmap } from "./WorldCrowdHeatmap";
 import { WorldCooperativeCelebration } from "./WorldCooperativeCelebration";
@@ -455,6 +456,11 @@ type RouteArrivalNotice = {
   title: string;
   detail: string;
   kind: "portal" | "destination";
+};
+type MoveToZoneOptions = {
+  stampCheckpoint?: boolean;
+  syncRealtime?: boolean;
+  status?: string;
 };
 
 const joystickDeadZone = 0.05;
@@ -1828,7 +1834,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     setTarget
   ]);
 
-  const moveToZone = useCallback((zoneId: WorldZoneId, spawn?: Point) => {
+  const moveToZone = useCallback((zoneId: WorldZoneId, spawn?: Point, options: MoveToZoneOptions = {}) => {
     clearTerminalStopConfirm();
     setRouteRecalculationNotice(null);
     const zone = getWorldZone(gardenWorld, zoneId);
@@ -1858,14 +1864,16 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
       window.clearTimeout(worldPropMomentTimerRef.current);
       worldPropMomentTimerRef.current = null;
     }
-    setTravelStatus(`${zone.label} 도착`);
-    const checkpointId = journeyCheckpointForZone(zone.id);
-    if (checkpointId) stampJourneyCheckpoint(checkpointId);
+    setTravelStatus(options.status ?? `${zone.label} 도착`);
+    if (options.stampCheckpoint !== false) {
+      const checkpointId = journeyCheckpointForZone(zone.id);
+      if (checkpointId) stampJourneyCheckpoint(checkpointId);
+    }
     targetStepAtRef.current = null;
     tileInputStateRef.current = null;
     joystickWasMovingRef.current = false;
 
-    const connection = connectionRef.current;
+    const connection = options.syncRealtime === false ? null : connectionRef.current;
     if (connection) {
       const message: MoveMessage = {
         type: "move",
@@ -1879,6 +1887,26 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
       sendMoveImmediately(connection, message);
     }
   }, [clearTerminalStopConfirm, resetWalkCycle, sendMoveImmediately, setInteractionIntent, setPortalIntent, stampJourneyCheckpoint]);
+
+  const handleDiagnosticZoneChange = useCallback((zoneId: WorldZoneId) => {
+    if (!mapAuditMode.available || zoneId === activeZoneIdRef.current) return;
+    const zone = getWorldZone(gardenWorld, zoneId);
+    setPortalTransition(null);
+    setPendingJourneyGuideId(null);
+    setActiveJourneyGuideId(null);
+    journeyGuideLastZoneRef.current = null;
+    setActiveSpotId(null);
+    setInputReleaseRequired(false);
+    void preloadWorldZoneAssets(zoneId, "high");
+    moveToZone(zoneId, undefined, {
+      stampCheckpoint: false,
+      syncRealtime: false,
+      status: `${zone.label} 진단 위치로 이동했어요`
+    });
+    const url = new URL(window.location.href);
+    url.searchParams.set("mapAuditZone", zoneId);
+    window.history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
+  }, [mapAuditMode.available, moveToZone, setInputReleaseRequired, setPortalTransition]);
 
   const handleJourneySelect = useCallback((zoneId: WorldZoneId) => {
     if (portalTransitionRef.current || zoneId === activeZoneIdRef.current) return;
@@ -4525,22 +4553,19 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
 
       <div className="world-map-shell">
         {mapAuditMode.available ? (
-          <button
-            type="button"
-            className="world-geometry-audit-toggle"
-            aria-label={geometryAuditEnabled ? "지도 진단 끄기" : "지도 진단 켜기"}
-            aria-pressed={geometryAuditEnabled}
-            onClick={() => {
-              const nextEnabled = !geometryAuditEnabled;
+          <WorldGeometryAuditControls
+            zones={gardenWorld.zones}
+            activeZoneId={activeZone.id}
+            enabled={geometryAuditEnabled}
+            onEnabledChange={(nextEnabled) => {
               const url = new URL(window.location.href);
               url.searchParams.set("mapAudit", nextEnabled ? "1" : "0");
+              if (!nextEnabled) url.searchParams.delete("mapAuditZone");
               window.history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
               setGeometryAuditEnabled(nextEnabled);
             }}
-          >
-            <MapPinned aria-hidden="true" />
-            <span>{geometryAuditEnabled ? "진단 ON" : "진단 OFF"}</span>
-          </button>
+            onZoneChange={handleDiagnosticZoneChange}
+          />
         ) : null}
         <div
           ref={mapViewportRef}
