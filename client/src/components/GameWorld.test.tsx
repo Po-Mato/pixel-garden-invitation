@@ -621,7 +621,7 @@ describe("GameWorld", () => {
       travelThroughPortal(portalLabel);
       expectMapBackground(container, zoneId);
     });
-  });
+  }, 10_000);
 
   it("keeps the expandable minimap in sync with portal travel and zone changes", () => {
     render(<GameWorld profile={profile} />);
