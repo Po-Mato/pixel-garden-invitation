@@ -10,6 +10,7 @@ test("approved patch workflow isolates untrusted PR code and limits the write sc
   const workflow = await readFile(path.join(rootDir, ".github/workflows/apply-approved-map-patch.yml"), "utf8");
   assert.match(workflow, /pull_request_target/);
   assert.match(workflow, /workflow_dispatch/);
+  assert.match(workflow, /run-name: "Apply approved map patch #\$\{\{ inputs\.source_pr \|\| github\.event\.pull_request\.number \}\}"/);
   assert.match(workflow, /map-foreground-patch-approved/);
   assert.match(workflow, /head\.repo\.full_name == github\.repository/);
   assert.match(workflow, /Checkout trusted automation tools/);

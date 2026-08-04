@@ -1,5 +1,5 @@
 name: Apply approved map foreground patch
-run-name: Apply approved map patch #${{ inputs.source_pr || github.event.pull_request.number }}
+run-name: "Apply approved map patch #${{ inputs.source_pr || github.event.pull_request.number }}"
 
 on:
   workflow_dispatch:
