@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { gridTileSize } from "../game/movement";
 import { auditWorldGeometry } from "../game/worldGeometryAudit";
-import type { WorldZone } from "../game/world";
+import { worldForegroundPlacements, type WorldZone } from "../game/world";
 
 type WorldGeometryAuditOverlayProps = {
   zone: WorldZone;
@@ -10,6 +10,7 @@ type WorldGeometryAuditOverlayProps = {
 
 export function WorldGeometryAuditOverlay({ zone, enabled }: WorldGeometryAuditOverlayProps) {
   const audit = useMemo(() => auditWorldGeometry(zone), [zone]);
+  const foregrounds = worldForegroundPlacements[zone.id];
   if (!enabled) return null;
 
   return (
@@ -32,8 +33,44 @@ export function WorldGeometryAuditOverlay({ zone, enabled }: WorldGeometryAuditO
           }}
         />
       ))}
+      {zone.blocked.map((collision, index) => (
+        <i
+          key={`collision-${index}`}
+          className="world-geometry-audit__collision"
+          data-collision-index={index}
+          style={{
+            left: collision.x,
+            top: collision.y,
+            width: collision.width,
+            height: collision.height
+          }}
+        />
+      ))}
+      {foregrounds.map((placement) => (
+        <div
+          key={placement.decorationId}
+          className="world-geometry-audit__foreground"
+          data-decoration-id={placement.decorationId}
+          data-depth-mode={placement.depthMode}
+          style={{
+            left: placement.x,
+            top: placement.y,
+            width: placement.width,
+            height: placement.height
+          }}
+        >
+          <i
+            className="world-geometry-audit__depth"
+            data-depth-y={placement.depthY}
+            style={{ top: placement.depthY - placement.y }}
+          />
+          <small>{placement.decorationId}</small>
+        </div>
+      ))}
       <span className="world-geometry-audit__summary">
-        이동 {audit.reachableCount} · 충돌 {audit.blockedCount} · 단절 {audit.unreachableCount}
+        <strong>MAP DIAGNOSTICS</strong>
+        <em>이동 {audit.reachableCount} · 충돌 타일 {audit.blockedCount} · 단절 {audit.unreachableCount}</em>
+        <small>청록 전경 · 금색 충돌 · 분홍 깊이선</small>
       </span>
     </div>
   );

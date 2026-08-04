@@ -545,9 +545,11 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     devicePerformance.mode,
     devicePerformance.effectsQuality
   ), [devicePerformance.effectsQuality, devicePerformance.mode]);
-  const geometryAuditEnabled = useMemo(() => (
-    new URLSearchParams(window.location.search).get("mapAudit") === "1"
-  ), []);
+  const mapAuditMode = useMemo(() => {
+    const parameter = new URLSearchParams(window.location.search).get("mapAudit");
+    return { available: parameter !== null, initiallyEnabled: parameter === "1" };
+  }, []);
+  const [geometryAuditEnabled, setGeometryAuditEnabled] = useState(mapAuditMode.initiallyEnabled);
   const movementStepIntervalMs = viewPreferences.gameMovementSpeed === "relaxed"
     ? 320
     : viewPreferences.gameMovementSpeed === "brisk" ? 190 : 240;
@@ -4522,6 +4524,24 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
       </header>
 
       <div className="world-map-shell">
+        {mapAuditMode.available ? (
+          <button
+            type="button"
+            className="world-geometry-audit-toggle"
+            aria-label={geometryAuditEnabled ? "지도 진단 끄기" : "지도 진단 켜기"}
+            aria-pressed={geometryAuditEnabled}
+            onClick={() => {
+              const nextEnabled = !geometryAuditEnabled;
+              const url = new URL(window.location.href);
+              url.searchParams.set("mapAudit", nextEnabled ? "1" : "0");
+              window.history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
+              setGeometryAuditEnabled(nextEnabled);
+            }}
+          >
+            <MapPinned aria-hidden="true" />
+            <span>{geometryAuditEnabled ? "진단 ON" : "진단 OFF"}</span>
+          </button>
+        ) : null}
         <div
           ref={mapViewportRef}
           className={`world-map world-map--${activeZone.theme}`}

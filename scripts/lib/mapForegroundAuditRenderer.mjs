@@ -160,7 +160,7 @@ export async function auditMapForegroundPlacements({
 }
 
 function escapeXml(value) {
-  return value.replace(/[<>&'\"]/g, (character) => ({
+  return String(value).replace(/[<>&'\"]/g, (character) => ({
     "<": "&lt;",
     ">": "&gt;",
     "&": "&amp;",
@@ -169,13 +169,70 @@ function escapeXml(value) {
   })[character]);
 }
 
-function labelSvg(label, width, height) {
+function labelSvg(label, width, height, instanceCount) {
   return Buffer.from(
     `<svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">` +
       `<rect width="100%" height="100%" fill="#171717"/>` +
-      `<text x="12" y="24" font-family="Arial, sans-serif" font-size="18" fill="#ffffff">` +
-      `${escapeXml(label)}</text></svg>`
+      `<text x="12" y="22" font-family="ui-monospace, monospace" font-size="16" font-weight="700" fill="#ffffff">` +
+      `${escapeXml(label)} · ${instanceCount}</text>` +
+      `<g font-family="ui-monospace, monospace" font-size="10" font-weight="700">` +
+        `<line x1="12" y1="39" x2="28" y2="39" stroke="#4df2ff" stroke-width="3"/>` +
+        `<text x="34" y="43" fill="#d7fbff">ALPHA</text>` +
+        `<line x1="91" y1="39" x2="107" y2="39" stroke="#ff4d98" stroke-width="3"/>` +
+        `<text x="113" y="43" fill="#ffd8e9">DEPTH</text>` +
+        `<rect x="173" y="33" width="16" height="12" fill="#ffc85744" stroke="#ffc857" stroke-width="2"/>` +
+        `<text x="195" y="43" fill="#ffe8ae">COLLISION</text>` +
+      `</g></svg>`
   );
+}
+
+export function foregroundDiagnosticsSvg({ width, height, metrics }) {
+  const diagnostics = metrics.map(({ placement, visibleBounds }) => {
+    const collision = placement.collision
+      ? `<rect x="${placement.collision.x}" y="${placement.collision.y}" width="${placement.collision.width}" height="${placement.collision.height}" fill="#ffc85733" stroke="#ffc857" stroke-width="4" stroke-dasharray="10 6"/>`
+      : "";
+    const labelY = Math.max(16, visibleBounds.y - 7);
+    return collision +
+      `<rect x="${visibleBounds.x}" y="${visibleBounds.y}" width="${visibleBounds.width}" height="${visibleBounds.height}" fill="none" stroke="#4df2ff" stroke-width="4"/>` +
+      `<line x1="${placement.x}" y1="${placement.depthY}" x2="${placement.x + placement.width}" y2="${placement.depthY}" stroke="#ff4d98" stroke-width="5"/>` +
+      `<text x="${placement.x + 4}" y="${labelY}" font-family="ui-monospace, monospace" font-size="13" font-weight="700" fill="#ffffff" stroke="#171717" stroke-width="4" paint-order="stroke">${escapeXml(placement.decorationId)}</text>`;
+  }).join("");
+
+  return Buffer.from(
+    `<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">` +
+      diagnostics +
+    `</svg>`
+  );
+}
+
+export function serializeForegroundAuditReport(result) {
+  return {
+    version: 1,
+    zoneCount: result.zoneIds.length,
+    instanceCount: result.instanceCount,
+    zones: result.zoneIds.map((zoneId) => ({
+      zoneId,
+      instanceCount: result.placementMetrics.filter((metric) => metric.zoneId === zoneId).length
+    })),
+    placements: result.placementMetrics.map(({ zoneId, placement, alphaBounds, visibleBounds }) => ({
+      zoneId,
+      decorationId: placement.decorationId,
+      asset: placement.asset,
+      depthMode: placement.depthMode,
+      placementBounds: {
+        x: placement.x,
+        y: placement.y,
+        width: placement.width,
+        height: placement.height
+      },
+      alphaBounds,
+      visibleBounds,
+      depthY: placement.depthY,
+      visibleBottom: visibleBounds.y + visibleBounds.height,
+      depthGap: placement.depthY - (visibleBounds.y + visibleBounds.height),
+      collision: placement.collision ?? null
+    }))
+  };
 }
 
 export async function renderMapForegroundAuditSheet({
@@ -189,7 +246,7 @@ export async function renderMapForegroundAuditSheet({
 }) {
   const manifest = JSON.parse(await readFile(manifestPath, "utf8"));
   const placementAudit = await auditForegroundPlacementSet({ rootDir, manifest, placementsByZone });
-  const labelHeight = 34;
+  const labelHeight = 52;
   const rows = Math.ceil(manifest.zones.length / columns);
   const cells = [];
   let instanceCount = 0;
@@ -206,12 +263,24 @@ export async function renderMapForegroundAuditSheet({
     }
 
     const backgroundPath = path.join(zoneDir, zone.background.output);
+    const zoneMetrics = placementAudit.metrics.filter((metric) => metric.zoneId === zone.id);
     const composed = await sharp(backgroundPath)
-      .composite(placements.map((placement) => ({
-        input: path.join(zoneDir, placement.asset),
-        left: placement.x,
-        top: placement.y
-      })))
+      .composite([
+        ...placements.map((placement) => ({
+          input: path.join(zoneDir, placement.asset),
+          left: placement.x,
+          top: placement.y
+        })),
+        {
+          input: foregroundDiagnosticsSvg({
+            width: zone.background.width,
+            height: zone.background.height,
+            metrics: zoneMetrics
+          }),
+          left: 0,
+          top: 0
+        }
+      ])
       .png()
       .toBuffer();
     const mapImage = await sharp(composed)
@@ -228,7 +297,7 @@ export async function renderMapForegroundAuditSheet({
       create: { width: cellWidth, height: cellHeight, channels: 4, background: "#171717" }
     })
       .composite([
-        { input: labelSvg(zone.id, cellWidth, labelHeight), left: 0, top: 0 },
+        { input: labelSvg(zone.id, cellWidth, labelHeight, placements.length), left: 0, top: 0 },
         { input: mapImage, left: 0, top: labelHeight }
       ])
       .png()

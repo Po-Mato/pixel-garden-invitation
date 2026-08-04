@@ -65,6 +65,8 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm visual:test
+      - name: Render map foreground diagnostics
+        run: pnpm maps:foreground-audit
       - name: Install mobile browser engines
         run: pnpm exec playwright install --with-deps chromium webkit
       - name: Audit live mobile HUD screenshots
@@ -119,5 +121,15 @@ jobs:
         with:
           name: mobile-device-soak-${{ github.run_id }}
           path: .superpowers/visual-regression/mobile-device-soak
+          if-no-files-found: ignore
+          retention-days: 14
+      - name: Upload map foreground diagnostics
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: map-foreground-diagnostics-${{ github.run_id }}
+          path: |
+            .superpowers/visual-regression/map-foreground-audit.png
+            .superpowers/visual-regression/map-foreground-audit.json
           if-no-files-found: ignore
           retention-days: 14

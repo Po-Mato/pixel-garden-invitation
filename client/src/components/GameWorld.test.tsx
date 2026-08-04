@@ -38,6 +38,7 @@ type MockListener = (event: Event) => void;
 
 let animationFrames = new Map<number, FrameRequestCallback>();
 let nextAnimationFrameId = 1;
+let manualAnimationClock = 100_000;
 const originalVibrate = navigator.vibrate;
 
 class MockWebSocket {
@@ -80,6 +81,7 @@ beforeAll(async () => {
 beforeEach(() => {
   animationFrames = new Map();
   nextAnimationFrameId = 1;
+  manualAnimationClock = 100_000;
   MockWebSocket.instances = [];
   const localValues = new Map<string, string>();
   vi.stubGlobal("localStorage", {
@@ -123,6 +125,16 @@ function advanceAnimation(now: number) {
   const callbacks = [...animationFrames.values()];
   animationFrames.clear();
   act(() => callbacks.forEach((callback) => callback(now)));
+}
+
+function moveWithKeyboard(control: HTMLElement, key: string, tileCount: number) {
+  fireEvent.keyDown(control, { key });
+  for (let index = 0; index < tileCount; index += 1) {
+    advanceAnimation(manualAnimationClock);
+    manualAnimationClock += 300;
+  }
+  fireEvent.keyUp(control, { key });
+  manualAnimationClock += 300;
 }
 
 async function revealLazyGameFeature() {
@@ -1983,6 +1995,29 @@ describe("GameWorld", () => {
     expect(Number(player.style.zIndex)).toBeLessThan(Number(desk?.style.zIndex));
   });
 
+  it("keeps map diagnostics hidden behind an explicit developer URL toggle", () => {
+    const originalUrl = window.location.href;
+    window.history.replaceState({}, "", "/?mapAudit=0");
+    try {
+      render(<GameWorld profile={profile} />);
+
+      expect(screen.queryByTestId("world-geometry-audit")).not.toBeInTheDocument();
+      const toggle = screen.getByRole("button", { name: "지도 진단 켜기" });
+      expect(toggle).toHaveAttribute("aria-pressed", "false");
+
+      fireEvent.click(toggle);
+      expect(screen.getByTestId("world-geometry-audit")).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "지도 진단 끄기" })).toHaveAttribute("aria-pressed", "true");
+      expect(window.location.search).toBe("?mapAudit=1");
+
+      fireEvent.click(screen.getByRole("button", { name: "지도 진단 끄기" }));
+      expect(screen.queryByTestId("world-geometry-audit")).not.toBeInTheDocument();
+      expect(window.location.search).toBe("?mapAudit=0");
+    } finally {
+      window.history.replaceState({}, "", originalUrl);
+    }
+  });
+
   it("renders the exact Task 11 bridal room stage, foreground depth, NPC modal, and lobby return", () => {
     const { container } = render(<GameWorld profile={profile} />);
     travelFromHomeToLobby();
@@ -2090,6 +2125,31 @@ describe("GameWorld", () => {
     expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "945px", top: "405px" });
   });
 
+  it("switches the guest across both banquet table depth rows while walking", () => {
+    const { container } = render(<GameWorld profile={profile} />);
+    travelFromHomeToLobby();
+    travelThroughPortal("연회장");
+
+    const control = screen.getByLabelText("가상 조이스틱");
+    const player = screen.getByLabelText("하객1");
+    const tables = [...container.querySelectorAll<HTMLElement>('img[data-decoration="banquet-table"]')];
+    expect(player).toHaveStyle({ left: "135px", top: "465px", zIndex: "1465" });
+    expect(Number(player.style.zIndex)).toBeLessThan(Number(tables[0].style.zIndex));
+
+    moveWithKeyboard(control, "ArrowDown", 2);
+    expect(player).toHaveStyle({ left: "135px", top: "525px", zIndex: "1525" });
+    expect(Number(player.style.zIndex)).toBeGreaterThan(Number(tables[0].style.zIndex));
+    expect(Number(player.style.zIndex)).toBeLessThan(Number(tables[2].style.zIndex));
+
+    moveWithKeyboard(control, "ArrowDown", 10);
+    expect(player).toHaveStyle({ left: "135px", top: "825px", zIndex: "1825" });
+    expect(Number(player.style.zIndex)).toBeGreaterThan(Number(tables[2].style.zIndex));
+
+    moveWithKeyboard(control, "ArrowUp", 1);
+    expect(player).toHaveStyle({ left: "135px", top: "795px", zIndex: "1795" });
+    expect(Number(player.style.zIndex)).toBeLessThan(Number(tables[2].style.zIndex));
+  });
+
   it("walks through the ceremony hall and returns only through the lobby portal", () => {
     const { container } = render(<GameWorld profile={profile} />);
     travelFromHomeToLobby();
@@ -2153,6 +2213,28 @@ describe("GameWorld", () => {
 
     expect(screen.getByLabelText("예식장 로비 지도")).toBeInTheDocument();
     expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "525px", top: "135px" });
+  });
+
+  it("switches the guest behind and in front of the ceremony aisle bouquet while walking", () => {
+    const { container } = render(<GameWorld profile={profile} />);
+    travelFromHomeToLobby();
+    travelThroughPortal("예식홀");
+
+    const control = screen.getByLabelText("가상 조이스틱");
+    const player = screen.getByLabelText("하객1");
+    const bouquets = [...container.querySelectorAll<HTMLElement>('img[data-decoration="aisle-bouquet"]')];
+    const bottomBouquet = bouquets[3];
+    expect(player).toHaveStyle({ left: "375px", top: "1785px", zIndex: "2785" });
+    expect(Number(player.style.zIndex)).toBeGreaterThan(Number(bottomBouquet.style.zIndex));
+
+    moveWithKeyboard(control, "ArrowRight", 3);
+    moveWithKeyboard(control, "ArrowUp", 17);
+    expect(player).toHaveStyle({ left: "465px", top: "1275px", zIndex: "2275" });
+    expect(Number(player.style.zIndex)).toBeLessThan(Number(bottomBouquet.style.zIndex));
+
+    moveWithKeyboard(control, "ArrowDown", 1);
+    expect(player).toHaveStyle({ left: "465px", top: "1305px", zIndex: "2305" });
+    expect(Number(player.style.zIndex)).toBeGreaterThan(Number(bottomBouquet.style.zIndex));
   });
 
   it("waits for the overlay opacity transition before swapping maps", () => {

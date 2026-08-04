@@ -534,6 +534,7 @@ test("declares the ten map contracts in journey order", async () => {
 
 test("wires gallery, map, character, photo-effect, and mobile visual audits into root scripts", async () => {
   const packageJson = JSON.parse(await readFile(join(root, "package.json"), "utf8"));
+  const visualWorkflow = await readFile(join(root, ".github/workflows/visual-regression.yml"), "utf8");
 
   assert.equal(
     packageJson.scripts["maps:audit"],
@@ -547,4 +548,8 @@ test("wires gallery, map, character, photo-effect, and mobile visual audits into
     packageJson.scripts.test,
     "pnpm gallery:audit && pnpm gallery:test && pnpm maps:audit && pnpm maps:test && pnpm characters:audit && pnpm characters:test && pnpm photo-effects:audit && pnpm photo-effects:test && pnpm visual:test && pnpm --filter @wedding-game/shared test && pnpm --filter @wedding-game/client test && pnpm --filter @wedding-game/worker test"
   );
+  assert.match(visualWorkflow, /run: pnpm maps:foreground-audit/);
+  assert.match(visualWorkflow, /name: map-foreground-diagnostics-\$\{\{ github\.run_id \}\}/);
+  assert.match(visualWorkflow, /map-foreground-audit\.png/);
+  assert.match(visualWorkflow, /map-foreground-audit\.json/);
 });

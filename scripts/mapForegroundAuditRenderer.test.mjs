@@ -7,6 +7,8 @@ import sharp from "sharp";
 import {
   DEFAULT_FOREGROUND_PLACEMENTS,
   auditForegroundPlacementGeometry,
+  foregroundDiagnosticsSvg,
+  serializeForegroundAuditReport,
   renderMapForegroundAuditSheet
 } from "./lib/mapForegroundAuditRenderer.mjs";
 
@@ -114,6 +116,60 @@ test("rejects foreground pixels that cross their floor depth or leave the map", 
   } finally {
     await rm(rootDir, { recursive: true, force: true });
   }
+});
+
+test("draws distinct alpha, depth, and collision diagnostics", () => {
+  const svg = foregroundDiagnosticsSvg({
+    width: 120,
+    height: 100,
+    metrics: [{
+      placement: {
+        decorationId: "test-front",
+        asset: "front.png",
+        x: 10,
+        y: 20,
+        width: 40,
+        height: 30,
+        depthY: 50,
+        depthMode: "floor",
+        collision: { x: 10, y: 25, width: 40, height: 25 }
+      },
+      visibleBounds: { x: 15, y: 27, width: 30, height: 20 }
+    }]
+  }).toString("utf8");
+
+  assert.match(svg, /stroke="#4df2ff"/);
+  assert.match(svg, /stroke="#ff4d98"/);
+  assert.match(svg, /stroke="#ffc857"/);
+  assert.match(svg, /x1="10" y1="50" x2="50" y2="50"/);
+  assert.match(svg, />test-front<\/text>/);
+});
+
+test("serializes portable foreground metrics for CI artifacts", () => {
+  const report = serializeForegroundAuditReport({
+    zoneIds: ["alpha"],
+    instanceCount: 1,
+    placementMetrics: [{
+      zoneId: "alpha",
+      placement: {
+        decorationId: "alpha-front",
+        asset: "front.png",
+        x: 5,
+        y: 6,
+        width: 10,
+        height: 10,
+        depthY: 16,
+        depthMode: "floor"
+      },
+      alphaBounds: { canvasWidth: 10, canvasHeight: 10, x: 0, y: 0, width: 10, height: 8 },
+      visibleBounds: { x: 5, y: 6, width: 10, height: 8 }
+    }]
+  });
+
+  assert.deepEqual(report.zones, [{ zoneId: "alpha", instanceCount: 1 }]);
+  assert.equal(report.placements[0].visibleBottom, 14);
+  assert.equal(report.placements[0].depthGap, 2);
+  assert.equal(report.placements[0].collision, null);
 });
 
 test("renders every manifest zone with its foreground placements", async () => {
