@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {
+  auditInvitationQualityMetrics,
   auditMobileHudRectangles,
   compactDynamicViewport,
   mobileHudAuditViewports
@@ -41,4 +42,25 @@ test("mobile HUD rectangle audit catches clipping and meaningful overlap", () =>
 test("dynamic viewport audit covers address-bar contraction without creating unusably short screens", () => {
   assert.deepEqual(compactDynamicViewport({ width: 390, height: 844 }), { width: 390, height: 724 });
   assert.deepEqual(compactDynamicViewport({ width: 844, height: 390 }), { width: 844, height: 342 });
+});
+
+test("invitation quality audit protects compact labels, Korean fallbacks, and large text sheets", () => {
+  assert.deepEqual(auditInvitationQualityMetrics({
+    floatingSpot: { hitTargetPreserved: true, visuallyCompact: true, contentContained: true },
+    typography: { koreanFallbackReady: true },
+    largeTextSheet: { contained: true, contentContained: true, touchTargetsReady: true }
+  }), []);
+  assert.deepEqual(auditInvitationQualityMetrics({
+    floatingSpot: { hitTargetPreserved: false, visuallyCompact: false, contentContained: false },
+    typography: { koreanFallbackReady: false },
+    largeTextSheet: { contained: false, contentContained: false, touchTargetsReady: false }
+  }), [
+    "월드 안내 터치 영역 축소",
+    "월드 안내 카드 크기 초과",
+    "월드 안내 문구 넘침",
+    "안드로이드 한글 폰트 대체 누락",
+    "큰 글자 바텀시트 화면 이탈",
+    "큰 글자 바텀시트 가로 넘침",
+    "큰 글자 바텀시트 터치 영역 부족"
+  ]);
 });

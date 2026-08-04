@@ -1168,6 +1168,8 @@ describe("GameWorld", () => {
     const directionsSpot = getDirectionsWorldSpot();
     const joystick = screen.getByLabelText("가상 조이스틱");
 
+    expect(directionsSpot.querySelector(".world-spot__card")).toHaveTextContent("오시는 길");
+
     fireEvent.click(directionsSpot);
     expect(directionsSpot).toHaveClass("world-spot--target");
 
@@ -1920,7 +1922,7 @@ describe("GameWorld", () => {
     expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "465px", top: "765px" });
     const flowerArch = container.querySelector('img[data-decoration="flower-arch"]');
     expect(flowerArch).toHaveAttribute("src", "/assets/maps/v2/venue-exterior/flower-arch-front.png");
-    expect(flowerArch).toHaveStyle({ left: "360px", top: "180px", width: "240px", height: "180px", zIndex: "1360" });
+    expect(flowerArch).toHaveStyle({ left: "360px", top: "180px", width: "240px", height: "180px", zIndex: "1339" });
 
     fireEvent.click(screen.getByRole("button", { name: "예식장 로비 들어가기" }));
 
@@ -1985,7 +1987,7 @@ describe("GameWorld", () => {
 
     const player = screen.getByLabelText("하객1");
     const desk = container.querySelector<HTMLElement>('img[data-decoration="reception-desk"]');
-    expect(desk).toHaveStyle({ left: "450px", top: "360px", width: "180px", height: "120px", zIndex: "1480" });
+    expect(desk).toHaveStyle({ left: "450px", top: "360px", width: "180px", height: "120px", zIndex: "1475" });
     expect(Number(player.style.zIndex)).toBeGreaterThan(Number(desk?.style.zIndex));
 
     fireEvent.click(screen.getByRole("button", { name: "예식홀" }));
@@ -2098,7 +2100,7 @@ describe("GameWorld", () => {
     expect(screen.getByRole("button", { name: `${brideNpcLabel}와 대화하기` }).parentElement)
       .toHaveStyle({ left: "360px", top: "285px", zIndex: "1285" });
     expect(flowerFront).toHaveAttribute("src", "/assets/maps/v2/bridal-room/flower-arrangement-front.png");
-    expect(flowerFront).toHaveStyle({ left: "240px", top: "300px", width: "90px", height: "120px", zIndex: "1420" });
+    expect(flowerFront).toHaveStyle({ left: "240px", top: "300px", width: "90px", height: "120px", zIndex: "1397" });
 
     fireEvent.click(screen.getByRole("button", { name: `${brideNpcLabel}와 대화하기` }));
     expect(screen.getByRole("button", { name: `${brideNpcLabel}와 대화하기` })).toHaveAttribute("data-approaching", "true");
@@ -2150,10 +2152,10 @@ describe("GameWorld", () => {
     expect(screen.getByLabelText("하객1")).toHaveStyle({ left: "135px", top: "465px" });
     expect(banquetTables).toHaveLength(4);
     [
-      ["210px", "270px", "table-floral.png", "1510"],
-      ["690px", "270px", "table-dining.png", "1510"],
-      ["210px", "570px", "table-dining.png", "1810"],
-      ["690px", "570px", "table-floral.png", "1810"]
+      ["210px", "270px", "table-floral.png", "1490"],
+      ["690px", "270px", "table-dining.png", "1468"],
+      ["210px", "570px", "table-dining.png", "1768"],
+      ["690px", "570px", "table-floral.png", "1790"]
     ].forEach(([left, top, asset, zIndex], index) => {
       expect(banquetTables[index]).toHaveAttribute("src", `/assets/maps/v2/banquet/${asset}`);
       expect(banquetTables[index]).toHaveStyle({ left, top, width: "240px", height: "240px", zIndex });
@@ -2210,8 +2212,8 @@ describe("GameWorld", () => {
     expect(player).toHaveStyle({ left: "135px", top: "825px", zIndex: "1825" });
     expect(Number(player.style.zIndex)).toBeGreaterThan(Number(tables[2].style.zIndex));
 
-    moveWithKeyboard(control, "ArrowUp", 1);
-    expect(player).toHaveStyle({ left: "135px", top: "795px", zIndex: "1795" });
+    moveWithKeyboard(control, "ArrowUp", 2);
+    expect(player).toHaveStyle({ left: "135px", top: "765px", zIndex: "1765" });
     expect(Number(player.style.zIndex)).toBeLessThan(Number(tables[2].style.zIndex));
   });
 
@@ -2255,14 +2257,14 @@ describe("GameWorld", () => {
       top: "165px",
       width: "180px",
       height: "120px",
-      zIndex: "1285"
+      zIndex: "1277"
     });
     expect(bouquets).toHaveLength(4);
     [
-      ["240px", "480px", "1570"],
-      ["480px", "720px", "1810"],
-      ["240px", "960px", "2050"],
-      ["480px", "1200px", "2290"]
+      ["240px", "480px", "1555"],
+      ["480px", "720px", "1795"],
+      ["240px", "960px", "2035"],
+      ["480px", "1200px", "2275"]
     ].forEach(([left, top, zIndex], index) => {
       expect(bouquets[index]).toHaveAttribute("src", "/assets/maps/v2/ceremony-hall/aisle-bouquet-front.png");
       expect(bouquets[index]).toHaveStyle({ left, top, width: "60px", height: "90px", zIndex });
@@ -2293,11 +2295,11 @@ describe("GameWorld", () => {
     expect(Number(player.style.zIndex)).toBeGreaterThan(Number(bottomBouquet.style.zIndex));
 
     moveWithKeyboard(control, "ArrowRight", 3);
-    moveWithKeyboard(control, "ArrowUp", 17);
-    expect(player).toHaveStyle({ left: "465px", top: "1275px", zIndex: "2275" });
+    moveWithKeyboard(control, "ArrowUp", 18);
+    expect(player).toHaveStyle({ left: "465px", top: "1245px", zIndex: "2245" });
     expect(Number(player.style.zIndex)).toBeLessThan(Number(bottomBouquet.style.zIndex));
 
-    moveWithKeyboard(control, "ArrowDown", 1);
+    moveWithKeyboard(control, "ArrowDown", 2);
     expect(player).toHaveStyle({ left: "465px", top: "1305px", zIndex: "2305" });
     expect(Number(player.style.zIndex)).toBeGreaterThan(Number(bottomBouquet.style.zIndex));
   });

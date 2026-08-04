@@ -209,7 +209,7 @@ describe("guest route world", () => {
       { x: 400, y: 110, width: 140, height: 290 },
       { x: 340, y: 290, width: 65, height: 135 },
       { x: 15, y: 565, width: 115, height: 130 },
-      { x: 420, y: 480, width: 60, height: 90 },
+      { x: 426, y: 491, width: 47, height: 68 },
       directionsSpot
     ]);
 
@@ -301,9 +301,9 @@ describe("guest route world", () => {
       })
     ]);
     expect(neighborhood.decorations.filter((item) => item.kind === "tree")).toEqual([
-      expect.objectContaining({ x: 214, y: 90, width: 90, height: 150, asset: "tree-canopy.png", depthY: 240 }),
-      expect.objectContaining({ x: 513, y: 90, width: 90, height: 150, asset: "tree-canopy.png", depthY: 240 }),
-      expect.objectContaining({ x: 860, y: 90, width: 90, height: 150, asset: "tree-canopy.png", depthY: 240 })
+      expect.objectContaining({ x: 214, y: 90, width: 90, height: 150, asset: "tree-canopy.png", depthY: 210 }),
+      expect.objectContaining({ x: 513, y: 90, width: 90, height: 150, asset: "tree-canopy.png", depthY: 210 }),
+      expect.objectContaining({ x: 860, y: 90, width: 90, height: 150, asset: "tree-canopy.png", depthY: 210 })
     ]);
   });
 
@@ -543,7 +543,7 @@ describe("guest route world", () => {
       width: 240,
       height: 180,
       asset: "flower-arch-front.png",
-      depthY: 360
+      depthY: 339
     }));
   });
 
@@ -592,7 +592,7 @@ describe("guest route world", () => {
       expect.objectContaining({ id: "story", x: 780, y: 630, width: 120, height: 90 })
     ]);
     expect(lobby.blocked).toEqual([
-      { x: 450, y: 390, width: 180, height: 90 },
+      { x: 456, y: 437, width: 158, height: 42 },
       weddingInfo,
       rsvp,
       gallery,
@@ -652,7 +652,7 @@ describe("guest route world", () => {
       width: 180,
       height: 120,
       asset: "reception-desk-front.png",
-      depthY: 480
+      depthY: 475
     }));
 
     for (const portalItem of lobby.portals) {
@@ -706,7 +706,7 @@ describe("guest route world", () => {
         width: 90,
         height: 120,
         asset: "flower-arrangement-front.png",
-        depthY: 420
+        depthY: 397
       })
     ]);
     expect(bridal.decorations.some((item) => ["bridal-photo-wall", "bridal-flower-1", "bridal-flower-2", "bridal-door"].includes(item.id)))
@@ -840,10 +840,10 @@ describe("guest route world", () => {
       })
     ]);
     expect(hall.decorations.filter((item) => item.kind === "aisle-bouquet")).toEqual([
-      expect.objectContaining({ x: 240, y: 480, width: 60, height: 90, asset: "aisle-bouquet-front.png", depthY: 570 }),
-      expect.objectContaining({ x: 480, y: 720, width: 60, height: 90, asset: "aisle-bouquet-front.png", depthY: 810 }),
-      expect.objectContaining({ x: 240, y: 960, width: 60, height: 90, asset: "aisle-bouquet-front.png", depthY: 1050 }),
-      expect.objectContaining({ x: 480, y: 1200, width: 60, height: 90, asset: "aisle-bouquet-front.png", depthY: 1290 })
+      expect.objectContaining({ x: 240, y: 480, width: 60, height: 90, asset: "aisle-bouquet-front.png", depthY: 555 }),
+      expect.objectContaining({ x: 480, y: 720, width: 60, height: 90, asset: "aisle-bouquet-front.png", depthY: 795 }),
+      expect.objectContaining({ x: 240, y: 960, width: 60, height: 90, asset: "aisle-bouquet-front.png", depthY: 1035 }),
+      expect.objectContaining({ x: 480, y: 1200, width: 60, height: 90, asset: "aisle-bouquet-front.png", depthY: 1275 })
     ]);
     expect(hall.decorations.find((item) => item.id === "hall-ceremony-arch")).toEqual(
       expect.objectContaining({
@@ -864,7 +864,7 @@ describe("guest route world", () => {
         width: 180,
         height: 120,
         asset: "altar-table-front.png",
-        depthY: 285
+        depthY: 277
       })
     );
   });
@@ -894,7 +894,10 @@ describe("guest route world", () => {
       expect.objectContaining({ id: "guestbook", x: 990, y: 690, width: 120, height: 90 })
     ]);
     expect(banquet.blocked).toEqual([
-      ...tableRects,
+      { x: 218, y: 290, width: 224, height: 204 },
+      { x: 694, y: 294, width: 232, height: 178 },
+      { x: 214, y: 594, width: 232, height: 178 },
+      { x: 698, y: 590, width: 224, height: 204 },
       { x: 450, y: 90, width: 300, height: 90 },
       guestbookSpot
     ]);
@@ -923,10 +926,10 @@ describe("guest route world", () => {
       })
     ]);
     expect(banquet.decorations.filter((item) => item.kind === "banquet-table")).toEqual([
-      expect.objectContaining({ id: "banquet-table-1", ...tableRects[0], asset: "table-floral.png", depthY: 510 }),
-      expect.objectContaining({ id: "banquet-table-2", ...tableRects[1], asset: "table-dining.png", depthY: 510 }),
-      expect.objectContaining({ id: "banquet-table-3", ...tableRects[2], asset: "table-dining.png", depthY: 810 }),
-      expect.objectContaining({ id: "banquet-table-4", ...tableRects[3], asset: "table-floral.png", depthY: 810 })
+      expect.objectContaining({ id: "banquet-table-1", ...tableRects[0], asset: "table-floral.png", depthY: 490 }),
+      expect.objectContaining({ id: "banquet-table-2", ...tableRects[1], asset: "table-dining.png", depthY: 468 }),
+      expect.objectContaining({ id: "banquet-table-3", ...tableRects[2], asset: "table-dining.png", depthY: 768 }),
+      expect.objectContaining({ id: "banquet-table-4", ...tableRects[3], asset: "table-floral.png", depthY: 790 })
     ]);
     expect(banquet.decorations.some((item) => item.asset === "table-front.png")).toBe(false);
 
@@ -941,10 +944,10 @@ describe("guest route world", () => {
     }
 
     for (const blockedPoint of [
-      { x: 225, y: 285 },
-      { x: 705, y: 285 },
-      { x: 225, y: 585 },
-      { x: 705, y: 585 },
+      { x: 330, y: 390 },
+      { x: 810, y: 375 },
+      { x: 330, y: 675 },
+      { x: 810, y: 690 },
       { x: 465, y: 105 }
     ]) {
       expect(isBlocked(blockedPoint, banquet), `banquet blocked ${blockedPoint.x},${blockedPoint.y}`).toBe(true);

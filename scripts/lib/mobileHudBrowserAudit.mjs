@@ -53,6 +53,19 @@ export function auditMobileHudRectangles(rectangles, viewport, overlapTolerance 
   return issues;
 }
 
+export function auditInvitationQualityMetrics(metrics) {
+  const issues = [];
+  const { floatingSpot, typography, largeTextSheet } = metrics;
+  if (!floatingSpot?.hitTargetPreserved) issues.push("월드 안내 터치 영역 축소");
+  if (!floatingSpot?.visuallyCompact) issues.push("월드 안내 카드 크기 초과");
+  if (!floatingSpot?.contentContained) issues.push("월드 안내 문구 넘침");
+  if (!typography?.koreanFallbackReady) issues.push("안드로이드 한글 폰트 대체 누락");
+  if (!largeTextSheet?.contained) issues.push("큰 글자 바텀시트 화면 이탈");
+  if (!largeTextSheet?.contentContained) issues.push("큰 글자 바텀시트 가로 넘침");
+  if (!largeTextSheet?.touchTargetsReady) issues.push("큰 글자 바텀시트 터치 영역 부족");
+  return issues;
+}
+
 async function waitForServer(url, process, timeoutMs = 30_000) {
   const startedAt = Date.now();
   while (Date.now() - startedAt < timeoutMs) {
@@ -169,6 +182,66 @@ async function measureJoystickTouchResponse(page, context) {
   return { latencyMs: Math.round((performance.now() - startedAt) * 10) / 10, responded };
 }
 
+async function measureInvitationQuality(page, viewport, sheetScreenshotPath) {
+  const floatingSpot = await page.evaluate(() => {
+    const hitTarget = document.querySelector(".world-spot");
+    const card = hitTarget?.querySelector(".world-spot__card");
+    if (!(hitTarget instanceof HTMLElement) || !(card instanceof HTMLElement)) return null;
+    const hitRect = hitTarget.getBoundingClientRect();
+    const cardRect = card.getBoundingClientRect();
+    return {
+      hitRect: { width: hitRect.width, height: hitRect.height },
+      cardRect: { width: cardRect.width, height: cardRect.height },
+      hitTargetPreserved: hitRect.width >= 44 && hitRect.height >= 44,
+      visuallyCompact: cardRect.width <= 100 && cardRect.height <= 68,
+      contentContained: card.scrollWidth <= card.clientWidth + 1 && card.scrollHeight <= card.clientHeight + 1
+    };
+  });
+
+  await page.evaluate(() => { document.documentElement.dataset.textScale = "xlarge"; });
+  await page.locator(".world-menu-button").click();
+  await page.locator(".world-menu-sheet").waitFor({ state: "visible" });
+  await page.getByRole("button", { name: "오시는 길", exact: true }).click();
+  const sheet = page.locator(".bottom-sheet");
+  await sheet.waitFor({ state: "visible" });
+  await page.screenshot({ path: sheetScreenshotPath, fullPage: false });
+  const { typography, largeTextSheet } = await page.evaluate(({ width, height }) => {
+    const world = document.querySelector(".game-world");
+    const heading = document.querySelector(".bottom-sheet__header h2");
+    const sheetElement = document.querySelector(".bottom-sheet");
+    if (!(world instanceof HTMLElement) || !(heading instanceof HTMLElement) || !(sheetElement instanceof HTMLElement)) {
+      return {
+        typography: { uiFamily: "", displayFamily: "", koreanFallbackReady: false },
+        largeTextSheet: { contained: false, contentContained: false, touchTargetsReady: false }
+      };
+    }
+    const uiFamily = getComputedStyle(world).fontFamily;
+    const displayFamily = getComputedStyle(heading).fontFamily;
+    const rect = sheetElement.getBoundingClientRect();
+    const controls = [...sheetElement.querySelectorAll("button, a[href]")].filter((element) => {
+      const style = getComputedStyle(element);
+      return style.display !== "none" && style.visibility !== "hidden";
+    });
+    return {
+      typography: {
+        uiFamily,
+        displayFamily,
+        koreanFallbackReady: /Noto Sans (?:CJK )?KR/.test(uiFamily) && /Noto Serif (?:CJK )?KR/.test(displayFamily)
+      },
+      largeTextSheet: {
+        rect: { x: rect.x, y: rect.y, width: rect.width, height: rect.height },
+        contained: rect.x >= -1 && rect.y >= -1 && rect.right <= width + 1 && rect.bottom <= height + 1,
+        contentContained: sheetElement.scrollWidth <= sheetElement.clientWidth + 1,
+        touchTargetsReady: controls.length > 0 && controls.every((element) => element.getBoundingClientRect().height >= 43)
+      }
+    };
+  }, viewport);
+  await page.locator(".bottom-sheet__header button").click();
+  await sheet.waitFor({ state: "hidden" });
+  await page.evaluate(() => { delete document.documentElement.dataset.textScale; });
+  return { floatingSpot, typography, largeTextSheet, sheetScreenshotPath };
+}
+
 export async function runMobileHudBrowserAudit({ rootDir, outputDir, port = 4178 }) {
   const server = spawn(
     "pnpm",
@@ -236,7 +309,11 @@ export async function runMobileHudBrowserAudit({ rootDir, outputDir, port = 4178
         ) issues.push("expanded-tools 화면 이탈");
         const toolsScreenshotPath = path.join(outputDir, `mobile-hud-${viewport.id}-tools.png`);
         await page.screenshot({ path: toolsScreenshotPath, fullPage: false });
-        reports.push({ ...viewport, rectangles, movementLayout, dynamicViewport, toolsRect, touchResponse, issues, screenshotPath, toolsScreenshotPath });
+        await page.locator(".world-hud__tools-toggle").click();
+        const sheetScreenshotPath = path.join(outputDir, `mobile-hud-${viewport.id}-directions-xlarge.png`);
+        const invitationQuality = await measureInvitationQuality(page, viewport, sheetScreenshotPath);
+        auditInvitationQualityMetrics(invitationQuality).forEach((issue) => issues.push(issue));
+        reports.push({ ...viewport, rectangles, movementLayout, dynamicViewport, toolsRect, touchResponse, invitationQuality, issues, screenshotPath, toolsScreenshotPath });
         await context.close();
       }
     } finally {

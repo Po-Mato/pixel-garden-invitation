@@ -11,16 +11,16 @@ import {
 describe("전경 추천 검토 상태", () => {
   it("유효한 승인·거절만 안정적인 공유 문자열로 왕복한다", () => {
     const decisions = {
-      "lobby/lobby-desk": "accepted",
-      "home/home-plant": "rejected",
+      "venue-exterior/venue-arch": "accepted",
+      "neighborhood/street-tree-1": "rejected",
       "invalid/key": "accepted",
       "banquet/banquet-table-1": "pending"
     } as const;
     const serialized = serializeWorldForegroundReviewDecisions(decisions);
-    expect(serialized).toBe("r:home/home-plant,a:lobby/lobby-desk");
+    expect(serialized).toBe("r:neighborhood/street-tree-1,a:venue-exterior/venue-arch");
     expect(parseWorldForegroundReviewDecisions(serialized)).toEqual({
-      "home/home-plant": "rejected",
-      "lobby/lobby-desk": "accepted"
+      "neighborhood/street-tree-1": "rejected",
+      "venue-exterior/venue-arch": "accepted"
     });
   });
 
@@ -28,28 +28,28 @@ describe("전경 추천 검토 상태", () => {
     const storage = {
       getItem: vi.fn(() => JSON.stringify({
         version: 1,
-        decisions: { "home/home-plant": "accepted" }
+        decisions: { "neighborhood/street-tree-1": "accepted" }
       })),
       setItem: vi.fn(),
       removeItem: vi.fn()
     };
-    expect(loadWorldForegroundReviewDecisions("r:lobby/lobby-desk", storage)).toEqual({
-      "lobby/lobby-desk": "rejected"
+    expect(loadWorldForegroundReviewDecisions("r:venue-exterior/venue-arch", storage)).toEqual({
+      "venue-exterior/venue-arch": "rejected"
     });
     expect(loadWorldForegroundReviewDecisions(null, storage)).toEqual({
-      "home/home-plant": "accepted"
+      "neighborhood/street-tree-1": "accepted"
     });
-    saveWorldForegroundReviewDecisions({ "lobby/lobby-desk": "accepted" }, storage);
+    saveWorldForegroundReviewDecisions({ "venue-exterior/venue-arch": "accepted" }, storage);
     expect(storage.setItem).toHaveBeenCalledWith(
       worldForegroundReviewStorageKey,
-      JSON.stringify({ version: 1, decisions: { "lobby/lobby-desk": "accepted" } })
+      JSON.stringify({ version: 1, decisions: { "venue-exterior/venue-arch": "accepted" } })
     );
     saveWorldForegroundReviewDecisions({}, storage);
     expect(storage.removeItem).toHaveBeenCalledWith(worldForegroundReviewStorageKey);
   });
 
   it("결정이 없으면 URL 매개변수를 제거한다", () => {
-    const url = new URL("https://example.test/?mapAudit=1&mapAuditReview=a%3Alobby%2Flobby-desk");
+    const url = new URL("https://example.test/?mapAudit=1&mapAuditReview=a%3Avenue-exterior%2Fvenue-arch");
     writeWorldForegroundReviewDecisionsToUrl(url, {});
     expect(url.searchParams.has("mapAuditReview")).toBe(false);
   });

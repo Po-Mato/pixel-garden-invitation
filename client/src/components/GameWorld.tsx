@@ -5089,8 +5089,10 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
                     });
                   }}
                 >
-                  <span>{worldSpot.label}</span>
-                  <small>{content?.actionLabel ?? "보기"}</small>
+                  <span className="world-spot__card">
+                    <strong>{worldSpot.label}</strong>
+                    <small>{content?.actionLabel ?? "보기"}</small>
+                  </span>
                 </button>
               );
             })}

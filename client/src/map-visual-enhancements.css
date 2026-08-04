@@ -1,6 +1,25 @@
 .world-map__stage {
   --character-ground-shadow: rgba(37, 31, 27, 0.32);
   --character-edge-shadow: rgba(40, 31, 26, 0.42);
+  --foreground-ground-shadow: rgba(42, 32, 28, 0.22);
+}
+
+.world-map__stage[data-zone="neighborhood"],
+.world-map__stage[data-zone="venue-exterior"],
+.world-map__stage[data-zone="ceremony-hall"] {
+  --foreground-ground-shadow: rgba(24, 43, 29, 0.28);
+}
+
+.world-map__stage[data-zone="subway-station"],
+.world-map__stage[data-zone="subway-train"],
+.world-map__stage[data-zone="lobby"],
+.world-map__stage[data-zone="restroom"] {
+  --foreground-ground-shadow: rgba(31, 49, 52, 0.22);
+}
+
+.world-decoration--asset {
+  filter: drop-shadow(0 2px 1px var(--foreground-ground-shadow));
+  backface-visibility: hidden;
 }
 
 .world-map__stage[data-zone="neighborhood"],

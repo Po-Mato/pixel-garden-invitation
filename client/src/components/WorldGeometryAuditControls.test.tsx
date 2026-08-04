@@ -58,7 +58,7 @@ describe("WorldGeometryAuditControls", () => {
     render(
       <WorldGeometryAuditControls
         zones={gardenWorld.zones}
-        activeZoneId="home"
+        activeZoneId="neighborhood"
         enabled
         issueCounts={{
           home: { blocking: 2, warning: 0 },
@@ -71,8 +71,8 @@ describe("WorldGeometryAuditControls", () => {
         patchImportStatus="loaded"
         importedPatchOperationCount={2}
         heatmapMode="pattern"
-        recommendations={foregroundRecommendationReviewsForZone("home")}
-        recommendationDecisions={{ "home/home-plant": "accepted" }}
+        recommendations={foregroundRecommendationReviewsForZone("neighborhood")}
+        recommendationDecisions={{ "neighborhood/street-tree-1": "accepted" }}
         onDownloadBundle={onDownloadBundle}
         onDownloadPatch={onDownloadPatch}
         onImportPatch={onImportPatch}
@@ -114,9 +114,9 @@ describe("WorldGeometryAuditControls", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "전경 추천 검토 열기" }));
     expect(screen.getByRole("region", { name: "현재 구역 전경 추천 검토" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "home-plant 추천 승인" })).toHaveAttribute("aria-pressed", "true");
-    fireEvent.click(screen.getByRole("button", { name: "home-plant 추천 거절" }));
-    expect(onRecommendationDecision).toHaveBeenCalledWith("home/home-plant", "rejected");
+    expect(screen.getByRole("button", { name: "street-tree-1 추천 승인" })).toHaveAttribute("aria-pressed", "true");
+    fireEvent.click(screen.getByRole("button", { name: "street-tree-1 추천 거절" }));
+    expect(onRecommendationDecision).toHaveBeenCalledWith("neighborhood/street-tree-1", "rejected");
     fireEvent.click(screen.getByRole("button", { name: "승인 추천 JSON patch 저장, 1개 선택" }));
     expect(onDownloadPatch).toHaveBeenCalledOnce();
     fireEvent.click(screen.getByRole("button", { name: "진단 번들 뷰어 열기" }));
