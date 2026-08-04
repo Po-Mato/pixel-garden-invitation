@@ -17,8 +17,9 @@
     .privacy { border:1px solid var(--green); padding:7px 9px; color:var(--green); font-size:10px; font-weight:900; }
     .drop { display:grid; min-height:188px; margin-top:18px; place-items:center; border:2px dashed var(--cyan); background:rgba(23,23,21,.94); cursor:pointer; text-align:center; transition:transform .12s,background .12s; }
     .drop[data-active="true"] { transform:translateY(-3px); background:#123236; }
+    .drop > span { width:100%; min-width:0; padding:0 14px; }
     .drop strong { display:block; color:var(--cyan); font-size:18px; }
-    .drop small { display:block; margin-top:8px; color:#a9a39b; }
+    .drop small { display:block; margin-top:8px; color:#a9a39b; line-height:1.5; overflow-wrap:anywhere; }
     input[type="file"] { position:absolute; width:1px; height:1px; overflow:hidden; opacity:0; }
     .error { margin:10px 0 0; color:#ff7cae; font-size:11px; }
     .drop[hidden],.report[hidden],.comparison[hidden],.delta-report[hidden],.error:empty { display:none; }

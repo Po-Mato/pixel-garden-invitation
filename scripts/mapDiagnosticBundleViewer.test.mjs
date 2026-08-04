@@ -15,6 +15,7 @@ test("standalone diagnostic bundle viewer stays local and renders every evidence
   assert.match(html, /A \/ B EVIDENCE COMPARE/);
   assert.match(html, /LOAD COMPARISON/);
   assert.match(html, /FORENSIC LIGHT TABLE/);
+  assert.match(html, /\.drop > span \{ width:100%; min-width:0; padding:0 14px; \}/);
   assert.match(html, /PIXEL DIFF · D/);
   assert.match(html, /DOWNLOAD DELTA/);
   assert.match(html, /world-diagnostic-delta/);
