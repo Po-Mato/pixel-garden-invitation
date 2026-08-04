@@ -3,10 +3,17 @@ import {
   cameraDeadZone,
   computeCameraTransform,
   computeTrackingCameraTransform,
-  screenToWorld
+  screenToWorld,
+  snapCameraViewport
 } from "./camera";
 
 describe("tracking camera", () => {
+  it("snaps fractional layout measurements to a stable CSS-pixel viewport", () => {
+    expect(snapCameraViewport({ width: 389.6, height: 519.51 })).toEqual({ width: 390, height: 520 });
+    expect(snapCameraViewport({ width: 390.4, height: 520.49 })).toEqual({ width: 390, height: 520 });
+    expect(snapCameraViewport({ width: Number.NaN, height: 0 })).toEqual({ width: 390, height: 520 });
+  });
+
   it("projects the player onto the exact viewport center", () => {
     const camera = computeCameraTransform({
       player: { x: 315, y: 1200 },

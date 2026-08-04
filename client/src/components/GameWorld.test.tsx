@@ -253,14 +253,14 @@ function travelFromHomeToLobby() {
 }
 
 function openJourneyTools() {
-  const toggle = screen.getByRole("button", { name: /여정 도구 (열기|닫기)/ });
+  const toggle = screen.getByRole("button", { name: /안내 도구 (열기|닫기)/ });
   if (toggle.getAttribute("aria-expanded") !== "true") fireEvent.click(toggle);
 }
 
 function openGameVault() {
   openJourneyTools();
-  const summary = screen.getByText("선택 기능").closest("summary");
-  if (!summary) throw new Error("선택 기능 요약을 찾지 못했습니다.");
+  const summary = screen.getByText("게임 기록·설정").closest("summary");
+  if (!summary) throw new Error("게임 기록·설정 요약을 찾지 못했습니다.");
   const details = summary.closest("details");
   if (!details?.hasAttribute("open")) fireEvent.click(summary);
 }
@@ -2928,7 +2928,7 @@ describe("GameWorld", () => {
     render(<GameWorld profile={profile} />);
     openJourneyTools();
 
-    const summary = screen.getByText("선택 기능").closest("summary");
+    const summary = screen.getByText("게임 기록·설정").closest("summary");
     const vault = summary?.closest("details");
     expect(vault).toHaveAttribute("data-optional-features", "true");
     expect(vault).not.toHaveAttribute("open");

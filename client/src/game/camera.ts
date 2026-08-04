@@ -25,6 +25,13 @@ function positiveOr(value: number, fallback: number): number {
   return Number.isFinite(value) && value > 0 ? value : fallback;
 }
 
+export function snapCameraViewport(viewport: ViewportSize): ViewportSize {
+  return {
+    width: Math.max(1, Math.round(positiveOr(viewport.width, 390))),
+    height: Math.max(1, Math.round(positiveOr(viewport.height, 520)))
+  };
+}
+
 function cameraAxis(desired: number, viewportSize: number, mapSize: number, zoom: number): number {
   const scaledMapSize = positiveOr(mapSize, viewportSize / zoom) * zoom;
   const aligned = scaledMapSize <= viewportSize

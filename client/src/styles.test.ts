@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 const styles = readFileSync("src/styles.css", "utf8");
 const hudDensityStyles = readFileSync("src/game-hud-density.css", "utf8");
 const experienceStyles = readFileSync("src/game-experience-continuity.css", "utf8");
+const refinedGameStyles = readFileSync("src/game-refined-theme.css", "utf8");
 const worldZones = [
   "home",
   "neighborhood",
@@ -315,12 +316,19 @@ describe("mobile world controls", () => {
     expect(mapRule).toContain("overflow: hidden;");
     expect(stageRule).toContain("transform-origin: 0 0;");
     expect(stageRule).toContain("will-change: transform;");
-    expect(stageRule).toContain("transition: transform 180ms");
-    expect(styles).toContain('html[data-camera-tracking="responsive"] .world-map__stage');
-    expect(styles).toContain("transition-duration: 110ms;");
+    expect(stageRule).toContain("contain: layout paint style;");
+    expect(stageRule).toContain("backface-visibility: hidden;");
+    expect(stageRule).not.toContain("transition:");
+    expect(styles).not.toContain('html[data-camera-tracking="responsive"] .world-map__stage');
     expect(stageRule).not.toContain("width: 390px;");
     expect(stageRule).not.toContain("height: 720px;");
     expect(stageRule).not.toContain("scale: calc(");
+  });
+
+  it("opens guidance as an overlay without changing the camera viewport", () => {
+    expect(refinedGameStyles).toMatch(/\.world-hud__tools\s*\{[^}]*position:\s*absolute;/s);
+    expect(refinedGameStyles).toMatch(/\.game-world \.world-hud\s*\{[^}]*flex:\s*0 0 calc\(96px \+ env\(safe-area-inset-top\)\);/s);
+    expect(refinedGameStyles).toContain(".world-hud[data-tools-open] .world-destination-guide-row");
   });
 
   it("adapts the game shell and fixed HUD to dynamic viewport and safe-area changes", () => {

@@ -34,6 +34,7 @@ import {
   computeCameraTransform,
   computeTrackingCameraTransform,
   screenToWorld,
+  snapCameraViewport,
   type ViewportSize
 } from "../game/camera";
 import { resolveFootstepSurface, type FootstepSurface } from "../game/footstepSurface";
@@ -358,6 +359,7 @@ import "../game-experience-continuity.css";
 import "../map-visual-enhancements.css";
 import "../game-discovery-dashboard.css";
 import "../game-hud-density.css";
+import "../game-refined-theme.css";
 
 const loadWeddingPhotoBoothComponent = () => import("./WeddingPhotoBooth");
 const loadWeddingPhotoAlbumComponent = () => import("./WeddingPhotoAlbum");
@@ -2536,10 +2538,11 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     const update = () => {
       const rect = element.getBoundingClientRect();
       if (rect.width > 0 && rect.height > 0) {
+        const nextViewport = snapCameraViewport(rect);
         setViewport((current) => (
-          current.width === rect.width && current.height === rect.height
+          current.width === nextViewport.width && current.height === nextViewport.height
             ? current
-            : { width: rect.width, height: rect.height }
+            : nextViewport
         ));
       }
     };
@@ -4493,14 +4496,14 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
             type="button"
             className="world-hud__tools-toggle"
             aria-expanded={hudToolsOpen}
-            aria-label={hudToolsOpen ? "여정 도구 닫기" : "여정 도구 열기"}
+            aria-label={hudToolsOpen ? "안내 도구 닫기" : "안내 도구 열기"}
             onClick={() => {
               pauseWorldInput();
               setHudToolsOpen((current) => !current);
             }}
           >
             <SlidersHorizontal aria-hidden="true" />
-            <span>{journeyCompleted ? "추억" : "여정"}</span>
+            <span>{journeyCompleted ? "추억" : "안내"}</span>
             <i className={`realtime-pill realtime-pill--${realtimeStatus}`} aria-label={realtimeStatusText(realtimeStatus)} />
             <ChevronDown aria-hidden="true" />
           </button>
@@ -4614,7 +4617,12 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
         <details className="world-game-vault" data-optional-features="true">
           <summary>
             <Archive aria-hidden="true" />
-            <span><strong>선택 기능</strong><small>{optionalFeatureSummary(optionalFeatureUsage)}</small></span>
+            <span>
+              <strong>게임 기록·설정</strong>
+              <small>{optionalFeatureUsage.recentId
+                ? optionalFeatureSummary(optionalFeatureUsage)
+                : "수집·같이 걷기·저장·기기 점검"}</small>
+            </span>
             <ChevronDown aria-hidden="true" />
           </summary>
           <div className="world-game-vault__body">
