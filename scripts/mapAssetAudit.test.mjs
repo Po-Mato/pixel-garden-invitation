@@ -551,9 +551,10 @@ test("wires gallery, map, character, photo-effect, and mobile visual audits into
   assert.match(visualWorkflow, /run: pnpm maps:foreground-audit/);
   assert.match(visualWorkflow, /run: pnpm maps:foreground-suggest/);
   assert.match(visualWorkflow, /--preview-patch/);
-  assert.match(visualWorkflow, /actions\/cache\/restore@v4/);
+  assert.match(visualWorkflow, /actions\/cache\/restore@v5/);
   assert.match(visualWorkflow, /run: pnpm maps:foreground-trend/);
-  assert.match(visualWorkflow, /actions\/cache\/save@v4/);
+  assert.match(visualWorkflow, /--ref-label/);
+  assert.match(visualWorkflow, /actions\/cache\/save@v5/);
   assert.match(visualWorkflow, /run: pnpm maps:foreground-summary/);
   assert.match(visualWorkflow, /run: pnpm visual:map-diagnostics/);
   assert.match(visualWorkflow, /pull-requests: write/);
@@ -567,5 +568,6 @@ test("wires gallery, map, character, photo-effect, and mobile visual audits into
   assert.match(visualWorkflow, /map-foreground-rollback\.patch\.json/);
   assert.match(visualWorkflow, /map-foreground-depth-trend\.json/);
   assert.match(visualWorkflow, /map-foreground-depth-trend\.html/);
+  assert.match(visualWorkflow, /world-geometry-policy-report\.json/);
   assert.match(visualWorkflow, /map-foreground-pr-summary\.md/);
 });

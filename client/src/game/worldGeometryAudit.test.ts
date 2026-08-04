@@ -24,6 +24,9 @@ describe("맵 이동 영역 자동 감사", () => {
       }]
     });
     expect(audit.unreachableCount).toBeGreaterThan(0);
-    expect(audit.issues.some((issue) => issue.includes("닿을 수 없는"))).toBe(true);
+    expect(audit.findings).toContainEqual(expect.objectContaining({
+      code: "disconnected-tiles",
+      severity: "warning"
+    }));
   });
 });

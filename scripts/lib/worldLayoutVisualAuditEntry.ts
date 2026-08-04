@@ -4,6 +4,7 @@ import sharp from "sharp";
 import { gridTileSize } from "../../client/src/game/movement";
 import { gardenWorld } from "../../client/src/game/world";
 import { auditWorldGeometry } from "../../client/src/game/worldGeometryAudit";
+import { evaluateWorldGeometryAuditPolicy } from "../../client/src/game/worldGeometryAuditPolicy";
 import { worldPropInteractionsForZone } from "../../client/src/game/worldPropInteractions";
 
 const rootDir = process.cwd();
@@ -12,6 +13,7 @@ const outputPath = path.join(artifactDir, "world-layout-current.png");
 const baselinePath = path.join(rootDir, "scripts/visual-baselines/world-layout-regression.webp");
 const diffPath = path.join(artifactDir, "world-layout-diff.png");
 const reportPath = path.join(artifactDir, "world-layout-regions.json");
+const policyReportPath = path.join(artifactDir, "world-geometry-policy-report.json");
 const cellWidth = 360;
 const cellHeight = 260;
 const labelHeight = 32;
@@ -25,6 +27,7 @@ function escapeXml(value: string): string {
 
 function zoneSvg(zone: (typeof gardenWorld.zones)[number]): Buffer {
   const audit = auditWorldGeometry(zone);
+  const policy = evaluateWorldGeometryAuditPolicy(audit);
   const scale = Math.min(cellWidth / zone.bounds.width, (cellHeight - labelHeight) / zone.bounds.height);
   const contentWidth = zone.bounds.width * scale;
   const contentHeight = zone.bounds.height * scale;
@@ -41,7 +44,7 @@ function zoneSvg(zone: (typeof gardenWorld.zones)[number]): Buffer {
   const interactions = worldPropInteractionsForZone(zone).map(({ decoration }) => (
     `<circle cx="${decoration.x + decoration.width / 2}" cy="${decoration.y + decoration.height / 2}" r="16" fill="#ae5068" stroke="#fff4c5" stroke-width="4"/>`
   )).join("");
-  const issues = audit.issues.length === 0 ? "정상" : `문제 ${audit.issues.length}`;
+  const issues = `B${audit.severityCounts.blocking} · W${audit.severityCounts.warning}/${policy.maxWarnings}`;
 
   return Buffer.from(`<svg width="${cellWidth}" height="${cellHeight}" xmlns="http://www.w3.org/2000/svg">
     <rect width="100%" height="100%" fill="#17211d"/>
@@ -62,6 +65,22 @@ async function renderSheet(): Promise<void> {
   await sharp({
     create: { width: cellWidth * columns, height, channels: 4, background: "#17211d" }
   }).composite(composites).png().toFile(outputPath);
+  const zones = gardenWorld.zones.map((zone) => {
+    const audit = auditWorldGeometry(zone);
+    const policy = evaluateWorldGeometryAuditPolicy(audit);
+    return {
+      zoneId: zone.id,
+      policy,
+      findings: audit.findings
+    };
+  });
+  await writeFile(policyReportPath, `${JSON.stringify({ version: 1, zones }, null, 2)}\n`);
+  const blocked = zones.filter(({ policy }) => policy.status === "blocked");
+  if (blocked.length > 0) {
+    throw new Error(`world geometry policy blocked: ${blocked.map(({ zoneId, policy }) => (
+      `${zoneId} (${policy.violations.join(", ")})`
+    )).join("; ")}`);
+  }
 }
 
 async function compareSheet(): Promise<void> {

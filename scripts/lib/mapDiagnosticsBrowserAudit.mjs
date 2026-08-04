@@ -1,14 +1,14 @@
 import { spawn } from "node:child_process";
 import { readFileSync } from "node:fs";
-import { mkdir, writeFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 const placementContract = JSON.parse(readFileSync(
   new URL("../../client/src/game/worldForegroundPlacements.json", import.meta.url),
   "utf8"
 ));
-const depthRecommendations = JSON.parse(readFileSync(
-  new URL("../../client/src/game/worldForegroundDepthRecommendations.json", import.meta.url),
+const foregroundRecommendations = JSON.parse(readFileSync(
+  new URL("../../client/src/game/worldForegroundRecommendations.json", import.meta.url),
   "utf8"
 ));
 
@@ -24,7 +24,9 @@ export function auditMapDiagnosticsSnapshot(
   snapshot,
   viewport,
   expectedDepthCount,
-  expectedRecommendedDepthCount = 0
+  expectedRecommendedDepthCount = 0,
+  expectedCurrentCollisionCount = 0,
+  expectedRecommendedCollisionCount = 0
 ) {
   const issues = [];
   const controls = snapshot.controlsRect;
@@ -44,9 +46,17 @@ export function auditMapDiagnosticsSnapshot(
   if (snapshot.recommendedDepthCount !== expectedRecommendedDepthCount) {
     issues.push(`추천 깊이선 수 불일치 ${snapshot.recommendedDepthCount}/${expectedRecommendedDepthCount}`);
   }
+  if (snapshot.currentForegroundCollisionCount !== expectedCurrentCollisionCount) {
+    issues.push(`현재 전경 충돌 수 불일치 ${snapshot.currentForegroundCollisionCount}/${expectedCurrentCollisionCount}`);
+  }
+  if (snapshot.recommendedForegroundCollisionCount !== expectedRecommendedCollisionCount) {
+    issues.push(`추천 전경 충돌 수 불일치 ${snapshot.recommendedForegroundCollisionCount}/${expectedRecommendedCollisionCount}`);
+  }
   if (snapshot.activeLayerCount !== 4) issues.push(`활성 진단 필터 수 불일치 ${snapshot.activeLayerCount}/4`);
   if (!snapshot.layers.every(Boolean)) issues.push("기본 진단 필터 비활성");
-  if (snapshot.issueCount > 0) issues.push(`맵 지오메트리 문제 ${snapshot.issueCount}건`);
+  if (snapshot.policyStatus !== "passed") {
+    issues.push(`맵 지오메트리 정책 차단 B${snapshot.blockingCount}/W${snapshot.warningCount}`);
+  }
   return issues;
 }
 
@@ -83,8 +93,13 @@ async function readSnapshot(page, selectedZoneId) {
       controlsRect: rect(".world-geometry-audit-controls"),
       depthCount: document.querySelectorAll(".world-geometry-audit__depth[data-depth-y]").length,
       recommendedDepthCount: document.querySelectorAll(".world-geometry-audit__depth--recommended").length,
+      currentForegroundCollisionCount: document.querySelectorAll(".world-geometry-audit__foreground-collision--current").length,
+      recommendedForegroundCollisionCount: document.querySelectorAll(".world-geometry-audit__foreground-collision--recommended").length,
       collisionCount: document.querySelectorAll(".world-geometry-audit__collision").length,
       issueCount: Number(overlay?.getAttribute("data-issue-count") ?? -1),
+      blockingCount: Number(overlay?.getAttribute("data-blocking-count") ?? -1),
+      warningCount: Number(overlay?.getAttribute("data-warning-count") ?? -1),
+      policyStatus: overlay?.getAttribute("data-policy-status") ?? null,
       activeLayerCount: document.querySelectorAll(".world-geometry-audit-layers button[aria-pressed=\"true\"]").length,
       layers: ["grid", "collision", "depth", "labels"].map((layer) => overlay?.getAttribute(`data-${layer}`) === "true")
     };
@@ -110,7 +125,8 @@ export async function runMapDiagnosticsBrowserAudit({ rootDir, outputDir, port =
           viewport: { width: viewport.width, height: viewport.height },
           hasTouch: true,
           isMobile: true,
-          deviceScaleFactor: 2
+          deviceScaleFactor: 2,
+          acceptDownloads: true
         });
         const page = await context.newPage();
         await page.addInitScript(() => {
@@ -143,6 +159,38 @@ export async function runMapDiagnosticsBrowserAudit({ rootDir, outputDir, port =
         }
         await page.getByRole("button", { name: "이동 격자 표시" }).click();
 
+        if (viewport.id === "small-android") {
+          await selector.selectOption("lobby");
+          await page.getByRole("button", { name: "전경 추천 검토 열기" }).click();
+          await page.getByRole("button", { name: "lobby-desk 추천 승인" }).click();
+          const acceptedGhost = page.locator(
+            '.world-geometry-audit__foreground-collision--recommended[data-decoration-id="lobby-desk"]'
+          );
+          if (await acceptedGhost.getAttribute("data-review-decision") !== "accepted") {
+            throw new Error(`${viewport.id}: 추천 충돌 승인 상태가 오버레이에 반영되지 않음`);
+          }
+          const patchDownloadPromise = page.waitForEvent("download");
+          await page.getByRole("button", { name: "승인 추천 JSON patch 저장, 1개 선택" }).click();
+          const patchDownload = await patchDownloadPromise;
+          const patchPath = await patchDownload.path();
+          const patch = JSON.parse(await readFile(patchPath, "utf8"));
+          if (patch.acceptedPlacementKeys?.[0] !== "lobby/lobby-desk" || patch.operationCount !== 2) {
+            throw new Error(`${viewport.id}: 선택 patch 내용 불일치`);
+          }
+          const bundleDownloadPromise = page.waitForEvent("download", { timeout: 30_000 });
+          await page.getByRole("button", { name: "현재 화면 진단 번들 저장" }).click();
+          const bundleDownload = await bundleDownloadPromise;
+          const bundlePath = await bundleDownload.path();
+          const bundle = JSON.parse(await readFile(bundlePath, "utf8"));
+          if (
+            bundle.zone?.id !== "lobby"
+            || bundle.selectedPatch?.operationCount !== 2
+            || !bundle.screenshot?.dataUrl?.startsWith("data:image/png;base64,")
+          ) throw new Error(`${viewport.id}: 화면 진단 번들 내용 불일치`);
+          await page.getByRole("button", { name: "lobby-desk 추천 승인" }).click();
+          await page.getByRole("button", { name: "전경 추천 검토 열기" }).click();
+        }
+
         for (const zoneId of mapDiagnosticsZoneIds) {
           await selector.selectOption(zoneId);
           await page.waitForFunction((expectedZoneId) => (
@@ -155,17 +203,28 @@ export async function runMapDiagnosticsBrowserAudit({ rootDir, outputDir, port =
           const snapshot = await readSnapshot(page, zoneId);
           const expectedDepthCount = placementContract.zones[zoneId].length;
           const recommendations = new Map(
-            depthRecommendations.zones[zoneId].map(({ decorationId, depthY }) => [decorationId, depthY])
+            foregroundRecommendations.zones[zoneId].map((recommendation) => [recommendation.decorationId, recommendation])
           );
           const expectedRecommendedDepthCount = placementContract.zones[zoneId].filter((placement) => (
-            recommendations.get(placement.decorationId) !== undefined
-            && recommendations.get(placement.decorationId) !== placement.depthY
+            recommendations.get(placement.decorationId)?.depthY !== undefined
+            && recommendations.get(placement.decorationId)?.depthY !== placement.depthY
           )).length;
+          const collisionChanged = (placement) => {
+            const recommended = recommendations.get(placement.decorationId)?.collision ?? null;
+            const current = placement.collision ?? null;
+            return JSON.stringify(current) !== JSON.stringify(recommended);
+          };
+          const expectedCurrentCollisionCount = placementContract.zones[zoneId]
+            .filter((placement) => collisionChanged(placement) && placement.collision).length;
+          const expectedRecommendedCollisionCount = placementContract.zones[zoneId]
+            .filter((placement) => collisionChanged(placement) && recommendations.get(placement.decorationId)?.collision).length;
           const issues = auditMapDiagnosticsSnapshot(
             snapshot,
             viewport,
             expectedDepthCount,
-            expectedRecommendedDepthCount
+            expectedRecommendedDepthCount,
+            expectedCurrentCollisionCount,
+            expectedRecommendedCollisionCount
           );
           const screenshotPath = path.join(outputDir, `map-diagnostics-${viewport.id}-${zoneId}.png`);
           await page.screenshot({ path: screenshotPath, fullPage: false });
@@ -174,6 +233,8 @@ export async function runMapDiagnosticsBrowserAudit({ rootDir, outputDir, port =
             zoneId,
             expectedDepthCount,
             expectedRecommendedDepthCount,
+            expectedCurrentCollisionCount,
+            expectedRecommendedCollisionCount,
             snapshot,
             issues,
             screenshotPath

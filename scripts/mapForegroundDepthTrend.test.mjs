@@ -59,7 +59,8 @@ test("depth trend warns only when absolute gap change reaches the threshold", ()
 test("depth trend deduplicates rerun SHAs and retains bounded history", () => {
   const snapshots = Array.from({ length: 4 }, (_, index) => createMapForegroundDepthSnapshot(auditReport(index), {
     sha: `sha-${index}`,
-    generatedAt: `2026-08-0${index + 1}T00:00:00.000Z`
+    generatedAt: `2026-08-0${index + 1}T00:00:00.000Z`,
+    refLabel: index === 2 ? "tag:v2.0.0" : `branch:main-${index}`
   }));
   const result = buildMapForegroundDepthTrend(auditReport(9), { version: 1, snapshots }, {
     sha: "sha-3",
@@ -73,5 +74,9 @@ test("depth trend deduplicates rerun SHAs and retains bounded history", () => {
   assert.match(html, /MAP DEPTH TRACE/);
   assert.match(html, /desk/);
   assert.match(html, /<polyline/);
+  assert.match(html, /비교 기준 커밋 또는 릴리스 태그/);
+  assert.match(html, /tag:v2\.0\.0 · sha-2/);
+  assert.match(html, /depth-history-data/);
+  assert.match(html, /select\.addEventListener\("change",render\)/);
   assert.doesNotMatch(html, /https?:\/\//);
 });

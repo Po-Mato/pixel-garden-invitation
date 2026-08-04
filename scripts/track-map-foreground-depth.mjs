@@ -45,11 +45,12 @@ const htmlPath = path.resolve(rootDir, argumentValue(
 ));
 const warningDelta = Number(argumentValue("--warning-delta", "12"));
 const sha = argumentValue("--sha", process.env.GITHUB_SHA ?? "local");
+const refLabel = argumentValue("--ref-label", process.env.GITHUB_REF_NAME ?? null);
 
 const audit = JSON.parse(await readFile(auditPath, "utf8"));
 if (audit.status !== "passed") throw new Error("통과한 전경 감사 보고서가 있어야 depthGap 추세를 계산할 수 있습니다");
 const history = await readJsonIfPresent(historyPath, { version: 1, snapshots: [] });
-const result = buildMapForegroundDepthTrend(audit, history, { sha, warningDelta });
+const result = buildMapForegroundDepthTrend(audit, history, { sha, warningDelta, refLabel });
 const markdown = renderMapForegroundDepthTrendMarkdown(result.report);
 const html = renderMapForegroundDepthTrendHtml(result.history, result.report);
 

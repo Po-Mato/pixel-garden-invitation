@@ -1,0 +1,41 @@
+{
+  "version": 1,
+  "zones": {
+    "home": [
+      { "decorationId": "home-plant", "depthY": 555, "collision": { "x": 426, "y": 491, "width": 47, "height": 68 } }
+    ],
+    "neighborhood": [
+      { "decorationId": "street-tree-1", "depthY": 210, "collision": { "x": 219, "y": 103, "width": 80, "height": 111 } },
+      { "decorationId": "street-tree-2", "depthY": 210, "collision": { "x": 518, "y": 103, "width": 80, "height": 111 } },
+      { "decorationId": "street-tree-3", "depthY": 210, "collision": { "x": 865, "y": 103, "width": 80, "height": 111 } }
+    ],
+    "subway-station": [],
+    "subway-train": [
+      { "decorationId": "train-straps", "depthY": 420, "collision": null }
+    ],
+    "venue-exterior": [
+      { "decorationId": "venue-arch", "depthY": 339, "collision": { "x": 361, "y": 197, "width": 238, "height": 146 } }
+    ],
+    "lobby": [
+      { "decorationId": "lobby-desk", "depthY": 475, "collision": { "x": 456, "y": 437, "width": 158, "height": 42 } }
+    ],
+    "bridal-room": [
+      { "decorationId": "bridal-flower-front", "depthY": 397, "collision": { "x": 245, "y": 319, "width": 80, "height": 82 } }
+    ],
+    "ceremony-hall": [
+      { "decorationId": "hall-ceremony-arch", "depthY": 330, "collision": { "x": 194, "y": 30, "width": 392, "height": 300 } },
+      { "decorationId": "hall-altar-table-front", "depthY": 277, "collision": { "x": 300, "y": 169, "width": 180, "height": 112 } },
+      { "decorationId": "hall-flowers-1", "depthY": 555, "collision": { "x": 247, "y": 491, "width": 45, "height": 68 } },
+      { "decorationId": "hall-flowers-2", "depthY": 795, "collision": { "x": 487, "y": 731, "width": 45, "height": 68 } },
+      { "decorationId": "hall-flowers-3", "depthY": 1035, "collision": { "x": 247, "y": 971, "width": 45, "height": 68 } },
+      { "decorationId": "hall-flowers-4", "depthY": 1275, "collision": { "x": 487, "y": 1211, "width": 45, "height": 68 } }
+    ],
+    "banquet": [
+      { "decorationId": "banquet-table-1", "depthY": 490, "collision": { "x": 218, "y": 290, "width": 224, "height": 204 } },
+      { "decorationId": "banquet-table-2", "depthY": 468, "collision": { "x": 694, "y": 294, "width": 232, "height": 178 } },
+      { "decorationId": "banquet-table-3", "depthY": 768, "collision": { "x": 214, "y": 594, "width": 232, "height": 178 } },
+      { "decorationId": "banquet-table-4", "depthY": 790, "collision": { "x": 698, "y": 590, "width": 224, "height": 204 } }
+    ],
+    "restroom": []
+  }
+}

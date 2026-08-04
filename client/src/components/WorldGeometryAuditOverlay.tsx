@@ -1,8 +1,12 @@
 import { useMemo } from "react";
 import { gridTileSize } from "../game/movement";
 import { auditWorldGeometry } from "../game/worldGeometryAudit";
+import { evaluateWorldGeometryAuditPolicy } from "../game/worldGeometryAuditPolicy";
 import { worldForegroundPlacements, type WorldZone } from "../game/world";
-import { recommendedForegroundDepthY } from "../game/worldForegroundDepthRecommendations";
+import {
+  foregroundRecommendationReviewsForZone,
+  type ForegroundRecommendationDecision
+} from "../game/worldForegroundRecommendations";
 import {
   defaultWorldGeometryAuditLayers,
   type WorldGeometryAuditLayers
@@ -12,15 +16,22 @@ type WorldGeometryAuditOverlayProps = {
   zone: WorldZone;
   enabled: boolean;
   layers?: WorldGeometryAuditLayers;
+  recommendationDecisions?: Partial<Record<string, ForegroundRecommendationDecision>>;
 };
 
 export function WorldGeometryAuditOverlay({
   zone,
   enabled,
-  layers = defaultWorldGeometryAuditLayers
+  layers = defaultWorldGeometryAuditLayers,
+  recommendationDecisions = {}
 }: WorldGeometryAuditOverlayProps) {
   const audit = useMemo(() => auditWorldGeometry(zone), [zone]);
+  const policy = useMemo(() => evaluateWorldGeometryAuditPolicy(audit), [audit]);
   const foregrounds = worldForegroundPlacements[zone.id];
+  const recommendationReviews = useMemo(() => foregroundRecommendationReviewsForZone(zone.id), [zone.id]);
+  const recommendationById = new Map(
+    recommendationReviews.map((review) => [review.decorationId, review])
+  );
   if (!enabled) return null;
 
   return (
@@ -29,6 +40,9 @@ export function WorldGeometryAuditOverlay({
       data-testid="world-geometry-audit"
       data-zone={zone.id}
       data-issue-count={audit.issues.length}
+      data-blocking-count={audit.severityCounts.blocking}
+      data-warning-count={audit.severityCounts.warning}
+      data-policy-status={policy.status}
       data-grid={layers.grid}
       data-collision={layers.collision}
       data-depth={layers.depth}
@@ -60,8 +74,45 @@ export function WorldGeometryAuditOverlay({
           }}
         />
       )) : null}
+      {layers.collision ? recommendationReviews.flatMap((review) => {
+        if (!review.collisionChanged) return [];
+        const decision = recommendationDecisions[review.key] ?? "pending";
+        return [
+          review.current.collision ? (
+            <i
+              key={`${review.key}-current-collision`}
+              className="world-geometry-audit__foreground-collision world-geometry-audit__foreground-collision--current"
+              data-decoration-id={review.decorationId}
+              data-collision-state="current"
+              style={{
+                left: review.current.collision.x,
+                top: review.current.collision.y,
+                width: review.current.collision.width,
+                height: review.current.collision.height
+              }}
+            />
+          ) : null,
+          review.recommended.collision ? (
+            <i
+              key={`${review.key}-recommended-collision`}
+              className="world-geometry-audit__foreground-collision world-geometry-audit__foreground-collision--recommended"
+              data-decoration-id={review.decorationId}
+              data-collision-state="recommended"
+              data-review-decision={decision}
+              style={{
+                left: review.recommended.collision.x,
+                top: review.recommended.collision.y,
+                width: review.recommended.collision.width,
+                height: review.recommended.collision.height
+              }}
+            />
+          ) : null
+        ].filter(Boolean);
+      }) : null}
       {layers.depth || layers.labels ? foregrounds.map((placement) => {
-        const recommendedDepthY = recommendedForegroundDepthY(zone.id, placement.decorationId);
+        const review = recommendationById.get(placement.decorationId);
+        const recommendedDepthY = review?.recommended.depthY ?? null;
+        const decision = review ? recommendationDecisions[review.key] ?? "pending" : null;
         return (
           <div
             key={placement.decorationId}
@@ -86,6 +137,7 @@ export function WorldGeometryAuditOverlay({
                   <i
                     className="world-geometry-audit__depth world-geometry-audit__depth--recommended"
                     data-recommended-depth-y={recommendedDepthY}
+                    data-review-decision={decision}
                     style={{ top: recommendedDepthY - placement.y }}
                   />
                 ) : null}
@@ -98,8 +150,10 @@ export function WorldGeometryAuditOverlay({
       <span className="world-geometry-audit__summary">
         <strong>MAP DIAGNOSTICS</strong>
         <em>이동 {audit.reachableCount} · 충돌 타일 {audit.blockedCount} · 단절 {audit.unreachableCount}</em>
-        <small className={audit.issues.length > 0 ? "world-geometry-audit__summary-issue" : undefined}>
-          {audit.issues[0] ?? "분홍 현재 · 보라 점선 추천 · 금색 충돌"}
+        <small
+          className={audit.findings.length > 0 ? `world-geometry-audit__summary-issue world-geometry-audit__summary-issue--${audit.findings[0].severity}` : undefined}
+        >
+          {audit.findings[0]?.message ?? "깊이 분홍/보라 · 충돌 청록/보라 추천"}
         </small>
       </span>
     </div>

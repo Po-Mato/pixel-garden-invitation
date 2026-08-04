@@ -77,7 +77,7 @@ test("production floor recommendations contain alpha pixels and their recommende
   const report = buildMapForegroundPlacementSuggestions(audit);
   assert.equal(report.suggestions.length, 18);
   const recommendationContract = JSON.parse(await readFile(
-    path.join(rootDir, "client/src/game/worldForegroundDepthRecommendations.json"),
+    path.join(rootDir, "client/src/game/worldForegroundRecommendations.json"),
     "utf8"
   ));
   assert.deepEqual(Object.keys(recommendationContract.zones), audit.zoneIds);
@@ -88,7 +88,8 @@ test("production floor recommendations contain alpha pixels and their recommende
         .filter((suggestion) => suggestion.zoneId === zoneId)
         .map((suggestion) => ({
           decorationId: suggestion.decorationId,
-          depthY: suggestion.recommended.depthY
+          depthY: suggestion.recommended.depthY,
+          collision: suggestion.recommended.collision
         }))
     );
   }

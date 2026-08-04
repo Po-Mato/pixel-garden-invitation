@@ -1,4 +1,5 @@
 import type { WorldZoneId } from "@wedding-game/shared";
+import type { WorldGeometryAuditSeverityCounts } from "./worldGeometryAudit";
 
 export const worldGeometryAuditLayerKeys = ["grid", "collision", "depth", "labels"] as const;
 
@@ -26,14 +27,16 @@ export function serializeWorldGeometryAuditLayers(layers: WorldGeometryAuditLaye
 
 export function nextWorldGeometryIssueZone(
   zoneIds: readonly WorldZoneId[],
-  issueCounts: Partial<Record<WorldZoneId, number>>,
+  issueCounts: Partial<Record<WorldZoneId, WorldGeometryAuditSeverityCounts>>,
   activeZoneId: WorldZoneId
 ): WorldZoneId | null {
   if (zoneIds.length === 0) return null;
   const activeIndex = Math.max(0, zoneIds.indexOf(activeZoneId));
-  for (let offset = 1; offset <= zoneIds.length; offset += 1) {
-    const zoneId = zoneIds[(activeIndex + offset) % zoneIds.length];
-    if ((issueCounts[zoneId] ?? 0) > 0) return zoneId;
+  for (const severity of ["blocking", "warning"] as const) {
+    for (let offset = 1; offset <= zoneIds.length; offset += 1) {
+      const zoneId = zoneIds[(activeIndex + offset) % zoneIds.length];
+      if ((issueCounts[zoneId]?.[severity] ?? 0) > 0) return zoneId;
+    }
   }
   return null;
 }

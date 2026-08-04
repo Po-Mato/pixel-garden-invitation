@@ -218,6 +218,18 @@ import {
   type WorldGeometryAuditLayerKey
 } from "../game/worldGeometryAuditLayers";
 import { auditWorldGeometry } from "../game/worldGeometryAudit";
+import { evaluateWorldGeometryAuditPolicy } from "../game/worldGeometryAuditPolicy";
+import {
+  captureWorldDiagnosticScreenshot,
+  createWorldDiagnosticBundle,
+  downloadJsonArtifact,
+  worldDiagnosticArtifactFilename
+} from "../game/worldDiagnosticBundle";
+import {
+  buildWorldForegroundRecommendationPatch,
+  foregroundRecommendationReviewsForZone,
+  type ForegroundRecommendationDecision
+} from "../game/worldForegroundRecommendations";
 import {
   nearestWorldLandmark,
   worldPortalAccessibilityLabel,
@@ -577,6 +589,11 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   const [geometryAuditEnabled, setGeometryAuditEnabled] = useState(mapAuditMode.initiallyEnabled);
   const [geometryAuditLayers, setGeometryAuditLayers] = useState(mapAuditMode.initialLayers);
   const [diagnosticCopyStatus, setDiagnosticCopyStatus] = useState<"idle" | "copied" | "error">("idle");
+  const [diagnosticPatchStatus, setDiagnosticPatchStatus] = useState<"idle" | "saved" | "error">("idle");
+  const [diagnosticBundleStatus, setDiagnosticBundleStatus] = useState<"idle" | "capturing" | "saved" | "error">("idle");
+  const [foregroundRecommendationDecisions, setForegroundRecommendationDecisions] = useState<
+    Partial<Record<string, ForegroundRecommendationDecision>>
+  >({});
   const movementStepIntervalMs = viewPreferences.gameMovementSpeed === "relaxed"
     ? 320
     : viewPreferences.gameMovementSpeed === "brisk" ? 190 : 240;
@@ -617,11 +634,18 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   const initialGuideId = mapAuditMode.available ? null : restoredGuideId;
   const [activeZoneId, setActiveZoneId] = useState<WorldZoneId>(initialZone.id);
   const activeZone = getWorldZone(gardenWorld, activeZoneId);
-  const geometryAuditIssueCounts = useMemo(() => (
+  const geometryAuditsByZone = useMemo(() => (
     mapAuditMode.available
-      ? Object.fromEntries(gardenWorld.zones.map((zone) => [zone.id, auditWorldGeometry(zone).issues.length]))
+      ? Object.fromEntries(gardenWorld.zones.map((zone) => [zone.id, auditWorldGeometry(zone)]))
       : {}
-  ) as Partial<Record<WorldZoneId, number>>, [mapAuditMode.available]);
+  ) as Partial<Record<WorldZoneId, ReturnType<typeof auditWorldGeometry>>>, [mapAuditMode.available]);
+  const geometryAuditIssueCounts = useMemo(() => Object.fromEntries(
+    Object.entries(geometryAuditsByZone).map(([zoneId, audit]) => [zoneId, audit.severityCounts])
+  ), [geometryAuditsByZone]);
+  const activeForegroundRecommendations = useMemo(
+    () => mapAuditMode.available ? foregroundRecommendationReviewsForZone(activeZoneId) : [],
+    [activeZoneId, mapAuditMode.available]
+  );
   const [position, setPosition] = useState<Point>(
     companionInviteLink || diagnosticInitialZoneId
       ? initialZone.spawn
@@ -784,6 +808,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     setEquippedJourneyStampReward("none");
   }, [equippedJourneyStampReward, journeyProgress]);
 
+  const mapShellRef = useRef<HTMLDivElement | null>(null);
   const mapViewportRef = useRef<HTMLDivElement | null>(null);
   const menuButtonRef = useRef<HTMLButtonElement | null>(null);
   const menuCloseButtonRef = useRef<HTMLButtonElement | null>(null);
@@ -1943,6 +1968,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     url.searchParams.set("mapAuditZone", zoneId);
     window.history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
     setDiagnosticCopyStatus("idle");
+    setDiagnosticBundleStatus("idle");
   }, [mapAuditMode.available, moveToZone, setInputReleaseRequired, setPortalTransition]);
 
   const handleDiagnosticLayerChange = useCallback((layer: WorldGeometryAuditLayerKey, enabled: boolean) => {
@@ -1952,6 +1978,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     url.searchParams.set("mapAuditLayers", serializeWorldGeometryAuditLayers(nextLayers));
     window.history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
     setDiagnosticCopyStatus("idle");
+    setDiagnosticBundleStatus("idle");
   }, [geometryAuditLayers]);
 
   const handleNextDiagnosticIssue = useCallback(() => {
@@ -1975,6 +2002,84 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
       setDiagnosticCopyStatus("error");
     }
   }, [activeZoneId, geometryAuditLayers]);
+
+  const handleForegroundRecommendationDecision = useCallback((
+    key: string,
+    decision: ForegroundRecommendationDecision
+  ) => {
+    setForegroundRecommendationDecisions((current) => {
+      const next = { ...current };
+      if (decision === "pending") delete next[key];
+      else next[key] = decision;
+      return next;
+    });
+    setDiagnosticPatchStatus("idle");
+    setDiagnosticBundleStatus("idle");
+  }, []);
+
+  const handleDownloadDiagnosticPatch = useCallback(() => {
+    try {
+      const generatedAt = new Date();
+      const patch = buildWorldForegroundRecommendationPatch(
+        foregroundRecommendationDecisions,
+        generatedAt.toISOString()
+      );
+      downloadJsonArtifact(
+        patch,
+        worldDiagnosticArtifactFilename("patch", activeZoneId, generatedAt)
+      );
+      setDiagnosticPatchStatus("saved");
+    } catch {
+      setDiagnosticPatchStatus("error");
+    }
+  }, [activeZoneId, foregroundRecommendationDecisions]);
+
+  const handleDownloadDiagnosticBundle = useCallback(async () => {
+    const shell = mapShellRef.current;
+    if (!shell || diagnosticBundleStatus === "capturing") return;
+    setDiagnosticBundleStatus("capturing");
+    try {
+      const generatedAt = new Date();
+      const audit = geometryAuditsByZone[activeZoneId] ?? auditWorldGeometry(activeZone);
+      const screenshot = await captureWorldDiagnosticScreenshot(shell);
+      const selectedPatch = buildWorldForegroundRecommendationPatch(
+        foregroundRecommendationDecisions,
+        generatedAt.toISOString()
+      );
+      const bundle = createWorldDiagnosticBundle({
+        generatedAt: generatedAt.toISOString(),
+        zone: { id: activeZone.id, label: activeZone.label },
+        diagnosticUrl: window.location.href,
+        viewport: {
+          width: window.innerWidth,
+          height: window.innerHeight,
+          devicePixelRatio: window.devicePixelRatio || 1
+        },
+        userAgent: navigator.userAgent,
+        layers: geometryAuditLayers,
+        findings: audit.findings,
+        policy: evaluateWorldGeometryAuditPolicy(audit),
+        recommendationDecisions: foregroundRecommendationDecisions,
+        selectedPatch,
+        screenshot
+      });
+      downloadJsonArtifact(
+        bundle,
+        worldDiagnosticArtifactFilename("bundle", activeZoneId, generatedAt)
+      );
+      setDiagnosticBundleStatus("saved");
+    } catch (error) {
+      console.error("[map-diagnostics] Failed to build diagnostic bundle", error);
+      setDiagnosticBundleStatus("error");
+    }
+  }, [
+    activeZone,
+    activeZoneId,
+    diagnosticBundleStatus,
+    foregroundRecommendationDecisions,
+    geometryAuditLayers,
+    geometryAuditsByZone
+  ]);
 
   useEffect(() => {
     if (!mapAuditMode.available || !geometryAuditEnabled) return;
@@ -4647,7 +4752,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
         </div>
       </header>
 
-      <div className="world-map-shell">
+      <div ref={mapShellRef} className="world-map-shell">
         {mapAuditMode.available ? (
           <WorldGeometryAuditControls
             zones={gardenWorld.zones}
@@ -4656,6 +4761,12 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
             issueCounts={geometryAuditIssueCounts}
             layers={geometryAuditLayers}
             copyStatus={diagnosticCopyStatus}
+            patchStatus={diagnosticPatchStatus}
+            bundleStatus={diagnosticBundleStatus}
+            recommendations={activeForegroundRecommendations}
+            recommendationDecisions={foregroundRecommendationDecisions}
+            onDownloadBundle={() => { void handleDownloadDiagnosticBundle(); }}
+            onDownloadPatch={handleDownloadDiagnosticPatch}
             onCopyLink={() => { void handleCopyDiagnosticLink(); }}
             onEnabledChange={(nextEnabled) => {
               const url = new URL(window.location.href);
@@ -4671,6 +4782,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
             }}
             onLayerChange={handleDiagnosticLayerChange}
             onNextIssue={handleNextDiagnosticIssue}
+            onRecommendationDecision={handleForegroundRecommendationDecision}
             onZoneChange={handleDiagnosticZoneChange}
           />
         ) : null}
@@ -4718,6 +4830,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
               zone={activeZone}
               enabled={geometryAuditEnabled}
               layers={geometryAuditLayers}
+              recommendationDecisions={foregroundRecommendationDecisions}
             />
             <WorldCelebrationCollectibles
               items={zoneCelebrationCollectibles}

@@ -187,6 +187,7 @@
 .world-geometry-audit__tile--unreachable { background: rgba(226, 55, 72, 0.68); }
 
 .world-geometry-audit__collision,
+.world-geometry-audit__foreground-collision,
 .world-geometry-audit__foreground,
 .world-geometry-audit__depth {
   position: absolute;
@@ -205,6 +206,39 @@
   border: 3px dashed #ffc857;
   background: rgba(255, 200, 87, 0.2);
   box-shadow: inset 0 0 0 1px rgba(47, 35, 23, 0.82);
+}
+
+.world-geometry-audit__foreground-collision {
+  z-index: 3;
+  border: 2px solid #4df2ff;
+  background: rgba(77, 242, 255, 0.1);
+  box-shadow: inset 0 0 0 1px rgba(16, 72, 77, 0.72);
+}
+
+.world-geometry-audit__foreground-collision--recommended {
+  z-index: 4;
+  border-style: dashed;
+  border-color: #b89cff;
+  background: rgba(184, 156, 255, 0.13);
+  box-shadow: inset 0 0 0 1px rgba(49, 35, 79, 0.78);
+}
+
+.world-geometry-audit__foreground-collision--recommended[data-review-decision="accepted"] {
+  border-color: #68f5a6;
+  background: rgba(104, 245, 166, 0.16);
+}
+
+.world-geometry-audit__foreground-collision--recommended[data-review-decision="rejected"] {
+  border-color: #ff6f9d;
+  background: repeating-linear-gradient(135deg, rgba(255, 111, 157, 0.2) 0 4px, transparent 4px 8px);
+}
+
+.world-geometry-audit__depth--recommended[data-review-decision="accepted"] {
+  background: repeating-linear-gradient(90deg, #68f5a6 0 8px, transparent 8px 13px);
+}
+
+.world-geometry-audit__depth--recommended[data-review-decision="rejected"] {
+  background: repeating-linear-gradient(90deg, #ff6f9d 0 3px, transparent 3px 8px);
 }
 
 .world-geometry-audit__foreground {
@@ -268,6 +302,8 @@
 .world-geometry-audit__summary em { font-size: 9px; }
 .world-geometry-audit__summary small { color: #5d5550; font-size: 8px; }
 .world-geometry-audit__summary .world-geometry-audit__summary-issue { color: #a3264c; }
+.world-geometry-audit__summary .world-geometry-audit__summary-issue--warning { color: #8a5a00; }
+.world-geometry-audit__summary .world-geometry-audit__summary-issue--blocking { color: #b01646; }
 
 .world-geometry-audit-controls {
   position: absolute;
@@ -381,7 +417,7 @@
 
 .world-geometry-audit-actions {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 3px;
   pointer-events: auto;
 }
@@ -402,6 +438,86 @@
 .world-geometry-audit-issues > span { color: #ff4d98; }
 .world-geometry-audit-issues:disabled { color: #8b8581; opacity: 0.78; }
 .world-geometry-audit-copy { border-color: #4df2ff !important; color: #ffc857 !important; }
+.world-geometry-audit-review-toggle[aria-expanded="true"] { border-color: #b89cff; color: #efe8ff; }
+.world-geometry-audit-bundle { border-color: #ffc857 !important; }
+.world-geometry-audit-bundle:disabled { color: #8b8581; }
+
+.world-geometry-audit-review {
+  display: grid;
+  gap: 4px;
+  border: 2px solid #342d2b;
+  border-radius: 4px;
+  padding: 5px;
+  background: rgba(23, 23, 23, 0.96);
+  color: #d7fbff;
+  box-shadow: 3px 3px 0 rgba(35, 28, 27, 0.42);
+  font-family: ui-monospace, monospace;
+  pointer-events: auto;
+}
+
+.world-geometry-audit-review > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+}
+
+.world-geometry-audit-review > header > span {
+  overflow: hidden;
+  color: #b89cff;
+  font-size: 7px;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.world-geometry-audit-review button {
+  min-width: 25px;
+  border: 1px solid #5f5956;
+  border-radius: 2px;
+  padding: 3px 4px;
+  background: #252323;
+  color: #d7fbff;
+  font: 900 7px/1 ui-monospace, monospace;
+}
+
+.world-geometry-audit-review button:focus-visible { outline: 2px solid #fff1a8; outline-offset: 1px; }
+.world-geometry-audit-review button:disabled { color: #77706c; }
+.world-geometry-audit-review > header button:not(:disabled) { border-color: #68f5a6; color: #68f5a6; }
+
+.world-geometry-audit-review ul {
+  display: grid;
+  max-height: 116px;
+  gap: 3px;
+  margin: 0;
+  padding: 0 2px 0 0;
+  overflow-y: auto;
+  list-style: none;
+  scrollbar-color: #4df2ff #252323;
+  scrollbar-width: thin;
+}
+
+.world-geometry-audit-review li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 3px;
+  border-left: 2px solid #5f5956;
+  padding: 3px 0 3px 5px;
+  background: #1d1b1b;
+}
+
+.world-geometry-audit-review li[data-decision="accepted"] { border-left-color: #68f5a6; }
+.world-geometry-audit-review li[data-decision="rejected"] { border-left-color: #ff6f9d; opacity: 0.76; }
+.world-geometry-audit-review li > span { min-width: 0; }
+.world-geometry-audit-review li strong,
+.world-geometry-audit-review li small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.world-geometry-audit-review li strong { color: #fff7d7; font-size: 7px; }
+.world-geometry-audit-review li small { margin-top: 2px; color: #8fcfd4; font-size: 6px; }
+.world-geometry-audit-review li button[aria-pressed="true"]:first-of-type { border-color: #68f5a6; color: #68f5a6; }
+.world-geometry-audit-review li button[aria-pressed="true"]:last-of-type { border-color: #ff6f9d; color: #ff6f9d; }
+.world-geometry-audit-review > p { margin: 3px 0; color: #89827c; font: 800 7px/1.2 ui-monospace, monospace; text-align: center; }
 
 .world-destination-beacon {
   position: absolute;

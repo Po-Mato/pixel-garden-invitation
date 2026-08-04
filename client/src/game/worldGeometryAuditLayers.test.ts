@@ -20,8 +20,12 @@ describe("worldGeometryAuditLayers", () => {
 
   it("cycles to the next zone containing geometry issues", () => {
     const zoneIds = ["home", "lobby", "banquet"] as const;
-    expect(nextWorldGeometryIssueZone(zoneIds, { home: 2, banquet: 1 }, "home")).toBe("banquet");
-    expect(nextWorldGeometryIssueZone(zoneIds, { home: 2 }, "home")).toBe("home");
+    expect(nextWorldGeometryIssueZone(zoneIds, {
+      home: { blocking: 0, warning: 2 },
+      lobby: { blocking: 1, warning: 0 },
+      banquet: { blocking: 0, warning: 1 }
+    }, "home")).toBe("lobby");
+    expect(nextWorldGeometryIssueZone(zoneIds, { home: { blocking: 0, warning: 2 } }, "home")).toBe("home");
     expect(nextWorldGeometryIssueZone(zoneIds, {}, "lobby")).toBeNull();
   });
 });

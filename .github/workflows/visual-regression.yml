@@ -12,6 +12,7 @@ on:
       - "client/src/components/GamePerformanceStatus.tsx"
       - "client/src/components/World*.tsx"
       - "client/src/game/world*.ts"
+      - "client/src/game/world*.json"
       - "client/src/game/npcMotion.ts"
       - "client/src/game/npcDialogue.ts"
       - "client/src/performance/**"
@@ -26,6 +27,7 @@ on:
       - "pnpm-lock.yaml"
   push:
     branches: [main]
+    tags: ["v*"]
     paths:
       - "client/public/assets/maps/**"
       - "client/public/characters/**"
@@ -35,6 +37,7 @@ on:
       - "client/src/components/GamePerformanceStatus.tsx"
       - "client/src/components/World*.tsx"
       - "client/src/game/world*.ts"
+      - "client/src/game/world*.json"
       - "client/src/game/npcMotion.ts"
       - "client/src/game/npcDialogue.ts"
       - "client/src/performance/**"
@@ -67,7 +70,7 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - name: Restore foreground depth history
         id: foreground-depth-history
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: .superpowers/visual-regression/map-foreground-depth-history.json
           key: map-foreground-depth-${{ runner.os }}-${{ github.base_ref || github.ref_name }}-${{ github.sha }}
@@ -79,13 +82,13 @@ jobs:
       - name: Suggest foreground depth and collision geometry
         run: pnpm maps:foreground-suggest -- --preview-patch
       - name: Track foreground depth gap history
-        run: pnpm maps:foreground-trend -- --sha "${{ github.sha }}"
+        run: pnpm maps:foreground-trend -- --sha "${{ github.sha }}" --ref-label "${{ github.ref_type }}:${{ github.ref_name }}"
       - name: Summarize foreground diagnostics for pull requests
         if: always()
         run: pnpm maps:foreground-summary -- --run-url "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
       - name: Save foreground depth history
         if: success() && steps.foreground-depth-history.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         with:
           path: .superpowers/visual-regression/map-foreground-depth-history.json
           key: map-foreground-depth-${{ runner.os }}-${{ github.base_ref || github.ref_name }}-${{ github.sha }}
@@ -118,7 +121,9 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: world-layout-region-report-${{ github.run_id }}
-          path: .superpowers/visual-regression/world-layout-regions.json
+          path: |
+            .superpowers/visual-regression/world-layout-regions.json
+            .superpowers/visual-regression/world-geometry-policy-report.json
           if-no-files-found: ignore
           retention-days: 14
       - name: Upload world layout difference

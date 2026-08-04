@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "zones": {
+    "home": { "failOnBlocking": true, "maxWarnings": 0 },
+    "neighborhood": { "failOnBlocking": true, "maxWarnings": 0 },
+    "subway-station": { "failOnBlocking": true, "maxWarnings": 0 },
+    "subway-train": { "failOnBlocking": true, "maxWarnings": 0 },
+    "venue-exterior": { "failOnBlocking": true, "maxWarnings": 0 },
+    "lobby": { "failOnBlocking": true, "maxWarnings": 0 },
+    "bridal-room": { "failOnBlocking": true, "maxWarnings": 0 },
+    "ceremony-hall": { "failOnBlocking": true, "maxWarnings": 1 },
+    "banquet": { "failOnBlocking": true, "maxWarnings": 1 },
+    "restroom": { "failOnBlocking": true, "maxWarnings": 0 }
+  }
+}

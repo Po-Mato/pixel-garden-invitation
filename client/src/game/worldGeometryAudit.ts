@@ -11,12 +11,30 @@ export type WorldGeometryAuditTile = Point & {
   state: WorldGeometryTileState;
 };
 
+export type WorldGeometryAuditSeverity = "warning" | "blocking";
+
+export type WorldGeometryAuditFindingCode =
+  | "spawn-unreachable"
+  | "disconnected-tiles"
+  | "portal-unreachable"
+  | "interaction-unreachable";
+
+export type WorldGeometryAuditFinding = {
+  code: WorldGeometryAuditFindingCode;
+  severity: WorldGeometryAuditSeverity;
+  message: string;
+};
+
+export type WorldGeometryAuditSeverityCounts = Record<WorldGeometryAuditSeverity, number>;
+
 export type WorldGeometryAudit = {
   zoneId: WorldZone["id"];
   tiles: WorldGeometryAuditTile[];
   reachableCount: number;
   blockedCount: number;
   unreachableCount: number;
+  findings: WorldGeometryAuditFinding[];
+  severityCounts: WorldGeometryAuditSeverityCounts;
   issues: string[];
 };
 
@@ -51,10 +69,15 @@ export function auditWorldGeometry(zone: WorldZone): WorldGeometryAudit {
   const spawnTile = tileByKey.get(tileKey(spawnGrid.column, spawnGrid.row));
   const reachable = new Set<string>();
   const queue: Array<{ column: number; row: number }> = [];
-  const issues: string[] = [];
+  const findings: WorldGeometryAuditFinding[] = [];
+  const addFinding = (
+    code: WorldGeometryAuditFindingCode,
+    severity: WorldGeometryAuditSeverity,
+    message: string
+  ) => findings.push({ code, severity, message });
 
   if (!spawnTile || spawnTile.blocked) {
-    issues.push("시작 타일이 이동 가능 영역에 없습니다.");
+    addFinding("spawn-unreachable", "blocking", "시작 타일이 이동 가능 영역에 없습니다.");
   } else {
     const startKey = tileKey(spawnTile.column, spawnTile.row);
     reachable.add(startKey);
@@ -85,7 +108,11 @@ export function auditWorldGeometry(zone: WorldZone): WorldGeometryAudit {
   }));
   const unreachableTiles = tiles.filter((tile) => tile.state === "unreachable");
   if (unreachableTiles.length > 0) {
-    issues.push(`시작점에서 닿을 수 없는 이동 타일이 ${unreachableTiles.length}개 있습니다.`);
+    addFinding(
+      "disconnected-tiles",
+      "warning",
+      `시작점에서 닿을 수 없는 이동 타일이 ${unreachableTiles.length}개 있습니다.`
+    );
   }
 
   for (const portal of zone.portals) {
@@ -93,7 +120,11 @@ export function auditWorldGeometry(zone: WorldZone): WorldGeometryAudit {
       const grid = tileCoordinates(zone, entry);
       const tile = tileByKey.get(tileKey(grid.column, grid.row));
       if (!tile || tile.blocked || !reachable.has(tileKey(grid.column, grid.row))) {
-        issues.push(`${portal.label} 진입 타일 ${entry.x},${entry.y}에 도달할 수 없습니다.`);
+        addFinding(
+          "portal-unreachable",
+          "blocking",
+          `${portal.label} 진입 타일 ${entry.x},${entry.y}에 도달할 수 없습니다.`
+        );
       }
     }
   }
@@ -116,8 +147,19 @@ export function auditWorldGeometry(zone: WorldZone): WorldGeometryAudit {
     const hasReachableApproach = tiles.some((tile) => (
       tile.state === "reachable" && distanceToRect(tile, target.rect) <= target.radius
     ));
-    if (!hasReachableApproach) issues.push(`${target.label} 상호작용 범위에 도달할 수 없습니다.`);
+    if (!hasReachableApproach) {
+      addFinding(
+        "interaction-unreachable",
+        "warning",
+        `${target.label} 상호작용 범위에 도달할 수 없습니다.`
+      );
+    }
   }
+
+  const severityCounts = findings.reduce<WorldGeometryAuditSeverityCounts>((counts, finding) => ({
+    ...counts,
+    [finding.severity]: counts[finding.severity] + 1
+  }), { warning: 0, blocking: 0 });
 
   return {
     zoneId: zone.id,
@@ -125,6 +167,8 @@ export function auditWorldGeometry(zone: WorldZone): WorldGeometryAudit {
     reachableCount: tiles.filter((tile) => tile.state === "reachable").length,
     blockedCount: tiles.filter((tile) => tile.state === "blocked").length,
     unreachableCount: unreachableTiles.length,
-    issues
+    findings,
+    severityCounts,
+    issues: findings.map((finding) => finding.message)
   };
 }

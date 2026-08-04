@@ -27,7 +27,9 @@ describe("WorldGeometryAuditOverlay", () => {
     expect(container.querySelectorAll(".world-geometry-audit__foreground"))
       .toHaveLength(worldForegroundPlacements.lobby.length);
 
-    const desk = container.querySelector<HTMLElement>('[data-decoration-id="lobby-desk"]');
+    const desk = container.querySelector<HTMLElement>(
+      '.world-geometry-audit__foreground[data-decoration-id="lobby-desk"]'
+    );
     const depthLine = desk?.querySelector<HTMLElement>(".world-geometry-audit__depth");
     expect(desk).toHaveStyle({ left: "450px", top: "360px", width: "180px", height: "120px" });
     expect(depthLine).toHaveAttribute("data-depth-y", "480");
@@ -35,7 +37,16 @@ describe("WorldGeometryAuditOverlay", () => {
     const recommendedDepthLine = desk?.querySelector<HTMLElement>(".world-geometry-audit__depth--recommended");
     expect(recommendedDepthLine).toHaveAttribute("data-recommended-depth-y", "475");
     expect(recommendedDepthLine).toHaveStyle({ top: "115px" });
-    expect(screen.getByText(/분홍 현재 · 보라 점선 추천 · 금색 충돌/)).toBeInTheDocument();
+    const currentCollision = container.querySelector<HTMLElement>(
+      '.world-geometry-audit__foreground-collision--current[data-decoration-id="lobby-desk"]'
+    );
+    const recommendedCollision = container.querySelector<HTMLElement>(
+      '.world-geometry-audit__foreground-collision--recommended[data-decoration-id="lobby-desk"]'
+    );
+    expect(currentCollision).toHaveStyle({ left: "450px", top: "390px", width: "180px", height: "90px" });
+    expect(recommendedCollision).toHaveStyle({ left: "456px", top: "437px", width: "158px", height: "42px" });
+    expect(recommendedCollision).toHaveAttribute("data-review-decision", "pending");
+    expect(screen.getByText(/깊이 분홍\/보라 · 충돌 청록\/보라 추천/)).toBeInTheDocument();
   });
 
   it("independently filters the grid, collision, depth, and identifier layers", () => {
@@ -50,6 +61,7 @@ describe("WorldGeometryAuditOverlay", () => {
 
     expect(container.querySelectorAll(".world-geometry-audit__tile")).toHaveLength(0);
     expect(container.querySelectorAll(".world-geometry-audit__collision")).toHaveLength(0);
+    expect(container.querySelectorAll(".world-geometry-audit__foreground-collision")).toHaveLength(0);
     expect(container.querySelectorAll(".world-geometry-audit__depth")).toHaveLength(2);
     expect(screen.getByText("lobby-desk")).toBeInTheDocument();
 
