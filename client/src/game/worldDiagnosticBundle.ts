@@ -2,6 +2,7 @@ import type { WorldZoneId } from "@wedding-game/shared";
 import type { WorldGeometryAuditFinding } from "./worldGeometryAudit";
 import type { WorldGeometryAuditPolicyResult } from "./worldGeometryAuditPolicy";
 import type { WorldGeometryAuditLayers } from "./worldGeometryAuditLayers";
+import type { WorldGeometryAuditHeatmapMode } from "./worldGeometryAuditHeatmap";
 import type {
   ForegroundRecommendationDecision,
   WorldForegroundRecommendationPatch
@@ -15,7 +16,7 @@ export type WorldDiagnosticScreenshot = {
 };
 
 export type WorldDiagnosticBundle = {
-  version: 1;
+  version: 2;
   generatedAt: string;
   zone: { id: WorldZoneId; label: string };
   diagnosticUrl: string;
@@ -23,11 +24,22 @@ export type WorldDiagnosticBundle = {
   viewport: { width: number; height: number; devicePixelRatio: number };
   userAgent: string;
   layers: WorldGeometryAuditLayers;
+  heatmapMode: WorldGeometryAuditHeatmapMode;
+  sourceContract: {
+    target: WorldForegroundRecommendationPatch["target"];
+    version: number;
+    checksum: string;
+  };
   findings: WorldGeometryAuditFinding[];
   policy: WorldGeometryAuditPolicyResult;
   recommendationDecisions: Partial<Record<string, ForegroundRecommendationDecision>>;
   selectedPatch: WorldForegroundRecommendationPatch;
   screenshot: WorldDiagnosticScreenshot;
+  integrity: {
+    algorithm: "SHA-256";
+    canonicalization: "json-sort-v1";
+    checksum: string;
+  };
 };
 
 type ScreenshotRenderer = (
@@ -151,8 +163,42 @@ export async function captureWorldDiagnosticScreenshot(
   };
 }
 
-export function createWorldDiagnosticBundle(input: Omit<WorldDiagnosticBundle, "version">): WorldDiagnosticBundle {
-  return { version: 1, ...input };
+export function canonicalDiagnosticJson(value: unknown): string {
+  if (value === null || typeof value !== "object") return JSON.stringify(value);
+  if (Array.isArray(value)) return `[${value.map(canonicalDiagnosticJson).join(",")}]`;
+  const record = value as Record<string, unknown>;
+  return `{${Object.keys(record).sort().map((key) => (
+    `${JSON.stringify(key)}:${canonicalDiagnosticJson(record[key])}`
+  )).join(",")}}`;
+}
+
+async function sha256Hex(value: string): Promise<string> {
+  const digest = await globalThis.crypto.subtle.digest("SHA-256", new TextEncoder().encode(value));
+  return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+
+export async function createWorldDiagnosticBundle(
+  input: Omit<WorldDiagnosticBundle, "version" | "integrity">
+): Promise<WorldDiagnosticBundle> {
+  const payload = { version: 2 as const, ...input };
+  return {
+    ...payload,
+    integrity: {
+      algorithm: "SHA-256",
+      canonicalization: "json-sort-v1",
+      checksum: await sha256Hex(canonicalDiagnosticJson(payload))
+    }
+  };
+}
+
+export async function verifyWorldDiagnosticBundleIntegrity(bundle: WorldDiagnosticBundle): Promise<boolean> {
+  if (
+    bundle.version !== 2
+    || bundle.integrity?.algorithm !== "SHA-256"
+    || bundle.integrity?.canonicalization !== "json-sort-v1"
+  ) return false;
+  const { integrity, ...payload } = bundle;
+  return integrity.checksum === await sha256Hex(canonicalDiagnosticJson(payload));
 }
 
 export function downloadJsonArtifact(

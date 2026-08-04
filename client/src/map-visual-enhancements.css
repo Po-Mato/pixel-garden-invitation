@@ -209,6 +209,37 @@
 .world-geometry-audit__heatmap[data-delta-intensity="medium"] { color: #ffc857; }
 .world-geometry-audit__heatmap[data-delta-intensity="high"] { color: #ff4d98; }
 
+.world-geometry-audit[data-heatmap-mode="pattern"] .world-geometry-audit__heatmap {
+  opacity: 0.54;
+  mix-blend-mode: normal;
+  background-color: rgba(12, 12, 11, 0.72);
+}
+
+.world-geometry-audit[data-heatmap-mode="pattern"] .world-geometry-audit__heatmap[data-delta-intensity="low"] {
+  background-image: repeating-linear-gradient(0deg, currentColor 0 2px, transparent 2px 7px);
+}
+
+.world-geometry-audit[data-heatmap-mode="pattern"] .world-geometry-audit__heatmap[data-delta-intensity="medium"] {
+  background-image: repeating-linear-gradient(90deg, currentColor 0 3px, transparent 3px 8px);
+}
+
+.world-geometry-audit[data-heatmap-mode="pattern"] .world-geometry-audit__heatmap[data-delta-intensity="high"] {
+  background-image: repeating-linear-gradient(45deg, currentColor 0 3px, transparent 3px 7px), repeating-linear-gradient(-45deg, currentColor 0 2px, transparent 2px 9px);
+}
+
+.world-geometry-audit[data-heatmap-mode="contrast"] .world-geometry-audit__heatmap {
+  border: 3px solid #fff;
+  background: repeating-linear-gradient(135deg, #000 0 5px, #fff 5px 10px);
+  color: #fff;
+  opacity: 0.86;
+  mix-blend-mode: normal;
+  outline: 2px solid #000;
+}
+
+.world-geometry-audit[data-heatmap-mode="contrast"] .world-geometry-audit__heatmap[data-delta-kind="depth"] {
+  background: repeating-linear-gradient(90deg, #ffea00 0 7px, #000 7px 12px);
+}
+
 .world-geometry-audit__depth--recommended {
   z-index: 2;
   height: 3px;
@@ -429,6 +460,28 @@
   text-align: right;
 }
 
+.world-geometry-audit-heatmap-mode {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 6px;
+  border-top: 1px solid #4b4542;
+  padding-top: 4px;
+  color: #ffc857;
+  font: 900 7px/1 ui-monospace, monospace;
+}
+
+.world-geometry-audit-heatmap-mode select {
+  min-width: 0;
+  border: 1px solid #b89cff;
+  border-radius: 2px;
+  padding: 2px 4px;
+  background: #252323;
+  color: #efe8ff;
+  font: 800 7px/1 ui-monospace, monospace;
+}
+
 .world-geometry-audit-actions {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -501,6 +554,45 @@
 .world-geometry-audit-review__tools { display: flex; gap: 3px; }
 .world-geometry-audit-review__tools button:first-child { border-color: #b89cff; color: #b89cff; }
 .world-geometry-audit-review__tools button:last-child:not(:disabled) { border-color: #68f5a6; color: #68f5a6; }
+
+.world-geometry-audit-review__import {
+  display: inline-grid;
+  min-width: 25px;
+  place-items: center;
+  border: 1px solid #4df2ff;
+  border-radius: 2px;
+  padding: 3px 4px;
+  color: #4df2ff;
+  font: 900 7px/1 ui-monospace, monospace;
+  cursor: pointer;
+}
+
+.world-geometry-audit-review__import input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  opacity: 0;
+}
+
+.world-geometry-audit-review__import:focus-within { outline: 2px solid #fff1a8; outline-offset: 1px; }
+
+.world-geometry-audit-review__preview {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 5px;
+  border: 1px solid #4df2ff;
+  padding: 4px 5px;
+  background: #10282a;
+  color: #d7fbff;
+  font: 900 7px/1 ui-monospace, monospace;
+}
+
+.world-geometry-audit-review__preview[data-status="error"] { border-color: #ff6f9d; background: #321923; }
+.world-geometry-audit-review__preview span { color: #4df2ff; }
+.world-geometry-audit-review__preview[data-status="error"] span { color: #ff6f9d; }
+.world-geometry-audit-review__preview strong { color: #ffc857; }
 
 .world-geometry-audit-review ul {
   display: grid;

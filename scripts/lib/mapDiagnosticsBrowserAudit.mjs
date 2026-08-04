@@ -56,6 +56,7 @@ export function auditMapDiagnosticsSnapshot(
   if (snapshot.heatmapCount !== expectedHeatmapCount) issues.push(`차이 히트맵 수 불일치 ${snapshot.heatmapCount}/${expectedHeatmapCount}`);
   if (snapshot.activeLayerCount !== 5) issues.push(`활성 진단 필터 수 불일치 ${snapshot.activeLayerCount}/5`);
   if (!snapshot.layers.every(Boolean)) issues.push("기본 진단 필터 비활성");
+  if (!["color", "pattern", "contrast"].includes(snapshot.heatmapMode)) issues.push("히트맵 접근성 모드 불일치");
   if (snapshot.policyStatus !== "passed") {
     issues.push(`맵 지오메트리 정책 차단 B${snapshot.blockingCount}/W${snapshot.warningCount}`);
   }
@@ -103,6 +104,7 @@ async function readSnapshot(page, selectedZoneId) {
       blockingCount: Number(overlay?.getAttribute("data-blocking-count") ?? -1),
       warningCount: Number(overlay?.getAttribute("data-warning-count") ?? -1),
       policyStatus: overlay?.getAttribute("data-policy-status") ?? null,
+      heatmapMode: overlay?.getAttribute("data-heatmap-mode") ?? null,
       activeLayerCount: document.querySelectorAll(".world-geometry-audit-layers button[aria-pressed=\"true\"]").length,
       layers: ["grid", "collision", "depth", "heatmap", "labels"].map((layer) => overlay?.getAttribute(`data-${layer}`) === "true")
     };
@@ -115,7 +117,7 @@ export async function runMapDiagnosticsBrowserAudit({ rootDir, outputDir, port =
     ["--filter", "@wedding-game/client", "exec", "vite", "--host", "127.0.0.1", "--port", String(port), "--strictPort"],
     { cwd: rootDir, env: { ...process.env, BROWSER: "none" }, stdio: "pipe" }
   );
-  const url = `http://127.0.0.1:${port}/?mapAudit=1&mapAuditZone=lobby`;
+  const url = `http://127.0.0.1:${port}/?mapAudit=1&mapAuditZone=lobby&mapAuditHeatmap=color`;
   await mkdir(outputDir, { recursive: true });
   try {
     await waitForServer(url, server);
@@ -164,6 +166,18 @@ export async function runMapDiagnosticsBrowserAudit({ rootDir, outputDir, port =
 
         if (viewport.id === "small-android") {
           await selector.selectOption("lobby");
+          const heatmapMode = page.getByRole("combobox", { name: "히트맵 표시 방식" });
+          await heatmapMode.selectOption("pattern");
+          if (
+            await page.locator(".world-geometry-audit").getAttribute("data-heatmap-mode") !== "pattern"
+            || !new URL(page.url()).searchParams.get("mapAuditHeatmap")?.includes("pattern")
+          ) throw new Error(`${viewport.id}: 색각 패턴 히트맵 상태 저장 실패`);
+          await heatmapMode.selectOption("contrast");
+          if (await page.locator(".world-geometry-audit").getAttribute("data-heatmap-mode") !== "contrast") {
+            throw new Error(`${viewport.id}: 고대비 히트맵 전환 실패`);
+          }
+          await page.screenshot({ path: path.join(outputDir, "map-diagnostics-small-android-lobby-contrast.png"), fullPage: true });
+          await heatmapMode.selectOption("pattern");
           await page.getByRole("button", { name: "전경 추천 검토 열기" }).click();
           await page.getByRole("button", { name: "lobby-desk 추천 승인" }).click();
           const reviewState = await page.evaluate(() => ({
@@ -191,21 +205,37 @@ export async function runMapDiagnosticsBrowserAudit({ rootDir, outputDir, port =
           ) {
             throw new Error(`${viewport.id}: 선택 patch 내용 불일치`);
           }
+          await page.getByLabel("검토 JSON patch 불러오기").setInputFiles(patchPath);
+          await page.getByText("PATCH PREVIEW", { exact: true }).waitFor({ state: "visible" });
+          if (
+            await page.locator(".world-geometry-audit").getAttribute("data-patch-preview") !== "true"
+            || await page.locator('.world-geometry-audit__depth--recommended[data-recommended-depth-y="475"]').count() !== 1
+          ) throw new Error(`${viewport.id}: 불러온 patch 시각 미리보기 불일치`);
           const bundleDownloadPromise = page.waitForEvent("download", { timeout: 30_000 });
           await page.getByRole("button", { name: "현재 화면 진단 번들 저장" }).click();
           const bundleDownload = await bundleDownloadPromise;
           const bundlePath = await bundleDownload.path();
           const bundle = JSON.parse(await readFile(bundlePath, "utf8"));
           if (
-            bundle.zone?.id !== "lobby"
+            bundle.version !== 2
+            || bundle.zone?.id !== "lobby"
             || bundle.selectedPatch?.operationCount !== 2
             || !bundle.screenshot?.dataUrl?.startsWith("data:image/png;base64,")
             || !bundle.viewerUrl?.endsWith("/map-diagnostic-bundle-viewer.html")
+            || bundle.heatmapMode !== "pattern"
+            || bundle.sourceContract?.checksum !== bundle.selectedPatch?.sourceChecksum
+            || !/^[a-f0-9]{64}$/.test(bundle.integrity?.checksum ?? "")
           ) throw new Error(`${viewport.id}: 화면 진단 번들 내용 불일치`);
           const viewerPagePromise = context.waitForEvent("page");
           await page.getByRole("button", { name: "진단 번들 뷰어 열기" }).click();
           const viewerPage = await viewerPagePromise;
-          await viewerPage.getByText("DROP DIAGNOSTIC JSON").waitFor({ state: "visible" });
+          await viewerPage.getByText("DROP 1–2 DIAGNOSTIC JSON").waitFor({ state: "visible" });
+          await viewerPage.locator("#file-input").setInputFiles({
+            name: "tampered-diagnostic.json",
+            mimeType: "application/json",
+            buffer: Buffer.from(JSON.stringify({ ...bundle, zone: { ...bundle.zone, label: "변조" } }))
+          });
+          await viewerPage.getByText(/무결성 검증에 실패했습니다/).waitFor({ state: "visible" });
           await viewerPage.locator("#file-input").setInputFiles(bundlePath);
           await viewerPage.getByText("PASSED", { exact: true }).waitFor({ state: "visible" });
           if (await viewerPage.locator("#operations tr").count() !== 2) {
@@ -219,9 +249,15 @@ export async function runMapDiagnosticsBrowserAudit({ rootDir, outputDir, port =
           if (viewerState.reportHidden || !viewerState.dropHidden || !viewerState.screenshotLoaded) {
             throw new Error(`${viewport.id}: 진단 번들 뷰어 로드 상태 불일치`);
           }
+          await viewerPage.locator("#compare-input").setInputFiles(bundlePath);
+          await viewerPage.getByText("0 CHANGES", { exact: true }).waitFor({ state: "visible" });
+          if (await viewerPage.locator("#comparison").getAttribute("hidden") !== null) {
+            throw new Error(`${viewport.id}: 진단 번들 A/B 비교 렌더링 실패`);
+          }
           await viewerPage.waitForTimeout(350);
           await viewerPage.screenshot({ path: path.join(outputDir, "map-diagnostic-bundle-viewer-loaded.png"), fullPage: true });
           await viewerPage.close();
+          await page.getByRole("button", { name: "불러온 Patch 미리보기 지우기" }).click();
           await page.getByRole("button", { name: "lobby-desk 추천 승인" }).click();
           const clearedReviewState = await page.evaluate(() => ({
             query: new URL(window.location.href).searchParams.has("mapAuditReview"),

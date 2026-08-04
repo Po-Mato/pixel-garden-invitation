@@ -43,6 +43,10 @@ export type WorldForegroundRecommendationPatch = {
   operations: WorldForegroundJsonPatchOperation[];
 };
 
+export const worldForegroundPlacementTarget = "client/src/game/worldForegroundPlacements.json" as const;
+export const worldForegroundSourceContractVersion = recommendationData.version;
+export const worldForegroundSourceChecksum = recommendationData.sourceChecksum;
+
 export const worldForegroundRecommendations = recommendationData.zones as Record<
   WorldZoneId,
   WorldForegroundRecommendation[]
@@ -150,9 +154,9 @@ export function buildWorldForegroundRecommendationPatch(
 
   return {
     version: 1,
-    target: "client/src/game/worldForegroundPlacements.json",
-    sourceContractVersion: recommendationData.version,
-    sourceChecksum: recommendationData.sourceChecksum,
+    target: worldForegroundPlacementTarget,
+    sourceContractVersion: worldForegroundSourceContractVersion,
+    sourceChecksum: worldForegroundSourceChecksum,
     generatedAt,
     acceptedPlacementKeys,
     operationCount: operations.length,

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useId, useState } from "react";
 import { MapPinned } from "lucide-react";
 import type { WorldZoneId } from "@wedding-game/shared";
 import type { WorldZone } from "../game/world";
@@ -12,6 +12,10 @@ import type {
   ForegroundRecommendationDecision,
   WorldForegroundRecommendationReview
 } from "../game/worldForegroundRecommendations";
+import {
+  worldGeometryAuditHeatmapModes,
+  type WorldGeometryAuditHeatmapMode
+} from "../game/worldGeometryAuditHeatmap";
 
 type WorldGeometryAuditControlsProps = {
   zones: WorldZone[];
@@ -22,14 +26,20 @@ type WorldGeometryAuditControlsProps = {
   copyStatus: "idle" | "copied" | "error";
   patchStatus: "idle" | "saved" | "error";
   bundleStatus: "idle" | "capturing" | "saved" | "error";
+  patchImportStatus: "idle" | "loaded" | "error";
+  importedPatchOperationCount: number;
+  heatmapMode: WorldGeometryAuditHeatmapMode;
   recommendations: WorldForegroundRecommendationReview[];
   recommendationDecisions: Partial<Record<string, ForegroundRecommendationDecision>>;
   onDownloadBundle: () => void;
   onDownloadPatch: () => void;
+  onImportPatch: (file: File) => void;
+  onClearImportedPatch: () => void;
   onOpenBundleViewer: () => void;
   onCopyLink: () => void;
   onEnabledChange: (enabled: boolean) => void;
   onLayerChange: (layer: WorldGeometryAuditLayerKey, enabled: boolean) => void;
+  onHeatmapModeChange: (mode: WorldGeometryAuditHeatmapMode) => void;
   onNextIssue: () => void;
   onRecommendationDecision: (key: string, decision: ForegroundRecommendationDecision) => void;
   onZoneChange: (zoneId: WorldZoneId) => void;
@@ -52,19 +62,26 @@ export function WorldGeometryAuditControls({
   copyStatus,
   patchStatus,
   bundleStatus,
+  patchImportStatus,
+  importedPatchOperationCount,
+  heatmapMode,
   recommendations,
   recommendationDecisions,
   onDownloadBundle,
   onDownloadPatch,
+  onImportPatch,
+  onClearImportedPatch,
   onOpenBundleViewer,
   onCopyLink,
   onEnabledChange,
   onLayerChange,
+  onHeatmapModeChange,
   onNextIssue,
   onRecommendationDecision,
   onZoneChange
 }: WorldGeometryAuditControlsProps) {
   const [reviewOpen, setReviewOpen] = useState(false);
+  const patchInputId = useId();
   const issueTotal = zones.reduce((total, zone) => (
     total + (issueCounts[zone.id]?.blocking ?? 0) + (issueCounts[zone.id]?.warning ?? 0)
   ), 0);
@@ -124,6 +141,20 @@ export function WorldGeometryAuditControls({
                 {layerLabels[layer].short}
               </button>
             ))}
+            <label className="world-geometry-audit-heatmap-mode">
+              <span>Δ MODE</span>
+              <select
+                aria-label="히트맵 표시 방식"
+                value={heatmapMode}
+                onChange={(event) => onHeatmapModeChange(event.target.value as WorldGeometryAuditHeatmapMode)}
+              >
+                {worldGeometryAuditHeatmapModes.map((mode) => (
+                  <option key={mode} value={mode}>
+                    {mode === "color" ? "색상" : mode === "pattern" ? "색각 패턴" : "고대비"}
+                  </option>
+                ))}
+              </select>
+            </label>
             <small aria-label="구역 단축키">KEY 1–0 · [ ]</small>
           </div>
           <div className="world-geometry-audit-actions">
@@ -174,6 +205,20 @@ export function WorldGeometryAuditControls({
                 <span>RECOMMENDATION QUEUE</span>
                 <div className="world-geometry-audit-review__tools">
                   <button type="button" aria-label="진단 번들 뷰어 열기" onClick={onOpenBundleViewer}>VIEW</button>
+                  <label htmlFor={patchInputId} className="world-geometry-audit-review__import">
+                    {patchImportStatus === "loaded" ? "IMPORT ✓" : patchImportStatus === "error" ? "IMPORT !" : "IMPORT"}
+                    <input
+                      id={patchInputId}
+                      type="file"
+                      accept="application/json,.json"
+                      aria-label="검토 JSON patch 불러오기"
+                      onChange={(event) => {
+                        const file = event.target.files?.[0];
+                        if (file) onImportPatch(file);
+                        event.target.value = "";
+                      }}
+                    />
+                  </label>
                   <button
                     type="button"
                     aria-label={`승인 추천 JSON patch 저장, ${acceptedTotal}개 선택`}
@@ -184,6 +229,13 @@ export function WorldGeometryAuditControls({
                   </button>
                 </div>
               </header>
+              {patchImportStatus !== "idle" ? (
+                <div className="world-geometry-audit-review__preview" data-status={patchImportStatus}>
+                  <span>{patchImportStatus === "loaded" ? "PATCH PREVIEW" : "INVALID PATCH"}</span>
+                  <strong>{patchImportStatus === "loaded" ? `${importedPatchOperationCount} OPS` : "CHECK CONTRACT"}</strong>
+                  <button type="button" aria-label="불러온 Patch 미리보기 지우기" onClick={onClearImportedPatch}>CLEAR</button>
+                </div>
+              ) : null}
               {recommendations.length > 0 ? (
                 <ul>
                   {recommendations.map((recommendation) => {

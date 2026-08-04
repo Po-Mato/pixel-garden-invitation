@@ -1,9 +1,11 @@
 import { describe, expect, it, vi } from "vitest";
 import {
   captureWorldDiagnosticScreenshot,
+  canonicalDiagnosticJson,
   createWorldDiagnosticBundle,
   downloadJsonArtifact,
   normalizeSrgbColorFunctions,
+  verifyWorldDiagnosticBundleIntegrity,
   worldDiagnosticArtifactFilename,
   worldDiagnosticBundleViewerUrl
 } from "./worldDiagnosticBundle";
@@ -37,7 +39,7 @@ describe("맵 진단 번들", () => {
       clickDownload: vi.fn((_url: string, _filename: string) => undefined),
       revokeObjectUrl: vi.fn((_url: string) => undefined)
     };
-    const bundle = createWorldDiagnosticBundle({
+    const bundle = await createWorldDiagnosticBundle({
       generatedAt: "2026-08-04T00:00:00.000Z",
       zone: { id: "lobby", label: "예식장 로비" },
       diagnosticUrl: "https://example.test/?mapAudit=1&mapAuditZone=lobby",
@@ -45,6 +47,12 @@ describe("맵 진단 번들", () => {
       viewport: { width: 390, height: 844, devicePixelRatio: 2 },
       userAgent: "test",
       layers: { grid: true, collision: true, depth: true, heatmap: true, labels: true },
+      heatmapMode: "pattern",
+      sourceContract: {
+        target: "client/src/game/worldForegroundPlacements.json",
+        version: 1,
+        checksum: "f9ad528aecb7b789ea4eb309b9d6c5bd8f78edce9a35ba0df7af8198b7793e25"
+      },
       findings: [],
       policy: { status: "passed", blockingCount: 0, warningCount: 0, maxWarnings: 0, violations: [] },
       recommendationDecisions: { "lobby/lobby-desk": "accepted" },
@@ -60,6 +68,12 @@ describe("맵 진단 번들", () => {
       },
       screenshot: { mimeType: "image/png", dataUrl: "data:image/png;base64,ok", width: 780, height: 1688 }
     });
+    expect(bundle.integrity.checksum).toMatch(/^[a-f0-9]{64}$/);
+    await expect(verifyWorldDiagnosticBundleIntegrity(bundle)).resolves.toBe(true);
+    await expect(verifyWorldDiagnosticBundleIntegrity({
+      ...bundle,
+      zone: { ...bundle.zone, label: "변조됨" }
+    })).resolves.toBe(false);
     downloadJsonArtifact(bundle, "diagnostic.json", environment);
     expect(environment.clickDownload).toHaveBeenCalledWith("blob:diagnostic", "diagnostic.json");
     expect(environment.revokeObjectUrl).toHaveBeenCalledWith("blob:diagnostic");
@@ -75,5 +89,10 @@ describe("맵 진단 번들", () => {
       .toBe("wedding-map-lobby-bundle-2026-08-04T12-34-56Z.json");
     expect(worldDiagnosticBundleViewerUrl("/invitation/", "https://example.test"))
       .toBe("https://example.test/invitation/map-diagnostic-bundle-viewer.html");
+  });
+
+  it("객체 키 순서와 무관한 정렬 JSON을 무결성 입력으로 사용한다", () => {
+    expect(canonicalDiagnosticJson({ beta: [2, { z: true, a: null }], alpha: "x" }))
+      .toBe('{"alpha":"x","beta":[2,{"a":null,"z":true}]}');
   });
 });

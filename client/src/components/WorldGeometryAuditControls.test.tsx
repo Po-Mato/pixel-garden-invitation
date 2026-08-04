@@ -19,14 +19,20 @@ describe("WorldGeometryAuditControls", () => {
         copyStatus="idle"
         patchStatus="idle"
         bundleStatus="idle"
+        patchImportStatus="idle"
+        importedPatchOperationCount={0}
+        heatmapMode="color"
         recommendations={[]}
         recommendationDecisions={{}}
         onDownloadBundle={vi.fn()}
         onDownloadPatch={vi.fn()}
+        onImportPatch={vi.fn()}
+        onClearImportedPatch={vi.fn()}
         onOpenBundleViewer={vi.fn()}
         onCopyLink={vi.fn()}
         onEnabledChange={vi.fn()}
         onLayerChange={vi.fn()}
+        onHeatmapModeChange={vi.fn()}
         onNextIssue={vi.fn()}
         onRecommendationDecision={vi.fn()}
         onZoneChange={vi.fn()}
@@ -45,6 +51,9 @@ describe("WorldGeometryAuditControls", () => {
     const onDownloadBundle = vi.fn();
     const onDownloadPatch = vi.fn();
     const onOpenBundleViewer = vi.fn();
+    const onImportPatch = vi.fn();
+    const onClearImportedPatch = vi.fn();
+    const onHeatmapModeChange = vi.fn();
     const onRecommendationDecision = vi.fn();
     render(
       <WorldGeometryAuditControls
@@ -59,14 +68,20 @@ describe("WorldGeometryAuditControls", () => {
         copyStatus="idle"
         patchStatus="idle"
         bundleStatus="idle"
+        patchImportStatus="loaded"
+        importedPatchOperationCount={2}
+        heatmapMode="pattern"
         recommendations={foregroundRecommendationReviewsForZone("home")}
         recommendationDecisions={{ "home/home-plant": "accepted" }}
         onDownloadBundle={onDownloadBundle}
         onDownloadPatch={onDownloadPatch}
+        onImportPatch={onImportPatch}
+        onClearImportedPatch={onClearImportedPatch}
         onOpenBundleViewer={onOpenBundleViewer}
         onCopyLink={onCopyLink}
         onEnabledChange={vi.fn()}
         onLayerChange={onLayerChange}
+        onHeatmapModeChange={onHeatmapModeChange}
         onNextIssue={onNextIssue}
         onRecommendationDecision={onRecommendationDecision}
         onZoneChange={onZoneChange}
@@ -85,6 +100,8 @@ describe("WorldGeometryAuditControls", () => {
     fireEvent.click(gridFilter);
     expect(onLayerChange).toHaveBeenCalledWith("grid", false);
     expect(screen.getByRole("button", { name: "추천 차이 히트맵 숨기기" })).toHaveAttribute("aria-pressed", "true");
+    fireEvent.change(screen.getByRole("combobox", { name: "히트맵 표시 방식" }), { target: { value: "contrast" } });
+    expect(onHeatmapModeChange).toHaveBeenCalledWith("contrast");
     expect(selector.querySelector('option[value="home"]')).toHaveTextContent("B2");
     expect(selector.querySelector('option[value="banquet"]')).toHaveTextContent("W1");
 
@@ -104,5 +121,12 @@ describe("WorldGeometryAuditControls", () => {
     expect(onDownloadPatch).toHaveBeenCalledOnce();
     fireEvent.click(screen.getByRole("button", { name: "진단 번들 뷰어 열기" }));
     expect(onOpenBundleViewer).toHaveBeenCalledOnce();
+    const patchFile = new File(["{}"], "review.patch.json", { type: "application/json" });
+    fireEvent.change(screen.getByLabelText("검토 JSON patch 불러오기"), { target: { files: [patchFile] } });
+    expect(onImportPatch).toHaveBeenCalledWith(patchFile);
+    expect(screen.getByText("PATCH PREVIEW")).toBeInTheDocument();
+    expect(screen.getByText("2 OPS")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "불러온 Patch 미리보기 지우기" }));
+    expect(onClearImportedPatch).toHaveBeenCalledOnce();
   });
 });

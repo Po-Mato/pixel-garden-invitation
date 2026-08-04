@@ -6,12 +6,17 @@ import { worldForegroundPlacements, type WorldZone } from "../game/world";
 import {
   foregroundGeometryDeltaIntensity,
   foregroundRecommendationReviewsForZone,
-  type ForegroundRecommendationDecision
+  type ForegroundRecommendationDecision,
+  type WorldForegroundRecommendationReview
 } from "../game/worldForegroundRecommendations";
 import {
   defaultWorldGeometryAuditLayers,
   type WorldGeometryAuditLayers
 } from "../game/worldGeometryAuditLayers";
+import {
+  defaultWorldGeometryAuditHeatmapMode,
+  type WorldGeometryAuditHeatmapMode
+} from "../game/worldGeometryAuditHeatmap";
 
 function unionRect(
   left: { x: number; y: number; width: number; height: number } | null | undefined,
@@ -33,6 +38,8 @@ type WorldGeometryAuditOverlayProps = {
   zone: WorldZone;
   enabled: boolean;
   layers?: WorldGeometryAuditLayers;
+  heatmapMode?: WorldGeometryAuditHeatmapMode;
+  previewRecommendations?: WorldForegroundRecommendationReview[] | null;
   recommendationDecisions?: Partial<Record<string, ForegroundRecommendationDecision>>;
 };
 
@@ -40,12 +47,15 @@ export function WorldGeometryAuditOverlay({
   zone,
   enabled,
   layers = defaultWorldGeometryAuditLayers,
+  heatmapMode = defaultWorldGeometryAuditHeatmapMode,
+  previewRecommendations = null,
   recommendationDecisions = {}
 }: WorldGeometryAuditOverlayProps) {
   const audit = useMemo(() => auditWorldGeometry(zone), [zone]);
   const policy = useMemo(() => evaluateWorldGeometryAuditPolicy(audit), [audit]);
   const foregrounds = worldForegroundPlacements[zone.id];
-  const recommendationReviews = useMemo(() => foregroundRecommendationReviewsForZone(zone.id), [zone.id]);
+  const standardRecommendationReviews = useMemo(() => foregroundRecommendationReviewsForZone(zone.id), [zone.id]);
+  const recommendationReviews = previewRecommendations ?? standardRecommendationReviews;
   const recommendationById = new Map(
     recommendationReviews.map((review) => [review.decorationId, review])
   );
@@ -64,6 +74,8 @@ export function WorldGeometryAuditOverlay({
       data-collision={layers.collision}
       data-depth={layers.depth}
       data-heatmap={layers.heatmap}
+      data-heatmap-mode={heatmapMode}
+      data-patch-preview={previewRecommendations ? true : undefined}
       data-labels={layers.labels}
       aria-hidden="true"
     >
@@ -138,6 +150,7 @@ export function WorldGeometryAuditOverlay({
             <i
               key={`${review.key}-collision-heatmap`}
               className="world-geometry-audit__heatmap world-geometry-audit__heatmap--collision"
+              data-delta-kind="collision"
               data-decoration-id={review.decorationId}
               data-delta-intensity={intensity}
               style={{ left: collisionDelta.x, top: collisionDelta.y, width: collisionDelta.width, height: collisionDelta.height }}
@@ -147,6 +160,7 @@ export function WorldGeometryAuditOverlay({
             <i
               key={`${review.key}-depth-heatmap`}
               className="world-geometry-audit__heatmap world-geometry-audit__heatmap--depth"
+              data-delta-kind="depth"
               data-decoration-id={review.decorationId}
               data-delta-intensity={intensity}
               style={{
@@ -203,7 +217,7 @@ export function WorldGeometryAuditOverlay({
         <small
           className={audit.findings.length > 0 ? `world-geometry-audit__summary-issue world-geometry-audit__summary-issue--${audit.findings[0].severity}` : undefined}
         >
-          {audit.findings[0]?.message ?? "깊이 분홍/보라 · 충돌 청록/보라 · 차이 히트 Δ"}
+          {audit.findings[0]?.message ?? `깊이 분홍/보라 · 충돌 청록/보라 · 차이 히트 ${heatmapMode.toUpperCase()}`}
         </small>
       </span>
     </div>

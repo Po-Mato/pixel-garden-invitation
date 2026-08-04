@@ -6,30 +6,31 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data:; style-src 'unsafe-inline'; script-src 'unsafe-inline'">
   <title>맵 진단 번들 뷰어</title>
   <style>
-    :root { color-scheme: dark; --ink:#0c0c0b; --panel:#171715; --line:#403d38; --paper:#fff2c7; --cyan:#4df2ff; --pink:#ff4d98; --amber:#ffc857; --green:#68f5a6; }
+    :root { color-scheme:dark; --ink:#0c0c0b; --panel:#171715; --line:#403d38; --paper:#fff2c7; --cyan:#4df2ff; --pink:#ff4d98; --amber:#ffc857; --green:#68f5a6; }
     * { box-sizing:border-box; }
     body { min-height:100vh; margin:0; background:var(--ink); color:var(--paper); font-family:"Courier New",monospace; }
     body::before { position:fixed; inset:0; pointer-events:none; content:""; opacity:.18; background:repeating-linear-gradient(0deg,transparent 0 15px,#384644 16px),repeating-linear-gradient(90deg,transparent 0 63px,#382b33 64px); }
     main { position:relative; width:min(1180px,calc(100% - 28px)); margin:auto; padding:28px 0 64px; }
-    header { display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:end; gap:18px; border-bottom:3px solid var(--pink); padding-bottom:15px; }
+    .masthead { display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:end; gap:18px; border-bottom:3px solid var(--pink); padding-bottom:15px; }
     h1 { margin:0; font:900 clamp(25px,5vw,52px)/.9 Georgia,serif; letter-spacing:-.06em; text-transform:uppercase; }
-    header p { margin:8px 0 0; color:#a9a39b; font-size:11px; }
+    .masthead p { margin:8px 0 0; color:#a9a39b; font-size:11px; }
     .privacy { border:1px solid var(--green); padding:7px 9px; color:var(--green); font-size:10px; font-weight:900; }
     .drop { display:grid; min-height:188px; margin-top:18px; place-items:center; border:2px dashed var(--cyan); background:rgba(23,23,21,.94); cursor:pointer; text-align:center; transition:transform .12s,background .12s; }
     .drop[data-active="true"] { transform:translateY(-3px); background:#123236; }
     .drop strong { display:block; color:var(--cyan); font-size:18px; }
     .drop small { display:block; margin-top:8px; color:#a9a39b; }
-    .drop input { position:absolute; width:1px; height:1px; overflow:hidden; opacity:0; }
+    input[type="file"] { position:absolute; width:1px; height:1px; overflow:hidden; opacity:0; }
     .error { margin:10px 0 0; color:#ff7cae; font-size:11px; }
-    .drop[hidden],.report[hidden],.error:empty { display:none; }
+    .drop[hidden],.report[hidden],.comparison[hidden],.error:empty { display:none; }
     .report { display:grid; gap:14px; margin-top:18px; animation:reveal .28s steps(4,end); }
-    .stamp { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); border:1px solid var(--line); background:var(--panel); }
+    .stamp { display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); border:1px solid var(--line); background:var(--panel); }
     .stamp div { min-width:0; border-right:1px solid var(--line); padding:10px; }
     .stamp div:last-child { border:0; }
     dt { color:var(--pink); font-size:9px; font-weight:900; }
     dd { overflow:hidden; margin:5px 0 0; color:var(--paper); font-size:12px; text-overflow:ellipsis; white-space:nowrap; }
+    #integrity { color:var(--green); }
     .evidence { display:grid; grid-template-columns:minmax(0,1.45fr) minmax(260px,.55fr); gap:14px; }
-    figure,.ledger { margin:0; border:1px solid var(--line); background:var(--panel); box-shadow:5px 5px 0 #030303; }
+    figure,.ledger,.comparison,.patch { margin:0; border:1px solid var(--line); background:var(--panel); box-shadow:5px 5px 0 #030303; }
     figure { display:grid; min-height:420px; place-items:center; overflow:hidden; background:#10100f; }
     figure img { display:block; width:100%; max-height:72vh; object-fit:contain; image-rendering:auto; }
     .ledger { display:grid; align-content:start; }
@@ -41,86 +42,103 @@
     .score[data-status="blocked"] b { color:var(--pink); }
     ul { display:grid; gap:5px; margin:0; padding:0; list-style:none; }
     li { border-left:2px solid var(--cyan); padding-left:7px; color:#b8b3ab; font-size:10px; }
-    .patch { overflow:auto; border:1px solid var(--line); background:var(--panel); }
-    .patch header { display:flex; align-items:center; justify-content:space-between; border:0; padding:12px; }
+    .patch { overflow:auto; }
+    .section-head { display:flex; align-items:center; justify-content:space-between; gap:9px; border:0; padding:12px; }
+    .section-head h2 { margin:0; }
+    .tools { display:flex; flex-wrap:wrap; gap:6px; }
+    .action { border:1px solid var(--amber); padding:6px 9px; background:transparent; color:var(--amber); font:900 9px "Courier New",monospace; cursor:pointer; }
+    .action--compare { border-color:var(--cyan); color:var(--cyan); }
     table { width:100%; border-collapse:collapse; font-size:10px; }
     th,td { border-top:1px solid var(--line); padding:9px 11px; text-align:left; vertical-align:top; }
     th { color:var(--pink); }
     td:nth-child(1) { color:var(--green); font-weight:900; }
     td:nth-child(2) { color:var(--cyan); }
     td code { white-space:pre-wrap; word-break:break-all; }
-    .reset { border:1px solid var(--amber); padding:6px 9px; background:transparent; color:var(--amber); font:900 9px "Courier New",monospace; cursor:pointer; }
+    .comparison { padding:12px; border-top:3px solid var(--cyan); }
+    .comparison__verdict { display:flex; align-items:baseline; gap:9px; margin:0 0 12px; }
+    .comparison__verdict b { color:var(--cyan); font-size:26px; }
+    .comparison__grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+    .comparison figure { min-height:220px; box-shadow:none; }
+    .comparison figcaption { align-self:start; justify-self:start; padding:8px; color:var(--pink); font-size:9px; font-weight:900; }
+    .comparison__changes { grid-column:1/-1; border-top:1px solid var(--line); padding-top:10px; }
     @keyframes reveal { from { opacity:0; transform:translateY(8px); } }
-    @media (max-width:760px) { header,.evidence { grid-template-columns:1fr; } .privacy { width:max-content; } .stamp { grid-template-columns:repeat(2,minmax(0,1fr)); } .stamp div:nth-child(2) { border-right:0; } figure { min-height:260px; } }
+    @media (max-width:760px) { .masthead,.evidence,.comparison__grid { grid-template-columns:1fr; } .privacy { width:max-content; } .stamp { grid-template-columns:repeat(2,minmax(0,1fr)); } .stamp div:nth-child(even) { border-right:0; } figure { min-height:260px; } .comparison__changes { grid-column:1; } }
   </style>
 </head>
 <body>
   <main>
-    <header><div><h1>Map Evidence Room</h1><p>맵 진단 번들을 로컬에서만 해독합니다.</p></div><span class="privacy">NO UPLOAD · LOCAL ONLY</span></header>
-    <label class="drop" id="drop-zone"><span><strong>DROP DIAGNOSTIC JSON</strong><small>클릭해서 파일을 선택하거나 이곳에 놓으세요</small></span><input id="file-input" type="file" accept="application/json,.json"></label>
+    <header class="masthead"><div><h1>Map Evidence Room</h1><p>맵 진단 번들을 로컬에서 검증하고 서로 비교합니다.</p></div><span class="privacy">NO UPLOAD · LOCAL ONLY</span></header>
+    <label class="drop" id="drop-zone"><span><strong>DROP 1–2 DIAGNOSTIC JSON</strong><small>한 개는 검증, 두 개는 전후 비교 · 파일은 전송되지 않습니다</small></span><input id="file-input" type="file" accept="application/json,.json" multiple></label>
     <p class="error" id="error" role="alert"></p>
     <section class="report" id="report" hidden>
-      <dl class="stamp"><div><dt>FILE</dt><dd id="file-name"></dd></div><div><dt>ZONE</dt><dd id="zone"></dd></div><div><dt>CAPTURED</dt><dd id="captured"></dd></div><div><dt>VIEWPORT</dt><dd id="viewport"></dd></div></dl>
+      <dl class="stamp"><div><dt>FILE</dt><dd id="file-name"></dd></div><div><dt>ZONE</dt><dd id="zone"></dd></div><div><dt>CAPTURED</dt><dd id="captured"></dd></div><div><dt>VIEWPORT</dt><dd id="viewport"></dd></div><div><dt>CONTRACT</dt><dd id="contract"></dd></div><div><dt>INTEGRITY</dt><dd id="integrity"></dd></div></dl>
       <div class="evidence">
         <figure><img id="screenshot" alt="진단 번들에 포함된 맵 화면"></figure>
         <aside class="ledger">
           <section><h2>POLICY VERDICT</h2><div class="score" id="score"><b id="status"></b><span id="counts"></span></div></section>
           <section><h2>REVIEW DECISIONS</h2><ul id="decisions"></ul></section>
           <section><h2>FINDINGS</h2><ul id="findings"></ul></section>
-          <section><h2>TRACE</h2><ul><li id="diagnostic-url"></li><li id="user-agent"></li></ul></section>
+          <section><h2>TRACE</h2><ul><li id="heatmap-mode"></li><li id="diagnostic-url"></li><li id="user-agent"></li></ul></section>
         </aside>
       </div>
-      <section class="patch"><header><h2>SELECTED JSON PATCH</h2><button class="reset" id="reset" type="button">LOAD ANOTHER</button></header><table><thead><tr><th>OP</th><th>PATH</th><th>VALUE</th></tr></thead><tbody id="operations"></tbody></table></section>
+      <section class="comparison" id="comparison" aria-label="두 진단 번들 비교" hidden>
+        <div class="section-head"><h2>A / B EVIDENCE COMPARE</h2><button class="action" id="remove-comparison" type="button">REMOVE B</button></div>
+        <p class="comparison__verdict"><b id="comparison-count"></b><span id="comparison-label"></span></p>
+        <div class="comparison__grid"><figure><figcaption>A · BASE</figcaption><img id="comparison-a" alt="기준 진단 화면"></figure><figure><figcaption>B · CANDIDATE</figcaption><img id="comparison-b" alt="비교 진단 화면"></figure><ul class="comparison__changes" id="comparison-changes"></ul></div>
+      </section>
+      <section class="patch"><div class="section-head"><h2>SELECTED JSON PATCH</h2><div class="tools"><label class="action action--compare">LOAD COMPARISON<input id="compare-input" type="file" accept="application/json,.json"></label><button class="action" id="reset" type="button">LOAD ANOTHER</button></div></div><table><thead><tr><th>OP</th><th>PATH</th><th>VALUE</th></tr></thead><tbody id="operations"></tbody></table></section>
     </section>
   </main>
   <script>
     (() => {
       const byId = (id) => document.getElementById(id);
-      const drop = byId("drop-zone");
-      const input = byId("file-input");
-      const error = byId("error");
-      const report = byId("report");
-      const list = (target, values, empty) => {
-        target.replaceChildren(...(values.length ? values : [empty]).map((value) => {
-          const item = document.createElement("li"); item.textContent = value; return item;
-        }));
+      const drop = byId("drop-zone"); const input = byId("file-input"); const compareInput = byId("compare-input");
+      const error = byId("error"); const report = byId("report"); const comparison = byId("comparison");
+      let primary = null; let secondary = null;
+      const list = (target, values, empty) => target.replaceChildren(...(values.length ? values : [empty]).map((value) => { const item = document.createElement("li"); item.textContent = value; return item; }));
+      const canonicalJson = (value) => {
+        if (value === null || typeof value !== "object") return JSON.stringify(value);
+        if (Array.isArray(value)) return `[${value.map(canonicalJson).join(",")}]`;
+        return `{${Object.keys(value).sort().map((key) => `${JSON.stringify(key)}:${canonicalJson(value[key])}`).join(",")}}`;
       };
-      function validate(bundle) {
-        if (!bundle || bundle.version !== 1 || !bundle.zone?.id || !bundle.policy || !bundle.selectedPatch) throw new Error("지원하는 맵 진단 번들이 아닙니다.");
+      const sha256 = async (value) => [...new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(value)))].map((byte) => byte.toString(16).padStart(2,"0")).join("");
+      async function validate(bundle) {
+        if (!bundle || bundle.version !== 2 || !bundle.zone?.id || !bundle.policy || !bundle.selectedPatch || !bundle.sourceContract) throw new Error("지원하는 맵 진단 번들이 아닙니다.");
         if (!bundle.screenshot?.dataUrl?.startsWith("data:image/png;base64,")) throw new Error("PNG 스크린샷이 없는 번들입니다.");
+        if (bundle.sourceContract.target !== bundle.selectedPatch.target || bundle.sourceContract.version !== bundle.selectedPatch.sourceContractVersion || bundle.sourceContract.checksum !== bundle.selectedPatch.sourceChecksum || !/^[a-f0-9]{64}$/.test(bundle.sourceContract.checksum)) throw new Error("번들의 원본 계약 체크섬이 일치하지 않습니다.");
+        if (bundle.integrity?.algorithm !== "SHA-256" || bundle.integrity?.canonicalization !== "json-sort-v1") throw new Error("지원하는 무결성 봉인이 없습니다.");
+        const { integrity, ...payload } = bundle;
+        if (integrity.checksum !== await sha256(canonicalJson(payload))) throw new Error("무결성 검증에 실패했습니다. 번들이 변경되었습니다.");
         return bundle;
       }
       function render(bundle, filename) {
-        byId("file-name").textContent = filename;
-        byId("zone").textContent = `${bundle.zone.label} · ${bundle.zone.id}`;
-        byId("captured").textContent = new Date(bundle.generatedAt).toLocaleString("ko-KR");
-        byId("viewport").textContent = `${bundle.viewport.width}×${bundle.viewport.height} @${bundle.viewport.devicePixelRatio}`;
-        byId("screenshot").src = bundle.screenshot.dataUrl;
-        byId("score").dataset.status = bundle.policy.status;
-        byId("status").textContent = bundle.policy.status.toUpperCase();
+        byId("file-name").textContent = filename; byId("zone").textContent = `${bundle.zone.label} · ${bundle.zone.id}`;
+        byId("captured").textContent = new Date(bundle.generatedAt).toLocaleString("ko-KR"); byId("viewport").textContent = `${bundle.viewport.width}×${bundle.viewport.height} @${bundle.viewport.devicePixelRatio}`;
+        byId("contract").textContent = `v${bundle.sourceContract.version} · ${bundle.sourceContract.checksum.slice(0,12)}`; byId("integrity").textContent = `VERIFIED · ${bundle.integrity.checksum.slice(0,12)}`;
+        byId("screenshot").src = bundle.screenshot.dataUrl; byId("score").dataset.status = bundle.policy.status; byId("status").textContent = bundle.policy.status.toUpperCase();
         byId("counts").textContent = `B${bundle.policy.blockingCount} · W${bundle.policy.warningCount}/${bundle.policy.maxWarnings}`;
         list(byId("decisions"), Object.entries(bundle.recommendationDecisions || {}).map(([key,value]) => `${value === "accepted" ? "A" : "R"} · ${key}`), "결정 없음");
         list(byId("findings"), (bundle.findings || []).map((finding) => `${finding.severity.toUpperCase()} · ${finding.message}`), "발견 사항 없음");
-        byId("diagnostic-url").textContent = bundle.diagnosticUrl;
-        byId("user-agent").textContent = bundle.userAgent;
-        byId("operations").replaceChildren(...(bundle.selectedPatch.operations || []).map((operation) => {
-          const row = document.createElement("tr");
-          [operation.op, operation.path, operation.value === undefined ? "—" : JSON.stringify(operation.value)].forEach((value) => {
-            const cell = document.createElement("td"); const code = document.createElement("code"); code.textContent = value; cell.append(code); row.append(cell);
-          });
-          return row;
-        }));
+        byId("heatmap-mode").textContent = `HEATMAP · ${(bundle.heatmapMode || "color").toUpperCase()}`; byId("diagnostic-url").textContent = bundle.diagnosticUrl; byId("user-agent").textContent = bundle.userAgent;
+        byId("operations").replaceChildren(...(bundle.selectedPatch.operations || []).map((operation) => { const row = document.createElement("tr"); [operation.op, operation.path, operation.value === undefined ? "—" : JSON.stringify(operation.value)].forEach((value) => { const cell = document.createElement("td"); const code = document.createElement("code"); code.textContent = value; cell.append(code); row.append(cell); }); return row; }));
         error.textContent = ""; report.hidden = false; drop.hidden = true;
       }
-      async function load(file) {
-        try { render(validate(JSON.parse(await file.text())), file.name); }
-        catch (caught) { error.textContent = caught instanceof Error ? caught.message : "번들을 읽지 못했습니다."; }
+      function comparisonFacts(left, right) {
+        const screenshotChanged = left.screenshot.dataUrl !== right.screenshot.dataUrl;
+        const facts = [["ZONE", left.zone.id, right.zone.id],["VIEWPORT", `${left.viewport.width}×${left.viewport.height}`, `${right.viewport.width}×${right.viewport.height}`],["POLICY", `${left.policy.status}:B${left.policy.blockingCount}/W${left.policy.warningCount}`, `${right.policy.status}:B${right.policy.blockingCount}/W${right.policy.warningCount}`],["HEATMAP", left.heatmapMode, right.heatmapMode],["DECISIONS", canonicalJson(left.recommendationDecisions), canonicalJson(right.recommendationDecisions)],["PATCH", canonicalJson(left.selectedPatch.operations), canonicalJson(right.selectedPatch.operations)],["SCREENSHOT", screenshotChanged ? "BASE" : "SAME", screenshotChanged ? "CHANGED" : "SAME"]];
+        return facts.filter(([,a,b]) => a !== b).map(([label,a,b]) => `${label} · ${String(a).slice(0,72)} → ${String(b).slice(0,72)}`);
       }
-      input.addEventListener("change", () => input.files?.[0] && load(input.files[0]));
-      ["dragenter","dragover"].forEach((name) => drop.addEventListener(name, (event) => { event.preventDefault(); drop.dataset.active = "true"; }));
-      ["dragleave","drop"].forEach((name) => drop.addEventListener(name, (event) => { event.preventDefault(); drop.dataset.active = "false"; }));
-      drop.addEventListener("drop", (event) => event.dataTransfer?.files?.[0] && load(event.dataTransfer.files[0]));
-      byId("reset").addEventListener("click", () => { report.hidden = true; drop.hidden = false; input.value = ""; error.textContent = ""; });
+      function renderComparison() {
+        if (!primary || !secondary) { comparison.hidden = true; return; }
+        const changes = comparisonFacts(primary.bundle, secondary.bundle); byId("comparison-count").textContent = `${changes.length} CHANGES`; byId("comparison-label").textContent = changes.length ? `${primary.filename} → ${secondary.filename}` : "NO MATERIAL CHANGE";
+        byId("comparison-a").src = primary.bundle.screenshot.dataUrl; byId("comparison-b").src = secondary.bundle.screenshot.dataUrl; list(byId("comparison-changes"), changes, "두 번들의 진단 증거가 같습니다."); comparison.hidden = false;
+      }
+      async function read(file) { return { filename:file.name, bundle:await validate(JSON.parse(await file.text())) }; }
+      async function loadFiles(files) { try { const entries = await Promise.all([...files].slice(0,2).map(read)); if (!entries.length) return; primary = entries[0]; secondary = entries[1] || null; render(primary.bundle, primary.filename); renderComparison(); } catch (caught) { error.textContent = caught instanceof Error ? caught.message : "번들을 읽지 못했습니다."; } }
+      input.addEventListener("change", () => loadFiles(input.files || [])); compareInput.addEventListener("change", async () => { try { if (!compareInput.files?.[0]) return; secondary = await read(compareInput.files[0]); renderComparison(); error.textContent = ""; } catch (caught) { error.textContent = caught instanceof Error ? caught.message : "비교 번들을 읽지 못했습니다."; } });
+      ["dragenter","dragover"].forEach((name) => drop.addEventListener(name, (event) => { event.preventDefault(); drop.dataset.active = "true"; })); ["dragleave","drop"].forEach((name) => drop.addEventListener(name, (event) => { event.preventDefault(); drop.dataset.active = "false"; })); drop.addEventListener("drop", (event) => loadFiles(event.dataTransfer?.files || []));
+      byId("remove-comparison").addEventListener("click", () => { secondary = null; compareInput.value = ""; renderComparison(); });
+      byId("reset").addEventListener("click", () => { primary = null; secondary = null; report.hidden = true; comparison.hidden = true; drop.hidden = false; input.value = ""; compareInput.value = ""; error.textContent = ""; });
     })();
   </script>
 </body>

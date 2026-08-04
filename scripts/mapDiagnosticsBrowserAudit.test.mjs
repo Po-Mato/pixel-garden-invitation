@@ -31,6 +31,7 @@ test("map diagnostics snapshot accepts a matching visible overlay", () => {
     blockingCount: 0,
     warningCount: 0,
     policyStatus: "passed",
+    heatmapMode: "color",
     activeLayerCount: 5,
     layers: [true, true, true, true, true]
   }, { width: 360, height: 640 }, 1), []);
@@ -52,6 +53,7 @@ test("map diagnostics snapshot reports clipping, stale zones, geometry, and dept
     blockingCount: 1,
     warningCount: 1,
     policyStatus: "blocked",
+    heatmapMode: "unknown",
     activeLayerCount: 2,
     layers: [true, false, true, false, false]
   }, { width: 360, height: 640 }, 1, 1, 1, 1, 1), [
@@ -66,6 +68,7 @@ test("map diagnostics snapshot reports clipping, stale zones, geometry, and dept
     "차이 히트맵 수 불일치 0/1",
     "활성 진단 필터 수 불일치 2/5",
     "기본 진단 필터 비활성",
+    "히트맵 접근성 모드 불일치",
     "맵 지오메트리 정책 차단 B1/W1"
   ]);
 });

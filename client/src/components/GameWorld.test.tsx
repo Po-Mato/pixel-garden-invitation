@@ -2011,11 +2011,17 @@ describe("GameWorld", () => {
       expect(new URLSearchParams(window.location.search).get("mapAudit")).toBe("1");
       expect(new URLSearchParams(window.location.search).get("mapAuditLayers"))
         .toBe("grid,collision,depth,heatmap,labels");
+      expect(new URLSearchParams(window.location.search).get("mapAuditHeatmap")).toBe("color");
       expect(screen.getByRole("button", { name: "진단 오류 없음" })).toBeDisabled();
 
       fireEvent.click(screen.getByRole("button", { name: "충돌 영역 숨기기" }));
       expect(screen.getByTestId("world-geometry-audit")).toHaveAttribute("data-collision", "false");
       expect(new URLSearchParams(window.location.search).get("mapAuditLayers")).toBe("grid,depth,heatmap,labels");
+      fireEvent.change(screen.getByRole("combobox", { name: "히트맵 표시 방식" }), {
+        target: { value: "contrast" }
+      });
+      expect(screen.getByTestId("world-geometry-audit")).toHaveAttribute("data-heatmap-mode", "contrast");
+      expect(new URLSearchParams(window.location.search).get("mapAuditHeatmap")).toBe("contrast");
 
       fireEvent.change(screen.getByRole("combobox", { name: "진단 구역 즉시 이동" }), {
         target: { value: "ceremony-hall" }
@@ -2034,6 +2040,7 @@ describe("GameWorld", () => {
       const copiedDiagnosticUrl = new URL(vi.mocked(copyText).mock.calls.at(-1)?.[0] ?? "", window.location.origin);
       expect(copiedDiagnosticUrl.searchParams.get("mapAuditZone")).toBe("ceremony-hall");
       expect(copiedDiagnosticUrl.searchParams.get("mapAuditLayers")).toBe("grid,depth,heatmap,labels");
+      expect(copiedDiagnosticUrl.searchParams.get("mapAuditHeatmap")).toBe("contrast");
       expect(screen.getByRole("button", { name: "현재 진단 링크 복사" })).toHaveTextContent("COPIED");
 
       fireEvent.click(screen.getByRole("button", { name: "지도 진단 끄기" }));
@@ -2046,7 +2053,7 @@ describe("GameWorld", () => {
 
   it("opens shared diagnostic zone links and cycles zones with developer shortcuts", () => {
     const originalUrl = window.location.href;
-    window.history.replaceState({}, "", "/?mapAudit=1&mapAuditZone=banquet&mapAuditLayers=grid,depth");
+    window.history.replaceState({}, "", "/?mapAudit=1&mapAuditZone=banquet&mapAuditLayers=grid,depth&mapAuditHeatmap=pattern");
     try {
       render(<GameWorld profile={profile} />);
 
@@ -2057,6 +2064,7 @@ describe("GameWorld", () => {
       expect(window.localStorage.getItem(worldSessionStorageKey)).toBeNull();
       expect(screen.getByRole("button", { name: "충돌 영역 표시" })).toHaveAttribute("aria-pressed", "false");
       expect(screen.getByRole("button", { name: "전경 식별자 표시" })).toHaveAttribute("aria-pressed", "false");
+      expect(screen.getByRole("combobox", { name: "히트맵 표시 방식" })).toHaveValue("pattern");
 
       fireEvent.keyDown(window, { key: "[" });
       expect(selector).toHaveValue("ceremony-hall");

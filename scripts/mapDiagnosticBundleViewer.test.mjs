@@ -10,6 +10,10 @@ test("standalone diagnostic bundle viewer stays local and renders every evidence
   const html = await readFile(path.join(root, "client/public/map-diagnostic-bundle-viewer.html"), "utf8");
   assert.match(html, /NO UPLOAD · LOCAL ONLY/);
   assert.match(html, /data:image\/png;base64/);
+  assert.match(html, /crypto\.subtle\.digest\("SHA-256"/);
+  assert.match(html, /무결성 검증에 실패했습니다/);
+  assert.match(html, /A \/ B EVIDENCE COMPARE/);
+  assert.match(html, /LOAD COMPARISON/);
   assert.match(html, /REVIEW DECISIONS/);
   assert.match(html, /SELECTED JSON PATCH/);
   assert.match(html, /dataTransfer\?\.files/);

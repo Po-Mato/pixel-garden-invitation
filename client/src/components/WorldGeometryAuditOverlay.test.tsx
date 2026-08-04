@@ -48,7 +48,29 @@ describe("WorldGeometryAuditOverlay", () => {
     expect(recommendedCollision).toHaveAttribute("data-review-decision", "pending");
     expect(container.querySelectorAll('.world-geometry-audit__heatmap[data-decoration-id="lobby-desk"]')).toHaveLength(2);
     expect(container.querySelector(".world-geometry-audit__heatmap--collision")).toHaveAttribute("data-delta-intensity", "high");
-    expect(screen.getByText(/차이 히트 Δ/)).toBeInTheDocument();
+    expect(screen.getByText(/차이 히트 COLOR/)).toBeInTheDocument();
+  });
+
+  it("renders imported patch geometry with colorblind and high-contrast heatmap modes", () => {
+    const lobby = getWorldZone(gardenWorld, "lobby");
+    const preview = [{
+      key: "lobby/lobby-desk",
+      zoneId: "lobby" as const,
+      decorationId: "lobby-desk",
+      current: { depthY: 480, collision: { x: 450, y: 390, width: 180, height: 90 } },
+      recommended: { depthY: 472, collision: { x: 460, y: 440, width: 150, height: 36 } },
+      depthChanged: true,
+      collisionChanged: true
+    }];
+    const { container, rerender } = render(
+      <WorldGeometryAuditOverlay zone={lobby} enabled heatmapMode="pattern" previewRecommendations={preview} />
+    );
+    expect(screen.getByTestId("world-geometry-audit")).toHaveAttribute("data-patch-preview", "true");
+    expect(screen.getByTestId("world-geometry-audit")).toHaveAttribute("data-heatmap-mode", "pattern");
+    expect(container.querySelector(".world-geometry-audit__depth--recommended"))
+      .toHaveAttribute("data-recommended-depth-y", "472");
+    rerender(<WorldGeometryAuditOverlay zone={lobby} enabled heatmapMode="contrast" previewRecommendations={preview} />);
+    expect(screen.getByTestId("world-geometry-audit")).toHaveAttribute("data-heatmap-mode", "contrast");
   });
 
   it("independently filters the grid, collision, depth, and identifier layers", () => {

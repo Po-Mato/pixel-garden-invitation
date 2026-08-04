@@ -217,6 +217,10 @@ import {
   serializeWorldGeometryAuditLayers,
   type WorldGeometryAuditLayerKey
 } from "../game/worldGeometryAuditLayers";
+import {
+  parseWorldGeometryAuditHeatmapMode,
+  type WorldGeometryAuditHeatmapMode
+} from "../game/worldGeometryAuditHeatmap";
 import { auditWorldGeometry } from "../game/worldGeometryAudit";
 import { evaluateWorldGeometryAuditPolicy } from "../game/worldGeometryAuditPolicy";
 import {
@@ -231,6 +235,10 @@ import {
   foregroundRecommendationReviewsForZone,
   type ForegroundRecommendationDecision
 } from "../game/worldForegroundRecommendations";
+import {
+  previewWorldForegroundRecommendationPatch,
+  type WorldForegroundPatchPreview
+} from "../game/worldForegroundPatchPreview";
 import {
   loadWorldForegroundReviewDecisions,
   saveWorldForegroundReviewDecisions,
@@ -590,6 +598,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
       initiallyEnabled: parameter === "1",
       initialZoneId,
       initialLayers: parseWorldGeometryAuditLayers(parameters.get("mapAuditLayers")),
+      initialHeatmapMode: parseWorldGeometryAuditHeatmapMode(parameters.get("mapAuditHeatmap")),
       initialRecommendationDecisions: loadWorldForegroundReviewDecisions(
         parameters.get("mapAuditReview"),
         window.localStorage
@@ -598,9 +607,12 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   }, []);
   const [geometryAuditEnabled, setGeometryAuditEnabled] = useState(mapAuditMode.initiallyEnabled);
   const [geometryAuditLayers, setGeometryAuditLayers] = useState(mapAuditMode.initialLayers);
+  const [geometryAuditHeatmapMode, setGeometryAuditHeatmapMode] = useState(mapAuditMode.initialHeatmapMode);
   const [diagnosticCopyStatus, setDiagnosticCopyStatus] = useState<"idle" | "copied" | "error">("idle");
   const [diagnosticPatchStatus, setDiagnosticPatchStatus] = useState<"idle" | "saved" | "error">("idle");
   const [diagnosticBundleStatus, setDiagnosticBundleStatus] = useState<"idle" | "capturing" | "saved" | "error">("idle");
+  const [diagnosticPatchImportStatus, setDiagnosticPatchImportStatus] = useState<"idle" | "loaded" | "error">("idle");
+  const [diagnosticPatchPreview, setDiagnosticPatchPreview] = useState<WorldForegroundPatchPreview | null>(null);
   const [foregroundRecommendationDecisions, setForegroundRecommendationDecisions] = useState<
     Partial<Record<string, ForegroundRecommendationDecision>>
   >(mapAuditMode.initialRecommendationDecisions);
@@ -656,6 +668,10 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     () => mapAuditMode.available ? foregroundRecommendationReviewsForZone(activeZoneId) : [],
     [activeZoneId, mapAuditMode.available]
   );
+  const activePatchPreviewRecommendations = diagnosticPatchPreview?.reviewsByZone[activeZoneId] ?? null;
+  const overlayRecommendationDecisions = diagnosticPatchPreview
+    ? { ...foregroundRecommendationDecisions, ...diagnosticPatchPreview.decisions }
+    : foregroundRecommendationDecisions;
   const [position, setPosition] = useState<Point>(
     companionInviteLink || diagnosticInitialZoneId
       ? initialZone.spawn
@@ -1991,6 +2007,30 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     setDiagnosticBundleStatus("idle");
   }, [geometryAuditLayers]);
 
+  const handleDiagnosticHeatmapModeChange = useCallback((mode: WorldGeometryAuditHeatmapMode) => {
+    setGeometryAuditHeatmapMode(mode);
+    const url = new URL(window.location.href);
+    url.searchParams.set("mapAuditHeatmap", mode);
+    window.history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
+    setDiagnosticCopyStatus("idle");
+    setDiagnosticBundleStatus("idle");
+  }, []);
+
+  const handleImportDiagnosticPatch = useCallback(async (file: File) => {
+    try {
+      const preview = previewWorldForegroundRecommendationPatch(JSON.parse(await file.text()));
+      setDiagnosticPatchPreview(preview);
+      setDiagnosticPatchImportStatus("loaded");
+      const firstZoneId = preview.zoneIds[0];
+      if (firstZoneId && firstZoneId !== activeZoneIdRef.current) handleDiagnosticZoneChange(firstZoneId);
+    } catch (error) {
+      console.error("[map-diagnostics] Rejected imported foreground patch", error);
+      setDiagnosticPatchPreview(null);
+      setDiagnosticPatchImportStatus("error");
+    }
+    setDiagnosticBundleStatus("idle");
+  }, [handleDiagnosticZoneChange]);
+
   const handleNextDiagnosticIssue = useCallback(() => {
     const zoneId = nextWorldGeometryIssueZone(
       gardenWorld.zones.map((zone) => zone.id),
@@ -2005,6 +2045,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     url.searchParams.set("mapAudit", "1");
     url.searchParams.set("mapAuditZone", activeZoneId);
     url.searchParams.set("mapAuditLayers", serializeWorldGeometryAuditLayers(geometryAuditLayers));
+    url.searchParams.set("mapAuditHeatmap", geometryAuditHeatmapMode);
     writeWorldForegroundReviewDecisionsToUrl(url, foregroundRecommendationDecisions);
     try {
       await copyText(url.toString());
@@ -2012,7 +2053,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     } catch {
       setDiagnosticCopyStatus("error");
     }
-  }, [activeZoneId, foregroundRecommendationDecisions, geometryAuditLayers]);
+  }, [activeZoneId, foregroundRecommendationDecisions, geometryAuditHeatmapMode, geometryAuditLayers]);
 
   const handleForegroundRecommendationDecision = useCallback((
     key: string,
@@ -2056,11 +2097,11 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
       const generatedAt = new Date();
       const audit = geometryAuditsByZone[activeZoneId] ?? auditWorldGeometry(activeZone);
       const screenshot = await captureWorldDiagnosticScreenshot(shell);
-      const selectedPatch = buildWorldForegroundRecommendationPatch(
+      const selectedPatch = diagnosticPatchPreview?.patch ?? buildWorldForegroundRecommendationPatch(
         foregroundRecommendationDecisions,
         generatedAt.toISOString()
       );
-      const bundle = createWorldDiagnosticBundle({
+      const bundle = await createWorldDiagnosticBundle({
         generatedAt: generatedAt.toISOString(),
         zone: { id: activeZone.id, label: activeZone.label },
         diagnosticUrl: window.location.href,
@@ -2072,9 +2113,15 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
         },
         userAgent: navigator.userAgent,
         layers: geometryAuditLayers,
+        heatmapMode: geometryAuditHeatmapMode,
+        sourceContract: {
+          target: selectedPatch.target,
+          version: selectedPatch.sourceContractVersion,
+          checksum: selectedPatch.sourceChecksum
+        },
         findings: audit.findings,
         policy: evaluateWorldGeometryAuditPolicy(audit),
-        recommendationDecisions: foregroundRecommendationDecisions,
+        recommendationDecisions: overlayRecommendationDecisions,
         selectedPatch,
         screenshot
       });
@@ -2091,9 +2138,12 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     activeZone,
     activeZoneId,
     diagnosticBundleStatus,
+    diagnosticPatchPreview,
     foregroundRecommendationDecisions,
+    geometryAuditHeatmapMode,
     geometryAuditLayers,
-    geometryAuditsByZone
+    geometryAuditsByZone,
+    overlayRecommendationDecisions
   ]);
 
   useEffect(() => {
@@ -4778,10 +4828,19 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
             copyStatus={diagnosticCopyStatus}
             patchStatus={diagnosticPatchStatus}
             bundleStatus={diagnosticBundleStatus}
+            patchImportStatus={diagnosticPatchImportStatus}
+            importedPatchOperationCount={diagnosticPatchPreview?.patch.operationCount ?? 0}
+            heatmapMode={geometryAuditHeatmapMode}
             recommendations={activeForegroundRecommendations}
             recommendationDecisions={foregroundRecommendationDecisions}
             onDownloadBundle={() => { void handleDownloadDiagnosticBundle(); }}
             onDownloadPatch={handleDownloadDiagnosticPatch}
+            onImportPatch={(file) => { void handleImportDiagnosticPatch(file); }}
+            onClearImportedPatch={() => {
+              setDiagnosticPatchPreview(null);
+              setDiagnosticPatchImportStatus("idle");
+              setDiagnosticBundleStatus("idle");
+            }}
             onOpenBundleViewer={() => {
               window.open(worldDiagnosticBundleViewerUrl(), "_blank", "noopener,noreferrer");
             }}
@@ -4791,16 +4850,19 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
               url.searchParams.set("mapAudit", nextEnabled ? "1" : "0");
               if (nextEnabled) {
                 url.searchParams.set("mapAuditLayers", serializeWorldGeometryAuditLayers(geometryAuditLayers));
+                url.searchParams.set("mapAuditHeatmap", geometryAuditHeatmapMode);
                 writeWorldForegroundReviewDecisionsToUrl(url, foregroundRecommendationDecisions);
               } else {
                 url.searchParams.delete("mapAuditZone");
                 url.searchParams.delete("mapAuditLayers");
+                url.searchParams.delete("mapAuditHeatmap");
                 url.searchParams.delete("mapAuditReview");
               }
               window.history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
               setGeometryAuditEnabled(nextEnabled);
             }}
             onLayerChange={handleDiagnosticLayerChange}
+            onHeatmapModeChange={handleDiagnosticHeatmapModeChange}
             onNextIssue={handleNextDiagnosticIssue}
             onRecommendationDecision={handleForegroundRecommendationDecision}
             onZoneChange={handleDiagnosticZoneChange}
@@ -4850,7 +4912,9 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
               zone={activeZone}
               enabled={geometryAuditEnabled}
               layers={geometryAuditLayers}
-              recommendationDecisions={foregroundRecommendationDecisions}
+              heatmapMode={geometryAuditHeatmapMode}
+              previewRecommendations={activePatchPreviewRecommendations}
+              recommendationDecisions={overlayRecommendationDecisions}
             />
             <WorldCelebrationCollectibles
               items={zoneCelebrationCollectibles}
