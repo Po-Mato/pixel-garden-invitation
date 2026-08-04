@@ -13,5 +13,6 @@ test("standalone diagnostic bundle viewer stays local and renders every evidence
   assert.match(html, /REVIEW DECISIONS/);
   assert.match(html, /SELECTED JSON PATCH/);
   assert.match(html, /dataTransfer\?\.files/);
+  assert.match(html, /\.drop\[hidden\]/);
   assert.doesNotMatch(html, /https?:\/\//);
 });
