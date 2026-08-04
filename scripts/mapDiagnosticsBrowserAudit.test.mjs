@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   auditMapDiagnosticsSnapshot,
+  mapDiagnosticsReviewTarget,
   mapDiagnosticsAuditViewports,
   mapDiagnosticsZoneIds
 } from "./lib/mapDiagnosticsBrowserAudit.mjs";
@@ -13,6 +14,9 @@ test("map diagnostics browser audit covers three mobile viewport shapes and all 
     "phone-landscape"
   ]);
   assert.equal(mapDiagnosticsZoneIds.length, 10);
+  assert.ok(mapDiagnosticsReviewTarget);
+  assert.ok(mapDiagnosticsReviewTarget.operationCount > 0);
+  assert.ok(mapDiagnosticsZoneIds.includes(mapDiagnosticsReviewTarget.zoneId));
 });
 
 test("map diagnostics snapshot accepts a matching visible overlay", () => {

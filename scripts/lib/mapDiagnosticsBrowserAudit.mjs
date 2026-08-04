@@ -20,6 +20,27 @@ export const mapDiagnosticsAuditViewports = Object.freeze([
 
 export const mapDiagnosticsZoneIds = Object.freeze(Object.keys(placementContract.zones));
 
+export const mapDiagnosticsReviewTarget = Object.freeze(mapDiagnosticsZoneIds.flatMap((zoneId) => {
+  const recommendations = new Map(
+    foregroundRecommendations.zones[zoneId].map((recommendation) => [recommendation.decorationId, recommendation])
+  );
+  return placementContract.zones[zoneId].flatMap((placement) => {
+    const recommendation = recommendations.get(placement.decorationId);
+    if (!recommendation) return [];
+    const depthChanged = recommendation.depthY !== placement.depthY;
+    const collisionChanged = JSON.stringify(recommendation.collision ?? null) !== JSON.stringify(placement.collision ?? null);
+    if (!depthChanged && !collisionChanged) return [];
+    return [{
+      zoneId,
+      decorationId: placement.decorationId,
+      key: `${zoneId}/${placement.decorationId}`,
+      operationCount: Number(depthChanged) + Number(collisionChanged),
+      depthChanged,
+      collisionChanged
+    }];
+  });
+})[0] ?? null);
+
 export function auditMapDiagnosticsSnapshot(
   snapshot,
   viewport,
@@ -112,6 +133,8 @@ async function readSnapshot(page, selectedZoneId) {
 }
 
 export async function runMapDiagnosticsBrowserAudit({ rootDir, outputDir, port = 4180 }) {
+  if (!mapDiagnosticsReviewTarget) throw new Error("맵 진단 브라우저 감사에 사용할 미해결 전경 추천이 없습니다");
+  const reviewTarget = mapDiagnosticsReviewTarget;
   const server = spawn(
     "pnpm",
     ["--filter", "@wedding-game/client", "exec", "vite", "--host", "127.0.0.1", "--port", String(port), "--strictPort"],
@@ -165,7 +188,11 @@ export async function runMapDiagnosticsBrowserAudit({ rootDir, outputDir, port =
         await page.getByRole("button", { name: "이동 격자 표시" }).click();
 
         if (viewport.id === "small-android") {
-          await selector.selectOption("lobby");
+          await selector.selectOption(reviewTarget.zoneId);
+          await page.waitForFunction((zoneId) => (
+            document.querySelector(".world-map__stage")?.getAttribute("data-zone") === zoneId
+            && document.querySelector(".world-map__stage")?.classList.contains("world-map__stage--background-loaded")
+          ), reviewTarget.zoneId, { timeout: 15_000 });
           const heatmapMode = page.getByRole("combobox", { name: "히트맵 표시 방식" });
           await heatmapMode.selectOption("pattern");
           if (
@@ -176,19 +203,19 @@ export async function runMapDiagnosticsBrowserAudit({ rootDir, outputDir, port =
           if (await page.locator(".world-geometry-audit").getAttribute("data-heatmap-mode") !== "contrast") {
             throw new Error(`${viewport.id}: 고대비 히트맵 전환 실패`);
           }
-          await page.screenshot({ path: path.join(outputDir, "map-diagnostics-small-android-lobby-contrast.png"), fullPage: true });
+          await page.screenshot({ path: path.join(outputDir, `map-diagnostics-small-android-${reviewTarget.zoneId}-contrast.png`), fullPage: true });
           await heatmapMode.selectOption("pattern");
           await page.getByRole("button", { name: "전경 추천 검토 열기" }).click();
-          await page.getByRole("button", { name: "lobby-desk 추천 승인" }).click();
+          await page.getByRole("button", { name: `${reviewTarget.decorationId} 추천 승인` }).click();
           const reviewState = await page.evaluate(() => ({
             query: new URL(window.location.href).searchParams.get("mapAuditReview"),
             stored: localStorage.getItem("wedding-game:map-foreground-review:v1")
           }));
-          if (!reviewState.query?.includes("a:lobby/lobby-desk") || !reviewState.stored?.includes("accepted")) {
+          if (!reviewState.query?.includes(`a:${reviewTarget.key}`) || !reviewState.stored?.includes("accepted")) {
             throw new Error(`${viewport.id}: 추천 승인 상태 URL·로컬 저장 실패`);
           }
           const acceptedGhost = page.locator(
-            '.world-geometry-audit__foreground-collision--recommended[data-decoration-id="lobby-desk"]'
+            `.world-geometry-audit__foreground-collision--recommended[data-decoration-id="${reviewTarget.decorationId}"]`
           );
           if (await acceptedGhost.getAttribute("data-review-decision") !== "accepted") {
             throw new Error(`${viewport.id}: 추천 충돌 승인 상태가 오버레이에 반영되지 않음`);
@@ -199,8 +226,8 @@ export async function runMapDiagnosticsBrowserAudit({ rootDir, outputDir, port =
           const patchPath = await patchDownload.path();
           const patch = JSON.parse(await readFile(patchPath, "utf8"));
           if (
-            patch.acceptedPlacementKeys?.[0] !== "lobby/lobby-desk"
-            || patch.operationCount !== 2
+            patch.acceptedPlacementKeys?.[0] !== reviewTarget.key
+            || patch.operationCount !== reviewTarget.operationCount
             || !/^[a-f0-9]{64}$/.test(patch.sourceChecksum ?? "")
           ) {
             throw new Error(`${viewport.id}: 선택 patch 내용 불일치`);
@@ -209,7 +236,8 @@ export async function runMapDiagnosticsBrowserAudit({ rootDir, outputDir, port =
           await page.getByText("PATCH PREVIEW", { exact: true }).waitFor({ state: "visible" });
           if (
             await page.locator(".world-geometry-audit").getAttribute("data-patch-preview") !== "true"
-            || await page.locator('.world-geometry-audit__depth--recommended[data-recommended-depth-y="475"]').count() !== 1
+            || (reviewTarget.collisionChanged
+              && await page.locator(`.world-geometry-audit__foreground-collision--recommended[data-decoration-id="${reviewTarget.decorationId}"]`).count() !== 1)
           ) throw new Error(`${viewport.id}: 불러온 patch 시각 미리보기 불일치`);
           const bundleDownloadPromise = page.waitForEvent("download", { timeout: 30_000 });
           await page.getByRole("button", { name: "현재 화면 진단 번들 저장" }).click();
@@ -218,8 +246,8 @@ export async function runMapDiagnosticsBrowserAudit({ rootDir, outputDir, port =
           const bundle = JSON.parse(await readFile(bundlePath, "utf8"));
           if (
             bundle.version !== 2
-            || bundle.zone?.id !== "lobby"
-            || bundle.selectedPatch?.operationCount !== 2
+            || bundle.zone?.id !== reviewTarget.zoneId
+            || bundle.selectedPatch?.operationCount !== reviewTarget.operationCount
             || !bundle.screenshot?.dataUrl?.startsWith("data:image/png;base64,")
             || !bundle.viewerUrl?.endsWith("/map-diagnostic-bundle-viewer.html")
             || bundle.heatmapMode !== "pattern"
@@ -250,7 +278,7 @@ export async function runMapDiagnosticsBrowserAudit({ rootDir, outputDir, port =
           await viewerPage.getByText(/무결성 검증에 실패했습니다/).waitFor({ state: "visible" });
           await viewerPage.locator("#file-input").setInputFiles(bundlePath);
           await viewerPage.getByText("PASSED", { exact: true }).waitFor({ state: "visible" });
-          if (await viewerPage.locator("#operations tr").count() !== 2) {
+          if (await viewerPage.locator("#operations tr").count() !== reviewTarget.operationCount) {
             throw new Error(`${viewport.id}: 진단 번들 뷰어 patch 렌더링 불일치`);
           }
           const viewerState = await viewerPage.evaluate(() => ({
@@ -320,7 +348,7 @@ export async function runMapDiagnosticsBrowserAudit({ rootDir, outputDir, port =
           }
           await viewerPage.close();
           await page.getByRole("button", { name: "불러온 Patch 미리보기 지우기" }).click();
-          await page.getByRole("button", { name: "lobby-desk 추천 승인" }).click();
+          await page.getByRole("button", { name: `${reviewTarget.decorationId} 추천 승인` }).click();
           const clearedReviewState = await page.evaluate(() => ({
             query: new URL(window.location.href).searchParams.has("mapAuditReview"),
             stored: localStorage.getItem("wedding-game:map-foreground-review:v1")
