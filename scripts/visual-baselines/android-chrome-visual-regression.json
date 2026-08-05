@@ -1,7 +1,7 @@
 {
   "version": 1,
-  "approvedAt": "2026-08-05T08:09:19.840Z",
-  "reason": "Pixel 7 Android 15 Chrome 124 actual-emulator quality baseline",
+  "approvedAt": "2026-08-05T10:40:37.018Z",
+  "reason": "캐릭터 중앙 추적 및 홈 시작 위치 보정",
   "profile": {
     "id": "pixel-7-api-35-chrome",
     "deviceName": "Pixel 7",
@@ -9,7 +9,7 @@
     "requiredDirectionsScroll": 0
   },
   "capture": {
-    "generatedAt": "2026-08-05T08:06:35.910Z",
+    "generatedAt": "2026-08-05T10:36:17.495Z",
     "profile": {
       "id": "pixel-7-api-35-chrome",
       "deviceName": "Pixel 7",
@@ -41,8 +41,8 @@
     "player": {
       "height": 110.04762268066406,
       "width": 76,
-      "x": 157,
-      "y": 562.9761962890625
+      "x": 168,
+      "y": 384.9761962890625
     }
   },
   "pixelThreshold": 36,
@@ -55,14 +55,14 @@
       "state": "game",
       "width": 1080,
       "height": 2201,
-      "sha256": "1d80756265725e6cadd06cd69bb39c20fe4835257c817d1cf69c3226c25e738b"
+      "sha256": "3fe290c44777baac821e2c0f748046139e3bc43b208d67f2f6f89bd6560b24fe"
     },
     {
       "profileId": "pixel-7-api-35-chrome",
       "state": "directions",
       "width": 1080,
       "height": 2201,
-      "sha256": "5c83137a624792a7fac9fa93c2410c9590320220d4ae7b2f4e929ca2257ab6f8"
+      "sha256": "227dd1e9d74234e4ca84a75b81242f24965b8f0d14800d42c4568b19f672f8be"
     }
   ]
 }
