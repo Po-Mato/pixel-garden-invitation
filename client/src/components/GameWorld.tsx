@@ -332,6 +332,7 @@ import {
   type ZoneMiniQuestStep
 } from "../game/zoneMiniQuest";
 import { resolveWorldRenderBudget } from "../game/worldRenderBudget";
+import { createWorldMotionStore, type WorldMotionStore } from "../game/worldMotionStore";
 import {
   CelebrationCollectionProgress,
   WorldCelebrationCollectibles
@@ -339,6 +340,7 @@ import {
 import { WorldDecorationLayer, WorldPathLayer } from "./WorldStaticMapLayers";
 import { WorldInteractiveProp, WorldPropMoment } from "./WorldInteractiveProp";
 import { WorldMiniMap } from "./WorldMiniMap";
+import { WorldLocalPlayer } from "./WorldLocalPlayer";
 import { WorldSecretProgress } from "./WorldSecretProgress";
 import { WorldSecretCollectionBook } from "./WorldSecretCollectionBook";
 import { WorldTravelTimeline } from "./WorldTravelTimeline";
@@ -501,6 +503,7 @@ type MoveToZoneOptions = {
 };
 
 const joystickDeadZone = 0.05;
+const joystickDirectionHandoffDelayMs = 96;
 const realtimeMoveIntervalMs = 100;
 const realtimeTerminalStopConfirmDelayMs = realtimeMoveIntervalMs + 25;
 const portalArrivalDelayMs = 150;
@@ -687,12 +690,17 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   const [interactionIntent, setInteractionIntentState] = useState<WorldInteractionIntent | null>(null);
   const [portalTransition, setPortalTransitionState] = useState<PortalTransition | null>(null);
   const [inputReleaseRequired, setInputReleaseRequiredState] = useState(false);
-  const [joystickVector, setJoystickVector] = useState<Point>({ x: 0, y: 0 });
+  const [joystickInputActive, setJoystickInputActive] = useState(false);
   const [direction, setDirection] = useState<Direction>(
     companionInviteLink || diagnosticInitialZoneId ? "down" : restoredWorldSession?.direction ?? "down"
   );
   const [moving, setMoving] = useState(false);
   const [stepFrame, setStepFrame] = useState(neutralWalkFrame);
+  const motionStoreRef = useRef<WorldMotionStore | null>(null);
+  if (!motionStoreRef.current) {
+    motionStoreRef.current = createWorldMotionStore({ position, direction, moving, stepFrame });
+  }
+  const motionStore = motionStoreRef.current;
   const [activeSpotId, setActiveSpotId] = useState<SpotId | null>(null);
   const [activePhotoSpotId, setActivePhotoSpotId] = useState<WorldPhotoSpotId | null>(null);
   const [photoAlbum, setPhotoAlbum] = useState(loadWeddingPhotoAlbum);
@@ -843,6 +851,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
 
   const mapShellRef = useRef<HTMLDivElement | null>(null);
   const mapViewportRef = useRef<HTMLDivElement | null>(null);
+  const mapStageRef = useRef<HTMLDivElement | null>(null);
   const menuButtonRef = useRef<HTMLButtonElement | null>(null);
   const menuCloseButtonRef = useRef<HTMLButtonElement | null>(null);
   const restoreMenuButtonFocusRef = useRef(false);
@@ -855,6 +864,9 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   const portalTransitionRef = useRef<PortalTransition | null>(null);
   const targetStepAtRef = useRef<number | null>(null);
   const tileInputStateRef = useRef<TileInputState | null>(null);
+  const joystickVectorRef = useRef<Point>({ x: 0, y: 0 });
+  const joystickInputActiveRef = useRef(false);
+  const joystickStopTimerRef = useRef<number | null>(null);
   const joystickWasMovingRef = useRef(false);
   const inputReleaseRequiredRef = useRef(false);
   const inputGenerationRef = useRef(0);
@@ -1100,17 +1112,68 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     setInputReleaseRequiredState(required);
   }, []);
 
+  const setJoystickVector = useCallback((vector: Point) => {
+    if (joystickStopTimerRef.current !== null) {
+      window.clearTimeout(joystickStopTimerRef.current);
+      joystickStopTimerRef.current = null;
+    }
+    joystickVectorRef.current = vector;
+    const active = hasJoystickMovement(vector);
+    if (joystickInputActiveRef.current === active) return;
+    joystickInputActiveRef.current = active;
+    setJoystickInputActive(active);
+  }, []);
+
+  useEffect(() => () => {
+    if (joystickStopTimerRef.current !== null) {
+      window.clearTimeout(joystickStopTimerRef.current);
+    }
+  }, []);
+
+  useEffect(() => {
+    motionStore.update({ position });
+  }, [motionStore, position]);
+
+  useEffect(() => {
+    motionStore.update({ direction });
+  }, [direction, motionStore]);
+
+  useEffect(() => {
+    motionStore.update({ moving });
+  }, [motionStore, moving]);
+
+  useEffect(() => {
+    motionStore.update({ stepFrame });
+  }, [motionStore, stepFrame]);
+
+  useEffect(() => {
+    const updateCamera = () => {
+      const stage = mapStageRef.current;
+      if (!stage) return;
+      const nextCamera = computeCameraTransform({
+        player: motionStore.getSnapshot().position,
+        viewport,
+        bounds: activeZone.bounds,
+        zoom: 1
+      });
+      stage.style.transform = `translate3d(${nextCamera.x}px, ${nextCamera.y}px, 0) scale(${nextCamera.zoom})`;
+    };
+    updateCamera();
+    return motionStore.subscribe(updateCamera);
+  }, [activeZone.bounds.height, activeZone.bounds.width, motionStore, viewport.height, viewport.width]);
+
   const resetWalkCycle = useCallback(() => {
     walkPhaseRef.current = 0;
+    motionStore.update({ stepFrame: neutralWalkFrame });
     setStepFrame(neutralWalkFrame);
-  }, []);
+  }, [motionStore]);
 
   const advanceWalkCycle = useCallback((surface: FootstepSurface) => {
     const next = advanceWalkPhase(walkPhaseRef.current);
     walkPhaseRef.current = next.nextPhase;
-    setStepFrame(next.frame);
     const foot = walkLandingFootForFrame(next.frame);
     if (foot) playFeedback("footstep", { surface, foot });
+    return next.frame;
   }, [playFeedback]);
 
   const showRouteArrivalNotice = useCallback((notice: RouteArrivalNotice) => {
@@ -2953,7 +3016,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     const inputGeneration = inputGenerationRef.current;
     if (portalTransitionRef.current) return;
 
-    const hasJoystickInput = hasJoystickMovement(joystickVector);
+    const hasJoystickInput = joystickInputActive;
     const movementTarget = interactionIntent?.path[0] ?? portalIntent?.path[0] ?? mapPath[0] ?? target;
     if (!movementTarget && !hasJoystickInput) {
       targetStepAtRef.current = null;
@@ -2961,7 +3024,6 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
       return;
     }
 
-    const movementVector = joystickVector;
     let frame = 0;
     function tick(now: number) {
       if (inputGeneration !== inputGenerationRef.current || portalTransitionRef.current) return;
@@ -2974,6 +3036,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
 
       const current = positionRef.current;
       const automaticPath = interactionIntent?.path ?? portalIntent?.path ?? mapPath;
+      const movementVector = joystickVectorRef.current;
       const hasDirectionalInput = hasJoystickMovement(movementVector);
       const nextDirection = hasDirectionalInput
         ? directionFromVector(movementVector)
@@ -2982,6 +3045,10 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
           : null;
 
       if (!nextDirection) {
+        if (joystickInputActive) {
+          frame = requestAnimationFrame(tick);
+          return;
+        }
         setMoving(false);
         resetWalkCycle();
         setTarget(null);
@@ -3033,9 +3100,14 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
       ];
       if (isTileOccupied(next, occupiedPoints)) {
         directionRef.current = nextDirection;
-        setDirection(nextDirection);
-        setMoving(false);
-        resetWalkCycle();
+        if (hasDirectionalInput) {
+          walkPhaseRef.current = 0;
+          motionStore.update({ direction: nextDirection, moving: false, stepFrame: neutralWalkFrame });
+        } else {
+          setDirection(nextDirection);
+          setMoving(false);
+          resetWalkCycle();
+        }
         sendRealtimeMove(current, false, nextDirection, activeZone.id, now);
 
         const rerouteInterval = renderBudget.targetFps === 24 ? 480 : 240;
@@ -3074,7 +3146,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
       const didMove = !samePoint(current, next);
       const reachedTarget = movementTarget ? samePoint(next, movementTarget) : false;
       directionRef.current = nextDirection;
-      setDirection(nextDirection);
+      if (!hasDirectionalInput) setDirection(nextDirection);
 
       if (!didMove) {
         setRouteRecalculationNotice(null);
@@ -3153,9 +3225,18 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
       }
 
       positionRef.current = next;
-      setPosition(next);
-      setMoving(true);
-      advanceWalkCycle(resolveFootstepSurface(activeZone, next));
+      const nextStepFrame = advanceWalkCycle(resolveFootstepSurface(activeZone, next));
+      motionStore.update({
+        position: next,
+        direction: nextDirection,
+        moving: true,
+        stepFrame: nextStepFrame
+      });
+      if (!hasDirectionalInput) {
+        setPosition(next);
+        setMoving(true);
+        setStepFrame(nextStepFrame);
+      }
       sendRealtimeMove(next, hasDirectionalInput || !reachedTarget, nextDirection, activeZone.id, now);
 
       if (reachedTarget) {
@@ -3195,8 +3276,9 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     devicePerformance.reportAnimationFrame,
     interactionIntent,
     handleCollectCelebrationItem,
-    joystickVector,
+    joystickInputActive,
     mapPath,
+    motionStore,
     movementInitialDelayMs,
     movementStepIntervalMs,
     openSpot,
@@ -3559,28 +3641,56 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
         tileInputStateRef.current = null;
         return;
       }
+      if (portalTransitionRef.current || inputReleaseRequiredRef.current) return;
+
+      joystickVectorRef.current = vector;
+      tileInputStateRef.current = null;
+      if (!wasMoving) {
+        setJoystickVector(vector);
+        return;
+      }
+      if (joystickStopTimerRef.current !== null) {
+        window.clearTimeout(joystickStopTimerRef.current);
+      }
+      joystickStopTimerRef.current = window.setTimeout(() => {
+        setJoystickVector({ x: 0, y: 0 });
+        joystickWasMovingRef.current = false;
+        const settledMotion = motionStore.getSnapshot();
+        motionStore.update({ moving: false, stepFrame: neutralWalkFrame });
+        setPosition(settledMotion.position);
+        setDirection(settledMotion.direction);
+        setMoving(false);
+        resetWalkCycle();
+        sendRealtimeMove(
+          settledMotion.position,
+          false,
+          settledMotion.direction,
+          activeZone.id,
+          performance.now()
+        );
+        resumeNavigationAfterManualMove();
+      }, joystickDirectionHandoffDelayMs);
+      return;
     }
 
     if (portalTransitionRef.current || inputReleaseRequiredRef.current) return;
 
-    if (isMoving) {
-      if (!wasMoving) {
-        navigationResumeRef.current = portalIntentRef.current
+    if (!wasMoving) {
+      navigationResumeRef.current = portalIntentRef.current
+        ? {
+          kind: "portal",
+          portal: portalIntentRef.current.portal,
+          remainingTiles: portalIntentRef.current.path.length
+        }
+        : interactionIntentRef.current
           ? {
-            kind: "portal",
-            portal: portalIntentRef.current.portal,
-            remainingTiles: portalIntentRef.current.path.length
+            kind: "interaction",
+            intent: interactionIntentRef.current,
+            remainingTiles: interactionIntentRef.current.path.length
           }
-          : interactionIntentRef.current
-            ? {
-              kind: "interaction",
-              intent: interactionIntentRef.current,
-              remainingTiles: interactionIntentRef.current.path.length
-            }
-            : target
-              ? { kind: "map", target, remainingTiles: mapPath.length }
-              : null;
-      }
+          : target
+            ? { kind: "map", target, remainingTiles: mapPath.length }
+            : null;
       if (!navigationResumeRef.current) {
         setPendingJourneyGuideId(null);
         setActiveJourneyGuideId(null);
@@ -3589,25 +3699,14 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
       setActiveNpcDialogue(null);
       setPortalIntent(null);
       setInteractionIntent(null);
-    }
-    setJoystickVector(vector);
-
-    if (isMoving) {
-      joystickWasMovingRef.current = true;
       setTarget(null);
       targetStepAtRef.current = null;
-      directionRef.current = directionFromVector(vector);
-      return;
+      setMoving(true);
     }
-
-    joystickWasMovingRef.current = false;
-    tileInputStateRef.current = null;
-    if (wasMoving) {
-      setMoving(false);
-      resetWalkCycle();
-      sendRealtimeMove(positionRef.current, false, directionRef.current, activeZone.id, performance.now());
-      resumeNavigationAfterManualMove();
-    }
+    setJoystickVector(vector);
+    joystickWasMovingRef.current = true;
+    directionRef.current = directionFromVector(vector);
+    motionStore.update({ direction: directionRef.current, moving: true });
   }
 
   const completedJourneyIds = new Set(journeyProgress.completedIds);
@@ -4313,7 +4412,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     companionZoneGraceUntilRef.current = 0;
     setCompanionRejoinZoneId(null);
     if (companionRole !== "follower" || companionRendezvous) return;
-    if (portalTransition || interactionIntent || portalIntent || hasJoystickMovement(joystickVector)) return;
+    if (portalTransition || interactionIntent || portalIntent || joystickInputActive) return;
     const companionPoint = snapToGrid({ x: activeCompanion.x, y: activeCompanion.y }, activeZone);
     const fullPath = findTilePath(activeZone, positionRef.current, companionPoint);
     if (!fullPath) {
@@ -4344,7 +4443,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     activeCompanion?.zoneId,
     activeZone,
     interactionIntent,
-    joystickVector,
+    joystickInputActive,
     portalIntent,
     portalTransition,
     realtimeStatus,
@@ -4928,6 +5027,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
           onClick={handleMapClick}
         >
           <div
+            ref={mapStageRef}
             className={`world-map__stage${loadedBackgroundZoneId === activeZone.id ? " world-map__stage--background-loaded" : ""}`}
             aria-label={`${activeZone.label} 지도`}
             data-zone={activeZone.id}
@@ -5305,28 +5405,13 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
                 </div>
               );
             })}
-            <div
-              className="world-player player"
-              aria-label={profile.nickname}
-              style={{
-                left: position.x,
-                top: position.y,
-                zIndex: worldDepth(position.y),
-                ...worldCharacterAnchorStyle(profile.appearance, window.devicePixelRatio)
-              }}
-            >
-              {localReaction?.zoneId === activeZone.id ? (
-                <GuestReactionBubble reaction={localReaction.reaction} guestName={profile.nickname} />
-              ) : null}
-              <CharacterSprite
-                appearance={profile.appearance}
-                direction={direction}
-                moving={moving}
-                stepFrame={stepFrame}
-                label={`${profile.nickname} 캐릭터`}
-              />
-              <span>{profile.nickname}</span>
-            </div>
+            <WorldLocalPlayer
+              appearance={profile.appearance}
+              nickname={profile.nickname}
+              motionStore={motionStore}
+              activeZoneId={activeZone.id}
+              reaction={localReaction}
+            />
           </div>
 
           {activeWorldPropMomentEntry ? (

@@ -127,6 +127,10 @@ function advanceAnimation(now: number) {
   act(() => callbacks.forEach((callback) => callback(now)));
 }
 
+function finishJoystickRelease() {
+  act(() => vi.advanceTimersByTime(100));
+}
+
 function moveWithKeyboard(control: HTMLElement, key: string, tileCount: number) {
   fireEvent.keyDown(control, { key });
   for (let index = 0; index < tileCount; index += 1) {
@@ -383,8 +387,27 @@ describe("GameWorld", () => {
     expect(sprite).toHaveAttribute("data-walk-frame", "1");
 
     fireEvent.keyUp(joystick, { key: "ArrowLeft" });
+    finishJoystickRelease();
     expect(sprite).toHaveAttribute("data-moving", "false");
     expect(sprite).toHaveAttribute("data-walk-frame", "1");
+  });
+
+  it("keeps the isolated motion loop active across an immediate keyboard direction handoff", () => {
+    render(<GameWorld profile={profile} />);
+    const sprite = screen.getByLabelText("하객1 캐릭터");
+    const joystick = screen.getByLabelText("가상 조이스틱");
+
+    fireEvent.keyDown(joystick, { key: "ArrowRight" });
+    advanceAnimation(0);
+    fireEvent.keyUp(joystick, { key: "ArrowRight" });
+    fireEvent.keyDown(joystick, { key: "ArrowLeft" });
+    finishJoystickRelease();
+
+    expect(sprite).toHaveAttribute("data-moving", "true");
+
+    fireEvent.keyUp(joystick, { key: "ArrowLeft" });
+    finishJoystickRelease();
+    expect(sprite).toHaveAttribute("data-moving", "false");
   });
 
   it("plays footstep haptics only on right-foot and left-foot landing frames", () => {
@@ -1166,6 +1189,7 @@ describe("GameWorld", () => {
     fireEvent.keyDown(joystick, { key: "ArrowLeft" });
     advanceAnimation(0);
     fireEvent.keyUp(joystick, { key: "ArrowLeft" });
+    finishJoystickRelease();
 
     expect(directionsSpot).toHaveClass("world-spot--target");
     expect(screen.getByText("오시는 길까지 경로를 다시 찾았어요")).toBeInTheDocument();
@@ -1677,6 +1701,7 @@ describe("GameWorld", () => {
     fireEvent.keyDown(joystick, { key: "ArrowLeft" });
     advanceAnimation(240);
     fireEvent.keyUp(joystick, { key: "ArrowLeft" });
+    finishJoystickRelease();
 
     expect(screen.getByLabelText("우리 집 지도")).toBeInTheDocument();
     expect(screen.getByText("동네로 나가기까지 경로를 다시 찾았어요")).toBeInTheDocument();
@@ -2990,6 +3015,7 @@ describe("GameWorld", () => {
     expect(hud).not.toHaveAttribute("data-auto-hidden");
 
     fireEvent.keyUp(joystick, { key: "ArrowRight" });
+    finishJoystickRelease();
     advanceAnimation(300);
     expect(hud).not.toHaveAttribute("data-density", "moving");
   });
