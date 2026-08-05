@@ -129,9 +129,9 @@ test("mobile HUD rectangle audit catches expanded tool collisions", () => {
 
 test("landscape HUD text audit rejects clipped zone and destination labels", () => {
   assert.deepEqual(auditHudTextContainment([
-    { id: "현재 구역", text: "우리 집", clippedInline: false, clippedBlock: false },
-    { id: "다음 목적지", text: "지하철역", clippedInline: true, clippedBlock: false }
-  ]), ["다음 목적지 문구 잘림"]);
+    { id: "현재 구역", text: "우리 집", clippedInline: false, clippedBlock: false, lineCount: 1, maxLines: 2 },
+    { id: "다음 목적지", text: "지하철역", clippedInline: true, clippedBlock: false, lineCount: 3, maxLines: 2 }
+  ]), ["다음 목적지 문구 잘림", "다음 목적지 문구 과도한 줄바꿈"]);
 });
 
 test("world label audit accepts priority-hidden labels and rejects visible collisions", () => {

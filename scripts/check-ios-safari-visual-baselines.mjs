@@ -248,18 +248,24 @@ async function captureLandscapeMetrics(state) {
     const right = viewport.offsetLeft + viewport.visualWidth - safeArea.right;
     const bottom = viewport.offsetTop + viewport.visualHeight - safeArea.bottom;
     const hudText = [
-      ["current-zone", ".world-zone-summary strong"],
-      ["guidance-toggle", ".world-hud__tools-toggle > span"],
-      ["next-destination", ".world-destination-guide strong"]
-    ].flatMap(([id, selector]) => {
+      ["current-zone", ".world-zone-summary strong", 2],
+      ["guidance-toggle", ".world-hud__tools-toggle > span", 1],
+      ["next-destination", ".world-destination-guide strong", 2]
+    ].flatMap(([id, selector, maxLines]) => {
       const element = document.querySelector(selector);
       if (!(element instanceof HTMLElement)) return [];
       const style = getComputedStyle(element);
+      const lineHeight = Number.parseFloat(style.lineHeight);
+      const lineCount = lineHeight > 0
+        ? Math.max(1, Math.round(element.getBoundingClientRect().height / lineHeight))
+        : 1;
       return [{
         id,
         text: element.textContent?.trim() ?? "",
         clippedInline: style.overflowX !== "visible" && element.scrollWidth > element.clientWidth + 1,
-        clippedBlock: style.overflowY !== "visible" && element.scrollHeight > element.clientHeight + 1
+        clippedBlock: style.overflowY !== "visible" && element.scrollHeight > element.clientHeight + 1,
+        lineCount,
+        maxLines
       }];
     });
     return {
@@ -270,7 +276,9 @@ async function captureLandscapeMetrics(state) {
       horizontalOverflow: document.documentElement.scrollWidth > innerWidth + 1,
       visibleDialogs,
       hudText,
-      textContained: hudText.every(({ clippedInline, clippedBlock }) => !clippedInline && !clippedBlock),
+      textContained: hudText.every(({ clippedInline, clippedBlock, lineCount, maxLines }) => (
+        !clippedInline && !clippedBlock && lineCount <= maxLines
+      )),
       controls,
       controlsContained: controls.every(({ rect }) => (
         rect.x >= left - 2

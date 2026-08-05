@@ -276,9 +276,15 @@ export function auditMobileHudRectangles(rectangles, viewport, overlapTolerance 
 }
 
 export function auditHudTextContainment(entries) {
-  return entries.flatMap(({ id, text, clippedInline, clippedBlock }) => (
-    text && (clippedInline || clippedBlock) ? [`${id} 문구 잘림`] : []
-  ));
+  return entries.flatMap(({ id, text, clippedInline, clippedBlock, lineCount, maxLines }) => {
+    if (!text) return [];
+    const issues = [];
+    if (clippedInline || clippedBlock) issues.push(`${id} 문구 잘림`);
+    if (Number.isFinite(lineCount) && Number.isFinite(maxLines) && lineCount > maxLines) {
+      issues.push(`${id} 문구 과도한 줄바꿈`);
+    }
+    return issues;
+  });
 }
 
 export function auditInvitationQualityMetrics(metrics) {
@@ -344,21 +350,27 @@ async function visibleRectangles(page) {
 
 async function hudTextContainment(page) {
   return page.evaluate(() => [
-    ["현재 구역", ".world-zone-summary strong"],
-    ["안내 버튼", ".world-hud__tools-toggle > span"],
-    ["다음 목적지", ".world-destination-guide strong"]
-  ].flatMap(([id, selector]) => {
+    ["현재 구역", ".world-zone-summary strong", 2],
+    ["안내 버튼", ".world-hud__tools-toggle > span", 1],
+    ["다음 목적지", ".world-destination-guide strong", 2]
+  ].flatMap(([id, selector, maxLines]) => {
     const element = document.querySelector(selector);
     if (!(element instanceof HTMLElement)) return [];
     const style = getComputedStyle(element);
     if (style.display === "none" || style.visibility === "hidden") return [];
     const clipsInline = style.overflowX !== "visible";
     const clipsBlock = style.overflowY !== "visible";
+    const lineHeight = Number.parseFloat(style.lineHeight);
+    const lineCount = lineHeight > 0
+      ? Math.max(1, Math.round(element.getBoundingClientRect().height / lineHeight))
+      : 1;
     return [{
       id,
       text: element.textContent?.trim() ?? "",
       clippedInline: clipsInline && element.scrollWidth > element.clientWidth + 1,
       clippedBlock: clipsBlock && element.scrollHeight > element.clientHeight + 1,
+      lineCount,
+      maxLines,
       client: { width: element.clientWidth, height: element.clientHeight },
       scroll: { width: element.scrollWidth, height: element.scrollHeight }
     }];
@@ -735,6 +747,14 @@ async function runMobileHudCollisionMatrix({ browser, url, outputDir }) {
         version: 1,
         completed: true,
         completedAt: new Date().toISOString()
+      }));
+      localStorage.setItem("wedding-game:world-session:v1", JSON.stringify({
+        version: 1,
+        zoneId: "home",
+        position: { x: 285, y: 555 },
+        direction: "down",
+        guideCheckpointId: null,
+        updatedAt: new Date().toISOString()
       }));
     });
     try {

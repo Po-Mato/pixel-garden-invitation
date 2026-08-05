@@ -471,6 +471,17 @@
       calc(9px + env(safe-area-inset-left));
   }
 
+  /* Context density is intentionally compact in portrait. In a landscape safe-area
+     rail, shrinking it again leaves only one Korean glyph per line. */
+  .game-world .world-hud[data-density="context"] {
+    width: 100%;
+    padding:
+      calc(10px + env(safe-area-inset-top))
+      9px
+      calc(10px + env(safe-area-inset-bottom))
+      calc(9px + env(safe-area-inset-left));
+  }
+
   .world-hud__status {
     grid-template-columns: minmax(0, 1fr);
     gap: 7px;
