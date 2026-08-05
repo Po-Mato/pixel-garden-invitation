@@ -1,7 +1,7 @@
 {
   "version": 3,
-  "approvedAt": "2026-08-05T05:24:46.866Z",
-  "reason": "12종 캐릭터 대비, 다중 화면 라벨, iOS 200% 스크롤 기준선 확장",
+  "approvedAt": "2026-08-05T10:49:05.157Z",
+  "reason": "캐릭터 중앙 추적 및 홈 시작 위치 보정",
   "pixelThreshold": 36,
   "maxChangedRatio": 0.015,
   "profileMaxChangedRatioOverrides": {
@@ -16,7 +16,7 @@
       "state": "game",
       "width": 360,
       "height": 780,
-      "sha256": "a7e6101ac1c9ab20ded6b6ad4aafba0c50ed4b7cc7214fadeada0e898083aace"
+      "sha256": "0deeb5f454e6c148a021f044ed42f75a807cb2e5f95d4490cba4f555b6c1bd6a"
     },
     {
       "profileId": "galaxy-s23-font-150",
@@ -24,7 +24,7 @@
       "state": "directions-xlarge",
       "width": 360,
       "height": 780,
-      "sha256": "14fceb2f0a5768cf51445a78680ce85cd543d32a803b7f2ae164445676309f98"
+      "sha256": "1a1f52ef042646ea64ff9b485117878e9340d0cd8af85b9a1a6ca054c44bc710"
     },
     {
       "profileId": "galaxy-s23-font-150",
@@ -32,7 +32,7 @@
       "state": "directions-xlarge-middle",
       "width": 360,
       "height": 780,
-      "sha256": "86b26aa5168af51da6e44ce083270c47c405b4b03fd642a8df3e50c224cfa185"
+      "sha256": "3ddffd134859b0a2a3ab7eb49a7bcd6623cee3030e69faff5a4ba2d4a8c00a4d"
     },
     {
       "profileId": "galaxy-s23-font-150",
@@ -40,7 +40,7 @@
       "state": "directions-xlarge-bottom",
       "width": 360,
       "height": 780,
-      "sha256": "0f3a5ff9b6be5845f1eddde38fc1eb1782a55c3154b3ef6c7a31fb1ca6a06247"
+      "sha256": "aa0fe91016514503c6ba34aaacaa2416bb42687c4b54aa26d6bee4d4007599a2"
     },
     {
       "profileId": "iphone-15-dynamic-type",
@@ -48,7 +48,7 @@
       "state": "game",
       "width": 393,
       "height": 852,
-      "sha256": "c03c0d71c8da5e0cd8e5ae356af62c57e0f6ea94bd530f0c718de6362813eee6"
+      "sha256": "abbdd53373624ca64565e01ec4e2158cfed443b908dce307526de4bac742f149"
     },
     {
       "profileId": "iphone-15-dynamic-type",
@@ -56,7 +56,7 @@
       "state": "directions-xlarge",
       "width": 393,
       "height": 852,
-      "sha256": "95c8bb5bbe65f51a65b3e2cdd9f086a2d9c0caaae166258273d3b7766f256f2d"
+      "sha256": "978b0a21c32a4785ff4e672f2773ec41dc166f53ff9d1df15dd52c3f84cb3330"
     },
     {
       "profileId": "iphone-15-dynamic-type",
@@ -64,7 +64,7 @@
       "state": "directions-xlarge-middle",
       "width": 393,
       "height": 852,
-      "sha256": "18c6ec207b59bc4a96d6aaa15afd566b348a2b47b400d901fd09a06c26df86e2"
+      "sha256": "d1694a483fd3a6c8323cde829901f04ba1590b4e9f0d62693d46b2cf6644b0ab"
     },
     {
       "profileId": "iphone-15-dynamic-type",
@@ -72,7 +72,7 @@
       "state": "directions-xlarge-bottom",
       "width": 393,
       "height": 852,
-      "sha256": "18c6ec207b59bc4a96d6aaa15afd566b348a2b47b400d901fd09a06c26df86e2"
+      "sha256": "d1694a483fd3a6c8323cde829901f04ba1590b4e9f0d62693d46b2cf6644b0ab"
     },
     {
       "profileId": "iphone-15-webkit-dynamic-type",
@@ -80,7 +80,7 @@
       "state": "game",
       "width": 393,
       "height": 852,
-      "sha256": "531f4c531a28f8874125cbca5e626945b3029894ebdbb2476e1646e49742c40e"
+      "sha256": "147f08f420b704633a4d8df705aa2b406da105e33ce943df3ddaeac4de177f1c"
     },
     {
       "profileId": "iphone-15-webkit-dynamic-type",
@@ -88,7 +88,7 @@
       "state": "directions-xlarge",
       "width": 393,
       "height": 852,
-      "sha256": "8f149d467181a455cd32def056639619dd194ac4a6157b01e7cd2a34c028dc5f"
+      "sha256": "9348f58000cd8242fc7409cafd5aa53f4d59e133245032bcedd2cf159bd04274"
     },
     {
       "profileId": "iphone-15-webkit-dynamic-type",
@@ -96,7 +96,7 @@
       "state": "directions-xlarge-middle",
       "width": 393,
       "height": 852,
-      "sha256": "8f149d467181a455cd32def056639619dd194ac4a6157b01e7cd2a34c028dc5f"
+      "sha256": "9348f58000cd8242fc7409cafd5aa53f4d59e133245032bcedd2cf159bd04274"
     },
     {
       "profileId": "iphone-15-webkit-dynamic-type",
@@ -104,7 +104,7 @@
       "state": "directions-xlarge-bottom",
       "width": 393,
       "height": 852,
-      "sha256": "8f149d467181a455cd32def056639619dd194ac4a6157b01e7cd2a34c028dc5f"
+      "sha256": "9348f58000cd8242fc7409cafd5aa53f4d59e133245032bcedd2cf159bd04274"
     },
     {
       "profileId": "iphone-15-webkit-text-200",
@@ -112,7 +112,7 @@
       "state": "game",
       "width": 393,
       "height": 852,
-      "sha256": "245cb234d8f733ae8833880df73d839bc0eff0f45e0fdeca4ecda5f60029bbdb"
+      "sha256": "9ac1df70373be43efc1bc1edf81c1e8ccda06e877fd76462da0f835fce989286"
     },
     {
       "profileId": "iphone-15-webkit-text-200",
@@ -120,7 +120,7 @@
       "state": "directions-xlarge",
       "width": 393,
       "height": 852,
-      "sha256": "bbaeb148a9bd211b620617af857d447512e1c6294841fe39a925f61dd144acf7"
+      "sha256": "ba0bf794921bc0edaec0a2564b5fb3d4a5224f19cfafd91cab23d94b3a3b281b"
     },
     {
       "profileId": "iphone-15-webkit-text-200",
@@ -128,7 +128,7 @@
       "state": "directions-xlarge-middle",
       "width": 393,
       "height": 852,
-      "sha256": "6d766ad570420a58982d93a90fed4782615ebf703c5829e82ca706aaddd5414e"
+      "sha256": "2abe2cfdc29004211c51266f3ab08fd895e3d1aadf2aa327c80e6d3161c180ec"
     },
     {
       "profileId": "iphone-15-webkit-text-200",
@@ -136,7 +136,7 @@
       "state": "directions-xlarge-bottom",
       "width": 393,
       "height": 852,
-      "sha256": "049cdaa2b4efd8897f6aab8c1e3756f753fcbfac4bbaa8046f7e240dfc87b694"
+      "sha256": "11a63c641700b0cc5dd95a8086d3f2e30b2ccb6f71625db9e3fa572cc5b735e1"
     }
   ]
 }

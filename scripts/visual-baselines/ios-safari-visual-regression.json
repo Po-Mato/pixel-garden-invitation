@@ -1,7 +1,7 @@
 {
   "version": 1,
-  "approvedAt": "2026-08-05T10:01:01.275Z",
-  "reason": "iPhone 16 Pro iOS 18.5 Mobile Safari portrait 200% directions and dialog-free landscape safe-area review",
+  "approvedAt": "2026-08-05T10:51:28.042Z",
+  "reason": "캐릭터 중앙 추적 및 홈 시작 위치 보정",
   "profile": {
     "id": "iphone-16-pro-ios-18-5-safari",
     "deviceName": "iPhone 16 Pro",
@@ -9,7 +9,7 @@
     "requiredDirectionsScroll": 160
   },
   "capture": {
-    "generatedAt": "2026-08-05T09:48:30.778Z",
+    "generatedAt": "2026-08-05T10:44:43.145Z",
     "profile": {
       "id": "iphone-16-pro-ios-18-5-safari",
       "deviceName": "iPhone 16 Pro",
@@ -188,59 +188,10 @@
       },
       "chromeViewportDelta": 0
     },
-    "comparisons": [
-      {
-        "state": "game",
-        "changedPixels": 2323,
-        "changedRatio": 0.000734630938872887,
-        "meanPixelDifference": 0.09264603754681967,
-        "pixelCount": 3162132,
-        "passed": true,
-        "maxChangedRatio": 0.015,
-        "baselinePath": "/Users/runner/work/pixel-garden-invitation/pixel-garden-invitation/scripts/visual-baselines/ios-safari-iphone-16-pro-ios-18-5-safari-game.webp",
-        "currentPath": "/Users/runner/work/pixel-garden-invitation/pixel-garden-invitation/.superpowers/visual-regression/ios-safari/ios-safari-iphone-16-pro-ios-18-5-safari-game-current.png",
-        "diffPath": "/Users/runner/work/pixel-garden-invitation/pixel-garden-invitation/.superpowers/visual-regression/ios-safari/ios-safari-iphone-16-pro-ios-18-5-safari-game-diff.png"
-      },
-      {
-        "state": "directions-text-200",
-        "changedPixels": 2323,
-        "changedRatio": 0.000734630938872887,
-        "meanPixelDifference": 0.09264603754681967,
-        "pixelCount": 3162132,
-        "passed": true,
-        "maxChangedRatio": 0.015,
-        "baselinePath": "/Users/runner/work/pixel-garden-invitation/pixel-garden-invitation/scripts/visual-baselines/ios-safari-iphone-16-pro-ios-18-5-safari-directions-text-200.webp",
-        "currentPath": "/Users/runner/work/pixel-garden-invitation/pixel-garden-invitation/.superpowers/visual-regression/ios-safari/ios-safari-iphone-16-pro-ios-18-5-safari-directions-text-200-current.png",
-        "diffPath": "/Users/runner/work/pixel-garden-invitation/pixel-garden-invitation/.superpowers/visual-regression/ios-safari/ios-safari-iphone-16-pro-ios-18-5-safari-directions-text-200-diff.png"
-      },
-      {
-        "state": "directions-text-200-middle",
-        "changedPixels": 2323,
-        "changedRatio": 0.000734630938872887,
-        "meanPixelDifference": 0.09264603754681967,
-        "pixelCount": 3162132,
-        "passed": true,
-        "maxChangedRatio": 0.015,
-        "baselinePath": "/Users/runner/work/pixel-garden-invitation/pixel-garden-invitation/scripts/visual-baselines/ios-safari-iphone-16-pro-ios-18-5-safari-directions-text-200-middle.webp",
-        "currentPath": "/Users/runner/work/pixel-garden-invitation/pixel-garden-invitation/.superpowers/visual-regression/ios-safari/ios-safari-iphone-16-pro-ios-18-5-safari-directions-text-200-middle-current.png",
-        "diffPath": "/Users/runner/work/pixel-garden-invitation/pixel-garden-invitation/.superpowers/visual-regression/ios-safari/ios-safari-iphone-16-pro-ios-18-5-safari-directions-text-200-middle-diff.png"
-      },
-      {
-        "state": "directions-text-200-bottom",
-        "changedPixels": 2323,
-        "changedRatio": 0.000734630938872887,
-        "meanPixelDifference": 0.09264603754681967,
-        "pixelCount": 3162132,
-        "passed": true,
-        "maxChangedRatio": 0.015,
-        "baselinePath": "/Users/runner/work/pixel-garden-invitation/pixel-garden-invitation/scripts/visual-baselines/ios-safari-iphone-16-pro-ios-18-5-safari-directions-text-200-bottom.webp",
-        "currentPath": "/Users/runner/work/pixel-garden-invitation/pixel-garden-invitation/.superpowers/visual-regression/ios-safari/ios-safari-iphone-16-pro-ios-18-5-safari-directions-text-200-bottom-current.png",
-        "diffPath": "/Users/runner/work/pixel-garden-invitation/pixel-garden-invitation/.superpowers/visual-regression/ios-safari/ios-safari-iphone-16-pro-ios-18-5-safari-directions-text-200-bottom-diff.png"
-      }
-    ],
+    "comparisons": [],
     "player": {
-      "x": 157,
-      "y": 457.5,
+      "x": 163,
+      "y": 331.5,
       "width": 76,
       "height": 111,
       "layerCount": 1,
@@ -266,42 +217,42 @@
       "state": "game",
       "width": 1206,
       "height": 2622,
-      "sha256": "2a7cd6b60cf7c0bb3c6dbaeb1a071f9f83d51a9909f75c872a13ed0375e01dbe"
+      "sha256": "d536d574d7331909bf58fc7a33fe34bd4bc6828ea9c0b859a2e2ff0fd48813b3"
     },
     {
       "profileId": "iphone-16-pro-ios-18-5-safari",
       "state": "directions-text-200",
       "width": 1206,
       "height": 2622,
-      "sha256": "00a9a4875e4664ac8915fbfb3c7b60b496cfc34e9575f07c121b23f0920c9d97"
+      "sha256": "2384b63062f03de085844a49f6971e8c1113536bd152c1855a8f04f7bc7994bf"
     },
     {
       "profileId": "iphone-16-pro-ios-18-5-safari",
       "state": "directions-text-200-middle",
       "width": 1206,
       "height": 2622,
-      "sha256": "f69270b195769aaab803b40fb590b8b71c2fa20db266d95e7aa126652a814df9"
+      "sha256": "3f797c8341bfb0178f538e69e689b4b6586d5e448b1c705bcb20c205fd15f3bd"
     },
     {
       "profileId": "iphone-16-pro-ios-18-5-safari",
       "state": "directions-text-200-bottom",
       "width": 1206,
       "height": 2622,
-      "sha256": "cc88b242e59d5503b5d01dbb1d62b18bbf17c6a4ce60e9d6952f2e1c5ed3f995"
+      "sha256": "3a1bb91320538476dc23b09f60f5fc22c0d7cc9c574e2ca378f996c0161efa6e"
     },
     {
       "profileId": "iphone-16-pro-ios-18-5-safari",
       "state": "game-landscape-chrome-expanded",
       "width": 2622,
       "height": 1206,
-      "sha256": "7b4a3f340d4e71b5a4318b6f6949615c603f0d036db0b1af5e3fc959bd90674c"
+      "sha256": "e5a35fe9621e669bae5b95f076ba557eaddce6c43ddbfecbe3910718839042f5"
     },
     {
       "profileId": "iphone-16-pro-ios-18-5-safari",
       "state": "game-landscape-chrome-collapsed",
       "width": 2622,
       "height": 1206,
-      "sha256": "e2e4364df298a8edebdd70fcd86533bcfe0b97af9804c522e068a9538efd0994"
+      "sha256": "44a34a3fe35339a1d2392395cfb30e62d83b740d8906c3746edaa56dc4196993"
     }
   ]
 }
