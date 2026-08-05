@@ -174,22 +174,13 @@ function advancePortalTransition() {
 }
 
 function walkHomeToPortalEntrance(joystick: HTMLElement) {
-  const move = (key: string, times: number[]) => {
-    fireEvent.keyDown(joystick, { key });
-    times.forEach(advanceAnimation);
-    fireEvent.keyUp(joystick, { key });
-  };
-
-  move("ArrowLeft", [0, 300]);
-  move("ArrowUp", [600, 900, 1140, 1380, 1620, 1860, 2100, 2340, 2580]);
-  move("ArrowRight", [2880, 3180]);
   fireEvent.keyDown(joystick, { key: "ArrowUp" });
-  [3420, 3720, 3960, 4200, 4440].forEach(advanceAnimation);
+  [0, 300, 600, 900, 1200, 1500, 1800, 2100].forEach(advanceAnimation);
 }
 
 function walkHomeToPortalWithHeldUp(joystick: HTMLElement) {
   walkHomeToPortalEntrance(joystick);
-  advanceAnimation(4680);
+  advanceAnimation(2400);
 }
 
 function walkHomeToPortalRightEdge(joystick: HTMLElement) {
@@ -199,11 +190,9 @@ function walkHomeToPortalRightEdge(joystick: HTMLElement) {
     fireEvent.keyUp(joystick, { key });
   };
 
-  move("ArrowLeft", [0, 300]);
-  move("ArrowUp", [600, 900, 1140, 1380, 1620, 1860, 2100, 2340, 2580]);
-  move("ArrowRight", [2880, 3180, 3420]);
+  move("ArrowRight", [0]);
   fireEvent.keyDown(joystick, { key: "ArrowUp" });
-  [3660, 3960, 4200, 4440, 4680, 4920].forEach(advanceAnimation);
+  [300, 600, 900, 1200, 1500, 1800, 2100, 2400, 2700].forEach(advanceAnimation);
 }
 
 function finishPortalFadeOut() {
@@ -367,30 +356,30 @@ describe("GameWorld", () => {
     const sprite = screen.getByLabelText("하객1 캐릭터");
     const joystick = screen.getByLabelText("가상 조이스틱");
 
-    expect(player).toHaveStyle({ left: "285px", top: "555px" });
+    expect(player).toHaveStyle({ left: "285px", top: "375px" });
     expect(sprite).toHaveAttribute("data-moving", "false");
     expect(sprite).toHaveAttribute("data-walk-frame", "1");
 
     fireEvent.keyDown(joystick, { key: "ArrowLeft" });
     advanceAnimation(0);
-    expect(player).toHaveStyle({ left: "255px", top: "555px" });
+    expect(player).toHaveStyle({ left: "255px", top: "375px" });
     expect(sprite).toHaveAttribute("data-moving", "true");
     expect(sprite).toHaveAttribute("data-walk-frame", "0");
 
     advanceAnimation(299);
-    expect(player).toHaveStyle({ left: "255px", top: "555px" });
+    expect(player).toHaveStyle({ left: "255px", top: "375px" });
     expect(sprite).toHaveAttribute("data-walk-frame", "0");
 
     advanceAnimation(300);
-    expect(player).toHaveStyle({ left: "225px", top: "555px" });
+    expect(player).toHaveStyle({ left: "225px", top: "375px" });
     expect(sprite).toHaveAttribute("data-walk-frame", "1");
 
     advanceAnimation(540);
-    expect(player).toHaveStyle({ left: "195px", top: "555px" });
+    expect(player).toHaveStyle({ left: "195px", top: "375px" });
     expect(sprite).toHaveAttribute("data-walk-frame", "2");
 
     advanceAnimation(780);
-    expect(player).toHaveStyle({ left: "165px", top: "555px" });
+    expect(player).toHaveStyle({ left: "165px", top: "375px" });
     expect(sprite).toHaveAttribute("data-walk-frame", "1");
 
     fireEvent.keyUp(joystick, { key: "ArrowLeft" });
@@ -653,7 +642,7 @@ describe("GameWorld", () => {
     fireEvent.click(getControl(), { clientX: 350, clientY: 450 });
     advanceAnimation(0);
 
-    expect(player).toHaveStyle({ left: "285px", top: "555px" });
+    expect(player).toHaveStyle({ left: "285px", top: "375px" });
   });
 
   it("당일 퀵 안내를 열 때 이동을 멈추고 지도 클릭을 발생시키지 않는다", () => {
@@ -750,7 +739,7 @@ describe("GameWorld", () => {
 
     fireEvent.click(map, { clientX: 265, clientY: 375 });
     advanceAnimation(0);
-    expect(player).not.toHaveStyle({ left: "285px", top: "555px" });
+    expect(player).not.toHaveStyle({ left: "285px", top: "375px" });
 
     fireEvent.click(screen.getByRole("button", { name: "초대장 메뉴" }));
     fireEvent.click(within(screen.getByRole("dialog", { name: "초대장 바로가기" })).getByRole("button", { name: "답변하기" }));
@@ -807,7 +796,7 @@ describe("GameWorld", () => {
     fireEvent.click(map, { clientX: 265, clientY: 375 });
     advanceAnimation(0);
     const pausedAt = { left: player.style.left, top: player.style.top };
-    expect(pausedAt).not.toEqual({ left: "285px", top: "555px" });
+    expect(pausedAt).not.toEqual({ left: "285px", top: "375px" });
 
     fireEvent.click(screen.getByRole("button", { name: "초대장 메뉴" }));
     fireEvent.click(within(screen.getByRole("dialog", { name: "초대장 바로가기" })).getByRole("button", { name: "사진 보기" }));
@@ -944,7 +933,7 @@ describe("GameWorld", () => {
 
     expect(screen.getByRole("dialog", { name: "캘린더 저장" })).toBeInTheDocument();
     expect(menu).toHaveAttribute("aria-hidden", "true");
-    expect(player).toHaveStyle({ left: "285px", top: "555px" });
+    expect(player).toHaveStyle({ left: "285px", top: "375px" });
   });
 
   it("opens directions from the invitation detail without moving the player", async () => {
@@ -1244,7 +1233,7 @@ describe("GameWorld", () => {
     fireEvent.click(screen.getByRole("button", { name: "동네로 나가기" }));
     advanceAnimation(0);
     const pausedAt = { left: player.style.left, top: player.style.top };
-    expect(pausedAt).not.toEqual({ left: "285px", top: "555px" });
+    expect(pausedAt).not.toEqual({ left: "285px", top: "375px" });
 
     fireEvent.click(screen.getByRole("button", { name: "초대장 메뉴" }));
     fireEvent.click(within(screen.getByRole("dialog", { name: "초대장 바로가기" })).getByRole("button", { name: "오시는 길" }));
@@ -1266,7 +1255,7 @@ describe("GameWorld", () => {
     const joystick = screen.getByLabelText("가상 조이스틱");
 
     fireEvent.click(screen.getByRole("button", { name: "동네로 나가기" }));
-    Array.from({ length: 14 }, (_, index) => index * 240).forEach(advanceAnimation);
+    Array.from({ length: 8 }, (_, index) => index * 240).forEach(advanceAnimation);
     expect(player).toHaveStyle({ left: "285px", top: "135px" });
     const staleTick = [...animationFrames.values()][0];
     expect(staleTick).toBeDefined();
@@ -1300,7 +1289,7 @@ describe("GameWorld", () => {
     fireEvent.click(map, { clientX: 265, clientY: 375 });
     advanceAnimation(0);
     const pausedAt = { left: player.style.left, top: player.style.top };
-    expect(pausedAt).not.toEqual({ left: "285px", top: "555px" });
+    expect(pausedAt).not.toEqual({ left: "285px", top: "375px" });
 
     fireEvent.click(screen.getByRole("button", { name: "초대장 메뉴" }));
     fireEvent.click(within(screen.getByRole("dialog", { name: "초대장 바로가기" })).getByRole("button", { name: "길 찾기" }));
@@ -1327,7 +1316,7 @@ describe("GameWorld", () => {
     fireEvent.keyDown(joystick, { key: "ArrowRight" });
     advanceAnimation(0);
     const pausedAt = { left: player.style.left, top: player.style.top };
-    expect(pausedAt).toEqual({ left: "315px", top: "555px" });
+    expect(pausedAt).toEqual({ left: "315px", top: "375px" });
 
     fireEvent.click(getDirectionsWorldSpot());
 
@@ -1362,11 +1351,11 @@ describe("GameWorld", () => {
     fireEvent.keyDown(joystick, { key: "ArrowRight" });
     advanceAnimation(0);
     const priorMove = JSON.parse(socket.sentMessages.at(-1) ?? "null");
-    expect(priorMove).toMatchObject({ x: 315, y: 555, direction: "right", moving: true, zoneId: "home" });
+    expect(priorMove).toMatchObject({ x: 315, y: 375, direction: "right", moving: true, zoneId: "home" });
 
     fireEvent.keyDown(joystick, { key: "ArrowDown" });
     advanceAnimation(50);
-    expect(player).toHaveStyle({ left: "315px", top: "585px" });
+    expect(player).toHaveStyle({ left: "315px", top: "405px" });
     expect(socket.sentMessages).toHaveLength(1);
     const pausedAt = {
       x: Number.parseInt(player.style.left, 10),
@@ -1409,7 +1398,7 @@ describe("GameWorld", () => {
     act(() => socket.emit("open"));
     act(() => socket.emitJson({ type: "welcome", guestId: "guest_self", guests: [] }));
     const priorStop = JSON.parse(socket.sentMessages.at(-1) ?? "null");
-    expect(priorStop).toMatchObject({ x: 285, y: 555, moving: false, zoneId: "home" });
+    expect(priorStop).toMatchObject({ x: 285, y: 375, moving: false, zoneId: "home" });
     socket.sentMessages.length = 0;
 
     openDirectionsFromMenu();
@@ -1672,7 +1661,7 @@ describe("GameWorld", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "동네로 나가기" }));
     advanceAnimation(0);
-    fireEvent.click(map, { clientX: 265, clientY: 280 });
+    fireEvent.click(map, { clientX: 235, clientY: 280 });
     finishCurrentRoute();
 
     expect(screen.getByLabelText("우리 집 지도")).toBeInTheDocument();
@@ -2509,7 +2498,7 @@ describe("GameWorld", () => {
 
     expect(stage).toHaveStyle({ width: "600px", height: "720px" });
     expect(stage.style.transform).toContain("translate3d(");
-    expect(player).toHaveStyle({ left: "285px", top: "555px", zIndex: "1555" });
+    expect(player).toHaveStyle({ left: "285px", top: "375px", zIndex: "1375" });
   });
 
   it("keeps portal effects behind characters while information buttons stay above the map", () => {
@@ -2517,7 +2506,7 @@ describe("GameWorld", () => {
 
     const portal = screen.getByRole("button", { name: "동네로 나가기" });
     expect(portal).toHaveStyle({ zIndex: "1005" });
-    expect(screen.getByLabelText("하객1")).toHaveStyle({ zIndex: "1555" });
+    expect(screen.getByLabelText("하객1")).toHaveStyle({ zIndex: "1375" });
     expect(Number(portal.style.zIndex)).toBeLessThan(worldDepth(105 - 88));
     expect(getDirectionsWorldSpot()).toHaveStyle({ zIndex: "9000" });
   });
@@ -2579,13 +2568,13 @@ describe("GameWorld", () => {
     mockMapRect(map);
     const player = screen.getByLabelText("하객1");
 
-    fireEvent.click(map, { clientX: 265, clientY: 375 });
+    fireEvent.click(map, { clientX: 145, clientY: 280 });
     advanceAnimation(0);
-    expect(player).toHaveStyle({ left: "315px", top: "555px" });
+    expect(player).toHaveStyle({ left: "255px", top: "375px" });
     advanceAnimation(239);
-    expect(player).toHaveStyle({ left: "315px" });
+    expect(player).toHaveStyle({ left: "255px" });
     advanceAnimation(240);
-    expect(player).toHaveStyle({ left: "345px" });
+    expect(player).toHaveStyle({ left: "225px" });
   });
 
   it("keeps remote guests isolated to the active zone", () => {
@@ -2819,23 +2808,23 @@ describe("GameWorld", () => {
     act(() => socket.emitJson({
       type: "welcome",
       guestId: "guest_self",
-      guests: [serverGuest({ x: 315, y: 555 })]
+      guests: [serverGuest({ x: 315, y: 375 })]
     }));
     const joystick = screen.getByLabelText("가상 조이스틱");
     const player = screen.getByLabelText("하객1");
 
     fireEvent.keyDown(joystick, { key: "ArrowRight" });
     advanceAnimation(0);
-    expect(player).toHaveStyle({ left: "285px", top: "555px" });
+    expect(player).toHaveStyle({ left: "285px", top: "375px" });
     expect(screen.getByText("앞 타일에 다른 캐릭터가 있어 잠시 멈췄어요")).toBeInTheDocument();
 
     act(() => socket.emitJson({
       type: "guest_moved",
       guestId: "guest_remote",
-      position: { x: 345, y: 555, direction: "right", moving: true, seq: 1, zoneId: "home" }
+      position: { x: 345, y: 375, direction: "right", moving: true, seq: 1, zoneId: "home" }
     }));
     advanceAnimation(300);
-    expect(player).toHaveStyle({ left: "315px", top: "555px" });
+    expect(player).toHaveStyle({ left: "315px", top: "375px" });
   });
 
   it("renders remote guest movement with the same neutral-separated walk cycle", () => {
@@ -2888,7 +2877,7 @@ describe("GameWorld", () => {
     });
 
     advanceAnimation(0);
-    expect(player).toHaveStyle({ left: "315px", top: "555px" });
+    expect(player).toHaveStyle({ left: "315px", top: "375px" });
     expect(screen.getByRole("status", { name: "하객1님의 하트" })).toBeInTheDocument();
   });
 

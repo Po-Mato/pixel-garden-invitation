@@ -15,7 +15,6 @@ export type ViewPreferences = {
   miniMapRouteWeight: "standard" | "bold";
   routePatternEnhanced: boolean;
   gameMovementSpeed: "relaxed" | "normal" | "brisk";
-  cameraTracking: "steady" | "responsive";
   gameUiScale: "standard" | "large";
 };
 
@@ -39,7 +38,6 @@ export const defaultViewPreferences: ViewPreferences = {
   miniMapRouteWeight: "standard",
   routePatternEnhanced: false,
   gameMovementSpeed: "normal",
-  cameraTracking: "steady",
   gameUiScale: "standard"
 };
 
@@ -60,7 +58,6 @@ export const comfortableViewPreferences: ViewPreferences = {
   miniMapRouteWeight: "bold",
   routePatternEnhanced: true,
   gameMovementSpeed: "relaxed",
-  cameraTracking: "steady",
   gameUiScale: "large"
 };
 
@@ -101,7 +98,6 @@ export function isViewPreferences(value: unknown): value is ViewPreferences {
     && (candidate.miniMapRouteWeight === "standard" || candidate.miniMapRouteWeight === "bold")
     && typeof candidate.routePatternEnhanced === "boolean"
     && (candidate.gameMovementSpeed === "relaxed" || candidate.gameMovementSpeed === "normal" || candidate.gameMovementSpeed === "brisk")
-    && (candidate.cameraTracking === "steady" || candidate.cameraTracking === "responsive")
     && (candidate.gameUiScale === "standard" || candidate.gameUiScale === "large");
 }
 
@@ -152,7 +148,6 @@ function normalizeStoredPreferences(value: unknown): ViewPreferences | null {
     gameMovementSpeed: candidate.gameMovementSpeed === "relaxed" || candidate.gameMovementSpeed === "brisk"
       ? candidate.gameMovementSpeed
       : "normal",
-    cameraTracking: candidate.cameraTracking === "responsive" ? "responsive" : "steady",
     gameUiScale: candidate.gameUiScale === "large" ? "large" : "standard"
   };
 }
@@ -221,7 +216,7 @@ export function applyViewPreferences(
   else delete root.dataset.routePattern;
 
   root.dataset.gameMovementSpeed = preferences.gameMovementSpeed;
-  root.dataset.cameraTracking = preferences.cameraTracking;
+  delete root.dataset.cameraTracking;
   root.dataset.gameUiScale = preferences.gameUiScale;
 }
 

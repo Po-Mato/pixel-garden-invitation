@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  celebrationCollectibleRevealRadius,
   celebrationCollectiblesForZone,
   collectCelebrationItem,
   loadCelebrationCollection,
@@ -18,6 +19,9 @@ describe("celebrationCollectibles", () => {
       const items = celebrationCollectiblesForZone(zone);
       expect(items, zone.id).toHaveLength(3);
       expect(items.map(({ kind }) => kind)).toEqual(["petal", "ribbon", "star"]);
+      expect(items.every(({ point }) => (
+        Math.hypot(point.x - zone.spawn.x, point.y - zone.spawn.y) > celebrationCollectibleRevealRadius
+      )), zone.id).toBe(true);
     });
   });
 

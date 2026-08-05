@@ -196,7 +196,7 @@ describe("guest route world", () => {
   it("defines the v2 home layout, portal, and topiary depth asset", () => {
     const home = getWorldZone(gardenWorld, "home");
 
-    expect(home.spawn).toEqual({ x: 285, y: 555 });
+    expect(home.spawn).toEqual({ x: 285, y: 375 });
     expect(home.paths).toEqual([
       { id: "home-floor", kind: "floor", x: 90, y: 120, width: 420, height: 510 },
       { id: "home-entry", kind: "floor", x: 240, y: 60, width: 120, height: 120 }

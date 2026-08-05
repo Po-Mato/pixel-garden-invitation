@@ -1,11 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  cameraDeadZone,
-  computeCameraTransform,
-  computeTrackingCameraTransform,
-  screenToWorld,
-  snapCameraViewport
-} from "./camera";
+import { computeCameraTransform, screenToWorld, snapCameraViewport } from "./camera";
 
 describe("tracking camera", () => {
   it("snaps fractional layout measurements to a stable CSS-pixel viewport", () => {
@@ -107,7 +101,7 @@ describe("tracking camera", () => {
     expect(camera.y).toBe(expectedY);
   });
 
-  it("centers a scaled map axis that is smaller than the viewport", () => {
+  it("uses the free space around a smaller map to keep the player near center", () => {
     const camera = computeCameraTransform({
       player: { x: 30, y: 45 },
       viewport: { width: 390, height: 520 },
@@ -115,7 +109,9 @@ describe("tracking camera", () => {
       zoom: 1
     });
 
-    expect(camera).toEqual({ x: 75, y: 110, zoom: 1 });
+    expect(camera).toEqual({ x: 150, y: 215, zoom: 1 });
+    expect(30 + camera.x).toBe(180);
+    expect(45 + camera.y).toBe(260);
   });
 
   it("inverts a screen click back into world coordinates", () => {
@@ -159,42 +155,17 @@ describe("tracking camera", () => {
     expect(Number.isInteger(camera.y)).toBe(true);
   });
 
-  it("keeps the camera still while the player remains inside the dead zone", () => {
-    const previous = { x: -120, y: -940, zoom: 1 };
-    const camera = computeTrackingCameraTransform({
-      player: { x: 345, y: 1230 },
-      previous,
-      deadZone: { width: 120, height: 160 },
-      viewport: { width: 390, height: 520 },
-      bounds: { width: 780, height: 1920 },
-      zoom: 1
-    });
+  it("recenters after every interior grid step instead of leaving a dead zone", () => {
+    for (const x of [315, 345, 375, 405]) {
+      const camera = computeCameraTransform({
+        player: { x, y: 1200 },
+        viewport: { width: 390, height: 520 },
+        bounds: { width: 780, height: 1920 },
+        zoom: 1
+      });
 
-    expect(camera).toEqual(previous);
-  });
-
-  it("moves only enough to return the player to the dead-zone edge", () => {
-    const camera = computeTrackingCameraTransform({
-      player: { x: 405, y: 1320 },
-      previous: { x: -120, y: -940, zoom: 1 },
-      deadZone: { width: 120, height: 160 },
-      viewport: { width: 390, height: 520 },
-      bounds: { width: 780, height: 1920 },
-      zoom: 1
-    });
-
-    expect(camera).toEqual({ x: -150, y: -980, zoom: 1 });
-    expect(405 + camera.x).toBe(255);
-    expect(1320 + camera.y).toBe(340);
-  });
-
-  it("derives a bounded dead zone for phone and tablet viewports", () => {
-    expect(cameraDeadZone({ width: 390, height: 748 })).toEqual({ width: 125, height: 168 });
-    expect(cameraDeadZone({ width: 1024, height: 768 })).toEqual({ width: 132, height: 168 });
-  });
-
-  it("uses a smaller dead zone when the guest prefers responsive tracking", () => {
-    expect(cameraDeadZone({ width: 390, height: 748 }, "responsive")).toEqual({ width: 70, height: 112 });
-    expect(cameraDeadZone({ width: 320, height: 400 }, "responsive")).toEqual({ width: 58, height: 72 });
+      expect(x + camera.x).toBe(195);
+      expect(1200 + camera.y).toBe(260);
+    }
   });
 });

@@ -30,9 +30,7 @@ import {
   saveSyncedJourneyProgress
 } from "../api/journeyProgressApi";
 import {
-  cameraDeadZone,
   computeCameraTransform,
-  computeTrackingCameraTransform,
   screenToWorld,
   snapCameraViewport,
   type ViewportSize
@@ -760,7 +758,6 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     bounds: initialZone.bounds,
     zoom: 1
   }));
-  const cameraZoneRef = useRef<WorldZoneId>(initialZone.id);
   const [remoteGuests, setRemoteGuests] = useState<RoomGuest[]>([]);
   const [companionGuestId, setCompanionGuestId] = useState<string | null>(
     restoredCompanionSession?.companionGuestId ?? null
@@ -2557,22 +2554,18 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   }, [activeZoneId]);
 
   useEffect(() => {
-    const zoneChanged = cameraZoneRef.current !== activeZone.id;
-    cameraZoneRef.current = activeZone.id;
     setCamera((current) => {
-      const next = computeTrackingCameraTransform({
+      const next = computeCameraTransform({
         player: position,
         viewport,
         bounds: activeZone.bounds,
-        zoom: 1,
-        previous: zoneChanged ? null : current,
-        deadZone: cameraDeadZone(viewport, viewPreferences.cameraTracking)
+        zoom: 1
       });
       return next.x === current.x && next.y === current.y && next.zoom === current.zoom
         ? current
         : next;
     });
-  }, [activeZone.bounds.height, activeZone.bounds.width, activeZone.id, position.x, position.y, viewPreferences.cameraTracking, viewport.height, viewport.width]);
+  }, [activeZone.bounds.height, activeZone.bounds.width, position.x, position.y, viewport.height, viewport.width]);
 
   useEffect(() => {
     if (!menuOpen) return;

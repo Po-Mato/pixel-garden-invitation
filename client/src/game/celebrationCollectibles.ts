@@ -62,9 +62,13 @@ export function celebrationCollectiblesForZone(zone: WorldZone): CelebrationColl
 
   for (const point of [...preferredPoints, ...fallbackPoints]) {
     if (selected.length === kinds.length) break;
-    if (isBlocked(point, zone) || selected.some((candidate) => (
-      candidate.x === point.x && candidate.y === point.y
-    ))) continue;
+    if (
+      Math.hypot(point.x - zone.spawn.x, point.y - zone.spawn.y) <= celebrationCollectibleRevealRadius
+      || isBlocked(point, zone)
+      || selected.some((candidate) => (
+        candidate.x === point.x && candidate.y === point.y
+      ))
+    ) continue;
     selected.push(point);
   }
 

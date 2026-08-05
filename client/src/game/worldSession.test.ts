@@ -49,6 +49,17 @@ describe("worldSession", () => {
     })))).toBeNull();
   });
 
+  it("moves the legacy home start tile to the centered safe start", () => {
+    expect(loadWorldSession(memoryStorage(JSON.stringify({
+      version: 1,
+      zoneId: "home",
+      position: { x: 285, y: 555 },
+      direction: "down"
+    })))).toMatchObject({
+      position: { x: 285, y: 375 }
+    });
+  });
+
   it("uses a versioned storage key", () => {
     expect(worldSessionStorageKey).toContain(":v1");
   });

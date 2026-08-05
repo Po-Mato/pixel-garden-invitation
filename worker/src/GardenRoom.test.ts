@@ -119,7 +119,7 @@ afterEach(() => {
 });
 
 const expectedRealtimeWorldContract = {
-  home: { spawn: { x: 285, y: 555 }, bounds: { width: 600, height: 720 } },
+  home: { spawn: { x: 285, y: 375 }, bounds: { width: 600, height: 720 } },
   neighborhood: { spawn: { x: 135, y: 375 }, bounds: { width: 1200, height: 660 } },
   "subway-station": { spawn: { x: 135, y: 435 }, bounds: { width: 900, height: 840 } },
   "subway-train": { spawn: { x: 135, y: 285 }, bounds: { width: 1440, height: 540 } },
@@ -143,7 +143,7 @@ describe("GardenRoom helpers", () => {
       nickname: "하객1",
       appearance: defaultCharacterAppearance,
       x: 285,
-      y: 555,
+      y: 375,
       direction: "down",
       moving: false,
       seq: 0,

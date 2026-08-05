@@ -17,6 +17,7 @@ export type WorldSession = {
 type WorldSessionStorage = Pick<Storage, "getItem" | "setItem">;
 
 const directions = new Set<Direction>(["up", "down", "left", "right"]);
+const legacyHomeSpawn = { x: 285, y: 555 } as const;
 
 function browserStorage(): WorldSessionStorage | null {
   try {
@@ -49,7 +50,12 @@ export function loadWorldSession(
       return null;
     }
     const zone = getWorldZone(gardenWorld, parsed.zoneId);
-    const position = snapToGrid(parsed.position, zone);
+    const savedPosition = parsed.zoneId === "home"
+      && parsed.position.x === legacyHomeSpawn.x
+      && parsed.position.y === legacyHomeSpawn.y
+      ? zone.spawn
+      : parsed.position;
+    const position = snapToGrid(savedPosition, zone);
     if (isBlocked(position, zone)) return null;
 
     return {

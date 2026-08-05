@@ -19,7 +19,6 @@ afterEach(() => {
   delete document.documentElement.dataset.miniMapRouteWeight;
   delete document.documentElement.dataset.routePattern;
   delete document.documentElement.dataset.gameMovementSpeed;
-  delete document.documentElement.dataset.cameraTracking;
   delete document.documentElement.dataset.gameUiScale;
   delete document.documentElement.dataset.colorVision;
 });
@@ -90,12 +89,10 @@ describe("ViewSettingsAccess", () => {
       .getByRole("button", { name: "빠르게" }));
     fireEvent.click(within(screen.getByRole("group", { name: "게임 UI 크기" }))
       .getByRole("button", { name: "크게" }));
-    fireEvent.click(within(screen.getByRole("group", { name: "카메라 움직임" }))
-      .getByRole("button", { name: "빠르게 따라오기" }));
 
     expect(document.documentElement).toHaveAttribute("data-game-movement-speed", "brisk");
-    expect(document.documentElement).toHaveAttribute("data-camera-tracking", "responsive");
     expect(document.documentElement).toHaveAttribute("data-game-ui-scale", "large");
+    expect(screen.queryByRole("group", { name: "카메라 움직임" })).not.toBeInTheDocument();
   });
 
   it("미니맵 대비와 경로 굵기를 즉시 설정한다", () => {
