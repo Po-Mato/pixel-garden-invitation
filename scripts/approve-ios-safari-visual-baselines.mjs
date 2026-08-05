@@ -5,11 +5,14 @@ import { approveIosSafariVisualBaselines } from "./lib/iosSafariVisualBaseline.m
 import { parseBaselineApprovalArgs } from "./lib/mobileVisualBaselineApproval.mjs";
 
 const rootDir = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
-const options = parseBaselineApprovalArgs(process.argv.slice(2));
 const directoryIndex = process.argv.indexOf("--captures-dir");
 const capturesDir = directoryIndex >= 0
   ? path.resolve(process.argv[directoryIndex + 1])
   : path.join(rootDir, ".superpowers/visual-regression/ios-safari");
+const approvalArgs = process.argv.slice(2).filter((argument, index, args) => (
+  argument !== "--captures-dir" && args[index - 1] !== "--captures-dir"
+));
+const options = parseBaselineApprovalArgs(approvalArgs);
 const captureReport = JSON.parse(await readFile(path.join(capturesDir, "ios-safari-capture-report.json"), "utf8"));
 const result = await approveIosSafariVisualBaselines({
   rootDir,

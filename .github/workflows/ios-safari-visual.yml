@@ -86,4 +86,5 @@ jobs:
             ${{ runner.temp }}/ios-safari-vite.log
             ${{ runner.temp }}/ios-safari-appium.log
           if-no-files-found: warn
+          include-hidden-files: true
           retention-days: 14

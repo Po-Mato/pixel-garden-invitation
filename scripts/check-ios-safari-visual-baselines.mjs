@@ -118,6 +118,8 @@ try {
         "appium:udid": process.env.IOS_SIMULATOR_UDID,
         "appium:noReset": true,
         "appium:newCommandTimeout": 300,
+        "appium:simulatorStartupTimeout": 600000,
+        "appium:simulatorStartupRetries": 2,
         "appium:wdaLaunchTimeout": 600000,
         "appium:wdaConnectionTimeout": 600000,
         "appium:showXcodeLog": true
@@ -156,10 +158,12 @@ try {
   await waitForDocument("document.querySelector('.world-map__stage--background-loaded')", "홈 맵 배경", 60_000);
   await waitForDocument(`
     (() => {
-      const images = [...document.querySelectorAll(".world-player:not(.player--remote) .character-layer__preload")];
-      return images.length > 0 && images.every((image) => image.complete && image.naturalWidth > 0);
+      const layer = document.querySelector(".world-player:not(.player--remote) .character-layer");
+      if (!(layer instanceof HTMLElement)) return false;
+      const rect = layer.getBoundingClientRect();
+      return rect.width > 0 && rect.height > 0 && getComputedStyle(layer).backgroundImage !== "none";
     })()
-  `, "플레이어 캐릭터 이미지", 60_000);
+  `, "플레이어 캐릭터 레이어", 60_000);
   await waitForDocument("document.fonts.status === 'loaded'", "한글 폰트");
   const environment = await evaluate(`
     const style = document.createElement("style");
@@ -184,7 +188,20 @@ try {
         const player = document.querySelector(".world-player:not(.player--remote)");
         if (!(player instanceof HTMLElement)) return null;
         const rect = player.getBoundingClientRect();
-        return { x: rect.x, y: rect.y, width: rect.width, height: rect.height };
+        const layers = [...player.querySelectorAll(".character-layer")];
+        return {
+          x: rect.x,
+          y: rect.y,
+          width: rect.width,
+          height: rect.height,
+          layerCount: layers.length,
+          backgrounds: layers.map((layer) => getComputedStyle(layer).backgroundImage),
+          preloads: [...player.querySelectorAll(".character-layer__preload")].map((image) => ({
+            complete: image.complete,
+            naturalWidth: image.naturalWidth,
+            src: image.currentSrc || image.src
+          }))
+        };
       })()
     };
   `);
