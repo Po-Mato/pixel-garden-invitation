@@ -1,0 +1,101 @@
+{
+  "version": 1,
+  "approvedAt": "2026-08-05T06:49:48.091Z",
+  "reason": "Approve calibrated iPhone 16 Pro iOS 18.5 Safari game and 200% Directions baselines",
+  "profile": {
+    "id": "iphone-16-pro-ios-18-5-safari",
+    "deviceName": "iPhone 16 Pro",
+    "runtime": "iOS 18.5",
+    "requiredDirectionsScroll": 160
+  },
+  "capture": {
+    "generatedAt": "2026-08-05T06:43:20.161Z",
+    "profile": {
+      "id": "iphone-16-pro-ios-18-5-safari",
+      "deviceName": "iPhone 16 Pro",
+      "runtime": "iOS 18.5",
+      "requiredDirectionsScroll": 160
+    },
+    "url": "http://127.0.0.1:4178/",
+    "automation": "Appium XCUITest WebDriver",
+    "simulatorUdid": "9E2C2CF0-7DD4-4B9D-B6CE-63C9E42B95A7",
+    "userAgent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Mobile/15E148 Safari/604.1",
+    "viewport": {
+      "width": 402,
+      "height": 678,
+      "dpr": 3
+    },
+    "scrollStates": {
+      "directions-text-200": {
+        "scrollTop": 0,
+        "maxScroll": 530,
+        "target": 0,
+        "reached": true
+      },
+      "directions-text-200-middle": {
+        "scrollTop": 265,
+        "maxScroll": 530,
+        "target": 265,
+        "reached": true
+      },
+      "directions-text-200-bottom": {
+        "scrollTop": 530,
+        "maxScroll": 530,
+        "target": 530,
+        "reached": true
+      }
+    },
+    "comparisons": [],
+    "player": {
+      "x": 157,
+      "y": 457.5,
+      "width": 76,
+      "height": 111,
+      "layerCount": 1,
+      "backgrounds": [
+        "url(\"http://127.0.0.1:4178/characters/generated/guests/feminine-long-wave-dress__idle.png\")"
+      ],
+      "preloads": [
+        {
+          "complete": true,
+          "naturalWidth": 192,
+          "src": "http://127.0.0.1:4178/characters/generated/guests/feminine-long-wave-dress__idle.png"
+        }
+      ]
+    }
+  },
+  "pixelThreshold": 36,
+  "maxChangedRatio": 0.015,
+  "comparisonMode": "gaussian-structural",
+  "blurSigma": 2,
+  "profiles": [
+    {
+      "profileId": "iphone-16-pro-ios-18-5-safari",
+      "state": "game",
+      "width": 1206,
+      "height": 2622,
+      "sha256": "d906296a643c147d938b8cbd519f81253839bedca14a4ddc5c268cd27cf16daa"
+    },
+    {
+      "profileId": "iphone-16-pro-ios-18-5-safari",
+      "state": "directions-text-200",
+      "width": 1206,
+      "height": 2622,
+      "sha256": "767fb3d4f761f2e52cf2d4d32d7af82d9abf7af5528d70c0ef8da14782f07572"
+    },
+    {
+      "profileId": "iphone-16-pro-ios-18-5-safari",
+      "state": "directions-text-200-middle",
+      "width": 1206,
+      "height": 2622,
+      "sha256": "63a4495011505c18bb999fbf818499d2ec1ac4db430ec05d1cf62f3ccc5ff30c"
+    },
+    {
+      "profileId": "iphone-16-pro-ios-18-5-safari",
+      "state": "directions-text-200-bottom",
+      "width": 1206,
+      "height": 2622,
+      "sha256": "d553cfd9e312967348d6c40942976d414f02eadd9439dec03919dbec1c4fef54"
+    }
+  ]
+}
