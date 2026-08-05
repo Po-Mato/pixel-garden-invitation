@@ -113,6 +113,7 @@ export async function runMobileDeviceSoakAudit({ rootDir, outputDir, port = 4179
         if (!failure.includes("ERR_ABORTED") && !failure.includes("cancelled")) failedRequests.push(`${request.url()} ${failure}`);
       });
       await page.addInitScript(() => {
+        Object.defineProperty(navigator, "hardwareConcurrency", { configurable: true, get: () => 4 });
         localStorage.setItem("wedding-game:entry-session:v1", JSON.stringify({
           version: 1,
           nickname: "장시간감사",

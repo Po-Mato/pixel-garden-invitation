@@ -5,6 +5,7 @@ const styles = readFileSync("src/styles.css", "utf8");
 const hudDensityStyles = readFileSync("src/game-hud-density.css", "utf8");
 const experienceStyles = readFileSync("src/game-experience-continuity.css", "utf8");
 const refinedGameStyles = readFileSync("src/game-refined-theme.css", "utf8");
+const devicePerformanceStyles = readFileSync("src/device-performance.css", "utf8");
 const worldZones = [
   "home",
   "neighborhood",
@@ -29,6 +30,17 @@ const worldEffects = [
   "mirror-glint",
   "banquet-light"
 ];
+
+describe("low-end world rendering", () => {
+  it("keeps guidance visible without repeating WebKit-heavy filters", () => {
+    expect(devicePerformanceStyles).toMatch(
+      /data-effects-quality="minimal"[\s\S]*\.world-spot--target,[\s\S]*\.world-spot--recommended,[\s\S]*\.wedding-npc--target[\s\S]*animation:\s*none !important;[\s\S]*filter:\s*none !important;/
+    );
+    expect(devicePerformanceStyles).toMatch(
+      /data-effects-quality="minimal"[^\n]*\.world-portal__effect\s*\{[^}]*filter:\s*none !important;/s
+    );
+  });
+});
 
 describe("private RSVP administration layout", () => {
   it("uses a viewport-safe operational layout without horizontal overflow", () => {

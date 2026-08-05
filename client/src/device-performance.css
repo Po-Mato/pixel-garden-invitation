@@ -36,6 +36,19 @@ html[data-effects-quality="minimal"] .responsive-gallery-image--loading {
   transform: none;
 }
 
+html[data-effects-quality="minimal"] .world-map__stage[data-render-budget="minimal"] :is(
+  .world-spot--target,
+  .world-spot--recommended,
+  .wedding-npc--target
+) {
+  animation: none !important;
+  filter: none !important;
+}
+
+html[data-effects-quality="minimal"] .world-map__stage[data-render-budget="minimal"] .world-portal__effect {
+  filter: none !important;
+}
+
 html[data-performance-mode="lite"] .world-map__stage[data-render-budget="minimal"] :is(
   .world-collectible,
   .world-companion-link line,
