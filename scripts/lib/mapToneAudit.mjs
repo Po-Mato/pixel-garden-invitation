@@ -1,6 +1,7 @@
 import { readFile, readdir } from "node:fs/promises";
 import path from "node:path";
 import sharp from "sharp";
+import { cleanGuestHairSheet, waveHairPresetIds } from "./guestHairBackground.mjs";
 import { DEFAULT_FOREGROUND_PLACEMENTS } from "./mapForegroundAuditRenderer.mjs";
 
 export const mapToneCharacterPositions = Object.freeze({
@@ -126,8 +127,11 @@ async function loadToneCharacter(rootDir) {
   if (!preset) throw new Error("Default tone-audit character preset is missing");
   const source = manifest.frame.source;
   const display = manifest.frame.display.world;
-  const input = path.join(rootDir, "client/public/characters/generated", preset.generated.idle);
-  const buffer = await sharp(input)
+  const input = path.join(rootDir, preset.source.idle);
+  const renderInput = waveHairPresetIds.has(preset.id)
+    ? await cleanGuestHairSheet(input, source)
+    : input;
+  const buffer = await sharp(renderInput)
     .extract({ left: 0, top: 0, width: source.width, height: source.height })
     .resize(display.width, display.height, { kernel: sharp.kernel.nearest })
     .png()
