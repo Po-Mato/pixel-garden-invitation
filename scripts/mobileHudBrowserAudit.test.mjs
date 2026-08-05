@@ -6,6 +6,7 @@ import {
   auditWorldLabelRectangles,
   auditWorldLabelZoneSweep,
   compactDynamicViewport,
+  dynamicViewportLayoutApplied,
   dynamicViewportResizeApplied,
   mobileHudAuditViewports,
   summarizeTouchLatency,
@@ -120,6 +121,11 @@ test("dynamic viewport audit covers address-bar contraction without creating unu
     { width: 393, height: 732 }
   ), true);
   assert.equal(dynamicViewportResizeApplied(
+    { width: 393, height: 732 },
+    { width: 393, height: 852 }
+  ), false);
+  assert.equal(dynamicViewportLayoutApplied(
+    { width: 393, height: 732 },
     { width: 393, height: 732 },
     { width: 393, height: 852 }
   ), false);

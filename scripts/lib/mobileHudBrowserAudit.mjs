@@ -71,6 +71,11 @@ export function dynamicViewportResizeApplied(target, actual, tolerance = 1) {
   ));
 }
 
+export function dynamicViewportLayoutApplied(target, actualViewport, world) {
+  return dynamicViewportResizeApplied(target, actualViewport)
+    && dynamicViewportResizeApplied(target, world);
+}
+
 export function summarizeTouchLatency(samples) {
   if (!Array.isArray(samples) || samples.length === 0) {
     throw new TypeError("Touch latency samples must contain at least one value");
@@ -280,8 +285,8 @@ async function measureDynamicViewportAdaptation(page, viewport) {
   await page.setViewportSize(compact);
   await page.waitForTimeout(240);
   const actualViewport = await page.evaluate(() => ({ width: window.innerWidth, height: window.innerHeight }));
-  const supported = dynamicViewportResizeApplied(compact, actualViewport);
   const compactWorld = await readWorld();
+  const supported = dynamicViewportLayoutApplied(compact, actualViewport, compactWorld);
   const compactRectangles = await visibleRectangles(page);
   const compactIssues = supported ? auditMobileHudRectangles(compactRectangles, compact) : [];
   await page.setViewportSize({ width: viewport.width, height: viewport.height });
