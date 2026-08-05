@@ -181,15 +181,18 @@ async function captureLandscapeMetrics(state) {
       ))
     };
   `);
+  return metrics;
+}
+
+function assertLandscapeMetrics(metrics) {
   if (metrics.viewport.width <= metrics.viewport.height) {
-    throw new Error(`${state} 실제 Safari 가로 회전 실패`);
+    throw new Error(`${metrics.state} 실제 Safari 가로 회전 실패`);
   }
   if (metrics.visibleDialogs.length > 0) {
-    throw new Error(`${state} 실제 Safari 맵 위 대화상자 잔존: ${metrics.visibleDialogs.join(", ")}`);
+    throw new Error(`${metrics.state} 실제 Safari 맵 위 대화상자 잔존: ${metrics.visibleDialogs.join(", ")}`);
   }
-  if (metrics.horizontalOverflow) throw new Error(`${state} 실제 Safari 가로 넘침`);
-  if (!metrics.controlsContained) throw new Error(`${state} 실제 Safari safe-area 이탈`);
-  return metrics;
+  if (metrics.horizontalOverflow) throw new Error(`${metrics.state} 실제 Safari 가로 넘침`);
+  if (!metrics.controlsContained) throw new Error(`${metrics.state} 실제 Safari safe-area 이탈`);
 }
 
 try {
@@ -371,17 +374,28 @@ try {
   await new Promise((resolve) => setTimeout(resolve, 800));
   captureReport.landscape.expanded = await captureLandscapeMetrics("game-landscape-chrome-expanded");
   await screenshot("game-landscape-chrome-expanded");
+  assertLandscapeMetrics(captureReport.landscape.expanded);
 
-  await evaluate(`
+  captureReport.landscape.collapseSetup = await evaluate(`
     document.documentElement.dataset.iosChromeCollapseAudit = "true";
     document.documentElement.style.overflowY = "auto";
     document.body.style.overflowY = "auto";
+    const playingShell = document.querySelector(".app-shell--playing");
+    if (!(playingShell instanceof HTMLElement)) throw new Error("플레이 중인 앱 셸을 찾을 수 없어요");
+    playingShell.style.position = "fixed";
+    playingShell.style.inset = "0";
+    playingShell.style.width = "100%";
+    playingShell.style.height = "100dvh";
     const spacer = document.createElement("div");
     spacer.id = "ios-chrome-collapse-spacer";
     spacer.style.cssText = "position:relative;width:1px;height:320px;margin-top:100vh;pointer-events:none";
     document.body.append(spacer);
     window.scrollTo(0, document.documentElement.scrollHeight);
-    return { scrollY, scrollHeight: document.documentElement.scrollHeight };
+    return {
+      scrollY,
+      scrollHeight: document.documentElement.scrollHeight,
+      shellPosition: getComputedStyle(playingShell).position
+    };
   `);
   await new Promise((resolve) => setTimeout(resolve, 1200));
   captureReport.landscape.collapsed = await captureLandscapeMetrics("game-landscape-chrome-collapsed");
@@ -389,6 +403,7 @@ try {
     captureReport.landscape.collapsed.viewport.visualHeight
     - captureReport.landscape.expanded.viewport.visualHeight;
   await screenshot("game-landscape-chrome-collapsed");
+  assertLandscapeMetrics(captureReport.landscape.collapsed);
 
   const baselineStates = Object.fromEntries(await Promise.all(iosSafariVisualStates.map(async (state) => [
     state,

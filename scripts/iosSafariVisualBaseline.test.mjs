@@ -34,3 +34,13 @@ test("landscape capture closes stacked invitation dialogs before rotating", asyn
   assert.match(source, /맵 대화상자 정리/);
   assert.match(source, /실제 Safari 맵 위 대화상자 잔존/);
 });
+
+test("collapsed Safari chrome audit keeps the playing shell pinned and saves evidence before validation", async () => {
+  const source = await readFile(new URL("./check-ios-safari-visual-baselines.mjs", import.meta.url), "utf8");
+  assert.match(source, /playingShell\.style\.position = "fixed"/);
+  assert.match(source, /captureReport\.landscape\.collapseSetup = await evaluate/);
+  assert.match(
+    source,
+    /await screenshot\("game-landscape-chrome-collapsed"\);\s+assertLandscapeMetrics\(captureReport\.landscape\.collapsed\)/
+  );
+});
