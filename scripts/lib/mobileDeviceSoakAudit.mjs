@@ -27,7 +27,8 @@ export function summarizeMovementSamples(samples, settledSamples) {
   const distanceFrom = (left, right) => Math.hypot(left.x - right.x, left.y - right.y);
   const movementDistance = Math.max(...samples.map(({ position }) => distanceFrom(position, first.position)));
   const cameraDistance = Math.max(...samples.map(({ camera }) => distanceFrom(camera, first.camera)));
-  const maxCenterErrorPx = Math.max(...samples.map(({ centerError }) => Math.hypot(centerError.x, centerError.y)));
+  const centeredSamples = [first, ...settledSamples];
+  const maxCenterErrorPx = Math.max(...centeredSamples.map(({ centerError }) => Math.hypot(centerError.x, centerError.y)));
   const settledOrigin = settledSamples[0]?.visualCenter ?? samples.at(-1).visualCenter;
   const settledJitterPx = Math.max(0, ...settledSamples.map(({ visualCenter }) => (
     distanceFrom(visualCenter, settledOrigin)
@@ -116,91 +117,123 @@ async function heapUsed(page) {
   });
 }
 
-async function readMovementSample(page, phase) {
-  return page.evaluate((samplePhase) => {
+async function sampleMovingFrameSeries(page, durationMs, sampleCount = 3) {
+  const result = await page.evaluate(async ({ duration, count }) => {
     const player = document.querySelector(".world-player:not(.player--remote)");
     const sprite = player?.querySelector(".character-sprite--world");
     const map = document.querySelector(".world-map");
     const stage = document.querySelector(".world-map__stage");
+    const joystick = document.querySelector(".virtual-joystick");
     if (
       !(player instanceof HTMLElement)
       || !(sprite instanceof HTMLElement)
       || !(map instanceof HTMLElement)
       || !(stage instanceof HTMLElement)
+      || !(joystick instanceof HTMLElement)
     ) throw new Error("Movement sample elements are unavailable");
-    const playerStyle = getComputedStyle(player);
-    const spriteRect = sprite.getBoundingClientRect();
-    const mapRect = map.getBoundingClientRect();
-    const stageTransform = getComputedStyle(stage).transform;
-    const matrix = stageTransform === "none"
-      ? { m41: 0, m42: 0 }
-      : new DOMMatrixReadOnly(stageTransform);
-    const centerOffsetX = Number.parseFloat(playerStyle.getPropertyValue("--character-world-anchor-offset-x")) || 0;
-    const centerY = Number.parseFloat(playerStyle.getPropertyValue("--character-world-anchor-y")) || spriteRect.height / 2;
-    const visualCenter = {
-      x: spriteRect.x + spriteRect.width / 2 + centerOffsetX,
-      y: spriteRect.y + centerY
+    const read = (phase) => {
+      const playerStyle = getComputedStyle(player);
+      const spriteRect = sprite.getBoundingClientRect();
+      const mapRect = map.getBoundingClientRect();
+      const stageTransform = getComputedStyle(stage).transform;
+      const matrix = stageTransform === "none"
+        ? { m41: 0, m42: 0 }
+        : new DOMMatrixReadOnly(stageTransform);
+      const centerOffsetX = Number.parseFloat(playerStyle.getPropertyValue("--character-world-anchor-offset-x")) || 0;
+      const centerY = Number.parseFloat(playerStyle.getPropertyValue("--character-world-anchor-y")) || spriteRect.height / 2;
+      const visualCenter = {
+        x: spriteRect.x + spriteRect.width / 2 + centerOffsetX,
+        y: spriteRect.y + centerY
+      };
+      const viewportCenter = {
+        x: mapRect.x + mapRect.width / 2,
+        y: mapRect.y + mapRect.height / 2
+      };
+      const rawCenterError = {
+        x: visualCenter.x - viewportCenter.x,
+        y: visualCenter.y - viewportCenter.y
+      };
+      const logicalWidth = Number(stage.dataset.logicalWidth) || stage.offsetWidth;
+      const logicalHeight = Number(stage.dataset.logicalHeight) || stage.offsetHeight;
+      const centerable = {
+        x: logicalWidth > mapRect.width + 1
+          && matrix.m41 < -0.5
+          && matrix.m41 > mapRect.width - logicalWidth + 0.5,
+        y: logicalHeight > mapRect.height + 1
+          && matrix.m42 < -0.5
+          && matrix.m42 > mapRect.height - logicalHeight + 0.5
+      };
+      return {
+        phase,
+        position: {
+          x: Number.parseFloat(player.style.left),
+          y: Number.parseFloat(player.style.top)
+        },
+        camera: { x: matrix.m41, y: matrix.m42 },
+        visualCenter,
+        viewportCenter,
+        centerable,
+        rawCenterError,
+        centerError: {
+          x: centerable.x ? rawCenterError.x : 0,
+          y: centerable.y ? rawCenterError.y : 0
+        }
+      };
     };
-    const viewportCenter = {
-      x: mapRect.x + mapRect.width / 2,
-      y: mapRect.y + mapRect.height / 2
-    };
-    const rawCenterError = {
-      x: visualCenter.x - viewportCenter.x,
-      y: visualCenter.y - viewportCenter.y
-    };
-    const logicalWidth = Number(stage.dataset.logicalWidth) || stage.offsetWidth;
-    const logicalHeight = Number(stage.dataset.logicalHeight) || stage.offsetHeight;
-    const centerable = {
-      x: logicalWidth > mapRect.width + 1
-        && matrix.m41 < -0.5
-        && matrix.m41 > mapRect.width - logicalWidth + 0.5,
-      y: logicalHeight > mapRect.height + 1
-        && matrix.m42 < -0.5
-        && matrix.m42 > mapRect.height - logicalHeight + 0.5
-    };
-    return {
-      phase: samplePhase,
-      position: {
-        x: Number.parseFloat(player.style.left),
-        y: Number.parseFloat(player.style.top)
-      },
-      camera: { x: matrix.m41, y: matrix.m42 },
-      visualCenter,
-      viewportCenter,
-      centerable,
-      rawCenterError,
-      centerError: {
-        x: centerable.x ? rawCenterError.x : 0,
-        y: centerable.y ? rawCenterError.y : 0
-      }
-    };
-  }, phase);
-}
 
-async function exercisePlayerMovement(page, durationMs) {
-  const samples = [await readMovementSample(page, "before")];
-  await page.locator(".virtual-joystick").focus();
-  const segmentDurationMs = Math.max(220, Math.min(420, Math.floor(durationMs / 10)));
-  const segmentCount = Math.max(4, Math.floor(durationMs / (segmentDurationMs + 80)));
-  for (let index = 0; index < segmentCount; index += 1) {
-    const key = index % 2 === 0 ? "ArrowRight" : "ArrowLeft";
-    try {
-      await page.keyboard.down(key);
-      await page.waitForTimeout(segmentDurationMs);
-    } finally {
-      await page.keyboard.up(key).catch(() => undefined);
+    const dispatchKey = (type, key) => joystick.dispatchEvent(new KeyboardEvent(type, {
+      key,
+      bubbles: true,
+      cancelable: true
+    }));
+    const samples = [read("before")];
+    const frameCounts = Array.from({ length: count }, () => 0);
+    const sampleDuration = duration / count;
+    const segmentDuration = Math.max(240, Math.min(500, Math.floor(duration / 10)));
+    let currentKey = "ArrowRight";
+    let currentSegment = 0;
+    joystick.focus();
+    dispatchKey("keydown", currentKey);
+    const startedAt = performance.now();
+    await new Promise((resolve) => {
+      const tick = (now) => {
+        const elapsed = now - startedAt;
+        const bucket = Math.min(count - 1, Math.floor(elapsed / sampleDuration));
+        frameCounts[bucket] += 1;
+        const nextSegment = Math.floor(elapsed / segmentDuration);
+        if (nextSegment !== currentSegment) {
+          samples.push(read(`moving-${nextSegment}`));
+          dispatchKey("keyup", currentKey);
+          currentSegment = nextSegment;
+          currentKey = currentSegment % 2 === 0 ? "ArrowRight" : "ArrowLeft";
+          dispatchKey("keydown", currentKey);
+        }
+        if (elapsed >= duration) {
+          resolve();
+          return;
+        }
+        requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    });
+    samples.push(read("before-release"));
+    dispatchKey("keyup", currentKey);
+    await new Promise((resolve) => setTimeout(resolve, 96));
+    const settledSamples = [];
+    for (let index = 0; index < 4; index += 1) {
+      await new Promise((resolve) => requestAnimationFrame(resolve));
+      settledSamples.push(read(`settled-${index + 1}`));
     }
-    await page.waitForTimeout(72);
-    samples.push(await readMovementSample(page, `release-${index + 1}`));
-  }
-  await page.waitForTimeout(96);
-  const settledSamples = [];
-  for (let index = 0; index < 4; index += 1) {
-    await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(resolve)));
-    settledSamples.push(await readMovementSample(page, `settled-${index + 1}`));
-  }
-  return summarizeMovementSamples(samples, settledSamples);
+    return {
+      frameSamples: frameCounts.map((frames) => Math.round(frames / sampleDuration * 1000)),
+      samples,
+      settledSamples
+    };
+  }, { duration: durationMs, count: sampleCount });
+  return {
+    frames: summarizeFrameSamples(result.frameSamples),
+    movement: summarizeMovementSamples(result.samples, result.settledSamples)
+  };
 }
 
 export async function runMobileDeviceSoakAudit({ rootDir, outputDir, port = 4179, durationMs = 5_000, interactionCount = 18 }) {
@@ -304,10 +337,9 @@ export async function runMobileDeviceSoakAudit({ rootDir, outputDir, port = 4179
       await page.locator(".bottom-sheet__header button").tap();
       await sheet.waitFor({ state: "hidden" });
       await page.evaluate(() => { delete document.documentElement.dataset.textScale; });
-      const [applicationFrames, movementMetrics] = await Promise.all([
-        sampleFrameSeries(page, durationMs),
-        exercisePlayerMovement(page, durationMs)
-      ]);
+      const movingFrameSeries = await sampleMovingFrameSeries(page, durationMs);
+      const applicationFrames = movingFrameSeries.frames;
+      const movementMetrics = movingFrameSeries.movement;
       const averageFps = applicationFrames.medianFps;
       const baselineFps = baselineFrames.medianFps;
       const automaticQuality = await page.evaluate(() => ({

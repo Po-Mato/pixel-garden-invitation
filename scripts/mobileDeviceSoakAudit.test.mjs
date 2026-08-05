@@ -45,7 +45,7 @@ test("mobile soak summarizes real player movement, camera follow, centering, and
     cameraFollowed: true,
     movementDistance: 60,
     cameraDistance: 60,
-    maxCenterErrorPx: 0.25,
+    maxCenterErrorPx: 0.5,
     settledJitterPx: 0.25,
     samples,
     settledSamples
