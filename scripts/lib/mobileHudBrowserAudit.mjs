@@ -115,6 +115,12 @@ export const iosText200AuditCss = `
   }
 `;
 
+export const iosSafariText200AuditCss = iosText200AuditCss.replace(`
+  html[data-text-scale="ios-200"] .bottom-sheet__body {
+    font-size: 200%;
+  }
+`, "");
+
 export function compactDynamicViewport(viewport) {
   const reduction = viewport.height >= 600 ? 120 : 48;
   return { width: viewport.width, height: Math.max(320, viewport.height - reduction) };

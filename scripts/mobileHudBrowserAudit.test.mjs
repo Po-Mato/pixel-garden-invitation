@@ -8,6 +8,8 @@ import {
   compactDynamicViewport,
   dynamicViewportLayoutApplied,
   dynamicViewportResizeApplied,
+  iosSafariText200AuditCss,
+  iosText200AuditCss,
   mobileHudAuditViewports,
   summarizeTouchLatency,
   worldLabelAuditProfiles,
@@ -48,6 +50,12 @@ test("mobile HUD audit covers phones and tablets in both orientations", () => {
       requiredSheetScroll: 160
     }
   );
+});
+
+test("real Safari 200% uses native text adjustment without double scaling", () => {
+  assert.match(iosText200AuditCss, /bottom-sheet__body[\s\S]*font-size:\s*200%/);
+  assert.doesNotMatch(iosSafariText200AuditCss, /bottom-sheet__body\s*\{\s*font-size:\s*200%/);
+  assert.match(iosSafariText200AuditCss, /-webkit-text-size-adjust:\s*200%/);
 });
 
 test("world label sweep covers every production zone with representative positions", () => {

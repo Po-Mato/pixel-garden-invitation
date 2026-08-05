@@ -9,7 +9,7 @@ import {
   iosSafariVisualProfile,
   iosSafariVisualStates
 } from "./lib/iosSafariVisualBaseline.mjs";
-import { iosText200AuditCss } from "./lib/mobileHudBrowserAudit.mjs";
+import { iosSafariText200AuditCss } from "./lib/mobileHudBrowserAudit.mjs";
 
 const rootDir = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
 const option = (name, fallback = null) => {
@@ -154,6 +154,12 @@ try {
   await evaluate(`document.querySelector(".entry-screen__resume-access")?.click(); return true;`);
   await waitForDocument("document.querySelector('.game-world')", "게임 화면");
   await waitForDocument("document.querySelector('.world-map__stage--background-loaded')", "홈 맵 배경", 60_000);
+  await waitForDocument(`
+    (() => {
+      const images = [...document.querySelectorAll(".world-player:not(.player--remote) .character-layer__preload")];
+      return images.length > 0 && images.every((image) => image.complete && image.naturalWidth > 0);
+    })()
+  `, "플레이어 캐릭터 이미지", 60_000);
   await waitForDocument("document.fonts.status === 'loaded'", "한글 폰트");
   const environment = await evaluate(`
     const style = document.createElement("style");
@@ -173,17 +179,25 @@ try {
     document.documentElement.classList.add("ios-safari-baseline-freeze");
     return {
       userAgent: navigator.userAgent,
-      viewport: { width: innerWidth, height: innerHeight, dpr: devicePixelRatio }
+      viewport: { width: innerWidth, height: innerHeight, dpr: devicePixelRatio },
+      player: (() => {
+        const player = document.querySelector(".world-player:not(.player--remote)");
+        if (!(player instanceof HTMLElement)) return null;
+        const rect = player.getBoundingClientRect();
+        return { x: rect.x, y: rect.y, width: rect.width, height: rect.height };
+      })()
     };
   `);
   captureReport.userAgent = environment.userAgent;
   captureReport.viewport = environment.viewport;
+  captureReport.player = environment.player;
+  await new Promise((resolve) => setTimeout(resolve, 500));
   await screenshot("game");
 
   await evaluate(`
     const style = document.createElement("style");
     style.id = "ios-text-200-audit";
-    style.textContent = ${JSON.stringify(iosText200AuditCss)};
+    style.textContent = ${JSON.stringify(iosSafariText200AuditCss)};
     document.head.append(style);
     document.documentElement.dataset.textScale = "ios-200";
     document.querySelector(".world-menu-button")?.click();
@@ -195,7 +209,16 @@ try {
       .find((button) => button.textContent?.trim() === "오시는 길")?.click();
     return true;
   `);
-  await waitForDocument("document.querySelector('.bottom-sheet')", "오시는 길 바텀시트");
+  await waitForDocument(`
+    (() => {
+      const sheet = document.querySelector(".bottom-sheet");
+      if (!(sheet instanceof HTMLElement)) return false;
+      const style = getComputedStyle(sheet);
+      return style.display !== "none" && style.visibility !== "hidden" && sheet.getBoundingClientRect().height > 0;
+    })()
+  `, "오시는 길 바텀시트");
+  await waitForDocument("document.fonts.status === 'loaded'", "오시는 길 한글 폰트");
+  await new Promise((resolve) => setTimeout(resolve, 500));
 
   for (const [state, ratio] of [
     ["directions-text-200", 0],
@@ -220,6 +243,7 @@ try {
     if (scroll.maxScroll < iosSafariVisualProfile.requiredDirectionsScroll) {
       throw new Error(`${state} 실제 Safari 200% 스크롤 범위 부족: ${scroll.maxScroll}px`);
     }
+    await new Promise((resolve) => setTimeout(resolve, 300));
     await screenshot(state);
   }
 
