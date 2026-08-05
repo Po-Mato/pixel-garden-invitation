@@ -138,9 +138,11 @@ async function captureLandscapeMetrics(state) {
       dpr: devicePixelRatio
     };
     const selectors = [
-      ".world-hud",
+      ".world-hud__status",
+      ".world-hud__tools-toggle",
       ".world-minimap",
-      ".world-control-dock",
+      ".world-control-dock .virtual-joystick",
+      ".world-control-actions",
       ".world-context-action"
     ];
     const controls = selectors.flatMap((selector) => {

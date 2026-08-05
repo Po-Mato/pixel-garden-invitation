@@ -461,6 +461,18 @@
     box-shadow: 8px 0 28px rgba(49, 38, 39, 0.1);
   }
 
+  .world-minimap {
+    right: max(10px, env(safe-area-inset-right));
+  }
+
+  .world-control-dock {
+    right: max(5px, env(safe-area-inset-right));
+  }
+
+  .world-context-action {
+    right: max(8px, env(safe-area-inset-right));
+  }
+
   .world-hud__tools {
     position: absolute;
     inset: 86px 8px 8px;
