@@ -41,6 +41,12 @@ describe("low-end world rendering", () => {
     expect(devicePerformanceStyles).toMatch(
       /data-effects-quality="minimal"[^\n]*\.world-portal__effect\s*\{[^}]*filter:\s*none !important;/s
     );
+    expect(devicePerformanceStyles).toMatch(
+      /data-effects-quality="minimal"[\s\S]*\.world-destination-beacon__marker,[\s\S]*\.world-interactive-prop__clue,[\s\S]*animation:\s*none !important;/
+    );
+    expect(devicePerformanceStyles).toMatch(
+      /data-render-budget="minimal"[\s\S]*\.world-destination-beacon__marker,[\s\S]*\.world-interactive-prop__clue,[\s\S]*filter:\s*none !important;/
+    );
   });
 });
 

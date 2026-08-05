@@ -27,6 +27,8 @@ html[data-effects-quality="minimal"] .world-minimap__route polyline,
 html[data-effects-quality="minimal"] .world-minimap__journey-marker--recommended circle,
 html[data-effects-quality="minimal"] .world-journey-route polyline,
 html[data-effects-quality="minimal"] .character-sprite--idle-front .character-layer--base,
+html[data-effects-quality="minimal"] .world-destination-beacon__marker,
+html[data-effects-quality="minimal"] .world-interactive-prop__clue,
 html[data-effects-quality="minimal"] .wedding-npc__sprite {
   animation: none !important;
 }
@@ -39,6 +41,8 @@ html[data-effects-quality="minimal"] .responsive-gallery-image--loading {
 html[data-effects-quality="minimal"] .world-map__stage[data-render-budget="minimal"] :is(
   .world-spot--target,
   .world-spot--recommended,
+  .world-destination-beacon__marker,
+  .world-interactive-prop__clue,
   .wedding-npc--target
 ) {
   animation: none !important;
