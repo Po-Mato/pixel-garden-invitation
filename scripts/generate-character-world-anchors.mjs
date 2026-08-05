@@ -3,6 +3,7 @@ import { readFile, writeFile } from "node:fs/promises";
 import path, { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import sharp from "sharp";
+import { cleanGuestHairSheet, waveHairPresetIds } from "./lib/guestHairBackground.mjs";
 import {
   characterVisualAnchorAlphaThreshold,
   measureAlphaVisualAnchor
@@ -11,7 +12,7 @@ import {
 const rootDir = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
 const catalogPath = path.join(rootDir, "character-assets/guest-character-presets.json");
 const outputPath = path.join(rootDir, "client/src/character/worldAnchors.generated.json");
-const generatedRoot = path.join(rootDir, "client/public/characters/generated");
+const sourceRoot = path.join(rootDir, "character-assets/source");
 const checkOnly = process.argv.includes("--check");
 
 function stableManifest(value) {
@@ -19,8 +20,10 @@ function stableManifest(value) {
 }
 
 async function derivePresetAnchor(preset, frame) {
-  const idlePath = path.join(generatedRoot, preset.generated.idle);
-  const source = await readFile(idlePath);
+  const idlePath = path.join(sourceRoot, preset.source.idle.replace(/^character-assets\/source\//, ""));
+  const source = waveHairPresetIds.has(preset.id)
+    ? await cleanGuestHairSheet(idlePath, frame.source)
+    : await readFile(idlePath);
   const extracted = await sharp(source)
     .extract({ left: 0, top: 0, width: frame.source.width, height: frame.source.height })
     .ensureAlpha()
