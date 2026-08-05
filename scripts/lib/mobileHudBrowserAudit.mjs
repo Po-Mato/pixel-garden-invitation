@@ -37,6 +37,16 @@ export const mobileHudAuditViewports = Object.freeze([
     platform: "ios",
     engine: "webkit",
     textScale: "xlarge"
+  },
+  {
+    id: "iphone-15-webkit-text-200",
+    width: 393,
+    height: 852,
+    deviceScaleFactor: 3,
+    platform: "ios",
+    engine: "webkit",
+    textScale: "ios-200",
+    requiredSheetScroll: 160
   }
 ]);
 
@@ -59,6 +69,51 @@ export const worldLabelAuditScenarios = Object.freeze([
   { id: "banquet-guestbook", zoneId: "banquet", position: { x: 945, y: 735 } },
   { id: "restroom-entry", zoneId: "restroom", position: { x: 135, y: 345 } }
 ]);
+
+export const worldLabelAuditProfiles = Object.freeze([
+  { id: "iphone-portrait", width: 393, height: 852, deviceScaleFactor: 2 },
+  { id: "compact-android", width: 360, height: 640, deviceScaleFactor: 3 },
+  { id: "phone-landscape", width: 844, height: 390, deviceScaleFactor: 2 }
+]);
+
+export const iosText200AuditCss = `
+  html[data-text-scale="ios-200"] {
+    -webkit-text-size-adjust: 200%;
+    text-size-adjust: 200%;
+  }
+  html[data-text-scale="ios-200"] .bottom-sheet {
+    width: min(calc(100% - 16px), 420px);
+    max-height: calc(100dvh - 12px - env(safe-area-inset-top));
+    padding: 14px;
+  }
+  html[data-text-scale="ios-200"] .bottom-sheet__header {
+    align-items: flex-start;
+  }
+  html[data-text-scale="ios-200"] .bottom-sheet__header h2 {
+    font-size: 30px;
+    line-height: 1.25;
+    overflow-wrap: anywhere;
+  }
+  html[data-text-scale="ios-200"] .bottom-sheet__body {
+    font-size: 200%;
+  }
+  html[data-text-scale="ios-200"] .bottom-sheet__body :is(p, li, a, button, label, dt, dd, time, span, strong) {
+    font-size: 1em;
+    line-height: 1.55;
+  }
+  html[data-text-scale="ios-200"] .directions-sheet__venue,
+  html[data-text-scale="ios-200"] .directions-sheet__phone {
+    grid-template-columns: var(--directions-icon-column) minmax(0, 1fr);
+  }
+  html[data-text-scale="ios-200"] :is(.directions-sheet__venue > button, .directions-sheet__phone > a) {
+    grid-column: 1 / -1;
+    width: 100%;
+    min-height: 56px;
+  }
+  html[data-text-scale="ios-200"] .directions-sheet__maps {
+    grid-template-columns: minmax(0, 1fr);
+  }
+`;
 
 export function compactDynamicViewport(viewport) {
   const reduction = viewport.height >= 600 ? 120 : 48;
@@ -118,15 +173,21 @@ export function auditWorldLabelRectangles(labels, overlapTolerance = 8) {
   return issues;
 }
 
-export function auditWorldLabelZoneSweep(reports, expectedZoneIds) {
+export function auditWorldLabelZoneSweep(reports, expectedZoneIds, expectedProfileIds = []) {
   const issues = [];
-  const coveredZoneIds = new Set(reports.map(({ zoneId }) => zoneId));
-  for (const zoneId of expectedZoneIds) {
-    if (!coveredZoneIds.has(zoneId)) issues.push(`${zoneId}: 라벨 감사 누락`);
-  }
-  for (const report of reports) {
-    if (report.candidateCount === 0) issues.push(`${report.id}: 라벨 후보 없음`);
-    auditWorldLabelRectangles(report.visibleLabels).forEach((issue) => issues.push(`${report.id}: ${issue}`));
+  const profileIds = expectedProfileIds.length > 0 ? expectedProfileIds : [null];
+  for (const profileId of profileIds) {
+    const profileReports = profileId === null ? reports : reports.filter((report) => report.profileId === profileId);
+    const coveredZoneIds = new Set(profileReports.map(({ zoneId }) => zoneId));
+    const profilePrefix = profileId === null ? "" : `${profileId}/`;
+    for (const zoneId of expectedZoneIds) {
+      if (!coveredZoneIds.has(zoneId)) issues.push(`${profilePrefix}${zoneId}: 라벨 감사 누락`);
+    }
+    for (const report of profileReports) {
+      const reportId = `${profilePrefix}${report.id}`;
+      if (report.candidateCount === 0) issues.push(`${reportId}: 라벨 후보 없음`);
+      auditWorldLabelRectangles(report.visibleLabels).forEach((issue) => issues.push(`${reportId}: ${issue}`));
+    }
   }
   return issues;
 }
@@ -164,6 +225,11 @@ export function auditInvitationQualityMetrics(metrics) {
   if (!largeTextSheet?.contained) issues.push("큰 글자 바텀시트 화면 이탈");
   if (!largeTextSheet?.contentContained) issues.push("큰 글자 바텀시트 가로 넘침");
   if (!largeTextSheet?.touchTargetsReady) issues.push("큰 글자 바텀시트 터치 영역 부족");
+  if (
+    Number.isFinite(largeTextSheet?.requiredScrollRange)
+    && largeTextSheet.requiredScrollRange > 0
+    && largeTextSheet.actualScrollRange < largeTextSheet.requiredScrollRange
+  ) issues.push("iOS 200% 큰 글자 바텀시트 실제 스크롤 범위 부족");
   for (const [state, scroll] of Object.entries(metrics.scrollStates ?? {})) {
     if (!scroll.reached) issues.push(`${state} 스크롤 위치 도달 실패`);
   }
@@ -349,6 +415,16 @@ async function captureStableDeviceScreenshot(page, screenshotPath) {
   await page.evaluate(() => { document.documentElement.classList.remove("device-visual-baseline-freeze"); });
 }
 
+async function setAuditTextScale(page, textScale) {
+  if (textScale === "ios-200") {
+    await page.addStyleTag({ content: iosText200AuditCss });
+  }
+  await page.evaluate((scale) => {
+    if (scale) document.documentElement.dataset.textScale = scale;
+    else delete document.documentElement.dataset.textScale;
+  }, textScale);
+}
+
 async function measureInvitationQuality(page, viewport, sheetScreenshotPath, deviceSheetCurrentPaths = null) {
   const floatingSpot = await page.evaluate(() => {
     const hitTarget = document.querySelector(".world-spot");
@@ -366,7 +442,7 @@ async function measureInvitationQuality(page, viewport, sheetScreenshotPath, dev
   });
 
   const previousTextScale = await page.evaluate(() => document.documentElement.dataset.textScale ?? null);
-  await page.evaluate(() => { document.documentElement.dataset.textScale = "xlarge"; });
+  await setAuditTextScale(page, viewport.textScale ?? "xlarge");
   await page.locator(".world-menu-button").click();
   await page.locator(".world-menu-sheet").waitFor({ state: "visible" });
   await page.getByRole("button", { name: "오시는 길", exact: true }).click();
@@ -449,6 +525,8 @@ async function measureInvitationQuality(page, viewport, sheetScreenshotPath, dev
       }
     };
   }, viewport);
+  largeTextSheet.actualScrollRange = Math.max(0, ...Object.values(scrollStates).map(({ maxScroll }) => maxScroll));
+  largeTextSheet.requiredScrollRange = viewport.requiredSheetScroll ?? 0;
   await page.locator(".bottom-sheet__header button").click();
   await sheet.waitFor({ state: "hidden" });
   await page.evaluate((textScale) => {
@@ -459,76 +537,84 @@ async function measureInvitationQuality(page, viewport, sheetScreenshotPath, dev
 }
 
 async function runWorldLabelZoneSweep({ browser, url, outputDir }) {
-  const context = await browser.newContext({
-    viewport: { width: 393, height: 852 },
-    hasTouch: true,
-    isMobile: true,
-    locale: "ko-KR",
-    colorScheme: "light",
-    reducedMotion: "reduce",
-    deviceScaleFactor: 2
-  });
-  const page = await context.newPage();
-  await page.addInitScript(() => {
-    localStorage.setItem("wedding-game:entry-session:v1", JSON.stringify({
-      version: 1,
-      nickname: "라벨감사",
-      appearance: { presetId: "feminine-long-wave-dress" },
-      updatedAt: new Date().toISOString()
-    }));
-    localStorage.setItem("wedding-game:first-visit-guide:v1", JSON.stringify({
-      version: 1,
-      completed: true,
-      completedAt: new Date().toISOString()
-    }));
-  });
   const reports = [];
-  try {
-    await page.goto(url, { waitUntil: "domcontentloaded" });
-    for (const scenario of worldLabelAuditScenarios) {
-      await page.evaluate(({ zoneId, position }) => {
-        localStorage.setItem("wedding-game:world-session:v1", JSON.stringify({
-          version: 1,
-          zoneId,
-          position,
-          direction: "down",
-          guideCheckpointId: null,
-          updatedAt: new Date().toISOString()
-        }));
-      }, scenario);
-      await page.reload({ waitUntil: "domcontentloaded" });
-      const resumeGarden = page.locator(".entry-screen__resume-access");
-      if (await resumeGarden.isVisible().catch(() => false)) await resumeGarden.click();
-      await page.locator(`.world-map__stage[data-zone="${scenario.zoneId}"]`).waitFor({ state: "visible" });
-      await page.locator(`.world-map__stage--background-loaded[data-zone="${scenario.zoneId}"]`).waitFor({
-        state: "visible",
-        timeout: 15_000
-      });
-      await page.addStyleTag({ content: `
-        html.world-label-zone-freeze *,
-        html.world-label-zone-freeze *::before,
-        html.world-label-zone-freeze *::after {
-          animation: none !important;
-          caret-color: transparent !important;
-          transition: none !important;
-        }
-      ` });
-      await page.evaluate(() => {
-        document.documentElement.classList.add("world-label-zone-freeze");
-        return document.fonts.ready;
-      });
-      await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
-      const visibleLabels = await visibleWorldLabels(page);
-      const visibility = await worldLabelVisibilitySummary(page);
-      const screenshotPath = path.join(outputDir, `world-label-${scenario.id}.png`);
-      await page.screenshot({ path: screenshotPath, fullPage: false, scale: "css" });
-      reports.push({ ...scenario, ...visibility, visibleLabels, screenshotPath });
+  for (const profile of worldLabelAuditProfiles) {
+    const context = await browser.newContext({
+      viewport: { width: profile.width, height: profile.height },
+      hasTouch: true,
+      isMobile: true,
+      locale: "ko-KR",
+      colorScheme: "light",
+      reducedMotion: "reduce",
+      deviceScaleFactor: profile.deviceScaleFactor
+    });
+    const page = await context.newPage();
+    await page.addInitScript(() => {
+      localStorage.setItem("wedding-game:entry-session:v1", JSON.stringify({
+        version: 1,
+        nickname: "라벨감사",
+        appearance: { presetId: "feminine-long-wave-dress" },
+        updatedAt: new Date().toISOString()
+      }));
+      localStorage.setItem("wedding-game:first-visit-guide:v1", JSON.stringify({
+        version: 1,
+        completed: true,
+        completedAt: new Date().toISOString()
+      }));
+    });
+    try {
+      await page.goto(url, { waitUntil: "domcontentloaded" });
+      for (const scenario of worldLabelAuditScenarios) {
+        await page.evaluate(({ zoneId, position }) => {
+          localStorage.setItem("wedding-game:world-session:v1", JSON.stringify({
+            version: 1,
+            zoneId,
+            position,
+            direction: "down",
+            guideCheckpointId: null,
+            updatedAt: new Date().toISOString()
+          }));
+        }, scenario);
+        await page.reload({ waitUntil: "domcontentloaded" });
+        const resumeGarden = page.locator(".entry-screen__resume-access");
+        if (await resumeGarden.isVisible().catch(() => false)) await resumeGarden.click();
+        await page.locator(`.world-map__stage[data-zone="${scenario.zoneId}"]`).waitFor({ state: "visible" });
+        await page.locator(`.world-map__stage--background-loaded[data-zone="${scenario.zoneId}"]`).waitFor({
+          state: "visible",
+          timeout: 15_000
+        });
+        await page.addStyleTag({ content: `
+          html.world-label-zone-freeze *,
+          html.world-label-zone-freeze *::before,
+          html.world-label-zone-freeze *::after {
+            animation: none !important;
+            caret-color: transparent !important;
+            transition: none !important;
+          }
+        ` });
+        await page.evaluate(() => {
+          document.documentElement.classList.add("world-label-zone-freeze");
+          return document.fonts.ready;
+        });
+        await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+        const visibleLabels = await visibleWorldLabels(page);
+        const visibility = await worldLabelVisibilitySummary(page);
+        const screenshotPath = path.join(outputDir, `world-label-${profile.id}-${scenario.id}.png`);
+        await page.screenshot({ path: screenshotPath, fullPage: false, scale: "css" });
+        reports.push({ ...scenario, profileId: profile.id, width: profile.width, height: profile.height, ...visibility, visibleLabels, screenshotPath });
+      }
+    } finally {
+      await context.close();
     }
-  } finally {
-    await context.close();
   }
   const expectedZoneIds = [...new Set(worldLabelAuditScenarios.map(({ zoneId }) => zoneId))];
-  return { reports, issues: auditWorldLabelZoneSweep(reports, expectedZoneIds), expectedZoneIds };
+  const expectedProfileIds = worldLabelAuditProfiles.map(({ id }) => id);
+  return {
+    reports,
+    issues: auditWorldLabelZoneSweep(reports, expectedZoneIds, expectedProfileIds),
+    expectedZoneIds,
+    profiles: worldLabelAuditProfiles
+  };
 }
 
 export async function runMobileHudBrowserAudit({ rootDir, outputDir, port = 4178, deviceBaselineMode = "compare" }) {
@@ -596,11 +682,7 @@ export async function runMobileHudBrowserAudit({ rootDir, outputDir, port = 4178
             display: none !important;
           }
         ` });
-        if (viewport.textScale) {
-          await page.evaluate((textScale) => {
-            document.documentElement.dataset.textScale = textScale;
-          }, viewport.textScale);
-        }
+        if (viewport.textScale) await setAuditTextScale(page, viewport.textScale);
         const rectangles = await visibleRectangles(page);
         const issues = auditMobileHudRectangles(rectangles, viewport);
         const worldLabels = await visibleWorldLabels(page);

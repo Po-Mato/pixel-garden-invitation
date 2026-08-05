@@ -1,7 +1,7 @@
 {
   "version": 3,
-  "approvedAt": "2026-08-05T04:18:28.111Z",
-  "reason": "WebKit과 큰 글자 시트 스크롤 상태 품질 기준 확장",
+  "approvedAt": "2026-08-05T05:24:46.866Z",
+  "reason": "12종 캐릭터 대비, 다중 화면 라벨, iOS 200% 스크롤 기준선 확장",
   "pixelThreshold": 36,
   "maxChangedRatio": 0.015,
   "comparisonMode": "gaussian-structural",
@@ -102,6 +102,38 @@
       "width": 393,
       "height": 852,
       "sha256": "8f149d467181a455cd32def056639619dd194ac4a6157b01e7cd2a34c028dc5f"
+    },
+    {
+      "profileId": "iphone-15-webkit-text-200",
+      "engine": "webkit",
+      "state": "game",
+      "width": 393,
+      "height": 852,
+      "sha256": "245cb234d8f733ae8833880df73d839bc0eff0f45e0fdeca4ecda5f60029bbdb"
+    },
+    {
+      "profileId": "iphone-15-webkit-text-200",
+      "engine": "webkit",
+      "state": "directions-xlarge",
+      "width": 393,
+      "height": 852,
+      "sha256": "bbaeb148a9bd211b620617af857d447512e1c6294841fe39a925f61dd144acf7"
+    },
+    {
+      "profileId": "iphone-15-webkit-text-200",
+      "engine": "webkit",
+      "state": "directions-xlarge-middle",
+      "width": 393,
+      "height": 852,
+      "sha256": "6d766ad570420a58982d93a90fed4782615ebf703c5829e82ca706aaddd5414e"
+    },
+    {
+      "profileId": "iphone-15-webkit-text-200",
+      "engine": "webkit",
+      "state": "directions-xlarge-bottom",
+      "width": 393,
+      "height": 852,
+      "sha256": "049cdaa2b4efd8897f6aab8c1e3756f753fcbfac4bbaa8046f7e240dfc87b694"
     }
   ]
 }

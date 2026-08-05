@@ -1,0 +1,81 @@
+name: Real iOS Safari visual regression
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/ios-safari-visual.yml"
+      - "client/**"
+      - "character-assets/**"
+      - "map-assets/**"
+      - "scripts/**"
+      - "package.json"
+      - "pnpm-lock.yaml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ios-safari-visual-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  compare:
+    runs-on: macos-15
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 10.29.2
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: pnpm
+      - name: Select pinned Xcode and warm Simulator services
+        shell: bash
+        run: |
+          XCODE_APP="$(find /Applications -maxdepth 1 -type d -name 'Xcode_16.4*.app' | sort | head -n 1)"
+          test -n "$XCODE_APP"
+          sudo xcode-select --switch "$XCODE_APP/Contents/Developer"
+          xcodebuild -version
+          xcrun simctl list > /dev/null
+          xcrun simctl list devices available | grep 'iPhone 16 Pro'
+      - run: pnpm install --frozen-lockfile
+      - name: Install the iOS Safari automation bridge
+        run: |
+          npm install --global agent-browser@0.13.0 appium@3
+          appium driver install xcuitest
+          agent-browser --version
+          appium --version
+      - name: Start deterministic invitation server
+        shell: bash
+        run: |
+          pnpm --filter @wedding-game/client exec vite --host 0.0.0.0 --port 4178 --strictPort > "$RUNNER_TEMP/ios-safari-vite.log" 2>&1 &
+          echo "VITE_PID=$!" >> "$GITHUB_ENV"
+          for attempt in {1..60}; do
+            if curl --fail --silent http://127.0.0.1:4178/ > /dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat "$RUNNER_TEMP/ios-safari-vite.log"
+          exit 1
+      - name: Capture and compare real Mobile Safari
+        run: pnpm visual:ios-safari -- --mode auto --url http://127.0.0.1:4178/
+      - name: Stop invitation server
+        if: always()
+        shell: bash
+        run: |
+          if test -n "${VITE_PID:-}"; then kill "$VITE_PID" 2>/dev/null || true; fi
+      - name: Upload real iOS Safari evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: ios-safari-visual-${{ github.run_id }}
+          path: |
+            .superpowers/visual-regression/ios-safari
+            ${{ runner.temp }}/ios-safari-vite.log
+          if-no-files-found: warn
+          retention-days: 14

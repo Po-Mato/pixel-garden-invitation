@@ -9,7 +9,8 @@ console.log(`맵 밝기·대비 감사 통과: ${result.reports.length}개 구�
 for (const report of result.reports) {
   console.log(
     `- ${report.zoneId}: 배경 ${report.averageLuminance.toFixed(3)} · 합성 ${report.sceneAverageLuminance.toFixed(3)}`
-    + ` · 캐릭터 경계 ${report.characterEdgeContrast.toFixed(2)}:1 · 전경 ${report.foregroundAssetCount}개`
+    + ` · 캐릭터 경계 최소 ${report.characterEdgeContrast.toFixed(2)}:1`
+    + ` (${report.weakestCharacterPresetId}, ${report.characterPresetCount}종) · 전경 ${report.foregroundAssetCount}개`
     + ` · 최소 라벨 ${Math.min(...Object.values(report.contrasts)).toFixed(2)}:1`
   );
 }

@@ -6,7 +6,8 @@ import sharp from "sharp";
 export const mobileDeviceVisualBaselineProfiles = Object.freeze([
   "galaxy-s23-font-150",
   "iphone-15-dynamic-type",
-  "iphone-15-webkit-dynamic-type"
+  "iphone-15-webkit-dynamic-type",
+  "iphone-15-webkit-text-200"
 ]);
 
 export const mobileDeviceVisualBaselineStates = Object.freeze([

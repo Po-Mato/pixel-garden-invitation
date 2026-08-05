@@ -17,7 +17,8 @@ test("device visual baselines cover Chromium and WebKit mobile states including 
   assert.deepEqual(mobileDeviceVisualBaselineProfiles, [
     "galaxy-s23-font-150",
     "iphone-15-dynamic-type",
-    "iphone-15-webkit-dynamic-type"
+    "iphone-15-webkit-dynamic-type",
+    "iphone-15-webkit-text-200"
   ]);
   assert.deepEqual(mobileDeviceVisualBaselineStates, [
     "game",

@@ -64,18 +64,46 @@ export function evaluateMapToneMetrics(metrics, expected, thresholds) {
     Number.isFinite(metrics.sceneP90Luminance)
     && metrics.sceneP90Luminance - metrics.sceneP10Luminance < thresholds.minDynamicRange
   ) issues.push("합성 장면 명암 폭 부족");
+  const expectedPresetContrasts = expected.characterEdgeContrasts;
+  const actualPresetContrasts = metrics.characterEdgeContrasts;
+  if (expectedPresetContrasts && typeof expectedPresetContrasts === "object") {
+    const expectedPresetIds = Object.keys(expectedPresetContrasts).sort();
+    const actualPresetIds = Object.keys(actualPresetContrasts ?? {}).sort();
+    if (JSON.stringify(actualPresetIds) !== JSON.stringify(expectedPresetIds)) {
+      issues.push("캐릭터 프리셋 대비 목록 불일치");
+    }
+    for (const presetId of expectedPresetIds) {
+      const actual = actualPresetContrasts?.[presetId];
+      const baseline = expectedPresetContrasts[presetId];
+      if (!Number.isFinite(actual)) {
+        issues.push(`${presetId} 캐릭터 가장자리 대비 측정 누락`);
+        continue;
+      }
+      if (actual < thresholds.minCharacterEdgeContrast) {
+        issues.push(`${presetId} 캐릭터 가장자리 대비 부족`);
+      }
+      if (Math.abs(actual - baseline) > thresholds.maxCharacterEdgeContrastDelta) {
+        issues.push(`${presetId} 캐릭터 가장자리 대비 기준선 이탈`);
+      }
+    }
+  } else {
+    if (
+      Number.isFinite(metrics.characterEdgeContrast)
+      && metrics.characterEdgeContrast < thresholds.minCharacterEdgeContrast
+    ) issues.push("캐릭터 가장자리 대비 부족");
+    if (
+      Number.isFinite(expected.characterEdgeContrast)
+      && !Number.isFinite(metrics.characterEdgeContrast)
+    ) issues.push("캐릭터 가장자리 대비 측정 누락");
+    else if (
+      Number.isFinite(expected.characterEdgeContrast)
+      && Math.abs(metrics.characterEdgeContrast - expected.characterEdgeContrast) > thresholds.maxCharacterEdgeContrastDelta
+    ) issues.push("캐릭터 가장자리 대비 기준선 이탈");
+  }
   if (
-    Number.isFinite(metrics.characterEdgeContrast)
-    && metrics.characterEdgeContrast < thresholds.minCharacterEdgeContrast
-  ) issues.push("캐릭터 가장자리 대비 부족");
-  if (
-    Number.isFinite(expected.characterEdgeContrast)
-    && !Number.isFinite(metrics.characterEdgeContrast)
-  ) issues.push("캐릭터 가장자리 대비 측정 누락");
-  else if (
-    Number.isFinite(expected.characterEdgeContrast)
-    && Math.abs(metrics.characterEdgeContrast - expected.characterEdgeContrast) > thresholds.maxCharacterEdgeContrastDelta
-  ) issues.push("캐릭터 가장자리 대비 기준선 이탈");
+    Number.isInteger(expected.characterPresetCount)
+    && metrics.characterPresetCount !== expected.characterPresetCount
+  ) issues.push("캐릭터 프리셋 감사 수 불일치");
   if (
     Number.isFinite(expected.foregroundAssetCount)
     && metrics.foregroundAssetCount !== expected.foregroundAssetCount
@@ -121,22 +149,26 @@ export function characterEdgeShadowsFromCss(css, zoneIds) {
   }));
 }
 
-async function loadToneCharacter(rootDir) {
+async function loadToneCharacters(rootDir) {
   const manifest = JSON.parse(await readFile(path.join(rootDir, "character-assets/guest-character-presets.json"), "utf8"));
-  const preset = manifest.presets.find(({ id }) => id === manifest.defaultPresetId);
-  if (!preset) throw new Error("Default tone-audit character preset is missing");
+  if (!manifest.presets.some(({ id }) => id === manifest.defaultPresetId)) {
+    throw new Error("Default tone-audit character preset is missing");
+  }
   const source = manifest.frame.source;
   const display = manifest.frame.display.world;
-  const input = path.join(rootDir, preset.source.idle);
-  const renderInput = waveHairPresetIds.has(preset.id)
-    ? await cleanGuestHairSheet(input, source)
-    : input;
-  const buffer = await sharp(renderInput)
-    .extract({ left: 0, top: 0, width: source.width, height: source.height })
-    .resize(display.width, display.height, { kernel: sharp.kernel.nearest })
-    .png()
-    .toBuffer();
-  return { buffer, width: display.width, height: display.height, presetId: preset.id };
+  const characters = await Promise.all(manifest.presets.map(async (preset) => {
+    const input = path.join(rootDir, preset.source.idle);
+    const renderInput = waveHairPresetIds.has(preset.id)
+      ? await cleanGuestHairSheet(input, source)
+      : input;
+    const buffer = await sharp(renderInput)
+      .extract({ left: 0, top: 0, width: source.width, height: source.height })
+      .resize(display.width, display.height, { kernel: sharp.kernel.nearest })
+      .png()
+      .toBuffer();
+    return { buffer, width: display.width, height: display.height, presetId: preset.id };
+  }));
+  return { characters, defaultPresetId: manifest.defaultPresetId };
 }
 
 async function characterShadow(characterBuffer, color) {
@@ -187,13 +219,11 @@ async function measureCharacterEdgeContrast(sceneBuffer, characterBuffer, left, 
   return ratios[Math.floor(ratios.length * 0.2)];
 }
 
-export async function measureCompositedMapTone({ rootDir, zone, character, edgeShadow }) {
+export async function measureCompositedMapTone({ rootDir, zone, characters, defaultPresetId, edgeShadow }) {
   const mapRoot = path.join(rootDir, "client/public/assets/maps/v2", zone.id);
   const placements = DEFAULT_FOREGROUND_PLACEMENTS[zone.id] ?? [];
   const position = mapToneCharacterPositions[zone.id];
   if (!position) throw new Error(`Missing tone-audit character position for ${zone.id}`);
-  const characterLeft = Math.round(position.x - character.width / 2);
-  const characterTop = Math.round(position.y - character.height / 2);
   const foregroundScene = await sharp(path.join(mapRoot, zone.background.output))
     .composite(placements.map((placement) => ({
       input: path.join(mapRoot, placement.asset),
@@ -202,27 +232,48 @@ export async function measureCompositedMapTone({ rootDir, zone, character, edgeS
     })))
     .png()
     .toBuffer();
-  const shadow = await characterShadow(character.buffer, edgeShadow);
-  const scene = await sharp(foregroundScene).composite([
-    { input: shadow, left: characterLeft + 1, top: characterTop + 2 },
-    { input: character.buffer, left: characterLeft, top: characterTop }
-  ]).png().toBuffer();
-  const sceneTone = await measureMapTone(scene);
+  const characterReports = [];
+  for (const character of characters) {
+    const characterLeft = Math.round(position.x - character.width / 2);
+    const characterTop = Math.round(position.y - character.height / 2);
+    const shadow = await characterShadow(character.buffer, edgeShadow);
+    const scene = await sharp(foregroundScene).composite([
+      { input: shadow, left: characterLeft + 1, top: characterTop + 2 },
+      { input: character.buffer, left: characterLeft, top: characterTop }
+    ]).png().toBuffer();
+    characterReports.push({
+      presetId: character.presetId,
+      scene,
+      edgeContrast: await measureCharacterEdgeContrast(
+        scene,
+        character.buffer,
+        characterLeft,
+        characterTop,
+        character.width,
+        character.height
+      )
+    });
+  }
+  const defaultReport = characterReports.find(({ presetId }) => presetId === defaultPresetId);
+  if (!defaultReport) throw new Error("Default tone-audit character report is missing");
+  const sceneTone = await measureMapTone(defaultReport.scene);
+  const characterEdgeContrasts = Object.fromEntries(
+    characterReports.map(({ presetId, edgeContrast }) => [presetId, edgeContrast])
+  );
+  const weakestCharacter = characterReports.reduce((weakest, report) => (
+    report.edgeContrast < weakest.edgeContrast ? report : weakest
+  ));
   return {
-    sceneBuffer: scene,
+    sceneBuffer: defaultReport.scene,
     sceneAverageLuminance: sceneTone.averageLuminance,
     sceneP10Luminance: sceneTone.p10Luminance,
     sceneP90Luminance: sceneTone.p90Luminance,
-    characterEdgeContrast: await measureCharacterEdgeContrast(
-      scene,
-      character.buffer,
-      characterLeft,
-      characterTop,
-      character.width,
-      character.height
-    ),
+    characterEdgeContrast: weakestCharacter.edgeContrast,
+    characterEdgeContrasts,
+    characterPresetCount: characterReports.length,
+    weakestCharacterPresetId: weakestCharacter.presetId,
     foregroundAssetCount: placements.length,
-    characterPresetId: character.presetId,
+    characterPresetId: defaultPresetId,
     characterPosition: position
   };
 }
@@ -240,7 +291,7 @@ export async function auditMapTones({ rootDir, contractPath = path.join(rootDir,
   if (JSON.stringify(actualZoneIds) !== JSON.stringify(expectedZoneIds)) issues.push("맵 톤 계약 구역 목록 불일치");
 
   const reports = [];
-  const character = await loadToneCharacter(rootDir);
+  const { characters, defaultPresetId } = await loadToneCharacters(rootDir);
   const edgeShadows = characterEdgeShadowsFromCss(
     await readFile(path.join(rootDir, "client/src/map-visual-enhancements.css"), "utf8"),
     expectedZoneIds
@@ -252,7 +303,13 @@ export async function auditMapTones({ rootDir, contractPath = path.join(rootDir,
       continue;
     }
     const backgroundTone = await measureMapTone(path.join(mapRoot, zoneId, zone.background.output));
-    const compositeTone = await measureCompositedMapTone({ rootDir, zone, character, edgeShadow: edgeShadows[zoneId] });
+    const compositeTone = await measureCompositedMapTone({
+      rootDir,
+      zone,
+      characters,
+      defaultPresetId,
+      edgeShadow: edgeShadows[zoneId]
+    });
     const { sceneBuffer: _sceneBuffer, ...sceneMetrics } = compositeTone;
     const metrics = { ...backgroundTone, ...sceneMetrics };
     const evaluation = evaluateMapToneMetrics(metrics, contract.zones[zoneId], contract.thresholds);

@@ -72,6 +72,59 @@ test("map tone audit catches weak character separation and missing foreground as
   assert.ok(result.issues.includes("합성 전경 수 불일치"));
 });
 
+test("map tone audit checks every character preset independently", () => {
+  const result = evaluateMapToneMetrics(
+    {
+      averageLuminance: 0.5,
+      p10Luminance: 0.2,
+      p90Luminance: 0.8,
+      sceneAverageLuminance: 0.5,
+      sceneP10Luminance: 0.2,
+      sceneP90Luminance: 0.8,
+      characterEdgeContrasts: { "guest-a": 1.42, "guest-b": 1.08 },
+      characterPresetCount: 2,
+      foregroundAssetCount: 2
+    },
+    {
+      averageLuminance: 0.5,
+      p10Luminance: 0.2,
+      p90Luminance: 0.8,
+      sceneAverageLuminance: 0.5,
+      sceneP10Luminance: 0.2,
+      sceneP90Luminance: 0.8,
+      characterEdgeContrasts: { "guest-a": 1.4, "guest-b": 1.4 },
+      characterPresetCount: 2,
+      foregroundAssetCount: 2
+    },
+    thresholds
+  );
+  assert.ok(result.issues.includes("guest-b 캐릭터 가장자리 대비 부족"));
+  assert.ok(result.issues.includes("guest-b 캐릭터 가장자리 대비 기준선 이탈"));
+});
+
+test("map tone audit rejects a missing character preset measurement", () => {
+  const result = evaluateMapToneMetrics(
+    {
+      averageLuminance: 0.5,
+      p10Luminance: 0.2,
+      p90Luminance: 0.8,
+      characterEdgeContrasts: { "guest-a": 1.4 },
+      characterPresetCount: 1
+    },
+    {
+      averageLuminance: 0.5,
+      p10Luminance: 0.2,
+      p90Luminance: 0.8,
+      characterEdgeContrasts: { "guest-a": 1.4, "guest-b": 1.4 },
+      characterPresetCount: 2
+    },
+    thresholds
+  );
+  assert.ok(result.issues.includes("캐릭터 프리셋 대비 목록 불일치"));
+  assert.ok(result.issues.includes("guest-b 캐릭터 가장자리 대비 측정 누락"));
+  assert.ok(result.issues.includes("캐릭터 프리셋 감사 수 불일치"));
+});
+
 test("map tone audit rejects omitted composited-scene measurements", () => {
   const result = evaluateMapToneMetrics(
     { averageLuminance: 0.5, p10Luminance: 0.2, p90Luminance: 0.8, foregroundAssetCount: 2 },

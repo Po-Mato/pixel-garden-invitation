@@ -27,7 +27,7 @@
 
 .world-map__stage[data-zone="subway-station"] {
   --character-ground-shadow: rgba(29, 50, 55, 0.36);
-  --character-edge-shadow: rgba(30, 47, 52, 0.48);
+  --character-edge-shadow: rgba(24, 37, 42, 0.63);
   --foreground-ground-shadow: rgba(31, 49, 52, 0.22);
   --zone-highlight: rgba(221, 251, 248, 0.06);
   --zone-grade: rgba(40, 87, 91, 0.045);
@@ -54,7 +54,7 @@
 
 .world-map__stage[data-zone="lobby"] {
   --character-ground-shadow: rgba(48, 44, 39, 0.34);
-  --character-edge-shadow: rgba(49, 42, 39, 0.44);
+  --character-edge-shadow: rgba(43, 36, 34, 0.56);
   --foreground-ground-shadow: rgba(47, 50, 46, 0.21);
   --zone-highlight: rgba(255, 250, 229, 0.08);
   --zone-grade: rgba(107, 86, 70, 0.035);
@@ -63,7 +63,7 @@
 
 .world-map__stage[data-zone="bridal-room"] {
   --character-ground-shadow: rgba(58, 38, 47, 0.36);
-  --character-edge-shadow: rgba(53, 35, 43, 0.47);
+  --character-edge-shadow: rgba(39, 23, 31, 0.68);
   --foreground-ground-shadow: rgba(61, 41, 49, 0.23);
   --zone-highlight: rgba(255, 236, 225, 0.08);
   --zone-grade: rgba(133, 68, 88, 0.045);
@@ -81,7 +81,7 @@
 
 .world-map__stage[data-zone="banquet"] {
   --character-ground-shadow: rgba(57, 36, 30, 0.41);
-  --character-edge-shadow: rgba(52, 32, 28, 0.53);
+  --character-edge-shadow: rgba(46, 27, 24, 0.58);
   --foreground-ground-shadow: rgba(61, 38, 30, 0.27);
   --zone-highlight: rgba(255, 232, 182, 0.085);
   --zone-grade: rgba(123, 58, 44, 0.05);
@@ -90,7 +90,7 @@
 
 .world-map__stage[data-zone="restroom"] {
   --character-ground-shadow: rgba(30, 48, 50, 0.34);
-  --character-edge-shadow: rgba(31, 45, 48, 0.45);
+  --character-edge-shadow: rgba(26, 39, 42, 0.57);
   --foreground-ground-shadow: rgba(32, 49, 50, 0.21);
   --zone-highlight: rgba(232, 255, 249, 0.065);
   --zone-grade: rgba(45, 93, 89, 0.04);

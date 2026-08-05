@@ -10,6 +10,7 @@ import {
   dynamicViewportResizeApplied,
   mobileHudAuditViewports,
   summarizeTouchLatency,
+  worldLabelAuditProfiles,
   worldLabelAuditScenarios
 } from "./lib/mobileHudBrowserAudit.mjs";
 
@@ -22,7 +23,8 @@ test("mobile HUD audit covers phones and tablets in both orientations", () => {
     "tablet-landscape",
     "galaxy-s23-font-150",
     "iphone-15-dynamic-type",
-    "iphone-15-webkit-dynamic-type"
+    "iphone-15-webkit-dynamic-type",
+    "iphone-15-webkit-text-200"
   ]);
   assert.deepEqual(
     mobileHudAuditViewports.filter(({ textScale }) => textScale === "xlarge").map(({ id, platform }) => ({ id, platform })),
@@ -33,9 +35,27 @@ test("mobile HUD audit covers phones and tablets in both orientations", () => {
     ]
   );
   assert.equal(mobileHudAuditViewports.find(({ id }) => id === "iphone-15-webkit-dynamic-type")?.engine, "webkit");
+  assert.deepEqual(
+    mobileHudAuditViewports.find(({ id }) => id === "iphone-15-webkit-text-200"),
+    {
+      id: "iphone-15-webkit-text-200",
+      width: 393,
+      height: 852,
+      deviceScaleFactor: 3,
+      platform: "ios",
+      engine: "webkit",
+      textScale: "ios-200",
+      requiredSheetScroll: 160
+    }
+  );
 });
 
 test("world label sweep covers every production zone with representative positions", () => {
+  assert.deepEqual(worldLabelAuditProfiles, [
+    { id: "iphone-portrait", width: 393, height: 852, deviceScaleFactor: 2 },
+    { id: "compact-android", width: 360, height: 640, deviceScaleFactor: 3 },
+    { id: "phone-landscape", width: 844, height: 390, deviceScaleFactor: 2 }
+  ]);
   assert.equal(worldLabelAuditScenarios.length, 17);
   assert.deepEqual([...new Set(worldLabelAuditScenarios.map(({ zoneId }) => zoneId))], [
     "home",
@@ -111,6 +131,17 @@ test("world label zone sweep reports missing zones, empty candidates, and collis
     "home-center: 라벨 후보 없음",
     "home-center: spot:directions/portal:exit 라벨 겹침"
   ]);
+  assert.deepEqual(auditWorldLabelZoneSweep([
+    {
+      id: "home-center",
+      profileId: "compact-android",
+      zoneId: "home",
+      candidateCount: 2,
+      visibleLabels: []
+    }
+  ], ["home"], ["compact-android", "phone-landscape"]), [
+    "phone-landscape/home: 라벨 감사 누락"
+  ]);
 });
 
 test("dynamic viewport audit covers address-bar contraction without creating unusably short screens", () => {
@@ -140,7 +171,13 @@ test("invitation quality audit protects compact labels, Korean fallbacks, and la
   assert.deepEqual(auditInvitationQualityMetrics({
     floatingSpot: { hitTargetPreserved: true, visuallyCompact: true, contentContained: true },
     typography: { koreanFallbackReady: true, bundledFontsReady: true, fontResourcesSameOrigin: true },
-    largeTextSheet: { contained: true, contentContained: true, touchTargetsReady: true },
+    largeTextSheet: {
+      contained: true,
+      contentContained: true,
+      touchTargetsReady: true,
+      actualScrollRange: 240,
+      requiredScrollRange: 160
+    },
     scrollStates: {
       "directions-xlarge-middle": { reached: true },
       "directions-xlarge-bottom": { reached: true }
@@ -149,7 +186,13 @@ test("invitation quality audit protects compact labels, Korean fallbacks, and la
   assert.deepEqual(auditInvitationQualityMetrics({
     floatingSpot: { hitTargetPreserved: false, visuallyCompact: false, contentContained: false },
     typography: { koreanFallbackReady: false, bundledFontsReady: false, fontResourcesSameOrigin: false },
-    largeTextSheet: { contained: false, contentContained: false, touchTargetsReady: false },
+    largeTextSheet: {
+      contained: false,
+      contentContained: false,
+      touchTargetsReady: false,
+      actualScrollRange: 48,
+      requiredScrollRange: 160
+    },
     scrollStates: { "directions-xlarge-bottom": { reached: false } }
   }), [
     "월드 안내 터치 영역 축소",
@@ -161,6 +204,7 @@ test("invitation quality audit protects compact labels, Korean fallbacks, and la
     "큰 글자 바텀시트 화면 이탈",
     "큰 글자 바텀시트 가로 넘침",
     "큰 글자 바텀시트 터치 영역 부족",
+    "iOS 200% 큰 글자 바텀시트 실제 스크롤 범위 부족",
     "directions-xlarge-bottom 스크롤 위치 도달 실패"
   ]);
 });
