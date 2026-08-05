@@ -4,7 +4,8 @@ import {
   auditInvitationQualityMetrics,
   auditMobileHudRectangles,
   compactDynamicViewport,
-  mobileHudAuditViewports
+  mobileHudAuditViewports,
+  summarizeTouchLatency
 } from "./lib/mobileHudBrowserAudit.mjs";
 
 test("mobile HUD audit covers phones and tablets in both orientations", () => {
@@ -42,6 +43,11 @@ test("mobile HUD rectangle audit catches clipping and meaningful overlap", () =>
 test("dynamic viewport audit covers address-bar contraction without creating unusably short screens", () => {
   assert.deepEqual(compactDynamicViewport({ width: 390, height: 844 }), { width: 390, height: 724 });
   assert.deepEqual(compactDynamicViewport({ width: 844, height: 390 }), { width: 844, height: 342 });
+});
+
+test("joystick latency uses repeated-sample median instead of a runner spike", () => {
+  assert.equal(summarizeTouchLatency([18.4, 141.2, 20.1]), 20.1);
+  assert.equal(summarizeTouchLatency([18.4, 20.2]), 19.3);
 });
 
 test("invitation quality audit protects compact labels, Korean fallbacks, and large text sheets", () => {

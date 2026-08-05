@@ -15,6 +15,17 @@ export function compactDynamicViewport(viewport) {
   return { width: viewport.width, height: Math.max(320, viewport.height - reduction) };
 }
 
+export function summarizeTouchLatency(samples) {
+  if (!Array.isArray(samples) || samples.length === 0) {
+    throw new TypeError("Touch latency samples must contain at least one value");
+  }
+  const sorted = samples.map(Number).sort((left, right) => left - right);
+  const middle = Math.floor(sorted.length / 2);
+  return sorted.length % 2 === 0
+    ? Math.round((sorted[middle - 1] + sorted[middle]) * 5) / 10
+    : sorted[middle];
+}
+
 const overlapPairs = [
   ["hud", "controls"],
   ["hud", "minimap"],
@@ -162,24 +173,39 @@ async function measureJoystickTouchResponse(page, context) {
   const x = box.x + box.width - 4;
   const y = box.y + box.height / 2;
   const session = await context.newCDPSession(page);
-  const startedAt = performance.now();
-  let responded = false;
+  const samples = [];
   try {
-    await session.send("Input.dispatchTouchEvent", {
-      type: "touchStart",
-      touchPoints: [{ x, y, radiusX: 2, radiusY: 2, force: 1, id: 1 }]
-    });
-    await page.waitForFunction(() => (
-      document.querySelector(".virtual-joystick__thumb")?.style.getPropertyValue("--joystick-x").trim() === "1"
-    ), undefined, { timeout: 500 });
-    responded = true;
-  } catch {
-    responded = false;
+    for (let index = 0; index < 3; index += 1) {
+      const startedAt = performance.now();
+      let responded = false;
+      try {
+        await session.send("Input.dispatchTouchEvent", {
+          type: "touchStart",
+          touchPoints: [{ x, y, radiusX: 2, radiusY: 2, force: 1, id: index + 1 }]
+        });
+        await page.waitForFunction(() => (
+          document.querySelector(".virtual-joystick__thumb")?.style.getPropertyValue("--joystick-x").trim() === "1"
+        ), undefined, { timeout: 500 });
+        responded = true;
+      } catch {
+        responded = false;
+      } finally {
+        await session.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] }).catch(() => undefined);
+      }
+      const latencyMs = Math.round((performance.now() - startedAt) * 10) / 10;
+      samples.push({ latencyMs, responded });
+      await page.waitForFunction(() => (
+        document.querySelector(".virtual-joystick__thumb")?.style.getPropertyValue("--joystick-x").trim() === "0"
+      ), undefined, { timeout: 500 }).catch(() => undefined);
+    }
   } finally {
-    await session.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] }).catch(() => undefined);
     await session.detach().catch(() => undefined);
   }
-  return { latencyMs: Math.round((performance.now() - startedAt) * 10) / 10, responded };
+  return {
+    latencyMs: summarizeTouchLatency(samples.map((sample) => sample.latencyMs)),
+    responded: samples.every((sample) => sample.responded),
+    samples
+  };
 }
 
 async function measureInvitationQuality(page, viewport, sheetScreenshotPath) {
