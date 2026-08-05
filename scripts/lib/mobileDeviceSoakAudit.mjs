@@ -187,12 +187,19 @@ async function sampleMovingFrameSeries(page, durationMs, sampleCount = 3) {
       cancelable: true
     }));
     const samples = [read("before")];
+    joystick.focus();
+    dispatchKey("keydown", "ArrowRight");
+    await new Promise((resolve) => setTimeout(resolve, Math.min(720, Math.max(360, duration / 7))));
+    dispatchKey("keyup", "ArrowRight");
+    await new Promise((resolve) => setTimeout(resolve, 96));
+    await new Promise((resolve) => requestAnimationFrame(resolve));
+    samples.push(read("movement-proof"));
+
     const frameCounts = Array.from({ length: count }, () => 0);
     const sampleDuration = duration / count;
     const segmentDuration = Math.max(240, Math.min(500, Math.floor(duration / 10)));
     let currentKey = "ArrowRight";
     let currentSegment = 0;
-    joystick.focus();
     dispatchKey("keydown", currentKey);
     const startedAt = performance.now();
     await new Promise((resolve) => {
@@ -202,7 +209,6 @@ async function sampleMovingFrameSeries(page, durationMs, sampleCount = 3) {
         frameCounts[bucket] += 1;
         const nextSegment = Math.floor(elapsed / segmentDuration);
         if (nextSegment !== currentSegment) {
-          samples.push(read(`moving-${nextSegment}`));
           dispatchKey("keyup", currentKey);
           currentSegment = nextSegment;
           currentKey = currentSegment % 2 === 0 ? "ArrowRight" : "ArrowLeft";
