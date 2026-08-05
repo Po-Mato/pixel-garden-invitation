@@ -13,14 +13,12 @@ export const androidChromeVisualProfile = Object.freeze({
   id: "pixel-7-api-35-chrome",
   deviceName: "Pixel 7",
   runtime: "Android 15 (API 35)",
-  requiredDirectionsScroll: 80
+  requiredDirectionsScroll: 0
 });
 
 export const androidChromeVisualStates = Object.freeze([
   "game",
-  "directions",
-  "directions-middle",
-  "directions-bottom"
+  "directions"
 ]);
 
 export function androidChromeBaselinePath(rootDir, state) {

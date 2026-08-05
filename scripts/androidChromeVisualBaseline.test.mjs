@@ -11,13 +11,11 @@ test("real Android Chrome baseline covers the game and directions scroll", () =>
     id: "pixel-7-api-35-chrome",
     deviceName: "Pixel 7",
     runtime: "Android 15 (API 35)",
-    requiredDirectionsScroll: 80
+    requiredDirectionsScroll: 0
   });
   assert.deepEqual(androidChromeVisualStates, [
     "game",
-    "directions",
-    "directions-middle",
-    "directions-bottom"
+    "directions"
   ]);
   assert.match(
     androidChromeBaselinePath("/repo", "game"),

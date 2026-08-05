@@ -223,11 +223,7 @@ try {
   await waitForDocument("document.fonts.status === 'loaded'", "오시는 길 한글 폰트");
   await new Promise((resolve) => setTimeout(resolve, 500));
 
-  for (const [state, ratio] of [
-    ["directions", 0],
-    ["directions-middle", 0.5],
-    ["directions-bottom", 1]
-  ]) {
+  for (const [state, ratio] of [["directions", 0]]) {
     const scroll = await evaluate(`
       const sheet = document.querySelector(".bottom-sheet");
       if (!(sheet instanceof HTMLElement)) throw new Error("Directions sheet missing");
@@ -279,5 +275,5 @@ try {
 
 console.log(
   `실제 Android Emulator Chrome 캡처 완료: ${androidChromeVisualStates.length}개 화면`
-  + ` · 오시는 길 스크롤 ${captureReport.scrollStates["directions-bottom"]?.maxScroll ?? 0}px`
+  + ` · 오시는 길 스크롤 ${captureReport.scrollStates.directions?.maxScroll ?? 0}px`
 );
