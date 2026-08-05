@@ -1,0 +1,68 @@
+{
+  "version": 1,
+  "approvedAt": "2026-08-05T08:09:19.840Z",
+  "reason": "Pixel 7 Android 15 Chrome 124 actual-emulator quality baseline",
+  "profile": {
+    "id": "pixel-7-api-35-chrome",
+    "deviceName": "Pixel 7",
+    "runtime": "Android 15 (API 35)",
+    "requiredDirectionsScroll": 0
+  },
+  "capture": {
+    "generatedAt": "2026-08-05T08:06:35.910Z",
+    "profile": {
+      "id": "pixel-7-api-35-chrome",
+      "deviceName": "Pixel 7",
+      "runtime": "Android 15 (API 35)",
+      "requiredDirectionsScroll": 0
+    },
+    "url": "http://10.0.2.2:4179/",
+    "automation": "Appium UiAutomator2 WebDriver",
+    "emulatorSerial": "emulator-5554",
+    "userAgent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36",
+    "viewport": {
+      "dpr": 2.625,
+      "height": 783,
+      "visualHeight": 783.2380981445312,
+      "visualWidth": 412.19049072265625,
+      "width": 412
+    },
+    "browserVersion": null,
+    "scrollStates": {
+      "directions": {
+        "horizontalOverflow": false,
+        "maxScroll": 0,
+        "reached": true,
+        "scrollTop": 0,
+        "target": 0
+      }
+    },
+    "comparisons": [],
+    "player": {
+      "height": 110.04762268066406,
+      "width": 76,
+      "x": 157,
+      "y": 562.9761962890625
+    }
+  },
+  "pixelThreshold": 36,
+  "maxChangedRatio": 0.015,
+  "comparisonMode": "gaussian-structural",
+  "blurSigma": 2,
+  "profiles": [
+    {
+      "profileId": "pixel-7-api-35-chrome",
+      "state": "game",
+      "width": 1080,
+      "height": 2201,
+      "sha256": "1d80756265725e6cadd06cd69bb39c20fe4835257c817d1cf69c3226c25e738b"
+    },
+    {
+      "profileId": "pixel-7-api-35-chrome",
+      "state": "directions",
+      "width": 1080,
+      "height": 2201,
+      "sha256": "5c83137a624792a7fac9fa93c2410c9590320220d4ae7b2f4e929ca2257ab6f8"
+    }
+  ]
+}

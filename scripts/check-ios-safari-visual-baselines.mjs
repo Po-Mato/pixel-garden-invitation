@@ -195,6 +195,9 @@ try {
         "appium:simulatorStartupRetries": 2,
         "appium:wdaLaunchTimeout": 600000,
         "appium:wdaConnectionTimeout": 600000,
+        "appium:initialDeeplinkUrl": url,
+        "appium:webviewConnectTimeout": 120000,
+        "appium:webviewConnectRetries": 120,
         "appium:showXcodeLog": true
       }
     }
