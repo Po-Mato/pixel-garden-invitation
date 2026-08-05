@@ -24,6 +24,7 @@ import {
 import { shouldReduceMotion } from "../accessibility/viewPreferences";
 import { speakRouteVoiceMessage } from "../accessibility/routeVoiceGuidance";
 import { resolveCharacterPortraitUrl } from "../character/assets";
+import { worldCharacterAnchorStyle } from "../character/worldAnchor";
 import {
   fetchSyncedJourneyProgress,
   journeyProgressSyncScope,
@@ -752,12 +753,12 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   const [activePropMoment, setActivePropMoment] = useState<ActiveWorldPropMoment | null>(null);
   const [remoteReactions, setRemoteReactions] = useState<Record<string, ActiveGuestReaction>>({});
   const [viewport, setViewport] = useState<ViewportSize>(defaultViewport);
-  const [camera, setCamera] = useState(() => computeCameraTransform({
+  const camera = useMemo(() => computeCameraTransform({
     player: position,
-    viewport: defaultViewport,
-    bounds: initialZone.bounds,
+    viewport,
+    bounds: activeZone.bounds,
     zoom: 1
-  }));
+  }), [activeZone.bounds.height, activeZone.bounds.width, position.x, position.y, viewport.height, viewport.width]);
   const [remoteGuests, setRemoteGuests] = useState<RoomGuest[]>([]);
   const [companionGuestId, setCompanionGuestId] = useState<string | null>(
     restoredCompanionSession?.companionGuestId ?? null
@@ -2552,20 +2553,6 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     observer.observe(element);
     return () => observer.disconnect();
   }, [activeZoneId]);
-
-  useEffect(() => {
-    setCamera((current) => {
-      const next = computeCameraTransform({
-        player: position,
-        viewport,
-        bounds: activeZone.bounds,
-        zoom: 1
-      });
-      return next.x === current.x && next.y === current.y && next.zoom === current.zoom
-        ? current
-        : next;
-    });
-  }, [activeZone.bounds.height, activeZone.bounds.width, position.x, position.y, viewport.height, viewport.width]);
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -4502,6 +4489,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
       data-journey-stamp-reward={equippedJourneyStampReward}
       data-secret-reward={worldSecretCollection.equippedRewardId}
       data-group-celebration={npcGroupCelebrationActive || undefined}
+      data-hud-tools-open={hudToolsOpen || undefined}
       aria-label="모바일 청첩장 월드"
       aria-busy={portalTransition ? "true" : undefined}
     >
@@ -5238,7 +5226,12 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
                 className="world-player player player--remote"
                 aria-label={guest.nickname}
                 data-remote-motion="pixel-step-3"
-                style={{ left: guest.x, top: guest.y, zIndex: worldDepth(guest.y) }}
+                style={{
+                  left: guest.x,
+                  top: guest.y,
+                  zIndex: worldDepth(guest.y),
+                  ...worldCharacterAnchorStyle(guest.appearance, window.devicePixelRatio)
+                }}
               >
                 {remoteReactions[guest.guestId]?.zoneId === activeZone.id ? (
                   <GuestReactionBubble
@@ -5316,7 +5309,12 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
             <div
               className="world-player player"
               aria-label={profile.nickname}
-              style={{ left: position.x, top: position.y, zIndex: worldDepth(position.y) }}
+              style={{
+                left: position.x,
+                top: position.y,
+                zIndex: worldDepth(position.y),
+                ...worldCharacterAnchorStyle(profile.appearance, window.devicePixelRatio)
+              }}
             >
               {localReaction?.zoneId === activeZone.id ? (
                 <GuestReactionBubble reaction={localReaction.reaction} guestName={profile.nickname} />

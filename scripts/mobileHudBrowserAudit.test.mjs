@@ -11,6 +11,7 @@ import {
   iosSafariText200AuditCss,
   iosText200AuditCss,
   mobileHudAuditViewports,
+  mobileHudCollisionMatrixProfiles,
   summarizeTouchLatency,
   worldLabelAuditProfiles,
   worldLabelAuditScenarios
@@ -50,6 +51,21 @@ test("mobile HUD audit covers phones and tablets in both orientations", () => {
       requiredSheetScroll: 160
     }
   );
+});
+
+test("floating UI collision matrix covers 320–430 widths, 100–200% text, and landscape", () => {
+  assert.equal(mobileHudCollisionMatrixProfiles.length, 15);
+  assert.deepEqual(
+    [...new Set(mobileHudCollisionMatrixProfiles
+      .filter(({ orientation }) => orientation === "portrait")
+      .map(({ width }) => width))],
+    [320, 360, 390, 430]
+  );
+  assert.deepEqual(
+    [...new Set(mobileHudCollisionMatrixProfiles.map(({ textPercent }) => textPercent))],
+    [100, 150, 200]
+  );
+  assert.equal(mobileHudCollisionMatrixProfiles.filter(({ orientation }) => orientation === "landscape").length, 3);
 });
 
 test("real Safari 200% uses native text adjustment without double scaling", () => {
@@ -99,6 +115,15 @@ test("mobile HUD rectangle audit catches clipping and meaningful overlap", () =>
     "minimap 화면 이탈",
     "context/controls 겹침"
   ]);
+});
+
+test("mobile HUD rectangle audit catches expanded tool collisions", () => {
+  assert.deepEqual(auditMobileHudRectangles({
+    hud: { x: 8, y: 8, width: 344, height: 90 },
+    tools: { x: 8, y: 96, width: 344, height: 230 },
+    minimap: { x: 300, y: 110, width: 52, height: 52 },
+    controls: { x: 8, y: 540, width: 344, height: 92 }
+  }, { width: 360, height: 640 }), ["tools/minimap 겹침"]);
 });
 
 test("world label audit accepts priority-hidden labels and rejects visible collisions", () => {

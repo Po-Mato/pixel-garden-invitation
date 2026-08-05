@@ -341,7 +341,7 @@ describe("mobile world controls", () => {
     expect(stageRule).toContain("will-change: transform;");
     expect(stageRule).toContain("contain: layout paint style;");
     expect(stageRule).toContain("backface-visibility: hidden;");
-    expect(stageRule).not.toContain("transition:");
+    expect(stageRule).toContain("transition: transform 48ms linear;");
     expect(styles).not.toContain('html[data-camera-tracking="responsive"] .world-map__stage');
     expect(stageRule).not.toContain("width: 390px;");
     expect(stageRule).not.toContain("height: 720px;");

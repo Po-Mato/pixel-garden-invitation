@@ -19,6 +19,31 @@ export function summarizeFrameSamples(samples) {
   return { samples: [...samples], medianFps, minimumFps: sorted[0], maximumFps: sorted.at(-1) };
 }
 
+export function summarizeMovementSamples(samples, settledSamples) {
+  if (!Array.isArray(samples) || samples.length < 2) {
+    throw new TypeError("Movement samples must contain at least two values");
+  }
+  const first = samples[0];
+  const distanceFrom = (left, right) => Math.hypot(left.x - right.x, left.y - right.y);
+  const movementDistance = Math.max(...samples.map(({ position }) => distanceFrom(position, first.position)));
+  const cameraDistance = Math.max(...samples.map(({ camera }) => distanceFrom(camera, first.camera)));
+  const maxCenterErrorPx = Math.max(...samples.map(({ centerError }) => Math.hypot(centerError.x, centerError.y)));
+  const settledOrigin = settledSamples[0]?.visualCenter ?? samples.at(-1).visualCenter;
+  const settledJitterPx = Math.max(0, ...settledSamples.map(({ visualCenter }) => (
+    distanceFrom(visualCenter, settledOrigin)
+  )));
+  return {
+    movementResponded: movementDistance >= 8,
+    cameraFollowed: cameraDistance >= 4,
+    movementDistance: Math.round(movementDistance * 10) / 10,
+    cameraDistance: Math.round(cameraDistance * 10) / 10,
+    maxCenterErrorPx: Math.round(maxCenterErrorPx * 100) / 100,
+    settledJitterPx: Math.round(settledJitterPx * 100) / 100,
+    samples,
+    settledSamples
+  };
+}
+
 export function assessMobileSoakMetrics(metrics) {
   const issues = [];
   if (metrics.pageErrors.length > 0) issues.push(`페이지 오류 ${metrics.pageErrors.length}개`);
@@ -27,6 +52,14 @@ export function assessMobileSoakMetrics(metrics) {
   if (!metrics.layoutStable) issues.push("반복 조작 후 HUD 또는 맵 화면 틀어짐");
   if (!metrics.typographyFallbackReady) issues.push("안드로이드 한글 폰트 대체 누락");
   if (!metrics.sheetContained) issues.push("큰 글자 바텀시트 화면 이탈");
+  if (metrics.movementResponded === false) issues.push("실제 캐릭터 이동 무응답");
+  if (metrics.cameraFollowed === false) issues.push("실제 이동 중 카메라 추적 없음");
+  if (Number.isFinite(metrics.maxCenterErrorPx) && metrics.maxCenterErrorPx > 1.25) {
+    issues.push(`이동 후 캐릭터 중심 오차 ${metrics.maxCenterErrorPx}px`);
+  }
+  if (Number.isFinite(metrics.settledJitterPx) && metrics.settledJitterPx > 0.75) {
+    issues.push(`이동 정지 후 카메라 미세 흔들림 ${metrics.settledJitterPx}px`);
+  }
   const baselineFps = Number.isFinite(metrics.baselineFps) ? metrics.baselineFps : 60;
   const relativeFps = baselineFps > 0 ? metrics.averageFps / baselineFps : 0;
   if ((baselineFps >= 25 && metrics.averageFps < 25) || (baselineFps < 25 && relativeFps < 0.75)) {
@@ -81,6 +114,93 @@ async function heapUsed(page) {
     const memory = performance.memory;
     return typeof memory?.usedJSHeapSize === "number" ? memory.usedJSHeapSize : null;
   });
+}
+
+async function readMovementSample(page, phase) {
+  return page.evaluate((samplePhase) => {
+    const player = document.querySelector(".world-player:not(.player--remote)");
+    const sprite = player?.querySelector(".character-sprite--world");
+    const map = document.querySelector(".world-map");
+    const stage = document.querySelector(".world-map__stage");
+    if (
+      !(player instanceof HTMLElement)
+      || !(sprite instanceof HTMLElement)
+      || !(map instanceof HTMLElement)
+      || !(stage instanceof HTMLElement)
+    ) throw new Error("Movement sample elements are unavailable");
+    const playerStyle = getComputedStyle(player);
+    const spriteRect = sprite.getBoundingClientRect();
+    const mapRect = map.getBoundingClientRect();
+    const stageTransform = getComputedStyle(stage).transform;
+    const matrix = stageTransform === "none"
+      ? { m41: 0, m42: 0 }
+      : new DOMMatrixReadOnly(stageTransform);
+    const centerOffsetX = Number.parseFloat(playerStyle.getPropertyValue("--character-world-anchor-offset-x")) || 0;
+    const centerY = Number.parseFloat(playerStyle.getPropertyValue("--character-world-anchor-y")) || spriteRect.height / 2;
+    const visualCenter = {
+      x: spriteRect.x + spriteRect.width / 2 + centerOffsetX,
+      y: spriteRect.y + centerY
+    };
+    const viewportCenter = {
+      x: mapRect.x + mapRect.width / 2,
+      y: mapRect.y + mapRect.height / 2
+    };
+    const rawCenterError = {
+      x: visualCenter.x - viewportCenter.x,
+      y: visualCenter.y - viewportCenter.y
+    };
+    const logicalWidth = Number(stage.dataset.logicalWidth) || stage.offsetWidth;
+    const logicalHeight = Number(stage.dataset.logicalHeight) || stage.offsetHeight;
+    const centerable = {
+      x: logicalWidth > mapRect.width + 1
+        && matrix.m41 < -0.5
+        && matrix.m41 > mapRect.width - logicalWidth + 0.5,
+      y: logicalHeight > mapRect.height + 1
+        && matrix.m42 < -0.5
+        && matrix.m42 > mapRect.height - logicalHeight + 0.5
+    };
+    return {
+      phase: samplePhase,
+      position: {
+        x: Number.parseFloat(player.style.left),
+        y: Number.parseFloat(player.style.top)
+      },
+      camera: { x: matrix.m41, y: matrix.m42 },
+      visualCenter,
+      viewportCenter,
+      centerable,
+      rawCenterError,
+      centerError: {
+        x: centerable.x ? rawCenterError.x : 0,
+        y: centerable.y ? rawCenterError.y : 0
+      }
+    };
+  }, phase);
+}
+
+async function exercisePlayerMovement(page, durationMs) {
+  const samples = [await readMovementSample(page, "before")];
+  await page.locator(".virtual-joystick").focus();
+  const segmentDurationMs = Math.max(220, Math.min(420, Math.floor(durationMs / 10)));
+  const segmentCount = Math.max(4, Math.floor(durationMs / (segmentDurationMs + 80)));
+  for (let index = 0; index < segmentCount; index += 1) {
+    const key = index % 2 === 0 ? "ArrowRight" : "ArrowLeft";
+    try {
+      await page.keyboard.down(key);
+      await page.waitForTimeout(segmentDurationMs);
+    } finally {
+      await page.keyboard.up(key).catch(() => undefined);
+    }
+    await page.waitForTimeout(72);
+    samples.push(await readMovementSample(page, `release-${index + 1}`));
+  }
+  await page.waitForTimeout(96);
+  const settledSamples = [];
+  for (let index = 0; index < 4; index += 1) {
+    await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(resolve)));
+    settledSamples.push(await readMovementSample(page, `settled-${index + 1}`));
+  }
+  return summarizeMovementSamples(samples, settledSamples);
 }
 
 export async function runMobileDeviceSoakAudit({ rootDir, outputDir, port = 4179, durationMs = 5_000, interactionCount = 18 }) {
@@ -184,7 +304,10 @@ export async function runMobileDeviceSoakAudit({ rootDir, outputDir, port = 4179
       await page.locator(".bottom-sheet__header button").tap();
       await sheet.waitFor({ state: "hidden" });
       await page.evaluate(() => { delete document.documentElement.dataset.textScale; });
-      const applicationFrames = await sampleFrameSeries(page, durationMs);
+      const [applicationFrames, movementMetrics] = await Promise.all([
+        sampleFrameSeries(page, durationMs),
+        exercisePlayerMovement(page, durationMs)
+      ]);
       const averageFps = applicationFrames.medianFps;
       const baselineFps = baselineFrames.medianFps;
       const automaticQuality = await page.evaluate(() => ({
@@ -200,6 +323,7 @@ export async function runMobileDeviceSoakAudit({ rootDir, outputDir, port = 4179
         touchResponded,
         layoutStable,
         ...invitationMetrics,
+        ...movementMetrics,
         averageFps,
         baselineFps,
         frameRatio: baselineFps > 0 ? averageFps / baselineFps : null,

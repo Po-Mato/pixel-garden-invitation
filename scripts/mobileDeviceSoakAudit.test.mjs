@@ -3,7 +3,8 @@ import assert from "node:assert/strict";
 import {
   assessMobileSoakMetrics,
   mobileSoakProfiles,
-  summarizeFrameSamples
+  summarizeFrameSamples,
+  summarizeMovementSamples
 } from "./lib/mobileDeviceSoakAudit.mjs";
 
 test("mobile soak covers Android Chromium and iOS WebKit", () => {
@@ -23,6 +24,34 @@ test("mobile soak uses the median of repeated frame samples", () => {
   });
 });
 
+test("mobile soak summarizes real player movement, camera follow, centering, and settled jitter", () => {
+  const sample = (position, camera, visualCenter = { x: 180, y: 320 }) => ({
+    position,
+    camera,
+    visualCenter,
+    centerError: { x: visualCenter.x - 180, y: visualCenter.y - 320 }
+  });
+  const samples = [
+    sample({ x: 285, y: 375 }, { x: -105, y: -55 }),
+    sample({ x: 345, y: 375 }, { x: -165, y: -55 }, { x: 180.25, y: 320 })
+  ];
+  const settledSamples = [
+    sample({ x: 345, y: 375 }, { x: -165, y: -55 }, { x: 180.25, y: 320 }),
+    sample({ x: 345, y: 375 }, { x: -165, y: -55 }, { x: 180.5, y: 320 })
+  ];
+
+  assert.deepEqual(summarizeMovementSamples(samples, settledSamples), {
+    movementResponded: true,
+    cameraFollowed: true,
+    movementDistance: 60,
+    cameraDistance: 60,
+    maxCenterErrorPx: 0.25,
+    settledJitterPx: 0.25,
+    samples,
+    settledSamples
+  });
+});
+
 test("mobile soak calibrates an engine-limited runner without hiding an app slowdown", () => {
   const stableRunner = {
     pageErrors: [], failedRequests: [], touchResponded: true, layoutStable: true,
@@ -37,7 +66,9 @@ test("mobile soak calibrates an engine-limited runner without hiding an app slow
 test("mobile soak reports interaction, frame, and memory regressions", () => {
   assert.deepEqual(assessMobileSoakMetrics({
     pageErrors: ["boom"], failedRequests: ["asset"], touchResponded: false, layoutStable: false,
-    typographyFallbackReady: false, sheetContained: false, averageFps: 20, baselineFps: 60, heapGrowthRatio: 0.5
+    typographyFallbackReady: false, sheetContained: false,
+    movementResponded: false, cameraFollowed: false, maxCenterErrorPx: 2.4, settledJitterPx: 1.1,
+    averageFps: 20, baselineFps: 60, heapGrowthRatio: 0.5
   }), [
     "페이지 오류 1개",
     "요청 실패 1개",
@@ -45,6 +76,10 @@ test("mobile soak reports interaction, frame, and memory regressions", () => {
     "반복 조작 후 HUD 또는 맵 화면 틀어짐",
     "안드로이드 한글 폰트 대체 누락",
     "큰 글자 바텀시트 화면 이탈",
+    "실제 캐릭터 이동 무응답",
+    "실제 이동 중 카메라 추적 없음",
+    "이동 후 캐릭터 중심 오차 2.4px",
+    "이동 정지 후 카메라 미세 흔들림 1.1px",
     "낮은 프레임 20 FPS (러너 기준 60 FPS)",
     "메모리 증가 50%"
   ]);

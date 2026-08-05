@@ -2009,6 +2009,7 @@ select,
   backface-visibility: hidden;
   transform-origin: 0 0;
   will-change: transform;
+  transition: transform 48ms linear;
 }
 
 .world-map-artwork,
@@ -2500,7 +2501,10 @@ select,
   gap: 3px;
   width: 76px;
   pointer-events: none;
-  transform: translate(-50%, -50%);
+  transform: translate(
+    calc(-50% - var(--character-world-anchor-offset-x, 0px)),
+    calc(-1 * var(--character-world-anchor-y, 46px))
+  );
   color: var(--ink);
   font-size: 12px;
   font-weight: 900;
@@ -2510,6 +2514,12 @@ select,
     0 2px 0 var(--paper-raised),
     0 -2px 0 var(--paper-raised);
   transition: none;
+}
+
+.game-world[data-hud-tools-open="true"] :is(.world-minimap, .world-context-action) {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
 }
 
 .player--remote {

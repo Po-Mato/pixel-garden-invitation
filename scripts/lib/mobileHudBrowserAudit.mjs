@@ -51,8 +51,57 @@ export const mobileHudAuditViewports = Object.freeze([
   }
 ]);
 
+const portraitCollisionWidths = [
+  { width: 320, height: 568, deviceScaleFactor: 2 },
+  { width: 360, height: 780, deviceScaleFactor: 3 },
+  { width: 390, height: 844, deviceScaleFactor: 3 },
+  { width: 430, height: 932, deviceScaleFactor: 3 }
+];
+
+const collisionTextScales = [
+  { suffix: "100", textPercent: 100, textScale: null },
+  { suffix: "150", textPercent: 150, textScale: "xlarge" },
+  { suffix: "200", textPercent: 200, textScale: "ios-200" }
+];
+
+export const mobileHudCollisionMatrixProfiles = Object.freeze([
+  ...portraitCollisionWidths.flatMap((viewport) => collisionTextScales.map((scale) => ({
+    id: `portrait-${viewport.width}-text-${scale.suffix}`,
+    ...viewport,
+    ...scale,
+    orientation: "portrait"
+  }))),
+  {
+    id: "landscape-568x320-text-100",
+    width: 568,
+    height: 320,
+    deviceScaleFactor: 2,
+    textPercent: 100,
+    textScale: null,
+    orientation: "landscape"
+  },
+  {
+    id: "landscape-844x390-text-150",
+    width: 844,
+    height: 390,
+    deviceScaleFactor: 2,
+    textPercent: 150,
+    textScale: "xlarge",
+    orientation: "landscape"
+  },
+  {
+    id: "landscape-932x430-text-200",
+    width: 932,
+    height: 430,
+    deviceScaleFactor: 3,
+    textPercent: 200,
+    textScale: "ios-200",
+    orientation: "landscape"
+  }
+]);
+
 export const worldLabelAuditScenarios = Object.freeze([
-  { id: "home-center", zoneId: "home", position: { x: 285, y: 555 } },
+  { id: "home-center", zoneId: "home", position: { x: 285, y: 375 } },
   { id: "neighborhood-west", zoneId: "neighborhood", position: { x: 135, y: 375 } },
   { id: "neighborhood-east", zoneId: "neighborhood", position: { x: 1095, y: 375 } },
   { id: "station-west", zoneId: "subway-station", position: { x: 135, y: 435 } },
@@ -157,7 +206,11 @@ const overlapPairs = [
   ["minimap", "context"],
   ["collection", "controls"],
   ["collection", "context"],
-  ["context", "controls"]
+  ["context", "controls"],
+  ["tools", "minimap"],
+  ["tools", "collection"],
+  ["tools", "context"],
+  ["tools", "controls"]
 ];
 
 function overlapArea(left, right) {
@@ -265,7 +318,8 @@ async function visibleRectangles(page) {
       minimap: ".world-minimap",
       collection: ".world-collection-progress",
       context: ".world-context-action",
-      controls: ".world-control-dock"
+      controls: ".world-control-dock",
+      tools: ".world-hud__tools"
     };
     return Object.fromEntries(Object.entries(selectors).map(([name, selector]) => {
       const element = document.querySelector(selector);
@@ -624,6 +678,79 @@ async function runWorldLabelZoneSweep({ browser, url, outputDir }) {
   };
 }
 
+async function runMobileHudCollisionMatrix({ browser, url, outputDir }) {
+  const reports = [];
+  for (const profile of mobileHudCollisionMatrixProfiles) {
+    const context = await browser.newContext({
+      viewport: { width: profile.width, height: profile.height },
+      hasTouch: true,
+      isMobile: true,
+      locale: "ko-KR",
+      colorScheme: "light",
+      reducedMotion: "reduce",
+      deviceScaleFactor: profile.deviceScaleFactor
+    });
+    const page = await context.newPage();
+    await page.addInitScript(() => {
+      localStorage.setItem("wedding-game:entry-session:v1", JSON.stringify({
+        version: 1,
+        nickname: "중첩감사",
+        appearance: { presetId: "feminine-long-wave-dress" },
+        updatedAt: new Date().toISOString()
+      }));
+      localStorage.setItem("wedding-game:first-visit-guide:v1", JSON.stringify({
+        version: 1,
+        completed: true,
+        completedAt: new Date().toISOString()
+      }));
+    });
+    try {
+      await page.goto(url, { waitUntil: "domcontentloaded" });
+      const resumeGarden = page.locator(".entry-screen__resume-access");
+      if (await resumeGarden.isVisible().catch(() => false)) await resumeGarden.click();
+      await page.locator(".game-world").waitFor({ state: "visible" });
+      await page.locator(".world-map__stage--background-loaded").waitFor({ state: "visible", timeout: 15_000 });
+      await page.addStyleTag({ content: `
+        html.hud-collision-matrix-freeze *,
+        html.hud-collision-matrix-freeze *::before,
+        html.hud-collision-matrix-freeze *::after {
+          animation: none !important;
+          caret-color: transparent !important;
+          transition: none !important;
+        }
+      ` });
+      await setAuditTextScale(page, profile.textScale);
+      await page.evaluate(() => {
+        document.documentElement.classList.add("hud-collision-matrix-freeze");
+        return document.fonts.ready;
+      });
+      const baseRectangles = await visibleRectangles(page);
+      const baseIssues = auditMobileHudRectangles(baseRectangles, profile);
+      await page.locator(".world-hud__tools-toggle").click();
+      await page.locator(".world-hud__tools").waitFor({ state: "visible" });
+      const toolsRectangles = await visibleRectangles(page);
+      const toolsIssues = auditMobileHudRectangles(toolsRectangles, profile);
+      const issues = [
+        ...baseIssues.map((issue) => `기본 상태 ${issue}`),
+        ...toolsIssues.map((issue) => `안내 도구 상태 ${issue}`)
+      ];
+      let screenshotPath = null;
+      if (issues.length > 0) {
+        screenshotPath = path.join(outputDir, `hud-collision-${profile.id}.png`);
+        await page.screenshot({ path: screenshotPath, fullPage: false, scale: "css" });
+      }
+      reports.push({ ...profile, baseRectangles, toolsRectangles, issues, screenshotPath });
+    } finally {
+      await context.close();
+    }
+  }
+  return {
+    profiles: mobileHudCollisionMatrixProfiles,
+    reports,
+    issues: reports.flatMap((report) => report.issues.map((issue) => `${report.id}: ${issue}`))
+  };
+}
+
 export async function runMobileHudBrowserAudit({ rootDir, outputDir, port = 4178, deviceBaselineMode = "compare" }) {
   const server = spawn(
     "pnpm",
@@ -643,6 +770,7 @@ export async function runMobileHudBrowserAudit({ rootDir, outputDir, port = 4178
     const reports = [];
     let zoneLabelSweep = { reports: [], issues: [], expectedZoneIds: [] };
     let typographyScaleAudit = { reports: [], issues: [], profiles: [] };
+    let collisionMatrix = { reports: [], issues: [], profiles: [] };
     try {
       for (const viewport of mobileHudAuditViewports) {
         const engine = viewport.engine ?? "chromium";
@@ -719,6 +847,8 @@ export async function runMobileHudBrowserAudit({ rootDir, outputDir, port = 4178
         const toolsPanel = page.locator(".world-hud__tools");
         await toolsPanel.waitFor({ state: "visible" });
         const toolsRect = await toolsPanel.boundingBox();
+        const toolsRectangles = await visibleRectangles(page);
+        auditMobileHudRectangles(toolsRectangles, viewport).forEach((issue) => issues.push(`expanded-tools ${issue}`));
         if (
           !toolsRect
           || toolsRect.x < -1
@@ -757,7 +887,7 @@ export async function runMobileHudBrowserAudit({ rootDir, outputDir, port = 4178
             }
           }
         }
-        reports.push({ ...viewport, engine, rectangles, worldLabels, movementLayout, dynamicViewport, toolsRect, touchResponse, invitationQuality, deviceVisualBaselines, issues, screenshotPath, toolsScreenshotPath });
+        reports.push({ ...viewport, engine, rectangles, worldLabels, movementLayout, dynamicViewport, toolsRect, toolsRectangles, touchResponse, invitationQuality, deviceVisualBaselines, issues, screenshotPath, toolsScreenshotPath });
         await context.close();
       }
       zoneLabelSweep = await runWorldLabelZoneSweep({
@@ -770,6 +900,11 @@ export async function runMobileHudBrowserAudit({ rootDir, outputDir, port = 4178
         url,
         outputDir
       });
+      collisionMatrix = await runMobileHudCollisionMatrix({
+        browser: await browserFor("chromium"),
+        url,
+        outputDir
+      });
     } finally {
       await Promise.all([...browsers.values()].map((browser) => browser.close()));
     }
@@ -778,15 +913,17 @@ export async function runMobileHudBrowserAudit({ rootDir, outputDir, port = 4178
       generatedAt: new Date().toISOString(),
       reports,
       zoneLabelSweep,
-      typographyScaleAudit
+      typographyScaleAudit,
+      collisionMatrix
     }, null, 2)}\n`);
     const issues = [
       ...reports.flatMap((report) => report.issues.map((issue) => `${report.id}: ${issue}`)),
       ...zoneLabelSweep.issues,
-      ...typographyScaleAudit.issues
+      ...typographyScaleAudit.issues,
+      ...collisionMatrix.issues
     ];
     if (issues.length > 0) throw new Error(`Mobile HUD browser audit failed:\n${issues.join("\n")}`);
-    return { reports, zoneLabelSweep, typographyScaleAudit, reportPath };
+    return { reports, zoneLabelSweep, typographyScaleAudit, collisionMatrix, reportPath };
   } finally {
     server.kill("SIGTERM");
   }
