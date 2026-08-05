@@ -1,4 +1,5 @@
 import { access, mkdir, writeFile } from "node:fs/promises";
+import http from "node:http";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import {
@@ -22,14 +23,34 @@ const appiumUrl = option("--appium-url", "http://127.0.0.1:4723/wd/hub");
 await mkdir(outputDir, { recursive: true });
 
 async function webdriver(method, endpoint, body) {
-  const response = await fetch(`${appiumUrl}${endpoint}`, {
-    method,
-    headers: body === undefined ? undefined : { "content-type": "application/json" },
-    body: body === undefined ? undefined : JSON.stringify(body)
+  const target = new URL(`${appiumUrl}${endpoint}`);
+  const payload = body === undefined ? null : JSON.stringify(body);
+  const { statusCode, responseBody } = await new Promise((resolve, reject) => {
+    const request = http.request({
+      protocol: target.protocol,
+      hostname: target.hostname,
+      port: target.port,
+      path: `${target.pathname}${target.search}`,
+      method,
+      headers: payload === null ? undefined : {
+        "content-type": "application/json",
+        "content-length": Buffer.byteLength(payload)
+      }
+    }, (response) => {
+      const chunks = [];
+      response.on("data", (chunk) => chunks.push(chunk));
+      response.on("end", () => resolve({
+        statusCode: response.statusCode ?? 500,
+        responseBody: Buffer.concat(chunks).toString("utf8")
+      }));
+    });
+    request.on("error", reject);
+    if (payload !== null) request.write(payload);
+    request.end();
   });
-  const result = await response.json().catch(() => ({}));
-  if (!response.ok || result.value?.error) {
-    throw new Error(result.value?.message ?? `WebDriver ${method} ${endpoint} 실패: ${response.status}`);
+  const result = responseBody ? JSON.parse(responseBody) : {};
+  if (statusCode < 200 || statusCode >= 300 || result.value?.error) {
+    throw new Error(result.value?.message ?? `WebDriver ${method} ${endpoint} 실패: ${statusCode}`);
   }
   return result.value;
 }
@@ -97,8 +118,9 @@ try {
         "appium:udid": process.env.IOS_SIMULATOR_UDID,
         "appium:noReset": true,
         "appium:newCommandTimeout": 300,
-        "appium:wdaLaunchTimeout": 180000,
-        "appium:wdaConnectionTimeout": 180000
+        "appium:wdaLaunchTimeout": 600000,
+        "appium:wdaConnectionTimeout": 600000,
+        "appium:showXcodeLog": true
       }
     }
   });
