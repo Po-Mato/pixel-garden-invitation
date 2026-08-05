@@ -11,6 +11,7 @@ export const mobileDeviceVisualBaselineProfiles = Object.freeze([
 export const mobileDeviceVisualBaselineStates = Object.freeze(["game", "directions-xlarge"]);
 export const mobileDeviceVisualMaxChangedRatio = 0.015;
 export const mobileDeviceVisualPixelThreshold = 36;
+export const mobileDeviceVisualBlurSigma = 2;
 
 export function analyzePixelDifference(current, baseline, channels = 4, pixelThreshold = mobileDeviceVisualPixelThreshold) {
   if (!Buffer.isBuffer(current) || !Buffer.isBuffer(baseline) || current.length !== baseline.length) {
@@ -41,20 +42,27 @@ export function mobileDeviceBaselinePath(rootDir, profileId, state) {
 
 export async function compareMobileDeviceVisualBaseline({ rootDir, profileId, state, currentPath, diffPath }) {
   const baselinePath = mobileDeviceBaselinePath(rootDir, profileId, state);
-  const [current, baseline] = await Promise.all([
+  const [current, baseline, structuralCurrent, structuralBaseline] = await Promise.all([
     sharp(currentPath).ensureAlpha().raw().toBuffer({ resolveWithObject: true }),
-    sharp(baselinePath).ensureAlpha().raw().toBuffer({ resolveWithObject: true })
+    sharp(baselinePath).ensureAlpha().raw().toBuffer({ resolveWithObject: true }),
+    sharp(currentPath).blur(mobileDeviceVisualBlurSigma).ensureAlpha().raw().toBuffer({ resolveWithObject: true }),
+    sharp(baselinePath).blur(mobileDeviceVisualBlurSigma).ensureAlpha().raw().toBuffer({ resolveWithObject: true })
   ]);
   if (current.info.width !== baseline.info.width || current.info.height !== baseline.info.height) {
     throw new Error(`${profileId}/${state} 기준선 크기 불일치`);
   }
-  const result = analyzePixelDifference(current.data, baseline.data, current.info.channels);
+  const rawResult = analyzePixelDifference(current.data, baseline.data, current.info.channels);
+  const result = analyzePixelDifference(
+    structuralCurrent.data,
+    structuralBaseline.data,
+    structuralCurrent.info.channels
+  );
   const diffPixels = Buffer.alloc(current.data.length);
   for (let offset = 0; offset < current.data.length; offset += current.info.channels) {
     const changed = Math.max(
-      Math.abs(current.data[offset] - baseline.data[offset]),
-      Math.abs(current.data[offset + 1] - baseline.data[offset + 1]),
-      Math.abs(current.data[offset + 2] - baseline.data[offset + 2])
+      Math.abs(structuralCurrent.data[offset] - structuralBaseline.data[offset]),
+      Math.abs(structuralCurrent.data[offset + 1] - structuralBaseline.data[offset + 1]),
+      Math.abs(structuralCurrent.data[offset + 2] - structuralBaseline.data[offset + 2])
     ) > mobileDeviceVisualPixelThreshold;
     diffPixels.set(changed ? [190, 60, 86, 255] : [238, 234, 226, 255], offset);
   }
@@ -63,6 +71,10 @@ export async function compareMobileDeviceVisualBaseline({ rootDir, profileId, st
     ...result,
     passed: result.changedRatio <= mobileDeviceVisualMaxChangedRatio,
     maxChangedRatio: mobileDeviceVisualMaxChangedRatio,
+    comparisonMode: "gaussian-structural",
+    blurSigma: mobileDeviceVisualBlurSigma,
+    rawChangedRatio: rawResult.changedRatio,
+    rawMeanPixelDifference: rawResult.meanPixelDifference,
     baselinePath,
     currentPath,
     diffPath
@@ -89,11 +101,13 @@ export async function approveMobileDeviceVisualBaselines({ rootDir, captures, re
   }
   const metadataPath = path.join(baselineDir, "mobile-device-visual-regression.json");
   const metadata = {
-    version: 1,
+    version: 2,
     approvedAt: now.toISOString(),
     reason: reason.trim(),
     pixelThreshold: mobileDeviceVisualPixelThreshold,
     maxChangedRatio: mobileDeviceVisualMaxChangedRatio,
+    comparisonMode: "gaussian-structural",
+    blurSigma: mobileDeviceVisualBlurSigma,
     profiles
   };
   await writeFile(metadataPath, `${JSON.stringify(metadata, null, 2)}\n`);

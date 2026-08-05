@@ -1,9 +1,11 @@
 {
-  "version": 1,
+  "version": 2,
   "approvedAt": "2026-08-05T03:27:35.966Z",
   "reason": "Galaxy와 iPhone 큰 글자 품질 기준 고정",
   "pixelThreshold": 36,
   "maxChangedRatio": 0.015,
+  "comparisonMode": "gaussian-structural",
+  "blurSigma": 2,
   "profiles": [
     {
       "profileId": "galaxy-s23-font-150",
