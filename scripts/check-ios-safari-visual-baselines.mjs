@@ -153,6 +153,14 @@ async function captureLandscapeMetrics(state) {
       const rect = element.getBoundingClientRect();
       return [{ selector, rect: { x: rect.x, y: rect.y, width: rect.width, height: rect.height } }];
     });
+    const visibleDialogs = [...document.querySelectorAll('[role="dialog"]')].flatMap((dialog) => {
+      if (!(dialog instanceof HTMLElement)) return [];
+      const style = getComputedStyle(dialog);
+      const rect = dialog.getBoundingClientRect();
+      if (style.display === "none" || style.visibility === "hidden" || Number(style.opacity) === 0) return [];
+      if (rect.width <= 0 || rect.height <= 0) return [];
+      return [dialog.getAttribute("aria-label") || dialog.getAttribute("aria-labelledby") || dialog.className];
+    });
     const left = viewport.offsetLeft + safeArea.left;
     const top = viewport.offsetTop + safeArea.top;
     const right = viewport.offsetLeft + viewport.visualWidth - safeArea.right;
@@ -163,6 +171,7 @@ async function captureLandscapeMetrics(state) {
       viewport,
       safeArea,
       horizontalOverflow: document.documentElement.scrollWidth > innerWidth + 1,
+      visibleDialogs,
       controls,
       controlsContained: controls.every(({ rect }) => (
         rect.x >= left - 2
@@ -174,6 +183,9 @@ async function captureLandscapeMetrics(state) {
   `);
   if (metrics.viewport.width <= metrics.viewport.height) {
     throw new Error(`${state} 실제 Safari 가로 회전 실패`);
+  }
+  if (metrics.visibleDialogs.length > 0) {
+    throw new Error(`${state} 실제 Safari 맵 위 대화상자 잔존: ${metrics.visibleDialogs.join(", ")}`);
   }
   if (metrics.horizontalOverflow) throw new Error(`${state} 실제 Safari 가로 넘침`);
   if (!metrics.controlsContained) throw new Error(`${state} 실제 Safari safe-area 이탈`);
@@ -348,6 +360,12 @@ try {
     return true;
   `);
   await waitForDocument("!document.querySelector('.bottom-sheet')", "오시는 길 닫힘");
+  await evaluate(`
+    document.querySelector('.world-menu-sheet button[aria-label="초대장 메뉴 닫기"]')?.click();
+    return true;
+  `);
+  await waitForDocument("!document.querySelector('.world-menu-sheet')", "초대장 메뉴 닫힘");
+  await waitForDocument("!document.querySelector('[role=\"dialog\"]')", "맵 대화상자 정리");
   await sessionCommand("POST", "/orientation", { orientation: "LANDSCAPE" });
   await waitForDocument("innerWidth > innerHeight", "Safari 가로 회전", 30_000);
   await new Promise((resolve) => setTimeout(resolve, 800));
