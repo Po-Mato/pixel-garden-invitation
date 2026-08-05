@@ -35,6 +35,17 @@ test("landscape capture closes stacked invitation dialogs before rotating", asyn
   assert.match(source, /실제 Safari 맵 위 대화상자 잔존/);
 });
 
+test("portrait game capture discards a stale lazy-loading framebuffer", async () => {
+  const source = await readFile(new URL("./check-ios-safari-visual-baselines.mjs", import.meta.url), "utf8");
+  assert.match(source, /!document\.querySelector\("\.screen-loading"\)/);
+  assert.match(source, /async function stabilizeGameFrameCapture\(\)/);
+  assert.match(
+    source,
+    /await sessionCommand\("GET", "\/screenshot"\);[\s\S]*게임 캡처 프레임 재확인/
+  );
+  assert.match(source, /await stabilizeGameFrameCapture\(\);\s+await screenshot\("game"\)/);
+});
+
 test("collapsed Safari chrome audit keeps the playing shell pinned and saves evidence before validation", async () => {
   const source = await readFile(new URL("./check-ios-safari-visual-baselines.mjs", import.meta.url), "utf8");
   assert.match(source, /playingShell\.style\.position = "fixed"/);

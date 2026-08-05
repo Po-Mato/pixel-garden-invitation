@@ -98,6 +98,33 @@ async function screenshot(state) {
   await writeFile(iosSafariCurrentPath(outputDir, state), Buffer.from(encoded, "base64"));
 }
 
+const stableGameFrameExpression = `
+  (() => {
+    const game = document.querySelector(".game-world");
+    const map = document.querySelector(".world-map__stage--background-loaded");
+    const player = document.querySelector(".world-player:not(.player--remote) .character-layer");
+    if (!(game instanceof HTMLElement) || !(map instanceof HTMLElement) || !(player instanceof HTMLElement)) {
+      return false;
+    }
+    const playerRect = player.getBoundingClientRect();
+    return document.visibilityState === "visible"
+      && !document.querySelector(".screen-loading")
+      && playerRect.width > 0
+      && playerRect.height > 0
+      && getComputedStyle(player).backgroundImage !== "none";
+  })()
+`;
+
+async function stabilizeGameFrameCapture() {
+  await waitForDocument(stableGameFrameExpression, "게임 캡처 프레임", 60_000);
+  // XCUITest can return the framebuffer from immediately before the React lazy
+  // boundary settles on the first screenshot request. Warm it once, then prove
+  // the game is still mounted before preserving the visual evidence.
+  await sessionCommand("GET", "/screenshot");
+  await new Promise((resolve) => setTimeout(resolve, 500));
+  await waitForDocument(stableGameFrameExpression, "게임 캡처 프레임 재확인", 60_000);
+}
+
 async function performTouchSwipe({ x, fromY, toY, durationMs = 620 }) {
   await sessionCommand("POST", "/actions", {
     actions: [{
@@ -414,7 +441,7 @@ try {
   captureReport.userAgent = environment.userAgent;
   captureReport.viewport = environment.viewport;
   captureReport.player = environment.player;
-  await new Promise((resolve) => setTimeout(resolve, 500));
+  await stabilizeGameFrameCapture();
   await screenshot("game");
 
   await evaluate(`
