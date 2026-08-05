@@ -463,18 +463,8 @@
 
   /* The side rail only touches the left cutout. Reserving the opposite inset here
      made short zone names and the next destination collapse to one character. */
-  .game-world .world-hud {
-    padding:
-      calc(10px + env(safe-area-inset-top))
-      9px
-      calc(10px + env(safe-area-inset-bottom))
-      calc(9px + env(safe-area-inset-left));
-  }
-
-  /* Context density is intentionally compact in portrait. In a landscape safe-area
-     rail, shrinking it again leaves only one Korean glyph per line. */
-  .game-world .world-hud[data-density="context"] {
-    width: 100%;
+  .game-world .world-hud,
+  .game-world .world-hud:not([data-tools-open]) {
     padding:
       calc(10px + env(safe-area-inset-top))
       9px
