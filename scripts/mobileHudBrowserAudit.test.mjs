@@ -6,6 +6,7 @@ import {
   auditWorldLabelRectangles,
   auditWorldLabelZoneSweep,
   compactDynamicViewport,
+  dynamicViewportResizeApplied,
   mobileHudAuditViewports,
   summarizeTouchLatency,
   worldLabelAuditScenarios
@@ -114,6 +115,14 @@ test("world label zone sweep reports missing zones, empty candidates, and collis
 test("dynamic viewport audit covers address-bar contraction without creating unusably short screens", () => {
   assert.deepEqual(compactDynamicViewport({ width: 390, height: 844 }), { width: 390, height: 724 });
   assert.deepEqual(compactDynamicViewport({ width: 844, height: 390 }), { width: 844, height: 342 });
+  assert.equal(dynamicViewportResizeApplied(
+    { width: 393, height: 732 },
+    { width: 393, height: 732 }
+  ), true);
+  assert.equal(dynamicViewportResizeApplied(
+    { width: 393, height: 732 },
+    { width: 393, height: 852 }
+  ), false);
 });
 
 test("joystick latency uses repeated-sample median instead of a runner spike", () => {

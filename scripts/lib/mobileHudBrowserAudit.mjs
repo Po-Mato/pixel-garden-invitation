@@ -65,6 +65,12 @@ export function compactDynamicViewport(viewport) {
   return { width: viewport.width, height: Math.max(320, viewport.height - reduction) };
 }
 
+export function dynamicViewportResizeApplied(target, actual, tolerance = 1) {
+  return Boolean(actual && ["width", "height"].every(
+    (key) => Math.abs(target[key] - actual[key]) <= tolerance
+  ));
+}
+
 export function summarizeTouchLatency(samples) {
   if (!Array.isArray(samples) || samples.length === 0) {
     throw new TypeError("Touch latency samples must contain at least one value");
@@ -273,16 +279,18 @@ async function measureDynamicViewportAdaptation(page, viewport) {
   const compact = compactDynamicViewport(viewport);
   await page.setViewportSize(compact);
   await page.waitForTimeout(240);
+  const actualViewport = await page.evaluate(() => ({ width: window.innerWidth, height: window.innerHeight }));
+  const supported = dynamicViewportResizeApplied(compact, actualViewport);
   const compactWorld = await readWorld();
   const compactRectangles = await visibleRectangles(page);
-  const compactIssues = auditMobileHudRectangles(compactRectangles, compact);
+  const compactIssues = supported ? auditMobileHudRectangles(compactRectangles, compact) : [];
   await page.setViewportSize({ width: viewport.width, height: viewport.height });
   await page.waitForTimeout(240);
   const after = await readWorld();
   const restored = Boolean(before && after && ["x", "y", "width", "height"].every(
     (key) => Math.abs(before[key] - after[key]) <= 1
   ));
-  return { before, compact, compactWorld, compactRectangles, compactIssues, after, restored };
+  return { before, compact, actualViewport, supported, compactWorld, compactRectangles, compactIssues, after, restored };
 }
 
 async function measureJoystickTouchResponse(page, context, engine = "chromium") {
