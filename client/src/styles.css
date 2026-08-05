@@ -2012,6 +2012,10 @@ select,
   transition: transform 48ms linear;
 }
 
+.world-map__stage[data-render-quality="lite"] {
+  transition-duration: 0ms;
+}
+
 .world-map-artwork,
 .world-map-artwork__background {
   position: absolute;
