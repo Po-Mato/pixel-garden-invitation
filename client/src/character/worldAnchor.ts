@@ -4,6 +4,7 @@ import {
   type CharacterAppearance
 } from "@wedding-game/shared";
 import type { CSSProperties } from "react";
+import generatedWorldAnchors from "./worldAnchors.generated.json";
 
 type SourceVisualAnchor = {
   centerX: number;
@@ -11,25 +12,17 @@ type SourceVisualAnchor = {
   feetY: number;
 };
 
-const defaultSourceVisualAnchor: SourceVisualAnchor = {
+const fallbackSourceVisualAnchor: SourceVisualAnchor = {
   centerX: 48,
   centerY: 69.5,
   feetY: 133
 };
 
-const halfPixelCenterPresetIds = new Set([
-  "feminine-sage-bolero-dress",
-  "feminine-lavender-jacket-dress",
-  "feminine-teal-modern-hanbok",
-  "masculine-charcoal-burgundy-tie",
-  "masculine-blue-modern-hanbok"
-]);
-
 function sourceVisualAnchor(presetId: string): SourceVisualAnchor {
-  return {
-    ...defaultSourceVisualAnchor,
-    centerX: halfPixelCenterPresetIds.has(presetId) ? 48.5 : 48
-  };
+  const generated = generatedWorldAnchors.presets[
+    presetId as keyof typeof generatedWorldAnchors.presets
+  ];
+  return generated ?? fallbackSourceVisualAnchor;
 }
 
 function safeDevicePixelRatio(devicePixelRatio: number) {

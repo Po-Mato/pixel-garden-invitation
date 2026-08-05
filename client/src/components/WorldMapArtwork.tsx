@@ -1,4 +1,4 @@
-import type { CSSProperties } from "react";
+import { memo, type CSSProperties } from "react";
 import type { WorldZoneId } from "@wedding-game/shared";
 import { createWorldAtmosphereParticles, type WorldAmbientMotion } from "../game/worldAtmosphere";
 import { resolveWorldVisual } from "../game/worldVisuals";
@@ -18,7 +18,7 @@ type AmbientParticleStyle = CSSProperties & {
   "--ambient-drift": string;
 };
 
-export function WorldMapArtwork({ zoneId, ambientMotion = "full", onLoadStateChange }: WorldMapArtworkProps) {
+export const WorldMapArtwork = memo(function WorldMapArtwork({ zoneId, ambientMotion = "full", onLoadStateChange }: WorldMapArtworkProps) {
   const visual = resolveWorldVisual(zoneId);
   const particles = createWorldAtmosphereParticles(zoneId, visual.atmosphere, ambientMotion);
 
@@ -69,4 +69,4 @@ export function WorldMapArtwork({ zoneId, ambientMotion = "full", onLoadStateCha
       <span className="world-map-artwork__grade" />
     </div>
   );
-}
+});

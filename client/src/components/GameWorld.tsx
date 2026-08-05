@@ -336,7 +336,7 @@ import {
   CelebrationCollectionProgress,
   WorldCelebrationCollectibles
 } from "./WorldCelebrationCollectibles";
-import { WorldDecoration } from "./WorldDecoration";
+import { WorldDecorationLayer, WorldPathLayer } from "./WorldStaticMapLayers";
 import { WorldInteractiveProp, WorldPropMoment } from "./WorldInteractiveProp";
 import { WorldMiniMap } from "./WorldMiniMap";
 import { WorldSecretProgress } from "./WorldSecretProgress";
@@ -805,6 +805,11 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   const [cooperativePhotoGuestIds, setCooperativePhotoGuestIds] = useState<string[]>([]);
   const [realtimeStatus, setRealtimeStatus] = useState<RealtimeStatus>("offline");
   const [loadedBackgroundZoneId, setLoadedBackgroundZoneId] = useState<WorldZoneId | null>(null);
+  const handleBackgroundLoadStateChange = useCallback((loaded: boolean) => {
+    setLoadedBackgroundZoneId((current) => (
+      loaded ? activeZoneId : current === activeZoneId ? null : current
+    ));
+  }, [activeZoneId]);
   const nestedMenuSheetOpen = calendarSheetOpen
     || directionsSheetOpen
     || giftAccountSheetOpen
@@ -3972,11 +3977,11 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     collectedCelebrationIds,
     celebrationCollectibles
   ).filter(({ unlocked }) => unlocked).map(({ kind }) => kind);
-  const activeNpcContexts = activeZone.npcs.map((npc) => ({
+  const activeNpcContexts = useMemo(() => activeZone.npcs.map((npc) => ({
     id: npc.id,
     label: npc.label,
     point: npcMotionFor(activeZone, npc, npcMotions).point
-  }));
+  })), [activeZone, npcMotions]);
   const relationshipStampBook = buildNpcRelationshipStampBook(npcDialogueMemory);
   const nextRelationshipStamp = relationshipStampBook.stamps.find(({ unlocked }) => !unlocked);
   const miniMapRelationshipStampMarkers = relationshipStampBook.stamps
@@ -3992,7 +3997,10 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
         recommended: stamp.id === nextRelationshipStamp?.id
       }] : [];
     });
-  const activeNpcPoints = activeNpcContexts.map(({ point }) => point);
+  const activeNpcPoints = useMemo(
+    () => activeNpcContexts.map(({ point }) => point),
+    [activeNpcContexts]
+  );
   const activeZoneMiniQuest = zoneMiniQuestFor(activeZone.id);
   const activeZoneMiniQuestStep = currentZoneMiniQuestStep(activeZoneMiniQuest, zoneMiniQuestProgress);
   const activeZoneMiniQuestCompletedCount = completedZoneMiniQuestStepCount(
@@ -4146,23 +4154,26 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
       npcId: npc.id
     });
   }
-  const portalOccupiedPoints = [
+  const portalOccupiedPoints = useMemo(() => [
     ...activeNpcPoints,
     ...zoneRemoteGuests.map((guest) => ({ x: guest.x, y: guest.y }))
-  ];
-  const portalCongestionById = new Map(activeZone.portals.map((portal) => [
+  ], [activeNpcPoints, zoneRemoteGuests]);
+  const portalCongestionById = useMemo(() => new Map(activeZone.portals.map((portal) => [
     portal.id,
     portalCongestion(portal, portalOccupiedPoints)
-  ]));
-  const crowdCells = crowdDensityCells(zoneRemoteGuests.map((guest) => ({ x: guest.x, y: guest.y })));
-  const portalWaitById = new Map(activeZone.portals.map((portal) => [
+  ])), [activeZone.portals, portalOccupiedPoints]);
+  const crowdCells = useMemo(
+    () => crowdDensityCells(zoneRemoteGuests.map((guest) => ({ x: guest.x, y: guest.y }))),
+    [zoneRemoteGuests]
+  );
+  const portalWaitById = useMemo(() => new Map(activeZone.portals.map((portal) => [
     portal.id,
     portalWaitEstimate(
       portal,
       portalCongestionById.get(portal.id)!,
       zoneRemoteGuests.map((guest) => ({ x: guest.x, y: guest.y }))
     )
-  ]));
+  ])), [activeZone.portals, portalCongestionById, zoneRemoteGuests]);
   const visibleRemoteGuests = zoneRemoteGuests.length > renderBudget.remoteGuestLimit
     ? [...zoneRemoteGuests]
       .sort((left, right) => (
@@ -4934,20 +4945,10 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
             <WorldMapArtwork
               zoneId={activeZone.id}
               ambientMotion={renderBudget.ambientMotion}
-              onLoadStateChange={(loaded) => {
-                setLoadedBackgroundZoneId((current) => (
-                  loaded ? activeZone.id : current === activeZone.id ? null : current
-                ));
-              }}
+              onLoadStateChange={handleBackgroundLoadStateChange}
             />
             <WorldCrowdHeatmap cells={crowdCells} />
-            {activeZone.paths.map((worldPath) => (
-              <div
-                key={worldPath.id}
-                className={`world-path world-path--${worldPath.kind}`}
-                style={pixelRect(worldPath)}
-              />
-            ))}
+            <WorldPathLayer paths={activeZone.paths} />
             <WorldGeometryAuditOverlay
               zone={activeZone}
               enabled={geometryAuditEnabled}
@@ -5063,9 +5064,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
                 <line x1={position.x} y1={position.y} x2={activeCompanion.x} y2={activeCompanion.y} />
               </svg>
             ) : null}
-            {activeZone.decorations.map((item) => (
-              <WorldDecoration key={item.id} zoneId={activeZone.id} decoration={item} />
-            ))}
+            <WorldDecorationLayer zoneId={activeZone.id} decorations={activeZone.decorations} />
             {activeZone.id === "home" && worldSecretCollection.unlockedAchievementIds.includes("wedding-archivist") ? <WorldSecretMemorial collection={worldSecretCollection} /> : null}
             {activeWorldPropInteractions.map(({ decoration, interaction }) => (
               <WorldInteractiveProp

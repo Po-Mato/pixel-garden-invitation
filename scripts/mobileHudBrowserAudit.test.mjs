@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {
   auditInvitationQualityMetrics,
+  auditHudTextContainment,
   auditMobileHudRectangles,
   auditWorldLabelRectangles,
   auditWorldLabelZoneSweep,
@@ -124,6 +125,13 @@ test("mobile HUD rectangle audit catches expanded tool collisions", () => {
     minimap: { x: 300, y: 110, width: 52, height: 52 },
     controls: { x: 8, y: 540, width: 344, height: 92 }
   }, { width: 360, height: 640 }), ["tools/minimap 겹침"]);
+});
+
+test("landscape HUD text audit rejects clipped zone and destination labels", () => {
+  assert.deepEqual(auditHudTextContainment([
+    { id: "현재 구역", text: "우리 집", clippedInline: false, clippedBlock: false },
+    { id: "다음 목적지", text: "지하철역", clippedInline: true, clippedBlock: false }
+  ]), ["다음 목적지 문구 잘림"]);
 });
 
 test("world label audit accepts priority-hidden labels and rejects visible collisions", () => {

@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { memo, useMemo } from "react";
 import { gridTileSize } from "../game/movement";
 import { auditWorldGeometry } from "../game/worldGeometryAudit";
 import { evaluateWorldGeometryAuditPolicy } from "../game/worldGeometryAuditPolicy";
@@ -43,7 +43,7 @@ type WorldGeometryAuditOverlayProps = {
   recommendationDecisions?: Partial<Record<string, ForegroundRecommendationDecision>>;
 };
 
-export function WorldGeometryAuditOverlay({
+export const WorldGeometryAuditOverlay = memo(function WorldGeometryAuditOverlay({
   zone,
   enabled,
   layers = defaultWorldGeometryAuditLayers,
@@ -222,4 +222,4 @@ export function WorldGeometryAuditOverlay({
       </span>
     </div>
   );
-}
+});

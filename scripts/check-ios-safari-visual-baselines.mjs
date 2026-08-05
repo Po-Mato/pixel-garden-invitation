@@ -10,6 +10,7 @@ import {
   iosSafariVisualStates
 } from "./lib/iosSafariVisualBaseline.mjs";
 import { iosSafariText200AuditCss } from "./lib/mobileHudBrowserAudit.mjs";
+import { assessFrameTimingHeadroom, summarizeFrameTimings } from "./lib/frameTimingMetrics.mjs";
 
 const rootDir = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
 const option = (name, fallback = null) => {
@@ -20,6 +21,10 @@ const url = option("--url", "http://127.0.0.1:4178/");
 const outputDir = option("--output-dir", path.join(rootDir, ".superpowers/visual-regression/ios-safari"));
 const mode = option("--mode", "auto");
 const appiumUrl = option("--appium-url", "http://127.0.0.1:4723/wd/hub");
+const deviceKind = process.env.IOS_SAFARI_DEVICE_KIND === "physical" ? "physical" : "simulator";
+const deviceUdid = process.env.IOS_DEVICE_UDID ?? process.env.IOS_SIMULATOR_UDID;
+const deviceName = process.env.IOS_DEVICE_NAME ?? iosSafariVisualProfile.deviceName;
+const platformVersion = process.env.IOS_PLATFORM_VERSION ?? "18.5";
 await mkdir(outputDir, { recursive: true });
 
 async function webdriver(method, endpoint, body) {
@@ -93,12 +98,89 @@ async function screenshot(state) {
   await writeFile(iosSafariCurrentPath(outputDir, state), Buffer.from(encoded, "base64"));
 }
 
+async function performTouchSwipe({ x, fromY, toY, durationMs = 620 }) {
+  await sessionCommand("POST", "/actions", {
+    actions: [{
+      type: "pointer",
+      id: "ios-chrome-swipe",
+      parameters: { pointerType: "touch" },
+      actions: [
+        { type: "pointerMove", duration: 0, x, y: fromY, origin: "viewport" },
+        { type: "pointerDown", button: 0 },
+        { type: "pause", duration: 80 },
+        { type: "pointerMove", duration: durationMs, x, y: toY, origin: "viewport" },
+        { type: "pointerUp", button: 0 }
+      ]
+    }]
+  });
+  await sessionCommand("DELETE", "/actions").catch(() => undefined);
+}
+
+async function startLandscapeViewportTrace() {
+  await evaluate(`
+    const audit = {
+      active: true,
+      startedAt: performance.now(),
+      previousFrameAt: null,
+      frameDeltas: [],
+      events: []
+    };
+    const snapshot = (source) => audit.events.push({
+      source,
+      at: Math.round((performance.now() - audit.startedAt) * 100) / 100,
+      innerHeight,
+      visualHeight: visualViewport?.height ?? innerHeight,
+      offsetTop: visualViewport?.offsetTop ?? 0,
+      pageTop: visualViewport?.pageTop ?? scrollY,
+      scrollY
+    });
+    audit.onVisualResize = () => snapshot("visualViewport.resize");
+    audit.onVisualScroll = () => snapshot("visualViewport.scroll");
+    audit.onWindowResize = () => snapshot("window.resize");
+    visualViewport?.addEventListener("resize", audit.onVisualResize);
+    visualViewport?.addEventListener("scroll", audit.onVisualScroll);
+    addEventListener("resize", audit.onWindowResize);
+    const tick = (now) => {
+      if (!audit.active) return;
+      if (audit.previousFrameAt !== null) audit.frameDeltas.push(now - audit.previousFrameAt);
+      audit.previousFrameAt = now;
+      requestAnimationFrame(tick);
+    };
+    snapshot("start");
+    requestAnimationFrame(tick);
+    window.__iosSafariViewportAudit = audit;
+    return true;
+  `);
+}
+
+async function stopLandscapeViewportTrace() {
+  return evaluate(`
+    const audit = window.__iosSafariViewportAudit;
+    if (!audit) throw new Error("Safari viewport audit was not started");
+    audit.active = false;
+    visualViewport?.removeEventListener("resize", audit.onVisualResize);
+    visualViewport?.removeEventListener("scroll", audit.onVisualScroll);
+    removeEventListener("resize", audit.onWindowResize);
+    audit.events.push({
+      source: "stop",
+      at: Math.round((performance.now() - audit.startedAt) * 100) / 100,
+      innerHeight,
+      visualHeight: visualViewport?.height ?? innerHeight,
+      offsetTop: visualViewport?.offsetTop ?? 0,
+      pageTop: visualViewport?.pageTop ?? scrollY,
+      scrollY
+    });
+    return { events: audit.events, frameDeltas: audit.frameDeltas };
+  `);
+}
+
 const captureReport = {
   generatedAt: new Date().toISOString(),
   profile: iosSafariVisualProfile,
   url,
   automation: "Appium XCUITest WebDriver",
-  simulatorUdid: process.env.IOS_SIMULATOR_UDID ?? null,
+  device: { kind: deviceKind, udid: deviceUdid ?? null, name: deviceName, platformVersion },
+  simulatorUdid: deviceKind === "simulator" ? deviceUdid ?? null : null,
   userAgent: null,
   viewport: null,
   scrollStates: {},
@@ -165,6 +247,21 @@ async function captureLandscapeMetrics(state) {
     const top = viewport.offsetTop + safeArea.top;
     const right = viewport.offsetLeft + viewport.visualWidth - safeArea.right;
     const bottom = viewport.offsetTop + viewport.visualHeight - safeArea.bottom;
+    const hudText = [
+      ["current-zone", ".world-zone-summary strong"],
+      ["guidance-toggle", ".world-hud__tools-toggle > span"],
+      ["next-destination", ".world-destination-guide strong"]
+    ].flatMap(([id, selector]) => {
+      const element = document.querySelector(selector);
+      if (!(element instanceof HTMLElement)) return [];
+      const style = getComputedStyle(element);
+      return [{
+        id,
+        text: element.textContent?.trim() ?? "",
+        clippedInline: style.overflowX !== "visible" && element.scrollWidth > element.clientWidth + 1,
+        clippedBlock: style.overflowY !== "visible" && element.scrollHeight > element.clientHeight + 1
+      }];
+    });
     return {
       state: ${JSON.stringify(state)},
       orientation: screen.orientation?.type ?? null,
@@ -172,6 +269,8 @@ async function captureLandscapeMetrics(state) {
       safeArea,
       horizontalOverflow: document.documentElement.scrollWidth > innerWidth + 1,
       visibleDialogs,
+      hudText,
+      textContained: hudText.every(({ clippedInline, clippedBlock }) => !clippedInline && !clippedBlock),
       controls,
       controlsContained: controls.every(({ rect }) => (
         rect.x >= left - 2
@@ -193,29 +292,36 @@ function assertLandscapeMetrics(metrics) {
   }
   if (metrics.horizontalOverflow) throw new Error(`${metrics.state} 실제 Safari 가로 넘침`);
   if (!metrics.controlsContained) throw new Error(`${metrics.state} 실제 Safari safe-area 이탈`);
+  if (!metrics.textContained) throw new Error(`${metrics.state} 실제 Safari HUD 문구 잘림`);
 }
 
 try {
   await waitForAppium();
+  const deviceCapabilities = {
+    platformName: "iOS",
+    browserName: "Safari",
+    "appium:automationName": "XCUITest",
+    "appium:deviceName": deviceName,
+    "appium:platformVersion": platformVersion,
+    "appium:udid": deviceUdid,
+    "appium:noReset": true,
+    "appium:newCommandTimeout": 300,
+    "appium:wdaLaunchTimeout": 600000,
+    "appium:wdaConnectionTimeout": 600000,
+    "appium:webviewConnectTimeout": 120000,
+    "appium:webviewConnectRetries": 120,
+    "appium:showXcodeLog": true,
+    ...(deviceKind === "simulator" ? {
+      "appium:simulatorStartupTimeout": 600000,
+      "appium:simulatorStartupRetries": 2
+    } : {}),
+    ...(process.env.IOS_XCODE_ORG_ID ? { "appium:xcodeOrgId": process.env.IOS_XCODE_ORG_ID } : {}),
+    ...(process.env.IOS_XCODE_SIGNING_ID ? { "appium:xcodeSigningId": process.env.IOS_XCODE_SIGNING_ID } : {}),
+    ...(process.env.IOS_UPDATED_WDA_BUNDLE_ID ? { "appium:updatedWDABundleId": process.env.IOS_UPDATED_WDA_BUNDLE_ID } : {})
+  };
   const session = await webdriver("POST", "/session", {
     capabilities: {
-      alwaysMatch: {
-        platformName: "iOS",
-        browserName: "Safari",
-        "appium:automationName": "XCUITest",
-        "appium:deviceName": iosSafariVisualProfile.deviceName,
-        "appium:platformVersion": "18.5",
-        "appium:udid": process.env.IOS_SIMULATOR_UDID,
-        "appium:noReset": true,
-        "appium:newCommandTimeout": 300,
-        "appium:simulatorStartupTimeout": 600000,
-        "appium:simulatorStartupRetries": 2,
-        "appium:wdaLaunchTimeout": 600000,
-        "appium:wdaConnectionTimeout": 600000,
-        "appium:webviewConnectTimeout": 120000,
-        "appium:webviewConnectRetries": 120,
-        "appium:showXcodeLog": true
-      }
+      alwaysMatch: deviceCapabilities
     }
   });
   sessionId = session.sessionId;
@@ -376,6 +482,7 @@ try {
   await screenshot("game-landscape-chrome-expanded");
   assertLandscapeMetrics(captureReport.landscape.expanded);
 
+  await startLandscapeViewportTrace();
   captureReport.landscape.collapseSetup = await evaluate(`
     document.documentElement.dataset.iosChromeCollapseAudit = "true";
     document.documentElement.style.overflowY = "auto";
@@ -390,20 +497,51 @@ try {
     spacer.id = "ios-chrome-collapse-spacer";
     spacer.style.cssText = "position:relative;width:1px;height:320px;margin-top:100vh;pointer-events:none";
     document.body.append(spacer);
-    window.scrollTo(0, document.documentElement.scrollHeight);
+    window.scrollTo(0, ${deviceKind === "physical" ? "0" : "document.documentElement.scrollHeight"});
     return {
       scrollY,
       scrollHeight: document.documentElement.scrollHeight,
       shellPosition: getComputedStyle(playingShell).position
     };
   `);
+  if (deviceKind === "physical") {
+    await evaluate(`
+      const playingShell = document.querySelector(".app-shell--playing");
+      if (playingShell instanceof HTMLElement) playingShell.style.pointerEvents = "none";
+      return true;
+    `);
+    await performTouchSwipe({
+      x: Math.round(captureReport.landscape.expanded.viewport.width * 0.72),
+      fromY: Math.round(captureReport.landscape.expanded.viewport.height * 0.78),
+      toY: Math.round(captureReport.landscape.expanded.viewport.height * 0.22)
+    });
+    await evaluate(`
+      const playingShell = document.querySelector(".app-shell--playing");
+      if (playingShell instanceof HTMLElement) playingShell.style.pointerEvents = "";
+      return true;
+    `);
+  }
   await new Promise((resolve) => setTimeout(resolve, 1200));
+  const viewportTrace = await stopLandscapeViewportTrace();
+  captureReport.landscape.viewportTrace = viewportTrace.events;
+  captureReport.landscape.frameTimings = summarizeFrameTimings(viewportTrace.frameDeltas);
   captureReport.landscape.collapsed = await captureLandscapeMetrics("game-landscape-chrome-collapsed");
   captureReport.landscape.chromeViewportDelta =
     captureReport.landscape.collapsed.viewport.visualHeight
     - captureReport.landscape.expanded.viewport.visualHeight;
   await screenshot("game-landscape-chrome-collapsed");
   assertLandscapeMetrics(captureReport.landscape.collapsed);
+  const frameTimingIssues = assessFrameTimingHeadroom(captureReport.landscape.frameTimings);
+  if (frameTimingIssues.length > 0) {
+    throw new Error(`실제 Safari 동적 크롬 프레임 지연: ${frameTimingIssues.join(", ")}`);
+  }
+  if (
+    deviceKind === "physical"
+    && captureReport.landscape.chromeViewportDelta < 12
+    && !captureReport.landscape.viewportTrace.some(({ source }) => source === "visualViewport.resize")
+  ) {
+    throw new Error("실제 iPhone Safari 주소창 제스처에서 visualViewport 변화가 감지되지 않았어요");
+  }
 
   const baselineStates = Object.fromEntries(await Promise.all(iosSafariVisualStates.map(async (state) => [
     state,
@@ -428,6 +566,7 @@ try {
 }
 
 console.log(
-  `실제 iOS Simulator Safari 캡처 완료: ${iosSafariVisualStates.length}개 화면`
+  `실제 iOS ${deviceKind === "physical" ? "iPhone" : "Simulator"} Safari 캡처 완료: ${iosSafariVisualStates.length}개 화면`
   + ` · 200% 스크롤 ${captureReport.scrollStates["directions-text-200-bottom"]?.maxScroll ?? 0}px`
+  + ` · p95/p99 ${captureReport.landscape.frameTimings?.p95FrameMs ?? 0}/${captureReport.landscape.frameTimings?.p99FrameMs ?? 0}ms`
 );

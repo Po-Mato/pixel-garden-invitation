@@ -420,6 +420,18 @@ describe("responsive play viewport", () => {
     expect(landscapeBlock).toContain("grid-template-columns:");
     expect(landscapeBlock).toContain(".world-hud");
     expect(landscapeBlock).toContain(".world-map-shell");
+    expect(refinedGameStyles).toMatch(
+      /@media \(orientation: landscape\) and \(max-height: 500px\)[\s\S]*\.game-world \.world-hud\s*\{[\s\S]*calc\(9px \+ env\(safe-area-inset-left\)\);/s
+    );
+    expect(refinedGameStyles).toMatch(
+      /\.world-hud__status\s*\{[^}]*grid-template-columns:\s*minmax\(0, 1fr\);/s
+    );
+    expect(refinedGameStyles).toMatch(
+      /\.world-zone-summary strong,[\s\S]*\.world-destination-guide strong\s*\{[^}]*white-space:\s*normal;/s
+    );
+    expect(refinedGameStyles).toMatch(
+      /html\[data-text-scale="ios-200"\] \.world-hud__tools\s*\{[^}]*top:\s*calc\(182px \+ env\(safe-area-inset-top\)\);/s
+    );
   });
 });
 

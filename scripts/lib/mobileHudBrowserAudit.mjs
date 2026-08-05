@@ -210,7 +210,9 @@ const overlapPairs = [
   ["tools", "minimap"],
   ["tools", "collection"],
   ["tools", "context"],
-  ["tools", "controls"]
+  ["tools", "controls"],
+  ["tools", "toolsToggle"],
+  ["tools", "hudStatus"]
 ];
 
 function overlapArea(left, right) {
@@ -273,6 +275,12 @@ export function auditMobileHudRectangles(rectangles, viewport, overlapTolerance 
   return issues;
 }
 
+export function auditHudTextContainment(entries) {
+  return entries.flatMap(({ id, text, clippedInline, clippedBlock }) => (
+    text && (clippedInline || clippedBlock) ? [`${id} 문구 잘림`] : []
+  ));
+}
+
 export function auditInvitationQualityMetrics(metrics) {
   const issues = [];
   const { floatingSpot, typography, largeTextSheet } = metrics;
@@ -319,7 +327,9 @@ async function visibleRectangles(page) {
       collection: ".world-collection-progress",
       context: ".world-context-action",
       controls: ".world-control-dock",
-      tools: ".world-hud__tools"
+      tools: ".world-hud__tools",
+      toolsToggle: ".world-hud__tools-toggle",
+      hudStatus: ".world-hud__status"
     };
     return Object.fromEntries(Object.entries(selectors).map(([name, selector]) => {
       const element = document.querySelector(selector);
@@ -330,6 +340,29 @@ async function visibleRectangles(page) {
       return [name, { x: rect.x, y: rect.y, width: rect.width, height: rect.height }];
     }));
   });
+}
+
+async function hudTextContainment(page) {
+  return page.evaluate(() => [
+    ["현재 구역", ".world-zone-summary strong"],
+    ["안내 버튼", ".world-hud__tools-toggle > span"],
+    ["다음 목적지", ".world-destination-guide strong"]
+  ].flatMap(([id, selector]) => {
+    const element = document.querySelector(selector);
+    if (!(element instanceof HTMLElement)) return [];
+    const style = getComputedStyle(element);
+    if (style.display === "none" || style.visibility === "hidden") return [];
+    const clipsInline = style.overflowX !== "visible";
+    const clipsBlock = style.overflowY !== "visible";
+    return [{
+      id,
+      text: element.textContent?.trim() ?? "",
+      clippedInline: clipsInline && element.scrollWidth > element.clientWidth + 1,
+      clippedBlock: clipsBlock && element.scrollHeight > element.clientHeight + 1,
+      client: { width: element.clientWidth, height: element.clientHeight },
+      scroll: { width: element.scrollWidth, height: element.scrollHeight }
+    }];
+  }));
 }
 
 async function visibleWorldLabels(page) {
@@ -726,12 +759,15 @@ async function runMobileHudCollisionMatrix({ browser, url, outputDir }) {
       });
       const baseRectangles = await visibleRectangles(page);
       const baseIssues = auditMobileHudRectangles(baseRectangles, profile);
+      const hudText = await hudTextContainment(page);
+      const textIssues = profile.orientation === "landscape" ? auditHudTextContainment(hudText) : [];
       await page.locator(".world-hud__tools-toggle").click();
       await page.locator(".world-hud__tools").waitFor({ state: "visible" });
       const toolsRectangles = await visibleRectangles(page);
       const toolsIssues = auditMobileHudRectangles(toolsRectangles, profile);
       const issues = [
         ...baseIssues.map((issue) => `기본 상태 ${issue}`),
+        ...textIssues.map((issue) => `기본 상태 ${issue}`),
         ...toolsIssues.map((issue) => `안내 도구 상태 ${issue}`)
       ];
       let screenshotPath = null;
@@ -739,7 +775,7 @@ async function runMobileHudCollisionMatrix({ browser, url, outputDir }) {
         screenshotPath = path.join(outputDir, `hud-collision-${profile.id}.png`);
         await page.screenshot({ path: screenshotPath, fullPage: false, scale: "css" });
       }
-      reports.push({ ...profile, baseRectangles, toolsRectangles, issues, screenshotPath });
+      reports.push({ ...profile, baseRectangles, toolsRectangles, hudText, issues, screenshotPath });
     } finally {
       await context.close();
     }

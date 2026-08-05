@@ -24,7 +24,9 @@ test("mobile soak closes invitation overlays before measuring movement frames", 
 test("mobile soak accepts stable repeated interaction metrics", () => {
   assert.deepEqual(assessMobileSoakMetrics({
     pageErrors: [], failedRequests: [], touchResponded: true, layoutStable: true,
-    typographyFallbackReady: true, sheetContained: true, averageFps: 58, baselineFps: 60, heapGrowthRatio: 0.08
+    typographyFallbackReady: true, sheetContained: true, averageFps: 58, baselineFps: 60,
+    frameTimings: { p95FrameMs: 20, p99FrameMs: 28 },
+    baselineFrameTimings: { p95FrameMs: 18, p99FrameMs: 24 }, heapGrowthRatio: 0.08
   }), []);
 });
 
@@ -78,7 +80,9 @@ test("mobile soak reports interaction, frame, and memory regressions", () => {
     pageErrors: ["boom"], failedRequests: ["asset"], touchResponded: false, layoutStable: false,
     typographyFallbackReady: false, sheetContained: false,
     movementResponded: false, cameraFollowed: false, maxCenterErrorPx: 2.4, settledJitterPx: 1.1,
-    averageFps: 20, baselineFps: 60, heapGrowthRatio: 0.5
+    averageFps: 20, baselineFps: 60,
+    frameTimings: { p95FrameMs: 70, p99FrameMs: 120 },
+    baselineFrameTimings: { p95FrameMs: 18, p99FrameMs: 25 }, heapGrowthRatio: 0.5
   }), [
     "페이지 오류 1개",
     "요청 실패 1개",
@@ -91,6 +95,8 @@ test("mobile soak reports interaction, frame, and memory regressions", () => {
     "이동 후 캐릭터 중심 오차 2.4px",
     "이동 정지 후 카메라 미세 흔들림 1.1px",
     "낮은 프레임 20 FPS (러너 기준 60 FPS)",
+    "p95 프레임 70ms",
+    "p99 프레임 120ms",
     "메모리 증가 50%"
   ]);
 });

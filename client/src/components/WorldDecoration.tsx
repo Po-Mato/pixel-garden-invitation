@@ -1,3 +1,4 @@
+import { memo } from "react";
 import type { WorldZoneId } from "@wedding-game/shared";
 import type { WorldDecoration as WorldDecorationData } from "../game/world";
 import { resolveWorldMapAsset, worldDepth } from "../game/worldVisuals";
@@ -7,7 +8,7 @@ type WorldDecorationProps = {
   decoration: WorldDecorationData;
 };
 
-export function WorldDecoration({ zoneId, decoration }: WorldDecorationProps) {
+export const WorldDecoration = memo(function WorldDecoration({ zoneId, decoration }: WorldDecorationProps) {
   if (!decoration.asset) return null;
   const depthY = decoration.depthY ?? decoration.y + decoration.height;
   const shadowHeight = Math.max(6, Math.min(14, decoration.height * 0.08));
@@ -48,4 +49,4 @@ export function WorldDecoration({ zoneId, decoration }: WorldDecorationProps) {
       />
     </>
   );
-}
+});

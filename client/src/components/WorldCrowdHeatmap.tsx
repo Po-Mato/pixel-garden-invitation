@@ -1,10 +1,11 @@
+import { memo } from "react";
 import type { CrowdDensityCell } from "../game/crowdDensity";
 
 type WorldCrowdHeatmapProps = {
   cells: readonly CrowdDensityCell[];
 };
 
-export function WorldCrowdHeatmap({ cells }: WorldCrowdHeatmapProps) {
+export const WorldCrowdHeatmap = memo(function WorldCrowdHeatmap({ cells }: WorldCrowdHeatmapProps) {
   if (cells.length === 0) return null;
   return (
     <div className="world-crowd-heatmap" aria-label={`실시간 하객 밀도 ${cells.length}구역`}>
@@ -22,4 +23,4 @@ export function WorldCrowdHeatmap({ cells }: WorldCrowdHeatmapProps) {
       ))}
     </div>
   );
-}
+});

@@ -461,6 +461,73 @@
     box-shadow: 8px 0 28px rgba(49, 38, 39, 0.1);
   }
 
+  /* The side rail only touches the left cutout. Reserving the opposite inset here
+     made short zone names and the next destination collapse to one character. */
+  .game-world .world-hud {
+    padding:
+      calc(10px + env(safe-area-inset-top))
+      9px
+      calc(10px + env(safe-area-inset-bottom))
+      calc(9px + env(safe-area-inset-left));
+  }
+
+  .world-hud__status {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 7px;
+  }
+
+  .world-zone-summary,
+  .world-hud:not([data-tools-open]) .world-zone-summary {
+    width: 100%;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "step"
+      "title"
+      "subtitle";
+    gap: 2px;
+    overflow: visible;
+  }
+
+  .world-zone-summary strong,
+  .world-destination-guide strong {
+    overflow: visible;
+    line-height: 1.18;
+    overflow-wrap: anywhere;
+    text-overflow: clip;
+    white-space: normal;
+  }
+
+  .world-hud__tools-toggle {
+    width: 100%;
+    min-width: 0;
+    grid-template-columns: 16px minmax(0, 1fr) 7px 13px;
+  }
+
+  .world-hud__tools-toggle > span {
+    min-width: 0;
+    text-align: left;
+    white-space: nowrap;
+  }
+
+  .world-destination-guide {
+    grid-template-columns: 24px minmax(0, 1fr) 16px;
+    gap: 5px;
+    padding-inline: 6px;
+  }
+
+  .world-destination-guide > svg:first-child {
+    width: 24px;
+    height: 24px;
+  }
+
+  .world-destination-guide > span {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .world-destination-guide small {
+    grid-column: auto;
+  }
+
   .world-minimap {
     right: max(10px, env(safe-area-inset-right));
   }
@@ -475,7 +542,7 @@
 
   .world-hud__tools {
     position: absolute;
-    inset: 86px 8px 8px;
+    inset: calc(132px + env(safe-area-inset-top)) 8px 8px;
     z-index: 24;
     max-height: 0;
     overflow: hidden;
@@ -484,6 +551,10 @@
     padding: 0 8px;
     background: rgba(255, 253, 248, 0.985);
     box-shadow: 0 16px 38px rgba(45, 33, 36, 0.2);
+  }
+
+  html[data-text-scale="ios-200"] .world-hud__tools {
+    top: calc(182px + env(safe-area-inset-top));
   }
 
   .world-hud[data-tools-open] .world-hud__tools {

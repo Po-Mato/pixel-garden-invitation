@@ -1,6 +1,7 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { spawn } from "node:child_process";
+import { assessFrameTimingHeadroom, summarizeFrameTimings } from "./frameTimingMetrics.mjs";
 
 export const mobileSoakProfiles = Object.freeze([
   { id: "android-chromium", engine: "chromium", device: "Pixel 7" },
@@ -63,8 +64,12 @@ export function assessMobileSoakMetrics(metrics) {
   }
   const baselineFps = Number.isFinite(metrics.baselineFps) ? metrics.baselineFps : 60;
   const relativeFps = baselineFps > 0 ? metrics.averageFps / baselineFps : 0;
-  if ((baselineFps >= 25 && metrics.averageFps < 25) || (baselineFps < 25 && relativeFps < 0.75)) {
+  if ((baselineFps >= 45 && metrics.averageFps < 45) || (baselineFps < 45 && relativeFps < 0.75)) {
     issues.push(`낮은 프레임 ${metrics.averageFps} FPS (러너 기준 ${baselineFps} FPS)`);
+  }
+  if (metrics.frameTimings) {
+    assessFrameTimingHeadroom(metrics.frameTimings, metrics.baselineFrameTimings)
+      .forEach((issue) => issues.push(issue));
   }
   if (metrics.heapGrowthRatio !== null && metrics.heapGrowthRatio > 0.35) issues.push(`메모리 증가 ${Math.round(metrics.heapGrowthRatio * 100)}%`);
   return issues;
@@ -87,11 +92,18 @@ async function waitForServer(url, process, timeoutMs = 30_000) {
 async function sampleFrames(page, durationMs) {
   return page.evaluate((duration) => new Promise((resolve) => {
     let frames = 0;
+    const frameDeltas = [];
     const startedAt = performance.now();
+    let previousFrameAt = startedAt;
     const tick = (now) => {
       frames += 1;
+      frameDeltas.push(now - previousFrameAt);
+      previousFrameAt = now;
       if (now - startedAt >= duration) {
-        resolve(Math.round(frames / Math.max(1, now - startedAt) * 1000));
+        resolve({
+          fps: Math.round(frames / Math.max(1, now - startedAt) * 1000),
+          frameDeltas
+        });
         return;
       }
       requestAnimationFrame(tick);
@@ -104,10 +116,16 @@ async function sampleFrameSeries(page, durationMs, sampleCount = 3) {
   const sampleDurationMs = Math.max(750, Math.floor(durationMs / sampleCount));
   await page.waitForTimeout(250);
   const samples = [];
+  const frameDeltas = [];
   for (let index = 0; index < sampleCount; index += 1) {
-    samples.push(await sampleFrames(page, sampleDurationMs));
+    const sample = await sampleFrames(page, sampleDurationMs);
+    samples.push(sample.fps);
+    frameDeltas.push(...sample.frameDeltas);
   }
-  return summarizeFrameSamples(samples);
+  return {
+    ...summarizeFrameSamples(samples),
+    timings: summarizeFrameTimings(frameDeltas)
+  };
 }
 
 async function heapUsed(page) {
@@ -196,14 +214,18 @@ async function sampleMovingFrameSeries(page, durationMs, sampleCount = 3) {
     samples.push(read("movement-proof"));
 
     const frameCounts = Array.from({ length: count }, () => 0);
+    const frameDeltas = [];
     const sampleDuration = duration / count;
     const segmentDuration = Math.max(240, Math.min(500, Math.floor(duration / 10)));
     let currentKey = "ArrowRight";
     let currentSegment = 0;
+    let previousFrameAt = null;
     dispatchKey("keydown", currentKey);
     const startedAt = performance.now();
     await new Promise((resolve) => {
       const tick = (now) => {
+        if (previousFrameAt !== null) frameDeltas.push(now - previousFrameAt);
+        previousFrameAt = now;
         const elapsed = now - startedAt;
         const bucket = Math.min(count - 1, Math.floor(elapsed / sampleDuration));
         frameCounts[bucket] += 1;
@@ -232,12 +254,16 @@ async function sampleMovingFrameSeries(page, durationMs, sampleCount = 3) {
     }
     return {
       frameSamples: frameCounts.map((frames) => Math.round(frames / sampleDuration * 1000)),
+      frameDeltas,
       samples,
       settledSamples
     };
   }, { duration: durationMs, count: sampleCount });
   return {
-    frames: summarizeFrameSamples(result.frameSamples),
+    frames: {
+      ...summarizeFrameSamples(result.frameSamples),
+      timings: summarizeFrameTimings(result.frameDeltas)
+    },
     movement: summarizeMovementSamples(result.samples, result.settledSamples)
   };
 }
@@ -370,6 +396,8 @@ export async function runMobileDeviceSoakAudit({ rootDir, outputDir, port = 4179
         frameRatio: baselineFps > 0 ? averageFps / baselineFps : null,
         frameSamples: applicationFrames.samples,
         baselineFrameSamples: baselineFrames.samples,
+        frameTimings: applicationFrames.timings,
+        baselineFrameTimings: baselineFrames.timings,
         automaticQuality,
         beforeHeap,
         afterHeap,

@@ -43,4 +43,17 @@ test("collapsed Safari chrome audit keeps the playing shell pinned and saves evi
     source,
     /await screenshot\("game-landscape-chrome-collapsed"\);\s+assertLandscapeMetrics\(captureReport\.landscape\.collapsed\)/
   );
+  assert.match(source, /startLandscapeViewportTrace/);
+  assert.match(source, /visualViewport\.resize/);
+  assert.match(source, /summarizeFrameTimings\(viewportTrace\.frameDeltas\)/);
+  assert.match(source, /p95\/p99/);
+});
+
+test("iOS audit supports a signed physical iPhone session and native address-bar swipe", async () => {
+  const source = await readFile(new URL("./check-ios-safari-visual-baselines.mjs", import.meta.url), "utf8");
+  assert.match(source, /IOS_SAFARI_DEVICE_KIND/);
+  assert.match(source, /IOS_DEVICE_UDID/);
+  assert.match(source, /IOS_XCODE_ORG_ID/);
+  assert.match(source, /performTouchSwipe/);
+  assert.match(source, /pointerType: "touch"/);
 });
