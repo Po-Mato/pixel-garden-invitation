@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import {
   assessMobileSoakMetrics,
   mobileSoakProfiles,
@@ -9,6 +10,15 @@ import {
 
 test("mobile soak covers Android Chromium and iOS WebKit", () => {
   assert.deepEqual(mobileSoakProfiles.map(({ id }) => id), ["android-chromium", "ios-webkit"]);
+});
+
+test("mobile soak closes invitation overlays before measuring movement frames", () => {
+  const source = readFileSync("scripts/lib/mobileDeviceSoakAudit.mjs", "utf8");
+  const closeMenuAt = source.indexOf('.world-menu-sheet button[aria-label="초대장 메뉴 닫기"]');
+  const measureMovementAt = source.indexOf("sampleMovingFrameSeries(page, durationMs)");
+  assert.ok(closeMenuAt >= 0);
+  assert.ok(measureMovementAt > closeMenuAt);
+  assert.match(source.slice(closeMenuAt, measureMovementAt), /virtual-joystick.+state: "visible"/s);
 });
 
 test("mobile soak accepts stable repeated interaction metrics", () => {

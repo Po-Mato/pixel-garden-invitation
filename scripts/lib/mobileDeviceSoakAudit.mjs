@@ -342,6 +342,9 @@ export async function runMobileDeviceSoakAudit({ rootDir, outputDir, port = 4179
       });
       await page.locator(".bottom-sheet__header button").tap();
       await sheet.waitFor({ state: "hidden" });
+      await page.locator('.world-menu-sheet button[aria-label="초대장 메뉴 닫기"]').tap();
+      await page.locator(".world-menu-sheet").waitFor({ state: "hidden" });
+      await page.locator(".virtual-joystick").waitFor({ state: "visible" });
       await page.evaluate(() => { delete document.documentElement.dataset.textScale; });
       const movingFrameSeries = await sampleMovingFrameSeries(page, durationMs);
       const applicationFrames = movingFrameSeries.frames;
