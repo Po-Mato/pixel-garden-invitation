@@ -463,13 +463,16 @@
 
   /* The side rail only touches the left cutout. Reserving the opposite inset here
      made short zone names and the next destination collapse to one character. */
-  .game-world .world-hud,
-  .game-world .world-hud:not([data-tools-open]) {
+  .game-world .world-hud {
     padding:
       calc(10px + env(safe-area-inset-top))
       9px
       calc(10px + env(safe-area-inset-bottom))
       calc(9px + env(safe-area-inset-left));
+  }
+
+  .game-world .world-hud:not([data-tools-open]) {
+    padding-right: 9px;
   }
 
   .world-hud__status {
