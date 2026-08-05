@@ -7,6 +7,7 @@ import {
   loadEffectsPreference,
   resolveEnergySavingEffectsQuality,
   resolvePreferredEffectsQuality,
+  resolveStartupEffectsQuality,
   saveEffectsPreference,
   resolveDevicePerformanceStatus,
   useDevicePerformance
@@ -77,6 +78,13 @@ describe("기기 성능 자동 최적화", () => {
 
     expect(screen.getByText(/reduced|minimal/)).toBeInTheDocument();
     expect(document.documentElement.dataset.performanceReason).toBe("frame-rate");
+  });
+
+  it("초기 프레임 중앙값으로 저사양 WebKit 효과를 선제 조정한다", () => {
+    expect(resolveStartupEffectsQuality(Array.from({ length: 45 }, () => 16.7))).toBe("full");
+    expect(resolveStartupEffectsQuality(Array.from({ length: 45 }, () => 25))).toBe("reduced");
+    expect(resolveStartupEffectsQuality([...Array.from({ length: 44 }, () => 50), 180])).toBe("minimal");
+    expect(resolveStartupEffectsQuality(Array.from({ length: 19 }, () => 50))).toBe("full");
   });
 
   it("익명 실기기 표본으로 보정된 원격 기준을 하위 UI에 공유한다", async () => {

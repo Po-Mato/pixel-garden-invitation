@@ -186,6 +186,11 @@ export async function runMobileDeviceSoakAudit({ rootDir, outputDir, port = 4179
       const applicationFrames = await sampleFrameSeries(page, durationMs);
       const averageFps = applicationFrames.medianFps;
       const baselineFps = baselineFrames.medianFps;
+      const automaticQuality = await page.evaluate(() => ({
+        mode: document.documentElement.dataset.performanceMode ?? null,
+        reason: document.documentElement.dataset.performanceReason ?? null,
+        effects: document.documentElement.dataset.effectsQuality ?? null
+      }));
       const afterHeap = await heapUsed(page);
       const heapGrowthRatio = beforeHeap && afterHeap ? Math.max(0, (afterHeap - beforeHeap) / beforeHeap) : null;
       const metrics = {
@@ -199,6 +204,7 @@ export async function runMobileDeviceSoakAudit({ rootDir, outputDir, port = 4179
         frameRatio: baselineFps > 0 ? averageFps / baselineFps : null,
         frameSamples: applicationFrames.samples,
         baselineFrameSamples: baselineFrames.samples,
+        automaticQuality,
         beforeHeap,
         afterHeap,
         heapGrowthRatio

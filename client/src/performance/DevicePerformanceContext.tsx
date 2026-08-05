@@ -97,6 +97,21 @@ const effectsQualityRank: Record<DeviceEffectsQuality, number> = {
   full: 2
 };
 
+export function resolveStartupEffectsQuality(frameDeltas: number[]): DeviceEffectsQuality {
+  const validDeltas = frameDeltas
+    .filter((delta) => Number.isFinite(delta) && delta > 0 && delta <= 250)
+    .sort((left, right) => left - right);
+  if (validDeltas.length < 20) return "full";
+  const middle = Math.floor(validDeltas.length / 2);
+  const medianDelta = validDeltas.length % 2 === 0
+    ? (validDeltas[middle - 1] + validDeltas[middle]) / 2
+    : validDeltas[middle];
+  const fps = 1_000 / medianDelta;
+  if (fps <= 30) return "minimal";
+  if (fps < 42) return "reduced";
+  return "full";
+}
+
 export function resolvePreferredEffectsQuality(
   automatic: DeviceEffectsQuality,
   preference: DeviceEffectsPreference
@@ -174,6 +189,33 @@ export function DevicePerformanceProvider({
   const statusRef = useRef<DevicePerformanceStatus>(baseStatus);
   const previousStatusRef = useRef<DevicePerformanceStatus | null>(null);
   const previousRuntimeHealthRef = useRef(diagnostics.health);
+
+  useEffect(() => {
+    if (
+      baseStatus.mode !== "standard"
+      || visibilityState !== "visible"
+      || typeof window.requestAnimationFrame !== "function"
+    ) return;
+    let frame = 0;
+    let startedAt: number | null = null;
+    let previousAt: number | null = null;
+    const deltas: number[] = [];
+    const tick = (now: number) => {
+      startedAt ??= now;
+      if (previousAt !== null && now - startedAt >= 350) deltas.push(now - previousAt);
+      previousAt = now;
+      if (deltas.length >= 45 || now - startedAt >= 6_000) {
+        const startupQuality = resolveStartupEffectsQuality(deltas);
+        setObservedEffectsQuality((current) => (
+          effectsQualityRank[startupQuality] < effectsQualityRank[current] ? startupQuality : current
+        ));
+        return;
+      }
+      frame = window.requestAnimationFrame(tick);
+    };
+    frame = window.requestAnimationFrame(tick);
+    return () => window.cancelAnimationFrame(frame);
+  }, [baseStatus.mode, visibilityState]);
 
   useEffect(() => {
     const update = () => setBaseStatus(resolveDevicePerformanceStatus());
