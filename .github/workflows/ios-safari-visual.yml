@@ -71,7 +71,10 @@ jobs:
           exit 1
       - name: Capture and compare real Mobile Safari
         shell: bash
-        run: pnpm visual:ios-safari -- --mode auto --url http://127.0.0.1:4178/
+        run: |
+          xcrun simctl openurl "$IOS_SIMULATOR_UDID" http://127.0.0.1:4178/
+          sleep 3
+          pnpm visual:ios-safari -- --mode auto --url http://127.0.0.1:4178/
       - name: Stop invitation server
         if: always()
         shell: bash
