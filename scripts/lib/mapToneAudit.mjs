@@ -104,6 +104,42 @@ export function evaluateMapToneMetrics(metrics, expected, thresholds) {
     Number.isInteger(expected.characterPresetCount)
     && metrics.characterPresetCount !== expected.characterPresetCount
   ) issues.push("캐릭터 프리셋 감사 수 불일치");
+  const expectedMovementContrasts = expected.characterMovementEdgeContrasts;
+  const actualMovementContrasts = metrics.characterMovementEdgeContrasts;
+  if (expectedMovementContrasts && typeof expectedMovementContrasts === "object") {
+    const expectedPresetIds = Object.keys(expectedMovementContrasts).sort();
+    const actualPresetIds = Object.keys(actualMovementContrasts ?? {}).sort();
+    if (JSON.stringify(actualPresetIds) !== JSON.stringify(expectedPresetIds)) {
+      issues.push("이동 캐릭터 프리셋 대비 목록 불일치");
+    }
+    for (const presetId of expectedPresetIds) {
+      const expectedFrames = expectedMovementContrasts[presetId];
+      const actualFrames = actualMovementContrasts?.[presetId];
+      const expectedFrameIds = Object.keys(expectedFrames).sort();
+      const actualFrameIds = Object.keys(actualFrames ?? {}).sort();
+      if (JSON.stringify(actualFrameIds) !== JSON.stringify(expectedFrameIds)) {
+        issues.push(`${presetId} 이동 프레임 대비 목록 불일치`);
+      }
+      for (const frameId of expectedFrameIds) {
+        const actual = actualFrames?.[frameId];
+        const baseline = expectedFrames[frameId];
+        if (!Number.isFinite(actual)) {
+          issues.push(`${presetId}/${frameId} 이동 가장자리 대비 측정 누락`);
+          continue;
+        }
+        if (actual < thresholds.minCharacterEdgeContrast) {
+          issues.push(`${presetId}/${frameId} 이동 가장자리 대비 부족`);
+        }
+        if (Math.abs(actual - baseline) > thresholds.maxCharacterEdgeContrastDelta) {
+          issues.push(`${presetId}/${frameId} 이동 가장자리 대비 기준선 이탈`);
+        }
+      }
+    }
+  }
+  if (
+    Number.isInteger(expected.movementFrameCount)
+    && metrics.movementFrameCount !== expected.movementFrameCount
+  ) issues.push("캐릭터 이동 프레임 감사 수 불일치");
   if (
     Number.isFinite(expected.foregroundAssetCount)
     && metrics.foregroundAssetCount !== expected.foregroundAssetCount
@@ -157,16 +193,34 @@ async function loadToneCharacters(rootDir) {
   const source = manifest.frame.source;
   const display = manifest.frame.display.world;
   const characters = await Promise.all(manifest.presets.map(async (preset) => {
-    const input = path.join(rootDir, preset.source.idle);
-    const renderInput = waveHairPresetIds.has(preset.id)
-      ? await cleanGuestHairSheet(input, source)
-      : input;
-    const buffer = await sharp(renderInput)
+    const idleInput = path.join(rootDir, preset.source.idle);
+    const walkInput = path.join(rootDir, preset.source.walk);
+    const [renderIdleInput, renderWalkInput] = waveHairPresetIds.has(preset.id)
+      ? await Promise.all([
+        cleanGuestHairSheet(idleInput, source),
+        cleanGuestHairSheet(walkInput, source)
+      ])
+      : [idleInput, walkInput];
+    const buffer = await sharp(renderIdleInput)
       .extract({ left: 0, top: 0, width: source.width, height: source.height })
       .resize(display.width, display.height, { kernel: sharp.kernel.nearest })
       .png()
       .toBuffer();
-    return { buffer, width: display.width, height: display.height, presetId: preset.id };
+    const movementFrames = await Promise.all(Array.from({ length: manifest.frame.walk.columns }, async (_, index) => ({
+      frameId: `down-${index}`,
+      buffer: await sharp(renderWalkInput)
+        .extract({ left: index * source.width, top: 0, width: source.width, height: source.height })
+        .resize(display.width, display.height, { kernel: sharp.kernel.nearest })
+        .png()
+        .toBuffer()
+    })));
+    return {
+      buffer,
+      movementFrames,
+      width: display.width,
+      height: display.height,
+      presetId: preset.id
+    };
   }));
   return { characters, defaultPresetId: manifest.defaultPresetId };
 }
@@ -233,6 +287,7 @@ export async function measureCompositedMapTone({ rootDir, zone, characters, defa
     .png()
     .toBuffer();
   const characterReports = [];
+  const movementReports = [];
   for (const character of characters) {
     const characterLeft = Math.round(position.x - character.width / 2);
     const characterTop = Math.round(position.y - character.height / 2);
@@ -253,6 +308,25 @@ export async function measureCompositedMapTone({ rootDir, zone, characters, defa
         character.height
       )
     });
+    for (const frame of character.movementFrames) {
+      const frameShadow = await characterShadow(frame.buffer, edgeShadow);
+      const frameScene = await sharp(foregroundScene).composite([
+        { input: frameShadow, left: characterLeft + 1, top: characterTop + 2 },
+        { input: frame.buffer, left: characterLeft, top: characterTop }
+      ]).png().toBuffer();
+      movementReports.push({
+        presetId: character.presetId,
+        frameId: frame.frameId,
+        edgeContrast: await measureCharacterEdgeContrast(
+          frameScene,
+          frame.buffer,
+          characterLeft,
+          characterTop,
+          character.width,
+          character.height
+        )
+      });
+    }
   }
   const defaultReport = characterReports.find(({ presetId }) => presetId === defaultPresetId);
   if (!defaultReport) throw new Error("Default tone-audit character report is missing");
@@ -261,6 +335,15 @@ export async function measureCompositedMapTone({ rootDir, zone, characters, defa
     characterReports.map(({ presetId, edgeContrast }) => [presetId, edgeContrast])
   );
   const weakestCharacter = characterReports.reduce((weakest, report) => (
+    report.edgeContrast < weakest.edgeContrast ? report : weakest
+  ));
+  const characterMovementEdgeContrasts = Object.fromEntries(characters.map((character) => [
+    character.presetId,
+    Object.fromEntries(movementReports
+      .filter(({ presetId }) => presetId === character.presetId)
+      .map(({ frameId, edgeContrast }) => [frameId, edgeContrast]))
+  ]));
+  const weakestMovementCharacter = movementReports.reduce((weakest, report) => (
     report.edgeContrast < weakest.edgeContrast ? report : weakest
   ));
   return {
@@ -272,6 +355,11 @@ export async function measureCompositedMapTone({ rootDir, zone, characters, defa
     characterEdgeContrasts,
     characterPresetCount: characterReports.length,
     weakestCharacterPresetId: weakestCharacter.presetId,
+    characterMovementEdgeContrasts,
+    movementFrameCount: characters[0]?.movementFrames.length ?? 0,
+    weakestMovementCharacterPresetId: weakestMovementCharacter.presetId,
+    weakestMovementFrameId: weakestMovementCharacter.frameId,
+    weakestMovementEdgeContrast: weakestMovementCharacter.edgeContrast,
     foregroundAssetCount: placements.length,
     characterPresetId: defaultPresetId,
     characterPosition: position

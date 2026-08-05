@@ -102,8 +102,81 @@ const captureReport = {
   userAgent: null,
   viewport: null,
   scrollStates: {},
+  landscape: {},
   comparisons: []
 };
+
+async function captureLandscapeMetrics(state) {
+  const metrics = await evaluate(`
+    const probe = document.createElement("div");
+    probe.style.cssText = [
+      "position:fixed",
+      "inset:0",
+      "pointer-events:none",
+      "padding-top:env(safe-area-inset-top)",
+      "padding-right:env(safe-area-inset-right)",
+      "padding-bottom:env(safe-area-inset-bottom)",
+      "padding-left:env(safe-area-inset-left)"
+    ].join(";");
+    document.body.append(probe);
+    const probeStyle = getComputedStyle(probe);
+    const safeArea = {
+      top: parseFloat(probeStyle.paddingTop) || 0,
+      right: parseFloat(probeStyle.paddingRight) || 0,
+      bottom: parseFloat(probeStyle.paddingBottom) || 0,
+      left: parseFloat(probeStyle.paddingLeft) || 0
+    };
+    probe.remove();
+    const viewport = {
+      width: innerWidth,
+      height: innerHeight,
+      visualWidth: visualViewport?.width ?? innerWidth,
+      visualHeight: visualViewport?.height ?? innerHeight,
+      offsetLeft: visualViewport?.offsetLeft ?? 0,
+      offsetTop: visualViewport?.offsetTop ?? 0,
+      scrollY,
+      dpr: devicePixelRatio
+    };
+    const selectors = [
+      ".world-hud",
+      ".world-minimap",
+      ".world-control-dock",
+      ".world-context-action"
+    ];
+    const controls = selectors.flatMap((selector) => {
+      const element = document.querySelector(selector);
+      if (!(element instanceof HTMLElement)) return [];
+      const style = getComputedStyle(element);
+      if (style.display === "none" || style.visibility === "hidden" || Number(style.opacity) === 0) return [];
+      const rect = element.getBoundingClientRect();
+      return [{ selector, rect: { x: rect.x, y: rect.y, width: rect.width, height: rect.height } }];
+    });
+    const left = viewport.offsetLeft + safeArea.left;
+    const top = viewport.offsetTop + safeArea.top;
+    const right = viewport.offsetLeft + viewport.visualWidth - safeArea.right;
+    const bottom = viewport.offsetTop + viewport.visualHeight - safeArea.bottom;
+    return {
+      state: ${JSON.stringify(state)},
+      orientation: screen.orientation?.type ?? null,
+      viewport,
+      safeArea,
+      horizontalOverflow: document.documentElement.scrollWidth > innerWidth + 1,
+      controls,
+      controlsContained: controls.every(({ rect }) => (
+        rect.x >= left - 2
+        && rect.y >= top - 2
+        && rect.x + rect.width <= right + 2
+        && rect.y + rect.height <= bottom + 2
+      ))
+    };
+  `);
+  if (metrics.viewport.width <= metrics.viewport.height) {
+    throw new Error(`${state} 실제 Safari 가로 회전 실패`);
+  }
+  if (metrics.horizontalOverflow) throw new Error(`${state} 실제 Safari 가로 넘침`);
+  if (!metrics.controlsContained) throw new Error(`${state} 실제 Safari safe-area 이탈`);
+  return metrics;
+}
 
 try {
   await waitForAppium();
@@ -264,10 +337,47 @@ try {
     await screenshot(state);
   }
 
-  const baselineReady = await access(iosSafariBaselinePath(rootDir, "game")).then(() => true, () => false);
-  if (mode === "compare" && !baselineReady) throw new Error("실제 iOS Safari 기준선이 없습니다.");
-  if (mode !== "capture" && baselineReady) {
-    for (const state of iosSafariVisualStates) {
+  await evaluate(`
+    document.querySelector(".bottom-sheet__header button")?.click();
+    document.getElementById("ios-text-200-audit")?.remove();
+    delete document.documentElement.dataset.textScale;
+    return true;
+  `);
+  await waitForDocument("!document.querySelector('.bottom-sheet')", "오시는 길 닫힘");
+  await sessionCommand("POST", "/orientation", { orientation: "LANDSCAPE" });
+  await waitForDocument("innerWidth > innerHeight", "Safari 가로 회전", 30_000);
+  await new Promise((resolve) => setTimeout(resolve, 800));
+  captureReport.landscape.expanded = await captureLandscapeMetrics("game-landscape-chrome-expanded");
+  await screenshot("game-landscape-chrome-expanded");
+
+  await evaluate(`
+    document.documentElement.dataset.iosChromeCollapseAudit = "true";
+    document.documentElement.style.overflowY = "auto";
+    document.body.style.overflowY = "auto";
+    const spacer = document.createElement("div");
+    spacer.id = "ios-chrome-collapse-spacer";
+    spacer.style.cssText = "position:relative;width:1px;height:320px;margin-top:100vh;pointer-events:none";
+    document.body.append(spacer);
+    window.scrollTo(0, document.documentElement.scrollHeight);
+    return { scrollY, scrollHeight: document.documentElement.scrollHeight };
+  `);
+  await new Promise((resolve) => setTimeout(resolve, 1200));
+  captureReport.landscape.collapsed = await captureLandscapeMetrics("game-landscape-chrome-collapsed");
+  captureReport.landscape.chromeViewportDelta =
+    captureReport.landscape.collapsed.viewport.visualHeight
+    - captureReport.landscape.expanded.viewport.visualHeight;
+  await screenshot("game-landscape-chrome-collapsed");
+
+  const baselineStates = Object.fromEntries(await Promise.all(iosSafariVisualStates.map(async (state) => [
+    state,
+    await access(iosSafariBaselinePath(rootDir, state)).then(() => true, () => false)
+  ])));
+  const missingStates = iosSafariVisualStates.filter((state) => !baselineStates[state]);
+  if (mode === "compare" && missingStates.length > 0) {
+    throw new Error(`실제 iOS Safari 기준선 누락: ${missingStates.join(", ")}`);
+  }
+  if (mode !== "capture") {
+    for (const state of iosSafariVisualStates.filter((candidate) => baselineStates[candidate])) {
       const comparison = await compareIosSafariVisualBaseline({ rootDir, outputDir, state });
       captureReport.comparisons.push({ state, ...comparison });
       if (!comparison.passed) {

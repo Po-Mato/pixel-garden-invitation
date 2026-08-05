@@ -1,0 +1,101 @@
+name: Real Android Chrome visual regression
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/android-chrome-visual.yml"
+      - "client/**"
+      - "character-assets/**"
+      - "map-assets/**"
+      - "scripts/**"
+      - "package.json"
+      - "pnpm-lock.yaml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: android-chrome-visual-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  compare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 10.29.2
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: pnpm
+      - name: Enable KVM acceleration
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' \
+            | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - run: pnpm install --frozen-lockfile
+      - name: Install the Android Chrome automation bridge
+        run: |
+          npm install --global appium@3
+          appium driver install uiautomator2
+          appium --version
+      - name: Start deterministic invitation server and Appium
+        shell: bash
+        run: |
+          pnpm characters:generate
+          pnpm --filter @wedding-game/client exec vite --host 0.0.0.0 --port 4179 --strictPort > "$RUNNER_TEMP/android-chrome-vite.log" 2>&1 &
+          echo "VITE_PID=$!" >> "$GITHUB_ENV"
+          appium --base-path /wd/hub --port 4725 \
+            --allow-insecure uiautomator2:chromedriver_autodownload \
+            --log "$RUNNER_TEMP/android-chrome-appium.log" > /dev/null 2>&1 &
+          echo "APPIUM_PID=$!" >> "$GITHUB_ENV"
+          for attempt in {1..60}; do
+            if curl --fail --silent http://127.0.0.1:4179/ > /dev/null \
+              && curl --fail --silent http://127.0.0.1:4725/wd/hub/status > /dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat "$RUNNER_TEMP/android-chrome-vite.log"
+          cat "$RUNNER_TEMP/android-chrome-appium.log"
+          exit 1
+      - name: Capture and compare real Android Chrome
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: google_apis_playstore
+          arch: x86_64
+          profile: pixel_7
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none
+          disable-animations: true
+          script: |
+            adb shell pm path com.android.chrome
+            adb shell dumpsys package com.android.chrome | grep versionName | head -n 1
+            ANDROID_EMULATOR_SERIAL="emulator-${EMULATOR_PORT:-5554}" \
+              pnpm visual:android-chrome -- --mode auto \
+                --url http://10.0.2.2:4179/ \
+                --appium-url http://127.0.0.1:4725/wd/hub
+      - name: Stop invitation server
+        if: always()
+        shell: bash
+        run: |
+          if test -n "${VITE_PID:-}"; then kill "$VITE_PID" 2>/dev/null || true; fi
+          if test -n "${APPIUM_PID:-}"; then kill "$APPIUM_PID" 2>/dev/null || true; fi
+      - name: Upload real Android Chrome evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: android-chrome-visual-${{ github.run_id }}
+          path: |
+            .superpowers/visual-regression/android-chrome
+            ${{ runner.temp }}/android-chrome-vite.log
+            ${{ runner.temp }}/android-chrome-appium.log
+          if-no-files-found: warn
+          include-hidden-files: true
+          retention-days: 14

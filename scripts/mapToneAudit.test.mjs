@@ -125,6 +125,35 @@ test("map tone audit rejects a missing character preset measurement", () => {
   assert.ok(result.issues.includes("캐릭터 프리셋 감사 수 불일치"));
 });
 
+test("map tone audit checks all three moving character frames", () => {
+  const stable = { "down-0": 1.4, "down-1": 1.35, "down-2": 1.3 };
+  const result = evaluateMapToneMetrics(
+    {
+      averageLuminance: 0.5,
+      p10Luminance: 0.2,
+      p90Luminance: 0.8,
+      characterMovementEdgeContrasts: {
+        "guest-a": stable,
+        "guest-b": { "down-0": 1.4, "down-1": 1.05 }
+      },
+      movementFrameCount: 2
+    },
+    {
+      averageLuminance: 0.5,
+      p10Luminance: 0.2,
+      p90Luminance: 0.8,
+      characterMovementEdgeContrasts: { "guest-a": stable, "guest-b": stable },
+      movementFrameCount: 3
+    },
+    thresholds
+  );
+  assert.ok(result.issues.includes("guest-b 이동 프레임 대비 목록 불일치"));
+  assert.ok(result.issues.includes("guest-b/down-1 이동 가장자리 대비 부족"));
+  assert.ok(result.issues.includes("guest-b/down-1 이동 가장자리 대비 기준선 이탈"));
+  assert.ok(result.issues.includes("guest-b/down-2 이동 가장자리 대비 측정 누락"));
+  assert.ok(result.issues.includes("캐릭터 이동 프레임 감사 수 불일치"));
+});
+
 test("map tone audit rejects omitted composited-scene measurements", () => {
   const result = evaluateMapToneMetrics(
     { averageLuminance: 0.5, p10Luminance: 0.2, p90Luminance: 0.8, foregroundAssetCount: 2 },

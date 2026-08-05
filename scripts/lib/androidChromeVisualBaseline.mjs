@@ -9,38 +9,36 @@ import {
   mobileDeviceVisualPixelThreshold
 } from "./mobileDeviceVisualBaseline.mjs";
 
-export const iosSafariVisualProfile = Object.freeze({
-  id: "iphone-16-pro-ios-18-5-safari",
-  deviceName: "iPhone 16 Pro",
-  runtime: "iOS 18.5",
-  requiredDirectionsScroll: 160
+export const androidChromeVisualProfile = Object.freeze({
+  id: "pixel-7-api-35-chrome",
+  deviceName: "Pixel 7",
+  runtime: "Android 15 (API 35)",
+  requiredDirectionsScroll: 80
 });
 
-export const iosSafariVisualStates = Object.freeze([
+export const androidChromeVisualStates = Object.freeze([
   "game",
-  "directions-text-200",
-  "directions-text-200-middle",
-  "directions-text-200-bottom",
-  "game-landscape-chrome-expanded",
-  "game-landscape-chrome-collapsed"
+  "directions",
+  "directions-middle",
+  "directions-bottom"
 ]);
 
-export function iosSafariBaselinePath(rootDir, state) {
+export function androidChromeBaselinePath(rootDir, state) {
   return path.join(
     rootDir,
     "scripts/visual-baselines",
-    `ios-safari-${iosSafariVisualProfile.id}-${state}.webp`
+    `android-chrome-${androidChromeVisualProfile.id}-${state}.webp`
   );
 }
 
-export function iosSafariCurrentPath(outputDir, state) {
-  return path.join(outputDir, `ios-safari-${iosSafariVisualProfile.id}-${state}-current.png`);
+export function androidChromeCurrentPath(outputDir, state) {
+  return path.join(outputDir, `android-chrome-${androidChromeVisualProfile.id}-${state}-current.png`);
 }
 
-export async function compareIosSafariVisualBaseline({ rootDir, outputDir, state }) {
-  const currentPath = iosSafariCurrentPath(outputDir, state);
-  const baselinePath = iosSafariBaselinePath(rootDir, state);
-  const diffPath = path.join(outputDir, `ios-safari-${iosSafariVisualProfile.id}-${state}-diff.png`);
+export async function compareAndroidChromeVisualBaseline({ rootDir, outputDir, state }) {
+  const currentPath = androidChromeCurrentPath(outputDir, state);
+  const baselinePath = androidChromeBaselinePath(rootDir, state);
+  const diffPath = path.join(outputDir, `android-chrome-${androidChromeVisualProfile.id}-${state}-diff.png`);
   const [current, baseline, structuralCurrent, structuralBaseline] = await Promise.all([
     sharp(currentPath).ensureAlpha().raw().toBuffer({ resolveWithObject: true }),
     sharp(baselinePath).ensureAlpha().raw().toBuffer({ resolveWithObject: true }),
@@ -48,7 +46,7 @@ export async function compareIosSafariVisualBaseline({ rootDir, outputDir, state
     sharp(baselinePath).blur(mobileDeviceVisualBlurSigma).ensureAlpha().raw().toBuffer({ resolveWithObject: true })
   ]);
   if (current.info.width !== baseline.info.width || current.info.height !== baseline.info.height) {
-    throw new Error(`${state} 실제 iOS Safari 기준선 크기 불일치`);
+    throw new Error(`${state} 실제 Android Chrome 기준선 크기 불일치`);
   }
   const result = analyzePixelDifference(
     structuralCurrent.data,
@@ -75,18 +73,18 @@ export async function compareIosSafariVisualBaseline({ rootDir, outputDir, state
   };
 }
 
-export async function approveIosSafariVisualBaselines({ rootDir, capturesDir, reason, captureReport }) {
-  if (!reason?.trim()) throw new Error("실제 iOS Safari 기준선 승인 사유가 필요합니다.");
+export async function approveAndroidChromeVisualBaselines({ rootDir, capturesDir, reason, captureReport }) {
+  if (!reason?.trim()) throw new Error("실제 Android Chrome 기준선 승인 사유가 필요합니다.");
   const profiles = [];
   await mkdir(path.join(rootDir, "scripts/visual-baselines"), { recursive: true });
-  for (const state of iosSafariVisualStates) {
-    const currentPath = iosSafariCurrentPath(capturesDir, state);
-    const baselinePath = iosSafariBaselinePath(rootDir, state);
+  for (const state of androidChromeVisualStates) {
+    const currentPath = androidChromeCurrentPath(capturesDir, state);
+    const baselinePath = androidChromeBaselinePath(rootDir, state);
     await sharp(currentPath).webp({ lossless: true, effort: 6 }).toFile(baselinePath);
     const buffer = await readFile(baselinePath);
     const metadata = await sharp(buffer).metadata();
     profiles.push({
-      profileId: iosSafariVisualProfile.id,
+      profileId: androidChromeVisualProfile.id,
       state,
       width: metadata.width,
       height: metadata.height,
@@ -97,7 +95,7 @@ export async function approveIosSafariVisualBaselines({ rootDir, capturesDir, re
     version: 1,
     approvedAt: new Date().toISOString(),
     reason: reason.trim(),
-    profile: iosSafariVisualProfile,
+    profile: androidChromeVisualProfile,
     capture: captureReport,
     pixelThreshold: mobileDeviceVisualPixelThreshold,
     maxChangedRatio: mobileDeviceVisualMaxChangedRatio,
@@ -105,7 +103,7 @@ export async function approveIosSafariVisualBaselines({ rootDir, capturesDir, re
     blurSigma: mobileDeviceVisualBlurSigma,
     profiles
   };
-  const metadataPath = path.join(rootDir, "scripts/visual-baselines/ios-safari-visual-regression.json");
+  const metadataPath = path.join(rootDir, "scripts/visual-baselines/android-chrome-visual-regression.json");
   await writeFile(metadataPath, `${JSON.stringify(metadata, null, 2)}\n`);
   return { metadataPath, metadata };
 }

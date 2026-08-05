@@ -18,4 +18,9 @@ console.log(
   `전 구역 라벨 충돌 순회: ${result.zoneLabelSweep.profiles.length}개 화면 프로필`
   + ` · ${result.zoneLabelSweep.expectedZoneIds.length}개 구역 · ${result.zoneLabelSweep.reports.length}개 위치`
 );
+console.log(
+  `글자 확대 레이아웃: ${result.typographyScaleAudit.reports.map((report) => (
+    `${report.percent}% ${report.sheetScrollHeight}px/${report.minimumLineHeightRatio.toFixed(2)}`
+  )).join(" · ")}`
+);
 console.log(`보고서: ${result.reportPath}`);

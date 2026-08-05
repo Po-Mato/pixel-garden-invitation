@@ -17,7 +17,9 @@ test("real iOS Safari baseline contract covers game and 200% directions scroll",
     "game",
     "directions-text-200",
     "directions-text-200-middle",
-    "directions-text-200-bottom"
+    "directions-text-200-bottom",
+    "game-landscape-chrome-expanded",
+    "game-landscape-chrome-collapsed"
   ]);
   assert.match(
     iosSafariBaselinePath("/repo", "game"),

@@ -45,7 +45,7 @@
 
 .world-map__stage[data-zone="venue-exterior"] {
   --character-ground-shadow: rgba(26, 42, 29, 0.43);
-  --character-edge-shadow: rgba(27, 37, 26, 0.54);
+  --character-edge-shadow: rgba(27, 37, 26, 0.62);
   --foreground-ground-shadow: rgba(27, 45, 30, 0.28);
   --zone-highlight: rgba(255, 246, 221, 0.075);
   --zone-grade: rgba(75, 105, 57, 0.04);
@@ -54,7 +54,7 @@
 
 .world-map__stage[data-zone="lobby"] {
   --character-ground-shadow: rgba(48, 44, 39, 0.34);
-  --character-edge-shadow: rgba(43, 36, 34, 0.56);
+  --character-edge-shadow: rgba(43, 36, 34, 0.64);
   --foreground-ground-shadow: rgba(47, 50, 46, 0.21);
   --zone-highlight: rgba(255, 250, 229, 0.08);
   --zone-grade: rgba(107, 86, 70, 0.035);

@@ -6,6 +6,7 @@ import {
   mobileDeviceVisualBaselineProfiles,
   mobileDeviceVisualBaselineStates
 } from "./mobileDeviceVisualBaseline.mjs";
+import { runTypographyScaleAudit } from "./typographyScaleAudit.mjs";
 
 export const mobileHudAuditViewports = Object.freeze([
   { id: "iphone-portrait", width: 390, height: 844 },
@@ -641,6 +642,7 @@ export async function runMobileHudBrowserAudit({ rootDir, outputDir, port = 4178
     };
     const reports = [];
     let zoneLabelSweep = { reports: [], issues: [], expectedZoneIds: [] };
+    let typographyScaleAudit = { reports: [], issues: [], profiles: [] };
     try {
       for (const viewport of mobileHudAuditViewports) {
         const engine = viewport.engine ?? "chromium";
@@ -763,17 +765,28 @@ export async function runMobileHudBrowserAudit({ rootDir, outputDir, port = 4178
         url,
         outputDir
       });
+      typographyScaleAudit = await runTypographyScaleAudit({
+        browser: await browserFor("chromium"),
+        url,
+        outputDir
+      });
     } finally {
       await Promise.all([...browsers.values()].map((browser) => browser.close()));
     }
     const reportPath = path.join(outputDir, "mobile-hud-browser-report.json");
-    await writeFile(reportPath, `${JSON.stringify({ generatedAt: new Date().toISOString(), reports, zoneLabelSweep }, null, 2)}\n`);
+    await writeFile(reportPath, `${JSON.stringify({
+      generatedAt: new Date().toISOString(),
+      reports,
+      zoneLabelSweep,
+      typographyScaleAudit
+    }, null, 2)}\n`);
     const issues = [
       ...reports.flatMap((report) => report.issues.map((issue) => `${report.id}: ${issue}`)),
-      ...zoneLabelSweep.issues
+      ...zoneLabelSweep.issues,
+      ...typographyScaleAudit.issues
     ];
     if (issues.length > 0) throw new Error(`Mobile HUD browser audit failed:\n${issues.join("\n")}`);
-    return { reports, zoneLabelSweep, reportPath };
+    return { reports, zoneLabelSweep, typographyScaleAudit, reportPath };
   } finally {
     server.kill("SIGTERM");
   }

@@ -11,6 +11,8 @@ for (const report of result.reports) {
     `- ${report.zoneId}: 배경 ${report.averageLuminance.toFixed(3)} · 합성 ${report.sceneAverageLuminance.toFixed(3)}`
     + ` · 캐릭터 경계 최소 ${report.characterEdgeContrast.toFixed(2)}:1`
     + ` (${report.weakestCharacterPresetId}, ${report.characterPresetCount}종) · 전경 ${report.foregroundAssetCount}개`
+    + ` · 이동 ${report.weakestMovementEdgeContrast.toFixed(2)}:1`
+    + ` (${report.weakestMovementCharacterPresetId}/${report.weakestMovementFrameId}, ${report.movementFrameCount}프레임)`
     + ` · 최소 라벨 ${Math.min(...Object.values(report.contrasts)).toFixed(2)}:1`
   );
 }
