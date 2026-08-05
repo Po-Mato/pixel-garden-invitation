@@ -1,7 +1,7 @@
 {
   "version": 1,
-  "approvedAt": "2026-08-05T06:49:48.091Z",
-  "reason": "Approve calibrated iPhone 16 Pro iOS 18.5 Safari game and 200% Directions baselines",
+  "approvedAt": "2026-08-05T10:01:01.275Z",
+  "reason": "iPhone 16 Pro iOS 18.5 Mobile Safari portrait 200% directions and dialog-free landscape safe-area review",
   "profile": {
     "id": "iphone-16-pro-ios-18-5-safari",
     "deviceName": "iPhone 16 Pro",
@@ -9,7 +9,7 @@
     "requiredDirectionsScroll": 160
   },
   "capture": {
-    "generatedAt": "2026-08-05T06:43:20.161Z",
+    "generatedAt": "2026-08-05T09:48:30.778Z",
     "profile": {
       "id": "iphone-16-pro-ios-18-5-safari",
       "deviceName": "iPhone 16 Pro",
@@ -45,7 +45,199 @@
         "reached": true
       }
     },
-    "comparisons": [],
+    "landscape": {
+      "expanded": {
+        "state": "game-landscape-chrome-expanded",
+        "orientation": "landscape-primary",
+        "viewport": {
+          "width": 874,
+          "height": 352,
+          "visualWidth": 874,
+          "visualHeight": 352,
+          "offsetLeft": 0,
+          "offsetTop": 0,
+          "scrollY": 0,
+          "dpr": 3
+        },
+        "safeArea": {
+          "top": 0,
+          "right": 62,
+          "bottom": 21,
+          "left": 62
+        },
+        "horizontalOverflow": false,
+        "visibleDialogs": [],
+        "controls": [
+          {
+            "selector": ".world-hud__status",
+            "rect": {
+              "x": 79,
+              "y": 11,
+              "width": 77.078125,
+              "height": 68
+            }
+          },
+          {
+            "selector": ".world-hud__tools-toggle",
+            "rect": {
+              "x": 79,
+              "y": 37,
+              "width": 77.078125,
+              "height": 42
+            }
+          },
+          {
+            "selector": ".world-minimap",
+            "rect": {
+              "x": 750,
+              "y": 15,
+              "width": 48,
+              "height": 48
+            }
+          },
+          {
+            "selector": ".world-control-dock .virtual-joystick",
+            "rect": {
+              "x": 242.078125,
+              "y": 247,
+              "width": 72,
+              "height": 72
+            }
+          },
+          {
+            "selector": ".world-control-actions",
+            "rect": {
+              "x": 748,
+              "y": 319,
+              "width": 0,
+              "height": 0
+            }
+          }
+        ],
+        "controlsContained": true
+      },
+      "collapsed": {
+        "state": "game-landscape-chrome-collapsed",
+        "orientation": "landscape-primary",
+        "viewport": {
+          "width": 874,
+          "height": 352,
+          "visualWidth": 874,
+          "visualHeight": 352,
+          "offsetLeft": 0,
+          "offsetTop": 0,
+          "scrollY": 0,
+          "dpr": 3
+        },
+        "safeArea": {
+          "top": 0,
+          "right": 62,
+          "bottom": 21,
+          "left": 62
+        },
+        "horizontalOverflow": false,
+        "visibleDialogs": [],
+        "controls": [
+          {
+            "selector": ".world-hud__status",
+            "rect": {
+              "x": 79,
+              "y": 11,
+              "width": 77.078125,
+              "height": 68
+            }
+          },
+          {
+            "selector": ".world-hud__tools-toggle",
+            "rect": {
+              "x": 79,
+              "y": 37,
+              "width": 77.078125,
+              "height": 42
+            }
+          },
+          {
+            "selector": ".world-minimap",
+            "rect": {
+              "x": 750,
+              "y": 15,
+              "width": 48,
+              "height": 48
+            }
+          },
+          {
+            "selector": ".world-control-dock .virtual-joystick",
+            "rect": {
+              "x": 242.078125,
+              "y": 247,
+              "width": 72,
+              "height": 72
+            }
+          },
+          {
+            "selector": ".world-control-actions",
+            "rect": {
+              "x": 748,
+              "y": 319,
+              "width": 0,
+              "height": 0
+            }
+          }
+        ],
+        "controlsContained": true
+      },
+      "chromeViewportDelta": 0
+    },
+    "comparisons": [
+      {
+        "state": "game",
+        "changedPixels": 2323,
+        "changedRatio": 0.000734630938872887,
+        "meanPixelDifference": 0.09264603754681967,
+        "pixelCount": 3162132,
+        "passed": true,
+        "maxChangedRatio": 0.015,
+        "baselinePath": "/Users/runner/work/pixel-garden-invitation/pixel-garden-invitation/scripts/visual-baselines/ios-safari-iphone-16-pro-ios-18-5-safari-game.webp",
+        "currentPath": "/Users/runner/work/pixel-garden-invitation/pixel-garden-invitation/.superpowers/visual-regression/ios-safari/ios-safari-iphone-16-pro-ios-18-5-safari-game-current.png",
+        "diffPath": "/Users/runner/work/pixel-garden-invitation/pixel-garden-invitation/.superpowers/visual-regression/ios-safari/ios-safari-iphone-16-pro-ios-18-5-safari-game-diff.png"
+      },
+      {
+        "state": "directions-text-200",
+        "changedPixels": 2323,
+        "changedRatio": 0.000734630938872887,
+        "meanPixelDifference": 0.09264603754681967,
+        "pixelCount": 3162132,
+        "passed": true,
+        "maxChangedRatio": 0.015,
+        "baselinePath": "/Users/runner/work/pixel-garden-invitation/pixel-garden-invitation/scripts/visual-baselines/ios-safari-iphone-16-pro-ios-18-5-safari-directions-text-200.webp",
+        "currentPath": "/Users/runner/work/pixel-garden-invitation/pixel-garden-invitation/.superpowers/visual-regression/ios-safari/ios-safari-iphone-16-pro-ios-18-5-safari-directions-text-200-current.png",
+        "diffPath": "/Users/runner/work/pixel-garden-invitation/pixel-garden-invitation/.superpowers/visual-regression/ios-safari/ios-safari-iphone-16-pro-ios-18-5-safari-directions-text-200-diff.png"
+      },
+      {
+        "state": "directions-text-200-middle",
+        "changedPixels": 2323,
+        "changedRatio": 0.000734630938872887,
+        "meanPixelDifference": 0.09264603754681967,
+        "pixelCount": 3162132,
+        "passed": true,
+        "maxChangedRatio": 0.015,
+        "baselinePath": "/Users/runner/work/pixel-garden-invitation/pixel-garden-invitation/scripts/visual-baselines/ios-safari-iphone-16-pro-ios-18-5-safari-directions-text-200-middle.webp",
+        "currentPath": "/Users/runner/work/pixel-garden-invitation/pixel-garden-invitation/.superpowers/visual-regression/ios-safari/ios-safari-iphone-16-pro-ios-18-5-safari-directions-text-200-middle-current.png",
+        "diffPath": "/Users/runner/work/pixel-garden-invitation/pixel-garden-invitation/.superpowers/visual-regression/ios-safari/ios-safari-iphone-16-pro-ios-18-5-safari-directions-text-200-middle-diff.png"
+      },
+      {
+        "state": "directions-text-200-bottom",
+        "changedPixels": 2323,
+        "changedRatio": 0.000734630938872887,
+        "meanPixelDifference": 0.09264603754681967,
+        "pixelCount": 3162132,
+        "passed": true,
+        "maxChangedRatio": 0.015,
+        "baselinePath": "/Users/runner/work/pixel-garden-invitation/pixel-garden-invitation/scripts/visual-baselines/ios-safari-iphone-16-pro-ios-18-5-safari-directions-text-200-bottom.webp",
+        "currentPath": "/Users/runner/work/pixel-garden-invitation/pixel-garden-invitation/.superpowers/visual-regression/ios-safari/ios-safari-iphone-16-pro-ios-18-5-safari-directions-text-200-bottom-current.png",
+        "diffPath": "/Users/runner/work/pixel-garden-invitation/pixel-garden-invitation/.superpowers/visual-regression/ios-safari/ios-safari-iphone-16-pro-ios-18-5-safari-directions-text-200-bottom-diff.png"
+      }
+    ],
     "player": {
       "x": 157,
       "y": 457.5,
@@ -74,28 +266,42 @@
       "state": "game",
       "width": 1206,
       "height": 2622,
-      "sha256": "d906296a643c147d938b8cbd519f81253839bedca14a4ddc5c268cd27cf16daa"
+      "sha256": "2a7cd6b60cf7c0bb3c6dbaeb1a071f9f83d51a9909f75c872a13ed0375e01dbe"
     },
     {
       "profileId": "iphone-16-pro-ios-18-5-safari",
       "state": "directions-text-200",
       "width": 1206,
       "height": 2622,
-      "sha256": "767fb3d4f761f2e52cf2d4d32d7af82d9abf7af5528d70c0ef8da14782f07572"
+      "sha256": "00a9a4875e4664ac8915fbfb3c7b60b496cfc34e9575f07c121b23f0920c9d97"
     },
     {
       "profileId": "iphone-16-pro-ios-18-5-safari",
       "state": "directions-text-200-middle",
       "width": 1206,
       "height": 2622,
-      "sha256": "63a4495011505c18bb999fbf818499d2ec1ac4db430ec05d1cf62f3ccc5ff30c"
+      "sha256": "f69270b195769aaab803b40fb590b8b71c2fa20db266d95e7aa126652a814df9"
     },
     {
       "profileId": "iphone-16-pro-ios-18-5-safari",
       "state": "directions-text-200-bottom",
       "width": 1206,
       "height": 2622,
-      "sha256": "d553cfd9e312967348d6c40942976d414f02eadd9439dec03919dbec1c4fef54"
+      "sha256": "cc88b242e59d5503b5d01dbb1d62b18bbf17c6a4ce60e9d6952f2e1c5ed3f995"
+    },
+    {
+      "profileId": "iphone-16-pro-ios-18-5-safari",
+      "state": "game-landscape-chrome-expanded",
+      "width": 2622,
+      "height": 1206,
+      "sha256": "7b4a3f340d4e71b5a4318b6f6949615c603f0d036db0b1af5e3fc959bd90674c"
+    },
+    {
+      "profileId": "iphone-16-pro-ios-18-5-safari",
+      "state": "game-landscape-chrome-collapsed",
+      "width": 2622,
+      "height": 1206,
+      "sha256": "e2e4364df298a8edebdd70fcd86533bcfe0b97af9804c522e068a9538efd0994"
     }
   ]
 }
