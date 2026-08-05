@@ -6,6 +6,7 @@ const hudDensityStyles = readFileSync("src/game-hud-density.css", "utf8");
 const experienceStyles = readFileSync("src/game-experience-continuity.css", "utf8");
 const refinedGameStyles = readFileSync("src/game-refined-theme.css", "utf8");
 const devicePerformanceStyles = readFileSync("src/device-performance.css", "utf8");
+const mapVisualEnhancementStyles = readFileSync("src/map-visual-enhancements.css", "utf8");
 const worldZones = [
   "home",
   "neighborhood",
@@ -412,6 +413,30 @@ describe("responsive play viewport", () => {
 });
 
 describe("pixel wedding festival map", () => {
+  it("fades only the visual card as a spot moves into the distance", () => {
+    const farRule = refinedGameStyles.match(/\.world-spot\[data-proximity="far"\] \.world-spot__card\s*\{([^}]*)}/s)?.[1] ?? "";
+    expect(farRule).toContain("opacity: 0.18;");
+    expect(farRule).toContain("transform: scale(0.76);");
+    expect(refinedGameStyles).toContain(".world-spot:is(.world-spot--target, .world-spot--recommended, :focus-visible)");
+    const hitTargetRule = refinedGameStyles.match(/\.world-spot\s*\{([^}]*)}/s)?.[1] ?? "";
+    expect(hitTargetRule).not.toContain("opacity:");
+    expect(hitTargetRule).not.toContain("transform:");
+  });
+
+  it("harmonizes every zone with static tone and shadow tokens", () => {
+    worldZones.forEach((zoneId) => {
+      const rule = mapVisualEnhancementStyles.match(
+        new RegExp(`\\.world-map__stage\\[data-zone="${zoneId}"\\]\\s*\\{([^}]*)}`, "s")
+      )?.[1] ?? "";
+      expect(rule).toContain("--character-ground-shadow:");
+      expect(rule).toContain("--foreground-ground-shadow:");
+      expect(rule).toContain("--zone-grade:");
+    });
+    const gradeRule = mapVisualEnhancementStyles.match(/\.world-map-artwork__grade\s*\{([^}]*)}/s)?.[1] ?? "";
+    expect(gradeRule).toContain("linear-gradient");
+    expect(gradeRule).not.toContain("filter:");
+  });
+
   it("uses pixelated image artwork as the map surface", () => {
     const artworkRule = styles.match(/\.world-map-artwork\s*\{([^}]*)}/s)?.[1] ?? "";
     const backgroundRule = [...styles.matchAll(/\.world-map-artwork__background\s*\{([^}]*)}/gs)]

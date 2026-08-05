@@ -66,6 +66,7 @@ export function WorldMapArtwork({ zoneId, ambientMotion = "full", onLoadStateCha
           />
         ))}
       </span>
+      <span className="world-map-artwork__grade" />
     </div>
   );
 }

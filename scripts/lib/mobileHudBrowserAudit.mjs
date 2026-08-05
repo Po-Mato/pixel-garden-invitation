@@ -7,7 +7,23 @@ export const mobileHudAuditViewports = Object.freeze([
   { id: "small-android", width: 360, height: 640 },
   { id: "phone-landscape", width: 844, height: 390 },
   { id: "tablet-portrait", width: 768, height: 1024 },
-  { id: "tablet-landscape", width: 1024, height: 768 }
+  { id: "tablet-landscape", width: 1024, height: 768 },
+  {
+    id: "galaxy-s23-font-150",
+    width: 360,
+    height: 780,
+    deviceScaleFactor: 3,
+    platform: "android",
+    textScale: "xlarge"
+  },
+  {
+    id: "iphone-15-dynamic-type",
+    width: 393,
+    height: 852,
+    deviceScaleFactor: 3,
+    platform: "ios",
+    textScale: "xlarge"
+  }
 ]);
 
 export function compactDynamicViewport(viewport) {
@@ -71,6 +87,8 @@ export function auditInvitationQualityMetrics(metrics) {
   if (!floatingSpot?.visuallyCompact) issues.push("월드 안내 카드 크기 초과");
   if (!floatingSpot?.contentContained) issues.push("월드 안내 문구 넘침");
   if (!typography?.koreanFallbackReady) issues.push("안드로이드 한글 폰트 대체 누락");
+  if (!typography?.bundledFontsReady) issues.push("번들 한글 폰트 로드 실패");
+  if (!typography?.fontResourcesSameOrigin) issues.push("한글 폰트 외부 출처 요청");
   if (!largeTextSheet?.contained) issues.push("큰 글자 바텀시트 화면 이탈");
   if (!largeTextSheet?.contentContained) issues.push("큰 글자 바텀시트 가로 넘침");
   if (!largeTextSheet?.touchTargetsReady) issues.push("큰 글자 바텀시트 터치 영역 부족");
@@ -224,12 +242,14 @@ async function measureInvitationQuality(page, viewport, sheetScreenshotPath) {
     };
   });
 
+  const previousTextScale = await page.evaluate(() => document.documentElement.dataset.textScale ?? null);
   await page.evaluate(() => { document.documentElement.dataset.textScale = "xlarge"; });
   await page.locator(".world-menu-button").click();
   await page.locator(".world-menu-sheet").waitFor({ state: "visible" });
   await page.getByRole("button", { name: "오시는 길", exact: true }).click();
   const sheet = page.locator(".bottom-sheet");
   await sheet.waitFor({ state: "visible" });
+  await page.evaluate(() => document.fonts.ready);
   await page.screenshot({ path: sheetScreenshotPath, fullPage: false });
   const { typography, largeTextSheet } = await page.evaluate(({ width, height }) => {
     const world = document.querySelector(".game-world");
@@ -237,12 +257,21 @@ async function measureInvitationQuality(page, viewport, sheetScreenshotPath) {
     const sheetElement = document.querySelector(".bottom-sheet");
     if (!(world instanceof HTMLElement) || !(heading instanceof HTMLElement) || !(sheetElement instanceof HTMLElement)) {
       return {
-        typography: { uiFamily: "", displayFamily: "", koreanFallbackReady: false },
+        typography: {
+          uiFamily: "",
+          displayFamily: "",
+          koreanFallbackReady: false,
+          bundledFontsReady: false,
+          fontResourcesSameOrigin: false
+        },
         largeTextSheet: { contained: false, contentContained: false, touchTargetsReady: false }
       };
     }
     const uiFamily = getComputedStyle(world).fontFamily;
     const displayFamily = getComputedStyle(heading).fontFamily;
+    const fontResources = performance.getEntriesByType("resource")
+      .map((entry) => entry.name)
+      .filter((name) => name.endsWith(".woff2"));
     const rect = sheetElement.getBoundingClientRect();
     const controls = [...sheetElement.querySelectorAll("button, a[href]")].filter((element) => {
       const style = getComputedStyle(element);
@@ -252,7 +281,14 @@ async function measureInvitationQuality(page, viewport, sheetScreenshotPath) {
       typography: {
         uiFamily,
         displayFamily,
-        koreanFallbackReady: /Noto Sans (?:CJK )?KR/.test(uiFamily) && /Noto Serif (?:CJK )?KR/.test(displayFamily)
+        koreanFallbackReady: /Noto Sans (?:CJK )?KR/.test(uiFamily) && /Noto Serif (?:CJK )?KR/.test(displayFamily),
+        bundledFontsReady:
+          document.fonts.check('700 16px "Noto Sans KR Variable"', "오시는 길")
+          && document.fonts.check('700 16px "Noto Serif KR Variable"', "오시는 길"),
+        fontResourcesSameOrigin:
+          fontResources.length > 0
+          && fontResources.every((name) => new URL(name, location.href).origin === location.origin),
+        fontResourceCount: fontResources.length
       },
       largeTextSheet: {
         rect: { x: rect.x, y: rect.y, width: rect.width, height: rect.height },
@@ -264,7 +300,10 @@ async function measureInvitationQuality(page, viewport, sheetScreenshotPath) {
   }, viewport);
   await page.locator(".bottom-sheet__header button").click();
   await sheet.waitFor({ state: "hidden" });
-  await page.evaluate(() => { delete document.documentElement.dataset.textScale; });
+  await page.evaluate((textScale) => {
+    if (textScale) document.documentElement.dataset.textScale = textScale;
+    else delete document.documentElement.dataset.textScale;
+  }, previousTextScale);
   return { floatingSpot, typography, largeTextSheet, sheetScreenshotPath };
 }
 
@@ -287,7 +326,7 @@ export async function runMobileHudBrowserAudit({ rootDir, outputDir, port = 4178
           viewport: { width: viewport.width, height: viewport.height },
           hasTouch: true,
           isMobile: true,
-          deviceScaleFactor: viewport.id.startsWith("tablet") ? 1.5 : 2
+          deviceScaleFactor: viewport.deviceScaleFactor ?? (viewport.id.startsWith("tablet") ? 1.5 : 2)
         });
         const page = await context.newPage();
         await page.addInitScript(() => {
@@ -310,6 +349,11 @@ export async function runMobileHudBrowserAudit({ rootDir, outputDir, port = 4178
         }
         await page.locator(".game-world").waitFor({ state: "visible" });
         await page.locator(".world-map__stage--background-loaded").waitFor({ state: "visible", timeout: 15_000 });
+        if (viewport.textScale) {
+          await page.evaluate((textScale) => {
+            document.documentElement.dataset.textScale = textScale;
+          }, viewport.textScale);
+        }
         const rectangles = await visibleRectangles(page);
         const issues = auditMobileHudRectangles(rectangles, viewport);
         const movementLayout = await measureMovementLayoutStability(page);

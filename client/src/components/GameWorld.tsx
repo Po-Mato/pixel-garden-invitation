@@ -88,6 +88,7 @@ import {
   type OptionalFeatureId
 } from "../game/optionalFeatureUsage";
 import { placeWorldOverlayInsideViewport } from "../game/worldOverlayPlacement";
+import { resolveWorldSpotProximity } from "../game/worldSpotProximity";
 import { resolveContextHudAction, type ContextHudAction } from "../game/contextHudAction";
 import { resolveNpcDialoguePlacement } from "../game/gameOverlayPlacement";
 import { journeyDirectionLabels, resolveJourneyGuidance } from "../game/journeyGuidance";
@@ -5064,6 +5065,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
             ))}
             {activeZone.spots.map((worldSpot) => {
               const content = invitationContent.spots.find((candidate) => candidate.id === worldSpot.id);
+              const proximity = resolveWorldSpotProximity(position, worldSpot);
               const overlayPlacement = placeWorldOverlayInsideViewport({
                 rect: worldSpot,
                 camera,
@@ -5075,6 +5077,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
                   type="button"
                   className={`world-spot world-spot--${worldSpot.id}${interactionIntent?.targetId === `spot:${worldSpot.id}` ? " world-spot--target" : ""}${recommendedCheckpoint?.zoneId === activeZone.id && recommendedCheckpoint.target.type === "spot" && recommendedCheckpoint.target.spotId === worldSpot.id ? " world-spot--recommended" : ""}`}
                   data-edge-shifted={overlayPlacement.shiftedEdges.join(" ") || undefined}
+                  data-proximity={proximity}
                   style={{ ...pixelRect(overlayPlacement.rect), zIndex: 9000 }}
                   onClick={(event) => {
                     event.stopPropagation();

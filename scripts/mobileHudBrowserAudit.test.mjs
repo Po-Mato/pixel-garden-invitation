@@ -14,8 +14,17 @@ test("mobile HUD audit covers phones and tablets in both orientations", () => {
     "small-android",
     "phone-landscape",
     "tablet-portrait",
-    "tablet-landscape"
+    "tablet-landscape",
+    "galaxy-s23-font-150",
+    "iphone-15-dynamic-type"
   ]);
+  assert.deepEqual(
+    mobileHudAuditViewports.filter(({ textScale }) => textScale === "xlarge").map(({ id, platform }) => ({ id, platform })),
+    [
+      { id: "galaxy-s23-font-150", platform: "android" },
+      { id: "iphone-15-dynamic-type", platform: "ios" }
+    ]
+  );
 });
 
 test("mobile HUD rectangle audit accepts separated controls", () => {
@@ -53,18 +62,20 @@ test("joystick latency uses repeated-sample median instead of a runner spike", (
 test("invitation quality audit protects compact labels, Korean fallbacks, and large text sheets", () => {
   assert.deepEqual(auditInvitationQualityMetrics({
     floatingSpot: { hitTargetPreserved: true, visuallyCompact: true, contentContained: true },
-    typography: { koreanFallbackReady: true },
+    typography: { koreanFallbackReady: true, bundledFontsReady: true, fontResourcesSameOrigin: true },
     largeTextSheet: { contained: true, contentContained: true, touchTargetsReady: true }
   }), []);
   assert.deepEqual(auditInvitationQualityMetrics({
     floatingSpot: { hitTargetPreserved: false, visuallyCompact: false, contentContained: false },
-    typography: { koreanFallbackReady: false },
+    typography: { koreanFallbackReady: false, bundledFontsReady: false, fontResourcesSameOrigin: false },
     largeTextSheet: { contained: false, contentContained: false, touchTargetsReady: false }
   }), [
     "월드 안내 터치 영역 축소",
     "월드 안내 카드 크기 초과",
     "월드 안내 문구 넘침",
     "안드로이드 한글 폰트 대체 누락",
+    "번들 한글 폰트 로드 실패",
+    "한글 폰트 외부 출처 요청",
     "큰 글자 바텀시트 화면 이탈",
     "큰 글자 바텀시트 가로 넘침",
     "큰 글자 바텀시트 터치 영역 부족"

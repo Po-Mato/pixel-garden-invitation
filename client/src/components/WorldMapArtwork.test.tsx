@@ -50,6 +50,7 @@ it("renders map-specific texture and quality-budgeted atmosphere independently",
   const { container, rerender } = render(<WorldMapArtwork zoneId="venue-exterior" ambientMotion="full" />);
   expect(container.querySelector("[data-texture='garden-path']")).toBeInTheDocument();
   expect(container.querySelectorAll(".world-map-atmosphere__particle")).toHaveLength(16);
+  expect(container.querySelector(".world-map-artwork__grade")).toBeInTheDocument();
 
   rerender(<WorldMapArtwork zoneId="venue-exterior" ambientMotion="minimal" />);
   expect(container.querySelectorAll(".world-map-atmosphere__particle")).toHaveLength(0);

@@ -7,6 +7,8 @@ import { PublishedInvitationContentProvider } from "./invitation/PublishedInvita
 import { GameFeedbackProvider } from "./feedback/GameFeedbackContext";
 import { startInvitationAnalytics } from "./analytics/invitationAnalytics";
 import { DevicePerformanceProvider } from "./performance/DevicePerformanceContext";
+import "@fontsource-variable/noto-sans-kr/wght.css";
+import "@fontsource-variable/noto-serif-kr/wght.css";
 import "./styles.css";
 import "./feedback.css";
 import "./pwa.css";
