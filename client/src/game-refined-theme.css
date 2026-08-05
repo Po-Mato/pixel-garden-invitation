@@ -305,6 +305,24 @@
   transform: none;
 }
 
+.world-spot[data-label-visibility="quiet"]:not(.world-spot--target, .world-spot--recommended, :focus-visible) .world-spot__card {
+  opacity: 0;
+  transform: scale(0.72);
+}
+
+.world-portal__label,
+.world-portal__congestion,
+.world-portal__wait,
+.wedding-npc__label {
+  transition: opacity 120ms ease;
+}
+
+.world-portal[data-label-visibility="quiet"]:not(.world-portal--target, .world-portal--recommended, :focus-visible)
+  :is(.world-portal__label, .world-portal__congestion, .world-portal__wait),
+.world-npc[data-label-visibility="quiet"]:not([data-label-guided]):not(:focus-within) .wedding-npc__label {
+  opacity: 0;
+}
+
 .world-spot__card::before {
   position: absolute;
   top: 0;
@@ -493,7 +511,11 @@ html[data-text-scale="xlarge"] .world-spot__card > small {
 
 @media (prefers-reduced-motion: reduce) {
   .world-hud__tools,
-  .world-spot__card {
+  .world-spot__card,
+  .world-portal__label,
+  .world-portal__congestion,
+  .world-portal__wait,
+  .wedding-npc__label {
     transition: none;
   }
 }

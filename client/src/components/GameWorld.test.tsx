@@ -1169,6 +1169,7 @@ describe("GameWorld", () => {
     const joystick = screen.getByLabelText("가상 조이스틱");
 
     expect(directionsSpot.querySelector(".world-spot__card")).toHaveTextContent("오시는 길");
+    expect(directionsSpot).toHaveAttribute("data-label-visibility", "full");
 
     fireEvent.click(directionsSpot);
     expect(directionsSpot).toHaveClass("world-spot--target");

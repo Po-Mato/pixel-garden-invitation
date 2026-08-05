@@ -29,6 +29,7 @@ it("확정된 예식장, 교통, 주차, 지도, 전화 동작을 표시한다",
     "href",
     "tel:0323475500"
   );
+  expect(screen.getByRole("button", { name: "주소 복사" })).toHaveTextContent("복사");
 });
 
 it("주소를 복사하고 성공 상태를 알린다", async () => {

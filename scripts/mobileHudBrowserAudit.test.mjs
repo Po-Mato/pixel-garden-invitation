@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import {
   auditInvitationQualityMetrics,
   auditMobileHudRectangles,
+  auditWorldLabelRectangles,
   compactDynamicViewport,
   mobileHudAuditViewports,
   summarizeTouchLatency
@@ -47,6 +48,17 @@ test("mobile HUD rectangle audit catches clipping and meaningful overlap", () =>
     "minimap 화면 이탈",
     "context/controls 겹침"
   ]);
+});
+
+test("world label audit accepts priority-hidden labels and rejects visible collisions", () => {
+  assert.deepEqual(auditWorldLabelRectangles([
+    { id: "spot:0", rect: { x: 10, y: 10, width: 92, height: 58 } },
+    { id: "portal:0", rect: { x: 120, y: 20, width: 90, height: 20 } }
+  ]), []);
+  assert.deepEqual(auditWorldLabelRectangles([
+    { id: "spot:0", rect: { x: 10, y: 10, width: 92, height: 58 } },
+    { id: "npc:0", rect: { x: 50, y: 30, width: 84, height: 20 } }
+  ]), ["spot:0/npc:0 라벨 겹침"]);
 });
 
 test("dynamic viewport audit covers address-bar contraction without creating unusably short screens", () => {

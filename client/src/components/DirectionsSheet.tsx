@@ -57,6 +57,7 @@ export function DirectionsContent({ venue = invitationContent.event.venue }: Dir
           onClick={copyAddress}
         >
           <Copy aria-hidden="true" />
+          <span>복사</span>
         </button>
       </section>
 

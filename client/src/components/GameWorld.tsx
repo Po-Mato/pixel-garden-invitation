@@ -89,6 +89,7 @@ import {
 } from "../game/optionalFeatureUsage";
 import { placeWorldOverlayInsideViewport } from "../game/worldOverlayPlacement";
 import { resolveWorldSpotProximity } from "../game/worldSpotProximity";
+import { resolveWorldLabelVisibility } from "../game/worldLabelLayout";
 import { resolveContextHudAction, type ContextHudAction } from "../game/contextHudAction";
 import { resolveNpcDialoguePlacement } from "../game/gameOverlayPlacement";
 import { journeyDirectionLabels, resolveJourneyGuidance } from "../game/journeyGuidance";
@@ -4448,6 +4449,55 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     return () => window.clearTimeout(timer);
   }, [predictedAssetPlan, predictedGuestAppearances]);
 
+  const worldLabelVisibility = resolveWorldLabelVisibility([
+    ...activeZone.spots.map((worldSpot) => {
+      const proximity = resolveWorldSpotProximity(position, worldSpot);
+      const placedSpot = placeWorldOverlayInsideViewport({ rect: worldSpot, camera, viewport }).rect;
+      const targeted = interactionIntent?.targetId === `spot:${worldSpot.id}`;
+      const recommended = recommendedCheckpoint?.zoneId === activeZone.id
+        && recommendedCheckpoint.target.type === "spot"
+        && recommendedCheckpoint.target.spotId === worldSpot.id;
+      return {
+        id: `spot:${worldSpot.id}`,
+        rect: {
+          x: placedSpot.x + placedSpot.width / 2 - 48,
+          y: placedSpot.y + placedSpot.height / 2 - 31,
+          width: 96,
+          height: 62
+        },
+        priority: targeted ? 120 : recommended ? 110 : proximity === "near" ? 90 : proximity === "mid" ? 60 : 30
+      };
+    }),
+    ...activeZone.portals.map((portalItem) => {
+      const entry = portalEntryRect(portalItem);
+      const targeted = portalIntent?.portal.id === portalItem.id;
+      const recommended = journeyGuidance?.portalId === portalItem.id;
+      return {
+        id: `portal:${portalItem.id}`,
+        rect: {
+          x: entry.x + entry.width / 2 - 56,
+          y: entry.y + entry.height,
+          width: 112,
+          height: 20
+        },
+        priority: targeted ? 116 : recommended ? 106 : 80
+      };
+    }),
+    ...activeZone.npcs.map((npc) => {
+      const motion = npcMotionFor(activeZone, npc, npcMotions);
+      const targeted = interactionIntent?.targetId === `npc:${npc.id}` || (
+        recommendedCheckpoint?.zoneId === activeZone.id
+        && recommendedCheckpoint.target.type === "npc"
+        && recommendedCheckpoint.target.npcId === npc.id
+      );
+      return {
+        id: `npc:${npc.id}`,
+        rect: { x: motion.point.x - 42, y: motion.point.y + 25, width: 84, height: 20 },
+        priority: activeNpcDialogue?.npcId === npc.id ? 130 : targeted ? 112 : 70
+      };
+    })
+  ]);
+
   return (
     <section
       className="game-world"
@@ -5078,6 +5128,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
                   className={`world-spot world-spot--${worldSpot.id}${interactionIntent?.targetId === `spot:${worldSpot.id}` ? " world-spot--target" : ""}${recommendedCheckpoint?.zoneId === activeZone.id && recommendedCheckpoint.target.type === "spot" && recommendedCheckpoint.target.spotId === worldSpot.id ? " world-spot--recommended" : ""}`}
                   data-edge-shifted={overlayPlacement.shiftedEdges.join(" ") || undefined}
                   data-proximity={proximity}
+                  data-label-visibility={worldLabelVisibility.get(`spot:${worldSpot.id}`)}
                   style={{ ...pixelRect(overlayPlacement.rect), zIndex: 9000 }}
                   onClick={(event) => {
                     event.stopPropagation();
@@ -5143,6 +5194,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
                   aria-label={portalItem.label}
                   aria-describedby={`portal-accessibility-${portalItem.id}`}
                   data-congestion={congestion.level}
+                  data-label-visibility={worldLabelVisibility.get(`portal:${portalItem.id}`)}
                   style={{
                     ...pixelRect(portalEntryRect(portalItem)),
                     zIndex: worldDepth(portalItem.approach.y) - 100
@@ -5218,6 +5270,12 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
                   key={npc.id}
                   className="world-npc"
                   data-motion={motion.moving ? "walking" : motion.reaction}
+                  data-label-visibility={worldLabelVisibility.get(`npc:${npc.id}`)}
+                  data-label-guided={activeNpcDialogue?.npcId === npc.id || interactionIntent?.targetId === `npc:${npc.id}` || (
+                    recommendedCheckpoint?.zoneId === activeZone.id
+                    && recommendedCheckpoint.target.type === "npc"
+                    && recommendedCheckpoint.target.npcId === npc.id
+                  ) || undefined}
                   style={{
                     left: motion.point.x,
                     top: motion.point.y,

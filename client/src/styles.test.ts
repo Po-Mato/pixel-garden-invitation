@@ -7,6 +7,7 @@ const experienceStyles = readFileSync("src/game-experience-continuity.css", "utf
 const refinedGameStyles = readFileSync("src/game-refined-theme.css", "utf8");
 const devicePerformanceStyles = readFileSync("src/device-performance.css", "utf8");
 const mapVisualEnhancementStyles = readFileSync("src/map-visual-enhancements.css", "utf8");
+const weddingLuxeStyles = readFileSync("src/wedding-luxe-theme.css", "utf8");
 const worldZones = [
   "home",
   "neighborhood",
@@ -267,6 +268,9 @@ describe("wedding event access", () => {
     expect(styles).toMatch(/\.directions-sheet__venue > button,\s*\.directions-sheet__phone > a\s*\{[^}]*min-height:\s*48px;/s);
     expect(styles).toMatch(/\.directions-sheet__venue span\s*\{[^}]*user-select:\s*text;/s);
     expect(styles).toMatch(/\.directions-sheet a:focus-visible,\s*\.directions-sheet button:focus-visible\s*\{/s);
+    expect(weddingLuxeStyles).toContain("--directions-icon-column: 28px;");
+    expect(weddingLuxeStyles).toMatch(/\.directions-sheet__maps > :is\(a, button\)\s*\{[^}]*justify-content:\s*flex-start;[^}]*text-align:\s*left;/s);
+    expect(weddingLuxeStyles).toMatch(/\.directions-sheet__status:empty\s*\{[^}]*display:\s*none;/s);
   });
 
   it("keeps compact actions in a full-width portrait row", () => {
@@ -421,6 +425,9 @@ describe("pixel wedding festival map", () => {
     const hitTargetRule = refinedGameStyles.match(/\.world-spot\s*\{([^}]*)}/s)?.[1] ?? "";
     expect(hitTargetRule).not.toContain("opacity:");
     expect(hitTargetRule).not.toContain("transform:");
+    expect(refinedGameStyles).toContain('.world-spot[data-label-visibility="quiet"]');
+    expect(refinedGameStyles).toContain('.world-portal[data-label-visibility="quiet"]');
+    expect(refinedGameStyles).toContain('.world-npc[data-label-visibility="quiet"]');
   });
 
   it("harmonizes every zone with static tone and shadow tokens", () => {

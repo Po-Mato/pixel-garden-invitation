@@ -1,6 +1,11 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { spawn } from "node:child_process";
+import {
+  compareMobileDeviceVisualBaseline,
+  mobileDeviceVisualBaselineProfiles,
+  mobileDeviceVisualBaselineStates
+} from "./mobileDeviceVisualBaseline.mjs";
 
 export const mobileHudAuditViewports = Object.freeze([
   { id: "iphone-portrait", width: 390, height: 844 },
@@ -57,6 +62,20 @@ function overlapArea(left, right) {
   const width = Math.max(0, Math.min(left.x + left.width, right.x + right.width) - Math.max(left.x, right.x));
   const height = Math.max(0, Math.min(left.y + left.height, right.y + right.height) - Math.max(left.y, right.y));
   return width * height;
+}
+
+export function auditWorldLabelRectangles(labels, overlapTolerance = 8) {
+  const issues = [];
+  for (let leftIndex = 0; leftIndex < labels.length; leftIndex += 1) {
+    for (let rightIndex = leftIndex + 1; rightIndex < labels.length; rightIndex += 1) {
+      const left = labels[leftIndex];
+      const right = labels[rightIndex];
+      if (overlapArea(left.rect, right.rect) > overlapTolerance) {
+        issues.push(`${left.id}/${right.id} 라벨 겹침`);
+      }
+    }
+  }
+  return issues;
 }
 
 export function auditMobileHudRectangles(rectangles, viewport, overlapTolerance = 36) {
@@ -127,6 +146,25 @@ async function visibleRectangles(page) {
       const rect = element.getBoundingClientRect();
       return [name, { x: rect.x, y: rect.y, width: rect.width, height: rect.height }];
     }));
+  });
+}
+
+async function visibleWorldLabels(page) {
+  return page.evaluate(() => {
+    const definitions = [
+      ["spot", ".world-spot__card"],
+      ["portal", ".world-portal__label"],
+      ["npc", ".wedding-npc__label"]
+    ];
+    return definitions.flatMap(([kind, selector]) => (
+      [...document.querySelectorAll(selector)].flatMap((element, index) => {
+        if (!(element instanceof HTMLElement)) return [];
+        const style = getComputedStyle(element);
+        if (style.display === "none" || style.visibility === "hidden" || Number(style.opacity) < 0.1) return [];
+        const rect = element.getBoundingClientRect();
+        return [{ id: `${kind}:${index}`, rect: { x: rect.x, y: rect.y, width: rect.width, height: rect.height } }];
+      })
+    ));
   });
 }
 
@@ -226,7 +264,14 @@ async function measureJoystickTouchResponse(page, context) {
   };
 }
 
-async function measureInvitationQuality(page, viewport, sheetScreenshotPath) {
+async function captureStableDeviceScreenshot(page, screenshotPath) {
+  await page.evaluate(() => { document.documentElement.classList.add("device-visual-baseline-freeze"); });
+  await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+  await page.screenshot({ path: screenshotPath, fullPage: false, scale: "css" });
+  await page.evaluate(() => { document.documentElement.classList.remove("device-visual-baseline-freeze"); });
+}
+
+async function measureInvitationQuality(page, viewport, sheetScreenshotPath, deviceSheetCurrentPath = null) {
   const floatingSpot = await page.evaluate(() => {
     const hitTarget = document.querySelector(".world-spot");
     const card = hitTarget?.querySelector(".world-spot__card");
@@ -251,6 +296,7 @@ async function measureInvitationQuality(page, viewport, sheetScreenshotPath) {
   await sheet.waitFor({ state: "visible" });
   await page.evaluate(() => document.fonts.ready);
   await page.screenshot({ path: sheetScreenshotPath, fullPage: false });
+  if (deviceSheetCurrentPath) await captureStableDeviceScreenshot(page, deviceSheetCurrentPath);
   const { typography, largeTextSheet } = await page.evaluate(({ width, height }) => {
     const world = document.querySelector(".game-world");
     const heading = document.querySelector(".bottom-sheet__header h2");
@@ -307,7 +353,7 @@ async function measureInvitationQuality(page, viewport, sheetScreenshotPath) {
   return { floatingSpot, typography, largeTextSheet, sheetScreenshotPath };
 }
 
-export async function runMobileHudBrowserAudit({ rootDir, outputDir, port = 4178 }) {
+export async function runMobileHudBrowserAudit({ rootDir, outputDir, port = 4178, deviceBaselineMode = "compare" }) {
   const server = spawn(
     "pnpm",
     ["--filter", "@wedding-game/client", "exec", "vite", "--host", "127.0.0.1", "--port", String(port), "--strictPort"],
@@ -326,6 +372,9 @@ export async function runMobileHudBrowserAudit({ rootDir, outputDir, port = 4178
           viewport: { width: viewport.width, height: viewport.height },
           hasTouch: true,
           isMobile: true,
+          locale: "ko-KR",
+          colorScheme: "light",
+          reducedMotion: "reduce",
           deviceScaleFactor: viewport.deviceScaleFactor ?? (viewport.id.startsWith("tablet") ? 1.5 : 2)
         });
         const page = await context.newPage();
@@ -349,6 +398,15 @@ export async function runMobileHudBrowserAudit({ rootDir, outputDir, port = 4178
         }
         await page.locator(".game-world").waitFor({ state: "visible" });
         await page.locator(".world-map__stage--background-loaded").waitFor({ state: "visible", timeout: 15_000 });
+        await page.addStyleTag({ content: `
+          html.device-visual-baseline-freeze *,
+          html.device-visual-baseline-freeze *::before,
+          html.device-visual-baseline-freeze *::after {
+            animation: none !important;
+            caret-color: transparent !important;
+            transition: none !important;
+          }
+        ` });
         if (viewport.textScale) {
           await page.evaluate((textScale) => {
             document.documentElement.dataset.textScale = textScale;
@@ -356,6 +414,21 @@ export async function runMobileHudBrowserAudit({ rootDir, outputDir, port = 4178
         }
         const rectangles = await visibleRectangles(page);
         const issues = auditMobileHudRectangles(rectangles, viewport);
+        const worldLabels = await visibleWorldLabels(page);
+        auditWorldLabelRectangles(worldLabels).forEach((issue) => issues.push(issue));
+        const deviceBaselineEnabled = mobileDeviceVisualBaselineProfiles.includes(viewport.id);
+        const deviceVisualBaselines = deviceBaselineEnabled ? {
+          game: {
+            currentPath: path.join(outputDir, `mobile-device-${viewport.id}-game-current.png`)
+          },
+          "directions-xlarge": {
+            currentPath: path.join(outputDir, `mobile-device-${viewport.id}-directions-xlarge-current.png`)
+          }
+        } : null;
+        if (deviceVisualBaselines) {
+          await page.evaluate(() => document.fonts.ready);
+          await captureStableDeviceScreenshot(page, deviceVisualBaselines.game.currentPath);
+        }
         const movementLayout = await measureMovementLayoutStability(page);
         if (!movementLayout.stable) issues.push("이동 중 HUD 또는 맵 화면 틀어짐");
         const dynamicViewport = await measureDynamicViewportAdaptation(page, viewport);
@@ -381,9 +454,34 @@ export async function runMobileHudBrowserAudit({ rootDir, outputDir, port = 4178
         await page.screenshot({ path: toolsScreenshotPath, fullPage: false });
         await page.locator(".world-hud__tools-toggle").click();
         const sheetScreenshotPath = path.join(outputDir, `mobile-hud-${viewport.id}-directions-xlarge.png`);
-        const invitationQuality = await measureInvitationQuality(page, viewport, sheetScreenshotPath);
+        const invitationQuality = await measureInvitationQuality(
+          page,
+          viewport,
+          sheetScreenshotPath,
+          deviceVisualBaselines?.["directions-xlarge"].currentPath
+        );
         auditInvitationQualityMetrics(invitationQuality).forEach((issue) => issues.push(issue));
-        reports.push({ ...viewport, rectangles, movementLayout, dynamicViewport, toolsRect, touchResponse, invitationQuality, issues, screenshotPath, toolsScreenshotPath });
+        if (deviceVisualBaselines && deviceBaselineMode === "compare") {
+          for (const state of mobileDeviceVisualBaselineStates) {
+            const diffPath = path.join(outputDir, `mobile-device-${viewport.id}-${state}-diff.png`);
+            try {
+              const comparison = await compareMobileDeviceVisualBaseline({
+                rootDir,
+                profileId: viewport.id,
+                state,
+                currentPath: deviceVisualBaselines[state].currentPath,
+                diffPath
+              });
+              deviceVisualBaselines[state].comparison = comparison;
+              if (!comparison.passed) {
+                issues.push(`${state} 픽셀 변경률 ${(comparison.changedRatio * 100).toFixed(3)}%`);
+              }
+            } catch (error) {
+              issues.push(`${state} 기기 시각 기준선 오류: ${error instanceof Error ? error.message : String(error)}`);
+            }
+          }
+        }
+        reports.push({ ...viewport, rectangles, worldLabels, movementLayout, dynamicViewport, toolsRect, touchResponse, invitationQuality, deviceVisualBaselines, issues, screenshotPath, toolsScreenshotPath });
         await context.close();
       }
     } finally {

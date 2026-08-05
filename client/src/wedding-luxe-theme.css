@@ -191,7 +191,7 @@ body {
 .bottom-sheet {
   width: min(calc(100% - 24px), 420px);
   max-height: calc(100dvh - 20px - env(safe-area-inset-top));
-  padding: 18px;
+  padding: 18px 18px 16px;
   font-family: var(--wedding-font-ui);
   word-break: keep-all;
   overflow-wrap: anywhere;
@@ -199,6 +199,8 @@ body {
 
 .bottom-sheet__header {
   min-width: 0;
+  min-height: 48px;
+  align-items: center;
   gap: 16px;
   padding-bottom: 12px;
   border-bottom: 1px solid rgba(179, 148, 89, 0.36);
@@ -209,7 +211,7 @@ body {
   font-size: 22px;
   font-weight: 650;
   letter-spacing: -0.035em;
-  line-height: 1.25;
+  line-height: 1.18;
   text-wrap: balance;
 }
 
@@ -232,7 +234,7 @@ body {
   min-width: 0;
   margin-top: 14px;
   font-size: 15px;
-  line-height: 1.62;
+  line-height: 1.58;
 }
 
 .bottom-sheet :is(.field input, .field textarea, .field select) {
@@ -345,7 +347,8 @@ body {
 }
 
 .directions-sheet {
-  gap: 10px;
+  --directions-icon-column: 28px;
+  gap: 11px;
 }
 
 .directions-sheet__venue,
@@ -353,12 +356,46 @@ body {
 .directions-sheet__phone {
   border: 1px solid rgba(105, 134, 121, 0.2);
   border-radius: 14px;
-  padding: 11px;
+  padding: 13px 12px;
   background: rgba(247, 250, 247, 0.72);
 }
 
 .directions-sheet__info {
   border-top-style: solid;
+}
+
+.directions-sheet__venue,
+.directions-sheet__phone {
+  grid-template-columns: var(--directions-icon-column) minmax(0, 1fr) 68px;
+}
+
+.directions-sheet__info {
+  grid-template-columns: var(--directions-icon-column) minmax(0, 1fr);
+}
+
+.directions-sheet :is(.directions-sheet__venue, .directions-sheet__info, .directions-sheet__phone) > svg {
+  box-sizing: border-box;
+  width: 28px;
+  height: 28px;
+  align-self: start;
+  border: 1px solid rgba(105, 134, 121, 0.2);
+  border-radius: 50%;
+  padding: 5px;
+  background: rgba(255, 255, 252, 0.76);
+  color: var(--sage);
+}
+
+.directions-sheet :is(.directions-sheet__venue, .directions-sheet__info) > div {
+  gap: 4px;
+}
+
+.directions-sheet :is(.directions-sheet__venue, .directions-sheet__info, .directions-sheet__phone) strong {
+  line-height: 1.32;
+  letter-spacing: -0.018em;
+}
+
+.directions-sheet :is(.directions-sheet__venue, .directions-sheet__info) span {
+  line-height: 1.55;
 }
 
 .directions-sheet__maps {
@@ -371,6 +408,28 @@ body {
   border-width: 1px;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(76, 57, 63, 0.07);
+}
+
+.directions-sheet__maps > :is(a, button) {
+  justify-content: flex-start;
+  gap: 8px;
+  padding-inline: 12px;
+  text-align: left;
+}
+
+.directions-sheet__maps > :is(a, button) svg,
+.directions-sheet__venue > button svg {
+  width: 16px;
+  height: 16px;
+}
+
+.directions-sheet__venue > button {
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.directions-sheet__status:empty {
+  display: none;
 }
 
 .bottom-sheet__body :is(button, a[href]):focus-visible {
@@ -519,7 +578,7 @@ html[data-text-scale="xlarge"] .bottom-sheet__header h2 {
 
 html[data-text-scale="xlarge"] .directions-sheet__venue,
 html[data-text-scale="xlarge"] .directions-sheet__phone {
-  grid-template-columns: 20px minmax(0, 1fr);
+  grid-template-columns: var(--directions-icon-column) minmax(0, 1fr);
 }
 
 html[data-text-scale="xlarge"] :is(.directions-sheet__venue > button, .directions-sheet__phone > a) {

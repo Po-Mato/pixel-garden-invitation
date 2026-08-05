@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "thresholds": {
+    "maxLuminanceDelta": 0.03,
+    "minDynamicRange": 0.16,
+    "minTextContrast": 4.5
+  },
+  "zones": {
+    "banquet": { "averageLuminance": 0.591, "p10Luminance": 0.215, "p90Luminance": 0.819 },
+    "bridal-room": { "averageLuminance": 0.449, "p10Luminance": 0.164, "p90Luminance": 0.736 },
+    "ceremony-hall": { "averageLuminance": 0.530, "p10Luminance": 0.194, "p90Luminance": 0.785 },
+    "home": { "averageLuminance": 0.263, "p10Luminance": 0.066, "p90Luminance": 0.408 },
+    "lobby": { "averageLuminance": 0.497, "p10Luminance": 0.157, "p90Luminance": 0.811 },
+    "neighborhood": { "averageLuminance": 0.127, "p10Luminance": 0.039, "p90Luminance": 0.239 },
+    "restroom": { "averageLuminance": 0.508, "p10Luminance": 0.187, "p90Luminance": 0.749 },
+    "subway-station": { "averageLuminance": 0.425, "p10Luminance": 0.058, "p90Luminance": 0.655 },
+    "subway-train": { "averageLuminance": 0.161, "p10Luminance": 0.028, "p90Luminance": 0.331 },
+    "venue-exterior": { "averageLuminance": 0.299, "p10Luminance": 0.035, "p90Luminance": 0.782 }
+  }
+}

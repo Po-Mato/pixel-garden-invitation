@@ -1,0 +1,37 @@
+{
+  "version": 1,
+  "approvedAt": "2026-08-05T03:27:35.966Z",
+  "reason": "Galaxy와 iPhone 큰 글자 품질 기준 고정",
+  "pixelThreshold": 36,
+  "maxChangedRatio": 0.015,
+  "profiles": [
+    {
+      "profileId": "galaxy-s23-font-150",
+      "state": "game",
+      "width": 360,
+      "height": 780,
+      "sha256": "18083cffa77151702fca88fd93cb8616b1120c27c239bcbcb3402e3941d1557d"
+    },
+    {
+      "profileId": "galaxy-s23-font-150",
+      "state": "directions-xlarge",
+      "width": 360,
+      "height": 780,
+      "sha256": "14fceb2f0a5768cf51445a78680ce85cd543d32a803b7f2ae164445676309f98"
+    },
+    {
+      "profileId": "iphone-15-dynamic-type",
+      "state": "game",
+      "width": 393,
+      "height": 852,
+      "sha256": "88912f6f143aa769a6cac1538ae175078fc98e5ff020ecd4e5afe869746668ba"
+    },
+    {
+      "profileId": "iphone-15-dynamic-type",
+      "state": "directions-xlarge",
+      "width": 393,
+      "height": 852,
+      "sha256": "95c8bb5bbe65f51a65b3e2cdd9f086a2d9c0caaae166258273d3b7766f256f2d"
+    }
+  ]
+}
