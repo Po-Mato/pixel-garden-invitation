@@ -5,10 +5,16 @@ import sharp from "sharp";
 
 export const mobileDeviceVisualBaselineProfiles = Object.freeze([
   "galaxy-s23-font-150",
-  "iphone-15-dynamic-type"
+  "iphone-15-dynamic-type",
+  "iphone-15-webkit-dynamic-type"
 ]);
 
-export const mobileDeviceVisualBaselineStates = Object.freeze(["game", "directions-xlarge"]);
+export const mobileDeviceVisualBaselineStates = Object.freeze([
+  "game",
+  "directions-xlarge",
+  "directions-xlarge-middle",
+  "directions-xlarge-bottom"
+]);
 export const mobileDeviceVisualMaxChangedRatio = 0.015;
 export const mobileDeviceVisualPixelThreshold = 36;
 export const mobileDeviceVisualBlurSigma = 2;
@@ -93,6 +99,7 @@ export async function approveMobileDeviceVisualBaselines({ rootDir, captures, re
     const metadata = await sharp(buffer).metadata();
     profiles.push({
       profileId: capture.profileId,
+      engine: capture.engine ?? "chromium",
       state: capture.state,
       width: metadata.width,
       height: metadata.height,
@@ -101,7 +108,7 @@ export async function approveMobileDeviceVisualBaselines({ rootDir, captures, re
   }
   const metadataPath = path.join(baselineDir, "mobile-device-visual-regression.json");
   const metadata = {
-    version: 2,
+    version: 3,
     approvedAt: now.toISOString(),
     reason: reason.trim(),
     pixelThreshold: mobileDeviceVisualPixelThreshold,

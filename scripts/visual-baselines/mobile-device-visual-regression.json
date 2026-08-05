@@ -1,7 +1,7 @@
 {
-  "version": 2,
-  "approvedAt": "2026-08-05T03:27:35.966Z",
-  "reason": "Galaxy와 iPhone 큰 글자 품질 기준 고정",
+  "version": 3,
+  "approvedAt": "2026-08-05T04:18:28.111Z",
+  "reason": "WebKit과 큰 글자 시트 스크롤 상태 품질 기준 확장",
   "pixelThreshold": 36,
   "maxChangedRatio": 0.015,
   "comparisonMode": "gaussian-structural",
@@ -9,31 +9,99 @@
   "profiles": [
     {
       "profileId": "galaxy-s23-font-150",
+      "engine": "chromium",
       "state": "game",
       "width": 360,
       "height": 780,
-      "sha256": "18083cffa77151702fca88fd93cb8616b1120c27c239bcbcb3402e3941d1557d"
+      "sha256": "a7e6101ac1c9ab20ded6b6ad4aafba0c50ed4b7cc7214fadeada0e898083aace"
     },
     {
       "profileId": "galaxy-s23-font-150",
+      "engine": "chromium",
       "state": "directions-xlarge",
       "width": 360,
       "height": 780,
       "sha256": "14fceb2f0a5768cf51445a78680ce85cd543d32a803b7f2ae164445676309f98"
     },
     {
-      "profileId": "iphone-15-dynamic-type",
-      "state": "game",
-      "width": 393,
-      "height": 852,
-      "sha256": "88912f6f143aa769a6cac1538ae175078fc98e5ff020ecd4e5afe869746668ba"
+      "profileId": "galaxy-s23-font-150",
+      "engine": "chromium",
+      "state": "directions-xlarge-middle",
+      "width": 360,
+      "height": 780,
+      "sha256": "86b26aa5168af51da6e44ce083270c47c405b4b03fd642a8df3e50c224cfa185"
+    },
+    {
+      "profileId": "galaxy-s23-font-150",
+      "engine": "chromium",
+      "state": "directions-xlarge-bottom",
+      "width": 360,
+      "height": 780,
+      "sha256": "0f3a5ff9b6be5845f1eddde38fc1eb1782a55c3154b3ef6c7a31fb1ca6a06247"
     },
     {
       "profileId": "iphone-15-dynamic-type",
+      "engine": "chromium",
+      "state": "game",
+      "width": 393,
+      "height": 852,
+      "sha256": "c03c0d71c8da5e0cd8e5ae356af62c57e0f6ea94bd530f0c718de6362813eee6"
+    },
+    {
+      "profileId": "iphone-15-dynamic-type",
+      "engine": "chromium",
       "state": "directions-xlarge",
       "width": 393,
       "height": 852,
       "sha256": "95c8bb5bbe65f51a65b3e2cdd9f086a2d9c0caaae166258273d3b7766f256f2d"
+    },
+    {
+      "profileId": "iphone-15-dynamic-type",
+      "engine": "chromium",
+      "state": "directions-xlarge-middle",
+      "width": 393,
+      "height": 852,
+      "sha256": "18c6ec207b59bc4a96d6aaa15afd566b348a2b47b400d901fd09a06c26df86e2"
+    },
+    {
+      "profileId": "iphone-15-dynamic-type",
+      "engine": "chromium",
+      "state": "directions-xlarge-bottom",
+      "width": 393,
+      "height": 852,
+      "sha256": "18c6ec207b59bc4a96d6aaa15afd566b348a2b47b400d901fd09a06c26df86e2"
+    },
+    {
+      "profileId": "iphone-15-webkit-dynamic-type",
+      "engine": "webkit",
+      "state": "game",
+      "width": 393,
+      "height": 852,
+      "sha256": "531f4c531a28f8874125cbca5e626945b3029894ebdbb2476e1646e49742c40e"
+    },
+    {
+      "profileId": "iphone-15-webkit-dynamic-type",
+      "engine": "webkit",
+      "state": "directions-xlarge",
+      "width": 393,
+      "height": 852,
+      "sha256": "8f149d467181a455cd32def056639619dd194ac4a6157b01e7cd2a34c028dc5f"
+    },
+    {
+      "profileId": "iphone-15-webkit-dynamic-type",
+      "engine": "webkit",
+      "state": "directions-xlarge-middle",
+      "width": 393,
+      "height": 852,
+      "sha256": "8f149d467181a455cd32def056639619dd194ac4a6157b01e7cd2a34c028dc5f"
+    },
+    {
+      "profileId": "iphone-15-webkit-dynamic-type",
+      "engine": "webkit",
+      "state": "directions-xlarge-bottom",
+      "width": 393,
+      "height": 852,
+      "sha256": "8f149d467181a455cd32def056639619dd194ac4a6157b01e7cd2a34c028dc5f"
     }
   ]
 }

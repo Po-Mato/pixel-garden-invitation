@@ -16,6 +16,7 @@ const captures = audit.reports
   .filter((report) => mobileDeviceVisualBaselineProfiles.includes(report.id))
   .flatMap((report) => mobileDeviceVisualBaselineStates.map((state) => ({
     profileId: report.id,
+    engine: report.engine,
     state,
     currentPath: report.deviceVisualBaselines[state].currentPath
   })));

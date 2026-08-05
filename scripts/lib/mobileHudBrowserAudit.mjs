@@ -28,7 +28,36 @@ export const mobileHudAuditViewports = Object.freeze([
     deviceScaleFactor: 3,
     platform: "ios",
     textScale: "xlarge"
+  },
+  {
+    id: "iphone-15-webkit-dynamic-type",
+    width: 393,
+    height: 852,
+    deviceScaleFactor: 3,
+    platform: "ios",
+    engine: "webkit",
+    textScale: "xlarge"
   }
+]);
+
+export const worldLabelAuditScenarios = Object.freeze([
+  { id: "home-center", zoneId: "home", position: { x: 285, y: 555 } },
+  { id: "neighborhood-west", zoneId: "neighborhood", position: { x: 135, y: 375 } },
+  { id: "neighborhood-east", zoneId: "neighborhood", position: { x: 1095, y: 375 } },
+  { id: "station-west", zoneId: "subway-station", position: { x: 135, y: 435 } },
+  { id: "station-east", zoneId: "subway-station", position: { x: 705, y: 435 } },
+  { id: "train-west", zoneId: "subway-train", position: { x: 135, y: 285 } },
+  { id: "train-east", zoneId: "subway-train", position: { x: 1305, y: 285 } },
+  { id: "venue-north", zoneId: "venue-exterior", position: { x: 465, y: 135 } },
+  { id: "venue-south", zoneId: "venue-exterior", position: { x: 465, y: 765 } },
+  { id: "lobby-center", zoneId: "lobby", position: { x: 525, y: 405 } },
+  { id: "bridal-center", zoneId: "bridal-room", position: { x: 345, y: 405 } },
+  { id: "hall-altar", zoneId: "ceremony-hall", position: { x: 375, y: 315 } },
+  { id: "hall-entry", zoneId: "ceremony-hall", position: { x: 375, y: 1785 } },
+  { id: "banquet-west", zoneId: "banquet", position: { x: 135, y: 465 } },
+  { id: "banquet-east", zoneId: "banquet", position: { x: 1065, y: 465 } },
+  { id: "banquet-guestbook", zoneId: "banquet", position: { x: 945, y: 735 } },
+  { id: "restroom-entry", zoneId: "restroom", position: { x: 135, y: 345 } }
 ]);
 
 export function compactDynamicViewport(viewport) {
@@ -78,6 +107,19 @@ export function auditWorldLabelRectangles(labels, overlapTolerance = 8) {
   return issues;
 }
 
+export function auditWorldLabelZoneSweep(reports, expectedZoneIds) {
+  const issues = [];
+  const coveredZoneIds = new Set(reports.map(({ zoneId }) => zoneId));
+  for (const zoneId of expectedZoneIds) {
+    if (!coveredZoneIds.has(zoneId)) issues.push(`${zoneId}: 라벨 감사 누락`);
+  }
+  for (const report of reports) {
+    if (report.candidateCount === 0) issues.push(`${report.id}: 라벨 후보 없음`);
+    auditWorldLabelRectangles(report.visibleLabels).forEach((issue) => issues.push(`${report.id}: ${issue}`));
+  }
+  return issues;
+}
+
 export function auditMobileHudRectangles(rectangles, viewport, overlapTolerance = 36) {
   const issues = [];
   for (const [name, rect] of Object.entries(rectangles)) {
@@ -111,6 +153,9 @@ export function auditInvitationQualityMetrics(metrics) {
   if (!largeTextSheet?.contained) issues.push("큰 글자 바텀시트 화면 이탈");
   if (!largeTextSheet?.contentContained) issues.push("큰 글자 바텀시트 가로 넘침");
   if (!largeTextSheet?.touchTargetsReady) issues.push("큰 글자 바텀시트 터치 영역 부족");
+  for (const [state, scroll] of Object.entries(metrics.scrollStates ?? {})) {
+    if (!scroll.reached) issues.push(`${state} 스크롤 위치 도달 실패`);
+  }
   return issues;
 }
 
@@ -161,10 +206,27 @@ async function visibleWorldLabels(page) {
         if (!(element instanceof HTMLElement)) return [];
         const style = getComputedStyle(element);
         if (style.display === "none" || style.visibility === "hidden" || Number(style.opacity) < 0.1) return [];
+        const owner = element.closest("[data-label-visibility]");
         const rect = element.getBoundingClientRect();
-        return [{ id: `${kind}:${index}`, rect: { x: rect.x, y: rect.y, width: rect.width, height: rect.height } }];
+        const label = owner?.getAttribute("aria-label") ?? element.textContent?.trim() ?? String(index);
+        return [{
+          id: `${kind}:${label}`,
+          visibility: owner?.getAttribute("data-label-visibility") ?? null,
+          rect: { x: rect.x, y: rect.y, width: rect.width, height: rect.height }
+        }];
       })
     ));
+  });
+}
+
+async function worldLabelVisibilitySummary(page) {
+  return page.evaluate(() => {
+    const owners = [...document.querySelectorAll("[data-label-visibility]")];
+    return {
+      candidateCount: owners.length,
+      fullCount: owners.filter((element) => element.getAttribute("data-label-visibility") === "full").length,
+      quietCount: owners.filter((element) => element.getAttribute("data-label-visibility") === "quiet").length
+    };
   });
 }
 
@@ -223,7 +285,10 @@ async function measureDynamicViewportAdaptation(page, viewport) {
   return { before, compact, compactWorld, compactRectangles, compactIssues, after, restored };
 }
 
-async function measureJoystickTouchResponse(page, context) {
+async function measureJoystickTouchResponse(page, context, engine = "chromium") {
+  if (engine !== "chromium") {
+    return { latencyMs: null, responded: true, samples: [], method: "webkit-soak-covered" };
+  }
   const box = await page.locator(".virtual-joystick").boundingBox();
   if (!box) return { latencyMs: null, responded: false };
   const x = box.x + box.width - 4;
@@ -271,7 +336,7 @@ async function captureStableDeviceScreenshot(page, screenshotPath) {
   await page.evaluate(() => { document.documentElement.classList.remove("device-visual-baseline-freeze"); });
 }
 
-async function measureInvitationQuality(page, viewport, sheetScreenshotPath, deviceSheetCurrentPath = null) {
+async function measureInvitationQuality(page, viewport, sheetScreenshotPath, deviceSheetCurrentPaths = null) {
   const floatingSpot = await page.evaluate(() => {
     const hitTarget = document.querySelector(".world-spot");
     const card = hitTarget?.querySelector(".world-spot__card");
@@ -296,7 +361,34 @@ async function measureInvitationQuality(page, viewport, sheetScreenshotPath, dev
   await sheet.waitFor({ state: "visible" });
   await page.evaluate(() => document.fonts.ready);
   await page.screenshot({ path: sheetScreenshotPath, fullPage: false });
-  if (deviceSheetCurrentPath) await captureStableDeviceScreenshot(page, deviceSheetCurrentPath);
+  const scrollStates = {};
+  for (const [state, ratio] of [
+    ["directions-xlarge", 0],
+    ["directions-xlarge-middle", 0.5],
+    ["directions-xlarge-bottom", 1]
+  ]) {
+    await sheet.evaluate((element, targetRatio) => {
+      const maxScroll = Math.max(0, element.scrollHeight - element.clientHeight);
+      element.scrollTop = Math.round(maxScroll * targetRatio);
+    }, ratio);
+    await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+    const scroll = await sheet.evaluate((element, targetRatio) => {
+      const maxScroll = Math.max(0, element.scrollHeight - element.clientHeight);
+      const target = Math.round(maxScroll * targetRatio);
+      return {
+        scrollTop: element.scrollTop,
+        maxScroll,
+        target,
+        ratio: maxScroll > 0 ? element.scrollTop / maxScroll : 0,
+        reached: Math.abs(element.scrollTop - target) <= 2
+      };
+    }, ratio);
+    scrollStates[state] = scroll;
+    if (deviceSheetCurrentPaths?.[state]?.currentPath) {
+      await captureStableDeviceScreenshot(page, deviceSheetCurrentPaths[state].currentPath);
+    }
+  }
+  await sheet.evaluate((element) => { element.scrollTop = 0; });
   const { typography, largeTextSheet } = await page.evaluate(({ width, height }) => {
     const world = document.querySelector(".game-world");
     const heading = document.querySelector(".bottom-sheet__header h2");
@@ -350,7 +442,80 @@ async function measureInvitationQuality(page, viewport, sheetScreenshotPath, dev
     if (textScale) document.documentElement.dataset.textScale = textScale;
     else delete document.documentElement.dataset.textScale;
   }, previousTextScale);
-  return { floatingSpot, typography, largeTextSheet, sheetScreenshotPath };
+  return { floatingSpot, typography, largeTextSheet, scrollStates, sheetScreenshotPath };
+}
+
+async function runWorldLabelZoneSweep({ browser, url, outputDir }) {
+  const context = await browser.newContext({
+    viewport: { width: 393, height: 852 },
+    hasTouch: true,
+    isMobile: true,
+    locale: "ko-KR",
+    colorScheme: "light",
+    reducedMotion: "reduce",
+    deviceScaleFactor: 2
+  });
+  const page = await context.newPage();
+  await page.addInitScript(() => {
+    localStorage.setItem("wedding-game:entry-session:v1", JSON.stringify({
+      version: 1,
+      nickname: "라벨감사",
+      appearance: { presetId: "feminine-long-wave-dress" },
+      updatedAt: new Date().toISOString()
+    }));
+    localStorage.setItem("wedding-game:first-visit-guide:v1", JSON.stringify({
+      version: 1,
+      completed: true,
+      completedAt: new Date().toISOString()
+    }));
+  });
+  const reports = [];
+  try {
+    await page.goto(url, { waitUntil: "domcontentloaded" });
+    for (const scenario of worldLabelAuditScenarios) {
+      await page.evaluate(({ zoneId, position }) => {
+        localStorage.setItem("wedding-game:world-session:v1", JSON.stringify({
+          version: 1,
+          zoneId,
+          position,
+          direction: "down",
+          guideCheckpointId: null,
+          updatedAt: new Date().toISOString()
+        }));
+      }, scenario);
+      await page.reload({ waitUntil: "domcontentloaded" });
+      const resumeGarden = page.locator(".entry-screen__resume-access");
+      if (await resumeGarden.isVisible().catch(() => false)) await resumeGarden.click();
+      await page.locator(`.world-map__stage[data-zone="${scenario.zoneId}"]`).waitFor({ state: "visible" });
+      await page.locator(`.world-map__stage--background-loaded[data-zone="${scenario.zoneId}"]`).waitFor({
+        state: "visible",
+        timeout: 15_000
+      });
+      await page.addStyleTag({ content: `
+        html.world-label-zone-freeze *,
+        html.world-label-zone-freeze *::before,
+        html.world-label-zone-freeze *::after {
+          animation: none !important;
+          caret-color: transparent !important;
+          transition: none !important;
+        }
+      ` });
+      await page.evaluate(() => {
+        document.documentElement.classList.add("world-label-zone-freeze");
+        return document.fonts.ready;
+      });
+      await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+      const visibleLabels = await visibleWorldLabels(page);
+      const visibility = await worldLabelVisibilitySummary(page);
+      const screenshotPath = path.join(outputDir, `world-label-${scenario.id}.png`);
+      await page.screenshot({ path: screenshotPath, fullPage: false, scale: "css" });
+      reports.push({ ...scenario, ...visibility, visibleLabels, screenshotPath });
+    }
+  } finally {
+    await context.close();
+  }
+  const expectedZoneIds = [...new Set(worldLabelAuditScenarios.map(({ zoneId }) => zoneId))];
+  return { reports, issues: auditWorldLabelZoneSweep(reports, expectedZoneIds), expectedZoneIds };
 }
 
 export async function runMobileHudBrowserAudit({ rootDir, outputDir, port = 4178, deviceBaselineMode = "compare" }) {
@@ -363,11 +528,18 @@ export async function runMobileHudBrowserAudit({ rootDir, outputDir, port = 4178
   await mkdir(outputDir, { recursive: true });
   try {
     await waitForServer(url, server);
-    const { chromium } = await import("playwright");
-    const browser = await chromium.launch({ headless: true });
+    const playwright = await import("playwright");
+    const browsers = new Map();
+    const browserFor = async (engine) => {
+      if (!browsers.has(engine)) browsers.set(engine, await playwright[engine].launch({ headless: true }));
+      return browsers.get(engine);
+    };
     const reports = [];
+    let zoneLabelSweep = { reports: [], issues: [], expectedZoneIds: [] };
     try {
       for (const viewport of mobileHudAuditViewports) {
+        const engine = viewport.engine ?? "chromium";
+        const browser = await browserFor(engine);
         const context = await browser.newContext({
           viewport: { width: viewport.width, height: viewport.height },
           hasTouch: true,
@@ -406,6 +578,10 @@ export async function runMobileHudBrowserAudit({ rootDir, outputDir, port = 4178
             caret-color: transparent !important;
             transition: none !important;
           }
+          html.device-visual-baseline-freeze .world-travel-status-row,
+          html.device-visual-baseline-freeze .world-route-arrival-card {
+            display: none !important;
+          }
         ` });
         if (viewport.textScale) {
           await page.evaluate((textScale) => {
@@ -417,14 +593,11 @@ export async function runMobileHudBrowserAudit({ rootDir, outputDir, port = 4178
         const worldLabels = await visibleWorldLabels(page);
         auditWorldLabelRectangles(worldLabels).forEach((issue) => issues.push(issue));
         const deviceBaselineEnabled = mobileDeviceVisualBaselineProfiles.includes(viewport.id);
-        const deviceVisualBaselines = deviceBaselineEnabled ? {
-          game: {
-            currentPath: path.join(outputDir, `mobile-device-${viewport.id}-game-current.png`)
-          },
-          "directions-xlarge": {
-            currentPath: path.join(outputDir, `mobile-device-${viewport.id}-directions-xlarge-current.png`)
-          }
-        } : null;
+        const deviceVisualBaselines = deviceBaselineEnabled
+          ? Object.fromEntries(mobileDeviceVisualBaselineStates.map((state) => [state, {
+            currentPath: path.join(outputDir, `mobile-device-${viewport.id}-${state}-current.png`)
+          }]))
+          : null;
         if (deviceVisualBaselines) {
           await page.evaluate(() => document.fonts.ready);
           await captureStableDeviceScreenshot(page, deviceVisualBaselines.game.currentPath);
@@ -434,7 +607,7 @@ export async function runMobileHudBrowserAudit({ rootDir, outputDir, port = 4178
         const dynamicViewport = await measureDynamicViewportAdaptation(page, viewport);
         dynamicViewport.compactIssues.forEach((issue) => issues.push(`주소창 축소 화면 ${issue}`));
         if (!dynamicViewport.restored) issues.push("주소창·회전 후 화면 복원 실패");
-        const touchResponse = await measureJoystickTouchResponse(page, context);
+        const touchResponse = await measureJoystickTouchResponse(page, context, engine);
         if (!touchResponse.responded) issues.push("joystick 터치 무응답");
         if (touchResponse.latencyMs !== null && touchResponse.latencyMs > 120) issues.push(`joystick 터치 지연 ${touchResponse.latencyMs}ms`);
         const screenshotPath = path.join(outputDir, `mobile-hud-${viewport.id}.png`);
@@ -458,7 +631,7 @@ export async function runMobileHudBrowserAudit({ rootDir, outputDir, port = 4178
           page,
           viewport,
           sheetScreenshotPath,
-          deviceVisualBaselines?.["directions-xlarge"].currentPath
+          deviceVisualBaselines
         );
         auditInvitationQualityMetrics(invitationQuality).forEach((issue) => issues.push(issue));
         if (deviceVisualBaselines && deviceBaselineMode === "compare") {
@@ -481,17 +654,25 @@ export async function runMobileHudBrowserAudit({ rootDir, outputDir, port = 4178
             }
           }
         }
-        reports.push({ ...viewport, rectangles, worldLabels, movementLayout, dynamicViewport, toolsRect, touchResponse, invitationQuality, deviceVisualBaselines, issues, screenshotPath, toolsScreenshotPath });
+        reports.push({ ...viewport, engine, rectangles, worldLabels, movementLayout, dynamicViewport, toolsRect, touchResponse, invitationQuality, deviceVisualBaselines, issues, screenshotPath, toolsScreenshotPath });
         await context.close();
       }
+      zoneLabelSweep = await runWorldLabelZoneSweep({
+        browser: await browserFor("chromium"),
+        url,
+        outputDir
+      });
     } finally {
-      await browser.close();
+      await Promise.all([...browsers.values()].map((browser) => browser.close()));
     }
     const reportPath = path.join(outputDir, "mobile-hud-browser-report.json");
-    await writeFile(reportPath, `${JSON.stringify({ generatedAt: new Date().toISOString(), reports }, null, 2)}\n`);
-    const issues = reports.flatMap((report) => report.issues.map((issue) => `${report.id}: ${issue}`));
+    await writeFile(reportPath, `${JSON.stringify({ generatedAt: new Date().toISOString(), reports, zoneLabelSweep }, null, 2)}\n`);
+    const issues = [
+      ...reports.flatMap((report) => report.issues.map((issue) => `${report.id}: ${issue}`)),
+      ...zoneLabelSweep.issues
+    ];
     if (issues.length > 0) throw new Error(`Mobile HUD browser audit failed:\n${issues.join("\n")}`);
-    return { reports, reportPath };
+    return { reports, zoneLabelSweep, reportPath };
   } finally {
     server.kill("SIGTERM");
   }

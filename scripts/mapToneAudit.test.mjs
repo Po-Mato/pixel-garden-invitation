@@ -1,11 +1,32 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { contrastRatio, evaluateMapToneMetrics, relativeLuminance } from "./lib/mapToneAudit.mjs";
+import {
+  characterEdgeShadowsFromCss,
+  contrastRatio,
+  evaluateMapToneMetrics,
+  mapToneCharacterPositions,
+  relativeLuminance
+} from "./lib/mapToneAudit.mjs";
 
-const thresholds = { maxLuminanceDelta: 0.03, minDynamicRange: 0.16, minTextContrast: 4.5 };
+const thresholds = {
+  maxLuminanceDelta: 0.03,
+  minDynamicRange: 0.16,
+  minTextContrast: 4.5,
+  minCharacterEdgeContrast: 1.2,
+  maxCharacterEdgeContrastDelta: 0.15
+};
 
 test("map tone audit accepts a stable exposure with readable labels", () => {
-  const metrics = { averageLuminance: 0.5, p10Luminance: 0.2, p90Luminance: 0.8 };
+  const metrics = {
+    averageLuminance: 0.5,
+    p10Luminance: 0.2,
+    p90Luminance: 0.8,
+    sceneAverageLuminance: 0.49,
+    sceneP10Luminance: 0.19,
+    sceneP90Luminance: 0.79,
+    characterEdgeContrast: 1.4,
+    foregroundAssetCount: 2
+  };
   const result = evaluateMapToneMetrics(metrics, metrics, thresholds);
   assert.deepEqual(result.issues, []);
   assert.ok(result.contrasts.portal >= 4.5);
@@ -19,6 +40,66 @@ test("map tone audit catches exposure drift and flattened map depth", () => {
   );
   assert.ok(result.issues.includes("averageLuminance 기준선 이탈"));
   assert.ok(result.issues.includes("맵 명암 폭 부족"));
+});
+
+test("map tone audit catches weak character separation and missing foreground assets", () => {
+  const result = evaluateMapToneMetrics(
+    {
+      averageLuminance: 0.5,
+      p10Luminance: 0.2,
+      p90Luminance: 0.8,
+      sceneAverageLuminance: 0.5,
+      sceneP10Luminance: 0.4,
+      sceneP90Luminance: 0.5,
+      characterEdgeContrast: 1.05,
+      foregroundAssetCount: 1
+    },
+    {
+      averageLuminance: 0.5,
+      p10Luminance: 0.2,
+      p90Luminance: 0.8,
+      sceneAverageLuminance: 0.5,
+      sceneP10Luminance: 0.2,
+      sceneP90Luminance: 0.8,
+      characterEdgeContrast: 1.4,
+      foregroundAssetCount: 2
+    },
+    thresholds
+  );
+  assert.ok(result.issues.includes("합성 장면 명암 폭 부족"));
+  assert.ok(result.issues.includes("캐릭터 가장자리 대비 부족"));
+  assert.ok(result.issues.includes("캐릭터 가장자리 대비 기준선 이탈"));
+  assert.ok(result.issues.includes("합성 전경 수 불일치"));
+});
+
+test("map tone audit rejects omitted composited-scene measurements", () => {
+  const result = evaluateMapToneMetrics(
+    { averageLuminance: 0.5, p10Luminance: 0.2, p90Luminance: 0.8, foregroundAssetCount: 2 },
+    {
+      averageLuminance: 0.5,
+      p10Luminance: 0.2,
+      p90Luminance: 0.8,
+      sceneAverageLuminance: 0.5,
+      sceneP10Luminance: 0.2,
+      sceneP90Luminance: 0.8,
+      characterEdgeContrast: 1.4,
+      foregroundAssetCount: 2
+    },
+    thresholds
+  );
+  assert.ok(result.issues.includes("sceneAverageLuminance 측정 누락"));
+  assert.ok(result.issues.includes("캐릭터 가장자리 대비 측정 누락"));
+});
+
+test("map tone audit parses every zone edge-shadow and fixes one character position per zone", () => {
+  const zoneIds = Object.keys(mapToneCharacterPositions);
+  const css = zoneIds.map((zoneId, index) => (
+    `.world-map__stage[data-zone="${zoneId}"] { --character-edge-shadow: rgba(${index}, 31, 26, 0.42); }`
+  )).join("\n");
+  const colors = characterEdgeShadowsFromCss(css, zoneIds);
+  assert.equal(Object.keys(colors).length, 10);
+  assert.equal(colors.home.alpha, 0.42);
+  assert.equal(colors.restroom.red, 9);
 });
 
 test("relative luminance produces the expected black-white contrast", () => {

@@ -11,6 +11,8 @@ for (const report of result.reports) {
   const baselineSummary = report.deviceVisualBaselines
     ? ` · 픽셀 ${Object.values(report.deviceVisualBaselines).map(({ comparison }) => `${((comparison?.changedRatio ?? 0) * 100).toFixed(3)}%`).join("/")}`
     : "";
-  console.log(`- ${report.id}: ${report.width}x${report.height} · 터치 ${report.touchResponse.latencyMs}ms${baselineSummary}`);
+  const touchSummary = report.touchResponse.latencyMs === null ? "WebKit 장시간 검사 연계" : `터치 ${report.touchResponse.latencyMs}ms`;
+  console.log(`- ${report.id}: ${report.width}x${report.height} · ${touchSummary}${baselineSummary}`);
 }
+console.log(`전 구역 라벨 충돌 순회: ${result.zoneLabelSweep.expectedZoneIds.length}개 구역 · ${result.zoneLabelSweep.reports.length}개 위치`);
 console.log(`보고서: ${result.reportPath}`);

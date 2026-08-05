@@ -1,20 +1,22 @@
 {
-  "version": 1,
+  "version": 2,
   "thresholds": {
     "maxLuminanceDelta": 0.03,
     "minDynamicRange": 0.16,
-    "minTextContrast": 4.5
+    "minTextContrast": 4.5,
+    "minCharacterEdgeContrast": 1.2,
+    "maxCharacterEdgeContrastDelta": 0.15
   },
   "zones": {
-    "banquet": { "averageLuminance": 0.591, "p10Luminance": 0.215, "p90Luminance": 0.819 },
-    "bridal-room": { "averageLuminance": 0.449, "p10Luminance": 0.164, "p90Luminance": 0.736 },
-    "ceremony-hall": { "averageLuminance": 0.530, "p10Luminance": 0.194, "p90Luminance": 0.785 },
-    "home": { "averageLuminance": 0.263, "p10Luminance": 0.066, "p90Luminance": 0.408 },
-    "lobby": { "averageLuminance": 0.497, "p10Luminance": 0.157, "p90Luminance": 0.811 },
-    "neighborhood": { "averageLuminance": 0.127, "p10Luminance": 0.039, "p90Luminance": 0.239 },
-    "restroom": { "averageLuminance": 0.508, "p10Luminance": 0.187, "p90Luminance": 0.749 },
-    "subway-station": { "averageLuminance": 0.425, "p10Luminance": 0.058, "p90Luminance": 0.655 },
-    "subway-train": { "averageLuminance": 0.161, "p10Luminance": 0.028, "p90Luminance": 0.331 },
-    "venue-exterior": { "averageLuminance": 0.299, "p10Luminance": 0.035, "p90Luminance": 0.782 }
+    "banquet": { "averageLuminance": 0.591, "p10Luminance": 0.215, "p90Luminance": 0.819, "sceneAverageLuminance": 0.570, "sceneP10Luminance": 0.214, "sceneP90Luminance": 0.814, "characterEdgeContrast": 1.397, "foregroundAssetCount": 4 },
+    "bridal-room": { "averageLuminance": 0.449, "p10Luminance": 0.164, "p90Luminance": 0.736, "sceneAverageLuminance": 0.443, "sceneP10Luminance": 0.160, "sceneP90Luminance": 0.731, "characterEdgeContrast": 1.302, "foregroundAssetCount": 1 },
+    "ceremony-hall": { "averageLuminance": 0.530, "p10Luminance": 0.194, "p90Luminance": 0.785, "sceneAverageLuminance": 0.515, "sceneP10Luminance": 0.184, "sceneP90Luminance": 0.778, "characterEdgeContrast": 1.435, "foregroundAssetCount": 6 },
+    "home": { "averageLuminance": 0.263, "p10Luminance": 0.066, "p90Luminance": 0.408, "sceneAverageLuminance": 0.263, "sceneP10Luminance": 0.068, "sceneP90Luminance": 0.408, "characterEdgeContrast": 1.785, "foregroundAssetCount": 1 },
+    "lobby": { "averageLuminance": 0.497, "p10Luminance": 0.157, "p90Luminance": 0.811, "sceneAverageLuminance": 0.498, "sceneP10Luminance": 0.156, "sceneP90Luminance": 0.811, "characterEdgeContrast": 1.231, "foregroundAssetCount": 1 },
+    "neighborhood": { "averageLuminance": 0.127, "p10Luminance": 0.039, "p90Luminance": 0.239, "sceneAverageLuminance": 0.125, "sceneP10Luminance": 0.037, "sceneP90Luminance": 0.225, "characterEdgeContrast": 1.490, "foregroundAssetCount": 3 },
+    "restroom": { "averageLuminance": 0.508, "p10Luminance": 0.187, "p90Luminance": 0.749, "sceneAverageLuminance": 0.510, "sceneP10Luminance": 0.186, "sceneP90Luminance": 0.753, "characterEdgeContrast": 1.264, "foregroundAssetCount": 0 },
+    "subway-station": { "averageLuminance": 0.425, "p10Luminance": 0.058, "p90Luminance": 0.655, "sceneAverageLuminance": 0.420, "sceneP10Luminance": 0.058, "sceneP90Luminance": 0.648, "characterEdgeContrast": 1.368, "foregroundAssetCount": 0 },
+    "subway-train": { "averageLuminance": 0.161, "p10Luminance": 0.028, "p90Luminance": 0.331, "sceneAverageLuminance": 0.167, "sceneP10Luminance": 0.028, "sceneP90Luminance": 0.341, "characterEdgeContrast": 1.798, "foregroundAssetCount": 1 },
+    "venue-exterior": { "averageLuminance": 0.299, "p10Luminance": 0.035, "p90Luminance": 0.782, "sceneAverageLuminance": 0.293, "sceneP10Luminance": 0.034, "sceneP90Luminance": 0.774, "characterEdgeContrast": 1.407, "foregroundAssetCount": 1 }
   }
 }

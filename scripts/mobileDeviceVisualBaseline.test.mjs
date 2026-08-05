@@ -13,9 +13,18 @@ import {
   mobileDeviceVisualBaselineStates
 } from "./lib/mobileDeviceVisualBaseline.mjs";
 
-test("device visual baselines cover Galaxy and iPhone game and large-text states", () => {
-  assert.deepEqual(mobileDeviceVisualBaselineProfiles, ["galaxy-s23-font-150", "iphone-15-dynamic-type"]);
-  assert.deepEqual(mobileDeviceVisualBaselineStates, ["game", "directions-xlarge"]);
+test("device visual baselines cover Chromium and WebKit mobile states including sheet scroll", () => {
+  assert.deepEqual(mobileDeviceVisualBaselineProfiles, [
+    "galaxy-s23-font-150",
+    "iphone-15-dynamic-type",
+    "iphone-15-webkit-dynamic-type"
+  ]);
+  assert.deepEqual(mobileDeviceVisualBaselineStates, [
+    "game",
+    "directions-xlarge",
+    "directions-xlarge-middle",
+    "directions-xlarge-bottom"
+  ]);
   assert.equal(mobileDeviceVisualBlurSigma, 2);
 });
 
