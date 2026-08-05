@@ -41,21 +41,27 @@ jobs:
           sudo xcode-select --switch "$XCODE_APP/Contents/Developer"
           xcodebuild -version
           xcrun simctl list > /dev/null
-          xcrun simctl list devices available | grep 'iPhone 16 Pro'
+          IOS_SIMULATOR_UDID="$(xcrun simctl list devices available --json | jq -r '.devices | to_entries[] | select(.key | contains("iOS-18-5")) | .value[] | select(.name == "iPhone 16 Pro") | .udid' | head -n 1)"
+          test -n "$IOS_SIMULATOR_UDID"
+          echo "IOS_SIMULATOR_UDID=$IOS_SIMULATOR_UDID" >> "$GITHUB_ENV"
+          xcrun simctl boot "$IOS_SIMULATOR_UDID"
+          xcrun simctl bootstatus "$IOS_SIMULATOR_UDID" -b
       - run: pnpm install --frozen-lockfile
       - name: Install the iOS Safari automation bridge
         run: |
-          npm install --global agent-browser@0.13.0 appium@3
+          npm install --global appium@3
           appium driver install xcuitest
-          agent-browser --version
           appium --version
       - name: Start deterministic invitation server
         shell: bash
         run: |
           pnpm --filter @wedding-game/client exec vite --host 0.0.0.0 --port 4178 --strictPort > "$RUNNER_TEMP/ios-safari-vite.log" 2>&1 &
           echo "VITE_PID=$!" >> "$GITHUB_ENV"
+          appium --base-path /wd/hub --port 4723 --log "$RUNNER_TEMP/ios-safari-appium.log" > /dev/null 2>&1 &
+          echo "APPIUM_PID=$!" >> "$GITHUB_ENV"
           for attempt in {1..60}; do
-            if curl --fail --silent http://127.0.0.1:4178/ > /dev/null; then
+            if curl --fail --silent http://127.0.0.1:4178/ > /dev/null \
+              && curl --fail --silent http://127.0.0.1:4723/wd/hub/status > /dev/null; then
               exit 0
             fi
             sleep 1
@@ -69,6 +75,7 @@ jobs:
         shell: bash
         run: |
           if test -n "${VITE_PID:-}"; then kill "$VITE_PID" 2>/dev/null || true; fi
+          if test -n "${APPIUM_PID:-}"; then kill "$APPIUM_PID" 2>/dev/null || true; fi
       - name: Upload real iOS Safari evidence
         if: always()
         uses: actions/upload-artifact@v7
@@ -77,5 +84,6 @@ jobs:
           path: |
             .superpowers/visual-regression/ios-safari
             ${{ runner.temp }}/ios-safari-vite.log
+            ${{ runner.temp }}/ios-safari-appium.log
           if-no-files-found: warn
           retention-days: 14

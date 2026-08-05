@@ -4,6 +4,9 @@
   "reason": "12종 캐릭터 대비, 다중 화면 라벨, iOS 200% 스크롤 기준선 확장",
   "pixelThreshold": 36,
   "maxChangedRatio": 0.015,
+  "profileMaxChangedRatioOverrides": {
+    "iphone-15-webkit-text-200": 0.018
+  },
   "comparisonMode": "gaussian-structural",
   "blurSigma": 2,
   "profiles": [

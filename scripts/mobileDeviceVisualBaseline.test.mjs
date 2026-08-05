@@ -9,6 +9,7 @@ import {
   compareMobileDeviceVisualBaseline,
   mobileDeviceBaselinePath,
   mobileDeviceVisualBlurSigma,
+  mobileDeviceVisualMaxChangedRatioOverrides,
   mobileDeviceVisualBaselineProfiles,
   mobileDeviceVisualBaselineStates
 } from "./lib/mobileDeviceVisualBaseline.mjs";
@@ -27,6 +28,9 @@ test("device visual baselines cover Chromium and WebKit mobile states including 
     "directions-xlarge-bottom"
   ]);
   assert.equal(mobileDeviceVisualBlurSigma, 2);
+  assert.deepEqual(mobileDeviceVisualMaxChangedRatioOverrides, {
+    "iphone-15-webkit-text-200": 0.018
+  });
 });
 
 test("device visual difference ignores antialias noise and catches structural pixels", () => {
