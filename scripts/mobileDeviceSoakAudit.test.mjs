@@ -22,16 +22,16 @@ test("mobile soak closes invitation overlays before measuring movement frames", 
   assert.match(source.slice(closeMenuAt, measureMovementAt), /virtual-joystick.+state: "visible"/s);
 });
 
-test("mobile soak excludes automation setup pauses from destination render timing", () => {
+test("mobile soak measures destination rendering inside one browser evaluation", () => {
   const source = readFileSync("scripts/lib/mobileDeviceSoakAudit.mjs", "utf8");
-  const openVaultAt = source.indexOf('vault.locator(":scope > summary").tap()');
-  const startTraceAt = source.indexOf("await startFrameTrace()", openVaultAt);
-  const destinationTapAt = source.indexOf('page.getByRole("button", { name: `${target.label} 바로 이동`', startTraceAt);
-  const stopTraceAt = source.indexOf("await stopFrameTrace()", destinationTapAt);
-  assert.ok(openVaultAt >= 0);
-  assert.ok(startTraceAt > openVaultAt);
-  assert.ok(destinationTapAt > startTraceAt);
-  assert.ok(stopTraceAt > destinationTapAt);
+  const captureStart = source.indexOf("async function captureZoneTransitionInPage");
+  const captureEnd = source.indexOf("async function sampleZoneTransitionSeries", captureStart);
+  const captureSource = source.slice(captureStart, captureEnd);
+  assert.match(captureSource, /return page\.evaluate\(async/);
+  assert.match(captureSource, /button\.click\(\)/);
+  assert.match(captureSource, /world-map__stage--background-loaded/);
+  assert.match(captureSource, /return \{ frameDeltas, samples \}/);
+  assert.match(source.slice(captureEnd), /await captureZoneTransitionInPage\(page, target\)/);
 });
 
 test("mobile soak accepts stable repeated interaction metrics", () => {

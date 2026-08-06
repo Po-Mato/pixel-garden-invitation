@@ -326,8 +326,45 @@ async function sampleMovingFrameSeries(page, durationMs, sampleCount = 3) {
   };
 }
 
-async function readZoneTransitionSample(page, phase) {
-  return page.evaluate((samplePhase) => {
+async function captureZoneTransitionInPage(page, target) {
+  return page.evaluate(async ({ id: targetId, label: targetLabel }) => {
+    let traceActive = true;
+    let previousFrameAt = performance.now();
+    const frameDeltas = [];
+    const tick = (now) => {
+      if (!traceActive) return;
+      frameDeltas.push(now - previousFrameAt);
+      previousFrameAt = now;
+      requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+    const waitFor = async (predicate, message) => {
+      const startedAt = performance.now();
+      while (!predicate()) {
+        if (performance.now() - startedAt > 15_000) throw new Error(message);
+        await new Promise((resolve) => requestAnimationFrame(resolve));
+      }
+    };
+    const button = [...document.querySelectorAll("button")].find((candidate) => (
+      candidate.getAttribute("aria-label") === `${targetLabel} 바로 이동`
+    ));
+    if (!(button instanceof HTMLButtonElement)) throw new Error(`${targetLabel} 이동 버튼을 찾을 수 없어요`);
+    button.click();
+    await waitFor(
+      () => document.querySelector(".world-map__stage")?.getAttribute("data-zone") === targetId,
+      `${targetLabel} 구역 전환 시간 초과`
+    );
+    await waitFor(
+      () => document.querySelector(".world-map__stage")?.classList.contains("world-map__stage--background-loaded") === true,
+      `${targetLabel} 배경 로드 시간 초과`
+    );
+    const toolsToggle = document.querySelector(".world-hud__tools-toggle");
+    if (toolsToggle instanceof HTMLButtonElement && toolsToggle.getAttribute("aria-expanded") === "true") {
+      toolsToggle.click();
+    }
+    await new Promise((resolve) => setTimeout(resolve, 90));
+
+    const read = (samplePhase) => {
     const player = document.querySelector(".world-player:not(.player--remote)");
     const sprite = player?.querySelector(".character-sprite--world");
     const map = document.querySelector(".world-map");
@@ -381,27 +418,18 @@ async function readZoneTransitionSample(page, phase) {
         effects: document.documentElement.dataset.effectsQuality ?? null
       }
     };
-  }, phase);
+    };
+    const samples = [];
+    for (let index = 0; index < 4; index += 1) {
+      await new Promise((resolve) => requestAnimationFrame(resolve));
+      samples.push(read(`settled-${index + 1}`));
+    }
+    traceActive = false;
+    return { frameDeltas, samples };
+  }, target);
 }
 
 async function sampleZoneTransitionSeries(page, baselineLayout) {
-  const startFrameTrace = () => page.evaluate(() => {
-    const trace = { active: true, previous: null, frameDeltas: [] };
-    const tick = (now) => {
-      if (!trace.active) return;
-      if (trace.previous !== null) trace.frameDeltas.push(now - trace.previous);
-      trace.previous = now;
-      requestAnimationFrame(tick);
-    };
-    window.__mobileZoneTransitionTrace = trace;
-    requestAnimationFrame(tick);
-  });
-  const stopFrameTrace = () => page.evaluate(() => {
-    const trace = window.__mobileZoneTransitionTrace;
-    if (!trace) return [];
-    trace.active = false;
-    return trace.frameDeltas;
-  });
   const transitions = [];
   const frameDeltas = [];
   for (const target of mobileSoakZoneTransitionSequence) {
@@ -409,20 +437,9 @@ async function sampleZoneTransitionSeries(page, baselineLayout) {
     if (await toggle.getAttribute("aria-expanded") !== "true") await toggle.tap();
     const vault = page.locator(".world-game-vault");
     if (await vault.getAttribute("open") === null) await vault.locator(":scope > summary").tap();
-    // Playwright WebKit can pause rAF while resolving locators. Keep setup outside the trace,
-    // then measure the actual user-visible destination render through its settled frames.
-    await startFrameTrace();
-    await page.getByRole("button", { name: `${target.label} 바로 이동`, exact: true }).tap();
-    await page.waitForFunction((zoneId) => document.querySelector(".world-map__stage")?.getAttribute("data-zone") === zoneId, target.id);
-    await page.locator(".world-map__stage--background-loaded").waitFor({ state: "visible", timeout: 15_000 });
-    if (await toggle.getAttribute("aria-expanded") === "true") await toggle.tap();
-    await page.waitForTimeout(90);
-    const samples = [];
-    for (let index = 0; index < 4; index += 1) {
-      await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => resolve(true))));
-      samples.push(await readZoneTransitionSample(page, `settled-${index + 1}`));
-    }
-    const transitionFrameDeltas = await stopFrameTrace();
+    // WebKit pauses rendering around cross-process automation calls. Keep the click, load wait,
+    // settled frames, and geometry reads inside one browser task so the audit does not create jank.
+    const { frameDeltas: transitionFrameDeltas, samples } = await captureZoneTransitionInPage(page, target);
     frameDeltas.push(...transitionFrameDeltas);
     transitions.push({
       zoneId: target.id,
