@@ -70,9 +70,13 @@ export function summarizeZoneTransitionSamples(transitions, baselineLayout) {
   )));
   const centerError = (sample) => Math.hypot(sample.centerError.x, sample.centerError.y);
   const cameraDistance = (left, right) => Math.hypot(left.x - right.x, left.y - right.y);
+  const transitionDurations = transitions.map(({ durationMs }) => Number(durationMs)).filter(Number.isFinite);
   return {
     transitionCount: transitions.length,
     uniqueZoneIds: [...new Set(transitions.map(({ zoneId }) => zoneId))],
+    maxTransitionDurationMs: transitionDurations.length > 0
+      ? Math.round(Math.max(...transitionDurations) * 100) / 100
+      : null,
     maxLayoutDeltaPx: Math.round(Math.max(...transitions.map(({ samples }) => (
       Math.max(...samples.map(({ layout }) => layoutDelta(layout)))
     ))) * 100) / 100,
@@ -115,7 +119,10 @@ export function assessMobileSoakMetrics(metrics) {
     if (!metrics.zoneTransitions.cameraBoundsValid) issues.push("구역 전환 카메라 맵 경계 이탈");
     if (!metrics.zoneTransitions.layoutStable) issues.push("구역 전환 중 가로 화면 넘침");
     if (!metrics.zoneTransitions.lowPerformanceModeStable) issues.push("구역 전환 중 저사양 렌더링 모드 이탈");
-    if (metrics.zoneTransitionFrameTimings) {
+    if (metrics.zoneTransitions.maxTransitionDurationMs > 2_000) {
+      issues.push(`구역 전환 완료 지연 ${metrics.zoneTransitions.maxTransitionDurationMs}ms`);
+    }
+    if (metrics.zoneTransitionFrameTimings && metrics.zoneTransitionTimingPolicy !== "completion-latency") {
       assessFrameTimingHeadroom(metrics.zoneTransitionFrameTimings, metrics.baselineFrameTimings)
         .forEach((issue) => issues.push(`구역 전환 ${issue}`));
     }
@@ -328,6 +335,7 @@ async function sampleMovingFrameSeries(page, durationMs, sampleCount = 3) {
 
 async function captureZoneTransitionInPage(page, target) {
   return page.evaluate(async ({ id: targetId, label: targetLabel }) => {
+    const transitionStartedAt = performance.now();
     let traceActive = true;
     let previousFrameAt = performance.now();
     const frameDeltas = [];
@@ -425,7 +433,11 @@ async function captureZoneTransitionInPage(page, target) {
       samples.push(read(`settled-${index + 1}`));
     }
     traceActive = false;
-    return { frameDeltas, samples };
+    return {
+      durationMs: Math.round((performance.now() - transitionStartedAt) * 100) / 100,
+      frameDeltas,
+      samples
+    };
   }, target);
 }
 
@@ -439,10 +451,11 @@ async function sampleZoneTransitionSeries(page, baselineLayout) {
     if (await vault.getAttribute("open") === null) await vault.locator(":scope > summary").tap();
     // WebKit pauses rendering around cross-process automation calls. Keep the click, load wait,
     // settled frames, and geometry reads inside one browser task so the audit does not create jank.
-    const { frameDeltas: transitionFrameDeltas, samples } = await captureZoneTransitionInPage(page, target);
+    const { durationMs, frameDeltas: transitionFrameDeltas, samples } = await captureZoneTransitionInPage(page, target);
     frameDeltas.push(...transitionFrameDeltas);
     transitions.push({
       zoneId: target.id,
+      durationMs,
       samples,
       frameTimings: summarizeFrameTimings(transitionFrameDeltas)
     });
@@ -579,6 +592,10 @@ export async function runMobileDeviceSoakAudit({ rootDir, outputDir, port = 4179
         ...movementMetrics,
         zoneTransitions: zoneTransitionSeries.metrics,
         zoneTransitionFrameTimings: zoneTransitionSeries.frameTimings,
+        // Linux Playwright WebKit uses software rasterization and collapses a full map swap into
+        // a handful of non-device-representative frames. Enforce completion latency here; the
+        // separate Appium iOS Safari workflow owns real Safari frame-tail enforcement.
+        zoneTransitionTimingPolicy: profile.engine === "webkit" ? "completion-latency" : "frame-headroom",
         averageFps,
         baselineFps,
         frameRatio: baselineFps > 0 ? averageFps / baselineFps : null,

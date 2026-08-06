@@ -30,7 +30,7 @@ test("mobile soak measures destination rendering inside one browser evaluation",
   assert.match(captureSource, /return page\.evaluate\(async/);
   assert.match(captureSource, /button\.click\(\)/);
   assert.match(captureSource, /world-map__stage--background-loaded/);
-  assert.match(captureSource, /return \{ frameDeltas, samples \}/);
+  assert.match(captureSource, /durationMs:[\s\S]+frameDeltas,[\s\S]+samples/);
   assert.match(source.slice(captureEnd), /await captureZoneTransitionInPage\(page, target\)/);
 });
 
@@ -89,12 +89,14 @@ test("mobile soak summarizes repeated low-performance zone transitions", () => {
   });
   const transitions = Array.from({ length: 12 }, (_, index) => ({
     zoneId: ["home", "neighborhood", "lobby", "ceremony-hall", "banquet", "bridal-room"][index % 6],
+    durationMs: 420 + index,
     samples: [sample(), sample(-100.25)],
     frameTimings: { p95FrameMs: 18, p99FrameMs: 24 }
   }));
   assert.deepEqual(summarizeZoneTransitionSamples(transitions, layout), {
     transitionCount: 12,
     uniqueZoneIds: ["home", "neighborhood", "lobby", "ceremony-hall", "banquet", "bridal-room"],
+    maxTransitionDurationMs: 431,
     maxLayoutDeltaPx: 0,
     maxCenterErrorPx: 0.25,
     maxSettledCameraJitterPx: 0.25,
@@ -103,6 +105,34 @@ test("mobile soak summarizes repeated low-performance zone transitions", () => {
     lowPerformanceModeStable: true,
     transitions
   });
+});
+
+test("mobile soak uses completion latency for software-rasterized WebKit transitions", () => {
+  const metrics = {
+    pageErrors: [], failedRequests: [], touchResponded: true, layoutStable: true,
+    typographyFallbackReady: true, sheetContained: true, averageFps: 58, baselineFps: 62,
+    frameTimings: { p95FrameMs: 26, p99FrameMs: 32 },
+    baselineFrameTimings: { p95FrameMs: 17, p99FrameMs: 18 },
+    zoneTransitionTimingPolicy: "completion-latency",
+    zoneTransitionFrameTimings: { p95FrameMs: 328, p99FrameMs: 450 },
+    zoneTransitions: {
+      transitionCount: 12,
+      uniqueZoneIds: ["home", "neighborhood", "lobby", "ceremony-hall", "banquet", "bridal-room"],
+      maxTransitionDurationMs: 1_240,
+      maxLayoutDeltaPx: 0,
+      maxCenterErrorPx: 0.5,
+      maxSettledCameraJitterPx: 0,
+      cameraBoundsValid: true,
+      layoutStable: true,
+      lowPerformanceModeStable: true
+    },
+    heapGrowthRatio: null
+  };
+  assert.deepEqual(assessMobileSoakMetrics(metrics), []);
+  assert.deepEqual(assessMobileSoakMetrics({
+    ...metrics,
+    zoneTransitions: { ...metrics.zoneTransitions, maxTransitionDurationMs: 2_001 }
+  }), ["구역 전환 완료 지연 2001ms"]);
 });
 
 test("mobile soak calibrates an engine-limited runner without hiding an app slowdown", () => {
