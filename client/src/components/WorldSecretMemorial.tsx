@@ -1,11 +1,13 @@
 import { Captions, ChevronLeft, ChevronRight, Crown, Music2, Pause, Play, Sparkles, Volume2, VolumeX, X } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import "@fontsource-variable/noto-sans-kr/wght.css";
 import { worldDepth } from "../game/worldVisuals";
 import { getWorldZone, gardenWorld } from "../game/world";
 import { worldSecretCatalog } from "../game/worldPropInteractions";
 import { worldSecretAchievements, type WorldSecretCollection } from "../game/worldSecretCollection";
 import { memorialAmbienceSupported, startMemorialAmbience, type MemorialAmbienceController, type MemorialAmbienceTheme } from "../game/worldSecretMemorialAudio";
+import "../world-secret-memorial.css";
 
 type WorldSecretMemorialProps = { collection: WorldSecretCollection };
 

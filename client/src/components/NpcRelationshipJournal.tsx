@@ -1,8 +1,10 @@
 import { BadgeCheck, BookHeart, Flower2, Gift, Heart, LockKeyhole, Mail, MapPin, MessageCircle, Sparkles, Wine } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
+import "@fontsource-variable/noto-sans-kr/wght.css";
 import type { NpcId } from "../game/npcDialogue";
 import type { NpcDialogueMemory } from "../game/npcDialogueMemory";
 import { buildNpcRelationshipJournal, buildNpcRelationshipStampBook } from "../game/npcRelationshipJournal";
+import "../game-vault-optional.css";
 
 type NpcRelationshipJournalProps = {
   memory: NpcDialogueMemory;

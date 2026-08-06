@@ -2549,8 +2549,20 @@ select,
 }
 
 .player--remote .world-player__name {
+  max-width: 64px;
   background: rgba(250, 247, 241, 0.84);
   color: #675b5e;
+  transform: translate(
+    var(--remote-name-offset-x, 0px),
+    var(--remote-name-offset-y, 0px)
+  );
+  transition: transform 120ms ease, background-color 120ms ease;
+}
+
+.player--remote[data-nameplate-crowded] .world-player__name {
+  border-color: rgba(105, 78, 85, 0.4);
+  background: rgba(255, 252, 244, 0.94);
+  box-shadow: 0 3px 9px rgba(55, 43, 48, 0.18);
 }
 
 .world-npc {
@@ -6713,7 +6725,8 @@ html[data-reduce-motion="true"] .wedding-npc__sprite,
 html[data-reduce-motion="true"] .world-spot--target,
 html[data-reduce-motion="true"] .wedding-npc--target,
 html[data-reduce-motion="true"] .world-minimap__portal--target,
-html[data-reduce-motion="true"] .player--remote {
+html[data-reduce-motion="true"] .player--remote,
+html[data-reduce-motion="true"] .player--remote .world-player__name {
   animation: none;
   transition: none;
 }

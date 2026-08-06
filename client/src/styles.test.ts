@@ -439,10 +439,15 @@ describe("responsive play viewport", () => {
 
   it("keeps character names compact, single-line, and readable", () => {
     const nameRule = styles.match(/\.world-player__name\s*\{([^}]*)}/s)?.[1] ?? "";
+    const remoteNameRule = styles.match(/\.player--remote \.world-player__name\s*\{([^}]*)}/s)?.[1] ?? "";
     expect(nameRule).toContain("max-width: 72px;");
     expect(nameRule).toContain("text-overflow: ellipsis;");
     expect(nameRule).toContain("white-space: nowrap;");
     expect(nameRule).toContain("font-size: 10px;");
+    expect(remoteNameRule).toContain("max-width: 64px;");
+    expect(remoteNameRule).toContain("--remote-name-offset-x");
+    expect(remoteNameRule).toContain("--remote-name-offset-y");
+    expect(styles).toContain(".player--remote[data-nameplate-crowded] .world-player__name");
   });
 });
 

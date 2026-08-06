@@ -1,5 +1,6 @@
 import { ArrowRight, Check, Clock3, Download, Eye, HardDriveDownload, History, KeyRound, QrCode, RefreshCw, RotateCcw, ScanLine, Share2, ShieldCheck, Trash2, Upload, Wifi } from "lucide-react";
 import { useEffect, useRef, useState, type ChangeEvent } from "react";
+import "@fontsource-variable/noto-sans-kr/wght.css";
 import { claimServerGameTransfer, createServerGameTransfer, fetchServerGameTransfer, reportServerGameTransferProgress, revokeServerGameTransfer, type GameTransferState, type GameTransferStatus } from "../api/gameTransferApi";
 import {
   createGameSaveBackup,
@@ -30,6 +31,7 @@ import {
 import { loadGameTransferReceiptHistory, rememberCreatedGameTransfer, updateGameTransferReceiptState } from "../game/gameTransferReceiptHistory";
 import { gameTransferLiveStatusLabel, gameTransferLiveSteps, type GameTransferLiveRole } from "../game/gameTransferLiveProgress";
 import { GameSaveQrScanner } from "./GameSaveQrScanner";
+import "../game-vault-optional.css";
 import "../game-transfer-live.css";
 
 function incomingTransfer(): { envelope: EncryptedGameSaveEnvelope | null; error: string | null } {

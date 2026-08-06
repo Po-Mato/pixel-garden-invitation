@@ -1,5 +1,6 @@
 import { Check, ClipboardCheck, Download, Play, Send, TriangleAlert } from "lucide-react";
 import { useState } from "react";
+import "@fontsource-variable/noto-sans-kr/wght.css";
 import { flushInvitationAnalytics, trackInvitationAnalytics } from "../analytics/invitationAnalytics";
 import { postDeviceQaDetailReport } from "../api/deviceQaReportApi";
 import { currentDeviceQaProfile } from "../invitation/deviceQaProfile";
@@ -11,6 +12,7 @@ import {
   type DeviceQaCheckState,
   type DeviceReadinessReport
 } from "../game/gameDeviceReadiness";
+import "../game-vault-optional.css";
 
 function downloadReport(report: DeviceReadinessReport) {
   const url = URL.createObjectURL(new Blob([JSON.stringify(report, null, 2)], { type: "application/json" }));

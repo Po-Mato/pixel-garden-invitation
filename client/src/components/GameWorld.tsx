@@ -6,10 +6,11 @@ import {
   useMemo,
   useRef,
   useState,
+  type CSSProperties,
   type MouseEvent,
   type TransitionEvent as ReactTransitionEvent
 } from "react";
-import "@fontsource-variable/noto-sans-kr/wght.css";
+import "../game-ui-font-critical.css";
 import { Accessibility, Archive, ArrowRight, CalendarDays, Camera, ChevronDown, CircleHelp, Flower2, Images, MapPinned, MessageCircle, RefreshCw, Share2, SlidersHorizontal, UsersRound, X } from "lucide-react";
 import {
   companionRendezvousProposalLifetimeMs,
@@ -38,6 +39,8 @@ import {
   type ViewportSize
 } from "../game/camera";
 import { resolveFootstepSurface, type FootstepSurface } from "../game/footstepSurface";
+import { loadExtendedGameTypography, requiresExtendedGameTypography } from "../game/gameTypography";
+import { placeRemoteGuestNameplates } from "../game/remoteGuestNameplates";
 import { computeNextGridPosition, directionFromVector, directionTowardPoint, snapToGrid } from "../game/movement";
 import {
   findNearestInteractionRoute,
@@ -4303,14 +4306,28 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
       zoneRemoteGuests.map((guest) => ({ x: guest.x, y: guest.y }))
     )
   ])), [activeZone.portals, portalCongestionById, zoneRemoteGuests]);
-  const visibleRemoteGuests = zoneRemoteGuests.length > renderBudget.remoteGuestLimit
-    ? [...zoneRemoteGuests]
-      .sort((left, right) => (
-        Math.hypot(left.x - position.x, left.y - position.y)
-        - Math.hypot(right.x - position.x, right.y - position.y)
-      ))
-      .slice(0, renderBudget.remoteGuestLimit)
-    : zoneRemoteGuests;
+  const visibleRemoteGuests = useMemo(() => (
+    zoneRemoteGuests.length > renderBudget.remoteGuestLimit
+      ? [...zoneRemoteGuests]
+        .sort((left, right) => (
+          Math.hypot(left.x - position.x, left.y - position.y)
+          - Math.hypot(right.x - position.x, right.y - position.y)
+        ))
+        .slice(0, renderBudget.remoteGuestLimit)
+      : zoneRemoteGuests
+  ), [position.x, position.y, renderBudget.remoteGuestLimit, zoneRemoteGuests]);
+  const remoteGuestNameplates = useMemo(
+    () => placeRemoteGuestNameplates(visibleRemoteGuests),
+    [visibleRemoteGuests]
+  );
+  useEffect(() => {
+    if (requiresExtendedGameTypography([
+      profile.nickname,
+      ...visibleRemoteGuests.map(({ nickname }) => nickname)
+    ])) {
+      void loadExtendedGameTypography();
+    }
+  }, [profile.nickname, visibleRemoteGuests]);
   const activeJourneyMarkers = journeyCheckpoints
     .filter((checkpoint) => checkpoint.zoneId === activeZone.id)
     .flatMap((checkpoint) => {
@@ -5359,35 +5376,41 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
                 </button>
               );
             })}
-            {visibleRemoteGuests.map((guest) => (
-              <div
-                key={guest.guestId}
-                className="world-player player player--remote"
-                aria-label={guest.nickname}
-                data-remote-motion="pixel-step-3"
-                style={{
-                  left: guest.x,
-                  top: guest.y,
-                  zIndex: worldDepth(guest.y),
-                  ...worldCharacterAnchorStyle(guest.appearance, window.devicePixelRatio)
-                }}
-              >
-                {remoteReactions[guest.guestId]?.zoneId === activeZone.id ? (
-                  <GuestReactionBubble
-                    reaction={remoteReactions[guest.guestId].reaction}
-                    guestName={guest.nickname}
+            {visibleRemoteGuests.map((guest) => {
+              const nameplate = remoteGuestNameplates.get(guest.guestId) ?? { x: 0, y: 0, crowded: false };
+              return (
+                <div
+                  key={guest.guestId}
+                  className="world-player player player--remote"
+                  aria-label={guest.nickname}
+                  data-nameplate-crowded={nameplate.crowded || undefined}
+                  data-remote-motion="pixel-step-3"
+                  style={{
+                    left: guest.x,
+                    top: guest.y,
+                    zIndex: worldDepth(guest.y),
+                    "--remote-name-offset-x": `${nameplate.x}px`,
+                    "--remote-name-offset-y": `${nameplate.y}px`,
+                    ...worldCharacterAnchorStyle(guest.appearance, window.devicePixelRatio)
+                  } as CSSProperties}
+                >
+                  {remoteReactions[guest.guestId]?.zoneId === activeZone.id ? (
+                    <GuestReactionBubble
+                      reaction={remoteReactions[guest.guestId].reaction}
+                      guestName={guest.nickname}
+                    />
+                  ) : null}
+                  <CharacterSprite
+                    appearance={guest.appearance}
+                    direction={guest.direction}
+                    moving={guest.moving}
+                    stepFrame={walkFrameForPhase(Math.max(0, guest.seq - 1))}
+                    label={`${guest.nickname} 캐릭터`}
                   />
-                ) : null}
-                <CharacterSprite
-                  appearance={guest.appearance}
-                  direction={guest.direction}
-                  moving={guest.moving}
-                  stepFrame={walkFrameForPhase(Math.max(0, guest.seq - 1))}
-                  label={`${guest.nickname} 캐릭터`}
-                />
-                <span className="world-player__name" title={guest.nickname}>{guest.nickname}</span>
-              </div>
-            ))}
+                  <span className="world-player__name" title={guest.nickname}>{guest.nickname}</span>
+                </div>
+              );
+            })}
             {activeZone.npcs.map((npc) => {
               const motion = npcMotionFor(activeZone, npc, npcMotions);
               return (
