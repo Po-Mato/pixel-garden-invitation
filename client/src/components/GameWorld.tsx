@@ -40,7 +40,7 @@ import {
 } from "../game/camera";
 import { resolveFootstepSurface, type FootstepSurface } from "../game/footstepSurface";
 import { loadExtendedGameTypography, requiresExtendedGameTypography } from "../game/gameTypography";
-import { placeRemoteGuestNameplates } from "../game/remoteGuestNameplates";
+import { placeRemoteGuestNameplates, type RemoteGuestNameplateObstacle } from "../game/remoteGuestNameplates";
 import { computeNextGridPosition, directionFromVector, directionTowardPoint, snapToGrid } from "../game/movement";
 import {
   findNearestInteractionRoute,
@@ -4321,6 +4321,55 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
         .slice(0, renderBudget.remoteGuestLimit)
       : zoneRemoteGuests
   ), [position.x, position.y, renderBudget.remoteGuestLimit, zoneRemoteGuests]);
+  const worldLabelCandidates = [
+    ...activeZone.spots.map((worldSpot) => {
+      const proximity = resolveWorldSpotProximity(position, worldSpot);
+      const placedSpot = placeWorldOverlayInsideViewport({ rect: worldSpot, camera, viewport }).rect;
+      const targeted = interactionIntent?.targetId === `spot:${worldSpot.id}`;
+      const recommended = recommendedCheckpoint?.zoneId === activeZone.id
+        && recommendedCheckpoint.target.type === "spot"
+        && recommendedCheckpoint.target.spotId === worldSpot.id;
+      return {
+        id: `spot:${worldSpot.id}`,
+        rect: {
+          x: placedSpot.x + placedSpot.width / 2 - 48,
+          y: placedSpot.y + placedSpot.height / 2 - 31,
+          width: 96,
+          height: 62
+        },
+        priority: targeted ? 120 : recommended ? 110 : proximity === "near" ? 90 : proximity === "mid" ? 60 : 30
+      };
+    }),
+    ...activeZone.portals.map((portalItem) => {
+      const entry = portalEntryRect(portalItem);
+      const targeted = portalIntent?.portal.id === portalItem.id;
+      const recommended = journeyGuidance?.portalId === portalItem.id;
+      return {
+        id: `portal:${portalItem.id}`,
+        rect: {
+          x: entry.x + entry.width / 2 - 56,
+          y: entry.y + entry.height,
+          width: 112,
+          height: 20
+        },
+        priority: targeted ? 116 : recommended ? 106 : 80
+      };
+    }),
+    ...activeZone.npcs.map((npc) => {
+      const motion = npcMotionFor(activeZone, npc, npcMotions);
+      const targeted = interactionIntent?.targetId === `npc:${npc.id}` || (
+        recommendedCheckpoint?.zoneId === activeZone.id
+        && recommendedCheckpoint.target.type === "npc"
+        && recommendedCheckpoint.target.npcId === npc.id
+      );
+      return {
+        id: `npc:${npc.id}`,
+        rect: { x: motion.point.x - 42, y: motion.point.y + 25, width: 84, height: 20 },
+        priority: activeNpcDialogue?.npcId === npc.id ? 130 : targeted ? 112 : 70
+      };
+    })
+  ];
+  const worldLabelVisibility = resolveWorldLabelVisibility(worldLabelCandidates);
   const remoteGuestNameplateBounds = useMemo(() => ({
     left: Math.max(activeZone.bounds.x, -camera.x / camera.zoom) + 4,
     right: Math.min(
@@ -4333,16 +4382,77 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
       (viewport.height - camera.y) / camera.zoom
     ) - Math.min(104, viewport.height * 0.22) / camera.zoom
   }), [activeZone.bounds, camera.x, camera.y, camera.zoom, viewport.height, viewport.width]);
-  const remoteGuestNameplates = useMemo(
-    () => placeRemoteGuestNameplates(visibleRemoteGuests.filter((guest) => (
+  const activeDialogueObstacle: RemoteGuestNameplateObstacle | null = activeDialogueNpcPoint
+    ? (() => {
+        const width = Math.min(248, viewport.width - 24) / camera.zoom;
+        const height = Math.min(236, viewport.height * 0.5) / camera.zoom;
+        const horizontalGap = 51 / camera.zoom;
+        const verticalGap = 58 / camera.zoom;
+        if (npcDialoguePlacement === "left") {
+          return {
+            id: "npc-dialogue",
+            left: activeDialogueNpcPoint.x - horizontalGap - width,
+            right: activeDialogueNpcPoint.x - horizontalGap,
+            top: activeDialogueNpcPoint.y - 24 / camera.zoom,
+            bottom: activeDialogueNpcPoint.y - 24 / camera.zoom + height
+          };
+        }
+        if (npcDialoguePlacement === "right") {
+          return {
+            id: "npc-dialogue",
+            left: activeDialogueNpcPoint.x + horizontalGap,
+            right: activeDialogueNpcPoint.x + horizontalGap + width,
+            top: activeDialogueNpcPoint.y - 24 / camera.zoom,
+            bottom: activeDialogueNpcPoint.y - 24 / camera.zoom + height
+          };
+        }
+        const top = npcDialoguePlacement === "below"
+          ? activeDialogueNpcPoint.y + verticalGap
+          : activeDialogueNpcPoint.y - verticalGap - height;
+        return {
+          id: "npc-dialogue",
+          left: activeDialogueNpcPoint.x - width / 2,
+          right: activeDialogueNpcPoint.x + width / 2,
+          top,
+          bottom: top + height
+        };
+      })()
+    : null;
+  const remoteGuestNameplateObstacles: RemoteGuestNameplateObstacle[] = [
+    ...worldLabelCandidates
+      .filter(({ id }) => worldLabelVisibility.get(id) !== "quiet")
+      .map(({ id, rect }) => ({
+        id,
+        left: rect.x,
+        right: rect.x + rect.width,
+        top: rect.y,
+        bottom: rect.y + rect.height
+      })),
+    ...visibleRemoteGuests.flatMap((guest) => remoteReactions[guest.guestId]?.zoneId === activeZone.id ? [{
+      id: `reaction:${guest.guestId}`,
+      left: guest.x - 22,
+      right: guest.x + 22,
+      top: guest.y - 96,
+      bottom: guest.y - 48
+    }] : []),
+    ...(activeDialogueObstacle ? [activeDialogueObstacle] : [])
+  ].filter((obstacle) => (
+    obstacle.right >= remoteGuestNameplateBounds.left
+    && obstacle.left <= remoteGuestNameplateBounds.right
+    && obstacle.bottom >= remoteGuestNameplateBounds.top
+    && obstacle.top <= remoteGuestNameplateBounds.bottom
+  ));
+  const remoteGuestNameplates = placeRemoteGuestNameplates(
+    visibleRemoteGuests.filter((guest) => (
       guest.x >= remoteGuestNameplateBounds.left - 64
       && guest.x <= remoteGuestNameplateBounds.right + 64
       && guest.y >= remoteGuestNameplateBounds.top - 18
       && guest.y <= remoteGuestNameplateBounds.bottom
         + Math.min(104, viewport.height * 0.22) / camera.zoom
         + 18
-    )), remoteGuestNameplateBounds),
-    [camera.zoom, remoteGuestNameplateBounds, viewport.height, visibleRemoteGuests]
+    )),
+    remoteGuestNameplateBounds,
+    remoteGuestNameplateObstacles
   );
   useEffect(() => {
     if (requiresExtendedGameTypography([
@@ -4609,55 +4719,6 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     }, 220);
     return () => window.clearTimeout(timer);
   }, [predictedAssetPlan, predictedGuestAppearances]);
-
-  const worldLabelVisibility = resolveWorldLabelVisibility([
-    ...activeZone.spots.map((worldSpot) => {
-      const proximity = resolveWorldSpotProximity(position, worldSpot);
-      const placedSpot = placeWorldOverlayInsideViewport({ rect: worldSpot, camera, viewport }).rect;
-      const targeted = interactionIntent?.targetId === `spot:${worldSpot.id}`;
-      const recommended = recommendedCheckpoint?.zoneId === activeZone.id
-        && recommendedCheckpoint.target.type === "spot"
-        && recommendedCheckpoint.target.spotId === worldSpot.id;
-      return {
-        id: `spot:${worldSpot.id}`,
-        rect: {
-          x: placedSpot.x + placedSpot.width / 2 - 48,
-          y: placedSpot.y + placedSpot.height / 2 - 31,
-          width: 96,
-          height: 62
-        },
-        priority: targeted ? 120 : recommended ? 110 : proximity === "near" ? 90 : proximity === "mid" ? 60 : 30
-      };
-    }),
-    ...activeZone.portals.map((portalItem) => {
-      const entry = portalEntryRect(portalItem);
-      const targeted = portalIntent?.portal.id === portalItem.id;
-      const recommended = journeyGuidance?.portalId === portalItem.id;
-      return {
-        id: `portal:${portalItem.id}`,
-        rect: {
-          x: entry.x + entry.width / 2 - 56,
-          y: entry.y + entry.height,
-          width: 112,
-          height: 20
-        },
-        priority: targeted ? 116 : recommended ? 106 : 80
-      };
-    }),
-    ...activeZone.npcs.map((npc) => {
-      const motion = npcMotionFor(activeZone, npc, npcMotions);
-      const targeted = interactionIntent?.targetId === `npc:${npc.id}` || (
-        recommendedCheckpoint?.zoneId === activeZone.id
-        && recommendedCheckpoint.target.type === "npc"
-        && recommendedCheckpoint.target.npcId === npc.id
-      );
-      return {
-        id: `npc:${npc.id}`,
-        rect: { x: motion.point.x - 42, y: motion.point.y + 25, width: 84, height: 20 },
-        priority: activeNpcDialogue?.npcId === npc.id ? 130 : targeted ? 112 : 70
-      };
-    })
-  ]);
 
   return (
     <section

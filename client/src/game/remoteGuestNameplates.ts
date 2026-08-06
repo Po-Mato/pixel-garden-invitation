@@ -17,6 +17,10 @@ export type RemoteGuestNameplateBounds = {
   bottom: number;
 };
 
+export type RemoteGuestNameplateObstacle = RemoteGuestNameplateBounds & {
+  id?: string;
+};
+
 export const remoteGuestNameplateWidth = 64;
 export const remoteGuestNameplateHeight = 18;
 const nameplateGap = 4;
@@ -67,6 +71,11 @@ function intersects(left: NameplateRect, right: NameplateRect) {
   );
 }
 
+function overlapArea(left: NameplateRect, right: NameplateRect) {
+  return Math.max(0, Math.min(left.right, right.right) - Math.max(left.left, right.left))
+    * Math.max(0, Math.min(left.bottom, right.bottom) - Math.max(left.top, right.top));
+}
+
 function isInsideBounds(rect: NameplateRect, bounds: RemoteGuestNameplateBounds | undefined) {
   return !bounds || (
     rect.left >= bounds.left
@@ -78,18 +87,28 @@ function isInsideBounds(rect: NameplateRect, bounds: RemoteGuestNameplateBounds 
 
 export function placeRemoteGuestNameplates(
   guests: readonly RemoteGuestNameplateSource[],
-  bounds?: RemoteGuestNameplateBounds
+  bounds?: RemoteGuestNameplateBounds,
+  obstacles: readonly RemoteGuestNameplateObstacle[] = []
 ) {
   const placements = new Map<string, RemoteGuestNameplatePlacement>();
   const placedRects: NameplateRect[] = [];
-  const candidates = candidateOffsets(guests.length);
+  const candidates = candidateOffsets(Math.max(guests.length, Math.min(obstacles.length + 2, 8)));
 
   for (const guest of [...guests].sort((left, right) => left.guestId.localeCompare(right.guestId))) {
-    const selected = candidates.find(({ x, y }) => {
+    const boundedCandidates = candidates.filter(({ x, y }) => (
+      isInsideBounds(placementRect(guest, x, y), bounds)
+    ));
+    const selected = boundedCandidates.find(({ x, y }) => {
       const rect = placementRect(guest, x, y);
-      return isInsideBounds(rect, bounds)
-        && placedRects.every((placed) => !intersects(rect, placed));
-    }) ?? { x: 0, y: placedRects.length * verticalStep };
+      return placedRects.every((placed) => !intersects(rect, placed))
+        && obstacles.every((obstacle) => !intersects(rect, obstacle));
+    }) ?? boundedCandidates.reduce<{ x: number; y: number; penalty: number } | null>((best, candidate) => {
+      const rect = placementRect(guest, candidate.x, candidate.y);
+      const penalty = [...placedRects, ...obstacles]
+        .reduce((sum, blocked) => sum + overlapArea(rect, blocked), 0);
+      if (!best || penalty < best.penalty) return { ...candidate, penalty };
+      return best;
+    }, null) ?? { x: 0, y: placedRects.length * verticalStep, penalty: Number.POSITIVE_INFINITY };
 
     placedRects.push(placementRect(guest, selected.x, selected.y));
     placements.set(guest.guestId, {

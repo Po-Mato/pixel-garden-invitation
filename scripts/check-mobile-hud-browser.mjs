@@ -29,4 +29,5 @@ console.log(
   )).join(" · ")}`
 );
 console.log(`맵 가장자리 긴 이름표: ${result.remoteNameplateCrowd.reports.map(({ count, edge }) => `${edge} ${count}명`).join(" · ")}`);
+console.log(`실시간 장애 비차단 회귀: ${result.realtimeResilience.phases.join(" → ")} · 레이아웃 변화 ${result.realtimeResilience.maximumLayoutDelta}px`);
 console.log(`보고서: ${result.reportPath}`);

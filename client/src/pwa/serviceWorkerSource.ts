@@ -7,10 +7,11 @@ export const pwaCorePrecachePaths = [
   "./images/wedding-gallery/01-cover-640.webp",
   "./images/wedding-gallery/01-cover-640.avif",
   "./assets/maps/v2/home/background.webp",
+  "./assets/maps/v2/home/topiary-foreground.png",
   "./assets/ui/joystick-wedding-compass-base.png",
   "./assets/ui/joystick-wedding-compass-thumb.png",
-  "./characters/generated/guests/world/feminine-long-wave-dress__idle.png",
-  "./characters/generated/guests/world/feminine-long-wave-dress__walk.png",
+  "./characters/generated/guests/feminine-long-wave-dress__idle.png",
+  "./characters/generated/guests/feminine-long-wave-dress__walk.png",
   "./characters/puppets/bride/rig.json",
   "./characters/puppets/bride/body.webp",
   "./characters/puppets/bride/head-open.webp",
@@ -29,11 +30,12 @@ function relativeAssetPath(fileName: string): string {
 
 const adminOnlyBundlePattern = /(?:AdminPage|AdminNotificationInbox|papaparse|inviteLinkAdminTokens|attendanceOperations)/i;
 const gameFeatureBundlePattern = /(?:WeddingPhotoBooth|WeddingPhotoAlbum|GameMemoryAlbum|CelebrationCollectionGuide|CompanionDestinationSheet|CompanionWaitingRoom|JourneyRouteSheet)/i;
+const criticalBuildAssetPattern = /(?:noto-serif-kr-critical|entry-wedding-garden-hero|noto-sans-kr-(?:11[0-9]|latin)-).*\.(?:woff2|avif|webp)$/i;
 
 export function resolvePwaPrecachePaths(bundleFileNames: readonly string[]): string[] {
   const buildAssets = bundleFileNames
     .filter((fileName) => (
-      /\.(?:css|js)$/i.test(fileName)
+      (/\.(?:css|js)$/i.test(fileName) || criticalBuildAssetPattern.test(fileName))
       && !adminOnlyBundlePattern.test(fileName)
       && !gameFeatureBundlePattern.test(fileName)
     ))
@@ -318,8 +320,8 @@ async function navigationResponse(request) {
   try {
     return await fetch(request, { signal: controller.signal });
   } catch {
-    return await caches.match(scopedUrl("./index.html"))
-      || await caches.match(scopedUrl("./"))
+    return await caches.match(scopedUrl("./index.html"), { ignoreVary: true })
+      || await caches.match(scopedUrl("./"), { ignoreVary: true })
       || new Response('<!doctype html><html lang="ko"><meta charset="utf-8"><title>웨딩 가든</title><body><p>오프라인 초대장을 준비하지 못했습니다. 연결 후 다시 열어주세요.</p></body></html>', {
         headers: { "Content-Type": "text/html; charset=utf-8" },
         status: 503
@@ -338,7 +340,7 @@ function shouldCacheRequest(request, url) {
 }
 
 async function staticResponse(request) {
-  const cached = await caches.match(request);
+  const cached = await caches.match(request, { ignoreVary: true });
   if (cached) return cached;
   const cache = await caches.open(RUNTIME_NAME);
   const response = await fetchAndCache(cache, request);

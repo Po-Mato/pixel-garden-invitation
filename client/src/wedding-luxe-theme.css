@@ -1,7 +1,7 @@
 /* Luminous botanical salon theme for the public invitation experience. */
 :root {
   --wedding-font-ui: "Noto Sans KR Variable", "Pretendard Variable", Pretendard, "SUIT Variable", SUIT, "Noto Sans CJK KR", "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
-  --wedding-font-display: "Noto Serif KR Variable", "Iowan Old Style", Baskerville, "Noto Serif CJK KR", "Noto Serif KR", "Nanum Myeongjo", AppleMyungjo, Batang, serif;
+  --wedding-font-display: "Noto Serif KR Critical", "Iowan Old Style", Baskerville, "Noto Serif CJK KR", "Noto Serif KR", "Nanum Myeongjo", AppleMyungjo, Batang, serif;
   --paper: #fffdf9;
   --paper-raised: #ffffff;
   --camellia: #b76f7c;

@@ -4,11 +4,16 @@ import {
   remoteGuestNameplateHeight,
   remoteGuestNameplateWidth,
   type RemoteGuestNameplateBounds,
+  type RemoteGuestNameplateObstacle,
   type RemoteGuestNameplateSource
 } from "./remoteGuestNameplates";
 
-function rectangles(guests: RemoteGuestNameplateSource[], bounds?: RemoteGuestNameplateBounds) {
-  const placements = placeRemoteGuestNameplates(guests, bounds);
+function rectangles(
+  guests: RemoteGuestNameplateSource[],
+  bounds?: RemoteGuestNameplateBounds,
+  obstacles: RemoteGuestNameplateObstacle[] = []
+) {
+  const placements = placeRemoteGuestNameplates(guests, bounds, obstacles);
   return guests.map((guest) => {
     const placement = placements.get(guest.guestId)!;
     const centerX = guest.x + placement.x;
@@ -102,5 +107,34 @@ describe("placeRemoteGuestNameplates", () => {
 
     expectNoOverlap(guests, bounds);
     expectInsideBounds(guests, bounds);
+  });
+
+  it("routes clustered labels around visible spots, portals, and NPC speech", () => {
+    const bounds = { left: 4, right: 396, top: 4, bottom: 296 };
+    const obstacles = [
+      { id: "spot", left: 146, right: 254, top: 158, bottom: 224 },
+      { id: "portal", left: 270, right: 386, top: 88, bottom: 124 },
+      { id: "npc-dialogue", left: 8, right: 132, top: 72, bottom: 148 }
+    ];
+    const guests = Array.from({ length: 8 }, (_, index) => ({
+      guestId: `world-ui-guest-${index + 1}`,
+      x: 200 + (index % 2),
+      y: 190 + (index % 2)
+    }));
+
+    const rects = rectangles(guests, bounds, obstacles);
+    expectNoOverlap(guests, bounds);
+    expectInsideBounds(guests, bounds);
+    for (const rect of rects) {
+      for (const obstacle of obstacles) {
+        expect(
+          rect.right <= obstacle.left
+            || obstacle.right <= rect.left
+            || rect.bottom <= obstacle.top
+            || obstacle.bottom <= rect.top,
+          `${rect.id} overlaps ${obstacle.id}`
+        ).toBe(true);
+      }
+    }
   });
 });

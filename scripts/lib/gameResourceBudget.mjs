@@ -7,8 +7,8 @@ export const gameResourceBudgets = Object.freeze({
   base: {
     maxCssRequests: 2,
     maxCssGzipBytes: 112 * 1024,
-    maxFontRequests: 15,
-    maxFontBytes: 370 * 1024,
+    maxFontRequests: 11,
+    maxFontBytes: 280 * 1024,
     maxGameWorldCssGzipBytes: 48 * 1024
   },
   directions: {

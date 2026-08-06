@@ -1,0 +1,50 @@
+import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { spawn } from "node:child_process";
+import os from "node:os";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+const googleFontsCommit = "d58d8d9f1c5c68363f51f4696bb79af59bc7cf0e";
+const sourceBase = `https://raw.githubusercontent.com/google/fonts/${googleFontsCommit}/ofl/notoserifkr`;
+const rootDir = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
+const fontDir = path.join(rootDir, "client/src/assets/fonts");
+const corpusPath = path.join(fontDir, "noto-serif-kr-critical.txt");
+const outputPath = path.join(fontDir, "noto-serif-kr-critical.woff2");
+const licensePath = path.join(fontDir, "OFL.txt");
+
+async function download(url, output) {
+  const response = await fetch(url);
+  if (!response.ok) throw new Error(`Font download failed: ${response.status} ${url}`);
+  await writeFile(output, Buffer.from(await response.arrayBuffer()));
+}
+
+async function run(command, args) {
+  await new Promise((resolve, reject) => {
+    const child = spawn(command, args, { stdio: "inherit" });
+    child.once("error", reject);
+    child.once("exit", (code) => code === 0 ? resolve() : reject(new Error(`${command} exited with ${code}`)));
+  });
+}
+
+await mkdir(fontDir, { recursive: true });
+await readFile(corpusPath, "utf8");
+const temporaryDir = await mkdtemp(path.join(os.tmpdir(), "wedding-serif-"));
+try {
+  const sourcePath = path.join(temporaryDir, "NotoSerifKR[wght].ttf");
+  await download(`${sourceBase}/NotoSerifKR%5Bwght%5D.ttf`, sourcePath);
+  await run("pyftsubset", [
+    sourcePath,
+    `--output-file=${outputPath}`,
+    `--text-file=${corpusPath}`,
+    "--flavor=woff2",
+    "--layout-features=*",
+    "--name-IDs=*",
+    "--name-languages=*",
+    "--drop-tables+=DSIG"
+  ]);
+  await download(`${sourceBase}/OFL.txt`, licensePath);
+} finally {
+  await rm(temporaryDir, { recursive: true, force: true });
+}
+
+console.log(`Critical wedding serif generated: ${path.relative(rootDir, outputPath)}`);

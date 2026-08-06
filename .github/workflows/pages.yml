@@ -49,6 +49,8 @@ jobs:
         run: pnpm exec playwright install chromium
       - name: Verify game CSS and font request budgets
         run: pnpm performance:resource-budget
+      - name: Verify fresh-install offline invitation journey
+        run: pnpm pwa:clean-install-canary
       - uses: actions/configure-pages@v6
       - uses: actions/upload-pages-artifact@v5
         with:

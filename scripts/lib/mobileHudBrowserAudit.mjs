@@ -108,7 +108,8 @@ export const longVenueAuditProfiles = Object.freeze([
 export const remoteNameplateCrowdScenarios = Object.freeze([
   { id: "left-edge-3", count: 3, edge: "left" },
   { id: "right-edge-5", count: 5, edge: "right" },
-  { id: "bottom-edge-8", count: 8, edge: "bottom" }
+  { id: "bottom-edge-8", count: 8, edge: "bottom" },
+  { id: "world-ui-8", count: 8, edge: "center", obstacle: true }
 ]);
 
 export const hudLongTextFixture = Object.freeze({
@@ -247,6 +248,7 @@ export function auditRemoteNameplateCrowd(report, overlapTolerance = 1) {
     if (!label.singleLine) issues.push(`${label.id} 여러 줄 표시`);
     if (!label.ellipsisReady) issues.push(`${label.id} 긴 이름 생략 실패`);
     if (!label.fullNameAvailable) issues.push(`${label.id} 전체 이름 접근 불가`);
+    if (label.avoidsObstacles === false) issues.push(`${label.id} 월드 UI와 겹침`);
   });
   for (let leftIndex = 0; leftIndex < report.labels.length; leftIndex += 1) {
     for (let rightIndex = leftIndex + 1; rightIndex < report.labels.length; rightIndex += 1) {
@@ -367,6 +369,19 @@ export function auditLongVenueLayout(metrics) {
   if (!metrics?.venueLinesReady) issues.push("예식장 문구 과도한 줄바꿈");
   if (!metrics?.addressLinesReady) issues.push("예식장 주소 과도한 줄바꿈");
   if (!metrics?.copyTargetReady) issues.push("주소 복사 터치 영역 부족");
+  return issues;
+}
+
+export function auditRealtimeResilience(report, tolerance = 1) {
+  const issues = [];
+  if (!report.phases.includes("connecting")) issues.push("실시간 지연 상태 미검증");
+  if (!report.phases.includes("reconnecting")) issues.push("실시간 거부 상태 미검증");
+  if (!report.dotCompact) issues.push("실시간 상태 점 크기 증가");
+  if (!report.layoutStable || report.maximumLayoutDelta > tolerance) issues.push("실시간 장애 중 레이아웃 이동");
+  if (report.closedConnectionFeedback.length > 0) issues.push("실시간 장애 문구가 닫힌 HUD 밖에 노출됨");
+  if (report.blockingSurfaces.length > 0) issues.push("실시간 장애가 초대장 이용을 가로막음");
+  if (!report.expandedStatus?.includes("초대장 이용 가능")) issues.push("실시간 장애 비차단 안내 누락");
+  if (report.pageErrors.length > 0) issues.push(`실시간 장애 중 페이지 오류 ${report.pageErrors.join(" | ")}`);
   return issues;
 }
 
@@ -714,7 +729,7 @@ async function measureInvitationQuality(page, viewport, sheetScreenshotPath, dev
         displayFamily,
         koreanFallbackReady: /Noto Sans (?:CJK )?KR/.test(uiFamily) && /Noto Serif (?:CJK )?KR/.test(displayFamily),
         uiFontReady: /-apple-system|BlinkMacSystemFont|Apple SD Gothic Neo|Noto Sans (?:CJK )?KR|Malgun Gothic|system-ui/.test(uiFamily),
-        bundledDisplayFontReady: document.fonts.check('700 16px "Noto Serif KR Variable"', "오시는 길"),
+        bundledDisplayFontReady: document.fonts.check('700 16px "Noto Serif KR Critical"', "오시는 길"),
         fontResourcesSameOrigin:
           fontResources.length > 0
           && fontResources.every((name) => new URL(name, location.href).origin === location.origin),
@@ -874,9 +889,19 @@ async function runRemoteNameplateCrowdAudit({ browser, url, outputDir }) {
         max-width: 64px;
         transition: none !important;
       }
+      .remote-nameplate-audit-obstacle {
+        position: absolute;
+        border: 1px solid rgba(92, 72, 78, 0.45);
+        background: rgba(255, 253, 249, 0.92);
+        color: #514348;
+        font-size: 10px;
+        font-weight: 800;
+        display: grid;
+        place-items: center;
+      }
     ` });
     for (const scenario of remoteNameplateCrowdScenarios) {
-      await page.evaluate(async ({ count, edge }) => {
+      await page.evaluate(async ({ count, edge, obstacle: obstacleEnabled }) => {
         document.querySelector(".remote-nameplate-audit-layer")?.remove();
         const map = document.querySelector(".world-map");
         if (!(map instanceof HTMLElement)) throw new Error("world map missing");
@@ -886,7 +911,9 @@ async function runRemoteNameplateCrowdAudit({ browser, url, outputDir }) {
           ? { x: 18, y: Math.round(height * 0.54) }
           : edge === "right"
             ? { x: width - 18, y: Math.round(height * 0.34) }
-            : { x: Math.round(width / 2), y: height - 22 };
+            : edge === "bottom"
+              ? { x: Math.round(width / 2), y: height - 22 }
+              : { x: Math.round(width / 2), y: Math.round(height * 0.44) };
         const safeBottom = height - Math.min(104, height * 0.22);
         const guests = Array.from({ length: count }, (_, index) => ({
           guestId: `visual-edge-${index + 1}`,
@@ -894,12 +921,19 @@ async function runRemoteNameplateCrowdAudit({ browser, url, outputDir }) {
           y: anchor.y + (index % 2)
         }));
         const module = await import("/src/game/remoteGuestNameplates.ts");
+        const obstacles = obstacleEnabled ? [{
+          id: "world-spot",
+          left: anchor.x - 56,
+          right: anchor.x + 56,
+          top: anchor.y - 24,
+          bottom: anchor.y + 42
+        }] : [];
         const placements = module.placeRemoteGuestNameplates(guests, {
           left: 4,
           right: width - 4,
           top: 4,
           bottom: safeBottom
-        });
+        }, obstacles);
         const layer = document.createElement("div");
         layer.className = "remote-nameplate-audit-layer";
         layer.dataset.count = String(count);
@@ -922,6 +956,17 @@ async function runRemoteNameplateCrowdAudit({ browser, url, outputDir }) {
           owner.append(name);
           layer.append(owner);
         }
+        for (const obstacle of obstacles) {
+          const blocked = document.createElement("span");
+          blocked.className = "remote-nameplate-audit-obstacle";
+          blocked.dataset.auditObstacle = obstacle.id;
+          blocked.textContent = "월드 안내";
+          blocked.style.left = `${obstacle.left}px`;
+          blocked.style.top = `${obstacle.top}px`;
+          blocked.style.width = `${obstacle.right - obstacle.left}px`;
+          blocked.style.height = `${obstacle.bottom - obstacle.top}px`;
+          layer.append(blocked);
+        }
         map.append(layer);
         await document.fonts.ready;
       }, scenario);
@@ -931,6 +976,8 @@ async function runRemoteNameplateCrowdAudit({ browser, url, outputDir }) {
         if (!(layer instanceof HTMLElement)) throw new Error("nameplate audit layer missing");
         const layerRect = layer.getBoundingClientRect();
         const safeBottom = Number(layer.dataset.safeBottom) || layer.clientHeight;
+        const obstacleRects = [...layer.querySelectorAll("[data-audit-obstacle]")]
+          .map((element) => element.getBoundingClientRect());
         const labels = [...layer.querySelectorAll(".world-player__name")].map((element) => {
           const rect = element.getBoundingClientRect();
           const style = getComputedStyle(element);
@@ -946,6 +993,12 @@ async function runRemoteNameplateCrowdAudit({ browser, url, outputDir }) {
               && style.textOverflow === "ellipsis"
               && element.scrollWidth > element.clientWidth,
             fullNameAvailable: element.title === element.textContent,
+            avoidsObstacles: obstacleRects.every((obstacle) => (
+              rect.right <= obstacle.left
+                || obstacle.right <= rect.left
+                || rect.bottom <= obstacle.top
+                || obstacle.bottom <= rect.top
+            )),
             rect: { x: rect.x, y: rect.y, width: rect.width, height: rect.height }
           };
         });
@@ -965,6 +1018,163 @@ async function runRemoteNameplateCrowdAudit({ browser, url, outputDir }) {
     reports,
     issues: reports.flatMap((report) => report.issues.map((issue) => `${report.id}: ${issue}`))
   };
+}
+
+async function runRealtimeResilienceAudit({ browser, url, outputDir }) {
+  const context = await browser.newContext({
+    viewport: { width: 393, height: 852 },
+    hasTouch: true,
+    isMobile: true,
+    locale: "ko-KR",
+    colorScheme: "light",
+    reducedMotion: "reduce",
+    deviceScaleFactor: 3
+  });
+  const page = await context.newPage();
+  const pageErrors = [];
+  page.on("pageerror", (error) => pageErrors.push(error.message));
+  await page.addInitScript(() => {
+    localStorage.setItem("wedding-game:entry-session:v1", JSON.stringify({
+      version: 1,
+      nickname: "연결감사",
+      appearance: { presetId: "feminine-long-wave-dress" },
+      updatedAt: new Date().toISOString()
+    }));
+    localStorage.setItem("wedding-game:first-visit-guide:v1", JSON.stringify({
+      version: 1,
+      completed: true,
+      completedAt: new Date().toISOString()
+    }));
+
+    class DelayedDeniedWebSocket extends EventTarget {
+      static CONNECTING = 0;
+      static OPEN = 1;
+      static CLOSING = 2;
+      static CLOSED = 3;
+      CONNECTING = 0;
+      OPEN = 1;
+      CLOSING = 2;
+      CLOSED = 3;
+      readyState = DelayedDeniedWebSocket.CONNECTING;
+      bufferedAmount = 0;
+      extensions = "";
+      protocol = "";
+      binaryType = "blob";
+      onopen = null;
+      onerror = null;
+      onclose = null;
+      onmessage = null;
+      url;
+
+      constructor(url) {
+        super();
+        this.url = String(url);
+        window.setTimeout(() => {
+          if (this.readyState !== DelayedDeniedWebSocket.CONNECTING) return;
+          this.dispatchEvent(new Event("error"));
+          this.readyState = DelayedDeniedWebSocket.CLOSED;
+          this.dispatchEvent(new CloseEvent("close", { code: 1006, wasClean: false }));
+        }, 900);
+      }
+
+      send() {}
+
+      close() {
+        if (this.readyState === DelayedDeniedWebSocket.CLOSED) return;
+        this.readyState = DelayedDeniedWebSocket.CLOSED;
+        this.dispatchEvent(new CloseEvent("close", { code: 1000, wasClean: true }));
+      }
+    }
+
+    Object.defineProperty(window, "WebSocket", { configurable: true, value: DelayedDeniedWebSocket });
+  });
+
+  const readState = async () => page.evaluate(() => {
+    const readRect = (selector) => {
+      const element = document.querySelector(selector);
+      if (!(element instanceof HTMLElement)) return null;
+      const rect = element.getBoundingClientRect();
+      return { x: rect.x, y: rect.y, width: rect.width, height: rect.height };
+    };
+    const dot = document.querySelector(".world-hud__tools-toggle .realtime-pill");
+    const dotRect = dot instanceof HTMLElement ? dot.getBoundingClientRect() : null;
+    const visible = (element) => {
+      if (!(element instanceof HTMLElement)) return false;
+      const style = getComputedStyle(element);
+      const rect = element.getBoundingClientRect();
+      return style.display !== "none" && style.visibility !== "hidden" && Number(style.opacity) > 0 && rect.width > 0 && rect.height > 0;
+    };
+    const status = dot?.className.match(/realtime-pill--([a-z-]+)/)?.[1] ?? "missing";
+    const closedConnectionFeedback = [...document.querySelectorAll(".world-travel-status-row, .pwa-status, [role=alert]")]
+      .filter(visible)
+      .map((element) => element.textContent?.trim() ?? "")
+      .filter((text) => /같이 걷기.*(?:연결|재연결)|(?:연결|재연결).*같이 걷기/.test(text));
+    const blockingSurfaces = [...document.querySelectorAll('[role="dialog"], [role="alertdialog"], .bottom-sheet-backdrop')]
+      .filter(visible)
+      .map((element) => element.className || element.getAttribute("role") || "unknown");
+    return {
+      status,
+      layout: {
+        world: readRect(".game-world"),
+        map: readRect(".world-map"),
+        hud: readRect(".world-hud"),
+        controls: readRect(".world-controls")
+      },
+      dot: dotRect ? { width: dotRect.width, height: dotRect.height } : null,
+      closedConnectionFeedback: [...new Set(closedConnectionFeedback)],
+      blockingSurfaces
+    };
+  });
+
+  try {
+    await page.goto(url, { waitUntil: "domcontentloaded" });
+    const resumeGarden = page.locator(".entry-screen__resume-access");
+    if (await resumeGarden.isVisible().catch(() => false)) await resumeGarden.click();
+    await page.locator(".game-world").waitFor({ state: "visible" });
+    await page.locator('.world-hud__tools-toggle .realtime-pill[aria-label^="같이 걷기 연결 중"]').waitFor({ state: "visible" });
+    const delayed = await readState();
+    await page.waitForFunction(() => (
+      document.querySelector(".world-hud__tools-toggle .realtime-pill")
+        ?.classList.contains("realtime-pill--reconnecting")
+    ));
+    const denied = await readState();
+    await page.locator(".world-hud__tools-toggle").click();
+    const expandedStatus = await page.locator(".world-hud__tools .realtime-pill").innerText();
+    await page.locator(".world-hud__tools-toggle").click();
+    const layoutDeltas = Object.keys(delayed.layout).flatMap((key) => {
+      const before = delayed.layout[key];
+      const after = denied.layout[key];
+      if (!before && !after) return [0];
+      return before && after ? [
+        Math.abs(before.x - after.x),
+        Math.abs(before.y - after.y),
+        Math.abs(before.width - after.width),
+        Math.abs(before.height - after.height)
+      ] : [Number.POSITIVE_INFINITY];
+    });
+    const maximumLayoutDelta = Math.max(...layoutDeltas);
+    const report = {
+      phases: [delayed.status, denied.status],
+      delayed,
+      denied,
+      dotCompact: [delayed.dot, denied.dot].every((dot) => dot && dot.width <= 10 && dot.height <= 10),
+      maximumLayoutDelta,
+      layoutStable: Number.isFinite(maximumLayoutDelta) && maximumLayoutDelta <= 1,
+      closedConnectionFeedback: [...new Set([
+        ...delayed.closedConnectionFeedback,
+        ...denied.closedConnectionFeedback
+      ])],
+      blockingSurfaces: [...new Set([...delayed.blockingSurfaces, ...denied.blockingSurfaces])],
+      expandedStatus,
+      pageErrors,
+      screenshotPath: path.join(outputDir, "realtime-delayed-denied.png")
+    };
+    report.issues = auditRealtimeResilience(report);
+    await page.screenshot({ path: report.screenshotPath, fullPage: false, scale: "css" });
+    return report;
+  } finally {
+    await context.close();
+  }
 }
 
 async function runMobileHudCollisionMatrix({ browser, url, outputDir }) {
@@ -1138,7 +1348,11 @@ export async function runMobileHudBrowserAudit({ rootDir, outputDir, port = 4178
   const server = spawn(
     "pnpm",
     ["--filter", "@wedding-game/client", "exec", "vite", "--host", "127.0.0.1", "--port", String(port), "--strictPort"],
-    { cwd: rootDir, env: { ...process.env, BROWSER: "none" }, stdio: "pipe" }
+    {
+      cwd: rootDir,
+      env: { ...process.env, BROWSER: "none", VITE_WORKER_URL: "https://realtime-audit.invalid" },
+      stdio: "pipe"
+    }
   );
   const url = `http://127.0.0.1:${port}/`;
   await mkdir(outputDir, { recursive: true });
@@ -1156,6 +1370,7 @@ export async function runMobileHudBrowserAudit({ rootDir, outputDir, port = 4178
     let collisionMatrix = { reports: [], issues: [], profiles: [] };
     let longVenueAudit = { reports: [], issues: [], profiles: [] };
     let remoteNameplateCrowd = { reports: [], issues: [], scenarios: [] };
+    let realtimeResilience = { issues: [] };
     try {
       for (const viewport of mobileHudAuditViewports) {
         const engine = viewport.engine ?? "chromium";
@@ -1301,6 +1516,11 @@ export async function runMobileHudBrowserAudit({ rootDir, outputDir, port = 4178
         url,
         outputDir
       });
+      realtimeResilience = await runRealtimeResilienceAudit({
+        browser: await browserFor("chromium"),
+        url,
+        outputDir
+      });
     } finally {
       await Promise.all([...browsers.values()].map((browser) => browser.close()));
     }
@@ -1312,7 +1532,8 @@ export async function runMobileHudBrowserAudit({ rootDir, outputDir, port = 4178
       typographyScaleAudit,
       collisionMatrix,
       longVenueAudit,
-      remoteNameplateCrowd
+      remoteNameplateCrowd,
+      realtimeResilience
     }, null, 2)}\n`);
     const issues = [
       ...reports.flatMap((report) => report.issues.map((issue) => `${report.id}: ${issue}`)),
@@ -1320,10 +1541,11 @@ export async function runMobileHudBrowserAudit({ rootDir, outputDir, port = 4178
       ...typographyScaleAudit.issues,
       ...collisionMatrix.issues,
       ...longVenueAudit.issues,
-      ...remoteNameplateCrowd.issues
+      ...remoteNameplateCrowd.issues,
+      ...realtimeResilience.issues
     ];
     if (issues.length > 0) throw new Error(`Mobile HUD browser audit failed:\n${issues.join("\n")}`);
-    return { reports, zoneLabelSweep, typographyScaleAudit, collisionMatrix, longVenueAudit, remoteNameplateCrowd, reportPath };
+    return { reports, zoneLabelSweep, typographyScaleAudit, collisionMatrix, longVenueAudit, remoteNameplateCrowd, realtimeResilience, reportPath };
   } finally {
     server.kill("SIGTERM");
   }

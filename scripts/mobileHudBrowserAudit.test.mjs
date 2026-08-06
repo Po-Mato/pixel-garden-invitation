@@ -6,6 +6,7 @@ import {
   auditLongVenueLayout,
   auditMobileHudRectangles,
   auditPlayerNameplate,
+  auditRealtimeResilience,
   auditRemoteNameplateCrowd,
   auditWorldLabelRectangles,
   auditWorldLabelZoneSweep,
@@ -81,11 +82,12 @@ test("long venue audit covers the narrowest portrait and landscape phones", () =
   ]);
 });
 
-test("remote guest visual regression covers 3, 5, and 8 long names at map edges", () => {
+test("remote guest visual regression covers map edges and a crowded world UI obstacle", () => {
   assert.deepEqual(remoteNameplateCrowdScenarios, [
     { id: "left-edge-3", count: 3, edge: "left" },
     { id: "right-edge-5", count: 5, edge: "right" },
-    { id: "bottom-edge-8", count: 8, edge: "bottom" }
+    { id: "bottom-edge-8", count: 8, edge: "bottom" },
+    { id: "world-ui-8", count: 8, edge: "center", obstacle: true }
   ]);
 });
 
@@ -102,7 +104,7 @@ test("remote guest crowd audit rejects clipping, overlap, wrapping, and inaccess
   assert.deepEqual(auditRemoteNameplateCrowd({
     count: 2,
     labels: [
-      { ...ready, contained: false, singleLine: false, ellipsisReady: false, fullNameAvailable: false },
+      { ...ready, contained: false, singleLine: false, ellipsisReady: false, fullNameAvailable: false, avoidsObstacles: false },
       { ...ready, id: "guest-2", rect: { x: 20, y: 4, width: 64, height: 18 } }
     ]
   }), [
@@ -110,7 +112,42 @@ test("remote guest crowd audit rejects clipping, overlap, wrapping, and inaccess
     "guest-1 여러 줄 표시",
     "guest-1 긴 이름 생략 실패",
     "guest-1 전체 이름 접근 불가",
+    "guest-1 월드 UI와 겹침",
     "guest-1/guest-2 이름표 겹침"
+  ]);
+});
+
+test("realtime failure audit permits only the compact status indicator without layout movement", () => {
+  const ready = {
+    phases: ["connecting", "reconnecting"],
+    dotCompact: true,
+    layoutStable: true,
+    maximumLayoutDelta: 0,
+    closedConnectionFeedback: [],
+    blockingSurfaces: [],
+    expandedStatus: "같이 걷기 재연결 중 · 초대장 이용 가능",
+    pageErrors: []
+  };
+  assert.deepEqual(auditRealtimeResilience(ready), []);
+  assert.deepEqual(auditRealtimeResilience({
+    ...ready,
+    phases: ["offline"],
+    dotCompact: false,
+    layoutStable: false,
+    maximumLayoutDelta: 8,
+    closedConnectionFeedback: ["같이 걷기 재연결 중"],
+    blockingSurfaces: ["alertdialog"],
+    expandedStatus: "같이 걷기 실패",
+    pageErrors: ["boom"]
+  }), [
+    "실시간 지연 상태 미검증",
+    "실시간 거부 상태 미검증",
+    "실시간 상태 점 크기 증가",
+    "실시간 장애 중 레이아웃 이동",
+    "실시간 장애 문구가 닫힌 HUD 밖에 노출됨",
+    "실시간 장애가 초대장 이용을 가로막음",
+    "실시간 장애 비차단 안내 누락",
+    "실시간 장애 중 페이지 오류 boom"
   ]);
 });
 

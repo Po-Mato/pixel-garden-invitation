@@ -15,6 +15,9 @@ describe("PWA service worker source", () => {
       "assets/GameMemoryAlbum-feature.js",
       "assets/RsvpAdminPage-private.js",
       "assets/papaparse.min-private.js",
+      "assets/noto-serif-kr-critical-hash.woff2",
+      "assets/noto-sans-kr-119-wght-normal-hash.woff2",
+      "assets/entry-wedding-garden-hero-hash.avif",
       "assets/cover.webp",
       "index.html"
     ]);
@@ -22,12 +25,18 @@ describe("PWA service worker source", () => {
     expect(paths).toEqual([
       ...pwaCorePrecachePaths,
       "./assets/index-abc.js",
-      "./assets/GameWorld-def.css"
+      "./assets/GameWorld-def.css",
+      "./assets/noto-serif-kr-critical-hash.woff2",
+      "./assets/noto-sans-kr-119-wght-normal-hash.woff2",
+      "./assets/entry-wedding-garden-hero-hash.avif"
     ]);
     expect(paths).toContain("./manifest.webmanifest");
     expect(paths).toContain("./assets/maps/v2/home/background.webp");
     expect(paths).toContain("./characters/puppets/bride/rig.json");
     expect(paths).toContain("./characters/puppets/groom/head-blink.webp");
+    expect(paths).toContain("./assets/noto-serif-kr-critical-hash.woff2");
+    expect(paths).toContain("./assets/noto-sans-kr-119-wght-normal-hash.woff2");
+    expect(paths).toContain("./assets/entry-wedding-garden-hero-hash.avif");
     expect(paths).not.toContain("./assets/RsvpAdminPage-private.js");
     expect(paths).not.toContain("./assets/papaparse.min-private.js");
     expect(paths).not.toContain("./assets/GameMemoryAlbum-feature.js");
@@ -71,6 +80,7 @@ describe("PWA service worker source", () => {
     expect(source).toContain("cachedAt");
     expect(source).toContain('"PWA_FEATURE_CACHE_PROGRESS"');
     expect(source).toContain("reportOfflineCacheState");
+    expect(source).toContain("ignoreVary: true");
     expect(source).toContain('type: failed > 0 ? "PWA_CACHE_ERROR" : "PWA_CACHE_READY"');
     expect(source).not.toContain("throw error");
     expect(source).not.toContain("POST");
