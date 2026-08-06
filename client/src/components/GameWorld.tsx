@@ -1799,6 +1799,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     returnFocusRef: menuButtonRef,
     onEscape: closeMenu,
     suspended: nestedMenuSheetOpen,
+    isolateSiblings: true,
     lockBody: true
   });
 

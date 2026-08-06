@@ -19,6 +19,31 @@ function focusableElements(container: HTMLElement) {
   ));
 }
 
+function isolateDialogSiblings(dialog: HTMLElement) {
+  const restorers: Array<() => void> = [];
+  let branch: HTMLElement = dialog;
+  let parent = branch.parentElement;
+
+  while (parent && parent !== document.body) {
+    for (const sibling of Array.from(parent.children)) {
+      if (!(sibling instanceof HTMLElement) || sibling === branch || sibling.classList.contains("world-menu-backdrop")) continue;
+      const previousAriaHidden = sibling.getAttribute("aria-hidden");
+      const previouslyInert = sibling.hasAttribute("inert");
+      sibling.setAttribute("aria-hidden", "true");
+      sibling.setAttribute("inert", "");
+      restorers.push(() => {
+        if (previousAriaHidden === null) sibling.removeAttribute("aria-hidden");
+        else sibling.setAttribute("aria-hidden", previousAriaHidden);
+        if (!previouslyInert) sibling.removeAttribute("inert");
+      });
+    }
+    branch = parent;
+    parent = branch.parentElement;
+  }
+
+  return () => restorers.reverse().forEach((restore) => restore());
+}
+
 type ModalDialogFocusOptions = {
   open: boolean;
   dialogRef: RefObject<HTMLElement | null>;
@@ -27,6 +52,7 @@ type ModalDialogFocusOptions = {
   onEscape: () => void;
   suspended?: boolean;
   isolateApp?: boolean;
+  isolateSiblings?: boolean;
   lockBody?: boolean;
 };
 
@@ -38,6 +64,7 @@ export function useModalDialogFocus({
   onEscape,
   suspended = false,
   isolateApp = false,
+  isolateSiblings = false,
   lockBody = true
 }: ModalDialogFocusOptions) {
   const onEscapeRef = useRef(onEscape);
@@ -52,6 +79,9 @@ export function useModalDialogFocus({
       ?? (document.activeElement instanceof HTMLElement ? document.activeElement : null);
     const previousOverflow = document.body.style.overflow;
     const restoreApp = isolateApp ? isolateAppForModal() : () => undefined;
+    const restoreSiblings = isolateSiblings && dialogRef.current
+      ? isolateDialogSiblings(dialogRef.current)
+      : () => undefined;
 
     if (lockBody) document.body.style.overflow = "hidden";
     (initialFocusRef?.current ?? dialogRef.current)?.focus({ preventScroll: true });
@@ -93,6 +123,7 @@ export function useModalDialogFocus({
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
       if (lockBody) document.body.style.overflow = previousOverflow;
+      restoreSiblings();
       restoreApp();
       const active = document.activeElement;
       if (
@@ -102,5 +133,5 @@ export function useModalDialogFocus({
         previouslyFocused.focus({ preventScroll: true });
       }
     };
-  }, [dialogRef, initialFocusRef, isolateApp, lockBody, open, returnFocusRef]);
+  }, [dialogRef, initialFocusRef, isolateApp, isolateSiblings, lockBody, open, returnFocusRef]);
 }

@@ -691,8 +691,12 @@ describe("GameWorld", () => {
     const menuTrigger = screen.getByRole("button", { name: "초대장 메뉴" });
     fireEvent.click(menuTrigger);
     const menu = screen.getByRole("dialog", { name: "초대장 바로가기" });
+    const isolatedWorldSibling = Array.from(menu.parentElement?.children ?? [])
+      .find((element) => element !== menu && !element.classList.contains("world-menu-backdrop") && element.contains(menuTrigger));
     expect(screen.getByRole("heading", { name: "초대장 바로가기" })).toHaveFocus();
     expect(menu).toHaveAccessibleDescription("예식 정보와 자주 찾는 초대장 항목을 순서대로 확인할 수 있습니다.");
+    expect(isolatedWorldSibling).toHaveAttribute("aria-hidden", "true");
+    expect(isolatedWorldSibling).toHaveAttribute("inert");
     expect(document.querySelector(".world-menu-backdrop")).toHaveAttribute("tabindex", "-1");
     fireEvent.keyDown(screen.getByRole("heading", { name: "초대장 바로가기" }), { key: "Tab", shiftKey: true });
     expect(within(menu).getByRole("button", { name: "초대장 공유" })).toHaveFocus();
@@ -1578,7 +1582,9 @@ describe("GameWorld", () => {
     const menu = screen.getByRole("dialog", { name: "초대장 바로가기" });
     fireEvent.click(within(menu).getByRole("button", { name: "오시는 길" }));
 
-    fireEvent.click(screen.getByRole("button", { name: "동네로 나가기" }));
+    const hiddenPortal = document.querySelector<HTMLButtonElement>('.world-portal[aria-label="동네로 나가기"]');
+    expect(hiddenPortal).not.toBeNull();
+    fireEvent.click(hiddenPortal!);
 
     advanceRouteToPortalArrival();
 
