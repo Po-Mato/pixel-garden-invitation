@@ -9,6 +9,7 @@ import {
   type MouseEvent,
   type TransitionEvent as ReactTransitionEvent
 } from "react";
+import "@fontsource-variable/noto-sans-kr/wght.css";
 import { Accessibility, Archive, ArrowRight, CalendarDays, Camera, ChevronDown, CircleHelp, Flower2, Images, MapPinned, MessageCircle, RefreshCw, Share2, SlidersHorizontal, UsersRound, X } from "lucide-react";
 import {
   companionRendezvousProposalLifetimeMs,

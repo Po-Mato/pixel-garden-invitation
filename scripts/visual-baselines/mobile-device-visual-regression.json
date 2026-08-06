@@ -1,7 +1,7 @@
 {
   "version": 3,
-  "approvedAt": "2026-08-06T03:49:55.686Z",
-  "reason": "시스템 한글 UI 폰트 경량화와 캐릭터 이름표 고급화",
+  "approvedAt": "2026-08-06T04:12:27.214Z",
+  "reason": "게임 진입 시 지연 로드하는 Noto Sans KR과 캐릭터 이름표 고급화",
   "pixelThreshold": 36,
   "maxChangedRatio": 0.015,
   "profileMaxChangedRatioOverrides": {
@@ -16,7 +16,7 @@
       "state": "game",
       "width": 360,
       "height": 780,
-      "sha256": "0b5d7890739310540e6f2372fa3563efe78922a1ad9cbcc68c41886d8186d4ed"
+      "sha256": "6d9c9784cdd532370c5c9f944ef3a9ab8feb9fa7b7f73d8ea62df7e1d9c6583d"
     },
     {
       "profileId": "galaxy-s23-font-150",
@@ -24,7 +24,7 @@
       "state": "directions-xlarge",
       "width": 360,
       "height": 780,
-      "sha256": "34aea7816335e852088b8b36629433ae1e2d78d4325160dff4234c3a8be5e2ee"
+      "sha256": "15a3e3112441e033d08c08b6e183d9ef48ed1f3feaacf853131b335cc3f11c28"
     },
     {
       "profileId": "galaxy-s23-font-150",
@@ -32,7 +32,7 @@
       "state": "directions-xlarge-middle",
       "width": 360,
       "height": 780,
-      "sha256": "701a503425c273b453e2ecd2c88f7091fb13bd065612b61c369f342504ccac3f"
+      "sha256": "50231143576c90738101fe491953c92684fb9bb71374b1109e52ccfa5586c901"
     },
     {
       "profileId": "galaxy-s23-font-150",
@@ -40,7 +40,7 @@
       "state": "directions-xlarge-bottom",
       "width": 360,
       "height": 780,
-      "sha256": "c9bd15203c03aee2a7ce1f155b87988cb0d8789adcfa3146dadb9df80b11e856"
+      "sha256": "30d282aacbeb59b3bd715ec20857c8a9d19414c2d9f7498c64313f67ef4ea9a8"
     },
     {
       "profileId": "iphone-15-dynamic-type",
@@ -48,7 +48,7 @@
       "state": "game",
       "width": 393,
       "height": 852,
-      "sha256": "6a91a4c13590c96e792761f55556f14b2147f0d0c326ed12c420c4405c4033d7"
+      "sha256": "44e6b62356d8e5f060ebd9ddb93c07778d51792d070e9d5dd6bc837c0213f36b"
     },
     {
       "profileId": "iphone-15-dynamic-type",
@@ -56,7 +56,7 @@
       "state": "directions-xlarge",
       "width": 393,
       "height": 852,
-      "sha256": "8de1a1048f65a25b3cbc95f07d5959b97603a1ce2c06102b573c3d467689174a"
+      "sha256": "3761af6caedeeaa4916cc7442541a9239d840dfe72a6fc721022fe14801018fc"
     },
     {
       "profileId": "iphone-15-dynamic-type",
@@ -64,7 +64,7 @@
       "state": "directions-xlarge-middle",
       "width": 393,
       "height": 852,
-      "sha256": "ca4c45a7470042d598dc0225c2f6a84d5836e90cd5ae8631c81264179cfe7c71"
+      "sha256": "c278a201b1e8e9d46b453c22c0642e2c05d46777d00dfe36886c70c0e1c40c63"
     },
     {
       "profileId": "iphone-15-dynamic-type",
@@ -72,7 +72,7 @@
       "state": "directions-xlarge-bottom",
       "width": 393,
       "height": 852,
-      "sha256": "ca4c45a7470042d598dc0225c2f6a84d5836e90cd5ae8631c81264179cfe7c71"
+      "sha256": "c278a201b1e8e9d46b453c22c0642e2c05d46777d00dfe36886c70c0e1c40c63"
     },
     {
       "profileId": "iphone-15-webkit-dynamic-type",
@@ -80,7 +80,7 @@
       "state": "game",
       "width": 393,
       "height": 852,
-      "sha256": "f03104e7e32dff98b59e3c3368986c461c6f7956f68c66e089d4a4fcc37573fa"
+      "sha256": "d5918ee1a6383ff48edf67ab242f93917a0cc07eb663093a98dc0f551f6a5e99"
     },
     {
       "profileId": "iphone-15-webkit-dynamic-type",
@@ -88,7 +88,7 @@
       "state": "directions-xlarge",
       "width": 393,
       "height": 852,
-      "sha256": "8e07706dfd13acb426b697ff8802baf555d9f7d0e0db55918b4f5949f369325c"
+      "sha256": "1c394451999b3a611dc04247bbc6ecfdf60fa5a0b6c6966e01e540ab18f6b686"
     },
     {
       "profileId": "iphone-15-webkit-dynamic-type",
@@ -96,7 +96,7 @@
       "state": "directions-xlarge-middle",
       "width": 393,
       "height": 852,
-      "sha256": "8e07706dfd13acb426b697ff8802baf555d9f7d0e0db55918b4f5949f369325c"
+      "sha256": "1c394451999b3a611dc04247bbc6ecfdf60fa5a0b6c6966e01e540ab18f6b686"
     },
     {
       "profileId": "iphone-15-webkit-dynamic-type",
@@ -104,7 +104,7 @@
       "state": "directions-xlarge-bottom",
       "width": 393,
       "height": 852,
-      "sha256": "8e07706dfd13acb426b697ff8802baf555d9f7d0e0db55918b4f5949f369325c"
+      "sha256": "1c394451999b3a611dc04247bbc6ecfdf60fa5a0b6c6966e01e540ab18f6b686"
     },
     {
       "profileId": "iphone-15-webkit-text-200",
@@ -112,7 +112,7 @@
       "state": "game",
       "width": 393,
       "height": 852,
-      "sha256": "6eb28235d996b93f96b7513e7223bcf00a131600091e9a65ffd3e98dd6dda84d"
+      "sha256": "75f3c291bcf0217061f32a356461ca0a57e82a4364e5bdc27fdb92785891b5a5"
     },
     {
       "profileId": "iphone-15-webkit-text-200",
@@ -120,7 +120,7 @@
       "state": "directions-xlarge",
       "width": 393,
       "height": 852,
-      "sha256": "a135d0eeecc5ca30642fba0885a0817b4f588c5898a63f7819a55ad1c440eaac"
+      "sha256": "22407d17329de5d42573f4cda975f21e1d798364a0b615e8ed566a95fa76f90e"
     },
     {
       "profileId": "iphone-15-webkit-text-200",
@@ -128,7 +128,7 @@
       "state": "directions-xlarge-middle",
       "width": 393,
       "height": 852,
-      "sha256": "26cb41ecc0bbe64631b14b240ff7f358d134bf22403fbdf3319b73b5400962e9"
+      "sha256": "59eddc30410ac53a34cf7d7edaad940681b37b4b9ff867784b9c944cb2352454"
     },
     {
       "profileId": "iphone-15-webkit-text-200",
@@ -136,7 +136,7 @@
       "state": "directions-xlarge-bottom",
       "width": 393,
       "height": 852,
-      "sha256": "cd2bffcb881356c37a27004e31d47acce4ee8c6dfacff93207def32b777c7294"
+      "sha256": "9f5826066084a6e4393ab76e0a2ddd6ce16ec167aa573d624056251d823e4ed2"
     }
   ]
 }
