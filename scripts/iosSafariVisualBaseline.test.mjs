@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises";
 import test from "node:test";
 import {
   iosSafariBaselinePath,
+  iosSafariSentinelPixelRatio,
   iosSafariVisualProfile,
   iosSafariVisualStates
 } from "./lib/iosSafariVisualBaseline.mjs";
@@ -39,11 +40,22 @@ test("portrait game capture discards a stale lazy-loading framebuffer", async ()
   const source = await readFile(new URL("./check-ios-safari-visual-baselines.mjs", import.meta.url), "utf8");
   assert.match(source, /!document\.querySelector\("\.screen-loading"\)/);
   assert.match(source, /async function stabilizeGameFrameCapture\(\)/);
-  assert.match(
-    source,
-    /await sessionCommand\("GET", "\/screenshot"\);[\s\S]*게임 캡처 프레임 재확인/
-  );
-  assert.match(source, /await stabilizeGameFrameCapture\(\);\s+await screenshot\("game"\)/);
+  assert.match(source, /ios-safari-native-compositor-sentinel/);
+  assert.match(source, /visibleRatio >= 0\.2/);
+  assert.match(source, /settledRatio <= 0\.02/);
+  assert.match(source, /await screenshot\("game", stabilizedGameFrame\.frame\)/);
+});
+
+test("native compositor sentinel ratio tolerates screenshot color conversion", () => {
+  const pixels = Uint8Array.from([
+    255, 0, 255, 255,
+    214, 72, 232, 255,
+    199, 0, 255, 255,
+    255, 81, 255, 255
+  ]);
+  assert.equal(iosSafariSentinelPixelRatio(pixels, 4), 0.5);
+  assert.equal(iosSafariSentinelPixelRatio(new Uint8Array(), 4), 0);
+  assert.throws(() => iosSafariSentinelPixelRatio(pixels, 2), /at least three channels/);
 });
 
 test("collapsed Safari chrome audit keeps the playing shell pinned and saves evidence before validation", async () => {

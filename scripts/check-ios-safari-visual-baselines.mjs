@@ -6,11 +6,13 @@ import {
   compareIosSafariVisualBaseline,
   iosSafariBaselinePath,
   iosSafariCurrentPath,
+  iosSafariSentinelPixelRatio,
   iosSafariVisualProfile,
   iosSafariVisualStates
 } from "./lib/iosSafariVisualBaseline.mjs";
 import { iosSafariText200AuditCss } from "./lib/mobileHudBrowserAudit.mjs";
 import { assessFrameTimingHeadroom, summarizeFrameTimings } from "./lib/frameTimingMetrics.mjs";
+import sharp from "sharp";
 
 const rootDir = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
 const option = (name, fallback = null) => {
@@ -93,9 +95,18 @@ async function waitForDocument(expression, description, timeoutMs = 30_000) {
   throw new Error(`${description} 대기 시간 초과`);
 }
 
-async function screenshot(state) {
+async function captureNativeScreenshot() {
   const encoded = await sessionCommand("GET", "/screenshot");
-  await writeFile(iosSafariCurrentPath(outputDir, state), Buffer.from(encoded, "base64"));
+  return Buffer.from(encoded, "base64");
+}
+
+async function screenshot(state, frame = null) {
+  await writeFile(iosSafariCurrentPath(outputDir, state), frame ?? await captureNativeScreenshot());
+}
+
+async function nativeSentinelRatio(frame) {
+  const { data, info } = await sharp(frame).removeAlpha().raw().toBuffer({ resolveWithObject: true });
+  return iosSafariSentinelPixelRatio(data, info.channels);
 }
 
 const stableGameFrameExpression = `
@@ -117,12 +128,45 @@ const stableGameFrameExpression = `
 
 async function stabilizeGameFrameCapture() {
   await waitForDocument(stableGameFrameExpression, "게임 캡처 프레임", 60_000);
-  // XCUITest can return the framebuffer from immediately before the React lazy
-  // boundary settles on the first screenshot request. Warm it once, then prove
-  // the game is still mounted before preserving the visual evidence.
-  await sessionCommand("GET", "/screenshot");
-  await new Promise((resolve) => setTimeout(resolve, 500));
+  await evaluate(`
+    const sentinel = document.createElement("div");
+    sentinel.id = "ios-safari-native-compositor-sentinel";
+    sentinel.setAttribute("aria-hidden", "true");
+    sentinel.style.cssText = "position:fixed;inset:0;z-index:2147483647;background:rgb(255,0,255);pointer-events:none";
+    document.body.append(sentinel);
+    return true;
+  `);
+
+  let visibleAttempt = 0;
+  let visibleRatio = 0;
+  try {
+    for (visibleAttempt = 1; visibleAttempt <= 12; visibleAttempt += 1) {
+      visibleRatio = await nativeSentinelRatio(await captureNativeScreenshot());
+      if (visibleRatio >= 0.2) break;
+      await new Promise((resolve) => setTimeout(resolve, 400));
+    }
+  } finally {
+    await evaluate(`document.getElementById("ios-safari-native-compositor-sentinel")?.remove(); return true;`);
+  }
+  if (visibleRatio < 0.2) throw new Error("iOS Safari 네이티브 캡처가 합성 표식을 따라오지 못했어요");
+
+  let settledAttempt = 0;
+  let settledRatio = 1;
+  let settledFrame = null;
+  for (settledAttempt = 1; settledAttempt <= 12; settledAttempt += 1) {
+    settledFrame = await captureNativeScreenshot();
+    settledRatio = await nativeSentinelRatio(settledFrame);
+    if (settledRatio <= 0.02) break;
+    await new Promise((resolve) => setTimeout(resolve, 400));
+  }
+  if (!settledFrame || settledRatio > 0.02) {
+    throw new Error("iOS Safari 네이티브 캡처에서 합성 표식이 정리되지 않았어요");
+  }
   await waitForDocument(stableGameFrameExpression, "게임 캡처 프레임 재확인", 60_000);
+  return {
+    frame: settledFrame,
+    evidence: { visibleAttempt, visibleRatio, settledAttempt, settledRatio }
+  };
 }
 
 async function performTouchSwipe({ x, fromY, toY, durationMs = 620 }) {
@@ -211,6 +255,7 @@ const captureReport = {
   userAgent: null,
   viewport: null,
   scrollStates: {},
+  nativeCompositor: null,
   landscape: {},
   comparisons: []
 };
@@ -441,8 +486,9 @@ try {
   captureReport.userAgent = environment.userAgent;
   captureReport.viewport = environment.viewport;
   captureReport.player = environment.player;
-  await stabilizeGameFrameCapture();
-  await screenshot("game");
+  const stabilizedGameFrame = await stabilizeGameFrameCapture();
+  captureReport.nativeCompositor = stabilizedGameFrame.evidence;
+  await screenshot("game", stabilizedGameFrame.frame);
 
   await evaluate(`
     const style = document.createElement("style");

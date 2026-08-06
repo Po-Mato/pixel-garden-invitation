@@ -25,6 +25,25 @@ export const iosSafariVisualStates = Object.freeze([
   "game-landscape-chrome-collapsed"
 ]);
 
+export function iosSafariSentinelPixelRatio(pixelData, channels) {
+  if (!Number.isInteger(channels) || channels < 3) {
+    throw new Error("iOS Safari sentinel pixels require at least three channels");
+  }
+  let sentinelPixels = 0;
+  let pixelCount = 0;
+  for (let offset = 0; offset + 2 < pixelData.length; offset += channels) {
+    pixelCount += 1;
+    if (
+      pixelData[offset] >= 200
+      && pixelData[offset + 1] <= 80
+      && pixelData[offset + 2] >= 200
+    ) {
+      sentinelPixels += 1;
+    }
+  }
+  return pixelCount === 0 ? 0 : sentinelPixels / pixelCount;
+}
+
 export function iosSafariBaselinePath(rootDir, state) {
   return path.join(
     rootDir,
