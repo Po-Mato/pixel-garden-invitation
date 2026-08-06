@@ -77,7 +77,12 @@ export function reducePwaWorkerMessage(
     return { ...current, cacheState: "ready", completed: total, total };
   }
   if (message.type === "PWA_CACHE_ERROR") {
-    return { ...current, cacheState: "error" };
+    return {
+      ...current,
+      cacheState: "error",
+      completed: numericProgress(message.completed) || current.completed,
+      total: numericProgress(message.total) || current.total
+    };
   }
   if (message.type === "PWA_FEATURE_CACHE_PROGRESS") {
     return {
@@ -291,6 +296,29 @@ export function prepareOfflineGameFeatures(): void {
     return;
   }
   void registrationPromise?.then((registration) => registration?.active?.postMessage(message));
+}
+
+export async function retryOfflinePreparation(
+  enabled = import.meta.env.PROD,
+  baseUrl = import.meta.env.BASE_URL
+): Promise<void> {
+  updateSnapshot({ cacheState: "preparing", completed: 0 });
+  const registration = await registrationPromise;
+  const worker = navigator.serviceWorker?.controller ?? registration?.active;
+  if (worker) {
+    worker.postMessage({ type: "CACHE_CORE" });
+    return;
+  }
+  if (!registration) {
+    registrationPromise = null;
+    await startPwaClient(enabled, baseUrl);
+    return;
+  }
+  try {
+    await registration.update();
+  } catch {
+    updateSnapshot({ cacheState: "error" });
+  }
 }
 
 function postPwaMessage(message: object): void {

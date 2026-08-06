@@ -105,7 +105,8 @@
 }
 
 .pwa-status--offline > svg,
-.pwa-status--error > svg { background: #8f6259; }
+.pwa-status--error > svg,
+.pwa-status--notice > svg { background: #8f6259; }
 .pwa-status--update > svg { background: #ad6676; }
 .pwa-status--install > svg { background: #bf8f3f; }
 

@@ -16,6 +16,7 @@ function outputFingerprint(output: Rollup.OutputAsset | Rollup.OutputChunk): str
 function pwaServiceWorkerPlugin(): Plugin {
   return {
     name: "wedding-garden-pwa-service-worker",
+    enforce: "post",
     apply: "build",
     generateBundle(_options, bundle) {
       const outputs = Object.values(bundle).sort((left, right) => left.fileName.localeCompare(right.fileName));

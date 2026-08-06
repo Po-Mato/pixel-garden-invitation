@@ -6,6 +6,7 @@ import {
   prepareOfflineJourneyAssets,
   reducePwaWorkerMessage,
   resetPwaClientForTests,
+  retryOfflinePreparation,
   startPwaClient,
   warmPwaAssetCache,
   type PwaClientSnapshot
@@ -58,7 +59,11 @@ describe("PWA client", () => {
     expect(preparing).toMatchObject({ cacheState: "preparing", completed: 4, total: 10 });
     expect(reducePwaWorkerMessage(preparing, { type: "PWA_CACHE_READY", total: 10 }))
       .toMatchObject({ cacheState: "ready", completed: 10, total: 10 });
-    expect(reducePwaWorkerMessage(preparing, { type: "PWA_CACHE_ERROR" }).cacheState).toBe("error");
+    expect(reducePwaWorkerMessage(preparing, {
+      type: "PWA_CACHE_ERROR",
+      completed: 8,
+      total: 10
+    })).toMatchObject({ cacheState: "error", completed: 8, total: 10 });
     expect(reducePwaWorkerMessage(emptySnapshot, {
       type: "PWA_CACHE_PROGRESS",
       completed: -1,
@@ -133,6 +138,10 @@ describe("PWA client", () => {
       groups: { home: ["./home.webp"], lobby: ["./lobby.webp"] }
     });
 
+    await retryOfflinePreparation(true, "./");
+    expect(serviceWorker.controller.postMessage).toHaveBeenCalledWith({ type: "CACHE_CORE" });
+    expect(getPwaClientSnapshot()).toMatchObject({ cacheState: "preparing", completed: 0 });
+
     await expect(applyPwaUpdate()).resolves.toBe(true);
     expect(waiting.postMessage).toHaveBeenCalledWith({ type: "SKIP_WAITING" });
   });
@@ -148,5 +157,33 @@ describe("PWA client", () => {
     await expect(applyPwaUpdate()).resolves.toBe(true);
     expect(registration.update).toHaveBeenCalledTimes(1);
     expect(waiting.postMessage).toHaveBeenCalledWith({ type: "SKIP_WAITING" });
+  });
+
+  it("starts a fresh registration after a temporary service-worker failure", async () => {
+    const registration = {
+      waiting: null,
+      active: { postMessage: vi.fn() },
+      installing: null,
+      addEventListener: vi.fn(),
+      update: vi.fn(async () => undefined)
+    };
+    const serviceWorker = {
+      controller: null,
+      addEventListener: vi.fn(),
+      register: vi.fn()
+        .mockRejectedValueOnce(new Error("temporary failure"))
+        .mockResolvedValueOnce(registration)
+    };
+    Object.defineProperty(navigator, "serviceWorker", { configurable: true, value: serviceWorker });
+
+    await startPwaClient(true, "./");
+    expect(getPwaClientSnapshot().cacheState).toBe("error");
+    await retryOfflinePreparation(true, "./");
+
+    expect(serviceWorker.register).toHaveBeenCalledTimes(2);
+    expect(serviceWorker.register).toHaveBeenLastCalledWith("./service-worker.js", {
+      scope: "./",
+      updateViaCache: "none"
+    });
   });
 });

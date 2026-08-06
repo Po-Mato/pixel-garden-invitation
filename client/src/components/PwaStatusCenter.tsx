@@ -5,6 +5,7 @@ import {
   checkForPwaUpdate,
   getPwaClientSnapshot,
   prepareOfflineGameFeatures,
+  retryOfflinePreparation,
   startPwaClient,
   subscribePwaClient,
   type PwaClientSnapshot
@@ -53,6 +54,7 @@ export function PwaStatusCenter({
   const [installDismissed, setInstallDismissed] = useState(installWasDismissed);
   const [applyingUpdate, setApplyingUpdate] = useState(false);
   const [updateError, setUpdateError] = useState(false);
+  const [offlineNoticeDismissed, setOfflineNoticeDismissed] = useState(false);
   const previousCacheState = useRef(client.cacheState);
   const previousFeatureCacheState = useRef(client.featureCacheState);
 
@@ -197,13 +199,19 @@ export function PwaStatusCenter({
         </button>
       </>
     );
-  } else if (client.cacheState === "error") {
-    tone = "error";
+  } else if (client.cacheState === "error" && (showInstall || showBackgroundProgress) && !offlineNoticeDismissed) {
+    tone = "notice";
     content = (
       <>
         <CloudOff aria-hidden="true" />
-        <span><strong>오프라인 준비를 마치지 못했어요</strong><small>연결 상태를 확인해 주세요</small></span>
-        <button type="button" onClick={() => window.location.reload()}>다시 시도</button>
+        <span><strong>오프라인 저장은 아직 준비 중이에요</strong><small>초대장과 게임은 지금 그대로 이용할 수 있어요</small></span>
+        <button type="button" onClick={() => { void retryOfflinePreparation(); }}>저장 재시도</button>
+        <button
+          type="button"
+          className="pwa-status__dismiss"
+          aria-label="오프라인 저장 안내 닫기"
+          onClick={() => setOfflineNoticeDismissed(true)}
+        ><X /></button>
       </>
     );
   } else if (showBackgroundProgress && client.cacheState === "preparing" && client.total > 0) {
@@ -218,7 +226,7 @@ export function PwaStatusCenter({
         <progress max={client.total} value={client.completed} aria-label={`오프라인 준비 ${percent}%`} />
       </>
     );
-  } else if (playing && client.featureCacheState === "error") {
+  } else if (showBackgroundProgress && playing && client.featureCacheState === "error") {
     tone = "error";
     content = (
       <>

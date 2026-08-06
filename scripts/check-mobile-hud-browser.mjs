@@ -28,4 +28,5 @@ console.log(
     `${report.width}x${report.height} ${report.metrics.venueLines}줄/${report.metrics.addressLines}줄`
   )).join(" · ")}`
 );
+console.log(`맵 가장자리 긴 이름표: ${result.remoteNameplateCrowd.reports.map(({ count, edge }) => `${edge} ${count}명`).join(" · ")}`);
 console.log(`보고서: ${result.reportPath}`);

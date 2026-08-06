@@ -6,6 +6,7 @@ import {
   auditLongVenueLayout,
   auditMobileHudRectangles,
   auditPlayerNameplate,
+  auditRemoteNameplateCrowd,
   auditWorldLabelRectangles,
   auditWorldLabelZoneSweep,
   compactDynamicViewport,
@@ -16,6 +17,7 @@ import {
   longVenueAuditProfiles,
   mobileHudAuditViewports,
   mobileHudCollisionMatrixProfiles,
+  remoteNameplateCrowdScenarios,
   summarizeTouchLatency,
   worldLabelAuditProfiles,
   worldLabelAuditScenarios
@@ -76,6 +78,39 @@ test("long venue audit covers the narrowest portrait and landscape phones", () =
   assert.deepEqual(longVenueAuditProfiles, [
     { id: "venue-320-portrait", width: 320, height: 568, orientation: "portrait" },
     { id: "venue-568-landscape", width: 568, height: 320, orientation: "landscape" }
+  ]);
+});
+
+test("remote guest visual regression covers 3, 5, and 8 long names at map edges", () => {
+  assert.deepEqual(remoteNameplateCrowdScenarios, [
+    { id: "left-edge-3", count: 3, edge: "left" },
+    { id: "right-edge-5", count: 5, edge: "right" },
+    { id: "bottom-edge-8", count: 8, edge: "bottom" }
+  ]);
+});
+
+test("remote guest crowd audit rejects clipping, overlap, wrapping, and inaccessible full names", () => {
+  const ready = {
+    id: "guest-1",
+    contained: true,
+    singleLine: true,
+    ellipsisReady: true,
+    fullNameAvailable: true,
+    rect: { x: 4, y: 4, width: 64, height: 18 }
+  };
+  assert.deepEqual(auditRemoteNameplateCrowd({ count: 1, labels: [ready] }), []);
+  assert.deepEqual(auditRemoteNameplateCrowd({
+    count: 2,
+    labels: [
+      { ...ready, contained: false, singleLine: false, ellipsisReady: false, fullNameAvailable: false },
+      { ...ready, id: "guest-2", rect: { x: 20, y: 4, width: 64, height: 18 } }
+    ]
+  }), [
+    "guest-1 맵 화면 이탈",
+    "guest-1 여러 줄 표시",
+    "guest-1 긴 이름 생략 실패",
+    "guest-1 전체 이름 접근 불가",
+    "guest-1/guest-2 이름표 겹침"
   ]);
 });
 

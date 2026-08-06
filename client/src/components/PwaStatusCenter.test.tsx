@@ -1,16 +1,28 @@
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { resetPwaClientForTests } from "../pwa/pwaClient";
+import { resetPwaClientForTests, startPwaClient } from "../pwa/pwaClient";
 import { PwaStatusCenter } from "./PwaStatusCenter";
 
 afterEach(() => {
   cleanup();
   resetPwaClientForTests();
+  Reflect.deleteProperty(navigator, "serviceWorker");
   Object.defineProperty(navigator, "onLine", { configurable: true, value: true });
   window.sessionStorage.clear();
 });
 
 describe("PwaStatusCenter", () => {
+  async function failOfflinePreparation() {
+    Object.defineProperty(navigator, "serviceWorker", {
+      configurable: true,
+      value: {
+        addEventListener: vi.fn(),
+        register: vi.fn(async () => { throw new Error("temporary registration failure"); })
+      }
+    });
+    await startPwaClient(true, "./");
+  }
+
   it("announces offline mode and then a recovered connection", () => {
     Object.defineProperty(navigator, "onLine", { configurable: true, value: true });
     render(<PwaStatusCenter playing={false} showInstall={false} />);
@@ -52,5 +64,24 @@ describe("PwaStatusCenter", () => {
 
     expect(screen.queryByText("웨딩 가든 설치")).not.toBeInTheDocument();
     expect(window.sessionStorage.getItem("wedding-garden:pwa-install-dismissed:v1")).toBe("true");
+  });
+
+  it("keeps an offline-save failure secondary to the usable invitation", async () => {
+    await failOfflinePreparation();
+    render(<PwaStatusCenter playing={false} showInstall />);
+
+    expect(screen.getByRole("status")).toHaveTextContent("오프라인 저장은 아직 준비 중이에요");
+    expect(screen.getByRole("status")).toHaveTextContent("초대장과 게임은 지금 그대로 이용할 수 있어요");
+    expect(screen.queryByText("연결 상태를 확인해 주세요")).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "오프라인 저장 안내 닫기" }));
+    expect(screen.queryByRole("status")).not.toBeInTheDocument();
+  });
+
+  it("does not overlay offline-save preparation errors while the guest is playing", async () => {
+    await failOfflinePreparation();
+    render(<PwaStatusCenter playing showInstall={false} />);
+
+    expect(screen.queryByRole("status")).not.toBeInTheDocument();
   });
 });

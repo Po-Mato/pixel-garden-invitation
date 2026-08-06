@@ -25,6 +25,9 @@ on:
       - "client/src/game/npcDialogue.ts"
       - "client/src/performance/**"
       - "client/src/device-performance.css"
+      - "client/src/**/*.css"
+      - "client/src/pwa/**"
+      - "client/vite.config.ts"
       - "client/src/map-visual-enhancements.css"
       - "client/src/game-navigation-enhancements.css"
       - "client/src/game-discovery-dashboard.css"
@@ -56,6 +59,9 @@ on:
       - "client/src/game/npcDialogue.ts"
       - "client/src/performance/**"
       - "client/src/device-performance.css"
+      - "client/src/**/*.css"
+      - "client/src/pwa/**"
+      - "client/vite.config.ts"
       - "client/src/map-visual-enhancements.css"
       - "client/src/game-navigation-enhancements.css"
       - "client/src/game-discovery-dashboard.css"
@@ -112,6 +118,13 @@ jobs:
           restore-keys: |
             world-geometry-policy-review-${{ runner.os }}-${{ github.base_ref || github.ref_name }}-
       - run: pnpm visual:test
+      - name: Build client for request-budget verification
+        run: pnpm --filter @wedding-game/client build
+        env:
+          VITE_WORKER_URL: https://example.invalid
+          VITE_INVITATION_ID: sample-garden
+      - name: Verify game CSS and font request budgets
+        run: pnpm performance:resource-budget
       - name: Render map foreground diagnostics
         run: pnpm maps:foreground-audit
       - name: Suggest foreground depth and collision geometry

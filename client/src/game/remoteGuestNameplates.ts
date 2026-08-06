@@ -10,6 +10,13 @@ export type RemoteGuestNameplatePlacement = {
   crowded: boolean;
 };
 
+export type RemoteGuestNameplateBounds = {
+  left: number;
+  right: number;
+  top: number;
+  bottom: number;
+};
+
 export const remoteGuestNameplateWidth = 64;
 export const remoteGuestNameplateHeight = 18;
 const nameplateGap = 4;
@@ -24,16 +31,20 @@ type NameplateRect = {
 };
 
 function candidateOffsets(count: number) {
-  const candidates = [{ x: 0, y: 0 }];
-  const rows = Math.max(1, Math.ceil(count / 3));
-
-  for (let row = 0; row < rows; row += 1) {
-    const y = row * verticalStep;
-    if (row > 0) candidates.push({ x: 0, y });
-    candidates.push({ x: -horizontalStep, y }, { x: horizontalStep, y });
-  }
-
-  return candidates;
+  const radius = Math.max(1, count);
+  return Array.from({ length: radius * 2 + 1 }, (_, rowIndex) => rowIndex - radius)
+    .flatMap((row) => Array.from(
+      { length: radius * 2 + 1 },
+      (_, columnIndex) => ({ column: columnIndex - radius, row })
+    ))
+    .sort((left, right) => (
+      Math.abs(left.column) + Math.abs(left.row)
+      - Math.abs(right.column) - Math.abs(right.row)
+      || Math.abs(left.row) - Math.abs(right.row)
+      || left.row - right.row
+      || left.column - right.column
+    ))
+    .map(({ column, row }) => ({ x: column * horizontalStep, y: row * verticalStep }));
 }
 
 function placementRect(guest: RemoteGuestNameplateSource, x: number, y: number): NameplateRect {
@@ -56,7 +67,19 @@ function intersects(left: NameplateRect, right: NameplateRect) {
   );
 }
 
-export function placeRemoteGuestNameplates(guests: readonly RemoteGuestNameplateSource[]) {
+function isInsideBounds(rect: NameplateRect, bounds: RemoteGuestNameplateBounds | undefined) {
+  return !bounds || (
+    rect.left >= bounds.left
+    && rect.right <= bounds.right
+    && rect.top >= bounds.top
+    && rect.bottom <= bounds.bottom
+  );
+}
+
+export function placeRemoteGuestNameplates(
+  guests: readonly RemoteGuestNameplateSource[],
+  bounds?: RemoteGuestNameplateBounds
+) {
   const placements = new Map<string, RemoteGuestNameplatePlacement>();
   const placedRects: NameplateRect[] = [];
   const candidates = candidateOffsets(guests.length);
@@ -64,7 +87,8 @@ export function placeRemoteGuestNameplates(guests: readonly RemoteGuestNameplate
   for (const guest of [...guests].sort((left, right) => left.guestId.localeCompare(right.guestId))) {
     const selected = candidates.find(({ x, y }) => {
       const rect = placementRect(guest, x, y);
-      return placedRects.every((placed) => !intersects(rect, placed));
+      return isInsideBounds(rect, bounds)
+        && placedRects.every((placed) => !intersects(rect, placed));
     }) ?? { x: 0, y: placedRects.length * verticalStep };
 
     placedRects.push(placementRect(guest, selected.x, selected.y));

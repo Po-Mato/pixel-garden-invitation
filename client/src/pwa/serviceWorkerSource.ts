@@ -222,6 +222,7 @@ async function removeZoneGroups(groups) {
 async function prepareOfflineCache() {
   const cache = await caches.open(PRECACHE_NAME);
   let completed = 0;
+  let failed = 0;
   await broadcast({ type: "PWA_CACHE_PROGRESS", completed, total: PRECACHE_URLS.length });
 
   for (const path of PRECACHE_URLS) {
@@ -232,13 +233,28 @@ async function prepareOfflineCache() {
       await cache.put(request, response);
       completed += 1;
       await broadcast({ type: "PWA_CACHE_PROGRESS", completed, total: PRECACHE_URLS.length });
-    } catch (error) {
-      await broadcast({ type: "PWA_CACHE_ERROR", path });
-      throw error;
+    } catch {
+      failed += 1;
     }
   }
 
-  await broadcast({ type: "PWA_CACHE_READY", total: PRECACHE_URLS.length });
+  await broadcast({
+    type: failed > 0 ? "PWA_CACHE_ERROR" : "PWA_CACHE_READY",
+    completed,
+    total: PRECACHE_URLS.length,
+    failed
+  });
+}
+
+async function reportOfflineCacheState() {
+  const matches = await Promise.all(PRECACHE_URLS.map((path) => caches.match(scopedUrl(path))));
+  const completed = matches.filter(Boolean).length;
+  await broadcast({
+    type: completed === PRECACHE_URLS.length ? "PWA_CACHE_READY" : "PWA_CACHE_ERROR",
+    completed,
+    total: PRECACHE_URLS.length,
+    failed: PRECACHE_URLS.length - completed
+  });
 }
 
 async function prepareFeatureCache() {
@@ -291,7 +307,7 @@ self.addEventListener("activate", (event) => {
       .filter((name) => name.startsWith(CACHE_PREFIX) && !currentCaches.has(name))
       .map((name) => caches.delete(name)));
     await self.clients.claim();
-    await broadcast({ type: "PWA_CACHE_READY", total: PRECACHE_URLS.length });
+    await reportOfflineCacheState();
     await reportFeatureCacheState();
   })());
 });
@@ -348,6 +364,10 @@ self.addEventListener("message", (event) => {
   }
   if (event.data?.type === "CACHE_GAME_FEATURES") {
     event.waitUntil(prepareFeatureCache());
+    return;
+  }
+  if (event.data?.type === "CACHE_CORE") {
+    event.waitUntil(prepareOfflineCache());
     return;
   }
   if (event.data?.type === "CACHE_ZONE_ASSETS") {

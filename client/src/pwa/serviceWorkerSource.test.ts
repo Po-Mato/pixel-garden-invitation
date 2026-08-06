@@ -59,6 +59,7 @@ describe("PWA service worker source", () => {
     expect(source).toContain('event.data?.type === "SKIP_WAITING"');
     expect(source).toContain('event.data?.type !== "CACHE_URLS"');
     expect(source).toContain('event.data?.type === "CACHE_GAME_FEATURES"');
+    expect(source).toContain('event.data?.type === "CACHE_CORE"');
     expect(source).toContain('event.data?.type === "CACHE_ZONE_ASSETS"');
     expect(source).toContain('event.data?.type === "PAUSE_ZONE_ASSETS"');
     expect(source).toContain('event.data?.type === "REMOVE_ZONE_ASSETS"');
@@ -69,6 +70,9 @@ describe("PWA service worker source", () => {
     expect(source).toContain("__offline-zone-version__");
     expect(source).toContain("cachedAt");
     expect(source).toContain('"PWA_FEATURE_CACHE_PROGRESS"');
+    expect(source).toContain("reportOfflineCacheState");
+    expect(source).toContain('type: failed > 0 ? "PWA_CACHE_ERROR" : "PWA_CACHE_READY"');
+    expect(source).not.toContain("throw error");
     expect(source).not.toContain("POST");
   });
 });

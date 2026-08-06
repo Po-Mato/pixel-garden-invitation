@@ -36,6 +36,8 @@ jobs:
         env:
           VITE_WORKER_URL: ${{ vars.VITE_WORKER_URL }}
           VITE_INVITATION_ID: ${{ vars.VITE_INVITATION_ID || 'sample-garden' }}
+      - name: Verify game CSS and font request budgets
+        run: pnpm performance:resource-budget
       - uses: actions/configure-pages@v6
       - uses: actions/upload-pages-artifact@v5
         with:

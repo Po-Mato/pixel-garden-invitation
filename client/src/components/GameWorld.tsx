@@ -298,7 +298,6 @@ import { GameQuickDock } from "./GameQuickDock";
 import { InvitationShareAccess } from "./InvitationShareAccess";
 import { JourneyCompletion } from "./JourneyCompletion";
 import { JourneyNextActionCard } from "./JourneyNextActionCard";
-import { JourneyMemoryCardAccess } from "./JourneyMemoryCardAccess";
 import type {
   JourneyRouteComparisonOption,
   JourneyRoutePreference
@@ -375,6 +374,7 @@ const loadViewSettingsAccessComponent = () => import("./ViewSettingsAccess");
 const loadGameSaveDataCenterComponent = () => import("./GameSaveDataCenter");
 const loadGameDeviceReadinessCenterComponent = () => import("./GameDeviceReadinessCenter");
 const loadWorldSecretMemorialComponent = () => import("./WorldSecretMemorial");
+const loadJourneyMemoryCardAccessComponent = () => import("./JourneyMemoryCardAccess");
 
 export async function preloadGameFeatureComponents() {
   await Promise.all([
@@ -389,7 +389,8 @@ export async function preloadGameFeatureComponents() {
     loadViewSettingsAccessComponent(),
     loadGameSaveDataCenterComponent(),
     loadGameDeviceReadinessCenterComponent(),
-    loadWorldSecretMemorialComponent()
+    loadWorldSecretMemorialComponent(),
+    loadJourneyMemoryCardAccessComponent()
   ]);
 }
 
@@ -440,6 +441,10 @@ const GameDeviceReadinessCenter = lazy(async () => {
 const WorldSecretMemorial = lazy(async () => {
   const module = await loadWorldSecretMemorialComponent();
   return { default: module.WorldSecretMemorial };
+});
+const JourneyMemoryCardAccess = lazy(async () => {
+  const module = await loadJourneyMemoryCardAccessComponent();
+  return { default: module.JourneyMemoryCardAccess };
 });
 
 function GameFeatureLoading({ label }: { label: string }) {
@@ -609,11 +614,11 @@ function moveGuest(guests: RoomGuest[], guestId: string, position: MoveMessage):
 }
 
 function realtimeStatusText(status: RealtimeStatus) {
-  if (status === "online") return "실시간 정원";
-  if (status === "full") return "실시간 만석 · 솔로 모드";
-  if (status === "reconnecting") return "실시간 재연결 중";
-  if (status === "connecting") return "실시간 연결 중";
-  return "오프라인 정원";
+  if (status === "online") return "같이 걷기 연결됨";
+  if (status === "full") return "같이 걷기 만석 · 혼자 둘러보기";
+  if (status === "reconnecting") return "같이 걷기 재연결 중 · 초대장 이용 가능";
+  if (status === "connecting") return "같이 걷기 연결 중 · 초대장 이용 가능";
+  return "같이 걷기 없이 둘러보기";
 }
 
 export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView }: GameWorldProps) {
@@ -4316,9 +4321,28 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
         .slice(0, renderBudget.remoteGuestLimit)
       : zoneRemoteGuests
   ), [position.x, position.y, renderBudget.remoteGuestLimit, zoneRemoteGuests]);
+  const remoteGuestNameplateBounds = useMemo(() => ({
+    left: Math.max(activeZone.bounds.x, -camera.x / camera.zoom) + 4,
+    right: Math.min(
+      activeZone.bounds.x + activeZone.bounds.width,
+      (viewport.width - camera.x) / camera.zoom
+    ) - 4,
+    top: Math.max(activeZone.bounds.y, -camera.y / camera.zoom) + 4,
+    bottom: Math.min(
+      activeZone.bounds.y + activeZone.bounds.height,
+      (viewport.height - camera.y) / camera.zoom
+    ) - Math.min(104, viewport.height * 0.22) / camera.zoom
+  }), [activeZone.bounds, camera.x, camera.y, camera.zoom, viewport.height, viewport.width]);
   const remoteGuestNameplates = useMemo(
-    () => placeRemoteGuestNameplates(visibleRemoteGuests),
-    [visibleRemoteGuests]
+    () => placeRemoteGuestNameplates(visibleRemoteGuests.filter((guest) => (
+      guest.x >= remoteGuestNameplateBounds.left - 64
+      && guest.x <= remoteGuestNameplateBounds.right + 64
+      && guest.y >= remoteGuestNameplateBounds.top - 18
+      && guest.y <= remoteGuestNameplateBounds.bottom
+        + Math.min(104, viewport.height * 0.22) / camera.zoom
+        + 18
+    )), remoteGuestNameplateBounds),
+    [camera.zoom, remoteGuestNameplateBounds, viewport.height, visibleRemoteGuests]
   );
   useEffect(() => {
     if (requiresExtendedGameTypography([
@@ -4902,7 +4926,9 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
                 disabled={Boolean(portalTransition)}
                 onSelectZone={handleJourneySelect}
               />
-              <JourneyMemoryCardAccess nickname={profile.nickname} progress={journeyProgress} />
+              <Suspense fallback={<GameInlineLoading label="추억 카드" />}>
+                <JourneyMemoryCardAccess nickname={profile.nickname} progress={journeyProgress} />
+              </Suspense>
               <Suspense fallback={<GameInlineLoading label="인연 기록" />}>
                 <NpcRelationshipJournal
                   memory={npcDialogueMemory}

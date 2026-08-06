@@ -3136,7 +3136,7 @@ describe("GameWorld", () => {
     act(() => socket.emit("open"));
     act(() => socket.emitJson({ type: "error", code: "room_full" }));
 
-    expect(screen.getByLabelText("실시간 만석 · 솔로 모드")).toBeInTheDocument();
+    expect(screen.getByLabelText("같이 걷기 만석 · 혼자 둘러보기")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "동네로 나가기" }));
     finishCurrentRoute();
     expect(screen.getByLabelText("동네 거리 지도")).toBeInTheDocument();

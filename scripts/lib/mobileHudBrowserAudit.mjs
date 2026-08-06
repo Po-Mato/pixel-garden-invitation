@@ -105,6 +105,12 @@ export const longVenueAuditProfiles = Object.freeze([
   { id: "venue-568-landscape", width: 568, height: 320, orientation: "landscape" }
 ]);
 
+export const remoteNameplateCrowdScenarios = Object.freeze([
+  { id: "left-edge-3", count: 3, edge: "left" },
+  { id: "right-edge-5", count: 5, edge: "right" },
+  { id: "bottom-edge-8", count: 8, edge: "bottom" }
+]);
+
 export const hudLongTextFixture = Object.freeze({
   zone: "MJ컨벤션 외부",
   destination: "지하철 오시는 길"
@@ -229,6 +235,29 @@ function overlapArea(left, right) {
   const width = Math.max(0, Math.min(left.x + left.width, right.x + right.width) - Math.max(left.x, right.x));
   const height = Math.max(0, Math.min(left.y + left.height, right.y + right.height) - Math.max(left.y, right.y));
   return width * height;
+}
+
+export function auditRemoteNameplateCrowd(report, overlapTolerance = 1) {
+  const issues = [];
+  if (report.labels.length !== report.count) {
+    issues.push(`이름표 수 불일치 ${report.labels.length}/${report.count}`);
+  }
+  report.labels.forEach((label) => {
+    if (!label.contained) issues.push(`${label.id} 맵 화면 이탈`);
+    if (!label.singleLine) issues.push(`${label.id} 여러 줄 표시`);
+    if (!label.ellipsisReady) issues.push(`${label.id} 긴 이름 생략 실패`);
+    if (!label.fullNameAvailable) issues.push(`${label.id} 전체 이름 접근 불가`);
+  });
+  for (let leftIndex = 0; leftIndex < report.labels.length; leftIndex += 1) {
+    for (let rightIndex = leftIndex + 1; rightIndex < report.labels.length; rightIndex += 1) {
+      const left = report.labels[leftIndex];
+      const right = report.labels[rightIndex];
+      if (overlapArea(left.rect, right.rect) > overlapTolerance) {
+        issues.push(`${left.id}/${right.id} 이름표 겹침`);
+      }
+    }
+  }
+  return issues;
 }
 
 export function auditWorldLabelRectangles(labels, overlapTolerance = 8) {
@@ -791,6 +820,153 @@ async function runWorldLabelZoneSweep({ browser, url, outputDir }) {
   };
 }
 
+async function runRemoteNameplateCrowdAudit({ browser, url, outputDir }) {
+  const context = await browser.newContext({
+    viewport: { width: 393, height: 852 },
+    hasTouch: true,
+    isMobile: true,
+    locale: "ko-KR",
+    colorScheme: "light",
+    reducedMotion: "reduce",
+    deviceScaleFactor: 3
+  });
+  const page = await context.newPage();
+  const reports = [];
+  await page.addInitScript(() => {
+    localStorage.setItem("wedding-game:entry-session:v1", JSON.stringify({
+      version: 1,
+      nickname: "이름표감사",
+      appearance: { presetId: "feminine-long-wave-dress" },
+      updatedAt: new Date().toISOString()
+    }));
+    localStorage.setItem("wedding-game:first-visit-guide:v1", JSON.stringify({
+      version: 1,
+      completed: true,
+      completedAt: new Date().toISOString()
+    }));
+  });
+  try {
+    await page.goto(url, { waitUntil: "domcontentloaded" });
+    const resumeGarden = page.locator(".entry-screen__resume-access");
+    if (await resumeGarden.isVisible().catch(() => false)) await resumeGarden.click();
+    await page.locator(".game-world").waitFor({ state: "visible" });
+    await page.locator(".world-map__stage--background-loaded").waitFor({ state: "visible", timeout: 15_000 });
+    await page.addStyleTag({ content: `
+      .remote-nameplate-audit-layer {
+        position: absolute;
+        inset: 0;
+        z-index: 90;
+        overflow: hidden;
+        pointer-events: none;
+      }
+      .remote-nameplate-audit-layer .remote-nameplate-audit-guest {
+        display: block;
+        width: 0;
+        height: 0;
+        transform: none !important;
+        transition: none !important;
+      }
+      .remote-nameplate-audit-layer .world-player__name {
+        position: absolute;
+        top: 0;
+        left: -32px;
+        width: 64px;
+        max-width: 64px;
+        transition: none !important;
+      }
+    ` });
+    for (const scenario of remoteNameplateCrowdScenarios) {
+      await page.evaluate(async ({ count, edge }) => {
+        document.querySelector(".remote-nameplate-audit-layer")?.remove();
+        const map = document.querySelector(".world-map");
+        if (!(map instanceof HTMLElement)) throw new Error("world map missing");
+        const width = map.clientWidth;
+        const height = map.clientHeight;
+        const anchor = edge === "left"
+          ? { x: 18, y: Math.round(height * 0.54) }
+          : edge === "right"
+            ? { x: width - 18, y: Math.round(height * 0.34) }
+            : { x: Math.round(width / 2), y: height - 22 };
+        const safeBottom = height - Math.min(104, height * 0.22);
+        const guests = Array.from({ length: count }, (_, index) => ({
+          guestId: `visual-edge-${index + 1}`,
+          x: anchor.x + (index % 2),
+          y: anchor.y + (index % 2)
+        }));
+        const module = await import("/src/game/remoteGuestNameplates.ts");
+        const placements = module.placeRemoteGuestNameplates(guests, {
+          left: 4,
+          right: width - 4,
+          top: 4,
+          bottom: safeBottom
+        });
+        const layer = document.createElement("div");
+        layer.className = "remote-nameplate-audit-layer";
+        layer.dataset.count = String(count);
+        layer.dataset.safeBottom = String(safeBottom);
+        for (const [index, guest] of guests.entries()) {
+          const placement = placements.get(guest.guestId);
+          const fullName = `모바일초대장긴하객이름${index + 1}`;
+          const owner = document.createElement("div");
+          owner.className = "world-player player player--remote remote-nameplate-audit-guest";
+          owner.dataset.auditGuestId = guest.guestId;
+          if (placement?.crowded) owner.dataset.nameplateCrowded = "true";
+          owner.style.left = `${guest.x}px`;
+          owner.style.top = `${guest.y}px`;
+          owner.style.setProperty("--remote-name-offset-x", `${placement?.x ?? 0}px`);
+          owner.style.setProperty("--remote-name-offset-y", `${placement?.y ?? 0}px`);
+          const name = document.createElement("span");
+          name.className = "world-player__name";
+          name.textContent = fullName;
+          name.title = fullName;
+          owner.append(name);
+          layer.append(owner);
+        }
+        map.append(layer);
+        await document.fonts.ready;
+      }, scenario);
+      await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+      const metrics = await page.evaluate(() => {
+        const layer = document.querySelector(".remote-nameplate-audit-layer");
+        if (!(layer instanceof HTMLElement)) throw new Error("nameplate audit layer missing");
+        const layerRect = layer.getBoundingClientRect();
+        const safeBottom = Number(layer.dataset.safeBottom) || layer.clientHeight;
+        const labels = [...layer.querySelectorAll(".world-player__name")].map((element) => {
+          const rect = element.getBoundingClientRect();
+          const style = getComputedStyle(element);
+          const owner = element.closest("[data-audit-guest-id]");
+          return {
+            id: owner?.getAttribute("data-audit-guest-id") ?? "unknown",
+            contained: rect.left >= layerRect.left - 1
+              && rect.right <= layerRect.right + 1
+              && rect.top >= layerRect.top - 1
+              && rect.bottom <= layerRect.top + safeBottom + 1,
+            singleLine: style.whiteSpace === "nowrap" && element.scrollHeight <= element.clientHeight + 1,
+            ellipsisReady: style.overflow === "hidden"
+              && style.textOverflow === "ellipsis"
+              && element.scrollWidth > element.clientWidth,
+            fullNameAvailable: element.title === element.textContent,
+            rect: { x: rect.x, y: rect.y, width: rect.width, height: rect.height }
+          };
+        });
+        return { labels, mapRect: { x: layerRect.x, y: layerRect.y, width: layerRect.width, height: layerRect.height } };
+      });
+      const report = { ...scenario, ...metrics };
+      const issues = auditRemoteNameplateCrowd(report);
+      const screenshotPath = path.join(outputDir, `remote-nameplates-${scenario.id}.png`);
+      await page.locator(".world-map").screenshot({ path: screenshotPath, scale: "css" });
+      reports.push({ ...report, issues, screenshotPath });
+    }
+  } finally {
+    await context.close();
+  }
+  return {
+    scenarios: remoteNameplateCrowdScenarios,
+    reports,
+    issues: reports.flatMap((report) => report.issues.map((issue) => `${report.id}: ${issue}`))
+  };
+}
+
 async function runMobileHudCollisionMatrix({ browser, url, outputDir }) {
   const reports = [];
   for (const profile of mobileHudCollisionMatrixProfiles) {
@@ -979,6 +1155,7 @@ export async function runMobileHudBrowserAudit({ rootDir, outputDir, port = 4178
     let typographyScaleAudit = { reports: [], issues: [], profiles: [] };
     let collisionMatrix = { reports: [], issues: [], profiles: [] };
     let longVenueAudit = { reports: [], issues: [], profiles: [] };
+    let remoteNameplateCrowd = { reports: [], issues: [], scenarios: [] };
     try {
       for (const viewport of mobileHudAuditViewports) {
         const engine = viewport.engine ?? "chromium";
@@ -1119,6 +1296,11 @@ export async function runMobileHudBrowserAudit({ rootDir, outputDir, port = 4178
         browser: await browserFor("chromium"),
         url
       });
+      remoteNameplateCrowd = await runRemoteNameplateCrowdAudit({
+        browser: await browserFor("chromium"),
+        url,
+        outputDir
+      });
     } finally {
       await Promise.all([...browsers.values()].map((browser) => browser.close()));
     }
@@ -1129,17 +1311,19 @@ export async function runMobileHudBrowserAudit({ rootDir, outputDir, port = 4178
       zoneLabelSweep,
       typographyScaleAudit,
       collisionMatrix,
-      longVenueAudit
+      longVenueAudit,
+      remoteNameplateCrowd
     }, null, 2)}\n`);
     const issues = [
       ...reports.flatMap((report) => report.issues.map((issue) => `${report.id}: ${issue}`)),
       ...zoneLabelSweep.issues,
       ...typographyScaleAudit.issues,
       ...collisionMatrix.issues,
-      ...longVenueAudit.issues
+      ...longVenueAudit.issues,
+      ...remoteNameplateCrowd.issues
     ];
     if (issues.length > 0) throw new Error(`Mobile HUD browser audit failed:\n${issues.join("\n")}`);
-    return { reports, zoneLabelSweep, typographyScaleAudit, collisionMatrix, longVenueAudit, reportPath };
+    return { reports, zoneLabelSweep, typographyScaleAudit, collisionMatrix, longVenueAudit, remoteNameplateCrowd, reportPath };
   } finally {
     server.kill("SIGTERM");
   }
