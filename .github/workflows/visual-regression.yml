@@ -123,8 +123,6 @@ jobs:
         env:
           VITE_WORKER_URL: https://example.invalid
           VITE_INVITATION_ID: sample-garden
-      - name: Verify game CSS and font request budgets
-        run: pnpm performance:resource-budget
       - name: Render map foreground diagnostics
         run: pnpm maps:foreground-audit
       - name: Suggest foreground depth and collision geometry
@@ -202,6 +200,8 @@ jobs:
       - name: Install mobile browser engines on cache miss
         if: steps.playwright-browser-cache.outputs.cache-hit != 'true'
         run: pnpm exec playwright install chromium webkit
+      - name: Verify game CSS and font request budgets
+        run: pnpm performance:resource-budget
       - name: Audit live mobile HUD screenshots
         run: pnpm visual:hud-browser
       - name: Audit map diagnostic screenshots
