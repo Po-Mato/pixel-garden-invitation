@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useId, useRef, useState, type KeyboardEvent as ReactKeyboardEvent } from "react";
 import { BookOpen, CalendarDays, ChevronRight, CircleHelp, Ellipsis, MapPin, RotateCcw, Sparkles } from "lucide-react";
 import {
   defaultCharacterAppearance,
@@ -70,6 +70,35 @@ export function EntryScreen({
   const [characterPickerOpen, setCharacterPickerOpen] = useState(false);
   const [puppetMotionEnabled, setPuppetMotionEnabled] = useState(false);
   const [characterReady, setCharacterReady] = useState(() => import.meta.env.MODE === "test");
+  const utilitiesId = useId();
+  const utilitiesButtonRef = useRef<HTMLButtonElement>(null);
+  const utilitiesMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!utilitiesOpen) return;
+    utilitiesMenuRef.current?.querySelector<HTMLElement>("button:not([disabled])")?.focus({ preventScroll: true });
+  }, [utilitiesOpen]);
+
+  const handleUtilityMenuKeyDown = (event: ReactKeyboardEvent<HTMLDivElement>) => {
+    const items = Array.from(utilitiesMenuRef.current?.querySelectorAll<HTMLElement>("button:not([disabled])") ?? []);
+    if (event.key === "Escape") {
+      event.preventDefault();
+      setUtilitiesOpen(false);
+      utilitiesButtonRef.current?.focus({ preventScroll: true });
+      return;
+    }
+    if (!["ArrowDown", "ArrowRight", "ArrowUp", "ArrowLeft", "Home", "End"].includes(event.key) || items.length === 0) return;
+    event.preventDefault();
+    const current = Math.max(0, items.indexOf(document.activeElement as HTMLElement));
+    const next = event.key === "Home"
+      ? 0
+      : event.key === "End"
+        ? items.length - 1
+        : event.key === "ArrowDown" || event.key === "ArrowRight"
+          ? (current + 1) % items.length
+          : (current - 1 + items.length) % items.length;
+    items[next].focus({ preventScroll: true });
+  };
 
   useEffect(() => {
     if (invitedGuest?.guestName) setNickname((current) => current || invitedGuest.guestName);
@@ -113,10 +142,13 @@ export function EntryScreen({
       </div>
       <nav className="entry-screen__utilities" aria-label="빠른 도구">
         <button
+          ref={utilitiesButtonRef}
           className="entry-screen__utility-button entry-screen__utility-button--more"
           type="button"
           aria-label={utilitiesOpen ? "도구 더보기 닫기" : "도구 더보기"}
           aria-expanded={utilitiesOpen}
+          aria-controls={utilitiesId}
+          aria-haspopup="true"
           title="도구 더보기"
           onClick={() => setUtilitiesOpen((current) => !current)}
         >
@@ -124,9 +156,12 @@ export function EntryScreen({
         </button>
         {utilitiesOpen ? (
           <div
+            ref={utilitiesMenuRef}
+            id={utilitiesId}
             className="entry-screen__utility-menu"
             role="group"
             aria-label="도움말·공유·설정"
+            onKeyDown={handleUtilityMenuKeyDown}
             onClickCapture={() => setUtilitiesOpen(false)}
           >
             <button

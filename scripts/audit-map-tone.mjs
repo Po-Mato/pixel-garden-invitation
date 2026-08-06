@@ -14,5 +14,7 @@ for (const report of result.reports) {
     + ` · 이동 ${report.weakestMovementEdgeContrast.toFixed(2)}:1`
     + ` (${report.weakestMovementCharacterPresetId}/${report.weakestMovementFrameId}, ${report.movementFrameCount}프레임)`
     + ` · 최소 라벨 ${Math.min(...Object.values(report.contrasts)).toFixed(2)}:1`
+    + ` · OLED ${report.displayProfiles.oled.weakestCharacterEdgeContrast.toFixed(2)}/${report.displayProfiles.oled.weakestMovementEdgeContrast.toFixed(2)}`
+    + ` · LCD ${report.displayProfiles.lcd.weakestCharacterEdgeContrast.toFixed(2)}/${report.displayProfiles.lcd.weakestMovementEdgeContrast.toFixed(2)}`
   );
 }

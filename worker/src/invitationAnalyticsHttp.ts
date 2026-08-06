@@ -36,9 +36,12 @@ const dimensionRules: Record<InvitationAnalyticsEventName, RegExp> = {
   page_load: /^(mobile|tablet|desktop)$/,
   client_error: /^(script|promise|resource)$/,
   character_asset_fallback: /^[a-z0-9-]{3,40}$/,
-  performance_fps: /^(standard|lite):(standard|memory|processor|network|frame-rate)$/,
+  performance_fps: /^(standard|lite):(standard|memory|processor|network|frame-rate|battery|background)$/,
   performance_long_task: /^(mobile|tablet|desktop)$/,
-  performance_quality_change: /^(standard|lite):(standard|memory|processor|network|frame-rate)$/,
+  performance_quality_change: /^(standard|lite):(standard|memory|processor|network|frame-rate|battery|background)$/,
+  quality_camera_center: /^(mobile|tablet|desktop):(interior|edge)$/,
+  quality_cls: /^(mobile|tablet|desktop)$/,
+  quality_long_frame: /^(mobile|tablet|desktop)$/,
   device_qa: /^(ios|android|other):(complete|warning|issue-(viewport|touch|storage|audio|movement|portal|feedback|layout|photo))$/
 };
 
@@ -67,6 +70,10 @@ function parseEvent(value: unknown): InvitationAnalyticsEvent | null {
   }
   if (name === "performance_fps") {
     if (!Number.isInteger(value.value) || (value.value as number) < 1 || (value.value as number) > 120) return null;
+    return { name, dimension: value.dimension, value: value.value as number };
+  }
+  if (name === "quality_camera_center" || name === "quality_cls" || name === "quality_long_frame") {
+    if (!Number.isInteger(value.value) || (value.value as number) < 0 || (value.value as number) > 1_000) return null;
     return { name, dimension: value.dimension, value: value.value as number };
   }
   if (value.value !== undefined) return null;

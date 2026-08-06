@@ -11,9 +11,13 @@
   --game-gold: #ad8a54;
   --game-line: rgba(83, 65, 67, 0.2);
   --game-surface: rgba(255, 253, 248, 0.97);
+  --display-copy-weight: 600;
+  --display-title-weight: 650;
+  --display-label-weight: 750;
   color: var(--game-ink);
   font-family: var(--game-font-ui);
   font-synthesis: none;
+  font-optical-sizing: auto;
 }
 
 .world-hud {
@@ -27,7 +31,7 @@
 .world-zone-summary > span {
   color: var(--game-wine);
   font-size: 8px;
-  font-weight: 750;
+  font-weight: var(--display-label-weight);
   letter-spacing: 0.09em;
 }
 
@@ -35,14 +39,14 @@
   color: var(--game-ink);
   font-family: var(--game-font-display);
   font-size: 17px;
-  font-weight: 650;
+  font-weight: var(--display-title-weight);
   letter-spacing: -0.025em;
 }
 
 .world-zone-summary small {
   color: var(--game-muted);
   font-size: 10px;
-  font-weight: 600;
+  font-weight: var(--display-copy-weight);
   letter-spacing: -0.01em;
 }
 

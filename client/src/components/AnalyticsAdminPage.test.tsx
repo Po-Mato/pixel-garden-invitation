@@ -35,7 +35,10 @@ function result(): InvitationAnalyticsAdminResponse {
       guestbookViews: 6, guestbookMessages: 3, galleryViews: 8, galleryZooms: 5,
       clientErrors: 1, characterAssetFallbacks: 2, pageLoadSamples: 10, averagePageLoadMs: 1400,
       fpsSamples: 4, averageFps: 54, longTaskCount: 2, averageLongTaskMs: 82,
-      qualityDowngrades: 1, qualityRecoveries: 1, deviceQaReports: 8, deviceQaIssues: 2
+      qualityDowngrades: 1, qualityRecoveries: 1,
+      cameraCenterSamples: 4, averageCameraCenterErrorPx: 0.5,
+      clsSamples: 5, averageCls: 0.012, longFrameSamples: 3, averageLongFrameMs: 64,
+      deviceQaReports: 8, deviceQaIssues: 2
     },
     performance: {
       mode: "adaptive",

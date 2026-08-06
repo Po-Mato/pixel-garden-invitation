@@ -221,7 +221,8 @@ async function removeZoneGroups(groups) {
   }
 }
 
-async function prepareOfflineCache() {
+async function prepareOfflineCache(options = {}) {
+  const atomic = options.atomic === true;
   const cache = await caches.open(PRECACHE_NAME);
   let completed = 0;
   let failed = 0;
@@ -246,6 +247,11 @@ async function prepareOfflineCache() {
     total: PRECACHE_URLS.length,
     failed
   });
+
+  if (failed > 0 && atomic) {
+    await caches.delete(PRECACHE_NAME);
+    throw new Error(\`PWA core precache incomplete: ${"${completed}"}/${"${PRECACHE_URLS.length}"}\`);
+  }
 }
 
 async function reportOfflineCacheState() {
@@ -295,7 +301,7 @@ async function reportFeatureCacheState() {
 
 self.addEventListener("install", (event) => {
   event.waitUntil((async () => {
-    await prepareOfflineCache();
+    await prepareOfflineCache({ atomic: true });
     await prepareFeatureCache();
     if (!self.registration.active) await self.skipWaiting();
   })());

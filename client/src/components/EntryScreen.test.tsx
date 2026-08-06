@@ -70,10 +70,18 @@ describe("EntryScreen", () => {
     expect(screen.getByRole("heading", { name: "이승재 & 이건희의 정원" })).toBeInTheDocument();
   });
 
-  it("빠른 도구의 도움말 아이콘에서 예식 상세를 연다", () => {
+  it("빠른 도구를 읽기 순서대로 열고 Escape로 트리거에 돌아간다", () => {
     render(<EntryScreen onEnter={vi.fn()} />);
 
-    fireEvent.click(screen.getByRole("button", { name: "도구 더보기" }));
+    const trigger = screen.getByRole("button", { name: "도구 더보기" });
+    fireEvent.click(trigger);
+    const help = screen.getByRole("button", { name: "예식 도움말" });
+    expect(trigger).toHaveAttribute("aria-controls");
+    expect(help).toHaveFocus();
+    fireEvent.keyDown(help, { key: "Escape" });
+    expect(trigger).toHaveFocus();
+
+    fireEvent.click(trigger);
     fireEvent.click(screen.getByRole("button", { name: "예식 도움말" }));
 
     expect(screen.getByRole("dialog", { name: "예식 정보" })).toBeInTheDocument();

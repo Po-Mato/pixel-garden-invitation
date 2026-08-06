@@ -47,7 +47,10 @@ describe("invitation analytics HTTP", () => {
         guestbookViews: 0, guestbookMessages: 0, galleryViews: 0, galleryZooms: 0,
         clientErrors: 0, characterAssetFallbacks: 0, pageLoadSamples: 0, averagePageLoadMs: null,
         fpsSamples: 0, averageFps: null, longTaskCount: 0, averageLongTaskMs: null,
-        qualityDowngrades: 0, qualityRecoveries: 0, deviceQaReports: 0, deviceQaIssues: 0
+        qualityDowngrades: 0, qualityRecoveries: 0,
+        cameraCenterSamples: 0, averageCameraCenterErrorPx: null,
+        clsSamples: 0, averageCls: null, longFrameSamples: 0, averageLongFrameMs: null,
+        deviceQaReports: 0, deviceQaIssues: 0
       },
       daily: [],
       breakdowns: { devices: [], modes: [], maps: [], shares: [], calendars: [], qualityModes: [], characterFallbacks: [], deviceQaDevices: [], deviceQaIssues: [] },
@@ -91,6 +94,10 @@ describe("invitation analytics HTTP", () => {
           { name: "visit", dimension: "entry:new:mobile" },
           { name: "page_load", dimension: "mobile", value: 900 },
           { name: "character_asset_fallback", dimension: "feminine-teal-modern-hanbok" },
+          { name: "quality_camera_center", dimension: "mobile:interior", value: 1 },
+          { name: "quality_cls", dimension: "mobile", value: 12 },
+          { name: "quality_long_frame", dimension: "mobile", value: 64 },
+          { name: "performance_quality_change", dimension: "lite:battery" },
           { name: "device_qa", dimension: "ios:warning" },
           { name: "device_qa", dimension: "ios:issue-layout" }
         ] })
@@ -110,6 +117,8 @@ describe("invitation analytics HTTP", () => {
       { name: "map_click", dimension: "unknown" },
       { name: "page_load", dimension: "mobile", value: 60_001 },
       { name: "character_asset_fallback", dimension: "../../secrets" },
+      { name: "quality_camera_center", dimension: "mobile:unknown", value: 1 },
+      { name: "quality_cls", dimension: "mobile", value: 1_001 },
       { name: "device_qa", dimension: "ios:issue-free-text" }
     ]) {
       const response = await handlePublicInvitationAnalyticsRequest(new Request("https://worker.test", {

@@ -1,8 +1,10 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
+  calibratedLabelContrasts,
   characterEdgeShadowsFromCss,
   contrastRatio,
+  displayCalibrationProfiles,
   evaluateMapToneMetrics,
   mapToneCharacterPositions,
   relativeLuminance
@@ -13,10 +15,16 @@ const thresholds = {
   minDynamicRange: 0.16,
   minTextContrast: 4.5,
   minCharacterEdgeContrast: 1.2,
+  minDisplayCharacterEdgeContrast: 1.1,
   maxCharacterEdgeContrastDelta: 0.15
 };
 
 test("map tone audit accepts a stable exposure with readable labels", () => {
+  const displayProfiles = Object.fromEntries(Object.entries(displayCalibrationProfiles).map(([id, profile]) => [id, {
+    contrasts: calibratedLabelContrasts({ sceneP90Luminance: 0.79 }, profile.adjustLuminance),
+    characterEdgeContrasts: { "guest-a": 1.4 },
+    characterMovementEdgeContrasts: { "guest-a": { "down-0": 1.35 } }
+  }]));
   const metrics = {
     averageLuminance: 0.5,
     p10Luminance: 0.2,
@@ -25,7 +33,8 @@ test("map tone audit accepts a stable exposure with readable labels", () => {
     sceneP10Luminance: 0.19,
     sceneP90Luminance: 0.79,
     characterEdgeContrast: 1.4,
-    foregroundAssetCount: 2
+    foregroundAssetCount: 2,
+    displayProfiles
   };
   const result = evaluateMapToneMetrics(metrics, metrics, thresholds);
   assert.deepEqual(result.issues, []);
@@ -188,4 +197,12 @@ test("relative luminance produces the expected black-white contrast", () => {
   assert.equal(relativeLuminance([0, 0, 0]), 0);
   assert.equal(relativeLuminance([255, 255, 255]), 1);
   assert.equal(contrastRatio(0, 1), 21);
+});
+
+test("OLED와 LCD 보정 모델에서도 밝기 순서와 라벨 가독성을 유지한다", () => {
+  for (const profile of Object.values(displayCalibrationProfiles)) {
+    assert.ok(profile.adjustLuminance(0.8) > profile.adjustLuminance(0.1));
+    const contrasts = calibratedLabelContrasts({ sceneP90Luminance: 0.8 }, profile.adjustLuminance);
+    assert.ok(Math.min(...Object.values(contrasts)) >= 4.5);
+  }
 });

@@ -26,6 +26,8 @@ import {
 } from "@wedding-game/shared";
 import { shouldReduceMotion } from "../accessibility/viewPreferences";
 import { speakRouteVoiceMessage } from "../accessibility/routeVoiceGuidance";
+import { useModalDialogFocus } from "../accessibility/useModalDialogFocus";
+import { trackCameraCenterQuality } from "../analytics/invitationAnalytics";
 import { resolveCharacterPortraitUrl } from "../character/assets";
 import { resolveWorldCharacterAnchor, worldCharacterAnchorStyle } from "../character/worldAnchor";
 import {
@@ -892,6 +894,8 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   const mapViewportRef = useRef<HTMLDivElement | null>(null);
   const mapStageRef = useRef<HTMLDivElement | null>(null);
   const menuButtonRef = useRef<HTMLButtonElement | null>(null);
+  const menuDialogRef = useRef<HTMLElement | null>(null);
+  const menuTitleRef = useRef<HTMLHeadingElement | null>(null);
   const menuCloseButtonRef = useRef<HTMLButtonElement | null>(null);
   const restoreMenuButtonFocusRef = useRef(false);
   const activeZoneIdRef = useRef<WorldZoneId>(initialZone.id);
@@ -983,6 +987,45 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     window.addEventListener(runtimeProtectionEventName, handleRuntimeProtection);
     return () => window.removeEventListener(runtimeProtectionEventName, handleRuntimeProtection);
   }, []);
+
+  useEffect(() => {
+    if (loadedBackgroundZoneId !== activeZone.id || portalTransition) return;
+    const timer = window.setTimeout(() => {
+      const map = mapViewportRef.current;
+      const stage = mapStageRef.current;
+      const player = stage?.querySelector<HTMLElement>(".world-player:not(.player--remote)");
+      const sprite = player?.querySelector<HTMLElement>(".character-sprite--world");
+      if (!map || !stage || !player || !sprite || motionStore.getSnapshot().moving) return;
+      const mapRect = map.getBoundingClientRect();
+      const spriteRect = sprite.getBoundingClientRect();
+      if (mapRect.width <= 0 || mapRect.height <= 0 || spriteRect.width <= 0 || spriteRect.height <= 0) return;
+
+      const playerStyle = getComputedStyle(player);
+      const centerOffsetX = Number.parseFloat(playerStyle.getPropertyValue("--character-world-anchor-offset-x")) || 0;
+      const centerY = Number.parseFloat(playerStyle.getPropertyValue("--character-world-anchor-y")) || spriteRect.height / 2;
+      const visualCenter = {
+        x: spriteRect.x + spriteRect.width / 2 + centerOffsetX * camera.zoom,
+        y: spriteRect.y + centerY * camera.zoom
+      };
+      const viewportCenter = { x: mapRect.x + mapRect.width / 2, y: mapRect.y + mapRect.height / 2 };
+      const scaledWidth = activeZone.bounds.width * camera.zoom;
+      const scaledHeight = activeZone.bounds.height * camera.zoom;
+      const centerable = {
+        x: scaledWidth > mapRect.width + 1
+          && camera.x < -0.5
+          && camera.x > mapRect.width - scaledWidth + 0.5,
+        y: scaledHeight > mapRect.height + 1
+          && camera.y < -0.5
+          && camera.y > mapRect.height - scaledHeight + 0.5
+      };
+      const error = Math.hypot(
+        centerable.x ? visualCenter.x - viewportCenter.x : 0,
+        centerable.y ? visualCenter.y - viewportCenter.y : 0
+      );
+      trackCameraCenterQuality(error, centerable.x || centerable.y ? "interior" : "edge");
+    }, 400);
+    return () => window.clearTimeout(timer);
+  }, [activeZone.id, loadedBackgroundZoneId, portalTransition, viewport.height, viewport.width]);
 
   useEffect(() => {
     pendingJourneyGuideIdRef.current = pendingJourneyGuideId;
@@ -1748,6 +1791,22 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     setPhotoAlbumOpen(false);
     setMenuOpen(false);
   }, []);
+
+  useModalDialogFocus({
+    open: menuOpen,
+    dialogRef: menuDialogRef,
+    initialFocusRef: menuTitleRef,
+    returnFocusRef: menuButtonRef,
+    onEscape: closeMenu,
+    suspended: nestedMenuSheetOpen,
+    lockBody: true
+  });
+
+  useEffect(() => {
+    const dialog = menuDialogRef.current;
+    if (!dialog) return;
+    dialog.toggleAttribute("inert", nestedMenuSheetOpen);
+  }, [menuOpen, nestedMenuSheetOpen]);
 
   const sendMoveImmediately = useCallback((connection: RealtimeConnection, message: MoveMessage) => {
     if (!currentGuestIdRef.current) return;
@@ -2660,20 +2719,6 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     observer.observe(element);
     return () => observer.disconnect();
   }, [activeZoneId]);
-
-  useEffect(() => {
-    if (!menuOpen) return;
-    menuCloseButtonRef.current?.focus();
-  }, [menuOpen]);
-
-  useEffect(() => {
-    if (!menuOpen) return;
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape" && !nestedMenuSheetOpen) closeMenu();
-    };
-    document.addEventListener("keydown", handleEscape);
-    return () => document.removeEventListener("keydown", handleEscape);
-  }, [closeMenu, menuOpen, nestedMenuSheetOpen]);
 
   useEffect(() => {
     if (!stampedCheckpointId) return;
@@ -5798,16 +5843,20 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
           <button
             type="button"
             className="world-menu-backdrop"
-            aria-label="초대장 메뉴 닫기"
+            aria-hidden="true"
+            tabIndex={-1}
             style={{ zIndex: nestedMenuSheetOpen ? 8 : undefined }}
             onClick={closeMenu}
           />
           <section
+            ref={menuDialogRef}
             className="world-menu-sheet"
             role="dialog"
             aria-modal="true"
-            aria-label="초대장 바로가기"
+            aria-labelledby="world-menu-title"
+            aria-describedby="world-menu-description"
             aria-hidden={nestedMenuSheetOpen || undefined}
+            tabIndex={-1}
             style={{ zIndex: nestedMenuSheetOpen ? 9 : undefined }}
             onClickCapture={(event) => {
               if (event.target instanceof Element) {
@@ -5816,9 +5865,10 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
             }}
           >
             <header className="world-menu-sheet__header">
-              <div><span>WEDDING MENU</span><h2>초대장 바로가기</h2></div>
+              <div><span>WEDDING MENU</span><h2 ref={menuTitleRef} id="world-menu-title" tabIndex={-1}>초대장 바로가기</h2></div>
               <button ref={menuCloseButtonRef} type="button" aria-label="초대장 메뉴 닫기" onClick={closeMenu}>×</button>
             </header>
+            <p id="world-menu-description" className="sr-only">예식 정보와 자주 찾는 초대장 항목을 순서대로 확인할 수 있습니다.</p>
             <WeddingEventSummary
               variant="detail"
               weddingDayPreview={weddingDayPreview}

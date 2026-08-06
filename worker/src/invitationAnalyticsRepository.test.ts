@@ -44,6 +44,7 @@ function testDatabase(): { sqlite: SqliteDatabase; db: D1Database } {
   sqlite.exec(readFileSync(new URL("../migrations/0012_invitation_analytics.sql", import.meta.url), "utf8"));
   sqlite.exec(readFileSync(new URL("../migrations/0020_device_qa_analytics.sql", import.meta.url), "utf8"));
   sqlite.exec(readFileSync(new URL("../migrations/0023_character_asset_fallback_analytics.sql", import.meta.url), "utf8"));
+  sqlite.exec(readFileSync(new URL("../migrations/0024_anonymous_experience_quality.sql", import.meta.url), "utf8"));
 
   const prepare = (sql: string) => ({
     bind: (...values: unknown[]) => ({
@@ -84,6 +85,9 @@ describe("invitation analytics repository", () => {
         { name: "share_click", dimension: "copy" },
         { name: "page_load", dimension: "mobile", value: 1200 },
         { name: "character_asset_fallback", dimension: "feminine-teal-modern-hanbok" },
+        { name: "quality_camera_center", dimension: "mobile:interior", value: 1 },
+        { name: "quality_cls", dimension: "mobile", value: 12 },
+        { name: "quality_long_frame", dimension: "mobile", value: 64 },
         { name: "device_qa", dimension: "android:warning" },
         { name: "device_qa", dimension: "android:issue-portal" }
       ], new Date("2026-07-21T16:00:00.000Z"));
@@ -110,6 +114,12 @@ describe("invitation analytics repository", () => {
         shareClicks: 1,
         averagePageLoadMs: 1200,
         characterAssetFallbacks: 1,
+        cameraCenterSamples: 1,
+        averageCameraCenterErrorPx: 1,
+        clsSamples: 1,
+        averageCls: 0.012,
+        longFrameSamples: 1,
+        averageLongFrameMs: 64,
         deviceQaReports: 1,
         deviceQaIssues: 1
       });
@@ -126,7 +136,7 @@ describe("invitation analytics repository", () => {
       }]);
       expect(result?.breakdowns.deviceQaDevices).toEqual([{ key: "android:warning", count: 1 }]);
       expect(result?.breakdowns.deviceQaIssues).toEqual([{ key: "android:portal", count: 1 }]);
-      expect(sqlite.prepare("SELECT COUNT(*) AS count FROM invitation_analytics_daily").get()).toEqual({ count: 10 });
+      expect(sqlite.prepare("SELECT COUNT(*) AS count FROM invitation_analytics_daily").get()).toEqual({ count: 13 });
     } finally {
       sqlite.close();
     }

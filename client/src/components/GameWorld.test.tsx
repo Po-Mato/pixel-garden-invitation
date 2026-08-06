@@ -688,8 +688,14 @@ describe("GameWorld", () => {
 
   it("opens invitation content without teleporting to its map", () => {
     render(<GameWorld profile={profile} />);
-    fireEvent.click(screen.getByRole("button", { name: "초대장 메뉴" }));
+    const menuTrigger = screen.getByRole("button", { name: "초대장 메뉴" });
+    fireEvent.click(menuTrigger);
     const menu = screen.getByRole("dialog", { name: "초대장 바로가기" });
+    expect(screen.getByRole("heading", { name: "초대장 바로가기" })).toHaveFocus();
+    expect(menu).toHaveAccessibleDescription("예식 정보와 자주 찾는 초대장 항목을 순서대로 확인할 수 있습니다.");
+    expect(document.querySelector(".world-menu-backdrop")).toHaveAttribute("tabindex", "-1");
+    fireEvent.keyDown(screen.getByRole("heading", { name: "초대장 바로가기" }), { key: "Tab", shiftKey: true });
+    expect(within(menu).getByRole("button", { name: "초대장 공유" })).toHaveFocus();
     fireEvent.click(within(menu).getByRole("button", { name: "축하 쓰기" }));
 
     expect(screen.getByRole("dialog")).toHaveTextContent("축하 메시지");
@@ -1536,9 +1542,10 @@ describe("GameWorld", () => {
     render(<GameWorld profile={profile} />);
     fireEvent.click(screen.getByRole("button", { name: "초대장 메뉴" }));
     const menu = screen.getByRole("dialog", { name: "초대장 바로가기" });
+    const closeButton = within(menu).getByRole("button", { name: "초대장 메뉴 닫기" });
     fireEvent.click(within(menu).getByRole("button", { name: "캘린더 저장" }));
 
-    fireEvent.click(screen.getByRole("button", { name: "초대장 메뉴 닫기" }));
+    fireEvent.click(closeButton);
 
     expect(screen.queryByRole("dialog", { name: "캘린더 저장" })).not.toBeInTheDocument();
     expect(screen.queryByRole("dialog", { name: "초대장 바로가기" })).not.toBeInTheDocument();

@@ -81,8 +81,10 @@ describe("PWA service worker source", () => {
     expect(source).toContain('"PWA_FEATURE_CACHE_PROGRESS"');
     expect(source).toContain("reportOfflineCacheState");
     expect(source).toContain("ignoreVary: true");
+    expect(source).toContain("prepareOfflineCache({ atomic: true })");
+    expect(source).toContain("await caches.delete(PRECACHE_NAME)");
+    expect(source).toContain("PWA core precache incomplete");
     expect(source).toContain('type: failed > 0 ? "PWA_CACHE_ERROR" : "PWA_CACHE_READY"');
-    expect(source).not.toContain("throw error");
     expect(source).not.toContain("POST");
   });
 });

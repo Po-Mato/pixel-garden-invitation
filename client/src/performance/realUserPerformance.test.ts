@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { createFpsSampler, observeLongTasks } from "./realUserPerformance";
+import { createFpsSampler, createPageQualityAccumulator, observeLongTasks } from "./realUserPerformance";
 
 describe("realUserPerformance", () => {
   it("연속 프레임의 평균 FPS를 제한된 값으로 보고한다", () => {
@@ -34,5 +34,16 @@ describe("realUserPerformance", () => {
     expect(durations).toEqual([81]);
     stop();
     expect(disconnect).toHaveBeenCalled();
+  });
+});
+
+describe("page quality accumulator", () => {
+  it("사용자 입력 직후 이동을 제외한 CLS와 긴 프레임 p95만 익명 요약한다", () => {
+    const accumulator = createPageQualityAccumulator();
+    accumulator.addLayoutShift(0.08);
+    accumulator.addLayoutShift(0.5, true);
+    [51, 70, 95, 1_500].forEach((duration) => accumulator.addFrame(duration));
+    expect(accumulator.flush()).toEqual({ cumulativeLayoutShiftMilli: 80, longFrameP95Ms: 95 });
+    expect(accumulator.flush()).toEqual({ cumulativeLayoutShiftMilli: 0, longFrameP95Ms: null });
   });
 });

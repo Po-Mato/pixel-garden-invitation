@@ -1,6 +1,6 @@
-import { useEffect, useId, useRef, type ReactNode } from "react";
+import { useId, useRef, type ReactNode } from "react";
 import { createPortal } from "react-dom";
-import { isolateAppForModal } from "../accessibility/modalIsolation";
+import { useModalDialogFocus } from "../accessibility/useModalDialogFocus";
 
 type BottomSheetProps = {
   title: string;
@@ -9,101 +9,27 @@ type BottomSheetProps = {
   className?: string;
 };
 
-const focusableSelector = [
-  "a[href]",
-  "button:not([disabled])",
-  "input:not([disabled])",
-  "select:not([disabled])",
-  "textarea:not([disabled])",
-  "[tabindex]:not([tabindex='-1'])"
-].join(",");
-
-function getFocusableElements(container: HTMLElement) {
-  return Array.from(container.querySelectorAll<HTMLElement>(focusableSelector)).filter(
-    (element) => element.tabIndex >= 0 && element.getAttribute("aria-hidden") !== "true"
-  );
-}
-
 export function BottomSheet({ title, onClose, children, className = "" }: BottomSheetProps) {
   const titleId = useId();
+  const descriptionId = useId();
   const dialogRef = useRef<HTMLElement>(null);
-  const closeButtonRef = useRef<HTMLButtonElement>(null);
-  const onCloseRef = useRef(onClose);
+  const titleRef = useRef<HTMLHeadingElement>(null);
 
-  useEffect(() => {
-    onCloseRef.current = onClose;
-  }, [onClose]);
-
-  useEffect(() => {
-    const previouslyFocused = document.activeElement instanceof HTMLElement ? document.activeElement : null;
-    const previousOverflow = document.body.style.overflow;
-
-    closeButtonRef.current?.focus();
-    const restoreApp = isolateAppForModal();
-    document.body.style.overflow = "hidden";
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        onCloseRef.current();
-        return;
-      }
-
-      if (event.key !== "Tab") {
-        return;
-      }
-
-      const dialog = dialogRef.current;
-
-      if (!dialog) {
-        return;
-      }
-
-      const focusableElements = getFocusableElements(dialog);
-
-      if (focusableElements.length === 0) {
-        event.preventDefault();
-        dialog.focus();
-        return;
-      }
-
-      const firstElement = focusableElements[0];
-      const lastElement = focusableElements[focusableElements.length - 1];
-      const activeElement = document.activeElement;
-
-      if (!dialog.contains(activeElement)) {
-        event.preventDefault();
-        (event.shiftKey ? lastElement : firstElement).focus();
-        return;
-      }
-
-      if (event.shiftKey && activeElement === firstElement) {
-        event.preventDefault();
-        lastElement.focus();
-        return;
-      }
-
-      if (!event.shiftKey && activeElement === lastElement) {
-        event.preventDefault();
-        firstElement.focus();
-      }
-    };
-
-    document.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-      document.body.style.overflow = previousOverflow;
-      restoreApp();
-      if (previouslyFocused?.isConnected) previouslyFocused.focus();
-    };
-  }, []);
+  useModalDialogFocus({
+    open: true,
+    dialogRef,
+    initialFocusRef: titleRef,
+    onEscape: onClose,
+    isolateApp: true
+  });
 
   return createPortal(
     <>
       <button
         type="button"
         className="sheet-backdrop"
-        aria-label={`${title} 닫기`}
+        aria-hidden="true"
+        tabIndex={-1}
         onClick={onClose}
       />
       <section
@@ -112,14 +38,16 @@ export function BottomSheet({ title, onClose, children, className = "" }: Bottom
         role="dialog"
         aria-modal={true}
         aria-labelledby={titleId}
+        aria-describedby={descriptionId}
         tabIndex={-1}
       >
         <header className="bottom-sheet__header">
-          <h2 id={titleId}>{title}</h2>
-          <button ref={closeButtonRef} type="button" aria-label="닫기" onClick={onClose}>
+          <h2 ref={titleRef} id={titleId} tabIndex={-1}>{title}</h2>
+          <button type="button" aria-label="닫기" onClick={onClose}>
             닫기
           </button>
         </header>
+        <p id={descriptionId} className="sr-only">{title} 창입니다. 닫기 버튼 다음에 주요 내용이 이어집니다.</p>
         <div className="bottom-sheet__body">{children}</div>
       </section>
     </>,

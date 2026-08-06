@@ -213,6 +213,12 @@ export async function getInvitationAnalytics(
     averageLongTaskMs: null,
     qualityDowngrades: 0,
     qualityRecoveries: 0,
+    cameraCenterSamples: 0,
+    averageCameraCenterErrorPx: null,
+    clsSamples: 0,
+    averageCls: null,
+    longFrameSamples: 0,
+    averageLongFrameMs: null,
     deviceQaReports: 0,
     deviceQaIssues: 0
   };
@@ -228,6 +234,9 @@ export async function getInvitationAnalytics(
   let pageLoadValueSum = 0;
   let fpsValueSum = 0;
   let longTaskValueSum = 0;
+  let cameraCenterValueSum = 0;
+  let clsValueSum = 0;
+  let longFrameValueSum = 0;
 
   for (const row of analytics.results) {
     const item = daily.get(row.local_date);
@@ -296,6 +305,18 @@ export async function getInvitationAnalytics(
         if (row.dimension.startsWith("lite:")) totals.qualityDowngrades += count;
         else totals.qualityRecoveries += count;
         break;
+      case "quality_camera_center":
+        totals.cameraCenterSamples += count;
+        cameraCenterValueSum += row.value_sum;
+        break;
+      case "quality_cls":
+        totals.clsSamples += count;
+        clsValueSum += row.value_sum;
+        break;
+      case "quality_long_frame":
+        totals.longFrameSamples += count;
+        longFrameValueSum += row.value_sum;
+        break;
       case "device_qa": {
         const [device, result] = row.dimension.split(":");
         if (result?.startsWith("issue-")) {
@@ -328,6 +349,11 @@ export async function getInvitationAnalytics(
   }
   if (totals.fpsSamples > 0) totals.averageFps = Math.round(fpsValueSum / totals.fpsSamples);
   if (totals.longTaskCount > 0) totals.averageLongTaskMs = Math.round(longTaskValueSum / totals.longTaskCount);
+  if (totals.cameraCenterSamples > 0) {
+    totals.averageCameraCenterErrorPx = Math.round(cameraCenterValueSum / totals.cameraCenterSamples * 10) / 10;
+  }
+  if (totals.clsSamples > 0) totals.averageCls = Math.round(clsValueSum / totals.clsSamples) / 1_000;
+  if (totals.longFrameSamples > 0) totals.averageLongFrameMs = Math.round(longFrameValueSum / totals.longFrameSamples);
 
   return {
     range,

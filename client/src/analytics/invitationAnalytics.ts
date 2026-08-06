@@ -6,7 +6,7 @@ import {
   invitationAnalyticsEventsUrl,
   postInvitationAnalyticsEvents
 } from "../api/invitationAnalyticsApi";
-import { observeLongTasks } from "../performance/realUserPerformance";
+import { observeLongTasks, observePageQuality } from "../performance/realUserPerformance";
 
 export type AnalyticsContext = "entry" | "game" | "simple";
 type DeviceType = "mobile" | "tablet" | "desktop";
@@ -76,6 +76,15 @@ export function trackAnalyticsModeOpen(mode: "game" | "simple"): void {
   trackInvitationAnalytics("mode_open", mode);
 }
 
+export function trackCameraCenterQuality(errorPx: number, placement: "interior" | "edge"): void {
+  if (!Number.isFinite(errorPx)) return;
+  trackInvitationAnalytics(
+    "quality_camera_center",
+    `${deviceType()}:${placement}`,
+    Math.min(1_000, Math.max(0, Math.round(errorPx)))
+  );
+}
+
 export async function flushInvitationAnalytics(): Promise<void> {
   if (flushTimer !== null && typeof window !== "undefined") {
     window.clearTimeout(flushTimer);
@@ -130,10 +139,16 @@ export function startInvitationAnalytics(initialContext: AnalyticsContext): void
   window.addEventListener("unhandledrejection", () => {
     trackInvitationAnalytics("client_error", "promise");
   });
-  window.addEventListener("pagehide", flushWithBeacon);
   observeLongTasks((duration) => {
     trackInvitationAnalytics("performance_long_task", deviceType(), duration);
   });
+  observePageQuality(({ cumulativeLayoutShiftMilli, longFrameP95Ms }) => {
+    trackInvitationAnalytics("quality_cls", deviceType(), cumulativeLayoutShiftMilli);
+    if (longFrameP95Ms !== null) {
+      trackInvitationAnalytics("quality_long_frame", deviceType(), longFrameP95Ms);
+    }
+  });
+  window.addEventListener("pagehide", flushWithBeacon);
 
   if (document.readyState === "complete") window.setTimeout(reportPageLoad, 0);
   else window.addEventListener("load", reportPageLoad, { once: true });

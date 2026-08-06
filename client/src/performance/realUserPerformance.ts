@@ -64,3 +64,84 @@ export function observeLongTasks(
   observer.observe({ entryTypes: ["longtask"] });
   return () => observer.disconnect();
 }
+
+export type PageQualitySummary = {
+  cumulativeLayoutShiftMilli: number;
+  longFrameP95Ms: number | null;
+};
+
+export function createPageQualityAccumulator() {
+  let layoutShift = 0;
+  let longFrames: number[] = [];
+  return {
+    addLayoutShift(value: number, hadRecentInput = false) {
+      if (!hadRecentInput && Number.isFinite(value) && value > 0) layoutShift += value;
+    },
+    addFrame(durationMs: number) {
+      if (Number.isFinite(durationMs) && durationMs >= 50 && durationMs <= 1_000) {
+        longFrames.push(durationMs);
+        if (longFrames.length > 120) longFrames = longFrames.slice(-120);
+      }
+    },
+    flush(): PageQualitySummary {
+      const sorted = [...longFrames].sort((left, right) => left - right);
+      const longFrameP95Ms = sorted.length > 0
+        ? Math.round(sorted[Math.min(sorted.length - 1, Math.floor(sorted.length * 0.95))])
+        : null;
+      const summary = {
+        cumulativeLayoutShiftMilli: Math.min(1_000, Math.max(0, Math.round(layoutShift * 1_000))),
+        longFrameP95Ms
+      };
+      layoutShift = 0;
+      longFrames = [];
+      return summary;
+    }
+  };
+}
+
+type LayoutShiftEntry = PerformanceEntry & { value?: number; hadRecentInput?: boolean };
+
+export function observePageQuality(
+  onFlush: (summary: PageQualitySummary) => void,
+  source: {
+    Observer?: typeof PerformanceObserver;
+    requestFrame?: typeof requestAnimationFrame;
+    cancelFrame?: typeof cancelAnimationFrame;
+    addPageHide?: (listener: () => void) => void;
+    removePageHide?: (listener: () => void) => void;
+  } = {}
+): () => void {
+  const accumulator = createPageQualityAccumulator();
+  const Observer = source.Observer ?? (typeof PerformanceObserver === "undefined" ? undefined : PerformanceObserver);
+  let observer: PerformanceObserver | null = null;
+  if (Observer?.supportedEntryTypes?.includes("layout-shift")) {
+    observer = new Observer((list) => {
+      for (const entry of list.getEntries() as LayoutShiftEntry[]) {
+        accumulator.addLayoutShift(entry.value ?? 0, entry.hadRecentInput ?? false);
+      }
+    });
+    observer.observe({ entryTypes: ["layout-shift"] });
+  }
+
+  const requestFrame = source.requestFrame ?? (typeof requestAnimationFrame === "function" ? requestAnimationFrame : undefined);
+  const cancelFrame = source.cancelFrame ?? (typeof cancelAnimationFrame === "function" ? cancelAnimationFrame : undefined);
+  let frame = 0;
+  let previousAt: number | null = null;
+  const tick = (now: number) => {
+    if (previousAt !== null) accumulator.addFrame(now - previousAt);
+    previousAt = now;
+    frame = requestFrame?.(tick) ?? 0;
+  };
+  if (requestFrame) frame = requestFrame(tick);
+
+  const flush = () => onFlush(accumulator.flush());
+  const addPageHide = source.addPageHide ?? ((listener) => window.addEventListener("pagehide", listener));
+  const removePageHide = source.removePageHide ?? ((listener) => window.removeEventListener("pagehide", listener));
+  addPageHide(flush);
+
+  return () => {
+    observer?.disconnect();
+    if (frame && cancelFrame) cancelFrame(frame);
+    removePageHide(flush);
+  };
+}

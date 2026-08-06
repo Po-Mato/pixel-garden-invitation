@@ -16,10 +16,10 @@ it("closes from Escape and backdrop and restores trigger focus", () => {
     </BottomSheet>
   );
 
-  expect(screen.getByRole("button", { name: "닫기" })).toHaveFocus();
+  expect(screen.getByRole("heading", { name: "캘린더 저장" })).toHaveFocus();
   fireEvent.keyDown(document, { key: "Escape" });
   expect(onClose).toHaveBeenCalledTimes(1);
-  fireEvent.click(screen.getByRole("button", { name: "캘린더 저장 닫기" }));
+  fireEvent.click(screen.getByRole("button", { name: "닫기" }));
   expect(onClose).toHaveBeenCalledTimes(2);
 
   unmount();
@@ -35,6 +35,7 @@ it("renders its dialog in the document body portal", () => {
   );
 
   expect(screen.getByRole("dialog")).toHaveClass("calendar-sheet-test");
+  expect(screen.getByRole("dialog")).toHaveAccessibleDescription("캘린더 저장 창입니다. 닫기 버튼 다음에 주요 내용이 이어집니다.");
   expect(screen.getByRole("dialog").parentElement).toBe(document.body);
 });
 
@@ -71,6 +72,8 @@ it("열려 있는 동안 앱 배경을 비활성화하고 닫을 때 복구한�
   expect(appRoot).toHaveAttribute("aria-hidden", "true");
   expect(appRoot).toHaveAttribute("inert");
   expect(document.body.style.overflow).toBe("hidden");
+  expect(document.querySelector(".sheet-backdrop")).toHaveAttribute("aria-hidden", "true");
+  expect(document.querySelector(".sheet-backdrop")).toHaveAttribute("tabindex", "-1");
 
   unmount();
   expect(appRoot).not.toHaveAttribute("aria-hidden");

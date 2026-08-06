@@ -31,13 +31,41 @@ export function contrastRatio(first, second) {
   return (lighter + 0.05) / (darker + 0.05);
 }
 
+export const displayCalibrationProfiles = Object.freeze({
+  oled: {
+    label: "OLED",
+    adjustLuminance(value) {
+      const bounded = Math.max(0, Math.min(1, value));
+      return bounded < 0.08 ? bounded * 0.78 : Math.min(1, bounded ** 0.94);
+    }
+  },
+  lcd: {
+    label: "LCD",
+    adjustLuminance(value) {
+      return Math.max(0, Math.min(1, 0.025 + Math.max(0, Math.min(1, value)) * 0.91));
+    }
+  }
+});
+
+export function calibratedLabelContrasts(metrics, adjustLuminance = (value) => value) {
+  const portalInk = adjustLuminance(relativeLuminance([26, 39, 48]));
+  const portalText = adjustLuminance(relativeLuminance([248, 255, 255]));
+  const portalSurface = portalInk * 0.88 + adjustLuminance(metrics.sceneP90Luminance ?? metrics.p90Luminance) * 0.12;
+  return {
+    spot: contrastRatio(
+      adjustLuminance(relativeLuminance([52, 43, 45])),
+      adjustLuminance(relativeLuminance([255, 253, 248]))
+    ),
+    portal: contrastRatio(portalText, portalSurface),
+    npc: contrastRatio(
+      adjustLuminance(relativeLuminance([63, 53, 56])),
+      adjustLuminance(relativeLuminance([255, 253, 249]))
+    )
+  };
+}
+
 export function evaluateMapToneMetrics(metrics, expected, thresholds) {
-  const portalInk = relativeLuminance([26, 39, 48]);
-  const portalText = relativeLuminance([248, 255, 255]);
-  const portalSurface = portalInk * 0.88 + (metrics.sceneP90Luminance ?? metrics.p90Luminance) * 0.12;
-  const spotContrast = contrastRatio(relativeLuminance([52, 43, 45]), relativeLuminance([255, 253, 248]));
-  const npcContrast = contrastRatio(relativeLuminance([63, 53, 56]), relativeLuminance([255, 253, 249]));
-  const portalContrast = contrastRatio(portalText, portalSurface);
+  const contrasts = calibratedLabelContrasts(metrics);
   const issues = [];
 
   for (const key of [
@@ -144,11 +172,34 @@ export function evaluateMapToneMetrics(metrics, expected, thresholds) {
     Number.isFinite(expected.foregroundAssetCount)
     && metrics.foregroundAssetCount !== expected.foregroundAssetCount
   ) issues.push("합성 전경 수 불일치");
-  for (const [label, ratio] of [["스팟", spotContrast], ["포털", portalContrast], ["NPC", npcContrast]]) {
+  for (const [label, ratio] of [["스팟", contrasts.spot], ["포털", contrasts.portal], ["NPC", contrasts.npc]]) {
     if (ratio < thresholds.minTextContrast) issues.push(`${label} 라벨 대비 부족`);
   }
 
-  return { issues, contrasts: { spot: spotContrast, portal: portalContrast, npc: npcContrast } };
+  for (const [profileId, profile] of Object.entries(displayCalibrationProfiles)) {
+    const report = metrics.displayProfiles?.[profileId];
+    if (!report) {
+      issues.push(`${profile.label} 표시 보정 측정 누락`);
+      continue;
+    }
+    for (const [label, ratio] of Object.entries(report.contrasts ?? {})) {
+      if (ratio < thresholds.minTextContrast) issues.push(`${profile.label} ${label} 라벨 대비 부족`);
+    }
+    for (const [presetId, ratio] of Object.entries(report.characterEdgeContrasts ?? {})) {
+      if (ratio < thresholds.minDisplayCharacterEdgeContrast) {
+        issues.push(`${profile.label} ${presetId} 캐릭터 가장자리 대비 부족`);
+      }
+    }
+    for (const [presetId, frames] of Object.entries(report.characterMovementEdgeContrasts ?? {})) {
+      for (const [frameId, ratio] of Object.entries(frames)) {
+        if (ratio < thresholds.minDisplayCharacterEdgeContrast) {
+          issues.push(`${profile.label} ${presetId}/${frameId} 이동 가장자리 대비 부족`);
+        }
+      }
+    }
+  }
+
+  return { issues, contrasts };
 }
 
 export async function measureMapTone(imagePath) {
@@ -237,12 +288,19 @@ async function characterShadow(characterBuffer, color) {
   return sharp(shadow, { raw: info }).png().toBuffer();
 }
 
-async function measureCharacterEdgeContrast(sceneBuffer, characterBuffer, left, top, width, height) {
+async function measureCharacterEdgeContrasts(sceneBuffer, characterBuffer, left, top, width, height) {
   const [scene, character] = await Promise.all([
     sharp(sceneBuffer).extract({ left, top, width, height }).ensureAlpha().raw().toBuffer({ resolveWithObject: true }),
     sharp(characterBuffer).ensureAlpha().raw().toBuffer({ resolveWithObject: true })
   ]);
-  const ratios = [];
+  const ratios = Object.fromEntries([
+    ["standard", (value) => value],
+    ...Object.entries(displayCalibrationProfiles).map(([id, profile]) => [id, profile.adjustLuminance])
+  ].map(([id]) => [id, []]));
+  const profiles = {
+    standard: (value) => value,
+    ...Object.fromEntries(Object.entries(displayCalibrationProfiles).map(([id, profile]) => [id, profile.adjustLuminance]))
+  };
   const neighbors = [[-1, 0], [1, 0], [0, -1], [0, 1]];
   for (let y = 0; y < character.info.height; y += 1) {
     for (let x = 0; x < character.info.width; x += 1) {
@@ -257,20 +315,25 @@ async function measureCharacterEdgeContrast(sceneBuffer, characterBuffer, left, 
       });
       if (outside.length === 0) continue;
       const edgeLuminance = relativeLuminance([scene.data[offset], scene.data[offset + 1], scene.data[offset + 2]]);
-      const localRatios = outside.map((neighborOffset) => contrastRatio(
-        edgeLuminance,
-        relativeLuminance([
-          scene.data[neighborOffset],
-          scene.data[neighborOffset + 1],
-          scene.data[neighborOffset + 2]
-        ])
-      ));
-      ratios.push(Math.max(...localRatios));
+      const outsideLuminances = outside.map((neighborOffset) => relativeLuminance([
+        scene.data[neighborOffset],
+        scene.data[neighborOffset + 1],
+        scene.data[neighborOffset + 2]
+      ]));
+      for (const [profileId, adjustLuminance] of Object.entries(profiles)) {
+        const localRatios = outsideLuminances.map((outsideLuminance) => contrastRatio(
+          adjustLuminance(edgeLuminance),
+          adjustLuminance(outsideLuminance)
+        ));
+        ratios[profileId].push(Math.max(...localRatios));
+      }
     }
   }
-  if (ratios.length === 0) throw new Error("Tone-audit character has no measurable edge pixels");
-  ratios.sort((leftValue, rightValue) => leftValue - rightValue);
-  return ratios[Math.floor(ratios.length * 0.2)];
+  if (ratios.standard.length === 0) throw new Error("Tone-audit character has no measurable edge pixels");
+  return Object.fromEntries(Object.entries(ratios).map(([profileId, values]) => {
+    values.sort((leftValue, rightValue) => leftValue - rightValue);
+    return [profileId, values[Math.floor(values.length * 0.2)]];
+  }));
 }
 
 export async function measureCompositedMapTone({ rootDir, zone, characters, defaultPresetId, edgeShadow }) {
@@ -296,17 +359,19 @@ export async function measureCompositedMapTone({ rootDir, zone, characters, defa
       { input: shadow, left: characterLeft + 1, top: characterTop + 2 },
       { input: character.buffer, left: characterLeft, top: characterTop }
     ]).png().toBuffer();
+    const edgeContrasts = await measureCharacterEdgeContrasts(
+      scene,
+      character.buffer,
+      characterLeft,
+      characterTop,
+      character.width,
+      character.height
+    );
     characterReports.push({
       presetId: character.presetId,
       scene,
-      edgeContrast: await measureCharacterEdgeContrast(
-        scene,
-        character.buffer,
-        characterLeft,
-        characterTop,
-        character.width,
-        character.height
-      )
+      edgeContrast: edgeContrasts.standard,
+      displayEdgeContrasts: edgeContrasts
     });
     for (const frame of character.movementFrames) {
       const frameShadow = await characterShadow(frame.buffer, edgeShadow);
@@ -314,17 +379,19 @@ export async function measureCompositedMapTone({ rootDir, zone, characters, defa
         { input: frameShadow, left: characterLeft + 1, top: characterTop + 2 },
         { input: frame.buffer, left: characterLeft, top: characterTop }
       ]).png().toBuffer();
+      const edgeContrasts = await measureCharacterEdgeContrasts(
+        frameScene,
+        frame.buffer,
+        characterLeft,
+        characterTop,
+        character.width,
+        character.height
+      );
       movementReports.push({
         presetId: character.presetId,
         frameId: frame.frameId,
-        edgeContrast: await measureCharacterEdgeContrast(
-          frameScene,
-          frame.buffer,
-          characterLeft,
-          characterTop,
-          character.width,
-          character.height
-        )
+        edgeContrast: edgeContrasts.standard,
+        displayEdgeContrasts: edgeContrasts
       });
     }
   }
@@ -346,6 +413,30 @@ export async function measureCompositedMapTone({ rootDir, zone, characters, defa
   const weakestMovementCharacter = movementReports.reduce((weakest, report) => (
     report.edgeContrast < weakest.edgeContrast ? report : weakest
   ));
+  const displayProfiles = Object.fromEntries(Object.entries(displayCalibrationProfiles).map(([profileId, profile]) => {
+    const characterEdgeContrasts = Object.fromEntries(characterReports.map((report) => [
+      report.presetId,
+      report.displayEdgeContrasts[profileId]
+    ]));
+    const characterMovementEdgeContrasts = Object.fromEntries(characters.map((character) => [
+      character.presetId,
+      Object.fromEntries(movementReports
+        .filter(({ presetId }) => presetId === character.presetId)
+        .map((report) => [report.frameId, report.displayEdgeContrasts[profileId]]))
+    ]));
+    const weakestCharacterEdgeContrast = Math.min(...Object.values(characterEdgeContrasts));
+    const weakestMovementEdgeContrast = Math.min(
+      ...Object.values(characterMovementEdgeContrasts).flatMap((frames) => Object.values(frames))
+    );
+    return [profileId, {
+      label: profile.label,
+      contrasts: calibratedLabelContrasts(sceneTone, profile.adjustLuminance),
+      characterEdgeContrasts,
+      characterMovementEdgeContrasts,
+      weakestCharacterEdgeContrast,
+      weakestMovementEdgeContrast
+    }];
+  }));
   return {
     sceneBuffer: defaultReport.scene,
     sceneAverageLuminance: sceneTone.averageLuminance,
@@ -360,6 +451,7 @@ export async function measureCompositedMapTone({ rootDir, zone, characters, defa
     weakestMovementCharacterPresetId: weakestMovementCharacter.presetId,
     weakestMovementFrameId: weakestMovementCharacter.frameId,
     weakestMovementEdgeContrast: weakestMovementCharacter.edgeContrast,
+    displayProfiles,
     foregroundAssetCount: placements.length,
     characterPresetId: defaultPresetId,
     characterPosition: position
@@ -384,6 +476,11 @@ export async function auditMapTones({ rootDir, contractPath = path.join(rootDir,
     await readFile(path.join(rootDir, "client/src/map-visual-enhancements.css"), "utf8"),
     expectedZoneIds
   );
+  const typographyCss = await readFile(path.join(rootDir, "client/src/game-refined-theme.css"), "utf8");
+  for (const [token, expectedWeight] of Object.entries(contract.displayTypography ?? {})) {
+    const actualWeight = Number(typographyCss.match(new RegExp(`--${token}:\\s*(\\d+)`))?.[1]);
+    if (actualWeight !== expectedWeight) issues.push(`표시 글꼴 토큰 --${token} 불일치`);
+  }
   for (const zoneId of expectedZoneIds) {
     const zone = manifest.zones.find(({ id }) => id === zoneId);
     if (!zone) {

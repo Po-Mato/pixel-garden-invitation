@@ -18,6 +18,9 @@ export const invitationAnalyticsEventNames = [
   "performance_fps",
   "performance_long_task",
   "performance_quality_change",
+  "quality_camera_center",
+  "quality_cls",
+  "quality_long_frame",
   "device_qa"
 ] as const;
 
@@ -90,6 +93,12 @@ export type InvitationAnalyticsAdminResult = {
     averageLongTaskMs: number | null;
     qualityDowngrades: number;
     qualityRecoveries: number;
+    cameraCenterSamples: number;
+    averageCameraCenterErrorPx: number | null;
+    clsSamples: number;
+    averageCls: number | null;
+    longFrameSamples: number;
+    averageLongFrameMs: number | null;
     deviceQaReports: number;
     deviceQaIssues: number;
   };

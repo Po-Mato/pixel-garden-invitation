@@ -1,11 +1,17 @@
 {
-  "version": 4,
+  "version": 5,
   "thresholds": {
     "maxLuminanceDelta": 0.03,
     "minDynamicRange": 0.16,
     "minTextContrast": 4.5,
     "minCharacterEdgeContrast": 1.17,
+    "minDisplayCharacterEdgeContrast": 1.1,
     "maxCharacterEdgeContrastDelta": 0.15
+  },
+  "displayTypography": {
+    "display-copy-weight": 600,
+    "display-title-weight": 650,
+    "display-label-weight": 750
   },
   "zones": {
     "banquet": {
