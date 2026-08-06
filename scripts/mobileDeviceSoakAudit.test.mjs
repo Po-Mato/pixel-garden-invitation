@@ -22,6 +22,18 @@ test("mobile soak closes invitation overlays before measuring movement frames", 
   assert.match(source.slice(closeMenuAt, measureMovementAt), /virtual-joystick.+state: "visible"/s);
 });
 
+test("mobile soak excludes automation setup pauses from destination render timing", () => {
+  const source = readFileSync("scripts/lib/mobileDeviceSoakAudit.mjs", "utf8");
+  const openVaultAt = source.indexOf('vault.locator(":scope > summary").tap()');
+  const startTraceAt = source.indexOf("await startFrameTrace()", openVaultAt);
+  const destinationTapAt = source.indexOf('page.getByRole("button", { name: `${target.label} 바로 이동`', startTraceAt);
+  const stopTraceAt = source.indexOf("await stopFrameTrace()", destinationTapAt);
+  assert.ok(openVaultAt >= 0);
+  assert.ok(startTraceAt > openVaultAt);
+  assert.ok(destinationTapAt > startTraceAt);
+  assert.ok(stopTraceAt > destinationTapAt);
+});
+
 test("mobile soak accepts stable repeated interaction metrics", () => {
   assert.deepEqual(assessMobileSoakMetrics({
     pageErrors: [], failedRequests: [], touchResponded: true, layoutStable: true,
@@ -77,7 +89,8 @@ test("mobile soak summarizes repeated low-performance zone transitions", () => {
   });
   const transitions = Array.from({ length: 12 }, (_, index) => ({
     zoneId: ["home", "neighborhood", "lobby", "ceremony-hall", "banquet", "bridal-room"][index % 6],
-    samples: [sample(), sample(-100.25)]
+    samples: [sample(), sample(-100.25)],
+    frameTimings: { p95FrameMs: 18, p99FrameMs: 24 }
   }));
   assert.deepEqual(summarizeZoneTransitionSamples(transitions, layout), {
     transitionCount: 12,

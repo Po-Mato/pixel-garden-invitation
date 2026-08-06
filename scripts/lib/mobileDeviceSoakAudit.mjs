@@ -385,7 +385,7 @@ async function readZoneTransitionSample(page, phase) {
 }
 
 async function sampleZoneTransitionSeries(page, baselineLayout) {
-  await page.evaluate(() => {
+  const startFrameTrace = () => page.evaluate(() => {
     const trace = { active: true, previous: null, frameDeltas: [] };
     const tick = (now) => {
       if (!trace.active) return;
@@ -396,12 +396,22 @@ async function sampleZoneTransitionSeries(page, baselineLayout) {
     window.__mobileZoneTransitionTrace = trace;
     requestAnimationFrame(tick);
   });
+  const stopFrameTrace = () => page.evaluate(() => {
+    const trace = window.__mobileZoneTransitionTrace;
+    if (!trace) return [];
+    trace.active = false;
+    return trace.frameDeltas;
+  });
   const transitions = [];
+  const frameDeltas = [];
   for (const target of mobileSoakZoneTransitionSequence) {
     const toggle = page.locator(".world-hud__tools-toggle");
     if (await toggle.getAttribute("aria-expanded") !== "true") await toggle.tap();
     const vault = page.locator(".world-game-vault");
     if (await vault.getAttribute("open") === null) await vault.locator(":scope > summary").tap();
+    // Playwright WebKit can pause rAF while resolving locators. Keep setup outside the trace,
+    // then measure the actual user-visible destination render through its settled frames.
+    await startFrameTrace();
     await page.getByRole("button", { name: `${target.label} 바로 이동`, exact: true }).tap();
     await page.waitForFunction((zoneId) => document.querySelector(".world-map__stage")?.getAttribute("data-zone") === zoneId, target.id);
     await page.locator(".world-map__stage--background-loaded").waitFor({ state: "visible", timeout: 15_000 });
@@ -412,14 +422,14 @@ async function sampleZoneTransitionSeries(page, baselineLayout) {
       await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => resolve(true))));
       samples.push(await readZoneTransitionSample(page, `settled-${index + 1}`));
     }
-    transitions.push({ zoneId: target.id, samples });
+    const transitionFrameDeltas = await stopFrameTrace();
+    frameDeltas.push(...transitionFrameDeltas);
+    transitions.push({
+      zoneId: target.id,
+      samples,
+      frameTimings: summarizeFrameTimings(transitionFrameDeltas)
+    });
   }
-  const frameDeltas = await page.evaluate(() => {
-    const trace = window.__mobileZoneTransitionTrace;
-    if (!trace) return [];
-    trace.active = false;
-    return trace.frameDeltas;
-  });
   return {
     metrics: summarizeZoneTransitionSamples(transitions, baselineLayout),
     frameTimings: summarizeFrameTimings(frameDeltas)
