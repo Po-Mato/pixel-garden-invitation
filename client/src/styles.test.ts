@@ -430,8 +430,19 @@ describe("responsive play viewport", () => {
       /\.world-zone-summary strong,[\s\S]*\.world-destination-guide strong\s*\{[^}]*white-space:\s*normal;/s
     );
     expect(refinedGameStyles).toMatch(
+      /\.world-zone-summary strong,[\s\S]*\.world-destination-guide strong\s*\{[^}]*word-break:\s*keep-all;[^}]*-webkit-line-clamp:\s*2;/s
+    );
+    expect(refinedGameStyles).toMatch(
       /html\[data-text-scale="ios-200"\] \.world-hud__tools\s*\{[^}]*top:\s*calc\(182px \+ env\(safe-area-inset-top\)\);/s
     );
+  });
+
+  it("keeps character names compact, single-line, and readable", () => {
+    const nameRule = styles.match(/\.world-player__name\s*\{([^}]*)}/s)?.[1] ?? "";
+    expect(nameRule).toContain("max-width: 72px;");
+    expect(nameRule).toContain("text-overflow: ellipsis;");
+    expect(nameRule).toContain("white-space: nowrap;");
+    expect(nameRule).toContain("font-size: 10px;");
   });
 });
 

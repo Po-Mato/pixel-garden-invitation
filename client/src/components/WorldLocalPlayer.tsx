@@ -48,7 +48,7 @@ export const WorldLocalPlayer = memo(function WorldLocalPlayer({
         stepFrame={motion.stepFrame}
         label={`${nickname} 캐릭터`}
       />
-      <span>{nickname}</span>
+      <span className="world-player__name" title={nickname}>{nickname}</span>
     </div>
   );
 });

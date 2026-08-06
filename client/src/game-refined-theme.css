@@ -494,11 +494,15 @@
 
   .world-zone-summary strong,
   .world-destination-guide strong {
-    overflow: visible;
+    display: -webkit-box;
+    overflow: hidden;
     line-height: 1.18;
-    overflow-wrap: anywhere;
+    overflow-wrap: normal;
     text-overflow: clip;
     white-space: normal;
+    word-break: keep-all;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
   }
 
   .world-hud__tools-toggle {

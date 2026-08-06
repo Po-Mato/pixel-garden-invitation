@@ -23,4 +23,9 @@ console.log(
     `${report.percent}% ${report.sheetScrollHeight}px/${report.minimumLineHeightRatio.toFixed(2)}`
   )).join(" · ")}`
 );
+console.log(
+  `긴 예식장 문구: ${result.longVenueAudit.reports.map((report) => (
+    `${report.width}x${report.height} ${report.metrics.venueLines}줄/${report.metrics.addressLines}줄`
+  )).join(" · ")}`
+);
 console.log(`보고서: ${result.reportPath}`);

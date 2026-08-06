@@ -307,7 +307,6 @@ import { PortalDestinationPreview } from "./PortalDestinationPreview";
 import { SpotModal } from "./SpotModal";
 import { VirtualJoystick } from "./VirtualJoystick";
 import { useViewPreferences } from "../accessibility/ViewPreferencesContext";
-import { ViewSettingsAccess } from "./ViewSettingsAccess";
 import { WeddingEventSummary } from "./WeddingEventSummary";
 import { WeddingJourneyClock } from "./WeddingJourneyClock";
 import { WeddingDayQuickAccess } from "./WeddingDayQuickAccess";
@@ -345,16 +344,12 @@ import { WorldSecretProgress } from "./WorldSecretProgress";
 import { WorldSecretCollectionBook } from "./WorldSecretCollectionBook";
 import { WorldTravelTimeline } from "./WorldTravelTimeline";
 import { GamePerformanceStatus } from "./GamePerformanceStatus";
-import { GameSaveDataCenter } from "./GameSaveDataCenter";
-import { GameDeviceReadinessCenter } from "./GameDeviceReadinessCenter";
-import { WorldSecretMemorial } from "./WorldSecretMemorial";
-import { NpcRelationshipJournal } from "./NpcRelationshipJournal";
 import { WeddingPhaseAnnouncement } from "./WeddingPhaseAnnouncement";
 import "../journey.css";
 import "../game-guide.css";
 import "../npc-reactions.css";
 import "../game-mobile-controls.css";
-import "../wedding-photo.css";
+import "../wedding-photo-world.css";
 import "../game-luxe-theme.css";
 import "../game-navigation-enhancements.css";
 import "../game-wedding-day-operations.css";
@@ -371,6 +366,11 @@ const loadCelebrationCollectionGuideComponent = () => import("./CelebrationColle
 const loadCompanionDestinationSheetComponent = () => import("./CompanionDestinationSheet");
 const loadCompanionWaitingRoomComponent = () => import("./CompanionWaitingRoom");
 const loadJourneyRouteSheetComponent = () => import("./JourneyRouteSheet");
+const loadNpcRelationshipJournalComponent = () => import("./NpcRelationshipJournal");
+const loadViewSettingsAccessComponent = () => import("./ViewSettingsAccess");
+const loadGameSaveDataCenterComponent = () => import("./GameSaveDataCenter");
+const loadGameDeviceReadinessCenterComponent = () => import("./GameDeviceReadinessCenter");
+const loadWorldSecretMemorialComponent = () => import("./WorldSecretMemorial");
 
 export async function preloadGameFeatureComponents() {
   await Promise.all([
@@ -380,7 +380,12 @@ export async function preloadGameFeatureComponents() {
     loadCelebrationCollectionGuideComponent(),
     loadCompanionDestinationSheetComponent(),
     loadCompanionWaitingRoomComponent(),
-    loadJourneyRouteSheetComponent()
+    loadJourneyRouteSheetComponent(),
+    loadNpcRelationshipJournalComponent(),
+    loadViewSettingsAccessComponent(),
+    loadGameSaveDataCenterComponent(),
+    loadGameDeviceReadinessCenterComponent(),
+    loadWorldSecretMemorialComponent()
   ]);
 }
 
@@ -412,6 +417,26 @@ const JourneyRouteSheet = lazy(async () => {
   const module = await loadJourneyRouteSheetComponent();
   return { default: module.JourneyRouteSheet };
 });
+const NpcRelationshipJournal = lazy(async () => {
+  const module = await loadNpcRelationshipJournalComponent();
+  return { default: module.NpcRelationshipJournal };
+});
+const ViewSettingsAccess = lazy(async () => {
+  const module = await loadViewSettingsAccessComponent();
+  return { default: module.ViewSettingsAccess };
+});
+const GameSaveDataCenter = lazy(async () => {
+  const module = await loadGameSaveDataCenterComponent();
+  return { default: module.GameSaveDataCenter };
+});
+const GameDeviceReadinessCenter = lazy(async () => {
+  const module = await loadGameDeviceReadinessCenterComponent();
+  return { default: module.GameDeviceReadinessCenter };
+});
+const WorldSecretMemorial = lazy(async () => {
+  const module = await loadWorldSecretMemorialComponent();
+  return { default: module.WorldSecretMemorial };
+});
 
 function GameFeatureLoading({ label }: { label: string }) {
   return (
@@ -420,6 +445,10 @@ function GameFeatureLoading({ label }: { label: string }) {
       <span>{label} 준비 중</span>
     </div>
   );
+}
+
+function GameInlineLoading({ label }: { label: string }) {
+  return <p className="game-inline-loading" role="status">{label} 준비 중</p>;
 }
 
 type GameWorldProps = {
@@ -4856,15 +4885,17 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
                 onSelectZone={handleJourneySelect}
               />
               <JourneyMemoryCardAccess nickname={profile.nickname} progress={journeyProgress} />
-              <NpcRelationshipJournal
-                memory={npcDialogueMemory}
-                names={{ bride: invitationContent.event.couple.bride, groom: invitationContent.event.couple.groom }}
-                onRewardInteraction={(npcId, rewardLabel) => {
-                  handleGuestReaction(npcId === "bride" ? "heart" : "celebrate");
-                  playFeedback("complete");
-                  setTravelStatus(`${rewardLabel}을 다시 펼쳐봤어요`);
-                }}
-              />
+              <Suspense fallback={<GameInlineLoading label="인연 기록" />}>
+                <NpcRelationshipJournal
+                  memory={npcDialogueMemory}
+                  names={{ bride: invitationContent.event.couple.bride, groom: invitationContent.event.couple.groom }}
+                  onRewardInteraction={(npcId, rewardLabel) => {
+                    handleGuestReaction(npcId === "bride" ? "heart" : "celebrate");
+                    playFeedback("complete");
+                    setTravelStatus(`${rewardLabel}을 다시 펼쳐봤어요`);
+                  }}
+                />
+              </Suspense>
             </section>
             <section className="world-game-vault__section" aria-label="장소 바로가기">
               <h3>장소 바로가기</h3>
@@ -4917,18 +4948,22 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
                   <CircleHelp aria-hidden="true" />
                   <span><strong>게임 안내</strong><small>조작 방법 다시 보기</small></span>
                 </button>
-                <ViewSettingsAccess
-                  variant="menu"
-                  currentZoneId={activeZone.id}
-                  onOpenChange={handleViewSettingsOpenChange}
-                />
+                <Suspense fallback={<GameInlineLoading label="화면 설정" />}>
+                  <ViewSettingsAccess
+                    variant="menu"
+                    currentZoneId={activeZone.id}
+                    onOpenChange={handleViewSettingsOpenChange}
+                  />
+                </Suspense>
               </div>
             </section>
             <section className="world-game-vault__section" aria-label="기기와 저장">
               <h3>기기와 저장</h3>
               <GamePerformanceStatus performance={devicePerformance} />
-              <GameSaveDataCenter />
-              <GameDeviceReadinessCenter />
+              <Suspense fallback={<GameInlineLoading label="저장·기기 점검" />}>
+                <GameSaveDataCenter />
+                <GameDeviceReadinessCenter />
+              </Suspense>
             </section>
           </div>
         </details>
@@ -5165,7 +5200,11 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
               </svg>
             ) : null}
             <WorldDecorationLayer zoneId={activeZone.id} decorations={activeZone.decorations} />
-            {activeZone.id === "home" && worldSecretCollection.unlockedAchievementIds.includes("wedding-archivist") ? <WorldSecretMemorial collection={worldSecretCollection} /> : null}
+            {activeZone.id === "home" && worldSecretCollection.unlockedAchievementIds.includes("wedding-archivist") ? (
+              <Suspense fallback={null}>
+                <WorldSecretMemorial collection={worldSecretCollection} />
+              </Suspense>
+            ) : null}
             {activeWorldPropInteractions.map(({ decoration, interaction }) => (
               <WorldInteractiveProp
                 key={`interaction:${decoration.id}`}
@@ -5345,7 +5384,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
                   stepFrame={walkFrameForPhase(Math.max(0, guest.seq - 1))}
                   label={`${guest.nickname} 캐릭터`}
                 />
-                <span>{guest.nickname}</span>
+                <span className="world-player__name" title={guest.nickname}>{guest.nickname}</span>
               </div>
             ))}
             {activeZone.npcs.map((npc) => {
@@ -5689,7 +5728,6 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
               <button
                 type="button"
                 onClick={() => {
-                  void loadGameMemoryAlbumComponent();
                   pauseWorldInput();
                   setGiftAccountSheetOpen(true);
                 }}

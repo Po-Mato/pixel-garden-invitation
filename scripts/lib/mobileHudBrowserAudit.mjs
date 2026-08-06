@@ -100,6 +100,16 @@ export const mobileHudCollisionMatrixProfiles = Object.freeze([
   }
 ]);
 
+export const longVenueAuditProfiles = Object.freeze([
+  { id: "venue-320-portrait", width: 320, height: 568, orientation: "portrait" },
+  { id: "venue-568-landscape", width: 568, height: 320, orientation: "landscape" }
+]);
+
+export const hudLongTextFixture = Object.freeze({
+  zone: "MJ컨벤션 외부",
+  destination: "지하철 오시는 길"
+});
+
 export const worldLabelAuditScenarios = Object.freeze([
   { id: "home-center", zoneId: "home", position: { x: 285, y: 375 } },
   { id: "neighborhood-west", zoneId: "neighborhood", position: { x: 135, y: 375 } },
@@ -294,7 +304,8 @@ export function auditInvitationQualityMetrics(metrics) {
   if (!floatingSpot?.visuallyCompact) issues.push("월드 안내 카드 크기 초과");
   if (!floatingSpot?.contentContained) issues.push("월드 안내 문구 넘침");
   if (!typography?.koreanFallbackReady) issues.push("안드로이드 한글 폰트 대체 누락");
-  if (!typography?.bundledFontsReady) issues.push("번들 한글 폰트 로드 실패");
+  if (!typography?.uiFontReady) issues.push("시스템 한글 UI 폰트 준비 실패");
+  if (!typography?.bundledDisplayFontReady) issues.push("번들 한글 명조 폰트 로드 실패");
   if (!typography?.fontResourcesSameOrigin) issues.push("한글 폰트 외부 출처 요청");
   if (!largeTextSheet?.contained) issues.push("큰 글자 바텀시트 화면 이탈");
   if (!largeTextSheet?.contentContained) issues.push("큰 글자 바텀시트 가로 넘침");
@@ -307,6 +318,26 @@ export function auditInvitationQualityMetrics(metrics) {
   for (const [state, scroll] of Object.entries(metrics.scrollStates ?? {})) {
     if (!scroll.reached) issues.push(`${state} 스크롤 위치 도달 실패`);
   }
+  return issues;
+}
+
+export function auditPlayerNameplate(metrics) {
+  const issues = [];
+  if (!metrics?.singleLine) issues.push("캐릭터 이름표 줄바꿈");
+  if (!metrics?.contained) issues.push("캐릭터 이름표 영역 이탈");
+  if (!metrics?.ellipsisReady) issues.push("긴 캐릭터 이름 말줄임 누락");
+  if (!metrics?.fullNameAvailable) issues.push("캐릭터 전체 이름 접근 불가");
+  return issues;
+}
+
+export function auditLongVenueLayout(metrics) {
+  const issues = [];
+  if (!metrics?.sheetContained) issues.push("오시는 길 시트 화면 이탈");
+  if (!metrics?.contentContained) issues.push("오시는 길 긴 문구 가로 넘침");
+  if (!metrics?.venueTextComplete) issues.push("예식장 전체 문구 누락");
+  if (!metrics?.venueLinesReady) issues.push("예식장 문구 과도한 줄바꿈");
+  if (!metrics?.addressLinesReady) issues.push("예식장 주소 과도한 줄바꿈");
+  if (!metrics?.copyTargetReady) issues.push("주소 복사 터치 영역 부족");
   return issues;
 }
 
@@ -358,9 +389,10 @@ async function hudTextContainment(page) {
     if (!(element instanceof HTMLElement)) return [];
     const style = getComputedStyle(element);
     if (style.display === "none" || style.visibility === "hidden") return [];
+    const lineHeight = Number.parseFloat(style.lineHeight);
     const clipsInline = style.overflowX !== "visible";
     const clipsBlock = style.overflowY !== "visible";
-    const lineHeight = Number.parseFloat(style.lineHeight);
+    const blockTolerance = Number.isFinite(lineHeight) ? Math.max(2, lineHeight * 0.25) : 2;
     const lineCount = lineHeight > 0
       ? Math.max(1, Math.round(element.getBoundingClientRect().height / lineHeight))
       : 1;
@@ -368,13 +400,49 @@ async function hudTextContainment(page) {
       id,
       text: element.textContent?.trim() ?? "",
       clippedInline: clipsInline && element.scrollWidth > element.clientWidth + 1,
-      clippedBlock: clipsBlock && element.scrollHeight > element.clientHeight + 1,
+      clippedBlock: clipsBlock && element.scrollHeight > element.clientHeight + blockTolerance,
       lineCount,
       maxLines,
       client: { width: element.clientWidth, height: element.clientHeight },
       scroll: { width: element.scrollWidth, height: element.scrollHeight }
     }];
   }));
+}
+
+async function measurePlayerNameplate(page) {
+  return page.evaluate(async () => {
+    const element = document.querySelector(".world-player__name");
+    const owner = element?.closest(".world-player");
+    if (!(element instanceof HTMLElement) || !(owner instanceof HTMLElement)) return null;
+    const originalText = element.textContent ?? "";
+    const originalTitle = element.title;
+    const stressName = "모바일초대장긴하객이름";
+    element.textContent = stressName;
+    element.title = stressName;
+    await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+    const style = getComputedStyle(element);
+    const rect = element.getBoundingClientRect();
+    const ownerRect = owner.getBoundingClientRect();
+    const lineHeight = Number.parseFloat(style.lineHeight);
+    const contentHeight = rect.height
+      - Number.parseFloat(style.paddingTop)
+      - Number.parseFloat(style.paddingBottom)
+      - Number.parseFloat(style.borderTopWidth)
+      - Number.parseFloat(style.borderBottomWidth);
+    const metrics = {
+      text: stressName,
+      singleLine: style.whiteSpace === "nowrap" && (!Number.isFinite(lineHeight) || contentHeight <= lineHeight + 1),
+      contained: rect.left >= ownerRect.left - 1 && rect.right <= ownerRect.right + 1,
+      ellipsisReady: style.overflow === "hidden" && style.textOverflow === "ellipsis" && element.scrollWidth > element.clientWidth,
+      fullNameAvailable: element.title === stressName,
+      rect: { x: rect.x, y: rect.y, width: rect.width, height: rect.height },
+      clientWidth: element.clientWidth,
+      scrollWidth: element.scrollWidth
+    };
+    element.textContent = originalText;
+    element.title = originalTitle;
+    return metrics;
+  });
 }
 
 async function visibleWorldLabels(page) {
@@ -594,7 +662,8 @@ async function measureInvitationQuality(page, viewport, sheetScreenshotPath, dev
           uiFamily: "",
           displayFamily: "",
           koreanFallbackReady: false,
-          bundledFontsReady: false,
+          uiFontReady: false,
+          bundledDisplayFontReady: false,
           fontResourcesSameOrigin: false
         },
         largeTextSheet: { contained: false, contentContained: false, touchTargetsReady: false }
@@ -615,9 +684,8 @@ async function measureInvitationQuality(page, viewport, sheetScreenshotPath, dev
         uiFamily,
         displayFamily,
         koreanFallbackReady: /Noto Sans (?:CJK )?KR/.test(uiFamily) && /Noto Serif (?:CJK )?KR/.test(displayFamily),
-        bundledFontsReady:
-          document.fonts.check('700 16px "Noto Sans KR Variable"', "오시는 길")
-          && document.fonts.check('700 16px "Noto Serif KR Variable"', "오시는 길"),
+        uiFontReady: /-apple-system|BlinkMacSystemFont|Apple SD Gothic Neo|Noto Sans (?:CJK )?KR|Malgun Gothic|system-ui/.test(uiFamily),
+        bundledDisplayFontReady: document.fonts.check('700 16px "Noto Serif KR Variable"', "오시는 길"),
         fontResourcesSameOrigin:
           fontResources.length > 0
           && fontResources.every((name) => new URL(name, location.href).origin === location.origin),
@@ -777,10 +845,19 @@ async function runMobileHudCollisionMatrix({ browser, url, outputDir }) {
         document.documentElement.classList.add("hud-collision-matrix-freeze");
         return document.fonts.ready;
       });
+      const longTextStress = profile.id === "portrait-320-text-100" || profile.id === "landscape-568x320-text-100";
+      if (longTextStress) {
+        await page.evaluate((fixture) => {
+          const zone = document.querySelector(".world-zone-summary strong");
+          const destination = document.querySelector(".world-destination-guide strong");
+          if (zone) zone.textContent = fixture.zone;
+          if (destination) destination.textContent = fixture.destination;
+        }, hudLongTextFixture);
+      }
       const baseRectangles = await visibleRectangles(page);
       const baseIssues = auditMobileHudRectangles(baseRectangles, profile);
       const hudText = await hudTextContainment(page);
-      const textIssues = profile.orientation === "landscape" ? auditHudTextContainment(hudText) : [];
+      const textIssues = profile.orientation === "landscape" || longTextStress ? auditHudTextContainment(hudText) : [];
       await page.locator(".world-hud__tools-toggle").click();
       await page.locator(".world-hud__tools").waitFor({ state: "visible" });
       const toolsRectangles = await visibleRectangles(page);
@@ -795,13 +872,87 @@ async function runMobileHudCollisionMatrix({ browser, url, outputDir }) {
         screenshotPath = path.join(outputDir, `hud-collision-${profile.id}.png`);
         await page.screenshot({ path: screenshotPath, fullPage: false, scale: "css" });
       }
-      reports.push({ ...profile, baseRectangles, toolsRectangles, hudText, issues, screenshotPath });
+      reports.push({ ...profile, longTextStress, baseRectangles, toolsRectangles, hudText, issues, screenshotPath });
     } finally {
       await context.close();
     }
   }
   return {
     profiles: mobileHudCollisionMatrixProfiles,
+    reports,
+    issues: reports.flatMap((report) => report.issues.map((issue) => `${report.id}: ${issue}`))
+  };
+}
+
+async function runLongVenueAudit({ browser, url }) {
+  const reports = [];
+  for (const profile of longVenueAuditProfiles) {
+    const context = await browser.newContext({
+      viewport: { width: profile.width, height: profile.height },
+      hasTouch: true,
+      isMobile: true,
+      locale: "ko-KR",
+      reducedMotion: "reduce",
+      deviceScaleFactor: 2
+    });
+    const page = await context.newPage();
+    await page.addInitScript(() => {
+      localStorage.setItem("wedding-game:entry-session:v1", JSON.stringify({
+        version: 1,
+        nickname: "장소문구감사",
+        appearance: { presetId: "feminine-long-wave-dress" },
+        updatedAt: new Date().toISOString()
+      }));
+      localStorage.setItem("wedding-game:first-visit-guide:v1", JSON.stringify({
+        version: 1,
+        completed: true,
+        completedAt: new Date().toISOString()
+      }));
+    });
+    try {
+      await page.goto(url, { waitUntil: "domcontentloaded" });
+      const resumeGarden = page.locator(".entry-screen__resume-access");
+      if (await resumeGarden.isVisible().catch(() => false)) await resumeGarden.click();
+      await page.locator(".game-world").waitFor({ state: "visible" });
+      await page.locator(".world-menu-button").click();
+      await page.locator(".world-menu-sheet").waitFor({ state: "visible" });
+      await page.getByRole("button", { name: "오시는 길", exact: true }).click();
+      await page.locator(".directions-sheet").waitFor({ state: "visible" });
+      await page.evaluate(() => document.fonts.ready);
+      const metrics = await page.evaluate(({ width, height }) => {
+        const sheet = document.querySelector(".bottom-sheet");
+        const content = document.querySelector(".directions-sheet");
+        const venue = document.querySelector(".directions-sheet__venue strong");
+        const address = document.querySelector(".directions-sheet__venue span");
+        const copy = document.querySelector(".directions-sheet__venue > button");
+        if (![sheet, content, venue, address, copy].every((element) => element instanceof HTMLElement)) return null;
+        const sheetRect = sheet.getBoundingClientRect();
+        const lineCount = (element) => {
+          const lineHeight = Number.parseFloat(getComputedStyle(element).lineHeight);
+          return lineHeight > 0 ? Math.max(1, Math.round(element.getBoundingClientRect().height / lineHeight)) : 1;
+        };
+        const venueLines = lineCount(venue);
+        const addressLines = lineCount(address);
+        return {
+          venueText: venue.textContent?.trim() ?? "",
+          addressText: address.textContent?.trim() ?? "",
+          venueLines,
+          addressLines,
+          sheetContained: sheetRect.x >= -1 && sheetRect.y >= -1 && sheetRect.right <= width + 1 && sheetRect.bottom <= height + 1,
+          contentContained: content.scrollWidth <= content.clientWidth + 1 && sheet.scrollWidth <= sheet.clientWidth + 1,
+          venueTextComplete: venue.textContent?.includes("MJ컨벤션 5층 파티오볼룸") ?? false,
+          venueLinesReady: venueLines <= 3,
+          addressLinesReady: addressLines <= 3,
+          copyTargetReady: copy.getBoundingClientRect().height >= 43
+        };
+      }, profile);
+      reports.push({ ...profile, metrics, issues: auditLongVenueLayout(metrics) });
+    } finally {
+      await context.close();
+    }
+  }
+  return {
+    profiles: longVenueAuditProfiles,
     reports,
     issues: reports.flatMap((report) => report.issues.map((issue) => `${report.id}: ${issue}`))
   };
@@ -827,6 +978,7 @@ export async function runMobileHudBrowserAudit({ rootDir, outputDir, port = 4178
     let zoneLabelSweep = { reports: [], issues: [], expectedZoneIds: [] };
     let typographyScaleAudit = { reports: [], issues: [], profiles: [] };
     let collisionMatrix = { reports: [], issues: [], profiles: [] };
+    let longVenueAudit = { reports: [], issues: [], profiles: [] };
     try {
       for (const viewport of mobileHudAuditViewports) {
         const engine = viewport.engine ?? "chromium";
@@ -879,6 +1031,8 @@ export async function runMobileHudBrowserAudit({ rootDir, outputDir, port = 4178
         const issues = auditMobileHudRectangles(rectangles, viewport);
         const worldLabels = await visibleWorldLabels(page);
         auditWorldLabelRectangles(worldLabels).forEach((issue) => issues.push(issue));
+        const playerNameplate = await measurePlayerNameplate(page);
+        auditPlayerNameplate(playerNameplate).forEach((issue) => issues.push(issue));
         const deviceBaselineEnabled = mobileDeviceVisualBaselineProfiles.includes(viewport.id);
         const deviceVisualBaselines = deviceBaselineEnabled
           ? Object.fromEntries(mobileDeviceVisualBaselineStates.map((state) => [state, {
@@ -943,7 +1097,7 @@ export async function runMobileHudBrowserAudit({ rootDir, outputDir, port = 4178
             }
           }
         }
-        reports.push({ ...viewport, engine, rectangles, worldLabels, movementLayout, dynamicViewport, toolsRect, toolsRectangles, touchResponse, invitationQuality, deviceVisualBaselines, issues, screenshotPath, toolsScreenshotPath });
+        reports.push({ ...viewport, engine, rectangles, worldLabels, playerNameplate, movementLayout, dynamicViewport, toolsRect, toolsRectangles, touchResponse, invitationQuality, deviceVisualBaselines, issues, screenshotPath, toolsScreenshotPath });
         await context.close();
       }
       zoneLabelSweep = await runWorldLabelZoneSweep({
@@ -961,6 +1115,10 @@ export async function runMobileHudBrowserAudit({ rootDir, outputDir, port = 4178
         url,
         outputDir
       });
+      longVenueAudit = await runLongVenueAudit({
+        browser: await browserFor("chromium"),
+        url
+      });
     } finally {
       await Promise.all([...browsers.values()].map((browser) => browser.close()));
     }
@@ -970,16 +1128,18 @@ export async function runMobileHudBrowserAudit({ rootDir, outputDir, port = 4178
       reports,
       zoneLabelSweep,
       typographyScaleAudit,
-      collisionMatrix
+      collisionMatrix,
+      longVenueAudit
     }, null, 2)}\n`);
     const issues = [
       ...reports.flatMap((report) => report.issues.map((issue) => `${report.id}: ${issue}`)),
       ...zoneLabelSweep.issues,
       ...typographyScaleAudit.issues,
-      ...collisionMatrix.issues
+      ...collisionMatrix.issues,
+      ...longVenueAudit.issues
     ];
     if (issues.length > 0) throw new Error(`Mobile HUD browser audit failed:\n${issues.join("\n")}`);
-    return { reports, zoneLabelSweep, typographyScaleAudit, collisionMatrix, reportPath };
+    return { reports, zoneLabelSweep, typographyScaleAudit, collisionMatrix, longVenueAudit, reportPath };
   } finally {
     server.kill("SIGTERM");
   }

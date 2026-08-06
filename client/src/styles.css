@@ -2509,15 +2509,29 @@ select,
     calc(-50% - var(--character-world-anchor-offset-x, 0px)),
     calc(-1 * var(--character-world-anchor-y, 46px))
   );
-  color: var(--ink);
-  font-size: 12px;
-  font-weight: 900;
-  text-shadow:
-    2px 0 0 var(--paper-raised),
-    -2px 0 0 var(--paper-raised),
-    0 2px 0 var(--paper-raised),
-    0 -2px 0 var(--paper-raised);
   transition: none;
+}
+
+.world-player__name {
+  box-sizing: border-box;
+  display: block;
+  max-width: 72px;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid rgba(113, 82, 89, 0.3);
+  border-radius: 999px;
+  padding: 2px 7px 3px;
+  background: rgba(255, 253, 247, 0.9);
+  color: #514348;
+  box-shadow: 0 2px 7px rgba(64, 48, 53, 0.14);
+  font-family: var(--wedding-font-ui, system-ui, sans-serif);
+  font-size: 10px;
+  font-weight: 760;
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.96);
+  white-space: nowrap;
 }
 
 .game-world[data-hud-tools-open="true"] :is(.world-minimap, .world-context-action) {
@@ -2532,6 +2546,11 @@ select,
     left 90ms steps(3, end),
     top 90ms steps(3, end);
   will-change: left, top;
+}
+
+.player--remote .world-player__name {
+  background: rgba(250, 247, 241, 0.84);
+  color: #675b5e;
 }
 
 .world-npc {

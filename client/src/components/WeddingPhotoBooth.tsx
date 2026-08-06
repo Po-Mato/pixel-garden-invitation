@@ -31,6 +31,7 @@ import {
 import type { WorldPhotoPose, WorldPhotoSpot } from "../game/world";
 import { celebrationCosmeticToneLabels, type CelebrationCosmeticId, type CelebrationCosmeticTone } from "../game/celebrationReward";
 import { CharacterPortrait } from "./CharacterPortrait";
+import "../wedding-photo.css";
 
 type WeddingPhotoBoothProps = {
   spot: WorldPhotoSpot;

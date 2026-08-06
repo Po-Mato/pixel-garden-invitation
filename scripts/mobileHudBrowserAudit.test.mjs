@@ -3,7 +3,9 @@ import assert from "node:assert/strict";
 import {
   auditInvitationQualityMetrics,
   auditHudTextContainment,
+  auditLongVenueLayout,
   auditMobileHudRectangles,
+  auditPlayerNameplate,
   auditWorldLabelRectangles,
   auditWorldLabelZoneSweep,
   compactDynamicViewport,
@@ -11,6 +13,7 @@ import {
   dynamicViewportResizeApplied,
   iosSafariText200AuditCss,
   iosText200AuditCss,
+  longVenueAuditProfiles,
   mobileHudAuditViewports,
   mobileHudCollisionMatrixProfiles,
   summarizeTouchLatency,
@@ -67,6 +70,13 @@ test("floating UI collision matrix covers 320–430 widths, 100–200% text, and
     [100, 150, 200]
   );
   assert.equal(mobileHudCollisionMatrixProfiles.filter(({ orientation }) => orientation === "landscape").length, 3);
+});
+
+test("long venue audit covers the narrowest portrait and landscape phones", () => {
+  assert.deepEqual(longVenueAuditProfiles, [
+    { id: "venue-320-portrait", width: 320, height: 568, orientation: "portrait" },
+    { id: "venue-568-landscape", width: 568, height: 320, orientation: "landscape" }
+  ]);
 });
 
 test("real Safari 200% uses native text adjustment without double scaling", () => {
@@ -211,7 +221,7 @@ test("joystick latency uses repeated-sample median instead of a runner spike", (
 test("invitation quality audit protects compact labels, Korean fallbacks, and large text sheets", () => {
   assert.deepEqual(auditInvitationQualityMetrics({
     floatingSpot: { hitTargetPreserved: true, visuallyCompact: true, contentContained: true },
-    typography: { koreanFallbackReady: true, bundledFontsReady: true, fontResourcesSameOrigin: true },
+    typography: { koreanFallbackReady: true, uiFontReady: true, bundledDisplayFontReady: true, fontResourcesSameOrigin: true },
     largeTextSheet: {
       contained: true,
       contentContained: true,
@@ -226,7 +236,7 @@ test("invitation quality audit protects compact labels, Korean fallbacks, and la
   }), []);
   assert.deepEqual(auditInvitationQualityMetrics({
     floatingSpot: { hitTargetPreserved: false, visuallyCompact: false, contentContained: false },
-    typography: { koreanFallbackReady: false, bundledFontsReady: false, fontResourcesSameOrigin: false },
+    typography: { koreanFallbackReady: false, uiFontReady: false, bundledDisplayFontReady: false, fontResourcesSameOrigin: false },
     largeTextSheet: {
       contained: false,
       contentContained: false,
@@ -240,12 +250,47 @@ test("invitation quality audit protects compact labels, Korean fallbacks, and la
     "월드 안내 카드 크기 초과",
     "월드 안내 문구 넘침",
     "안드로이드 한글 폰트 대체 누락",
-    "번들 한글 폰트 로드 실패",
+    "시스템 한글 UI 폰트 준비 실패",
+    "번들 한글 명조 폰트 로드 실패",
     "한글 폰트 외부 출처 요청",
     "큰 글자 바텀시트 화면 이탈",
     "큰 글자 바텀시트 가로 넘침",
     "큰 글자 바텀시트 터치 영역 부족",
     "iOS 200% 큰 글자 바텀시트 실제 스크롤 범위 부족",
     "directions-xlarge-bottom 스크롤 위치 도달 실패"
+  ]);
+});
+
+test("player nameplate audit accepts one-line ellipsis with the full accessible name", () => {
+  assert.deepEqual(auditPlayerNameplate({
+    singleLine: true,
+    contained: true,
+    ellipsisReady: true,
+    fullNameAvailable: true
+  }), []);
+  assert.deepEqual(auditPlayerNameplate({}), [
+    "캐릭터 이름표 줄바꿈",
+    "캐릭터 이름표 영역 이탈",
+    "긴 캐릭터 이름 말줄임 누락",
+    "캐릭터 전체 이름 접근 불가"
+  ]);
+});
+
+test("long venue layout audit protects full Korean venue text on compact phones", () => {
+  assert.deepEqual(auditLongVenueLayout({
+    sheetContained: true,
+    contentContained: true,
+    venueTextComplete: true,
+    venueLinesReady: true,
+    addressLinesReady: true,
+    copyTargetReady: true
+  }), []);
+  assert.deepEqual(auditLongVenueLayout({}), [
+    "오시는 길 시트 화면 이탈",
+    "오시는 길 긴 문구 가로 넘침",
+    "예식장 전체 문구 누락",
+    "예식장 문구 과도한 줄바꿈",
+    "예식장 주소 과도한 줄바꿈",
+    "주소 복사 터치 영역 부족"
   ]);
 });

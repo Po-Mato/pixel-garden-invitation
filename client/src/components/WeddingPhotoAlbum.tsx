@@ -60,6 +60,7 @@ import { PhotoFrameTouchEditor } from "./PhotoFrameTouchEditor";
 import { PhotoFrameActionControls } from "./PhotoFrameActionControls";
 import { PhotoCompositionTemplateControls, PhotoStickerTransformControls } from "./PhotoCompositionTemplateControls";
 import { PhotoStickerStyleControls } from "./PhotoStickerStyleControls";
+import "../wedding-photo.css";
 
 type WeddingPhotoAlbumProps = {
   album: WeddingPhotoAlbumData;
