@@ -5,7 +5,8 @@ import {
   assessMobileSoakMetrics,
   mobileSoakProfiles,
   summarizeFrameSamples,
-  summarizeMovementSamples
+  summarizeMovementSamples,
+  summarizeZoneTransitionSamples
 } from "./lib/mobileDeviceSoakAudit.mjs";
 
 test("mobile soak covers Android Chromium and iOS WebKit", () => {
@@ -61,6 +62,33 @@ test("mobile soak summarizes real player movement, camera follow, centering, and
     settledJitterPx: 0.25,
     samples,
     settledSamples
+  });
+});
+
+test("mobile soak summarizes repeated low-performance zone transitions", () => {
+  const layout = { hud: { x: 0, y: 0, width: 390, height: 64 }, map: { x: 0, y: 64, width: 390, height: 716 } };
+  const sample = (cameraX = -100) => ({
+    camera: { x: cameraX, y: -50 },
+    centerError: { x: 0.25, y: 0 },
+    cameraBoundsValid: true,
+    horizontalOverflow: false,
+    layout,
+    quality: { mode: "lite", effects: "minimal" }
+  });
+  const transitions = Array.from({ length: 12 }, (_, index) => ({
+    zoneId: ["home", "neighborhood", "lobby", "ceremony-hall", "banquet", "bridal-room"][index % 6],
+    samples: [sample(), sample(-100.25)]
+  }));
+  assert.deepEqual(summarizeZoneTransitionSamples(transitions, layout), {
+    transitionCount: 12,
+    uniqueZoneIds: ["home", "neighborhood", "lobby", "ceremony-hall", "banquet", "bridal-room"],
+    maxLayoutDeltaPx: 0,
+    maxCenterErrorPx: 0.25,
+    maxSettledCameraJitterPx: 0.25,
+    cameraBoundsValid: true,
+    layoutStable: true,
+    lowPerformanceModeStable: true,
+    transitions
   });
 });
 

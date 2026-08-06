@@ -3,8 +3,9 @@ import { spawn } from "node:child_process";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { criticalWeddingSerifSourceCommit, writeCriticalWeddingSerifManifest } from "./lib/criticalWeddingSerifAudit.mjs";
 
-const googleFontsCommit = "d58d8d9f1c5c68363f51f4696bb79af59bc7cf0e";
+const googleFontsCommit = criticalWeddingSerifSourceCommit;
 const sourceBase = `https://raw.githubusercontent.com/google/fonts/${googleFontsCommit}/ofl/notoserifkr`;
 const rootDir = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
 const fontDir = path.join(rootDir, "client/src/assets/fonts");
@@ -26,13 +27,22 @@ async function run(command, args) {
   });
 }
 
+async function subsetFont(args) {
+  try {
+    await run("pyftsubset", args);
+  } catch (error) {
+    if (error?.code !== "ENOENT") throw error;
+    await run("uvx", ["--with", "brotli", "--from", "fonttools", "pyftsubset", ...args]);
+  }
+}
+
 await mkdir(fontDir, { recursive: true });
 await readFile(corpusPath, "utf8");
 const temporaryDir = await mkdtemp(path.join(os.tmpdir(), "wedding-serif-"));
 try {
   const sourcePath = path.join(temporaryDir, "NotoSerifKR[wght].ttf");
   await download(`${sourceBase}/NotoSerifKR%5Bwght%5D.ttf`, sourcePath);
-  await run("pyftsubset", [
+  await subsetFont([
     sourcePath,
     `--output-file=${outputPath}`,
     `--text-file=${corpusPath}`,
@@ -43,8 +53,9 @@ try {
     "--drop-tables+=DSIG"
   ]);
   await download(`${sourceBase}/OFL.txt`, licensePath);
+  await writeCriticalWeddingSerifManifest(rootDir);
 } finally {
   await rm(temporaryDir, { recursive: true, force: true });
 }
 
-console.log(`Critical wedding serif generated: ${path.relative(rootDir, outputPath)}`);
+console.log(`Critical wedding serif and manifest generated: ${path.relative(rootDir, outputPath)}`);

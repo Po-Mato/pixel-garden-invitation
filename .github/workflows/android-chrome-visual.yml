@@ -49,20 +49,26 @@ jobs:
         shell: bash
         run: |
           pnpm characters:generate
+          pnpm --filter @wedding-game/shared build
+          VITE_WORKER_URL=https://example.invalid VITE_INVITATION_ID=device-pwa-audit pnpm --filter @wedding-game/client build
           pnpm --filter @wedding-game/client exec vite --host 0.0.0.0 --port 4179 --strictPort > "$RUNNER_TEMP/android-chrome-vite.log" 2>&1 &
           echo "VITE_PID=$!" >> "$GITHUB_ENV"
+          pnpm --filter @wedding-game/client exec vite preview --host 0.0.0.0 --port 4188 --strictPort > "$RUNNER_TEMP/android-chrome-pwa-preview.log" 2>&1 &
+          echo "PWA_PREVIEW_PID=$!" >> "$GITHUB_ENV"
           appium --base-path /wd/hub --port 4725 \
             --allow-insecure uiautomator2:chromedriver_autodownload \
             --log "$RUNNER_TEMP/android-chrome-appium.log" > /dev/null 2>&1 &
           echo "APPIUM_PID=$!" >> "$GITHUB_ENV"
           for attempt in {1..60}; do
             if curl --fail --silent http://127.0.0.1:4179/ > /dev/null \
+              && curl --fail --silent http://127.0.0.1:4188/ > /dev/null \
               && curl --fail --silent http://127.0.0.1:4725/wd/hub/status > /dev/null; then
               exit 0
             fi
             sleep 1
           done
           cat "$RUNNER_TEMP/android-chrome-vite.log"
+          cat "$RUNNER_TEMP/android-chrome-pwa-preview.log"
           cat "$RUNNER_TEMP/android-chrome-appium.log"
           exit 1
       - name: Capture and compare real Android Chrome
@@ -77,12 +83,14 @@ jobs:
           script: |
             adb shell pm path com.android.chrome
             adb shell dumpsys package com.android.chrome | grep versionName | head -n 1
-            ANDROID_EMULATOR_SERIAL=emulator-5554 pnpm visual:android-chrome -- --mode auto --url http://10.0.2.2:4179/ --appium-url http://127.0.0.1:4725/wd/hub
+            adb reverse tcp:4188 tcp:4188
+            ANDROID_EMULATOR_SERIAL=emulator-5554 pnpm visual:android-chrome -- --mode auto --url http://10.0.2.2:4179/ --pwa-url http://127.0.0.1:4188/ --preview-host-url http://127.0.0.1:4188/ --appium-url http://127.0.0.1:4725/wd/hub
       - name: Stop invitation server
         if: always()
         shell: bash
         run: |
           if test -n "${VITE_PID:-}"; then kill "$VITE_PID" 2>/dev/null || true; fi
+          if test -n "${PWA_PREVIEW_PID:-}"; then kill "$PWA_PREVIEW_PID" 2>/dev/null || true; fi
           if test -n "${APPIUM_PID:-}"; then kill "$APPIUM_PID" 2>/dev/null || true; fi
       - name: Upload real Android Chrome evidence
         if: always()
@@ -92,6 +100,7 @@ jobs:
           path: |
             .superpowers/visual-regression/android-chrome
             ${{ runner.temp }}/android-chrome-vite.log
+            ${{ runner.temp }}/android-chrome-pwa-preview.log
             ${{ runner.temp }}/android-chrome-appium.log
           if-no-files-found: warn
           include-hidden-files: true

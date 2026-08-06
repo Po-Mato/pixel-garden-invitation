@@ -22,6 +22,7 @@
     "characters:editor": "node scripts/serve-character-editor.mjs",
     "characters:test": "pnpm characters:generate && node --test scripts/referenceAsset.test.mjs scripts/characterAssetGenerator.test.mjs scripts/characterAssetAudit.test.mjs scripts/characterVisualAnchor.test.mjs scripts/guest3dPromotion.test.mjs scripts/coupleThreeHeadSprite.test.mjs scripts/couplePuppetAssets.test.mjs tools/character-pixel-editor/editor-core.test.mjs",
     "fonts:build-critical-serif": "node scripts/build-critical-wedding-serif.mjs",
+    "fonts:check-critical-serif": "node scripts/check-critical-wedding-serif.mjs",
     "maps:build": "node scripts/build-map-assets.mjs",
     "maps:audit": "node scripts/audit-map-assets.mjs && node scripts/audit-map-foreground-placements.mjs && node scripts/audit-map-tone.mjs",
     "maps:tone-audit": "node scripts/audit-map-tone.mjs",
@@ -51,24 +52,26 @@
     "visual:world-layout": "node scripts/check-world-layout-visual-regression.mjs",
     "visual:world-layout:approve": "node scripts/check-world-layout-visual-regression.mjs --approve",
     "visual:hud-browser": "node scripts/check-mobile-hud-browser.mjs",
+    "visual:two-client": "node scripts/check-two-client-realtime-visual.mjs",
     "performance:resource-budget": "node scripts/check-game-resource-budget.mjs",
     "pwa:clean-install-canary": "node scripts/check-pwa-clean-install-canary.mjs",
     "visual:map-diagnostics": "node scripts/check-map-diagnostics-browser.mjs",
     "visual:mobile-soak": "node scripts/check-mobile-device-soak.mjs",
     "visual:check": "pnpm characters:generate && node scripts/check-mobile-game-visual-regression.mjs",
-    "visual:test": "pnpm visual:check && pnpm visual:world-layout && node --test scripts/mobileGameVisualAuditRenderer.test.mjs scripts/mobileVisualBaselineApproval.test.mjs scripts/mobileDeviceVisualBaseline.test.mjs scripts/frameTimingMetrics.test.mjs scripts/iosSafariVisualBaseline.test.mjs scripts/androidChromeVisualBaseline.test.mjs scripts/mobileHudBrowserAudit.test.mjs scripts/typographyScaleAudit.test.mjs scripts/mapDiagnosticsBrowserAudit.test.mjs scripts/mobileDeviceSoakAudit.test.mjs scripts/gameResourceBudget.test.mjs scripts/pwaCleanInstallCanary.test.mjs",
+    "visual:test": "pnpm visual:check && pnpm visual:world-layout && node --test scripts/mobileGameVisualAuditRenderer.test.mjs scripts/mobileVisualBaselineApproval.test.mjs scripts/mobileDeviceVisualBaseline.test.mjs scripts/frameTimingMetrics.test.mjs scripts/iosSafariVisualBaseline.test.mjs scripts/androidChromeVisualBaseline.test.mjs scripts/mobileHudBrowserAudit.test.mjs scripts/typographyScaleAudit.test.mjs scripts/mapDiagnosticsBrowserAudit.test.mjs scripts/mobileDeviceSoakAudit.test.mjs scripts/gameResourceBudget.test.mjs scripts/pwaCleanInstallCanary.test.mjs scripts/devicePwaOfflineAudit.test.mjs scripts/twoClientRealtimeVisualAudit.test.mjs scripts/criticalWeddingSerifAudit.test.mjs",
     "gallery:build": "node scripts/build-wedding-gallery-assets.mjs",
     "gallery:audit": "node scripts/audit-wedding-gallery-assets.mjs",
     "gallery:test": "node --test scripts/weddingGalleryAssets.test.mjs",
     "build": "pnpm gallery:audit && pnpm maps:audit && pnpm characters:audit && pnpm characters:generate && pnpm photo-effects:audit && pnpm characters:build-couple-puppets && pnpm --filter @wedding-game/shared build && pnpm --filter @wedding-game/client build && pnpm --filter @wedding-game/worker build",
-    "test": "pnpm gallery:audit && pnpm gallery:test && pnpm maps:audit && pnpm maps:test && pnpm characters:audit && pnpm characters:test && pnpm photo-effects:audit && pnpm photo-effects:test && pnpm visual:test && pnpm --filter @wedding-game/shared test && pnpm --filter @wedding-game/client test && pnpm --filter @wedding-game/worker test",
+    "test": "pnpm fonts:check-critical-serif && pnpm gallery:audit && pnpm gallery:test && pnpm maps:audit && pnpm maps:test && pnpm characters:audit && pnpm characters:test && pnpm photo-effects:audit && pnpm photo-effects:test && pnpm visual:test && pnpm --filter @wedding-game/shared test && pnpm --filter @wedding-game/client test && pnpm --filter @wedding-game/worker test",
     "typecheck": "pnpm --filter @wedding-game/shared typecheck && pnpm --filter @wedding-game/client typecheck && pnpm --filter @wedding-game/worker typecheck"
   },
   "devDependencies": {
     "@types/node": "^20.14.0",
     "playwright": "1.62.0",
     "sharp": "^0.34.5",
-    "typescript": "^5.5.0"
+    "typescript": "^5.5.0",
+    "ws": "^8.21.0"
   },
   "pnpm": {
     "overrides": {

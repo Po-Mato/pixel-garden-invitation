@@ -10,6 +10,7 @@ for (const report of result.reports) {
   const { averageFps, baselineFps, frameRatio } = report.metrics;
   const { p95FrameMs, p99FrameMs } = report.metrics.frameTimings;
   const { mode, reason, effects } = report.metrics.automaticQuality;
-  console.log(`- ${report.id}: ${averageFps} FPS / 러너 ${baselineFps} FPS (${Math.round(frameRatio * 100)}%) · p95/p99 ${p95FrameMs}/${p99FrameMs}ms · ${mode}/${reason}/${effects} · 반복 터치 ${report.interactionCount}회`);
+  const transitions = report.metrics.zoneTransitions;
+  console.log(`- ${report.id}: ${averageFps} FPS / 러너 ${baselineFps} FPS (${Math.round(frameRatio * 100)}%) · p95/p99 ${p95FrameMs}/${p99FrameMs}ms · ${mode}/${reason}/${effects} · 반복 터치 ${report.interactionCount}회 · 구역 전환 ${transitions.transitionCount}회/중심 ${transitions.maxCenterErrorPx}px`);
 }
 console.log(`보고서: ${result.reportPath}`);

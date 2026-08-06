@@ -206,6 +206,8 @@ jobs:
         run: pnpm performance:resource-budget
       - name: Audit live mobile HUD screenshots
         run: pnpm visual:hud-browser
+      - name: Audit real two-client movement and UI collisions
+        run: pnpm visual:two-client
       - name: Audit map diagnostic screenshots
         run: pnpm visual:map-diagnostics
       - name: Audit Android and iOS long-session stability

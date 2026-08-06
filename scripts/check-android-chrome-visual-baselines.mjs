@@ -1,4 +1,4 @@
-import { access, mkdir, writeFile } from "node:fs/promises";
+import { access, mkdir, readFile, writeFile } from "node:fs/promises";
 import http from "node:http";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -9,6 +9,8 @@ import {
   androidChromeVisualStates,
   compareAndroidChromeVisualBaseline
 } from "./lib/androidChromeVisualBaseline.mjs";
+import { runDevicePwaOfflineAudit } from "./lib/devicePwaOfflineAudit.mjs";
+import { parsePwaPrecachePaths } from "./lib/gameResourceBudget.mjs";
 
 const rootDir = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
 const option = (name, fallback = null) => {
@@ -19,6 +21,8 @@ const url = option("--url", "http://10.0.2.2:4179/");
 const outputDir = option("--output-dir", path.join(rootDir, ".superpowers/visual-regression/android-chrome"));
 const mode = option("--mode", "auto");
 const appiumUrl = option("--appium-url", "http://127.0.0.1:4725/wd/hub");
+const pwaUrl = option("--pwa-url");
+const previewHostUrl = option("--preview-host-url", "http://127.0.0.1:4188/");
 await mkdir(outputDir, { recursive: true });
 
 async function webdriver(method, endpoint, body) {
@@ -101,6 +105,7 @@ const captureReport = {
   userAgent: null,
   viewport: null,
   browserVersion: null,
+  pwaOffline: null,
   scrollStates: {},
   comparisons: []
 };
@@ -248,6 +253,21 @@ try {
     await screenshot(state);
   }
 
+  if (pwaUrl) {
+    const serviceWorkerSource = await readFile(path.join(rootDir, "client/dist/service-worker.js"), "utf8");
+    captureReport.pwaOffline = (await runDevicePwaOfflineAudit({
+      platform: "Android Chrome",
+      url: pwaUrl,
+      previewHostUrl,
+      previewPid: Number(process.env.PWA_PREVIEW_PID),
+      expectedPaths: parsePwaPrecachePaths(serviceWorkerSource),
+      navigate: (targetUrl) => sessionCommand("POST", "/url", { url: targetUrl }),
+      evaluate,
+      waitForDocument,
+      screenshot
+    })).snapshot;
+  }
+
   const baselineStates = Object.fromEntries(await Promise.all(androidChromeVisualStates.map(async (state) => [
     state,
     await access(androidChromeBaselinePath(rootDir, state)).then(() => true, () => false)
@@ -276,4 +296,5 @@ try {
 console.log(
   `실제 Android Emulator Chrome 캡처 완료: ${androidChromeVisualStates.length}개 화면`
   + ` · 오시는 길 스크롤 ${captureReport.scrollStates.directions?.maxScroll ?? 0}px`
+  + `${captureReport.pwaOffline ? ` · 오프라인 PWA ${captureReport.pwaOffline.cachedPaths}/${captureReport.pwaOffline.expectedPaths}` : ""}`
 );

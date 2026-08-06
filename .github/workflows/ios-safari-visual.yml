@@ -56,30 +56,37 @@ jobs:
         shell: bash
         run: |
           pnpm characters:generate
+          pnpm --filter @wedding-game/shared build
+          VITE_WORKER_URL=https://example.invalid VITE_INVITATION_ID=device-pwa-audit pnpm --filter @wedding-game/client build
           pnpm --filter @wedding-game/client exec vite --host 0.0.0.0 --port 4178 --strictPort > "$RUNNER_TEMP/ios-safari-vite.log" 2>&1 &
           echo "VITE_PID=$!" >> "$GITHUB_ENV"
+          pnpm --filter @wedding-game/client exec vite preview --host 0.0.0.0 --port 4188 --strictPort > "$RUNNER_TEMP/ios-safari-pwa-preview.log" 2>&1 &
+          echo "PWA_PREVIEW_PID=$!" >> "$GITHUB_ENV"
           appium --base-path /wd/hub --port 4723 --log "$RUNNER_TEMP/ios-safari-appium.log" > /dev/null 2>&1 &
           echo "APPIUM_PID=$!" >> "$GITHUB_ENV"
           for attempt in {1..60}; do
             if curl --fail --silent http://127.0.0.1:4178/ > /dev/null \
+              && curl --fail --silent http://127.0.0.1:4188/ > /dev/null \
               && curl --fail --silent http://127.0.0.1:4723/wd/hub/status > /dev/null; then
               exit 0
             fi
             sleep 1
           done
           cat "$RUNNER_TEMP/ios-safari-vite.log"
+          cat "$RUNNER_TEMP/ios-safari-pwa-preview.log"
           exit 1
       - name: Capture and compare real Mobile Safari
         shell: bash
         run: |
           xcrun simctl openurl "$IOS_SIMULATOR_UDID" http://127.0.0.1:4178/
           sleep 3
-          pnpm visual:ios-safari -- --mode auto --url http://127.0.0.1:4178/
+          pnpm visual:ios-safari -- --mode auto --url http://127.0.0.1:4178/ --pwa-url http://127.0.0.1:4188/ --preview-host-url http://127.0.0.1:4188/
       - name: Stop invitation server
         if: always()
         shell: bash
         run: |
           if test -n "${VITE_PID:-}"; then kill "$VITE_PID" 2>/dev/null || true; fi
+          if test -n "${PWA_PREVIEW_PID:-}"; then kill "$PWA_PREVIEW_PID" 2>/dev/null || true; fi
           if test -n "${APPIUM_PID:-}"; then kill "$APPIUM_PID" 2>/dev/null || true; fi
       - name: Upload real iOS Safari evidence
         if: always()
@@ -89,6 +96,7 @@ jobs:
           path: |
             .superpowers/visual-regression/ios-safari
             ${{ runner.temp }}/ios-safari-vite.log
+            ${{ runner.temp }}/ios-safari-pwa-preview.log
             ${{ runner.temp }}/ios-safari-appium.log
           if-no-files-found: warn
           include-hidden-files: true

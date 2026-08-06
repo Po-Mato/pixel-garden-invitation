@@ -1,4 +1,4 @@
-import { access, mkdir, writeFile } from "node:fs/promises";
+import { access, mkdir, readFile, writeFile } from "node:fs/promises";
 import http from "node:http";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -12,6 +12,8 @@ import {
 } from "./lib/iosSafariVisualBaseline.mjs";
 import { iosSafariText200AuditCss } from "./lib/mobileHudBrowserAudit.mjs";
 import { assessFrameTimingHeadroom, summarizeFrameTimings } from "./lib/frameTimingMetrics.mjs";
+import { runDevicePwaOfflineAudit } from "./lib/devicePwaOfflineAudit.mjs";
+import { parsePwaPrecachePaths } from "./lib/gameResourceBudget.mjs";
 import sharp from "sharp";
 
 const rootDir = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -23,6 +25,8 @@ const url = option("--url", "http://127.0.0.1:4178/");
 const outputDir = option("--output-dir", path.join(rootDir, ".superpowers/visual-regression/ios-safari"));
 const mode = option("--mode", "auto");
 const appiumUrl = option("--appium-url", "http://127.0.0.1:4723/wd/hub");
+const pwaUrl = option("--pwa-url");
+const previewHostUrl = option("--preview-host-url", "http://127.0.0.1:4188/");
 const deviceKind = process.env.IOS_SAFARI_DEVICE_KIND === "physical" ? "physical" : "simulator";
 const deviceUdid = process.env.IOS_DEVICE_UDID ?? process.env.IOS_SIMULATOR_UDID;
 const deviceName = process.env.IOS_DEVICE_NAME ?? iosSafariVisualProfile.deviceName;
@@ -256,6 +260,7 @@ const captureReport = {
   viewport: null,
   scrollStates: {},
   nativeCompositor: null,
+  pwaOffline: null,
   landscape: {},
   comparisons: []
 };
@@ -624,6 +629,23 @@ try {
     throw new Error("실제 iPhone Safari 주소창 제스처에서 visualViewport 변화가 감지되지 않았어요");
   }
 
+  if (pwaUrl) {
+    await sessionCommand("POST", "/orientation", { orientation: "PORTRAIT" });
+    await waitForDocument("innerHeight > innerWidth", "Safari 세로 복귀", 30_000);
+    const serviceWorkerSource = await readFile(path.join(rootDir, "client/dist/service-worker.js"), "utf8");
+    captureReport.pwaOffline = (await runDevicePwaOfflineAudit({
+      platform: "iOS Safari",
+      url: pwaUrl,
+      previewHostUrl,
+      previewPid: Number(process.env.PWA_PREVIEW_PID),
+      expectedPaths: parsePwaPrecachePaths(serviceWorkerSource),
+      navigate: (targetUrl) => sessionCommand("POST", "/url", { url: targetUrl }),
+      evaluate,
+      waitForDocument,
+      screenshot
+    })).snapshot;
+  }
+
   const baselineStates = Object.fromEntries(await Promise.all(iosSafariVisualStates.map(async (state) => [
     state,
     await access(iosSafariBaselinePath(rootDir, state)).then(() => true, () => false)
@@ -650,4 +672,5 @@ console.log(
   `실제 iOS ${deviceKind === "physical" ? "iPhone" : "Simulator"} Safari 캡처 완료: ${iosSafariVisualStates.length}개 화면`
   + ` · 200% 스크롤 ${captureReport.scrollStates["directions-text-200-bottom"]?.maxScroll ?? 0}px`
   + ` · p95/p99 ${captureReport.landscape.frameTimings?.p95FrameMs ?? 0}/${captureReport.landscape.frameTimings?.p99FrameMs ?? 0}ms`
+  + `${captureReport.pwaOffline ? ` · 오프라인 PWA ${captureReport.pwaOffline.cachedPaths}/${captureReport.pwaOffline.expectedPaths}` : ""}`
 );

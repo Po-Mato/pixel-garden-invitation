@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "sourceCommit": "d58d8d9f1c5c68363f51f4696bb79af59bc7cf0e",
+  "corpusSha256": "fb9d56179e4e6ce3b4be0cd96fcaa655903d7922ebcaa9a423eaa96baa3b08d0",
+  "fontSha256": "40ffb9c9631065036b01bd82f36fd9a53ad9fc9a7da1e3885da7a14c5d4db2ea",
+  "requiredTextSha256": "c5dc0119b6725f80f4d8924072598fb0e72e41e548176528be18bacb1060f193",
+  "corpusCodePointCount": 300,
+  "requiredCodePointCount": 222,
+  "sourceFileCount": 23
+}

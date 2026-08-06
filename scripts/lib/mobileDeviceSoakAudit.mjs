@@ -8,6 +8,21 @@ export const mobileSoakProfiles = Object.freeze([
   { id: "ios-webkit", engine: "webkit", device: "iPhone 13" }
 ]);
 
+export const mobileSoakZoneTransitionSequence = Object.freeze([
+  { id: "neighborhood", label: "동네 거리" },
+  { id: "lobby", label: "예식장 로비" },
+  { id: "ceremony-hall", label: "예식홀" },
+  { id: "banquet", label: "연회장" },
+  { id: "bridal-room", label: "신부 대기실" },
+  { id: "home", label: "우리 집" },
+  { id: "neighborhood", label: "동네 거리" },
+  { id: "lobby", label: "예식장 로비" },
+  { id: "ceremony-hall", label: "예식홀" },
+  { id: "banquet", label: "연회장" },
+  { id: "bridal-room", label: "신부 대기실" },
+  { id: "home", label: "우리 집" }
+]);
+
 export function summarizeFrameSamples(samples) {
   if (!Array.isArray(samples) || samples.length === 0) {
     throw new TypeError("Frame samples must contain at least one value");
@@ -46,6 +61,35 @@ export function summarizeMovementSamples(samples, settledSamples) {
   };
 }
 
+export function summarizeZoneTransitionSamples(transitions, baselineLayout) {
+  if (!Array.isArray(transitions) || transitions.length === 0) {
+    throw new TypeError("Zone transition samples must contain at least one transition");
+  }
+  const layoutDelta = (layout) => Math.max(...["hud", "map"].flatMap((name) => (
+    ["x", "y", "width", "height"].map((key) => Math.abs(layout[name][key] - baselineLayout[name][key]))
+  )));
+  const centerError = (sample) => Math.hypot(sample.centerError.x, sample.centerError.y);
+  const cameraDistance = (left, right) => Math.hypot(left.x - right.x, left.y - right.y);
+  return {
+    transitionCount: transitions.length,
+    uniqueZoneIds: [...new Set(transitions.map(({ zoneId }) => zoneId))],
+    maxLayoutDeltaPx: Math.round(Math.max(...transitions.map(({ samples }) => (
+      Math.max(...samples.map(({ layout }) => layoutDelta(layout)))
+    ))) * 100) / 100,
+    maxCenterErrorPx: Math.round(Math.max(...transitions.flatMap(({ samples }) => samples.map(centerError))) * 100) / 100,
+    maxSettledCameraJitterPx: Math.round(Math.max(...transitions.map(({ samples }) => {
+      const origin = samples[0].camera;
+      return Math.max(...samples.map(({ camera }) => cameraDistance(camera, origin)));
+    })) * 100) / 100,
+    cameraBoundsValid: transitions.every(({ samples }) => samples.every(({ cameraBoundsValid }) => cameraBoundsValid)),
+    layoutStable: transitions.every(({ samples }) => samples.every(({ horizontalOverflow }) => !horizontalOverflow)),
+    lowPerformanceModeStable: transitions.every(({ samples }) => samples.every(({ quality }) => (
+      quality.mode === "lite" && quality.effects === "minimal"
+    ))),
+    transitions
+  };
+}
+
 export function assessMobileSoakMetrics(metrics) {
   const issues = [];
   if (metrics.pageErrors.length > 0) issues.push(`페이지 오류 ${metrics.pageErrors.length}개`);
@@ -61,6 +105,20 @@ export function assessMobileSoakMetrics(metrics) {
   }
   if (Number.isFinite(metrics.settledJitterPx) && metrics.settledJitterPx > 0.75) {
     issues.push(`이동 정지 후 카메라 미세 흔들림 ${metrics.settledJitterPx}px`);
+  }
+  if (metrics.zoneTransitions) {
+    if (metrics.zoneTransitions.transitionCount < 12) issues.push(`구역 전환 표본 부족 ${metrics.zoneTransitions.transitionCount}/12`);
+    if (metrics.zoneTransitions.uniqueZoneIds.length < 6) issues.push(`구역 전환 범위 부족 ${metrics.zoneTransitions.uniqueZoneIds.length}/6`);
+    if (metrics.zoneTransitions.maxLayoutDeltaPx > 1) issues.push(`구역 전환 HUD/맵 틀어짐 ${metrics.zoneTransitions.maxLayoutDeltaPx}px`);
+    if (metrics.zoneTransitions.maxCenterErrorPx > 1.25) issues.push(`구역 전환 캐릭터 중심 오차 ${metrics.zoneTransitions.maxCenterErrorPx}px`);
+    if (metrics.zoneTransitions.maxSettledCameraJitterPx > 0.75) issues.push(`구역 전환 후 카메라 흔들림 ${metrics.zoneTransitions.maxSettledCameraJitterPx}px`);
+    if (!metrics.zoneTransitions.cameraBoundsValid) issues.push("구역 전환 카메라 맵 경계 이탈");
+    if (!metrics.zoneTransitions.layoutStable) issues.push("구역 전환 중 가로 화면 넘침");
+    if (!metrics.zoneTransitions.lowPerformanceModeStable) issues.push("구역 전환 중 저사양 렌더링 모드 이탈");
+    if (metrics.zoneTransitionFrameTimings) {
+      assessFrameTimingHeadroom(metrics.zoneTransitionFrameTimings, metrics.baselineFrameTimings)
+        .forEach((issue) => issues.push(`구역 전환 ${issue}`));
+    }
   }
   const baselineFps = Number.isFinite(metrics.baselineFps) ? metrics.baselineFps : 60;
   const relativeFps = baselineFps > 0 ? metrics.averageFps / baselineFps : 0;
@@ -268,6 +326,106 @@ async function sampleMovingFrameSeries(page, durationMs, sampleCount = 3) {
   };
 }
 
+async function readZoneTransitionSample(page, phase) {
+  return page.evaluate((samplePhase) => {
+    const player = document.querySelector(".world-player:not(.player--remote)");
+    const sprite = player?.querySelector(".character-sprite--world");
+    const map = document.querySelector(".world-map");
+    const stage = document.querySelector(".world-map__stage");
+    const hud = document.querySelector(".world-hud");
+    if (!(player instanceof HTMLElement) || !(sprite instanceof HTMLElement) || !(map instanceof HTMLElement)
+      || !(stage instanceof HTMLElement) || !(hud instanceof HTMLElement)) {
+      throw new Error("Zone transition sample elements are unavailable");
+    }
+    const toRect = (element) => {
+      const rect = element.getBoundingClientRect();
+      return { x: rect.x, y: rect.y, width: rect.width, height: rect.height };
+    };
+    const mapRect = map.getBoundingClientRect();
+    const spriteRect = sprite.getBoundingClientRect();
+    const playerStyle = getComputedStyle(player);
+    const transform = getComputedStyle(stage).transform;
+    const matrix = transform === "none" ? new DOMMatrixReadOnly() : new DOMMatrixReadOnly(transform);
+    const zoom = matrix.a || 1;
+    const logicalWidth = Number(stage.dataset.logicalWidth) || stage.offsetWidth;
+    const logicalHeight = Number(stage.dataset.logicalHeight) || stage.offsetHeight;
+    const scaledWidth = logicalWidth * zoom;
+    const scaledHeight = logicalHeight * zoom;
+    const xBounds = { min: Math.min(0, mapRect.width - scaledWidth), max: Math.max(0, mapRect.width - scaledWidth) };
+    const yBounds = { min: Math.min(0, mapRect.height - scaledHeight), max: Math.max(0, mapRect.height - scaledHeight) };
+    const centerOffsetX = Number.parseFloat(playerStyle.getPropertyValue("--character-world-anchor-offset-x")) || 0;
+    const centerY = Number.parseFloat(playerStyle.getPropertyValue("--character-world-anchor-y")) || spriteRect.height / 2;
+    const visualCenter = {
+      x: spriteRect.x + spriteRect.width / 2 + centerOffsetX * zoom,
+      y: spriteRect.y + centerY * zoom
+    };
+    const viewportCenter = { x: mapRect.x + mapRect.width / 2, y: mapRect.y + mapRect.height / 2 };
+    const centerable = {
+      x: scaledWidth > mapRect.width + 1 && matrix.m41 < -0.5 && matrix.m41 > mapRect.width - scaledWidth + 0.5,
+      y: scaledHeight > mapRect.height + 1 && matrix.m42 < -0.5 && matrix.m42 > mapRect.height - scaledHeight + 0.5
+    };
+    return {
+      phase: samplePhase,
+      zoneId: stage.dataset.zone,
+      camera: { x: matrix.m41, y: matrix.m42, zoom },
+      centerError: {
+        x: centerable.x ? visualCenter.x - viewportCenter.x : 0,
+        y: centerable.y ? visualCenter.y - viewportCenter.y : 0
+      },
+      cameraBoundsValid: matrix.m41 >= xBounds.min - 1 && matrix.m41 <= xBounds.max + 1
+        && matrix.m42 >= yBounds.min - 1 && matrix.m42 <= yBounds.max + 1,
+      horizontalOverflow: document.documentElement.scrollWidth > innerWidth + 1,
+      layout: { hud: toRect(hud), map: toRect(map) },
+      quality: {
+        mode: document.documentElement.dataset.performanceMode ?? null,
+        effects: document.documentElement.dataset.effectsQuality ?? null
+      }
+    };
+  }, phase);
+}
+
+async function sampleZoneTransitionSeries(page, baselineLayout) {
+  await page.evaluate(() => {
+    const trace = { active: true, previous: null, frameDeltas: [] };
+    const tick = (now) => {
+      if (!trace.active) return;
+      if (trace.previous !== null) trace.frameDeltas.push(now - trace.previous);
+      trace.previous = now;
+      requestAnimationFrame(tick);
+    };
+    window.__mobileZoneTransitionTrace = trace;
+    requestAnimationFrame(tick);
+  });
+  const transitions = [];
+  for (const target of mobileSoakZoneTransitionSequence) {
+    const toggle = page.locator(".world-hud__tools-toggle");
+    if (await toggle.getAttribute("aria-expanded") !== "true") await toggle.tap();
+    const vault = page.locator(".world-game-vault");
+    if (await vault.getAttribute("open") === null) await vault.locator(":scope > summary").tap();
+    await page.getByRole("button", { name: `${target.label} 바로 이동`, exact: true }).tap();
+    await page.waitForFunction((zoneId) => document.querySelector(".world-map__stage")?.getAttribute("data-zone") === zoneId, target.id);
+    await page.locator(".world-map__stage--background-loaded").waitFor({ state: "visible", timeout: 15_000 });
+    if (await toggle.getAttribute("aria-expanded") === "true") await toggle.tap();
+    await page.waitForTimeout(90);
+    const samples = [];
+    for (let index = 0; index < 4; index += 1) {
+      await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => resolve(true))));
+      samples.push(await readZoneTransitionSample(page, `settled-${index + 1}`));
+    }
+    transitions.push({ zoneId: target.id, samples });
+  }
+  const frameDeltas = await page.evaluate(() => {
+    const trace = window.__mobileZoneTransitionTrace;
+    if (!trace) return [];
+    trace.active = false;
+    return trace.frameDeltas;
+  });
+  return {
+    metrics: summarizeZoneTransitionSamples(transitions, baselineLayout),
+    frameTimings: summarizeFrameTimings(frameDeltas)
+  };
+}
+
 export async function runMobileDeviceSoakAudit({ rootDir, outputDir, port = 4179, durationMs = 5_000, interactionCount = 18 }) {
   const server = spawn("pnpm", ["--filter", "@wedding-game/client", "exec", "vite", "--host", "127.0.0.1", "--port", String(port), "--strictPort"], {
     cwd: rootDir,
@@ -375,6 +533,7 @@ export async function runMobileDeviceSoakAudit({ rootDir, outputDir, port = 4179
       const movingFrameSeries = await sampleMovingFrameSeries(page, durationMs);
       const applicationFrames = movingFrameSeries.frames;
       const movementMetrics = movingFrameSeries.movement;
+      const zoneTransitionSeries = await sampleZoneTransitionSeries(page, layoutBefore);
       const averageFps = applicationFrames.medianFps;
       const baselineFps = baselineFrames.medianFps;
       const automaticQuality = await page.evaluate(() => ({
@@ -391,6 +550,8 @@ export async function runMobileDeviceSoakAudit({ rootDir, outputDir, port = 4179
         layoutStable,
         ...invitationMetrics,
         ...movementMetrics,
+        zoneTransitions: zoneTransitionSeries.metrics,
+        zoneTransitionFrameTimings: zoneTransitionSeries.frameTimings,
         averageFps,
         baselineFps,
         frameRatio: baselineFps > 0 ? averageFps / baselineFps : null,

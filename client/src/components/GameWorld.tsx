@@ -14,6 +14,7 @@ import "../game-ui-font-critical.css";
 import { Accessibility, Archive, ArrowRight, CalendarDays, Camera, ChevronDown, CircleHelp, Flower2, Images, MapPinned, MessageCircle, RefreshCw, Share2, SlidersHorizontal, UsersRound, X } from "lucide-react";
 import {
   companionRendezvousProposalLifetimeMs,
+  guestPresetFrame,
   invitationContent,
   type ClientMessage,
   type CompanionPing,
@@ -26,7 +27,7 @@ import {
 import { shouldReduceMotion } from "../accessibility/viewPreferences";
 import { speakRouteVoiceMessage } from "../accessibility/routeVoiceGuidance";
 import { resolveCharacterPortraitUrl } from "../character/assets";
-import { worldCharacterAnchorStyle } from "../character/worldAnchor";
+import { resolveWorldCharacterAnchor, worldCharacterAnchorStyle } from "../character/worldAnchor";
 import {
   fetchSyncedJourneyProgress,
   journeyProgressSyncScope,
@@ -4347,10 +4348,10 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
       return {
         id: `portal:${portalItem.id}`,
         rect: {
-          x: entry.x + entry.width / 2 - 56,
-          y: entry.y + entry.height,
-          width: 112,
-          height: 20
+          x: entry.x + entry.width / 2 - 60,
+          y: entry.y - 18,
+          width: 120,
+          height: entry.height + 42
         },
         priority: targeted ? 116 : recommended ? 106 : 80
       };
@@ -4364,7 +4365,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
       );
       return {
         id: `npc:${npc.id}`,
-        rect: { x: motion.point.x - 42, y: motion.point.y + 25, width: 84, height: 20 },
+        rect: { x: motion.point.x - 48, y: motion.point.y - 52, width: 96, height: 152 },
         priority: activeNpcDialogue?.npcId === npc.id ? 130 : targeted ? 112 : 70
       };
     })
@@ -4420,7 +4421,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     : null;
   const remoteGuestNameplateObstacles: RemoteGuestNameplateObstacle[] = [
     ...worldLabelCandidates
-      .filter(({ id }) => worldLabelVisibility.get(id) !== "quiet")
+      .filter(({ id }) => id.startsWith("npc:") || worldLabelVisibility.get(id) !== "quiet")
       .map(({ id, rect }) => ({
         id,
         left: rect.x,
@@ -4450,7 +4451,14 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
       && guest.y <= remoteGuestNameplateBounds.bottom
         + Math.min(104, viewport.height * 0.22) / camera.zoom
         + 18
-    )),
+    )).map((guest) => {
+      const anchor = resolveWorldCharacterAnchor(guest.appearance, window.devicePixelRatio);
+      return {
+        ...guest,
+        x: guest.x - anchor.centerOffsetX,
+        y: guest.y + guestPresetFrame.display.world.height + 3 - anchor.centerY
+      };
+    }),
     remoteGuestNameplateBounds,
     remoteGuestNameplateObstacles
   );
