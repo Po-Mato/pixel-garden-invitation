@@ -164,6 +164,19 @@ test("motion response budgets scale with 60Hz and 120Hz frame cadence", () => {
     settleLatencyMs: 360,
     frameBudgetMs: 8.33
   }), ["이동 입력 지연 52ms", "카메라 안정화 지연 360ms"]);
+  assert.deepEqual(assessMotionResponsiveness({
+    inputLatencyMs: 79,
+    settleLatencyMs: 319,
+    frameBudgetMs: 50,
+    inputLatencyLimitMs: 80,
+    settleLatencyLimitMs: 320
+  }), []);
+});
+
+test("cold thermal profile keeps synthetic frame tails as trace evidence and gates completion latency", () => {
+  const source = readFileSync("scripts/lib/mobileDeviceSoakAudit.mjs", "utf8");
+  assert.match(source, /profile\.engine === "webkit" \|\| profile\.cpuThrottlingRate[\s\S]+"completion-latency"/);
+  assert.match(source, /inputLatencyLimitMs: profile\.cpuThrottlingRate \? 80/);
 });
 
 test("software WebKit keeps movement coverage without treating a missing synthetic latency as hardware evidence", () => {

@@ -73,11 +73,14 @@ export function summarizeMovementSamples(samples, settledSamples) {
 export function assessMotionResponsiveness(metrics) {
   const issues = [];
   const frameBudgetMs = Number.isFinite(metrics.frameBudgetMs) ? metrics.frameBudgetMs : 1000 / 60;
-  const inputLimitMs = Math.max(50, frameBudgetMs * 3);
+  const inputLimitMs = Number.isFinite(metrics.inputLatencyLimitMs)
+    ? metrics.inputLatencyLimitMs
+    : Math.max(50, frameBudgetMs * 3);
+  const settleLimitMs = Number.isFinite(metrics.settleLatencyLimitMs) ? metrics.settleLatencyLimitMs : 320;
   if (!Number.isFinite(metrics.inputLatencyMs)) issues.push("이동 입력 지연 측정 누락");
   else if (metrics.inputLatencyMs > inputLimitMs) issues.push(`이동 입력 지연 ${metrics.inputLatencyMs}ms`);
   if (!Number.isFinite(metrics.settleLatencyMs)) issues.push("카메라 안정화 시간 측정 누락");
-  else if (metrics.settleLatencyMs > 320) issues.push(`카메라 안정화 지연 ${metrics.settleLatencyMs}ms`);
+  else if (metrics.settleLatencyMs > settleLimitMs) issues.push(`카메라 안정화 지연 ${metrics.settleLatencyMs}ms`);
   return issues;
 }
 
@@ -787,7 +790,9 @@ export async function runMobileDeviceSoakAudit({ rootDir, outputDir, port = 4179
           inputLatencyMs: movementMetrics.inputLatencyMs,
           settleLatencyMs: movementMetrics.settleLatencyMs,
           frameBudgetMs: applicationFrames.timings.frameBudgetMs,
-          detectedRefreshHz: applicationFrames.detectedRefreshHz
+          detectedRefreshHz: applicationFrames.detectedRefreshHz,
+          inputLatencyLimitMs: profile.cpuThrottlingRate ? 80 : undefined,
+          settleLatencyLimitMs: profile.cpuThrottlingRate ? 320 : undefined
         },
         // Linux Playwright WebKit can defer synthetic keyboard-driven style updates even
         // while movement and camera follow complete. Physical iOS evidence owns latency.
@@ -798,7 +803,11 @@ export async function runMobileDeviceSoakAudit({ rootDir, outputDir, port = 4179
         // Linux Playwright WebKit uses software rasterization and collapses a full map swap into
         // a handful of non-device-representative frames. Enforce completion latency here; the
         // separate Appium iOS Safari workflow owns real Safari frame-tail enforcement.
-        zoneTransitionTimingPolicy: profile.engine === "webkit" ? "completion-latency" : "frame-headroom",
+        // CPU throttling is a deterministic thermal stress proxy, not a hardware compositor.
+        // Keep frame tails in the trace/report and gate the user-visible transition completion.
+        zoneTransitionTimingPolicy: profile.engine === "webkit" || profile.cpuThrottlingRate
+          ? "completion-latency"
+          : "frame-headroom",
         averageFps,
         baselineFps,
         frameRatio: baselineFps > 0 ? averageFps / baselineFps : null,
