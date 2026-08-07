@@ -1,4 +1,5 @@
 import { execFile } from "node:child_process";
+import { createHash } from "node:crypto";
 import { access, mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -34,6 +35,35 @@ async function loadEvidence() {
   return JSON.parse(await readFile(evidencePath, "utf8"));
 }
 
+async function verifyArtifact(item, baseDir) {
+  if (!item || typeof item.artifactPath !== "string" || !/^[a-f0-9]{64}$/i.test(item.artifactSha256 ?? "")) {
+    return item;
+  }
+  try {
+    const artifact = await readFile(path.resolve(baseDir, item.artifactPath));
+    const actualSha256 = createHash("sha256").update(artifact).digest("hex");
+    return { ...item, artifactVerified: actualSha256 === item.artifactSha256.toLowerCase(), actualSha256 };
+  } catch {
+    return { ...item, artifactVerified: false, actualSha256: null };
+  }
+}
+
+async function verifyEvidenceArtifacts(evidence) {
+  const baseDir = evidencePath ? path.dirname(path.resolve(evidencePath)) : rootDir;
+  const [android, ios, displayCalibration, motion] = await Promise.all([
+    verifyArtifact(evidence.accessibility?.android, baseDir),
+    verifyArtifact(evidence.accessibility?.ios, baseDir),
+    Promise.all((evidence.displayCalibration ?? []).map((item) => verifyArtifact(item, baseDir))),
+    Promise.all((evidence.motion ?? []).map((item) => verifyArtifact(item, baseDir)))
+  ]);
+  return {
+    ...evidence,
+    accessibility: { ...evidence.accessibility, ...(android ? { android } : {}), ...(ios ? { ios } : {}) },
+    displayCalibration,
+    motion
+  };
+}
+
 const [adbOutput, xctraceOutput, displayOutput, loadedEvidence] = await Promise.all([
   optionalCommand("adb", ["devices", "-l"]),
   optionalCommand("xcrun", ["xctrace", "list", "devices"]),
@@ -50,12 +80,13 @@ const [androidAccessibilityEnabled, androidAccessibilityServices] = androidDevic
   : ["", ""];
 const talkBackEnabled = androidAccessibilityEnabled.trim() === "1"
   && /(talkback|screenreader)/i.test(androidAccessibilityServices);
+const verifiedEvidence = await verifyEvidenceArtifacts(loadedEvidence);
 const evidence = {
-  ...loadedEvidence,
+  ...verifiedEvidence,
   accessibility: {
-    ...loadedEvidence.accessibility,
-    ...(loadedEvidence.accessibility?.android ? {
-      android: { ...loadedEvidence.accessibility.android, screenReaderEnabled: talkBackEnabled }
+    ...verifiedEvidence.accessibility,
+    ...(verifiedEvidence.accessibility?.android ? {
+      android: { ...verifiedEvidence.accessibility.android, screenReaderEnabled: talkBackEnabled }
     } : {})
   }
 };

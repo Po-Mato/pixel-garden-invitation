@@ -28,6 +28,7 @@ console.log(
     `${report.width}x${report.height} ${report.metrics.venueLines}줄/${report.metrics.addressLines}줄`
   )).join(" · ")}`
 );
+console.log(`200% 접근성 동선: ${result.largeTextAccessibilityAudit.reports.map((report) => `${report.width}x${report.height} ${report.focusOrder.join(" → ")}`).join(" · ")}`);
 console.log(`맵 가장자리 긴 이름표: ${result.remoteNameplateCrowd.reports.map(({ count, edge }) => `${edge} ${count}명`).join(" · ")}`);
 console.log(`실시간 장애 비차단 회귀: ${result.realtimeResilience.phases.join(" → ")} · 레이아웃 변화 ${result.realtimeResilience.maximumLayoutDelta}px`);
 console.log(`보고서: ${result.reportPath}`);

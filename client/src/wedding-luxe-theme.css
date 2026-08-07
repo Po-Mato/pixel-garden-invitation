@@ -397,13 +397,13 @@ body {
 .directions-sheet :is(.directions-sheet__venue, .directions-sheet__info, .directions-sheet__phone) strong {
   line-height: 1.32;
   letter-spacing: -0.018em;
-  overflow-wrap: break-word;
+  overflow-wrap: anywhere;
   word-break: keep-all;
 }
 
 .directions-sheet :is(.directions-sheet__venue, .directions-sheet__info) span {
   line-height: 1.55;
-  overflow-wrap: break-word;
+  overflow-wrap: anywhere;
   word-break: keep-all;
 }
 

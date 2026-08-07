@@ -59,12 +59,13 @@ function result(): InvitationAnalyticsAdminResponse {
     qualityGuard: {
       window: { from: "2026-07-16", to: "2026-07-22", days: 7 },
       status: "stable",
-      minimumActiveDays: 5,
+      minimumActiveDays: 7,
       minimumSamples: 20,
+      calibrationStatus: "ready",
       metrics: [
-        { key: "camera-center", label: "캐릭터 중심 오차", unit: "px", sampleCount: 28, activeDays: 7, average: 0.5, alertThreshold: 2, status: "stable" },
-        { key: "cls", label: "화면 배치 흔들림", unit: "score", sampleCount: 28, activeDays: 7, average: 0.012, alertThreshold: 0.1, status: "stable" },
-        { key: "long-frame", label: "긴 프레임 p95", unit: "ms", sampleCount: 28, activeDays: 7, average: 64, alertThreshold: 100, status: "stable" }
+        { key: "camera-center", label: "캐릭터 중심 오차", unit: "px", sampleCount: 28, activeDays: 7, average: 0.5, alertThreshold: 2, status: "stable", calibration: { status: "ready", remainingActiveDays: 0, remainingSamples: 0, dailyP95: 0.7, suggestedThreshold: 2, decision: "retain" } },
+        { key: "cls", label: "화면 배치 흔들림", unit: "score", sampleCount: 28, activeDays: 7, average: 0.012, alertThreshold: 0.1, status: "stable", calibration: { status: "ready", remainingActiveDays: 0, remainingSamples: 0, dailyP95: 0.02, suggestedThreshold: 0.1, decision: "retain" } },
+        { key: "long-frame", label: "긴 프레임 p95", unit: "ms", sampleCount: 28, activeDays: 7, average: 64, alertThreshold: 100, status: "stable", calibration: { status: "ready", remainingActiveDays: 0, remainingSamples: 0, dailyP95: 72, suggestedThreshold: 100, decision: "retain" } }
       ],
       generatedAt: "2026-07-22T03:00:00.000Z"
     },
@@ -151,6 +152,8 @@ describe("AnalyticsAdminPage", () => {
     expect(screen.getByRole("heading", { name: "7일 품질 경보" })).toBeInTheDocument();
     expect(screen.getByRole("region", { name: "7일 품질 경보" })).toHaveTextContent("정상 범위");
     expect(screen.getByRole("region", { name: "7일 품질 경보" })).toHaveTextContent("기준 100ms");
+    expect(screen.getByRole("region", { name: "7일 품질 경보" })).toHaveTextContent("그림자 보정 준비 완료");
+    expect(screen.getByRole("region", { name: "7일 품질 경보" })).toHaveTextContent("일별 p95 72ms");
     expect(screen.getByText(/FPS 표본 4회/)).toBeInTheDocument();
     expect(screen.getByText(/캐릭터 자동 대체 2회/)).toBeInTheDocument();
     expect(screen.getByRole("region", { name: "대체된 캐릭터 이미지" })).toHaveTextContent("더스티 로즈 원피스");

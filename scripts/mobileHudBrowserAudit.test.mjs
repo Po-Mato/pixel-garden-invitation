@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {
   auditInvitationQualityMetrics,
+  auditLargeTextAccessibilityFlow,
   auditHudTextContainment,
   auditLongVenueLayout,
   auditMobileHudRectangles,
@@ -15,6 +16,7 @@ import {
   dynamicViewportResizeApplied,
   iosSafariText200AuditCss,
   iosText200AuditCss,
+  largeTextAccessibilityProfiles,
   longVenueAuditProfiles,
   mobileHudAuditViewports,
   mobileHudCollisionMatrixProfiles,
@@ -79,6 +81,37 @@ test("long venue audit covers the narrowest portrait and landscape phones", () =
   assert.deepEqual(longVenueAuditProfiles, [
     { id: "venue-320-portrait", width: 320, height: 568, orientation: "portrait" },
     { id: "venue-568-landscape", width: 568, height: 320, orientation: "landscape" }
+  ]);
+});
+
+test("200% semantic flow covers 320px portrait and 320px-high landscape", () => {
+  assert.deepEqual(largeTextAccessibilityProfiles, [
+    { id: "compact-portrait-320-text-200", width: 320, height: 568, orientation: "portrait", textScale: "ios-200" },
+    { id: "compact-landscape-568x320-text-200", width: 568, height: 320, orientation: "landscape", textScale: "ios-200" }
+  ]);
+  const ready = {
+    dialogNamed: true,
+    modal: true,
+    underlyingContentInert: true,
+    initialFocusOnHeading: true,
+    focusTrapWrapped: true,
+    focusRestored: true,
+    menuRemainedOpen: true,
+    sheetContained: true,
+    contentContained: true,
+    touchTargetsReady: true,
+    focusOrder: ["닫기", "주소 복사", "네이버지도", "카카오맵", "Google 지도", "032-123-4567 전화하기"]
+  };
+  assert.deepEqual(auditLargeTextAccessibilityFlow(ready), []);
+  assert.deepEqual(auditLargeTextAccessibilityFlow({
+    ...ready,
+    underlyingContentInert: false,
+    focusRestored: false,
+    focusOrder: ["주소 복사", "닫기"]
+  }), [
+    "오시는 길 뒤 콘텐츠 스크린리더 격리 실패",
+    "오시는 길 닫기 후 메뉴 포커스 복원 실패",
+    "오시는 길 스크린리더 탐색 순서 불일치"
   ]);
 });
 

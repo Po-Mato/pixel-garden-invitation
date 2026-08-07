@@ -84,8 +84,9 @@ describe("invitation analytics HTTP", () => {
     mockedQualityGuard.getInvitationExperienceQualityGuard.mockResolvedValue({
       window: { from: "2026-07-16", to: "2026-07-22", days: 7 },
       status: "collecting",
-      minimumActiveDays: 5,
+      minimumActiveDays: 7,
       minimumSamples: 20,
+      calibrationStatus: "locked",
       metrics: [],
       generatedAt: "2026-07-22T00:00:00.000Z"
     });

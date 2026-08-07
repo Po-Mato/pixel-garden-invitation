@@ -213,6 +213,8 @@
 .analytics-quality-guard header > strong { color: var(--analytics-green); font-size: 11px; }
 .analytics-quality-guard[data-status="collecting"] header > strong { color: var(--analytics-gold); }
 .analytics-quality-guard[data-status="watch"] header > strong { color: #a14747; }
+.analytics-quality-guard__calibration { margin: 12px 0 0; border-radius: 7px; padding: 7px 10px; background: #f2f5f0; color: var(--analytics-muted); font-size: 9px; line-height: 1.5; }
+.analytics-quality-guard__calibration[data-status="locked"] { background: #fbf6e8; color: #795f26; }
 .analytics-quality-guard__metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 7px; margin-top: 13px; }
 .analytics-quality-guard__metrics article { display: grid; gap: 3px; border-left: 3px solid #78917d; padding: 9px 10px; background: #fff; }
 .analytics-quality-guard__metrics article[data-status="collecting"] { border-left-color: #c3a65d; }

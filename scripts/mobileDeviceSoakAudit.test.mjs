@@ -7,11 +7,50 @@ import {
   mobileSoakProfiles,
   summarizeFrameSamples,
   summarizeMovementSamples,
+  summarizeZoneBottlenecks,
   summarizeZoneTransitionSamples
 } from "./lib/mobileDeviceSoakAudit.mjs";
 
-test("mobile soak covers Android Chromium and iOS WebKit", () => {
-  assert.deepEqual(mobileSoakProfiles.map(({ id }) => id), ["android-chromium", "ios-webkit"]);
+test("mobile soak covers Android Chromium, iOS WebKit, and a battery-constrained Android", () => {
+  assert.deepEqual(mobileSoakProfiles.map(({ id }) => id), [
+    "android-chromium", "ios-webkit", "android-chromium-low-power"
+  ]);
+});
+
+test("mobile soak identifies the worst low-power zone from repeated frame tails", () => {
+  const transitions = [
+    { zoneId: "home", durationMs: 300, frameDeltas: [16, 17, 18] },
+    { zoneId: "lobby", durationMs: 420, frameDeltas: [16, 20, 88] },
+    { zoneId: "home", durationMs: 320, frameDeltas: [16, 17, 19] },
+    { zoneId: "lobby", durationMs: 450, frameDeltas: [17, 24, 96] }
+  ];
+  const summary = summarizeZoneBottlenecks(transitions);
+  assert.equal(summary.worstZoneId, "lobby");
+  assert.equal(summary.zones[0].transitionCount, 2);
+  assert.equal(summary.zones[0].maximumTransitionDurationMs, 450);
+  assert.ok(summary.zones[0].p99FrameMs > summary.zones[1].p99FrameMs);
+});
+
+test("battery soak requires automatic minimal effects and a worst-zone trace", () => {
+  const base = {
+    pageErrors: [], failedRequests: [], touchResponded: true, layoutStable: true,
+    typographyFallbackReady: true, sheetContained: true, averageFps: 58, baselineFps: 60,
+    heapGrowthRatio: null, expectedPowerMode: "battery"
+  };
+  assert.deepEqual(assessMobileSoakMetrics({
+    ...base,
+    automaticQuality: { reason: "battery", effects: "minimal" },
+    zoneBottlenecks: { worstZoneId: "lobby" }
+  }), []);
+  assert.deepEqual(assessMobileSoakMetrics({
+    ...base,
+    automaticQuality: { reason: "standard", effects: "full" },
+    zoneBottlenecks: { worstZoneId: null }
+  }), [
+    "저전력 배터리 모드 자동 감지 실패",
+    "저전력 효과 최소화 실패",
+    "저전력 최악 구역 프레임 추적 누락"
+  ]);
 });
 
 test("mobile soak closes invitation overlays before measuring movement frames", () => {

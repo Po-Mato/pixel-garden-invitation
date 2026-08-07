@@ -6,6 +6,7 @@ import {
   parseDisplays,
   parseXctraceDevices,
   physicalAccessibilityFlow,
+  physicalQualityEvidenceVersion,
   requiredDisplayScenarios,
   requiredMotionScenarios
 } from "./lib/physicalQualityAudit.mjs";
@@ -34,26 +35,56 @@ test("device discovery parsers reject simulators and offline Android devices", (
 
 test("physical quality evidence passes only when every real-device scenario is complete", () => {
   const flow = Object.fromEntries(physicalAccessibilityFlow.map((step) => [step, true]));
+  const integrity = {
+    reviewedBy: "QA",
+    capturedAt: "2026-08-07T03:00:00.000Z",
+    artifactPath: "evidence.mp4",
+    artifactSha256: "a".repeat(64),
+    artifactVerified: true
+  };
   const evidence = {
+    version: physicalQualityEvidenceVersion,
     accessibility: {
-      android: { deviceId: "android-1", screenReaderEnabled: true, flow },
-      ios: { deviceId: "ios-1", screenReaderEnabled: true, flow }
+      android: { ...integrity, deviceId: "android-1", screenReaderEnabled: true, flow },
+      ios: { ...integrity, deviceId: "ios-1", screenReaderEnabled: true, flow }
     },
     displayCalibration: requiredDisplayScenarios.map((id) => ({
-      id, deviceModel: "fixture", panel: id.startsWith("oled") ? "oled" : "lcd",
+      ...integrity, id, deviceModel: "fixture", panel: id.startsWith("oled") ? "oled" : "lcd",
       brightnessPercent: 20, ambientLux: 50, labelsReadable: true,
       characterEdgesClear: true, uiOverlapFree: true
     })),
     motion: requiredMotionScenarios.map(({ id }) => ({
-      id, inputLatencyMs: 20, settleLatencyMs: 120, settledJitterPx: 0.25
+      ...integrity, id, inputLatencyMs: 20, settleLatencyMs: 120, settledJitterPx: 0.25
     }))
   };
   const report = assessPhysicalQualityEvidence({
     evidence,
     androidDevices: [{ id: "android-1", detail: "Pixel" }],
     iosDevices: [{ id: "ios-1", detail: "iPhone" }],
-    displays: []
+    displays: [],
+    now: new Date("2026-08-07T04:00:00.000Z")
   });
   assert.equal(report.status, "passed");
   assert.deepEqual(report.issues, []);
+});
+
+test("physical quality evidence rejects stale or checksum-unbound captures", () => {
+  const report = assessPhysicalQualityEvidence({
+    evidence: {
+      version: physicalQualityEvidenceVersion,
+      accessibility: {
+        android: {
+          deviceId: "android-1", reviewedBy: "QA", capturedAt: "2026-07-01T00:00:00.000Z",
+          artifactPath: "talkback.mp4", artifactSha256: "b".repeat(64), artifactVerified: false,
+          screenReaderEnabled: true,
+          flow: Object.fromEntries(physicalAccessibilityFlow.map((step) => [step, true]))
+        }
+      }
+    },
+    androidDevices: [{ id: "android-1", detail: "Pixel" }],
+    now: new Date("2026-08-07T04:00:00.000Z")
+  });
+  assert.equal(report.status, "pending");
+  assert.ok(report.issues.includes("android 증거가 14일보다 오래됨"));
+  assert.ok(report.issues.includes("android 증거 파일 SHA-256 불일치"));
 });

@@ -12,7 +12,7 @@ type QualityDailyRow = {
 
 const DAY_MS = 86_400_000;
 const WINDOW_DAYS = 7;
-export const EXPERIENCE_QUALITY_MINIMUM_ACTIVE_DAYS = 5;
+export const EXPERIENCE_QUALITY_MINIMUM_ACTIVE_DAYS = 7;
 export const EXPERIENCE_QUALITY_MINIMUM_SAMPLES = 20;
 
 const definitions = Object.freeze([
@@ -41,6 +41,15 @@ function metricAverage(eventName: QualityDailyRow["event_name"], valueSum: numbe
   return Math.round(average);
 }
 
+function percentile(values: readonly number[], ratio: number): number | null {
+  if (values.length === 0) return null;
+  const sorted = [...values].sort((left, right) => left - right);
+  const position = (sorted.length - 1) * ratio;
+  const lower = Math.floor(position);
+  const upper = Math.ceil(position);
+  return sorted[lower] * (1 - (position - lower)) + sorted[upper] * (position - lower);
+}
+
 export function buildInvitationExperienceQualityGuard(
   rows: readonly QualityDailyRow[],
   input: { to: string; now?: Date }
@@ -53,6 +62,16 @@ export function buildInvitationExperienceQualityGuard(
     const average = sampleCount > 0 ? metricAverage(definition.eventName, valueSum, sampleCount) : null;
     const ready = activeDays >= EXPERIENCE_QUALITY_MINIMUM_ACTIVE_DAYS
       && sampleCount >= EXPERIENCE_QUALITY_MINIMUM_SAMPLES;
+    const dailyP95Value = ready ? percentile(matching
+      .filter((row) => row.sample_count > 0)
+      .map((row) => metricAverage(definition.eventName, Number(row.value_sum), Number(row.sample_count))), 0.95) : null;
+    const dailyP95 = dailyP95Value === null ? null : definition.eventName === "quality_cls"
+      ? round(dailyP95Value, 3)
+      : definition.eventName === "quality_camera_center" ? round(dailyP95Value, 1) : Math.round(dailyP95Value);
+    const suggestionValue = dailyP95 === null ? null : Math.max(definition.alertThreshold, dailyP95 * 1.25);
+    const suggestedThreshold = suggestionValue === null ? null : definition.eventName === "quality_cls"
+      ? round(suggestionValue, 3)
+      : definition.eventName === "quality_camera_center" ? round(suggestionValue, 1) : Math.round(suggestionValue);
     return {
       key: definition.key,
       label: definition.label,
@@ -61,7 +80,16 @@ export function buildInvitationExperienceQualityGuard(
       activeDays,
       average,
       alertThreshold: definition.alertThreshold,
-      status: !ready ? "collecting" : average !== null && average > definition.alertThreshold ? "watch" : "stable"
+      status: !ready ? "collecting" : average !== null && average > definition.alertThreshold ? "watch" : "stable",
+      calibration: {
+        status: ready ? "ready" : "locked",
+        remainingActiveDays: Math.max(0, EXPERIENCE_QUALITY_MINIMUM_ACTIVE_DAYS - activeDays),
+        remainingSamples: Math.max(0, EXPERIENCE_QUALITY_MINIMUM_SAMPLES - sampleCount),
+        dailyP95,
+        suggestedThreshold,
+        decision: !ready ? "collect-more" : suggestedThreshold !== null
+          && suggestedThreshold > definition.alertThreshold * 1.1 ? "review-increase" : "retain"
+      }
     };
   });
   const status = metrics.some((metric) => metric.status === "watch")
@@ -72,6 +100,7 @@ export function buildInvitationExperienceQualityGuard(
     status,
     minimumActiveDays: EXPERIENCE_QUALITY_MINIMUM_ACTIVE_DAYS,
     minimumSamples: EXPERIENCE_QUALITY_MINIMUM_SAMPLES,
+    calibrationStatus: metrics.every((metric) => metric.calibration.status === "ready") ? "ready" : "locked",
     metrics,
     generatedAt: (input.now ?? new Date()).toISOString()
   };

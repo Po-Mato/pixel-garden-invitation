@@ -5,7 +5,8 @@ import { assessFrameTimingHeadroom, summarizeFrameTimings } from "./frameTimingM
 
 export const mobileSoakProfiles = Object.freeze([
   { id: "android-chromium", engine: "chromium", device: "Pixel 7" },
-  { id: "ios-webkit", engine: "webkit", device: "iPhone 13" }
+  { id: "ios-webkit", engine: "webkit", device: "iPhone 13" },
+  { id: "android-chromium-low-power", engine: "chromium", device: "Pixel 7", powerMode: "battery" }
 ]);
 
 export const mobileSoakZoneTransitionSequence = Object.freeze([
@@ -99,10 +100,36 @@ export function summarizeZoneTransitionSamples(transitions, baselineLayout) {
     cameraBoundsValid: transitions.every(({ samples }) => samples.every(({ cameraBoundsValid }) => cameraBoundsValid)),
     layoutStable: transitions.every(({ samples }) => samples.every(({ horizontalOverflow }) => !horizontalOverflow)),
     lowPerformanceModeStable: transitions.every(({ samples }) => samples.every(({ quality }) => (
-      quality.mode === "lite" && quality.effects === "minimal"
+      (quality.mode === "lite" && quality.effects === "minimal")
+      || (quality.reason === "battery" && quality.effects === "minimal")
     ))),
     transitions
   };
+}
+
+export function summarizeZoneBottlenecks(transitions) {
+  if (!Array.isArray(transitions) || transitions.length === 0) {
+    throw new TypeError("Zone bottleneck samples must contain at least one transition");
+  }
+  const grouped = new Map();
+  for (const transition of transitions) {
+    const current = grouped.get(transition.zoneId) ?? { durations: [], frameDeltas: [] };
+    current.durations.push(Number(transition.durationMs));
+    current.frameDeltas.push(...(transition.frameDeltas ?? []));
+    grouped.set(transition.zoneId, current);
+  }
+  const zones = [...grouped.entries()].map(([zoneId, samples]) => {
+    const timings = summarizeFrameTimings(samples.frameDeltas);
+    return {
+      zoneId,
+      transitionCount: samples.durations.length,
+      averageTransitionDurationMs: Math.round(samples.durations.reduce((sum, value) => sum + value, 0) / samples.durations.length * 100) / 100,
+      maximumTransitionDurationMs: Math.round(Math.max(...samples.durations) * 100) / 100,
+      ...timings
+    };
+  }).sort((left, right) => right.p99FrameMs - left.p99FrameMs
+    || right.maximumTransitionDurationMs - left.maximumTransitionDurationMs);
+  return { worstZoneId: zones[0].zoneId, zones };
 }
 
 export function assessMobileSoakMetrics(metrics) {
@@ -140,6 +167,11 @@ export function assessMobileSoakMetrics(metrics) {
       assessFrameTimingHeadroom(metrics.zoneTransitionFrameTimings, metrics.baselineFrameTimings)
         .forEach((issue) => issues.push(`구역 전환 ${issue}`));
     }
+  }
+  if (metrics.expectedPowerMode === "battery") {
+    if (metrics.automaticQuality?.reason !== "battery") issues.push("저전력 배터리 모드 자동 감지 실패");
+    if (metrics.automaticQuality?.effects !== "minimal") issues.push("저전력 효과 최소화 실패");
+    if (!metrics.zoneBottlenecks?.worstZoneId) issues.push("저전력 최악 구역 프레임 추적 누락");
   }
   const baselineFps = Number.isFinite(metrics.baselineFps) ? metrics.baselineFps : 60;
   const relativeFps = baselineFps > 0 ? metrics.averageFps / baselineFps : 0;
@@ -472,6 +504,7 @@ async function captureZoneTransitionInPage(page, target) {
       layout: { hud: toRect(hud), map: toRect(map) },
       quality: {
         mode: document.documentElement.dataset.performanceMode ?? null,
+        reason: document.documentElement.dataset.performanceReason ?? null,
         effects: document.documentElement.dataset.effectsQuality ?? null
       }
     };
@@ -506,6 +539,7 @@ async function sampleZoneTransitionSeries(page, baselineLayout) {
       zoneId: target.id,
       durationMs,
       samples,
+      frameDeltas: transitionFrameDeltas,
       frameTimings: summarizeFrameTimings(transitionFrameDeltas)
     });
   }
@@ -530,6 +564,8 @@ export async function runMobileDeviceSoakAudit({ rootDir, outputDir, port = 4179
     for (const profile of mobileSoakProfiles) {
       const browser = await playwright[profile.engine].launch({ headless: true });
       const context = await browser.newContext({ ...playwright.devices[profile.device] });
+      const tracePath = profile.powerMode === "battery" ? path.join(outputDir, `${profile.id}-trace.zip`) : null;
+      if (tracePath) await context.tracing.start({ screenshots: true, snapshots: true, sources: true });
       await context.route("http://127.0.0.1:8787/**", (route) => route.fulfill({
         status: 404,
         contentType: "application/json",
@@ -544,8 +580,15 @@ export async function runMobileDeviceSoakAudit({ rootDir, outputDir, port = 4179
         const failure = request.failure()?.errorText ?? "unknown";
         if (!failure.includes("ERR_ABORTED") && !failure.includes("cancelled")) failedRequests.push(`${request.url()} ${failure}`);
       });
-      await page.addInitScript(() => {
-        Object.defineProperty(navigator, "hardwareConcurrency", { configurable: true, get: () => 4 });
+      await page.addInitScript(({ powerMode }) => {
+        Object.defineProperty(navigator, "hardwareConcurrency", { configurable: true, get: () => powerMode === "battery" ? 8 : 4 });
+        if (powerMode === "battery") {
+          Object.defineProperty(navigator, "deviceMemory", { configurable: true, get: () => 8 });
+          Object.defineProperty(navigator, "getBattery", {
+            configurable: true,
+            value: async () => ({ charging: false, level: 0.08, addEventListener() {}, removeEventListener() {} })
+          });
+        }
         localStorage.setItem("wedding-game:entry-session:v1", JSON.stringify({
           version: 1,
           nickname: "장시간감사",
@@ -553,7 +596,7 @@ export async function runMobileDeviceSoakAudit({ rootDir, outputDir, port = 4179
           updatedAt: new Date().toISOString()
         }));
         localStorage.setItem("wedding-game:first-visit-guide:v1", JSON.stringify({ version: 1, completed: true }));
-      });
+      }, { powerMode: profile.powerMode ?? "constrained" });
       await page.goto(url, { waitUntil: "networkidle" });
       const resumeGarden = page.locator(".entry-screen__resume-access");
       if (await resumeGarden.isVisible().catch(() => false)) {
@@ -561,6 +604,10 @@ export async function runMobileDeviceSoakAudit({ rootDir, outputDir, port = 4179
       }
       await page.locator(".game-world").waitFor({ state: "visible" });
       await page.locator(".world-map__stage--background-loaded").waitFor({ state: "visible", timeout: 15_000 });
+      if (profile.powerMode === "battery") {
+        await page.waitForFunction(() => document.documentElement.dataset.performanceReason === "battery"
+          && document.documentElement.dataset.effectsQuality === "minimal");
+      }
       const readStableLayout = () => page.evaluate(() => {
         const read = (selector) => {
           const element = document.querySelector(selector);
@@ -623,6 +670,7 @@ export async function runMobileDeviceSoakAudit({ rootDir, outputDir, port = 4179
       const applicationFrames = movingFrameSeries.frames;
       const movementMetrics = movingFrameSeries.movement;
       const zoneTransitionSeries = await sampleZoneTransitionSeries(page, layoutBefore);
+      const zoneBottlenecks = summarizeZoneBottlenecks(zoneTransitionSeries.metrics.transitions);
       const averageFps = applicationFrames.medianFps;
       const baselineFps = baselineFrames.medianFps;
       const automaticQuality = await page.evaluate(() => ({
@@ -649,6 +697,7 @@ export async function runMobileDeviceSoakAudit({ rootDir, outputDir, port = 4179
         // while movement and camera follow complete. Physical iOS evidence owns latency.
         motionResponseTimingPolicy: profile.engine === "webkit" ? "availability-only" : "frame-budget",
         zoneTransitions: zoneTransitionSeries.metrics,
+        zoneBottlenecks,
         zoneTransitionFrameTimings: zoneTransitionSeries.frameTimings,
         // Linux Playwright WebKit uses software rasterization and collapses a full map swap into
         // a handful of non-device-representative frames. Enforce completion latency here; the
@@ -662,6 +711,7 @@ export async function runMobileDeviceSoakAudit({ rootDir, outputDir, port = 4179
         frameTimings: applicationFrames.timings,
         baselineFrameTimings: baselineFrames.timings,
         automaticQuality,
+        expectedPowerMode: profile.powerMode ?? null,
         beforeHeap,
         afterHeap,
         heapGrowthRatio
@@ -669,7 +719,8 @@ export async function runMobileDeviceSoakAudit({ rootDir, outputDir, port = 4179
       const issues = assessMobileSoakMetrics(metrics);
       const screenshotPath = path.join(outputDir, `${profile.id}.png`);
       await page.screenshot({ path: screenshotPath, fullPage: false });
-      reports.push({ ...profile, durationMs, interactionCount, metrics, issues, screenshotPath });
+      if (tracePath) await context.tracing.stop({ path: tracePath });
+      reports.push({ ...profile, durationMs, interactionCount, metrics, issues, screenshotPath, tracePath });
       await context.close();
       await browser.close();
     }

@@ -412,12 +412,20 @@ export function AnalyticsAdminPage() {
                 <div><p>7-DAY QUALITY GUARD</p><h2 id="analytics-quality-guard-title">7일 품질 경보</h2><span>{analytics.qualityGuard.window.from} - {analytics.qualityGuard.window.to} · 개인별 기록 없이 일별 합계만 판정</span></div>
                 <strong>{analytics.qualityGuard.status === "watch" ? "확인 필요" : analytics.qualityGuard.status === "stable" ? "정상 범위" : "표본 수집 중"}</strong>
               </header>
+              <p className="analytics-quality-guard__calibration" data-status={analytics.qualityGuard.calibrationStatus}>
+                {analytics.qualityGuard.calibrationStatus === "ready"
+                  ? "그림자 보정 준비 완료 · 후보 임계값은 검토 후에만 반영됩니다."
+                  : "그림자 보정 잠금 · 각 지표가 7일·20표본을 채울 때까지 현재 기준을 유지합니다."}
+              </p>
               <div className="analytics-quality-guard__metrics">
                 {analytics.qualityGuard.metrics.map((metric) => (
                   <article key={metric.key} data-status={metric.status}>
                     <span>{metric.label}</span>
                     <strong>{metric.average === null ? "집계 전" : `${metric.average}${metric.unit === "score" ? "" : metric.unit}`}</strong>
                     <small>기준 {metric.alertThreshold}{metric.unit === "score" ? "" : metric.unit} · {metric.activeDays}/{analytics.qualityGuard.minimumActiveDays}일 · {formatNumber(metric.sampleCount)}/{analytics.qualityGuard.minimumSamples}표본</small>
+                    <small>{metric.calibration.status === "ready"
+                      ? `일별 p95 ${metric.calibration.dailyP95}${metric.unit === "score" ? "" : metric.unit} · 후보 ${metric.calibration.suggestedThreshold}${metric.unit === "score" ? "" : metric.unit} (${metric.calibration.decision === "retain" ? "현 기준 유지" : "상향 검토"})`
+                      : `보정까지 ${metric.calibration.remainingActiveDays}일 · ${formatNumber(metric.calibration.remainingSamples)}표본`}</small>
                   </article>
                 ))}
               </div>

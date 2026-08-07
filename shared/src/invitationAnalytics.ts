@@ -176,6 +176,14 @@ export type InvitationExperienceQualityMetric = {
   average: number | null;
   alertThreshold: number;
   status: "collecting" | "stable" | "watch";
+  calibration: {
+    status: "locked" | "ready";
+    remainingActiveDays: number;
+    remainingSamples: number;
+    dailyP95: number | null;
+    suggestedThreshold: number | null;
+    decision: "collect-more" | "retain" | "review-increase";
+  };
 };
 
 export type InvitationExperienceQualityGuard = {
@@ -183,6 +191,7 @@ export type InvitationExperienceQualityGuard = {
   status: "collecting" | "stable" | "watch";
   minimumActiveDays: number;
   minimumSamples: number;
+  calibrationStatus: "locked" | "ready";
   metrics: InvitationExperienceQualityMetric[];
   generatedAt: string;
 };

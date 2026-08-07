@@ -105,6 +105,11 @@ export const longVenueAuditProfiles = Object.freeze([
   { id: "venue-568-landscape", width: 568, height: 320, orientation: "landscape" }
 ]);
 
+export const largeTextAccessibilityProfiles = Object.freeze([
+  { id: "compact-portrait-320-text-200", width: 320, height: 568, orientation: "portrait", textScale: "ios-200" },
+  { id: "compact-landscape-568x320-text-200", width: 568, height: 320, orientation: "landscape", textScale: "ios-200" }
+]);
+
 export const remoteNameplateCrowdScenarios = Object.freeze([
   { id: "left-edge-3", count: 3, edge: "left" },
   { id: "right-edge-5", count: 5, edge: "right" },
@@ -369,6 +374,25 @@ export function auditLongVenueLayout(metrics) {
   if (!metrics?.venueLinesReady) issues.push("예식장 문구 과도한 줄바꿈");
   if (!metrics?.addressLinesReady) issues.push("예식장 주소 과도한 줄바꿈");
   if (!metrics?.copyTargetReady) issues.push("주소 복사 터치 영역 부족");
+  return issues;
+}
+
+export function auditLargeTextAccessibilityFlow(report) {
+  const issues = [];
+  if (!report.dialogNamed) issues.push("오시는 길 대화상자 이름 누락");
+  if (!report.modal) issues.push("오시는 길 모달 의미 누락");
+  if (!report.underlyingContentInert) issues.push("오시는 길 뒤 콘텐츠 스크린리더 격리 실패");
+  if (!report.initialFocusOnHeading) issues.push("오시는 길 제목 초기 포커스 실패");
+  if (!report.focusTrapWrapped) issues.push("오시는 길 포커스 순환 실패");
+  if (!report.focusRestored) issues.push("오시는 길 닫기 후 메뉴 포커스 복원 실패");
+  if (!report.menuRemainedOpen) issues.push("오시는 길 닫기 후 상위 메뉴 유실");
+  if (!report.sheetContained) issues.push("200% 오시는 길 시트 화면 이탈");
+  if (!report.contentContained) issues.push("200% 오시는 길 내용 가로 넘침");
+  if (!report.touchTargetsReady) issues.push("200% 오시는 길 터치 영역 부족");
+  const expectedOrder = ["닫기", "주소 복사", "네이버지도", "카카오맵", "Google 지도"];
+  if (!expectedOrder.every((name, index) => report.focusOrder[index] === name)) {
+    issues.push("오시는 길 스크린리더 탐색 순서 불일치");
+  }
   return issues;
 }
 
@@ -1344,6 +1368,88 @@ async function runLongVenueAudit({ browser, url }) {
   };
 }
 
+async function runLargeTextAccessibilityAudit({ browser, url, outputDir }) {
+  const reports = [];
+  for (const profile of largeTextAccessibilityProfiles) {
+    const context = await browser.newContext({
+      viewport: { width: profile.width, height: profile.height },
+      hasTouch: true,
+      isMobile: true,
+      locale: "ko-KR",
+      reducedMotion: "reduce",
+      deviceScaleFactor: 2
+    });
+    const page = await context.newPage();
+    await page.addInitScript(() => {
+      localStorage.setItem("wedding-game:entry-session:v1", JSON.stringify({
+        version: 1,
+        nickname: "접근성감사",
+        appearance: { presetId: "feminine-long-wave-dress" },
+        updatedAt: new Date().toISOString()
+      }));
+      localStorage.setItem("wedding-game:first-visit-guide:v1", JSON.stringify({ version: 1, completed: true }));
+    });
+    try {
+      await page.goto(url, { waitUntil: "domcontentloaded" });
+      const resumeGarden = page.locator(".entry-screen__resume-access");
+      if (await resumeGarden.isVisible().catch(() => false)) await resumeGarden.click();
+      await page.locator(".game-world").waitFor({ state: "visible" });
+      await setAuditTextScale(page, profile.textScale);
+      await page.locator(".world-menu-button").click();
+      const menu = page.locator(".world-menu-sheet");
+      await menu.waitFor({ state: "visible" });
+      const directionsTrigger = menu.getByRole("button", { name: "오시는 길", exact: true });
+      await directionsTrigger.focus();
+      await directionsTrigger.click();
+      const dialog = page.getByRole("dialog", { name: "오시는 길" });
+      await dialog.waitFor({ state: "visible" });
+      await page.waitForFunction(() => document.activeElement?.textContent?.trim() === "오시는 길");
+      const metrics = await page.evaluate(({ width, height }) => {
+        const sheet = document.querySelector(".bottom-sheet");
+        const body = sheet?.querySelector(".bottom-sheet__body");
+        const root = document.querySelector("#root");
+        if (!(sheet instanceof HTMLElement) || !(body instanceof HTMLElement)) return null;
+        const rect = sheet.getBoundingClientRect();
+        const focusable = [...sheet.querySelectorAll("button:not([disabled]), a[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex='-1'])")]
+          .filter((element) => element instanceof HTMLElement && getComputedStyle(element).visibility !== "hidden");
+        const nameOf = (element) => element.getAttribute("aria-label") || element.textContent?.trim().replace(/\s+/g, " ") || "";
+        return {
+          dialogNamed: sheet.getAttribute("aria-labelledby") !== null,
+          modal: sheet.getAttribute("aria-modal") === "true",
+          underlyingContentInert: root?.hasAttribute("inert") === true,
+          initialFocusOnHeading: document.activeElement === sheet.querySelector("h2"),
+          sheetContained: rect.x >= -1 && rect.y >= -1 && rect.right <= width + 1 && rect.bottom <= height + 1,
+          contentContained: sheet.scrollWidth <= sheet.clientWidth + 1 && body.scrollWidth <= body.clientWidth + 1,
+          touchTargetsReady: focusable.every((element) => element.getBoundingClientRect().height >= 43),
+          focusOrder: focusable.map(nameOf)
+        };
+      }, profile);
+      const focusable = dialog.locator("button:not([disabled]), a[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex='-1'])");
+      await focusable.last().focus();
+      await page.keyboard.press("Tab");
+      const focusTrapWrapped = await page.evaluate(() => document.activeElement?.getAttribute("aria-label") === "닫기");
+      const screenshotPath = path.join(outputDir, `large-text-accessibility-${profile.id}.png`);
+      await page.screenshot({ path: screenshotPath, fullPage: false, scale: "css" });
+      await dialog.getByRole("button", { name: "닫기" }).click();
+      await dialog.waitFor({ state: "hidden" });
+      await page.waitForFunction(() => document.activeElement?.textContent?.trim().replace(/\s+/g, " ") === "오시는 길");
+      const finalState = await page.evaluate(() => ({
+        focusRestored: document.activeElement?.textContent?.trim().replace(/\s+/g, " ") === "오시는 길",
+        menuRemainedOpen: document.querySelector(".world-menu-sheet") !== null
+      }));
+      const report = { ...profile, ...metrics, ...finalState, focusTrapWrapped, screenshotPath };
+      reports.push({ ...report, issues: auditLargeTextAccessibilityFlow(report) });
+    } finally {
+      await context.close();
+    }
+  }
+  return {
+    profiles: largeTextAccessibilityProfiles,
+    reports,
+    issues: reports.flatMap((report) => report.issues.map((issue) => `${report.id}: ${issue}`))
+  };
+}
+
 export async function runMobileHudBrowserAudit({ rootDir, outputDir, port = 4178, deviceBaselineMode = "compare" }) {
   const server = spawn(
     "pnpm",
@@ -1369,6 +1475,7 @@ export async function runMobileHudBrowserAudit({ rootDir, outputDir, port = 4178
     let typographyScaleAudit = { reports: [], issues: [], profiles: [] };
     let collisionMatrix = { reports: [], issues: [], profiles: [] };
     let longVenueAudit = { reports: [], issues: [], profiles: [] };
+    let largeTextAccessibilityAudit = { reports: [], issues: [], profiles: [] };
     let remoteNameplateCrowd = { reports: [], issues: [], scenarios: [] };
     let realtimeResilience = { issues: [] };
     try {
@@ -1511,6 +1618,11 @@ export async function runMobileHudBrowserAudit({ rootDir, outputDir, port = 4178
         browser: await browserFor("chromium"),
         url
       });
+      largeTextAccessibilityAudit = await runLargeTextAccessibilityAudit({
+        browser: await browserFor("chromium"),
+        url,
+        outputDir
+      });
       remoteNameplateCrowd = await runRemoteNameplateCrowdAudit({
         browser: await browserFor("chromium"),
         url,
@@ -1532,6 +1644,7 @@ export async function runMobileHudBrowserAudit({ rootDir, outputDir, port = 4178
       typographyScaleAudit,
       collisionMatrix,
       longVenueAudit,
+      largeTextAccessibilityAudit,
       remoteNameplateCrowd,
       realtimeResilience
     }, null, 2)}\n`);
@@ -1541,11 +1654,12 @@ export async function runMobileHudBrowserAudit({ rootDir, outputDir, port = 4178
       ...typographyScaleAudit.issues,
       ...collisionMatrix.issues,
       ...longVenueAudit.issues,
+      ...largeTextAccessibilityAudit.issues,
       ...remoteNameplateCrowd.issues,
       ...realtimeResilience.issues
     ];
     if (issues.length > 0) throw new Error(`Mobile HUD browser audit failed:\n${issues.join("\n")}`);
-    return { reports, zoneLabelSweep, typographyScaleAudit, collisionMatrix, longVenueAudit, remoteNameplateCrowd, realtimeResilience, reportPath };
+    return { reports, zoneLabelSweep, typographyScaleAudit, collisionMatrix, longVenueAudit, largeTextAccessibilityAudit, remoteNameplateCrowd, realtimeResilience, reportPath };
   } finally {
     server.kill("SIGTERM");
   }
