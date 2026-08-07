@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type RefObject } from "react";
 import { Car, Copy, ExternalLink, MapPinned, Phone, TrainFront } from "lucide-react";
 import { invitationContent, type WeddingEvent } from "@wedding-game/shared";
 import { copyText } from "../invitation/browserActions";
@@ -8,6 +8,7 @@ import { trackInvitationAnalytics } from "../analytics/invitationAnalytics";
 
 type DirectionsSheetProps = {
   onClose: () => void;
+  returnFocusRef?: RefObject<HTMLElement | null>;
 };
 
 type DirectionsContentProps = {
@@ -121,9 +122,9 @@ export function DirectionsContent({ venue = invitationContent.event.venue }: Dir
   );
 }
 
-export function DirectionsSheet({ onClose }: DirectionsSheetProps) {
+export function DirectionsSheet({ onClose, returnFocusRef }: DirectionsSheetProps) {
   return (
-    <BottomSheet title="오시는 길" onClose={onClose}>
+    <BottomSheet title="오시는 길" onClose={onClose} returnFocusRef={returnFocusRef}>
       <DirectionsContent />
     </BottomSheet>
   );

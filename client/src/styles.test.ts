@@ -667,6 +667,7 @@ describe("prism map interactions", () => {
     expect(sheetRule).toContain("overflow-y: auto;");
     expect(styles).toContain(".bottom-sheet .field input:focus-visible");
     expect(styles).toContain(".bottom-sheet__header button:focus-visible");
+    expect(weddingLuxeStyles).toContain(".bottom-sheet__header h2:focus");
     expect(styles).toContain(".bottom-sheet .primary-button");
     expect(styles).toContain(".rsvp-segmented");
     expect(styles).toContain(".rsvp-segmented input:focus-visible + span");

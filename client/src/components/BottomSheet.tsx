@@ -1,4 +1,4 @@
-import { useId, useRef, type ReactNode } from "react";
+import { useId, useRef, type ReactNode, type RefObject } from "react";
 import { createPortal } from "react-dom";
 import { useModalDialogFocus } from "../accessibility/useModalDialogFocus";
 
@@ -7,9 +7,10 @@ type BottomSheetProps = {
   onClose: () => void;
   children: ReactNode;
   className?: string;
+  returnFocusRef?: RefObject<HTMLElement | null>;
 };
 
-export function BottomSheet({ title, onClose, children, className = "" }: BottomSheetProps) {
+export function BottomSheet({ title, onClose, children, className = "", returnFocusRef }: BottomSheetProps) {
   const titleId = useId();
   const descriptionId = useId();
   const dialogRef = useRef<HTMLElement>(null);
@@ -19,6 +20,7 @@ export function BottomSheet({ title, onClose, children, className = "" }: Bottom
     open: true,
     dialogRef,
     initialFocusRef: titleRef,
+    returnFocusRef,
     onEscape: onClose,
     isolateApp: true
   });

@@ -215,6 +215,10 @@ body {
   text-wrap: balance;
 }
 
+.bottom-sheet__header h2:focus {
+  outline: none;
+}
+
 .bottom-sheet__header button,
 .icon-button {
   min-width: 44px;

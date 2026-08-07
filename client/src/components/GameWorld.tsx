@@ -3,6 +3,7 @@ import {
   Suspense,
   useCallback,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -1803,7 +1804,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     lockBody: true
   });
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const dialog = menuDialogRef.current;
     if (!dialog) return;
     dialog.toggleAttribute("inert", nestedMenuSheetOpen);

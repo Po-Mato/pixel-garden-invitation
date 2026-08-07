@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, expect, it, vi } from "vitest";
 import { copyText } from "../invitation/browserActions";
 import { WeddingEventSummary } from "./WeddingEventSummary";
@@ -105,4 +105,14 @@ it("상세 요약의 오시는 길 시트 열림 상태를 소유자에게 알�
   expect(onDirectionsSheetOpenChange).toHaveBeenLastCalledWith(true);
   fireEvent.click(screen.getByRole("button", { name: "닫기" }));
   expect(onDirectionsSheetOpenChange).toHaveBeenLastCalledWith(false);
+});
+
+it("오시는 길 시트를 닫으면 메뉴의 실행 버튼으로 포커스를 돌려준다", async () => {
+  render(<WeddingEventSummary variant="detail" />);
+  const directionsButton = screen.getByRole("button", { name: "오시는 길" });
+
+  fireEvent.click(directionsButton);
+  fireEvent.click(screen.getByRole("button", { name: "닫기" }));
+
+  await waitFor(() => expect(directionsButton).toHaveFocus());
 });

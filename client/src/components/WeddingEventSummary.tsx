@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { CalendarDays, CalendarPlus, Copy, MapPin, Navigation } from "lucide-react";
 import { copyText } from "../invitation/browserActions";
 import { usePublishedInvitationContent } from "../invitation/PublishedInvitationContentContext";
@@ -34,6 +34,7 @@ export function WeddingEventSummary({
   const { event } = usePublishedInvitationContent();
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [directionsOpen, setDirectionsOpen] = useState(false);
+  const directionsButtonRef = useRef<HTMLButtonElement>(null);
   const [addressStatus, setAddressStatus] = useState<"idle" | "copying" | "copied" | "error">("idle");
 
   const setCalendarVisibility = (open: boolean) => {
@@ -101,6 +102,7 @@ export function WeddingEventSummary({
       </div>
       <div className="wedding-event-summary__actions">
         <button
+          ref={directionsButtonRef}
           type="button"
           className="wedding-event-summary__directions"
           onClick={() => setDirectionsVisibility(true)}
@@ -127,7 +129,12 @@ export function WeddingEventSummary({
         {addressStatus === "copied" ? "주소를 복사했습니다." : null}
         {addressStatus === "error" ? "복사하지 못했습니다. 주소를 길게 눌러 복사해주세요." : null}
       </p>
-      {directionsOpen ? <DirectionsSheet onClose={() => setDirectionsVisibility(false)} /> : null}
+      {directionsOpen ? (
+        <DirectionsSheet
+          onClose={() => setDirectionsVisibility(false)}
+          returnFocusRef={directionsButtonRef}
+        />
+      ) : null}
       {calendarOpen ? <CalendarSaveSheet onClose={() => setCalendarVisibility(false)} /> : null}
     </section>
   );
