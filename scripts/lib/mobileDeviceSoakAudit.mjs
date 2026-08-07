@@ -121,7 +121,7 @@ export function assessMobileSoakMetrics(metrics) {
   if (Number.isFinite(metrics.settledJitterPx) && metrics.settledJitterPx > 0.75) {
     issues.push(`이동 정지 후 카메라 미세 흔들림 ${metrics.settledJitterPx}px`);
   }
-  if (metrics.motionResponse) {
+  if (metrics.motionResponse && metrics.motionResponseTimingPolicy !== "availability-only") {
     assessMotionResponsiveness(metrics.motionResponse).forEach((issue) => issues.push(issue));
   }
   if (metrics.zoneTransitions) {
@@ -645,6 +645,9 @@ export async function runMobileDeviceSoakAudit({ rootDir, outputDir, port = 4179
           frameBudgetMs: applicationFrames.timings.frameBudgetMs,
           detectedRefreshHz: applicationFrames.detectedRefreshHz
         },
+        // Linux Playwright WebKit can defer synthetic keyboard-driven style updates even
+        // while movement and camera follow complete. Physical iOS evidence owns latency.
+        motionResponseTimingPolicy: profile.engine === "webkit" ? "availability-only" : "frame-budget",
         zoneTransitions: zoneTransitionSeries.metrics,
         zoneTransitionFrameTimings: zoneTransitionSeries.frameTimings,
         // Linux Playwright WebKit uses software rasterization and collapses a full map swap into

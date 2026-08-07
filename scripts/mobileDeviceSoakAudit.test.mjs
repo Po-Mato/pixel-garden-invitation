@@ -91,6 +91,16 @@ test("motion response budgets scale with 60Hz and 120Hz frame cadence", () => {
   }), ["이동 입력 지연 52ms", "카메라 안정화 지연 360ms"]);
 });
 
+test("software WebKit keeps movement coverage without treating a missing synthetic latency as hardware evidence", () => {
+  assert.deepEqual(assessMobileSoakMetrics({
+    pageErrors: [], failedRequests: [], touchResponded: true, layoutStable: true,
+    typographyFallbackReady: true, sheetContained: true, movementResponded: true,
+    cameraFollowed: true, averageFps: 58, baselineFps: 60, heapGrowthRatio: null,
+    motionResponseTimingPolicy: "availability-only",
+    motionResponse: { inputLatencyMs: null, settleLatencyMs: 120, frameBudgetMs: 16.67 }
+  }), []);
+});
+
 test("mobile soak summarizes repeated low-performance zone transitions", () => {
   const layout = { hud: { x: 0, y: 0, width: 390, height: 64 }, map: { x: 0, y: 64, width: 390, height: 716 } };
   const sample = (cameraX = -100) => ({
