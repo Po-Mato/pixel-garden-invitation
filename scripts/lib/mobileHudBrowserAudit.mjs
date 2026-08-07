@@ -598,7 +598,15 @@ async function measureDynamicViewportAdaptation(page, viewport) {
   const compactRectangles = await visibleRectangles(page);
   const compactIssues = supported ? auditMobileHudRectangles(compactRectangles, compact) : [];
   await page.setViewportSize({ width: viewport.width, height: viewport.height });
-  await page.waitForTimeout(240);
+  await page.waitForFunction(({ width, height }) => {
+    const element = document.querySelector(".game-world");
+    if (!(element instanceof HTMLElement)) return false;
+    const rect = element.getBoundingClientRect();
+    return Math.abs(window.innerWidth - width) <= 1
+      && Math.abs(window.innerHeight - height) <= 1
+      && Math.abs(rect.width - width) <= 1
+      && Math.abs(rect.height - height) <= 1;
+  }, viewport, { timeout: 3_000 }).catch(() => undefined);
   const after = await readWorld();
   const restored = Boolean(before && after && ["x", "y", "width", "height"].every(
     (key) => Math.abs(before[key] - after[key]) <= 1
