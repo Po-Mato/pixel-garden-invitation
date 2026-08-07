@@ -17,6 +17,10 @@ vi.mock("./deviceQaReportRepository", () => ({
 vi.mock("./invitationExperienceQualityGuard", () => ({
   getInvitationExperienceQualityGuard: vi.fn()
 }));
+vi.mock("./invitationQualityCalibrationRepository", () => ({
+  ensureInvitationQualityCalibrationSnapshot: vi.fn(),
+  reviewInvitationQualityCalibrationSnapshot: vi.fn()
+}));
 
 import {
   handleAdminInvitationAnalyticsRequest,
@@ -26,6 +30,7 @@ import * as repository from "./invitationAnalyticsRepository";
 import * as performanceConfig from "./invitationPerformanceConfig";
 import * as deviceQaRepository from "./deviceQaReportRepository";
 import * as qualityGuardRepository from "./invitationExperienceQualityGuard";
+import * as qualityCalibrationRepository from "./invitationQualityCalibrationRepository";
 import { verifyAdminToken } from "./security";
 import type { Env } from "./index";
 
@@ -33,6 +38,7 @@ const mockedRepository = vi.mocked(repository);
 const mockedPerformance = vi.mocked(performanceConfig);
 const mockedDeviceQa = vi.mocked(deviceQaRepository);
 const mockedQualityGuard = vi.mocked(qualityGuardRepository);
+const mockedQualityCalibration = vi.mocked(qualityCalibrationRepository);
 const mockedVerify = vi.mocked(verifyAdminToken);
 const env = {
   DB: {} as D1Database,
@@ -88,6 +94,20 @@ describe("invitation analytics HTTP", () => {
       minimumSamples: 20,
       calibrationStatus: "locked",
       metrics: [],
+      generatedAt: "2026-07-22T00:00:00.000Z"
+    });
+    mockedQualityCalibration.ensureInvitationQualityCalibrationSnapshot.mockResolvedValue({
+      currentWeekStart: "2026-07-20",
+      eligible: false,
+      pendingCount: 0,
+      snapshots: [],
+      generatedAt: "2026-07-22T00:00:00.000Z"
+    });
+    mockedQualityCalibration.reviewInvitationQualityCalibrationSnapshot.mockResolvedValue({
+      currentWeekStart: "2026-07-20",
+      eligible: true,
+      pendingCount: 2,
+      snapshots: [],
       generatedAt: "2026-07-22T00:00:00.000Z"
     });
     mockedDeviceQa.updateDeviceQaAlertSettings.mockResolvedValue(true);
@@ -157,8 +177,35 @@ describe("invitation analytics HTTP", () => {
     });
     expect(await response.json()).toMatchObject({
       performance: { mode: "adaptive" },
-      qualityGuard: { status: "collecting" }
+      qualityGuard: { status: "collecting" },
+      qualityCalibration: { currentWeekStart: "2026-07-20", eligible: false }
     });
+  });
+
+  it("관리자가 주간 보정 후보를 수동 검토 이력으로 확정한다", async () => {
+    const response = await handleAdminInvitationAnalyticsRequest(new Request(
+      "https://worker.test/api/invitations/sample-garden/admin/analytics",
+      {
+        method: "POST",
+        headers: { authorization: "Bearer admin-token", "content-type": "application/json" },
+        body: JSON.stringify({ qualityCalibrationReview: {
+          weekStart: "2026-07-20",
+          metricKey: "long-frame",
+          decision: "approve-candidate"
+        } })
+      }
+    ), env, "sample-garden");
+    expect(response.status).toBe(200);
+    expect(mockedQualityCalibration.reviewInvitationQualityCalibrationSnapshot).toHaveBeenCalledWith(
+      env.DB,
+      "sample-garden",
+      {
+        weekStart: "2026-07-20",
+        metricKey: "long-frame",
+        decision: "approve-candidate",
+        note: undefined
+      }
+    );
   });
 
   it("관리자가 성능 운영 모드를 즉시 전환한다", async () => {

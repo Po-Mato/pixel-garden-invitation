@@ -21,10 +21,12 @@ import {
 import {
   guestCharacterPresets,
   type InvitationAnalyticsAdminResponse,
-  type InvitationAnalyticsBreakdown
+  type InvitationAnalyticsBreakdown,
+  type InvitationQualityCalibrationSnapshot
 } from "@wedding-game/shared";
 import {
   fetchAdminInvitationAnalytics,
+  reviewAdminInvitationQualityCalibration,
   updateAdminInvitationPerformanceMode
 } from "../api/invitationAnalyticsApi";
 import { updateAdminDeviceQaAlertSettings } from "../api/deviceQaReportApi";
@@ -166,6 +168,7 @@ export function AnalyticsAdminPage() {
   const [analytics, setAnalytics] = useState<InvitationAnalyticsAdminResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [performanceBusy, setPerformanceBusy] = useState(false);
+  const [calibrationBusy, setCalibrationBusy] = useState<string | null>(null);
   const [error, setError] = useState("");
   const [status, setStatus] = useState("");
 
@@ -177,6 +180,7 @@ export function AnalyticsAdminPage() {
     setPassword("");
     setLoading(false);
     setPerformanceBusy(false);
+    setCalibrationBusy(null);
     setError(message);
     setStatus("");
   }, [id]);
@@ -256,6 +260,38 @@ export function AnalyticsAdminPage() {
     }
   }
 
+  async function reviewQualityCalibration(
+    snapshot: InvitationQualityCalibrationSnapshot,
+    decision: "approve-candidate" | "retain-current"
+  ) {
+    if (!sessionRef.current || calibrationBusy) return;
+    const busyKey = `${snapshot.weekStart}:${snapshot.metricKey}`;
+    setCalibrationBusy(busyKey);
+    setError("");
+    setStatus("");
+    try {
+      const qualityCalibration = await reviewAdminInvitationQualityCalibration(sessionRef.current.token, {
+        weekStart: snapshot.weekStart,
+        metricKey: snapshot.metricKey,
+        decision
+      });
+      setAnalytics((current) => current ? { ...current, qualityCalibration } : current);
+      setStatus(decision === "approve-candidate"
+        ? "이번 주 보정 후보를 검토 완료로 기록했습니다. 기준값은 자동 변경되지 않습니다."
+        : "이번 주에는 현재 기준을 유지하는 것으로 기록했습니다.");
+    } catch (reviewError) {
+      if (reviewError instanceof WeddingApiError && reviewError.status === 401) {
+        logout(errorMessage(reviewError));
+        return;
+      }
+      setError(reviewError instanceof WeddingApiError && reviewError.code === "review_locked"
+        ? "이미 검토된 주간 보정 기록입니다. 새로고침해 주세요."
+        : "주간 보정 검토를 기록하지 못했습니다. 잠시 후 다시 시도해 주세요.");
+    } finally {
+      setCalibrationBusy(null);
+    }
+  }
+
   const recentDays = analytics?.daily.slice(-7) ?? [];
   const maxVisits = Math.max(1, ...recentDays.map((day) => day.visits));
   const repeatRate = analytics ? percentage(analytics.totals.returningVisits, analytics.totals.visits) : "0%";
@@ -271,6 +307,10 @@ export function AnalyticsAdminPage() {
         ? "최근 기기 점검 흐름이 안정적입니다"
         : "비교 가능한 표본을 더 모으는 중입니다";
   const periodLabel = analytics ? `${analytics.range.from} - ${analytics.range.to}` : "조회 중";
+  const currentCalibrationSnapshots = analytics?.qualityCalibration?.snapshots.filter(({ weekStart }) => (
+    weekStart === analytics.qualityCalibration?.currentWeekStart
+  )) ?? [];
+  const reviewedCalibrationSnapshots = analytics?.qualityCalibration?.snapshots.filter(({ decision }) => decision !== "pending") ?? [];
   const metricCards = useMemo(() => analytics ? [
     { label: "방문", value: formatNumber(analytics.totals.visits), detail: `재방문 ${repeatRate}`, icon: Users },
     { label: "모드 진입", value: formatNumber(analytics.totals.gameEntries + analytics.totals.simpleEntries), detail: `게임 ${formatNumber(analytics.totals.gameEntries)} · 간편 ${formatNumber(analytics.totals.simpleEntries)}`, icon: Gamepad2 },
@@ -429,6 +469,47 @@ export function AnalyticsAdminPage() {
                   </article>
                 ))}
               </div>
+              <section className="analytics-quality-calibration" aria-label="주간 품질 보정 검토">
+                <header>
+                  <div><strong>주간 보정 스냅샷</strong><span>{analytics.qualityCalibration?.currentWeekStart ?? "표본 수집 중"} 시작 주</span></div>
+                  <small>후보 승인도 기준값을 자동 변경하지 않습니다.</small>
+                </header>
+                {!analytics.qualityCalibration?.eligible ? (
+                  <p>7일·20표본을 모두 충족하면 세 지표의 후보값을 주 1회 고정해 검토 이력으로 남깁니다.</p>
+                ) : (
+                  <div className="analytics-quality-calibration__current">
+                    {currentCalibrationSnapshots.map((snapshot) => {
+                      const metric = analytics.qualityGuard.metrics.find(({ key }) => key === snapshot.metricKey);
+                      const busy = calibrationBusy === `${snapshot.weekStart}:${snapshot.metricKey}`;
+                      return (
+                        <article key={`${snapshot.weekStart}:${snapshot.metricKey}`} data-decision={snapshot.decision}>
+                          <span>{metric?.label ?? snapshot.metricKey}</span>
+                          <strong>{snapshot.currentThreshold} → {snapshot.suggestedThreshold}{metric?.unit === "score" ? "" : metric?.unit}</strong>
+                          {snapshot.decision === "pending" ? (
+                            <div>
+                              <button type="button" onClick={() => void reviewQualityCalibration(snapshot, "retain-current")} disabled={calibrationBusy !== null}>현 기준 유지</button>
+                              <button type="button" onClick={() => void reviewQualityCalibration(snapshot, "approve-candidate")} disabled={calibrationBusy !== null}>{busy ? "기록 중" : "후보 검토 완료"}</button>
+                            </div>
+                          ) : <small>{snapshot.decision === "approve-candidate" ? "후보 검토 완료" : "현 기준 유지"} · {snapshot.reviewedAt ? formatDateTime(snapshot.reviewedAt) : ""}</small>}
+                        </article>
+                      );
+                    })}
+                  </div>
+                )}
+                {reviewedCalibrationSnapshots.length > 0 && (
+                  <details>
+                    <summary>최근 수동 검토 이력 {reviewedCalibrationSnapshots.length}건</summary>
+                    <ul>
+                      {reviewedCalibrationSnapshots.slice(0, 9).map((snapshot) => (
+                        <li key={`history:${snapshot.weekStart}:${snapshot.metricKey}`}>
+                          <span>{snapshot.weekStart} · {snapshot.metricKey}</span>
+                          <strong>{snapshot.decision === "approve-candidate" ? "후보 검토 완료" : "현 기준 유지"}</strong>
+                        </li>
+                      ))}
+                    </ul>
+                  </details>
+                )}
+              </section>
             </section>
 
             <section className="analytics-device-qa" aria-labelledby="analytics-device-qa-title">

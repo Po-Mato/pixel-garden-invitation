@@ -3,6 +3,7 @@ import { cleanupExpiredInvitationData } from "./cleanup";
 import { retryPendingAdminNotificationEmails } from "./adminNotificationService";
 import { handlePublishedGalleryMediaRequest } from "./invitationGalleryHttp";
 import { publishDueInvitationReleases } from "./invitationReleaseRepository";
+import { snapshotReadyInvitationQualityCalibrations } from "./invitationQualityCalibrationRepository";
 
 export interface Env {
   DB: D1Database;
@@ -65,12 +66,14 @@ export default {
       console.info(JSON.stringify({ event: "invitation_release_queue", ...invitationReleases }));
 
       if (controller.cron === "17 15 * * *" || !controller.cron) {
+        const qualityCalibration = await snapshotReadyInvitationQualityCalibrations(env.DB, now);
+        console.info(JSON.stringify({ event: "quality_calibration_snapshot", ...qualityCalibration }));
         const cleanup = await cleanupExpiredInvitationData(env.DB, now);
         console.info(JSON.stringify({ event: "invitation_data_cleanup", ...cleanup }));
-        return { emailQueue, invitationReleases, cleanup };
+        return { emailQueue, invitationReleases, qualityCalibration, cleanup };
       }
 
-      return { emailQueue, invitationReleases, cleanup: null };
+      return { emailQueue, invitationReleases, qualityCalibration: null, cleanup: null };
     })();
     ctx.waitUntil(work);
   }

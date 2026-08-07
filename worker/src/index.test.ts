@@ -22,7 +22,7 @@ describe("worker scaffold", () => {
     const run = vi.fn().mockResolvedValue({ success: true, meta: { changes: 0 } });
     const all = vi.fn().mockResolvedValue({ results: [] });
     const db = {
-      prepare: vi.fn(() => ({ bind: vi.fn(() => ({ run, all })) }))
+      prepare: vi.fn(() => ({ all, bind: vi.fn(() => ({ run, all })) }))
     } as unknown as D1Database;
     const waitUntil = vi.fn();
     const info = vi.spyOn(console, "info").mockImplementation(() => undefined);
@@ -37,10 +37,11 @@ describe("worker scaffold", () => {
     await expect(waitUntil.mock.calls[0][0]).resolves.toEqual({
       emailQueue: { attempted: 0, sent: 0, failed: 0 },
       invitationReleases: { attempted: 0, published: 0, failed: 0 },
+      qualityCalibration: { checkedInvitations: 0, eligibleInvitations: 0 },
       cleanup: { inviteLinks: 0, rsvps: 0, guestbookMessages: 0, notifications: 0, attempts: 0 }
     });
     expect(run).toHaveBeenCalledTimes(5);
-    expect(all).toHaveBeenCalledOnce();
+    expect(all).toHaveBeenCalledTimes(2);
     expect(info).toHaveBeenCalledWith(JSON.stringify({
       event: "admin_notification_email_queue",
       attempted: 0,
@@ -52,6 +53,11 @@ describe("worker scaffold", () => {
       attempted: 0,
       published: 0,
       failed: 0
+    }));
+    expect(info).toHaveBeenCalledWith(JSON.stringify({
+      event: "quality_calibration_snapshot",
+      checkedInvitations: 0,
+      eligibleInvitations: 0
     }));
     expect(info).toHaveBeenCalledWith(JSON.stringify({
       event: "invitation_data_cleanup",
@@ -82,6 +88,7 @@ describe("worker scaffold", () => {
     await expect(waitUntil.mock.calls[0][0]).resolves.toEqual({
       emailQueue: { attempted: 0, sent: 0, failed: 0 },
       invitationReleases: { attempted: 0, published: 0, failed: 0 },
+      qualityCalibration: null,
       cleanup: null
     });
     expect(prepare).toHaveBeenCalledOnce();

@@ -17,6 +17,10 @@ import {
 import { adminNotificationEmailConfigured } from "./adminNotificationEmail";
 import { getDeviceQaDetailAdminState, updateDeviceQaAlertSettings } from "./deviceQaReportRepository";
 import { getInvitationExperienceQualityGuard } from "./invitationExperienceQualityGuard";
+import {
+  ensureInvitationQualityCalibrationSnapshot,
+  reviewInvitationQualityCalibrationSnapshot
+} from "./invitationQualityCalibrationRepository";
 
 const eventNames = new Set<string>(invitationAnalyticsEventNames);
 const contextPattern = /^(entry|game|simple)$/;
@@ -136,6 +140,32 @@ export async function handleAdminInvitationAnalyticsRequest(
     } catch {
       return json({ error: "invalid_request" }, 400);
     }
+    const qualityCalibrationReview = isRecord(body) && isRecord(body.qualityCalibrationReview)
+      ? body.qualityCalibrationReview
+      : null;
+    if (qualityCalibrationReview) {
+      const weekStart = qualityCalibrationReview.weekStart;
+      const metricKey = qualityCalibrationReview.metricKey;
+      const decision = qualityCalibrationReview.decision;
+      const note = qualityCalibrationReview.note;
+      if (typeof weekStart !== "string" || !validDate(weekStart)
+        || !["camera-center", "cls", "long-frame"].includes(String(metricKey))
+        || (decision !== "approve-candidate" && decision !== "retain-current")
+        || (note !== undefined && (typeof note !== "string" || note.trim().length > 200))) {
+        return json({ error: "invalid_request" }, 400);
+      }
+      try {
+        const state = await reviewInvitationQualityCalibrationSnapshot(env.DB, invitationId, {
+          weekStart,
+          metricKey: metricKey as "camera-center" | "cls" | "long-frame",
+          decision,
+          note: typeof note === "string" ? note : undefined
+        });
+        return state ? json(state) : json({ error: "review_locked" }, 409);
+      } catch {
+        return json({ error: "internal_error" }, 500);
+      }
+    }
     const deviceQaAlerts = body && typeof body === "object" && "deviceQaAlerts" in body
       ? (body as { deviceQaAlerts?: unknown }).deviceQaAlerts
       : null;
@@ -184,9 +214,13 @@ export async function handleAdminInvitationAnalyticsRequest(
       getInvitationExperienceQualityGuard(env.DB, invitationId, { to }),
       getDeviceQaDetailAdminState(env.DB, invitationId, adminNotificationEmailConfigured(env))
     ]);
-    return result && performance && deviceQaDetail
-      ? json({ ...result, performance, qualityGuard, deviceQaDetail })
-      : json({ error: "not_found" }, 404);
+    if (!result || !performance || !deviceQaDetail) return json({ error: "not_found" }, 404);
+    const qualityCalibration = await ensureInvitationQualityCalibrationSnapshot(
+      env.DB,
+      invitationId,
+      qualityGuard
+    );
+    return json({ ...result, performance, qualityGuard, qualityCalibration, deviceQaDetail });
   } catch {
     return json({ error: "internal_error" }, 500);
   }

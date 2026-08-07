@@ -1,5 +1,7 @@
 import type {
   InvitationAnalyticsAdminResponse,
+  InvitationQualityCalibrationAdminState,
+  InvitationQualityCalibrationSnapshot,
   InvitationPerformanceAdminState,
   InvitationAnalyticsEventBatch
 } from "@wedding-game/shared";
@@ -87,4 +89,36 @@ export async function updateAdminInvitationPerformanceMode(
   }
   if (!body) throw new WeddingApiError(response.status, "invalid_response");
   return body as InvitationPerformanceAdminState;
+}
+
+export async function reviewAdminInvitationQualityCalibration(
+  token: string,
+  input: {
+    weekStart: string;
+    metricKey: InvitationQualityCalibrationSnapshot["metricKey"];
+    decision: "approve-candidate" | "retain-current";
+  }
+): Promise<InvitationQualityCalibrationAdminState> {
+  const response = await fetch(adminAnalyticsUrl({}), {
+    method: "POST",
+    headers: {
+      authorization: `Bearer ${token}`,
+      "content-type": "application/json"
+    },
+    body: JSON.stringify({ qualityCalibrationReview: input })
+  });
+  let body: unknown = null;
+  try {
+    body = await response.json();
+  } catch {
+    body = null;
+  }
+  if (!response.ok) {
+    const code = typeof body === "object" && body !== null && "error" in body && typeof body.error === "string"
+      ? body.error
+      : "request_failed";
+    throw new WeddingApiError(response.status, code);
+  }
+  if (!body) throw new WeddingApiError(response.status, "invalid_response");
+  return body as InvitationQualityCalibrationAdminState;
 }

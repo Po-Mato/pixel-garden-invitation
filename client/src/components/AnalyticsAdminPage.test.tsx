@@ -5,6 +5,7 @@ import { AnalyticsAdminPage } from "./AnalyticsAdminPage";
 
 const analyticsApi = vi.hoisted(() => ({
   fetchAdminInvitationAnalytics: vi.fn(),
+  reviewAdminInvitationQualityCalibration: vi.fn(),
   updateAdminInvitationPerformanceMode: vi.fn()
 }));
 const deviceQaApi = vi.hoisted(() => ({ updateAdminDeviceQaAlertSettings: vi.fn() }));
@@ -66,6 +67,17 @@ function result(): InvitationAnalyticsAdminResponse {
         { key: "camera-center", label: "캐릭터 중심 오차", unit: "px", sampleCount: 28, activeDays: 7, average: 0.5, alertThreshold: 2, status: "stable", calibration: { status: "ready", remainingActiveDays: 0, remainingSamples: 0, dailyP95: 0.7, suggestedThreshold: 2, decision: "retain" } },
         { key: "cls", label: "화면 배치 흔들림", unit: "score", sampleCount: 28, activeDays: 7, average: 0.012, alertThreshold: 0.1, status: "stable", calibration: { status: "ready", remainingActiveDays: 0, remainingSamples: 0, dailyP95: 0.02, suggestedThreshold: 0.1, decision: "retain" } },
         { key: "long-frame", label: "긴 프레임 p95", unit: "ms", sampleCount: 28, activeDays: 7, average: 64, alertThreshold: 100, status: "stable", calibration: { status: "ready", remainingActiveDays: 0, remainingSamples: 0, dailyP95: 72, suggestedThreshold: 100, decision: "retain" } }
+      ],
+      generatedAt: "2026-07-22T03:00:00.000Z"
+    },
+    qualityCalibration: {
+      currentWeekStart: "2026-07-20",
+      eligible: true,
+      pendingCount: 3,
+      snapshots: [
+        { weekStart: "2026-07-20", metricKey: "camera-center", window: { from: "2026-07-16", to: "2026-07-22" }, activeDays: 7, sampleCount: 28, dailyP95: 0.7, suggestedThreshold: 2, currentThreshold: 2, recommendation: "retain", decision: "pending", decisionNote: null, createdAt: "2026-07-22T03:00:00.000Z", reviewedAt: null },
+        { weekStart: "2026-07-20", metricKey: "cls", window: { from: "2026-07-16", to: "2026-07-22" }, activeDays: 7, sampleCount: 28, dailyP95: 0.02, suggestedThreshold: 0.1, currentThreshold: 0.1, recommendation: "retain", decision: "pending", decisionNote: null, createdAt: "2026-07-22T03:00:00.000Z", reviewedAt: null },
+        { weekStart: "2026-07-20", metricKey: "long-frame", window: { from: "2026-07-16", to: "2026-07-22" }, activeDays: 7, sampleCount: 28, dailyP95: 72, suggestedThreshold: 100, currentThreshold: 100, recommendation: "retain", decision: "pending", decisionNote: null, createdAt: "2026-07-22T03:00:00.000Z", reviewedAt: null }
       ],
       generatedAt: "2026-07-22T03:00:00.000Z"
     },
@@ -131,6 +143,13 @@ describe("AnalyticsAdminPage", () => {
       effective: { ...result().performance.effective, source: "default", slowFpsThreshold: 42, recoveryFpsThreshold: 52 },
       updatedAt: "2026-07-22T04:00:00.000Z"
     });
+    analyticsApi.reviewAdminInvitationQualityCalibration.mockResolvedValue({
+      ...result().qualityCalibration,
+      pendingCount: 2,
+      snapshots: result().qualityCalibration?.snapshots.map((snapshot) => snapshot.metricKey === "long-frame"
+        ? { ...snapshot, decision: "approve-candidate", reviewedAt: "2026-07-22T04:00:00.000Z" }
+        : snapshot)
+    });
     deviceQaApi.updateAdminDeviceQaAlertSettings.mockResolvedValue(result().deviceQaDetail);
   });
 
@@ -154,6 +173,7 @@ describe("AnalyticsAdminPage", () => {
     expect(screen.getByRole("region", { name: "7일 품질 경보" })).toHaveTextContent("기준 100ms");
     expect(screen.getByRole("region", { name: "7일 품질 경보" })).toHaveTextContent("그림자 보정 준비 완료");
     expect(screen.getByRole("region", { name: "7일 품질 경보" })).toHaveTextContent("일별 p95 72ms");
+    expect(screen.getByRole("region", { name: "주간 품질 보정 검토" })).toHaveTextContent("2026-07-20 시작 주");
     expect(screen.getByText(/FPS 표본 4회/)).toBeInTheDocument();
     expect(screen.getByText(/캐릭터 자동 대체 2회/)).toBeInTheDocument();
     expect(screen.getByRole("region", { name: "대체된 캐릭터 이미지" })).toHaveTextContent("더스티 로즈 원피스");
@@ -189,5 +209,18 @@ describe("AnalyticsAdminPage", () => {
       .toHaveBeenCalledWith("admin-token", "safe-default"));
     expect(await screen.findByText("안정 기본값으로 즉시 전환했습니다.")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "자동 보정 다시 사용" })).toBeInTheDocument();
+  });
+
+  it("주간 보정 후보 검토를 기록하되 기준은 자동 변경하지 않는다", async () => {
+    render(<AnalyticsAdminPage />);
+    await login();
+    const buttons = screen.getAllByRole("button", { name: "후보 검토 완료" });
+    fireEvent.click(buttons[2]);
+    await waitFor(() => expect(analyticsApi.reviewAdminInvitationQualityCalibration).toHaveBeenCalledWith("admin-token", {
+      weekStart: "2026-07-20",
+      metricKey: "long-frame",
+      decision: "approve-candidate"
+    }));
+    expect(await screen.findByText("이번 주 보정 후보를 검토 완료로 기록했습니다. 기준값은 자동 변경되지 않습니다.")).toBeInTheDocument();
   });
 });

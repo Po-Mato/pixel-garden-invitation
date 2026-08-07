@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   fetchAdminInvitationAnalytics,
   postInvitationAnalyticsEvents,
+  reviewAdminInvitationQualityCalibration,
   updateAdminInvitationPerformanceMode
 } from "./invitationAnalyticsApi";
 
@@ -51,5 +52,27 @@ describe("invitation analytics API", () => {
       },
       body: JSON.stringify({ performanceMode: "safe-default" })
     });
+  });
+
+  it("주간 보정 후보의 수동 검토 결정을 기록한다", async () => {
+    const body = { currentWeekStart: "2026-08-03", eligible: true, pendingCount: 2, snapshots: [] };
+    const fetchMock = vi.fn().mockResolvedValue(new Response(JSON.stringify(body), {
+      status: 200,
+      headers: { "content-type": "application/json" }
+    }));
+    vi.stubGlobal("fetch", fetchMock);
+    await expect(reviewAdminInvitationQualityCalibration("admin-token", {
+      weekStart: "2026-08-03",
+      metricKey: "long-frame",
+      decision: "approve-candidate"
+    })).resolves.toEqual(body);
+    expect(fetchMock).toHaveBeenCalledWith(expect.stringContaining("/admin/analytics"), expect.objectContaining({
+      method: "POST",
+      body: JSON.stringify({ qualityCalibrationReview: {
+        weekStart: "2026-08-03",
+        metricKey: "long-frame",
+        decision: "approve-candidate"
+      } })
+    }));
   });
 });

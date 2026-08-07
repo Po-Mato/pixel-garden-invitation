@@ -1368,7 +1368,7 @@ async function runLongVenueAudit({ browser, url }) {
   };
 }
 
-async function runLargeTextAccessibilityAudit({ browser, url, outputDir }) {
+export async function runLargeTextAccessibilityAudit({ browser, url, outputDir }) {
   const reports = [];
   for (const profile of largeTextAccessibilityProfiles) {
     const context = await browser.newContext({

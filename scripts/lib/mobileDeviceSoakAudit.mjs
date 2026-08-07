@@ -6,7 +6,15 @@ import { assessFrameTimingHeadroom, summarizeFrameTimings } from "./frameTimingM
 export const mobileSoakProfiles = Object.freeze([
   { id: "android-chromium", engine: "chromium", device: "Pixel 7" },
   { id: "ios-webkit", engine: "webkit", device: "iPhone 13" },
-  { id: "android-chromium-low-power", engine: "chromium", device: "Pixel 7", powerMode: "battery" }
+  {
+    id: "android-chromium-low-power-cold-thermal",
+    engine: "chromium",
+    device: "Pixel 7",
+    powerMode: "battery",
+    cacheMode: "cold",
+    cpuThrottlingRate: 4,
+    trace: true
+  }
 ]);
 
 export const mobileSoakZoneTransitionSequence = Object.freeze([
@@ -113,9 +121,18 @@ export function summarizeZoneBottlenecks(transitions) {
   }
   const grouped = new Map();
   for (const transition of transitions) {
-    const current = grouped.get(transition.zoneId) ?? { durations: [], frameDeltas: [] };
+    const current = grouped.get(transition.zoneId) ?? {
+      durations: [],
+      frameDeltas: [],
+      imageDecodeReady: [],
+      imageResourceLoad: [],
+      decodedBodySizes: []
+    };
     current.durations.push(Number(transition.durationMs));
     current.frameDeltas.push(...(transition.frameDeltas ?? []));
+    if (Number.isFinite(transition.imageDecode?.readyMs)) current.imageDecodeReady.push(transition.imageDecode.readyMs);
+    if (Number.isFinite(transition.imageDecode?.resourceLoadMs)) current.imageResourceLoad.push(transition.imageDecode.resourceLoadMs);
+    if (Number.isFinite(transition.imageDecode?.decodedBodySize)) current.decodedBodySizes.push(transition.imageDecode.decodedBodySize);
     grouped.set(transition.zoneId, current);
   }
   const zones = [...grouped.entries()].map(([zoneId, samples]) => {
@@ -125,11 +142,28 @@ export function summarizeZoneBottlenecks(transitions) {
       transitionCount: samples.durations.length,
       averageTransitionDurationMs: Math.round(samples.durations.reduce((sum, value) => sum + value, 0) / samples.durations.length * 100) / 100,
       maximumTransitionDurationMs: Math.round(Math.max(...samples.durations) * 100) / 100,
+      imageDecodeSampleCount: samples.imageDecodeReady.length,
+      maximumImageDecodeReadyMs: samples.imageDecodeReady.length > 0
+        ? Math.round(Math.max(...samples.imageDecodeReady) * 100) / 100
+        : null,
+      maximumImageResourceLoadMs: samples.imageResourceLoad.length > 0
+        ? Math.round(Math.max(...samples.imageResourceLoad) * 100) / 100
+        : null,
+      maximumDecodedBodySize: samples.decodedBodySizes.length > 0
+        ? Math.max(...samples.decodedBodySizes)
+        : null,
       ...timings
     };
   }).sort((left, right) => right.p99FrameMs - left.p99FrameMs
     || right.maximumTransitionDurationMs - left.maximumTransitionDurationMs);
-  return { worstZoneId: zones[0].zoneId, zones };
+  const decodeZones = [...zones].filter(({ imageDecodeSampleCount }) => imageDecodeSampleCount > 0)
+    .sort((left, right) => right.maximumImageDecodeReadyMs - left.maximumImageDecodeReadyMs);
+  return {
+    worstZoneId: zones[0].zoneId,
+    worstDecodeZoneId: decodeZones[0]?.zoneId ?? null,
+    maximumImageDecodeReadyMs: decodeZones[0]?.maximumImageDecodeReadyMs ?? null,
+    zones
+  };
 }
 
 export function assessMobileSoakMetrics(metrics) {
@@ -172,6 +206,20 @@ export function assessMobileSoakMetrics(metrics) {
     if (metrics.automaticQuality?.reason !== "battery") issues.push("저전력 배터리 모드 자동 감지 실패");
     if (metrics.automaticQuality?.effects !== "minimal") issues.push("저전력 효과 최소화 실패");
     if (!metrics.zoneBottlenecks?.worstZoneId) issues.push("저전력 최악 구역 프레임 추적 누락");
+  }
+  if (metrics.expectedCacheMode === "cold") {
+    if (!metrics.environmentEmulation?.cacheDisabled) issues.push("저전력 cold cache 적용 실패");
+    if (metrics.environmentEmulation?.cpuThrottlingRate !== metrics.expectedCpuThrottlingRate) {
+      issues.push("저전력 thermal CPU 제한 적용 실패");
+    }
+    const decodeSamples = metrics.zoneBottlenecks?.zones.reduce((sum, zone) => sum + zone.imageDecodeSampleCount, 0) ?? 0;
+    if (decodeSamples < 12) issues.push(`cold cache 최초 이미지 decode 표본 부족 ${decodeSamples}/12`);
+    if (!metrics.zoneBottlenecks?.worstDecodeZoneId) issues.push("최초 이미지 decode 최악 구역 추적 누락");
+    if (Number.isFinite(metrics.zoneBottlenecks?.maximumImageDecodeReadyMs)
+      && metrics.zoneBottlenecks.maximumImageDecodeReadyMs > 2_000) {
+      issues.push(`최초 이미지 decode 준비 지연 ${metrics.zoneBottlenecks.maximumImageDecodeReadyMs}ms`);
+    }
+    if (!metrics.traceConfigured) issues.push("cold cache thermal trace 누락");
   }
   const baselineFps = Number.isFinite(metrics.baselineFps) ? metrics.baselineFps : 60;
   const relativeFps = baselineFps > 0 ? metrics.averageFps / baselineFps : 0;
@@ -414,9 +462,10 @@ async function sampleMovingFrameSeries(page, durationMs, sampleCount = 3) {
   };
 }
 
-async function captureZoneTransitionInPage(page, target) {
-  return page.evaluate(async ({ id: targetId, label: targetLabel }) => {
+async function captureZoneTransitionInPage(page, target, { auditImageDecode = false } = {}) {
+  return page.evaluate(async ({ target: { id: targetId, label: targetLabel }, auditImageDecode: shouldAuditImageDecode }) => {
     const transitionStartedAt = performance.now();
+    const resourceStartIndex = performance.getEntriesByType("resource").length;
     let traceActive = true;
     let previousFrameAt = performance.now();
     const frameDeltas = [];
@@ -443,6 +492,12 @@ async function captureZoneTransitionInPage(page, target) {
       () => document.querySelector(".world-map__stage")?.getAttribute("data-zone") === targetId,
       `${targetLabel} 구역 전환 시간 초과`
     );
+    const backgroundImage = document.querySelector('.world-map__stage[data-zone="' + targetId + '"] .world-map-artwork__background');
+    const decodeStartedAt = performance.now();
+    const decodePromise = shouldAuditImageDecode && backgroundImage instanceof HTMLImageElement
+      ? backgroundImage.decode().then(() => ({ succeeded: true, readyMs: performance.now() - decodeStartedAt }))
+        .catch(() => ({ succeeded: false, readyMs: performance.now() - decodeStartedAt }))
+      : Promise.resolve(null);
     await waitFor(
       () => document.querySelector(".world-map__stage")?.classList.contains("world-map__stage--background-loaded") === true,
       `${targetLabel} 배경 로드 시간 초과`
@@ -515,15 +570,35 @@ async function captureZoneTransitionInPage(page, target) {
       samples.push(read(`settled-${index + 1}`));
     }
     traceActive = false;
+    const decodeResult = await decodePromise;
+    const resourceEntries = performance.getEntriesByType("resource").slice(resourceStartIndex);
+    const backgroundUrl = backgroundImage instanceof HTMLImageElement ? backgroundImage.currentSrc || backgroundImage.src : "";
+    const backgroundPath = backgroundUrl ? new URL(backgroundUrl).pathname : "";
+    const imageResource = [...resourceEntries].reverse().find((entry) => {
+      if (entry.name === backgroundUrl) return true;
+      try {
+        return backgroundPath !== "" && new URL(entry.name).pathname === backgroundPath;
+      } catch {
+        return false;
+      }
+    });
     return {
       durationMs: Math.round((performance.now() - transitionStartedAt) * 100) / 100,
       frameDeltas,
-      samples
+      samples,
+      imageDecode: decodeResult ? {
+        succeeded: decodeResult.succeeded,
+        readyMs: Math.round(decodeResult.readyMs * 100) / 100,
+        resourceLoadMs: imageResource ? Math.round(imageResource.duration * 100) / 100 : null,
+        transferSize: imageResource && "transferSize" in imageResource ? imageResource.transferSize : null,
+        decodedBodySize: imageResource && "decodedBodySize" in imageResource ? imageResource.decodedBodySize : null,
+        url: backgroundUrl ? new URL(backgroundUrl).pathname : null
+      } : null
     };
-  }, target);
+  }, { target, auditImageDecode });
 }
 
-async function sampleZoneTransitionSeries(page, baselineLayout) {
+async function sampleZoneTransitionSeries(page, baselineLayout, options = {}) {
   const transitions = [];
   const frameDeltas = [];
   for (const target of mobileSoakZoneTransitionSequence) {
@@ -533,12 +608,13 @@ async function sampleZoneTransitionSeries(page, baselineLayout) {
     if (await vault.getAttribute("open") === null) await vault.locator(":scope > summary").tap();
     // WebKit pauses rendering around cross-process automation calls. Keep the click, load wait,
     // settled frames, and geometry reads inside one browser task so the audit does not create jank.
-    const { durationMs, frameDeltas: transitionFrameDeltas, samples } = await captureZoneTransitionInPage(page, target);
+    const { durationMs, frameDeltas: transitionFrameDeltas, samples, imageDecode } = await captureZoneTransitionInPage(page, target, options);
     frameDeltas.push(...transitionFrameDeltas);
     transitions.push({
       zoneId: target.id,
       durationMs,
       samples,
+      imageDecode,
       frameDeltas: transitionFrameDeltas,
       frameTimings: summarizeFrameTimings(transitionFrameDeltas)
     });
@@ -564,7 +640,7 @@ export async function runMobileDeviceSoakAudit({ rootDir, outputDir, port = 4179
     for (const profile of mobileSoakProfiles) {
       const browser = await playwright[profile.engine].launch({ headless: true });
       const context = await browser.newContext({ ...playwright.devices[profile.device] });
-      const tracePath = profile.powerMode === "battery" ? path.join(outputDir, `${profile.id}-trace.zip`) : null;
+      const tracePath = profile.trace ? path.join(outputDir, `${profile.id}-trace.zip`) : null;
       if (tracePath) await context.tracing.start({ screenshots: true, snapshots: true, sources: true });
       await context.route("http://127.0.0.1:8787/**", (route) => route.fulfill({
         status: 404,
@@ -572,6 +648,24 @@ export async function runMobileDeviceSoakAudit({ rootDir, outputDir, port = 4179
         body: "{}"
       }));
       const page = await context.newPage();
+      const environmentEmulation = {
+        cacheDisabled: false,
+        cpuThrottlingRate: 1,
+        thermalProxy: false
+      };
+      if (profile.engine === "chromium" && (profile.cacheMode === "cold" || profile.cpuThrottlingRate)) {
+        const session = await context.newCDPSession(page);
+        if (profile.cacheMode === "cold") {
+          await session.send("Network.enable");
+          await session.send("Network.setCacheDisabled", { cacheDisabled: true });
+          environmentEmulation.cacheDisabled = true;
+        }
+        if (profile.cpuThrottlingRate) {
+          await session.send("Emulation.setCPUThrottlingRate", { rate: profile.cpuThrottlingRate });
+          environmentEmulation.cpuThrottlingRate = profile.cpuThrottlingRate;
+          environmentEmulation.thermalProxy = true;
+        }
+      }
       const baselineFrames = await sampleFrameSeries(page, durationMs);
       const pageErrors = [];
       const failedRequests = [];
@@ -669,7 +763,9 @@ export async function runMobileDeviceSoakAudit({ rootDir, outputDir, port = 4179
       const movingFrameSeries = await sampleMovingFrameSeries(page, durationMs);
       const applicationFrames = movingFrameSeries.frames;
       const movementMetrics = movingFrameSeries.movement;
-      const zoneTransitionSeries = await sampleZoneTransitionSeries(page, layoutBefore);
+      const zoneTransitionSeries = await sampleZoneTransitionSeries(page, layoutBefore, {
+        auditImageDecode: profile.cacheMode === "cold"
+      });
       const zoneBottlenecks = summarizeZoneBottlenecks(zoneTransitionSeries.metrics.transitions);
       const averageFps = applicationFrames.medianFps;
       const baselineFps = baselineFrames.medianFps;
@@ -712,6 +808,10 @@ export async function runMobileDeviceSoakAudit({ rootDir, outputDir, port = 4179
         baselineFrameTimings: baselineFrames.timings,
         automaticQuality,
         expectedPowerMode: profile.powerMode ?? null,
+        expectedCacheMode: profile.cacheMode ?? null,
+        expectedCpuThrottlingRate: profile.cpuThrottlingRate ?? 1,
+        environmentEmulation,
+        traceConfigured: Boolean(tracePath),
         beforeHeap,
         afterHeap,
         heapGrowthRatio

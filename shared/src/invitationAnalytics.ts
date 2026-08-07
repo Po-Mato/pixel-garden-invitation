@@ -196,8 +196,35 @@ export type InvitationExperienceQualityGuard = {
   generatedAt: string;
 };
 
+export type InvitationQualityCalibrationDecision = "pending" | "approve-candidate" | "retain-current";
+
+export type InvitationQualityCalibrationSnapshot = {
+  weekStart: string;
+  metricKey: InvitationExperienceQualityMetric["key"];
+  window: { from: string; to: string };
+  activeDays: number;
+  sampleCount: number;
+  dailyP95: number;
+  suggestedThreshold: number;
+  currentThreshold: number;
+  recommendation: "retain" | "review-increase";
+  decision: InvitationQualityCalibrationDecision;
+  decisionNote: string | null;
+  createdAt: string;
+  reviewedAt: string | null;
+};
+
+export type InvitationQualityCalibrationAdminState = {
+  currentWeekStart: string;
+  eligible: boolean;
+  pendingCount: number;
+  snapshots: InvitationQualityCalibrationSnapshot[];
+  generatedAt: string;
+};
+
 export type InvitationAnalyticsAdminResponse = InvitationAnalyticsAdminResult & {
   performance: InvitationPerformanceAdminState;
   qualityGuard: InvitationExperienceQualityGuard;
+  qualityCalibration?: InvitationQualityCalibrationAdminState;
   deviceQaDetail?: DeviceQaDetailAdminState;
 };

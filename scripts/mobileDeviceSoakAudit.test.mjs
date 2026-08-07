@@ -11,24 +11,35 @@ import {
   summarizeZoneTransitionSamples
 } from "./lib/mobileDeviceSoakAudit.mjs";
 
-test("mobile soak covers Android Chromium, iOS WebKit, and a battery-constrained Android", () => {
+test("mobile soak covers Android Chromium, iOS WebKit, and a cold-cache thermal Android", () => {
   assert.deepEqual(mobileSoakProfiles.map(({ id }) => id), [
-    "android-chromium", "ios-webkit", "android-chromium-low-power"
+    "android-chromium", "ios-webkit", "android-chromium-low-power-cold-thermal"
   ]);
+  assert.deepEqual(mobileSoakProfiles[2], {
+    id: "android-chromium-low-power-cold-thermal",
+    engine: "chromium",
+    device: "Pixel 7",
+    powerMode: "battery",
+    cacheMode: "cold",
+    cpuThrottlingRate: 4,
+    trace: true
+  });
 });
 
 test("mobile soak identifies the worst low-power zone from repeated frame tails", () => {
   const transitions = [
-    { zoneId: "home", durationMs: 300, frameDeltas: [16, 17, 18] },
-    { zoneId: "lobby", durationMs: 420, frameDeltas: [16, 20, 88] },
-    { zoneId: "home", durationMs: 320, frameDeltas: [16, 17, 19] },
-    { zoneId: "lobby", durationMs: 450, frameDeltas: [17, 24, 96] }
+    { zoneId: "home", durationMs: 300, frameDeltas: [16, 17, 18], imageDecode: { readyMs: 40, resourceLoadMs: 30, decodedBodySize: 1_000 } },
+    { zoneId: "lobby", durationMs: 420, frameDeltas: [16, 20, 88], imageDecode: { readyMs: 96, resourceLoadMs: 80, decodedBodySize: 2_000 } },
+    { zoneId: "home", durationMs: 320, frameDeltas: [16, 17, 19], imageDecode: { readyMs: 44, resourceLoadMs: 32, decodedBodySize: 1_000 } },
+    { zoneId: "lobby", durationMs: 450, frameDeltas: [17, 24, 96], imageDecode: { readyMs: 110, resourceLoadMs: 92, decodedBodySize: 2_000 } }
   ];
   const summary = summarizeZoneBottlenecks(transitions);
   assert.equal(summary.worstZoneId, "lobby");
   assert.equal(summary.zones[0].transitionCount, 2);
   assert.equal(summary.zones[0].maximumTransitionDurationMs, 450);
   assert.ok(summary.zones[0].p99FrameMs > summary.zones[1].p99FrameMs);
+  assert.equal(summary.worstDecodeZoneId, "lobby");
+  assert.equal(summary.maximumImageDecodeReadyMs, 110);
 });
 
 test("battery soak requires automatic minimal effects and a worst-zone trace", () => {
@@ -53,6 +64,31 @@ test("battery soak requires automatic minimal effects and a worst-zone trace", (
   ]);
 });
 
+test("cold-cache thermal soak requires applied emulation, 12 decode samples, and a trace", () => {
+  const zones = [{ zoneId: "lobby", imageDecodeSampleCount: 12, maximumImageDecodeReadyMs: 180 }];
+  const metrics = {
+    pageErrors: [], failedRequests: [], touchResponded: true, layoutStable: true,
+    typographyFallbackReady: true, sheetContained: true, averageFps: 12, baselineFps: 12,
+    heapGrowthRatio: null, expectedCacheMode: "cold", expectedCpuThrottlingRate: 4,
+    environmentEmulation: { cacheDisabled: true, cpuThrottlingRate: 4, thermalProxy: true },
+    zoneBottlenecks: { worstZoneId: "lobby", worstDecodeZoneId: "lobby", maximumImageDecodeReadyMs: 180, zones },
+    traceConfigured: true
+  };
+  assert.deepEqual(assessMobileSoakMetrics(metrics), []);
+  assert.deepEqual(assessMobileSoakMetrics({
+    ...metrics,
+    environmentEmulation: { cacheDisabled: false, cpuThrottlingRate: 1 },
+    zoneBottlenecks: { worstZoneId: "lobby", worstDecodeZoneId: null, maximumImageDecodeReadyMs: null, zones: [] },
+    traceConfigured: false
+  }), [
+    "저전력 cold cache 적용 실패",
+    "저전력 thermal CPU 제한 적용 실패",
+    "cold cache 최초 이미지 decode 표본 부족 0/12",
+    "최초 이미지 decode 최악 구역 추적 누락",
+    "cold cache thermal trace 누락"
+  ]);
+});
+
 test("mobile soak closes invitation overlays before measuring movement frames", () => {
   const source = readFileSync("scripts/lib/mobileDeviceSoakAudit.mjs", "utf8");
   const closeMenuAt = source.indexOf('.world-menu-sheet button[aria-label="초대장 메뉴 닫기"]');
@@ -71,7 +107,7 @@ test("mobile soak measures destination rendering inside one browser evaluation",
   assert.match(captureSource, /button\.click\(\)/);
   assert.match(captureSource, /world-map__stage--background-loaded/);
   assert.match(captureSource, /durationMs:[\s\S]+frameDeltas,[\s\S]+samples/);
-  assert.match(source.slice(captureEnd), /await captureZoneTransitionInPage\(page, target\)/);
+  assert.match(source.slice(captureEnd), /await captureZoneTransitionInPage\(page, target, options\)/);
 });
 
 test("mobile soak accepts stable repeated interaction metrics", () => {
