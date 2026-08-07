@@ -167,7 +167,28 @@ export type DeviceQaDetailAdminState = {
   generatedAt: string;
 };
 
+export type InvitationExperienceQualityMetric = {
+  key: "camera-center" | "cls" | "long-frame";
+  label: string;
+  unit: "px" | "score" | "ms";
+  sampleCount: number;
+  activeDays: number;
+  average: number | null;
+  alertThreshold: number;
+  status: "collecting" | "stable" | "watch";
+};
+
+export type InvitationExperienceQualityGuard = {
+  window: InvitationAnalyticsRange;
+  status: "collecting" | "stable" | "watch";
+  minimumActiveDays: number;
+  minimumSamples: number;
+  metrics: InvitationExperienceQualityMetric[];
+  generatedAt: string;
+};
+
 export type InvitationAnalyticsAdminResponse = InvitationAnalyticsAdminResult & {
   performance: InvitationPerformanceAdminState;
+  qualityGuard: InvitationExperienceQualityGuard;
   deviceQaDetail?: DeviceQaDetailAdminState;
 };

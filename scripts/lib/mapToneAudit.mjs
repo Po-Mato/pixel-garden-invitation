@@ -44,6 +44,36 @@ export const displayCalibrationProfiles = Object.freeze({
     adjustLuminance(value) {
       return Math.max(0, Math.min(1, 0.025 + Math.max(0, Math.min(1, value)) * 0.91));
     }
+  },
+  "oled-low-brightness": {
+    label: "OLED 저휘도",
+    gamut: "display-p3",
+    adjustLuminance(value) {
+      const bounded = Math.max(0, Math.min(1, value));
+      return bounded < 0.08 ? bounded * 0.64 : Math.min(1, bounded ** 1.04 * 0.9);
+    }
+  },
+  "oled-outdoor-p3": {
+    label: "OLED 야외 P3",
+    gamut: "display-p3",
+    adjustLuminance(value) {
+      const bounded = Math.max(0, Math.min(1, value));
+      return Math.min(1, 0.018 + bounded ** 0.97 * 0.96);
+    }
+  },
+  "lcd-low-brightness": {
+    label: "LCD 저휘도",
+    gamut: "srgb",
+    adjustLuminance(value) {
+      return Math.max(0, Math.min(1, 0.028 + Math.max(0, Math.min(1, value)) * 0.86));
+    }
+  },
+  "lcd-outdoor-srgb": {
+    label: "LCD 야외 sRGB",
+    gamut: "srgb",
+    adjustLuminance(value) {
+      return Math.max(0, Math.min(1, 0.045 + Math.max(0, Math.min(1, value)) * 0.86));
+    }
   }
 });
 

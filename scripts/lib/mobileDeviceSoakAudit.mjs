@@ -61,6 +61,17 @@ export function summarizeMovementSamples(samples, settledSamples) {
   };
 }
 
+export function assessMotionResponsiveness(metrics) {
+  const issues = [];
+  const frameBudgetMs = Number.isFinite(metrics.frameBudgetMs) ? metrics.frameBudgetMs : 1000 / 60;
+  const inputLimitMs = Math.max(50, frameBudgetMs * 3);
+  if (!Number.isFinite(metrics.inputLatencyMs)) issues.push("이동 입력 지연 측정 누락");
+  else if (metrics.inputLatencyMs > inputLimitMs) issues.push(`이동 입력 지연 ${metrics.inputLatencyMs}ms`);
+  if (!Number.isFinite(metrics.settleLatencyMs)) issues.push("카메라 안정화 시간 측정 누락");
+  else if (metrics.settleLatencyMs > 320) issues.push(`카메라 안정화 지연 ${metrics.settleLatencyMs}ms`);
+  return issues;
+}
+
 export function summarizeZoneTransitionSamples(transitions, baselineLayout) {
   if (!Array.isArray(transitions) || transitions.length === 0) {
     throw new TypeError("Zone transition samples must contain at least one transition");
@@ -109,6 +120,9 @@ export function assessMobileSoakMetrics(metrics) {
   }
   if (Number.isFinite(metrics.settledJitterPx) && metrics.settledJitterPx > 0.75) {
     issues.push(`이동 정지 후 카메라 미세 흔들림 ${metrics.settledJitterPx}px`);
+  }
+  if (metrics.motionResponse) {
+    assessMotionResponsiveness(metrics.motionResponse).forEach((issue) => issues.push(issue));
   }
   if (metrics.zoneTransitions) {
     if (metrics.zoneTransitions.transitionCount < 12) issues.push(`구역 전환 표본 부족 ${metrics.zoneTransitions.transitionCount}/12`);
@@ -271,7 +285,20 @@ async function sampleMovingFrameSeries(page, durationMs, sampleCount = 3) {
     }));
     const samples = [read("before")];
     joystick.focus();
+    const inputStartedAt = performance.now();
     dispatchKey("keydown", "ArrowRight");
+    let inputLatencyMs = null;
+    while (performance.now() - inputStartedAt <= 300) {
+      await new Promise((resolve) => requestAnimationFrame(resolve));
+      const current = read("input-latency");
+      if (Math.hypot(
+        current.position.x - samples[0].position.x,
+        current.position.y - samples[0].position.y
+      ) >= 0.5) {
+        inputLatencyMs = performance.now() - inputStartedAt;
+        break;
+      }
+    }
     await new Promise((resolve) => setTimeout(resolve, Math.min(720, Math.max(360, duration / 7))));
     dispatchKey("keyup", "ArrowRight");
     await new Promise((resolve) => setTimeout(resolve, 96));
@@ -310,8 +337,22 @@ async function sampleMovingFrameSeries(page, durationMs, sampleCount = 3) {
       requestAnimationFrame(tick);
     });
     samples.push(read("before-release"));
+    const releaseStartedAt = performance.now();
     dispatchKey("keyup", currentKey);
-    await new Promise((resolve) => setTimeout(resolve, 96));
+    let previousCamera = read("release").camera;
+    let stableFrameCount = 0;
+    let settleLatencyMs = null;
+    while (performance.now() - releaseStartedAt <= 600) {
+      await new Promise((resolve) => requestAnimationFrame(resolve));
+      const current = read("settle-probe");
+      const cameraDelta = Math.hypot(current.camera.x - previousCamera.x, current.camera.y - previousCamera.y);
+      previousCamera = current.camera;
+      stableFrameCount = cameraDelta <= 0.1 ? stableFrameCount + 1 : 0;
+      if (stableFrameCount >= 3) {
+        settleLatencyMs = performance.now() - releaseStartedAt;
+        break;
+      }
+    }
     const settledSamples = [];
     for (let index = 0; index < 4; index += 1) {
       await new Promise((resolve) => requestAnimationFrame(resolve));
@@ -321,15 +362,23 @@ async function sampleMovingFrameSeries(page, durationMs, sampleCount = 3) {
       frameSamples: frameCounts.map((frames) => Math.round(frames / sampleDuration * 1000)),
       frameDeltas,
       samples,
-      settledSamples
+      settledSamples,
+      inputLatencyMs: inputLatencyMs === null ? null : Math.round(inputLatencyMs * 100) / 100,
+      settleLatencyMs: settleLatencyMs === null ? null : Math.round(settleLatencyMs * 100) / 100
     };
   }, { duration: durationMs, count: sampleCount });
+  const timings = summarizeFrameTimings(result.frameDeltas);
   return {
     frames: {
       ...summarizeFrameSamples(result.frameSamples),
-      timings: summarizeFrameTimings(result.frameDeltas)
+      timings,
+      detectedRefreshHz: Math.round(1000 / timings.p50FrameMs)
     },
-    movement: summarizeMovementSamples(result.samples, result.settledSamples)
+    movement: {
+      ...summarizeMovementSamples(result.samples, result.settledSamples),
+      inputLatencyMs: result.inputLatencyMs,
+      settleLatencyMs: result.settleLatencyMs
+    }
   };
 }
 
@@ -590,6 +639,12 @@ export async function runMobileDeviceSoakAudit({ rootDir, outputDir, port = 4179
         layoutStable,
         ...invitationMetrics,
         ...movementMetrics,
+        motionResponse: {
+          inputLatencyMs: movementMetrics.inputLatencyMs,
+          settleLatencyMs: movementMetrics.settleLatencyMs,
+          frameBudgetMs: applicationFrames.timings.frameBudgetMs,
+          detectedRefreshHz: applicationFrames.detectedRefreshHz
+        },
         zoneTransitions: zoneTransitionSeries.metrics,
         zoneTransitionFrameTimings: zoneTransitionSeries.frameTimings,
         // Linux Playwright WebKit uses software rasterization and collapses a full map swap into

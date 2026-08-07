@@ -56,6 +56,18 @@ function result(): InvitationAnalyticsAdminResponse {
       },
       updatedAt: null
     },
+    qualityGuard: {
+      window: { from: "2026-07-16", to: "2026-07-22", days: 7 },
+      status: "stable",
+      minimumActiveDays: 5,
+      minimumSamples: 20,
+      metrics: [
+        { key: "camera-center", label: "캐릭터 중심 오차", unit: "px", sampleCount: 28, activeDays: 7, average: 0.5, alertThreshold: 2, status: "stable" },
+        { key: "cls", label: "화면 배치 흔들림", unit: "score", sampleCount: 28, activeDays: 7, average: 0.012, alertThreshold: 0.1, status: "stable" },
+        { key: "long-frame", label: "긴 프레임 p95", unit: "ms", sampleCount: 28, activeDays: 7, average: 64, alertThreshold: 100, status: "stable" }
+      ],
+      generatedAt: "2026-07-22T03:00:00.000Z"
+    },
     deviceQaDetail: {
       profiles: [{
         key: "android|Android|14|Chrome|126",
@@ -136,6 +148,9 @@ describe("AnalyticsAdminPage", () => {
     expect(screen.getByText("예상 참석 9명")).toBeInTheDocument();
     expect(screen.getByText("완료율 50%")).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "로딩·게임 성능" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "7일 품질 경보" })).toBeInTheDocument();
+    expect(screen.getByRole("region", { name: "7일 품질 경보" })).toHaveTextContent("정상 범위");
+    expect(screen.getByRole("region", { name: "7일 품질 경보" })).toHaveTextContent("기준 100ms");
     expect(screen.getByText(/FPS 표본 4회/)).toBeInTheDocument();
     expect(screen.getByText(/캐릭터 자동 대체 2회/)).toBeInTheDocument();
     expect(screen.getByRole("region", { name: "대체된 캐릭터 이미지" })).toHaveTextContent("더스티 로즈 원피스");

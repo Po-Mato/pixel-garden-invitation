@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import {
   assessMobileSoakMetrics,
+  assessMotionResponsiveness,
   mobileSoakProfiles,
   summarizeFrameSamples,
   summarizeMovementSamples,
@@ -75,6 +76,19 @@ test("mobile soak summarizes real player movement, camera follow, centering, and
     samples,
     settledSamples
   });
+});
+
+test("motion response budgets scale with 60Hz and 120Hz frame cadence", () => {
+  assert.deepEqual(assessMotionResponsiveness({
+    inputLatencyMs: 42,
+    settleLatencyMs: 180,
+    frameBudgetMs: 16.67
+  }), []);
+  assert.deepEqual(assessMotionResponsiveness({
+    inputLatencyMs: 52,
+    settleLatencyMs: 360,
+    frameBudgetMs: 8.33
+  }), ["이동 입력 지연 52ms", "카메라 안정화 지연 360ms"]);
 });
 
 test("mobile soak summarizes repeated low-performance zone transitions", () => {

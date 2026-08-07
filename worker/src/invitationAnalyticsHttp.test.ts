@@ -14,6 +14,9 @@ vi.mock("./deviceQaReportRepository", () => ({
   getDeviceQaDetailAdminState: vi.fn(),
   updateDeviceQaAlertSettings: vi.fn()
 }));
+vi.mock("./invitationExperienceQualityGuard", () => ({
+  getInvitationExperienceQualityGuard: vi.fn()
+}));
 
 import {
   handleAdminInvitationAnalyticsRequest,
@@ -22,12 +25,14 @@ import {
 import * as repository from "./invitationAnalyticsRepository";
 import * as performanceConfig from "./invitationPerformanceConfig";
 import * as deviceQaRepository from "./deviceQaReportRepository";
+import * as qualityGuardRepository from "./invitationExperienceQualityGuard";
 import { verifyAdminToken } from "./security";
 import type { Env } from "./index";
 
 const mockedRepository = vi.mocked(repository);
 const mockedPerformance = vi.mocked(performanceConfig);
 const mockedDeviceQa = vi.mocked(deviceQaRepository);
+const mockedQualityGuard = vi.mocked(qualityGuardRepository);
 const mockedVerify = vi.mocked(verifyAdminToken);
 const env = {
   DB: {} as D1Database,
@@ -75,6 +80,14 @@ describe("invitation analytics HTTP", () => {
     mockedDeviceQa.getDeviceQaDetailAdminState.mockResolvedValue({
       profiles: [], latestAlert: null, recentAlerts: [], emailConfigured: false,
       emailEnabled: false, warningThreshold: 3, generatedAt: "2026-07-22T00:00:00.000Z"
+    });
+    mockedQualityGuard.getInvitationExperienceQualityGuard.mockResolvedValue({
+      window: { from: "2026-07-16", to: "2026-07-22", days: 7 },
+      status: "collecting",
+      minimumActiveDays: 5,
+      minimumSamples: 20,
+      metrics: [],
+      generatedAt: "2026-07-22T00:00:00.000Z"
     });
     mockedDeviceQa.updateDeviceQaAlertSettings.mockResolvedValue(true);
     mockedPerformance.setInvitationPerformanceMode.mockImplementation(async (_db, _id, mode) => ({
@@ -141,7 +154,10 @@ describe("invitation analytics HTTP", () => {
       from: "2026-07-16",
       to: "2026-07-22"
     });
-    expect(await response.json()).toMatchObject({ performance: { mode: "adaptive" } });
+    expect(await response.json()).toMatchObject({
+      performance: { mode: "adaptive" },
+      qualityGuard: { status: "collecting" }
+    });
   });
 
   it("관리자가 성능 운영 모드를 즉시 전환한다", async () => {

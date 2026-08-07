@@ -199,7 +199,10 @@ test("relative luminance produces the expected black-white contrast", () => {
   assert.equal(contrastRatio(0, 1), 21);
 });
 
-test("OLED와 LCD 보정 모델에서도 밝기 순서와 라벨 가독성을 유지한다", () => {
+test("OLED와 LCD의 저휘도·야외·P3 보정 모델에서도 밝기 순서와 라벨 가독성을 유지한다", () => {
+  assert.deepEqual(Object.keys(displayCalibrationProfiles), [
+    "oled", "lcd", "oled-low-brightness", "oled-outdoor-p3", "lcd-low-brightness", "lcd-outdoor-srgb"
+  ]);
   for (const profile of Object.values(displayCalibrationProfiles)) {
     assert.ok(profile.adjustLuminance(0.8) > profile.adjustLuminance(0.1));
     const contrasts = calibratedLabelContrasts({ sceneP90Luminance: 0.8 }, profile.adjustLuminance);

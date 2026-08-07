@@ -16,5 +16,7 @@ for (const report of result.reports) {
     + ` · 최소 라벨 ${Math.min(...Object.values(report.contrasts)).toFixed(2)}:1`
     + ` · OLED ${report.displayProfiles.oled.weakestCharacterEdgeContrast.toFixed(2)}/${report.displayProfiles.oled.weakestMovementEdgeContrast.toFixed(2)}`
     + ` · LCD ${report.displayProfiles.lcd.weakestCharacterEdgeContrast.toFixed(2)}/${report.displayProfiles.lcd.weakestMovementEdgeContrast.toFixed(2)}`
+    + ` · 저휘도 OLED/LCD ${report.displayProfiles["oled-low-brightness"].weakestCharacterEdgeContrast.toFixed(2)}/${report.displayProfiles["lcd-low-brightness"].weakestCharacterEdgeContrast.toFixed(2)}`
+    + ` · 야외 P3/sRGB ${report.displayProfiles["oled-outdoor-p3"].weakestCharacterEdgeContrast.toFixed(2)}/${report.displayProfiles["lcd-outdoor-srgb"].weakestCharacterEdgeContrast.toFixed(2)}`
   );
 }

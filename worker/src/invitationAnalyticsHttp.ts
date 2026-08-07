@@ -16,6 +16,7 @@ import {
 } from "./invitationPerformanceConfig";
 import { adminNotificationEmailConfigured } from "./adminNotificationEmail";
 import { getDeviceQaDetailAdminState, updateDeviceQaAlertSettings } from "./deviceQaReportRepository";
+import { getInvitationExperienceQualityGuard } from "./invitationExperienceQualityGuard";
 
 const eventNames = new Set<string>(invitationAnalyticsEventNames);
 const contextPattern = /^(entry|game|simple)$/;
@@ -177,12 +178,15 @@ export async function handleAdminInvitationAnalyticsRequest(
   }
 
   try {
-    const [result, performance, deviceQaDetail] = await Promise.all([
+    const [result, performance, qualityGuard, deviceQaDetail] = await Promise.all([
       getInvitationAnalytics(env.DB, invitationId, { from, to }),
       getInvitationPerformanceAdminState(env.DB, invitationId),
+      getInvitationExperienceQualityGuard(env.DB, invitationId, { to }),
       getDeviceQaDetailAdminState(env.DB, invitationId, adminNotificationEmailConfigured(env))
     ]);
-    return result && performance && deviceQaDetail ? json({ ...result, performance, deviceQaDetail }) : json({ error: "not_found" }, 404);
+    return result && performance && deviceQaDetail
+      ? json({ ...result, performance, qualityGuard, deviceQaDetail })
+      : json({ error: "not_found" }, 404);
   } catch {
     return json({ error: "internal_error" }, 500);
   }

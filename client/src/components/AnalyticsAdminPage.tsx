@@ -406,6 +406,23 @@ export function AnalyticsAdminPage() {
               <strong className={analytics.totals.clientErrors > 0 ? "has-errors" : ""}><AlertTriangle aria-hidden="true" /> 오류 {formatNumber(analytics.totals.clientErrors)}건</strong>
             </section>
 
+            <section className="analytics-quality-guard" data-status={analytics.qualityGuard.status} aria-labelledby="analytics-quality-guard-title">
+              <header>
+                <ShieldCheck aria-hidden="true" />
+                <div><p>7-DAY QUALITY GUARD</p><h2 id="analytics-quality-guard-title">7일 품질 경보</h2><span>{analytics.qualityGuard.window.from} - {analytics.qualityGuard.window.to} · 개인별 기록 없이 일별 합계만 판정</span></div>
+                <strong>{analytics.qualityGuard.status === "watch" ? "확인 필요" : analytics.qualityGuard.status === "stable" ? "정상 범위" : "표본 수집 중"}</strong>
+              </header>
+              <div className="analytics-quality-guard__metrics">
+                {analytics.qualityGuard.metrics.map((metric) => (
+                  <article key={metric.key} data-status={metric.status}>
+                    <span>{metric.label}</span>
+                    <strong>{metric.average === null ? "집계 전" : `${metric.average}${metric.unit === "score" ? "" : metric.unit}`}</strong>
+                    <small>기준 {metric.alertThreshold}{metric.unit === "score" ? "" : metric.unit} · {metric.activeDays}/{analytics.qualityGuard.minimumActiveDays}일 · {formatNumber(metric.sampleCount)}/{analytics.qualityGuard.minimumSamples}표본</small>
+                  </article>
+                ))}
+              </div>
+            </section>
+
             <section className="analytics-device-qa" aria-labelledby="analytics-device-qa-title">
               <header>
                 <ClipboardCheck aria-hidden="true" />
