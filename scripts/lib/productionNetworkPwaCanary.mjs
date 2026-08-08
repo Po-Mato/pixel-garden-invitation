@@ -124,8 +124,8 @@ async function measureEntry(page, url, timeoutMs) {
   return { ...metrics, entryVisibleMs, pageErrors, failedRequests };
 }
 
-async function waitForControllerAndCache(page, version, expectedPaths, timeoutMs = 180_000) {
-  return page.evaluate(async ({ targetVersion, paths, timeout }) => {
+async function waitForControllerAndCache(page, version, expectedPaths, timeoutMs = 180_000, obsoleteName = null) {
+  return page.evaluate(async ({ targetVersion, paths, timeout, obsolete }) => {
     const deadline = Date.now() + timeout;
     const expectedName = `wedding-garden-precache-${targetVersion}`;
     while (Date.now() < deadline) {
@@ -135,14 +135,15 @@ async function waitForControllerAndCache(page, version, expectedPaths, timeoutMs
       const urls = new Set(cache ? (await cache.keys()).map((request) => request.url) : []);
       const scope = registration?.scope ?? location.href;
       const complete = Boolean(cache) && paths.every((resourcePath) => urls.has(new URL(resourcePath, scope).href));
-      if (registration?.active && navigator.serviceWorker.controller && complete) {
+      const obsoleteRemoved = !obsolete || !names.includes(obsolete);
+      if (registration?.active && navigator.serviceWorker.controller && complete && obsoleteRemoved) {
         return { controlled: true, complete, names, expectedName, cachedPaths: urls.size };
       }
       await new Promise((resolve) => setTimeout(resolve, 200));
     }
     const registration = await navigator.serviceWorker.getRegistration();
     return { controlled: Boolean(navigator.serviceWorker.controller), complete: false, names: await caches.keys(), expectedName, cachedPaths: 0, registrationActive: Boolean(registration?.active) };
-  }, { targetVersion: version, paths: expectedPaths, timeout: timeoutMs });
+  }, { targetVersion: version, paths: expectedPaths, timeout: timeoutMs, obsolete: obsoleteName });
 }
 
 async function installPublicUpdate(page, timeoutMs) {
@@ -273,7 +274,14 @@ export async function verifyProductionNetworkPwaCanary({ url, expectedSha, profi
     const updatedControllerActive = installState === "installed"
       ? await activateWaitingWorker(page)
       : Boolean(await page.evaluate(() => navigator.serviceWorker.controller));
-    const cache = await waitForControllerAndCache(page, expectedVersion, expectedPaths);
+    const obsoleteName = prepare.previousVersion === expectedVersion ? null : prepare.previousCacheName;
+    const cache = await waitForControllerAndCache(
+      page,
+      expectedVersion,
+      expectedPaths,
+      productionNetworkPwaBudgets.updateInstallMs,
+      obsoleteName
+    );
     await session.send("Network.clearBrowserCache");
     const updatedColdStart = await measureEntry(
       page,
