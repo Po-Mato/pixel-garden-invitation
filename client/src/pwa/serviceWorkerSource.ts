@@ -29,15 +29,17 @@ function relativeAssetPath(fileName: string): string {
 }
 
 const adminOnlyBundlePattern = /(?:AdminPage|AdminNotificationInbox|papaparse|inviteLinkAdminTokens|attendanceOperations)/i;
-const gameFeatureBundlePattern = /(?:WeddingPhotoBooth|WeddingPhotoAlbum|GameMemoryAlbum|CelebrationCollectionGuide|CompanionDestinationSheet|CompanionWaitingRoom|JourneyRouteSheet)/i;
 const criticalBuildAssetPattern = /(?:noto-serif-kr-critical|entry-wedding-garden-hero|noto-sans-kr-(?:11[0-9]|latin)-).*\.(?:woff2|avif|webp)$/i;
 
-export function resolvePwaPrecachePaths(bundleFileNames: readonly string[]): string[] {
+export function resolvePwaPrecachePaths(
+  bundleFileNames: readonly string[],
+  coreBuildFileNames: readonly string[] = []
+): string[] {
+  const coreBuildFiles = new Set(coreBuildFileNames);
   const buildAssets = bundleFileNames
     .filter((fileName) => (
-      (/\.(?:css|js)$/i.test(fileName) || criticalBuildAssetPattern.test(fileName))
+      (coreBuildFiles.has(fileName) || criticalBuildAssetPattern.test(fileName))
       && !adminOnlyBundlePattern.test(fileName)
-      && !gameFeatureBundlePattern.test(fileName)
     ))
     .map(relativeAssetPath);
   return [...new Set([...pwaCorePrecachePaths, ...buildAssets])];
@@ -45,7 +47,9 @@ export function resolvePwaPrecachePaths(bundleFileNames: readonly string[]): str
 
 export function resolvePwaFeaturePrecachePaths(bundleFileNames: readonly string[]): string[] {
   return [...new Set(bundleFileNames
-    .filter((fileName) => /\.(?:css|js)$/i.test(fileName) && gameFeatureBundlePattern.test(fileName))
+    .filter((fileName) => /\.(?:css|js)$/i.test(fileName)
+      && !adminOnlyBundlePattern.test(fileName)
+      && !criticalBuildAssetPattern.test(fileName))
     .map(relativeAssetPath))];
 }
 
@@ -289,20 +293,9 @@ async function prepareFeatureCache() {
   });
 }
 
-async function reportFeatureCacheState() {
-  const matches = await Promise.all(FEATURE_URLS.map((path) => caches.match(scopedUrl(path))));
-  const completed = matches.filter(Boolean).length;
-  await broadcast({
-    type: completed === FEATURE_URLS.length ? "PWA_FEATURE_CACHE_READY" : "PWA_FEATURE_CACHE_ERROR",
-    completed,
-    total: FEATURE_URLS.length
-  });
-}
-
 self.addEventListener("install", (event) => {
   event.waitUntil((async () => {
     await prepareOfflineCache({ atomic: true });
-    await prepareFeatureCache();
     if (!self.registration.active) await self.skipWaiting();
   })());
 });
@@ -316,7 +309,6 @@ self.addEventListener("activate", (event) => {
       .map((name) => caches.delete(name)));
     await self.clients.claim();
     await reportOfflineCacheState();
-    await reportFeatureCacheState();
   })());
 });
 

@@ -12,16 +12,19 @@ const healthy = {
   readinessStatus: 200,
   expectedVersion: "abcdef123456",
   deployedVersion: "abcdef123456",
-  freshColdStart: { entryVisible: true, entryVisibleMs: 4_500, layoutContained: true, pageErrors: [], failedRequests: [] },
+  freshColdStart: { entryVisible: true, entryVisibleMs: 4_500, layoutContained: true, largestContentfulPaintSupported: true, largestContentfulPaintMs: 2_200, pageErrors: [], failedRequests: [] },
   update: {
     previousVersion: "111111111111",
     previousControllerActive: true,
     installState: "installed",
+    installDurationMs: 3_500,
     updatedControllerActive: true,
     updatedCacheComplete: true,
+    expectedPaths: 44,
+    expectedFeaturePaths: 58,
     previousCachePresent: false
   },
-  updatedColdStart: { entryVisible: true, entryVisibleMs: 900, layoutContained: true, pageErrors: [], failedRequests: [] }
+  updatedColdStart: { entryVisible: true, entryVisibleMs: 900, layoutContained: true, largestContentfulPaintSupported: true, largestContentfulPaintMs: 700, pageErrors: [], failedRequests: [] }
 };
 
 test("production network canary defines a deterministic slow 4G profile", () => {
@@ -43,14 +46,18 @@ test("production network canary accepts atomic updates and cold starts", () => {
   assert.deepEqual(auditProductionNetworkPwaCanary(healthy), []);
   const issues = auditProductionNetworkPwaCanary({
     ...healthy,
-    freshColdStart: { ...healthy.freshColdStart, entryVisibleMs: 12_001 },
-    update: { ...healthy.update, updatedCacheComplete: false, previousCachePresent: true },
-    updatedColdStart: { ...healthy.updatedColdStart, layoutContained: false }
+    freshColdStart: { ...healthy.freshColdStart, entryVisibleMs: 12_001, largestContentfulPaintMs: 4_001 },
+    update: { ...healthy.update, updatedCacheComplete: false, expectedPaths: 91, expectedFeaturePaths: 0, previousCachePresent: true },
+    updatedColdStart: { ...healthy.updatedColdStart, layoutContained: false, largestContentfulPaintSupported: false, largestContentfulPaintMs: null }
   });
   assert.ok(issues.some((issue) => issue.includes("최초 진입")));
   assert.ok(issues.some((issue) => issue.includes("프리캐시")));
   assert.ok(issues.some((issue) => issue.includes("이전 서비스 워커 캐시")));
   assert.ok(issues.some((issue) => issue.includes("화면 넘침")));
+  assert.ok(issues.some((issue) => issue.includes("느린 4G LCP")));
+  assert.ok(issues.some((issue) => issue.includes("핵심 프리캐시 과다")));
+  assert.ok(issues.some((issue) => issue.includes("선택 기능 캐시 분리")));
+  assert.ok(issues.some((issue) => issue.includes("교체 후 LCP 관측")));
 });
 
 test("Pages prepares the old worker before deploy and verifies the new worker after deploy", () => {

@@ -84,4 +84,27 @@ describe("PwaStatusCenter", () => {
 
     expect(screen.queryByRole("status")).not.toBeInTheDocument();
   });
+
+  it("warms optional game features only after the guest enters the garden", async () => {
+    const postMessage = vi.fn();
+    Object.defineProperty(navigator, "serviceWorker", {
+      configurable: true,
+      value: {
+        controller: { postMessage },
+        addEventListener: vi.fn(),
+        register: vi.fn(async () => ({
+          active: { postMessage },
+          waiting: null,
+          installing: null,
+          addEventListener: vi.fn()
+        }))
+      }
+    });
+    await startPwaClient(true, "./");
+    const rendered = render(<PwaStatusCenter playing={false} showInstall={false} />);
+    expect(postMessage).not.toHaveBeenCalledWith({ type: "CACHE_GAME_FEATURES" });
+
+    rendered.rerender(<PwaStatusCenter playing showInstall={false} />);
+    await waitFor(() => expect(postMessage).toHaveBeenCalledWith({ type: "CACHE_GAME_FEATURES" }));
+  });
 });

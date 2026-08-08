@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import {
   auditGameResourceBudgets,
   gameResourceBudgets,
+  parsePwaFeaturePaths,
   parsePwaPrecachePaths,
   summarizeGameResourceStates
 } from "./lib/gameResourceBudget.mjs";
@@ -17,6 +18,10 @@ test("service-worker precache manifest is parsed for missing-asset verification"
     "./assets/index-a.js"
   ]);
   assert.throws(() => parsePwaPrecachePaths("const VERSION = 'missing';"), /PRECACHE_URLS missing/);
+  assert.deepEqual(parsePwaFeaturePaths('const FEATURE_URLS = ["./assets/optional-a.js"];'), [
+    "./assets/optional-a.js"
+  ]);
+  assert.throws(() => parsePwaFeaturePaths("const VERSION = 'missing';"), /FEATURE_URLS missing/);
 });
 
 const baseResources = [

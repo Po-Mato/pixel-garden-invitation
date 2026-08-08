@@ -23,6 +23,14 @@ export function auditPwaCleanInstallCanary(snapshot) {
   return issues;
 }
 
+export function criticalOfflineAssetFailures(requestFailures, baseUrl) {
+  const origin = new URL(baseUrl).origin;
+  return [...new Set(requestFailures
+    .map(({ url: failedUrl }) => new URL(failedUrl))
+    .filter((failedUrl) => failedUrl.origin === origin && !failedUrl.pathname.startsWith("/api/"))
+    .map((failedUrl) => failedUrl.pathname))];
+}
+
 async function waitForServer(url, server, timeoutMs = 20_000) {
   const startedAt = Date.now();
   while (Date.now() - startedAt < timeoutMs) {
@@ -134,11 +142,10 @@ export async function runPwaCleanInstallCanary({ rootDir, outputDir, port = 4187
       }
       const blockingNoticeVisible = await page.locator(".pwa-status--notice, .pwa-status--error").isVisible().catch(() => false);
       const fallbackDocumentVisible = await page.getByText("오프라인 초대장을 준비하지 못했습니다", { exact: false }).isVisible().catch(() => false);
-      const criticalAssetFailures = [...new Set(requestFailures
-        .slice(offlineFailureStart)
-        .map(({ url: failedUrl }) => new URL(failedUrl))
-        .filter((failedUrl) => failedUrl.origin === new URL(url).origin)
-        .map((failedUrl) => failedUrl.pathname))];
+      const criticalAssetFailures = criticalOfflineAssetFailures(
+        requestFailures.slice(offlineFailureStart),
+        url
+      );
       const screenshotPath = path.join(outputDir, "pwa-clean-install-offline.png");
       await page.screenshot({ path: screenshotPath, fullPage: false, scale: "css" });
 

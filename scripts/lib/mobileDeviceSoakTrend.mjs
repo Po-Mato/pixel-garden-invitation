@@ -4,6 +4,21 @@ import path from "node:path";
 export const lowPowerSoakProfileId = "android-chromium-low-power-cold-thermal";
 export const requiredLowPowerRuns = 3;
 export const retainedLowPowerTrendRuns = 12;
+export const requiredCrossRunMedianSamples = 3;
+
+const crossRunMedianPolicies = Object.freeze([
+  { key: "averageFps", direction: "minimum", ratio: 0.8, noiseFloor: 0 },
+  { key: "p95FrameMs", direction: "maximum", ratio: 1.5, noiseFloor: 8 },
+  { key: "p99FrameMs", direction: "maximum", ratio: 1.5, noiseFloor: 16 },
+  { key: "inputLatencyMs", direction: "maximum", ratio: 1.5, noiseFloor: 20 },
+  { key: "settleLatencyMs", direction: "maximum", ratio: 1.5, noiseFloor: 40 },
+  { key: "transitionP95FrameMs", direction: "maximum", ratio: 1.5, noiseFloor: 40 },
+  { key: "transitionP99FrameMs", direction: "maximum", ratio: 1.5, noiseFloor: 60 },
+  { key: "maxTransitionDurationMs", direction: "maximum", ratio: 1.5, noiseFloor: 150 },
+  { key: "maxCenterErrorPx", direction: "maximum", ratio: 1.5, noiseFloor: 0.25 },
+  { key: "settledJitterPx", direction: "maximum", ratio: 1.5, noiseFloor: 0.5 },
+  { key: "maximumImageDecodeReadyMs", direction: "maximum", ratio: 1.5, noiseFloor: 100 }
+]);
 
 const transientIssuePatterns = Object.freeze([
   /^낮은 프레임 /,
@@ -31,6 +46,45 @@ export function median(values) {
 
 export function isTransientLowPowerIssue(issue) {
   return transientIssuePatterns.some((pattern) => pattern.test(String(issue)));
+}
+
+export function assessCrossRunMedianDrift(previousRuns, currentRun) {
+  const previousPassedRuns = (Array.isArray(previousRuns) ? previousRuns : [])
+    .filter(({ status, medians }) => status === "passed" && medians && typeof medians === "object")
+    .slice(-(requiredCrossRunMedianSamples - 1));
+  const sampleCount = previousPassedRuns.length + 1;
+  if (sampleCount < requiredCrossRunMedianSamples) {
+    return {
+      status: "warming",
+      sampleCount,
+      requiredSampleCount: requiredCrossRunMedianSamples,
+      baselineRunIds: previousPassedRuns.map(({ runId }) => runId).filter(Boolean),
+      comparisons: [],
+      issues: []
+    };
+  }
+  const comparisons = crossRunMedianPolicies.map((policy) => {
+    const baseline = round(median(previousPassedRuns.map(({ medians }) => medians[policy.key])));
+    const current = Number(currentRun.medians?.[policy.key]);
+    const limit = policy.direction === "minimum"
+      ? round(baseline * policy.ratio)
+      : round(Math.max(baseline * policy.ratio, baseline + policy.noiseFloor));
+    const passed = Number.isFinite(current) && (policy.direction === "minimum"
+      ? current >= limit
+      : current <= limit);
+    return { key: policy.key, direction: policy.direction, baseline, current, limit, passed };
+  });
+  const issues = comparisons.filter(({ passed }) => !passed).map(({ key, direction, current, limit }) => (
+    `CI 실행 간 ${key} ${current} ${direction === "minimum" ? "<" : ">"} ${limit}`
+  ));
+  return {
+    status: issues.length === 0 ? "passed" : "failed",
+    sampleCount,
+    requiredSampleCount: requiredCrossRunMedianSamples,
+    baselineRunIds: previousPassedRuns.map(({ runId }) => runId).filter(Boolean),
+    comparisons,
+    issues
+  };
 }
 
 export function extractLowPowerSoakSample(report, index) {
@@ -119,6 +173,11 @@ export async function writeMobileDeviceSoakTrend({ reports, outputDir, metadata 
   } catch {
     // The first CI run intentionally starts without history.
   }
+  const priorRuns = history.filter(({ sha, runId }) => sha !== trend.sha || runId !== trend.runId);
+  const crossRunDrift = assessCrossRunMedianDrift(priorRuns, trend);
+  trend.crossRunDrift = crossRunDrift;
+  trend.issues.push(...crossRunDrift.issues);
+  trend.status = trend.issues.length === 0 ? "passed" : "failed";
   const current = {
     generatedAt: trend.generatedAt,
     sha: trend.sha,
@@ -126,9 +185,10 @@ export async function writeMobileDeviceSoakTrend({ reports, outputDir, metadata 
     refLabel: trend.refLabel,
     status: trend.status,
     medians: trend.medians,
+    crossRunDrift: trend.crossRunDrift,
     worstZones: trend.samples.map(({ worstZoneId, worstDecodeZoneId }) => ({ worstZoneId, worstDecodeZoneId }))
   };
-  const runs = [...history.filter(({ sha, runId }) => sha !== current.sha || runId !== current.runId), current]
+  const runs = [...priorRuns, current]
     .slice(-retainedLowPowerTrendRuns);
   await Promise.all([
     writeFile(reportPath, `${JSON.stringify(trend, null, 2)}\n`),
@@ -143,6 +203,7 @@ export async function writeMobileDeviceSoakTrend({ reports, outputDir, metadata 
       `- 입력/안정화: ${trend.medians.inputLatencyMs}ms / ${trend.medians.settleLatencyMs}ms`,
       `- 최초 이미지 decode: ${trend.medians.maximumImageDecodeReadyMs}ms`,
       `- 보존된 CI 실행: ${runs.length}/${retainedLowPowerTrendRuns}`,
+      `- 실행 간 드리프트: ${trend.crossRunDrift.status} (${trend.crossRunDrift.sampleCount}/${requiredCrossRunMedianSamples})`,
       "",
       ...(trend.issues.length ? trend.issues.map((issue) => `- 실패: ${issue}`) : ["- 실패 항목 없음"]),
       ""

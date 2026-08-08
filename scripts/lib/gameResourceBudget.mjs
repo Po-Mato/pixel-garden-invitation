@@ -33,6 +33,16 @@ export function parsePwaPrecachePaths(source) {
   return paths;
 }
 
+export function parsePwaFeaturePaths(source) {
+  const match = source.match(/const FEATURE_URLS = (\[[^;]+\]);/);
+  if (!match) throw new Error("service-worker.js FEATURE_URLS missing");
+  const paths = JSON.parse(match[1]);
+  if (!Array.isArray(paths) || paths.some((value) => typeof value !== "string")) {
+    throw new Error("service-worker.js FEATURE_URLS invalid");
+  }
+  return paths;
+}
+
 const optionalStylePattern = /(?:game-vault-optional|WorldSecretMemorial|world-secret-memorial|wght-)/i;
 
 function uniqueResources(resources) {

@@ -8,9 +8,10 @@ import {
 
 describe("PWA service worker source", () => {
   it("combines required offline assets with generated scripts and styles once", () => {
-    const paths = resolvePwaPrecachePaths([
+    const bundlePaths = [
       "assets/index-abc.js",
       "assets/index-abc.js",
+      "assets/chunk-shared.js",
       "assets/GameWorld-def.css",
       "assets/GameMemoryAlbum-feature.js",
       "assets/RsvpAdminPage-private.js",
@@ -20,11 +21,17 @@ describe("PWA service worker source", () => {
       "assets/entry-wedding-garden-hero-hash.avif",
       "assets/cover.webp",
       "index.html"
+    ];
+    const paths = resolvePwaPrecachePaths(bundlePaths, [
+      "assets/index-abc.js",
+      "assets/chunk-shared.js",
+      "assets/GameWorld-def.css"
     ]);
 
     expect(paths).toEqual([
       ...pwaCorePrecachePaths,
       "./assets/index-abc.js",
+      "./assets/chunk-shared.js",
       "./assets/GameWorld-def.css",
       "./assets/noto-serif-kr-critical-hash.woff2",
       "./assets/noto-sans-kr-119-wght-normal-hash.woff2",
@@ -41,10 +48,10 @@ describe("PWA service worker source", () => {
     expect(paths).not.toContain("./assets/papaparse.min-private.js");
     expect(paths).not.toContain("./assets/GameMemoryAlbum-feature.js");
     expect(resolvePwaFeaturePrecachePaths([
-      "assets/index-abc.js",
       "assets/GameMemoryAlbum-feature.js",
       "assets/CompanionDestinationSheet-feature.js",
-      "assets/CompanionWaitingRoom-feature.js"
+      "assets/CompanionWaitingRoom-feature.js",
+      "assets/RsvpAdminPage-private.js"
     ])).toEqual([
       "./assets/GameMemoryAlbum-feature.js",
       "./assets/CompanionDestinationSheet-feature.js",
@@ -85,6 +92,11 @@ describe("PWA service worker source", () => {
     expect(source).toContain("await caches.delete(PRECACHE_NAME)");
     expect(source).toContain("PWA core precache incomplete");
     expect(source).toContain('type: failed > 0 ? "PWA_CACHE_ERROR" : "PWA_CACHE_READY"');
+    const installHandler = source.slice(
+      source.indexOf('self.addEventListener("install"'),
+      source.indexOf('self.addEventListener("activate"')
+    );
+    expect(installHandler).not.toContain("prepareFeatureCache");
     expect(source).not.toContain("POST");
   });
 });

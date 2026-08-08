@@ -1,6 +1,6 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
-import { parsePwaPrecachePaths } from "./gameResourceBudget.mjs";
+import { parsePwaFeaturePaths, parsePwaPrecachePaths } from "./gameResourceBudget.mjs";
 
 export const slow4gNetworkProfile = Object.freeze({
   offline: false,
@@ -13,7 +13,9 @@ export const slow4gNetworkProfile = Object.freeze({
 export const productionNetworkPwaBudgets = Object.freeze({
   freshEntryMs: 12_000,
   updatedEntryMs: 5_000,
-  updateInstallMs: 180_000
+  updateInstallMs: 180_000,
+  largestContentfulPaintMs: 4_000,
+  maximumCorePrecachePaths: 90
 });
 
 export function buildProductionNetworkCanaryUrl(rawUrl, marker) {
@@ -38,12 +40,25 @@ export function auditProductionNetworkPwaCanary(snapshot) {
     issues.push(`느린 4G 최초 진입 ${snapshot.freshColdStart.entryVisibleMs}ms`);
   }
   if (!snapshot.freshColdStart.layoutContained) issues.push("느린 4G 최초 진입 화면 넘침");
+  if (!snapshot.freshColdStart.largestContentfulPaintSupported
+    || !Number.isFinite(snapshot.freshColdStart.largestContentfulPaintMs)) {
+    issues.push("느린 4G LCP 관측 누락");
+  } else if (snapshot.freshColdStart.largestContentfulPaintMs > productionNetworkPwaBudgets.largestContentfulPaintMs) {
+    issues.push(`느린 4G LCP ${snapshot.freshColdStart.largestContentfulPaintMs}ms`);
+  }
   if (!snapshot.update.previousControllerActive) issues.push("배포 전 서비스 워커 제어권 누락");
   if (snapshot.update.previousVersion !== snapshot.expectedVersion && snapshot.update.installState !== "installed") {
     issues.push(`서비스 워커 교체 설치 실패 ${snapshot.update.installState}`);
   }
   if (!snapshot.update.updatedControllerActive) issues.push("새 서비스 워커 제어권 전환 실패");
   if (!snapshot.update.updatedCacheComplete) issues.push("새 서비스 워커 프리캐시 불완전");
+  if (snapshot.update.expectedPaths > productionNetworkPwaBudgets.maximumCorePrecachePaths) {
+    issues.push(`핵심 프리캐시 과다 ${snapshot.update.expectedPaths}개`);
+  }
+  if (snapshot.update.expectedFeaturePaths < 1) issues.push("선택 기능 캐시 분리 누락");
+  if (snapshot.update.installDurationMs > productionNetworkPwaBudgets.updateInstallMs) {
+    issues.push(`서비스 워커 설치 지연 ${snapshot.update.installDurationMs}ms`);
+  }
   if (snapshot.update.previousVersion !== snapshot.expectedVersion && snapshot.update.previousCachePresent) {
     issues.push("교체 후 이전 서비스 워커 캐시 잔존");
   }
@@ -52,6 +67,12 @@ export function auditProductionNetworkPwaCanary(snapshot) {
     issues.push(`서비스 워커 교체 후 콜드 진입 ${snapshot.updatedColdStart.entryVisibleMs}ms`);
   }
   if (!snapshot.updatedColdStart.layoutContained) issues.push("서비스 워커 교체 후 화면 넘침");
+  if (!snapshot.updatedColdStart.largestContentfulPaintSupported
+    || !Number.isFinite(snapshot.updatedColdStart.largestContentfulPaintMs)) {
+    issues.push("교체 후 LCP 관측 누락");
+  } else if (snapshot.updatedColdStart.largestContentfulPaintMs > productionNetworkPwaBudgets.largestContentfulPaintMs) {
+    issues.push(`교체 후 LCP ${snapshot.updatedColdStart.largestContentfulPaintMs}ms`);
+  }
   const pageErrors = [...snapshot.freshColdStart.pageErrors, ...snapshot.updatedColdStart.pageErrors];
   if (pageErrors.length > 0) issues.push(`페이지 오류 ${pageErrors.length}개`);
   const failedRequests = [...snapshot.freshColdStart.failedRequests, ...snapshot.updatedColdStart.failedRequests];
@@ -88,6 +109,19 @@ async function applySlow4g(context, page) {
 }
 
 async function measureEntry(page, url, timeoutMs) {
+  await page.addInitScript(() => {
+    globalThis.__weddingQualityLcp = {
+      supported: typeof PerformanceObserver === "function"
+        && PerformanceObserver.supportedEntryTypes?.includes("largest-contentful-paint") === true,
+      value: null
+    };
+    if (!globalThis.__weddingQualityLcp.supported) return;
+    const observer = new PerformanceObserver((list) => {
+      const latest = list.getEntries().at(-1);
+      if (latest) globalThis.__weddingQualityLcp.value = Math.round(latest.startTime);
+    });
+    observer.observe({ type: "largest-contentful-paint", buffered: true });
+  });
   const startedAt = Date.now();
   const pageErrors = [];
   const failedRequests = [];
@@ -103,11 +137,16 @@ async function measureEntry(page, url, timeoutMs) {
   await entry.waitFor({ state: "visible", timeout: timeoutMs });
   const entryVisibleMs = Date.now() - startedAt;
   await page.waitForTimeout(250);
+  await page.waitForFunction(
+    () => Number.isFinite(globalThis.__weddingQualityLcp?.value),
+    undefined,
+    { timeout: Math.min(timeoutMs, 6_000) }
+  ).catch(() => undefined);
   const metrics = await page.evaluate(() => {
     const entryElement = document.querySelector(".entry-screen");
     const rect = entryElement?.getBoundingClientRect();
     const navigation = performance.getEntriesByType("navigation")[0];
-    const lcp = performance.getEntriesByType("largest-contentful-paint").at(-1);
+    const lcp = globalThis.__weddingQualityLcp;
     return {
       entryVisible: Boolean(entryElement && rect && rect.width > 0 && rect.height > 0),
       layoutContained: Boolean(rect && rect.left >= -1 && rect.top >= -1
@@ -116,7 +155,8 @@ async function measureEntry(page, url, timeoutMs) {
       domContentLoadedMs: navigation ? Math.round(navigation.domContentLoadedEventEnd) : null,
       loadEventMs: navigation?.loadEventEnd ? Math.round(navigation.loadEventEnd) : null,
       transferSize: navigation?.transferSize ?? null,
-      largestContentfulPaintMs: lcp ? Math.round(lcp.startTime) : null,
+      largestContentfulPaintSupported: lcp?.supported === true,
+      largestContentfulPaintMs: Number.isFinite(lcp?.value) ? lcp.value : null,
       controlled: Boolean(navigator.serviceWorker.controller),
       viewport: { width: innerWidth, height: innerHeight }
     };
@@ -200,6 +240,7 @@ export async function prepareProductionNetworkPwaCanary({ url, profileDir, outpu
   await mkdir(outputDir, { recursive: true });
   const worker = await fetchServiceWorker(publicUrl);
   const expectedPaths = parsePwaPrecachePaths(worker.source);
+  const expectedFeaturePaths = parsePwaFeaturePaths(worker.source);
   const { chromium } = await import("playwright");
   const context = await chromium.launchPersistentContext(profileDir, {
     headless: true,
@@ -217,6 +258,7 @@ export async function prepareProductionNetworkPwaCanary({ url, profileDir, outpu
       publicUrl,
       previousVersion: worker.version,
       expectedPathCount: expectedPaths.length,
+      expectedFeaturePathCount: expectedFeaturePaths.length,
       previousControllerActive: cache.controlled,
       previousCacheComplete: cache.complete,
       previousCacheName: cache.expectedName
@@ -236,6 +278,7 @@ export async function verifyProductionNetworkPwaCanary({ url, expectedSha, profi
   const expectedVersion = expectedSha.slice(0, 12);
   const deployed = await waitForServiceWorkerVersion(url, expectedVersion);
   const expectedPaths = parsePwaPrecachePaths(deployed.source);
+  const expectedFeaturePaths = parsePwaFeaturePaths(deployed.source);
   const prepare = JSON.parse(await readFile(path.join(outputDir, "production-network-pwa-prepare.json"), "utf8"));
   const { chromium } = await import("playwright");
   const browser = await chromium.launch({ headless: true });
@@ -263,6 +306,7 @@ export async function verifyProductionNetworkPwaCanary({ url, expectedSha, profi
     await page.goto(buildProductionNetworkCanaryUrl(url, `update-${expectedVersion}`), { waitUntil: "domcontentloaded", timeout: 30_000 });
     await page.locator(".entry-screen").waitFor({ state: "visible", timeout: 20_000 });
     const beforeNames = await page.evaluate(() => caches.keys());
+    const installStartedAt = Date.now();
     const installState = prepare.previousVersion === expectedVersion
       ? await page.evaluate(async () => {
           const registration = await navigator.serviceWorker.getRegistration();
@@ -271,6 +315,7 @@ export async function verifyProductionNetworkPwaCanary({ url, expectedSha, profi
           return "unchanged";
         }).catch(() => "update-error")
       : await installPublicUpdate(page, productionNetworkPwaBudgets.updateInstallMs);
+    const installDurationMs = Date.now() - installStartedAt;
     const updatedControllerActive = installState === "installed"
       ? await activateWaitingWorker(page)
       : Boolean(await page.evaluate(() => navigator.serviceWorker.controller));
@@ -302,11 +347,15 @@ export async function verifyProductionNetworkPwaCanary({ url, expectedSha, profi
         previousCacheComplete: prepare.previousCacheComplete,
         previousCacheName: prepare.previousCacheName,
         installState,
+        installDurationMs,
         updatedControllerActive: updatedControllerActive && cache.controlled,
         updatedCacheComplete: cache.complete,
         updatedCacheName: cache.expectedName,
         cachedPaths: cache.cachedPaths,
         expectedPaths: expectedPaths.length,
+        expectedFeaturePaths: expectedFeaturePaths.length,
+        previousExpectedPaths: prepare.expectedPathCount,
+        previousExpectedFeaturePaths: prepare.expectedFeaturePathCount,
         previousCachePresent: prepare.previousVersion === expectedVersion
           ? false
           : cache.names.includes(prepare.previousCacheName),

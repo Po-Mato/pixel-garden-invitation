@@ -57,6 +57,7 @@ export function PwaStatusCenter({
   const [offlineNoticeDismissed, setOfflineNoticeDismissed] = useState(false);
   const previousCacheState = useRef(client.cacheState);
   const previousFeatureCacheState = useRef(client.featureCacheState);
+  const featurePreparationRequested = useRef(false);
 
   useEffect(() => {
     const unsubscribe = subscribePwaClient(setClient);
@@ -130,6 +131,13 @@ export function PwaStatusCenter({
     }
     previousFeatureCacheState.current = client.featureCacheState;
   }, [client.featureCacheState]);
+
+  useEffect(() => {
+    if (!playing || !online || !client.supported || featurePreparationRequested.current
+      || client.featureCacheState === "preparing" || client.featureCacheState === "ready") return;
+    featurePreparationRequested.current = true;
+    prepareOfflineGameFeatures();
+  }, [client.featureCacheState, client.supported, online, playing]);
 
   useEffect(() => {
     if (!featuresPrepared) return;

@@ -1,6 +1,9 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { auditPwaCleanInstallCanary } from "./lib/pwaCleanInstallCanary.mjs";
+import {
+  auditPwaCleanInstallCanary,
+  criticalOfflineAssetFailures
+} from "./lib/pwaCleanInstallCanary.mjs";
 
 const ready = {
   serviceWorkerSupported: true,
@@ -40,4 +43,12 @@ test("clean-install canary reports cache and offline fallback regressions", () =
     "오프라인 핵심 화면 자산 누락 /assets/missing-font.woff2",
     "오프라인 재실행 페이지 오류 chunk missing"
   ]);
+});
+
+test("clean-install canary ignores expected offline API fallbacks but keeps static asset failures", () => {
+  assert.deepEqual(criticalOfflineAssetFailures([
+    { url: "http://127.0.0.1:4187/api/invitations/sample/release" },
+    { url: "http://127.0.0.1:4187/assets/GameWorld-missing.js" },
+    { url: "https://worker.example/api/invitations/sample/release" }
+  ], "http://127.0.0.1:4187/"), ["/assets/GameWorld-missing.js"]);
 });

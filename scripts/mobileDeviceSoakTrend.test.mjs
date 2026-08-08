@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { readFileSync } from "node:fs";
 import {
+  assessCrossRunMedianDrift,
   buildMobileDeviceSoakTrend,
   isTransientLowPowerIssue,
   lowPowerSoakProfileId,
@@ -52,6 +53,36 @@ test("low-power trend validates sample count and helper behavior", () => {
   assert.equal(isTransientLowPowerIssue("p99 프레임 120ms"), true);
   assert.equal(isTransientLowPowerIssue("저전력 cold cache 적용 실패"), false);
   assert.throws(() => buildMobileDeviceSoakTrend([report(), report()]), /표본 부족 2\/3/);
+});
+
+test("cross-run drift warms up until three successful CI medians exist", () => {
+  const current = buildMobileDeviceSoakTrend([report(), report(), report()]);
+  const drift = assessCrossRunMedianDrift([
+    { status: "passed", runId: "1", medians: current.medians }
+  ], current);
+  assert.equal(drift.status, "warming");
+  assert.equal(drift.sampleCount, 2);
+  assert.deepEqual(drift.baselineRunIds, ["1"]);
+});
+
+test("cross-run drift gates a third CI median without reacting to runner noise", () => {
+  const current = buildMobileDeviceSoakTrend([report(), report(), report()]);
+  const previous = [
+    { status: "passed", runId: "1", medians: { ...current.medians, p95FrameMs: 26, inputLatencyMs: 48 } },
+    { status: "passed", runId: "2", medians: { ...current.medians, p95FrameMs: 28, inputLatencyMs: 52 } }
+  ];
+  const passed = assessCrossRunMedianDrift(previous, current);
+  assert.equal(passed.status, "passed");
+  assert.equal(passed.sampleCount, 3);
+  assert.ok(passed.comparisons.every(({ passed: comparisonPassed }) => comparisonPassed));
+
+  const failed = assessCrossRunMedianDrift(previous, {
+    ...current,
+    medians: { ...current.medians, averageFps: 30, p95FrameMs: 80 }
+  });
+  assert.equal(failed.status, "failed");
+  assert.ok(failed.issues.some((issue) => issue.includes("averageFps")));
+  assert.ok(failed.issues.some((issue) => issue.includes("p95FrameMs")));
 });
 
 test("mobile soak runner repeats the low-power profile three times", () => {
