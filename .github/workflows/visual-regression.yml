@@ -119,6 +119,14 @@ jobs:
           key: world-geometry-policy-review-${{ runner.os }}-${{ github.base_ref || github.ref_name }}-${{ github.sha }}
           restore-keys: |
             world-geometry-policy-review-${{ runner.os }}-${{ github.base_ref || github.ref_name }}-
+      - name: Restore low-power soak trend history
+        id: mobile-soak-trend-history
+        uses: actions/cache/restore@v5
+        with:
+          path: .superpowers/visual-regression/mobile-device-soak/mobile-device-soak-trend-history.json
+          key: mobile-soak-trend-${{ runner.os }}-${{ github.base_ref || github.ref_name }}-${{ github.sha }}
+          restore-keys: |
+            mobile-soak-trend-${{ runner.os }}-${{ github.base_ref || github.ref_name }}-
       - run: pnpm visual:test
       - name: Build client for request-budget verification
         run: pnpm --filter @wedding-game/client build
@@ -212,6 +220,12 @@ jobs:
         run: pnpm visual:map-diagnostics
       - name: Audit Android and iOS long-session stability
         run: pnpm visual:mobile-soak
+      - name: Save low-power soak trend history
+        if: success() && steps.mobile-soak-trend-history.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v5
+        with:
+          path: .superpowers/visual-regression/mobile-device-soak/mobile-device-soak-trend-history.json
+          key: mobile-soak-trend-${{ runner.os }}-${{ github.base_ref || github.ref_name }}-${{ github.sha }}
       - name: Build map diagnostics provenance manifest
         run: pnpm maps:diagnostics-provenance -- --sha "${{ github.sha }}" --run-id "${{ github.run_id }}" --repository "${{ github.repository }}"
       - name: Verify diagnostics provenance subjects

@@ -628,7 +628,16 @@ async function sampleZoneTransitionSeries(page, baselineLayout, options = {}) {
   };
 }
 
-export async function runMobileDeviceSoakAudit({ rootDir, outputDir, port = 4179, durationMs = 5_000, interactionCount = 18 }) {
+export async function runMobileDeviceSoakAudit({
+  rootDir,
+  outputDir,
+  port = 4179,
+  durationMs = 5_000,
+  interactionCount = 18,
+  profiles = mobileSoakProfiles,
+  throwOnIssues = true,
+  reportFileName = "mobile-device-soak-report.json"
+}) {
   const server = spawn("pnpm", ["--filter", "@wedding-game/client", "exec", "vite", "--host", "127.0.0.1", "--port", String(port), "--strictPort"], {
     cwd: rootDir,
     env: { ...process.env, BROWSER: "none" },
@@ -640,7 +649,7 @@ export async function runMobileDeviceSoakAudit({ rootDir, outputDir, port = 4179
     await waitForServer(url, server);
     const playwright = await import("playwright");
     const reports = [];
-    for (const profile of mobileSoakProfiles) {
+    for (const profile of profiles) {
       const browser = await playwright[profile.engine].launch({ headless: true });
       const context = await browser.newContext({ ...playwright.devices[profile.device] });
       const tracePath = profile.trace ? path.join(outputDir, `${profile.id}-trace.zip`) : null;
@@ -833,11 +842,11 @@ export async function runMobileDeviceSoakAudit({ rootDir, outputDir, port = 4179
       await context.close();
       await browser.close();
     }
-    const reportPath = path.join(outputDir, "mobile-device-soak-report.json");
+    const reportPath = path.join(outputDir, reportFileName);
     await writeFile(reportPath, `${JSON.stringify({ generatedAt: new Date().toISOString(), reports }, null, 2)}\n`);
     const issues = reports.flatMap((report) => report.issues.map((issue) => `${report.id}: ${issue}`));
-    if (issues.length) throw new Error(`Mobile device soak audit failed:\n${issues.join("\n")}`);
-    return { reports, reportPath };
+    if (throwOnIssues && issues.length) throw new Error(`Mobile device soak audit failed:\n${issues.join("\n")}`);
+    return { reports, reportPath, issues };
   } finally {
     server.kill("SIGTERM");
   }
