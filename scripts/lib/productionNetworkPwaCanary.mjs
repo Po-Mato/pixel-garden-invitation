@@ -230,12 +230,16 @@ async function fetchServiceWorker(url) {
   return { source, version: parseServiceWorkerVersion(source), status: response.status };
 }
 
-async function waitForServiceWorkerVersion(url, expectedVersion, attempts = 18) {
+export async function waitForServiceWorkerVersion(
+  url,
+  expectedVersion,
+  { attempts = 18, intervalMs = 5_000 } = {}
+) {
   let latest = null;
   for (let attempt = 1; attempt <= attempts; attempt += 1) {
     latest = await fetchServiceWorker(url);
     if (latest.version === expectedVersion) return { ...latest, attempt };
-    if (attempt < attempts) await new Promise((resolve) => setTimeout(resolve, 5_000));
+    if (attempt < attempts) await new Promise((resolve) => setTimeout(resolve, intervalMs));
   }
   throw new Error(`서비스 워커 배포 대기 실패: ${latest?.version ?? "unknown"} != ${expectedVersion}`);
 }

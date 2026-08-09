@@ -35,3 +35,11 @@ test("Pages deploy runs the public portrait and landscape 200% canary after depl
   assert.match(workflow.slice(canaryAt), /steps\.deployment\.outputs\.page_url/);
   assert.match(workflow.slice(canaryAt), /GITHUB_SHA/);
 });
+
+test("public large-text canary waits for the exact deployment version before opening a browser", () => {
+  const source = readFileSync("scripts/check-production-large-text-canary.mjs", "utf8");
+  const deploymentWaitAt = source.indexOf("waitForServiceWorkerVersion(url, expectedSha.slice(0, 12))");
+  const browserAuditAt = source.indexOf("await runLargeTextAccessibilityAudit");
+  assert.ok(deploymentWaitAt >= 0);
+  assert.ok(browserAuditAt > deploymentWaitAt);
+});

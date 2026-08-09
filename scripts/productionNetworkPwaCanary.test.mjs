@@ -9,7 +9,8 @@ import {
   parseServiceWorkerVersion,
   productionNetworkPwaTrendSample,
   slow4gNetworkProfile,
-  waitForPublicPrecacheAvailability
+  waitForPublicPrecacheAvailability,
+  waitForServiceWorkerVersion
 } from "./lib/productionNetworkPwaCanary.mjs";
 
 const healthy = {
@@ -35,6 +36,27 @@ test("production network canary defines a deterministic slow 4G profile", () => 
   assert.equal(slow4gNetworkProfile.latency, 150);
   assert.equal(slow4gNetworkProfile.downloadThroughput, 200_000);
   assert.equal(slow4gNetworkProfile.connectionType, "cellular4g");
+});
+
+test("service worker readiness waits for the exact deployment SHA", async () => {
+  const originalFetch = globalThis.fetch;
+  let requestCount = 0;
+  globalThis.fetch = async () => {
+    requestCount += 1;
+    const version = requestCount === 1 ? "previous12345" : "expected12345";
+    return new Response(`const VERSION = "${version}";`, { status: 200 });
+  };
+  try {
+    const result = await waitForServiceWorkerVersion(
+      "https://example.test/invitation/",
+      "expected12345",
+      { attempts: 2, intervalMs: 0 }
+    );
+    assert.equal(result.version, "expected12345");
+    assert.equal(result.attempt, 2);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
 });
 
 test("production network trend warms to five runs then gates LCP and update installation drift", () => {

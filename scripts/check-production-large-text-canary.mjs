@@ -2,6 +2,7 @@ import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { runLargeTextAccessibilityAudit } from "./lib/mobileHudBrowserAudit.mjs";
+import { waitForServiceWorkerVersion } from "./lib/productionNetworkPwaCanary.mjs";
 
 const defaultUrl = "https://po-mato.github.io/pixel-garden-invitation/";
 
@@ -43,6 +44,9 @@ export async function waitForPublicCanary(url, { attempts = 12, intervalMs = 5_0
 export async function runProductionLargeTextCanary({ url, expectedSha = "", outputDir }) {
   const publicUrl = buildPublicCanaryUrl(url, expectedSha);
   await mkdir(outputDir, { recursive: true });
+  const deployment = expectedSha
+    ? await waitForServiceWorkerVersion(url, expectedSha.slice(0, 12))
+    : null;
   const readiness = await waitForPublicCanary(publicUrl);
   const { chromium } = await import("playwright");
   const browser = await chromium.launch({ headless: true });
@@ -52,7 +56,11 @@ export async function runProductionLargeTextCanary({ url, expectedSha = "", outp
       generatedAt: new Date().toISOString(),
       publicUrl,
       expectedSha: expectedSha || null,
-      readiness,
+      readiness: {
+        ...readiness,
+        deployedVersion: deployment?.version ?? null,
+        deploymentAttempt: deployment?.attempt ?? null
+      },
       ...audit
     };
     const reportPath = path.join(outputDir, "production-large-text-canary-report.json");
