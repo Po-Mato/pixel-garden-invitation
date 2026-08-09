@@ -28,5 +28,6 @@ test("shared quality build produces isolated production and device variants", as
   assert.match(source, /\.quality-build\/production/);
   assert.match(source, /\.quality-build\/device/);
   assert.match(source, /VITE_TURNSTILE_SITE_KEY/);
+  assert.match(source, /path: \.quality-build\s+include-hidden-files: true/);
   assert.match(source, /retention-days: 7/);
 });

@@ -45,5 +45,6 @@ test("release workflows upload packaged evidence instead of duplicate binary tre
     const source = await readFile(new URL(`../.github/workflows/${name}`, import.meta.url), "utf8");
     assert.match(source, /pack-content-addressed-quality-evidence\.mjs/);
     assert.match(source, /\.quality-artifacts\//);
+    assert.match(source, /\.quality-artifacts\/[\s\S]*include-hidden-files: true/);
   }
 });

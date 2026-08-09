@@ -48,6 +48,7 @@ jobs:
         with:
           name: quality-build-${{ github.sha }}
           path: .quality-build
+          include-hidden-files: true
           if-no-files-found: error
           compression-level: 9
           retention-days: 7

@@ -346,6 +346,7 @@ jobs:
           name: mobile-hud-browser-${{ github.run_id }}
           path: |
             .quality-artifacts/mobile-hud-browser
+          include-hidden-files: true
           if-no-files-found: ignore
           compression-level: 9
           retention-days: 7
@@ -356,6 +357,7 @@ jobs:
           name: mobile-device-soak-${{ github.run_id }}
           path: |
             .quality-artifacts/mobile-device-soak
+          include-hidden-files: true
           if-no-files-found: ignore
           compression-level: 9
           retention-days: 7
@@ -374,6 +376,7 @@ jobs:
         with:
           name: map-diagnostics-browser-${{ github.run_id }}
           path: .quality-artifacts/map-diagnostics-browser
+          include-hidden-files: true
           if-no-files-found: ignore
           compression-level: 9
           retention-days: 7
