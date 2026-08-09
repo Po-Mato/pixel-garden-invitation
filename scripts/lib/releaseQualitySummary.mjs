@@ -101,16 +101,20 @@ export function buildReleaseQualitySummary(evidence = {}, metadata = {}) {
     ...(assetTrend?.logicalChunkBudget?.issues ?? []),
     ...(evidence.pwaNetwork?.issues ?? [])
   ];
+  const pwaNetworkStatus = evidence.pwaNetwork?.status
+    ?? evidence.pwaNetwork?.trend?.status
+    ?? ((evidence.pwaNetwork?.issues?.length ?? 0) === 0 ? "passed" : "failed");
   if (assetTrend && assetTrend.logicalChunkBudget?.status !== "passed") {
     pwaIssues.push("PWA 논리 청크 예산 미통과");
   }
-  if (evidence.pwaNetwork && evidence.pwaNetwork.status !== "passed") {
-    pwaIssues.push(`공개 네트워크 캔어리 ${evidence.pwaNetwork.status ?? "unknown"}`);
+  if (evidence.pwaNetwork && pwaNetworkStatus !== "passed") {
+    pwaIssues.push(`공개 네트워크 캔어리 ${pwaNetworkStatus}`);
   }
   const pwa = category("pwa", ["pwaAssets", "pwaNetwork"], {
     pwaAssets: assetTrend ? (assetTrend.groups?.core?.total ?? 0) + (assetTrend.groups?.features?.total ?? 0) : null,
     logicalChunks: assetTrend?.logicalChunkBudget?.evaluations?.length ?? null,
     largestContentfulPaintMs: evidence.pwaNetwork?.slow4g?.largestContentfulPaintMs
+      ?? evidence.pwaNetwork?.freshColdStart?.largestContentfulPaintMs
       ?? evidence.pwaNetwork?.metrics?.largestContentfulPaintMs
       ?? null
   }, pwaIssues);

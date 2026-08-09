@@ -15,7 +15,11 @@ function cleanEvidence() {
     android: device,
     ios: { ...device, landscape: { frameTimings: { p95FrameMs: 16 } } },
     pwaAssets: { trend: { groups: { core: { total: 82 }, features: { total: 40 } }, logicalChunkBudget: { status: "passed", evaluations: [{ logicalPath: "index.js" }], issues: [] } } },
-    pwaNetwork: { status: "passed", issues: [], slow4g: { largestContentfulPaintMs: 1200 } }
+    pwaNetwork: {
+      issues: [],
+      trend: { status: "passed" },
+      freshColdStart: { largestContentfulPaintMs: 1200 }
+    }
   };
 }
 
@@ -25,7 +29,19 @@ test("release quality summary combines all five evidence groups", () => {
   assert.deepEqual(summary.categories.map(({ id, status }) => [id, status]), [
     ["map", "passed"], ["hud", "passed"], ["android", "passed"], ["ios", "passed"], ["pwa", "passed"]
   ]);
+  assert.equal(summary.categories.find(({ id }) => id === "pwa").metrics.largestContentfulPaintMs, 1200);
   assert.match(formatReleaseQualitySummaryMarkdown(summary), /종합 상태: \*\*passed\*\*/);
+});
+
+test("release quality summary respects the deployed PWA trend status", () => {
+  const evidence = cleanEvidence();
+  evidence.pwaNetwork.trend.status = "failed";
+
+  const summary = buildReleaseQualitySummary(evidence);
+  const pwa = summary.categories.find(({ id }) => id === "pwa");
+
+  assert.equal(pwa.status, "failed");
+  assert.ok(pwa.issues.includes("공개 네트워크 캔어리 failed"));
 });
 
 test("release quality summary distinguishes missing evidence from failed evidence", () => {
