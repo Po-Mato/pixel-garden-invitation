@@ -190,13 +190,15 @@ describe("admin notification email queue", () => {
         invitationId: "sample-garden",
         eventKey: "quality_calibration_ready:2026-08-03",
         kind: "quality_calibration_ready",
-        sourceId: "2026-08-03",
+        sourceId: "2026-08-03:camera-center",
         title: "주간 품질 보정 검토 준비",
         body: "기준값은 자동 변경되지 않습니다.",
         expiresAt: "2026-09-08T00:00:00.000Z"
       });
       expect(send).toHaveBeenCalledWith(expect.objectContaining({
-        html: expect.stringContaining("https://example.test/invitation/?admin=analytics")
+        text: expect.stringContaining(
+          "https://example.test/invitation/?admin=analytics&calibrationWeek=2026-08-03&calibrationMetric=camera-center"
+        )
       }));
     } finally {
       database.close();

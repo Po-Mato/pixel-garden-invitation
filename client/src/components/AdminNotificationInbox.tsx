@@ -1,6 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { Bell, Check, CheckCheck, Mail, RefreshCw, RotateCcw } from "lucide-react";
-import type { AdminNotification, AdminNotificationResult } from "@wedding-game/shared";
+import {
+  qualityCalibrationAdminHref,
+  type AdminNotification,
+  type AdminNotificationResult
+} from "@wedding-game/shared";
 
 import {
   fetchAdminNotifications,
@@ -29,7 +33,7 @@ function formatNotificationDate(value: string): string {
 
 function notificationPage(notification: AdminNotification): { href: string; label: string } {
   if (notification.kind === "quality_calibration_ready") {
-    return { href: "?admin=analytics", label: "품질 분석" };
+    return { href: qualityCalibrationAdminHref(notification.sourceId), label: "품질 분석" };
   }
   return notification.kind.startsWith("rsvp_")
     ? { href: "?admin=rsvp", label: "참석 답변" }

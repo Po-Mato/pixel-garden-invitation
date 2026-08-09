@@ -1,4 +1,4 @@
-import type { AdminNotification } from "@wedding-game/shared";
+import { qualityCalibrationAdminHref, type AdminNotification } from "@wedding-game/shared";
 import type { Env } from "./index";
 
 function configuredValue(value: unknown): value is string {
@@ -26,9 +26,10 @@ function adminUrl(env: Env, notification: AdminNotification): string {
   const base = configuredValue(env.ADMIN_NOTIFICATION_BASE_URL)
     ? env.ADMIN_NOTIFICATION_BASE_URL.replace(/\/$/, "")
     : "https://po-mato.github.io/pixel-garden-invitation";
-  const page = notification.kind === "quality_calibration_ready"
-    ? "analytics"
-    : notification.kind.startsWith("rsvp_") ? "rsvp" : "guestbook";
+  if (notification.kind === "quality_calibration_ready") {
+    return `${base}/${qualityCalibrationAdminHref(notification.sourceId)}`;
+  }
+  const page = notification.kind.startsWith("rsvp_") ? "rsvp" : "guestbook";
   return `${base}/?admin=${page}`;
 }
 

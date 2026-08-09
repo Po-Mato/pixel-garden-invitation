@@ -22,7 +22,8 @@ import {
   guestCharacterPresets,
   type InvitationAnalyticsAdminResponse,
   type InvitationAnalyticsBreakdown,
-  type InvitationQualityCalibrationSnapshot
+  type InvitationQualityCalibrationSnapshot,
+  type QualityCalibrationMetricKey
 } from "@wedding-game/shared";
 import {
   fetchAdminInvitationAnalytics,
@@ -129,6 +130,16 @@ function errorMessage(error: unknown): string {
   return "통계 데이터를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.";
 }
 
+function qualityCalibrationDeepLink(): { weekStart: string; metricKey: QualityCalibrationMetricKey | null } | null {
+  const parameters = new URLSearchParams(window.location.search);
+  const weekStart = parameters.get("calibrationWeek");
+  if (!weekStart) return null;
+  const metricCandidate = parameters.get("calibrationMetric");
+  const metricKey = (["camera-center", "cls", "long-frame"] as const)
+    .find((candidate) => candidate === metricCandidate) ?? null;
+  return { weekStart, metricKey };
+}
+
 function BreakdownList({
   title,
   items,
@@ -162,6 +173,9 @@ export function AnalyticsAdminPage() {
   const id = invitationId();
   const initializedRef = useRef(false);
   const sessionRef = useRef<AdminSession | null>(null);
+  const calibrationTargetRef = useRef<HTMLElement | null>(null);
+  const calibrationFocusHandledRef = useRef(false);
+  const calibrationLink = useMemo(qualityCalibrationDeepLink, []);
   const [session, setSession] = useState<AdminSession | null>(null);
   const [password, setPassword] = useState("");
   const [preset, setPreset] = useState<RangePreset>("30");
@@ -307,9 +321,19 @@ export function AnalyticsAdminPage() {
         ? "최근 기기 점검 흐름이 안정적입니다"
         : "비교 가능한 표본을 더 모으는 중입니다";
   const periodLabel = analytics ? `${analytics.range.from} - ${analytics.range.to}` : "조회 중";
+  const calibrationWeek = calibrationLink && analytics?.qualityCalibration?.snapshots.some(({ weekStart }) => (
+    weekStart === calibrationLink.weekStart
+  ))
+    ? calibrationLink.weekStart
+    : analytics?.qualityCalibration?.currentWeekStart;
   const currentCalibrationSnapshots = analytics?.qualityCalibration?.snapshots.filter(({ weekStart }) => (
-    weekStart === analytics.qualityCalibration?.currentWeekStart
+    weekStart === calibrationWeek
   )) ?? [];
+  const linkedCalibrationSnapshot = calibrationLink
+    ? currentCalibrationSnapshots.find(({ metricKey }) => metricKey === calibrationLink.metricKey)
+      ?? currentCalibrationSnapshots.find(({ decision }) => decision === "pending")
+      ?? currentCalibrationSnapshots[0]
+    : null;
   const reviewedCalibrationSnapshots = analytics?.qualityCalibration?.snapshots.filter(({ decision }) => decision !== "pending") ?? [];
   const metricCards = useMemo(() => analytics ? [
     { label: "방문", value: formatNumber(analytics.totals.visits), detail: `재방문 ${repeatRate}`, icon: Users },
@@ -318,6 +342,16 @@ export function AnalyticsAdminPage() {
     { label: "방명록", value: formatNumber(analytics.totals.guestbookMessages), detail: `화면 조회 ${formatNumber(analytics.totals.guestbookViews)}`, icon: MessageCircle },
     { label: "공유", value: formatNumber(analytics.totals.shareClicks), detail: `지도 클릭 ${formatNumber(analytics.totals.mapClicks)}`, icon: Share2 }
   ] : [], [analytics, repeatRate]);
+
+  useEffect(() => {
+    if (!linkedCalibrationSnapshot || calibrationFocusHandledRef.current) return;
+    calibrationFocusHandledRef.current = true;
+    const frame = window.requestAnimationFrame(() => {
+      calibrationTargetRef.current?.focus({ preventScroll: true });
+      calibrationTargetRef.current?.scrollIntoView?.({ behavior: "smooth", block: "center" });
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [linkedCalibrationSnapshot]);
 
   if (!session) {
     return (
@@ -471,7 +505,7 @@ export function AnalyticsAdminPage() {
               </div>
               <section className="analytics-quality-calibration" aria-label="주간 품질 보정 검토">
                 <header>
-                  <div><strong>주간 보정 스냅샷</strong><span>{analytics.qualityCalibration?.currentWeekStart ?? "표본 수집 중"} 시작 주</span></div>
+                  <div><strong>주간 보정 스냅샷</strong><span>{calibrationWeek ?? "표본 수집 중"} 시작 주</span></div>
                   <small>후보 승인도 기준값을 자동 변경하지 않습니다.</small>
                 </header>
                 {!analytics.qualityCalibration?.eligible ? (
@@ -481,8 +515,16 @@ export function AnalyticsAdminPage() {
                     {currentCalibrationSnapshots.map((snapshot) => {
                       const metric = analytics.qualityGuard.metrics.find(({ key }) => key === snapshot.metricKey);
                       const busy = calibrationBusy === `${snapshot.weekStart}:${snapshot.metricKey}`;
+                      const isDeepLinked = linkedCalibrationSnapshot === snapshot;
                       return (
-                        <article key={`${snapshot.weekStart}:${snapshot.metricKey}`} data-decision={snapshot.decision}>
+                        <article
+                          key={`${snapshot.weekStart}:${snapshot.metricKey}`}
+                          ref={isDeepLinked ? calibrationTargetRef : undefined}
+                          aria-label={`${metric?.label ?? snapshot.metricKey} 보정 지표`}
+                          tabIndex={isDeepLinked ? -1 : undefined}
+                          data-decision={snapshot.decision}
+                          data-deep-linked={isDeepLinked || undefined}
+                        >
                           <span>{metric?.label ?? snapshot.metricKey}</span>
                           <strong>{snapshot.currentThreshold} → {snapshot.suggestedThreshold}{metric?.unit === "score" ? "" : metric?.unit}</strong>
                           {snapshot.decision === "pending" ? (

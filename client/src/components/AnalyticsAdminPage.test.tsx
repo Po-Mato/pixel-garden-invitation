@@ -132,6 +132,7 @@ function result(): InvitationAnalyticsAdminResponse {
 describe("AnalyticsAdminPage", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    window.history.replaceState({}, "", "/?admin=analytics");
     storage.loadAdminSession.mockReturnValue(null);
     storage.saveAdminSession.mockReturnValue(true);
     storage.clearAdminSession.mockReturnValue(true);
@@ -222,5 +223,15 @@ describe("AnalyticsAdminPage", () => {
       decision: "approve-candidate"
     }));
     expect(await screen.findByText("이번 주 보정 후보를 검토 완료로 기록했습니다. 기준값은 자동 변경되지 않습니다.")).toBeInTheDocument();
+  });
+
+  it("품질 알림 딥링크의 정확한 주차와 지표 카드를 표시하고 초점을 옮긴다", async () => {
+    window.history.replaceState({}, "", "/?admin=analytics&calibrationWeek=2026-07-20&calibrationMetric=cls");
+    render(<AnalyticsAdminPage />);
+    await login();
+
+    const card = screen.getByRole("article", { name: "화면 배치 흔들림 보정 지표" });
+    expect(card).toHaveAttribute("data-deep-linked", "true");
+    await waitFor(() => expect(card).toHaveFocus());
   });
 });

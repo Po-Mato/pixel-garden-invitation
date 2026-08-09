@@ -1,8 +1,9 @@
-import type {
-  InvitationExperienceQualityGuard,
-  InvitationQualityCalibrationAdminState,
-  InvitationQualityCalibrationDecision,
-  InvitationQualityCalibrationSnapshot
+import {
+  qualityCalibrationNotificationSourceId,
+  type InvitationExperienceQualityGuard,
+  type InvitationQualityCalibrationAdminState,
+  type InvitationQualityCalibrationDecision,
+  type InvitationQualityCalibrationSnapshot
 } from "@wedding-game/shared";
 import { analyticsLocalDate } from "./invitationAnalyticsRepository";
 import { getInvitationExperienceQualityGuard } from "./invitationExperienceQualityGuard";
@@ -155,12 +156,16 @@ export async function createQualityCalibrationReadyNotification(
 ): Promise<boolean> {
   if (!state.eligible || state.pendingCount < 1) return false;
   const createdAt = now.toISOString();
+  const target = state.snapshots.find(({ weekStart, decision }) => (
+    weekStart === state.currentWeekStart && decision === "pending"
+  ));
+  if (!target) return false;
   const notification = await createAdminNotification(db, {
     id: `notification_${crypto.randomUUID()}`,
     invitationId,
     eventKey: `quality_calibration_ready:${state.currentWeekStart}`,
     kind: "quality_calibration_ready",
-    sourceId: state.currentWeekStart,
+    sourceId: qualityCalibrationNotificationSourceId(state.currentWeekStart, target.metricKey),
     title: "주간 품질 보정 검토 준비",
     body: `${state.pendingCount}개 품질 지표의 보정 후보가 준비되었습니다. 기준값은 자동 변경되지 않으며 관리자 검토 후 결정됩니다.`,
     createdAt,

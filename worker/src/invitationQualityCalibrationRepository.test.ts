@@ -118,7 +118,7 @@ describe("quality calibration snapshots", () => {
         SELECT kind, source_id, title FROM admin_notifications
       `).get()).toEqual({
         kind: "quality_calibration_ready",
-        source_id: "2026-08-03",
+        source_id: "2026-08-03:camera-center",
         title: "주간 품질 보정 검토 준비"
       });
       expect(sqlite.prepare(`

@@ -98,4 +98,22 @@ describe("AdminNotificationInbox", () => {
     await waitFor(() => expect(api.retryFailedAdminNotificationEmails).toHaveBeenCalledWith("admin-token"));
     expect(await screen.findByText("이메일 발송 대기·재시도 1건")).toBeInTheDocument();
   });
+
+  it("품질 알림은 정확한 주차와 첫 미결 지표로 연결한다", async () => {
+    api.fetchAdminNotifications.mockResolvedValue({
+      ...unreadResult,
+      notifications: [{
+        ...unreadResult.notifications[0],
+        kind: "quality_calibration_ready" as const,
+        sourceId: "2026-08-03:camera-center",
+        title: "주간 품질 보정 검토 준비"
+      }]
+    });
+    render(<AdminNotificationInbox token="admin-token" onUnauthorized={vi.fn()} />);
+
+    expect(await screen.findByRole("link", { name: "품질 분석 열기" })).toHaveAttribute(
+      "href",
+      "?admin=analytics&calibrationWeek=2026-08-03&calibrationMetric=camera-center"
+    );
+  });
 });

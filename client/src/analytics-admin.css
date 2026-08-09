@@ -232,6 +232,8 @@
 .analytics-quality-calibration > p { margin: 7px 0 0; }
 .analytics-quality-calibration__current { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; margin-top: 8px; }
 .analytics-quality-calibration__current article { display: grid; gap: 4px; border: 1px solid var(--analytics-line); border-radius: 7px; padding: 8px; background: #fff; }
+.analytics-quality-calibration__current article[data-deep-linked="true"] { border-color: #6f8d78; background: #f3f8f3; box-shadow: 0 0 0 3px rgba(111, 141, 120, 0.16); scroll-margin-block: 96px; }
+.analytics-quality-calibration__current article[data-deep-linked="true"]:focus-visible { outline: 2px solid #526f5d; outline-offset: 3px; }
 .analytics-quality-calibration__current article > span { color: var(--analytics-muted); font-size: 9px; font-weight: 800; }
 .analytics-quality-calibration__current article > strong { color: var(--analytics-ink); font-size: 11px; }
 .analytics-quality-calibration__current article > small { color: var(--analytics-green); font-size: 9px; }
