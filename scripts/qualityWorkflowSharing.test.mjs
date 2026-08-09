@@ -27,7 +27,10 @@ test("shared quality build produces isolated production and device variants", as
   assert.match(source, /quality-build-\$\{\{ github\.sha \}\}/);
   assert.match(source, /\.quality-build\/production/);
   assert.match(source, /\.quality-build\/device/);
+  assert.match(source, /\.quality-build\/generated-characters/);
   assert.match(source, /VITE_TURNSTILE_SITE_KEY/);
   assert.match(source, /path: \.quality-build\s+include-hidden-files: true/);
   assert.match(source, /retention-days: 7/);
+  const action = await readFile(new URL("../.github/actions/restore-quality-build/action.yml", import.meta.url), "utf8");
+  assert.match(action, /client\/public\/characters\/generated/);
 });

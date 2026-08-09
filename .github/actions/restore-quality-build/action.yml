@@ -38,9 +38,13 @@ runs:
             if gh run download "$run_id" --name "$artifact_name" --dir "$download_dir"; then
               test "$(jq -r '.sha' "$download_dir/quality-build-manifest.json")" = "$QUALITY_BUILD_SHA"
               test -d "$download_dir/$QUALITY_BUILD_VARIANT"
+              test -d "$download_dir/generated-characters"
               node -e 'require("node:fs").rmSync("client/dist", {recursive:true, force:true})'
+              node -e 'require("node:fs").rmSync("client/public/characters/generated", {recursive:true, force:true})'
               mkdir -p client/dist
+              mkdir -p client/public/characters/generated
               cp -R "$download_dir/$QUALITY_BUILD_VARIANT/." client/dist/
+              cp -R "$download_dir/generated-characters/." client/public/characters/generated/
               echo "restored=true" >> "$GITHUB_OUTPUT"
               exit 0
             fi

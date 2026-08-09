@@ -29,10 +29,12 @@ jobs:
           VITE_WORKER_URL: ${{ vars.VITE_WORKER_URL || 'https://example.invalid' }}
           VITE_INVITATION_ID: ${{ vars.VITE_INVITATION_ID || 'sample-garden' }}
           VITE_TURNSTILE_SITE_KEY: ${{ vars.VITE_TURNSTILE_SITE_KEY }}
-      - name: Preserve production client
+      - name: Preserve production client and generated runtime assets
         run: |
           mkdir -p .quality-build/production
           cp -R client/dist/. .quality-build/production/
+          mkdir -p .quality-build/generated-characters
+          cp -R client/public/characters/generated/. .quality-build/generated-characters/
       - name: Build isolated device quality client
         run: pnpm --filter @wedding-game/client build
         env:
