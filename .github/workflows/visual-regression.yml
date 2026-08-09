@@ -271,7 +271,8 @@ jobs:
           name: mobile-visual-region-report-${{ github.run_id }}
           path: .superpowers/visual-regression/mobile-game-regions.json
           if-no-files-found: ignore
-          retention-days: 14
+          compression-level: 9
+          retention-days: 30
       - name: Upload signed diagnostics Evidence Pack
         if: always()
         uses: actions/upload-artifact@v7
@@ -291,8 +292,11 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: mobile-visual-regression-${{ github.run_id }}
-          path: .superpowers/visual-regression
+          path: |
+            .superpowers/visual-regression/mobile-game-diff.png
+            .superpowers/visual-regression/mobile-hud-browser/**/*-diff.png
           if-no-files-found: ignore
+          compression-level: 9
           retention-days: 14
       - name: Upload world layout report
         if: always()
@@ -329,17 +333,32 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: mobile-hud-browser-${{ github.run_id }}
-          path: .superpowers/visual-regression/mobile-hud-browser
+          path: |
+            .superpowers/visual-regression/mobile-hud-browser
+            !.superpowers/visual-regression/mobile-hud-browser/**/*-diff.png
           if-no-files-found: ignore
-          retention-days: 14
+          compression-level: 9
+          retention-days: 7
       - name: Upload mobile device soak audit
         if: always()
         uses: actions/upload-artifact@v7
         with:
           name: mobile-device-soak-${{ github.run_id }}
-          path: .superpowers/visual-regression/mobile-device-soak
+          path: |
+            .superpowers/visual-regression/mobile-device-soak
+            !.superpowers/visual-regression/mobile-device-soak/*-trace.zip
           if-no-files-found: ignore
-          retention-days: 14
+          compression-level: 9
+          retention-days: 7
+      - name: Upload short-lived mobile performance traces
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: mobile-device-traces-${{ github.run_id }}
+          path: .superpowers/visual-regression/mobile-device-soak/*-trace.zip
+          if-no-files-found: ignore
+          compression-level: 0
+          retention-days: 3
       - name: Upload map diagnostics browser audit
         if: always()
         uses: actions/upload-artifact@v7
@@ -347,7 +366,8 @@ jobs:
           name: map-diagnostics-browser-${{ github.run_id }}
           path: .superpowers/visual-regression/map-diagnostics-browser
           if-no-files-found: ignore
-          retention-days: 14
+          compression-level: 9
+          retention-days: 7
       - name: Upload map foreground diagnostics
         if: always()
         uses: actions/upload-artifact@v7
@@ -365,7 +385,8 @@ jobs:
             .superpowers/visual-regression/map-foreground-depth-trend.html
             .superpowers/visual-regression/map-foreground-pr-summary.md
           if-no-files-found: ignore
-          retention-days: 14
+          compression-level: 9
+          retention-days: 7
       - name: Comment map foreground diagnostics on the pull request
         if: always() && github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
         uses: actions/github-script@v8

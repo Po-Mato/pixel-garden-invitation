@@ -112,6 +112,8 @@ jobs:
           name: production-large-text-canary
           path: .superpowers/visual-regression/production-large-text-canary
           if-no-files-found: warn
+          compression-level: 9
+          retention-days: 7
       - name: Upload public slow 4G and PWA update evidence
         if: always()
         uses: actions/upload-artifact@v7
@@ -119,6 +121,8 @@ jobs:
           name: production-network-pwa-canary
           path: .superpowers/visual-regression/production-network-pwa-canary
           if-no-files-found: warn
+          compression-level: 9
+          retention-days: 7
       - name: Upload PWA cache asset change report
         if: always()
         uses: actions/upload-artifact@v7
@@ -126,3 +130,5 @@ jobs:
           name: pwa-cache-asset-change
           path: .superpowers/visual-regression/game-resource-budget
           if-no-files-found: warn
+          compression-level: 9
+          retention-days: 30

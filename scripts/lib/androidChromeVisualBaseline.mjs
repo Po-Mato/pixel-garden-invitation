@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import sharp from "sharp";
+import { classifyVisualDifference } from "./visualDiffClassifier.mjs";
 import {
   analyzePixelDifference,
   mobileDeviceVisualBlurSigma,
@@ -51,6 +52,7 @@ export async function compareAndroidChromeVisualBaseline({ rootDir, outputDir, s
     structuralBaseline.data,
     structuralCurrent.info.channels
   );
+  const rawResult = analyzePixelDifference(current.data, baseline.data, current.info.channels);
   const diffPixels = Buffer.alloc(current.data.length);
   for (let offset = 0; offset < current.data.length; offset += current.info.channels) {
     const changed = Math.max(
@@ -61,14 +63,17 @@ export async function compareAndroidChromeVisualBaseline({ rootDir, outputDir, s
     diffPixels.set(changed ? [190, 60, 86, 255] : [238, 234, 226, 255], offset);
   }
   await sharp(diffPixels, { raw: current.info }).png().toFile(diffPath);
-  return {
+  const comparison = {
     ...result,
     passed: result.changedRatio <= mobileDeviceVisualMaxChangedRatio,
     maxChangedRatio: mobileDeviceVisualMaxChangedRatio,
+    rawChangedRatio: rawResult.changedRatio,
+    rawMeanPixelDifference: rawResult.meanPixelDifference,
     baselinePath,
     currentPath,
     diffPath
   };
+  return { ...comparison, classification: classifyVisualDifference(comparison) };
 }
 
 export async function approveAndroidChromeVisualBaselines({ rootDir, capturesDir, reason, captureReport }) {
@@ -86,11 +91,12 @@ export async function approveAndroidChromeVisualBaselines({ rootDir, capturesDir
       state,
       width: metadata.width,
       height: metadata.height,
-      sha256: createHash("sha256").update(buffer).digest("hex")
+      sha256: createHash("sha256").update(buffer).digest("hex"),
+      classification: classifyVisualDifference({}, { approved: true, reason })
     });
   }
   const metadata = {
-    version: 1,
+    version: 2,
     approvedAt: new Date().toISOString(),
     reason: reason.trim(),
     profile: androidChromeVisualProfile,

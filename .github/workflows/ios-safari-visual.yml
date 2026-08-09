@@ -159,12 +159,23 @@ jobs:
           name: ios-safari-visual-${{ github.run_id }}
           path: |
             .superpowers/visual-regression/ios-safari
+            !.superpowers/visual-regression/ios-safari/**/*-diff.png
             .superpowers/visual-regression/ios-safari-stability
             ${{ runner.temp }}/ios-safari-vite.log
             ${{ runner.temp }}/ios-safari-pwa-preview.log
             ${{ runner.temp }}/ios-safari-appium.log
           if-no-files-found: warn
           include-hidden-files: true
+          compression-level: 9
+          retention-days: 7
+      - name: Upload failed iOS Safari visual differences
+        if: steps.capture.outcome != 'success'
+        uses: actions/upload-artifact@v7
+        with:
+          name: ios-safari-diff-${{ github.run_id }}
+          path: .superpowers/visual-regression/ios-safari/**/*-diff.png
+          if-no-files-found: ignore
+          compression-level: 9
           retention-days: 14
       - name: Save iOS Safari stability history
         if: ${{ always() && hashFiles('.superpowers/visual-regression/ios-safari-stability/ios-safari-stability-trend-history.json') != '' }}

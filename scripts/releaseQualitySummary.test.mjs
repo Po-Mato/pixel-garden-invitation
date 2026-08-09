@@ -5,7 +5,7 @@ import { buildReleaseQualitySummary, formatReleaseQualitySummaryMarkdown } from 
 
 function cleanEvidence() {
   const device = {
-    comparisons: [{ state: "game", passed: true }],
+    comparisons: [{ state: "game", passed: true, changedRatio: 0.001, rawChangedRatio: 0.008, maxChangedRatio: 0.015 }],
     pwaOffline: { controlled: true, cachedPaths: 82, expectedPaths: 82, criticalAssetFailures: [], pageErrors: [] }
   };
   return {
@@ -30,6 +30,8 @@ test("release quality summary combines all five evidence groups", () => {
     ["map", "passed"], ["hud", "passed"], ["android", "passed"], ["ios", "passed"], ["pwa", "passed"]
   ]);
   assert.equal(summary.categories.find(({ id }) => id === "pwa").metrics.largestContentfulPaintMs, 1200);
+  assert.equal(summary.visualDifferences.status, "passed");
+  assert.equal(summary.visualDifferences.counts["renderer-noise"], 2);
   assert.match(formatReleaseQualitySummaryMarkdown(summary), /종합 상태: \*\*passed\*\*/);
 });
 
@@ -62,4 +64,6 @@ test("release quality workflow joins completed artifacts by commit SHA", async (
   assert.match(workflow, /gh run download[\s\S]*\|\| true/);
   assert.match(workflow, /gh run download/);
   assert.match(workflow, /quality:summary/);
+  assert.match(workflow, /release-quality-history/);
+  assert.match(workflow, /quality:summary-seed/);
 });

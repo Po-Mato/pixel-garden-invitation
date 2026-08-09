@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import sharp from "sharp";
+import { classifyVisualDifference } from "./visualDiffClassifier.mjs";
 
 export const mobileDeviceVisualBaselineProfiles = Object.freeze([
   "galaxy-s23-font-150",
@@ -79,7 +80,7 @@ export async function compareMobileDeviceVisualBaseline({ rootDir, profileId, st
   await sharp(diffPixels, { raw: current.info }).png().toFile(diffPath);
   const maxChangedRatio = mobileDeviceVisualMaxChangedRatioOverrides[profileId]
     ?? mobileDeviceVisualMaxChangedRatio;
-  return {
+  const comparison = {
     ...result,
     passed: result.changedRatio <= maxChangedRatio,
     maxChangedRatio,
@@ -91,6 +92,7 @@ export async function compareMobileDeviceVisualBaseline({ rootDir, profileId, st
     currentPath,
     diffPath
   };
+  return { ...comparison, classification: classifyVisualDifference(comparison) };
 }
 
 export async function approveMobileDeviceVisualBaselines({ rootDir, captures, reason, now = new Date() }) {
@@ -109,12 +111,13 @@ export async function approveMobileDeviceVisualBaselines({ rootDir, captures, re
       state: capture.state,
       width: metadata.width,
       height: metadata.height,
-      sha256: createHash("sha256").update(buffer).digest("hex")
+      sha256: createHash("sha256").update(buffer).digest("hex"),
+      classification: classifyVisualDifference({}, { approved: true, reason })
     });
   }
   const metadataPath = path.join(baselineDir, "mobile-device-visual-regression.json");
   const metadata = {
-    version: 3,
+    version: 4,
     approvedAt: now.toISOString(),
     reason: reason.trim(),
     pixelThreshold: mobileDeviceVisualPixelThreshold,

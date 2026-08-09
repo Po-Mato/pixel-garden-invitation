@@ -24,6 +24,26 @@ jobs:
       - uses: pnpm/action-setup@v6
         with:
           version: 10.29.2
+      - name: Restore release quality history
+        uses: actions/cache/restore@v5
+        with:
+          path: .superpowers/visual-regression/release-quality-summary/release-quality-history.json
+          key: release-quality-history-${{ runner.os }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            release-quality-history-${{ runner.os }}-
+      - name: Seed release quality history from the previous successful summary
+        if: ${{ hashFiles('.superpowers/visual-regression/release-quality-summary/release-quality-history.json') == '' }}
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TARGET_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+        run: |
+          previous_run_id="$(gh run list --workflow release-quality-summary.yml --status success --limit 10 --json databaseId,headSha --jq ".[] | select(.headSha != \"$TARGET_SHA\") | .databaseId" | head -n 1)"
+          if test -n "$previous_run_id"; then
+            mkdir -p quality-history-seed
+            gh run download "$previous_run_id" --pattern 'release-quality-summary-*' --dir quality-history-seed
+            pnpm quality:summary-seed -- --input-dir quality-history-seed
+          fi
       - name: Download same-commit quality evidence
         shell: bash
         env:
@@ -61,8 +81,16 @@ jobs:
           download_artifact "$MOBILE_RUN_ID" "mobile-visual-region-report-$MOBILE_RUN_ID" quality-inputs/mobile
           download_artifact "$ANDROID_RUN_ID" "android-chrome-visual-$ANDROID_RUN_ID" quality-inputs/android
           download_artifact "$IOS_RUN_ID" "ios-safari-visual-$IOS_RUN_ID" quality-inputs/ios
+      - name: Build checksum-bound artifact manifest
+        run: pnpm quality:artifact-manifest -- --input-dir quality-inputs
       - name: Build release quality summary
         run: pnpm quality:summary -- --input-dir quality-inputs --sha "${{ github.event.workflow_run.head_sha || github.sha }}"
+      - name: Save release quality history
+        if: ${{ always() && hashFiles('.superpowers/visual-regression/release-quality-summary/release-quality-history.json') != '' }}
+        uses: actions/cache/save@v5
+        with:
+          path: .superpowers/visual-regression/release-quality-summary/release-quality-history.json
+          key: release-quality-history-${{ runner.os }}-${{ github.run_id }}-${{ github.run_attempt }}
       - name: Upload release quality summary
         if: always()
         uses: actions/upload-artifact@v7
@@ -71,4 +99,5 @@ jobs:
           path: .superpowers/visual-regression/release-quality-summary
           include-hidden-files: true
           if-no-files-found: error
+          compression-level: 9
           retention-days: 30

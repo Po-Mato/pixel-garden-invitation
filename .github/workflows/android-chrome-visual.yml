@@ -99,9 +99,20 @@ jobs:
           name: android-chrome-visual-${{ github.run_id }}
           path: |
             .superpowers/visual-regression/android-chrome
+            !.superpowers/visual-regression/android-chrome/**/*-diff.png
             ${{ runner.temp }}/android-chrome-vite.log
             ${{ runner.temp }}/android-chrome-pwa-preview.log
             ${{ runner.temp }}/android-chrome-appium.log
           if-no-files-found: warn
           include-hidden-files: true
+          compression-level: 9
+          retention-days: 7
+      - name: Upload failed Android Chrome visual differences
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: android-chrome-diff-${{ github.run_id }}
+          path: .superpowers/visual-regression/android-chrome/**/*-diff.png
+          if-no-files-found: ignore
+          compression-level: 9
           retention-days: 14

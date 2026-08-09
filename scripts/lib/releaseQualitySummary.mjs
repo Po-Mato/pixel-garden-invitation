@@ -1,3 +1,5 @@
+import { classifyVisualDifference, summarizeVisualDifferenceClassifications } from "./visualDiffClassifier.mjs";
+
 export const releaseQualityEvidenceNames = Object.freeze({
   mapDiagnostics: "map-diagnostics-browser-report.json",
   mobileRegions: "mobile-game-regions.json",
@@ -53,6 +55,29 @@ function offlineIssues(report, label) {
   for (const issue of snapshot.criticalAssetFailures ?? []) issues.push(`${label}: ${issue}`);
   for (const issue of snapshot.pageErrors ?? []) issues.push(`${label}: ${issue}`);
   return issues;
+}
+
+function visualComparisons(evidence) {
+  const hud = (evidence.hud?.reports ?? []).flatMap((report) => Object.entries(report.deviceVisualBaselines ?? {}).flatMap(([state, value]) => (
+    value?.comparison ? [{ source: `hud/${report.id}`, state, ...value.comparison }] : []
+  )));
+  const device = ["android", "ios"].flatMap((source) => (evidence[source]?.comparisons ?? []).map((comparison) => ({
+    source,
+    ...comparison,
+    classification: comparison.classification ?? classifyVisualDifference(comparison)
+  })));
+  const regions = (evidence.mobileRegions?.regionResults ?? []).map((region) => {
+    const maxChangedRatio = evidence.mobileRegions?.maxRegionChangedRatio ?? 0;
+    const comparison = {
+      source: `map/${region.kind ?? "unknown"}`,
+      state: region.id,
+      changedRatio: region.changedRatio,
+      maxChangedRatio,
+      passed: region.changedRatio <= maxChangedRatio
+    };
+    return { ...comparison, classification: classifyVisualDifference(comparison) };
+  });
+  return [...hud, ...device, ...regions];
 }
 
 export function buildReleaseQualitySummary(evidence = {}, metadata = {}) {
@@ -120,6 +145,7 @@ export function buildReleaseQualitySummary(evidence = {}, metadata = {}) {
   }, pwaIssues);
 
   const categories = [map, hud, android, ios, pwa];
+  const visualDifferences = summarizeVisualDifferenceClassifications(visualComparisons(evidence));
   return {
     generatedAt: metadata.generatedAt ?? new Date().toISOString(),
     sha: metadata.sha ?? null,
@@ -127,7 +153,8 @@ export function buildReleaseQualitySummary(evidence = {}, metadata = {}) {
     status: categories.some(({ status }) => status === "failed")
       ? "failed"
       : categories.some(({ status }) => status === "blocked") ? "blocked" : "passed",
-    categories
+    categories,
+    visualDifferences
   };
 }
 
@@ -146,6 +173,23 @@ export function formatReleaseQualitySummaryMarkdown(summary) {
   for (const item of summary.categories) {
     const metrics = Object.entries(item.metrics).map(([key, value]) => `${key} ${value}`).join(" · ") || "-";
     lines.push(`| ${label[item.id] ?? item.id} | ${item.status} | ${metrics} |`);
+  }
+  if (summary.visualDifferences) {
+    const counts = Object.entries(summary.visualDifferences.counts)
+      .filter(([, count]) => count > 0)
+      .map(([id, count]) => `${id} ${count}`)
+      .join(" · ") || "없음";
+    lines.push("", "### 시각 차이 원인 분류", "", `- 상태: **${summary.visualDifferences.status}**`, `- ${counts}`);
+  }
+  if (summary.trend) {
+    lines.push(
+      "",
+      "### 이전 릴리스 대비",
+      "",
+      `- 상태: **${summary.trend.status}** · 표본 ${summary.trend.sampleCount}개`,
+      `- 이전 커밋: \`${summary.trend.previousSha ?? "없음"}\``,
+      ...(summary.trend.regressions.length ? summary.trend.regressions.map((issue) => `- ${issue}`) : ["- 유의미한 악화 없음"])
+    );
   }
   const issues = summary.categories.flatMap((item) => [
     ...item.missing.map((name) => `${label[item.id] ?? item.id}: ${name} 증거 누락`),

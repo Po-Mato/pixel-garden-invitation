@@ -76,6 +76,8 @@ test("device visual structural comparison still catches shifted layout", async (
     });
     assert.equal(comparison.passed, false);
     assert.ok(comparison.changedRatio > comparison.maxChangedRatio);
+    assert.equal(comparison.classification.id, "structural-regression");
+    assert.equal(comparison.classification.review, "required");
   } finally {
     await rm(rootDir, { recursive: true, force: true });
   }
