@@ -8,7 +8,8 @@ import {
   mergeProductionNetworkPwaTrendRuns,
   parseServiceWorkerVersion,
   productionNetworkPwaTrendSample,
-  slow4gNetworkProfile
+  slow4gNetworkProfile,
+  waitForPublicPrecacheAvailability
 } from "./lib/productionNetworkPwaCanary.mjs";
 
 const healthy = {
@@ -61,6 +62,32 @@ test("production network trend extracts valid reports and de-duplicates deployme
   assert.deepEqual(mergeProductionNetworkPwaTrendRuns([sample], [{ ...sample, largestContentfulPaintMs: 1_200 }]), [
     { ...sample, largestContentfulPaintMs: 1_200 }
   ]);
+  assert.deepEqual(mergeProductionNetworkPwaTrendRuns([sample], [{ ...sample, runId: "43" }]), [
+    { ...sample, runId: "43" }
+  ]);
+  assert.deepEqual(mergeProductionNetworkPwaTrendRuns([
+    { ...sample, runId: "41" },
+    { ...sample, runId: "42", generatedAt: "2026-08-08T01:00:00.000Z" }
+  ], []), [
+    { ...sample, runId: "42", generatedAt: "2026-08-08T01:00:00.000Z" }
+  ]);
+});
+
+test("production network trend cannot be warmed by rerunning the same deployment SHA", () => {
+  const sample = (runId, expectedSha) => ({
+    runId, expectedSha, generatedAt: `2026-08-08T00:00:0${runId}.000Z`, status: "passed",
+    largestContentfulPaintMs: 1_100, updateInstallMs: 900
+  });
+  const current = sample("5", "sha-current");
+  const trend = assessProductionNetworkPwaTrend([
+    sample("1", "sha-one"),
+    sample("2", "sha-one"),
+    sample("3", "sha-two"),
+    sample("4", "sha-current")
+  ], current);
+  assert.equal(trend.status, "warming");
+  assert.equal(trend.sampleCount, 3);
+  assert.deepEqual(trend.baselineRunIds, ["2", "3"]);
 });
 
 test("production network canary parses deployed worker versions and HTTPS URLs", () => {
@@ -70,6 +97,25 @@ test("production network canary parses deployed worker versions and HTTPS URLs",
     "https://example.com/wedding/?quality-network-pwa=fresh"
   );
   assert.throws(() => buildProductionNetworkCanaryUrl("http://example.com/", "fresh"), /HTTPS/);
+});
+
+test("production network canary waits until every deployed precache asset is available", async () => {
+  let calls = 0;
+  const result = await waitForPublicPrecacheAvailability("https://example.test/wedding/", ["./", "./app.js"], {
+    attempts: 2,
+    intervalMs: 0,
+    fetchImpl: async (url) => {
+      calls += 1;
+      const unavailable = calls === 2 && String(url).endsWith("/app.js");
+      return new Response("asset", { status: unavailable ? 404 : 200 });
+    }
+  });
+  assert.deepEqual(result, { attempt: 2, checkedPaths: 2 });
+  await assert.rejects(() => waitForPublicPrecacheAvailability(
+    "https://example.test/wedding/",
+    ["./missing.js"],
+    { attempts: 1, intervalMs: 0, fetchImpl: async () => new Response("missing", { status: 404 }) }
+  ), /missing\.js\(404\)/);
 });
 
 test("production network canary accepts atomic updates and cold starts", () => {

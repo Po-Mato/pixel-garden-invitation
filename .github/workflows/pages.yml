@@ -68,12 +68,6 @@ jobs:
             pwa-cache-assets-${{ runner.os }}-main-
       - name: Verify game CSS and font request budgets
         run: pnpm performance:resource-budget
-      - name: Save PWA cache asset history
-        if: ${{ always() && hashFiles('.superpowers/visual-regression/game-resource-budget/pwa-cache-asset-trend-history.json') != '' }}
-        uses: actions/cache/save@v5
-        with:
-          path: .superpowers/visual-regression/game-resource-budget/pwa-cache-asset-trend-history.json
-          key: pwa-cache-assets-${{ runner.os }}-main-${{ github.run_id }}-${{ github.run_attempt }}
       - name: Verify fresh-install offline invitation journey
         run: pnpm pwa:clean-install-canary
       - name: Verify service worker replacement and cache rollback
@@ -103,6 +97,12 @@ jobs:
         with:
           path: .superpowers/visual-regression/production-network-pwa-canary/production-network-pwa-trend-history.json
           key: production-network-pwa-trend-${{ runner.os }}-${{ github.run_id }}-${{ github.run_attempt }}
+      - name: Save successful PWA cache asset history
+        if: ${{ success() && hashFiles('.superpowers/visual-regression/game-resource-budget/pwa-cache-asset-trend-history.json') != '' }}
+        uses: actions/cache/save@v5
+        with:
+          path: .superpowers/visual-regression/game-resource-budget/pwa-cache-asset-trend-history.json
+          key: pwa-cache-assets-${{ runner.os }}-main-${{ github.run_id }}-${{ github.run_attempt }}
       - name: Upload public large-text canary evidence
         if: always()
         uses: actions/upload-artifact@v7

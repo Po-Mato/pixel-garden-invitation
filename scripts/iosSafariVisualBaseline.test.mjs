@@ -80,3 +80,10 @@ test("iOS audit supports a signed physical iPhone session and native address-bar
   assert.match(source, /performTouchSwipe/);
   assert.match(source, /pointerType: "touch"/);
 });
+
+test("iOS CI pins the stable Node runtime and retries Simulator URL activation", async () => {
+  const workflow = await readFile(new URL("../.github/workflows/ios-safari-visual.yml", import.meta.url), "utf8");
+  assert.match(workflow, /node-version: 22/);
+  assert.match(workflow, /for attempt in 1 2 3/);
+  assert.match(workflow, /simctl bootstatus/);
+});

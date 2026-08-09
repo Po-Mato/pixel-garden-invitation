@@ -52,27 +52,44 @@ export function mergeProductionNetworkPwaTrendRuns(runs, incoming) {
   const merged = [...(Array.isArray(runs) ? runs : [])];
   for (const run of Array.isArray(incoming) ? incoming : []) {
     if (!run) continue;
-    const identity = run.runId || run.expectedSha;
+    const identity = run.expectedSha || run.runId;
     const duplicateAt = merged.findIndex((candidate) => (
-      identity && (candidate.runId || candidate.expectedSha) === identity
+      identity && (candidate.expectedSha || candidate.runId) === identity
     ));
     if (duplicateAt >= 0) merged.splice(duplicateAt, 1);
     merged.push(run);
   }
-  return merged
-    .sort((left, right) => Date.parse(left.generatedAt) - Date.parse(right.generatedAt))
-    .slice(-productionNetworkPwaTrendPolicy.retainedRuns);
+  const normalized = [];
+  for (const run of merged.sort((left, right) => Date.parse(left.generatedAt) - Date.parse(right.generatedAt))) {
+    const identity = run.expectedSha || run.runId;
+    const duplicateAt = normalized.findIndex((candidate) => (
+      identity && (candidate.expectedSha || candidate.runId) === identity
+    ));
+    if (duplicateAt >= 0) normalized.splice(duplicateAt, 1);
+    normalized.push(run);
+  }
+  return normalized.slice(-productionNetworkPwaTrendPolicy.retainedRuns);
 }
 
 export function assessProductionNetworkPwaTrend(previousRuns, currentRun) {
   if (!currentRun || currentRun.status !== "passed") {
     return { status: "skipped", sampleCount: 0, requiredSampleCount: productionNetworkPwaTrendPolicy.requiredRuns, baselineRunIds: [], comparisons: [], issues: [] };
   }
-  const baselines = (Array.isArray(previousRuns) ? previousRuns : [])
+  const currentIdentity = currentRun.expectedSha || currentRun.runId;
+  const seenDeployments = new Set();
+  const baselines = [...(Array.isArray(previousRuns) ? previousRuns : [])]
+    .reverse()
     .filter(({ status, largestContentfulPaintMs, updateInstallMs }) => (
       status === "passed" && Number.isFinite(largestContentfulPaintMs) && Number.isFinite(updateInstallMs)
     ))
-    .slice(-(productionNetworkPwaTrendPolicy.requiredRuns - 1));
+    .filter((run) => {
+      const identity = run.expectedSha || run.runId;
+      if (identity && (identity === currentIdentity || seenDeployments.has(identity))) return false;
+      if (identity) seenDeployments.add(identity);
+      return true;
+    })
+    .slice(0, productionNetworkPwaTrendPolicy.requiredRuns - 1)
+    .reverse();
   const sampleCount = baselines.length + 1;
   if (sampleCount < productionNetworkPwaTrendPolicy.requiredRuns) {
     return {
@@ -122,6 +139,31 @@ export function buildProductionNetworkCanaryUrl(rawUrl, marker) {
   if (url.protocol !== "https:") throw new TypeError("공개 네트워크 카나리 URL은 HTTPS여야 합니다.");
   url.searchParams.set("quality-network-pwa", marker);
   return url.toString();
+}
+
+export async function waitForPublicPrecacheAvailability(
+  rawUrl,
+  paths,
+  { attempts = 12, intervalMs = 1_000, fetchImpl = fetch } = {}
+) {
+  let unavailable = [];
+  for (let attempt = 1; attempt <= attempts; attempt += 1) {
+    const results = await Promise.all(paths.map(async (resourcePath) => {
+      try {
+        const response = await fetchImpl(new URL(resourcePath, rawUrl), { cache: "no-store" });
+        if (response.ok) await response.arrayBuffer();
+        return response.ok ? null : { path: resourcePath, status: response.status };
+      } catch {
+        return { path: resourcePath, status: 0 };
+      }
+    }));
+    unavailable = results.filter(Boolean);
+    if (unavailable.length === 0) return { attempt, checkedPaths: paths.length };
+    if (attempt < attempts) await new Promise((resolve) => setTimeout(resolve, intervalMs));
+  }
+  throw new Error(`공개 프리캐시 자산 준비 지연: ${unavailable.map(({ path: resourcePath, status }) => (
+    `${resourcePath}(${status || "network"})`
+  )).join(", ")}`);
 }
 
 export function parseServiceWorkerVersion(source) {
@@ -378,6 +420,7 @@ export async function verifyProductionNetworkPwaCanary({ url, expectedSha, profi
   const deployed = await waitForServiceWorkerVersion(url, expectedVersion);
   const expectedPaths = parsePwaPrecachePaths(deployed.source);
   const expectedFeaturePaths = parsePwaFeaturePaths(deployed.source);
+  const assetReadiness = await waitForPublicPrecacheAvailability(url, expectedPaths);
   const prepare = JSON.parse(await readFile(path.join(outputDir, "production-network-pwa-prepare.json"), "utf8"));
   const { chromium } = await import("playwright");
   const browser = await chromium.launch({ headless: true });
@@ -436,6 +479,7 @@ export async function verifyProductionNetworkPwaCanary({ url, expectedSha, profi
     const snapshot = {
       readinessStatus: deployed.status,
       readinessAttempt: deployed.attempt,
+      assetReadinessAttempt: assetReadiness.attempt,
       expectedVersion,
       deployedVersion: deployed.version,
       networkProfile: slow4gNetworkProfile,
@@ -480,7 +524,7 @@ export async function verifyProductionNetworkPwaCanary({ url, expectedSha, profi
       // The first deployment warms the five-run trend from an empty history.
     }
     const priorRuns = previousRuns.filter(({ runId, expectedSha: sha }) => (
-      (runId || sha) !== (currentRun?.runId || currentRun?.expectedSha)
+      (sha || runId) !== (currentRun?.expectedSha || currentRun?.runId)
     ));
     const trend = assessProductionNetworkPwaTrend(priorRuns, currentRun);
     const issues = [...baseIssues, ...trend.issues];

@@ -59,6 +59,7 @@
     "visual:map-diagnostics": "node scripts/check-map-diagnostics-browser.mjs",
     "visual:mobile-soak": "node scripts/check-mobile-device-soak.mjs",
     "quality:physical": "node scripts/check-physical-quality.mjs",
+    "quality:physical:preflight": "node scripts/check-physical-quality-readiness.mjs",
     "quality:physical:capture": "node scripts/capture-physical-quality-evidence.mjs",
     "quality:physical:require-all": "node scripts/check-physical-quality.mjs --require-all",
     "quality:production-large-text": "node scripts/check-production-large-text-canary.mjs",

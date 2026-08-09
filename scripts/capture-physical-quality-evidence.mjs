@@ -7,6 +7,7 @@ import { promisify } from "node:util";
 import { parseAdbDevices, parseXctraceDevices } from "./lib/physicalQualityAudit.mjs";
 import {
   auditPhysicalQualityCaptureSession,
+  assessPhysicalQualityCaptureReadiness,
   buildPhysicalQualityEvidence,
   createPhysicalQualityCaptureTemplate,
   physicalQualityCaptureArtifactCount,
@@ -34,9 +35,9 @@ const reportPath = path.resolve(option(
 
 async function optionalCommand(command, args) {
   try {
-    return (await run(command, args, { maxBuffer: 4 * 1024 * 1024 })).stdout;
-  } catch {
-    return "";
+    return { available: true, output: (await run(command, args, { maxBuffer: 4 * 1024 * 1024 })).stdout };
+  } catch (error) {
+    return { available: error?.code !== "ENOENT" && !String(error?.stderr).includes("unable to find utility"), output: error?.stdout || "" };
   }
 }
 
@@ -45,9 +46,16 @@ const [adbOutput, xctraceOutput] = await Promise.all([
   optionalCommand("xcrun", ["xctrace", "list", "devices"])
 ]);
 const connected = {
-  androidDevices: parseAdbDevices(adbOutput),
-  iosDevices: parseXctraceDevices(xctraceOutput)
+  androidDevices: parseAdbDevices(adbOutput.output),
+  iosDevices: parseXctraceDevices(xctraceOutput.output)
 };
+const readiness = assessPhysicalQualityCaptureReadiness({
+  adbAvailable: adbOutput.available,
+  xctraceAvailable: xctraceOutput.available,
+  ...connected
+});
+console.log(`실기기 증빙 준비 상태: ${readiness.status}`);
+for (const issue of readiness.issues) console.log(`- ${issue}`);
 
 try {
   await access(sessionPath);

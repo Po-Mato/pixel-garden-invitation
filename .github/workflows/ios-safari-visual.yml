@@ -31,7 +31,8 @@ jobs:
           version: 10.29.2
       - uses: actions/setup-node@v6
         with:
-          node-version: 24
+          # Node 24 undici can intermittently raise setTypeOfService EINVAL on macOS runners.
+          node-version: 22
           cache: pnpm
       - name: Select pinned Xcode and warm Simulator services
         shell: bash
@@ -78,7 +79,14 @@ jobs:
       - name: Capture and compare real Mobile Safari
         shell: bash
         run: |
-          xcrun simctl openurl "$IOS_SIMULATOR_UDID" http://127.0.0.1:4178/
+          for attempt in 1 2 3; do
+            if xcrun simctl openurl "$IOS_SIMULATOR_UDID" http://127.0.0.1:4178/; then
+              break
+            fi
+            test "$attempt" -lt 3
+            xcrun simctl bootstatus "$IOS_SIMULATOR_UDID" -b
+            sleep 3
+          done
           sleep 3
           pnpm visual:ios-safari -- --mode auto --url http://127.0.0.1:4178/ --pwa-url http://127.0.0.1:4188/ --preview-host-url http://127.0.0.1:4188/
       - name: Stop invitation server

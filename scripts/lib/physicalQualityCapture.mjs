@@ -7,6 +7,26 @@ import {
 
 export const physicalQualityCaptureArtifactCount = 9;
 
+export function assessPhysicalQualityCaptureReadiness({
+  adbAvailable = false,
+  xctraceAvailable = false,
+  androidDevices = [],
+  iosDevices = []
+} = {}) {
+  const issues = [];
+  if (!adbAvailable) issues.push("Android Platform Tools(adb) 설치 필요");
+  else if (androidDevices.length === 0) issues.push("USB 디버깅을 허용한 실제 Android 연결 필요");
+  if (!xctraceAvailable) issues.push("Xcode 명령줄 도구(xctrace) 설치 필요");
+  else if (iosDevices.length === 0) issues.push("신뢰 연결된 실제 iPhone 연결 필요");
+  return {
+    status: issues.length === 0 ? "ready" : "blocked",
+    android: { toolAvailable: adbAvailable, devices: androidDevices },
+    ios: { toolAvailable: xctraceAvailable, devices: iosDevices },
+    requiredArtifactCount: physicalQualityCaptureArtifactCount,
+    issues
+  };
+}
+
 const completedFlow = (value = false) => Object.fromEntries(
   physicalAccessibilityFlow.map((step) => [step, value])
 );

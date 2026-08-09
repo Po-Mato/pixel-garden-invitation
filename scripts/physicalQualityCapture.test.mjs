@@ -1,12 +1,29 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
+  assessPhysicalQualityCaptureReadiness,
   auditPhysicalQualityCaptureSession,
   buildPhysicalQualityEvidence,
   createPhysicalQualityCaptureTemplate,
   physicalQualityCaptureArtifactCount,
   physicalQualityCaptureEntries
 } from "./lib/physicalQualityCapture.mjs";
+
+test("physical capture preflight reports missing tools and devices without inventing evidence", () => {
+  assert.deepEqual(assessPhysicalQualityCaptureReadiness(), {
+    status: "blocked",
+    android: { toolAvailable: false, devices: [] },
+    ios: { toolAvailable: false, devices: [] },
+    requiredArtifactCount: 9,
+    issues: ["Android Platform Tools(adb) 설치 필요", "Xcode 명령줄 도구(xctrace) 설치 필요"]
+  });
+  assert.equal(assessPhysicalQualityCaptureReadiness({
+    adbAvailable: true,
+    xctraceAvailable: true,
+    androidDevices: [{ id: "android-1" }],
+    iosDevices: [{ id: "ios-1" }]
+  }).status, "ready");
+});
 
 test("physical capture session enumerates all nine real-device evidence artifacts", () => {
   const session = createPhysicalQualityCaptureTemplate({
