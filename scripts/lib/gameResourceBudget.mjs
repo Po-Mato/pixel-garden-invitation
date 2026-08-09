@@ -247,6 +247,7 @@ async function inspectPwaCacheGroup(distDir, paths) {
     rawBytes: total(assets, "rawBytes"),
     transferBytes: total(assets, "transferBytes"),
     missing,
+    assets,
     largest: [...assets].sort((left, right) => right.transferBytes - left.transferBytes).slice(0, 10)
   };
 }

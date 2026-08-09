@@ -210,6 +210,14 @@ jobs:
       - name: Install mobile browser engines on cache miss
         if: steps.playwright-browser-cache.outputs.cache-hit != 'true'
         run: pnpm exec playwright install chromium webkit
+      - name: Restore main PWA cache asset history
+        if: github.event_name == 'pull_request'
+        uses: actions/cache/restore@v5
+        with:
+          path: .superpowers/visual-regression/game-resource-budget/pwa-cache-asset-trend-history.json
+          key: pwa-cache-assets-${{ runner.os }}-pr-${{ github.event.pull_request.number }}-${{ github.sha }}
+          restore-keys: |
+            pwa-cache-assets-${{ runner.os }}-main-
       - name: Verify game CSS and font request budgets
         run: pnpm performance:resource-budget
       - name: Audit live mobile HUD screenshots
@@ -365,6 +373,7 @@ jobs:
           script: |
             const fs = require("fs");
             const summaryPaths = [
+              ".superpowers/visual-regression/game-resource-budget/pwa-cache-asset-delta.md",
               ".superpowers/visual-regression/map-foreground-pr-summary.md",
               ".superpowers/visual-regression/world-geometry-policy-pr-summary.md",
               ".superpowers/visual-regression/map-diagnostics-provenance.md"

@@ -59,8 +59,21 @@ jobs:
         run: node scripts/seed-production-network-pwa-trend-history.mjs
         env:
           GH_TOKEN: ${{ github.token }}
+      - name: Restore PWA cache asset history
+        uses: actions/cache/restore@v5
+        with:
+          path: .superpowers/visual-regression/game-resource-budget/pwa-cache-asset-trend-history.json
+          key: pwa-cache-assets-${{ runner.os }}-main-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            pwa-cache-assets-${{ runner.os }}-main-
       - name: Verify game CSS and font request budgets
         run: pnpm performance:resource-budget
+      - name: Save PWA cache asset history
+        if: ${{ always() && hashFiles('.superpowers/visual-regression/game-resource-budget/pwa-cache-asset-trend-history.json') != '' }}
+        uses: actions/cache/save@v5
+        with:
+          path: .superpowers/visual-regression/game-resource-budget/pwa-cache-asset-trend-history.json
+          key: pwa-cache-assets-${{ runner.os }}-main-${{ github.run_id }}-${{ github.run_attempt }}
       - name: Verify fresh-install offline invitation journey
         run: pnpm pwa:clean-install-canary
       - name: Verify service worker replacement and cache rollback
@@ -103,4 +116,11 @@ jobs:
         with:
           name: production-network-pwa-canary
           path: .superpowers/visual-regression/production-network-pwa-canary
+          if-no-files-found: warn
+      - name: Upload PWA cache asset change report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: pwa-cache-asset-change
+          path: .superpowers/visual-regression/game-resource-budget
           if-no-files-found: warn
