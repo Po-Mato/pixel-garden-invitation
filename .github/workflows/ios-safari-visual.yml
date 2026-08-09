@@ -52,7 +52,7 @@ jobs:
             ~/.appium
             ~/.npm
             .cache/ios-safari-wda
-          key: ios-safari-automation-${{ runner.os }}-xcode-16.4-appium-3-xcuitest-11.4.0-v2
+          key: ios-safari-automation-${{ runner.os }}-xcode-16.4-appium-3-xcuitest-11.4.0-v3
       - name: Select pinned Xcode and warm Simulator services
         shell: bash
         run: |
@@ -75,6 +75,7 @@ jobs:
             appium driver install xcuitest@11.4.0
           fi
           WDA_CACHE_DIR="$GITHUB_WORKSPACE/.cache/ios-safari-wda"
+          mkdir -p "$(dirname "$WDA_CACHE_DIR")"
           IOS_PREBUILT_WDA_PATH=""
           if test -d "$WDA_CACHE_DIR"; then
             IOS_PREBUILT_WDA_PATH="$(find "$WDA_CACHE_DIR" -type d -name 'WebDriverAgentRunner-Runner.app' | head -n 1)"
@@ -172,14 +173,14 @@ jobs:
           path: .superpowers/visual-regression/ios-safari-stability/ios-safari-stability-trend-history.json
           key: ios-safari-stability-${{ runner.os }}-${{ github.run_id }}-${{ github.run_attempt }}
       - name: Save Appium and prebuilt WebDriverAgent
-        if: ${{ always() && steps.ios-automation-cache.outputs.cache-hit != 'true' }}
+        if: ${{ success() && steps.ios-automation-cache.outputs.cache-hit != 'true' }}
         uses: actions/cache/save@v5
         with:
           path: |
             ~/.appium
             ~/.npm
             .cache/ios-safari-wda
-          key: ios-safari-automation-${{ runner.os }}-xcode-16.4-appium-3-xcuitest-11.4.0-v2
+          key: ios-safari-automation-${{ runner.os }}-xcode-16.4-appium-3-xcuitest-11.4.0-v3
       - name: Fail when the Safari capture failed
         if: steps.capture.outcome != 'success'
         run: exit 1
