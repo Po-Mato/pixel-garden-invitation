@@ -87,6 +87,7 @@ test("iOS CI pins the stable Node runtime and retries Simulator URL activation",
   assert.match(workflow, /for attempt in 1 2 3/);
   assert.match(workflow, /simctl bootstatus/);
   assert.match(workflow, /download-wda/);
+  assert.doesNotMatch(workflow, /mkdir -p "\$WDA_CACHE_DIR"/);
   assert.match(workflow, /IOS_PREBUILT_WDA_PATH/);
   assert.match(workflow, /actions\/cache\/save@v5/);
 });

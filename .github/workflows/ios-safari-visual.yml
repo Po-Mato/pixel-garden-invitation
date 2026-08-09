@@ -75,8 +75,10 @@ jobs:
             appium driver install xcuitest@11.4.0
           fi
           WDA_CACHE_DIR="$GITHUB_WORKSPACE/.cache/ios-safari-wda"
-          mkdir -p "$WDA_CACHE_DIR"
-          IOS_PREBUILT_WDA_PATH="$(find "$WDA_CACHE_DIR" -type d -name 'WebDriverAgentRunner-Runner.app' | head -n 1)"
+          IOS_PREBUILT_WDA_PATH=""
+          if test -d "$WDA_CACHE_DIR"; then
+            IOS_PREBUILT_WDA_PATH="$(find "$WDA_CACHE_DIR" -type d -name 'WebDriverAgentRunner-Runner.app' | head -n 1)"
+          fi
           if test -z "$IOS_PREBUILT_WDA_PATH"; then
             appium driver run xcuitest download-wda -- --outdir="$WDA_CACHE_DIR" --kind=sim --platform=ios
             IOS_PREBUILT_WDA_PATH="$(find "$WDA_CACHE_DIR" -type d -name 'WebDriverAgentRunner-Runner.app' | head -n 1)"
