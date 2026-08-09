@@ -4,7 +4,10 @@ import { readFileSync } from "node:fs";
 import {
   auditProductionNetworkPwaCanary,
   buildProductionNetworkCanaryUrl,
+  assessProductionNetworkPwaTrend,
+  mergeProductionNetworkPwaTrendRuns,
   parseServiceWorkerVersion,
+  productionNetworkPwaTrendSample,
   slow4gNetworkProfile
 } from "./lib/productionNetworkPwaCanary.mjs";
 
@@ -31,6 +34,33 @@ test("production network canary defines a deterministic slow 4G profile", () => 
   assert.equal(slow4gNetworkProfile.latency, 150);
   assert.equal(slow4gNetworkProfile.downloadThroughput, 200_000);
   assert.equal(slow4gNetworkProfile.connectionType, "cellular4g");
+});
+
+test("production network trend warms to five runs then gates LCP and update installation drift", () => {
+  const sample = (runId, lcp, install) => ({
+    runId, expectedSha: runId, generatedAt: `2026-08-0${runId}T00:00:00.000Z`,
+    status: "passed", largestContentfulPaintMs: lcp, updateInstallMs: install
+  });
+  const previous = [sample("1", 1_000, 800), sample("2", 1_100, 900), sample("3", 1_200, 1_000)];
+  assert.equal(assessProductionNetworkPwaTrend(previous, sample("4", 1_150, 950)).status, "warming");
+  const passed = assessProductionNetworkPwaTrend([...previous, sample("4", 1_150, 950)], sample("5", 1_300, 1_200));
+  assert.equal(passed.status, "passed");
+  const failed = assessProductionNetworkPwaTrend([...previous, sample("4", 1_150, 950)], sample("5", 2_001, 4_000));
+  assert.equal(failed.status, "failed");
+  assert.equal(failed.issues.length, 2);
+});
+
+test("production network trend extracts valid reports and de-duplicates deployment identities", () => {
+  const report = { generatedAt: "2026-08-08T00:00:00.000Z", expectedSha: "sha", issues: [], freshColdStart: { largestContentfulPaintMs: 1_100 }, update: { installDurationMs: 900 } };
+  const sample = productionNetworkPwaTrendSample(report, "42");
+  assert.deepEqual(sample, {
+    runId: "42", expectedSha: "sha", generatedAt: report.generatedAt, status: "passed",
+    largestContentfulPaintMs: 1_100, updateInstallMs: 900
+  });
+  assert.equal(productionNetworkPwaTrendSample({ ...report, update: {} }, "43"), null);
+  assert.deepEqual(mergeProductionNetworkPwaTrendRuns([sample], [{ ...sample, largestContentfulPaintMs: 1_200 }]), [
+    { ...sample, largestContentfulPaintMs: 1_200 }
+  ]);
 });
 
 test("production network canary parses deployed worker versions and HTTPS URLs", () => {
@@ -69,4 +99,7 @@ test("Pages prepares the old worker before deploy and verifies the new worker af
   assert.ok(deployAt > prepareAt);
   assert.ok(verifyAt > deployAt);
   assert.match(workflow.slice(verifyAt), /--expected-sha "\$GITHUB_SHA"/);
+  assert.match(workflow, /Restore public PWA deployment trend/);
+  assert.match(workflow, /seed-production-network-pwa-trend-history\.mjs/);
+  assert.match(workflow, /Save public PWA deployment trend/);
 });

@@ -28,6 +28,9 @@ function formatNotificationDate(value: string): string {
 }
 
 function notificationPage(notification: AdminNotification): { href: string; label: string } {
+  if (notification.kind === "quality_calibration_ready") {
+    return { href: "?admin=analytics", label: "품질 분석" };
+  }
   return notification.kind.startsWith("rsvp_")
     ? { href: "?admin=rsvp", label: "참석 답변" }
     : { href: "?admin=guestbook", label: "방명록" };

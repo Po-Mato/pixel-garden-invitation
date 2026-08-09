@@ -24,7 +24,8 @@ const migrationFiles = [
   "0004_rsvp_consent_policy.sql",
   "0005_production_guestbook.sql",
   "0006_admin_notifications.sql",
-  "0007_admin_notification_email_queue.sql"
+  "0007_admin_notification_email_queue.sql",
+  "0026_quality_calibration_notifications.sql"
 ] as const;
 
 const expectedInvitation = {
@@ -161,7 +162,6 @@ describe("invitation migrations", () => {
         INSERT INTO rsvps (id, invitation_id, side, guest_name, phone, attendance, party_size, meal_status, note, consent_version, consented_at, edit_token_hash)
         VALUES ('rsvp_attending_zero', 'sample-garden', 'groom', '참석 하객', '01012345678', 'yes', 0, 'yes', '', '2026-07-20', '2027-04-20T00:00:00.000Z', 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
       `)).toThrow(/CHECK constraint failed/);
-
       expect(() => database.exec(`
         INSERT INTO rsvps (id, invitation_id, side, guest_name, phone, attendance, party_size, meal_status, note, consent_version, consented_at, edit_token_hash)
         VALUES ('rsvp_absent_meal', 'sample-garden', 'bride', '불참 하객', '01012345678', 'no', 0, 'yes', '', '2026-07-20', '2027-04-20T00:00:00.000Z', 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
@@ -381,6 +381,15 @@ describe("invitation migrations", () => {
           '2026-07-21T00:00:00.000Z', '2027-05-31T14:59:59.000Z'
         )
       `)).toThrow(/CHECK constraint failed/);
+      expect(() => database.exec(`
+        INSERT INTO admin_notifications (
+          id, invitation_id, event_key, kind, source_id, title, body, created_at, expires_at
+        ) VALUES (
+          'notification_quality', 'sample-garden', 'quality_calibration_ready:2026-08-03',
+          'quality_calibration_ready', '2026-08-03', '주간 품질 보정 검토 준비',
+          '기준값은 자동 변경되지 않습니다.', '2026-08-09T00:00:00.000Z', '2026-09-08T00:00:00.000Z'
+        )
+      `)).not.toThrow();
     } finally {
       database.close();
     }

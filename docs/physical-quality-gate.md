@@ -5,7 +5,10 @@
 ```bash
 pnpm quality:physical
 pnpm quality:physical:require-all -- --evidence /절대경로/physical-quality-evidence.json
+pnpm quality:physical:capture -- --session /절대경로/capture-session.json
 ```
+
+`quality:physical:capture`는 연결된 Android·iPhone 식별자를 채운 수집 세션을 처음 한 번 생성한다. 세션에 지정된 2개 스크린리더 녹화, 4개 패널 캡처, 3개 동작 녹화와 실제 측정값을 채운 뒤 같은 명령을 다시 실행하면 9개 파일의 SHA-256 계산, 증빙 JSON 생성, 연결 기기·TalkBack·유효기간 검증까지 한 번에 수행한다. 측정하지 않은 값을 자동으로 통과시키지는 않는다.
 
 Android는 현재 연결된 기기의 TalkBack 활성 상태를 `adb settings`로 직접 확인한다. iOS VoiceOver 상태와 각 화면 판독 결과, 패널 환경은 점검자가 아래 형식으로 기록한다. 각 판정은 14일 이내의 캡처 파일과 SHA-256으로 묶이며, 캡처에는 개인 정보를 넣지 않는다. `artifactPath`는 증거 JSON 파일 기준 상대 경로다.
 

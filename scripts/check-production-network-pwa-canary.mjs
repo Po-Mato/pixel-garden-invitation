@@ -26,6 +26,7 @@ if (phase === "prepare") {
   const result = await verifyProductionNetworkPwaCanary(input);
   const { freshColdStart, update, updatedColdStart } = result.snapshot;
   console.log(`공개 느린 4G·PWA 카나리 통과: 최초 ${freshColdStart.entryVisibleMs}ms · 교체 ${update.installState} · 갱신 후 ${updatedColdStart.entryVisibleMs}ms`);
+  console.log(`최근 5회 배포 추세: ${result.trend.status} · 표본 ${result.trend.sampleCount}/${result.trend.requiredSampleCount}`);
   console.log(`보고서: ${result.reportPath}`);
 } else {
   throw new TypeError("--phase prepare 또는 --phase verify가 필요합니다.");

@@ -2,7 +2,8 @@ export type AdminNotificationKind =
   | "rsvp_created"
   | "rsvp_updated"
   | "guestbook_created"
-  | "guestbook_updated";
+  | "guestbook_updated"
+  | "quality_calibration_ready";
 
 export type AdminNotificationEmailStatus = "pending" | "retrying" | "sent" | "failed";
 

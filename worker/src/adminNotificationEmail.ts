@@ -26,7 +26,9 @@ function adminUrl(env: Env, notification: AdminNotification): string {
   const base = configuredValue(env.ADMIN_NOTIFICATION_BASE_URL)
     ? env.ADMIN_NOTIFICATION_BASE_URL.replace(/\/$/, "")
     : "https://po-mato.github.io/pixel-garden-invitation";
-  const page = notification.kind.startsWith("rsvp_") ? "rsvp" : "guestbook";
+  const page = notification.kind === "quality_calibration_ready"
+    ? "analytics"
+    : notification.kind.startsWith("rsvp_") ? "rsvp" : "guestbook";
   return `${base}/?admin=${page}`;
 }
 

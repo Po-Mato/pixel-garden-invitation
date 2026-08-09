@@ -31,7 +31,8 @@ const migrations = [
   "0004_rsvp_consent_policy.sql",
   "0005_production_guestbook.sql",
   "0006_admin_notifications.sql",
-  "0007_admin_notification_email_queue.sql"
+  "0007_admin_notification_email_queue.sql",
+  "0026_quality_calibration_notifications.sql"
 ] as const;
 
 function createD1Adapter(database: SqliteDatabase): D1Database {
@@ -177,6 +178,26 @@ describe("admin notification email queue", () => {
       `).get()).toEqual({ email_attempts: 0, emailed_at: null, email_error: null });
       await expect(retryPendingAdminNotificationEmails(env))
         .resolves.toEqual({ attempted: 0, sent: 0, failed: 0 });
+    } finally {
+      database.close();
+    }
+  });
+
+  it("품질 보정 준비 알림은 분석 관리자 화면으로 연결한다", async () => {
+    const { database, env, send } = setup();
+    try {
+      await publishAdminNotification(env, {
+        invitationId: "sample-garden",
+        eventKey: "quality_calibration_ready:2026-08-03",
+        kind: "quality_calibration_ready",
+        sourceId: "2026-08-03",
+        title: "주간 품질 보정 검토 준비",
+        body: "기준값은 자동 변경되지 않습니다.",
+        expiresAt: "2026-09-08T00:00:00.000Z"
+      });
+      expect(send).toHaveBeenCalledWith(expect.objectContaining({
+        html: expect.stringContaining("https://example.test/invitation/?admin=analytics")
+      }));
     } finally {
       database.close();
     }

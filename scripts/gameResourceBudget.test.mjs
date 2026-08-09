@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {
   auditGameResourceBudgets,
+  auditPwaCacheBudgets,
   gameResourceBudgets,
   parsePwaFeaturePaths,
   parsePwaPrecachePaths,
@@ -22,6 +23,23 @@ test("service-worker precache manifest is parsed for missing-asset verification"
     "./assets/optional-a.js"
   ]);
   assert.throws(() => parsePwaFeaturePaths("const VERSION = 'missing';"), /FEATURE_URLS missing/);
+});
+
+test("PWA cache budgets cover core and optional bytes plus missing assets", () => {
+  const precache = {
+    core: { rawBytes: 2_900_000, transferBytes: 2_000_000, missing: [], largest: [], total: 82 },
+    features: { rawBytes: 900_000, transferBytes: 260_000, missing: [], largest: [], total: 40 }
+  };
+  assert.deepEqual(auditPwaCacheBudgets(precache), []);
+  assert.deepEqual(auditPwaCacheBudgets({
+    core: { ...precache.core, transferBytes: 2_300_001, missing: ["./missing-core.js"] },
+    features: { ...precache.features, rawBytes: 1_100_001, missing: ["./missing-feature.js"] }
+  }), [
+    "핵심 오프라인 저장 자산 누락 ./missing-core.js",
+    "선택 기능 오프라인 저장 자산 누락 ./missing-feature.js",
+    "핵심 오프라인 캐시 전송 용량 초과 2300001/2300000",
+    "선택 기능 캐시 원본 용량 초과 1100001/1100000"
+  ]);
 });
 
 const baseResources = [

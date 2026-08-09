@@ -6,6 +6,7 @@ on:
   workflow_dispatch:
 
 permissions:
+  actions: read
   contents: read
   pages: write
   id-token: write
@@ -47,6 +48,17 @@ jobs:
       - name: Install Chromium on cache miss
         if: steps.playwright-browser-cache.outputs.cache-hit != 'true'
         run: pnpm exec playwright install chromium
+      - name: Restore public PWA deployment trend
+        uses: actions/cache/restore@v5
+        with:
+          path: .superpowers/visual-regression/production-network-pwa-canary/production-network-pwa-trend-history.json
+          key: production-network-pwa-trend-${{ runner.os }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            production-network-pwa-trend-${{ runner.os }}-
+      - name: Seed public PWA trend from recent successful Pages artifacts
+        run: node scripts/seed-production-network-pwa-trend-history.mjs
+        env:
+          GH_TOKEN: ${{ github.token }}
       - name: Verify game CSS and font request budgets
         run: pnpm performance:resource-budget
       - name: Verify fresh-install offline invitation journey
@@ -72,6 +84,12 @@ jobs:
         run: pnpm quality:production-network-pwa -- --phase verify --url "$PAGES_URL" --expected-sha "$GITHUB_SHA" --profile-dir "$RUNNER_TEMP/production-network-pwa-profile"
         env:
           PAGES_URL: ${{ steps.deployment.outputs.page_url }}
+      - name: Save public PWA deployment trend
+        if: ${{ always() && hashFiles('.superpowers/visual-regression/production-network-pwa-canary/production-network-pwa-trend-history.json') != '' }}
+        uses: actions/cache/save@v5
+        with:
+          path: .superpowers/visual-regression/production-network-pwa-canary/production-network-pwa-trend-history.json
+          key: production-network-pwa-trend-${{ runner.os }}-${{ github.run_id }}-${{ github.run_attempt }}
       - name: Upload public large-text canary evidence
         if: always()
         uses: actions/upload-artifact@v7

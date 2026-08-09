@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 import type { InvitationExperienceQualityGuard } from "@wedding-game/shared";
 import {
   ensureInvitationQualityCalibrationSnapshot,
+  createQualityCalibrationReadyNotification,
   qualityCalibrationWeekStart,
   reviewInvitationQualityCalibrationSnapshot
 } from "./invitationQualityCalibrationRepository";
@@ -15,6 +16,9 @@ const { DatabaseSync } = createRequire(import.meta.url)("node:sqlite") as { Data
 function database() {
   const sqlite = new DatabaseSync(":memory:");
   sqlite.exec("PRAGMA foreign_keys = ON; CREATE TABLE invitations (id TEXT PRIMARY KEY); INSERT INTO invitations VALUES ('sample-garden');");
+  sqlite.exec(readFileSync(new URL("../migrations/0006_admin_notifications.sql", import.meta.url), "utf8"));
+  sqlite.exec(readFileSync(new URL("../migrations/0007_admin_notification_email_queue.sql", import.meta.url), "utf8"));
+  sqlite.exec(readFileSync(new URL("../migrations/0026_quality_calibration_notifications.sql", import.meta.url), "utf8"));
   sqlite.exec(readFileSync(new URL("../migrations/0025_quality_calibration_snapshots.sql", import.meta.url), "utf8"));
   const prepare = (sql: string) => {
     let values: unknown[] = [];
@@ -90,6 +94,7 @@ describe("quality calibration snapshots", () => {
       expect(reviewed?.pendingCount).toBe(2);
       expect(reviewed?.snapshots.find(({ metricKey }) => metricKey === "long-frame")).toMatchObject({
         decision: "approve-candidate",
+        currentThreshold: 100,
         reviewedAt: "2026-08-08T01:00:00.000Z"
       });
       await expect(reviewInvitationQualityCalibrationSnapshot(db, "sample-garden", {
@@ -97,6 +102,29 @@ describe("quality calibration snapshots", () => {
         metricKey: "long-frame",
         decision: "retain-current"
       })).resolves.toBeNull();
+    } finally {
+      sqlite.close();
+    }
+  });
+
+  it("준비 알림을 주차별 한 번만 만들고 기준값은 변경하지 않는다", async () => {
+    const { sqlite, db } = database();
+    try {
+      const now = new Date("2026-08-07T01:00:00.000Z");
+      const state = await ensureInvitationQualityCalibrationSnapshot(db, "sample-garden", readyGuard, now);
+      await expect(createQualityCalibrationReadyNotification(db, "sample-garden", state, now)).resolves.toBe(true);
+      await expect(createQualityCalibrationReadyNotification(db, "sample-garden", state, now)).resolves.toBe(false);
+      expect(sqlite.prepare(`
+        SELECT kind, source_id, title FROM admin_notifications
+      `).get()).toEqual({
+        kind: "quality_calibration_ready",
+        source_id: "2026-08-03",
+        title: "주간 품질 보정 검토 준비"
+      });
+      expect(sqlite.prepare(`
+        SELECT metric_key, current_threshold FROM invitation_quality_calibration_snapshots
+        WHERE metric_key = 'long-frame'
+      `).get()).toEqual({ metric_key: "long-frame", current_threshold: 100 });
     } finally {
       sqlite.close();
     }

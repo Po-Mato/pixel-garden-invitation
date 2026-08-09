@@ -20,6 +20,12 @@ export const gameResourceBudgets = Object.freeze({
     maxAdditionalCssGzipBytes: 34 * 1024,
     maxAdditionalFontRequests: 4,
     maxAdditionalFontBytes: 140 * 1024
+  },
+  pwa: {
+    maxCoreRawBytes: 3_300_000,
+    maxCoreTransferBytes: 2_300_000,
+    maxFeatureRawBytes: 1_100_000,
+    maxFeatureTransferBytes: 320_000
   }
 });
 
@@ -60,6 +66,27 @@ function resourceDelta(after, before, kind) {
 
 function total(resources, field) {
   return resources.reduce((sum, resource) => sum + (Number(resource[field]) || 0), 0);
+}
+
+const compressiblePwaAssetPattern = /\.(?:css|html?|js|json|svg|txt|webmanifest|xml)$/i;
+
+function pwaDistPath(resourcePath) {
+  const relativePath = resourcePath.replace(/^\.\//, "");
+  return relativePath || "index.html";
+}
+
+export function auditPwaCacheBudgets(precache, budgets = gameResourceBudgets.pwa) {
+  const issues = [];
+  const checkMaximum = (value, maximum, label) => {
+    if (value > maximum) issues.push(`${label} ${value}/${maximum}`);
+  };
+  precache.core.missing.forEach((resourcePath) => issues.push(`핵심 오프라인 저장 자산 누락 ${resourcePath}`));
+  precache.features.missing.forEach((resourcePath) => issues.push(`선택 기능 오프라인 저장 자산 누락 ${resourcePath}`));
+  checkMaximum(precache.core.rawBytes, budgets.maxCoreRawBytes, "핵심 오프라인 캐시 원본 용량 초과");
+  checkMaximum(precache.core.transferBytes, budgets.maxCoreTransferBytes, "핵심 오프라인 캐시 전송 용량 초과");
+  checkMaximum(precache.features.rawBytes, budgets.maxFeatureRawBytes, "선택 기능 캐시 원본 용량 초과");
+  checkMaximum(precache.features.transferBytes, budgets.maxFeatureTransferBytes, "선택 기능 캐시 전송 용량 초과");
+  return issues;
 }
 
 export function summarizeGameResourceStates(states) {
@@ -200,19 +227,37 @@ async function browserResourceSnapshot(page, id, distDir) {
   return { id, resources: await enrichResources(resources, distDir) };
 }
 
-async function inspectPwaPrecache(distDir) {
-  const source = await readFile(path.join(distDir, "service-worker.js"), "utf8");
-  const paths = parsePwaPrecachePaths(source);
+async function inspectPwaCacheGroup(distDir, paths) {
   const missing = [];
+  const assets = [];
   for (const resourcePath of paths) {
-    const relativePath = resourcePath.replace(/^\.\//, "");
+    const relativePath = pwaDistPath(resourcePath);
     try {
-      await stat(path.join(distDir, relativePath));
+      const file = await readFile(path.join(distDir, relativePath));
+      const transferBytes = compressiblePwaAssetPattern.test(relativePath)
+        ? gzipSync(file).byteLength
+        : file.byteLength;
+      assets.push({ path: resourcePath, rawBytes: file.byteLength, transferBytes });
     } catch {
       missing.push(resourcePath);
     }
   }
-  return { total: paths.length, missing };
+  return {
+    total: paths.length,
+    rawBytes: total(assets, "rawBytes"),
+    transferBytes: total(assets, "transferBytes"),
+    missing,
+    largest: [...assets].sort((left, right) => right.transferBytes - left.transferBytes).slice(0, 10)
+  };
+}
+
+export async function inspectPwaPrecache(distDir) {
+  const source = await readFile(path.join(distDir, "service-worker.js"), "utf8");
+  const [core, features] = await Promise.all([
+    inspectPwaCacheGroup(distDir, parsePwaPrecachePaths(source)),
+    inspectPwaCacheGroup(distDir, parsePwaFeaturePaths(source))
+  ]);
+  return { core, features, total: core.total + features.total };
 }
 
 export async function runGameResourceBudgetAudit({ rootDir, outputDir, port = 4183 }) {
@@ -279,7 +324,7 @@ export async function runGameResourceBudgetAudit({ rootDir, outputDir, port = 41
       const vault = await browserResourceSnapshot(page, "vault", distDir);
       const states = { base, directions, vault };
       const result = auditGameResourceBudgets(states);
-      precache.missing.forEach((resourcePath) => result.issues.push(`오프라인 저장 자산 누락 ${resourcePath}`));
+      result.issues.push(...auditPwaCacheBudgets(precache));
       const reportPath = path.join(outputDir, "game-resource-budget-report.json");
       await writeFile(reportPath, `${JSON.stringify({
         generatedAt: new Date().toISOString(),

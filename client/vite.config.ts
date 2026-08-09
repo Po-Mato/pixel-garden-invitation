@@ -22,6 +22,7 @@ function collectChunkFiles(
   roots: readonly string[],
   includeDynamicImports: boolean
 ): Set<string> {
+  const outputFileNames = new Set(outputs.map(({ fileName }) => fileName));
   const chunks = new Map(outputs
     .filter((output): output is Rollup.OutputChunk => output.type === "chunk")
     .map((chunk) => [chunk.fileName, chunk]));
@@ -29,7 +30,7 @@ function collectChunkFiles(
   const queue = [...roots];
   while (queue.length > 0) {
     const fileName = queue.shift();
-    if (!fileName || selected.has(fileName)) continue;
+    if (!fileName || selected.has(fileName) || !outputFileNames.has(fileName)) continue;
     selected.add(fileName);
     const chunk = chunks.get(fileName) as ViteOutputChunk | undefined;
     if (!chunk) continue;

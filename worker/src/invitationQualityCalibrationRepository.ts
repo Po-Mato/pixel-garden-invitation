@@ -6,6 +6,7 @@ import type {
 } from "@wedding-game/shared";
 import { analyticsLocalDate } from "./invitationAnalyticsRepository";
 import { getInvitationExperienceQualityGuard } from "./invitationExperienceQualityGuard";
+import { createAdminNotification } from "./adminNotificationRepository";
 
 type SnapshotRow = {
   week_start: string;
@@ -146,15 +147,41 @@ export async function reviewInvitationQualityCalibrationSnapshot(
   });
 }
 
+export async function createQualityCalibrationReadyNotification(
+  db: D1Database,
+  invitationId: string,
+  state: InvitationQualityCalibrationAdminState,
+  now = new Date()
+): Promise<boolean> {
+  if (!state.eligible || state.pendingCount < 1) return false;
+  const createdAt = now.toISOString();
+  const notification = await createAdminNotification(db, {
+    id: `notification_${crypto.randomUUID()}`,
+    invitationId,
+    eventKey: `quality_calibration_ready:${state.currentWeekStart}`,
+    kind: "quality_calibration_ready",
+    sourceId: state.currentWeekStart,
+    title: "주간 품질 보정 검토 준비",
+    body: `${state.pendingCount}개 품질 지표의 보정 후보가 준비되었습니다. 기준값은 자동 변경되지 않으며 관리자 검토 후 결정됩니다.`,
+    createdAt,
+    expiresAt: new Date(now.getTime() + 30 * DAY_MS).toISOString()
+  });
+  return notification !== null;
+}
+
 export async function snapshotReadyInvitationQualityCalibrations(db: D1Database, now = new Date()) {
   const invitations = await db.prepare("SELECT id FROM invitations ORDER BY id ASC").all<{ id: string }>();
   const to = analyticsLocalDate(now);
   let eligibleInvitations = 0;
+  let createdNotifications = 0;
   for (const invitation of invitations.results ?? []) {
     const guard = await getInvitationExperienceQualityGuard(db, invitation.id, { to, now });
     if (guard.calibrationStatus !== "ready") continue;
-    await ensureInvitationQualityCalibrationSnapshot(db, invitation.id, guard, now);
+    const state = await ensureInvitationQualityCalibrationSnapshot(db, invitation.id, guard, now);
+    if (await createQualityCalibrationReadyNotification(db, invitation.id, state, now)) {
+      createdNotifications += 1;
+    }
     eligibleInvitations += 1;
   }
-  return { checkedInvitations: invitations.results?.length ?? 0, eligibleInvitations };
+  return { checkedInvitations: invitations.results?.length ?? 0, eligibleInvitations, createdNotifications };
 }

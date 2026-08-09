@@ -18,5 +18,14 @@ console.log(
   `게임 기록·설정 추가 CSS ${result.summary.vault.additionalCssRequests}개/${result.summary.vault.additionalCssGzipBytes}B`
   + ` · 폰트 ${result.summary.vault.additionalFontRequests}개/${result.summary.vault.additionalFontBytes}B`
 );
-console.log(`오프라인 저장 자산: ${result.precache.total}개 · 누락 ${result.precache.missing.length}개`);
+console.log(
+  `핵심 오프라인 캐시: ${result.precache.core.total}개`
+  + ` · 원본 ${result.precache.core.rawBytes}B · 전송 ${result.precache.core.transferBytes}B`
+  + ` · 누락 ${result.precache.core.missing.length}개`
+);
+console.log(
+  `선택 기능 캐시: ${result.precache.features.total}개`
+  + ` · 원본 ${result.precache.features.rawBytes}B · 전송 ${result.precache.features.transferBytes}B`
+  + ` · 누락 ${result.precache.features.missing.length}개`
+);
 console.log(`보고서: ${result.reportPath}`);

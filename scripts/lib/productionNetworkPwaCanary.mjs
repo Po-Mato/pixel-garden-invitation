@@ -18,6 +18,105 @@ export const productionNetworkPwaBudgets = Object.freeze({
   maximumCorePrecachePaths: 90
 });
 
+export const productionNetworkPwaTrendPolicy = Object.freeze({
+  requiredRuns: 5,
+  retainedRuns: 12,
+  largestContentfulPaintRatio: 1.5,
+  largestContentfulPaintNoiseMs: 750,
+  updateInstallRatio: 2.5,
+  updateInstallNoiseMs: 2_500
+});
+
+function median(values) {
+  const sorted = values.map(Number).filter(Number.isFinite).sort((left, right) => left - right);
+  if (sorted.length === 0) throw new TypeError("추세 중앙값 표본이 필요합니다.");
+  const middle = Math.floor(sorted.length / 2);
+  return sorted.length % 2 ? sorted[middle] : (sorted[middle - 1] + sorted[middle]) / 2;
+}
+
+export function productionNetworkPwaTrendSample(report, runId = null) {
+  const largestContentfulPaintMs = report?.freshColdStart?.largestContentfulPaintMs;
+  const updateInstallMs = report?.update?.installDurationMs;
+  if (!Number.isFinite(largestContentfulPaintMs) || !Number.isFinite(updateInstallMs)) return null;
+  return {
+    runId: runId ? String(runId) : null,
+    expectedSha: report.expectedSha ?? null,
+    generatedAt: report.generatedAt ?? new Date().toISOString(),
+    status: Array.isArray(report.issues) && report.issues.length > 0 ? "failed" : "passed",
+    largestContentfulPaintMs,
+    updateInstallMs
+  };
+}
+
+export function mergeProductionNetworkPwaTrendRuns(runs, incoming) {
+  const merged = [...(Array.isArray(runs) ? runs : [])];
+  for (const run of Array.isArray(incoming) ? incoming : []) {
+    if (!run) continue;
+    const identity = run.runId || run.expectedSha;
+    const duplicateAt = merged.findIndex((candidate) => (
+      identity && (candidate.runId || candidate.expectedSha) === identity
+    ));
+    if (duplicateAt >= 0) merged.splice(duplicateAt, 1);
+    merged.push(run);
+  }
+  return merged
+    .sort((left, right) => Date.parse(left.generatedAt) - Date.parse(right.generatedAt))
+    .slice(-productionNetworkPwaTrendPolicy.retainedRuns);
+}
+
+export function assessProductionNetworkPwaTrend(previousRuns, currentRun) {
+  if (!currentRun || currentRun.status !== "passed") {
+    return { status: "skipped", sampleCount: 0, requiredSampleCount: productionNetworkPwaTrendPolicy.requiredRuns, baselineRunIds: [], comparisons: [], issues: [] };
+  }
+  const baselines = (Array.isArray(previousRuns) ? previousRuns : [])
+    .filter(({ status, largestContentfulPaintMs, updateInstallMs }) => (
+      status === "passed" && Number.isFinite(largestContentfulPaintMs) && Number.isFinite(updateInstallMs)
+    ))
+    .slice(-(productionNetworkPwaTrendPolicy.requiredRuns - 1));
+  const sampleCount = baselines.length + 1;
+  if (sampleCount < productionNetworkPwaTrendPolicy.requiredRuns) {
+    return {
+      status: "warming",
+      sampleCount,
+      requiredSampleCount: productionNetworkPwaTrendPolicy.requiredRuns,
+      baselineRunIds: baselines.map(({ runId }) => runId).filter(Boolean),
+      comparisons: [],
+      issues: []
+    };
+  }
+  const policies = [
+    {
+      key: "largestContentfulPaintMs",
+      label: "느린 4G LCP",
+      ratio: productionNetworkPwaTrendPolicy.largestContentfulPaintRatio,
+      noise: productionNetworkPwaTrendPolicy.largestContentfulPaintNoiseMs
+    },
+    {
+      key: "updateInstallMs",
+      label: "서비스 워커 설치",
+      ratio: productionNetworkPwaTrendPolicy.updateInstallRatio,
+      noise: productionNetworkPwaTrendPolicy.updateInstallNoiseMs
+    }
+  ];
+  const comparisons = policies.map(({ key, label, ratio, noise }) => {
+    const baseline = Math.round(median(baselines.map((run) => run[key])));
+    const current = Number(currentRun[key]);
+    const limit = Math.round(Math.max(baseline * ratio, baseline + noise));
+    return { key, label, baseline, current, limit, passed: Number.isFinite(current) && current <= limit };
+  });
+  const issues = comparisons
+    .filter(({ passed }) => !passed)
+    .map(({ label, current, limit }) => `최근 5회 ${label} 회귀 ${current}ms > ${limit}ms`);
+  return {
+    status: issues.length === 0 ? "passed" : "failed",
+    sampleCount,
+    requiredSampleCount: productionNetworkPwaTrendPolicy.requiredRuns,
+    baselineRunIds: baselines.map(({ runId }) => runId).filter(Boolean),
+    comparisons,
+    issues
+  };
+}
+
 export function buildProductionNetworkCanaryUrl(rawUrl, marker) {
   const url = new URL(rawUrl);
   if (url.protocol !== "https:") throw new TypeError("공개 네트워크 카나리 URL은 HTTPS여야 합니다.");
@@ -364,11 +463,48 @@ export async function verifyProductionNetworkPwaCanary({ url, expectedSha, profi
       },
       updatedColdStart
     };
-    const issues = auditProductionNetworkPwaCanary(snapshot);
+    const baseIssues = auditProductionNetworkPwaCanary(snapshot);
+    const generatedAt = new Date().toISOString();
+    const currentRun = productionNetworkPwaTrendSample({
+      generatedAt,
+      expectedSha,
+      ...snapshot,
+      issues: baseIssues
+    }, process.env.GITHUB_RUN_ID ?? expectedSha);
+    const historyPath = path.join(outputDir, "production-network-pwa-trend-history.json");
+    let previousRuns = [];
+    try {
+      const history = JSON.parse(await readFile(historyPath, "utf8"));
+      if (Array.isArray(history.runs)) previousRuns = history.runs;
+    } catch {
+      // The first deployment warms the five-run trend from an empty history.
+    }
+    const priorRuns = previousRuns.filter(({ runId, expectedSha: sha }) => (
+      (runId || sha) !== (currentRun?.runId || currentRun?.expectedSha)
+    ));
+    const trend = assessProductionNetworkPwaTrend(priorRuns, currentRun);
+    const issues = [...baseIssues, ...trend.issues];
+    if (currentRun) currentRun.status = issues.length === 0 ? "passed" : "failed";
+    const historyRuns = mergeProductionNetworkPwaTrendRuns(priorRuns, [currentRun]);
     const reportPath = path.join(outputDir, "production-network-pwa-canary-report.json");
-    await writeFile(reportPath, `${JSON.stringify({ generatedAt: new Date().toISOString(), publicUrl: url, expectedSha, ...snapshot, issues }, null, 2)}\n`);
+    await Promise.all([
+      writeFile(reportPath, `${JSON.stringify({ generatedAt, publicUrl: url, expectedSha, ...snapshot, trend, issues }, null, 2)}\n`),
+      writeFile(historyPath, `${JSON.stringify({ version: 1, runs: historyRuns }, null, 2)}\n`),
+      writeFile(path.join(outputDir, "production-network-pwa-trend.md"), [
+        "# 공개 배포 네트워크 품질 추세",
+        "",
+        `- 상태: ${trend.status}`,
+        `- 유효 표본: ${trend.sampleCount}/${trend.requiredSampleCount}`,
+        `- 현재 느린 4G LCP: ${currentRun?.largestContentfulPaintMs ?? "미측정"}ms`,
+        `- 현재 서비스 워커 설치: ${currentRun?.updateInstallMs ?? "미측정"}ms`,
+        `- 보존된 배포: ${historyRuns.length}/${productionNetworkPwaTrendPolicy.retainedRuns}`,
+        "",
+        ...(trend.issues.length ? trend.issues.map((issue) => `- 실패: ${issue}`) : ["- 추세 실패 항목 없음"]),
+        ""
+      ].join("\n"))
+    ]);
     if (issues.length > 0) throw new Error(`공개 느린 4G·PWA 카나리 실패:\n${issues.join("\n")}`);
-    return { snapshot, issues, reportPath };
+    return { snapshot, trend, issues, reportPath };
   } finally {
     await context.close();
   }
