@@ -3,11 +3,15 @@ import { fileURLToPath } from "node:url";
 import { packContentAddressedQualityEvidence } from "./lib/contentAddressedQualityEvidence.mjs";
 
 const rootDir = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
+const options = (name) => process.argv.flatMap((value, index) => {
+  if (value === name) return process.argv[index + 1] ? [process.argv[index + 1]] : [];
+  const prefix = `${name}=`;
+  return value.startsWith(prefix) ? [value.slice(prefix.length)] : [];
+});
 const option = (name, fallback) => {
-  const index = process.argv.indexOf(name);
-  return index >= 0 ? process.argv[index + 1] : fallback;
+  const values = options(name);
+  return values.at(-1) ?? fallback;
 };
-const options = (name) => process.argv.flatMap((value, index) => value === name ? [process.argv[index + 1]] : []);
 const inputDir = path.resolve(option("--input-dir", path.join(rootDir, ".superpowers/visual-regression")));
 const outputDir = path.resolve(option("--output-dir", path.join(rootDir, ".superpowers/quality-evidence-package")));
 const manifest = await packContentAddressedQualityEvidence({
