@@ -52,7 +52,7 @@ jobs:
             ~/.appium
             ~/.npm
             .cache/ios-safari-wda
-          key: ios-safari-automation-${{ runner.os }}-xcode-16.4-appium-3-xcuitest-11.4.0-v1
+          key: ios-safari-automation-${{ runner.os }}-xcode-16.4-appium-3-xcuitest-11.4.0-v2
       - name: Select pinned Xcode and warm Simulator services
         shell: bash
         run: |
@@ -179,7 +179,7 @@ jobs:
             ~/.appium
             ~/.npm
             .cache/ios-safari-wda
-          key: ios-safari-automation-${{ runner.os }}-xcode-16.4-appium-3-xcuitest-11.4.0-v1
+          key: ios-safari-automation-${{ runner.os }}-xcode-16.4-appium-3-xcuitest-11.4.0-v2
       - name: Fail when the Safari capture failed
         if: steps.capture.outcome != 'success'
         run: exit 1
