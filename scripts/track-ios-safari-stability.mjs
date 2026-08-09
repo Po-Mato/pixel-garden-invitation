@@ -82,6 +82,9 @@ if (currentOutcome) {
     sha: option("--sha", process.env.GITHUB_SHA),
     outcome: currentOutcome,
     durationMs: currentRun?.durationMs ?? Number(option("--duration-ms", 0)),
+    setupDurationMs: Number(option("--setup-duration-ms", 0)),
+    captureDurationMs: Number(option("--capture-duration-ms", 0)),
+    wdaMode: option("--wda-mode", "source-build"),
     generatedAt: currentRun?.generatedAt ?? option("--generated-at", new Date().toISOString()),
     policyRevision: iosSafariStabilityPolicy.policyRevision,
     url: currentRun?.url ?? option("--run-url")

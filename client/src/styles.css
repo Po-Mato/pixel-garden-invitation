@@ -6343,12 +6343,14 @@ select,
   top: calc(52px + env(safe-area-inset-top));
   z-index: 110;
   display: flex;
-  gap: 20px;
-  padding: 4px 16px;
+  gap: 12px;
+  padding: 4px 12px;
   overflow-x: auto;
   border-bottom: 1px solid #deddd7;
   background: rgba(255, 255, 252, 0.96);
   scrollbar-width: none;
+  scroll-padding-inline: 12px;
+  scroll-snap-type: x proximity;
   backdrop-filter: blur(10px);
 }
 
@@ -6363,6 +6365,7 @@ select,
   align-items: center;
   justify-content: center;
   flex: 0 0 auto;
+  scroll-snap-align: center;
   color: #53605a;
   font-size: 11px;
   font-weight: 800;
@@ -6616,7 +6619,8 @@ html[data-text-scale="xlarge"] .quick-invitation :is(h1, h2, h3) {
 }
 
 html[data-text-scale="xlarge"] .quick-hero__content h1 {
-  font-size: 38px;
+  font-size: clamp(32px, 10.5vw, 38px);
+  line-height: 1.16;
 }
 
 html[data-text-scale="xlarge"] .bottom-sheet__body :is(p, li, a, button, label, input, textarea, select, dt, dd, time, span, strong) {

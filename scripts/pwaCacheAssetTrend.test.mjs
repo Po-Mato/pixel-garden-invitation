@@ -1,10 +1,12 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {
+  auditPwaLogicalChunkBudgets,
   comparePwaCacheAssets,
   formatPwaCacheAssetTrendMarkdown,
   hydratePwaCacheAssetDigests,
   mergePwaCacheAssetHistory,
+  logicalPwaAssetPath,
   pwaCacheAssetSample
 } from "./lib/pwaCacheAssetTrend.mjs";
 
@@ -96,4 +98,37 @@ test("PWA cache trend hydrates a legacy hashed bundle digest from the live basel
     "https://example.test/invitation/assets/GameWorld-AAAAAAAA.js",
     { cache: "no-store" }
   ]]);
+});
+
+test("PWA logical chunk budget attributes hashed output to stable chunk names", () => {
+  const previous = pwaCacheAssetSample(precache([
+    { path: "./assets/index-AAAAAAAA.js", rawBytes: 120_000, transferBytes: 90_000, sha256: "a".repeat(64) }
+  ]), { sha: "old" });
+  const current = pwaCacheAssetSample(precache([
+    { path: "./assets/index-BBBBBBBB.js", rawBytes: 124_000, transferBytes: 94_000, sha256: "b".repeat(64) }
+  ]), { sha: "new" });
+  const trend = comparePwaCacheAssets(current, previous);
+  const budget = auditPwaLogicalChunkBudgets(current, trend);
+
+  assert.equal(logicalPwaAssetPath(current.groups.core.assets[0]), "./assets/index.js");
+  assert.equal(budget.status, "passed");
+  assert.deepEqual(budget.evaluations.map(({ logicalPath, passed }) => [logicalPath, passed]), [
+    ["./assets/index.js", true]
+  ]);
+});
+
+test("PWA logical chunk budget blocks absolute, growth, and new-chunk regressions", () => {
+  const previous = pwaCacheAssetSample(precache([
+    { path: "./assets/index-AAAAAAAA.js", rawBytes: 100_000, transferBytes: 90_000, sha256: "a".repeat(64) }
+  ]), { sha: "old" });
+  const current = pwaCacheAssetSample(precache([
+    { path: "./assets/index-BBBBBBBB.js", rawBytes: 180_000, transferBytes: 130_000, sha256: "b".repeat(64) },
+    { path: "./assets/NewFeature-CCCCCCCC.js", rawBytes: 150_000, transferBytes: 70_000, sha256: "c".repeat(64) }
+  ]), { sha: "new" });
+  const budget = auditPwaLogicalChunkBudgets(current, comparePwaCacheAssets(current, previous));
+
+  assert.equal(budget.status, "failed");
+  assert.ok(budget.issues.some((issue) => issue.includes("index.js 전송 용량")));
+  assert.ok(budget.issues.some((issue) => issue.includes("index.js 배포 증가")));
+  assert.ok(budget.issues.some((issue) => issue.includes("NewFeature.js 새 청크")));
 });

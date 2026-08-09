@@ -860,7 +860,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
       loaded ? activeZoneId : current === activeZoneId ? null : current
     ));
   }, [activeZoneId]);
-  const nestedMenuSheetOpen = calendarSheetOpen
+  const nonGuideSheetOpen = calendarSheetOpen
     || directionsSheetOpen
     || giftAccountSheetOpen
     || familyContactSheetOpen
@@ -873,8 +873,19 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     || collectionGuideOpen
     || companionDestinationOpen
     || companionWaitingRoomOpen
-    || gameGuideOpen
     || journeyRouteOpen;
+
+  const nonGuideOverlayOpen = menuOpen
+    || nonGuideSheetOpen
+    || quickDockSettingsOpen
+    || activeSpotId !== null
+    || activePhotoSpotId !== null
+    || activeNpcDialogue !== null
+    || journeyCompletionOpen
+    || celebrationRewardOpen;
+
+  const gameGuideVisible = gameGuideOpen && !nonGuideOverlayOpen;
+  const nestedMenuSheetOpen = nonGuideSheetOpen || gameGuideVisible;
 
   const gameOverlayOpen = menuOpen
     || nestedMenuSheetOpen
@@ -6065,7 +6076,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
       {celebrationRewardOpen ? (
         <CelebrationRewardNotice onClose={() => setCelebrationRewardOpen(false)} />
       ) : null}
-      {gameGuideOpen ? <GameFirstVisitGuide onDismiss={dismissGameGuide} /> : null}
+      {gameGuideVisible ? <GameFirstVisitGuide onDismiss={dismissGameGuide} /> : null}
       {journeyRouteOpen && recommendedCheckpoint ? (
         <Suspense fallback={<GameFeatureLoading label="여정 경로" />}>
           <JourneyRouteSheet

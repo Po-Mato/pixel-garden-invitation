@@ -9,6 +9,8 @@ import {
 function sample(index, outcome = "success", policyRevision = 0, durationMs = 600_000) {
   return {
     runId: String(index), runAttempt: 1, sha: `sha-${index}`, outcome, durationMs,
+    setupDurationMs: 240_000, captureDurationMs: 360_000,
+    wdaMode: policyRevision === 2 ? "preinstalled" : "source-build",
     generatedAt: `2026-08-${String(index).padStart(2, "0")}T00:00:00.000Z`, policyRevision
   };
 }
@@ -35,17 +37,31 @@ test("iOS Safari trend quantifies ten historical runs but warms the hardened gat
 
 test("iOS Safari hardened gate accepts nine of ten bounded runs", () => {
   const trend = buildIosSafariStabilityTrend(Array.from({ length: 10 }, (_, index) => (
-    sample(index + 1, index === 4 ? "failure" : "success", 1, 700_000 + index * 1_000)
+    sample(index + 1, index === 4 ? "failure" : "success", 2, 700_000 + index * 1_000)
   )));
   assert.equal(trend.acceptance.sampleCount, 10);
   assert.equal(trend.acceptance.status, "passed");
   assert.equal(trend.acceptance.successRate, 0.9);
+  assert.equal(trend.acceptance.preinstalledWdaSamples, 10);
+  assert.match(formatIosSafariStabilityMarkdown(trend), /준비 p95 240초/);
 });
 
 test("iOS Safari hardened gate rejects clustered failures", () => {
   const trend = buildIosSafariStabilityTrend(Array.from({ length: 10 }, (_, index) => (
-    sample(index + 1, [7, 8].includes(index) ? "failure" : "success", 1)
+    sample(index + 1, [7, 8].includes(index) ? "failure" : "success", 2)
   )));
   assert.equal(trend.acceptance.status, "failed");
   assert.ok(trend.acceptance.issues.some((issue) => issue.startsWith("연속 실패 2회")));
+});
+
+test("iOS Safari hardened gate reports slow setup and capture phases", () => {
+  const runs = Array.from({ length: 10 }, (_, index) => ({
+    ...sample(index + 1, "success", 2, 1_100_000),
+    setupDurationMs: 500_000,
+    captureDurationMs: 750_000
+  }));
+  const trend = buildIosSafariStabilityTrend(runs);
+  assert.equal(trend.acceptance.status, "failed");
+  assert.ok(trend.acceptance.issues.some((issue) => issue.startsWith("p95 준비 시간")));
+  assert.ok(trend.acceptance.issues.some((issue) => issue.startsWith("p95 캡처 시간")));
 });

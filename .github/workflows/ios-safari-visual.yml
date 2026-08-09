@@ -27,6 +27,8 @@ jobs:
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v6
+      - name: Mark iOS Safari job start
+        run: echo "IOS_JOB_STARTED_AT_MS=$(node -p 'Date.now()')" >> "$GITHUB_ENV"
       - uses: pnpm/action-setup@v6
         with:
           version: 10.29.2
@@ -42,6 +44,15 @@ jobs:
           key: ios-safari-stability-${{ runner.os }}-${{ github.run_id }}-${{ github.run_attempt }}
           restore-keys: |
             ios-safari-stability-${{ runner.os }}-
+      - name: Restore Appium and prebuilt WebDriverAgent
+        id: ios-automation-cache
+        uses: actions/cache/restore@v5
+        with:
+          path: |
+            ~/.appium
+            ~/.npm
+            .cache/ios-safari-wda
+          key: ios-safari-automation-${{ runner.os }}-xcode-16.4-appium-3-xcuitest-11.4.0-v1
       - name: Select pinned Xcode and warm Simulator services
         shell: bash
         run: |
@@ -57,9 +68,21 @@ jobs:
           xcrun simctl bootstatus "$IOS_SIMULATOR_UDID" -b
       - run: pnpm install --frozen-lockfile
       - name: Install the iOS Safari automation bridge
+        shell: bash
         run: |
           npm install --global appium@3
-          appium driver install xcuitest
+          if ! test -d "$HOME/.appium/node_modules/appium-xcuitest-driver"; then
+            appium driver install xcuitest@11.4.0
+          fi
+          WDA_CACHE_DIR="$GITHUB_WORKSPACE/.cache/ios-safari-wda"
+          mkdir -p "$WDA_CACHE_DIR"
+          IOS_PREBUILT_WDA_PATH="$(find "$WDA_CACHE_DIR" -type d -name 'WebDriverAgentRunner-Runner.app' | head -n 1)"
+          if test -z "$IOS_PREBUILT_WDA_PATH"; then
+            appium driver run xcuitest download-wda -- --outdir="$WDA_CACHE_DIR" --kind=sim --platform=ios
+            IOS_PREBUILT_WDA_PATH="$(find "$WDA_CACHE_DIR" -type d -name 'WebDriverAgentRunner-Runner.app' | head -n 1)"
+          fi
+          test -n "$IOS_PREBUILT_WDA_PATH"
+          echo "IOS_PREBUILT_WDA_PATH=$IOS_PREBUILT_WDA_PATH" >> "$GITHUB_ENV"
           appium --version
       - name: Start deterministic invitation server
         shell: bash
@@ -106,12 +129,16 @@ jobs:
         shell: bash
         run: |
           DURATION_MS="$(node -p 'Math.max(0, Date.now() - Number(process.env.IOS_CAPTURE_STARTED_AT_MS || Date.now()))')"
+          SETUP_DURATION_MS="$(node -p 'Math.max(0, Number(process.env.IOS_CAPTURE_STARTED_AT_MS || Date.now()) - Number(process.env.IOS_JOB_STARTED_AT_MS || Date.now()))')"
           pnpm visual:ios-safari:stability -- \
             --outcome "${{ steps.capture.outcome }}" \
             --run-id "$GITHUB_RUN_ID" \
             --run-attempt "$GITHUB_RUN_ATTEMPT" \
             --sha "$GITHUB_SHA" \
             --duration-ms "$DURATION_MS" \
+            --setup-duration-ms "$SETUP_DURATION_MS" \
+            --capture-duration-ms "$DURATION_MS" \
+            --wda-mode preinstalled \
             --run-url "https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
         env:
           GH_TOKEN: ${{ github.token }}
@@ -142,6 +169,15 @@ jobs:
         with:
           path: .superpowers/visual-regression/ios-safari-stability/ios-safari-stability-trend-history.json
           key: ios-safari-stability-${{ runner.os }}-${{ github.run_id }}-${{ github.run_attempt }}
+      - name: Save Appium and prebuilt WebDriverAgent
+        if: ${{ always() && steps.ios-automation-cache.outputs.cache-hit != 'true' }}
+        uses: actions/cache/save@v5
+        with:
+          path: |
+            ~/.appium
+            ~/.npm
+            .cache/ios-safari-wda
+          key: ios-safari-automation-${{ runner.os }}-xcode-16.4-appium-3-xcuitest-11.4.0-v1
       - name: Fail when the Safari capture failed
         if: steps.capture.outcome != 'success'
         run: exit 1

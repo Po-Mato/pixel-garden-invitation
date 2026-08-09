@@ -8,6 +8,7 @@ const refinedGameStyles = readFileSync("src/game-refined-theme.css", "utf8");
 const devicePerformanceStyles = readFileSync("src/device-performance.css", "utf8");
 const mapVisualEnhancementStyles = readFileSync("src/map-visual-enhancements.css", "utf8");
 const weddingLuxeStyles = readFileSync("src/wedding-luxe-theme.css", "utf8");
+const quickInvitationStyles = readFileSync("src/quick-invitation-continuity.css", "utf8");
 const worldZones = [
   "home",
   "neighborhood",
@@ -167,6 +168,24 @@ describe("고령 하객 보기 설정", () => {
     expect(styles).toMatch(/\.quick-invitation__topbar > button,[\s\S]*?min-height:\s*44px;/);
     expect(styles).toMatch(/\.quick-invitation__nav a\s*\{[^}]*min-height:\s*44px;/s);
     expect(styles).toMatch(/\.view-settings-trigger--icon\s*\{[^}]*min-height:\s*44px;/s);
+  });
+});
+
+describe("compact invitation visual rhythm", () => {
+  it("keeps map labels quieter while world geometry owns the interaction rectangle", () => {
+    expect(refinedGameStyles).toMatch(/\.world-spot__card\s*\{[^}]*width:\s*min\(84px,[^}]*min-height:\s*52px;/s);
+    expect(refinedGameStyles).toMatch(/data-text-scale="xlarge"[^}]*\.world-spot__card\s*\{[^}]*width:\s*min\(92px,[^}]*min-height:\s*58px;/s);
+  });
+
+  it("uses a restrained snapping navigation and fluid enlarged hero title", () => {
+    expect(styles).toMatch(/\.quick-invitation__nav\s*\{[^}]*gap:\s*12px;[^}]*scroll-snap-type:\s*x proximity;/s);
+    expect(styles).toMatch(/data-text-scale="xlarge"[^}]*\.quick-hero__content h1\s*\{[^}]*font-size:\s*clamp\(32px, 10\.5vw, 38px\);/s);
+    expect(quickInvitationStyles).toMatch(/\.quick-core-actions > button,[\s\S]*?min-height:\s*60px;/);
+  });
+
+  it("compacts the directions cards at 360px while preserving touch sizes", () => {
+    expect(weddingLuxeStyles).toMatch(/@media \(max-width:\s*360px\)[\s\S]*--directions-icon-column:\s*24px;/);
+    expect(weddingLuxeStyles).toMatch(/\.bottom-sheet__body :is\(button, a\[href\]\)\s*\{[^}]*min-height:\s*44px;/s);
   });
 });
 

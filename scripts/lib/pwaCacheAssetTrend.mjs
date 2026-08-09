@@ -3,6 +3,21 @@ import { createHash } from "node:crypto";
 import path from "node:path";
 
 export const pwaCacheAssetTrendPolicy = Object.freeze({ retainedDeployments: 12, listedAssets: 12 });
+export const pwaLogicalChunkBudgetPolicy = Object.freeze({
+  maximumGrowthBytes: Object.freeze({ core: 12 * 1024, features: 8 * 1024 }),
+  maximumNewChunkBytes: Object.freeze({ core: 64 * 1024, features: 128 * 1024 }),
+  maximumTransferBytes: Object.freeze({
+    "core:./assets/index.js": 112 * 1024,
+    "core:./assets/index.css": 72 * 1024,
+    "core:./assets/GameWorld.js": 96 * 1024,
+    "core:./assets/GameWorld.css": 52 * 1024,
+    "core:./assets/QuickInvitation.js": 10 * 1024,
+    "features:./assets/esm.js": 128 * 1024,
+    "features:./assets/html2canvas.js": 56 * 1024,
+    "features:./assets/GameMemoryAlbum.js": 20 * 1024,
+    "features:./assets/GameSaveDataCenter.js": 18 * 1024
+  })
+});
 
 function deploymentIdentity(sample) {
   return sample.sha || sample.runId;
@@ -55,9 +70,14 @@ function indexedAssets(sample) {
   return assets;
 }
 
-function semanticAssetIdentity(asset) {
+export function logicalPwaAssetPath(asset) {
   const match = asset.path.match(/^(.*)-([a-zA-Z0-9_-]{8})(\.[^./]+)$/);
-  return match ? `${asset.group}:${match[1]}${match[3]}` : null;
+  return match ? `${match[1]}${match[3]}` : null;
+}
+
+function semanticAssetIdentity(asset) {
+  const logicalPath = logicalPwaAssetPath(asset);
+  return logicalPath ? `${asset.group}:${logicalPath}` : null;
 }
 
 export async function hydratePwaCacheAssetDigests(sample, baseUrl, fetchImpl = fetch) {
@@ -167,6 +187,56 @@ export function comparePwaCacheAssets(current, previous = null) {
   };
 }
 
+export function auditPwaLogicalChunkBudgets(current, trend, policy = pwaLogicalChunkBudgetPolicy) {
+  const issues = [];
+  const evaluations = [];
+  const currentAssets = [...indexedAssets(current).values()]
+    .flatMap((asset) => {
+      const logicalPath = logicalPwaAssetPath(asset);
+      if (!logicalPath || !/\.(?:css|js)$/i.test(logicalPath)) return [];
+      return [{
+        group: asset.group,
+        logicalPath,
+        path: asset.path,
+        transferBytes: asset.transferBytes,
+        maximumTransferBytes: policy.maximumTransferBytes[`${asset.group}:${logicalPath}`] ?? null
+      }];
+    });
+  for (const evaluation of currentAssets) {
+    const passed = evaluation.maximumTransferBytes === null
+      || evaluation.transferBytes <= evaluation.maximumTransferBytes;
+    evaluations.push({ ...evaluation, passed });
+    if (!passed) {
+      issues.push(
+        `${evaluation.group}:${evaluation.logicalPath} 전송 용량 ${evaluation.transferBytes}/${evaluation.maximumTransferBytes}`
+      );
+    }
+  }
+  for (const asset of [...trend.changed, ...trend.replaced]) {
+    const logicalPath = logicalPwaAssetPath(asset);
+    if (!logicalPath || !/\.(?:css|js)$/i.test(logicalPath) || asset.transferBytesDelta <= 0) continue;
+    const maximum = policy.maximumGrowthBytes[asset.group];
+    if (asset.transferBytesDelta > maximum) {
+      issues.push(`${asset.group}:${logicalPath} 배포 증가 ${asset.transferBytesDelta}/${maximum}`);
+    }
+  }
+  for (const asset of trend.added) {
+    const logicalPath = logicalPwaAssetPath(asset);
+    if (!logicalPath || !/\.(?:css|js)$/i.test(logicalPath)) continue;
+    if (policy.maximumTransferBytes[`${asset.group}:${logicalPath}`] !== undefined) continue;
+    const maximum = policy.maximumNewChunkBytes[asset.group];
+    if (asset.transferBytes > maximum) {
+      issues.push(`${asset.group}:${logicalPath} 새 청크 ${asset.transferBytes}/${maximum}`);
+    }
+  }
+  return {
+    status: issues.length === 0 ? "passed" : "failed",
+    policy,
+    evaluations: evaluations.sort((left, right) => right.transferBytes - left.transferBytes),
+    issues
+  };
+}
+
 function signed(value) {
   return `${value >= 0 ? "+" : ""}${value.toLocaleString("ko-KR")}B`;
 }
@@ -231,6 +301,13 @@ export function formatPwaCacheAssetTrendMarkdown(trend) {
     "### 캐시에서 빠진 파일",
     "",
     assetRows(trend.removed, (asset) => `${asset.transferBytes.toLocaleString("ko-KR")}B 전송`),
+    "",
+    "### 논리 번들 변화 예산",
+    "",
+    `- 상태: **${trend.logicalChunkBudget?.status ?? "미측정"}**`,
+    ...(trend.logicalChunkBudget?.issues?.length
+      ? trend.logicalChunkBudget.issues.map((issue) => `- ${issue}`)
+      : ["- 예산 초과 없음"]),
     ""
   );
   return lines.join("\n");
@@ -262,7 +339,11 @@ export async function writePwaCacheAssetTrend({
   const storedPrevious = [...previousSamples].reverse()
     .find((candidate) => deploymentIdentity(candidate) !== deploymentIdentity(sample)) || null;
   const previous = await hydratePwaCacheAssetDigests(storedPrevious, baselineUrl);
-  const trend = comparePwaCacheAssets(sample, previous);
+  const compared = comparePwaCacheAssets(sample, previous);
+  const trend = {
+    ...compared,
+    logicalChunkBudget: auditPwaLogicalChunkBudgets(sample, compared)
+  };
   const hydratedHistory = storedPrevious && previous !== storedPrevious
     ? previousSamples.map((candidate) => deploymentIdentity(candidate) === deploymentIdentity(storedPrevious)
       ? previous : candidate)

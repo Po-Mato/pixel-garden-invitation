@@ -42,5 +42,12 @@ console.log(
     + ` · 제거 ${assetTrend.trend.removed.length}개`}`
   + ` · 배포 이력 ${assetTrend.sampleCount}개`
 );
+console.log(
+  `논리 번들 변화 예산: ${assetTrend.trend.logicalChunkBudget.status}`
+  + ` · 추적 청크 ${assetTrend.trend.logicalChunkBudget.evaluations.length}개`
+);
 console.log(`캐시 변화 요약: ${assetTrend.markdownPath}`);
 console.log(`보고서: ${result.reportPath}`);
+if (assetTrend.trend.logicalChunkBudget.status !== "passed") {
+  throw new Error(`PWA logical chunk budget failed:\n${assetTrend.trend.logicalChunkBudget.issues.join("\n")}`);
+}

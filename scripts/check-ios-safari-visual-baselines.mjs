@@ -31,6 +31,7 @@ const deviceKind = process.env.IOS_SAFARI_DEVICE_KIND === "physical" ? "physical
 const deviceUdid = process.env.IOS_DEVICE_UDID ?? process.env.IOS_SIMULATOR_UDID;
 const deviceName = process.env.IOS_DEVICE_NAME ?? iosSafariVisualProfile.deviceName;
 const platformVersion = process.env.IOS_PLATFORM_VERSION ?? "18.5";
+const prebuiltWdaPath = process.env.IOS_PREBUILT_WDA_PATH;
 await mkdir(outputDir, { recursive: true });
 
 async function webdriver(method, endpoint, body) {
@@ -396,9 +397,14 @@ try {
     "appium:webviewConnectTimeout": 120000,
     "appium:webviewConnectRetries": 120,
     "appium:showXcodeLog": true,
+    "appium:useNewWDA": false,
     ...(deviceKind === "simulator" ? {
       "appium:simulatorStartupTimeout": 600000,
-      "appium:simulatorStartupRetries": 2
+      "appium:simulatorStartupRetries": 2,
+      ...(prebuiltWdaPath ? {
+        "appium:usePreinstalledWDA": true,
+        "appium:prebuiltWDAPath": prebuiltWdaPath
+      } : {})
     } : {}),
     ...(process.env.IOS_XCODE_ORG_ID ? { "appium:xcodeOrgId": process.env.IOS_XCODE_ORG_ID } : {}),
     ...(process.env.IOS_XCODE_SIGNING_ID ? { "appium:xcodeSigningId": process.env.IOS_XCODE_SIGNING_ID } : {}),

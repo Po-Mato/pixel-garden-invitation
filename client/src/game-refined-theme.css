@@ -270,15 +270,15 @@
 .world-spot__card {
   position: relative;
   display: grid;
-  width: min(92px, calc(100% - 12px));
-  min-height: 58px;
+  width: min(84px, calc(100% - 16px));
+  min-height: 52px;
   place-content: center;
-  gap: 3px;
+  gap: 2px;
   box-sizing: border-box;
   overflow: hidden;
   border: 1px solid color-mix(in srgb, var(--spot-edge) 72%, #fff);
   border-radius: 10px;
-  padding: 7px 8px 6px;
+  padding: 6px 7px 5px;
   background:
     linear-gradient(180deg, rgba(255, 255, 252, 0.9), rgba(255, 253, 248, 0.96)),
     var(--spot-soft);
@@ -331,7 +331,7 @@
   position: absolute;
   top: 0;
   left: 14px;
-  width: 28px;
+  width: 24px;
   height: 2px;
   border-radius: 999px;
   background: var(--spot-accent);
@@ -343,7 +343,7 @@
   min-width: 0;
   color: var(--game-ink);
   font-family: var(--game-font-display);
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 700;
   letter-spacing: -0.025em;
   overflow-wrap: anywhere;
@@ -590,18 +590,18 @@
 }
 
 html[data-text-scale="xlarge"] .world-spot__card {
-  width: min(96px, calc(100% - 8px));
-  min-height: 62px;
+  width: min(92px, calc(100% - 10px));
+  min-height: 58px;
   padding-inline: 6px;
 }
 
 html[data-text-scale="xlarge"] .world-spot__card > strong {
-  font-size: 12px;
+  font-size: 11px;
   line-height: 1.22;
 }
 
 html[data-text-scale="xlarge"] .world-spot__card > small {
-  font-size: 9px;
+  font-size: 8px;
 }
 
 @media (prefers-reduced-motion: reduce) {

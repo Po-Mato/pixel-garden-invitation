@@ -458,6 +458,21 @@ describe("GameWorld", () => {
     });
   });
 
+  it("temporarily yields the first-visit guide to another game overlay", () => {
+    window.localStorage.removeItem(gameGuideStorageKey);
+
+    render(<GameWorld profile={profile} />);
+
+    expect(screen.getByRole("dialog", { name: "게임 첫 방문 안내" })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "초대장 메뉴" }));
+
+    expect(screen.queryByRole("dialog", { name: "게임 첫 방문 안내" })).not.toBeInTheDocument();
+    const menu = screen.getByRole("dialog", { name: "초대장 바로가기" });
+    fireEvent.click(within(menu).getByRole("button", { name: "초대장 메뉴 닫기" }));
+
+    expect(screen.getByRole("dialog", { name: "게임 첫 방문 안내" })).toBeInTheDocument();
+  });
+
   it("does not interrupt a returning guest who already has journey progress", () => {
     window.localStorage.removeItem(gameGuideStorageKey);
     window.localStorage.setItem(journeyProgressStorageKey, JSON.stringify({

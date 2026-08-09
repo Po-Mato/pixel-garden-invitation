@@ -3,9 +3,11 @@ export const iosSafariStabilityPolicy = Object.freeze({
   requiredHardenedRuns: 10,
   minimumSuccessRate: 0.9,
   maximumP95DurationMs: 20 * 60_000,
+  maximumP95SetupDurationMs: 8 * 60_000,
+  maximumP95CaptureDurationMs: 12 * 60_000,
   maximumConsecutiveFailures: 1,
   retainedRuns: 30,
-  policyRevision: 1
+  policyRevision: 2
 });
 
 function runIdentity(sample) {
@@ -19,6 +21,9 @@ function normalizedSample(sample = {}) {
     sha: sample.sha ? String(sample.sha) : null,
     outcome: ["success", "failure", "cancelled"].includes(sample.outcome) ? sample.outcome : "failure",
     durationMs: Math.max(0, Number(sample.durationMs) || 0),
+    setupDurationMs: Math.max(0, Number(sample.setupDurationMs) || 0),
+    captureDurationMs: Math.max(0, Number(sample.captureDurationMs) || 0),
+    wdaMode: sample.wdaMode === "preinstalled" ? "preinstalled" : "source-build",
     generatedAt: sample.generatedAt || new Date().toISOString(),
     policyRevision: Number(sample.policyRevision) || 0,
     url: sample.url || null
@@ -58,12 +63,18 @@ function consecutiveFailures(samples) {
 function summarize(samples) {
   const successes = samples.filter(({ outcome }) => outcome === "success").length;
   const successRate = samples.length === 0 ? 0 : successes / samples.length;
+  const setupDurations = samples.map(({ setupDurationMs }) => setupDurationMs).filter((value) => value > 0);
+  const captureDurations = samples.map(({ captureDurationMs }) => captureDurationMs).filter((value) => value > 0);
   return {
     sampleCount: samples.length,
     successes,
     failures: samples.length - successes,
     successRate,
     p95DurationMs: percentile(samples.map(({ durationMs }) => durationMs), 0.95),
+    p95SetupDurationMs: percentile(setupDurations, 0.95),
+    p95CaptureDurationMs: percentile(captureDurations, 0.95),
+    phaseTimingSamples: Math.min(setupDurations.length, captureDurations.length),
+    preinstalledWdaSamples: samples.filter(({ wdaMode }) => wdaMode === "preinstalled").length,
     maximumConsecutiveFailures: consecutiveFailures(samples),
     runIds: samples.map(({ runId }) => runId).filter(Boolean)
   };
@@ -76,6 +87,18 @@ function policyIssues(summary) {
   }
   if (summary.p95DurationMs > iosSafariStabilityPolicy.maximumP95DurationMs) {
     issues.push(`p95 실행 시간 ${Math.round(summary.p95DurationMs / 1000)}초/${Math.round(iosSafariStabilityPolicy.maximumP95DurationMs / 1000)}초`);
+  }
+  if (
+    summary.p95SetupDurationMs > 0
+    && summary.p95SetupDurationMs > iosSafariStabilityPolicy.maximumP95SetupDurationMs
+  ) {
+    issues.push(`p95 준비 시간 ${Math.round(summary.p95SetupDurationMs / 1000)}초/${Math.round(iosSafariStabilityPolicy.maximumP95SetupDurationMs / 1000)}초`);
+  }
+  if (
+    summary.p95CaptureDurationMs > 0
+    && summary.p95CaptureDurationMs > iosSafariStabilityPolicy.maximumP95CaptureDurationMs
+  ) {
+    issues.push(`p95 캡처 시간 ${Math.round(summary.p95CaptureDurationMs / 1000)}초/${Math.round(iosSafariStabilityPolicy.maximumP95CaptureDurationMs / 1000)}초`);
   }
   if (summary.maximumConsecutiveFailures > iosSafariStabilityPolicy.maximumConsecutiveFailures) {
     issues.push(`연속 실패 ${summary.maximumConsecutiveFailures}회/${iosSafariStabilityPolicy.maximumConsecutiveFailures}회`);
@@ -95,7 +118,7 @@ export function buildIosSafariStabilityTrend(samples) {
     : policyIssues(observed);
   const acceptance = summarize(hardenedSamples);
   const acceptanceIssues = acceptance.sampleCount < iosSafariStabilityPolicy.requiredHardenedRuns
-    ? [`Node 22·URL 재시도 이후 표본 ${acceptance.sampleCount}/${iosSafariStabilityPolicy.requiredHardenedRuns}`]
+    ? [`Prebuilt WDA 적용 이후 표본 ${acceptance.sampleCount}/${iosSafariStabilityPolicy.requiredHardenedRuns}`]
     : policyIssues(acceptance);
   return {
     policy: iosSafariStabilityPolicy,
@@ -119,11 +142,16 @@ export function formatIosSafariStabilityMarkdown(trend) {
     + ` · ${Math.round(summary.successRate * 100)}%`
     + ` · p95 ${Math.round(summary.p95DurationMs / 1000)}초`
     + ` · 최대 연속 실패 ${summary.maximumConsecutiveFailures}회`;
+  const phase = trend.acceptance.phaseTimingSamples > 0
+    ? ` · 준비 p95 ${Math.round(trend.acceptance.p95SetupDurationMs / 1000)}초`
+      + ` · 캡처 p95 ${Math.round(trend.acceptance.p95CaptureDurationMs / 1000)}초`
+      + ` · Prebuilt WDA ${trend.acceptance.preinstalledWdaSamples}/${trend.acceptance.sampleCount}`
+    : "";
   return [
     "## iOS Safari CI 안정성 추세",
     "",
     `- 최근 실행 10회: **${trend.observed.status}** · ${format(trend.observed)}`,
-    `- Node 22·URL 재시도 적용 후: **${trend.acceptance.status}** · ${format(trend.acceptance)}`,
+    `- Prebuilt WDA 적용 후: **${trend.acceptance.status}** · ${format(trend.acceptance)}${phase}`,
     "",
     ...[...trend.observed.issues, ...trend.acceptance.issues].map((issue) => `- ${issue}`),
     ""
