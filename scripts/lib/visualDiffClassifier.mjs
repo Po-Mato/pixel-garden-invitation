@@ -8,7 +8,30 @@ export const visualDiffClassifications = Object.freeze({
   intentionalBaselineUpdate: "intentional-baseline-update"
 });
 
-export function classifyVisualDifference(comparison = {}, approval = null) {
+export const defaultVisualDiffClassificationPolicy = Object.freeze({
+  rendererNoiseMinimumShare: 0.55,
+  rendererNoiseMaximumBudgetUsage: 0.35,
+  watchStructuralMinimumBudgetUsage: 0.65
+});
+
+function classificationPolicy(policy = {}) {
+  return {
+    rendererNoiseMinimumShare: finiteRatio(
+      policy.rendererNoiseMinimumShare,
+      defaultVisualDiffClassificationPolicy.rendererNoiseMinimumShare
+    ),
+    rendererNoiseMaximumBudgetUsage: finiteRatio(
+      policy.rendererNoiseMaximumBudgetUsage,
+      defaultVisualDiffClassificationPolicy.rendererNoiseMaximumBudgetUsage
+    ),
+    watchStructuralMinimumBudgetUsage: finiteRatio(
+      policy.watchStructuralMinimumBudgetUsage,
+      defaultVisualDiffClassificationPolicy.watchStructuralMinimumBudgetUsage
+    )
+  };
+}
+
+export function classifyVisualDifference(comparison = {}, approval = null, policy = null) {
   const changedRatio = finiteRatio(comparison.changedRatio);
   const maxChangedRatio = Math.max(finiteRatio(comparison.maxChangedRatio, 0.015), Number.EPSILON);
   const rawChangedRatio = Number.isFinite(comparison.rawChangedRatio)
@@ -17,6 +40,7 @@ export function classifyVisualDifference(comparison = {}, approval = null) {
   const filteredNoiseRatio = rawChangedRatio === null ? null : Math.max(0, rawChangedRatio - changedRatio);
   const filteredNoiseShare = rawChangedRatio > 0 ? filteredNoiseRatio / rawChangedRatio : 0;
   const budgetUsage = changedRatio / maxChangedRatio;
+  const thresholds = classificationPolicy(policy ?? {});
 
   if (approval?.approved === true && typeof approval.reason === "string" && approval.reason.trim()) {
     return {
@@ -50,8 +74,8 @@ export function classifyVisualDifference(comparison = {}, approval = null) {
   if (
     rawChangedRatio !== null
     && filteredNoiseRatio >= 0.0005
-    && filteredNoiseShare >= 0.55
-    && budgetUsage <= 0.35
+    && filteredNoiseShare >= thresholds.rendererNoiseMinimumShare
+    && budgetUsage <= thresholds.rendererNoiseMaximumBudgetUsage
   ) {
     return {
       id: visualDiffClassifications.rendererNoise,
@@ -66,7 +90,7 @@ export function classifyVisualDifference(comparison = {}, approval = null) {
     };
   }
 
-  if (budgetUsage >= 0.65) {
+  if (budgetUsage >= thresholds.watchStructuralMinimumBudgetUsage) {
     return {
       id: visualDiffClassifications.watchStructural,
       confidence: "medium",
@@ -96,6 +120,7 @@ export function classifyVisualDifference(comparison = {}, approval = null) {
 export function summarizeVisualDifferenceClassifications(comparisons = []) {
   const details = comparisons.map((comparison) => ({
     source: comparison.source ?? "unknown",
+    engine: comparison.engine ?? "unknown",
     state: comparison.state ?? "unknown",
     classification: comparison.classification ?? classifyVisualDifference(comparison)
   }));

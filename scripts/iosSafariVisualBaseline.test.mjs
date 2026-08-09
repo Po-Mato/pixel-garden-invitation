@@ -44,6 +44,11 @@ test("portrait game capture discards a stale lazy-loading framebuffer", async ()
   assert.match(source, /visibleRatio >= 0\.2/);
   assert.match(source, /settledRatio <= 0\.02/);
   assert.match(source, /await screenshot\("game", stabilizedGameFrame\.frame\)/);
+  assert.match(source, /recoveryStrategies = \["activate-refresh", "recreate-session"\]/);
+  assert.match(source, /appium\/device\/activate_app/);
+  assert.match(source, /await sessionCommand\("POST", "\/refresh"\)/);
+  assert.match(source, /await createSafariSession\(\)/);
+  assert.match(source, /네이티브 캡처 자동 복구 실패/);
 });
 
 test("native compositor sentinel ratio tolerates screenshot color conversion", () => {

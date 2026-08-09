@@ -9,15 +9,17 @@ test("successful visual evidence excludes diff images and uses short retention",
     readFile(new URL("../.github/workflows/visual-regression.yml", import.meta.url), "utf8")
   ]);
 
-  assert.match(android, /!\.superpowers\/visual-regression\/android-chrome\/\*\*\/\*-diff\.png/);
-  assert.match(ios, /!\.superpowers\/visual-regression\/ios-safari\/\*\*\/\*-diff\.png/);
-  assert.match(mobile, /mobile-hud-browser[\s\S]*!\.superpowers\/visual-regression\/mobile-hud-browser\/\*\*\/\*-diff\.png/);
+  assert.match(android, /android-chrome[\s\S]*--exclude-suffix=-diff\.png/);
+  assert.match(ios, /ios-safari[\s\S]*--exclude-suffix=-diff\.png/);
+  assert.match(mobile, /mobile-hud-browser[\s\S]*--exclude-suffix=-diff\.png/);
+  assert.match(android, /path: \|[\s\S]*\.quality-artifacts\/android-chrome/);
+  assert.match(ios, /path: \|[\s\S]*\.quality-artifacts\/ios-safari/);
   assert.match(android, /android-chrome-diff-[\s\S]*retention-days: 14/);
   assert.match(ios, /ios-safari-diff-[\s\S]*retention-days: 14/);
 });
 
 test("large trace archives are split into a three-day artifact", async () => {
   const workflow = await readFile(new URL("../.github/workflows/visual-regression.yml", import.meta.url), "utf8");
-  assert.match(workflow, /!\.superpowers\/visual-regression\/mobile-device-soak\/\*-trace\.zip/);
+  assert.match(workflow, /mobile-device-soak[\s\S]*--exclude-suffix=-trace\.zip/);
   assert.match(workflow, /mobile-device-traces-[\s\S]*compression-level: 0[\s\S]*retention-days: 3/);
 });

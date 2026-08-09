@@ -7,6 +7,7 @@ import {
   releaseQualityEvidenceNames
 } from "./lib/releaseQualitySummary.mjs";
 import { buildReleaseQualityTrend } from "./lib/releaseQualityTrend.mjs";
+import { buildVisualDiffCalibration } from "./lib/visualDiffCalibration.mjs";
 
 const rootDir = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
 const option = (name, fallback = null) => {
@@ -16,6 +17,10 @@ const option = (name, fallback = null) => {
 const inputDir = path.resolve(option("--input-dir", path.join(rootDir, ".superpowers/visual-regression")));
 const outputDir = path.resolve(option("--output-dir", path.join(rootDir, ".superpowers/visual-regression/release-quality-summary")));
 const historyPath = path.resolve(option("--history", path.join(outputDir, "release-quality-history.json")));
+const calibrationHistoryPath = path.resolve(option(
+  "--calibration-history",
+  path.join(outputDir, "visual-diff-calibration-history.json")
+));
 
 async function filesBelow(directory) {
   const entries = await readdir(directory, { withFileTypes: true }).catch(() => []);
@@ -38,11 +43,21 @@ async function readEvidence(filename) {
 const evidence = Object.fromEntries(await Promise.all(Object.entries(releaseQualityEvidenceNames).map(async ([id, filename]) => (
   [id, await readEvidence(filename)]
 ))));
-const summary = buildReleaseQualitySummary(evidence, {
+const metadata = {
+  generatedAt: new Date().toISOString(),
   sha: option("--sha", process.env.GITHUB_SHA || null),
   runUrl: option("--run-url", process.env.GITHUB_RUN_ID && process.env.GITHUB_REPOSITORY
     ? `https://github.com/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`
     : null)
+};
+const provisionalSummary = buildReleaseQualitySummary(evidence, metadata);
+const calibrationHistory = await readFile(calibrationHistoryPath, "utf8")
+  .then(JSON.parse, () => ({ version: 1, snapshots: [] }));
+const calibrationResult = buildVisualDiffCalibration(provisionalSummary, calibrationHistory);
+const summary = buildReleaseQualitySummary(evidence, {
+  ...metadata,
+  visualCalibration: calibrationResult.calibration,
+  visualCalibrationPolicies: calibrationResult.policies
 });
 const history = await readFile(historyPath, "utf8").then(JSON.parse, () => ({ version: 1, snapshots: [] }));
 const trendResult = buildReleaseQualityTrend(summary, history);
@@ -54,7 +69,8 @@ const markdownPath = path.join(outputDir, "release-quality-summary.md");
 await Promise.all([
   writeFile(reportPath, `${JSON.stringify(summary, null, 2)}\n`),
   writeFile(markdownPath, markdown),
-  writeFile(historyPath, `${JSON.stringify(trendResult.history, null, 2)}\n`)
+  writeFile(historyPath, `${JSON.stringify(trendResult.history, null, 2)}\n`),
+  writeFile(calibrationHistoryPath, `${JSON.stringify(calibrationResult.history, null, 2)}\n`)
 ]);
 if (process.env.GITHUB_STEP_SUMMARY) await appendFile(process.env.GITHUB_STEP_SUMMARY, `\n${markdown}\n`);
 console.log(`릴리스 품질 요약: ${summary.status} · ${summary.categories.filter(({ status }) => status === "passed").length}/${summary.categories.length}`);

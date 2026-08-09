@@ -82,6 +82,7 @@ async function waitForAppium(timeoutMs = 30_000) {
 }
 
 let sessionId = null;
+let safariCapabilities = null;
 async function sessionCommand(method, endpoint, body) {
   if (!sessionId) throw new Error("iOS Safari WebDriver 세션이 없습니다.");
   return webdriver(method, `/session/${sessionId}${endpoint}`, body);
@@ -131,7 +132,90 @@ const stableGameFrameExpression = `
   })()
 `;
 
-async function stabilizeGameFrameCapture() {
+async function createSafariSession() {
+  if (!safariCapabilities) throw new Error("iOS Safari 세션 설정이 준비되지 않았어요");
+  const session = await webdriver("POST", "/session", {
+    capabilities: { alwaysMatch: safariCapabilities }
+  });
+  sessionId = session.sessionId;
+  return session;
+}
+
+async function applyBaselineFreeze() {
+  await evaluate(`
+    document.getElementById("ios-safari-baseline-freeze")?.remove();
+    const style = document.createElement("style");
+    style.id = "ios-safari-baseline-freeze";
+    style.textContent = \`
+      html.ios-safari-baseline-freeze *,
+      html.ios-safari-baseline-freeze *::before,
+      html.ios-safari-baseline-freeze *::after {
+        animation: none !important;
+        caret-color: transparent !important;
+        transition: none !important;
+      }
+      html.ios-safari-baseline-freeze .world-travel-status-row,
+      html.ios-safari-baseline-freeze .world-route-arrival-card { display: none !important; }
+    \`;
+    document.head.append(style);
+    document.documentElement.classList.add("ios-safari-baseline-freeze");
+    return true;
+  `);
+}
+
+async function restoreGameView() {
+  await waitForDocument("document.readyState === 'complete'", "복구된 Safari 문서", 60_000);
+  await evaluate(`
+    localStorage.setItem("wedding-game:entry-session:v1", JSON.stringify({
+      version: 1,
+      nickname: "iOS Safari 감사",
+      appearance: { presetId: "feminine-long-wave-dress" },
+      updatedAt: new Date().toISOString()
+    }));
+    localStorage.setItem("wedding-game:first-visit-guide:v1", JSON.stringify({
+      version: 1,
+      completed: true,
+      completedAt: new Date().toISOString()
+    }));
+    localStorage.setItem("wedding-game:world-session:v1", JSON.stringify({
+      version: 1,
+      zoneId: "home",
+      position: { x: 285, y: 555 },
+      direction: "down",
+      guideCheckpointId: null,
+      updatedAt: new Date().toISOString()
+    }));
+    return true;
+  `);
+  await sessionCommand("POST", "/url", { url });
+  await waitForDocument("document.querySelector('.entry-screen__resume-access')", "복구 후 이어하기 버튼", 60_000);
+  await evaluate(`document.querySelector(".entry-screen__resume-access")?.click(); return true;`);
+  await waitForDocument(stableGameFrameExpression, "복구 후 게임 캡처 프레임", 60_000);
+  await waitForDocument("document.fonts.status === 'loaded'", "복구 후 한글 폰트", 60_000);
+  await applyBaselineFreeze();
+}
+
+async function recoverNativeCompositor(strategy) {
+  if (strategy === "activate-refresh") {
+    await sessionCommand("POST", "/appium/device/activate_app", {
+      bundleId: "com.apple.mobilesafari"
+    });
+    await sessionCommand("POST", "/refresh");
+    await restoreGameView();
+    return;
+  }
+  if (strategy === "recreate-session") {
+    if (sessionId) await webdriver("DELETE", `/session/${sessionId}`).catch(() => undefined);
+    sessionId = null;
+    await createSafariSession();
+    await sessionCommand("POST", "/url", { url });
+    await restoreGameView();
+    return;
+  }
+  throw new Error(`알 수 없는 iOS 캡처 복구 전략: ${strategy}`);
+}
+
+async function probeNativeCompositor() {
   await waitForDocument(stableGameFrameExpression, "게임 캡처 프레임", 60_000);
   await evaluate(`
     const sentinel = document.createElement("div");
@@ -145,7 +229,7 @@ async function stabilizeGameFrameCapture() {
   let visibleAttempt = 0;
   let visibleRatio = 0;
   try {
-    for (visibleAttempt = 1; visibleAttempt <= 12; visibleAttempt += 1) {
+    for (visibleAttempt = 1; visibleAttempt <= 4; visibleAttempt += 1) {
       visibleRatio = await nativeSentinelRatio(await captureNativeScreenshot());
       if (visibleRatio >= 0.2) break;
       await new Promise((resolve) => setTimeout(resolve, 400));
@@ -153,25 +237,72 @@ async function stabilizeGameFrameCapture() {
   } finally {
     await evaluate(`document.getElementById("ios-safari-native-compositor-sentinel")?.remove(); return true;`);
   }
-  if (visibleRatio < 0.2) throw new Error("iOS Safari 네이티브 캡처가 합성 표식을 따라오지 못했어요");
+  if (visibleRatio < 0.2) {
+    return {
+      passed: false,
+      reason: "sentinel-not-visible",
+      evidence: { visibleAttempt, visibleRatio, settledAttempt: 0, settledRatio: null }
+    };
+  }
 
   let settledAttempt = 0;
   let settledRatio = 1;
   let settledFrame = null;
-  for (settledAttempt = 1; settledAttempt <= 12; settledAttempt += 1) {
+  for (settledAttempt = 1; settledAttempt <= 6; settledAttempt += 1) {
     settledFrame = await captureNativeScreenshot();
     settledRatio = await nativeSentinelRatio(settledFrame);
     if (settledRatio <= 0.02) break;
     await new Promise((resolve) => setTimeout(resolve, 400));
   }
   if (!settledFrame || settledRatio > 0.02) {
-    throw new Error("iOS Safari 네이티브 캡처에서 합성 표식이 정리되지 않았어요");
+    return {
+      passed: false,
+      reason: "sentinel-not-cleared",
+      evidence: { visibleAttempt, visibleRatio, settledAttempt, settledRatio }
+    };
   }
   await waitForDocument(stableGameFrameExpression, "게임 캡처 프레임 재확인", 60_000);
   return {
+    passed: true,
     frame: settledFrame,
     evidence: { visibleAttempt, visibleRatio, settledAttempt, settledRatio }
   };
+}
+
+async function stabilizeGameFrameCapture() {
+  const attempts = [];
+  const recoveries = [];
+  const recoveryStrategies = ["activate-refresh", "recreate-session"];
+  for (let cycle = 0; cycle <= recoveryStrategies.length; cycle += 1) {
+    const result = await probeNativeCompositor();
+    attempts.push({ cycle: cycle + 1, passed: result.passed, reason: result.reason ?? null, ...result.evidence });
+    if (result.passed) {
+      return {
+        frame: result.frame,
+        evidence: {
+          recovered: recoveries.length > 0,
+          recoveryCount: recoveries.length,
+          attempts,
+          recoveries
+        }
+      };
+    }
+    const strategy = recoveryStrategies[cycle];
+    if (!strategy) break;
+    const recovery = { strategy, status: "started" };
+    recoveries.push(recovery);
+    try {
+      await recoverNativeCompositor(strategy);
+      recovery.status = "completed";
+    } catch (error) {
+      recovery.status = "failed";
+      recovery.error = error instanceof Error ? error.message : String(error);
+    }
+  }
+  const reasons = attempts.map(({ reason, visibleRatio, settledRatio }) => (
+    `${reason}:${visibleRatio ?? "n/a"}/${settledRatio ?? "n/a"}`
+  )).join(", ");
+  throw new Error(`iOS Safari 네이티브 캡처 자동 복구 실패: ${reasons}`);
 }
 
 async function performTouchSwipe({ x, fromY, toY, durationMs = 620 }) {
@@ -383,7 +514,7 @@ function assertLandscapeMetrics(metrics) {
 
 try {
   await waitForAppium();
-  const deviceCapabilities = {
+  safariCapabilities = {
     platformName: "iOS",
     browserName: "Safari",
     "appium:automationName": "XCUITest",
@@ -410,66 +541,10 @@ try {
     ...(process.env.IOS_XCODE_SIGNING_ID ? { "appium:xcodeSigningId": process.env.IOS_XCODE_SIGNING_ID } : {}),
     ...(process.env.IOS_UPDATED_WDA_BUNDLE_ID ? { "appium:updatedWDABundleId": process.env.IOS_UPDATED_WDA_BUNDLE_ID } : {})
   };
-  const session = await webdriver("POST", "/session", {
-    capabilities: {
-      alwaysMatch: deviceCapabilities
-    }
-  });
-  sessionId = session.sessionId;
+  await createSafariSession();
   await sessionCommand("POST", "/url", { url });
-  await waitForDocument("document.readyState === 'complete'", "초기 Safari 문서");
-  await evaluate(`
-    localStorage.setItem("wedding-game:entry-session:v1", JSON.stringify({
-      version: 1,
-      nickname: "iOS Safari 감사",
-      appearance: { presetId: "feminine-long-wave-dress" },
-      updatedAt: new Date().toISOString()
-    }));
-    localStorage.setItem("wedding-game:first-visit-guide:v1", JSON.stringify({
-      version: 1,
-      completed: true,
-      completedAt: new Date().toISOString()
-    }));
-    localStorage.setItem("wedding-game:world-session:v1", JSON.stringify({
-      version: 1,
-      zoneId: "home",
-      position: { x: 285, y: 555 },
-      direction: "down",
-      guideCheckpointId: null,
-      updatedAt: new Date().toISOString()
-    }));
-    return true;
-  `);
-  await sessionCommand("POST", "/url", { url });
-  await waitForDocument("document.querySelector('.entry-screen__resume-access')", "이어하기 버튼");
-  await evaluate(`document.querySelector(".entry-screen__resume-access")?.click(); return true;`);
-  await waitForDocument("document.querySelector('.game-world')", "게임 화면");
-  await waitForDocument("document.querySelector('.world-map__stage--background-loaded')", "홈 맵 배경", 60_000);
-  await waitForDocument(`
-    (() => {
-      const layer = document.querySelector(".world-player:not(.player--remote) .character-layer");
-      if (!(layer instanceof HTMLElement)) return false;
-      const rect = layer.getBoundingClientRect();
-      return rect.width > 0 && rect.height > 0 && getComputedStyle(layer).backgroundImage !== "none";
-    })()
-  `, "플레이어 캐릭터 레이어", 60_000);
-  await waitForDocument("document.fonts.status === 'loaded'", "한글 폰트");
+  await restoreGameView();
   const environment = await evaluate(`
-    const style = document.createElement("style");
-    style.id = "ios-safari-baseline-freeze";
-    style.textContent = \`
-      html.ios-safari-baseline-freeze *,
-      html.ios-safari-baseline-freeze *::before,
-      html.ios-safari-baseline-freeze *::after {
-        animation: none !important;
-        caret-color: transparent !important;
-        transition: none !important;
-      }
-      html.ios-safari-baseline-freeze .world-travel-status-row,
-      html.ios-safari-baseline-freeze .world-route-arrival-card { display: none !important; }
-    \`;
-    document.head.append(style);
-    document.documentElement.classList.add("ios-safari-baseline-freeze");
     return {
       userAgent: navigator.userAgent,
       viewport: { width: innerWidth, height: innerHeight, dpr: devicePixelRatio },

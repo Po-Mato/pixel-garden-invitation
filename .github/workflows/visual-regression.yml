@@ -75,6 +75,7 @@ on:
       - "pnpm-lock.yaml"
 
 permissions:
+  actions: read
   contents: read
   pull-requests: write
   issues: write
@@ -87,14 +88,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - uses: pnpm/action-setup@v6
-        with:
-          version: 10.29.2
-      - uses: actions/setup-node@v6
+      - name: Restore shared quality dependencies
+        uses: ./.github/actions/setup-quality-dependencies
         with:
           node-version: 24
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
       - name: Restore map foreground depth history
         id: foreground-depth-history
         uses: actions/cache/restore@v5
@@ -128,7 +125,15 @@ jobs:
           restore-keys: |
             mobile-soak-trend-${{ runner.os }}-${{ github.base_ref || github.ref_name }}-
       - run: pnpm visual:test
-      - name: Build client for request-budget verification
+      - name: Restore commit-matched production build
+        id: quality-build
+        uses: ./.github/actions/restore-quality-build
+        with:
+          variant: production
+          target-sha: ${{ github.sha }}
+          github-token: ${{ github.token }}
+      - name: Build client locally when shared artifact is unavailable
+        if: steps.quality-build.outputs.restored != 'true'
         run: pnpm --filter @wedding-game/client build
         env:
           VITE_WORKER_URL: https://example.invalid
@@ -264,6 +269,12 @@ jobs:
       - name: Summarize diagnostics provenance
         if: always() && hashFiles('.superpowers/visual-regression/map-diagnostics-provenance.json') != ''
         run: pnpm maps:diagnostics-provenance-summary -- --attestation-url "${{ steps.diagnostics-attestation.outputs.attestation-url }}" --run-url "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+      - name: Package content-addressed browser quality evidence
+        if: always()
+        run: |
+          node scripts/pack-content-addressed-quality-evidence.mjs --input-dir .superpowers/visual-regression/mobile-hud-browser --output-dir .quality-artifacts/mobile-hud-browser --exclude-suffix=-diff.png
+          node scripts/pack-content-addressed-quality-evidence.mjs --input-dir .superpowers/visual-regression/mobile-device-soak --output-dir .quality-artifacts/mobile-device-soak --exclude-suffix=-trace.zip
+          node scripts/pack-content-addressed-quality-evidence.mjs --input-dir .superpowers/visual-regression/map-diagnostics-browser --output-dir .quality-artifacts/map-diagnostics-browser
       - name: Upload visual region report
         if: always()
         uses: actions/upload-artifact@v7
@@ -334,8 +345,7 @@ jobs:
         with:
           name: mobile-hud-browser-${{ github.run_id }}
           path: |
-            .superpowers/visual-regression/mobile-hud-browser
-            !.superpowers/visual-regression/mobile-hud-browser/**/*-diff.png
+            .quality-artifacts/mobile-hud-browser
           if-no-files-found: ignore
           compression-level: 9
           retention-days: 7
@@ -345,8 +355,7 @@ jobs:
         with:
           name: mobile-device-soak-${{ github.run_id }}
           path: |
-            .superpowers/visual-regression/mobile-device-soak
-            !.superpowers/visual-regression/mobile-device-soak/*-trace.zip
+            .quality-artifacts/mobile-device-soak
           if-no-files-found: ignore
           compression-level: 9
           retention-days: 7
@@ -364,7 +373,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: map-diagnostics-browser-${{ github.run_id }}
-          path: .superpowers/visual-regression/map-diagnostics-browser
+          path: .quality-artifacts/map-diagnostics-browser
           if-no-files-found: ignore
           compression-level: 9
           retention-days: 7

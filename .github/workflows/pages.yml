@@ -20,20 +20,25 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - uses: pnpm/action-setup@v6
-        with:
-          version: 10.29.2
-      - uses: actions/setup-node@v6
+      - name: Restore shared quality dependencies
+        uses: ./.github/actions/setup-quality-dependencies
         with:
           node-version: 24
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
       - run: pnpm test
       - name: Verify Pages build environment
         run: test -n "$VITE_WORKER_URL"
         env:
           VITE_WORKER_URL: ${{ vars.VITE_WORKER_URL }}
-      - run: pnpm build
+      - name: Restore commit-matched production build
+        id: quality-build
+        uses: ./.github/actions/restore-quality-build
+        with:
+          variant: production
+          target-sha: ${{ github.sha }}
+          github-token: ${{ github.token }}
+      - name: Build locally when shared artifact is unavailable
+        if: steps.quality-build.outputs.restored != 'true'
+        run: pnpm build
         env:
           VITE_WORKER_URL: ${{ vars.VITE_WORKER_URL }}
           VITE_INVITATION_ID: ${{ vars.VITE_INVITATION_ID || 'sample-garden' }}
@@ -105,12 +110,18 @@ jobs:
         with:
           path: .superpowers/visual-regression/game-resource-budget/pwa-cache-asset-trend-history.json
           key: pwa-cache-assets-${{ runner.os }}-main-${{ github.run_id }}-${{ github.run_attempt }}
+      - name: Package content-addressed Pages quality evidence
+        if: always()
+        run: |
+          node scripts/pack-content-addressed-quality-evidence.mjs --input-dir .superpowers/visual-regression/production-large-text-canary --output-dir .quality-artifacts/production-large-text-canary
+          node scripts/pack-content-addressed-quality-evidence.mjs --input-dir .superpowers/visual-regression/production-network-pwa-canary --output-dir .quality-artifacts/production-network-pwa-canary
+          node scripts/pack-content-addressed-quality-evidence.mjs --input-dir .superpowers/visual-regression/game-resource-budget --output-dir .quality-artifacts/game-resource-budget
       - name: Upload public large-text canary evidence
         if: always()
         uses: actions/upload-artifact@v7
         with:
           name: production-large-text-canary
-          path: .superpowers/visual-regression/production-large-text-canary
+          path: .quality-artifacts/production-large-text-canary
           if-no-files-found: warn
           compression-level: 9
           retention-days: 7
@@ -119,7 +130,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: production-network-pwa-canary
-          path: .superpowers/visual-regression/production-network-pwa-canary
+          path: .quality-artifacts/production-network-pwa-canary
           if-no-files-found: warn
           compression-level: 9
           retention-days: 7
@@ -128,7 +139,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: pwa-cache-asset-change
-          path: .superpowers/visual-regression/game-resource-budget
+          path: .quality-artifacts/game-resource-budget
           if-no-files-found: warn
           compression-level: 9
           retention-days: 30

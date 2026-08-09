@@ -66,4 +66,6 @@ test("release quality workflow joins completed artifacts by commit SHA", async (
   assert.match(workflow, /quality:summary/);
   assert.match(workflow, /release-quality-history/);
   assert.match(workflow, /quality:summary-seed/);
+  assert.match(workflow, /visual-diff-calibration-history/);
+  assert.match(workflow, /while read -r previous_run_id/);
 });

@@ -57,19 +57,27 @@ function offlineIssues(report, label) {
   return issues;
 }
 
-function visualComparisons(evidence) {
+function visualComparisons(evidence, policies = {}) {
   const hud = (evidence.hud?.reports ?? []).flatMap((report) => Object.entries(report.deviceVisualBaselines ?? {}).flatMap(([state, value]) => (
-    value?.comparison ? [{ source: `hud/${report.id}`, state, ...value.comparison }] : []
+    value?.comparison ? [{
+      source: `hud/${report.id}`,
+      engine: report.engine ?? "chromium",
+      state,
+      ...value.comparison,
+      classification: classifyVisualDifference(value.comparison, null, policies[report.engine ?? "chromium"])
+    }] : []
   )));
   const device = ["android", "ios"].flatMap((source) => (evidence[source]?.comparisons ?? []).map((comparison) => ({
     source,
+    engine: source === "ios" ? "webkit" : "chromium",
     ...comparison,
-    classification: comparison.classification ?? classifyVisualDifference(comparison)
+    classification: classifyVisualDifference(comparison, null, policies[source === "ios" ? "webkit" : "chromium"])
   })));
   const regions = (evidence.mobileRegions?.regionResults ?? []).map((region) => {
     const maxChangedRatio = evidence.mobileRegions?.maxRegionChangedRatio ?? 0;
     const comparison = {
       source: `map/${region.kind ?? "unknown"}`,
+      engine: "renderer",
       state: region.id,
       changedRatio: region.changedRatio,
       maxChangedRatio,
@@ -145,7 +153,10 @@ export function buildReleaseQualitySummary(evidence = {}, metadata = {}) {
   }, pwaIssues);
 
   const categories = [map, hud, android, ios, pwa];
-  const visualDifferences = summarizeVisualDifferenceClassifications(visualComparisons(evidence));
+  const visualDifferences = summarizeVisualDifferenceClassifications(visualComparisons(
+    evidence,
+    metadata.visualCalibrationPolicies ?? {}
+  ));
   return {
     generatedAt: metadata.generatedAt ?? new Date().toISOString(),
     sha: metadata.sha ?? null,
@@ -154,7 +165,8 @@ export function buildReleaseQualitySummary(evidence = {}, metadata = {}) {
       ? "failed"
       : categories.some(({ status }) => status === "blocked") ? "blocked" : "passed",
     categories,
-    visualDifferences
+    visualDifferences,
+    visualCalibration: metadata.visualCalibration ?? null
   };
 }
 
@@ -180,6 +192,12 @@ export function formatReleaseQualitySummaryMarkdown(summary) {
       .map(([id, count]) => `${id} ${count}`)
       .join(" · ") || "없음";
     lines.push("", "### 시각 차이 원인 분류", "", `- 상태: **${summary.visualDifferences.status}**`, `- ${counts}`);
+  }
+  if (summary.visualCalibration) {
+    const engines = Object.entries(summary.visualCalibration.engines)
+      .map(([engine, value]) => `${engine} ${value.status} ${value.sampleCount}/${value.requiredSamples}`)
+      .join(" · ");
+    lines.push("", "### 엔진별 시각 임계치 보정", "", `- 상태: **${summary.visualCalibration.status}**`, `- ${engines}`);
   }
   if (summary.trend) {
     lines.push(

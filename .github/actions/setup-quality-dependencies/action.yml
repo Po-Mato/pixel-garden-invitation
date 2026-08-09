@@ -1,0 +1,28 @@
+name: Setup shared quality dependencies
+description: Restore the OS-specific pnpm workspace install shared by quality workflows.
+inputs:
+  node-version:
+    description: Node.js major version
+    required: true
+runs:
+  using: composite
+  steps:
+    - uses: pnpm/action-setup@v6
+      with:
+        version: 10.29.2
+    - uses: actions/setup-node@v6
+      with:
+        node-version: ${{ inputs.node-version }}
+        cache: pnpm
+    - id: workspace-dependencies
+      uses: actions/cache@v5
+      with:
+        path: |
+          node_modules
+          client/node_modules
+          shared/node_modules
+          worker/node_modules
+        key: quality-dependencies-${{ runner.os }}-${{ runner.arch }}-node-${{ inputs.node-version }}-${{ hashFiles('pnpm-lock.yaml', 'package.json', 'client/package.json', 'shared/package.json', 'worker/package.json') }}
+    - if: steps.workspace-dependencies.outputs.cache-hit != 'true'
+      shell: bash
+      run: pnpm install --frozen-lockfile

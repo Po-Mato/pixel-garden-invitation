@@ -1,0 +1,51 @@
+name: Restore shared quality build
+description: Restore the commit-matched production or isolated-device client build.
+inputs:
+  variant:
+    description: production or device
+    required: true
+  target-sha:
+    description: Commit SHA that produced the artifact
+    required: true
+  github-token:
+    description: Token with actions read permission
+    required: true
+  wait-attempts:
+    description: Ten-second polling attempts before local fallback
+    required: false
+    default: "36"
+outputs:
+  restored:
+    description: Whether the shared build was restored
+    value: ${{ steps.restore.outputs.restored }}
+runs:
+  using: composite
+  steps:
+    - id: restore
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.github-token }}
+        QUALITY_BUILD_VARIANT: ${{ inputs.variant }}
+        QUALITY_BUILD_SHA: ${{ inputs.target-sha }}
+        QUALITY_BUILD_WAIT_ATTEMPTS: ${{ inputs.wait-attempts }}
+      run: |
+        set -euo pipefail
+        artifact_name="quality-build-$QUALITY_BUILD_SHA"
+        download_dir="$RUNNER_TEMP/quality-build-$QUALITY_BUILD_SHA"
+        for ((attempt=1; attempt<=QUALITY_BUILD_WAIT_ATTEMPTS; attempt+=1)); do
+          run_id="$(gh run list --workflow quality-build.yml --commit "$QUALITY_BUILD_SHA" --status success --limit 1 --json databaseId --jq '.[0].databaseId // empty')"
+          if test -n "$run_id"; then
+            if gh run download "$run_id" --name "$artifact_name" --dir "$download_dir"; then
+              test "$(jq -r '.sha' "$download_dir/quality-build-manifest.json")" = "$QUALITY_BUILD_SHA"
+              test -d "$download_dir/$QUALITY_BUILD_VARIANT"
+              node -e 'require("node:fs").rmSync("client/dist", {recursive:true, force:true})'
+              mkdir -p client/dist
+              cp -R "$download_dir/$QUALITY_BUILD_VARIANT/." client/dist/
+              echo "restored=true" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+          fi
+          sleep 10
+        done
+        echo "공통 빌드가 없어 현재 워크플로에서 안전하게 다시 빌드합니다."
+        echo "restored=false" >> "$GITHUB_OUTPUT"

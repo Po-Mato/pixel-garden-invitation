@@ -29,14 +29,11 @@ jobs:
       - uses: actions/checkout@v6
       - name: Mark iOS Safari job start
         run: echo "IOS_JOB_STARTED_AT_MS=$(node -p 'Date.now()')" >> "$GITHUB_ENV"
-      - uses: pnpm/action-setup@v6
-        with:
-          version: 10.29.2
-      - uses: actions/setup-node@v6
+      - name: Restore shared quality dependencies
+        uses: ./.github/actions/setup-quality-dependencies
         with:
           # Node 24 undici can intermittently raise setTypeOfService EINVAL on macOS runners.
           node-version: 22
-          cache: pnpm
       - name: Restore iOS Safari stability history
         uses: actions/cache/restore@v5
         with:
@@ -66,7 +63,6 @@ jobs:
           echo "IOS_SIMULATOR_UDID=$IOS_SIMULATOR_UDID" >> "$GITHUB_ENV"
           xcrun simctl boot "$IOS_SIMULATOR_UDID"
           xcrun simctl bootstatus "$IOS_SIMULATOR_UDID" -b
-      - run: pnpm install --frozen-lockfile
       - name: Install the iOS Safari automation bridge
         shell: bash
         run: |
@@ -87,12 +83,22 @@ jobs:
           test -n "$IOS_PREBUILT_WDA_PATH"
           echo "IOS_PREBUILT_WDA_PATH=$IOS_PREBUILT_WDA_PATH" >> "$GITHUB_ENV"
           appium --version
-      - name: Start deterministic invitation server
-        shell: bash
+      - name: Restore commit-matched device build
+        id: quality-build
+        uses: ./.github/actions/restore-quality-build
+        with:
+          variant: device
+          target-sha: ${{ github.sha }}
+          github-token: ${{ github.token }}
+      - name: Build device client locally when shared artifact is unavailable
+        if: steps.quality-build.outputs.restored != 'true'
         run: |
           pnpm characters:generate
           pnpm --filter @wedding-game/shared build
           VITE_WORKER_URL=https://example.invalid VITE_INVITATION_ID=device-pwa-audit pnpm --filter @wedding-game/client build
+      - name: Start deterministic invitation server
+        shell: bash
+        run: |
           pnpm --filter @wedding-game/client exec vite --host 0.0.0.0 --port 4178 --strictPort > "$RUNNER_TEMP/ios-safari-vite.log" 2>&1 &
           echo "VITE_PID=$!" >> "$GITHUB_ENV"
           pnpm --filter @wedding-game/client exec vite preview --host 0.0.0.0 --port 4188 --strictPort > "$RUNNER_TEMP/ios-safari-pwa-preview.log" 2>&1 &
@@ -152,15 +158,19 @@ jobs:
           if test -n "${VITE_PID:-}"; then kill "$VITE_PID" 2>/dev/null || true; fi
           if test -n "${PWA_PREVIEW_PID:-}"; then kill "$PWA_PREVIEW_PID" 2>/dev/null || true; fi
           if test -n "${APPIUM_PID:-}"; then kill "$APPIUM_PID" 2>/dev/null || true; fi
+      - name: Package content-addressed iOS quality evidence
+        if: always()
+        run: |
+          node scripts/pack-content-addressed-quality-evidence.mjs --input-dir .superpowers/visual-regression/ios-safari --output-dir .quality-artifacts/ios-safari --exclude-suffix=-diff.png
+          node scripts/pack-content-addressed-quality-evidence.mjs --input-dir .superpowers/visual-regression/ios-safari-stability --output-dir .quality-artifacts/ios-safari-stability
       - name: Upload real iOS Safari evidence
         if: always()
         uses: actions/upload-artifact@v7
         with:
           name: ios-safari-visual-${{ github.run_id }}
           path: |
-            .superpowers/visual-regression/ios-safari
-            !.superpowers/visual-regression/ios-safari/**/*-diff.png
-            .superpowers/visual-regression/ios-safari-stability
+            .quality-artifacts/ios-safari
+            .quality-artifacts/ios-safari-stability
             ${{ runner.temp }}/ios-safari-vite.log
             ${{ runner.temp }}/ios-safari-pwa-preview.log
             ${{ runner.temp }}/ios-safari-appium.log
