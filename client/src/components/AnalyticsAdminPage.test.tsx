@@ -232,6 +232,8 @@ describe("AnalyticsAdminPage", () => {
 
     const card = screen.getByRole("article", { name: "화면 배치 흔들림 보정 지표" });
     expect(card).toHaveAttribute("data-deep-linked", "true");
+    expect(card).toHaveAttribute("data-calibration-week", "2026-07-20");
+    expect(card).toHaveAttribute("data-calibration-metric", "cls");
     await waitFor(() => expect(card).toHaveFocus());
   });
 });

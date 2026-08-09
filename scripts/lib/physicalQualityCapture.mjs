@@ -11,7 +11,8 @@ export function assessPhysicalQualityCaptureReadiness({
   adbAvailable = false,
   xctraceAvailable = false,
   androidDevices = [],
-  iosDevices = []
+  iosDevices = [],
+  hostDisplays = []
 } = {}) {
   const issues = [];
   if (!adbAvailable) issues.push("Android Platform Tools(adb) 설치 필요");
@@ -22,6 +23,21 @@ export function assessPhysicalQualityCaptureReadiness({
     status: issues.length === 0 ? "ready" : "blocked",
     android: { toolAvailable: adbAvailable, devices: androidDevices },
     ios: { toolAvailable: xctraceAvailable, devices: iosDevices },
+    hostDisplays,
+    requiredCoverage: {
+      accessibility: ["android-talkback", "ios-voiceover"],
+      display: [...requiredDisplayScenarios],
+      motion: requiredMotionScenarios.map(({ id }) => id)
+    },
+    nextActions: issues.length === 0
+      ? ["pnpm quality:physical:capture로 9개 실기기 증빙을 수집하고 SHA-256으로 봉인"]
+      : [
+          ...(!adbAvailable ? ["Android Platform Tools 설치 후 USB 디버깅 기기 연결"] : []),
+          ...(adbAvailable && androidDevices.length === 0 ? ["실제 Android에서 USB 디버깅 허용"] : []),
+          ...(!xctraceAvailable ? ["전체 Xcode 설치와 xcode-select 설정 후 xctrace 활성화"] : []),
+          ...(xctraceAvailable && iosDevices.length === 0 ? ["실제 iPhone의 이 컴퓨터 신뢰 연결 허용"] : []),
+          "OLED·LCD 및 60Hz·120Hz 조건을 확보한 뒤 pnpm quality:physical:capture 실행"
+        ],
     requiredArtifactCount: physicalQualityCaptureArtifactCount,
     issues
   };

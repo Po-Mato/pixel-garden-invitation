@@ -1,0 +1,101 @@
+import { appendFile, mkdir, readFile, writeFile } from "node:fs/promises";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import {
+  buildIosSafariStabilityTrend,
+  formatIosSafariStabilityMarkdown,
+  iosSafariStabilityPolicy,
+  mergeIosSafariStabilityHistory
+} from "./lib/iosSafariStabilityTrend.mjs";
+
+const rootDir = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
+const option = (name, fallback = null) => {
+  const index = process.argv.indexOf(name);
+  return index >= 0 ? process.argv[index + 1] : fallback;
+};
+const outputDir = path.resolve(option(
+  "--output-dir",
+  path.join(rootDir, ".superpowers/visual-regression/ios-safari-stability")
+));
+const historyPath = path.join(outputDir, "ios-safari-stability-trend-history.json");
+const reportPath = path.join(outputDir, "ios-safari-stability-trend.json");
+const markdownPath = path.join(outputDir, "ios-safari-stability-trend.md");
+
+async function readHistory() {
+  try {
+    const parsed = JSON.parse(await readFile(historyPath, "utf8"));
+    return Array.isArray(parsed.samples) ? parsed.samples : [];
+  } catch (error) {
+    if (error?.code === "ENOENT") return [];
+    throw error;
+  }
+}
+
+async function githubRunSamples() {
+  const repository = process.env.GITHUB_REPOSITORY;
+  const token = process.env.GH_TOKEN;
+  if (!repository || !token) return [];
+  const endpoint = `https://api.github.com/repos/${repository}/actions/workflows/ios-safari-visual.yml/runs?status=completed&per_page=30`;
+  const response = await fetch(endpoint, {
+    headers: { accept: "application/vnd.github+json", authorization: `Bearer ${token}`, "x-github-api-version": "2022-11-28" }
+  });
+  if (!response.ok) throw new Error(`GitHub iOS workflow history ${response.status}`);
+  const body = await response.json();
+  return (body.workflow_runs ?? []).map((run) => ({
+    runId: String(run.id),
+    runAttempt: Number(run.run_attempt) || 1,
+    sha: run.head_sha,
+    outcome: run.conclusion === "success" ? "success" : run.conclusion === "cancelled" ? "cancelled" : "failure",
+    durationMs: Math.max(0, Date.parse(run.updated_at) - Date.parse(run.created_at)),
+    generatedAt: run.created_at,
+    policyRevision: 0,
+    url: run.html_url
+  }));
+}
+
+async function currentGithubRun() {
+  const repository = process.env.GITHUB_REPOSITORY;
+  const token = process.env.GH_TOKEN;
+  const runId = option("--run-id", process.env.GITHUB_RUN_ID);
+  if (!repository || !token || !runId) return null;
+  const response = await fetch(`https://api.github.com/repos/${repository}/actions/runs/${runId}`, {
+    headers: { accept: "application/vnd.github+json", authorization: `Bearer ${token}`, "x-github-api-version": "2022-11-28" }
+  });
+  if (!response.ok) return null;
+  const run = await response.json();
+  const startedAt = run.run_started_at || run.created_at;
+  return {
+    generatedAt: startedAt,
+    durationMs: Math.max(0, Date.now() - Date.parse(startedAt)),
+    url: run.html_url
+  };
+}
+
+await mkdir(outputDir, { recursive: true });
+let samples = mergeIosSafariStabilityHistory(await readHistory(), await githubRunSamples());
+const currentOutcome = option("--outcome");
+if (currentOutcome) {
+  const currentRun = await currentGithubRun();
+  samples = mergeIosSafariStabilityHistory(samples, [{
+    runId: option("--run-id", process.env.GITHUB_RUN_ID),
+    runAttempt: option("--run-attempt", process.env.GITHUB_RUN_ATTEMPT),
+    sha: option("--sha", process.env.GITHUB_SHA),
+    outcome: currentOutcome,
+    durationMs: currentRun?.durationMs ?? Number(option("--duration-ms", 0)),
+    generatedAt: currentRun?.generatedAt ?? option("--generated-at", new Date().toISOString()),
+    policyRevision: iosSafariStabilityPolicy.policyRevision,
+    url: currentRun?.url ?? option("--run-url")
+  }]);
+}
+const trend = buildIosSafariStabilityTrend(samples);
+const markdown = formatIosSafariStabilityMarkdown(trend);
+await Promise.all([
+  writeFile(historyPath, `${JSON.stringify({ version: 1, samples }, null, 2)}\n`),
+  writeFile(reportPath, `${JSON.stringify({ generatedAt: new Date().toISOString(), trend }, null, 2)}\n`),
+  writeFile(markdownPath, markdown)
+]);
+if (process.env.GITHUB_STEP_SUMMARY) await appendFile(process.env.GITHUB_STEP_SUMMARY, `\n${markdown}\n`);
+console.log(`iOS Safari CI 안정성: 최근 10회 ${trend.observed.status} · 강화 후 ${trend.acceptance.status}`);
+for (const issue of [...trend.observed.issues, ...trend.acceptance.issues]) console.log(`- ${issue}`);
+console.log(`보고서: ${reportPath}`);
+if (trend.acceptance.status === "failed") process.exitCode = 1;

@@ -524,6 +524,8 @@ export function AnalyticsAdminPage() {
                           tabIndex={isDeepLinked ? -1 : undefined}
                           data-decision={snapshot.decision}
                           data-deep-linked={isDeepLinked || undefined}
+                          data-calibration-week={snapshot.weekStart}
+                          data-calibration-metric={snapshot.metricKey}
                         >
                           <span>{metric?.label ?? snapshot.metricKey}</span>
                           <strong>{snapshot.currentThreshold} → {snapshot.suggestedThreshold}{metric?.unit === "score" ? "" : metric?.unit}</strong>

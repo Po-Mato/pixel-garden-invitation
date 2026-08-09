@@ -1,0 +1,49 @@
+name: Production quality calibration deep-link
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production-quality-calibration-deep-link
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 10.29.2
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Restore Playwright browser cache
+        id: playwright-browser-cache
+        uses: actions/cache@v5
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ runner.arch }}-1.62.0
+      - name: Install Chromium system dependencies
+        run: pnpm exec playwright install-deps chromium
+      - name: Install Chromium on cache miss
+        if: steps.playwright-browser-cache.outputs.cache-hit != 'true'
+        run: pnpm exec playwright install chromium
+      - name: Verify authenticated production calibration deep-link
+        run: pnpm quality:calibration-deep-link -- --url "$PAGES_URL" --require-auth
+        env:
+          PAGES_URL: https://po-mato.github.io/pixel-garden-invitation/
+          RSVP_ADMIN_E2E_PASSWORD: ${{ secrets.RSVP_ADMIN_E2E_PASSWORD }}
+      - name: Upload redacted calibration deep-link evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: production-quality-calibration-deep-link-${{ github.run_id }}
+          path: .superpowers/visual-regression/production-quality-calibration-deep-link
+          if-no-files-found: warn
+          retention-days: 14

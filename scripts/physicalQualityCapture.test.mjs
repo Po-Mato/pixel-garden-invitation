@@ -14,6 +14,17 @@ test("physical capture preflight reports missing tools and devices without inven
     status: "blocked",
     android: { toolAvailable: false, devices: [] },
     ios: { toolAvailable: false, devices: [] },
+    hostDisplays: [],
+    requiredCoverage: {
+      accessibility: ["android-talkback", "ios-voiceover"],
+      display: ["oled-low-brightness", "oled-outdoor-p3", "lcd-low-brightness", "lcd-outdoor-srgb"],
+      motion: ["60hz-normal", "120hz-normal", "60hz-low-power"]
+    },
+    nextActions: [
+      "Android Platform Tools 설치 후 USB 디버깅 기기 연결",
+      "전체 Xcode 설치와 xcode-select 설정 후 xctrace 활성화",
+      "OLED·LCD 및 60Hz·120Hz 조건을 확보한 뒤 pnpm quality:physical:capture 실행"
+    ],
     requiredArtifactCount: 9,
     issues: ["Android Platform Tools(adb) 설치 필요", "Xcode 명령줄 도구(xctrace) 설치 필요"]
   });

@@ -14,6 +14,7 @@ on:
       - "pnpm-lock.yaml"
 
 permissions:
+  actions: read
   contents: read
 
 concurrency:
@@ -34,6 +35,13 @@ jobs:
           # Node 24 undici can intermittently raise setTypeOfService EINVAL on macOS runners.
           node-version: 22
           cache: pnpm
+      - name: Restore iOS Safari stability history
+        uses: actions/cache/restore@v5
+        with:
+          path: .superpowers/visual-regression/ios-safari-stability/ios-safari-stability-trend-history.json
+          key: ios-safari-stability-${{ runner.os }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            ios-safari-stability-${{ runner.os }}-
       - name: Select pinned Xcode and warm Simulator services
         shell: bash
         run: |
@@ -76,7 +84,11 @@ jobs:
           cat "$RUNNER_TEMP/ios-safari-vite.log"
           cat "$RUNNER_TEMP/ios-safari-pwa-preview.log"
           exit 1
+      - name: Mark iOS Safari capture start
+        run: echo "IOS_CAPTURE_STARTED_AT_MS=$(node -p 'Date.now()')" >> "$GITHUB_ENV"
       - name: Capture and compare real Mobile Safari
+        id: capture
+        continue-on-error: true
         shell: bash
         run: |
           for attempt in 1 2 3; do
@@ -89,6 +101,20 @@ jobs:
           done
           sleep 3
           pnpm visual:ios-safari -- --mode auto --url http://127.0.0.1:4178/ --pwa-url http://127.0.0.1:4188/ --preview-host-url http://127.0.0.1:4188/
+      - name: Track ten-run iOS Safari stability
+        if: always()
+        shell: bash
+        run: |
+          DURATION_MS="$(node -p 'Math.max(0, Date.now() - Number(process.env.IOS_CAPTURE_STARTED_AT_MS || Date.now()))')"
+          pnpm visual:ios-safari:stability -- \
+            --outcome "${{ steps.capture.outcome }}" \
+            --run-id "$GITHUB_RUN_ID" \
+            --run-attempt "$GITHUB_RUN_ATTEMPT" \
+            --sha "$GITHUB_SHA" \
+            --duration-ms "$DURATION_MS" \
+            --run-url "https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+        env:
+          GH_TOKEN: ${{ github.token }}
       - name: Stop invitation server
         if: always()
         shell: bash
@@ -103,9 +129,19 @@ jobs:
           name: ios-safari-visual-${{ github.run_id }}
           path: |
             .superpowers/visual-regression/ios-safari
+            .superpowers/visual-regression/ios-safari-stability
             ${{ runner.temp }}/ios-safari-vite.log
             ${{ runner.temp }}/ios-safari-pwa-preview.log
             ${{ runner.temp }}/ios-safari-appium.log
           if-no-files-found: warn
           include-hidden-files: true
           retention-days: 14
+      - name: Save iOS Safari stability history
+        if: ${{ always() && hashFiles('.superpowers/visual-regression/ios-safari-stability/ios-safari-stability-trend-history.json') != '' }}
+        uses: actions/cache/save@v5
+        with:
+          path: .superpowers/visual-regression/ios-safari-stability/ios-safari-stability-trend-history.json
+          key: ios-safari-stability-${{ runner.os }}-${{ github.run_id }}-${{ github.run_attempt }}
+      - name: Fail when the Safari capture failed
+        if: steps.capture.outcome != 'success'
+        run: exit 1

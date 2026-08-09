@@ -1,4 +1,5 @@
 import { spawn } from "node:child_process";
+import { createHash } from "node:crypto";
 import { gzipSync } from "node:zlib";
 import { mkdir, readFile, stat, writeFile } from "node:fs/promises";
 import path from "node:path";
@@ -237,7 +238,12 @@ async function inspectPwaCacheGroup(distDir, paths) {
       const transferBytes = compressiblePwaAssetPattern.test(relativePath)
         ? gzipSync(file).byteLength
         : file.byteLength;
-      assets.push({ path: resourcePath, rawBytes: file.byteLength, transferBytes });
+      assets.push({
+        path: resourcePath,
+        rawBytes: file.byteLength,
+        transferBytes,
+        sha256: createHash("sha256").update(file).digest("hex")
+      });
     } catch {
       missing.push(resourcePath);
     }

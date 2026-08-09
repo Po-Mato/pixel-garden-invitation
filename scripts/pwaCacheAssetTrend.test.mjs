@@ -49,3 +49,28 @@ test("PWA cache history replaces duplicate deployment SHAs and retains new deplo
     ["two", "3"]
   ]);
 });
+
+test("PWA cache trend pairs Vite hash replacements and compares content digests", () => {
+  const previous = pwaCacheAssetSample(precache([
+    { path: "./assets/GameWorld-AAAAAAAA.js", rawBytes: 100, transferBytes: 70, sha256: "a".repeat(64) },
+    { path: "./assets/index-CCCCCCCC.css", rawBytes: 50, transferBytes: 30, sha256: "c".repeat(64) }
+  ]), { sha: "old" });
+  const current = pwaCacheAssetSample(precache([
+    { path: "./assets/GameWorld-BBBBBBBB.js", rawBytes: 108, transferBytes: 74, sha256: "b".repeat(64) },
+    { path: "./assets/index-DDDDDDDD.css", rawBytes: 50, transferBytes: 30, sha256: "c".repeat(64) }
+  ]), { sha: "new" });
+
+  const trend = comparePwaCacheAssets(current, previous);
+  assert.deepEqual(trend.added, []);
+  assert.deepEqual(trend.removed, []);
+  assert.deepEqual(trend.replaced.map(({ previousPath, path, contentChanged, transferBytesDelta }) => (
+    [previousPath, path, contentChanged, transferBytesDelta]
+  )), [
+    ["./assets/GameWorld-AAAAAAAA.js", "./assets/GameWorld-BBBBBBBB.js", true, 4],
+    ["./assets/index-CCCCCCCC.css", "./assets/index-DDDDDDDD.css", false, 0]
+  ]);
+  const markdown = formatPwaCacheAssetTrendMarkdown(trend);
+  assert.match(markdown, /해시가 교체된 번들/);
+  assert.match(markdown, /동일 내용·해시만 변경/);
+  assert.match(markdown, /내용 변경/);
+});

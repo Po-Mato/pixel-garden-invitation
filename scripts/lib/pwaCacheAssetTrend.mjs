@@ -16,7 +16,8 @@ function normalizeGroup(group = {}) {
       ? group.assets.map((asset) => ({
         path: String(asset.path),
         rawBytes: Number(asset.rawBytes) || 0,
-        transferBytes: Number(asset.transferBytes) || 0
+        transferBytes: Number(asset.transferBytes) || 0,
+        sha256: /^[a-f0-9]{64}$/i.test(asset.sha256 ?? "") ? String(asset.sha256).toLowerCase() : null
       })).sort((left, right) => left.path.localeCompare(right.path))
       : []
   };
@@ -53,6 +54,11 @@ function indexedAssets(sample) {
   return assets;
 }
 
+function semanticAssetIdentity(asset) {
+  const match = asset.path.match(/^(.*)-([a-zA-Z0-9_-]{8})(\.[^./]+)$/);
+  return match ? `${asset.group}:${match[1]}${match[3]}` : null;
+}
+
 function groupDelta(current, previous, groupName) {
   const currentGroup = current.groups[groupName];
   const previousGroup = previous?.groups?.[groupName] || { total: 0, rawBytes: 0, transferBytes: 0 };
@@ -72,6 +78,7 @@ export function comparePwaCacheAssets(current, previous = null) {
   const added = [];
   const changed = [];
   const removed = [];
+  const replaced = [];
 
   for (const [key, asset] of currentAssets) {
     const prior = previousAssets.get(key);
@@ -86,11 +93,42 @@ export function comparePwaCacheAssets(current, previous = null) {
   for (const [key, asset] of previousAssets) {
     if (!currentAssets.has(key)) removed.push(asset);
   }
+  const unmatchedAdded = [...added];
+  const unmatchedRemoved = [...removed];
+  const removedBySemanticIdentity = new Map();
+  for (const asset of unmatchedRemoved) {
+    const identity = semanticAssetIdentity(asset);
+    if (!identity) continue;
+    const candidates = removedBySemanticIdentity.get(identity) ?? [];
+    candidates.push(asset);
+    removedBySemanticIdentity.set(identity, candidates);
+  }
+  for (const asset of [...unmatchedAdded]) {
+    const identity = semanticAssetIdentity(asset);
+    const candidates = identity ? removedBySemanticIdentity.get(identity) : null;
+    if (!candidates || candidates.length === 0) continue;
+    const prior = candidates.shift();
+    const rawBytesDelta = asset.rawBytes - prior.rawBytes;
+    const transferBytesDelta = asset.transferBytes - prior.transferBytes;
+    const contentChanged = asset.sha256 && prior.sha256 ? asset.sha256 !== prior.sha256 : null;
+    replaced.push({
+      ...asset,
+      previousPath: prior.path,
+      previousRawBytes: prior.rawBytes,
+      previousTransferBytes: prior.transferBytes,
+      rawBytesDelta,
+      transferBytesDelta,
+      contentChanged
+    });
+    unmatchedAdded.splice(unmatchedAdded.indexOf(asset), 1);
+    unmatchedRemoved.splice(unmatchedRemoved.indexOf(prior), 1);
+  }
   const byTransferImpact = (left, right) => Math.abs(right.transferBytesDelta ?? right.transferBytes)
     - Math.abs(left.transferBytesDelta ?? left.transferBytes);
-  added.sort(byTransferImpact);
+  unmatchedAdded.sort(byTransferImpact);
   changed.sort(byTransferImpact);
-  removed.sort(byTransferImpact);
+  replaced.sort(byTransferImpact);
+  unmatchedRemoved.sort(byTransferImpact);
 
   return {
     status: previous ? "compared" : "initial",
@@ -100,9 +138,10 @@ export function comparePwaCacheAssets(current, previous = null) {
       core: groupDelta(current, previous, "core"),
       features: groupDelta(current, previous, "features")
     },
-    added,
+    added: unmatchedAdded,
     changed,
-    removed
+    replaced,
+    removed: unmatchedRemoved
   };
 }
 
@@ -118,6 +157,18 @@ function assetRows(assets, value) {
   if (assets.length === 0) return "- 없음";
   return assets.slice(0, pwaCacheAssetTrendPolicy.listedAssets)
     .map((asset) => `- \`${asset.path}\` (${groupLabel(asset.group)}, ${value(asset)})`)
+    .join("\n");
+}
+
+function replacementRows(assets) {
+  if (assets.length === 0) return "- 없음";
+  return assets.slice(0, pwaCacheAssetTrendPolicy.listedAssets)
+    .map((asset) => {
+      const content = asset.contentChanged === true
+        ? "내용 변경"
+        : asset.contentChanged === false ? "동일 내용·해시만 변경" : "내용 해시 미수집";
+      return `- \`${asset.previousPath}\` → \`${asset.path}\` (${groupLabel(asset.group)}, ${content}, ${signed(asset.transferBytesDelta)} 전송)`;
+    })
     .join("\n");
 }
 
@@ -150,6 +201,10 @@ export function formatPwaCacheAssetTrendMarkdown(trend) {
     "### 용량이 바뀐 파일",
     "",
     assetRows(trend.changed, (asset) => `${signed(asset.transferBytesDelta)} 전송`),
+    "",
+    "### 해시가 교체된 번들",
+    "",
+    replacementRows(trend.replaced),
     "",
     "### 캐시에서 빠진 파일",
     "",

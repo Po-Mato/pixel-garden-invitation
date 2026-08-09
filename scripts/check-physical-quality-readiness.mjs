@@ -3,7 +3,7 @@ import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
-import { parseAdbDevices, parseXctraceDevices } from "./lib/physicalQualityAudit.mjs";
+import { parseAdbDevices, parseDisplays, parseXctraceDevices } from "./lib/physicalQualityAudit.mjs";
 import { assessPhysicalQualityCaptureReadiness } from "./lib/physicalQualityCapture.mjs";
 
 const run = promisify(execFile);
@@ -18,9 +18,10 @@ async function inspectCommand(command, args) {
   }
 }
 
-const [adb, xctrace] = await Promise.all([
+const [adb, xctrace, display] = await Promise.all([
   inspectCommand("adb", ["devices", "-l"]),
-  inspectCommand("xcrun", ["xctrace", "list", "devices"])
+  inspectCommand("xcrun", ["xctrace", "list", "devices"]),
+  inspectCommand("system_profiler", ["SPDisplaysDataType"])
 ]);
 const report = {
   generatedAt: new Date().toISOString(),
@@ -28,7 +29,8 @@ const report = {
     adbAvailable: adb.available,
     xctraceAvailable: xctrace.available,
     androidDevices: parseAdbDevices(adb.output),
-    iosDevices: parseXctraceDevices(xctrace.output)
+    iosDevices: parseXctraceDevices(xctrace.output),
+    hostDisplays: parseDisplays(display.output)
   })
 };
 await mkdir(path.dirname(outputPath), { recursive: true });

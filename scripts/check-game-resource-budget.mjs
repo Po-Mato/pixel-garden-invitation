@@ -37,7 +37,8 @@ console.log(
 );
 console.log(
   `캐시 자산 변화: ${assetTrend.trend.status === "initial" ? "기준선 기록" : `추가 ${assetTrend.trend.added.length}개`
-    + ` · 변경 ${assetTrend.trend.changed.length}개 · 제거 ${assetTrend.trend.removed.length}개`}`
+    + ` · 변경 ${assetTrend.trend.changed.length}개 · 해시 교체 ${assetTrend.trend.replaced.length}개`
+    + ` · 제거 ${assetTrend.trend.removed.length}개`}`
   + ` · 배포 이력 ${assetTrend.sampleCount}개`
 );
 console.log(`캐시 변화 요약: ${assetTrend.markdownPath}`);
