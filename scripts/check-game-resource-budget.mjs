@@ -10,7 +10,8 @@ const assetTrend = await writePwaCacheAssetTrend({
   outputDir,
   precache: result.precache,
   metadata: { sha: process.env.GITHUB_SHA || null, runId: process.env.GITHUB_RUN_ID || null },
-  summaryPath: process.env.GITHUB_STEP_SUMMARY || null
+  summaryPath: process.env.GITHUB_STEP_SUMMARY || null,
+  baselineUrl: process.env.PWA_CACHE_BASELINE_URL || null
 });
 
 console.log(

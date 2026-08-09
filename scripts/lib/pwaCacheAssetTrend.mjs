@@ -1,4 +1,5 @@
 import { appendFile, mkdir, readFile, writeFile } from "node:fs/promises";
+import { createHash } from "node:crypto";
 import path from "node:path";
 
 export const pwaCacheAssetTrendPolicy = Object.freeze({ retainedDeployments: 12, listedAssets: 12 });
@@ -57,6 +58,27 @@ function indexedAssets(sample) {
 function semanticAssetIdentity(asset) {
   const match = asset.path.match(/^(.*)-([a-zA-Z0-9_-]{8})(\.[^./]+)$/);
   return match ? `${asset.group}:${match[1]}${match[3]}` : null;
+}
+
+export async function hydratePwaCacheAssetDigests(sample, baseUrl, fetchImpl = fetch) {
+  if (!sample || !baseUrl) return sample;
+  const hydratedGroups = {};
+  for (const groupName of ["core", "features"]) {
+    const group = sample.groups[groupName];
+    const assets = await Promise.all(group.assets.map(async (asset) => {
+      if (asset.sha256 || !semanticAssetIdentity({ ...asset, group: groupName })) return asset;
+      try {
+        const response = await fetchImpl(new URL(asset.path.replace(/^\.\//, ""), baseUrl), { cache: "no-store" });
+        if (!response.ok) return asset;
+        const body = Buffer.from(await response.arrayBuffer());
+        return { ...asset, sha256: createHash("sha256").update(body).digest("hex") };
+      } catch {
+        return asset;
+      }
+    }));
+    hydratedGroups[groupName] = { ...group, assets };
+  }
+  return { ...sample, groups: hydratedGroups };
 }
 
 function groupDelta(current, previous, groupName) {
@@ -224,17 +246,28 @@ async function readHistory(historyPath) {
   }
 }
 
-export async function writePwaCacheAssetTrend({ outputDir, precache, metadata = {}, summaryPath = null }) {
+export async function writePwaCacheAssetTrend({
+  outputDir,
+  precache,
+  metadata = {},
+  summaryPath = null,
+  baselineUrl = null
+}) {
   await mkdir(outputDir, { recursive: true });
   const historyPath = path.join(outputDir, "pwa-cache-asset-trend-history.json");
   const reportPath = path.join(outputDir, "pwa-cache-asset-trend.json");
   const markdownPath = path.join(outputDir, "pwa-cache-asset-delta.md");
   const previousSamples = await readHistory(historyPath);
   const sample = pwaCacheAssetSample(precache, metadata);
-  const previous = [...previousSamples].reverse()
+  const storedPrevious = [...previousSamples].reverse()
     .find((candidate) => deploymentIdentity(candidate) !== deploymentIdentity(sample)) || null;
+  const previous = await hydratePwaCacheAssetDigests(storedPrevious, baselineUrl);
   const trend = comparePwaCacheAssets(sample, previous);
-  const samples = mergePwaCacheAssetHistory(previousSamples, sample);
+  const hydratedHistory = storedPrevious && previous !== storedPrevious
+    ? previousSamples.map((candidate) => deploymentIdentity(candidate) === deploymentIdentity(storedPrevious)
+      ? previous : candidate)
+    : previousSamples;
+  const samples = mergePwaCacheAssetHistory(hydratedHistory, sample);
   const markdown = formatPwaCacheAssetTrendMarkdown(trend);
   await Promise.all([
     writeFile(historyPath, `${JSON.stringify({ version: 1, samples }, null, 2)}\n`),

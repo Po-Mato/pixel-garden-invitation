@@ -68,6 +68,8 @@ jobs:
             pwa-cache-assets-${{ runner.os }}-main-
       - name: Verify game CSS and font request budgets
         run: pnpm performance:resource-budget
+        env:
+          PWA_CACHE_BASELINE_URL: https://po-mato.github.io/pixel-garden-invitation/
       - name: Verify fresh-install offline invitation journey
         run: pnpm pwa:clean-install-canary
       - name: Verify service worker replacement and cache rollback

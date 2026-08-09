@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import {
   comparePwaCacheAssets,
   formatPwaCacheAssetTrendMarkdown,
+  hydratePwaCacheAssetDigests,
   mergePwaCacheAssetHistory,
   pwaCacheAssetSample
 } from "./lib/pwaCacheAssetTrend.mjs";
@@ -73,4 +74,26 @@ test("PWA cache trend pairs Vite hash replacements and compares content digests"
   assert.match(markdown, /해시가 교체된 번들/);
   assert.match(markdown, /동일 내용·해시만 변경/);
   assert.match(markdown, /내용 변경/);
+});
+
+test("PWA cache trend hydrates a legacy hashed bundle digest from the live baseline", async () => {
+  const legacy = pwaCacheAssetSample(precache([
+    { path: "./assets/GameWorld-AAAAAAAA.js", rawBytes: 3, transferBytes: 3 },
+    { path: "./index.html", rawBytes: 4, transferBytes: 4 }
+  ]), { sha: "legacy" });
+  const requests = [];
+  const hydrated = await hydratePwaCacheAssetDigests(
+    legacy,
+    "https://example.test/invitation/",
+    async (url, init) => {
+      requests.push([url.toString(), init]);
+      return new Response("old", { status: 200 });
+    }
+  );
+  assert.equal(hydrated.groups.core.assets[0].sha256, "cba06b5736faf67e54b07b561eae94395e774c517a7d910a54369e1263ccfbd4");
+  assert.equal(hydrated.groups.core.assets[1].sha256, null);
+  assert.deepEqual(requests, [[
+    "https://example.test/invitation/assets/GameWorld-AAAAAAAA.js",
+    { cache: "no-store" }
+  ]]);
 });
