@@ -88,6 +88,7 @@ if (currentOutcome) {
     compositorRecoveryDurationMs: Number(option("--compositor-recovery-duration-ms", 0)),
     compositorFaultInjected: option("--compositor-fault-injected", "false") === "true",
     compositorFaultRecovered: option("--compositor-fault-recovered", "false") === "true",
+    compositorRecoveryStrategy: option("--compositor-recovery-strategy"),
     wdaMode: option("--wda-mode", "source-build"),
     generatedAt: currentRun?.generatedAt ?? option("--generated-at", new Date().toISOString()),
     policyRevision: iosSafariStabilityPolicy.policyRevision,

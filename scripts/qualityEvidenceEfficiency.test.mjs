@@ -23,6 +23,7 @@ test("content-addressed evidence efficiency reports savings and warms its trend"
   assert.equal(report.status, "warming");
   assert.equal(report.metrics.omittedDuplicateBytes, 6_000_000);
   assert.equal(report.metrics.savingsRate, 0.3);
+  assert.equal(report.budgetCalibration.status, "warming");
   assert.match(formatQualityEvidenceEfficiencyMarkdown(report), /중복 절감 6000000 bytes/);
 });
 
@@ -34,6 +35,38 @@ test("content-addressed evidence efficiency gates diff leaks and material size r
   assert.equal(report.status, "failed");
   assert.ok(report.issues.some((issue) => issue.startsWith("성공 패키지 diff/trace 누출")));
   assert.ok(report.issues.some((issue) => issue.startsWith("저장 크기 회귀")));
+});
+
+test("evidence efficiency activates a bounded budget after three real release samples", () => {
+  const mib = 1024 * 1024;
+  const history = { version: 1, snapshots: [
+    snapshot(1, 100 * mib, 0.08),
+    snapshot(2, 104 * mib, 0.07)
+  ] };
+  const { report } = buildQualityEvidenceEfficiency([
+    manifest({ total: 116 * mib, stored: 108 * mib })
+  ], history, { sha: "current", generatedAt: "2026-08-03T00:00:00.000Z" });
+  assert.equal(report.status, "passed");
+  assert.equal(report.budgetCalibration.status, "active");
+  assert.equal(report.budgetCalibration.sampleCount, 3);
+  assert.equal(report.budgetCalibration.enforced, false);
+  assert.ok(report.budgetCalibration.effectiveMaximumStoredBytes < report.policy.maximumStoredBytes);
+  assert.match(formatQualityEvidenceEfficiencyMarkdown(report), /다음 릴리스 적용/);
+});
+
+test("calibrated evidence budgets enforce stored bytes on later releases", () => {
+  const mib = 1024 * 1024;
+  const history = { version: 1, snapshots: [
+    snapshot(1, 100 * mib, 0.08),
+    snapshot(2, 102 * mib, 0.08),
+    snapshot(3, 104 * mib, 0.08)
+  ] };
+  const { report } = buildQualityEvidenceEfficiency([
+    manifest({ total: 138 * mib, stored: 130 * mib })
+  ], history, { sha: "current", generatedAt: "2026-08-04T00:00:00.000Z" });
+  assert.equal(report.budgetCalibration.enforced, true);
+  assert.equal(report.status, "failed");
+  assert.ok(report.issues.some((issue) => issue.startsWith("보정 저장 예산")));
 });
 
 test("evidence efficiency history de-duplicates release SHA and retains order", () => {

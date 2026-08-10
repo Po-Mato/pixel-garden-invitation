@@ -8,6 +8,7 @@ export const releaseQualityEvidenceNames = Object.freeze({
   ios: "ios-safari-capture-report.json",
   pwaAssets: "pwa-cache-asset-trend.json",
   pwaNetwork: "production-network-pwa-canary-report.json",
+  pagesRuntimeContract: "pages-runtime-contract-report.json",
   ciEfficiency: "quality-ci-efficiency-summary.json",
   evidenceEfficiency: "quality-evidence-efficiency-summary.json"
 });
@@ -137,7 +138,8 @@ export function buildReleaseQualitySummary(evidence = {}, metadata = {}) {
   const assetTrend = evidence.pwaAssets?.trend;
   const pwaIssues = [
     ...(assetTrend?.logicalChunkBudget?.issues ?? []),
-    ...(evidence.pwaNetwork?.issues ?? [])
+    ...(evidence.pwaNetwork?.issues ?? []),
+    ...(evidence.pagesRuntimeContract?.issues ?? [])
   ];
   const pwaNetworkStatus = evidence.pwaNetwork?.status
     ?? evidence.pwaNetwork?.trend?.status
@@ -148,9 +150,14 @@ export function buildReleaseQualitySummary(evidence = {}, metadata = {}) {
   if (evidence.pwaNetwork && pwaNetworkStatus !== "passed") {
     pwaIssues.push(`공개 네트워크 캔어리 ${pwaNetworkStatus}`);
   }
-  const pwa = category("pwa", ["pwaAssets", "pwaNetwork"], {
+  if (evidence.pagesRuntimeContract && evidence.pagesRuntimeContract.status !== "passed") {
+    pwaIssues.push(`Pages 운영 복원 계약 ${evidence.pagesRuntimeContract.status}`);
+  }
+  const pwa = category("pwa", ["pwaAssets", "pwaNetwork", "pagesRuntimeContract"], {
     pwaAssets: assetTrend ? (assetTrend.groups?.core?.total ?? 0) + (assetTrend.groups?.features?.total ?? 0) : null,
     logicalChunks: assetTrend?.logicalChunkBudget?.evaluations?.length ?? null,
+    pagesRuntimeAssets: evidence.pagesRuntimeContract?.assets?.probes?.length ?? null,
+    serviceWorkerScope: evidence.pagesRuntimeContract?.serviceWorker?.allowedScope ?? null,
     largestContentfulPaintMs: evidence.pwaNetwork?.slow4g?.largestContentfulPaintMs
       ?? evidence.pwaNetwork?.freshColdStart?.largestContentfulPaintMs
       ?? evidence.pwaNetwork?.metrics?.largestContentfulPaintMs
@@ -170,9 +177,14 @@ export function buildReleaseQualitySummary(evidence = {}, metadata = {}) {
     sharedBuildRestoreRate: evidence.ciEfficiency?.metrics?.sharedBuildRestoreRate ?? null,
     estimatedSavedMs: evidence.ciEfficiency?.metrics?.estimatedSavedMs ?? null,
     artifactBytes: evidence.ciEfficiency?.metrics?.artifactBytes ?? null,
+    coldCacheP95Ms: evidence.ciEfficiency?.trend?.cacheTiming?.cold?.p95RunDurationMs ?? null,
+    warmCacheP95Ms: evidence.ciEfficiency?.trend?.cacheTiming?.warm?.p95RunDurationMs ?? null,
+    monthlyRunnerMinutes: evidence.ciEfficiency?.trend?.monthly?.runnerMinutes ?? null,
+    monthlyEstimatedChargeUsd: evidence.ciEfficiency?.trend?.monthly?.estimatedChargeUsd ?? null,
     evidenceStoredBytes: evidence.evidenceEfficiency?.metrics?.storedBytes ?? null,
     omittedDuplicateBytes: evidence.evidenceEfficiency?.metrics?.omittedDuplicateBytes ?? null,
-    evidenceTrendStatus: evidence.evidenceEfficiency?.status ?? null
+    evidenceTrendStatus: evidence.evidenceEfficiency?.status ?? null,
+    evidenceBudgetBytes: evidence.evidenceEfficiency?.budgetCalibration?.effectiveMaximumStoredBytes ?? null
   }, automationIssues);
 
   const categories = [map, hud, android, ios, pwa, automation];

@@ -108,6 +108,10 @@ jobs:
       - name: Deploy GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v5
+      - name: Verify Pages base path and service worker scope contract
+        run: pnpm quality:pages-runtime-contract -- --url "$PAGES_URL" --expected-sha "$GITHUB_SHA" --expected-base-path /pixel-garden-invitation/
+        env:
+          PAGES_URL: ${{ steps.deployment.outputs.page_url }}
       - name: Verify public 320px 200% portrait and landscape journey
         run: pnpm quality:production-large-text -- --url "$PAGES_URL" --expected-sha "$GITHUB_SHA"
         env:

@@ -20,13 +20,21 @@ function cleanEvidence() {
       trend: { status: "passed" },
       freshColdStart: { largestContentfulPaintMs: 1200 }
     },
+    pagesRuntimeContract: {
+      status: "passed",
+      issues: [],
+      assets: { probes: Array.from({ length: 86 }) },
+      serviceWorker: { allowedScope: "https://example.test/pixel-garden-invitation/" }
+    },
     ciEfficiency: {
       status: "passed",
-      metrics: { reportCount: 4, dependencyCacheHitRate: 0.75, sharedBuildRestoreRate: 1, estimatedSavedMs: 320_000, artifactBytes: 12_000_000 }
+      metrics: { reportCount: 4, dependencyCacheHitRate: 0.75, sharedBuildRestoreRate: 1, estimatedSavedMs: 320_000, artifactBytes: 12_000_000 },
+      trend: { cacheTiming: { cold: { p95RunDurationMs: 180_000 }, warm: { p95RunDurationMs: 120_000 } }, monthly: { runnerMinutes: 42, estimatedChargeUsd: 0 } }
     },
     evidenceEfficiency: {
       status: "warming",
-      metrics: { storedBytes: 20_000_000, omittedDuplicateBytes: 6_000_000 }
+      metrics: { storedBytes: 20_000_000, omittedDuplicateBytes: 6_000_000 },
+      budgetCalibration: { effectiveMaximumStoredBytes: 130_000_000 }
     }
   };
 }
@@ -38,6 +46,7 @@ test("release quality summary combines product and automation evidence groups", 
     ["map", "passed"], ["hud", "passed"], ["android", "passed"], ["ios", "passed"], ["pwa", "passed"], ["automation", "passed"]
   ]);
   assert.equal(summary.categories.find(({ id }) => id === "pwa").metrics.largestContentfulPaintMs, 1200);
+  assert.equal(summary.categories.find(({ id }) => id === "pwa").metrics.pagesRuntimeAssets, 86);
   assert.equal(summary.visualDifferences.status, "passed");
   assert.equal(summary.visualDifferences.counts["renderer-noise"], 2);
   assert.match(formatReleaseQualitySummaryMarkdown(summary), /종합 상태: \*\*passed\*\*/);
@@ -77,6 +86,9 @@ test("release quality workflow joins completed artifacts by commit SHA", async (
   assert.match(workflow, /visual-diff-calibration-history/);
   assert.match(workflow, /while read -r previous_run_id/);
   assert.match(workflow, /quality:ci-efficiency/);
+  assert.match(workflow, /record-quality-ci-run-timing\.mjs/);
+  assert.match(workflow, /quality-ci-efficiency-history/);
+  assert.match(workflow, /repository-visibility/);
   assert.match(workflow, /quality:evidence-efficiency/);
   assert.match(workflow, /quality-evidence-efficiency-history/);
 });

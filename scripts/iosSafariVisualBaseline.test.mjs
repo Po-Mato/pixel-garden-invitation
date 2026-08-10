@@ -102,6 +102,13 @@ test("iOS CI pins the stable Node runtime and retries Simulator URL activation",
   assert.match(workflow, /IOS_PREBUILT_WDA_PATH/);
   assert.match(workflow, /actions\/cache\/save@v5/);
   assert.match(workflow, /cron: "17 3 \* \* 1"/);
+  assert.match(workflow, /cron: "47 4 1 \* \*"/);
+  assert.match(workflow, /github\.event\.schedule == '47 4 1 \* \*'/);
+  assert.match(workflow, /recreate-session/);
+  assert.match(workflow, /cancel-in-progress: false/);
+  assert.match(workflow, /seed-ios-safari-stability-history\.mjs/);
+  assert.match(workflow, /ios-safari-stability-history-\$\{\{ github\.run_id \}\}/);
   assert.match(workflow, /compositor-fault-injection/);
   assert.match(workflow, /COMPOSITOR_RECOVERY_DURATION_MS/);
+  assert.match(workflow, /COMPOSITOR_RECOVERY_STRATEGY/);
 });

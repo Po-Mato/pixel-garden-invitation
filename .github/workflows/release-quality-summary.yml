@@ -30,12 +30,13 @@ jobs:
           path: |
             .superpowers/visual-regression/release-quality-summary/release-quality-history.json
             .superpowers/visual-regression/release-quality-summary/visual-diff-calibration-history.json
+            .superpowers/visual-regression/release-quality-summary/quality-ci-efficiency-history.json
             .superpowers/visual-regression/release-quality-summary/quality-evidence-efficiency-history.json
           key: release-quality-history-${{ runner.os }}-${{ github.run_id }}-${{ github.run_attempt }}
           restore-keys: |
             release-quality-history-${{ runner.os }}-
       - name: Seed release and engine calibration history from recent successful summaries
-        if: ${{ hashFiles('.superpowers/visual-regression/release-quality-summary/release-quality-history.json') == '' || hashFiles('.superpowers/visual-regression/release-quality-summary/visual-diff-calibration-history.json') == '' }}
+        if: ${{ hashFiles('.superpowers/visual-regression/release-quality-summary/release-quality-history.json') == '' || hashFiles('.superpowers/visual-regression/release-quality-summary/visual-diff-calibration-history.json') == '' || hashFiles('.superpowers/visual-regression/release-quality-summary/quality-ci-efficiency-history.json') == '' || hashFiles('.superpowers/visual-regression/release-quality-summary/quality-evidence-efficiency-history.json') == '' }}
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
@@ -92,8 +93,26 @@ jobs:
           download_artifact "$ANDROID_RUN_ID" "quality-ci-efficiency-android-$ANDROID_RUN_ID" quality-inputs/ci/android
           download_artifact "$IOS_RUN_ID" "ios-safari-visual-$IOS_RUN_ID" quality-inputs/ios
           download_artifact "$IOS_RUN_ID" "quality-ci-efficiency-ios-$IOS_RUN_ID" quality-inputs/ci/ios
+          record_run_timing() {
+            local workflow="$1"
+            local run_id="$2"
+            local runner_os="$3"
+            if test -n "$run_id"; then
+              node scripts/record-quality-ci-run-timing.mjs \
+                --workflow "$workflow" \
+                --run-id "$run_id" \
+                --runner-os "$runner_os" \
+                --output-dir quality-inputs/ci/timings
+            fi
+          }
+          record_run_timing pages "$PAGES_RUN_ID" linux
+          record_run_timing mobile "$MOBILE_RUN_ID" linux
+          record_run_timing android "$ANDROID_RUN_ID" linux
+          record_run_timing ios "$IOS_RUN_ID" macos
       - name: Summarize dependency cache and shared-build efficiency
-        run: pnpm quality:ci-efficiency -- --input-dir quality-inputs
+        run: pnpm quality:ci-efficiency -- --input-dir quality-inputs --repository-visibility "$REPOSITORY_VISIBILITY"
+        env:
+          REPOSITORY_VISIBILITY: ${{ github.event.repository.visibility || 'public' }}
       - name: Track content-addressed evidence savings and leak budgets
         run: pnpm quality:evidence-efficiency -- --input-dir quality-inputs --sha "${{ github.event.workflow_run.head_sha || github.sha }}"
       - name: Build checksum-bound artifact manifest
@@ -107,6 +126,7 @@ jobs:
           path: |
             .superpowers/visual-regression/release-quality-summary/release-quality-history.json
             .superpowers/visual-regression/release-quality-summary/visual-diff-calibration-history.json
+            .superpowers/visual-regression/release-quality-summary/quality-ci-efficiency-history.json
             .superpowers/visual-regression/release-quality-summary/quality-evidence-efficiency-history.json
           key: release-quality-history-${{ runner.os }}-${{ github.run_id }}-${{ github.run_attempt }}
       - name: Upload release quality summary

@@ -24,6 +24,15 @@ test("iOS Safari history replaces rerun attempts by run identity", () => {
   ]);
 });
 
+test("iOS Safari history keeps hardened timing evidence over API-only duplicates", () => {
+  const merged = mergeIosSafariStabilityHistory([
+    sample(1, "success", 3)
+  ], [{ ...sample(1, "failure", 0), setupDurationMs: 0, captureDurationMs: 0 }]);
+  assert.equal(merged[0].policyRevision, 3);
+  assert.equal(merged[0].outcome, "success");
+  assert.equal(merged[0].setupDurationMs, 240_000);
+});
+
 test("iOS Safari trend quantifies ten historical runs but warms the hardened gate", () => {
   const trend = buildIosSafariStabilityTrend(Array.from({ length: 10 }, (_, index) => (
     sample(index + 1, index < 7 ? "success" : index === 9 ? "cancelled" : "failure")
@@ -37,13 +46,21 @@ test("iOS Safari trend quantifies ten historical runs but warms the hardened gat
 
 test("iOS Safari hardened gate accepts nine of ten bounded runs", () => {
   const trend = buildIosSafariStabilityTrend(Array.from({ length: 10 }, (_, index) => (
-    sample(index + 1, index === 4 ? "failure" : "success", 3, 700_000 + index * 1_000)
+    {
+      ...sample(index + 1, index === 4 ? "failure" : "success", 3, 700_000 + index * 1_000),
+      compositorFaultInjected: index >= 8,
+      compositorFaultRecovered: index >= 8,
+      compositorRecoveryCount: index >= 8 ? 1 : 0,
+      compositorRecoveryDurationMs: index >= 8 ? 8_000 : 0,
+      compositorRecoveryStrategy: index === 8 ? "activate-refresh" : index === 9 ? "recreate-session" : null
+    }
   )));
   assert.equal(trend.acceptance.sampleCount, 10);
   assert.equal(trend.acceptance.status, "passed");
   assert.equal(trend.acceptance.successRate, 0.9);
   assert.equal(trend.acceptance.preinstalledWdaSamples, 10);
   assert.match(formatIosSafariStabilityMarkdown(trend), /준비 p95 240초/);
+  assert.match(formatIosSafariStabilityMarkdown(trend), /recreate 1\/1/);
 });
 
 test("iOS Safari hardened gate rejects clustered failures", () => {
@@ -72,7 +89,8 @@ test("iOS Safari trend tracks deterministic compositor recovery frequency and la
     compositorRecoveryCount: index === 9 ? 1 : 0,
     compositorRecoveryDurationMs: index === 9 ? 8_400 : 0,
     compositorFaultInjected: index === 9,
-    compositorFaultRecovered: index === 9
+    compositorFaultRecovered: index === 9,
+    compositorRecoveryStrategy: index === 9 ? "activate-refresh" : null
   }));
   const trend = buildIosSafariStabilityTrend(runs);
   assert.equal(trend.acceptance.recoveryRuns, 1);
@@ -80,4 +98,17 @@ test("iOS Safari trend tracks deterministic compositor recovery frequency and la
   assert.equal(trend.acceptance.p95RecoveryDurationMs, 8_400);
   assert.equal(trend.acceptance.successfulFaultRecoveries, 1);
   assert.match(formatIosSafariStabilityMarkdown(trend), /주입 복구 1\/1/);
+});
+
+test("iOS Safari hardened gate requires both scheduled recovery strategies", () => {
+  const runs = Array.from({ length: 10 }, (_, index) => ({
+    ...sample(index + 1, "success", 3),
+    compositorFaultInjected: index === 9,
+    compositorFaultRecovered: index === 9,
+    compositorRecoveryCount: index === 9 ? 1 : 0,
+    compositorRecoveryStrategy: index === 9 ? "activate-refresh" : null
+  }));
+  const trend = buildIosSafariStabilityTrend(runs);
+  assert.equal(trend.acceptance.status, "failed");
+  assert.ok(trend.acceptance.issues.some((issue) => issue.startsWith("recreate-session 합성기 복구 표본")));
 });

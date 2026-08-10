@@ -14,6 +14,7 @@ on:
           - recreate-session
   schedule:
     - cron: "17 3 * * 1"
+    - cron: "47 4 1 * *"
   push:
     branches: [main]
     paths:
@@ -31,7 +32,7 @@ permissions:
 
 concurrency:
   group: ios-safari-visual-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   compare:
@@ -54,6 +55,32 @@ jobs:
           key: ios-safari-stability-${{ runner.os }}-${{ github.run_id }}-${{ github.run_attempt }}
           restore-keys: |
             ios-safari-stability-${{ runner.os }}-
+      - name: Seed hardened iOS history from successful run artifacts
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          SEED_DIR="$RUNNER_TEMP/ios-safari-stability-seed"
+          HISTORY_PATH=".superpowers/visual-regression/ios-safari-stability/ios-safari-stability-trend-history.json"
+          mkdir -p "$SEED_DIR"
+          CURRENT_SAMPLES="$(jq -r '[.samples[] | select(.policyRevision == 3)] | length' "$HISTORY_PATH" 2>/dev/null || printf '0')"
+          LEGACY_DOWNLOADED=0
+          while read -r PREVIOUS_RUN_ID; do
+            test -n "$PREVIOUS_RUN_ID" || continue
+            if gh run download "$PREVIOUS_RUN_ID" \
+              --pattern "ios-safari-stability-history-$PREVIOUS_RUN_ID" \
+              --dir "$SEED_DIR/$PREVIOUS_RUN_ID"; then
+              continue
+            fi
+            if test "$CURRENT_SAMPLES" -lt 3 && test "$LEGACY_DOWNLOADED" -lt 4; then
+              gh run download "$PREVIOUS_RUN_ID" \
+                --pattern "ios-safari-visual-$PREVIOUS_RUN_ID" \
+                --dir "$SEED_DIR/$PREVIOUS_RUN_ID" || true
+              LEGACY_DOWNLOADED=$((LEGACY_DOWNLOADED + 1))
+            fi
+          done < <(gh run list --workflow ios-safari-visual.yml --status success --limit 15 \
+            --json databaseId --jq '.[].databaseId')
+          node scripts/seed-ios-safari-stability-history.mjs --input-dir "$SEED_DIR" --history "$HISTORY_PATH"
       - name: Restore Appium and prebuilt WebDriverAgent
         id: ios-automation-cache
         uses: actions/cache/restore@v5
@@ -169,7 +196,7 @@ jobs:
             --preview-host-url http://127.0.0.1:4188/ \
             --compositor-fault-injection "$IOS_COMPOSITOR_FAULT_INJECTION"
         env:
-          IOS_COMPOSITOR_FAULT_INJECTION: ${{ github.event_name == 'schedule' && 'activate-refresh' || inputs.compositor_fault_injection || 'none' }}
+          IOS_COMPOSITOR_FAULT_INJECTION: ${{ github.event_name == 'schedule' && github.event.schedule == '47 4 1 * *' && 'recreate-session' || github.event_name == 'schedule' && 'activate-refresh' || inputs.compositor_fault_injection || 'none' }}
       - name: Track ten-run iOS Safari stability
         if: always()
         shell: bash
@@ -181,6 +208,7 @@ jobs:
           COMPOSITOR_RECOVERY_DURATION_MS="$(jq -r '.nativeCompositor.recoveryDurationMs // 0' "$CAPTURE_REPORT" 2>/dev/null || printf '0')"
           COMPOSITOR_FAULT_INJECTED="$(jq -r '.nativeCompositor.faultInjection.triggered // false' "$CAPTURE_REPORT" 2>/dev/null || printf 'false')"
           COMPOSITOR_FAULT_RECOVERED="$(jq -r '.nativeCompositor.faultInjection.recovered // false' "$CAPTURE_REPORT" 2>/dev/null || printf 'false')"
+          COMPOSITOR_RECOVERY_STRATEGY="$(jq -r '.nativeCompositor.faultInjection.recoveryStrategy // ""' "$CAPTURE_REPORT" 2>/dev/null || printf '')"
           pnpm visual:ios-safari:stability -- \
             --outcome "${{ steps.capture.outcome }}" \
             --run-id "$GITHUB_RUN_ID" \
@@ -193,6 +221,7 @@ jobs:
             --compositor-recovery-duration-ms "$COMPOSITOR_RECOVERY_DURATION_MS" \
             --compositor-fault-injected "$COMPOSITOR_FAULT_INJECTED" \
             --compositor-fault-recovered "$COMPOSITOR_FAULT_RECOVERED" \
+            --compositor-recovery-strategy "$COMPOSITOR_RECOVERY_STRATEGY" \
             --wda-mode preinstalled \
             --run-url "https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
         env:
@@ -233,6 +262,16 @@ jobs:
           if-no-files-found: ignore
           compression-level: 9
           retention-days: 14
+      - name: Upload lightweight iOS Safari stability history
+        if: ${{ always() && hashFiles('.superpowers/visual-regression/ios-safari-stability/ios-safari-stability-trend-history.json') != '' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: ios-safari-stability-history-${{ github.run_id }}
+          path: |
+            .superpowers/visual-regression/ios-safari-stability/ios-safari-stability-trend-history.json
+            .superpowers/visual-regression/ios-safari-stability/ios-safari-stability-trend.json
+          if-no-files-found: error
+          retention-days: 30
       - name: Save iOS Safari stability history
         if: ${{ always() && hashFiles('.superpowers/visual-regression/ios-safari-stability/ios-safari-stability-trend-history.json') != '' }}
         uses: actions/cache/save@v5

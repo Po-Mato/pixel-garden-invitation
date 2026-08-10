@@ -1,7 +1,12 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
-import { buildQualityCiEfficiency, formatQualityCiEfficiencyMarkdown } from "./lib/qualityCiEfficiency.mjs";
+import {
+  buildQualityCiEfficiency,
+  formatQualityCiEfficiencyMarkdown,
+  mergeQualityCiEfficiencyHistory,
+  mergeQualityCiRunTimings
+} from "./lib/qualityCiEfficiency.mjs";
 
 const sample = (workflow, variant, cache = true) => ({
   workflow,
@@ -11,7 +16,12 @@ const sample = (workflow, variant, cache = true) => ({
   buildRestored: true,
   restoreDurationMs: 20_000,
   artifactBytes: 12_000_000,
-  producerBuildDurationMs: variant === "device" ? 40_000 : 120_000
+  producerBuildDurationMs: variant === "device" ? 40_000 : 120_000,
+  runDurationMs: workflow === "ios" ? 600_000 : 120_000,
+  billedMinutes: workflow === "ios" ? 10 : 2,
+  runnerOs: workflow === "ios" ? "macos" : "linux",
+  runId: `run-${workflow}`,
+  generatedAt: "2026-08-10T00:00:00.000Z"
 });
 
 test("quality CI dashboard aggregates cache, reuse, size, and saved time", () => {
@@ -25,7 +35,11 @@ test("quality CI dashboard aggregates cache, reuse, size, and saved time", () =>
   assert.equal(summary.metrics.dependencyCacheHitRate, 0.75);
   assert.equal(summary.metrics.sharedBuildRestoreRate, 1);
   assert.equal(summary.metrics.estimatedSavedMs, 320_000);
+  assert.equal(summary.trend.cacheTiming.warm.p95RunDurationMs, 600_000);
+  assert.equal(summary.trend.monthly.estimatedChargeUsd, 0);
+  assert.equal(summary.trend.monthly.billedEquivalentUsd, 0.656);
   assert.match(formatQualityCiEfficiencyMarkdown(summary), /추정 절약: 320초/);
+  assert.match(formatQualityCiEfficiencyMarkdown(summary), /공개 저장소 예상 과금 \$0\.00/);
 });
 
 test("quality CI dashboard gates missing reports and local rebuild fallback", () => {
@@ -48,4 +62,33 @@ test("all expensive quality consumers publish efficiency evidence", async () => 
   const restoreAction = await readFile(new URL("../.github/actions/restore-quality-build/action.yml", import.meta.url), "utf8");
   assert.match(restoreAction, /artifact-bytes:/);
   assert.match(restoreAction, /producer-build-duration-ms:/);
+});
+
+test("quality CI history separates cold and warm p50/p95 without double-counting reruns", () => {
+  const current = [
+    { ...sample("pages", "production", true), runId: "2", dependencySetupDurationMs: 8_000, runDurationMs: 100_000 },
+    { ...sample("ios", "device", true), runId: "3", dependencySetupDurationMs: 20_000, runDurationMs: 600_000 }
+  ];
+  const history = mergeQualityCiEfficiencyHistory({ version: 1, samples: [
+    { ...sample("pages", "production", false), runId: "1", dependencySetupDurationMs: 30_000, runDurationMs: 180_000 },
+    { ...sample("pages", "production", true), runId: "2", dependencySetupDurationMs: 9_000, runDurationMs: 110_000 }
+  ] }, current);
+  assert.equal(history.samples.length, 3);
+  const summary = buildQualityCiEfficiency(current, history, {
+    generatedAt: "2026-08-10T12:00:00.000Z",
+    repositoryVisibility: "private"
+  });
+  assert.equal(summary.trend.cacheTiming.cold.p50SetupDurationMs, 30_000);
+  assert.equal(summary.trend.cacheTiming.warm.p50SetupDurationMs, 8_000);
+  assert.equal(summary.trend.cacheTiming.warm.p95RunDurationMs, 600_000);
+  assert.ok(summary.trend.monthly.estimatedChargeUsd > 0);
+});
+
+test("quality CI timing reports merge only with their matching workflow run", () => {
+  const samples = [{ ...sample("pages", "production"), runId: "42", runDurationMs: 0 }];
+  const merged = mergeQualityCiRunTimings(samples, [{
+    workflow: "pages", runId: "42", runDurationMs: 123_000, billedMinutes: 3, runnerOs: "linux"
+  }]);
+  assert.equal(merged[0].runDurationMs, 123_000);
+  assert.equal(merged[0].billedMinutes, 3);
 });
