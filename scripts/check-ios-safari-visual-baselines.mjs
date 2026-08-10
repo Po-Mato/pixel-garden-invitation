@@ -609,7 +609,7 @@ async function captureLandscapeMetrics(state) {
   return metrics;
 }
 
-function assertLandscapeMetrics(metrics) {
+function assertLandscapeMetrics(metrics, { requireHudTools = false } = {}) {
   if (metrics.viewport.width <= metrics.viewport.height) {
     throw new Error(`${metrics.state} 실제 Safari 가로 회전 실패`);
   }
@@ -618,6 +618,9 @@ function assertLandscapeMetrics(metrics) {
   }
   if (metrics.horizontalOverflow) throw new Error(`${metrics.state} 실제 Safari 가로 넘침`);
   if (!metrics.controlsContained) throw new Error(`${metrics.state} 실제 Safari safe-area 이탈`);
+  if (requireHudTools && !metrics.controls.some(({ selector }) => selector === ".world-hud__tools")) {
+    throw new Error(`${metrics.state} 실제 Safari 펼친 안내 패널 측정 누락`);
+  }
   if (!metrics.textContained) throw new Error(`${metrics.state} 실제 Safari HUD 문구 잘림`);
   if (!metrics.playerCenter) throw new Error(`${metrics.state} 실제 Safari 캐릭터 중심 측정 누락`);
   if (metrics.playerCenter.errorPx > iosSafariVisualProfile.maxLandscapePlayerCenterErrorPx) {
@@ -813,6 +816,30 @@ try {
   await sessionCommand("POST", "/orientation", { orientation: "LANDSCAPE" });
   await waitForDocument("innerWidth > innerHeight", "Safari 가로 회전", 30_000);
   await new Promise((resolve) => setTimeout(resolve, 800));
+  await evaluate(`
+    document.querySelector(".world-hud__tools-toggle")?.click();
+    return true;
+  `);
+  await waitForDocument(`
+    (() => {
+      const panel = document.querySelector(".world-hud[data-tools-open] .world-hud__tools");
+      if (!(panel instanceof HTMLElement)) return false;
+      const style = getComputedStyle(panel);
+      const rect = panel.getBoundingClientRect();
+      return style.display !== "none" && style.visibility !== "hidden" && rect.width > 0 && rect.height > 0;
+    })()
+  `, "가로 펼친 안내 패널");
+  captureReport.landscape.toolsExpanded = await captureLandscapeMetrics("game-landscape-tools-expanded");
+  await screenshot("game-landscape-tools-expanded");
+  assertLandscapeMetrics(captureReport.landscape.toolsExpanded, { requireHudTools: true });
+  await evaluate(`
+    document.querySelector(".world-hud__tools-toggle")?.click();
+    return true;
+  `);
+  await waitForDocument(
+    "!document.querySelector('.world-hud[data-tools-open] .world-hud__tools')",
+    "가로 안내 패널 닫힘"
+  );
   captureReport.landscape.expanded = await captureLandscapeMetrics("game-landscape-chrome-expanded");
   await screenshot("game-landscape-chrome-expanded");
   assertLandscapeMetrics(captureReport.landscape.expanded);

@@ -89,6 +89,10 @@ test("collapsed Safari chrome audit keeps the playing shell pinned and saves evi
   assert.match(source, /playerCenter\.centerable\.y/);
   assert.match(source, /가로 내부 이동 후 캐릭터 중심 오차/);
   assert.match(source, /"\.world-hud__tools"/);
+  assert.match(source, /captureReport\.landscape\.toolsExpanded = await captureLandscapeMetrics\("game-landscape-tools-expanded"\)/);
+  assert.match(source, /await screenshot\("game-landscape-tools-expanded"\)/);
+  assert.match(source, /assertLandscapeMetrics\(captureReport\.landscape\.toolsExpanded, \{ requireHudTools: true \}\)/);
+  assert.match(source, /실제 Safari 펼친 안내 패널 측정 누락/);
 });
 
 test("iOS audit supports a signed physical iPhone session and native address-bar swipe", async () => {
