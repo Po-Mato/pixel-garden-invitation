@@ -120,7 +120,10 @@ function summarize(samples) {
   };
 }
 
-function policyIssues(summary, { requireRecoveryStrategies = false } = {}) {
+function policyIssues(summary, {
+  requireRecoveryStrategies = false,
+  recoveryStrategies = summary.recoveryStrategies
+} = {}) {
   const issues = [];
   if (summary.successRate < iosSafariStabilityPolicy.minimumSuccessRate) {
     issues.push(`성공률 ${Math.round(summary.successRate * 100)}%/${Math.round(iosSafariStabilityPolicy.minimumSuccessRate * 100)}%`);
@@ -145,7 +148,7 @@ function policyIssues(summary, { requireRecoveryStrategies = false } = {}) {
   }
   if (requireRecoveryStrategies) {
     for (const strategy of iosSafariStabilityPolicy.requiredFaultRecoveryStrategies) {
-      const coverage = summary.recoveryStrategies[strategy];
+      const coverage = recoveryStrategies[strategy];
       if (!coverage || coverage.samples < 1 || coverage.successes < coverage.samples) {
         issues.push(`${strategy} 합성기 복구 표본 ${coverage?.successes ?? 0}/${coverage?.samples ?? 0}`);
       }
@@ -157,9 +160,10 @@ function policyIssues(summary, { requireRecoveryStrategies = false } = {}) {
 export function buildIosSafariStabilityTrend(samples) {
   const ordered = mergeIosSafariStabilityHistory([], samples);
   const observedSamples = ordered.slice(-iosSafariStabilityPolicy.observedWindow);
-  const hardenedSamples = ordered
-    .filter(({ policyRevision }) => policyRevision === iosSafariStabilityPolicy.policyRevision)
-    .slice(-iosSafariStabilityPolicy.requiredHardenedRuns);
+  const hardenedHistory = ordered
+    .filter(({ policyRevision }) => policyRevision === iosSafariStabilityPolicy.policyRevision);
+  const hardenedSamples = hardenedHistory.slice(-iosSafariStabilityPolicy.requiredHardenedRuns);
+  const retainedRecoveryStrategies = summarize(hardenedHistory).recoveryStrategies;
   const observed = summarize(observedSamples);
   const observedIssues = observed.sampleCount < iosSafariStabilityPolicy.observedWindow
     ? [`관측 표본 ${observed.sampleCount}/${iosSafariStabilityPolicy.observedWindow}`]
@@ -167,7 +171,10 @@ export function buildIosSafariStabilityTrend(samples) {
   const acceptance = summarize(hardenedSamples);
   const acceptanceIssues = acceptance.sampleCount < iosSafariStabilityPolicy.requiredHardenedRuns
     ? [`Prebuilt WDA 적용 이후 표본 ${acceptance.sampleCount}/${iosSafariStabilityPolicy.requiredHardenedRuns}`]
-    : policyIssues(acceptance, { requireRecoveryStrategies: true });
+    : policyIssues(acceptance, {
+      requireRecoveryStrategies: true,
+      recoveryStrategies: retainedRecoveryStrategies
+    });
   return {
     policy: iosSafariStabilityPolicy,
     observed: {
@@ -178,6 +185,7 @@ export function buildIosSafariStabilityTrend(samples) {
     },
     acceptance: {
       ...acceptance,
+      recoveryStrategies: retainedRecoveryStrategies,
       status: acceptance.sampleCount < iosSafariStabilityPolicy.requiredHardenedRuns
         ? "warming" : acceptanceIssues.length === 0 ? "passed" : "failed",
       issues: acceptanceIssues

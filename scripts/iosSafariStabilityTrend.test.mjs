@@ -119,3 +119,19 @@ test("iOS Safari hardened gate requires both scheduled recovery strategies", () 
   assert.equal(trend.acceptance.status, "failed");
   assert.ok(trend.acceptance.issues.some((issue) => issue.startsWith("recreate-session 합성기 복구 표본")));
 });
+
+test("iOS Safari hardened gate keeps scheduled recovery coverage beyond the ten-run timing window", () => {
+  const runs = Array.from({ length: 12 }, (_, index) => ({
+    ...sample(index + 1, "success", 3),
+    compositorFaultInjected: index === 0 || index === 11,
+    compositorFaultRecovered: index === 0 || index === 11,
+    compositorRecoveryCount: index === 0 || index === 11 ? 1 : 0,
+    compositorRecoveryStrategy: index === 0
+      ? "recreate-session" : index === 11 ? "activate-refresh" : null
+  }));
+  const trend = buildIosSafariStabilityTrend(runs);
+  assert.equal(trend.acceptance.sampleCount, 10);
+  assert.equal(trend.acceptance.status, "passed");
+  assert.equal(trend.acceptance.recoveryStrategies["recreate-session"].successes, 1);
+  assert.equal(trend.acceptance.recoveryStrategies["activate-refresh"].successes, 1);
+});
