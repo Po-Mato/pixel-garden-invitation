@@ -114,8 +114,10 @@ jobs:
           record_run_timing android "$ANDROID_RUN_ID" linux
           record_run_timing ios "$IOS_RUN_ID" macos
           {
-            gh run list --workflow quality-build.yml --event schedule --status success --limit 6 --json databaseId --jq '.[].databaseId'
-            gh run list --workflow quality-build.yml --event workflow_dispatch --status success --limit 30 --json databaseId --jq '.[].databaseId'
+            gh run list --workflow quality-build.yml --event schedule --status success --limit 6 --json databaseId,headSha \
+              --jq ".[] | select(.headSha == \"$TARGET_SHA\") | .databaseId"
+            gh run list --workflow quality-build.yml --event workflow_dispatch --status success --limit 30 --json databaseId,headSha \
+              --jq ".[] | select(.headSha == \"$TARGET_SHA\") | .databaseId"
           } | sort -u \
             | while read -r cold_run_id; do
                 test -n "$cold_run_id" || continue
@@ -123,7 +125,12 @@ jobs:
                   --jq "[.artifacts[] | select(.name == \"quality-ci-intentional-cold-$cold_run_id\" and (.expired | not))] | length")"
                 if test "$has_cold_artifact" -gt 0; then
                   download_artifact "$cold_run_id" "quality-ci-intentional-cold-$cold_run_id" "quality-inputs/ci/cold/$cold_run_id"
-                  record_run_timing cold-sample "$cold_run_id" linux
+                  cold_report="$(find "quality-inputs/ci/cold/$cold_run_id" -name quality-ci-efficiency-cold-sample.json -print -quit)"
+                  if test -n "$cold_report" && test "$(jq -r '.releaseSha // .sha // ""' "$cold_report")" = "$TARGET_SHA"; then
+                    record_run_timing cold-sample "$cold_run_id" linux
+                  else
+                    rm -f "$cold_report"
+                  fi
                 fi
               done
       - name: Summarize dependency cache and shared-build efficiency

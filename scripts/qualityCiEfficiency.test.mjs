@@ -54,6 +54,7 @@ test("intentional monthly cold samples improve timing confidence without replaci
     ...sample("cold-sample", "production", false),
     sampleKind: "intentional-cold",
     runId: `cold-${index}`,
+    releaseSha: `release-${index}`,
     dependencySetupDurationMs: 24_000 + index,
     runDurationMs: 180_000 + index
   }));
@@ -61,6 +62,7 @@ test("intentional monthly cold samples improve timing confidence without replaci
   assert.equal(summary.metrics.reportCount, 4);
   assert.equal(summary.reports.length, 4);
   assert.equal(summary.supplementalReports.length, 6);
+  assert.equal(summary.supplementalReports[5].releaseSha, "release-5");
   assert.equal(summary.trend.cacheTiming.cold.sampleCount, 6);
   assert.equal(summary.trend.cacheTiming.cold.intentionalSampleCount, 6);
   assert.equal(summary.trend.cacheTiming.cold.confidence, "established");
@@ -90,9 +92,14 @@ test("all expensive quality consumers publish efficiency evidence", async () => 
   const buildWorkflow = await readFile(new URL("../.github/workflows/quality-build.yml", import.meta.url), "utf8");
   assert.match(buildWorkflow, /cron: "23 5 1 \* \*"/);
   assert.match(buildWorkflow, /force_cold_sample:/);
+  assert.match(buildWorkflow, /release_sha:/);
+  assert.match(buildWorkflow, /release_sha is required for a forced cold sample/);
   assert.match(buildWorkflow, /inputs\.force_cold_sample == true/);
   assert.match(buildWorkflow, /force-cold:/);
   assert.match(buildWorkflow, /quality-ci-intentional-cold-/);
+  const releaseSummaryWorkflow = await readFile(new URL("../.github/workflows/release-quality-summary.yml", import.meta.url), "utf8");
+  assert.match(releaseSummaryWorkflow, /select\(\.headSha == \\"\$TARGET_SHA\\"\)/);
+  assert.match(releaseSummaryWorkflow, /\.releaseSha \/\/ \.sha/);
   const dependencyAction = await readFile(new URL("../.github/actions/setup-quality-dependencies/action.yml", import.meta.url), "utf8");
   assert.match(dependencyAction, /hashFiles\('pnpm-lock\.yaml'\)/);
   assert.doesNotMatch(dependencyAction, /hashFiles\('pnpm-lock\.yaml',/);

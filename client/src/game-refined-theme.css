@@ -554,7 +554,10 @@
 
   .world-hud__tools {
     position: absolute;
-    inset: calc(132px + env(safe-area-inset-top)) 8px 8px;
+    top: calc(132px + env(safe-area-inset-top));
+    right: 8px;
+    bottom: 8px;
+    left: calc(8px + env(safe-area-inset-left));
     z-index: 24;
     max-height: 0;
     overflow: hidden;

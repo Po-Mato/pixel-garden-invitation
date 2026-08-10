@@ -23,8 +23,11 @@ function normalizedSample(sample = {}) {
     sha: sample.sha ? String(sample.sha) : null,
     outcome: ["success", "failure", "cancelled"].includes(sample.outcome) ? sample.outcome : "failure",
     durationMs: Math.max(0, Number(sample.durationMs) || 0),
+    queueDurationMs: Math.max(0, Number(sample.queueDurationMs) || 0),
     setupDurationMs: Math.max(0, Number(sample.setupDurationMs) || 0),
     captureDurationMs: Math.max(0, Number(sample.captureDurationMs) || 0),
+    bridgeInstallDurationMs: Math.max(0, Number(sample.bridgeInstallDurationMs) || 0),
+    appiumCacheHit: sample.appiumCacheHit === true || sample.appiumCacheHit === "true",
     compositorRecoveryCount: Math.max(0, Number(sample.compositorRecoveryCount) || 0),
     compositorRecoveryDurationMs: Math.max(0, Number(sample.compositorRecoveryDurationMs) || 0),
     compositorFaultInjected: sample.compositorFaultInjected === true || sample.compositorFaultInjected === "true",
@@ -77,6 +80,10 @@ function summarize(samples) {
   const successRate = samples.length === 0 ? 0 : successes / samples.length;
   const setupDurations = samples.map(({ setupDurationMs }) => setupDurationMs).filter((value) => value > 0);
   const captureDurations = samples.map(({ captureDurationMs }) => captureDurationMs).filter((value) => value > 0);
+  const queueDurations = samples.map(({ queueDurationMs }) => queueDurationMs).filter((value) => value >= 0);
+  const bridgeInstallDurations = samples
+    .map(({ bridgeInstallDurationMs }) => bridgeInstallDurationMs)
+    .filter((value) => value > 0);
   const recoverySamples = samples.filter(({ compositorRecoveryCount }) => compositorRecoveryCount > 0);
   const faultInjectionSamples = samples.filter(({ compositorFaultInjected }) => compositorFaultInjected);
   const recoveryStrategies = Object.fromEntries(iosSafariStabilityPolicy.requiredFaultRecoveryStrategies.map((strategy) => {
@@ -92,9 +99,12 @@ function summarize(samples) {
     failures: samples.length - successes,
     successRate,
     p95DurationMs: percentile(samples.map(({ durationMs }) => durationMs), 0.95),
+    p95QueueDurationMs: percentile(queueDurations, 0.95),
     p95SetupDurationMs: percentile(setupDurations, 0.95),
     p95CaptureDurationMs: percentile(captureDurations, 0.95),
-    phaseTimingSamples: Math.min(setupDurations.length, captureDurations.length),
+    p95BridgeInstallDurationMs: percentile(bridgeInstallDurations, 0.95),
+    phaseTimingSamples: Math.min(queueDurations.length, setupDurations.length, captureDurations.length),
+    cachedAppiumSamples: samples.filter(({ appiumCacheHit }) => appiumCacheHit).length,
     preinstalledWdaSamples: samples.filter(({ wdaMode }) => wdaMode === "preinstalled").length,
     recoveryRuns: recoverySamples.length,
     recoveryRate: samples.length === 0 ? 0 : recoverySamples.length / samples.length,
@@ -181,8 +191,11 @@ export function formatIosSafariStabilityMarkdown(trend) {
     + ` · p95 ${Math.round(summary.p95DurationMs / 1000)}초`
     + ` · 최대 연속 실패 ${summary.maximumConsecutiveFailures}회`;
   const phase = trend.acceptance.phaseTimingSamples > 0
-    ? ` · 준비 p95 ${Math.round(trend.acceptance.p95SetupDurationMs / 1000)}초`
+    ? ` · 대기 p95 ${Math.round(trend.acceptance.p95QueueDurationMs / 1000)}초`
+      + ` · 준비 p95 ${Math.round(trend.acceptance.p95SetupDurationMs / 1000)}초`
       + ` · 캡처 p95 ${Math.round(trend.acceptance.p95CaptureDurationMs / 1000)}초`
+      + ` · Appium 준비 p95 ${Math.round(trend.acceptance.p95BridgeInstallDurationMs / 1000)}초`
+      + ` · Appium 캐시 ${trend.acceptance.cachedAppiumSamples}/${trend.acceptance.sampleCount}`
       + ` · Prebuilt WDA ${trend.acceptance.preinstalledWdaSamples}/${trend.acceptance.sampleCount}`
     : "";
   const compositor = ` · compositor 복구 ${trend.acceptance.recoveryRuns}/${trend.acceptance.sampleCount}`

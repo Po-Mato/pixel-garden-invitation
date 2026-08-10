@@ -88,6 +88,7 @@ test("collapsed Safari chrome audit keeps the playing shell pinned and saves evi
   assert.match(source, /playerCenter\.centerable\.x/);
   assert.match(source, /playerCenter\.centerable\.y/);
   assert.match(source, /가로 내부 이동 후 캐릭터 중심 오차/);
+  assert.match(source, /"\.world-hud__tools"/);
 });
 
 test("iOS audit supports a signed physical iPhone session and native address-bar swipe", async () => {
@@ -110,7 +111,12 @@ test("iOS CI pins the stable Node runtime and recovers Simulator URL activation"
   assert.match(workflow, /download-wda/);
   assert.doesNotMatch(workflow, /mkdir -p "\$WDA_CACHE_DIR"/);
   assert.match(workflow, /mkdir -p "\$\(dirname "\$WDA_CACHE_DIR"\)"/);
-  assert.match(workflow, /xcuitest-11\.4\.0-v3/);
+  assert.match(workflow, /appium-3\.6\.0-xcuitest-11\.4\.0-v4/);
+  assert.match(workflow, /\.cache\/ios-safari-appium/);
+  assert.match(workflow, /npm install --prefix "\$APPIUM_CACHE_DIR"/);
+  assert.doesNotMatch(workflow, /npm install --global appium/);
+  assert.match(workflow, /bridge-install-duration-ms/);
+  assert.match(workflow, /appium-cache-hit/);
   assert.match(workflow, /success\(\).*ios-automation-cache\.outputs\.cache-hit/);
   assert.match(workflow, /IOS_PREBUILT_WDA_PATH/);
   assert.match(workflow, /actions\/cache\/save@v5/);

@@ -9,7 +9,8 @@ import {
 function sample(index, outcome = "success", policyRevision = 0, durationMs = 600_000) {
   return {
     runId: String(index), runAttempt: 1, sha: `sha-${index}`, outcome, durationMs,
-    setupDurationMs: 240_000, captureDurationMs: 360_000,
+    queueDurationMs: 12_000, setupDurationMs: 240_000, captureDurationMs: 360_000,
+    bridgeInstallDurationMs: 4_000, appiumCacheHit: true,
     wdaMode: policyRevision === 3 ? "preinstalled" : "source-build",
     generatedAt: `2026-08-${String(index).padStart(2, "0")}T00:00:00.000Z`, policyRevision
   };
@@ -60,6 +61,11 @@ test("iOS Safari hardened gate accepts nine of ten bounded runs", () => {
   assert.equal(trend.acceptance.status, "passed");
   assert.equal(trend.acceptance.successRate, 0.9);
   assert.equal(trend.acceptance.preinstalledWdaSamples, 10);
+  assert.equal(trend.acceptance.cachedAppiumSamples, 10);
+  assert.equal(trend.acceptance.p95QueueDurationMs, 12_000);
+  assert.equal(trend.acceptance.p95BridgeInstallDurationMs, 4_000);
+  assert.match(formatIosSafariStabilityMarkdown(trend), /대기 p95 12초/);
+  assert.match(formatIosSafariStabilityMarkdown(trend), /Appium 캐시 10\/10/);
   assert.match(formatIosSafariStabilityMarkdown(trend), /준비 p95 240초/);
   assert.match(formatIosSafariStabilityMarkdown(trend), /recreate 1\/1/);
 });

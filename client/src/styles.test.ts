@@ -372,6 +372,7 @@ describe("mobile world controls", () => {
     expect(refinedGameStyles).toMatch(/\.world-hud__tools\s*\{[^}]*position:\s*absolute;/s);
     expect(refinedGameStyles).toMatch(/\.game-world \.world-hud\s*\{[^}]*flex:\s*0 0 calc\(96px \+ env\(safe-area-inset-top\)\);/s);
     expect(refinedGameStyles).toContain(".world-hud[data-tools-open] .world-destination-guide-row");
+    expect(refinedGameStyles).toContain("left: calc(8px + env(safe-area-inset-left));");
   });
 
   it("adapts the game shell and fixed HUD to dynamic viewport and safe-area changes", () => {

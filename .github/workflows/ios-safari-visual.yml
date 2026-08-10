@@ -39,9 +39,9 @@ jobs:
     runs-on: macos-15
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v6
       - name: Mark iOS Safari job start
         run: echo "IOS_JOB_STARTED_AT_MS=$(node -p 'Date.now()')" >> "$GITHUB_ENV"
+      - uses: actions/checkout@v6
       - name: Restore shared quality dependencies
         id: quality-dependencies
         uses: ./.github/actions/setup-quality-dependencies
@@ -88,8 +88,12 @@ jobs:
           path: |
             ~/.appium
             ~/.npm
+            .cache/ios-safari-appium
             .cache/ios-safari-wda
-          key: ios-safari-automation-${{ runner.os }}-xcode-16.4-appium-3-xcuitest-11.4.0-v3
+          key: ios-safari-automation-${{ runner.os }}-xcode-16.4-appium-3.6.0-xcuitest-11.4.0-v4
+          restore-keys: |
+            ios-safari-automation-${{ runner.os }}-xcode-16.4-appium-3.6.0-xcuitest-11.4.0-
+            ios-safari-automation-${{ runner.os }}-xcode-16.4-appium-3-
       - name: Select pinned Xcode and warm Simulator services
         shell: bash
         run: |
@@ -104,11 +108,23 @@ jobs:
           xcrun simctl boot "$IOS_SIMULATOR_UDID"
           xcrun simctl bootstatus "$IOS_SIMULATOR_UDID" -b
       - name: Install the iOS Safari automation bridge
+        id: ios-automation-bridge
         shell: bash
         run: |
-          npm install --global appium@3
+          BRIDGE_STARTED_AT_MS="$(node -p 'Date.now()')"
+          export BRIDGE_STARTED_AT_MS
+          APPIUM_CACHE_DIR="$GITHUB_WORKSPACE/.cache/ios-safari-appium"
+          APPIUM_BIN="$APPIUM_CACHE_DIR/node_modules/.bin/appium"
+          APPIUM_CACHE_HIT=false
+          if test -x "$APPIUM_BIN" \
+            && test "$(node -p "require('$APPIUM_CACHE_DIR/node_modules/appium/package.json').version" 2>/dev/null || true)" = "3.6.0"; then
+            APPIUM_CACHE_HIT=true
+          else
+            npm install --prefix "$APPIUM_CACHE_DIR" --no-audit --no-fund --no-save appium@3.6.0
+          fi
+          echo "$APPIUM_CACHE_DIR/node_modules/.bin" >> "$GITHUB_PATH"
           if ! test -d "$HOME/.appium/node_modules/appium-xcuitest-driver"; then
-            appium driver install xcuitest@11.4.0
+            "$APPIUM_BIN" driver install xcuitest@11.4.0
           fi
           WDA_CACHE_DIR="$GITHUB_WORKSPACE/.cache/ios-safari-wda"
           mkdir -p "$(dirname "$WDA_CACHE_DIR")"
@@ -117,12 +133,14 @@ jobs:
             IOS_PREBUILT_WDA_PATH="$(find "$WDA_CACHE_DIR" -type d -name 'WebDriverAgentRunner-Runner.app' | head -n 1)"
           fi
           if test -z "$IOS_PREBUILT_WDA_PATH"; then
-            appium driver run xcuitest download-wda -- --outdir="$WDA_CACHE_DIR" --kind=sim --platform=ios
+            "$APPIUM_BIN" driver run xcuitest download-wda -- --outdir="$WDA_CACHE_DIR" --kind=sim --platform=ios
             IOS_PREBUILT_WDA_PATH="$(find "$WDA_CACHE_DIR" -type d -name 'WebDriverAgentRunner-Runner.app' | head -n 1)"
           fi
           test -n "$IOS_PREBUILT_WDA_PATH"
           echo "IOS_PREBUILT_WDA_PATH=$IOS_PREBUILT_WDA_PATH" >> "$GITHUB_ENV"
-          appium --version
+          echo "cache-hit=$APPIUM_CACHE_HIT" >> "$GITHUB_OUTPUT"
+          echo "duration-ms=$(node -p 'Math.max(0, Date.now() - Number(process.env.BRIDGE_STARTED_AT_MS))')" >> "$GITHUB_OUTPUT"
+          "$APPIUM_BIN" --version
       - name: Restore commit-matched device build
         id: quality-build
         uses: ./.github/actions/restore-quality-build
@@ -229,6 +247,8 @@ jobs:
             --duration-ms "$DURATION_MS" \
             --setup-duration-ms "$SETUP_DURATION_MS" \
             --capture-duration-ms "$DURATION_MS" \
+            --bridge-install-duration-ms "${{ steps.ios-automation-bridge.outputs.duration-ms || '0' }}" \
+            --appium-cache-hit "${{ steps.ios-automation-bridge.outputs.cache-hit || 'false' }}" \
             --compositor-recovery-count "$COMPOSITOR_RECOVERY_COUNT" \
             --compositor-recovery-duration-ms "$COMPOSITOR_RECOVERY_DURATION_MS" \
             --compositor-fault-injected "$COMPOSITOR_FAULT_INJECTED" \
@@ -297,8 +317,9 @@ jobs:
           path: |
             ~/.appium
             ~/.npm
+            .cache/ios-safari-appium
             .cache/ios-safari-wda
-          key: ios-safari-automation-${{ runner.os }}-xcode-16.4-appium-3-xcuitest-11.4.0-v3
+          key: ios-safari-automation-${{ runner.os }}-xcode-16.4-appium-3.6.0-xcuitest-11.4.0-v4
       - name: Fail when the Safari capture failed
         if: steps.capture.outcome != 'success'
         run: exit 1

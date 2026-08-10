@@ -64,9 +64,11 @@ async function currentGithubRun() {
   if (!response.ok) return null;
   const run = await response.json();
   const startedAt = run.run_started_at || run.created_at;
+  const createdAt = run.created_at || startedAt;
   return {
     generatedAt: startedAt,
-    durationMs: Math.max(0, Date.now() - Date.parse(startedAt)),
+    durationMs: Math.max(0, Date.now() - Date.parse(createdAt)),
+    queueDurationMs: Math.max(0, Date.parse(startedAt) - Date.parse(createdAt)),
     url: run.html_url
   };
 }
@@ -82,8 +84,11 @@ if (currentOutcome) {
     sha: option("--sha", process.env.GITHUB_SHA),
     outcome: currentOutcome,
     durationMs: currentRun?.durationMs ?? Number(option("--duration-ms", 0)),
+    queueDurationMs: currentRun?.queueDurationMs ?? Number(option("--queue-duration-ms", 0)),
     setupDurationMs: Number(option("--setup-duration-ms", 0)),
     captureDurationMs: Number(option("--capture-duration-ms", 0)),
+    bridgeInstallDurationMs: Number(option("--bridge-install-duration-ms", 0)),
+    appiumCacheHit: option("--appium-cache-hit", "false") === "true",
     compositorRecoveryCount: Number(option("--compositor-recovery-count", 0)),
     compositorRecoveryDurationMs: Number(option("--compositor-recovery-duration-ms", 0)),
     compositorFaultInjected: option("--compositor-fault-injected", "false") === "true",

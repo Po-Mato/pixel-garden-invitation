@@ -8,6 +8,11 @@ on:
         required: false
         default: false
         type: boolean
+      release_sha:
+        description: Full release commit SHA that owns a forced cold-cache sample
+        required: false
+        default: ""
+        type: string
   schedule:
     - cron: "23 5 1 * *"
   push:
@@ -27,6 +32,17 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v6
+      - name: Bind forced cold sample to its release commit
+        if: ${{ inputs.force_cold_sample == true }}
+        env:
+          REQUESTED_RELEASE_SHA: ${{ inputs.release_sha }}
+        run: |
+          test -n "$REQUESTED_RELEASE_SHA" || { echo "release_sha is required for a forced cold sample" >&2; exit 1; }
+          RESOLVED_RELEASE_SHA="$(git rev-parse "$REQUESTED_RELEASE_SHA^{commit}")"
+          test "$RESOLVED_RELEASE_SHA" = "$GITHUB_SHA" || {
+            echo "release_sha $RESOLVED_RELEASE_SHA does not match checked out commit $GITHUB_SHA" >&2
+            exit 1
+          }
       - name: Mark intentional cold-cache sample start
         id: intentional-cold-start
         if: ${{ (github.event_name == 'schedule' && github.event.schedule == '23 5 1 * *') || inputs.force_cold_sample == true }}
@@ -82,11 +98,13 @@ jobs:
         if: ${{ (github.event_name == 'schedule' && github.event.schedule == '23 5 1 * *') || inputs.force_cold_sample == true }}
         env:
           COLD_SAMPLE_STARTED_AT_MS: ${{ steps.intentional-cold-start.outputs.started-at-ms }}
+          COLD_SAMPLE_RELEASE_SHA: ${{ inputs.release_sha || github.sha }}
         run: |
           node scripts/record-quality-ci-efficiency.mjs \
             --workflow cold-sample \
             --variant production \
             --sample-kind intentional-cold \
+            --release-sha "$COLD_SAMPLE_RELEASE_SHA" \
             --dependency-cache-hit "${{ steps.quality-dependencies.outputs.cache-hit || 'false' }}" \
             --dependency-setup-duration-ms "${{ steps.quality-dependencies.outputs.setup-duration-ms || '0' }}" \
             --build-restored false \

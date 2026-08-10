@@ -27,6 +27,7 @@ const sample = {
   billedMinutes: runDurationMs > 0 ? Math.ceil(runDurationMs / 60_000) : 0,
   runId: process.env.GITHUB_RUN_ID ?? null,
   sha: process.env.GITHUB_SHA ?? null,
+  releaseSha: option("--release-sha", process.env.GITHUB_SHA ?? null),
   generatedAt: new Date().toISOString()
 };
 await mkdir(outputDir, { recursive: true });

@@ -38,6 +38,7 @@ function normalize(sample = {}) {
     runnerOs: normalizeRunnerOs(sample.runnerOs, workflow),
     runId: sample.runId ? String(sample.runId) : null,
     sha: sample.sha ? String(sample.sha) : null,
+    releaseSha: sample.releaseSha ? String(sample.releaseSha) : null,
     generatedAt: sample.generatedAt ?? new Date().toISOString()
   };
 }

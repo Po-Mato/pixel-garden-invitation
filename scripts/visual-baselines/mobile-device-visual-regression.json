@@ -1,7 +1,7 @@
 {
-  "version": 3,
-  "approvedAt": "2026-08-09T13:24:39.248Z",
-  "reason": "Reviewed compact directions cards across 150 and 200 percent mobile captures",
+  "version": 4,
+  "approvedAt": "2026-08-10T10:53:51.342Z",
+  "reason": "번들 한글 UI 웹폰트 적용 후 2회 연속 운영 캡처에서 확인된 안정 타이포그래피",
   "pixelThreshold": 36,
   "maxChangedRatio": 0.015,
   "profileMaxChangedRatioOverrides": {
@@ -16,7 +16,19 @@
       "state": "game",
       "width": 360,
       "height": 780,
-      "sha256": "779a184c2c41e77ced070687f958c76b3cc7b01b191eb2fd907c2e2633ded5a3"
+      "sha256": "b9796ae8ebd4dd04057b1712c0fab08c8dc761373d0cbfe8a49b7e9323228830",
+      "classification": {
+        "id": "intentional-baseline-update",
+        "confidence": "high",
+        "likelyCause": "explicit-baseline-approval",
+        "review": "approved",
+        "approvalReason": "번들 한글 UI 웹폰트 적용 후 2회 연속 운영 캡처에서 확인된 안정 타이포그래피",
+        "changedRatio": 0,
+        "rawChangedRatio": null,
+        "filteredNoiseRatio": null,
+        "filteredNoiseShare": 0,
+        "budgetUsage": 0
+      }
     },
     {
       "profileId": "galaxy-s23-font-150",
@@ -24,7 +36,19 @@
       "state": "directions-xlarge",
       "width": 360,
       "height": 780,
-      "sha256": "62d17d0a7537d1a579cf6dd3ff44349186c867efe48683b77d0c530c1db52c46"
+      "sha256": "b19f49d63afc41786defb697930d68cf6ba3765e880e8a54c228c59999ac03e0",
+      "classification": {
+        "id": "intentional-baseline-update",
+        "confidence": "high",
+        "likelyCause": "explicit-baseline-approval",
+        "review": "approved",
+        "approvalReason": "번들 한글 UI 웹폰트 적용 후 2회 연속 운영 캡처에서 확인된 안정 타이포그래피",
+        "changedRatio": 0,
+        "rawChangedRatio": null,
+        "filteredNoiseRatio": null,
+        "filteredNoiseShare": 0,
+        "budgetUsage": 0
+      }
     },
     {
       "profileId": "galaxy-s23-font-150",
@@ -32,7 +56,19 @@
       "state": "directions-xlarge-middle",
       "width": 360,
       "height": 780,
-      "sha256": "00c7ab26a4ac614fa8d57bebc4e686e62881bc3c934c391e10fa9c71e7572cc0"
+      "sha256": "03f06f2a110bd430a7fe230e9aceacd528e86633c99f6c96e7d65dc696393713",
+      "classification": {
+        "id": "intentional-baseline-update",
+        "confidence": "high",
+        "likelyCause": "explicit-baseline-approval",
+        "review": "approved",
+        "approvalReason": "번들 한글 UI 웹폰트 적용 후 2회 연속 운영 캡처에서 확인된 안정 타이포그래피",
+        "changedRatio": 0,
+        "rawChangedRatio": null,
+        "filteredNoiseRatio": null,
+        "filteredNoiseShare": 0,
+        "budgetUsage": 0
+      }
     },
     {
       "profileId": "galaxy-s23-font-150",
@@ -40,7 +76,19 @@
       "state": "directions-xlarge-bottom",
       "width": 360,
       "height": 780,
-      "sha256": "25fdfc9aff7ae357f2d332935e8c9353d14cdce1359ff99dd133a848161c95f0"
+      "sha256": "7e36356ac3980b45781174539ef5dfa7d249aeef28f4231f37ebec62750e83a6",
+      "classification": {
+        "id": "intentional-baseline-update",
+        "confidence": "high",
+        "likelyCause": "explicit-baseline-approval",
+        "review": "approved",
+        "approvalReason": "번들 한글 UI 웹폰트 적용 후 2회 연속 운영 캡처에서 확인된 안정 타이포그래피",
+        "changedRatio": 0,
+        "rawChangedRatio": null,
+        "filteredNoiseRatio": null,
+        "filteredNoiseShare": 0,
+        "budgetUsage": 0
+      }
     },
     {
       "profileId": "iphone-15-dynamic-type",
@@ -48,7 +96,19 @@
       "state": "game",
       "width": 393,
       "height": 852,
-      "sha256": "7d8d7c16fb276584a90a7563973af058cb525f24ae7a85b5b0a3e1168212299b"
+      "sha256": "c8cef26e61aabe048a7f0bec9bb0bdeb2821cb9c7647f3691d9dfc35180f847b",
+      "classification": {
+        "id": "intentional-baseline-update",
+        "confidence": "high",
+        "likelyCause": "explicit-baseline-approval",
+        "review": "approved",
+        "approvalReason": "번들 한글 UI 웹폰트 적용 후 2회 연속 운영 캡처에서 확인된 안정 타이포그래피",
+        "changedRatio": 0,
+        "rawChangedRatio": null,
+        "filteredNoiseRatio": null,
+        "filteredNoiseShare": 0,
+        "budgetUsage": 0
+      }
     },
     {
       "profileId": "iphone-15-dynamic-type",
@@ -56,7 +116,19 @@
       "state": "directions-xlarge",
       "width": 393,
       "height": 852,
-      "sha256": "cf3348e5892e77fa4ee85b6e5d6e3b80ebd1b4e4b7c2c5a1b67c42f3533a6791"
+      "sha256": "874dd94b188e223aaba549370014890d58b9dc357d68be594d2075f00a01109a",
+      "classification": {
+        "id": "intentional-baseline-update",
+        "confidence": "high",
+        "likelyCause": "explicit-baseline-approval",
+        "review": "approved",
+        "approvalReason": "번들 한글 UI 웹폰트 적용 후 2회 연속 운영 캡처에서 확인된 안정 타이포그래피",
+        "changedRatio": 0,
+        "rawChangedRatio": null,
+        "filteredNoiseRatio": null,
+        "filteredNoiseShare": 0,
+        "budgetUsage": 0
+      }
     },
     {
       "profileId": "iphone-15-dynamic-type",
@@ -64,7 +136,19 @@
       "state": "directions-xlarge-middle",
       "width": 393,
       "height": 852,
-      "sha256": "e35c7dff0a3afc4bcfc10f49842dbd3c4524af68adfd4aa7710cfd8d22455a67"
+      "sha256": "9ccff1994c323295b677ab5033c30c38d22afaa7d4584a2a9fda16ab60fb342c",
+      "classification": {
+        "id": "intentional-baseline-update",
+        "confidence": "high",
+        "likelyCause": "explicit-baseline-approval",
+        "review": "approved",
+        "approvalReason": "번들 한글 UI 웹폰트 적용 후 2회 연속 운영 캡처에서 확인된 안정 타이포그래피",
+        "changedRatio": 0,
+        "rawChangedRatio": null,
+        "filteredNoiseRatio": null,
+        "filteredNoiseShare": 0,
+        "budgetUsage": 0
+      }
     },
     {
       "profileId": "iphone-15-dynamic-type",
@@ -72,7 +156,19 @@
       "state": "directions-xlarge-bottom",
       "width": 393,
       "height": 852,
-      "sha256": "e35c7dff0a3afc4bcfc10f49842dbd3c4524af68adfd4aa7710cfd8d22455a67"
+      "sha256": "9ccff1994c323295b677ab5033c30c38d22afaa7d4584a2a9fda16ab60fb342c",
+      "classification": {
+        "id": "intentional-baseline-update",
+        "confidence": "high",
+        "likelyCause": "explicit-baseline-approval",
+        "review": "approved",
+        "approvalReason": "번들 한글 UI 웹폰트 적용 후 2회 연속 운영 캡처에서 확인된 안정 타이포그래피",
+        "changedRatio": 0,
+        "rawChangedRatio": null,
+        "filteredNoiseRatio": null,
+        "filteredNoiseShare": 0,
+        "budgetUsage": 0
+      }
     },
     {
       "profileId": "iphone-15-webkit-dynamic-type",
@@ -80,7 +176,19 @@
       "state": "game",
       "width": 393,
       "height": 852,
-      "sha256": "164f1bd10d572a53b2a664e009275e2ee72748b4fc9b5b096e4117b8ee851a49"
+      "sha256": "3b3fb4085d04086459d1a7087dfda2f3043ca734eb46e5378fd10a22da49d7d3",
+      "classification": {
+        "id": "intentional-baseline-update",
+        "confidence": "high",
+        "likelyCause": "explicit-baseline-approval",
+        "review": "approved",
+        "approvalReason": "번들 한글 UI 웹폰트 적용 후 2회 연속 운영 캡처에서 확인된 안정 타이포그래피",
+        "changedRatio": 0,
+        "rawChangedRatio": null,
+        "filteredNoiseRatio": null,
+        "filteredNoiseShare": 0,
+        "budgetUsage": 0
+      }
     },
     {
       "profileId": "iphone-15-webkit-dynamic-type",
@@ -88,7 +196,19 @@
       "state": "directions-xlarge",
       "width": 393,
       "height": 852,
-      "sha256": "3901934dfeca2c78468e759bdcbfd18e512179969cc294ed6ae2883a8ad0a7e9"
+      "sha256": "98121d589e8e3ae79655612121bac9a1a750cb03f2b22b658718ac202c30acfc",
+      "classification": {
+        "id": "intentional-baseline-update",
+        "confidence": "high",
+        "likelyCause": "explicit-baseline-approval",
+        "review": "approved",
+        "approvalReason": "번들 한글 UI 웹폰트 적용 후 2회 연속 운영 캡처에서 확인된 안정 타이포그래피",
+        "changedRatio": 0,
+        "rawChangedRatio": null,
+        "filteredNoiseRatio": null,
+        "filteredNoiseShare": 0,
+        "budgetUsage": 0
+      }
     },
     {
       "profileId": "iphone-15-webkit-dynamic-type",
@@ -96,7 +216,19 @@
       "state": "directions-xlarge-middle",
       "width": 393,
       "height": 852,
-      "sha256": "3901934dfeca2c78468e759bdcbfd18e512179969cc294ed6ae2883a8ad0a7e9"
+      "sha256": "98121d589e8e3ae79655612121bac9a1a750cb03f2b22b658718ac202c30acfc",
+      "classification": {
+        "id": "intentional-baseline-update",
+        "confidence": "high",
+        "likelyCause": "explicit-baseline-approval",
+        "review": "approved",
+        "approvalReason": "번들 한글 UI 웹폰트 적용 후 2회 연속 운영 캡처에서 확인된 안정 타이포그래피",
+        "changedRatio": 0,
+        "rawChangedRatio": null,
+        "filteredNoiseRatio": null,
+        "filteredNoiseShare": 0,
+        "budgetUsage": 0
+      }
     },
     {
       "profileId": "iphone-15-webkit-dynamic-type",
@@ -104,7 +236,19 @@
       "state": "directions-xlarge-bottom",
       "width": 393,
       "height": 852,
-      "sha256": "3901934dfeca2c78468e759bdcbfd18e512179969cc294ed6ae2883a8ad0a7e9"
+      "sha256": "98121d589e8e3ae79655612121bac9a1a750cb03f2b22b658718ac202c30acfc",
+      "classification": {
+        "id": "intentional-baseline-update",
+        "confidence": "high",
+        "likelyCause": "explicit-baseline-approval",
+        "review": "approved",
+        "approvalReason": "번들 한글 UI 웹폰트 적용 후 2회 연속 운영 캡처에서 확인된 안정 타이포그래피",
+        "changedRatio": 0,
+        "rawChangedRatio": null,
+        "filteredNoiseRatio": null,
+        "filteredNoiseShare": 0,
+        "budgetUsage": 0
+      }
     },
     {
       "profileId": "iphone-15-webkit-text-200",
@@ -112,7 +256,19 @@
       "state": "game",
       "width": 393,
       "height": 852,
-      "sha256": "039c7518d84a6b6d6f8ba0f67952f6ef1cc152d15c547105660b1cfc55c2f7c0"
+      "sha256": "08c413ee2e880bc65e9d3c4106a2360c7e3a154c141b697e40bf7419a1c32e65",
+      "classification": {
+        "id": "intentional-baseline-update",
+        "confidence": "high",
+        "likelyCause": "explicit-baseline-approval",
+        "review": "approved",
+        "approvalReason": "번들 한글 UI 웹폰트 적용 후 2회 연속 운영 캡처에서 확인된 안정 타이포그래피",
+        "changedRatio": 0,
+        "rawChangedRatio": null,
+        "filteredNoiseRatio": null,
+        "filteredNoiseShare": 0,
+        "budgetUsage": 0
+      }
     },
     {
       "profileId": "iphone-15-webkit-text-200",
@@ -120,7 +276,19 @@
       "state": "directions-xlarge",
       "width": 393,
       "height": 852,
-      "sha256": "a69c090ca242d98d34a1724e9e92ce243df7bed7d4639e03aff1ef4b1b7d505c"
+      "sha256": "3dc751360144cf021994369206ad5d2b199976ad2363d039846a0aed5a7a0e3c",
+      "classification": {
+        "id": "intentional-baseline-update",
+        "confidence": "high",
+        "likelyCause": "explicit-baseline-approval",
+        "review": "approved",
+        "approvalReason": "번들 한글 UI 웹폰트 적용 후 2회 연속 운영 캡처에서 확인된 안정 타이포그래피",
+        "changedRatio": 0,
+        "rawChangedRatio": null,
+        "filteredNoiseRatio": null,
+        "filteredNoiseShare": 0,
+        "budgetUsage": 0
+      }
     },
     {
       "profileId": "iphone-15-webkit-text-200",
@@ -128,7 +296,19 @@
       "state": "directions-xlarge-middle",
       "width": 393,
       "height": 852,
-      "sha256": "59eddc30410ac53a34cf7d7edaad940681b37b4b9ff867784b9c944cb2352454"
+      "sha256": "54e7fc4fc8d71ef531da47beecd504dc2f3f3dd4f087be5a3d25567ef9358483",
+      "classification": {
+        "id": "intentional-baseline-update",
+        "confidence": "high",
+        "likelyCause": "explicit-baseline-approval",
+        "review": "approved",
+        "approvalReason": "번들 한글 UI 웹폰트 적용 후 2회 연속 운영 캡처에서 확인된 안정 타이포그래피",
+        "changedRatio": 0,
+        "rawChangedRatio": null,
+        "filteredNoiseRatio": null,
+        "filteredNoiseShare": 0,
+        "budgetUsage": 0
+      }
     },
     {
       "profileId": "iphone-15-webkit-text-200",
@@ -136,7 +316,19 @@
       "state": "directions-xlarge-bottom",
       "width": 393,
       "height": 852,
-      "sha256": "9f5826066084a6e4393ab76e0a2ddd6ce16ec167aa573d624056251d823e4ed2"
+      "sha256": "1340b7e8aef4b4eef29c97cc710ab9d277ef170b1b4791bbd7167cce9870a8f1",
+      "classification": {
+        "id": "intentional-baseline-update",
+        "confidence": "high",
+        "likelyCause": "explicit-baseline-approval",
+        "review": "approved",
+        "approvalReason": "번들 한글 UI 웹폰트 적용 후 2회 연속 운영 캡처에서 확인된 안정 타이포그래피",
+        "changedRatio": 0,
+        "rawChangedRatio": null,
+        "filteredNoiseRatio": null,
+        "filteredNoiseShare": 0,
+        "budgetUsage": 0
+      }
     }
   ]
 }

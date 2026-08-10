@@ -486,6 +486,7 @@ async function captureLandscapeMetrics(state) {
     const selectors = [
       ".world-hud__status",
       ".world-hud__tools-toggle",
+      ".world-hud__tools",
       ".world-minimap",
       ".world-control-dock .virtual-joystick",
       ".world-control-actions",
