@@ -8,6 +8,85 @@ export function auditDevicePwaOffline(snapshot) {
   return issues;
 }
 
+export function describeDevicePwaPrecacheSnapshot(snapshot) {
+  if (!snapshot || typeof snapshot !== "object") return "snapshot=unavailable";
+  const details = [
+    `controlled=${snapshot.controlled === true}`,
+    `precache=${snapshot.precacheName ?? "missing"}`,
+    `cached=${Number.isFinite(snapshot.cachedPaths) ? snapshot.cachedPaths : "unknown"}`
+      + `/${Number.isFinite(snapshot.expectedPaths) ? snapshot.expectedPaths : "unknown"}`
+  ];
+  if (snapshot.error) details.push(`error=${snapshot.error}`);
+  return details.join(" · ");
+}
+
+async function resetPwaStorage({ evaluate, waitForDocument, platform }) {
+  await evaluate(`
+    window.__devicePwaCleanup = { complete: false, registrations: -1, caches: -1 };
+    Promise.all([
+      navigator.serviceWorker?.getRegistrations?.().then(async (registrations) => {
+        await Promise.all(registrations.map((registration) => registration.unregister()));
+        return registrations.length;
+      }) ?? Promise.resolve(0),
+      caches.keys().then(async (names) => {
+        await Promise.all(names.map((name) => caches.delete(name)));
+        return names.length;
+      })
+    ]).then(([registrations, cachesRemoved]) => {
+      localStorage.clear();
+      sessionStorage.clear();
+      window.__devicePwaCleanup = { complete: true, registrations, caches: cachesRemoved };
+    }).catch((error) => {
+      window.__devicePwaCleanup = { complete: true, error: String(error), registrations: -1, caches: -1 };
+    });
+    return true;
+  `);
+  await waitForDocument("window.__devicePwaCleanup?.complete === true", `${platform} PWA 저장소 초기화`);
+  return evaluate(`return window.__devicePwaCleanup;`);
+}
+
+async function waitForDevicePrecache({ platform, expectedPaths, evaluate, waitForDocument }) {
+  await evaluate(`
+    clearInterval(window.__devicePwaCacheProbe);
+    window.__devicePwaCacheSnapshot = null;
+    window.__devicePwaCacheProbe = window.setInterval(async () => {
+      try {
+        const paths = ${JSON.stringify(expectedPaths)};
+        const registration = await navigator.serviceWorker?.getRegistration?.();
+        const names = await caches.keys();
+        const precacheName = names.find((name) => name.startsWith("wedding-garden-precache-")) ?? null;
+        const cachedUrls = precacheName
+          ? new Set((await (await caches.open(precacheName)).keys()).map((request) => request.url))
+          : new Set();
+        const scope = registration?.scope ?? location.href;
+        window.__devicePwaCacheSnapshot = {
+          serviceWorkerSupported: "serviceWorker" in navigator,
+          controlled: Boolean(navigator.serviceWorker?.controller),
+          precacheName,
+          cachedPaths: paths.filter((resourcePath) => cachedUrls.has(new URL(resourcePath, scope).href)).length,
+          expectedPaths: paths.length
+        };
+      } catch (error) {
+        window.__devicePwaCacheSnapshot = { error: String(error), cachedPaths: 0, expectedPaths: ${expectedPaths.length} };
+      }
+    }, 120);
+    return true;
+  `);
+  try {
+    await waitForDocument(`
+      window.__devicePwaCacheSnapshot?.controlled === true
+        && window.__devicePwaCacheSnapshot?.cachedPaths === ${expectedPaths.length}
+    `, `${platform} PWA 프리캐시`, 60_000);
+    return await evaluate(`return window.__devicePwaCacheSnapshot;`);
+  } catch (error) {
+    const snapshot = await evaluate(`return window.__devicePwaCacheSnapshot;`).catch(() => null);
+    error.precacheSnapshot = snapshot;
+    throw error;
+  } finally {
+    await evaluate(`clearInterval(window.__devicePwaCacheProbe); return true;`).catch(() => undefined);
+  }
+}
+
 async function waitForPreviewExit(pid, previewHostUrl, timeoutMs = 12_000) {
   if (!Number.isSafeInteger(pid) || pid <= 1) throw new Error("PWA_PREVIEW_PID가 유효하지 않습니다.");
   process.kill(pid, "SIGTERM");
@@ -44,63 +123,31 @@ export async function runDevicePwaOfflineAudit({
 }) {
   await navigate(url);
   await waitForDocument("document.readyState === 'complete'", `${platform} PWA 초기 문서`);
-  await evaluate(`
-    window.__devicePwaCleanup = { complete: false, registrations: -1, caches: -1 };
-    Promise.all([
-      navigator.serviceWorker?.getRegistrations?.().then(async (registrations) => {
-        await Promise.all(registrations.map((registration) => registration.unregister()));
-        return registrations.length;
-      }) ?? Promise.resolve(0),
-      caches.keys().then(async (names) => {
-        await Promise.all(names.map((name) => caches.delete(name)));
-        return names.length;
-      })
-    ]).then(([registrations, cachesRemoved]) => {
-      localStorage.clear();
-      sessionStorage.clear();
-      window.__devicePwaCleanup = { complete: true, registrations, caches: cachesRemoved };
-    }).catch((error) => {
-      window.__devicePwaCleanup = { complete: true, error: String(error), registrations: -1, caches: -1 };
-    });
-    return true;
-  `);
-  await waitForDocument("window.__devicePwaCleanup?.complete === true", `${platform} PWA 저장소 초기화`);
-  const cleanup = await evaluate(`return window.__devicePwaCleanup;`);
+  let cleanup = await resetPwaStorage({ evaluate, waitForDocument, platform });
 
   await navigate(url);
   await waitForDocument("document.querySelector('.entry-screen')", `${platform} PWA 클린 진입 화면`, 60_000);
+  let onlineCache;
+  let precacheAttempts = 1;
+  let precacheFirstFailure = null;
+  try {
+    onlineCache = await waitForDevicePrecache({ platform, expectedPaths, evaluate, waitForDocument });
+  } catch (firstError) {
+    precacheFirstFailure = describeDevicePwaPrecacheSnapshot(firstError.precacheSnapshot);
+    cleanup = await resetPwaStorage({ evaluate, waitForDocument, platform });
+    await navigate(url);
+    await waitForDocument("document.querySelector('.entry-screen')", `${platform} PWA 재설치 진입 화면`, 60_000);
+    precacheAttempts = 2;
+    try {
+      onlineCache = await waitForDevicePrecache({ platform, expectedPaths, evaluate, waitForDocument });
+    } catch (secondError) {
+      throw new Error(
+        `${platform} PWA 프리캐시 재설치 실패: first(${precacheFirstFailure}) · `
+        + `second(${describeDevicePwaPrecacheSnapshot(secondError.precacheSnapshot)})`
+      );
+    }
+  }
   await evaluate(`
-    window.__devicePwaCacheSnapshot = null;
-    window.__devicePwaCacheProbe = window.setInterval(async () => {
-      try {
-        const paths = ${JSON.stringify(expectedPaths)};
-        const registration = await navigator.serviceWorker?.getRegistration?.();
-        const names = await caches.keys();
-        const precacheName = names.find((name) => name.startsWith("wedding-garden-precache-")) ?? null;
-        const cachedUrls = precacheName
-          ? new Set((await (await caches.open(precacheName)).keys()).map((request) => request.url))
-          : new Set();
-        const scope = registration?.scope ?? location.href;
-        window.__devicePwaCacheSnapshot = {
-          serviceWorkerSupported: "serviceWorker" in navigator,
-          controlled: Boolean(navigator.serviceWorker?.controller),
-          precacheName,
-          cachedPaths: paths.filter((resourcePath) => cachedUrls.has(new URL(resourcePath, scope).href)).length,
-          expectedPaths: paths.length
-        };
-      } catch (error) {
-        window.__devicePwaCacheSnapshot = { error: String(error), cachedPaths: 0, expectedPaths: ${expectedPaths.length} };
-      }
-    }, 120);
-    return true;
-  `);
-  await waitForDocument(`
-    window.__devicePwaCacheSnapshot?.controlled === true
-      && window.__devicePwaCacheSnapshot?.cachedPaths === ${expectedPaths.length}
-  `, `${platform} PWA 프리캐시`, 60_000);
-  const onlineCache = await evaluate(`return window.__devicePwaCacheSnapshot;`);
-  await evaluate(`
-    clearInterval(window.__devicePwaCacheProbe);
     localStorage.setItem("wedding-game:entry-session:v1", JSON.stringify({
       version: 1,
       nickname: ${JSON.stringify(`${platform} 오프라인감사`)},
@@ -150,6 +197,8 @@ export async function runDevicePwaOfflineAudit({
   const snapshot = {
     platform,
     cleanInstallReady: cleanup.complete === true && !cleanup.error,
+    precacheAttempts,
+    precacheFirstFailure,
     previewHostUnavailable,
     ...onlineCache,
     ...offline,

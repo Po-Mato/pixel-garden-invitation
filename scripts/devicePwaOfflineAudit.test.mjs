@@ -1,6 +1,9 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { auditDevicePwaOffline } from "./lib/devicePwaOfflineAudit.mjs";
+import {
+  auditDevicePwaOffline,
+  describeDevicePwaPrecacheSnapshot
+} from "./lib/devicePwaOfflineAudit.mjs";
 
 const healthy = {
   cleanInstallReady: true,
@@ -37,4 +40,18 @@ test("device PWA audit rejects stale install, live host, and broken offline asse
   assert.ok(issues.some((issue) => issue.includes("서버 종료")));
   assert.ok(issues.some((issue) => issue.includes("이미지 손상")));
   assert.ok(issues.some((issue) => issue.includes("페이지 제어")));
+});
+
+test("device PWA precache diagnostics preserve the last retry state", () => {
+  assert.equal(describeDevicePwaPrecacheSnapshot(null), "snapshot=unavailable");
+  assert.equal(
+    describeDevicePwaPrecacheSnapshot({
+      controlled: false,
+      precacheName: "wedding-garden-precache-release",
+      cachedPaths: 81,
+      expectedPaths: 82,
+      error: "install stalled"
+    }),
+    "controlled=false · precache=wedding-garden-precache-release · cached=81/82 · error=install stalled"
+  );
 });
