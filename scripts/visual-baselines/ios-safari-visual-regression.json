@@ -1,20 +1,22 @@
 {
-  "version": 1,
-  "approvedAt": "2026-08-05T23:25:55.607Z",
-  "reason": "Landscape HUD safe-area and text-wrap quality correction",
+  "version": 2,
+  "approvedAt": "2026-08-10T11:48:59.504Z",
+  "reason": "번들 한글 UI 웹폰트 적용 후 4회 연속 실제 iOS Safari 캡처에서 확인된 안정 타이포그래피와 이름표 레이아웃",
   "profile": {
     "id": "iphone-16-pro-ios-18-5-safari",
     "deviceName": "iPhone 16 Pro",
     "runtime": "iOS 18.5",
-    "requiredDirectionsScroll": 160
+    "requiredDirectionsScroll": 160,
+    "maxLandscapePlayerCenterErrorPx": 2
   },
   "capture": {
-    "generatedAt": "2026-08-05T23:18:55.942Z",
+    "generatedAt": "2026-08-10T11:40:06.972Z",
     "profile": {
       "id": "iphone-16-pro-ios-18-5-safari",
       "deviceName": "iPhone 16 Pro",
       "runtime": "iOS 18.5",
-      "requiredDirectionsScroll": 160
+      "requiredDirectionsScroll": 160,
+      "maxLandscapePlayerCenterErrorPx": 2
     },
     "url": "http://127.0.0.1:4178/",
     "automation": "Appium XCUITest WebDriver",
@@ -51,7 +53,167 @@
         "reached": true
       }
     },
+    "nativeCompositor": {
+      "recovered": false,
+      "recoveryCount": 0,
+      "recoveryDurationMs": 0,
+      "faultInjection": null,
+      "attempts": [
+        {
+          "cycle": 1,
+          "passed": true,
+          "reason": null,
+          "visibleAttempt": 1,
+          "visibleRatio": 0.7757437070938215,
+          "settledAttempt": 1,
+          "settledRatio": 0
+        }
+      ],
+      "recoveries": []
+    },
+    "pwaOffline": {
+      "platform": "iOS Safari",
+      "cleanInstallReady": true,
+      "precacheAttempts": 1,
+      "precacheFirstFailure": null,
+      "previewHostUnavailable": true,
+      "serviceWorkerSupported": true,
+      "controlled": true,
+      "precacheName": "wedding-garden-precache-1e4b0acfb5b2",
+      "cachedPaths": 82,
+      "expectedPaths": 82,
+      "offlineEntryVisible": true,
+      "offlineStatusVisible": true,
+      "resumeVisible": true,
+      "offlineGameVisible": true,
+      "blockingNoticeVisible": false,
+      "fallbackDocumentVisible": false,
+      "brokenImages": [],
+      "criticalAssetFailures": [],
+      "pageErrors": []
+    },
     "landscape": {
+      "toolsExpanded": {
+        "state": "game-landscape-tools-expanded",
+        "orientation": "landscape-primary",
+        "viewport": {
+          "width": 874,
+          "height": 352,
+          "visualWidth": 874,
+          "visualHeight": 352,
+          "offsetLeft": 0,
+          "offsetTop": 0,
+          "scrollY": 0,
+          "dpr": 3
+        },
+        "safeArea": {
+          "top": 0,
+          "right": 62,
+          "bottom": 21,
+          "left": 62
+        },
+        "horizontalOverflow": false,
+        "visibleDialogs": [],
+        "hudText": [
+          {
+            "id": "current-zone",
+            "text": "우리 집",
+            "clippedInline": false,
+            "clippedBlock": false,
+            "lineCount": 1,
+            "maxLines": 2
+          },
+          {
+            "id": "guidance-toggle",
+            "text": "안내",
+            "clippedInline": false,
+            "clippedBlock": false,
+            "lineCount": 1,
+            "maxLines": 1
+          },
+          {
+            "id": "next-destination",
+            "text": "오시는 길",
+            "clippedInline": false,
+            "clippedBlock": false,
+            "lineCount": 1,
+            "maxLines": 2
+          }
+        ],
+        "textContained": true,
+        "playerCenter": {
+          "visualCenter": {
+            "x": 545.078125,
+            "y": 176.00001017252603
+          },
+          "viewportCenter": {
+            "x": 548.5390625,
+            "y": 176
+          },
+          "centerable": {
+            "x": false,
+            "y": true
+          },
+          "error": {
+            "x": 0,
+            "y": 0.000010172526032192764
+          },
+          "errorPx": 0,
+          "camera": {
+            "x": 23,
+            "y": -206,
+            "zoom": 1
+          }
+        },
+        "controls": [
+          {
+            "selector": ".world-hud__status",
+            "rect": {
+              "x": 79,
+              "y": 11,
+              "width": 142.078125,
+              "height": 104
+            }
+          },
+          {
+            "selector": ".world-hud__tools-toggle",
+            "rect": {
+              "x": 79,
+              "y": 79,
+              "width": 142.078125,
+              "height": 36
+            }
+          },
+          {
+            "selector": ".world-hud__tools",
+            "rect": {
+              "x": 78,
+              "y": 133,
+              "width": 144.078125,
+              "height": 106.390625
+            }
+          },
+          {
+            "selector": ".world-control-dock .virtual-joystick",
+            "rect": {
+              "x": 242.078125,
+              "y": 247,
+              "width": 72,
+              "height": 72
+            }
+          },
+          {
+            "selector": ".world-control-actions",
+            "rect": {
+              "x": 748,
+              "y": 319,
+              "width": 0,
+              "height": 0
+            }
+          }
+        ],
+        "controlsContained": true
+      },
       "expanded": {
         "state": "game-landscape-chrome-expanded",
         "orientation": "landscape-primary",
@@ -100,6 +262,30 @@
           }
         ],
         "textContained": true,
+        "playerCenter": {
+          "visualCenter": {
+            "x": 545.078125,
+            "y": 176.00001017252603
+          },
+          "viewportCenter": {
+            "x": 548.5390625,
+            "y": 176
+          },
+          "centerable": {
+            "x": false,
+            "y": true
+          },
+          "error": {
+            "x": 0,
+            "y": 0.000010172526032192764
+          },
+          "errorPx": 0,
+          "camera": {
+            "x": 23,
+            "y": -206,
+            "zoom": 1
+          }
+        },
         "controls": [
           {
             "selector": ".world-hud__status",
@@ -157,7 +343,7 @@
       "viewportTrace": [
         {
           "source": "start",
-          "at": 1,
+          "at": 0,
           "innerHeight": 352,
           "visualHeight": 352,
           "offsetTop": 0,
@@ -166,7 +352,7 @@
         },
         {
           "source": "visualViewport.scroll",
-          "at": 37,
+          "at": 26,
           "innerHeight": 352,
           "visualHeight": 352,
           "offsetTop": 352,
@@ -175,7 +361,7 @@
         },
         {
           "source": "visualViewport.scroll",
-          "at": 129,
+          "at": 88,
           "innerHeight": 352,
           "visualHeight": 352,
           "offsetTop": 0,
@@ -184,7 +370,7 @@
         },
         {
           "source": "stop",
-          "at": 1236,
+          "at": 1339,
           "innerHeight": 352,
           "visualHeight": 352,
           "offsetTop": 0,
@@ -193,14 +379,14 @@
         }
       ],
       "frameTimings": {
-        "sampleCount": 69,
+        "sampleCount": 76,
         "frameBudgetMs": 16.67,
         "p50FrameMs": 17,
-        "p95FrameMs": 17,
-        "p99FrameMs": 51.88,
-        "maximumFrameMs": 92,
-        "slowFrameRatio": 0.029,
-        "droppedFrameRatio": 0.0145
+        "p95FrameMs": 17.25,
+        "p99FrameMs": 41.25,
+        "maximumFrameMs": 63,
+        "slowFrameRatio": 0.0395,
+        "droppedFrameRatio": 0.0263
       },
       "collapsed": {
         "state": "game-landscape-chrome-collapsed",
@@ -250,6 +436,30 @@
           }
         ],
         "textContained": true,
+        "playerCenter": {
+          "visualCenter": {
+            "x": 545.078125,
+            "y": 176.00001017252603
+          },
+          "viewportCenter": {
+            "x": 548.5390625,
+            "y": 176
+          },
+          "centerable": {
+            "x": false,
+            "y": true
+          },
+          "error": {
+            "x": 0,
+            "y": 0.000010172526032192764
+          },
+          "errorPx": 0,
+          "camera": {
+            "x": 23,
+            "y": -206,
+            "zoom": 1
+          }
+        },
         "controls": [
           {
             "selector": ".world-hud__status",
@@ -299,75 +509,295 @@
         ],
         "controlsContained": true
       },
-      "chromeViewportDelta": 0
+      "chromeViewportDelta": 0,
+      "interiorCenterProbe": {
+        "state": "game-landscape-interior-center-probe",
+        "orientation": "landscape-primary",
+        "viewport": {
+          "width": 874,
+          "height": 352,
+          "visualWidth": 874,
+          "visualHeight": 352,
+          "offsetLeft": 0,
+          "offsetTop": 0,
+          "scrollY": 0,
+          "dpr": 3
+        },
+        "safeArea": {
+          "top": 0,
+          "right": 62,
+          "bottom": 21,
+          "left": 62
+        },
+        "horizontalOverflow": false,
+        "visibleDialogs": [],
+        "hudText": [
+          {
+            "id": "current-zone",
+            "text": "동네 거리",
+            "clippedInline": false,
+            "clippedBlock": false,
+            "lineCount": 1,
+            "maxLines": 2
+          },
+          {
+            "id": "guidance-toggle",
+            "text": "안내",
+            "clippedInline": false,
+            "clippedBlock": false,
+            "lineCount": 1,
+            "maxLines": 1
+          },
+          {
+            "id": "next-destination",
+            "text": "오시는 길",
+            "clippedInline": false,
+            "clippedBlock": false,
+            "lineCount": 1,
+            "maxLines": 2
+          }
+        ],
+        "textContained": true,
+        "playerCenter": {
+          "visualCenter": {
+            "x": 549.078125,
+            "y": 176.00001017252603
+          },
+          "viewportCenter": {
+            "x": 548.5390625,
+            "y": 176
+          },
+          "centerable": {
+            "x": true,
+            "y": true
+          },
+          "error": {
+            "x": 0.5390625,
+            "y": 0.000010172526032192764
+          },
+          "errorPx": 0.54,
+          "camera": {
+            "x": -273,
+            "y": -206,
+            "zoom": 1
+          }
+        },
+        "controls": [
+          {
+            "selector": ".world-hud__status",
+            "rect": {
+              "x": 79,
+              "y": 11,
+              "width": 139.078125,
+              "height": 55
+            }
+          },
+          {
+            "selector": ".world-hud__tools-toggle",
+            "rect": {
+              "x": 79,
+              "y": 30,
+              "width": 139.078125,
+              "height": 36
+            }
+          },
+          {
+            "selector": ".world-minimap",
+            "rect": {
+              "x": 750,
+              "y": 15,
+              "width": 48,
+              "height": 48
+            }
+          },
+          {
+            "selector": ".world-control-dock .virtual-joystick",
+            "rect": {
+              "x": 242.078125,
+              "y": 247,
+              "width": 72,
+              "height": 72
+            }
+          },
+          {
+            "selector": ".world-control-actions",
+            "rect": {
+              "x": 748,
+              "y": 319,
+              "width": 0,
+              "height": 0
+            }
+          },
+          {
+            "selector": ".world-context-action",
+            "rect": {
+              "x": 700,
+              "y": 19,
+              "width": 196,
+              "height": 44
+            }
+          }
+        ],
+        "controlsContained": false
+      }
     },
     "comparisons": [
       {
         "state": "game",
-        "changedPixels": 34847,
-        "changedRatio": 0.011020096567758715,
-        "meanPixelDifference": 1.2751143848517392,
+        "changedPixels": 42653,
+        "changedRatio": 0.013488684216851163,
+        "meanPixelDifference": 1.3422649655359107,
         "pixelCount": 3162132,
         "passed": true,
         "maxChangedRatio": 0.015,
+        "rawChangedRatio": 0.012267356327945829,
+        "rawMeanPixelDifference": 1.5746012500426927,
         "baselinePath": "/Users/runner/work/pixel-garden-invitation/pixel-garden-invitation/scripts/visual-baselines/ios-safari-iphone-16-pro-ios-18-5-safari-game.webp",
         "currentPath": "/Users/runner/work/pixel-garden-invitation/pixel-garden-invitation/.superpowers/visual-regression/ios-safari/ios-safari-iphone-16-pro-ios-18-5-safari-game-current.png",
-        "diffPath": "/Users/runner/work/pixel-garden-invitation/pixel-garden-invitation/.superpowers/visual-regression/ios-safari/ios-safari-iphone-16-pro-ios-18-5-safari-game-diff.png"
+        "diffPath": "/Users/runner/work/pixel-garden-invitation/pixel-garden-invitation/.superpowers/visual-regression/ios-safari/ios-safari-iphone-16-pro-ios-18-5-safari-game-diff.png",
+        "classification": {
+          "id": "watch-structural",
+          "confidence": "medium",
+          "likelyCause": "meaningful-change-within-budget",
+          "review": "recommended",
+          "changedRatio": 0.013488684216851163,
+          "rawChangedRatio": 0.012267356327945829,
+          "filteredNoiseRatio": 0,
+          "filteredNoiseShare": 0,
+          "budgetUsage": 0.8992456144567442
+        }
       },
       {
         "state": "directions-text-200",
-        "changedPixels": 3343,
-        "changedRatio": 0.0010571981182316236,
-        "meanPixelDifference": 0.14067597431100282,
+        "changedPixels": 24816,
+        "changedRatio": 0.007847869728398436,
+        "meanPixelDifference": 0.8167995516948692,
         "pixelCount": 3162132,
         "passed": true,
         "maxChangedRatio": 0.015,
+        "rawChangedRatio": 0.00589570580861267,
+        "rawMeanPixelDifference": 0.8317192324672088,
         "baselinePath": "/Users/runner/work/pixel-garden-invitation/pixel-garden-invitation/scripts/visual-baselines/ios-safari-iphone-16-pro-ios-18-5-safari-directions-text-200.webp",
         "currentPath": "/Users/runner/work/pixel-garden-invitation/pixel-garden-invitation/.superpowers/visual-regression/ios-safari/ios-safari-iphone-16-pro-ios-18-5-safari-directions-text-200-current.png",
-        "diffPath": "/Users/runner/work/pixel-garden-invitation/pixel-garden-invitation/.superpowers/visual-regression/ios-safari/ios-safari-iphone-16-pro-ios-18-5-safari-directions-text-200-diff.png"
+        "diffPath": "/Users/runner/work/pixel-garden-invitation/pixel-garden-invitation/.superpowers/visual-regression/ios-safari/ios-safari-iphone-16-pro-ios-18-5-safari-directions-text-200-diff.png",
+        "classification": {
+          "id": "stable",
+          "confidence": "high",
+          "likelyCause": "minor-change-within-budget",
+          "review": "not-required",
+          "changedRatio": 0.007847869728398436,
+          "rawChangedRatio": 0.00589570580861267,
+          "filteredNoiseRatio": 0,
+          "filteredNoiseShare": 0,
+          "budgetUsage": 0.5231913152265624
+        }
       },
       {
         "state": "directions-text-200-middle",
-        "changedPixels": 3343,
-        "changedRatio": 0.0010571981182316236,
-        "meanPixelDifference": 0.14065794849803867,
+        "changedPixels": 8299,
+        "changedRatio": 0.002624495119115837,
+        "meanPixelDifference": 0.27032805714625446,
         "pixelCount": 3162132,
         "passed": true,
         "maxChangedRatio": 0.015,
+        "rawChangedRatio": 0.002362646467636392,
+        "rawMeanPixelDifference": 0.28117295546169485,
         "baselinePath": "/Users/runner/work/pixel-garden-invitation/pixel-garden-invitation/scripts/visual-baselines/ios-safari-iphone-16-pro-ios-18-5-safari-directions-text-200-middle.webp",
         "currentPath": "/Users/runner/work/pixel-garden-invitation/pixel-garden-invitation/.superpowers/visual-regression/ios-safari/ios-safari-iphone-16-pro-ios-18-5-safari-directions-text-200-middle-current.png",
-        "diffPath": "/Users/runner/work/pixel-garden-invitation/pixel-garden-invitation/.superpowers/visual-regression/ios-safari/ios-safari-iphone-16-pro-ios-18-5-safari-directions-text-200-middle-diff.png"
+        "diffPath": "/Users/runner/work/pixel-garden-invitation/pixel-garden-invitation/.superpowers/visual-regression/ios-safari/ios-safari-iphone-16-pro-ios-18-5-safari-directions-text-200-middle-diff.png",
+        "classification": {
+          "id": "stable",
+          "confidence": "high",
+          "likelyCause": "minor-change-within-budget",
+          "review": "not-required",
+          "changedRatio": 0.002624495119115837,
+          "rawChangedRatio": 0.002362646467636392,
+          "filteredNoiseRatio": 0,
+          "filteredNoiseShare": 0,
+          "budgetUsage": 0.17496634127438915
+        }
       },
       {
         "state": "directions-text-200-bottom",
-        "changedPixels": 3343,
-        "changedRatio": 0.0010571981182316236,
-        "meanPixelDifference": 0.14067059819134686,
+        "changedPixels": 8299,
+        "changedRatio": 0.002624495119115837,
+        "meanPixelDifference": 0.27038656197780486,
         "pixelCount": 3162132,
         "passed": true,
         "maxChangedRatio": 0.015,
+        "rawChangedRatio": 0.002362646467636392,
+        "rawMeanPixelDifference": 0.2811928787286552,
         "baselinePath": "/Users/runner/work/pixel-garden-invitation/pixel-garden-invitation/scripts/visual-baselines/ios-safari-iphone-16-pro-ios-18-5-safari-directions-text-200-bottom.webp",
         "currentPath": "/Users/runner/work/pixel-garden-invitation/pixel-garden-invitation/.superpowers/visual-regression/ios-safari/ios-safari-iphone-16-pro-ios-18-5-safari-directions-text-200-bottom-current.png",
-        "diffPath": "/Users/runner/work/pixel-garden-invitation/pixel-garden-invitation/.superpowers/visual-regression/ios-safari/ios-safari-iphone-16-pro-ios-18-5-safari-directions-text-200-bottom-diff.png"
+        "diffPath": "/Users/runner/work/pixel-garden-invitation/pixel-garden-invitation/.superpowers/visual-regression/ios-safari/ios-safari-iphone-16-pro-ios-18-5-safari-directions-text-200-bottom-diff.png",
+        "classification": {
+          "id": "stable",
+          "confidence": "high",
+          "likelyCause": "minor-change-within-budget",
+          "review": "not-required",
+          "changedRatio": 0.002624495119115837,
+          "rawChangedRatio": 0.002362646467636392,
+          "filteredNoiseRatio": 0,
+          "filteredNoiseShare": 0,
+          "budgetUsage": 0.17496634127438915
+        }
       },
       {
         "state": "game-landscape-chrome-expanded",
-        "changedPixels": 49366,
-        "changedRatio": 0.015611618996297434,
-        "meanPixelDifference": 2.178904296215338,
+        "changedPixels": 46928,
+        "changedRatio": 0.014840620189163514,
+        "meanPixelDifference": 1.5735263423538297,
         "pixelCount": 3162132,
-        "passed": false,
+        "passed": true,
         "maxChangedRatio": 0.015,
+        "rawChangedRatio": 0.014295418407580708,
+        "rawMeanPixelDifference": 1.8294827666903215,
         "baselinePath": "/Users/runner/work/pixel-garden-invitation/pixel-garden-invitation/scripts/visual-baselines/ios-safari-iphone-16-pro-ios-18-5-safari-game-landscape-chrome-expanded.webp",
         "currentPath": "/Users/runner/work/pixel-garden-invitation/pixel-garden-invitation/.superpowers/visual-regression/ios-safari/ios-safari-iphone-16-pro-ios-18-5-safari-game-landscape-chrome-expanded-current.png",
-        "diffPath": "/Users/runner/work/pixel-garden-invitation/pixel-garden-invitation/.superpowers/visual-regression/ios-safari/ios-safari-iphone-16-pro-ios-18-5-safari-game-landscape-chrome-expanded-diff.png"
+        "diffPath": "/Users/runner/work/pixel-garden-invitation/pixel-garden-invitation/.superpowers/visual-regression/ios-safari/ios-safari-iphone-16-pro-ios-18-5-safari-game-landscape-chrome-expanded-diff.png",
+        "classification": {
+          "id": "watch-structural",
+          "confidence": "medium",
+          "likelyCause": "meaningful-change-within-budget",
+          "review": "recommended",
+          "changedRatio": 0.014840620189163514,
+          "rawChangedRatio": 0.014295418407580708,
+          "filteredNoiseRatio": 0,
+          "filteredNoiseShare": 0,
+          "budgetUsage": 0.9893746792775676
+        }
+      },
+      {
+        "state": "game-landscape-chrome-collapsed",
+        "changedPixels": 46928,
+        "changedRatio": 0.014840620189163514,
+        "meanPixelDifference": 1.5684569777605741,
+        "pixelCount": 3162132,
+        "passed": true,
+        "maxChangedRatio": 0.015,
+        "rawChangedRatio": 0.014295418407580708,
+        "rawMeanPixelDifference": 1.813591905714246,
+        "baselinePath": "/Users/runner/work/pixel-garden-invitation/pixel-garden-invitation/scripts/visual-baselines/ios-safari-iphone-16-pro-ios-18-5-safari-game-landscape-chrome-collapsed.webp",
+        "currentPath": "/Users/runner/work/pixel-garden-invitation/pixel-garden-invitation/.superpowers/visual-regression/ios-safari/ios-safari-iphone-16-pro-ios-18-5-safari-game-landscape-chrome-collapsed-current.png",
+        "diffPath": "/Users/runner/work/pixel-garden-invitation/pixel-garden-invitation/.superpowers/visual-regression/ios-safari/ios-safari-iphone-16-pro-ios-18-5-safari-game-landscape-chrome-collapsed-diff.png",
+        "classification": {
+          "id": "watch-structural",
+          "confidence": "medium",
+          "likelyCause": "meaningful-change-within-budget",
+          "review": "recommended",
+          "changedRatio": 0.014840620189163514,
+          "rawChangedRatio": 0.014295418407580708,
+          "filteredNoiseRatio": 0,
+          "filteredNoiseShare": 0,
+          "budgetUsage": 0.9893746792775676
+        }
       }
     ],
     "player": {
       "x": 163,
       "y": 352.3333435058594,
       "width": 76,
-      "height": 111,
+      "height": 94,
       "layerCount": 1,
       "backgrounds": [
         "url(\"http://127.0.0.1:4178/characters/generated/guests/feminine-long-wave-dress__idle.png\")"
@@ -391,42 +821,114 @@
       "state": "game",
       "width": 1206,
       "height": 2622,
-      "sha256": "9f6f7bad1e23a2720d0ac707f056db041a8c77d45c6aaf39ae4502163691ba56"
+      "sha256": "3ecce641f90a43d06c08c67b2a3c057e6b48d18eba90080c6b72c38c7c9ecc12",
+      "classification": {
+        "id": "intentional-baseline-update",
+        "confidence": "high",
+        "likelyCause": "explicit-baseline-approval",
+        "review": "approved",
+        "approvalReason": "번들 한글 UI 웹폰트 적용 후 4회 연속 실제 iOS Safari 캡처에서 확인된 안정 타이포그래피와 이름표 레이아웃",
+        "changedRatio": 0,
+        "rawChangedRatio": null,
+        "filteredNoiseRatio": null,
+        "filteredNoiseShare": 0,
+        "budgetUsage": 0
+      }
     },
     {
       "profileId": "iphone-16-pro-ios-18-5-safari",
       "state": "directions-text-200",
       "width": 1206,
       "height": 2622,
-      "sha256": "efbfc7f771bbb6cf8b70d3d763bef21ff6d9fc1d13cb6c44f8d93299da212083"
+      "sha256": "e5cc28f83518d23075d12f9df2b74fcda0b2b6cf7ec673a99a3681372770f97a",
+      "classification": {
+        "id": "intentional-baseline-update",
+        "confidence": "high",
+        "likelyCause": "explicit-baseline-approval",
+        "review": "approved",
+        "approvalReason": "번들 한글 UI 웹폰트 적용 후 4회 연속 실제 iOS Safari 캡처에서 확인된 안정 타이포그래피와 이름표 레이아웃",
+        "changedRatio": 0,
+        "rawChangedRatio": null,
+        "filteredNoiseRatio": null,
+        "filteredNoiseShare": 0,
+        "budgetUsage": 0
+      }
     },
     {
       "profileId": "iphone-16-pro-ios-18-5-safari",
       "state": "directions-text-200-middle",
       "width": 1206,
       "height": 2622,
-      "sha256": "01ec0f2efe4ee107190e5ab03e5ab6edb2e6bd6c8a6e41bcdc2abf27cc719674"
+      "sha256": "c3df9106ef87c9fd26cee64e5265e3e1c0333074bf52c8f0158816b8acdfb6ec",
+      "classification": {
+        "id": "intentional-baseline-update",
+        "confidence": "high",
+        "likelyCause": "explicit-baseline-approval",
+        "review": "approved",
+        "approvalReason": "번들 한글 UI 웹폰트 적용 후 4회 연속 실제 iOS Safari 캡처에서 확인된 안정 타이포그래피와 이름표 레이아웃",
+        "changedRatio": 0,
+        "rawChangedRatio": null,
+        "filteredNoiseRatio": null,
+        "filteredNoiseShare": 0,
+        "budgetUsage": 0
+      }
     },
     {
       "profileId": "iphone-16-pro-ios-18-5-safari",
       "state": "directions-text-200-bottom",
       "width": 1206,
       "height": 2622,
-      "sha256": "290ef0347b9518ee863fa9a4b274232aefddd99e7e8e5236c1e06559a2f1b56d"
+      "sha256": "0296fbb2a8a0d31914352458f4e9f60fad116ec7c98e4be860799508898cfd80",
+      "classification": {
+        "id": "intentional-baseline-update",
+        "confidence": "high",
+        "likelyCause": "explicit-baseline-approval",
+        "review": "approved",
+        "approvalReason": "번들 한글 UI 웹폰트 적용 후 4회 연속 실제 iOS Safari 캡처에서 확인된 안정 타이포그래피와 이름표 레이아웃",
+        "changedRatio": 0,
+        "rawChangedRatio": null,
+        "filteredNoiseRatio": null,
+        "filteredNoiseShare": 0,
+        "budgetUsage": 0
+      }
     },
     {
       "profileId": "iphone-16-pro-ios-18-5-safari",
       "state": "game-landscape-chrome-expanded",
       "width": 2622,
       "height": 1206,
-      "sha256": "fb8d1e9f0712768556fd6f8b9292f646a793a0afc919fee46ea0f3cc454f5066"
+      "sha256": "1b49d13330039d28d87719b04e1a6ee076da6d5f31e96078af03779e4168e8f0",
+      "classification": {
+        "id": "intentional-baseline-update",
+        "confidence": "high",
+        "likelyCause": "explicit-baseline-approval",
+        "review": "approved",
+        "approvalReason": "번들 한글 UI 웹폰트 적용 후 4회 연속 실제 iOS Safari 캡처에서 확인된 안정 타이포그래피와 이름표 레이아웃",
+        "changedRatio": 0,
+        "rawChangedRatio": null,
+        "filteredNoiseRatio": null,
+        "filteredNoiseShare": 0,
+        "budgetUsage": 0
+      }
     },
     {
       "profileId": "iphone-16-pro-ios-18-5-safari",
       "state": "game-landscape-chrome-collapsed",
       "width": 2622,
       "height": 1206,
-      "sha256": "28a001b8a8f9499b473a9b4b5be43dbd6284e824e25d5e8c92ee6a883c61830d"
+      "sha256": "1eef4dc7fb3d88fbc325514876d49de47b5439a730bc3f0b56b3ed8676f18b86",
+      "classification": {
+        "id": "intentional-baseline-update",
+        "confidence": "high",
+        "likelyCause": "explicit-baseline-approval",
+        "review": "approved",
+        "approvalReason": "번들 한글 UI 웹폰트 적용 후 4회 연속 실제 iOS Safari 캡처에서 확인된 안정 타이포그래피와 이름표 레이아웃",
+        "changedRatio": 0,
+        "rawChangedRatio": null,
+        "filteredNoiseRatio": null,
+        "filteredNoiseShare": 0,
+        "budgetUsage": 0
+      }
     }
   ]
 }
