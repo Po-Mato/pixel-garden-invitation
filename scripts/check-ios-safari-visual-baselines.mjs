@@ -653,11 +653,22 @@ async function captureLandscapeInteriorCenterProbe() {
   await new Promise((resolve) => setTimeout(resolve, 800));
   const metrics = await captureLandscapeMetrics("game-landscape-interior-center-probe");
   await screenshot("game-landscape-interior-center-probe");
-  assertLandscapeMetrics(metrics);
+  if (metrics.viewport.width <= metrics.viewport.height) {
+    throw new Error("실제 Safari 가로 내부 이동 후 가로 회전 상태를 유지하지 못했어요");
+  }
+  if (!metrics.playerCenter) {
+    throw new Error("실제 Safari 가로 내부 이동 후 캐릭터 중심 측정이 누락됐어요");
+  }
   if (!metrics.playerCenter.centerable.x || !metrics.playerCenter.centerable.y) {
     throw new Error(
       "실제 Safari 가로 내부 이동 후 X·Y 카메라 중심 가능 상태를 만들지 못했어요: "
       + JSON.stringify(metrics.playerCenter.centerable)
+    );
+  }
+  if (metrics.playerCenter.errorPx > iosSafariVisualProfile.maxLandscapePlayerCenterErrorPx) {
+    throw new Error(
+      `실제 Safari 가로 내부 이동 후 캐릭터 중심 오차 ${metrics.playerCenter.errorPx}px`
+      + ` > ${iosSafariVisualProfile.maxLandscapePlayerCenterErrorPx}px`
     );
   }
   return metrics;

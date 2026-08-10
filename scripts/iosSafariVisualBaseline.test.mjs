@@ -87,6 +87,7 @@ test("collapsed Safari chrome audit keeps the playing shell pinned and saves evi
   assert.match(source, /position: \{ x: 585, y: 375 \}/);
   assert.match(source, /playerCenter\.centerable\.x/);
   assert.match(source, /playerCenter\.centerable\.y/);
+  assert.match(source, /가로 내부 이동 후 캐릭터 중심 오차/);
 });
 
 test("iOS audit supports a signed physical iPhone session and native address-bar swipe", async () => {
@@ -119,6 +120,7 @@ test("iOS CI pins the stable Node runtime and recovers Simulator URL activation"
   assert.match(workflow, /recreate-session/);
   assert.match(workflow, /cancel-in-progress: false/);
   assert.match(workflow, /seed-ios-safari-stability-history\.mjs/);
+  assert.match(workflow, /ios-safari-stability-v2-/);
   assert.match(workflow, /ios-safari-stability-history-\$\{\{ github\.run_id \}\}/);
   assert.match(workflow, /compositor-fault-injection/);
   assert.match(workflow, /COMPOSITOR_RECOVERY_DURATION_MS/);

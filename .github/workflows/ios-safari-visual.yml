@@ -52,9 +52,9 @@ jobs:
         uses: actions/cache/restore@v5
         with:
           path: .superpowers/visual-regression/ios-safari-stability/ios-safari-stability-trend-history.json
-          key: ios-safari-stability-${{ runner.os }}-${{ github.run_id }}-${{ github.run_attempt }}
+          key: ios-safari-stability-v2-${{ runner.os }}-${{ github.run_id }}-${{ github.run_attempt }}
           restore-keys: |
-            ios-safari-stability-${{ runner.os }}-
+            ios-safari-stability-v2-${{ runner.os }}-
       - name: Seed hardened iOS history from successful run artifacts
         shell: bash
         env:
@@ -289,7 +289,7 @@ jobs:
         uses: actions/cache/save@v5
         with:
           path: .superpowers/visual-regression/ios-safari-stability/ios-safari-stability-trend-history.json
-          key: ios-safari-stability-${{ runner.os }}-${{ github.run_id }}-${{ github.run_attempt }}
+          key: ios-safari-stability-v2-${{ runner.os }}-${{ github.run_id }}-${{ github.run_attempt }}
       - name: Save Appium and prebuilt WebDriverAgent
         if: ${{ success() && steps.ios-automation-cache.outputs.cache-hit != 'true' }}
         uses: actions/cache/save@v5
