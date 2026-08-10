@@ -2554,6 +2554,20 @@ describe("GameWorld", () => {
     expect(player).toHaveStyle({ left: "285px", top: "375px", zIndex: "1375" });
   });
 
+  it("recenters the camera after a Safari orientation viewport change", () => {
+    render(<GameWorld profile={profile} />);
+    const viewport = screen.getByTestId("world-map-viewport");
+    const stage = screen.getByLabelText("우리 집 지도");
+
+    expect(stage.style.transform).toContain("translate3d(-90px, -115px, 0)");
+    vi.spyOn(viewport, "getBoundingClientRect").mockReturnValue(new DOMRect(0, 0, 874, 352));
+
+    act(() => window.dispatchEvent(new Event("orientationchange")));
+    advanceAnimation(manualAnimationClock);
+
+    expect(stage.style.transform).toContain("translate3d(152px, -199px, 0)");
+  });
+
   it("keeps portal effects behind characters while information buttons stay above the map", () => {
     render(<GameWorld profile={profile} />);
 

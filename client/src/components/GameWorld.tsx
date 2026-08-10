@@ -2714,6 +2714,9 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     const element = mapViewportRef.current;
     if (!element) return;
 
+    let resizeFrame: number | null = null;
+    let settleTimer: number | null = null;
+
     const update = () => {
       const rect = element.getBoundingClientRect();
       if (rect.width > 0 && rect.height > 0) {
@@ -2725,12 +2728,32 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
         ));
       }
     };
+    const scheduleUpdate = () => {
+      if (resizeFrame !== null) window.cancelAnimationFrame(resizeFrame);
+      resizeFrame = window.requestAnimationFrame(() => {
+        resizeFrame = null;
+        update();
+      });
+      if (settleTimer !== null) window.clearTimeout(settleTimer);
+      settleTimer = window.setTimeout(update, 320);
+    };
     update();
 
-    if (typeof ResizeObserver === "undefined") return;
-    const observer = new ResizeObserver(update);
-    observer.observe(element);
-    return () => observer.disconnect();
+    const observer = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(scheduleUpdate);
+    observer?.observe(element);
+    window.addEventListener("resize", scheduleUpdate, { passive: true });
+    window.addEventListener("orientationchange", scheduleUpdate, { passive: true });
+    window.visualViewport?.addEventListener("resize", scheduleUpdate, { passive: true });
+    window.visualViewport?.addEventListener("scroll", scheduleUpdate, { passive: true });
+    return () => {
+      observer?.disconnect();
+      window.removeEventListener("resize", scheduleUpdate);
+      window.removeEventListener("orientationchange", scheduleUpdate);
+      window.visualViewport?.removeEventListener("resize", scheduleUpdate);
+      window.visualViewport?.removeEventListener("scroll", scheduleUpdate);
+      if (resizeFrame !== null) window.cancelAnimationFrame(resizeFrame);
+      if (settleTimer !== null) window.clearTimeout(settleTimer);
+    };
   }, [activeZoneId]);
 
   useEffect(() => {

@@ -180,14 +180,26 @@ jobs:
         continue-on-error: true
         shell: bash
         run: |
+          IOS_URL_WARMED=false
           for attempt in 1 2 3; do
             if xcrun simctl openurl "$IOS_SIMULATOR_UDID" http://127.0.0.1:4178/; then
+              IOS_URL_WARMED=true
               break
             fi
-            test "$attempt" -lt 3
-            xcrun simctl bootstatus "$IOS_SIMULATOR_UDID" -b
-            sleep 3
+            if test "$attempt" -lt 3; then
+              xcrun simctl bootstatus "$IOS_SIMULATOR_UDID" -b
+              sleep 3
+            fi
           done
+          if test "$IOS_URL_WARMED" != true; then
+            echo "::warning::Simulator URL warm-up timed out; rebooting once before Appium navigation"
+            xcrun simctl shutdown "$IOS_SIMULATOR_UDID" || true
+            xcrun simctl boot "$IOS_SIMULATOR_UDID"
+            xcrun simctl bootstatus "$IOS_SIMULATOR_UDID" -b
+            if ! xcrun simctl openurl "$IOS_SIMULATOR_UDID" http://127.0.0.1:4178/; then
+              echo "::warning::Simulator URL warm-up still unavailable; Appium will perform the authoritative navigation"
+            fi
+          fi
           sleep 3
           pnpm visual:ios-safari -- \
             --mode auto \

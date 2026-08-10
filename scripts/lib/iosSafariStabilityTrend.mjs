@@ -12,7 +12,8 @@ export const iosSafariStabilityPolicy = Object.freeze({
 });
 
 function runIdentity(sample) {
-  return `${sample.runId || sample.sha || "unknown"}:${sample.runAttempt || 1}`;
+  if (sample.runId) return String(sample.runId);
+  return `${sample.sha || "unknown"}:${sample.runAttempt || 1}:${sample.generatedAt || "unknown"}`;
 }
 
 function normalizedSample(sample = {}) {

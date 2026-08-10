@@ -18,10 +18,11 @@ function sample(index, outcome = "success", policyRevision = 0, durationMs = 600
 test("iOS Safari history replaces rerun attempts by run identity", () => {
   const merged = mergeIosSafariStabilityHistory([
     sample(1, "failure"), sample(2)
-  ], [{ ...sample(1), outcome: "success" }]);
+  ], [{ ...sample(1), runAttempt: 2, outcome: "success" }]);
   assert.deepEqual(merged.map(({ runId, outcome }) => [runId, outcome]), [
     ["1", "success"], ["2", "success"]
   ]);
+  assert.equal(merged[0].runAttempt, 2);
 });
 
 test("iOS Safari history keeps hardened timing evidence over API-only duplicates", () => {

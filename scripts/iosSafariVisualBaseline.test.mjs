@@ -89,11 +89,14 @@ test("iOS audit supports a signed physical iPhone session and native address-bar
   assert.match(source, /pointerType: "touch"/);
 });
 
-test("iOS CI pins the stable Node runtime and retries Simulator URL activation", async () => {
+test("iOS CI pins the stable Node runtime and recovers Simulator URL activation", async () => {
   const workflow = await readFile(new URL("../.github/workflows/ios-safari-visual.yml", import.meta.url), "utf8");
   assert.match(workflow, /node-version: 22/);
   assert.match(workflow, /for attempt in 1 2 3/);
   assert.match(workflow, /simctl bootstatus/);
+  assert.match(workflow, /IOS_URL_WARMED=false/);
+  assert.match(workflow, /simctl shutdown/);
+  assert.match(workflow, /Appium will perform the authoritative navigation/);
   assert.match(workflow, /download-wda/);
   assert.doesNotMatch(workflow, /mkdir -p "\$WDA_CACHE_DIR"/);
   assert.match(workflow, /mkdir -p "\$\(dirname "\$WDA_CACHE_DIR"\)"/);
