@@ -2,6 +2,12 @@ name: Shared quality build
 
 on:
   workflow_dispatch:
+    inputs:
+      force_cold_sample:
+        description: Bypass workspace dependencies and publish an intentional cold-cache timing sample
+        required: false
+        default: false
+        type: boolean
   schedule:
     - cron: "23 5 1 * *"
   push:
@@ -23,14 +29,14 @@ jobs:
       - uses: actions/checkout@v6
       - name: Mark intentional cold-cache sample start
         id: intentional-cold-start
-        if: ${{ github.event_name == 'schedule' && github.event.schedule == '23 5 1 * *' }}
+        if: ${{ (github.event_name == 'schedule' && github.event.schedule == '23 5 1 * *') || inputs.force_cold_sample == true }}
         run: echo "started-at-ms=$(node -p 'Date.now()')" >> "$GITHUB_OUTPUT"
       - name: Restore shared quality dependencies
         id: quality-dependencies
         uses: ./.github/actions/setup-quality-dependencies
         with:
           node-version: 24
-          force-cold: ${{ github.event_name == 'schedule' && github.event.schedule == '23 5 1 * *' }}
+          force-cold: ${{ (github.event_name == 'schedule' && github.event.schedule == '23 5 1 * *') || inputs.force_cold_sample == true }}
       - name: Build production quality workspace once
         run: |
           echo "QUALITY_PRODUCTION_BUILD_STARTED_AT_MS=$(node -p 'Date.now()')" >> "$GITHUB_ENV"
@@ -73,7 +79,7 @@ jobs:
           compression-level: 9
           retention-days: 7
       - name: Record intentional monthly cold-cache timing sample
-        if: ${{ github.event_name == 'schedule' && github.event.schedule == '23 5 1 * *' }}
+        if: ${{ (github.event_name == 'schedule' && github.event.schedule == '23 5 1 * *') || inputs.force_cold_sample == true }}
         env:
           COLD_SAMPLE_STARTED_AT_MS: ${{ steps.intentional-cold-start.outputs.started-at-ms }}
         run: |
@@ -88,7 +94,7 @@ jobs:
             --run-duration-ms "$(node -p 'Math.max(0, Date.now() - Number(process.env.COLD_SAMPLE_STARTED_AT_MS))')" \
             --output-dir .quality-ci-intentional-cold
       - name: Upload intentional monthly cold-cache sample
-        if: ${{ github.event_name == 'schedule' && github.event.schedule == '23 5 1 * *' }}
+        if: ${{ (github.event_name == 'schedule' && github.event.schedule == '23 5 1 * *') || inputs.force_cold_sample == true }}
         uses: actions/upload-artifact@v7
         with:
           name: quality-ci-intentional-cold-${{ github.run_id }}

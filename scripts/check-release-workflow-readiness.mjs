@@ -15,6 +15,8 @@ const option = (name, fallback = null) => {
 const repository = option("--repository", process.env.GITHUB_REPOSITORY);
 const targetSha = option("--target-sha", process.env.GITHUB_SHA);
 const currentRunId = String(option("--current-run-id", process.env.GITHUB_RUN_ID ?? ""));
+const waitTimeoutMs = Math.max(0, Number(option("--wait-timeout-ms", 0)) || 0);
+const pollIntervalMs = Math.max(1000, Number(option("--poll-interval-ms", 20000)) || 20000);
 const token = process.env.GH_TOKEN ?? process.env.GITHUB_TOKEN;
 const outputDir = path.resolve(option(
   "--output-dir",
@@ -36,11 +38,26 @@ async function github(pathname) {
   return response.json();
 }
 
-const runsByWorkflow = Object.fromEntries(await Promise.all(requiredReleaseWorkflows.map(async ({ id, file }) => {
-  const data = await github(`/actions/workflows/${encodeURIComponent(file)}/runs?head_sha=${encodeURIComponent(targetSha)}&per_page=100`);
-  return [id, data.workflow_runs ?? []];
-})));
-const readiness = evaluateReleaseWorkflowReadiness(runsByWorkflow);
+async function fetchReadiness() {
+  const runsByWorkflow = Object.fromEntries(await Promise.all(requiredReleaseWorkflows.map(async ({ id, file }) => {
+    const data = await github(`/actions/workflows/${encodeURIComponent(file)}/runs?head_sha=${encodeURIComponent(targetSha)}&per_page=100`);
+    return [id, data.workflow_runs ?? []];
+  })));
+  return evaluateReleaseWorkflowReadiness(runsByWorkflow);
+}
+
+const waitStartedAt = Date.now();
+let pollCount = 0;
+let readiness;
+do {
+  pollCount += 1;
+  readiness = await fetchReadiness();
+  const elapsedMs = Date.now() - waitStartedAt;
+  if (readiness.ready || elapsedMs >= waitTimeoutMs) break;
+  const remainingMs = waitTimeoutMs - elapsedMs;
+  await new Promise((resolve) => setTimeout(resolve, Math.min(pollIntervalMs, remainingMs)));
+} while (true);
+const waitedMs = Date.now() - waitStartedAt;
 
 const priorSummaryRuns = (await github(
   `/actions/workflows/${encodeURIComponent("release-quality-summary.yml")}/runs?head_sha=${encodeURIComponent(targetSha)}&per_page=100`
@@ -60,6 +77,14 @@ const report = {
   ready: readiness.ready,
   alreadySummarized,
   shouldSummarize,
+  coordination: {
+    mode: "single-mobile-completion-trigger",
+    waitTimeoutMs,
+    pollIntervalMs,
+    pollCount,
+    waitedMs,
+    timedOut: !readiness.ready && waitedMs >= waitTimeoutMs
+  },
   workflows: readiness.workflows,
   pending: readiness.pending
 };
@@ -78,5 +103,6 @@ if (process.env.GITHUB_OUTPUT) {
 console.log(
   `릴리스 품질 워크플로: ${readiness.workflows.filter(({ status }) => status === "completed").length}`
   + `/${requiredReleaseWorkflows.length} 완료 · 기존 요약 ${alreadySummarized ? "있음" : "없음"}`
+  + ` · 확인 ${pollCount}회/${Math.round(waitedMs / 1000)}초`
   + ` · 생성 ${shouldSummarize ? "진행" : "대기/생략"}`
 );

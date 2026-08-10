@@ -37,7 +37,7 @@ runs:
           client/node_modules
           shared/node_modules
           worker/node_modules
-        key: quality-dependencies-${{ runner.os }}-${{ runner.arch }}-node-${{ inputs.node-version }}-${{ hashFiles('pnpm-lock.yaml', 'package.json', 'client/package.json', 'shared/package.json', 'worker/package.json') }}
+        key: quality-dependencies-${{ runner.os }}-${{ runner.arch }}-node-${{ inputs.node-version }}-pnpm-10.29.2-${{ hashFiles('pnpm-lock.yaml') }}
     - if: steps.workspace-dependencies.outputs.cache-hit != 'true'
       shell: bash
       run: pnpm install --frozen-lockfile

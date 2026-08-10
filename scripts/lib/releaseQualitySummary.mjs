@@ -128,6 +128,7 @@ export function buildReleaseQualitySummary(evidence = {}, metadata = {}) {
     p95FrameMs: evidence.ios?.landscape?.frameTimings?.p95FrameMs ?? null,
     expandedPlayerCenterErrorPx: evidence.ios?.landscape?.expanded?.playerCenter?.errorPx ?? null,
     collapsedPlayerCenterErrorPx: evidence.ios?.landscape?.collapsed?.playerCenter?.errorPx ?? null,
+    interiorPlayerCenterErrorPx: evidence.ios?.landscape?.interiorCenterProbe?.playerCenter?.errorPx ?? null,
     compositorRecoveryCount: evidence.ios?.nativeCompositor?.recoveryCount ?? null,
     compositorRecoveryDurationMs: evidence.ios?.nativeCompositor?.recoveryDurationMs ?? null,
     compositorFaultInjected: evidence.ios?.nativeCompositor?.faultInjection?.triggered ?? null
@@ -243,13 +244,19 @@ export function formatReleaseQualitySummaryMarkdown(summary) {
       "",
       `- 상태: **${summary.trend.status}** · 표본 ${summary.trend.sampleCount}개`,
       `- 이전 커밋: \`${summary.trend.previousSha ?? "없음"}\``,
-      ...(summary.trend.regressions.length ? summary.trend.regressions.map((issue) => `- ${issue}`) : ["- 유의미한 악화 없음"])
+      ...(summary.trend.regressions.length ? summary.trend.regressions.map((issue) => `- ${issue}`) : ["- 유의미한 악화 없음"]),
+      `- 반복 시각 변동: **${summary.trend.watchStructural?.status ?? "clear"}**`,
+      ...(summary.trend.watchStructural?.promoted ?? []).map(({ source, state, consecutiveReleases }) => (
+        `- 검토 승격: ${source}/${state} · ${consecutiveReleases}개 릴리스 연속`
+      ))
     );
   }
   const issues = summary.categories.flatMap((item) => [
     ...item.missing.map((name) => `${label[item.id] ?? item.id}: ${name} 증거 누락`),
     ...item.issues
-  ]);
+  ]).concat((summary.trend?.watchStructural?.promoted ?? []).map(({ source, state, consecutiveReleases }) => (
+    `반복 시각 변동 검토 필요: ${source}/${state} (${consecutiveReleases}개 릴리스 연속)`
+  )));
   lines.push("", "### 확인 필요", "", ...(issues.length ? issues.map((issue) => `- ${issue}`) : ["- 없음"]), "");
   return lines.join("\n");
 }

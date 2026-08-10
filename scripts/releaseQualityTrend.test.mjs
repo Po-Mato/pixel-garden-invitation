@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { buildReleaseQualityTrend, seedReleaseQualityHistory } from "./lib/releaseQualityTrend.mjs";
 
-function summary(sha, { lcp = 1200, frame = 20, map = 0, structural = 0 } = {}) {
+function summary(sha, { lcp = 1200, frame = 20, map = 0, structural = 0, watchKeys = [] } = {}) {
   return {
     sha,
     generatedAt: `2026-08-10T00:00:0${sha.length}.000Z`,
@@ -12,7 +12,14 @@ function summary(sha, { lcp = 1200, frame = 20, map = 0, structural = 0 } = {}) 
       { id: "ios", status: "passed", metrics: { p95FrameMs: frame } },
       { id: "pwa", status: "passed", metrics: { largestContentfulPaintMs: lcp } }
     ],
-    visualDifferences: { status: "passed", counts: { "structural-regression": structural } }
+    visualDifferences: {
+      status: watchKeys.length > 0 ? "watch" : "passed",
+      counts: { "structural-regression": structural, "watch-structural": watchKeys.length },
+      details: watchKeys.map((key) => {
+        const [source, state] = key.split("::");
+        return { source, state, classification: { id: "watch-structural" } };
+      })
+    }
   };
 }
 
@@ -24,6 +31,35 @@ test("release quality trend warms up then reports stable deltas", () => {
   assert.equal(second.trend.status, "stable");
   assert.equal(second.trend.previousSha, "a");
   assert.equal(second.history.snapshots.length, 2);
+});
+
+test("the same watch-structural region is promoted after three consecutive releases", () => {
+  const key = "ios::game-landscape-chrome-expanded";
+  const first = buildReleaseQualityTrend(summary("a", { watchKeys: [key] }));
+  const second = buildReleaseQualityTrend(summary("bb", { watchKeys: [key] }), first.history);
+  const third = buildReleaseQualityTrend(summary("ccc", { watchKeys: [key] }), second.history);
+
+  assert.equal(second.trend.watchStructural.status, "observing");
+  assert.equal(third.trend.status, "watch");
+  assert.equal(third.trend.watchStructural.status, "review-required");
+  assert.deepEqual(third.trend.watchStructural.promoted[0], {
+    key,
+    source: "ios",
+    state: "game-landscape-chrome-expanded",
+    consecutiveReleases: 3,
+    requiredReleases: 3,
+    releaseShas: ["a", "bb", "ccc"],
+    promoted: true
+  });
+});
+
+test("a clean intervening release resets the watch-structural streak", () => {
+  const key = "ios::game";
+  const first = buildReleaseQualityTrend(summary("a", { watchKeys: [key] }));
+  const clean = buildReleaseQualityTrend(summary("bb"), first.history);
+  const current = buildReleaseQualityTrend(summary("ccc", { watchKeys: [key] }), clean.history);
+  assert.equal(current.trend.watchStructural.candidates[0].consecutiveReleases, 1);
+  assert.equal(current.trend.watchStructural.status, "observing");
 });
 
 test("release quality trend flags material regressions and de-duplicates rerun SHAs", () => {

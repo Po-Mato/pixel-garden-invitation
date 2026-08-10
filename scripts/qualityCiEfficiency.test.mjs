@@ -89,8 +89,13 @@ test("all expensive quality consumers publish efficiency evidence", async () => 
   assert.match(restoreAction, /producer-build-duration-ms:/);
   const buildWorkflow = await readFile(new URL("../.github/workflows/quality-build.yml", import.meta.url), "utf8");
   assert.match(buildWorkflow, /cron: "23 5 1 \* \*"/);
+  assert.match(buildWorkflow, /force_cold_sample:/);
+  assert.match(buildWorkflow, /inputs\.force_cold_sample == true/);
   assert.match(buildWorkflow, /force-cold:/);
   assert.match(buildWorkflow, /quality-ci-intentional-cold-/);
+  const dependencyAction = await readFile(new URL("../.github/actions/setup-quality-dependencies/action.yml", import.meta.url), "utf8");
+  assert.match(dependencyAction, /hashFiles\('pnpm-lock\.yaml'\)/);
+  assert.doesNotMatch(dependencyAction, /hashFiles\('pnpm-lock\.yaml',/);
 });
 
 test("quality CI history separates cold and warm p50/p95 without double-counting reruns", () => {

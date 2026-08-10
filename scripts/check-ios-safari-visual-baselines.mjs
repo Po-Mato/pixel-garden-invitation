@@ -627,6 +627,42 @@ function assertLandscapeMetrics(metrics) {
   }
 }
 
+async function captureLandscapeInteriorCenterProbe() {
+  await evaluate(`
+    localStorage.setItem("wedding-game:world-session:v1", JSON.stringify({
+      version: 1,
+      zoneId: "neighborhood",
+      position: { x: 585, y: 375 },
+      direction: "down",
+      guideCheckpointId: null,
+      updatedAt: new Date().toISOString()
+    }));
+    return true;
+  `);
+  await sessionCommand("POST", "/url", { url });
+  await waitForDocument("document.querySelector('.entry-screen__resume-access')", "가로 중심 감사 이어하기", 60_000);
+  await evaluate(`document.querySelector(".entry-screen__resume-access")?.click(); return true;`);
+  await waitForDocument(stableGameFrameExpression, "가로 중심 감사 게임 프레임", 60_000);
+  await waitForDocument(
+    "document.querySelector('.world-map__stage')?.dataset.zone === 'neighborhood'",
+    "가로 중심 감사 넓은 맵",
+    30_000
+  );
+  await waitForDocument("document.fonts.status === 'loaded'", "가로 중심 감사 한글 폰트", 30_000);
+  await applyBaselineFreeze();
+  await new Promise((resolve) => setTimeout(resolve, 800));
+  const metrics = await captureLandscapeMetrics("game-landscape-interior-center-probe");
+  await screenshot("game-landscape-interior-center-probe");
+  assertLandscapeMetrics(metrics);
+  if (!metrics.playerCenter.centerable.x || !metrics.playerCenter.centerable.y) {
+    throw new Error(
+      "실제 Safari 가로 내부 이동 후 X·Y 카메라 중심 가능 상태를 만들지 못했어요: "
+      + JSON.stringify(metrics.playerCenter.centerable)
+    );
+  }
+  return metrics;
+}
+
 try {
   await waitForAppium();
   safariCapabilities = {
@@ -829,6 +865,8 @@ try {
   ) {
     throw new Error("실제 iPhone Safari 주소창 제스처에서 visualViewport 변화가 감지되지 않았어요");
   }
+
+  captureReport.landscape.interiorCenterProbe = await captureLandscapeInteriorCenterProbe();
 
   if (pwaUrl) {
     await sessionCommand("POST", "/orientation", { orientation: "PORTRAIT" });

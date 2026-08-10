@@ -3,11 +3,7 @@ name: Release quality summary
 on:
   workflow_dispatch:
   workflow_run:
-    workflows:
-      - Deploy client to GitHub Pages
-      - Mobile visual regression
-      - Real Android Chrome visual regression
-      - Real iOS Safari visual regression
+    workflows: [Mobile visual regression]
     types: [completed]
 
 permissions:
@@ -21,6 +17,7 @@ concurrency:
 jobs:
   summarize:
     runs-on: ubuntu-latest
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v6
         with:
@@ -33,7 +30,9 @@ jobs:
         run: |
           node scripts/check-release-workflow-readiness.mjs \
             --target-sha "$TARGET_SHA" \
-            --current-run-id "$GITHUB_RUN_ID"
+            --current-run-id "$GITHUB_RUN_ID" \
+            --wait-timeout-ms 2700000 \
+            --poll-interval-ms 20000
       - uses: pnpm/action-setup@v6
         if: steps.release-gate.outputs.should_summarize == 'true'
         with:
@@ -114,12 +113,18 @@ jobs:
           record_run_timing mobile "$MOBILE_RUN_ID" linux
           record_run_timing android "$ANDROID_RUN_ID" linux
           record_run_timing ios "$IOS_RUN_ID" macos
-          gh run list --workflow quality-build.yml --event schedule --status success --limit 6 --json databaseId \
-            --jq '.[].databaseId' \
+          {
+            gh run list --workflow quality-build.yml --event schedule --status success --limit 6 --json databaseId --jq '.[].databaseId'
+            gh run list --workflow quality-build.yml --event workflow_dispatch --status success --limit 30 --json databaseId --jq '.[].databaseId'
+          } | sort -u \
             | while read -r cold_run_id; do
                 test -n "$cold_run_id" || continue
-                download_artifact "$cold_run_id" "quality-ci-intentional-cold-$cold_run_id" "quality-inputs/ci/cold/$cold_run_id"
-                record_run_timing cold-sample "$cold_run_id" linux
+                has_cold_artifact="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$cold_run_id/artifacts" \
+                  --jq "[.artifacts[] | select(.name == \"quality-ci-intentional-cold-$cold_run_id\" and (.expired | not))] | length")"
+                if test "$has_cold_artifact" -gt 0; then
+                  download_artifact "$cold_run_id" "quality-ci-intentional-cold-$cold_run_id" "quality-inputs/ci/cold/$cold_run_id"
+                  record_run_timing cold-sample "$cold_run_id" linux
+                fi
               done
       - name: Summarize dependency cache and shared-build efficiency
         if: steps.release-gate.outputs.should_summarize == 'true'

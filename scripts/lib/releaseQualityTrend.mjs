@@ -5,6 +5,49 @@ const metricPolicies = Object.freeze([
   { category: "visual", key: "structural-regression", direction: "lower", absoluteTolerance: 0, relativeTolerance: 0 }
 ]);
 
+export const repeatedWatchStructuralReleaseThreshold = 3;
+
+function watchStructuralKey(detail) {
+  return `${String(detail.source ?? "unknown")}::${String(detail.state ?? "unknown")}`;
+}
+
+function watchStructuralKeys(summary) {
+  return [...new Set((summary.visualDifferences?.details ?? [])
+    .filter(({ classification }) => classification?.id === "watch-structural")
+    .map(watchStructuralKey))].sort();
+}
+
+function repeatedWatchStructuralTrend(summary, previousSnapshots) {
+  const currentKeys = watchStructuralKeys(summary);
+  const previousDistinct = previousSnapshots.filter(({ sha }) => sha && sha !== summary.sha);
+  const candidates = currentKeys.map((key) => {
+    let consecutiveReleases = 1;
+    const releaseShas = [summary.sha].filter(Boolean);
+    for (const snapshot of [...previousDistinct].reverse()) {
+      if (!(snapshot.visualDifferences?.watchStructuralKeys ?? []).includes(key)) break;
+      consecutiveReleases += 1;
+      releaseShas.unshift(snapshot.sha);
+    }
+    const [source, state] = key.split("::");
+    return {
+      key,
+      source,
+      state,
+      consecutiveReleases,
+      requiredReleases: repeatedWatchStructuralReleaseThreshold,
+      releaseShas,
+      promoted: consecutiveReleases >= repeatedWatchStructuralReleaseThreshold
+    };
+  });
+  const promoted = candidates.filter(({ promoted }) => promoted);
+  return {
+    status: promoted.length > 0 ? "review-required" : candidates.length > 0 ? "observing" : "clear",
+    requiredReleases: repeatedWatchStructuralReleaseThreshold,
+    candidates,
+    promoted
+  };
+}
+
 function metricValue(summary, category, key) {
   if (category === "visual") return summary.visualDifferences?.counts?.[key] ?? 0;
   return summary.categories?.find(({ id }) => id === category)?.metrics?.[key] ?? null;
@@ -16,7 +59,11 @@ export function releaseQualitySnapshot(summary) {
     generatedAt: summary.generatedAt ?? new Date().toISOString(),
     status: summary.status,
     categories: Object.fromEntries((summary.categories ?? []).map(({ id, status, metrics }) => [id, { status, metrics }])),
-    visualDifferences: summary.visualDifferences ? { status: summary.visualDifferences.status, counts: summary.visualDifferences.counts } : null
+    visualDifferences: summary.visualDifferences ? {
+      status: summary.visualDifferences.status,
+      counts: summary.visualDifferences.counts,
+      watchStructuralKeys: watchStructuralKeys(summary)
+    } : null
   };
 }
 
@@ -65,16 +112,20 @@ export function buildReleaseQualityTrend(summary, history = { version: 1, snapsh
     )),
     ...categoryRegressions
   ];
+  const watchStructural = repeatedWatchStructuralTrend(summary, previousSnapshots);
   const withoutCurrent = previousSnapshots.filter(({ sha }) => !current.sha || sha !== current.sha);
   const snapshots = [...withoutCurrent, current].slice(-limit);
   return {
     history: { version: 1, snapshots },
     trend: {
-      status: previous === null ? "warming" : regressions.length > 0 ? "watch" : "stable",
+      status: previous === null
+        ? "warming"
+        : regressions.length > 0 || watchStructural.status === "review-required" ? "watch" : "stable",
       previousSha: previous?.sha ?? null,
       sampleCount: snapshots.length,
       comparisons,
-      regressions
+      regressions,
+      watchStructural
     }
   };
 }

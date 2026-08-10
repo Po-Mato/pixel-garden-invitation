@@ -13,7 +13,13 @@ function cleanEvidence() {
     mobileRegions: { changedRatio: 0, maxRegionChangedRatio: 0.02, regionResults: [{ id: "home", kind: "map", changedRatio: 0 }] },
     hud: { reports: [{ issues: [] }], typographyScaleAudit: { reports: [{ issues: [] }], issues: [] }, collisionMatrix: { reports: [], issues: [] } },
     android: device,
-    ios: { ...device, landscape: { frameTimings: { p95FrameMs: 16 } } },
+    ios: {
+      ...device,
+      landscape: {
+        frameTimings: { p95FrameMs: 16 },
+        interiorCenterProbe: { playerCenter: { errorPx: 0.5 } }
+      }
+    },
     pwaAssets: { trend: { groups: { core: { total: 82 }, features: { total: 40 } }, logicalChunkBudget: { status: "passed", evaluations: [{ logicalPath: "index.js" }], issues: [] } } },
     pwaNetwork: {
       issues: [],
@@ -47,9 +53,27 @@ test("release quality summary combines product and automation evidence groups", 
   ]);
   assert.equal(summary.categories.find(({ id }) => id === "pwa").metrics.largestContentfulPaintMs, 1200);
   assert.equal(summary.categories.find(({ id }) => id === "pwa").metrics.pagesRuntimeAssets, 86);
+  assert.equal(summary.categories.find(({ id }) => id === "ios").metrics.interiorPlayerCenterErrorPx, 0.5);
   assert.equal(summary.visualDifferences.status, "passed");
   assert.equal(summary.visualDifferences.counts["renderer-noise"], 2);
   assert.match(formatReleaseQualitySummaryMarkdown(summary), /종합 상태: \*\*passed\*\*/);
+});
+
+test("release summary markdown exposes promoted repeated visual regions", () => {
+  const summary = buildReleaseQualitySummary(cleanEvidence(), { sha: "abc" });
+  summary.trend = {
+    status: "watch",
+    sampleCount: 3,
+    previousSha: "def",
+    regressions: [],
+    watchStructural: {
+      status: "review-required",
+      promoted: [{ source: "ios", state: "game", consecutiveReleases: 3 }]
+    }
+  };
+  const markdown = formatReleaseQualitySummaryMarkdown(summary);
+  assert.match(markdown, /검토 승격: ios\/game · 3개 릴리스 연속/);
+  assert.match(markdown, /반복 시각 변동 검토 필요: ios\/game/);
 });
 
 test("release quality summary respects the deployed PWA trend status", () => {
@@ -73,15 +97,16 @@ test("release quality summary distinguishes missing evidence from failed evidenc
   assert.equal(summary.categories.find(({ id }) => id === "hud").status, "failed");
 });
 
-test("release quality workflow runs once after all four commit workflows and joins exact run artifacts", async () => {
+test("release quality workflow has one central trigger, waits for all commit workflows, and joins exact run artifacts", async () => {
   const workflow = await readFile(new URL("../.github/workflows/release-quality-summary.yml", import.meta.url), "utf8");
   assert.match(workflow, /workflow_run:/);
   assert.match(workflow, /TARGET_SHA/);
-  assert.match(workflow, /Deploy client to GitHub Pages/);
-  assert.match(workflow, /Mobile visual regression/);
-  assert.match(workflow, /Real Android Chrome visual regression/);
-  assert.match(workflow, /Real iOS Safari visual regression/);
+  assert.match(workflow, /workflows: \[Mobile visual regression\]/);
+  assert.doesNotMatch(workflow, /workflows:[\s\S]*Deploy client to GitHub Pages[\s\S]*types:/);
   assert.match(workflow, /check-release-workflow-readiness\.mjs/);
+  assert.match(workflow, /--wait-timeout-ms 2700000/);
+  assert.match(workflow, /--poll-interval-ms 20000/);
+  assert.match(workflow, /timeout-minutes: 60/);
   assert.match(workflow, /steps\.release-gate\.outputs\.should_summarize == 'true'/);
   assert.match(workflow, /steps\.release-gate\.outputs\.pages_run_id/);
   assert.doesNotMatch(workflow, /for attempt in \{1\.\.36\}/);
@@ -99,5 +124,13 @@ test("release quality workflow runs once after all four commit workflows and joi
   assert.match(workflow, /quality:evidence-efficiency/);
   assert.match(workflow, /quality-evidence-efficiency-history/);
   assert.match(workflow, /quality-ci-intentional-cold-/);
+  assert.match(workflow, /--event workflow_dispatch/);
+  assert.match(workflow, /has_cold_artifact/);
   assert.match(workflow, /record_run_timing cold-sample/);
+
+  const releaseGate = await readFile(new URL("./lib/releaseWorkflowGate.mjs", import.meta.url), "utf8");
+  assert.match(releaseGate, /pages\.yml/);
+  assert.match(releaseGate, /visual-regression\.yml/);
+  assert.match(releaseGate, /android-chrome-visual\.yml/);
+  assert.match(releaseGate, /ios-safari-visual\.yml/);
 });

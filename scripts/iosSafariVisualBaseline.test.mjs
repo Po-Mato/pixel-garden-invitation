@@ -82,6 +82,11 @@ test("collapsed Safari chrome audit keeps the playing shell pinned and saves evi
   assert.match(source, /playerCenter/);
   assert.match(source, /maxLandscapePlayerCenterErrorPx/);
   assert.match(source, /실제 Safari 캐릭터 중심 오차/);
+  assert.match(source, /captureLandscapeInteriorCenterProbe/);
+  assert.match(source, /zoneId: "neighborhood"/);
+  assert.match(source, /position: \{ x: 585, y: 375 \}/);
+  assert.match(source, /playerCenter\.centerable\.x/);
+  assert.match(source, /playerCenter\.centerable\.y/);
 });
 
 test("iOS audit supports a signed physical iPhone session and native address-bar swipe", async () => {

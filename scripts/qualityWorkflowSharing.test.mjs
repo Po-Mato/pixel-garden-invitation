@@ -37,14 +37,13 @@ test("shared quality build produces isolated production and device variants", as
 
 test("release summary has one artifact-producing gate for all mandatory workflows", async () => {
   const source = await workflow("release-quality-summary.yml");
-  for (const name of [
-    "Deploy client to GitHub Pages",
-    "Mobile visual regression",
-    "Real Android Chrome visual regression",
-    "Real iOS Safari visual regression"
-  ]) assert.match(source, new RegExp(name));
+  assert.match(source, /workflows: \[Mobile visual regression\]/);
+  assert.doesNotMatch(source, /workflows:[\s\S]*Deploy client to GitHub Pages[\s\S]*types:/);
   assert.match(source, /should_summarize/);
   assert.match(source, /cancel-in-progress: true/);
   const gate = await readFile(new URL("./check-release-workflow-readiness.mjs", import.meta.url), "utf8");
   assert.match(gate, /already_summarized/);
+  assert.match(gate, /setTimeout/);
+  assert.match(gate, /pollCount/);
+  assert.match(gate, /single-mobile-completion-trigger/);
 });
