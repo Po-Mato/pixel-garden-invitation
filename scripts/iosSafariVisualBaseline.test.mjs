@@ -13,7 +13,8 @@ test("real iOS Safari baseline contract covers game and 200% directions scroll",
     id: "iphone-16-pro-ios-18-5-safari",
     deviceName: "iPhone 16 Pro",
     runtime: "iOS 18.5",
-    requiredDirectionsScroll: 160
+    requiredDirectionsScroll: 160,
+    maxLandscapePlayerCenterErrorPx: 2
   });
   assert.deepEqual(iosSafariVisualStates, [
     "game",
@@ -78,6 +79,9 @@ test("collapsed Safari chrome audit keeps the playing shell pinned and saves evi
   assert.match(source, /visualViewport\.resize/);
   assert.match(source, /summarizeFrameTimings\(viewportTrace\.frameDeltas\)/);
   assert.match(source, /p95\/p99/);
+  assert.match(source, /playerCenter/);
+  assert.match(source, /maxLandscapePlayerCenterErrorPx/);
+  assert.match(source, /실제 Safari 캐릭터 중심 오차/);
 });
 
 test("iOS audit supports a signed physical iPhone session and native address-bar swipe", async () => {

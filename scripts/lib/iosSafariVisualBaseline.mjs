@@ -14,7 +14,8 @@ export const iosSafariVisualProfile = Object.freeze({
   id: "iphone-16-pro-ios-18-5-safari",
   deviceName: "iPhone 16 Pro",
   runtime: "iOS 18.5",
-  requiredDirectionsScroll: 160
+  requiredDirectionsScroll: 160,
+  maxLandscapePlayerCenterErrorPx: 2
 });
 
 export const iosSafariVisualStates = Object.freeze([

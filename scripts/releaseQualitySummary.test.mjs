@@ -73,11 +73,18 @@ test("release quality summary distinguishes missing evidence from failed evidenc
   assert.equal(summary.categories.find(({ id }) => id === "hud").status, "failed");
 });
 
-test("release quality workflow joins completed artifacts by commit SHA", async () => {
+test("release quality workflow runs once after all four commit workflows and joins exact run artifacts", async () => {
   const workflow = await readFile(new URL("../.github/workflows/release-quality-summary.yml", import.meta.url), "utf8");
   assert.match(workflow, /workflow_run:/);
   assert.match(workflow, /TARGET_SHA/);
-  assert.match(workflow, /--status completed/);
+  assert.match(workflow, /Deploy client to GitHub Pages/);
+  assert.match(workflow, /Mobile visual regression/);
+  assert.match(workflow, /Real Android Chrome visual regression/);
+  assert.match(workflow, /Real iOS Safari visual regression/);
+  assert.match(workflow, /check-release-workflow-readiness\.mjs/);
+  assert.match(workflow, /steps\.release-gate\.outputs\.should_summarize == 'true'/);
+  assert.match(workflow, /steps\.release-gate\.outputs\.pages_run_id/);
+  assert.doesNotMatch(workflow, /for attempt in \{1\.\.36\}/);
   assert.match(workflow, /gh run download[\s\S]*\|\| true/);
   assert.match(workflow, /gh run download/);
   assert.match(workflow, /quality:summary/);
@@ -91,4 +98,6 @@ test("release quality workflow joins completed artifacts by commit SHA", async (
   assert.match(workflow, /repository-visibility/);
   assert.match(workflow, /quality:evidence-efficiency/);
   assert.match(workflow, /quality-evidence-efficiency-history/);
+  assert.match(workflow, /quality-ci-intentional-cold-/);
+  assert.match(workflow, /record_run_timing cold-sample/);
 });

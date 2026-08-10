@@ -10,9 +10,11 @@ const option = (name, fallback = null) => {
 const workflow = option("--workflow", "unknown");
 const outputDir = path.resolve(option("--output-dir", path.join(rootDir, ".quality-ci-efficiency")));
 const fallbackStartedAtMs = Math.max(0, Number(option("--fallback-started-at-ms", 0)) || 0);
+const runDurationMs = Math.max(0, Number(option("--run-duration-ms", 0)) || 0);
 const sample = {
   version: 1,
   workflow,
+  sampleKind: option("--sample-kind", "natural"),
   variant: option("--variant", "production"),
   dependencyCacheHit: option("--dependency-cache-hit", "false") === "true",
   dependencySetupDurationMs: Number(option("--dependency-setup-duration-ms", 0)),
@@ -21,6 +23,8 @@ const sample = {
   artifactBytes: Number(option("--artifact-bytes", 0)),
   producerBuildDurationMs: Number(option("--producer-build-duration-ms", 0)),
   fallbackBuildDurationMs: fallbackStartedAtMs > 0 ? Math.max(0, Date.now() - fallbackStartedAtMs) : 0,
+  runDurationMs,
+  billedMinutes: runDurationMs > 0 ? Math.ceil(runDurationMs / 60_000) : 0,
   runId: process.env.GITHUB_RUN_ID ?? null,
   sha: process.env.GITHUB_SHA ?? null,
   generatedAt: new Date().toISOString()

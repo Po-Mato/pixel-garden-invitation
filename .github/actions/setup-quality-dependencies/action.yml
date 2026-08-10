@@ -4,10 +4,14 @@ inputs:
   node-version:
     description: Node.js major version
     required: true
+  force-cold:
+    description: Bypass the workspace dependency cache for an intentional cold-cache sample
+    required: false
+    default: "false"
 outputs:
   cache-hit:
     description: Whether the workspace dependency cache matched exactly
-    value: ${{ steps.workspace-dependencies.outputs.cache-hit }}
+    value: ${{ steps.workspace-dependencies.outputs.cache-hit || 'false' }}
   setup-duration-ms:
     description: Total dependency setup duration in milliseconds
     value: ${{ steps.setup-metrics.outputs.duration-ms }}
@@ -25,6 +29,7 @@ runs:
         node-version: ${{ inputs.node-version }}
         cache: pnpm
     - id: workspace-dependencies
+      if: inputs.force-cold != 'true'
       uses: actions/cache@v5
       with:
         path: |

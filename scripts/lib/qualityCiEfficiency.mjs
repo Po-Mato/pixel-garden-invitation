@@ -2,6 +2,7 @@ export const qualityCiEfficiencyPolicy = Object.freeze({
   expectedWorkflows: ["pages", "mobile", "android", "ios"],
   minimumDependencyCacheHitRate: 0.75,
   maximumSharedArtifactBytes: 70 * 1024 * 1024,
+  recommendedColdTimingSamples: 6,
   retainedRuns: 160,
   pricingVerifiedAt: "2026-08-10",
   pricingReference: "https://docs.github.com/en/billing/concepts/product-billing/github-actions",
@@ -22,6 +23,7 @@ function normalize(sample = {}) {
   const runDurationMs = Math.max(0, Number(sample.runDurationMs) || 0);
   return {
     workflow,
+    sampleKind: sample.sampleKind === "intentional-cold" ? "intentional-cold" : "natural",
     variant: sample.variant === "device" ? "device" : "production",
     dependencyCacheHit: truthy(sample.dependencyCacheHit),
     dependencySetupDurationMs: Math.max(0, Number(sample.dependencySetupDurationMs) || 0),
@@ -93,6 +95,7 @@ function buildTrend(history, repositoryVisibility, generatedAt) {
   const samples = history.samples ?? [];
   const warm = samples.filter(({ dependencyCacheHit }) => dependencyCacheHit);
   const cold = samples.filter(({ dependencyCacheHit }) => !dependencyCacheHit);
+  const intentionalCold = cold.filter(({ sampleKind }) => sampleKind === "intentional-cold");
   const month = String(generatedAt).slice(0, 7);
   const monthlySamples = samples.filter(({ generatedAt: value }) => String(value).slice(0, 7) === month);
   const billedEquivalentUsd = monthlySamples.reduce((total, sample) => (
@@ -101,7 +104,12 @@ function buildTrend(history, repositoryVisibility, generatedAt) {
   return {
     sampleCount: samples.length,
     cacheTiming: {
-      cold: timingSummary(cold),
+      cold: {
+        ...timingSummary(cold),
+        intentionalSampleCount: intentionalCold.length,
+        confidence: cold.length >= qualityCiEfficiencyPolicy.recommendedColdTimingSamples ? "established" : "warming",
+        recommendedSampleCount: qualityCiEfficiencyPolicy.recommendedColdTimingSamples
+      },
       warm: timingSummary(warm)
     },
     monthly: {
@@ -118,8 +126,13 @@ function buildTrend(history, repositoryVisibility, generatedAt) {
 }
 
 export function buildQualityCiEfficiency(samples = [], history = {}, metadata = {}) {
+  const normalizedSamples = samples.map(normalize);
   const latest = new Map();
-  for (const sample of samples.map(normalize)) latest.set(sample.workflow, sample);
+  const supplementalReports = [];
+  for (const sample of normalizedSamples) {
+    if (qualityCiEfficiencyPolicy.expectedWorkflows.includes(sample.workflow)) latest.set(sample.workflow, sample);
+    else supplementalReports.push(sample);
+  }
   const reports = [...latest.values()].sort((left, right) => left.workflow.localeCompare(right.workflow));
   const expected = qualityCiEfficiencyPolicy.expectedWorkflows;
   const missingWorkflows = expected.filter((workflow) => !latest.has(workflow));
@@ -147,13 +160,14 @@ export function buildQualityCiEfficiency(samples = [], history = {}, metadata = 
     target: qualityCiEfficiencyPolicy.minimumDependencyCacheHitRate
   };
   const generatedAt = metadata.generatedAt ?? new Date().toISOString();
-  const nextHistory = mergeQualityCiEfficiencyHistory(history, expectedReports);
+  const nextHistory = mergeQualityCiEfficiencyHistory(history, [...expectedReports, ...supplementalReports]);
   return {
     version: 2,
     generatedAt,
     status: issues.length > 0 ? "failed" : "passed",
     policy: qualityCiEfficiencyPolicy,
     reports,
+    supplementalReports,
     metrics: {
       reportCount: expectedReports.length,
       dependencyCacheHits: cacheHits,
@@ -183,7 +197,7 @@ export function formatQualityCiEfficiencyMarkdown(summary) {
     `- 의존성 캐시: ${metrics.dependencyCacheHits}/${metrics.reportCount} · ${Math.round(metrics.dependencyCacheHitRate * 100)}% · 예산 ${summary.cacheBudget.status}`,
     `- 공통 빌드 재사용: ${metrics.sharedBuildRestores}/${metrics.reportCount} · 산출물 ${metrics.artifactBytes} bytes`,
     `- 추정 절약: ${Math.round(metrics.estimatedSavedMs / 1000)}초 · 복원 대기 ${Math.round(metrics.totalRestoreDurationMs / 1000)}초`,
-    `- cold cache ${cold.sampleCount}회: 준비 p50/p95 ${Math.round(cold.p50SetupDurationMs / 1000)}/${Math.round(cold.p95SetupDurationMs / 1000)}초 · 전체 p50/p95 ${Math.round(cold.p50RunDurationMs / 1000)}/${Math.round(cold.p95RunDurationMs / 1000)}초`,
+    `- cold cache ${cold.sampleCount}회(의도 표본 ${cold.intentionalSampleCount}회, 신뢰도 ${cold.confidence}): 준비 p50/p95 ${Math.round(cold.p50SetupDurationMs / 1000)}/${Math.round(cold.p95SetupDurationMs / 1000)}초 · 전체 p50/p95 ${Math.round(cold.p50RunDurationMs / 1000)}/${Math.round(cold.p95RunDurationMs / 1000)}초`,
     `- warm cache ${warm.sampleCount}회: 준비 p50/p95 ${Math.round(warm.p50SetupDurationMs / 1000)}/${Math.round(warm.p95SetupDurationMs / 1000)}초 · 전체 p50/p95 ${Math.round(warm.p50RunDurationMs / 1000)}/${Math.round(warm.p95RunDurationMs / 1000)}초`,
     `- ${trend.monthly.month} 표준 러너 ${Math.round(trend.monthly.runnerMinutes)}분 · 공개 저장소 예상 과금 $${trend.monthly.estimatedChargeUsd.toFixed(2)} · 유료 환산 $${trend.monthly.billedEquivalentUsd.toFixed(2)}`,
     ...summary.issues.map((issue) => `- ${issue}`),

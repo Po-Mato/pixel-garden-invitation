@@ -126,6 +126,8 @@ export function buildReleaseQualitySummary(evidence = {}, metadata = {}) {
     cachedPaths: evidence.ios?.pwaOffline?.cachedPaths ?? null,
     expectedPaths: evidence.ios?.pwaOffline?.expectedPaths ?? null,
     p95FrameMs: evidence.ios?.landscape?.frameTimings?.p95FrameMs ?? null,
+    expandedPlayerCenterErrorPx: evidence.ios?.landscape?.expanded?.playerCenter?.errorPx ?? null,
+    collapsedPlayerCenterErrorPx: evidence.ios?.landscape?.collapsed?.playerCenter?.errorPx ?? null,
     compositorRecoveryCount: evidence.ios?.nativeCompositor?.recoveryCount ?? null,
     compositorRecoveryDurationMs: evidence.ios?.nativeCompositor?.recoveryDurationMs ?? null,
     compositorFaultInjected: evidence.ios?.nativeCompositor?.faultInjection?.triggered ?? null

@@ -2,6 +2,8 @@ name: Shared quality build
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: "23 5 1 * *"
   push:
     branches: [main]
   pull_request:
@@ -19,11 +21,16 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v6
+      - name: Mark intentional cold-cache sample start
+        id: intentional-cold-start
+        if: ${{ github.event_name == 'schedule' && github.event.schedule == '23 5 1 * *' }}
+        run: echo "started-at-ms=$(node -p 'Date.now()')" >> "$GITHUB_OUTPUT"
       - name: Restore shared quality dependencies
         id: quality-dependencies
         uses: ./.github/actions/setup-quality-dependencies
         with:
           node-version: 24
+          force-cold: ${{ github.event_name == 'schedule' && github.event.schedule == '23 5 1 * *' }}
       - name: Build production quality workspace once
         run: |
           echo "QUALITY_PRODUCTION_BUILD_STARTED_AT_MS=$(node -p 'Date.now()')" >> "$GITHUB_ENV"
@@ -65,3 +72,26 @@ jobs:
           if-no-files-found: error
           compression-level: 9
           retention-days: 7
+      - name: Record intentional monthly cold-cache timing sample
+        if: ${{ github.event_name == 'schedule' && github.event.schedule == '23 5 1 * *' }}
+        env:
+          COLD_SAMPLE_STARTED_AT_MS: ${{ steps.intentional-cold-start.outputs.started-at-ms }}
+        run: |
+          node scripts/record-quality-ci-efficiency.mjs \
+            --workflow cold-sample \
+            --variant production \
+            --sample-kind intentional-cold \
+            --dependency-cache-hit "${{ steps.quality-dependencies.outputs.cache-hit || 'false' }}" \
+            --dependency-setup-duration-ms "${{ steps.quality-dependencies.outputs.setup-duration-ms || '0' }}" \
+            --build-restored false \
+            --producer-build-duration-ms "$((QUALITY_PRODUCTION_BUILD_DURATION_MS + QUALITY_DEVICE_BUILD_DURATION_MS))" \
+            --run-duration-ms "$(node -p 'Math.max(0, Date.now() - Number(process.env.COLD_SAMPLE_STARTED_AT_MS))')" \
+            --output-dir .quality-ci-intentional-cold
+      - name: Upload intentional monthly cold-cache sample
+        if: ${{ github.event_name == 'schedule' && github.event.schedule == '23 5 1 * *' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: quality-ci-intentional-cold-${{ github.run_id }}
+          path: .quality-ci-intentional-cold/quality-ci-efficiency-cold-sample.json
+          if-no-files-found: error
+          retention-days: 120

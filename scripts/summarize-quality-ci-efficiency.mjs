@@ -28,10 +28,10 @@ async function filesBelow(directory) {
 
 const files = await filesBelow(inputDir);
 const reportFiles = files.filter((file) => (
-  /^quality-ci-efficiency-(?:pages|mobile|android|ios)\.json$/.test(path.basename(file))
+  /^quality-ci-efficiency-(?:pages|mobile|android|ios|cold-sample)\.json$/.test(path.basename(file))
 ));
 const timingFiles = files.filter((file) => (
-  /^quality-ci-run-timing-(?:pages|mobile|android|ios)\.json$/.test(path.basename(file))
+  /^quality-ci-run-timing-(?:pages|mobile|android|ios|cold-sample)(?:-[^.]+)?\.json$/.test(path.basename(file))
 ));
 const [samples, timings, history] = await Promise.all([
   Promise.all(reportFiles.map((file) => readFile(file, "utf8").then(JSON.parse))),
@@ -44,7 +44,7 @@ const summary = buildQualityCiEfficiency(mergedSamples, history, {
   generatedAt,
   repositoryVisibility: option("--repository-visibility", "public")
 });
-const nextHistory = mergeQualityCiEfficiencyHistory(history, summary.reports);
+const nextHistory = mergeQualityCiEfficiencyHistory(history, [...summary.reports, ...summary.supplementalReports]);
 const markdown = formatQualityCiEfficiencyMarkdown(summary);
 await Promise.all([mkdir(outputDir, { recursive: true }), mkdir(mirrorDir, { recursive: true })]);
 await Promise.all([

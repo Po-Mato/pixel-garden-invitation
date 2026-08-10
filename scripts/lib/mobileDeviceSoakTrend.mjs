@@ -3,6 +3,7 @@ import path from "node:path";
 
 export const lowPowerSoakProfileId = "android-chromium-low-power-cold-thermal";
 export const requiredLowPowerRuns = 3;
+export const maximumLowPowerRuns = requiredLowPowerRuns + 1;
 export const retainedLowPowerTrendRuns = 12;
 export const requiredCrossRunMedianSamples = 3;
 
@@ -46,6 +47,11 @@ export function median(values) {
 
 export function isTransientLowPowerIssue(issue) {
   return transientIssuePatterns.some((pattern) => pattern.test(String(issue)));
+}
+
+export function isRemeasurableLowPowerTrendIssue(issue) {
+  return /^\d+회 중앙 (?:FPS|averageFps|p95FrameMs|p99FrameMs|inputLatencyMs|settleLatencyMs|transitionP95FrameMs|transitionP99FrameMs)/.test(String(issue))
+    || /^CI 실행 간 (?:averageFps|p95FrameMs|p99FrameMs|inputLatencyMs|settleLatencyMs|transitionP95FrameMs|transitionP99FrameMs)/.test(String(issue));
 }
 
 export function assessCrossRunMedianDrift(previousRuns, currentRun) {
@@ -118,7 +124,7 @@ export function buildMobileDeviceSoakTrend(reports, metadata = {}) {
   if (!Array.isArray(reports) || reports.length < requiredLowPowerRuns) {
     throw new Error(`저전력 중앙값 표본 부족 ${reports?.length ?? 0}/${requiredLowPowerRuns}`);
   }
-  const samples = reports.slice(-requiredLowPowerRuns).map(extractLowPowerSoakSample);
+  const samples = reports.slice(-maximumLowPowerRuns).map(extractLowPowerSoakSample);
   const medians = Object.fromEntries([
     "averageFps", "baselineFps", "frameRatio", "p95FrameMs", "p99FrameMs",
     "baselineP95FrameMs", "baselineP99FrameMs", "inputLatencyMs", "settleLatencyMs",
@@ -138,13 +144,13 @@ export function buildMobileDeviceSoakTrend(reports, metadata = {}) {
   const issues = samples.flatMap((sample) => sample.structuralIssues.map((issue) => `${sample.run}회차 ${issue}`));
   if ((medians.baselineFps >= 45 && medians.averageFps < 45)
     || (medians.baselineFps < 45 && medians.frameRatio < 0.75)) {
-    issues.push(`3회 중앙 FPS ${medians.averageFps} (러너 ${medians.baselineFps})`);
+    issues.push(`${samples.length}회 중앙 FPS ${medians.averageFps} (러너 ${medians.baselineFps})`);
   }
   for (const key of [
     "p95FrameMs", "p99FrameMs", "inputLatencyMs", "settleLatencyMs",
     "maxTransitionDurationMs", "maxCenterErrorPx", "settledJitterPx", "maximumImageDecodeReadyMs"
   ]) {
-    if (medians[key] > limits[key]) issues.push(`3회 중앙 ${key} ${medians[key]} > ${limits[key]}`);
+    if (medians[key] > limits[key]) issues.push(`${samples.length}회 중앙 ${key} ${medians[key]} > ${limits[key]}`);
   }
   return {
     generatedAt: new Date().toISOString(),
@@ -153,6 +159,7 @@ export function buildMobileDeviceSoakTrend(reports, metadata = {}) {
     refLabel: metadata.refLabel || null,
     profileId: lowPowerSoakProfileId,
     sampleCount: samples.length,
+    remeasurement: metadata.remeasurement ?? { triggered: false },
     samples,
     medians,
     limits,
@@ -194,10 +201,10 @@ export async function writeMobileDeviceSoakTrend({ reports, outputDir, metadata 
     writeFile(reportPath, `${JSON.stringify(trend, null, 2)}\n`),
     writeFile(historyPath, `${JSON.stringify({ version: 1, runs }, null, 2)}\n`),
     writeFile(path.join(outputDir, "mobile-device-soak-trend.md"), [
-      "# 저전력 3회 중앙값 품질 추세",
+      "# 저전력 중앙값 품질 추세",
       "",
       `- 상태: ${trend.status}`,
-      `- 표본: ${trend.sampleCount}회`,
+      `- 표본: ${trend.sampleCount}회 · 프로필 재측정 ${trend.remeasurement.triggered ? "1회" : "없음"}`,
       `- FPS: ${trend.medians.averageFps} / 러너 ${trend.medians.baselineFps}`,
       `- 프레임 p95/p99: ${trend.medians.p95FrameMs}ms / ${trend.medians.p99FrameMs}ms`,
       `- 입력/안정화: ${trend.medians.inputLatencyMs}ms / ${trend.medians.settleLatencyMs}ms`,

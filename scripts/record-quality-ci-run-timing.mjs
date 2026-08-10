@@ -37,5 +37,5 @@ const report = {
 };
 const outputDir = path.resolve(option("--output-dir", path.join(rootDir, "quality-inputs/ci/timings")));
 await mkdir(outputDir, { recursive: true });
-await writeFile(path.join(outputDir, `quality-ci-run-timing-${workflow}.json`), `${JSON.stringify(report, null, 2)}\n`);
+await writeFile(path.join(outputDir, `quality-ci-run-timing-${workflow}-${runId}.json`), `${JSON.stringify(report, null, 2)}\n`);
 console.log(`품질 CI 실행 시간: ${workflow} · ${Math.round(report.runDurationMs / 1000)}초 · ${report.billedMinutes}분`);

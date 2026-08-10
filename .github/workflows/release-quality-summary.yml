@@ -3,7 +3,11 @@ name: Release quality summary
 on:
   workflow_dispatch:
   workflow_run:
-    workflows: ["Real iOS Safari visual regression"]
+    workflows:
+      - Deploy client to GitHub Pages
+      - Mobile visual regression
+      - Real Android Chrome visual regression
+      - Real iOS Safari visual regression
     types: [completed]
 
 permissions:
@@ -21,10 +25,21 @@ jobs:
       - uses: actions/checkout@v6
         with:
           ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      - name: Gate on all four same-commit release workflows
+        id: release-gate
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TARGET_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+        run: |
+          node scripts/check-release-workflow-readiness.mjs \
+            --target-sha "$TARGET_SHA" \
+            --current-run-id "$GITHUB_RUN_ID"
       - uses: pnpm/action-setup@v6
+        if: steps.release-gate.outputs.should_summarize == 'true'
         with:
           version: 10.29.2
       - name: Restore release quality history
+        if: steps.release-gate.outputs.should_summarize == 'true'
         uses: actions/cache/restore@v5
         with:
           path: |
@@ -36,7 +51,7 @@ jobs:
           restore-keys: |
             release-quality-history-${{ runner.os }}-
       - name: Seed release and engine calibration history from recent successful summaries
-        if: ${{ hashFiles('.superpowers/visual-regression/release-quality-summary/release-quality-history.json') == '' || hashFiles('.superpowers/visual-regression/release-quality-summary/visual-diff-calibration-history.json') == '' || hashFiles('.superpowers/visual-regression/release-quality-summary/quality-ci-efficiency-history.json') == '' || hashFiles('.superpowers/visual-regression/release-quality-summary/quality-evidence-efficiency-history.json') == '' }}
+        if: ${{ steps.release-gate.outputs.should_summarize == 'true' && (hashFiles('.superpowers/visual-regression/release-quality-summary/release-quality-history.json') == '' || hashFiles('.superpowers/visual-regression/release-quality-summary/visual-diff-calibration-history.json') == '' || hashFiles('.superpowers/visual-regression/release-quality-summary/quality-ci-efficiency-history.json') == '' || hashFiles('.superpowers/visual-regression/release-quality-summary/quality-evidence-efficiency-history.json') == '') }}
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
@@ -50,24 +65,18 @@ jobs:
                 gh run download "$previous_run_id" --pattern 'release-quality-summary-*' --dir "quality-history-seed/$previous_run_id" || true
               done
           pnpm quality:summary-seed -- --input-dir quality-history-seed
-      - name: Download same-commit quality evidence
+      - name: Download same-commit quality evidence and intentional cold samples
+        if: steps.release-gate.outputs.should_summarize == 'true'
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
           TARGET_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
-          IOS_RUN_ID: ${{ github.event.workflow_run.id }}
+          PAGES_RUN_ID: ${{ steps.release-gate.outputs.pages_run_id }}
+          MOBILE_RUN_ID: ${{ steps.release-gate.outputs.mobile_run_id }}
+          ANDROID_RUN_ID: ${{ steps.release-gate.outputs.android_run_id }}
+          IOS_RUN_ID: ${{ steps.release-gate.outputs.ios_run_id }}
         run: |
           mkdir -p quality-inputs
-          find_completed_run() {
-            local workflow="$1"
-            local run_id=""
-            for attempt in {1..36}; do
-              run_id="$(gh run list --workflow "$workflow" --commit "$TARGET_SHA" --status completed --limit 1 --json databaseId --jq '.[0].databaseId // empty')"
-              if test -n "$run_id"; then printf '%s' "$run_id"; return 0; fi
-              sleep 10
-            done
-            return 1
-          }
           download_artifact() {
             local run_id="$1"
             local pattern="$2"
@@ -76,10 +85,6 @@ jobs:
               gh run download "$run_id" --pattern "$pattern" --dir "$destination" || true
             fi
           }
-          PAGES_RUN_ID="$(find_completed_run pages.yml || true)"
-          MOBILE_RUN_ID="$(find_completed_run visual-regression.yml || true)"
-          ANDROID_RUN_ID="$(find_completed_run android-chrome-visual.yml || true)"
-          if test -z "$IOS_RUN_ID"; then IOS_RUN_ID="$(find_completed_run ios-safari-visual.yml || true)"; fi
           download_artifact "$PAGES_RUN_ID" 'pwa-cache-asset-change' quality-inputs/pages
           download_artifact "$PAGES_RUN_ID" 'production-network-pwa-canary' quality-inputs/pages
           download_artifact "$PAGES_RUN_ID" 'production-large-text-canary' quality-inputs/pages
@@ -109,18 +114,29 @@ jobs:
           record_run_timing mobile "$MOBILE_RUN_ID" linux
           record_run_timing android "$ANDROID_RUN_ID" linux
           record_run_timing ios "$IOS_RUN_ID" macos
+          gh run list --workflow quality-build.yml --event schedule --status success --limit 6 --json databaseId \
+            --jq '.[].databaseId' \
+            | while read -r cold_run_id; do
+                test -n "$cold_run_id" || continue
+                download_artifact "$cold_run_id" "quality-ci-intentional-cold-$cold_run_id" "quality-inputs/ci/cold/$cold_run_id"
+                record_run_timing cold-sample "$cold_run_id" linux
+              done
       - name: Summarize dependency cache and shared-build efficiency
+        if: steps.release-gate.outputs.should_summarize == 'true'
         run: pnpm quality:ci-efficiency -- --input-dir quality-inputs --repository-visibility "$REPOSITORY_VISIBILITY"
         env:
           REPOSITORY_VISIBILITY: ${{ github.event.repository.visibility || 'public' }}
       - name: Track content-addressed evidence savings and leak budgets
+        if: steps.release-gate.outputs.should_summarize == 'true'
         run: pnpm quality:evidence-efficiency -- --input-dir quality-inputs --sha "${{ github.event.workflow_run.head_sha || github.sha }}"
       - name: Build checksum-bound artifact manifest
+        if: steps.release-gate.outputs.should_summarize == 'true'
         run: pnpm quality:artifact-manifest -- --input-dir quality-inputs
       - name: Build release quality summary
+        if: steps.release-gate.outputs.should_summarize == 'true'
         run: pnpm quality:summary -- --input-dir quality-inputs --sha "${{ github.event.workflow_run.head_sha || github.sha }}"
       - name: Save release quality history
-        if: ${{ always() && hashFiles('.superpowers/visual-regression/release-quality-summary/release-quality-history.json') != '' && hashFiles('.superpowers/visual-regression/release-quality-summary/visual-diff-calibration-history.json') != '' }}
+        if: ${{ always() && steps.release-gate.outputs.should_summarize == 'true' && hashFiles('.superpowers/visual-regression/release-quality-summary/release-quality-history.json') != '' && hashFiles('.superpowers/visual-regression/release-quality-summary/visual-diff-calibration-history.json') != '' }}
         uses: actions/cache/save@v5
         with:
           path: |
@@ -130,7 +146,7 @@ jobs:
             .superpowers/visual-regression/release-quality-summary/quality-evidence-efficiency-history.json
           key: release-quality-history-${{ runner.os }}-${{ github.run_id }}-${{ github.run_attempt }}
       - name: Upload release quality summary
-        if: always()
+        if: ${{ always() && steps.release-gate.outputs.should_summarize == 'true' }}
         uses: actions/upload-artifact@v7
         with:
           name: release-quality-summary-${{ github.run_id }}

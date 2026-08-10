@@ -36,10 +36,35 @@ test("quality CI dashboard aggregates cache, reuse, size, and saved time", () =>
   assert.equal(summary.metrics.sharedBuildRestoreRate, 1);
   assert.equal(summary.metrics.estimatedSavedMs, 320_000);
   assert.equal(summary.trend.cacheTiming.warm.p95RunDurationMs, 600_000);
+  assert.equal(summary.trend.cacheTiming.cold.confidence, "warming");
   assert.equal(summary.trend.monthly.estimatedChargeUsd, 0);
   assert.equal(summary.trend.monthly.billedEquivalentUsd, 0.656);
   assert.match(formatQualityCiEfficiencyMarkdown(summary), /추정 절약: 320초/);
   assert.match(formatQualityCiEfficiencyMarkdown(summary), /공개 저장소 예상 과금 \$0\.00/);
+});
+
+test("intentional monthly cold samples improve timing confidence without replacing release reports", () => {
+  const releaseSamples = [
+    sample("pages", "production"),
+    sample("mobile", "production"),
+    sample("android", "device"),
+    sample("ios", "device")
+  ];
+  const coldSamples = Array.from({ length: 6 }, (_, index) => ({
+    ...sample("cold-sample", "production", false),
+    sampleKind: "intentional-cold",
+    runId: `cold-${index}`,
+    dependencySetupDurationMs: 24_000 + index,
+    runDurationMs: 180_000 + index
+  }));
+  const summary = buildQualityCiEfficiency([...releaseSamples, ...coldSamples]);
+  assert.equal(summary.metrics.reportCount, 4);
+  assert.equal(summary.reports.length, 4);
+  assert.equal(summary.supplementalReports.length, 6);
+  assert.equal(summary.trend.cacheTiming.cold.sampleCount, 6);
+  assert.equal(summary.trend.cacheTiming.cold.intentionalSampleCount, 6);
+  assert.equal(summary.trend.cacheTiming.cold.confidence, "established");
+  assert.match(formatQualityCiEfficiencyMarkdown(summary), /의도 표본 6회, 신뢰도 established/);
 });
 
 test("quality CI dashboard gates missing reports and local rebuild fallback", () => {
@@ -62,6 +87,10 @@ test("all expensive quality consumers publish efficiency evidence", async () => 
   const restoreAction = await readFile(new URL("../.github/actions/restore-quality-build/action.yml", import.meta.url), "utf8");
   assert.match(restoreAction, /artifact-bytes:/);
   assert.match(restoreAction, /producer-build-duration-ms:/);
+  const buildWorkflow = await readFile(new URL("../.github/workflows/quality-build.yml", import.meta.url), "utf8");
+  assert.match(buildWorkflow, /cron: "23 5 1 \* \*"/);
+  assert.match(buildWorkflow, /force-cold:/);
+  assert.match(buildWorkflow, /quality-ci-intentional-cold-/);
 });
 
 test("quality CI history separates cold and warm p50/p95 without double-counting reruns", () => {

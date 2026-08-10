@@ -532,6 +532,58 @@ async function captureLandscapeMetrics(state) {
         maxLines
       }];
     });
+    const playerCenter = (() => {
+      const player = document.querySelector(".world-player:not(.player--remote)");
+      const sprite = player?.querySelector(".character-sprite--world");
+      const map = document.querySelector(".world-map");
+      const stage = document.querySelector(".world-map__stage");
+      if (!(player instanceof HTMLElement) || !(sprite instanceof HTMLElement)
+        || !(map instanceof HTMLElement) || !(stage instanceof HTMLElement)) return null;
+      const mapRect = map.getBoundingClientRect();
+      const spriteRect = sprite.getBoundingClientRect();
+      const playerStyle = getComputedStyle(player);
+      const transform = getComputedStyle(stage).transform;
+      const matrix = transform === "none" ? new DOMMatrixReadOnly() : new DOMMatrixReadOnly(transform);
+      const zoom = matrix.a || 1;
+      const logicalWidth = Number(stage.dataset.logicalWidth) || stage.offsetWidth;
+      const logicalHeight = Number(stage.dataset.logicalHeight) || stage.offsetHeight;
+      const scaledWidth = logicalWidth * zoom;
+      const scaledHeight = logicalHeight * zoom;
+      const centerOffsetX = Number.parseFloat(
+        playerStyle.getPropertyValue("--character-world-anchor-offset-x")
+      ) || 0;
+      const centerY = Number.parseFloat(
+        playerStyle.getPropertyValue("--character-world-anchor-y")
+      ) || spriteRect.height / (2 * zoom);
+      const visualCenter = {
+        x: spriteRect.x + spriteRect.width / 2 + centerOffsetX * zoom,
+        y: spriteRect.y + centerY * zoom
+      };
+      const viewportCenter = {
+        x: mapRect.x + mapRect.width / 2,
+        y: mapRect.y + mapRect.height / 2
+      };
+      const centerable = {
+        x: scaledWidth > mapRect.width + 1
+          && matrix.m41 < -0.5
+          && matrix.m41 > mapRect.width - scaledWidth + 0.5,
+        y: scaledHeight > mapRect.height + 1
+          && matrix.m42 < -0.5
+          && matrix.m42 > mapRect.height - scaledHeight + 0.5
+      };
+      const error = {
+        x: centerable.x ? visualCenter.x - viewportCenter.x : 0,
+        y: centerable.y ? visualCenter.y - viewportCenter.y : 0
+      };
+      return {
+        visualCenter,
+        viewportCenter,
+        centerable,
+        error,
+        errorPx: Math.round(Math.hypot(error.x, error.y) * 100) / 100,
+        camera: { x: matrix.m41, y: matrix.m42, zoom }
+      };
+    })();
     return {
       state: ${JSON.stringify(state)},
       orientation: screen.orientation?.type ?? null,
@@ -543,6 +595,7 @@ async function captureLandscapeMetrics(state) {
       textContained: hudText.every(({ clippedInline, clippedBlock, lineCount, maxLines }) => (
         !clippedInline && !clippedBlock && lineCount <= maxLines
       )),
+      playerCenter,
       controls,
       controlsContained: controls.every(({ rect }) => (
         rect.x >= left - 2
@@ -565,6 +618,13 @@ function assertLandscapeMetrics(metrics) {
   if (metrics.horizontalOverflow) throw new Error(`${metrics.state} 실제 Safari 가로 넘침`);
   if (!metrics.controlsContained) throw new Error(`${metrics.state} 실제 Safari safe-area 이탈`);
   if (!metrics.textContained) throw new Error(`${metrics.state} 실제 Safari HUD 문구 잘림`);
+  if (!metrics.playerCenter) throw new Error(`${metrics.state} 실제 Safari 캐릭터 중심 측정 누락`);
+  if (metrics.playerCenter.errorPx > iosSafariVisualProfile.maxLandscapePlayerCenterErrorPx) {
+    throw new Error(
+      `${metrics.state} 실제 Safari 캐릭터 중심 오차 ${metrics.playerCenter.errorPx}px`
+      + ` > ${iosSafariVisualProfile.maxLandscapePlayerCenterErrorPx}px`
+    );
+  }
 }
 
 try {

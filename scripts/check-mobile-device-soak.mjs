@@ -5,7 +5,9 @@ import {
   runMobileDeviceSoakAudit
 } from "./lib/mobileDeviceSoakAudit.mjs";
 import {
+  isRemeasurableLowPowerTrendIssue,
   lowPowerSoakProfileId,
+  maximumLowPowerRuns,
   requiredLowPowerRuns,
   writeMobileDeviceSoakTrend
 } from "./lib/mobileDeviceSoakTrend.mjs";
@@ -26,7 +28,7 @@ for (let run = 2; run <= requiredLowPowerRuns; run += 1) {
     throwOnIssues: false
   }));
 }
-const trendResult = await writeMobileDeviceSoakTrend({
+let trendResult = await writeMobileDeviceSoakTrend({
   reports: repeatedReports,
   outputDir,
   metadata: {
@@ -35,6 +37,33 @@ const trendResult = await writeMobileDeviceSoakTrend({
     refLabel: process.env.GITHUB_REF_NAME ?? "local"
   }
 });
+if (
+  trendResult.trend.issues.length > 0
+  && trendResult.trend.issues.every(isRemeasurableLowPowerTrendIssue)
+) {
+  const remeasureOutputDir = path.join(outputDir, `repeat-${maximumLowPowerRuns}`);
+  repeatedReports.push(await runMobileDeviceSoakAudit({
+    rootDir,
+    outputDir: remeasureOutputDir,
+    port: 4178 + maximumLowPowerRuns,
+    profiles: [lowPowerProfile],
+    throwOnIssues: false
+  }));
+  trendResult = await writeMobileDeviceSoakTrend({
+    reports: repeatedReports,
+    outputDir,
+    metadata: {
+      sha: process.env.GITHUB_SHA ?? "",
+      runId: process.env.GITHUB_RUN_ID ?? "",
+      refLabel: process.env.GITHUB_REF_NAME ?? "local",
+      remeasurement: {
+        triggered: true,
+        profileId: lowPowerSoakProfileId,
+        initialIssues: trendResult.trend.issues
+      }
+    }
+  });
+}
 const regularIssues = result.reports
   .filter(({ id }) => id !== lowPowerSoakProfileId)
   .flatMap((report) => report.issues.map((issue) => `${report.id}: ${issue}`));
@@ -53,5 +82,5 @@ for (const report of result.reports) {
   console.log(`- ${report.id}: ${averageFps} FPS / 러너 ${baselineFps} FPS (${Math.round(frameRatio * 100)}%) · 감지 ${motion.detectedRefreshHz}Hz · 입력/안정화 ${inputLatency}/${motion.settleLatencyMs}ms · p95/p99 ${p95FrameMs}/${p99FrameMs}ms · ${mode}/${reason}/${effects} · 반복 터치 ${report.interactionCount}회 · 구역 전환 ${transitions.transitionCount}회/중심 ${transitions.maxCenterErrorPx}px · 최악 ${bottleneck.zoneId} p99 ${bottleneck.p99FrameMs}ms${decodeZone ? ` · cold decode 최악 ${decodeZone.zoneId} ${decodeZone.maximumImageDecodeReadyMs}ms` : ""}${report.tracePath ? ` · trace ${report.tracePath}` : ""}`);
 }
 console.log(`보고서: ${result.reportPath}`);
-console.log(`저전력 3회 중앙값: ${trendResult.trend.medians.averageFps} FPS · p95/p99 ${trendResult.trend.medians.p95FrameMs}/${trendResult.trend.medians.p99FrameMs}ms · decode ${trendResult.trend.medians.maximumImageDecodeReadyMs}ms`);
+console.log(`저전력 ${trendResult.trend.sampleCount}회 중앙값: ${trendResult.trend.medians.averageFps} FPS · p95/p99 ${trendResult.trend.medians.p95FrameMs}/${trendResult.trend.medians.p99FrameMs}ms · decode ${trendResult.trend.medians.maximumImageDecodeReadyMs}ms · 프로필 재측정 ${trendResult.trend.remeasurement.triggered ? "1회" : "없음"}`);
 console.log(`저전력 추세: ${trendResult.reportPath}`);

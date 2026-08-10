@@ -4,6 +4,7 @@ import { readFileSync } from "node:fs";
 import {
   assessCrossRunMedianDrift,
   buildMobileDeviceSoakTrend,
+  isRemeasurableLowPowerTrendIssue,
   isTransientLowPowerIssue,
   lowPowerSoakProfileId,
   median
@@ -52,7 +53,24 @@ test("low-power trend validates sample count and helper behavior", () => {
   assert.equal(median([80, 20, 60]), 60);
   assert.equal(isTransientLowPowerIssue("p99 프레임 120ms"), true);
   assert.equal(isTransientLowPowerIssue("저전력 cold cache 적용 실패"), false);
+  assert.equal(isRemeasurableLowPowerTrendIssue("3회 중앙 p99FrameMs 120 > 90"), true);
+  assert.equal(isRemeasurableLowPowerTrendIssue("CI 실행 간 transitionP95FrameMs 166 > 150"), true);
+  assert.equal(isRemeasurableLowPowerTrendIssue("2회차 화면 틀어짐"), false);
   assert.throws(() => buildMobileDeviceSoakTrend([report(), report()]), /표본 부족 2\/3/);
+});
+
+test("one profile-level remeasurement uses a four-sample median without hiding structure", () => {
+  const trend = buildMobileDeviceSoakTrend([
+    report({ frameTimings: { p95FrameMs: 28, p99FrameMs: 48 } }),
+    report({ frameTimings: { p95FrameMs: 31, p99FrameMs: 54 } }),
+    report({ frameTimings: { p95FrameMs: 180, p99FrameMs: 260 } }, ["p99 프레임 260ms"]),
+    report({ frameTimings: { p95FrameMs: 29, p99FrameMs: 50 } })
+  ], { remeasurement: { triggered: true, profileId: lowPowerSoakProfileId } });
+  assert.equal(trend.sampleCount, 4);
+  assert.equal(trend.medians.p95FrameMs, 30);
+  assert.equal(trend.medians.p99FrameMs, 52);
+  assert.equal(trend.remeasurement.triggered, true);
+  assert.equal(trend.status, "passed");
 });
 
 test("cross-run drift warms up until three successful CI medians exist", () => {
@@ -90,4 +108,6 @@ test("mobile soak runner repeats the low-power profile three times", () => {
   assert.match(source, /run <= requiredLowPowerRuns/);
   assert.match(source, /profiles: \[lowPowerProfile\]/);
   assert.match(source, /writeMobileDeviceSoakTrend/);
+  assert.match(source, /every\(isRemeasurableLowPowerTrendIssue\)/);
+  assert.match(source, /repeat-\$\{maximumLowPowerRuns\}/);
 });
