@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 import test from "node:test";
 import {
   buildQualityEvidenceEfficiency,
@@ -43,4 +44,11 @@ test("evidence efficiency history de-duplicates release SHA and retains order", 
   assert.deepEqual(history.snapshots.map(({ sha, storedBytes }) => [sha, storedBytes]), [
     ["sha-1", 7_000_000], ["sha-2", 6_000_000], ["sha-3", 7_000_000]
   ]);
+});
+
+test("release summary includes every content-addressed success package in savings", async () => {
+  const workflow = await readFile(new URL("../.github/workflows/release-quality-summary.yml", import.meta.url), "utf8");
+  assert.match(workflow, /production-large-text-canary/);
+  assert.match(workflow, /mobile-device-soak-\$MOBILE_RUN_ID/);
+  assert.match(workflow, /quality:evidence-efficiency/);
 });
