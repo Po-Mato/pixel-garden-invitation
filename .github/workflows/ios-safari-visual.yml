@@ -239,6 +239,7 @@ jobs:
           COMPOSITOR_FAULT_INJECTED="$(jq -r '.nativeCompositor.faultInjection.triggered // false' "$CAPTURE_REPORT" 2>/dev/null || printf 'false')"
           COMPOSITOR_FAULT_RECOVERED="$(jq -r '.nativeCompositor.faultInjection.recovered // false' "$CAPTURE_REPORT" 2>/dev/null || printf 'false')"
           COMPOSITOR_RECOVERY_STRATEGY="$(jq -r '.nativeCompositor.faultInjection.recoveryStrategy // ""' "$CAPTURE_REPORT" 2>/dev/null || printf '')"
+          CAPTURE_PHASE_TIMINGS_JSON="$(jq -c '.phaseTimings // {} | with_entries(.value = (.value.durationMs // 0))' "$CAPTURE_REPORT" 2>/dev/null || printf '{}')"
           pnpm visual:ios-safari:stability -- \
             --outcome "${{ steps.capture.outcome }}" \
             --run-id "$GITHUB_RUN_ID" \
@@ -247,6 +248,7 @@ jobs:
             --duration-ms "$DURATION_MS" \
             --setup-duration-ms "$SETUP_DURATION_MS" \
             --capture-duration-ms "$DURATION_MS" \
+            --capture-phase-timings-json "$CAPTURE_PHASE_TIMINGS_JSON" \
             --bridge-install-duration-ms "${{ steps.ios-automation-bridge.outputs.duration-ms || '0' }}" \
             --appium-cache-hit "${{ steps.ios-automation-bridge.outputs.cache-hit || 'false' }}" \
             --compositor-recovery-count "$COMPOSITOR_RECOVERY_COUNT" \

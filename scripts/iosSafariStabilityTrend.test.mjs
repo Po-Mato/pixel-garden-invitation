@@ -10,6 +10,7 @@ function sample(index, outcome = "success", policyRevision = 0, durationMs = 600
   return {
     runId: String(index), runAttempt: 1, sha: `sha-${index}`, outcome, durationMs,
     queueDurationMs: 12_000, setupDurationMs: 240_000, captureDurationMs: 360_000,
+    capturePhaseDurationsMs: { "session-setup": 120_000, landscape: 180_000, "baseline-comparison": 60_000 },
     bridgeInstallDurationMs: 4_000, appiumCacheHit: true,
     wdaMode: policyRevision === 3 ? "preinstalled" : "source-build",
     generatedAt: `2026-08-${String(index).padStart(2, "0")}T00:00:00.000Z`, policyRevision
@@ -67,6 +68,8 @@ test("iOS Safari hardened gate accepts nine of ten bounded runs", () => {
   assert.match(formatIosSafariStabilityMarkdown(trend), /대기 p95 12초/);
   assert.match(formatIosSafariStabilityMarkdown(trend), /Appium 캐시 10\/10/);
   assert.match(formatIosSafariStabilityMarkdown(trend), /준비 p95 240초/);
+  assert.deepEqual(trend.acceptance.slowestCapturePhase, { name: "landscape", p95DurationMs: 180_000 });
+  assert.match(formatIosSafariStabilityMarkdown(trend), /느린 단계 landscape p95 180초/);
   assert.match(formatIosSafariStabilityMarkdown(trend), /recreate 1\/1/);
 });
 

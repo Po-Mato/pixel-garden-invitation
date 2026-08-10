@@ -20,6 +20,15 @@ const captures = audit.reports
     state,
     currentPath: report.deviceVisualBaselines[state].currentPath
   })));
-const result = await approveMobileDeviceVisualBaselines({ rootDir, captures, reason: options.reason });
+const result = await approveMobileDeviceVisualBaselines({
+  rootDir,
+  captures,
+  reason: options.reason,
+  captureReport: {
+    runId: process.env.GITHUB_RUN_ID ?? null,
+    runAttempt: Number(process.env.GITHUB_RUN_ATTEMPT) || null,
+    sha: process.env.GITHUB_SHA ?? null
+  }
+});
 console.log(`모바일 기기 시각 기준선 승인 완료: ${captures.length}개 화면`);
 console.log(`승인 기록: ${result.metadataPath}`);

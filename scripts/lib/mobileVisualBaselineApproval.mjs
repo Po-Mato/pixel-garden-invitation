@@ -3,6 +3,7 @@ import { mkdir, mkdtemp, readFile, rename, rm, writeFile } from "node:fs/promise
 import path from "node:path";
 import sharp from "sharp";
 import { renderMobileGameVisualAudit } from "./mobileGameVisualAuditRenderer.mjs";
+import { buildVisualBaselineProvenance } from "./visualBaselineProvenance.mjs";
 
 export function parseBaselineApprovalArgs(args) {
   let approved = false;
@@ -44,11 +45,16 @@ export async function approveMobileVisualBaseline({ rootDir, approved, reason, n
     const rendered = await renderMobileGameVisualAudit({ rootDir, outputPath: auditPath });
     await sharp(auditPath).webp({ lossless: true, effort: 6 }).toFile(nextBaselinePath);
     const baselineBuffer = await readFile(nextBaselinePath);
+    const provenance = await buildVisualBaselineProvenance({
+      rootDir,
+      files: [{ logicalPath: "mobile-game-current", filePath: auditPath }]
+    });
     const metadata = {
-      version: 1,
+      version: 2,
       approvedAt: now.toISOString(),
       reason: reason.trim(),
       sha256: createHash("sha256").update(baselineBuffer).digest("hex"),
+      provenance,
       width: rendered.outputWidth,
       height: rendered.outputHeight,
       mapZoneIds: rendered.mapZoneIds,

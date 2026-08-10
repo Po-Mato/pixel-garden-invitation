@@ -3,6 +3,7 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import sharp from "sharp";
 import { classifyVisualDifference } from "./visualDiffClassifier.mjs";
+import { buildVisualBaselineProvenance } from "./visualBaselineProvenance.mjs";
 
 export const mobileDeviceVisualBaselineProfiles = Object.freeze([
   "galaxy-s23-font-150",
@@ -95,7 +96,7 @@ export async function compareMobileDeviceVisualBaseline({ rootDir, profileId, st
   return { ...comparison, classification: classifyVisualDifference(comparison) };
 }
 
-export async function approveMobileDeviceVisualBaselines({ rootDir, captures, reason, now = new Date() }) {
+export async function approveMobileDeviceVisualBaselines({ rootDir, captures, reason, captureReport = {}, now = new Date() }) {
   if (!reason?.trim()) throw new Error("기기 시각 기준선 승인 사유가 필요합니다.");
   const baselineDir = path.join(rootDir, "scripts/visual-baselines");
   await mkdir(baselineDir, { recursive: true });
@@ -115,9 +116,17 @@ export async function approveMobileDeviceVisualBaselines({ rootDir, captures, re
       classification: classifyVisualDifference({}, { approved: true, reason })
     });
   }
+  const provenance = await buildVisualBaselineProvenance({
+    rootDir,
+    captureReport,
+    files: captures.map(({ profileId, state, currentPath }) => ({
+      logicalPath: `${profileId}/${state}`,
+      filePath: currentPath
+    }))
+  });
   const metadataPath = path.join(baselineDir, "mobile-device-visual-regression.json");
   const metadata = {
-    version: 4,
+    version: 5,
     approvedAt: now.toISOString(),
     reason: reason.trim(),
     pixelThreshold: mobileDeviceVisualPixelThreshold,
@@ -125,6 +134,7 @@ export async function approveMobileDeviceVisualBaselines({ rootDir, captures, re
     profileMaxChangedRatioOverrides: mobileDeviceVisualMaxChangedRatioOverrides,
     comparisonMode: "gaussian-structural",
     blurSigma: mobileDeviceVisualBlurSigma,
+    provenance,
     profiles
   };
   await writeFile(metadataPath, `${JSON.stringify(metadata, null, 2)}\n`);

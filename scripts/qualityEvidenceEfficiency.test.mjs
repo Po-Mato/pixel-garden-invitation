@@ -82,6 +82,7 @@ test("evidence efficiency history de-duplicates release SHA and retains order", 
 test("release summary includes every content-addressed success package in savings", async () => {
   const workflow = await readFile(new URL("../.github/workflows/release-quality-summary.yml", import.meta.url), "utf8");
   assert.match(workflow, /production-large-text-canary/);
+  assert.match(workflow, /pwa-clean-install-canary-\$PAGES_RUN_ID/);
   assert.match(workflow, /mobile-device-soak-\$MOBILE_RUN_ID/);
   assert.match(workflow, /quality:evidence-efficiency/);
 });

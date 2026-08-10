@@ -9,6 +9,7 @@ import {
   mobileDeviceVisualMaxChangedRatio,
   mobileDeviceVisualPixelThreshold
 } from "./mobileDeviceVisualBaseline.mjs";
+import { buildVisualBaselineProvenance } from "./visualBaselineProvenance.mjs";
 
 export const androidChromeVisualProfile = Object.freeze({
   id: "pixel-7-api-35-chrome",
@@ -95,12 +96,21 @@ export async function approveAndroidChromeVisualBaselines({ rootDir, capturesDir
       classification: classifyVisualDifference({}, { approved: true, reason })
     });
   }
+  const provenance = await buildVisualBaselineProvenance({
+    rootDir,
+    captureReport,
+    files: androidChromeVisualStates.map((state) => ({
+      logicalPath: `${androidChromeVisualProfile.id}/${state}`,
+      filePath: androidChromeCurrentPath(capturesDir, state)
+    }))
+  });
   const metadata = {
-    version: 2,
+    version: 3,
     approvedAt: new Date().toISOString(),
     reason: reason.trim(),
     profile: androidChromeVisualProfile,
     capture: captureReport,
+    provenance,
     pixelThreshold: mobileDeviceVisualPixelThreshold,
     maxChangedRatio: mobileDeviceVisualMaxChangedRatio,
     comparisonMode: "gaussian-structural",

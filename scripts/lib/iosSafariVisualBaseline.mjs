@@ -9,6 +9,7 @@ import {
   mobileDeviceVisualMaxChangedRatio,
   mobileDeviceVisualPixelThreshold
 } from "./mobileDeviceVisualBaseline.mjs";
+import { buildVisualBaselineProvenance } from "./visualBaselineProvenance.mjs";
 
 export const iosSafariVisualProfile = Object.freeze({
   id: "iphone-16-pro-ios-18-5-safari",
@@ -119,12 +120,21 @@ export async function approveIosSafariVisualBaselines({ rootDir, capturesDir, re
       classification: classifyVisualDifference({}, { approved: true, reason })
     });
   }
+  const provenance = await buildVisualBaselineProvenance({
+    rootDir,
+    captureReport,
+    files: iosSafariVisualStates.map((state) => ({
+      logicalPath: `${iosSafariVisualProfile.id}/${state}`,
+      filePath: iosSafariCurrentPath(capturesDir, state)
+    }))
+  });
   const metadata = {
-    version: 2,
+    version: 3,
     approvedAt: new Date().toISOString(),
     reason: reason.trim(),
     profile: iosSafariVisualProfile,
     capture: captureReport,
+    provenance,
     pixelThreshold: mobileDeviceVisualPixelThreshold,
     maxChangedRatio: mobileDeviceVisualMaxChangedRatio,
     comparisonMode: "gaussian-structural",

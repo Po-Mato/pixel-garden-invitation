@@ -69,8 +69,27 @@ jobs:
           done
           echo "Visual evidence timed out" >&2
           exit 1
+      - name: Classify empty map patch as a healthy no-op
+        id: patch
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EVIDENCE_RUN: ${{ steps.evidence.outputs.run-id }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/map-patch-e2e-evidence"
+          gh run download "$EVIDENCE_RUN" --name "map-foreground-diagnostics-$EVIDENCE_RUN" --dir "$RUNNER_TEMP/map-patch-e2e-evidence"
+          PATCH="$RUNNER_TEMP/map-patch-e2e-evidence/map-foreground-suggestions.patch.json"
+          test -f "$PATCH"
+          operation_count=$(jq -r '.operationCount // -1' "$PATCH")
+          test "$operation_count" -ge 0
+          if test "$operation_count" -eq 0; then
+            echo "no_op=true" >> "$GITHUB_OUTPUT"
+            echo "::notice::Map diagnostics are healthy and produced no patch operations; approval automation is intentionally skipped."
+          else
+            echo "no_op=false" >> "$GITHUB_OUTPUT"
+          fi
       - name: Add the real approval label
         id: approval
+        if: steps.patch.outputs.no_op != 'true'
         env:
           GH_TOKEN: ${{ github.token }}
           EVIDENCE_RUN: ${{ steps.evidence.outputs.run-id }}
@@ -82,6 +101,7 @@ jobs:
           gh workflow run apply-approved-map-patch.yml --ref "${{ github.event.repository.default_branch }}" -f source_pr="$SOURCE_PR" -f evidence_run="$EVIDENCE_RUN"
       - name: Wait for trusted approval automation
         id: application
+        if: steps.patch.outputs.no_op != 'true'
         env:
           GH_TOKEN: ${{ github.token }}
           HEAD_SHA: ${{ steps.source.outputs.sha }}
@@ -110,6 +130,7 @@ jobs:
           echo "branch=$application_branch" >> "$GITHUB_OUTPUT"
           echo "number=$application_pr" >> "$GITHUB_OUTPUT"
       - name: Verify isolated application pull request
+        if: steps.patch.outputs.no_op != 'true'
         env:
           GH_TOKEN: ${{ github.token }}
           APPLICATION_PR: ${{ steps.application.outputs.number }}

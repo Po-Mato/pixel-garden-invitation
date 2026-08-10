@@ -443,14 +443,51 @@ const captureReport = {
   automation: "Appium XCUITest WebDriver",
   device: { kind: deviceKind, udid: deviceUdid ?? null, name: deviceName, platformVersion },
   simulatorUdid: deviceKind === "simulator" ? deviceUdid ?? null : null,
+  runId: process.env.GITHUB_RUN_ID ?? null,
+  runAttempt: Number(process.env.GITHUB_RUN_ATTEMPT) || null,
+  sha: process.env.GITHUB_SHA ?? null,
+  runUrl: process.env.GITHUB_RUN_ID && process.env.GITHUB_REPOSITORY
+    ? `${process.env.GITHUB_SERVER_URL ?? "https://github.com"}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`
+    : null,
   userAgent: null,
   viewport: null,
   scrollStates: {},
   nativeCompositor: null,
   pwaOffline: null,
   landscape: {},
+  phaseTimings: {},
+  slowestPhase: null,
   comparisons: []
 };
+
+let activeCapturePhase = null;
+let captureOutcome = "failed";
+function finishCapturePhase(outcome = "completed") {
+  if (!activeCapturePhase) return;
+  const timing = captureReport.phaseTimings[activeCapturePhase];
+  timing.durationMs = Math.max(0, Date.now() - timing.startedAtMs);
+  timing.outcome = outcome;
+  delete timing.startedAtMs;
+  activeCapturePhase = null;
+}
+
+function startCapturePhase(name) {
+  finishCapturePhase();
+  activeCapturePhase = name;
+  captureReport.phaseTimings[name] = {
+    startedAt: new Date().toISOString(),
+    startedAtMs: Date.now(),
+    durationMs: 0,
+    outcome: "running"
+  };
+}
+
+function identifySlowestCapturePhase() {
+  const entries = Object.entries(captureReport.phaseTimings);
+  if (entries.length === 0) return null;
+  const [name, timing] = entries.sort((left, right) => right[1].durationMs - left[1].durationMs)[0];
+  return { name, durationMs: timing.durationMs };
+}
 
 async function captureLandscapeMetrics(state) {
   const metrics = await evaluate(`
@@ -678,6 +715,7 @@ async function captureLandscapeInteriorCenterProbe() {
   return metrics;
 }
 
+startCapturePhase("session-setup");
 try {
   await waitForAppium();
   safariCapabilities = {
@@ -710,6 +748,7 @@ try {
   await createSafariSession();
   await sessionCommand("POST", "/url", { url });
   await restoreGameView();
+  startCapturePhase("portrait-game");
   const environment = await evaluate(`
     return {
       userAgent: navigator.userAgent,
@@ -747,6 +786,7 @@ try {
   }
   await screenshot("game", stabilizedGameFrame.frame);
 
+  startCapturePhase("directions-200");
   await evaluate(`
     const style = document.createElement("style");
     style.id = "ios-text-200-audit";
@@ -813,6 +853,7 @@ try {
   `);
   await waitForDocument("!document.querySelector('.world-menu-sheet')", "초대장 메뉴 닫힘");
   await waitForDocument("!document.querySelector('[role=\"dialog\"]')", "맵 대화상자 정리");
+  startCapturePhase("landscape");
   await sessionCommand("POST", "/orientation", { orientation: "LANDSCAPE" });
   await waitForDocument("innerWidth > innerHeight", "Safari 가로 회전", 30_000);
   await new Promise((resolve) => setTimeout(resolve, 800));
@@ -908,6 +949,7 @@ try {
   captureReport.landscape.interiorCenterProbe = await captureLandscapeInteriorCenterProbe();
 
   if (pwaUrl) {
+    startCapturePhase("pwa-offline");
     await sessionCommand("POST", "/orientation", { orientation: "PORTRAIT" });
     await waitForDocument("innerHeight > innerWidth", "Safari 세로 복귀", 30_000);
     const serviceWorkerSource = await readFile(path.join(rootDir, "client/dist/service-worker.js"), "utf8");
@@ -924,6 +966,7 @@ try {
     })).snapshot;
   }
 
+  startCapturePhase("baseline-comparison");
   const baselineStates = Object.fromEntries(await Promise.all(iosSafariVisualStates.map(async (state) => [
     state,
     await access(iosSafariBaselinePath(rootDir, state)).then(() => true, () => false)
@@ -941,7 +984,10 @@ try {
       }
     }
   }
+  captureOutcome = "completed";
 } finally {
+  finishCapturePhase(captureOutcome);
+  captureReport.slowestPhase = identifySlowestCapturePhase();
   if (sessionId) await webdriver("DELETE", `/session/${sessionId}`).catch(() => undefined);
   await writeFile(path.join(outputDir, "ios-safari-capture-report.json"), `${JSON.stringify(captureReport, null, 2)}\n`);
 }

@@ -38,6 +38,9 @@ test("sandbox E2E exercises the real approval label and cleans every temporary r
   assert.match(workflow, /--add-label map-foreground-patch-approved/);
   assert.match(workflow, /gh label create map-foreground-patch-approved/);
   assert.match(workflow, /apply-approved-map-patch\.yml/);
+  assert.match(workflow, /Classify empty map patch as a healthy no-op/);
+  assert.match(workflow, /operation_count/);
+  assert.match(workflow, /steps\.patch\.outputs\.no_op != 'true'/);
   assert.match(workflow, /-f source_pr="\$SOURCE_PR" -f evidence_run="\$EVIDENCE_RUN"/);
   assert.match(workflow, /--event workflow_dispatch/);
   assert.match(workflow, /visual-regression\.yml/);

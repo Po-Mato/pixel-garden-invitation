@@ -87,6 +87,7 @@ jobs:
           download_artifact "$PAGES_RUN_ID" 'pwa-cache-asset-change' quality-inputs/pages
           download_artifact "$PAGES_RUN_ID" 'production-network-pwa-canary' quality-inputs/pages
           download_artifact "$PAGES_RUN_ID" 'production-large-text-canary' quality-inputs/pages
+          download_artifact "$PAGES_RUN_ID" "pwa-clean-install-canary-$PAGES_RUN_ID" quality-inputs/pages
           download_artifact "$PAGES_RUN_ID" "quality-ci-efficiency-pages-$PAGES_RUN_ID" quality-inputs/ci/pages
           download_artifact "$MOBILE_RUN_ID" "map-diagnostics-browser-$MOBILE_RUN_ID" quality-inputs/mobile
           download_artifact "$MOBILE_RUN_ID" "mobile-hud-browser-$MOBILE_RUN_ID" quality-inputs/mobile

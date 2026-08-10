@@ -138,6 +138,7 @@ jobs:
           node scripts/pack-content-addressed-quality-evidence.mjs --input-dir .superpowers/visual-regression/production-large-text-canary --output-dir .quality-artifacts/production-large-text-canary
           node scripts/pack-content-addressed-quality-evidence.mjs --input-dir .superpowers/visual-regression/production-network-pwa-canary --output-dir .quality-artifacts/production-network-pwa-canary
           node scripts/pack-content-addressed-quality-evidence.mjs --input-dir .superpowers/visual-regression/game-resource-budget --output-dir .quality-artifacts/game-resource-budget
+          node scripts/pack-content-addressed-quality-evidence.mjs --input-dir .superpowers/visual-regression/pwa-clean-install-canary --output-dir .quality-artifacts/pwa-clean-install-canary
       - name: Upload public large-text canary evidence
         if: always()
         uses: actions/upload-artifact@v7
@@ -168,3 +169,13 @@ jobs:
           if-no-files-found: warn
           compression-level: 9
           retention-days: 30
+      - name: Upload fresh-install PWA readiness evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: pwa-clean-install-canary-${{ github.run_id }}
+          path: .quality-artifacts/pwa-clean-install-canary
+          include-hidden-files: true
+          if-no-files-found: warn
+          compression-level: 9
+          retention-days: 14

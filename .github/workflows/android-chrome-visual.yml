@@ -108,8 +108,9 @@ jobs:
           script: |
             adb shell pm path com.android.chrome
             adb shell dumpsys package com.android.chrome | grep versionName | head -n 1
+            adb reverse tcp:4179 tcp:4179
             adb reverse tcp:4188 tcp:4188
-            ANDROID_EMULATOR_SERIAL=emulator-5554 pnpm visual:android-chrome -- --mode auto --url http://10.0.2.2:4179/ --pwa-url http://127.0.0.1:4188/ --preview-host-url http://127.0.0.1:4188/ --appium-url http://127.0.0.1:4725/wd/hub
+            ANDROID_EMULATOR_SERIAL=emulator-5554 pnpm visual:android-chrome -- --mode auto --url http://127.0.0.1:4179/ --pwa-url http://127.0.0.1:4188/ --preview-host-url http://127.0.0.1:4188/ --appium-url http://127.0.0.1:4725/wd/hub
       - name: Stop invitation server
         if: always()
         shell: bash

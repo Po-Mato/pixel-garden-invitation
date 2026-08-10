@@ -135,4 +135,15 @@ test("iOS CI pins the stable Node runtime and recovers Simulator URL activation"
   assert.match(workflow, /compositor-fault-injection/);
   assert.match(workflow, /COMPOSITOR_RECOVERY_DURATION_MS/);
   assert.match(workflow, /COMPOSITOR_RECOVERY_STRATEGY/);
+  assert.match(workflow, /CAPTURE_PHASE_TIMINGS_JSON/);
+  assert.match(workflow, /capture-phase-timings-json/);
+});
+
+test("iOS capture records screen, PWA, and comparison phase durations", async () => {
+  const source = await readFile(new URL("./check-ios-safari-visual-baselines.mjs", import.meta.url), "utf8");
+  for (const phase of ["session-setup", "portrait-game", "directions-200", "landscape", "pwa-offline", "baseline-comparison"]) {
+    assert.match(source, new RegExp(`startCapturePhase\\("${phase}"\\)`));
+  }
+  assert.match(source, /captureReport\.slowestPhase = identifySlowestCapturePhase\(\)/);
+  assert.match(source, /runId: process\.env\.GITHUB_RUN_ID/);
 });

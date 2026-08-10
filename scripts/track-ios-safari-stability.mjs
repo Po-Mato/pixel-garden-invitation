@@ -87,6 +87,7 @@ if (currentOutcome) {
     queueDurationMs: currentRun?.queueDurationMs ?? Number(option("--queue-duration-ms", 0)),
     setupDurationMs: Number(option("--setup-duration-ms", 0)),
     captureDurationMs: Number(option("--capture-duration-ms", 0)),
+    capturePhaseDurationsMs: option("--capture-phase-timings-json", "{}"),
     bridgeInstallDurationMs: Number(option("--bridge-install-duration-ms", 0)),
     appiumCacheHit: option("--appium-cache-hit", "false") === "true",
     compositorRecoveryCount: Number(option("--compositor-recovery-count", 0)),

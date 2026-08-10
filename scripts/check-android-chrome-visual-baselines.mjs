@@ -11,13 +11,14 @@ import {
 } from "./lib/androidChromeVisualBaseline.mjs";
 import { runDevicePwaOfflineAudit } from "./lib/devicePwaOfflineAudit.mjs";
 import { parsePwaPrecachePaths } from "./lib/gameResourceBudget.mjs";
+import { navigateAndroidChromeWithRetry } from "./lib/androidDeviceReadiness.mjs";
 
 const rootDir = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
 const option = (name, fallback = null) => {
   const index = process.argv.indexOf(name);
   return index >= 0 ? process.argv[index + 1] : fallback;
 };
-const url = option("--url", "http://10.0.2.2:4179/");
+const url = option("--url", "http://127.0.0.1:4179/");
 const outputDir = option("--output-dir", path.join(rootDir, ".superpowers/visual-regression/android-chrome"));
 const mode = option("--mode", "auto");
 const appiumUrl = option("--appium-url", "http://127.0.0.1:4725/wd/hub");
@@ -105,6 +106,13 @@ const captureReport = {
   userAgent: null,
   viewport: null,
   browserVersion: null,
+  runId: process.env.GITHUB_RUN_ID ?? null,
+  runAttempt: Number(process.env.GITHUB_RUN_ATTEMPT) || null,
+  sha: process.env.GITHUB_SHA ?? null,
+  runUrl: process.env.GITHUB_RUN_ID && process.env.GITHUB_REPOSITORY
+    ? `${process.env.GITHUB_SERVER_URL ?? "https://github.com"}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`
+    : null,
+  networkReadiness: {},
   pwaOffline: null,
   scrollStates: {},
   comparisons: []
@@ -131,8 +139,16 @@ try {
   });
   sessionId = session.sessionId;
   captureReport.browserVersion = session.capabilities?.browserVersion ?? null;
-  await sessionCommand("POST", "/url", { url });
-  await waitForDocument("document.readyState === 'complete'", "초기 Chrome 문서");
+  try {
+    captureReport.networkReadiness.initial = await navigateAndroidChromeWithRetry({
+      targetUrl: url,
+      navigate: (targetUrl) => sessionCommand("POST", "/url", { url: targetUrl }),
+      verify: () => waitForDocument("document.readyState === 'complete'", "초기 Chrome 문서", 15_000)
+    });
+  } catch (error) {
+    captureReport.networkReadiness.initial = { targetUrl: url, outcome: "failed", attempts: error.navigationAttempts ?? [] };
+    throw error;
+  }
   await evaluate(`
     localStorage.setItem("wedding-game:entry-session:v1", JSON.stringify({
       version: 1,
@@ -155,8 +171,16 @@ try {
     }));
     return true;
   `);
-  await sessionCommand("POST", "/url", { url });
-  await waitForDocument("document.querySelector('.entry-screen__resume-access')", "이어하기 버튼");
+  try {
+    captureReport.networkReadiness.seededSession = await navigateAndroidChromeWithRetry({
+      targetUrl: url,
+      navigate: (targetUrl) => sessionCommand("POST", "/url", { url: targetUrl }),
+      verify: () => waitForDocument("document.querySelector('.entry-screen__resume-access')", "이어하기 버튼", 15_000)
+    });
+  } catch (error) {
+    captureReport.networkReadiness.seededSession = { targetUrl: url, outcome: "failed", attempts: error.navigationAttempts ?? [] };
+    throw error;
+  }
   await evaluate(`document.querySelector(".entry-screen__resume-access")?.click(); return true;`);
   await waitForDocument("document.querySelector('.game-world')", "게임 화면");
   await waitForDocument("document.querySelector('.world-map__stage--background-loaded')", "홈 맵 배경", 60_000);

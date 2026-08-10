@@ -2,8 +2,14 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {
   auditPwaCleanInstallCanary,
+  auditPwaReadinessTimeline,
   criticalOfflineAssetFailures
 } from "./lib/pwaCleanInstallCanary.mjs";
+
+const readinessTimeline = [
+  "first-navigation", "entry-visible", "service-worker-ready", "precache-ready", "session-seeded",
+  "offline-enabled", "preview-stopped", "offline-reload-complete", "offline-entry-visible", "offline-game-visible"
+].map((phase) => ({ phase, outcome: "completed" }));
 
 const ready = {
   serviceWorkerSupported: true,
@@ -17,11 +23,18 @@ const ready = {
   blockingNoticeVisible: false,
   fallbackDocumentVisible: false,
   criticalAssetFailures: [],
-  pageErrors: []
+  pageErrors: [],
+  readinessTimeline
 };
 
 test("clean-install canary accepts a fully cached offline invitation journey", () => {
   assert.deepEqual(auditPwaCleanInstallCanary(ready), []);
+});
+
+test("clean-install canary reports the exact missing readiness phases", () => {
+  assert.deepEqual(auditPwaReadinessTimeline(readinessTimeline.slice(0, -2)), [
+    "PWA 준비 단계 증거 누락 offline-entry-visible, offline-game-visible"
+  ]);
 });
 
 test("clean-install canary reports cache and offline fallback regressions", () => {

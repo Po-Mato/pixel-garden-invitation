@@ -16,6 +16,21 @@ function runIdentity(sample) {
   return `${sample.sha || "unknown"}:${sample.runAttempt || 1}:${sample.generatedAt || "unknown"}`;
 }
 
+export function normalizeCapturePhaseDurations(value) {
+  let source = value;
+  if (typeof value === "string") {
+    try {
+      source = JSON.parse(value);
+    } catch {
+      return {};
+    }
+  }
+  if (!source || typeof source !== "object" || Array.isArray(source)) return {};
+  return Object.fromEntries(Object.entries(source)
+    .filter(([name, durationMs]) => /^[a-z0-9-]+$/.test(name) && Number.isFinite(Number(durationMs)))
+    .map(([name, durationMs]) => [name, Math.max(0, Number(durationMs))]));
+}
+
 function normalizedSample(sample = {}) {
   return {
     runId: sample.runId ? String(sample.runId) : null,
@@ -26,6 +41,7 @@ function normalizedSample(sample = {}) {
     queueDurationMs: Math.max(0, Number(sample.queueDurationMs) || 0),
     setupDurationMs: Math.max(0, Number(sample.setupDurationMs) || 0),
     captureDurationMs: Math.max(0, Number(sample.captureDurationMs) || 0),
+    capturePhaseDurationsMs: normalizeCapturePhaseDurations(sample.capturePhaseDurationsMs),
     bridgeInstallDurationMs: Math.max(0, Number(sample.bridgeInstallDurationMs) || 0),
     appiumCacheHit: sample.appiumCacheHit === true || sample.appiumCacheHit === "true",
     compositorRecoveryCount: Math.max(0, Number(sample.compositorRecoveryCount) || 0),
@@ -93,6 +109,15 @@ function summarize(samples) {
       successes: strategySamples.filter(({ compositorFaultRecovered }) => compositorFaultRecovered).length
     }];
   }));
+  const capturePhaseNames = [...new Set(samples.flatMap(({ capturePhaseDurationsMs }) => (
+    Object.keys(capturePhaseDurationsMs)
+  )))].sort();
+  const p95CapturePhaseDurationsMs = Object.fromEntries(capturePhaseNames.map((name) => [
+    name,
+    percentile(samples.map(({ capturePhaseDurationsMs }) => capturePhaseDurationsMs[name] ?? 0).filter((value) => value > 0), 0.95)
+  ]));
+  const slowestCapturePhase = Object.entries(p95CapturePhaseDurationsMs)
+    .sort((left, right) => right[1] - left[1])[0] ?? null;
   return {
     sampleCount: samples.length,
     successes,
@@ -102,6 +127,10 @@ function summarize(samples) {
     p95QueueDurationMs: percentile(queueDurations, 0.95),
     p95SetupDurationMs: percentile(setupDurations, 0.95),
     p95CaptureDurationMs: percentile(captureDurations, 0.95),
+    p95CapturePhaseDurationsMs,
+    slowestCapturePhase: slowestCapturePhase
+      ? { name: slowestCapturePhase[0], p95DurationMs: slowestCapturePhase[1] }
+      : null,
     p95BridgeInstallDurationMs: percentile(bridgeInstallDurations, 0.95),
     phaseTimingSamples: Math.min(queueDurations.length, setupDurations.length, captureDurations.length),
     cachedAppiumSamples: samples.filter(({ appiumCacheHit }) => appiumCacheHit).length,
@@ -205,6 +234,9 @@ export function formatIosSafariStabilityMarkdown(trend) {
       + ` · Appium 준비 p95 ${Math.round(trend.acceptance.p95BridgeInstallDurationMs / 1000)}초`
       + ` · Appium 캐시 ${trend.acceptance.cachedAppiumSamples}/${trend.acceptance.sampleCount}`
       + ` · Prebuilt WDA ${trend.acceptance.preinstalledWdaSamples}/${trend.acceptance.sampleCount}`
+      + `${trend.acceptance.slowestCapturePhase
+        ? ` · 느린 단계 ${trend.acceptance.slowestCapturePhase.name} p95 ${Math.round(trend.acceptance.slowestCapturePhase.p95DurationMs / 1000)}초`
+        : ""}`
     : "";
   const compositor = ` · compositor 복구 ${trend.acceptance.recoveryRuns}/${trend.acceptance.sampleCount}`
     + ` · 복구 p95 ${Math.round(trend.acceptance.p95RecoveryDurationMs / 1000)}초`

@@ -5,6 +5,7 @@ import {
   androidChromeVisualProfile,
   androidChromeVisualStates
 } from "./lib/androidChromeVisualBaseline.mjs";
+import { readFile } from "node:fs/promises";
 
 test("real Android Chrome baseline covers the game and directions scroll", () => {
   assert.deepEqual(androidChromeVisualProfile, {
@@ -21,4 +22,11 @@ test("real Android Chrome baseline covers the game and directions scroll", () =>
     androidChromeBaselinePath("/repo", "game"),
     /android-chrome-pixel-7-api-35-chrome-game\.webp$/
   );
+});
+
+test("real Android capture report records run provenance and network readiness attempts", async () => {
+  const source = await readFile(new URL("./check-android-chrome-visual-baselines.mjs", import.meta.url), "utf8");
+  assert.match(source, /runId: process\.env\.GITHUB_RUN_ID/);
+  assert.match(source, /networkReadiness/);
+  assert.match(source, /navigateAndroidChromeWithRetry/);
 });
