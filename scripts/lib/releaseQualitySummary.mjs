@@ -7,7 +7,9 @@ export const releaseQualityEvidenceNames = Object.freeze({
   android: "android-chrome-capture-report.json",
   ios: "ios-safari-capture-report.json",
   pwaAssets: "pwa-cache-asset-trend.json",
-  pwaNetwork: "production-network-pwa-canary-report.json"
+  pwaNetwork: "production-network-pwa-canary-report.json",
+  ciEfficiency: "quality-ci-efficiency-summary.json",
+  evidenceEfficiency: "quality-evidence-efficiency-summary.json"
 });
 
 function nestedIssues(value, prefix = "") {
@@ -122,7 +124,10 @@ export function buildReleaseQualitySummary(evidence = {}, metadata = {}) {
     ios: evidence.ios ? evidence.ios.comparisons?.length ?? 0 : null,
     cachedPaths: evidence.ios?.pwaOffline?.cachedPaths ?? null,
     expectedPaths: evidence.ios?.pwaOffline?.expectedPaths ?? null,
-    p95FrameMs: evidence.ios?.landscape?.frameTimings?.p95FrameMs ?? null
+    p95FrameMs: evidence.ios?.landscape?.frameTimings?.p95FrameMs ?? null,
+    compositorRecoveryCount: evidence.ios?.nativeCompositor?.recoveryCount ?? null,
+    compositorRecoveryDurationMs: evidence.ios?.nativeCompositor?.recoveryDurationMs ?? null,
+    compositorFaultInjected: evidence.ios?.nativeCompositor?.faultInjection?.triggered ?? null
   }, [
     ...nestedIssues(evidence.ios),
     ...comparisonIssues(evidence.ios, "iOS"),
@@ -152,7 +157,25 @@ export function buildReleaseQualitySummary(evidence = {}, metadata = {}) {
       ?? null
   }, pwaIssues);
 
-  const categories = [map, hud, android, ios, pwa];
+  const automationIssues = [];
+  if (evidence.ciEfficiency?.status === "failed") {
+    automationIssues.push(...(evidence.ciEfficiency.issues ?? ["CI 효율 예산 미통과"]));
+  }
+  if (evidence.evidenceEfficiency?.status === "failed") {
+    automationIssues.push(...(evidence.evidenceEfficiency.issues ?? ["품질 증거 저장 예산 미통과"]));
+  }
+  const automation = category("automation", ["ciEfficiency", "evidenceEfficiency"], {
+    ciReports: evidence.ciEfficiency?.metrics?.reportCount ?? null,
+    dependencyCacheHitRate: evidence.ciEfficiency?.metrics?.dependencyCacheHitRate ?? null,
+    sharedBuildRestoreRate: evidence.ciEfficiency?.metrics?.sharedBuildRestoreRate ?? null,
+    estimatedSavedMs: evidence.ciEfficiency?.metrics?.estimatedSavedMs ?? null,
+    artifactBytes: evidence.ciEfficiency?.metrics?.artifactBytes ?? null,
+    evidenceStoredBytes: evidence.evidenceEfficiency?.metrics?.storedBytes ?? null,
+    omittedDuplicateBytes: evidence.evidenceEfficiency?.metrics?.omittedDuplicateBytes ?? null,
+    evidenceTrendStatus: evidence.evidenceEfficiency?.status ?? null
+  }, automationIssues);
+
+  const categories = [map, hud, android, ios, pwa, automation];
   const visualDifferences = summarizeVisualDifferenceClassifications(visualComparisons(
     evidence,
     metadata.visualCalibrationPolicies ?? {}
@@ -171,7 +194,7 @@ export function buildReleaseQualitySummary(evidence = {}, metadata = {}) {
 }
 
 export function formatReleaseQualitySummaryMarkdown(summary) {
-  const label = { map: "맵", hud: "HUD·타이포", android: "Android", ios: "iOS", pwa: "PWA" };
+  const label = { map: "맵", hud: "HUD·타이포", android: "Android", ios: "iOS", pwa: "PWA", automation: "자동화 효율" };
   const lines = [
     "<!-- release-quality-summary -->",
     "## 릴리스 품질 요약",

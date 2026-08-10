@@ -21,6 +21,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - name: Restore shared quality dependencies
+        id: quality-dependencies
         uses: ./.github/actions/setup-quality-dependencies
         with:
           node-version: 24
@@ -36,12 +37,29 @@ jobs:
           variant: production
           target-sha: ${{ github.sha }}
           github-token: ${{ github.token }}
+      - name: Mark local Pages fallback build start
+        id: local-quality-build-start
+        if: steps.quality-build.outputs.restored != 'true'
+        run: echo "started-at-ms=$(node -p 'Date.now()')" >> "$GITHUB_OUTPUT"
       - name: Build locally when shared artifact is unavailable
         if: steps.quality-build.outputs.restored != 'true'
         run: pnpm build
         env:
           VITE_WORKER_URL: ${{ vars.VITE_WORKER_URL }}
           VITE_INVITATION_ID: ${{ vars.VITE_INVITATION_ID || 'sample-garden' }}
+      - name: Report Pages quality CI efficiency
+        if: always()
+        uses: ./.github/actions/report-quality-ci-efficiency
+        with:
+          workflow: pages
+          variant: production
+          dependency-cache-hit: ${{ steps.quality-dependencies.outputs.cache-hit || 'false' }}
+          dependency-setup-duration-ms: ${{ steps.quality-dependencies.outputs.setup-duration-ms || '0' }}
+          build-restored: ${{ steps.quality-build.outputs.restored || 'false' }}
+          restore-duration-ms: ${{ steps.quality-build.outputs.restore-duration-ms || '0' }}
+          artifact-bytes: ${{ steps.quality-build.outputs.artifact-bytes || '0' }}
+          producer-build-duration-ms: ${{ steps.quality-build.outputs.producer-build-duration-ms || '0' }}
+          fallback-started-at-ms: ${{ steps.local-quality-build-start.outputs.started-at-ms || '0' }}
       - name: Restore Playwright browser cache
         id: playwright-browser-cache
         uses: actions/cache@v5

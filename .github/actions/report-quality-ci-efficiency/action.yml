@@ -1,0 +1,43 @@
+name: Report quality CI efficiency
+description: Record cache and shared-build efficiency for one quality consumer.
+inputs:
+  workflow:
+    required: true
+  variant:
+    required: true
+  dependency-cache-hit:
+    required: true
+  dependency-setup-duration-ms:
+    required: true
+  build-restored:
+    required: true
+  restore-duration-ms:
+    required: true
+  artifact-bytes:
+    required: true
+  producer-build-duration-ms:
+    required: true
+  fallback-started-at-ms:
+    required: false
+    default: "0"
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      run: |
+        node scripts/record-quality-ci-efficiency.mjs \
+          --workflow "${{ inputs.workflow }}" \
+          --variant "${{ inputs.variant }}" \
+          --dependency-cache-hit "${{ inputs.dependency-cache-hit }}" \
+          --dependency-setup-duration-ms "${{ inputs.dependency-setup-duration-ms }}" \
+          --build-restored "${{ inputs.build-restored }}" \
+          --restore-duration-ms "${{ inputs.restore-duration-ms }}" \
+          --artifact-bytes "${{ inputs.artifact-bytes }}" \
+          --producer-build-duration-ms "${{ inputs.producer-build-duration-ms }}" \
+          --fallback-started-at-ms "${{ inputs.fallback-started-at-ms }}"
+    - uses: actions/upload-artifact@v7
+      with:
+        name: quality-ci-efficiency-${{ inputs.workflow }}-${{ github.run_id }}
+        path: .quality-ci-efficiency/quality-ci-efficiency-${{ inputs.workflow }}.json
+        if-no-files-found: error
+        retention-days: 30

@@ -44,7 +44,10 @@ test("portrait game capture discards a stale lazy-loading framebuffer", async ()
   assert.match(source, /visibleRatio >= 0\.2/);
   assert.match(source, /settledRatio <= 0\.02/);
   assert.match(source, /await screenshot\("game", stabilizedGameFrame\.frame\)/);
-  assert.match(source, /recoveryStrategies = \["activate-refresh", "recreate-session"\]/);
+  assert.match(source, /compositorFaultInjection/);
+  assert.match(source, /scheduled-background-fault-injection/);
+  assert.match(source, /mobile: backgroundApp/);
+  assert.match(source, /recoveryDurationMs/);
   assert.match(source, /appium\/device\/activate_app/);
   assert.match(source, /await sessionCommand\("POST", "\/refresh"\)/);
   assert.match(source, /await createSafariSession\(\)/);
@@ -98,4 +101,7 @@ test("iOS CI pins the stable Node runtime and retries Simulator URL activation",
   assert.match(workflow, /success\(\).*ios-automation-cache\.outputs\.cache-hit/);
   assert.match(workflow, /IOS_PREBUILT_WDA_PATH/);
   assert.match(workflow, /actions\/cache\/save@v5/);
+  assert.match(workflow, /cron: "17 3 \* \* 1"/);
+  assert.match(workflow, /compositor-fault-injection/);
+  assert.match(workflow, /COMPOSITOR_RECOVERY_DURATION_MS/);
 });

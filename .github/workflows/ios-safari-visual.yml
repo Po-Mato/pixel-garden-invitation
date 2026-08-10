@@ -2,6 +2,18 @@ name: Real iOS Safari visual regression
 
 on:
   workflow_dispatch:
+    inputs:
+      compositor_fault_injection:
+        description: Deterministic native compositor recovery drill
+        required: false
+        default: none
+        type: choice
+        options:
+          - none
+          - activate-refresh
+          - recreate-session
+  schedule:
+    - cron: "17 3 * * 1"
   push:
     branches: [main]
     paths:
@@ -30,6 +42,7 @@ jobs:
       - name: Mark iOS Safari job start
         run: echo "IOS_JOB_STARTED_AT_MS=$(node -p 'Date.now()')" >> "$GITHUB_ENV"
       - name: Restore shared quality dependencies
+        id: quality-dependencies
         uses: ./.github/actions/setup-quality-dependencies
         with:
           # Node 24 undici can intermittently raise setTypeOfService EINVAL on macOS runners.
@@ -90,12 +103,29 @@ jobs:
           variant: device
           target-sha: ${{ github.sha }}
           github-token: ${{ github.token }}
+      - name: Mark local iOS fallback build start
+        id: local-quality-build-start
+        if: steps.quality-build.outputs.restored != 'true'
+        run: echo "started-at-ms=$(node -p 'Date.now()')" >> "$GITHUB_OUTPUT"
       - name: Build device client locally when shared artifact is unavailable
         if: steps.quality-build.outputs.restored != 'true'
         run: |
           pnpm characters:generate
           pnpm --filter @wedding-game/shared build
           VITE_WORKER_URL=https://example.invalid VITE_INVITATION_ID=device-pwa-audit pnpm --filter @wedding-game/client build
+      - name: Report iOS quality CI efficiency
+        if: always()
+        uses: ./.github/actions/report-quality-ci-efficiency
+        with:
+          workflow: ios
+          variant: device
+          dependency-cache-hit: ${{ steps.quality-dependencies.outputs.cache-hit || 'false' }}
+          dependency-setup-duration-ms: ${{ steps.quality-dependencies.outputs.setup-duration-ms || '0' }}
+          build-restored: ${{ steps.quality-build.outputs.restored || 'false' }}
+          restore-duration-ms: ${{ steps.quality-build.outputs.restore-duration-ms || '0' }}
+          artifact-bytes: ${{ steps.quality-build.outputs.artifact-bytes || '0' }}
+          producer-build-duration-ms: ${{ steps.quality-build.outputs.producer-build-duration-ms || '0' }}
+          fallback-started-at-ms: ${{ steps.local-quality-build-start.outputs.started-at-ms || '0' }}
       - name: Start deterministic invitation server
         shell: bash
         run: |
@@ -132,13 +162,25 @@ jobs:
             sleep 3
           done
           sleep 3
-          pnpm visual:ios-safari -- --mode auto --url http://127.0.0.1:4178/ --pwa-url http://127.0.0.1:4188/ --preview-host-url http://127.0.0.1:4188/
+          pnpm visual:ios-safari -- \
+            --mode auto \
+            --url http://127.0.0.1:4178/ \
+            --pwa-url http://127.0.0.1:4188/ \
+            --preview-host-url http://127.0.0.1:4188/ \
+            --compositor-fault-injection "$IOS_COMPOSITOR_FAULT_INJECTION"
+        env:
+          IOS_COMPOSITOR_FAULT_INJECTION: ${{ github.event_name == 'schedule' && 'activate-refresh' || inputs.compositor_fault_injection || 'none' }}
       - name: Track ten-run iOS Safari stability
         if: always()
         shell: bash
         run: |
           DURATION_MS="$(node -p 'Math.max(0, Date.now() - Number(process.env.IOS_CAPTURE_STARTED_AT_MS || Date.now()))')"
           SETUP_DURATION_MS="$(node -p 'Math.max(0, Number(process.env.IOS_CAPTURE_STARTED_AT_MS || Date.now()) - Number(process.env.IOS_JOB_STARTED_AT_MS || Date.now()))')"
+          CAPTURE_REPORT=.superpowers/visual-regression/ios-safari/ios-safari-capture-report.json
+          COMPOSITOR_RECOVERY_COUNT="$(jq -r '.nativeCompositor.recoveryCount // 0' "$CAPTURE_REPORT" 2>/dev/null || printf '0')"
+          COMPOSITOR_RECOVERY_DURATION_MS="$(jq -r '.nativeCompositor.recoveryDurationMs // 0' "$CAPTURE_REPORT" 2>/dev/null || printf '0')"
+          COMPOSITOR_FAULT_INJECTED="$(jq -r '.nativeCompositor.faultInjection.triggered // false' "$CAPTURE_REPORT" 2>/dev/null || printf 'false')"
+          COMPOSITOR_FAULT_RECOVERED="$(jq -r '.nativeCompositor.faultInjection.recovered // false' "$CAPTURE_REPORT" 2>/dev/null || printf 'false')"
           pnpm visual:ios-safari:stability -- \
             --outcome "${{ steps.capture.outcome }}" \
             --run-id "$GITHUB_RUN_ID" \
@@ -147,6 +189,10 @@ jobs:
             --duration-ms "$DURATION_MS" \
             --setup-duration-ms "$SETUP_DURATION_MS" \
             --capture-duration-ms "$DURATION_MS" \
+            --compositor-recovery-count "$COMPOSITOR_RECOVERY_COUNT" \
+            --compositor-recovery-duration-ms "$COMPOSITOR_RECOVERY_DURATION_MS" \
+            --compositor-fault-injected "$COMPOSITOR_FAULT_INJECTED" \
+            --compositor-fault-recovered "$COMPOSITOR_FAULT_RECOVERED" \
             --wda-mode preinstalled \
             --run-url "https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
         env:

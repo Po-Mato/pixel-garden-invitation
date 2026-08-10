@@ -27,6 +27,11 @@ const mode = option("--mode", "auto");
 const appiumUrl = option("--appium-url", "http://127.0.0.1:4723/wd/hub");
 const pwaUrl = option("--pwa-url");
 const previewHostUrl = option("--preview-host-url", "http://127.0.0.1:4188/");
+const compositorFaultInjection = option("--compositor-fault-injection", "none");
+const compositorFaultStrategies = ["none", "activate-refresh", "recreate-session"];
+if (!compositorFaultStrategies.includes(compositorFaultInjection)) {
+  throw new Error(`알 수 없는 iOS compositor fault injection: ${compositorFaultInjection}`);
+}
 const deviceKind = process.env.IOS_SAFARI_DEVICE_KIND === "physical" ? "physical" : "simulator";
 const deviceUdid = process.env.IOS_DEVICE_UDID ?? process.env.IOS_SIMULATOR_UDID;
 const deviceName = process.env.IOS_DEVICE_NAME ?? iosSafariVisualProfile.deviceName;
@@ -215,6 +220,30 @@ async function recoverNativeCompositor(strategy) {
   throw new Error(`알 수 없는 iOS 캡처 복구 전략: ${strategy}`);
 }
 
+async function injectNativeCompositorFault() {
+  if (compositorFaultInjection === "none") return null;
+  const startedAt = Date.now();
+  const injection = {
+    requestedStrategy: compositorFaultInjection,
+    mechanism: "background-mobile-safari",
+    triggered: false,
+    durationMs: 0,
+    error: null
+  };
+  try {
+    await sessionCommand("POST", "/execute/sync", {
+      script: "mobile: backgroundApp",
+      args: [{ seconds: 1 }]
+    });
+    injection.triggered = true;
+    await new Promise((resolve) => setTimeout(resolve, 500));
+  } catch (error) {
+    injection.error = error instanceof Error ? error.message : String(error);
+  }
+  injection.durationMs = Date.now() - startedAt;
+  return injection;
+}
+
 async function probeNativeCompositor() {
   await waitForDocument(stableGameFrameExpression, "게임 캡처 프레임", 60_000);
   await evaluate(`
@@ -272,16 +301,39 @@ async function probeNativeCompositor() {
 async function stabilizeGameFrameCapture() {
   const attempts = [];
   const recoveries = [];
-  const recoveryStrategies = ["activate-refresh", "recreate-session"];
+  const faultInjection = await injectNativeCompositorFault();
+  const recoveryStrategies = compositorFaultInjection === "none"
+    ? ["activate-refresh", "recreate-session"]
+    : [compositorFaultInjection, ...["activate-refresh", "recreate-session"].filter((item) => (
+      item !== compositorFaultInjection
+    ))];
   for (let cycle = 0; cycle <= recoveryStrategies.length; cycle += 1) {
-    const result = await probeNativeCompositor();
+    const result = cycle === 0 && faultInjection
+      ? {
+          passed: false,
+          reason: "scheduled-background-fault-injection",
+          evidence: { visibleAttempt: 0, visibleRatio: null, settledAttempt: 0, settledRatio: null }
+        }
+      : await probeNativeCompositor();
     attempts.push({ cycle: cycle + 1, passed: result.passed, reason: result.reason ?? null, ...result.evidence });
     if (result.passed) {
+      const recoveryDurationMs = recoveries.reduce((total, recovery) => total + (recovery.durationMs ?? 0), 0);
+      const requestedRecoveryCompleted = !faultInjection || (
+        faultInjection.triggered
+        && recoveries[0]?.strategy === faultInjection.requestedStrategy
+        && recoveries[0]?.status === "completed"
+      );
       return {
         frame: result.frame,
         evidence: {
           recovered: recoveries.length > 0,
           recoveryCount: recoveries.length,
+          recoveryDurationMs,
+          faultInjection: faultInjection ? {
+            ...faultInjection,
+            recovered: requestedRecoveryCompleted,
+            recoveryStrategy: recoveries.find(({ status }) => status === "completed")?.strategy ?? null
+          } : null,
           attempts,
           recoveries
         }
@@ -289,7 +341,8 @@ async function stabilizeGameFrameCapture() {
     }
     const strategy = recoveryStrategies[cycle];
     if (!strategy) break;
-    const recovery = { strategy, status: "started" };
+    const recovery = { strategy, status: "started", startedAt: new Date().toISOString() };
+    const recoveryStartedAt = Date.now();
     recoveries.push(recovery);
     try {
       await recoverNativeCompositor(strategy);
@@ -297,6 +350,8 @@ async function stabilizeGameFrameCapture() {
     } catch (error) {
       recovery.status = "failed";
       recovery.error = error instanceof Error ? error.message : String(error);
+    } finally {
+      recovery.durationMs = Date.now() - recoveryStartedAt;
     }
   }
   const reasons = attempts.map(({ reason, visibleRatio, settledRatio }) => (
@@ -574,6 +629,11 @@ try {
   captureReport.player = environment.player;
   const stabilizedGameFrame = await stabilizeGameFrameCapture();
   captureReport.nativeCompositor = stabilizedGameFrame.evidence;
+  if (captureReport.nativeCompositor.faultInjection?.recovered === false) {
+    throw new Error(
+      `iOS Safari compositor fault injection 불완전: ${captureReport.nativeCompositor.faultInjection.error ?? "requested recovery missing"}`
+    );
+  }
   await screenshot("game", stabilizedGameFrame.frame);
 
   await evaluate(`

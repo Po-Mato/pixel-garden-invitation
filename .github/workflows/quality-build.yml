@@ -20,31 +20,42 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - name: Restore shared quality dependencies
+        id: quality-dependencies
         uses: ./.github/actions/setup-quality-dependencies
         with:
           node-version: 24
       - name: Build production quality workspace once
-        run: pnpm build
+        run: |
+          echo "QUALITY_PRODUCTION_BUILD_STARTED_AT_MS=$(node -p 'Date.now()')" >> "$GITHUB_ENV"
+          pnpm build
         env:
           VITE_WORKER_URL: ${{ vars.VITE_WORKER_URL || 'https://example.invalid' }}
           VITE_INVITATION_ID: ${{ vars.VITE_INVITATION_ID || 'sample-garden' }}
           VITE_TURNSTILE_SITE_KEY: ${{ vars.VITE_TURNSTILE_SITE_KEY }}
       - name: Preserve production client and generated runtime assets
         run: |
+          echo "QUALITY_PRODUCTION_BUILD_DURATION_MS=$(node -p 'Math.max(0, Date.now() - Number(process.env.QUALITY_PRODUCTION_BUILD_STARTED_AT_MS))')" >> "$GITHUB_ENV"
           mkdir -p .quality-build/production
           cp -R client/dist/. .quality-build/production/
           mkdir -p .quality-build/generated-characters
           cp -R client/public/characters/generated/. .quality-build/generated-characters/
       - name: Build isolated device quality client
-        run: pnpm --filter @wedding-game/client build
+        run: |
+          echo "QUALITY_DEVICE_BUILD_STARTED_AT_MS=$(node -p 'Date.now()')" >> "$GITHUB_ENV"
+          pnpm --filter @wedding-game/client build
         env:
           VITE_WORKER_URL: https://example.invalid
           VITE_INVITATION_ID: device-pwa-audit
       - name: Preserve device client and manifest
         run: |
+          QUALITY_DEVICE_BUILD_DURATION_MS="$(node -p 'Math.max(0, Date.now() - Number(process.env.QUALITY_DEVICE_BUILD_STARTED_AT_MS))')"
+          export QUALITY_DEVICE_BUILD_DURATION_MS
+          echo "QUALITY_DEVICE_BUILD_DURATION_MS=$QUALITY_DEVICE_BUILD_DURATION_MS" >> "$GITHUB_ENV"
           mkdir -p .quality-build/device
           cp -R client/dist/. .quality-build/device/
-          node -e 'require("node:fs").writeFileSync(".quality-build/quality-build-manifest.json", JSON.stringify({version:1, sha:process.env.GITHUB_SHA, variants:["production","device"]}, null, 2) + "\n")'
+          node -e 'require("node:fs").writeFileSync(".quality-build/quality-build-manifest.json", JSON.stringify({version:1, sha:process.env.GITHUB_SHA, variants:["production","device"], buildDurationsMs:{production:Number(process.env.QUALITY_PRODUCTION_BUILD_DURATION_MS)||0, device:Number(process.env.QUALITY_DEVICE_BUILD_DURATION_MS)||0}}, null, 2) + "\n")'
+      - name: Verify shared build runtime contract
+        run: pnpm quality:build-contract -- --mode package --package-dir .quality-build --expected-sha "$GITHUB_SHA"
       - name: Upload shared build once per commit
         uses: actions/upload-artifact@v7
         with:

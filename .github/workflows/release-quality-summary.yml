@@ -30,6 +30,7 @@ jobs:
           path: |
             .superpowers/visual-regression/release-quality-summary/release-quality-history.json
             .superpowers/visual-regression/release-quality-summary/visual-diff-calibration-history.json
+            .superpowers/visual-regression/release-quality-summary/quality-evidence-efficiency-history.json
           key: release-quality-history-${{ runner.os }}-${{ github.run_id }}-${{ github.run_attempt }}
           restore-keys: |
             release-quality-history-${{ runner.os }}-
@@ -80,11 +81,19 @@ jobs:
           if test -z "$IOS_RUN_ID"; then IOS_RUN_ID="$(find_completed_run ios-safari-visual.yml || true)"; fi
           download_artifact "$PAGES_RUN_ID" 'pwa-cache-asset-change' quality-inputs/pages
           download_artifact "$PAGES_RUN_ID" 'production-network-pwa-canary' quality-inputs/pages
+          download_artifact "$PAGES_RUN_ID" "quality-ci-efficiency-pages-$PAGES_RUN_ID" quality-inputs/ci/pages
           download_artifact "$MOBILE_RUN_ID" "map-diagnostics-browser-$MOBILE_RUN_ID" quality-inputs/mobile
           download_artifact "$MOBILE_RUN_ID" "mobile-hud-browser-$MOBILE_RUN_ID" quality-inputs/mobile
           download_artifact "$MOBILE_RUN_ID" "mobile-visual-region-report-$MOBILE_RUN_ID" quality-inputs/mobile
+          download_artifact "$MOBILE_RUN_ID" "quality-ci-efficiency-mobile-$MOBILE_RUN_ID" quality-inputs/ci/mobile
           download_artifact "$ANDROID_RUN_ID" "android-chrome-visual-$ANDROID_RUN_ID" quality-inputs/android
+          download_artifact "$ANDROID_RUN_ID" "quality-ci-efficiency-android-$ANDROID_RUN_ID" quality-inputs/ci/android
           download_artifact "$IOS_RUN_ID" "ios-safari-visual-$IOS_RUN_ID" quality-inputs/ios
+          download_artifact "$IOS_RUN_ID" "quality-ci-efficiency-ios-$IOS_RUN_ID" quality-inputs/ci/ios
+      - name: Summarize dependency cache and shared-build efficiency
+        run: pnpm quality:ci-efficiency -- --input-dir quality-inputs
+      - name: Track content-addressed evidence savings and leak budgets
+        run: pnpm quality:evidence-efficiency -- --input-dir quality-inputs --sha "${{ github.event.workflow_run.head_sha || github.sha }}"
       - name: Build checksum-bound artifact manifest
         run: pnpm quality:artifact-manifest -- --input-dir quality-inputs
       - name: Build release quality summary
@@ -96,6 +105,7 @@ jobs:
           path: |
             .superpowers/visual-regression/release-quality-summary/release-quality-history.json
             .superpowers/visual-regression/release-quality-summary/visual-diff-calibration-history.json
+            .superpowers/visual-regression/release-quality-summary/quality-evidence-efficiency-history.json
           key: release-quality-history-${{ runner.os }}-${{ github.run_id }}-${{ github.run_attempt }}
       - name: Upload release quality summary
         if: always()

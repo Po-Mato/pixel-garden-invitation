@@ -7,7 +7,7 @@ export const iosSafariStabilityPolicy = Object.freeze({
   maximumP95CaptureDurationMs: 12 * 60_000,
   maximumConsecutiveFailures: 1,
   retainedRuns: 30,
-  policyRevision: 2
+  policyRevision: 3
 });
 
 function runIdentity(sample) {
@@ -23,6 +23,10 @@ function normalizedSample(sample = {}) {
     durationMs: Math.max(0, Number(sample.durationMs) || 0),
     setupDurationMs: Math.max(0, Number(sample.setupDurationMs) || 0),
     captureDurationMs: Math.max(0, Number(sample.captureDurationMs) || 0),
+    compositorRecoveryCount: Math.max(0, Number(sample.compositorRecoveryCount) || 0),
+    compositorRecoveryDurationMs: Math.max(0, Number(sample.compositorRecoveryDurationMs) || 0),
+    compositorFaultInjected: sample.compositorFaultInjected === true || sample.compositorFaultInjected === "true",
+    compositorFaultRecovered: sample.compositorFaultRecovered === true || sample.compositorFaultRecovered === "true",
     wdaMode: sample.wdaMode === "preinstalled" ? "preinstalled" : "source-build",
     generatedAt: sample.generatedAt || new Date().toISOString(),
     policyRevision: Number(sample.policyRevision) || 0,
@@ -65,6 +69,8 @@ function summarize(samples) {
   const successRate = samples.length === 0 ? 0 : successes / samples.length;
   const setupDurations = samples.map(({ setupDurationMs }) => setupDurationMs).filter((value) => value > 0);
   const captureDurations = samples.map(({ captureDurationMs }) => captureDurationMs).filter((value) => value > 0);
+  const recoverySamples = samples.filter(({ compositorRecoveryCount }) => compositorRecoveryCount > 0);
+  const faultInjectionSamples = samples.filter(({ compositorFaultInjected }) => compositorFaultInjected);
   return {
     sampleCount: samples.length,
     successes,
@@ -75,6 +81,14 @@ function summarize(samples) {
     p95CaptureDurationMs: percentile(captureDurations, 0.95),
     phaseTimingSamples: Math.min(setupDurations.length, captureDurations.length),
     preinstalledWdaSamples: samples.filter(({ wdaMode }) => wdaMode === "preinstalled").length,
+    recoveryRuns: recoverySamples.length,
+    recoveryRate: samples.length === 0 ? 0 : recoverySamples.length / samples.length,
+    p95RecoveryDurationMs: percentile(
+      recoverySamples.map(({ compositorRecoveryDurationMs }) => compositorRecoveryDurationMs),
+      0.95
+    ),
+    faultInjectionSamples: faultInjectionSamples.length,
+    successfulFaultRecoveries: faultInjectionSamples.filter(({ compositorFaultRecovered }) => compositorFaultRecovered).length,
     maximumConsecutiveFailures: consecutiveFailures(samples),
     runIds: samples.map(({ runId }) => runId).filter(Boolean)
   };
@@ -147,11 +161,14 @@ export function formatIosSafariStabilityMarkdown(trend) {
       + ` · 캡처 p95 ${Math.round(trend.acceptance.p95CaptureDurationMs / 1000)}초`
       + ` · Prebuilt WDA ${trend.acceptance.preinstalledWdaSamples}/${trend.acceptance.sampleCount}`
     : "";
+  const compositor = ` · compositor 복구 ${trend.acceptance.recoveryRuns}/${trend.acceptance.sampleCount}`
+    + ` · 복구 p95 ${Math.round(trend.acceptance.p95RecoveryDurationMs / 1000)}초`
+    + ` · 주입 복구 ${trend.acceptance.successfulFaultRecoveries}/${trend.acceptance.faultInjectionSamples}`;
   return [
     "## iOS Safari CI 안정성 추세",
     "",
     `- 최근 실행 10회: **${trend.observed.status}** · ${format(trend.observed)}`,
-    `- Prebuilt WDA 적용 후: **${trend.acceptance.status}** · ${format(trend.acceptance)}${phase}`,
+    `- Prebuilt WDA 적용 후: **${trend.acceptance.status}** · ${format(trend.acceptance)}${phase}${compositor}`,
     "",
     ...[...trend.observed.issues, ...trend.acceptance.issues].map((issue) => `- ${issue}`),
     ""

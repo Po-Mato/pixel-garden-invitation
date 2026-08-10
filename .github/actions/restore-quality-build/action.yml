@@ -18,6 +18,15 @@ outputs:
   restored:
     description: Whether the shared build was restored
     value: ${{ steps.restore.outputs.restored }}
+  restore-duration-ms:
+    description: Artifact lookup, download, and contract verification duration
+    value: ${{ steps.restore.outputs.restore-duration-ms }}
+  artifact-bytes:
+    description: Uncompressed shared artifact bytes
+    value: ${{ steps.restore.outputs.artifact-bytes }}
+  producer-build-duration-ms:
+    description: Producer duration for the restored variant
+    value: ${{ steps.restore.outputs.producer-build-duration-ms }}
 runs:
   using: composite
   steps:
@@ -30,6 +39,7 @@ runs:
         QUALITY_BUILD_WAIT_ATTEMPTS: ${{ inputs.wait-attempts }}
       run: |
         set -euo pipefail
+        restore_started_at_ms="$(node -p 'Date.now()')"
         artifact_name="quality-build-$QUALITY_BUILD_SHA"
         download_dir="$RUNNER_TEMP/quality-build-$QUALITY_BUILD_SHA"
         for ((attempt=1; attempt<=QUALITY_BUILD_WAIT_ATTEMPTS; attempt+=1)); do
@@ -45,7 +55,14 @@ runs:
               mkdir -p client/public/characters/generated
               cp -R "$download_dir/$QUALITY_BUILD_VARIANT/." client/dist/
               cp -R "$download_dir/generated-characters/." client/public/characters/generated/
+              node scripts/check-quality-build-runtime-contract.mjs \
+                --mode restored \
+                --variant "$QUALITY_BUILD_VARIANT" \
+                --expected-sha "$QUALITY_BUILD_SHA"
               echo "restored=true" >> "$GITHUB_OUTPUT"
+              echo "restore-duration-ms=$(node -p "Math.max(0, Date.now() - Number('$restore_started_at_ms'))")" >> "$GITHUB_OUTPUT"
+              echo "artifact-bytes=$(du -sk "$download_dir" | awk '{print $1 * 1024}')" >> "$GITHUB_OUTPUT"
+              echo "producer-build-duration-ms=$(jq -r --arg variant "$QUALITY_BUILD_VARIANT" '.buildDurationsMs[$variant] // 0' "$download_dir/quality-build-manifest.json")" >> "$GITHUB_OUTPUT"
               exit 0
             fi
           fi
@@ -53,3 +70,6 @@ runs:
         done
         echo "공통 빌드가 없어 현재 워크플로에서 안전하게 다시 빌드합니다."
         echo "restored=false" >> "$GITHUB_OUTPUT"
+        echo "restore-duration-ms=$(node -p "Math.max(0, Date.now() - Number('$restore_started_at_ms'))")" >> "$GITHUB_OUTPUT"
+        echo "artifact-bytes=0" >> "$GITHUB_OUTPUT"
+        echo "producer-build-duration-ms=0" >> "$GITHUB_OUTPUT"

@@ -4,9 +4,19 @@ inputs:
   node-version:
     description: Node.js major version
     required: true
+outputs:
+  cache-hit:
+    description: Whether the workspace dependency cache matched exactly
+    value: ${{ steps.workspace-dependencies.outputs.cache-hit }}
+  setup-duration-ms:
+    description: Total dependency setup duration in milliseconds
+    value: ${{ steps.setup-metrics.outputs.duration-ms }}
 runs:
   using: composite
   steps:
+    - id: setup-start
+      shell: bash
+      run: echo "started-at-ms=$(node -p 'Date.now()')" >> "$GITHUB_OUTPUT"
     - uses: pnpm/action-setup@v6
       with:
         version: 10.29.2
@@ -26,3 +36,8 @@ runs:
     - if: steps.workspace-dependencies.outputs.cache-hit != 'true'
       shell: bash
       run: pnpm install --frozen-lockfile
+    - id: setup-metrics
+      shell: bash
+      env:
+        SETUP_STARTED_AT_MS: ${{ steps.setup-start.outputs.started-at-ms }}
+      run: echo "duration-ms=$(node -p 'Math.max(0, Date.now() - Number(process.env.SETUP_STARTED_AT_MS || Date.now()))')" >> "$GITHUB_OUTPUT"

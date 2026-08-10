@@ -19,15 +19,23 @@ function cleanEvidence() {
       issues: [],
       trend: { status: "passed" },
       freshColdStart: { largestContentfulPaintMs: 1200 }
+    },
+    ciEfficiency: {
+      status: "passed",
+      metrics: { reportCount: 4, dependencyCacheHitRate: 0.75, sharedBuildRestoreRate: 1, estimatedSavedMs: 320_000, artifactBytes: 12_000_000 }
+    },
+    evidenceEfficiency: {
+      status: "warming",
+      metrics: { storedBytes: 20_000_000, omittedDuplicateBytes: 6_000_000 }
     }
   };
 }
 
-test("release quality summary combines all five evidence groups", () => {
+test("release quality summary combines product and automation evidence groups", () => {
   const summary = buildReleaseQualitySummary(cleanEvidence(), { sha: "abc" });
   assert.equal(summary.status, "passed");
   assert.deepEqual(summary.categories.map(({ id, status }) => [id, status]), [
-    ["map", "passed"], ["hud", "passed"], ["android", "passed"], ["ios", "passed"], ["pwa", "passed"]
+    ["map", "passed"], ["hud", "passed"], ["android", "passed"], ["ios", "passed"], ["pwa", "passed"], ["automation", "passed"]
   ]);
   assert.equal(summary.categories.find(({ id }) => id === "pwa").metrics.largestContentfulPaintMs, 1200);
   assert.equal(summary.visualDifferences.status, "passed");
@@ -68,4 +76,7 @@ test("release quality workflow joins completed artifacts by commit SHA", async (
   assert.match(workflow, /quality:summary-seed/);
   assert.match(workflow, /visual-diff-calibration-history/);
   assert.match(workflow, /while read -r previous_run_id/);
+  assert.match(workflow, /quality:ci-efficiency/);
+  assert.match(workflow, /quality:evidence-efficiency/);
+  assert.match(workflow, /quality-evidence-efficiency-history/);
 });
