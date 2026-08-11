@@ -6,7 +6,14 @@ import { buildReleaseQualitySummary, formatReleaseQualitySummaryMarkdown } from 
 function cleanEvidence() {
   const device = {
     comparisons: [{ state: "game", passed: true, changedRatio: 0.001, rawChangedRatio: 0.008, maxChangedRatio: 0.015 }],
-    pwaOffline: { controlled: true, cachedPaths: 82, expectedPaths: 82, criticalAssetFailures: [], pageErrors: [] }
+    pwaOffline: {
+      controlled: true,
+      cachedPaths: 82,
+      expectedPaths: 82,
+      transportProbe: { transportBlocked: true, durationMs: 24, browserErrorKind: "failed-to-fetch" },
+      criticalAssetFailures: [],
+      pageErrors: []
+    }
   };
   return {
     mapDiagnostics: { reports: [{ issues: [], snapshot: { policyStatus: "passed" } }] },
@@ -54,6 +61,7 @@ test("release quality summary combines product and automation evidence groups", 
   assert.equal(summary.categories.find(({ id }) => id === "pwa").metrics.largestContentfulPaintMs, 1200);
   assert.equal(summary.categories.find(({ id }) => id === "pwa").metrics.pagesRuntimeAssets, 86);
   assert.equal(summary.categories.find(({ id }) => id === "ios").metrics.interiorPlayerCenterErrorPx, 0.5);
+  assert.equal(summary.categories.find(({ id }) => id === "android").metrics.transportBlockLatencyMs, 24);
   assert.equal(summary.visualDifferences.status, "passed");
   assert.equal(summary.visualDifferences.counts["renderer-noise"], 2);
   assert.match(formatReleaseQualitySummaryMarkdown(summary), /종합 상태: \*\*passed\*\*/);

@@ -98,6 +98,8 @@ if (currentOutcome) {
     compositorFaultInjected: option("--compositor-fault-injected", "false") === "true",
     compositorFaultRecovered: option("--compositor-fault-recovered", "false") === "true",
     compositorRecoveryStrategy: option("--compositor-recovery-strategy"),
+    failureCategory: option("--failure-category"),
+    failureKind: option("--failure-kind"),
     wdaMode: option("--wda-mode", "source-build"),
     generatedAt: currentRun?.generatedAt ?? option("--generated-at", new Date().toISOString()),
     policyRevision: iosSafariStabilityPolicy.policyRevision,

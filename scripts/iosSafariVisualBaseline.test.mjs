@@ -139,8 +139,18 @@ test("iOS CI pins the stable Node runtime and recovers Simulator URL activation"
   assert.match(workflow, /capture-phase-timings-json/);
   assert.match(workflow, /id: ios-simulator/);
   assert.match(workflow, /steps\.ios-simulator\.outputs\.duration-ms/);
+  assert.match(workflow, /Simulator\.app" --args -CurrentDeviceUDID/);
+  assert.match(workflow, /simctl install "\$IOS_SIMULATOR_UDID" "\$IOS_PREBUILT_WDA_PATH"/);
+  assert.match(workflow, /simctl get_app_container/);
+  assert.match(workflow, /IOS_WDA_PREINSTALLED=true/);
+  assert.match(workflow, /IOS_PREINSTALLED_WDA_BUNDLE_ID=com\.facebook\.WebDriverAgentRunner/);
+  assert.match(workflow, /wda-preinstall-duration-ms/);
+  assert.match(workflow, /FAILURE_CATEGORY/);
+  assert.match(workflow, /--failure-kind/);
+  assert.match(workflow, /CAPTURE_OUTCOME=failure/);
   assert.match(workflow, /"simulator-boot"/);
   assert.match(workflow, /"appium-bridge-install"/);
+  assert.match(workflow, /"wda-preinstall"/);
 });
 
 test("iOS capture records screen, PWA, and comparison phase durations", async () => {
@@ -160,4 +170,8 @@ test("iOS capture records screen, PWA, and comparison phase durations", async ()
   assert.doesNotMatch(source, /startCapturePhase\("session-setup"\)/);
   assert.match(source, /captureReport\.slowestPhase = identifySlowestCapturePhase\(\)/);
   assert.match(source, /runId: process\.env\.GITHUB_RUN_ID/);
+  assert.match(source, /classifyIosSafariFailure\(error, \{ phase: activeCapturePhase \}\)/);
+  assert.match(source, /wdaPreinstalled \? \{/);
+  assert.match(source, /"appium:updatedWDABundleId": preinstalledWdaBundleId/);
+  assert.doesNotMatch(source, /simulatorStartupRetries/);
 });

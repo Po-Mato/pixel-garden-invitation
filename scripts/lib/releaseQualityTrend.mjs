@@ -6,6 +6,66 @@ const metricPolicies = Object.freeze([
 ]);
 
 export const repeatedWatchStructuralReleaseThreshold = 3;
+export const devicePwaTransportTrendPolicy = Object.freeze({
+  observedWindow: 10,
+  requiredSamplesPerPlatform: 3,
+  maximumP95LatencyMs: 2_000
+});
+
+function percentile(values, ratio) {
+  if (values.length === 0) return 0;
+  const ordered = [...values].sort((left, right) => left - right);
+  return ordered[Math.max(0, Math.ceil(ordered.length * ratio) - 1)];
+}
+
+export function buildDevicePwaTransportTrend(snapshots = []) {
+  const platforms = Object.fromEntries(["android", "ios"].map((platform) => {
+    const samples = snapshots
+      .filter(({ sha }, index, values) => sha && values.findLastIndex((candidate) => candidate.sha === sha) === index)
+      .map((snapshot) => ({
+        sha: snapshot.sha,
+        generatedAt: snapshot.generatedAt,
+        blocked: snapshot.categories?.[platform]?.metrics?.transportBlocked,
+        latencyMs: snapshot.categories?.[platform]?.metrics?.transportBlockLatencyMs,
+        errorKind: snapshot.categories?.[platform]?.metrics?.transportErrorKind
+      }))
+      .filter(({ blocked, latencyMs, errorKind }) => (
+        typeof blocked === "boolean" && Number.isFinite(latencyMs) && typeof errorKind === "string"
+      ))
+      .slice(-devicePwaTransportTrendPolicy.observedWindow);
+    const blockedSamples = samples.filter(({ blocked }) => blocked).length;
+    const p95LatencyMs = percentile(samples.map(({ latencyMs }) => latencyMs), 0.95);
+    const errorKinds = Object.fromEntries([...new Set(samples.map(({ errorKind }) => errorKind))]
+      .sort()
+      .map((kind) => [kind, samples.filter(({ errorKind }) => errorKind === kind).length]));
+    const issues = [];
+    if (samples.length >= devicePwaTransportTrendPolicy.requiredSamplesPerPlatform) {
+      if (blockedSamples !== samples.length) issues.push(`차단 ${blockedSamples}/${samples.length}`);
+      if (p95LatencyMs > devicePwaTransportTrendPolicy.maximumP95LatencyMs) {
+        issues.push(`p95 ${Math.round(p95LatencyMs)}ms/${devicePwaTransportTrendPolicy.maximumP95LatencyMs}ms`);
+      }
+    }
+    return [platform, {
+      status: samples.length < devicePwaTransportTrendPolicy.requiredSamplesPerPlatform
+        ? "warming" : issues.length > 0 ? "watch" : "passed",
+      sampleCount: samples.length,
+      blockedSamples,
+      blockRate: samples.length === 0 ? 0 : blockedSamples / samples.length,
+      p95LatencyMs,
+      errorKinds,
+      issues,
+      samples
+    }];
+  }));
+  const values = Object.values(platforms);
+  return {
+    policy: devicePwaTransportTrendPolicy,
+    status: values.some(({ status }) => status === "watch")
+      ? "watch" : values.some(({ status }) => status === "warming") ? "warming" : "passed",
+    platforms,
+    issues: Object.entries(platforms).flatMap(([platform, value]) => value.issues.map((issue) => `${platform}: ${issue}`))
+  };
+}
 
 function watchStructuralKey(detail) {
   return `${String(detail.source ?? "unknown")}::${String(detail.state ?? "unknown")}`;
@@ -115,17 +175,21 @@ export function buildReleaseQualityTrend(summary, history = { version: 1, snapsh
   const watchStructural = repeatedWatchStructuralTrend(summary, previousSnapshots);
   const withoutCurrent = previousSnapshots.filter(({ sha }) => !current.sha || sha !== current.sha);
   const snapshots = [...withoutCurrent, current].slice(-limit);
+  const devicePwaTransport = buildDevicePwaTransportTrend(snapshots);
   return {
     history: { version: 1, snapshots },
     trend: {
       status: previous === null
         ? "warming"
-        : regressions.length > 0 || watchStructural.status === "review-required" ? "watch" : "stable",
+        : regressions.length > 0
+          || watchStructural.status === "review-required"
+          || devicePwaTransport.status === "watch" ? "watch" : "stable",
       previousSha: previous?.sha ?? null,
       sampleCount: snapshots.length,
       comparisons,
       regressions,
-      watchStructural
+      watchStructural,
+      devicePwaTransport
     }
   };
 }

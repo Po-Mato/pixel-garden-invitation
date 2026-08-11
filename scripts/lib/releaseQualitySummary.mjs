@@ -55,6 +55,7 @@ function offlineIssues(report, label) {
   if (snapshot.cachedPaths !== snapshot.expectedPaths) {
     issues.push(`${label}: 오프라인 캐시 ${snapshot.cachedPaths}/${snapshot.expectedPaths}`);
   }
+  if (snapshot.transportProbe?.transportBlocked !== true) issues.push(`${label}: 오프라인 전송 차단 실패`);
   for (const issue of snapshot.criticalAssetFailures ?? []) issues.push(`${label}: ${issue}`);
   for (const issue of snapshot.pageErrors ?? []) issues.push(`${label}: ${issue}`);
   return issues;
@@ -114,7 +115,10 @@ export function buildReleaseQualitySummary(evidence = {}, metadata = {}) {
   const android = category("android", ["android"], {
     android: evidence.android ? evidence.android.comparisons?.length ?? 0 : null,
     cachedPaths: evidence.android?.pwaOffline?.cachedPaths ?? null,
-    expectedPaths: evidence.android?.pwaOffline?.expectedPaths ?? null
+    expectedPaths: evidence.android?.pwaOffline?.expectedPaths ?? null,
+    transportBlocked: evidence.android?.pwaOffline?.transportProbe?.transportBlocked ?? null,
+    transportBlockLatencyMs: evidence.android?.pwaOffline?.transportProbe?.durationMs ?? null,
+    transportErrorKind: evidence.android?.pwaOffline?.transportProbe?.browserErrorKind ?? null
   }, [
     ...nestedIssues(evidence.android),
     ...comparisonIssues(evidence.android, "Android"),
@@ -125,6 +129,9 @@ export function buildReleaseQualitySummary(evidence = {}, metadata = {}) {
     ios: evidence.ios ? evidence.ios.comparisons?.length ?? 0 : null,
     cachedPaths: evidence.ios?.pwaOffline?.cachedPaths ?? null,
     expectedPaths: evidence.ios?.pwaOffline?.expectedPaths ?? null,
+    transportBlocked: evidence.ios?.pwaOffline?.transportProbe?.transportBlocked ?? null,
+    transportBlockLatencyMs: evidence.ios?.pwaOffline?.transportProbe?.durationMs ?? null,
+    transportErrorKind: evidence.ios?.pwaOffline?.transportProbe?.browserErrorKind ?? null,
     p95FrameMs: evidence.ios?.landscape?.frameTimings?.p95FrameMs ?? null,
     expandedPlayerCenterErrorPx: evidence.ios?.landscape?.expanded?.playerCenter?.errorPx ?? null,
     collapsedPlayerCenterErrorPx: evidence.ios?.landscape?.collapsed?.playerCenter?.errorPx ?? null,
@@ -248,6 +255,11 @@ export function formatReleaseQualitySummaryMarkdown(summary) {
       `- 반복 시각 변동: **${summary.trend.watchStructural?.status ?? "clear"}**`,
       ...(summary.trend.watchStructural?.promoted ?? []).map(({ source, state, consecutiveReleases }) => (
         `- 검토 승격: ${source}/${state} · ${consecutiveReleases}개 릴리스 연속`
+      )),
+      `- 기기 PWA 전송: **${summary.trend.devicePwaTransport?.status ?? "warming"}**`,
+      ...Object.entries(summary.trend.devicePwaTransport?.platforms ?? {}).map(([platform, value]) => (
+        `- ${platform}: 차단 ${value.blockedSamples}/${value.sampleCount} · p95 ${Math.round(value.p95LatencyMs)}ms`
+        + ` · 오류 ${Object.entries(value.errorKinds).map(([kind, count]) => `${kind} ${count}`).join(", ") || "없음"}`
       ))
     );
   }

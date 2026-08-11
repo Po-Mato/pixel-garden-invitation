@@ -14,6 +14,7 @@ import { iosSafariText200AuditCss } from "./lib/mobileHudBrowserAudit.mjs";
 import { assessFrameTimingHeadroom, summarizeFrameTimings } from "./lib/frameTimingMetrics.mjs";
 import { runDevicePwaOfflineAudit } from "./lib/devicePwaOfflineAudit.mjs";
 import { parsePwaPrecachePaths } from "./lib/gameResourceBudget.mjs";
+import { classifyIosSafariFailure } from "./lib/iosSafariFailureTaxonomy.mjs";
 import sharp from "sharp";
 
 const rootDir = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -37,6 +38,8 @@ const deviceUdid = process.env.IOS_DEVICE_UDID ?? process.env.IOS_SIMULATOR_UDID
 const deviceName = process.env.IOS_DEVICE_NAME ?? iosSafariVisualProfile.deviceName;
 const platformVersion = process.env.IOS_PLATFORM_VERSION ?? "18.5";
 const prebuiltWdaPath = process.env.IOS_PREBUILT_WDA_PATH;
+const wdaPreinstalled = process.env.IOS_WDA_PREINSTALLED === "true";
+const preinstalledWdaBundleId = process.env.IOS_PREINSTALLED_WDA_BUNDLE_ID;
 await mkdir(outputDir, { recursive: true });
 
 async function webdriver(method, endpoint, body) {
@@ -457,6 +460,7 @@ const captureReport = {
   landscape: {},
   phaseTimings: {},
   slowestPhase: null,
+  failure: null,
   comparisons: []
 };
 
@@ -736,10 +740,13 @@ try {
     "appium:useNewWDA": false,
     ...(deviceKind === "simulator" ? {
       "appium:simulatorStartupTimeout": 600000,
-      "appium:simulatorStartupRetries": 2,
       ...(prebuiltWdaPath ? {
         "appium:usePreinstalledWDA": true,
-        "appium:prebuiltWDAPath": prebuiltWdaPath
+        ...(wdaPreinstalled ? {
+          "appium:updatedWDABundleId": preinstalledWdaBundleId ?? "com.facebook.WebDriverAgentRunner"
+        } : {
+          "appium:prebuiltWDAPath": prebuiltWdaPath
+        })
       } : {})
     } : {}),
     ...(process.env.IOS_XCODE_ORG_ID ? { "appium:xcodeOrgId": process.env.IOS_XCODE_ORG_ID } : {}),
@@ -987,6 +994,9 @@ try {
     }
   }
   captureOutcome = "completed";
+} catch (error) {
+  captureReport.failure = classifyIosSafariFailure(error, { phase: activeCapturePhase });
+  throw error;
 } finally {
   finishCapturePhase(captureOutcome);
   captureReport.slowestPhase = identifySlowestCapturePhase();

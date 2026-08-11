@@ -134,6 +134,23 @@ test("iOS Safari hardened gate rejects clustered failures", () => {
   assert.ok(trend.acceptance.issues.some((issue) => issue.startsWith("연속 실패 2회")));
 });
 
+test("iOS Safari trend separates product, automation, and infrastructure failures", () => {
+  const runs = Array.from({ length: 10 }, (_, index) => ({
+    ...sample(index + 1, index < 3 ? "failure" : "success", currentPolicyRevision),
+    failureCategory: index === 0 ? "product" : index === 1 ? "automation" : index === 2 ? "infrastructure" : null,
+    failureKind: index === 0 ? "product-visual-regression" : index === 1 ? "automation-wda" : index === 2 ? "infrastructure-simulator" : null
+  }));
+  const trend = buildIosSafariStabilityTrend(runs);
+  assert.deepEqual(trend.acceptance.failureCategories, {
+    product: 1,
+    automation: 1,
+    infrastructure: 1,
+    unknown: 0
+  });
+  assert.equal(trend.acceptance.failureKinds["automation-wda"], 1);
+  assert.match(formatIosSafariStabilityMarkdown(trend), /실패 분류 제품 1\/자동화 1\/인프라 1/);
+});
+
 test("iOS Safari hardened gate reports slow setup and capture phases", () => {
   const runs = Array.from({ length: 10 }, (_, index) => ({
     ...sample(index + 1, "success", currentPolicyRevision, 1_100_000),

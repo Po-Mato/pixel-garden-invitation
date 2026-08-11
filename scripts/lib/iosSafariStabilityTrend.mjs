@@ -56,6 +56,9 @@ function normalizedSample(sample = {}) {
     compositorFaultRecovered: sample.compositorFaultRecovered === true || sample.compositorFaultRecovered === "true",
     compositorRecoveryStrategy: ["activate-refresh", "recreate-session"].includes(sample.compositorRecoveryStrategy)
       ? sample.compositorRecoveryStrategy : null,
+    failureCategory: ["product", "automation", "infrastructure", "unknown"].includes(sample.failureCategory)
+      ? sample.failureCategory : null,
+    failureKind: sample.failureKind ? String(sample.failureKind) : null,
     wdaMode: sample.wdaMode === "preinstalled" ? "preinstalled" : "source-build",
     generatedAt: sample.generatedAt || new Date().toISOString(),
     policyRevision: Number(sample.policyRevision) || 0,
@@ -114,6 +117,14 @@ function summarize(samples) {
     .filter((value) => value > 0);
   const recoverySamples = samples.filter(({ compositorRecoveryCount }) => compositorRecoveryCount > 0);
   const faultInjectionSamples = samples.filter(({ compositorFaultInjected }) => compositorFaultInjected);
+  const failures = samples.filter(({ outcome }) => outcome === "failure");
+  const failureCategories = Object.fromEntries(["product", "automation", "infrastructure", "unknown"].map((category) => [
+    category,
+    failures.filter(({ failureCategory }) => (failureCategory ?? "unknown") === category).length
+  ]));
+  const failureKinds = Object.fromEntries([...new Set(failures.map(({ failureKind }) => failureKind ?? "unknown"))]
+    .sort()
+    .map((kind) => [kind, failures.filter(({ failureKind }) => (failureKind ?? "unknown") === kind).length]));
   const recoveryStrategies = Object.fromEntries(iosSafariStabilityPolicy.requiredFaultRecoveryStrategies.map((strategy) => {
     const strategySamples = faultInjectionSamples.filter(({ compositorRecoveryStrategy }) => compositorRecoveryStrategy === strategy);
     return [strategy, {
@@ -139,6 +150,8 @@ function summarize(samples) {
     sampleCount: samples.length,
     successes,
     failures: samples.length - successes,
+    failureCategories,
+    failureKinds,
     successRate,
     p95DurationMs: percentile(samples.map(({ durationMs }) => durationMs), 0.95),
     p95QueueDurationMs: percentile(queueDurations, 0.95),
@@ -265,12 +278,16 @@ export function formatIosSafariStabilityMarkdown(trend) {
     + ` · 주입 복구 ${trend.acceptance.successfulFaultRecoveries}/${trend.acceptance.faultInjectionSamples}`
     + ` · activate ${trend.acceptance.recoveryStrategies["activate-refresh"].successes}/${trend.acceptance.recoveryStrategies["activate-refresh"].samples}`
     + ` · recreate ${trend.acceptance.recoveryStrategies["recreate-session"].successes}/${trend.acceptance.recoveryStrategies["recreate-session"].samples}`;
+  const failures = ` · 실패 분류 제품 ${trend.acceptance.failureCategories.product}`
+    + `/자동화 ${trend.acceptance.failureCategories.automation}`
+    + `/인프라 ${trend.acceptance.failureCategories.infrastructure}`
+    + `/미분류 ${trend.acceptance.failureCategories.unknown}`;
   return [
     "## iOS Safari CI 안정성 추세",
     "",
     `- 최근 완료 실행 10회: **${trend.observed.status}** · ${format(trend.observed)}`
       + `${trend.excludedCancelledRuns > 0 ? ` · 취소 제외 ${trend.excludedCancelledRuns}회` : ""}`,
-    `- 현행 측정 정책 적용 후: **${trend.acceptance.status}** · ${format(trend.acceptance)}${phase}${compositor}`,
+    `- 현행 측정 정책 적용 후: **${trend.acceptance.status}** · ${format(trend.acceptance)}${phase}${compositor}${failures}`,
     "",
     ...[...trend.observed.issues, ...trend.acceptance.issues].map((issue) => `- ${issue}`),
     ""

@@ -2,6 +2,15 @@ import { auditPwaCleanInstallCanary } from "./pwaCleanInstallCanary.mjs";
 
 export const devicePwaTransportProbeErrorKey = "errorMessage";
 
+export function normalizeDevicePwaTransportError(error) {
+  if (error === null || error === undefined || String(error).trim() === "") return "none";
+  const message = String(error);
+  if (/failed to fetch/i.test(message)) return "failed-to-fetch";
+  if (/load failed/i.test(message)) return "load-failed";
+  if (/network|internet connection|offline/i.test(message)) return "network-error";
+  return "unknown";
+}
+
 export function auditDevicePwaOffline(snapshot) {
   const issues = auditPwaCleanInstallCanary(snapshot);
   if (!snapshot.cleanInstallReady) issues.push("기존 서비스 워커·캐시 초기화 실패");
@@ -170,7 +179,8 @@ export async function runDevicePwaOfflineAudit({
   await waitForDocument("document.querySelector('.entry-screen')", `${platform} 오프라인 진입 화면`, 60_000);
   const navigatorOnlineAfterReload = await evaluate(`return navigator.onLine;`);
   await evaluate(`
-    window.__devicePwaTransportProbe = { complete: false };
+    window.__devicePwaTransportProbe = { complete: false, startedAt: performance.now() };
+    const transportStartedAt = window.__devicePwaTransportProbe.startedAt;
     const probeUrl = new URL("./api/__device_pwa_transport_probe__?nonce=" + Date.now(), location.href).href;
     fetch(probeUrl, { cache: "no-store" }).then((response) => {
       window.__devicePwaTransportProbe = {
@@ -178,6 +188,7 @@ export async function runDevicePwaOfflineAudit({
         url: probeUrl,
         resolved: true,
         status: response.status,
+        durationMs: Math.max(0, performance.now() - transportStartedAt),
         ${JSON.stringify(devicePwaTransportProbeErrorKey)}: null
       };
     }).catch((error) => {
@@ -186,6 +197,7 @@ export async function runDevicePwaOfflineAudit({
         url: probeUrl,
         resolved: false,
         status: null,
+        durationMs: Math.max(0, performance.now() - transportStartedAt),
         ${JSON.stringify(devicePwaTransportProbeErrorKey)}: error instanceof Error ? error.message : String(error)
       };
     });
@@ -199,6 +211,8 @@ export async function runDevicePwaOfflineAudit({
     browserFetchResolved: browserTransportProbe.resolved,
     browserStatus: browserTransportProbe.status,
     browserError: browserTransportProbe[devicePwaTransportProbeErrorKey],
+    browserErrorKind: normalizeDevicePwaTransportError(browserTransportProbe[devicePwaTransportProbeErrorKey]),
+    durationMs: Math.max(0, Number(browserTransportProbe.durationMs) || 0),
     transportBlocked: previewHostUnavailable && browserTransportProbe.resolved === false
   };
   const offlineEventDispatched = await evaluate(`

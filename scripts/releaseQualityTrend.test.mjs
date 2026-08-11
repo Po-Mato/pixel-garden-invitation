@@ -1,6 +1,11 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { buildReleaseQualityTrend, seedReleaseQualityHistory } from "./lib/releaseQualityTrend.mjs";
+import {
+  buildDevicePwaTransportTrend,
+  buildReleaseQualityTrend,
+  devicePwaTransportTrendPolicy,
+  seedReleaseQualityHistory
+} from "./lib/releaseQualityTrend.mjs";
 
 function summary(sha, { lcp = 1200, frame = 20, map = 0, structural = 0, watchKeys = [] } = {}) {
   return {
@@ -85,4 +90,22 @@ test("release quality history seeds a previous artifact and replaces duplicate S
 
   assert.deepEqual(history.snapshots.map(({ sha }) => sha), ["a", "b"]);
   assert.equal(history.snapshots[0].categories.pwa.metrics.largestContentfulPaintMs, 1200);
+});
+
+test("device PWA transport trend keeps engine-specific errors and enforces p95 latency", () => {
+  const snapshots = Array.from({ length: 3 }, (_, index) => ({
+    sha: `sha-${index}`,
+    generatedAt: `2026-08-${String(index + 1).padStart(2, "0")}T00:00:00.000Z`,
+    categories: {
+      android: { metrics: { transportBlocked: true, transportBlockLatencyMs: 40 + index, transportErrorKind: "failed-to-fetch" } },
+      ios: { metrics: { transportBlocked: true, transportBlockLatencyMs: index === 2 ? 2_001 : 55, transportErrorKind: "load-failed" } }
+    }
+  }));
+  const trend = buildDevicePwaTransportTrend(snapshots);
+  assert.equal(devicePwaTransportTrendPolicy.observedWindow, 10);
+  assert.equal(trend.platforms.android.status, "passed");
+  assert.equal(trend.platforms.android.errorKinds["failed-to-fetch"], 3);
+  assert.equal(trend.platforms.ios.status, "watch");
+  assert.equal(trend.platforms.ios.p95LatencyMs, 2_001);
+  assert.equal(trend.status, "watch");
 });

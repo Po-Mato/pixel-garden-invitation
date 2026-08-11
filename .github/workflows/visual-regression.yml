@@ -98,6 +98,9 @@ jobs:
     env:
       MAP_EVIDENCE_ONLY: ${{ github.event_name == 'workflow_dispatch' && inputs.scope == 'map-evidence' }}
     steps:
+      - name: Mark targeted map evidence start
+        if: env.MAP_EVIDENCE_ONLY == 'true'
+        run: echo "MAP_EVIDENCE_STARTED_AT_MS=$(node -p 'Date.now()')" >> "$GITHUB_ENV"
       - uses: actions/checkout@v6
       - name: Restore shared quality dependencies
         id: quality-dependencies
@@ -448,6 +451,17 @@ jobs:
           if-no-files-found: ignore
           compression-level: 9
           retention-days: 7
+      - name: Enforce the targeted map evidence 240 second budget
+        if: always() && env.MAP_EVIDENCE_ONLY == 'true'
+        run: node scripts/check-map-evidence-duration-budget.mjs --started-at-ms "$MAP_EVIDENCE_STARTED_AT_MS" --budget-ms 240000
+      - name: Upload the targeted map duration budget
+        if: always() && env.MAP_EVIDENCE_ONLY == 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          name: map-evidence-duration-${{ github.run_id }}
+          path: .superpowers/visual-regression/map-evidence-duration.json
+          if-no-files-found: error
+          retention-days: 30
       - name: Comment map foreground diagnostics on the pull request
         if: always() && github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
         uses: actions/github-script@v8

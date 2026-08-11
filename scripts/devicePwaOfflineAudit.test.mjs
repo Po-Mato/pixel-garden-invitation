@@ -3,7 +3,8 @@ import test from "node:test";
 import {
   auditDevicePwaOffline,
   devicePwaTransportProbeErrorKey,
-  describeDevicePwaPrecacheSnapshot
+  describeDevicePwaPrecacheSnapshot,
+  normalizeDevicePwaTransportError
 } from "./lib/devicePwaOfflineAudit.mjs";
 
 const healthy = {
@@ -35,6 +36,14 @@ const healthy = {
 test("device transport probe avoids the reserved WebDriver error field", () => {
   assert.equal(devicePwaTransportProbeErrorKey, "errorMessage");
   assert.notEqual(devicePwaTransportProbeErrorKey, "error");
+});
+
+test("device transport errors are normalized across Chromium and WebKit", () => {
+  assert.equal(normalizeDevicePwaTransportError("Failed to fetch"), "failed-to-fetch");
+  assert.equal(normalizeDevicePwaTransportError("Load failed"), "load-failed");
+  assert.equal(normalizeDevicePwaTransportError("The Internet connection appears to be offline."), "network-error");
+  assert.equal(normalizeDevicePwaTransportError(null), "none");
+  assert.equal(normalizeDevicePwaTransportError("engine-specific failure"), "unknown");
 });
 
 test("device PWA audit accepts a clean installed offline journey", () => {
