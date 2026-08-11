@@ -1,7 +1,7 @@
 {
   "version": 5,
-  "approvedAt": "2026-08-10T10:53:51.342Z",
-  "reason": "번들 한글 UI 웹폰트 적용 후 2회 연속 운영 캡처에서 확인된 안정 타이포그래피",
+  "approvedAt": "2026-08-11T23:47:48.001Z",
+  "reason": "청첩장 지도 안내, 맵 목적지 표시, 갤러리 조작 안내의 의도된 시각 개선 승인",
   "pixelThreshold": 36,
   "maxChangedRatio": 0.015,
   "profileMaxChangedRatioOverrides": {
@@ -9,6 +9,100 @@
   },
   "comparisonMode": "gaussian-structural",
   "blurSigma": 2,
+  "provenance": {
+    "schemaVersion": 1,
+    "subjectKind": "capture-set",
+    "sourceKind": "github-actions",
+    "runId": "31547192548",
+    "runAttempt": 1,
+    "commitSha": "24873b049734a67479a1ca8b80ecf74260c638a9",
+    "runUrl": "https://github.com/Po-Mato/pixel-garden-invitation/actions/runs/31547192548",
+    "checksumAlgorithm": "sha256",
+    "artifactChecksumScope": "sorted-capture-set-manifest",
+    "artifactSha256": "6a6320efb795d01056c268cadb71bdb0d47ef2e797c0fc43976109a0c8e058b5",
+    "files": [
+      {
+        "logicalPath": "galaxy-s23-font-150/directions-xlarge",
+        "size": 93559,
+        "sha256": "5f1c2119757cca926964bb5dbbef92a93d4887e9242bda1dce801c835186ce9b"
+      },
+      {
+        "logicalPath": "galaxy-s23-font-150/directions-xlarge-bottom",
+        "size": 72577,
+        "sha256": "0b070328d5c5f4c3c90865cdd9cb0211b54fcf982084e6f3ab9290b4f2179b5b"
+      },
+      {
+        "logicalPath": "galaxy-s23-font-150/directions-xlarge-middle",
+        "size": 85378,
+        "sha256": "ea6d96bc060bdca4d3296b96ad348ab8742466e0c8720ef5acebb867b992a78d"
+      },
+      {
+        "logicalPath": "galaxy-s23-font-150/game",
+        "size": 460491,
+        "sha256": "dc8af3033089ac12197c15460a8f113f0d376aa210fa54f7de8f62327cb88d85"
+      },
+      {
+        "logicalPath": "iphone-15-dynamic-type/directions-xlarge",
+        "size": 93429,
+        "sha256": "0220aa89034a67d1ca75ba20ad57adf296d71f8738c5071b70e9cb314804bc6c"
+      },
+      {
+        "logicalPath": "iphone-15-dynamic-type/directions-xlarge-bottom",
+        "size": 82208,
+        "sha256": "a79b7d617f936466d84d16825078694afe08d933edaa164acfb2a08246b2efa3"
+      },
+      {
+        "logicalPath": "iphone-15-dynamic-type/directions-xlarge-middle",
+        "size": 87683,
+        "sha256": "498e7df74e1929032973596788365a207e0c04aacbfcbddef48a6285848ab71b"
+      },
+      {
+        "logicalPath": "iphone-15-dynamic-type/game",
+        "size": 540345,
+        "sha256": "7136aabbb4606275fb94a8bc361d3d8d3b3cf74bf8d0faf972e3e4da87175b80"
+      },
+      {
+        "logicalPath": "iphone-15-webkit-dynamic-type/directions-xlarge",
+        "size": 105331,
+        "sha256": "890ce5b915c9d357a0458101cc4dbe7d2eaed3adc6ac2614a2aa3867338564bd"
+      },
+      {
+        "logicalPath": "iphone-15-webkit-dynamic-type/directions-xlarge-bottom",
+        "size": 105331,
+        "sha256": "890ce5b915c9d357a0458101cc4dbe7d2eaed3adc6ac2614a2aa3867338564bd"
+      },
+      {
+        "logicalPath": "iphone-15-webkit-dynamic-type/directions-xlarge-middle",
+        "size": 105331,
+        "sha256": "890ce5b915c9d357a0458101cc4dbe7d2eaed3adc6ac2614a2aa3867338564bd"
+      },
+      {
+        "logicalPath": "iphone-15-webkit-dynamic-type/game",
+        "size": 576684,
+        "sha256": "e94e68878bd8e6b2a5345a62f43befa4491a825d9ea67de9b71bf4025e32bf9c"
+      },
+      {
+        "logicalPath": "iphone-15-webkit-text-200/directions-xlarge",
+        "size": 97116,
+        "sha256": "43f1ed885604d7f3972d0b42c20139301d9a26a582fec92c43e52b5293f8f48e"
+      },
+      {
+        "logicalPath": "iphone-15-webkit-text-200/directions-xlarge-bottom",
+        "size": 93353,
+        "sha256": "5dbd3eeb1c33394fe52869997f8057882274e738fa6c3b012f3f501bd4afc57f"
+      },
+      {
+        "logicalPath": "iphone-15-webkit-text-200/directions-xlarge-middle",
+        "size": 93222,
+        "sha256": "36600f09d0abcbfbc36a0c9882e73593f8be1cf646e1d75bc37e46532fd4ac17"
+      },
+      {
+        "logicalPath": "iphone-15-webkit-text-200/game",
+        "size": 577115,
+        "sha256": "b3d5a95e2d01041ddb41c1799002fbce08fa7d29c91fe29f245f883c7034637b"
+      }
+    ]
+  },
   "profiles": [
     {
       "profileId": "galaxy-s23-font-150",
@@ -16,13 +110,13 @@
       "state": "game",
       "width": 360,
       "height": 780,
-      "sha256": "b9796ae8ebd4dd04057b1712c0fab08c8dc761373d0cbfe8a49b7e9323228830",
+      "sha256": "5bca2cb26d835c8fd2e437d66581fb577614f34dde68a6a4f62a851757ae5d08",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "번들 한글 UI 웹폰트 적용 후 2회 연속 운영 캡처에서 확인된 안정 타이포그래피",
+        "approvalReason": "청첩장 지도 안내, 맵 목적지 표시, 갤러리 조작 안내의 의도된 시각 개선 승인",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -36,13 +130,13 @@
       "state": "directions-xlarge",
       "width": 360,
       "height": 780,
-      "sha256": "b19f49d63afc41786defb697930d68cf6ba3765e880e8a54c228c59999ac03e0",
+      "sha256": "0a1ff2d2cc048d84a54381f2286c8ea5cf3340aaffc4991c8f3b6407f8143f58",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "번들 한글 UI 웹폰트 적용 후 2회 연속 운영 캡처에서 확인된 안정 타이포그래피",
+        "approvalReason": "청첩장 지도 안내, 맵 목적지 표시, 갤러리 조작 안내의 의도된 시각 개선 승인",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -56,13 +150,13 @@
       "state": "directions-xlarge-middle",
       "width": 360,
       "height": 780,
-      "sha256": "03f06f2a110bd430a7fe230e9aceacd528e86633c99f6c96e7d65dc696393713",
+      "sha256": "f3898678e2fb6b91801107082f95661afbe22b44898064dc42d61ff1ee9778d8",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "번들 한글 UI 웹폰트 적용 후 2회 연속 운영 캡처에서 확인된 안정 타이포그래피",
+        "approvalReason": "청첩장 지도 안내, 맵 목적지 표시, 갤러리 조작 안내의 의도된 시각 개선 승인",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -76,13 +170,13 @@
       "state": "directions-xlarge-bottom",
       "width": 360,
       "height": 780,
-      "sha256": "7e36356ac3980b45781174539ef5dfa7d249aeef28f4231f37ebec62750e83a6",
+      "sha256": "3860773b6d01ac2b0e11ad97f7a797920bcc894b9e62cb4315f7550ebaa8afa2",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "번들 한글 UI 웹폰트 적용 후 2회 연속 운영 캡처에서 확인된 안정 타이포그래피",
+        "approvalReason": "청첩장 지도 안내, 맵 목적지 표시, 갤러리 조작 안내의 의도된 시각 개선 승인",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -96,13 +190,13 @@
       "state": "game",
       "width": 393,
       "height": 852,
-      "sha256": "c8cef26e61aabe048a7f0bec9bb0bdeb2821cb9c7647f3691d9dfc35180f847b",
+      "sha256": "6a20315027ace493593642f24afab826a37d1036ae5642713fef7ce9ebb39a76",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "번들 한글 UI 웹폰트 적용 후 2회 연속 운영 캡처에서 확인된 안정 타이포그래피",
+        "approvalReason": "청첩장 지도 안내, 맵 목적지 표시, 갤러리 조작 안내의 의도된 시각 개선 승인",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -116,13 +210,13 @@
       "state": "directions-xlarge",
       "width": 393,
       "height": 852,
-      "sha256": "874dd94b188e223aaba549370014890d58b9dc357d68be594d2075f00a01109a",
+      "sha256": "1fcd6b26e2b2262d25f512838df538b76f8a2c0e02417e1f7b481b6be140dd6f",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "번들 한글 UI 웹폰트 적용 후 2회 연속 운영 캡처에서 확인된 안정 타이포그래피",
+        "approvalReason": "청첩장 지도 안내, 맵 목적지 표시, 갤러리 조작 안내의 의도된 시각 개선 승인",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -136,13 +230,13 @@
       "state": "directions-xlarge-middle",
       "width": 393,
       "height": 852,
-      "sha256": "9ccff1994c323295b677ab5033c30c38d22afaa7d4584a2a9fda16ab60fb342c",
+      "sha256": "99bbf901a7a3b2c39d0bb7c1424cdd199c28a0ae88bb7065447be453abc93669",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "번들 한글 UI 웹폰트 적용 후 2회 연속 운영 캡처에서 확인된 안정 타이포그래피",
+        "approvalReason": "청첩장 지도 안내, 맵 목적지 표시, 갤러리 조작 안내의 의도된 시각 개선 승인",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -156,13 +250,13 @@
       "state": "directions-xlarge-bottom",
       "width": 393,
       "height": 852,
-      "sha256": "9ccff1994c323295b677ab5033c30c38d22afaa7d4584a2a9fda16ab60fb342c",
+      "sha256": "867831ce5479b859bc8ec70cee45a1adeea866275e09fcba43ef3406a6e9e5b4",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "번들 한글 UI 웹폰트 적용 후 2회 연속 운영 캡처에서 확인된 안정 타이포그래피",
+        "approvalReason": "청첩장 지도 안내, 맵 목적지 표시, 갤러리 조작 안내의 의도된 시각 개선 승인",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -176,13 +270,13 @@
       "state": "game",
       "width": 393,
       "height": 852,
-      "sha256": "3b3fb4085d04086459d1a7087dfda2f3043ca734eb46e5378fd10a22da49d7d3",
+      "sha256": "1ea33c16b846e38820d97dd9964e7be441400119859337da7e914aa4bb63aed9",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "번들 한글 UI 웹폰트 적용 후 2회 연속 운영 캡처에서 확인된 안정 타이포그래피",
+        "approvalReason": "청첩장 지도 안내, 맵 목적지 표시, 갤러리 조작 안내의 의도된 시각 개선 승인",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -196,13 +290,13 @@
       "state": "directions-xlarge",
       "width": 393,
       "height": 852,
-      "sha256": "98121d589e8e3ae79655612121bac9a1a750cb03f2b22b658718ac202c30acfc",
+      "sha256": "465d50ba7fbe3e723fc831d60cd882298481e3dd460b6e13e72501d5e377c5b0",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "번들 한글 UI 웹폰트 적용 후 2회 연속 운영 캡처에서 확인된 안정 타이포그래피",
+        "approvalReason": "청첩장 지도 안내, 맵 목적지 표시, 갤러리 조작 안내의 의도된 시각 개선 승인",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -216,13 +310,13 @@
       "state": "directions-xlarge-middle",
       "width": 393,
       "height": 852,
-      "sha256": "98121d589e8e3ae79655612121bac9a1a750cb03f2b22b658718ac202c30acfc",
+      "sha256": "465d50ba7fbe3e723fc831d60cd882298481e3dd460b6e13e72501d5e377c5b0",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "번들 한글 UI 웹폰트 적용 후 2회 연속 운영 캡처에서 확인된 안정 타이포그래피",
+        "approvalReason": "청첩장 지도 안내, 맵 목적지 표시, 갤러리 조작 안내의 의도된 시각 개선 승인",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -236,13 +330,13 @@
       "state": "directions-xlarge-bottom",
       "width": 393,
       "height": 852,
-      "sha256": "98121d589e8e3ae79655612121bac9a1a750cb03f2b22b658718ac202c30acfc",
+      "sha256": "465d50ba7fbe3e723fc831d60cd882298481e3dd460b6e13e72501d5e377c5b0",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "번들 한글 UI 웹폰트 적용 후 2회 연속 운영 캡처에서 확인된 안정 타이포그래피",
+        "approvalReason": "청첩장 지도 안내, 맵 목적지 표시, 갤러리 조작 안내의 의도된 시각 개선 승인",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -256,13 +350,13 @@
       "state": "game",
       "width": 393,
       "height": 852,
-      "sha256": "08c413ee2e880bc65e9d3c4106a2360c7e3a154c141b697e40bf7419a1c32e65",
+      "sha256": "525c9d8f4321e528edbf0199208491f894b18d6be94700bedd029431c79d9ce3",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "번들 한글 UI 웹폰트 적용 후 2회 연속 운영 캡처에서 확인된 안정 타이포그래피",
+        "approvalReason": "청첩장 지도 안내, 맵 목적지 표시, 갤러리 조작 안내의 의도된 시각 개선 승인",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -276,13 +370,13 @@
       "state": "directions-xlarge",
       "width": 393,
       "height": 852,
-      "sha256": "3dc751360144cf021994369206ad5d2b199976ad2363d039846a0aed5a7a0e3c",
+      "sha256": "6d07991ddc424542129f2fcc8b026c899a90a579a8a77df522741faf9780cf34",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "번들 한글 UI 웹폰트 적용 후 2회 연속 운영 캡처에서 확인된 안정 타이포그래피",
+        "approvalReason": "청첩장 지도 안내, 맵 목적지 표시, 갤러리 조작 안내의 의도된 시각 개선 승인",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -296,13 +390,13 @@
       "state": "directions-xlarge-middle",
       "width": 393,
       "height": 852,
-      "sha256": "54e7fc4fc8d71ef531da47beecd504dc2f3f3dd4f087be5a3d25567ef9358483",
+      "sha256": "80947369b7957f7a92845d8bc1df6d55067aba2ccce31b710aa189ffbb3af923",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "번들 한글 UI 웹폰트 적용 후 2회 연속 운영 캡처에서 확인된 안정 타이포그래피",
+        "approvalReason": "청첩장 지도 안내, 맵 목적지 표시, 갤러리 조작 안내의 의도된 시각 개선 승인",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -316,13 +410,13 @@
       "state": "directions-xlarge-bottom",
       "width": 393,
       "height": 852,
-      "sha256": "1340b7e8aef4b4eef29c97cc710ab9d277ef170b1b4791bbd7167cce9870a8f1",
+      "sha256": "f06d6ece3f755b749b408794cd849c22465ea32627018970deb1933277b4a379",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "번들 한글 UI 웹폰트 적용 후 2회 연속 운영 캡처에서 확인된 안정 타이포그래피",
+        "approvalReason": "청첩장 지도 안내, 맵 목적지 표시, 갤러리 조작 안내의 의도된 시각 개선 승인",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -330,109 +424,5 @@
         "budgetUsage": 0
       }
     }
-  ],
-  "provenance": {
-    "schemaVersion": 1,
-    "subjectKind": "approved-baseline-set",
-    "sourceKind": "github-actions",
-    "runId": "31462820087",
-    "runAttempt": 1,
-    "commitSha": "5d491379bca25d6ba29090381ca15a2ddbd2dc55",
-    "runUrl": "https://github.com/Po-Mato/pixel-garden-invitation/actions/runs/31462820087",
-    "checksumAlgorithm": "sha256",
-    "artifactChecksumScope": "sorted-approved-baseline-set-manifest",
-    "artifactSha256": "4774379501add4a0df73b9d3ef09fd2e977eb3494028af1d4ff57cfeeedb86c9",
-    "files": [
-      {
-        "logicalPath": "scripts/visual-baselines/mobile-device-galaxy-s23-font-150-directions-xlarge-bottom.webp",
-        "size": 50456,
-        "sha256": "7e36356ac3980b45781174539ef5dfa7d249aeef28f4231f37ebec62750e83a6"
-      },
-      {
-        "logicalPath": "scripts/visual-baselines/mobile-device-galaxy-s23-font-150-directions-xlarge-middle.webp",
-        "size": 54858,
-        "sha256": "03f06f2a110bd430a7fe230e9aceacd528e86633c99f6c96e7d65dc696393713"
-      },
-      {
-        "logicalPath": "scripts/visual-baselines/mobile-device-galaxy-s23-font-150-directions-xlarge.webp",
-        "size": 56850,
-        "sha256": "b19f49d63afc41786defb697930d68cf6ba3765e880e8a54c228c59999ac03e0"
-      },
-      {
-        "logicalPath": "scripts/visual-baselines/mobile-device-galaxy-s23-font-150-game.webp",
-        "size": 321096,
-        "sha256": "b9796ae8ebd4dd04057b1712c0fab08c8dc761373d0cbfe8a49b7e9323228830"
-      },
-      {
-        "logicalPath": "scripts/visual-baselines/mobile-device-iphone-15-dynamic-type-directions-xlarge-bottom.webp",
-        "size": 50264,
-        "sha256": "9ccff1994c323295b677ab5033c30c38d22afaa7d4584a2a9fda16ab60fb342c"
-      },
-      {
-        "logicalPath": "scripts/visual-baselines/mobile-device-iphone-15-dynamic-type-directions-xlarge-middle.webp",
-        "size": 50264,
-        "sha256": "9ccff1994c323295b677ab5033c30c38d22afaa7d4584a2a9fda16ab60fb342c"
-      },
-      {
-        "logicalPath": "scripts/visual-baselines/mobile-device-iphone-15-dynamic-type-directions-xlarge.webp",
-        "size": 50204,
-        "sha256": "874dd94b188e223aaba549370014890d58b9dc357d68be594d2075f00a01109a"
-      },
-      {
-        "logicalPath": "scripts/visual-baselines/mobile-device-iphone-15-dynamic-type-game.webp",
-        "size": 378760,
-        "sha256": "c8cef26e61aabe048a7f0bec9bb0bdeb2821cb9c7647f3691d9dfc35180f847b"
-      },
-      {
-        "logicalPath": "scripts/visual-baselines/mobile-device-iphone-15-webkit-dynamic-type-directions-xlarge-bottom.webp",
-        "size": 56172,
-        "sha256": "98121d589e8e3ae79655612121bac9a1a750cb03f2b22b658718ac202c30acfc"
-      },
-      {
-        "logicalPath": "scripts/visual-baselines/mobile-device-iphone-15-webkit-dynamic-type-directions-xlarge-middle.webp",
-        "size": 56172,
-        "sha256": "98121d589e8e3ae79655612121bac9a1a750cb03f2b22b658718ac202c30acfc"
-      },
-      {
-        "logicalPath": "scripts/visual-baselines/mobile-device-iphone-15-webkit-dynamic-type-directions-xlarge.webp",
-        "size": 56172,
-        "sha256": "98121d589e8e3ae79655612121bac9a1a750cb03f2b22b658718ac202c30acfc"
-      },
-      {
-        "logicalPath": "scripts/visual-baselines/mobile-device-iphone-15-webkit-dynamic-type-game.webp",
-        "size": 362734,
-        "sha256": "3b3fb4085d04086459d1a7087dfda2f3043ca734eb46e5378fd10a22da49d7d3"
-      },
-      {
-        "logicalPath": "scripts/visual-baselines/mobile-device-iphone-15-webkit-text-200-directions-xlarge-bottom.webp",
-        "size": 45490,
-        "sha256": "1340b7e8aef4b4eef29c97cc710ab9d277ef170b1b4791bbd7167cce9870a8f1"
-      },
-      {
-        "logicalPath": "scripts/visual-baselines/mobile-device-iphone-15-webkit-text-200-directions-xlarge-middle.webp",
-        "size": 45874,
-        "sha256": "54e7fc4fc8d71ef531da47beecd504dc2f3f3dd4f087be5a3d25567ef9358483"
-      },
-      {
-        "logicalPath": "scripts/visual-baselines/mobile-device-iphone-15-webkit-text-200-directions-xlarge.webp",
-        "size": 46410,
-        "sha256": "3dc751360144cf021994369206ad5d2b199976ad2363d039846a0aed5a7a0e3c"
-      },
-      {
-        "logicalPath": "scripts/visual-baselines/mobile-device-iphone-15-webkit-text-200-game.webp",
-        "size": 363768,
-        "sha256": "08c413ee2e880bc65e9d3c4106a2360c7e3a154c141b697e40bf7419a1c32e65"
-      }
-    ]
-  },
-  "provenanceApproval": {
-    "kind": "unchanged-baseline-provenance-migration",
-    "approvedAt": "2026-08-11T05:47:45.322Z",
-    "reason": "기존 승인 이미지 무변경 출처 스키마 승격",
-    "previousVersion": 4,
-    "baselinePixelsChanged": false,
-    "baselineCount": 16,
-    "runId": "31462820087",
-    "commitSha": "5d491379bca25d6ba29090381ca15a2ddbd2dc55"
-  }
+  ]
 }

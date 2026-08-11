@@ -1,7 +1,7 @@
 {
   "version": 3,
-  "approvedAt": "2026-08-09T13:23:31.837Z",
-  "reason": "Reviewed compact world labels on Pixel 7 CI captures",
+  "approvedAt": "2026-08-11T23:48:48.553Z",
+  "reason": "청첩장 목적지 카드 중복 제거와 지도 안내 위계 개선 승인",
   "profile": {
     "id": "pixel-7-api-35-chrome",
     "deviceName": "Pixel 7",
@@ -9,14 +9,14 @@
     "requiredDirectionsScroll": 0
   },
   "capture": {
-    "generatedAt": "2026-08-09T13:18:17.703Z",
+    "generatedAt": "2026-08-11T23:41:35.699Z",
     "profile": {
       "id": "pixel-7-api-35-chrome",
       "deviceName": "Pixel 7",
       "runtime": "Android 15 (API 35)",
       "requiredDirectionsScroll": 0
     },
-    "url": "http://10.0.2.2:4179/",
+    "url": "http://127.0.0.1:4179/",
     "automation": "Appium UiAutomator2 WebDriver",
     "emulatorSerial": "emulator-5554",
     "userAgent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36",
@@ -28,14 +28,62 @@
       "width": 412
     },
     "browserVersion": null,
+    "runId": "31547192510",
+    "runAttempt": 1,
+    "sha": "24873b049734a67479a1ca8b80ecf74260c638a9",
+    "runUrl": "https://github.com/Po-Mato/pixel-garden-invitation/actions/runs/31547192510",
+    "retry": {
+      "attempted": false,
+      "reason": null
+    },
+    "networkReadiness": {
+      "initial": {
+        "targetUrl": "http://127.0.0.1:4179/",
+        "outcome": "ready",
+        "attempts": [
+          {
+            "attempt": 1,
+            "outcome": "ready",
+            "durationMs": 5458,
+            "error": null
+          }
+        ]
+      },
+      "seededSession": {
+        "targetUrl": "http://127.0.0.1:4179/",
+        "outcome": "ready",
+        "attempts": [
+          {
+            "attempt": 1,
+            "outcome": "ready",
+            "durationMs": 4348,
+            "error": null
+          }
+        ]
+      }
+    },
     "pwaOffline": {
       "platform": "Android Chrome",
       "cleanInstallReady": true,
+      "precacheAttempts": 1,
+      "precacheFirstFailure": null,
       "previewHostUnavailable": true,
+      "navigatorOnlineAfterReload": true,
+      "offlineEventDispatched": true,
+      "transportProbe": {
+        "previewHostReachableAfterStop": false,
+        "browserUrl": "http://127.0.0.1:4188/api/__device_pwa_transport_probe__?nonce=1786491792313",
+        "browserFetchResolved": false,
+        "browserStatus": null,
+        "browserError": "Failed to fetch",
+        "browserErrorKind": "failed-to-fetch",
+        "durationMs": 32.5,
+        "transportBlocked": true
+      },
       "cachedPaths": 82,
       "controlled": true,
       "expectedPaths": 82,
-      "precacheName": "wedding-garden-precache-ceaf414b1ecd",
+      "precacheName": "wedding-garden-precache-24873b049734",
       "serviceWorkerSupported": true,
       "blockingNoticeVisible": false,
       "brokenImages": [],
@@ -59,15 +107,28 @@
     "comparisons": [
       {
         "state": "game",
-        "changedPixels": 37374,
-        "changedRatio": 0.01572265132010702,
-        "meanPixelDifference": 1.687397563397109,
+        "changedPixels": 36771,
+        "changedRatio": 0.015468978747034177,
+        "meanPixelDifference": 1.2238649940262845,
         "pixelCount": 2377080,
         "passed": false,
         "maxChangedRatio": 0.015,
+        "rawChangedRatio": 0.015723072004307805,
+        "rawMeanPixelDifference": 1.3415366752486244,
         "baselinePath": "/home/runner/work/pixel-garden-invitation/pixel-garden-invitation/scripts/visual-baselines/android-chrome-pixel-7-api-35-chrome-game.webp",
         "currentPath": "/home/runner/work/pixel-garden-invitation/pixel-garden-invitation/.superpowers/visual-regression/android-chrome/android-chrome-pixel-7-api-35-chrome-game-current.png",
-        "diffPath": "/home/runner/work/pixel-garden-invitation/pixel-garden-invitation/.superpowers/visual-regression/android-chrome/android-chrome-pixel-7-api-35-chrome-game-diff.png"
+        "diffPath": "/home/runner/work/pixel-garden-invitation/pixel-garden-invitation/.superpowers/visual-regression/android-chrome/android-chrome-pixel-7-api-35-chrome-game-diff.png",
+        "classification": {
+          "id": "structural-regression",
+          "confidence": "high",
+          "likelyCause": "layout-or-content-change",
+          "review": "required",
+          "changedRatio": 0.015468978747034177,
+          "rawChangedRatio": 0.015723072004307805,
+          "filteredNoiseRatio": 0.0002540932572736281,
+          "filteredNoiseShare": 0.01616053511705675,
+          "budgetUsage": 1.0312652498022785
+        }
       }
     ],
     "player": {
@@ -76,6 +137,30 @@
       "x": 168,
       "y": 405.3333435058594
     }
+  },
+  "provenance": {
+    "schemaVersion": 1,
+    "subjectKind": "capture-set",
+    "sourceKind": "github-actions",
+    "runId": "31547192510",
+    "runAttempt": 1,
+    "commitSha": "24873b049734a67479a1ca8b80ecf74260c638a9",
+    "runUrl": "https://github.com/Po-Mato/pixel-garden-invitation/actions/runs/31547192510",
+    "checksumAlgorithm": "sha256",
+    "artifactChecksumScope": "sorted-capture-set-manifest",
+    "artifactSha256": "82599a21c02287efb94a210ff659b0c28daf25adf5f02795f5df6f7a74422c9c",
+    "files": [
+      {
+        "logicalPath": "pixel-7-api-35-chrome/directions",
+        "size": 401742,
+        "sha256": "583d77a61ad227c240f7eb99d86ce9180f6633fd30b24d6f7a32c792286b5d54"
+      },
+      {
+        "logicalPath": "pixel-7-api-35-chrome/game",
+        "size": 1935915,
+        "sha256": "36f568e4975139a9a1d9fd1048b1c1e7252f32b6eea6a8b69eac6819d06177f5"
+      }
+    ]
   },
   "pixelThreshold": 36,
   "maxChangedRatio": 0.015,
@@ -87,48 +172,38 @@
       "state": "game",
       "width": 1080,
       "height": 2201,
-      "sha256": "e81272801936fb56c156ea853fbb1762f3e219104138012b58156bdbe78afc06"
+      "sha256": "a4d429e4976a65f34596e17d5b1a761bb14bacc01ef3a3bbc8270fb800570412",
+      "classification": {
+        "id": "intentional-baseline-update",
+        "confidence": "high",
+        "likelyCause": "explicit-baseline-approval",
+        "review": "approved",
+        "approvalReason": "청첩장 목적지 카드 중복 제거와 지도 안내 위계 개선 승인",
+        "changedRatio": 0,
+        "rawChangedRatio": null,
+        "filteredNoiseRatio": null,
+        "filteredNoiseShare": 0,
+        "budgetUsage": 0
+      }
     },
     {
       "profileId": "pixel-7-api-35-chrome",
       "state": "directions",
       "width": 1080,
       "height": 2201,
-      "sha256": "083822ba3b28a5099745f7cceb454d8624372a57a18f0216e456a830464d9970"
-    }
-  ],
-  "provenance": {
-    "schemaVersion": 1,
-    "subjectKind": "approved-baseline-set",
-    "sourceKind": "github-actions",
-    "runId": "31462820087",
-    "runAttempt": 1,
-    "commitSha": "5d491379bca25d6ba29090381ca15a2ddbd2dc55",
-    "runUrl": "https://github.com/Po-Mato/pixel-garden-invitation/actions/runs/31462820087",
-    "checksumAlgorithm": "sha256",
-    "artifactChecksumScope": "sorted-approved-baseline-set-manifest",
-    "artifactSha256": "2cf4804b0b3f29a57ae46cc1152602f9ed9f204ed97ec622cdc3007278102a24",
-    "files": [
-      {
-        "logicalPath": "scripts/visual-baselines/android-chrome-pixel-7-api-35-chrome-directions.webp",
-        "size": 226354,
-        "sha256": "083822ba3b28a5099745f7cceb454d8624372a57a18f0216e456a830464d9970"
-      },
-      {
-        "logicalPath": "scripts/visual-baselines/android-chrome-pixel-7-api-35-chrome-game.webp",
-        "size": 1409062,
-        "sha256": "e81272801936fb56c156ea853fbb1762f3e219104138012b58156bdbe78afc06"
+      "sha256": "0cc23c9c1e015c9c7687da416190b44267384c07e81f74a2e7d8cb9413704838",
+      "classification": {
+        "id": "intentional-baseline-update",
+        "confidence": "high",
+        "likelyCause": "explicit-baseline-approval",
+        "review": "approved",
+        "approvalReason": "청첩장 목적지 카드 중복 제거와 지도 안내 위계 개선 승인",
+        "changedRatio": 0,
+        "rawChangedRatio": null,
+        "filteredNoiseRatio": null,
+        "filteredNoiseShare": 0,
+        "budgetUsage": 0
       }
-    ]
-  },
-  "provenanceApproval": {
-    "kind": "unchanged-baseline-provenance-migration",
-    "approvedAt": "2026-08-11T05:47:45.322Z",
-    "reason": "기존 승인 이미지 무변경 출처 스키마 승격",
-    "previousVersion": 1,
-    "baselinePixelsChanged": false,
-    "baselineCount": 2,
-    "runId": "31462820087",
-    "commitSha": "5d491379bca25d6ba29090381ca15a2ddbd2dc55"
-  }
+    }
+  ]
 }
