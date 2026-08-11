@@ -6,11 +6,12 @@ import {
   requiredReleaseWorkflows
 } from "./lib/releaseWorkflowGate.mjs";
 
-const completed = (id, conclusion = "success", runAttempt = 1) => ({
+const completed = (id, conclusion = "success", runAttempt = 1, event = "push") => ({
   id,
   status: "completed",
   conclusion,
   run_attempt: runAttempt,
+  event,
   html_url: `https://example.test/runs/${id}`
 });
 
@@ -33,6 +34,22 @@ test("release summary waits for all four same-commit workflows", () => {
   });
   assert.equal(ready.ready, true);
   assert.equal(ready.workflows.find(({ id }) => id === "android").runId, "5");
+});
+
+test("release summary ignores a newer targeted map dispatch", () => {
+  const ready = evaluateReleaseWorkflowReadiness({
+    pages: [completed(1)],
+    mobile: [
+      completed(2, "success", 1, "push"),
+      completed(9, "success", 1, "workflow_dispatch")
+    ],
+    android: [completed(3)],
+    ios: [completed(4)]
+  });
+
+  assert.equal(ready.ready, true);
+  assert.equal(ready.workflows.find(({ id }) => id === "mobile").runId, "2");
+  assert.equal(ready.workflows.find(({ id }) => id === "mobile").event, "push");
 });
 
 test("release summary deduplicates only a real non-expired summary artifact", () => {
