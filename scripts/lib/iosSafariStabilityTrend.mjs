@@ -10,7 +10,7 @@ export const iosSafariStabilityPolicy = Object.freeze({
   maximumConsecutiveFailures: 1,
   requiredFaultRecoveryStrategies: ["activate-refresh", "recreate-session"],
   retainedRuns: 30,
-  policyRevision: 6,
+  policyRevision: 7,
   capturePhaseSchemaVersion: 2
 });
 

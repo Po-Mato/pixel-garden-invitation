@@ -143,6 +143,9 @@ test("iOS CI pins the stable Node runtime and recovers Simulator URL activation"
   assert.match(workflow, /rsync -a[\s\S]*Frameworks\/XC\*\.framework/);
   assert.match(workflow, /Frameworks\/Testing\.framework/);
   assert.match(workflow, /Frameworks\/libXCTestSwiftSupport\.dylib/);
+  assert.match(workflow, /codesign --force --deep --sign -/);
+  assert.match(workflow, /codesign --verify --deep --strict "\$WDA_INSTALL_PATH"/);
+  assert.match(workflow, /wda-install-signature=ad-hoc-verified/);
   assert.match(workflow, /simctl install "\$IOS_SIMULATOR_UDID" "\$WDA_INSTALL_PATH"/);
   assert.match(workflow, /check-ios-wda-preinstall-budget\.mjs[\s\S]*--budget-ms 40000/);
   assert.match(workflow, /simctl get_app_container/);

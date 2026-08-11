@@ -63,7 +63,7 @@ jobs:
           SEED_DIR="$RUNNER_TEMP/ios-safari-stability-seed"
           HISTORY_PATH=".superpowers/visual-regression/ios-safari-stability/ios-safari-stability-trend-history.json"
           mkdir -p "$SEED_DIR"
-          CURRENT_SAMPLES="$(jq -r '[.samples[] | select(.policyRevision == 6)] | length' "$HISTORY_PATH" 2>/dev/null || printf '0')"
+          CURRENT_SAMPLES="$(jq -r '[.samples[] | select(.policyRevision == 7)] | length' "$HISTORY_PATH" 2>/dev/null || printf '0')"
           LEGACY_DOWNLOADED=0
           while read -r PREVIOUS_RUN_ID; do
             test -n "$PREVIOUS_RUN_ID" || continue
@@ -150,6 +150,10 @@ jobs:
             --exclude='/Frameworks/Testing.framework' \
             --exclude='/Frameworks/libXCTestSwiftSupport.dylib' \
             "$IOS_PREBUILT_WDA_PATH/" "$WDA_INSTALL_PATH/"
+          codesign --force --deep --sign - \
+            --preserve-metadata=identifier,entitlements,flags,runtime \
+            "$WDA_INSTALL_PATH"
+          codesign --verify --deep --strict "$WDA_INSTALL_PATH"
           WDA_SOURCE_BYTES="$(du -sk "$IOS_PREBUILT_WDA_PATH" | awk '{ print $1 * 1024 }')"
           WDA_INSTALL_BYTES="$(du -sk "$WDA_INSTALL_PATH" | awk '{ print $1 * 1024 }')"
           WDA_PREINSTALL_STARTED_AT_MS="$(node -p 'Date.now()')"
@@ -163,6 +167,7 @@ jobs:
           echo "wda-preinstall-duration-ms=$WDA_PREINSTALL_DURATION_MS" >> "$GITHUB_OUTPUT"
           echo "wda-source-bytes=$WDA_SOURCE_BYTES" >> "$GITHUB_OUTPUT"
           echo "wda-install-bytes=$WDA_INSTALL_BYTES" >> "$GITHUB_OUTPUT"
+          echo "wda-install-signature=ad-hoc-verified" >> "$GITHUB_OUTPUT"
           echo "wda-preinstalled=true" >> "$GITHUB_OUTPUT"
           echo "duration-ms=$(node -p 'Math.max(0, Date.now() - Number(process.env.BRIDGE_STARTED_AT_MS))')" >> "$GITHUB_OUTPUT"
           node scripts/check-ios-wda-preinstall-budget.mjs \
