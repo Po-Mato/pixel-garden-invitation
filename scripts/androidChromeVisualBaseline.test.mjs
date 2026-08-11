@@ -5,6 +5,7 @@ import {
   androidChromeVisualProfile,
   androidChromeVisualStates
 } from "./lib/androidChromeVisualBaseline.mjs";
+import { classifyAndroidChromeFailure } from "./lib/androidChromeFailureTaxonomy.mjs";
 import { readFile } from "node:fs/promises";
 
 test("real Android Chrome baseline covers the game and directions scroll", () => {
@@ -31,7 +32,15 @@ test("real Android capture report records run provenance and network readiness a
   assert.match(source, /networkReadiness/);
   assert.match(source, /navigateAndroidChromeWithRetry/);
   assert.match(source, /ANDROID_CAPTURE_RETRY === "renderer-disconnect"/);
-  assert.match(workflow, /Unable to receive message from renderer\|not connected to DevTools/);
-  assert.match(workflow, /ANDROID_CAPTURE_RETRY=renderer-disconnect/);
-  assert.match(workflow, /am force-stop com\.android\.chrome/);
+  assert.match(workflow, /run-android-chrome-capture-with-retry\.mjs/);
+});
+
+test("Android Chrome retries only a renderer automation disconnect", () => {
+  assert.deepEqual(classifyAndroidChromeFailure("disconnected: Unable to receive message from renderer"), {
+    category: "automation-renderer",
+    kind: "renderer-disconnect",
+    retryable: true
+  });
+  assert.equal(classifyAndroidChromeFailure("not connected to DevTools").retryable, true);
+  assert.equal(classifyAndroidChromeFailure("game pixel ratio exceeded").retryable, false);
 });
