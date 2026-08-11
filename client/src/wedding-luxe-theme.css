@@ -355,6 +355,11 @@ body {
   gap: 11px;
 }
 
+.directions-sheet > * {
+  min-width: 0;
+  max-width: 100%;
+}
+
 .directions-sheet__venue,
 .directions-sheet__info,
 .directions-sheet__phone {
@@ -410,12 +415,14 @@ body {
 .directions-sheet__venue > button { flex-shrink: 0; }
 
 .directions-sheet__maps {
+  min-width: 0;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 7px;
 }
 
 .directions-sheet__route-actions {
   display: grid;
+  min-width: 0;
   gap: 9px;
   border: 1px solid rgba(105, 134, 121, 0.3);
   border-radius: 16px;
@@ -456,6 +463,7 @@ body {
 }
 
 .directions-sheet__maps > :is(a, button) {
+  max-width: 100%;
   justify-content: flex-start;
   gap: 8px;
   padding-inline: 12px;
@@ -507,6 +515,7 @@ body {
 
 .directions-sheet__travel-notes {
   display: grid;
+  min-width: 0;
   gap: 7px;
   padding-top: 3px;
 }
@@ -769,6 +778,14 @@ html[data-text-scale="xlarge"] .directions-sheet__route-actions > header {
 }
 
 html[data-text-scale="xlarge"] .directions-sheet__route-actions > header span {
+  white-space: normal;
+}
+
+html[data-text-scale="xlarge"] .directions-sheet__maps > :is(a, button) > span {
+  flex-wrap: wrap;
+}
+
+html[data-text-scale="xlarge"] .directions-sheet__venue > button {
   white-space: normal;
 }
 
