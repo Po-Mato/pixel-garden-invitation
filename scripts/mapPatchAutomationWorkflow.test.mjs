@@ -44,6 +44,14 @@ test("sandbox E2E exercises the real approval label and cleans every temporary r
   assert.match(workflow, /-f source_pr="\$SOURCE_PR" -f evidence_run="\$EVIDENCE_RUN"/);
   assert.match(workflow, /--event workflow_dispatch/);
   assert.match(workflow, /visual-regression\.yml/);
+  assert.match(workflow, /Build commit-matched E2E quality workspace/);
+  assert.match(workflow, /gh workflow run quality-build\.yml --ref "\$E2E_BRANCH"/);
+  assert.match(workflow, /gh run list --workflow quality-build\.yml --commit "\$HEAD_SHA" --event workflow_dispatch/);
+  assert.match(workflow, /test "\$conclusion" = "success"/);
+  assert.ok(
+    workflow.indexOf("Build commit-matched E2E quality workspace")
+      < workflow.indexOf("Wait for successful visual evidence")
+  );
   assert.match(workflow, /client\/src\/game\/worldForegroundPlacements\.json/);
   assert.match(workflow, /if: always\(\)/);
   assert.match(workflow, /gh pr close "\$APPLICATION_PR" --delete-branch/);

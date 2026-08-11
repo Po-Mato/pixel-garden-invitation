@@ -95,8 +95,11 @@ jobs:
             ios-safari-automation-${{ runner.os }}-xcode-16.4-appium-3.6.0-xcuitest-11.4.0-
             ios-safari-automation-${{ runner.os }}-xcode-16.4-appium-3-
       - name: Select pinned Xcode and warm Simulator services
+        id: ios-simulator
         shell: bash
         run: |
+          SIMULATOR_STARTED_AT_MS="$(node -p 'Date.now()')"
+          export SIMULATOR_STARTED_AT_MS
           XCODE_APP="$(find /Applications -maxdepth 1 -type d -name 'Xcode_16.4*.app' | sort | head -n 1)"
           test -n "$XCODE_APP"
           sudo xcode-select --switch "$XCODE_APP/Contents/Developer"
@@ -107,6 +110,7 @@ jobs:
           echo "IOS_SIMULATOR_UDID=$IOS_SIMULATOR_UDID" >> "$GITHUB_ENV"
           xcrun simctl boot "$IOS_SIMULATOR_UDID"
           xcrun simctl bootstatus "$IOS_SIMULATOR_UDID" -b
+          echo "duration-ms=$(node -p 'Math.max(0, Date.now() - Number(process.env.SIMULATOR_STARTED_AT_MS))')" >> "$GITHUB_OUTPUT"
       - name: Install the iOS Safari automation bridge
         id: ios-automation-bridge
         shell: bash
@@ -239,7 +243,12 @@ jobs:
           COMPOSITOR_FAULT_INJECTED="$(jq -r '.nativeCompositor.faultInjection.triggered // false' "$CAPTURE_REPORT" 2>/dev/null || printf 'false')"
           COMPOSITOR_FAULT_RECOVERED="$(jq -r '.nativeCompositor.faultInjection.recovered // false' "$CAPTURE_REPORT" 2>/dev/null || printf 'false')"
           COMPOSITOR_RECOVERY_STRATEGY="$(jq -r '.nativeCompositor.faultInjection.recoveryStrategy // ""' "$CAPTURE_REPORT" 2>/dev/null || printf '')"
-          CAPTURE_PHASE_TIMINGS_JSON="$(jq -c '.phaseTimings // {} | with_entries(.value = (.value.durationMs // 0))' "$CAPTURE_REPORT" 2>/dev/null || printf '{}')"
+          CAPTURE_PHASE_TIMINGS_JSON="$(jq -c \
+            --argjson simulatorBootMs "${{ steps.ios-simulator.outputs.duration-ms || '0' }}" \
+            --argjson bridgeInstallMs "${{ steps.ios-automation-bridge.outputs.duration-ms || '0' }}" \
+            '(.phaseTimings // {} | with_entries(.value = (.value.durationMs // 0)))
+              + {"simulator-boot": $simulatorBootMs, "appium-bridge-install": $bridgeInstallMs}' \
+            "$CAPTURE_REPORT" 2>/dev/null || printf '{}')"
           pnpm visual:ios-safari:stability -- \
             --outcome "${{ steps.capture.outcome }}" \
             --run-id "$GITHUB_RUN_ID" \

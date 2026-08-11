@@ -42,6 +42,8 @@ jobs:
         run: pnpm visual:baseline:approve -- --approve --reason "$APPROVAL_REASON"
       - name: Verify approved baseline
         run: pnpm visual:check
+      - name: Verify approved baseline provenance
+        run: pnpm visual:provenance:verify
       - name: Create review pull request
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -53,6 +53,8 @@ jobs:
         with:
           node-version: 24
           force-cold: ${{ (github.event_name == 'schedule' && github.event.schedule == '23 5 1 * *') || inputs.force_cold_sample == true }}
+      - name: Verify visual baseline provenance
+        run: pnpm visual:provenance:verify
       - name: Build production quality workspace once
         run: |
           echo "QUALITY_PRODUCTION_BUILD_STARTED_AT_MS=$(node -p 'Date.now()')" >> "$GITHUB_ENV"

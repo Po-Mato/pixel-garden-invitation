@@ -19,6 +19,11 @@ function sha256(value) {
   return createHash("sha256").update(value).digest("hex");
 }
 
+export function visualBaselineArtifactSha256(files) {
+  const sortedFiles = [...files].sort((left, right) => left.logicalPath.localeCompare(right.logicalPath));
+  return sha256(JSON.stringify(sortedFiles));
+}
+
 export async function buildVisualBaselineProvenance({ rootDir, files, captureReport = {}, env = process.env }) {
   if (!Array.isArray(files) || files.length === 0) throw new Error("시각 기준선 출처 파일이 필요합니다.");
   const sourceFiles = await Promise.all(files.map(async ({ logicalPath, filePath }) => {
@@ -46,7 +51,7 @@ export async function buildVisualBaselineProvenance({ rootDir, files, captureRep
     runUrl,
     checksumAlgorithm: "sha256",
     artifactChecksumScope: "sorted-capture-set-manifest",
-    artifactSha256: sha256(JSON.stringify(sourceFiles)),
+    artifactSha256: visualBaselineArtifactSha256(sourceFiles),
     files: sourceFiles
   };
 }

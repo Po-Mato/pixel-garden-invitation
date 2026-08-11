@@ -10,7 +10,12 @@ function sample(index, outcome = "success", policyRevision = 0, durationMs = 600
   return {
     runId: String(index), runAttempt: 1, sha: `sha-${index}`, outcome, durationMs,
     queueDurationMs: 12_000, setupDurationMs: 240_000, captureDurationMs: 360_000,
-    capturePhaseDurationsMs: { "session-setup": 120_000, landscape: 180_000, "baseline-comparison": 60_000 },
+    capturePhaseDurationsMs: {
+      "appium-readiness": 5_000,
+      "wda-session": 115_000,
+      landscape: 180_000,
+      "baseline-comparison": 60_000
+    },
     bridgeInstallDurationMs: 4_000, appiumCacheHit: true,
     wdaMode: policyRevision === 3 ? "preinstalled" : "source-build",
     generatedAt: `2026-08-${String(index).padStart(2, "0")}T00:00:00.000Z`, policyRevision

@@ -22,6 +22,14 @@ const ready = {
   offlineGameVisible: true,
   blockingNoticeVisible: false,
   fallbackDocumentVisible: false,
+  navigatorOnlineAfterReload: true,
+  offlineEventDispatched: true,
+  transportProbe: {
+    previewHostReachableAfterStop: false,
+    browserFetchResolved: false,
+    browserNetworkError: "net::ERR_INTERNET_DISCONNECTED",
+    transportBlocked: true
+  },
   criticalAssetFailures: [],
   pageErrors: [],
   readinessTimeline
@@ -35,6 +43,20 @@ test("clean-install canary reports the exact missing readiness phases", () => {
   assert.deepEqual(auditPwaReadinessTimeline(readinessTimeline.slice(0, -2)), [
     "PWA 준비 단계 증거 누락 offline-entry-visible, offline-game-visible"
   ]);
+});
+
+test("clean-install canary rejects a browser signal without blocked transport evidence", () => {
+  assert.deepEqual(auditPwaCleanInstallCanary({
+    ...ready,
+    navigatorOnlineAfterReload: false,
+    offlineEventDispatched: false,
+    transportProbe: {
+      previewHostReachableAfterStop: false,
+      browserFetchResolved: true,
+      browserStatus: 200,
+      transportBlocked: false
+    }
+  }), ["오프라인 실제 전송 차단 실패"]);
 });
 
 test("clean-install canary reports cache and offline fallback regressions", () => {

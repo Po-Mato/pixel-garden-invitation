@@ -46,6 +46,29 @@ jobs:
           pr_number=$(gh pr view "$pr_url" --json number --jq .number)
           echo "url=$pr_url" >> "$GITHUB_OUTPUT"
           echo "number=$pr_number" >> "$GITHUB_OUTPUT"
+      - name: Build commit-matched E2E quality workspace
+        id: quality-build
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HEAD_SHA: ${{ steps.source.outputs.sha }}
+        run: |
+          started_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+          gh workflow run quality-build.yml --ref "$E2E_BRANCH"
+          for attempt in $(seq 1 180); do
+            runs=$(gh run list --workflow quality-build.yml --commit "$HEAD_SHA" --event workflow_dispatch --limit 10 --json databaseId,status,conclusion,url,createdAt 2>/dev/null || printf '[]')
+            run=$(jq -c --arg started "$started_at" '[.[] | select(.createdAt >= $started)] | first // {}' <<< "$runs")
+            status=$(jq -r '.status // "waiting"' <<< "$run")
+            conclusion=$(jq -r '.conclusion // ""' <<< "$run")
+            if test "$status" = "completed"; then
+              test "$conclusion" = "success"
+              echo "run-id=$(jq -r .databaseId <<< "$run")" >> "$GITHUB_OUTPUT"
+              echo "url=$(jq -r .url <<< "$run")" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "Commit-matched quality build timed out" >&2
+          exit 1
       - name: Wait for successful visual evidence
         id: evidence
         env:

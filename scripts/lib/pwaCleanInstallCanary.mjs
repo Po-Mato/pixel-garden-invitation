@@ -16,6 +16,9 @@ export function auditPwaCleanInstallCanary(snapshot) {
   if (!snapshot.offlineGameVisible) issues.push("오프라인 저장 여정 재개 실패");
   if (snapshot.blockingNoticeVisible) issues.push("오프라인 재실행 차단 안내 노출");
   if (snapshot.fallbackDocumentVisible) issues.push("오프라인 비상 문서로 강등");
+  if ("transportProbe" in snapshot && snapshot.transportProbe?.transportBlocked !== true) {
+    issues.push("오프라인 실제 전송 차단 실패");
+  }
   if (snapshot.criticalAssetFailures.length > 0) {
     issues.push(`오프라인 핵심 화면 자산 누락 ${snapshot.criticalAssetFailures.join(" | ")}`);
   }
@@ -194,15 +197,57 @@ export async function runPwaCleanInstallCanary({ rootDir, outputDir, port = 4187
       await context.setOffline(true);
       await recordPhase("offline-enabled");
       await stopServer();
-      await recordPhase("preview-stopped");
+      const previewProbeUrl = new URL(`?transport-probe=${Date.now()}`, url).href;
+      let previewHostProbe;
+      try {
+        const response = await fetch(previewProbeUrl, {
+          cache: "no-store",
+          signal: AbortSignal.timeout(5_000)
+        });
+        previewHostProbe = { reachable: true, status: response.status, error: null };
+      } catch (error) {
+        previewHostProbe = { reachable: false, status: null, error: error.message };
+      }
+      await recordPhase("preview-stopped", "completed", { previewHostProbe });
       await page.reload({ waitUntil: "domcontentloaded", timeout: 30_000 });
       // Chromium can reset navigator.onLine after a service-worker document replacement.
-      // Re-assert the already active offline profile before checking the in-app indicator.
+      // Keep that browser signal separate from proof that transport is actually blocked.
       await context.setOffline(true);
-      await page.evaluate(() => {
-        if (navigator.onLine) dispatchEvent(new Event("offline"));
+      const navigatorOnlineAfterReload = await page.evaluate(() => navigator.onLine);
+      const transportProbeUrl = new URL(`/api/__pwa_transport_probe__?nonce=${Date.now()}`, url).href;
+      const transportFailureStart = requestFailures.length;
+      const browserTransportProbe = await page.evaluate(async (probeUrl) => {
+        try {
+          const response = await fetch(probeUrl, { cache: "no-store" });
+          return { resolved: true, status: response.status, error: null };
+        } catch (error) {
+          return { resolved: false, status: null, error: error instanceof Error ? error.message : String(error) };
+        }
+      }, transportProbeUrl);
+      const browserNetworkError = requestFailures
+        .slice(transportFailureStart)
+        .find(({ url: failedUrl }) => failedUrl === transportProbeUrl)?.errorText ?? null;
+      const transportProbe = {
+        previewUrl: previewProbeUrl,
+        previewHostReachableAfterStop: previewHostProbe.reachable,
+        previewHostError: previewHostProbe.error,
+        browserUrl: transportProbeUrl,
+        browserFetchResolved: browserTransportProbe.resolved,
+        browserStatus: browserTransportProbe.status,
+        browserError: browserTransportProbe.error,
+        browserNetworkError,
+        transportBlocked: !previewHostProbe.reachable && !browserTransportProbe.resolved
+      };
+      const offlineEventDispatched = await page.evaluate(() => {
+        if (!navigator.onLine) return false;
+        dispatchEvent(new Event("offline"));
+        return true;
       });
-      await recordPhase("offline-reload-complete");
+      await recordPhase("offline-reload-complete", "completed", {
+        navigatorOnlineAfterReload,
+        offlineEventDispatched,
+        transportProbe
+      });
       await page.locator(".entry-screen").waitFor({ state: "visible", timeout: 20_000 });
       const offlineEntryVisible = await page.locator(".entry-screen").isVisible();
       if (offlineEntryVisible) await recordPhase("offline-entry-visible");
@@ -236,6 +281,9 @@ export async function runPwaCleanInstallCanary({ rootDir, outputDir, port = 4187
         offlineGameVisible,
         blockingNoticeVisible,
         fallbackDocumentVisible,
+        navigatorOnlineAfterReload,
+        offlineEventDispatched,
+        transportProbe,
         criticalAssetFailures,
         pageErrors,
         requestFailures,

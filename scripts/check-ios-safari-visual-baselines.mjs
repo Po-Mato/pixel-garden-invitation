@@ -715,9 +715,10 @@ async function captureLandscapeInteriorCenterProbe() {
   return metrics;
 }
 
-startCapturePhase("session-setup");
+startCapturePhase("appium-readiness");
 try {
   await waitForAppium();
+  startCapturePhase("wda-session");
   safariCapabilities = {
     platformName: "iOS",
     browserName: "Safari",
@@ -746,6 +747,7 @@ try {
     ...(process.env.IOS_UPDATED_WDA_BUNDLE_ID ? { "appium:updatedWDABundleId": process.env.IOS_UPDATED_WDA_BUNDLE_ID } : {})
   };
   await createSafariSession();
+  startCapturePhase("safari-navigation");
   await sessionCommand("POST", "/url", { url });
   await restoreGameView();
   startCapturePhase("portrait-game");
