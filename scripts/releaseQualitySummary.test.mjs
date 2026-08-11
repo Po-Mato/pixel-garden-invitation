@@ -145,6 +145,9 @@ test("release quality workflow has one central trigger, waits for all commit wor
   assert.doesNotMatch(workflow, /for attempt in \{1\.\.36\}/);
   assert.match(workflow, /gh run download[\s\S]*\|\| true/);
   assert.match(workflow, /gh run download/);
+  assert.match(workflow, /max_by\(\.id\)/);
+  assert.match(workflow, /actions\/artifacts\/\$artifact_id\/zip/);
+  assert.match(workflow, /unzip -qo "\$artifact_archive_dir\/artifact\.zip"/);
   assert.match(workflow, /quality:summary/);
   assert.match(workflow, /release-quality-history/);
   assert.match(workflow, /quality:summary-seed/);
