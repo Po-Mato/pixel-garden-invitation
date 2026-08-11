@@ -158,9 +158,11 @@ describe("entry screen layout", () => {
 
   it("stacks directions headings before controls at 200 percent text", () => {
     expect(weddingLuxeStyles).toMatch(/\.directions-sheet > \*\s*\{[^}]*min-width:\s*0;[^}]*max-width:\s*100%;/s);
-    expect(weddingLuxeStyles).toMatch(/html\[data-text-scale="xlarge"\] \.directions-sheet__route-actions > header\s*\{[^}]*display:\s*grid;/s);
-    expect(weddingLuxeStyles).toMatch(/html\[data-text-scale="xlarge"\] \.directions-sheet__route-actions > header span\s*\{[^}]*white-space:\s*normal;/s);
-    expect(weddingLuxeStyles).toMatch(/html\[data-text-scale="xlarge"\] \.directions-sheet__maps > :is\(a, button\) > span\s*\{[^}]*flex-wrap:\s*wrap;/s);
+    expect(weddingLuxeStyles).toContain('html[data-text-scale="ios-200"]');
+    expect(weddingLuxeStyles).toContain("html[data-typography-audit]");
+    expect(weddingLuxeStyles).toMatch(/\.directions-sheet__route-actions > header\s*\{[^}]*display:\s*grid;/s);
+    expect(weddingLuxeStyles).toMatch(/\.directions-sheet__route-actions > header span\s*\{[^}]*white-space:\s*normal;/s);
+    expect(weddingLuxeStyles).toMatch(/\.directions-sheet__maps > :is\(a, button\) > span\s*\{[^}]*flex-wrap:\s*wrap;/s);
   });
 });
 

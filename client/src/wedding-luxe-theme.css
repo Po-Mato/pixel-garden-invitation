@@ -768,24 +768,24 @@ html[data-text-scale="xlarge"] .directions-sheet__maps {
   grid-template-columns: minmax(0, 1fr);
 }
 
-html[data-text-scale="xlarge"] .directions-sheet__route-actions {
+:is(html[data-text-scale="xlarge"], html[data-text-scale="ios-200"], html[data-typography-audit]) .directions-sheet__route-actions {
   padding: 10px;
 }
 
-html[data-text-scale="xlarge"] .directions-sheet__route-actions > header {
+:is(html[data-text-scale="xlarge"], html[data-text-scale="ios-200"], html[data-typography-audit]) .directions-sheet__route-actions > header {
   display: grid;
   gap: 2px;
 }
 
-html[data-text-scale="xlarge"] .directions-sheet__route-actions > header span {
+:is(html[data-text-scale="xlarge"], html[data-text-scale="ios-200"], html[data-typography-audit]) .directions-sheet__route-actions > header span {
   white-space: normal;
 }
 
-html[data-text-scale="xlarge"] .directions-sheet__maps > :is(a, button) > span {
+:is(html[data-text-scale="xlarge"], html[data-text-scale="ios-200"], html[data-typography-audit]) .directions-sheet__maps > :is(a, button) > span {
   flex-wrap: wrap;
 }
 
-html[data-text-scale="xlarge"] .directions-sheet__venue > button {
+:is(html[data-text-scale="xlarge"], html[data-text-scale="ios-200"], html[data-typography-audit]) .directions-sheet__venue > button {
   white-space: normal;
 }
 
