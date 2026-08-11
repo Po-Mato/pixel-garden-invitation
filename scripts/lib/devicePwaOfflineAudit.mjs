@@ -1,5 +1,7 @@
 import { auditPwaCleanInstallCanary } from "./pwaCleanInstallCanary.mjs";
 
+export const devicePwaTransportProbeErrorKey = "errorMessage";
+
 export function auditDevicePwaOffline(snapshot) {
   const issues = auditPwaCleanInstallCanary(snapshot);
   if (!snapshot.cleanInstallReady) issues.push("기존 서비스 워커·캐시 초기화 실패");
@@ -176,7 +178,7 @@ export async function runDevicePwaOfflineAudit({
         url: probeUrl,
         resolved: true,
         status: response.status,
-        error: null
+        ${JSON.stringify(devicePwaTransportProbeErrorKey)}: null
       };
     }).catch((error) => {
       window.__devicePwaTransportProbe = {
@@ -184,7 +186,7 @@ export async function runDevicePwaOfflineAudit({
         url: probeUrl,
         resolved: false,
         status: null,
-        error: error instanceof Error ? error.message : String(error)
+        ${JSON.stringify(devicePwaTransportProbeErrorKey)}: error instanceof Error ? error.message : String(error)
       };
     });
     return true;
@@ -196,7 +198,7 @@ export async function runDevicePwaOfflineAudit({
     browserUrl: browserTransportProbe.url,
     browserFetchResolved: browserTransportProbe.resolved,
     browserStatus: browserTransportProbe.status,
-    browserError: browserTransportProbe.error,
+    browserError: browserTransportProbe[devicePwaTransportProbeErrorKey],
     transportBlocked: previewHostUnavailable && browserTransportProbe.resolved === false
   };
   const offlineEventDispatched = await evaluate(`

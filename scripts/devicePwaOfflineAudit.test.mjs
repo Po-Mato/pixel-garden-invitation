@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   auditDevicePwaOffline,
+  devicePwaTransportProbeErrorKey,
   describeDevicePwaPrecacheSnapshot
 } from "./lib/devicePwaOfflineAudit.mjs";
 
@@ -30,6 +31,11 @@ const healthy = {
   brokenImages: [],
   pageErrors: []
 };
+
+test("device transport probe avoids the reserved WebDriver error field", () => {
+  assert.equal(devicePwaTransportProbeErrorKey, "errorMessage");
+  assert.notEqual(devicePwaTransportProbeErrorKey, "error");
+});
 
 test("device PWA audit accepts a clean installed offline journey", () => {
   assert.deepEqual(auditDevicePwaOffline(healthy), []);
