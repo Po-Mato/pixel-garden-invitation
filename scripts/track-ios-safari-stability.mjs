@@ -75,7 +75,9 @@ async function currentGithubRun() {
 
 await mkdir(outputDir, { recursive: true });
 let samples = mergeIosSafariStabilityHistory(await readHistory(), await githubRunSamples());
-const currentOutcome = option("--outcome");
+const requestedOutcome = option("--outcome");
+const currentOutcome = ["success", "failure", "cancelled"].includes(requestedOutcome)
+  ? requestedOutcome : null;
 if (currentOutcome) {
   const currentRun = await currentGithubRun();
   samples = mergeIosSafariStabilityHistory(samples, [{

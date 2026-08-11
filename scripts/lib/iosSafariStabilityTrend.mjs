@@ -8,7 +8,7 @@ export const iosSafariStabilityPolicy = Object.freeze({
   maximumConsecutiveFailures: 1,
   requiredFaultRecoveryStrategies: ["activate-refresh", "recreate-session"],
   retainedRuns: 30,
-  policyRevision: 3,
+  policyRevision: 4,
   capturePhaseSchemaVersion: 2
 });
 
@@ -71,6 +71,12 @@ export function mergeIosSafariStabilityHistory(previousSamples, nextSamples) {
     const existing = byRun.get(identity);
     if (!existing || normalized.policyRevision >= existing.policyRevision) {
       byRun.set(identity, normalized);
+    } else if (normalized.outcome === "cancelled") {
+      byRun.set(identity, {
+        ...existing,
+        outcome: "cancelled",
+        url: normalized.url ?? existing.url
+      });
     }
   }
   return [...byRun.values()]
@@ -200,8 +206,10 @@ function policyIssues(summary, {
 
 export function buildIosSafariStabilityTrend(samples) {
   const ordered = mergeIosSafariStabilityHistory([], samples);
-  const observedSamples = ordered.slice(-iosSafariStabilityPolicy.observedWindow);
-  const hardenedHistory = ordered
+  const completed = ordered.filter(({ outcome }) => outcome !== "cancelled");
+  const excludedCancelledRuns = ordered.length - completed.length;
+  const observedSamples = completed.slice(-iosSafariStabilityPolicy.observedWindow);
+  const hardenedHistory = completed
     .filter(({ policyRevision }) => policyRevision === iosSafariStabilityPolicy.policyRevision);
   const hardenedSamples = hardenedHistory.slice(-iosSafariStabilityPolicy.requiredHardenedRuns);
   const retainedRecoveryStrategies = summarize(hardenedHistory).recoveryStrategies;
@@ -211,13 +219,14 @@ export function buildIosSafariStabilityTrend(samples) {
     : policyIssues(observed);
   const acceptance = summarize(hardenedSamples);
   const acceptanceIssues = acceptance.sampleCount < iosSafariStabilityPolicy.requiredHardenedRuns
-    ? [`Prebuilt WDA 적용 이후 표본 ${acceptance.sampleCount}/${iosSafariStabilityPolicy.requiredHardenedRuns}`]
+    ? [`현행 측정 정책 적용 이후 표본 ${acceptance.sampleCount}/${iosSafariStabilityPolicy.requiredHardenedRuns}`]
     : policyIssues(acceptance, {
       requireRecoveryStrategies: true,
       recoveryStrategies: retainedRecoveryStrategies
     });
   return {
     policy: iosSafariStabilityPolicy,
+    excludedCancelledRuns,
     observed: {
       ...observed,
       status: observed.sampleCount < iosSafariStabilityPolicy.observedWindow
@@ -259,8 +268,9 @@ export function formatIosSafariStabilityMarkdown(trend) {
   return [
     "## iOS Safari CI 안정성 추세",
     "",
-    `- 최근 실행 10회: **${trend.observed.status}** · ${format(trend.observed)}`,
-    `- Prebuilt WDA 적용 후: **${trend.acceptance.status}** · ${format(trend.acceptance)}${phase}${compositor}`,
+    `- 최근 완료 실행 10회: **${trend.observed.status}** · ${format(trend.observed)}`
+      + `${trend.excludedCancelledRuns > 0 ? ` · 취소 제외 ${trend.excludedCancelledRuns}회` : ""}`,
+    `- 현행 측정 정책 적용 후: **${trend.acceptance.status}** · ${format(trend.acceptance)}${phase}${compositor}`,
     "",
     ...[...trend.observed.issues, ...trend.acceptance.issues].map((issue) => `- ${issue}`),
     ""

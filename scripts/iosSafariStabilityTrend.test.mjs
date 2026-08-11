@@ -3,8 +3,11 @@ import test from "node:test";
 import {
   buildIosSafariStabilityTrend,
   formatIosSafariStabilityMarkdown,
+  iosSafariStabilityPolicy,
   mergeIosSafariStabilityHistory
 } from "./lib/iosSafariStabilityTrend.mjs";
+
+const currentPolicyRevision = iosSafariStabilityPolicy.policyRevision;
 
 function sample(index, outcome = "success", policyRevision = 0, durationMs = 600_000) {
   return {
@@ -19,7 +22,7 @@ function sample(index, outcome = "success", policyRevision = 0, durationMs = 600
     },
     capturePhaseSchemaVersion: 2,
     bridgeInstallDurationMs: 4_000, appiumCacheHit: true,
-    wdaMode: policyRevision === 3 ? "preinstalled" : "source-build",
+    wdaMode: policyRevision === currentPolicyRevision ? "preinstalled" : "source-build",
     generatedAt: `2026-08-${String(index).padStart(2, "0")}T00:00:00.000Z`, policyRevision
   };
 }
@@ -36,10 +39,19 @@ test("iOS Safari history replaces rerun attempts by run identity", () => {
 
 test("iOS Safari history keeps hardened timing evidence over API-only duplicates", () => {
   const merged = mergeIosSafariStabilityHistory([
-    sample(1, "success", 3)
+    sample(1, "success", currentPolicyRevision)
   ], [{ ...sample(1, "failure", 0), setupDurationMs: 0, captureDurationMs: 0 }]);
-  assert.equal(merged[0].policyRevision, 3);
+  assert.equal(merged[0].policyRevision, currentPolicyRevision);
   assert.equal(merged[0].outcome, "success");
+  assert.equal(merged[0].setupDurationMs, 240_000);
+});
+
+test("iOS Safari history applies an authoritative cancellation without dropping hardened timings", () => {
+  const merged = mergeIosSafariStabilityHistory([
+    sample(1, "failure", currentPolicyRevision)
+  ], [{ ...sample(1, "cancelled", 0), setupDurationMs: 0, captureDurationMs: 0 }]);
+  assert.equal(merged[0].outcome, "cancelled");
+  assert.equal(merged[0].policyRevision, currentPolicyRevision);
   assert.equal(merged[0].setupDurationMs, 240_000);
 });
 
@@ -47,17 +59,28 @@ test("iOS Safari trend quantifies ten historical runs but warms the hardened gat
   const trend = buildIosSafariStabilityTrend(Array.from({ length: 10 }, (_, index) => (
     sample(index + 1, index < 7 ? "success" : index === 9 ? "cancelled" : "failure")
   )));
-  assert.equal(trend.observed.sampleCount, 10);
-  assert.equal(trend.observed.successRate, 0.7);
-  assert.equal(trend.observed.status, "watch");
+  assert.equal(trend.observed.sampleCount, 9);
+  assert.equal(trend.observed.successRate, 7 / 9);
+  assert.equal(trend.observed.status, "warming");
+  assert.equal(trend.excludedCancelledRuns, 1);
   assert.equal(trend.acceptance.status, "warming");
-  assert.match(formatIosSafariStabilityMarkdown(trend), /7\/10 성공/);
+  assert.match(formatIosSafariStabilityMarkdown(trend), /7\/9 성공/);
+  assert.match(formatIosSafariStabilityMarkdown(trend), /취소 제외 1회/);
+});
+
+test("iOS Safari trend backfills the reliability window past a cancelled run", () => {
+  const trend = buildIosSafariStabilityTrend(Array.from({ length: 11 }, (_, index) => (
+    sample(index + 1, index === 4 ? "failure" : index === 9 ? "cancelled" : "success")
+  )));
+  assert.equal(trend.observed.sampleCount, 10);
+  assert.equal(trend.observed.successRate, 0.9);
+  assert.equal(trend.observed.status, "passed");
 });
 
 test("iOS Safari hardened gate accepts nine of ten bounded runs", () => {
   const trend = buildIosSafariStabilityTrend(Array.from({ length: 10 }, (_, index) => (
     {
-      ...sample(index + 1, index === 4 ? "failure" : "success", 3, 700_000 + index * 1_000),
+      ...sample(index + 1, index === 4 ? "failure" : "success", currentPolicyRevision, 700_000 + index * 1_000),
       compositorFaultInjected: index >= 8,
       compositorFaultRecovered: index >= 8,
       compositorRecoveryCount: index >= 8 ? 1 : 0,
@@ -85,10 +108,10 @@ test("iOS Safari hardened gate accepts nine of ten bounded runs", () => {
 
 test("iOS Safari phase trend excludes the legacy combined session setup", () => {
   const runs = Array.from({ length: 10 }, (_, index) => index === 0 ? {
-    ...sample(index + 1, "success", 3),
+    ...sample(index + 1, "success", currentPolicyRevision),
     capturePhaseSchemaVersion: 1,
     capturePhaseDurationsMs: { "session-setup": 398_402, landscape: 11_000 }
-  } : sample(index + 1, "success", 3));
+  } : sample(index + 1, "success", currentPolicyRevision));
   const trend = buildIosSafariStabilityTrend(runs);
   assert.equal(trend.acceptance.phaseTimingSamples, 9);
   assert.equal("session-setup" in trend.acceptance.p95CapturePhaseDurationsMs, false);
@@ -96,7 +119,7 @@ test("iOS Safari phase trend excludes the legacy combined session setup", () => 
 });
 
 test("iOS Safari phase schema is inferred for the first split timing sample", () => {
-  const run = sample(1, "success", 3);
+  const run = sample(1, "success", currentPolicyRevision);
   delete run.capturePhaseSchemaVersion;
   const trend = buildIosSafariStabilityTrend([run]);
   assert.equal(trend.acceptance.phaseTimingSamples, 1);
@@ -105,7 +128,7 @@ test("iOS Safari phase schema is inferred for the first split timing sample", ()
 
 test("iOS Safari hardened gate rejects clustered failures", () => {
   const trend = buildIosSafariStabilityTrend(Array.from({ length: 10 }, (_, index) => (
-    sample(index + 1, [7, 8].includes(index) ? "failure" : "success", 3)
+    sample(index + 1, [7, 8].includes(index) ? "failure" : "success", currentPolicyRevision)
   )));
   assert.equal(trend.acceptance.status, "failed");
   assert.ok(trend.acceptance.issues.some((issue) => issue.startsWith("연속 실패 2회")));
@@ -113,7 +136,7 @@ test("iOS Safari hardened gate rejects clustered failures", () => {
 
 test("iOS Safari hardened gate reports slow setup and capture phases", () => {
   const runs = Array.from({ length: 10 }, (_, index) => ({
-    ...sample(index + 1, "success", 3, 1_100_000),
+    ...sample(index + 1, "success", currentPolicyRevision, 1_100_000),
     setupDurationMs: 500_000,
     captureDurationMs: 750_000
   }));
@@ -125,7 +148,7 @@ test("iOS Safari hardened gate reports slow setup and capture phases", () => {
 
 test("iOS Safari trend tracks deterministic compositor recovery frequency and latency", () => {
   const runs = Array.from({ length: 10 }, (_, index) => ({
-    ...sample(index + 1, "success", 3),
+    ...sample(index + 1, "success", currentPolicyRevision),
     compositorRecoveryCount: index === 9 ? 1 : 0,
     compositorRecoveryDurationMs: index === 9 ? 8_400 : 0,
     compositorFaultInjected: index === 9,
@@ -142,7 +165,7 @@ test("iOS Safari trend tracks deterministic compositor recovery frequency and la
 
 test("iOS Safari hardened gate requires both scheduled recovery strategies", () => {
   const runs = Array.from({ length: 10 }, (_, index) => ({
-    ...sample(index + 1, "success", 3),
+    ...sample(index + 1, "success", currentPolicyRevision),
     compositorFaultInjected: index === 9,
     compositorFaultRecovered: index === 9,
     compositorRecoveryCount: index === 9 ? 1 : 0,
@@ -155,7 +178,7 @@ test("iOS Safari hardened gate requires both scheduled recovery strategies", () 
 
 test("iOS Safari hardened gate keeps scheduled recovery coverage beyond the ten-run timing window", () => {
   const runs = Array.from({ length: 12 }, (_, index) => ({
-    ...sample(index + 1, "success", 3),
+    ...sample(index + 1, "success", currentPolicyRevision),
     compositorFaultInjected: index === 0 || index === 11,
     compositorFaultRecovered: index === 0 || index === 11,
     compositorRecoveryCount: index === 0 || index === 11 ? 1 : 0,
