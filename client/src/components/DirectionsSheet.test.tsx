@@ -24,7 +24,7 @@ it("확정된 예식장, 교통, 주차, 지도, 전화 동작을 표시한다",
   expect(screen.getByText("추천")).toBeInTheDocument();
 
   for (const name of ["네이버지도", "카카오맵", "Google 지도"]) {
-    const link = screen.getByRole("link", { name: new RegExp(name) });
+    const link = screen.getByRole("link", { name });
     expect(link).toHaveAttribute("target", "_blank");
     expect(link).toHaveAttribute("rel", "noopener noreferrer");
   }

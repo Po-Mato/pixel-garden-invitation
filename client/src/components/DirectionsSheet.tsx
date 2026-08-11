@@ -83,6 +83,7 @@ export function DirectionsContent({ venue = invitationContent.event.venue }: Dir
               <a
                 key={label}
                 href={href}
+                aria-label={label}
                 target="_blank"
                 rel="noopener noreferrer"
                 data-primary={preferred || undefined}
@@ -95,7 +96,13 @@ export function DirectionsContent({ venue = invitationContent.event.venue }: Dir
                 </span>
               </a>
             ) : (
-              <button key={label} type="button" data-primary={preferred || undefined} disabled>
+              <button
+                key={label}
+                type="button"
+                aria-label={label}
+                data-primary={preferred || undefined}
+                disabled
+              >
                 <ExternalLink aria-hidden="true" />
                 <span>
                   <strong>{label}</strong>

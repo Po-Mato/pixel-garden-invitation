@@ -425,12 +425,14 @@ body {
 
 .directions-sheet__route-actions > header {
   display: flex;
+  min-width: 0;
   align-items: baseline;
   justify-content: space-between;
   gap: 10px;
 }
 
 .directions-sheet__route-actions > header h3 {
+  min-width: 0;
   margin: 0;
   color: #34483f;
   font-family: var(--wedding-font-display);
@@ -438,8 +440,10 @@ body {
 }
 
 .directions-sheet__route-actions > header span {
+  min-width: 0;
   color: #7b8580;
   font-size: 10px;
+  overflow-wrap: anywhere;
   white-space: nowrap;
 }
 
@@ -753,6 +757,19 @@ html[data-text-scale="xlarge"] :is(.directions-sheet__venue > button, .direction
 
 html[data-text-scale="xlarge"] .directions-sheet__maps {
   grid-template-columns: minmax(0, 1fr);
+}
+
+html[data-text-scale="xlarge"] .directions-sheet__route-actions {
+  padding: 10px;
+}
+
+html[data-text-scale="xlarge"] .directions-sheet__route-actions > header {
+  display: grid;
+  gap: 2px;
+}
+
+html[data-text-scale="xlarge"] .directions-sheet__route-actions > header span {
+  white-space: normal;
 }
 
 @media (prefers-contrast: more) {

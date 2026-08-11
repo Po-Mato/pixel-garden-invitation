@@ -155,6 +155,11 @@ describe("entry screen layout", () => {
     expect(entryScreenStyles).toMatch(/\.entry-screen h1\s*\{[^}]*text-wrap:\s*balance;/s);
     expect(entryScreenStyles).toMatch(/\.entry-screen__event-brief strong\s*\{[^}]*white-space:\s*normal;[^}]*-webkit-line-clamp:\s*2;/s);
   });
+
+  it("stacks directions headings before controls at 200 percent text", () => {
+    expect(weddingLuxeStyles).toMatch(/html\[data-text-scale="xlarge"\] \.directions-sheet__route-actions > header\s*\{[^}]*display:\s*grid;/s);
+    expect(weddingLuxeStyles).toMatch(/html\[data-text-scale="xlarge"\] \.directions-sheet__route-actions > header span\s*\{[^}]*white-space:\s*normal;/s);
+  });
 });
 
 describe("고령 하객 보기 설정", () => {
