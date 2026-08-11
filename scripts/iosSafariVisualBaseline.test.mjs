@@ -115,7 +115,7 @@ test("iOS CI pins the stable Node runtime and recovers Simulator URL activation"
   assert.match(workflow, /download-wda/);
   assert.doesNotMatch(workflow, /mkdir -p "\$WDA_CACHE_DIR"/);
   assert.match(workflow, /mkdir -p "\$\(dirname "\$WDA_CACHE_DIR"\)"/);
-  assert.match(workflow, /appium-3\.6\.0-xcuitest-11\.4\.0-v4/);
+  assert.match(workflow, /appium-3\.6\.0-xcuitest-11\.4\.0-v5/);
   assert.match(workflow, /\.cache\/ios-safari-appium/);
   assert.match(workflow, /npm install --prefix "\$APPIUM_CACHE_DIR"/);
   assert.doesNotMatch(workflow, /npm install --global appium/);
@@ -140,7 +140,11 @@ test("iOS CI pins the stable Node runtime and recovers Simulator URL activation"
   assert.match(workflow, /id: ios-simulator/);
   assert.match(workflow, /steps\.ios-simulator\.outputs\.duration-ms/);
   assert.match(workflow, /Simulator\.app" --args -CurrentDeviceUDID/);
-  assert.match(workflow, /simctl install "\$IOS_SIMULATOR_UDID" "\$IOS_PREBUILT_WDA_PATH"/);
+  assert.match(workflow, /rsync -a[\s\S]*Frameworks\/XC\*\.framework/);
+  assert.match(workflow, /Frameworks\/Testing\.framework/);
+  assert.match(workflow, /Frameworks\/libXCTestSwiftSupport\.dylib/);
+  assert.match(workflow, /simctl install "\$IOS_SIMULATOR_UDID" "\$WDA_INSTALL_PATH"/);
+  assert.match(workflow, /check-ios-wda-preinstall-budget\.mjs[\s\S]*--budget-ms 40000/);
   assert.match(workflow, /simctl get_app_container/);
   assert.match(workflow, /IOS_WDA_PREINSTALLED=true/);
   assert.match(workflow, /IOS_PREINSTALLED_WDA_BUNDLE_ID=com\.facebook\.WebDriverAgentRunner/);
@@ -151,6 +155,9 @@ test("iOS CI pins the stable Node runtime and recovers Simulator URL activation"
   assert.match(workflow, /"simulator-boot"/);
   assert.match(workflow, /"appium-bridge-install"/);
   assert.match(workflow, /"wda-preinstall"/);
+  assert.match(workflow, /check-ios-safari-capture-retry\.mjs/);
+  assert.match(workflow, /IOS_CAPTURE_ATTEMPT=2/);
+  assert.match(workflow, /RETRY_RECOVERED/);
 });
 
 test("iOS capture records screen, PWA, and comparison phase durations", async () => {
@@ -171,6 +178,7 @@ test("iOS capture records screen, PWA, and comparison phase durations", async ()
   assert.match(source, /captureReport\.slowestPhase = identifySlowestCapturePhase\(\)/);
   assert.match(source, /runId: process\.env\.GITHUB_RUN_ID/);
   assert.match(source, /classifyIosSafariFailure\(error, \{ phase: activeCapturePhase \}\)/);
+  assert.match(source, /initialFailureReport\?\.failure/);
   assert.match(source, /wdaPreinstalled \? \{/);
   assert.match(source, /"appium:updatedWDABundleId": preinstalledWdaBundleId/);
   assert.doesNotMatch(source, /simulatorStartupRetries/);

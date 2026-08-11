@@ -103,9 +103,31 @@ test("device PWA transport trend keeps engine-specific errors and enforces p95 l
   }));
   const trend = buildDevicePwaTransportTrend(snapshots);
   assert.equal(devicePwaTransportTrendPolicy.observedWindow, 10);
+  assert.equal(devicePwaTransportTrendPolicy.platforms.android.maximumP95LatencyMs, 750);
+  assert.equal(devicePwaTransportTrendPolicy.platforms.ios.maximumP95LatencyMs, 1_000);
   assert.equal(trend.platforms.android.status, "passed");
   assert.equal(trend.platforms.android.errorKinds["failed-to-fetch"], 3);
+  assert.equal(trend.platforms.android.alert.status, "armed");
+  assert.equal(trend.platforms.android.alert.active, true);
   assert.equal(trend.platforms.ios.status, "watch");
   assert.equal(trend.platforms.ios.p95LatencyMs, 2_001);
+  assert.equal(trend.platforms.ios.alert.status, "triggered");
+  assert.equal(trend.triggeredAlerts[0].engine, "WebKit");
   assert.equal(trend.status, "watch");
+});
+
+test("device PWA engine alerts remain inactive until the third distinct release", () => {
+  const snapshots = Array.from({ length: 2 }, (_, index) => ({
+    sha: `sha-${index}`,
+    generatedAt: `2026-08-0${index + 1}T00:00:00.000Z`,
+    categories: {
+      android: { metrics: { transportBlocked: true, transportBlockLatencyMs: 900, transportErrorKind: "failed-to-fetch" } },
+      ios: { metrics: { transportBlocked: true, transportBlockLatencyMs: 1_200, transportErrorKind: "load-failed" } }
+    }
+  }));
+  const trend = buildDevicePwaTransportTrend(snapshots);
+  assert.equal(trend.status, "warming");
+  assert.equal(trend.platforms.android.alert.active, false);
+  assert.equal(trend.platforms.ios.alert.active, false);
+  assert.equal(trend.triggeredAlerts.length, 0);
 });

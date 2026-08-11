@@ -84,6 +84,31 @@ test("release summary markdown exposes promoted repeated visual regions", () => 
   assert.match(markdown, /반복 시각 변동 검토 필요: ios\/game/);
 });
 
+test("release summary markdown exposes engine-specific PWA transport alert state", () => {
+  const summary = buildReleaseQualitySummary(cleanEvidence(), { sha: "abc" });
+  summary.trend = {
+    status: "stable",
+    sampleCount: 3,
+    previousSha: "def",
+    regressions: [],
+    watchStructural: { status: "clear", promoted: [] },
+    devicePwaTransport: {
+      status: "passed",
+      platforms: {
+        android: {
+          engine: "Chromium",
+          blockedSamples: 3,
+          sampleCount: 3,
+          p95LatencyMs: 48,
+          errorKinds: { "failed-to-fetch": 3 },
+          alert: { status: "armed", maximumP95LatencyMs: 750 }
+        }
+      }
+    }
+  };
+  assert.match(formatReleaseQualitySummaryMarkdown(summary), /android\/Chromium: 차단 3\/3 · p95 48ms\/750ms · 경보 armed/);
+});
+
 test("release quality summary respects the deployed PWA trend status", () => {
   const evidence = cleanEvidence();
   evidence.pwaNetwork.trend.status = "failed";

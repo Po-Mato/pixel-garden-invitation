@@ -16,6 +16,7 @@ function sample(index, outcome = "success", policyRevision = 0, durationMs = 600
     capturePhaseDurationsMs: {
       "appium-readiness": 5_000,
       "wda-session": 115_000,
+      "wda-preinstall": 33_000,
       "safari-navigation": 7_000,
       landscape: 180_000,
       "baseline-comparison": 60_000
@@ -95,10 +96,12 @@ test("iOS Safari hardened gate accepts nine of ten bounded runs", () => {
   assert.equal(trend.acceptance.cachedAppiumSamples, 10);
   assert.equal(trend.acceptance.p95QueueDurationMs, 12_000);
   assert.equal(trend.acceptance.p95BridgeInstallDurationMs, 4_000);
+  assert.equal(trend.acceptance.p95WdaPreinstallDurationMs, 33_000);
   assert.equal(trend.acceptance.capturePhaseSchemaVersion, 2);
   assert.equal(trend.acceptance.phaseTimingSamples, 10);
   assert.match(formatIosSafariStabilityMarkdown(trend), /대기 p95 12초/);
   assert.match(formatIosSafariStabilityMarkdown(trend), /Appium 캐시 10\/10/);
+  assert.match(formatIosSafariStabilityMarkdown(trend), /WDA 선설치 p95 33초\/40초/);
   assert.match(formatIosSafariStabilityMarkdown(trend), /준비 p95 240초/);
   assert.deepEqual(trend.acceptance.slowestCapturePhase, { name: "landscape", p95DurationMs: 180_000 });
   assert.match(formatIosSafariStabilityMarkdown(trend), /느린 단계 landscape p95 180초/);
@@ -149,6 +152,38 @@ test("iOS Safari trend separates product, automation, and infrastructure failure
   });
   assert.equal(trend.acceptance.failureKinds["automation-wda"], 1);
   assert.match(formatIosSafariStabilityMarkdown(trend), /실패 분류 제품 1\/자동화 1\/인프라 1/);
+});
+
+test("iOS Safari trend records one selective retry and its recovery category", () => {
+  const runs = Array.from({ length: 10 }, (_, index) => ({
+    ...sample(index + 1, "success", currentPolicyRevision),
+    retryAttempted: index === 9,
+    retryRecovered: index === 9,
+    retryFailureCategory: index === 9 ? "automation" : null,
+    retryFailureKind: index === 9 ? "automation-wda" : null,
+    compositorFaultInjected: index >= 8,
+    compositorFaultRecovered: index >= 8,
+    compositorRecoveryCount: index >= 8 ? 1 : 0,
+    compositorRecoveryStrategy: index === 8 ? "activate-refresh" : index === 9 ? "recreate-session" : null
+  }));
+  const trend = buildIosSafariStabilityTrend(runs);
+  assert.equal(trend.acceptance.retryAttempts, 1);
+  assert.equal(trend.acceptance.recoveredRetries, 1);
+  assert.equal(trend.acceptance.retryFailureCategories.automation, 1);
+  assert.match(formatIosSafariStabilityMarkdown(trend), /선택 재시도 1\/1 복구/);
+});
+
+test("iOS Safari hardened gate rejects WDA preinstall p95 above 40 seconds", () => {
+  const runs = Array.from({ length: 10 }, (_, index) => ({
+    ...sample(index + 1, "success", currentPolicyRevision),
+    capturePhaseDurationsMs: {
+      ...sample(index + 1).capturePhaseDurationsMs,
+      "wda-preinstall": index === 9 ? 40_001 : 33_000
+    }
+  }));
+  const trend = buildIosSafariStabilityTrend(runs);
+  assert.equal(trend.acceptance.p95WdaPreinstallDurationMs, 40_001);
+  assert.ok(trend.acceptance.issues.some((issue) => issue.startsWith("WDA 선설치 p95")));
 });
 
 test("iOS Safari hardened gate reports slow setup and capture phases", () => {

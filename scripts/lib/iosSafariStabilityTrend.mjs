@@ -5,10 +5,11 @@ export const iosSafariStabilityPolicy = Object.freeze({
   maximumP95DurationMs: 20 * 60_000,
   maximumP95SetupDurationMs: 8 * 60_000,
   maximumP95CaptureDurationMs: 12 * 60_000,
+  maximumP95WdaPreinstallDurationMs: 40_000,
   maximumConsecutiveFailures: 1,
   requiredFaultRecoveryStrategies: ["activate-refresh", "recreate-session"],
   retainedRuns: 30,
-  policyRevision: 4,
+  policyRevision: 5,
   capturePhaseSchemaVersion: 2
 });
 
@@ -59,6 +60,11 @@ function normalizedSample(sample = {}) {
     failureCategory: ["product", "automation", "infrastructure", "unknown"].includes(sample.failureCategory)
       ? sample.failureCategory : null,
     failureKind: sample.failureKind ? String(sample.failureKind) : null,
+    retryAttempted: sample.retryAttempted === true || sample.retryAttempted === "true",
+    retryRecovered: sample.retryRecovered === true || sample.retryRecovered === "true",
+    retryFailureCategory: ["product", "automation", "infrastructure", "unknown"].includes(sample.retryFailureCategory)
+      ? sample.retryFailureCategory : null,
+    retryFailureKind: sample.retryFailureKind ? String(sample.retryFailureKind) : null,
     wdaMode: sample.wdaMode === "preinstalled" ? "preinstalled" : "source-build",
     generatedAt: sample.generatedAt || new Date().toISOString(),
     policyRevision: Number(sample.policyRevision) || 0,
@@ -118,6 +124,7 @@ function summarize(samples) {
   const recoverySamples = samples.filter(({ compositorRecoveryCount }) => compositorRecoveryCount > 0);
   const faultInjectionSamples = samples.filter(({ compositorFaultInjected }) => compositorFaultInjected);
   const failures = samples.filter(({ outcome }) => outcome === "failure");
+  const retrySamples = samples.filter(({ retryAttempted }) => retryAttempted);
   const failureCategories = Object.fromEntries(["product", "automation", "infrastructure", "unknown"].map((category) => [
     category,
     failures.filter(({ failureCategory }) => (failureCategory ?? "unknown") === category).length
@@ -125,6 +132,10 @@ function summarize(samples) {
   const failureKinds = Object.fromEntries([...new Set(failures.map(({ failureKind }) => failureKind ?? "unknown"))]
     .sort()
     .map((kind) => [kind, failures.filter(({ failureKind }) => (failureKind ?? "unknown") === kind).length]));
+  const retryFailureCategories = Object.fromEntries(["product", "automation", "infrastructure", "unknown"].map((category) => [
+    category,
+    retrySamples.filter(({ retryFailureCategory }) => (retryFailureCategory ?? "unknown") === category).length
+  ]));
   const recoveryStrategies = Object.fromEntries(iosSafariStabilityPolicy.requiredFaultRecoveryStrategies.map((strategy) => {
     const strategySamples = faultInjectionSamples.filter(({ compositorRecoveryStrategy }) => compositorRecoveryStrategy === strategy);
     return [strategy, {
@@ -158,6 +169,7 @@ function summarize(samples) {
     p95SetupDurationMs: percentile(setupDurations, 0.95),
     p95CaptureDurationMs: percentile(captureDurations, 0.95),
     p95CapturePhaseDurationsMs,
+    p95WdaPreinstallDurationMs: p95CapturePhaseDurationsMs["wda-preinstall"] ?? 0,
     slowestCapturePhase: slowestCapturePhase
       ? { name: slowestCapturePhase[0], p95DurationMs: slowestCapturePhase[1] }
       : null,
@@ -166,6 +178,9 @@ function summarize(samples) {
     capturePhaseSchemaVersion: iosSafariStabilityPolicy.capturePhaseSchemaVersion,
     cachedAppiumSamples: samples.filter(({ appiumCacheHit }) => appiumCacheHit).length,
     preinstalledWdaSamples: samples.filter(({ wdaMode }) => wdaMode === "preinstalled").length,
+    retryAttempts: retrySamples.length,
+    recoveredRetries: retrySamples.filter(({ retryRecovered }) => retryRecovered).length,
+    retryFailureCategories,
     recoveryRuns: recoverySamples.length,
     recoveryRate: samples.length === 0 ? 0 : recoverySamples.length / samples.length,
     p95RecoveryDurationMs: percentile(
@@ -182,7 +197,8 @@ function summarize(samples) {
 
 function policyIssues(summary, {
   requireRecoveryStrategies = false,
-  recoveryStrategies = summary.recoveryStrategies
+  recoveryStrategies = summary.recoveryStrategies,
+  enforceWdaPreinstallBudget = false
 } = {}) {
   const issues = [];
   if (summary.successRate < iosSafariStabilityPolicy.minimumSuccessRate) {
@@ -202,6 +218,15 @@ function policyIssues(summary, {
     && summary.p95CaptureDurationMs > iosSafariStabilityPolicy.maximumP95CaptureDurationMs
   ) {
     issues.push(`p95 캡처 시간 ${Math.round(summary.p95CaptureDurationMs / 1000)}초/${Math.round(iosSafariStabilityPolicy.maximumP95CaptureDurationMs / 1000)}초`);
+  }
+  if (
+    enforceWdaPreinstallBudget
+    && summary.p95WdaPreinstallDurationMs > iosSafariStabilityPolicy.maximumP95WdaPreinstallDurationMs
+  ) {
+    issues.push(
+      `WDA 선설치 p95 ${Math.round(summary.p95WdaPreinstallDurationMs / 1000)}초`
+      + `/${Math.round(iosSafariStabilityPolicy.maximumP95WdaPreinstallDurationMs / 1000)}초`
+    );
   }
   if (summary.maximumConsecutiveFailures > iosSafariStabilityPolicy.maximumConsecutiveFailures) {
     issues.push(`연속 실패 ${summary.maximumConsecutiveFailures}회/${iosSafariStabilityPolicy.maximumConsecutiveFailures}회`);
@@ -235,7 +260,8 @@ export function buildIosSafariStabilityTrend(samples) {
     ? [`현행 측정 정책 적용 이후 표본 ${acceptance.sampleCount}/${iosSafariStabilityPolicy.requiredHardenedRuns}`]
     : policyIssues(acceptance, {
       requireRecoveryStrategies: true,
-      recoveryStrategies: retainedRecoveryStrategies
+      recoveryStrategies: retainedRecoveryStrategies,
+      enforceWdaPreinstallBudget: true
     });
   return {
     policy: iosSafariStabilityPolicy,
@@ -268,6 +294,7 @@ export function formatIosSafariStabilityMarkdown(trend) {
       + ` · Appium 준비 p95 ${Math.round(trend.acceptance.p95BridgeInstallDurationMs / 1000)}초`
       + ` · Appium 캐시 ${trend.acceptance.cachedAppiumSamples}/${trend.acceptance.sampleCount}`
       + ` · Prebuilt WDA ${trend.acceptance.preinstalledWdaSamples}/${trend.acceptance.sampleCount}`
+      + ` · WDA 선설치 p95 ${Math.round(trend.acceptance.p95WdaPreinstallDurationMs / 1000)}초/40초`
       + ` · 단계 v${trend.acceptance.capturePhaseSchemaVersion} ${trend.acceptance.phaseTimingSamples}/${trend.acceptance.sampleCount}`
       + `${trend.acceptance.slowestCapturePhase
         ? ` · 느린 단계 ${trend.acceptance.slowestCapturePhase.name} p95 ${Math.round(trend.acceptance.slowestCapturePhase.p95DurationMs / 1000)}초`
@@ -282,12 +309,15 @@ export function formatIosSafariStabilityMarkdown(trend) {
     + `/자동화 ${trend.acceptance.failureCategories.automation}`
     + `/인프라 ${trend.acceptance.failureCategories.infrastructure}`
     + `/미분류 ${trend.acceptance.failureCategories.unknown}`;
+  const retries = ` · 선택 재시도 ${trend.acceptance.recoveredRetries}/${trend.acceptance.retryAttempts} 복구`
+    + ` · 원인 자동화 ${trend.acceptance.retryFailureCategories.automation}`
+    + `/인프라 ${trend.acceptance.retryFailureCategories.infrastructure}`;
   return [
     "## iOS Safari CI 안정성 추세",
     "",
     `- 최근 완료 실행 10회: **${trend.observed.status}** · ${format(trend.observed)}`
       + `${trend.excludedCancelledRuns > 0 ? ` · 취소 제외 ${trend.excludedCancelledRuns}회` : ""}`,
-    `- 현행 측정 정책 적용 후: **${trend.acceptance.status}** · ${format(trend.acceptance)}${phase}${compositor}${failures}`,
+    `- 현행 측정 정책 적용 후: **${trend.acceptance.status}** · ${format(trend.acceptance)}${phase}${compositor}${failures}${retries}`,
     "",
     ...[...trend.observed.issues, ...trend.acceptance.issues].map((issue) => `- ${issue}`),
     ""

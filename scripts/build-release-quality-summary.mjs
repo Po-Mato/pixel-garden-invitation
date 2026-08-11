@@ -66,13 +66,26 @@ const markdown = formatReleaseQualitySummaryMarkdown(summary);
 await mkdir(outputDir, { recursive: true });
 const reportPath = path.join(outputDir, "release-quality-summary.json");
 const markdownPath = path.join(outputDir, "release-quality-summary.md");
+const transportAlertPath = path.join(outputDir, "device-pwa-transport-alerts.json");
 await Promise.all([
   writeFile(reportPath, `${JSON.stringify(summary, null, 2)}\n`),
   writeFile(markdownPath, markdown),
   writeFile(historyPath, `${JSON.stringify(trendResult.history, null, 2)}\n`),
-  writeFile(calibrationHistoryPath, `${JSON.stringify(calibrationResult.history, null, 2)}\n`)
+  writeFile(calibrationHistoryPath, `${JSON.stringify(calibrationResult.history, null, 2)}\n`),
+  writeFile(transportAlertPath, `${JSON.stringify({
+    generatedAt: metadata.generatedAt,
+    status: summary.trend.devicePwaTransport.status,
+    activeAlerts: summary.trend.devicePwaTransport.activeAlerts,
+    triggeredAlerts: summary.trend.devicePwaTransport.triggeredAlerts
+  }, null, 2)}\n`)
 ]);
 if (process.env.GITHUB_STEP_SUMMARY) await appendFile(process.env.GITHUB_STEP_SUMMARY, `\n${markdown}\n`);
 console.log(`릴리스 품질 요약: ${summary.status} · ${summary.categories.filter(({ status }) => status === "passed").length}/${summary.categories.length}`);
 console.log(`보고서: ${reportPath}`);
+for (const alert of summary.trend.devicePwaTransport.triggeredAlerts) {
+  const message = `${alert.platform}/${alert.engine} PWA 전송 p95 ${Math.round(alert.observedP95LatencyMs)}ms`
+    + ` > ${Math.round(alert.maximumP95LatencyMs)}ms`;
+  if (process.env.GITHUB_ACTIONS === "true") console.log(`::warning title=PWA transport p95::${message}`);
+  else console.warn(`PWA 전송 경보: ${message}`);
+}
 if (summary.status !== "passed") process.exitCode = 1;

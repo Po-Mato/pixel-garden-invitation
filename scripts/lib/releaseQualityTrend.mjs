@@ -9,7 +9,10 @@ export const repeatedWatchStructuralReleaseThreshold = 3;
 export const devicePwaTransportTrendPolicy = Object.freeze({
   observedWindow: 10,
   requiredSamplesPerPlatform: 3,
-  maximumP95LatencyMs: 2_000
+  platforms: Object.freeze({
+    android: Object.freeze({ engine: "Chromium", maximumP95LatencyMs: 750 }),
+    ios: Object.freeze({ engine: "WebKit", maximumP95LatencyMs: 1_000 })
+  })
 });
 
 function percentile(values, ratio) {
@@ -20,6 +23,7 @@ function percentile(values, ratio) {
 
 export function buildDevicePwaTransportTrend(snapshots = []) {
   const platforms = Object.fromEntries(["android", "ios"].map((platform) => {
+    const platformPolicy = devicePwaTransportTrendPolicy.platforms[platform];
     const samples = snapshots
       .filter(({ sha }, index, values) => sha && values.findLastIndex((candidate) => candidate.sha === sha) === index)
       .map((snapshot) => ({
@@ -38,21 +42,32 @@ export function buildDevicePwaTransportTrend(snapshots = []) {
     const errorKinds = Object.fromEntries([...new Set(samples.map(({ errorKind }) => errorKind))]
       .sort()
       .map((kind) => [kind, samples.filter(({ errorKind }) => errorKind === kind).length]));
+    const alertActive = samples.length >= devicePwaTransportTrendPolicy.requiredSamplesPerPlatform;
+    const p95Exceeded = alertActive && p95LatencyMs > platformPolicy.maximumP95LatencyMs;
     const issues = [];
-    if (samples.length >= devicePwaTransportTrendPolicy.requiredSamplesPerPlatform) {
+    if (alertActive) {
       if (blockedSamples !== samples.length) issues.push(`차단 ${blockedSamples}/${samples.length}`);
-      if (p95LatencyMs > devicePwaTransportTrendPolicy.maximumP95LatencyMs) {
-        issues.push(`p95 ${Math.round(p95LatencyMs)}ms/${devicePwaTransportTrendPolicy.maximumP95LatencyMs}ms`);
+      if (p95Exceeded) {
+        issues.push(`p95 ${Math.round(p95LatencyMs)}ms/${platformPolicy.maximumP95LatencyMs}ms`);
       }
     }
     return [platform, {
-      status: samples.length < devicePwaTransportTrendPolicy.requiredSamplesPerPlatform
+      engine: platformPolicy.engine,
+      status: !alertActive
         ? "warming" : issues.length > 0 ? "watch" : "passed",
       sampleCount: samples.length,
       blockedSamples,
       blockRate: samples.length === 0 ? 0 : blockedSamples / samples.length,
       p95LatencyMs,
       errorKinds,
+      alert: {
+        active: alertActive,
+        triggered: p95Exceeded,
+        status: !alertActive ? "warming" : p95Exceeded ? "triggered" : "armed",
+        engine: platformPolicy.engine,
+        maximumP95LatencyMs: platformPolicy.maximumP95LatencyMs,
+        observedP95LatencyMs: p95LatencyMs
+      },
       issues,
       samples
     }];
@@ -63,6 +78,12 @@ export function buildDevicePwaTransportTrend(snapshots = []) {
     status: values.some(({ status }) => status === "watch")
       ? "watch" : values.some(({ status }) => status === "warming") ? "warming" : "passed",
     platforms,
+    activeAlerts: Object.entries(platforms)
+      .filter(([, value]) => value.alert.active)
+      .map(([platform, value]) => ({ platform, ...value.alert })),
+    triggeredAlerts: Object.entries(platforms)
+      .filter(([, value]) => value.alert.triggered)
+      .map(([platform, value]) => ({ platform, ...value.alert })),
     issues: Object.entries(platforms).flatMap(([platform, value]) => value.issues.map((issue) => `${platform}: ${issue}`))
   };
 }

@@ -63,7 +63,7 @@ jobs:
           SEED_DIR="$RUNNER_TEMP/ios-safari-stability-seed"
           HISTORY_PATH=".superpowers/visual-regression/ios-safari-stability/ios-safari-stability-trend-history.json"
           mkdir -p "$SEED_DIR"
-          CURRENT_SAMPLES="$(jq -r '[.samples[] | select(.policyRevision == 3)] | length' "$HISTORY_PATH" 2>/dev/null || printf '0')"
+          CURRENT_SAMPLES="$(jq -r '[.samples[] | select(.policyRevision == 5)] | length' "$HISTORY_PATH" 2>/dev/null || printf '0')"
           LEGACY_DOWNLOADED=0
           while read -r PREVIOUS_RUN_ID; do
             test -n "$PREVIOUS_RUN_ID" || continue
@@ -90,7 +90,7 @@ jobs:
             ~/.npm
             .cache/ios-safari-appium
             .cache/ios-safari-wda
-          key: ios-safari-automation-${{ runner.os }}-xcode-16.4-appium-3.6.0-xcuitest-11.4.0-v4
+          key: ios-safari-automation-${{ runner.os }}-xcode-16.4-appium-3.6.0-xcuitest-11.4.0-v5
           restore-keys: |
             ios-safari-automation-${{ runner.os }}-xcode-16.4-appium-3.6.0-xcuitest-11.4.0-
             ios-safari-automation-${{ runner.os }}-xcode-16.4-appium-3-
@@ -142,16 +142,34 @@ jobs:
             IOS_PREBUILT_WDA_PATH="$(find "$WDA_CACHE_DIR" -type d -name 'WebDriverAgentRunner-Runner.app' | head -n 1)"
           fi
           test -n "$IOS_PREBUILT_WDA_PATH"
+          WDA_SLIM_DIR="$RUNNER_TEMP/ios-safari-wda-slim"
+          WDA_INSTALL_PATH="$WDA_SLIM_DIR/WebDriverAgentRunner-Runner.app"
+          mkdir -p "$WDA_INSTALL_PATH"
+          rsync -a \
+            --exclude='/Frameworks/XC*.framework' \
+            --exclude='/Frameworks/Testing.framework' \
+            --exclude='/Frameworks/libXCTestSwiftSupport.dylib' \
+            "$IOS_PREBUILT_WDA_PATH/" "$WDA_INSTALL_PATH/"
+          WDA_SOURCE_BYTES="$(du -sk "$IOS_PREBUILT_WDA_PATH" | awk '{ print $1 * 1024 }')"
+          WDA_INSTALL_BYTES="$(du -sk "$WDA_INSTALL_PATH" | awk '{ print $1 * 1024 }')"
           WDA_PREINSTALL_STARTED_AT_MS="$(node -p 'Date.now()')"
-          xcrun simctl install "$IOS_SIMULATOR_UDID" "$IOS_PREBUILT_WDA_PATH"
+          xcrun simctl install "$IOS_SIMULATOR_UDID" "$WDA_INSTALL_PATH"
+          WDA_PREINSTALL_DURATION_MS="$(node -p 'Math.max(0, Date.now() - Number(process.argv[1]))' "$WDA_PREINSTALL_STARTED_AT_MS")"
           xcrun simctl get_app_container "$IOS_SIMULATOR_UDID" com.facebook.WebDriverAgentRunner.xctrunner app > /dev/null
           echo "IOS_PREBUILT_WDA_PATH=$IOS_PREBUILT_WDA_PATH" >> "$GITHUB_ENV"
           echo "IOS_WDA_PREINSTALLED=true" >> "$GITHUB_ENV"
           echo "IOS_PREINSTALLED_WDA_BUNDLE_ID=com.facebook.WebDriverAgentRunner" >> "$GITHUB_ENV"
           echo "cache-hit=$APPIUM_CACHE_HIT" >> "$GITHUB_OUTPUT"
-          echo "wda-preinstall-duration-ms=$(node -p 'Math.max(0, Date.now() - Number(process.argv[1]))' "$WDA_PREINSTALL_STARTED_AT_MS")" >> "$GITHUB_OUTPUT"
+          echo "wda-preinstall-duration-ms=$WDA_PREINSTALL_DURATION_MS" >> "$GITHUB_OUTPUT"
+          echo "wda-source-bytes=$WDA_SOURCE_BYTES" >> "$GITHUB_OUTPUT"
+          echo "wda-install-bytes=$WDA_INSTALL_BYTES" >> "$GITHUB_OUTPUT"
           echo "wda-preinstalled=true" >> "$GITHUB_OUTPUT"
           echo "duration-ms=$(node -p 'Math.max(0, Date.now() - Number(process.env.BRIDGE_STARTED_AT_MS))')" >> "$GITHUB_OUTPUT"
+          node scripts/check-ios-wda-preinstall-budget.mjs \
+            --duration-ms "$WDA_PREINSTALL_DURATION_MS" \
+            --source-bytes "$WDA_SOURCE_BYTES" \
+            --install-bytes "$WDA_INSTALL_BYTES" \
+            --budget-ms 40000
           "$APPIUM_BIN" --version
       - name: Restore commit-matched device build
         id: quality-build
@@ -231,12 +249,59 @@ jobs:
             fi
           fi
           sleep 3
-          pnpm visual:ios-safari -- \
-            --mode auto \
-            --url http://127.0.0.1:4178/ \
-            --pwa-url http://127.0.0.1:4188/ \
-            --preview-host-url http://127.0.0.1:4188/ \
-            --compositor-fault-injection "$IOS_COMPOSITOR_FAULT_INJECTION"
+          capture_ios_safari() {
+            pnpm visual:ios-safari -- \
+              --mode auto \
+              --url http://127.0.0.1:4178/ \
+              --pwa-url http://127.0.0.1:4188/ \
+              --preview-host-url http://127.0.0.1:4188/ \
+              --compositor-fault-injection "$IOS_COMPOSITOR_FAULT_INJECTION"
+          }
+          export IOS_CAPTURE_ATTEMPT=1
+          set +e
+          capture_ios_safari
+          CAPTURE_STATUS=$?
+          set -e
+          if test "$CAPTURE_STATUS" -eq 0; then
+            exit 0
+          fi
+          CAPTURE_REPORT=.superpowers/visual-regression/ios-safari/ios-safari-capture-report.json
+          FIRST_ATTEMPT_REPORT=.superpowers/visual-regression/ios-safari/ios-safari-capture-attempt-1.json
+          RETRY_DECISION=.superpowers/visual-regression/ios-safari/ios-safari-capture-retry-decision.json
+          INITIAL_FAILURE_EVIDENCE="$RETRY_DECISION"
+          if test -f "$CAPTURE_REPORT"; then
+            cp "$CAPTURE_REPORT" "$FIRST_ATTEMPT_REPORT"
+            INITIAL_FAILURE_EVIDENCE="$FIRST_ATTEMPT_REPORT"
+          fi
+          if ! node scripts/check-ios-safari-capture-retry.mjs \
+            --report "$CAPTURE_REPORT" \
+            --output "$RETRY_DECISION" \
+            --attempt 1; then
+            exit "$CAPTURE_STATUS"
+          fi
+          if test -z "${PWA_PREVIEW_PID:-}" \
+            || ! kill -0 "$PWA_PREVIEW_PID" 2>/dev/null \
+            || ! curl --fail --silent http://127.0.0.1:4188/ > /dev/null; then
+            if test -n "${PWA_PREVIEW_PID:-}"; then kill "$PWA_PREVIEW_PID" 2>/dev/null || true; fi
+            pnpm --filter @wedding-game/client exec vite preview --host 0.0.0.0 --port 4188 --strictPort > "$RUNNER_TEMP/ios-safari-pwa-preview-retry.log" 2>&1 &
+            export PWA_PREVIEW_PID=$!
+            echo "PWA_PREVIEW_PID=$PWA_PREVIEW_PID" >> "$GITHUB_ENV"
+            PWA_PREVIEW_READY=false
+            for attempt in {1..30}; do
+              if curl --fail --silent http://127.0.0.1:4188/ > /dev/null; then
+                PWA_PREVIEW_READY=true
+                break
+              fi
+              sleep 1
+            done
+            if test "$PWA_PREVIEW_READY" != true; then
+              cat "$RUNNER_TEMP/ios-safari-pwa-preview-retry.log"
+              exit 1
+            fi
+          fi
+          export IOS_CAPTURE_ATTEMPT=2
+          export IOS_INITIAL_FAILURE_REPORT="$INITIAL_FAILURE_EVIDENCE"
+          capture_ios_safari
         env:
           IOS_COMPOSITOR_FAULT_INJECTION: ${{ github.event_name == 'schedule' && github.event.schedule == '47 4 1 * *' && 'recreate-session' || github.event_name == 'schedule' && 'activate-refresh' || inputs.compositor_fault_injection || 'none' }}
       - name: Track ten-run iOS Safari stability
@@ -253,8 +318,13 @@ jobs:
           COMPOSITOR_RECOVERY_STRATEGY="$(jq -r '.nativeCompositor.faultInjection.recoveryStrategy // ""' "$CAPTURE_REPORT" 2>/dev/null || printf '')"
           FAILURE_CATEGORY="$(jq -r '.failure.category // ""' "$CAPTURE_REPORT" 2>/dev/null || printf '')"
           FAILURE_KIND="$(jq -r '.failure.kind // ""' "$CAPTURE_REPORT" 2>/dev/null || printf '')"
+          RETRY_ATTEMPTED="$(jq -r '.retry.attempted // false' "$CAPTURE_REPORT" 2>/dev/null || printf 'false')"
+          RETRY_FAILURE_CATEGORY="$(jq -r '.retry.initialFailure.category // ""' "$CAPTURE_REPORT" 2>/dev/null || printf '')"
+          RETRY_FAILURE_KIND="$(jq -r '.retry.initialFailure.kind // ""' "$CAPTURE_REPORT" 2>/dev/null || printf '')"
           CAPTURE_OUTCOME="${{ steps.capture.outcome }}"
           if test "$CAPTURE_OUTCOME" != "success"; then CAPTURE_OUTCOME=failure; fi
+          RETRY_RECOVERED=false
+          if test "$RETRY_ATTEMPTED" = true && test "$CAPTURE_OUTCOME" = success; then RETRY_RECOVERED=true; fi
           if test "$CAPTURE_OUTCOME" != "success" && test -z "$FAILURE_CATEGORY"; then
             FAILURE_CATEGORY=infrastructure
             FAILURE_KIND=infrastructure-pre-capture
@@ -284,6 +354,10 @@ jobs:
             --compositor-recovery-strategy "$COMPOSITOR_RECOVERY_STRATEGY" \
             --failure-category "$FAILURE_CATEGORY" \
             --failure-kind "$FAILURE_KIND" \
+            --retry-attempted "$RETRY_ATTEMPTED" \
+            --retry-recovered "$RETRY_RECOVERED" \
+            --retry-failure-category "$RETRY_FAILURE_CATEGORY" \
+            --retry-failure-kind "$RETRY_FAILURE_KIND" \
             --wda-mode preinstalled \
             --run-url "https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
         env:
@@ -310,6 +384,7 @@ jobs:
             .quality-artifacts/ios-safari-stability
             ${{ runner.temp }}/ios-safari-vite.log
             ${{ runner.temp }}/ios-safari-pwa-preview.log
+            ${{ runner.temp }}/ios-safari-pwa-preview-retry.log
             ${{ runner.temp }}/ios-safari-appium.log
           if-no-files-found: warn
           include-hidden-files: true
@@ -349,7 +424,7 @@ jobs:
             ~/.npm
             .cache/ios-safari-appium
             .cache/ios-safari-wda
-          key: ios-safari-automation-${{ runner.os }}-xcode-16.4-appium-3.6.0-xcuitest-11.4.0-v4
+          key: ios-safari-automation-${{ runner.os }}-xcode-16.4-appium-3.6.0-xcuitest-11.4.0-v5
       - name: Fail when the Safari capture failed
         if: steps.capture.outcome != 'success'
         run: exit 1

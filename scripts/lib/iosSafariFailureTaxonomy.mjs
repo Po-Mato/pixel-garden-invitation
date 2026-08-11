@@ -23,6 +23,32 @@ const productPhaseKinds = Object.freeze({
   "baseline-comparison": "product-visual-regression"
 });
 
+export const iosSafariCaptureRetryPolicy = Object.freeze({
+  maximumAttempts: 2,
+  retryableCategories: ["automation", "infrastructure"]
+});
+
+export function decideIosSafariCaptureRetry({ attempt = 1, failure = null } = {}) {
+  const currentAttempt = Math.max(1, Number(attempt) || 1);
+  const category = failure?.category ?? "unknown";
+  const kind = failure?.kind ?? "unknown";
+  const categoryRetryable = iosSafariCaptureRetryPolicy.retryableCategories.includes(category);
+  const failureRetryable = failure?.retryable === true;
+  const attemptsRemain = currentAttempt < iosSafariCaptureRetryPolicy.maximumAttempts;
+  const shouldRetry = attemptsRemain && categoryRetryable && failureRetryable;
+  return {
+    shouldRetry,
+    attempt: currentAttempt,
+    nextAttempt: shouldRetry ? currentAttempt + 1 : null,
+    maximumAttempts: iosSafariCaptureRetryPolicy.maximumAttempts,
+    category,
+    kind,
+    reason: !attemptsRemain
+      ? "attempt-limit"
+      : !categoryRetryable || !failureRetryable ? "non-retryable-failure" : "retryable-automation-failure"
+  };
+}
+
 export function classifyIosSafariFailure(error, { phase = null } = {}) {
   const message = error instanceof Error ? error.message : String(error ?? "unknown failure");
   const details = `${message}\n${error instanceof Error ? error.stack ?? "" : ""}`;

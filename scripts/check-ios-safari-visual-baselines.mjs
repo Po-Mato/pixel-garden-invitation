@@ -40,6 +40,11 @@ const platformVersion = process.env.IOS_PLATFORM_VERSION ?? "18.5";
 const prebuiltWdaPath = process.env.IOS_PREBUILT_WDA_PATH;
 const wdaPreinstalled = process.env.IOS_WDA_PREINSTALLED === "true";
 const preinstalledWdaBundleId = process.env.IOS_PREINSTALLED_WDA_BUNDLE_ID;
+const captureAttempt = Math.max(1, Number(process.env.IOS_CAPTURE_ATTEMPT) || 1);
+const initialFailureReportPath = process.env.IOS_INITIAL_FAILURE_REPORT;
+const initialFailureReport = initialFailureReportPath
+  ? await readFile(initialFailureReportPath, "utf8").then(JSON.parse, () => null)
+  : null;
 await mkdir(outputDir, { recursive: true });
 
 async function webdriver(method, endpoint, body) {
@@ -461,6 +466,12 @@ const captureReport = {
   phaseTimings: {},
   slowestPhase: null,
   failure: null,
+  retry: {
+    attempt: captureAttempt,
+    attempted: captureAttempt > 1,
+    initialFailure: initialFailureReport?.failure ?? null,
+    initialFailureReportPath: initialFailureReportPath ?? null
+  },
   comparisons: []
 };
 

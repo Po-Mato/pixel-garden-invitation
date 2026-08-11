@@ -258,7 +258,8 @@ export function formatReleaseQualitySummaryMarkdown(summary) {
       )),
       `- 기기 PWA 전송: **${summary.trend.devicePwaTransport?.status ?? "warming"}**`,
       ...Object.entries(summary.trend.devicePwaTransport?.platforms ?? {}).map(([platform, value]) => (
-        `- ${platform}: 차단 ${value.blockedSamples}/${value.sampleCount} · p95 ${Math.round(value.p95LatencyMs)}ms`
+        `- ${platform}/${value.engine}: 차단 ${value.blockedSamples}/${value.sampleCount} · p95 ${Math.round(value.p95LatencyMs)}ms`
+        + `/${Math.round(value.alert.maximumP95LatencyMs)}ms · 경보 ${value.alert.status}`
         + ` · 오류 ${Object.entries(value.errorKinds).map(([kind, count]) => `${kind} ${count}`).join(", ") || "없음"}`
       ))
     );

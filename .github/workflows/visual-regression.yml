@@ -131,6 +131,9 @@ jobs:
           key: world-geometry-policy-review-${{ runner.os }}-${{ github.base_ref || github.ref_name }}-${{ github.sha }}
           restore-keys: |
             world-geometry-policy-review-${{ runner.os }}-${{ github.base_ref || github.ref_name }}-
+      - name: Mark targeted map setup complete
+        if: env.MAP_EVIDENCE_ONLY == 'true'
+        run: echo "MAP_EVIDENCE_SETUP_FINISHED_AT_MS=$(node -p 'Date.now()')" >> "$GITHUB_ENV"
       - name: Restore low-power soak trend history
         if: env.MAP_EVIDENCE_ONLY != 'true'
         id: mobile-soak-trend-history
@@ -146,6 +149,9 @@ jobs:
       - name: Run map approval contract tests
         if: env.MAP_EVIDENCE_ONLY == 'true'
         run: pnpm maps:audit && pnpm maps:test && pnpm visual:world-layout
+      - name: Mark targeted map contracts complete
+        if: env.MAP_EVIDENCE_ONLY == 'true'
+        run: echo "MAP_EVIDENCE_CONTRACTS_FINISHED_AT_MS=$(node -p 'Date.now()')" >> "$GITHUB_ENV"
       - name: Restore commit-matched production build
         id: quality-build
         uses: ./.github/actions/restore-quality-build
@@ -224,6 +230,9 @@ jobs:
       - name: Summarize foreground diagnostics for pull requests
         if: always()
         run: pnpm maps:foreground-summary -- --run-url "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+      - name: Mark targeted map diagnostics complete
+        if: env.MAP_EVIDENCE_ONLY == 'true'
+        run: echo "MAP_EVIDENCE_DIAGNOSTICS_FINISHED_AT_MS=$(node -p 'Date.now()')" >> "$GITHUB_ENV"
       - name: Save map foreground depth history
         if: success() && steps.foreground-depth-history.outputs.cache-hit != 'true'
         uses: actions/cache/save@v5
@@ -260,6 +269,9 @@ jobs:
       - name: Install map browser engine on cache miss
         if: env.MAP_EVIDENCE_ONLY == 'true' && steps.playwright-browser-cache.outputs.cache-hit != 'true'
         run: pnpm exec playwright install chromium
+      - name: Mark targeted map browser setup complete
+        if: env.MAP_EVIDENCE_ONLY == 'true'
+        run: echo "MAP_EVIDENCE_BROWSER_SETUP_FINISHED_AT_MS=$(node -p 'Date.now()')" >> "$GITHUB_ENV"
       - name: Restore main PWA cache asset history
         if: github.event_name == 'pull_request'
         uses: actions/cache/restore@v5
@@ -318,6 +330,9 @@ jobs:
       - name: Summarize diagnostics provenance
         if: always() && hashFiles('.superpowers/visual-regression/map-diagnostics-provenance.json') != ''
         run: pnpm maps:diagnostics-provenance-summary -- --attestation-url "${{ steps.diagnostics-attestation.outputs.attestation-url }}" --run-url "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+      - name: Mark targeted map audit and provenance complete
+        if: env.MAP_EVIDENCE_ONLY == 'true'
+        run: echo "MAP_EVIDENCE_AUDIT_PROVENANCE_FINISHED_AT_MS=$(node -p 'Date.now()')" >> "$GITHUB_ENV"
       - name: Package content-addressed browser quality evidence
         if: always() && env.MAP_EVIDENCE_ONLY != 'true'
         run: |
@@ -453,7 +468,7 @@ jobs:
           retention-days: 7
       - name: Enforce the targeted map evidence 240 second budget
         if: always() && env.MAP_EVIDENCE_ONLY == 'true'
-        run: node scripts/check-map-evidence-duration-budget.mjs --started-at-ms "$MAP_EVIDENCE_STARTED_AT_MS" --budget-ms 240000
+        run: node scripts/check-map-evidence-duration-budget.mjs --started-at-ms "$MAP_EVIDENCE_STARTED_AT_MS" --budget-ms 240000 --setup-finished-at-ms "$MAP_EVIDENCE_SETUP_FINISHED_AT_MS" --contracts-finished-at-ms "$MAP_EVIDENCE_CONTRACTS_FINISHED_AT_MS" --diagnostics-finished-at-ms "$MAP_EVIDENCE_DIAGNOSTICS_FINISHED_AT_MS" --browser-setup-finished-at-ms "$MAP_EVIDENCE_BROWSER_SETUP_FINISHED_AT_MS" --audit-provenance-finished-at-ms "$MAP_EVIDENCE_AUDIT_PROVENANCE_FINISHED_AT_MS"
       - name: Upload the targeted map duration budget
         if: always() && env.MAP_EVIDENCE_ONLY == 'true'
         uses: actions/upload-artifact@v7
