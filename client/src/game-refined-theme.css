@@ -323,7 +323,8 @@
   box-shadow: none;
 }
 
-.world-spot:is(.world-spot--target, .world-spot--recommended, :focus-visible) .world-spot__card {
+.world-spot:is(.world-spot--target, :focus-visible) .world-spot__card,
+.world-spot--recommended[data-proximity="near"] .world-spot__card {
   opacity: 1;
   transform: none;
 }
@@ -412,19 +413,6 @@
 .world-spot--recommended:not(.world-spot--target) .world-spot__card {
   outline: 2px dashed rgba(255, 239, 132, 0.96);
   outline-offset: 2px;
-}
-
-/* The top destination card already carries the primary route action. Keep the
-   matching map marker discoverable without letting it dominate distant art. */
-.world-spot--recommended:not(.world-spot--target)[data-proximity="mid"] .world-spot__card {
-  opacity: 0.76;
-  transform: scale(0.88);
-}
-
-.world-spot--recommended:not(.world-spot--target)[data-proximity="far"] .world-spot__card {
-  opacity: 0.46;
-  transform: scale(0.78);
-  box-shadow: 0 3px 9px color-mix(in srgb, var(--spot-edge) 12%, transparent);
 }
 
 .world-spot:focus-visible {

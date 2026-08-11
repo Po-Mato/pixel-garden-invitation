@@ -476,7 +476,8 @@ describe("pixel wedding festival map", () => {
     const farRule = refinedGameStyles.match(/\.world-spot\[data-proximity="far"\] \.world-spot__card\s*\{([^}]*)}/s)?.[1] ?? "";
     expect(farRule).toContain("opacity: 0.18;");
     expect(farRule).toContain("transform: scale(0.76);");
-    expect(refinedGameStyles).toContain(".world-spot:is(.world-spot--target, .world-spot--recommended, :focus-visible)");
+    expect(refinedGameStyles).toContain(".world-spot:is(.world-spot--target, :focus-visible)");
+    expect(refinedGameStyles).toContain('.world-spot--recommended[data-proximity="near"]');
     const hitTargetRule = refinedGameStyles.match(/\.world-spot\s*\{([^}]*)}/s)?.[1] ?? "";
     expect(hitTargetRule).not.toContain("opacity:");
     expect(hitTargetRule).not.toContain("transform:");

@@ -10,7 +10,10 @@ export const requiredCrossRunMedianSamples = 3;
 const crossRunMedianPolicies = Object.freeze([
   { key: "averageFps", direction: "minimum", ratio: 0.8, noiseFloor: 0 },
   { key: "p95FrameMs", direction: "maximum", ratio: 1.5, noiseFloor: 8 },
-  { key: "p99FrameMs", direction: "maximum", ratio: 1.5, noiseFloor: 16 },
+  // A 60 Hz runner occasionally misses one vsync and reports the next frame at
+  // 33.3ms. Treat that single refresh interval as noise while still gating
+  // sustained p99 drift through the ratio and absolute soak limits below.
+  { key: "p99FrameMs", direction: "maximum", ratio: 1.5, noiseFloor: 17 },
   { key: "inputLatencyMs", direction: "maximum", ratio: 1.5, noiseFloor: 20 },
   { key: "settleLatencyMs", direction: "maximum", ratio: 1.5, noiseFloor: 40 },
   { key: "transitionP95FrameMs", direction: "maximum", ratio: 1.5, noiseFloor: 40 },

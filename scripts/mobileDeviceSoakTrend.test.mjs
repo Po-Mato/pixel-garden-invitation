@@ -103,6 +103,26 @@ test("cross-run drift gates a third CI median without reacting to runner noise",
   assert.ok(failed.issues.some((issue) => issue.includes("p95FrameMs")));
 });
 
+test("cross-run p99 drift allows one missed 60 Hz refresh but rejects sustained drift", () => {
+  const current = buildMobileDeviceSoakTrend([report(), report(), report()]);
+  const previous = [
+    { status: "passed", runId: "1", medians: { ...current.medians, p99FrameMs: 16.8 } },
+    { status: "passed", runId: "2", medians: { ...current.medians, p99FrameMs: 16.8 } }
+  ];
+  const oneMissedRefresh = assessCrossRunMedianDrift(previous, {
+    ...current,
+    medians: { ...current.medians, p99FrameMs: 33.3 }
+  });
+  assert.equal(oneMissedRefresh.status, "passed");
+
+  const sustainedDrift = assessCrossRunMedianDrift(previous, {
+    ...current,
+    medians: { ...current.medians, p99FrameMs: 34 }
+  });
+  assert.equal(sustainedDrift.status, "failed");
+  assert.ok(sustainedDrift.issues.some((issue) => issue.includes("p99FrameMs")));
+});
+
 test("mobile soak runner repeats the low-power profile three times", () => {
   const source = readFileSync("scripts/check-mobile-device-soak.mjs", "utf8");
   assert.match(source, /run <= requiredLowPowerRuns/);
