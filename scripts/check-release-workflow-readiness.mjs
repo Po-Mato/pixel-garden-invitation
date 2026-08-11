@@ -61,7 +61,9 @@ const waitedMs = Date.now() - waitStartedAt;
 
 const priorSummaryRuns = (await github(
   `/actions/workflows/${encodeURIComponent("release-quality-summary.yml")}/runs?head_sha=${encodeURIComponent(targetSha)}&per_page=100`
-)).workflow_runs?.filter(({ id, status }) => String(id) !== currentRunId && status === "completed") ?? [];
+)).workflow_runs?.filter(({ id, status, conclusion }) => (
+  String(id) !== currentRunId && status === "completed" && conclusion === "success"
+)) ?? [];
 const summariesWithArtifacts = await Promise.all(priorSummaryRuns.map(async (run) => ({
   id: run.id,
   artifacts: (await github(`/actions/runs/${run.id}/artifacts?per_page=100`)).artifacts ?? []

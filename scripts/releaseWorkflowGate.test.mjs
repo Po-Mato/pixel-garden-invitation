@@ -46,3 +46,14 @@ test("release summary deduplicates only a real non-expired summary artifact", ()
     artifacts: [{ name: "release-quality-summary-3", expired: false }]
   }]), true);
 });
+
+test("release gate ignores artifacts from cancelled coordinators", async () => {
+  const source = await import("node:fs/promises").then(({ readFile }) => (
+    readFile(new URL("./check-release-workflow-readiness.mjs", import.meta.url), "utf8")
+  ));
+  const workflow = await import("node:fs/promises").then(({ readFile }) => (
+    readFile(new URL("../.github/workflows/release-quality-summary.yml", import.meta.url), "utf8")
+  ));
+  assert.match(source, /status === "completed" && conclusion === "success"/);
+  assert.match(workflow, /hashFiles\('\.superpowers\/visual-regression\/release-quality-summary\/release-quality-summary\.json'\) != ''/);
+});

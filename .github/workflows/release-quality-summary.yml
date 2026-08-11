@@ -159,7 +159,7 @@ jobs:
             .superpowers/visual-regression/release-quality-summary/quality-evidence-efficiency-history.json
           key: release-quality-history-${{ runner.os }}-${{ github.run_id }}-${{ github.run_attempt }}
       - name: Upload release quality summary
-        if: ${{ always() && steps.release-gate.outputs.should_summarize == 'true' }}
+        if: ${{ always() && steps.release-gate.outputs.should_summarize == 'true' && hashFiles('.superpowers/visual-regression/release-quality-summary/release-quality-summary.json') != '' }}
         uses: actions/upload-artifact@v7
         with:
           name: release-quality-summary-${{ github.run_id }}
