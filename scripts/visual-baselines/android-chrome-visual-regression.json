@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 3,
   "approvedAt": "2026-08-09T13:23:31.837Z",
   "reason": "Reviewed compact world labels on Pixel 7 CI captures",
   "profile": {
@@ -96,5 +96,39 @@
       "height": 2201,
       "sha256": "083822ba3b28a5099745f7cceb454d8624372a57a18f0216e456a830464d9970"
     }
-  ]
+  ],
+  "provenance": {
+    "schemaVersion": 1,
+    "subjectKind": "approved-baseline-set",
+    "sourceKind": "github-actions",
+    "runId": "31462820087",
+    "runAttempt": 1,
+    "commitSha": "5d491379bca25d6ba29090381ca15a2ddbd2dc55",
+    "runUrl": "https://github.com/Po-Mato/pixel-garden-invitation/actions/runs/31462820087",
+    "checksumAlgorithm": "sha256",
+    "artifactChecksumScope": "sorted-approved-baseline-set-manifest",
+    "artifactSha256": "2cf4804b0b3f29a57ae46cc1152602f9ed9f204ed97ec622cdc3007278102a24",
+    "files": [
+      {
+        "logicalPath": "scripts/visual-baselines/android-chrome-pixel-7-api-35-chrome-directions.webp",
+        "size": 226354,
+        "sha256": "083822ba3b28a5099745f7cceb454d8624372a57a18f0216e456a830464d9970"
+      },
+      {
+        "logicalPath": "scripts/visual-baselines/android-chrome-pixel-7-api-35-chrome-game.webp",
+        "size": 1409062,
+        "sha256": "e81272801936fb56c156ea853fbb1762f3e219104138012b58156bdbe78afc06"
+      }
+    ]
+  },
+  "provenanceApproval": {
+    "kind": "unchanged-baseline-provenance-migration",
+    "approvedAt": "2026-08-11T05:47:45.322Z",
+    "reason": "기존 승인 이미지 무변경 출처 스키마 승격",
+    "previousVersion": 1,
+    "baselinePixelsChanged": false,
+    "baselineCount": 2,
+    "runId": "31462820087",
+    "commitSha": "5d491379bca25d6ba29090381ca15a2ddbd2dc55"
+  }
 }

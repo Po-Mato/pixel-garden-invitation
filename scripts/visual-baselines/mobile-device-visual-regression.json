@@ -1,5 +1,5 @@
 {
-  "version": 4,
+  "version": 5,
   "approvedAt": "2026-08-10T10:53:51.342Z",
   "reason": "번들 한글 UI 웹폰트 적용 후 2회 연속 운영 캡처에서 확인된 안정 타이포그래피",
   "pixelThreshold": 36,
@@ -330,5 +330,109 @@
         "budgetUsage": 0
       }
     }
-  ]
+  ],
+  "provenance": {
+    "schemaVersion": 1,
+    "subjectKind": "approved-baseline-set",
+    "sourceKind": "github-actions",
+    "runId": "31462820087",
+    "runAttempt": 1,
+    "commitSha": "5d491379bca25d6ba29090381ca15a2ddbd2dc55",
+    "runUrl": "https://github.com/Po-Mato/pixel-garden-invitation/actions/runs/31462820087",
+    "checksumAlgorithm": "sha256",
+    "artifactChecksumScope": "sorted-approved-baseline-set-manifest",
+    "artifactSha256": "4774379501add4a0df73b9d3ef09fd2e977eb3494028af1d4ff57cfeeedb86c9",
+    "files": [
+      {
+        "logicalPath": "scripts/visual-baselines/mobile-device-galaxy-s23-font-150-directions-xlarge-bottom.webp",
+        "size": 50456,
+        "sha256": "7e36356ac3980b45781174539ef5dfa7d249aeef28f4231f37ebec62750e83a6"
+      },
+      {
+        "logicalPath": "scripts/visual-baselines/mobile-device-galaxy-s23-font-150-directions-xlarge-middle.webp",
+        "size": 54858,
+        "sha256": "03f06f2a110bd430a7fe230e9aceacd528e86633c99f6c96e7d65dc696393713"
+      },
+      {
+        "logicalPath": "scripts/visual-baselines/mobile-device-galaxy-s23-font-150-directions-xlarge.webp",
+        "size": 56850,
+        "sha256": "b19f49d63afc41786defb697930d68cf6ba3765e880e8a54c228c59999ac03e0"
+      },
+      {
+        "logicalPath": "scripts/visual-baselines/mobile-device-galaxy-s23-font-150-game.webp",
+        "size": 321096,
+        "sha256": "b9796ae8ebd4dd04057b1712c0fab08c8dc761373d0cbfe8a49b7e9323228830"
+      },
+      {
+        "logicalPath": "scripts/visual-baselines/mobile-device-iphone-15-dynamic-type-directions-xlarge-bottom.webp",
+        "size": 50264,
+        "sha256": "9ccff1994c323295b677ab5033c30c38d22afaa7d4584a2a9fda16ab60fb342c"
+      },
+      {
+        "logicalPath": "scripts/visual-baselines/mobile-device-iphone-15-dynamic-type-directions-xlarge-middle.webp",
+        "size": 50264,
+        "sha256": "9ccff1994c323295b677ab5033c30c38d22afaa7d4584a2a9fda16ab60fb342c"
+      },
+      {
+        "logicalPath": "scripts/visual-baselines/mobile-device-iphone-15-dynamic-type-directions-xlarge.webp",
+        "size": 50204,
+        "sha256": "874dd94b188e223aaba549370014890d58b9dc357d68be594d2075f00a01109a"
+      },
+      {
+        "logicalPath": "scripts/visual-baselines/mobile-device-iphone-15-dynamic-type-game.webp",
+        "size": 378760,
+        "sha256": "c8cef26e61aabe048a7f0bec9bb0bdeb2821cb9c7647f3691d9dfc35180f847b"
+      },
+      {
+        "logicalPath": "scripts/visual-baselines/mobile-device-iphone-15-webkit-dynamic-type-directions-xlarge-bottom.webp",
+        "size": 56172,
+        "sha256": "98121d589e8e3ae79655612121bac9a1a750cb03f2b22b658718ac202c30acfc"
+      },
+      {
+        "logicalPath": "scripts/visual-baselines/mobile-device-iphone-15-webkit-dynamic-type-directions-xlarge-middle.webp",
+        "size": 56172,
+        "sha256": "98121d589e8e3ae79655612121bac9a1a750cb03f2b22b658718ac202c30acfc"
+      },
+      {
+        "logicalPath": "scripts/visual-baselines/mobile-device-iphone-15-webkit-dynamic-type-directions-xlarge.webp",
+        "size": 56172,
+        "sha256": "98121d589e8e3ae79655612121bac9a1a750cb03f2b22b658718ac202c30acfc"
+      },
+      {
+        "logicalPath": "scripts/visual-baselines/mobile-device-iphone-15-webkit-dynamic-type-game.webp",
+        "size": 362734,
+        "sha256": "3b3fb4085d04086459d1a7087dfda2f3043ca734eb46e5378fd10a22da49d7d3"
+      },
+      {
+        "logicalPath": "scripts/visual-baselines/mobile-device-iphone-15-webkit-text-200-directions-xlarge-bottom.webp",
+        "size": 45490,
+        "sha256": "1340b7e8aef4b4eef29c97cc710ab9d277ef170b1b4791bbd7167cce9870a8f1"
+      },
+      {
+        "logicalPath": "scripts/visual-baselines/mobile-device-iphone-15-webkit-text-200-directions-xlarge-middle.webp",
+        "size": 45874,
+        "sha256": "54e7fc4fc8d71ef531da47beecd504dc2f3f3dd4f087be5a3d25567ef9358483"
+      },
+      {
+        "logicalPath": "scripts/visual-baselines/mobile-device-iphone-15-webkit-text-200-directions-xlarge.webp",
+        "size": 46410,
+        "sha256": "3dc751360144cf021994369206ad5d2b199976ad2363d039846a0aed5a7a0e3c"
+      },
+      {
+        "logicalPath": "scripts/visual-baselines/mobile-device-iphone-15-webkit-text-200-game.webp",
+        "size": 363768,
+        "sha256": "08c413ee2e880bc65e9d3c4106a2360c7e3a154c141b697e40bf7419a1c32e65"
+      }
+    ]
+  },
+  "provenanceApproval": {
+    "kind": "unchanged-baseline-provenance-migration",
+    "approvedAt": "2026-08-11T05:47:45.322Z",
+    "reason": "기존 승인 이미지 무변경 출처 스키마 승격",
+    "previousVersion": 4,
+    "baselinePixelsChanged": false,
+    "baselineCount": 16,
+    "runId": "31462820087",
+    "commitSha": "5d491379bca25d6ba29090381ca15a2ddbd2dc55"
+  }
 }

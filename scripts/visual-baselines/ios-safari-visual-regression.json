@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "approvedAt": "2026-08-10T11:48:59.504Z",
   "reason": "번들 한글 UI 웹폰트 적용 후 4회 연속 실제 iOS Safari 캡처에서 확인된 안정 타이포그래피와 이름표 레이아웃",
   "profile": {
@@ -930,5 +930,59 @@
         "budgetUsage": 0
       }
     }
-  ]
+  ],
+  "provenance": {
+    "schemaVersion": 1,
+    "subjectKind": "approved-baseline-set",
+    "sourceKind": "github-actions",
+    "runId": "31462820087",
+    "runAttempt": 1,
+    "commitSha": "5d491379bca25d6ba29090381ca15a2ddbd2dc55",
+    "runUrl": "https://github.com/Po-Mato/pixel-garden-invitation/actions/runs/31462820087",
+    "checksumAlgorithm": "sha256",
+    "artifactChecksumScope": "sorted-approved-baseline-set-manifest",
+    "artifactSha256": "572905c1def80690b2df9013a443e5709f9aa15df45eaa82d957a02e649d1759",
+    "files": [
+      {
+        "logicalPath": "scripts/visual-baselines/ios-safari-iphone-16-pro-ios-18-5-safari-directions-text-200-bottom.webp",
+        "size": 355652,
+        "sha256": "0296fbb2a8a0d31914352458f4e9f60fad116ec7c98e4be860799508898cfd80"
+      },
+      {
+        "logicalPath": "scripts/visual-baselines/ios-safari-iphone-16-pro-ios-18-5-safari-directions-text-200-middle.webp",
+        "size": 308628,
+        "sha256": "c3df9106ef87c9fd26cee64e5265e3e1c0333074bf52c8f0158816b8acdfb6ec"
+      },
+      {
+        "logicalPath": "scripts/visual-baselines/ios-safari-iphone-16-pro-ios-18-5-safari-directions-text-200.webp",
+        "size": 350376,
+        "sha256": "e5cc28f83518d23075d12f9df2b74fcda0b2b6cf7ec673a99a3681372770f97a"
+      },
+      {
+        "logicalPath": "scripts/visual-baselines/ios-safari-iphone-16-pro-ios-18-5-safari-game-landscape-chrome-collapsed.webp",
+        "size": 1172114,
+        "sha256": "1eef4dc7fb3d88fbc325514876d49de47b5439a730bc3f0b56b3ed8676f18b86"
+      },
+      {
+        "logicalPath": "scripts/visual-baselines/ios-safari-iphone-16-pro-ios-18-5-safari-game-landscape-chrome-expanded.webp",
+        "size": 1173194,
+        "sha256": "1b49d13330039d28d87719b04e1a6ee076da6d5f31e96078af03779e4168e8f0"
+      },
+      {
+        "logicalPath": "scripts/visual-baselines/ios-safari-iphone-16-pro-ios-18-5-safari-game.webp",
+        "size": 1352278,
+        "sha256": "3ecce641f90a43d06c08c67b2a3c057e6b48d18eba90080c6b72c38c7c9ecc12"
+      }
+    ]
+  },
+  "provenanceApproval": {
+    "kind": "unchanged-baseline-provenance-migration",
+    "approvedAt": "2026-08-11T05:47:45.322Z",
+    "reason": "기존 승인 이미지 무변경 출처 스키마 승격",
+    "previousVersion": 2,
+    "baselinePixelsChanged": false,
+    "baselineCount": 6,
+    "runId": "31462820087",
+    "commitSha": "5d491379bca25d6ba29090381ca15a2ddbd2dc55"
+  }
 }
