@@ -1,0 +1,84 @@
+name: Reapprove trusted visual baseline provenance
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: Type MIGRATE to reapprove unchanged baseline files
+        required: true
+        type: string
+      reason:
+        description: Provenance migration approval reason
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    env:
+      APPROVAL_CONFIRMATION: ${{ inputs.confirmation }}
+      APPROVAL_REASON: ${{ inputs.reason }}
+    steps:
+      - name: Validate explicit migration approval
+        run: |
+          test "$APPROVAL_CONFIRMATION" = "MIGRATE"
+          test -n "$APPROVAL_REASON"
+      - uses: actions/checkout@v6
+        with:
+          ref: main
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 10.29.2
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+      - name: Reapprove unchanged visual baseline provenance
+        run: pnpm visual:provenance:migrate -- --approve --reason "$APPROVAL_REASON"
+      - name: Require every baseline on the current provenance schema
+        run: pnpm visual:provenance:verify -- --require-current
+      - name: Verify metadata-only migration scope
+        run: |
+          test -z "$(git diff --name-only -- 'scripts/visual-baselines/*.webp')"
+          changed="$(git diff --name-only | sort)"
+          expected="$(printf '%s\n' \
+            scripts/visual-baselines/android-chrome-visual-regression.json \
+            scripts/visual-baselines/ios-safari-visual-regression.json \
+            scripts/visual-baselines/mobile-device-visual-regression.json \
+            scripts/visual-baselines/mobile-game-visual-regression.json | sort)"
+          test "$changed" = "$expected"
+      - name: Create provenance review pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          branch="visual-baseline-provenance/${GITHUB_RUN_ID}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -c "$branch"
+          git add -- scripts/visual-baselines/*-visual-regression.json
+          git commit -m "chore: reapprove visual baseline provenance"
+          git push origin "$branch"
+          printf '%s\n' \
+            '기존 승인 이미지의 픽셀과 체크섬은 변경하지 않고, GitHub Actions 실행 정보와 기준선 묶음 체크섬을 재승인합니다.' \
+            '' \
+            "사유: ${APPROVAL_REASON}" \
+            '' \
+            '- 변경 범위: 기준선 JSON 메타데이터 4개' \
+            '- WebP 변경: 없음' \
+            '- 현행 provenance 엄격 검증: 통과' > "$RUNNER_TEMP/visual-baseline-provenance-pr.md"
+          gh pr create \
+            --base main \
+            --head "$branch" \
+            --title "chore: reapprove visual baseline provenance" \
+            --body-file "$RUNNER_TEMP/visual-baseline-provenance-pr.md"
+      - name: Upload reapproved metadata
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: visual-baseline-provenance-${{ github.run_id }}
+          path: scripts/visual-baselines/*-visual-regression.json
+          if-no-files-found: error
+          retention-days: 30

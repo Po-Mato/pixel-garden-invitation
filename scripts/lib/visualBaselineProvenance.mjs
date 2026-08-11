@@ -24,8 +24,17 @@ export function visualBaselineArtifactSha256(files) {
   return sha256(JSON.stringify(sortedFiles));
 }
 
-export async function buildVisualBaselineProvenance({ rootDir, files, captureReport = {}, env = process.env }) {
+export async function buildVisualBaselineProvenance({
+  rootDir,
+  files,
+  captureReport = {},
+  env = process.env,
+  subjectKind = "capture-set"
+}) {
   if (!Array.isArray(files) || files.length === 0) throw new Error("시각 기준선 출처 파일이 필요합니다.");
+  if (!["capture-set", "approved-baseline-set"].includes(subjectKind)) {
+    throw new Error("시각 기준선 출처 종류가 올바르지 않습니다.");
+  }
   const sourceFiles = await Promise.all(files.map(async ({ logicalPath, filePath }) => {
     if (!logicalPath?.trim() || !filePath) throw new Error("시각 기준선 출처 파일 경로가 올바르지 않습니다.");
     const [buffer, fileStat] = await Promise.all([readFile(filePath), stat(filePath)]);
@@ -44,13 +53,16 @@ export async function buildVisualBaselineProvenance({ rootDir, files, captureRep
   const runUrl = captureReport.runUrl ?? (runId && repository ? `${serverUrl}/${repository}/actions/runs/${runId}` : null);
   return {
     schemaVersion: 1,
+    subjectKind,
     sourceKind: runId ? "github-actions" : "local",
     runId: runId ? String(runId) : null,
     runAttempt,
     commitSha,
     runUrl,
     checksumAlgorithm: "sha256",
-    artifactChecksumScope: "sorted-capture-set-manifest",
+    artifactChecksumScope: subjectKind === "approved-baseline-set"
+      ? "sorted-approved-baseline-set-manifest"
+      : "sorted-capture-set-manifest",
     artifactSha256: visualBaselineArtifactSha256(sourceFiles),
     files: sourceFiles
   };

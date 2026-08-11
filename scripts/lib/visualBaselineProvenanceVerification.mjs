@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { readFile } from "node:fs/promises";
+import { readFile, stat } from "node:fs/promises";
 import path from "node:path";
 import { visualBaselineArtifactSha256 } from "./visualBaselineProvenance.mjs";
 
@@ -54,7 +54,14 @@ export function auditVisualBaselineProvenance(metadata, provenanceVersion) {
   if (provenance.checksumAlgorithm !== "sha256") {
     issues.push("provenance checksumAlgorithm must be sha256");
   }
-  if (provenance.artifactChecksumScope !== "sorted-capture-set-manifest") {
+  const subjectKind = provenance.subjectKind ?? "capture-set";
+  if (!["capture-set", "approved-baseline-set"].includes(subjectKind)) {
+    issues.push("provenance subjectKind is invalid");
+  }
+  const expectedChecksumScope = subjectKind === "approved-baseline-set"
+    ? "sorted-approved-baseline-set-manifest"
+    : "sorted-capture-set-manifest";
+  if (provenance.artifactChecksumScope !== expectedChecksumScope) {
     issues.push("provenance artifact checksum scope is invalid");
   }
   if (provenance.sourceKind === "github-actions") {
@@ -124,6 +131,29 @@ async function baselineHashIssues(rootDir, contract, metadata) {
   return issues;
 }
 
+async function approvedBaselineProvenanceIssues(rootDir, contract, metadata) {
+  if (metadata.provenance?.subjectKind !== "approved-baseline-set") return [];
+  const subjects = contract.singleSha ? [{ sha256: metadata.sha256 }] : metadata.profiles;
+  if (!Array.isArray(subjects) || subjects.length === 0) return ["approved baseline provenance subjects are missing"];
+  const expectedPaths = subjects.map((subject) => contract.baselinePath(subject)).sort((left, right) => left.localeCompare(right));
+  const provenanceFiles = metadata.provenance.files ?? [];
+  if (JSON.stringify(provenanceFiles.map(({ logicalPath }) => logicalPath)) !== JSON.stringify(expectedPaths)) {
+    return ["approved baseline provenance paths do not match baseline subjects"];
+  }
+  const issues = [];
+  for (const file of provenanceFiles) {
+    try {
+      const absolutePath = path.join(rootDir, file.logicalPath);
+      const [buffer, fileStat] = await Promise.all([readFile(absolutePath), stat(absolutePath)]);
+      if (hash(buffer) !== file.sha256) issues.push(`approved baseline provenance checksum mismatch: ${file.logicalPath}`);
+      if (fileStat.size !== file.size) issues.push(`approved baseline provenance size mismatch: ${file.logicalPath}`);
+    } catch (error) {
+      issues.push(`approved baseline provenance file unreadable: ${file.logicalPath} (${error.code ?? error.message})`);
+    }
+  }
+  return issues;
+}
+
 export async function verifyVisualBaselineProvenance({ rootDir, contracts = visualBaselineContracts }) {
   const summaries = [];
   const issues = [];
@@ -137,13 +167,15 @@ export async function verifyVisualBaselineProvenance({ rootDir, contracts = visu
     }
     const contractIssues = [
       ...await baselineHashIssues(rootDir, contract, metadata),
-      ...auditVisualBaselineProvenance(metadata, contract.provenanceVersion)
+      ...auditVisualBaselineProvenance(metadata, contract.provenanceVersion),
+      ...await approvedBaselineProvenanceIssues(rootDir, contract, metadata)
     ];
     issues.push(...contractIssues.map((issue) => `${contract.id}: ${issue}`));
     summaries.push({
       id: contract.id,
       version: metadata.version ?? null,
-      status: metadata.version >= contract.provenanceVersion ? "verified" : "legacy",
+      status: contractIssues.length > 0
+        ? "invalid" : metadata.version >= contract.provenanceVersion ? "verified" : "legacy",
       baselineCount: contract.singleSha ? 1 : Array.isArray(metadata.profiles) ? metadata.profiles.length : 0,
       issueCount: contractIssues.length
     });

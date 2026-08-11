@@ -76,7 +76,7 @@ jobs:
           HEAD_SHA: ${{ steps.source.outputs.sha }}
         run: |
           started_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)
-          gh workflow run visual-regression.yml --ref "$E2E_BRANCH"
+          gh workflow run visual-regression.yml --ref "$E2E_BRANCH" -f scope=map-evidence
           for attempt in $(seq 1 300); do
             run=$(gh run list --workflow visual-regression.yml --commit "$HEAD_SHA" --event workflow_dispatch --limit 10 --json databaseId,status,conclusion,url,createdAt 2>/dev/null || printf '[]')
             run=$(jq -c --arg started "$started_at" '[.[] | select(.createdAt >= $started)] | first // {}' <<< "$run")

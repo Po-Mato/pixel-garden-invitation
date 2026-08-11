@@ -13,9 +13,11 @@ function sample(index, outcome = "success", policyRevision = 0, durationMs = 600
     capturePhaseDurationsMs: {
       "appium-readiness": 5_000,
       "wda-session": 115_000,
+      "safari-navigation": 7_000,
       landscape: 180_000,
       "baseline-comparison": 60_000
     },
+    capturePhaseSchemaVersion: 2,
     bridgeInstallDurationMs: 4_000, appiumCacheHit: true,
     wdaMode: policyRevision === 3 ? "preinstalled" : "source-build",
     generatedAt: `2026-08-${String(index).padStart(2, "0")}T00:00:00.000Z`, policyRevision
@@ -70,12 +72,35 @@ test("iOS Safari hardened gate accepts nine of ten bounded runs", () => {
   assert.equal(trend.acceptance.cachedAppiumSamples, 10);
   assert.equal(trend.acceptance.p95QueueDurationMs, 12_000);
   assert.equal(trend.acceptance.p95BridgeInstallDurationMs, 4_000);
+  assert.equal(trend.acceptance.capturePhaseSchemaVersion, 2);
+  assert.equal(trend.acceptance.phaseTimingSamples, 10);
   assert.match(formatIosSafariStabilityMarkdown(trend), /대기 p95 12초/);
   assert.match(formatIosSafariStabilityMarkdown(trend), /Appium 캐시 10\/10/);
   assert.match(formatIosSafariStabilityMarkdown(trend), /준비 p95 240초/);
   assert.deepEqual(trend.acceptance.slowestCapturePhase, { name: "landscape", p95DurationMs: 180_000 });
   assert.match(formatIosSafariStabilityMarkdown(trend), /느린 단계 landscape p95 180초/);
+  assert.match(formatIosSafariStabilityMarkdown(trend), /단계 v2 10\/10/);
   assert.match(formatIosSafariStabilityMarkdown(trend), /recreate 1\/1/);
+});
+
+test("iOS Safari phase trend excludes the legacy combined session setup", () => {
+  const runs = Array.from({ length: 10 }, (_, index) => index === 0 ? {
+    ...sample(index + 1, "success", 3),
+    capturePhaseSchemaVersion: 1,
+    capturePhaseDurationsMs: { "session-setup": 398_402, landscape: 11_000 }
+  } : sample(index + 1, "success", 3));
+  const trend = buildIosSafariStabilityTrend(runs);
+  assert.equal(trend.acceptance.phaseTimingSamples, 9);
+  assert.equal("session-setup" in trend.acceptance.p95CapturePhaseDurationsMs, false);
+  assert.deepEqual(trend.acceptance.slowestCapturePhase, { name: "landscape", p95DurationMs: 180_000 });
+});
+
+test("iOS Safari phase schema is inferred for the first split timing sample", () => {
+  const run = sample(1, "success", 3);
+  delete run.capturePhaseSchemaVersion;
+  const trend = buildIosSafariStabilityTrend([run]);
+  assert.equal(trend.acceptance.phaseTimingSamples, 1);
+  assert.equal(trend.acceptance.capturePhaseSchemaVersion, 2);
 });
 
 test("iOS Safari hardened gate rejects clustered failures", () => {

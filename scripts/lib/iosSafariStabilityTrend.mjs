@@ -8,7 +8,8 @@ export const iosSafariStabilityPolicy = Object.freeze({
   maximumConsecutiveFailures: 1,
   requiredFaultRecoveryStrategies: ["activate-refresh", "recreate-session"],
   retainedRuns: 30,
-  policyRevision: 3
+  policyRevision: 3,
+  capturePhaseSchemaVersion: 2
 });
 
 function runIdentity(sample) {
@@ -32,6 +33,10 @@ export function normalizeCapturePhaseDurations(value) {
 }
 
 function normalizedSample(sample = {}) {
+  const capturePhaseDurationsMs = normalizeCapturePhaseDurations(sample.capturePhaseDurationsMs);
+  const inferredCapturePhaseSchemaVersion = ["appium-readiness", "wda-session", "safari-navigation"]
+    .every((name) => Object.hasOwn(capturePhaseDurationsMs, name)) ? 2
+    : Object.hasOwn(capturePhaseDurationsMs, "session-setup") ? 1 : 0;
   return {
     runId: sample.runId ? String(sample.runId) : null,
     runAttempt: Number(sample.runAttempt) || 1,
@@ -41,7 +46,8 @@ function normalizedSample(sample = {}) {
     queueDurationMs: Math.max(0, Number(sample.queueDurationMs) || 0),
     setupDurationMs: Math.max(0, Number(sample.setupDurationMs) || 0),
     captureDurationMs: Math.max(0, Number(sample.captureDurationMs) || 0),
-    capturePhaseDurationsMs: normalizeCapturePhaseDurations(sample.capturePhaseDurationsMs),
+    capturePhaseDurationsMs,
+    capturePhaseSchemaVersion: Number(sample.capturePhaseSchemaVersion) || inferredCapturePhaseSchemaVersion,
     bridgeInstallDurationMs: Math.max(0, Number(sample.bridgeInstallDurationMs) || 0),
     appiumCacheHit: sample.appiumCacheHit === true || sample.appiumCacheHit === "true",
     compositorRecoveryCount: Math.max(0, Number(sample.compositorRecoveryCount) || 0),
@@ -109,12 +115,17 @@ function summarize(samples) {
       successes: strategySamples.filter(({ compositorFaultRecovered }) => compositorFaultRecovered).length
     }];
   }));
-  const capturePhaseNames = [...new Set(samples.flatMap(({ capturePhaseDurationsMs }) => (
+  const capturePhaseSamples = samples.filter(({ capturePhaseSchemaVersion }) => (
+    capturePhaseSchemaVersion === iosSafariStabilityPolicy.capturePhaseSchemaVersion
+  ));
+  const capturePhaseNames = [...new Set(capturePhaseSamples.flatMap(({ capturePhaseDurationsMs }) => (
     Object.keys(capturePhaseDurationsMs)
   )))].sort();
   const p95CapturePhaseDurationsMs = Object.fromEntries(capturePhaseNames.map((name) => [
     name,
-    percentile(samples.map(({ capturePhaseDurationsMs }) => capturePhaseDurationsMs[name] ?? 0).filter((value) => value > 0), 0.95)
+    percentile(capturePhaseSamples
+      .map(({ capturePhaseDurationsMs }) => capturePhaseDurationsMs[name] ?? 0)
+      .filter((value) => value > 0), 0.95)
   ]));
   const slowestCapturePhase = Object.entries(p95CapturePhaseDurationsMs)
     .sort((left, right) => right[1] - left[1])[0] ?? null;
@@ -132,7 +143,8 @@ function summarize(samples) {
       ? { name: slowestCapturePhase[0], p95DurationMs: slowestCapturePhase[1] }
       : null,
     p95BridgeInstallDurationMs: percentile(bridgeInstallDurations, 0.95),
-    phaseTimingSamples: Math.min(queueDurations.length, setupDurations.length, captureDurations.length),
+    phaseTimingSamples: capturePhaseSamples.length,
+    capturePhaseSchemaVersion: iosSafariStabilityPolicy.capturePhaseSchemaVersion,
     cachedAppiumSamples: samples.filter(({ appiumCacheHit }) => appiumCacheHit).length,
     preinstalledWdaSamples: samples.filter(({ wdaMode }) => wdaMode === "preinstalled").length,
     recoveryRuns: recoverySamples.length,
@@ -234,6 +246,7 @@ export function formatIosSafariStabilityMarkdown(trend) {
       + ` · Appium 준비 p95 ${Math.round(trend.acceptance.p95BridgeInstallDurationMs / 1000)}초`
       + ` · Appium 캐시 ${trend.acceptance.cachedAppiumSamples}/${trend.acceptance.sampleCount}`
       + ` · Prebuilt WDA ${trend.acceptance.preinstalledWdaSamples}/${trend.acceptance.sampleCount}`
+      + ` · 단계 v${trend.acceptance.capturePhaseSchemaVersion} ${trend.acceptance.phaseTimingSamples}/${trend.acceptance.sampleCount}`
       + `${trend.acceptance.slowestCapturePhase
         ? ` · 느린 단계 ${trend.acceptance.slowestCapturePhase.name} p95 ${Math.round(trend.acceptance.slowestCapturePhase.p95DurationMs / 1000)}초`
         : ""}`

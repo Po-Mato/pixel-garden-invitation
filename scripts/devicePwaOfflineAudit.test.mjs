@@ -18,6 +18,14 @@ const healthy = {
   offlineGameVisible: true,
   blockingNoticeVisible: false,
   fallbackDocumentVisible: false,
+  navigatorOnlineAfterReload: true,
+  offlineEventDispatched: true,
+  transportProbe: {
+    previewHostReachableAfterStop: false,
+    browserFetchResolved: false,
+    browserError: "Failed to fetch",
+    transportBlocked: true
+  },
   criticalAssetFailures: [],
   brokenImages: [],
   pageErrors: []
@@ -40,6 +48,19 @@ test("device PWA audit rejects stale install, live host, and broken offline asse
   assert.ok(issues.some((issue) => issue.includes("서버 종료")));
   assert.ok(issues.some((issue) => issue.includes("이미지 손상")));
   assert.ok(issues.some((issue) => issue.includes("페이지 제어")));
+});
+
+test("device PWA audit rejects an offline label without blocked browser transport", () => {
+  const issues = auditDevicePwaOffline({
+    ...healthy,
+    transportProbe: {
+      previewHostReachableAfterStop: false,
+      browserFetchResolved: true,
+      browserStatus: 200,
+      transportBlocked: false
+    }
+  });
+  assert.ok(issues.includes("오프라인 실제 전송 차단 실패"));
 });
 
 test("device PWA precache diagnostics preserve the last retry state", () => {

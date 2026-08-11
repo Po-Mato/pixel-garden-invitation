@@ -43,7 +43,7 @@ test("sandbox E2E exercises the real approval label and cleans every temporary r
   assert.match(workflow, /steps\.patch\.outputs\.no_op != 'true'/);
   assert.match(workflow, /-f source_pr="\$SOURCE_PR" -f evidence_run="\$EVIDENCE_RUN"/);
   assert.match(workflow, /--event workflow_dispatch/);
-  assert.match(workflow, /visual-regression\.yml/);
+  assert.match(workflow, /gh workflow run visual-regression\.yml --ref "\$E2E_BRANCH" -f scope=map-evidence/);
   assert.match(workflow, /Build commit-matched E2E quality workspace/);
   assert.match(workflow, /gh workflow run quality-build\.yml --ref "\$E2E_BRANCH"/);
   assert.match(workflow, /gh run list --workflow quality-build\.yml --commit "\$HEAD_SHA" --event workflow_dispatch/);
@@ -57,4 +57,24 @@ test("sandbox E2E exercises the real approval label and cleans every temporary r
   assert.match(workflow, /gh pr close "\$APPLICATION_PR" --delete-branch/);
   assert.match(workflow, /gh pr close "\$SOURCE_PR" --delete-branch/);
   assert.match(workflow, /automation\/e2e-map-patch-/);
+});
+
+test("map approval evidence skips unrelated HUD and soak work without weakening full runs", async () => {
+  const workflow = await readFile(path.join(rootDir, ".github/workflows/visual-regression.yml"), "utf8");
+  assert.match(workflow, /scope:\s+[\s\S]*- full\s+- map-evidence/);
+  assert.match(workflow, /MAP_EVIDENCE_ONLY:.*inputs\.scope == 'map-evidence'/);
+  assert.match(workflow, /name: Run map approval contract tests\s+if: env\.MAP_EVIDENCE_ONLY == 'true'\s+run: pnpm maps:audit && pnpm maps:test && pnpm visual:world-layout/);
+  assert.match(workflow, /name: Audit map diagnostic screenshots\s+run: pnpm visual:map-diagnostics/);
+  for (const step of [
+    "Run the full visual contract suite",
+    "Audit live mobile HUD screenshots",
+    "Audit real two-client movement and UI collisions",
+    "Audit Android and iOS long-session stability"
+  ]) {
+    const position = workflow.indexOf(`name: ${step}`);
+    assert.ok(position >= 0, `${step} is missing`);
+    assert.match(workflow.slice(position, position + 220), /if: env\.MAP_EVIDENCE_ONLY != 'true'/);
+  }
+  assert.match(workflow, /name: Package targeted map browser evidence/);
+  assert.match(workflow, /name: Upload map foreground diagnostics\s+if: always\(\)/);
 });

@@ -166,7 +166,44 @@ export async function runDevicePwaOfflineAudit({
   if (!previewHostUnavailable) throw new Error(`${platform} PWA 프리뷰 서버가 종료되지 않았습니다.`);
   await navigate(url);
   await waitForDocument("document.querySelector('.entry-screen')", `${platform} 오프라인 진입 화면`, 60_000);
-  await evaluate(`window.dispatchEvent(new Event("offline")); return true;`);
+  const navigatorOnlineAfterReload = await evaluate(`return navigator.onLine;`);
+  await evaluate(`
+    window.__devicePwaTransportProbe = { complete: false };
+    const probeUrl = new URL("./api/__device_pwa_transport_probe__?nonce=" + Date.now(), location.href).href;
+    fetch(probeUrl, { cache: "no-store" }).then((response) => {
+      window.__devicePwaTransportProbe = {
+        complete: true,
+        url: probeUrl,
+        resolved: true,
+        status: response.status,
+        error: null
+      };
+    }).catch((error) => {
+      window.__devicePwaTransportProbe = {
+        complete: true,
+        url: probeUrl,
+        resolved: false,
+        status: null,
+        error: error instanceof Error ? error.message : String(error)
+      };
+    });
+    return true;
+  `);
+  await waitForDocument("window.__devicePwaTransportProbe?.complete === true", `${platform} 실제 전송 차단`, 15_000);
+  const browserTransportProbe = await evaluate(`return window.__devicePwaTransportProbe;`);
+  const transportProbe = {
+    previewHostReachableAfterStop: !previewHostUnavailable,
+    browserUrl: browserTransportProbe.url,
+    browserFetchResolved: browserTransportProbe.resolved,
+    browserStatus: browserTransportProbe.status,
+    browserError: browserTransportProbe.error,
+    transportBlocked: previewHostUnavailable && browserTransportProbe.resolved === false
+  };
+  const offlineEventDispatched = await evaluate(`
+    if (!navigator.onLine) return false;
+    window.dispatchEvent(new Event("offline"));
+    return true;
+  `);
   await waitForDocument("document.querySelector('.entry-screen__resume-access')", `${platform} 오프라인 이어하기`);
   await evaluate(`document.querySelector(".entry-screen__resume-access")?.click(); return true;`);
   await waitForDocument("document.querySelector('.game-world')", `${platform} 오프라인 게임 화면`, 30_000);
@@ -200,6 +237,9 @@ export async function runDevicePwaOfflineAudit({
     precacheAttempts,
     precacheFirstFailure,
     previewHostUnavailable,
+    navigatorOnlineAfterReload,
+    offlineEventDispatched,
+    transportProbe,
     ...onlineCache,
     ...offline,
     criticalAssetFailures: offline.brokenImages,

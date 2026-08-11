@@ -2,6 +2,15 @@ name: Mobile visual regression
 
 on:
   workflow_dispatch:
+    inputs:
+      scope:
+        description: Full mobile suite or the map-approval evidence subset
+        required: false
+        default: full
+        type: choice
+        options:
+          - full
+          - map-evidence
   schedule:
     - cron: "41 3 * * 1"
   pull_request:
@@ -86,6 +95,8 @@ permissions:
 jobs:
   compare:
     runs-on: ubuntu-latest
+    env:
+      MAP_EVIDENCE_ONLY: ${{ github.event_name == 'workflow_dispatch' && inputs.scope == 'map-evidence' }}
     steps:
       - uses: actions/checkout@v6
       - name: Restore shared quality dependencies
@@ -118,6 +129,7 @@ jobs:
           restore-keys: |
             world-geometry-policy-review-${{ runner.os }}-${{ github.base_ref || github.ref_name }}-
       - name: Restore low-power soak trend history
+        if: env.MAP_EVIDENCE_ONLY != 'true'
         id: mobile-soak-trend-history
         uses: actions/cache/restore@v5
         with:
@@ -125,7 +137,12 @@ jobs:
           key: mobile-soak-trend-${{ runner.os }}-${{ github.base_ref || github.ref_name }}-${{ github.sha }}
           restore-keys: |
             mobile-soak-trend-${{ runner.os }}-${{ github.base_ref || github.ref_name }}-
-      - run: pnpm visual:test
+      - name: Run the full visual contract suite
+        if: env.MAP_EVIDENCE_ONLY != 'true'
+        run: pnpm visual:test
+      - name: Run map approval contract tests
+        if: env.MAP_EVIDENCE_ONLY == 'true'
+        run: pnpm maps:audit && pnpm maps:test && pnpm visual:world-layout
       - name: Restore commit-matched production build
         id: quality-build
         uses: ./.github/actions/restore-quality-build
@@ -229,10 +246,17 @@ jobs:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-${{ runner.arch }}-1.62.0
       - name: Install mobile browser system dependencies
+        if: env.MAP_EVIDENCE_ONLY != 'true'
         run: pnpm exec playwright install-deps chromium webkit
+      - name: Install map browser system dependencies
+        if: env.MAP_EVIDENCE_ONLY == 'true'
+        run: pnpm exec playwright install-deps chromium
       - name: Install mobile browser engines on cache miss
-        if: steps.playwright-browser-cache.outputs.cache-hit != 'true'
+        if: env.MAP_EVIDENCE_ONLY != 'true' && steps.playwright-browser-cache.outputs.cache-hit != 'true'
         run: pnpm exec playwright install chromium webkit
+      - name: Install map browser engine on cache miss
+        if: env.MAP_EVIDENCE_ONLY == 'true' && steps.playwright-browser-cache.outputs.cache-hit != 'true'
+        run: pnpm exec playwright install chromium
       - name: Restore main PWA cache asset history
         if: github.event_name == 'pull_request'
         uses: actions/cache/restore@v5
@@ -242,17 +266,21 @@ jobs:
           restore-keys: |
             pwa-cache-assets-${{ runner.os }}-main-
       - name: Verify game CSS and font request budgets
+        if: env.MAP_EVIDENCE_ONLY != 'true'
         run: pnpm performance:resource-budget
       - name: Audit live mobile HUD screenshots
+        if: env.MAP_EVIDENCE_ONLY != 'true'
         run: pnpm visual:hud-browser
       - name: Audit real two-client movement and UI collisions
+        if: env.MAP_EVIDENCE_ONLY != 'true'
         run: pnpm visual:two-client
       - name: Audit map diagnostic screenshots
         run: pnpm visual:map-diagnostics
       - name: Audit Android and iOS long-session stability
+        if: env.MAP_EVIDENCE_ONLY != 'true'
         run: pnpm visual:mobile-soak
       - name: Save low-power soak trend history
-        if: success() && steps.mobile-soak-trend-history.outputs.cache-hit != 'true'
+        if: env.MAP_EVIDENCE_ONLY != 'true' && success() && steps.mobile-soak-trend-history.outputs.cache-hit != 'true'
         uses: actions/cache/save@v5
         with:
           path: .superpowers/visual-regression/mobile-device-soak/mobile-device-soak-trend-history.json
@@ -288,13 +316,16 @@ jobs:
         if: always() && hashFiles('.superpowers/visual-regression/map-diagnostics-provenance.json') != ''
         run: pnpm maps:diagnostics-provenance-summary -- --attestation-url "${{ steps.diagnostics-attestation.outputs.attestation-url }}" --run-url "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
       - name: Package content-addressed browser quality evidence
-        if: always()
+        if: always() && env.MAP_EVIDENCE_ONLY != 'true'
         run: |
           node scripts/pack-content-addressed-quality-evidence.mjs --input-dir .superpowers/visual-regression/mobile-hud-browser --output-dir .quality-artifacts/mobile-hud-browser --exclude-suffix=-diff.png
           node scripts/pack-content-addressed-quality-evidence.mjs --input-dir .superpowers/visual-regression/mobile-device-soak --output-dir .quality-artifacts/mobile-device-soak --exclude-suffix=-trace.zip
           node scripts/pack-content-addressed-quality-evidence.mjs --input-dir .superpowers/visual-regression/map-diagnostics-browser --output-dir .quality-artifacts/map-diagnostics-browser
+      - name: Package targeted map browser evidence
+        if: always() && env.MAP_EVIDENCE_ONLY == 'true'
+        run: node scripts/pack-content-addressed-quality-evidence.mjs --input-dir .superpowers/visual-regression/map-diagnostics-browser --output-dir .quality-artifacts/map-diagnostics-browser
       - name: Upload visual region report
-        if: always()
+        if: always() && env.MAP_EVIDENCE_ONLY != 'true'
         uses: actions/upload-artifact@v7
         with:
           name: mobile-visual-region-report-${{ github.run_id }}
@@ -317,7 +348,7 @@ jobs:
           if-no-files-found: ignore
           retention-days: 30
       - name: Upload visual difference
-        if: failure()
+        if: failure() && env.MAP_EVIDENCE_ONLY != 'true'
         uses: actions/upload-artifact@v7
         with:
           name: mobile-visual-regression-${{ github.run_id }}
@@ -348,7 +379,7 @@ jobs:
           if-no-files-found: ignore
           retention-days: 30
       - name: Upload world layout difference
-        if: failure()
+        if: failure() && env.MAP_EVIDENCE_ONLY != 'true'
         uses: actions/upload-artifact@v7
         with:
           name: world-layout-regression-${{ github.run_id }}
@@ -358,7 +389,7 @@ jobs:
           if-no-files-found: ignore
           retention-days: 14
       - name: Upload mobile HUD browser audit
-        if: always()
+        if: always() && env.MAP_EVIDENCE_ONLY != 'true'
         uses: actions/upload-artifact@v7
         with:
           name: mobile-hud-browser-${{ github.run_id }}
@@ -369,7 +400,7 @@ jobs:
           compression-level: 9
           retention-days: 7
       - name: Upload mobile device soak audit
-        if: always()
+        if: always() && env.MAP_EVIDENCE_ONLY != 'true'
         uses: actions/upload-artifact@v7
         with:
           name: mobile-device-soak-${{ github.run_id }}
@@ -380,7 +411,7 @@ jobs:
           compression-level: 9
           retention-days: 7
       - name: Upload short-lived mobile performance traces
-        if: always()
+        if: always() && env.MAP_EVIDENCE_ONLY != 'true'
         uses: actions/upload-artifact@v7
         with:
           name: mobile-device-traces-${{ github.run_id }}

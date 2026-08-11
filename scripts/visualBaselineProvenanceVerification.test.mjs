@@ -52,26 +52,31 @@ test("provenance verification rejects capture run and commit mismatches", () => 
   ]);
 });
 
-test("committed legacy baselines retain valid file checksums", async () => {
+test("committed baselines retain valid file checksums throughout provenance migration", async () => {
   const result = await verifyVisualBaselineProvenance({ rootDir });
   assert.equal(result.passed, true, result.issues.join("\n"));
-  assert.deepEqual(result.summaries.map(({ id, status }) => [id, status]), [
-    ["ios-safari", "legacy"],
-    ["android-chrome", "legacy"],
-    ["mobile-device", "legacy"],
-    ["mobile-game", "legacy"]
+  assert.deepEqual(result.summaries.map(({ id }) => id), [
+    "ios-safari", "android-chrome", "mobile-device", "mobile-game"
   ]);
+  assert.ok(result.summaries.every(({ status }) => ["legacy", "verified"].includes(status)));
+  assert.equal(new Set(result.summaries.map(({ status }) => status)).size, 1);
 });
 
-test("shared build and approval workflows gate baseline provenance", async () => {
-  const [qualityWorkflow, approvalWorkflow, packageSource] = await Promise.all([
+test("shared build, approval, and trusted migration workflows gate baseline provenance", async () => {
+  const [qualityWorkflow, approvalWorkflow, migrationWorkflow, packageSource] = await Promise.all([
     readFile(path.join(rootDir, ".github/workflows/quality-build.yml"), "utf8"),
     readFile(path.join(rootDir, ".github/workflows/visual-baseline-approval.yml"), "utf8"),
+    readFile(path.join(rootDir, ".github/workflows/visual-baseline-provenance-migration.yml"), "utf8"),
     readFile(path.join(rootDir, "package.json"), "utf8")
   ]);
   assert.match(qualityWorkflow, /run: pnpm visual:provenance:verify/);
   assert.match(approvalWorkflow, /name: Verify approved baseline provenance\s+run: pnpm visual:provenance:verify/);
+  assert.match(migrationWorkflow, /test "\$APPROVAL_CONFIRMATION" = "MIGRATE"/);
+  assert.match(migrationWorkflow, /pnpm visual:provenance:verify -- --require-current/);
+  assert.match(migrationWorkflow, /test -z "\$\(git diff --name-only -- 'scripts\/visual-baselines\/\*\.webp'\)"/);
   const packageJson = JSON.parse(packageSource);
   assert.equal(packageJson.scripts["visual:provenance:verify"], "node scripts/verify-visual-baseline-provenance.mjs");
+  assert.equal(packageJson.scripts["visual:provenance:migrate"], "node scripts/migrate-visual-baseline-provenance.mjs");
   assert.match(packageJson.scripts["visual:test"], /visualBaselineProvenanceVerification\.test\.mjs/);
+  assert.match(packageJson.scripts["visual:test"], /visualBaselineProvenanceMigration\.test\.mjs/);
 });
