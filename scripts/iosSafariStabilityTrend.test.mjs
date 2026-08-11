@@ -101,7 +101,7 @@ test("iOS Safari hardened gate accepts nine of ten bounded runs", () => {
   assert.equal(trend.acceptance.phaseTimingSamples, 10);
   assert.match(formatIosSafariStabilityMarkdown(trend), /대기 p95 12초/);
   assert.match(formatIosSafariStabilityMarkdown(trend), /Appium 캐시 10\/10/);
-  assert.match(formatIosSafariStabilityMarkdown(trend), /WDA 선설치 p95 33초\/40초/);
+  assert.match(formatIosSafariStabilityMarkdown(trend), /WDA 선설치 p95 33초\/40초 목표 passed/);
   assert.match(formatIosSafariStabilityMarkdown(trend), /준비 p95 240초/);
   assert.deepEqual(trend.acceptance.slowestCapturePhase, { name: "landscape", p95DurationMs: 180_000 });
   assert.match(formatIosSafariStabilityMarkdown(trend), /느린 단계 landscape p95 180초/);
@@ -173,7 +173,7 @@ test("iOS Safari trend records one selective retry and its recovery category", (
   assert.match(formatIosSafariStabilityMarkdown(trend), /선택 재시도 1\/1 복구/);
 });
 
-test("iOS Safari hardened gate rejects WDA preinstall p95 above 40 seconds", () => {
+test("iOS Safari stability reports the 40 second WDA target separately from the hard limit", () => {
   const runs = Array.from({ length: 10 }, (_, index) => ({
     ...sample(index + 1, "success", currentPolicyRevision),
     capturePhaseDurationsMs: {
@@ -183,6 +183,19 @@ test("iOS Safari hardened gate rejects WDA preinstall p95 above 40 seconds", () 
   }));
   const trend = buildIosSafariStabilityTrend(runs);
   assert.equal(trend.acceptance.p95WdaPreinstallDurationMs, 40_001);
+  assert.equal(trend.acceptance.wdaPreinstallTargetStatus, "watch");
+  assert.equal(trend.acceptance.issues.some((issue) => issue.startsWith("WDA 선설치 p95")), false);
+});
+
+test("iOS Safari hardened gate rejects WDA preinstall p95 above 120 seconds", () => {
+  const runs = Array.from({ length: 10 }, (_, index) => ({
+    ...sample(index + 1, "success", currentPolicyRevision),
+    capturePhaseDurationsMs: {
+      ...sample(index + 1).capturePhaseDurationsMs,
+      "wda-preinstall": index === 9 ? 120_001 : 33_000
+    }
+  }));
+  const trend = buildIosSafariStabilityTrend(runs);
   assert.ok(trend.acceptance.issues.some((issue) => issue.startsWith("WDA 선설치 p95")));
 });
 

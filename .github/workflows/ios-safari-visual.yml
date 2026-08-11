@@ -63,7 +63,7 @@ jobs:
           SEED_DIR="$RUNNER_TEMP/ios-safari-stability-seed"
           HISTORY_PATH=".superpowers/visual-regression/ios-safari-stability/ios-safari-stability-trend-history.json"
           mkdir -p "$SEED_DIR"
-          CURRENT_SAMPLES="$(jq -r '[.samples[] | select(.policyRevision == 5)] | length' "$HISTORY_PATH" 2>/dev/null || printf '0')"
+          CURRENT_SAMPLES="$(jq -r '[.samples[] | select(.policyRevision == 6)] | length' "$HISTORY_PATH" 2>/dev/null || printf '0')"
           LEGACY_DOWNLOADED=0
           while read -r PREVIOUS_RUN_ID; do
             test -n "$PREVIOUS_RUN_ID" || continue

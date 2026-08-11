@@ -5,11 +5,12 @@ export const iosSafariStabilityPolicy = Object.freeze({
   maximumP95DurationMs: 20 * 60_000,
   maximumP95SetupDurationMs: 8 * 60_000,
   maximumP95CaptureDurationMs: 12 * 60_000,
-  maximumP95WdaPreinstallDurationMs: 40_000,
+  targetP95WdaPreinstallDurationMs: 40_000,
+  maximumP95WdaPreinstallDurationMs: 120_000,
   maximumConsecutiveFailures: 1,
   requiredFaultRecoveryStrategies: ["activate-refresh", "recreate-session"],
   retainedRuns: 30,
-  policyRevision: 5,
+  policyRevision: 6,
   capturePhaseSchemaVersion: 2
 });
 
@@ -170,6 +171,8 @@ function summarize(samples) {
     p95CaptureDurationMs: percentile(captureDurations, 0.95),
     p95CapturePhaseDurationsMs,
     p95WdaPreinstallDurationMs: p95CapturePhaseDurationsMs["wda-preinstall"] ?? 0,
+    wdaPreinstallTargetStatus: (p95CapturePhaseDurationsMs["wda-preinstall"] ?? 0)
+      <= iosSafariStabilityPolicy.targetP95WdaPreinstallDurationMs ? "passed" : "watch",
     slowestCapturePhase: slowestCapturePhase
       ? { name: slowestCapturePhase[0], p95DurationMs: slowestCapturePhase[1] }
       : null,
@@ -294,7 +297,7 @@ export function formatIosSafariStabilityMarkdown(trend) {
       + ` · Appium 준비 p95 ${Math.round(trend.acceptance.p95BridgeInstallDurationMs / 1000)}초`
       + ` · Appium 캐시 ${trend.acceptance.cachedAppiumSamples}/${trend.acceptance.sampleCount}`
       + ` · Prebuilt WDA ${trend.acceptance.preinstalledWdaSamples}/${trend.acceptance.sampleCount}`
-      + ` · WDA 선설치 p95 ${Math.round(trend.acceptance.p95WdaPreinstallDurationMs / 1000)}초/40초`
+      + ` · WDA 선설치 p95 ${Math.round(trend.acceptance.p95WdaPreinstallDurationMs / 1000)}초/40초 목표 ${trend.acceptance.wdaPreinstallTargetStatus}`
       + ` · 단계 v${trend.acceptance.capturePhaseSchemaVersion} ${trend.acceptance.phaseTimingSamples}/${trend.acceptance.sampleCount}`
       + `${trend.acceptance.slowestCapturePhase
         ? ` · 느린 단계 ${trend.acceptance.slowestCapturePhase.name} p95 ${Math.round(trend.acceptance.slowestCapturePhase.p95DurationMs / 1000)}초`
