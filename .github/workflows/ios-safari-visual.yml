@@ -94,12 +94,14 @@ jobs:
           restore-keys: |
             ios-safari-automation-${{ runner.os }}-xcode-16.4-appium-3.6.0-xcuitest-11.4.0-
             ios-safari-automation-${{ runner.os }}-xcode-16.4-appium-3-
-      - name: Select pinned Xcode and warm Simulator services
+      - name: Select pinned Xcode and begin Simulator boot
         id: ios-simulator
         shell: bash
         run: |
           SIMULATOR_STARTED_AT_MS="$(node -p 'Date.now()')"
           export SIMULATOR_STARTED_AT_MS
+          echo "IOS_SIMULATOR_STARTED_AT_MS=$SIMULATOR_STARTED_AT_MS" >> "$GITHUB_ENV"
+          echo "started-at-ms=$SIMULATOR_STARTED_AT_MS" >> "$GITHUB_OUTPUT"
           XCODE_APP="$(find /Applications -maxdepth 1 -type d -name 'Xcode_16.4*.app' | sort | head -n 1)"
           test -n "$XCODE_APP"
           sudo xcode-select --switch "$XCODE_APP/Contents/Developer"
@@ -110,7 +112,6 @@ jobs:
           echo "IOS_SIMULATOR_UDID=$IOS_SIMULATOR_UDID" >> "$GITHUB_ENV"
           xcrun simctl boot "$IOS_SIMULATOR_UDID"
           open -Fn "$XCODE_APP/Contents/Developer/Applications/Simulator.app" --args -CurrentDeviceUDID "$IOS_SIMULATOR_UDID"
-          xcrun simctl bootstatus "$IOS_SIMULATOR_UDID" -b
           echo "duration-ms=$(node -p 'Math.max(0, Date.now() - Number(process.env.SIMULATOR_STARTED_AT_MS))')" >> "$GITHUB_OUTPUT"
       - name: Install the iOS Safari automation bridge
         id: ios-automation-bridge
@@ -118,6 +119,13 @@ jobs:
         run: |
           BRIDGE_STARTED_AT_MS="$(node -p 'Date.now()')"
           export BRIDGE_STARTED_AT_MS
+          SIMULATOR_BOOTSTATUS_LOG="$RUNNER_TEMP/ios-simulator-bootstatus.log"
+          xcrun simctl bootstatus "$IOS_SIMULATOR_UDID" -b > "$SIMULATOR_BOOTSTATUS_LOG" 2>&1 &
+          SIMULATOR_BOOTSTATUS_PID=$!
+          cleanup_bootstatus() {
+            kill "$SIMULATOR_BOOTSTATUS_PID" 2>/dev/null || true
+          }
+          trap cleanup_bootstatus EXIT
           APPIUM_CACHE_DIR="$GITHUB_WORKSPACE/.cache/ios-safari-appium"
           APPIUM_BIN="$APPIUM_CACHE_DIR/node_modules/.bin/appium"
           APPIUM_CACHE_HIT=false
@@ -142,6 +150,10 @@ jobs:
             IOS_PREBUILT_WDA_PATH="$(find "$WDA_CACHE_DIR" -type d -name 'WebDriverAgentRunner-Runner.app' | head -n 1)"
           fi
           test -n "$IOS_PREBUILT_WDA_PATH"
+          wait "$SIMULATOR_BOOTSTATUS_PID"
+          trap - EXIT
+          sed -n '1,120p' "$SIMULATOR_BOOTSTATUS_LOG"
+          SIMULATOR_BOOT_DURATION_MS="$(node -p 'Math.max(0, Date.now() - Number(process.env.IOS_SIMULATOR_STARTED_AT_MS))')"
           WDA_INSTALL_PATH="$IOS_PREBUILT_WDA_PATH"
           WDA_SOURCE_BYTES="$(du -sk "$IOS_PREBUILT_WDA_PATH" | awk '{ print $1 * 1024 }')"
           WDA_INSTALL_BYTES="$(du -sk "$WDA_INSTALL_PATH" | awk '{ print $1 * 1024 }')"
@@ -157,11 +169,13 @@ jobs:
           echo "wda-source-bytes=$WDA_SOURCE_BYTES" >> "$GITHUB_OUTPUT"
           echo "wda-install-bytes=$WDA_INSTALL_BYTES" >> "$GITHUB_OUTPUT"
           echo "wda-preinstalled=true" >> "$GITHUB_OUTPUT"
+          echo "simulator-boot-duration-ms=$SIMULATOR_BOOT_DURATION_MS" >> "$GITHUB_OUTPUT"
           echo "duration-ms=$(node -p 'Math.max(0, Date.now() - Number(process.env.BRIDGE_STARTED_AT_MS))')" >> "$GITHUB_OUTPUT"
           node scripts/check-ios-wda-preinstall-budget.mjs \
             --duration-ms "$WDA_PREINSTALL_DURATION_MS" \
             --source-bytes "$WDA_SOURCE_BYTES" \
             --install-bytes "$WDA_INSTALL_BYTES" \
+            --history .superpowers/visual-regression/ios-safari-stability/ios-safari-stability-trend-history.json \
             --budget-ms 40000
           "$APPIUM_BIN" --version
       - name: Restore commit-matched device build
@@ -323,7 +337,7 @@ jobs:
             FAILURE_KIND=infrastructure-pre-capture
           fi
           CAPTURE_PHASE_TIMINGS_JSON="$(jq -c \
-            --argjson simulatorBootMs "${{ steps.ios-simulator.outputs.duration-ms || '0' }}" \
+            --argjson simulatorBootMs "${{ steps.ios-automation-bridge.outputs.simulator-boot-duration-ms || '0' }}" \
             --argjson bridgeInstallMs "${{ steps.ios-automation-bridge.outputs.duration-ms || '0' }}" \
             --argjson wdaPreinstallMs "${{ steps.ios-automation-bridge.outputs.wda-preinstall-duration-ms || '0' }}" \
             '(.phaseTimings // {} | with_entries(.value = (.value.durationMs // 0)))

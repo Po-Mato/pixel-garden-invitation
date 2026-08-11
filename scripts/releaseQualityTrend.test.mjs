@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
+  androidCaptureRetryTrendPolicy,
+  buildAndroidCaptureRetryTrend,
   buildDevicePwaTransportTrend,
   buildReleaseQualityTrend,
   devicePwaTransportTrendPolicy,
@@ -108,6 +110,8 @@ test("device PWA transport trend keeps engine-specific errors and enforces p95 l
   assert.equal(trend.platforms.android.status, "passed");
   assert.equal(trend.platforms.android.errorKinds["failed-to-fetch"], 3);
   assert.equal(trend.platforms.android.alert.status, "armed");
+  assert.equal(trend.monitors.length, 2);
+  assert.equal(trend.activeAlerts.length, 1);
   assert.equal(trend.platforms.android.alert.active, true);
   assert.equal(trend.platforms.ios.status, "watch");
   assert.equal(trend.platforms.ios.p95LatencyMs, 2_001);
@@ -129,5 +133,48 @@ test("device PWA engine alerts remain inactive until the third distinct release"
   assert.equal(trend.status, "warming");
   assert.equal(trend.platforms.android.alert.active, false);
   assert.equal(trend.platforms.ios.alert.active, false);
+  assert.equal(trend.monitors.length, 0);
+  assert.equal(trend.activeAlerts.length, 0);
   assert.equal(trend.triggeredAlerts.length, 0);
+});
+
+test("Android capture retry trend aggregates recovered renderer disconnects", () => {
+  const snapshots = Array.from({ length: 5 }, (_, index) => ({
+    sha: `sha-${index}`,
+    generatedAt: `2026-08-0${index + 1}T00:00:00.000Z`,
+    categories: {
+      android: {
+        status: "passed",
+        metrics: {
+          captureRetryAttempted: index === 1 || index === 4,
+          captureRetryReason: index === 1 || index === 4 ? "renderer-disconnect" : null
+        }
+      }
+    }
+  }));
+  const trend = buildAndroidCaptureRetryTrend(snapshots);
+  assert.equal(androidCaptureRetryTrendPolicy.observedWindow, 10);
+  assert.equal(trend.sampleCount, 5);
+  assert.equal(trend.retryAttempts, 2);
+  assert.equal(trend.recoveredRetries, 2);
+  assert.equal(trend.retryRate, 0.4);
+  assert.deepEqual(trend.reasons, { "renderer-disconnect": 2 });
+  assert.equal(trend.status, "watch");
+  assert.equal(trend.alert.status, "triggered");
+});
+
+test("Android retry trend does not alert on one isolated recovery", () => {
+  const snapshots = Array.from({ length: 4 }, (_, index) => ({
+    sha: `sha-${index}`,
+    categories: {
+      android: {
+        status: "passed",
+        metrics: { captureRetryAttempted: index === 0, captureRetryReason: index === 0 ? "renderer-disconnect" : null }
+      }
+    }
+  }));
+  const trend = buildAndroidCaptureRetryTrend(snapshots);
+  assert.equal(trend.retryRate, 0.25);
+  assert.equal(trend.status, "passed");
+  assert.equal(trend.alert.status, "armed");
 });

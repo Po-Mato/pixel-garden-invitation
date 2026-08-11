@@ -72,4 +72,6 @@ test("mobile workflow measures the targeted scope from its first step and upload
   assert.match(workflow, /MAP_EVIDENCE_BROWSER_SETUP_FINISHED_AT_MS/);
   assert.match(workflow, /MAP_EVIDENCE_AUDIT_PROVENANCE_FINISHED_AT_MS/);
   assert.match(workflow, /map-evidence-duration-\$\{\{ github\.run_id \}\}/);
+  assert.match(workflow, /run-map-approval-contracts\.mjs/);
+  assert.match(workflow, /map-approval-contracts-duration\.json/);
 });

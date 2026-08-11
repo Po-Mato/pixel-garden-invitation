@@ -148,7 +148,7 @@ jobs:
         run: pnpm visual:test
       - name: Run map approval contract tests
         if: env.MAP_EVIDENCE_ONLY == 'true'
-        run: pnpm maps:audit && pnpm maps:test && pnpm visual:world-layout
+        run: node scripts/run-map-approval-contracts.mjs
       - name: Mark targeted map contracts complete
         if: env.MAP_EVIDENCE_ONLY == 'true'
         run: echo "MAP_EVIDENCE_CONTRACTS_FINISHED_AT_MS=$(node -p 'Date.now()')" >> "$GITHUB_ENV"
@@ -474,7 +474,9 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: map-evidence-duration-${{ github.run_id }}
-          path: .superpowers/visual-regression/map-evidence-duration.json
+          path: |
+            .superpowers/visual-regression/map-evidence-duration.json
+            .superpowers/visual-regression/map-approval-contracts-duration.json
           if-no-files-found: error
           retention-days: 30
       - name: Comment map foreground diagnostics on the pull request

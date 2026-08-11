@@ -75,8 +75,10 @@ await Promise.all([
   writeFile(transportAlertPath, `${JSON.stringify({
     generatedAt: metadata.generatedAt,
     status: summary.trend.devicePwaTransport.status,
+    monitors: summary.trend.devicePwaTransport.monitors,
     activeAlerts: summary.trend.devicePwaTransport.activeAlerts,
-    triggeredAlerts: summary.trend.devicePwaTransport.triggeredAlerts
+    triggeredAlerts: summary.trend.devicePwaTransport.triggeredAlerts,
+    notifications: summary.trend.devicePwaTransport.triggeredAlerts
   }, null, 2)}\n`)
 ]);
 if (process.env.GITHUB_STEP_SUMMARY) await appendFile(process.env.GITHUB_STEP_SUMMARY, `\n${markdown}\n`);

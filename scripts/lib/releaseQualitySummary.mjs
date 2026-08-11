@@ -114,6 +114,8 @@ export function buildReleaseQualitySummary(evidence = {}, metadata = {}) {
 
   const android = category("android", ["android"], {
     android: evidence.android ? evidence.android.comparisons?.length ?? 0 : null,
+    captureRetryAttempted: evidence.android?.retry?.attempted ?? null,
+    captureRetryReason: evidence.android?.retry?.reason ?? null,
     cachedPaths: evidence.android?.pwaOffline?.cachedPaths ?? null,
     expectedPaths: evidence.android?.pwaOffline?.expectedPaths ?? null,
     transportBlocked: evidence.android?.pwaOffline?.transportProbe?.transportBlocked ?? null,
@@ -259,9 +261,17 @@ export function formatReleaseQualitySummaryMarkdown(summary) {
       `- 기기 PWA 전송: **${summary.trend.devicePwaTransport?.status ?? "warming"}**`,
       ...Object.entries(summary.trend.devicePwaTransport?.platforms ?? {}).map(([platform, value]) => (
         `- ${platform}/${value.engine}: 차단 ${value.blockedSamples}/${value.sampleCount} · p95 ${Math.round(value.p95LatencyMs)}ms`
-        + `/${Math.round(value.alert.maximumP95LatencyMs)}ms · 경보 ${value.alert.status}`
+        + `/${Math.round(value.alert.maximumP95LatencyMs)}ms · 감시 ${value.alert.status}`
         + ` · 오류 ${Object.entries(value.errorKinds).map(([kind, count]) => `${kind} ${count}`).join(", ") || "없음"}`
-      ))
+      )),
+      ...(summary.trend.devicePwaTransport?.triggeredAlerts ?? []).map(({ platform, engine }) => (
+        `- PWA 알림 발생: ${platform}/${engine}`
+      )),
+      `- Android 캡처 재시도: **${summary.trend.androidCaptureRetry?.status ?? "warming"}**`,
+      `- 재시도 후 통과 ${summary.trend.androidCaptureRetry?.recoveredRetries ?? 0}`
+        + `/${summary.trend.androidCaptureRetry?.retryAttempts ?? 0}`
+        + ` · 최근 ${summary.trend.androidCaptureRetry?.sampleCount ?? 0}개 릴리스 중 `
+        + `${Math.round((summary.trend.androidCaptureRetry?.retryRate ?? 0) * 100)}%`
     );
   }
   const issues = summary.categories.flatMap((item) => [

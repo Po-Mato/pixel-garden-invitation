@@ -1,4 +1,4 @@
-import { appendFile, mkdir, writeFile } from "node:fs/promises";
+import { appendFile, mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import {
@@ -16,8 +16,17 @@ const outputPath = path.resolve(option(
   "--output",
   path.join(rootDir, ".superpowers/visual-regression/ios-safari/ios-wda-preinstall-budget.json")
 ));
+const historyPath = option("--history");
+const previousDurationsMs = historyPath
+  ? await readFile(path.resolve(historyPath), "utf8")
+    .then(JSON.parse, () => ({ samples: [] }))
+    .then(({ samples = [] }) => samples
+      .map((sample) => Number(sample.capturePhaseDurationsMs?.["wda-preinstall"]))
+      .filter((value) => Number.isFinite(value) && value >= 0))
+  : [];
 const report = auditIosWdaPreinstall({
   durationMs: option("--duration-ms"),
+  previousDurationsMs,
   sourceBytes: option("--source-bytes", 0),
   installBytes: option("--install-bytes", 0),
   budgetMs: option("--budget-ms", iosWdaPreinstallBudgetMs),
@@ -25,13 +34,17 @@ const report = auditIosWdaPreinstall({
 });
 await mkdir(path.dirname(outputPath), { recursive: true });
 await writeFile(outputPath, `${JSON.stringify({ generatedAt: new Date().toISOString(), ...report }, null, 2)}\n`);
-const summary = `WDA 선설치: ${Math.round(report.durationMs / 1000)}초/${Math.round(report.budgetMs / 1000)}초`
+const targetLabel = report.measurementStatus === "active"
+  ? `최근 ${report.sampleCount}회 중앙값 ${Math.round(report.medianDurationMs / 1000)}초`
+  : `현재 ${Math.round(report.durationMs / 1000)}초 · 중앙값 준비 ${report.sampleCount}/${report.requiredSampleCount}`;
+const summary = `WDA 선설치: ${targetLabel}/${Math.round(report.budgetMs / 1000)}초 목표`
+  + ` · 현재 ${Math.round(report.durationMs / 1000)}초`
   + ` · 번들 ${Math.round(report.installBytes / 1024 / 1024)}MB`
   + ` · ${report.status}`;
 if (process.env.GITHUB_STEP_SUMMARY) await appendFile(process.env.GITHUB_STEP_SUMMARY, `\n- ${summary}\n`);
 console.log(summary);
 console.log(`보고서: ${outputPath}`);
 if (report.status === "watch" && process.env.GITHUB_ACTIONS === "true") {
-  console.log(`::warning title=WDA preinstall target::${Math.round(report.durationMs / 1000)}초 > ${Math.round(report.budgetMs / 1000)}초 목표`);
+  console.log(`::warning title=WDA preinstall target::${targetLabel} > ${Math.round(report.budgetMs / 1000)}초 목표`);
 }
 if (report.status === "failed") process.exitCode = 1;

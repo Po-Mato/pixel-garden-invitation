@@ -6,6 +6,7 @@ import { buildReleaseQualitySummary, formatReleaseQualitySummaryMarkdown } from 
 function cleanEvidence() {
   const device = {
     comparisons: [{ state: "game", passed: true, changedRatio: 0.001, rawChangedRatio: 0.008, maxChangedRatio: 0.015 }],
+    retry: { attempted: false, reason: null },
     pwaOffline: {
       controlled: true,
       cachedPaths: 82,
@@ -62,6 +63,7 @@ test("release quality summary combines product and automation evidence groups", 
   assert.equal(summary.categories.find(({ id }) => id === "pwa").metrics.pagesRuntimeAssets, 86);
   assert.equal(summary.categories.find(({ id }) => id === "ios").metrics.interiorPlayerCenterErrorPx, 0.5);
   assert.equal(summary.categories.find(({ id }) => id === "android").metrics.transportBlockLatencyMs, 24);
+  assert.equal(summary.categories.find(({ id }) => id === "android").metrics.captureRetryAttempted, false);
   assert.equal(summary.visualDifferences.status, "passed");
   assert.equal(summary.visualDifferences.counts["renderer-noise"], 2);
   assert.match(formatReleaseQualitySummaryMarkdown(summary), /종합 상태: \*\*passed\*\*/);
@@ -103,10 +105,15 @@ test("release summary markdown exposes engine-specific PWA transport alert state
           errorKinds: { "failed-to-fetch": 3 },
           alert: { status: "armed", maximumP95LatencyMs: 750 }
         }
-      }
-    }
+      },
+      triggeredAlerts: []
+    },
+    androidCaptureRetry: { status: "passed", recoveredRetries: 1, retryAttempts: 1, sampleCount: 4, retryRate: 0.25 }
   };
-  assert.match(formatReleaseQualitySummaryMarkdown(summary), /android\/Chromium: 차단 3\/3 · p95 48ms\/750ms · 경보 armed/);
+  const markdown = formatReleaseQualitySummaryMarkdown(summary);
+  assert.match(markdown, /android\/Chromium: 차단 3\/3 · p95 48ms\/750ms · 감시 armed/);
+  assert.doesNotMatch(markdown, /PWA 알림 발생/);
+  assert.match(markdown, /재시도 후 통과 1\/1 · 최근 4개 릴리스 중 25%/);
 });
 
 test("release quality summary respects the deployed PWA trend status", () => {

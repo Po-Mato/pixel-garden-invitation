@@ -63,7 +63,7 @@ test("map approval evidence skips unrelated HUD and soak work without weakening 
   const workflow = await readFile(path.join(rootDir, ".github/workflows/visual-regression.yml"), "utf8");
   assert.match(workflow, /scope:\s+[\s\S]*- full\s+- map-evidence/);
   assert.match(workflow, /MAP_EVIDENCE_ONLY:.*inputs\.scope == 'map-evidence'/);
-  assert.match(workflow, /name: Run map approval contract tests\s+if: env\.MAP_EVIDENCE_ONLY == 'true'\s+run: pnpm maps:audit && pnpm maps:test && pnpm visual:world-layout/);
+  assert.match(workflow, /name: Run map approval contract tests\s+if: env\.MAP_EVIDENCE_ONLY == 'true'\s+run: node scripts\/run-map-approval-contracts\.mjs/);
   assert.match(workflow, /name: Audit map diagnostic screenshots\s+run: pnpm visual:map-diagnostics/);
   for (const step of [
     "Run the full visual contract suite",

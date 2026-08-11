@@ -138,11 +138,15 @@ test("iOS CI pins the stable Node runtime and recovers Simulator URL activation"
   assert.match(workflow, /CAPTURE_PHASE_TIMINGS_JSON/);
   assert.match(workflow, /capture-phase-timings-json/);
   assert.match(workflow, /id: ios-simulator/);
-  assert.match(workflow, /steps\.ios-simulator\.outputs\.duration-ms/);
+  assert.match(workflow, /steps\.ios-automation-bridge\.outputs\.simulator-boot-duration-ms/);
+  assert.match(workflow, /simctl bootstatus "\$IOS_SIMULATOR_UDID" -b[^\n]*&/);
+  assert.match(workflow, /SIMULATOR_BOOTSTATUS_PID/);
+  assert.match(workflow, /simulator-boot-duration-ms/);
   assert.match(workflow, /Simulator\.app" --args -CurrentDeviceUDID/);
   assert.match(workflow, /WDA_INSTALL_PATH="\$IOS_PREBUILT_WDA_PATH"/);
   assert.match(workflow, /simctl install "\$IOS_SIMULATOR_UDID" "\$WDA_INSTALL_PATH"/);
   assert.match(workflow, /check-ios-wda-preinstall-budget\.mjs[\s\S]*--budget-ms 40000/);
+  assert.match(workflow, /--history \.superpowers\/visual-regression\/ios-safari-stability\/ios-safari-stability-trend-history\.json/);
   assert.match(workflow, /simctl get_app_container/);
   assert.match(workflow, /IOS_WDA_PREINSTALLED=true/);
   assert.match(workflow, /IOS_PREINSTALLED_WDA_BUNDLE_ID=com\.facebook\.WebDriverAgentRunner/);

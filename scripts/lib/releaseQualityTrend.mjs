@@ -14,6 +14,12 @@ export const devicePwaTransportTrendPolicy = Object.freeze({
     ios: Object.freeze({ engine: "WebKit", maximumP95LatencyMs: 1_000 })
   })
 });
+export const androidCaptureRetryTrendPolicy = Object.freeze({
+  observedWindow: 10,
+  requiredSamples: 3,
+  maximumRetryRate: 0.25,
+  minimumRetryAttemptsForAlert: 2
+});
 
 function percentile(values, ratio) {
   if (values.length === 0) return 0;
@@ -78,13 +84,63 @@ export function buildDevicePwaTransportTrend(snapshots = []) {
     status: values.some(({ status }) => status === "watch")
       ? "watch" : values.some(({ status }) => status === "warming") ? "warming" : "passed",
     platforms,
-    activeAlerts: Object.entries(platforms)
+    monitors: Object.entries(platforms)
       .filter(([, value]) => value.alert.active)
+      .map(([platform, value]) => ({ platform, ...value.alert })),
+    activeAlerts: Object.entries(platforms)
+      .filter(([, value]) => value.alert.triggered)
       .map(([platform, value]) => ({ platform, ...value.alert })),
     triggeredAlerts: Object.entries(platforms)
       .filter(([, value]) => value.alert.triggered)
       .map(([platform, value]) => ({ platform, ...value.alert })),
     issues: Object.entries(platforms).flatMap(([platform, value]) => value.issues.map((issue) => `${platform}: ${issue}`))
+  };
+}
+
+export function buildAndroidCaptureRetryTrend(snapshots = []) {
+  const samples = snapshots
+    .filter(({ sha }, index, values) => sha && values.findLastIndex((candidate) => candidate.sha === sha) === index)
+    .map((snapshot) => {
+      const android = snapshot.categories?.android;
+      const attempted = android?.metrics?.captureRetryAttempted;
+      if (typeof attempted !== "boolean") return null;
+      return {
+        sha: snapshot.sha,
+        generatedAt: snapshot.generatedAt,
+        attempted,
+        recovered: attempted && android.status === "passed",
+        reason: attempted ? android.metrics?.captureRetryReason ?? "unknown" : null
+      };
+    })
+    .filter(Boolean)
+    .slice(-androidCaptureRetryTrendPolicy.observedWindow);
+  const retrySamples = samples.filter(({ attempted }) => attempted);
+  const retryAttempts = retrySamples.length;
+  const recoveredRetries = retrySamples.filter(({ recovered }) => recovered).length;
+  const retryRate = samples.length === 0 ? 0 : retryAttempts / samples.length;
+  const active = samples.length >= androidCaptureRetryTrendPolicy.requiredSamples;
+  const triggered = active
+    && retryAttempts >= androidCaptureRetryTrendPolicy.minimumRetryAttemptsForAlert
+    && retryRate > androidCaptureRetryTrendPolicy.maximumRetryRate;
+  const reasons = Object.fromEntries([...new Set(retrySamples.map(({ reason }) => reason))]
+    .sort()
+    .map((reason) => [reason, retrySamples.filter((sample) => sample.reason === reason).length]));
+  return {
+    status: !active ? "warming" : triggered ? "watch" : "passed",
+    sampleCount: samples.length,
+    retryAttempts,
+    recoveredRetries,
+    retryRate,
+    recoveryRate: retryAttempts === 0 ? 1 : recoveredRetries / retryAttempts,
+    reasons,
+    alert: {
+      active,
+      triggered,
+      status: !active ? "warming" : triggered ? "triggered" : "armed",
+      maximumRetryRate: androidCaptureRetryTrendPolicy.maximumRetryRate,
+      minimumRetryAttempts: androidCaptureRetryTrendPolicy.minimumRetryAttemptsForAlert
+    },
+    samples
   };
 }
 
@@ -197,6 +253,7 @@ export function buildReleaseQualityTrend(summary, history = { version: 1, snapsh
   const withoutCurrent = previousSnapshots.filter(({ sha }) => !current.sha || sha !== current.sha);
   const snapshots = [...withoutCurrent, current].slice(-limit);
   const devicePwaTransport = buildDevicePwaTransportTrend(snapshots);
+  const androidCaptureRetry = buildAndroidCaptureRetryTrend(snapshots);
   return {
     history: { version: 1, snapshots },
     trend: {
@@ -204,13 +261,15 @@ export function buildReleaseQualityTrend(summary, history = { version: 1, snapsh
         ? "warming"
         : regressions.length > 0
           || watchStructural.status === "review-required"
-          || devicePwaTransport.status === "watch" ? "watch" : "stable",
+          || devicePwaTransport.status === "watch"
+          || androidCaptureRetry.status === "watch" ? "watch" : "stable",
       previousSha: previous?.sha ?? null,
       sampleCount: snapshots.length,
       comparisons,
       regressions,
       watchStructural,
-      devicePwaTransport
+      devicePwaTransport,
+      androidCaptureRetry
     }
   };
 }
