@@ -110,7 +110,22 @@ jobs:
             adb shell dumpsys package com.android.chrome | grep versionName | head -n 1
             adb reverse tcp:4179 tcp:4179
             adb reverse tcp:4188 tcp:4188
-            ANDROID_EMULATOR_SERIAL=emulator-5554 pnpm visual:android-chrome -- --mode auto --url http://127.0.0.1:4179/ --pwa-url http://127.0.0.1:4188/ --preview-host-url http://127.0.0.1:4188/ --appium-url http://127.0.0.1:4725/wd/hub
+            ANDROID_CAPTURE_LOG="$RUNNER_TEMP/android-chrome-capture-attempt-1.log"
+            set +e
+            ANDROID_EMULATOR_SERIAL=emulator-5554 pnpm visual:android-chrome -- --mode auto --url http://127.0.0.1:4179/ --pwa-url http://127.0.0.1:4188/ --preview-host-url http://127.0.0.1:4188/ --appium-url http://127.0.0.1:4725/wd/hub > "$ANDROID_CAPTURE_LOG" 2>&1
+            ANDROID_CAPTURE_STATUS=$?
+            set -e
+            cat "$ANDROID_CAPTURE_LOG"
+            if test "$ANDROID_CAPTURE_STATUS" -eq 0; then
+              exit 0
+            fi
+            if ! grep -Eq 'disconnected: Unable to receive message from renderer|not connected to DevTools' "$ANDROID_CAPTURE_LOG"; then
+              exit "$ANDROID_CAPTURE_STATUS"
+            fi
+            echo 'Android Chrome 렌더러 단절 감지: 세션 재생성 후 1회 재시도'
+            adb shell am force-stop com.android.chrome || true
+            sleep 2
+            ANDROID_CAPTURE_RETRY=renderer-disconnect ANDROID_EMULATOR_SERIAL=emulator-5554 pnpm visual:android-chrome -- --mode auto --url http://127.0.0.1:4179/ --pwa-url http://127.0.0.1:4188/ --preview-host-url http://127.0.0.1:4188/ --appium-url http://127.0.0.1:4725/wd/hub
       - name: Stop invitation server
         if: always()
         shell: bash
@@ -131,6 +146,7 @@ jobs:
             ${{ runner.temp }}/android-chrome-vite.log
             ${{ runner.temp }}/android-chrome-pwa-preview.log
             ${{ runner.temp }}/android-chrome-appium.log
+            ${{ runner.temp }}/android-chrome-capture-attempt-1.log
           if-no-files-found: warn
           include-hidden-files: true
           compression-level: 9

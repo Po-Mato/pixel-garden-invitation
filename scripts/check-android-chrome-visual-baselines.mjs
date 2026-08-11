@@ -112,6 +112,10 @@ const captureReport = {
   runUrl: process.env.GITHUB_RUN_ID && process.env.GITHUB_REPOSITORY
     ? `${process.env.GITHUB_SERVER_URL ?? "https://github.com"}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`
     : null,
+  retry: {
+    attempted: process.env.ANDROID_CAPTURE_RETRY === "renderer-disconnect",
+    reason: process.env.ANDROID_CAPTURE_RETRY ?? null
+  },
   networkReadiness: {},
   pwaOffline: null,
   scrollStates: {},
