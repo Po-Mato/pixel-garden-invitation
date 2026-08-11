@@ -415,6 +415,19 @@
   outline-offset: 2px;
 }
 
+/* The destination card in the fixed HUD remains the primary route action.
+   Keep its matching map marker readable, but smaller than nearby content. */
+.world-spot--recommended:not(.world-spot--target)[data-proximity="mid"] .world-spot__card {
+  opacity: 0.76;
+  transform: scale(0.88);
+}
+
+.world-spot--recommended:not(.world-spot--target)[data-proximity="far"] .world-spot__card {
+  opacity: 0.46;
+  transform: scale(0.78);
+  box-shadow: 0 3px 9px color-mix(in srgb, var(--spot-edge) 12%, transparent);
+}
+
 .world-spot:focus-visible {
   outline: 0;
   box-shadow: none;
