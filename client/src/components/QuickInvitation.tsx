@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import {
   ArrowLeft,
   CalendarDays,
+  ChevronDown,
+  Gamepad2,
   Heart,
   HeartHandshake,
   MapPin,
@@ -189,20 +191,6 @@ export function QuickInvitation({
       <InvitationPriorityActions event={event} now={now} onSelect={(id) => scrollToSection(id)} />
       <RsvpSavedStatus event={event} onOpenDetails={() => scrollToSection("rsvp")} />
 
-      <nav className="quick-destination-nav" aria-label="초대장 목적지 탐색">
-        <strong>여정 목적지</strong>
-        <ol>
-          {journeyCheckpoints.map((checkpoint, index) => (
-            <li key={checkpoint.id}>
-              <a href={quickInvitationHashForCheckpoint(checkpoint)}>
-                <b>{index + 1}</b>
-                <span><strong>{checkpoint.label}</strong><small>{checkpoint.detail}</small></span>
-              </a>
-            </li>
-          ))}
-        </ol>
-      </nav>
-
       <section className="quick-intro quick-band" aria-labelledby="quick-intro-title">
         <Sparkles aria-hidden="true" />
         <p>서로의 계절을 함께 걷기로 했습니다.</p>
@@ -284,6 +272,26 @@ export function QuickInvitation({
           <GuestbookExperience nickname={nickname} />
         </DeferredContent>
       </section>
+
+      <details className="quick-destination-disclosure">
+        <summary>
+          <Gamepad2 aria-hidden="true" />
+          <span><strong>게임으로 둘러볼 장소</strong><small>선택 사항 · 여정 {journeyCheckpoints.length}곳</small></span>
+          <ChevronDown aria-hidden="true" />
+        </summary>
+        <nav className="quick-destination-nav" aria-label="초대장 목적지 탐색">
+          <ol>
+            {journeyCheckpoints.map((checkpoint, index) => (
+              <li key={checkpoint.id}>
+                <a href={quickInvitationHashForCheckpoint(checkpoint)}>
+                  <b>{index + 1}</b>
+                  <span><strong>{checkpoint.label}</strong><small>{checkpoint.detail}</small></span>
+                </a>
+              </li>
+            ))}
+          </ol>
+        </nav>
+      </details>
 
       <section className="quick-closing quick-band" id="share">
         <Heart aria-hidden="true" />

@@ -40,6 +40,7 @@ it("주소를 복사하고 성공 상태를 알린다", async () => {
 
   expect(copyText).toHaveBeenCalledWith("경기 부천시 소사구 경인로 386");
   expect(await screen.findByText("주소를 복사했습니다.")).toHaveAttribute("aria-live", "polite");
+  expect(screen.getByRole("button", { name: "주소 복사" })).toHaveTextContent("복사됨");
 });
 
 it("주소 복사 실패 후에도 주소를 표시하고 오류를 알린다", async () => {

@@ -212,6 +212,25 @@
   border-radius: 50%;
 }
 
+.game-quick-dock .world-menu-button {
+  grid-template-rows: 21px auto;
+  align-content: center;
+  gap: 1px;
+}
+
+.game-quick-dock .world-menu-button > .game-quick-dock__menu-icon {
+  width: 21px;
+  height: 21px;
+}
+
+.game-quick-dock .world-menu-button > small {
+  color: var(--game-wine);
+  font-size: 8px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
 .world-context-action {
   width: min(196px, calc(100% - 24px));
   min-height: 44px;
@@ -393,6 +412,19 @@
 .world-spot--recommended:not(.world-spot--target) .world-spot__card {
   outline: 2px dashed rgba(255, 239, 132, 0.96);
   outline-offset: 2px;
+}
+
+/* The top destination card already carries the primary route action. Keep the
+   matching map marker discoverable without letting it dominate distant art. */
+.world-spot--recommended:not(.world-spot--target)[data-proximity="mid"] .world-spot__card {
+  opacity: 0.76;
+  transform: scale(0.88);
+}
+
+.world-spot--recommended:not(.world-spot--target)[data-proximity="far"] .world-spot__card {
+  opacity: 0.46;
+  transform: scale(0.78);
+  box-shadow: 0 3px 9px color-mix(in srgb, var(--spot-edge) 12%, transparent);
 }
 
 .world-spot:focus-visible {

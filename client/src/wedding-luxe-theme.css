@@ -439,14 +439,47 @@ body {
   white-space: nowrap;
 }
 
+.directions-sheet__venue > button[data-status="copied"] {
+  border-color: rgba(78, 121, 96, 0.46);
+  background: #edf5ef;
+  color: #315d47;
+}
+
+.directions-sheet__status {
+  min-height: 0;
+  margin: -4px 4px 0 52px;
+  color: #4f6d5d;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.directions-sheet__status[data-status="error"] {
+  color: #8c3f4c;
+}
+
 .directions-sheet__status:empty {
   display: none;
+}
+
+.quick-invitation__nav {
+  position: static;
+  top: auto;
+  justify-content: center;
+  gap: 0 8px;
+  padding-block: 6px;
+  flex-wrap: wrap;
+  background: #fffdf9;
+  backdrop-filter: none;
 }
 
 @media (max-width: 360px) {
   .directions-sheet {
     --directions-icon-column: 24px;
     gap: 9px;
+  }
+
+  .directions-sheet__status {
+    margin-inline: 0;
   }
 
   .directions-sheet__venue,

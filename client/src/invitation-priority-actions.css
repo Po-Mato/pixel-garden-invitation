@@ -73,6 +73,86 @@
   padding: 18px clamp(18px, 5vw, 30px) 26px;
 }
 
+.quick-destination-disclosure {
+  width: min(calc(100% - 36px), 700px);
+  margin: 30px auto 42px;
+  border: 1px solid #d9e2dc;
+  border-radius: 14px;
+  background: #f7f9f6;
+  color: #31483d;
+}
+
+.quick-destination-disclosure > summary {
+  display: grid;
+  min-height: 58px;
+  grid-template-columns: 34px minmax(0, 1fr) 18px;
+  align-items: center;
+  gap: 9px;
+  padding: 9px 12px;
+  cursor: pointer;
+  list-style: none;
+}
+
+.quick-destination-disclosure > summary::-webkit-details-marker {
+  display: none;
+}
+
+.quick-destination-disclosure > summary > svg:first-child {
+  box-sizing: border-box;
+  width: 34px;
+  height: 34px;
+  border: 1px solid #d4dfd8;
+  border-radius: 50%;
+  padding: 7px;
+  background: #fff;
+  color: #587064;
+}
+
+.quick-destination-disclosure > summary > span {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+
+.quick-destination-disclosure > summary strong {
+  font-size: 0.82rem;
+}
+
+.quick-destination-disclosure > summary small {
+  color: #75827b;
+  font-size: 0.68rem;
+}
+
+.quick-destination-disclosure > summary > svg:last-child {
+  width: 18px;
+  height: 18px;
+  transition: transform 160ms ease;
+}
+
+.quick-destination-disclosure[open] > summary > svg:last-child {
+  transform: rotate(180deg);
+}
+
+.quick-destination-disclosure .quick-destination-nav {
+  width: auto;
+  margin: 0 12px;
+  padding: 0 0 14px;
+  border-top: 1px solid #e0e7e2;
+}
+
+.quick-destination-disclosure .quick-destination-nav ol {
+  border-top: 0;
+}
+
+.quick-destination-disclosure > summary:focus-visible {
+  outline: 3px solid #8f4f5f;
+  outline-offset: 2px;
+}
+
+html[data-reduce-motion="true"] .quick-destination-disclosure > summary > svg:last-child {
+  transition: none;
+}
+
 .quick-destination-nav > strong {
   display: block;
   margin-bottom: 10px;

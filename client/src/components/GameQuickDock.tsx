@@ -222,6 +222,7 @@ export function GameQuickDock({
         onClick={onOpenMenu}
       >
         <span className="game-quick-dock__menu-icon" aria-hidden="true"><BookOpen /></span>
+        <small aria-hidden="true">초대장</small>
       </button>
     </div>
   );

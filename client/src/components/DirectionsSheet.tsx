@@ -1,5 +1,5 @@
 import { useState, type RefObject } from "react";
-import { Car, Copy, ExternalLink, MapPinned, Phone, TrainFront } from "lucide-react";
+import { Car, Check, Copy, ExternalLink, MapPinned, Phone, TrainFront } from "lucide-react";
 import { invitationContent, type WeddingEvent } from "@wedding-game/shared";
 import { copyText } from "../invitation/browserActions";
 import { buildDirectionsLinks } from "../invitation/directions";
@@ -54,13 +54,23 @@ export function DirectionsContent({ venue = invitationContent.event.venue }: Dir
         <button
           type="button"
           aria-label="주소 복사"
+          data-status={copyStatus === "copied" ? "copied" : undefined}
           disabled={copyStatus === "copying"}
           onClick={copyAddress}
         >
-          <Copy aria-hidden="true" />
-          <span>복사</span>
+          {copyStatus === "copied" ? <Check aria-hidden="true" /> : <Copy aria-hidden="true" />}
+          <span>{copyStatus === "copying" ? "복사 중" : copyStatus === "copied" ? "복사됨" : "복사"}</span>
         </button>
       </section>
+
+      <p
+        className="directions-sheet__status"
+        data-status={copyStatus === "error" ? "error" : copyStatus === "copied" ? "copied" : undefined}
+        aria-live="polite"
+      >
+        {copyStatus === "copied" ? "주소를 복사했습니다." : null}
+        {copyStatus === "error" ? "복사하지 못했습니다. 주소를 길게 눌러 복사해주세요." : null}
+      </p>
 
       <div className="directions-sheet__maps">
         {mapLinks.map(([label, href, provider]) =>
@@ -113,11 +123,6 @@ export function DirectionsContent({ venue = invitationContent.event.venue }: Dir
           </a>
         ) : null}
       </section>
-
-      <p className="directions-sheet__status" aria-live="polite">
-        {copyStatus === "copied" ? "주소를 복사했습니다." : null}
-        {copyStatus === "error" ? "복사하지 못했습니다. 주소를 길게 눌러 복사해주세요." : null}
-      </p>
     </div>
   );
 }

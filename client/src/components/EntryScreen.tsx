@@ -232,7 +232,7 @@ export function EntryScreen({
             onClick={onQuickView}
           >
             <BookOpen aria-hidden="true" />
-            <span><small>게임 없이 가볍게</small><strong>초대장 바로 보기</strong></span>
+            <span><small>일정 · 사진 · 오시는 길</small><strong>초대장 바로 보기</strong></span>
             <ChevronRight aria-hidden="true" />
           </button>
         ) : null}
@@ -271,8 +271,8 @@ export function EntryScreen({
             />
           </span>
           <span>
-            <small>게임으로 둘러보기</small>
-            <strong>{selectedPreset.label}로 정원 입장</strong>
+            <small>게임은 선택 사항</small>
+            <strong>{selectedPreset.label}로 정원 둘러보기</strong>
           </span>
           <span className="entry-screen__character-command">
             <Sparkles aria-hidden="true" />
