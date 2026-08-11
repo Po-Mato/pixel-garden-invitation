@@ -14,6 +14,7 @@ describe("에디토리얼 웨딩 갤러리", () => {
     const photos = invitationContent.content.gallery;
     const buttons = screen.getAllByRole("button", { name: /사진 \d+:/ });
     expect(buttons).toHaveLength(10);
+    expect(screen.getAllByText("크게 보기")).toHaveLength(10);
     expect(buttons.map((button) => button.getAttribute("aria-label"))).toEqual(
       photos.map((photo, index) => `사진 ${index + 1}: ${photo.alt}`)
     );

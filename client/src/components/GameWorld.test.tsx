@@ -491,6 +491,7 @@ describe("GameWorld", () => {
     render(<GameWorld profile={profile} />);
 
     expect(screen.getByText("목적지 · 오시는 길")).toBeInTheDocument();
+    expect(screen.queryByTestId("world-destination-beacon")).not.toBeInTheDocument();
     expect(screen.getByTestId("minimap-destination-route")).toHaveAttribute("data-route-kind", "preview");
     expect(screen.getByTestId("minimap-route-progress")).toHaveTextContent("경로 미리보기");
     expect(screen.getByTestId("minimap-journey-marker")).toHaveClass("world-minimap__journey-marker--recommended");
@@ -551,6 +552,7 @@ describe("GameWorld", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "다음 목적지 웨딩 갤러리, 예식장 로비로 이동" }));
     expect(screen.getByRole("button", { name: "동네로 나가기" })).toHaveClass("world-portal--target");
+    expect(screen.getByTestId("world-destination-beacon")).toHaveTextContent("동네로 나가기");
 
     advanceRouteToPortalArrival();
     expect(screen.getByTestId("world-portal-transition")).toHaveAttribute("data-continuous-journey", "true");

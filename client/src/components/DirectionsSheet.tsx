@@ -21,9 +21,9 @@ export function DirectionsContent({ venue = invitationContent.event.venue }: Dir
   const links = buildDirectionsLinks(venue);
   const [copyStatus, setCopyStatus] = useState<CopyStatus>("idle");
   const mapLinks = [
-    ["네이버지도", links.naver, "naver"],
-    ["카카오맵", links.kakao, "kakao"],
-    ["Google 지도", links.google, "google"]
+    ["네이버지도", links.naver, "naver", true],
+    ["카카오맵", links.kakao, "kakao", false],
+    ["Google 지도", links.google, "google", false]
   ] as const;
 
   const copyAddress = async () => {
@@ -72,42 +72,58 @@ export function DirectionsContent({ venue = invitationContent.event.venue }: Dir
         {copyStatus === "error" ? "복사하지 못했습니다. 주소를 길게 눌러 복사해주세요." : null}
       </p>
 
-      <div className="directions-sheet__maps">
-        {mapLinks.map(([label, href, provider]) =>
-          href ? (
-            <a
-              key={label}
-              href={href}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => trackInvitationAnalytics("map_click", provider)}
-            >
-              <ExternalLink aria-hidden="true" />
-              {label}
-            </a>
-          ) : (
-            <button key={label} type="button" disabled>
-              <ExternalLink aria-hidden="true" />
-              {label}
-            </button>
-          )
-        )}
-      </div>
-
-      <section className="directions-sheet__info">
-        <TrainFront aria-hidden="true" />
-        <div>
-          <strong>대중교통</strong>
-          <span>{venue.directions.transit}</span>
+      <section className="directions-sheet__route-actions" aria-labelledby="directions-map-title">
+        <header>
+          <h3 id="directions-map-title">지도 앱으로 길 찾기</h3>
+          <span>원하는 앱을 선택하세요</span>
+        </header>
+        <div className="directions-sheet__maps">
+          {mapLinks.map(([label, href, provider, preferred]) =>
+            href ? (
+              <a
+                key={label}
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                data-primary={preferred || undefined}
+                onClick={() => trackInvitationAnalytics("map_click", provider)}
+              >
+                <ExternalLink aria-hidden="true" />
+                <span>
+                  <strong>{label}</strong>
+                  {preferred ? <small>추천</small> : null}
+                </span>
+              </a>
+            ) : (
+              <button key={label} type="button" data-primary={preferred || undefined} disabled>
+                <ExternalLink aria-hidden="true" />
+                <span>
+                  <strong>{label}</strong>
+                  {preferred ? <small>추천</small> : null}
+                </span>
+              </button>
+            )
+          )}
         </div>
       </section>
 
-      <section className="directions-sheet__info">
-        <Car aria-hidden="true" />
-        <div>
-          <strong>자가용·주차</strong>
-          <span>{venue.directions.parking}</span>
-        </div>
+      <section className="directions-sheet__travel-notes" aria-labelledby="directions-travel-title">
+        <h3 id="directions-travel-title">교통 안내</h3>
+        <section className="directions-sheet__info">
+          <TrainFront aria-hidden="true" />
+          <div>
+            <strong>대중교통</strong>
+            <span>{venue.directions.transit}</span>
+          </div>
+        </section>
+
+        <section className="directions-sheet__info">
+          <Car aria-hidden="true" />
+          <div>
+            <strong>자가용·주차</strong>
+            <span>{venue.directions.parking}</span>
+          </div>
+        </section>
       </section>
 
       <section className="directions-sheet__phone">

@@ -1,5 +1,5 @@
 import type { WeddingGalleryPhoto } from "@wedding-game/shared";
-import { ChevronLeft, ChevronRight, ImageUp, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, ImageUp, MoveHorizontal, X } from "lucide-react";
 import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
 import { createPortal } from "react-dom";
 import { isolateAppForModal } from "../accessibility/modalIsolation";
@@ -226,6 +226,7 @@ export function PhotoLightbox({ photos, index, onIndexChange, onClose }: PhotoLi
           onClick={onClose}
         >
           <X aria-hidden="true" />
+          <span>닫기</span>
         </button>
       </header>
 
@@ -270,6 +271,12 @@ export function PhotoLightbox({ photos, index, onIndexChange, onClose }: PhotoLi
       </div>
 
       <footer className="photo-lightbox__footer">
+        {photos.length > 1 ? (
+          <p className="photo-lightbox__gesture" aria-hidden="true">
+            <MoveHorizontal />
+            좌우로 넘겨보기
+          </p>
+        ) : null}
         {networkMode === "economy" && !fullQuality ? (
           <button className="photo-lightbox__quality" type="button" onClick={() => setFullQualityPhotoId(photo.id)}>
             <ImageUp aria-hidden="true" /> 이 사진 고화질로 보기

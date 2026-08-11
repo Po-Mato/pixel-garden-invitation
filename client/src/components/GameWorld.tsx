@@ -4012,6 +4012,16 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   const accessibleDestinationRemainingTiles = selectedTravelPath.length > 0
     ? selectedTravelPath.length
     : journeyGuidance?.tileCount ?? 0;
+  const destinationUsesWorldSpotCard = Boolean(
+    interactionIntent?.spotId
+    || (
+      !interactionIntent
+      && !portalIntent
+      && !target
+      && destinationCheckpoint?.zoneId === activeZone.id
+      && destinationCheckpoint.target.type === "spot"
+    )
+  );
   const activeRouteArrivalCue = directTravelActive && miniMapDestinationLabel
     ? routeArrivalCue(selectedTravelPath.length, miniMapDestinationLabel, Boolean(portalIntent))
     : null;
@@ -5376,7 +5386,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
                 </g>
               </svg>
             ) : null}
-            {accessibleDestinationPoint && miniMapDestinationLabel ? (
+            {accessibleDestinationPoint && miniMapDestinationLabel && !destinationUsesWorldSpotCard ? (
               <WorldDestinationBeacon
                 point={accessibleDestinationPoint}
                 label={miniMapDestinationLabel}

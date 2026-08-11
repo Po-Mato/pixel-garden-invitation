@@ -8,6 +8,7 @@ const refinedGameStyles = readFileSync("src/game-refined-theme.css", "utf8");
 const devicePerformanceStyles = readFileSync("src/device-performance.css", "utf8");
 const mapVisualEnhancementStyles = readFileSync("src/map-visual-enhancements.css", "utf8");
 const weddingLuxeStyles = readFileSync("src/wedding-luxe-theme.css", "utf8");
+const entryScreenStyles = readFileSync("src/entry-screen-v3.css", "utf8");
 const quickInvitationStyles = readFileSync("src/quick-invitation-continuity.css", "utf8");
 const worldZones = [
   "home",
@@ -147,6 +148,12 @@ describe("entry screen layout", () => {
   it("adapts the entry composition for short mobile viewports", () => {
     expect(styles).toMatch(/@media \(max-height:\s*640px\)[\s\S]*\.character-customizer/);
     expect(styles).toMatch(/@media \(prefers-reduced-motion:\s*reduce\)[\s\S]*entry-prism/);
+  });
+
+  it("keeps 320 to 430px entry copy balanced without hiding the venue", () => {
+    expect(entryScreenStyles).toContain("@media (min-width: 320px) and (max-width: 430px)");
+    expect(entryScreenStyles).toMatch(/\.entry-screen h1\s*\{[^}]*text-wrap:\s*balance;/s);
+    expect(entryScreenStyles).toMatch(/\.entry-screen__event-brief strong\s*\{[^}]*white-space:\s*normal;[^}]*-webkit-line-clamp:\s*2;/s);
   });
 });
 

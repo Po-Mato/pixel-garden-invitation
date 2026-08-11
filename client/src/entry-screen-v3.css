@@ -382,6 +382,78 @@
   }
 }
 
+/* Phone-width polish: preserve full venue text and keep the invitation CTA
+   visually dominant without crowding the couple portrait. */
+@media (min-width: 320px) and (max-width: 430px) and (orientation: portrait) {
+  .entry-screen {
+    gap: clamp(7px, 1.15dvh, 10px);
+  }
+
+  .entry-screen__hero {
+    gap: clamp(3px, 0.8dvh, 7px);
+  }
+
+  .entry-screen__hero .entry-screen__header {
+    padding-inline: clamp(20px, 6vw, 26px);
+  }
+
+  .entry-screen__header :is(p, span),
+  .entry-screen h1 {
+    text-wrap: balance;
+  }
+
+  .entry-screen h1 {
+    max-width: calc(100% - 18px);
+    justify-self: center;
+    font-size: clamp(24px, 7.2vw, 29px);
+    line-height: 1.14;
+    overflow-wrap: anywhere;
+    word-break: keep-all;
+  }
+
+  .entry-screen__actions {
+    gap: clamp(7px, 1dvh, 10px);
+  }
+
+  .entry-screen__event-brief {
+    min-height: 74px;
+  }
+
+  .entry-screen__event-brief strong {
+    display: -webkit-box;
+    overflow: hidden;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+    text-overflow: clip;
+    white-space: normal;
+    word-break: keep-all;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  .entry-screen__actions .entry-screen__quick-access--primary {
+    min-height: 58px;
+  }
+
+  .entry-screen__quick-access :is(small, strong) {
+    white-space: normal;
+  }
+}
+
+@media (min-width: 320px) and (max-width: 350px) and (orientation: portrait) {
+  .entry-screen__hero .entry-screen__header {
+    padding-inline: 18px;
+  }
+
+  .entry-screen h1 {
+    font-size: 23px;
+  }
+
+  .entry-screen__event-brief {
+    padding-inline: 9px;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .entry-screen__utility-menu { animation: none; }
 }

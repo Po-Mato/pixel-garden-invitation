@@ -19,6 +19,9 @@ it("확정된 예식장, 교통, 주차, 지도, 전화 동작을 표시한다",
   expect(screen.getByText("경기 부천시 소사구 경인로 386")).toBeInTheDocument();
   expect(screen.getByText("1호선·서해선 소사역 1번 출구에서 도보 약 3분")).toBeInTheDocument();
   expect(screen.getByText("주차 2시간 무료 · 약 500대 이상 주차 가능")).toBeInTheDocument();
+  expect(screen.getByRole("heading", { name: "지도 앱으로 길 찾기" })).toBeInTheDocument();
+  expect(screen.getByRole("heading", { name: "교통 안내" })).toBeInTheDocument();
+  expect(screen.getByText("추천")).toBeInTheDocument();
 
   for (const name of ["네이버지도", "카카오맵", "Google 지도"]) {
     const link = screen.getByRole("link", { name: new RegExp(name) });

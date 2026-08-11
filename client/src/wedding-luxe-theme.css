@@ -410,7 +410,37 @@ body {
 .directions-sheet__venue > button { flex-shrink: 0; }
 
 .directions-sheet__maps {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 7px;
+}
+
+.directions-sheet__route-actions {
+  display: grid;
+  gap: 9px;
+  border: 1px solid rgba(105, 134, 121, 0.3);
+  border-radius: 16px;
+  padding: 12px;
+  background: #f8fbf8;
+}
+
+.directions-sheet__route-actions > header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.directions-sheet__route-actions > header h3 {
+  margin: 0;
+  color: #34483f;
+  font-family: var(--wedding-font-display);
+  font-size: 15px;
+}
+
+.directions-sheet__route-actions > header span {
+  color: #7b8580;
+  font-size: 10px;
+  white-space: nowrap;
 }
 
 .directions-sheet__maps > :is(a, button),
@@ -428,6 +458,38 @@ body {
   text-align: left;
 }
 
+.directions-sheet__maps > :is(a, button):first-child {
+  grid-column: 1 / -1;
+}
+
+.directions-sheet__maps > :is(a, button)[data-primary="true"] {
+  border-color: #526f63;
+  background: #526f63;
+  color: #fffdf9;
+  box-shadow: 0 6px 16px rgba(58, 82, 71, 0.2);
+}
+
+.directions-sheet__maps > :is(a, button) > span {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 7px;
+}
+
+.directions-sheet__maps > :is(a, button) strong {
+  color: inherit;
+  font-size: 12px;
+}
+
+.directions-sheet__maps > :is(a, button) small {
+  border-radius: 999px;
+  padding: 3px 6px;
+  background: rgba(255, 255, 255, 0.2);
+  color: inherit;
+  font-size: 9px;
+  font-weight: 800;
+}
+
 .directions-sheet__maps > :is(a, button) svg,
 .directions-sheet__venue > button svg {
   width: 16px;
@@ -437,6 +499,24 @@ body {
 .directions-sheet__venue > button {
   gap: 6px;
   white-space: nowrap;
+}
+
+.directions-sheet__travel-notes {
+  display: grid;
+  gap: 7px;
+  padding-top: 3px;
+}
+
+.directions-sheet__travel-notes > h3 {
+  margin: 0 2px;
+  color: #69585d;
+  font-family: var(--wedding-font-display);
+  font-size: 14px;
+}
+
+.directions-sheet__travel-notes .directions-sheet__info {
+  padding-block: 11px;
+  background: rgba(249, 247, 243, 0.72);
 }
 
 .directions-sheet__venue > button[data-status="copied"] {
@@ -480,6 +560,27 @@ body {
 
   .directions-sheet__status {
     margin-inline: 0;
+  }
+
+  .directions-sheet__route-actions {
+    padding: 10px;
+  }
+
+  .directions-sheet__route-actions > header {
+    display: grid;
+    gap: 2px;
+  }
+
+  .directions-sheet__route-actions > header span {
+    white-space: normal;
+  }
+
+  .directions-sheet__maps {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .directions-sheet__maps > :is(a, button):first-child {
+    grid-column: 1;
   }
 
   .directions-sheet__venue,

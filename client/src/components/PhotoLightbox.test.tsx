@@ -66,6 +66,8 @@ describe("전체 화면 웨딩 사진 뷰어", () => {
     expect(screen.getByRole("img", { name: photos[0].alt })).toBeInTheDocument();
     expect(screen.getByText(`1 / ${photos.length}`)).toBeInTheDocument();
     expect(screen.getByText(photos[0].caption ?? "")).toBeInTheDocument();
+    expect(screen.getByText("좌우로 넘겨보기")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "전체 화면 닫기" })).toHaveTextContent("닫기");
   });
 
   it("버튼과 방향키로 비순환 탐색하고 양 끝의 버튼을 비활성화한다", () => {

@@ -2956,6 +2956,7 @@ select,
 }
 
 .wedding-gallery__photo-button {
+  position: relative;
   display: block;
   width: 100%;
   min-width: 0;
@@ -2966,6 +2967,31 @@ select,
   background: var(--paper);
   color: var(--ink);
   cursor: zoom-in;
+}
+
+.wedding-gallery__open-affordance {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  display: inline-flex;
+  min-height: 28px;
+  align-items: center;
+  gap: 5px;
+  border: 1px solid rgba(255, 253, 248, 0.56);
+  border-radius: 999px;
+  padding: 4px 8px;
+  background: rgba(31, 27, 26, 0.76);
+  color: #fffdf8;
+  box-shadow: 0 4px 14px rgba(17, 14, 13, 0.24);
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.wedding-gallery__open-affordance svg {
+  width: 13px;
+  height: 13px;
 }
 
 .wedding-gallery__photo-button:focus-visible {
@@ -3122,7 +3148,14 @@ select,
 }
 
 .photo-lightbox__close {
+  width: auto;
+  min-width: 68px;
+  grid-auto-flow: column;
+  gap: 6px;
+  padding-inline: 10px;
   justify-self: end;
+  font-size: 12px;
+  font-weight: 800;
 }
 
 .photo-lightbox__previous:disabled,
@@ -3149,7 +3182,24 @@ select,
   display: grid;
   min-height: 48px;
   align-items: center;
+  gap: 5px;
   padding: 8px 56px 0;
+}
+
+.photo-lightbox__gesture {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin: 0;
+  color: #d8c9a5;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.photo-lightbox__gesture svg {
+  width: 16px;
+  height: 16px;
 }
 
 .photo-lightbox__caption {

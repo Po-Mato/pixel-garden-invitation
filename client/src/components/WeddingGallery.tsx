@@ -1,6 +1,6 @@
 import type { WeddingGalleryPhoto } from "@wedding-game/shared";
 import { useRef, useState } from "react";
-import { Images } from "lucide-react";
+import { Images, Maximize2 } from "lucide-react";
 import { useViewPreferences } from "../accessibility/ViewPreferencesContext";
 import { usePublishedInvitationContent } from "../invitation/PublishedInvitationContentContext";
 import { useNetworkMode } from "../performance/networkQuality";
@@ -61,6 +61,10 @@ export function WeddingGallery({ photos: photosOverride, onPhotoOpen }: WeddingG
               onClick={() => openPhoto(index)}
             >
               <ResponsiveGalleryImage photo={photo} priority={index === 0} sizes={galleryImageSizes(photo.layout)} />
+              <span className="wedding-gallery__open-affordance" aria-hidden="true">
+                <Maximize2 />
+                크게 보기
+              </span>
             </button>
             {photo.caption ? <figcaption className="wedding-gallery__caption">{photo.caption}</figcaption> : null}
           </figure>
