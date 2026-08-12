@@ -199,8 +199,6 @@ body {
 .bottom-sheet {
   width: min(calc(100% - 24px), 420px);
   max-height: calc(100dvh - 20px - env(safe-area-inset-top));
-  grid-template-rows: auto minmax(0, 1fr);
-  overflow: hidden;
   padding: 18px 18px 16px;
   font-family: var(--wedding-font-ui);
   word-break: keep-all;
@@ -263,11 +261,7 @@ body {
 
 .bottom-sheet__body {
   min-width: 0;
-  min-height: 0;
   margin-top: 14px;
-  overflow-x: hidden;
-  overflow-y: auto;
-  overscroll-behavior: contain;
   font-size: 15px;
   line-height: 1.58;
 }

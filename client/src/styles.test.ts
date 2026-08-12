@@ -708,10 +708,8 @@ describe("prism map interactions", () => {
 
     expect(sheetRule).toContain("--sheet-prism:");
     expect(sheetRule).toContain("max-height: calc(100dvh - 24px);");
-    expect(sheetRule).toContain("grid-template-rows: auto minmax(0, 1fr);");
-    expect(sheetRule).toContain("overflow: hidden;");
+    expect(sheetRule).toContain("overflow-y: auto;");
     expect(styles).toMatch(/\.bottom-sheet__header\s*\{[^}]*position:\s*sticky;/s);
-    expect(styles).toMatch(/\.bottom-sheet__body\s*\{[^}]*overflow-y:\s*auto;/s);
     expect(styles).toContain(".bottom-sheet .field input:focus-visible");
     expect(styles).toContain(".bottom-sheet__header button:focus-visible");
     expect(weddingLuxeStyles).toContain(".bottom-sheet__header h2:focus");
