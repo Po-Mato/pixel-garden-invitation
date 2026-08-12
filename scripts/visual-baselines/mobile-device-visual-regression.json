@@ -1,7 +1,7 @@
 {
   "version": 5,
-  "approvedAt": "2026-08-12T07:40:38.123Z",
-  "reason": "청첩장 시각 체계 통일과 고정 시트 헤더 개선 승인",
+  "approvedAt": "2026-08-12T10:11:33.720Z",
+  "reason": "확대 글자 시트의 중간 및 끝 스크롤 안내를 독립 영역으로 분리한 브라우저 캡처 검토 완료 변경",
   "pixelThreshold": 36,
   "maxChangedRatio": 0.015,
   "profileMaxChangedRatioOverrides": {
@@ -13,93 +13,93 @@
     "schemaVersion": 1,
     "subjectKind": "capture-set",
     "sourceKind": "github-actions",
-    "runId": "31574249576",
+    "runId": "31585397167",
     "runAttempt": 1,
-    "commitSha": "4b1c75b8582a5e7adff30fa3c5c8a25bb87ced49",
-    "runUrl": "https://github.com/Po-Mato/pixel-garden-invitation/actions/runs/31574249576",
+    "commitSha": "d9ea52bf4729d161d2741c022f93499f4bb85644",
+    "runUrl": "https://github.com/Po-Mato/pixel-garden-invitation/actions/runs/31585397167",
     "checksumAlgorithm": "sha256",
     "artifactChecksumScope": "sorted-capture-set-manifest",
-    "artifactSha256": "a9c575a87e407829aa5c40a8d3757beca5b291ba0168c0e19bfbbb091c84cd0b",
+    "artifactSha256": "d5ab81ca9ccf26d86557f3b5e127e5e75c1dfee2c5997dd1ef4895e26669a365",
     "files": [
       {
         "logicalPath": "galaxy-s23-font-150/directions-xlarge",
-        "size": 85861,
-        "sha256": "49fff5a98530e012ac0eaf5c315202610864d50e18bcc3ebfda15f956fa7000f"
+        "size": 85026,
+        "sha256": "df3a64959b981f336e59c3f49ea5fcc55027fc594f68457a365e404eb0feac7a"
       },
       {
         "logicalPath": "galaxy-s23-font-150/directions-xlarge-bottom",
-        "size": 73529,
-        "sha256": "22b35ad1bfed17cc06ba85f9ed5d6a7f2a84b1ab4bd5376d4825630ca4219de7"
+        "size": 72972,
+        "sha256": "e388efd2b37a2afc75d0ce041cbe30e56b66a7a88be3e3cd932b6f22f14af774"
       },
       {
         "logicalPath": "galaxy-s23-font-150/directions-xlarge-middle",
-        "size": 78155,
-        "sha256": "5d7d0013986c06bef4b8e31845d355932b46e4d83e8c4cbf1c2d30fe46e1a698"
+        "size": 78253,
+        "sha256": "116c999417b63df729668b34985916cafae73524dba498ba111290010c6c6d75"
       },
       {
         "logicalPath": "galaxy-s23-font-150/game",
-        "size": 459937,
-        "sha256": "b8727f6f035c49f15c8c12d06f142b8d01959041becfc2a7f140ccc0fa85e3dd"
+        "size": 459591,
+        "sha256": "5bf3c5f3e4b3a3f91f160a465a1a69d0f9d963dbf31f7713eca65a2f58a727d5"
       },
       {
         "logicalPath": "iphone-15-dynamic-type/directions-xlarge",
-        "size": 86544,
-        "sha256": "ab6b029372abaa5b9ba83a17d21eb7fc8b290e5f40abbe82d77bf943f86a010e"
+        "size": 88550,
+        "sha256": "975911ab9a54612703f6af653298df7fa498505a4f8c7f793dc40bebc1a2344d"
       },
       {
         "logicalPath": "iphone-15-dynamic-type/directions-xlarge-bottom",
-        "size": 76815,
-        "sha256": "27d003014fbc3177b93e1bcbcb9fc66dd1bc5f0f99c5637defd7076cda43481e"
+        "size": 78056,
+        "sha256": "b8343855fc51a5632423c90f123dbe570f3b444b8b35dc82cd62e61f81c874a5"
       },
       {
         "logicalPath": "iphone-15-dynamic-type/directions-xlarge-middle",
-        "size": 82554,
-        "sha256": "965821eb1554ce786c534bb00565d6f346e586fd466fd661bd6259ebab34828e"
+        "size": 80291,
+        "sha256": "e44689251a52305fbec1d11700dec5e770b85f708a5df924eda6918989a675cf"
       },
       {
         "logicalPath": "iphone-15-dynamic-type/game",
-        "size": 539595,
-        "sha256": "7b3939be3960a43204cf5a24dbf56c930f29be1b7938813c8d503a1e334d508f"
+        "size": 539314,
+        "sha256": "a5a59ea167921b811725a382533bfa2ddcdce6b172729752ce9121f94397a194"
       },
       {
         "logicalPath": "iphone-15-webkit-dynamic-type/directions-xlarge",
-        "size": 106032,
-        "sha256": "3f80ff158374552080be3b54e4f2f93dec66edfe99eec71eafe65735dda55cab"
+        "size": 103673,
+        "sha256": "81efae063e1b55913b68fb6676a3bfbef568c40d457a92e6b418051acf029dbc"
       },
       {
         "logicalPath": "iphone-15-webkit-dynamic-type/directions-xlarge-bottom",
-        "size": 106032,
-        "sha256": "3f80ff158374552080be3b54e4f2f93dec66edfe99eec71eafe65735dda55cab"
+        "size": 103673,
+        "sha256": "81efae063e1b55913b68fb6676a3bfbef568c40d457a92e6b418051acf029dbc"
       },
       {
         "logicalPath": "iphone-15-webkit-dynamic-type/directions-xlarge-middle",
-        "size": 106032,
-        "sha256": "3f80ff158374552080be3b54e4f2f93dec66edfe99eec71eafe65735dda55cab"
+        "size": 103673,
+        "sha256": "81efae063e1b55913b68fb6676a3bfbef568c40d457a92e6b418051acf029dbc"
       },
       {
         "logicalPath": "iphone-15-webkit-dynamic-type/game",
-        "size": 576061,
-        "sha256": "06a018aeb91445c49c5dfe2e57de4f2aeadc80415f6207a425f1df2045dfb182"
+        "size": 576045,
+        "sha256": "a56152d30829380ac5fca93548544ad0f2d59df29503b850ddb49a737fbac38e"
       },
       {
         "logicalPath": "iphone-15-webkit-text-200/directions-xlarge",
-        "size": 97990,
-        "sha256": "7010df043e1c95bf1f318b053c4ca7bd2f3625585a55e744b29e37fe66e2d510"
+        "size": 98501,
+        "sha256": "f7a06da6a3ab9f9081a8ad84aa1e150d6eb0a6c7729d2f6b86aeeff66a7316e5"
       },
       {
         "logicalPath": "iphone-15-webkit-text-200/directions-xlarge-bottom",
-        "size": 96431,
-        "sha256": "abf889184c9045b1c167bc1593bef0a113348275b9a96c560d40c447e01f17fb"
+        "size": 99030,
+        "sha256": "b1469e31bac8147f0ace2211da05454b589dbaa744cfa77d7f12c44b899573e1"
       },
       {
         "logicalPath": "iphone-15-webkit-text-200/directions-xlarge-middle",
-        "size": 95505,
-        "sha256": "e836fe53ee40bad7dc29a9b4edb2765f453aa3581033d058bf54bf6b4a120c50"
+        "size": 94945,
+        "sha256": "263c3db9818b5d246901b955273e8d62bf7cf3f754f59aaa1715ec8d7a0907d7"
       },
       {
         "logicalPath": "iphone-15-webkit-text-200/game",
-        "size": 576510,
-        "sha256": "43ceadda1285d613b69dcf692d3fe6dbb35c6d1b94f300bda2779578c149e2af"
+        "size": 576377,
+        "sha256": "cf7983030dcb7db1dacd548486d3115d749f5c0d12b9c11b85f62ac9ff2946b0"
       }
     ]
   },
@@ -110,13 +110,13 @@
       "state": "game",
       "width": 360,
       "height": 780,
-      "sha256": "c9ce7fd2e02fce99e6f690fd82f07c78bb020df5f774e47d82e0b77fe207b960",
+      "sha256": "0403ad269c3c38aeaa923729a8d934214fd7f7748e91e27fee4e613715147938",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "청첩장 시각 체계 통일과 고정 시트 헤더 개선 승인",
+        "approvalReason": "확대 글자 시트의 중간 및 끝 스크롤 안내를 독립 영역으로 분리한 브라우저 캡처 검토 완료 변경",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -130,13 +130,13 @@
       "state": "directions-xlarge",
       "width": 360,
       "height": 780,
-      "sha256": "eb86bf32dfe24f8c5f5b558c3a88e02bfd83ddcb3c49d1b254bc88de33d805cd",
+      "sha256": "db5fb59d97e7db9fa4e703da35c392e11d07552ad9e3035b09576bab435d3603",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "청첩장 시각 체계 통일과 고정 시트 헤더 개선 승인",
+        "approvalReason": "확대 글자 시트의 중간 및 끝 스크롤 안내를 독립 영역으로 분리한 브라우저 캡처 검토 완료 변경",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -150,13 +150,13 @@
       "state": "directions-xlarge-middle",
       "width": 360,
       "height": 780,
-      "sha256": "4cd82e5475e843cd9dda347783556548190be1c45164f6178d0b4d57a72739b4",
+      "sha256": "26a358adc4c3be08991ec1b844a28418524287d377e01badb3c146f67bc8cfa0",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "청첩장 시각 체계 통일과 고정 시트 헤더 개선 승인",
+        "approvalReason": "확대 글자 시트의 중간 및 끝 스크롤 안내를 독립 영역으로 분리한 브라우저 캡처 검토 완료 변경",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -170,13 +170,13 @@
       "state": "directions-xlarge-bottom",
       "width": 360,
       "height": 780,
-      "sha256": "ec758cc5cee6f5749cebed6f47f83082385f2c323639cd41db0ccbeecaa7c346",
+      "sha256": "874729c0a521ac06bcd152e662a9a67181824076114df3f99c548f0543e7557e",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "청첩장 시각 체계 통일과 고정 시트 헤더 개선 승인",
+        "approvalReason": "확대 글자 시트의 중간 및 끝 스크롤 안내를 독립 영역으로 분리한 브라우저 캡처 검토 완료 변경",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -190,13 +190,13 @@
       "state": "game",
       "width": 393,
       "height": 852,
-      "sha256": "3b249cb06f2f102753954cae6b2c631c8362e16c77553ded90c43b54e6a5ce27",
+      "sha256": "e6a9533eda925bae4ef9dab93a4c640c760b345814b5455555ee8b74612ffd19",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "청첩장 시각 체계 통일과 고정 시트 헤더 개선 승인",
+        "approvalReason": "확대 글자 시트의 중간 및 끝 스크롤 안내를 독립 영역으로 분리한 브라우저 캡처 검토 완료 변경",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -210,13 +210,13 @@
       "state": "directions-xlarge",
       "width": 393,
       "height": 852,
-      "sha256": "0e4ca6fba4072c88f1729d9109ab6a5f9d9c9300e005067193b7419d17cad782",
+      "sha256": "1283dfe96899e593bda831352d774c08649b4096e70b273a18ea822a81ea868c",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "청첩장 시각 체계 통일과 고정 시트 헤더 개선 승인",
+        "approvalReason": "확대 글자 시트의 중간 및 끝 스크롤 안내를 독립 영역으로 분리한 브라우저 캡처 검토 완료 변경",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -230,13 +230,13 @@
       "state": "directions-xlarge-middle",
       "width": 393,
       "height": 852,
-      "sha256": "131dd3cf52901677fdd7a4e9bf18afce8113676e1a1696d54a0489623e982f43",
+      "sha256": "bd1a2a435c145c3d386a2db925dc5b55929f411739950741137b8bf6be43be41",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "청첩장 시각 체계 통일과 고정 시트 헤더 개선 승인",
+        "approvalReason": "확대 글자 시트의 중간 및 끝 스크롤 안내를 독립 영역으로 분리한 브라우저 캡처 검토 완료 변경",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -250,13 +250,13 @@
       "state": "directions-xlarge-bottom",
       "width": 393,
       "height": 852,
-      "sha256": "e341edf5ca55b39760e49cf1989dbcc1e19e54a48f5e05957b12b6e2a3512bbe",
+      "sha256": "6a0ec8d5dd2b7a071c295fc5597e71bf58f76d9f759a77e14a676d20136061c6",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "청첩장 시각 체계 통일과 고정 시트 헤더 개선 승인",
+        "approvalReason": "확대 글자 시트의 중간 및 끝 스크롤 안내를 독립 영역으로 분리한 브라우저 캡처 검토 완료 변경",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -270,13 +270,13 @@
       "state": "game",
       "width": 393,
       "height": 852,
-      "sha256": "04be37ef05eb70014bdd2f6f77ddeb5436805c598fec26c82713cb5cdd5f4503",
+      "sha256": "423c469700c0cc1b6bf02e258149c33987f5dfba41eaada8ba0dcffec3a91389",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "청첩장 시각 체계 통일과 고정 시트 헤더 개선 승인",
+        "approvalReason": "확대 글자 시트의 중간 및 끝 스크롤 안내를 독립 영역으로 분리한 브라우저 캡처 검토 완료 변경",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -290,13 +290,13 @@
       "state": "directions-xlarge",
       "width": 393,
       "height": 852,
-      "sha256": "38be087b48c7b656dc98d5b4dd5dfa274ffbde3afa40ccd96549c534742b15bb",
+      "sha256": "0a8d65ea5c61d121ed2472b7c97836711ffe4d0670ce140b0082575664d32798",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "청첩장 시각 체계 통일과 고정 시트 헤더 개선 승인",
+        "approvalReason": "확대 글자 시트의 중간 및 끝 스크롤 안내를 독립 영역으로 분리한 브라우저 캡처 검토 완료 변경",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -310,13 +310,13 @@
       "state": "directions-xlarge-middle",
       "width": 393,
       "height": 852,
-      "sha256": "38be087b48c7b656dc98d5b4dd5dfa274ffbde3afa40ccd96549c534742b15bb",
+      "sha256": "0a8d65ea5c61d121ed2472b7c97836711ffe4d0670ce140b0082575664d32798",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "청첩장 시각 체계 통일과 고정 시트 헤더 개선 승인",
+        "approvalReason": "확대 글자 시트의 중간 및 끝 스크롤 안내를 독립 영역으로 분리한 브라우저 캡처 검토 완료 변경",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -330,13 +330,13 @@
       "state": "directions-xlarge-bottom",
       "width": 393,
       "height": 852,
-      "sha256": "38be087b48c7b656dc98d5b4dd5dfa274ffbde3afa40ccd96549c534742b15bb",
+      "sha256": "0a8d65ea5c61d121ed2472b7c97836711ffe4d0670ce140b0082575664d32798",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "청첩장 시각 체계 통일과 고정 시트 헤더 개선 승인",
+        "approvalReason": "확대 글자 시트의 중간 및 끝 스크롤 안내를 독립 영역으로 분리한 브라우저 캡처 검토 완료 변경",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -350,13 +350,13 @@
       "state": "game",
       "width": 393,
       "height": 852,
-      "sha256": "22d9c97f3836e13f95921f09cf83a3acc803b38931818c8bd38f021aefdb3622",
+      "sha256": "caea2be7589ecb837edd6595df3fcbf2fb67dda0ef2195f789d841f233241d67",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "청첩장 시각 체계 통일과 고정 시트 헤더 개선 승인",
+        "approvalReason": "확대 글자 시트의 중간 및 끝 스크롤 안내를 독립 영역으로 분리한 브라우저 캡처 검토 완료 변경",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -370,13 +370,13 @@
       "state": "directions-xlarge",
       "width": 393,
       "height": 852,
-      "sha256": "657979580bc0c8451f5e355541dee25381e8396e59aabdd4707a23034680fc6f",
+      "sha256": "699cd8b3e22d93a2b1219e187dd7c8d8033250ff1a428bf32ac5c13fb6f9130d",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "청첩장 시각 체계 통일과 고정 시트 헤더 개선 승인",
+        "approvalReason": "확대 글자 시트의 중간 및 끝 스크롤 안내를 독립 영역으로 분리한 브라우저 캡처 검토 완료 변경",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -390,13 +390,13 @@
       "state": "directions-xlarge-middle",
       "width": 393,
       "height": 852,
-      "sha256": "5c473307d53fffa4c2d25ecf265b794d9e67c9b97a63e8b74918ea252b1d5c71",
+      "sha256": "00bce491f164e2d32b18e73b43a2fc0745ee630df277602cb5dafd8bf58b74f6",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "청첩장 시각 체계 통일과 고정 시트 헤더 개선 승인",
+        "approvalReason": "확대 글자 시트의 중간 및 끝 스크롤 안내를 독립 영역으로 분리한 브라우저 캡처 검토 완료 변경",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -410,13 +410,13 @@
       "state": "directions-xlarge-bottom",
       "width": 393,
       "height": 852,
-      "sha256": "85ce35d2a097c6821b77254ee6bd0c36ce80b8a02bccffb27b4e839071db0026",
+      "sha256": "c490b1bd99ba5da681bce501dd4cc87385370a64c733d1b2577e7b3b2bec1193",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "청첩장 시각 체계 통일과 고정 시트 헤더 개선 승인",
+        "approvalReason": "확대 글자 시트의 중간 및 끝 스크롤 안내를 독립 영역으로 분리한 브라우저 캡처 검토 완료 변경",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
