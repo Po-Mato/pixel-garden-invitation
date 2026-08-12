@@ -86,9 +86,13 @@ export async function markApprovedIosSafariVisualFailures({
     return mergeIosSafariStabilityHistory([], samples);
   }
   return Promise.all(mergeIosSafariStabilityHistory([], samples).map(async (sample) => {
+    const approvedVisualFailureKinds = new Set([
+      "product-visual-regression",
+      "product-directions-layout"
+    ]);
     const isApprovedVisualFailure = sample.outcome === "failure"
       && sample.failureCategory === "product"
-      && sample.failureKind === "product-visual-regression"
+      && approvedVisualFailureKinds.has(sample.failureKind)
       && /^[a-f0-9]{40}$/.test(sample.sha ?? "");
     if (!isApprovedVisualFailure || !await isAncestor(sample.sha, approvedCommitSha)) return sample;
     return {

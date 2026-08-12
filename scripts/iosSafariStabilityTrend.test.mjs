@@ -79,10 +79,11 @@ test("iOS Safari trend backfills the reliability window past a cancelled run", (
   assert.equal(trend.observed.status, "passed");
 });
 
-test("approved iOS visual baselines supersede only ancestor visual failures", async () => {
+test("approved iOS visual baselines supersede only ancestor visual and directions layout failures", async () => {
   const approvedCommitSha = "f".repeat(40);
   const visualFailureSha = "a".repeat(40);
-  const automationFailureSha = "b".repeat(40);
+  const directionsFailureSha = "b".repeat(40);
+  const automationFailureSha = "c".repeat(40);
   const marked = await markApprovedIosSafariVisualFailures({
     samples: [
       {
@@ -93,17 +94,25 @@ test("approved iOS visual baselines supersede only ancestor visual failures", as
       },
       {
         ...sample(2, "failure", currentPolicyRevision),
+        sha: directionsFailureSha,
+        failureCategory: "product",
+        failureKind: "product-directions-layout"
+      },
+      {
+        ...sample(3, "failure", currentPolicyRevision),
         sha: automationFailureSha,
         failureCategory: "automation",
         failureKind: "automation-wda"
       }
     ],
     approvedCommitSha,
-    isAncestor: async (sha) => sha === visualFailureSha
+    isAncestor: async (sha) => [visualFailureSha, directionsFailureSha].includes(sha)
   });
   assert.equal(marked[0].supersededBySha, approvedCommitSha);
   assert.equal(marked[0].supersededReason, "approved-visual-baseline");
-  assert.equal(marked[1].supersededBySha, null);
+  assert.equal(marked[1].supersededBySha, approvedCommitSha);
+  assert.equal(marked[1].supersededReason, "approved-visual-baseline");
+  assert.equal(marked[2].supersededBySha, null);
 });
 
 test("approved visual drift is excluded without hiding later failures", () => {
