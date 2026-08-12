@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import {
   auditInvitationQualityMetrics,
   auditLargeTextAccessibilityFlow,
@@ -25,6 +26,8 @@ import {
   worldLabelAuditProfiles,
   worldLabelAuditScenarios
 } from "./lib/mobileHudBrowserAudit.mjs";
+
+const source = readFileSync(new URL("./lib/mobileHudBrowserAudit.mjs", import.meta.url), "utf8");
 
 test("mobile HUD audit covers phones and tablets in both orientations", () => {
   assert.deepEqual(mobileHudAuditViewports.map(({ id }) => id), [
@@ -188,6 +191,7 @@ test("real Safari 200% uses native text adjustment without double scaling", () =
   assert.match(iosText200AuditCss, /bottom-sheet__body[\s\S]*font-size:\s*200%/);
   assert.doesNotMatch(iosSafariText200AuditCss, /bottom-sheet__body\s*\{\s*font-size:\s*200%/);
   assert.match(iosSafariText200AuditCss, /-webkit-text-size-adjust:\s*200%/);
+  assert.match(source, /sheet\.locator\("\.bottom-sheet__body"\)/);
 });
 
 test("world label sweep covers every production zone with representative positions", () => {

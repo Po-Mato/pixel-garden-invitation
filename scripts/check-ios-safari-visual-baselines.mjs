@@ -840,15 +840,16 @@ try {
   ]) {
     const scroll = await evaluate(`
       const sheet = document.querySelector(".bottom-sheet");
-      if (!(sheet instanceof HTMLElement)) throw new Error("Directions sheet missing");
-      const maxScroll = Math.max(0, sheet.scrollHeight - sheet.clientHeight);
+      const scroller = sheet?.querySelector(".bottom-sheet__body");
+      if (!(sheet instanceof HTMLElement) || !(scroller instanceof HTMLElement)) throw new Error("Directions sheet missing");
+      const maxScroll = Math.max(0, scroller.scrollHeight - scroller.clientHeight);
       const target = Math.round(maxScroll * ${ratio});
-      sheet.scrollTop = target;
+      scroller.scrollTop = target;
       return {
-        scrollTop: sheet.scrollTop,
+        scrollTop: scroller.scrollTop,
         maxScroll,
         target,
-        reached: Math.abs(sheet.scrollTop - target) <= 2
+        reached: Math.abs(scroller.scrollTop - target) <= 2
       };
     `);
     captureReport.scrollStates[state] = scroll;

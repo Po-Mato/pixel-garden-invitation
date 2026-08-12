@@ -129,8 +129,9 @@ export async function runTypographyScaleAudit({ browser, url, outputDir }) {
       await page.getByRole("button", { name: "오시는 길", exact: true }).click();
       const sheet = page.locator(".bottom-sheet");
       await sheet.waitFor({ state: "visible" });
+      const sheetScroller = sheet.locator(".bottom-sheet__body");
       await page.evaluate(() => document.fonts.ready);
-      await sheet.evaluate((element) => { element.scrollTop = 0; });
+      await sheetScroller.evaluate((element) => { element.scrollTop = 0; });
       await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
       const metrics = await page.evaluate(({ width, height }) => {
         const sheetElement = document.querySelector(".bottom-sheet");
@@ -184,16 +185,16 @@ export async function runTypographyScaleAudit({ browser, url, outputDir }) {
           minimumLineHeightRatio: Math.min(...textMetrics.map(({ ratio }) => ratio)),
           touchTargetsReady: controls.length > 0 && controls.every((element) => element.getBoundingClientRect().height >= 43),
           bodyFontSize: parseFloat(getComputedStyle(body).fontSize),
-          sheetScrollHeight: sheetElement.scrollHeight,
-          sheetClientHeight: sheetElement.clientHeight,
-          maxScroll: Math.max(0, sheetElement.scrollHeight - sheetElement.clientHeight),
+          sheetScrollHeight: body.scrollHeight,
+          sheetClientHeight: body.clientHeight,
+          maxScroll: Math.max(0, body.scrollHeight - body.clientHeight),
           cardHeights: Object.fromEntries(cardReports.map(({ id, rect }) => [id, rect.height])),
           cardReports
         };
       }, { width: 393, height: 852 });
       const scrollStates = {};
       for (const [state, ratio] of [["top", 0], ["middle", 0.5], ["bottom", 1]]) {
-        const scroll = await sheet.evaluate((element, targetRatio) => {
+        const scroll = await sheetScroller.evaluate((element, targetRatio) => {
           const maxScroll = Math.max(0, element.scrollHeight - element.clientHeight);
           const target = Math.round(maxScroll * targetRatio);
           element.scrollTop = target;
@@ -201,7 +202,7 @@ export async function runTypographyScaleAudit({ browser, url, outputDir }) {
         }, ratio);
         scrollStates[state] = scroll;
       }
-      await sheet.evaluate((element) => { element.scrollTop = 0; });
+      await sheetScroller.evaluate((element) => { element.scrollTop = 0; });
       const screenshotPath = path.join(outputDir, `typography-scale-${profile.percent}.png`);
       await page.screenshot({ path: screenshotPath, fullPage: false, scale: "css" });
       reports.push({ ...profile, ...metrics, scrollStates, screenshotPath });

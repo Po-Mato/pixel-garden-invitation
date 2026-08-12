@@ -698,6 +698,7 @@ async function measureInvitationQuality(page, viewport, sheetScreenshotPath, dev
   await page.getByRole("button", { name: "오시는 길", exact: true }).click();
   const sheet = page.locator(".bottom-sheet");
   await sheet.waitFor({ state: "visible" });
+  const sheetScroller = sheet.locator(".bottom-sheet__body");
   await page.evaluate(() => document.fonts.ready);
   await page.screenshot({ path: sheetScreenshotPath, fullPage: false });
   const scrollStates = {};
@@ -706,12 +707,12 @@ async function measureInvitationQuality(page, viewport, sheetScreenshotPath, dev
     ["directions-xlarge-middle", 0.5],
     ["directions-xlarge-bottom", 1]
   ]) {
-    await sheet.evaluate((element, targetRatio) => {
+    await sheetScroller.evaluate((element, targetRatio) => {
       const maxScroll = Math.max(0, element.scrollHeight - element.clientHeight);
       element.scrollTop = Math.round(maxScroll * targetRatio);
     }, ratio);
     await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
-    const scroll = await sheet.evaluate((element, targetRatio) => {
+    const scroll = await sheetScroller.evaluate((element, targetRatio) => {
       const maxScroll = Math.max(0, element.scrollHeight - element.clientHeight);
       const target = Math.round(maxScroll * targetRatio);
       return {
@@ -727,7 +728,7 @@ async function measureInvitationQuality(page, viewport, sheetScreenshotPath, dev
       await captureStableDeviceScreenshot(page, deviceSheetCurrentPaths[state].currentPath);
     }
   }
-  await sheet.evaluate((element) => { element.scrollTop = 0; });
+  await sheetScroller.evaluate((element) => { element.scrollTop = 0; });
   const { typography, largeTextSheet } = await page.evaluate(({ width, height }) => {
     const world = document.querySelector(".game-world");
     const heading = document.querySelector(".bottom-sheet__header h2");

@@ -32,6 +32,7 @@ test("real Android capture report records run provenance and network readiness a
   assert.match(source, /networkReadiness/);
   assert.match(source, /navigateAndroidChromeWithRetry/);
   assert.match(source, /ANDROID_CAPTURE_RETRY === "renderer-disconnect"/);
+  assert.match(source, /querySelector\("\.bottom-sheet__body"\)/);
   assert.match(workflow, /run-android-chrome-capture-with-retry\.mjs/);
 });
 

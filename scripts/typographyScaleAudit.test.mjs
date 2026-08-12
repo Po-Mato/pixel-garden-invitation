@@ -4,6 +4,9 @@ import {
   auditTypographyScaleReports,
   typographyScaleAuditProfiles
 } from "./lib/typographyScaleAudit.mjs";
+import { readFileSync } from "node:fs";
+
+const source = readFileSync(new URL("./lib/typographyScaleAudit.mjs", import.meta.url), "utf8");
 
 const report = (profile, bodyFontSize, sheetScrollHeight, cardHeight) => ({
   ...profile,
@@ -21,6 +24,7 @@ const report = (profile, bodyFontSize, sheetScrollHeight, cardHeight) => ({
 });
 
 test("typography scale audit covers 100, 150, and 200 percent", () => {
+  assert.match(source, /sheet\.locator\("\.bottom-sheet__body"\)/);
   assert.deepEqual(typographyScaleAuditProfiles, [
     { id: "text-100", percent: 100, requiredScroll: 0 },
     { id: "text-150", percent: 150, requiredScroll: 40 },

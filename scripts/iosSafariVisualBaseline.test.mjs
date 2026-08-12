@@ -32,6 +32,7 @@ test("real iOS Safari baseline contract covers game and 200% directions scroll",
 
 test("landscape capture closes stacked invitation dialogs before rotating", async () => {
   const source = await readFile(new URL("./check-ios-safari-visual-baselines.mjs", import.meta.url), "utf8");
+  assert.match(source, /querySelector\("\.bottom-sheet__body"\)/);
   assert.match(source, /world-menu-sheet button\[aria-label="초대장 메뉴 닫기"\]/);
   assert.match(source, /맵 대화상자 정리/);
   assert.match(source, /실제 Safari 맵 위 대화상자 잔존/);
