@@ -72,8 +72,12 @@ async function currentGithubRun() {
   const createdAt = run.created_at || startedAt;
   return {
     generatedAt: startedAt,
-    durationMs: Math.max(0, Date.now() - Date.parse(createdAt)),
-    queueDurationMs: Math.max(0, Date.parse(startedAt) - Date.parse(createdAt)),
+    // A rerun keeps the original run's created_at timestamp. Measuring from it
+    // makes a healthy attempt look progressively slower every time it is rerun.
+    durationMs: Math.max(0, Date.now() - Date.parse(startedAt)),
+    queueDurationMs: Number(run.run_attempt) > 1
+      ? 0
+      : Math.max(0, Date.parse(startedAt) - Date.parse(createdAt)),
     url: run.html_url
   };
 }
