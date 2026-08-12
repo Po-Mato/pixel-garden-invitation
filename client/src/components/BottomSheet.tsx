@@ -1,5 +1,6 @@
 import { useId, useRef, type ReactNode, type RefObject } from "react";
 import { createPortal } from "react-dom";
+import { X } from "lucide-react";
 import { useModalDialogFocus } from "../accessibility/useModalDialogFocus";
 
 type BottomSheetProps = {
@@ -46,7 +47,8 @@ export function BottomSheet({ title, onClose, children, className = "", returnFo
         <header className="bottom-sheet__header">
           <h2 ref={titleRef} id={titleId} tabIndex={-1}>{title}</h2>
           <button type="button" aria-label="닫기" onClick={onClose}>
-            닫기
+            <X aria-hidden="true" />
+            <span>닫기</span>
           </button>
         </header>
         <p id={descriptionId} className="sr-only">{title} 창입니다. 닫기 버튼 다음에 주요 내용이 이어집니다.</p>

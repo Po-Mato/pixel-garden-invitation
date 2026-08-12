@@ -868,7 +868,7 @@ describe("GameWorld", () => {
 
     fireEvent.keyDown(lightbox, { key: "ArrowRight" });
 
-    expect(within(lightbox).getByText("2 / 10")).toBeInTheDocument();
+    expect(within(lightbox).getByText("사진").closest("p")).toHaveTextContent("사진2/ 10");
     expect(player).toHaveStyle(before);
   });
 

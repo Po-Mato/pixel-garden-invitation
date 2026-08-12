@@ -454,6 +454,93 @@
   }
 }
 
+/* Short phones keep the greenhouse arch and couple centered while preserving
+   full-size touch targets and a clear invitation-first action hierarchy. */
+@media (min-width: 320px) and (max-width: 430px) and (orientation: portrait) and (max-height: 700px) {
+  .entry-screen {
+    gap: 6px;
+  }
+
+  .entry-screen__utilities {
+    min-height: 40px;
+  }
+
+  .entry-screen__utilities :is(
+    .entry-screen__utility-button,
+    .invitation-share-trigger--icon,
+    .view-settings-trigger--icon
+  ) {
+    width: 40px;
+    min-width: 40px;
+    height: 40px;
+    min-height: 40px;
+  }
+
+  .entry-screen__hero {
+    grid-template-rows: auto minmax(86px, 1fr) auto auto;
+    gap: 2px;
+  }
+
+  .entry-screen__hero::before {
+    background-position: center 44%;
+  }
+
+  .entry-screen__hero .entry-screen__header {
+    padding-block: 5px 4px;
+  }
+
+  .entry-screen h1 {
+    font-size: clamp(22px, 6.8vw, 26px);
+  }
+
+  .entry-screen__hero .entry-screen__couple-puppets {
+    width: min(184px, 50vw);
+  }
+
+  .entry-screen__actions {
+    gap: 6px;
+  }
+
+  .entry-screen__event-brief {
+    min-height: 68px;
+    padding-block: 7px;
+  }
+
+  .entry-screen__actions .entry-screen__quick-access--primary {
+    min-height: 54px;
+  }
+
+  .entry-screen__resume-access {
+    min-height: 48px;
+  }
+
+  .entry-screen__actions .entry-screen__character-access {
+    min-height: 72px;
+  }
+}
+
+@media (min-width: 320px) and (max-width: 430px) and (orientation: portrait) and (max-height: 600px) {
+  .entry-screen__hero::before {
+    background-position: center 41%;
+  }
+
+  .entry-screen__hero .entry-screen__couple-puppets {
+    width: min(160px, 44vw);
+  }
+
+  .entry-screen__event-brief {
+    min-height: 64px;
+  }
+
+  .entry-screen__actions .entry-screen__quick-access--primary {
+    min-height: 52px;
+  }
+
+  .entry-screen__actions .entry-screen__character-access {
+    min-height: 68px;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .entry-screen__utility-menu { animation: none; }
 }

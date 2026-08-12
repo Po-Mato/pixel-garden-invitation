@@ -35,6 +35,7 @@ it("renders its dialog in the document body portal", () => {
   );
 
   expect(screen.getByRole("dialog")).toHaveClass("calendar-sheet-test");
+  expect(screen.getByRole("button", { name: "닫기" }).querySelector("svg")).toBeInTheDocument();
   expect(screen.getByRole("dialog")).toHaveAccessibleDescription("캘린더 저장 창입니다. 닫기 버튼 다음에 주요 내용이 이어집니다.");
   expect(screen.getByRole("dialog").parentElement).toBe(document.body);
 });

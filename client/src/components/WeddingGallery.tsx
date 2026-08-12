@@ -1,5 +1,5 @@
 import type { WeddingGalleryPhoto } from "@wedding-game/shared";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Images, Maximize2 } from "lucide-react";
 import { useViewPreferences } from "../accessibility/ViewPreferencesContext";
 import { usePublishedInvitationContent } from "../invitation/PublishedInvitationContentContext";
@@ -23,9 +23,11 @@ export function WeddingGallery({ photos: photosOverride, onPhotoOpen }: WeddingG
   const { preferences } = useViewPreferences();
   const networkMode = useNetworkMode(preferences.dataSaver);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const [lastViewedIndex, setLastViewedIndex] = useState<number | null>(null);
   const [expanded, setExpanded] = useState(false);
   const photoButtonRefs = useRef<Array<HTMLButtonElement | null>>([]);
   const returnFocusRef = useRef<HTMLButtonElement | null>(null);
+  const shouldRestoreFocusRef = useRef(false);
   const initialPhotoCount = 4;
   const deferredCount = Math.max(0, photos.length - initialPhotoCount);
   const visiblePhotos = networkMode === "economy" && !expanded
@@ -38,13 +40,27 @@ export function WeddingGallery({ photos: photosOverride, onPhotoOpen }: WeddingG
     trigger?.focus();
     onPhotoOpen?.(index);
     trackAnalyticsContextEvent("gallery_zoom");
+    setLastViewedIndex(index);
+    setSelectedIndex(index);
+  };
+
+  const selectLightboxPhoto = (index: number) => {
+    const currentPhotoButton = photoButtonRefs.current[index];
+    if (currentPhotoButton) returnFocusRef.current = currentPhotoButton;
+    setLastViewedIndex(index);
     setSelectedIndex(index);
   };
 
   const closeLightbox = () => {
+    shouldRestoreFocusRef.current = true;
     setSelectedIndex(null);
-    returnFocusRef.current?.focus();
   };
+
+  useEffect(() => {
+    if (selectedIndex !== null || !shouldRestoreFocusRef.current) return;
+    shouldRestoreFocusRef.current = false;
+    returnFocusRef.current?.focus();
+  }, [selectedIndex]);
 
   return (
     <>
@@ -58,9 +74,13 @@ export function WeddingGallery({ photos: photosOverride, onPhotoOpen }: WeddingG
               className="wedding-gallery__photo-button"
               type="button"
               aria-label={`사진 ${index + 1}: ${photo.alt}`}
+              aria-current={lastViewedIndex === index ? "true" : undefined}
               onClick={() => openPhoto(index)}
             >
               <ResponsiveGalleryImage photo={photo} priority={index === 0} sizes={galleryImageSizes(photo.layout)} />
+              <span className="wedding-gallery__photo-number" aria-hidden="true">
+                {String(index + 1).padStart(2, "0")}
+              </span>
               <span className="wedding-gallery__open-affordance" aria-hidden="true">
                 <Maximize2 />
                 크게 보기
@@ -84,7 +104,7 @@ export function WeddingGallery({ photos: photosOverride, onPhotoOpen }: WeddingG
         <PhotoLightbox
           photos={photos}
           index={selectedIndex}
-          onIndexChange={setSelectedIndex}
+          onIndexChange={selectLightboxPhoto}
           onClose={closeLightbox}
         />
       ) : null}

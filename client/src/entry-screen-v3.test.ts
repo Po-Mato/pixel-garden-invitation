@@ -23,4 +23,11 @@ describe("entry screen wedding artwork", () => {
     expect(styles).toMatch(/\.entry-character-picker \.character-customizer__sprite\s*\{[^}]*top:\s*calc\(50% \+ 30px\);/s);
     expect(styles).toMatch(/\.entry-character-picker \.character-customizer__halo\s*\{[^}]*top:\s*calc\(50% \+ 102px\);/s);
   });
+
+  it("keeps the greenhouse crop and primary controls composed on short portrait phones", () => {
+    expect(styles).toContain("(orientation: portrait) and (max-height: 700px)");
+    expect(styles).toMatch(/max-height: 700px[\s\S]*?\.entry-screen__hero::before\s*\{[^}]*background-position:\s*center 44%;/s);
+    expect(styles).toMatch(/max-height: 700px[\s\S]*?\.entry-screen__event-brief\s*\{[^}]*min-height:\s*68px;/s);
+    expect(styles).toMatch(/max-height: 600px[\s\S]*?\.entry-screen__hero::before\s*\{[^}]*background-position:\s*center 41%;/s);
+  });
 });

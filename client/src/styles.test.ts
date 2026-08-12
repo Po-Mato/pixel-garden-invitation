@@ -156,6 +156,13 @@ describe("entry screen layout", () => {
     expect(entryScreenStyles).toMatch(/\.entry-screen__event-brief strong\s*\{[^}]*white-space:\s*normal;[^}]*-webkit-line-clamp:\s*2;/s);
   });
 
+  it("shares invitation surface tokens with the refined game HUD", () => {
+    expect(weddingLuxeStyles).toContain("--wedding-radius-control: 12px;");
+    expect(weddingLuxeStyles).toMatch(/\.entry-screen__resume-access\s*\{[^}]*background:/s);
+    expect(refinedGameStyles).toContain("--game-wine: var(--camellia");
+    expect(refinedGameStyles).toContain("border-radius: var(--wedding-radius-control, 12px);");
+  });
+
   it("stacks directions headings before controls at 200 percent text", () => {
     expect(weddingLuxeStyles).toMatch(/\.directions-sheet > \*\s*\{[^}]*min-width:\s*0;[^}]*max-width:\s*100%;/s);
     expect(weddingLuxeStyles).toContain('html[data-text-scale="ios-200"]');
@@ -701,7 +708,10 @@ describe("prism map interactions", () => {
 
     expect(sheetRule).toContain("--sheet-prism:");
     expect(sheetRule).toContain("max-height: calc(100dvh - 24px);");
-    expect(sheetRule).toContain("overflow-y: auto;");
+    expect(sheetRule).toContain("grid-template-rows: auto minmax(0, 1fr);");
+    expect(sheetRule).toContain("overflow: hidden;");
+    expect(styles).toMatch(/\.bottom-sheet__header\s*\{[^}]*position:\s*sticky;/s);
+    expect(styles).toMatch(/\.bottom-sheet__body\s*\{[^}]*overflow-y:\s*auto;/s);
     expect(styles).toContain(".bottom-sheet .field input:focus-visible");
     expect(styles).toContain(".bottom-sheet__header button:focus-visible");
     expect(weddingLuxeStyles).toContain(".bottom-sheet__header h2:focus");
@@ -759,6 +769,8 @@ describe("wedding editorial content", () => {
     expect(triggerRule).toContain("border-radius: 6px;");
     expect(triggerRule).toContain("overflow: hidden;");
     expect(styles).toContain(".wedding-gallery__photo-button:focus-visible");
+    expect(styles).toContain('.wedding-gallery__photo-button[aria-current="true"]');
+    expect(styles).toContain(".wedding-gallery__photo-number");
   });
 
   it("isolates gallery button visuals and focus halos from the bottom sheet cascade", () => {

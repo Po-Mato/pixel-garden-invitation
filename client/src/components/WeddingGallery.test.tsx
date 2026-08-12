@@ -15,6 +15,8 @@ describe("에디토리얼 웨딩 갤러리", () => {
     const buttons = screen.getAllByRole("button", { name: /사진 \d+:/ });
     expect(buttons).toHaveLength(10);
     expect(screen.getAllByText("크게 보기")).toHaveLength(10);
+    expect(screen.getByText("01")).toBeInTheDocument();
+    expect(screen.getByText("10")).toBeInTheDocument();
     expect(buttons.map((button) => button.getAttribute("aria-label"))).toEqual(
       photos.map((photo, index) => `사진 ${index + 1}: ${photo.alt}`)
     );
@@ -44,6 +46,7 @@ describe("에디토리얼 웨딩 갤러리", () => {
 
     expect(onPhotoOpen).toHaveBeenCalledWith(4);
     expect(screen.getByRole("dialog", { name: "웨딩 사진 전체 화면" })).toBeInTheDocument();
+    expect(screen.getAllByRole("button", { name: /사진 \d+:/ })[4]).toHaveAttribute("aria-current", "true");
   });
 
   it("라이트박스를 닫으면 선택했던 사진 버튼으로 포커스를 복원한다", () => {
@@ -55,6 +58,19 @@ describe("에디토리얼 웨딩 갤러리", () => {
 
     expect(screen.queryByRole("dialog", { name: "웨딩 사진 전체 화면" })).not.toBeInTheDocument();
     expect(selectedPhoto).toHaveFocus();
+    expect(selectedPhoto).toHaveAttribute("aria-current", "true");
+  });
+
+  it("라이트박스에서 넘겨 본 현재 사진으로 선택 상태와 포커스를 옮긴다", () => {
+    render(<WeddingGallery />);
+    const photoButtons = screen.getAllByRole("button", { name: /사진 \d+:/ });
+
+    fireEvent.click(photoButtons[1]);
+    fireEvent.click(screen.getByRole("button", { name: "다음 사진" }));
+    fireEvent.click(screen.getByRole("button", { name: "전체 화면 닫기" }));
+
+    expect(photoButtons[2]).toHaveAttribute("aria-current", "true");
+    expect(photoButtons[2]).toHaveFocus();
   });
 
   it("데이터 절약 중에는 4장만 먼저 표시하고 요청할 때 나머지를 불러온다", () => {

@@ -215,7 +215,9 @@ export function PhotoLightbox({ photos, index, onIndexChange, onClose }: PhotoLi
     >
       <header className="photo-lightbox__header">
         <p className="photo-lightbox__counter" aria-live="polite">
-          {index + 1} / {photos.length}
+          <span>사진</span>
+          <strong>{index + 1}</strong>
+          <span>/ {photos.length}</span>
         </p>
         <button
           ref={closeButtonRef}

@@ -2680,7 +2680,9 @@ select,
   z-index: 41;
   width: min(calc(100% - 32px), 390px);
   max-height: calc(100dvh - 24px);
-  overflow-y: auto;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  overflow: hidden;
   overscroll-behavior: contain;
   border: 2px solid #59483f;
   border-radius: 0;
@@ -2704,6 +2706,9 @@ select,
 }
 
 .bottom-sheet__header {
+  position: sticky;
+  top: 0;
+  z-index: 3;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -2720,6 +2725,10 @@ select,
 }
 
 .bottom-sheet__header button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
   border: 2px solid #765665;
   padding: 8px 12px;
   background: linear-gradient(135deg, var(--camellia-soft), var(--camellia));
@@ -2728,7 +2737,12 @@ select,
 }
 
 .bottom-sheet__body {
+  min-width: 0;
+  min-height: 0;
   margin-top: 14px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
   color: var(--ink);
   font-size: 16px;
   line-height: 1.65;
@@ -2999,6 +3013,37 @@ select,
   outline-offset: 2px;
 }
 
+.wedding-gallery__photo-number {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  display: inline-grid;
+  min-width: 30px;
+  min-height: 26px;
+  place-items: center;
+  border: 1px solid rgba(255, 253, 248, 0.72);
+  border-radius: 999px;
+  padding: 3px 7px;
+  background: rgba(38, 32, 31, 0.72);
+  color: #fffdf8;
+  box-shadow: 0 4px 14px rgba(17, 14, 13, 0.2);
+  font-size: 10px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.wedding-gallery__photo-button[aria-current="true"] {
+  border-color: var(--camellia);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--camellia) 24%, transparent);
+}
+
+.wedding-gallery__photo-button[aria-current="true"] .wedding-gallery__photo-number {
+  border-color: rgba(255, 255, 255, 0.86);
+  background: var(--camellia);
+}
+
 .bottom-sheet .wedding-gallery__photo-button {
   border: 1px solid color-mix(in srgb, var(--gold) 68%, var(--ink));
   border-radius: 6px;
@@ -3010,6 +3055,11 @@ select,
 .bottom-sheet .wedding-gallery__photo-button:focus-visible {
   outline: 3px solid var(--camellia);
   outline-offset: 2px;
+}
+
+.bottom-sheet .wedding-gallery__photo-button[aria-current="true"] {
+  border-color: var(--camellia);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--camellia) 24%, transparent);
 }
 
 .wedding-gallery__caption {
@@ -3087,9 +3137,22 @@ select,
 }
 
 .photo-lightbox__counter {
+  display: inline-flex;
+  min-height: 34px;
+  align-items: baseline;
+  gap: 5px;
+  border: 1px solid rgba(216, 201, 165, 0.36);
+  border-radius: 999px;
+  padding: 6px 11px;
+  background: rgba(255, 253, 248, 0.08);
   color: #d8c9a5;
-  font-size: 13px;
+  font-size: 12px;
   font-variant-numeric: tabular-nums;
+}
+
+.photo-lightbox__counter strong {
+  color: #fffdf8;
+  font-size: 16px;
 }
 
 .photo-lightbox__stage {

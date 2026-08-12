@@ -18,6 +18,9 @@
   --entry-coral: #bd7883;
   --entry-lilac: #a99bb6;
   --entry-ink: #42363a;
+  --wedding-line: rgba(92, 72, 78, 0.26);
+  --wedding-radius-control: 12px;
+  --wedding-radius-surface: 20px;
   color: var(--ink);
   background: #f5ede9;
   font-family: var(--wedding-font-ui);
@@ -141,9 +144,10 @@ body {
 
 .entry-screen__event-brief,
 .entry-screen__character-access,
-.entry-screen__quick-access {
-  border: 1px solid rgba(92, 72, 78, 0.26);
-  border-radius: 5px;
+.entry-screen__quick-access,
+.entry-screen__resume-access {
+  border: 1px solid var(--wedding-line);
+  border-radius: var(--wedding-radius-control);
   background: rgba(255, 255, 255, 0.9);
   color: #453a3d;
   box-shadow: 0 7px 20px rgba(89, 67, 72, 0.08);
@@ -156,6 +160,10 @@ body {
 .entry-screen__quick-access {
   border-color: rgba(105, 134, 121, 0.4);
   background: #f4f8f5;
+}
+
+.entry-screen__resume-access {
+  background: rgba(255, 253, 249, 0.94);
 }
 
 .entry-screen__character-command,
@@ -171,7 +179,7 @@ body {
   box-shadow: 0 8px 24px rgba(89, 67, 72, 0.12);
 }
 
-.bottom-sheet-backdrop,
+.sheet-backdrop,
 .world-menu-backdrop {
   background: rgba(52, 43, 46, 0.4);
   backdrop-filter: blur(5px);
@@ -191,6 +199,8 @@ body {
 .bottom-sheet {
   width: min(calc(100% - 24px), 420px);
   max-height: calc(100dvh - 20px - env(safe-area-inset-top));
+  grid-template-rows: auto minmax(0, 1fr);
+  overflow: hidden;
   padding: 18px 18px 16px;
   font-family: var(--wedding-font-ui);
   word-break: keep-all;
@@ -198,12 +208,17 @@ body {
 }
 
 .bottom-sheet__header {
+  position: sticky;
+  top: 0;
+  z-index: 3;
   min-width: 0;
   min-height: 48px;
   align-items: center;
   gap: 16px;
   padding-bottom: 12px;
   border-bottom: 1px solid rgba(179, 148, 89, 0.36);
+  background: rgba(255, 254, 251, 0.96);
+  backdrop-filter: blur(10px);
 }
 
 .bottom-sheet__header h2 {
@@ -234,9 +249,25 @@ body {
   font-weight: 700;
 }
 
+.bottom-sheet__header button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+.bottom-sheet__header button svg {
+  width: 16px;
+  height: 16px;
+}
+
 .bottom-sheet__body {
   min-width: 0;
+  min-height: 0;
   margin-top: 14px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
   font-size: 15px;
   line-height: 1.58;
 }
