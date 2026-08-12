@@ -209,14 +209,34 @@ body {
   position: sticky;
   top: 0;
   z-index: 3;
+  isolation: isolate;
   min-width: 0;
   min-height: 48px;
   align-items: center;
   gap: 16px;
   padding-bottom: 12px;
   border-bottom: 1px solid rgba(179, 148, 89, 0.36);
-  background: rgba(255, 254, 251, 0.96);
+  background: #fffefb;
+  box-shadow: 0 8px 12px -12px rgba(61, 45, 50, 0.34);
   backdrop-filter: blur(10px);
+}
+
+.bottom-sheet__header::before {
+  position: absolute;
+  z-index: -1;
+  inset: -20px -20px 0;
+  background: #fffefb;
+  content: "";
+  pointer-events: none;
+}
+
+html[data-text-scale="ios-200"] .bottom-sheet__header {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+html[data-text-scale="ios-200"] .bottom-sheet__header button {
+  font-size: 16px;
 }
 
 .bottom-sheet__header h2 {
