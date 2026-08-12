@@ -64,6 +64,7 @@ describe("전체 화면 웨딩 사진 뷰어", () => {
     expect(dialog.parentElement).toBe(document.body);
     expect(dialog).toHaveAttribute("aria-modal", "true");
     expect(screen.getByRole("img", { name: photos[0].alt })).toBeInTheDocument();
+    expect(dialog.querySelector(".photo-lightbox__media")).toHaveAttribute("data-orientation", photos[0].orientation);
     expect(screen.getByText("사진").closest("p")).toHaveTextContent(`사진1/ ${photos.length}`);
     expect(screen.getByText(photos[0].caption ?? "")).toBeInTheDocument();
     expect(screen.getByText("좌우로 넘겨보기")).toBeInTheDocument();

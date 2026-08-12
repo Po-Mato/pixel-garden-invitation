@@ -50,6 +50,15 @@
   transition: width 220ms ease;
 }
 
+.rsvp-progress__focus-status {
+  display: none;
+  margin: 0;
+  color: #66756d;
+  font-size: 9.5px;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
 .rsvp-progress__steps {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -130,6 +139,11 @@
   box-shadow: 0 8px 22px rgba(70, 92, 80, 0.075);
 }
 
+.rsvp-form__section:focus-within {
+  border-color: rgba(105, 134, 121, 0.64);
+  box-shadow: 0 10px 26px rgba(70, 92, 80, 0.11);
+}
+
 .rsvp-form__section-header {
   display: grid;
   grid-template-columns: 30px minmax(0, 1fr);
@@ -202,6 +216,10 @@
 .rsvp-form__section .field > :is(input, textarea):focus {
   border-color: var(--sage);
   box-shadow: 0 0 0 3px rgba(105, 134, 121, 0.12);
+}
+
+.rsvp-form__section :is(input, textarea) {
+  scroll-margin-block: 112px 38dvh;
 }
 
 .rsvp-form__section .field > input[aria-invalid="true"] {
@@ -431,6 +449,74 @@
   line-height: 1.45;
 }
 
+/* Invitation rhythm — connect the long scroll as four editorial chapters. */
+.quick-band[id]:not(.quick-closing) {
+  --quick-section-accent: #9f6670;
+  position: relative;
+  padding-block: clamp(62px, 9dvh, 76px);
+  background-image: linear-gradient(180deg, color-mix(in srgb, var(--quick-section-accent) 5%, transparent), transparent 58px);
+}
+
+.quick-band[id][data-flow="visit"] {
+  --quick-section-accent: #668276;
+}
+
+.quick-band[id][data-flow="reply"] {
+  --quick-section-accent: #a18456;
+}
+
+.quick-band[id]:not(.quick-closing)::before {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 54px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--quick-section-accent), transparent);
+  content: "";
+  opacity: 0.68;
+  transform: translateX(-50%);
+}
+
+.quick-section-heading {
+  gap: 0;
+  margin-bottom: 34px;
+}
+
+.quick-section-heading__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--quick-section-accent, #9f6670);
+  font-family: var(--wedding-font-ui);
+  font-size: 9px;
+  font-weight: 850;
+  letter-spacing: 0.17em;
+  line-height: 1.4;
+}
+
+.quick-section-heading__eyebrow > span:first-child {
+  display: inline-grid;
+  min-width: 24px;
+  min-height: 19px;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--quick-section-accent, #9f6670) 42%, transparent);
+  border-radius: 999px;
+  padding: 2px 5px;
+  background: color-mix(in srgb, var(--quick-section-accent, #9f6670) 6%, #fff);
+  font-size: 8px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.08em;
+}
+
+.quick-section-heading h2 {
+  margin-top: 11px;
+}
+
+.quick-section-heading p {
+  margin-top: 11px;
+}
+
 /* Share + closing — one finish instead of three visually separate endings. */
 .invitation-share-trigger[data-state="open"] {
   color: var(--camellia);
@@ -603,36 +689,92 @@
 }
 
 .quick-core-actions {
+  min-height: 56px;
   border-top-color: rgba(105, 134, 121, 0.26);
-  background: rgba(255, 253, 249, 0.96);
+  background: rgba(255, 253, 249, 0.965);
   box-shadow: 0 -10px 28px rgba(35, 53, 45, 0.12);
 }
 
 .quick-core-actions > button,
 .quick-core-actions > .invitation-share-trigger {
   position: relative;
+  min-height: 56px;
+  gap: 2px;
+  padding-block: 5px;
   border-right-color: rgba(105, 134, 121, 0.12);
   color: #53675e;
+  font-size: 9px;
+  transition: background-color 160ms ease, color 160ms ease;
 }
 
-.quick-core-actions > button[aria-current="page"] {
+.quick-core-actions svg {
+  width: 18px;
+  height: 18px;
+  transition: transform 160ms ease;
+}
+
+.quick-core-actions > :is(button, .invitation-share-trigger)[aria-current="page"] {
   background: #edf3ef;
   color: #315d4a;
 }
 
 .quick-core-actions > button[aria-current="page"]::before,
+.quick-core-actions > .invitation-share-trigger[aria-current="page"]::before,
 .quick-core-actions > .invitation-share-trigger[data-state="open"]::before {
   position: absolute;
-  top: 0;
-  right: 24%;
-  left: 24%;
-  height: 2px;
-  border-radius: 0 0 2px 2px;
+  top: 5px;
+  right: 34%;
+  left: 34%;
+  height: 3px;
+  border-radius: 999px;
   background: #648173;
   content: "";
 }
 
-/* Gallery — expose swipe progress and make photo/caption changes feel connected. */
+.quick-core-actions > :is(button, .invitation-share-trigger)[aria-current="page"] svg,
+.quick-core-actions > .invitation-share-trigger[data-state="open"] svg {
+  transform: translateY(-1px);
+}
+
+/* Gallery — preserve the source ratio and give every frame one caption rhythm. */
+.quick-band--gallery .wedding-gallery__item--half .wedding-gallery__photo-button {
+  aspect-ratio: 2 / 3;
+}
+
+.quick-band--gallery .wedding-gallery__caption {
+  display: grid;
+  min-height: 27px;
+  align-content: start;
+  gap: 4px;
+  padding: 8px 3px 0;
+}
+
+.wedding-gallery__caption-meta {
+  color: #8b777b;
+  font-size: 7.5px;
+  font-weight: 850;
+  letter-spacing: 0.13em;
+  line-height: 1.35;
+}
+
+.wedding-gallery__item[data-orientation="landscape"] .wedding-gallery__caption-meta {
+  color: #637b70;
+}
+
+.wedding-gallery__caption-copy {
+  color: #62575a;
+  font-family: var(--wedding-font-display);
+  font-size: 11.5px;
+  font-weight: 600;
+  line-height: 1.55;
+  word-break: keep-all;
+}
+
+.quick-band--gallery .wedding-gallery__item[data-has-caption="true"] .wedding-gallery__caption {
+  min-height: 48px;
+}
+
+/* Gallery viewer — expose swipe progress and make photo/caption changes feel connected. */
 .photo-lightbox {
   grid-template-rows: auto 3px minmax(0, 1fr) auto;
   background:
@@ -659,10 +801,26 @@
 }
 
 .photo-lightbox__media {
+  background: #11100f;
   transform: translate3d(var(--photo-drag-x, 0), 0, 0);
   animation: photo-lightbox-enter 240ms ease both;
   transition: transform 180ms ease;
   will-change: transform;
+}
+
+.photo-lightbox__media:has(.responsive-gallery-image--loading) {
+  background:
+    linear-gradient(110deg, transparent 32%, rgba(255, 255, 255, 0.055) 48%, transparent 64%) 0 0 / 220% 100%,
+    #171614;
+}
+
+.photo-lightbox__close {
+  white-space: nowrap;
+}
+
+.photo-lightbox__media[data-orientation="portrait"] {
+  width: min(100%, 64dvh);
+  justify-self: center;
 }
 
 .photo-lightbox__stage[data-dragging="true"] .photo-lightbox__media {
@@ -750,6 +908,73 @@
   }
 }
 
+@media (max-width: 520px) {
+  .rsvp-form:focus-within .rsvp-progress {
+    position: sticky;
+    top: max(6px, env(safe-area-inset-top));
+    z-index: 4;
+    gap: 6px;
+    border-radius: 14px;
+    padding: 9px 11px;
+    background: rgba(251, 253, 250, 0.96);
+    box-shadow: 0 9px 24px rgba(55, 75, 65, 0.15);
+    backdrop-filter: blur(12px);
+  }
+
+  .quick-invitation .rsvp-form:focus-within .rsvp-progress {
+    top: calc(62px + env(safe-area-inset-top));
+  }
+
+  .rsvp-form:focus-within .rsvp-progress__steps {
+    display: none;
+  }
+
+  .rsvp-form:focus-within .rsvp-progress__focus-status {
+    display: block;
+  }
+
+  .rsvp-form__section:focus-within {
+    scroll-margin-top: 106px;
+  }
+
+  .photo-lightbox__stage {
+    position: relative;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+
+  .photo-lightbox__previous,
+  .photo-lightbox__next {
+    position: absolute;
+    top: 50%;
+    z-index: 2;
+    border-color: rgba(255, 253, 248, 0.28);
+    border-radius: 50%;
+    background: rgba(17, 16, 15, 0.58);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    transform: translateY(-50%);
+    backdrop-filter: blur(8px);
+  }
+
+  .photo-lightbox__previous {
+    left: 4px;
+  }
+
+  .photo-lightbox__next {
+    right: 4px;
+  }
+
+  .photo-lightbox__media {
+    grid-column: 1;
+    width: 100%;
+    padding-inline: 4px;
+  }
+
+  .photo-lightbox__media[data-orientation="portrait"] {
+    width: min(100%, 64dvh);
+  }
+}
+
 :is(html[data-text-scale="xlarge"], html[data-text-scale="ios-200"], html[data-typography-audit]) .rsvp-progress__steps {
   grid-template-columns: minmax(0, 1fr);
 }
@@ -789,6 +1014,7 @@
 @media (prefers-reduced-motion: reduce) {
   .rsvp-progress__track > span,
   .rsvp-form__section,
+  .quick-core-actions svg,
   .directions-sheet__maps > :is(a, button),
   .photo-lightbox__progress > span,
   .photo-lightbox__media,
@@ -801,6 +1027,7 @@
 html[data-reduce-motion="true"] :is(
   .rsvp-progress__track > span,
   .rsvp-form__section,
+  .quick-core-actions svg,
   .directions-sheet__maps > :is(a, button),
   .photo-lightbox__progress > span,
   .photo-lightbox__media,

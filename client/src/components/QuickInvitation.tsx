@@ -55,6 +55,7 @@ type QuickInvitationProps = {
 };
 
 type SectionHeadingProps = {
+  number: string;
   eyebrow: string;
   title: string;
   body?: string;
@@ -69,10 +70,13 @@ const navigation = [
   ["방명록", "guestbook"]
 ] as const;
 
-function SectionHeading({ eyebrow, title, body }: SectionHeadingProps) {
+function SectionHeading({ number, eyebrow, title, body }: SectionHeadingProps) {
   return (
     <header className="quick-section-heading">
-      <span>{eyebrow}</span>
+      <div className="quick-section-heading__eyebrow">
+        <span aria-hidden="true">{number}</span>
+        <span>{eyebrow}</span>
+      </div>
       <h2>{title}</h2>
       {body ? <p>{body}</p> : null}
     </header>
@@ -114,6 +118,15 @@ export function QuickInvitation({
     loadInvitationViewSync()?.sectionId ?? "top"
   );
   const [activeSection, setActiveSection] = useState<QuickInvitationSectionId>(activeSectionRef.current);
+
+  const selectSection = (id: QuickInvitationSectionId) => {
+    if (activeSectionRef.current !== id) {
+      activeSectionRef.current = id;
+      setActiveSection(id);
+      saveQuickViewSection(id);
+    }
+    return scrollToSection(id);
+  };
 
   useEffect(() => {
     const synced = loadInvitationViewSync();
@@ -199,8 +212,9 @@ export function QuickInvitation({
         <span>{content.coupleMessage}</span>
       </section>
 
-      <section className="quick-band quick-band--profiles" id="couple">
+      <section className="quick-band quick-band--profiles" id="couple" data-flow="story">
         <SectionHeading
+          number="01"
           eyebrow="BRIDE & GROOM"
           title="두 사람을 소개합니다"
           body="서로의 일상에 가장 편안한 사람이 된 두 사람입니다."
@@ -208,13 +222,14 @@ export function QuickInvitation({
         <CoupleProfilePanel />
       </section>
 
-      <section className="quick-band quick-band--story" id="story">
-        <SectionHeading eyebrow="OUR STORY" title="함께 걸어온 시간" />
+      <section className="quick-band quick-band--story" id="story" data-flow="story">
+        <SectionHeading number="02" eyebrow="OUR STORY" title="함께 걸어온 시간" />
         <WeddingStoryTimeline />
       </section>
 
-      <section className="quick-band quick-band--gallery" id="gallery">
+      <section className="quick-band quick-band--gallery" id="gallery" data-flow="story">
         <SectionHeading
+          number="03"
           eyebrow="GALLERY"
           title="우리의 장면들"
           body="사진을 누르면 한 장씩 크게 감상할 수 있습니다."
@@ -224,8 +239,8 @@ export function QuickInvitation({
         </DeferredContent>
       </section>
 
-      <section className="quick-band quick-band--event" id="schedule">
-        <SectionHeading eyebrow="WEDDING DAY" title="예식 일정" />
+      <section className="quick-band quick-band--event" id="schedule" data-flow="visit">
+        <SectionHeading number="04" eyebrow="WEDDING DAY" title="예식 일정" />
         <WeddingEventSummary
           variant="detail"
           weddingDayPreview={weddingDayPreview}
@@ -233,8 +248,9 @@ export function QuickInvitation({
         />
       </section>
 
-      <section className="quick-band quick-band--directions" id="directions">
+      <section className="quick-band quick-band--directions" id="directions" data-flow="visit">
         <SectionHeading
+          number="05"
           eyebrow="LOCATION"
           title="오시는 길"
           body="소사역 1번 출구에서 도보 약 3분 거리입니다."
@@ -242,8 +258,9 @@ export function QuickInvitation({
         <DirectionsContent />
       </section>
 
-      <section className="quick-band quick-band--rsvp" id="rsvp">
+      <section className="quick-band quick-band--rsvp" id="rsvp" data-flow="reply">
         <SectionHeading
+          number="06"
           eyebrow="RSVP"
           title="참석 여부를 알려주세요"
           body="예식 준비를 위해 2027년 4월 24일까지 답변 부탁드립니다."
@@ -253,18 +270,19 @@ export function QuickInvitation({
         </DeferredContent>
       </section>
 
-      <section className="quick-band quick-band--gift" id="gift">
-        <SectionHeading eyebrow="WITH GRATITUDE" title="마음 전하실 곳" />
+      <section className="quick-band quick-band--gift" id="gift" data-flow="reply">
+        <SectionHeading number="07" eyebrow="WITH GRATITUDE" title="마음 전하실 곳" />
         <GiftAccountContent />
       </section>
 
-      <section className="quick-band quick-band--contact" id="contact">
-        <SectionHeading eyebrow="CONTACT" title="혼주 연락처" />
+      <section className="quick-band quick-band--contact" id="contact" data-flow="reply">
+        <SectionHeading number="08" eyebrow="CONTACT" title="혼주 연락처" />
         <FamilyContactContent />
       </section>
 
-      <section className="quick-band quick-band--guestbook" id="guestbook">
+      <section className="quick-band quick-band--guestbook" id="guestbook" data-flow="reply">
         <SectionHeading
+          number="09"
           eyebrow="GUESTBOOK"
           title="축하의 말을 남겨주세요"
           body="남겨주신 마음은 두 사람에게 오래도록 소중한 선물이 됩니다."
@@ -330,11 +348,11 @@ export function QuickInvitation({
         <strong>{names}</strong>
         <button type="button" onClick={() => scrollToSection("top")}><ArrowUp aria-hidden="true" /> 맨 위로</button>
       </footer>
-      <nav className="quick-core-actions" aria-label="초대장 핵심 바로가기">
+      <nav className="quick-core-actions" aria-label="초대장 핵심 바로가기" data-active-section={activeSection}>
         <button
           type="button"
           aria-current={activeSection === "schedule" ? "page" : undefined}
-          onClick={() => scrollToSection("schedule")}
+          onClick={() => selectSection("schedule")}
         >
           <CalendarDays aria-hidden="true" />
           <span>일정</span>
@@ -342,7 +360,7 @@ export function QuickInvitation({
         <button
           type="button"
           aria-current={activeSection === "directions" ? "page" : undefined}
-          onClick={() => scrollToSection("directions")}
+          onClick={() => selectSection("directions")}
         >
           <MapPin aria-hidden="true" />
           <span>길 찾기</span>
@@ -350,12 +368,12 @@ export function QuickInvitation({
         <button
           type="button"
           aria-current={activeSection === "rsvp" ? "page" : undefined}
-          onClick={() => scrollToSection("rsvp")}
+          onClick={() => selectSection("rsvp")}
         >
           <Send aria-hidden="true" />
           <span>참석</span>
         </button>
-        <InvitationShareAccess variant="menu" />
+        <InvitationShareAccess variant="menu" compactLabel current={activeSection === "share"} />
       </nav>
     </article>
   );

@@ -13,10 +13,17 @@ vi.mock("./GuestbookExperience", () => ({
 }));
 vi.mock("./WeddingGallery", () => ({ WeddingGallery: () => <div>웨딩 사진 모음</div> }));
 vi.mock("./InvitationShareAccess", () => ({
-  InvitationShareAccess: ({ variant }: { variant: string }) => <button type="button">공유 {variant}</button>
+  InvitationShareAccess: ({ variant, compactLabel, current }: { variant: string; compactLabel?: boolean; current?: boolean }) => (
+    <button type="button" aria-label={compactLabel ? "초대장 공유" : undefined} aria-current={current ? "page" : undefined}>
+      {compactLabel ? "공유" : `공유 ${variant}`}
+    </button>
+  )
 }));
 
-beforeEach(() => installMemoryLocalStorage());
+beforeEach(() => {
+  installMemoryLocalStorage();
+  Element.prototype.scrollIntoView = vi.fn();
+});
 afterEach(cleanup);
 
 describe("간편 초대장", () => {
@@ -31,6 +38,10 @@ describe("간편 초대장", () => {
     expect(screen.getAllByText("경기 부천시 소사구 경인로 386")).toHaveLength(2);
     expect(screen.getByText("THANK YOU")).toBeInTheDocument();
     expect(screen.getByText("초대장을 간직하거나 참석 여부를 알려주세요.")).toBeInTheDocument();
+    expect(document.getElementById("couple")).toHaveAttribute("data-flow", "story");
+    expect(document.getElementById("directions")).toHaveAttribute("data-flow", "visit");
+    expect(document.getElementById("rsvp")).toHaveAttribute("data-flow", "reply");
+    expect(document.querySelectorAll(".quick-section-heading__eyebrow")).toHaveLength(9);
     const gameJourney = screen.getByText("게임으로 둘러볼 장소").closest("details");
     expect(gameJourney).not.toHaveAttribute("open");
     fireEvent.click(screen.getByText("게임으로 둘러볼 장소"));
@@ -50,14 +61,20 @@ describe("간편 초대장", () => {
     expect(actions.querySelector("button")?.textContent).toContain("참석 답변");
   });
 
-  it("일정·길 찾기·참석·공유를 항상 보이는 핵심 동선으로 제공한다", () => {
+  it("일정·길 찾기·참석·공유를 항상 보이고 선택 즉시 현재 위치를 표시한다", () => {
     render(<QuickInvitation onOpenGarden={vi.fn()} />);
 
     const dock = screen.getByRole("navigation", { name: "초대장 핵심 바로가기" });
     expect(within(dock).getByRole("button", { name: "일정" })).toBeInTheDocument();
-    expect(within(dock).getByRole("button", { name: "길 찾기" })).toBeInTheDocument();
+    const directions = within(dock).getByRole("button", { name: "길 찾기" });
+    expect(directions).toBeInTheDocument();
     expect(within(dock).getByRole("button", { name: "참석" })).toBeInTheDocument();
-    expect(dock).toHaveTextContent("공유 menu");
+    expect(within(dock).getByRole("button", { name: "초대장 공유" })).toHaveTextContent("공유");
+
+    fireEvent.click(directions);
+    expect(directions).toHaveAttribute("aria-current", "page");
+    expect(dock).toHaveAttribute("data-active-section", "directions");
+    expect(loadInvitationViewSync()).toMatchObject({ source: "quick", sectionId: "directions" });
   });
 
   it("게임에서 온 방문자가 아니면 입장 선택으로 돌아간다", () => {

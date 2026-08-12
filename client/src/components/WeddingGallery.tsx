@@ -70,6 +70,8 @@ export function WeddingGallery({ photos: photosOverride, onPhotoOpen }: WeddingG
             key={photo.id}
             className={`wedding-gallery__item wedding-gallery__item--${photo.layout}`}
             data-photo-id={photo.id}
+            data-orientation={photo.orientation}
+            data-has-caption={photo.caption ? "true" : undefined}
           >
             <button
               ref={(element) => {
@@ -90,7 +92,12 @@ export function WeddingGallery({ photos: photosOverride, onPhotoOpen }: WeddingG
                 크게 보기
               </span>
             </button>
-            {photo.caption ? <figcaption className="wedding-gallery__caption">{photo.caption}</figcaption> : null}
+            <figcaption className="wedding-gallery__caption">
+              <span className="wedding-gallery__caption-meta" aria-hidden="true">
+                {photo.orientation === "portrait" ? "PORTRAIT" : "LANDSCAPE"} · {String(index + 1).padStart(2, "0")}
+              </span>
+              {photo.caption ? <span className="wedding-gallery__caption-copy">{photo.caption}</span> : null}
+            </figcaption>
           </figure>
         ))}
       </section>

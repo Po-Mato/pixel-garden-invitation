@@ -279,7 +279,7 @@ export function PhotoLightbox({ photos, index, onIndexChange, onClose }: PhotoLi
         >
           <ChevronLeft aria-hidden="true" />
         </button>
-        <div key={photo.id} className="photo-lightbox__media">
+        <div key={photo.id} className="photo-lightbox__media" data-orientation={photo.orientation}>
           <ResponsiveGalleryImage
             key={`${photo.id}-${fullQuality ? "full" : "auto"}`}
             photo={photo}

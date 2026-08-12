@@ -34,6 +34,14 @@ afterEach(() => {
 });
 
 describe("InvitationShareAccess", () => {
+  it("하단 메뉴에서는 짧은 표시 이름과 현재 섹션 상태를 함께 제공한다", () => {
+    render(<InvitationShareAccess variant="menu" compactLabel current />);
+
+    const trigger = screen.getByRole("button", { name: "초대장 공유" });
+    expect(trigger).toHaveTextContent("공유");
+    expect(trigger).toHaveAttribute("aria-current", "page");
+  });
+
   it("외부 완주 동작에서 트리거 없이 공유 시트를 제어한다", () => {
     const onOpenChange = vi.fn();
     render(<InvitationShareAccess variant="menu" open showTrigger={false} onOpenChange={onOpenChange} />);

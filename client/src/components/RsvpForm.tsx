@@ -255,6 +255,7 @@ export function RsvpForm({
         >
           <span style={{ width: `${(completedSteps / 3) * 100}%` }} />
         </div>
+        <p className="rsvp-progress__focus-status" aria-live="polite">작성 안내 · {readinessMessage}</p>
         <ol className="rsvp-progress__steps">
           {[
             ["하객 정보", identityComplete],

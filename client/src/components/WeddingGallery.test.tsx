@@ -33,8 +33,15 @@ describe("에디토리얼 웨딩 갤러리", () => {
       const item = buttons[index].closest("figure");
       expect(item).toHaveClass("wedding-gallery__item", `wedding-gallery__item--${photo.layout}`);
       expect(item).toHaveAttribute("data-photo-id", photo.id);
+      expect(item).toHaveAttribute("data-orientation", photo.orientation);
+      expect(item?.querySelector(".wedding-gallery__caption-meta")).toHaveTextContent(
+        `${photo.orientation === "portrait" ? "PORTRAIT" : "LANDSCAPE"} · ${String(index + 1).padStart(2, "0")}`
+      );
       if (photo.caption) {
+        expect(item).toHaveAttribute("data-has-caption", "true");
         expect(item).toHaveTextContent(photo.caption);
+      } else {
+        expect(item).not.toHaveAttribute("data-has-caption");
       }
     });
   });

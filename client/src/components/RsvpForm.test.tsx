@@ -38,6 +38,8 @@ describe("RsvpForm", () => {
     expect(progress).toHaveAttribute("aria-valuenow", "0");
     expect(screen.getByText("0/3 완료")).toBeInTheDocument();
     expect(screen.getByText("이름과 연락처를 확인해 주세요.")).toBeInTheDocument();
+    expect(document.querySelector(".rsvp-progress__focus-status"))
+      .toHaveTextContent("작성 안내 · 이름과 연락처를 확인해 주세요.");
 
     fireEvent.change(screen.getByLabelText("연락처"), { target: { value: "010-12" } });
     expect(screen.getByLabelText("연락처")).toHaveAttribute("aria-invalid", "true");
@@ -47,6 +49,8 @@ describe("RsvpForm", () => {
     expect(progress).toHaveAttribute("aria-valuenow", "3");
     expect(screen.getByText("3/3 완료")).toBeInTheDocument();
     expect(screen.getByText("답변을 보낼 준비가 되었습니다.")).toBeInTheDocument();
+    expect(document.querySelector(".rsvp-progress__focus-status"))
+      .toHaveTextContent("작성 안내 · 답변을 보낼 준비가 되었습니다.");
   });
 
   it("작성 중인 답변을 임시 저장하고 오프라인 전송 대기 동작을 제공한다", async () => {
