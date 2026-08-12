@@ -93,7 +93,26 @@ async function approvedVisualBaselineCommitSha() {
   }
 }
 
-async function isGitAncestor(ancestor, descendant) {
+async function isApprovedCommitAncestor(ancestor, descendant) {
+  if (ancestor === descendant) return true;
+  const repository = process.env.GITHUB_REPOSITORY;
+  const token = process.env.GH_TOKEN;
+  if (repository && token) {
+    const response = await fetch(
+      `https://api.github.com/repos/${repository}/compare/${ancestor}...${descendant}`,
+      {
+        headers: {
+          accept: "application/vnd.github+json",
+          authorization: `Bearer ${token}`,
+          "x-github-api-version": "2022-11-28"
+        }
+      }
+    );
+    if (response.status === 404) return false;
+    if (!response.ok) throw new Error(`GitHub approved baseline ancestry ${response.status}`);
+    const comparison = await response.json();
+    return comparison.status === "ahead" || comparison.status === "identical";
+  }
   try {
     await execFileAsync("git", ["merge-base", "--is-ancestor", ancestor, descendant], { cwd: rootDir });
     return true;
@@ -143,7 +162,7 @@ if (currentOutcome) {
 samples = await markApprovedIosSafariVisualFailures({
   samples,
   approvedCommitSha: await approvedVisualBaselineCommitSha(),
-  isAncestor: isGitAncestor
+  isAncestor: isApprovedCommitAncestor
 });
 const trend = buildIosSafariStabilityTrend(samples);
 const markdown = formatIosSafariStabilityMarkdown(trend);
