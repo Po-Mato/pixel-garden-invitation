@@ -714,7 +714,7 @@ describe("prism map interactions", () => {
     expect(styles).toContain(".bottom-sheet__header button:focus-visible");
     expect(weddingLuxeStyles).toContain(".bottom-sheet__header h2:focus");
     expect(weddingLuxeStyles).toMatch(/\.bottom-sheet__header\s*\{[^}]*background:\s*#fffefb;[^}]*box-shadow:/s);
-    expect(weddingLuxeStyles).toMatch(/\.bottom-sheet__header::before\s*\{[^}]*inset:\s*-20px -20px 0;[^}]*background:\s*#fffefb;/s);
+    expect(weddingLuxeStyles).toMatch(/\.bottom-sheet__header::before\s*\{[^}]*inset:\s*-20px 0 0;[^}]*background:\s*#fffefb;/s);
     expect(weddingLuxeStyles).toMatch(/html\[data-text-scale="ios-200"\] \.bottom-sheet__header\s*\{[^}]*text-size-adjust:\s*100%;/s);
     expect(styles).toContain(".bottom-sheet .primary-button");
     expect(styles).toContain(".rsvp-segmented");

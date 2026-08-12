@@ -224,7 +224,7 @@ body {
 .bottom-sheet__header::before {
   position: absolute;
   z-index: -1;
-  inset: -20px -20px 0;
+  inset: -20px 0 0;
   background: #fffefb;
   content: "";
   pointer-events: none;
