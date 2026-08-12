@@ -1,5 +1,6 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
+import { invitationContent } from "@wedding-game/shared";
 import { WeddingStoryTimeline } from "./WeddingStoryTimeline";
 
 afterEach(cleanup);
@@ -16,5 +17,11 @@ describe("결혼 스토리 타임라인", () => {
       "결혼을 약속한 마음",
       "우리의 결혼식"
     ]);
+    expect(screen.getAllByRole("img")).toHaveLength(4);
+    invitationContent.content.storyTimeline.forEach((step, index) => {
+      const photo = invitationContent.content.gallery.find((candidate) => candidate.id === step.photoId);
+      expect(screen.getAllByRole("listitem")[index]).toHaveAttribute("data-orientation", photo?.orientation);
+      expect(screen.getByRole("img", { name: photo?.alt })).toHaveAttribute("loading", "lazy");
+    });
   });
 });

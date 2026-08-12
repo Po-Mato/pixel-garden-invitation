@@ -24,11 +24,14 @@ export function CoupleProfilePanel({ content: contentOverride }: { content?: Wed
             key={profile.role}
             className={`couple-profile-panel__person couple-profile-panel__person--${profile.role}`}
             aria-label={sectionLabel}
+            data-photo-orientation={photo?.orientation}
           >
-            <p className="couple-profile-panel__role">{profile.roleLabel}</p>
-            <h3 className="couple-profile-panel__name">{profile.name}</h3>
+            <header className="couple-profile-panel__identity">
+              <p className="couple-profile-panel__role">{profile.roleLabel}</p>
+              <h3 className="couple-profile-panel__name">{profile.name}</h3>
+            </header>
             {photo ? (
-              <div className="couple-profile-panel__media">
+              <div className="couple-profile-panel__media" data-orientation={photo.orientation}>
                 <img
                   className="couple-profile-panel__image"
                   src={resolveGalleryAssetPath(photo.assetPath)}
@@ -38,6 +41,9 @@ export function CoupleProfilePanel({ content: contentOverride }: { content?: Wed
                   loading="lazy"
                   decoding="async"
                 />
+                <span className="couple-profile-panel__photo-label" aria-hidden="true">
+                  {profile.role === "bride" ? "BRIDE" : "GROOM"} PORTRAIT
+                </span>
                 <CouplePuppetStage
                   className="couple-profile-panel__puppet"
                   character={profile.role}

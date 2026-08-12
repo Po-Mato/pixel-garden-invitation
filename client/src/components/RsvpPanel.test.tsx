@@ -73,19 +73,23 @@ describe("RsvpPanel", () => {
 
   it("creates an RSVP, stores its credential, and shows the summary", async () => {
     api.createRsvp.mockResolvedValue({ response, credential });
-    render(<RsvpPanel />);
+    const onBackToDirections = vi.fn();
+    render(<RsvpPanel onBackToDirections={onBackToDirections} />);
     await fillNewForm();
 
     fireEvent.click(screen.getByRole("button", { name: "참석 답변 보내기" }));
 
-    const summaryTitle = await screen.findByRole("heading", { name: "보내주신 답변" });
+    const summaryTitle = await screen.findByRole("heading", { name: "참석 답변을 받았습니다" });
     const summary = summaryTitle.closest(".rsvp-summary");
     expect(summary).not.toBeNull();
-    expect(within(summary as HTMLElement).getByText("RSVP COMPLETE")).toBeInTheDocument();
-    expect(within(summary as HTMLElement).getByText("참석 답변이 안전하게 저장되었습니다.")).toBeInTheDocument();
+    expect(within(summary as HTMLElement).getByText("RSVP SAVED")).toBeInTheDocument();
+    expect(within(summary as HTMLElement).getByText("소중한 답변을 안전하게 보관했어요.")).toBeInTheDocument();
+    expect(within(summary as HTMLElement).getByText(/예식 전까지 이 기기에서 다시 수정/)).toBeInTheDocument();
     expect(summary?.querySelector('[data-attendance="yes"]')).toHaveTextContent("참석");
     expect(storage.saveRsvpCredential).toHaveBeenCalledWith("sample-garden", credential);
     expect(screen.getByText("김하객")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "오시는 길 다시 보기" }));
+    expect(onBackToDirections).toHaveBeenCalledOnce();
   });
 
   it("개인 초대 링크의 이름과 측을 새 참석 답변에 미리 입력한다", () => {
@@ -105,7 +109,7 @@ describe("RsvpPanel", () => {
     render(<RsvpPanel />);
 
     expect(screen.getByRole("status")).toHaveTextContent("답변을 확인하고 있습니다");
-    expect(await screen.findByRole("heading", { name: "보내주신 답변" })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: "참석 답변을 받았습니다" })).toBeInTheDocument();
     expect(api.fetchOwnedRsvp).toHaveBeenCalledWith(credential);
   });
 
@@ -115,7 +119,7 @@ describe("RsvpPanel", () => {
 
     render(<StrictMode><RsvpPanel /></StrictMode>);
 
-    expect(await screen.findByRole("heading", { name: "보내주신 답변" })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: "참석 답변을 받았습니다" })).toBeInTheDocument();
     expect(api.fetchOwnedRsvp).toHaveBeenCalledTimes(1);
   });
 
@@ -133,9 +137,9 @@ describe("RsvpPanel", () => {
     api.fetchOwnedRsvp.mockResolvedValue(response);
     api.updateOwnedRsvp.mockResolvedValue({ ...response, guestName: "김수정", revision: 4 });
     render(<RsvpPanel />);
-    await screen.findByRole("heading", { name: "보내주신 답변" });
+    await screen.findByRole("heading", { name: "참석 답변을 받았습니다" });
 
-    fireEvent.click(screen.getByRole("button", { name: "답변 수정" }));
+    fireEvent.click(screen.getByRole("button", { name: "답변 내용 수정" }));
     fireEvent.change(screen.getByLabelText("이름"), { target: { value: "김수정" } });
     fireEvent.click(screen.getByRole("button", { name: "수정 저장" }));
 
@@ -151,9 +155,9 @@ describe("RsvpPanel", () => {
     api.fetchOwnedRsvp.mockResolvedValueOnce(response).mockResolvedValueOnce({ ...response, guestName: "최신 하객", revision: 4 });
     api.updateOwnedRsvp.mockRejectedValue(new WeddingApiError(409, "conflict"));
     render(<RsvpPanel />);
-    await screen.findByRole("heading", { name: "보내주신 답변" });
+    await screen.findByRole("heading", { name: "참석 답변을 받았습니다" });
 
-    fireEvent.click(screen.getByRole("button", { name: "답변 수정" }));
+    fireEvent.click(screen.getByRole("button", { name: "답변 내용 수정" }));
     fireEvent.click(screen.getByRole("button", { name: "수정 저장" }));
 
     expect(await screen.findByRole("status")).toHaveTextContent("다른 변경사항을 반영했습니다");
@@ -166,9 +170,9 @@ describe("RsvpPanel", () => {
     api.fetchOwnedRsvp.mockResolvedValue(response);
     api.updateOwnedRsvp.mockRejectedValue(new WeddingApiError(status, "unauthorized"));
     render(<RsvpPanel />);
-    await screen.findByRole("heading", { name: "보내주신 답변" });
+    await screen.findByRole("heading", { name: "참석 답변을 받았습니다" });
 
-    fireEvent.click(screen.getByRole("button", { name: "답변 수정" }));
+    fireEvent.click(screen.getByRole("button", { name: "답변 내용 수정" }));
     fireEvent.click(screen.getByRole("button", { name: "수정 저장" }));
 
     expect(await screen.findByRole("button", { name: "참석 답변 보내기" })).toBeInTheDocument();
@@ -183,7 +187,7 @@ describe("RsvpPanel", () => {
     await fillNewForm();
     fireEvent.click(screen.getByRole("button", { name: "참석 답변 보내기" }));
 
-    expect(await screen.findByRole("heading", { name: "보내주신 답변" })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: "참석 답변을 받았습니다" })).toBeInTheDocument();
     expect(screen.getByRole("status")).toHaveTextContent("이 기기에서 다시 수정하기 어려울 수 있습니다");
   });
 
@@ -216,7 +220,7 @@ describe("RsvpPanel", () => {
     expect(screen.queryByRole("button", { name: "참석 답변 보내기" })).not.toBeInTheDocument();
     resolveCreate?.({ response, credential });
 
-    expect(await screen.findByRole("heading", { name: "보내주신 답변" })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: "참석 답변을 받았습니다" })).toBeInTheDocument();
     expect(api.createRsvp).toHaveBeenCalledTimes(1);
     expect(storage.saveRsvpCredential).toHaveBeenCalledTimes(1);
   });
@@ -238,7 +242,7 @@ describe("RsvpPanel", () => {
     await fillNewForm();
     fireEvent.click(screen.getByRole("button", { name: "참석 답변 보내기" }));
 
-    expect(await screen.findByRole("heading", { name: "보내주신 답변" })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: "참석 답변을 받았습니다" })).toBeInTheDocument();
     expect(api.createRsvp).toHaveBeenCalledTimes(2);
   });
 
@@ -246,9 +250,9 @@ describe("RsvpPanel", () => {
     storage.loadRsvpCredential.mockReturnValue(credential);
     api.fetchOwnedRsvp.mockResolvedValue({ ...response, consentVersion });
     render(<RsvpPanel />);
-    await screen.findByRole("heading", { name: "보내주신 답변" });
+    await screen.findByRole("heading", { name: "참석 답변을 받았습니다" });
 
-    fireEvent.click(screen.getByRole("button", { name: "답변 수정" }));
+    fireEvent.click(screen.getByRole("button", { name: "답변 내용 수정" }));
 
     expect(screen.getByLabelText(/개인정보 수집/)).not.toBeChecked();
     expect(screen.getByRole("button", { name: "수정 저장" })).toBeDisabled();
@@ -283,8 +287,8 @@ describe("RsvpPanel", () => {
     api.fetchOwnedRsvp.mockResolvedValue(response);
     api.updateOwnedRsvp.mockRejectedValue(new WeddingApiError(429, "rate_limited", 60));
     render(<RsvpPanel />);
-    await screen.findByRole("heading", { name: "보내주신 답변" });
-    fireEvent.click(screen.getByRole("button", { name: "답변 수정" }));
+    await screen.findByRole("heading", { name: "참석 답변을 받았습니다" });
+    fireEvent.click(screen.getByRole("button", { name: "답변 내용 수정" }));
     fireEvent.click(screen.getByRole("button", { name: "수정 저장" }));
 
     expect(await screen.findByRole("alert")).toHaveTextContent("60초 후 다시 시도해 주세요");

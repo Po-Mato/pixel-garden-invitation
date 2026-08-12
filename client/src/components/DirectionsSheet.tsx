@@ -126,22 +126,30 @@ export function DirectionsContent({ venue = invitationContent.event.venue }: Dir
       </section>
 
       <section className="directions-sheet__travel-notes" aria-labelledby="directions-travel-title">
-        <h3 id="directions-travel-title">교통 안내</h3>
-        <section className="directions-sheet__info">
-          <TrainFront aria-hidden="true" />
-          <div>
-            <strong>대중교통</strong>
-            <span>{venue.directions.transit}</span>
-          </div>
-        </section>
+        <header>
+          <span>ARRIVAL GUIDE</span>
+          <h3 id="directions-travel-title">교통 안내</h3>
+          <p>이동 방법에 맞는 안내를 확인하세요.</p>
+        </header>
+        <div className="directions-sheet__travel-grid">
+          <section className="directions-sheet__info" data-mode="transit">
+            <TrainFront aria-hidden="true" />
+            <div>
+              <small>지하철 · 도보</small>
+              <strong>대중교통</strong>
+              <span>{venue.directions.transit}</span>
+            </div>
+          </section>
 
-        <section className="directions-sheet__info">
-          <Car aria-hidden="true" />
-          <div>
-            <strong>자가용·주차</strong>
-            <span>{venue.directions.parking}</span>
-          </div>
-        </section>
+          <section className="directions-sheet__info" data-mode="parking">
+            <Car aria-hidden="true" />
+            <div>
+              <small>자가용 · 주차</small>
+              <strong>주차 안내</strong>
+              <span>{venue.directions.parking}</span>
+            </div>
+          </section>
+        </div>
       </section>
 
       <section className="directions-sheet__phone">

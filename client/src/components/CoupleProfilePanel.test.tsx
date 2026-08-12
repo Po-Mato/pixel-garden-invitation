@@ -27,13 +27,19 @@ describe("신랑신부 소개 패널", () => {
     const sections = screen.getAllByRole("region", { name: /신랑 이승재|신부 이건희/ });
 
     invitationContent.content.coupleProfiles.forEach((profile, index) => {
-      const [roleLabel, name, media, message] = Array.from(sections[index].children);
+      const [identity, media, message] = Array.from(sections[index].children);
+      const roleLabel = identity.querySelector(".couple-profile-panel__role");
+      const name = identity.querySelector(".couple-profile-panel__name");
       const image = media.querySelector("img");
+      const photo = invitationContent.content.gallery.find((candidate) => candidate.id === profile.photoId);
 
-      expect(Array.from(sections[index].children).map((element) => element.tagName)).toEqual(["P", "H3", "DIV", "P"]);
+      expect(Array.from(sections[index].children).map((element) => element.tagName)).toEqual(["HEADER", "DIV", "P"]);
       expect(roleLabel).toHaveTextContent(profile.roleLabel);
       expect(name).toHaveTextContent(profile.name);
-      expect(image).toHaveAttribute("alt", invitationContent.content.gallery.find((photo) => photo.id === profile.photoId)?.alt);
+      expect(image).toHaveAttribute("alt", photo?.alt);
+      expect(sections[index]).toHaveAttribute("data-photo-orientation", photo?.orientation);
+      expect(media).toHaveAttribute("data-orientation", photo?.orientation);
+      expect(media.querySelector(".couple-profile-panel__photo-label")).toHaveTextContent(/PORTRAIT/);
       expect(media).toContainElement(screen.getByRole("img", { name: `${profile.roleLabel} ${profile.name} 2D 퍼펫` }));
       expect(message).toHaveTextContent(profile.message);
       expect(Array.from(sections[index].querySelectorAll("p")).filter((element) => element.textContent === profile.roleLabel))

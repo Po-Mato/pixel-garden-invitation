@@ -12,7 +12,7 @@ import {
 import { clearRsvpCredential, loadRsvpCredential, saveRsvpCredential } from "../invitation/rsvpStorage";
 import { RsvpForm, type RsvpFormInitialValue } from "./RsvpForm";
 import { trackAnalyticsContextEvent } from "../analytics/invitationAnalytics";
-import { CircleCheckBig } from "lucide-react";
+import { CircleCheckBig, MapPin, Pencil } from "lucide-react";
 
 type PanelState =
   | { kind: "loading" }
@@ -80,7 +80,7 @@ function apiMessage(error: unknown, fallback: string): Error {
   return new Error(fallback);
 }
 
-export function RsvpPanel() {
+export function RsvpPanel({ onBackToDirections }: { onBackToDirections?: () => void } = {}) {
   const id = invitationId();
   const credentialRef = useRef<RsvpCredential | null>(loadRsvpCredential(id));
   const pendingAtRender = pendingCreates.get(id);
@@ -140,7 +140,7 @@ export function RsvpPanel() {
     credentialRef.current = created.result.credential;
     if (!mountedRef.current) return;
     setNotice(created.credentialSaved
-      ? "답변이 저장되었습니다."
+      ? "답변이 저장되었습니다. 필요할 때 이 기기에서 다시 확인하고 수정할 수 있어요."
       : "답변은 저장되었지만 이 기기에서 다시 수정하기 어려울 수 있습니다.");
     setState({ kind: "summary", response: created.result.response });
   }, []);
@@ -281,9 +281,9 @@ export function RsvpPanel() {
           <header className="rsvp-summary__hero">
             <CircleCheckBig aria-hidden="true" />
             <div>
-              <span>RSVP COMPLETE</span>
-              <h3 id="rsvp-summary-title">보내주신 답변</h3>
-              <p>참석 답변이 안전하게 저장되었습니다.</p>
+              <span>RSVP SAVED</span>
+              <h3 id="rsvp-summary-title">참석 답변을 받았습니다</h3>
+              <p>소중한 답변을 안전하게 보관했어요.</p>
             </div>
             <strong data-attendance={state.response.attendance}>{attendanceLabel[state.response.attendance]}</strong>
           </header>
@@ -297,7 +297,17 @@ export function RsvpPanel() {
             <div><dt>전달사항</dt><dd>{state.response.note || "없음"}</dd></div>
             <div><dt>마지막 수정</dt><dd>{formatUpdatedAt(state.response.updatedAt)}</dd></div>
           </dl>
-          <button type="button" className="primary-button" onClick={() => { setNotice(""); setState({ kind: "editing", response: state.response }); }}>답변 수정</button>
+          <p className="rsvp-summary__guidance">변경이 필요하면 예식 전까지 이 기기에서 다시 수정할 수 있습니다.</p>
+          <div className="rsvp-summary__actions">
+            <button type="button" className="primary-button" onClick={() => { setNotice(""); setState({ kind: "editing", response: state.response }); }}>
+              <Pencil aria-hidden="true" /> 답변 내용 수정
+            </button>
+            {onBackToDirections ? (
+              <button type="button" onClick={onBackToDirections}>
+                <MapPin aria-hidden="true" /> 오시는 길 다시 보기
+              </button>
+            ) : null}
+          </div>
         </section>
       ) : null}
       {state.kind === "error" ? (

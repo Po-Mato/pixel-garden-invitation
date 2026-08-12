@@ -736,6 +736,411 @@
   transform: translateY(-1px);
 }
 
+/* Opening — make date, place and the first useful action readable within one glance. */
+.quick-hero__shade {
+  background:
+    linear-gradient(180deg, rgba(18, 27, 23, 0.06) 18%, rgba(18, 27, 23, 0.34) 55%, rgba(13, 22, 18, 0.88) 100%),
+    linear-gradient(90deg, rgba(15, 24, 20, 0.13), transparent 45%, rgba(15, 24, 20, 0.08));
+}
+
+.quick-hero__content {
+  width: 100%;
+  padding: 70px 20px 30px;
+  text-shadow: 0 2px 16px rgba(7, 13, 11, 0.68);
+}
+
+.quick-hero__content .quick-hero__eyebrow {
+  font-family: var(--wedding-font-display);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.24em;
+}
+
+.quick-hero__content h1 {
+  margin-top: 3px;
+  color: #fffdf9;
+  font-family: var(--wedding-font-display);
+  font-size: clamp(34px, 10vw, 42px);
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  text-shadow: 0 2px 18px rgba(7, 13, 11, 0.78);
+}
+
+.quick-hero__facts {
+  display: grid;
+  width: min(100%, 380px);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 13px;
+  border-block: 1px solid rgba(255, 255, 255, 0.28);
+  padding-block: 12px;
+  text-align: left;
+  text-shadow: none;
+}
+
+.quick-hero__facts > div {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: 21px minmax(0, 1fr);
+  align-items: start;
+  gap: 8px;
+  padding-inline: 12px;
+}
+
+.quick-hero__facts > div + div {
+  border-inline-start: 1px solid rgba(255, 255, 255, 0.22);
+}
+
+.quick-hero__facts svg {
+  width: 17px;
+  height: 17px;
+  margin-top: 3px;
+  color: #f0d5d9;
+}
+
+.quick-hero__facts span {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+
+.quick-hero__facts small {
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 8px;
+  font-weight: 850;
+  letter-spacing: 0.12em;
+}
+
+.quick-hero__facts :is(time, strong) {
+  margin: 0;
+  color: #fff;
+  font-family: var(--wedding-font-display);
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+  word-break: keep-all;
+}
+
+.quick-hero__facts b {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 9.5px;
+  font-weight: 650;
+  line-height: 1.35;
+}
+
+.quick-hero__actions {
+  display: grid;
+  width: min(100%, 380px);
+  gap: 4px;
+  margin-top: 8px;
+  text-shadow: none;
+}
+
+.quick-hero__actions button {
+  display: inline-flex;
+  min-height: 46px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.42);
+  border-radius: 999px;
+  padding: 9px 16px;
+  background: rgba(255, 253, 249, 0.94);
+  color: #334b41;
+  font-size: 11px;
+  font-weight: 850;
+  box-shadow: 0 8px 22px rgba(8, 17, 13, 0.18);
+  backdrop-filter: blur(10px);
+}
+
+.quick-hero__actions button svg {
+  width: 15px;
+  height: 15px;
+}
+
+.quick-hero__actions button + button {
+  min-height: 36px;
+  border-color: transparent;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.84);
+  font-size: 9.5px;
+  box-shadow: none;
+}
+
+/* Portraits + story — one editorial image grammar across both sections. */
+.quick-band--profiles .couple-profile-panel__identity {
+  display: flex;
+  width: min(100%, 286px);
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.quick-band--profiles .couple-profile-panel__person--bride .couple-profile-panel__identity {
+  flex-direction: row-reverse;
+}
+
+.quick-band--profiles .couple-profile-panel__role {
+  margin: 0;
+  color: #9b6470;
+  font-size: 9px;
+  letter-spacing: 0.15em;
+}
+
+.quick-band--profiles .couple-profile-panel__name {
+  font-family: var(--wedding-font-display);
+  font-size: clamp(24px, 7vw, 28px);
+  font-weight: 650;
+  letter-spacing: -0.025em;
+}
+
+.quick-band--profiles .couple-profile-panel__media {
+  margin-block: 7px 10px;
+}
+
+.quick-band--profiles .couple-profile-panel__image {
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  object-position: center;
+}
+
+.quick-band--profiles [data-photo-orientation="landscape"] .couple-profile-panel__image {
+  object-position: 50% 46%;
+}
+
+.couple-profile-panel__photo-label {
+  position: absolute;
+  bottom: 9px;
+  left: 9px;
+  z-index: 1;
+  border-radius: 999px;
+  padding: 5px 7px;
+  background: rgba(29, 42, 36, 0.7);
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 7px;
+  font-weight: 850;
+  letter-spacing: 0.12em;
+  line-height: 1;
+  backdrop-filter: blur(8px);
+}
+
+.couple-profile-panel__person--bride .couple-profile-panel__photo-label {
+  right: 9px;
+  left: auto;
+}
+
+.quick-band--profiles .couple-profile-panel__message {
+  width: min(100%, 286px);
+  max-width: 286px;
+  margin: 0;
+  color: #59655f;
+  font-size: 12.5px;
+  line-height: 1.75;
+}
+
+.quick-band--story .wedding-story-timeline {
+  gap: 28px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.quick-band--story .wedding-story-timeline__step {
+  display: grid;
+  gap: 0;
+  overflow: hidden;
+  border: 1px solid rgba(105, 134, 121, 0.24);
+  border-radius: 3px;
+  background: rgba(255, 255, 252, 0.88);
+  box-shadow: 0 12px 26px rgba(55, 77, 65, 0.08);
+}
+
+.wedding-story-timeline__media {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  margin: 0;
+  overflow: hidden;
+  background: #dfe8e2;
+}
+
+.wedding-story-timeline__media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.wedding-story-timeline__step[data-orientation="portrait"] .wedding-story-timeline__media img {
+  object-position: center 44%;
+}
+
+.wedding-story-timeline__media figcaption {
+  position: absolute;
+  right: 10px;
+  bottom: 9px;
+  border-radius: 999px;
+  padding: 5px 7px;
+  background: rgba(29, 42, 36, 0.7);
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 7px;
+  font-weight: 850;
+  letter-spacing: 0.12em;
+  line-height: 1;
+  backdrop-filter: blur(8px);
+}
+
+.wedding-story-timeline__copy {
+  display: grid;
+  gap: 7px;
+  padding: 17px 16px 19px;
+}
+
+.quick-band--story .wedding-story-timeline__number {
+  position: static;
+  inset: auto;
+  display: inline;
+  width: auto;
+  height: auto;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #8b6670;
+  font-size: 8px;
+  letter-spacing: 0.13em;
+}
+
+.quick-band--story .wedding-story-timeline__title {
+  font-family: var(--wedding-font-display);
+  font-size: 18px;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+}
+
+.quick-band--story .wedding-story-timeline__body {
+  margin: 0;
+  color: #5c6862;
+  font-size: 12.5px;
+  line-height: 1.75;
+}
+
+/* Arrival — keep transport choices legible as text grows. */
+.directions-sheet__travel-notes {
+  gap: 10px;
+  padding-top: 5px;
+}
+
+.directions-sheet__travel-notes > header {
+  display: grid;
+  gap: 3px;
+  padding-inline: 2px;
+}
+
+.directions-sheet__travel-notes > header > span {
+  color: #78877f;
+  font-size: 8px;
+  font-weight: 850;
+  letter-spacing: 0.15em;
+}
+
+.directions-sheet__travel-notes > header > h3 {
+  margin: 0;
+  color: #405249;
+  font-family: var(--wedding-font-display);
+  font-size: 17px;
+}
+
+.directions-sheet__travel-notes > header > p {
+  margin: 0;
+  color: #758078;
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.directions-sheet__travel-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 8px;
+}
+
+.directions-sheet__travel-grid .directions-sheet__info {
+  min-height: 94px;
+  align-items: start;
+  border-color: rgba(105, 134, 121, 0.25);
+  padding: 14px 13px;
+  background: rgba(255, 255, 252, 0.82);
+  box-shadow: 0 6px 18px rgba(55, 77, 65, 0.055);
+}
+
+.directions-sheet__travel-grid .directions-sheet__info[data-mode="parking"] {
+  border-color: rgba(161, 132, 86, 0.26);
+  background: rgba(255, 252, 245, 0.84);
+}
+
+.directions-sheet__travel-grid .directions-sheet__info > div {
+  gap: 3px;
+}
+
+.directions-sheet__travel-grid .directions-sheet__info small {
+  color: #7b8a82;
+  font-size: 8px;
+  font-weight: 850;
+  letter-spacing: 0.1em;
+  line-height: 1.35;
+}
+
+.directions-sheet__travel-grid .directions-sheet__info strong {
+  font-family: var(--wedding-font-display);
+  font-size: 14px;
+}
+
+/* RSVP finish — separate editing from the practical return action. */
+.rsvp-summary__guidance {
+  margin: 2px 1px 0;
+  color: #69776f;
+  font-size: 10px;
+  line-height: 1.55;
+  text-align: center;
+  word-break: keep-all;
+}
+
+.rsvp-summary__actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.rsvp-summary__actions > button {
+  display: inline-flex;
+  min-width: 0;
+  min-height: 46px;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border: 1px solid rgba(105, 134, 121, 0.3);
+  border-radius: 12px;
+  padding: 8px 10px;
+  background: #f7faf7;
+  color: #49665a;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.rsvp-summary__actions > .primary-button {
+  border-color: #526f63;
+  background: #526f63;
+  color: #fff;
+  box-shadow: 0 7px 16px rgba(58, 82, 71, 0.16);
+}
+
+.rsvp-summary__actions svg {
+  width: 15px;
+  height: 15px;
+  flex: 0 0 15px;
+}
+
 /* Gallery — preserve the source ratio and give every frame one caption rhythm. */
 .quick-band--gallery .wedding-gallery__item--half .wedding-gallery__photo-button {
   aspect-ratio: 2 / 3;
@@ -999,6 +1404,34 @@
   justify-self: start;
 }
 
+:is(html[data-text-scale="xlarge"], html[data-text-scale="ios-200"], html[data-typography-audit]) .quick-hero__facts {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+:is(html[data-text-scale="xlarge"], html[data-text-scale="ios-200"], html[data-typography-audit]) .quick-hero__facts > div {
+  padding-block: 8px;
+}
+
+:is(html[data-text-scale="xlarge"], html[data-text-scale="ios-200"], html[data-typography-audit]) .quick-hero__facts > div + div {
+  border-block-start: 1px solid rgba(255, 255, 255, 0.22);
+  border-inline-start: 0;
+}
+
+:is(html[data-text-scale="xlarge"], html[data-text-scale="ios-200"], html[data-typography-audit]) .quick-hero__actions,
+:is(html[data-text-scale="xlarge"], html[data-text-scale="ios-200"], html[data-typography-audit]) .rsvp-summary__actions {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+:is(html[data-text-scale="xlarge"], html[data-text-scale="ios-200"], html[data-typography-audit]) .directions-sheet__travel-grid .directions-sheet__info {
+  grid-template-columns: 32px minmax(0, 1fr);
+  gap: 10px;
+}
+
+:is(html[data-text-scale="xlarge"], html[data-text-scale="ios-200"], html[data-typography-audit]) .directions-sheet__travel-notes > header,
+:is(html[data-text-scale="xlarge"], html[data-text-scale="ios-200"], html[data-typography-audit]) .directions-sheet__travel-grid .directions-sheet__info > div {
+  min-width: 0;
+}
+
 :is(html[data-text-scale="xlarge"], html[data-text-scale="ios-200"], html[data-typography-audit]) .directions-sheet__maps > :is(a, button) > span:not(.directions-sheet__map-icon) {
   display: grid;
 }
@@ -1042,6 +1475,7 @@ html[data-reduce-motion="true"] :is(
   .rsvp-form__section,
   .rsvp-summary,
   .directions-sheet__route-actions,
+  .directions-sheet__travel-grid .directions-sheet__info,
   .directions-sheet__maps > :is(a, button),
   .quick-closing__actions > button,
   .quick-closing__links button {

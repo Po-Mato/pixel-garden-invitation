@@ -21,6 +21,10 @@ it("확정된 예식장, 교통, 주차, 지도, 전화 동작을 표시한다",
   expect(screen.getByText("주차 2시간 무료 · 약 500대 이상 주차 가능")).toBeInTheDocument();
   expect(screen.getByRole("heading", { name: "지도 앱으로 길 찾기" })).toBeInTheDocument();
   expect(screen.getByRole("heading", { name: "교통 안내" })).toBeInTheDocument();
+  expect(screen.getByText("ARRIVAL GUIDE")).toBeInTheDocument();
+  expect(screen.getByText("지하철 · 도보")).toBeInTheDocument();
+  expect(screen.getByText("자가용 · 주차")).toBeInTheDocument();
+  expect(document.querySelectorAll(".directions-sheet__travel-grid > .directions-sheet__info")).toHaveLength(2);
   expect(screen.getByText("추천")).toBeInTheDocument();
 
   for (const name of ["네이버지도", "카카오맵", "Google 지도"]) {

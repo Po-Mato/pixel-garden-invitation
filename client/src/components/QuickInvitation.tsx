@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import {
   ArrowLeft,
+  ArrowDown,
   ArrowUp,
   CalendarDays,
   ChevronDown,
@@ -191,10 +192,34 @@ export function QuickInvitation({
         </div>
         <div className="quick-hero__shade" aria-hidden="true" />
         <div className="quick-hero__content">
-          <p>WEDDING INVITATION</p>
+          <p className="quick-hero__eyebrow">WEDDING INVITATION</p>
           <h1>{names}</h1>
-          <time dateTime={event.startAt}>{formatEventDate(event)} · {formatEventStartTime(event)}</time>
-          <span>{event.venue.name} {event.venue.hall}</span>
+          <div className="quick-hero__facts" aria-label="예식 핵심 정보">
+            <div>
+              <CalendarDays aria-hidden="true" />
+              <span>
+                <small>일시</small>
+                <time dateTime={event.startAt}>{formatEventDate(event)}</time>
+                <b>{formatEventStartTime(event)}</b>
+              </span>
+            </div>
+            <div>
+              <MapPin aria-hidden="true" />
+              <span>
+                <small>장소</small>
+                <strong>{event.venue.name}</strong>
+                <b>{event.venue.hall}</b>
+              </span>
+            </div>
+          </div>
+          <div className="quick-hero__actions">
+            <button type="button" onClick={() => selectSection("schedule")}>
+              예식 정보 보기 <ArrowDown aria-hidden="true" />
+            </button>
+            <button type="button" onClick={() => selectSection("couple")}>
+              두 사람 이야기부터 보기
+            </button>
+          </div>
         </div>
       </section>
 
@@ -266,7 +291,7 @@ export function QuickInvitation({
           body="예식 준비를 위해 2027년 4월 24일까지 답변 부탁드립니다."
         />
         <DeferredContent label="참석 답변" minHeight={360} rootMargin="360px 0px">
-          <RsvpPanel />
+          <RsvpPanel onBackToDirections={() => selectSection("directions")} />
         </DeferredContent>
       </section>
 
