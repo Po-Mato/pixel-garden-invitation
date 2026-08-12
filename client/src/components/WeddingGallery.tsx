@@ -66,7 +66,11 @@ export function WeddingGallery({ photos: photosOverride, onPhotoOpen }: WeddingG
     <>
       <section className="wedding-gallery" aria-label="웨딩 사진 갤러리">
         {visiblePhotos.map((photo, index) => (
-          <figure key={photo.id} className={`wedding-gallery__item wedding-gallery__item--${photo.layout}`}>
+          <figure
+            key={photo.id}
+            className={`wedding-gallery__item wedding-gallery__item--${photo.layout}`}
+            data-photo-id={photo.id}
+          >
             <button
               ref={(element) => {
                 photoButtonRefs.current[index] = element;

@@ -32,6 +32,7 @@ describe("에디토리얼 웨딩 갤러리", () => {
     photos.forEach((photo, index) => {
       const item = buttons[index].closest("figure");
       expect(item).toHaveClass("wedding-gallery__item", `wedding-gallery__item--${photo.layout}`);
+      expect(item).toHaveAttribute("data-photo-id", photo.id);
       if (photo.caption) {
         expect(item).toHaveTextContent(photo.caption);
       }

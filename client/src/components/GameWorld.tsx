@@ -5450,6 +5450,8 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
                   type="button"
                   className={`world-spot world-spot--${worldSpot.id}${interactionIntent?.targetId === `spot:${worldSpot.id}` ? " world-spot--target" : ""}${recommendedCheckpoint?.zoneId === activeZone.id && recommendedCheckpoint.target.type === "spot" && recommendedCheckpoint.target.spotId === worldSpot.id ? " world-spot--recommended" : ""}`}
                   data-edge-shifted={overlayPlacement.shiftedEdges.join(" ") || undefined}
+                  data-label-anchor={worldSpot.y + worldSpot.height / 2 < activeZone.bounds.height / 2 ? "top" : "bottom"}
+                  data-label-surface={activeZone.id === "home" ? "wood" : activeZone.id === "subway-station" ? "cool" : "pearl"}
                   data-proximity={proximity}
                   data-label-visibility={worldLabelVisibility.get(`spot:${worldSpot.id}`)}
                   style={{ ...pixelRect(overlayPlacement.rect), zIndex: 9000 }}

@@ -40,6 +40,29 @@ it("renders its dialog in the document body portal", () => {
   expect(screen.getByRole("dialog").parentElement).toBe(document.body);
 });
 
+it("긴 내용의 남은 스크롤과 끝까지 확인한 상태를 알려준다", () => {
+  render(
+    <BottomSheet title="오시는 길" onClose={vi.fn()}>
+      <div>긴 길 안내</div>
+    </BottomSheet>
+  );
+
+  const dialog = screen.getByRole("dialog");
+  Object.defineProperties(dialog, {
+    clientHeight: { configurable: true, value: 400 },
+    scrollHeight: { configurable: true, value: 900 },
+    scrollTop: { configurable: true, writable: true, value: 0 }
+  });
+  fireEvent.scroll(dialog);
+  expect(dialog).toHaveAttribute("data-scroll-state", "more");
+  expect(screen.getByRole("status")).toHaveTextContent("아래로 더 보기");
+
+  Object.defineProperty(dialog, "scrollTop", { configurable: true, writable: true, value: 500 });
+  fireEvent.scroll(dialog);
+  expect(dialog).toHaveAttribute("data-scroll-state", "end");
+  expect(screen.getByRole("status")).toHaveTextContent("모두 확인했습니다");
+});
+
 it("cycles focus in both directions at the dialog boundaries", () => {
   render(
     <BottomSheet title="캘린더 저장" onClose={vi.fn()}>

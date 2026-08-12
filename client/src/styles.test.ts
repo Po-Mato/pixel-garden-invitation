@@ -198,6 +198,15 @@ describe("compact invitation visual rhythm", () => {
   it("keeps map labels quieter while world geometry owns the interaction rectangle", () => {
     expect(refinedGameStyles).toMatch(/\.world-spot__card\s*\{[^}]*width:\s*min\(84px,[^}]*min-height:\s*52px;/s);
     expect(refinedGameStyles).toMatch(/data-text-scale="xlarge"[^}]*\.world-spot__card\s*\{[^}]*width:\s*min\(92px,[^}]*min-height:\s*58px;/s);
+    expect(refinedGameStyles).toContain('.world-spot[data-label-anchor="top"]');
+    expect(refinedGameStyles).toContain('.world-spot[data-label-surface="wood"] .world-spot__card');
+  });
+
+  it("gives invitation sections, gallery crops, and sheet completion cues a consistent visible rhythm", () => {
+    expect(styles).toMatch(/\.quick-band\s*\{[^}]*--quick-section-spacing:\s*clamp\(56px, 8dvh, 68px\);/s);
+    expect(styles).toMatch(/\.wedding-gallery__item--half \.wedding-gallery__photo-button\s*\{[^}]*aspect-ratio:\s*4 \/ 5;/s);
+    expect(styles).toContain('.wedding-gallery__item[data-photo-id="07-bouquet-still"]');
+    expect(styles).toContain('.bottom-sheet[data-scroll-state="end"] .bottom-sheet__scroll-cue');
   });
 
   it("uses a restrained snapping navigation and fluid enlarged hero title", () => {

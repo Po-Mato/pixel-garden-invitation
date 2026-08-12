@@ -2736,9 +2736,44 @@ select,
 
 .bottom-sheet__body {
   margin-top: 14px;
+  padding-bottom: max(18px, calc(env(safe-area-inset-bottom) + 6px));
   color: var(--ink);
   font-size: 16px;
   line-height: 1.65;
+}
+
+.bottom-sheet__scroll-cue {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  display: flex;
+  width: max-content;
+  min-height: 30px;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  margin: 0 auto -8px;
+  border: 1px solid color-mix(in srgb, var(--sheet-prism) 48%, #766a66);
+  border-radius: 999px;
+  padding: 5px 10px;
+  background: rgba(255, 254, 250, 0.96);
+  color: #746269;
+  box-shadow: 0 5px 16px rgba(61, 45, 50, 0.14);
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.bottom-sheet__scroll-cue svg {
+  width: 14px;
+  height: 14px;
+}
+
+.bottom-sheet[data-scroll-state="end"] .bottom-sheet__scroll-cue {
+  border-color: rgba(105, 134, 121, 0.42);
+  background: rgba(247, 251, 248, 0.97);
+  color: #587568;
 }
 
 .bottom-sheet .field input,
@@ -2976,6 +3011,35 @@ select,
   cursor: zoom-in;
 }
 
+.wedding-gallery__item--hero .wedding-gallery__photo-button,
+.wedding-gallery__item--wide .wedding-gallery__photo-button {
+  aspect-ratio: 3 / 2;
+}
+
+.wedding-gallery__item--half .wedding-gallery__photo-button {
+  aspect-ratio: 4 / 5;
+}
+
+.wedding-gallery__photo-button .responsive-gallery-picture {
+  width: 100%;
+  height: 100%;
+}
+
+.wedding-gallery__photo-button :is(img.responsive-gallery-image) {
+  width: 100%;
+  max-width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: var(--gallery-object-position, 50% 50%);
+}
+
+.wedding-gallery__item[data-photo-id="02-dress-bouquet"] { --gallery-object-position: 50% 38%; }
+.wedding-gallery__item[data-photo-id="03-side-walk"] { --gallery-object-position: 50% 44%; }
+.wedding-gallery__item[data-photo-id="04-bench-silhouette"] { --gallery-object-position: 50% 54%; }
+.wedding-gallery__item[data-photo-id="05-veil-flowers"] { --gallery-object-position: 50% 42%; }
+.wedding-gallery__item[data-photo-id="07-bouquet-still"] { --gallery-object-position: 50% 64%; }
+.wedding-gallery__item[data-photo-id="10-sunlit-finale"] { --gallery-object-position: 50% 46%; }
+
 .wedding-gallery__open-affordance {
   position: absolute;
   right: 8px;
@@ -3056,10 +3120,12 @@ select,
 }
 
 .wedding-gallery__caption {
-  padding: 7px 2px 0;
+  min-height: 34px;
+  padding: 10px 4px 0;
   color: var(--ink-soft);
-  font-size: 11px;
-  line-height: 1.55;
+  font-size: 11.5px;
+  font-weight: 600;
+  line-height: 1.65;
   letter-spacing: 0;
   word-break: keep-all;
 }
@@ -6860,24 +6926,26 @@ html[data-data-saver="true"] .couple-puppet-stage__fallback {
 }
 
 .quick-band {
+  --quick-section-spacing: clamp(56px, 8dvh, 68px);
   scroll-margin-top: calc(104px + env(safe-area-inset-top));
-  padding: 58px 24px;
+  padding: var(--quick-section-spacing) 24px;
 }
 
 .quick-section-heading {
   display: grid;
   justify-items: center;
-  gap: 8px;
-  margin-bottom: 28px;
+  gap: 0;
+  margin-bottom: 30px;
   text-align: center;
 }
 
 .quick-section-heading > span {
   color: #a35d68;
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--wedding-font-ui);
   font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.16em;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  line-height: 1.4;
 }
 
 .quick-section-heading h2,
@@ -6887,26 +6955,39 @@ html[data-data-saver="true"] .couple-puppet-stage__fallback {
 }
 
 .quick-section-heading h2 {
+  margin-top: 9px;
   color: #293b34;
-  font-family: Georgia, "Batang", serif;
-  font-size: 25px;
+  font-family: var(--wedding-font-display);
+  font-size: clamp(24px, 7vw, 28px);
   font-weight: 600;
-  line-height: 1.35;
+  letter-spacing: -0.025em;
+  line-height: 1.3;
 }
 
 .quick-section-heading p {
+  margin-top: 12px;
   max-width: 32ch;
   color: #68736e;
   font-size: 13px;
-  line-height: 1.7;
+  line-height: 1.75;
   word-break: keep-all;
+}
+
+.quick-band > .quick-section-heading + * {
+  margin-top: 0;
+}
+
+.quick-band :is(.primary-button, .secondary-button, .directions-sheet__route-actions a, .directions-sheet__phone a) {
+  font-family: var(--wedding-font-ui);
+  font-size: 13px;
+  font-weight: 750;
+  line-height: 1.35;
 }
 
 .quick-intro {
   display: grid;
   justify-items: center;
-  gap: 14px;
-  padding-block: 72px;
+  gap: 0;
   background: #f2e9eb;
   text-align: center;
 }
@@ -6915,6 +6996,7 @@ html[data-data-saver="true"] .couple-puppet-stage__fallback {
   width: 22px;
   height: 22px;
   color: #9f5966;
+  margin-bottom: 14px;
 }
 
 .quick-intro p,
@@ -6925,19 +7007,22 @@ html[data-data-saver="true"] .couple-puppet-stage__fallback {
 }
 
 .quick-intro p {
+  margin-bottom: 10px;
   color: #945c65;
   font-size: 12px;
   font-weight: 800;
 }
 
 .quick-intro h2 {
-  font-family: Georgia, "Batang", serif;
-  font-size: 26px;
-  font-weight: 500;
-  line-height: 1.55;
+  font-family: var(--wedding-font-display);
+  font-size: clamp(25px, 7vw, 29px);
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.5;
 }
 
 .quick-intro span {
+  margin-top: 14px;
   max-width: 31ch;
   color: #655c5d;
   font-size: 13px;
@@ -6989,7 +7074,7 @@ html[data-data-saver="true"] .couple-puppet-stage__fallback {
 }
 
 .quick-band--story .wedding-story-timeline {
-  margin-top: 40px;
+  margin-top: 0;
   border-color: #789285;
 }
 
