@@ -1,7 +1,7 @@
 {
   "version": 5,
-  "approvedAt": "2026-08-11T23:47:48.001Z",
-  "reason": "청첩장 지도 안내, 맵 목적지 표시, 갤러리 조작 안내의 의도된 시각 개선 승인",
+  "approvedAt": "2026-08-12T07:40:38.123Z",
+  "reason": "청첩장 시각 체계 통일과 고정 시트 헤더 개선 승인",
   "pixelThreshold": 36,
   "maxChangedRatio": 0.015,
   "profileMaxChangedRatioOverrides": {
@@ -13,93 +13,93 @@
     "schemaVersion": 1,
     "subjectKind": "capture-set",
     "sourceKind": "github-actions",
-    "runId": "31547192548",
+    "runId": "31574249576",
     "runAttempt": 1,
-    "commitSha": "24873b049734a67479a1ca8b80ecf74260c638a9",
-    "runUrl": "https://github.com/Po-Mato/pixel-garden-invitation/actions/runs/31547192548",
+    "commitSha": "4b1c75b8582a5e7adff30fa3c5c8a25bb87ced49",
+    "runUrl": "https://github.com/Po-Mato/pixel-garden-invitation/actions/runs/31574249576",
     "checksumAlgorithm": "sha256",
     "artifactChecksumScope": "sorted-capture-set-manifest",
-    "artifactSha256": "6a6320efb795d01056c268cadb71bdb0d47ef2e797c0fc43976109a0c8e058b5",
+    "artifactSha256": "a9c575a87e407829aa5c40a8d3757beca5b291ba0168c0e19bfbbb091c84cd0b",
     "files": [
       {
         "logicalPath": "galaxy-s23-font-150/directions-xlarge",
-        "size": 93559,
-        "sha256": "5f1c2119757cca926964bb5dbbef92a93d4887e9242bda1dce801c835186ce9b"
+        "size": 85861,
+        "sha256": "49fff5a98530e012ac0eaf5c315202610864d50e18bcc3ebfda15f956fa7000f"
       },
       {
         "logicalPath": "galaxy-s23-font-150/directions-xlarge-bottom",
-        "size": 72577,
-        "sha256": "0b070328d5c5f4c3c90865cdd9cb0211b54fcf982084e6f3ab9290b4f2179b5b"
+        "size": 73529,
+        "sha256": "22b35ad1bfed17cc06ba85f9ed5d6a7f2a84b1ab4bd5376d4825630ca4219de7"
       },
       {
         "logicalPath": "galaxy-s23-font-150/directions-xlarge-middle",
-        "size": 85378,
-        "sha256": "ea6d96bc060bdca4d3296b96ad348ab8742466e0c8720ef5acebb867b992a78d"
+        "size": 78155,
+        "sha256": "5d7d0013986c06bef4b8e31845d355932b46e4d83e8c4cbf1c2d30fe46e1a698"
       },
       {
         "logicalPath": "galaxy-s23-font-150/game",
-        "size": 460491,
-        "sha256": "dc8af3033089ac12197c15460a8f113f0d376aa210fa54f7de8f62327cb88d85"
+        "size": 459937,
+        "sha256": "b8727f6f035c49f15c8c12d06f142b8d01959041becfc2a7f140ccc0fa85e3dd"
       },
       {
         "logicalPath": "iphone-15-dynamic-type/directions-xlarge",
-        "size": 93429,
-        "sha256": "0220aa89034a67d1ca75ba20ad57adf296d71f8738c5071b70e9cb314804bc6c"
+        "size": 86544,
+        "sha256": "ab6b029372abaa5b9ba83a17d21eb7fc8b290e5f40abbe82d77bf943f86a010e"
       },
       {
         "logicalPath": "iphone-15-dynamic-type/directions-xlarge-bottom",
-        "size": 82208,
-        "sha256": "a79b7d617f936466d84d16825078694afe08d933edaa164acfb2a08246b2efa3"
+        "size": 76815,
+        "sha256": "27d003014fbc3177b93e1bcbcb9fc66dd1bc5f0f99c5637defd7076cda43481e"
       },
       {
         "logicalPath": "iphone-15-dynamic-type/directions-xlarge-middle",
-        "size": 87683,
-        "sha256": "498e7df74e1929032973596788365a207e0c04aacbfcbddef48a6285848ab71b"
+        "size": 82554,
+        "sha256": "965821eb1554ce786c534bb00565d6f346e586fd466fd661bd6259ebab34828e"
       },
       {
         "logicalPath": "iphone-15-dynamic-type/game",
-        "size": 540345,
-        "sha256": "7136aabbb4606275fb94a8bc361d3d8d3b3cf74bf8d0faf972e3e4da87175b80"
+        "size": 539595,
+        "sha256": "7b3939be3960a43204cf5a24dbf56c930f29be1b7938813c8d503a1e334d508f"
       },
       {
         "logicalPath": "iphone-15-webkit-dynamic-type/directions-xlarge",
-        "size": 105331,
-        "sha256": "890ce5b915c9d357a0458101cc4dbe7d2eaed3adc6ac2614a2aa3867338564bd"
+        "size": 106032,
+        "sha256": "3f80ff158374552080be3b54e4f2f93dec66edfe99eec71eafe65735dda55cab"
       },
       {
         "logicalPath": "iphone-15-webkit-dynamic-type/directions-xlarge-bottom",
-        "size": 105331,
-        "sha256": "890ce5b915c9d357a0458101cc4dbe7d2eaed3adc6ac2614a2aa3867338564bd"
+        "size": 106032,
+        "sha256": "3f80ff158374552080be3b54e4f2f93dec66edfe99eec71eafe65735dda55cab"
       },
       {
         "logicalPath": "iphone-15-webkit-dynamic-type/directions-xlarge-middle",
-        "size": 105331,
-        "sha256": "890ce5b915c9d357a0458101cc4dbe7d2eaed3adc6ac2614a2aa3867338564bd"
+        "size": 106032,
+        "sha256": "3f80ff158374552080be3b54e4f2f93dec66edfe99eec71eafe65735dda55cab"
       },
       {
         "logicalPath": "iphone-15-webkit-dynamic-type/game",
-        "size": 576684,
-        "sha256": "e94e68878bd8e6b2a5345a62f43befa4491a825d9ea67de9b71bf4025e32bf9c"
+        "size": 576061,
+        "sha256": "06a018aeb91445c49c5dfe2e57de4f2aeadc80415f6207a425f1df2045dfb182"
       },
       {
         "logicalPath": "iphone-15-webkit-text-200/directions-xlarge",
-        "size": 97116,
-        "sha256": "43f1ed885604d7f3972d0b42c20139301d9a26a582fec92c43e52b5293f8f48e"
+        "size": 97990,
+        "sha256": "7010df043e1c95bf1f318b053c4ca7bd2f3625585a55e744b29e37fe66e2d510"
       },
       {
         "logicalPath": "iphone-15-webkit-text-200/directions-xlarge-bottom",
-        "size": 93353,
-        "sha256": "5dbd3eeb1c33394fe52869997f8057882274e738fa6c3b012f3f501bd4afc57f"
+        "size": 96431,
+        "sha256": "abf889184c9045b1c167bc1593bef0a113348275b9a96c560d40c447e01f17fb"
       },
       {
         "logicalPath": "iphone-15-webkit-text-200/directions-xlarge-middle",
-        "size": 93222,
-        "sha256": "36600f09d0abcbfbc36a0c9882e73593f8be1cf646e1d75bc37e46532fd4ac17"
+        "size": 95505,
+        "sha256": "e836fe53ee40bad7dc29a9b4edb2765f453aa3581033d058bf54bf6b4a120c50"
       },
       {
         "logicalPath": "iphone-15-webkit-text-200/game",
-        "size": 577115,
-        "sha256": "b3d5a95e2d01041ddb41c1799002fbce08fa7d29c91fe29f245f883c7034637b"
+        "size": 576510,
+        "sha256": "43ceadda1285d613b69dcf692d3fe6dbb35c6d1b94f300bda2779578c149e2af"
       }
     ]
   },
@@ -110,13 +110,13 @@
       "state": "game",
       "width": 360,
       "height": 780,
-      "sha256": "5bca2cb26d835c8fd2e437d66581fb577614f34dde68a6a4f62a851757ae5d08",
+      "sha256": "c9ce7fd2e02fce99e6f690fd82f07c78bb020df5f774e47d82e0b77fe207b960",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "청첩장 지도 안내, 맵 목적지 표시, 갤러리 조작 안내의 의도된 시각 개선 승인",
+        "approvalReason": "청첩장 시각 체계 통일과 고정 시트 헤더 개선 승인",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -130,13 +130,13 @@
       "state": "directions-xlarge",
       "width": 360,
       "height": 780,
-      "sha256": "0a1ff2d2cc048d84a54381f2286c8ea5cf3340aaffc4991c8f3b6407f8143f58",
+      "sha256": "eb86bf32dfe24f8c5f5b558c3a88e02bfd83ddcb3c49d1b254bc88de33d805cd",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "청첩장 지도 안내, 맵 목적지 표시, 갤러리 조작 안내의 의도된 시각 개선 승인",
+        "approvalReason": "청첩장 시각 체계 통일과 고정 시트 헤더 개선 승인",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -150,13 +150,13 @@
       "state": "directions-xlarge-middle",
       "width": 360,
       "height": 780,
-      "sha256": "f3898678e2fb6b91801107082f95661afbe22b44898064dc42d61ff1ee9778d8",
+      "sha256": "4cd82e5475e843cd9dda347783556548190be1c45164f6178d0b4d57a72739b4",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "청첩장 지도 안내, 맵 목적지 표시, 갤러리 조작 안내의 의도된 시각 개선 승인",
+        "approvalReason": "청첩장 시각 체계 통일과 고정 시트 헤더 개선 승인",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -170,13 +170,13 @@
       "state": "directions-xlarge-bottom",
       "width": 360,
       "height": 780,
-      "sha256": "3860773b6d01ac2b0e11ad97f7a797920bcc894b9e62cb4315f7550ebaa8afa2",
+      "sha256": "ec758cc5cee6f5749cebed6f47f83082385f2c323639cd41db0ccbeecaa7c346",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "청첩장 지도 안내, 맵 목적지 표시, 갤러리 조작 안내의 의도된 시각 개선 승인",
+        "approvalReason": "청첩장 시각 체계 통일과 고정 시트 헤더 개선 승인",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -190,13 +190,13 @@
       "state": "game",
       "width": 393,
       "height": 852,
-      "sha256": "6a20315027ace493593642f24afab826a37d1036ae5642713fef7ce9ebb39a76",
+      "sha256": "3b249cb06f2f102753954cae6b2c631c8362e16c77553ded90c43b54e6a5ce27",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "청첩장 지도 안내, 맵 목적지 표시, 갤러리 조작 안내의 의도된 시각 개선 승인",
+        "approvalReason": "청첩장 시각 체계 통일과 고정 시트 헤더 개선 승인",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -210,13 +210,13 @@
       "state": "directions-xlarge",
       "width": 393,
       "height": 852,
-      "sha256": "1fcd6b26e2b2262d25f512838df538b76f8a2c0e02417e1f7b481b6be140dd6f",
+      "sha256": "0e4ca6fba4072c88f1729d9109ab6a5f9d9c9300e005067193b7419d17cad782",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "청첩장 지도 안내, 맵 목적지 표시, 갤러리 조작 안내의 의도된 시각 개선 승인",
+        "approvalReason": "청첩장 시각 체계 통일과 고정 시트 헤더 개선 승인",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -230,13 +230,13 @@
       "state": "directions-xlarge-middle",
       "width": 393,
       "height": 852,
-      "sha256": "99bbf901a7a3b2c39d0bb7c1424cdd199c28a0ae88bb7065447be453abc93669",
+      "sha256": "131dd3cf52901677fdd7a4e9bf18afce8113676e1a1696d54a0489623e982f43",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "청첩장 지도 안내, 맵 목적지 표시, 갤러리 조작 안내의 의도된 시각 개선 승인",
+        "approvalReason": "청첩장 시각 체계 통일과 고정 시트 헤더 개선 승인",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -250,13 +250,13 @@
       "state": "directions-xlarge-bottom",
       "width": 393,
       "height": 852,
-      "sha256": "867831ce5479b859bc8ec70cee45a1adeea866275e09fcba43ef3406a6e9e5b4",
+      "sha256": "e341edf5ca55b39760e49cf1989dbcc1e19e54a48f5e05957b12b6e2a3512bbe",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "청첩장 지도 안내, 맵 목적지 표시, 갤러리 조작 안내의 의도된 시각 개선 승인",
+        "approvalReason": "청첩장 시각 체계 통일과 고정 시트 헤더 개선 승인",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -270,13 +270,13 @@
       "state": "game",
       "width": 393,
       "height": 852,
-      "sha256": "1ea33c16b846e38820d97dd9964e7be441400119859337da7e914aa4bb63aed9",
+      "sha256": "04be37ef05eb70014bdd2f6f77ddeb5436805c598fec26c82713cb5cdd5f4503",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "청첩장 지도 안내, 맵 목적지 표시, 갤러리 조작 안내의 의도된 시각 개선 승인",
+        "approvalReason": "청첩장 시각 체계 통일과 고정 시트 헤더 개선 승인",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -290,13 +290,13 @@
       "state": "directions-xlarge",
       "width": 393,
       "height": 852,
-      "sha256": "465d50ba7fbe3e723fc831d60cd882298481e3dd460b6e13e72501d5e377c5b0",
+      "sha256": "38be087b48c7b656dc98d5b4dd5dfa274ffbde3afa40ccd96549c534742b15bb",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "청첩장 지도 안내, 맵 목적지 표시, 갤러리 조작 안내의 의도된 시각 개선 승인",
+        "approvalReason": "청첩장 시각 체계 통일과 고정 시트 헤더 개선 승인",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -310,13 +310,13 @@
       "state": "directions-xlarge-middle",
       "width": 393,
       "height": 852,
-      "sha256": "465d50ba7fbe3e723fc831d60cd882298481e3dd460b6e13e72501d5e377c5b0",
+      "sha256": "38be087b48c7b656dc98d5b4dd5dfa274ffbde3afa40ccd96549c534742b15bb",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "청첩장 지도 안내, 맵 목적지 표시, 갤러리 조작 안내의 의도된 시각 개선 승인",
+        "approvalReason": "청첩장 시각 체계 통일과 고정 시트 헤더 개선 승인",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -330,13 +330,13 @@
       "state": "directions-xlarge-bottom",
       "width": 393,
       "height": 852,
-      "sha256": "465d50ba7fbe3e723fc831d60cd882298481e3dd460b6e13e72501d5e377c5b0",
+      "sha256": "38be087b48c7b656dc98d5b4dd5dfa274ffbde3afa40ccd96549c534742b15bb",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "청첩장 지도 안내, 맵 목적지 표시, 갤러리 조작 안내의 의도된 시각 개선 승인",
+        "approvalReason": "청첩장 시각 체계 통일과 고정 시트 헤더 개선 승인",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -350,13 +350,13 @@
       "state": "game",
       "width": 393,
       "height": 852,
-      "sha256": "525c9d8f4321e528edbf0199208491f894b18d6be94700bedd029431c79d9ce3",
+      "sha256": "22d9c97f3836e13f95921f09cf83a3acc803b38931818c8bd38f021aefdb3622",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "청첩장 지도 안내, 맵 목적지 표시, 갤러리 조작 안내의 의도된 시각 개선 승인",
+        "approvalReason": "청첩장 시각 체계 통일과 고정 시트 헤더 개선 승인",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -370,13 +370,13 @@
       "state": "directions-xlarge",
       "width": 393,
       "height": 852,
-      "sha256": "6d07991ddc424542129f2fcc8b026c899a90a579a8a77df522741faf9780cf34",
+      "sha256": "657979580bc0c8451f5e355541dee25381e8396e59aabdd4707a23034680fc6f",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "청첩장 지도 안내, 맵 목적지 표시, 갤러리 조작 안내의 의도된 시각 개선 승인",
+        "approvalReason": "청첩장 시각 체계 통일과 고정 시트 헤더 개선 승인",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -390,13 +390,13 @@
       "state": "directions-xlarge-middle",
       "width": 393,
       "height": 852,
-      "sha256": "80947369b7957f7a92845d8bc1df6d55067aba2ccce31b710aa189ffbb3af923",
+      "sha256": "5c473307d53fffa4c2d25ecf265b794d9e67c9b97a63e8b74918ea252b1d5c71",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "청첩장 지도 안내, 맵 목적지 표시, 갤러리 조작 안내의 의도된 시각 개선 승인",
+        "approvalReason": "청첩장 시각 체계 통일과 고정 시트 헤더 개선 승인",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -410,13 +410,13 @@
       "state": "directions-xlarge-bottom",
       "width": 393,
       "height": 852,
-      "sha256": "f06d6ece3f755b749b408794cd849c22465ea32627018970deb1933277b4a379",
+      "sha256": "85ce35d2a097c6821b77254ee6bd0c36ce80b8a02bccffb27b4e839071db0026",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "청첩장 지도 안내, 맵 목적지 표시, 갤러리 조작 안내의 의도된 시각 개선 승인",
+        "approvalReason": "청첩장 시각 체계 통일과 고정 시트 헤더 개선 승인",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,

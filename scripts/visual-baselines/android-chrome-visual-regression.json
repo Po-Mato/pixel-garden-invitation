@@ -1,7 +1,7 @@
 {
   "version": 3,
-  "approvedAt": "2026-08-11T23:48:48.553Z",
-  "reason": "청첩장 목적지 카드 중복 제거와 지도 안내 위계 개선 승인",
+  "approvedAt": "2026-08-12T07:40:43.699Z",
+  "reason": "청첩장 시각 체계 통일과 고정 시트 헤더 개선 승인",
   "profile": {
     "id": "pixel-7-api-35-chrome",
     "deviceName": "Pixel 7",
@@ -9,7 +9,7 @@
     "requiredDirectionsScroll": 0
   },
   "capture": {
-    "generatedAt": "2026-08-11T23:41:35.699Z",
+    "generatedAt": "2026-08-12T07:34:05.895Z",
     "profile": {
       "id": "pixel-7-api-35-chrome",
       "deviceName": "Pixel 7",
@@ -28,10 +28,10 @@
       "width": 412
     },
     "browserVersion": null,
-    "runId": "31547192510",
+    "runId": "31574249519",
     "runAttempt": 1,
-    "sha": "24873b049734a67479a1ca8b80ecf74260c638a9",
-    "runUrl": "https://github.com/Po-Mato/pixel-garden-invitation/actions/runs/31547192510",
+    "sha": "4b1c75b8582a5e7adff30fa3c5c8a25bb87ced49",
+    "runUrl": "https://github.com/Po-Mato/pixel-garden-invitation/actions/runs/31574249519",
     "retry": {
       "attempted": false,
       "reason": null
@@ -44,7 +44,7 @@
           {
             "attempt": 1,
             "outcome": "ready",
-            "durationMs": 5458,
+            "durationMs": 5381,
             "error": null
           }
         ]
@@ -56,7 +56,7 @@
           {
             "attempt": 1,
             "outcome": "ready",
-            "durationMs": 4348,
+            "durationMs": 7142,
             "error": null
           }
         ]
@@ -72,18 +72,18 @@
       "offlineEventDispatched": true,
       "transportProbe": {
         "previewHostReachableAfterStop": false,
-        "browserUrl": "http://127.0.0.1:4188/api/__device_pwa_transport_probe__?nonce=1786491792313",
+        "browserUrl": "http://127.0.0.1:4188/api/__device_pwa_transport_probe__?nonce=1786520145110",
         "browserFetchResolved": false,
         "browserStatus": null,
         "browserError": "Failed to fetch",
         "browserErrorKind": "failed-to-fetch",
-        "durationMs": 32.5,
+        "durationMs": 283.30000000001746,
         "transportBlocked": true
       },
       "cachedPaths": 82,
       "controlled": true,
       "expectedPaths": 82,
-      "precacheName": "wedding-garden-precache-24873b049734",
+      "precacheName": "wedding-garden-precache-4b1c75b8582a",
       "serviceWorkerSupported": true,
       "blockingNoticeVisible": false,
       "brokenImages": [],
@@ -107,27 +107,52 @@
     "comparisons": [
       {
         "state": "game",
-        "changedPixels": 36771,
-        "changedRatio": 0.015468978747034177,
-        "meanPixelDifference": 1.2238649940262845,
+        "changedPixels": 3091,
+        "changedRatio": 0.0013003348646238241,
+        "meanPixelDifference": 1.2244379659077524,
         "pixelCount": 2377080,
-        "passed": false,
+        "passed": true,
         "maxChangedRatio": 0.015,
-        "rawChangedRatio": 0.015723072004307805,
-        "rawMeanPixelDifference": 1.3415366752486244,
+        "rawChangedRatio": 0.006892069261446817,
+        "rawMeanPixelDifference": 2.445260151109765,
         "baselinePath": "/home/runner/work/pixel-garden-invitation/pixel-garden-invitation/scripts/visual-baselines/android-chrome-pixel-7-api-35-chrome-game.webp",
         "currentPath": "/home/runner/work/pixel-garden-invitation/pixel-garden-invitation/.superpowers/visual-regression/android-chrome/android-chrome-pixel-7-api-35-chrome-game-current.png",
         "diffPath": "/home/runner/work/pixel-garden-invitation/pixel-garden-invitation/.superpowers/visual-regression/android-chrome/android-chrome-pixel-7-api-35-chrome-game-diff.png",
         "classification": {
-          "id": "structural-regression",
+          "id": "renderer-noise",
           "confidence": "high",
-          "likelyCause": "layout-or-content-change",
-          "review": "required",
-          "changedRatio": 0.015468978747034177,
-          "rawChangedRatio": 0.015723072004307805,
-          "filteredNoiseRatio": 0.0002540932572736281,
-          "filteredNoiseShare": 0.01616053511705675,
-          "budgetUsage": 1.0312652498022785
+          "likelyCause": "font-or-antialias-rendering",
+          "review": "not-required",
+          "changedRatio": 0.0013003348646238241,
+          "rawChangedRatio": 0.006892069261446817,
+          "filteredNoiseRatio": 0.005591734396822993,
+          "filteredNoiseShare": 0.8113288164560826,
+          "budgetUsage": 0.08668899097492161
+        }
+      },
+      {
+        "state": "directions",
+        "changedPixels": 18647,
+        "changedRatio": 0.007844498292022144,
+        "meanPixelDifference": 5.292357430124354,
+        "pixelCount": 2377080,
+        "passed": true,
+        "maxChangedRatio": 0.015,
+        "rawChangedRatio": 0.010081276187591498,
+        "rawMeanPixelDifference": 5.332492385615966,
+        "baselinePath": "/home/runner/work/pixel-garden-invitation/pixel-garden-invitation/scripts/visual-baselines/android-chrome-pixel-7-api-35-chrome-directions.webp",
+        "currentPath": "/home/runner/work/pixel-garden-invitation/pixel-garden-invitation/.superpowers/visual-regression/android-chrome/android-chrome-pixel-7-api-35-chrome-directions-current.png",
+        "diffPath": "/home/runner/work/pixel-garden-invitation/pixel-garden-invitation/.superpowers/visual-regression/android-chrome/android-chrome-pixel-7-api-35-chrome-directions-diff.png",
+        "classification": {
+          "id": "stable",
+          "confidence": "high",
+          "likelyCause": "minor-change-within-budget",
+          "review": "not-required",
+          "changedRatio": 0.007844498292022144,
+          "rawChangedRatio": 0.010081276187591498,
+          "filteredNoiseRatio": 0.0022367778955693536,
+          "filteredNoiseShare": 0.221874478384243,
+          "budgetUsage": 0.5229665528014763
         }
       }
     ],
@@ -142,23 +167,23 @@
     "schemaVersion": 1,
     "subjectKind": "capture-set",
     "sourceKind": "github-actions",
-    "runId": "31547192510",
+    "runId": "31574249519",
     "runAttempt": 1,
-    "commitSha": "24873b049734a67479a1ca8b80ecf74260c638a9",
-    "runUrl": "https://github.com/Po-Mato/pixel-garden-invitation/actions/runs/31547192510",
+    "commitSha": "4b1c75b8582a5e7adff30fa3c5c8a25bb87ced49",
+    "runUrl": "https://github.com/Po-Mato/pixel-garden-invitation/actions/runs/31574249519",
     "checksumAlgorithm": "sha256",
     "artifactChecksumScope": "sorted-capture-set-manifest",
-    "artifactSha256": "82599a21c02287efb94a210ff659b0c28daf25adf5f02795f5df6f7a74422c9c",
+    "artifactSha256": "cae2cb47aadcbbaf11f9837bca8d3ddca9bcea53a1f930a45f5686cb620142c3",
     "files": [
       {
         "logicalPath": "pixel-7-api-35-chrome/directions",
-        "size": 401742,
-        "sha256": "583d77a61ad227c240f7eb99d86ce9180f6633fd30b24d6f7a32c792286b5d54"
+        "size": 373923,
+        "sha256": "da8989672cd629d21d9b490a031218a42050027f5b619967fcda6ffef5a385a4"
       },
       {
         "logicalPath": "pixel-7-api-35-chrome/game",
-        "size": 1935915,
-        "sha256": "36f568e4975139a9a1d9fd1048b1c1e7252f32b6eea6a8b69eac6819d06177f5"
+        "size": 2106153,
+        "sha256": "9cd9769229f4dd37d9beab308860b62b8bdd380cd49b1b011a3d8ad776f2e381"
       }
     ]
   },
@@ -172,13 +197,13 @@
       "state": "game",
       "width": 1080,
       "height": 2201,
-      "sha256": "a4d429e4976a65f34596e17d5b1a761bb14bacc01ef3a3bbc8270fb800570412",
+      "sha256": "826447a12aa96234518abf9889f1778d41fbb3bebda773b2a0adf79f168f2f40",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "청첩장 목적지 카드 중복 제거와 지도 안내 위계 개선 승인",
+        "approvalReason": "청첩장 시각 체계 통일과 고정 시트 헤더 개선 승인",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -191,13 +216,13 @@
       "state": "directions",
       "width": 1080,
       "height": 2201,
-      "sha256": "0cc23c9c1e015c9c7687da416190b44267384c07e81f74a2e7d8cb9413704838",
+      "sha256": "d99c0c11b87350971e4d9265dc786d53609662f62c51973a577c0908ef684089",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "청첩장 목적지 카드 중복 제거와 지도 안내 위계 개선 승인",
+        "approvalReason": "청첩장 시각 체계 통일과 고정 시트 헤더 개선 승인",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
