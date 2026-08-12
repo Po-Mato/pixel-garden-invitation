@@ -66,11 +66,37 @@ function normalizedSample(sample = {}) {
     retryFailureCategory: ["product", "automation", "infrastructure", "unknown"].includes(sample.retryFailureCategory)
       ? sample.retryFailureCategory : null,
     retryFailureKind: sample.retryFailureKind ? String(sample.retryFailureKind) : null,
+    supersededBySha: /^[a-f0-9]{40}$/.test(sample.supersededBySha ?? "")
+      ? sample.supersededBySha : null,
+    supersededReason: sample.supersededReason === "approved-visual-baseline"
+      ? sample.supersededReason : null,
     wdaMode: sample.wdaMode === "preinstalled" ? "preinstalled" : "source-build",
     generatedAt: sample.generatedAt || new Date().toISOString(),
     policyRevision: Number(sample.policyRevision) || 0,
     url: sample.url || null
   };
+}
+
+export async function markApprovedIosSafariVisualFailures({
+  samples,
+  approvedCommitSha,
+  isAncestor
+}) {
+  if (!/^[a-f0-9]{40}$/.test(approvedCommitSha ?? "") || typeof isAncestor !== "function") {
+    return mergeIosSafariStabilityHistory([], samples);
+  }
+  return Promise.all(mergeIosSafariStabilityHistory([], samples).map(async (sample) => {
+    const isApprovedVisualFailure = sample.outcome === "failure"
+      && sample.failureCategory === "product"
+      && sample.failureKind === "product-visual-regression"
+      && /^[a-f0-9]{40}$/.test(sample.sha ?? "");
+    if (!isApprovedVisualFailure || !await isAncestor(sample.sha, approvedCommitSha)) return sample;
+    return {
+      ...sample,
+      supersededBySha: approvedCommitSha,
+      supersededReason: "approved-visual-baseline"
+    };
+  }));
 }
 
 export function mergeIosSafariStabilityHistory(previousSamples, nextSamples) {
@@ -247,8 +273,13 @@ function policyIssues(summary, {
 
 export function buildIosSafariStabilityTrend(samples) {
   const ordered = mergeIosSafariStabilityHistory([], samples);
-  const completed = ordered.filter(({ outcome }) => outcome !== "cancelled");
-  const excludedCancelledRuns = ordered.length - completed.length;
+  const excludedCancelledRuns = ordered.filter(({ outcome }) => outcome === "cancelled").length;
+  const excludedSupersededVisualRuns = ordered.filter(({ supersededReason }) => (
+    supersededReason === "approved-visual-baseline"
+  )).length;
+  const completed = ordered.filter(({ outcome, supersededReason }) => (
+    outcome !== "cancelled" && supersededReason !== "approved-visual-baseline"
+  ));
   const observedSamples = completed.slice(-iosSafariStabilityPolicy.observedWindow);
   const hardenedHistory = completed
     .filter(({ policyRevision }) => policyRevision === iosSafariStabilityPolicy.policyRevision);
@@ -269,6 +300,7 @@ export function buildIosSafariStabilityTrend(samples) {
   return {
     policy: iosSafariStabilityPolicy,
     excludedCancelledRuns,
+    excludedSupersededVisualRuns,
     observed: {
       ...observed,
       status: observed.sampleCount < iosSafariStabilityPolicy.observedWindow
@@ -319,7 +351,9 @@ export function formatIosSafariStabilityMarkdown(trend) {
     "## iOS Safari CI 안정성 추세",
     "",
     `- 최근 완료 실행 10회: **${trend.observed.status}** · ${format(trend.observed)}`
-      + `${trend.excludedCancelledRuns > 0 ? ` · 취소 제외 ${trend.excludedCancelledRuns}회` : ""}`,
+      + `${trend.excludedCancelledRuns > 0 ? ` · 취소 제외 ${trend.excludedCancelledRuns}회` : ""}`
+      + `${trend.excludedSupersededVisualRuns > 0
+        ? ` · 승인된 시각 변경 제외 ${trend.excludedSupersededVisualRuns}회` : ""}`,
     `- 현행 측정 정책 적용 후: **${trend.acceptance.status}** · ${format(trend.acceptance)}${phase}${compositor}${failures}${retries}`,
     "",
     ...[...trend.observed.issues, ...trend.acceptance.issues].map((issue) => `- ${issue}`),

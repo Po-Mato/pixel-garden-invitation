@@ -4,6 +4,7 @@ import {
   buildIosSafariStabilityTrend,
   formatIosSafariStabilityMarkdown,
   iosSafariStabilityPolicy,
+  markApprovedIosSafariVisualFailures,
   mergeIosSafariStabilityHistory
 } from "./lib/iosSafariStabilityTrend.mjs";
 
@@ -76,6 +77,49 @@ test("iOS Safari trend backfills the reliability window past a cancelled run", (
   assert.equal(trend.observed.sampleCount, 10);
   assert.equal(trend.observed.successRate, 0.9);
   assert.equal(trend.observed.status, "passed");
+});
+
+test("approved iOS visual baselines supersede only ancestor visual failures", async () => {
+  const approvedCommitSha = "f".repeat(40);
+  const visualFailureSha = "a".repeat(40);
+  const automationFailureSha = "b".repeat(40);
+  const marked = await markApprovedIosSafariVisualFailures({
+    samples: [
+      {
+        ...sample(1, "failure", currentPolicyRevision),
+        sha: visualFailureSha,
+        failureCategory: "product",
+        failureKind: "product-visual-regression"
+      },
+      {
+        ...sample(2, "failure", currentPolicyRevision),
+        sha: automationFailureSha,
+        failureCategory: "automation",
+        failureKind: "automation-wda"
+      }
+    ],
+    approvedCommitSha,
+    isAncestor: async (sha) => sha === visualFailureSha
+  });
+  assert.equal(marked[0].supersededBySha, approvedCommitSha);
+  assert.equal(marked[0].supersededReason, "approved-visual-baseline");
+  assert.equal(marked[1].supersededBySha, null);
+});
+
+test("approved visual drift is excluded without hiding later failures", () => {
+  const runs = Array.from({ length: 10 }, (_, index) => ({
+    ...sample(index + 1, index >= 5 && index <= 8 ? "failure" : "success", currentPolicyRevision),
+    failureCategory: index >= 5 && index <= 8 ? "product" : null,
+    failureKind: index >= 5 && index <= 8 ? "product-visual-regression" : null,
+    supersededBySha: index >= 5 && index <= 8 ? "f".repeat(40) : null,
+    supersededReason: index >= 5 && index <= 8 ? "approved-visual-baseline" : null
+  }));
+  const trend = buildIosSafariStabilityTrend(runs);
+  assert.equal(trend.excludedSupersededVisualRuns, 4);
+  assert.equal(trend.observed.sampleCount, 6);
+  assert.equal(trend.observed.status, "warming");
+  assert.equal(trend.acceptance.status, "warming");
+  assert.match(formatIosSafariStabilityMarkdown(trend), /승인된 시각 변경 제외 4회/);
 });
 
 test("iOS Safari hardened gate accepts nine of ten bounded runs", () => {

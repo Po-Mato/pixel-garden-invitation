@@ -1,12 +1,17 @@
+import { execFile } from "node:child_process";
 import { appendFile, mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { promisify } from "node:util";
 import {
   buildIosSafariStabilityTrend,
   formatIosSafariStabilityMarkdown,
   iosSafariStabilityPolicy,
+  markApprovedIosSafariVisualFailures,
   mergeIosSafariStabilityHistory
 } from "./lib/iosSafariStabilityTrend.mjs";
+
+const execFileAsync = promisify(execFile);
 
 const rootDir = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
 const option = (name, fallback = null) => {
@@ -73,6 +78,31 @@ async function currentGithubRun() {
   };
 }
 
+async function approvedVisualBaselineCommitSha() {
+  try {
+    const metadata = JSON.parse(await readFile(
+      path.join(rootDir, "scripts/visual-baselines/ios-safari-visual-regression.json"),
+      "utf8"
+    ));
+    const commitSha = metadata.provenance?.commitSha;
+    return metadata.provenance?.sourceKind === "github-actions" && /^[a-f0-9]{40}$/.test(commitSha ?? "")
+      ? commitSha : null;
+  } catch (error) {
+    if (error?.code === "ENOENT") return null;
+    throw error;
+  }
+}
+
+async function isGitAncestor(ancestor, descendant) {
+  try {
+    await execFileAsync("git", ["merge-base", "--is-ancestor", ancestor, descendant], { cwd: rootDir });
+    return true;
+  } catch (error) {
+    if (error?.code === 1) return false;
+    throw error;
+  }
+}
+
 await mkdir(outputDir, { recursive: true });
 let samples = mergeIosSafariStabilityHistory(await readHistory(), await githubRunSamples());
 const requestedOutcome = option("--outcome");
@@ -110,6 +140,11 @@ if (currentOutcome) {
     url: currentRun?.url ?? option("--run-url")
   }]);
 }
+samples = await markApprovedIosSafariVisualFailures({
+  samples,
+  approvedCommitSha: await approvedVisualBaselineCommitSha(),
+  isAncestor: isGitAncestor
+});
 const trend = buildIosSafariStabilityTrend(samples);
 const markdown = formatIosSafariStabilityMarkdown(trend);
 await Promise.all([
