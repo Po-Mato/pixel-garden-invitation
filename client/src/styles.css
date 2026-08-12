@@ -2675,12 +2675,14 @@ select,
 .bottom-sheet {
   --sheet-prism: var(--gold);
   position: fixed;
+  display: grid;
   left: 50%;
   bottom: max(12px, env(safe-area-inset-bottom));
   z-index: 41;
   width: min(calc(100% - 32px), 390px);
   max-height: calc(100dvh - 24px);
-  overflow-y: auto;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  overflow: hidden;
   overscroll-behavior: contain;
   border: 2px solid #59483f;
   border-radius: 0;
@@ -2735,24 +2737,24 @@ select,
 }
 
 .bottom-sheet__body {
+  min-height: 0;
   margin-top: 14px;
   padding-bottom: max(18px, calc(env(safe-area-inset-bottom) + 6px));
+  overflow-y: auto;
+  overscroll-behavior: contain;
   color: var(--ink);
   font-size: 16px;
   line-height: 1.65;
 }
 
 .bottom-sheet__scroll-cue {
-  position: sticky;
-  bottom: 0;
-  z-index: 2;
   display: flex;
   width: max-content;
   min-height: 30px;
   align-items: center;
   justify-content: center;
   gap: 5px;
-  margin: 0 auto -8px;
+  margin: 8px auto 0;
   border: 1px solid color-mix(in srgb, var(--sheet-prism) 48%, #766a66);
   border-radius: 999px;
   padding: 5px 10px;

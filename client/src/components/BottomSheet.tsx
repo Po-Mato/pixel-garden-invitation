@@ -17,16 +17,17 @@ export function BottomSheet({ title, onClose, children, className = "", returnFo
   const titleId = useId();
   const descriptionId = useId();
   const dialogRef = useRef<HTMLElement>(null);
+  const bodyRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
   const [scrollState, setScrollState] = useState<BottomSheetScrollState>("static");
 
   const updateScrollState = useCallback(() => {
-    const dialog = dialogRef.current;
-    if (!dialog) return;
-    const scrollable = dialog.scrollHeight - dialog.clientHeight > 12;
+    const body = bodyRef.current;
+    if (!body) return;
+    const scrollable = body.scrollHeight - body.clientHeight > 12;
     const nextState: BottomSheetScrollState = !scrollable
       ? "static"
-      : dialog.scrollHeight - dialog.clientHeight - dialog.scrollTop <= 20
+      : body.scrollHeight - body.clientHeight - body.scrollTop <= 20
         ? "end"
         : "more";
     setScrollState((current) => current === nextState ? current : nextState);
@@ -50,8 +51,8 @@ export function BottomSheet({ title, onClose, children, className = "", returnFo
       ? null
       : new ResizeObserver(updateScrollState);
     resizeObserver?.observe(dialog);
-    const body = dialog.querySelector(".bottom-sheet__body");
-    if (body instanceof HTMLElement) resizeObserver?.observe(body);
+    const body = bodyRef.current;
+    if (body) resizeObserver?.observe(body);
     return () => {
       window.removeEventListener("resize", updateScrollState);
       resizeObserver?.disconnect();
@@ -76,7 +77,6 @@ export function BottomSheet({ title, onClose, children, className = "", returnFo
         aria-describedby={descriptionId}
         data-scroll-state={scrollState}
         tabIndex={-1}
-        onScroll={updateScrollState}
       >
         <header className="bottom-sheet__header">
           <h2 ref={titleRef} id={titleId} tabIndex={-1}>{title}</h2>
@@ -86,7 +86,7 @@ export function BottomSheet({ title, onClose, children, className = "", returnFo
           </button>
         </header>
         <p id={descriptionId} className="sr-only">{title} 창입니다. 닫기 버튼 다음에 주요 내용이 이어집니다.</p>
-        <div className="bottom-sheet__body">{children}</div>
+        <div ref={bodyRef} className="bottom-sheet__body" onScroll={updateScrollState}>{children}</div>
         {scrollState !== "static" ? (
           <div className="bottom-sheet__scroll-cue" role="status" aria-live="polite">
             {scrollState === "more" ? <ChevronDown aria-hidden="true" /> : <Check aria-hidden="true" />}

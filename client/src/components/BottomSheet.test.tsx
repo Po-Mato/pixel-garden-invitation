@@ -48,17 +48,18 @@ it("긴 내용의 남은 스크롤과 끝까지 확인한 상태를 알려준다
   );
 
   const dialog = screen.getByRole("dialog");
-  Object.defineProperties(dialog, {
+  const body = dialog.querySelector(".bottom-sheet__body") as HTMLDivElement;
+  Object.defineProperties(body, {
     clientHeight: { configurable: true, value: 400 },
     scrollHeight: { configurable: true, value: 900 },
     scrollTop: { configurable: true, writable: true, value: 0 }
   });
-  fireEvent.scroll(dialog);
+  fireEvent.scroll(body);
   expect(dialog).toHaveAttribute("data-scroll-state", "more");
   expect(screen.getByRole("status")).toHaveTextContent("아래로 더 보기");
 
-  Object.defineProperty(dialog, "scrollTop", { configurable: true, writable: true, value: 500 });
-  fireEvent.scroll(dialog);
+  Object.defineProperty(body, "scrollTop", { configurable: true, writable: true, value: 500 });
+  fireEvent.scroll(body);
   expect(dialog).toHaveAttribute("data-scroll-state", "end");
   expect(screen.getByRole("status")).toHaveTextContent("모두 확인했습니다");
 });

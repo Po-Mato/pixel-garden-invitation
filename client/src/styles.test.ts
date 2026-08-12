@@ -207,6 +207,7 @@ describe("compact invitation visual rhythm", () => {
     expect(styles).toMatch(/\.wedding-gallery__item--half \.wedding-gallery__photo-button\s*\{[^}]*aspect-ratio:\s*4 \/ 5;/s);
     expect(styles).toContain('.wedding-gallery__item[data-photo-id="07-bouquet-still"]');
     expect(styles).toContain('.bottom-sheet[data-scroll-state="end"] .bottom-sheet__scroll-cue');
+    expect(styles).toMatch(/\.bottom-sheet\s*\{[^}]*grid-template-rows:\s*auto minmax\(0, 1fr\) auto;[^}]*overflow:\s*hidden;/s);
   });
 
   it("uses a restrained snapping navigation and fluid enlarged hero title", () => {
@@ -717,7 +718,8 @@ describe("prism map interactions", () => {
 
     expect(sheetRule).toContain("--sheet-prism:");
     expect(sheetRule).toContain("max-height: calc(100dvh - 24px);");
-    expect(sheetRule).toContain("overflow-y: auto;");
+    expect(sheetRule).toContain("overflow: hidden;");
+    expect(styles).toMatch(/\.bottom-sheet__body\s*\{[^}]*overflow-y:\s*auto;/s);
     expect(styles).toMatch(/\.bottom-sheet__header\s*\{[^}]*position:\s*sticky;/s);
     expect(styles).toContain(".bottom-sheet .field input:focus-visible");
     expect(styles).toContain(".bottom-sheet__header button:focus-visible");
