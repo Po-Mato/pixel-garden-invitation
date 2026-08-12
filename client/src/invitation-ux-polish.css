@@ -1,0 +1,823 @@
+/* Visible invitation UX polish: RSVP clarity, map choice, closing cohesion and gallery motion. */
+
+/* RSVP — turn one long form into three calm, scannable decisions. */
+.rsvp-form {
+  gap: 14px;
+}
+
+.rsvp-progress {
+  display: grid;
+  gap: 10px;
+  border: 1px solid rgba(105, 134, 121, 0.28);
+  border-radius: 18px;
+  padding: 14px;
+  background: linear-gradient(145deg, rgba(248, 251, 248, 0.98), rgba(255, 253, 249, 0.98));
+  box-shadow: 0 8px 24px rgba(66, 82, 72, 0.07);
+}
+
+.rsvp-progress__heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.rsvp-progress__heading strong {
+  color: #35483f;
+  font-family: var(--wedding-font-display);
+  font-size: 15px;
+}
+
+.rsvp-progress__heading span {
+  color: #738078;
+  font-size: 10px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.rsvp-progress__track {
+  height: 4px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(105, 134, 121, 0.14);
+}
+
+.rsvp-progress__track > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--sage), #8ca89a);
+  transition: width 220ms ease;
+}
+
+.rsvp-progress__steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rsvp-progress__steps li {
+  display: grid;
+  min-width: 0;
+  justify-items: center;
+  gap: 5px;
+  color: #8c8284;
+}
+
+.rsvp-progress__steps li > span {
+  display: grid;
+  width: 23px;
+  height: 23px;
+  place-items: center;
+  border: 1px solid rgba(96, 75, 82, 0.22);
+  border-radius: 50%;
+  background: #fff;
+  font-size: 10px;
+  font-weight: 900;
+}
+
+.rsvp-progress__steps li > span svg {
+  width: 13px;
+  height: 13px;
+}
+
+.rsvp-progress__steps li small {
+  overflow: hidden;
+  font-size: 9px;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rsvp-progress__steps li[data-current="true"] {
+  color: #4c3d41;
+}
+
+.rsvp-progress__steps li[data-current="true"] > span {
+  border-color: rgba(183, 111, 124, 0.5);
+  background: #fff7f7;
+  color: #9b5866;
+  box-shadow: 0 0 0 3px rgba(183, 111, 124, 0.1);
+}
+
+.rsvp-progress__steps li[data-complete="true"] {
+  color: #557065;
+}
+
+.rsvp-progress__steps li[data-complete="true"] > span {
+  border-color: var(--sage);
+  background: var(--sage);
+  color: #fff;
+}
+
+.rsvp-form__section {
+  display: grid;
+  min-width: 0;
+  gap: 15px;
+  border: 1px solid rgba(96, 75, 82, 0.18);
+  border-radius: 18px;
+  padding: 16px 14px;
+  background: rgba(255, 255, 255, 0.86);
+  box-shadow: 0 8px 22px rgba(78, 58, 64, 0.055);
+  transition: border-color 180ms ease, box-shadow 180ms ease;
+}
+
+.rsvp-form__section[data-complete="true"] {
+  border-color: rgba(105, 134, 121, 0.36);
+  box-shadow: 0 8px 22px rgba(70, 92, 80, 0.075);
+}
+
+.rsvp-form__section-header {
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 11px;
+  border-bottom: 1px solid rgba(96, 75, 82, 0.12);
+}
+
+.rsvp-form__section-header > span {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  border: 1px solid rgba(183, 111, 124, 0.28);
+  border-radius: 50%;
+  background: #fff7f7;
+  color: #9b5866;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.rsvp-form__section[data-complete="true"] .rsvp-form__section-header > span {
+  border-color: var(--sage);
+  background: var(--sage);
+  color: #fff;
+}
+
+.rsvp-form__section-header svg {
+  width: 15px;
+  height: 15px;
+}
+
+.rsvp-form__section-header > div {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+
+.rsvp-form__section-header strong {
+  color: #3f3538;
+  font-family: var(--wedding-font-display);
+  font-size: 15px;
+}
+
+.rsvp-form__section-header small {
+  color: #817579;
+  font-size: 10px;
+  line-height: 1.45;
+}
+
+.rsvp-form__section .field {
+  gap: 7px;
+}
+
+.rsvp-form__section .field > span,
+.rsvp-form__section .rsvp-fieldset legend {
+  color: #55484c;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.rsvp-form__section .field > :is(input, textarea) {
+  border-color: rgba(96, 75, 82, 0.28);
+  border-radius: 12px;
+  background: #fffefa;
+  box-shadow: inset 0 1px 2px rgba(79, 60, 65, 0.035);
+}
+
+.rsvp-form__section .field > :is(input, textarea):focus {
+  border-color: var(--sage);
+  box-shadow: 0 0 0 3px rgba(105, 134, 121, 0.12);
+}
+
+.rsvp-form__section .field > input[aria-invalid="true"] {
+  border-color: #b66570;
+  background: #fffafa;
+}
+
+.rsvp-field-hint {
+  color: #a54f5d;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.rsvp-form__section .rsvp-segmented span {
+  border-width: 1px;
+  border-color: rgba(96, 75, 82, 0.28);
+  border-radius: 11px;
+  background: #fffefa;
+  box-shadow: none;
+}
+
+.rsvp-form__section .rsvp-segmented input:checked + span {
+  border-color: rgba(105, 134, 121, 0.72);
+  background: #edf4ef;
+  color: #355246;
+  box-shadow: 0 4px 12px rgba(63, 88, 76, 0.08);
+}
+
+.rsvp-form__section--submit {
+  background: linear-gradient(145deg, #fffdf9, #f6faf7);
+}
+
+.rsvp-readiness {
+  min-height: 18px;
+  margin: -2px 0 0;
+  color: #8c5961;
+  font-size: 10.5px;
+  font-weight: 750;
+  line-height: 1.45;
+  text-align: center;
+}
+
+.rsvp-readiness[data-ready="true"] {
+  color: #4b6f5d;
+}
+
+.rsvp-form__section .rsvp-submit {
+  border: 1px solid #4d6d5e;
+  border-radius: 13px;
+  background: #526f63;
+  color: #fff;
+  box-shadow: 0 8px 18px rgba(58, 82, 71, 0.2);
+}
+
+.rsvp-form__section .rsvp-submit:disabled {
+  border-color: rgba(96, 75, 82, 0.18);
+  background: #ece9e6;
+  color: #9a9192;
+  box-shadow: none;
+}
+
+.rsvp-summary {
+  overflow: hidden;
+  border: 1px solid rgba(105, 134, 121, 0.28);
+  border-radius: 20px;
+  padding: 0 15px 15px;
+  background: #fff;
+  box-shadow: 0 12px 30px rgba(63, 82, 72, 0.09);
+}
+
+.rsvp-summary__hero {
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  margin-inline: -15px;
+  padding: 17px 15px;
+  background: linear-gradient(145deg, #edf5ef, #fbf8f2);
+}
+
+.rsvp-summary__hero > svg {
+  width: 34px;
+  height: 34px;
+  color: #587769;
+}
+
+.rsvp-summary__hero > div {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+
+.rsvp-summary__hero > div > span {
+  color: #78877f;
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+}
+
+.rsvp-summary__hero h3 {
+  font-family: var(--wedding-font-display);
+  font-size: 17px;
+}
+
+.rsvp-summary__hero p {
+  margin: 0;
+  color: #69786f;
+  font-size: 10px;
+  line-height: 1.45;
+}
+
+.rsvp-summary__hero > strong {
+  border: 1px solid rgba(105, 134, 121, 0.35);
+  border-radius: 999px;
+  padding: 5px 8px;
+  background: rgba(255, 255, 255, 0.72);
+  color: #496859;
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+.rsvp-summary__hero > strong[data-attendance="no"] {
+  border-color: rgba(96, 75, 82, 0.24);
+  color: #74676a;
+}
+
+.rsvp-summary dl {
+  border-top: 0;
+}
+
+.rsvp-summary dl > div {
+  border-color: rgba(96, 75, 82, 0.11);
+}
+
+.rsvp-summary > .primary-button {
+  min-height: 46px;
+  border-radius: 12px;
+  background: #526f63;
+  color: #fff;
+}
+
+/* Directions — recognize the map provider quickly and retain the last choice. */
+.directions-sheet__route-actions {
+  gap: 11px;
+  border-color: rgba(105, 134, 121, 0.24);
+  border-radius: 18px;
+  padding: 14px;
+  background: linear-gradient(145deg, #f8fbf8, #fffdf9);
+  box-shadow: 0 8px 22px rgba(66, 82, 72, 0.06);
+}
+
+.directions-sheet__maps {
+  gap: 8px;
+}
+
+.directions-sheet__maps > :is(a, button) {
+  min-height: 54px;
+  gap: 9px;
+  border-color: rgba(96, 75, 82, 0.2);
+  border-radius: 13px;
+  padding: 8px 11px;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 4px 14px rgba(78, 58, 64, 0.055);
+  transition: border-color 160ms ease, background 160ms ease, box-shadow 160ms ease;
+}
+
+.directions-sheet__maps > :is(a, button)[data-primary="true"] {
+  border-color: rgba(105, 134, 121, 0.55);
+  background: #f1f6f2;
+  color: #365347;
+  box-shadow: 0 5px 15px rgba(58, 82, 71, 0.09);
+}
+
+.directions-sheet__maps > :is(a, button)[data-selected="true"] {
+  border-color: #526f63;
+  background: #526f63;
+  color: #fff;
+  box-shadow: 0 7px 18px rgba(58, 82, 71, 0.2);
+}
+
+.directions-sheet__map-icon {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  flex: 0 0 30px;
+  place-items: center;
+  border: 1px solid rgba(105, 134, 121, 0.18);
+  border-radius: 10px;
+  background: rgba(105, 134, 121, 0.08);
+  color: #587769;
+}
+
+.directions-sheet__maps > [data-selected="true"] .directions-sheet__map-icon {
+  border-color: rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+
+.directions-sheet__map-icon > svg {
+  width: 16px;
+  height: 16px;
+}
+
+.directions-sheet__maps > :is(a, button) > span:not(.directions-sheet__map-icon) {
+  display: grid;
+  justify-items: start;
+  gap: 2px;
+}
+
+.directions-sheet__maps > :is(a, button) small {
+  padding: 0;
+  background: transparent;
+  color: #738078;
+  font-size: 8px;
+}
+
+.directions-sheet__maps > [data-selected="true"] small {
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.directions-sheet__map-status {
+  min-height: 15px;
+  margin: -2px 1px 0;
+  color: #7b8580;
+  font-size: 9.5px;
+  line-height: 1.45;
+}
+
+/* Share + closing — one finish instead of three visually separate endings. */
+.invitation-share-trigger[data-state="open"] {
+  color: var(--camellia);
+}
+
+.quick-core-actions > .invitation-share-trigger[data-state="open"] {
+  background: #f7e9eb;
+  color: #8f4f5f;
+}
+
+.invitation-share-sheet {
+  gap: 13px;
+}
+
+.invitation-share-sheet__preview {
+  border-width: 1px;
+  border-color: rgba(179, 148, 89, 0.42);
+  border-radius: 18px;
+  padding-block: 22px;
+  background: linear-gradient(145deg, #fffaf3, #f7eceb 54%, #edf4ef);
+  box-shadow: 0 9px 24px rgba(78, 58, 64, 0.08);
+}
+
+.invitation-share-sheet__preview > strong {
+  font-family: var(--wedding-font-display);
+  font-weight: 700;
+}
+
+.invitation-share-sheet__detail {
+  border-top-style: solid;
+  border-color: rgba(96, 75, 82, 0.12);
+}
+
+.invitation-share-sheet__actions > button {
+  border-width: 1px;
+  border-color: rgba(96, 75, 82, 0.24);
+  border-radius: 12px;
+  background: #fffdfa;
+  box-shadow: 0 5px 14px rgba(78, 58, 64, 0.06);
+}
+
+.invitation-share-sheet__actions > button:first-child {
+  border-color: #526f63;
+  background: #526f63;
+  color: #fff;
+}
+
+.invitation-share-sheet__status[data-status="shared"],
+.invitation-share-sheet__status[data-status="copied"],
+.invitation-share-sheet__status[data-status="fallback"] {
+  color: #4d705e;
+  font-weight: 800;
+}
+
+.invitation-share-sheet__status[data-status="error"] {
+  color: #a54f5d;
+  font-weight: 800;
+}
+
+.quick-closing.quick-band {
+  position: relative;
+  overflow: hidden;
+  gap: 9px;
+  padding-block: 76px 66px;
+  background:
+    radial-gradient(circle at 16% 10%, rgba(231, 196, 200, 0.13), transparent 28%),
+    radial-gradient(circle at 88% 82%, rgba(199, 218, 207, 0.13), transparent 30%),
+    linear-gradient(160deg, #334a42, #243a33 62%, #1f312b);
+  color: #fffdf9;
+}
+
+.quick-closing.quick-band > svg {
+  width: 23px;
+  height: 23px;
+  margin-bottom: 2px;
+  color: #e8bfc5;
+  fill: #e8bfc5;
+}
+
+.quick-closing__eyebrow {
+  color: #c9d9cf;
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 0.22em;
+}
+
+.quick-closing.quick-band h2 {
+  color: #fffdf9;
+  font-family: var(--wedding-font-display);
+  font-size: clamp(23px, 7vw, 27px);
+  font-weight: 600;
+}
+
+.quick-closing.quick-band > p {
+  color: #d8e4dd;
+  font-family: var(--wedding-font-display);
+  font-size: 13px;
+}
+
+.quick-closing__note {
+  margin-top: 9px;
+  color: rgba(232, 240, 235, 0.72);
+  font-size: 9.5px;
+  font-weight: 600;
+  line-height: 1.55;
+  word-break: keep-all;
+}
+
+.quick-closing__actions {
+  gap: 9px;
+  margin-top: 8px;
+}
+
+.quick-closing__actions > button,
+.quick-closing__actions .invitation-share-trigger {
+  min-height: 49px;
+  border: 1px solid rgba(255, 255, 255, 0.34);
+  border-radius: 13px;
+  background: rgba(255, 255, 255, 0.06);
+  box-shadow: none;
+}
+
+.quick-closing__actions .invitation-share-trigger {
+  border-color: #efd9dc;
+  background: #f4e3e6;
+  color: #61474d;
+}
+
+.quick-closing__links {
+  gap: 5px;
+  margin-top: 10px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.quick-closing__links button {
+  min-height: 52px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 11px;
+  background: rgba(255, 255, 255, 0.055);
+  color: #e5ece8;
+}
+
+.quick-invitation__footer {
+  gap: 7px;
+  padding-top: 25px;
+  background: #1f312b;
+  color: #aebfb6;
+}
+
+.quick-invitation__footer strong {
+  font-family: var(--wedding-font-display);
+  font-size: 15px;
+}
+
+.quick-invitation__footer button {
+  display: inline-flex;
+  min-height: 38px;
+  align-items: center;
+  gap: 5px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  padding: 7px 11px;
+  color: #dbe7e0;
+}
+
+.quick-invitation__footer button svg {
+  width: 13px;
+  height: 13px;
+}
+
+.quick-core-actions {
+  border-top-color: rgba(105, 134, 121, 0.26);
+  background: rgba(255, 253, 249, 0.96);
+  box-shadow: 0 -10px 28px rgba(35, 53, 45, 0.12);
+}
+
+.quick-core-actions > button,
+.quick-core-actions > .invitation-share-trigger {
+  position: relative;
+  border-right-color: rgba(105, 134, 121, 0.12);
+  color: #53675e;
+}
+
+.quick-core-actions > button[aria-current="page"] {
+  background: #edf3ef;
+  color: #315d4a;
+}
+
+.quick-core-actions > button[aria-current="page"]::before,
+.quick-core-actions > .invitation-share-trigger[data-state="open"]::before {
+  position: absolute;
+  top: 0;
+  right: 24%;
+  left: 24%;
+  height: 2px;
+  border-radius: 0 0 2px 2px;
+  background: #648173;
+  content: "";
+}
+
+/* Gallery — expose swipe progress and make photo/caption changes feel connected. */
+.photo-lightbox {
+  grid-template-rows: auto 3px minmax(0, 1fr) auto;
+  background:
+    radial-gradient(circle at 50% 38%, rgba(255, 253, 248, 0.045), transparent 42%),
+    #11100f;
+  font-family: var(--wedding-font-ui);
+}
+
+.photo-lightbox__progress {
+  align-self: center;
+  height: 2px;
+  overflow: hidden;
+  margin: 3px 4px 0;
+  border-radius: 999px;
+  background: rgba(216, 201, 165, 0.14);
+}
+
+.photo-lightbox__progress > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #c4aa73, #eadfc7);
+  transition: width 220ms ease;
+}
+
+.photo-lightbox__media {
+  transform: translate3d(var(--photo-drag-x, 0), 0, 0);
+  animation: photo-lightbox-enter 240ms ease both;
+  transition: transform 180ms ease;
+  will-change: transform;
+}
+
+.photo-lightbox__stage[data-dragging="true"] .photo-lightbox__media {
+  transition: none;
+}
+
+.photo-lightbox__footer {
+  gap: 6px;
+}
+
+.photo-lightbox__caption-card {
+  display: grid;
+  min-width: 0;
+  justify-items: center;
+  gap: 3px;
+  animation: photo-caption-enter 260ms ease both;
+}
+
+.photo-lightbox__caption-card > span {
+  color: #b8a884;
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.13em;
+}
+
+.photo-lightbox__caption {
+  font-family: var(--wedding-font-display);
+  font-size: 13px;
+}
+
+.photo-lightbox__quality {
+  justify-self: center;
+  min-height: 38px;
+  border: 1px solid rgba(216, 201, 165, 0.42);
+  border-radius: 999px;
+  padding: 7px 11px;
+  background: rgba(255, 253, 248, 0.08);
+  color: #eee7da;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.photo-lightbox__quality svg {
+  width: 14px;
+  height: 14px;
+}
+
+@keyframes photo-lightbox-enter {
+  from { opacity: 0.72; transform: translate3d(var(--photo-drag-x, 0), 5px, 0) scale(0.992); }
+  to { opacity: 1; transform: translate3d(var(--photo-drag-x, 0), 0, 0) scale(1); }
+}
+
+@keyframes photo-caption-enter {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 360px) {
+  .rsvp-progress,
+  .rsvp-form__section {
+    border-radius: 15px;
+    padding-inline: 12px;
+  }
+
+  .rsvp-progress__steps li small {
+    font-size: 8px;
+  }
+
+  .directions-sheet__route-actions {
+    padding: 11px;
+  }
+
+  .directions-sheet__maps > :is(a, button) {
+    padding-inline: 9px;
+  }
+
+  .directions-sheet__map-icon {
+    width: 28px;
+    height: 28px;
+    flex-basis: 28px;
+  }
+
+  .quick-closing__links {
+    gap: 3px;
+  }
+}
+
+:is(html[data-text-scale="xlarge"], html[data-text-scale="ios-200"], html[data-typography-audit]) .rsvp-progress__steps {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+:is(html[data-text-scale="xlarge"], html[data-text-scale="ios-200"], html[data-typography-audit]) .rsvp-progress__steps li {
+  grid-template-columns: 28px minmax(0, 1fr);
+  justify-items: start;
+  align-items: center;
+}
+
+:is(html[data-text-scale="xlarge"], html[data-text-scale="ios-200"], html[data-typography-audit]) .rsvp-progress__steps li small {
+  overflow: visible;
+  white-space: normal;
+}
+
+:is(html[data-text-scale="xlarge"], html[data-text-scale="ios-200"], html[data-typography-audit]) .rsvp-summary__hero {
+  grid-template-columns: 38px minmax(0, 1fr);
+}
+
+:is(html[data-text-scale="xlarge"], html[data-text-scale="ios-200"], html[data-typography-audit]) .rsvp-summary__hero > strong {
+  grid-column: 1 / -1;
+  justify-self: start;
+}
+
+:is(html[data-text-scale="xlarge"], html[data-text-scale="ios-200"], html[data-typography-audit]) .directions-sheet__maps > :is(a, button) > span:not(.directions-sheet__map-icon) {
+  display: grid;
+}
+
+:is(html[data-text-scale="xlarge"], html[data-text-scale="ios-200"], html[data-typography-audit]) .quick-closing__actions {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+:is(html[data-text-scale="xlarge"], html[data-text-scale="ios-200"], html[data-typography-audit]) .quick-closing__links {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rsvp-progress__track > span,
+  .rsvp-form__section,
+  .directions-sheet__maps > :is(a, button),
+  .photo-lightbox__progress > span,
+  .photo-lightbox__media,
+  .photo-lightbox__caption-card {
+    animation: none;
+    transition: none;
+  }
+}
+
+html[data-reduce-motion="true"] :is(
+  .rsvp-progress__track > span,
+  .rsvp-form__section,
+  .directions-sheet__maps > :is(a, button),
+  .photo-lightbox__progress > span,
+  .photo-lightbox__media,
+  .photo-lightbox__caption-card
+) {
+  animation: none;
+  transition: none;
+}
+
+@media (forced-colors: active) {
+  .rsvp-progress,
+  .rsvp-form__section,
+  .rsvp-summary,
+  .directions-sheet__route-actions,
+  .directions-sheet__maps > :is(a, button),
+  .quick-closing__actions > button,
+  .quick-closing__links button {
+    border-color: CanvasText;
+  }
+}

@@ -10,6 +10,7 @@ const mapVisualEnhancementStyles = readFileSync("src/map-visual-enhancements.css
 const weddingLuxeStyles = readFileSync("src/wedding-luxe-theme.css", "utf8");
 const entryScreenStyles = readFileSync("src/entry-screen-v3.css", "utf8");
 const quickInvitationStyles = readFileSync("src/quick-invitation-continuity.css", "utf8");
+const invitationUxPolishStyles = readFileSync("src/invitation-ux-polish.css", "utf8");
 const worldZones = [
   "home",
   "neighborhood",
@@ -208,6 +209,15 @@ describe("compact invitation visual rhythm", () => {
     expect(styles).toContain('.wedding-gallery__item[data-photo-id="07-bouquet-still"]');
     expect(styles).toContain('.bottom-sheet[data-scroll-state="end"] .bottom-sheet__scroll-cue');
     expect(styles).toMatch(/\.bottom-sheet\s*\{[^}]*grid-template-rows:\s*auto minmax\(0, 1fr\) auto;[^}]*overflow:\s*hidden;/s);
+  });
+
+  it("keeps the visible invitation polish responsive and motion-safe", () => {
+    expect(invitationUxPolishStyles).toContain(".rsvp-progress__track");
+    expect(invitationUxPolishStyles).toContain('.directions-sheet__maps > :is(a, button)[data-selected="true"]');
+    expect(invitationUxPolishStyles).toContain('.quick-core-actions > .invitation-share-trigger[data-state="open"]');
+    expect(invitationUxPolishStyles).toContain(".photo-lightbox__stage[data-dragging=\"true\"]");
+    expect(invitationUxPolishStyles).toContain('@media (prefers-reduced-motion: reduce)');
+    expect(invitationUxPolishStyles).toContain('html[data-text-scale="xlarge"]');
   });
 
   it("uses a restrained snapping navigation and fluid enlarged hero title", () => {

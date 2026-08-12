@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { StrictMode } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { RsvpRecord } from "@wedding-game/shared";
@@ -78,7 +78,12 @@ describe("RsvpPanel", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "참석 답변 보내기" }));
 
-    expect(await screen.findByRole("heading", { name: "보내주신 답변" })).toBeInTheDocument();
+    const summaryTitle = await screen.findByRole("heading", { name: "보내주신 답변" });
+    const summary = summaryTitle.closest(".rsvp-summary");
+    expect(summary).not.toBeNull();
+    expect(within(summary as HTMLElement).getByText("RSVP COMPLETE")).toBeInTheDocument();
+    expect(within(summary as HTMLElement).getByText("참석 답변이 안전하게 저장되었습니다.")).toBeInTheDocument();
+    expect(summary?.querySelector('[data-attendance="yes"]')).toHaveTextContent("참석");
     expect(storage.saveRsvpCredential).toHaveBeenCalledWith("sample-garden", credential);
     expect(screen.getByText("김하객")).toBeInTheDocument();
   });

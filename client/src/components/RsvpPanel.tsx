@@ -12,6 +12,7 @@ import {
 import { clearRsvpCredential, loadRsvpCredential, saveRsvpCredential } from "../invitation/rsvpStorage";
 import { RsvpForm, type RsvpFormInitialValue } from "./RsvpForm";
 import { trackAnalyticsContextEvent } from "../analytics/invitationAnalytics";
+import { CircleCheckBig } from "lucide-react";
 
 type PanelState =
   | { kind: "loading" }
@@ -277,7 +278,15 @@ export function RsvpPanel() {
       ) : null}
       {state.kind === "summary" ? (
         <section className="rsvp-summary" aria-labelledby="rsvp-summary-title">
-          <h3 id="rsvp-summary-title">보내주신 답변</h3>
+          <header className="rsvp-summary__hero">
+            <CircleCheckBig aria-hidden="true" />
+            <div>
+              <span>RSVP COMPLETE</span>
+              <h3 id="rsvp-summary-title">보내주신 답변</h3>
+              <p>참석 답변이 안전하게 저장되었습니다.</p>
+            </div>
+            <strong data-attendance={state.response.attendance}>{attendanceLabel[state.response.attendance]}</strong>
+          </header>
           <dl>
             <div><dt>대상</dt><dd>{sideLabel[state.response.side]}</dd></div>
             <div><dt>이름</dt><dd>{state.response.guestName}</dd></div>

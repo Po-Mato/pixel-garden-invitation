@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import {
   ArrowLeft,
+  ArrowUp,
   CalendarDays,
   ChevronDown,
   Gamepad2,
@@ -295,8 +296,10 @@ export function QuickInvitation({
 
       <section className="quick-closing quick-band" id="share">
         <Heart aria-hidden="true" />
+        <span className="quick-closing__eyebrow">THANK YOU</span>
         <h2>기쁜 날, 함께해 주세요.</h2>
         <p>{names}</p>
+        <small className="quick-closing__note">초대장을 간직하거나 참석 여부를 알려주세요.</small>
         <div className="quick-closing__actions">
           <InvitationShareAccess variant="menu" />
           <button type="button" onClick={() => scrollToSection("rsvp")}>
@@ -325,7 +328,7 @@ export function QuickInvitation({
       <footer className="quick-invitation__footer">
         <span>{event.startAt.slice(0, 10).replaceAll("-", ".")}</span>
         <strong>{names}</strong>
-        <button type="button" onClick={() => scrollToSection("top")}>맨 위로</button>
+        <button type="button" onClick={() => scrollToSection("top")}><ArrowUp aria-hidden="true" /> 맨 위로</button>
       </footer>
       <nav className="quick-core-actions" aria-label="초대장 핵심 바로가기">
         <button

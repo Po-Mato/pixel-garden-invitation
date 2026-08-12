@@ -1,3 +1,4 @@
+import { Check } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { normalizeRsvpPhone, type RsvpAttendance, type RsvpMealStatus, type RsvpSide, type RsvpSubmission } from "@wedding-game/shared";
 import { useCoupleOrder } from "../invitation/CoupleOrderContext";
@@ -152,15 +153,25 @@ export function RsvpForm({
   }, [draftStorageId, draftTouched, online]);
 
   const normalizedPhone = normalizeRsvpPhone(phone);
+  const phoneValid = normalizedPhone.length >= 8 && normalizedPhone.length <= 15;
   const partySizeValid = attendance === "no" || (Number.isInteger(partySize) && partySize >= 1 && partySize <= 10);
-  const valid = guestName.trim().length > 0
-    && normalizedPhone.length >= 8
-    && normalizedPhone.length <= 15
+  const identityComplete = guestName.trim().length > 0 && phoneValid;
+  const attendanceComplete = identityComplete && partySizeValid;
+  const consentComplete = attendanceComplete && consented;
+  const completedSteps = consentComplete ? 3 : attendanceComplete ? 2 : identityComplete ? 1 : 0;
+  const valid = identityComplete
     && partySizeValid
     && consented;
   const deadlinePassed = Date.now() > Date.parse(policy.responseDeadline);
   const deadlineLabel = formatPolicyDate(policy.responseDeadline);
   const deleteAtLabel = formatPolicyDate(policy.deleteAt);
+  const readinessMessage = !identityComplete
+    ? "이름과 연락처를 확인해 주세요."
+    : !partySizeValid
+      ? "참석 인원은 1명에서 10명 사이로 입력해 주세요."
+      : !consented
+        ? "개인정보 이용 동의 후 답변을 보낼 수 있습니다."
+        : "답변을 보낼 준비가 되었습니다.";
 
   function changeAttendance(value: RsvpAttendance) {
     setAttendance(value);
@@ -229,81 +240,143 @@ export function RsvpForm({
         ? "마감일이 지났지만 답변을 보내실 수 있습니다"
         : `${deadlineLabel}까지 알려주세요`}</p>
 
-      <fieldset className="rsvp-fieldset" role="radiogroup">
-        <legend>어느 분의 하객인가요?</legend>
-        <div className="rsvp-segmented">
-          {sideOrder.map((weddingSide) => (
-            <label key={weddingSide}>
-              <input
-                type="radio"
-                name="rsvp-side"
-                value={weddingSide}
-                checked={side === weddingSide}
-                onChange={() => setSide(weddingSide)}
-              />
-              <span>{weddingSide === "bride" ? "신부측" : "신랑측"}</span>
-            </label>
-          ))}
+      <section className="rsvp-progress" aria-label="참석 답변 작성 진행">
+        <div className="rsvp-progress__heading">
+          <strong>{completedSteps === 3 ? "전송 준비 완료" : "답변 작성 중"}</strong>
+          <span>{completedSteps}/3 완료</span>
         </div>
-      </fieldset>
-
-      <label className="field">
-        <span>이름</span>
-        <input value={guestName} maxLength={30} autoComplete="name" onChange={(event) => setGuestName(event.target.value)} required />
-      </label>
-      <label className="field">
-        <span>연락처</span>
-        <input type="tel" inputMode="tel" value={phone} maxLength={19} autoComplete="tel" onChange={(event) => setPhone(formatPhone(event.target.value))} required />
-      </label>
-
-      <fieldset className="rsvp-fieldset" role="radiogroup">
-        <legend>참석 여부</legend>
-        <div className="rsvp-segmented rsvp-segmented--three">
-          {(["yes", "no", "unsure"] as const).map((value) => (
-            <label key={value}>
-              <input type="radio" name="rsvp-attendance" value={value} checked={attendance === value} onChange={() => changeAttendance(value)} />
-              <span>{{ yes: "참석", no: "불참", unsure: "미정" }[value]}</span>
-            </label>
-          ))}
+        <div
+          className="rsvp-progress__track"
+          role="progressbar"
+          aria-label="참석 답변 작성 진행률"
+          aria-valuemin={0}
+          aria-valuemax={3}
+          aria-valuenow={completedSteps}
+        >
+          <span style={{ width: `${(completedSteps / 3) * 100}%` }} />
         </div>
-      </fieldset>
+        <ol className="rsvp-progress__steps">
+          {[
+            ["하객 정보", identityComplete],
+            ["참석 정보", attendanceComplete],
+            ["동의·전송", consentComplete]
+          ].map(([label, complete], stepIndex) => (
+            <li key={String(label)} data-complete={complete || undefined} data-current={completedSteps === stepIndex || undefined}>
+              <span>{complete ? <Check aria-hidden="true" /> : stepIndex + 1}</span>
+              <small>{label}</small>
+            </li>
+          ))}
+        </ol>
+      </section>
 
-      {attendance !== "no" ? (
-        <label className="field">
-          <span>{attendance === "unsure" ? "예상 인원" : "본인 포함 참석 인원"}</span>
-          <input type="number" min={1} max={10} value={partySize} onChange={(event) => setPartySize(Number(event.target.value))} />
-        </label>
-      ) : null}
-
-      {attendance === "yes" ? (
+      <section className="rsvp-form__section" data-complete={identityComplete || undefined}>
+        <header className="rsvp-form__section-header">
+          <span>{identityComplete ? <Check aria-hidden="true" /> : 1}</span>
+          <div><strong>하객 정보</strong><small>연락 가능한 정보를 적어주세요</small></div>
+        </header>
         <fieldset className="rsvp-fieldset" role="radiogroup">
-          <legend>식사 여부</legend>
-          <div className="rsvp-segmented rsvp-segmented--three">
-            {(["yes", "no", "unsure"] as const).map((value) => (
-              <label key={value}>
-                <input type="radio" name="rsvp-meal" value={value} checked={mealStatus === value} onChange={() => setMealStatus(value)} />
-                <span>{{ yes: "식사 예정", no: "식사 안 함", unsure: "미정" }[value]}</span>
+          <legend>어느 분의 하객인가요?</legend>
+          <div className="rsvp-segmented">
+            {sideOrder.map((weddingSide) => (
+              <label key={weddingSide}>
+                <input
+                  type="radio"
+                  name="rsvp-side"
+                  value={weddingSide}
+                  checked={side === weddingSide}
+                  onChange={() => setSide(weddingSide)}
+                />
+                <span>{weddingSide === "bride" ? "신부측" : "신랑측"}</span>
               </label>
             ))}
           </div>
         </fieldset>
-      ) : null}
 
-      <label className="field">
-        <span>전달사항</span>
-        <textarea value={note} maxLength={160} onChange={(event) => setNote(event.target.value)} />
-      </label>
+        <label className="field">
+          <span>이름</span>
+          <input value={guestName} maxLength={30} autoComplete="name" onChange={(event) => setGuestName(event.target.value)} required />
+        </label>
+        <label className="field">
+          <span>연락처</span>
+          <input
+            type="tel"
+            inputMode="tel"
+            aria-label="연락처"
+            value={phone}
+            maxLength={19}
+            autoComplete="tel"
+            aria-invalid={phone.length > 0 && !phoneValid ? "true" : undefined}
+            aria-describedby={phone.length > 0 && !phoneValid ? "rsvp-phone-hint" : undefined}
+            onChange={(event) => setPhone(formatPhone(event.target.value))}
+            required
+          />
+          {phone.length > 0 && !phoneValid ? (
+            <small className="rsvp-field-hint" id="rsvp-phone-hint">숫자 8자리 이상 입력해 주세요.</small>
+          ) : null}
+        </label>
+      </section>
 
-      <label className="rsvp-consent">
-        <input type="checkbox" checked={consented} onChange={(event) => setConsented(event.target.checked)} />
-        <span>개인정보 수집 및 이용에 동의합니다. 예식 참석 인원 확인을 위해 이름·연락처·답변을 {deleteAtLabel}까지 보관 후 자동 삭제합니다.</span>
-      </label>
+      <section className="rsvp-form__section" data-complete={attendanceComplete || undefined}>
+        <header className="rsvp-form__section-header">
+          <span>{attendanceComplete ? <Check aria-hidden="true" /> : 2}</span>
+          <div><strong>참석 정보</strong><small>예식 준비에 필요한 내용입니다</small></div>
+        </header>
+        <fieldset className="rsvp-fieldset" role="radiogroup">
+          <legend>참석 여부</legend>
+          <div className="rsvp-segmented rsvp-segmented--three">
+            {(["yes", "no", "unsure"] as const).map((value) => (
+              <label key={value}>
+                <input type="radio" name="rsvp-attendance" value={value} checked={attendance === value} onChange={() => changeAttendance(value)} />
+                <span>{{ yes: "참석", no: "불참", unsure: "미정" }[value]}</span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
 
-      <button className="primary-button rsvp-submit" type="submit" disabled={!valid || submitting}>
-        {submitting ? online ? "보내는 중" : "저장 중" : !online ? "전송 대기함에 저장" : queuedAt ? "대기 중인 답변 보내기" : submitLabel}
-      </button>
-      {draftStatus ? <p className="form-draft-status" role="status">{draftStatus}</p> : null}
-      {message ? <p className="form-status form-status--error" role="alert">{message}</p> : null}
+        {attendance !== "no" ? (
+          <label className="field">
+            <span>{attendance === "unsure" ? "예상 인원" : "본인 포함 참석 인원"}</span>
+            <input type="number" min={1} max={10} value={partySize} onChange={(event) => setPartySize(Number(event.target.value))} />
+          </label>
+        ) : null}
+
+        {attendance === "yes" ? (
+          <fieldset className="rsvp-fieldset" role="radiogroup">
+            <legend>식사 여부</legend>
+            <div className="rsvp-segmented rsvp-segmented--three">
+              {(["yes", "no", "unsure"] as const).map((value) => (
+                <label key={value}>
+                  <input type="radio" name="rsvp-meal" value={value} checked={mealStatus === value} onChange={() => setMealStatus(value)} />
+                  <span>{{ yes: "식사 예정", no: "식사 안 함", unsure: "미정" }[value]}</span>
+                </label>
+              ))}
+            </div>
+          </fieldset>
+        ) : null}
+
+        <label className="field">
+          <span>전달사항</span>
+          <textarea value={note} maxLength={160} onChange={(event) => setNote(event.target.value)} />
+        </label>
+      </section>
+
+      <section className="rsvp-form__section rsvp-form__section--submit" data-complete={consentComplete || undefined}>
+        <header className="rsvp-form__section-header">
+          <span>{consentComplete ? <Check aria-hidden="true" /> : 3}</span>
+          <div><strong>동의 및 전송</strong><small>내용을 확인하고 답변을 보내주세요</small></div>
+        </header>
+        <label className="rsvp-consent">
+          <input type="checkbox" checked={consented} onChange={(event) => setConsented(event.target.checked)} />
+          <span>개인정보 수집 및 이용에 동의합니다. 예식 참석 인원 확인을 위해 이름·연락처·답변을 {deleteAtLabel}까지 보관 후 자동 삭제합니다.</span>
+        </label>
+
+        <p className="rsvp-readiness" data-ready={valid || undefined} aria-live="polite">{readinessMessage}</p>
+        <button className="primary-button rsvp-submit" type="submit" disabled={!valid || submitting}>
+          {submitting ? online ? "보내는 중" : "저장 중" : !online ? "전송 대기함에 저장" : queuedAt ? "대기 중인 답변 보내기" : submitLabel}
+        </button>
+        {draftStatus ? <p className="form-draft-status" role="status">{draftStatus}</p> : null}
+        {message ? <p className="form-status form-status--error" role="alert">{message}</p> : null}
+      </section>
     </form>
   );
 }

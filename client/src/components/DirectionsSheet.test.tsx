@@ -35,6 +35,19 @@ it("확정된 예식장, 교통, 주차, 지도, 전화 동작을 표시한다",
   expect(screen.getByRole("button", { name: "주소 복사" })).toHaveTextContent("복사");
 });
 
+it("선택한 지도 앱을 강조하고 새 창 안내를 갱신한다", () => {
+  render(<DirectionsSheet onClose={vi.fn()} />);
+
+  const kakaoLink = screen.getByRole("link", { name: "카카오맵" });
+  expect(kakaoLink).not.toHaveAttribute("aria-current");
+  fireEvent.click(kakaoLink);
+
+  expect(kakaoLink).toHaveAttribute("aria-current", "true");
+  expect(kakaoLink).toHaveAttribute("data-selected", "true");
+  expect(kakaoLink).toHaveTextContent("최근 선택");
+  expect(screen.getByText("카카오맵 앱을 새 창에서 열었습니다.")).toHaveAttribute("aria-live", "polite");
+});
+
 it("주소를 복사하고 성공 상태를 알린다", async () => {
   vi.mocked(copyText).mockResolvedValue(undefined);
   render(<DirectionsSheet onClose={vi.fn()} />);

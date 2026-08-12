@@ -1,5 +1,5 @@
 import { useState, type RefObject } from "react";
-import { Car, Check, Copy, ExternalLink, MapPinned, Phone, TrainFront } from "lucide-react";
+import { Car, Check, Copy, Globe2, Map, MapPinned, Navigation, Phone, TrainFront } from "lucide-react";
 import { invitationContent, type WeddingEvent } from "@wedding-game/shared";
 import { copyText } from "../invitation/browserActions";
 import { buildDirectionsLinks } from "../invitation/directions";
@@ -16,15 +16,18 @@ type DirectionsContentProps = {
 };
 
 type CopyStatus = "idle" | "copying" | "copied" | "error";
+type MapProvider = "naver" | "kakao" | "google";
 
 export function DirectionsContent({ venue = invitationContent.event.venue }: DirectionsContentProps) {
   const links = buildDirectionsLinks(venue);
   const [copyStatus, setCopyStatus] = useState<CopyStatus>("idle");
+  const [selectedMapProvider, setSelectedMapProvider] = useState<MapProvider | null>(null);
   const mapLinks = [
-    ["네이버지도", links.naver, "naver", true],
-    ["카카오맵", links.kakao, "kakao", false],
-    ["Google 지도", links.google, "google", false]
+    { label: "네이버지도", href: links.naver, provider: "naver", preferred: true, Icon: Navigation },
+    { label: "카카오맵", href: links.kakao, provider: "kakao", preferred: false, Icon: Map },
+    { label: "Google 지도", href: links.google, provider: "google", preferred: false, Icon: Globe2 }
   ] as const;
+  const selectedMapLabel = mapLinks.find(({ provider }) => provider === selectedMapProvider)?.label;
 
   const copyAddress = async () => {
     if (copyStatus === "copying") {
@@ -78,7 +81,7 @@ export function DirectionsContent({ venue = invitationContent.event.venue }: Dir
           <span>원하는 앱을 선택하세요</span>
         </header>
         <div className="directions-sheet__maps">
-          {mapLinks.map(([label, href, provider, preferred]) =>
+          {mapLinks.map(({ label, href, provider, preferred, Icon }) =>
             href ? (
               <a
                 key={label}
@@ -87,12 +90,17 @@ export function DirectionsContent({ venue = invitationContent.event.venue }: Dir
                 target="_blank"
                 rel="noopener noreferrer"
                 data-primary={preferred || undefined}
-                onClick={() => trackInvitationAnalytics("map_click", provider)}
+                data-selected={selectedMapProvider === provider || undefined}
+                aria-current={selectedMapProvider === provider ? "true" : undefined}
+                onClick={() => {
+                  setSelectedMapProvider(provider);
+                  trackInvitationAnalytics("map_click", provider);
+                }}
               >
-                <ExternalLink aria-hidden="true" />
+                <span className="directions-sheet__map-icon"><Icon aria-hidden="true" /></span>
                 <span>
                   <strong>{label}</strong>
-                  {preferred ? <small>추천</small> : null}
+                  {selectedMapProvider === provider ? <small>최근 선택</small> : preferred ? <small>추천</small> : null}
                 </span>
               </a>
             ) : (
@@ -103,7 +111,7 @@ export function DirectionsContent({ venue = invitationContent.event.venue }: Dir
                 data-primary={preferred || undefined}
                 disabled
               >
-                <ExternalLink aria-hidden="true" />
+                <span className="directions-sheet__map-icon"><Icon aria-hidden="true" /></span>
                 <span>
                   <strong>{label}</strong>
                   {preferred ? <small>추천</small> : null}
@@ -112,6 +120,9 @@ export function DirectionsContent({ venue = invitationContent.event.venue }: Dir
             )
           )}
         </div>
+        <p className="directions-sheet__map-status" aria-live="polite">
+          {selectedMapLabel ? `${selectedMapLabel} 앱을 새 창에서 열었습니다.` : "선택한 지도 앱은 새 창에서 열립니다."}
+        </p>
       </section>
 
       <section className="directions-sheet__travel-notes" aria-labelledby="directions-travel-title">

@@ -29,6 +29,8 @@ describe("간편 초대장", () => {
     expect(document.getElementById("rsvp")).toHaveTextContent("참석 답변 내용");
     expect(document.getElementById("guestbook")).toHaveTextContent("방명록 내용 하객1");
     expect(screen.getAllByText("경기 부천시 소사구 경인로 386")).toHaveLength(2);
+    expect(screen.getByText("THANK YOU")).toBeInTheDocument();
+    expect(screen.getByText("초대장을 간직하거나 참석 여부를 알려주세요.")).toBeInTheDocument();
     const gameJourney = screen.getByText("게임으로 둘러볼 장소").closest("details");
     expect(gameJourney).not.toHaveAttribute("open");
     fireEvent.click(screen.getByText("게임으로 둘러볼 장소"));

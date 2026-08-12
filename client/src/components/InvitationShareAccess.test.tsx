@@ -46,7 +46,11 @@ describe("InvitationShareAccess", () => {
   it("아이콘 진입점에서 예식 정보를 포함한 공유 시트를 연다", () => {
     render(<InvitationShareAccess variant="icon" />);
 
-    fireEvent.click(screen.getByRole("button", { name: "초대장 공유" }));
+    const trigger = screen.getByRole("button", { name: "초대장 공유" });
+    expect(trigger).toHaveAttribute("aria-expanded", "false");
+    fireEvent.click(trigger);
+    expect(trigger).toHaveAttribute("aria-expanded", "true");
+    expect(trigger).toHaveAttribute("data-state", "open");
 
     const dialog = screen.getByRole("dialog", { name: "초대장 공유" });
     expect(dialog).toHaveTextContent("이건희 · 이승재");

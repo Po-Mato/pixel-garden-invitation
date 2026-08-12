@@ -67,7 +67,27 @@ describe("전체 화면 웨딩 사진 뷰어", () => {
     expect(screen.getByText("사진").closest("p")).toHaveTextContent(`사진1/ ${photos.length}`);
     expect(screen.getByText(photos[0].caption ?? "")).toBeInTheDocument();
     expect(screen.getByText("좌우로 넘겨보기")).toBeInTheDocument();
+    expect(dialog.querySelector(".photo-lightbox__progress > span")).toHaveStyle({
+      width: `${(1 / photos.length) * 100}%`
+    });
+    expect(screen.getByText("01 · WEDDING GALLERY")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "전체 화면 닫기" })).toHaveTextContent("닫기");
+  });
+
+  it("드래그하는 동안 사진을 손가락 방향으로 움직이고 놓으면 원위치한다", () => {
+    const onIndexChange = vi.fn();
+    render(<PhotoLightbox photos={photos} index={2} onIndexChange={onIndexChange} onClose={vi.fn()} />);
+    const stage = screen.getByTestId("photo-lightbox-stage");
+
+    fireEvent.pointerDown(stage, { pointerId: 11, clientX: 120, clientY: 20 });
+    fireEvent.pointerMove(stage, { pointerId: 11, clientX: 60, clientY: 24 });
+    expect(stage).toHaveAttribute("data-dragging", "true");
+    expect(stage.getAttribute("style")).toContain("--photo-drag-x: -60px");
+
+    fireEvent.pointerUp(stage, { pointerId: 11, clientX: 60, clientY: 24 });
+    expect(stage).not.toHaveAttribute("data-dragging");
+    expect(stage.getAttribute("style")).toContain("--photo-drag-x: 0px");
+    expect(onIndexChange).toHaveBeenCalledWith(3);
   });
 
   it("버튼과 방향키로 비순환 탐색하고 양 끝의 버튼을 비활성화한다", () => {

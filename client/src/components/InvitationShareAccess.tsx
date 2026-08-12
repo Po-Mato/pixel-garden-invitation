@@ -104,6 +104,8 @@ export function InvitationShareAccess({
         type="button"
         className={`invitation-share-trigger invitation-share-trigger--${variant}`}
         aria-label={variant === "icon" ? "초대장 공유" : undefined}
+        aria-expanded={open}
+        data-state={open ? "open" : undefined}
         title={variant === "icon" ? "초대장 공유" : undefined}
         onClick={() => setVisibility(true)}
       >
@@ -113,7 +115,7 @@ export function InvitationShareAccess({
 
       {open ? (
         <BottomSheet title="초대장 공유" onClose={() => setVisibility(false)}>
-          <div className="invitation-share-sheet">
+          <div className="invitation-share-sheet" data-status={status === "idle" ? undefined : status}>
             <section className="invitation-share-sheet__preview">
               <span>WEDDING INVITATION</span>
               <strong>{formatCoupleNames(event, coupleOrder)}</strong>
@@ -146,7 +148,7 @@ export function InvitationShareAccess({
               </button>
             </div>
 
-            <p className="invitation-share-sheet__status" aria-live="polite">
+            <p className="invitation-share-sheet__status" data-status={status === "idle" ? undefined : status} aria-live="polite">
               {statusMessage(status)}
             </p>
           </div>

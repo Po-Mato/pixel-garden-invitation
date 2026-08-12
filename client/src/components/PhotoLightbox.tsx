@@ -1,6 +1,6 @@
 import type { WeddingGalleryPhoto } from "@wedding-game/shared";
 import { ChevronLeft, ChevronRight, ImageUp, MoveHorizontal, X } from "lucide-react";
-import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
+import { useEffect, useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent } from "react";
 import { createPortal } from "react-dom";
 import { isolateAppForModal } from "../accessibility/modalIsolation";
 import { useViewPreferences } from "../accessibility/ViewPreferencesContext";
@@ -43,6 +43,7 @@ export function PhotoLightbox({ photos, index, onIndexChange, onClose }: PhotoLi
   const { preferences } = useViewPreferences();
   const networkMode = useNetworkMode(preferences.dataSaver);
   const [fullQualityPhotoId, setFullQualityPhotoId] = useState<string | null>(null);
+  const [dragOffset, setDragOffset] = useState(0);
   const dialogRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const pointerStartRef = useRef<PointerStart | null>(null);
@@ -171,6 +172,7 @@ export function PhotoLightbox({ photos, index, onIndexChange, onClose }: PhotoLi
   const handlePointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
     if (event.target instanceof Element && event.target.closest(interactiveSwipeSelector)) {
       pointerStartRef.current = null;
+      setDragOffset(0);
       return;
     }
 
@@ -179,11 +181,29 @@ export function PhotoLightbox({ photos, index, onIndexChange, onClose }: PhotoLi
       x: event.clientX,
       y: event.clientY
     };
+    setDragOffset(0);
+  };
+
+  const handlePointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
+    const start = pointerStartRef.current;
+    if (!start || start.pointerId !== event.pointerId) return;
+
+    const horizontal = event.clientX - start.x;
+    const vertical = event.clientY - start.y;
+    if (Math.abs(horizontal) <= Math.abs(vertical)) {
+      setDragOffset(0);
+      return;
+    }
+
+    const atBoundary = (horizontal > 0 && index === 0) || (horizontal < 0 && index === photos.length - 1);
+    const resistedOffset = atBoundary ? horizontal * 0.22 : horizontal;
+    setDragOffset(Math.max(-72, Math.min(72, resistedOffset)));
   };
 
   const handlePointerUp = (event: ReactPointerEvent<HTMLDivElement>) => {
     const start = pointerStartRef.current;
     pointerStartRef.current = null;
+    setDragOffset(0);
 
     if (!start || start.pointerId !== event.pointerId) {
       return;
@@ -232,13 +252,21 @@ export function PhotoLightbox({ photos, index, onIndexChange, onClose }: PhotoLi
         </button>
       </header>
 
+      <div className="photo-lightbox__progress" aria-hidden="true">
+        <span style={{ width: `${((index + 1) / photos.length) * 100}%` }} />
+      </div>
+
       <div
         className="photo-lightbox__stage"
         data-testid="photo-lightbox-stage"
+        data-dragging={dragOffset !== 0 || undefined}
+        style={{ "--photo-drag-x": `${dragOffset}px` } as CSSProperties}
         onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
         onPointerCancel={() => {
           pointerStartRef.current = null;
+          setDragOffset(0);
         }}
       >
         <button
@@ -251,7 +279,7 @@ export function PhotoLightbox({ photos, index, onIndexChange, onClose }: PhotoLi
         >
           <ChevronLeft aria-hidden="true" />
         </button>
-        <div className="photo-lightbox__media">
+        <div key={photo.id} className="photo-lightbox__media">
           <ResponsiveGalleryImage
             key={`${photo.id}-${fullQuality ? "full" : "auto"}`}
             photo={photo}
@@ -284,11 +312,14 @@ export function PhotoLightbox({ photos, index, onIndexChange, onClose }: PhotoLi
             <ImageUp aria-hidden="true" /> 이 사진 고화질로 보기
           </button>
         ) : null}
-        {photo.caption ? (
-          <p id={captionId} className="photo-lightbox__caption">
-            {photo.caption}
-          </p>
-        ) : null}
+        <div key={photo.id} className="photo-lightbox__caption-card">
+          <span aria-hidden="true">{String(index + 1).padStart(2, "0")} · WEDDING GALLERY</span>
+          {photo.caption ? (
+            <p id={captionId} className="photo-lightbox__caption">
+              {photo.caption}
+            </p>
+          ) : null}
+        </div>
       </footer>
     </div>,
     document.body
