@@ -1,7 +1,7 @@
 {
   "version": 3,
-  "approvedAt": "2026-08-12T10:11:26.231Z",
-  "reason": "시트 스크롤 안내를 본문 밖의 독립 영역으로 분리한 실기기 검토 완료 변경",
+  "approvedAt": "2026-08-12T14:09:45.352Z",
+  "reason": "Reviewed refined directions provider cards and hierarchy for 731cafd",
   "profile": {
     "id": "pixel-7-api-35-chrome",
     "deviceName": "Pixel 7",
@@ -9,7 +9,7 @@
     "requiredDirectionsScroll": 0
   },
   "capture": {
-    "generatedAt": "2026-08-12T10:03:06.989Z",
+    "generatedAt": "2026-08-12T14:04:42.928Z",
     "profile": {
       "id": "pixel-7-api-35-chrome",
       "deviceName": "Pixel 7",
@@ -28,10 +28,10 @@
       "width": 412
     },
     "browserVersion": null,
-    "runId": "31585397183",
+    "runId": "31604462007",
     "runAttempt": 1,
-    "sha": "d9ea52bf4729d161d2741c022f93499f4bb85644",
-    "runUrl": "https://github.com/Po-Mato/pixel-garden-invitation/actions/runs/31585397183",
+    "sha": "731cafd44c637966a5b54494b96fbea85f05e806",
+    "runUrl": "https://github.com/Po-Mato/pixel-garden-invitation/actions/runs/31604462007",
     "retry": {
       "attempted": false,
       "reason": null
@@ -44,7 +44,7 @@
           {
             "attempt": 1,
             "outcome": "ready",
-            "durationMs": 3879,
+            "durationMs": 4801,
             "error": null
           }
         ]
@@ -56,7 +56,7 @@
           {
             "attempt": 1,
             "outcome": "ready",
-            "durationMs": 6981,
+            "durationMs": 3125,
             "error": null
           }
         ]
@@ -72,18 +72,18 @@
       "offlineEventDispatched": true,
       "transportProbe": {
         "previewHostReachableAfterStop": false,
-        "browserUrl": "http://127.0.0.1:4188/api/__device_pwa_transport_probe__?nonce=1786529089548",
+        "browserUrl": "http://127.0.0.1:4188/api/__device_pwa_transport_probe__?nonce=1786543582728",
         "browserFetchResolved": false,
         "browserStatus": null,
         "browserError": "Failed to fetch",
         "browserErrorKind": "failed-to-fetch",
-        "durationMs": 65.70000000001164,
+        "durationMs": 122.5,
         "transportBlocked": true
       },
       "cachedPaths": 82,
       "controlled": true,
       "expectedPaths": 82,
-      "precacheName": "wedding-garden-precache-d9ea52bf4729",
+      "precacheName": "wedding-garden-precache-731cafd44c63",
       "serviceWorkerSupported": true,
       "blockingNoticeVisible": false,
       "brokenImages": [],
@@ -107,39 +107,39 @@
     "comparisons": [
       {
         "state": "game",
-        "changedPixels": 23405,
-        "changedRatio": 0.009846113719353155,
-        "meanPixelDifference": 2.138522052265805,
+        "changedPixels": 1058,
+        "changedRatio": 0.0004450838844296364,
+        "meanPixelDifference": 1.6482011543574469,
         "pixelCount": 2377080,
         "passed": true,
         "maxChangedRatio": 0.015,
-        "rawChangedRatio": 0.014349538088747539,
-        "rawMeanPixelDifference": 3.361854039409696,
+        "rawChangedRatio": 0.011833425883857506,
+        "rawMeanPixelDifference": 2.7436476685681592,
         "baselinePath": "/home/runner/work/pixel-garden-invitation/pixel-garden-invitation/scripts/visual-baselines/android-chrome-pixel-7-api-35-chrome-game.webp",
         "currentPath": "/home/runner/work/pixel-garden-invitation/pixel-garden-invitation/.superpowers/visual-regression/android-chrome/android-chrome-pixel-7-api-35-chrome-game-current.png",
         "diffPath": "/home/runner/work/pixel-garden-invitation/pixel-garden-invitation/.superpowers/visual-regression/android-chrome/android-chrome-pixel-7-api-35-chrome-game-diff.png",
         "classification": {
-          "id": "watch-structural",
-          "confidence": "medium",
-          "likelyCause": "meaningful-change-within-budget",
-          "review": "recommended",
-          "changedRatio": 0.009846113719353155,
-          "rawChangedRatio": 0.014349538088747539,
-          "filteredNoiseRatio": 0.004503424369394384,
-          "filteredNoiseShare": 0.3138375842861332,
-          "budgetUsage": 0.6564075812902104
+          "id": "renderer-noise",
+          "confidence": "high",
+          "likelyCause": "font-or-antialias-rendering",
+          "review": "not-required",
+          "changedRatio": 0.0004450838844296364,
+          "rawChangedRatio": 0.011833425883857506,
+          "filteredNoiseRatio": 0.01138834199942787,
+          "filteredNoiseShare": 0.9623875715453802,
+          "budgetUsage": 0.02967225896197576
         }
       },
       {
         "state": "directions",
-        "changedPixels": 288218,
-        "changedRatio": 0.12124875898160768,
-        "meanPixelDifference": 18.032369545829336,
+        "changedPixels": 288838,
+        "changedRatio": 0.12150958318609387,
+        "meanPixelDifference": 20.170007740589295,
         "pixelCount": 2377080,
         "passed": false,
         "maxChangedRatio": 0.015,
-        "rawChangedRatio": 0.10734262204048665,
-        "rawMeanPixelDifference": 18.710785922223906,
+        "rawChangedRatio": 0.11538652464368049,
+        "rawMeanPixelDifference": 20.78147517121847,
         "baselinePath": "/home/runner/work/pixel-garden-invitation/pixel-garden-invitation/scripts/visual-baselines/android-chrome-pixel-7-api-35-chrome-directions.webp",
         "currentPath": "/home/runner/work/pixel-garden-invitation/pixel-garden-invitation/.superpowers/visual-regression/android-chrome/android-chrome-pixel-7-api-35-chrome-directions-current.png",
         "diffPath": "/home/runner/work/pixel-garden-invitation/pixel-garden-invitation/.superpowers/visual-regression/android-chrome/android-chrome-pixel-7-api-35-chrome-directions-diff.png",
@@ -148,11 +148,11 @@
           "confidence": "high",
           "likelyCause": "layout-or-content-change",
           "review": "required",
-          "changedRatio": 0.12124875898160768,
-          "rawChangedRatio": 0.10734262204048665,
+          "changedRatio": 0.12150958318609387,
+          "rawChangedRatio": 0.11538652464368049,
           "filteredNoiseRatio": 0,
           "filteredNoiseShare": 0,
-          "budgetUsage": 8.083250598773846
+          "budgetUsage": 8.100638879072925
         }
       }
     ],
@@ -167,23 +167,23 @@
     "schemaVersion": 1,
     "subjectKind": "capture-set",
     "sourceKind": "github-actions",
-    "runId": "31585397183",
+    "runId": "31604462007",
     "runAttempt": 1,
-    "commitSha": "d9ea52bf4729d161d2741c022f93499f4bb85644",
-    "runUrl": "https://github.com/Po-Mato/pixel-garden-invitation/actions/runs/31585397183",
+    "commitSha": "731cafd44c637966a5b54494b96fbea85f05e806",
+    "runUrl": "https://github.com/Po-Mato/pixel-garden-invitation/actions/runs/31604462007",
     "checksumAlgorithm": "sha256",
     "artifactChecksumScope": "sorted-capture-set-manifest",
-    "artifactSha256": "6f5934cd5d862a533cfd1029d380f9d127c95f3f4e3fc1957c2778b0887b83dd",
+    "artifactSha256": "46b2166dba9bd9273aaaf570721832536e2bbaadf3c612c54dd0533506140fc8",
     "files": [
       {
         "logicalPath": "pixel-7-api-35-chrome/directions",
-        "size": 361458,
-        "sha256": "489b2ddd60ec682d689034bf4ccff66557b0466a1c2fa7ebf870193a7109f2b4"
+        "size": 380132,
+        "sha256": "cae894484a272a638e53d8374b428edb5f86a59279c04b6e27d872e9bdced46a"
       },
       {
         "logicalPath": "pixel-7-api-35-chrome/game",
-        "size": 1931470,
-        "sha256": "4a42b11048df7d74d3af59a61428052d17b910d0aaec748a4068a1cb80a815be"
+        "size": 2013222,
+        "sha256": "25223e69e21d1af4f859a358565ca7abac2b2bc854f45d1eb9b45842e03ab79d"
       }
     ]
   },
@@ -197,13 +197,13 @@
       "state": "game",
       "width": 1080,
       "height": 2201,
-      "sha256": "5c347491c0f6a52e6886ba2f95cbd98a7037cfdde86395426b41854c093e98b5",
+      "sha256": "34b7a80de506749532d8fcb8550f90232c94e9607daa364388e694644c606304",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "시트 스크롤 안내를 본문 밖의 독립 영역으로 분리한 실기기 검토 완료 변경",
+        "approvalReason": "Reviewed refined directions provider cards and hierarchy for 731cafd",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -216,13 +216,13 @@
       "state": "directions",
       "width": 1080,
       "height": 2201,
-      "sha256": "1e7e1976ddce7bee401377e869fccbeee487f48d370f08d56f879f5648e7866d",
+      "sha256": "9688aa9784372d91c20a5c17179d1ec2f5ab02dbba42b3bad571e2466685cedd",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "시트 스크롤 안내를 본문 밖의 독립 영역으로 분리한 실기기 검토 완료 변경",
+        "approvalReason": "Reviewed refined directions provider cards and hierarchy for 731cafd",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,

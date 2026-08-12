@@ -1,7 +1,7 @@
 {
   "version": 5,
-  "approvedAt": "2026-08-12T10:11:33.720Z",
-  "reason": "확대 글자 시트의 중간 및 끝 스크롤 안내를 독립 영역으로 분리한 브라우저 캡처 검토 완료 변경",
+  "approvedAt": "2026-08-12T14:09:40.312Z",
+  "reason": "Reviewed invitation map provider card redesign and large-text reflow for 731cafd",
   "pixelThreshold": 36,
   "maxChangedRatio": 0.015,
   "profileMaxChangedRatioOverrides": {
@@ -13,28 +13,28 @@
     "schemaVersion": 1,
     "subjectKind": "capture-set",
     "sourceKind": "github-actions",
-    "runId": "31585397167",
+    "runId": "31604462067",
     "runAttempt": 1,
-    "commitSha": "d9ea52bf4729d161d2741c022f93499f4bb85644",
-    "runUrl": "https://github.com/Po-Mato/pixel-garden-invitation/actions/runs/31585397167",
+    "commitSha": "731cafd44c637966a5b54494b96fbea85f05e806",
+    "runUrl": "https://github.com/Po-Mato/pixel-garden-invitation/actions/runs/31604462067",
     "checksumAlgorithm": "sha256",
     "artifactChecksumScope": "sorted-capture-set-manifest",
-    "artifactSha256": "d5ab81ca9ccf26d86557f3b5e127e5e75c1dfee2c5997dd1ef4895e26669a365",
+    "artifactSha256": "3059ea932b050403a376ac7e9709ba29a293624870bc2d0978b8ad854c467adc",
     "files": [
       {
         "logicalPath": "galaxy-s23-font-150/directions-xlarge",
-        "size": 85026,
-        "sha256": "df3a64959b981f336e59c3f49ea5fcc55027fc594f68457a365e404eb0feac7a"
+        "size": 103763,
+        "sha256": "7d0c1993ac3cb6175255802b43162c5175564161dc0e1350c5814d0a4e76b756"
       },
       {
         "logicalPath": "galaxy-s23-font-150/directions-xlarge-bottom",
-        "size": 72972,
-        "sha256": "e388efd2b37a2afc75d0ce041cbe30e56b66a7a88be3e3cd932b6f22f14af774"
+        "size": 85068,
+        "sha256": "effd754fcd5a386e637e0641729f43373d1f45154a8629bb30f2f23e9ee55d91"
       },
       {
         "logicalPath": "galaxy-s23-font-150/directions-xlarge-middle",
-        "size": 78253,
-        "sha256": "116c999417b63df729668b34985916cafae73524dba498ba111290010c6c6d75"
+        "size": 97501,
+        "sha256": "5e69446717bb0ed8bfa45e3e5d631b47cbec0deda1ee4040595ec31ab9b7bc40"
       },
       {
         "logicalPath": "galaxy-s23-font-150/game",
@@ -43,18 +43,18 @@
       },
       {
         "logicalPath": "iphone-15-dynamic-type/directions-xlarge",
-        "size": 88550,
-        "sha256": "975911ab9a54612703f6af653298df7fa498505a4f8c7f793dc40bebc1a2344d"
+        "size": 106116,
+        "sha256": "ce5bac8ba2cab58b44527a61171242c1c18878ee069882ebf001ca7048a86c61"
       },
       {
         "logicalPath": "iphone-15-dynamic-type/directions-xlarge-bottom",
-        "size": 78056,
-        "sha256": "b8343855fc51a5632423c90f123dbe570f3b444b8b35dc82cd62e61f81c874a5"
+        "size": 87992,
+        "sha256": "d6aa9f29236dd0dbb901ab50791a5800619e1ca940ea289bcfaa8049c0eab46b"
       },
       {
         "logicalPath": "iphone-15-dynamic-type/directions-xlarge-middle",
-        "size": 80291,
-        "sha256": "e44689251a52305fbec1d11700dec5e770b85f708a5df924eda6918989a675cf"
+        "size": 100543,
+        "sha256": "32006038ecf0e0c30c75a9172fc665edcfea7b876df50ef23a566ec9e8fbe02f"
       },
       {
         "logicalPath": "iphone-15-dynamic-type/game",
@@ -63,18 +63,18 @@
       },
       {
         "logicalPath": "iphone-15-webkit-dynamic-type/directions-xlarge",
-        "size": 103673,
-        "sha256": "81efae063e1b55913b68fb6676a3bfbef568c40d457a92e6b418051acf029dbc"
+        "size": 109032,
+        "sha256": "47a99a40af0453b7bd972ef8c8dda0c4d74d23c67e724ff3627381f3e9fd7d12"
       },
       {
         "logicalPath": "iphone-15-webkit-dynamic-type/directions-xlarge-bottom",
-        "size": 103673,
-        "sha256": "81efae063e1b55913b68fb6676a3bfbef568c40d457a92e6b418051acf029dbc"
+        "size": 102734,
+        "sha256": "630816d8977b66d00be868b3e6b8dd24a5b8efd509a2cec555090d07179499a3"
       },
       {
         "logicalPath": "iphone-15-webkit-dynamic-type/directions-xlarge-middle",
-        "size": 103673,
-        "sha256": "81efae063e1b55913b68fb6676a3bfbef568c40d457a92e6b418051acf029dbc"
+        "size": 106061,
+        "sha256": "7505997c22c77c5a70b2558809e53472bdb35f9c79c17fea4d34bc8b5e812540"
       },
       {
         "logicalPath": "iphone-15-webkit-dynamic-type/game",
@@ -83,18 +83,18 @@
       },
       {
         "logicalPath": "iphone-15-webkit-text-200/directions-xlarge",
-        "size": 98501,
-        "sha256": "f7a06da6a3ab9f9081a8ad84aa1e150d6eb0a6c7729d2f6b86aeeff66a7316e5"
+        "size": 103530,
+        "sha256": "b6933a934668ba331f4eae10459ca5f501bf7f5be2531da7a7e543415ad6d2fe"
       },
       {
         "logicalPath": "iphone-15-webkit-text-200/directions-xlarge-bottom",
-        "size": 99030,
-        "sha256": "b1469e31bac8147f0ace2211da05454b589dbaa744cfa77d7f12c44b899573e1"
+        "size": 99350,
+        "sha256": "4cee5623e1078ed183d040afb9f684c2985d5af7f5b28e009823a1ca7c77c893"
       },
       {
         "logicalPath": "iphone-15-webkit-text-200/directions-xlarge-middle",
-        "size": 94945,
-        "sha256": "263c3db9818b5d246901b955273e8d62bf7cf3f754f59aaa1715ec8d7a0907d7"
+        "size": 97056,
+        "sha256": "89f6fcac6a5fbd3a3201a5bf0631148494c1e3bf924067bcf4ac709d7da75593"
       },
       {
         "logicalPath": "iphone-15-webkit-text-200/game",
@@ -116,7 +116,7 @@
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "확대 글자 시트의 중간 및 끝 스크롤 안내를 독립 영역으로 분리한 브라우저 캡처 검토 완료 변경",
+        "approvalReason": "Reviewed invitation map provider card redesign and large-text reflow for 731cafd",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -130,13 +130,13 @@
       "state": "directions-xlarge",
       "width": 360,
       "height": 780,
-      "sha256": "db5fb59d97e7db9fa4e703da35c392e11d07552ad9e3035b09576bab435d3603",
+      "sha256": "aadd22a1c4844eddf131c536c984055ed8a0cebbabd1683f86c6f3d81d0657de",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "확대 글자 시트의 중간 및 끝 스크롤 안내를 독립 영역으로 분리한 브라우저 캡처 검토 완료 변경",
+        "approvalReason": "Reviewed invitation map provider card redesign and large-text reflow for 731cafd",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -150,13 +150,13 @@
       "state": "directions-xlarge-middle",
       "width": 360,
       "height": 780,
-      "sha256": "26a358adc4c3be08991ec1b844a28418524287d377e01badb3c146f67bc8cfa0",
+      "sha256": "4af30a125a06f80aec3feb49ee45dd01c0ae15746419e0eba39d9597c0611db7",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "확대 글자 시트의 중간 및 끝 스크롤 안내를 독립 영역으로 분리한 브라우저 캡처 검토 완료 변경",
+        "approvalReason": "Reviewed invitation map provider card redesign and large-text reflow for 731cafd",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -170,13 +170,13 @@
       "state": "directions-xlarge-bottom",
       "width": 360,
       "height": 780,
-      "sha256": "874729c0a521ac06bcd152e662a9a67181824076114df3f99c548f0543e7557e",
+      "sha256": "4128a6db3c59d3d3c6c026bfc6a734b573b9778e333517a9c99d111e3f117915",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "확대 글자 시트의 중간 및 끝 스크롤 안내를 독립 영역으로 분리한 브라우저 캡처 검토 완료 변경",
+        "approvalReason": "Reviewed invitation map provider card redesign and large-text reflow for 731cafd",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -196,7 +196,7 @@
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "확대 글자 시트의 중간 및 끝 스크롤 안내를 독립 영역으로 분리한 브라우저 캡처 검토 완료 변경",
+        "approvalReason": "Reviewed invitation map provider card redesign and large-text reflow for 731cafd",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -210,13 +210,13 @@
       "state": "directions-xlarge",
       "width": 393,
       "height": 852,
-      "sha256": "1283dfe96899e593bda831352d774c08649b4096e70b273a18ea822a81ea868c",
+      "sha256": "4a296681cae7e3afff1656fec6344c26c995c11eb95aa32a4cb696cde86a8e17",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "확대 글자 시트의 중간 및 끝 스크롤 안내를 독립 영역으로 분리한 브라우저 캡처 검토 완료 변경",
+        "approvalReason": "Reviewed invitation map provider card redesign and large-text reflow for 731cafd",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -230,13 +230,13 @@
       "state": "directions-xlarge-middle",
       "width": 393,
       "height": 852,
-      "sha256": "bd1a2a435c145c3d386a2db925dc5b55929f411739950741137b8bf6be43be41",
+      "sha256": "b1fe136d7351e427ec3c724956a6c8bffb683f1cb96453102ff6524fec62f9a6",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "확대 글자 시트의 중간 및 끝 스크롤 안내를 독립 영역으로 분리한 브라우저 캡처 검토 완료 변경",
+        "approvalReason": "Reviewed invitation map provider card redesign and large-text reflow for 731cafd",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -250,13 +250,13 @@
       "state": "directions-xlarge-bottom",
       "width": 393,
       "height": 852,
-      "sha256": "6a0ec8d5dd2b7a071c295fc5597e71bf58f76d9f759a77e14a676d20136061c6",
+      "sha256": "8778b4e494e4ee20580dc1c3e2c114ea14aec11fb87a37d35be88abbab2de1f1",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "확대 글자 시트의 중간 및 끝 스크롤 안내를 독립 영역으로 분리한 브라우저 캡처 검토 완료 변경",
+        "approvalReason": "Reviewed invitation map provider card redesign and large-text reflow for 731cafd",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -276,7 +276,7 @@
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "확대 글자 시트의 중간 및 끝 스크롤 안내를 독립 영역으로 분리한 브라우저 캡처 검토 완료 변경",
+        "approvalReason": "Reviewed invitation map provider card redesign and large-text reflow for 731cafd",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -290,13 +290,13 @@
       "state": "directions-xlarge",
       "width": 393,
       "height": 852,
-      "sha256": "0a8d65ea5c61d121ed2472b7c97836711ffe4d0670ce140b0082575664d32798",
+      "sha256": "1740195f59a2e3536632f0d7ecc289dd97c2fec81e9a86ccbb6e6ba106f1ef96",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "확대 글자 시트의 중간 및 끝 스크롤 안내를 독립 영역으로 분리한 브라우저 캡처 검토 완료 변경",
+        "approvalReason": "Reviewed invitation map provider card redesign and large-text reflow for 731cafd",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -310,13 +310,13 @@
       "state": "directions-xlarge-middle",
       "width": 393,
       "height": 852,
-      "sha256": "0a8d65ea5c61d121ed2472b7c97836711ffe4d0670ce140b0082575664d32798",
+      "sha256": "d72eb68ead319871baae306a46605894946533ccaf24611014c01beefdf6a43f",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "확대 글자 시트의 중간 및 끝 스크롤 안내를 독립 영역으로 분리한 브라우저 캡처 검토 완료 변경",
+        "approvalReason": "Reviewed invitation map provider card redesign and large-text reflow for 731cafd",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -330,13 +330,13 @@
       "state": "directions-xlarge-bottom",
       "width": 393,
       "height": 852,
-      "sha256": "0a8d65ea5c61d121ed2472b7c97836711ffe4d0670ce140b0082575664d32798",
+      "sha256": "e06c09acea0c633ed17b9391db10644d6af8ea811d66db6e32dedc59849b4407",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "확대 글자 시트의 중간 및 끝 스크롤 안내를 독립 영역으로 분리한 브라우저 캡처 검토 완료 변경",
+        "approvalReason": "Reviewed invitation map provider card redesign and large-text reflow for 731cafd",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -356,7 +356,7 @@
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "확대 글자 시트의 중간 및 끝 스크롤 안내를 독립 영역으로 분리한 브라우저 캡처 검토 완료 변경",
+        "approvalReason": "Reviewed invitation map provider card redesign and large-text reflow for 731cafd",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -370,13 +370,13 @@
       "state": "directions-xlarge",
       "width": 393,
       "height": 852,
-      "sha256": "699cd8b3e22d93a2b1219e187dd7c8d8033250ff1a428bf32ac5c13fb6f9130d",
+      "sha256": "13adfbf325f8b67af67fa698bcc5edf952e176a1775453a2aa2578755b1f8b53",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "확대 글자 시트의 중간 및 끝 스크롤 안내를 독립 영역으로 분리한 브라우저 캡처 검토 완료 변경",
+        "approvalReason": "Reviewed invitation map provider card redesign and large-text reflow for 731cafd",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -390,13 +390,13 @@
       "state": "directions-xlarge-middle",
       "width": 393,
       "height": 852,
-      "sha256": "00bce491f164e2d32b18e73b43a2fc0745ee630df277602cb5dafd8bf58b74f6",
+      "sha256": "6b9877a30cbc4ee8b11c3f01e48cb6e12cf97e53a097b2764beb54c25e7ef662",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "확대 글자 시트의 중간 및 끝 스크롤 안내를 독립 영역으로 분리한 브라우저 캡처 검토 완료 변경",
+        "approvalReason": "Reviewed invitation map provider card redesign and large-text reflow for 731cafd",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -410,13 +410,13 @@
       "state": "directions-xlarge-bottom",
       "width": 393,
       "height": 852,
-      "sha256": "c490b1bd99ba5da681bce501dd4cc87385370a64c733d1b2577e7b3b2bec1193",
+      "sha256": "99ee0995f3dd9a10e2060c79eb396bd7a3fdb45e1266297c77bb9f2ccd2d429a",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "확대 글자 시트의 중간 및 끝 스크롤 안내를 독립 영역으로 분리한 브라우저 캡처 검토 완료 변경",
+        "approvalReason": "Reviewed invitation map provider card redesign and large-text reflow for 731cafd",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,

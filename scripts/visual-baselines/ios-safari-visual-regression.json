@@ -1,7 +1,7 @@
 {
   "version": 3,
-  "approvedAt": "2026-08-12T10:11:33.648Z",
-  "reason": "시트 스크롤 안내와 완료 상태를 본문 밖에 유지하도록 개선한 실기기 검토 완료 변경",
+  "approvedAt": "2026-08-12T14:11:18.666Z",
+  "reason": "Reviewed 200 percent directions hierarchy and map provider card reflow for 731cafd",
   "profile": {
     "id": "iphone-16-pro-ios-18-5-safari",
     "deviceName": "iPhone 16 Pro",
@@ -10,7 +10,7 @@
     "maxLandscapePlayerCenterErrorPx": 2
   },
   "capture": {
-    "generatedAt": "2026-08-12T10:03:23.974Z",
+    "generatedAt": "2026-08-12T14:07:30.807Z",
     "profile": {
       "id": "iphone-16-pro-ios-18-5-safari",
       "deviceName": "iPhone 16 Pro",
@@ -27,10 +27,10 @@
       "platformVersion": "18.5"
     },
     "simulatorUdid": "9E2C2CF0-7DD4-4B9D-B6CE-63C9E42B95A7",
-    "runId": "31585397166",
+    "runId": "31604462840",
     "runAttempt": 1,
-    "sha": "d9ea52bf4729d161d2741c022f93499f4bb85644",
-    "runUrl": "https://github.com/Po-Mato/pixel-garden-invitation/actions/runs/31585397166",
+    "sha": "731cafd44c637966a5b54494b96fbea85f05e806",
+    "runUrl": "https://github.com/Po-Mato/pixel-garden-invitation/actions/runs/31604462840",
     "userAgent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Mobile/15E148 Safari/604.1",
     "viewport": {
       "width": 402,
@@ -40,20 +40,20 @@
     "scrollStates": {
       "directions-text-200": {
         "scrollTop": 0,
-        "maxScroll": 717,
+        "maxScroll": 856,
         "target": 0,
         "reached": true
       },
       "directions-text-200-middle": {
-        "scrollTop": 359,
-        "maxScroll": 717,
-        "target": 359,
+        "scrollTop": 428,
+        "maxScroll": 856,
+        "target": 428,
         "reached": true
       },
       "directions-text-200-bottom": {
-        "scrollTop": 717,
-        "maxScroll": 717,
-        "target": 717,
+        "scrollTop": 856,
+        "maxScroll": 856,
+        "target": 856,
         "reached": true
       }
     },
@@ -85,17 +85,17 @@
       "offlineEventDispatched": true,
       "transportProbe": {
         "previewHostReachableAfterStop": false,
-        "browserUrl": "http://127.0.0.1:4188/api/__device_pwa_transport_probe__?nonce=1786529104214",
+        "browserUrl": "http://127.0.0.1:4188/api/__device_pwa_transport_probe__?nonce=1786543724893",
         "browserFetchResolved": false,
         "browserStatus": null,
         "browserError": "Load failed",
         "browserErrorKind": "load-failed",
-        "durationMs": 8,
+        "durationMs": 9,
         "transportBlocked": true
       },
       "serviceWorkerSupported": true,
       "controlled": true,
-      "precacheName": "wedding-garden-precache-d9ea52bf4729",
+      "precacheName": "wedding-garden-precache-731cafd44c63",
       "cachedPaths": 82,
       "expectedPaths": 82,
       "offlineEntryVisible": true,
@@ -359,7 +359,7 @@
       "viewportTrace": [
         {
           "source": "start",
-          "at": 0,
+          "at": 1,
           "innerHeight": 352,
           "visualHeight": 352,
           "offsetTop": 0,
@@ -368,7 +368,7 @@
         },
         {
           "source": "visualViewport.scroll",
-          "at": 33,
+          "at": 14,
           "innerHeight": 352,
           "visualHeight": 352,
           "offsetTop": 352,
@@ -377,7 +377,7 @@
         },
         {
           "source": "visualViewport.scroll",
-          "at": 111,
+          "at": 98,
           "innerHeight": 352,
           "visualHeight": 352,
           "offsetTop": 0,
@@ -386,7 +386,7 @@
         },
         {
           "source": "stop",
-          "at": 1324,
+          "at": 1220,
           "innerHeight": 352,
           "visualHeight": 352,
           "offsetTop": 0,
@@ -395,14 +395,14 @@
         }
       ],
       "frameTimings": {
-        "sampleCount": 76,
+        "sampleCount": 69,
         "frameBudgetMs": 16.67,
         "p50FrameMs": 17,
-        "p95FrameMs": 17.25,
-        "p99FrameMs": 33,
-        "maximumFrameMs": 78,
-        "slowFrameRatio": 0.0132,
-        "droppedFrameRatio": 0.0132
+        "p95FrameMs": 17,
+        "p99FrameMs": 37.16,
+        "maximumFrameMs": 80,
+        "slowFrameRatio": 0.0145,
+        "droppedFrameRatio": 0.0145
       },
       "collapsed": {
         "state": "game-landscape-chrome-collapsed",
@@ -659,56 +659,56 @@
     },
     "phaseTimings": {
       "appium-readiness": {
-        "startedAt": "2026-08-12T10:03:23.976Z",
-        "durationMs": 27,
+        "startedAt": "2026-08-12T14:07:30.831Z",
+        "durationMs": 168,
         "outcome": "completed"
       },
       "wda-session": {
-        "startedAt": "2026-08-12T10:03:24.003Z",
-        "durationMs": 44546,
+        "startedAt": "2026-08-12T14:07:30.999Z",
+        "durationMs": 27055,
         "outcome": "completed"
       },
       "safari-navigation": {
-        "startedAt": "2026-08-12T10:04:08.549Z",
-        "durationMs": 15505,
+        "startedAt": "2026-08-12T14:07:58.054Z",
+        "durationMs": 23828,
         "outcome": "completed"
       },
       "portrait-game": {
-        "startedAt": "2026-08-12T10:04:24.054Z",
-        "durationMs": 1786,
+        "startedAt": "2026-08-12T14:08:21.882Z",
+        "durationMs": 1385,
         "outcome": "completed"
       },
       "directions-200": {
-        "startedAt": "2026-08-12T10:04:25.841Z",
-        "durationMs": 5362,
+        "startedAt": "2026-08-12T14:08:23.267Z",
+        "durationMs": 3423,
         "outcome": "completed"
       },
       "landscape": {
-        "startedAt": "2026-08-12T10:04:31.203Z",
-        "durationMs": 17994,
+        "startedAt": "2026-08-12T14:08:26.690Z",
+        "durationMs": 12584,
         "outcome": "completed"
       },
       "pwa-offline": {
-        "startedAt": "2026-08-12T10:04:49.197Z",
-        "durationMs": 16125,
+        "startedAt": "2026-08-12T14:08:39.274Z",
+        "durationMs": 7058,
         "outcome": "completed"
       },
       "baseline-comparison": {
-        "startedAt": "2026-08-12T10:05:05.322Z",
-        "durationMs": 2614,
+        "startedAt": "2026-08-12T14:08:46.332Z",
+        "durationMs": 1409,
         "outcome": "failed"
       }
     },
     "slowestPhase": {
       "name": "wda-session",
-      "durationMs": 44546
+      "durationMs": 27055
     },
     "failure": {
       "category": "product",
       "kind": "product-visual-regression",
       "phase": "baseline-comparison",
       "retryable": false,
-      "message": "directions-text-200-middle 실제 iOS Safari 픽셀 변경률 15.335%"
+      "message": "directions-text-200 실제 iOS Safari 픽셀 변경률 6.359%"
     },
     "retry": {
       "attempt": 1,
@@ -719,77 +719,52 @@
     "comparisons": [
       {
         "state": "game",
-        "changedPixels": 37963,
-        "changedRatio": 0.012005507676466383,
-        "meanPixelDifference": 1.3835994196320711,
+        "changedPixels": 3713,
+        "changedRatio": 0.0011742077813323415,
+        "meanPixelDifference": 0.16406968463049612,
         "pixelCount": 3162132,
         "passed": true,
         "maxChangedRatio": 0.015,
-        "rawChangedRatio": 0.011580477981311343,
-        "rawMeanPixelDifference": 1.4466005846688248,
+        "rawChangedRatio": 0.0008680852032742466,
+        "rawMeanPixelDifference": 0.1870712544574357,
         "baselinePath": "/Users/runner/work/pixel-garden-invitation/pixel-garden-invitation/scripts/visual-baselines/ios-safari-iphone-16-pro-ios-18-5-safari-game.webp",
         "currentPath": "/Users/runner/work/pixel-garden-invitation/pixel-garden-invitation/.superpowers/visual-regression/ios-safari/ios-safari-iphone-16-pro-ios-18-5-safari-game-current.png",
         "diffPath": "/Users/runner/work/pixel-garden-invitation/pixel-garden-invitation/.superpowers/visual-regression/ios-safari/ios-safari-iphone-16-pro-ios-18-5-safari-game-diff.png",
-        "classification": {
-          "id": "watch-structural",
-          "confidence": "medium",
-          "likelyCause": "meaningful-change-within-budget",
-          "review": "recommended",
-          "changedRatio": 0.012005507676466383,
-          "rawChangedRatio": 0.011580477981311343,
-          "filteredNoiseRatio": 0,
-          "filteredNoiseShare": 0,
-          "budgetUsage": 0.8003671784310923
-        }
-      },
-      {
-        "state": "directions-text-200",
-        "changedPixels": 27814,
-        "changedRatio": 0.008795964241846957,
-        "meanPixelDifference": 1.4480581455802604,
-        "pixelCount": 3162132,
-        "passed": true,
-        "maxChangedRatio": 0.015,
-        "rawChangedRatio": 0.00829978002183337,
-        "rawMeanPixelDifference": 1.5268995728198569,
-        "baselinePath": "/Users/runner/work/pixel-garden-invitation/pixel-garden-invitation/scripts/visual-baselines/ios-safari-iphone-16-pro-ios-18-5-safari-directions-text-200.webp",
-        "currentPath": "/Users/runner/work/pixel-garden-invitation/pixel-garden-invitation/.superpowers/visual-regression/ios-safari/ios-safari-iphone-16-pro-ios-18-5-safari-directions-text-200-current.png",
-        "diffPath": "/Users/runner/work/pixel-garden-invitation/pixel-garden-invitation/.superpowers/visual-regression/ios-safari/ios-safari-iphone-16-pro-ios-18-5-safari-directions-text-200-diff.png",
         "classification": {
           "id": "stable",
           "confidence": "high",
           "likelyCause": "minor-change-within-budget",
           "review": "not-required",
-          "changedRatio": 0.008795964241846957,
-          "rawChangedRatio": 0.00829978002183337,
+          "changedRatio": 0.0011742077813323415,
+          "rawChangedRatio": 0.0008680852032742466,
           "filteredNoiseRatio": 0,
           "filteredNoiseShare": 0,
-          "budgetUsage": 0.5863976161231305
+          "budgetUsage": 0.07828051875548944
         }
       },
       {
-        "state": "directions-text-200-middle",
-        "changedPixels": 484899,
-        "changedRatio": 0.15334559088614896,
-        "meanPixelDifference": 21.746369854262884,
+        "state": "directions-text-200",
+        "changedPixels": 201083,
+        "changedRatio": 0.06359095698724784,
+        "meanPixelDifference": 9.91162513139869,
         "pixelCount": 3162132,
         "passed": false,
         "maxChangedRatio": 0.015,
-        "rawChangedRatio": 0.1375537137602099,
-        "rawMeanPixelDifference": 22.27255503565316,
-        "baselinePath": "/Users/runner/work/pixel-garden-invitation/pixel-garden-invitation/scripts/visual-baselines/ios-safari-iphone-16-pro-ios-18-5-safari-directions-text-200-middle.webp",
-        "currentPath": "/Users/runner/work/pixel-garden-invitation/pixel-garden-invitation/.superpowers/visual-regression/ios-safari/ios-safari-iphone-16-pro-ios-18-5-safari-directions-text-200-middle-current.png",
-        "diffPath": "/Users/runner/work/pixel-garden-invitation/pixel-garden-invitation/.superpowers/visual-regression/ios-safari/ios-safari-iphone-16-pro-ios-18-5-safari-directions-text-200-middle-diff.png",
+        "rawChangedRatio": 0.060713784244300996,
+        "rawMeanPixelDifference": 10.138042624406571,
+        "baselinePath": "/Users/runner/work/pixel-garden-invitation/pixel-garden-invitation/scripts/visual-baselines/ios-safari-iphone-16-pro-ios-18-5-safari-directions-text-200.webp",
+        "currentPath": "/Users/runner/work/pixel-garden-invitation/pixel-garden-invitation/.superpowers/visual-regression/ios-safari/ios-safari-iphone-16-pro-ios-18-5-safari-directions-text-200-current.png",
+        "diffPath": "/Users/runner/work/pixel-garden-invitation/pixel-garden-invitation/.superpowers/visual-regression/ios-safari/ios-safari-iphone-16-pro-ios-18-5-safari-directions-text-200-diff.png",
         "classification": {
           "id": "structural-regression",
           "confidence": "high",
           "likelyCause": "layout-or-content-change",
           "review": "required",
-          "changedRatio": 0.15334559088614896,
-          "rawChangedRatio": 0.1375537137602099,
+          "changedRatio": 0.06359095698724784,
+          "rawChangedRatio": 0.060713784244300996,
           "filteredNoiseRatio": 0,
           "filteredNoiseShare": 0,
-          "budgetUsage": 10.223039392409932
+          "budgetUsage": 4.23939713248319
         }
       }
     ],
@@ -815,33 +790,33 @@
     "schemaVersion": 1,
     "subjectKind": "capture-set",
     "sourceKind": "github-actions",
-    "runId": "31585397166",
+    "runId": "31604462840",
     "runAttempt": 1,
-    "commitSha": "d9ea52bf4729d161d2741c022f93499f4bb85644",
-    "runUrl": "https://github.com/Po-Mato/pixel-garden-invitation/actions/runs/31585397166",
+    "commitSha": "731cafd44c637966a5b54494b96fbea85f05e806",
+    "runUrl": "https://github.com/Po-Mato/pixel-garden-invitation/actions/runs/31604462840",
     "checksumAlgorithm": "sha256",
     "artifactChecksumScope": "sorted-capture-set-manifest",
-    "artifactSha256": "b778e5bfd057c35cf0d09950f9e036230437b25c9205fedfd0ada7a87d36ae99",
+    "artifactSha256": "8aed8d2475a8f7ae2895edc9d2f9698cef391a5e829c495a57cf0042c1f3922a",
     "files": [
       {
         "logicalPath": "iphone-16-pro-ios-18-5-safari/directions-text-200",
-        "size": 728508,
-        "sha256": "ab693b1df492bf234cd8db8f2962d4989f50c76d90a957b4146748c9c5623a57"
+        "size": 995664,
+        "sha256": "db3d0d0b5584acf9c617e97b617763a6dfef3bc524849fbb0a1b6fa0c3cc05e5"
       },
       {
         "logicalPath": "iphone-16-pro-ios-18-5-safari/directions-text-200-bottom",
-        "size": 780623,
-        "sha256": "d945dab09e58e161f2dd652682df7b3b89a29704cfc0a0f808c3f5c892dab71c"
+        "size": 782124,
+        "sha256": "ba02d226a437d9ffb154b4ec278d67e68c4fb8d1cb4b17a0966f5efc4f86ef0f"
       },
       {
         "logicalPath": "iphone-16-pro-ios-18-5-safari/directions-text-200-middle",
-        "size": 628609,
-        "sha256": "d38d4318729d19dd55f7517005c786da4b5b1c0435296db34bc70f711b3ae0ef"
+        "size": 943488,
+        "sha256": "de4f3ac801556fb72bc93b3da6303cd36a1616d5efad45dda4bf89832270dd1a"
       },
       {
         "logicalPath": "iphone-16-pro-ios-18-5-safari/game",
-        "size": 2271233,
-        "sha256": "508d62965ce9d88326ebdca70803151a7c08edb1771b136812a92fb8ae9db3d0"
+        "size": 2272414,
+        "sha256": "11df98bbb3679edb5b940314bbf44768a3daa03dbe205c11e47d38861becd39f"
       },
       {
         "logicalPath": "iphone-16-pro-ios-18-5-safari/game-landscape-chrome-collapsed",
@@ -865,13 +840,13 @@
       "state": "game",
       "width": 1206,
       "height": 2622,
-      "sha256": "871dbeeeb88981c83d6549012887edaea5bbad7e14b594fd589ad37325a04050",
+      "sha256": "812418fa8430c1b8c3434de8c041331bace74ab8af1d2dc40fe1fd16ca0c2f7a",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "시트 스크롤 안내와 완료 상태를 본문 밖에 유지하도록 개선한 실기기 검토 완료 변경",
+        "approvalReason": "Reviewed 200 percent directions hierarchy and map provider card reflow for 731cafd",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -884,13 +859,13 @@
       "state": "directions-text-200",
       "width": 1206,
       "height": 2622,
-      "sha256": "0cb1ca5f568aabebd829f4cd4e071d27225c8e36bdb924c9966c4d8706bc504f",
+      "sha256": "24fab0f8191c317493c6f7962c12a858de62e9a4b5e99942d7289e153310ba55",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "시트 스크롤 안내와 완료 상태를 본문 밖에 유지하도록 개선한 실기기 검토 완료 변경",
+        "approvalReason": "Reviewed 200 percent directions hierarchy and map provider card reflow for 731cafd",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -903,13 +878,13 @@
       "state": "directions-text-200-middle",
       "width": 1206,
       "height": 2622,
-      "sha256": "ead0c43272f7cf4023c268cef2128447b646ce24ea3d6540d183d5bae20eb42b",
+      "sha256": "e46307d6293d0afa563bd8b66044b0c4480d19e707e64c70e66cb3ff12a0045e",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "시트 스크롤 안내와 완료 상태를 본문 밖에 유지하도록 개선한 실기기 검토 완료 변경",
+        "approvalReason": "Reviewed 200 percent directions hierarchy and map provider card reflow for 731cafd",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -922,13 +897,13 @@
       "state": "directions-text-200-bottom",
       "width": 1206,
       "height": 2622,
-      "sha256": "f7d6b691c81d82043d0d4b41ccff10b5eb25a32dd6a3048f950d0a087d1d353c",
+      "sha256": "7ccd2133ecd5131ad76771769fd72283e641faa6014f96a75fff0568fd678d0a",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "시트 스크롤 안내와 완료 상태를 본문 밖에 유지하도록 개선한 실기기 검토 완료 변경",
+        "approvalReason": "Reviewed 200 percent directions hierarchy and map provider card reflow for 731cafd",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -947,7 +922,7 @@
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "시트 스크롤 안내와 완료 상태를 본문 밖에 유지하도록 개선한 실기기 검토 완료 변경",
+        "approvalReason": "Reviewed 200 percent directions hierarchy and map provider card reflow for 731cafd",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -966,7 +941,7 @@
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "시트 스크롤 안내와 완료 상태를 본문 밖에 유지하도록 개선한 실기기 검토 완료 변경",
+        "approvalReason": "Reviewed 200 percent directions hierarchy and map provider card reflow for 731cafd",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
