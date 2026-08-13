@@ -88,6 +88,25 @@ describe("간편 초대장", () => {
     expect(loadInvitationViewSync()).toMatchObject({ source: "quick", sectionId: "directions" });
   });
 
+  it("스크롤 위치에 맞춰 상단 바 맥락과 목차의 현재 위치를 갱신한다", () => {
+    render(<QuickInvitation onOpenGarden={vi.fn()} />);
+
+    const invitation = document.querySelector<HTMLElement>(".quick-invitation");
+    const topbar = document.querySelector<HTMLElement>(".quick-invitation__topbar");
+    expect(invitation).toHaveAttribute("data-scroll-state", "hero");
+    expect(topbar).not.toHaveAttribute("data-scrolled");
+    expect(screen.getByText(/WEDDING DAY · 2027\.05\.01/)).toBeInTheDocument();
+
+    Object.defineProperty(invitation, "scrollTop", { configurable: true, value: 96 });
+    fireEvent.scroll(invitation as HTMLElement);
+    expect(invitation).toHaveAttribute("data-scroll-state", "scrolled");
+    expect(topbar).toHaveAttribute("data-scrolled", "true");
+
+    const directions = screen.getByRole("link", { name: "오시는 길" });
+    fireEvent.click(directions);
+    expect(directions).toHaveAttribute("aria-current", "location");
+  });
+
   it("첫 화면과 답변 완료 동선에서 필요한 섹션으로 바로 이동한다", () => {
     render(<QuickInvitation onOpenGarden={vi.fn()} />);
 

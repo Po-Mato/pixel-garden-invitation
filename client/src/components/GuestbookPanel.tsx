@@ -1,5 +1,17 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Check, ChevronDown, Pencil, RefreshCw, Trash2, X } from "lucide-react";
+import {
+  AlertCircle,
+  Check,
+  CheckCircle2,
+  ChevronDown,
+  Heart,
+  MessageCircle,
+  Pencil,
+  RefreshCw,
+  Send,
+  Trash2,
+  X
+} from "lucide-react";
 import {
   invitationContent,
   type GuestbookMessage,
@@ -64,6 +76,17 @@ function operationError(error: unknown, fallback: string): string {
       : "작성 요청이 많습니다. 잠시 후 다시 시도해 주세요.";
   }
   return fallback;
+}
+
+function GuestbookCharacterCount({ length }: { length: number }) {
+  const remaining = 240 - length;
+  const tone = remaining === 0 ? "full" : remaining <= 40 ? "near-limit" : "calm";
+  return (
+    <div className="guestbook-character-count" data-tone={tone} aria-live="polite">
+      <span>{remaining <= 40 ? `${remaining}자 남았어요.` : "짧은 한마디도 충분히 따뜻해요."}</span>
+      <strong>{length}<small>/240</small></strong>
+    </div>
+  );
 }
 
 export function GuestbookPanel({
@@ -295,7 +318,7 @@ export function GuestbookPanel({
                   required
                 />
               </label>
-              <span className="guestbook-character-count">{draftMessage.length}/240</span>
+              <GuestbookCharacterCount length={draftMessage.length} />
               <div className="guestbook-action-row">
                 <button className="secondary-button" type="button" onClick={cancelEdit} disabled={busy !== null}>
                   <X aria-hidden="true" /> 취소
@@ -349,6 +372,14 @@ export function GuestbookPanel({
         </section>
       ) : (
         <form className="form-stack guestbook-compose" onSubmit={handleCreate}>
+          <header className="guestbook-compose__header">
+            <span><MessageCircle aria-hidden="true" /></span>
+            <div>
+              <small>WRITE A NOTE</small>
+              <h3>따뜻한 한마디를 남겨주세요</h3>
+              <p>두 사람에게 전하고 싶은 마음을 편하게 적어주세요.</p>
+            </div>
+          </header>
           {queuedAt ? (
             <PendingSubmissionManager queuedAt={queuedAt} online={online} label="축하 메시지" onDiscard={discardQueuedSubmission} />
           ) : draftSavedAt ? <FormDraftManager savedAt={draftSavedAt} onDiscard={discardDraft} /> : null}
@@ -357,6 +388,7 @@ export function GuestbookPanel({
             <input
               value={draftNickname}
               maxLength={16}
+              placeholder="예: 정원 친구"
               onChange={(event) => {
                 setDraftTouched(true);
                 setDraftNickname(event.target.value);
@@ -369,6 +401,7 @@ export function GuestbookPanel({
             <textarea
               value={draftMessage}
               maxLength={240}
+              placeholder="두 사람의 새로운 시작을 축하해 주세요."
               onChange={(event) => {
                 setDraftTouched(true);
                 setDraftMessage(event.target.value);
@@ -376,16 +409,27 @@ export function GuestbookPanel({
               required
             />
           </label>
-          <span className="guestbook-character-count">{draftMessage.length}/240</span>
+          <GuestbookCharacterCount length={draftMessage.length} />
           <button className="primary-button" type="submit" disabled={busy !== null}>
+            <Send aria-hidden="true" />
             {busy === "create" ? "메시지 보내는 중" : !online ? "전송 대기함에 저장" : queuedAt ? "대기 중인 메시지 보내기" : "메시지 남기기"}
           </button>
           {draftStatus ? <p className="form-draft-status" role="status">{draftStatus}</p> : null}
         </form>
       )}
 
-      {status && <p className="form-status" role="status">{status}</p>}
-      {error && <p className="form-status form-status--error" role="alert">{error}</p>}
+      {status ? (
+        <div className="guestbook-feedback guestbook-feedback--success" role="status">
+          <CheckCircle2 aria-hidden="true" />
+          <p>{status}</p>
+        </div>
+      ) : null}
+      {error ? (
+        <div className="guestbook-feedback guestbook-feedback--error" role="alert">
+          <AlertCircle aria-hidden="true" />
+          <p>{error}</p>
+        </div>
+      ) : null}
 
       <section className="guestbook-public" aria-labelledby="guestbook-public-title">
         <div className="guestbook-section-heading">
@@ -393,7 +437,10 @@ export function GuestbookPanel({
           <span>{messages.length}개 표시</span>
         </div>
         {isLoading ? (
-          <p className="guestbook-list-state" role="status">메시지를 불러오는 중입니다.</p>
+          <div className="guestbook-list-state guestbook-list-state--loading" role="status">
+            <RefreshCw aria-hidden="true" />
+            <p>축하 메시지를 불러오는 중입니다.</p>
+          </div>
         ) : listError ? (
           <div className="guestbook-list-state" role="alert">
             <p>{listError}</p>
@@ -402,7 +449,11 @@ export function GuestbookPanel({
             </button>
           </div>
         ) : visibleMessages.length === 0 ? (
-          <p className="guestbook-list-state">아직 공개된 축하 메시지가 없습니다.</p>
+          <div className="guestbook-list-state guestbook-list-state--empty">
+            <Heart aria-hidden="true" />
+            <strong>첫 축하 메시지를 기다리고 있어요.</strong>
+            <span>두 사람에게 가장 먼저 따뜻한 마음을 남겨주세요.</span>
+          </div>
         ) : (
           <ul className="guestbook-list">
             {visibleMessages.map((item) => (

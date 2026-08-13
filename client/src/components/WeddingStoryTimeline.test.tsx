@@ -22,6 +22,7 @@ describe("결혼 스토리 타임라인", () => {
       const photo = invitationContent.content.gallery.find((candidate) => candidate.id === step.photoId);
       expect(screen.getAllByRole("listitem")[index]).toHaveAttribute("data-orientation", photo?.orientation);
       expect(screen.getByRole("img", { name: photo?.alt })).toHaveAttribute("loading", "lazy");
+      expect(screen.getByRole("img", { name: photo?.alt })).toHaveAttribute("sizes", expect.stringContaining("340px"));
     });
   });
 });

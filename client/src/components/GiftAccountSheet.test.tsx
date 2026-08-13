@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import type { WeddingEvent } from "@wedding-game/shared";
 import { afterEach, expect, it, vi } from "vitest";
 import { copyText } from "../invitation/browserActions";
@@ -96,16 +96,16 @@ it("미입력 상태에서는 신부·신랑 양쪽의 준비 안내만 표시�
   expect(screen.queryByRole("button", { name: /계좌번호 복사/ })).not.toBeInTheDocument();
 });
 
-it("완성된 계좌만 기본 접힘 항목으로 표시하고 안전한 간편송금 링크를 제공한다", () => {
+it("완성된 계좌만 표시하고 첫 계좌를 바로 확인하며 안전한 간편송금 링크를 제공한다", () => {
   render(<GiftAccountSheet onClose={vi.fn()} giftAccounts={populatedGiftAccounts} />);
 
   expect(screen.getByText("신부 이건희")).toBeInTheDocument();
   fireEvent.click(screen.getByRole("tab", { name: "신랑 측" }));
   const account = screen.getByText("신랑 이승재").closest("details");
-  expect(account).not.toHaveAttribute("open");
+  expect(account).toHaveAttribute("open");
+  expect(screen.getByText("정원은행 · 계좌번호 확인")).toBeInTheDocument();
   expect(screen.queryByText("신랑 아버지")).not.toBeInTheDocument();
 
-  fireEvent.click(within(account as HTMLElement).getByText("신랑 이승재"));
   expect(screen.getByText("정원은행 · 예금주 이승재")).toBeInTheDocument();
   expect(screen.getByRole("link", { name: /카카오페이/ })).toHaveAttribute(
     "href",

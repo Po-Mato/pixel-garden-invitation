@@ -71,7 +71,11 @@ export function GiftAccountContent({
     <div className="gift-account-sheet" data-nosnippet="">
         <div className="gift-account-sheet__intro">
           <HeartHandshake aria-hidden="true" />
-          <p>{resolvedGiftAccounts.notice}</p>
+          <div>
+            <span>PRIVATE THANKS</span>
+            <p>{resolvedGiftAccounts.notice}</p>
+            <small>필요한 분의 계좌만 열어 확인하실 수 있습니다.</small>
+          </div>
         </div>
 
         <div className="gift-account-sheet__tabs" role="tablist" aria-label="계좌 구분">
@@ -110,17 +114,24 @@ export function GiftAccountContent({
             </div>
           ) : (
             <div className="gift-account-sheet__accounts">
-              {accounts.map((account) => {
+              {accounts.map((account, index) => {
                 const kakaoPayUrl = safeHttpsUrl(account.kakaoPayUrl);
                 const tossUrl = safeHttpsUrl(account.tossUrl);
                 const status = copyStatus?.accountId === account.id ? copyStatus.state : "idle";
 
                 return (
-                  <details key={account.id} className="gift-account-sheet__account">
+                  <details key={account.id} className="gift-account-sheet__account" open={index === 0 ? true : undefined}>
                     <summary>
-                      <span>
+                      <span className="gift-account-sheet__summary-icon">
                         <Landmark aria-hidden="true" />
+                      </span>
+                      <span className="gift-account-sheet__summary-copy">
                         <strong>{recipientLabel(account)}</strong>
+                        <small>
+                          {hasAccountDetails(account)
+                            ? `${account.bank} · 계좌번호 확인`
+                            : "간편송금으로 마음 전하기"}
+                        </small>
                       </span>
                       <ChevronDown aria-hidden="true" />
                     </summary>

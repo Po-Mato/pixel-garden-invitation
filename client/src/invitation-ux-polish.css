@@ -1444,6 +1444,648 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
+/* Invitation chrome — keep one stable bar while its context gently changes. */
+.quick-invitation__topbar {
+  display: grid;
+  grid-template-columns: minmax(44px, auto) minmax(0, 1fr) auto;
+  gap: 8px;
+  min-height: 60px;
+  padding-block: calc(8px + env(safe-area-inset-top)) 8px;
+  background: rgba(255, 253, 249, 0.86);
+  box-shadow: 0 3px 14px rgba(79, 60, 65, 0.045);
+  transition: background-color 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
+}
+
+.quick-invitation__topbar[data-scrolled="true"] {
+  border-color: rgba(161, 132, 86, 0.44);
+  background: rgba(255, 253, 249, 0.975);
+  box-shadow: 0 9px 24px rgba(58, 46, 50, 0.1);
+}
+
+.quick-invitation__topbar > button {
+  min-width: 44px;
+  justify-self: start;
+  white-space: nowrap;
+}
+
+.quick-invitation__topbar-brand {
+  display: grid;
+  min-width: 0;
+  justify-items: center;
+  gap: 1px;
+  opacity: 0;
+  pointer-events: none;
+  text-align: center;
+  transform: translateY(5px);
+  transition: opacity 180ms ease, transform 220ms ease;
+}
+
+.quick-invitation__topbar[data-scrolled="true"] .quick-invitation__topbar-brand {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.quick-invitation__topbar-brand small,
+.quick-invitation__topbar-brand strong {
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.quick-invitation__topbar-brand small {
+  color: #9a7d65;
+  font-size: 6.5px;
+  font-weight: 850;
+  letter-spacing: 0.11em;
+}
+
+.quick-invitation__topbar-brand strong {
+  color: #3f3337;
+  font-family: var(--wedding-font-display);
+  font-size: 11.5px;
+  font-weight: 650;
+  letter-spacing: -0.015em;
+}
+
+.quick-invitation__topbar-actions {
+  min-width: 0;
+  justify-self: end;
+}
+
+.quick-invitation__nav a {
+  position: relative;
+  transition: color 180ms ease;
+}
+
+.quick-invitation__nav a[aria-current="location"] {
+  color: #8f5360;
+}
+
+.quick-invitation__nav a[aria-current="location"]::after {
+  position: absolute;
+  right: 8px;
+  bottom: 2px;
+  left: 8px;
+  height: 2px;
+  border-radius: 999px;
+  background: #a76673;
+  content: "";
+}
+
+/* Gift + family contact — one restrained support-card language. */
+.quick-band--gift .gift-account-sheet,
+.quick-band--contact .family-contact-sheet {
+  width: 100%;
+  max-width: 620px;
+  margin-inline: auto;
+  gap: 13px;
+}
+
+.gift-account-sheet__intro,
+.family-contact-sheet__intro {
+  grid-template-columns: 38px minmax(0, 1fr);
+  gap: 12px;
+  border: 1px solid rgba(105, 134, 121, 0.22);
+  border-radius: 17px;
+  padding: 14px;
+  background: rgba(255, 255, 252, 0.78);
+  box-shadow: 0 8px 22px rgba(66, 82, 72, 0.055);
+}
+
+.gift-account-sheet__intro > svg,
+.family-contact-sheet__intro > svg {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  padding: 9px;
+  background: #f7ecee;
+  color: #9d5d69;
+}
+
+.gift-account-sheet__intro > div,
+.family-contact-sheet__intro > div {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+}
+
+.gift-account-sheet__intro span,
+.family-contact-sheet__intro span {
+  color: #9a6d75;
+  font-size: 7px;
+  font-weight: 900;
+  letter-spacing: 0.15em;
+}
+
+.gift-account-sheet__intro p,
+.family-contact-sheet__intro p {
+  margin: 0;
+  color: #40383a;
+  font-family: var(--wedding-font-display);
+  font-size: 14px;
+  font-weight: 650;
+  line-height: 1.55;
+}
+
+.gift-account-sheet__intro small,
+.family-contact-sheet__intro small {
+  color: #79827d;
+  font-size: 9.5px;
+  line-height: 1.45;
+}
+
+.gift-account-sheet__tabs,
+.family-contact-sheet__tabs {
+  gap: 3px;
+  border: 1px solid rgba(96, 75, 82, 0.18);
+  border-radius: 999px;
+  padding: 3px;
+  background: rgba(255, 255, 255, 0.6);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.64);
+}
+
+.gift-account-sheet__tabs button,
+.family-contact-sheet__tabs button {
+  min-height: 42px;
+  border: 0;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.gift-account-sheet__tabs button[aria-selected="true"],
+.family-contact-sheet__tabs button[aria-selected="true"] {
+  border: 0;
+  background: #526f63;
+  color: #fff;
+  box-shadow: 0 5px 13px rgba(56, 79, 68, 0.17);
+}
+
+.gift-account-sheet__account,
+.family-contact-sheet__person {
+  overflow: hidden;
+  border: 1px solid rgba(96, 75, 82, 0.2);
+  border-radius: 15px;
+  background: rgba(255, 255, 252, 0.9);
+  box-shadow: 0 7px 20px rgba(78, 58, 64, 0.055);
+}
+
+.gift-account-sheet__account summary {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) 18px;
+  gap: 10px;
+  min-height: 64px;
+  padding: 11px 13px;
+}
+
+.gift-account-sheet__summary-icon {
+  display: grid !important;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border-radius: 50%;
+  background: #edf4ef;
+}
+
+.gift-account-sheet__summary-copy {
+  display: grid !important;
+  min-width: 0;
+  gap: 2px;
+}
+
+.gift-account-sheet__summary-copy strong,
+.gift-account-sheet__summary-copy small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.gift-account-sheet__summary-copy strong {
+  color: #453a3d;
+  font-size: 13px;
+}
+
+.gift-account-sheet__summary-copy small {
+  color: #7c8580;
+  font-size: 9.5px;
+}
+
+.gift-account-sheet__account[open] summary {
+  border-bottom: 1px solid rgba(96, 75, 82, 0.11);
+  background: #fbfdfb;
+}
+
+.gift-account-sheet__account-body {
+  gap: 12px;
+  border-top: 0;
+  padding: 14px;
+  background: rgba(249, 247, 242, 0.72);
+}
+
+.gift-account-sheet__number-row button,
+.gift-account-sheet__transfer-links a,
+.family-contact-sheet__actions a {
+  border-width: 1px;
+  border-radius: 11px;
+  box-shadow: 0 5px 13px rgba(78, 58, 64, 0.065);
+}
+
+.family-contact-sheet__person {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 13px;
+}
+
+.family-contact-sheet__identity {
+  grid-template-columns: 38px minmax(0, 1fr);
+  gap: 10px;
+}
+
+.family-contact-sheet__identity > svg {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  padding: 9px;
+  background: #edf4ef;
+}
+
+.family-contact-sheet__identity > div {
+  gap: 0;
+}
+
+.family-contact-sheet__identity small {
+  color: #829087;
+  font-size: 8px;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+}
+
+.family-contact-sheet__identity strong {
+  color: #43383c;
+  font-family: var(--wedding-font-display);
+  font-size: 15px;
+  font-weight: 650;
+}
+
+.family-contact-sheet__actions {
+  grid-template-columns: repeat(2, 52px);
+  gap: 6px;
+}
+
+.family-contact-sheet__actions a {
+  display: grid;
+  min-height: 52px;
+  place-items: center;
+  gap: 2px;
+  padding: 5px;
+  font-size: 9px;
+}
+
+/* Guestbook — make writing, empty and completion states immediately legible. */
+.quick-band--guestbook .guestbook-panel {
+  width: 100%;
+  max-width: 660px;
+  margin-inline: auto;
+  gap: 14px;
+}
+
+.guestbook-policy-note {
+  border: 1px solid rgba(105, 134, 121, 0.2);
+  border-left-width: 3px;
+  border-radius: 10px;
+  background: rgba(237, 244, 239, 0.78);
+  font-size: 10px;
+}
+
+.guestbook-compose {
+  gap: 13px;
+  border: 1px solid rgba(96, 75, 82, 0.18);
+  border-radius: 18px;
+  padding: 16px;
+  background: rgba(255, 255, 252, 0.94);
+  box-shadow: 0 10px 28px rgba(78, 58, 64, 0.065);
+}
+
+.guestbook-compose__header {
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr);
+  align-items: center;
+  gap: 11px;
+  padding-bottom: 13px;
+  border-bottom: 1px solid rgba(96, 75, 82, 0.11);
+}
+
+.guestbook-compose__header > span {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border-radius: 50%;
+  background: #f7e9eb;
+  color: #9b5966;
+}
+
+.guestbook-compose__header svg {
+  width: 17px;
+  height: 17px;
+}
+
+.guestbook-compose__header > div {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+
+.guestbook-compose__header small {
+  color: #9a6d75;
+  font-size: 7px;
+  font-weight: 900;
+  letter-spacing: 0.15em;
+}
+
+.guestbook-compose__header h3,
+.guestbook-compose__header p {
+  margin: 0;
+}
+
+.guestbook-compose__header h3 {
+  color: #403438;
+  font-family: var(--wedding-font-display);
+  font-size: 16px;
+  font-weight: 650;
+}
+
+.guestbook-compose__header p {
+  color: #78817c;
+  font-size: 9.5px;
+  line-height: 1.45;
+}
+
+.guestbook-compose textarea {
+  min-height: 118px;
+}
+
+.guestbook-character-count {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: -5px;
+  color: #7c8580;
+  font-size: 9px;
+}
+
+.guestbook-character-count > span {
+  min-width: 0;
+}
+
+.guestbook-character-count strong {
+  flex: 0 0 auto;
+  color: #62736a;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+.guestbook-character-count strong small {
+  color: #9aa19d;
+  font-size: 8px;
+}
+
+.guestbook-character-count[data-tone="near-limit"] :is(span, strong),
+.guestbook-character-count[data-tone="full"] :is(span, strong) {
+  color: #a45b67;
+}
+
+.guestbook-compose > .primary-button {
+  display: inline-flex;
+  min-height: 48px;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border-radius: 12px;
+  box-shadow: 0 7px 17px rgba(78, 103, 91, 0.15);
+}
+
+.guestbook-feedback {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  align-items: center;
+  gap: 9px;
+  border: 1px solid;
+  border-radius: 13px;
+  padding: 11px 12px;
+}
+
+.guestbook-feedback svg {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  padding: 6px;
+}
+
+.guestbook-feedback p {
+  margin: 0;
+  font-size: 10.5px;
+  font-weight: 750;
+  line-height: 1.5;
+}
+
+.guestbook-feedback--success {
+  border-color: rgba(91, 126, 108, 0.28);
+  background: #f0f7f2;
+  color: #476957;
+}
+
+.guestbook-feedback--success svg {
+  background: #dcece1;
+}
+
+.guestbook-feedback--error {
+  border-color: rgba(164, 79, 93, 0.28);
+  background: #fff1f2;
+  color: #964a57;
+}
+
+.guestbook-feedback--error svg {
+  background: #f8dfe2;
+}
+
+.guestbook-public {
+  border-top-width: 1px;
+}
+
+.guestbook-section-heading > span {
+  border-radius: 999px;
+  padding: 4px 7px;
+  background: #edf4ef;
+  color: #5f7469;
+}
+
+.guestbook-list-state--empty,
+.guestbook-list-state--loading {
+  min-height: 164px;
+  align-content: center;
+  border: 1px dashed rgba(105, 134, 121, 0.34);
+  border-radius: 16px;
+  background: linear-gradient(145deg, rgba(248, 251, 248, 0.9), rgba(255, 250, 250, 0.9));
+}
+
+.guestbook-list-state--empty svg,
+.guestbook-list-state--loading svg {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  padding: 8px;
+  background: #f7e9eb;
+  color: #9e5e6a;
+}
+
+.guestbook-list-state--empty strong {
+  color: #43383c;
+  font-family: var(--wedding-font-display);
+  font-size: 15px;
+}
+
+.guestbook-list-state--empty span {
+  max-width: 28ch;
+  color: #79827d;
+  font-size: 10px;
+  font-weight: 650;
+  line-height: 1.55;
+  word-break: keep-all;
+}
+
+.guestbook-list-state--loading svg {
+  animation: guestbook-loading-spin 1.2s linear infinite;
+}
+
+@keyframes guestbook-loading-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Tablet + desktop invitation — widen the paper and compose story frames editorially. */
+@media (min-width: 760px) {
+  .app-shell--quick {
+    padding: 20px;
+  }
+
+  .phone-frame--quick {
+    width: min(calc(100vw - 40px), 860px);
+    height: min(940px, calc(100dvh - 40px));
+  }
+
+  .quick-band {
+    padding-inline: clamp(48px, 8vw, 78px);
+  }
+
+  .quick-section-heading {
+    width: min(100%, 620px);
+    margin-inline: auto;
+  }
+
+  .quick-band--story {
+    padding-bottom: 106px;
+  }
+
+  .quick-band--story .wedding-story-timeline {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: min(100%, 720px);
+    align-items: start;
+    margin-inline: auto;
+    column-gap: 20px;
+    row-gap: 26px;
+  }
+
+  .quick-band--story .wedding-story-timeline__step:nth-child(even) {
+    margin-top: 38px;
+  }
+
+  .wedding-story-timeline__media {
+    aspect-ratio: 16 / 11;
+  }
+
+  .wedding-story-timeline__step[data-orientation="portrait"] .wedding-story-timeline__media img {
+    object-position: center 38%;
+  }
+
+  .quick-band--story .wedding-story-timeline__copy {
+    min-height: 142px;
+    align-content: start;
+    padding: 19px 18px 22px;
+  }
+
+  .quick-band--story .wedding-story-timeline__body {
+    max-width: 34ch;
+  }
+}
+
+@media (max-width: 430px) {
+  .quick-invitation__topbar-label {
+    display: none;
+  }
+
+  .family-contact-sheet__person {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .family-contact-sheet__actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 350px) {
+  .quick-invitation__topbar {
+    gap: 4px;
+    padding-inline: 8px;
+  }
+
+  .quick-invitation__topbar-brand small {
+    display: none;
+  }
+
+  .gift-account-sheet__number-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .gift-account-sheet__number-row button,
+  .gift-account-sheet__transfer-links a {
+    width: 100%;
+  }
+}
+
+:is(html[data-text-scale="xlarge"], html[data-text-scale="ios-200"], html[data-typography-audit]) .quick-invitation__topbar-label,
+:is(html[data-text-scale="xlarge"], html[data-text-scale="ios-200"], html[data-typography-audit]) .quick-invitation__topbar-brand small {
+  display: none;
+}
+
+:is(html[data-text-scale="xlarge"], html[data-text-scale="ios-200"], html[data-typography-audit]) .quick-invitation__nav {
+  justify-content: flex-start;
+  flex-wrap: nowrap;
+}
+
+:is(html[data-text-scale="xlarge"], html[data-text-scale="ios-200"], html[data-typography-audit]) .gift-account-sheet__summary-copy :is(strong, small) {
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
+}
+
+:is(html[data-text-scale="xlarge"], html[data-text-scale="ios-200"], html[data-typography-audit]) .gift-account-sheet__number-row,
+:is(html[data-text-scale="xlarge"], html[data-text-scale="ios-200"], html[data-typography-audit]) .gift-account-sheet__transfer-links {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+:is(html[data-text-scale="xlarge"], html[data-text-scale="ios-200"], html[data-typography-audit]) .family-contact-sheet__person {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+:is(html[data-text-scale="xlarge"], html[data-text-scale="ios-200"], html[data-typography-audit]) .family-contact-sheet__actions {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
 @media (prefers-reduced-motion: reduce) {
   .rsvp-progress__track > span,
   .rsvp-form__section,
@@ -1451,7 +2093,11 @@
   .directions-sheet__maps > :is(a, button),
   .photo-lightbox__progress > span,
   .photo-lightbox__media,
-  .photo-lightbox__caption-card {
+  .photo-lightbox__caption-card,
+  .quick-invitation__topbar,
+  .quick-invitation__topbar-brand,
+  .quick-invitation__nav a,
+  .guestbook-list-state--loading svg {
     animation: none;
     transition: none;
   }
@@ -1464,7 +2110,11 @@ html[data-reduce-motion="true"] :is(
   .directions-sheet__maps > :is(a, button),
   .photo-lightbox__progress > span,
   .photo-lightbox__media,
-  .photo-lightbox__caption-card
+  .photo-lightbox__caption-card,
+  .quick-invitation__topbar,
+  .quick-invitation__topbar-brand,
+  .quick-invitation__nav a,
+  .guestbook-list-state--loading svg
 ) {
   animation: none;
   transition: none;

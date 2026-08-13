@@ -52,6 +52,21 @@ const ownedMessage = {
 };
 
 describe("GuestbookPanel", () => {
+  it("작성 안내와 잔여 글자, 첫 메시지 빈 화면을 명확히 보여준다", () => {
+    renderPanel();
+
+    expect(screen.getByRole("heading", { name: "따뜻한 한마디를 남겨주세요" })).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("예: 정원 친구")).toBeInTheDocument();
+    expect(screen.getByText("짧은 한마디도 충분히 따뜻해요.")).toBeInTheDocument();
+    expect(screen.getByText("첫 축하 메시지를 기다리고 있어요.")).toBeInTheDocument();
+
+    fireEvent.change(screen.getByRole("textbox", { name: "축하 메시지" }), {
+      target: { value: "가".repeat(205) }
+    });
+    expect(screen.getByText("35자 남았어요.")).toBeInTheDocument();
+    expect(screen.getByText("205").closest(".guestbook-character-count")).toHaveAttribute("data-tone", "near-limit");
+  });
+
   it("오프라인 메시지를 전송 대기함에 저장한다", async () => {
     Object.defineProperty(navigator, "onLine", { configurable: true, value: false });
     const actions = renderPanel();
@@ -90,6 +105,7 @@ describe("GuestbookPanel", () => {
       nickname: "하객1",
       message: "축하합니다"
     }));
+    expect(screen.getByRole("status")).toHaveClass("guestbook-feedback--success");
     expect(screen.getByRole("status")).toHaveTextContent("이 기기에서 수정하거나 삭제할 수 있습니다.");
   });
 

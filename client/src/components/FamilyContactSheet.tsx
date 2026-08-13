@@ -44,7 +44,11 @@ export function FamilyContactContent({
     <div className="family-contact-sheet" data-nosnippet="">
         <div className="family-contact-sheet__intro">
           <UsersRound aria-hidden="true" />
-          <p>{resolvedFamilyContacts.notice}</p>
+          <div>
+            <span>FAMILY CONTACT</span>
+            <p>{resolvedFamilyContacts.notice}</p>
+            <small>전화 또는 문자 중 편한 방법을 선택해 주세요.</small>
+          </div>
         </div>
 
         <div className="family-contact-sheet__tabs" role="tablist" aria-label="연락처 구분">
@@ -89,7 +93,8 @@ export function FamilyContactContent({
                   <div className="family-contact-sheet__identity">
                     <UserRound aria-hidden="true" />
                     <div>
-                      <strong>{recipientLabel(contact)}</strong>
+                      <small>{contact.relation}</small>
+                      <strong>{contact.name || "연락처"}</strong>
                       <span>{contact.phone}</span>
                     </div>
                   </div>

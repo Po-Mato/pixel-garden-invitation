@@ -21,7 +21,7 @@ export function WeddingStoryTimeline({ timeline }: { timeline?: WeddingContent["
               <figure className="wedding-story-timeline__media">
                 <ResponsiveGalleryImage
                   photo={photo}
-                  sizes="(max-width: 520px) calc(100vw - 48px), 430px"
+                  sizes="(min-width: 760px) 340px, (max-width: 520px) calc(100vw - 48px), 430px"
                 />
                 <figcaption aria-hidden="true">OUR STORY · {number}</figcaption>
               </figure>

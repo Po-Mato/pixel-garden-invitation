@@ -118,7 +118,9 @@ export function QuickInvitation({
   const activeSectionRef = useRef<QuickInvitationSectionId>(
     loadInvitationViewSync()?.sectionId ?? "top"
   );
+  const invitationRef = useRef<HTMLElement>(null);
   const [activeSection, setActiveSection] = useState<QuickInvitationSectionId>(activeSectionRef.current);
+  const [topbarState, setTopbarState] = useState<"hero" | "scrolled">("hero");
 
   const selectSection = (id: QuickInvitationSectionId) => {
     if (activeSectionRef.current !== id) {
@@ -160,6 +162,18 @@ export function QuickInvitation({
     return () => observer.disconnect();
   }, []);
 
+  useEffect(() => {
+    const invitation = invitationRef.current;
+    if (!invitation) return;
+    const updateTopbar = () => {
+      const nextState = invitation.scrollTop > 72 ? "scrolled" : "hero";
+      setTopbarState((current) => current === nextState ? current : nextState);
+    };
+    updateTopbar();
+    invitation.addEventListener("scroll", updateTopbar, { passive: true });
+    return () => invitation.removeEventListener("scroll", updateTopbar);
+  }, []);
+
   const returnToGarden = () => {
     saveQuickViewSection(activeSectionRef.current);
     onOpenGarden();
@@ -173,12 +187,22 @@ export function QuickInvitation({
   ]), []);
 
   return (
-    <article className="quick-invitation">
-      <header className="quick-invitation__topbar">
-        <button type="button" onClick={returnToGarden}>
+    <article ref={invitationRef} className="quick-invitation" data-scroll-state={topbarState}>
+      <header className="quick-invitation__topbar" data-scrolled={topbarState === "scrolled" ? "true" : undefined}>
+        <button
+          type="button"
+          aria-label={canReturnToGarden ? "정원으로 돌아가기" : "입장 선택"}
+          onClick={returnToGarden}
+        >
           <ArrowLeft aria-hidden="true" />
-          {canReturnToGarden ? "정원으로 돌아가기" : "입장 선택"}
+          <span className="quick-invitation__topbar-label">
+            {canReturnToGarden ? "정원으로 돌아가기" : "입장 선택"}
+          </span>
         </button>
+        <div className="quick-invitation__topbar-brand" aria-hidden="true">
+          <small>WEDDING DAY · {event.startAt.slice(0, 10).replaceAll("-", ".")}</small>
+          <strong>{formatCoupleNames(event, coupleOrder, " · ")}</strong>
+        </div>
         <div className="quick-invitation__topbar-actions">
           <GuestInformationAccess variant="quick" />
           <ViewSettingsAccess variant="icon" />
@@ -224,7 +248,19 @@ export function QuickInvitation({
       </section>
 
       <nav className="quick-invitation__nav" aria-label="간편 초대장 목차">
-        {navigation.map(([label, id]) => <a key={id} href={`#${id}`}>{label}</a>)}
+        {navigation.map(([label, id]) => (
+          <a
+            key={id}
+            href={`#${id}`}
+            aria-current={activeSection === id ? "location" : undefined}
+            onClick={(event) => {
+              event.preventDefault();
+              selectSection(id);
+            }}
+          >
+            {label}
+          </a>
+        ))}
       </nav>
 
       <InvitationPriorityActions event={event} now={now} onSelect={(id) => scrollToSection(id)} />
