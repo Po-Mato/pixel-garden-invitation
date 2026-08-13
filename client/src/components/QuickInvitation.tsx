@@ -71,6 +71,24 @@ const navigation = [
   ["방명록", "guestbook"]
 ] as const;
 
+const invitationSectionOrder: readonly QuickInvitationSectionId[] = [
+  "top", "couple", "story", "gallery", "schedule", "directions", "rsvp", "gift", "contact", "guestbook", "share"
+];
+
+const invitationSectionLabels: Record<QuickInvitationSectionId, string> = {
+  top: "초대장",
+  couple: "두 사람",
+  story: "우리 이야기",
+  gallery: "웨딩 사진",
+  schedule: "예식 일정",
+  directions: "오시는 길",
+  rsvp: "참석 답변",
+  gift: "마음 전하실 곳",
+  contact: "혼주 연락처",
+  guestbook: "방명록",
+  share: "마무리"
+};
+
 function SectionHeading({ number, eyebrow, title, body }: SectionHeadingProps) {
   return (
     <header className="quick-section-heading">
@@ -121,6 +139,8 @@ export function QuickInvitation({
   const invitationRef = useRef<HTMLElement>(null);
   const [activeSection, setActiveSection] = useState<QuickInvitationSectionId>(activeSectionRef.current);
   const [topbarState, setTopbarState] = useState<"hero" | "scrolled">("hero");
+  const activeSectionNumber = Math.max(1, invitationSectionOrder.indexOf(activeSection) + 1);
+  const activeSectionProgress = activeSectionNumber / invitationSectionOrder.length * 100;
 
   const selectSection = (id: QuickInvitationSectionId) => {
     if (activeSectionRef.current !== id) {
@@ -146,32 +166,38 @@ export function QuickInvitation({
   }, []);
 
   useEffect(() => {
-    if (typeof IntersectionObserver === "undefined") return;
-    const sections = [...document.querySelectorAll<HTMLElement>(".quick-invitation section[id]")];
-    const observer = new IntersectionObserver((entries) => {
-      const visible = entries
-        .filter((entry) => entry.isIntersecting)
-        .sort((left, right) => right.intersectionRatio - left.intersectionRatio)[0];
-      const id = visible?.target.id as QuickInvitationSectionId | undefined;
-      if (!id || activeSectionRef.current === id) return;
-      activeSectionRef.current = id;
-      setActiveSection(id);
-      saveQuickViewSection(id);
-    }, { rootMargin: "-18% 0px -58%", threshold: [0.12, 0.45, 0.75] });
-    sections.forEach((section) => observer.observe(section));
-    return () => observer.disconnect();
-  }, []);
-
-  useEffect(() => {
     const invitation = invitationRef.current;
     if (!invitation) return;
-    const updateTopbar = () => {
+    const sections = [...invitation.querySelectorAll<HTMLElement>("section[id]")];
+    let frame = 0;
+    const updateScrollContext = () => {
       const nextState = invitation.scrollTop > 72 ? "scrolled" : "hero";
       setTopbarState((current) => current === nextState ? current : nextState);
+      const activationLine = invitation.getBoundingClientRect().top + Math.min(220, invitation.clientHeight * 0.3);
+      const visibleSection = invitation.scrollTop <= 1
+        ? sections[0]
+        : [...sections].reverse().find((section) => section.getBoundingClientRect().top <= activationLine);
+      const id = visibleSection?.id as QuickInvitationSectionId | undefined;
+      if (id && activeSectionRef.current !== id) {
+        activeSectionRef.current = id;
+        setActiveSection(id);
+        saveQuickViewSection(id);
+      }
     };
-    updateTopbar();
-    invitation.addEventListener("scroll", updateTopbar, { passive: true });
-    return () => invitation.removeEventListener("scroll", updateTopbar);
+    const scheduleUpdate = () => {
+      const nextState = invitation.scrollTop > 72 ? "scrolled" : "hero";
+      setTopbarState((current) => current === nextState ? current : nextState);
+      window.cancelAnimationFrame(frame);
+      frame = window.requestAnimationFrame(updateScrollContext);
+    };
+    setTopbarState(invitation.scrollTop > 72 ? "scrolled" : "hero");
+    invitation.addEventListener("scroll", scheduleUpdate, { passive: true });
+    window.addEventListener("resize", scheduleUpdate);
+    return () => {
+      invitation.removeEventListener("scroll", scheduleUpdate);
+      window.removeEventListener("resize", scheduleUpdate);
+      window.cancelAnimationFrame(frame);
+    };
   }, []);
 
   const returnToGarden = () => {
@@ -200,7 +226,11 @@ export function QuickInvitation({
           </span>
         </button>
         <div className="quick-invitation__topbar-brand" aria-hidden="true">
-          <small>WEDDING DAY · {event.startAt.slice(0, 10).replaceAll("-", ".")}</small>
+          <small>
+            {topbarState === "hero" && activeSection === "top"
+              ? `WEDDING DAY · ${event.startAt.slice(0, 10).replaceAll("-", ".")}`
+              : `${String(activeSectionNumber).padStart(2, "0")} / ${invitationSectionOrder.length} · ${invitationSectionLabels[activeSection]}`}
+          </small>
           <strong>{formatCoupleNames(event, coupleOrder, " · ")}</strong>
         </div>
         <div className="quick-invitation__topbar-actions">
@@ -208,6 +238,9 @@ export function QuickInvitation({
           <ViewSettingsAccess variant="icon" />
           <InvitationShareAccess variant="icon" />
         </div>
+        <i className="quick-invitation__topbar-progress" aria-hidden="true">
+          <span style={{ width: `${activeSectionProgress}%` }} />
+        </i>
       </header>
 
       <section className="quick-hero" id="top" aria-label={`${names} 결혼식 초대`}>

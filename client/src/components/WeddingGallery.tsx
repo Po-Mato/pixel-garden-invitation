@@ -64,6 +64,18 @@ export function WeddingGallery({ photos: photosOverride, onPhotoOpen }: WeddingG
 
   return (
     <>
+      <header className="wedding-gallery__guide">
+        <span className="wedding-gallery__guide-icon"><Images aria-hidden="true" /></span>
+        <span>
+          <small>PHOTO COLLECTION</small>
+          <strong>{photos.length}장의 소중한 순간</strong>
+        </span>
+        <p aria-live="polite">
+          {lastViewedIndex === null
+            ? "사진을 누르면 전체 화면으로 감상할 수 있어요."
+            : `${String(lastViewedIndex + 1).padStart(2, "0")}번 사진까지 감상했어요.`}
+        </p>
+      </header>
       <section className="wedding-gallery" aria-label="웨딩 사진 갤러리">
         {visiblePhotos.map((photo, index) => (
           <figure
@@ -89,8 +101,11 @@ export function WeddingGallery({ photos: photosOverride, onPhotoOpen }: WeddingG
               </span>
               <span className="wedding-gallery__open-affordance" aria-hidden="true">
                 <Maximize2 />
-                크게 보기
+                {lastViewedIndex === index ? "다시 보기" : "크게 보기"}
               </span>
+              {lastViewedIndex === index ? (
+                <span className="wedding-gallery__recent" aria-hidden="true">최근 본 사진</span>
+              ) : null}
             </button>
             <figcaption className="wedding-gallery__caption">
               <span className="wedding-gallery__caption-meta" aria-hidden="true">

@@ -25,7 +25,10 @@ it("확정된 예식장, 교통, 주차, 지도, 전화 동작을 표시한다",
   expect(screen.getByText("지하철 · 도보")).toBeInTheDocument();
   expect(screen.getByText("자가용 · 주차")).toBeInTheDocument();
   expect(document.querySelectorAll(".directions-sheet__travel-grid > .directions-sheet__info")).toHaveLength(2);
-  expect(screen.getByText("추천")).toBeInTheDocument();
+  expect(screen.getByText("추천 경로")).toBeInTheDocument();
+  expect(screen.getByText("NAVER MAP")).toBeInTheDocument();
+  expect(screen.getByText("KAKAO MAP")).toBeInTheDocument();
+  expect(screen.getByText("GOOGLE MAP")).toBeInTheDocument();
 
   for (const name of ["네이버지도", "카카오맵", "Google 지도"]) {
     const link = screen.getByRole("link", { name });
@@ -36,7 +39,7 @@ it("확정된 예식장, 교통, 주차, 지도, 전화 동작을 표시한다",
     "href",
     "tel:0323475500"
   );
-  expect(screen.getByRole("button", { name: "주소 복사" })).toHaveTextContent("복사");
+  expect(screen.getByRole("button", { name: "주소 복사" })).toHaveTextContent("주소 복사");
 });
 
 it("선택한 지도 앱을 강조하고 새 창 안내를 갱신한다", () => {
@@ -48,8 +51,8 @@ it("선택한 지도 앱을 강조하고 새 창 안내를 갱신한다", () => 
 
   expect(kakaoLink).toHaveAttribute("aria-current", "true");
   expect(kakaoLink).toHaveAttribute("data-selected", "true");
-  expect(kakaoLink).toHaveTextContent("최근 선택");
-  expect(screen.getByText("카카오맵 앱을 새 창에서 열었습니다.")).toHaveAttribute("aria-live", "polite");
+  expect(kakaoLink).toHaveTextContent("지금 연 앱");
+  expect(screen.getByText("카카오맵을 열었어요").closest(".directions-sheet__map-status")).toHaveAttribute("aria-live", "polite");
 });
 
 it("주소를 복사하고 성공 상태를 알린다", async () => {
@@ -59,8 +62,10 @@ it("주소를 복사하고 성공 상태를 알린다", async () => {
   fireEvent.click(screen.getByRole("button", { name: "주소 복사" }));
 
   expect(copyText).toHaveBeenCalledWith("경기 부천시 소사구 경인로 386");
-  expect(await screen.findByText("주소를 복사했습니다.")).toHaveAttribute("aria-live", "polite");
-  expect(screen.getByRole("button", { name: "주소 복사" })).toHaveTextContent("복사됨");
+  expect(await screen.findByRole("status")).toHaveTextContent("주소 복사를 완료했어요");
+  expect(screen.getByRole("status")).toHaveTextContent("지도 앱 검색창에 바로 붙여넣을 수 있습니다.");
+  expect(screen.getByRole("button", { name: "주소 복사" })).toHaveTextContent("복사 완료");
+  expect(screen.getByRole("button", { name: "주소 복사" })).toHaveAttribute("aria-describedby", "directions-copy-feedback");
 });
 
 it("주소 복사 실패 후에도 주소를 표시하고 오류를 알린다", async () => {
@@ -70,8 +75,9 @@ it("주소 복사 실패 후에도 주소를 표시하고 오류를 알린다", 
   fireEvent.click(screen.getByRole("button", { name: "주소 복사" }));
 
   expect(
-    await screen.findByText("복사하지 못했습니다. 주소를 길게 눌러 복사해주세요.")
-  ).toHaveAttribute("aria-live", "polite");
+    await screen.findByRole("alert")
+  ).toHaveTextContent("주소를 복사하지 못했어요");
+  expect(screen.getByRole("alert")).toHaveTextContent("위 주소를 길게 눌러 직접 복사해주세요.");
   expect(screen.getByText("경기 부천시 소사구 경인로 386")).toBeInTheDocument();
 });
 

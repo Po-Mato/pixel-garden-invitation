@@ -1514,6 +1514,30 @@
   justify-self: end;
 }
 
+.quick-invitation__topbar-progress {
+  position: absolute;
+  right: 0;
+  bottom: -1px;
+  left: 0;
+  height: 2px;
+  overflow: hidden;
+  background: rgba(105, 134, 121, 0.12);
+  opacity: 0;
+  transition: opacity 180ms ease;
+}
+
+.quick-invitation__topbar[data-scrolled="true"] .quick-invitation__topbar-progress {
+  opacity: 1;
+}
+
+.quick-invitation__topbar-progress > span {
+  display: block;
+  height: 100%;
+  border-radius: 0 999px 999px 0;
+  background: linear-gradient(90deg, #9a6670, #648173);
+  transition: width 220ms ease;
+}
+
 .quick-invitation__nav a {
   position: relative;
   transition: color 180ms ease;
@@ -1967,6 +1991,396 @@
   to { transform: rotate(360deg); }
 }
 
+/* Gallery wayfinding — keep the collection calm while making the viewed photo unmistakable. */
+.wedding-gallery__guide {
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr);
+  align-items: center;
+  gap: 3px 10px;
+  margin: 0 0 14px;
+  border-block: 1px solid rgba(105, 134, 121, 0.2);
+  padding: 12px 2px;
+}
+
+.wedding-gallery__guide-icon {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  grid-row: 1 / span 2;
+  place-items: center;
+  border-radius: 12px;
+  background: #edf3ef;
+  color: #526f63;
+}
+
+.wedding-gallery__guide-icon svg {
+  width: 17px;
+  height: 17px;
+}
+
+.wedding-gallery__guide > span:nth-child(2) {
+  display: grid;
+  min-width: 0;
+  gap: 1px;
+}
+
+.wedding-gallery__guide small {
+  color: #8d7076;
+  font-size: 7.5px;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+}
+
+.wedding-gallery__guide strong {
+  color: #433a3c;
+  font-family: var(--wedding-font-display);
+  font-size: 13px;
+}
+
+.wedding-gallery__guide p {
+  grid-column: 2;
+  margin: 0;
+  color: #738078;
+  font-size: 9.5px;
+  line-height: 1.45;
+  word-break: keep-all;
+}
+
+.wedding-gallery__recent {
+  position: absolute;
+  top: 9px;
+  left: 9px;
+  z-index: 2;
+  border: 1px solid rgba(255, 255, 255, 0.52);
+  border-radius: 999px;
+  padding: 5px 7px;
+  background: rgba(41, 61, 52, 0.82);
+  color: #fff;
+  font-size: 7.5px;
+  font-weight: 850;
+  letter-spacing: 0.04em;
+  backdrop-filter: blur(8px);
+}
+
+.photo-lightbox__index {
+  display: grid;
+  width: min(calc(100% + 96px), 340px);
+  grid-template-columns: repeat(10, minmax(0, 1fr));
+  justify-self: center;
+  gap: 3px;
+  margin-bottom: 2px;
+}
+
+.photo-lightbox__index button {
+  position: relative;
+  min-width: 0;
+  min-height: 27px;
+  border: 0;
+  border-radius: 7px;
+  padding: 0;
+  background: rgba(255, 253, 248, 0.055);
+  color: #968d80;
+  font-size: 7px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+}
+
+.photo-lightbox__index button[aria-current="true"] {
+  background: #d9c8a4;
+  color: #1e1b18;
+  box-shadow: 0 0 0 1px rgba(255, 253, 248, 0.28);
+}
+
+.photo-lightbox__index button:focus-visible {
+  outline: 2px solid #fffdf8;
+  outline-offset: 1px;
+}
+
+/* Directions feedback — make copy success and provider choice immediately scannable. */
+.directions-sheet__venue > button {
+  border-radius: 12px;
+  transition: border-color 160ms ease, background 160ms ease, color 160ms ease;
+}
+
+.directions-sheet__venue > button[data-status="copied"] {
+  border-color: #526f63;
+  background: #526f63;
+  color: #fff;
+  box-shadow: 0 7px 16px rgba(58, 82, 71, 0.16);
+}
+
+.directions-sheet__copy-feedback {
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  min-height: 54px;
+  border: 1px solid rgba(105, 134, 121, 0.28);
+  border-radius: 14px;
+  padding: 10px 12px;
+  background: #f1f6f2;
+  color: #496859;
+}
+
+.directions-sheet__copy-feedback[data-status="error"] {
+  border-color: rgba(157, 83, 83, 0.28);
+  background: #fbf1ef;
+  color: #925c5b;
+}
+
+.directions-sheet__copy-feedback > svg {
+  width: 25px;
+  height: 25px;
+}
+
+.directions-sheet__copy-feedback > span {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+
+.directions-sheet__copy-feedback strong {
+  font-size: 11px;
+}
+
+.directions-sheet__copy-feedback small {
+  color: #6f7d75;
+  font-size: 9px;
+  line-height: 1.45;
+  word-break: keep-all;
+}
+
+.directions-sheet__maps > :is(a, button)[data-provider="naver"] {
+  --map-provider-accent: #39a96b;
+}
+
+.directions-sheet__maps > :is(a, button)[data-provider="kakao"] {
+  --map-provider-accent: #b28b2f;
+}
+
+.directions-sheet__maps > :is(a, button)[data-provider="google"] {
+  --map-provider-accent: #5c77b5;
+}
+
+.directions-sheet__maps > :is(a, button):not([data-selected="true"]) .directions-sheet__map-icon {
+  border-color: color-mix(in srgb, var(--map-provider-accent) 24%, transparent);
+  background: color-mix(in srgb, var(--map-provider-accent) 9%, white);
+  color: var(--map-provider-accent);
+}
+
+.directions-sheet__maps > :is(a, button) em {
+  overflow: hidden;
+  color: #68776f;
+  font-size: 7.5px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 1.3;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.directions-sheet__maps > [data-selected="true"] :is(small, em) {
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.directions-sheet__map-status {
+  display: grid;
+  grid-template-columns: 25px minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  min-height: 42px;
+  margin: 1px 0 0;
+  border-radius: 11px;
+  padding: 7px 9px;
+  background: rgba(105, 134, 121, 0.075);
+}
+
+.directions-sheet__map-status > svg {
+  width: 18px;
+  height: 18px;
+  color: #648173;
+}
+
+.directions-sheet__map-status > span {
+  display: grid;
+  min-width: 0;
+  gap: 1px;
+}
+
+.directions-sheet__map-status strong {
+  color: #52665c;
+  font-size: 9.5px;
+}
+
+.directions-sheet__map-status small {
+  color: #7b8580;
+  font-size: 8.5px;
+  line-height: 1.35;
+}
+
+/* RSVP completion — show the answer at a glance and keep private detail folded. */
+.rsvp-summary__highlights {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.rsvp-summary__highlights article {
+  display: grid;
+  min-width: 0;
+  justify-items: center;
+  gap: 5px;
+  border: 1px solid rgba(105, 134, 121, 0.19);
+  border-radius: 13px;
+  padding: 11px 6px;
+  background: #fafbf8;
+  text-align: center;
+}
+
+.rsvp-summary__highlights article > svg {
+  width: 17px;
+  height: 17px;
+  color: #648173;
+}
+
+.rsvp-summary__highlights article > span {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+
+.rsvp-summary__highlights small {
+  color: #87928c;
+  font-size: 8px;
+  font-weight: 800;
+}
+
+.rsvp-summary__highlights strong {
+  overflow: hidden;
+  color: #46554d;
+  font-size: 10.5px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rsvp-summary__details {
+  overflow: hidden;
+  border: 1px solid rgba(96, 75, 82, 0.12);
+  border-radius: 13px;
+  background: #fffdfb;
+}
+
+.rsvp-summary__details > summary {
+  display: grid;
+  min-height: 50px;
+  grid-template-columns: 22px minmax(0, 1fr) 18px;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 11px;
+  color: #5a4f52;
+  cursor: pointer;
+  list-style: none;
+}
+
+.rsvp-summary__details > summary::-webkit-details-marker {
+  display: none;
+}
+
+.rsvp-summary__details > summary > svg:first-child {
+  width: 18px;
+  height: 18px;
+  color: #7b6a6e;
+}
+
+.rsvp-summary__details > summary > svg:last-child {
+  width: 16px;
+  height: 16px;
+  transition: transform 160ms ease;
+}
+
+.rsvp-summary__details[open] > summary > svg:last-child {
+  transform: rotate(180deg);
+}
+
+.rsvp-summary__details > summary > span {
+  display: grid;
+  gap: 1px;
+}
+
+.rsvp-summary__details > summary strong {
+  font-size: 10.5px;
+}
+
+.rsvp-summary__details > summary small {
+  color: #8d8385;
+  font-size: 8.5px;
+}
+
+.rsvp-summary__details dl {
+  margin: 0 11px 11px;
+  border-top: 1px solid rgba(96, 75, 82, 0.11);
+}
+
+@media (max-width: 350px) {
+  .wedding-gallery__guide p {
+    font-size: 8.5px;
+  }
+
+  .directions-sheet__maps > :is(a, button) em {
+    font-size: 7px;
+  }
+
+  .rsvp-summary__highlights {
+    gap: 4px;
+  }
+
+  .rsvp-summary__highlights article {
+    padding-inline: 3px;
+  }
+}
+
+:is(html[data-text-scale="xlarge"], html[data-text-scale="ios-200"], html[data-typography-audit]) .wedding-gallery__guide,
+:is(html[data-text-scale="xlarge"], html[data-text-scale="ios-200"], html[data-typography-audit]) .directions-sheet__copy-feedback,
+:is(html[data-text-scale="xlarge"], html[data-text-scale="ios-200"], html[data-typography-audit]) .directions-sheet__map-status {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+:is(html[data-text-scale="xlarge"], html[data-text-scale="ios-200"], html[data-typography-audit]) .wedding-gallery__guide-icon,
+:is(html[data-text-scale="xlarge"], html[data-text-scale="ios-200"], html[data-typography-audit]) .directions-sheet__copy-feedback > svg,
+:is(html[data-text-scale="xlarge"], html[data-text-scale="ios-200"], html[data-typography-audit]) .directions-sheet__map-status > svg {
+  display: none;
+}
+
+:is(html[data-text-scale="xlarge"], html[data-text-scale="ios-200"], html[data-typography-audit]) .wedding-gallery__guide p {
+  grid-column: 1;
+}
+
+:is(html[data-text-scale="xlarge"], html[data-text-scale="ios-200"], html[data-typography-audit]) .directions-sheet__maps > :is(a, button) em {
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
+}
+
+:is(html[data-text-scale="xlarge"], html[data-text-scale="ios-200"], html[data-typography-audit]) .directions-sheet__maps {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+:is(html[data-text-scale="xlarge"], html[data-text-scale="ios-200"], html[data-typography-audit]) .rsvp-summary__highlights {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+:is(html[data-text-scale="xlarge"], html[data-text-scale="ios-200"], html[data-typography-audit]) .rsvp-summary__highlights article {
+  grid-template-columns: 24px minmax(0, 1fr);
+  justify-items: start;
+  text-align: left;
+}
+
+:is(html[data-text-scale="xlarge"], html[data-text-scale="ios-200"], html[data-typography-audit]) .rsvp-summary__highlights strong {
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
+}
+
 /* Tablet + desktop invitation — widen the paper and compose story frames editorially. */
 @media (min-width: 760px) {
   .app-shell--quick {
@@ -2090,8 +2504,12 @@
   .rsvp-progress__track > span,
   .rsvp-form__section,
   .quick-core-actions svg,
+  .quick-invitation__topbar-progress,
+  .quick-invitation__topbar-progress > span,
   .directions-sheet__maps > :is(a, button),
+  .directions-sheet__venue > button,
   .photo-lightbox__progress > span,
+  .rsvp-summary__details > summary > svg:last-child,
   .photo-lightbox__media,
   .photo-lightbox__caption-card,
   .quick-invitation__topbar,
@@ -2107,8 +2525,12 @@ html[data-reduce-motion="true"] :is(
   .rsvp-progress__track > span,
   .rsvp-form__section,
   .quick-core-actions svg,
+  .quick-invitation__topbar-progress,
+  .quick-invitation__topbar-progress > span,
   .directions-sheet__maps > :is(a, button),
+  .directions-sheet__venue > button,
   .photo-lightbox__progress > span,
+  .rsvp-summary__details > summary > svg:last-child,
   .photo-lightbox__media,
   .photo-lightbox__caption-card,
   .quick-invitation__topbar,
@@ -2127,6 +2549,10 @@ html[data-reduce-motion="true"] :is(
   .directions-sheet__route-actions,
   .directions-sheet__travel-grid .directions-sheet__info,
   .directions-sheet__maps > :is(a, button),
+  .directions-sheet__copy-feedback,
+  .photo-lightbox__index button,
+  .rsvp-summary__highlights article,
+  .rsvp-summary__details,
   .quick-closing__actions > button,
   .quick-closing__links button {
     border-color: CanvasText;

@@ -1008,7 +1008,7 @@ describe("GameWorld", () => {
     await act(async () => {
       await Promise.resolve();
     });
-    expect(screen.getByText("주소를 복사했습니다.")).toBeInTheDocument();
+    expect(screen.getByText("주소 복사를 완료했어요")).toBeInTheDocument();
     expect(player?.style.left).toBe(before.left);
     expect(player?.style.top).toBe(before.top);
 

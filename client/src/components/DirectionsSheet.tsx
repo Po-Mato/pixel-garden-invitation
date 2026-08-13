@@ -1,5 +1,5 @@
 import { useState, type RefObject } from "react";
-import { Car, Check, Copy, Globe2, Map, MapPinned, Navigation, Phone, TrainFront } from "lucide-react";
+import { AlertCircle, Car, Check, CheckCircle2, Copy, Globe2, Map, MapPinned, Navigation, Phone, TrainFront } from "lucide-react";
 import { invitationContent, type WeddingEvent } from "@wedding-game/shared";
 import { copyText } from "../invitation/browserActions";
 import { buildDirectionsLinks } from "../invitation/directions";
@@ -23,9 +23,9 @@ export function DirectionsContent({ venue = invitationContent.event.venue }: Dir
   const [copyStatus, setCopyStatus] = useState<CopyStatus>("idle");
   const [selectedMapProvider, setSelectedMapProvider] = useState<MapProvider | null>(null);
   const mapLinks = [
-    { label: "네이버지도", href: links.naver, provider: "naver", preferred: true, Icon: Navigation },
-    { label: "카카오맵", href: links.kakao, provider: "kakao", preferred: false, Icon: Map },
-    { label: "Google 지도", href: links.google, provider: "google", preferred: false, Icon: Globe2 }
+    { label: "네이버지도", eyebrow: "NAVER MAP", helper: "추천 경로", href: links.naver, provider: "naver", preferred: true, Icon: Navigation },
+    { label: "카카오맵", eyebrow: "KAKAO MAP", helper: "카카오맵으로 열기", href: links.kakao, provider: "kakao", preferred: false, Icon: Map },
+    { label: "Google 지도", eyebrow: "GOOGLE MAP", helper: "Google 지도로 열기", href: links.google, provider: "google", preferred: false, Icon: Globe2 }
   ] as const;
   const selectedMapLabel = mapLinks.find(({ provider }) => provider === selectedMapProvider)?.label;
 
@@ -57,23 +57,35 @@ export function DirectionsContent({ venue = invitationContent.event.venue }: Dir
         <button
           type="button"
           aria-label="주소 복사"
+          aria-describedby={copyStatus === "copied" || copyStatus === "error" ? "directions-copy-feedback" : undefined}
           data-status={copyStatus === "copied" ? "copied" : undefined}
           disabled={copyStatus === "copying"}
           onClick={copyAddress}
         >
           {copyStatus === "copied" ? <Check aria-hidden="true" /> : <Copy aria-hidden="true" />}
-          <span>{copyStatus === "copying" ? "복사 중" : copyStatus === "copied" ? "복사됨" : "복사"}</span>
+          <span>{copyStatus === "copying" ? "복사 중" : copyStatus === "copied" ? "복사 완료" : "주소 복사"}</span>
         </button>
       </section>
 
-      <p
-        className="directions-sheet__status"
-        data-status={copyStatus === "error" ? "error" : copyStatus === "copied" ? "copied" : undefined}
-        aria-live="polite"
-      >
-        {copyStatus === "copied" ? "주소를 복사했습니다." : null}
-        {copyStatus === "error" ? "복사하지 못했습니다. 주소를 길게 눌러 복사해주세요." : null}
-      </p>
+      {copyStatus === "copied" || copyStatus === "error" ? (
+        <div
+          id="directions-copy-feedback"
+          className="directions-sheet__copy-feedback"
+          data-status={copyStatus}
+          role={copyStatus === "error" ? "alert" : "status"}
+          aria-live="polite"
+        >
+          {copyStatus === "copied" ? <CheckCircle2 aria-hidden="true" /> : <AlertCircle aria-hidden="true" />}
+          <span>
+            <strong>{copyStatus === "copied" ? "주소 복사를 완료했어요" : "주소를 복사하지 못했어요"}</strong>
+            <small>
+              {copyStatus === "copied"
+                ? "지도 앱 검색창에 바로 붙여넣을 수 있습니다."
+                : "위 주소를 길게 눌러 직접 복사해주세요."}
+            </small>
+          </span>
+        </div>
+      ) : null}
 
       <section className="directions-sheet__route-actions" aria-labelledby="directions-map-title">
         <header>
@@ -81,7 +93,7 @@ export function DirectionsContent({ venue = invitationContent.event.venue }: Dir
           <span>원하는 앱을 선택하세요</span>
         </header>
         <div className="directions-sheet__maps">
-          {mapLinks.map(({ label, href, provider, preferred, Icon }) =>
+          {mapLinks.map(({ label, eyebrow, helper, href, provider, preferred, Icon }) =>
             href ? (
               <a
                 key={label}
@@ -89,6 +101,7 @@ export function DirectionsContent({ venue = invitationContent.event.venue }: Dir
                 aria-label={label}
                 target="_blank"
                 rel="noopener noreferrer"
+                data-provider={provider}
                 data-primary={preferred || undefined}
                 data-selected={selectedMapProvider === provider || undefined}
                 aria-current={selectedMapProvider === provider ? "true" : undefined}
@@ -99,8 +112,9 @@ export function DirectionsContent({ venue = invitationContent.event.venue }: Dir
               >
                 <span className="directions-sheet__map-icon"><Icon aria-hidden="true" /></span>
                 <span>
+                  <small>{eyebrow}</small>
                   <strong>{label}</strong>
-                  {selectedMapProvider === provider ? <small>최근 선택</small> : preferred ? <small>추천</small> : null}
+                  <em>{selectedMapProvider === provider ? "지금 연 앱" : helper}</em>
                 </span>
               </a>
             ) : (
@@ -108,21 +122,27 @@ export function DirectionsContent({ venue = invitationContent.event.venue }: Dir
                 key={label}
                 type="button"
                 aria-label={label}
+                data-provider={provider}
                 data-primary={preferred || undefined}
                 disabled
               >
                 <span className="directions-sheet__map-icon"><Icon aria-hidden="true" /></span>
                 <span>
+                  <small>{eyebrow}</small>
                   <strong>{label}</strong>
-                  {preferred ? <small>추천</small> : null}
+                  <em>{helper}</em>
                 </span>
               </button>
             )
           )}
         </div>
-        <p className="directions-sheet__map-status" aria-live="polite">
-          {selectedMapLabel ? `${selectedMapLabel} 앱을 새 창에서 열었습니다.` : "선택한 지도 앱은 새 창에서 열립니다."}
-        </p>
+        <div className="directions-sheet__map-status" data-selected={selectedMapProvider || undefined} aria-live="polite">
+          <Navigation aria-hidden="true" />
+          <span>
+            <strong>{selectedMapLabel ? `${selectedMapLabel}을 열었어요` : "지도 앱을 선택해주세요"}</strong>
+            <small>{selectedMapLabel ? "새 창에서 경로를 이어서 확인할 수 있습니다." : "선택한 지도 앱은 새 창에서 열립니다."}</small>
+          </span>
+        </div>
       </section>
 
       <section className="directions-sheet__travel-notes" aria-labelledby="directions-travel-title">

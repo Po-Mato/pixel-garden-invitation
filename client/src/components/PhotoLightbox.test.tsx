@@ -202,12 +202,12 @@ describe("전체 화면 웨딩 사진 뷰어", () => {
     render(<PhotoLightbox photos={photos} index={1} onIndexChange={vi.fn()} onClose={vi.fn()} />);
 
     const closeButton = screen.getByRole("button", { name: "전체 화면 닫기" });
-    const nextButton = screen.getByRole("button", { name: "다음 사진" });
+    const lastIndexButton = screen.getByRole("button", { name: "10번 사진 보기" });
     expect(closeButton).toHaveFocus();
 
     fireEvent.keyDown(closeButton, { key: "Tab", shiftKey: true });
-    expect(nextButton).toHaveFocus();
-    fireEvent.keyDown(nextButton, { key: "Tab" });
+    expect(lastIndexButton).toHaveFocus();
+    fireEvent.keyDown(lastIndexButton, { key: "Tab" });
     expect(closeButton).toHaveFocus();
   });
 

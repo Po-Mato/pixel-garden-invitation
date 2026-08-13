@@ -12,7 +12,7 @@ import {
 import { clearRsvpCredential, loadRsvpCredential, saveRsvpCredential } from "../invitation/rsvpStorage";
 import { RsvpForm, type RsvpFormInitialValue } from "./RsvpForm";
 import { trackAnalyticsContextEvent } from "../analytics/invitationAnalytics";
-import { CircleCheckBig, MapPin, Pencil } from "lucide-react";
+import { ChevronDown, CircleCheckBig, FileText, MapPin, Pencil, UserRound, UsersRound, UtensilsCrossed } from "lucide-react";
 
 type PanelState =
   | { kind: "loading" }
@@ -139,9 +139,7 @@ export function RsvpPanel({ onBackToDirections }: { onBackToDirections?: () => v
   const applyCreated = useCallback((created: PendingCreateResult) => {
     credentialRef.current = created.result.credential;
     if (!mountedRef.current) return;
-    setNotice(created.credentialSaved
-      ? "답변이 저장되었습니다. 필요할 때 이 기기에서 다시 확인하고 수정할 수 있어요."
-      : "답변은 저장되었지만 이 기기에서 다시 수정하기 어려울 수 있습니다.");
+    setNotice(created.credentialSaved ? "" : "답변은 저장되었지만 이 기기에서 다시 수정하기 어려울 수 있습니다.");
     setState({ kind: "summary", response: created.result.response });
   }, []);
 
@@ -287,16 +285,37 @@ export function RsvpPanel({ onBackToDirections }: { onBackToDirections?: () => v
             </div>
             <strong data-attendance={state.response.attendance}>{attendanceLabel[state.response.attendance]}</strong>
           </header>
-          <dl>
-            <div><dt>대상</dt><dd>{sideLabel[state.response.side]}</dd></div>
-            <div><dt>이름</dt><dd>{state.response.guestName}</dd></div>
-            <div><dt>연락처</dt><dd>{state.response.phone ?? "-"}</dd></div>
-            <div><dt>참석</dt><dd>{attendanceLabel[state.response.attendance]}</dd></div>
-            {state.response.attendance !== "no" ? <div><dt>인원</dt><dd>{state.response.partySize}명</dd></div> : null}
-            {state.response.attendance === "yes" ? <div><dt>식사</dt><dd>{mealLabel[state.response.mealStatus]}</dd></div> : null}
-            <div><dt>전달사항</dt><dd>{state.response.note || "없음"}</dd></div>
-            <div><dt>마지막 수정</dt><dd>{formatUpdatedAt(state.response.updatedAt)}</dd></div>
-          </dl>
+          <div className="rsvp-summary__highlights" aria-label="저장한 참석 답변 요약">
+            <article>
+              <UserRound aria-hidden="true" />
+              <span><small>이름</small><strong>{state.response.guestName}</strong></span>
+            </article>
+            <article>
+              <UsersRound aria-hidden="true" />
+              <span><small>참석</small><strong>{state.response.attendance === "yes" ? `${state.response.partySize}명` : attendanceLabel[state.response.attendance]}</strong></span>
+            </article>
+            <article>
+              <UtensilsCrossed aria-hidden="true" />
+              <span><small>식사</small><strong>{state.response.attendance === "yes" ? mealLabel[state.response.mealStatus] : "해당 없음"}</strong></span>
+            </article>
+          </div>
+          <details className="rsvp-summary__details">
+            <summary>
+              <FileText aria-hidden="true" />
+              <span><strong>저장한 답변 전체 보기</strong><small>연락처와 전달사항 포함</small></span>
+              <ChevronDown aria-hidden="true" />
+            </summary>
+            <dl>
+              <div><dt>대상</dt><dd>{sideLabel[state.response.side]}</dd></div>
+              <div><dt>이름</dt><dd>{state.response.guestName}</dd></div>
+              <div><dt>연락처</dt><dd>{state.response.phone ?? "-"}</dd></div>
+              <div><dt>참석</dt><dd>{attendanceLabel[state.response.attendance]}</dd></div>
+              {state.response.attendance !== "no" ? <div><dt>인원</dt><dd>{state.response.partySize}명</dd></div> : null}
+              {state.response.attendance === "yes" ? <div><dt>식사</dt><dd>{mealLabel[state.response.mealStatus]}</dd></div> : null}
+              <div><dt>전달사항</dt><dd>{state.response.note || "없음"}</dd></div>
+              <div><dt>마지막 수정</dt><dd>{formatUpdatedAt(state.response.updatedAt)}</dd></div>
+            </dl>
+          </details>
           <p className="rsvp-summary__guidance">변경이 필요하면 예식 전까지 이 기기에서 다시 수정할 수 있습니다.</p>
           <div className="rsvp-summary__actions">
             <button type="button" className="primary-button" onClick={() => { setNotice(""); setState({ kind: "editing", response: state.response }); }}>

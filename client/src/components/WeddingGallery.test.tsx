@@ -12,6 +12,8 @@ describe("에디토리얼 웨딩 갤러리", () => {
     render(<WeddingGallery />);
 
     const photos = invitationContent.content.gallery;
+    expect(screen.getByText("10장의 소중한 순간")).toBeInTheDocument();
+    expect(screen.getByText("사진을 누르면 전체 화면으로 감상할 수 있어요.")).toBeInTheDocument();
     const buttons = screen.getAllByRole("button", { name: /사진 \d+:/ });
     expect(buttons).toHaveLength(10);
     expect(screen.getAllByText("크게 보기")).toHaveLength(10);
@@ -54,7 +56,19 @@ describe("에디토리얼 웨딩 갤러리", () => {
 
     expect(onPhotoOpen).toHaveBeenCalledWith(4);
     expect(screen.getByRole("dialog", { name: "웨딩 사진 전체 화면" })).toBeInTheDocument();
+    expect(screen.getByRole("navigation", { name: "웨딩 사진 바로 선택" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "5번 사진 보기" })).toHaveAttribute("aria-current", "true");
     expect(screen.getAllByRole("button", { name: /사진 \d+:/ })[4]).toHaveAttribute("aria-current", "true");
+  });
+
+  it("전체 화면 번호 트랙으로 원하는 사진을 바로 선택한다", () => {
+    render(<WeddingGallery />);
+    fireEvent.click(screen.getAllByRole("button", { name: /사진 \d+:/ })[0]);
+
+    fireEvent.click(screen.getByRole("button", { name: "8번 사진 보기" }));
+
+    expect(screen.getByRole("button", { name: "8번 사진 보기" })).toHaveAttribute("aria-current", "true");
+    expect(screen.getByText("사진").parentElement).toHaveTextContent("8/ 10");
   });
 
   it("라이트박스를 닫으면 선택했던 사진 버튼으로 포커스를 복원한다", () => {
@@ -67,6 +81,8 @@ describe("에디토리얼 웨딩 갤러리", () => {
     expect(screen.queryByRole("dialog", { name: "웨딩 사진 전체 화면" })).not.toBeInTheDocument();
     expect(selectedPhoto).toHaveFocus();
     expect(selectedPhoto).toHaveAttribute("aria-current", "true");
+    expect(screen.getByText("05번 사진까지 감상했어요.")).toBeInTheDocument();
+    expect(selectedPhoto).toHaveTextContent("다시 보기");
   });
 
   it("라이트박스에서 넘겨 본 현재 사진으로 선택 상태와 포커스를 옮긴다", () => {

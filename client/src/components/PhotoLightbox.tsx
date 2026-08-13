@@ -301,6 +301,20 @@ export function PhotoLightbox({ photos, index, onIndexChange, onClose }: PhotoLi
       </div>
 
       <footer className="photo-lightbox__footer">
+        <nav className="photo-lightbox__index" aria-label="웨딩 사진 바로 선택">
+          {photos.map((candidate, photoIndex) => (
+            <button
+              key={candidate.id}
+              type="button"
+              aria-label={`${photoIndex + 1}번 사진 보기`}
+              aria-current={photoIndex === index ? "true" : undefined}
+              title={`${photoIndex + 1}번 사진`}
+              onClick={() => onIndexChange(photoIndex)}
+            >
+              {String(photoIndex + 1).padStart(2, "0")}
+            </button>
+          ))}
+        </nav>
         {photos.length > 1 ? (
           <p className="photo-lightbox__gesture" aria-hidden="true">
             <MoveHorizontal />

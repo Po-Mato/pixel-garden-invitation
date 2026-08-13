@@ -86,8 +86,12 @@ describe("RsvpPanel", () => {
     expect(within(summary as HTMLElement).getByText("소중한 답변을 안전하게 보관했어요.")).toBeInTheDocument();
     expect(within(summary as HTMLElement).getByText(/예식 전까지 이 기기에서 다시 수정/)).toBeInTheDocument();
     expect(summary?.querySelector('[data-attendance="yes"]')).toHaveTextContent("참석");
+    const highlights = within(summary as HTMLElement).getByLabelText("저장한 참석 답변 요약");
+    expect(highlights).toHaveTextContent("김하객");
+    expect(highlights).toHaveTextContent("2명");
+    expect(highlights).toHaveTextContent("식사 예정");
+    expect(within(summary as HTMLElement).getByText("저장한 답변 전체 보기").closest("details")).not.toHaveAttribute("open");
     expect(storage.saveRsvpCredential).toHaveBeenCalledWith("sample-garden", credential);
-    expect(screen.getByText("김하객")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "오시는 길 다시 보기" }));
     expect(onBackToDirections).toHaveBeenCalledOnce();
   });
@@ -147,7 +151,7 @@ describe("RsvpPanel", () => {
       credential,
       expect.objectContaining({ guestName: "김수정", revision: 3 })
     ));
-    expect(await screen.findByText("김수정")).toBeInTheDocument();
+    expect((await screen.findAllByText("김수정")).length).toBeGreaterThan(0);
   });
 
   it("reloads the latest response and explains a revision conflict", async () => {
@@ -161,7 +165,7 @@ describe("RsvpPanel", () => {
     fireEvent.click(screen.getByRole("button", { name: "수정 저장" }));
 
     expect(await screen.findByRole("status")).toHaveTextContent("다른 변경사항을 반영했습니다");
-    expect(screen.getByText("최신 하객")).toBeInTheDocument();
+    expect(screen.getAllByText("최신 하객")).toHaveLength(2);
     expect(api.fetchOwnedRsvp).toHaveBeenCalledTimes(2);
   });
 

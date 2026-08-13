@@ -85,6 +85,7 @@ describe("간편 초대장", () => {
     fireEvent.click(directions);
     expect(directions).toHaveAttribute("aria-current", "page");
     expect(dock).toHaveAttribute("data-active-section", "directions");
+    expect(document.querySelector(".quick-invitation__topbar-brand")).toHaveTextContent("06 / 11 · 오시는 길");
     expect(loadInvitationViewSync()).toMatchObject({ source: "quick", sectionId: "directions" });
   });
 
@@ -101,6 +102,7 @@ describe("간편 초대장", () => {
     fireEvent.scroll(invitation as HTMLElement);
     expect(invitation).toHaveAttribute("data-scroll-state", "scrolled");
     expect(topbar).toHaveAttribute("data-scrolled", "true");
+    expect(document.querySelector(".quick-invitation__topbar-progress span")).toHaveStyle({ width: "9.090909090909092%" });
 
     const directions = screen.getByRole("link", { name: "오시는 길" });
     fireEvent.click(directions);
