@@ -1,7 +1,7 @@
 {
   "version": 5,
-  "approvedAt": "2026-08-13T08:11:36.405Z",
-  "reason": "Refined directions travel-mode hierarchy and large-text layout",
+  "approvedAt": "2026-08-13T22:05:24.233Z",
+  "reason": "Refined invitation sheet hierarchy, typography, and large-text layout",
   "pixelThreshold": 36,
   "maxChangedRatio": 0.015,
   "profileMaxChangedRatioOverrides": {
@@ -13,93 +13,93 @@
     "schemaVersion": 1,
     "subjectKind": "capture-set",
     "sourceKind": "github-actions",
-    "runId": "31680094752",
+    "runId": "31747571554",
     "runAttempt": 1,
-    "commitSha": "11825feccf144d725f16f767d93708a7104128e1",
-    "runUrl": "https://github.com/Po-Mato/pixel-garden-invitation/actions/runs/31680094752",
+    "commitSha": "43712c2e4a3954f253207a7f8b5852f0ce3f0f24",
+    "runUrl": "https://github.com/Po-Mato/pixel-garden-invitation/actions/runs/31747571554",
     "checksumAlgorithm": "sha256",
     "artifactChecksumScope": "sorted-capture-set-manifest",
-    "artifactSha256": "b7eb93356021c62f3d179bacda2afb77ea8cfd059f453ff62812068fdcb5b63d",
+    "artifactSha256": "94d5c23631731dcbcf4ca061ec1b76dbd5529351cda8d883d4f3af2a80a6e535",
     "files": [
       {
         "logicalPath": "galaxy-s23-font-150/directions-xlarge",
-        "size": 101865,
-        "sha256": "6efa2944e694fac9b9c12609e76ac82443c3872373a4729d590bd35aed971586"
+        "size": 99483,
+        "sha256": "0411f1bf4739c08f5b3c02db72a8d218430a2fc53c4e8de51aa8919bec2a4d48"
       },
       {
         "logicalPath": "galaxy-s23-font-150/directions-xlarge-bottom",
-        "size": 101134,
-        "sha256": "375005dabafe61181d4305d9f1c9c4b1838b7171d455c6fd375242123a43c294"
+        "size": 112071,
+        "sha256": "7578b41cafeee0648bdaded38f6900dbc18c0cccd58c869e8aa5614cdea1c909"
       },
       {
         "logicalPath": "galaxy-s23-font-150/directions-xlarge-middle",
-        "size": 94651,
-        "sha256": "ebaf34224e477919fb7466df8b077bfa823b98cf58dc719bd8110bfdf6ab8fa3"
+        "size": 105320,
+        "sha256": "457717a71bb53c6f58505b67a668175c3fccf0d2cb9dafdb7fdb5f0bee184f22"
       },
       {
         "logicalPath": "galaxy-s23-font-150/game",
-        "size": 459591,
-        "sha256": "5bf3c5f3e4b3a3f91f160a465a1a69d0f9d963dbf31f7713eca65a2f58a727d5"
+        "size": 659490,
+        "sha256": "a37b534925038c9580087c72dfccc662bd9e6328625566c2622b7225f8355927"
       },
       {
         "logicalPath": "iphone-15-dynamic-type/directions-xlarge",
-        "size": 106668,
-        "sha256": "3e74e7be0e3c8b425047bb1cd203708edd501af8f89d023bd10343a476a08f12"
+        "size": 108101,
+        "sha256": "3b71809cb291c5609e4314f265348da668fa438f51b47a2b220f0d24a746de7f"
       },
       {
         "logicalPath": "iphone-15-dynamic-type/directions-xlarge-bottom",
-        "size": 100633,
-        "sha256": "bbe60cf1a47c0a7f3dc604f3e26a885f369b70a06741400f3ff2288ee76088a7"
+        "size": 108001,
+        "sha256": "f0483b006a488c3d4e2836b8133e2fb383cd8ead9d1b1cb9988344841d0c8f42"
       },
       {
         "logicalPath": "iphone-15-dynamic-type/directions-xlarge-middle",
-        "size": 100825,
-        "sha256": "98197ccd269654040f7007ff2545d9823c1ca760dbbfb93a72b6dd8e834014c3"
+        "size": 104117,
+        "sha256": "2d86b04fa8d25bbc8013cd33da5e27a274eeecfbf6cebcb342f4d194838627f0"
       },
       {
         "logicalPath": "iphone-15-dynamic-type/game",
-        "size": 539314,
-        "sha256": "a5a59ea167921b811725a382533bfa2ddcdce6b172729752ce9121f94397a194"
+        "size": 776710,
+        "sha256": "a2f5aa3748d9ae16845f3e7c4c6b3f2353c25aaf92946baddfbf42dee0099f4d"
       },
       {
         "logicalPath": "iphone-15-webkit-dynamic-type/directions-xlarge",
-        "size": 109239,
-        "sha256": "732a313cb088fefda61c242f91f7c3be8a4228ba6e9b9ed967103f3ce3d8b368"
+        "size": 110787,
+        "sha256": "ecf38b951d7d0feb9d52bcfdffc63db2d290507735909a9ec62dbc4df8c92e0e"
       },
       {
         "logicalPath": "iphone-15-webkit-dynamic-type/directions-xlarge-bottom",
-        "size": 106661,
-        "sha256": "2e3b41fab5ba7a63557e75045e540b875777973dd223296490bf9e3942b5ba2a"
+        "size": 111483,
+        "sha256": "e61b973d74108e6bc2871600f06a849ef55fd28048c32e2c2b3446c52ae094ba"
       },
       {
         "logicalPath": "iphone-15-webkit-dynamic-type/directions-xlarge-middle",
-        "size": 111686,
-        "sha256": "7a63a18fbd0440d07d79d76fdf0097f44fd085715de491b169b0b1c03bbea9a8"
+        "size": 115104,
+        "sha256": "435bf59f5e14cfffe92a08f87dd82dd3809d742a2d1f2fc58d8134c6aefb21f1"
       },
       {
         "logicalPath": "iphone-15-webkit-dynamic-type/game",
-        "size": 576045,
-        "sha256": "a56152d30829380ac5fca93548544ad0f2d59df29503b850ddb49a737fbac38e"
+        "size": 762315,
+        "sha256": "8ace5b21ae1025d1a73c8b6db9f180fb136cdc1ce4d86188b035f1573a4f3d67"
       },
       {
         "logicalPath": "iphone-15-webkit-text-200/directions-xlarge",
-        "size": 104483,
-        "sha256": "6a5a7ac7d095c2c98aef7ed472769a7c667cad8f0e689c7483ccb7d530e9a14b"
+        "size": 101269,
+        "sha256": "008e1b7076b6ec018423fdbcbccc5c190799c6a54954af0a7959be29895e0397"
       },
       {
         "logicalPath": "iphone-15-webkit-text-200/directions-xlarge-bottom",
-        "size": 103022,
-        "sha256": "6f93caec36d0ac713c2bc268263dccbee1deb1cba922a910a84f722d1526bba8"
+        "size": 102438,
+        "sha256": "810d1b0a5fef1ea41a496e015d3f37b3e10ae6b5c7756d35c3c852e5d22d16b1"
       },
       {
         "logicalPath": "iphone-15-webkit-text-200/directions-xlarge-middle",
-        "size": 101654,
-        "sha256": "f1c980b9512c69652d47d55968c6e7f76de361f229251ca767ff96bbd47c1145"
+        "size": 107238,
+        "sha256": "6f5d273f5b73841323e0a7510b9fc4b62511cde35b878332adb7e000ac73e36d"
       },
       {
         "logicalPath": "iphone-15-webkit-text-200/game",
-        "size": 576377,
-        "sha256": "cf7983030dcb7db1dacd548486d3115d749f5c0d12b9c11b85f62ac9ff2946b0"
+        "size": 762963,
+        "sha256": "6f357f30f5f395a3bfd7d7779c593ba21534904cf7ec883e1c211f921a0295f4"
       }
     ]
   },
@@ -116,7 +116,7 @@
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Refined directions travel-mode hierarchy and large-text layout",
+        "approvalReason": "Refined invitation sheet hierarchy, typography, and large-text layout",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -130,13 +130,13 @@
       "state": "directions-xlarge",
       "width": 360,
       "height": 780,
-      "sha256": "0693dace42e331c8098681c0e46b86cef7b07c0f148d2a7fc3ceef0e16e8b4a9",
+      "sha256": "df21f55b14a5115f0b99c0311ef670c04ed04292312b593dbce843686907e35c",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Refined directions travel-mode hierarchy and large-text layout",
+        "approvalReason": "Refined invitation sheet hierarchy, typography, and large-text layout",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -150,13 +150,13 @@
       "state": "directions-xlarge-middle",
       "width": 360,
       "height": 780,
-      "sha256": "e53bdfe02ebef70f34a51feda3dc80f5b18999f5130d43ba00854060cef015ff",
+      "sha256": "e5c1f4d94b5d33a40b66190e657e86b85b805a8401741bfb70decaab720ca49e",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Refined directions travel-mode hierarchy and large-text layout",
+        "approvalReason": "Refined invitation sheet hierarchy, typography, and large-text layout",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -170,13 +170,13 @@
       "state": "directions-xlarge-bottom",
       "width": 360,
       "height": 780,
-      "sha256": "ccdc380a9760c41883cfd43f4ab60a9f634d2d95244e6d15a1431eb7b297b1c6",
+      "sha256": "16c8bd8ba5067f187e30acecacdb0dfb76dfc226c7f106a105f6b8711e8be2af",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Refined directions travel-mode hierarchy and large-text layout",
+        "approvalReason": "Refined invitation sheet hierarchy, typography, and large-text layout",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -196,7 +196,7 @@
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Refined directions travel-mode hierarchy and large-text layout",
+        "approvalReason": "Refined invitation sheet hierarchy, typography, and large-text layout",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -210,13 +210,13 @@
       "state": "directions-xlarge",
       "width": 393,
       "height": 852,
-      "sha256": "b5b3af2e1633eb656acac95adda63dc32046c4b96d4dde9703fb450be2a0516d",
+      "sha256": "6fff16f5e2e549094fdb43680295c0460e2e09d1448de3e239615a6dc4ba19f6",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Refined directions travel-mode hierarchy and large-text layout",
+        "approvalReason": "Refined invitation sheet hierarchy, typography, and large-text layout",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -230,13 +230,13 @@
       "state": "directions-xlarge-middle",
       "width": 393,
       "height": 852,
-      "sha256": "85c6c6053818e50039fad7e01d3c7bccc249987ac580657d5bd96655235400fa",
+      "sha256": "f664231ee906cd4f85258d153b3a2120cb6a1c12d9232e2397b9ddbd33a849d4",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Refined directions travel-mode hierarchy and large-text layout",
+        "approvalReason": "Refined invitation sheet hierarchy, typography, and large-text layout",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -250,13 +250,13 @@
       "state": "directions-xlarge-bottom",
       "width": 393,
       "height": 852,
-      "sha256": "28d1ad71827f891f60a89d7572482c4fff97feaee99976abf36460f0cd5db593",
+      "sha256": "cdb911a79c7b81c973affe30564f9ee5aeb1bc58a0931360cf9f1715cfb7b4e5",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Refined directions travel-mode hierarchy and large-text layout",
+        "approvalReason": "Refined invitation sheet hierarchy, typography, and large-text layout",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -276,7 +276,7 @@
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Refined directions travel-mode hierarchy and large-text layout",
+        "approvalReason": "Refined invitation sheet hierarchy, typography, and large-text layout",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -290,13 +290,13 @@
       "state": "directions-xlarge",
       "width": 393,
       "height": 852,
-      "sha256": "1b71762ae153184e9db8c25ab8ab54fe5eaa8196ce2b22de6beec08e80d52416",
+      "sha256": "e4d0edffab4a038bef1a6019db11f3a92aafbd19fe2a18a8dfdf7a6606d24f3b",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Refined directions travel-mode hierarchy and large-text layout",
+        "approvalReason": "Refined invitation sheet hierarchy, typography, and large-text layout",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -310,13 +310,13 @@
       "state": "directions-xlarge-middle",
       "width": 393,
       "height": 852,
-      "sha256": "1c31c3528e6c0cd7ada8843dc4616f78fd02619877f4dc601d19168d5f8ea0f8",
+      "sha256": "ea5d65ed89496d0915b263b9f50facf846c905e7e48c8686529810927cfa5c2e",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Refined directions travel-mode hierarchy and large-text layout",
+        "approvalReason": "Refined invitation sheet hierarchy, typography, and large-text layout",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -330,13 +330,13 @@
       "state": "directions-xlarge-bottom",
       "width": 393,
       "height": 852,
-      "sha256": "7a76750f19690b40ecf592f500658a0623406718cfb049de9816b67170daedce",
+      "sha256": "d52f26803aeef59e9bcea264716469248d2cdbeb37f2a36bd957c14329a1d2ff",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Refined directions travel-mode hierarchy and large-text layout",
+        "approvalReason": "Refined invitation sheet hierarchy, typography, and large-text layout",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -356,7 +356,7 @@
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Refined directions travel-mode hierarchy and large-text layout",
+        "approvalReason": "Refined invitation sheet hierarchy, typography, and large-text layout",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -370,13 +370,13 @@
       "state": "directions-xlarge",
       "width": 393,
       "height": 852,
-      "sha256": "84d52b1ec747bea95657f2b8ecc41dd7d703a37fc2859e41b02d74ef9c9e60e2",
+      "sha256": "c9acd3fa70fb78f466e9468ac73b915c2e2c32fc5dcf43404a309a4c9d283174",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Refined directions travel-mode hierarchy and large-text layout",
+        "approvalReason": "Refined invitation sheet hierarchy, typography, and large-text layout",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -390,13 +390,13 @@
       "state": "directions-xlarge-middle",
       "width": 393,
       "height": 852,
-      "sha256": "a26e51a806fc80beba3c935ee40af75c550694882b569cb48b71349ce7a46533",
+      "sha256": "226a7c862eff195cab3893ba1e4efcbc6f730671e134ee275e0973aa636f896f",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Refined directions travel-mode hierarchy and large-text layout",
+        "approvalReason": "Refined invitation sheet hierarchy, typography, and large-text layout",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -410,13 +410,13 @@
       "state": "directions-xlarge-bottom",
       "width": 393,
       "height": 852,
-      "sha256": "9666ec0b1fdd4ba6e4e88dd93dc169d8ba608fcdb9c2f9bd0e6c2cf3a3befe58",
+      "sha256": "bba9ff91e651f099085f7df3bbf815a9470641c78bfc4410c00ed6c07f0889a4",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Refined directions travel-mode hierarchy and large-text layout",
+        "approvalReason": "Refined invitation sheet hierarchy, typography, and large-text layout",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,

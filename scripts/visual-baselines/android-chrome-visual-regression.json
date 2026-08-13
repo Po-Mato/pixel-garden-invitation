@@ -1,7 +1,7 @@
 {
   "version": 3,
-  "approvedAt": "2026-08-13T08:10:50.808Z",
-  "reason": "Refined directions travel-mode hierarchy and large-text layout",
+  "approvedAt": "2026-08-13T22:04:50.674Z",
+  "reason": "Refined invitation sheet hierarchy, typography, and large-text layout",
   "profile": {
     "id": "pixel-7-api-35-chrome",
     "deviceName": "Pixel 7",
@@ -9,7 +9,7 @@
     "requiredDirectionsScroll": 0
   },
   "capture": {
-    "generatedAt": "2026-08-13T08:03:27.413Z",
+    "generatedAt": "2026-08-13T21:56:29.626Z",
     "profile": {
       "id": "pixel-7-api-35-chrome",
       "deviceName": "Pixel 7",
@@ -28,10 +28,10 @@
       "width": 412
     },
     "browserVersion": null,
-    "runId": "31680094757",
+    "runId": "31747571370",
     "runAttempt": 1,
-    "sha": "11825feccf144d725f16f767d93708a7104128e1",
-    "runUrl": "https://github.com/Po-Mato/pixel-garden-invitation/actions/runs/31680094757",
+    "sha": "43712c2e4a3954f253207a7f8b5852f0ce3f0f24",
+    "runUrl": "https://github.com/Po-Mato/pixel-garden-invitation/actions/runs/31747571370",
     "retry": {
       "attempted": false,
       "reason": null
@@ -44,7 +44,7 @@
           {
             "attempt": 1,
             "outcome": "ready",
-            "durationMs": 5039,
+            "durationMs": 5049,
             "error": null
           }
         ]
@@ -56,7 +56,7 @@
           {
             "attempt": 1,
             "outcome": "ready",
-            "durationMs": 4878,
+            "durationMs": 4473,
             "error": null
           }
         ]
@@ -72,18 +72,18 @@
       "offlineEventDispatched": true,
       "transportProbe": {
         "previewHostReachableAfterStop": false,
-        "browserUrl": "http://127.0.0.1:4188/api/__device_pwa_transport_probe__?nonce=1786608319545",
+        "browserUrl": "http://127.0.0.1:4188/api/__device_pwa_transport_probe__?nonce=1786658298283",
         "browserFetchResolved": false,
         "browserStatus": null,
         "browserError": "Failed to fetch",
         "browserErrorKind": "failed-to-fetch",
-        "durationMs": 144.10000000000582,
+        "durationMs": 19,
         "transportBlocked": true
       },
       "cachedPaths": 83,
       "controlled": true,
       "expectedPaths": 83,
-      "precacheName": "wedding-garden-precache-11825feccf14",
+      "precacheName": "wedding-garden-precache-43712c2e4a39",
       "serviceWorkerSupported": true,
       "blockingNoticeVisible": false,
       "brokenImages": [],
@@ -98,7 +98,7 @@
     "scrollStates": {
       "directions": {
         "horizontalOverflow": false,
-        "maxScroll": 61,
+        "maxScroll": 89,
         "reached": true,
         "scrollTop": 0,
         "target": 0
@@ -132,14 +132,14 @@
       },
       {
         "state": "directions",
-        "changedPixels": 48547,
-        "changedRatio": 0.02042295589546839,
-        "meanPixelDifference": 3.3089546838978916,
+        "changedPixels": 370904,
+        "changedRatio": 0.15603345280764636,
+        "meanPixelDifference": 23.745850791727666,
         "pixelCount": 2377080,
         "passed": false,
         "maxChangedRatio": 0.015,
-        "rawChangedRatio": 0.020715331415013378,
-        "rawMeanPixelDifference": 3.5469689703333502,
+        "rawChangedRatio": 0.14011055580796608,
+        "rawMeanPixelDifference": 25.013129553906474,
         "baselinePath": "/home/runner/work/pixel-garden-invitation/pixel-garden-invitation/scripts/visual-baselines/android-chrome-pixel-7-api-35-chrome-directions.webp",
         "currentPath": "/home/runner/work/pixel-garden-invitation/pixel-garden-invitation/.superpowers/visual-regression/android-chrome/android-chrome-pixel-7-api-35-chrome-directions-current.png",
         "diffPath": "/home/runner/work/pixel-garden-invitation/pixel-garden-invitation/.superpowers/visual-regression/android-chrome/android-chrome-pixel-7-api-35-chrome-directions-diff.png",
@@ -148,11 +148,11 @@
           "confidence": "high",
           "likelyCause": "layout-or-content-change",
           "review": "required",
-          "changedRatio": 0.02042295589546839,
-          "rawChangedRatio": 0.020715331415013378,
-          "filteredNoiseRatio": 0.00029237551954498786,
-          "filteredNoiseShare": 0.014113967751106774,
-          "budgetUsage": 1.3615303930312261
+          "changedRatio": 0.15603345280764636,
+          "rawChangedRatio": 0.14011055580796608,
+          "filteredNoiseRatio": 0,
+          "filteredNoiseShare": 0,
+          "budgetUsage": 10.402230187176425
         }
       }
     ],
@@ -167,23 +167,23 @@
     "schemaVersion": 1,
     "subjectKind": "capture-set",
     "sourceKind": "github-actions",
-    "runId": "31680094757",
+    "runId": "31747571370",
     "runAttempt": 1,
-    "commitSha": "11825feccf144d725f16f767d93708a7104128e1",
-    "runUrl": "https://github.com/Po-Mato/pixel-garden-invitation/actions/runs/31680094757",
+    "commitSha": "43712c2e4a3954f253207a7f8b5852f0ce3f0f24",
+    "runUrl": "https://github.com/Po-Mato/pixel-garden-invitation/actions/runs/31747571370",
     "checksumAlgorithm": "sha256",
     "artifactChecksumScope": "sorted-capture-set-manifest",
-    "artifactSha256": "d0f698e6641d8bf42707e3062e2653caeece0ebf9b9f679d792f6f4270619020",
+    "artifactSha256": "e801ffb6158974b366660e567248fb806a3df9d89113dac52f27dd496970579e",
     "files": [
       {
         "logicalPath": "pixel-7-api-35-chrome/directions",
-        "size": 454605,
-        "sha256": "574400757700f87782e0d1cdf315512c06d2c0b2b1c7d24416a8bb89458dd503"
+        "size": 511499,
+        "sha256": "5facb8c9a62ea1dd8e82f189811bb8ee18f815e52cc2b0d9a9500c594e86117a"
       },
       {
         "logicalPath": "pixel-7-api-35-chrome/game",
-        "size": 2105112,
-        "sha256": "8e559d55fe7424bf35a4fc04b094ffc943a7f39d0ffd0ab6701db86b88c97103"
+        "size": 3732608,
+        "sha256": "8e5678fb2b8ee575d8e1f0576967f11131b2f47d19b2f1b082917956b13fe246"
       }
     ]
   },
@@ -203,7 +203,7 @@
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Refined directions travel-mode hierarchy and large-text layout",
+        "approvalReason": "Refined invitation sheet hierarchy, typography, and large-text layout",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -216,13 +216,13 @@
       "state": "directions",
       "width": 1080,
       "height": 2201,
-      "sha256": "3f6bd52d61d4675a9784105566ed007e1cfb14fba1918df348460f587615e275",
+      "sha256": "23ab70821b6a93688f869b9a1ed7e7a6d1888093a9dc837314393a4fa7226a2a",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Refined directions travel-mode hierarchy and large-text layout",
+        "approvalReason": "Refined invitation sheet hierarchy, typography, and large-text layout",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
