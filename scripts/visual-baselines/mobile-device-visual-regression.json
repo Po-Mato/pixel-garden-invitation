@@ -1,7 +1,7 @@
 {
   "version": 5,
-  "approvedAt": "2026-08-13T00:07:39.444Z",
-  "reason": "Reviewed refined arrival guide cards across large-text mobile profiles for 19aa955",
+  "approvedAt": "2026-08-13T04:32:26.705Z",
+  "reason": "Refined large-text directions hierarchy and stacked map actions",
   "pixelThreshold": 36,
   "maxChangedRatio": 0.015,
   "profileMaxChangedRatioOverrides": {
@@ -13,28 +13,28 @@
     "schemaVersion": 1,
     "subjectKind": "capture-set",
     "sourceKind": "github-actions",
-    "runId": "31652709181",
+    "runId": "31666865258",
     "runAttempt": 1,
-    "commitSha": "19aa95561694dc947cd217eda0bd12ac2521769f",
-    "runUrl": "https://github.com/Po-Mato/pixel-garden-invitation/actions/runs/31652709181",
+    "commitSha": "99bdbea1eccfd6a7dd78ea1ee5a3e756aff6196a",
+    "runUrl": "https://github.com/Po-Mato/pixel-garden-invitation/actions/runs/31666865258",
     "checksumAlgorithm": "sha256",
     "artifactChecksumScope": "sorted-capture-set-manifest",
-    "artifactSha256": "20afd99dcd62d075fab18f728997860ea450d198be9b6da61dee97632601f80c",
+    "artifactSha256": "f1651fd592dfe96df4acd067392ef972b60665431719d8fbffa1ce3027fab847",
     "files": [
       {
         "logicalPath": "galaxy-s23-font-150/directions-xlarge",
-        "size": 104883,
-        "sha256": "5a24fa3b90fb86bb4dde52a541c52593baf0e11c01ed9afc7177fd4c888d78bf"
+        "size": 101865,
+        "sha256": "6efa2944e694fac9b9c12609e76ac82443c3872373a4729d590bd35aed971586"
       },
       {
         "logicalPath": "galaxy-s23-font-150/directions-xlarge-bottom",
-        "size": 97673,
-        "sha256": "5ef06590042e43cc8fbeeca7ba50ea8ab06960144d85e7cf352258c5bccdb257"
+        "size": 98989,
+        "sha256": "0515ced94dd86f8bb46cbcd56a3740093519baa02fbcc4ba8a4144fdc381077b"
       },
       {
         "logicalPath": "galaxy-s23-font-150/directions-xlarge-middle",
-        "size": 89138,
-        "sha256": "fdada1f6b601d734d903ddf0f46fb3674fb09f3d75a671981ffdcdcc4d422506"
+        "size": 91479,
+        "sha256": "ddde26157310eea2081e4b1a39d574aee05b9308ee84b679645017cd21ebe212"
       },
       {
         "logicalPath": "galaxy-s23-font-150/game",
@@ -43,18 +43,18 @@
       },
       {
         "logicalPath": "iphone-15-dynamic-type/directions-xlarge",
-        "size": 108269,
-        "sha256": "3792fa361aa131f1b8779b9df35cbde45b95e0e497b85a8c9c06155bbc7028f3"
+        "size": 106668,
+        "sha256": "3e74e7be0e3c8b425047bb1cd203708edd501af8f89d023bd10343a476a08f12"
       },
       {
         "logicalPath": "iphone-15-dynamic-type/directions-xlarge-bottom",
-        "size": 97542,
-        "sha256": "ba2f270a97d1b352309065377b62f010860b6065ce6ad54094f004c57abaa27e"
+        "size": 98911,
+        "sha256": "7d620aada0d58896886a86aaffa696ce382aae82a14d936f5c648886df6e3a6b"
       },
       {
         "logicalPath": "iphone-15-dynamic-type/directions-xlarge-middle",
-        "size": 101839,
-        "sha256": "e319c37e9eaeaf5ae9239b4feab9e6e218965a2ea0925303ed014857e59771c8"
+        "size": 95108,
+        "sha256": "ce51b62d175f6546f973b11d08827746047e2ad6b447c3c5990e89a1aa1f96b8"
       },
       {
         "logicalPath": "iphone-15-dynamic-type/game",
@@ -63,18 +63,18 @@
       },
       {
         "logicalPath": "iphone-15-webkit-dynamic-type/directions-xlarge",
-        "size": 109854,
-        "sha256": "16b13472defc7064e4d88216ac108dc647910fe78cb6ecd4313b0c2909a12e6e"
+        "size": 109655,
+        "sha256": "9f22a3a95ea748475b0d84c9992aee922ca492f8b3869c3b0a71d046136525f4"
       },
       {
         "logicalPath": "iphone-15-webkit-dynamic-type/directions-xlarge-bottom",
-        "size": 102200,
-        "sha256": "a2a915f5324ae4064383effeafeadf55d999466f23b5c2b7633d84d06c383c9e"
+        "size": 102596,
+        "sha256": "cc2aae30b60717aec145ee4e8f244238060b47372c5705bef383c9a5b610aa99"
       },
       {
         "logicalPath": "iphone-15-webkit-dynamic-type/directions-xlarge-middle",
-        "size": 105910,
-        "sha256": "405ce6d7c4eaa83f9009a62a73e29e72df35b1f6b3d19d45ebff2f4c6a702440"
+        "size": 107106,
+        "sha256": "79ae80ecd4a7794419b8a00e16531fd60ac74eca6a3839e66250bfa77768bab5"
       },
       {
         "logicalPath": "iphone-15-webkit-dynamic-type/game",
@@ -83,18 +83,18 @@
       },
       {
         "logicalPath": "iphone-15-webkit-text-200/directions-xlarge",
-        "size": 103530,
-        "sha256": "b6933a934668ba331f4eae10459ca5f501bf7f5be2531da7a7e543415ad6d2fe"
+        "size": 104483,
+        "sha256": "6a5a7ac7d095c2c98aef7ed472769a7c667cad8f0e689c7483ccb7d530e9a14b"
       },
       {
         "logicalPath": "iphone-15-webkit-text-200/directions-xlarge-bottom",
-        "size": 95818,
-        "sha256": "4f69c4e0efe8a36279ad1c6cf535ca0c1c147b076662f4a2abf270cba18fadb6"
+        "size": 95902,
+        "sha256": "4a07b1a61a5a91dd9452541ce9a2d4d30893edafcb6c629ebbe2e361b7ef7bb8"
       },
       {
         "logicalPath": "iphone-15-webkit-text-200/directions-xlarge-middle",
-        "size": 100625,
-        "sha256": "40ee7e1559f7d4c6bbebc271a948efafcc5ebb28fcafa76c068e0370777e9374"
+        "size": 100638,
+        "sha256": "4f0ea4d5df34ac6c3915eaf5e12069fc72fe7a9c31148c2e3aea3861364a2d67"
       },
       {
         "logicalPath": "iphone-15-webkit-text-200/game",
@@ -116,7 +116,7 @@
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Reviewed refined arrival guide cards across large-text mobile profiles for 19aa955",
+        "approvalReason": "Refined large-text directions hierarchy and stacked map actions",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -130,13 +130,13 @@
       "state": "directions-xlarge",
       "width": 360,
       "height": 780,
-      "sha256": "948cd0e8372b272636527352d85044f662e425ce81ecf49f615eee72a9dc77fe",
+      "sha256": "0693dace42e331c8098681c0e46b86cef7b07c0f148d2a7fc3ceef0e16e8b4a9",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Reviewed refined arrival guide cards across large-text mobile profiles for 19aa955",
+        "approvalReason": "Refined large-text directions hierarchy and stacked map actions",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -150,13 +150,13 @@
       "state": "directions-xlarge-middle",
       "width": 360,
       "height": 780,
-      "sha256": "4778e31488a41f9be133348b8ef32988099a84c7360f73c5c366b48589c07039",
+      "sha256": "18913ea07a19dfa55bbb1ce4f481a192490a92262bd130c217b83ec1c1c1e204",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Reviewed refined arrival guide cards across large-text mobile profiles for 19aa955",
+        "approvalReason": "Refined large-text directions hierarchy and stacked map actions",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -170,13 +170,13 @@
       "state": "directions-xlarge-bottom",
       "width": 360,
       "height": 780,
-      "sha256": "d7121f4eb3f2d1bfd9e7db6cc38f7d3c596f10a76250c058b9959aa81731cdf8",
+      "sha256": "f596bb840c4b80ef0c5a2d28c7fcbd6ce0e7eebbc9938b88ebfdd28b5daa53a4",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Reviewed refined arrival guide cards across large-text mobile profiles for 19aa955",
+        "approvalReason": "Refined large-text directions hierarchy and stacked map actions",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -196,7 +196,7 @@
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Reviewed refined arrival guide cards across large-text mobile profiles for 19aa955",
+        "approvalReason": "Refined large-text directions hierarchy and stacked map actions",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -210,13 +210,13 @@
       "state": "directions-xlarge",
       "width": 393,
       "height": 852,
-      "sha256": "66250295c33783ecfef9c27c78a4fbb035641738cffebb372570d918508b5938",
+      "sha256": "b5b3af2e1633eb656acac95adda63dc32046c4b96d4dde9703fb450be2a0516d",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Reviewed refined arrival guide cards across large-text mobile profiles for 19aa955",
+        "approvalReason": "Refined large-text directions hierarchy and stacked map actions",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -230,13 +230,13 @@
       "state": "directions-xlarge-middle",
       "width": 393,
       "height": 852,
-      "sha256": "fa34cb5b2d5d367bfb90a278f91f61333188104ec0d0366c87198392eb54f4aa",
+      "sha256": "277832bdac58d0c580a9d524b1e4509fea8099dcdc5268a67d27eff80d47dc77",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Reviewed refined arrival guide cards across large-text mobile profiles for 19aa955",
+        "approvalReason": "Refined large-text directions hierarchy and stacked map actions",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -250,13 +250,13 @@
       "state": "directions-xlarge-bottom",
       "width": 393,
       "height": 852,
-      "sha256": "526780a70b44b9f1cd62f25ed334334d532d479778945fcd5c6253783559bbf6",
+      "sha256": "d80ef5ed6010a384976f64fc891679fa358ec141c06fd1d963674dae50be9aea",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Reviewed refined arrival guide cards across large-text mobile profiles for 19aa955",
+        "approvalReason": "Refined large-text directions hierarchy and stacked map actions",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -276,7 +276,7 @@
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Reviewed refined arrival guide cards across large-text mobile profiles for 19aa955",
+        "approvalReason": "Refined large-text directions hierarchy and stacked map actions",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -290,13 +290,13 @@
       "state": "directions-xlarge",
       "width": 393,
       "height": 852,
-      "sha256": "26f1c237e70e99882180b9ed8ad77219d95703422a16397ddf50eee40ccc4d7c",
+      "sha256": "8bab0f50f4f0592c830811d5339681f08101d8509bc7c23a30a533c3e739d4fb",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Reviewed refined arrival guide cards across large-text mobile profiles for 19aa955",
+        "approvalReason": "Refined large-text directions hierarchy and stacked map actions",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -310,13 +310,13 @@
       "state": "directions-xlarge-middle",
       "width": 393,
       "height": 852,
-      "sha256": "82214636389df040d170ac0f36452902c37d6c16fcb9a197428000a3798ad1d2",
+      "sha256": "65c1b47ddc532832069e767f376adb417bd484b7972cebdc8adc813664ca01f5",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Reviewed refined arrival guide cards across large-text mobile profiles for 19aa955",
+        "approvalReason": "Refined large-text directions hierarchy and stacked map actions",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -330,13 +330,13 @@
       "state": "directions-xlarge-bottom",
       "width": 393,
       "height": 852,
-      "sha256": "1f9d6de92d7eb5ef8148976dd41ed3472f7b459b8dcd57c2cb36f5a5b82e12ab",
+      "sha256": "e95fee495f17e51ac6724a47a49049bee7b7128aaa49fc6f64a3dcc858ac45f1",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Reviewed refined arrival guide cards across large-text mobile profiles for 19aa955",
+        "approvalReason": "Refined large-text directions hierarchy and stacked map actions",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -356,7 +356,7 @@
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Reviewed refined arrival guide cards across large-text mobile profiles for 19aa955",
+        "approvalReason": "Refined large-text directions hierarchy and stacked map actions",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -370,13 +370,13 @@
       "state": "directions-xlarge",
       "width": 393,
       "height": 852,
-      "sha256": "13adfbf325f8b67af67fa698bcc5edf952e176a1775453a2aa2578755b1f8b53",
+      "sha256": "84d52b1ec747bea95657f2b8ecc41dd7d703a37fc2859e41b02d74ef9c9e60e2",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Reviewed refined arrival guide cards across large-text mobile profiles for 19aa955",
+        "approvalReason": "Refined large-text directions hierarchy and stacked map actions",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -390,13 +390,13 @@
       "state": "directions-xlarge-middle",
       "width": 393,
       "height": 852,
-      "sha256": "17143c0792c6535c76bd7d5b65f2658b3cc71c95a6f9b5e183a44bf659b5ecd6",
+      "sha256": "cf98b8e8da22489d111d7af0f17515f84c33b4f03d06f7d3c336f9d95df4b400",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Reviewed refined arrival guide cards across large-text mobile profiles for 19aa955",
+        "approvalReason": "Refined large-text directions hierarchy and stacked map actions",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -410,13 +410,13 @@
       "state": "directions-xlarge-bottom",
       "width": 393,
       "height": 852,
-      "sha256": "5fb3db5662df11983fb8a9c8957ffd299c5415658ce1af8584ca44ff64458a67",
+      "sha256": "599cdc81d1d8c46d903849a0a044b0103f354973ac0e07ede858c3ae2b97138c",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Reviewed refined arrival guide cards across large-text mobile profiles for 19aa955",
+        "approvalReason": "Refined large-text directions hierarchy and stacked map actions",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
