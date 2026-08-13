@@ -105,6 +105,7 @@ function SectionHeading({ number, eyebrow, title, body }: SectionHeadingProps) {
 function scrollToSection(id: string) {
   const timers: number[] = [];
   const align = (smooth: boolean) => {
+    if (typeof document === "undefined") return;
     const target = document.getElementById(id);
     target?.scrollIntoView({
       behavior: smooth && !shouldReduceMotion() ? "smooth" : "auto",
