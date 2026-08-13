@@ -1081,6 +1081,7 @@ describe("GameWorld", () => {
 
     const directions = screen.getByRole("dialog", { name: "오시는 길" });
     expect(directions).toHaveTextContent("네이버지도");
+    fireEvent.click(within(directions).getByRole("tab", { name: /자가용·주차/ }));
     expect(directions).toHaveTextContent("주차 2시간 무료");
     expect(screen.queryByText("MJ컨벤션은 경기 부천시 소사구 경인로 386에 있습니다.")).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "방문 스탬프 1/5, 열기" })).toBeInTheDocument();

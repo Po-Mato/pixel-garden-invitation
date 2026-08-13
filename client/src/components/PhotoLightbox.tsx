@@ -3,6 +3,7 @@ import { ChevronLeft, ChevronRight, ImageUp, MoveHorizontal, X } from "lucide-re
 import { useEffect, useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent } from "react";
 import { createPortal } from "react-dom";
 import { isolateAppForModal } from "../accessibility/modalIsolation";
+import { shouldReduceMotion } from "../accessibility/viewPreferences";
 import { useViewPreferences } from "../accessibility/ViewPreferencesContext";
 import { useNetworkMode } from "../performance/networkQuality";
 import { galleryPrefetchUrl, nextGalleryPrefetchIndex } from "../performance/galleryPrefetch";
@@ -47,6 +48,7 @@ export function PhotoLightbox({ photos, index, onIndexChange, onClose }: PhotoLi
   const [dragOffset, setDragOffset] = useState(0);
   const dialogRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const thumbnailButtonRefs = useRef<Array<HTMLButtonElement | null>>([]);
   const pointerStartRef = useRef<PointerStart | null>(null);
   const indexRef = useRef(index);
   const photoCountRef = useRef(photos.length);
@@ -162,6 +164,16 @@ export function PhotoLightbox({ photos, index, onIndexChange, onClose }: PhotoLi
       if (timer !== null) window.clearTimeout(timer);
     };
   }, [index, networkMode, photos]);
+
+  useEffect(() => {
+    const selectedThumbnail = thumbnailButtonRefs.current[index];
+    if (typeof selectedThumbnail?.scrollIntoView !== "function") return;
+    selectedThumbnail.scrollIntoView({
+      behavior: shouldReduceMotion() ? "auto" : "smooth",
+      block: "nearest",
+      inline: "center"
+    });
+  }, [index]);
 
   if (!photo) {
     return null;
@@ -306,6 +318,9 @@ export function PhotoLightbox({ photos, index, onIndexChange, onClose }: PhotoLi
           {photos.map((candidate, photoIndex) => (
             <button
               key={candidate.id}
+              ref={(element) => {
+                thumbnailButtonRefs.current[photoIndex] = element;
+              }}
               type="button"
               aria-label={`${photoIndex + 1}번 사진 보기`}
               aria-current={photoIndex === index ? "true" : undefined}

@@ -3116,3 +3116,285 @@ html[data-reduce-motion="true"] :is(
 html[data-reduce-motion="true"] :is(.wedding-gallery__guide-progress > span > i, .photo-lightbox__thumbnail) {
   transition: none;
 }
+
+/* Gallery filmstrip — keep the active frame centered while the guest swipes. */
+.photo-lightbox__index {
+  scroll-padding-inline: calc(50% - 24px);
+  mask-image: linear-gradient(90deg, transparent, #000 18px, #000 calc(100% - 18px), transparent);
+}
+
+.photo-lightbox__index::before,
+.photo-lightbox__index::after {
+  min-width: calc(50% - 24px);
+  flex: 0 0 calc(50% - 24px);
+  content: "";
+}
+
+.photo-lightbox__index button {
+  scroll-margin-inline: calc(50% - 24px);
+  transition: border-color 180ms ease, background 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+}
+
+.photo-lightbox__index button[aria-current="true"] {
+  transform: translateY(-2px);
+}
+
+/* RSVP receipt — make successful submission unmistakable and guide the next step. */
+.rsvp-summary__receipt {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 3px 10px;
+  margin: 13px 0 11px;
+  border: 1px solid rgba(161, 132, 86, 0.22);
+  border-radius: 14px;
+  padding: 11px 12px;
+  background:
+    linear-gradient(135deg, rgba(255, 252, 244, 0.96), rgba(245, 250, 246, 0.94)),
+    #fffdf8;
+  box-shadow: inset 3px 0 #b4945f;
+}
+
+.rsvp-summary__receipt > span {
+  display: inline-flex;
+  grid-row: 1 / span 2;
+  align-items: center;
+  gap: 5px;
+  color: #886b3f;
+  font-size: 8.5px;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+
+.rsvp-summary__receipt > span > svg {
+  width: 15px;
+  height: 15px;
+}
+
+.rsvp-summary__receipt > strong {
+  color: #495a50;
+  font-size: 10px;
+  font-weight: 850;
+  line-height: 1.4;
+  text-align: right;
+}
+
+.rsvp-summary__receipt > small {
+  color: #7c8881;
+  font-size: 8px;
+  line-height: 1.4;
+  text-align: right;
+}
+
+/* Arrival tabs — show one travel decision at a time instead of two long cards. */
+.directions-sheet__travel-tabs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 5px;
+  border: 1px solid rgba(105, 134, 121, 0.2);
+  border-radius: 15px;
+  padding: 5px;
+  background: rgba(235, 242, 237, 0.7);
+}
+
+.directions-sheet__travel-tabs > button {
+  display: grid;
+  min-width: 0;
+  min-height: 58px;
+  grid-template-columns: 26px minmax(0, 1fr);
+  align-items: center;
+  gap: 7px;
+  border: 1px solid transparent;
+  border-radius: 11px;
+  padding: 8px 9px;
+  background: transparent;
+  color: #697970;
+  text-align: left;
+  transition: border-color 160ms ease, background 160ms ease, color 160ms ease, box-shadow 160ms ease;
+}
+
+.directions-sheet__travel-tabs > button[aria-selected="true"] {
+  border-color: rgba(105, 134, 121, 0.28);
+  background: #fffefb;
+  color: #425b50;
+  box-shadow: 0 6px 15px rgba(55, 77, 65, 0.08);
+}
+
+.directions-sheet__travel-tabs > button > svg {
+  width: 21px;
+  height: 21px;
+  justify-self: center;
+}
+
+.directions-sheet__travel-tabs > button > span {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+
+.directions-sheet__travel-tabs strong {
+  font-family: var(--wedding-font-display);
+  font-size: 12px;
+  line-height: 1.35;
+  word-break: keep-all;
+}
+
+.directions-sheet__travel-tabs small {
+  overflow: hidden;
+  color: #829087;
+  font-size: 7.5px;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.directions-sheet__travel-panel.directions-sheet__info {
+  display: grid;
+  min-height: 110px;
+  grid-template-columns: 34px minmax(0, 1fr);
+  align-items: start;
+  gap: 10px;
+  border-color: rgba(105, 134, 121, 0.25);
+  border-radius: 15px;
+  padding: 15px 14px;
+  background: rgba(255, 255, 252, 0.9);
+  box-shadow: 0 8px 20px rgba(55, 77, 65, 0.06);
+}
+
+.directions-sheet__travel-panel.directions-sheet__info[data-mode="parking"] {
+  border-color: rgba(161, 132, 86, 0.28);
+  background: rgba(255, 252, 245, 0.92);
+}
+
+.directions-sheet__travel-panel > svg {
+  width: 26px;
+  height: 26px;
+  margin-top: 2px;
+  color: #648173;
+}
+
+.directions-sheet__travel-panel[data-mode="parking"] > svg {
+  color: #9a7a48;
+}
+
+.directions-sheet__travel-panel > div {
+  display: grid;
+  min-width: 0;
+  gap: 4px;
+}
+
+.directions-sheet__travel-panel > div > small {
+  color: #7b8a82;
+  font-size: 7.5px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+}
+
+.directions-sheet__travel-panel > div > strong {
+  color: #42564c;
+  font-family: var(--wedding-font-display);
+  font-size: 14px;
+}
+
+.directions-sheet__travel-panel > div > span {
+  color: #627068;
+  font-size: 10px;
+  line-height: 1.65;
+  word-break: keep-all;
+}
+
+/* Editorial section rhythm — connect each chapter and reveal headings on entry. */
+.quick-band[id]:not(.quick-closing) {
+  min-height: min-content;
+  scroll-margin-top: 56px;
+  padding-block: clamp(68px, 10dvh, 84px);
+}
+
+.quick-band[id]:not(.quick-closing)::after {
+  position: absolute;
+  bottom: -16px;
+  left: 50%;
+  z-index: 1;
+  width: 1px;
+  height: 32px;
+  background: linear-gradient(180deg, var(--quick-section-accent), color-mix(in srgb, var(--quick-section-accent) 10%, transparent));
+  content: "";
+  opacity: 0.42;
+  pointer-events: none;
+}
+
+@keyframes invitation-section-heading-reveal {
+  from {
+    opacity: 0.38;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@supports (animation-timeline: view()) {
+  .quick-band[id] > .quick-section-heading {
+    animation: invitation-section-heading-reveal 1ms linear both;
+    animation-timeline: view(block);
+    animation-range: entry 4% cover 28%;
+  }
+}
+
+@media (max-width: 350px) {
+  .directions-sheet__travel-tabs > button {
+    grid-template-columns: 22px minmax(0, 1fr);
+    gap: 5px;
+    padding-inline: 7px;
+  }
+
+  .directions-sheet__travel-tabs > button > svg {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+:is(html[data-text-scale="xlarge"], html[data-text-scale="ios-200"], html[data-typography-audit]) .rsvp-summary__receipt {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+:is(html[data-text-scale="xlarge"], html[data-text-scale="ios-200"], html[data-typography-audit]) .rsvp-summary__receipt > span {
+  grid-row: auto;
+}
+
+:is(html[data-text-scale="xlarge"], html[data-text-scale="ios-200"], html[data-typography-audit]) .rsvp-summary__receipt > :is(strong, small) {
+  text-align: left;
+}
+
+:is(html[data-text-scale="xlarge"], html[data-text-scale="ios-200"], html[data-typography-audit]) .directions-sheet__travel-tabs > button {
+  min-height: 76px;
+  grid-template-columns: minmax(0, 1fr);
+  justify-items: center;
+  text-align: center;
+}
+
+:is(html[data-text-scale="xlarge"], html[data-text-scale="ios-200"], html[data-typography-audit]) .directions-sheet__travel-tabs small {
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .photo-lightbox__index button,
+  .directions-sheet__travel-tabs > button,
+  .quick-band[id] > .quick-section-heading {
+    animation: none;
+    transition: none;
+  }
+}
+
+html[data-reduce-motion="true"] :is(
+  .photo-lightbox__index button,
+  .directions-sheet__travel-tabs > button,
+  .quick-band[id] > .quick-section-heading
+) {
+  animation: none;
+  transition: none;
+}

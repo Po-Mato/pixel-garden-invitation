@@ -84,6 +84,8 @@ describe("RsvpPanel", () => {
     expect(summary).not.toBeNull();
     expect(within(summary as HTMLElement).getByText("RSVP SAVED")).toBeInTheDocument();
     expect(within(summary as HTMLElement).getByText("소중한 답변을 안전하게 보관했어요.")).toBeInTheDocument();
+    expect(within(summary as HTMLElement).getByLabelText("참석 답변 접수 정보")).toHaveTextContent("접수 완료");
+    expect(within(summary as HTMLElement).getByLabelText("참석 답변 접수 정보")).toHaveTextContent("2027년 4월 20일");
     expect(within(summary as HTMLElement).getByText(/예식 전까지 이 기기에서 다시 수정/)).toBeInTheDocument();
     expect(summary?.querySelector('[data-attendance="yes"]')).toHaveTextContent("참석");
     const highlights = within(summary as HTMLElement).getByLabelText("저장한 참석 답변 요약");
@@ -92,7 +94,8 @@ describe("RsvpPanel", () => {
     expect(highlights).toHaveTextContent("식사 예정");
     expect(within(summary as HTMLElement).getByText("저장한 답변 전체 보기").closest("details")).not.toHaveAttribute("open");
     expect(storage.saveRsvpCredential).toHaveBeenCalledWith("sample-garden", credential);
-    fireEvent.click(screen.getByRole("button", { name: "오시는 길 다시 보기" }));
+    expect(screen.getByRole("button", { name: "오시는 길 확인" })).toHaveClass("primary-button");
+    fireEvent.click(screen.getByRole("button", { name: "오시는 길 확인" }));
     expect(onBackToDirections).toHaveBeenCalledOnce();
   });
 

@@ -12,7 +12,7 @@ import {
 import { clearRsvpCredential, loadRsvpCredential, saveRsvpCredential } from "../invitation/rsvpStorage";
 import { RsvpForm, type RsvpFormInitialValue } from "./RsvpForm";
 import { trackAnalyticsContextEvent } from "../analytics/invitationAnalytics";
-import { ChevronDown, CircleCheckBig, FileText, MapPin, Pencil, UserRound, UsersRound, UtensilsCrossed } from "lucide-react";
+import { CalendarCheck2, ChevronDown, CircleCheckBig, FileText, MapPin, Pencil, UserRound, UsersRound, UtensilsCrossed } from "lucide-react";
 
 type PanelState =
   | { kind: "loading" }
@@ -285,6 +285,11 @@ export function RsvpPanel({ onBackToDirections }: { onBackToDirections?: () => v
             </div>
             <strong data-attendance={state.response.attendance}>{attendanceLabel[state.response.attendance]}</strong>
           </header>
+          <div className="rsvp-summary__receipt" aria-label="참석 답변 접수 정보">
+            <span><CalendarCheck2 aria-hidden="true" /> 접수 완료</span>
+            <strong>{formatUpdatedAt(state.response.updatedAt)}</strong>
+            <small>이 기기에 안전하게 저장되었습니다</small>
+          </div>
           <div className="rsvp-summary__highlights" aria-label="저장한 참석 답변 요약">
             <article>
               <UserRound aria-hidden="true" />
@@ -318,14 +323,14 @@ export function RsvpPanel({ onBackToDirections }: { onBackToDirections?: () => v
           </details>
           <p className="rsvp-summary__guidance">변경이 필요하면 예식 전까지 이 기기에서 다시 수정할 수 있습니다.</p>
           <div className="rsvp-summary__actions">
-            <button type="button" className="primary-button" onClick={() => { setNotice(""); setState({ kind: "editing", response: state.response }); }}>
-              <Pencil aria-hidden="true" /> 답변 내용 수정
-            </button>
             {onBackToDirections ? (
-              <button type="button" onClick={onBackToDirections}>
-                <MapPin aria-hidden="true" /> 오시는 길 다시 보기
+              <button type="button" className="primary-button" onClick={onBackToDirections}>
+                <MapPin aria-hidden="true" /> 오시는 길 확인
               </button>
             ) : null}
+            <button type="button" onClick={() => { setNotice(""); setState({ kind: "editing", response: state.response }); }}>
+              <Pencil aria-hidden="true" /> 답변 내용 수정
+            </button>
           </div>
         </section>
       ) : null}

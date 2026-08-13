@@ -18,6 +18,7 @@ class MockPointerEvent extends MouseEvent {
 
 beforeEach(() => {
   vi.stubGlobal("PointerEvent", MockPointerEvent);
+  Element.prototype.scrollIntoView = vi.fn();
 });
 
 afterEach(() => {
@@ -76,6 +77,23 @@ describe("전체 화면 웨딩 사진 뷰어", () => {
     expect(dialog.querySelectorAll(".photo-lightbox__thumbnail")).toHaveLength(photos.length);
     expect(screen.getByRole("button", { name: "1번 사진 보기" }).querySelector(".photo-lightbox__thumbnail"))
       .toHaveStyle({ backgroundImage: expect.stringContaining("01-cover-640.webp") });
+    expect(Element.prototype.scrollIntoView).toHaveBeenCalledWith({
+      behavior: "smooth",
+      block: "nearest",
+      inline: "center"
+    });
+  });
+
+  it("사진을 바꾸면 선택한 썸네일을 스트립 중앙으로 따라온다", () => {
+    const { rerender } = render(
+      <PhotoLightbox photos={photos} index={0} onIndexChange={vi.fn()} onClose={vi.fn()} />
+    );
+    vi.mocked(Element.prototype.scrollIntoView).mockClear();
+
+    rerender(<PhotoLightbox photos={photos} index={7} onIndexChange={vi.fn()} onClose={vi.fn()} />);
+
+    expect(screen.getByRole("button", { name: "8번 사진 보기" })).toHaveAttribute("aria-current", "true");
+    expect(Element.prototype.scrollIntoView).toHaveBeenCalledOnce();
   });
 
   it("드래그하는 동안 사진을 손가락 방향으로 움직이고 놓으면 원위치한다", () => {

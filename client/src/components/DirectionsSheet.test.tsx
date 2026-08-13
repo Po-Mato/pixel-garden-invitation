@@ -18,13 +18,12 @@ it("확정된 예식장, 교통, 주차, 지도, 전화 동작을 표시한다",
   );
   expect(screen.getByText("경기 부천시 소사구 경인로 386")).toBeInTheDocument();
   expect(screen.getByText("1호선·서해선 소사역 1번 출구에서 도보 약 3분")).toBeInTheDocument();
-  expect(screen.getByText("주차 2시간 무료 · 약 500대 이상 주차 가능")).toBeInTheDocument();
   expect(screen.getByRole("heading", { name: "지도 앱으로 길 찾기" })).toBeInTheDocument();
   expect(screen.getByRole("heading", { name: "교통 안내" })).toBeInTheDocument();
   expect(screen.getByText("ARRIVAL GUIDE")).toBeInTheDocument();
-  expect(screen.getByText("지하철 · 도보")).toBeInTheDocument();
-  expect(screen.getByText("자가용 · 주차")).toBeInTheDocument();
-  expect(document.querySelectorAll(".directions-sheet__travel-grid > .directions-sheet__info")).toHaveLength(2);
+  expect(screen.getByRole("tab", { name: /대중교통/ })).toHaveAttribute("aria-selected", "true");
+  expect(screen.getByRole("tab", { name: /자가용·주차/ })).toHaveAttribute("aria-selected", "false");
+  expect(screen.getByRole("tabpanel")).toHaveTextContent("지하철에서 예식장까지");
   expect(screen.getByText("추천 경로")).toBeInTheDocument();
   expect(screen.getByText("NAVER MAP")).toBeInTheDocument();
   expect(screen.getByText("KAKAO MAP")).toBeInTheDocument();
@@ -40,6 +39,17 @@ it("확정된 예식장, 교통, 주차, 지도, 전화 동작을 표시한다",
     "tel:0323475500"
   );
   expect(screen.getByRole("button", { name: "주소 복사" })).toHaveTextContent("주소 복사");
+});
+
+it("이동 방법 탭을 바꾸면 한 카드 안에서 필요한 안내만 보여준다", () => {
+  render(<DirectionsSheet onClose={vi.fn()} />);
+
+  fireEvent.click(screen.getByRole("tab", { name: /자가용·주차/ }));
+
+  expect(screen.getByRole("tab", { name: /자가용·주차/ })).toHaveAttribute("aria-selected", "true");
+  expect(screen.getByRole("tabpanel")).toHaveTextContent("주차장 이용 안내");
+  expect(screen.getByRole("tabpanel")).toHaveTextContent("주차 2시간 무료 · 약 500대 이상 주차 가능");
+  expect(screen.getByRole("tabpanel")).not.toHaveTextContent("소사역 1번 출구");
 });
 
 it("선택한 지도 앱을 강조하고 새 창 안내를 갱신한다", () => {
