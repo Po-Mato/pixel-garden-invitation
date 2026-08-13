@@ -13,7 +13,10 @@ afterEach(() => {
 it("확정된 예식장, 교통, 주차, 지도, 전화 동작을 표시한다", () => {
   render(<DirectionsSheet onClose={vi.fn()} />);
 
-  expect(screen.getByRole("dialog", { name: "오시는 길" })).toHaveTextContent(
+  const dialog = screen.getByRole("dialog", { name: "오시는 길" });
+  expect(dialog).toHaveClass("invitation-detail-sheet--directions");
+  expect(dialog).toHaveAccessibleDescription("지도 앱과 이동 방법을 한곳에서 확인하세요.");
+  expect(dialog).toHaveTextContent(
     "MJ컨벤션 5층 파티오볼룸"
   );
   expect(screen.getByText("경기 부천시 소사구 경인로 386")).toBeInTheDocument();

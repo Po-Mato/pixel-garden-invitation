@@ -224,7 +224,14 @@ export function DirectionsContent({ venue = invitationContent.event.venue }: Dir
 
 export function DirectionsSheet({ onClose, returnFocusRef }: DirectionsSheetProps) {
   return (
-    <BottomSheet title="오시는 길" onClose={onClose} returnFocusRef={returnFocusRef}>
+    <BottomSheet
+      title="오시는 길"
+      eyebrow="LOCATION & ROUTE"
+      description="지도 앱과 이동 방법을 한곳에서 확인하세요."
+      className="invitation-detail-sheet invitation-detail-sheet--directions"
+      onClose={onClose}
+      returnFocusRef={returnFocusRef}
+    >
       <DirectionsContent />
     </BottomSheet>
   );

@@ -3641,3 +3641,433 @@ html[data-reduce-motion="true"] :is(
 ) {
   transition: none;
 }
+
+/* Invitation finish — tune focal crops, editorial rhythm and tactile feedback as one system. */
+.quick-hero {
+  --quick-hero-focal-x: 53%;
+  --quick-hero-focal-y: 50%;
+}
+
+.quick-hero__image .responsive-gallery-image {
+  object-position: var(--quick-hero-focal-x) var(--quick-hero-focal-y);
+}
+
+.quick-band--profiles .couple-profile-panel {
+  gap: clamp(32px, 8vw, 40px);
+  margin-top: 12px;
+}
+
+.quick-band--profiles .couple-profile-panel__person {
+  gap: 9px;
+  padding-block: 2px 30px;
+  border-bottom-color: rgba(105, 134, 121, 0.28);
+}
+
+.quick-band--profiles .couple-profile-panel__identity {
+  min-height: 38px;
+}
+
+.quick-band--profiles .couple-profile-panel__role {
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 0.18em;
+}
+
+.quick-band--profiles .couple-profile-panel__name {
+  color: #43383c;
+  font-size: clamp(25px, 7.4vw, 29px);
+  line-height: 1.16;
+}
+
+.quick-band--profiles .couple-profile-panel__media {
+  overflow: hidden;
+  border: 1px solid rgba(96, 75, 82, 0.16);
+  border-radius: 2px;
+  box-shadow: 0 12px 28px rgba(59, 72, 65, 0.09);
+}
+
+.quick-band--profiles .couple-profile-panel__message {
+  font-family: var(--wedding-font-display);
+  font-size: 13px;
+  line-height: 1.82;
+}
+
+.quick-band--profiles .couple-profile-panel__together {
+  width: min(100%, 340px);
+  margin: -4px auto 0;
+  border: 1px solid rgba(179, 148, 89, 0.24);
+  border-radius: 15px;
+  padding: 15px 17px;
+  background: rgba(255, 253, 248, 0.72);
+  color: #50675c;
+  font-family: var(--wedding-font-display);
+  font-size: 13px;
+  font-weight: 650;
+  box-shadow: 0 8px 22px rgba(70, 55, 60, 0.045);
+}
+
+.quick-band--story .wedding-story-timeline {
+  gap: clamp(24px, 6vw, 30px);
+}
+
+.quick-band--story .wedding-story-timeline__step {
+  border-radius: 4px;
+  box-shadow: 0 12px 28px rgba(55, 77, 65, 0.075);
+}
+
+.quick-band--story .wedding-story-timeline__copy {
+  gap: 8px;
+  padding: 19px 18px 21px;
+}
+
+.quick-band--story .wedding-story-timeline__number {
+  color: #94606a;
+  font-size: 7.5px;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+}
+
+.quick-band--story .wedding-story-timeline__title {
+  color: #43383c;
+  font-size: 19px;
+  line-height: 1.35;
+}
+
+.quick-band--story .wedding-story-timeline__body {
+  max-width: 34ch;
+  font-family: var(--wedding-font-display);
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+.quick-band--gift .gift-account-sheet {
+  gap: 15px;
+}
+
+.quick-band--gift .gift-account-sheet__intro {
+  padding: 16px;
+}
+
+.quick-band--gift .gift-account-sheet__intro p {
+  font-size: 14.5px;
+  line-height: 1.6;
+}
+
+.quick-band--gift .gift-account-sheet__tabs {
+  margin-top: -1px;
+}
+
+.quick-band--gift .gift-account-sheet__empty {
+  min-height: 168px;
+  border-width: 1px;
+  border-radius: 16px;
+  padding: 25px 18px;
+  background: rgba(255, 252, 243, 0.72);
+}
+
+.quick-band--gift .gift-account-sheet__empty strong {
+  color: #4c4144;
+  font-family: var(--wedding-font-display);
+  font-size: 15px;
+}
+
+/* Guest-facing sheets use quiet editorial headings and a clear action hierarchy. */
+.bottom-sheet.invitation-detail-sheet {
+  --sheet-prism: #86998e;
+  width: min(calc(100% - 20px), 430px);
+  bottom: max(8px, env(safe-area-inset-bottom));
+  max-height: calc(100dvh - 16px);
+  border: 1px solid rgba(70, 83, 76, 0.28);
+  border-radius: 24px 24px 18px 18px;
+  padding: 0 18px 14px;
+  background:
+    radial-gradient(circle at 8% 0%, rgba(231, 196, 200, 0.14), transparent 28%),
+    linear-gradient(165deg, #fffdfa, #f6f3ed 58%, #edf3ef);
+  box-shadow: 0 24px 70px rgba(31, 40, 35, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.86);
+}
+
+.invitation-detail-sheet .bottom-sheet__header {
+  position: relative;
+  align-items: flex-start;
+  gap: 14px;
+  border-bottom: 1px solid rgba(96, 75, 82, 0.13);
+  padding: 18px 0 15px;
+}
+
+.bottom-sheet__heading {
+  display: grid;
+  min-width: 0;
+  gap: 4px;
+}
+
+.bottom-sheet__eyebrow {
+  color: #94636d;
+  font-family: var(--wedding-font-ui);
+  font-size: 7.5px;
+  font-weight: 900;
+  letter-spacing: 0.18em;
+  line-height: 1.2;
+}
+
+.invitation-detail-sheet .bottom-sheet__heading h2 {
+  color: #403639;
+  font-family: var(--wedding-font-display);
+  font-size: clamp(23px, 7vw, 27px);
+  font-weight: 650;
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+}
+
+.invitation-detail-sheet .bottom-sheet__heading p {
+  max-width: 30ch;
+  margin: 1px 0 0;
+  color: #748078;
+  font-family: var(--wedding-font-ui);
+  font-size: 9.5px;
+  line-height: 1.5;
+  word-break: keep-all;
+}
+
+.invitation-detail-sheet .bottom-sheet__header > button {
+  min-width: 0;
+  min-height: 38px;
+  flex: 0 0 auto;
+  gap: 4px;
+  border: 1px solid rgba(96, 75, 82, 0.2);
+  border-radius: 999px;
+  padding: 7px 10px;
+  background: rgba(255, 255, 252, 0.78);
+  color: #62565a;
+  font-size: 9px;
+  font-weight: 800;
+  box-shadow: 0 4px 12px rgba(70, 55, 60, 0.055);
+}
+
+.invitation-detail-sheet .bottom-sheet__header > button svg {
+  width: 15px;
+  height: 15px;
+}
+
+.invitation-detail-sheet .bottom-sheet__body {
+  margin-top: 14px;
+  padding-bottom: max(14px, calc(env(safe-area-inset-bottom) + 4px));
+}
+
+.invitation-detail-sheet .directions-sheet__maps > [data-primary="true"],
+.invitation-detail-sheet .family-contact-sheet__actions > [data-action="call"],
+.invitation-detail-sheet .gift-account-sheet__number-row > button {
+  border-color: #526f63;
+  background: #526f63;
+  color: #fff;
+  box-shadow: 0 7px 17px rgba(58, 82, 71, 0.17);
+}
+
+/* Pressed, selected and completed states share the same restrained movement. */
+:is(
+  .quick-hero__actions button,
+  .quick-invitation__nav a,
+  .quick-core-actions button,
+  .quick-closing__actions button,
+  .quick-closing__links button,
+  .directions-sheet__venue > button,
+  .directions-sheet__maps > a,
+  .directions-sheet__travel-tabs > button,
+  .directions-sheet__phone > a,
+  .gift-account-sheet__tabs button,
+  .gift-account-sheet__account summary,
+  .gift-account-sheet__number-row button,
+  .gift-account-sheet__transfer-links a,
+  .family-contact-sheet__tabs button,
+  .family-contact-sheet__actions a,
+  .invitation-detail-sheet .bottom-sheet__header > button
+) {
+  transform-origin: center;
+  transition: transform 150ms ease, border-color 170ms ease, background-color 170ms ease, color 170ms ease, box-shadow 170ms ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+:is(
+  .quick-hero__actions button,
+  .quick-invitation__nav a,
+  .quick-core-actions button,
+  .quick-closing__actions button,
+  .quick-closing__links button,
+  .directions-sheet__venue > button,
+  .directions-sheet__maps > a,
+  .directions-sheet__travel-tabs > button,
+  .directions-sheet__phone > a,
+  .gift-account-sheet__tabs button,
+  .gift-account-sheet__account summary,
+  .gift-account-sheet__number-row button,
+  .gift-account-sheet__transfer-links a,
+  .family-contact-sheet__tabs button,
+  .family-contact-sheet__actions a,
+  .invitation-detail-sheet .bottom-sheet__header > button
+):active {
+  transform: translateY(1px) scale(0.985);
+}
+
+:is(
+  .quick-invitation__nav a[aria-current],
+  .quick-core-actions button[aria-current="page"],
+  .directions-sheet__maps > [data-selected="true"],
+  .directions-sheet__travel-tabs > button[aria-selected="true"],
+  .gift-account-sheet__tabs button[aria-selected="true"],
+  .family-contact-sheet__tabs button[aria-selected="true"]
+) {
+  transform: translateY(-1px);
+}
+
+:is(
+  .directions-sheet__venue > button[data-status="copied"],
+  .gift-account-sheet__number-row button[data-status="copied"]
+) {
+  animation: invitation-control-confirm 420ms cubic-bezier(0.2, 0.75, 0.25, 1);
+}
+
+@keyframes invitation-control-confirm {
+  0% { transform: scale(0.98); }
+  56% { transform: scale(1.025); }
+  100% { transform: scale(1); }
+}
+
+@media (max-width: 350px) {
+  .quick-hero {
+    --quick-hero-focal-x: 54%;
+  }
+
+  .quick-band--profiles .couple-profile-panel__message,
+  .quick-band--story .wedding-story-timeline__body {
+    font-size: 12.5px;
+  }
+
+  .bottom-sheet.invitation-detail-sheet {
+    width: calc(100% - 12px);
+    padding-inline: 14px;
+  }
+}
+
+@media (orientation: portrait) and (max-height: 640px) {
+  .quick-hero {
+    --quick-hero-focal-x: 54%;
+    min-height: min(620px, 68dvh);
+  }
+
+  .quick-hero__content {
+    padding-top: 42px;
+    padding-bottom: 22px;
+  }
+
+  .quick-hero__facts {
+    margin-top: 8px;
+  }
+
+  .quick-hero__actions {
+    margin-top: 6px;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 500px) {
+  .quick-hero {
+    --quick-hero-focal-x: 52%;
+    --quick-hero-focal-y: 42%;
+    min-height: calc(100dvh - 48px);
+  }
+
+  .quick-hero__content {
+    grid-template-columns: minmax(180px, 0.82fr) minmax(270px, 1.18fr);
+    grid-template-rows: auto auto auto;
+    align-items: end;
+    justify-items: start;
+    column-gap: clamp(16px, 4vw, 30px);
+    row-gap: 2px;
+    padding: 16px max(24px, 7vw) max(74px, calc(env(safe-area-inset-bottom) + 74px));
+    text-align: left;
+  }
+
+  .quick-hero__content .quick-hero__eyebrow {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .quick-hero__content h1 {
+    grid-column: 1;
+    grid-row: 2;
+    justify-content: flex-start;
+    font-size: clamp(28px, 4.7vw, 34px);
+  }
+
+  .quick-hero__facts {
+    width: 100%;
+    grid-column: 2;
+    grid-row: 1 / 3;
+    align-self: end;
+    margin-top: 0;
+  }
+
+  .quick-hero__actions {
+    width: 100%;
+    grid-column: 1 / -1;
+    grid-row: 3;
+    grid-template-columns: minmax(180px, 0.82fr) minmax(220px, 1.18fr);
+    align-items: center;
+    gap: clamp(16px, 4vw, 30px);
+    margin-top: 7px;
+  }
+
+  .quick-hero__actions button + button {
+    justify-content: flex-start;
+    padding-inline: 4px;
+  }
+
+  .bottom-sheet.invitation-detail-sheet {
+    width: min(calc(100% - 16px), 720px);
+    max-height: calc(100dvh - 10px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :is(
+    .quick-hero__actions button,
+    .quick-invitation__nav a,
+    .quick-core-actions button,
+    .quick-closing__actions button,
+    .quick-closing__links button,
+    .directions-sheet__venue > button,
+    .directions-sheet__maps > a,
+    .directions-sheet__travel-tabs > button,
+    .directions-sheet__phone > a,
+    .gift-account-sheet__tabs button,
+    .gift-account-sheet__account summary,
+    .gift-account-sheet__number-row button,
+    .gift-account-sheet__transfer-links a,
+    .family-contact-sheet__tabs button,
+    .family-contact-sheet__actions a,
+    .invitation-detail-sheet .bottom-sheet__header > button
+  ) {
+    animation: none;
+    transition: none;
+  }
+}
+
+html[data-reduce-motion="true"] :is(
+  .quick-hero__actions button,
+  .quick-invitation__nav a,
+  .quick-core-actions button,
+  .quick-closing__actions button,
+  .quick-closing__links button,
+  .directions-sheet__venue > button,
+  .directions-sheet__maps > a,
+  .directions-sheet__travel-tabs > button,
+  .directions-sheet__phone > a,
+  .gift-account-sheet__tabs button,
+  .gift-account-sheet__account summary,
+  .gift-account-sheet__number-row button,
+  .gift-account-sheet__transfer-links a,
+  .family-contact-sheet__tabs button,
+  .family-contact-sheet__actions a,
+  .invitation-detail-sheet .bottom-sheet__header > button
+) {
+  animation: none;
+  transition: none;
+}

@@ -130,7 +130,13 @@ export function FamilyContactContent({
 
 export function FamilyContactSheet({ onClose, familyContacts }: FamilyContactSheetProps) {
   return (
-    <BottomSheet title="혼주 연락처" onClose={onClose}>
+    <BottomSheet
+      title="혼주 연락처"
+      eyebrow="FAMILY CONTACT"
+      description="전화 또는 문자 중 편한 방법으로 연락해 주세요."
+      className="invitation-detail-sheet invitation-detail-sheet--contact"
+      onClose={onClose}
+    >
       <FamilyContactContent familyContacts={familyContacts} />
     </BottomSheet>
   );

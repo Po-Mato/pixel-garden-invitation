@@ -207,7 +207,13 @@ export function GiftAccountContent({
 
 export function GiftAccountSheet({ onClose, giftAccounts }: GiftAccountSheetProps) {
   return (
-    <BottomSheet title="마음 전하실 곳" onClose={onClose}>
+    <BottomSheet
+      title="마음 전하실 곳"
+      eyebrow="WITH GRATITUDE"
+      description="마음을 전하실 분의 정보만 선택해 확인하세요."
+      className="invitation-detail-sheet invitation-detail-sheet--gift"
+      onClose={onClose}
+    >
       <GiftAccountContent giftAccounts={giftAccounts} />
     </BottomSheet>
   );

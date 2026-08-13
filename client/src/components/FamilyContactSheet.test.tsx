@@ -23,7 +23,10 @@ it("미입력 상태에서는 양가 연락처 준비 안내만 표시한다", (
 
   expect(screen.getByRole("tab", { name: "신부 측" })).toHaveAttribute("aria-selected", "true");
   expect(screen.getByText("신부 측 연락처 준비 중")).toBeInTheDocument();
-  expect(screen.getByRole("dialog", { name: "혼주 연락처" }).querySelector("[data-nosnippet]"))
+  const dialog = screen.getByRole("dialog", { name: "혼주 연락처" });
+  expect(dialog).toHaveClass("invitation-detail-sheet--contact");
+  expect(dialog).toHaveAccessibleDescription("전화 또는 문자 중 편한 방법으로 연락해 주세요.");
+  expect(dialog.querySelector("[data-nosnippet]"))
     .toBeInTheDocument();
 
   fireEvent.click(screen.getByRole("tab", { name: "신랑 측" }));

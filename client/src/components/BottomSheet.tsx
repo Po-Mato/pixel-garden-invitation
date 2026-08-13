@@ -7,13 +7,23 @@ type BottomSheetScrollState = "static" | "more" | "end";
 
 type BottomSheetProps = {
   title: string;
+  eyebrow?: string;
+  description?: string;
   onClose: () => void;
   children: ReactNode;
   className?: string;
   returnFocusRef?: RefObject<HTMLElement | null>;
 };
 
-export function BottomSheet({ title, onClose, children, className = "", returnFocusRef }: BottomSheetProps) {
+export function BottomSheet({
+  title,
+  eyebrow,
+  description,
+  onClose,
+  children,
+  className = "",
+  returnFocusRef
+}: BottomSheetProps) {
   const titleId = useId();
   const descriptionId = useId();
   const dialogRef = useRef<HTMLElement>(null);
@@ -79,13 +89,19 @@ export function BottomSheet({ title, onClose, children, className = "", returnFo
         tabIndex={-1}
       >
         <header className="bottom-sheet__header">
-          <h2 ref={titleRef} id={titleId} tabIndex={-1}>{title}</h2>
+          <div className="bottom-sheet__heading">
+            {eyebrow ? <span className="bottom-sheet__eyebrow">{eyebrow}</span> : null}
+            <h2 ref={titleRef} id={titleId} tabIndex={-1}>{title}</h2>
+            {description ? <p id={descriptionId}>{description}</p> : null}
+          </div>
           <button type="button" aria-label="닫기" onClick={onClose}>
             <X aria-hidden="true" />
             <span>닫기</span>
           </button>
         </header>
-        <p id={descriptionId} className="sr-only">{title} 창입니다. 닫기 버튼 다음에 주요 내용이 이어집니다.</p>
+        {!description ? (
+          <p id={descriptionId} className="sr-only">{title} 창입니다. 닫기 버튼 다음에 주요 내용이 이어집니다.</p>
+        ) : null}
         <div ref={bodyRef} className="bottom-sheet__body" onScroll={updateScrollState}>{children}</div>
         {scrollState !== "static" ? (
           <div className="bottom-sheet__scroll-cue" role="status" aria-live="polite">

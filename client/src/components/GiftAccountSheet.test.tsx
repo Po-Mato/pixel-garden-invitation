@@ -88,7 +88,10 @@ it("미입력 상태에서는 신부·신랑 양쪽의 준비 안내만 표시�
   render(<GiftAccountSheet onClose={vi.fn()} />);
 
   expect(screen.getByRole("tab", { name: "신부 측" })).toHaveAttribute("aria-selected", "true");
-  expect(screen.getByRole("dialog", { name: "마음 전하실 곳" }).querySelector("[data-nosnippet]"))
+  const dialog = screen.getByRole("dialog", { name: "마음 전하실 곳" });
+  expect(dialog).toHaveClass("invitation-detail-sheet--gift");
+  expect(dialog).toHaveAccessibleDescription("마음을 전하실 분의 정보만 선택해 확인하세요.");
+  expect(dialog.querySelector("[data-nosnippet]"))
     .toBeInTheDocument();
   expect(screen.getByText("신부 측 계좌 정보 준비 중")).toBeInTheDocument();
   fireEvent.click(screen.getByRole("tab", { name: "신랑 측" }));

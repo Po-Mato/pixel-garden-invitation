@@ -220,6 +220,20 @@ describe("compact invitation visual rhythm", () => {
     expect(invitationUxPolishStyles).toContain('html[data-text-scale="xlarge"]');
   });
 
+  it("tunes hero crops, editorial cards and guest sheets for small screens", () => {
+    expect(invitationUxPolishStyles).toContain("--quick-hero-focal-x: 53%;");
+    expect(invitationUxPolishStyles).toContain("object-position: var(--quick-hero-focal-x) var(--quick-hero-focal-y);");
+    expect(invitationUxPolishStyles).toContain(".quick-band--profiles .couple-profile-panel__together");
+    expect(invitationUxPolishStyles).toContain(".quick-band--story .wedding-story-timeline__copy");
+    expect(invitationUxPolishStyles).toContain(".quick-band--gift .gift-account-sheet__empty");
+    expect(invitationUxPolishStyles).toContain(".bottom-sheet.invitation-detail-sheet");
+    expect(invitationUxPolishStyles).toMatch(
+      /@media \(orientation: landscape\) and \(max-height: 500px\)[\s\S]*\.quick-hero__actions[\s\S]*grid-template-columns:/
+    );
+    expect(invitationUxPolishStyles).toContain("@keyframes invitation-control-confirm");
+    expect(invitationUxPolishStyles).toContain('html[data-reduce-motion="true"] :is(');
+  });
+
   it("uses a restrained snapping navigation and fluid enlarged hero title", () => {
     expect(styles).toMatch(/\.quick-invitation__nav\s*\{[^}]*gap:\s*12px;[^}]*scroll-snap-type:\s*x proximity;/s);
     expect(styles).toMatch(/data-text-scale="xlarge"[^}]*\.quick-hero__content h1\s*\{[^}]*font-size:\s*clamp\(32px, 10\.5vw, 38px\);/s);

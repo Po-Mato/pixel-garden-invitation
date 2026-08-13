@@ -40,6 +40,26 @@ it("renders its dialog in the document body portal", () => {
   expect(screen.getByRole("dialog").parentElement).toBe(document.body);
 });
 
+it("shows an editorial eyebrow and visible purpose when provided", () => {
+  render(
+    <BottomSheet
+      title="오시는 길"
+      eyebrow="LOCATION & ROUTE"
+      description="지도 앱과 이동 방법을 한곳에서 확인하세요."
+      className="invitation-detail-sheet"
+      onClose={vi.fn()}
+    >
+      <button type="button">네이버지도</button>
+    </BottomSheet>
+  );
+
+  const dialog = screen.getByRole("dialog", { name: "오시는 길" });
+  expect(dialog).toHaveClass("invitation-detail-sheet");
+  expect(screen.getByText("LOCATION & ROUTE")).toHaveClass("bottom-sheet__eyebrow");
+  expect(dialog).toHaveAccessibleDescription("지도 앱과 이동 방법을 한곳에서 확인하세요.");
+  expect(screen.getByRole("button", { name: "닫기" })).toHaveTextContent("닫기");
+});
+
 it("긴 내용의 남은 스크롤과 끝까지 확인한 상태를 알려준다", () => {
   render(
     <BottomSheet title="오시는 길" onClose={vi.fn()}>
