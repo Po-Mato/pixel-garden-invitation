@@ -101,6 +101,7 @@ export function FamilyContactContent({
                   <div className="family-contact-sheet__actions">
                     <a
                       href={links.telephone ?? undefined}
+                      data-action="call"
                       aria-label={`${recipientLabel(contact)}에게 전화하기`}
                       onClick={() => trackInvitationAnalytics("call_click", "family")}
                     >
@@ -108,7 +109,7 @@ export function FamilyContactContent({
                       전화
                     </a>
                     {links.sms ? (
-                      <a href={links.sms} aria-label={`${recipientLabel(contact)}에게 문자 보내기`}>
+                      <a href={links.sms} data-action="message" aria-label={`${recipientLabel(contact)}에게 문자 보내기`}>
                         <MessageCircle aria-hidden="true" />
                         문자
                       </a>

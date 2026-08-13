@@ -123,10 +123,12 @@ it("계좌번호를 복사하고 실패 시에도 직접 복사할 수 있게 �
   const copyButton = screen.getByRole("button", { name: "신랑 이승재 계좌번호 복사" });
   fireEvent.click(copyButton);
   expect(copyText).toHaveBeenCalledWith("123-456-789");
-  expect(await screen.findByText("계좌번호를 복사했습니다.")).toHaveAttribute("aria-live", "polite");
+  expect(await screen.findByText("계좌번호 복사 완료")).toBeInTheDocument();
+  expect(copyButton).toHaveTextContent("복사 완료");
 
   fireEvent.click(copyButton);
-  expect(await screen.findByText("복사하지 못했습니다. 계좌번호를 길게 눌러 복사해주세요.")).toBeInTheDocument();
+  expect(await screen.findByText("자동 복사를 완료하지 못했어요")).toBeInTheDocument();
+  expect(screen.getByText("위 계좌번호를 길게 눌러 직접 복사해 주세요.")).toBeInTheDocument();
   await waitFor(() => expect(screen.getByText("123-456-789")).toBeInTheDocument());
 });
 

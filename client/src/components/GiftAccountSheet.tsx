@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { ChevronDown, Copy, ExternalLink, HeartHandshake, Landmark } from "lucide-react";
+import { AlertCircle, CheckCircle2, ChevronDown, Copy, ExternalLink, HeartHandshake, Landmark } from "lucide-react";
 import {
   type WeddingEvent,
   type WeddingGiftAccount
@@ -145,11 +145,12 @@ export function GiftAccountContent({
                           <button
                             type="button"
                             aria-label={`${recipientLabel(account)} 계좌번호 복사`}
+                            data-status={status}
                             disabled={status === "copying"}
                             onClick={() => void copyAccountNumber(account)}
                           >
-                            <Copy aria-hidden="true" />
-                            복사
+                            {status === "copied" ? <CheckCircle2 aria-hidden="true" /> : <Copy aria-hidden="true" />}
+                            {status === "copying" ? "복사 중" : status === "copied" ? "복사 완료" : "계좌 복사"}
                           </button>
                         </div>
                       ) : null}
@@ -171,10 +172,24 @@ export function GiftAccountContent({
                         </div>
                       ) : null}
 
-                      <p className="gift-account-sheet__status" aria-live="polite">
-                        {status === "copied" ? "계좌번호를 복사했습니다." : null}
-                        {status === "error" ? "복사하지 못했습니다. 계좌번호를 길게 눌러 복사해주세요." : null}
-                      </p>
+                      {status === "copied" || status === "error" ? (
+                        <div
+                          className="gift-account-sheet__status"
+                          data-status={status}
+                          role={status === "error" ? "alert" : "status"}
+                          aria-live={status === "copied" ? "polite" : undefined}
+                        >
+                          {status === "copied" ? <CheckCircle2 aria-hidden="true" /> : <AlertCircle aria-hidden="true" />}
+                          <span>
+                            <strong>{status === "copied" ? "계좌번호 복사 완료" : "자동 복사를 완료하지 못했어요"}</strong>
+                            <small>
+                              {status === "copied"
+                                ? "은행 앱에서 바로 붙여넣을 수 있습니다."
+                                : "위 계좌번호를 길게 눌러 직접 복사해 주세요."}
+                            </small>
+                          </span>
+                        </div>
+                      ) : null}
                     </div>
                   </details>
                 );

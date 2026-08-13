@@ -37,7 +37,9 @@ describe("간편 초대장", () => {
   it("핵심 정보를 세로 섹션과 목차로 제공한다", () => {
     render(<QuickInvitation nickname="하객1" onOpenGarden={vi.fn()} />);
 
-    expect(screen.getByRole("heading", { name: "이건희 & 이승재" })).toBeInTheDocument();
+    const heroHeading = screen.getByRole("heading", { name: "이건희 & 이승재" });
+    expect(heroHeading).toBeInTheDocument();
+    expect(heroHeading.querySelectorAll("span")).toHaveLength(2);
     expect(screen.getByLabelText("예식 핵심 정보")).toHaveTextContent("2027년 5월 1일");
     expect(screen.getByLabelText("예식 핵심 정보")).toHaveTextContent("MJ컨벤션");
     expect(screen.getByRole("button", { name: /예식 정보 보기/ })).toBeInTheDocument();

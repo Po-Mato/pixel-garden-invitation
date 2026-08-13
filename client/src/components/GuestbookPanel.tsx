@@ -167,6 +167,7 @@ export function GuestbookPanel({
     () => messages.filter(({ id }) => id !== ownedMessage?.id),
     [messages, ownedMessage?.id]
   );
+  const composeReady = draftNickname.trim().length > 0 && draftMessage.trim().length > 0;
 
   function discardDraft() {
     if (!clearGuestbookFormDraft(invitationId)) {
@@ -293,11 +294,20 @@ export function GuestbookPanel({
         작성한 이름과 메시지는 방명록에 공개되며 {guestbookDeleteDate}에 자동 삭제됩니다.
       </p>
       {ownedMessage ? (
-        <section className="guestbook-owned" aria-labelledby="guestbook-owned-title">
+        <section className="guestbook-owned" aria-labelledby="guestbook-owned-title" data-status={status ? "updated" : "saved"}>
           <div className="guestbook-section-heading">
             <h3 id="guestbook-owned-title">내가 남긴 메시지</h3>
             {ownedMessage.isHidden && <span className="guestbook-visibility-badge">비공개</span>}
           </div>
+          {!editing ? (
+            <div className="guestbook-owned__saved" role={status ? "status" : undefined}>
+              <CheckCircle2 aria-hidden="true" />
+              <span>
+                <strong>{status ? "두 사람에게 마음을 전했어요" : "전달한 메시지"}</strong>
+                <small>이 기기에서 예식 전까지 수정하거나 삭제할 수 있습니다.</small>
+              </span>
+            </div>
+          ) : null}
           {editing ? (
             <form className="form-stack" onSubmit={handleUpdate}>
               <label className="field">
@@ -410,6 +420,10 @@ export function GuestbookPanel({
             />
           </label>
           <GuestbookCharacterCount length={draftMessage.length} />
+          <div className="guestbook-compose__readiness" data-ready={composeReady ? "true" : undefined} aria-live="polite">
+            {composeReady ? <CheckCircle2 aria-hidden="true" /> : <MessageCircle aria-hidden="true" />}
+            <span>{composeReady ? "메시지를 보낼 준비가 됐어요." : "이름과 축하 메시지를 입력해 주세요."}</span>
+          </div>
           <button className="primary-button" type="submit" disabled={busy !== null}>
             <Send aria-hidden="true" />
             {busy === "create" ? "메시지 보내는 중" : !online ? "전송 대기함에 저장" : queuedAt ? "대기 중인 메시지 보내기" : "메시지 남기기"}
@@ -418,16 +432,16 @@ export function GuestbookPanel({
         </form>
       )}
 
-      {status ? (
+      {status && !ownedMessage ? (
         <div className="guestbook-feedback guestbook-feedback--success" role="status">
           <CheckCircle2 aria-hidden="true" />
-          <p>{status}</p>
+          <span><strong>저장 완료</strong><small>{status}</small></span>
         </div>
       ) : null}
       {error ? (
         <div className="guestbook-feedback guestbook-feedback--error" role="alert">
           <AlertCircle aria-hidden="true" />
-          <p>{error}</p>
+          <span><strong>확인이 필요해요</strong><small>{error}</small></span>
         </div>
       ) : null}
 

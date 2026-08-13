@@ -43,10 +43,12 @@ it("유효한 연락처만 표시하고 휴대전화에 전화·문자 동작을
     "href",
     "tel:01012345678"
   );
+  expect(screen.getByRole("link", { name: "신랑 이승재에게 전화하기" })).toHaveAttribute("data-action", "call");
   expect(screen.getByRole("link", { name: "신랑 이승재에게 문자 보내기" })).toHaveAttribute(
     "href",
     "sms:01012345678"
   );
+  expect(screen.getByRole("link", { name: "신랑 이승재에게 문자 보내기" })).toHaveAttribute("data-action", "message");
   expect(screen.getByRole("link", { name: "신랑 아버지 이정원에게 전화하기" })).toHaveAttribute(
     "href",
     "tel:0321234567"

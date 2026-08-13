@@ -133,6 +133,7 @@ export function QuickInvitation({
   const coupleOrder = useCoupleOrder();
   const cover = content.gallery[0];
   const names = formatCoupleNames(event, coupleOrder, " & ");
+  const heroNames = names.split(" & ");
   const activeSectionRef = useRef<QuickInvitationSectionId>(
     loadInvitationViewSync()?.sectionId ?? "top"
   );
@@ -250,7 +251,11 @@ export function QuickInvitation({
         <div className="quick-hero__shade" aria-hidden="true" />
         <div className="quick-hero__content">
           <p className="quick-hero__eyebrow">WEDDING INVITATION</p>
-          <h1>{names}</h1>
+          <h1 aria-label={names}>
+            <span>{heroNames[0]}</span>
+            <i aria-hidden="true">·</i>
+            <span>{heroNames[1]}</span>
+          </h1>
           <div className="quick-hero__facts" aria-label="예식 핵심 정보">
             <div>
               <CalendarDays aria-hidden="true" />

@@ -450,6 +450,12 @@
 }
 
 /* Invitation rhythm — connect the long scroll as four editorial chapters. */
+.quick-invitation {
+  --invitation-card-radius: 17px;
+  --invitation-card-border: rgba(96, 75, 82, 0.18);
+  --invitation-card-shadow: 0 9px 24px rgba(70, 55, 60, 0.06);
+}
+
 .quick-band[id]:not(.quick-closing) {
   --quick-section-accent: #9f6670;
   position: relative;
@@ -478,8 +484,24 @@
 }
 
 .quick-section-heading {
+  position: relative;
+  width: min(100%, 620px);
   gap: 0;
-  margin-bottom: 34px;
+  margin: 0 auto 34px;
+  padding-bottom: 21px;
+  border-bottom: 1px solid color-mix(in srgb, var(--quick-section-accent, #9f6670) 22%, transparent);
+}
+
+.quick-section-heading::after {
+  position: absolute;
+  bottom: -1px;
+  left: 50%;
+  width: 34px;
+  height: 2px;
+  border-radius: 999px;
+  background: var(--quick-section-accent, #9f6670);
+  content: "";
+  transform: translateX(-50%);
 }
 
 .quick-section-heading__eyebrow {
@@ -514,7 +536,28 @@
 }
 
 .quick-section-heading p {
+  max-width: 38ch;
   margin-top: 11px;
+  margin-inline: auto;
+  word-break: keep-all;
+}
+
+.quick-band :is(
+  .wedding-event-summary__date,
+  .wedding-event-summary__venue,
+  .directions-sheet__venue,
+  .directions-sheet__info,
+  .directions-sheet__phone,
+  .rsvp-form__section,
+  .gift-account-sheet__account,
+  .family-contact-sheet__person,
+  .guestbook-compose,
+  .guestbook-owned,
+  .guestbook-message,
+  .guestbook-list-state
+) {
+  border-radius: var(--invitation-card-radius);
+  box-shadow: var(--invitation-card-shadow);
 }
 
 /* Share + closing — one finish instead of three visually separate endings. */
@@ -757,6 +800,10 @@
 }
 
 .quick-hero__content h1 {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: clamp(9px, 3.4vw, 15px);
   margin-top: 3px;
   color: #fffdf9;
   font-family: var(--wedding-font-display);
@@ -766,13 +813,33 @@
   text-shadow: 0 2px 18px rgba(7, 13, 11, 0.78);
 }
 
+.quick-hero__content h1 > span {
+  min-width: 0;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  white-space: nowrap;
+}
+
+.quick-hero__content h1 > i {
+  color: #f1d6da;
+  font-family: var(--wedding-font-display);
+  font-size: 0.72em;
+  font-style: italic;
+  font-weight: 400;
+}
+
 .quick-hero__facts {
   display: grid;
   width: min(100%, 380px);
   grid-template-columns: repeat(2, minmax(0, 1fr));
   margin-top: 13px;
-  border-block: 1px solid rgba(255, 255, 255, 0.28);
-  padding-block: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.26);
+  border-radius: 14px;
+  padding-block: 11px;
+  background: rgba(17, 28, 23, 0.24);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(8px);
   text-align: left;
   text-shadow: none;
 }
@@ -832,7 +899,7 @@
   display: grid;
   width: min(100%, 380px);
   gap: 4px;
-  margin-top: 8px;
+  margin-top: 10px;
   text-shadow: none;
 }
 
@@ -862,8 +929,11 @@
   min-height: 36px;
   border-color: transparent;
   background: transparent;
-  color: rgba(255, 255, 255, 0.84);
+  color: rgba(255, 255, 255, 0.9);
   font-size: 9.5px;
+  text-decoration: underline;
+  text-decoration-color: rgba(255, 255, 255, 0.34);
+  text-underline-offset: 4px;
   box-shadow: none;
 }
 
@@ -1716,6 +1786,52 @@
   box-shadow: 0 5px 13px rgba(78, 58, 64, 0.065);
 }
 
+.gift-account-sheet__number-row button[data-status="copied"] {
+  border-color: #526f63;
+  background: #526f63;
+  color: #fff;
+}
+
+.gift-account-sheet__status {
+  display: grid;
+  grid-template-columns: 27px minmax(0, 1fr);
+  align-items: center;
+  gap: 9px;
+  min-height: 54px;
+  border: 1px solid rgba(82, 111, 99, 0.26);
+  border-radius: 13px;
+  padding: 10px 11px;
+  background: #f0f6f2;
+  color: #486657;
+}
+
+.gift-account-sheet__status[data-status="error"] {
+  border-color: rgba(164, 79, 93, 0.25);
+  background: #fff2f2;
+  color: #934f5b;
+}
+
+.gift-account-sheet__status > svg {
+  width: 25px;
+  height: 25px;
+}
+
+.gift-account-sheet__status > span {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+
+.gift-account-sheet__status strong {
+  font-size: 10.5px;
+}
+
+.gift-account-sheet__status small {
+  color: inherit;
+  font-size: 8.5px;
+  line-height: 1.45;
+}
+
 .family-contact-sheet__person {
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
@@ -1766,6 +1882,19 @@
   gap: 2px;
   padding: 5px;
   font-size: 9px;
+}
+
+.family-contact-sheet__actions a[data-action="call"] {
+  border-color: #526f63;
+  background: #526f63;
+  color: #fff;
+  box-shadow: 0 6px 15px rgba(58, 82, 71, 0.16);
+}
+
+.family-contact-sheet__actions a[data-action="message"] {
+  border-color: rgba(96, 75, 82, 0.24);
+  background: #fffdfa;
+  color: #5f5155;
 }
 
 /* Guestbook — make writing, empty and completion states immediately legible. */
@@ -1852,6 +1981,21 @@
   min-height: 118px;
 }
 
+.guestbook-compose .field > :is(input, textarea),
+.guestbook-owned .field > :is(input, textarea) {
+  border-width: 1px;
+  border-color: rgba(96, 75, 82, 0.24);
+  border-radius: 12px;
+  background: #fffefa;
+  box-shadow: inset 0 1px 2px rgba(79, 60, 65, 0.035);
+}
+
+.guestbook-compose .field > :is(input, textarea):focus,
+.guestbook-owned .field > :is(input, textarea):focus {
+  border-color: #698679;
+  box-shadow: 0 0 0 3px rgba(105, 134, 121, 0.12);
+}
+
 .guestbook-character-count {
   display: flex;
   width: 100%;
@@ -1894,6 +2038,74 @@
   box-shadow: 0 7px 17px rgba(78, 103, 91, 0.15);
 }
 
+.guestbook-compose__readiness {
+  display: flex;
+  min-height: 34px;
+  align-items: center;
+  gap: 7px;
+  margin-top: -3px;
+  border-radius: 10px;
+  padding: 7px 9px;
+  background: rgba(105, 134, 121, 0.075);
+  color: #7b8580;
+  font-size: 9px;
+  font-weight: 750;
+}
+
+.guestbook-compose__readiness[data-ready="true"] {
+  background: #edf5ef;
+  color: #4c6d5c;
+}
+
+.guestbook-compose__readiness > svg {
+  width: 14px;
+  height: 14px;
+  flex: 0 0 14px;
+}
+
+.guestbook-owned {
+  display: grid;
+  gap: 11px;
+  border: 1px solid rgba(105, 134, 121, 0.22);
+  padding: 15px;
+  background: rgba(255, 255, 252, 0.92);
+}
+
+.guestbook-owned__saved {
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr);
+  align-items: center;
+  gap: 9px;
+  border-radius: 12px;
+  padding: 9px 10px;
+  background: #edf5ef;
+  color: #496a59;
+}
+
+.guestbook-owned__saved > svg {
+  width: 26px;
+  height: 26px;
+}
+
+.guestbook-owned__saved > span,
+.guestbook-feedback > span {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+
+.guestbook-owned__saved strong,
+.guestbook-feedback strong {
+  font-size: 10.5px;
+}
+
+.guestbook-owned__saved small,
+.guestbook-feedback small {
+  color: inherit;
+  font-size: 8.5px;
+  line-height: 1.45;
+}
+
 .guestbook-feedback {
   display: grid;
   grid-template-columns: 28px minmax(0, 1fr);
@@ -1909,13 +2121,6 @@
   height: 28px;
   border-radius: 50%;
   padding: 6px;
-}
-
-.guestbook-feedback p {
-  margin: 0;
-  font-size: 10.5px;
-  font-weight: 750;
-  line-height: 1.5;
 }
 
 .guestbook-feedback--success {
@@ -1940,6 +2145,55 @@
 
 .guestbook-public {
   border-top-width: 1px;
+}
+
+.guestbook-message {
+  border-width: 1px;
+  border-color: rgba(96, 75, 82, 0.17);
+  padding: 13px;
+  background: rgba(255, 253, 249, 0.94);
+}
+
+.guestbook-message--owned {
+  border-color: rgba(105, 134, 121, 0.28);
+  background: #f4f8f4;
+}
+
+.guestbook-message > div {
+  padding-bottom: 7px;
+  border-bottom: 1px solid rgba(96, 75, 82, 0.09);
+}
+
+.guestbook-message > p {
+  color: #55484c;
+  font-family: var(--wedding-font-display);
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+@media (max-width: 350px) {
+  .quick-hero__content {
+    padding-inline: 15px;
+    padding-bottom: 24px;
+  }
+
+  .quick-hero__content h1 {
+    gap: 7px;
+    font-size: 33px;
+  }
+
+  .quick-hero__facts > div {
+    gap: 6px;
+    padding-inline: 8px;
+  }
+
+  .quick-hero__facts :is(time, strong) {
+    font-size: 12px;
+  }
+
+  .quick-section-heading {
+    margin-bottom: 28px;
+  }
 }
 
 .guestbook-section-heading > span {

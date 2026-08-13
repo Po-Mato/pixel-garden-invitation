@@ -58,11 +58,13 @@ describe("GuestbookPanel", () => {
     expect(screen.getByRole("heading", { name: "따뜻한 한마디를 남겨주세요" })).toBeInTheDocument();
     expect(screen.getByPlaceholderText("예: 정원 친구")).toBeInTheDocument();
     expect(screen.getByText("짧은 한마디도 충분히 따뜻해요.")).toBeInTheDocument();
+    expect(screen.getByText("이름과 축하 메시지를 입력해 주세요.")).toBeInTheDocument();
     expect(screen.getByText("첫 축하 메시지를 기다리고 있어요.")).toBeInTheDocument();
 
     fireEvent.change(screen.getByRole("textbox", { name: "축하 메시지" }), {
       target: { value: "가".repeat(205) }
     });
+    expect(screen.getByText("메시지를 보낼 준비가 됐어요.")).toBeInTheDocument();
     expect(screen.getByText("35자 남았어요.")).toBeInTheDocument();
     expect(screen.getByText("205").closest(".guestbook-character-count")).toHaveAttribute("data-tone", "near-limit");
   });
@@ -121,6 +123,8 @@ describe("GuestbookPanel", () => {
 
   it("소유 메시지를 수정하고 삭제 확인 후 삭제한다", async () => {
     const actions = renderPanel({ ownedMessage });
+    expect(screen.getByText("전달한 메시지")).toBeInTheDocument();
+    expect(screen.getByText("이 기기에서 예식 전까지 수정하거나 삭제할 수 있습니다.")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "수정" }));
     fireEvent.change(screen.getByRole("textbox", { name: "축하 메시지" }), { target: { value: "수정한 축하" } });
     fireEvent.click(screen.getByRole("button", { name: "수정 저장" }));
