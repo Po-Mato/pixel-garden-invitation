@@ -18,7 +18,7 @@ class MockPointerEvent extends MouseEvent {
 
 beforeEach(() => {
   vi.stubGlobal("PointerEvent", MockPointerEvent);
-  Element.prototype.scrollIntoView = vi.fn();
+  HTMLElement.prototype.scrollTo = vi.fn();
 });
 
 afterEach(() => {
@@ -66,21 +66,21 @@ describe("전체 화면 웨딩 사진 뷰어", () => {
     expect(dialog).toHaveAttribute("aria-modal", "true");
     expect(screen.getByRole("img", { name: photos[0].alt })).toBeInTheDocument();
     expect(dialog.querySelector(".photo-lightbox__media")).toHaveAttribute("data-orientation", photos[0].orientation);
-    expect(screen.getByText("사진").closest("p")).toHaveTextContent(`사진1/ ${photos.length}`);
+    expect(screen.getByText("WEDDING GALLERY").closest("p")).toHaveTextContent(`WEDDING GALLERY01/${photos.length}`);
     expect(screen.getByText(photos[0].caption ?? "")).toBeInTheDocument();
-    expect(screen.getByText("좌우로 넘겨보기")).toBeInTheDocument();
+    expect(screen.getByText("사진을 좌우로 넘겨보세요")).toBeInTheDocument();
     expect(dialog.querySelector(".photo-lightbox__progress > span")).toHaveStyle({
       width: `${(1 / photos.length) * 100}%`
     });
-    expect(screen.getByText("01 · WEDDING GALLERY")).toBeInTheDocument();
+    expect(screen.getByText("WEDDING MOMENT")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "장면 01" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "전체 화면 닫기" })).toHaveTextContent("닫기");
     expect(dialog.querySelectorAll(".photo-lightbox__thumbnail")).toHaveLength(photos.length);
     expect(screen.getByRole("button", { name: "1번 사진 보기" }).querySelector(".photo-lightbox__thumbnail"))
       .toHaveStyle({ backgroundImage: expect.stringContaining("01-cover-640.webp") });
-    expect(Element.prototype.scrollIntoView).toHaveBeenCalledWith({
+    expect(HTMLElement.prototype.scrollTo).toHaveBeenCalledWith({
       behavior: "smooth",
-      block: "nearest",
-      inline: "center"
+      left: 0
     });
   });
 
@@ -88,12 +88,12 @@ describe("전체 화면 웨딩 사진 뷰어", () => {
     const { rerender } = render(
       <PhotoLightbox photos={photos} index={0} onIndexChange={vi.fn()} onClose={vi.fn()} />
     );
-    vi.mocked(Element.prototype.scrollIntoView).mockClear();
+    vi.mocked(HTMLElement.prototype.scrollTo).mockClear();
 
     rerender(<PhotoLightbox photos={photos} index={7} onIndexChange={vi.fn()} onClose={vi.fn()} />);
 
     expect(screen.getByRole("button", { name: "8번 사진 보기" })).toHaveAttribute("aria-current", "true");
-    expect(Element.prototype.scrollIntoView).toHaveBeenCalledOnce();
+    expect(HTMLElement.prototype.scrollTo).toHaveBeenCalledOnce();
   });
 
   it("드래그하는 동안 사진을 손가락 방향으로 움직이고 놓으면 원위치한다", () => {

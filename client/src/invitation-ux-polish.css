@@ -3398,3 +3398,246 @@ html[data-reduce-motion="true"] :is(
   animation: none;
   transition: none;
 }
+
+/* Compact invitation chrome — preserve content space on short screens and keyboards. */
+.quick-invitation[data-dock-density="compact"] {
+  padding-bottom: calc(58px + env(safe-area-inset-bottom));
+}
+
+.quick-core-actions[data-density="compact"] {
+  min-height: 48px;
+}
+
+.quick-core-actions[data-density="compact"] > :is(button, .invitation-share-trigger) {
+  min-height: 48px;
+  gap: 1px;
+  padding-block: 3px;
+  font-size: 8px;
+}
+
+.quick-core-actions[data-density="compact"] svg {
+  width: 16px;
+  height: 16px;
+}
+
+.quick-invitation[data-dock-density="minimal"] {
+  padding-bottom: calc(50px + env(safe-area-inset-bottom));
+}
+
+.quick-core-actions[data-density="minimal"] {
+  min-height: 42px;
+}
+
+.quick-core-actions[data-density="minimal"] > :is(button, .invitation-share-trigger) {
+  min-height: 42px;
+  gap: 0;
+  padding-block: 2px;
+  font-size: 0;
+}
+
+.quick-core-actions[data-density="minimal"] svg {
+  width: 17px;
+  height: 17px;
+}
+
+.quick-core-actions[data-density="minimal"] > :is(button, .invitation-share-trigger)[aria-current="page"]::before,
+.quick-core-actions[data-density="minimal"] > .invitation-share-trigger[data-state="open"]::before {
+  top: 3px;
+  height: 2px;
+}
+
+/* Reading navigation — keep the representative chapter visible through nested sections. */
+.quick-invitation__nav {
+  scroll-padding-inline: calc(50% - 34px);
+}
+
+.quick-invitation__nav a {
+  border-radius: 999px;
+  padding-inline: 11px;
+  scroll-margin-inline: calc(50% - 34px);
+  transition: color 180ms ease, background-color 180ms ease, box-shadow 180ms ease;
+}
+
+.quick-invitation__nav a[aria-current="location"] {
+  background: rgba(183, 111, 124, 0.09);
+  box-shadow: inset 0 0 0 1px rgba(183, 111, 124, 0.1);
+}
+
+.quick-invitation__topbar-progress > span {
+  transition-duration: 100ms;
+}
+
+/* RSVP correction path — reveal one clear issue and move focus to it. */
+.rsvp-form__section[data-invalid="true"] {
+  border-color: rgba(182, 101, 112, 0.58);
+  background: linear-gradient(145deg, #fffdfb, #fff8f8);
+  box-shadow: 0 10px 26px rgba(151, 74, 87, 0.1);
+}
+
+.rsvp-form__section[data-invalid="true"] .rsvp-form__section-header > span {
+  border-color: rgba(182, 101, 112, 0.6);
+  background: #fff0f2;
+  color: #a24e5c;
+}
+
+.rsvp-form__section :is(input, textarea)[aria-invalid="true"] {
+  border-color: #b66570;
+  background: #fffafa;
+  box-shadow: 0 0 0 3px rgba(182, 101, 112, 0.1);
+}
+
+.rsvp-consent:has(input[aria-invalid="true"]) {
+  border: 1px solid rgba(182, 101, 112, 0.42);
+  border-radius: 12px;
+  padding: 10px;
+  background: #fff7f8;
+}
+
+.rsvp-validation-callout {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  align-items: center;
+  gap: 9px;
+  margin: 0;
+  border: 1px solid rgba(182, 101, 112, 0.36);
+  border-radius: 13px;
+  padding: 10px 11px;
+  background: #fff5f6;
+  color: #87434e;
+}
+
+.rsvp-validation-callout > svg {
+  width: 20px;
+  height: 20px;
+}
+
+.rsvp-validation-callout > span {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+
+.rsvp-validation-callout strong {
+  font-size: 10.5px;
+}
+
+.rsvp-validation-callout small {
+  font-size: 9.5px;
+  line-height: 1.45;
+}
+
+.rsvp-form__section .rsvp-submit:not(:disabled) {
+  transition: transform 160ms ease, box-shadow 160ms ease, background-color 160ms ease;
+}
+
+.rsvp-form__section .rsvp-submit:not(:disabled):active {
+  transform: translateY(1px);
+  box-shadow: 0 4px 10px rgba(58, 82, 71, 0.16);
+}
+
+/* Gallery hierarchy — give the collection, current scene and controls distinct roles. */
+.photo-lightbox__header {
+  padding-inline: 4px;
+}
+
+.photo-lightbox__counter {
+  display: grid;
+  min-width: 104px;
+  align-items: center;
+  gap: 1px;
+  border-radius: 12px;
+  padding: 6px 10px;
+}
+
+.photo-lightbox__counter > small {
+  color: #b8a884;
+  font-size: 6px;
+  font-weight: 850;
+  letter-spacing: 0.15em;
+  line-height: 1.2;
+}
+
+.photo-lightbox__counter > span {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+  font-variant-numeric: tabular-nums;
+}
+
+.photo-lightbox__counter :is(i, b) {
+  color: #a99f91;
+  font-size: 9px;
+  font-style: normal;
+  font-weight: 750;
+}
+
+.photo-lightbox__counter strong {
+  font-family: var(--wedding-font-display);
+  font-size: 16px;
+}
+
+.photo-lightbox__previous,
+.photo-lightbox__next {
+  border-color: rgba(234, 223, 199, 0.48);
+  background: linear-gradient(145deg, rgba(53, 49, 44, 0.92), rgba(24, 22, 20, 0.9));
+  box-shadow: 0 7px 20px rgba(0, 0, 0, 0.28), inset 0 0 0 1px rgba(255, 253, 248, 0.05);
+}
+
+.photo-lightbox__previous:disabled,
+.photo-lightbox__next:disabled {
+  border-color: rgba(255, 253, 248, 0.14);
+  box-shadow: none;
+}
+
+.photo-lightbox__caption-card {
+  min-height: 48px;
+  align-content: start;
+}
+
+.photo-lightbox__caption-card > h2 {
+  margin: 0;
+  color: #fffaf0;
+  font-family: var(--wedding-font-display);
+  font-size: 14px;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+}
+
+.photo-lightbox__caption-card > .photo-lightbox__caption {
+  max-width: 44ch;
+  color: #cfc7bb;
+  font-family: var(--wedding-font-ui);
+  font-size: 10.5px;
+  line-height: 1.5;
+}
+
+@media (max-height: 700px) {
+  .photo-lightbox__gesture {
+    display: none;
+  }
+
+  .photo-lightbox__footer {
+    gap: 3px;
+    padding-top: 5px;
+  }
+
+  .photo-lightbox__caption-card {
+    min-height: 38px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .quick-invitation__nav a,
+  .quick-invitation__topbar-progress > span,
+  .rsvp-form__section .rsvp-submit {
+    transition: none;
+  }
+}
+
+html[data-reduce-motion="true"] :is(
+  .quick-invitation__nav a,
+  .quick-invitation__topbar-progress > span,
+  .rsvp-form__section .rsvp-submit
+) {
+  transition: none;
+}

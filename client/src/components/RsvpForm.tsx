@@ -1,6 +1,7 @@
-import { Check, Minus, Plus } from "lucide-react";
+import { Check, CircleAlert, Minus, Plus } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { normalizeRsvpPhone, type RsvpAttendance, type RsvpMealStatus, type RsvpSide, type RsvpSubmission } from "@wedding-game/shared";
+import { shouldReduceMotion } from "../accessibility/viewPreferences";
 import { useCoupleOrder } from "../invitation/CoupleOrderContext";
 import { coupleSides } from "../invitation/coupleOrder";
 import {
@@ -81,6 +82,7 @@ export function RsvpForm({
   const [consented, setConsented] = useState(initialValue?.consentVersion === policy.consentVersion);
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState("");
+  const [validationAttempted, setValidationAttempted] = useState(false);
   const [online, setOnline] = useState(() => navigator.onLine !== false);
   const [draftTouched, setDraftTouched] = useState(false);
   const [draftSavedAt, setDraftSavedAt] = useState<string | null>(restoredDraftAt ?? null);
@@ -90,6 +92,10 @@ export function RsvpForm({
   const mountedRef = useRef(true);
   const submittingRef = useRef(false);
   const previousOnlineRef = useRef(online);
+  const guestNameRef = useRef<HTMLInputElement>(null);
+  const phoneRef = useRef<HTMLInputElement>(null);
+  const partySizeRef = useRef<HTMLInputElement>(null);
+  const consentRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     mountedRef.current = true;
@@ -172,6 +178,17 @@ export function RsvpForm({
       : !consented
         ? "개인정보 이용 동의 후 답변을 보낼 수 있습니다."
         : "답변을 보낼 준비가 되었습니다.";
+  const validationMessage = !validationAttempted
+    ? ""
+    : guestName.trim().length === 0
+      ? "이름을 입력해 주세요."
+      : !phoneValid
+        ? "연락처를 숫자 8자리 이상 입력해 주세요."
+        : !partySizeValid
+          ? "참석 인원을 1명에서 10명 사이로 확인해 주세요."
+          : !consented
+            ? "개인정보 수집 및 이용에 동의해 주세요."
+            : "";
 
   function changeAttendance(value: RsvpAttendance) {
     setAttendance(value);
@@ -204,11 +221,35 @@ export function RsvpForm({
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!valid || submittingRef.current) return;
+    if (submittingRef.current) return;
+    if (!valid) {
+      setValidationAttempted(true);
+      setMessage("");
+      const target = guestName.trim().length === 0
+        ? guestNameRef.current
+        : !phoneValid
+          ? phoneRef.current
+          : !partySizeValid
+            ? partySizeRef.current
+            : consentRef.current;
+      const revealTarget = () => {
+        if (!target) return;
+        target.scrollIntoView?.({
+          behavior: shouldReduceMotion() ? "auto" : "smooth",
+          block: "center",
+          inline: "nearest"
+        });
+        target.focus({ preventScroll: true });
+      };
+      if (typeof window.requestAnimationFrame === "function") window.requestAnimationFrame(revealTarget);
+      else window.setTimeout(revealTarget, 0);
+      return;
+    }
 
     submittingRef.current = true;
     setSubmitting(true);
     setMessage("");
+    setValidationAttempted(false);
     const payload: RsvpSubmission = {
       side,
       guestName: guestName.trim(),
@@ -237,7 +278,7 @@ export function RsvpForm({
   }
 
   return (
-    <form className="rsvp-form form-stack" onSubmit={handleSubmit} onChange={() => setDraftTouched(true)}>
+    <form className="rsvp-form form-stack" noValidate onSubmit={handleSubmit} onChange={() => setDraftTouched(true)}>
       {queuedAt && onDiscardQueued ? (
         <PendingSubmissionManager queuedAt={queuedAt} online={online} label="참석 답변" onDiscard={onDiscardQueued} />
       ) : draftSavedAt ? <FormDraftManager savedAt={draftSavedAt} onDiscard={discardDraft} /> : null}
@@ -275,7 +316,11 @@ export function RsvpForm({
         </ol>
       </section>
 
-      <section className="rsvp-form__section" data-complete={identityComplete || undefined}>
+      <section
+        className="rsvp-form__section"
+        data-complete={identityComplete || undefined}
+        data-invalid={validationAttempted && !identityComplete || undefined}
+      >
         <header className="rsvp-form__section-header">
           <span>{identityComplete ? <Check aria-hidden="true" /> : 1}</span>
           <div><strong>하객 정보</strong><small>연락 가능한 정보를 적어주세요</small></div>
@@ -300,29 +345,47 @@ export function RsvpForm({
 
         <label className="field">
           <span>이름</span>
-          <input value={guestName} maxLength={30} autoComplete="name" onChange={(event) => setGuestName(event.target.value)} required />
+          <input
+            ref={guestNameRef}
+            value={guestName}
+            maxLength={30}
+            autoComplete="name"
+            aria-label="이름"
+            aria-invalid={validationAttempted && guestName.trim().length === 0 ? "true" : undefined}
+            aria-describedby={validationAttempted && guestName.trim().length === 0 ? "rsvp-name-hint" : undefined}
+            onChange={(event) => setGuestName(event.target.value)}
+            required
+          />
+          {validationAttempted && guestName.trim().length === 0 ? (
+            <small className="rsvp-field-hint" id="rsvp-name-hint">성함을 입력해 주세요.</small>
+          ) : null}
         </label>
         <label className="field">
           <span>연락처</span>
           <input
+            ref={phoneRef}
             type="tel"
             inputMode="tel"
             aria-label="연락처"
             value={phone}
             maxLength={19}
             autoComplete="tel"
-            aria-invalid={phone.length > 0 && !phoneValid ? "true" : undefined}
-            aria-describedby={phone.length > 0 && !phoneValid ? "rsvp-phone-hint" : undefined}
+            aria-invalid={(phone.length > 0 || validationAttempted) && !phoneValid ? "true" : undefined}
+            aria-describedby={(phone.length > 0 || validationAttempted) && !phoneValid ? "rsvp-phone-hint" : undefined}
             onChange={(event) => setPhone(formatPhone(event.target.value))}
             required
           />
-          {phone.length > 0 && !phoneValid ? (
+          {(phone.length > 0 || validationAttempted) && !phoneValid ? (
             <small className="rsvp-field-hint" id="rsvp-phone-hint">숫자 8자리 이상 입력해 주세요.</small>
           ) : null}
         </label>
       </section>
 
-      <section className="rsvp-form__section" data-complete={attendanceComplete || undefined}>
+      <section
+        className="rsvp-form__section"
+        data-complete={attendanceComplete || undefined}
+        data-invalid={validationAttempted && !partySizeValid || undefined}
+      >
         <header className="rsvp-form__section-header">
           <span>{attendanceComplete ? <Check aria-hidden="true" /> : 2}</span>
           <div><strong>참석 정보</strong><small>예식 준비에 필요한 내용입니다</small></div>
@@ -349,11 +412,14 @@ export function RsvpForm({
               <label>
                 <span className="sr-only">{attendance === "unsure" ? "예상 인원" : "본인 포함 참석 인원"}</span>
                 <input
+                  ref={partySizeRef}
                   type="number"
                   min={1}
                   max={10}
                   inputMode="numeric"
                   aria-labelledby="rsvp-party-size-label"
+                  aria-invalid={validationAttempted && !partySizeValid ? "true" : undefined}
+                  aria-describedby="rsvp-party-size-hint"
                   value={partySize}
                   onChange={(event) => setPartySize(Number(event.target.value))}
                 />
@@ -363,7 +429,9 @@ export function RsvpForm({
                 <Plus aria-hidden="true" />
               </button>
             </div>
-            <small className="rsvp-party-size__hint">본인을 포함한 전체 인원입니다.</small>
+            <small className="rsvp-party-size__hint" id="rsvp-party-size-hint">
+              {validationAttempted && !partySizeValid ? "1명에서 10명 사이로 입력해 주세요." : "본인을 포함한 전체 인원입니다."}
+            </small>
           </div>
         ) : null}
 
@@ -387,22 +455,47 @@ export function RsvpForm({
         </label>
       </section>
 
-      <section className="rsvp-form__section rsvp-form__section--submit" data-complete={consentComplete || undefined}>
+      <section
+        className="rsvp-form__section rsvp-form__section--submit"
+        data-complete={consentComplete || undefined}
+        data-invalid={validationAttempted && !consented || undefined}
+      >
         <header className="rsvp-form__section-header">
           <span>{consentComplete ? <Check aria-hidden="true" /> : 3}</span>
           <div><strong>동의 및 전송</strong><small>내용을 확인하고 답변을 보내주세요</small></div>
         </header>
         <label className="rsvp-consent">
-          <input type="checkbox" checked={consented} onChange={(event) => setConsented(event.target.checked)} />
+          <input
+            ref={consentRef}
+            type="checkbox"
+            checked={consented}
+            aria-invalid={validationAttempted && !consented ? "true" : undefined}
+            aria-describedby="rsvp-consent-detail"
+            onChange={(event) => setConsented(event.target.checked)}
+          />
           <span>
             <strong>개인정보 수집 및 이용에 동의합니다.</strong>
-            <small>참석 인원 확인을 위해 이름·연락처·답변을 {deleteAtLabel}까지 보관 후 자동 삭제합니다.</small>
+            <small id="rsvp-consent-detail">참석 인원 확인을 위해 이름·연락처·답변을 {deleteAtLabel}까지 보관 후 자동 삭제합니다.</small>
           </span>
         </label>
 
+        {validationMessage ? (
+          <p className="rsvp-validation-callout" role="alert">
+            <CircleAlert aria-hidden="true" />
+            <span><strong>확인이 필요한 항목으로 이동했어요</strong><small>{validationMessage}</small></span>
+          </p>
+        ) : null}
         <p className="rsvp-readiness" data-ready={valid || undefined} aria-live="polite">{readinessMessage}</p>
-        <button className="primary-button rsvp-submit" type="submit" disabled={!valid || submitting}>
-          {submitting ? online ? "보내는 중" : "저장 중" : !online ? "전송 대기함에 저장" : queuedAt ? "대기 중인 답변 보내기" : submitLabel}
+        <button className="primary-button rsvp-submit" type="submit" disabled={submitting}>
+          {submitting
+            ? online ? "보내는 중" : "저장 중"
+            : !valid
+              ? "입력 내용 확인하기"
+              : !online
+                ? "전송 대기함에 저장"
+                : queuedAt
+                  ? "대기 중인 답변 보내기"
+                  : submitLabel}
         </button>
         {draftStatus ? <p className="form-draft-status" role="status">{draftStatus}</p> : null}
         {message ? <p className="form-status form-status--error" role="alert">{message}</p> : null}

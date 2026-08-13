@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   loadInvitationViewSync,
@@ -30,6 +30,7 @@ vi.mock("./InvitationShareAccess", () => ({
 beforeEach(() => {
   installMemoryLocalStorage();
   Element.prototype.scrollIntoView = vi.fn();
+  HTMLElement.prototype.scrollTo = vi.fn();
 });
 afterEach(cleanup);
 
@@ -94,7 +95,7 @@ describe("간편 초대장", () => {
     expect(loadInvitationViewSync()).toMatchObject({ source: "quick", sectionId: "directions" });
   });
 
-  it("스크롤 위치에 맞춰 상단 바 맥락과 목차의 현재 위치를 갱신한다", () => {
+  it("스크롤 위치에 맞춰 상단 바 맥락과 목차의 현재 위치를 갱신한다", async () => {
     render(<QuickInvitation onOpenGarden={vi.fn()} />);
 
     const invitation = document.querySelector<HTMLElement>(".quick-invitation");
@@ -104,14 +105,64 @@ describe("간편 초대장", () => {
     expect(screen.getByText(/WEDDING DAY · 2027\.05\.01/)).toBeInTheDocument();
 
     Object.defineProperty(invitation, "scrollTop", { configurable: true, value: 96 });
+    Object.defineProperty(invitation, "scrollHeight", { configurable: true, value: 1056 });
+    Object.defineProperty(invitation, "clientHeight", { configurable: true, value: 96 });
     fireEvent.scroll(invitation as HTMLElement);
     expect(invitation).toHaveAttribute("data-scroll-state", "scrolled");
     expect(topbar).toHaveAttribute("data-scrolled", "true");
-    expect(document.querySelector(".quick-invitation__topbar-progress span")).toHaveStyle({ width: "9.090909090909092%" });
+    await waitFor(() => expect(document.querySelector(".quick-invitation__topbar-progress span")).toHaveStyle({ width: "10%" }));
 
     const directions = screen.getByRole("link", { name: "오시는 길" });
     fireEvent.click(directions);
     expect(directions).toHaveAttribute("aria-current", "location");
+  });
+
+  it("세부 섹션을 읽는 동안 대표 목차와 연속 진행률을 정확히 동기화한다", async () => {
+    render(<QuickInvitation onOpenGarden={vi.fn()} />);
+
+    const invitation = document.querySelector<HTMLElement>(".quick-invitation")!;
+    const sections = [...invitation.querySelectorAll<HTMLElement>("section[id]")];
+    Object.defineProperty(invitation, "scrollTop", { configurable: true, value: 1500 });
+    Object.defineProperty(invitation, "scrollHeight", { configurable: true, value: 3300 });
+    Object.defineProperty(invitation, "clientHeight", { configurable: true, value: 600 });
+    invitation.getBoundingClientRect = () => ({ top: 0, bottom: 600 } as DOMRect);
+    sections.forEach((section, index) => {
+      section.getBoundingClientRect = () => ({
+        top: index * 300 - invitation.scrollTop,
+        bottom: (index + 1) * 300 - invitation.scrollTop
+      } as DOMRect);
+    });
+
+    fireEvent.scroll(invitation);
+
+    await waitFor(() => {
+      expect(screen.getByRole("link", { name: "오시는 길" })).toHaveAttribute("aria-current", "location");
+      expect(document.querySelector(".quick-invitation__topbar-brand")).toHaveTextContent("06 / 11 · 오시는 길");
+      expect(document.querySelector(".quick-invitation__topbar-progress span")).toHaveStyle({
+        width: "55.55555555555556%"
+      });
+    });
+    expect(HTMLElement.prototype.scrollTo).toHaveBeenCalledWith({
+      behavior: "smooth",
+      left: 0
+    });
+  });
+
+  it("화면 높이에 따라 하단 바로가기 밀도를 자동 조절한다", () => {
+    Object.defineProperty(window, "innerHeight", { configurable: true, value: 640 });
+    render(<QuickInvitation onOpenGarden={vi.fn()} />);
+
+    const invitation = document.querySelector(".quick-invitation");
+    const dock = screen.getByRole("navigation", { name: "초대장 핵심 바로가기" });
+    expect(invitation).toHaveAttribute("data-dock-density", "compact");
+    expect(dock).toHaveAttribute("data-density", "compact");
+
+    Object.defineProperty(window, "innerHeight", { configurable: true, value: 480 });
+    fireEvent(window, new Event("resize"));
+    expect(invitation).toHaveAttribute("data-dock-density", "minimal");
+    expect(dock).toHaveAttribute("data-density", "minimal");
+
+    Object.defineProperty(window, "innerHeight", { configurable: true, value: 768 });
   });
 
   it("첫 화면과 답변 완료 동선에서 필요한 섹션으로 바로 이동한다", () => {

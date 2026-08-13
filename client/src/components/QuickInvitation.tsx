@@ -71,6 +71,9 @@ const navigation = [
   ["방명록", "guestbook"]
 ] as const;
 
+type NavigationSectionId = (typeof navigation)[number][1];
+type DockDensity = "normal" | "compact" | "minimal";
+
 const invitationSectionOrder: readonly QuickInvitationSectionId[] = [
   "top", "couple", "story", "gallery", "schedule", "directions", "rsvp", "gift", "contact", "guestbook", "share"
 ];
@@ -88,6 +91,24 @@ const invitationSectionLabels: Record<QuickInvitationSectionId, string> = {
   guestbook: "방명록",
   share: "마무리"
 };
+
+function navigationSectionFor(id: QuickInvitationSectionId): NavigationSectionId | null {
+  if (id === "couple" || id === "story") return "couple";
+  if (id === "gallery") return "gallery";
+  if (id === "schedule") return "schedule";
+  if (id === "directions") return "directions";
+  if (id === "rsvp" || id === "gift" || id === "contact") return "rsvp";
+  if (id === "guestbook" || id === "share") return "guestbook";
+  return null;
+}
+
+function dockDensityForViewport(): DockDensity {
+  if (typeof window === "undefined") return "normal";
+  const viewportHeight = window.visualViewport?.height ?? window.innerHeight;
+  if (viewportHeight <= 520) return "minimal";
+  if (viewportHeight <= 700) return "compact";
+  return "normal";
+}
 
 function SectionHeading({ number, eyebrow, title, body }: SectionHeadingProps) {
   return (
@@ -139,10 +160,14 @@ export function QuickInvitation({
     loadInvitationViewSync()?.sectionId ?? "top"
   );
   const invitationRef = useRef<HTMLElement>(null);
+  const navigationRef = useRef<HTMLElement>(null);
+  const navigationLinkRefs = useRef<Partial<Record<NavigationSectionId, HTMLAnchorElement | null>>>({});
   const [activeSection, setActiveSection] = useState<QuickInvitationSectionId>(activeSectionRef.current);
   const [topbarState, setTopbarState] = useState<"hero" | "scrolled">("hero");
+  const [readingProgress, setReadingProgress] = useState(0);
+  const [dockDensity, setDockDensity] = useState<DockDensity>(dockDensityForViewport);
   const activeSectionNumber = Math.max(1, invitationSectionOrder.indexOf(activeSection) + 1);
-  const activeSectionProgress = activeSectionNumber / invitationSectionOrder.length * 100;
+  const activeNavigationSection = navigationSectionFor(activeSection);
 
   const selectSection = (id: QuickInvitationSectionId) => {
     if (activeSectionRef.current !== id) {
@@ -175,10 +200,26 @@ export function QuickInvitation({
     const updateScrollContext = () => {
       const nextState = invitation.scrollTop > 72 ? "scrolled" : "hero";
       setTopbarState((current) => current === nextState ? current : nextState);
-      const activationLine = invitation.getBoundingClientRect().top + Math.min(220, invitation.clientHeight * 0.3);
+      const maximumScroll = Math.max(0, invitation.scrollHeight - invitation.clientHeight);
+      const nextProgress = maximumScroll === 0 ? 0 : Math.min(100, Math.max(0, invitation.scrollTop / maximumScroll * 100));
+      setReadingProgress((current) => Math.abs(current - nextProgress) < 0.25 ? current : nextProgress);
+
+      const invitationTop = invitation.getBoundingClientRect().top;
+      const activationLine = invitationTop + Math.min(220, Math.max(112, invitation.clientHeight * 0.3));
+      const sectionAtReadingLine = sections.find((section) => {
+        const rect = section.getBoundingClientRect();
+        return rect.top <= activationLine && rect.bottom > activationLine;
+      });
+      const nearestSection = sections.reduce<HTMLElement | undefined>((nearest, section) => {
+        if (!nearest) return section;
+        return Math.abs(section.getBoundingClientRect().top - activationLine)
+          < Math.abs(nearest.getBoundingClientRect().top - activationLine) ? section : nearest;
+      }, undefined);
       const visibleSection = invitation.scrollTop <= 1
         ? sections[0]
-        : [...sections].reverse().find((section) => section.getBoundingClientRect().top <= activationLine);
+        : maximumScroll > 0 && invitation.scrollTop >= maximumScroll - 2
+          ? sections.at(-1)
+          : sectionAtReadingLine ?? nearestSection;
       const id = visibleSection?.id as QuickInvitationSectionId | undefined;
       if (id && activeSectionRef.current !== id) {
         activeSectionRef.current = id;
@@ -192,7 +233,9 @@ export function QuickInvitation({
       window.cancelAnimationFrame(frame);
       frame = window.requestAnimationFrame(updateScrollContext);
     };
+    const maximumScroll = Math.max(0, invitation.scrollHeight - invitation.clientHeight);
     setTopbarState(invitation.scrollTop > 72 ? "scrolled" : "hero");
+    setReadingProgress(maximumScroll === 0 ? 0 : Math.min(100, Math.max(0, invitation.scrollTop / maximumScroll * 100)));
     invitation.addEventListener("scroll", scheduleUpdate, { passive: true });
     window.addEventListener("resize", scheduleUpdate);
     return () => {
@@ -201,6 +244,29 @@ export function QuickInvitation({
       window.cancelAnimationFrame(frame);
     };
   }, []);
+
+  useEffect(() => {
+    const updateDensity = () => setDockDensity(dockDensityForViewport());
+    window.addEventListener("resize", updateDensity);
+    window.visualViewport?.addEventListener("resize", updateDensity);
+    return () => {
+      window.removeEventListener("resize", updateDensity);
+      window.visualViewport?.removeEventListener("resize", updateDensity);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!activeNavigationSection) return;
+    const selectedLink = navigationLinkRefs.current[activeNavigationSection];
+    const navigationElement = navigationRef.current;
+    if (!selectedLink || !navigationElement) return;
+    const left = selectedLink.offsetLeft - (navigationElement.clientWidth - selectedLink.offsetWidth) / 2;
+    if (typeof navigationElement.scrollTo === "function") {
+      navigationElement.scrollTo({ left, behavior: shouldReduceMotion() ? "auto" : "smooth" });
+    } else {
+      navigationElement.scrollLeft = left;
+    }
+  }, [activeNavigationSection]);
 
   const returnToGarden = () => {
     saveQuickViewSection(activeSectionRef.current);
@@ -215,7 +281,12 @@ export function QuickInvitation({
   ]), []);
 
   return (
-    <article ref={invitationRef} className="quick-invitation" data-scroll-state={topbarState}>
+    <article
+      ref={invitationRef}
+      className="quick-invitation"
+      data-scroll-state={topbarState}
+      data-dock-density={dockDensity}
+    >
       <header className="quick-invitation__topbar" data-scrolled={topbarState === "scrolled" ? "true" : undefined}>
         <button
           type="button"
@@ -241,7 +312,7 @@ export function QuickInvitation({
           <InvitationShareAccess variant="icon" />
         </div>
         <i className="quick-invitation__topbar-progress" aria-hidden="true">
-          <span style={{ width: `${activeSectionProgress}%` }} />
+          <span style={{ width: `${readingProgress}%` }} />
         </i>
       </header>
 
@@ -286,12 +357,20 @@ export function QuickInvitation({
         </div>
       </section>
 
-      <nav className="quick-invitation__nav" aria-label="간편 초대장 목차">
+      <nav
+        ref={navigationRef}
+        className="quick-invitation__nav"
+        aria-label="간편 초대장 목차"
+        data-active-section={activeNavigationSection ?? undefined}
+      >
         {navigation.map(([label, id]) => (
           <a
             key={id}
+            ref={(element) => {
+              navigationLinkRefs.current[id] = element;
+            }}
             href={`#${id}`}
-            aria-current={activeSection === id ? "location" : undefined}
+            aria-current={activeNavigationSection === id ? "location" : undefined}
             onClick={(event) => {
               event.preventDefault();
               selectSection(id);
@@ -455,7 +534,12 @@ export function QuickInvitation({
         <strong>{names}</strong>
         <button type="button" onClick={() => scrollToSection("top")}><ArrowUp aria-hidden="true" /> 맨 위로</button>
       </footer>
-      <nav className="quick-core-actions" aria-label="초대장 핵심 바로가기" data-active-section={activeSection}>
+      <nav
+        className="quick-core-actions"
+        aria-label="초대장 핵심 바로가기"
+        data-active-section={activeSection}
+        data-density={dockDensity}
+      >
         <button
           type="button"
           aria-current={activeSection === "schedule" ? "page" : undefined}

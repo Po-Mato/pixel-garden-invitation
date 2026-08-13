@@ -48,6 +48,7 @@ export function PhotoLightbox({ photos, index, onIndexChange, onClose }: PhotoLi
   const [dragOffset, setDragOffset] = useState(0);
   const dialogRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const thumbnailIndexRef = useRef<HTMLElement>(null);
   const thumbnailButtonRefs = useRef<Array<HTMLButtonElement | null>>([]);
   const pointerStartRef = useRef<PointerStart | null>(null);
   const indexRef = useRef(index);
@@ -167,12 +168,15 @@ export function PhotoLightbox({ photos, index, onIndexChange, onClose }: PhotoLi
 
   useEffect(() => {
     const selectedThumbnail = thumbnailButtonRefs.current[index];
-    if (typeof selectedThumbnail?.scrollIntoView !== "function") return;
-    selectedThumbnail.scrollIntoView({
-      behavior: shouldReduceMotion() ? "auto" : "smooth",
-      block: "nearest",
-      inline: "center"
-    });
+    const thumbnailIndex = thumbnailIndexRef.current;
+    if (!selectedThumbnail || !thumbnailIndex) return;
+    const left = selectedThumbnail.offsetLeft - (thumbnailIndex.clientWidth - selectedThumbnail.offsetWidth) / 2;
+    if (typeof thumbnailIndex.scrollTo === "function") {
+      thumbnailIndex.scrollTo({ left, behavior: shouldReduceMotion() ? "auto" : "smooth" });
+    } else {
+      thumbnailIndex.scrollLeft = left;
+    }
+    if (dialogRef.current) dialogRef.current.scrollLeft = 0;
   }, [index]);
 
   if (!photo) {
@@ -248,9 +252,12 @@ export function PhotoLightbox({ photos, index, onIndexChange, onClose }: PhotoLi
     >
       <header className="photo-lightbox__header">
         <p className="photo-lightbox__counter" aria-live="polite">
-          <span>사진</span>
-          <strong>{index + 1}</strong>
-          <span>/ {photos.length}</span>
+          <small>WEDDING GALLERY</small>
+          <span>
+            <strong>{String(index + 1).padStart(2, "0")}</strong>
+            <i aria-hidden="true">/</i>
+            <b>{String(photos.length).padStart(2, "0")}</b>
+          </span>
         </p>
         <button
           ref={closeButtonRef}
@@ -314,7 +321,7 @@ export function PhotoLightbox({ photos, index, onIndexChange, onClose }: PhotoLi
       </div>
 
       <footer className="photo-lightbox__footer">
-        <nav className="photo-lightbox__index" aria-label="웨딩 사진 바로 선택">
+        <nav ref={thumbnailIndexRef} className="photo-lightbox__index" aria-label="웨딩 사진 바로 선택">
           {photos.map((candidate, photoIndex) => (
             <button
               key={candidate.id}
@@ -340,7 +347,7 @@ export function PhotoLightbox({ photos, index, onIndexChange, onClose }: PhotoLi
         {photos.length > 1 ? (
           <p className="photo-lightbox__gesture" aria-hidden="true">
             <MoveHorizontal />
-            좌우로 넘겨보기
+            사진을 좌우로 넘겨보세요
           </p>
         ) : null}
         {networkMode === "economy" && !fullQuality ? (
@@ -349,7 +356,8 @@ export function PhotoLightbox({ photos, index, onIndexChange, onClose }: PhotoLi
           </button>
         ) : null}
         <div key={photo.id} className="photo-lightbox__caption-card">
-          <span aria-hidden="true">{String(index + 1).padStart(2, "0")} · WEDDING GALLERY</span>
+          <span aria-hidden="true">WEDDING MOMENT</span>
+          <h2>장면 {String(index + 1).padStart(2, "0")}</h2>
           {photo.caption ? (
             <p id={captionId} className="photo-lightbox__caption">
               {photo.caption}

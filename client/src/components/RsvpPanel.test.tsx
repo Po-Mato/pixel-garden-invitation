@@ -135,7 +135,7 @@ describe("RsvpPanel", () => {
     api.fetchOwnedRsvp.mockRejectedValue(new WeddingApiError(status, "unauthorized"));
     render(<RsvpPanel />);
 
-    expect(await screen.findByRole("button", { name: "참석 답변 보내기" })).toBeInTheDocument();
+    expect(await screen.findByRole("button", { name: "입력 내용 확인하기" })).toBeInTheDocument();
     expect(storage.clearRsvpCredential).toHaveBeenCalledWith("sample-garden");
   });
 
@@ -182,7 +182,7 @@ describe("RsvpPanel", () => {
     fireEvent.click(screen.getByRole("button", { name: "답변 내용 수정" }));
     fireEvent.click(screen.getByRole("button", { name: "수정 저장" }));
 
-    expect(await screen.findByRole("button", { name: "참석 답변 보내기" })).toBeInTheDocument();
+    expect(await screen.findByRole("button", { name: "입력 내용 확인하기" })).toBeInTheDocument();
     expect(storage.clearRsvpCredential).toHaveBeenCalledWith("sample-garden");
     expect(screen.getByRole("status")).toHaveTextContent("수정 정보를 확인할 수 없어 새 답변 작성으로 전환했습니다");
   });
@@ -244,7 +244,7 @@ describe("RsvpPanel", () => {
     expect(screen.getByRole("status")).toHaveTextContent("답변을 저장하고 있습니다");
     rejectCreate?.(new Error("network"));
 
-    expect(await screen.findByRole("button", { name: "참석 답변 보내기" })).toBeInTheDocument();
+    expect(await screen.findByRole("button", { name: "입력 내용 확인하기" })).toBeInTheDocument();
     api.createRsvp.mockResolvedValueOnce({ response, credential });
     await fillNewForm();
     fireEvent.click(screen.getByRole("button", { name: "참석 답변 보내기" }));
@@ -262,7 +262,7 @@ describe("RsvpPanel", () => {
     fireEvent.click(screen.getByRole("button", { name: "답변 내용 수정" }));
 
     expect(screen.getByLabelText(/개인정보 수집/)).not.toBeChecked();
-    expect(screen.getByRole("button", { name: "수정 저장" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "입력 내용 확인하기" })).toBeEnabled();
   });
 
   it("preserves form values on create failure and blocks duplicate creation", async () => {

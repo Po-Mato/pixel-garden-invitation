@@ -23,6 +23,7 @@ describe("RsvpForm", () => {
     vi.setSystemTime(new Date("2027-04-20T00:00:00+09:00"));
     installMemoryLocalStorage();
     Object.defineProperty(navigator, "onLine", { configurable: true, value: true });
+    Element.prototype.scrollIntoView = vi.fn();
   });
 
   afterEach(() => {
@@ -190,21 +191,40 @@ describe("RsvpForm", () => {
     })));
   });
 
-  it("disables submission until name, normalized phone, and consent are valid", () => {
-    render(<RsvpForm policy={policy} submitLabel="참석 답변 보내기" onSubmit={vi.fn()} />);
-    const submit = screen.getByRole("button", { name: "참석 답변 보내기" });
+  it("미완료 상태에서는 첫 오류 항목으로 이동하고 수정 지점을 순서대로 강조한다", async () => {
+    const onSubmit = vi.fn();
+    render(<RsvpForm policy={policy} submitLabel="참석 답변 보내기" onSubmit={onSubmit} />);
+    const review = screen.getByRole("button", { name: "입력 내용 확인하기" });
 
-    expect(submit).toBeDisabled();
+    expect(review).toBeEnabled();
+    fireEvent.click(review);
+    await waitFor(() => expect(screen.getByLabelText("이름")).toHaveFocus());
+    expect(screen.getByLabelText("이름")).toHaveAttribute("aria-invalid", "true");
+    expect(screen.getByRole("alert")).toHaveTextContent("이름을 입력해 주세요.");
+    expect(Element.prototype.scrollIntoView).toHaveBeenCalledWith({
+      behavior: "smooth",
+      block: "center",
+      inline: "nearest"
+    });
+
     fireEvent.change(screen.getByLabelText("이름"), { target: { value: "이승재" } });
     fireEvent.change(screen.getByLabelText("연락처"), { target: { value: "010-12" } });
-    fireEvent.click(screen.getByLabelText(/개인정보 수집/));
-    expect(submit).toBeDisabled();
+    fireEvent.click(screen.getByRole("button", { name: "입력 내용 확인하기" }));
+    await waitFor(() => expect(screen.getByLabelText("연락처")).toHaveFocus());
+    expect(screen.getByRole("alert")).toHaveTextContent("연락처를 숫자 8자리 이상 입력해 주세요.");
+
     fireEvent.change(screen.getByLabelText("연락처"), { target: { value: "010-1234-5678" } });
-    expect(submit).toBeEnabled();
+    fireEvent.click(screen.getByRole("button", { name: "입력 내용 확인하기" }));
+    await waitFor(() => expect(screen.getByLabelText(/개인정보 수집/)).toHaveFocus());
+    expect(screen.getByRole("alert")).toHaveTextContent("개인정보 수집 및 이용에 동의해 주세요.");
+    expect(onSubmit).not.toHaveBeenCalled();
+
+    fireEvent.click(screen.getByLabelText(/개인정보 수집/));
+    expect(screen.getByRole("button", { name: "참석 답변 보내기" })).toBeEnabled();
     fireEvent.change(screen.getByLabelText("본인 포함 참석 인원"), { target: { value: "11" } });
-    expect(submit).toBeDisabled();
+    expect(screen.getByRole("button", { name: "입력 내용 확인하기" })).toBeEnabled();
     fireEvent.change(screen.getByLabelText("본인 포함 참석 인원"), { target: { value: "2" } });
-    expect(submit).toBeEnabled();
+    expect(screen.getByRole("button", { name: "참석 답변 보내기" })).toBeEnabled();
     expect(screen.getByText(/2027년 5월 31일까지 보관 후 자동 삭제/)).toBeInTheDocument();
     expect(screen.getByPlaceholderText(/알레르기, 유아 의자/)).toBeInTheDocument();
   });

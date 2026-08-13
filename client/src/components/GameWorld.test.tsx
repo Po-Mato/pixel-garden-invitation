@@ -777,7 +777,7 @@ describe("GameWorld", () => {
     fireEvent.click(within(dialog).getByLabelText("신부측"));
     advanceAnimation(0);
 
-    expect(within(dialog).getByRole("button", { name: "참석 답변 보내기" })).toBeInTheDocument();
+    expect(within(dialog).getByRole("button", { name: "입력 내용 확인하기" })).toBeInTheDocument();
     expect(player).toHaveStyle(before);
   });
 
@@ -868,7 +868,7 @@ describe("GameWorld", () => {
 
     fireEvent.keyDown(lightbox, { key: "ArrowRight" });
 
-    expect(within(lightbox).getByText("사진").closest("p")).toHaveTextContent("사진2/ 10");
+    expect(within(lightbox).getByText("WEDDING GALLERY").closest("p")).toHaveTextContent("WEDDING GALLERY02/10");
     expect(player).toHaveStyle(before);
   });
 

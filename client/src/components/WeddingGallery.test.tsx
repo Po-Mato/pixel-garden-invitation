@@ -70,7 +70,7 @@ describe("에디토리얼 웨딩 갤러리", () => {
     fireEvent.click(screen.getByRole("button", { name: "8번 사진 보기" }));
 
     expect(screen.getByRole("button", { name: "8번 사진 보기" })).toHaveAttribute("aria-current", "true");
-    expect(screen.getByText("사진").parentElement).toHaveTextContent("8/ 10");
+    expect(screen.getByText("WEDDING GALLERY").closest("p")).toHaveTextContent("WEDDING GALLERY08/10");
   });
 
   it("라이트박스를 닫으면 선택했던 사진 버튼으로 포커스를 복원한다", () => {
