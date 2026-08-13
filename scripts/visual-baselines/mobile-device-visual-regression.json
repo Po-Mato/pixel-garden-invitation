@@ -1,7 +1,7 @@
 {
   "version": 5,
-  "approvedAt": "2026-08-12T14:09:40.312Z",
-  "reason": "Reviewed invitation map provider card redesign and large-text reflow for 731cafd",
+  "approvedAt": "2026-08-13T00:07:39.444Z",
+  "reason": "Reviewed refined arrival guide cards across large-text mobile profiles for 19aa955",
   "pixelThreshold": 36,
   "maxChangedRatio": 0.015,
   "profileMaxChangedRatioOverrides": {
@@ -13,28 +13,28 @@
     "schemaVersion": 1,
     "subjectKind": "capture-set",
     "sourceKind": "github-actions",
-    "runId": "31604462067",
+    "runId": "31652709181",
     "runAttempt": 1,
-    "commitSha": "731cafd44c637966a5b54494b96fbea85f05e806",
-    "runUrl": "https://github.com/Po-Mato/pixel-garden-invitation/actions/runs/31604462067",
+    "commitSha": "19aa95561694dc947cd217eda0bd12ac2521769f",
+    "runUrl": "https://github.com/Po-Mato/pixel-garden-invitation/actions/runs/31652709181",
     "checksumAlgorithm": "sha256",
     "artifactChecksumScope": "sorted-capture-set-manifest",
-    "artifactSha256": "3059ea932b050403a376ac7e9709ba29a293624870bc2d0978b8ad854c467adc",
+    "artifactSha256": "20afd99dcd62d075fab18f728997860ea450d198be9b6da61dee97632601f80c",
     "files": [
       {
         "logicalPath": "galaxy-s23-font-150/directions-xlarge",
-        "size": 103763,
-        "sha256": "7d0c1993ac3cb6175255802b43162c5175564161dc0e1350c5814d0a4e76b756"
+        "size": 104883,
+        "sha256": "5a24fa3b90fb86bb4dde52a541c52593baf0e11c01ed9afc7177fd4c888d78bf"
       },
       {
         "logicalPath": "galaxy-s23-font-150/directions-xlarge-bottom",
-        "size": 85068,
-        "sha256": "effd754fcd5a386e637e0641729f43373d1f45154a8629bb30f2f23e9ee55d91"
+        "size": 97673,
+        "sha256": "5ef06590042e43cc8fbeeca7ba50ea8ab06960144d85e7cf352258c5bccdb257"
       },
       {
         "logicalPath": "galaxy-s23-font-150/directions-xlarge-middle",
-        "size": 97501,
-        "sha256": "5e69446717bb0ed8bfa45e3e5d631b47cbec0deda1ee4040595ec31ab9b7bc40"
+        "size": 89138,
+        "sha256": "fdada1f6b601d734d903ddf0f46fb3674fb09f3d75a671981ffdcdcc4d422506"
       },
       {
         "logicalPath": "galaxy-s23-font-150/game",
@@ -43,18 +43,18 @@
       },
       {
         "logicalPath": "iphone-15-dynamic-type/directions-xlarge",
-        "size": 106116,
-        "sha256": "ce5bac8ba2cab58b44527a61171242c1c18878ee069882ebf001ca7048a86c61"
+        "size": 108269,
+        "sha256": "3792fa361aa131f1b8779b9df35cbde45b95e0e497b85a8c9c06155bbc7028f3"
       },
       {
         "logicalPath": "iphone-15-dynamic-type/directions-xlarge-bottom",
-        "size": 87992,
-        "sha256": "d6aa9f29236dd0dbb901ab50791a5800619e1ca940ea289bcfaa8049c0eab46b"
+        "size": 97542,
+        "sha256": "ba2f270a97d1b352309065377b62f010860b6065ce6ad54094f004c57abaa27e"
       },
       {
         "logicalPath": "iphone-15-dynamic-type/directions-xlarge-middle",
-        "size": 100543,
-        "sha256": "32006038ecf0e0c30c75a9172fc665edcfea7b876df50ef23a566ec9e8fbe02f"
+        "size": 101839,
+        "sha256": "e319c37e9eaeaf5ae9239b4feab9e6e218965a2ea0925303ed014857e59771c8"
       },
       {
         "logicalPath": "iphone-15-dynamic-type/game",
@@ -63,18 +63,18 @@
       },
       {
         "logicalPath": "iphone-15-webkit-dynamic-type/directions-xlarge",
-        "size": 109032,
-        "sha256": "47a99a40af0453b7bd972ef8c8dda0c4d74d23c67e724ff3627381f3e9fd7d12"
+        "size": 109854,
+        "sha256": "16b13472defc7064e4d88216ac108dc647910fe78cb6ecd4313b0c2909a12e6e"
       },
       {
         "logicalPath": "iphone-15-webkit-dynamic-type/directions-xlarge-bottom",
-        "size": 102734,
-        "sha256": "630816d8977b66d00be868b3e6b8dd24a5b8efd509a2cec555090d07179499a3"
+        "size": 102200,
+        "sha256": "a2a915f5324ae4064383effeafeadf55d999466f23b5c2b7633d84d06c383c9e"
       },
       {
         "logicalPath": "iphone-15-webkit-dynamic-type/directions-xlarge-middle",
-        "size": 106061,
-        "sha256": "7505997c22c77c5a70b2558809e53472bdb35f9c79c17fea4d34bc8b5e812540"
+        "size": 105910,
+        "sha256": "405ce6d7c4eaa83f9009a62a73e29e72df35b1f6b3d19d45ebff2f4c6a702440"
       },
       {
         "logicalPath": "iphone-15-webkit-dynamic-type/game",
@@ -88,13 +88,13 @@
       },
       {
         "logicalPath": "iphone-15-webkit-text-200/directions-xlarge-bottom",
-        "size": 99350,
-        "sha256": "4cee5623e1078ed183d040afb9f684c2985d5af7f5b28e009823a1ca7c77c893"
+        "size": 95818,
+        "sha256": "4f69c4e0efe8a36279ad1c6cf535ca0c1c147b076662f4a2abf270cba18fadb6"
       },
       {
         "logicalPath": "iphone-15-webkit-text-200/directions-xlarge-middle",
-        "size": 97056,
-        "sha256": "89f6fcac6a5fbd3a3201a5bf0631148494c1e3bf924067bcf4ac709d7da75593"
+        "size": 100625,
+        "sha256": "40ee7e1559f7d4c6bbebc271a948efafcc5ebb28fcafa76c068e0370777e9374"
       },
       {
         "logicalPath": "iphone-15-webkit-text-200/game",
@@ -116,7 +116,7 @@
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Reviewed invitation map provider card redesign and large-text reflow for 731cafd",
+        "approvalReason": "Reviewed refined arrival guide cards across large-text mobile profiles for 19aa955",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -130,13 +130,13 @@
       "state": "directions-xlarge",
       "width": 360,
       "height": 780,
-      "sha256": "aadd22a1c4844eddf131c536c984055ed8a0cebbabd1683f86c6f3d81d0657de",
+      "sha256": "948cd0e8372b272636527352d85044f662e425ce81ecf49f615eee72a9dc77fe",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Reviewed invitation map provider card redesign and large-text reflow for 731cafd",
+        "approvalReason": "Reviewed refined arrival guide cards across large-text mobile profiles for 19aa955",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -150,13 +150,13 @@
       "state": "directions-xlarge-middle",
       "width": 360,
       "height": 780,
-      "sha256": "4af30a125a06f80aec3feb49ee45dd01c0ae15746419e0eba39d9597c0611db7",
+      "sha256": "4778e31488a41f9be133348b8ef32988099a84c7360f73c5c366b48589c07039",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Reviewed invitation map provider card redesign and large-text reflow for 731cafd",
+        "approvalReason": "Reviewed refined arrival guide cards across large-text mobile profiles for 19aa955",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -170,13 +170,13 @@
       "state": "directions-xlarge-bottom",
       "width": 360,
       "height": 780,
-      "sha256": "4128a6db3c59d3d3c6c026bfc6a734b573b9778e333517a9c99d111e3f117915",
+      "sha256": "d7121f4eb3f2d1bfd9e7db6cc38f7d3c596f10a76250c058b9959aa81731cdf8",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Reviewed invitation map provider card redesign and large-text reflow for 731cafd",
+        "approvalReason": "Reviewed refined arrival guide cards across large-text mobile profiles for 19aa955",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -196,7 +196,7 @@
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Reviewed invitation map provider card redesign and large-text reflow for 731cafd",
+        "approvalReason": "Reviewed refined arrival guide cards across large-text mobile profiles for 19aa955",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -210,13 +210,13 @@
       "state": "directions-xlarge",
       "width": 393,
       "height": 852,
-      "sha256": "4a296681cae7e3afff1656fec6344c26c995c11eb95aa32a4cb696cde86a8e17",
+      "sha256": "66250295c33783ecfef9c27c78a4fbb035641738cffebb372570d918508b5938",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Reviewed invitation map provider card redesign and large-text reflow for 731cafd",
+        "approvalReason": "Reviewed refined arrival guide cards across large-text mobile profiles for 19aa955",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -230,13 +230,13 @@
       "state": "directions-xlarge-middle",
       "width": 393,
       "height": 852,
-      "sha256": "b1fe136d7351e427ec3c724956a6c8bffb683f1cb96453102ff6524fec62f9a6",
+      "sha256": "fa34cb5b2d5d367bfb90a278f91f61333188104ec0d0366c87198392eb54f4aa",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Reviewed invitation map provider card redesign and large-text reflow for 731cafd",
+        "approvalReason": "Reviewed refined arrival guide cards across large-text mobile profiles for 19aa955",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -250,13 +250,13 @@
       "state": "directions-xlarge-bottom",
       "width": 393,
       "height": 852,
-      "sha256": "8778b4e494e4ee20580dc1c3e2c114ea14aec11fb87a37d35be88abbab2de1f1",
+      "sha256": "526780a70b44b9f1cd62f25ed334334d532d479778945fcd5c6253783559bbf6",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Reviewed invitation map provider card redesign and large-text reflow for 731cafd",
+        "approvalReason": "Reviewed refined arrival guide cards across large-text mobile profiles for 19aa955",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -276,7 +276,7 @@
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Reviewed invitation map provider card redesign and large-text reflow for 731cafd",
+        "approvalReason": "Reviewed refined arrival guide cards across large-text mobile profiles for 19aa955",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -290,13 +290,13 @@
       "state": "directions-xlarge",
       "width": 393,
       "height": 852,
-      "sha256": "1740195f59a2e3536632f0d7ecc289dd97c2fec81e9a86ccbb6e6ba106f1ef96",
+      "sha256": "26f1c237e70e99882180b9ed8ad77219d95703422a16397ddf50eee40ccc4d7c",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Reviewed invitation map provider card redesign and large-text reflow for 731cafd",
+        "approvalReason": "Reviewed refined arrival guide cards across large-text mobile profiles for 19aa955",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -310,13 +310,13 @@
       "state": "directions-xlarge-middle",
       "width": 393,
       "height": 852,
-      "sha256": "d72eb68ead319871baae306a46605894946533ccaf24611014c01beefdf6a43f",
+      "sha256": "82214636389df040d170ac0f36452902c37d6c16fcb9a197428000a3798ad1d2",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Reviewed invitation map provider card redesign and large-text reflow for 731cafd",
+        "approvalReason": "Reviewed refined arrival guide cards across large-text mobile profiles for 19aa955",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -330,13 +330,13 @@
       "state": "directions-xlarge-bottom",
       "width": 393,
       "height": 852,
-      "sha256": "e06c09acea0c633ed17b9391db10644d6af8ea811d66db6e32dedc59849b4407",
+      "sha256": "1f9d6de92d7eb5ef8148976dd41ed3472f7b459b8dcd57c2cb36f5a5b82e12ab",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Reviewed invitation map provider card redesign and large-text reflow for 731cafd",
+        "approvalReason": "Reviewed refined arrival guide cards across large-text mobile profiles for 19aa955",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -356,7 +356,7 @@
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Reviewed invitation map provider card redesign and large-text reflow for 731cafd",
+        "approvalReason": "Reviewed refined arrival guide cards across large-text mobile profiles for 19aa955",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -376,7 +376,7 @@
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Reviewed invitation map provider card redesign and large-text reflow for 731cafd",
+        "approvalReason": "Reviewed refined arrival guide cards across large-text mobile profiles for 19aa955",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -390,13 +390,13 @@
       "state": "directions-xlarge-middle",
       "width": 393,
       "height": 852,
-      "sha256": "6b9877a30cbc4ee8b11c3f01e48cb6e12cf97e53a097b2764beb54c25e7ef662",
+      "sha256": "17143c0792c6535c76bd7d5b65f2658b3cc71c95a6f9b5e183a44bf659b5ecd6",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Reviewed invitation map provider card redesign and large-text reflow for 731cafd",
+        "approvalReason": "Reviewed refined arrival guide cards across large-text mobile profiles for 19aa955",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -410,13 +410,13 @@
       "state": "directions-xlarge-bottom",
       "width": 393,
       "height": 852,
-      "sha256": "99ee0995f3dd9a10e2060c79eb396bd7a3fdb45e1266297c77bb9f2ccd2d429a",
+      "sha256": "5fb3db5662df11983fb8a9c8957ffd299c5415658ce1af8584ca44ff64458a67",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Reviewed invitation map provider card redesign and large-text reflow for 731cafd",
+        "approvalReason": "Reviewed refined arrival guide cards across large-text mobile profiles for 19aa955",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,

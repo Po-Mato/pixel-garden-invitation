@@ -1,7 +1,7 @@
 {
   "version": 3,
-  "approvedAt": "2026-08-12T14:09:45.352Z",
-  "reason": "Reviewed refined directions provider cards and hierarchy for 731cafd",
+  "approvedAt": "2026-08-13T00:07:22.060Z",
+  "reason": "Reviewed refined arrival guide cards on Pixel 7 for 19aa955",
   "profile": {
     "id": "pixel-7-api-35-chrome",
     "deviceName": "Pixel 7",
@@ -9,7 +9,7 @@
     "requiredDirectionsScroll": 0
   },
   "capture": {
-    "generatedAt": "2026-08-12T14:04:42.928Z",
+    "generatedAt": "2026-08-13T00:00:39.614Z",
     "profile": {
       "id": "pixel-7-api-35-chrome",
       "deviceName": "Pixel 7",
@@ -28,10 +28,10 @@
       "width": 412
     },
     "browserVersion": null,
-    "runId": "31604462007",
+    "runId": "31652709230",
     "runAttempt": 1,
-    "sha": "731cafd44c637966a5b54494b96fbea85f05e806",
-    "runUrl": "https://github.com/Po-Mato/pixel-garden-invitation/actions/runs/31604462007",
+    "sha": "19aa95561694dc947cd217eda0bd12ac2521769f",
+    "runUrl": "https://github.com/Po-Mato/pixel-garden-invitation/actions/runs/31652709230",
     "retry": {
       "attempted": false,
       "reason": null
@@ -44,7 +44,7 @@
           {
             "attempt": 1,
             "outcome": "ready",
-            "durationMs": 4801,
+            "durationMs": 4715,
             "error": null
           }
         ]
@@ -56,7 +56,7 @@
           {
             "attempt": 1,
             "outcome": "ready",
-            "durationMs": 3125,
+            "durationMs": 6886,
             "error": null
           }
         ]
@@ -72,18 +72,18 @@
       "offlineEventDispatched": true,
       "transportProbe": {
         "previewHostReachableAfterStop": false,
-        "browserUrl": "http://127.0.0.1:4188/api/__device_pwa_transport_probe__?nonce=1786543582728",
+        "browserUrl": "http://127.0.0.1:4188/api/__device_pwa_transport_probe__?nonce=1786579340885",
         "browserFetchResolved": false,
         "browserStatus": null,
         "browserError": "Failed to fetch",
         "browserErrorKind": "failed-to-fetch",
-        "durationMs": 122.5,
+        "durationMs": 49.89999999999418,
         "transportBlocked": true
       },
       "cachedPaths": 82,
       "controlled": true,
       "expectedPaths": 82,
-      "precacheName": "wedding-garden-precache-731cafd44c63",
+      "precacheName": "wedding-garden-precache-19aa95561694",
       "serviceWorkerSupported": true,
       "blockingNoticeVisible": false,
       "brokenImages": [],
@@ -107,14 +107,14 @@
     "comparisons": [
       {
         "state": "game",
-        "changedPixels": 1058,
-        "changedRatio": 0.0004450838844296364,
-        "meanPixelDifference": 1.6482011543574469,
+        "changedPixels": 571,
+        "changedRatio": 0.0002402106786477527,
+        "meanPixelDifference": 1.5695845322833055,
         "pixelCount": 2377080,
         "passed": true,
         "maxChangedRatio": 0.015,
-        "rawChangedRatio": 0.011833425883857506,
-        "rawMeanPixelDifference": 2.7436476685681592,
+        "rawChangedRatio": 0.008768741481144935,
+        "rawMeanPixelDifference": 2.6806897538156056,
         "baselinePath": "/home/runner/work/pixel-garden-invitation/pixel-garden-invitation/scripts/visual-baselines/android-chrome-pixel-7-api-35-chrome-game.webp",
         "currentPath": "/home/runner/work/pixel-garden-invitation/pixel-garden-invitation/.superpowers/visual-regression/android-chrome/android-chrome-pixel-7-api-35-chrome-game-current.png",
         "diffPath": "/home/runner/work/pixel-garden-invitation/pixel-garden-invitation/.superpowers/visual-regression/android-chrome/android-chrome-pixel-7-api-35-chrome-game-diff.png",
@@ -123,23 +123,23 @@
           "confidence": "high",
           "likelyCause": "font-or-antialias-rendering",
           "review": "not-required",
-          "changedRatio": 0.0004450838844296364,
-          "rawChangedRatio": 0.011833425883857506,
-          "filteredNoiseRatio": 0.01138834199942787,
-          "filteredNoiseShare": 0.9623875715453802,
-          "budgetUsage": 0.02967225896197576
+          "changedRatio": 0.0002402106786477527,
+          "rawChangedRatio": 0.008768741481144935,
+          "filteredNoiseRatio": 0.008528530802497183,
+          "filteredNoiseShare": 0.9726060257148341,
+          "budgetUsage": 0.016014045243183513
         }
       },
       {
         "state": "directions",
-        "changedPixels": 288838,
-        "changedRatio": 0.12150958318609387,
-        "meanPixelDifference": 20.170007740589295,
+        "changedPixels": 412219,
+        "changedRatio": 0.17341402056304372,
+        "meanPixelDifference": 26.294854190856007,
         "pixelCount": 2377080,
         "passed": false,
         "maxChangedRatio": 0.015,
-        "rawChangedRatio": 0.11538652464368049,
-        "rawMeanPixelDifference": 20.78147517121847,
+        "rawChangedRatio": 0.16162686994127248,
+        "rawMeanPixelDifference": 27.171262220876034,
         "baselinePath": "/home/runner/work/pixel-garden-invitation/pixel-garden-invitation/scripts/visual-baselines/android-chrome-pixel-7-api-35-chrome-directions.webp",
         "currentPath": "/home/runner/work/pixel-garden-invitation/pixel-garden-invitation/.superpowers/visual-regression/android-chrome/android-chrome-pixel-7-api-35-chrome-directions-current.png",
         "diffPath": "/home/runner/work/pixel-garden-invitation/pixel-garden-invitation/.superpowers/visual-regression/android-chrome/android-chrome-pixel-7-api-35-chrome-directions-diff.png",
@@ -148,11 +148,11 @@
           "confidence": "high",
           "likelyCause": "layout-or-content-change",
           "review": "required",
-          "changedRatio": 0.12150958318609387,
-          "rawChangedRatio": 0.11538652464368049,
+          "changedRatio": 0.17341402056304372,
+          "rawChangedRatio": 0.16162686994127248,
           "filteredNoiseRatio": 0,
           "filteredNoiseShare": 0,
-          "budgetUsage": 8.100638879072925
+          "budgetUsage": 11.560934704202916
         }
       }
     ],
@@ -167,23 +167,23 @@
     "schemaVersion": 1,
     "subjectKind": "capture-set",
     "sourceKind": "github-actions",
-    "runId": "31604462007",
+    "runId": "31652709230",
     "runAttempt": 1,
-    "commitSha": "731cafd44c637966a5b54494b96fbea85f05e806",
-    "runUrl": "https://github.com/Po-Mato/pixel-garden-invitation/actions/runs/31604462007",
+    "commitSha": "19aa95561694dc947cd217eda0bd12ac2521769f",
+    "runUrl": "https://github.com/Po-Mato/pixel-garden-invitation/actions/runs/31652709230",
     "checksumAlgorithm": "sha256",
     "artifactChecksumScope": "sorted-capture-set-manifest",
-    "artifactSha256": "46b2166dba9bd9273aaaf570721832536e2bbaadf3c612c54dd0533506140fc8",
+    "artifactSha256": "fd32e99167c5bfc4f5d8dcb0667a329d4a994b0c67f4ade3bf421d44c17de5f5",
     "files": [
       {
         "logicalPath": "pixel-7-api-35-chrome/directions",
-        "size": 380132,
-        "sha256": "cae894484a272a638e53d8374b428edb5f86a59279c04b6e27d872e9bdced46a"
+        "size": 366722,
+        "sha256": "675e07a528d26ae59bfed434e87dc61da6a7b30ddef9498f4cef5ee660400f8c"
       },
       {
         "logicalPath": "pixel-7-api-35-chrome/game",
-        "size": 2013222,
-        "sha256": "25223e69e21d1af4f859a358565ca7abac2b2bc854f45d1eb9b45842e03ab79d"
+        "size": 2105112,
+        "sha256": "8e559d55fe7424bf35a4fc04b094ffc943a7f39d0ffd0ab6701db86b88c97103"
       }
     ]
   },
@@ -197,13 +197,13 @@
       "state": "game",
       "width": 1080,
       "height": 2201,
-      "sha256": "34b7a80de506749532d8fcb8550f90232c94e9607daa364388e694644c606304",
+      "sha256": "beca9bc3f6b676ea35c558ec617acbe680918791cdc646475bfc9c8439ea9cda",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Reviewed refined directions provider cards and hierarchy for 731cafd",
+        "approvalReason": "Reviewed refined arrival guide cards on Pixel 7 for 19aa955",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -216,13 +216,13 @@
       "state": "directions",
       "width": 1080,
       "height": 2201,
-      "sha256": "9688aa9784372d91c20a5c17179d1ec2f5ab02dbba42b3bad571e2466685cedd",
+      "sha256": "c136e0cef594633f3f97d703d4e2646c0a535ce424e4419aec7bd32cc5c8b210",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Reviewed refined directions provider cards and hierarchy for 731cafd",
+        "approvalReason": "Reviewed refined arrival guide cards on Pixel 7 for 19aa955",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
