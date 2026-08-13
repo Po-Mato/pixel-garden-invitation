@@ -50,7 +50,10 @@ describe("간편 초대장", () => {
     expect(document.getElementById("guestbook")).toHaveTextContent("방명록 내용 하객1");
     expect(screen.getAllByText("경기 부천시 소사구 경인로 386")).toHaveLength(2);
     expect(screen.getByText("THANK YOU")).toBeInTheDocument();
-    expect(screen.getByText("초대장을 간직하거나 참석 여부를 알려주세요.")).toBeInTheDocument();
+    expect(screen.getByLabelText("예식 기념 카드")).toHaveTextContent("2027년 5월 1일");
+    expect(screen.getByLabelText("예식 기념 카드")).toHaveTextContent("이건희 & 이승재");
+    expect(screen.getByText("소중한 분께 초대장을 전하거나 참석 여부를 알려주세요.")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "참석 여부 알리기" })).toBeInTheDocument();
     expect(document.getElementById("couple")).toHaveAttribute("data-flow", "story");
     expect(document.getElementById("directions")).toHaveAttribute("data-flow", "visit");
     expect(document.getElementById("rsvp")).toHaveAttribute("data-flow", "reply");

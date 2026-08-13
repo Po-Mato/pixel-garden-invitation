@@ -174,7 +174,7 @@ describe("EntryScreen", () => {
       />
     );
 
-    const quickButton = screen.getByRole("button", { name: /초대장 바로 보기/ });
+    const quickButton = screen.getByRole("button", { name: "모바일 청첩장 바로 보기" });
     fireEvent.pointerEnter(quickButton);
     fireEvent.click(quickButton);
 
@@ -186,10 +186,13 @@ describe("EntryScreen", () => {
   it("청첩장 보기를 게임 입장보다 먼저 제안한다", () => {
     const { container } = render(<EntryScreen onEnter={vi.fn()} onQuickView={vi.fn()} />);
     const actions = container.querySelector(".entry-screen__actions");
-    const quickView = screen.getByRole("button", { name: /초대장 바로 보기/ });
+    const quickView = screen.getByRole("button", { name: "모바일 청첩장 바로 보기" });
     const gameEntry = screen.getByRole("button", { name: /입장 캐릭터/ });
 
     expect(actions).toContainElement(quickView);
+    expect(quickView).toHaveAttribute("data-entry-priority", "primary");
+    expect(quickView).toHaveTextContent("추천1분 핵심 안내모바일 청첩장 보기");
+    expect(gameEntry).toHaveTextContent("선택게임 정원");
     expect(quickView.compareDocumentPosition(gameEntry) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 

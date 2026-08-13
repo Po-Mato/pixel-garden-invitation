@@ -226,13 +226,18 @@ export function EntryScreen({
           <button
             className="entry-screen__quick-access entry-screen__quick-access--primary"
             type="button"
+            aria-label="모바일 청첩장 바로 보기"
+            data-entry-priority="primary"
             onFocus={onQuickViewIntent}
             onPointerEnter={onQuickViewIntent}
             onPointerDown={onQuickViewIntent}
             onClick={onQuickView}
           >
             <BookOpen aria-hidden="true" />
-            <span><small>일정 · 사진 · 오시는 길</small><strong>초대장 바로 보기</strong></span>
+            <span>
+              <small><b>추천</b><em>1분 핵심 안내</em></small>
+              <strong>모바일 청첩장 보기</strong>
+            </span>
             <ChevronRight aria-hidden="true" />
           </button>
         ) : null}
@@ -271,8 +276,8 @@ export function EntryScreen({
             />
           </span>
           <span>
-            <small>게임은 선택 사항</small>
-            <strong>{selectedPreset.label}로 정원 둘러보기</strong>
+            <small><b>선택</b><em>게임 정원</em></small>
+            <strong>{selectedPreset.label}로 천천히 둘러보기</strong>
           </span>
           <span className="entry-screen__character-command">
             <Sparkles aria-hidden="true" />

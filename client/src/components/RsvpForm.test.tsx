@@ -132,6 +132,26 @@ describe("RsvpForm", () => {
     } satisfies RsvpSubmission));
   });
 
+  it("모바일 키보드 없이 참석 인원을 한 명씩 조절한다", () => {
+    render(<RsvpForm policy={policy} submitLabel="보내기" onSubmit={vi.fn()} />);
+
+    const partySize = screen.getByLabelText("본인 포함 참석 인원");
+    const decrease = screen.getByRole("button", { name: "참석 인원 1명 줄이기" });
+    const increase = screen.getByRole("button", { name: "참석 인원 1명 늘리기" });
+    expect(partySize).toHaveAttribute("inputmode", "numeric");
+    expect(partySize).toHaveValue(1);
+    expect(decrease).toBeDisabled();
+
+    fireEvent.click(increase);
+    fireEvent.click(increase);
+    expect(partySize).toHaveValue(3);
+    expect(decrease).toBeEnabled();
+    expect(screen.getByText("본인을 포함한 전체 인원입니다.")).toBeInTheDocument();
+
+    fireEvent.click(decrease);
+    expect(partySize).toHaveValue(2);
+  });
+
   it("신랑 우선 세션에서는 신랑측을 첫 선택이자 기본값으로 사용한다", () => {
     render(
       <CoupleOrderProvider initialOrder="groom-first">
@@ -186,6 +206,7 @@ describe("RsvpForm", () => {
     fireEvent.change(screen.getByLabelText("본인 포함 참석 인원"), { target: { value: "2" } });
     expect(submit).toBeEnabled();
     expect(screen.getByText(/2027년 5월 31일까지 보관 후 자동 삭제/)).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/알레르기, 유아 의자/)).toBeInTheDocument();
   });
 
   it("keeps submission enabled after the recommended deadline", () => {

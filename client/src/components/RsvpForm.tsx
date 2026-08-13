@@ -1,4 +1,4 @@
-import { Check } from "lucide-react";
+import { Check, Minus, Plus } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { normalizeRsvpPhone, type RsvpAttendance, type RsvpMealStatus, type RsvpSide, type RsvpSubmission } from "@wedding-game/shared";
 import { useCoupleOrder } from "../invitation/CoupleOrderContext";
@@ -178,6 +178,11 @@ export function RsvpForm({
     if (value === "unsure") setMealStatus("unsure");
   }
 
+  function adjustPartySize(delta: number) {
+    setDraftTouched(true);
+    setPartySize((current) => Math.min(10, Math.max(1, current + delta)));
+  }
+
   function discardDraft() {
     if (!draftStorageId || !clearRsvpFormDraft(draftStorageId)) {
       setDraftStatus("임시 저장을 삭제하지 못했습니다. 잠시 후 다시 시도해 주세요.");
@@ -335,10 +340,31 @@ export function RsvpForm({
         </fieldset>
 
         {attendance !== "no" ? (
-          <label className="field">
-            <span>{attendance === "unsure" ? "예상 인원" : "본인 포함 참석 인원"}</span>
-            <input type="number" min={1} max={10} value={partySize} onChange={(event) => setPartySize(Number(event.target.value))} />
-          </label>
+          <div className="field rsvp-party-size">
+            <span id="rsvp-party-size-label">{attendance === "unsure" ? "예상 인원" : "본인 포함 참석 인원"}</span>
+            <div className="rsvp-party-size__control">
+              <button type="button" aria-label="참석 인원 1명 줄이기" disabled={partySize <= 1} onClick={() => adjustPartySize(-1)}>
+                <Minus aria-hidden="true" />
+              </button>
+              <label>
+                <span className="sr-only">{attendance === "unsure" ? "예상 인원" : "본인 포함 참석 인원"}</span>
+                <input
+                  type="number"
+                  min={1}
+                  max={10}
+                  inputMode="numeric"
+                  aria-labelledby="rsvp-party-size-label"
+                  value={partySize}
+                  onChange={(event) => setPartySize(Number(event.target.value))}
+                />
+                <small>명</small>
+              </label>
+              <button type="button" aria-label="참석 인원 1명 늘리기" disabled={partySize >= 10} onClick={() => adjustPartySize(1)}>
+                <Plus aria-hidden="true" />
+              </button>
+            </div>
+            <small className="rsvp-party-size__hint">본인을 포함한 전체 인원입니다.</small>
+          </div>
         ) : null}
 
         {attendance === "yes" ? (
@@ -357,7 +383,7 @@ export function RsvpForm({
 
         <label className="field">
           <span>전달사항</span>
-          <textarea value={note} maxLength={160} onChange={(event) => setNote(event.target.value)} />
+          <textarea value={note} maxLength={160} placeholder="알레르기, 유아 의자 등 필요한 내용을 남겨주세요. (선택)" onChange={(event) => setNote(event.target.value)} />
         </label>
       </section>
 
@@ -368,7 +394,10 @@ export function RsvpForm({
         </header>
         <label className="rsvp-consent">
           <input type="checkbox" checked={consented} onChange={(event) => setConsented(event.target.checked)} />
-          <span>개인정보 수집 및 이용에 동의합니다. 예식 참석 인원 확인을 위해 이름·연락처·답변을 {deleteAtLabel}까지 보관 후 자동 삭제합니다.</span>
+          <span>
+            <strong>개인정보 수집 및 이용에 동의합니다.</strong>
+            <small>참석 인원 확인을 위해 이름·연락처·답변을 {deleteAtLabel}까지 보관 후 자동 삭제합니다.</small>
+          </span>
         </label>
 
         <p className="rsvp-readiness" data-ready={valid || undefined} aria-live="polite">{readinessMessage}</p>

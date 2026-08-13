@@ -14,6 +14,7 @@ describe("에디토리얼 웨딩 갤러리", () => {
     const photos = invitationContent.content.gallery;
     expect(screen.getByText("10장의 소중한 순간")).toBeInTheDocument();
     expect(screen.getByText("사진을 누르면 전체 화면으로 감상할 수 있어요.")).toBeInTheDocument();
+    expect(screen.getByRole("progressbar", { name: "웨딩 사진 감상 위치" })).toHaveAttribute("aria-valuenow", "0");
     const buttons = screen.getAllByRole("button", { name: /사진 \d+:/ });
     expect(buttons).toHaveLength(10);
     expect(screen.getAllByText("크게 보기")).toHaveLength(10);
@@ -59,6 +60,7 @@ describe("에디토리얼 웨딩 갤러리", () => {
     expect(screen.getByRole("navigation", { name: "웨딩 사진 바로 선택" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "5번 사진 보기" })).toHaveAttribute("aria-current", "true");
     expect(screen.getAllByRole("button", { name: /사진 \d+:/ })[4]).toHaveAttribute("aria-current", "true");
+    expect(screen.getByRole("progressbar", { name: "웨딩 사진 감상 위치" })).toHaveAttribute("aria-valuenow", "5");
   });
 
   it("전체 화면 번호 트랙으로 원하는 사진을 바로 선택한다", () => {

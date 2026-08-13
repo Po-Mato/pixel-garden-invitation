@@ -416,12 +416,19 @@ export function QuickInvitation({
         <Heart aria-hidden="true" />
         <span className="quick-closing__eyebrow">THANK YOU</span>
         <h2>기쁜 날, 함께해 주세요.</h2>
-        <p>{names}</p>
-        <small className="quick-closing__note">초대장을 간직하거나 참석 여부를 알려주세요.</small>
+        <p>두 사람의 첫날을 함께 기억해 주세요.</p>
+        <div className="quick-closing__keepsake" aria-label="예식 기념 카드">
+          <span>SAVE THE DATE</span>
+          <time dateTime={event.startAt}>{formatEventDate(event)}</time>
+          <i aria-hidden="true" />
+          <strong>{names}</strong>
+          <small>{formatEventStartTime(event)} · {event.venue.name}</small>
+        </div>
+        <small className="quick-closing__note">소중한 분께 초대장을 전하거나 참석 여부를 알려주세요.</small>
         <div className="quick-closing__actions">
           <InvitationShareAccess variant="menu" />
           <button type="button" onClick={() => scrollToSection("rsvp")}>
-            <Send aria-hidden="true" /> 참석 답변
+            <Send aria-hidden="true" /> 참석 여부 알리기
           </button>
         </div>
         <div className="quick-closing__links" aria-label="안내 바로가기">

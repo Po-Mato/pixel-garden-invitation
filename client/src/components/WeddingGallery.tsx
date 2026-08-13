@@ -75,6 +75,17 @@ export function WeddingGallery({ photos: photosOverride, onPhotoOpen }: WeddingG
             ? "사진을 누르면 전체 화면으로 감상할 수 있어요."
             : `${String(lastViewedIndex + 1).padStart(2, "0")}번 사진까지 감상했어요.`}
         </p>
+        <div
+          className="wedding-gallery__guide-progress"
+          role="progressbar"
+          aria-label="웨딩 사진 감상 위치"
+          aria-valuemin={0}
+          aria-valuemax={photos.length}
+          aria-valuenow={lastViewedIndex === null ? 0 : lastViewedIndex + 1}
+        >
+          <span aria-hidden="true"><i style={{ width: `${lastViewedIndex === null ? 0 : ((lastViewedIndex + 1) / photos.length) * 100}%` }} /></span>
+          <small>{lastViewedIndex === null ? `0 / ${photos.length}` : `${lastViewedIndex + 1} / ${photos.length}`}</small>
+        </div>
       </header>
       <section className="wedding-gallery" aria-label="웨딩 사진 갤러리">
         {visiblePhotos.map((photo, index) => (

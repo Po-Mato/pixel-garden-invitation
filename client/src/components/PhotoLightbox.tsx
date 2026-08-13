@@ -7,6 +7,7 @@ import { useViewPreferences } from "../accessibility/ViewPreferencesContext";
 import { useNetworkMode } from "../performance/networkQuality";
 import { galleryPrefetchUrl, nextGalleryPrefetchIndex } from "../performance/galleryPrefetch";
 import { preloadImage } from "../performance/imagePreloader";
+import { resolveGalleryAssetPath } from "../invitation/galleryAssets";
 import { ResponsiveGalleryImage } from "./ResponsiveGalleryImage";
 
 type PhotoLightboxProps = {
@@ -311,7 +312,13 @@ export function PhotoLightbox({ photos, index, onIndexChange, onClose }: PhotoLi
               title={`${photoIndex + 1}번 사진`}
               onClick={() => onIndexChange(photoIndex)}
             >
-              {String(photoIndex + 1).padStart(2, "0")}
+              <span
+                className="photo-lightbox__thumbnail"
+                aria-hidden="true"
+                data-orientation={candidate.orientation}
+                style={{ backgroundImage: `url("${resolveGalleryAssetPath(candidate.sources[0]?.assetPath ?? candidate.assetPath)}")` }}
+              />
+              <small aria-hidden="true">{String(photoIndex + 1).padStart(2, "0")}</small>
             </button>
           ))}
         </nav>

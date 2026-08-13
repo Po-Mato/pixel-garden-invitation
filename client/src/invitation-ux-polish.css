@@ -2812,3 +2812,307 @@ html[data-reduce-motion="true"] :is(
     border-color: CanvasText;
   }
 }
+
+/* RSVP touch controls — keep the mobile keyboard optional for party size. */
+.rsvp-party-size {
+  gap: 8px;
+}
+
+.rsvp-party-size__control {
+  display: grid;
+  grid-template-columns: 48px minmax(92px, 1fr) 48px;
+  align-items: stretch;
+  gap: 8px;
+}
+
+.rsvp-party-size__control > button {
+  display: grid;
+  min-height: 48px;
+  place-items: center;
+  border: 1px solid rgba(96, 75, 82, 0.24);
+  border-radius: 13px;
+  background: #f7f4f0;
+  color: #526f63;
+}
+
+.rsvp-party-size__control > button:disabled {
+  color: #bbb2b2;
+  background: #f3f1ef;
+}
+
+.rsvp-party-size__control > button svg {
+  width: 18px;
+  height: 18px;
+}
+
+.rsvp-party-size__control > label {
+  position: relative;
+  display: grid;
+  min-width: 0;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  border: 1px solid rgba(105, 134, 121, 0.46);
+  border-radius: 13px;
+  padding-inline: 10px;
+  background: #fffefa;
+  box-shadow: inset 0 1px 2px rgba(79, 60, 65, 0.035);
+}
+
+.rsvp-party-size__control input {
+  width: 100%;
+  min-width: 0;
+  min-height: 46px;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: #3f3538;
+  font-family: var(--wedding-font-display);
+  font-size: 19px;
+  font-weight: 700;
+  text-align: center;
+  box-shadow: none;
+  -moz-appearance: textfield;
+}
+
+.rsvp-party-size__control input::-webkit-inner-spin-button,
+.rsvp-party-size__control input::-webkit-outer-spin-button {
+  margin: 0;
+  appearance: none;
+}
+
+.rsvp-party-size__control label:focus-within {
+  border-color: var(--sage);
+  box-shadow: 0 0 0 3px rgba(105, 134, 121, 0.12);
+}
+
+.rsvp-party-size__control label > small {
+  color: #7e7376;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.rsvp-party-size__hint {
+  color: #897d80;
+  font-size: 9px;
+  line-height: 1.45;
+}
+
+.rsvp-consent > span {
+  display: grid;
+  gap: 3px;
+}
+
+.rsvp-consent > span strong {
+  color: #4f4246;
+  font-size: 10.5px;
+}
+
+.rsvp-consent > span small {
+  color: #84787b;
+  font-size: 9px;
+  line-height: 1.55;
+}
+
+/* Gallery progress and filmstrip — make collection position visible at a glance. */
+.wedding-gallery__guide-progress {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 9px;
+  margin-top: 7px;
+}
+
+.wedding-gallery__guide-progress > span {
+  height: 3px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(105, 134, 121, 0.14);
+}
+
+.wedding-gallery__guide-progress > span > i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #789488, #b76f7c);
+  transition: width 220ms ease;
+}
+
+.wedding-gallery__guide-progress > small {
+  color: #7d6d71;
+  font-size: 8px;
+  font-weight: 850;
+  font-variant-numeric: tabular-nums;
+}
+
+.photo-lightbox__index {
+  display: flex;
+  width: min(calc(100vw - 28px), 560px);
+  justify-self: center;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 2px 1px 5px;
+  scroll-padding-inline: 1px;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+}
+
+.photo-lightbox__index::-webkit-scrollbar {
+  display: none;
+}
+
+.photo-lightbox__index button {
+  position: relative;
+  display: grid;
+  width: 48px;
+  min-width: 48px;
+  height: 58px;
+  min-height: 58px;
+  flex: 0 0 48px;
+  place-items: stretch;
+  overflow: hidden;
+  border: 1px solid rgba(255, 253, 248, 0.12);
+  border-radius: 8px;
+  padding: 2px;
+  background: rgba(255, 253, 248, 0.045);
+  scroll-snap-align: center;
+}
+
+.photo-lightbox__thumbnail {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 5px;
+  background-position: center;
+  background-size: cover;
+  filter: saturate(0.72) brightness(0.7);
+  transition: filter 180ms ease, transform 180ms ease;
+}
+
+.photo-lightbox__index button > small {
+  position: absolute;
+  right: 4px;
+  bottom: 4px;
+  border-radius: 999px;
+  padding: 2px 4px;
+  background: rgba(18, 16, 15, 0.72);
+  color: #f3ead8;
+  font-size: 6.5px;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+}
+
+.photo-lightbox__index button[aria-current="true"] {
+  border-color: #eadfc7;
+  background: #d9c8a4;
+  box-shadow: 0 0 0 2px rgba(217, 200, 164, 0.25);
+}
+
+.photo-lightbox__index button[aria-current="true"] .photo-lightbox__thumbnail {
+  filter: saturate(1) brightness(1);
+  transform: scale(1.025);
+}
+
+/* Closing keepsake — end on a wedding card, then offer one clear next action. */
+.quick-closing.quick-band {
+  gap: 10px;
+}
+
+.quick-closing.quick-band > p {
+  max-width: 30ch;
+  color: rgba(232, 240, 235, 0.78);
+  font-family: var(--wedding-font-ui);
+  font-size: 10px;
+  line-height: 1.6;
+}
+
+.quick-closing__keepsake {
+  display: grid;
+  width: min(100%, 318px);
+  justify-items: center;
+  gap: 7px;
+  margin: 13px auto 3px;
+  border: 1px solid rgba(239, 217, 220, 0.4);
+  border-radius: 20px;
+  padding: 22px 18px 20px;
+  background:
+    linear-gradient(rgba(255, 253, 249, 0.94), rgba(250, 244, 237, 0.94)),
+    #fffdf9;
+  color: #4e4044;
+  box-shadow: 0 20px 42px rgba(12, 24, 19, 0.24);
+}
+
+.quick-closing__keepsake > span {
+  color: #9b6570;
+  font-size: 7.5px;
+  font-weight: 900;
+  letter-spacing: 0.22em;
+}
+
+.quick-closing__keepsake > time {
+  color: #425f53;
+  font-family: var(--wedding-font-display);
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.quick-closing__keepsake > i {
+  width: 34px;
+  height: 1px;
+  margin: 2px 0;
+  background: linear-gradient(90deg, transparent, #b67883, transparent);
+}
+
+.quick-closing__keepsake > strong {
+  color: #473a3e;
+  font-family: var(--wedding-font-display);
+  font-size: 20px;
+  font-weight: 650;
+}
+
+.quick-closing__keepsake > small {
+  color: #7d7073;
+  font-size: 8.5px;
+  font-weight: 700;
+}
+
+.quick-closing__actions {
+  width: min(100%, 318px);
+  margin-inline: auto;
+}
+
+.quick-closing__actions .invitation-share-trigger {
+  box-shadow: 0 8px 20px rgba(13, 28, 21, 0.22);
+}
+
+@media (max-width: 350px) {
+  .rsvp-party-size__control {
+    grid-template-columns: 44px minmax(80px, 1fr) 44px;
+    gap: 6px;
+  }
+
+  .quick-closing__keepsake {
+    padding-inline: 13px;
+  }
+}
+
+:is(html[data-text-scale="xlarge"], html[data-text-scale="ios-200"], html[data-typography-audit]) .rsvp-party-size__control {
+  grid-template-columns: 48px minmax(0, 1fr) 48px;
+}
+
+:is(html[data-text-scale="xlarge"], html[data-text-scale="ios-200"], html[data-typography-audit]) .quick-closing__keepsake {
+  align-items: start;
+  justify-items: start;
+  text-align: left;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wedding-gallery__guide-progress > span > i,
+  .photo-lightbox__thumbnail {
+    transition: none;
+  }
+}
+
+html[data-reduce-motion="true"] :is(.wedding-gallery__guide-progress > span > i, .photo-lightbox__thumbnail) {
+  transition: none;
+}
