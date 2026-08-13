@@ -1,7 +1,7 @@
 {
   "version": 5,
-  "approvedAt": "2026-08-13T04:32:26.705Z",
-  "reason": "Refined large-text directions hierarchy and stacked map actions",
+  "approvedAt": "2026-08-13T08:11:36.405Z",
+  "reason": "Refined directions travel-mode hierarchy and large-text layout",
   "pixelThreshold": 36,
   "maxChangedRatio": 0.015,
   "profileMaxChangedRatioOverrides": {
@@ -13,13 +13,13 @@
     "schemaVersion": 1,
     "subjectKind": "capture-set",
     "sourceKind": "github-actions",
-    "runId": "31666865258",
+    "runId": "31680094752",
     "runAttempt": 1,
-    "commitSha": "99bdbea1eccfd6a7dd78ea1ee5a3e756aff6196a",
-    "runUrl": "https://github.com/Po-Mato/pixel-garden-invitation/actions/runs/31666865258",
+    "commitSha": "11825feccf144d725f16f767d93708a7104128e1",
+    "runUrl": "https://github.com/Po-Mato/pixel-garden-invitation/actions/runs/31680094752",
     "checksumAlgorithm": "sha256",
     "artifactChecksumScope": "sorted-capture-set-manifest",
-    "artifactSha256": "f1651fd592dfe96df4acd067392ef972b60665431719d8fbffa1ce3027fab847",
+    "artifactSha256": "b7eb93356021c62f3d179bacda2afb77ea8cfd059f453ff62812068fdcb5b63d",
     "files": [
       {
         "logicalPath": "galaxy-s23-font-150/directions-xlarge",
@@ -28,13 +28,13 @@
       },
       {
         "logicalPath": "galaxy-s23-font-150/directions-xlarge-bottom",
-        "size": 98989,
-        "sha256": "0515ced94dd86f8bb46cbcd56a3740093519baa02fbcc4ba8a4144fdc381077b"
+        "size": 101134,
+        "sha256": "375005dabafe61181d4305d9f1c9c4b1838b7171d455c6fd375242123a43c294"
       },
       {
         "logicalPath": "galaxy-s23-font-150/directions-xlarge-middle",
-        "size": 91479,
-        "sha256": "ddde26157310eea2081e4b1a39d574aee05b9308ee84b679645017cd21ebe212"
+        "size": 94651,
+        "sha256": "ebaf34224e477919fb7466df8b077bfa823b98cf58dc719bd8110bfdf6ab8fa3"
       },
       {
         "logicalPath": "galaxy-s23-font-150/game",
@@ -48,13 +48,13 @@
       },
       {
         "logicalPath": "iphone-15-dynamic-type/directions-xlarge-bottom",
-        "size": 98911,
-        "sha256": "7d620aada0d58896886a86aaffa696ce382aae82a14d936f5c648886df6e3a6b"
+        "size": 100633,
+        "sha256": "bbe60cf1a47c0a7f3dc604f3e26a885f369b70a06741400f3ff2288ee76088a7"
       },
       {
         "logicalPath": "iphone-15-dynamic-type/directions-xlarge-middle",
-        "size": 95108,
-        "sha256": "ce51b62d175f6546f973b11d08827746047e2ad6b447c3c5990e89a1aa1f96b8"
+        "size": 100825,
+        "sha256": "98197ccd269654040f7007ff2545d9823c1ca760dbbfb93a72b6dd8e834014c3"
       },
       {
         "logicalPath": "iphone-15-dynamic-type/game",
@@ -63,18 +63,18 @@
       },
       {
         "logicalPath": "iphone-15-webkit-dynamic-type/directions-xlarge",
-        "size": 109655,
-        "sha256": "9f22a3a95ea748475b0d84c9992aee922ca492f8b3869c3b0a71d046136525f4"
+        "size": 109239,
+        "sha256": "732a313cb088fefda61c242f91f7c3be8a4228ba6e9b9ed967103f3ce3d8b368"
       },
       {
         "logicalPath": "iphone-15-webkit-dynamic-type/directions-xlarge-bottom",
-        "size": 102596,
-        "sha256": "cc2aae30b60717aec145ee4e8f244238060b47372c5705bef383c9a5b610aa99"
+        "size": 106661,
+        "sha256": "2e3b41fab5ba7a63557e75045e540b875777973dd223296490bf9e3942b5ba2a"
       },
       {
         "logicalPath": "iphone-15-webkit-dynamic-type/directions-xlarge-middle",
-        "size": 107106,
-        "sha256": "79ae80ecd4a7794419b8a00e16531fd60ac74eca6a3839e66250bfa77768bab5"
+        "size": 111686,
+        "sha256": "7a63a18fbd0440d07d79d76fdf0097f44fd085715de491b169b0b1c03bbea9a8"
       },
       {
         "logicalPath": "iphone-15-webkit-dynamic-type/game",
@@ -88,13 +88,13 @@
       },
       {
         "logicalPath": "iphone-15-webkit-text-200/directions-xlarge-bottom",
-        "size": 95902,
-        "sha256": "4a07b1a61a5a91dd9452541ce9a2d4d30893edafcb6c629ebbe2e361b7ef7bb8"
+        "size": 103022,
+        "sha256": "6f93caec36d0ac713c2bc268263dccbee1deb1cba922a910a84f722d1526bba8"
       },
       {
         "logicalPath": "iphone-15-webkit-text-200/directions-xlarge-middle",
-        "size": 100638,
-        "sha256": "4f0ea4d5df34ac6c3915eaf5e12069fc72fe7a9c31148c2e3aea3861364a2d67"
+        "size": 101654,
+        "sha256": "f1c980b9512c69652d47d55968c6e7f76de361f229251ca767ff96bbd47c1145"
       },
       {
         "logicalPath": "iphone-15-webkit-text-200/game",
@@ -116,7 +116,7 @@
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Refined large-text directions hierarchy and stacked map actions",
+        "approvalReason": "Refined directions travel-mode hierarchy and large-text layout",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -136,7 +136,7 @@
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Refined large-text directions hierarchy and stacked map actions",
+        "approvalReason": "Refined directions travel-mode hierarchy and large-text layout",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -150,13 +150,13 @@
       "state": "directions-xlarge-middle",
       "width": 360,
       "height": 780,
-      "sha256": "18913ea07a19dfa55bbb1ce4f481a192490a92262bd130c217b83ec1c1c1e204",
+      "sha256": "e53bdfe02ebef70f34a51feda3dc80f5b18999f5130d43ba00854060cef015ff",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Refined large-text directions hierarchy and stacked map actions",
+        "approvalReason": "Refined directions travel-mode hierarchy and large-text layout",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -170,13 +170,13 @@
       "state": "directions-xlarge-bottom",
       "width": 360,
       "height": 780,
-      "sha256": "f596bb840c4b80ef0c5a2d28c7fcbd6ce0e7eebbc9938b88ebfdd28b5daa53a4",
+      "sha256": "ccdc380a9760c41883cfd43f4ab60a9f634d2d95244e6d15a1431eb7b297b1c6",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Refined large-text directions hierarchy and stacked map actions",
+        "approvalReason": "Refined directions travel-mode hierarchy and large-text layout",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -196,7 +196,7 @@
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Refined large-text directions hierarchy and stacked map actions",
+        "approvalReason": "Refined directions travel-mode hierarchy and large-text layout",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -216,7 +216,7 @@
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Refined large-text directions hierarchy and stacked map actions",
+        "approvalReason": "Refined directions travel-mode hierarchy and large-text layout",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -230,13 +230,13 @@
       "state": "directions-xlarge-middle",
       "width": 393,
       "height": 852,
-      "sha256": "277832bdac58d0c580a9d524b1e4509fea8099dcdc5268a67d27eff80d47dc77",
+      "sha256": "85c6c6053818e50039fad7e01d3c7bccc249987ac580657d5bd96655235400fa",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Refined large-text directions hierarchy and stacked map actions",
+        "approvalReason": "Refined directions travel-mode hierarchy and large-text layout",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -250,13 +250,13 @@
       "state": "directions-xlarge-bottom",
       "width": 393,
       "height": 852,
-      "sha256": "d80ef5ed6010a384976f64fc891679fa358ec141c06fd1d963674dae50be9aea",
+      "sha256": "28d1ad71827f891f60a89d7572482c4fff97feaee99976abf36460f0cd5db593",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Refined large-text directions hierarchy and stacked map actions",
+        "approvalReason": "Refined directions travel-mode hierarchy and large-text layout",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -276,7 +276,7 @@
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Refined large-text directions hierarchy and stacked map actions",
+        "approvalReason": "Refined directions travel-mode hierarchy and large-text layout",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -290,13 +290,13 @@
       "state": "directions-xlarge",
       "width": 393,
       "height": 852,
-      "sha256": "8bab0f50f4f0592c830811d5339681f08101d8509bc7c23a30a533c3e739d4fb",
+      "sha256": "1b71762ae153184e9db8c25ab8ab54fe5eaa8196ce2b22de6beec08e80d52416",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Refined large-text directions hierarchy and stacked map actions",
+        "approvalReason": "Refined directions travel-mode hierarchy and large-text layout",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -310,13 +310,13 @@
       "state": "directions-xlarge-middle",
       "width": 393,
       "height": 852,
-      "sha256": "65c1b47ddc532832069e767f376adb417bd484b7972cebdc8adc813664ca01f5",
+      "sha256": "1c31c3528e6c0cd7ada8843dc4616f78fd02619877f4dc601d19168d5f8ea0f8",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Refined large-text directions hierarchy and stacked map actions",
+        "approvalReason": "Refined directions travel-mode hierarchy and large-text layout",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -330,13 +330,13 @@
       "state": "directions-xlarge-bottom",
       "width": 393,
       "height": 852,
-      "sha256": "e95fee495f17e51ac6724a47a49049bee7b7128aaa49fc6f64a3dcc858ac45f1",
+      "sha256": "7a76750f19690b40ecf592f500658a0623406718cfb049de9816b67170daedce",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Refined large-text directions hierarchy and stacked map actions",
+        "approvalReason": "Refined directions travel-mode hierarchy and large-text layout",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -356,7 +356,7 @@
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Refined large-text directions hierarchy and stacked map actions",
+        "approvalReason": "Refined directions travel-mode hierarchy and large-text layout",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -376,7 +376,7 @@
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Refined large-text directions hierarchy and stacked map actions",
+        "approvalReason": "Refined directions travel-mode hierarchy and large-text layout",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -390,13 +390,13 @@
       "state": "directions-xlarge-middle",
       "width": 393,
       "height": 852,
-      "sha256": "cf98b8e8da22489d111d7af0f17515f84c33b4f03d06f7d3c336f9d95df4b400",
+      "sha256": "a26e51a806fc80beba3c935ee40af75c550694882b569cb48b71349ce7a46533",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Refined large-text directions hierarchy and stacked map actions",
+        "approvalReason": "Refined directions travel-mode hierarchy and large-text layout",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -410,13 +410,13 @@
       "state": "directions-xlarge-bottom",
       "width": 393,
       "height": 852,
-      "sha256": "599cdc81d1d8c46d903849a0a044b0103f354973ac0e07ede858c3ae2b97138c",
+      "sha256": "9666ec0b1fdd4ba6e4e88dd93dc169d8ba608fcdb9c2f9bd0e6c2cf3a3befe58",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Refined large-text directions hierarchy and stacked map actions",
+        "approvalReason": "Refined directions travel-mode hierarchy and large-text layout",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
