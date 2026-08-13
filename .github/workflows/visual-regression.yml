@@ -1,4 +1,5 @@
 name: Mobile visual regression
+run-name: Mobile visual regression · ${{ inputs.scope || 'full' }}
 
 on:
   workflow_dispatch:

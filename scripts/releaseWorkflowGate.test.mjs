@@ -6,12 +6,13 @@ import {
   requiredReleaseWorkflows
 } from "./lib/releaseWorkflowGate.mjs";
 
-const completed = (id, conclusion = "success", runAttempt = 1, event = "push") => ({
+const completed = (id, conclusion = "success", runAttempt = 1, event = "push", displayTitle) => ({
   id,
   status: "completed",
   conclusion,
   run_attempt: runAttempt,
   event,
+  display_title: displayTitle,
   html_url: `https://example.test/runs/${id}`
 });
 
@@ -41,7 +42,7 @@ test("release summary ignores a newer targeted map dispatch", () => {
     pages: [completed(1)],
     mobile: [
       completed(2, "success", 1, "push"),
-      completed(9, "success", 1, "workflow_dispatch")
+      completed(9, "success", 1, "workflow_dispatch", "Mobile visual regression · map-evidence")
     ],
     android: [completed(3)],
     ios: [completed(4)]
@@ -50,6 +51,19 @@ test("release summary ignores a newer targeted map dispatch", () => {
   assert.equal(ready.ready, true);
   assert.equal(ready.workflows.find(({ id }) => id === "mobile").runId, "2");
   assert.equal(ready.workflows.find(({ id }) => id === "mobile").event, "push");
+});
+
+test("release summary accepts a full manually dispatched mobile run", () => {
+  const ready = evaluateReleaseWorkflowReadiness({
+    pages: [completed(1)],
+    mobile: [completed(9, "success", 1, "workflow_dispatch", "Mobile visual regression · full")],
+    android: [completed(3)],
+    ios: [completed(4)]
+  });
+
+  assert.equal(ready.ready, true);
+  assert.equal(ready.workflows.find(({ id }) => id === "mobile").runId, "9");
+  assert.equal(ready.workflows.find(({ id }) => id === "mobile").event, "workflow_dispatch");
 });
 
 test("release summary deduplicates only a real non-expired summary artifact", () => {
