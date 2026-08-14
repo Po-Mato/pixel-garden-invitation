@@ -774,6 +774,16 @@ describe("wedding editorial content", () => {
     expect(invitationUxPolishStyles).toMatch(/\.directions-sheet__travel-panel > div > strong\s*\{[^}]*font-weight:\s*400;[^}]*font-synthesis:\s*none;/s);
   });
 
+  it("uses one restrained editorial rhythm for type, controls, and cards", () => {
+    expect(invitationUxPolishStyles).toContain("--invitation-title-tracking: -0.035em;");
+    expect(invitationUxPolishStyles).toContain("--invitation-copy-leading: 1.72;");
+    expect(invitationUxPolishStyles).toContain("--invitation-control-height: 48px;");
+    expect(invitationUxPolishStyles).toContain("--invitation-card-shadow: 0 6px 18px rgba(55, 72, 64, 0.045);");
+    expect(invitationUxPolishStyles).toMatch(/\.wedding-event-summary--detail\s*\{[^}]*border-radius:\s*var\(--invitation-card-radius\);[^}]*box-shadow:\s*var\(--invitation-card-shadow\);/s);
+    expect(invitationUxPolishStyles).toMatch(/\.quick-core-actions > :is\(button, \.invitation-share-trigger\)\s*\{[^}]*grid-template-rows:\s*20px auto;[^}]*row-gap:\s*2px;/s);
+    expect(invitationUxPolishStyles).toMatch(/\.directions-sheet__maps > :is\(a, button\) strong\s*\{[^}]*font-weight:\s*700;/s);
+  });
+
   it("keeps couple profiles as unframed vertical sections with stable portraits", () => {
     const panelRule = styles.match(/\.couple-profile-panel\s*\{([^}]*)}/s)?.[1] ?? "";
     const personRule = styles.match(/\.couple-profile-panel__person\s*\{([^}]*)}/s)?.[1] ?? "";

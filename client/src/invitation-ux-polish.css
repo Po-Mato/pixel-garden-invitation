@@ -450,10 +450,18 @@
 }
 
 /* Invitation rhythm — connect the long scroll as four editorial chapters. */
-.quick-invitation {
+.quick-invitation,
+.bottom-sheet.invitation-detail-sheet {
   --invitation-card-radius: 17px;
-  --invitation-card-border: rgba(96, 75, 82, 0.18);
-  --invitation-card-shadow: 0 9px 24px rgba(70, 55, 60, 0.06);
+  --invitation-card-border: rgba(86, 104, 95, 0.18);
+  --invitation-card-shadow: 0 6px 18px rgba(55, 72, 64, 0.045);
+  --invitation-control-height: 48px;
+  --invitation-control-radius: 12px;
+  --invitation-control-gap: 7px;
+  --invitation-title-tracking: -0.035em;
+  --invitation-title-leading: 1.32;
+  --invitation-copy-tracking: -0.012em;
+  --invitation-copy-leading: 1.72;
 }
 
 .quick-band[id]:not(.quick-closing) {
@@ -3949,6 +3957,159 @@ html[data-reduce-motion="true"] :is(
   0% { transform: scale(0.98); }
   56% { transform: scale(1.025); }
   100% { transform: scale(1); }
+}
+
+/* Final invitation polish — one calm rhythm for type, controls, and surfaces. */
+:is(
+  .quick-section-heading h2,
+  .quick-band--profiles .couple-profile-panel__name,
+  .quick-band--story .wedding-story-timeline__title,
+  .directions-sheet__route-actions > header h3,
+  .directions-sheet__travel-notes > header > h3,
+  .quick-closing.quick-band h2,
+  .quick-closing__keepsake > strong
+) {
+  letter-spacing: var(--invitation-title-tracking);
+  line-height: var(--invitation-title-leading);
+}
+
+:is(
+  .quick-band--profiles .couple-profile-panel__message,
+  .quick-band--profiles .couple-profile-panel__together,
+  .quick-band--story .wedding-story-timeline__body
+) {
+  letter-spacing: var(--invitation-copy-tracking);
+  line-height: 1.76;
+}
+
+:is(
+  .quick-section-heading p,
+  .wedding-event-summary__date time,
+  .wedding-event-summary__venue span,
+  .directions-sheet__venue > div > span,
+  .directions-sheet__travel-notes > header > p,
+  .directions-sheet__travel-panel > div > span,
+  .gift-account-sheet__intro small,
+  .family-contact-sheet__intro small
+) {
+  font-family: var(--wedding-font-ui);
+  letter-spacing: var(--invitation-copy-tracking);
+  line-height: var(--invitation-copy-leading);
+}
+
+:is(
+  .quick-hero__actions button:first-child,
+  .wedding-event-summary__actions > button,
+  .calendar-save-options > button,
+  .calendar-save-options > a,
+  .directions-sheet__venue > button,
+  .directions-sheet__phone > a,
+  .quick-closing__actions > button,
+  .quick-closing__actions .invitation-share-trigger,
+  .gift-account-sheet__number-row button,
+  .gift-account-sheet__transfer-links a,
+  .family-contact-sheet__actions a
+) {
+  display: inline-flex;
+  min-height: var(--invitation-control-height);
+  align-items: center;
+  justify-content: center;
+  gap: var(--invitation-control-gap);
+  border-radius: var(--invitation-control-radius);
+  font-weight: 700;
+  letter-spacing: -0.012em;
+  line-height: 1.35;
+}
+
+:is(.quick-invitation, .bottom-sheet.invitation-detail-sheet) .directions-sheet__maps > :is(a, button) {
+  min-height: 58px;
+  align-items: center;
+  gap: 9px;
+  border-radius: var(--invitation-control-radius);
+  box-shadow: 0 4px 13px rgba(55, 72, 64, 0.045);
+  font-weight: 700;
+}
+
+:is(.quick-invitation, .bottom-sheet.invitation-detail-sheet) .directions-sheet__maps > :is(a, button) strong {
+  font-weight: 700;
+}
+
+.directions-sheet__travel-tabs > button {
+  min-height: 58px;
+  border-radius: var(--invitation-control-radius);
+}
+
+:is(
+  .wedding-event-summary__actions > button,
+  .calendar-save-options > button,
+  .calendar-save-options > a,
+  .directions-sheet__venue > button,
+  .directions-sheet__phone > a,
+  .quick-closing__actions > button,
+  .quick-closing__actions .invitation-share-trigger,
+  .quick-closing__links button,
+  .gift-account-sheet__number-row button,
+  .gift-account-sheet__transfer-links a,
+  .family-contact-sheet__actions a
+) > svg {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 16px;
+}
+
+.quick-core-actions > :is(button, .invitation-share-trigger) {
+  min-height: 48px;
+  grid-template-rows: 20px auto;
+  align-content: center;
+  justify-items: center;
+  row-gap: 2px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+}
+
+.quick-core-actions svg {
+  width: 17px;
+  height: 17px;
+}
+
+.quick-band--event .wedding-event-summary--detail {
+  border: 1px solid var(--invitation-card-border);
+  border-radius: var(--invitation-card-radius);
+  padding: 15px 14px;
+  background: rgba(255, 255, 252, 0.84);
+  box-shadow: var(--invitation-card-shadow);
+}
+
+.wedding-event-summary--detail :is(.wedding-event-summary__date, .wedding-event-summary__venue) {
+  border-radius: 0;
+  box-shadow: none;
+}
+
+:is(
+  .directions-sheet__venue,
+  .directions-sheet__route-actions,
+  .directions-sheet__travel-panel.directions-sheet__info,
+  .directions-sheet__phone,
+  .rsvp-form__section,
+  .gift-account-sheet__intro,
+  .gift-account-sheet__account,
+  .family-contact-sheet__intro,
+  .family-contact-sheet__person,
+  .guestbook-compose,
+  .guestbook-owned,
+  .guestbook-message,
+  .guestbook-list-state,
+  .quick-band--profiles .couple-profile-panel__together,
+  .quick-band--story .wedding-story-timeline__step
+) {
+  border-color: var(--invitation-card-border);
+  box-shadow: var(--invitation-card-shadow);
+}
+
+.quick-closing__keepsake {
+  border-color: rgba(239, 217, 220, 0.32);
+  box-shadow: 0 14px 34px rgba(12, 24, 19, 0.18);
 }
 
 @media (max-width: 350px) {
