@@ -1,7 +1,7 @@
 {
   "version": 5,
-  "approvedAt": "2026-08-13T22:05:24.233Z",
-  "reason": "Refined invitation sheet hierarchy, typography, and large-text layout",
+  "approvedAt": "2026-08-14T07:40:27.013Z",
+  "reason": "제목 글꼴을 바탕체 계열에서 Gowun Dodum 산세리프로 교체",
   "pixelThreshold": 36,
   "maxChangedRatio": 0.015,
   "profileMaxChangedRatioOverrides": {
@@ -12,94 +12,94 @@
   "provenance": {
     "schemaVersion": 1,
     "subjectKind": "capture-set",
-    "sourceKind": "github-actions",
-    "runId": "31747571554",
-    "runAttempt": 1,
-    "commitSha": "43712c2e4a3954f253207a7f8b5852f0ce3f0f24",
-    "runUrl": "https://github.com/Po-Mato/pixel-garden-invitation/actions/runs/31747571554",
+    "sourceKind": "local",
+    "runId": null,
+    "runAttempt": null,
+    "commitSha": "5159eaa8b6e8a6ef583ad4a89f30ad544aa2340a",
+    "runUrl": null,
     "checksumAlgorithm": "sha256",
     "artifactChecksumScope": "sorted-capture-set-manifest",
-    "artifactSha256": "94d5c23631731dcbcf4ca061ec1b76dbd5529351cda8d883d4f3af2a80a6e535",
+    "artifactSha256": "9742cbc6c4511df45788b581d48e181d4ee8bbbcf20e603517edd64c4302e13d",
     "files": [
       {
         "logicalPath": "galaxy-s23-font-150/directions-xlarge",
-        "size": 99483,
-        "sha256": "0411f1bf4739c08f5b3c02db72a8d218430a2fc53c4e8de51aa8919bec2a4d48"
+        "size": 104398,
+        "sha256": "84d8c1c855db86919d3c4ee380697ce9eacd3dd8085045fc38050c6fd0c8d261"
       },
       {
         "logicalPath": "galaxy-s23-font-150/directions-xlarge-bottom",
-        "size": 112071,
-        "sha256": "7578b41cafeee0648bdaded38f6900dbc18c0cccd58c869e8aa5614cdea1c909"
+        "size": 113864,
+        "sha256": "ae0f1fa074bfa613918352ad4d54138e02e05b0d97099afb3ff15ec184128ee0"
       },
       {
         "logicalPath": "galaxy-s23-font-150/directions-xlarge-middle",
-        "size": 105320,
-        "sha256": "457717a71bb53c6f58505b67a668175c3fccf0d2cb9dafdb7fdb5f0bee184f22"
+        "size": 108113,
+        "sha256": "d9e25e392888d8e0af58c70b1d0773fc7d789cf0f043403693eba56c3e9bdf39"
       },
       {
         "logicalPath": "galaxy-s23-font-150/game",
-        "size": 659490,
-        "sha256": "a37b534925038c9580087c72dfccc662bd9e6328625566c2622b7225f8355927"
+        "size": 463916,
+        "sha256": "22c785b46b3ccb70561f2d042c32db2b7cb66c90c2105b9bd4822d6860334015"
       },
       {
         "logicalPath": "iphone-15-dynamic-type/directions-xlarge",
-        "size": 108101,
-        "sha256": "3b71809cb291c5609e4314f265348da668fa438f51b47a2b220f0d24a746de7f"
+        "size": 112749,
+        "sha256": "3ee0cbf1e5d5a33b5fc26206cf692a23e3a26d19c0a4102a4223c7591376a351"
       },
       {
         "logicalPath": "iphone-15-dynamic-type/directions-xlarge-bottom",
-        "size": 108001,
-        "sha256": "f0483b006a488c3d4e2836b8133e2fb383cd8ead9d1b1cb9988344841d0c8f42"
+        "size": 110749,
+        "sha256": "9a1df5b452840f48370de0298105ece141f04d336c2807988bd86a638f9974c6"
       },
       {
         "logicalPath": "iphone-15-dynamic-type/directions-xlarge-middle",
-        "size": 104117,
-        "sha256": "2d86b04fa8d25bbc8013cd33da5e27a274eeecfbf6cebcb342f4d194838627f0"
+        "size": 107613,
+        "sha256": "f388105f937124980d0079823cfe47169bd60cf703c549e6b99821c2313d2d3e"
       },
       {
         "logicalPath": "iphone-15-dynamic-type/game",
-        "size": 776710,
-        "sha256": "a2f5aa3748d9ae16845f3e7c4c6b3f2353c25aaf92946baddfbf42dee0099f4d"
+        "size": 544334,
+        "sha256": "9733cef385d3af6a62b1fa8f10d5409f7c6233e95f5b5d19c60c44f66f7ed537"
       },
       {
         "logicalPath": "iphone-15-webkit-dynamic-type/directions-xlarge",
-        "size": 110787,
-        "sha256": "ecf38b951d7d0feb9d52bcfdffc63db2d290507735909a9ec62dbc4df8c92e0e"
+        "size": 236387,
+        "sha256": "5675fcaa3a6af589d3b82d20f773f2951885de9627676882c363783a979b0157"
       },
       {
         "logicalPath": "iphone-15-webkit-dynamic-type/directions-xlarge-bottom",
-        "size": 111483,
-        "sha256": "e61b973d74108e6bc2871600f06a849ef55fd28048c32e2c2b3446c52ae094ba"
+        "size": 228976,
+        "sha256": "aebbc68f4437fbb90bb130336c97a6890565d7a35fb4b0522c1ca3770698e20f"
       },
       {
         "logicalPath": "iphone-15-webkit-dynamic-type/directions-xlarge-middle",
-        "size": 115104,
-        "sha256": "435bf59f5e14cfffe92a08f87dd82dd3809d742a2d1f2fc58d8134c6aefb21f1"
+        "size": 228505,
+        "sha256": "3585a389df21e6f0bdc66e2d43fd4fcdca823021813dcc1e4393c874abf3f018"
       },
       {
         "logicalPath": "iphone-15-webkit-dynamic-type/game",
-        "size": 762315,
-        "sha256": "8ace5b21ae1025d1a73c8b6db9f180fb136cdc1ce4d86188b035f1573a4f3d67"
+        "size": 631844,
+        "sha256": "02adf532a3f1a282cd9997b7a4c0cf703dfa027f2331e4e1c65970041624e6ef"
       },
       {
         "logicalPath": "iphone-15-webkit-text-200/directions-xlarge",
-        "size": 101269,
-        "sha256": "008e1b7076b6ec018423fdbcbccc5c190799c6a54954af0a7959be29895e0397"
+        "size": 212901,
+        "sha256": "7c9adaf688d5df0e79723b9ed00172e88bcc4348fa58e303e726bda5b59cf14a"
       },
       {
         "logicalPath": "iphone-15-webkit-text-200/directions-xlarge-bottom",
-        "size": 102438,
-        "sha256": "810d1b0a5fef1ea41a496e015d3f37b3e10ae6b5c7756d35c3c852e5d22d16b1"
+        "size": 185427,
+        "sha256": "176a3ffa3816ff4d849c17df2a6e02bfd20d27be5cd6ca81f7c5a21c1e50ff5f"
       },
       {
         "logicalPath": "iphone-15-webkit-text-200/directions-xlarge-middle",
-        "size": 107238,
-        "sha256": "6f5d273f5b73841323e0a7510b9fc4b62511cde35b878332adb7e000ac73e36d"
+        "size": 226005,
+        "sha256": "de9d9387327c050a295b4d93b3e98b3301642361ff88abcc04f6d6d77d4c10c3"
       },
       {
         "logicalPath": "iphone-15-webkit-text-200/game",
-        "size": 762963,
-        "sha256": "6f357f30f5f395a3bfd7d7779c593ba21534904cf7ec883e1c211f921a0295f4"
+        "size": 632122,
+        "sha256": "0920e21b0bf0bae13ba565e07310ed21ed634b13b6cb6c60771dfe863dc6e426"
       }
     ]
   },
@@ -110,13 +110,13 @@
       "state": "game",
       "width": 360,
       "height": 780,
-      "sha256": "0403ad269c3c38aeaa923729a8d934214fd7f7748e91e27fee4e613715147938",
+      "sha256": "4df42d690fcf4885f7521c6d33e73cd5b07856be3c5e57ea964795d274cb8191",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Refined invitation sheet hierarchy, typography, and large-text layout",
+        "approvalReason": "제목 글꼴을 바탕체 계열에서 Gowun Dodum 산세리프로 교체",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -130,13 +130,13 @@
       "state": "directions-xlarge",
       "width": 360,
       "height": 780,
-      "sha256": "df21f55b14a5115f0b99c0311ef670c04ed04292312b593dbce843686907e35c",
+      "sha256": "0846aadf39c3a4a18983e05e91fb84908c9336b1470eb14416b14d1af65ba91b",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Refined invitation sheet hierarchy, typography, and large-text layout",
+        "approvalReason": "제목 글꼴을 바탕체 계열에서 Gowun Dodum 산세리프로 교체",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -150,13 +150,13 @@
       "state": "directions-xlarge-middle",
       "width": 360,
       "height": 780,
-      "sha256": "e5c1f4d94b5d33a40b66190e657e86b85b805a8401741bfb70decaab720ca49e",
+      "sha256": "8d37951b5f51a0ff9e45c1a6db770e63152923a3a0bcd22bcdaa4a01cae69c4b",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Refined invitation sheet hierarchy, typography, and large-text layout",
+        "approvalReason": "제목 글꼴을 바탕체 계열에서 Gowun Dodum 산세리프로 교체",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -170,13 +170,13 @@
       "state": "directions-xlarge-bottom",
       "width": 360,
       "height": 780,
-      "sha256": "16c8bd8ba5067f187e30acecacdb0dfb76dfc226c7f106a105f6b8711e8be2af",
+      "sha256": "c2a565676063baa9f592b6838e51eeb7e74af889f3535421d8e91b714f2cb63a",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Refined invitation sheet hierarchy, typography, and large-text layout",
+        "approvalReason": "제목 글꼴을 바탕체 계열에서 Gowun Dodum 산세리프로 교체",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -190,13 +190,13 @@
       "state": "game",
       "width": 393,
       "height": 852,
-      "sha256": "e6a9533eda925bae4ef9dab93a4c640c760b345814b5455555ee8b74612ffd19",
+      "sha256": "4fc3aab1db35d19b4d5bff6739166ee3382e83a885c4b5c378a00e21168d5951",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Refined invitation sheet hierarchy, typography, and large-text layout",
+        "approvalReason": "제목 글꼴을 바탕체 계열에서 Gowun Dodum 산세리프로 교체",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -210,13 +210,13 @@
       "state": "directions-xlarge",
       "width": 393,
       "height": 852,
-      "sha256": "6fff16f5e2e549094fdb43680295c0460e2e09d1448de3e239615a6dc4ba19f6",
+      "sha256": "9ea9f3ca1d1f7cb21afd456a539629bab2bffb3b69098fc9d15e998c3ddf13e6",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Refined invitation sheet hierarchy, typography, and large-text layout",
+        "approvalReason": "제목 글꼴을 바탕체 계열에서 Gowun Dodum 산세리프로 교체",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -230,13 +230,13 @@
       "state": "directions-xlarge-middle",
       "width": 393,
       "height": 852,
-      "sha256": "f664231ee906cd4f85258d153b3a2120cb6a1c12d9232e2397b9ddbd33a849d4",
+      "sha256": "1e3f5d70e2b7244769a9ea1b1af7fafccc6973bbd223afd9313821dd27d7fce9",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Refined invitation sheet hierarchy, typography, and large-text layout",
+        "approvalReason": "제목 글꼴을 바탕체 계열에서 Gowun Dodum 산세리프로 교체",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -250,13 +250,13 @@
       "state": "directions-xlarge-bottom",
       "width": 393,
       "height": 852,
-      "sha256": "cdb911a79c7b81c973affe30564f9ee5aeb1bc58a0931360cf9f1715cfb7b4e5",
+      "sha256": "eaf257f2f37e07df52ce7920d0361310df6131c84a24eb86138ee3f3153beee6",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Refined invitation sheet hierarchy, typography, and large-text layout",
+        "approvalReason": "제목 글꼴을 바탕체 계열에서 Gowun Dodum 산세리프로 교체",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -270,13 +270,13 @@
       "state": "game",
       "width": 393,
       "height": 852,
-      "sha256": "423c469700c0cc1b6bf02e258149c33987f5dfba41eaada8ba0dcffec3a91389",
+      "sha256": "0c1c74412b93b805705efe7a1f5b422f9291bae5bc60179af611412d302128cf",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Refined invitation sheet hierarchy, typography, and large-text layout",
+        "approvalReason": "제목 글꼴을 바탕체 계열에서 Gowun Dodum 산세리프로 교체",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -290,13 +290,13 @@
       "state": "directions-xlarge",
       "width": 393,
       "height": 852,
-      "sha256": "e4d0edffab4a038bef1a6019db11f3a92aafbd19fe2a18a8dfdf7a6606d24f3b",
+      "sha256": "9a0b82aae6d7b8bee0eadb3b24f353493ea6851b1a366cf746f666fa1a159581",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Refined invitation sheet hierarchy, typography, and large-text layout",
+        "approvalReason": "제목 글꼴을 바탕체 계열에서 Gowun Dodum 산세리프로 교체",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -310,13 +310,13 @@
       "state": "directions-xlarge-middle",
       "width": 393,
       "height": 852,
-      "sha256": "ea5d65ed89496d0915b263b9f50facf846c905e7e48c8686529810927cfa5c2e",
+      "sha256": "3dbe536771227b129da05830505f745ebe3c41640127179329f1fda7d3ebbf10",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Refined invitation sheet hierarchy, typography, and large-text layout",
+        "approvalReason": "제목 글꼴을 바탕체 계열에서 Gowun Dodum 산세리프로 교체",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -330,13 +330,13 @@
       "state": "directions-xlarge-bottom",
       "width": 393,
       "height": 852,
-      "sha256": "d52f26803aeef59e9bcea264716469248d2cdbeb37f2a36bd957c14329a1d2ff",
+      "sha256": "4baa9d31d07bfd5ea1d1a3d7a9f54cf363dbd29381c632bf6491e3e73803db2c",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Refined invitation sheet hierarchy, typography, and large-text layout",
+        "approvalReason": "제목 글꼴을 바탕체 계열에서 Gowun Dodum 산세리프로 교체",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -350,13 +350,13 @@
       "state": "game",
       "width": 393,
       "height": 852,
-      "sha256": "caea2be7589ecb837edd6595df3fcbf2fb67dda0ef2195f789d841f233241d67",
+      "sha256": "1960815b44dd81baa47b37efbd1f65aa32e103ff93c1e865d0bf45ec522e6c07",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Refined invitation sheet hierarchy, typography, and large-text layout",
+        "approvalReason": "제목 글꼴을 바탕체 계열에서 Gowun Dodum 산세리프로 교체",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -370,13 +370,13 @@
       "state": "directions-xlarge",
       "width": 393,
       "height": 852,
-      "sha256": "c9acd3fa70fb78f466e9468ac73b915c2e2c32fc5dcf43404a309a4c9d283174",
+      "sha256": "5e9577e3b81cbf443771f949ebb7ef05e3795179afd8d04d1afdbb24b6be71f9",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Refined invitation sheet hierarchy, typography, and large-text layout",
+        "approvalReason": "제목 글꼴을 바탕체 계열에서 Gowun Dodum 산세리프로 교체",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -390,13 +390,13 @@
       "state": "directions-xlarge-middle",
       "width": 393,
       "height": 852,
-      "sha256": "226a7c862eff195cab3893ba1e4efcbc6f730671e134ee275e0973aa636f896f",
+      "sha256": "581adc2e4c89a3963ab4bef8a8128c5e9dd9ee51b9c02294031874e061413aea",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Refined invitation sheet hierarchy, typography, and large-text layout",
+        "approvalReason": "제목 글꼴을 바탕체 계열에서 Gowun Dodum 산세리프로 교체",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -410,13 +410,13 @@
       "state": "directions-xlarge-bottom",
       "width": 393,
       "height": 852,
-      "sha256": "bba9ff91e651f099085f7df3bbf815a9470641c78bfc4410c00ed6c07f0889a4",
+      "sha256": "b322b4f4710518a2e1acd4769f6e88a934a628737312f624730a4660d4aff9b0",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Refined invitation sheet hierarchy, typography, and large-text layout",
+        "approvalReason": "제목 글꼴을 바탕체 계열에서 Gowun Dodum 산세리프로 교체",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
