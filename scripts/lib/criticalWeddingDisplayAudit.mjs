@@ -74,7 +74,10 @@ export function extractCriticalWeddingDisplayText(sourceText, fileName = "source
     true,
     fileName.endsWith(".tsx") ? ts.ScriptKind.TSX : ts.ScriptKind.TS
   );
-  const values = [];
+  // Display text is assembled from plain JSX, object labels, conditionals, and
+  // template strings. Track every Hangul glyph in the curated public-screen
+  // sources so a word can never fall back to a second font midway through.
+  const values = [sourceText.match(/\p{Script=Hangul}/gu)?.join("") ?? ""];
   const collectJsxChildren = (children) => {
     for (const child of children) {
       values.push(...stringParts(child));

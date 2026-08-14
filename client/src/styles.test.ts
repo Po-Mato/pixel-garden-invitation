@@ -769,6 +769,9 @@ describe("wedding editorial content", () => {
     expect(weddingLuxeStyles).not.toMatch(/Noto Serif|Nanum Myeongjo|AppleMyungjo|Batang/);
     expect(invitationUxPolishStyles).toMatch(/\.quick-hero__content h1\s*\{[^}]*font-weight:\s*400;[^}]*letter-spacing:\s*-0\.055em;/s);
     expect(invitationUxPolishStyles).toMatch(/\.bottom-sheet__heading h2\s*\{[^}]*font-weight:\s*400;[^}]*letter-spacing:\s*-0\.05em;/s);
+    expect(weddingLuxeStyles).toMatch(/\.directions-sheet__route-actions > header h3\s*\{[^}]*font-weight:\s*400;[^}]*font-synthesis:\s*none;/s);
+    expect(invitationUxPolishStyles).toMatch(/\.directions-sheet__travel-tabs strong\s*\{[^}]*font-weight:\s*400;[^}]*font-synthesis:\s*none;/s);
+    expect(invitationUxPolishStyles).toMatch(/\.directions-sheet__travel-panel > div > strong\s*\{[^}]*font-weight:\s*400;[^}]*font-synthesis:\s*none;/s);
   });
 
   it("keeps couple profiles as unframed vertical sections with stable portraits", () => {

@@ -3,7 +3,11 @@ import { spawn } from "node:child_process";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { criticalWeddingDisplaySourceCommit, writeCriticalWeddingDisplayManifest } from "./lib/criticalWeddingDisplayAudit.mjs";
+import {
+  collectCriticalWeddingDisplaySources,
+  criticalWeddingDisplaySourceCommit,
+  writeCriticalWeddingDisplayManifest
+} from "./lib/criticalWeddingDisplayAudit.mjs";
 
 const googleFontsCommit = criticalWeddingDisplaySourceCommit;
 const sourceBase = `https://raw.githubusercontent.com/google/fonts/${googleFontsCommit}/ofl/gowundodum`;
@@ -37,7 +41,12 @@ async function subsetFont(args) {
 }
 
 await mkdir(fontDir, { recursive: true });
-await readFile(corpusPath, "utf8");
+const currentCorpus = await readFile(corpusPath, "utf8");
+const { requiredCodePoints } = await collectCriticalWeddingDisplaySources(rootDir);
+const missingCodePoints = [...requiredCodePoints].filter((character) => !currentCorpus.includes(character));
+if (missingCodePoints.length > 0) {
+  await writeFile(corpusPath, `${currentCorpus.trimEnd()}\n${missingCodePoints.join("")}\n`);
+}
 const temporaryDir = await mkdtemp(path.join(os.tmpdir(), "wedding-display-"));
 try {
   const sourcePath = path.join(temporaryDir, "GowunDodum-Regular.ttf");
@@ -53,6 +62,8 @@ try {
     "--drop-tables+=DSIG"
   ]);
   await download(`${sourceBase}/OFL.txt`, licensePath);
+  const licenseText = await readFile(licensePath, "utf8");
+  await writeFile(licensePath, licenseText.replace(/[ \t]+$/gmu, ""));
   await writeCriticalWeddingDisplayManifest(rootDir);
 } finally {
   await rm(temporaryDir, { recursive: true, force: true });

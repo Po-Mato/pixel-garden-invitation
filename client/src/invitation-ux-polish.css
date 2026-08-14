@@ -1121,6 +1121,8 @@
   color: #405249;
   font-family: var(--wedding-font-display);
   font-size: 17px;
+  font-weight: 400;
+  font-synthesis: none;
 }
 
 .directions-sheet__travel-notes > header > p {
@@ -3239,7 +3241,9 @@ html[data-reduce-motion="true"] :is(.wedding-gallery__guide-progress > span > i,
 .directions-sheet__travel-tabs strong {
   font-family: var(--wedding-font-display);
   font-size: 12px;
+  font-weight: 400;
   line-height: 1.35;
+  font-synthesis: none;
   word-break: keep-all;
 }
 
@@ -3298,6 +3302,8 @@ html[data-reduce-motion="true"] :is(.wedding-gallery__guide-progress > span > i,
   color: #42564c;
   font-family: var(--wedding-font-display);
   font-size: 14px;
+  font-weight: 400;
+  font-synthesis: none;
 }
 
 .directions-sheet__travel-panel > div > span {

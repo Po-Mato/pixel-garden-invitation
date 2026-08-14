@@ -490,6 +490,8 @@ html[data-text-scale="ios-200"] .bottom-sheet__header button {
   color: #34483f;
   font-family: var(--wedding-font-display);
   font-size: 15px;
+  font-weight: 400;
+  font-synthesis: none;
 }
 
 .directions-sheet__route-actions > header span {

@@ -1,10 +1,10 @@
 {
   "version": 1,
   "sourceCommit": "73fc2ff52147e34a74804b500cf89ca219eac55d",
-  "corpusSha256": "fb9d56179e4e6ce3b4be0cd96fcaa655903d7922ebcaa9a423eaa96baa3b08d0",
-  "fontSha256": "630d64570a05eca22521cb6d42c49161594b3703d0210f22fa6ec351dacfcf30",
-  "requiredTextSha256": "c5dc0119b6725f80f4d8924072598fb0e72e41e548176528be18bacb1060f193",
-  "corpusCodePointCount": 300,
-  "requiredCodePointCount": 222,
+  "corpusSha256": "a844d60e8e0b621463f51f1261e63d7c3f9b6c23172a6e01eec10c2f62b36290",
+  "fontSha256": "e90a3b2de9339e4be31113cce195952435858b1b0360169e9f1d92da83823f65",
+  "requiredTextSha256": "8fc6102353afcdf26d9077f59327adad1b877b4a498fd18c5499853d33eb8014",
+  "corpusCodePointCount": 539,
+  "requiredCodePointCount": 466,
   "sourceFileCount": 23
 }

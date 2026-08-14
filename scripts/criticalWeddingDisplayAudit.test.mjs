@@ -7,15 +7,14 @@ import {
   normalizeCriticalCodePoints
 } from "./lib/criticalWeddingDisplayAudit.mjs";
 
-test("critical display font extraction follows headings and sheet titles", () => {
+test("critical display font extraction follows every Hangul glyph in public-screen sources", () => {
   const text = extractCriticalWeddingDisplayText(`
     export function Example() {
       return <><h1>두 사람의 정원</h1><BottomSheet title="오시는 길" /><p>본문 제외</p></>;
     }
   `, "client/src/components/Example.tsx");
   const codePoints = normalizeCriticalCodePoints(text);
-  for (const character of "두사람의정원오시는길") assert.ok(codePoints.includes(character));
-  assert.equal(codePoints.includes("본"), false);
+  for (const character of "두사람의정원오시는길본문제외") assert.ok(codePoints.includes(character));
 });
 
 test("critical display font audit rejects a missing title glyph", () => {
