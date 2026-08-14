@@ -1,7 +1,7 @@
 {
   "version": 5,
-  "approvedAt": "2026-08-14T07:54:48.430Z",
-  "reason": "Gowun Dodum 제목 글꼴의 Linux 모바일 렌더링 승인",
+  "approvedAt": "2026-08-14T09:35:54.701Z",
+  "reason": "청첩장 타이포, 버튼 정렬, 카드 깊이 개선에 따른 의도된 오시는 길 화면 변경",
   "pixelThreshold": 36,
   "maxChangedRatio": 0.015,
   "profileMaxChangedRatioOverrides": {
@@ -16,28 +16,28 @@
     "schemaVersion": 1,
     "subjectKind": "capture-set",
     "sourceKind": "github-actions",
-    "runId": "31780966321",
+    "runId": "31787964462",
     "runAttempt": 1,
-    "commitSha": "776ad9248aa7490c8976b3ab2b34f5f4d7692cc0",
-    "runUrl": "https://github.com/Po-Mato/pixel-garden-invitation/actions/runs/31780966321",
+    "commitSha": "1bad48b2a09357c926ea970f30442481d4e42297",
+    "runUrl": "https://github.com/Po-Mato/pixel-garden-invitation/actions/runs/31787964462",
     "checksumAlgorithm": "sha256",
     "artifactChecksumScope": "sorted-capture-set-manifest",
-    "artifactSha256": "de26490326304ed52ba4981bc951e5a79082db03d50bd0b101ef98ff48cf2ca9",
+    "artifactSha256": "4781d4d82048c72dc0b579fb09eb33c5d5af01796370ad5cdad16f2db7ebd8e1",
     "files": [
       {
         "logicalPath": "galaxy-s23-font-150/directions-xlarge",
-        "size": 98593,
-        "sha256": "142fd75d71bf687fb7779f7ee3d31d8e23210f758221c191e29c94a23e567c57"
+        "size": 97249,
+        "sha256": "5810b032b573c28c9eb4fcffaa50490fba54f5d7a3ef20ca6f00090d622a505a"
       },
       {
         "logicalPath": "galaxy-s23-font-150/directions-xlarge-bottom",
-        "size": 109586,
-        "sha256": "c02bd1cbb17b70efc51fd3d5fe9b613ef4608eb5527ffda769a2eb7df1d7e27a"
+        "size": 109999,
+        "sha256": "c02a0f9a7e430e1ab4083311a8cfe7fabd66c45b84d12b3e1e9b1e2b6ad2fd6e"
       },
       {
         "logicalPath": "galaxy-s23-font-150/directions-xlarge-middle",
-        "size": 103991,
-        "sha256": "cc09d1ecc46fee41f6494e1856d0e54b9e51b2e150e0657933598e66aa433cb9"
+        "size": 102963,
+        "sha256": "98d5cc60a2f7b808012c48a62a2fa188ad25406e437a3a27512d4e3434dad6c7"
       },
       {
         "logicalPath": "galaxy-s23-font-150/game",
@@ -46,18 +46,18 @@
       },
       {
         "logicalPath": "iphone-15-dynamic-type/directions-xlarge",
-        "size": 107287,
-        "sha256": "70e51f2da32c0ca1738e5544a3d5c6b0a04e58fa231738ae350c37e53d67ec49"
+        "size": 106074,
+        "sha256": "36b3a4716a6f87b68f69914349d0de01f27170e8c3178eb3e1f5cf2b88962d35"
       },
       {
         "logicalPath": "iphone-15-dynamic-type/directions-xlarge-bottom",
-        "size": 105444,
-        "sha256": "2776a10ca56758b09f302dc0cb0b8a1911237465fcec703a314b795d125dfe04"
+        "size": 105793,
+        "sha256": "8a40da48b54517d95c4ecb0bc8633146dad1922d58beba0cc0fd34fc2701a063"
       },
       {
         "logicalPath": "iphone-15-dynamic-type/directions-xlarge-middle",
-        "size": 102607,
-        "sha256": "275aa248ff12dbf284e7bdee60a589cdce91c9699a1c44e30244a0df54fd19e0"
+        "size": 101897,
+        "sha256": "e7eb807b37b2b28c5d33afa14460988e1828b5f09f28ba5982ba84afec96e972"
       },
       {
         "logicalPath": "iphone-15-dynamic-type/game",
@@ -66,18 +66,18 @@
       },
       {
         "logicalPath": "iphone-15-webkit-dynamic-type/directions-xlarge",
-        "size": 109863,
-        "sha256": "1b6472b1dec399a695b5d2ba82c6782e52b0cfd1bc7d10167bd77c9811c29e94"
+        "size": 107871,
+        "sha256": "bface5ac960e04414c315ebe571647abab2ae994035905a29b91d270915de439"
       },
       {
         "logicalPath": "iphone-15-webkit-dynamic-type/directions-xlarge-bottom",
-        "size": 109810,
-        "sha256": "2ac7550f72db04bbbb3c1b39725f91f8eb071070b8a440594cc1acbd5a61e1cf"
+        "size": 108975,
+        "sha256": "4b6a08b9ca0402ffb43c2d04bf2fa7f7c863de1982bb3c74ae46769383636e4d"
       },
       {
         "logicalPath": "iphone-15-webkit-dynamic-type/directions-xlarge-middle",
-        "size": 113309,
-        "sha256": "0a1dcabbf9881565017c5e8b350ad4a1286cb89c7fabf2b8abbe7fbcb4ed88b2"
+        "size": 111170,
+        "sha256": "73dbca6944d6741163235f81ebdd8a253846ed6ceaddbf218ddb11fd5fc1570d"
       },
       {
         "logicalPath": "iphone-15-webkit-dynamic-type/game",
@@ -86,18 +86,18 @@
       },
       {
         "logicalPath": "iphone-15-webkit-text-200/directions-xlarge",
-        "size": 100484,
-        "sha256": "f58d63b03883bf86314c31f5669366b5ea64a4fb90ebf248e01cef2f0fd4b16c"
+        "size": 99227,
+        "sha256": "679526fe21c4285c5cb3ddd4ce639d8a4ceaa9f524f405b390b1f52ca15fc240"
       },
       {
         "logicalPath": "iphone-15-webkit-text-200/directions-xlarge-bottom",
-        "size": 98614,
-        "sha256": "98be86fb9e5ef8c21a9dad58e777adb429c7f9de4c8d223cc9f3bf10f529fee1"
+        "size": 99132,
+        "sha256": "bcb720ff57ab2a7125a5627b4f7ecac8b2fb408a65e2395a531472b78bb45cd3"
       },
       {
         "logicalPath": "iphone-15-webkit-text-200/directions-xlarge-middle",
-        "size": 105028,
-        "sha256": "5a4a4c241349eb65805369871fbd539dbe4d1bde0eca6d447ef2c6d76e15780b"
+        "size": 104043,
+        "sha256": "33eb779a5c816fbcc532c4de916c59c9b803389ec141b13fbef62677cb57d9a0"
       },
       {
         "logicalPath": "iphone-15-webkit-text-200/game",
@@ -119,7 +119,7 @@
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Gowun Dodum 제목 글꼴의 Linux 모바일 렌더링 승인",
+        "approvalReason": "청첩장 타이포, 버튼 정렬, 카드 깊이 개선에 따른 의도된 오시는 길 화면 변경",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -133,13 +133,13 @@
       "state": "directions-xlarge",
       "width": 360,
       "height": 780,
-      "sha256": "a312b0a4ab071c297c6e13344ad6b1d64f2232462bbddfee0ca050cd0265d3b4",
+      "sha256": "422beca0f936dea3a53a063ca4154b408082d5e4ab9d5bdc2fe4c7f49da9b631",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Gowun Dodum 제목 글꼴의 Linux 모바일 렌더링 승인",
+        "approvalReason": "청첩장 타이포, 버튼 정렬, 카드 깊이 개선에 따른 의도된 오시는 길 화면 변경",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -153,13 +153,13 @@
       "state": "directions-xlarge-middle",
       "width": 360,
       "height": 780,
-      "sha256": "02c89f3e05019a9fe8c98825eba613fcfcbeba810ed9d756ee18eff7be88eb32",
+      "sha256": "d1a7f754ac444871f637860b0abdbb28deacbc33a9c7f07be100189e36526984",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Gowun Dodum 제목 글꼴의 Linux 모바일 렌더링 승인",
+        "approvalReason": "청첩장 타이포, 버튼 정렬, 카드 깊이 개선에 따른 의도된 오시는 길 화면 변경",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -173,13 +173,13 @@
       "state": "directions-xlarge-bottom",
       "width": 360,
       "height": 780,
-      "sha256": "e2a2751d097e044074888dd4cbc134b0213f8057971769cf5e736781fd9f096e",
+      "sha256": "3ce724ee3f3ad730095a029f448d04cfbd1f70595cd356fab4ed9d1d0e1f8b28",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Gowun Dodum 제목 글꼴의 Linux 모바일 렌더링 승인",
+        "approvalReason": "청첩장 타이포, 버튼 정렬, 카드 깊이 개선에 따른 의도된 오시는 길 화면 변경",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -199,7 +199,7 @@
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Gowun Dodum 제목 글꼴의 Linux 모바일 렌더링 승인",
+        "approvalReason": "청첩장 타이포, 버튼 정렬, 카드 깊이 개선에 따른 의도된 오시는 길 화면 변경",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -213,13 +213,13 @@
       "state": "directions-xlarge",
       "width": 393,
       "height": 852,
-      "sha256": "97ff36165e7517e50b0b69381715022b8c9ff2d741e88c47af881f5f314278c6",
+      "sha256": "2082792378dbf7121cea23de77f1452cf365b8c0a68d67e0b318dc17eb18f17c",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Gowun Dodum 제목 글꼴의 Linux 모바일 렌더링 승인",
+        "approvalReason": "청첩장 타이포, 버튼 정렬, 카드 깊이 개선에 따른 의도된 오시는 길 화면 변경",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -233,13 +233,13 @@
       "state": "directions-xlarge-middle",
       "width": 393,
       "height": 852,
-      "sha256": "6336876688916282b1abef1030f4a034b886cb2686c21b0456b3a572ee6a9751",
+      "sha256": "676610d6a0c200275db3a92adf24b18f681d98fa8ea68337f145aae6f47e5943",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Gowun Dodum 제목 글꼴의 Linux 모바일 렌더링 승인",
+        "approvalReason": "청첩장 타이포, 버튼 정렬, 카드 깊이 개선에 따른 의도된 오시는 길 화면 변경",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -253,13 +253,13 @@
       "state": "directions-xlarge-bottom",
       "width": 393,
       "height": 852,
-      "sha256": "ebf6605e56e6182e95e05a986a43c390a629c06a83223605c9833dd9a9a709c9",
+      "sha256": "8fd8d82008843f725e7181728cfdb8070c2a3312c6a925fd3075b8d34fc80a47",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Gowun Dodum 제목 글꼴의 Linux 모바일 렌더링 승인",
+        "approvalReason": "청첩장 타이포, 버튼 정렬, 카드 깊이 개선에 따른 의도된 오시는 길 화면 변경",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -279,7 +279,7 @@
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Gowun Dodum 제목 글꼴의 Linux 모바일 렌더링 승인",
+        "approvalReason": "청첩장 타이포, 버튼 정렬, 카드 깊이 개선에 따른 의도된 오시는 길 화면 변경",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -293,13 +293,13 @@
       "state": "directions-xlarge",
       "width": 393,
       "height": 852,
-      "sha256": "105b88a1e100a5b1343a62c847cd67183adb09188ecfcb414baf6238a32d22bf",
+      "sha256": "22ba555a05fadcb696544f50acda5ab18242ca08605ed014f1f0fa987da74687",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Gowun Dodum 제목 글꼴의 Linux 모바일 렌더링 승인",
+        "approvalReason": "청첩장 타이포, 버튼 정렬, 카드 깊이 개선에 따른 의도된 오시는 길 화면 변경",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -313,13 +313,13 @@
       "state": "directions-xlarge-middle",
       "width": 393,
       "height": 852,
-      "sha256": "5b93fd7c70165467d49fe8d6a086d9f7473ed47d1bc730af78bebaec11aa4712",
+      "sha256": "856fb3d4ceafda672b253f35e7c89f86700c10b3de9819331f79788cc38b5673",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Gowun Dodum 제목 글꼴의 Linux 모바일 렌더링 승인",
+        "approvalReason": "청첩장 타이포, 버튼 정렬, 카드 깊이 개선에 따른 의도된 오시는 길 화면 변경",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -333,13 +333,13 @@
       "state": "directions-xlarge-bottom",
       "width": 393,
       "height": 852,
-      "sha256": "bd10836689de663c1dde95343a5e127dfdcdcc7875a96115cc3a501072340141",
+      "sha256": "74e2784e872598a8e70629411e1dcbeab776dd602002b9dc0952a2d1eebc5ba5",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Gowun Dodum 제목 글꼴의 Linux 모바일 렌더링 승인",
+        "approvalReason": "청첩장 타이포, 버튼 정렬, 카드 깊이 개선에 따른 의도된 오시는 길 화면 변경",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -359,7 +359,7 @@
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Gowun Dodum 제목 글꼴의 Linux 모바일 렌더링 승인",
+        "approvalReason": "청첩장 타이포, 버튼 정렬, 카드 깊이 개선에 따른 의도된 오시는 길 화면 변경",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -373,13 +373,13 @@
       "state": "directions-xlarge",
       "width": 393,
       "height": 852,
-      "sha256": "8bdc5893d6fec441ba736ca9e6f77554185e3ba80a1042b5abf47e8f9b4f585d",
+      "sha256": "9b69970811283a26264b001f8ce80d24a75bcd5e38d6f3cbfc950c7fc767b99c",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Gowun Dodum 제목 글꼴의 Linux 모바일 렌더링 승인",
+        "approvalReason": "청첩장 타이포, 버튼 정렬, 카드 깊이 개선에 따른 의도된 오시는 길 화면 변경",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -393,13 +393,13 @@
       "state": "directions-xlarge-middle",
       "width": 393,
       "height": 852,
-      "sha256": "1fd86f69b608365dbc5e1f5005613efa36321a703eb9ec23b4e9a105a6622cd2",
+      "sha256": "4dbe4af4d56a768d960c385272ddb0f7b6b6e7a73803a126077623a2bd8df263",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Gowun Dodum 제목 글꼴의 Linux 모바일 렌더링 승인",
+        "approvalReason": "청첩장 타이포, 버튼 정렬, 카드 깊이 개선에 따른 의도된 오시는 길 화면 변경",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -413,13 +413,13 @@
       "state": "directions-xlarge-bottom",
       "width": 393,
       "height": 852,
-      "sha256": "99a641c5ecbbf9aab697f11ae93334d4303d9b8bcf9f14554e644e21046243ce",
+      "sha256": "c1832ec8096f0d5940885a8295f9ca8fe26c8242f2e28900c6bff5bff328825a",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Gowun Dodum 제목 글꼴의 Linux 모바일 렌더링 승인",
+        "approvalReason": "청첩장 타이포, 버튼 정렬, 카드 깊이 개선에 따른 의도된 오시는 길 화면 변경",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,

@@ -1,7 +1,7 @@
 {
   "version": 3,
-  "approvedAt": "2026-08-13T22:04:50.674Z",
-  "reason": "Refined invitation sheet hierarchy, typography, and large-text layout",
+  "approvedAt": "2026-08-14T09:35:33.902Z",
+  "reason": "청첩장 타이포, 버튼 정렬, 카드 깊이 개선에 따른 의도된 오시는 길 화면 변경",
   "profile": {
     "id": "pixel-7-api-35-chrome",
     "deviceName": "Pixel 7",
@@ -9,7 +9,7 @@
     "requiredDirectionsScroll": 0
   },
   "capture": {
-    "generatedAt": "2026-08-13T21:56:29.626Z",
+    "generatedAt": "2026-08-14T09:28:30.157Z",
     "profile": {
       "id": "pixel-7-api-35-chrome",
       "deviceName": "Pixel 7",
@@ -28,10 +28,10 @@
       "width": 412
     },
     "browserVersion": null,
-    "runId": "31747571370",
+    "runId": "31787964520",
     "runAttempt": 1,
-    "sha": "43712c2e4a3954f253207a7f8b5852f0ce3f0f24",
-    "runUrl": "https://github.com/Po-Mato/pixel-garden-invitation/actions/runs/31747571370",
+    "sha": "1bad48b2a09357c926ea970f30442481d4e42297",
+    "runUrl": "https://github.com/Po-Mato/pixel-garden-invitation/actions/runs/31787964520",
     "retry": {
       "attempted": false,
       "reason": null
@@ -44,7 +44,7 @@
           {
             "attempt": 1,
             "outcome": "ready",
-            "durationMs": 5049,
+            "durationMs": 4601,
             "error": null
           }
         ]
@@ -56,7 +56,7 @@
           {
             "attempt": 1,
             "outcome": "ready",
-            "durationMs": 4473,
+            "durationMs": 4665,
             "error": null
           }
         ]
@@ -72,18 +72,18 @@
       "offlineEventDispatched": true,
       "transportProbe": {
         "previewHostReachableAfterStop": false,
-        "browserUrl": "http://127.0.0.1:4188/api/__device_pwa_transport_probe__?nonce=1786658298283",
+        "browserUrl": "http://127.0.0.1:4188/api/__device_pwa_transport_probe__?nonce=1786699804491",
         "browserFetchResolved": false,
         "browserStatus": null,
         "browserError": "Failed to fetch",
         "browserErrorKind": "failed-to-fetch",
-        "durationMs": 19,
+        "durationMs": 36.10000000000582,
         "transportBlocked": true
       },
       "cachedPaths": 83,
       "controlled": true,
       "expectedPaths": 83,
-      "precacheName": "wedding-garden-precache-43712c2e4a39",
+      "precacheName": "wedding-garden-precache-1bad48b2a093",
       "serviceWorkerSupported": true,
       "blockingNoticeVisible": false,
       "brokenImages": [],
@@ -98,7 +98,7 @@
     "scrollStates": {
       "directions": {
         "horizontalOverflow": false,
-        "maxScroll": 89,
+        "maxScroll": 99,
         "reached": true,
         "scrollTop": 0,
         "target": 0
@@ -107,39 +107,39 @@
     "comparisons": [
       {
         "state": "game",
-        "changedPixels": 0,
-        "changedRatio": 0,
-        "meanPixelDifference": 0,
+        "changedPixels": 2519,
+        "changedRatio": 0.0010597035017752873,
+        "meanPixelDifference": 1.0970699345415384,
         "pixelCount": 2377080,
         "passed": true,
         "maxChangedRatio": 0.015,
-        "rawChangedRatio": 0,
-        "rawMeanPixelDifference": 0,
+        "rawChangedRatio": 0.006218133171790601,
+        "rawMeanPixelDifference": 2.3495608056943813,
         "baselinePath": "/home/runner/work/pixel-garden-invitation/pixel-garden-invitation/scripts/visual-baselines/android-chrome-pixel-7-api-35-chrome-game.webp",
         "currentPath": "/home/runner/work/pixel-garden-invitation/pixel-garden-invitation/.superpowers/visual-regression/android-chrome/android-chrome-pixel-7-api-35-chrome-game-current.png",
         "diffPath": "/home/runner/work/pixel-garden-invitation/pixel-garden-invitation/.superpowers/visual-regression/android-chrome/android-chrome-pixel-7-api-35-chrome-game-diff.png",
         "classification": {
-          "id": "stable",
+          "id": "renderer-noise",
           "confidence": "high",
-          "likelyCause": "no-change",
+          "likelyCause": "font-or-antialias-rendering",
           "review": "not-required",
-          "changedRatio": 0,
-          "rawChangedRatio": 0,
-          "filteredNoiseRatio": 0,
-          "filteredNoiseShare": 0,
-          "budgetUsage": 0
+          "changedRatio": 0.0010597035017752873,
+          "rawChangedRatio": 0.006218133171790601,
+          "filteredNoiseRatio": 0.005158429670015313,
+          "filteredNoiseShare": 0.8295785129558216,
+          "budgetUsage": 0.07064690011835249
         }
       },
       {
         "state": "directions",
-        "changedPixels": 370904,
-        "changedRatio": 0.15603345280764636,
-        "meanPixelDifference": 23.745850791727666,
+        "changedPixels": 134541,
+        "changedRatio": 0.056599273057701044,
+        "meanPixelDifference": 6.765630100795934,
         "pixelCount": 2377080,
         "passed": false,
         "maxChangedRatio": 0.015,
-        "rawChangedRatio": 0.14011055580796608,
-        "rawMeanPixelDifference": 25.013129553906474,
+        "rawChangedRatio": 0.05218461305467212,
+        "rawMeanPixelDifference": 7.925848940717183,
         "baselinePath": "/home/runner/work/pixel-garden-invitation/pixel-garden-invitation/scripts/visual-baselines/android-chrome-pixel-7-api-35-chrome-directions.webp",
         "currentPath": "/home/runner/work/pixel-garden-invitation/pixel-garden-invitation/.superpowers/visual-regression/android-chrome/android-chrome-pixel-7-api-35-chrome-directions-current.png",
         "diffPath": "/home/runner/work/pixel-garden-invitation/pixel-garden-invitation/.superpowers/visual-regression/android-chrome/android-chrome-pixel-7-api-35-chrome-directions-diff.png",
@@ -148,11 +148,11 @@
           "confidence": "high",
           "likelyCause": "layout-or-content-change",
           "review": "required",
-          "changedRatio": 0.15603345280764636,
-          "rawChangedRatio": 0.14011055580796608,
+          "changedRatio": 0.056599273057701044,
+          "rawChangedRatio": 0.05218461305467212,
           "filteredNoiseRatio": 0,
           "filteredNoiseShare": 0,
-          "budgetUsage": 10.402230187176425
+          "budgetUsage": 3.773284870513403
         }
       }
     ],
@@ -167,23 +167,23 @@
     "schemaVersion": 1,
     "subjectKind": "capture-set",
     "sourceKind": "github-actions",
-    "runId": "31747571370",
+    "runId": "31787964520",
     "runAttempt": 1,
-    "commitSha": "43712c2e4a3954f253207a7f8b5852f0ce3f0f24",
-    "runUrl": "https://github.com/Po-Mato/pixel-garden-invitation/actions/runs/31747571370",
+    "commitSha": "1bad48b2a09357c926ea970f30442481d4e42297",
+    "runUrl": "https://github.com/Po-Mato/pixel-garden-invitation/actions/runs/31787964520",
     "checksumAlgorithm": "sha256",
     "artifactChecksumScope": "sorted-capture-set-manifest",
-    "artifactSha256": "e801ffb6158974b366660e567248fb806a3df9d89113dac52f27dd496970579e",
+    "artifactSha256": "8f13d975d1dc350bb94a5c3ed3afa21ae0cdd45766b25f4fd44abade5e11e1cd",
     "files": [
       {
         "logicalPath": "pixel-7-api-35-chrome/directions",
-        "size": 511499,
-        "sha256": "5facb8c9a62ea1dd8e82f189811bb8ee18f815e52cc2b0d9a9500c594e86117a"
+        "size": 494125,
+        "sha256": "8af247a79495022283de4f47ead8c57a9d7a86e4f3e050aec5a84874e073da30"
       },
       {
         "logicalPath": "pixel-7-api-35-chrome/game",
-        "size": 3732608,
-        "sha256": "8e5678fb2b8ee575d8e1f0576967f11131b2f47d19b2f1b082917956b13fe246"
+        "size": 1930085,
+        "sha256": "e5fc44ce565762871762938c57e2d1c7b005dca5f0a4edf7f4f472da15dc4582"
       }
     ]
   },
@@ -197,13 +197,13 @@
       "state": "game",
       "width": 1080,
       "height": 2201,
-      "sha256": "beca9bc3f6b676ea35c558ec617acbe680918791cdc646475bfc9c8439ea9cda",
+      "sha256": "157a935d5e84f8602bc33fa6088b1764f5e68aed2e8b42c201867da297a78cbb",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Refined invitation sheet hierarchy, typography, and large-text layout",
+        "approvalReason": "청첩장 타이포, 버튼 정렬, 카드 깊이 개선에 따른 의도된 오시는 길 화면 변경",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -216,13 +216,13 @@
       "state": "directions",
       "width": 1080,
       "height": 2201,
-      "sha256": "23ab70821b6a93688f869b9a1ed7e7a6d1888093a9dc837314393a4fa7226a2a",
+      "sha256": "3c227b50fc333a7e5b0c2e02390029863c4ddd4fef381b0e6e5edf6aabd9fa54",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "Refined invitation sheet hierarchy, typography, and large-text layout",
+        "approvalReason": "청첩장 타이포, 버튼 정렬, 카드 깊이 개선에 따른 의도된 오시는 길 화면 변경",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
