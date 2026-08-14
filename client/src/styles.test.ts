@@ -11,6 +11,7 @@ const weddingLuxeStyles = readFileSync("src/wedding-luxe-theme.css", "utf8");
 const entryScreenStyles = readFileSync("src/entry-screen-v3.css", "utf8");
 const quickInvitationStyles = readFileSync("src/quick-invitation-continuity.css", "utf8");
 const invitationUxPolishStyles = readFileSync("src/invitation-ux-polish.css", "utf8");
+const weddingDisplayFontStyles = readFileSync("src/wedding-display-font-critical.css", "utf8");
 const worldZones = [
   "home",
   "neighborhood",
@@ -761,6 +762,15 @@ describe("prism map interactions", () => {
 });
 
 describe("wedding editorial content", () => {
+  it("uses a locally hosted elegant sans display face without serif fallbacks", () => {
+    expect(weddingDisplayFontStyles).toContain('font-family: "Gowun Dodum Critical";');
+    expect(weddingDisplayFontStyles).toContain('url("./assets/fonts/gowun-dodum-critical.woff2")');
+    expect(weddingLuxeStyles).toContain('--wedding-font-display: "Gowun Dodum Critical"');
+    expect(weddingLuxeStyles).not.toMatch(/Noto Serif|Nanum Myeongjo|AppleMyungjo|Batang/);
+    expect(invitationUxPolishStyles).toMatch(/\.quick-hero__content h1\s*\{[^}]*font-weight:\s*400;[^}]*letter-spacing:\s*-0\.055em;/s);
+    expect(invitationUxPolishStyles).toMatch(/\.bottom-sheet__heading h2\s*\{[^}]*font-weight:\s*400;[^}]*letter-spacing:\s*-0\.05em;/s);
+  });
+
   it("keeps couple profiles as unframed vertical sections with stable portraits", () => {
     const panelRule = styles.match(/\.couple-profile-panel\s*\{([^}]*)}/s)?.[1] ?? "";
     const personRule = styles.match(/\.couple-profile-panel__person\s*\{([^}]*)}/s)?.[1] ?? "";

@@ -761,7 +761,7 @@ export async function runMobileDeviceSoakAudit({
         const displayFamily = getComputedStyle(heading).fontFamily;
         const rect = sheetElement.getBoundingClientRect();
         return {
-          typographyFallbackReady: /Noto Sans (?:CJK )?KR/.test(uiFamily) && /Noto Serif (?:CJK )?KR/.test(displayFamily),
+          typographyFallbackReady: /Noto Sans (?:CJK )?KR/.test(uiFamily) && /Gowun Dodum/.test(displayFamily),
           sheetContained: rect.x >= -1 && rect.y >= -1 && rect.right <= innerWidth + 1 && rect.bottom <= innerHeight + 1
             && sheetElement.scrollWidth <= sheetElement.clientWidth + 1
         };

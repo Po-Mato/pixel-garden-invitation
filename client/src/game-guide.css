@@ -63,7 +63,7 @@
 }
 
 .game-guide__panel > header strong {
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--wedding-font-display);
   font-size: 22px;
   letter-spacing: 0;
 }
@@ -263,7 +263,7 @@
 
 .game-guide__copy h2 {
   margin: 0;
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--wedding-font-display);
   font-size: 22px;
   line-height: 1.15;
   letter-spacing: 0;

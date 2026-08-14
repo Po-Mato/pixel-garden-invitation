@@ -198,9 +198,9 @@ select,
 }
 
 .screen-loading > strong {
-  font-family: Georgia, "Batang", serif;
+  font-family: var(--wedding-font-display, "Gowun Dodum Critical", "Apple SD Gothic Neo", sans-serif);
   font-size: 18px;
-  font-weight: 600;
+  font-weight: 400;
 }
 
 .screen-loading__visual {
@@ -6489,13 +6489,13 @@ select,
 }
 
 .quick-hero__content p {
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--wedding-font-ui, "Noto Sans KR Variable", "Apple SD Gothic Neo", sans-serif);
   font-size: 11px;
   letter-spacing: 0.18em;
 }
 
 .quick-hero__content h1 {
-  font-family: Georgia, "Batang", serif;
+  font-family: var(--wedding-font-display, "Gowun Dodum Critical", "Apple SD Gothic Neo", sans-serif);
   font-size: 34px;
   font-weight: 500;
   line-height: 1.2;
@@ -7061,7 +7061,7 @@ html[data-data-saver="true"] .couple-puppet-stage__fallback {
 }
 
 .quick-band--profiles .couple-profile-panel__name {
-  font-family: Georgia, "Batang", serif;
+  font-family: var(--wedding-font-display, "Gowun Dodum Critical", "Apple SD Gothic Neo", sans-serif);
   font-size: 25px;
 }
 
@@ -7175,7 +7175,7 @@ html[data-data-saver="true"] .couple-puppet-stage__fallback {
 }
 
 .quick-closing h2 {
-  font-family: Georgia, "Batang", serif;
+  font-family: var(--wedding-font-display, "Gowun Dodum Critical", "Apple SD Gothic Neo", sans-serif);
   font-size: 25px;
   font-weight: 500;
 }
@@ -7251,7 +7251,7 @@ html[data-data-saver="true"] .couple-puppet-stage__fallback {
 
 .quick-invitation__footer strong {
   color: #fff;
-  font-family: Georgia, "Batang", serif;
+  font-family: var(--wedding-font-display, "Gowun Dodum Critical", "Apple SD Gothic Neo", sans-serif);
   font-size: 14px;
   letter-spacing: 0;
 }

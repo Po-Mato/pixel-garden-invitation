@@ -7,7 +7,7 @@ import { PublishedInvitationContentProvider } from "./invitation/PublishedInvita
 import { GameFeedbackProvider } from "./feedback/GameFeedbackContext";
 import { startInvitationAnalytics } from "./analytics/invitationAnalytics";
 import { DevicePerformanceProvider } from "./performance/DevicePerformanceContext";
-import "./wedding-serif-font-critical.css";
+import "./wedding-display-font-critical.css";
 import "./styles.css";
 import "./feedback.css";
 import "./pwa.css";

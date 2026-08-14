@@ -670,7 +670,7 @@
 .game-memory-album__preview { position: relative; display: grid; width: min(220px, 100%); aspect-ratio: 9 / 14; justify-self: center; align-content: start; gap: 8px; padding: 14px 12px; color: #463d3a; background: #fffaf3; border-top: 5px solid #9e6974; border-bottom: 5px solid #657e6a; box-shadow: 0 4px 14px rgba(58, 42, 38, 0.16); overflow: hidden; }
 .game-memory-album__preview[data-layout="garden"] { background: #f8f3e8; border-top-color: #6f8f76; border-bottom-color: #bd727f; }
 .game-memory-album__preview[data-layout="film"] { color: #fffaf0; background: #252523; border-top-color: #c9a56d; border-bottom-color: #8f5f68; }
-.game-memory-album__preview > small { overflow: hidden; font-family: serif; font-size: 11px; font-weight: 900; text-align: center; text-overflow: ellipsis; white-space: nowrap; }
+.game-memory-album__preview > small { overflow: hidden; font-family: var(--wedding-font-display); font-size: 11px; font-weight: 400; text-align: center; text-overflow: ellipsis; white-space: nowrap; }
 .game-memory-album__preview > .game-memory-album__preview-photos { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; }
 .game-memory-album__preview-photos > :is(button, span) { display: grid; width: 100%; aspect-ratio: 3 / 4; min-width: 0; place-items: center; padding: 0; background: #e9dfd3; border: 2px solid #fff; overflow: hidden; }
 .game-memory-album__preview-photos > button { touch-action: none; cursor: grab; }
@@ -681,13 +681,13 @@
 .game-memory-album__preview-photos > span svg { width: 16px; }
 .game-memory-album__preview[data-frame="rounded"] .game-memory-album__preview-photos > :is(button, span) { border-radius: 8px; }
 .game-memory-album__preview[data-frame="postage"] .game-memory-album__preview-photos > :is(button, span) { border-style: dashed; }
-.game-memory-album__preview > strong { margin-top: auto; font-family: serif; font-size: 10px; text-align: center; }
+.game-memory-album__preview > strong { margin-top: auto; font-family: var(--wedding-font-display); font-size: 10px; font-weight: 400; text-align: center; }
 .game-memory-album__preview > .game-memory-album__preview-stickers { position: absolute; z-index: 4; inset: 0; color: #a45f73; pointer-events: none; }
 .game-memory-album__preview-stickers button { position: absolute; display: grid; width: 28px; height: 28px; place-items: center; padding: 5px; color: inherit; background: transparent; border: 0; touch-action: none; pointer-events: auto; cursor: grab; transform-origin: center; }
 .game-memory-album__preview-stickers button:active { cursor: grabbing; }
 .game-memory-album__preview-stickers button[aria-pressed="true"] { outline: 2px solid #6b7f6d; outline-offset: 1px; background: rgba(255, 253, 247, 0.72); }
 .game-memory-album__preview-stickers svg { width: 18px; height: 18px; fill: rgba(255, 244, 210, 0.86); filter: drop-shadow(0 1px 1px rgba(73, 50, 45, 0.2)); }
-.game-memory-album__preview-stickers .game-memory-album__preview-text-sticker { width: auto; min-width: 76px; height: 24px; padding: 4px 9px; color: #9c5f70; background: rgba(255, 253, 247, 0.94); border: 1px solid currentColor; border-radius: 12px; font-family: serif; font-size: 7px; font-weight: 900; white-space: nowrap; }
+.game-memory-album__preview-stickers .game-memory-album__preview-text-sticker { width: auto; min-width: 76px; height: 24px; padding: 4px 9px; color: #9c5f70; background: rgba(255, 253, 247, 0.94); border: 1px solid currentColor; border-radius: 12px; font-family: var(--wedding-font-display); font-size: 7px; font-weight: 400; white-space: nowrap; }
 .game-memory-album__editor fieldset { display: grid; gap: 5px; margin: 0; padding: 0; border: 0; }
 .game-memory-album__editor legend,
 .game-memory-album__editor > label > span { display: flex; align-items: center; gap: 5px; margin-bottom: 5px; color: #5e5752; font-size: 10px; font-weight: 900; }
@@ -762,12 +762,12 @@
 .game-memory-album__print-preview { position: relative; width: min(100%, 210px); aspect-ratio: 0.707; margin: 0 auto; overflow: hidden; background: #fff; border: 1px solid #c8c0b8; box-shadow: 0 5px 15px rgb(55 45 40 / 10%); }
 .game-memory-album__print-preview[data-format="postcard"] { aspect-ratio: 2 / 3; }
 .game-memory-album__print-preview-art { position: absolute; display: flex; flex-direction: column; align-items: center; justify-content: space-between; box-sizing: border-box; overflow: hidden; padding: 7% 6%; color: #4a3935; background: #f8f3e8; font-size: 6px; text-align: center; }
-.game-memory-album__print-preview-art strong { font-family: serif; font-size: 9px; }
+.game-memory-album__print-preview-art strong { font-family: var(--wedding-font-display); font-size: 9px; font-weight: 400; }
 .game-memory-album__print-preview-art > div { display: grid; width: 100%; grid-template-columns: repeat(3, 1fr); gap: 3px; }
 .game-memory-album__print-preview-art img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; background: #e9dfd3; }
 .game-memory-album__postcard-back { position: absolute; display: grid; grid-template-columns: minmax(0, 1fr) 1px minmax(0, 0.9fr); gap: 7px; padding: 8%; color: #4a3935; background: #fffdf8; }
 .game-memory-album__postcard-back > span:first-child { display: flex; flex-direction: column; gap: 12px; }
-.game-memory-album__postcard-back strong { font-family: serif; font-size: 8px; }
+.game-memory-album__postcard-back strong { font-family: var(--wedding-font-display); font-size: 8px; font-weight: 400; }
 .game-memory-album__postcard-back small { font-size: 5px; line-height: 1.6; }
 .game-memory-album__postcard-back > i { background: #d6ccc2; }
 .game-memory-album__postcard-address { display: grid; align-content: start; gap: 8px; }

@@ -1,7 +1,7 @@
 /* Luminous botanical salon theme for the public invitation experience. */
 :root {
   --wedding-font-ui: "Noto Sans KR Variable", "Pretendard Variable", Pretendard, "SUIT Variable", SUIT, "Noto Sans CJK KR", "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
-  --wedding-font-display: "Noto Serif KR Critical", "Iowan Old Style", Baskerville, "Noto Serif CJK KR", "Noto Serif KR", "Nanum Myeongjo", AppleMyungjo, Batang, serif;
+  --wedding-font-display: "Gowun Dodum Critical", "Gowun Dodum", "Noto Sans KR Variable", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
   --paper: #fffdf9;
   --paper-raised: #ffffff;
   --camellia: #b76f7c;
@@ -133,8 +133,9 @@ body {
 .wedding-photo-booth__header h2 {
   color: #4b3b40;
   font-family: var(--wedding-font-display);
-  font-weight: 700;
-  letter-spacing: 0;
+  font-weight: 400;
+  letter-spacing: -0.045em;
+  font-synthesis: none;
   text-shadow: none;
 }
 

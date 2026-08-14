@@ -1,7 +1,7 @@
 /* Refined botanical editorial chrome. The illustrated game world remains playful;
    invitation controls stay restrained, legible and spatially stable. */
 .game-world {
-  --game-font-display: var(--wedding-font-display, "Noto Serif KR Variable", "Iowan Old Style", Baskerville, "Noto Serif CJK KR", "Noto Serif KR", "Nanum Myeongjo", AppleMyungjo, Batang, serif);
+  --game-font-display: var(--wedding-font-display, "Gowun Dodum Critical", "Gowun Dodum", "Noto Sans KR Variable", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif);
   --game-font-ui: var(--wedding-font-ui, "Noto Sans KR Variable", "Pretendard Variable", Pretendard, "SUIT Variable", SUIT, "Noto Sans CJK KR", "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif);
   --game-ink: var(--ink, #3f3538);
   --game-muted: var(--ink-soft, #6d6062);

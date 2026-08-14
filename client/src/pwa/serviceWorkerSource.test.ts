@@ -16,7 +16,7 @@ describe("PWA service worker source", () => {
       "assets/GameMemoryAlbum-feature.js",
       "assets/RsvpAdminPage-private.js",
       "assets/papaparse.min-private.js",
-      "assets/noto-serif-kr-critical-hash.woff2",
+      "assets/gowun-dodum-critical-hash.woff2",
       "assets/noto-sans-kr-119-wght-normal-hash.woff2",
       "assets/entry-wedding-garden-hero-hash.avif",
       "assets/cover.webp",
@@ -33,7 +33,7 @@ describe("PWA service worker source", () => {
       "./assets/index-abc.js",
       "./assets/chunk-shared.js",
       "./assets/GameWorld-def.css",
-      "./assets/noto-serif-kr-critical-hash.woff2",
+      "./assets/gowun-dodum-critical-hash.woff2",
       "./assets/noto-sans-kr-119-wght-normal-hash.woff2",
       "./assets/entry-wedding-garden-hero-hash.avif"
     ]);
@@ -41,7 +41,7 @@ describe("PWA service worker source", () => {
     expect(paths).toContain("./assets/maps/v2/home/background.webp");
     expect(paths).toContain("./characters/puppets/bride/rig.json");
     expect(paths).toContain("./characters/puppets/groom/head-blink.webp");
-    expect(paths).toContain("./assets/noto-serif-kr-critical-hash.woff2");
+    expect(paths).toContain("./assets/gowun-dodum-critical-hash.woff2");
     expect(paths).toContain("./assets/noto-sans-kr-119-wght-normal-hash.woff2");
     expect(paths).toContain("./assets/entry-wedding-garden-hero-hash.avif");
     expect(paths).not.toContain("./assets/RsvpAdminPage-private.js");

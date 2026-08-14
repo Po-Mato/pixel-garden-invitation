@@ -131,7 +131,7 @@
 .npc-group-celebration > p,
 .npc-group-celebration > small { display: flex; align-items: center; gap: 5px; margin: 0; }
 .npc-group-celebration > span { color: #a05266; font-size: 7px; font-weight: 900; }
-.npc-group-celebration > strong { font-family: Georgia, serif; font-size: 14px; }
+.npc-group-celebration > strong { font-family: var(--wedding-font-display); font-size: 14px; font-weight: 400; }
 .npc-group-celebration > p { font-size: 8px; font-weight: 800; }
 .npc-group-celebration > small { color: #7e654f; font-size: 7px; font-weight: 900; }
 .npc-group-celebration svg { width: 13px; height: 13px; }

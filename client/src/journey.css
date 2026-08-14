@@ -141,7 +141,7 @@
 }
 
 .journey-stamp-book__panel > header strong {
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--wedding-font-display);
   font-size: 17px;
   letter-spacing: 0;
 }
@@ -253,7 +253,7 @@
 
 .journey-stamp-book__index {
   color: #9a7163;
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--wedding-font-display);
   font-size: 10px;
   font-weight: 700;
 }
@@ -643,7 +643,7 @@ li[data-complete="true"] .journey-stamp-book__stamp {
 
 .journey-completion__heading h2 {
   margin: 0;
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--wedding-font-display);
   font-size: 21px;
   letter-spacing: 0;
   line-height: 1.28;
@@ -685,7 +685,7 @@ li[data-complete="true"] .journey-stamp-book__stamp {
 }
 
 .journey-keepsake-preview figcaption strong {
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--wedding-font-display);
   font-size: 17px;
   letter-spacing: 0;
 }

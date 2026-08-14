@@ -55,7 +55,7 @@
 .wedding-photo-booth__header h2 {
   margin: 2px 0 0;
   color: #fff9e7;
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--wedding-font-display);
   font-size: clamp(23px, 5vw, 34px);
   line-height: 1.15;
   letter-spacing: 0;
@@ -256,7 +256,7 @@
   position: absolute;
   color: #ee8d9d;
   content: "♥";
-  font-family: Georgia, serif;
+  font-family: var(--wedding-font-display);
   font-size: 42px;
   text-shadow: 42px 46px 0 #fff0b8, -34px 62px 0 #e58c9f;
   animation: wedding-photo-hearts 1.3s steps(4, end) infinite;
@@ -473,7 +473,7 @@ html[data-reduce-motion="true"] .wedding-photo-booth__pose-effect::after {
 
 .wedding-photo-album__header h2 {
   margin: 2px 0 0;
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--wedding-font-display);
   font-size: clamp(24px, 5vw, 38px);
   line-height: 1.05;
   letter-spacing: 0;
@@ -537,7 +537,7 @@ html[data-reduce-motion="true"] .wedding-photo-booth__pose-effect::after {
 }
 
 .wedding-photo-album__viewer-title strong {
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--wedding-font-display);
   font-size: 18px;
   letter-spacing: 0;
 }
@@ -732,7 +732,7 @@ html[data-reduce-motion="true"] .wedding-photo-booth__pose-effect::after {
 
 .wedding-photo-strip__title {
   color: #a25968;
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--wedding-font-display);
   font-size: 9px;
   font-weight: 900;
   line-height: 0.92;
@@ -753,12 +753,12 @@ html[data-reduce-motion="true"] .wedding-photo-booth__pose-effect::after {
 .wedding-photo-strip__preview > em { position: absolute; z-index: 2; max-width: 82%; overflow: hidden; padding: 3px 4px; background: #f8dfaf; color: #76505c; font-size: 6px; font-style: normal; font-weight: 900; text-align: center; text-overflow: ellipsis; white-space: nowrap; }
 
 .wedding-photo-strip__blank svg { width: 19px; height: 19px; color: #927d70; }
-.wedding-photo-strip__preview > small { font-family: Georgia, serif; font-size: 6px; font-weight: 900; text-align: center; }
+.wedding-photo-strip__preview > small { font-family: var(--wedding-font-display); font-size: 6px; font-weight: 400; text-align: center; }
 
 .wedding-photo-strip__copy { display: grid; min-width: 0; gap: 5px; }
 .wedding-photo-strip__copy > span { display: flex; align-items: center; gap: 5px; color: #a25968; font-size: 8px; font-weight: 900; }
 .wedding-photo-strip__copy > span svg { width: 14px; height: 14px; }
-.wedding-photo-strip__copy h3 { margin: 0; font-family: Georgia, "Times New Roman", serif; font-size: 17px; letter-spacing: 0; }
+.wedding-photo-strip__copy h3 { margin: 0; font-family: var(--wedding-font-display); font-size: 17px; font-weight: 400; letter-spacing: -0.03em; }
 .wedding-photo-strip__copy p { margin: 0; color: #766159; font-size: 9px; font-weight: 700; line-height: 1.45; word-break: keep-all; }
 .wedding-photo-strip__editor { display: grid; gap: 5px; border-top: 1px solid #cabbb1; padding-top: 5px; }
 .wedding-photo-strip__themes { display: flex; align-items: center; gap: 4px; }
@@ -839,7 +839,7 @@ html[data-reduce-motion="true"] .wedding-photo-booth__pose-effect::after {
 
 .wedding-photo-lightbox p { display: grid; gap: 2px; margin: 0; text-align: center; }
 .wedding-photo-lightbox p span { color: #efcd75; font-size: 9px; font-weight: 900; }
-.wedding-photo-lightbox p strong { font-family: Georgia, "Times New Roman", serif; font-size: 15px; letter-spacing: 0; }
+.wedding-photo-lightbox p strong { font-family: var(--wedding-font-display); font-size: 15px; font-weight: 400; letter-spacing: -0.03em; }
 
 @media (min-width: 760px) and (min-height: 660px) {
   .wedding-photo-album__workspace {

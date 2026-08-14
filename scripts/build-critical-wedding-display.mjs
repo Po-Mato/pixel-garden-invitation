@@ -3,15 +3,15 @@ import { spawn } from "node:child_process";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { criticalWeddingSerifSourceCommit, writeCriticalWeddingSerifManifest } from "./lib/criticalWeddingSerifAudit.mjs";
+import { criticalWeddingDisplaySourceCommit, writeCriticalWeddingDisplayManifest } from "./lib/criticalWeddingDisplayAudit.mjs";
 
-const googleFontsCommit = criticalWeddingSerifSourceCommit;
-const sourceBase = `https://raw.githubusercontent.com/google/fonts/${googleFontsCommit}/ofl/notoserifkr`;
+const googleFontsCommit = criticalWeddingDisplaySourceCommit;
+const sourceBase = `https://raw.githubusercontent.com/google/fonts/${googleFontsCommit}/ofl/gowundodum`;
 const rootDir = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
 const fontDir = path.join(rootDir, "client/src/assets/fonts");
-const corpusPath = path.join(fontDir, "noto-serif-kr-critical.txt");
-const outputPath = path.join(fontDir, "noto-serif-kr-critical.woff2");
-const licensePath = path.join(fontDir, "OFL.txt");
+const corpusPath = path.join(fontDir, "gowun-dodum-critical.txt");
+const outputPath = path.join(fontDir, "gowun-dodum-critical.woff2");
+const licensePath = path.join(fontDir, "gowun-dodum-OFL.txt");
 
 async function download(url, output) {
   const response = await fetch(url);
@@ -38,10 +38,10 @@ async function subsetFont(args) {
 
 await mkdir(fontDir, { recursive: true });
 await readFile(corpusPath, "utf8");
-const temporaryDir = await mkdtemp(path.join(os.tmpdir(), "wedding-serif-"));
+const temporaryDir = await mkdtemp(path.join(os.tmpdir(), "wedding-display-"));
 try {
-  const sourcePath = path.join(temporaryDir, "NotoSerifKR[wght].ttf");
-  await download(`${sourceBase}/NotoSerifKR%5Bwght%5D.ttf`, sourcePath);
+  const sourcePath = path.join(temporaryDir, "GowunDodum-Regular.ttf");
+  await download(`${sourceBase}/GowunDodum-Regular.ttf`, sourcePath);
   await subsetFont([
     sourcePath,
     `--output-file=${outputPath}`,
@@ -53,9 +53,9 @@ try {
     "--drop-tables+=DSIG"
   ]);
   await download(`${sourceBase}/OFL.txt`, licensePath);
-  await writeCriticalWeddingSerifManifest(rootDir);
+  await writeCriticalWeddingDisplayManifest(rootDir);
 } finally {
   await rm(temporaryDir, { recursive: true, force: true });
 }
 
-console.log(`Critical wedding serif and manifest generated: ${path.relative(rootDir, outputPath)}`);
+console.log(`Critical wedding display font and manifest generated: ${path.relative(rootDir, outputPath)}`);

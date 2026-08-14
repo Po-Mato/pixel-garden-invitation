@@ -29,7 +29,7 @@ function relativeAssetPath(fileName: string): string {
 }
 
 const adminOnlyBundlePattern = /(?:AdminPage|AdminNotificationInbox|papaparse|inviteLinkAdminTokens|attendanceOperations)/i;
-const criticalBuildAssetPattern = /(?:noto-serif-kr-critical|entry-wedding-garden-hero|noto-sans-kr-(?:11[0-9]|latin)-).*\.(?:woff2|avif|webp)$/i;
+const criticalBuildAssetPattern = /(?:gowun-dodum-critical|entry-wedding-garden-hero|noto-sans-kr-(?:11[0-9]|latin)-).*\.(?:woff2|avif|webp)$/i;
 
 export function resolvePwaPrecachePaths(
   bundleFileNames: readonly string[],

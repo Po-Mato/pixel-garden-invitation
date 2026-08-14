@@ -1,8 +1,0 @@
-/* One locally hosted variable subset for the first invitation and core sheets. */
-@font-face {
-  font-family: "Noto Serif KR Critical";
-  font-style: normal;
-  font-display: swap;
-  font-weight: 200 900;
-  src: url("./assets/fonts/noto-serif-kr-critical.woff2") format("woff2-variations");
-}

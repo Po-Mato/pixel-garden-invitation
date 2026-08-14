@@ -14,7 +14,7 @@
 .journey-stamp-wardrobe > header > span { display: grid; width: 28px; height: 28px; place-items: center; color: #fff9ed; background: #9a6673; border-radius: 50%; }
 .journey-stamp-wardrobe > header svg { width: 15px; }
 .journey-stamp-wardrobe > header div { display: grid; gap: 1px; }
-.journey-stamp-wardrobe > header strong { font-family: Georgia, "Times New Roman", serif; font-size: 12px; }
+.journey-stamp-wardrobe > header strong { font-family: var(--wedding-font-display); font-size: 12px; font-weight: 400; }
 .journey-stamp-wardrobe > header small { color: #90777b; font-size: 8px; font-weight: 750; }
 
 .journey-stamp-wardrobe__preview {
@@ -35,7 +35,7 @@
 .journey-stamp-wardrobe__preview > div { display: grid; gap: 4px; min-width: 0; }
 .journey-stamp-wardrobe__preview > div > small { display: flex; align-items: center; gap: 3px; color: #996778; font-size: 7px; font-weight: 900; }
 .journey-stamp-wardrobe__preview > div > small svg { width: 11px; }
-.journey-stamp-wardrobe__preview > div > strong { font-family: Georgia, "Times New Roman", serif; font-size: 13px; }
+.journey-stamp-wardrobe__preview > div > strong { font-family: var(--wedding-font-display); font-size: 13px; font-weight: 400; }
 .journey-stamp-wardrobe__preview p { margin: 0; color: #78676a; font-size: 8px; line-height: 1.45; }
 .journey-stamp-wardrobe__preview button { display: flex; min-height: 34px; align-items: center; justify-content: center; gap: 4px; padding: 6px; color: #fff; background: #76535e; border: 1px solid #65444f; font-size: 8px; font-weight: 900; }
 .journey-stamp-wardrobe__preview button:disabled { color: #7f7472; background: #e3ddd4; border-color: #bdb2a8; opacity: 1; }

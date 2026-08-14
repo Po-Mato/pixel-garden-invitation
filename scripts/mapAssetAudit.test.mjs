@@ -546,7 +546,7 @@ test("wires font, gallery, map, character, photo-effect, and mobile visual audit
   );
   assert.equal(
     packageJson.scripts.test,
-    "pnpm fonts:check-critical-serif && pnpm gallery:audit && pnpm gallery:test && pnpm maps:audit && pnpm maps:test && pnpm characters:audit && pnpm characters:test && pnpm photo-effects:audit && pnpm photo-effects:test && pnpm visual:test && pnpm --filter @wedding-game/shared test && pnpm --filter @wedding-game/client test && pnpm --filter @wedding-game/worker test"
+    "pnpm fonts:check-critical-display && pnpm gallery:audit && pnpm gallery:test && pnpm maps:audit && pnpm maps:test && pnpm characters:audit && pnpm characters:test && pnpm photo-effects:audit && pnpm photo-effects:test && pnpm visual:test && pnpm --filter @wedding-game/shared test && pnpm --filter @wedding-game/client test && pnpm --filter @wedding-game/worker test"
   );
   assert.equal(
     packageJson.scripts["maps:foreground-apply"],

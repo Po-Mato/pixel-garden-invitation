@@ -760,9 +760,9 @@ async function measureInvitationQuality(page, viewport, sheetScreenshotPath, dev
       typography: {
         uiFamily,
         displayFamily,
-        koreanFallbackReady: /Noto Sans (?:CJK )?KR/.test(uiFamily) && /Noto Serif (?:CJK )?KR/.test(displayFamily),
+        koreanFallbackReady: /Noto Sans (?:CJK )?KR/.test(uiFamily) && /Gowun Dodum/.test(displayFamily),
         uiFontReady: /-apple-system|BlinkMacSystemFont|Apple SD Gothic Neo|Noto Sans (?:CJK )?KR|Malgun Gothic|system-ui/.test(uiFamily),
-        bundledDisplayFontReady: document.fonts.check('700 16px "Noto Serif KR Critical"', "오시는 길"),
+        bundledDisplayFontReady: document.fonts.check('400 16px "Gowun Dodum Critical"', "오시는 길"),
         fontResourcesSameOrigin:
           fontResources.length > 0
           && fontResources.every((name) => new URL(name, location.href).origin === location.origin),

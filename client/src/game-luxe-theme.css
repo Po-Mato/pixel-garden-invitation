@@ -86,7 +86,7 @@
 
 .world-zone-summary strong {
   color: #44383c;
-  font-family: "Iowan Old Style", "AppleMyungjo", "Noto Serif KR", Georgia, serif;
+  font-family: var(--wedding-font-display);
   letter-spacing: 0;
 }
 
@@ -186,7 +186,7 @@
 
 .world-menu-sheet__header h2 {
   color: #4b3b40;
-  font-family: "Iowan Old Style", "AppleMyungjo", "Noto Serif KR", Georgia, serif;
+  font-family: var(--wedding-font-display);
   letter-spacing: 0;
 }
 
@@ -232,7 +232,7 @@
 
 .wedding-photo-booth__header h2 {
   color: #4b3b40;
-  font-family: "Iowan Old Style", "AppleMyungjo", "Noto Serif KR", Georgia, serif;
+  font-family: var(--wedding-font-display);
   letter-spacing: 0;
 }
 

@@ -1,0 +1,8 @@
+/* Locally hosted, invitation-only Gowun Dodum subset. */
+@font-face {
+  font-family: "Gowun Dodum Critical";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400;
+  src: url("./assets/fonts/gowun-dodum-critical.woff2") format("woff2");
+}

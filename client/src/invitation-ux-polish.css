@@ -650,7 +650,8 @@
   color: #fffdf9;
   font-family: var(--wedding-font-display);
   font-size: clamp(23px, 7vw, 27px);
-  font-weight: 600;
+  font-weight: 400;
+  letter-spacing: -0.045em;
 }
 
 .quick-closing.quick-band > p {
@@ -793,7 +794,7 @@
 }
 
 .quick-hero__content .quick-hero__eyebrow {
-  font-family: var(--wedding-font-display);
+  font-family: var(--wedding-font-ui);
   font-size: 9px;
   font-weight: 700;
   letter-spacing: 0.24em;
@@ -808,8 +809,9 @@
   color: #fffdf9;
   font-family: var(--wedding-font-display);
   font-size: clamp(34px, 10vw, 42px);
-  font-weight: 600;
-  letter-spacing: -0.025em;
+  font-weight: 400;
+  letter-spacing: -0.055em;
+  font-synthesis: none;
   text-shadow: 0 2px 18px rgba(7, 13, 11, 0.78);
 }
 
@@ -825,7 +827,7 @@
   color: #f1d6da;
   font-family: var(--wedding-font-display);
   font-size: 0.72em;
-  font-style: italic;
+  font-style: normal;
   font-weight: 400;
 }
 
@@ -960,8 +962,8 @@
 .quick-band--profiles .couple-profile-panel__name {
   font-family: var(--wedding-font-display);
   font-size: clamp(24px, 7vw, 28px);
-  font-weight: 650;
-  letter-spacing: -0.025em;
+  font-weight: 400;
+  letter-spacing: -0.045em;
 }
 
 .quick-band--profiles .couple-profile-panel__media {
@@ -1084,8 +1086,8 @@
 .quick-band--story .wedding-story-timeline__title {
   font-family: var(--wedding-font-display);
   font-size: 18px;
-  font-weight: 650;
-  letter-spacing: -0.02em;
+  font-weight: 400;
+  letter-spacing: -0.035em;
 }
 
 .quick-band--story .wedding-story-timeline__body {
@@ -1240,7 +1242,7 @@
   color: #62575a;
   font-family: var(--wedding-font-display);
   font-size: 11.5px;
-  font-weight: 600;
+  font-weight: 400;
   line-height: 1.55;
   word-break: keep-all;
 }
@@ -1575,8 +1577,8 @@
   color: #3f3337;
   font-family: var(--wedding-font-display);
   font-size: 11.5px;
-  font-weight: 650;
-  letter-spacing: -0.015em;
+  font-weight: 400;
+  letter-spacing: -0.035em;
 }
 
 .quick-invitation__topbar-actions {
@@ -2866,7 +2868,7 @@ html[data-reduce-motion="true"] :is(
   padding: 0;
   background: transparent;
   color: #3f3538;
-  font-family: var(--wedding-font-display);
+  font-family: var(--wedding-font-ui);
   font-size: 19px;
   font-weight: 700;
   text-align: center;
@@ -3053,7 +3055,7 @@ html[data-reduce-motion="true"] :is(
   color: #425f53;
   font-family: var(--wedding-font-display);
   font-size: 17px;
-  font-weight: 700;
+  font-weight: 400;
 }
 
 .quick-closing__keepsake > i {
@@ -3067,7 +3069,8 @@ html[data-reduce-motion="true"] :is(
   color: #473a3e;
   font-family: var(--wedding-font-display);
   font-size: 20px;
-  font-weight: 650;
+  font-weight: 400;
+  letter-spacing: -0.035em;
 }
 
 .quick-closing__keepsake > small {
@@ -3702,7 +3705,7 @@ html[data-reduce-motion="true"] :is(
   color: #50675c;
   font-family: var(--wedding-font-display);
   font-size: 13px;
-  font-weight: 650;
+  font-weight: 400;
   box-shadow: 0 8px 22px rgba(70, 55, 60, 0.045);
 }
 
@@ -3813,8 +3816,8 @@ html[data-reduce-motion="true"] :is(
   color: #403639;
   font-family: var(--wedding-font-display);
   font-size: clamp(23px, 7vw, 27px);
-  font-weight: 650;
-  letter-spacing: -0.025em;
+  font-weight: 400;
+  letter-spacing: -0.05em;
   line-height: 1.2;
 }
 
@@ -3826,6 +3829,16 @@ html[data-reduce-motion="true"] :is(
   font-size: 9.5px;
   line-height: 1.5;
   word-break: keep-all;
+}
+
+:is(
+  .entry-screen,
+  .quick-invitation,
+  .bottom-sheet.invitation-detail-sheet,
+  .wedding-photo-booth,
+  .wedding-photo-album
+) {
+  font-synthesis: none;
 }
 
 .invitation-detail-sheet .bottom-sheet__header > button {
