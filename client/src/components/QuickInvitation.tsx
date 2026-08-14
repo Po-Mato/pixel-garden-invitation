@@ -286,6 +286,7 @@ export function QuickInvitation({
       className="quick-invitation"
       data-scroll-state={topbarState}
       data-dock-density={dockDensity}
+      data-active-section={activeSection}
     >
       <header className="quick-invitation__topbar" data-scrolled={topbarState === "scrolled" ? "true" : undefined}>
         <button

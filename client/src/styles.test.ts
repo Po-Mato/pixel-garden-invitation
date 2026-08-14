@@ -54,6 +54,27 @@ describe("low-end world rendering", () => {
   });
 });
 
+describe("visible invitation finish", () => {
+  it("uses one current-section accent for the reading line and fixed action dock", () => {
+    expect(invitationUxPolishStyles).toContain("--invitation-navigation-accent");
+    expect(invitationUxPolishStyles).toMatch(/\.quick-invitation__topbar-progress > span\s*\{[^}]*var\(--invitation-navigation-accent\)/s);
+    expect(invitationUxPolishStyles).toMatch(/\.quick-core-actions > :is\(button, \.invitation-share-trigger\)\[aria-current="page"\]\s*\{[^}]*var\(--invitation-navigation-soft\)/s);
+  });
+
+  it("keeps utility-sheet tabs and actions comfortably tappable", () => {
+    expect(invitationUxPolishStyles).toMatch(/\.gift-account-sheet__tabs button,[\s\S]*?\.family-contact-sheet__tabs button\s*\{[^}]*min-height:\s*48px;/s);
+    expect(invitationUxPolishStyles).toMatch(/\.gift-account-sheet__number-row button,[\s\S]*?\.family-contact-sheet__actions a\s*\{[^}]*min-height:\s*48px;/s);
+    expect(invitationUxPolishStyles).toMatch(/\.gift-account-sheet__status\s*\{[^}]*min-height:\s*44px;/s);
+  });
+
+  it("reveals gallery photos without forcing motion and keeps closing type light", () => {
+    expect(invitationUxPolishStyles).toContain("@keyframes invitation-gallery-reveal");
+    expect(invitationUxPolishStyles).toMatch(/@media \(prefers-reduced-motion: reduce\)[\s\S]*\.responsive-gallery-image--loaded/);
+    expect(invitationUxPolishStyles).toMatch(/\.quick-closing__keepsake > strong\s*\{[^}]*font-weight:\s*400;[^}]*letter-spacing:\s*-0\.012em;/s);
+    expect(invitationUxPolishStyles).toMatch(/\.quick-closing__actions \.invitation-share-trigger\s*\{[^}]*background:\s*#f7e8eb;[^}]*color:\s*#543c43;/s);
+  });
+});
+
 describe("private RSVP administration layout", () => {
   it("uses a viewport-safe operational layout without horizontal overflow", () => {
     const pageRule = styles.match(/\.rsvp-admin-page\s*\{([^}]*)}/s)?.[1] ?? "";
