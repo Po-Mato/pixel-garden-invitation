@@ -221,6 +221,29 @@ describe("compact invitation visual rhythm", () => {
     expect(invitationUxPolishStyles).toContain('html[data-text-scale="xlarge"]');
   });
 
+  it("uses one visible design language for gallery type, header controls, section joins and forms", () => {
+    expect(invitationUxPolishStyles).toContain("--invitation-field-height: 48px;");
+    expect(invitationUxPolishStyles).toContain("--invitation-field-radius: 13px;");
+    expect(invitationUxPolishStyles).toMatch(
+      /\.quick-invitation__topbar-actions > :is\([\s\S]*?\.invitation-share-trigger[\s\S]*?width:\s*44px;[\s\S]*?height:\s*44px;/
+    );
+    expect(invitationUxPolishStyles).toMatch(
+      /\.quick-invitation__topbar \.guest-information-trigger__dot\s*\{[^}]*width:\s*6px;[^}]*height:\s*6px;/s
+    );
+    expect(invitationUxPolishStyles).toMatch(
+      /\.quick-band\[id\]:not\(\.quick-closing\)\s*\{[^}]*background-color:\s*var\(--invitation-section-surface\);[^}]*color-mix\(in srgb, var\(--quick-section-accent\) 3\.5%, var\(--invitation-section-surface\)\)/s
+    );
+    expect(invitationUxPolishStyles).toMatch(
+      /\.photo-lightbox__caption-card > h2\s*\{[^}]*font-weight:\s*400;[^}]*line-height:\s*1\.35;/s
+    );
+    expect(invitationUxPolishStyles).toMatch(
+      /\.quick-invitation \.rsvp-form__section \.rsvp-segmented span\s*\{[^}]*min-height:\s*var\(--invitation-field-height\);[^}]*font-weight:\s*600;/s
+    );
+    expect(invitationUxPolishStyles).toMatch(
+      /\.quick-invitation :is\(\.rsvp-form__section, \.guestbook-compose, \.guestbook-owned\) \.field > :is\(input, textarea, select\)\s*\{[^}]*min-height:\s*var\(--invitation-field-height\);[^}]*font-weight:\s*500;/s
+    );
+  });
+
   it("tunes hero crops, editorial cards and guest sheets for small screens", () => {
     expect(invitationUxPolishStyles).toContain("--quick-hero-focal-x: 53%;");
     expect(invitationUxPolishStyles).toContain("object-position: var(--quick-hero-focal-x) var(--quick-hero-focal-y);");
