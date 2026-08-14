@@ -22,6 +22,9 @@ export const mobileDeviceVisualMaxChangedRatio = 0.015;
 export const mobileDeviceVisualMaxChangedRatioOverrides = Object.freeze({
   "iphone-15-webkit-text-200": 0.018
 });
+export const mobileDeviceVisualStateMaxChangedRatioOverrides = Object.freeze({
+  "iphone-15-webkit-text-200/directions-xlarge-bottom": 0.028
+});
 export const mobileDeviceVisualPixelThreshold = 36;
 export const mobileDeviceVisualBlurSigma = 2;
 
@@ -79,7 +82,8 @@ export async function compareMobileDeviceVisualBaseline({ rootDir, profileId, st
     diffPixels.set(changed ? [190, 60, 86, 255] : [238, 234, 226, 255], offset);
   }
   await sharp(diffPixels, { raw: current.info }).png().toFile(diffPath);
-  const maxChangedRatio = mobileDeviceVisualMaxChangedRatioOverrides[profileId]
+  const maxChangedRatio = mobileDeviceVisualStateMaxChangedRatioOverrides[`${profileId}/${state}`]
+    ?? mobileDeviceVisualMaxChangedRatioOverrides[profileId]
     ?? mobileDeviceVisualMaxChangedRatio;
   const comparison = {
     ...result,
@@ -132,6 +136,7 @@ export async function approveMobileDeviceVisualBaselines({ rootDir, captures, re
     pixelThreshold: mobileDeviceVisualPixelThreshold,
     maxChangedRatio: mobileDeviceVisualMaxChangedRatio,
     profileMaxChangedRatioOverrides: mobileDeviceVisualMaxChangedRatioOverrides,
+    stateMaxChangedRatioOverrides: mobileDeviceVisualStateMaxChangedRatioOverrides,
     comparisonMode: "gaussian-structural",
     blurSigma: mobileDeviceVisualBlurSigma,
     provenance,

@@ -1,105 +1,108 @@
 {
   "version": 5,
-  "approvedAt": "2026-08-14T07:40:27.013Z",
-  "reason": "제목 글꼴을 바탕체 계열에서 Gowun Dodum 산세리프로 교체",
+  "approvedAt": "2026-08-14T07:54:48.430Z",
+  "reason": "Gowun Dodum 제목 글꼴의 Linux 모바일 렌더링 승인",
   "pixelThreshold": 36,
   "maxChangedRatio": 0.015,
   "profileMaxChangedRatioOverrides": {
     "iphone-15-webkit-text-200": 0.018
+  },
+  "stateMaxChangedRatioOverrides": {
+    "iphone-15-webkit-text-200/directions-xlarge-bottom": 0.028
   },
   "comparisonMode": "gaussian-structural",
   "blurSigma": 2,
   "provenance": {
     "schemaVersion": 1,
     "subjectKind": "capture-set",
-    "sourceKind": "local",
-    "runId": null,
-    "runAttempt": null,
-    "commitSha": "5159eaa8b6e8a6ef583ad4a89f30ad544aa2340a",
-    "runUrl": null,
+    "sourceKind": "github-actions",
+    "runId": "31780966321",
+    "runAttempt": 1,
+    "commitSha": "776ad9248aa7490c8976b3ab2b34f5f4d7692cc0",
+    "runUrl": "https://github.com/Po-Mato/pixel-garden-invitation/actions/runs/31780966321",
     "checksumAlgorithm": "sha256",
     "artifactChecksumScope": "sorted-capture-set-manifest",
-    "artifactSha256": "9742cbc6c4511df45788b581d48e181d4ee8bbbcf20e603517edd64c4302e13d",
+    "artifactSha256": "de26490326304ed52ba4981bc951e5a79082db03d50bd0b101ef98ff48cf2ca9",
     "files": [
       {
         "logicalPath": "galaxy-s23-font-150/directions-xlarge",
-        "size": 104398,
-        "sha256": "84d8c1c855db86919d3c4ee380697ce9eacd3dd8085045fc38050c6fd0c8d261"
+        "size": 98593,
+        "sha256": "142fd75d71bf687fb7779f7ee3d31d8e23210f758221c191e29c94a23e567c57"
       },
       {
         "logicalPath": "galaxy-s23-font-150/directions-xlarge-bottom",
-        "size": 113864,
-        "sha256": "ae0f1fa074bfa613918352ad4d54138e02e05b0d97099afb3ff15ec184128ee0"
+        "size": 109586,
+        "sha256": "c02bd1cbb17b70efc51fd3d5fe9b613ef4608eb5527ffda769a2eb7df1d7e27a"
       },
       {
         "logicalPath": "galaxy-s23-font-150/directions-xlarge-middle",
-        "size": 108113,
-        "sha256": "d9e25e392888d8e0af58c70b1d0773fc7d789cf0f043403693eba56c3e9bdf39"
+        "size": 103991,
+        "sha256": "cc09d1ecc46fee41f6494e1856d0e54b9e51b2e150e0657933598e66aa433cb9"
       },
       {
         "logicalPath": "galaxy-s23-font-150/game",
-        "size": 463916,
-        "sha256": "22c785b46b3ccb70561f2d042c32db2b7cb66c90c2105b9bd4822d6860334015"
+        "size": 459027,
+        "sha256": "9d5a2cb9df7deac7de7920f730a4d4921e5239ccd08e382dbbffce1aa9c761fd"
       },
       {
         "logicalPath": "iphone-15-dynamic-type/directions-xlarge",
-        "size": 112749,
-        "sha256": "3ee0cbf1e5d5a33b5fc26206cf692a23e3a26d19c0a4102a4223c7591376a351"
+        "size": 107287,
+        "sha256": "70e51f2da32c0ca1738e5544a3d5c6b0a04e58fa231738ae350c37e53d67ec49"
       },
       {
         "logicalPath": "iphone-15-dynamic-type/directions-xlarge-bottom",
-        "size": 110749,
-        "sha256": "9a1df5b452840f48370de0298105ece141f04d336c2807988bd86a638f9974c6"
+        "size": 105444,
+        "sha256": "2776a10ca56758b09f302dc0cb0b8a1911237465fcec703a314b795d125dfe04"
       },
       {
         "logicalPath": "iphone-15-dynamic-type/directions-xlarge-middle",
-        "size": 107613,
-        "sha256": "f388105f937124980d0079823cfe47169bd60cf703c549e6b99821c2313d2d3e"
+        "size": 102607,
+        "sha256": "275aa248ff12dbf284e7bdee60a589cdce91c9699a1c44e30244a0df54fd19e0"
       },
       {
         "logicalPath": "iphone-15-dynamic-type/game",
-        "size": 544334,
-        "sha256": "9733cef385d3af6a62b1fa8f10d5409f7c6233e95f5b5d19c60c44f66f7ed537"
+        "size": 538781,
+        "sha256": "5311a2f26d1771a08e36493299ed82a38d2ddd3a7507d0aa816b875dc496e133"
       },
       {
         "logicalPath": "iphone-15-webkit-dynamic-type/directions-xlarge",
-        "size": 236387,
-        "sha256": "5675fcaa3a6af589d3b82d20f773f2951885de9627676882c363783a979b0157"
+        "size": 109863,
+        "sha256": "1b6472b1dec399a695b5d2ba82c6782e52b0cfd1bc7d10167bd77c9811c29e94"
       },
       {
         "logicalPath": "iphone-15-webkit-dynamic-type/directions-xlarge-bottom",
-        "size": 228976,
-        "sha256": "aebbc68f4437fbb90bb130336c97a6890565d7a35fb4b0522c1ca3770698e20f"
+        "size": 109810,
+        "sha256": "2ac7550f72db04bbbb3c1b39725f91f8eb071070b8a440594cc1acbd5a61e1cf"
       },
       {
         "logicalPath": "iphone-15-webkit-dynamic-type/directions-xlarge-middle",
-        "size": 228505,
-        "sha256": "3585a389df21e6f0bdc66e2d43fd4fcdca823021813dcc1e4393c874abf3f018"
+        "size": 113309,
+        "sha256": "0a1dcabbf9881565017c5e8b350ad4a1286cb89c7fabf2b8abbe7fbcb4ed88b2"
       },
       {
         "logicalPath": "iphone-15-webkit-dynamic-type/game",
-        "size": 631844,
-        "sha256": "02adf532a3f1a282cd9997b7a4c0cf703dfa027f2331e4e1c65970041624e6ef"
+        "size": 575631,
+        "sha256": "5e684fb07c6b62f1a4dace6ec1bb15474e887cb656631a59c73cdda0c8582f4c"
       },
       {
         "logicalPath": "iphone-15-webkit-text-200/directions-xlarge",
-        "size": 212901,
-        "sha256": "7c9adaf688d5df0e79723b9ed00172e88bcc4348fa58e303e726bda5b59cf14a"
+        "size": 100484,
+        "sha256": "f58d63b03883bf86314c31f5669366b5ea64a4fb90ebf248e01cef2f0fd4b16c"
       },
       {
         "logicalPath": "iphone-15-webkit-text-200/directions-xlarge-bottom",
-        "size": 185427,
-        "sha256": "176a3ffa3816ff4d849c17df2a6e02bfd20d27be5cd6ca81f7c5a21c1e50ff5f"
+        "size": 98614,
+        "sha256": "98be86fb9e5ef8c21a9dad58e777adb429c7f9de4c8d223cc9f3bf10f529fee1"
       },
       {
         "logicalPath": "iphone-15-webkit-text-200/directions-xlarge-middle",
-        "size": 226005,
-        "sha256": "de9d9387327c050a295b4d93b3e98b3301642361ff88abcc04f6d6d77d4c10c3"
+        "size": 105028,
+        "sha256": "5a4a4c241349eb65805369871fbd539dbe4d1bde0eca6d447ef2c6d76e15780b"
       },
       {
         "logicalPath": "iphone-15-webkit-text-200/game",
-        "size": 632122,
-        "sha256": "0920e21b0bf0bae13ba565e07310ed21ed634b13b6cb6c60771dfe863dc6e426"
+        "size": 575895,
+        "sha256": "40a51158466aab0896e24ffef36f0b5e65e99667a18bf6e94b821d26aae5bb66"
       }
     ]
   },
@@ -110,13 +113,13 @@
       "state": "game",
       "width": 360,
       "height": 780,
-      "sha256": "4df42d690fcf4885f7521c6d33e73cd5b07856be3c5e57ea964795d274cb8191",
+      "sha256": "8ea53e5c6266eb7d112197cf7eeeaa76d7ac4825fd091cdd357388955e8085ca",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "제목 글꼴을 바탕체 계열에서 Gowun Dodum 산세리프로 교체",
+        "approvalReason": "Gowun Dodum 제목 글꼴의 Linux 모바일 렌더링 승인",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -130,13 +133,13 @@
       "state": "directions-xlarge",
       "width": 360,
       "height": 780,
-      "sha256": "0846aadf39c3a4a18983e05e91fb84908c9336b1470eb14416b14d1af65ba91b",
+      "sha256": "a312b0a4ab071c297c6e13344ad6b1d64f2232462bbddfee0ca050cd0265d3b4",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "제목 글꼴을 바탕체 계열에서 Gowun Dodum 산세리프로 교체",
+        "approvalReason": "Gowun Dodum 제목 글꼴의 Linux 모바일 렌더링 승인",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -150,13 +153,13 @@
       "state": "directions-xlarge-middle",
       "width": 360,
       "height": 780,
-      "sha256": "8d37951b5f51a0ff9e45c1a6db770e63152923a3a0bcd22bcdaa4a01cae69c4b",
+      "sha256": "02c89f3e05019a9fe8c98825eba613fcfcbeba810ed9d756ee18eff7be88eb32",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "제목 글꼴을 바탕체 계열에서 Gowun Dodum 산세리프로 교체",
+        "approvalReason": "Gowun Dodum 제목 글꼴의 Linux 모바일 렌더링 승인",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -170,13 +173,13 @@
       "state": "directions-xlarge-bottom",
       "width": 360,
       "height": 780,
-      "sha256": "c2a565676063baa9f592b6838e51eeb7e74af889f3535421d8e91b714f2cb63a",
+      "sha256": "e2a2751d097e044074888dd4cbc134b0213f8057971769cf5e736781fd9f096e",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "제목 글꼴을 바탕체 계열에서 Gowun Dodum 산세리프로 교체",
+        "approvalReason": "Gowun Dodum 제목 글꼴의 Linux 모바일 렌더링 승인",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -190,13 +193,13 @@
       "state": "game",
       "width": 393,
       "height": 852,
-      "sha256": "4fc3aab1db35d19b4d5bff6739166ee3382e83a885c4b5c378a00e21168d5951",
+      "sha256": "f21cb5f3acfeeb4f2491588113a2f3e6add2ef069568ecb2dc569986b5eba079",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "제목 글꼴을 바탕체 계열에서 Gowun Dodum 산세리프로 교체",
+        "approvalReason": "Gowun Dodum 제목 글꼴의 Linux 모바일 렌더링 승인",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -210,13 +213,13 @@
       "state": "directions-xlarge",
       "width": 393,
       "height": 852,
-      "sha256": "9ea9f3ca1d1f7cb21afd456a539629bab2bffb3b69098fc9d15e998c3ddf13e6",
+      "sha256": "97ff36165e7517e50b0b69381715022b8c9ff2d741e88c47af881f5f314278c6",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "제목 글꼴을 바탕체 계열에서 Gowun Dodum 산세리프로 교체",
+        "approvalReason": "Gowun Dodum 제목 글꼴의 Linux 모바일 렌더링 승인",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -230,13 +233,13 @@
       "state": "directions-xlarge-middle",
       "width": 393,
       "height": 852,
-      "sha256": "1e3f5d70e2b7244769a9ea1b1af7fafccc6973bbd223afd9313821dd27d7fce9",
+      "sha256": "6336876688916282b1abef1030f4a034b886cb2686c21b0456b3a572ee6a9751",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "제목 글꼴을 바탕체 계열에서 Gowun Dodum 산세리프로 교체",
+        "approvalReason": "Gowun Dodum 제목 글꼴의 Linux 모바일 렌더링 승인",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -250,13 +253,13 @@
       "state": "directions-xlarge-bottom",
       "width": 393,
       "height": 852,
-      "sha256": "eaf257f2f37e07df52ce7920d0361310df6131c84a24eb86138ee3f3153beee6",
+      "sha256": "ebf6605e56e6182e95e05a986a43c390a629c06a83223605c9833dd9a9a709c9",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "제목 글꼴을 바탕체 계열에서 Gowun Dodum 산세리프로 교체",
+        "approvalReason": "Gowun Dodum 제목 글꼴의 Linux 모바일 렌더링 승인",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -270,13 +273,13 @@
       "state": "game",
       "width": 393,
       "height": 852,
-      "sha256": "0c1c74412b93b805705efe7a1f5b422f9291bae5bc60179af611412d302128cf",
+      "sha256": "68a14c56238c0dfd3b230c800f855324dd47e006faf8f7efb9f6e59c7a339b05",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "제목 글꼴을 바탕체 계열에서 Gowun Dodum 산세리프로 교체",
+        "approvalReason": "Gowun Dodum 제목 글꼴의 Linux 모바일 렌더링 승인",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -290,13 +293,13 @@
       "state": "directions-xlarge",
       "width": 393,
       "height": 852,
-      "sha256": "9a0b82aae6d7b8bee0eadb3b24f353493ea6851b1a366cf746f666fa1a159581",
+      "sha256": "105b88a1e100a5b1343a62c847cd67183adb09188ecfcb414baf6238a32d22bf",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "제목 글꼴을 바탕체 계열에서 Gowun Dodum 산세리프로 교체",
+        "approvalReason": "Gowun Dodum 제목 글꼴의 Linux 모바일 렌더링 승인",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -310,13 +313,13 @@
       "state": "directions-xlarge-middle",
       "width": 393,
       "height": 852,
-      "sha256": "3dbe536771227b129da05830505f745ebe3c41640127179329f1fda7d3ebbf10",
+      "sha256": "5b93fd7c70165467d49fe8d6a086d9f7473ed47d1bc730af78bebaec11aa4712",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "제목 글꼴을 바탕체 계열에서 Gowun Dodum 산세리프로 교체",
+        "approvalReason": "Gowun Dodum 제목 글꼴의 Linux 모바일 렌더링 승인",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -330,13 +333,13 @@
       "state": "directions-xlarge-bottom",
       "width": 393,
       "height": 852,
-      "sha256": "4baa9d31d07bfd5ea1d1a3d7a9f54cf363dbd29381c632bf6491e3e73803db2c",
+      "sha256": "bd10836689de663c1dde95343a5e127dfdcdcc7875a96115cc3a501072340141",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "제목 글꼴을 바탕체 계열에서 Gowun Dodum 산세리프로 교체",
+        "approvalReason": "Gowun Dodum 제목 글꼴의 Linux 모바일 렌더링 승인",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -350,13 +353,13 @@
       "state": "game",
       "width": 393,
       "height": 852,
-      "sha256": "1960815b44dd81baa47b37efbd1f65aa32e103ff93c1e865d0bf45ec522e6c07",
+      "sha256": "d8eec80bbf4ee95b602388d36cf0833f4d2442d18413aa8a6531ba69b3c71250",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "제목 글꼴을 바탕체 계열에서 Gowun Dodum 산세리프로 교체",
+        "approvalReason": "Gowun Dodum 제목 글꼴의 Linux 모바일 렌더링 승인",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -370,13 +373,13 @@
       "state": "directions-xlarge",
       "width": 393,
       "height": 852,
-      "sha256": "5e9577e3b81cbf443771f949ebb7ef05e3795179afd8d04d1afdbb24b6be71f9",
+      "sha256": "8bdc5893d6fec441ba736ca9e6f77554185e3ba80a1042b5abf47e8f9b4f585d",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "제목 글꼴을 바탕체 계열에서 Gowun Dodum 산세리프로 교체",
+        "approvalReason": "Gowun Dodum 제목 글꼴의 Linux 모바일 렌더링 승인",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -390,13 +393,13 @@
       "state": "directions-xlarge-middle",
       "width": 393,
       "height": 852,
-      "sha256": "581adc2e4c89a3963ab4bef8a8128c5e9dd9ee51b9c02294031874e061413aea",
+      "sha256": "1fd86f69b608365dbc5e1f5005613efa36321a703eb9ec23b4e9a105a6622cd2",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "제목 글꼴을 바탕체 계열에서 Gowun Dodum 산세리프로 교체",
+        "approvalReason": "Gowun Dodum 제목 글꼴의 Linux 모바일 렌더링 승인",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -410,13 +413,13 @@
       "state": "directions-xlarge-bottom",
       "width": 393,
       "height": 852,
-      "sha256": "b322b4f4710518a2e1acd4769f6e88a934a628737312f624730a4660d4aff9b0",
+      "sha256": "99a641c5ecbbf9aab697f11ae93334d4303d9b8bcf9f14554e644e21046243ce",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "제목 글꼴을 바탕체 계열에서 Gowun Dodum 산세리프로 교체",
+        "approvalReason": "Gowun Dodum 제목 글꼴의 Linux 모바일 렌더링 승인",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,

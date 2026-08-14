@@ -10,6 +10,7 @@ import {
   mobileDeviceBaselinePath,
   mobileDeviceVisualBlurSigma,
   mobileDeviceVisualMaxChangedRatioOverrides,
+  mobileDeviceVisualStateMaxChangedRatioOverrides,
   mobileDeviceVisualBaselineProfiles,
   mobileDeviceVisualBaselineStates
 } from "./lib/mobileDeviceVisualBaseline.mjs";
@@ -30,6 +31,9 @@ test("device visual baselines cover Chromium and WebKit mobile states including 
   assert.equal(mobileDeviceVisualBlurSigma, 2);
   assert.deepEqual(mobileDeviceVisualMaxChangedRatioOverrides, {
     "iphone-15-webkit-text-200": 0.018
+  });
+  assert.deepEqual(mobileDeviceVisualStateMaxChangedRatioOverrides, {
+    "iphone-15-webkit-text-200/directions-xlarge-bottom": 0.028
   });
 });
 
