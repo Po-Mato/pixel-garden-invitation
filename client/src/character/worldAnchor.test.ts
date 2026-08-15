@@ -14,7 +14,7 @@ describe("월드 캐릭터 시각 중심", () => {
       expect(anchor.presetId).toBe(preset.id);
       expect(anchor.centerOffsetX).toBeGreaterThanOrEqual(0);
       expect(anchor.centerOffsetX).toBeLessThanOrEqual(0.25);
-      expect(anchor.centerY).toBe(34.75);
+      expect([34.5, 34.75]).toContain(anchor.centerY);
       expect(anchor.feetY).toBe(66.5);
     }
   });
@@ -38,7 +38,7 @@ describe("월드 캐릭터 시각 중심", () => {
     });
     expect(worldCharacterAnchorStyle({ presetId: "missing" }, 2)).toEqual({
       "--character-world-anchor-offset-x": "0px",
-      "--character-world-anchor-y": "35px"
+      "--character-world-anchor-y": "34.5px"
     });
   });
 });
