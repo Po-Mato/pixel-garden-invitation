@@ -106,13 +106,17 @@ it("선택 목록 썸네일은 고해상도 원본을 48x72로 표시한다", ()
   const sprite = screen.getByLabelText("목록 하객");
   expect(sprite).not.toHaveClass("character-sprite--world");
   expect(sprite).toHaveStyle({
-    "--character-source-width": "96px",
-    "--character-source-height": "144px",
+    "--character-source-width": "192px",
+    "--character-source-height": "288px",
     "--character-display-width": "48px",
     "--character-display-height": "72px",
-    "--character-display-scale-x": "0.5",
-    "--character-display-scale-y": "0.5"
+    "--character-display-scale-x": "0.25",
+    "--character-display-scale-y": "0.25"
   });
+  expect(sprite.querySelector("img")).toHaveAttribute(
+    "src",
+    expect.stringContaining("/guests/preview/feminine-long-wave-dress__idle.png")
+  );
 });
 
 it("선택한 프리셋 이미지 로드 실패 시 기본 캐릭터로 대체한다", () => {
