@@ -9,9 +9,9 @@
     "maxCharacterEdgeContrastDelta": 0.15
   },
   "displayTypography": {
-    "display-copy-weight": 600,
-    "display-title-weight": 650,
-    "display-label-weight": 750
+    "display-copy-weight": 500,
+    "display-title-weight": 400,
+    "display-label-weight": 600
   },
   "zones": {
     "banquet": {

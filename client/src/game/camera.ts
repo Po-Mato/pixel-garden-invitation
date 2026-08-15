@@ -48,6 +48,10 @@ export function computeCameraTransform(input: CameraInput): CameraTransform {
   };
 }
 
+export function cameraTransformCss(camera: CameraTransform): string {
+  return `translate3d(${camera.x}px, ${camera.y}px, 0) scale(${camera.zoom})`;
+}
+
 export function screenToWorld(input: ScreenToWorldInput): Point {
   const zoom = positiveOr(input.camera.zoom, 1);
   return {

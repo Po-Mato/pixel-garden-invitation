@@ -23,7 +23,33 @@
 }
 
 .game-world .world-hud[data-density="route"] .world-destination-guide {
-  min-height: 38px;
+  min-height: 34px;
+}
+
+.game-world .world-hud[data-density="route"] .world-destination-guide,
+.game-world .world-hud[data-density="moving"] .world-destination-guide,
+.game-world .world-hud[data-density="context"] .world-destination-guide {
+  grid-template-columns: 22px minmax(0, 1fr) 14px;
+  gap: 4px;
+  padding: 3px 5px;
+}
+
+.game-world .world-hud[data-density="route"] .world-destination-guide > svg:first-child,
+.game-world .world-hud[data-density="moving"] .world-destination-guide > svg:first-child,
+.game-world .world-hud[data-density="context"] .world-destination-guide > svg:first-child {
+  width: 22px;
+  height: 22px;
+  padding: 4px;
+}
+
+.game-world .world-hud[data-density="route"] .world-destination-guide strong,
+.game-world .world-hud[data-density="moving"] .world-destination-guide strong,
+.game-world .world-hud[data-density="context"] .world-destination-guide strong {
+  font-size: 10px;
+}
+
+.game-world .world-hud[data-density="moving"] .world-destination-guide small {
+  display: none;
 }
 
 .game-world .world-hud[data-density="moving"] {
