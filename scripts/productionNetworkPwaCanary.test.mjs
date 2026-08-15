@@ -8,6 +8,7 @@ import {
   mergeProductionNetworkPwaTrendRuns,
   parseServiceWorkerVersion,
   productionNetworkPwaTrendSample,
+  retryProductionPwaPreparation,
   slow4gNetworkProfile,
   waitForPublicPrecacheAvailability,
   waitForServiceWorkerVersion
@@ -36,6 +37,38 @@ test("production network canary defines a deterministic slow 4G profile", () => 
   assert.equal(slow4gNetworkProfile.latency, 150);
   assert.equal(slow4gNetworkProfile.downloadThroughput, 200_000);
   assert.equal(slow4gNetworkProfile.connectionType, "cellular4g");
+});
+
+test("production PWA preparation retries one transient service worker install failure", async () => {
+  const recoveries = [];
+  const snapshots = [
+    { controlled: false, complete: false, obsoleteRemoved: true, missingPaths: ["./index.html"] },
+    { controlled: true, complete: true, obsoleteRemoved: true, missingPaths: [] }
+  ];
+  const result = await retryProductionPwaPreparation({
+    probe: async () => snapshots.shift(),
+    recover: async (snapshot, attempt) => recoveries.push({ snapshot, attempt })
+  });
+
+  assert.equal(result.cache.controlled, true);
+  assert.equal(result.snapshots.length, 2);
+  assert.equal(recoveries.length, 1);
+  assert.equal(recoveries[0].attempt, 1);
+});
+
+test("production PWA preparation remains blocking after both bounded attempts fail", async () => {
+  let probes = 0;
+  const result = await retryProductionPwaPreparation({
+    probe: async () => {
+      probes += 1;
+      return { controlled: probes > 1, complete: false, obsoleteRemoved: true, missingPaths: ["./missing.js"] };
+    },
+    recover: async () => undefined
+  });
+
+  assert.equal(probes, 2);
+  assert.equal(result.cache.complete, false);
+  assert.deepEqual(result.cache.missingPaths, ["./missing.js"]);
 });
 
 test("service worker readiness waits for the exact deployment SHA", async () => {
