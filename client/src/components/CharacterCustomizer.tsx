@@ -6,7 +6,7 @@ import {
   type Direction
 } from "@wedding-game/shared";
 import { Pause, Play, RotateCcw, RotateCw, Shuffle } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
 import {
   randomizeAppearance,
   updateAppearance
@@ -26,6 +26,24 @@ const previewDirectionLabels: Record<Direction, string> = {
   left: "왼쪽"
 };
 const previewWalkFrames = [0, 1, 2, 1] as const;
+export const characterPreviewHintStorageKey = "wedding-garden:character-preview-hint-seen:v1";
+
+function shouldShowPreviewHint(): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    return window.localStorage.getItem(characterPreviewHintStorageKey) !== "true";
+  } catch {
+    return true;
+  }
+}
+
+function rememberPreviewHint(): void {
+  try {
+    window.localStorage.setItem(characterPreviewHintStorageKey, "true");
+  } catch {
+    // The hint still disappears for this visit when storage is unavailable.
+  }
+}
 
 export function CharacterCustomizer({ value, onChange }: Props) {
   const selectedPreset = resolveGuestPreset(value);
@@ -33,6 +51,25 @@ export function CharacterCustomizer({ value, onChange }: Props) {
   const [previewDirection, setPreviewDirection] = useState<Direction>("down");
   const [previewWalking, setPreviewWalking] = useState(true);
   const [previewFrameIndex, setPreviewFrameIndex] = useState(0);
+  const [previewHintVisible, setPreviewHintVisible] = useState(shouldShowPreviewHint);
+  const previewPointerRef = useRef<{ id: number; x: number; y: number } | null>(null);
+
+  const dismissPreviewHint = useCallback(() => setPreviewHintVisible(false), []);
+  const selectPreviewDirection = useCallback((nextDirection: Direction) => {
+    setPreviewDirection(nextDirection);
+    setPreviewFrameIndex(0);
+    dismissPreviewHint();
+  }, [dismissPreviewHint]);
+  const rotatePreview = useCallback((step: 1 | -1) => {
+    setPreviewDirection((current) => {
+      const nextIndex = (
+        previewDirections.indexOf(current) + step + previewDirections.length
+      ) % previewDirections.length;
+      return previewDirections[nextIndex];
+    });
+    setPreviewFrameIndex(0);
+    dismissPreviewHint();
+  }, [dismissPreviewHint]);
 
   useEffect(() => {
     if (!previewWalking) return;
@@ -46,6 +83,32 @@ export function CharacterCustomizer({ value, onChange }: Props) {
     selectedOptionRef.current?.scrollIntoView?.({ block: "nearest", inline: "center" });
   }, [selectedPreset.id]);
 
+  useEffect(() => {
+    if (!previewHintVisible) return;
+    rememberPreviewHint();
+    const timer = window.setTimeout(() => setPreviewHintVisible(false), 4200);
+    return () => window.clearTimeout(timer);
+  }, [previewHintVisible]);
+
+  const beginPreviewSwipe = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (event.pointerType === "mouse" && event.button !== 0) return;
+    previewPointerRef.current = { id: event.pointerId, x: event.clientX, y: event.clientY };
+    event.currentTarget.setPointerCapture?.(event.pointerId);
+  };
+
+  const finishPreviewSwipe = (event: ReactPointerEvent<HTMLDivElement>) => {
+    const start = previewPointerRef.current;
+    previewPointerRef.current = null;
+    if (event.currentTarget.hasPointerCapture?.(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+    if (!start || start.id !== event.pointerId) return;
+    const deltaX = event.clientX - start.x;
+    const deltaY = event.clientY - start.y;
+    if (Math.abs(deltaX) < 34 || Math.abs(deltaX) <= Math.abs(deltaY) * 1.15) return;
+    rotatePreview(deltaX < 0 ? 1 : -1);
+  };
+
   return (
     <section className="character-customizer" aria-label="하객 캐릭터 선택">
       <div className="character-customizer__preview">
@@ -56,7 +119,13 @@ export function CharacterCustomizer({ value, onChange }: Props) {
           <span className="character-customizer__flowers character-customizer__flowers--right" />
         </div>
         <div className="character-customizer__halo" aria-hidden="true" />
-        <div className="character-customizer__sprite">
+        <div
+          className="character-customizer__sprite"
+          data-swipe-ready="true"
+          onPointerDown={beginPreviewSwipe}
+          onPointerUp={finishPreviewSwipe}
+          onPointerCancel={() => { previewPointerRef.current = null; }}
+        >
           <CharacterSprite
             appearance={value}
             direction={previewDirection}
@@ -72,16 +141,27 @@ export function CharacterCustomizer({ value, onChange }: Props) {
             {previewDirectionLabels[previewDirection]} · {previewWalking ? "보행 중" : "정지"}
           </span>
         </div>
+        <div className="character-customizer__direction-dots" role="group" aria-label="캐릭터 방향 선택">
+          {previewDirections.map((direction) => (
+            <button
+              key={direction}
+              type="button"
+              aria-label={`${previewDirectionLabels[direction]} 보기`}
+              aria-pressed={previewDirection === direction}
+              onClick={() => selectPreviewDirection(direction)}
+            />
+          ))}
+        </div>
+        {previewHintVisible ? (
+          <p className="character-customizer__preview-hint" role="status">
+            회전·보행 확인 가능
+          </p>
+        ) : null}
         <div className="character-customizer__preview-controls" role="group" aria-label="캐릭터 보행 미리보기">
           <button
             type="button"
             aria-label={`캐릭터 회전, 현재 ${previewDirectionLabels[previewDirection]}`}
-            onClick={() => {
-              setPreviewDirection((current) => (
-                previewDirections[(previewDirections.indexOf(current) + 1) % previewDirections.length]
-              ));
-              if (previewWalking) setPreviewFrameIndex(0);
-            }}
+            onClick={() => rotatePreview(1)}
           >
             <RotateCw aria-hidden="true" />
             <span>회전</span>
@@ -94,6 +174,7 @@ export function CharacterCustomizer({ value, onChange }: Props) {
             onClick={() => {
               setPreviewWalking((current) => !current);
               setPreviewFrameIndex(previewWalking ? 1 : 0);
+              dismissPreviewHint();
             }}
           >
             {previewWalking ? <Pause aria-hidden="true" /> : <Play aria-hidden="true" />}

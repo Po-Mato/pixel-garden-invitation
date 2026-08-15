@@ -152,6 +152,18 @@ describe("entry screen layout", () => {
     expect(weddingLuxeStyles).toMatch(/\.customizer-option\s*\{[^}]*font-weight:\s*600;/s);
   });
 
+  it("adds swipe direction feedback without covering the character preview", () => {
+    expect(weddingLuxeStyles).toMatch(/\.character-customizer__sprite\[data-swipe-ready="true"\]\s*\{[^}]*touch-action:\s*pan-y;/s);
+    expect(weddingLuxeStyles).toMatch(/\.character-customizer__direction-dots button\s*\{[^}]*min-width:\s*24px;[^}]*min-height:\s*24px;/s);
+    expect(weddingLuxeStyles).toMatch(/\.character-customizer__preview-hint\s*\{[^}]*pointer-events:\s*none;/s);
+  });
+
+  it("collapses world labels while walking and reveals clamped camera edges", () => {
+    expect(refinedGameStyles).toMatch(/data-label-density="compact"[^}]*\.world-spot__card\s*\{[^}]*width:\s*30px;[^}]*min-height:\s*30px;/s);
+    expect(refinedGameStyles).toContain('[data-camera-edges~="left"] .world-camera-edge-cue--left');
+    expect(refinedGameStyles).toMatch(/data-camera-edges\]\[data-label-density="compact"\][^{]*\.world-camera-edge-status\s*\{[^}]*opacity:\s*1;/s);
+  });
+
   it("keeps Korean preset names readable in at most two lines", () => {
     const labelRule = styles.match(/\.customizer-option__label\s*\{([^}]*)}/s)?.[1] ?? "";
 

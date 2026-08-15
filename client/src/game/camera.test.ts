@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { cameraTransformCss, computeCameraTransform, screenToWorld, snapCameraViewport } from "./camera";
+import {
+  cameraClampedEdges,
+  cameraTransformCss,
+  computeCameraTransform,
+  screenToWorld,
+  snapCameraViewport
+} from "./camera";
 
 describe("tracking camera", () => {
   it("snaps fractional layout measurements to a stable CSS-pixel viewport", () => {
@@ -172,5 +178,31 @@ describe("tracking camera", () => {
   it("serializes the snapped camera without fractional transform drift", () => {
     expect(cameraTransformCss({ x: -120, y: -940, zoom: 1 }))
       .toBe("translate3d(-120px, -940px, 0) scale(1)");
+  });
+
+  it("reports only the map edges that prevent exact player centering", () => {
+    expect(cameraClampedEdges(
+      { x: 0, y: -940, zoom: 1 },
+      { width: 390, height: 520 },
+      { width: 780, height: 1920 }
+    )).toEqual(["left"]);
+    expect(cameraClampedEdges(
+      { x: -390, y: -1400, zoom: 1 },
+      { width: 390, height: 520 },
+      { width: 780, height: 1920 }
+    )).toEqual(["right", "bottom"]);
+    expect(cameraClampedEdges(
+      { x: -120, y: -940, zoom: 1 },
+      { width: 390, height: 520 },
+      { width: 780, height: 1920 }
+    )).toEqual([]);
+  });
+
+  it("does not mark an axis whose map already fits inside the viewport", () => {
+    expect(cameraClampedEdges(
+      { x: 75, y: 110, zoom: 1 },
+      { width: 390, height: 520 },
+      { width: 240, height: 300 }
+    )).toEqual([]);
   });
 });

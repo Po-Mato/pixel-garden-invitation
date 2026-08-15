@@ -1,11 +1,26 @@
 import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { defaultCharacterAppearance } from "@wedding-game/shared";
-import { afterEach, expect, it, vi } from "vitest";
-import { CharacterCustomizer } from "./CharacterCustomizer";
+import { afterEach, beforeEach, expect, it, vi } from "vitest";
+import { CharacterCustomizer, characterPreviewHintStorageKey } from "./CharacterCustomizer";
+
+beforeEach(() => {
+  const localValues = new Map<string, string>();
+  vi.stubGlobal("localStorage", {
+    getItem: (key: string) => localValues.get(key) ?? null,
+    setItem: (key: string, value: string) => { localValues.set(key, value); },
+    removeItem: (key: string) => { localValues.delete(key); },
+    clear: () => { localValues.clear(); },
+    key: (index: number) => [...localValues.keys()][index] ?? null,
+    get length() { return localValues.size; }
+  });
+  vi.stubGlobal("PointerEvent", MouseEvent);
+});
 
 afterEach(() => {
   cleanup();
+  window.localStorage.removeItem(characterPreviewHintStorageKey);
   vi.useRealTimers();
+  vi.unstubAllGlobals();
 });
 
 it("선택된 완성 하객 캐릭터 미리보기와 카드 목록을 보여준다", () => {
@@ -46,6 +61,38 @@ it("네 방향 회전과 보행 재생·정지 상태를 미리 볼 수 있다",
   expect(preview).toHaveAttribute("data-moving", "false");
   expect(preview).toHaveAttribute("data-walk-frame", "1");
   expect(screen.getByRole("button", { name: "보행 애니메이션 재생" })).toHaveAttribute("aria-pressed", "false");
+});
+
+it("캐릭터를 좌우로 밀거나 방향 점을 눌러 원하는 면을 바로 확인한다", () => {
+  render(<CharacterCustomizer value={defaultCharacterAppearance} onChange={vi.fn()} />);
+  const preview = screen.getByRole("img", { name: "선택한 하객 캐릭터" });
+  const swipeSurface = preview.parentElement as HTMLElement;
+
+  fireEvent.pointerDown(swipeSurface, { pointerId: 1, pointerType: "touch", clientX: 180, clientY: 160 });
+  fireEvent.pointerUp(swipeSurface, { pointerId: 1, pointerType: "touch", clientX: 118, clientY: 164 });
+  expect(preview).toHaveAttribute("data-direction", "right");
+
+  fireEvent.pointerDown(swipeSurface, { pointerId: 2, pointerType: "touch", clientX: 110, clientY: 160 });
+  fireEvent.pointerUp(swipeSurface, { pointerId: 2, pointerType: "touch", clientX: 176, clientY: 164 });
+  expect(preview).toHaveAttribute("data-direction", "down");
+
+  fireEvent.click(screen.getByRole("button", { name: "뒷면 보기" }));
+  expect(preview).toHaveAttribute("data-direction", "up");
+  expect(screen.getByRole("button", { name: "뒷면 보기" })).toHaveAttribute("aria-pressed", "true");
+});
+
+it("회전·보행 안내는 최초 한 번만 잠시 보여준다", () => {
+  vi.useFakeTimers();
+  const first = render(<CharacterCustomizer value={defaultCharacterAppearance} onChange={vi.fn()} />);
+
+  expect(screen.getByRole("status")).toHaveTextContent("회전·보행 확인 가능");
+  expect(window.localStorage.getItem(characterPreviewHintStorageKey)).toBe("true");
+  act(() => vi.advanceTimersByTime(4200));
+  expect(screen.queryByText("회전·보행 확인 가능")).not.toBeInTheDocument();
+
+  first.unmount();
+  render(<CharacterCustomizer value={defaultCharacterAppearance} onChange={vi.fn()} />);
+  expect(screen.queryByText("회전·보행 확인 가능")).not.toBeInTheDocument();
 });
 
 it("완성 캐릭터 카드를 선택하면 presetId를 변경한다", () => {

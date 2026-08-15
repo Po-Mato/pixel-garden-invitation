@@ -432,6 +432,13 @@
   white-space: nowrap;
 }
 
+.world-spot__motion-icon {
+  display: none;
+  width: 15px;
+  height: 15px;
+  color: var(--spot-edge);
+}
+
 .world-spot:active {
   transform: none;
   box-shadow: none;
@@ -490,6 +497,162 @@
   outline: 2px solid #fff8cf;
   outline-offset: 2px;
   box-shadow: 0 0 0 5px rgba(113, 62, 74, 0.72), 0 5px 14px color-mix(in srgb, var(--spot-edge) 22%, transparent);
+}
+
+/* Sustained walking clears the artwork around the player without shrinking the
+   actual touch targets. Labels return as soon as movement settles. */
+.world-map[data-label-density="compact"] .world-spot__card {
+  width: 30px;
+  min-height: 30px;
+  height: 30px;
+  gap: 0;
+  border-radius: 50%;
+  padding: 0;
+  opacity: 0.88;
+  transform: scale(0.88);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    0 3px 9px color-mix(in srgb, var(--spot-edge) 16%, transparent);
+}
+
+.world-map[data-label-density="compact"] .world-spot__card::before {
+  top: 3px;
+  left: 50%;
+  width: 9px;
+  height: 1px;
+  transform: translateX(-50%);
+}
+
+.world-map[data-label-density="compact"] .world-spot__card > :is(strong, small) {
+  display: none;
+}
+
+.world-map[data-label-density="compact"] .world-spot__motion-icon {
+  display: block;
+}
+
+.world-map[data-label-density="compact"] .world-spot[data-proximity="mid"] .world-spot__card {
+  opacity: 0.62;
+  transform: scale(0.76);
+}
+
+.world-map[data-label-density="compact"] .world-spot[data-proximity="far"] .world-spot__card {
+  opacity: 0.34;
+  transform: scale(0.66);
+}
+
+.world-map[data-label-density="compact"]
+  .world-spot[data-label-visibility="quiet"]:not(.world-spot--target, .world-spot--recommended, :focus-visible)
+  .world-spot__card {
+  opacity: 0.3;
+  transform: scale(0.62);
+}
+
+.world-map[data-label-density="compact"]
+  .world-spot:is(.world-spot--target, .world-spot--recommended, :focus-visible)
+  .world-spot__card {
+  opacity: 1;
+  transform: scale(0.94);
+}
+
+.world-camera-edge-cues {
+  position: absolute;
+  inset: 0;
+  z-index: 8;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.world-camera-edge-cue {
+  position: absolute;
+  opacity: 0;
+  transition: opacity 180ms ease;
+}
+
+.world-camera-edge-cue--left,
+.world-camera-edge-cue--right {
+  top: 0;
+  bottom: 0;
+  width: 16px;
+}
+
+.world-camera-edge-cue--top,
+.world-camera-edge-cue--bottom {
+  right: 0;
+  left: 0;
+  height: 16px;
+}
+
+.world-camera-edge-cue--left {
+  left: 0;
+  background: linear-gradient(90deg, rgba(78, 96, 81, 0.32), transparent);
+}
+
+.world-camera-edge-cue--right {
+  right: 0;
+  background: linear-gradient(270deg, rgba(78, 96, 81, 0.32), transparent);
+}
+
+.world-camera-edge-cue--top {
+  top: 0;
+  background: linear-gradient(180deg, rgba(78, 96, 81, 0.28), transparent);
+}
+
+.world-camera-edge-cue--bottom {
+  bottom: 0;
+  background: linear-gradient(0deg, rgba(78, 96, 81, 0.34), transparent);
+}
+
+.world-map[data-camera-edges~="left"] .world-camera-edge-cue--left,
+.world-map[data-camera-edges~="right"] .world-camera-edge-cue--right,
+.world-map[data-camera-edges~="top"] .world-camera-edge-cue--top,
+.world-map[data-camera-edges~="bottom"] .world-camera-edge-cue--bottom {
+  opacity: 1;
+}
+
+.world-camera-edge-status {
+  position: absolute;
+  top: 66px;
+  right: max(9px, env(safe-area-inset-right));
+  display: inline-flex;
+  min-height: 22px;
+  align-items: center;
+  gap: 3px;
+  border: 1px solid rgba(80, 95, 82, 0.25);
+  border-radius: 999px;
+  padding: 3px 7px;
+  background: rgba(255, 253, 246, 0.84);
+  color: #665c58;
+  box-shadow: 0 3px 9px rgba(48, 42, 39, 0.1);
+  font-size: 7px;
+  font-weight: 600;
+  opacity: 0;
+  transform: translateY(-3px);
+  transition: opacity 160ms ease, transform 160ms ease;
+}
+
+.world-camera-edge-status svg {
+  width: 11px;
+  height: 11px;
+  color: var(--game-wine);
+}
+
+.world-map[data-camera-edges][data-label-density="compact"] .world-camera-edge-status {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.world-map[data-camera-edges] .world-minimap {
+  outline: 1px solid rgba(255, 252, 231, 0.66);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .world-camera-edge-cue,
+  .world-camera-edge-status,
+  .world-map[data-label-density="compact"] .world-spot__card {
+    transition: none;
+  }
 }
 
 .world-menu-backdrop {

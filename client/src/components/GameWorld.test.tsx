@@ -3203,4 +3203,24 @@ describe("GameWorld", () => {
     fireEvent.keyUp(joystick, { key: "ArrowRight" });
     expect(sprite).not.toHaveClass("character-sprite--idle-front");
   });
+
+  it("collapses spot labels only during sustained movement and restores them on stop", () => {
+    const { container } = render(<GameWorld profile={profile} />);
+    const map = screen.getByTestId("world-map-viewport");
+    const joystick = screen.getByLabelText("가상 조이스틱");
+
+    expect(map).toHaveAttribute("data-label-density", "expanded");
+    expect(container.querySelector(".world-camera-edge-cues")).toBeInTheDocument();
+    expect(getDirectionsWorldSpot().querySelector(".world-spot__motion-icon")).toBeInTheDocument();
+
+    fireEvent.keyDown(joystick, { key: "ArrowRight" });
+    act(() => vi.advanceTimersByTime(159));
+    expect(map).toHaveAttribute("data-label-density", "expanded");
+    act(() => vi.advanceTimersByTime(1));
+    expect(map).toHaveAttribute("data-label-density", "compact");
+
+    fireEvent.keyUp(joystick, { key: "ArrowRight" });
+    finishJoystickRelease();
+    expect(map).toHaveAttribute("data-label-density", "expanded");
+  });
 });

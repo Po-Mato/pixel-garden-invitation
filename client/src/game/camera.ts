@@ -2,6 +2,7 @@ import type { Point } from "./world";
 
 export type ViewportSize = { width: number; height: number };
 export type CameraTransform = { x: number; y: number; zoom: number };
+export type CameraEdge = "left" | "right" | "top" | "bottom";
 
 type CameraInput = {
   player: Point;
@@ -50,6 +51,31 @@ export function computeCameraTransform(input: CameraInput): CameraTransform {
 
 export function cameraTransformCss(camera: CameraTransform): string {
   return `translate3d(${camera.x}px, ${camera.y}px, 0) scale(${camera.zoom})`;
+}
+
+export function cameraClampedEdges(
+  camera: CameraTransform,
+  viewport: ViewportSize,
+  bounds: ViewportSize
+): CameraEdge[] {
+  const width = positiveOr(viewport.width, 390);
+  const height = positiveOr(viewport.height, 520);
+  const zoom = positiveOr(camera.zoom, 1);
+  const scaledWidth = positiveOr(bounds.width, width / zoom) * zoom;
+  const scaledHeight = positiveOr(bounds.height, height / zoom) * zoom;
+  const epsilon = 0.5;
+  const edges: CameraEdge[] = [];
+
+  if (scaledWidth > width + epsilon) {
+    if (camera.x >= -epsilon) edges.push("left");
+    if (camera.x <= width - scaledWidth + epsilon) edges.push("right");
+  }
+  if (scaledHeight > height + epsilon) {
+    if (camera.y >= -epsilon) edges.push("top");
+    if (camera.y <= height - scaledHeight + epsilon) edges.push("bottom");
+  }
+
+  return edges;
 }
 
 export function screenToWorld(input: ScreenToWorldInput): Point {
