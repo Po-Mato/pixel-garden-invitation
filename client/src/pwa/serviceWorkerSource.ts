@@ -1,3 +1,18 @@
+export const pwaGuestSelectionIdlePrecachePaths = [
+  "feminine-champagne-navy-skirt",
+  "feminine-formal-hanbok",
+  "feminine-lavender-jacket-dress",
+  "feminine-long-wave-dress",
+  "feminine-sage-bolero-dress",
+  "feminine-teal-modern-hanbok",
+  "masculine-beige-summer-suit",
+  "masculine-blue-modern-hanbok",
+  "masculine-charcoal-blazer",
+  "masculine-charcoal-burgundy-tie",
+  "masculine-green-blazer-cream-pants",
+  "masculine-navy-suit"
+].map((presetId) => `./characters/generated/guests/preview/${presetId}__idle.png`);
+
 export const pwaCorePrecachePaths = [
   "./",
   "./index.html",
@@ -12,6 +27,7 @@ export const pwaCorePrecachePaths = [
   "./assets/ui/joystick-wedding-compass-thumb.png",
   "./characters/generated/guests/feminine-long-wave-dress__idle.png",
   "./characters/generated/guests/feminine-long-wave-dress__walk.png",
+  ...pwaGuestSelectionIdlePrecachePaths,
   "./characters/puppets/bride/rig.json",
   "./characters/puppets/bride/body.webp",
   "./characters/puppets/bride/head-open.webp",
