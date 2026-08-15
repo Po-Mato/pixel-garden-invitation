@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { computeCameraTransform, screenToWorld, snapCameraViewport } from "./camera";
+import { cameraTransformCss, computeCameraTransform, screenToWorld, snapCameraViewport } from "./camera";
 
 describe("tracking camera", () => {
   it("snaps fractional layout measurements to a stable CSS-pixel viewport", () => {
@@ -167,5 +167,10 @@ describe("tracking camera", () => {
       expect(x + camera.x).toBe(195);
       expect(1200 + camera.y).toBe(260);
     }
+  });
+
+  it("serializes the snapped camera without fractional transform drift", () => {
+    expect(cameraTransformCss({ x: -120, y: -940, zoom: 1 }))
+      .toBe("translate3d(-120px, -940px, 0) scale(1)");
   });
 });

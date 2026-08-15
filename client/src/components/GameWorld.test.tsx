@@ -356,17 +356,20 @@ describe("GameWorld", () => {
 
   it("synchronizes every 30px tile step with the approved four-phase walk cycle", () => {
     render(<GameWorld profile={profile} />);
+    const stage = screen.getByLabelText("우리 집 지도");
     const player = screen.getByLabelText("하객1");
     const sprite = screen.getByLabelText("하객1 캐릭터");
     const joystick = screen.getByLabelText("가상 조이스틱");
 
     expect(player).toHaveStyle({ left: "285px", top: "375px" });
+    expect(stage.style.transform).toBe("translate3d(-90px, -115px, 0) scale(1)");
     expect(sprite).toHaveAttribute("data-moving", "false");
     expect(sprite).toHaveAttribute("data-walk-frame", "1");
 
     fireEvent.keyDown(joystick, { key: "ArrowLeft" });
     advanceAnimation(0);
     expect(player).toHaveStyle({ left: "255px", top: "375px" });
+    expect(stage.style.transform).toBe("translate3d(-60px, -115px, 0) scale(1)");
     expect(sprite).toHaveAttribute("data-moving", "true");
     expect(sprite).toHaveAttribute("data-walk-frame", "0");
 
@@ -376,6 +379,7 @@ describe("GameWorld", () => {
 
     advanceAnimation(300);
     expect(player).toHaveStyle({ left: "225px", top: "375px" });
+    expect(stage.style.transform).toBe("translate3d(-30px, -115px, 0) scale(1)");
     expect(sprite).toHaveAttribute("data-walk-frame", "1");
 
     advanceAnimation(540);

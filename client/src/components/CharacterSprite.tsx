@@ -74,7 +74,9 @@ export function CharacterSprite({
   return (
     <span
       className={`character-sprite character-sprite--${displayMode} ${useFrontIdle ? "character-sprite--idle-front" : ""}`}
+      role={label ? "img" : undefined}
       aria-label={label}
+      data-direction={direction}
       data-moving={moving ? "true" : "false"}
       data-walk-frame={renderedStepFrame}
       data-character-fallback={renderedLayers.some(({ fallback }) => fallback) || undefined}

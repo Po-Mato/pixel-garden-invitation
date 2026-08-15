@@ -325,10 +325,99 @@ html[data-text-scale="ios-200"] .bottom-sheet__header button {
 }
 
 .character-customizer__selected-name {
+  top: 10px;
+  bottom: auto;
+  display: grid;
+  gap: 1px;
   border: 1px solid rgba(183, 111, 124, 0.46);
   border-radius: 999px;
+  padding: 5px 13px 6px;
   background: rgba(255, 255, 255, 0.94);
   box-shadow: 0 5px 14px rgba(80, 60, 67, 0.12);
+  font-weight: 400;
+}
+
+.character-customizer__selected-name strong {
+  overflow: hidden;
+  font-family: var(--wedding-font-display);
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: -0.025em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-synthesis: none;
+}
+
+.character-customizer__selected-name span {
+  color: #7a666b;
+  font-family: var(--wedding-font-ui);
+  font-size: 8px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+.entry-character-picker .character-customizer__selected-name {
+  top: 10px;
+  bottom: auto;
+}
+
+.character-customizer__preview-controls {
+  position: absolute;
+  right: 10px;
+  bottom: 8px;
+  left: 10px;
+  z-index: 6;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+  max-width: 280px;
+  margin-inline: auto;
+}
+
+.character-customizer__preview-controls button {
+  display: grid;
+  min-width: 0;
+  min-height: 34px;
+  grid-template-columns: 15px auto minmax(0, 1fr);
+  align-items: center;
+  gap: 4px;
+  border: 1px solid rgba(95, 75, 82, 0.3);
+  border-radius: 999px;
+  padding: 5px 8px;
+  background: rgba(255, 255, 252, 0.92);
+  color: #514348;
+  box-shadow: 0 5px 16px rgba(62, 48, 52, 0.12);
+  font-family: var(--wedding-font-ui);
+  font-size: 8px;
+  font-weight: 500;
+  line-height: 1;
+  backdrop-filter: blur(8px);
+  touch-action: manipulation;
+}
+
+.character-customizer__preview-controls button[aria-pressed="true"] {
+  border-color: rgba(183, 111, 124, 0.58);
+  background: rgba(255, 242, 243, 0.94);
+}
+
+.character-customizer__preview-controls button:focus-visible {
+  outline: 2px solid var(--camellia);
+  outline-offset: 2px;
+}
+
+.character-customizer__preview-controls svg {
+  width: 14px;
+  height: 14px;
+  color: var(--camellia);
+}
+
+.character-customizer__preview-controls strong {
+  overflow: hidden;
+  font-size: 9px;
+  font-weight: 600;
+  text-align: right;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .character-customizer__actions {
@@ -347,6 +436,19 @@ html[data-text-scale="ios-200"] .bottom-sheet__header button {
   background: #ffffff;
   color: #483b3f;
   box-shadow: 0 4px 12px rgba(81, 61, 67, 0.08);
+  font-weight: 600;
+}
+
+.character-customizer__panel h2,
+.character-customizer__panel h3 {
+  font-family: var(--wedding-font-display);
+  font-weight: 400;
+  letter-spacing: -0.025em;
+  font-synthesis: none;
+}
+
+.customizer-option {
+  font-weight: 600;
 }
 
 .customizer-tab--selected,

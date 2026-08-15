@@ -37,6 +37,7 @@ import {
   saveSyncedJourneyProgress
 } from "../api/journeyProgressApi";
 import {
+  cameraTransformCss,
   computeCameraTransform,
   screenToWorld,
   snapCameraViewport,
@@ -803,12 +804,12 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   const [activePropMoment, setActivePropMoment] = useState<ActiveWorldPropMoment | null>(null);
   const [remoteReactions, setRemoteReactions] = useState<Record<string, ActiveGuestReaction>>({});
   const [viewport, setViewport] = useState<ViewportSize>(defaultViewport);
-  const camera = useMemo(() => computeCameraTransform({
-    player: position,
+  const camera = computeCameraTransform({
+    player: motionStore.getSnapshot().position,
     viewport,
     bounds: activeZone.bounds,
     zoom: 1
-  }), [activeZone.bounds.height, activeZone.bounds.width, position.x, position.y, viewport.height, viewport.width]);
+  });
   const [remoteGuests, setRemoteGuests] = useState<RoomGuest[]>([]);
   const [companionGuestId, setCompanionGuestId] = useState<string | null>(
     restoredCompanionSession?.companionGuestId ?? null
@@ -1240,7 +1241,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     motionStore.update({ stepFrame });
   }, [motionStore, stepFrame]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const updateCamera = () => {
       const stage = mapStageRef.current;
       if (!stage) return;
@@ -1250,7 +1251,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
         bounds: activeZone.bounds,
         zoom: 1
       });
-      stage.style.transform = `translate3d(${nextCamera.x}px, ${nextCamera.y}px, 0) scale(${nextCamera.zoom})`;
+      stage.style.transform = cameraTransformCss(nextCamera);
     };
     updateCamera();
     return motionStore.subscribe(updateCamera);
@@ -3672,10 +3673,16 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     cancelPortalWalk();
     cancelInteractionWalk();
     const rect = event.currentTarget.getBoundingClientRect();
+    const interactionCamera = computeCameraTransform({
+      player: motionStore.getSnapshot().position,
+      viewport,
+      bounds: activeZone.bounds,
+      zoom: 1
+    });
     const worldPoint = screenToWorld({
       client: { x: event.clientX, y: event.clientY },
       viewportRect: rect,
-      camera
+      camera: interactionCamera
     });
     const nextTarget = snapToGrid(worldPoint, activeZone);
     const path = findTilePath(activeZone, positionRef.current, nextTarget);
@@ -5277,8 +5284,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
             data-logical-height={activeZone.bounds.height}
             style={{
               width: activeZone.bounds.width,
-              height: activeZone.bounds.height,
-              transform: `translate3d(${camera.x}px, ${camera.y}px, 0) scale(${camera.zoom})`
+              height: activeZone.bounds.height
             }}
           >
             <WorldMapArtwork

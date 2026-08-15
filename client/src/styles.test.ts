@@ -144,6 +144,14 @@ describe("entry screen layout", () => {
     expect(styles).toMatch(/\.entry-screen__controls\s*\{[^}]*z-index:\s*3;/s);
   });
 
+  it("offers a restrained four-direction walking preview with unified wedding typography", () => {
+    expect(weddingLuxeStyles).toMatch(/\.character-customizer__preview-controls\s*\{[^}]*grid-template-columns:\s*repeat\(2,/s);
+    expect(weddingLuxeStyles).toMatch(/\.character-customizer__preview-controls button\s*\{[^}]*min-height:\s*34px;/s);
+    expect(weddingLuxeStyles).toMatch(/\.character-customizer__selected-name strong\s*\{[^}]*font-family:\s*var\(--wedding-font-display\);[^}]*font-weight:\s*400;/s);
+    expect(weddingLuxeStyles).toMatch(/\.entry-character-picker \.character-customizer__selected-name\s*\{[^}]*top:\s*10px;[^}]*bottom:\s*auto;/s);
+    expect(weddingLuxeStyles).toMatch(/\.customizer-option\s*\{[^}]*font-weight:\s*600;/s);
+  });
+
   it("keeps Korean preset names readable in at most two lines", () => {
     const labelRule = styles.match(/\.customizer-option__label\s*\{([^}]*)}/s)?.[1] ?? "";
 
@@ -219,7 +227,7 @@ describe("고령 하객 보기 설정", () => {
 
 describe("compact invitation visual rhythm", () => {
   it("keeps map labels quieter while world geometry owns the interaction rectangle", () => {
-    expect(refinedGameStyles).toMatch(/\.world-spot__card\s*\{[^}]*width:\s*min\(84px,[^}]*min-height:\s*52px;/s);
+    expect(refinedGameStyles).toMatch(/\.world-spot__card\s*\{[^}]*width:\s*min\(72px,[^}]*min-height:\s*44px;/s);
     expect(refinedGameStyles).toMatch(/data-text-scale="xlarge"[^}]*\.world-spot__card\s*\{[^}]*width:\s*min\(92px,[^}]*min-height:\s*58px;/s);
     expect(refinedGameStyles).toContain('.world-spot[data-label-anchor="top"]');
     expect(refinedGameStyles).toContain('.world-spot[data-label-surface="wood"] .world-spot__card');
@@ -462,8 +470,7 @@ describe("mobile world controls", () => {
     expect(stageRule).toContain("will-change: transform;");
     expect(stageRule).toContain("contain: layout paint style;");
     expect(stageRule).toContain("backface-visibility: hidden;");
-    expect(stageRule).toContain("transition: transform 48ms linear;");
-    expect(styles).toMatch(/\.world-map__stage\[data-render-quality="lite"\]\s*\{[^}]*transition-duration:\s*0ms;/s);
+    expect(stageRule).toContain("transition: none;");
     expect(styles).not.toContain('html[data-camera-tracking="responsive"] .world-map__stage');
     expect(stageRule).not.toContain("width: 390px;");
     expect(stageRule).not.toContain("height: 720px;");
@@ -475,6 +482,13 @@ describe("mobile world controls", () => {
     expect(refinedGameStyles).toMatch(/\.game-world \.world-hud\s*\{[^}]*flex:\s*0 0 calc\(96px \+ env\(safe-area-inset-top\)\);/s);
     expect(refinedGameStyles).toContain(".world-hud[data-tools-open] .world-destination-guide-row");
     expect(refinedGameStyles).toContain("left: calc(8px + env(safe-area-inset-left));");
+  });
+
+  it("keeps moving map labels and destination guidance visually compact", () => {
+    expect(refinedGameStyles).toMatch(/\.world-spot__card\s*\{[^}]*width:\s*min\(72px,[^}]*min-height:\s*44px;/s);
+    expect(refinedGameStyles).toMatch(/\.world-context-action\s*\{[^}]*width:\s*min\(176px,[^}]*min-height:\s*40px;/s);
+    expect(hudDensityStyles).toMatch(/data-density="moving"[^}]*\.world-destination-guide small\s*\{[^}]*display:\s*none;/s);
+    expect(refinedGameStyles).toMatch(/\.world-destination-guide strong\s*\{[^}]*font-family:\s*var\(--game-font-display\);[^}]*font-weight:\s*400;/s);
   });
 
   it("adapts the game shell and fixed HUD to dynamic viewport and safe-area changes", () => {

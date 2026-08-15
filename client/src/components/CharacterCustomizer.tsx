@@ -2,15 +2,15 @@ import {
   defaultCharacterAppearance,
   guestCharacterPresets,
   resolveGuestPreset,
-  type CharacterAppearance
+  type CharacterAppearance,
+  type Direction
 } from "@wedding-game/shared";
-import { RotateCcw, Shuffle } from "lucide-react";
-import { useEffect, useRef } from "react";
+import { Pause, Play, RotateCcw, RotateCw, Shuffle } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import {
   randomizeAppearance,
   updateAppearance
 } from "../character/appearanceState";
-import { CharacterPortrait } from "./CharacterPortrait";
 import { CharacterSprite } from "./CharacterSprite";
 
 type Props = {
@@ -18,9 +18,29 @@ type Props = {
   onChange: (appearance: CharacterAppearance) => void;
 };
 
+const previewDirections: Direction[] = ["down", "right", "up", "left"];
+const previewDirectionLabels: Record<Direction, string> = {
+  down: "정면",
+  right: "오른쪽",
+  up: "뒷면",
+  left: "왼쪽"
+};
+const previewWalkFrames = [0, 1, 2, 1] as const;
+
 export function CharacterCustomizer({ value, onChange }: Props) {
   const selectedPreset = resolveGuestPreset(value);
   const selectedOptionRef = useRef<HTMLButtonElement>(null);
+  const [previewDirection, setPreviewDirection] = useState<Direction>("down");
+  const [previewWalking, setPreviewWalking] = useState(true);
+  const [previewFrameIndex, setPreviewFrameIndex] = useState(0);
+
+  useEffect(() => {
+    if (!previewWalking) return;
+    const timer = window.setInterval(() => {
+      setPreviewFrameIndex((current) => (current + 1) % previewWalkFrames.length);
+    }, 240);
+    return () => window.clearInterval(timer);
+  }, [previewWalking]);
 
   useEffect(() => {
     selectedOptionRef.current?.scrollIntoView?.({ block: "nearest", inline: "center" });
@@ -37,12 +57,50 @@ export function CharacterCustomizer({ value, onChange }: Props) {
         </div>
         <div className="character-customizer__halo" aria-hidden="true" />
         <div className="character-customizer__sprite">
-          <CharacterPortrait
+          <CharacterSprite
             appearance={value}
+            direction={previewDirection}
+            moving={previewWalking}
+            stepFrame={previewWalkFrames[previewFrameIndex]}
+            displayMode="preview"
             label="선택한 하객 캐릭터"
           />
         </div>
-        <p className="character-customizer__selected-name">{selectedPreset.label}</p>
+        <div className="character-customizer__selected-name">
+          <strong>{selectedPreset.label}</strong>
+          <span aria-live="polite">
+            {previewDirectionLabels[previewDirection]} · {previewWalking ? "보행 중" : "정지"}
+          </span>
+        </div>
+        <div className="character-customizer__preview-controls" role="group" aria-label="캐릭터 보행 미리보기">
+          <button
+            type="button"
+            aria-label={`캐릭터 회전, 현재 ${previewDirectionLabels[previewDirection]}`}
+            onClick={() => {
+              setPreviewDirection((current) => (
+                previewDirections[(previewDirections.indexOf(current) + 1) % previewDirections.length]
+              ));
+              if (previewWalking) setPreviewFrameIndex(0);
+            }}
+          >
+            <RotateCw aria-hidden="true" />
+            <span>회전</span>
+            <strong>{previewDirectionLabels[previewDirection]}</strong>
+          </button>
+          <button
+            type="button"
+            aria-label={previewWalking ? "보행 애니메이션 정지" : "보행 애니메이션 재생"}
+            aria-pressed={previewWalking}
+            onClick={() => {
+              setPreviewWalking((current) => !current);
+              setPreviewFrameIndex(previewWalking ? 1 : 0);
+            }}
+          >
+            {previewWalking ? <Pause aria-hidden="true" /> : <Play aria-hidden="true" />}
+            <span>보행</span>
+            <strong>{previewWalking ? "걷는 중" : "정지"}</strong>
+          </button>
+        </div>
       </div>
 
       <div className="character-customizer__actions">

@@ -2009,11 +2009,7 @@ select,
   backface-visibility: hidden;
   transform-origin: 0 0;
   will-change: transform;
-  transition: transform 48ms linear;
-}
-
-.world-map__stage[data-render-quality="lite"] {
-  transition-duration: 0ms;
+  transition: none;
 }
 
 .world-map-artwork,
