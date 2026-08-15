@@ -1,8 +1,27 @@
 {
   "version": 2,
-  "approvedAt": "2026-08-03T22:02:59.662Z",
-  "reason": "로비 안내데스크 전면과 충돌·깊이 좌표 정렬",
-  "sha256": "f2a395352e602657a8ebff82654ab94857ee94d7a57a4ec8e748e25dac1c3c7f",
+  "approvedAt": "2026-08-15T01:18:28.927Z",
+  "reason": "하객 캐릭터를 입체 렌더에서 평면 픽셀 아트로 통일",
+  "sha256": "c8487891a2c12c6cb754b3f9738b9ca5f8140fc4f17becb356886d53133f3f0b",
+  "provenance": {
+    "schemaVersion": 1,
+    "subjectKind": "capture-set",
+    "sourceKind": "local",
+    "runId": null,
+    "runAttempt": null,
+    "commitSha": "4c5502f7563587187f1b69456e16b1f74babc116",
+    "runUrl": null,
+    "checksumAlgorithm": "sha256",
+    "artifactChecksumScope": "sorted-capture-set-manifest",
+    "artifactSha256": "79cb44721a37f3c4c9f72da9795e666473753f8a6e29cd40b0051da99bebfd0c",
+    "files": [
+      {
+        "logicalPath": "mobile-game-current",
+        "size": 4642940,
+        "sha256": "ede8f2d7accea2d773d61d4dc59a5b3bb666029dda6f577ba807c00f56697b78"
+      }
+    ]
+  },
   "width": 780,
   "height": 3458,
   "mapZoneIds": [
@@ -31,34 +50,5 @@
     "masculine-green-blazer-cream-pants",
     "masculine-blue-modern-hanbok"
   ],
-  "directionSampleCount": 48,
-  "provenance": {
-    "schemaVersion": 1,
-    "subjectKind": "approved-baseline-set",
-    "sourceKind": "github-actions",
-    "runId": "31462820087",
-    "runAttempt": 1,
-    "commitSha": "5d491379bca25d6ba29090381ca15a2ddbd2dc55",
-    "runUrl": "https://github.com/Po-Mato/pixel-garden-invitation/actions/runs/31462820087",
-    "checksumAlgorithm": "sha256",
-    "artifactChecksumScope": "sorted-approved-baseline-set-manifest",
-    "artifactSha256": "607b667dd95c154c6987cb1fccaee6a9357e4a3aa81cbc56f0e11190d41b85de",
-    "files": [
-      {
-        "logicalPath": "scripts/visual-baselines/mobile-game-visual-regression.webp",
-        "size": 2805750,
-        "sha256": "f2a395352e602657a8ebff82654ab94857ee94d7a57a4ec8e748e25dac1c3c7f"
-      }
-    ]
-  },
-  "provenanceApproval": {
-    "kind": "unchanged-baseline-provenance-migration",
-    "approvedAt": "2026-08-11T05:47:45.322Z",
-    "reason": "기존 승인 이미지 무변경 출처 스키마 승격",
-    "previousVersion": 1,
-    "baselinePixelsChanged": false,
-    "baselineCount": 1,
-    "runId": "31462820087",
-    "commitSha": "5d491379bca25d6ba29090381ca15a2ddbd2dc55"
-  }
+  "directionSampleCount": 48
 }
