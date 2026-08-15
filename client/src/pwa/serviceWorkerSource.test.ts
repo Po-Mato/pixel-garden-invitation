@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   createPwaServiceWorkerSource,
   pwaCorePrecachePaths,
+  pwaGuestSelectionIdlePrecachePaths,
   resolvePwaFeaturePrecachePaths,
   resolvePwaPrecachePaths
 } from "./serviceWorkerSource";
@@ -41,6 +42,14 @@ describe("PWA service worker source", () => {
     expect(paths).toContain("./assets/maps/v2/home/background.webp");
     expect(paths).toContain("./characters/puppets/bride/rig.json");
     expect(paths).toContain("./characters/puppets/groom/head-blink.webp");
+    expect(pwaGuestSelectionIdlePrecachePaths).toHaveLength(12);
+    expect(paths).toContain(
+      "./characters/generated/guests/preview/feminine-long-wave-dress__idle.png"
+    );
+    expect(paths).toContain(
+      "./characters/generated/guests/preview/masculine-navy-suit__idle.png"
+    );
+    expect(new Set(pwaGuestSelectionIdlePrecachePaths)).toHaveLength(12);
     expect(paths).toContain("./assets/gowun-dodum-critical-hash.woff2");
     expect(paths).toContain("./assets/noto-sans-kr-119-wght-normal-hash.woff2");
     expect(paths).toContain("./assets/entry-wedding-garden-hero-hash.avif");
