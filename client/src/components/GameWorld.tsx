@@ -37,6 +37,7 @@ import {
   saveSyncedJourneyProgress
 } from "../api/journeyProgressApi";
 import {
+  cameraClampedEdges,
   cameraTransformCss,
   computeCameraTransform,
   screenToWorld,
@@ -553,6 +554,7 @@ const portalArrivalDelayMs = 150;
 const portalFadeOutMs = 250;
 const portalFadeOutFallbackMs = 1000;
 const portalFadeInMs = 300;
+const worldLabelCompactDelayMs = 160;
 const npcInteractionRadius = 30;
 const reactionVisibleMs = 2200;
 const defaultViewport: ViewportSize = { width: 390, height: 520 };
@@ -738,6 +740,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     companionInviteLink || diagnosticInitialZoneId ? "down" : restoredWorldSession?.direction ?? "down"
   );
   const [moving, setMoving] = useState(false);
+  const [compactWorldLabels, setCompactWorldLabels] = useState(false);
   const [stepFrame, setStepFrame] = useState(neutralWalkFrame);
   const motionStoreRef = useRef<WorldMotionStore | null>(null);
   if (!motionStoreRef.current) {
@@ -1238,6 +1241,15 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
   }, [motionStore, moving]);
 
   useEffect(() => {
+    if (!moving) {
+      setCompactWorldLabels(false);
+      return;
+    }
+    const timer = window.setTimeout(() => setCompactWorldLabels(true), worldLabelCompactDelayMs);
+    return () => window.clearTimeout(timer);
+  }, [moving]);
+
+  useEffect(() => {
     motionStore.update({ stepFrame });
   }, [motionStore, stepFrame]);
 
@@ -1252,6 +1264,12 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
         zoom: 1
       });
       stage.style.transform = cameraTransformCss(nextCamera);
+      const map = mapViewportRef.current;
+      if (map) {
+        const edgeValue = cameraClampedEdges(nextCamera, viewport, activeZone.bounds).join(" ");
+        if (edgeValue) map.dataset.cameraEdges = edgeValue;
+        else delete map.dataset.cameraEdges;
+      }
     };
     updateCamera();
     return motionStore.subscribe(updateCamera);
@@ -5267,6 +5285,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
         <div
           ref={mapViewportRef}
           className={`world-map world-map--${activeZone.theme}`}
+          data-label-density={compactWorldLabels ? "compact" : "expanded"}
           data-testid="world-map-viewport"
           data-dialogue-open={Boolean(activeNpcDialogue) || undefined}
           data-dialogue-placement={activeNpcDialogue ? npcDialoguePlacement : undefined}
@@ -5475,6 +5494,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
                   }}
                 >
                   <span className="world-spot__card">
+                    <MapPinned className="world-spot__motion-icon" aria-hidden="true" />
                     <strong>{worldSpot.label}</strong>
                     <small>{content?.actionLabel ?? "보기"}</small>
                   </span>
@@ -5669,6 +5689,14 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
               activeZoneId={activeZone.id}
               reaction={localReaction}
             />
+          </div>
+
+          <div className="world-camera-edge-cues" aria-hidden="true">
+            <span className="world-camera-edge-cue world-camera-edge-cue--left" />
+            <span className="world-camera-edge-cue world-camera-edge-cue--right" />
+            <span className="world-camera-edge-cue world-camera-edge-cue--top" />
+            <span className="world-camera-edge-cue world-camera-edge-cue--bottom" />
+            <span className="world-camera-edge-status"><MapPinned />지도 끝</span>
           </div>
 
           {activeWorldPropMomentEntry ? (

@@ -361,6 +361,95 @@ html[data-text-scale="ios-200"] .bottom-sheet__header button {
   bottom: auto;
 }
 
+.character-customizer__sprite[data-swipe-ready="true"] {
+  cursor: ew-resize;
+  touch-action: pan-y;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.character-customizer__direction-dots {
+  position: absolute;
+  top: 53px;
+  left: 50%;
+  z-index: 7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: translateX(-50%);
+}
+
+.character-customizer__direction-dots button {
+  position: relative;
+  width: 24px;
+  min-width: 24px;
+  height: 24px;
+  min-height: 24px;
+  appearance: none;
+  border: 0 !important;
+  border-radius: 0;
+  padding: 0;
+  background: transparent !important;
+  box-shadow: none !important;
+  touch-action: manipulation;
+}
+
+.character-customizer__direction-dots button::after {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  border: 1px solid rgba(99, 77, 84, 0.5);
+  border-radius: 999px;
+  background: rgba(255, 255, 252, 0.76);
+  box-shadow: 0 1px 3px rgba(67, 50, 55, 0.16);
+  content: "";
+  transform: translate(-50%, -50%);
+  transition: width 140ms ease, height 140ms ease, border-color 140ms ease, background 140ms ease;
+}
+
+.character-customizer__direction-dots button[aria-pressed="true"]::after {
+  width: 10px;
+  height: 6px;
+  border-color: rgba(151, 81, 96, 0.78);
+  background: var(--camellia);
+}
+
+.character-customizer__direction-dots button:focus-visible {
+  outline: 2px solid var(--camellia);
+  outline-offset: -2px;
+  border-radius: 999px;
+}
+
+.character-customizer__preview-hint {
+  position: absolute;
+  top: 104px;
+  left: 50%;
+  z-index: 7;
+  width: max-content;
+  max-width: calc(100% - 36px);
+  margin: 0;
+  border: 1px solid rgba(97, 119, 105, 0.34);
+  border-radius: 999px;
+  padding: 4px 10px;
+  background: rgba(255, 255, 249, 0.88);
+  color: #68585c;
+  box-shadow: 0 4px 12px rgba(63, 48, 53, 0.09);
+  font-family: var(--wedding-font-ui);
+  font-size: 8px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  pointer-events: none;
+  transform: translateX(-50%);
+  animation: character-preview-hint-in 260ms ease-out both;
+}
+
+@keyframes character-preview-hint-in {
+  from { opacity: 0; transform: translate(-50%, -3px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
+}
+
 .character-customizer__preview-controls {
   position: absolute;
   right: 10px;
@@ -372,6 +461,14 @@ html[data-text-scale="ios-200"] .bottom-sheet__header button {
   gap: 6px;
   max-width: 280px;
   margin-inline: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .character-customizer__direction-dots button::after,
+  .character-customizer__preview-hint {
+    animation: none;
+    transition: none;
+  }
 }
 
 .character-customizer__preview-controls button {
