@@ -22,13 +22,15 @@ it("월드에서도 96x144 고밀도 generated 경로를 48x72로 표시한다",
   ]);
 });
 
-it("미리보기에서는 기존 고해상도 generated 경로를 유지한다", () => {
+it("미리보기에서는 2배 해상도와 통일된 3등신 전용 시트를 사용한다", () => {
   const layer = resolveCharacterLayers(defaultCharacterAppearance, "./", "preview")[0];
 
   expect(layer).toMatchObject({
-    walkUrl: "./characters/generated/guests/feminine-long-wave-dress__walk.png",
-    idleUrl: "./characters/generated/guests/feminine-long-wave-dress__idle.png",
-    sourceSize: { width: 96, height: 144 }
+    walkUrl: "./characters/generated/guests/preview/feminine-long-wave-dress__walk.png",
+    idleUrl: "./characters/generated/guests/preview/feminine-long-wave-dress__idle.png",
+    fallbackWalkUrl: "./characters/generated/guests/preview/feminine-long-wave-dress__walk.png",
+    fallbackIdleUrl: "./characters/generated/guests/preview/feminine-long-wave-dress__idle.png",
+    sourceSize: { width: 192, height: 288 }
   });
 });
 

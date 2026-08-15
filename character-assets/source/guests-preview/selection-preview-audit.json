@@ -1,0 +1,1634 @@
+{
+  "version": 1,
+  "policy": {
+    "source": {
+      "width": 192,
+      "height": 288
+    },
+    "contentHeight": 252,
+    "headHeight": 84,
+    "bodyHeight": 168,
+    "headWidth": 92,
+    "footBaseline": 264,
+    "maximumHeadWidthDelta": 2
+  },
+  "summary": {
+    "presetCount": 12,
+    "frameCount": 144,
+    "minimumHeadWidth": 91,
+    "maximumHeadWidth": 93,
+    "maximumHeadWidthDelta": 1,
+    "exactBodyToHeadRatio": true,
+    "passed": true
+  },
+  "presets": [
+    {
+      "id": "feminine-long-wave-dress",
+      "guest": "guest-01",
+      "directions": {
+        "down": [
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 93,
+            "headWidthDelta": 1
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 92,
+            "headWidthDelta": 0
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 92,
+            "headWidthDelta": 0
+          }
+        ],
+        "left": [
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 93,
+            "headWidthDelta": 1
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 93,
+            "headWidthDelta": 1
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 93,
+            "headWidthDelta": 1
+          }
+        ],
+        "right": [
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 93,
+            "headWidthDelta": 1
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 92,
+            "headWidthDelta": 0
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 93,
+            "headWidthDelta": 1
+          }
+        ],
+        "up": [
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 93,
+            "headWidthDelta": 1
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 93,
+            "headWidthDelta": 1
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 92,
+            "headWidthDelta": 0
+          }
+        ]
+      }
+    },
+    {
+      "id": "feminine-formal-hanbok",
+      "guest": "guest-02",
+      "directions": {
+        "down": [
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 93,
+            "headWidthDelta": 1
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 93,
+            "headWidthDelta": 1
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 93,
+            "headWidthDelta": 1
+          }
+        ],
+        "left": [
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 92,
+            "headWidthDelta": 0
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 92,
+            "headWidthDelta": 0
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 93,
+            "headWidthDelta": 1
+          }
+        ],
+        "right": [
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 93,
+            "headWidthDelta": 1
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 93,
+            "headWidthDelta": 1
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 93,
+            "headWidthDelta": 1
+          }
+        ],
+        "up": [
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 93,
+            "headWidthDelta": 1
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 93,
+            "headWidthDelta": 1
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 92,
+            "headWidthDelta": 0
+          }
+        ]
+      }
+    },
+    {
+      "id": "masculine-navy-suit",
+      "guest": "guest-03",
+      "directions": {
+        "down": [
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 92,
+            "headWidthDelta": 0
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 92,
+            "headWidthDelta": 0
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 92,
+            "headWidthDelta": 0
+          }
+        ],
+        "left": [
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 93,
+            "headWidthDelta": 1
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 92,
+            "headWidthDelta": 0
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 93,
+            "headWidthDelta": 1
+          }
+        ],
+        "right": [
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 93,
+            "headWidthDelta": 1
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 93,
+            "headWidthDelta": 1
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 92,
+            "headWidthDelta": 0
+          }
+        ],
+        "up": [
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 92,
+            "headWidthDelta": 0
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 92,
+            "headWidthDelta": 0
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 92,
+            "headWidthDelta": 0
+          }
+        ]
+      }
+    },
+    {
+      "id": "masculine-charcoal-blazer",
+      "guest": "guest-04",
+      "directions": {
+        "down": [
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 91,
+            "headWidthDelta": -1
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 92,
+            "headWidthDelta": 0
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 91,
+            "headWidthDelta": -1
+          }
+        ],
+        "left": [
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 93,
+            "headWidthDelta": 1
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 92,
+            "headWidthDelta": 0
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 93,
+            "headWidthDelta": 1
+          }
+        ],
+        "right": [
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 91,
+            "headWidthDelta": -1
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 92,
+            "headWidthDelta": 0
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 93,
+            "headWidthDelta": 1
+          }
+        ],
+        "up": [
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 92,
+            "headWidthDelta": 0
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 92,
+            "headWidthDelta": 0
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 91,
+            "headWidthDelta": -1
+          }
+        ]
+      }
+    },
+    {
+      "id": "feminine-sage-bolero-dress",
+      "guest": "guest-05",
+      "directions": {
+        "down": [
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 92,
+            "headWidthDelta": 0
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 93,
+            "headWidthDelta": 1
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 93,
+            "headWidthDelta": 1
+          }
+        ],
+        "left": [
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 93,
+            "headWidthDelta": 1
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 93,
+            "headWidthDelta": 1
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 93,
+            "headWidthDelta": 1
+          }
+        ],
+        "right": [
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 93,
+            "headWidthDelta": 1
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 92,
+            "headWidthDelta": 0
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 92,
+            "headWidthDelta": 0
+          }
+        ],
+        "up": [
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 93,
+            "headWidthDelta": 1
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 92,
+            "headWidthDelta": 0
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 93,
+            "headWidthDelta": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "feminine-champagne-navy-skirt",
+      "guest": "guest-06",
+      "directions": {
+        "down": [
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 92,
+            "headWidthDelta": 0
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 92,
+            "headWidthDelta": 0
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 92,
+            "headWidthDelta": 0
+          }
+        ],
+        "left": [
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 93,
+            "headWidthDelta": 1
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 92,
+            "headWidthDelta": 0
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 93,
+            "headWidthDelta": 1
+          }
+        ],
+        "right": [
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 93,
+            "headWidthDelta": 1
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 92,
+            "headWidthDelta": 0
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 93,
+            "headWidthDelta": 1
+          }
+        ],
+        "up": [
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 92,
+            "headWidthDelta": 0
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 93,
+            "headWidthDelta": 1
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 93,
+            "headWidthDelta": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "feminine-lavender-jacket-dress",
+      "guest": "guest-07",
+      "directions": {
+        "down": [
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 92,
+            "headWidthDelta": 0
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 92,
+            "headWidthDelta": 0
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 93,
+            "headWidthDelta": 1
+          }
+        ],
+        "left": [
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 91,
+            "headWidthDelta": -1
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 92,
+            "headWidthDelta": 0
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 93,
+            "headWidthDelta": 1
+          }
+        ],
+        "right": [
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 93,
+            "headWidthDelta": 1
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 92,
+            "headWidthDelta": 0
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 92,
+            "headWidthDelta": 0
+          }
+        ],
+        "up": [
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 92,
+            "headWidthDelta": 0
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 92,
+            "headWidthDelta": 0
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 92,
+            "headWidthDelta": 0
+          }
+        ]
+      }
+    },
+    {
+      "id": "feminine-teal-modern-hanbok",
+      "guest": "guest-08",
+      "directions": {
+        "down": [
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 91,
+            "headWidthDelta": -1
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 92,
+            "headWidthDelta": 0
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 92,
+            "headWidthDelta": 0
+          }
+        ],
+        "left": [
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 91,
+            "headWidthDelta": -1
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 92,
+            "headWidthDelta": 0
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 93,
+            "headWidthDelta": 1
+          }
+        ],
+        "right": [
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 91,
+            "headWidthDelta": -1
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 92,
+            "headWidthDelta": 0
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 93,
+            "headWidthDelta": 1
+          }
+        ],
+        "up": [
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 92,
+            "headWidthDelta": 0
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 92,
+            "headWidthDelta": 0
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 91,
+            "headWidthDelta": -1
+          }
+        ]
+      }
+    },
+    {
+      "id": "masculine-beige-summer-suit",
+      "guest": "guest-09",
+      "directions": {
+        "down": [
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 93,
+            "headWidthDelta": 1
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 93,
+            "headWidthDelta": 1
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 92,
+            "headWidthDelta": 0
+          }
+        ],
+        "left": [
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 92,
+            "headWidthDelta": 0
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 93,
+            "headWidthDelta": 1
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 93,
+            "headWidthDelta": 1
+          }
+        ],
+        "right": [
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 93,
+            "headWidthDelta": 1
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 92,
+            "headWidthDelta": 0
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 93,
+            "headWidthDelta": 1
+          }
+        ],
+        "up": [
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 92,
+            "headWidthDelta": 0
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 93,
+            "headWidthDelta": 1
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 92,
+            "headWidthDelta": 0
+          }
+        ]
+      }
+    },
+    {
+      "id": "masculine-charcoal-burgundy-tie",
+      "guest": "guest-10",
+      "directions": {
+        "down": [
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 93,
+            "headWidthDelta": 1
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 92,
+            "headWidthDelta": 0
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 92,
+            "headWidthDelta": 0
+          }
+        ],
+        "left": [
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 92,
+            "headWidthDelta": 0
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 92,
+            "headWidthDelta": 0
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 92,
+            "headWidthDelta": 0
+          }
+        ],
+        "right": [
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 93,
+            "headWidthDelta": 1
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 92,
+            "headWidthDelta": 0
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 92,
+            "headWidthDelta": 0
+          }
+        ],
+        "up": [
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 92,
+            "headWidthDelta": 0
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 92,
+            "headWidthDelta": 0
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 92,
+            "headWidthDelta": 0
+          }
+        ]
+      }
+    },
+    {
+      "id": "masculine-green-blazer-cream-pants",
+      "guest": "guest-11",
+      "directions": {
+        "down": [
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 92,
+            "headWidthDelta": 0
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 92,
+            "headWidthDelta": 0
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 93,
+            "headWidthDelta": 1
+          }
+        ],
+        "left": [
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 93,
+            "headWidthDelta": 1
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 93,
+            "headWidthDelta": 1
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 92,
+            "headWidthDelta": 0
+          }
+        ],
+        "right": [
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 92,
+            "headWidthDelta": 0
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 93,
+            "headWidthDelta": 1
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 93,
+            "headWidthDelta": 1
+          }
+        ],
+        "up": [
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 93,
+            "headWidthDelta": 1
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 93,
+            "headWidthDelta": 1
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 93,
+            "headWidthDelta": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "masculine-blue-modern-hanbok",
+      "guest": "guest-12",
+      "directions": {
+        "down": [
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 93,
+            "headWidthDelta": 1
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 92,
+            "headWidthDelta": 0
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 92,
+            "headWidthDelta": 0
+          }
+        ],
+        "left": [
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 92,
+            "headWidthDelta": 0
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 92,
+            "headWidthDelta": 0
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 91,
+            "headWidthDelta": -1
+          }
+        ],
+        "right": [
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 93,
+            "headWidthDelta": 1
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 92,
+            "headWidthDelta": 0
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 92,
+            "headWidthDelta": 0
+          }
+        ],
+        "up": [
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 92,
+            "headWidthDelta": 0
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 92,
+            "headWidthDelta": 0
+          },
+          {
+            "top": 13,
+            "bottom": 264,
+            "characterHeight": 252,
+            "headHeight": 84,
+            "bodyHeight": 168,
+            "bodyToHeadRatio": 2,
+            "headWidth": 93,
+            "headWidthDelta": 1
+          }
+        ]
+      }
+    }
+  ]
+}

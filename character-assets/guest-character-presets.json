@@ -5,6 +5,28 @@
       "width": 96,
       "height": 144
     },
+    "selectionPreview": {
+      "source": {
+        "width": 192,
+        "height": 288
+      },
+      "walk": {
+        "sheet": {
+          "width": 576,
+          "height": 1152
+        }
+      },
+      "idle": {
+        "sheet": {
+          "width": 384,
+          "height": 288
+        }
+      },
+      "contentHeight": 252,
+      "headHeight": 84,
+      "headWidth": 92,
+      "footBaseline": 264
+    },
     "worldSource": {
       "width": 48,
       "height": 72

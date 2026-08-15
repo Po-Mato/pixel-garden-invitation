@@ -30,7 +30,7 @@ it("선택된 완성 하객 캐릭터 미리보기와 카드 목록을 보여준
   expect(preview).toHaveAttribute("data-moving", "true");
   expect(preview.querySelector("img")).toHaveAttribute(
     "src",
-    expect.stringContaining("/guests/feminine-long-wave-dress__walk.png")
+    expect.stringContaining("/guests/preview/feminine-long-wave-dress__walk.png")
   );
   expect(screen.getByRole("button", { name: "크림 롱 웨이브 원피스" })).toBeInTheDocument();
   expect(screen.getByRole("button", { name: "네이비 클래식 수트" })).toBeInTheDocument();

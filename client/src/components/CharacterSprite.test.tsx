@@ -65,7 +65,7 @@ it("월드에서 96x144 프레임을 동일 비율로 48x72에 렌더링한다",
   expect(baseLayer).toHaveStyle({ backgroundPosition: "-192px -288px" });
 });
 
-it("미리보기에서는 기존 96x144 프레임을 유지한다", () => {
+it("미리보기에서는 192x288 전용 프레임을 절반 크기로 선명하게 표시한다", () => {
   render(
     <CharacterSprite
       appearance={defaultCharacterAppearance}
@@ -79,13 +79,17 @@ it("미리보기에서는 기존 96x144 프레임을 유지한다", () => {
   const sprite = screen.getByLabelText("미리보기 하객");
   expect(sprite).not.toHaveClass("character-sprite--world");
   expect(sprite).toHaveStyle({
-    "--character-source-width": "96px",
-    "--character-source-height": "144px",
+    "--character-source-width": "192px",
+    "--character-source-height": "288px",
     "--character-display-width": "96px",
     "--character-display-height": "144px",
-    "--character-display-scale-x": "1",
-    "--character-display-scale-y": "1"
+    "--character-display-scale-x": "0.5",
+    "--character-display-scale-y": "0.5"
   });
+  expect(sprite.querySelector("img")).toHaveAttribute(
+    "src",
+    expect.stringContaining("/guests/preview/feminine-long-wave-dress__idle.png")
+  );
 });
 
 it("선택 목록 썸네일은 고해상도 원본을 48x72로 표시한다", () => {

@@ -12,6 +12,8 @@ const defaultSourceRoot = join(root, "character-assets/source");
 const defaultOutputRoot = join(root, "client/public/characters/generated");
 const guestIdleDimensions = guestPresetCatalog.frame.idle.sheet;
 const guestWalkDimensions = guestPresetCatalog.frame.walk.sheet;
+const guestSelectionPreviewIdleDimensions = guestPresetCatalog.frame.selectionPreview.idle.sheet;
+const guestSelectionPreviewWalkDimensions = guestPresetCatalog.frame.selectionPreview.walk.sheet;
 const guestWorldIdleDimensions = {
   width: guestPresetCatalog.frame.worldSource.width * guestPresetCatalog.frame.idle.columns,
   height: guestPresetCatalog.frame.worldSource.height
@@ -40,6 +42,14 @@ async function prevalidateSources(sourceRoot) {
   for (const preset of guestPresetCatalog.presets) {
     await requireFile(sourcePath(sourceRoot, preset.source.walk), guestWalkDimensions);
     await requireFile(sourcePath(sourceRoot, preset.source.idle), guestIdleDimensions);
+    await requireFile(
+      join(sourceRoot, "guests-preview", `${preset.id}__walk.png`),
+      guestSelectionPreviewWalkDimensions
+    );
+    await requireFile(
+      join(sourceRoot, "guests-preview", `${preset.id}__idle.png`),
+      guestSelectionPreviewIdleDimensions
+    );
   }
 
   for (const npc of catalog.npcs) {
@@ -115,6 +125,14 @@ export async function generateCharacterAssets({
       : idleSource;
     await writeFixed(generatedWalkSource, preset.generated.walk);
     await writeFixed(generatedIdleSource, preset.generated.idle);
+    await writeFixed(
+      join(sourceRoot, "guests-preview", `${preset.id}__walk.png`),
+      `guests/preview/${preset.id}__walk.png`
+    );
+    await writeFixed(
+      join(sourceRoot, "guests-preview", `${preset.id}__idle.png`),
+      `guests/preview/${preset.id}__idle.png`
+    );
     await writePortrait(
       generatedIdleSource,
       `guests/portraits/${preset.id}.png`

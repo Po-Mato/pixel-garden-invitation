@@ -31,17 +31,24 @@ export function resolveCharacterPortraitUrl(
 export function resolveCharacterLayers(
   appearance: CharacterAppearance,
   baseUrl = import.meta.env.BASE_URL,
-  _displayMode: CharacterDisplayMode = "world"
+  displayMode: CharacterDisplayMode = "world"
 ): ResolvedCharacterLayer[] {
   const preset = resolveGuestPreset(appearance);
   const fallbackPreset = resolveGuestPreset(defaultCharacterAppearance);
+  const usesSelectionPreview = displayMode === "preview";
+  const spritePath = (presetId: string, kind: "walk" | "idle") =>
+    usesSelectionPreview
+      ? `guests/preview/${presetId}__${kind}.png`
+      : `guests/${presetId}__${kind}.png`;
   return [{
     slot: "base",
-    walkUrl: assetUrl(baseUrl, preset.generated.walk),
-    idleUrl: assetUrl(baseUrl, preset.generated.idle),
-    fallbackWalkUrl: assetUrl(baseUrl, fallbackPreset.generated.walk),
-    fallbackIdleUrl: assetUrl(baseUrl, fallbackPreset.generated.idle),
-    sourceSize: guestPresetFrame.source,
+    walkUrl: assetUrl(baseUrl, spritePath(preset.id, "walk")),
+    idleUrl: assetUrl(baseUrl, spritePath(preset.id, "idle")),
+    fallbackWalkUrl: assetUrl(baseUrl, spritePath(fallbackPreset.id, "walk")),
+    fallbackIdleUrl: assetUrl(baseUrl, spritePath(fallbackPreset.id, "idle")),
+    sourceSize: usesSelectionPreview
+      ? guestPresetFrame.selectionPreview.source
+      : guestPresetFrame.source,
     displaySize: guestPresetFrame.display
   }];
 }

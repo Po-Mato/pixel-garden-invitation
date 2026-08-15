@@ -9,6 +9,15 @@ export type GuestSpriteSize = {
 
 export type GuestPresetFrame = {
   source: GuestSpriteSize;
+  selectionPreview: {
+    source: GuestSpriteSize;
+    walk: { sheet: GuestSpriteSize };
+    idle: { sheet: GuestSpriteSize };
+    contentHeight: number;
+    headHeight: number;
+    headWidth: number;
+    footBaseline: number;
+  };
   worldSource: GuestSpriteSize;
   display: {
     world: GuestSpriteSize;
