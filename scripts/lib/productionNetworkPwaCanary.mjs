@@ -18,6 +18,11 @@ export const productionNetworkPwaBudgets = Object.freeze({
   maximumCorePrecachePaths: 90
 });
 
+export const productionNetworkPwaPreparePolicy = Object.freeze({
+  attempts: 2,
+  attemptTimeoutMs: 90_000
+});
+
 export const productionNetworkPwaTrendPolicy = Object.freeze({
   requiredRuns: 5,
   retainedRuns: 12,
@@ -313,22 +318,49 @@ async function waitForControllerAndCache(page, version, expectedPaths, timeoutMs
   return page.evaluate(async ({ targetVersion, paths, timeout, obsolete }) => {
     const deadline = Date.now() + timeout;
     const expectedName = `wedding-garden-precache-${targetVersion}`;
-    while (Date.now() < deadline) {
+    const inspect = async () => {
       const registration = await navigator.serviceWorker.getRegistration();
       const names = await caches.keys();
       const cache = names.includes(expectedName) ? await caches.open(expectedName) : null;
       const urls = new Set(cache ? (await cache.keys()).map((request) => request.url) : []);
       const scope = registration?.scope ?? location.href;
-      const complete = Boolean(cache) && paths.every((resourcePath) => urls.has(new URL(resourcePath, scope).href));
-      const obsoleteRemoved = !obsolete || !names.includes(obsolete);
-      if (registration?.active && navigator.serviceWorker.controller && complete && obsoleteRemoved) {
-        return { controlled: true, complete, names, expectedName, cachedPaths: urls.size };
-      }
+      const missingPaths = paths.filter((resourcePath) => !urls.has(new URL(resourcePath, scope).href));
+      const complete = Boolean(cache) && missingPaths.length === 0;
+      return {
+        controlled: Boolean(navigator.serviceWorker.controller),
+        complete,
+        names,
+        expectedName,
+        cachedPaths: urls.size,
+        missingPaths,
+        registrationActive: Boolean(registration?.active),
+        registrationInstalling: registration?.installing?.state ?? null,
+        registrationWaiting: registration?.waiting?.state ?? null,
+        obsoleteRemoved: !obsolete || !names.includes(obsolete)
+      };
+    };
+    while (Date.now() < deadline) {
+      const snapshot = await inspect();
+      if (snapshot.registrationActive && snapshot.controlled && snapshot.complete && snapshot.obsoleteRemoved) return snapshot;
       await new Promise((resolve) => setTimeout(resolve, 200));
     }
-    const registration = await navigator.serviceWorker.getRegistration();
-    return { controlled: Boolean(navigator.serviceWorker.controller), complete: false, names: await caches.keys(), expectedName, cachedPaths: 0, registrationActive: Boolean(registration?.active) };
+    return inspect();
   }, { targetVersion: version, paths: expectedPaths, timeout: timeoutMs, obsolete: obsoleteName });
+}
+
+export async function retryProductionPwaPreparation({ probe, recover, attempts = productionNetworkPwaPreparePolicy.attempts }) {
+  if (typeof probe !== "function" || typeof recover !== "function") throw new TypeError("PWA 준비 probe와 recover가 필요합니다.");
+  if (!Number.isInteger(attempts) || attempts < 1) throw new TypeError("PWA 준비 시도 횟수는 1 이상이어야 합니다.");
+  const snapshots = [];
+  for (let attempt = 1; attempt <= attempts; attempt += 1) {
+    const snapshot = await probe(attempt);
+    snapshots.push({ attempt, ...snapshot });
+    if (snapshot.controlled && snapshot.complete && snapshot.obsoleteRemoved !== false) {
+      return { cache: snapshot, snapshots };
+    }
+    if (attempt < attempts) await recover(snapshot, attempt);
+  }
+  return { cache: snapshots.at(-1), snapshots };
 }
 
 async function installPublicUpdate(page, timeoutMs) {
@@ -397,7 +429,25 @@ export async function prepareProductionNetworkPwaCanary({ url, profileDir, outpu
     const page = context.pages()[0] ?? await context.newPage();
     await page.goto(publicUrl, { waitUntil: "domcontentloaded", timeout: 30_000 });
     await page.locator(".entry-screen").waitFor({ state: "visible", timeout: 20_000 });
-    const cache = await waitForControllerAndCache(page, worker.version, expectedPaths);
+    const preparation = await retryProductionPwaPreparation({
+      probe: () => waitForControllerAndCache(
+        page,
+        worker.version,
+        expectedPaths,
+        productionNetworkPwaPreparePolicy.attemptTimeoutMs
+      ),
+      recover: async () => {
+        await page.evaluate(async () => {
+          const registration = await navigator.serviceWorker.getRegistration();
+          const activeWorker = navigator.serviceWorker.controller ?? registration?.active;
+          if (activeWorker) activeWorker.postMessage({ type: "CACHE_CORE" });
+          else await registration?.unregister();
+        });
+        await page.reload({ waitUntil: "domcontentloaded", timeout: 30_000 });
+        await page.locator(".entry-screen").waitFor({ state: "visible", timeout: 20_000 });
+      }
+    });
+    const cache = preparation.cache;
     const report = {
       generatedAt: new Date().toISOString(),
       publicUrl,
@@ -406,11 +456,19 @@ export async function prepareProductionNetworkPwaCanary({ url, profileDir, outpu
       expectedFeaturePathCount: expectedFeaturePaths.length,
       previousControllerActive: cache.controlled,
       previousCacheComplete: cache.complete,
-      previousCacheName: cache.expectedName
+      previousCacheName: cache.expectedName,
+      preparationAttemptCount: preparation.snapshots.length,
+      preparationSnapshots: preparation.snapshots
     };
-    if (!cache.controlled || !cache.complete) throw new Error("배포 전 공개 서비스 워커 상태 준비 실패");
     const reportPath = path.join(outputDir, "production-network-pwa-prepare.json");
     await writeFile(reportPath, `${JSON.stringify(report, null, 2)}\n`);
+    if (!cache.controlled || !cache.complete) {
+      const missing = cache.missingPaths?.slice(0, 5).join(", ") || "없음";
+      throw new Error(
+        `배포 전 공개 서비스 워커 상태 준비 실패: 시도 ${preparation.snapshots.length}회 · `
+        + `제어 ${cache.controlled} · 활성 ${cache.registrationActive} · 캐시 ${cache.cachedPaths}/${expectedPaths.length} · 누락 ${missing}`
+      );
+    }
     return { ...report, reportPath };
   } finally {
     await context.close();
