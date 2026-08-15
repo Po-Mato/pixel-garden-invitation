@@ -35,7 +35,7 @@ export function resolveCharacterLayers(
 ): ResolvedCharacterLayer[] {
   const preset = resolveGuestPreset(appearance);
   const fallbackPreset = resolveGuestPreset(defaultCharacterAppearance);
-  const usesSelectionPreview = displayMode === "preview";
+  const usesSelectionPreview = displayMode === "preview" || displayMode === "thumbnail";
   const spritePath = (presetId: string, kind: "walk" | "idle") =>
     usesSelectionPreview
       ? `guests/preview/${presetId}__${kind}.png`

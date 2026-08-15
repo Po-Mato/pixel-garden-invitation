@@ -1,1634 +1,2685 @@
 {
-  "version": 1,
+  "version": 2,
+  "method": "shared-vector-rig",
+  "rendererSourceHash": "194598ebfa7f67bc288e526c5ab7dd7c2c03eab1e68f712b6c3c7c6485587ddb",
   "policy": {
     "source": {
       "width": 192,
       "height": 288
     },
-    "contentHeight": 252,
+    "anatomicalLandmarks": {
+      "crown": 12,
+      "chin": 96,
+      "shoulder": 110,
+      "waist": 158,
+      "pelvis": 184,
+      "knee": 224,
+      "foot": 264
+    },
     "headHeight": 84,
     "bodyHeight": 168,
-    "headWidth": 92,
-    "footBaseline": 264,
-    "maximumHeadWidthDelta": 2
+    "maximumCrossCharacterHeadVariationPercent": 2,
+    "maximumDirectionalLandmarkDelta": 2,
+    "prohibitedTransforms": [
+      "directional-scale",
+      "partial-horizontal-stretch",
+      "partial-vertical-stretch",
+      "perspective-camera"
+    ]
   },
   "summary": {
     "presetCount": 12,
     "frameCount": 144,
-    "minimumHeadWidth": 91,
-    "maximumHeadWidth": 93,
-    "maximumHeadWidthDelta": 1,
+    "minimumHeadHeight": 84,
+    "maximumHeadHeight": 84,
+    "crossCharacterHeadVariationPercent": 0,
+    "directionalLandmarkMaximumDelta": 0,
     "exactBodyToHeadRatio": true,
+    "maximumHeadWidthDelta": 0,
     "passed": true
   },
-  "presets": [
+  "hashes": {
+    "feminine-long-wave-dress": {
+      "walk": "576x1152:dd0f53f5",
+      "idle": "384x288:1d0ad715"
+    },
+    "feminine-formal-hanbok": {
+      "walk": "576x1152:308dfdf2",
+      "idle": "384x288:4cd72015"
+    },
+    "masculine-navy-suit": {
+      "walk": "576x1152:b9432ade",
+      "idle": "384x288:488b3d9d"
+    },
+    "masculine-charcoal-blazer": {
+      "walk": "576x1152:8d01b0df",
+      "idle": "384x288:d2c77161"
+    },
+    "feminine-sage-bolero-dress": {
+      "walk": "576x1152:f3e120f6",
+      "idle": "384x288:5c2c6ab9"
+    },
+    "feminine-champagne-navy-skirt": {
+      "walk": "576x1152:a89d07fb",
+      "idle": "384x288:aa0a74c1"
+    },
+    "feminine-lavender-jacket-dress": {
+      "walk": "576x1152:2f26e4d2",
+      "idle": "384x288:68fd1661"
+    },
+    "feminine-teal-modern-hanbok": {
+      "walk": "576x1152:a809043e",
+      "idle": "384x288:a7ba18d5"
+    },
+    "masculine-beige-summer-suit": {
+      "walk": "576x1152:c4f8589f",
+      "idle": "384x288:a5a17525"
+    },
+    "masculine-charcoal-burgundy-tie": {
+      "walk": "576x1152:7ae6d1c4",
+      "idle": "384x288:435fb299"
+    },
+    "masculine-green-blazer-cream-pants": {
+      "walk": "576x1152:9ab1a809",
+      "idle": "384x288:bd0ed925"
+    },
+    "masculine-blue-modern-hanbok": {
+      "walk": "576x1152:c70d208f",
+      "idle": "384x288:4adc9ad1"
+    }
+  },
+  "frames": [
     {
-      "id": "feminine-long-wave-dress",
-      "guest": "guest-01",
-      "directions": {
-        "down": [
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 93,
-            "headWidthDelta": 1
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 92,
-            "headWidthDelta": 0
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 92,
-            "headWidthDelta": 0
-          }
-        ],
-        "left": [
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 93,
-            "headWidthDelta": 1
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 93,
-            "headWidthDelta": 1
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 93,
-            "headWidthDelta": 1
-          }
-        ],
-        "right": [
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 93,
-            "headWidthDelta": 1
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 92,
-            "headWidthDelta": 0
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 93,
-            "headWidthDelta": 1
-          }
-        ],
-        "up": [
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 93,
-            "headWidthDelta": 1
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 93,
-            "headWidthDelta": 1
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 92,
-            "headWidthDelta": 0
-          }
-        ]
-      }
+      "guestId": "guest-01",
+      "direction": "down",
+      "step": -1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 88
     },
     {
-      "id": "feminine-formal-hanbok",
-      "guest": "guest-02",
-      "directions": {
-        "down": [
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 93,
-            "headWidthDelta": 1
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 93,
-            "headWidthDelta": 1
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 93,
-            "headWidthDelta": 1
-          }
-        ],
-        "left": [
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 92,
-            "headWidthDelta": 0
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 92,
-            "headWidthDelta": 0
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 93,
-            "headWidthDelta": 1
-          }
-        ],
-        "right": [
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 93,
-            "headWidthDelta": 1
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 93,
-            "headWidthDelta": 1
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 93,
-            "headWidthDelta": 1
-          }
-        ],
-        "up": [
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 93,
-            "headWidthDelta": 1
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 93,
-            "headWidthDelta": 1
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 92,
-            "headWidthDelta": 0
-          }
-        ]
-      }
+      "guestId": "guest-01",
+      "direction": "down",
+      "step": 0,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 88
     },
     {
-      "id": "masculine-navy-suit",
-      "guest": "guest-03",
-      "directions": {
-        "down": [
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 92,
-            "headWidthDelta": 0
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 92,
-            "headWidthDelta": 0
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 92,
-            "headWidthDelta": 0
-          }
-        ],
-        "left": [
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 93,
-            "headWidthDelta": 1
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 92,
-            "headWidthDelta": 0
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 93,
-            "headWidthDelta": 1
-          }
-        ],
-        "right": [
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 93,
-            "headWidthDelta": 1
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 93,
-            "headWidthDelta": 1
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 92,
-            "headWidthDelta": 0
-          }
-        ],
-        "up": [
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 92,
-            "headWidthDelta": 0
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 92,
-            "headWidthDelta": 0
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 92,
-            "headWidthDelta": 0
-          }
-        ]
-      }
+      "guestId": "guest-01",
+      "direction": "down",
+      "step": 1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 88
     },
     {
-      "id": "masculine-charcoal-blazer",
-      "guest": "guest-04",
-      "directions": {
-        "down": [
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 91,
-            "headWidthDelta": -1
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 92,
-            "headWidthDelta": 0
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 91,
-            "headWidthDelta": -1
-          }
-        ],
-        "left": [
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 93,
-            "headWidthDelta": 1
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 92,
-            "headWidthDelta": 0
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 93,
-            "headWidthDelta": 1
-          }
-        ],
-        "right": [
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 91,
-            "headWidthDelta": -1
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 92,
-            "headWidthDelta": 0
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 93,
-            "headWidthDelta": 1
-          }
-        ],
-        "up": [
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 92,
-            "headWidthDelta": 0
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 92,
-            "headWidthDelta": 0
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 91,
-            "headWidthDelta": -1
-          }
-        ]
-      }
+      "guestId": "guest-01",
+      "direction": "left",
+      "step": -1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 72
     },
     {
-      "id": "feminine-sage-bolero-dress",
-      "guest": "guest-05",
-      "directions": {
-        "down": [
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 92,
-            "headWidthDelta": 0
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 93,
-            "headWidthDelta": 1
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 93,
-            "headWidthDelta": 1
-          }
-        ],
-        "left": [
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 93,
-            "headWidthDelta": 1
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 93,
-            "headWidthDelta": 1
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 93,
-            "headWidthDelta": 1
-          }
-        ],
-        "right": [
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 93,
-            "headWidthDelta": 1
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 92,
-            "headWidthDelta": 0
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 92,
-            "headWidthDelta": 0
-          }
-        ],
-        "up": [
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 93,
-            "headWidthDelta": 1
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 92,
-            "headWidthDelta": 0
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 93,
-            "headWidthDelta": 1
-          }
-        ]
-      }
+      "guestId": "guest-01",
+      "direction": "left",
+      "step": 0,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 72
     },
     {
-      "id": "feminine-champagne-navy-skirt",
-      "guest": "guest-06",
-      "directions": {
-        "down": [
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 92,
-            "headWidthDelta": 0
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 92,
-            "headWidthDelta": 0
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 92,
-            "headWidthDelta": 0
-          }
-        ],
-        "left": [
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 93,
-            "headWidthDelta": 1
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 92,
-            "headWidthDelta": 0
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 93,
-            "headWidthDelta": 1
-          }
-        ],
-        "right": [
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 93,
-            "headWidthDelta": 1
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 92,
-            "headWidthDelta": 0
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 93,
-            "headWidthDelta": 1
-          }
-        ],
-        "up": [
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 92,
-            "headWidthDelta": 0
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 93,
-            "headWidthDelta": 1
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 93,
-            "headWidthDelta": 1
-          }
-        ]
-      }
+      "guestId": "guest-01",
+      "direction": "left",
+      "step": 1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 72
     },
     {
-      "id": "feminine-lavender-jacket-dress",
-      "guest": "guest-07",
-      "directions": {
-        "down": [
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 92,
-            "headWidthDelta": 0
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 92,
-            "headWidthDelta": 0
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 93,
-            "headWidthDelta": 1
-          }
-        ],
-        "left": [
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 91,
-            "headWidthDelta": -1
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 92,
-            "headWidthDelta": 0
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 93,
-            "headWidthDelta": 1
-          }
-        ],
-        "right": [
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 93,
-            "headWidthDelta": 1
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 92,
-            "headWidthDelta": 0
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 92,
-            "headWidthDelta": 0
-          }
-        ],
-        "up": [
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 92,
-            "headWidthDelta": 0
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 92,
-            "headWidthDelta": 0
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 92,
-            "headWidthDelta": 0
-          }
-        ]
-      }
+      "guestId": "guest-01",
+      "direction": "right",
+      "step": -1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 72
     },
     {
-      "id": "feminine-teal-modern-hanbok",
-      "guest": "guest-08",
-      "directions": {
-        "down": [
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 91,
-            "headWidthDelta": -1
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 92,
-            "headWidthDelta": 0
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 92,
-            "headWidthDelta": 0
-          }
-        ],
-        "left": [
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 91,
-            "headWidthDelta": -1
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 92,
-            "headWidthDelta": 0
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 93,
-            "headWidthDelta": 1
-          }
-        ],
-        "right": [
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 91,
-            "headWidthDelta": -1
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 92,
-            "headWidthDelta": 0
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 93,
-            "headWidthDelta": 1
-          }
-        ],
-        "up": [
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 92,
-            "headWidthDelta": 0
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 92,
-            "headWidthDelta": 0
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 91,
-            "headWidthDelta": -1
-          }
-        ]
-      }
+      "guestId": "guest-01",
+      "direction": "right",
+      "step": 0,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 72
     },
     {
-      "id": "masculine-beige-summer-suit",
-      "guest": "guest-09",
-      "directions": {
-        "down": [
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 93,
-            "headWidthDelta": 1
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 93,
-            "headWidthDelta": 1
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 92,
-            "headWidthDelta": 0
-          }
-        ],
-        "left": [
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 92,
-            "headWidthDelta": 0
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 93,
-            "headWidthDelta": 1
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 93,
-            "headWidthDelta": 1
-          }
-        ],
-        "right": [
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 93,
-            "headWidthDelta": 1
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 92,
-            "headWidthDelta": 0
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 93,
-            "headWidthDelta": 1
-          }
-        ],
-        "up": [
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 92,
-            "headWidthDelta": 0
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 93,
-            "headWidthDelta": 1
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 92,
-            "headWidthDelta": 0
-          }
-        ]
-      }
+      "guestId": "guest-01",
+      "direction": "right",
+      "step": 1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 72
     },
     {
-      "id": "masculine-charcoal-burgundy-tie",
-      "guest": "guest-10",
-      "directions": {
-        "down": [
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 93,
-            "headWidthDelta": 1
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 92,
-            "headWidthDelta": 0
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 92,
-            "headWidthDelta": 0
-          }
-        ],
-        "left": [
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 92,
-            "headWidthDelta": 0
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 92,
-            "headWidthDelta": 0
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 92,
-            "headWidthDelta": 0
-          }
-        ],
-        "right": [
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 93,
-            "headWidthDelta": 1
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 92,
-            "headWidthDelta": 0
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 92,
-            "headWidthDelta": 0
-          }
-        ],
-        "up": [
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 92,
-            "headWidthDelta": 0
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 92,
-            "headWidthDelta": 0
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 92,
-            "headWidthDelta": 0
-          }
-        ]
-      }
+      "guestId": "guest-01",
+      "direction": "up",
+      "step": -1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 88
     },
     {
-      "id": "masculine-green-blazer-cream-pants",
-      "guest": "guest-11",
-      "directions": {
-        "down": [
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 92,
-            "headWidthDelta": 0
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 92,
-            "headWidthDelta": 0
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 93,
-            "headWidthDelta": 1
-          }
-        ],
-        "left": [
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 93,
-            "headWidthDelta": 1
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 93,
-            "headWidthDelta": 1
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 92,
-            "headWidthDelta": 0
-          }
-        ],
-        "right": [
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 92,
-            "headWidthDelta": 0
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 93,
-            "headWidthDelta": 1
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 93,
-            "headWidthDelta": 1
-          }
-        ],
-        "up": [
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 93,
-            "headWidthDelta": 1
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 93,
-            "headWidthDelta": 1
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 93,
-            "headWidthDelta": 1
-          }
-        ]
-      }
+      "guestId": "guest-01",
+      "direction": "up",
+      "step": 0,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 88
     },
     {
-      "id": "masculine-blue-modern-hanbok",
-      "guest": "guest-12",
-      "directions": {
-        "down": [
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 93,
-            "headWidthDelta": 1
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 92,
-            "headWidthDelta": 0
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 92,
-            "headWidthDelta": 0
-          }
-        ],
-        "left": [
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 92,
-            "headWidthDelta": 0
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 92,
-            "headWidthDelta": 0
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 91,
-            "headWidthDelta": -1
-          }
-        ],
-        "right": [
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 93,
-            "headWidthDelta": 1
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 92,
-            "headWidthDelta": 0
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 92,
-            "headWidthDelta": 0
-          }
-        ],
-        "up": [
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 92,
-            "headWidthDelta": 0
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 92,
-            "headWidthDelta": 0
-          },
-          {
-            "top": 13,
-            "bottom": 264,
-            "characterHeight": 252,
-            "headHeight": 84,
-            "bodyHeight": 168,
-            "bodyToHeadRatio": 2,
-            "headWidth": 93,
-            "headWidthDelta": 1
-          }
-        ]
-      }
+      "guestId": "guest-01",
+      "direction": "up",
+      "step": 1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 88
+    },
+    {
+      "guestId": "guest-02",
+      "direction": "down",
+      "step": -1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 88
+    },
+    {
+      "guestId": "guest-02",
+      "direction": "down",
+      "step": 0,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 88
+    },
+    {
+      "guestId": "guest-02",
+      "direction": "down",
+      "step": 1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 88
+    },
+    {
+      "guestId": "guest-02",
+      "direction": "left",
+      "step": -1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 72
+    },
+    {
+      "guestId": "guest-02",
+      "direction": "left",
+      "step": 0,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 72
+    },
+    {
+      "guestId": "guest-02",
+      "direction": "left",
+      "step": 1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 72
+    },
+    {
+      "guestId": "guest-02",
+      "direction": "right",
+      "step": -1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 72
+    },
+    {
+      "guestId": "guest-02",
+      "direction": "right",
+      "step": 0,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 72
+    },
+    {
+      "guestId": "guest-02",
+      "direction": "right",
+      "step": 1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 72
+    },
+    {
+      "guestId": "guest-02",
+      "direction": "up",
+      "step": -1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 88
+    },
+    {
+      "guestId": "guest-02",
+      "direction": "up",
+      "step": 0,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 88
+    },
+    {
+      "guestId": "guest-02",
+      "direction": "up",
+      "step": 1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 88
+    },
+    {
+      "guestId": "guest-03",
+      "direction": "down",
+      "step": -1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 88
+    },
+    {
+      "guestId": "guest-03",
+      "direction": "down",
+      "step": 0,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 88
+    },
+    {
+      "guestId": "guest-03",
+      "direction": "down",
+      "step": 1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 88
+    },
+    {
+      "guestId": "guest-03",
+      "direction": "left",
+      "step": -1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 72
+    },
+    {
+      "guestId": "guest-03",
+      "direction": "left",
+      "step": 0,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 72
+    },
+    {
+      "guestId": "guest-03",
+      "direction": "left",
+      "step": 1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 72
+    },
+    {
+      "guestId": "guest-03",
+      "direction": "right",
+      "step": -1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 72
+    },
+    {
+      "guestId": "guest-03",
+      "direction": "right",
+      "step": 0,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 72
+    },
+    {
+      "guestId": "guest-03",
+      "direction": "right",
+      "step": 1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 72
+    },
+    {
+      "guestId": "guest-03",
+      "direction": "up",
+      "step": -1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 88
+    },
+    {
+      "guestId": "guest-03",
+      "direction": "up",
+      "step": 0,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 88
+    },
+    {
+      "guestId": "guest-03",
+      "direction": "up",
+      "step": 1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 88
+    },
+    {
+      "guestId": "guest-04",
+      "direction": "down",
+      "step": -1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 88
+    },
+    {
+      "guestId": "guest-04",
+      "direction": "down",
+      "step": 0,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 88
+    },
+    {
+      "guestId": "guest-04",
+      "direction": "down",
+      "step": 1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 88
+    },
+    {
+      "guestId": "guest-04",
+      "direction": "left",
+      "step": -1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 72
+    },
+    {
+      "guestId": "guest-04",
+      "direction": "left",
+      "step": 0,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 72
+    },
+    {
+      "guestId": "guest-04",
+      "direction": "left",
+      "step": 1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 72
+    },
+    {
+      "guestId": "guest-04",
+      "direction": "right",
+      "step": -1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 72
+    },
+    {
+      "guestId": "guest-04",
+      "direction": "right",
+      "step": 0,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 72
+    },
+    {
+      "guestId": "guest-04",
+      "direction": "right",
+      "step": 1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 72
+    },
+    {
+      "guestId": "guest-04",
+      "direction": "up",
+      "step": -1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 88
+    },
+    {
+      "guestId": "guest-04",
+      "direction": "up",
+      "step": 0,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 88
+    },
+    {
+      "guestId": "guest-04",
+      "direction": "up",
+      "step": 1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 88
+    },
+    {
+      "guestId": "guest-05",
+      "direction": "down",
+      "step": -1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 88
+    },
+    {
+      "guestId": "guest-05",
+      "direction": "down",
+      "step": 0,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 88
+    },
+    {
+      "guestId": "guest-05",
+      "direction": "down",
+      "step": 1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 88
+    },
+    {
+      "guestId": "guest-05",
+      "direction": "left",
+      "step": -1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 72
+    },
+    {
+      "guestId": "guest-05",
+      "direction": "left",
+      "step": 0,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 72
+    },
+    {
+      "guestId": "guest-05",
+      "direction": "left",
+      "step": 1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 72
+    },
+    {
+      "guestId": "guest-05",
+      "direction": "right",
+      "step": -1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 72
+    },
+    {
+      "guestId": "guest-05",
+      "direction": "right",
+      "step": 0,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 72
+    },
+    {
+      "guestId": "guest-05",
+      "direction": "right",
+      "step": 1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 72
+    },
+    {
+      "guestId": "guest-05",
+      "direction": "up",
+      "step": -1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 88
+    },
+    {
+      "guestId": "guest-05",
+      "direction": "up",
+      "step": 0,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 88
+    },
+    {
+      "guestId": "guest-05",
+      "direction": "up",
+      "step": 1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 88
+    },
+    {
+      "guestId": "guest-06",
+      "direction": "down",
+      "step": -1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 88
+    },
+    {
+      "guestId": "guest-06",
+      "direction": "down",
+      "step": 0,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 88
+    },
+    {
+      "guestId": "guest-06",
+      "direction": "down",
+      "step": 1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 88
+    },
+    {
+      "guestId": "guest-06",
+      "direction": "left",
+      "step": -1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 72
+    },
+    {
+      "guestId": "guest-06",
+      "direction": "left",
+      "step": 0,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 72
+    },
+    {
+      "guestId": "guest-06",
+      "direction": "left",
+      "step": 1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 72
+    },
+    {
+      "guestId": "guest-06",
+      "direction": "right",
+      "step": -1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 72
+    },
+    {
+      "guestId": "guest-06",
+      "direction": "right",
+      "step": 0,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 72
+    },
+    {
+      "guestId": "guest-06",
+      "direction": "right",
+      "step": 1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 72
+    },
+    {
+      "guestId": "guest-06",
+      "direction": "up",
+      "step": -1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 88
+    },
+    {
+      "guestId": "guest-06",
+      "direction": "up",
+      "step": 0,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 88
+    },
+    {
+      "guestId": "guest-06",
+      "direction": "up",
+      "step": 1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 88
+    },
+    {
+      "guestId": "guest-07",
+      "direction": "down",
+      "step": -1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 88
+    },
+    {
+      "guestId": "guest-07",
+      "direction": "down",
+      "step": 0,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 88
+    },
+    {
+      "guestId": "guest-07",
+      "direction": "down",
+      "step": 1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 88
+    },
+    {
+      "guestId": "guest-07",
+      "direction": "left",
+      "step": -1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 72
+    },
+    {
+      "guestId": "guest-07",
+      "direction": "left",
+      "step": 0,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 72
+    },
+    {
+      "guestId": "guest-07",
+      "direction": "left",
+      "step": 1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 72
+    },
+    {
+      "guestId": "guest-07",
+      "direction": "right",
+      "step": -1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 72
+    },
+    {
+      "guestId": "guest-07",
+      "direction": "right",
+      "step": 0,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 72
+    },
+    {
+      "guestId": "guest-07",
+      "direction": "right",
+      "step": 1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 72
+    },
+    {
+      "guestId": "guest-07",
+      "direction": "up",
+      "step": -1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 88
+    },
+    {
+      "guestId": "guest-07",
+      "direction": "up",
+      "step": 0,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 88
+    },
+    {
+      "guestId": "guest-07",
+      "direction": "up",
+      "step": 1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 88
+    },
+    {
+      "guestId": "guest-08",
+      "direction": "down",
+      "step": -1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 88
+    },
+    {
+      "guestId": "guest-08",
+      "direction": "down",
+      "step": 0,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 88
+    },
+    {
+      "guestId": "guest-08",
+      "direction": "down",
+      "step": 1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 88
+    },
+    {
+      "guestId": "guest-08",
+      "direction": "left",
+      "step": -1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 72
+    },
+    {
+      "guestId": "guest-08",
+      "direction": "left",
+      "step": 0,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 72
+    },
+    {
+      "guestId": "guest-08",
+      "direction": "left",
+      "step": 1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 72
+    },
+    {
+      "guestId": "guest-08",
+      "direction": "right",
+      "step": -1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 72
+    },
+    {
+      "guestId": "guest-08",
+      "direction": "right",
+      "step": 0,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 72
+    },
+    {
+      "guestId": "guest-08",
+      "direction": "right",
+      "step": 1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 72
+    },
+    {
+      "guestId": "guest-08",
+      "direction": "up",
+      "step": -1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 88
+    },
+    {
+      "guestId": "guest-08",
+      "direction": "up",
+      "step": 0,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 88
+    },
+    {
+      "guestId": "guest-08",
+      "direction": "up",
+      "step": 1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 88
+    },
+    {
+      "guestId": "guest-09",
+      "direction": "down",
+      "step": -1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 88
+    },
+    {
+      "guestId": "guest-09",
+      "direction": "down",
+      "step": 0,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 88
+    },
+    {
+      "guestId": "guest-09",
+      "direction": "down",
+      "step": 1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 88
+    },
+    {
+      "guestId": "guest-09",
+      "direction": "left",
+      "step": -1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 72
+    },
+    {
+      "guestId": "guest-09",
+      "direction": "left",
+      "step": 0,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 72
+    },
+    {
+      "guestId": "guest-09",
+      "direction": "left",
+      "step": 1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 72
+    },
+    {
+      "guestId": "guest-09",
+      "direction": "right",
+      "step": -1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 72
+    },
+    {
+      "guestId": "guest-09",
+      "direction": "right",
+      "step": 0,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 72
+    },
+    {
+      "guestId": "guest-09",
+      "direction": "right",
+      "step": 1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 72
+    },
+    {
+      "guestId": "guest-09",
+      "direction": "up",
+      "step": -1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 88
+    },
+    {
+      "guestId": "guest-09",
+      "direction": "up",
+      "step": 0,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 88
+    },
+    {
+      "guestId": "guest-09",
+      "direction": "up",
+      "step": 1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 88
+    },
+    {
+      "guestId": "guest-10",
+      "direction": "down",
+      "step": -1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 88
+    },
+    {
+      "guestId": "guest-10",
+      "direction": "down",
+      "step": 0,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 88
+    },
+    {
+      "guestId": "guest-10",
+      "direction": "down",
+      "step": 1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 88
+    },
+    {
+      "guestId": "guest-10",
+      "direction": "left",
+      "step": -1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 72
+    },
+    {
+      "guestId": "guest-10",
+      "direction": "left",
+      "step": 0,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 72
+    },
+    {
+      "guestId": "guest-10",
+      "direction": "left",
+      "step": 1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 72
+    },
+    {
+      "guestId": "guest-10",
+      "direction": "right",
+      "step": -1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 72
+    },
+    {
+      "guestId": "guest-10",
+      "direction": "right",
+      "step": 0,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 72
+    },
+    {
+      "guestId": "guest-10",
+      "direction": "right",
+      "step": 1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 72
+    },
+    {
+      "guestId": "guest-10",
+      "direction": "up",
+      "step": -1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 88
+    },
+    {
+      "guestId": "guest-10",
+      "direction": "up",
+      "step": 0,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 88
+    },
+    {
+      "guestId": "guest-10",
+      "direction": "up",
+      "step": 1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 88
+    },
+    {
+      "guestId": "guest-11",
+      "direction": "down",
+      "step": -1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 88
+    },
+    {
+      "guestId": "guest-11",
+      "direction": "down",
+      "step": 0,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 88
+    },
+    {
+      "guestId": "guest-11",
+      "direction": "down",
+      "step": 1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 88
+    },
+    {
+      "guestId": "guest-11",
+      "direction": "left",
+      "step": -1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 72
+    },
+    {
+      "guestId": "guest-11",
+      "direction": "left",
+      "step": 0,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 72
+    },
+    {
+      "guestId": "guest-11",
+      "direction": "left",
+      "step": 1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 72
+    },
+    {
+      "guestId": "guest-11",
+      "direction": "right",
+      "step": -1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 72
+    },
+    {
+      "guestId": "guest-11",
+      "direction": "right",
+      "step": 0,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 72
+    },
+    {
+      "guestId": "guest-11",
+      "direction": "right",
+      "step": 1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 72
+    },
+    {
+      "guestId": "guest-11",
+      "direction": "up",
+      "step": -1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 88
+    },
+    {
+      "guestId": "guest-11",
+      "direction": "up",
+      "step": 0,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 88
+    },
+    {
+      "guestId": "guest-11",
+      "direction": "up",
+      "step": 1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 88
+    },
+    {
+      "guestId": "guest-12",
+      "direction": "down",
+      "step": -1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 88
+    },
+    {
+      "guestId": "guest-12",
+      "direction": "down",
+      "step": 0,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 88
+    },
+    {
+      "guestId": "guest-12",
+      "direction": "down",
+      "step": 1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 88
+    },
+    {
+      "guestId": "guest-12",
+      "direction": "left",
+      "step": -1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 72
+    },
+    {
+      "guestId": "guest-12",
+      "direction": "left",
+      "step": 0,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 72
+    },
+    {
+      "guestId": "guest-12",
+      "direction": "left",
+      "step": 1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 72
+    },
+    {
+      "guestId": "guest-12",
+      "direction": "right",
+      "step": -1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 72
+    },
+    {
+      "guestId": "guest-12",
+      "direction": "right",
+      "step": 0,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 72
+    },
+    {
+      "guestId": "guest-12",
+      "direction": "right",
+      "step": 1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 72
+    },
+    {
+      "guestId": "guest-12",
+      "direction": "up",
+      "step": -1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 88
+    },
+    {
+      "guestId": "guest-12",
+      "direction": "up",
+      "step": 0,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 88
+    },
+    {
+      "guestId": "guest-12",
+      "direction": "up",
+      "step": 1,
+      "landmarks": {
+        "crown": 12,
+        "chin": 96,
+        "shoulder": 110,
+        "waist": 158,
+        "pelvis": 184,
+        "knee": 224,
+        "foot": 264
+      },
+      "headHeight": 84,
+      "bodyHeight": 168,
+      "bodyToHeadRatio": 2,
+      "skullWidth": 88
     }
   ]
 }
