@@ -12,6 +12,7 @@ const entryScreenStyles = readFileSync("src/entry-screen-v3.css", "utf8");
 const quickInvitationStyles = readFileSync("src/quick-invitation-continuity.css", "utf8");
 const invitationUxPolishStyles = readFileSync("src/invitation-ux-polish.css", "utf8");
 const weddingDisplayFontStyles = readFileSync("src/wedding-display-font-critical.css", "utf8");
+const pwaStyles = readFileSync("src/pwa.css", "utf8");
 const worldZones = [
   "home",
   "neighborhood",
@@ -154,6 +155,7 @@ describe("entry screen layout", () => {
 
   it("adds swipe direction feedback without covering the character preview", () => {
     expect(weddingLuxeStyles).toMatch(/\.character-customizer__sprite\[data-swipe-ready="true"\]\s*\{[^}]*touch-action:\s*pan-y;/s);
+    expect(weddingLuxeStyles).toMatch(/\.character-customizer__sprite\[data-turning="true"\]\s*\{[^}]*opacity:\s*0\.72;/s);
     expect(weddingLuxeStyles).toMatch(/\.character-customizer__direction-dots button\s*\{[^}]*min-width:\s*24px;[^}]*min-height:\s*24px;/s);
     expect(weddingLuxeStyles).toMatch(/\.character-customizer__preview-hint\s*\{[^}]*pointer-events:\s*none;/s);
   });
@@ -162,6 +164,14 @@ describe("entry screen layout", () => {
     expect(refinedGameStyles).toMatch(/data-label-density="compact"[^}]*\.world-spot__card\s*\{[^}]*width:\s*30px;[^}]*min-height:\s*30px;/s);
     expect(refinedGameStyles).toContain('[data-camera-edges~="left"] .world-camera-edge-cue--left');
     expect(refinedGameStyles).toMatch(/data-camera-edges\]\[data-label-density="compact"\][^{]*\.world-camera-edge-status\s*\{[^}]*opacity:\s*1;/s);
+    expect(refinedGameStyles).toContain('html[data-one-handed-controls="true"] .world-map .world-minimap');
+    expect(refinedGameStyles).toContain('html[data-one-handed-controls="true"][data-joystick-side="right"] .world-map .world-camera-edge-status');
+  });
+
+  it("keeps entry PWA notices away from primary actions and lets the card surface pass taps through", () => {
+    expect(pwaStyles).toMatch(/\.pwa-status-center--entry\s*\{[^}]*top:[^}]*bottom:\s*auto;/s);
+    expect(pwaStyles).toMatch(/\.pwa-status\s*\{[^}]*pointer-events:\s*none;/s);
+    expect(pwaStyles).toMatch(/\.pwa-status > button\s*\{[^}]*pointer-events:\s*auto;/s);
   });
 
   it("keeps Korean preset names readable in at most two lines", () => {

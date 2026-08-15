@@ -81,6 +81,18 @@ it("캐릭터를 좌우로 밀거나 방향 점을 눌러 원하는 면을 바�
   expect(screen.getByRole("button", { name: "뒷면 보기" })).toHaveAttribute("aria-pressed", "true");
 });
 
+it("방향이 바뀔 때 짧은 전환만 적용하고 즉시 원래 선명도로 돌아온다", () => {
+  vi.useFakeTimers();
+  render(<CharacterCustomizer value={defaultCharacterAppearance} onChange={vi.fn()} />);
+  const preview = screen.getByRole("img", { name: "선택한 하객 캐릭터" });
+  const swipeSurface = preview.parentElement as HTMLElement;
+
+  fireEvent.click(screen.getByRole("button", { name: "오른쪽 보기" }));
+  expect(swipeSurface).toHaveAttribute("data-turning", "true");
+  act(() => vi.advanceTimersByTime(90));
+  expect(swipeSurface).not.toHaveAttribute("data-turning");
+});
+
 it("회전·보행 안내는 최초 한 번만 잠시 보여준다", () => {
   vi.useFakeTimers();
   const first = render(<CharacterCustomizer value={defaultCharacterAppearance} onChange={vi.fn()} />);

@@ -363,9 +363,15 @@ html[data-text-scale="ios-200"] .bottom-sheet__header button {
 
 .character-customizer__sprite[data-swipe-ready="true"] {
   cursor: ew-resize;
+  opacity: 1;
   touch-action: pan-y;
+  transition: opacity 110ms ease-out;
   -webkit-user-select: none;
   user-select: none;
+}
+
+.character-customizer__sprite[data-turning="true"] {
+  opacity: 0.72;
 }
 
 .character-customizer__direction-dots {
@@ -377,6 +383,18 @@ html[data-text-scale="ios-200"] .bottom-sheet__header button {
   align-items: center;
   justify-content: center;
   transform: translateX(-50%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .character-customizer__sprite[data-swipe-ready="true"] {
+    opacity: 1;
+    transition: none;
+  }
+}
+
+html[data-reduce-motion="true"] .character-customizer__sprite[data-swipe-ready="true"] {
+  opacity: 1;
+  transition: none;
 }
 
 .character-customizer__direction-dots button {

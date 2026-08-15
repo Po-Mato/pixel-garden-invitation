@@ -12,7 +12,7 @@ import {
   type TransitionEvent as ReactTransitionEvent
 } from "react";
 import "../game-ui-font-critical.css";
-import { Accessibility, Archive, ArrowRight, CalendarDays, Camera, ChevronDown, CircleHelp, Flower2, Images, MapPinned, MessageCircle, RefreshCw, Share2, SlidersHorizontal, UsersRound, X } from "lucide-react";
+import { Accessibility, Archive, ArrowRight, CalendarDays, Camera, ChevronDown, CircleHelp, Flower2, Images, MapPinned, MessageCircle, RefreshCw, Share2, SlidersHorizontal, UsersRound, X, type LucideIcon } from "lucide-react";
 import {
   companionRendezvousProposalLifetimeMs,
   guestPresetFrame,
@@ -381,6 +381,21 @@ const loadGameSaveDataCenterComponent = () => import("./GameSaveDataCenter");
 const loadGameDeviceReadinessCenterComponent = () => import("./GameDeviceReadinessCenter");
 const loadWorldSecretMemorialComponent = () => import("./WorldSecretMemorial");
 const loadJourneyMemoryCardAccessComponent = () => import("./JourneyMemoryCardAccess");
+
+const worldSpotMotionIcons: Record<SpotId, LucideIcon> = {
+  "wedding-info": CalendarDays,
+  directions: MapPinned,
+  rsvp: UsersRound,
+  guestbook: MessageCircle,
+  couple: Flower2,
+  gallery: Images,
+  story: Archive
+};
+
+function WorldSpotMotionIcon({ spotId }: { spotId: SpotId }) {
+  const Icon = worldSpotMotionIcons[spotId];
+  return <Icon className="world-spot__motion-icon" data-purpose={spotId} aria-hidden="true" />;
+}
 
 export async function preloadGameFeatureComponents() {
   await Promise.all([
@@ -5494,7 +5509,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
                   }}
                 >
                   <span className="world-spot__card">
-                    <MapPinned className="world-spot__motion-icon" aria-hidden="true" />
+                    <WorldSpotMotionIcon spotId={worldSpot.id} />
                     <strong>{worldSpot.label}</strong>
                     <small>{content?.actionLabel ?? "보기"}</small>
                   </span>

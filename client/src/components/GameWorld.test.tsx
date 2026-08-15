@@ -3211,7 +3211,7 @@ describe("GameWorld", () => {
 
     expect(map).toHaveAttribute("data-label-density", "expanded");
     expect(container.querySelector(".world-camera-edge-cues")).toBeInTheDocument();
-    expect(getDirectionsWorldSpot().querySelector(".world-spot__motion-icon")).toBeInTheDocument();
+    expect(getDirectionsWorldSpot().querySelector(".world-spot__motion-icon")).toHaveAttribute("data-purpose", "directions");
 
     fireEvent.keyDown(joystick, { key: "ArrowRight" });
     act(() => vi.advanceTimersByTime(159));

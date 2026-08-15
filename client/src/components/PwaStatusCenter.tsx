@@ -277,9 +277,10 @@ export function PwaStatusCenter({
   if (!content) return null;
   return (
     <aside
-      className={`pwa-status-center pwa-status-center--${tone}${playing ? " pwa-status-center--playing" : ""}`}
+      className={`pwa-status-center pwa-status-center--${tone}${playing ? " pwa-status-center--playing" : ""}${showInstall ? " pwa-status-center--entry" : ""}`}
       aria-live="polite"
       aria-atomic="true"
+      data-placement={showInstall ? "entry-safe" : playing ? "play-safe" : "standard"}
     >
       <div className={`pwa-status pwa-status--${tone}`} role="status">{content}</div>
     </aside>

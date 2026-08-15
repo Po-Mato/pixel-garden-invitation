@@ -51,15 +51,26 @@ export function CharacterCustomizer({ value, onChange }: Props) {
   const [previewDirection, setPreviewDirection] = useState<Direction>("down");
   const [previewWalking, setPreviewWalking] = useState(true);
   const [previewFrameIndex, setPreviewFrameIndex] = useState(0);
+  const [previewTurning, setPreviewTurning] = useState(false);
   const [previewHintVisible, setPreviewHintVisible] = useState(shouldShowPreviewHint);
   const previewPointerRef = useRef<{ id: number; x: number; y: number } | null>(null);
+  const previewTurnTimerRef = useRef<number | null>(null);
 
   const dismissPreviewHint = useCallback(() => setPreviewHintVisible(false), []);
+  const showPreviewTurn = useCallback(() => {
+    if (previewTurnTimerRef.current !== null) window.clearTimeout(previewTurnTimerRef.current);
+    setPreviewTurning(true);
+    previewTurnTimerRef.current = window.setTimeout(() => {
+      setPreviewTurning(false);
+      previewTurnTimerRef.current = null;
+    }, 90);
+  }, []);
   const selectPreviewDirection = useCallback((nextDirection: Direction) => {
     setPreviewDirection(nextDirection);
     setPreviewFrameIndex(0);
+    showPreviewTurn();
     dismissPreviewHint();
-  }, [dismissPreviewHint]);
+  }, [dismissPreviewHint, showPreviewTurn]);
   const rotatePreview = useCallback((step: 1 | -1) => {
     setPreviewDirection((current) => {
       const nextIndex = (
@@ -68,8 +79,9 @@ export function CharacterCustomizer({ value, onChange }: Props) {
       return previewDirections[nextIndex];
     });
     setPreviewFrameIndex(0);
+    showPreviewTurn();
     dismissPreviewHint();
-  }, [dismissPreviewHint]);
+  }, [dismissPreviewHint, showPreviewTurn]);
 
   useEffect(() => {
     if (!previewWalking) return;
@@ -78,6 +90,10 @@ export function CharacterCustomizer({ value, onChange }: Props) {
     }, 240);
     return () => window.clearInterval(timer);
   }, [previewWalking]);
+
+  useEffect(() => () => {
+    if (previewTurnTimerRef.current !== null) window.clearTimeout(previewTurnTimerRef.current);
+  }, []);
 
   useEffect(() => {
     selectedOptionRef.current?.scrollIntoView?.({ block: "nearest", inline: "center" });
@@ -122,6 +138,7 @@ export function CharacterCustomizer({ value, onChange }: Props) {
         <div
           className="character-customizer__sprite"
           data-swipe-ready="true"
+          data-turning={previewTurning || undefined}
           onPointerDown={beginPreviewSwipe}
           onPointerUp={finishPreviewSwipe}
           onPointerCancel={() => { previewPointerRef.current = null; }}
