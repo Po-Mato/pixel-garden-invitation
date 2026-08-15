@@ -70,8 +70,11 @@ describe("PwaStatusCenter", () => {
     await failOfflinePreparation();
     render(<PwaStatusCenter playing={false} showInstall />);
 
-    expect(screen.getByRole("status")).toHaveTextContent("오프라인 저장은 아직 준비 중이에요");
-    expect(screen.getByRole("status")).toHaveTextContent("초대장과 게임은 지금 그대로 이용할 수 있어요");
+    const status = screen.getByRole("status");
+    expect(status).toHaveTextContent("오프라인 저장은 아직 준비 중이에요");
+    expect(status).toHaveTextContent("초대장과 게임은 지금 그대로 이용할 수 있어요");
+    expect(status.closest("aside")).toHaveAttribute("data-placement", "entry-safe");
+    expect(status.closest("aside")).toHaveClass("pwa-status-center--entry");
     expect(screen.queryByText("연결 상태를 확인해 주세요")).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "오프라인 저장 안내 닫기" }));

@@ -17,6 +17,12 @@
   bottom: max(92px, calc(env(safe-area-inset-bottom) + 82px));
 }
 
+.pwa-status-center--entry {
+  top: max(10px, env(safe-area-inset-top));
+  bottom: auto;
+  align-items: flex-start;
+}
+
 .pwa-status-center--offline,
 .pwa-status-center--online,
 .pwa-status-center--preparing {
@@ -40,7 +46,7 @@
   background: #fff9e9;
   color: #453b36;
   box-shadow: inset 0 0 0 2px #f1e6cb, 4px 5px 0 rgba(36, 29, 27, 0.35);
-  pointer-events: auto;
+  pointer-events: none;
 }
 
 .pwa-status > svg {
@@ -101,7 +107,12 @@
   color: #fffbed;
   font-size: 9px;
   font-weight: 900;
+  pointer-events: auto;
   white-space: nowrap;
+}
+
+.pwa-status-center--entry .pwa-status {
+  width: min(100%, 360px);
 }
 
 .pwa-status--offline > svg,

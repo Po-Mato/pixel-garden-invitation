@@ -637,6 +637,22 @@
   color: var(--game-wine);
 }
 
+html[data-one-handed-controls="true"] .world-map .world-minimap,
+html[data-one-handed-controls="true"] .world-map .world-camera-edge-status {
+  right: auto;
+  left: max(10px, env(safe-area-inset-left));
+}
+
+html[data-one-handed-controls="true"][data-joystick-side="right"] .world-map .world-minimap,
+html[data-one-handed-controls="true"][data-joystick-side="right"] .world-map .world-camera-edge-status {
+  right: max(10px, env(safe-area-inset-right));
+  left: auto;
+}
+
+html[data-one-handed-controls="true"] .world-camera-edge-status {
+  top: 68px;
+}
+
 .world-map[data-camera-edges][data-label-density="compact"] .world-camera-edge-status {
   opacity: 1;
   transform: translateY(0);
