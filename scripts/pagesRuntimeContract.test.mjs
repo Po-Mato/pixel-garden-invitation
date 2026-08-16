@@ -5,7 +5,8 @@ import {
   auditPagesRuntimeContract,
   buildPagesRuntimeContractSnapshot,
   extractHtmlRuntimeReferences,
-  formatPagesRuntimeContractMarkdown
+  formatPagesRuntimeContractMarkdown,
+  probePagesRuntimeResource
 } from "./lib/pagesRuntimeContract.mjs";
 
 const workerSource = `const VERSION = "abcdef123456";
@@ -45,7 +46,7 @@ test("Pages contract rejects root escapes, stale workers, and missing runtime re
   assert.ok(issues.some((issue) => issue.includes("SHA 불일치")));
   assert.ok(issues.some((issue) => issue.includes("manifest resolvedScope")));
   assert.ok(issues.some((issue) => issue.includes("HTML base path 이탈")));
-  assert.ok(issues.some((issue) => issue.includes("운영 자산 요청 실패")));
+  assert.ok(issues.some((issue) => issue.includes("운영 자산 요청 실패 1개 · 0:404")));
 });
 
 test("Pages contract extracts only fetchable script and link references", () => {
@@ -62,4 +63,53 @@ test("Pages deploy verifies the runtime contract after deployment", async () => 
   const contractAt = workflow.indexOf("quality:pages-runtime-contract");
   assert.ok(contractAt > deployAt);
   assert.match(workflow.slice(contractAt), /--expected-base-path \/pixel-garden-invitation\//);
+});
+
+test("Pages runtime probe retries a temporarily unavailable deployed asset", async () => {
+  let requests = 0;
+  let sleeps = 0;
+  const probe = await probePagesRuntimeResource({
+    baseUrl: "https://example.test/pixel-garden-invitation/",
+    resourcePath: "./assets/app.js",
+    attempts: 3,
+    retryDelayMs: 0,
+    sleep: async () => { sleeps += 1; },
+    fetcher: async (url) => {
+      requests += 1;
+      const status = requests === 1 ? 404 : 200;
+      return {
+        ok: status === 200,
+        status,
+        url: url.href,
+        arrayBuffer: async () => new ArrayBuffer(0)
+      };
+    }
+  });
+
+  assert.equal(requests, 2);
+  assert.equal(sleeps, 1);
+  assert.equal(probe.status, 200);
+  assert.equal(probe.attempts, 2);
+  assert.equal(probe.withinBase, true);
+});
+
+test("Pages runtime probe still reports a persistent asset failure", async () => {
+  let sleeps = 0;
+  const probe = await probePagesRuntimeResource({
+    baseUrl: "https://example.test/pixel-garden-invitation/",
+    resourcePath: "./assets/missing.js",
+    attempts: 3,
+    retryDelayMs: 0,
+    sleep: async () => { sleeps += 1; },
+    fetcher: async (url) => ({
+      ok: false,
+      status: 503,
+      url: url.href,
+      arrayBuffer: async () => new ArrayBuffer(0)
+    })
+  });
+
+  assert.equal(sleeps, 2);
+  assert.equal(probe.status, 503);
+  assert.equal(probe.attempts, 3);
 });
