@@ -1,6 +1,6 @@
 {
-  "guest": "guest-03",
-  "source": "exec-0f78218f-315e-4ba1-adac-e4ccd4f96cd6.png",
+  "guest": "guest-12",
+  "source": "exec-cf167197-4add-4b06-b03d-e64a5f3c3a8a.png",
   "dimensions": {
     "width": 1536,
     "height": 576,
@@ -34,10 +34,46 @@
     {
       "direction": "front",
       "sourceBounds": {
-        "left": 127,
-        "top": 38,
-        "width": 300,
-        "height": 845
+        "left": 162,
+        "top": 125,
+        "width": 242,
+        "height": 651
+      },
+      "normalizedBounds": {
+        "left": 99,
+        "top": 24,
+        "width": 187,
+        "height": 504
+      },
+      "crownY": 24,
+      "targetChinY": 192,
+      "footY": 528
+    },
+    {
+      "direction": "left",
+      "sourceBounds": {
+        "left": 583,
+        "top": 126,
+        "width": 234,
+        "height": 650
+      },
+      "normalizedBounds": {
+        "left": 102,
+        "top": 24,
+        "width": 181,
+        "height": 504
+      },
+      "crownY": 24,
+      "targetChinY": 192,
+      "footY": 528
+    },
+    {
+      "direction": "right",
+      "sourceBounds": {
+        "left": 953,
+        "top": 126,
+        "width": 231,
+        "height": 650
       },
       "normalizedBounds": {
         "left": 103,
@@ -50,53 +86,17 @@
       "footY": 528
     },
     {
-      "direction": "left",
-      "sourceBounds": {
-        "left": 528,
-        "top": 49,
-        "width": 284,
-        "height": 834
-      },
-      "normalizedBounds": {
-        "left": 106,
-        "top": 24,
-        "width": 172,
-        "height": 504
-      },
-      "crownY": 24,
-      "targetChinY": 192,
-      "footY": 528
-    },
-    {
-      "direction": "right",
-      "sourceBounds": {
-        "left": 899,
-        "top": 45,
-        "width": 288,
-        "height": 838
-      },
-      "normalizedBounds": {
-        "left": 106,
-        "top": 24,
-        "width": 173,
-        "height": 504
-      },
-      "crownY": 24,
-      "targetChinY": 192,
-      "footY": 528
-    },
-    {
       "direction": "back",
       "sourceBounds": {
-        "left": 1316,
-        "top": 46,
-        "width": 263,
-        "height": 834
+        "left": 1366,
+        "top": 127,
+        "width": 235,
+        "height": 649
       },
       "normalizedBounds": {
-        "left": 113,
+        "left": 101,
         "top": 24,
-        "width": 159,
+        "width": 182,
         "height": 504
       },
       "crownY": 24,

@@ -8,7 +8,9 @@ import sharp from "sharp";
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const pilotRoot = join(root, "character-assets/reference/guest-selection-pilots/v4-flat");
 
-for (const guest of ["guest-02", "guest-03"]) {
+const guests = Array.from({ length: 12 }, (_, index) => `guest-${String(index + 1).padStart(2, "0")}`);
+
+for (const guest of guests) {
   test(`${guest} flat pilot keeps the exact shared three-head rig`, async () => {
     const pilotPath = join(pilotRoot, `${guest}-turnaround-pilot.png`);
     const audit = JSON.parse(await readFile(join(pilotRoot, `${guest}-audit.json`), "utf8"));
@@ -29,6 +31,10 @@ for (const guest of ["guest-02", "guest-03"]) {
       totalCharacterHeight: 504,
       targetRatio: "1:2",
     });
+    assert.equal(
+      audit.segmentation,
+      "four foreground groups detected from transparent column gaps; no fixed-quarter clipping",
+    );
     assert.equal(audit.reviewStatus, "passed");
     assert.deepEqual(audit.acceptance, {
       ratio: true,
