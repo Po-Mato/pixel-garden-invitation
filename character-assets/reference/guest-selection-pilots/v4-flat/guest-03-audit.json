@@ -1,0 +1,113 @@
+{
+  "guest": "guest-03",
+  "source": "exec-0f78218f-315e-4ba1-adac-e4ccd4f96cd6.png",
+  "dimensions": {
+    "width": 1536,
+    "height": 576,
+    "laneWidth": 384
+  },
+  "exactThreeHeadRig": {
+    "headBoundary": "crown-to-neck-junction; the shared proxy for the hidden rear-view chin",
+    "crownY": 24,
+    "chinY": 192,
+    "footY": 528,
+    "headHeight": 168,
+    "bodyBelowChinHeight": 336,
+    "totalCharacterHeight": 504,
+    "targetRatio": "1:2"
+  },
+  "normalization": "whole-character uniform scale only; no head/body or directional stretch",
+  "flatColorPolicy": {
+    "style": "flat 2D game character",
+    "maximumPaletteColors": 40,
+    "dither": 0,
+    "forbidden": [
+      "volumetric lighting",
+      "gradient shading",
+      "gloss",
+      "cast shadow",
+      "3D perspective"
+    ]
+  },
+  "directions": [
+    {
+      "direction": "front",
+      "sourceBounds": {
+        "left": 127,
+        "top": 38,
+        "width": 300,
+        "height": 845
+      },
+      "normalizedBounds": {
+        "left": 103,
+        "top": 24,
+        "width": 179,
+        "height": 504
+      },
+      "crownY": 24,
+      "targetChinY": 192,
+      "footY": 528
+    },
+    {
+      "direction": "left",
+      "sourceBounds": {
+        "left": 99,
+        "top": 49,
+        "width": 284,
+        "height": 834
+      },
+      "normalizedBounds": {
+        "left": 106,
+        "top": 24,
+        "width": 172,
+        "height": 504
+      },
+      "crownY": 24,
+      "targetChinY": 192,
+      "footY": 528
+    },
+    {
+      "direction": "right",
+      "sourceBounds": {
+        "left": 40,
+        "top": 45,
+        "width": 288,
+        "height": 838
+      },
+      "normalizedBounds": {
+        "left": 106,
+        "top": 24,
+        "width": 173,
+        "height": 504
+      },
+      "crownY": 24,
+      "targetChinY": 192,
+      "footY": 528
+    },
+    {
+      "direction": "back",
+      "sourceBounds": {
+        "left": 28,
+        "top": 46,
+        "width": 263,
+        "height": 834
+      },
+      "normalizedBounds": {
+        "left": 113,
+        "top": 24,
+        "width": 159,
+        "height": 504
+      },
+      "crownY": 24,
+      "targetChinY": 192,
+      "footY": 528
+    }
+  ],
+  "acceptance": {
+    "ratio": true,
+    "fourDirectionLandmarks": true,
+    "flatness": true,
+    "transparentBackground": true
+  },
+  "reviewStatus": "passed"
+}

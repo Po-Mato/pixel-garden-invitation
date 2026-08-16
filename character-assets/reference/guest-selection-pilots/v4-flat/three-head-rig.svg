@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1536" height="576" viewBox="0 0 1536 576">
+  <rect width="1536" height="576" fill="#fffdf9"/>
+  <defs>
+    <g id="front-rig">
+      <ellipse cx="192" cy="108" rx="84" ry="84" fill="#d9d1ca"/>
+      <path d="M123 204Q192 178 261 204L269 354Q238 372 216 375L220 528H164L168 375Q146 372 115 354Z" fill="#b9aaa0"/>
+      <path d="M123 211Q93 244 101 338L128 337L145 224Z" fill="#b9aaa0"/>
+      <path d="M261 211Q291 244 283 338L256 337L239 224Z" fill="#b9aaa0"/>
+    </g>
+    <g id="side-rig">
+      <ellipse cx="192" cy="108" rx="72" ry="84" fill="#d9d1ca"/>
+      <path d="M151 204Q192 182 226 204L234 356Q216 372 204 375L215 528H164L172 375Q157 370 145 354Z" fill="#b9aaa0"/>
+      <path d="M218 211Q244 249 237 342L214 340L199 224Z" fill="#b9aaa0"/>
+    </g>
+  </defs>
+  <g transform="translate(0 0)"><use href="#front-rig"/></g>
+  <g transform="translate(384 0)"><use href="#side-rig"/></g>
+  <g transform="translate(768 0)"><use href="#side-rig" transform="translate(384 0) scale(-1 1)"/></g>
+  <g transform="translate(1152 0)"><use href="#front-rig"/></g>
+  <g fill="none" stroke-width="2">
+    <path d="M0 24H1536" stroke="#5f83c5" stroke-dasharray="8 8"/>
+    <path d="M0 192H1536" stroke="#c85f72" stroke-dasharray="8 8"/>
+    <path d="M0 220H1536" stroke="#ba6aa0" stroke-dasharray="6 8"/>
+    <path d="M0 316H1536" stroke="#d29b45" stroke-dasharray="6 8"/>
+    <path d="M0 368H1536" stroke="#8a75bf" stroke-dasharray="6 8"/>
+    <path d="M0 448H1536" stroke="#6c9d78" stroke-dasharray="6 8"/>
+    <path d="M0 528H1536" stroke="#3c9460" stroke-dasharray="8 8"/>
+    <path d="M384 0V576M768 0V576M1152 0V576" stroke="#d9cec6"/>
+  </g>
+</svg>
