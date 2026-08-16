@@ -21,7 +21,7 @@
     "photo-effects:audit": "node scripts/render-photo-effect-anchor-audit.mjs",
     "photo-effects:test": "node --test scripts/photoEffectAnchorAudit.test.mjs",
     "characters:editor": "node scripts/serve-character-editor.mjs",
-    "characters:test": "pnpm characters:generate && node --test scripts/referenceAsset.test.mjs scripts/characterAssetGenerator.test.mjs scripts/characterAssetAudit.test.mjs scripts/characterVisualAnchor.test.mjs scripts/guest3dPromotion.test.mjs scripts/guestSelectionPreviewAssets.test.mjs scripts/coupleThreeHeadSprite.test.mjs scripts/couplePuppetAssets.test.mjs tools/character-pixel-editor/editor-core.test.mjs",
+    "characters:test": "pnpm characters:generate && node --test scripts/referenceAsset.test.mjs scripts/characterAssetGenerator.test.mjs scripts/characterAssetAudit.test.mjs scripts/characterVisualAnchor.test.mjs scripts/guest3dPromotion.test.mjs scripts/guestSelectionPreviewAssets.test.mjs scripts/flatThreeHeadPilot.test.mjs scripts/coupleThreeHeadSprite.test.mjs scripts/couplePuppetAssets.test.mjs tools/character-pixel-editor/editor-core.test.mjs",
     "fonts:build-critical-display": "node scripts/build-critical-wedding-display.mjs",
     "fonts:check-critical-display": "node scripts/check-critical-wedding-display.mjs",
     "maps:build": "node scripts/build-map-assets.mjs",

@@ -16,6 +16,7 @@
     "totalCharacterHeight": 504,
     "targetRatio": "1:2"
   },
+  "segmentation": "four foreground groups detected from transparent column gaps; no fixed-quarter clipping",
   "normalization": "whole-character uniform scale only; no head/body or directional stretch",
   "flatColorPolicy": {
     "style": "flat 2D game character",
@@ -51,7 +52,7 @@
     {
       "direction": "left",
       "sourceBounds": {
-        "left": 66,
+        "left": 471,
         "top": 99,
         "width": 289,
         "height": 789
@@ -69,7 +70,7 @@
     {
       "direction": "right",
       "sourceBounds": {
-        "left": 34,
+        "left": 844,
         "top": 99,
         "width": 284,
         "height": 789
@@ -87,9 +88,9 @@
     {
       "direction": "back",
       "sourceBounds": {
-        "left": 1,
+        "left": 1216,
         "top": 99,
-        "width": 306,
+        "width": 305,
         "height": 789
       },
       "normalizedBounds": {

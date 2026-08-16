@@ -101,16 +101,59 @@ function alphaBounds(data, width, height) {
   return { left, top, width: right - left + 1, height: bottom - top + 1 };
 }
 
-async function extractDirection(source, sourceWidth, sourceHeight, index) {
-  const sourceLeft = Math.round((sourceWidth * index) / directions.length);
-  const sourceRight = Math.round((sourceWidth * (index + 1)) / directions.length);
-  const { data, info } = await sharp(source)
-    .extract({ left: sourceLeft, top: 0, width: sourceRight - sourceLeft, height: sourceHeight })
-    .ensureAlpha()
+function foregroundGroups(data, width, height) {
+  const columnPixels = new Uint32Array(width);
+  for (let pixel = 0; pixel < width * height; pixel += 1) {
+    if (data[pixel * 4 + 3] >= 16) columnPixels[pixel % width] += 1;
+  }
+
+  const runs = [];
+  let start = -1;
+  for (let x = 0; x <= width; x += 1) {
+    const occupied = x < width && columnPixels[x] >= 2;
+    if (occupied && start < 0) start = x;
+    if (!occupied && start >= 0) {
+      runs.push({ left: start, right: x - 1 });
+      start = -1;
+    }
+  }
+
+  const mergeGap = Math.max(12, Math.round(width * 0.016));
+  const merged = [];
+  for (const run of runs) {
+    const previous = merged.at(-1);
+    if (previous && run.left - previous.right - 1 <= mergeGap) {
+      previous.right = run.right;
+    } else {
+      merged.push({ ...run });
+    }
+  }
+
+  const candidates = merged
+    .map((group) => {
+      let pixels = 0;
+      for (let x = group.left; x <= group.right; x += 1) pixels += columnPixels[x];
+      return { ...group, pixels };
+    })
+    .filter((group) => group.right - group.left + 1 >= Math.round(width * 0.03))
+    .sort((a, b) => b.pixels - a.pixels)
+    .slice(0, directions.length)
+    .sort((a, b) => a.left - b.left);
+
+  if (candidates.length !== directions.length) {
+    throw new Error(`Expected four separated character groups, found ${candidates.length}`);
+  }
+  return candidates;
+}
+
+async function extractDirection(sourceData, sourceInfo, group, index) {
+  const groupWidth = group.right - group.left + 1;
+  const { data, info } = await sharp(sourceData, { raw: sourceInfo })
+    .extract({ left: group.left, top: 0, width: groupWidth, height: sourceInfo.height })
     .raw()
     .toBuffer({ resolveWithObject: true });
-  clearConnectedBackground(data, info.width, info.height);
   const bounds = alphaBounds(data, info.width, info.height);
+  const sourceBounds = { ...bounds, left: group.left + bounds.left };
   const cropped = await sharp(data, { raw: info }).extract(bounds).png().toBuffer();
   const scale = contentHeight / bounds.height;
   const width = Math.round(bounds.width * scale);
@@ -121,7 +164,7 @@ async function extractDirection(source, sourceWidth, sourceHeight, index) {
   return {
     direction: directions[index],
     normalized,
-    sourceBounds: bounds,
+    sourceBounds,
     normalizedBounds: { left: Math.round((laneWidth - width) / 2), top: crownY, width, height: contentHeight },
   };
 }
@@ -150,8 +193,14 @@ async function main() {
   const { source, guest, outputRoot, reviewStatus } = parseArgs(process.argv.slice(2));
   const metadata = await sharp(source).metadata();
   if (!metadata.width || !metadata.height) throw new Error("Source dimensions are unavailable");
+  const { data: sourceData, info: sourceInfo } = await sharp(source)
+    .ensureAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  clearConnectedBackground(sourceData, sourceInfo.width, sourceInfo.height);
+  const groups = foregroundGroups(sourceData, sourceInfo.width, sourceInfo.height);
   const views = await Promise.all(
-    directions.map((_, index) => extractDirection(source, metadata.width, metadata.height, index)),
+    directions.map((_, index) => extractDirection(sourceData, sourceInfo, groups[index], index)),
   );
 
   await mkdir(outputRoot, { recursive: true });
@@ -195,6 +244,7 @@ async function main() {
       totalCharacterHeight: contentHeight,
       targetRatio: "1:2",
     },
+    segmentation: "four foreground groups detected from transparent column gaps; no fixed-quarter clipping",
     normalization: "whole-character uniform scale only; no head/body or directional stretch",
     flatColorPolicy: {
       style: "flat 2D game character",

@@ -1,6 +1,6 @@
 {
-  "guest": "guest-03",
-  "source": "exec-0f78218f-315e-4ba1-adac-e4ccd4f96cd6.png",
+  "guest": "guest-06",
+  "source": "exec-9a30c78e-9247-4d1c-b749-455687f054f5.png",
   "dimensions": {
     "width": 1536,
     "height": 576,
@@ -34,15 +34,15 @@
     {
       "direction": "front",
       "sourceBounds": {
-        "left": 127,
-        "top": 38,
-        "width": 300,
-        "height": 845
+        "left": 158,
+        "top": 136,
+        "width": 263,
+        "height": 626
       },
       "normalizedBounds": {
-        "left": 103,
+        "left": 86,
         "top": 24,
-        "width": 179,
+        "width": 212,
         "height": 504
       },
       "crownY": 24,
@@ -52,15 +52,15 @@
     {
       "direction": "left",
       "sourceBounds": {
-        "left": 528,
-        "top": 49,
-        "width": 284,
-        "height": 834
+        "left": 563,
+        "top": 137,
+        "width": 232,
+        "height": 624
       },
       "normalizedBounds": {
-        "left": 106,
+        "left": 99,
         "top": 24,
-        "width": 172,
+        "width": 187,
         "height": 504
       },
       "crownY": 24,
@@ -70,15 +70,15 @@
     {
       "direction": "right",
       "sourceBounds": {
-        "left": 899,
-        "top": 45,
-        "width": 288,
-        "height": 838
+        "left": 942,
+        "top": 137,
+        "width": 232,
+        "height": 624
       },
       "normalizedBounds": {
-        "left": 106,
+        "left": 99,
         "top": 24,
-        "width": 173,
+        "width": 187,
         "height": 504
       },
       "crownY": 24,
@@ -88,15 +88,15 @@
     {
       "direction": "back",
       "sourceBounds": {
-        "left": 1316,
-        "top": 46,
-        "width": 263,
-        "height": 834
+        "left": 1376,
+        "top": 139,
+        "width": 238,
+        "height": 623
       },
       "normalizedBounds": {
-        "left": 113,
+        "left": 96,
         "top": 24,
-        "width": 159,
+        "width": 193,
         "height": 504
       },
       "crownY": 24,

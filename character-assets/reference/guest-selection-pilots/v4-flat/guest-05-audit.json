@@ -1,6 +1,6 @@
 {
-  "guest": "guest-03",
-  "source": "exec-0f78218f-315e-4ba1-adac-e4ccd4f96cd6.png",
+  "guest": "guest-05",
+  "source": "exec-108b54eb-449b-4533-9dd7-ddde059a9bef.png",
   "dimensions": {
     "width": 1536,
     "height": 576,
@@ -34,15 +34,15 @@
     {
       "direction": "front",
       "sourceBounds": {
-        "left": 127,
-        "top": 38,
-        "width": 300,
-        "height": 845
+        "left": 221,
+        "top": 65,
+        "width": 253,
+        "height": 775
       },
       "normalizedBounds": {
-        "left": 103,
+        "left": 110,
         "top": 24,
-        "width": 179,
+        "width": 165,
         "height": 504
       },
       "crownY": 24,
@@ -52,10 +52,28 @@
     {
       "direction": "left",
       "sourceBounds": {
-        "left": 528,
-        "top": 49,
-        "width": 284,
-        "height": 834
+        "left": 599,
+        "top": 66,
+        "width": 262,
+        "height": 773
+      },
+      "normalizedBounds": {
+        "left": 107,
+        "top": 24,
+        "width": 171,
+        "height": 504
+      },
+      "crownY": 24,
+      "targetChinY": 192,
+      "footY": 528
+    },
+    {
+      "direction": "right",
+      "sourceBounds": {
+        "left": 932,
+        "top": 66,
+        "width": 264,
+        "height": 773
       },
       "normalizedBounds": {
         "left": 106,
@@ -68,35 +86,17 @@
       "footY": 528
     },
     {
-      "direction": "right",
-      "sourceBounds": {
-        "left": 899,
-        "top": 45,
-        "width": 288,
-        "height": 838
-      },
-      "normalizedBounds": {
-        "left": 106,
-        "top": 24,
-        "width": 173,
-        "height": 504
-      },
-      "crownY": 24,
-      "targetChinY": 192,
-      "footY": 528
-    },
-    {
       "direction": "back",
       "sourceBounds": {
-        "left": 1316,
-        "top": 46,
-        "width": 263,
-        "height": 834
+        "left": 1304,
+        "top": 66,
+        "width": 231,
+        "height": 774
       },
       "normalizedBounds": {
-        "left": 113,
+        "left": 117,
         "top": 24,
-        "width": 159,
+        "width": 150,
         "height": 504
       },
       "crownY": 24,

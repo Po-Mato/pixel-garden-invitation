@@ -1,6 +1,6 @@
 {
-  "guest": "guest-03",
-  "source": "exec-0f78218f-315e-4ba1-adac-e4ccd4f96cd6.png",
+  "guest": "guest-11",
+  "source": "exec-193365fe-f200-434b-92fb-d7965ddf23a0.png",
   "dimensions": {
     "width": 1536,
     "height": 576,
@@ -34,15 +34,15 @@
     {
       "direction": "front",
       "sourceBounds": {
-        "left": 127,
-        "top": 38,
-        "width": 300,
-        "height": 845
+        "left": 89,
+        "top": 115,
+        "width": 298,
+        "height": 768
       },
       "normalizedBounds": {
-        "left": 103,
+        "left": 94,
         "top": 24,
-        "width": 179,
+        "width": 196,
         "height": 504
       },
       "crownY": 24,
@@ -52,15 +52,15 @@
     {
       "direction": "left",
       "sourceBounds": {
-        "left": 528,
-        "top": 49,
-        "width": 284,
-        "height": 834
+        "left": 461,
+        "top": 125,
+        "width": 289,
+        "height": 757
       },
       "normalizedBounds": {
-        "left": 106,
+        "left": 96,
         "top": 24,
-        "width": 172,
+        "width": 192,
         "height": 504
       },
       "crownY": 24,
@@ -70,15 +70,15 @@
     {
       "direction": "right",
       "sourceBounds": {
-        "left": 899,
-        "top": 45,
+        "left": 785,
+        "top": 125,
         "width": 288,
-        "height": 838
+        "height": 757
       },
       "normalizedBounds": {
-        "left": 106,
+        "left": 96,
         "top": 24,
-        "width": 173,
+        "width": 192,
         "height": 504
       },
       "crownY": 24,
@@ -88,15 +88,15 @@
     {
       "direction": "back",
       "sourceBounds": {
-        "left": 1316,
-        "top": 46,
-        "width": 263,
-        "height": 834
+        "left": 1154,
+        "top": 119,
+        "width": 287,
+        "height": 764
       },
       "normalizedBounds": {
-        "left": 113,
+        "left": 98,
         "top": 24,
-        "width": 159,
+        "width": 189,
         "height": 504
       },
       "crownY": 24,
