@@ -26,6 +26,46 @@ function withinBase(rawUrl, baseUrl) {
   return url.origin === baseUrl.origin && url.pathname.startsWith(baseUrl.pathname);
 }
 
+export async function probePagesRuntimeResource({
+  baseUrl: rawBaseUrl,
+  resourcePath,
+  fetcher = globalThis.fetch,
+  attempts = 4,
+  retryDelayMs = 1_500,
+  sleep = (delayMs) => new Promise((resolve) => setTimeout(resolve, delayMs))
+}) {
+  const baseUrl = normalizedBaseUrl(rawBaseUrl);
+  const requestedUrl = new URL(resourcePath, baseUrl);
+  const maximumAttempts = Math.max(1, Math.trunc(attempts));
+  let lastProbe = null;
+  for (let attempt = 1; attempt <= maximumAttempts; attempt += 1) {
+    try {
+      const response = await fetcher(requestedUrl);
+      if (response.ok) await response.arrayBuffer();
+      const finalUrl = response.url || requestedUrl.href;
+      lastProbe = {
+        path: resourcePath,
+        status: response.status,
+        finalUrl,
+        withinBase: withinBase(finalUrl, baseUrl),
+        attempts: attempt
+      };
+      if (lastProbe.status === 200 && lastProbe.withinBase) return lastProbe;
+    } catch (error) {
+      lastProbe = {
+        path: resourcePath,
+        status: 0,
+        finalUrl: requestedUrl.href,
+        withinBase: true,
+        attempts: attempt,
+        error: String(error)
+      };
+    }
+    if (attempt < maximumAttempts) await sleep(retryDelayMs);
+  }
+  return lastProbe;
+}
+
 export function extractHtmlRuntimeReferences(html) {
   const references = [];
   for (const match of String(html).matchAll(/<(?:script|link)\b[^>]*\b(?:src|href)=["']([^"']+)["'][^>]*>/gi)) {
@@ -113,7 +153,13 @@ export function auditPagesRuntimeContract(snapshot) {
   if (escapedHtml.length > 0) issues.push(`Pages HTML base path 이탈 ${escapedHtml.length}개`);
   if (snapshot.assets.outsideBasePaths.length > 0) issues.push(`Pages PWA 자산 base path 이탈 ${snapshot.assets.outsideBasePaths.length}개`);
   const failedProbes = snapshot.assets.probes.filter(({ status, withinBase: contained }) => status !== 200 || contained !== true);
-  if (failedProbes.length > 0) issues.push(`Pages 운영 자산 요청 실패 ${failedProbes.length}개`);
+  if (failedProbes.length > 0) {
+    const failedSummary = failedProbes
+      .slice(0, 3)
+      .map(({ path: resourcePath, status }) => `${resourcePath}:${status}`)
+      .join(", ");
+    issues.push(`Pages 운영 자산 요청 실패 ${failedProbes.length}개 · ${failedSummary}`);
+  }
   if (snapshot.assets.probes.length !== snapshot.assets.expectedPaths) {
     issues.push(`Pages 운영 자산 검사 ${snapshot.assets.probes.length}/${snapshot.assets.expectedPaths}`);
   }

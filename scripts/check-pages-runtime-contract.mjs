@@ -6,7 +6,8 @@ import {
   auditPagesRuntimeContract,
   buildPagesRuntimeContractSnapshot,
   formatPagesRuntimeContractMarkdown,
-  pagesRuntimeContractPolicy
+  pagesRuntimeContractPolicy,
+  probePagesRuntimeResource
 } from "./lib/pagesRuntimeContract.mjs";
 import { parseServiceWorkerVersion } from "./lib/productionNetworkPwaCanary.mjs";
 
@@ -52,22 +53,11 @@ const expectedPaths = [...new Set([
   ...parsePwaPrecachePaths(workerSource),
   ...pagesRuntimeContractPolicy.criticalRuntimePaths
 ])];
-const probes = await Promise.all(expectedPaths.map(async (resourcePath) => {
-  const requestedUrl = new URL(resourcePath, baseUrl);
-  try {
-    const response = await fetchNoStore(requestedUrl);
-    if (response.ok) await response.arrayBuffer();
-    const finalUrl = response.url || requestedUrl.href;
-    return {
-      path: resourcePath,
-      status: response.status,
-      finalUrl,
-      withinBase: new URL(finalUrl).origin === baseUrl.origin && new URL(finalUrl).pathname.startsWith(baseUrl.pathname)
-    };
-  } catch (error) {
-    return { path: resourcePath, status: 0, finalUrl: requestedUrl.href, withinBase: true, error: String(error) };
-  }
-}));
+const probes = await Promise.all(expectedPaths.map((resourcePath) => probePagesRuntimeResource({
+  baseUrl,
+  resourcePath,
+  fetcher: fetchNoStore
+})));
 const snapshot = buildPagesRuntimeContractSnapshot({
   baseUrl: baseUrl.href,
   expectedBasePath: option("--expected-base-path", pagesRuntimeContractPolicy.expectedBasePath),
