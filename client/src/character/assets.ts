@@ -4,6 +4,7 @@ import {
   guestPresetFrame,
   resolveGuestPreset
 } from "@wedding-game/shared";
+import { guestAssetRevisions } from "./assetRevisions";
 
 export type CharacterDisplayMode = "world" | "thumbnail" | "preview";
 
@@ -15,13 +16,6 @@ export type ResolvedCharacterLayer = {
   fallbackIdleUrl?: string;
   sourceSize: { width: number; height: number };
   displaySize: Record<CharacterDisplayMode, { width: number; height: number }>;
-};
-
-const guestAssetRevisions: Partial<Record<string, string>> = {
-  "feminine-long-wave-dress": "optical-three-head-v2",
-  "feminine-champagne-navy-skirt": "optical-three-head-v2",
-  "feminine-lavender-jacket-dress": "optical-three-head-v2",
-  "feminine-teal-modern-hanbok": "optical-three-head-v2"
 };
 
 const assetUrl = (baseUrl: string, path: string, revision?: string) =>
