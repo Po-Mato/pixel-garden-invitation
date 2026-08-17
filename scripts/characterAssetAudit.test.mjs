@@ -458,9 +458,9 @@ test("all guest walk sheets contain 144 approved high-density frames", async () 
     assert.equal(inspection.frames.length, 12, preset.id);
     for (const frame of inspection.frames) {
       assert.ok(frame.bounds, preset.id);
-      assert.ok(frame.bounds.top >= 5 && frame.bounds.top <= 6, preset.id);
+      assert.equal(frame.bounds.top, 7, preset.id);
       assert.equal(frame.bounds.bottom, 132, preset.id);
-      assert.ok(frame.bounds.height >= 127 && frame.bounds.height <= 128, preset.id);
+      assert.equal(frame.bounds.height, 126, preset.id);
     }
     frameCount += inspection.frames.length;
   }

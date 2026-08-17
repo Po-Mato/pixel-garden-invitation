@@ -1,20 +1,22 @@
 #!/usr/bin/env node
 
-import { execFile } from "node:child_process";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { access, mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
-import { promisify } from "node:util";
 
 import sharp from "sharp";
 
-const execFileAsync = promisify(execFile);
 const scriptPath = fileURLToPath(import.meta.url);
 const root = path.resolve(path.dirname(scriptPath), "..");
 const catalogPath = path.join(root, "character-assets/guest-character-presets.json");
-const pilotRoot = path.join(root, "character-assets/reference/guest-3d-master-sources/v1");
+const defaultWalkSourceRoot = path.join(
+  root,
+  "character-assets/reference/guest-flat-walk-sources/v1"
+);
+const defaultFrameReviewRoot = path.join(defaultWalkSourceRoot, "frames");
 const defaultOutputRoot = path.join(root, "character-assets/source/guests-preview");
+const defaultRuntimeOutputRoot = path.join(root, "character-assets/source/guests");
 const defaultReviewPath = path.join(
   root,
   ".superpowers/character-review/guest-selection-preview-hd-ratio.png"
@@ -23,6 +25,152 @@ const directions = ["down", "left", "right", "up"];
 
 function clamp(value, minimum, maximum) {
   return Math.max(minimum, Math.min(maximum, value));
+}
+
+function isConnectedBackgroundPixel(data, offset) {
+  const red = data[offset];
+  const green = data[offset + 1];
+  const blue = data[offset + 2];
+  const alpha = data[offset + 3];
+  const maximum = Math.max(red, green, blue);
+  const minimum = Math.min(red, green, blue);
+  return alpha === 0 || (minimum >= 224 && maximum - minimum <= 18);
+}
+
+function clearConnectedBackground(data, width, height) {
+  const queued = new Uint8Array(width * height);
+  const queue = new Uint32Array(width * height);
+  let head = 0;
+  let tail = 0;
+  const enqueue = (x, y) => {
+    if (x < 0 || x >= width || y < 0 || y >= height) return;
+    const pixel = y * width + x;
+    if (queued[pixel] || !isConnectedBackgroundPixel(data, pixel * 4)) return;
+    queued[pixel] = 1;
+    queue[tail] = pixel;
+    tail += 1;
+  };
+
+  for (let x = 0; x < width; x += 1) {
+    enqueue(x, 0);
+    enqueue(x, height - 1);
+  }
+  for (let y = 0; y < height; y += 1) {
+    enqueue(0, y);
+    enqueue(width - 1, y);
+  }
+
+  while (head < tail) {
+    const pixel = queue[head];
+    head += 1;
+    data[pixel * 4 + 3] = 0;
+    const x = pixel % width;
+    const y = Math.floor(pixel / width);
+    enqueue(x + 1, y);
+    enqueue(x - 1, y);
+    enqueue(x, y + 1);
+    enqueue(x, y - 1);
+  }
+}
+
+function detectGridBands(data, width, height, axis, expectedCount) {
+  const length = axis === "x" ? width : height;
+  const crossLength = axis === "x" ? height : width;
+  const counts = new Uint32Array(length);
+  for (let position = 0; position < length; position += 1) {
+    for (let cross = 0; cross < crossLength; cross += 1) {
+      const x = axis === "x" ? position : cross;
+      const y = axis === "x" ? cross : position;
+      if (data[(y * width + x) * 4 + 3] >= 8) counts[position] += 1;
+    }
+  }
+
+  const runs = [];
+  let start = -1;
+  for (let position = 0; position <= length; position += 1) {
+    const occupied = position < length && counts[position] >= 2;
+    if (occupied && start < 0) start = position;
+    if (!occupied && start >= 0) {
+      runs.push({ start, end: position - 1 });
+      start = -1;
+    }
+  }
+
+  const mergeGap = axis === "x"
+    ? Math.max(5, Math.round(length * 0.006))
+    : 2;
+  const merged = [];
+  for (const run of runs) {
+    const previous = merged.at(-1);
+    if (previous && run.start - previous.end - 1 <= mergeGap) {
+      previous.end = run.end;
+    } else {
+      merged.push({ ...run });
+    }
+  }
+
+  const candidates = merged
+    .map((run) => ({
+      ...run,
+      size: run.end - run.start + 1,
+      pixels: counts.slice(run.start, run.end + 1).reduce((total, value) => total + value, 0)
+    }))
+    .filter((run) => run.size >= Math.round(length * 0.045))
+    .sort((first, second) => second.pixels - first.pixels)
+    .slice(0, expectedCount)
+    .sort((first, second) => first.start - second.start);
+
+  if (candidates.length !== expectedCount) {
+    throw new Error(`${axis}축 캐릭터 그룹을 ${expectedCount}개 찾지 못했습니다.`);
+  }
+  return candidates;
+}
+
+async function loadWalkSheetGrid(input) {
+  const metadata = await sharp(input).metadata();
+  if (!metadata.width || !metadata.height) {
+    throw new Error(`${input} 보행 시트의 크기를 확인할 수 없습니다.`);
+  }
+  const { data, info } = await sharp(input)
+    .ensureAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  clearConnectedBackground(data, info.width, info.height);
+  const columns = detectGridBands(data, info.width, info.height, "x", 3);
+  const rows = detectGridBands(data, info.width, info.height, "y", 4);
+  const horizontalBoundaries = [
+    0,
+    ...columns.slice(0, -1).map((band, index) =>
+      Math.round((band.end + columns[index + 1].start) / 2)
+    ),
+    info.width
+  ];
+  const verticalBoundaries = [
+    0,
+    ...rows.slice(0, -1).map((band, index) =>
+      Math.round((band.end + rows[index + 1].start) / 2)
+    ),
+    info.height
+  ];
+  return { data, info, horizontalBoundaries, verticalBoundaries };
+}
+
+async function extractWalkCell(grid, row, column) {
+  const left = grid.horizontalBoundaries[column];
+  const right = grid.horizontalBoundaries[column + 1];
+  const top = grid.verticalBoundaries[row];
+  const bottom = grid.verticalBoundaries[row + 1];
+  return sharp(grid.data, { raw: grid.info })
+    .extract({ left, top, width: right - left, height: bottom - top })
+    .png()
+    .toBuffer();
+}
+
+async function writePng(file, input) {
+  await mkdir(path.dirname(file), { recursive: true });
+  await sharp(input)
+    .png({ compressionLevel: 9 })
+    .toFile(file);
 }
 
 async function alphaBounds(input, threshold = 12) {
@@ -148,6 +296,38 @@ export async function normalizeSelectionPreviewFrame(input, policy) {
   return normalizeHeadWidth(normalized, policy);
 }
 
+async function normalizeRuntimeFrame(input, selectionPolicy, runtimeSource) {
+  const runtimePolicy = {
+    source: runtimeSource,
+    contentHeight: selectionPolicy.contentHeight / 2,
+    headHeight: selectionPolicy.headHeight / 2,
+    headWidth: selectionPolicy.headWidth / 2,
+    footBaseline: selectionPolicy.footBaseline / 2
+  };
+  const bounds = await alphaBounds(input);
+  const visible = await sharp(input).extract(bounds).png().toBuffer();
+  const scale = runtimePolicy.contentHeight / bounds.height;
+  const width = Math.min(
+    runtimeSource.width - 4,
+    Math.max(1, Math.round(bounds.width * scale))
+  );
+  const resized = await sharp(visible)
+    .resize({
+      width,
+      height: runtimePolicy.contentHeight,
+      fit: "fill",
+      kernel: sharp.kernel.lanczos3
+    })
+    .png()
+    .toBuffer();
+  const normalized = await transparentCanvas(runtimeSource.width, runtimeSource.height, [{
+    input: resized,
+    left: Math.round((runtimeSource.width - width) / 2),
+    top: runtimePolicy.footBaseline - runtimePolicy.contentHeight + 1
+  }]);
+  return normalizeHeadWidth(normalized, runtimePolicy);
+}
+
 async function inspectFrame(input, policy) {
   const bounds = await alphaBounds(input);
   const measuredHeadWidth = await headBandWidth(input, policy);
@@ -204,7 +384,16 @@ async function inspectPreviewSheets({ catalog, outputRoot }) {
     }
     presets.push({ id: preset.id, guest: preset.reference.walkSourceGuest, directions: directionMetrics });
   }
-  const frames = presets.flatMap((preset) => Object.values(preset.directions).flat());
+  const frames = presets.flatMap((preset) =>
+    Object.entries(preset.directions).flatMap(([direction, directionFrames]) =>
+      directionFrames.map((frame, step) => ({
+        ...frame,
+        presetId: preset.id,
+        direction,
+        step: step + 1
+      }))
+    )
+  );
   const failures = frames.filter((frame) => (
     Math.abs(frame.characterHeight - policy.contentHeight) > 1
     || Math.abs(frame.bottom - policy.footBaseline) > 1
@@ -235,7 +424,13 @@ async function inspectPreviewSheets({ catalog, outputRoot }) {
     presets
   };
   if (!report.summary.passed) {
-    throw new Error(`선택 화면 3등신·머리 크기 감사 실패: ${failures.length}개 프레임`);
+    const details = failures
+      .map((frame) =>
+        `${frame.presetId}/${frame.direction}/step-${frame.step}: `
+        + `height=${frame.characterHeight}, bottom=${frame.bottom}, headWidth=${frame.headWidth}`
+      )
+      .join("; ");
+    throw new Error(`선택 화면 3등신·머리 크기 감사 실패: ${failures.length}개 프레임 (${details})`);
   }
   return report;
 }
@@ -310,58 +505,92 @@ export async function auditGuestSelectionPreviewAssets({
 }
 
 export async function buildGuestSelectionPreviewAssets({
-  rebuildPilots = true,
   catalog: providedCatalog,
   outputRoot = defaultOutputRoot,
+  runtimeOutputRoot = defaultRuntimeOutputRoot,
+  walkSourceRoot = defaultWalkSourceRoot,
+  frameReviewRoot = defaultFrameReviewRoot,
   reviewPath = defaultReviewPath
 } = {}) {
   const catalog = providedCatalog ?? JSON.parse(await readFile(catalogPath, "utf8"));
   const policy = catalog.frame.selectionPreview;
-  await mkdir(outputRoot, { recursive: true });
+  const runtimePolicy = catalog.frame.source;
+  await Promise.all([
+    mkdir(outputRoot, { recursive: true }),
+    mkdir(runtimeOutputRoot, { recursive: true }),
+    mkdir(frameReviewRoot, { recursive: true })
+  ]);
   for (const preset of catalog.presets) {
     const guest = preset.reference.walkSourceGuest;
-    if (rebuildPilots) {
-      await execFileAsync(process.execPath, [
-        path.join(root, "scripts/build-guest-3d-sprite-pilot.mjs"),
-        "--guest",
-        guest,
-        "--preset",
-        preset.id
-      ], { cwd: root, maxBuffer: 16 * 1024 * 1024 });
-    }
+    const source = path.join(walkSourceRoot, `${guest}-walk-sheet.png`);
+    await access(source);
+    const sourceGrid = await loadWalkSheetGrid(source);
     const framesByDirection = {};
-    for (const direction of directions) {
+    for (let row = 0; row < directions.length; row += 1) {
+      const direction = directions[row];
       framesByDirection[direction] = [];
-      for (let step = 1; step <= 3; step += 1) {
-        const source = path.join(
-          pilotRoot,
-          guest,
-          "pilot/sources",
-          direction,
-          `step-${String(step).padStart(2, "0")}-source.png`
+      for (let column = 0; column < 3; column += 1) {
+        const extracted = await extractWalkCell(sourceGrid, row, column);
+        const normalized = await normalizeSelectionPreviewFrame(extracted, policy);
+        framesByDirection[direction].push(normalized);
+        await writePng(
+          path.join(
+            frameReviewRoot,
+            guest,
+            direction,
+            `step-${String(column + 1).padStart(2, "0")}.png`
+          ),
+          normalized
         );
-        framesByDirection[direction].push(await normalizeSelectionPreviewFrame(source, policy));
       }
     }
-    const walkComposites = [];
+    const previewWalkComposites = [];
+    const runtimeWalkComposites = [];
     for (let row = 0; row < directions.length; row += 1) {
       for (let column = 0; column < 3; column += 1) {
-        walkComposites.push({
-          input: framesByDirection[directions[row]][column],
+        const previewFrame = framesByDirection[directions[row]][column];
+        const runtimeFrame = await normalizeRuntimeFrame(previewFrame, policy, runtimePolicy);
+        previewWalkComposites.push({
+          input: previewFrame,
           left: column * policy.source.width,
           top: row * policy.source.height
         });
+        runtimeWalkComposites.push({
+          input: runtimeFrame,
+          left: column * runtimePolicy.width,
+          top: row * runtimePolicy.height
+        });
       }
     }
-    const walk = await transparentCanvas(policy.walk.sheet.width, policy.walk.sheet.height, walkComposites);
-    const neutral = framesByDirection.down[1];
-    const idle = await transparentCanvas(policy.idle.sheet.width, policy.idle.sheet.height, [
-      { input: neutral, left: 0, top: 0 },
-      { input: neutral, left: policy.source.width, top: 0 }
+    const previewWalk = await transparentCanvas(
+      policy.walk.sheet.width,
+      policy.walk.sheet.height,
+      previewWalkComposites
+    );
+    const previewNeutral = framesByDirection.down[1];
+    const previewIdle = await transparentCanvas(policy.idle.sheet.width, policy.idle.sheet.height, [
+      { input: previewNeutral, left: 0, top: 0 },
+      { input: previewNeutral, left: policy.source.width, top: 0 }
     ]);
+    const runtimeWalk = await transparentCanvas(
+      catalog.frame.walk.sheet.width,
+      catalog.frame.walk.sheet.height,
+      runtimeWalkComposites
+    );
+    const runtimeNeutral = await normalizeRuntimeFrame(previewNeutral, policy, runtimePolicy);
+    const runtimeIdle = await transparentCanvas(
+      catalog.frame.idle.sheet.width,
+      catalog.frame.idle.sheet.height,
+      [
+        { input: runtimeNeutral, left: 0, top: 0 },
+        { input: runtimeNeutral, left: runtimePolicy.width, top: 0 }
+      ]
+    );
     await Promise.all([
-      writeFile(framePath(outputRoot, preset.id, "walk"), walk),
-      writeFile(framePath(outputRoot, preset.id, "idle"), idle)
+      writePng(framePath(outputRoot, preset.id, "walk"), previewWalk),
+      writePng(framePath(outputRoot, preset.id, "idle"), previewIdle),
+      writePng(framePath(runtimeOutputRoot, preset.id, "walk"), runtimeWalk),
+      writePng(framePath(runtimeOutputRoot, preset.id, "idle"), runtimeIdle)
     ]);
   }
   const report = await inspectPreviewSheets({ catalog, outputRoot });
@@ -370,12 +599,11 @@ export async function buildGuestSelectionPreviewAssets({
     `${JSON.stringify(report, null, 2)}\n`
   );
   await renderReview({ catalog, outputRoot, reviewPath });
-  return { report, reviewPath, outputRoot };
+  return { report, reviewPath, outputRoot, runtimeOutputRoot, walkSourceRoot };
 }
 
 async function main() {
   const checkOnly = process.argv.includes("--check");
-  const skipPilotBuild = process.argv.includes("--skip-pilot-build");
   if (checkOnly) {
     const report = await auditGuestSelectionPreviewAssets();
     console.log(
@@ -384,10 +612,10 @@ async function main() {
     );
     return;
   }
-  const result = await buildGuestSelectionPreviewAssets({ rebuildPilots: !skipPilotBuild });
+  const result = await buildGuestSelectionPreviewAssets();
   console.log(
-    `선택 화면 고해상도 캐릭터 생성 완료: ${result.report.summary.presetCount}명 · `
-    + `${result.report.summary.frameCount}프레임`
+    `평면 3등신 선택·게임 캐릭터 생성 완료: ${result.report.summary.presetCount}명 · `
+      + `${result.report.summary.frameCount}프레임`
   );
   console.log(result.reviewPath);
 }
