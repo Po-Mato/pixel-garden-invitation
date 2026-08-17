@@ -62,6 +62,27 @@ test("각 캐릭터의 상하좌우 보행 3컷은 같은 머리 높이 범위�
   }
 });
 
+test("6·7·8번은 방향 비율을 다시 맞춘 optical-rig 원화를 사용한다", async () => {
+  const report = await auditGuestSelectionPreviewAssets({ catalog });
+  const correctedGuests = new Set(["guest-06", "guest-07", "guest-08"]);
+
+  for (const preset of report.presets) {
+    assert.equal(
+      preset.sourceSet,
+      correctedGuests.has(preset.guest) ? "v2-optical-rig" : "v1-flat-three-head",
+      `${preset.guest} 원화 버전이 검수된 소스와 일치해야 합니다.`
+    );
+  }
+
+  const correctedSourceRoot = join(
+    root,
+    "character-assets/reference/guest-flat-walk-sources/v2"
+  );
+  await Promise.all([...correctedGuests].map((guest) =>
+    access(join(correctedSourceRoot, `${guest}-walk-sheet.png`))
+  ));
+});
+
 test("승인된 평면 원화 12종은 선택 화면과 게임의 실제 보행 포즈로 이어진다", async () => {
   const policy = catalog.frame.selectionPreview;
   const sourceRoot = join(root, "character-assets/reference/guest-flat-walk-sources/v1");

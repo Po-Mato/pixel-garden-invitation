@@ -15,6 +15,10 @@ const defaultWalkSourceRoot = path.join(
   root,
   "character-assets/reference/guest-flat-walk-sources/v1"
 );
+const defaultWalkSourceOverrideRoot = path.join(
+  root,
+  "character-assets/reference/guest-flat-walk-sources/v2"
+);
 const defaultFrameReviewRoot = path.join(defaultWalkSourceRoot, "frames");
 const defaultOutputRoot = path.join(root, "character-assets/source/guests-preview");
 const defaultRuntimeOutputRoot = path.join(root, "character-assets/source/guests");
@@ -172,6 +176,22 @@ async function writePng(file, input) {
   await sharp(input)
     .png({ compressionLevel: 9 })
     .toFile(file);
+}
+
+async function resolveWalkSource({ guest, walkSourceRoot, walkSourceOverrideRoot }) {
+  const filename = `${guest}-walk-sheet.png`;
+  if (walkSourceOverrideRoot) {
+    const override = path.join(walkSourceOverrideRoot, filename);
+    try {
+      await access(override);
+      return { source: override, sourceSet: "v2-optical-rig" };
+    } catch {
+      // Guests without a reviewed optical-rig redraw keep the approved v1 source.
+    }
+  }
+  const source = path.join(walkSourceRoot, filename);
+  await access(source);
+  return { source, sourceSet: "v1-flat-three-head" };
 }
 
 async function alphaBounds(input, threshold = 12) {
@@ -568,6 +588,7 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
     presets.push({
       id: preset.id,
       guest: preset.reference.walkSourceGuest,
+      sourceSet: presetRig.sourceSet,
       upSourceHeadHeightConsensus: presetRig.upSourceHeadHeightConsensus,
       directions: directionMetrics
     });
@@ -734,6 +755,7 @@ export async function auditGuestSelectionPreviewAssets({
   const sourceRig = Object.fromEntries(storedReport.presets.map((preset) => [
     preset.id,
     {
+      sourceSet: preset.sourceSet,
       upSourceHeadHeightConsensus: preset.upSourceHeadHeightConsensus,
       directions: Object.fromEntries(Object.entries(preset.directions).map(([direction, frames]) => [
         direction,
@@ -755,6 +777,7 @@ export async function buildGuestSelectionPreviewAssets({
   outputRoot = defaultOutputRoot,
   runtimeOutputRoot = defaultRuntimeOutputRoot,
   walkSourceRoot = defaultWalkSourceRoot,
+  walkSourceOverrideRoot = defaultWalkSourceOverrideRoot,
   frameReviewRoot = defaultFrameReviewRoot,
   reviewPath = defaultReviewPath
 } = {}) {
@@ -769,8 +792,11 @@ export async function buildGuestSelectionPreviewAssets({
   const sourceRig = {};
   for (const preset of catalog.presets) {
     const guest = preset.reference.walkSourceGuest;
-    const source = path.join(walkSourceRoot, `${guest}-walk-sheet.png`);
-    await access(source);
+    const { source, sourceSet } = await resolveWalkSource({
+      guest,
+      walkSourceRoot,
+      walkSourceOverrideRoot
+    });
     const sourceGrid = await loadWalkSheetGrid(source);
     const baseFramesByDirection = {};
     const detectedLandmarks = [];
@@ -789,6 +815,7 @@ export async function buildGuestSelectionPreviewAssets({
     }
     const upSourceHeadHeightConsensus = Math.round(median(detectedLandmarks));
     sourceRig[preset.id] = {
+      sourceSet,
       upSourceHeadHeightConsensus,
       directions: {}
     };
@@ -907,7 +934,14 @@ export async function buildGuestSelectionPreviewAssets({
     `${JSON.stringify(report, null, 2)}\n`
   );
   await renderReview({ catalog, outputRoot, reviewPath });
-  return { report, reviewPath, outputRoot, runtimeOutputRoot, walkSourceRoot };
+  return {
+    report,
+    reviewPath,
+    outputRoot,
+    runtimeOutputRoot,
+    walkSourceRoot,
+    walkSourceOverrideRoot
+  };
 }
 
 async function main() {

@@ -53,3 +53,18 @@ it("선택 화면과 포토존은 192x288 전용 초상 경로를 사용한다",
   expect(resolveCharacterPortraitUrl(defaultCharacterAppearance, "./"))
     .toBe("./characters/generated/guests/portraits/feminine-long-wave-dress.png");
 });
+
+it("6·7·8번 교정 에셋은 기존 서비스 워커 캐시와 다른 URL을 사용한다", () => {
+  const layer = resolveCharacterLayers(
+    { presetId: "feminine-champagne-navy-skirt" },
+    "./",
+    "preview"
+  )[0];
+
+  expect(layer.walkUrl).toBe(
+    "./characters/generated/guests/preview/feminine-champagne-navy-skirt__walk.png?v=optical-three-head-v2"
+  );
+  expect(layer.idleUrl).toBe(
+    "./characters/generated/guests/preview/feminine-champagne-navy-skirt__idle.png?v=optical-three-head-v2"
+  );
+});
