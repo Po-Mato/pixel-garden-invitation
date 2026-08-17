@@ -1,24 +1,24 @@
 {
   "version": 2,
-  "approvedAt": "2026-08-17T10:28:53.733Z",
-  "reason": "6·7·8번 하객의 3등신 방향 비율과 긴 머리 실루엣 교정",
-  "sha256": "86edb30a68bf93f5952702bcd0836163e382a40c317e909c65a380059fe1ef70",
+  "approvedAt": "2026-08-17T12:35:46.256Z",
+  "reason": "1번 하객의 3등신 방향 비율과 긴 머리 실루엣 교정",
+  "sha256": "2d8fff12b8630a438834f42bc04b7aaeb1c60de036f01ec226909b72f9e211a3",
   "provenance": {
     "schemaVersion": 1,
     "subjectKind": "capture-set",
     "sourceKind": "local",
     "runId": null,
     "runAttempt": null,
-    "commitSha": "b67c728d0d6e33245b0727f6b0b72bc64da803e5",
+    "commitSha": "534ccd9ed8c06ee16ec89fca68f2fe8d93369cdf",
     "runUrl": null,
     "checksumAlgorithm": "sha256",
     "artifactChecksumScope": "sorted-capture-set-manifest",
-    "artifactSha256": "a0a20db025efecfccdbdc4958f3bb2c8de01d36d710a434ba1db3814b70cfd15",
+    "artifactSha256": "89f7ff6e3bb7c3dd0a236d5f66b4d66fd3847c69f9bf523c8f16ad8b48ffbdb5",
     "files": [
       {
         "logicalPath": "mobile-game-current",
-        "size": 4624492,
-        "sha256": "783d3e967e53e7b3b20b201c00db4187dbcd34c5a09c75bc72185f348160d067"
+        "size": 4625407,
+        "sha256": "14335a6a855928b69c4dbb05543cd7c75604f2b94037954131557e0b37ca2e0a"
       }
     ]
   },
