@@ -1,24 +1,24 @@
 {
   "version": 2,
-  "approvedAt": "2026-08-17T03:04:06.140Z",
-  "reason": "승인된 평면 3등신 하객 12종과 상하좌우 보행 144프레임 적용",
-  "sha256": "fc66cd279ab03e793c4520d56cff962b6499a13b7a80657baea976ddaba18521",
+  "approvedAt": "2026-08-17T06:23:22.323Z",
+  "reason": "하객 12종 144프레임 실제 턱선 기준 3등신과 방향 비율 통일",
+  "sha256": "5d08103ad646b19eda2730d73b4120088d69d8b75ec6a6d029f5046b0a37c90c",
   "provenance": {
     "schemaVersion": 1,
     "subjectKind": "capture-set",
     "sourceKind": "local",
     "runId": null,
     "runAttempt": null,
-    "commitSha": "01b890fc9ff9b4822d2d9a50ee3089f6ab591f4a",
+    "commitSha": "2eaa77d1fd8535a1eaba51ec99615550fc458984",
     "runUrl": null,
     "checksumAlgorithm": "sha256",
     "artifactChecksumScope": "sorted-capture-set-manifest",
-    "artifactSha256": "e3a3cfc8ee6de18b9ef89e165c772aa61dbbd557e83a35acc6b1a5f32a59f7de",
+    "artifactSha256": "f3a08ea7d462a67f419acd04b5bb08b38daefdeaa330f372099cd7cab27c566c",
     "files": [
       {
         "logicalPath": "mobile-game-current",
-        "size": 4625173,
-        "sha256": "fa969fcdad9967721bef78aa72f42137b1e2d9d0dbf40c64dcaa40e2fd97c781"
+        "size": 4624972,
+        "sha256": "739a7f11c671ae1eb64e9d64c907a52c509ff74604d54ccaf4e42e5f8a6d2f86"
       }
     ]
   },

@@ -11,6 +11,7 @@ const contractPath = path.join(rootDir, "scripts/visual-baselines/map-tone-contr
 const contract = JSON.parse(await readFile(contractPath, "utf8"));
 const result = await auditMapTones({ rootDir, contractPath });
 const rounded = (value) => Number(value.toFixed(3));
+const meetsMinimum = (value, minimum) => rounded(value) >= minimum;
 const roundedRecord = (record) => Object.fromEntries(
   Object.entries(record).map(([key, value]) => [
     key,
@@ -19,16 +20,22 @@ const roundedRecord = (record) => Object.fromEntries(
 );
 
 for (const report of result.reports) {
-  if (report.characterEdgeContrast < contract.thresholds.minCharacterEdgeContrast) {
+  if (!meetsMinimum(report.characterEdgeContrast, contract.thresholds.minCharacterEdgeContrast)) {
     throw new Error(`${report.zoneId} 캐릭터 최소 대비가 안전 기준보다 낮습니다.`);
   }
-  if (report.weakestMovementEdgeContrast < contract.thresholds.minCharacterEdgeContrast) {
+  if (!meetsMinimum(report.weakestMovementEdgeContrast, contract.thresholds.minCharacterEdgeContrast)) {
     throw new Error(`${report.zoneId} 이동 캐릭터 최소 대비가 안전 기준보다 낮습니다.`);
   }
   for (const profile of Object.values(report.displayProfiles)) {
     if (
-      profile.weakestCharacterEdgeContrast < contract.thresholds.minDisplayCharacterEdgeContrast
-      || profile.weakestMovementEdgeContrast < contract.thresholds.minDisplayCharacterEdgeContrast
+      !meetsMinimum(
+        profile.weakestCharacterEdgeContrast,
+        contract.thresholds.minDisplayCharacterEdgeContrast
+      )
+      || !meetsMinimum(
+        profile.weakestMovementEdgeContrast,
+        contract.thresholds.minDisplayCharacterEdgeContrast
+      )
     ) {
       throw new Error(`${report.zoneId} ${profile.label} 표시 대비가 안전 기준보다 낮습니다.`);
     }

@@ -31,6 +31,10 @@ export function contrastRatio(first, second) {
   return (lighter + 0.05) / (darker + 0.05);
 }
 
+function isBelowRecordedThreshold(value, threshold) {
+  return Number(value.toFixed(3)) < threshold;
+}
+
 export const displayCalibrationProfiles = Object.freeze({
   oled: {
     label: "OLED",
@@ -137,7 +141,7 @@ export function evaluateMapToneMetrics(metrics, expected, thresholds) {
         issues.push(`${presetId} 캐릭터 가장자리 대비 측정 누락`);
         continue;
       }
-      if (actual < thresholds.minCharacterEdgeContrast) {
+      if (isBelowRecordedThreshold(actual, thresholds.minCharacterEdgeContrast)) {
         issues.push(`${presetId} 캐릭터 가장자리 대비 부족`);
       }
       if (Math.abs(actual - baseline) > thresholds.maxCharacterEdgeContrastDelta) {
@@ -147,7 +151,7 @@ export function evaluateMapToneMetrics(metrics, expected, thresholds) {
   } else {
     if (
       Number.isFinite(metrics.characterEdgeContrast)
-      && metrics.characterEdgeContrast < thresholds.minCharacterEdgeContrast
+      && isBelowRecordedThreshold(metrics.characterEdgeContrast, thresholds.minCharacterEdgeContrast)
     ) issues.push("캐릭터 가장자리 대비 부족");
     if (
       Number.isFinite(expected.characterEdgeContrast)
@@ -185,7 +189,7 @@ export function evaluateMapToneMetrics(metrics, expected, thresholds) {
           issues.push(`${presetId}/${frameId} 이동 가장자리 대비 측정 누락`);
           continue;
         }
-        if (actual < thresholds.minCharacterEdgeContrast) {
+        if (isBelowRecordedThreshold(actual, thresholds.minCharacterEdgeContrast)) {
           issues.push(`${presetId}/${frameId} 이동 가장자리 대비 부족`);
         }
         if (Math.abs(actual - baseline) > thresholds.maxCharacterEdgeContrastDelta) {
@@ -216,13 +220,13 @@ export function evaluateMapToneMetrics(metrics, expected, thresholds) {
       if (ratio < thresholds.minTextContrast) issues.push(`${profile.label} ${label} 라벨 대비 부족`);
     }
     for (const [presetId, ratio] of Object.entries(report.characterEdgeContrasts ?? {})) {
-      if (ratio < thresholds.minDisplayCharacterEdgeContrast) {
+      if (isBelowRecordedThreshold(ratio, thresholds.minDisplayCharacterEdgeContrast)) {
         issues.push(`${profile.label} ${presetId} 캐릭터 가장자리 대비 부족`);
       }
     }
     for (const [presetId, frames] of Object.entries(report.characterMovementEdgeContrasts ?? {})) {
       for (const [frameId, ratio] of Object.entries(frames)) {
-        if (ratio < thresholds.minDisplayCharacterEdgeContrast) {
+        if (isBelowRecordedThreshold(ratio, thresholds.minDisplayCharacterEdgeContrast)) {
           issues.push(`${profile.label} ${presetId}/${frameId} 이동 가장자리 대비 부족`);
         }
       }

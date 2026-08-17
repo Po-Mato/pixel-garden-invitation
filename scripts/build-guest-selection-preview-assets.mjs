@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { access, mkdir, readFile, writeFile } from "node:fs/promises";
+import { createHash } from "node:crypto";
 import path from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
@@ -192,6 +193,117 @@ async function alphaBounds(input, threshold = 12) {
   return { left, top, right, bottom, width: right - left + 1, height: bottom - top + 1 };
 }
 
+function isFaceSkinPixel(data, offset) {
+  const red = data[offset];
+  const green = data[offset + 1];
+  const blue = data[offset + 2];
+  const alpha = data[offset + 3];
+  return alpha > 128
+    && red > 205
+    && green > 145
+    && blue > 115
+    && red >= green
+    && green >= blue
+    && red - blue > 14
+    && red - green < 90
+    && green - blue < 75;
+}
+
+function verticalOverlap(first, second) {
+  return Math.min(first.bottom, second.bottom) - Math.max(first.top, second.top) + 1;
+}
+
+function horizontalGap(first, second) {
+  if (first.right < second.left) return second.left - first.right - 1;
+  if (second.right < first.left) return first.left - second.right - 1;
+  return 0;
+}
+
+export async function detectFaceLandmark(input, policy) {
+  const bounds = await alphaBounds(input);
+  const { data, info } = await sharp(input)
+    .ensureAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  const mask = new Uint8Array(info.width * info.height);
+  const scanBottom = Math.min(
+    bounds.bottom,
+    bounds.top + Math.round(policy.headHeight * 1.55)
+  );
+  for (let y = bounds.top; y <= scanBottom; y += 1) {
+    for (let x = 0; x < info.width; x += 1) {
+      const pixel = y * info.width + x;
+      if (isFaceSkinPixel(data, pixel * 4)) mask[pixel] = 1;
+    }
+  }
+
+  const seen = new Uint8Array(mask.length);
+  const queue = new Uint32Array(mask.length);
+  const components = [];
+  for (let pixel = 0; pixel < mask.length; pixel += 1) {
+    if (!mask[pixel] || seen[pixel]) continue;
+    let head = 0;
+    let tail = 0;
+    let left = info.width;
+    let top = info.height;
+    let right = -1;
+    let bottom = -1;
+    seen[pixel] = 1;
+    queue[tail] = pixel;
+    tail += 1;
+    while (head < tail) {
+      const current = queue[head];
+      head += 1;
+      const x = current % info.width;
+      const y = Math.floor(current / info.width);
+      left = Math.min(left, x);
+      top = Math.min(top, y);
+      right = Math.max(right, x);
+      bottom = Math.max(bottom, y);
+      for (const [nextX, nextY] of [[x - 1, y], [x + 1, y], [x, y - 1], [x, y + 1]]) {
+        if (nextX < 0 || nextX >= info.width || nextY < 0 || nextY >= info.height) continue;
+        const next = nextY * info.width + nextX;
+        if (!mask[next] || seen[next]) continue;
+        seen[next] = 1;
+        queue[tail] = next;
+        tail += 1;
+      }
+    }
+    components.push({ area: tail, left, top, right, bottom });
+  }
+
+  const candidates = components
+    .filter((component) => (
+      component.area >= 80
+      && component.bottom >= bounds.top + Math.round(policy.headHeight * 0.5)
+      && component.top <= bounds.top + policy.headHeight
+      && component.right - component.left + 1 >= 8
+    ))
+    .sort((first, second) => second.area - first.area);
+  const primary = candidates[0];
+  if (!primary) throw new Error("실제 얼굴 피부 영역과 턱선을 찾지 못했습니다.");
+  const faceCluster = candidates.filter((component) => (
+    component === primary
+    || (
+      verticalOverlap(primary, component) >= 6
+      && horizontalGap(primary, component) <= 5
+    )
+  ));
+  const faceBottom = Math.max(...faceCluster.map((component) => component.bottom));
+  const headHeight = faceBottom - bounds.top + 1;
+  if (headHeight < Math.round(policy.headHeight * 0.7)
+    || headHeight > Math.round(policy.headHeight * 1.4)) {
+    throw new Error(`실제 머리 높이 ${headHeight}px가 안전한 교정 범위를 벗어났습니다.`);
+  }
+  return {
+    characterTop: bounds.top,
+    faceBottom,
+    headHeight,
+    componentCount: faceCluster.length,
+    faceArea: faceCluster.reduce((total, component) => total + component.area, 0)
+  };
+}
+
 async function transparentCanvas(width, height, composites) {
   return sharp({
     create: { width, height, channels: 4, background: "#00000000" }
@@ -279,7 +391,7 @@ async function normalizeHeadWidth(input, policy) {
   return current;
 }
 
-export async function normalizeSelectionPreviewFrame(input, policy) {
+async function normalizeSelectionPreviewBaseFrame(input, policy) {
   const bounds = await alphaBounds(input);
   const visible = await sharp(input).extract(bounds).png().toBuffer();
   const scale = policy.contentHeight / bounds.height;
@@ -293,7 +405,47 @@ export async function normalizeSelectionPreviewFrame(input, policy) {
     left: Math.round((policy.source.width - width) / 2),
     top: policy.footBaseline - policy.contentHeight + 1
   }]);
-  return normalizeHeadWidth(normalized, policy);
+  return normalized;
+}
+
+async function normalizeVerticalRig(input, policy, sourceHeadHeight) {
+  const bounds = await alphaBounds(input);
+  const sourceBodyHeight = bounds.height - sourceHeadHeight;
+  const targetBodyHeight = policy.contentHeight - policy.headHeight;
+  if (sourceHeadHeight < 2 || sourceBodyHeight < 2 || targetBodyHeight < 2) {
+    throw new Error("3등신 세로 리그를 적용할 머리·몸통 영역이 부족합니다.");
+  }
+  const { data, info } = await sharp(input)
+    .ensureAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  const output = Buffer.alloc(data.length);
+  const targetTop = policy.footBaseline - policy.contentHeight + 1;
+  for (let targetIndex = 0; targetIndex < policy.contentHeight; targetIndex += 1) {
+    const sourceY = targetIndex < policy.headHeight
+      ? bounds.top
+        + targetIndex * ((sourceHeadHeight - 1) / (policy.headHeight - 1))
+      : bounds.top + sourceHeadHeight
+        + (targetIndex - policy.headHeight)
+          * ((sourceBodyHeight - 1) / (targetBodyHeight - 1));
+    const outputY = targetTop + targetIndex;
+    for (let x = 0; x < info.width; x += 1) {
+      output.set(
+        samplePremultiplied(data, info, x, sourceY),
+        (outputY * info.width + x) * 4
+      );
+    }
+  }
+  return sharp(output, { raw: info }).png({ compressionLevel: 9 }).toBuffer();
+}
+
+export async function normalizeSelectionPreviewFrame(input, policy, sourceHeadHeight) {
+  const normalized = await normalizeSelectionPreviewBaseFrame(input, policy);
+  const detected = Number.isFinite(sourceHeadHeight)
+    ? sourceHeadHeight
+    : (await detectFaceLandmark(normalized, policy)).headHeight;
+  const rigged = await normalizeVerticalRig(normalized, policy, detected);
+  return normalizeHeadWidth(rigged, policy);
 }
 
 async function normalizeRuntimeFrame(input, selectionPolicy, runtimeSource) {
@@ -328,18 +480,43 @@ async function normalizeRuntimeFrame(input, selectionPolicy, runtimeSource) {
   return normalizeHeadWidth(normalized, runtimePolicy);
 }
 
-async function inspectFrame(input, policy) {
+function median(values) {
+  const sorted = [...values].sort((first, second) => first - second);
+  const middle = Math.floor(sorted.length / 2);
+  return sorted.length % 2 === 0
+    ? (sorted[middle - 1] + sorted[middle]) / 2
+    : sorted[middle];
+}
+
+function frameSha256(input) {
+  return createHash("sha256").update(input).digest("hex");
+}
+
+async function inspectFrame(input, policy, { direction, rigFrame }) {
   const bounds = await alphaBounds(input);
   const measuredHeadWidth = await headBandWidth(input, policy);
+  const landmark = direction === "up"
+    ? null
+    : await detectFaceLandmark(input, policy);
+  const measuredHeadHeight = landmark?.headHeight ?? policy.headHeight;
+  const measuredBodyHeight = bounds.height - measuredHeadHeight;
+  const checksum = frameSha256(input);
   return {
     top: bounds.top,
     bottom: bounds.bottom,
     characterHeight: bounds.height,
-    headHeight: policy.headHeight,
-    bodyHeight: policy.contentHeight - policy.headHeight,
-    bodyToHeadRatio: (policy.contentHeight - policy.headHeight) / policy.headHeight,
+    measuredHeadHeight,
+    measuredBodyHeight,
+    measuredBodyToHeadRatio: measuredBodyHeight / measuredHeadHeight,
+    headHeightDelta: measuredHeadHeight - policy.headHeight,
     headWidth: measuredHeadWidth,
-    headWidthDelta: measuredHeadWidth - policy.headWidth
+    headWidthDelta: measuredHeadWidth - policy.headWidth,
+    sourceHeadHeight: rigFrame.sourceHeadHeight,
+    sourceMeasuredHeadHeight: rigFrame.sourceMeasuredHeadHeight,
+    sourceDetectionMethod: rigFrame.sourceDetectionMethod,
+    sourceFaceBottom: rigFrame.sourceFaceBottom,
+    frameSha256: checksum,
+    rigHashMatches: !rigFrame.frameSha256 || rigFrame.frameSha256 === checksum
   };
 }
 
@@ -347,7 +524,7 @@ function framePath(rootPath, presetId, kind) {
   return path.join(rootPath, `${presetId}__${kind}.png`);
 }
 
-async function inspectPreviewSheets({ catalog, outputRoot }) {
+async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
   const policy = catalog.frame.selectionPreview;
   const presets = [];
   let frameCount = 0;
@@ -365,6 +542,8 @@ async function inspectPreviewSheets({ catalog, outputRoot }) {
       throw new Error(`${preset.id} 선택 화면 고해상도 시트 규격이 잘못됐습니다.`);
     }
     const directionMetrics = {};
+    const presetRig = sourceRig[preset.id];
+    if (!presetRig) throw new Error(`${preset.id} 방향별 3등신 리그 정보가 없습니다.`);
     for (let row = 0; row < directions.length; row += 1) {
       const direction = directions[row];
       directionMetrics[direction] = [];
@@ -378,11 +557,20 @@ async function inspectPreviewSheets({ catalog, outputRoot }) {
           })
           .png()
           .toBuffer();
-        directionMetrics[direction].push(await inspectFrame(frame, policy));
+        const rigFrame = presetRig.directions[direction]?.[column];
+        if (!rigFrame) {
+          throw new Error(`${preset.id}/${direction}/step-${column + 1} 3등신 리그 정보가 없습니다.`);
+        }
+        directionMetrics[direction].push(await inspectFrame(frame, policy, { direction, rigFrame }));
         frameCount += 1;
       }
     }
-    presets.push({ id: preset.id, guest: preset.reference.walkSourceGuest, directions: directionMetrics });
+    presets.push({
+      id: preset.id,
+      guest: preset.reference.walkSourceGuest,
+      upSourceHeadHeightConsensus: presetRig.upSourceHeadHeightConsensus,
+      directions: directionMetrics
+    });
   }
   const frames = presets.flatMap((preset) =>
     Object.entries(preset.directions).flatMap(([direction, directionFrames]) =>
@@ -397,12 +585,27 @@ async function inspectPreviewSheets({ catalog, outputRoot }) {
   const failures = frames.filter((frame) => (
     Math.abs(frame.characterHeight - policy.contentHeight) > 1
     || Math.abs(frame.bottom - policy.footBaseline) > 1
+    || Math.abs(frame.headHeightDelta) > 1
+    || Math.abs(frame.measuredBodyHeight - (policy.contentHeight - policy.headHeight)) > 1
     || Math.abs(frame.headWidthDelta) > 2
-    || frame.bodyToHeadRatio !== 2
+    || !frame.rigHashMatches
   ));
   const headWidths = frames.map((frame) => frame.headWidth);
+  const headHeights = frames.map((frame) => frame.measuredHeadHeight);
+  const directionHeadHeightSpreads = presets.map((preset) => {
+    const values = Object.values(preset.directions)
+      .flat()
+      .map((frame) => frame.measuredHeadHeight);
+    return Math.max(...values) - Math.min(...values);
+  });
+  const landmarkFrameCount = frames.filter(
+    (frame) => frame.sourceDetectionMethod === "face-landmark"
+  ).length;
+  const consensusFrameCount = frames.filter(
+    (frame) => frame.sourceDetectionMethod === "cross-direction-consensus"
+  ).length;
   const report = {
-    version: 1,
+    version: 2,
     policy: {
       source: policy.source,
       contentHeight: policy.contentHeight,
@@ -410,15 +613,28 @@ async function inspectPreviewSheets({ catalog, outputRoot }) {
       bodyHeight: policy.contentHeight - policy.headHeight,
       headWidth: policy.headWidth,
       footBaseline: policy.footBaseline,
-      maximumHeadWidthDelta: 2
+      maximumHeadWidthDelta: 2,
+      maximumHeadHeightDelta: 1,
+      maximumDirectionHeadHeightSpread: 2,
+      faceLandmarkRule: "alpha top to detected chin skin boundary"
     },
     summary: {
       presetCount: presets.length,
       frameCount,
+      minimumMeasuredHeadHeight: Math.min(...headHeights),
+      maximumMeasuredHeadHeight: Math.max(...headHeights),
+      maximumHeadHeightDelta: Math.max(...headHeights.map((height) => Math.abs(height - policy.headHeight))),
+      maximumDirectionHeadHeightSpread: Math.max(...directionHeadHeightSpreads),
       minimumHeadWidth: Math.min(...headWidths),
       maximumHeadWidth: Math.max(...headWidths),
       maximumHeadWidthDelta: Math.max(...headWidths.map((width) => Math.abs(width - policy.headWidth))),
-      exactBodyToHeadRatio: frames.every((frame) => frame.bodyToHeadRatio === 2),
+      rigBodyToHeadRatio: (policy.contentHeight - policy.headHeight) / policy.headHeight,
+      measuredHeadHeightWithinTolerance: frames.every(
+        (frame) => Math.abs(frame.headHeightDelta) <= 1
+      ),
+      landmarkFrameCount,
+      consensusFrameCount,
+      rigHashesMatch: frames.every((frame) => frame.rigHashMatches),
       passed: failures.length === 0
     },
     presets
@@ -427,7 +643,9 @@ async function inspectPreviewSheets({ catalog, outputRoot }) {
     const details = failures
       .map((frame) =>
         `${frame.presetId}/${frame.direction}/step-${frame.step}: `
-        + `height=${frame.characterHeight}, bottom=${frame.bottom}, headWidth=${frame.headWidth}`
+        + `height=${frame.characterHeight}, bottom=${frame.bottom}, `
+        + `headHeight=${frame.measuredHeadHeight}, headWidth=${frame.headWidth}, `
+        + `rigHash=${frame.rigHashMatches}`
       )
       .join("; ");
     throw new Error(`선택 화면 3등신·머리 크기 감사 실패: ${failures.length}개 프레임 (${details})`);
@@ -438,12 +656,12 @@ async function inspectPreviewSheets({ catalog, outputRoot }) {
 async function renderReview({ catalog, outputRoot, reviewPath }) {
   const policy = catalog.frame.selectionPreview;
   const cardWidth = 420;
-  const cardHeight = 178;
+  const cardHeight = 442;
   const columns = 3;
   const gap = 12;
   const padding = 16;
-  const frameWidth = 84;
-  const frameHeight = 126;
+  const frameWidth = 64;
+  const frameHeight = 96;
   const frameScale = frameWidth / policy.source.width;
   const composites = [];
   for (let index = 0; index < catalog.presets.length; index += 1) {
@@ -457,31 +675,37 @@ async function renderReview({ catalog, outputRoot, reviewPath }) {
     </svg>`);
     composites.push({ input: label, left: cardX, top: cardY });
     for (let row = 0; row < directions.length; row += 1) {
-      const frame = await sharp(walkPath)
-        .extract({
-          left: policy.source.width,
-          top: row * policy.source.height,
-          width: policy.source.width,
-          height: policy.source.height
-        })
-        .resize(frameWidth, frameHeight, { fit: "fill", kernel: sharp.kernel.lanczos3 })
-        .png()
-        .toBuffer();
-      const frameX = cardX + 14 + row * (frameWidth + 16);
-      const frameY = cardY + 34;
-      composites.push({ input: frame, left: frameX, top: frameY });
-      const top = frameY + (policy.footBaseline - policy.contentHeight + 1) * frameScale;
-      const head = top + policy.headHeight * frameScale;
-      const body = head + policy.headHeight * frameScale;
-      const foot = frameY + policy.footBaseline * frameScale;
-      const guides = Buffer.from(`<svg width="${frameWidth}" height="${frameHeight}" xmlns="http://www.w3.org/2000/svg">
-        <text x="3" y="10" font-family="sans-serif" font-size="8" fill="#655a56">${directions[row]}</text>
-        <path d="M0 ${top - frameY}H${frameWidth}" stroke="#3b82f6" stroke-width="0.7"/>
-        <path d="M0 ${head - frameY}H${frameWidth}" stroke="#ef4444" stroke-width="0.8"/>
-        <path d="M0 ${body - frameY}H${frameWidth}" stroke="#f59e0b" stroke-width="0.7"/>
-        <path d="M0 ${foot - frameY}H${frameWidth}" stroke="#22c55e" stroke-width="0.7"/>
+      const rowY = cardY + 32 + row * 101;
+      const directionLabel = Buffer.from(`<svg width="58" height="96" xmlns="http://www.w3.org/2000/svg">
+        <text x="4" y="18" font-family="sans-serif" font-size="11" font-weight="700" fill="#655a56">${directions[row]}</text>
+        <text x="4" y="36" font-family="sans-serif" font-size="8" fill="#8b7d76">1 · 2 · 3</text>
       </svg>`);
-      composites.push({ input: guides, left: frameX, top: frameY });
+      composites.push({ input: directionLabel, left: cardX + 10, top: rowY });
+      for (let column = 0; column < 3; column += 1) {
+        const frame = await sharp(walkPath)
+          .extract({
+            left: column * policy.source.width,
+            top: row * policy.source.height,
+            width: policy.source.width,
+            height: policy.source.height
+          })
+          .resize(frameWidth, frameHeight, { fit: "fill", kernel: sharp.kernel.lanczos3 })
+          .png()
+          .toBuffer();
+        const frameX = cardX + 70 + column * (frameWidth + 18);
+        composites.push({ input: frame, left: frameX, top: rowY });
+        const top = (policy.footBaseline - policy.contentHeight + 1) * frameScale;
+        const head = top + policy.headHeight * frameScale;
+        const body = head + policy.headHeight * frameScale;
+        const foot = policy.footBaseline * frameScale;
+        const guides = Buffer.from(`<svg width="${frameWidth}" height="${frameHeight}" xmlns="http://www.w3.org/2000/svg">
+          <path d="M0 ${top}H${frameWidth}" stroke="#3b82f6" stroke-width="0.8"/>
+          <path d="M0 ${head}H${frameWidth}" stroke="#ef4444" stroke-width="1"/>
+          <path d="M0 ${body}H${frameWidth}" stroke="#f59e0b" stroke-width="0.8"/>
+          <path d="M0 ${foot}H${frameWidth}" stroke="#22c55e" stroke-width="0.8"/>
+        </svg>`);
+        composites.push({ input: guides, left: frameX, top: rowY });
+      }
     }
   }
   const rows = Math.ceil(catalog.presets.length / columns);
@@ -501,7 +725,29 @@ export async function auditGuestSelectionPreviewAssets({
   outputRoot = defaultOutputRoot
 } = {}) {
   const catalog = providedCatalog ?? JSON.parse(await readFile(catalogPath, "utf8"));
-  return inspectPreviewSheets({ catalog, outputRoot });
+  const storedReport = JSON.parse(
+    await readFile(path.join(outputRoot, "selection-preview-audit.json"), "utf8")
+  );
+  if (storedReport.version !== 2) {
+    throw new Error("실제 턱선 기반 3등신 감사 보고서를 다시 생성해야 합니다.");
+  }
+  const sourceRig = Object.fromEntries(storedReport.presets.map((preset) => [
+    preset.id,
+    {
+      upSourceHeadHeightConsensus: preset.upSourceHeadHeightConsensus,
+      directions: Object.fromEntries(Object.entries(preset.directions).map(([direction, frames]) => [
+        direction,
+        frames.map((frame) => ({
+          sourceHeadHeight: frame.sourceHeadHeight,
+          sourceMeasuredHeadHeight: frame.sourceMeasuredHeadHeight,
+          sourceDetectionMethod: frame.sourceDetectionMethod,
+          sourceFaceBottom: frame.sourceFaceBottom,
+          frameSha256: frame.frameSha256
+        }))
+      ]))
+    }
+  ]));
+  return inspectPreviewSheets({ catalog, outputRoot, sourceRig });
 }
 
 export async function buildGuestSelectionPreviewAssets({
@@ -520,19 +766,81 @@ export async function buildGuestSelectionPreviewAssets({
     mkdir(runtimeOutputRoot, { recursive: true }),
     mkdir(frameReviewRoot, { recursive: true })
   ]);
+  const sourceRig = {};
   for (const preset of catalog.presets) {
     const guest = preset.reference.walkSourceGuest;
     const source = path.join(walkSourceRoot, `${guest}-walk-sheet.png`);
     await access(source);
     const sourceGrid = await loadWalkSheetGrid(source);
+    const baseFramesByDirection = {};
+    const detectedLandmarks = [];
+    for (let row = 0; row < directions.length; row += 1) {
+      const direction = directions[row];
+      baseFramesByDirection[direction] = [];
+      for (let column = 0; column < 3; column += 1) {
+        const extracted = await extractWalkCell(sourceGrid, row, column);
+        const normalized = await normalizeSelectionPreviewBaseFrame(extracted, policy);
+        const landmark = direction === "up"
+          ? null
+          : await detectFaceLandmark(normalized, policy);
+        baseFramesByDirection[direction].push({ normalized, landmark });
+        if (landmark) detectedLandmarks.push(landmark.headHeight);
+      }
+    }
+    const upSourceHeadHeightConsensus = Math.round(median(detectedLandmarks));
+    sourceRig[preset.id] = {
+      upSourceHeadHeightConsensus,
+      directions: {}
+    };
     const framesByDirection = {};
     for (let row = 0; row < directions.length; row += 1) {
       const direction = directions[row];
       framesByDirection[direction] = [];
+      sourceRig[preset.id].directions[direction] = [];
       for (let column = 0; column < 3; column += 1) {
-        const extracted = await extractWalkCell(sourceGrid, row, column);
-        const normalized = await normalizeSelectionPreviewFrame(extracted, policy);
+        const baseFrame = baseFramesByDirection[direction][column];
+        const sourceMeasuredHeadHeight = baseFrame.landmark?.headHeight
+          ?? upSourceHeadHeightConsensus;
+        let sourceHeadHeight = sourceMeasuredHeadHeight;
+        const renderCandidate = async (candidateHeadHeight) => {
+          const rigged = await normalizeVerticalRig(
+            baseFrame.normalized,
+            policy,
+            candidateHeadHeight
+          );
+          const candidate = await normalizeHeadWidth(rigged, policy);
+          const measuredHeadHeight = baseFrame.landmark
+            ? (await detectFaceLandmark(candidate, policy)).headHeight
+            : policy.headHeight;
+          return { candidate, candidateHeadHeight, measuredHeadHeight };
+        };
+        let best = await renderCandidate(sourceHeadHeight);
+        if (baseFrame.landmark && best.measuredHeadHeight !== policy.headHeight) {
+          for (let offset = -4; offset <= 4; offset += 1) {
+            if (offset === 0) continue;
+            const candidateHeadHeight = clamp(
+              sourceMeasuredHeadHeight + offset,
+              Math.round(policy.headHeight * 0.7),
+              Math.round(policy.headHeight * 1.4)
+            );
+            const candidate = await renderCandidate(candidateHeadHeight);
+            const candidateDelta = Math.abs(candidate.measuredHeadHeight - policy.headHeight);
+            const bestDelta = Math.abs(best.measuredHeadHeight - policy.headHeight);
+            if (candidateDelta < bestDelta) best = candidate;
+            if (candidateDelta === 0) break;
+          }
+        }
+        const normalized = best.candidate;
+        sourceHeadHeight = best.candidateHeadHeight;
         framesByDirection[direction].push(normalized);
+        sourceRig[preset.id].directions[direction].push({
+          sourceHeadHeight,
+          sourceMeasuredHeadHeight,
+          sourceDetectionMethod: baseFrame.landmark
+            ? "face-landmark"
+            : "cross-direction-consensus",
+          sourceFaceBottom: baseFrame.landmark?.faceBottom ?? null
+        });
         await writePng(
           path.join(
             frameReviewRoot,
@@ -593,7 +901,7 @@ export async function buildGuestSelectionPreviewAssets({
       writePng(framePath(runtimeOutputRoot, preset.id, "idle"), runtimeIdle)
     ]);
   }
-  const report = await inspectPreviewSheets({ catalog, outputRoot });
+  const report = await inspectPreviewSheets({ catalog, outputRoot, sourceRig });
   await writeFile(
     path.join(outputRoot, "selection-preview-audit.json"),
     `${JSON.stringify(report, null, 2)}\n`
