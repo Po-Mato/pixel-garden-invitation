@@ -16,12 +16,50 @@ const catalog = JSON.parse(
 test("선택 화면의 12명 144프레임은 2배 해상도와 동일한 3등신 기준을 지킨다", async () => {
   const report = await auditGuestSelectionPreviewAssets({ catalog });
 
+  assert.equal(report.version, 2);
   assert.deepEqual(report.policy.source, { width: 192, height: 288 });
   assert.equal(report.summary.presetCount, 12);
   assert.equal(report.summary.frameCount, 144);
-  assert.equal(report.summary.exactBodyToHeadRatio, true);
+  assert.equal(report.summary.rigBodyToHeadRatio, 2);
+  assert.equal(report.summary.measuredHeadHeightWithinTolerance, true);
+  assert.ok(report.summary.minimumMeasuredHeadHeight >= report.policy.headHeight - 1);
+  assert.ok(report.summary.maximumMeasuredHeadHeight <= report.policy.headHeight + 1);
+  assert.ok(report.summary.maximumHeadHeightDelta <= 1);
+  assert.ok(report.summary.maximumDirectionHeadHeightSpread <= 1);
   assert.ok(report.summary.maximumHeadWidthDelta <= 2);
+  assert.equal(report.summary.landmarkFrameCount, 108);
+  assert.equal(report.summary.consensusFrameCount, 36);
+  assert.equal(report.summary.rigHashesMatch, true);
   assert.equal(report.summary.passed, true);
+});
+
+test("각 캐릭터의 상하좌우 보행 3컷은 같은 머리 높이 범위에 고정된다", async () => {
+  const report = await auditGuestSelectionPreviewAssets({ catalog });
+
+  for (const preset of report.presets) {
+    const frames = Object.values(preset.directions).flat();
+    const headHeights = frames.map((frame) => frame.measuredHeadHeight);
+    assert.ok(
+      Math.max(...headHeights) - Math.min(...headHeights) <= 1,
+      `${preset.guest}의 방향별 실제 머리 높이 차이는 1px 이하여야 합니다.`
+    );
+    assert.equal(
+      preset.directions.up.every(
+        (frame) => frame.sourceDetectionMethod === "cross-direction-consensus"
+      ),
+      true,
+      `${preset.guest} 후면 컷은 세 방향의 실제 턱선 합의값을 사용해야 합니다.`
+    );
+    for (const direction of ["down", "left", "right"]) {
+      assert.equal(
+        preset.directions[direction].every(
+          (frame) => frame.sourceDetectionMethod === "face-landmark"
+        ),
+        true,
+        `${preset.guest} ${direction} 컷은 실제 턱선을 측정해야 합니다.`
+      );
+    }
+  }
 });
 
 test("승인된 평면 원화 12종은 선택 화면과 게임의 실제 보행 포즈로 이어진다", async () => {

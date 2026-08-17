@@ -41,6 +41,37 @@ test("map tone audit accepts a stable exposure with readable labels", () => {
   assert.ok(result.contrasts.portal >= 4.5);
 });
 
+test("map tone audit compares contrast at the recorded three-decimal precision", () => {
+  const displayProfiles = Object.fromEntries(
+    Object.keys(displayCalibrationProfiles).map((id) => [id, {
+      contrasts: {},
+      characterEdgeContrasts: { "guest-a": 1.0996 },
+      characterMovementEdgeContrasts: { "guest-a": { "down-0": 1.0996 } }
+    }])
+  );
+  const metrics = {
+    averageLuminance: 0.5,
+    p10Luminance: 0.2,
+    p90Luminance: 0.8,
+    sceneAverageLuminance: 0.5,
+    sceneP10Luminance: 0.2,
+    sceneP90Luminance: 0.8,
+    characterEdgeContrasts: { "guest-a": 1.1996 },
+    characterPresetCount: 1,
+    characterMovementEdgeContrasts: { "guest-a": { "down-0": 1.1996 } },
+    movementFrameCount: 1,
+    foregroundAssetCount: 2,
+    displayProfiles
+  };
+  const result = evaluateMapToneMetrics(metrics, {
+    ...metrics,
+    characterEdgeContrasts: { "guest-a": 1.2 },
+    characterMovementEdgeContrasts: { "guest-a": { "down-0": 1.2 } }
+  }, thresholds);
+
+  assert.equal(result.issues.some((issue) => issue.includes("대비 부족")), false);
+});
+
 test("map tone audit catches exposure drift and flattened map depth", () => {
   const result = evaluateMapToneMetrics(
     { averageLuminance: 0.62, p10Luminance: 0.48, p90Luminance: 0.58 },
