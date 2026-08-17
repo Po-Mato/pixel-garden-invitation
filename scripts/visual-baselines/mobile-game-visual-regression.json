@@ -1,24 +1,24 @@
 {
   "version": 2,
-  "approvedAt": "2026-08-15T01:18:28.927Z",
-  "reason": "하객 캐릭터를 입체 렌더에서 평면 픽셀 아트로 통일",
-  "sha256": "c8487891a2c12c6cb754b3f9738b9ca5f8140fc4f17becb356886d53133f3f0b",
+  "approvedAt": "2026-08-17T03:04:06.140Z",
+  "reason": "승인된 평면 3등신 하객 12종과 상하좌우 보행 144프레임 적용",
+  "sha256": "fc66cd279ab03e793c4520d56cff962b6499a13b7a80657baea976ddaba18521",
   "provenance": {
     "schemaVersion": 1,
     "subjectKind": "capture-set",
     "sourceKind": "local",
     "runId": null,
     "runAttempt": null,
-    "commitSha": "4c5502f7563587187f1b69456e16b1f74babc116",
+    "commitSha": "01b890fc9ff9b4822d2d9a50ee3089f6ab591f4a",
     "runUrl": null,
     "checksumAlgorithm": "sha256",
     "artifactChecksumScope": "sorted-capture-set-manifest",
-    "artifactSha256": "79cb44721a37f3c4c9f72da9795e666473753f8a6e29cd40b0051da99bebfd0c",
+    "artifactSha256": "e3a3cfc8ee6de18b9ef89e165c772aa61dbbd557e83a35acc6b1a5f32a59f7de",
     "files": [
       {
         "logicalPath": "mobile-game-current",
-        "size": 4642940,
-        "sha256": "ede8f2d7accea2d773d61d4dc59a5b3bb666029dda6f577ba807c00f56697b78"
+        "size": 4625173,
+        "sha256": "fa969fcdad9967721bef78aa72f42137b1e2d9d0dbf40c64dcaa40e2fd97c781"
       }
     ]
   },

@@ -27,6 +27,7 @@
     "maps:build": "node scripts/build-map-assets.mjs",
     "maps:audit": "node scripts/audit-map-assets.mjs && node scripts/audit-map-foreground-placements.mjs && node scripts/audit-map-tone.mjs",
     "maps:tone-audit": "node scripts/audit-map-tone.mjs",
+    "maps:tone-baseline:flat-guests": "node scripts/update-map-tone-character-baseline.mjs",
     "maps:foreground-audit": "node scripts/render-map-foreground-audit-sheet.mjs",
     "maps:foreground-suggest": "node scripts/suggest-map-foreground-placements.mjs",
     "maps:foreground-preview": "node scripts/suggest-map-foreground-placements.mjs --preview-patch",
