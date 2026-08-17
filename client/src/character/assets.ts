@@ -18,6 +18,7 @@ export type ResolvedCharacterLayer = {
 };
 
 const guestAssetRevisions: Partial<Record<string, string>> = {
+  "feminine-long-wave-dress": "optical-three-head-v2",
   "feminine-champagne-navy-skirt": "optical-three-head-v2",
   "feminine-lavender-jacket-dress": "optical-three-head-v2",
   "feminine-teal-modern-hanbok": "optical-three-head-v2"

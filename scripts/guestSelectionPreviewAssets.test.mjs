@@ -62,9 +62,9 @@ test("각 캐릭터의 상하좌우 보행 3컷은 같은 머리 높이 범위�
   }
 });
 
-test("6·7·8번은 방향 비율을 다시 맞춘 optical-rig 원화를 사용한다", async () => {
+test("1·6·7·8번은 방향 비율을 다시 맞춘 optical-rig 원화를 사용한다", async () => {
   const report = await auditGuestSelectionPreviewAssets({ catalog });
-  const correctedGuests = new Set(["guest-06", "guest-07", "guest-08"]);
+  const correctedGuests = new Set(["guest-01", "guest-06", "guest-07", "guest-08"]);
 
   for (const preset of report.presets) {
     assert.equal(
