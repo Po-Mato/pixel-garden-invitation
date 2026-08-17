@@ -6,6 +6,7 @@ import {
   gameResourceBudgets,
   parsePwaFeaturePaths,
   parsePwaPrecachePaths,
+  pwaDistPath,
   summarizeGameResourceStates
 } from "./lib/gameResourceBudget.mjs";
 
@@ -23,6 +24,10 @@ test("service-worker precache manifest is parsed for missing-asset verification"
     "./assets/optional-a.js"
   ]);
   assert.throws(() => parsePwaFeaturePaths("const VERSION = 'missing';"), /FEATURE_URLS missing/);
+  assert.equal(
+    pwaDistPath("./characters/generated/guests/default__idle.png?v=optical-three-head-v2"),
+    "characters/generated/guests/default__idle.png"
+  );
 });
 
 test("PWA cache budgets cover core and optional bytes plus missing assets", () => {

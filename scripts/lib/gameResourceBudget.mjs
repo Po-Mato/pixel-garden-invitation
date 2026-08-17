@@ -71,8 +71,8 @@ function total(resources, field) {
 
 const compressiblePwaAssetPattern = /\.(?:css|html?|js|json|svg|txt|webmanifest|xml)$/i;
 
-function pwaDistPath(resourcePath) {
-  const relativePath = resourcePath.replace(/^\.\//, "");
+export function pwaDistPath(resourcePath) {
+  const relativePath = resourcePath.split(/[?#]/, 1)[0].replace(/^\.\//, "");
   return relativePath || "index.html";
 }
 

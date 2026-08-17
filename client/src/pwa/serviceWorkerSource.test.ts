@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   createPwaServiceWorkerSource,
   pwaCorePrecachePaths,
+  pwaDefaultGuestAssetRevision,
   pwaDefaultGuestSelectionIdlePath,
   resolvePwaFeaturePrecachePaths,
   resolvePwaPrecachePaths
@@ -44,6 +45,13 @@ describe("PWA service worker source", () => {
     expect(paths).toContain("./characters/puppets/groom/head-blink.webp");
     expect(paths).toContain(pwaDefaultGuestSelectionIdlePath);
     expect(paths.filter((path) => path === pwaDefaultGuestSelectionIdlePath)).toHaveLength(1);
+    expect(pwaDefaultGuestSelectionIdlePath.endsWith(`?v=${pwaDefaultGuestAssetRevision}`)).toBe(true);
+    expect(paths).toContain(
+      `./characters/generated/guests/feminine-long-wave-dress__idle.png?v=${pwaDefaultGuestAssetRevision}`
+    );
+    expect(paths).toContain(
+      `./characters/generated/guests/feminine-long-wave-dress__walk.png?v=${pwaDefaultGuestAssetRevision}`
+    );
     expect(paths).toContain("./assets/gowun-dodum-critical-hash.woff2");
     expect(paths).toContain("./assets/noto-sans-kr-119-wght-normal-hash.woff2");
     expect(paths).toContain("./assets/entry-wedding-garden-hero-hash.avif");
