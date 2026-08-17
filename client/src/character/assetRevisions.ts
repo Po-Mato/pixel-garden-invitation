@@ -1,8 +1,12 @@
-export const defaultGuestAssetRevision = "optical-three-head-v2";
+export const defaultGuestAssetRevision = "optical-face-rig-v3";
 
 export const guestAssetRevisions: Readonly<Partial<Record<string, string>>> = {
   "feminine-long-wave-dress": defaultGuestAssetRevision,
-  "feminine-champagne-navy-skirt": "optical-three-head-v2",
-  "feminine-lavender-jacket-dress": "optical-three-head-v2",
+  "feminine-formal-hanbok": defaultGuestAssetRevision,
+  "masculine-navy-suit": defaultGuestAssetRevision,
+  "feminine-sage-bolero-dress": defaultGuestAssetRevision,
+  "feminine-champagne-navy-skirt": defaultGuestAssetRevision,
+  "feminine-lavender-jacket-dress": defaultGuestAssetRevision,
+  "masculine-blue-modern-hanbok": defaultGuestAssetRevision,
   "feminine-teal-modern-hanbok": "optical-three-head-v2"
 };
