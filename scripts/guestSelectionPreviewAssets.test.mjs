@@ -16,7 +16,7 @@ const catalog = JSON.parse(
 test("선택 화면의 12명 144프레임은 2배 해상도와 동일한 3등신 기준을 지킨다", async () => {
   const report = await auditGuestSelectionPreviewAssets({ catalog });
 
-  assert.equal(report.version, 3);
+  assert.equal(report.version, 4);
   assert.deepEqual(report.policy.source, { width: 192, height: 288 });
   assert.equal(report.summary.presetCount, 12);
   assert.equal(report.summary.frameCount, 144);
@@ -25,7 +25,10 @@ test("선택 화면의 12명 144프레임은 2배 해상도와 동일한 3등신
   assert.ok(report.summary.minimumMeasuredHeadHeight >= report.policy.headHeight - 1);
   assert.ok(report.summary.maximumMeasuredHeadHeight <= report.policy.headHeight + 1);
   assert.ok(report.summary.maximumHeadHeightDelta <= 1);
-  assert.ok(report.summary.maximumDirectionHeadHeightSpread <= 1);
+  assert.ok(
+    report.summary.maximumDirectionHeadHeightSpread
+      <= report.policy.maximumDirectionHeadHeightSpread
+  );
   assert.ok(report.summary.maximumHeadWidthDelta <= 2);
   assert.equal(report.summary.landmarkFrameCount, 108);
   assert.equal(report.summary.consensusFrameCount, 36);
@@ -39,18 +42,45 @@ test("선택 화면의 12명 144프레임은 2배 해상도와 동일한 3등신
       <= report.policy.maximumLeftRightFaceWidthDifferenceRatio
   );
   assert.equal(report.summary.opticalFaceWidthWithinTolerance, true);
+  assert.ok(
+    report.summary.maximumMeasuredFacialLandmarkCenterYSpreadRatio
+      <= report.policy.maximumFacialLandmarkVerticalSpreadRatio
+  );
+  assert.ok(
+    report.summary.maximumMeasuredFacialLandmarkBottomYSpreadRatio
+      <= report.policy.maximumFacialLandmarkVerticalSpreadRatio
+  );
+  assert.equal(report.summary.opticalLandmarksWithinTolerance, true);
+  assert.ok(
+    report.summary.maximumMeasuredStrideSilhouetteSymmetryRatio
+      <= report.policy.maximumStrideSilhouetteSymmetryRatio
+  );
+  assert.ok(
+    report.summary.maximumMeasuredLeftRightStrideExpansionDifferenceRatio
+      <= report.policy.maximumLeftRightStrideExpansionDifferenceRatio
+  );
+  assert.ok(
+    report.summary.maximumMeasuredStrideCenterDrift
+      <= report.policy.maximumStrideCenterDrift
+  );
+  assert.ok(
+    report.summary.maximumMeasuredStepBaselineSpread
+      <= report.policy.maximumStepBaselineSpread
+  );
+  assert.equal(report.summary.motionWithinTolerance, true);
   assert.equal(report.summary.passed, true);
 });
 
-test("각 캐릭터의 상하좌우 보행 3컷은 같은 머리 높이 범위에 고정된다", async () => {
+test("각 캐릭터의 상하좌우 보행 3컷은 같은 머리 높이 허용 범위에 고정된다", async () => {
   const report = await auditGuestSelectionPreviewAssets({ catalog });
 
   for (const preset of report.presets) {
     const frames = Object.values(preset.directions).flat();
     const headHeights = frames.map((frame) => frame.measuredHeadHeight);
     assert.ok(
-      Math.max(...headHeights) - Math.min(...headHeights) <= 1,
-      `${preset.guest}의 방향별 실제 머리 높이 차이는 1px 이하여야 합니다.`
+      Math.max(...headHeights) - Math.min(...headHeights)
+        <= report.policy.maximumDirectionHeadHeightSpread,
+      `${preset.guest}의 방향별 실제 머리 높이 차이는 허용 범위 이하여야 합니다.`
     );
     assert.equal(
       preset.directions.up.every(
@@ -71,38 +101,23 @@ test("각 캐릭터의 상하좌우 보행 3컷은 같은 머리 높이 범위�
   }
 });
 
-test("얼굴 폭 보정 대상은 v3, 기존 체형 보정 대상은 v2 원화를 사용한다", async () => {
+test("12종 모두 방향·보행을 정돈한 v4 원화를 사용한다", async () => {
   const report = await auditGuestSelectionPreviewAssets({ catalog });
-  const faceCorrectedGuests = new Set([
-    "guest-01",
-    "guest-02",
-    "guest-03",
-    "guest-05",
-    "guest-06",
-    "guest-07",
-    "guest-12"
-  ]);
-  const opticalRigGuests = new Set(["guest-08"]);
 
   for (const preset of report.presets) {
-    const expectedSourceSet = faceCorrectedGuests.has(preset.guest)
-      ? "v3-optical-face-rig"
-      : opticalRigGuests.has(preset.guest)
-        ? "v2-optical-rig"
-        : "v1-flat-three-head";
     assert.equal(
       preset.sourceSet,
-      expectedSourceSet,
+      "v4-direction-motion-polish",
       `${preset.guest} 원화 버전이 검수된 소스와 일치해야 합니다.`
     );
   }
 
-  const faceCorrectedSourceRoot = join(
+  const polishedSourceRoot = join(
     root,
-    "character-assets/reference/guest-flat-walk-sources/v3"
+    "character-assets/reference/guest-flat-walk-sources/v4"
   );
-  await Promise.all([...faceCorrectedGuests].map((guest) =>
-    access(join(faceCorrectedSourceRoot, `${guest}-walk-sheet.png`))
+  await Promise.all(catalog.presets.map((preset) =>
+    access(join(polishedSourceRoot, `${preset.reference.walkSourceGuest}-walk-sheet.png`))
   ));
 });
 
@@ -123,9 +138,35 @@ test("정면과 측면의 실제 얼굴 폭은 캐릭터별 광학 허용 범위
   }
 });
 
+test("얼굴 기준선과 좌우 보행 리듬은 방향 전환 시 허용 범위 안에 있다", async () => {
+  const report = await auditGuestSelectionPreviewAssets({ catalog });
+
+  for (const preset of report.presets) {
+    assert.ok(
+      preset.opticalLandmarks.centerYSpreadRatio
+        <= report.policy.maximumFacialLandmarkVerticalSpreadRatio,
+      `${preset.guest} 얼굴 중심선이 방향별 허용 범위를 넘으면 안 됩니다.`
+    );
+    assert.ok(
+      preset.motion.maximumStrideSilhouetteSymmetryRatio
+        <= report.policy.maximumStrideSilhouetteSymmetryRatio,
+      `${preset.guest} 왼발·오른발 보폭 실루엣이 비대칭이면 안 됩니다.`
+    );
+    assert.ok(
+      preset.motion.leftRightStrideExpansionDifferenceRatio
+        <= report.policy.maximumLeftRightStrideExpansionDifferenceRatio,
+      `${preset.guest} 좌우 방향의 보폭 크기가 달라 보이면 안 됩니다.`
+    );
+    assert.ok(
+      preset.motion.maximumStepBaselineSpread <= report.policy.maximumStepBaselineSpread,
+      `${preset.guest} 보행 중 발 기준선이 흔들리면 안 됩니다.`
+    );
+  }
+});
+
 test("승인된 평면 원화 12종은 선택 화면과 게임의 실제 보행 포즈로 이어진다", async () => {
   const policy = catalog.frame.selectionPreview;
-  const sourceRoot = join(root, "character-assets/reference/guest-flat-walk-sources/v1");
+  const sourceRoot = join(root, "character-assets/reference/guest-flat-walk-sources/v4");
   const previewRoot = join(root, "character-assets/source/guests-preview");
 
   for (const preset of catalog.presets) {
