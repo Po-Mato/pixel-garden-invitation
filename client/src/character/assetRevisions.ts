@@ -1,18 +1,16 @@
-export const defaultGuestAssetRevision = "front-face-balance-v5";
-
-const directionMotionPolishRevision = "direction-motion-polish-v4";
+export const defaultGuestAssetRevision = "couple-depth-balance-v6";
 
 export const guestAssetRevisions: Readonly<Partial<Record<string, string>>> = {
   "feminine-long-wave-dress": defaultGuestAssetRevision,
-  "feminine-formal-hanbok": directionMotionPolishRevision,
-  "masculine-navy-suit": directionMotionPolishRevision,
-  "masculine-charcoal-blazer": directionMotionPolishRevision,
-  "feminine-sage-bolero-dress": directionMotionPolishRevision,
-  "feminine-champagne-navy-skirt": directionMotionPolishRevision,
-  "feminine-lavender-jacket-dress": directionMotionPolishRevision,
-  "feminine-teal-modern-hanbok": directionMotionPolishRevision,
-  "masculine-beige-summer-suit": directionMotionPolishRevision,
-  "masculine-charcoal-burgundy-tie": directionMotionPolishRevision,
-  "masculine-green-blazer-cream-pants": directionMotionPolishRevision,
-  "masculine-blue-modern-hanbok": directionMotionPolishRevision,
+  "feminine-formal-hanbok": defaultGuestAssetRevision,
+  "masculine-navy-suit": defaultGuestAssetRevision,
+  "masculine-charcoal-blazer": defaultGuestAssetRevision,
+  "feminine-sage-bolero-dress": defaultGuestAssetRevision,
+  "feminine-champagne-navy-skirt": defaultGuestAssetRevision,
+  "feminine-lavender-jacket-dress": defaultGuestAssetRevision,
+  "feminine-teal-modern-hanbok": defaultGuestAssetRevision,
+  "masculine-beige-summer-suit": defaultGuestAssetRevision,
+  "masculine-charcoal-burgundy-tie": defaultGuestAssetRevision,
+  "masculine-green-blazer-cream-pants": defaultGuestAssetRevision,
+  "masculine-blue-modern-hanbok": defaultGuestAssetRevision,
 };
