@@ -25,7 +25,7 @@ test("service-worker precache manifest is parsed for missing-asset verification"
   ]);
   assert.throws(() => parsePwaFeaturePaths("const VERSION = 'missing';"), /FEATURE_URLS missing/);
   assert.equal(
-    pwaDistPath("./characters/generated/guests/default__idle.png?v=direction-motion-polish-v4"),
+    pwaDistPath("./characters/generated/guests/default__idle.png?v=front-face-balance-v5"),
     "characters/generated/guests/default__idle.png"
   );
 });

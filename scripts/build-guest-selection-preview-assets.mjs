@@ -27,6 +27,10 @@ const defaultWalkSourcePolishOverrideRoot = path.join(
   root,
   "character-assets/reference/guest-flat-walk-sources/v4"
 );
+const defaultWalkSourceFrontFaceOverrideRoot = path.join(
+  root,
+  "character-assets/reference/guest-flat-walk-sources/v5"
+);
 const defaultFrameReviewRoot = path.join(defaultWalkSourceRoot, "frames");
 const defaultOutputRoot = path.join(root, "character-assets/source/guests-preview");
 const defaultRuntimeOutputRoot = path.join(root, "character-assets/source/guests");
@@ -191,9 +195,19 @@ async function resolveWalkSource({
   walkSourceRoot,
   walkSourceOverrideRoot,
   walkSourceFaceOverrideRoot,
-  walkSourcePolishOverrideRoot
+  walkSourcePolishOverrideRoot,
+  walkSourceFrontFaceOverrideRoot
 }) {
   const filename = `${guest}-walk-sheet.png`;
+  if (walkSourceFrontFaceOverrideRoot) {
+    const frontFaceOverride = path.join(walkSourceFrontFaceOverrideRoot, filename);
+    try {
+      await access(frontFaceOverride);
+      return { source: frontFaceOverride, sourceSet: "v5-front-face-balance" };
+    } catch {
+      // Only characters requiring an additional front/profile optical pass use v5.
+    }
+  }
   if (walkSourcePolishOverrideRoot) {
     const polishOverride = path.join(walkSourcePolishOverrideRoot, filename);
     try {
@@ -1080,6 +1094,7 @@ export async function buildGuestSelectionPreviewAssets({
   walkSourceOverrideRoot = defaultWalkSourceOverrideRoot,
   walkSourceFaceOverrideRoot = defaultWalkSourceFaceOverrideRoot,
   walkSourcePolishOverrideRoot = defaultWalkSourcePolishOverrideRoot,
+  walkSourceFrontFaceOverrideRoot = defaultWalkSourceFrontFaceOverrideRoot,
   frameReviewRoot = defaultFrameReviewRoot,
   reviewPath = defaultReviewPath
 } = {}) {
@@ -1099,7 +1114,8 @@ export async function buildGuestSelectionPreviewAssets({
       walkSourceRoot,
       walkSourceOverrideRoot,
       walkSourceFaceOverrideRoot,
-      walkSourcePolishOverrideRoot
+      walkSourcePolishOverrideRoot,
+      walkSourceFrontFaceOverrideRoot
     });
     const sourceGrid = await loadWalkSheetGrid(source);
     const baseFramesByDirection = {};
@@ -1254,7 +1270,8 @@ export async function buildGuestSelectionPreviewAssets({
     walkSourceRoot,
     walkSourceOverrideRoot,
     walkSourceFaceOverrideRoot,
-    walkSourcePolishOverrideRoot
+    walkSourcePolishOverrideRoot,
+    walkSourceFrontFaceOverrideRoot
   };
 }
 

@@ -37,7 +37,7 @@ describe("월드 캐릭터 시각 중심", () => {
       feetY: 67
     });
     expect(worldCharacterAnchorStyle({ presetId: "missing" }, 2)).toEqual({
-      "--character-world-anchor-offset-x": "0px",
+      "--character-world-anchor-offset-x": "0.5px",
       "--character-world-anchor-y": "35px"
     });
   });
