@@ -1019,6 +1019,24 @@ select,
   margin-top: 16px;
 }
 
+.character-customizer__panel-heading {
+  display: flex;
+  min-width: 0;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.character-customizer__panel-heading > span {
+  overflow: hidden;
+  color: #856f77;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .customizer-options {
   display: grid;
   min-width: 0;
@@ -1026,16 +1044,10 @@ select,
 }
 
 .customizer-options--images {
-  grid-auto-flow: column;
-  grid-auto-columns: 148px;
-  grid-template-columns: none;
-  overflow-x: auto;
-  overflow-y: hidden;
-  padding: 1px 12px 5px 1px;
-  scrollbar-width: thin;
-  scrollbar-color: #ba7d8b #efe4dc;
-  scroll-snap-type: x mandatory;
-  overscroll-behavior-inline: contain;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 4px;
+  overflow: visible;
+  padding: 1px;
 }
 
 .customizer-options--compact,
@@ -1062,35 +1074,49 @@ select,
 }
 
 .customizer-option--image {
+  position: relative;
   display: grid;
-  grid-template-columns: 58px minmax(0, 1fr);
-  align-items: center;
-  min-height: 86px;
-  height: 88px;
-  gap: 8px;
-  padding: 6px 8px;
-  text-align: left;
-  scroll-snap-align: start;
+  min-height: 44px;
+  height: 44px;
+  place-items: center;
+  gap: 0;
+  padding: 0;
 }
 
 .customizer-option__sprite {
   position: relative;
   z-index: 1;
   display: grid;
-  width: 54px;
-  height: 76px;
+  width: 32px;
+  height: 42px;
   place-items: center;
   overflow: hidden;
   border: 1px solid rgba(126, 96, 109, 0.22);
-  border-radius: 10px;
+  border: 0;
+  border-radius: 5px;
   background:
     radial-gradient(circle at 50% 76%, rgba(118, 153, 139, 0.18), transparent 34%),
     linear-gradient(180deg, rgba(255, 253, 247, 0.95), rgba(239, 232, 225, 0.72));
 }
 
 .customizer-option__sprite .character-sprite--thumbnail {
-  transform: scale(1.04);
+  transform: scale(0.58);
   transform-origin: center;
+}
+
+.customizer-option__index {
+  position: absolute;
+  bottom: 2px;
+  left: 3px;
+  z-index: 3;
+  border-radius: 999px;
+  padding: 1px 3px;
+  background: rgba(255, 253, 248, 0.88);
+  color: #715c64;
+  font-family: var(--wedding-font-ui, sans-serif);
+  font-size: 7px;
+  font-weight: 700;
+  line-height: 1;
 }
 
 .customizer-option__label {
@@ -1307,6 +1333,7 @@ select,
 .character-sprite--preview,
 .character-sprite--thumbnail {
   transform: none;
+  filter: contrast(1.025) saturate(0.96);
 }
 
 .character-sprite--world {

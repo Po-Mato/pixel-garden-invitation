@@ -213,9 +213,14 @@ export function CharacterCustomizer({ value, onChange }: Props) {
       </div>
 
       <div className="character-customizer__panel">
-        <h2>완성 하객 캐릭터</h2>
+        <div className="character-customizer__panel-heading">
+          <h2>완성 하객 캐릭터</h2>
+          <span aria-live="polite">
+            전체 12명 · {String(guestCharacterPresets.findIndex((preset) => preset.id === selectedPreset.id) + 1).padStart(2, "0")} 선택
+          </span>
+        </div>
         <div className="customizer-options customizer-options--images">
-          {guestCharacterPresets.map((preset) => {
+          {guestCharacterPresets.map((preset, index) => {
             const appearance = updateAppearance(value, preset.id);
             const selected = selectedPreset.id === preset.id;
             return (
@@ -228,6 +233,9 @@ export function CharacterCustomizer({ value, onChange }: Props) {
                 aria-pressed={selected}
                 onClick={() => onChange(appearance)}
               >
+                <span className="customizer-option__index" aria-hidden="true">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
                 <span className="customizer-option__sprite" aria-hidden="true">
                   <CharacterSprite
                     appearance={appearance}
@@ -236,7 +244,7 @@ export function CharacterCustomizer({ value, onChange }: Props) {
                     displayMode="thumbnail"
                   />
                 </span>
-                <span className="customizer-option__label">{preset.label}</span>
+                <span className="customizer-option__label sr-only">{preset.label}</span>
                 {selected ? <span className="customizer-option__check" aria-hidden="true">✓</span> : null}
               </button>
             );

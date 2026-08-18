@@ -16,7 +16,7 @@ const catalog = JSON.parse(
 test("선택 화면의 12명 144프레임은 2배 해상도와 동일한 3등신 기준을 지킨다", async () => {
   const report = await auditGuestSelectionPreviewAssets({ catalog });
 
-  assert.equal(report.version, 5);
+  assert.equal(report.version, 6);
   assert.deepEqual(report.policy.source, { width: 192, height: 288 });
   assert.equal(report.summary.presetCount, 12);
   assert.equal(report.summary.frameCount, 144);
@@ -78,6 +78,11 @@ test("선택 화면의 12명 144프레임은 2배 해상도와 동일한 3등신
       <= report.policy.maximumStepBaselineSpread
   );
   assert.equal(report.summary.motionWithinTolerance, true);
+  assert.ok(
+    report.summary.maximumRuntimeCoreCenterDriftDisplayPx
+      <= report.runtimeMotion.policy.maximumCoreCenterDriftDisplayPx
+  );
+  assert.equal(report.summary.runtimeMotionWithinTolerance, true);
   assert.equal(report.summary.passed, true);
 });
 
@@ -202,6 +207,19 @@ test("얼굴 기준선과 좌우 보행 리듬은 방향 전환 시 허용 범�
     assert.ok(
       preset.motion.maximumStepBaselineSpread <= report.policy.maximumStepBaselineSpread,
       `${preset.guest} 보행 중 발 기준선이 흔들리면 안 됩니다.`
+    );
+  }
+});
+
+test("실제 48×72 표시 크기에서도 보행 상체 중심은 1px 안에서 안정된다", async () => {
+  const report = await auditGuestSelectionPreviewAssets({ catalog });
+
+  assert.equal(report.runtimeMotion.presets.length, 12);
+  for (const preset of report.runtimeMotion.presets) {
+    assert.ok(
+      preset.maximumCoreCenterDriftDisplayPx
+        <= report.runtimeMotion.policy.maximumCoreCenterDriftDisplayPx,
+      `${preset.guest} 보행 상체가 실제 표시 크기에서 좌우로 흔들리면 안 됩니다.`
     );
   }
 });

@@ -1,5 +1,5 @@
 {
-  "version": 5,
+  "version": 6,
   "policy": {
     "source": {
       "width": 192,
@@ -55,7 +55,9 @@
     "maximumMeasuredStrideCenterDrift": 4,
     "maximumMeasuredStepBaselineSpread": 0,
     "motionWithinTolerance": true,
-    "passed": true
+    "passed": true,
+    "maximumRuntimeCoreCenterDriftDisplayPx": 0.7160754603447579,
+    "runtimeMotionWithinTolerance": true
   },
   "presets": [
     {
@@ -5278,5 +5280,486 @@
         ]
       }
     }
-  ]
+  ],
+  "runtimeMotion": {
+    "policy": {
+      "maximumCoreCenterDriftDisplayPx": 0.75,
+      "measurementBand": "head and upper 48 percent of body",
+      "displayScale": 0.5
+    },
+    "summary": {
+      "maximumMeasuredCoreCenterDriftDisplayPx": 0.7160754603447579,
+      "passed": true
+    },
+    "presets": [
+      {
+        "id": "feminine-long-wave-dress",
+        "guest": "guest-01",
+        "directions": {
+          "down": {
+            "coreCenters": [
+              47.89877605028118,
+              47.92638436482085,
+              47.632739059967584
+            ],
+            "maximumCoreCenterDriftDisplayPx": 0.14682265242663206
+          },
+          "left": {
+            "coreCenters": [
+              48.700325732899024,
+              47.704026567040266,
+              47.965991902834006
+            ],
+            "maximumCoreCenterDriftDisplayPx": 0.49814958292937916
+          },
+          "right": {
+            "coreCenters": [
+              47.29375258585023,
+              47.961017644645054,
+              48.36753883892069
+            ],
+            "maximumCoreCenterDriftDisplayPx": 0.3336325293974127
+          },
+          "up": {
+            "coreCenters": [
+              47.502432695426535,
+              47.883453709783325,
+              48.26727213752838
+            ],
+            "maximumCoreCenterDriftDisplayPx": 0.19190921387252757
+          }
+        },
+        "maximumCoreCenterDriftDisplayPx": 0.49814958292937916
+      },
+      {
+        "id": "feminine-formal-hanbok",
+        "guest": "guest-02",
+        "directions": {
+          "down": {
+            "coreCenters": [
+              47.28409893992933,
+              47.532908704883226,
+              47.78892857142857
+            ],
+            "maximumCoreCenterDriftDisplayPx": 0.12800993327267207
+          },
+          "left": {
+            "coreCenters": [
+              47.04616530156366,
+              46.8105461393597,
+              47.17102838186509
+            ],
+            "maximumCoreCenterDriftDisplayPx": 0.18024112125269554
+          },
+          "right": {
+            "coreCenters": [
+              48.54446119065562,
+              49.478760045924226,
+              49.3785930408472
+            ],
+            "maximumCoreCenterDriftDisplayPx": 0.467149427634304
+          },
+          "up": {
+            "coreCenters": [
+              47.87990762124711,
+              47.69215621923203,
+              47.244725738396625
+            ],
+            "maximumCoreCenterDriftDisplayPx": 0.22371524041770385
+          }
+        },
+        "maximumCoreCenterDriftDisplayPx": 0.467149427634304
+      },
+      {
+        "id": "masculine-navy-suit",
+        "guest": "guest-03",
+        "directions": {
+          "down": {
+            "coreCenters": [
+              47.83916950728231,
+              47.91736604260814,
+              47.46325376884422
+            ],
+            "maximumCoreCenterDriftDisplayPx": 0.22705613688195925
+          },
+          "left": {
+            "coreCenters": [
+              46.56171003717472,
+              46.962025316455694,
+              47.43465272591486
+            ],
+            "maximumCoreCenterDriftDisplayPx": 0.23631370472958224
+          },
+          "right": {
+            "coreCenters": [
+              48.018677042801556,
+              48.02496771416272,
+              48.09800859039438
+            ],
+            "maximumCoreCenterDriftDisplayPx": 0.03652043811582928
+          },
+          "up": {
+            "coreCenters": [
+              47.44979146615335,
+              47.29401470073503,
+              47.76753960556094
+            ],
+            "maximumCoreCenterDriftDisplayPx": 0.2367624524129539
+          }
+        },
+        "maximumCoreCenterDriftDisplayPx": 0.2367624524129539
+      },
+      {
+        "id": "masculine-charcoal-blazer",
+        "guest": "guest-04",
+        "directions": {
+          "down": {
+            "coreCenters": [
+              48.027633851468046,
+              47.788600288600286,
+              47.56445993031359
+            ],
+            "maximumCoreCenterDriftDisplayPx": 0.11951678143388023
+          },
+          "left": {
+            "coreCenters": [
+              47.77692602529705,
+              46.586176340274704,
+              46.98686751641561
+            ],
+            "maximumCoreCenterDriftDisplayPx": 0.5953748425111733
+          },
+          "right": {
+            "coreCenters": [
+              47.72476007677543,
+              49.12201476335215,
+              47.68986384266263
+            ],
+            "maximumCoreCenterDriftDisplayPx": 0.7160754603447579
+          },
+          "up": {
+            "coreCenters": [
+              48.5219326128417,
+              48.60410460112546,
+              48.95684620376379
+            ],
+            "maximumCoreCenterDriftDisplayPx": 0.17637080131916605
+          }
+        },
+        "maximumCoreCenterDriftDisplayPx": 0.7160754603447579
+      },
+      {
+        "id": "feminine-sage-bolero-dress",
+        "guest": "guest-05",
+        "directions": {
+          "down": {
+            "coreCenters": [
+              47.88877266387727,
+              47.55076495132128,
+              47.462155563306595
+            ],
+            "maximumCoreCenterDriftDisplayPx": 0.16900385627799608
+          },
+          "left": {
+            "coreCenters": [
+              46.644081307293746,
+              46.67613636363637,
+              47.046950240770464
+            ],
+            "maximumCoreCenterDriftDisplayPx": 0.18540693856704848
+          },
+          "right": {
+            "coreCenters": [
+              48.33171521035599,
+              48.568903173965445,
+              48.15014164305949
+            ],
+            "maximumCoreCenterDriftDisplayPx": 0.2093807654529769
+          },
+          "up": {
+            "coreCenters": [
+              47.968549205275615,
+              47.8883214164113,
+              47.61265483762973
+            ],
+            "maximumCoreCenterDriftDisplayPx": 0.13783328939078743
+          }
+        },
+        "maximumCoreCenterDriftDisplayPx": 0.2093807654529769
+      },
+      {
+        "id": "feminine-champagne-navy-skirt",
+        "guest": "guest-06",
+        "directions": {
+          "down": {
+            "coreCenters": [
+              47.81794871794872,
+              48.200804366561336,
+              47.76510067114094
+            ],
+            "maximumCoreCenterDriftDisplayPx": 0.21785184771019672
+          },
+          "left": {
+            "coreCenters": [
+              47.321250888415065,
+              47.616379310344826,
+              47.86129597197898
+            ],
+            "maximumCoreCenterDriftDisplayPx": 0.14756421096488026
+          },
+          "right": {
+            "coreCenters": [
+              48.400984875131904,
+              48.12580414581844,
+              48.31719128329298
+            ],
+            "maximumCoreCenterDriftDisplayPx": 0.1375903646567309
+          },
+          "up": {
+            "coreCenters": [
+              47.8792781580585,
+              47.652271273192575,
+              47.274328081556995
+            ],
+            "maximumCoreCenterDriftDisplayPx": 0.18897159581779022
+          }
+        },
+        "maximumCoreCenterDriftDisplayPx": 0.21785184771019672
+      },
+      {
+        "id": "feminine-lavender-jacket-dress",
+        "guest": "guest-07",
+        "directions": {
+          "down": {
+            "coreCenters": [
+              47.48580121703854,
+              47.66015493432132,
+              47.65811677354033
+            ],
+            "maximumCoreCenterDriftDisplayPx": 0.08717685864138858
+          },
+          "left": {
+            "coreCenters": [
+              47.985951008645536,
+              47.83393371757925,
+              48.197574893009985
+            ],
+            "maximumCoreCenterDriftDisplayPx": 0.18182058771536802
+          },
+          "right": {
+            "coreCenters": [
+              48.48407871198569,
+              48.14420289855072,
+              47.991729593671344
+            ],
+            "maximumCoreCenterDriftDisplayPx": 0.16993790671748243
+          },
+          "up": {
+            "coreCenters": [
+              47.81950274459154,
+              47.33543463835434,
+              46.99838187702265
+            ],
+            "maximumCoreCenterDriftDisplayPx": 0.24203405311859783
+          }
+        },
+        "maximumCoreCenterDriftDisplayPx": 0.24203405311859783
+      },
+      {
+        "id": "feminine-teal-modern-hanbok",
+        "guest": "guest-08",
+        "directions": {
+          "down": {
+            "coreCenters": [
+              47.87589647645775,
+              48.118235846105726,
+              48.053125
+            ],
+            "maximumCoreCenterDriftDisplayPx": 0.1211696848239896
+          },
+          "left": {
+            "coreCenters": [
+              47.67534784159829,
+              47.613232514177696,
+              47.64784756527876
+            ],
+            "maximumCoreCenterDriftDisplayPx": 0.03105766371029617
+          },
+          "right": {
+            "coreCenters": [
+              47.05589430894309,
+              47.201438848920866,
+              46.977987421383645
+            ],
+            "maximumCoreCenterDriftDisplayPx": 0.11172571376861029
+          },
+          "up": {
+            "coreCenters": [
+              48.866107576633894,
+              48.68422601530312,
+              48.48753300088002
+            ],
+            "maximumCoreCenterDriftDisplayPx": 0.09834650721154858
+          }
+        },
+        "maximumCoreCenterDriftDisplayPx": 0.1211696848239896
+      },
+      {
+        "id": "masculine-beige-summer-suit",
+        "guest": "guest-09",
+        "directions": {
+          "down": {
+            "coreCenters": [
+              47.5159803318992,
+              48.01507064364207,
+              47.9333123623781
+            ],
+            "maximumCoreCenterDriftDisplayPx": 0.24954515587143433
+          },
+          "left": {
+            "coreCenters": [
+              47.574024990533886,
+              47.11848906560636,
+              47.58896864374764
+            ],
+            "maximumCoreCenterDriftDisplayPx": 0.23523978907063992
+          },
+          "right": {
+            "coreCenters": [
+              49.16032811334825,
+              48.875151515151515,
+              48.7476026083621
+            ],
+            "maximumCoreCenterDriftDisplayPx": 0.14258829909836734
+          },
+          "up": {
+            "coreCenters": [
+              48.08510638297872,
+              48.01497769279796,
+              48.41197183098591
+            ],
+            "maximumCoreCenterDriftDisplayPx": 0.1984970690939747
+          }
+        },
+        "maximumCoreCenterDriftDisplayPx": 0.24954515587143433
+      },
+      {
+        "id": "masculine-charcoal-burgundy-tie",
+        "guest": "guest-10",
+        "directions": {
+          "down": {
+            "coreCenters": [
+              47.12842809364548,
+              47.608278145695365,
+              47.12888301387971
+            ],
+            "maximumCoreCenterDriftDisplayPx": 0.2399250260249417
+          },
+          "left": {
+            "coreCenters": [
+              47.23966613672496,
+              47.08447773616313,
+              47.20846905537459
+            ],
+            "maximumCoreCenterDriftDisplayPx": 0.07759420028091668
+          },
+          "right": {
+            "coreCenters": [
+              48.22596548890715,
+              47.8086809945217,
+              47.837694194603436
+            ],
+            "maximumCoreCenterDriftDisplayPx": 0.20864224719272428
+          },
+          "up": {
+            "coreCenters": [
+              47.55760977220205,
+              48.053577262332574,
+              47.960479429867185
+            ],
+            "maximumCoreCenterDriftDisplayPx": 0.24798374506526244
+          }
+        },
+        "maximumCoreCenterDriftDisplayPx": 0.24798374506526244
+      },
+      {
+        "id": "masculine-green-blazer-cream-pants",
+        "guest": "guest-11",
+        "directions": {
+          "down": {
+            "coreCenters": [
+              47.829427083333336,
+              47.51615051615052,
+              47.37960247637667
+            ],
+            "maximumCoreCenterDriftDisplayPx": 0.15663828359140908
+          },
+          "left": {
+            "coreCenters": [
+              47.50825206301575,
+              47.27866177070583,
+              46.82494365138993
+            ],
+            "maximumCoreCenterDriftDisplayPx": 0.22685905965795072
+          },
+          "right": {
+            "coreCenters": [
+              48.45037313432836,
+              48.72616136919316,
+              48.73999237514297
+            ],
+            "maximumCoreCenterDriftDisplayPx": 0.1378941174323991
+          },
+          "up": {
+            "coreCenters": [
+              47.63697967086157,
+              48.04896907216495,
+              47.57531584062196
+            ],
+            "maximumCoreCenterDriftDisplayPx": 0.23682661577149489
+          }
+        },
+        "maximumCoreCenterDriftDisplayPx": 0.23682661577149489
+      },
+      {
+        "id": "masculine-blue-modern-hanbok",
+        "guest": "guest-12",
+        "directions": {
+          "down": {
+            "coreCenters": [
+              48.092745638200185,
+              47.72675120772947,
+              47.67679807402949
+            ],
+            "maximumCoreCenterDriftDisplayPx": 0.18299721523535695
+          },
+          "left": {
+            "coreCenters": [
+              46.45014880952381,
+              46.628669462447576,
+              46.65915915915916
+            ],
+            "maximumCoreCenterDriftDisplayPx": 0.08926032646188276
+          },
+          "right": {
+            "coreCenters": [
+              47.60848529959062,
+              48.08381391772395,
+              48.271530650620534
+            ],
+            "maximumCoreCenterDriftDisplayPx": 0.23766430906666614
+          },
+          "up": {
+            "coreCenters": [
+              47.566055331053775,
+              47.61210974456007,
+              47.717643371983705
+            ],
+            "maximumCoreCenterDriftDisplayPx": 0.05276681371181624
+          }
+        },
+        "maximumCoreCenterDriftDisplayPx": 0.23766430906666614
+      }
+    ]
+  }
 }

@@ -129,13 +129,12 @@ describe("entry screen layout", () => {
     expect(styles).toMatch(/\.app-shell:not\(\.app-shell--playing\)\s*\{[^}]*position:\s*fixed;/s);
   });
 
-  it("uses one horizontally scrollable snapping row for character choices", () => {
+  it("keeps all twelve character portraits in a compact comparison grid", () => {
     const optionsRule = styles.match(/\.customizer-options--images\s*\{([^}]*)}/s)?.[1] ?? "";
 
-    expect(optionsRule).toContain("grid-auto-flow: column;");
-    expect(optionsRule).toContain("overflow-x: auto;");
-    expect(optionsRule).toContain("overflow-y: hidden;");
-    expect(optionsRule).toContain("scroll-snap-type: x mandatory;");
+    expect(optionsRule).toContain("grid-template-columns: repeat(6, minmax(0, 1fr));");
+    expect(optionsRule).toContain("overflow: visible;");
+    expect(optionsRule).not.toContain("scroll-snap-type:");
   });
 
   it("keeps readable entry content above decorative layers", () => {
@@ -630,12 +629,16 @@ describe("pixel wedding festival map", () => {
         new RegExp(`\\.world-map__stage\\[data-zone="${zoneId}"\\]\\s*\\{([^}]*)}`, "s")
       )?.[1] ?? "";
       expect(rule).toContain("--character-ground-shadow:");
+      expect(rule).toContain("--character-tone-filter:");
       expect(rule).toContain("--foreground-ground-shadow:");
       expect(rule).toContain("--zone-grade:");
     });
     const gradeRule = mapVisualEnhancementStyles.match(/\.world-map-artwork__grade\s*\{([^}]*)}/s)?.[1] ?? "";
     expect(gradeRule).toContain("linear-gradient");
     expect(gradeRule).not.toContain("filter:");
+    expect(mapVisualEnhancementStyles).toMatch(
+      /\.world-player \.character-sprite--world,[\s\S]*filter:[\s\S]*var\(--character-tone-filter\)[\s\S]*drop-shadow/
+    );
   });
 
   it("uses pixelated image artwork as the map surface", () => {

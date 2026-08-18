@@ -590,6 +590,80 @@ html[data-reduce-motion="true"] .character-customizer__sprite[data-swipe-ready="
   background: linear-gradient(90deg, var(--camellia), var(--gold), var(--sage));
 }
 
+/* Twelve portraits stay visible together: comparison first, labels remain in the
+   selected preview and accessible name instead of consuming the portrait grid. */
+.character-customizer__panel-heading > span {
+  color: #806c72;
+  font-family: var(--wedding-font-ui);
+  font-weight: 500;
+}
+
+.customizer-options--images {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 4px;
+  overflow: visible;
+  padding: 1px;
+}
+
+.customizer-option--image,
+.entry-character-picker .customizer-option--image {
+  min-height: 58px;
+  height: 58px;
+  grid-template-columns: minmax(0, 1fr);
+  place-items: center;
+  gap: 0;
+  padding: 0;
+}
+
+.customizer-option__sprite,
+.entry-character-picker .customizer-option__sprite {
+  width: 40px;
+  height: 56px;
+  border-radius: 6px;
+}
+
+.customizer-option__sprite .character-sprite--thumbnail,
+.entry-character-picker .customizer-option__sprite .character-sprite--thumbnail {
+  transform: scale(0.75);
+  transform-origin: center;
+}
+
+.customizer-option__check {
+  top: 2px;
+  right: 2px;
+  width: 15px;
+  height: 15px;
+  font-size: 9px;
+}
+
+@media (max-width: 350px) {
+  .character-customizer,
+  .entry-character-picker .character-customizer {
+    grid-template-rows: minmax(148px, 1fr) 38px 178px;
+  }
+
+  .customizer-options--images {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .customizer-option--image,
+  .entry-character-picker .customizer-option--image {
+    min-height: 44px;
+    height: 44px;
+  }
+
+  .customizer-option__sprite,
+  .entry-character-picker .customizer-option__sprite {
+    width: 32px;
+    height: 42px;
+  }
+
+  .customizer-option__sprite .character-sprite--thumbnail,
+  .entry-character-picker .customizer-option__sprite .character-sprite--thumbnail {
+    transform: scale(0.58);
+  }
+}
+
 .primary-button {
   border-color: #9d5f6d;
   background: #ad6875;

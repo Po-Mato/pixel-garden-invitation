@@ -25,7 +25,7 @@ test("service-worker precache manifest is parsed for missing-asset verification"
   ]);
   assert.throws(() => parsePwaFeaturePaths("const VERSION = 'missing';"), /FEATURE_URLS missing/);
   assert.equal(
-    pwaDistPath("./characters/generated/guests/default__idle.png?v=couple-depth-balance-v6"),
+    pwaDistPath("./characters/generated/guests/default__idle.png?v=couple-depth-gameplay-v7"),
     "characters/generated/guests/default__idle.png"
   );
 });

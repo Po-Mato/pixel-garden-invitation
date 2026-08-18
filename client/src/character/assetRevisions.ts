@@ -1,4 +1,4 @@
-export const defaultGuestAssetRevision = "couple-depth-balance-v6";
+export const defaultGuestAssetRevision = "couple-depth-gameplay-v7";
 
 export const guestAssetRevisions: Readonly<Partial<Record<string, string>>> = {
   "feminine-long-wave-dress": defaultGuestAssetRevision,
