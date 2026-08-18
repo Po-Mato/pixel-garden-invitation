@@ -16,7 +16,7 @@ const catalog = JSON.parse(
 test("선택 화면의 12명 144프레임은 2배 해상도와 동일한 3등신 기준을 지킨다", async () => {
   const report = await auditGuestSelectionPreviewAssets({ catalog });
 
-  assert.equal(report.version, 4);
+  assert.equal(report.version, 5);
   assert.deepEqual(report.policy.source, { width: 192, height: 288 });
   assert.equal(report.summary.presetCount, 12);
   assert.equal(report.summary.frameCount, 144);
@@ -29,13 +29,23 @@ test("선택 화면의 12명 144프레임은 2배 해상도와 동일한 3등신
     report.summary.maximumDirectionHeadHeightSpread
       <= report.policy.maximumDirectionHeadHeightSpread
   );
-  assert.ok(report.summary.maximumHeadWidthDelta <= 2);
+  assert.ok(
+    report.summary.maximumHeadWidthDelta <= report.policy.maximumHeadWidthDelta
+  );
   assert.equal(report.summary.landmarkFrameCount, 108);
   assert.equal(report.summary.consensusFrameCount, 36);
   assert.equal(report.summary.rigHashesMatch, true);
   assert.ok(
     report.summary.maximumMeasuredFrontToProfileFaceWidthRatio
       <= report.policy.maximumFrontToProfileFaceWidthRatio
+  );
+  assert.ok(
+    report.summary.minimumMeasuredFrontToProfileFaceWidthRatio
+      >= report.policy.minimumFrontToProfileFaceWidthRatio
+  );
+  assert.ok(
+    report.summary.maximumMeasuredFrontToProfileFaceAreaRatio
+      <= report.policy.maximumFrontToProfileFaceAreaRatio
   );
   assert.ok(
     report.summary.maximumMeasuredLeftRightFaceWidthDifferenceRatio
@@ -101,29 +111,23 @@ test("각 캐릭터의 상하좌우 보행 3컷은 같은 머리 높이 허용 �
   }
 });
 
-test("1번은 정면 얼굴을 보정한 v5, 나머지는 검수된 v4 원화를 사용한다", async () => {
+test("12명 모두 신랑·신부 수준의 2D 명암과 방향 비율을 보정한 v6 원화를 사용한다", async () => {
   const report = await auditGuestSelectionPreviewAssets({ catalog });
 
   for (const preset of report.presets) {
     assert.equal(
       preset.sourceSet,
-      preset.guest === "guest-01"
-        ? "v5-front-face-balance"
-        : "v4-direction-motion-polish",
-      `${preset.guest} 원화 버전이 검수된 소스와 일치해야 합니다.`
+      "v6-couple-depth-balance",
+      `${preset.guest} 원화 버전이 검수된 v6 소스와 일치해야 합니다.`
     );
   }
 
-  const polishedSourceRoot = join(
+  const depthSourceRoot = join(
     root,
-    "character-assets/reference/guest-flat-walk-sources/v4"
+    "character-assets/reference/guest-depth-walk-sources/v6"
   );
   await Promise.all(catalog.presets.map((preset) =>
-    access(join(polishedSourceRoot, `${preset.reference.walkSourceGuest}-walk-sheet.png`))
-  ));
-  await access(join(
-    root,
-    "character-assets/reference/guest-flat-walk-sources/v5/guest-01-walk-sheet.png"
+    access(join(depthSourceRoot, `${preset.reference.walkSourceGuest}-walk-sheet.png`))
   ));
 });
 
@@ -137,6 +141,16 @@ test("정면과 측면의 실제 얼굴 폭은 캐릭터별 광학 허용 범위
       `${preset.guest} 정면 얼굴 폭이 측면 평균보다 과도하게 커서는 안 됩니다.`
     );
     assert.ok(
+      preset.opticalFace.frontToProfileFaceWidthRatio
+        >= report.policy.minimumFrontToProfileFaceWidthRatio,
+      `${preset.guest} 정면 얼굴 폭이 측면 평균보다 과도하게 작아서는 안 됩니다.`
+    );
+    assert.ok(
+      preset.opticalFace.frontToProfileFaceAreaRatio
+        <= report.policy.maximumFrontToProfileFaceAreaRatio,
+      `${preset.guest} 정면 얼굴 면적이 측면 평균보다 과도하게 커서는 안 됩니다.`
+    );
+    assert.ok(
       preset.opticalFace.leftRightFaceWidthDifferenceRatio
         <= report.policy.maximumLeftRightFaceWidthDifferenceRatio,
       `${preset.guest} 좌우 얼굴 폭 차이가 광학 허용 범위를 넘으면 안 됩니다.`
@@ -144,22 +158,26 @@ test("정면과 측면의 실제 얼굴 폭은 캐릭터별 광학 허용 범위
   }
 });
 
-test("1번 캐릭터 정면 얼굴은 측면 평균과 거의 같은 광학 폭을 유지한다", async () => {
+test("모든 캐릭터 정면 얼굴은 측면 평균과 거의 같은 광학 폭을 유지한다", async () => {
   const report = await auditGuestSelectionPreviewAssets({ catalog });
-  const guest01 = report.presets.find((preset) => preset.guest === "guest-01");
 
-  assert.ok(guest01, "guest-01 감사 결과가 필요합니다.");
-  assert.ok(
-    guest01.opticalFace.frontToProfileFaceWidthRatio <= 1.08,
-    `guest-01 정면/측면 얼굴 폭 비율 ${guest01.opticalFace.frontToProfileFaceWidthRatio}은 1.08 이하여야 합니다.`
-  );
-  assert.ok(
-    Math.abs(
-      guest01.opticalFace.downMedianFaceWidth
-        - guest01.opticalFace.profileMedianFaceWidth
-    ) <= 2,
-    "guest-01 정면 얼굴 폭은 측면 평균과 2px 이상 벌어지면 안 됩니다."
-  );
+  for (const preset of report.presets) {
+    assert.ok(
+      preset.opticalFace.frontToProfileFaceWidthRatio <= 1.08,
+      `${preset.guest} 정면/측면 얼굴 폭 비율은 1.08 이하여야 합니다.`
+    );
+    assert.ok(
+      preset.opticalFace.frontToProfileFaceWidthRatio >= 0.92,
+      `${preset.guest} 정면/측면 얼굴 폭 비율은 0.92 이상이어야 합니다.`
+    );
+    assert.ok(
+      Math.abs(
+        preset.opticalFace.downMedianFaceWidth
+          - preset.opticalFace.profileMedianFaceWidth
+      ) <= 2,
+      `${preset.guest} 정면 얼굴 폭은 측면 평균과 2px 이상 벌어지면 안 됩니다.`
+    );
+  }
 });
 
 test("얼굴 기준선과 좌우 보행 리듬은 방향 전환 시 허용 범위 안에 있다", async () => {
@@ -188,18 +206,14 @@ test("얼굴 기준선과 좌우 보행 리듬은 방향 전환 시 허용 범�
   }
 });
 
-test("승인된 평면 원화 12종은 선택 화면과 게임의 실제 보행 포즈로 이어진다", async () => {
+test("승인된 입체 명암 원화 12종은 선택 화면과 게임의 실제 보행 포즈로 이어진다", async () => {
   const policy = catalog.frame.selectionPreview;
-  const sourceRoot = join(root, "character-assets/reference/guest-flat-walk-sources/v4");
-  const frontFaceSourceRoot = join(root, "character-assets/reference/guest-flat-walk-sources/v5");
+  const sourceRoot = join(root, "character-assets/reference/guest-depth-walk-sources/v6");
   const previewRoot = join(root, "character-assets/source/guests-preview");
 
   for (const preset of catalog.presets) {
     const guest = preset.reference.walkSourceGuest;
-    await access(join(
-      guest === "guest-01" ? frontFaceSourceRoot : sourceRoot,
-      `${guest}-walk-sheet.png`
-    ));
+    await access(join(sourceRoot, `${guest}-walk-sheet.png`));
     const walkPath = join(previewRoot, `${preset.id}__walk.png`);
     for (let row = 0; row < 4; row += 1) {
       const frames = [];
