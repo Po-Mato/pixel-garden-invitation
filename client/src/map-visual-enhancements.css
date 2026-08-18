@@ -18,7 +18,7 @@
 
 .world-map__stage[data-zone="neighborhood"] {
   --character-ground-shadow: rgba(22, 40, 28, 0.42);
-  --character-edge-shadow: rgba(22, 34, 25, 0.62);
+  --character-edge-shadow: rgba(247, 242, 219, 0.78);
   --foreground-ground-shadow: rgba(24, 43, 29, 0.28);
   --zone-highlight: rgba(239, 255, 218, 0.07);
   --zone-grade: rgba(52, 97, 61, 0.045);

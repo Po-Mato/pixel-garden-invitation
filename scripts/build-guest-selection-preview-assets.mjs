@@ -23,6 +23,10 @@ const defaultWalkSourceFaceOverrideRoot = path.join(
   root,
   "character-assets/reference/guest-flat-walk-sources/v3"
 );
+const defaultWalkSourcePolishOverrideRoot = path.join(
+  root,
+  "character-assets/reference/guest-flat-walk-sources/v4"
+);
 const defaultFrameReviewRoot = path.join(defaultWalkSourceRoot, "frames");
 const defaultOutputRoot = path.join(root, "character-assets/source/guests-preview");
 const defaultRuntimeOutputRoot = path.join(root, "character-assets/source/guests");
@@ -186,9 +190,19 @@ async function resolveWalkSource({
   guest,
   walkSourceRoot,
   walkSourceOverrideRoot,
-  walkSourceFaceOverrideRoot
+  walkSourceFaceOverrideRoot,
+  walkSourcePolishOverrideRoot
 }) {
   const filename = `${guest}-walk-sheet.png`;
+  if (walkSourcePolishOverrideRoot) {
+    const polishOverride = path.join(walkSourcePolishOverrideRoot, filename);
+    try {
+      await access(polishOverride);
+      return { source: polishOverride, sourceSet: "v4-direction-motion-polish" };
+    } catch {
+      // v4 is intentionally complete, while the fallback keeps custom test fixtures usable.
+    }
+  }
   if (walkSourceFaceOverrideRoot) {
     const faceOverride = path.join(walkSourceFaceOverrideRoot, filename);
     try {
@@ -242,7 +256,7 @@ function isFaceSkinPixel(data, offset) {
     && blue > 115
     && red >= green
     && green >= blue
-    && red - blue > 14
+    && red - blue > 5
     && red - green < 90
     && green - blue < 75;
 }
@@ -314,6 +328,7 @@ export async function detectFaceLandmark(input, policy) {
     .filter((component) => (
       component.area >= 80
       && component.bottom >= bounds.top + Math.round(policy.headHeight * 0.5)
+      && component.bottom <= bounds.top + Math.round(policy.headHeight * 1.3)
       && component.top <= bounds.top + policy.headHeight
       && component.right - component.left + 1 >= 8
     ))
@@ -523,7 +538,79 @@ async function normalizeRuntimeFrame(input, selectionPolicy, runtimeSource) {
     left: Math.round((runtimeSource.width - width) / 2),
     top: runtimePolicy.footBaseline - runtimePolicy.contentHeight + 1
   }]);
-  return normalizeHeadWidth(normalized, runtimePolicy);
+  const widthNormalized = await normalizeHeadWidth(normalized, runtimePolicy);
+  const { data: normalizedData, info: normalizedInfo } = await sharp(widthNormalized)
+    .ensureAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  const solidAlpha = Buffer.alloc(runtimeSource.width * runtimeSource.height);
+  const edgeData = Buffer.from(normalizedData);
+  for (let pixel = 0; pixel < solidAlpha.length; pixel += 1) {
+    const offset = pixel * 4;
+    const alpha = edgeData[offset + 3] >= 20 ? 255 : 0;
+    solidAlpha[pixel] = alpha;
+    edgeData[offset + 3] = alpha;
+    if (alpha === 0) {
+      edgeData[offset] = 0;
+      edgeData[offset + 1] = 0;
+      edgeData[offset + 2] = 0;
+    }
+  }
+  for (let y = 0; y < runtimeSource.height; y += 1) {
+    for (let x = 0; x < runtimeSource.width; x += 1) {
+      const pixel = y * runtimeSource.width + x;
+      if (solidAlpha[pixel] === 0) continue;
+      let touchesTransparency = false;
+      for (let offsetY = -1; offsetY <= 1 && !touchesTransparency; offsetY += 1) {
+        for (let offsetX = -1; offsetX <= 1; offsetX += 1) {
+          if (offsetX === 0 && offsetY === 0) continue;
+          const neighborX = x + offsetX;
+          const neighborY = y + offsetY;
+          if (
+            neighborX < 0
+            || neighborX >= runtimeSource.width
+            || neighborY < 0
+            || neighborY >= runtimeSource.height
+            || solidAlpha[neighborY * runtimeSource.width + neighborX] === 0
+          ) {
+            touchesTransparency = true;
+            break;
+          }
+        }
+      }
+      if (!touchesTransparency) continue;
+      const offset = pixel * 4;
+      edgeData[offset] = 47;
+      edgeData[offset + 1] = 39;
+      edgeData[offset + 2] = 43;
+    }
+  }
+  const edgeNormalized = await sharp(edgeData, { raw: normalizedInfo })
+    .png({ compressionLevel: 9 })
+    .toBuffer();
+  const { data: outlineMask, info: outlineMaskInfo } = await sharp(solidAlpha, {
+    raw: { width: runtimeSource.width, height: runtimeSource.height, channels: 1 }
+  })
+    .dilate(1)
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  const outlineData = Buffer.alloc(runtimeSource.width * runtimeSource.height * 4);
+  for (let pixel = 0; pixel < solidAlpha.length; pixel += 1) {
+    const offset = pixel * 4;
+    outlineData[offset] = 47;
+    outlineData[offset + 1] = 39;
+    outlineData[offset + 2] = 43;
+    outlineData[offset + 3] = outlineMask[pixel * outlineMaskInfo.channels];
+  }
+  const outline = await sharp(outlineData, {
+    raw: { width: runtimeSource.width, height: runtimeSource.height, channels: 4 }
+  })
+    .png()
+    .toBuffer();
+  return transparentCanvas(runtimeSource.width, runtimeSource.height, [
+    { input: outline, left: 0, top: 0 },
+    { input: edgeNormalized, left: 0, top: 0 }
+  ]);
 }
 
 function median(values) {
@@ -548,9 +635,13 @@ async function inspectFrame(input, policy, { direction, rigFrame }) {
   const measuredBodyHeight = bounds.height - measuredHeadHeight;
   const checksum = frameSha256(input);
   return {
+    left: bounds.left,
     top: bounds.top,
+    right: bounds.right,
     bottom: bounds.bottom,
+    characterWidth: bounds.width,
     characterHeight: bounds.height,
+    characterCenterX: (bounds.left + bounds.right) / 2,
     measuredHeadHeight,
     measuredBodyHeight,
     measuredBodyToHeadRatio: measuredBodyHeight / measuredHeadHeight,
@@ -560,6 +651,14 @@ async function inspectFrame(input, policy, { direction, rigFrame }) {
     visibleFaceWidth: landmark?.faceWidth ?? null,
     visibleFaceHeight: landmark?.faceHeight ?? null,
     visibleFaceArea: landmark?.faceArea ?? null,
+    visibleFaceTop: landmark?.faceTop ?? null,
+    visibleFaceBottom: landmark?.faceBottom ?? null,
+    visibleFaceCenterYRatio: landmark
+      ? (((landmark.faceTop + landmark.faceBottom) / 2) - bounds.top) / policy.headHeight
+      : null,
+    visibleFaceBottomYRatio: landmark
+      ? (landmark.faceBottom - bounds.top) / policy.headHeight
+      : null,
     sourceHeadHeight: rigFrame.sourceHeadHeight,
     sourceMeasuredHeadHeight: rigFrame.sourceMeasuredHeadHeight,
     sourceDetectionMethod: rigFrame.sourceDetectionMethod,
@@ -577,6 +676,11 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
   const policy = catalog.frame.selectionPreview;
   const maximumFrontToProfileFaceWidthRatio = 1.35;
   const maximumLeftRightFaceWidthDifferenceRatio = 0.2;
+  const maximumFacialLandmarkVerticalSpreadRatio = 0.15;
+  const maximumStrideSilhouetteSymmetryRatio = 0.08;
+  const maximumLeftRightStrideExpansionDifferenceRatio = 0.08;
+  const maximumStrideCenterDrift = 4;
+  const maximumStepBaselineSpread = 1;
   const presets = [];
   let frameCount = 0;
   for (const preset of catalog.presets) {
@@ -626,6 +730,43 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
       directionMetrics.right.map((frame) => frame.visibleFaceWidth)
     );
     const profileMedianFaceWidth = (leftMedianFaceWidth + rightMedianFaceWidth) / 2;
+    const facialLandmarkCenterYRatios = Object.fromEntries(
+      ["down", "left", "right"].map((direction) => [
+        direction,
+        median(directionMetrics[direction].map((frame) => frame.visibleFaceCenterYRatio))
+      ])
+    );
+    const facialLandmarkBottomYRatios = Object.fromEntries(
+      ["down", "left", "right"].map((direction) => [
+        direction,
+        median(directionMetrics[direction].map((frame) => frame.visibleFaceBottomYRatio))
+      ])
+    );
+    const centerYValues = Object.values(facialLandmarkCenterYRatios);
+    const bottomYValues = Object.values(facialLandmarkBottomYRatios);
+    const directionMotion = Object.fromEntries(
+      directions.map((direction) => {
+        const [firstStep, neutralStep, thirdStep] = directionMetrics[direction];
+        const averageStepWidth = (firstStep.characterWidth + thirdStep.characterWidth) / 2;
+        return [direction, {
+          firstStepWidth: firstStep.characterWidth,
+          neutralStepWidth: neutralStep.characterWidth,
+          thirdStepWidth: thirdStep.characterWidth,
+          strideExpansionRatio: averageStepWidth / neutralStep.characterWidth,
+          strideSilhouetteSymmetryRatio:
+            Math.abs(firstStep.characterWidth - thirdStep.characterWidth) / averageStepWidth,
+          maximumCenterDrift: Math.max(
+            Math.abs(firstStep.characterCenterX - neutralStep.characterCenterX),
+            Math.abs(thirdStep.characterCenterX - neutralStep.characterCenterX)
+          ),
+          baselineSpread: Math.max(
+            firstStep.bottom,
+            neutralStep.bottom,
+            thirdStep.bottom
+          ) - Math.min(firstStep.bottom, neutralStep.bottom, thirdStep.bottom)
+        }];
+      })
+    );
     presets.push({
       id: preset.id,
       guest: preset.reference.walkSourceGuest,
@@ -639,6 +780,29 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
         frontToProfileFaceWidthRatio: downMedianFaceWidth / profileMedianFaceWidth,
         leftRightFaceWidthDifferenceRatio:
           Math.abs(leftMedianFaceWidth - rightMedianFaceWidth) / profileMedianFaceWidth
+      },
+      opticalLandmarks: {
+        centerYRatios: facialLandmarkCenterYRatios,
+        bottomYRatios: facialLandmarkBottomYRatios,
+        centerYSpreadRatio: Math.max(...centerYValues) - Math.min(...centerYValues),
+        bottomYSpreadRatio: Math.max(...bottomYValues) - Math.min(...bottomYValues)
+      },
+      motion: {
+        directions: directionMotion,
+        maximumStrideSilhouetteSymmetryRatio: Math.max(
+          ...Object.values(directionMotion).map((direction) =>
+            direction.strideSilhouetteSymmetryRatio
+          )
+        ),
+        leftRightStrideExpansionDifferenceRatio: Math.abs(
+          directionMotion.left.strideExpansionRatio - directionMotion.right.strideExpansionRatio
+        ),
+        maximumCenterDrift: Math.max(
+          ...Object.values(directionMotion).map((direction) => direction.maximumCenterDrift)
+        ),
+        maximumStepBaselineSpread: Math.max(
+          ...Object.values(directionMotion).map((direction) => direction.baselineSpread)
+        )
       },
       directions: directionMetrics
     });
@@ -667,6 +831,18 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
     || preset.opticalFace.leftRightFaceWidthDifferenceRatio
       > maximumLeftRightFaceWidthDifferenceRatio
   ));
+  const opticalLandmarkFailures = presets.filter((preset) => (
+    preset.opticalLandmarks.centerYSpreadRatio > maximumFacialLandmarkVerticalSpreadRatio
+    || preset.opticalLandmarks.bottomYSpreadRatio > maximumFacialLandmarkVerticalSpreadRatio
+  ));
+  const motionFailures = presets.filter((preset) => (
+    preset.motion.maximumStrideSilhouetteSymmetryRatio
+      > maximumStrideSilhouetteSymmetryRatio
+    || preset.motion.leftRightStrideExpansionDifferenceRatio
+      > maximumLeftRightStrideExpansionDifferenceRatio
+    || preset.motion.maximumCenterDrift > maximumStrideCenterDrift
+    || preset.motion.maximumStepBaselineSpread > maximumStepBaselineSpread
+  ));
   const headWidths = frames.map((frame) => frame.headWidth);
   const headHeights = frames.map((frame) => frame.measuredHeadHeight);
   const directionHeadHeightSpreads = presets.map((preset) => {
@@ -682,7 +858,7 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
     (frame) => frame.sourceDetectionMethod === "cross-direction-consensus"
   ).length;
   const report = {
-    version: 3,
+    version: 4,
     policy: {
       source: policy.source,
       contentHeight: policy.contentHeight,
@@ -695,8 +871,15 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
       maximumDirectionHeadHeightSpread: 2,
       maximumFrontToProfileFaceWidthRatio,
       maximumLeftRightFaceWidthDifferenceRatio,
+      maximumFacialLandmarkVerticalSpreadRatio,
+      maximumStrideSilhouetteSymmetryRatio,
+      maximumLeftRightStrideExpansionDifferenceRatio,
+      maximumStrideCenterDrift,
+      maximumStepBaselineSpread,
       faceLandmarkRule: "alpha top to detected chin skin boundary",
-      opticalFaceRule: "median visible skin width by down, left, and right direction"
+      opticalFaceRule: "median visible skin width by down, left, and right direction",
+      opticalLandmarkRule: "median visible face center and chin anchors by visible direction",
+      motionRule: "symmetric first and third steps, matched side stride, stable center and baseline"
     },
     summary: {
       presetCount: presets.length,
@@ -722,7 +905,30 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
         ...presets.map((preset) => preset.opticalFace.leftRightFaceWidthDifferenceRatio)
       ),
       opticalFaceWidthWithinTolerance: opticalFaceFailures.length === 0,
-      passed: rigFailures.length === 0 && opticalFaceFailures.length === 0
+      maximumMeasuredFacialLandmarkCenterYSpreadRatio: Math.max(
+        ...presets.map((preset) => preset.opticalLandmarks.centerYSpreadRatio)
+      ),
+      maximumMeasuredFacialLandmarkBottomYSpreadRatio: Math.max(
+        ...presets.map((preset) => preset.opticalLandmarks.bottomYSpreadRatio)
+      ),
+      opticalLandmarksWithinTolerance: opticalLandmarkFailures.length === 0,
+      maximumMeasuredStrideSilhouetteSymmetryRatio: Math.max(
+        ...presets.map((preset) => preset.motion.maximumStrideSilhouetteSymmetryRatio)
+      ),
+      maximumMeasuredLeftRightStrideExpansionDifferenceRatio: Math.max(
+        ...presets.map((preset) => preset.motion.leftRightStrideExpansionDifferenceRatio)
+      ),
+      maximumMeasuredStrideCenterDrift: Math.max(
+        ...presets.map((preset) => preset.motion.maximumCenterDrift)
+      ),
+      maximumMeasuredStepBaselineSpread: Math.max(
+        ...presets.map((preset) => preset.motion.maximumStepBaselineSpread)
+      ),
+      motionWithinTolerance: motionFailures.length === 0,
+      passed: rigFailures.length === 0
+        && opticalFaceFailures.length === 0
+        && opticalLandmarkFailures.length === 0
+        && motionFailures.length === 0
     },
     presets
   };
@@ -741,10 +947,28 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
         + `left/right=${preset.opticalFace.leftRightFaceWidthDifferenceRatio.toFixed(3)}`
       )
       .join("; ");
+    const opticalLandmarkDetails = opticalLandmarkFailures
+      .map((preset) =>
+        `${preset.guest}: center=${preset.opticalLandmarks.centerYSpreadRatio.toFixed(3)}, `
+        + `chin=${preset.opticalLandmarks.bottomYSpreadRatio.toFixed(3)}`
+      )
+      .join("; ");
+    const motionDetails = motionFailures
+      .map((preset) =>
+        `${preset.guest}: symmetry=${preset.motion.maximumStrideSilhouetteSymmetryRatio.toFixed(3)}, `
+        + `sideStride=${preset.motion.leftRightStrideExpansionDifferenceRatio.toFixed(3)}, `
+        + `center=${preset.motion.maximumCenterDrift.toFixed(1)}, `
+        + `baseline=${preset.motion.maximumStepBaselineSpread}`
+      )
+      .join("; ");
     throw new Error(
-      `선택 화면 3등신·얼굴 크기 감사 실패: ${rigFailures.length}개 프레임, `
-      + `${opticalFaceFailures.length}명 얼굴 (${rigDetails || "리그 통과"}; `
-      + `${opticalFaceDetails || "얼굴 통과"})`
+      `선택 화면 3등신·얼굴·보행 감사 실패: ${rigFailures.length}개 프레임, `
+      + `${opticalFaceFailures.length}명 얼굴 폭, `
+      + `${opticalLandmarkFailures.length}명 얼굴 기준선, `
+      + `${motionFailures.length}명 보행 (${rigDetails || "리그 통과"}; `
+      + `${opticalFaceDetails || "얼굴 폭 통과"}; `
+      + `${opticalLandmarkDetails || "얼굴 기준선 통과"}; `
+      + `${motionDetails || "보행 통과"})`
     );
   }
   return report;
@@ -825,8 +1049,8 @@ export async function auditGuestSelectionPreviewAssets({
   const storedReport = JSON.parse(
     await readFile(path.join(outputRoot, "selection-preview-audit.json"), "utf8")
   );
-  if (storedReport.version !== 3) {
-    throw new Error("실제 턱선·방향별 얼굴 폭 기반 3등신 감사 보고서를 다시 생성해야 합니다.");
+  if (storedReport.version !== 4) {
+    throw new Error("방향별 얼굴 기준선·보행 리듬 기반 3등신 감사 보고서를 다시 생성해야 합니다.");
   }
   const sourceRig = Object.fromEntries(storedReport.presets.map((preset) => [
     preset.id,
@@ -855,6 +1079,7 @@ export async function buildGuestSelectionPreviewAssets({
   walkSourceRoot = defaultWalkSourceRoot,
   walkSourceOverrideRoot = defaultWalkSourceOverrideRoot,
   walkSourceFaceOverrideRoot = defaultWalkSourceFaceOverrideRoot,
+  walkSourcePolishOverrideRoot = defaultWalkSourcePolishOverrideRoot,
   frameReviewRoot = defaultFrameReviewRoot,
   reviewPath = defaultReviewPath
 } = {}) {
@@ -873,7 +1098,8 @@ export async function buildGuestSelectionPreviewAssets({
       guest,
       walkSourceRoot,
       walkSourceOverrideRoot,
-      walkSourceFaceOverrideRoot
+      walkSourceFaceOverrideRoot,
+      walkSourcePolishOverrideRoot
     });
     const sourceGrid = await loadWalkSheetGrid(source);
     const baseFramesByDirection = {};
@@ -1027,7 +1253,8 @@ export async function buildGuestSelectionPreviewAssets({
     runtimeOutputRoot,
     walkSourceRoot,
     walkSourceOverrideRoot,
-    walkSourceFaceOverrideRoot
+    walkSourceFaceOverrideRoot,
+    walkSourcePolishOverrideRoot
   };
 }
 

@@ -1063,12 +1063,12 @@ select,
 
 .customizer-option--image {
   display: grid;
-  grid-template-columns: 52px minmax(0, 1fr);
+  grid-template-columns: 58px minmax(0, 1fr);
   align-items: center;
   min-height: 86px;
   height: 88px;
-  gap: 7px;
-  padding: 6px 8px 6px 5px;
+  gap: 8px;
+  padding: 6px 8px;
   text-align: left;
   scroll-snap-align: start;
 }
@@ -1076,12 +1076,21 @@ select,
 .customizer-option__sprite {
   position: relative;
   z-index: 1;
-  display: block;
-  width: 48px;
-  height: 72px;
-  border-right: 1px solid rgba(126, 96, 109, 0.25);
+  display: grid;
+  width: 54px;
+  height: 76px;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid rgba(126, 96, 109, 0.22);
+  border-radius: 10px;
   background:
-    linear-gradient(180deg, rgba(169, 214, 210, 0.32), rgba(232, 169, 168, 0.2));
+    radial-gradient(circle at 50% 76%, rgba(118, 153, 139, 0.18), transparent 34%),
+    linear-gradient(180deg, rgba(255, 253, 247, 0.95), rgba(239, 232, 225, 0.72));
+}
+
+.customizer-option__sprite .character-sprite--thumbnail {
+  transform: scale(1.04);
+  transform-origin: center;
 }
 
 .customizer-option__label {
@@ -6148,21 +6157,21 @@ select,
   }
 
   .customizer-option--image {
-    grid-template-columns: 42px minmax(0, 1fr);
+    grid-template-columns: 48px minmax(0, 1fr);
     min-height: 70px;
     height: 70px;
     padding: 4px;
   }
 
   .customizer-option__sprite {
-    width: 40px;
-    height: 60px;
-    overflow: hidden;
+    width: 44px;
+    height: 64px;
+    border-radius: 8px;
   }
 
   .customizer-option__sprite .character-sprite--thumbnail {
-    transform: scale(0.8333333333);
-    transform-origin: left top;
+    transform: scale(0.875);
+    transform-origin: center;
   }
 
   .customizer-option__label {
@@ -7646,17 +7655,26 @@ html[data-reduce-motion="true"] *::after {
 }
 
 .entry-character-picker .customizer-options--images {
-  grid-auto-columns: 156px;
+  grid-auto-columns: 164px;
 }
 
 .entry-character-picker .customizer-option--image {
+  grid-template-columns: 66px minmax(0, 1fr);
   min-height: 112px;
   height: 112px;
+  gap: 8px;
+  padding: 8px 9px 8px 7px;
 }
 
 .entry-character-picker .customizer-option__sprite {
-  height: 92px;
-  overflow: hidden;
+  width: 62px;
+  height: 96px;
+  border-radius: 12px;
+}
+
+.entry-character-picker .customizer-option__sprite .character-sprite--thumbnail {
+  transform: scale(1.22);
+  transform-origin: center;
 }
 
 .entry-character-picker__controls {
@@ -7712,12 +7730,19 @@ html[data-reduce-motion="true"] *::after {
   }
 
   .entry-character-picker .customizer-option--image {
+    grid-template-columns: 60px minmax(0, 1fr);
     min-height: 88px;
     height: 90px;
+    padding-block: 6px;
   }
 
   .entry-character-picker .customizer-option__sprite {
+    width: 56px;
     height: 76px;
+  }
+
+  .entry-character-picker .customizer-option__sprite .character-sprite--thumbnail {
+    transform: scale(1.04);
   }
 }
 

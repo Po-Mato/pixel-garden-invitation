@@ -1,24 +1,24 @@
 {
   "version": 2,
-  "approvedAt": "2026-08-17T22:36:23.132Z",
-  "reason": "정면·측면 얼굴 폭을 광학 기준으로 통일한 하객 7종 v3 원화 승인",
-  "sha256": "6a75db68d611838bb6527070a09a62fc97b197c205f8cfdb7dbefa4542fe78b1",
+  "approvedAt": "2026-08-18T11:22:33.427Z",
+  "reason": "하객 12종 방향·보행·외곽선과 선택 카드 썸네일 정돈",
+  "sha256": "ce45c266034e6195b21c77742d9220cb86ec21329e0869b4f6478d4ff4bd5c3b",
   "provenance": {
     "schemaVersion": 1,
     "subjectKind": "capture-set",
     "sourceKind": "local",
     "runId": null,
     "runAttempt": null,
-    "commitSha": "690d886fb4949e4e7bb984f04d612d570d6828ac",
+    "commitSha": "2e5745e471c0c654d66d26da0e76fa07939f769b",
     "runUrl": null,
     "checksumAlgorithm": "sha256",
     "artifactChecksumScope": "sorted-capture-set-manifest",
-    "artifactSha256": "157752fd84ebf055cb1b91a020dc39a487739640c3ce37849e863805bd9e9bd9",
+    "artifactSha256": "bbe41191d23a1dbd1239f82086869608221b9674b4948e3a1ae6bdcf6867dc24",
     "files": [
       {
         "logicalPath": "mobile-game-current",
-        "size": 4627832,
-        "sha256": "741a8309c2dfa5ceed48c0893f9c7aa727c103c30807a80ec9e3ea784ed605ef"
+        "size": 4597781,
+        "sha256": "eb3d756be9b4d632d15944bcb8b0cadd7f7a8396c7f6e18cd6347d7d12d9c2a1"
       }
     ]
   },
