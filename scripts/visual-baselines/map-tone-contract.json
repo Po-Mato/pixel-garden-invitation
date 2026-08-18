@@ -1,5 +1,5 @@
 {
-  "version": 13,
+  "version": 14,
   "thresholds": {
     "maxLuminanceDelta": 0.03,
     "minDynamicRange": 0.16,
@@ -46,19 +46,19 @@
           "down-2": 2.98
         },
         "feminine-formal-hanbok": {
-          "down-0": 2.729,
+          "down-0": 2.999,
           "down-1": 2.967,
           "down-2": 2.527
         },
         "masculine-navy-suit": {
           "down-0": 3.056,
           "down-1": 3.086,
-          "down-2": 3.056
+          "down-2": 3.045
         },
         "masculine-charcoal-blazer": {
           "down-0": 3.086,
           "down-1": 3.086,
-          "down-2": 3.042
+          "down-2": 3.089
         },
         "feminine-sage-bolero-dress": {
           "down-0": 3.012,
@@ -86,9 +86,9 @@
           "down-2": 3.012
         },
         "masculine-charcoal-burgundy-tie": {
-          "down-0": 3.103,
+          "down-0": 3.114,
           "down-1": 3.089,
-          "down-2": 3.086
+          "down-2": 3.089
         },
         "masculine-green-blazer-cream-pants": {
           "down-0": 3.012,
@@ -134,14 +134,14 @@
           "down-2": 2.092
         },
         "feminine-formal-hanbok": {
-          "down-0": 1.941,
+          "down-0": 2.05,
           "down-1": 2.015,
           "down-2": 2.09
         },
         "masculine-navy-suit": {
           "down-0": 2.125,
           "down-1": 2.125,
-          "down-2": 2.1
+          "down-2": 2.123
         },
         "masculine-charcoal-blazer": {
           "down-0": 2.125,
@@ -176,7 +176,7 @@
         "masculine-charcoal-burgundy-tie": {
           "down-0": 2.125,
           "down-1": 2.1,
-          "down-2": 2.115
+          "down-2": 2.123
         },
         "masculine-green-blazer-cream-pants": {
           "down-0": 2.1,
@@ -222,7 +222,7 @@
           "down-2": 3.114
         },
         "feminine-formal-hanbok": {
-          "down-0": 2.892,
+          "down-0": 3.109,
           "down-1": 3.169,
           "down-2": 2.672
         },
@@ -234,7 +234,7 @@
         "masculine-charcoal-blazer": {
           "down-0": 3.247,
           "down-1": 3.247,
-          "down-2": 3.247
+          "down-2": 3.245
         },
         "feminine-sage-bolero-dress": {
           "down-0": 3.156,
@@ -262,9 +262,9 @@
           "down-2": 3.191
         },
         "masculine-charcoal-burgundy-tie": {
-          "down-0": 3.281,
+          "down-0": 3.283,
           "down-1": 3.247,
-          "down-2": 3.237
+          "down-2": 3.247
         },
         "masculine-green-blazer-cream-pants": {
           "down-0": 3.204,
@@ -310,19 +310,19 @@
           "down-2": 2.133
         },
         "feminine-formal-hanbok": {
-          "down-0": 2.069,
+          "down-0": 1.95,
           "down-1": 2.064,
           "down-2": 2.099
         },
         "masculine-navy-suit": {
           "down-0": 2.62,
           "down-1": 2.673,
-          "down-2": 2.57
+          "down-2": 2.524
         },
         "masculine-charcoal-blazer": {
-          "down-0": 2.621,
+          "down-0": 2.674,
           "down-1": 2.664,
-          "down-2": 2.582
+          "down-2": 2.657
         },
         "feminine-sage-bolero-dress": {
           "down-0": 2.217,
@@ -350,9 +350,9 @@
           "down-2": 2.483
         },
         "masculine-charcoal-burgundy-tie": {
-          "down-0": 2.557,
+          "down-0": 2.597,
           "down-1": 2.482,
-          "down-2": 2.503
+          "down-2": 2.435
         },
         "masculine-green-blazer-cream-pants": {
           "down-0": 2.217,
@@ -398,19 +398,19 @@
           "down-2": 2.666
         },
         "feminine-formal-hanbok": {
-          "down-0": 2.401,
+          "down-0": 2.638,
           "down-1": 2.627,
           "down-2": 2.401
         },
         "masculine-navy-suit": {
           "down-0": 2.746,
           "down-1": 2.79,
-          "down-2": 2.746
+          "down-2": 2.715
         },
         "masculine-charcoal-blazer": {
-          "down-0": 2.727,
+          "down-0": 2.78,
           "down-1": 2.746,
-          "down-2": 2.715
+          "down-2": 2.756
         },
         "feminine-sage-bolero-dress": {
           "down-0": 2.675,
@@ -438,7 +438,7 @@
           "down-2": 2.715
         },
         "masculine-charcoal-burgundy-tie": {
-          "down-0": 2.751,
+          "down-0": 2.758,
           "down-1": 2.756,
           "down-2": 2.749
         },
@@ -486,19 +486,19 @@
           "down-2": 1.82
         },
         "feminine-formal-hanbok": {
-          "down-0": 1.88,
+          "down-0": 1.901,
           "down-1": 1.953,
           "down-2": 1.953
         },
         "masculine-navy-suit": {
           "down-0": 1.901,
           "down-1": 1.943,
-          "down-2": 1.953
+          "down-2": 1.901
         },
         "masculine-charcoal-blazer": {
-          "down-0": 2.049,
+          "down-0": 2.087,
           "down-1": 2.139,
-          "down-2": 2.223
+          "down-2": 2.412
         },
         "feminine-sage-bolero-dress": {
           "down-0": 2.087,
@@ -526,9 +526,9 @@
           "down-2": 1.953
         },
         "masculine-charcoal-burgundy-tie": {
-          "down-0": 2.139,
+          "down-0": 2.101,
           "down-1": 2.139,
-          "down-2": 2.139
+          "down-2": 2.087
         },
         "masculine-green-blazer-cream-pants": {
           "down-0": 2.026,
@@ -574,19 +574,19 @@
           "down-2": 2.884
         },
         "feminine-formal-hanbok": {
-          "down-0": 2.701,
+          "down-0": 2.773,
           "down-1": 2.676,
           "down-2": 2.544
         },
         "masculine-navy-suit": {
           "down-0": 3.175,
           "down-1": 3.263,
-          "down-2": 3.228
+          "down-2": 3.041
         },
         "masculine-charcoal-blazer": {
-          "down-0": 3.146,
+          "down-0": 3.231,
           "down-1": 3.27,
-          "down-2": 3.131
+          "down-2": 3.201
         },
         "feminine-sage-bolero-dress": {
           "down-0": 2.998,
@@ -614,9 +614,9 @@
           "down-2": 2.999
         },
         "masculine-charcoal-burgundy-tie": {
-          "down-0": 3.264,
+          "down-0": 3.267,
           "down-1": 3.182,
-          "down-2": 3.237
+          "down-2": 3.202
         },
         "masculine-green-blazer-cream-pants": {
           "down-0": 3.06,
@@ -662,7 +662,7 @@
           "down-2": 2.295
         },
         "feminine-formal-hanbok": {
-          "down-0": 2.253,
+          "down-0": 2.278,
           "down-1": 2.326,
           "down-2": 2.223
         },
@@ -672,9 +672,9 @@
           "down-2": 2.421
         },
         "masculine-charcoal-blazer": {
-          "down-0": 2.421,
+          "down-0": 2.458,
           "down-1": 2.546,
-          "down-2": 2.466
+          "down-2": 2.458
         },
         "feminine-sage-bolero-dress": {
           "down-0": 2.316,
@@ -702,9 +702,9 @@
           "down-2": 2.356
         },
         "masculine-charcoal-burgundy-tie": {
-          "down-0": 2.448,
+          "down-0": 2.501,
           "down-1": 2.455,
-          "down-2": 2.432
+          "down-2": 2.385
         },
         "masculine-green-blazer-cream-pants": {
           "down-0": 2.349,
@@ -750,19 +750,19 @@
           "down-2": 1.684
         },
         "feminine-formal-hanbok": {
-          "down-0": 1.65,
+          "down-0": 1.633,
           "down-1": 1.572,
           "down-2": 1.579
         },
         "masculine-navy-suit": {
           "down-0": 1.85,
           "down-1": 1.874,
-          "down-2": 1.779
+          "down-2": 1.848
         },
         "masculine-charcoal-blazer": {
           "down-0": 1.88,
           "down-1": 1.85,
-          "down-2": 1.85
+          "down-2": 1.882
         },
         "feminine-sage-bolero-dress": {
           "down-0": 1.652,
@@ -790,7 +790,7 @@
           "down-2": 1.684
         },
         "masculine-charcoal-burgundy-tie": {
-          "down-0": 1.789,
+          "down-0": 1.846,
           "down-1": 1.789,
           "down-2": 1.818
         },
@@ -838,19 +838,19 @@
           "down-2": 2.754
         },
         "feminine-formal-hanbok": {
-          "down-0": 2.656,
+          "down-0": 2.623,
           "down-1": 2.712,
           "down-2": 2.416
         },
         "masculine-navy-suit": {
           "down-0": 2.817,
           "down-1": 2.904,
-          "down-2": 2.84
+          "down-2": 2.783
         },
         "masculine-charcoal-blazer": {
-          "down-0": 2.84,
+          "down-0": 2.845,
           "down-1": 2.88,
-          "down-2": 2.801
+          "down-2": 2.845
         },
         "feminine-sage-bolero-dress": {
           "down-0": 2.647,
@@ -878,9 +878,9 @@
           "down-2": 2.785
         },
         "masculine-charcoal-burgundy-tie": {
-          "down-0": 2.885,
+          "down-0": 2.882,
           "down-1": 2.815,
-          "down-2": 2.806
+          "down-2": 2.838
         },
         "masculine-green-blazer-cream-pants": {
           "down-0": 2.801,

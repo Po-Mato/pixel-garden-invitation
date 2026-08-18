@@ -1,6 +1,7 @@
 .world-map__stage {
   --character-ground-shadow: rgba(37, 31, 27, 0.32);
   --character-edge-shadow: rgba(40, 31, 26, 0.42);
+  --character-tone-filter: contrast(1.04) saturate(0.98);
   --foreground-ground-shadow: rgba(42, 32, 28, 0.22);
   --zone-highlight: rgba(255, 249, 225, 0.05);
   --zone-grade: rgba(78, 49, 42, 0.05);
@@ -10,6 +11,7 @@
 .world-map__stage[data-zone="home"] {
   --character-ground-shadow: rgba(57, 39, 31, 0.38);
   --character-edge-shadow: rgba(48, 31, 27, 0.48);
+  --character-tone-filter: contrast(1.04) saturate(0.98);
   --foreground-ground-shadow: rgba(58, 39, 31, 0.25);
   --zone-highlight: rgba(255, 239, 196, 0.08);
   --zone-grade: rgba(116, 69, 48, 0.05);
@@ -19,6 +21,7 @@
 .world-map__stage[data-zone="neighborhood"] {
   --character-ground-shadow: rgba(22, 40, 28, 0.42);
   --character-edge-shadow: rgba(247, 242, 219, 0.78);
+  --character-tone-filter: contrast(1.08) saturate(0.94) brightness(1.02);
   --foreground-ground-shadow: rgba(24, 43, 29, 0.28);
   --zone-highlight: rgba(239, 255, 218, 0.07);
   --zone-grade: rgba(52, 97, 61, 0.045);
@@ -28,6 +31,7 @@
 .world-map__stage[data-zone="subway-station"] {
   --character-ground-shadow: rgba(29, 50, 55, 0.36);
   --character-edge-shadow: rgba(24, 37, 42, 0.63);
+  --character-tone-filter: contrast(1.06) saturate(0.97);
   --foreground-ground-shadow: rgba(31, 49, 52, 0.22);
   --zone-highlight: rgba(221, 251, 248, 0.06);
   --zone-grade: rgba(40, 87, 91, 0.045);
@@ -37,6 +41,7 @@
 .world-map__stage[data-zone="subway-train"] {
   --character-ground-shadow: rgba(24, 45, 51, 0.4);
   --character-edge-shadow: rgba(25, 42, 48, 0.52);
+  --character-tone-filter: contrast(1.07) saturate(0.96);
   --foreground-ground-shadow: rgba(27, 48, 53, 0.25);
   --zone-highlight: rgba(222, 252, 249, 0.055);
   --zone-grade: rgba(37, 83, 90, 0.055);
@@ -46,6 +51,7 @@
 .world-map__stage[data-zone="venue-exterior"] {
   --character-ground-shadow: rgba(26, 42, 29, 0.43);
   --character-edge-shadow: rgba(27, 37, 26, 0.62);
+  --character-tone-filter: contrast(1.07) saturate(0.96) brightness(1.01);
   --foreground-ground-shadow: rgba(27, 45, 30, 0.28);
   --zone-highlight: rgba(255, 246, 221, 0.075);
   --zone-grade: rgba(75, 105, 57, 0.04);
@@ -55,6 +61,7 @@
 .world-map__stage[data-zone="lobby"] {
   --character-ground-shadow: rgba(48, 44, 39, 0.34);
   --character-edge-shadow: rgba(43, 36, 34, 0.64);
+  --character-tone-filter: contrast(1.09) saturate(0.95) brightness(0.99);
   --foreground-ground-shadow: rgba(47, 50, 46, 0.21);
   --zone-highlight: rgba(255, 250, 229, 0.08);
   --zone-grade: rgba(107, 86, 70, 0.035);
@@ -64,6 +71,7 @@
 .world-map__stage[data-zone="bridal-room"] {
   --character-ground-shadow: rgba(58, 38, 47, 0.36);
   --character-edge-shadow: rgba(39, 23, 31, 0.68);
+  --character-tone-filter: contrast(1.06) saturate(0.97);
   --foreground-ground-shadow: rgba(61, 41, 49, 0.23);
   --zone-highlight: rgba(255, 236, 225, 0.08);
   --zone-grade: rgba(133, 68, 88, 0.045);
@@ -73,6 +81,7 @@
 .world-map__stage[data-zone="ceremony-hall"] {
   --character-ground-shadow: rgba(27, 40, 27, 0.45);
   --character-edge-shadow: rgba(27, 35, 25, 0.56);
+  --character-tone-filter: contrast(1.08) saturate(0.95) brightness(1.01);
   --foreground-ground-shadow: rgba(28, 44, 29, 0.29);
   --zone-highlight: rgba(255, 235, 190, 0.09);
   --zone-grade: rgba(91, 77, 45, 0.05);
@@ -82,6 +91,7 @@
 .world-map__stage[data-zone="banquet"] {
   --character-ground-shadow: rgba(57, 36, 30, 0.41);
   --character-edge-shadow: rgba(46, 27, 24, 0.58);
+  --character-tone-filter: contrast(1.07) saturate(0.96);
   --foreground-ground-shadow: rgba(61, 38, 30, 0.27);
   --zone-highlight: rgba(255, 232, 182, 0.085);
   --zone-grade: rgba(123, 58, 44, 0.05);
@@ -91,6 +101,7 @@
 .world-map__stage[data-zone="restroom"] {
   --character-ground-shadow: rgba(30, 48, 50, 0.34);
   --character-edge-shadow: rgba(26, 39, 42, 0.57);
+  --character-tone-filter: contrast(1.06) saturate(0.97);
   --foreground-ground-shadow: rgba(32, 49, 50, 0.21);
   --zone-highlight: rgba(232, 255, 249, 0.065);
   --zone-grade: rgba(45, 93, 89, 0.04);
@@ -904,7 +915,10 @@
 
 .world-player .character-sprite--world,
 .world-npc .wedding-npc__sprite {
-  filter: drop-shadow(1px 2px 0 var(--character-edge-shadow));
+  filter:
+    var(--character-tone-filter)
+    drop-shadow(0 1px 0 var(--character-edge-shadow))
+    drop-shadow(1px 2px 0 var(--character-edge-shadow));
 }
 
 @media (prefers-reduced-motion: reduce) {

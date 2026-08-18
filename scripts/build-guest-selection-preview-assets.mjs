@@ -640,6 +640,125 @@ async function normalizeRuntimeFrame(input, selectionPolicy, runtimeSource) {
   ]);
 }
 
+async function runtimeCoreCenterX(input, runtimePolicy) {
+  const bounds = await alphaBounds(input);
+  const { data, info } = await sharp(input)
+    .ensureAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  const coreBottom = Math.min(
+    bounds.bottom,
+    bounds.top + runtimePolicy.headHeight + Math.round(
+      (runtimePolicy.contentHeight - runtimePolicy.headHeight) * 0.48
+    )
+  );
+  let weightedX = 0;
+  let alphaTotal = 0;
+  for (let y = bounds.top; y <= coreBottom; y += 1) {
+    for (let x = 0; x < info.width; x += 1) {
+      const alpha = data[(y * info.width + x) * 4 + 3];
+      if (alpha < 20) continue;
+      weightedX += x * alpha;
+      alphaTotal += alpha;
+    }
+  }
+  if (alphaTotal === 0) throw new Error("게임 캐릭터 상체 중심을 찾지 못했습니다.");
+  return weightedX / alphaTotal;
+}
+
+async function translateFrameX(input, offsetX) {
+  if (offsetX === 0) return input;
+  const { data, info } = await sharp(input)
+    .ensureAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  const output = Buffer.alloc(data.length);
+  for (let y = 0; y < info.height; y += 1) {
+    for (let x = 0; x < info.width; x += 1) {
+      const targetX = x + offsetX;
+      if (targetX < 0 || targetX >= info.width) continue;
+      const sourceOffset = (y * info.width + x) * 4;
+      const targetOffset = (y * info.width + targetX) * 4;
+      data.copy(output, targetOffset, sourceOffset, sourceOffset + 4);
+    }
+  }
+  return sharp(output, { raw: info }).png({ compressionLevel: 9 }).toBuffer();
+}
+
+async function stabilizeRuntimeWalkCycle(frames, runtimePolicy) {
+  const centers = await Promise.all(frames.map((frame) => runtimeCoreCenterX(frame, runtimePolicy)));
+  const neutralCenter = centers[1];
+  return Promise.all(frames.map((frame, index) => {
+    if (index === 1) return frame;
+    const offsetX = clamp(Math.round(neutralCenter - centers[index]), -2, 2);
+    return translateFrameX(frame, offsetX);
+  }));
+}
+
+async function inspectRuntimeMotion({ catalog, runtimeOutputRoot }) {
+  const source = catalog.frame.source;
+  const displayScale = catalog.frame.display.world.width / source.width;
+  const runtimePolicy = {
+    source,
+    contentHeight: catalog.frame.selectionPreview.contentHeight / 2,
+    headHeight: catalog.frame.selectionPreview.headHeight / 2,
+    footBaseline: catalog.frame.selectionPreview.footBaseline / 2
+  };
+  const maximumCoreCenterDriftDisplayPx = 0.75;
+  const presets = [];
+  for (const preset of catalog.presets) {
+    const walkPath = framePath(runtimeOutputRoot, preset.id, "walk");
+    const directionMetrics = {};
+    for (let row = 0; row < directions.length; row += 1) {
+      const centers = [];
+      for (let column = 0; column < 3; column += 1) {
+        const frame = await sharp(walkPath)
+          .extract({
+            left: column * source.width,
+            top: row * source.height,
+            width: source.width,
+            height: source.height
+          })
+          .png()
+          .toBuffer();
+        centers.push(await runtimeCoreCenterX(frame, runtimePolicy));
+      }
+      directionMetrics[directions[row]] = {
+        coreCenters: centers,
+        maximumCoreCenterDriftDisplayPx: Math.max(
+          Math.abs(centers[0] - centers[1]),
+          Math.abs(centers[2] - centers[1])
+        ) * displayScale
+      };
+    }
+    presets.push({
+      id: preset.id,
+      guest: preset.reference.walkSourceGuest,
+      directions: directionMetrics,
+      maximumCoreCenterDriftDisplayPx: Math.max(
+        ...Object.values(directionMetrics).map((direction) =>
+          direction.maximumCoreCenterDriftDisplayPx
+        )
+      )
+    });
+  }
+  const maximumMeasuredCoreCenterDriftDisplayPx = Math.max(
+    ...presets.map((preset) => preset.maximumCoreCenterDriftDisplayPx)
+  );
+  return {
+    policy: {
+      maximumCoreCenterDriftDisplayPx,
+      measurementBand: "head and upper 48 percent of body",
+      displayScale
+    },
+    summary: {
+      maximumMeasuredCoreCenterDriftDisplayPx,
+      passed: maximumMeasuredCoreCenterDriftDisplayPx <= maximumCoreCenterDriftDisplayPx
+    },
+    presets
+  };
+}
+
 async function replaceUpperBandWithMirroredReference(target, reference, policy) {
   const [{ data: targetData, info }, { data: mirroredData }] = await Promise.all([
     sharp(target).ensureAlpha().raw().toBuffer({ resolveWithObject: true }),
@@ -1007,7 +1126,7 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
     (frame) => frame.sourceDetectionMethod === "cross-direction-consensus"
   ).length;
   const report = {
-    version: 5,
+    version: 6,
     policy: {
       source: policy.source,
       contentHeight: policy.contentHeight,
@@ -1201,14 +1320,15 @@ async function renderReview({ catalog, outputRoot, reviewPath }) {
 
 export async function auditGuestSelectionPreviewAssets({
   catalog: providedCatalog,
-  outputRoot = defaultOutputRoot
+  outputRoot = defaultOutputRoot,
+  runtimeOutputRoot = defaultRuntimeOutputRoot
 } = {}) {
   const catalog = providedCatalog ?? JSON.parse(await readFile(catalogPath, "utf8"));
   const storedReport = JSON.parse(
     await readFile(path.join(outputRoot, "selection-preview-audit.json"), "utf8")
   );
-  if (storedReport.version !== 5) {
-    throw new Error("방향별 얼굴 폭·면적·보행 리듬 기반 3등신 감사 보고서를 다시 생성해야 합니다.");
+  if (storedReport.version !== 6) {
+    throw new Error("방향별 얼굴 폭·면적·실게임 보행 중심 기반 3등신 감사 보고서를 다시 생성해야 합니다.");
   }
   const sourceRig = Object.fromEntries(storedReport.presets.map((preset) => [
     preset.id,
@@ -1227,7 +1347,14 @@ export async function auditGuestSelectionPreviewAssets({
       ]))
     }
   ]));
-  return inspectPreviewSheets({ catalog, outputRoot, sourceRig });
+  const report = await inspectPreviewSheets({ catalog, outputRoot, sourceRig });
+  const runtimeMotion = await inspectRuntimeMotion({ catalog, runtimeOutputRoot });
+  report.runtimeMotion = runtimeMotion;
+  report.summary.maximumRuntimeCoreCenterDriftDisplayPx =
+    runtimeMotion.summary.maximumMeasuredCoreCenterDriftDisplayPx;
+  report.summary.runtimeMotionWithinTolerance = runtimeMotion.summary.passed;
+  report.summary.passed = report.summary.passed && runtimeMotion.summary.passed;
+  return report;
 }
 
 export async function buildGuestSelectionPreviewAssets({
@@ -1360,23 +1487,37 @@ export async function buildGuestSelectionPreviewAssets({
       }
     }
     const previewWalkComposites = [];
-    const runtimeWalkComposites = [];
+    const runtimeFramesByDirection = {};
     for (let row = 0; row < directions.length; row += 1) {
+      const direction = directions[row];
+      runtimeFramesByDirection[direction] = [];
       for (let column = 0; column < 3; column += 1) {
-        const previewFrame = framesByDirection[directions[row]][column];
+        const previewFrame = framesByDirection[direction][column];
         const runtimeFrame = await normalizeRuntimeFrame(previewFrame, policy, runtimePolicy);
         previewWalkComposites.push({
           input: previewFrame,
           left: column * policy.source.width,
           top: row * policy.source.height
         });
-        runtimeWalkComposites.push({
-          input: runtimeFrame,
-          left: column * runtimePolicy.width,
-          top: row * runtimePolicy.height
-        });
+        runtimeFramesByDirection[direction].push(runtimeFrame);
       }
+      runtimeFramesByDirection[direction] = await stabilizeRuntimeWalkCycle(
+        runtimeFramesByDirection[direction],
+        {
+          source: runtimePolicy,
+          contentHeight: policy.contentHeight / 2,
+          headHeight: policy.headHeight / 2,
+          footBaseline: policy.footBaseline / 2
+        }
+      );
     }
+    const runtimeWalkComposites = directions.flatMap((direction, row) =>
+      runtimeFramesByDirection[direction].map((runtimeFrame, column) => ({
+        input: runtimeFrame,
+        left: column * runtimePolicy.width,
+        top: row * runtimePolicy.height
+      }))
+    );
     const previewWalk = await transparentCanvas(
       policy.walk.sheet.width,
       policy.walk.sheet.height,
@@ -1409,6 +1550,18 @@ export async function buildGuestSelectionPreviewAssets({
     ]);
   }
   const report = await inspectPreviewSheets({ catalog, outputRoot, sourceRig });
+  const runtimeMotion = await inspectRuntimeMotion({ catalog, runtimeOutputRoot });
+  report.runtimeMotion = runtimeMotion;
+  report.summary.maximumRuntimeCoreCenterDriftDisplayPx =
+    runtimeMotion.summary.maximumMeasuredCoreCenterDriftDisplayPx;
+  report.summary.runtimeMotionWithinTolerance = runtimeMotion.summary.passed;
+  report.summary.passed = report.summary.passed && runtimeMotion.summary.passed;
+  if (!runtimeMotion.summary.passed) {
+    throw new Error(
+      `실게임 보행 상체 중심 흔들림 ${runtimeMotion.summary.maximumMeasuredCoreCenterDriftDisplayPx.toFixed(2)}px가 `
+      + `${runtimeMotion.policy.maximumCoreCenterDriftDisplayPx.toFixed(2)}px를 넘었습니다.`
+    );
+  }
   await writeFile(
     path.join(outputRoot, "selection-preview-audit.json"),
     `${JSON.stringify(report, null, 2)}\n`
