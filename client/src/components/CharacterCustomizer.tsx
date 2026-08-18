@@ -144,6 +144,7 @@ export function CharacterCustomizer({ value, onChange }: Props) {
           onPointerCancel={() => { previewPointerRef.current = null; }}
         >
           <CharacterSprite
+            key={selectedPreset.id}
             appearance={value}
             direction={previewDirection}
             moving={previewWalking}

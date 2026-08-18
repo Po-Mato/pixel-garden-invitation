@@ -1358,6 +1358,67 @@ select,
   transform-origin: left top;
 }
 
+.character-layer--base::before,
+.character-layer--base::after {
+  position: absolute;
+  inset: 0;
+  background-image: var(--character-layer-image);
+  background-position: var(--character-frame-position);
+  background-repeat: no-repeat;
+  content: "";
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* The approved artwork stays intact. These clipped copies add only a half-pixel
+   to one-pixel material follow-through after the world/preview downscale. */
+.character-sprite[data-moving="true"][data-motion-profile="flowing"] .character-layer--base::before {
+  clip-path: inset(5% 9% 43% 9%);
+  opacity: 1;
+}
+
+.character-sprite[data-moving="true"][data-motion-profile="flowing"] .character-layer--base::after {
+  clip-path: inset(55% 8% 5% 8%);
+  opacity: 0.9;
+}
+
+.character-sprite[data-moving="true"][data-motion-profile="hanbok"] .character-layer--base::after {
+  clip-path: inset(53% 6% 4% 6%);
+  opacity: 0.92;
+}
+
+.character-sprite[data-moving="true"][data-motion-profile="skirt"] .character-layer--base::after {
+  clip-path: inset(55% 9% 5% 9%);
+  opacity: 0.9;
+}
+
+.character-sprite[data-moving="true"][data-motion-profile="tailored"] .character-layer--base::after {
+  clip-path: inset(49% 16% 21% 16%);
+  opacity: 0.82;
+}
+
+.character-sprite[data-moving="true"][data-walk-frame="0"] .character-layer--base::after,
+.character-sprite[data-moving="true"][data-walk-frame="0"][data-direction="down"] .character-layer--base::before,
+.character-sprite[data-moving="true"][data-walk-frame="0"][data-direction="up"] .character-layer--base::before {
+  transform: translateX(-1px);
+}
+
+.character-sprite[data-moving="true"][data-walk-frame="2"] .character-layer--base::after,
+.character-sprite[data-moving="true"][data-walk-frame="2"][data-direction="down"] .character-layer--base::before,
+.character-sprite[data-moving="true"][data-walk-frame="2"][data-direction="up"] .character-layer--base::before {
+  transform: translateX(1px);
+}
+
+.character-sprite[data-moving="true"][data-walk-frame="0"][data-direction="right"] .character-layer--base::before,
+.character-sprite[data-moving="true"][data-walk-frame="2"][data-direction="left"] .character-layer--base::before {
+  transform: translateX(-2px);
+}
+
+.character-sprite[data-moving="true"][data-walk-frame="2"][data-direction="right"] .character-layer--base::before,
+.character-sprite[data-moving="true"][data-walk-frame="0"][data-direction="left"] .character-layer--base::before {
+  transform: translateX(1px);
+}
+
 .character-layer__preload {
   display: none;
 }
@@ -6930,6 +6991,7 @@ html[data-reduce-motion="true"] .quick-invitation {
 html[data-reduce-motion="true"] .entry-screen__prism,
 html[data-reduce-motion="true"] .entry-screen__petals,
 html[data-reduce-motion="true"] .customizer-option--selected,
+html[data-reduce-motion="true"] .character-customizer__sprite > .character-sprite--preview,
 html[data-reduce-motion="true"] .character-sprite--idle-front .character-layer--base,
 html[data-reduce-motion="true"] .wedding-npc__sprite,
 html[data-reduce-motion="true"] .world-spot--target,
@@ -6939,6 +7001,18 @@ html[data-reduce-motion="true"] .player--remote,
 html[data-reduce-motion="true"] .player--remote .world-player__name {
   animation: none;
   transition: none;
+}
+
+html[data-reduce-motion="true"] .character-layer--base::before,
+html[data-reduce-motion="true"] .character-layer--base::after {
+  content: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .character-layer--base::before,
+  .character-layer--base::after {
+    content: none;
+  }
 }
 
 html[data-reduce-motion="true"] .world-map-effect,

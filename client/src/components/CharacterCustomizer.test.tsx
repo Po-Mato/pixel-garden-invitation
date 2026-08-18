@@ -116,6 +116,23 @@ it("완성 캐릭터 카드를 선택하면 presetId를 변경한다", () => {
   expect(onChange).toHaveBeenCalledWith({ presetId: "masculine-navy-suit" });
 });
 
+it("프리셋이 바뀌면 큰 미리보기만 새 전환 대상으로 교체한다", () => {
+  const { rerender } = render(<CharacterCustomizer value={defaultCharacterAppearance} onChange={vi.fn()} />);
+  const firstPreview = screen.getByRole("img", { name: "선택한 하객 캐릭터" });
+
+  rerender(
+    <CharacterCustomizer
+      value={{ presetId: "masculine-navy-suit" }}
+      onChange={vi.fn()}
+    />
+  );
+
+  const nextPreview = screen.getByRole("img", { name: "선택한 하객 캐릭터" });
+  expect(nextPreview).not.toBe(firstPreview);
+  expect(nextPreview).toHaveAttribute("data-character-preset", "masculine-navy-suit");
+  expect(nextPreview).toHaveAttribute("data-motion-profile", "tailored");
+});
+
 it("무작위 선택과 기본 캐릭터 선택을 지원한다", () => {
   const onChange = vi.fn();
   render(<CharacterCustomizer value={defaultCharacterAppearance} onChange={onChange} />);
