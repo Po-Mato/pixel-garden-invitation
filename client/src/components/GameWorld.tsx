@@ -5607,6 +5607,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
             })}
             {visibleRemoteGuests.map((guest) => {
               const nameplate = remoteGuestNameplates.get(guest.guestId) ?? { x: 0, y: 0, crowded: false };
+              const remoteStepFrame = walkFrameForPhase(Math.max(0, guest.seq - 1));
               return (
                 <div
                   key={guest.guestId}
@@ -5614,6 +5615,8 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
                   aria-label={guest.nickname}
                   data-nameplate-crowded={nameplate.crowded || undefined}
                   data-remote-motion="pixel-step-3"
+                  data-moving={guest.moving || undefined}
+                  data-walk-frame={remoteStepFrame}
                   style={{
                     left: guest.x,
                     top: guest.y,
@@ -5633,7 +5636,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
                     appearance={guest.appearance}
                     direction={guest.direction}
                     moving={guest.moving}
-                    stepFrame={walkFrameForPhase(Math.max(0, guest.seq - 1))}
+                    stepFrame={remoteStepFrame}
                     label={`${guest.nickname} 캐릭터`}
                   />
                   <span className="world-player__name" title={guest.nickname}>{guest.nickname}</span>
@@ -5647,6 +5650,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
                   key={npc.id}
                   className="world-npc"
                   data-motion={motion.moving ? "walking" : motion.reaction}
+                  data-walk-frame={motion.stepFrame}
                   data-label-visibility={worldLabelVisibility.get(`npc:${npc.id}`)}
                   data-label-guided={activeNpcDialogue?.npcId === npc.id || interactionIntent?.targetId === `npc:${npc.id}` || (
                     recommendedCheckpoint?.zoneId === activeZone.id

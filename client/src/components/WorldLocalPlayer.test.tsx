@@ -24,5 +24,8 @@ it("shows a full accessible nickname inside the compact one-line nameplate", () 
   const nameplate = screen.getByTitle("모바일초대장긴하객이름");
   expect(nameplate).toHaveClass("world-player__name");
   expect(nameplate).toHaveTextContent("모바일초대장긴하객이름");
-  expect(screen.getByLabelText("모바일초대장긴하객이름")).toContainElement(nameplate);
+  const player = screen.getByLabelText("모바일초대장긴하객이름");
+  expect(player).toContainElement(nameplate);
+  expect(player).toHaveAttribute("data-walk-frame", "0");
+  expect(player).not.toHaveAttribute("data-moving");
 });

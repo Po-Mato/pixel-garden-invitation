@@ -7,6 +7,7 @@ import {
 } from "@wedding-game/shared";
 import { resolveCharacterLayers, type CharacterDisplayMode } from "../character/assets";
 import { getWalkFrameStyle } from "../character/frame";
+import { resolveCharacterMotionProfile } from "../character/motionProfile";
 import { trackInvitationAnalytics } from "../analytics/invitationAnalytics";
 
 type Props = {
@@ -28,6 +29,7 @@ export function CharacterSprite({
 }: Props) {
   const [failedUrls, setFailedUrls] = useState<Set<string>>(() => new Set());
   const safeAppearance = parseCharacterAppearance(appearance) ?? defaultCharacterAppearance;
+  const motionProfile = resolveCharacterMotionProfile(safeAppearance);
   const useFrontIdle = !moving && direction === "down";
   const layers = resolveCharacterLayers(safeAppearance, import.meta.env.BASE_URL, displayMode);
   const sourceSize = layers[0].sourceSize;
@@ -79,6 +81,8 @@ export function CharacterSprite({
       data-direction={direction}
       data-moving={moving ? "true" : "false"}
       data-walk-frame={renderedStepFrame}
+      data-character-preset={safeAppearance.presetId}
+      data-motion-profile={motionProfile}
       data-character-fallback={renderedLayers.some(({ fallback }) => fallback) || undefined}
       style={spriteStyle}
     >
@@ -91,8 +95,10 @@ export function CharacterSprite({
             className={`character-layer character-layer--${layer.slot}`}
             style={{
               backgroundImage: `url("${url}")`,
-              backgroundPosition: useFrontIdle && layer.idleUrl ? "0 0" : `${frame.x}px ${frame.y}px`
-            }}
+              backgroundPosition: useFrontIdle && layer.idleUrl ? "0 0" : `${frame.x}px ${frame.y}px`,
+              "--character-layer-image": `url("${url}")`,
+              "--character-frame-position": useFrontIdle && layer.idleUrl ? "0 0" : `${frame.x}px ${frame.y}px`
+            } as CSSProperties}
           >
             <img
               className="character-layer__preload"

@@ -25,8 +25,13 @@ it("완성 프리셋 단일 레이어만 렌더링한다", () => {
   );
 
   const sprite = screen.getByLabelText("하객 캐릭터");
+  expect(sprite).toHaveAttribute("data-character-preset", "feminine-long-wave-dress");
+  expect(sprite).toHaveAttribute("data-motion-profile", "flowing");
   expect([...sprite.querySelectorAll("[data-character-layer]")].map((node) => node.getAttribute("data-character-layer")))
     .toEqual(["base"]);
+  expect(sprite.querySelector('[data-character-layer="base"]')).toHaveStyle({
+    "--character-frame-position": "-192px -288px"
+  });
 });
 
 it("uses the two-frame idle class only when facing down and stopped", () => {

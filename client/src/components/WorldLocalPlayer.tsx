@@ -31,6 +31,8 @@ export const WorldLocalPlayer = memo(function WorldLocalPlayer({
     <div
       className="world-player player"
       aria-label={nickname}
+      data-moving={motion.moving || undefined}
+      data-walk-frame={motion.stepFrame}
       style={{
         left: motion.position.x,
         top: motion.position.y,

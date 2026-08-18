@@ -629,6 +629,9 @@ describe("pixel wedding festival map", () => {
         new RegExp(`\\.world-map__stage\\[data-zone="${zoneId}"\\]\\s*\\{([^}]*)}`, "s")
       )?.[1] ?? "";
       expect(rule).toContain("--character-ground-shadow:");
+      expect(rule).toContain("--character-ground-shadow-width:");
+      expect(rule).toContain("--character-ground-shadow-height:");
+      expect(rule).toContain("--character-ground-shadow-blur:");
       expect(rule).toContain("--character-tone-filter:");
       expect(rule).toContain("--foreground-ground-shadow:");
       expect(rule).toContain("--zone-grade:");
@@ -639,6 +642,31 @@ describe("pixel wedding festival map", () => {
     expect(mapVisualEnhancementStyles).toMatch(
       /\.world-player \.character-sprite--world,[\s\S]*filter:[\s\S]*var\(--character-tone-filter\)[\s\S]*drop-shadow/
     );
+    const contactShadowRule = mapVisualEnhancementStyles.match(
+      /\.world-player::before,\s*\.world-npc::before\s*\{([^}]*)}/s
+    )?.[1] ?? "";
+    expect(contactShadowRule).toContain("radial-gradient");
+    expect(contactShadowRule).toContain("var(--character-ground-shadow-width)");
+    expect(contactShadowRule).toContain("var(--character-ground-shadow-height)");
+    expect(contactShadowRule).toContain("blur(var(--character-ground-shadow-blur))");
+    expect(mapVisualEnhancementStyles).toContain('.world-player[data-moving="true"]');
+  });
+
+  it("adds restrained hair and garment follow-through without replacing approved artwork", () => {
+    expect(styles).toContain('[data-motion-profile="flowing"] .character-layer--base::before');
+    expect(styles).toContain('[data-motion-profile="hanbok"] .character-layer--base::after');
+    expect(styles).toContain('[data-motion-profile="skirt"] .character-layer--base::after');
+    expect(styles).toContain('[data-motion-profile="tailored"] .character-layer--base::after');
+    expect(styles).toContain("--character-layer-image");
+    expect(styles).toContain("translateX(-2px)");
+    expect(styles).toContain('html[data-reduce-motion="true"] .character-layer--base::before');
+  });
+
+  it("uses a short elegant selection transition and honors reduced motion", () => {
+    expect(weddingLuxeStyles).toContain("@keyframes character-selection-arrive");
+    expect(weddingLuxeStyles).toContain("animation: character-selection-arrive 180ms");
+    expect(weddingLuxeStyles).toContain(".customizer-option--selected::after");
+    expect(weddingLuxeStyles).toContain('html[data-reduce-motion="true"] .character-customizer__sprite > .character-sprite--preview');
   });
 
   it("uses pixelated image artwork as the map surface", () => {

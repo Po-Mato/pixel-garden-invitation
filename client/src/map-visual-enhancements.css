@@ -1,5 +1,9 @@
 .world-map__stage {
   --character-ground-shadow: rgba(37, 31, 27, 0.32);
+  --character-ground-shadow-width: 34px;
+  --character-ground-shadow-height: 8px;
+  --character-ground-shadow-blur: 0.3px;
+  --character-ground-shadow-offset-x: 0px;
   --character-edge-shadow: rgba(40, 31, 26, 0.42);
   --character-tone-filter: contrast(1.04) saturate(0.98);
   --foreground-ground-shadow: rgba(42, 32, 28, 0.22);
@@ -10,6 +14,10 @@
 
 .world-map__stage[data-zone="home"] {
   --character-ground-shadow: rgba(57, 39, 31, 0.38);
+  --character-ground-shadow-width: 33px;
+  --character-ground-shadow-height: 8px;
+  --character-ground-shadow-blur: 0.2px;
+  --character-ground-shadow-offset-x: 1px;
   --character-edge-shadow: rgba(48, 31, 27, 0.48);
   --character-tone-filter: contrast(1.04) saturate(0.98);
   --foreground-ground-shadow: rgba(58, 39, 31, 0.25);
@@ -20,6 +28,10 @@
 
 .world-map__stage[data-zone="neighborhood"] {
   --character-ground-shadow: rgba(22, 40, 28, 0.42);
+  --character-ground-shadow-width: 35px;
+  --character-ground-shadow-height: 9px;
+  --character-ground-shadow-blur: 0.35px;
+  --character-ground-shadow-offset-x: 0px;
   --character-edge-shadow: rgba(247, 242, 219, 0.78);
   --character-tone-filter: contrast(1.08) saturate(0.94) brightness(1.02);
   --foreground-ground-shadow: rgba(24, 43, 29, 0.28);
@@ -30,6 +42,10 @@
 
 .world-map__stage[data-zone="subway-station"] {
   --character-ground-shadow: rgba(29, 50, 55, 0.36);
+  --character-ground-shadow-width: 32px;
+  --character-ground-shadow-height: 7px;
+  --character-ground-shadow-blur: 0.2px;
+  --character-ground-shadow-offset-x: 0px;
   --character-edge-shadow: rgba(24, 37, 42, 0.63);
   --character-tone-filter: contrast(1.06) saturate(0.97);
   --foreground-ground-shadow: rgba(31, 49, 52, 0.22);
@@ -40,6 +56,10 @@
 
 .world-map__stage[data-zone="subway-train"] {
   --character-ground-shadow: rgba(24, 45, 51, 0.4);
+  --character-ground-shadow-width: 30px;
+  --character-ground-shadow-height: 7px;
+  --character-ground-shadow-blur: 0.2px;
+  --character-ground-shadow-offset-x: 0px;
   --character-edge-shadow: rgba(25, 42, 48, 0.52);
   --character-tone-filter: contrast(1.07) saturate(0.96);
   --foreground-ground-shadow: rgba(27, 48, 53, 0.25);
@@ -50,6 +70,10 @@
 
 .world-map__stage[data-zone="venue-exterior"] {
   --character-ground-shadow: rgba(26, 42, 29, 0.43);
+  --character-ground-shadow-width: 34px;
+  --character-ground-shadow-height: 9px;
+  --character-ground-shadow-blur: 0.35px;
+  --character-ground-shadow-offset-x: 0px;
   --character-edge-shadow: rgba(27, 37, 26, 0.62);
   --character-tone-filter: contrast(1.07) saturate(0.96) brightness(1.01);
   --foreground-ground-shadow: rgba(27, 45, 30, 0.28);
@@ -60,6 +84,10 @@
 
 .world-map__stage[data-zone="lobby"] {
   --character-ground-shadow: rgba(48, 44, 39, 0.34);
+  --character-ground-shadow-width: 36px;
+  --character-ground-shadow-height: 8px;
+  --character-ground-shadow-blur: 0.45px;
+  --character-ground-shadow-offset-x: 1px;
   --character-edge-shadow: rgba(43, 36, 34, 0.64);
   --character-tone-filter: contrast(1.09) saturate(0.95) brightness(0.99);
   --foreground-ground-shadow: rgba(47, 50, 46, 0.21);
@@ -70,6 +98,10 @@
 
 .world-map__stage[data-zone="bridal-room"] {
   --character-ground-shadow: rgba(58, 38, 47, 0.36);
+  --character-ground-shadow-width: 34px;
+  --character-ground-shadow-height: 10px;
+  --character-ground-shadow-blur: 0.75px;
+  --character-ground-shadow-offset-x: 0px;
   --character-edge-shadow: rgba(39, 23, 31, 0.68);
   --character-tone-filter: contrast(1.06) saturate(0.97);
   --foreground-ground-shadow: rgba(61, 41, 49, 0.23);
@@ -80,6 +112,10 @@
 
 .world-map__stage[data-zone="ceremony-hall"] {
   --character-ground-shadow: rgba(27, 40, 27, 0.45);
+  --character-ground-shadow-width: 35px;
+  --character-ground-shadow-height: 10px;
+  --character-ground-shadow-blur: 0.8px;
+  --character-ground-shadow-offset-x: 0px;
   --character-edge-shadow: rgba(27, 35, 25, 0.56);
   --character-tone-filter: contrast(1.08) saturate(0.95) brightness(1.01);
   --foreground-ground-shadow: rgba(28, 44, 29, 0.29);
@@ -90,6 +126,10 @@
 
 .world-map__stage[data-zone="banquet"] {
   --character-ground-shadow: rgba(57, 36, 30, 0.41);
+  --character-ground-shadow-width: 34px;
+  --character-ground-shadow-height: 8px;
+  --character-ground-shadow-blur: 0.3px;
+  --character-ground-shadow-offset-x: 1px;
   --character-edge-shadow: rgba(46, 27, 24, 0.58);
   --character-tone-filter: contrast(1.07) saturate(0.96);
   --foreground-ground-shadow: rgba(61, 38, 30, 0.27);
@@ -100,6 +140,10 @@
 
 .world-map__stage[data-zone="restroom"] {
   --character-ground-shadow: rgba(30, 48, 50, 0.34);
+  --character-ground-shadow-width: 31px;
+  --character-ground-shadow-height: 7px;
+  --character-ground-shadow-blur: 0.15px;
+  --character-ground-shadow-offset-x: 0px;
   --character-edge-shadow: rgba(26, 39, 42, 0.57);
   --character-tone-filter: contrast(1.06) saturate(0.97);
   --foreground-ground-shadow: rgba(32, 49, 50, 0.21);
@@ -896,15 +940,22 @@
 .world-npc::before {
   position: absolute;
   z-index: 0;
-  left: 50%;
+  left: calc(50% + var(--character-ground-shadow-offset-x));
   bottom: 18px;
-  width: 36px;
-  height: 10px;
+  width: var(--character-ground-shadow-width);
+  height: var(--character-ground-shadow-height);
   border-radius: 50%;
-  background: var(--character-ground-shadow);
-  box-shadow: 0 2px 0 rgba(255, 255, 235, 0.14);
+  background: radial-gradient(ellipse at center, var(--character-ground-shadow) 0 34%, transparent 76%);
   content: "";
-  transform: translateX(-50%);
+  filter: blur(var(--character-ground-shadow-blur));
+  transform: translateX(-50%) scale(var(--character-ground-shadow-step-x, 1), var(--character-ground-shadow-step-y, 1));
+  transform-origin: center;
+}
+
+:is(.world-player[data-moving="true"], .world-npc[data-motion="walking"])[data-walk-frame="0"]::before,
+:is(.world-player[data-moving="true"], .world-npc[data-motion="walking"])[data-walk-frame="2"]::before {
+  --character-ground-shadow-step-x: 0.94;
+  --character-ground-shadow-step-y: 0.84;
 }
 
 .world-player > *,
