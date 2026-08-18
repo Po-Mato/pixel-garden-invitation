@@ -87,6 +87,9 @@ export function CharacterSprite({
       style={spriteStyle}
     >
       {renderedLayers.map(({ layer, url, fallback, fallbackAvailable }) => {
+        const layerImageUrl = typeof document === "undefined"
+          ? url
+          : new URL(url, document.baseURI).href;
         return (
           <span
             key={`${layer.slot}:${layer.walkUrl}`}
@@ -94,9 +97,9 @@ export function CharacterSprite({
             data-character-fallback={fallback || undefined}
             className={`character-layer character-layer--${layer.slot}`}
             style={{
-              backgroundImage: `url("${url}")`,
+              backgroundImage: `url("${layerImageUrl}")`,
               backgroundPosition: useFrontIdle && layer.idleUrl ? "0 0" : `${frame.x}px ${frame.y}px`,
-              "--character-layer-image": `url("${url}")`,
+              "--character-layer-image": `url("${layerImageUrl}")`,
               "--character-frame-position": useFrontIdle && layer.idleUrl ? "0 0" : `${frame.x}px ${frame.y}px`
             } as CSSProperties}
           >
