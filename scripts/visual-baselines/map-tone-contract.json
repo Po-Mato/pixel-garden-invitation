@@ -1,5 +1,5 @@
 {
-  "version": 11,
+  "version": 12,
   "thresholds": {
     "maxLuminanceDelta": 0.03,
     "minDynamicRange": 0.16,
@@ -19,7 +19,7 @@
       "p10Luminance": 0.215,
       "p90Luminance": 0.819,
       "sceneAverageLuminance": 0.57,
-      "sceneP10Luminance": 0.215,
+      "sceneP10Luminance": 0.214,
       "sceneP90Luminance": 0.814,
       "characterEdgeContrast": 2.236,
       "characterPresetCount": 12,
@@ -41,9 +41,9 @@
       "movementFrameCount": 3,
       "characterMovementEdgeContrasts": {
         "feminine-long-wave-dress": {
-          "down-0": 3.026,
+          "down-0": 2.777,
           "down-1": 2.999,
-          "down-2": 2.858
+          "down-2": 2.969
         },
         "feminine-formal-hanbok": {
           "down-0": 1.823,
@@ -129,7 +129,7 @@
       "movementFrameCount": 3,
       "characterMovementEdgeContrasts": {
         "feminine-long-wave-dress": {
-          "down-0": 2.105,
+          "down-0": 2.092,
           "down-1": 2.1,
           "down-2": 2.09
         },
@@ -217,9 +217,9 @@
       "movementFrameCount": 3,
       "characterMovementEdgeContrasts": {
         "feminine-long-wave-dress": {
-          "down-0": 3.146,
+          "down-0": 2.753,
           "down-1": 3.156,
-          "down-2": 2.841
+          "down-2": 3.043
         },
         "feminine-formal-hanbok": {
           "down-0": 1.745,
@@ -288,7 +288,7 @@
       "characterEdgeContrast": 1.835,
       "characterPresetCount": 12,
       "characterEdgeContrasts": {
-        "feminine-long-wave-dress": 2.344,
+        "feminine-long-wave-dress": 2.436,
         "feminine-formal-hanbok": 2.185,
         "masculine-navy-suit": 2.633,
         "masculine-charcoal-blazer": 2.645,
@@ -305,9 +305,9 @@
       "movementFrameCount": 3,
       "characterMovementEdgeContrasts": {
         "feminine-long-wave-dress": {
-          "down-0": 2.507,
-          "down-1": 2.344,
-          "down-2": 2.285
+          "down-0": 2.172,
+          "down-1": 2.436,
+          "down-2": 2.016
         },
         "feminine-formal-hanbok": {
           "down-0": 1.954,
@@ -376,7 +376,7 @@
       "characterEdgeContrast": 2.131,
       "characterPresetCount": 12,
       "characterEdgeContrasts": {
-        "feminine-long-wave-dress": 2.718,
+        "feminine-long-wave-dress": 2.715,
         "feminine-formal-hanbok": 2.203,
         "masculine-navy-suit": 2.768,
         "masculine-charcoal-blazer": 2.746,
@@ -393,9 +393,9 @@
       "movementFrameCount": 3,
       "characterMovementEdgeContrasts": {
         "feminine-long-wave-dress": {
-          "down-0": 2.718,
-          "down-1": 2.718,
-          "down-2": 2.648
+          "down-0": 2.657,
+          "down-1": 2.715,
+          "down-2": 2.706
         },
         "feminine-formal-hanbok": {
           "down-0": 2.007,
@@ -460,11 +460,11 @@
       "p90Luminance": 0.239,
       "sceneAverageLuminance": 0.125,
       "sceneP10Luminance": 0.037,
-      "sceneP90Luminance": 0.225,
-      "characterEdgeContrast": 1.613,
+      "sceneP90Luminance": 0.226,
+      "characterEdgeContrast": 1.676,
       "characterPresetCount": 12,
       "characterEdgeContrasts": {
-        "feminine-long-wave-dress": 1.613,
+        "feminine-long-wave-dress": 1.738,
         "feminine-formal-hanbok": 1.798,
         "masculine-navy-suit": 1.961,
         "masculine-charcoal-blazer": 1.98,
@@ -481,9 +481,9 @@
       "movementFrameCount": 3,
       "characterMovementEdgeContrasts": {
         "feminine-long-wave-dress": {
-          "down-0": 1.665,
-          "down-1": 1.613,
-          "down-2": 1.712
+          "down-0": 1.791,
+          "down-1": 1.738,
+          "down-2": 1.738
         },
         "feminine-formal-hanbok": {
           "down-0": 1.718,
@@ -552,7 +552,7 @@
       "characterEdgeContrast": 2.094,
       "characterPresetCount": 12,
       "characterEdgeContrasts": {
-        "feminine-long-wave-dress": 2.816,
+        "feminine-long-wave-dress": 2.992,
         "feminine-formal-hanbok": 2.277,
         "masculine-navy-suit": 3.228,
         "masculine-charcoal-blazer": 3.237,
@@ -569,9 +569,9 @@
       "movementFrameCount": 3,
       "characterMovementEdgeContrasts": {
         "feminine-long-wave-dress": {
-          "down-0": 2.961,
-          "down-1": 2.816,
-          "down-2": 2.672
+          "down-0": 2.644,
+          "down-1": 2.992,
+          "down-2": 2.799
         },
         "feminine-formal-hanbok": {
           "down-0": 1.85,
@@ -657,9 +657,9 @@
       "movementFrameCount": 3,
       "characterMovementEdgeContrasts": {
         "feminine-long-wave-dress": {
-          "down-0": 2.421,
+          "down-0": 2.288,
           "down-1": 2.356,
-          "down-2": 2.26
+          "down-2": 2.288
         },
         "feminine-formal-hanbok": {
           "down-0": 2.046,
@@ -728,7 +728,7 @@
       "characterEdgeContrast": 1.687,
       "characterPresetCount": 12,
       "characterEdgeContrasts": {
-        "feminine-long-wave-dress": 1.816,
+        "feminine-long-wave-dress": 1.761,
         "feminine-formal-hanbok": 1.832,
         "masculine-navy-suit": 1.873,
         "masculine-charcoal-blazer": 1.826,
@@ -745,9 +745,9 @@
       "movementFrameCount": 3,
       "characterMovementEdgeContrasts": {
         "feminine-long-wave-dress": {
-          "down-0": 1.816,
-          "down-1": 1.816,
-          "down-2": 1.796
+          "down-0": 1.818,
+          "down-1": 1.761,
+          "down-2": 1.795
         },
         "feminine-formal-hanbok": {
           "down-0": 1.836,
@@ -816,7 +816,7 @@
       "characterEdgeContrast": 2.257,
       "characterPresetCount": 12,
       "characterEdgeContrasts": {
-        "feminine-long-wave-dress": 2.803,
+        "feminine-long-wave-dress": 2.703,
         "feminine-formal-hanbok": 2.347,
         "masculine-navy-suit": 2.875,
         "masculine-charcoal-blazer": 2.873,
@@ -833,9 +833,9 @@
       "movementFrameCount": 3,
       "characterMovementEdgeContrasts": {
         "feminine-long-wave-dress": {
-          "down-0": 2.738,
-          "down-1": 2.803,
-          "down-2": 2.738
+          "down-0": 2.618,
+          "down-1": 2.703,
+          "down-2": 2.671
         },
         "feminine-formal-hanbok": {
           "down-0": 2.019,

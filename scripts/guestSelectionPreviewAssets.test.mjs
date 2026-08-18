@@ -101,13 +101,15 @@ test("각 캐릭터의 상하좌우 보행 3컷은 같은 머리 높이 허용 �
   }
 });
 
-test("12종 모두 방향·보행을 정돈한 v4 원화를 사용한다", async () => {
+test("1번은 정면 얼굴을 보정한 v5, 나머지는 검수된 v4 원화를 사용한다", async () => {
   const report = await auditGuestSelectionPreviewAssets({ catalog });
 
   for (const preset of report.presets) {
     assert.equal(
       preset.sourceSet,
-      "v4-direction-motion-polish",
+      preset.guest === "guest-01"
+        ? "v5-front-face-balance"
+        : "v4-direction-motion-polish",
       `${preset.guest} 원화 버전이 검수된 소스와 일치해야 합니다.`
     );
   }
@@ -118,6 +120,10 @@ test("12종 모두 방향·보행을 정돈한 v4 원화를 사용한다", async
   );
   await Promise.all(catalog.presets.map((preset) =>
     access(join(polishedSourceRoot, `${preset.reference.walkSourceGuest}-walk-sheet.png`))
+  ));
+  await access(join(
+    root,
+    "character-assets/reference/guest-flat-walk-sources/v5/guest-01-walk-sheet.png"
   ));
 });
 
@@ -136,6 +142,24 @@ test("정면과 측면의 실제 얼굴 폭은 캐릭터별 광학 허용 범위
       `${preset.guest} 좌우 얼굴 폭 차이가 광학 허용 범위를 넘으면 안 됩니다.`
     );
   }
+});
+
+test("1번 캐릭터 정면 얼굴은 측면 평균과 거의 같은 광학 폭을 유지한다", async () => {
+  const report = await auditGuestSelectionPreviewAssets({ catalog });
+  const guest01 = report.presets.find((preset) => preset.guest === "guest-01");
+
+  assert.ok(guest01, "guest-01 감사 결과가 필요합니다.");
+  assert.ok(
+    guest01.opticalFace.frontToProfileFaceWidthRatio <= 1.08,
+    `guest-01 정면/측면 얼굴 폭 비율 ${guest01.opticalFace.frontToProfileFaceWidthRatio}은 1.08 이하여야 합니다.`
+  );
+  assert.ok(
+    Math.abs(
+      guest01.opticalFace.downMedianFaceWidth
+        - guest01.opticalFace.profileMedianFaceWidth
+    ) <= 2,
+    "guest-01 정면 얼굴 폭은 측면 평균과 2px 이상 벌어지면 안 됩니다."
+  );
 });
 
 test("얼굴 기준선과 좌우 보행 리듬은 방향 전환 시 허용 범위 안에 있다", async () => {
@@ -167,11 +191,15 @@ test("얼굴 기준선과 좌우 보행 리듬은 방향 전환 시 허용 범�
 test("승인된 평면 원화 12종은 선택 화면과 게임의 실제 보행 포즈로 이어진다", async () => {
   const policy = catalog.frame.selectionPreview;
   const sourceRoot = join(root, "character-assets/reference/guest-flat-walk-sources/v4");
+  const frontFaceSourceRoot = join(root, "character-assets/reference/guest-flat-walk-sources/v5");
   const previewRoot = join(root, "character-assets/source/guests-preview");
 
   for (const preset of catalog.presets) {
     const guest = preset.reference.walkSourceGuest;
-    await access(join(sourceRoot, `${guest}-walk-sheet.png`));
+    await access(join(
+      guest === "guest-01" ? frontFaceSourceRoot : sourceRoot,
+      `${guest}-walk-sheet.png`
+    ));
     const walkPath = join(previewRoot, `${preset.id}__walk.png`);
     for (let row = 0; row < 4; row += 1) {
       const frames = [];
