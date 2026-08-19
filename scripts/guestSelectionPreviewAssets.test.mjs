@@ -16,7 +16,7 @@ const catalog = JSON.parse(
 test("선택 화면의 12명 144프레임은 2배 해상도와 동일한 3등신 기준을 지킨다", async () => {
   const report = await auditGuestSelectionPreviewAssets({ catalog });
 
-  assert.equal(report.version, 6);
+  assert.equal(report.version, 7);
   assert.deepEqual(report.policy.source, { width: 192, height: 288 });
   assert.equal(report.summary.presetCount, 12);
   assert.equal(report.summary.frameCount, 144);
@@ -116,14 +116,16 @@ test("각 캐릭터의 상하좌우 보행 3컷은 같은 머리 높이 허용 �
   }
 });
 
-test("12명 모두 신랑·신부 수준의 2D 명암과 방향 비율을 보정한 v6 원화를 사용한다", async () => {
+test("1번은 광학 보정 v7, 나머지는 검수된 입체 명암 v6 원화를 사용한다", async () => {
   const report = await auditGuestSelectionPreviewAssets({ catalog });
 
   for (const preset of report.presets) {
     assert.equal(
       preset.sourceSet,
-      "v6-couple-depth-balance",
-      `${preset.guest} 원화 버전이 검수된 v6 소스와 일치해야 합니다.`
+      preset.guest === "guest-01"
+        ? "v7-optical-face-balance"
+        : "v6-couple-depth-balance",
+      `${preset.guest} 원화 버전이 승인된 방향별 소스와 일치해야 합니다.`
     );
   }
 
@@ -133,6 +135,10 @@ test("12명 모두 신랑·신부 수준의 2D 명암과 방향 비율을 보정
   );
   await Promise.all(catalog.presets.map((preset) =>
     access(join(depthSourceRoot, `${preset.reference.walkSourceGuest}-walk-sheet.png`))
+  ));
+  await access(join(
+    root,
+    "character-assets/reference/guest-depth-walk-sources/v7/guest-01-walk-sheet.png"
   ));
 });
 
@@ -185,6 +191,26 @@ test("모든 캐릭터 정면 얼굴은 측면 평균과 거의 같은 광학 �
   }
 });
 
+test("1번 캐릭터 정면 얼굴은 측면보다 좁은 폭과 1.25 이하의 광학 면적을 유지한다", async () => {
+  const report = await auditGuestSelectionPreviewAssets({ catalog });
+  const guest01 = report.presets.find((preset) => preset.guest === "guest-01");
+
+  assert.ok(guest01, "guest-01 감사 결과가 필요합니다.");
+  assert.equal(report.policy.maximumFrontToProfileFaceAreaRatioByGuest["guest-01"], 1.25);
+  assert.ok(
+    guest01.opticalFace.downMedianFaceWidth <= guest01.opticalFace.profileMedianFaceWidth,
+    "guest-01 정면 얼굴 폭은 측면 평균보다 넓어서는 안 됩니다."
+  );
+  assert.ok(
+    guest01.opticalFace.downMedianFaceWidth >= guest01.opticalFace.profileMedianFaceWidth - 3,
+    "guest-01 정면 얼굴 폭을 과도하게 줄여서는 안 됩니다."
+  );
+  assert.ok(
+    guest01.opticalFace.frontToProfileFaceAreaRatio <= 1.25,
+    "guest-01 정면 얼굴 면적은 측면 평균의 1.25배 이하여야 합니다."
+  );
+});
+
 test("얼굴 기준선과 좌우 보행 리듬은 방향 전환 시 허용 범위 안에 있다", async () => {
   const report = await auditGuestSelectionPreviewAssets({ catalog });
 
@@ -227,11 +253,15 @@ test("실제 48×72 표시 크기에서도 보행 상체 중심은 1px 안에서
 test("승인된 입체 명암 원화 12종은 선택 화면과 게임의 실제 보행 포즈로 이어진다", async () => {
   const policy = catalog.frame.selectionPreview;
   const sourceRoot = join(root, "character-assets/reference/guest-depth-walk-sources/v6");
+  const guest01Source = join(
+    root,
+    "character-assets/reference/guest-depth-walk-sources/v7/guest-01-walk-sheet.png"
+  );
   const previewRoot = join(root, "character-assets/source/guests-preview");
 
   for (const preset of catalog.presets) {
     const guest = preset.reference.walkSourceGuest;
-    await access(join(sourceRoot, `${guest}-walk-sheet.png`));
+    await access(guest === "guest-01" ? guest01Source : join(sourceRoot, `${guest}-walk-sheet.png`));
     const walkPath = join(previewRoot, `${preset.id}__walk.png`);
     for (let row = 0; row < 4; row += 1) {
       const frames = [];

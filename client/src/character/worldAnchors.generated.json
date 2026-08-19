@@ -8,16 +8,16 @@
   },
   "presets": {
     "feminine-long-wave-dress": {
-      "centerX": 48.5,
+      "centerX": 48,
       "centerY": 70,
       "feetY": 133,
       "bounds": {
-        "left": 25,
+        "left": 23,
         "top": 7,
-        "width": 47,
+        "width": 50,
         "height": 126
       },
-      "sourceSha256": "f9aca4b9909f91ce7f2c3a7a7ee7871a4d1fd1106ace40612d2c0ad25cbf7b30"
+      "sourceSha256": "65c6b3b130939ece78e2dc3007c2bf7d9128bf837e5f8da65e9fb6769c01f74c"
     },
     "feminine-formal-hanbok": {
       "centerX": 48,
