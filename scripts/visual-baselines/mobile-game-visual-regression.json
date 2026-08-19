@@ -1,24 +1,24 @@
 {
   "version": 2,
-  "approvedAt": "2026-08-19T03:28:16.558Z",
-  "reason": "1번 하객 정면 얼굴 광학 비율 보정",
-  "sha256": "1aef0c1555dea25671e7c7a38527ee689fbdaaf07330c7dc321b95c7b673a75b",
+  "approvedAt": "2026-08-19T05:53:44.826Z",
+  "reason": "하객 12종을 신랑·신부 수준의 고해상도 입체 마스터로 교체",
+  "sha256": "4742f284ea576bf974f439ad90d1f1d83a294b3e2f9d4ca0e78f529631aa5f2b",
   "provenance": {
     "schemaVersion": 1,
     "subjectKind": "capture-set",
     "sourceKind": "local",
     "runId": null,
     "runAttempt": null,
-    "commitSha": "a7597308042dfcd37aaeb1f1140ad24a50816791",
+    "commitSha": "91d1fbc729cffb180ed16017539ee68094ac1006",
     "runUrl": null,
     "checksumAlgorithm": "sha256",
     "artifactChecksumScope": "sorted-capture-set-manifest",
-    "artifactSha256": "a37ecfdec6a7e3c509589b5c3fc42efe64b31304ebc885f835c45284392b2c68",
+    "artifactSha256": "00fa367ed4851b627c0a593a8ad3d037bfbc307ce2343d08fdf928f2d9d2e8ed",
     "files": [
       {
         "logicalPath": "mobile-game-current",
-        "size": 4617287,
-        "sha256": "8dcb71e8a84ef30737a1844704d87569fd6d3a0b8b0f3ef770e81fc454bb71f9"
+        "size": 4617068,
+        "sha256": "6f87aec3f155467429603d69429c8c83bbd565d67d6234aa38dda6058bc01aed"
       }
     ]
   },

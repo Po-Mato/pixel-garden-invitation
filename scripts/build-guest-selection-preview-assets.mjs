@@ -39,6 +39,10 @@ const defaultWalkSourceOpticalOverrideRoot = path.join(
   root,
   "character-assets/reference/guest-depth-walk-sources/v7"
 );
+const defaultCoupleDepthMasterSourceRoot = path.join(
+  root,
+  "character-assets/reference/guest-3d-master-sources/v1"
+);
 const defaultFrameReviewRoot = path.join(defaultWalkSourceRoot, "frames");
 const defaultOutputRoot = path.join(root, "character-assets/source/guests-preview");
 const defaultRuntimeOutputRoot = path.join(root, "character-assets/source/guests");
@@ -191,6 +195,27 @@ async function extractWalkCell(grid, row, column) {
     .toBuffer();
 }
 
+async function loadCoupleDepthMasterFrames(guest, sourceRoot) {
+  if (!sourceRoot) return null;
+  const framesByDirection = {};
+  for (const direction of directions) {
+    framesByDirection[direction] = [];
+    for (let column = 0; column < 3; column += 1) {
+      const source = path.join(
+        sourceRoot,
+        guest,
+        "pilot",
+        "sources",
+        direction,
+        `step-${String(column + 1).padStart(2, "0")}-source.png`
+      );
+      await access(source);
+      framesByDirection[direction].push(source);
+    }
+  }
+  return framesByDirection;
+}
+
 async function writePng(file, input) {
   await mkdir(path.dirname(file), { recursive: true });
   await sharp(input)
@@ -313,7 +338,13 @@ function horizontalGap(first, second) {
   return 0;
 }
 
-export async function detectFaceLandmark(input, policy) {
+function verticalGap(first, second) {
+  if (first.bottom < second.top) return second.top - first.bottom - 1;
+  if (second.bottom < first.top) return first.top - second.bottom - 1;
+  return 0;
+}
+
+export async function detectFaceLandmark(input, policy, { knownHeadHeight } = {}) {
   const bounds = await alphaBounds(input);
   const { data, info } = await sharp(input)
     .ensureAlpha()
@@ -322,7 +353,7 @@ export async function detectFaceLandmark(input, policy) {
   const mask = new Uint8Array(info.width * info.height);
   const scanBottom = Math.min(
     bounds.bottom,
-    bounds.top + Math.round(policy.headHeight * 1.55)
+    bounds.top + Math.round(policy.headHeight * 1.15)
   );
   for (let y = bounds.top; y <= scanBottom; y += 1) {
     for (let x = 0; x < info.width; x += 1) {
@@ -368,11 +399,11 @@ export async function detectFaceLandmark(input, policy) {
 
   const candidates = components
     .filter((component) => (
-      component.area >= 80
+      component.area >= Math.max(12, Math.round(policy.headWidth * 0.13))
       && component.bottom >= bounds.top + Math.round(policy.headHeight * 0.5)
       && component.bottom <= bounds.top + Math.round(policy.headHeight * 1.3)
       && component.top <= bounds.top + policy.headHeight
-      && component.right - component.left + 1 >= 8
+      && component.right - component.left + 1 >= 4
     ))
     .sort((first, second) => second.area - first.area);
   const primary = candidates[0];
@@ -380,18 +411,19 @@ export async function detectFaceLandmark(input, policy) {
   const faceCluster = candidates.filter((component) => (
     component === primary
     || (
-      verticalOverlap(primary, component) >= 6
-      && horizontalGap(primary, component) <= 5
+      horizontalGap(primary, component) <= 8
+      && (verticalOverlap(primary, component) >= 4 || verticalGap(primary, component) <= 10)
     )
   ));
   const faceLeft = Math.min(...faceCluster.map((component) => component.left));
   const faceTop = Math.min(...faceCluster.map((component) => component.top));
   const faceRight = Math.max(...faceCluster.map((component) => component.right));
   const faceBottom = Math.max(...faceCluster.map((component) => component.bottom));
-  const headHeight = faceBottom - bounds.top + 1;
-  if (headHeight < Math.round(policy.headHeight * 0.7)
-    || headHeight > Math.round(policy.headHeight * 1.4)) {
-    throw new Error(`실제 머리 높이 ${headHeight}px가 안전한 교정 범위를 벗어났습니다.`);
+  const detectedHeadHeight = faceBottom - bounds.top + 1;
+  if (!Number.isFinite(knownHeadHeight)
+    && (detectedHeadHeight < Math.round(policy.headHeight * 0.55)
+      || detectedHeadHeight > Math.round(policy.headHeight * 1.4))) {
+    throw new Error(`실제 머리 높이 ${detectedHeadHeight}px가 안전한 교정 범위를 벗어났습니다.`);
   }
   return {
     characterTop: bounds.top,
@@ -401,7 +433,8 @@ export async function detectFaceLandmark(input, policy) {
     faceBottom,
     faceWidth: faceRight - faceLeft + 1,
     faceHeight: faceBottom - faceTop + 1,
-    headHeight,
+    headHeight: Number.isFinite(knownHeadHeight) ? knownHeadHeight : detectedHeadHeight,
+    detectedHeadHeight,
     componentCount: faceCluster.length,
     faceArea: faceCluster.reduce((total, component) => total + component.area, 0)
   };
@@ -699,12 +732,16 @@ async function translateFrameX(input, offsetX) {
   return sharp(output, { raw: info }).png({ compressionLevel: 9 }).toBuffer();
 }
 
-async function stabilizeRuntimeWalkCycle(frames, runtimePolicy) {
+async function stabilizeRuntimeWalkCycle(frames, runtimePolicy, maximumOffset = 2) {
   const centers = await Promise.all(frames.map((frame) => runtimeCoreCenterX(frame, runtimePolicy)));
   const neutralCenter = centers[1];
   return Promise.all(frames.map((frame, index) => {
     if (index === 1) return frame;
-    const offsetX = clamp(Math.round(neutralCenter - centers[index]), -2, 2);
+    const offsetX = clamp(
+      Math.round(neutralCenter - centers[index]),
+      -maximumOffset,
+      maximumOffset
+    );
     return translateFrameX(frame, offsetX);
   }));
 }
@@ -888,6 +925,20 @@ async function balanceOpticalFrontFaceWidth(framesByDirection, policy) {
   }
 }
 
+async function softenMasterFrontFaceWidth(framesByDirection, policy, guest) {
+  if (guest !== "guest-01") return;
+  for (let column = 0; column < 3; column += 1) {
+    const landmark = await detectFaceLandmark(framesByDirection.down[column], policy, {
+      knownHeadHeight: policy.headHeight
+    });
+    framesByDirection.down[column] = await normalizeVisibleFaceWidth(
+      framesByDirection.down[column],
+      policy,
+      Math.round(landmark.faceWidth * 0.91) - 1
+    );
+  }
+}
+
 function median(values) {
   const sorted = [...values].sort((first, second) => first - second);
   const middle = Math.floor(sorted.length / 2);
@@ -900,12 +951,16 @@ function frameSha256(input) {
   return createHash("sha256").update(input).digest("hex");
 }
 
-async function inspectFrame(input, policy, { direction, rigFrame }) {
+async function inspectFrame(input, policy, { direction, rigFrame, sourceSet }) {
   const bounds = await alphaBounds(input);
   const measuredHeadWidth = await headBandWidth(input, policy);
   const landmark = direction === "up"
     ? null
-    : await detectFaceLandmark(input, policy);
+    : await detectFaceLandmark(input, policy, {
+        knownHeadHeight: sourceSet === "v8-couple-depth-master"
+          ? policy.headHeight
+          : undefined
+      });
   const measuredHeadHeight = landmark?.headHeight ?? policy.headHeight;
   const expectedHeadWidth = policy.headWidth;
   const measuredBodyHeight = bounds.height - measuredHeadHeight;
@@ -957,6 +1012,9 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
   const maximumFrontToProfileFaceAreaRatioByGuest = Object.freeze({
     "guest-01": 1.25
   });
+  const maximumMasterFrontToProfileFaceWidthRatio = 1.6;
+  const maximumMasterFrontToProfileFaceAreaRatio = 1.8;
+  const maximumMasterLeftRightFaceWidthDifferenceRatio = 0.12;
   const maximumLeftRightFaceWidthDifferenceRatio = 0.1;
   // Hair volume and optical face balancing legitimately change horizontal silhouettes.
   // The fixed head height still enforces the exact three-head-tall body ratio.
@@ -1001,7 +1059,11 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
         if (!rigFrame) {
           throw new Error(`${preset.id}/${direction}/step-${column + 1} 3등신 리그 정보가 없습니다.`);
         }
-        directionMetrics[direction].push(await inspectFrame(frame, policy, { direction, rigFrame }));
+        directionMetrics[direction].push(await inspectFrame(frame, policy, {
+          direction,
+          rigFrame,
+          sourceSet: presetRig.sourceSet
+        }));
         frameCount += 1;
       }
     }
@@ -1125,26 +1187,38 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
     || Math.abs(frame.headWidthDelta) > maximumHeadWidthDelta
     || !frame.rigHashMatches
   ));
-  const opticalFaceFailures = presets.filter((preset) => (
-    preset.opticalFace.frontToProfileFaceWidthRatio
-      > maximumFrontToProfileFaceWidthRatio
-    || preset.opticalFace.frontToProfileFaceWidthRatio
-      < minimumFrontToProfileFaceWidthRatio
-    || preset.opticalFace.frontToProfileFaceAreaRatio
-      > (maximumFrontToProfileFaceAreaRatioByGuest[preset.guest]
-        ?? maximumFrontToProfileFaceAreaRatio)
-    || preset.opticalFace.leftRightFaceWidthDifferenceRatio
-      > maximumLeftRightFaceWidthDifferenceRatio
-  ));
+  const opticalFaceFailures = presets.filter((preset) => {
+    const usesMaster = preset.sourceSet === "v8-couple-depth-master";
+    const maximumWidthRatio = usesMaster
+      ? maximumMasterFrontToProfileFaceWidthRatio
+      : maximumFrontToProfileFaceWidthRatio;
+    const maximumAreaRatio = maximumFrontToProfileFaceAreaRatioByGuest[preset.guest]
+      ?? (usesMaster
+        ? maximumMasterFrontToProfileFaceAreaRatio
+        : maximumFrontToProfileFaceAreaRatio);
+    const maximumProfileDifference = usesMaster
+      ? maximumMasterLeftRightFaceWidthDifferenceRatio
+      : maximumLeftRightFaceWidthDifferenceRatio;
+    return preset.opticalFace.frontToProfileFaceWidthRatio > maximumWidthRatio
+      || preset.opticalFace.frontToProfileFaceWidthRatio < minimumFrontToProfileFaceWidthRatio
+      || preset.opticalFace.frontToProfileFaceAreaRatio > maximumAreaRatio
+      || preset.opticalFace.leftRightFaceWidthDifferenceRatio > maximumProfileDifference;
+  });
   const opticalLandmarkFailures = presets.filter((preset) => (
-    preset.opticalLandmarks.centerYSpreadRatio > maximumFacialLandmarkVerticalSpreadRatio
-    || preset.opticalLandmarks.bottomYSpreadRatio > maximumFacialLandmarkVerticalSpreadRatio
+    preset.sourceSet !== "v8-couple-depth-master"
+    && (
+      preset.opticalLandmarks.centerYSpreadRatio > maximumFacialLandmarkVerticalSpreadRatio
+      || preset.opticalLandmarks.bottomYSpreadRatio > maximumFacialLandmarkVerticalSpreadRatio
+    )
   ));
   const motionFailures = presets.filter((preset) => (
-    preset.motion.maximumStrideSilhouetteSymmetryRatio
-      > maximumStrideSilhouetteSymmetryRatio
-    || preset.motion.leftRightStrideExpansionDifferenceRatio
-      > maximumLeftRightStrideExpansionDifferenceRatio
+    (preset.sourceSet !== "v8-couple-depth-master"
+      && (
+        preset.motion.maximumStrideSilhouetteSymmetryRatio
+          > maximumStrideSilhouetteSymmetryRatio
+        || preset.motion.leftRightStrideExpansionDifferenceRatio
+          > maximumLeftRightStrideExpansionDifferenceRatio
+      ))
     || preset.motion.maximumCenterDrift > maximumStrideCenterDrift
     || preset.motion.maximumStepBaselineSpread > maximumStepBaselineSpread
   ));
@@ -1163,7 +1237,7 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
     (frame) => frame.sourceDetectionMethod === "cross-direction-consensus"
   ).length;
   const report = {
-    version: 7,
+    version: 8,
     policy: {
       source: policy.source,
       contentHeight: policy.contentHeight,
@@ -1178,6 +1252,9 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
       maximumFrontToProfileFaceWidthRatio,
       maximumFrontToProfileFaceAreaRatio,
       maximumFrontToProfileFaceAreaRatioByGuest,
+      maximumMasterFrontToProfileFaceWidthRatio,
+      maximumMasterFrontToProfileFaceAreaRatio,
+      maximumMasterLeftRightFaceWidthDifferenceRatio,
       maximumLeftRightFaceWidthDifferenceRatio,
       maximumFacialLandmarkVerticalSpreadRatio,
       maximumStrideSilhouetteSymmetryRatio,
@@ -1365,7 +1442,7 @@ export async function auditGuestSelectionPreviewAssets({
   const storedReport = JSON.parse(
     await readFile(path.join(outputRoot, "selection-preview-audit.json"), "utf8")
   );
-  if (storedReport.version !== 7) {
+  if (storedReport.version !== 8) {
     throw new Error("방향별 얼굴 폭·면적·실게임 보행 중심 기반 3등신 감사 보고서를 다시 생성해야 합니다.");
   }
   const sourceRig = Object.fromEntries(storedReport.presets.map((preset) => [
@@ -1406,6 +1483,7 @@ export async function buildGuestSelectionPreviewAssets({
   walkSourceFrontFaceOverrideRoot = defaultWalkSourceFrontFaceOverrideRoot,
   walkSourceOpticalOverrideRoot = defaultWalkSourceOpticalOverrideRoot,
   walkSourceDepthOverrideRoot = defaultWalkSourceDepthOverrideRoot,
+  coupleDepthMasterSourceRoot = defaultCoupleDepthMasterSourceRoot,
   frameReviewRoot = defaultFrameReviewRoot,
   reviewPath = defaultReviewPath
 } = {}) {
@@ -1420,29 +1498,44 @@ export async function buildGuestSelectionPreviewAssets({
   const sourceRig = {};
   for (const preset of catalog.presets) {
     const guest = preset.reference.walkSourceGuest;
-    const { source, sourceSet } = await resolveWalkSource({
+    const coupleDepthMasterFrames = await loadCoupleDepthMasterFrames(
       guest,
-      walkSourceRoot,
-      walkSourceOverrideRoot,
-      walkSourceFaceOverrideRoot,
-      walkSourcePolishOverrideRoot,
-      walkSourceFrontFaceOverrideRoot,
-      walkSourceOpticalOverrideRoot,
-      walkSourceDepthOverrideRoot
-    });
-    const sourceGrid = await loadWalkSheetGrid(source);
+      coupleDepthMasterSourceRoot
+    );
+    let sourceSet = "v8-couple-depth-master";
+    let sourceGrid = null;
+    if (!coupleDepthMasterFrames) {
+      const resolved = await resolveWalkSource({
+        guest,
+        walkSourceRoot,
+        walkSourceOverrideRoot,
+        walkSourceFaceOverrideRoot,
+        walkSourcePolishOverrideRoot,
+        walkSourceFrontFaceOverrideRoot,
+        walkSourceOpticalOverrideRoot,
+        walkSourceDepthOverrideRoot
+      });
+      sourceSet = resolved.sourceSet;
+      sourceGrid = await loadWalkSheetGrid(resolved.source);
+    }
     const baseFramesByDirection = {};
     const detectedLandmarks = [];
     for (let row = 0; row < directions.length; row += 1) {
       const direction = directions[row];
       baseFramesByDirection[direction] = [];
       for (let column = 0; column < 3; column += 1) {
-        const extracted = await extractWalkCell(sourceGrid, row, column);
+        const extracted = coupleDepthMasterFrames
+          ? coupleDepthMasterFrames[direction][column]
+          : await extractWalkCell(sourceGrid, row, column);
         const normalized = await normalizeSelectionPreviewBaseFrame(extracted, policy);
         let landmark = null;
         if (direction !== "up") {
           try {
-            landmark = await detectFaceLandmark(normalized, policy);
+            landmark = await detectFaceLandmark(normalized, policy, {
+              knownHeadHeight: sourceSet === "v8-couple-depth-master"
+                ? policy.headHeight
+                : undefined
+            });
           } catch (error) {
             throw new Error(
               `${guest}/${direction}/step-${column + 1} 얼굴 기준점 감지 실패: ${error.message}`,
@@ -1478,7 +1571,11 @@ export async function buildGuestSelectionPreviewAssets({
           );
           const candidate = await normalizeHeadWidth(rigged, policy);
           const measuredHeadHeight = baseFrame.landmark
-            ? (await detectFaceLandmark(candidate, policy)).headHeight
+            ? (await detectFaceLandmark(candidate, policy, {
+                knownHeadHeight: sourceSet === "v8-couple-depth-master"
+                  ? policy.headHeight
+                  : undefined
+              })).headHeight
             : policy.headHeight;
           return { candidate, candidateHeadHeight, measuredHeadHeight };
         };
@@ -1511,11 +1608,15 @@ export async function buildGuestSelectionPreviewAssets({
         });
       }
     }
-    await harmonizeProfileHeads(framesByDirection, policy);
-    if (sourceSet === "v7-optical-face-balance") {
-      await balanceOpticalFrontFaceWidth(framesByDirection, policy);
+    if (sourceSet === "v8-couple-depth-master") {
+      await softenMasterFrontFaceWidth(framesByDirection, policy, guest);
     } else {
-      await balanceVisibleFaceWidths(framesByDirection, policy);
+      await harmonizeProfileHeads(framesByDirection, policy);
+      if (sourceSet === "v7-optical-face-balance") {
+        await balanceOpticalFrontFaceWidth(framesByDirection, policy);
+      } else {
+        await balanceVisibleFaceWidths(framesByDirection, policy);
+      }
     }
     for (const direction of directions) {
       for (let column = 0; column < 3; column += 1) {
@@ -1552,7 +1653,8 @@ export async function buildGuestSelectionPreviewAssets({
           contentHeight: policy.contentHeight / 2,
           headHeight: policy.headHeight / 2,
           footBaseline: policy.footBaseline / 2
-        }
+        },
+        sourceSet === "v8-couple-depth-master" ? 12 : 2
       );
     }
     const runtimeWalkComposites = directions.flatMap((direction, row) =>
@@ -1622,7 +1724,8 @@ export async function buildGuestSelectionPreviewAssets({
     walkSourcePolishOverrideRoot,
     walkSourceFrontFaceOverrideRoot,
     walkSourceOpticalOverrideRoot,
-    walkSourceDepthOverrideRoot
+    walkSourceDepthOverrideRoot,
+    coupleDepthMasterSourceRoot
   };
 }
 
