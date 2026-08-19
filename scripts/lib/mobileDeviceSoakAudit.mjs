@@ -197,7 +197,21 @@ export function assessMobileSoakMetrics(metrics) {
     if (!metrics.zoneTransitions.cameraBoundsValid) issues.push("구역 전환 카메라 맵 경계 이탈");
     if (!metrics.zoneTransitions.layoutStable) issues.push("구역 전환 중 가로 화면 넘침");
     if (!metrics.zoneTransitions.lowPerformanceModeStable) issues.push("구역 전환 중 저사양 렌더링 모드 이탈");
-    if (metrics.zoneTransitions.maxTransitionDurationMs > 2_000) {
+    // Linux WebKit can stall once while its software compositor warms up. Keep a
+    // hard ceiling and reject repeated stalls so runner noise cannot hide an app slowdown.
+    const transitionDurations = metrics.zoneTransitions.transitions
+      ?.map(({ durationMs }) => durationMs)
+      .filter(Number.isFinite) ?? [];
+    const isSoftwareWebKitCompletionTiming = metrics.zoneTransitionTimingPolicy === "completion-latency"
+      && metrics.motionResponseTimingPolicy === "availability-only";
+    const slowTransitionCount = transitionDurations.filter((durationMs) => durationMs > 2_000).length;
+    const hasCompleteTransitionSamples = transitionDurations.length === metrics.zoneTransitions.transitionCount;
+    const hasPersistentCompletionDelay = metrics.zoneTransitions.maxTransitionDurationMs > 2_000
+      && (!isSoftwareWebKitCompletionTiming
+        || !hasCompleteTransitionSamples
+        || slowTransitionCount > 1
+        || metrics.zoneTransitions.maxTransitionDurationMs > 2_500);
+    if (hasPersistentCompletionDelay) {
       issues.push(`구역 전환 완료 지연 ${metrics.zoneTransitions.maxTransitionDurationMs}ms`);
     }
     if (metrics.zoneTransitionFrameTimings && metrics.zoneTransitionTimingPolicy !== "completion-latency") {

@@ -220,11 +220,21 @@ test("mobile soak summarizes repeated low-performance zone transitions", () => {
 });
 
 test("mobile soak uses completion latency for software-rasterized WebKit transitions", () => {
+  const transition = (durationMs, zoneId = "home") => ({ durationMs, zoneId });
+  const stableTransitions = [
+    transition(1_240, "home"), transition(980, "neighborhood"),
+    transition(920, "lobby"), transition(860, "ceremony-hall"),
+    transition(810, "banquet"), transition(760, "bridal-room"),
+    transition(710, "home"), transition(680, "neighborhood"),
+    transition(650, "lobby"), transition(620, "ceremony-hall"),
+    transition(590, "banquet"), transition(560, "bridal-room")
+  ];
   const metrics = {
     pageErrors: [], failedRequests: [], touchResponded: true, layoutStable: true,
     typographyFallbackReady: true, sheetContained: true, averageFps: 58, baselineFps: 62,
     frameTimings: { p95FrameMs: 26, p99FrameMs: 32 },
     baselineFrameTimings: { p95FrameMs: 17, p99FrameMs: 18 },
+    motionResponseTimingPolicy: "availability-only",
     zoneTransitionTimingPolicy: "completion-latency",
     zoneTransitionFrameTimings: { p95FrameMs: 328, p99FrameMs: 450 },
     zoneTransitions: {
@@ -236,15 +246,48 @@ test("mobile soak uses completion latency for software-rasterized WebKit transit
       maxSettledCameraJitterPx: 0,
       cameraBoundsValid: true,
       layoutStable: true,
-      lowPerformanceModeStable: true
+      lowPerformanceModeStable: true,
+      transitions: stableTransitions
     },
     heapGrowthRatio: null
   };
   assert.deepEqual(assessMobileSoakMetrics(metrics), []);
   assert.deepEqual(assessMobileSoakMetrics({
     ...metrics,
-    zoneTransitions: { ...metrics.zoneTransitions, maxTransitionDurationMs: 2_001 }
+    zoneTransitions: {
+      ...metrics.zoneTransitions,
+      maxTransitionDurationMs: 2_001,
+      transitions: undefined
+    }
   }), ["구역 전환 완료 지연 2001ms"]);
+  assert.deepEqual(assessMobileSoakMetrics({
+    ...metrics,
+    zoneTransitions: {
+      ...metrics.zoneTransitions,
+      maxTransitionDurationMs: 2_107,
+      transitions: [transition(2_107, "neighborhood"), ...stableTransitions.slice(1)]
+    }
+  }), []);
+  assert.deepEqual(assessMobileSoakMetrics({
+    ...metrics,
+    zoneTransitions: {
+      ...metrics.zoneTransitions,
+      maxTransitionDurationMs: 2_107,
+      transitions: [
+        transition(2_107, "neighborhood"),
+        transition(2_001, "lobby"),
+        ...stableTransitions.slice(2)
+      ]
+    }
+  }), ["구역 전환 완료 지연 2107ms"]);
+  assert.deepEqual(assessMobileSoakMetrics({
+    ...metrics,
+    zoneTransitions: {
+      ...metrics.zoneTransitions,
+      maxTransitionDurationMs: 2_501,
+      transitions: [transition(2_501, "neighborhood"), ...stableTransitions.slice(1)]
+    }
+  }), ["구역 전환 완료 지연 2501ms"]);
 });
 
 test("mobile soak calibrates an engine-limited runner without hiding an app slowdown", () => {
