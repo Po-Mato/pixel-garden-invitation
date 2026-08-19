@@ -1,24 +1,24 @@
 {
   "version": 2,
-  "approvedAt": "2026-08-18T14:49:19.992Z",
-  "reason": "하객 12종 정면·측면 얼굴 비율과 신랑·신부 수준의 2D 명암 정돈",
-  "sha256": "6c964e85c6b154dfe0f78198bfffb0fbe0d8a4fae6b9d20b868d88a008cf0a65",
+  "approvedAt": "2026-08-19T03:28:16.558Z",
+  "reason": "1번 하객 정면 얼굴 광학 비율 보정",
+  "sha256": "1aef0c1555dea25671e7c7a38527ee689fbdaaf07330c7dc321b95c7b673a75b",
   "provenance": {
     "schemaVersion": 1,
     "subjectKind": "capture-set",
     "sourceKind": "local",
     "runId": null,
     "runAttempt": null,
-    "commitSha": "f1dc921e2152749a7893841278c354bf2887b78b",
+    "commitSha": "a7597308042dfcd37aaeb1f1140ad24a50816791",
     "runUrl": null,
     "checksumAlgorithm": "sha256",
     "artifactChecksumScope": "sorted-capture-set-manifest",
-    "artifactSha256": "82a20ca9c309791ca89aa6781c8723e74c1340fb35552a4526ae178607fec93f",
+    "artifactSha256": "a37ecfdec6a7e3c509589b5c3fc42efe64b31304ebc885f835c45284392b2c68",
     "files": [
       {
         "logicalPath": "mobile-game-current",
-        "size": 4617245,
-        "sha256": "a760fbfd8c1b770384a68d8f753f70ddf5a79a27b65150c5982a45989b0c4a29"
+        "size": 4617287,
+        "sha256": "8dcb71e8a84ef30737a1844704d87569fd6d3a0b8b0f3ef770e81fc454bb71f9"
       }
     ]
   },
