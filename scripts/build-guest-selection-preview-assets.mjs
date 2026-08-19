@@ -35,6 +35,10 @@ const defaultWalkSourceDepthOverrideRoot = path.join(
   root,
   "character-assets/reference/guest-depth-walk-sources/v6"
 );
+const defaultWalkSourceOpticalOverrideRoot = path.join(
+  root,
+  "character-assets/reference/guest-depth-walk-sources/v7"
+);
 const defaultFrameReviewRoot = path.join(defaultWalkSourceRoot, "frames");
 const defaultOutputRoot = path.join(root, "character-assets/source/guests-preview");
 const defaultRuntimeOutputRoot = path.join(root, "character-assets/source/guests");
@@ -201,9 +205,19 @@ async function resolveWalkSource({
   walkSourceFaceOverrideRoot,
   walkSourcePolishOverrideRoot,
   walkSourceFrontFaceOverrideRoot,
+  walkSourceOpticalOverrideRoot,
   walkSourceDepthOverrideRoot
 }) {
   const filename = `${guest}-walk-sheet.png`;
+  if (walkSourceOpticalOverrideRoot) {
+    const opticalOverride = path.join(walkSourceOpticalOverrideRoot, filename);
+    try {
+      await access(opticalOverride);
+      return { source: opticalOverride, sourceSet: "v7-optical-face-balance" };
+    } catch {
+      // Only guests with an approved optical correction override the reviewed v6 set.
+    }
+  }
   if (walkSourceDepthOverrideRoot) {
     const depthOverride = path.join(walkSourceDepthOverrideRoot, filename);
     try {
@@ -855,6 +869,25 @@ async function balanceVisibleFaceWidths(framesByDirection, policy) {
   }
 }
 
+async function balanceOpticalFrontFaceWidth(framesByDirection, policy) {
+  const profileWidths = [];
+  for (const direction of ["left", "right"]) {
+    for (const frame of framesByDirection[direction]) {
+      profileWidths.push((await detectFaceLandmark(frame, policy)).faceWidth);
+    }
+  }
+  // A front face exposes both cheeks, so a slightly narrower pixel width produces
+  // the same perceived area as a profile without shrinking the three-head-tall rig.
+  const expectedFrontWidth = Math.round(median(profileWidths) * 0.96);
+  for (let column = 0; column < 3; column += 1) {
+    framesByDirection.down[column] = await normalizeVisibleFaceWidth(
+      framesByDirection.down[column],
+      policy,
+      expectedFrontWidth
+    );
+  }
+}
+
 function median(values) {
   const sorted = [...values].sort((first, second) => first - second);
   const middle = Math.floor(sorted.length / 2);
@@ -921,6 +954,9 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
   const minimumFrontToProfileFaceWidthRatio = 0.92;
   const maximumFrontToProfileFaceWidthRatio = 1.08;
   const maximumFrontToProfileFaceAreaRatio = 1.5;
+  const maximumFrontToProfileFaceAreaRatioByGuest = Object.freeze({
+    "guest-01": 1.25
+  });
   const maximumLeftRightFaceWidthDifferenceRatio = 0.1;
   // Hair volume and optical face balancing legitimately change horizontal silhouettes.
   // The fixed head height still enforces the exact three-head-tall body ratio.
@@ -1095,7 +1131,8 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
     || preset.opticalFace.frontToProfileFaceWidthRatio
       < minimumFrontToProfileFaceWidthRatio
     || preset.opticalFace.frontToProfileFaceAreaRatio
-      > maximumFrontToProfileFaceAreaRatio
+      > (maximumFrontToProfileFaceAreaRatioByGuest[preset.guest]
+        ?? maximumFrontToProfileFaceAreaRatio)
     || preset.opticalFace.leftRightFaceWidthDifferenceRatio
       > maximumLeftRightFaceWidthDifferenceRatio
   ));
@@ -1126,7 +1163,7 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
     (frame) => frame.sourceDetectionMethod === "cross-direction-consensus"
   ).length;
   const report = {
-    version: 6,
+    version: 7,
     policy: {
       source: policy.source,
       contentHeight: policy.contentHeight,
@@ -1140,6 +1177,7 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
       minimumFrontToProfileFaceWidthRatio,
       maximumFrontToProfileFaceWidthRatio,
       maximumFrontToProfileFaceAreaRatio,
+      maximumFrontToProfileFaceAreaRatioByGuest,
       maximumLeftRightFaceWidthDifferenceRatio,
       maximumFacialLandmarkVerticalSpreadRatio,
       maximumStrideSilhouetteSymmetryRatio,
@@ -1327,7 +1365,7 @@ export async function auditGuestSelectionPreviewAssets({
   const storedReport = JSON.parse(
     await readFile(path.join(outputRoot, "selection-preview-audit.json"), "utf8")
   );
-  if (storedReport.version !== 6) {
+  if (storedReport.version !== 7) {
     throw new Error("방향별 얼굴 폭·면적·실게임 보행 중심 기반 3등신 감사 보고서를 다시 생성해야 합니다.");
   }
   const sourceRig = Object.fromEntries(storedReport.presets.map((preset) => [
@@ -1366,6 +1404,7 @@ export async function buildGuestSelectionPreviewAssets({
   walkSourceFaceOverrideRoot = defaultWalkSourceFaceOverrideRoot,
   walkSourcePolishOverrideRoot = defaultWalkSourcePolishOverrideRoot,
   walkSourceFrontFaceOverrideRoot = defaultWalkSourceFrontFaceOverrideRoot,
+  walkSourceOpticalOverrideRoot = defaultWalkSourceOpticalOverrideRoot,
   walkSourceDepthOverrideRoot = defaultWalkSourceDepthOverrideRoot,
   frameReviewRoot = defaultFrameReviewRoot,
   reviewPath = defaultReviewPath
@@ -1388,6 +1427,7 @@ export async function buildGuestSelectionPreviewAssets({
       walkSourceFaceOverrideRoot,
       walkSourcePolishOverrideRoot,
       walkSourceFrontFaceOverrideRoot,
+      walkSourceOpticalOverrideRoot,
       walkSourceDepthOverrideRoot
     });
     const sourceGrid = await loadWalkSheetGrid(source);
@@ -1472,7 +1512,11 @@ export async function buildGuestSelectionPreviewAssets({
       }
     }
     await harmonizeProfileHeads(framesByDirection, policy);
-    await balanceVisibleFaceWidths(framesByDirection, policy);
+    if (sourceSet === "v7-optical-face-balance") {
+      await balanceOpticalFrontFaceWidth(framesByDirection, policy);
+    } else {
+      await balanceVisibleFaceWidths(framesByDirection, policy);
+    }
     for (const direction of directions) {
       for (let column = 0; column < 3; column += 1) {
         await writePng(
@@ -1577,6 +1621,7 @@ export async function buildGuestSelectionPreviewAssets({
     walkSourceFaceOverrideRoot,
     walkSourcePolishOverrideRoot,
     walkSourceFrontFaceOverrideRoot,
+    walkSourceOpticalOverrideRoot,
     walkSourceDepthOverrideRoot
   };
 }
