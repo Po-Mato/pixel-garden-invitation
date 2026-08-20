@@ -1,0 +1,250 @@
+{
+  "version": 10,
+  "policy": {
+    "genuineAlphaRequired": true,
+    "opaqueSourcePolicy": "a reviewed subject alpha mask is mandatory; color-key deletion is forbidden",
+    "minimumTransparentPercentage": 60,
+    "maximumBorderOpaquePercentage": 0,
+    "leftRightMirroredDifference": 0,
+    "whiteGarmentProtection": "subject masks preserve white garments; partial edge RGB is decontaminated from the old matte"
+  },
+  "summary": {
+    "presetCount": 12,
+    "appliedAlphaMaskSourceCount": 9,
+    "preservedAlphaSourceCount": 3,
+    "minimumTransparentPercentage": 69.84174526622101,
+    "maximumBorderOpaquePercentage": 0,
+    "maximumLeftRightMirroredDifference": 0,
+    "passed": true
+  },
+  "presets": [
+    {
+      "guest": "guest-01",
+      "source": "character-assets/reference/guest-unified-rig-sources/v9/guest-01-walk-sheet.png",
+      "output": "character-assets/reference/guest-unified-rig-sources/v10/guest-01-walk-sheet.png",
+      "hadRealAlpha": false,
+      "alphaMask": "character-assets/reference/guest-alpha-masks/v1/guest-01-alpha-mask.png",
+      "before": {
+        "transparentPercentage": 0,
+        "partialPercentage": 0,
+        "borderOpaquePercentage": 100
+      },
+      "after": {
+        "transparentPercentage": 77.45744431895648,
+        "partialPercentage": 1.982921766734837,
+        "borderOpaquePercentage": 0
+      },
+      "leftRightMirroredDifference": 0,
+      "directionCorrection": "left step 3 recovered from the source right row; right row mirrored from canonical left"
+    },
+    {
+      "guest": "guest-02",
+      "source": "character-assets/reference/guest-unified-rig-sources/v9/guest-02-walk-sheet.png",
+      "output": "character-assets/reference/guest-unified-rig-sources/v10/guest-02-walk-sheet.png",
+      "hadRealAlpha": true,
+      "alphaMask": null,
+      "before": {
+        "transparentPercentage": 69.24398166519133,
+        "partialPercentage": 2.412675640751707,
+        "borderOpaquePercentage": 0
+      },
+      "after": {
+        "transparentPercentage": 69.84174526622101,
+        "partialPercentage": 2.3780816621389254,
+        "borderOpaquePercentage": 0
+      },
+      "leftRightMirroredDifference": 0,
+      "directionCorrection": "right row mirrored from canonical left"
+    },
+    {
+      "guest": "guest-03",
+      "source": "character-assets/reference/guest-unified-rig-sources/v9/guest-03-walk-sheet.png",
+      "output": "character-assets/reference/guest-unified-rig-sources/v10/guest-03-walk-sheet.png",
+      "hadRealAlpha": false,
+      "alphaMask": "character-assets/reference/guest-alpha-masks/v1/guest-03-alpha-mask.png",
+      "before": {
+        "transparentPercentage": 0,
+        "partialPercentage": 0,
+        "borderOpaquePercentage": 100
+      },
+      "after": {
+        "transparentPercentage": 81.50951843146831,
+        "partialPercentage": 1.7103670014142833,
+        "borderOpaquePercentage": 0
+      },
+      "leftRightMirroredDifference": 0,
+      "directionCorrection": "right row mirrored from canonical left"
+    },
+    {
+      "guest": "guest-04",
+      "source": "character-assets/reference/guest-unified-rig-sources/v9/guest-04-walk-sheet.png",
+      "output": "character-assets/reference/guest-unified-rig-sources/v10/guest-04-walk-sheet.png",
+      "hadRealAlpha": true,
+      "alphaMask": null,
+      "before": {
+        "transparentPercentage": 78.72209588636896,
+        "partialPercentage": 2.1746512621714844,
+        "borderOpaquePercentage": 0
+      },
+      "after": {
+        "transparentPercentage": 78.9175137104077,
+        "partialPercentage": 2.150613534385397,
+        "borderOpaquePercentage": 0
+      },
+      "leftRightMirroredDifference": 0,
+      "directionCorrection": "right row mirrored from canonical left"
+    },
+    {
+      "guest": "guest-05",
+      "source": "character-assets/reference/guest-unified-rig-sources/v9/guest-05-walk-sheet.png",
+      "output": "character-assets/reference/guest-unified-rig-sources/v10/guest-05-walk-sheet.png",
+      "hadRealAlpha": true,
+      "alphaMask": null,
+      "before": {
+        "transparentPercentage": 75.69753924890368,
+        "partialPercentage": 2.395569427062666,
+        "borderOpaquePercentage": 0
+      },
+      "after": {
+        "transparentPercentage": 76.14052023239014,
+        "partialPercentage": 2.3725491692357785,
+        "borderOpaquePercentage": 0
+      },
+      "leftRightMirroredDifference": 0,
+      "directionCorrection": "right row mirrored from canonical left"
+    },
+    {
+      "guest": "guest-06",
+      "source": "character-assets/reference/guest-unified-rig-sources/v9/guest-06-walk-sheet.png",
+      "output": "character-assets/reference/guest-unified-rig-sources/v10/guest-06-walk-sheet.png",
+      "hadRealAlpha": false,
+      "alphaMask": "character-assets/reference/guest-alpha-masks/v1/guest-06-alpha-mask.png",
+      "before": {
+        "transparentPercentage": 0,
+        "partialPercentage": 0,
+        "borderOpaquePercentage": 100
+      },
+      "after": {
+        "transparentPercentage": 72.88855905904377,
+        "partialPercentage": 1.9099818890347262,
+        "borderOpaquePercentage": 0
+      },
+      "leftRightMirroredDifference": 0,
+      "directionCorrection": "right row mirrored from canonical left"
+    },
+    {
+      "guest": "guest-07",
+      "source": "character-assets/reference/guest-unified-rig-sources/v9/guest-07-walk-sheet.png",
+      "output": "character-assets/reference/guest-unified-rig-sources/v10/guest-07-walk-sheet.png",
+      "hadRealAlpha": false,
+      "alphaMask": "character-assets/reference/guest-alpha-masks/v1/guest-07-alpha-mask.png",
+      "before": {
+        "transparentPercentage": 0,
+        "partialPercentage": 0,
+        "borderOpaquePercentage": 100
+      },
+      "after": {
+        "transparentPercentage": 79.47813965792659,
+        "partialPercentage": 1.7642293173794046,
+        "borderOpaquePercentage": 0
+      },
+      "leftRightMirroredDifference": 0,
+      "directionCorrection": "right row mirrored from canonical left"
+    },
+    {
+      "guest": "guest-08",
+      "source": "character-assets/reference/guest-unified-rig-sources/v9/guest-08-walk-sheet.png",
+      "output": "character-assets/reference/guest-unified-rig-sources/v10/guest-08-walk-sheet.png",
+      "hadRealAlpha": false,
+      "alphaMask": "character-assets/reference/guest-alpha-masks/v1/guest-08-alpha-mask.png",
+      "before": {
+        "transparentPercentage": 0,
+        "partialPercentage": 0,
+        "borderOpaquePercentage": 100
+      },
+      "after": {
+        "transparentPercentage": 74.33527415728051,
+        "partialPercentage": 2.2655876397749357,
+        "borderOpaquePercentage": 0
+      },
+      "leftRightMirroredDifference": 0,
+      "directionCorrection": "right row mirrored from canonical left"
+    },
+    {
+      "guest": "guest-09",
+      "source": "character-assets/reference/guest-unified-rig-sources/v9/guest-09-walk-sheet.png",
+      "output": "character-assets/reference/guest-unified-rig-sources/v10/guest-09-walk-sheet.png",
+      "hadRealAlpha": false,
+      "alphaMask": "character-assets/reference/guest-alpha-masks/v1/guest-09-alpha-mask.png",
+      "before": {
+        "transparentPercentage": 0,
+        "partialPercentage": 0,
+        "borderOpaquePercentage": 100
+      },
+      "after": {
+        "transparentPercentage": 79.54828149323892,
+        "partialPercentage": 1.741081875807617,
+        "borderOpaquePercentage": 0
+      },
+      "leftRightMirroredDifference": 0,
+      "directionCorrection": "right row mirrored from canonical left"
+    },
+    {
+      "guest": "guest-10",
+      "source": "character-assets/reference/guest-unified-rig-sources/v9/guest-10-walk-sheet.png",
+      "output": "character-assets/reference/guest-unified-rig-sources/v10/guest-10-walk-sheet.png",
+      "hadRealAlpha": false,
+      "alphaMask": "character-assets/reference/guest-alpha-masks/v1/guest-10-alpha-mask.png",
+      "before": {
+        "transparentPercentage": 0,
+        "partialPercentage": 0,
+        "borderOpaquePercentage": 100
+      },
+      "after": {
+        "transparentPercentage": 75.46282164769084,
+        "partialPercentage": 1.8605074122686527,
+        "borderOpaquePercentage": 0
+      },
+      "leftRightMirroredDifference": 0,
+      "directionCorrection": "right row mirrored from canonical left"
+    },
+    {
+      "guest": "guest-11",
+      "source": "character-assets/reference/guest-unified-rig-sources/v9/guest-11-walk-sheet.png",
+      "output": "character-assets/reference/guest-unified-rig-sources/v10/guest-11-walk-sheet.png",
+      "hadRealAlpha": false,
+      "alphaMask": "character-assets/reference/guest-alpha-masks/v1/guest-11-alpha-mask.png",
+      "before": {
+        "transparentPercentage": 0,
+        "partialPercentage": 0,
+        "borderOpaquePercentage": 100
+      },
+      "after": {
+        "transparentPercentage": 80.66749844835832,
+        "partialPercentage": 1.6947234007915917,
+        "borderOpaquePercentage": 0
+      },
+      "leftRightMirroredDifference": 0,
+      "directionCorrection": "right row mirrored from canonical left"
+    },
+    {
+      "guest": "guest-12",
+      "source": "character-assets/reference/guest-unified-rig-sources/v9/guest-12-walk-sheet.png",
+      "output": "character-assets/reference/guest-unified-rig-sources/v10/guest-12-walk-sheet.png",
+      "hadRealAlpha": false,
+      "alphaMask": "character-assets/reference/guest-alpha-masks/v1/guest-12-alpha-mask.png",
+      "before": {
+        "transparentPercentage": 0,
+        "partialPercentage": 0,
+        "borderOpaquePercentage": 100
+      },
+      "after": {
+        "transparentPercentage": 79.46230528168657,
+        "partialPercentage": 1.7127199006949319,
+        "borderOpaquePercentage": 0
+      },
+      "leftRightMirroredDifference": 0,
+      "directionCorrection": "right row mirrored from canonical left"
+    }
+  ]
+}
