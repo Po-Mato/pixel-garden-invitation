@@ -1,24 +1,24 @@
 {
   "version": 2,
-  "approvedAt": "2026-08-20T03:53:07.371Z",
-  "reason": "하객 12종을 공통 3등신·2.5D 통일 광학 리그로 교체",
-  "sha256": "8c192358878eb07c2d1a37fb83ed7fbccba0ad9f2598748320e098c5fc2eb885",
+  "approvedAt": "2026-08-20T06:10:14.404Z",
+  "reason": "하객 12종의 실제 투명 알파, 좌우 방향, 얼굴 보존 3등신 리그를 승인",
+  "sha256": "bfb725c0864bf3818312c6d143899576cb83b8660b1933979df2cab25d114b63",
   "provenance": {
     "schemaVersion": 1,
     "subjectKind": "capture-set",
     "sourceKind": "local",
     "runId": null,
     "runAttempt": null,
-    "commitSha": "20e10289946d4698a913e8e33308ef26670f885b",
+    "commitSha": "7b77b9cd0e97609609bd15e068a9ca7465e27c85",
     "runUrl": null,
     "checksumAlgorithm": "sha256",
     "artifactChecksumScope": "sorted-capture-set-manifest",
-    "artifactSha256": "3f70a4fe3460f458e65b5fd533cc397f11a39801f8de40f8b83bd4a77b4aab21",
+    "artifactSha256": "e64b0c881cf01e4983582fc81b5543dbcfa95f30d01f14958e380767bffb821e",
     "files": [
       {
         "logicalPath": "mobile-game-current",
-        "size": 4627531,
-        "sha256": "5eabc2acfcd14207a5481dc6843ad8e689e9386ddde0f820f1432159444b6bbc"
+        "size": 4616968,
+        "sha256": "3e614d04f084e5f324430b130cdb6b8f77c8b66fac8c0731fa99171751f3c279"
       }
     ]
   },
