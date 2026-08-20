@@ -1,5 +1,5 @@
 {
-  "version": 16,
+  "version": 17,
   "thresholds": {
     "maxLuminanceDelta": 0.03,
     "minDynamicRange": 0.16,
@@ -21,84 +21,84 @@
       "sceneAverageLuminance": 0.57,
       "sceneP10Luminance": 0.214,
       "sceneP90Luminance": 0.814,
-      "characterEdgeContrast": 2.367,
+      "characterEdgeContrast": 2.285,
       "characterPresetCount": 12,
       "characterEdgeContrasts": {
-        "feminine-long-wave-dress": 2.9,
-        "feminine-formal-hanbok": 2.673,
-        "masculine-navy-suit": 3.112,
+        "feminine-long-wave-dress": 2.986,
+        "feminine-formal-hanbok": 2.58,
+        "masculine-navy-suit": 3.086,
         "masculine-charcoal-blazer": 3.103,
-        "feminine-sage-bolero-dress": 2.953,
-        "feminine-champagne-navy-skirt": 3.037,
-        "feminine-lavender-jacket-dress": 2.897,
-        "feminine-teal-modern-hanbok": 3.034,
-        "masculine-beige-summer-suit": 2.367,
-        "masculine-charcoal-burgundy-tie": 3.075,
-        "masculine-green-blazer-cream-pants": 2.967,
-        "masculine-blue-modern-hanbok": 2.999
+        "feminine-sage-bolero-dress": 2.977,
+        "feminine-champagne-navy-skirt": 2.442,
+        "feminine-lavender-jacket-dress": 3.032,
+        "feminine-teal-modern-hanbok": 2.285,
+        "masculine-beige-summer-suit": 2.744,
+        "masculine-charcoal-burgundy-tie": 3.059,
+        "masculine-green-blazer-cream-pants": 3.056,
+        "masculine-blue-modern-hanbok": 3.059
       },
       "foregroundAssetCount": 4,
       "movementFrameCount": 3,
       "characterMovementEdgeContrasts": {
         "feminine-long-wave-dress": {
-          "down-0": 3.034,
-          "down-1": 2.9,
-          "down-2": 3.021
+          "down-0": 2.798,
+          "down-1": 2.986,
+          "down-2": 2.986
         },
         "feminine-formal-hanbok": {
-          "down-0": 2.814,
-          "down-1": 2.673,
-          "down-2": 2.665
+          "down-0": 2.948,
+          "down-1": 2.58,
+          "down-2": 2.882
         },
         "masculine-navy-suit": {
-          "down-0": 3.1,
-          "down-1": 3.112,
-          "down-2": 3.114
+          "down-0": 3.056,
+          "down-1": 3.086,
+          "down-2": 3.056
         },
         "masculine-charcoal-blazer": {
-          "down-0": 3.078,
+          "down-0": 3.086,
           "down-1": 3.103,
           "down-2": 3.086
         },
         "feminine-sage-bolero-dress": {
-          "down-0": 2.27,
-          "down-1": 2.953,
-          "down-2": 2.181
+          "down-0": 2.563,
+          "down-1": 2.977,
+          "down-2": 2.935
         },
         "feminine-champagne-navy-skirt": {
-          "down-0": 3.084,
-          "down-1": 3.037,
-          "down-2": 3.086
+          "down-0": 3.056,
+          "down-1": 2.442,
+          "down-2": 2.901
         },
         "feminine-lavender-jacket-dress": {
-          "down-0": 3.056,
-          "down-1": 2.897,
-          "down-2": 3.045
+          "down-0": 2.946,
+          "down-1": 3.032,
+          "down-2": 2.983
         },
         "feminine-teal-modern-hanbok": {
-          "down-0": 2.539,
-          "down-1": 3.034,
-          "down-2": 2.543
+          "down-0": 2.313,
+          "down-1": 2.285,
+          "down-2": 2.345
         },
         "masculine-beige-summer-suit": {
-          "down-0": 2.354,
-          "down-1": 2.367,
-          "down-2": 2.325
+          "down-0": 2.967,
+          "down-1": 2.744,
+          "down-2": 2.648
         },
         "masculine-charcoal-burgundy-tie": {
-          "down-0": 3.045,
-          "down-1": 3.075,
-          "down-2": 3.045
+          "down-0": 3.032,
+          "down-1": 3.059,
+          "down-2": 2.999
         },
         "masculine-green-blazer-cream-pants": {
-          "down-0": 2.929,
-          "down-1": 2.967,
-          "down-2": 2.929
+          "down-0": 3.045,
+          "down-1": 3.056,
+          "down-2": 3.045
         },
         "masculine-blue-modern-hanbok": {
           "down-0": 2.999,
-          "down-1": 2.999,
-          "down-2": 2.937
+          "down-1": 3.059,
+          "down-2": 3.01
         }
       }
     },
@@ -112,81 +112,81 @@
       "characterEdgeContrast": 2.09,
       "characterPresetCount": 12,
       "characterEdgeContrasts": {
-        "feminine-long-wave-dress": 2.117,
-        "feminine-formal-hanbok": 2.1,
-        "masculine-navy-suit": 2.133,
+        "feminine-long-wave-dress": 2.1,
+        "feminine-formal-hanbok": 2.09,
+        "masculine-navy-suit": 2.125,
         "masculine-charcoal-blazer": 2.133,
-        "feminine-sage-bolero-dress": 2.125,
-        "feminine-champagne-navy-skirt": 2.092,
-        "feminine-lavender-jacket-dress": 2.09,
-        "feminine-teal-modern-hanbok": 2.098,
-        "masculine-beige-summer-suit": 2.09,
-        "masculine-charcoal-burgundy-tie": 2.1,
-        "masculine-green-blazer-cream-pants": 2.098,
-        "masculine-blue-modern-hanbok": 2.092
+        "feminine-sage-bolero-dress": 2.09,
+        "feminine-champagne-navy-skirt": 2.09,
+        "feminine-lavender-jacket-dress": 2.098,
+        "feminine-teal-modern-hanbok": 2.09,
+        "masculine-beige-summer-suit": 2.1,
+        "masculine-charcoal-burgundy-tie": 2.09,
+        "masculine-green-blazer-cream-pants": 2.133,
+        "masculine-blue-modern-hanbok": 2.1
       },
       "foregroundAssetCount": 1,
       "movementFrameCount": 3,
       "characterMovementEdgeContrasts": {
         "feminine-long-wave-dress": {
           "down-0": 2.1,
-          "down-1": 2.117,
+          "down-1": 2.1,
           "down-2": 2.1
         },
         "feminine-formal-hanbok": {
-          "down-0": 2.115,
-          "down-1": 2.1,
-          "down-2": 2.115
+          "down-0": 2.09,
+          "down-1": 2.09,
+          "down-2": 2.09
         },
         "masculine-navy-suit": {
-          "down-0": 2.133,
-          "down-1": 2.133,
-          "down-2": 2.133
+          "down-0": 2.125,
+          "down-1": 2.125,
+          "down-2": 2.125
         },
         "masculine-charcoal-blazer": {
-          "down-0": 2.115,
+          "down-0": 2.133,
           "down-1": 2.133,
-          "down-2": 2.123
+          "down-2": 2.142
         },
         "feminine-sage-bolero-dress": {
           "down-0": 2.1,
-          "down-1": 2.125,
-          "down-2": 2.09
+          "down-1": 2.09,
+          "down-2": 2.1
         },
         "feminine-champagne-navy-skirt": {
-          "down-0": 2.09,
-          "down-1": 2.092,
-          "down-2": 2.09
-        },
-        "feminine-lavender-jacket-dress": {
           "down-0": 2.1,
           "down-1": 2.09,
           "down-2": 2.1
         },
-        "feminine-teal-modern-hanbok": {
-          "down-0": 2.09,
+        "feminine-lavender-jacket-dress": {
+          "down-0": 2.092,
           "down-1": 2.098,
-          "down-2": 2.083
+          "down-2": 2.1
+        },
+        "feminine-teal-modern-hanbok": {
+          "down-0": 2.088,
+          "down-1": 2.09,
+          "down-2": 2.098
         },
         "masculine-beige-summer-suit": {
-          "down-0": 2.092,
-          "down-1": 2.09,
-          "down-2": 2.09
-        },
-        "masculine-charcoal-burgundy-tie": {
           "down-0": 2.1,
           "down-1": 2.1,
           "down-2": 2.1
         },
-        "masculine-green-blazer-cream-pants": {
-          "down-0": 2.1,
-          "down-1": 2.098,
+        "masculine-charcoal-burgundy-tie": {
+          "down-0": 2.09,
+          "down-1": 2.09,
           "down-2": 2.09
         },
+        "masculine-green-blazer-cream-pants": {
+          "down-0": 2.125,
+          "down-1": 2.133,
+          "down-2": 2.115
+        },
         "masculine-blue-modern-hanbok": {
-          "down-0": 2.09,
-          "down-1": 2.092,
-          "down-2": 2.09
+          "down-0": 2.1,
+          "down-1": 2.1,
+          "down-2": 2.1
         }
       }
     },
@@ -197,84 +197,84 @@
       "sceneAverageLuminance": 0.515,
       "sceneP10Luminance": 0.184,
       "sceneP90Luminance": 0.778,
-      "characterEdgeContrast": 2.25,
+      "characterEdgeContrast": 2.204,
       "characterPresetCount": 12,
       "characterEdgeContrasts": {
-        "feminine-long-wave-dress": 2.882,
-        "feminine-formal-hanbok": 2.584,
-        "masculine-navy-suit": 3.294,
-        "masculine-charcoal-blazer": 3.247,
-        "feminine-sage-bolero-dress": 2.845,
-        "feminine-champagne-navy-skirt": 3.144,
-        "feminine-lavender-jacket-dress": 2.753,
-        "feminine-teal-modern-hanbok": 3.191,
-        "masculine-beige-summer-suit": 2.25,
-        "masculine-charcoal-burgundy-tie": 3.245,
-        "masculine-green-blazer-cream-pants": 3.091,
-        "masculine-blue-modern-hanbok": 3.156
+        "feminine-long-wave-dress": 2.938,
+        "feminine-formal-hanbok": 2.588,
+        "masculine-navy-suit": 3.247,
+        "masculine-charcoal-blazer": 3.281,
+        "feminine-sage-bolero-dress": 3.099,
+        "feminine-champagne-navy-skirt": 2.633,
+        "feminine-lavender-jacket-dress": 3.156,
+        "feminine-teal-modern-hanbok": 2.204,
+        "masculine-beige-summer-suit": 2.608,
+        "masculine-charcoal-burgundy-tie": 3.199,
+        "masculine-green-blazer-cream-pants": 3.146,
+        "masculine-blue-modern-hanbok": 3.237
       },
       "foregroundAssetCount": 6,
       "movementFrameCount": 3,
       "characterMovementEdgeContrasts": {
         "feminine-long-wave-dress": {
-          "down-0": 3.199,
-          "down-1": 2.882,
-          "down-2": 3.144
+          "down-0": 2.645,
+          "down-1": 2.938,
+          "down-2": 2.907
         },
         "feminine-formal-hanbok": {
-          "down-0": 2.661,
-          "down-1": 2.584,
-          "down-2": 2.516
+          "down-0": 3.136,
+          "down-1": 2.588,
+          "down-2": 2.917
         },
         "masculine-navy-suit": {
-          "down-0": 3.247,
-          "down-1": 3.294,
-          "down-2": 3.294
-        },
-        "masculine-charcoal-blazer": {
-          "down-0": 3.245,
+          "down-0": 3.237,
           "down-1": 3.247,
           "down-2": 3.245
         },
+        "masculine-charcoal-blazer": {
+          "down-0": 3.247,
+          "down-1": 3.281,
+          "down-2": 3.247
+        },
         "feminine-sage-bolero-dress": {
-          "down-0": 2.202,
-          "down-1": 2.845,
-          "down-2": 2.101
+          "down-0": 2.403,
+          "down-1": 3.099,
+          "down-2": 2.888
         },
         "feminine-champagne-navy-skirt": {
-          "down-0": 3.202,
-          "down-1": 3.144,
-          "down-2": 3.199
+          "down-0": 3.156,
+          "down-1": 2.633,
+          "down-2": 3.033
         },
         "feminine-lavender-jacket-dress": {
-          "down-0": 3.156,
-          "down-1": 2.753,
-          "down-2": 3.156
+          "down-0": 3.006,
+          "down-1": 3.156,
+          "down-2": 3.108
         },
         "feminine-teal-modern-hanbok": {
-          "down-0": 2.401,
-          "down-1": 3.191,
-          "down-2": 2.447
+          "down-0": 2.391,
+          "down-1": 2.204,
+          "down-2": 2.283
         },
         "masculine-beige-summer-suit": {
-          "down-0": 2.19,
-          "down-1": 2.25,
-          "down-2": 2.27
+          "down-0": 2.906,
+          "down-1": 2.608,
+          "down-2": 2.601
         },
         "masculine-charcoal-burgundy-tie": {
-          "down-0": 3.202,
-          "down-1": 3.245,
-          "down-2": 3.245
+          "down-0": 3.181,
+          "down-1": 3.199,
+          "down-2": 3.146
         },
         "masculine-green-blazer-cream-pants": {
-          "down-0": 2.888,
-          "down-1": 3.091,
-          "down-2": 3.156
+          "down-0": 3.237,
+          "down-1": 3.146,
+          "down-2": 3.199
         },
         "masculine-blue-modern-hanbok": {
-          "down-0": 3.099,
-          "down-1": 3.156,
-          "down-2": 3.109
+          "down-0": 3.202,
+          "down-1": 3.237,
+          "down-2": 3.202
         }
       }
     },
@@ -285,84 +285,84 @@
       "sceneAverageLuminance": 0.263,
       "sceneP10Luminance": 0.068,
       "sceneP90Luminance": 0.407,
-      "characterEdgeContrast": 2.218,
+      "characterEdgeContrast": 1.807,
       "characterPresetCount": 12,
       "characterEdgeContrasts": {
-        "feminine-long-wave-dress": 2.399,
-        "feminine-formal-hanbok": 2.425,
-        "masculine-navy-suit": 2.582,
-        "masculine-charcoal-blazer": 2.587,
-        "feminine-sage-bolero-dress": 2.353,
-        "feminine-champagne-navy-skirt": 2.364,
-        "feminine-lavender-jacket-dress": 2.285,
-        "feminine-teal-modern-hanbok": 2.218,
-        "masculine-beige-summer-suit": 2.364,
-        "masculine-charcoal-burgundy-tie": 2.425,
-        "masculine-green-blazer-cream-pants": 2.436,
-        "masculine-blue-modern-hanbok": 2.423
+        "feminine-long-wave-dress": 2.367,
+        "feminine-formal-hanbok": 2.261,
+        "masculine-navy-suit": 2.633,
+        "masculine-charcoal-blazer": 2.674,
+        "feminine-sage-bolero-dress": 2.459,
+        "feminine-champagne-navy-skirt": 2.267,
+        "feminine-lavender-jacket-dress": 2.482,
+        "feminine-teal-modern-hanbok": 1.807,
+        "masculine-beige-summer-suit": 2.39,
+        "masculine-charcoal-burgundy-tie": 2.275,
+        "masculine-green-blazer-cream-pants": 2.495,
+        "masculine-blue-modern-hanbok": 2.51
       },
       "foregroundAssetCount": 1,
       "movementFrameCount": 3,
       "characterMovementEdgeContrasts": {
         "feminine-long-wave-dress": {
-          "down-0": 2.483,
-          "down-1": 2.399,
-          "down-2": 2.468
+          "down-0": 2.376,
+          "down-1": 2.367,
+          "down-2": 2.423
         },
         "feminine-formal-hanbok": {
-          "down-0": 2.435,
-          "down-1": 2.425,
-          "down-2": 2.4
+          "down-0": 2.446,
+          "down-1": 2.261,
+          "down-2": 2.3
         },
         "masculine-navy-suit": {
-          "down-0": 2.587,
-          "down-1": 2.582,
-          "down-2": 2.544
+          "down-0": 2.608,
+          "down-1": 2.633,
+          "down-2": 2.614
         },
         "masculine-charcoal-blazer": {
-          "down-0": 2.52,
-          "down-1": 2.587,
-          "down-2": 2.561
+          "down-0": 2.608,
+          "down-1": 2.674,
+          "down-2": 2.624
         },
         "feminine-sage-bolero-dress": {
-          "down-0": 2.433,
-          "down-1": 2.353,
-          "down-2": 2.399
+          "down-0": 2.4,
+          "down-1": 2.459,
+          "down-2": 2.435
         },
         "feminine-champagne-navy-skirt": {
-          "down-0": 2.436,
-          "down-1": 2.364,
-          "down-2": 2.459
+          "down-0": 2.399,
+          "down-1": 2.267,
+          "down-2": 2.436
         },
         "feminine-lavender-jacket-dress": {
-          "down-0": 2.522,
-          "down-1": 2.285,
-          "down-2": 2.483
+          "down-0": 2.474,
+          "down-1": 2.482,
+          "down-2": 2.436
         },
         "feminine-teal-modern-hanbok": {
-          "down-0": 2.185,
-          "down-1": 2.218,
-          "down-2": 2.185
+          "down-0": 1.759,
+          "down-1": 1.807,
+          "down-2": 1.831
         },
         "masculine-beige-summer-suit": {
-          "down-0": 2.217,
-          "down-1": 2.364,
-          "down-2": 2.333
+          "down-0": 2.406,
+          "down-1": 2.39,
+          "down-2": 2.459
         },
         "masculine-charcoal-burgundy-tie": {
-          "down-0": 2.435,
-          "down-1": 2.425,
-          "down-2": 2.482
+          "down-0": 2.356,
+          "down-1": 2.275,
+          "down-2": 2.184
         },
         "masculine-green-blazer-cream-pants": {
-          "down-0": 2.477,
-          "down-1": 2.436,
-          "down-2": 2.353
+          "down-0": 2.489,
+          "down-1": 2.495,
+          "down-2": 2.534
         },
         "masculine-blue-modern-hanbok": {
-          "down-0": 2.509,
-          "down-1": 2.423,
-          "down-2": 2.437
+          "down-0": 2.354,
+          "down-1": 2.51,
+          "down-2": 2.399
         }
       }
     },
@@ -373,84 +373,84 @@
       "sceneAverageLuminance": 0.498,
       "sceneP10Luminance": 0.156,
       "sceneP90Luminance": 0.811,
-      "characterEdgeContrast": 2.525,
+      "characterEdgeContrast": 2.156,
       "characterPresetCount": 12,
       "characterEdgeContrasts": {
-        "feminine-long-wave-dress": 2.697,
-        "feminine-formal-hanbok": 2.607,
-        "masculine-navy-suit": 2.78,
-        "masculine-charcoal-blazer": 2.77,
-        "feminine-sage-bolero-dress": 2.694,
-        "feminine-champagne-navy-skirt": 2.706,
-        "feminine-lavender-jacket-dress": 2.685,
-        "feminine-teal-modern-hanbok": 2.645,
-        "masculine-beige-summer-suit": 2.525,
-        "masculine-charcoal-burgundy-tie": 2.758,
-        "masculine-green-blazer-cream-pants": 2.715,
-        "masculine-blue-modern-hanbok": 2.682
+        "feminine-long-wave-dress": 2.687,
+        "feminine-formal-hanbok": 2.588,
+        "masculine-navy-suit": 2.768,
+        "masculine-charcoal-blazer": 2.796,
+        "feminine-sage-bolero-dress": 2.715,
+        "feminine-champagne-navy-skirt": 2.465,
+        "feminine-lavender-jacket-dress": 2.715,
+        "feminine-teal-modern-hanbok": 2.156,
+        "masculine-beige-summer-suit": 2.713,
+        "masculine-charcoal-burgundy-tie": 2.727,
+        "masculine-green-blazer-cream-pants": 2.756,
+        "masculine-blue-modern-hanbok": 2.727
       },
       "foregroundAssetCount": 1,
       "movementFrameCount": 3,
       "characterMovementEdgeContrasts": {
         "feminine-long-wave-dress": {
-          "down-0": 2.715,
-          "down-1": 2.697,
-          "down-2": 2.714
+          "down-0": 2.655,
+          "down-1": 2.687,
+          "down-2": 2.624
         },
         "feminine-formal-hanbok": {
-          "down-0": 2.648,
-          "down-1": 2.607,
-          "down-2": 2.648
+          "down-0": 2.725,
+          "down-1": 2.588,
+          "down-2": 2.657
         },
         "masculine-navy-suit": {
-          "down-0": 2.772,
-          "down-1": 2.78,
-          "down-2": 2.751
+          "down-0": 2.769,
+          "down-1": 2.768,
+          "down-2": 2.774
         },
         "masculine-charcoal-blazer": {
-          "down-0": 2.746,
-          "down-1": 2.77,
-          "down-2": 2.746
+          "down-0": 2.777,
+          "down-1": 2.796,
+          "down-2": 2.796
         },
         "feminine-sage-bolero-dress": {
-          "down-0": 2.562,
-          "down-1": 2.694,
-          "down-2": 2.444
-        },
-        "feminine-champagne-navy-skirt": {
-          "down-0": 2.746,
-          "down-1": 2.706,
-          "down-2": 2.727
-        },
-        "feminine-lavender-jacket-dress": {
-          "down-0": 2.727,
-          "down-1": 2.685,
-          "down-2": 2.727
-        },
-        "feminine-teal-modern-hanbok": {
-          "down-0": 2.438,
-          "down-1": 2.645,
-          "down-2": 2.3
-        },
-        "masculine-beige-summer-suit": {
-          "down-0": 2.498,
-          "down-1": 2.525,
-          "down-2": 2.51
-        },
-        "masculine-charcoal-burgundy-tie": {
-          "down-0": 2.749,
-          "down-1": 2.758,
-          "down-2": 2.756
-        },
-        "masculine-green-blazer-cream-pants": {
-          "down-0": 2.666,
+          "down-0": 2.613,
           "down-1": 2.715,
           "down-2": 2.675
         },
+        "feminine-champagne-navy-skirt": {
+          "down-0": 2.715,
+          "down-1": 2.465,
+          "down-2": 2.706
+        },
+        "feminine-lavender-jacket-dress": {
+          "down-0": 2.675,
+          "down-1": 2.715,
+          "down-2": 2.715
+        },
+        "feminine-teal-modern-hanbok": {
+          "down-0": 2.442,
+          "down-1": 2.156,
+          "down-2": 2.34
+        },
+        "masculine-beige-summer-suit": {
+          "down-0": 2.708,
+          "down-1": 2.713,
+          "down-2": 2.675
+        },
+        "masculine-charcoal-burgundy-tie": {
+          "down-0": 2.72,
+          "down-1": 2.727,
+          "down-2": 2.715
+        },
+        "masculine-green-blazer-cream-pants": {
+          "down-0": 2.746,
+          "down-1": 2.756,
+          "down-2": 2.749
+        },
         "masculine-blue-modern-hanbok": {
-          "down-0": 2.678,
-          "down-1": 2.682,
-          "down-2": 2.657
+          "down-0": 2.706,
+          "down-1": 2.727,
+          "down-2": 2.715
         }
       }
     },
@@ -461,84 +461,84 @@
       "sceneAverageLuminance": 0.125,
       "sceneP10Luminance": 0.037,
       "sceneP90Luminance": 0.225,
-      "characterEdgeContrast": 1.539,
+      "characterEdgeContrast": 1.206,
       "characterPresetCount": 12,
       "characterEdgeContrasts": {
-        "feminine-long-wave-dress": 1.657,
-        "feminine-formal-hanbok": 1.65,
-        "masculine-navy-suit": 2.139,
-        "masculine-charcoal-blazer": 2.56,
-        "feminine-sage-bolero-dress": 1.539,
-        "feminine-champagne-navy-skirt": 1.684,
-        "feminine-lavender-jacket-dress": 1.59,
-        "feminine-teal-modern-hanbok": 1.765,
-        "masculine-beige-summer-suit": 1.592,
-        "masculine-charcoal-burgundy-tie": 1.957,
-        "masculine-green-blazer-cream-pants": 1.791,
+        "feminine-long-wave-dress": 1.738,
+        "feminine-formal-hanbok": 1.842,
+        "masculine-navy-suit": 1.901,
+        "masculine-charcoal-blazer": 1.957,
+        "feminine-sage-bolero-dress": 1.726,
+        "feminine-champagne-navy-skirt": 1.738,
+        "feminine-lavender-jacket-dress": 1.541,
+        "feminine-teal-modern-hanbok": 1.871,
+        "masculine-beige-summer-suit": 1.417,
+        "masculine-charcoal-burgundy-tie": 1.901,
+        "masculine-green-blazer-cream-pants": 1.206,
         "masculine-blue-modern-hanbok": 1.801
       },
       "foregroundAssetCount": 3,
       "movementFrameCount": 3,
       "characterMovementEdgeContrasts": {
         "feminine-long-wave-dress": {
-          "down-0": 1.718,
-          "down-1": 1.657,
-          "down-2": 1.617
+          "down-0": 1.592,
+          "down-1": 1.738,
+          "down-2": 1.726
         },
         "feminine-formal-hanbok": {
-          "down-0": 1.691,
-          "down-1": 1.65,
-          "down-2": 1.787
+          "down-0": 1.842,
+          "down-1": 1.842,
+          "down-2": 1.901
         },
         "masculine-navy-suit": {
-          "down-0": 1.842,
-          "down-1": 2.139,
-          "down-2": 2.139
+          "down-0": 1.773,
+          "down-1": 1.901,
+          "down-2": 1.801
         },
         "masculine-charcoal-blazer": {
-          "down-0": 2.172,
-          "down-1": 2.56,
-          "down-2": 2.206
+          "down-0": 1.901,
+          "down-1": 1.957,
+          "down-2": 1.957
         },
         "feminine-sage-bolero-dress": {
-          "down-0": 1.601,
-          "down-1": 1.539,
-          "down-2": 1.727
+          "down-0": 1.885,
+          "down-1": 1.726,
+          "down-2": 1.797
         },
         "feminine-champagne-navy-skirt": {
-          "down-0": 1.801,
-          "down-1": 1.684,
+          "down-0": 1.709,
+          "down-1": 1.738,
           "down-2": 1.801
         },
         "feminine-lavender-jacket-dress": {
-          "down-0": 1.658,
-          "down-1": 1.59,
-          "down-2": 1.574
+          "down-0": 1.501,
+          "down-1": 1.541,
+          "down-2": 1.657
         },
         "feminine-teal-modern-hanbok": {
-          "down-0": 1.684,
-          "down-1": 1.765,
-          "down-2": 1.814
+          "down-0": 1.901,
+          "down-1": 1.871,
+          "down-2": 1.765
         },
         "masculine-beige-summer-suit": {
-          "down-0": 1.622,
-          "down-1": 1.592,
-          "down-2": 1.635
+          "down-0": 1.665,
+          "down-1": 1.417,
+          "down-2": 1.492
         },
         "masculine-charcoal-burgundy-tie": {
-          "down-0": 2.45,
-          "down-1": 1.957,
-          "down-2": 1.901
+          "down-0": 2.026,
+          "down-1": 1.901,
+          "down-2": 1.797
         },
         "masculine-green-blazer-cream-pants": {
-          "down-0": 1.683,
-          "down-1": 1.791,
-          "down-2": 1.901
+          "down-0": 1.691,
+          "down-1": 1.206,
+          "down-2": 1.718
         },
         "masculine-blue-modern-hanbok": {
-          "down-0": 1.716,
+          "down-0": 1.842,
           "down-1": 1.801,
-          "down-2": 1.838
+          "down-2": 1.801
         }
       }
     },
@@ -549,84 +549,84 @@
       "sceneAverageLuminance": 0.51,
       "sceneP10Luminance": 0.186,
       "sceneP90Luminance": 0.753,
-      "characterEdgeContrast": 2.304,
+      "characterEdgeContrast": 2.259,
       "characterPresetCount": 12,
       "characterEdgeContrasts": {
-        "feminine-long-wave-dress": 2.628,
-        "feminine-formal-hanbok": 2.304,
+        "feminine-long-wave-dress": 2.764,
+        "feminine-formal-hanbok": 2.505,
         "masculine-navy-suit": 3.244,
-        "masculine-charcoal-blazer": 3.156,
-        "feminine-sage-bolero-dress": 2.764,
-        "feminine-champagne-navy-skirt": 2.879,
-        "feminine-lavender-jacket-dress": 2.693,
-        "feminine-teal-modern-hanbok": 2.825,
-        "masculine-beige-summer-suit": 2.395,
-        "masculine-charcoal-burgundy-tie": 3.166,
-        "masculine-green-blazer-cream-pants": 2.861,
-        "masculine-blue-modern-hanbok": 2.998
+        "masculine-charcoal-blazer": 3.268,
+        "feminine-sage-bolero-dress": 2.712,
+        "feminine-champagne-navy-skirt": 2.543,
+        "feminine-lavender-jacket-dress": 2.909,
+        "feminine-teal-modern-hanbok": 2.259,
+        "masculine-beige-summer-suit": 2.606,
+        "masculine-charcoal-burgundy-tie": 3.101,
+        "masculine-green-blazer-cream-pants": 3.147,
+        "masculine-blue-modern-hanbok": 3.13
       },
       "foregroundAssetCount": 0,
       "movementFrameCount": 3,
       "characterMovementEdgeContrasts": {
         "feminine-long-wave-dress": {
-          "down-0": 2.825,
-          "down-1": 2.628,
-          "down-2": 2.825
+          "down-0": 2.662,
+          "down-1": 2.764,
+          "down-2": 2.623
         },
         "feminine-formal-hanbok": {
-          "down-0": 2.707,
-          "down-1": 2.304,
-          "down-2": 2.681
+          "down-0": 2.749,
+          "down-1": 2.505,
+          "down-2": 2.674
         },
         "masculine-navy-suit": {
-          "down-0": 3.195,
+          "down-0": 3.147,
           "down-1": 3.244,
-          "down-2": 3.218
+          "down-2": 3.228
         },
         "masculine-charcoal-blazer": {
-          "down-0": 3.086,
-          "down-1": 3.156,
-          "down-2": 3.137
+          "down-0": 3.257,
+          "down-1": 3.268,
+          "down-2": 3.221
         },
         "feminine-sage-bolero-dress": {
-          "down-0": 2.321,
-          "down-1": 2.764,
-          "down-2": 2.213
+          "down-0": 2.602,
+          "down-1": 2.712,
+          "down-2": 2.82
         },
         "feminine-champagne-navy-skirt": {
-          "down-0": 3.086,
-          "down-1": 2.879,
-          "down-2": 3.092
-        },
-        "feminine-lavender-jacket-dress": {
-          "down-0": 2.995,
-          "down-1": 2.693,
-          "down-2": 3.086
-        },
-        "feminine-teal-modern-hanbok": {
-          "down-0": 2.412,
-          "down-1": 2.825,
-          "down-2": 2.35
-        },
-        "masculine-beige-summer-suit": {
-          "down-0": 2.131,
-          "down-1": 2.395,
-          "down-2": 2.228
-        },
-        "masculine-charcoal-burgundy-tie": {
-          "down-0": 3.137,
-          "down-1": 3.166,
-          "down-2": 3.13
-        },
-        "masculine-green-blazer-cream-pants": {
-          "down-0": 2.861,
-          "down-1": 2.861,
+          "down-0": 2.879,
+          "down-1": 2.543,
           "down-2": 2.909
         },
+        "feminine-lavender-jacket-dress": {
+          "down-0": 2.794,
+          "down-1": 2.909,
+          "down-2": 2.871
+        },
+        "feminine-teal-modern-hanbok": {
+          "down-0": 2.267,
+          "down-1": 2.259,
+          "down-2": 2.347
+        },
+        "masculine-beige-summer-suit": {
+          "down-0": 2.871,
+          "down-1": 2.606,
+          "down-2": 2.529
+        },
+        "masculine-charcoal-burgundy-tie": {
+          "down-0": 3.045,
+          "down-1": 3.101,
+          "down-2": 2.97
+        },
+        "masculine-green-blazer-cream-pants": {
+          "down-0": 3.13,
+          "down-1": 3.147,
+          "down-2": 3.07
+        },
         "masculine-blue-modern-hanbok": {
-          "down-0": 2.775,
-          "down-1": 2.998,
-          "down-2": 2.838
+          "down-0": 3.083,
+          "down-1": 3.13,
+          "down-2": 3.059
         }
       }
     },
@@ -637,84 +637,84 @@
       "sceneAverageLuminance": 0.42,
       "sceneP10Luminance": 0.058,
       "sceneP90Luminance": 0.648,
-      "characterEdgeContrast": 2.26,
+      "characterEdgeContrast": 1.971,
       "characterPresetCount": 12,
       "characterEdgeContrasts": {
-        "feminine-long-wave-dress": 2.39,
-        "feminine-formal-hanbok": 2.356,
-        "masculine-navy-suit": 2.466,
-        "masculine-charcoal-blazer": 2.421,
-        "feminine-sage-bolero-dress": 2.359,
-        "feminine-champagne-navy-skirt": 2.356,
-        "feminine-lavender-jacket-dress": 2.26,
-        "feminine-teal-modern-hanbok": 2.288,
-        "masculine-beige-summer-suit": 2.313,
-        "masculine-charcoal-burgundy-tie": 2.385,
-        "masculine-green-blazer-cream-pants": 2.382,
-        "masculine-blue-modern-hanbok": 2.321
+        "feminine-long-wave-dress": 2.339,
+        "feminine-formal-hanbok": 2.221,
+        "masculine-navy-suit": 2.448,
+        "masculine-charcoal-blazer": 2.572,
+        "feminine-sage-bolero-dress": 2.339,
+        "feminine-champagne-navy-skirt": 2.232,
+        "feminine-lavender-jacket-dress": 2.356,
+        "feminine-teal-modern-hanbok": 1.971,
+        "masculine-beige-summer-suit": 2.382,
+        "masculine-charcoal-burgundy-tie": 2.339,
+        "masculine-green-blazer-cream-pants": 2.421,
+        "masculine-blue-modern-hanbok": 2.424
       },
       "foregroundAssetCount": 0,
       "movementFrameCount": 3,
       "characterMovementEdgeContrasts": {
         "feminine-long-wave-dress": {
-          "down-0": 2.359,
-          "down-1": 2.39,
-          "down-2": 2.421
+          "down-0": 2.323,
+          "down-1": 2.339,
+          "down-2": 2.349
         },
         "feminine-formal-hanbok": {
-          "down-0": 2.382,
-          "down-1": 2.356,
-          "down-2": 2.364
+          "down-0": 2.339,
+          "down-1": 2.221,
+          "down-2": 2.316
         },
         "masculine-navy-suit": {
-          "down-0": 2.496,
-          "down-1": 2.466,
+          "down-0": 2.463,
+          "down-1": 2.448,
           "down-2": 2.458
         },
         "masculine-charcoal-blazer": {
-          "down-0": 2.395,
-          "down-1": 2.421,
-          "down-2": 2.429
+          "down-0": 2.494,
+          "down-1": 2.572,
+          "down-2": 2.481
         },
         "feminine-sage-bolero-dress": {
-          "down-0": 2.321,
-          "down-1": 2.359,
+          "down-0": 2.356,
+          "down-1": 2.339,
           "down-2": 2.356
         },
         "feminine-champagne-navy-skirt": {
-          "down-0": 2.339,
-          "down-1": 2.356,
-          "down-2": 2.359
+          "down-0": 2.352,
+          "down-1": 2.232,
+          "down-2": 2.356
         },
         "feminine-lavender-jacket-dress": {
-          "down-0": 2.352,
-          "down-1": 2.26,
-          "down-2": 2.352
+          "down-0": 2.356,
+          "down-1": 2.356,
+          "down-2": 2.356
         },
         "feminine-teal-modern-hanbok": {
-          "down-0": 2.196,
-          "down-1": 2.288,
-          "down-2": 2.26
+          "down-0": 1.952,
+          "down-1": 1.971,
+          "down-2": 2.086
         },
         "masculine-beige-summer-suit": {
-          "down-0": 2.281,
-          "down-1": 2.313,
-          "down-2": 2.313
+          "down-0": 2.388,
+          "down-1": 2.382,
+          "down-2": 2.382
         },
         "masculine-charcoal-burgundy-tie": {
-          "down-0": 2.421,
-          "down-1": 2.385,
-          "down-2": 2.421
+          "down-0": 2.343,
+          "down-1": 2.339,
+          "down-2": 2.321
         },
         "masculine-green-blazer-cream-pants": {
-          "down-0": 2.382,
-          "down-1": 2.382,
-          "down-2": 2.385
+          "down-0": 2.421,
+          "down-1": 2.421,
+          "down-2": 2.382
         },
         "masculine-blue-modern-hanbok": {
-          "down-0": 2.321,
-          "down-1": 2.321,
-          "down-2": 2.316
+          "down-0": 2.349,
+          "down-1": 2.424,
+          "down-2": 2.352
         }
       }
     },
@@ -725,84 +725,84 @@
       "sceneAverageLuminance": 0.167,
       "sceneP10Luminance": 0.028,
       "sceneP90Luminance": 0.34,
-      "characterEdgeContrast": 1.712,
+      "characterEdgeContrast": 1.718,
       "characterPresetCount": 12,
       "characterEdgeContrasts": {
-        "feminine-long-wave-dress": 1.911,
-        "feminine-formal-hanbok": 1.85,
-        "masculine-navy-suit": 1.893,
-        "masculine-charcoal-blazer": 1.85,
-        "feminine-sage-bolero-dress": 1.822,
-        "feminine-champagne-navy-skirt": 1.816,
-        "feminine-lavender-jacket-dress": 1.764,
-        "feminine-teal-modern-hanbok": 1.712,
-        "masculine-beige-summer-suit": 1.826,
-        "masculine-charcoal-burgundy-tie": 1.789,
-        "masculine-green-blazer-cream-pants": 1.778,
-        "masculine-blue-modern-hanbok": 1.818
+        "feminine-long-wave-dress": 1.844,
+        "feminine-formal-hanbok": 1.764,
+        "masculine-navy-suit": 1.826,
+        "masculine-charcoal-blazer": 1.907,
+        "feminine-sage-bolero-dress": 1.878,
+        "feminine-champagne-navy-skirt": 1.734,
+        "feminine-lavender-jacket-dress": 1.81,
+        "feminine-teal-modern-hanbok": 1.738,
+        "masculine-beige-summer-suit": 1.844,
+        "masculine-charcoal-burgundy-tie": 1.718,
+        "masculine-green-blazer-cream-pants": 1.848,
+        "masculine-blue-modern-hanbok": 1.801
       },
       "foregroundAssetCount": 1,
       "movementFrameCount": 3,
       "characterMovementEdgeContrasts": {
         "feminine-long-wave-dress": {
-          "down-0": 1.903,
-          "down-1": 1.911,
-          "down-2": 1.858
+          "down-0": 1.867,
+          "down-1": 1.844,
+          "down-2": 1.846
         },
         "feminine-formal-hanbok": {
-          "down-0": 1.842,
-          "down-1": 1.85,
-          "down-2": 1.842
+          "down-0": 1.787,
+          "down-1": 1.764,
+          "down-2": 1.761
         },
         "masculine-navy-suit": {
-          "down-0": 1.911,
-          "down-1": 1.893,
-          "down-2": 1.869
+          "down-0": 1.826,
+          "down-1": 1.826,
+          "down-2": 1.899
         },
         "masculine-charcoal-blazer": {
-          "down-0": 1.867,
-          "down-1": 1.85,
-          "down-2": 1.84
+          "down-0": 1.897,
+          "down-1": 1.907,
+          "down-2": 1.897
         },
         "feminine-sage-bolero-dress": {
-          "down-0": 1.818,
-          "down-1": 1.822,
-          "down-2": 1.789
+          "down-0": 1.865,
+          "down-1": 1.878,
+          "down-2": 1.848
         },
         "feminine-champagne-navy-skirt": {
-          "down-0": 1.81,
-          "down-1": 1.816,
-          "down-2": 1.765
-        },
-        "feminine-lavender-jacket-dress": {
-          "down-0": 1.846,
-          "down-1": 1.764,
-          "down-2": 1.765
-        },
-        "feminine-teal-modern-hanbok": {
-          "down-0": 1.699,
-          "down-1": 1.712,
+          "down-0": 1.738,
+          "down-1": 1.734,
           "down-2": 1.744
         },
+        "feminine-lavender-jacket-dress": {
+          "down-0": 1.814,
+          "down-1": 1.81,
+          "down-2": 1.816
+        },
+        "feminine-teal-modern-hanbok": {
+          "down-0": 1.75,
+          "down-1": 1.738,
+          "down-2": 1.626
+        },
         "masculine-beige-summer-suit": {
-          "down-0": 1.812,
-          "down-1": 1.826,
-          "down-2": 1.873
+          "down-0": 1.822,
+          "down-1": 1.844,
+          "down-2": 1.865
         },
         "masculine-charcoal-burgundy-tie": {
-          "down-0": 1.83,
-          "down-1": 1.789,
-          "down-2": 1.83
+          "down-0": 1.764,
+          "down-1": 1.718,
+          "down-2": 1.699
         },
         "masculine-green-blazer-cream-pants": {
-          "down-0": 1.787,
-          "down-1": 1.778,
-          "down-2": 1.763
+          "down-0": 1.88,
+          "down-1": 1.848,
+          "down-2": 1.848
         },
         "masculine-blue-modern-hanbok": {
-          "down-0": 1.818,
-          "down-1": 1.818,
-          "down-2": 1.787
+          "down-0": 1.816,
+          "down-1": 1.801,
+          "down-2": 1.814
         }
       }
     },
@@ -813,84 +813,84 @@
       "sceneAverageLuminance": 0.293,
       "sceneP10Luminance": 0.034,
       "sceneP90Luminance": 0.774,
-      "characterEdgeContrast": 2.444,
+      "characterEdgeContrast": 2.16,
       "characterPresetCount": 12,
       "characterEdgeContrasts": {
-        "feminine-long-wave-dress": 2.661,
-        "feminine-formal-hanbok": 2.59,
+        "feminine-long-wave-dress": 2.765,
+        "feminine-formal-hanbok": 2.502,
         "masculine-navy-suit": 2.911,
-        "masculine-charcoal-blazer": 2.84,
-        "feminine-sage-bolero-dress": 2.74,
-        "feminine-champagne-navy-skirt": 2.645,
-        "feminine-lavender-jacket-dress": 2.711,
-        "feminine-teal-modern-hanbok": 2.756,
-        "masculine-beige-summer-suit": 2.444,
+        "masculine-charcoal-blazer": 2.946,
+        "feminine-sage-bolero-dress": 2.751,
+        "feminine-champagne-navy-skirt": 2.518,
+        "feminine-lavender-jacket-dress": 2.781,
+        "feminine-teal-modern-hanbok": 2.16,
+        "masculine-beige-summer-suit": 2.731,
         "masculine-charcoal-burgundy-tie": 2.785,
-        "masculine-green-blazer-cream-pants": 2.769,
+        "masculine-green-blazer-cream-pants": 2.817,
         "masculine-blue-modern-hanbok": 2.76
       },
       "foregroundAssetCount": 1,
       "movementFrameCount": 3,
       "characterMovementEdgeContrasts": {
         "feminine-long-wave-dress": {
-          "down-0": 2.76,
-          "down-1": 2.661,
-          "down-2": 2.734
+          "down-0": 2.645,
+          "down-1": 2.765,
+          "down-2": 2.682
         },
         "feminine-formal-hanbok": {
-          "down-0": 2.416,
-          "down-1": 2.59,
-          "down-2": 2.437
+          "down-0": 2.641,
+          "down-1": 2.502,
+          "down-2": 2.641
         },
         "masculine-navy-suit": {
-          "down-0": 2.845,
+          "down-0": 2.84,
           "down-1": 2.911,
-          "down-2": 2.894
+          "down-2": 2.84
         },
         "masculine-charcoal-blazer": {
-          "down-0": 2.815,
-          "down-1": 2.84,
-          "down-2": 2.813
+          "down-0": 2.869,
+          "down-1": 2.946,
+          "down-2": 2.843
         },
         "feminine-sage-bolero-dress": {
-          "down-0": 2.409,
-          "down-1": 2.74,
-          "down-2": 2.357
+          "down-0": 2.616,
+          "down-1": 2.751,
+          "down-2": 2.756
         },
         "feminine-champagne-navy-skirt": {
-          "down-0": 2.811,
-          "down-1": 2.645,
-          "down-2": 2.799
+          "down-0": 2.815,
+          "down-1": 2.518,
+          "down-2": 2.772
         },
         "feminine-lavender-jacket-dress": {
-          "down-0": 2.747,
-          "down-1": 2.711,
-          "down-2": 2.769
+          "down-0": 2.652,
+          "down-1": 2.781,
+          "down-2": 2.716
         },
         "feminine-teal-modern-hanbok": {
-          "down-0": 2.601,
-          "down-1": 2.756,
-          "down-2": 2.444
+          "down-0": 2.294,
+          "down-1": 2.16,
+          "down-2": 2.429
         },
         "masculine-beige-summer-suit": {
-          "down-0": 2.361,
-          "down-1": 2.444,
-          "down-2": 2.435
+          "down-0": 2.765,
+          "down-1": 2.731,
+          "down-2": 2.661
         },
         "masculine-charcoal-burgundy-tie": {
-          "down-0": 2.772,
+          "down-0": 2.724,
           "down-1": 2.785,
-          "down-2": 2.808
+          "down-2": 2.725
         },
         "masculine-green-blazer-cream-pants": {
-          "down-0": 2.735,
-          "down-1": 2.769,
-          "down-2": 2.747
+          "down-0": 2.808,
+          "down-1": 2.817,
+          "down-2": 2.797
         },
         "masculine-blue-modern-hanbok": {
-          "down-0": 2.803,
+          "down-0": 2.797,
           "down-1": 2.76,
-          "down-2": 2.649
+          "down-2": 2.778
         }
       }
     }
