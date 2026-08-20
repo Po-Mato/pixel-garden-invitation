@@ -1,4 +1,4 @@
-export const defaultGuestAssetRevision = "guest-couple-depth-master-v9";
+export const defaultGuestAssetRevision = "guest-unified-optical-rig-v10";
 
 export const guestAssetRevisions: Readonly<Partial<Record<string, string>>> = {
   "feminine-long-wave-dress": defaultGuestAssetRevision,

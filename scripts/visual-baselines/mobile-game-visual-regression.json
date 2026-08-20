@@ -1,24 +1,24 @@
 {
   "version": 2,
-  "approvedAt": "2026-08-19T05:53:44.826Z",
-  "reason": "하객 12종을 신랑·신부 수준의 고해상도 입체 마스터로 교체",
-  "sha256": "4742f284ea576bf974f439ad90d1f1d83a294b3e2f9d4ca0e78f529631aa5f2b",
+  "approvedAt": "2026-08-20T03:53:07.371Z",
+  "reason": "하객 12종을 공통 3등신·2.5D 통일 광학 리그로 교체",
+  "sha256": "8c192358878eb07c2d1a37fb83ed7fbccba0ad9f2598748320e098c5fc2eb885",
   "provenance": {
     "schemaVersion": 1,
     "subjectKind": "capture-set",
     "sourceKind": "local",
     "runId": null,
     "runAttempt": null,
-    "commitSha": "91d1fbc729cffb180ed16017539ee68094ac1006",
+    "commitSha": "20e10289946d4698a913e8e33308ef26670f885b",
     "runUrl": null,
     "checksumAlgorithm": "sha256",
     "artifactChecksumScope": "sorted-capture-set-manifest",
-    "artifactSha256": "00fa367ed4851b627c0a593a8ad3d037bfbc307ce2343d08fdf928f2d9d2e8ed",
+    "artifactSha256": "3f70a4fe3460f458e65b5fd533cc397f11a39801f8de40f8b83bd4a77b4aab21",
     "files": [
       {
         "logicalPath": "mobile-game-current",
-        "size": 4617068,
-        "sha256": "6f87aec3f155467429603d69429c8c83bbd565d67d6234aa38dda6058bc01aed"
+        "size": 4627531,
+        "sha256": "5eabc2acfcd14207a5481dc6843ad8e689e9386ddde0f820f1432159444b6bbc"
       }
     ]
   },
