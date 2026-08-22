@@ -1,6 +1,6 @@
-import { defaultGuestAssetRevision } from "../character/assetRevisions";
+import { guest01AssetRevision } from "../character/assetRevisions";
 
-export const pwaDefaultGuestAssetRevision = defaultGuestAssetRevision;
+export const pwaDefaultGuestAssetRevision = guest01AssetRevision;
 
 function versionedDefaultGuestPath(path: string): string {
   return `${path}?v=${pwaDefaultGuestAssetRevision}`;

@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { guest01AssetRevision } from "../character/assetRevisions";
 import {
   createPwaServiceWorkerSource,
   pwaCorePrecachePaths,
@@ -9,6 +10,10 @@ import {
 } from "./serviceWorkerSource";
 
 describe("PWA service worker source", () => {
+  it("pre-caches the same revision used by the default guest preset", () => {
+    expect(pwaDefaultGuestAssetRevision).toBe(guest01AssetRevision);
+  });
+
   it("combines required offline assets with generated scripts and styles once", () => {
     const bundlePaths = [
       "assets/index-abc.js",
