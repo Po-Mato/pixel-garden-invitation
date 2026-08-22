@@ -60,6 +60,13 @@ const defaultReviewPath = path.join(
 const directions = ["down", "left", "right", "up"];
 const safeUnifiedSourceSet = "v10-alpha-safe-unified-rig";
 const safeUnifiedDetectionMethod = "face-safe-three-head-rig";
+const guest01OpticalHeadCompensation = 6;
+const guest01AccessoryAnchorStep = Object.freeze({
+  down: 1,
+  left: 1,
+  right: 1,
+  up: 0
+});
 
 function clamp(value, minimum, maximum) {
   return Math.max(minimum, Math.min(maximum, value));
@@ -971,6 +978,45 @@ function frameSha256(input) {
   return createHash("sha256").update(input).digest("hex");
 }
 
+function guest01UpperBodyBandBottom(policy) {
+  const characterTop = policy.footBaseline - policy.contentHeight + 1;
+  const bodyHeight = policy.contentHeight - policy.headHeight;
+  return characterTop + policy.headHeight + Math.round(bodyHeight * 0.79) - 1;
+}
+
+async function upperBodyBandSha256(input, policy) {
+  const bottom = guest01UpperBodyBandBottom(policy);
+  const { data, info } = await sharp(input)
+    .ensureAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  return createHash("sha256")
+    .update(data.subarray(0, (bottom + 1) * info.width * info.channels))
+    .digest("hex");
+}
+
+async function lockGuest01UpperBodyAndBag(framesByDirection, policy) {
+  const bottom = guest01UpperBodyBandBottom(policy);
+  for (const direction of directions) {
+    const reference = framesByDirection[direction][guest01AccessoryAnchorStep[direction]];
+    const { data: referenceData, info } = await sharp(reference)
+      .ensureAlpha()
+      .raw()
+      .toBuffer({ resolveWithObject: true });
+    const byteLength = (bottom + 1) * info.width * info.channels;
+    for (let column = 0; column < 3; column += 1) {
+      const { data: targetData } = await sharp(framesByDirection[direction][column])
+        .ensureAlpha()
+        .raw()
+        .toBuffer({ resolveWithObject: true });
+      referenceData.copy(targetData, 0, 0, byteLength);
+      framesByDirection[direction][column] = await sharp(targetData, { raw: info })
+        .png({ compressionLevel: 9 })
+        .toBuffer();
+    }
+  }
+}
+
 async function inspectFrame(input, policy, { direction, rigFrame, sourceSet }) {
   const bounds = await alphaBounds(input);
   const measuredHeadWidth = await headBandWidth(input, policy);
@@ -986,6 +1032,7 @@ async function inspectFrame(input, policy, { direction, rigFrame, sourceSet }) {
   const expectedHeadWidth = policy.headWidth;
   const measuredBodyHeight = bounds.height - measuredHeadHeight;
   const checksum = frameSha256(input);
+  const opticalHeadCompensation = rigFrame.sourceMeasuredHeadHeight - rigFrame.sourceHeadHeight;
   return {
     left: bounds.left,
     top: bounds.top,
@@ -1014,6 +1061,14 @@ async function inspectFrame(input, policy, { direction, rigFrame, sourceSet }) {
       : null,
     sourceHeadHeight: rigFrame.sourceHeadHeight,
     sourceMeasuredHeadHeight: rigFrame.sourceMeasuredHeadHeight,
+    ...(opticalHeadCompensation > 0
+      ? {
+          opticalHeadCompensation,
+          estimatedOpticalHeadHeight:
+            policy.headHeight * rigFrame.sourceMeasuredHeadHeight / rigFrame.sourceHeadHeight,
+          upperBodyBandSha256: await upperBodyBandSha256(input, policy)
+        }
+      : {}),
     sourceDetectionMethod: rigFrame.sourceDetectionMethod,
     sourceFaceBottom: rigFrame.sourceFaceBottom,
     frameSha256: checksum,
@@ -1177,6 +1232,23 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
         }];
       })
     );
+    const accessoryStability = preset.reference.walkSourceGuest === "guest-01"
+      ? {
+          upperBodyBandBottom: guest01UpperBodyBandBottom(policy),
+          anchorSteps: guest01AccessoryAnchorStep,
+          directions: Object.fromEntries(directions.map((direction) => {
+            const hashes = directionMetrics[direction].map((frame) => frame.upperBodyBandSha256);
+            return [direction, {
+              hashes,
+              stable: new Set(hashes).size === 1
+            }];
+          }))
+        }
+      : null;
+    if (accessoryStability) {
+      accessoryStability.passed = Object.values(accessoryStability.directions)
+        .every((direction) => direction.stable);
+    }
     presets.push({
       id: preset.id,
       guest: preset.reference.walkSourceGuest,
@@ -1229,6 +1301,7 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
           ...Object.values(directionMotion).map((direction) => direction.baselineSpread)
         )
       },
+      accessoryStability,
       directions: directionMetrics
     });
   }
@@ -1330,6 +1403,9 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
     || preset.motion.maximumCenterDrift > maximumStrideCenterDrift
     || preset.motion.maximumStepBaselineSpread > maximumStepBaselineSpread
   ));
+  const accessoryFailures = presets.filter((preset) => (
+    preset.guest === "guest-01" && !preset.accessoryStability?.passed
+  ));
   const headWidths = frames.map((frame) => frame.headWidth);
   const headHeights = frames.map((frame) => frame.measuredHeadHeight);
   const directionHeadHeightSpreads = presets.map((preset) => {
@@ -1390,7 +1466,10 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
       opticalFaceRule: "median visible skin width and area by down, left, and right direction",
       opticalHeadRule: "fixed head silhouette width and front/profile median ratio",
       opticalLandmarkRule: "median visible face center and chin anchors by visible direction",
-      motionRule: "symmetric first and third steps, matched side stride, stable center and baseline"
+      motionRule: "symmetric first and third steps, matched side stride, stable center and baseline",
+      guest01OpticalHeadCompensation,
+      guest01AccessoryRule:
+        "the complete upper body and handbag band is pixel-locked within each direction"
     },
     summary: {
       presetCount: presets.length,
@@ -1453,11 +1532,13 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
         ...presets.map((preset) => preset.motion.maximumStepBaselineSpread)
       ),
       motionWithinTolerance: motionFailures.length === 0,
+      guest01AccessoryStable: accessoryFailures.length === 0,
       passed: rigFailures.length === 0
         && opticalHeadFailures.length === 0
         && opticalFaceFailures.length === 0
         && opticalLandmarkFailures.length === 0
         && motionFailures.length === 0
+        && accessoryFailures.length === 0
     },
     presets
   };
@@ -1502,11 +1583,13 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
       + `${opticalHeadFailures.length}명 머리 실루엣, `
       + `${opticalFaceFailures.length}명 얼굴 폭, `
       + `${opticalLandmarkFailures.length}명 얼굴 기준선, `
-      + `${motionFailures.length}명 보행 (${rigDetails || "리그 통과"}; `
+      + `${motionFailures.length}명 보행, `
+      + `${accessoryFailures.length}명 가방 고정 (${rigDetails || "리그 통과"}; `
       + `${opticalHeadDetails || "머리 실루엣 통과"}; `
       + `${opticalFaceDetails || "얼굴 폭 통과"}; `
       + `${opticalLandmarkDetails || "얼굴 기준선 통과"}; `
-      + `${motionDetails || "보행 통과"})`
+      + `${motionDetails || "보행 통과"}; `
+      + `${accessoryFailures.length === 0 ? "가방 고정 통과" : "guest-01 가방 고정 실패"})`
     );
   }
   return report;
@@ -1725,7 +1808,9 @@ export async function buildGuestSelectionPreviewAssets({
         const sourceMeasuredHeadHeight = usesUnifiedRig
           ? baseFrame.landmark?.headHeight ?? upSourceHeadHeightConsensus
           : baseFrame.landmark?.headHeight ?? upSourceHeadHeightConsensus;
-        let sourceHeadHeight = sourceMeasuredHeadHeight;
+        let sourceHeadHeight = guest === "guest-01"
+          ? Math.max(2, sourceMeasuredHeadHeight - guest01OpticalHeadCompensation)
+          : sourceMeasuredHeadHeight;
         const renderCandidate = async (candidateHeadHeight) => {
           const rigged = await normalizeVerticalRig(
             baseFrame.normalized,
@@ -1795,6 +1880,9 @@ export async function buildGuestSelectionPreviewAssets({
       } else {
         await balanceVisibleFaceWidths(framesByDirection, policy);
       }
+    }
+    if (guest === "guest-01") {
+      await lockGuest01UpperBodyAndBag(framesByDirection, policy);
     }
     for (const direction of directions) {
       for (let column = 0; column < 3; column += 1) {
