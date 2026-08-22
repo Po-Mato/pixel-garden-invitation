@@ -1,7 +1,8 @@
 export const defaultGuestAssetRevision = "guest-alpha-safe-face-rig-v11";
+export const guest01AssetRevision = "guest01-three-head-fixed-bag-v12";
 
 export const guestAssetRevisions: Readonly<Partial<Record<string, string>>> = {
-  "feminine-long-wave-dress": defaultGuestAssetRevision,
+  "feminine-long-wave-dress": guest01AssetRevision,
   "feminine-formal-hanbok": defaultGuestAssetRevision,
   "masculine-navy-suit": defaultGuestAssetRevision,
   "masculine-charcoal-blazer": defaultGuestAssetRevision,

@@ -139,6 +139,38 @@ test("1번 캐릭터 정면 얼굴은 측면 대비 별도 강화 기준을 지�
   );
 });
 
+test("1번 캐릭터는 광학 3등신 보정과 방향별 고정 가방 리그를 유지한다", async () => {
+  const report = await auditGuestSelectionPreviewAssets({ catalog });
+  const guest01 = report.presets.find((preset) => preset.guest === "guest-01");
+
+  assert.ok(guest01, "guest-01 감사 결과가 필요합니다.");
+  assert.equal(report.policy.guest01OpticalHeadCompensation, 6);
+  assert.equal(report.summary.guest01AccessoryStable, true);
+  assert.equal(guest01.accessoryStability.passed, true);
+  assert.deepEqual(guest01.accessoryStability.anchorSteps, {
+    down: 1,
+    left: 1,
+    right: 1,
+    up: 0
+  });
+
+  const frames = Object.values(guest01.directions).flat();
+  assert.equal(
+    frames.every((frame) => frame.opticalHeadCompensation === 6),
+    true,
+    "guest-01의 12컷은 같은 광학 머리 보정량을 사용해야 합니다."
+  );
+  assert.equal(
+    frames.every((frame) => frame.estimatedOpticalHeadHeight > report.policy.headHeight),
+    true,
+    "guest-01 머리 실루엣은 긴 원피스 비율을 상쇄하도록 확대돼야 합니다."
+  );
+  for (const direction of Object.values(guest01.accessoryStability.directions)) {
+    assert.equal(direction.stable, true);
+    assert.equal(new Set(direction.hashes).size, 1);
+  }
+});
+
 test("v10 원화는 실제 투명 배경과 정확한 좌우 반전 방향을 보장한다", async () => {
   const sourceRoot = join(root, "character-assets/reference/guest-unified-rig-sources/v10");
   const integrity = JSON.parse(await readFile(
