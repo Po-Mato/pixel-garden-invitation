@@ -1,24 +1,24 @@
 {
   "version": 2,
-  "approvedAt": "2026-08-22T02:17:51.494Z",
-  "reason": "guest-01 optical three-head proportion and fixed handbag walk rig",
-  "sha256": "444f6ffbaf143fddbe0df4df3c2d3c131e76b1886ffec25f09daa8fae8aff941",
+  "approvedAt": "2026-08-23T23:48:25.545Z",
+  "reason": "1번 캐릭터 4등신 착시 개선: 머리 비율 확대 및 측면 보행 중심 안정화",
+  "sha256": "f28768dfe35d3b8c29e5ddcaafb0da95d8ba9b52b573448b3567a698cd1a3895",
   "provenance": {
     "schemaVersion": 1,
     "subjectKind": "capture-set",
     "sourceKind": "local",
     "runId": null,
     "runAttempt": null,
-    "commitSha": "faebce2412f50748873cc07d21ce785c42ebf875",
+    "commitSha": "0fd50abb62b5446aab7b26ac251bb012b2113547",
     "runUrl": null,
     "checksumAlgorithm": "sha256",
     "artifactChecksumScope": "sorted-capture-set-manifest",
-    "artifactSha256": "bcff7589d07ef16c43e8386bac203ab909d672eac2320bd803e07492d12f0eaf",
+    "artifactSha256": "2478f96ddd05f58cd64808632813715865cf4100319ae30e39f6f12dc7dca10b",
     "files": [
       {
         "logicalPath": "mobile-game-current",
-        "size": 4618255,
-        "sha256": "92182cc24a136809e86064af432b497cd53e1df553a53e29448a7c3b8199cfbd"
+        "size": 4621768,
+        "sha256": "5a62a6f495793ca2f956c0eb3f091d70f8f72f805958c6ffb4217322700d6a5f"
       }
     ]
   },

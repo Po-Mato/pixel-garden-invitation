@@ -60,12 +60,21 @@ const defaultReviewPath = path.join(
 const directions = ["down", "left", "right", "up"];
 const safeUnifiedSourceSet = "v10-alpha-safe-unified-rig";
 const safeUnifiedDetectionMethod = "face-safe-three-head-rig";
-const guest01OpticalHeadCompensation = 6;
+// The long hair and ankle-length dress make guest-01 read taller than the
+// geometric guide. Scale the complete head mass further before compressing the
+// body so the final sprite reads as three-head-tall at its actual UI size.
+const guest01OpticalHeadCompensation = 20;
 const guest01AccessoryAnchorStep = Object.freeze({
   down: 1,
   left: 1,
   right: 1,
   up: 0
+});
+const guest01LowerBodyStrideOffsets = Object.freeze({
+  down: [0, 0, 0],
+  left: [0, 0, 2],
+  right: [0, 0, -2],
+  up: [0, 0, 0]
 });
 
 function clamp(value, minimum, maximum) {
@@ -1017,6 +1026,39 @@ async function lockGuest01UpperBodyAndBag(framesByDirection, policy) {
   }
 }
 
+async function shiftLowerBody(input, policy, offsetX) {
+  if (offsetX === 0) return input;
+  const lowerBodyTop = guest01UpperBodyBandBottom(policy) + 1;
+  const { data, info } = await sharp(input)
+    .ensureAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  const output = Buffer.from(data);
+  output.fill(0, lowerBodyTop * info.width * info.channels);
+  for (let y = lowerBodyTop; y < info.height; y += 1) {
+    for (let x = 0; x < info.width; x += 1) {
+      const targetX = x + offsetX;
+      if (targetX < 0 || targetX >= info.width) continue;
+      const sourceOffset = (y * info.width + x) * info.channels;
+      const targetOffset = (y * info.width + targetX) * info.channels;
+      data.copy(output, targetOffset, sourceOffset, sourceOffset + info.channels);
+    }
+  }
+  return sharp(output, { raw: info }).png({ compressionLevel: 9 }).toBuffer();
+}
+
+async function stabilizeGuest01LowerBodyStride(framesByDirection, policy) {
+  for (const direction of directions) {
+    for (let column = 0; column < 3; column += 1) {
+      framesByDirection[direction][column] = await shiftLowerBody(
+        framesByDirection[direction][column],
+        policy,
+        guest01LowerBodyStrideOffsets[direction][column]
+      );
+    }
+  }
+}
+
 async function inspectFrame(input, policy, { direction, rigFrame, sourceSet }) {
   const bounds = await alphaBounds(input);
   const measuredHeadWidth = await headBandWidth(input, policy);
@@ -1468,6 +1510,7 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
       opticalLandmarkRule: "median visible face center and chin anchors by visible direction",
       motionRule: "symmetric first and third steps, matched side stride, stable center and baseline",
       guest01OpticalHeadCompensation,
+      guest01LowerBodyStrideOffsets,
       guest01AccessoryRule:
         "the complete upper body and handbag band is pixel-locked within each direction"
     },
@@ -1883,6 +1926,7 @@ export async function buildGuestSelectionPreviewAssets({
     }
     if (guest === "guest-01") {
       await lockGuest01UpperBodyAndBag(framesByDirection, policy);
+      await stabilizeGuest01LowerBodyStride(framesByDirection, policy);
     }
     for (const direction of directions) {
       for (let column = 0; column < 3; column += 1) {
