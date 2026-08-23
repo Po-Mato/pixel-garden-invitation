@@ -144,7 +144,7 @@ test("1번 캐릭터는 광학 3등신 보정과 방향별 고정 가방 리그�
   const guest01 = report.presets.find((preset) => preset.guest === "guest-01");
 
   assert.ok(guest01, "guest-01 감사 결과가 필요합니다.");
-  assert.equal(report.policy.guest01OpticalHeadCompensation, 6);
+  assert.equal(report.policy.guest01OpticalHeadCompensation, 20);
   assert.equal(report.summary.guest01AccessoryStable, true);
   assert.equal(guest01.accessoryStability.passed, true);
   assert.deepEqual(guest01.accessoryStability.anchorSteps, {
@@ -153,17 +153,29 @@ test("1번 캐릭터는 광학 3등신 보정과 방향별 고정 가방 리그�
     right: 1,
     up: 0
   });
+  assert.deepEqual(report.policy.guest01LowerBodyStrideOffsets, {
+    down: [0, 0, 0],
+    left: [0, 0, 2],
+    right: [0, 0, -2],
+    up: [0, 0, 0]
+  });
+  assert.ok(
+    guest01.motion.maximumCenterDrift <= report.policy.maximumStrideCenterDrift,
+    "guest-01의 확대된 3등신 리그에서도 보행 중심이 안정돼야 합니다."
+  );
 
   const frames = Object.values(guest01.directions).flat();
   assert.equal(
-    frames.every((frame) => frame.opticalHeadCompensation === 6),
+    frames.every((frame) => frame.opticalHeadCompensation === 20),
     true,
     "guest-01의 12컷은 같은 광학 머리 보정량을 사용해야 합니다."
   );
   assert.equal(
-    frames.every((frame) => frame.estimatedOpticalHeadHeight > report.policy.headHeight),
+    frames.every((frame) => (
+      frame.estimatedOpticalHeadHeight >= report.policy.contentHeight * 0.4
+    )),
     true,
-    "guest-01 머리 실루엣은 긴 원피스 비율을 상쇄하도록 확대돼야 합니다."
+    "guest-01 머리 실루엣은 긴 원피스의 4등신 착시를 상쇄하도록 충분히 확대돼야 합니다."
   );
   for (const direction of Object.values(guest01.accessoryStability.directions)) {
     assert.equal(direction.stable, true);
