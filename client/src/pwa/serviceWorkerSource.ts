@@ -1,7 +1,6 @@
-import { guest01AssetRevision, guest03AssetRevision } from "../character/assetRevisions";
+import { guest01AssetRevision } from "../character/assetRevisions";
 
 export const pwaDefaultGuestAssetRevision = guest01AssetRevision;
-export const pwaGuest03AssetRevision = guest03AssetRevision;
 
 function versionedDefaultGuestPath(path: string): string {
   return `${path}?v=${pwaDefaultGuestAssetRevision}`;
@@ -9,14 +8,6 @@ function versionedDefaultGuestPath(path: string): string {
 
 export const pwaDefaultGuestSelectionIdlePath = versionedDefaultGuestPath(
   "./characters/generated/guests/preview/feminine-long-wave-dress__idle.png"
-);
-
-function versionedGuest03Path(path: string): string {
-  return `${path}?v=${pwaGuest03AssetRevision}`;
-}
-
-export const pwaGuest03SelectionIdlePath = versionedGuest03Path(
-  "./characters/generated/guests/preview/masculine-navy-suit__idle.png"
 );
 
 export const pwaCorePrecachePaths = [
@@ -34,9 +25,6 @@ export const pwaCorePrecachePaths = [
   versionedDefaultGuestPath("./characters/generated/guests/feminine-long-wave-dress__idle.png"),
   versionedDefaultGuestPath("./characters/generated/guests/feminine-long-wave-dress__walk.png"),
   pwaDefaultGuestSelectionIdlePath,
-  versionedGuest03Path("./characters/generated/guests/masculine-navy-suit__idle.png"),
-  versionedGuest03Path("./characters/generated/guests/masculine-navy-suit__walk.png"),
-  pwaGuest03SelectionIdlePath,
   "./characters/puppets/bride/rig.json",
   "./characters/puppets/bride/body.webp",
   "./characters/puppets/bride/head-open.webp",
