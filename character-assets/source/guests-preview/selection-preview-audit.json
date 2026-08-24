@@ -55,6 +55,13 @@
     "motionRule": "symmetric first and third steps, matched side stride, stable center and baseline",
     "guest01OpticalHeadCompensation": 20,
     "guest03OpticalHeadCompensation": 10,
+    "guest03MaximumHeadWidthDelta": 1,
+    "guest03HeadWidthsByDirection": {
+      "down": 96,
+      "left": 105,
+      "right": 105,
+      "up": 96
+    },
     "guest01LowerBodyStrideOffsets": {
       "down": [
         0,
@@ -77,7 +84,8 @@
         0
       ]
     },
-    "guest01AccessoryRule": "the complete upper body and handbag band is pixel-locked within each direction"
+    "guest01AccessoryRule": "the complete upper body and handbag band is pixel-locked within each direction",
+    "guest03ProportionRule": "the complete head, chin, and shoulder band is pixel-locked across all three walk frames within each direction"
   },
   "summary": {
     "presetCount": 12,
@@ -95,7 +103,7 @@
     "consensusFrameCount": 0,
     "faceSafeRigFrameCount": 144,
     "rigHashesMatch": true,
-    "maximumMeasuredFrontToProfileFaceWidthRatio": 1.5660377358490567,
+    "maximumMeasuredFrontToProfileFaceWidthRatio": 1.537037037037037,
     "minimumMeasuredFrontToProfileFaceWidthRatio": 1.0535714285714286,
     "maximumMeasuredFrontToProfileFaceAreaRatio": 2.1509648127128265,
     "maximumMeasuredLeftRightFaceWidthDifferenceRatio": 0,
@@ -113,7 +121,7 @@
     "motionWithinTolerance": true,
     "guest01AccessoryStable": true,
     "passed": true,
-    "maximumRuntimeCoreCenterDriftDisplayPx": 0.24816560059670323,
+    "maximumRuntimeCoreCenterDriftDisplayPx": 0.4398265798359873,
     "runtimeMotionWithinTolerance": true
   },
   "presets": [
@@ -1093,117 +1101,180 @@
       "upSourceHeadHeightConsensus": 83,
       "opticalFace": {
         "downMedianFaceWidth": 83,
-        "leftMedianFaceWidth": 53,
-        "rightMedianFaceWidth": 53,
-        "profileMedianFaceWidth": 53,
-        "frontToProfileFaceWidthRatio": 1.5660377358490567,
+        "leftMedianFaceWidth": 54,
+        "rightMedianFaceWidth": 54,
+        "profileMedianFaceWidth": 54,
+        "frontToProfileFaceWidthRatio": 1.537037037037037,
         "downMedianFaceArea": 1955,
-        "leftMedianFaceArea": 1181,
-        "rightMedianFaceArea": 1181,
-        "profileMedianFaceArea": 1181,
-        "frontToProfileFaceAreaRatio": 1.655376799322608,
-        "maximumStepFaceWidthSpreadRatio": 0.12048192771084337,
+        "leftMedianFaceArea": 1235,
+        "rightMedianFaceArea": 1239,
+        "profileMedianFaceArea": 1237,
+        "frontToProfileFaceAreaRatio": 1.5804365400161682,
+        "maximumStepFaceWidthSpreadRatio": 0,
         "leftRightFaceWidthDifferenceRatio": 0
       },
       "opticalHead": {
         "downMedianHeadWidth": 96,
-        "leftMedianHeadWidth": 102,
-        "rightMedianHeadWidth": 102,
-        "profileMedianHeadWidth": 102,
-        "frontToProfileHeadWidthRatio": 0.9411764705882353,
-        "leftRightHeadWidthDifferenceRatio": 0
+        "leftMedianHeadWidth": 105,
+        "rightMedianHeadWidth": 105,
+        "profileMedianHeadWidth": 105,
+        "frontToProfileHeadWidthRatio": 0.9142857142857143,
+        "leftRightHeadWidthDifferenceRatio": 0,
+        "headWidthsByDirection": {
+          "down": [
+            96,
+            96,
+            96
+          ],
+          "left": [
+            105,
+            105,
+            105
+          ],
+          "right": [
+            105,
+            105,
+            105
+          ],
+          "up": [
+            96,
+            96,
+            96
+          ]
+        },
+        "maximumStepHeadWidthSpreadRatio": 0,
+        "maximumAllFrameHeadWidthSpreadRatio": 0.08955223880597014
       },
       "opticalLandmarks": {
         "centerYRatios": {
           "down": 0.7797619047619048,
-          "left": 0.7916666666666666,
-          "right": 0.7916666666666666
+          "left": 0.7976190476190477,
+          "right": 0.7976190476190477
         },
         "bottomYRatios": {
-          "down": 1.1071428571428572,
-          "left": 1.1071428571428572,
-          "right": 1.1071428571428572
+          "down": 1.0952380952380953,
+          "left": 1.119047619047619,
+          "right": 1.119047619047619
         },
-        "centerYSpreadRatio": 0.011904761904761862,
-        "bottomYSpreadRatio": 0
+        "centerYSpreadRatio": 0.017857142857142905,
+        "bottomYSpreadRatio": 0.023809523809523725
       },
       "motion": {
         "directions": {
           "down": {
-            "firstStepWidth": 99,
+            "firstStepWidth": 98,
             "neutralStepWidth": 96,
-            "thirdStepWidth": 88,
-            "strideExpansionRatio": 0.9739583333333334,
-            "strideSilhouetteSymmetryRatio": 0.11764705882352941,
-            "maximumCenterDrift": 0.5,
+            "thirdStepWidth": 96,
+            "strideExpansionRatio": 1.0104166666666667,
+            "strideSilhouetteSymmetryRatio": 0.020618556701030927,
+            "maximumCenterDrift": 1,
             "baselineSpread": 0
           },
           "left": {
             "firstStepWidth": 123,
-            "neutralStepWidth": 103,
+            "neutralStepWidth": 105,
             "thirdStepWidth": 138,
-            "strideExpansionRatio": 1.266990291262136,
+            "strideExpansionRatio": 1.2428571428571429,
             "strideSilhouetteSymmetryRatio": 0.11494252873563218,
             "maximumCenterDrift": 0.5,
             "baselineSpread": 0
           },
           "right": {
             "firstStepWidth": 123,
-            "neutralStepWidth": 103,
+            "neutralStepWidth": 105,
             "thirdStepWidth": 138,
-            "strideExpansionRatio": 1.266990291262136,
+            "strideExpansionRatio": 1.2428571428571429,
             "strideSilhouetteSymmetryRatio": 0.11494252873563218,
             "maximumCenterDrift": 0.5,
             "baselineSpread": 0
           },
           "up": {
             "firstStepWidth": 100,
-            "neutralStepWidth": 90,
+            "neutralStepWidth": 96,
             "thirdStepWidth": 100,
-            "strideExpansionRatio": 1.1111111111111112,
+            "strideExpansionRatio": 1.0416666666666667,
             "strideSilhouetteSymmetryRatio": 0,
             "maximumCenterDrift": 0,
             "baselineSpread": 0
           }
         },
-        "maximumStrideSilhouetteSymmetryRatio": 0.11764705882352941,
+        "maximumStrideSilhouetteSymmetryRatio": 0.11494252873563218,
         "leftRightStrideExpansionDifferenceRatio": 0,
-        "maximumCenterDrift": 0.5,
+        "maximumCenterDrift": 1,
         "maximumStepBaselineSpread": 0
       },
       "accessoryStability": null,
+      "proportionStability": {
+        "bandBottom": 110,
+        "directions": {
+          "down": {
+            "hashes": [
+              "9c8fb27764d3d7b820129c0a67bbfc0c2775b6da0ff6ffb68fa4e080395f7a0d",
+              "9c8fb27764d3d7b820129c0a67bbfc0c2775b6da0ff6ffb68fa4e080395f7a0d",
+              "9c8fb27764d3d7b820129c0a67bbfc0c2775b6da0ff6ffb68fa4e080395f7a0d"
+            ],
+            "stable": true
+          },
+          "left": {
+            "hashes": [
+              "24208a63b9f9597b963869f2d21eff8b7a73cabd26ed9f309eaff10df992437d",
+              "24208a63b9f9597b963869f2d21eff8b7a73cabd26ed9f309eaff10df992437d",
+              "24208a63b9f9597b963869f2d21eff8b7a73cabd26ed9f309eaff10df992437d"
+            ],
+            "stable": true
+          },
+          "right": {
+            "hashes": [
+              "0d30407e07ce9438ba59967c9369c9a072a16324aa94227b4119969b94fffb1d",
+              "0d30407e07ce9438ba59967c9369c9a072a16324aa94227b4119969b94fffb1d",
+              "0d30407e07ce9438ba59967c9369c9a072a16324aa94227b4119969b94fffb1d"
+            ],
+            "stable": true
+          },
+          "up": {
+            "hashes": [
+              "31a787ec70bd1500853da995736a306618628671043c8ff38d88c59f5a361163",
+              "31a787ec70bd1500853da995736a306618628671043c8ff38d88c59f5a361163",
+              "31a787ec70bd1500853da995736a306618628671043c8ff38d88c59f5a361163"
+            ],
+            "stable": true
+          }
+        },
+        "passed": true
+      },
       "directions": {
         "down": [
           {
-            "left": 47,
+            "left": 48,
             "top": 13,
             "right": 145,
             "bottom": 264,
-            "characterWidth": 99,
+            "characterWidth": 98,
             "characterHeight": 252,
-            "characterCenterX": 96,
+            "characterCenterX": 96.5,
             "measuredHeadHeight": 84,
             "measuredBodyHeight": 168,
             "measuredBodyToHeadRatio": 2,
             "headHeightDelta": 0,
-            "headWidth": 99,
-            "expectedHeadWidth": 92,
-            "headWidthDelta": 7,
-            "visibleFaceWidth": 86,
-            "visibleFaceHeight": 56,
-            "visibleFaceArea": 2044,
-            "visibleFaceTop": 51,
-            "visibleFaceBottom": 106,
+            "headWidth": 96,
+            "expectedHeadWidth": 96,
+            "headWidthDelta": 0,
+            "visibleFaceWidth": 83,
+            "visibleFaceHeight": 54,
+            "visibleFaceArea": 1955,
+            "visibleFaceTop": 52,
+            "visibleFaceBottom": 105,
             "visibleFaceCenterYRatio": 0.7797619047619048,
-            "visibleFaceBottomYRatio": 1.1071428571428572,
+            "visibleFaceBottomYRatio": 1.0952380952380953,
             "sourceHeadHeight": 74,
             "sourceMeasuredHeadHeight": 84,
             "opticalHeadCompensation": 10,
             "estimatedOpticalHeadHeight": 95.35135135135135,
-            "upperBodyBandSha256": "7aabbd64955c1a40b61233c110318dd281b252d7044f9112df8ece5b2f56f500",
+            "upperBodyBandSha256": "274b068e14ad72fb14bbc00c0e1a16fd0c1ddc1518381d8923abf2e629b10ddf",
+            "headBandSha256": "9c8fb27764d3d7b820129c0a67bbfc0c2775b6da0ff6ffb68fa4e080395f7a0d",
             "sourceDetectionMethod": "face-safe-three-head-rig",
             "sourceFaceBottom": 96,
-            "frameSha256": "d2281edb1f4080724df26a463a97d8569dc131d10e85003c8beee6c2e0e2f90e",
+            "frameSha256": "c3dcdd290b0051d948552ebebb0171b22937a5c690789e27a7fee10685912a62",
             "rigHashMatches": true
           },
           {
@@ -1219,8 +1290,8 @@
             "measuredBodyToHeadRatio": 2,
             "headHeightDelta": 0,
             "headWidth": 96,
-            "expectedHeadWidth": 92,
-            "headWidthDelta": 4,
+            "expectedHeadWidth": 96,
+            "headWidthDelta": 0,
             "visibleFaceWidth": 83,
             "visibleFaceHeight": 54,
             "visibleFaceArea": 1955,
@@ -1233,41 +1304,43 @@
             "opticalHeadCompensation": 10,
             "estimatedOpticalHeadHeight": 95.2,
             "upperBodyBandSha256": "a3eb1a27f7b1a183e72e8f5f211d248a3e6bf67facd64116f573d1ac78e1aaf5",
+            "headBandSha256": "9c8fb27764d3d7b820129c0a67bbfc0c2775b6da0ff6ffb68fa4e080395f7a0d",
             "sourceDetectionMethod": "face-safe-three-head-rig",
             "sourceFaceBottom": 97,
             "frameSha256": "e41a7308c7efe7ca90529bf3b1b36f83e63d943ba3f1e08a083416fb39bc1e30",
             "rigHashMatches": true
           },
           {
-            "left": 52,
+            "left": 48,
             "top": 13,
-            "right": 139,
+            "right": 143,
             "bottom": 264,
-            "characterWidth": 88,
+            "characterWidth": 96,
             "characterHeight": 252,
             "characterCenterX": 95.5,
             "measuredHeadHeight": 84,
             "measuredBodyHeight": 168,
             "measuredBodyToHeadRatio": 2,
             "headHeightDelta": 0,
-            "headWidth": 88,
-            "expectedHeadWidth": 92,
-            "headWidthDelta": -4,
-            "visibleFaceWidth": 76,
-            "visibleFaceHeight": 59,
-            "visibleFaceArea": 1686,
-            "visibleFaceTop": 48,
-            "visibleFaceBottom": 106,
-            "visibleFaceCenterYRatio": 0.7619047619047619,
-            "visibleFaceBottomYRatio": 1.1071428571428572,
+            "headWidth": 96,
+            "expectedHeadWidth": 96,
+            "headWidthDelta": 0,
+            "visibleFaceWidth": 83,
+            "visibleFaceHeight": 54,
+            "visibleFaceArea": 1955,
+            "visibleFaceTop": 52,
+            "visibleFaceBottom": 105,
+            "visibleFaceCenterYRatio": 0.7797619047619048,
+            "visibleFaceBottomYRatio": 1.0952380952380953,
             "sourceHeadHeight": 83,
             "sourceMeasuredHeadHeight": 93,
             "opticalHeadCompensation": 10,
             "estimatedOpticalHeadHeight": 94.12048192771084,
-            "upperBodyBandSha256": "0ccc213eed44e029cfa659fcffb491b11ed1841ece6d8ea234cffb0f48eb5e90",
+            "upperBodyBandSha256": "17b029580300a313949f72c7b4bac06d331eaf1b41cbd11a5705269d87438223",
+            "headBandSha256": "9c8fb27764d3d7b820129c0a67bbfc0c2775b6da0ff6ffb68fa4e080395f7a0d",
             "sourceDetectionMethod": "face-safe-three-head-rig",
             "sourceFaceBottom": 105,
-            "frameSha256": "4e44ae153d2a71432a8372dd5e2e24d6490100ec9c6390192556702542411e35",
+            "frameSha256": "00740cf8513bd987f3ca97f75d84e509a545fc31f2ea95aad58ee9ec55b42691",
             "rigHashMatches": true
           }
         ],
@@ -1284,44 +1357,45 @@
             "measuredBodyHeight": 168,
             "measuredBodyToHeadRatio": 2,
             "headHeightDelta": 0,
-            "headWidth": 100,
-            "expectedHeadWidth": 92,
-            "headWidthDelta": 8,
-            "visibleFaceWidth": 53,
-            "visibleFaceHeight": 53,
-            "visibleFaceArea": 1146,
-            "visibleFaceTop": 52,
-            "visibleFaceBottom": 104,
-            "visibleFaceCenterYRatio": 0.7738095238095238,
-            "visibleFaceBottomYRatio": 1.0833333333333333,
+            "headWidth": 105,
+            "expectedHeadWidth": 105,
+            "headWidthDelta": 0,
+            "visibleFaceWidth": 54,
+            "visibleFaceHeight": 55,
+            "visibleFaceArea": 1235,
+            "visibleFaceTop": 53,
+            "visibleFaceBottom": 107,
+            "visibleFaceCenterYRatio": 0.7976190476190477,
+            "visibleFaceBottomYRatio": 1.119047619047619,
             "sourceHeadHeight": 73,
             "sourceMeasuredHeadHeight": 83,
             "opticalHeadCompensation": 10,
             "estimatedOpticalHeadHeight": 95.5068493150685,
-            "upperBodyBandSha256": "3869ecda3026af92b0374a27bea81ac92270538f6fa94551393adce930f7e691",
+            "upperBodyBandSha256": "08def8a8418e1e06a79df485464105c4cd0808a8ac7e309e7f388f1dc2ee272e",
+            "headBandSha256": "24208a63b9f9597b963869f2d21eff8b7a73cabd26ed9f309eaff10df992437d",
             "sourceDetectionMethod": "face-safe-three-head-rig",
             "sourceFaceBottom": 95,
-            "frameSha256": "23889b04b75b332876fc50726a2a8e3eb64ff4f8225b0ea6ab929a71d155da74",
+            "frameSha256": "b1a03884cfd578fd88ae815652ee4b184bd4920da58dfb2b0f9c00e5be02e729",
             "rigHashMatches": true
           },
           {
-            "left": 45,
+            "left": 44,
             "top": 13,
-            "right": 147,
+            "right": 148,
             "bottom": 264,
-            "characterWidth": 103,
+            "characterWidth": 105,
             "characterHeight": 252,
             "characterCenterX": 96,
             "measuredHeadHeight": 84,
             "measuredBodyHeight": 168,
             "measuredBodyToHeadRatio": 2,
             "headHeightDelta": 0,
-            "headWidth": 103,
-            "expectedHeadWidth": 92,
-            "headWidthDelta": 11,
-            "visibleFaceWidth": 53,
+            "headWidth": 105,
+            "expectedHeadWidth": 105,
+            "headWidthDelta": 0,
+            "visibleFaceWidth": 54,
             "visibleFaceHeight": 55,
-            "visibleFaceArea": 1215,
+            "visibleFaceArea": 1235,
             "visibleFaceTop": 53,
             "visibleFaceBottom": 107,
             "visibleFaceCenterYRatio": 0.7976190476190477,
@@ -1330,10 +1404,11 @@
             "sourceMeasuredHeadHeight": 81,
             "opticalHeadCompensation": 10,
             "estimatedOpticalHeadHeight": 95.83098591549296,
-            "upperBodyBandSha256": "7357a24f313a5746166874929196f0690e2221e4ce1cf5aba2bf4283f089e647",
+            "upperBodyBandSha256": "3180a79cd50d748ec6e3bcdaf6bf54690db872f352f6fdf2d14a2fe08b118d96",
+            "headBandSha256": "24208a63b9f9597b963869f2d21eff8b7a73cabd26ed9f309eaff10df992437d",
             "sourceDetectionMethod": "face-safe-three-head-rig",
             "sourceFaceBottom": 93,
-            "frameSha256": "3bddc431f1b00775091a3b6aecf52b33e22f9a70939bf063660b55143c02d34d",
+            "frameSha256": "608ef1423c92bfc3d70aa22eee6dff30f0235eed239833109c98f8d68365c571",
             "rigHashMatches": true
           },
           {
@@ -1348,24 +1423,25 @@
             "measuredBodyHeight": 168,
             "measuredBodyToHeadRatio": 2,
             "headHeightDelta": 0,
-            "headWidth": 102,
-            "expectedHeadWidth": 92,
-            "headWidthDelta": 10,
-            "visibleFaceWidth": 53,
-            "visibleFaceHeight": 54,
-            "visibleFaceArea": 1181,
+            "headWidth": 105,
+            "expectedHeadWidth": 105,
+            "headWidthDelta": 0,
+            "visibleFaceWidth": 54,
+            "visibleFaceHeight": 55,
+            "visibleFaceArea": 1235,
             "visibleFaceTop": 53,
-            "visibleFaceBottom": 106,
-            "visibleFaceCenterYRatio": 0.7916666666666666,
-            "visibleFaceBottomYRatio": 1.1071428571428572,
+            "visibleFaceBottom": 107,
+            "visibleFaceCenterYRatio": 0.7976190476190477,
+            "visibleFaceBottomYRatio": 1.119047619047619,
             "sourceHeadHeight": 71,
             "sourceMeasuredHeadHeight": 81,
             "opticalHeadCompensation": 10,
             "estimatedOpticalHeadHeight": 95.83098591549296,
-            "upperBodyBandSha256": "999dfbed08e681d89bc9e59993e12b79a651ce4d894b83b6130d47216f476c8d",
+            "upperBodyBandSha256": "8858bdc43e95700e4254fd2a724679d03c577374ef534275f94b76a7c1492830",
+            "headBandSha256": "24208a63b9f9597b963869f2d21eff8b7a73cabd26ed9f309eaff10df992437d",
             "sourceDetectionMethod": "face-safe-three-head-rig",
             "sourceFaceBottom": 93,
-            "frameSha256": "f8edc0d5e7cb6262a94008924e19661bfb89893885e68410cfc4b57361a29c07",
+            "frameSha256": "bfff620cc15967035cb256b2f71cb6ec851806a006b438fd33b5bd530795b914",
             "rigHashMatches": true
           }
         ],
@@ -1382,44 +1458,45 @@
             "measuredBodyHeight": 168,
             "measuredBodyToHeadRatio": 2,
             "headHeightDelta": 0,
-            "headWidth": 100,
-            "expectedHeadWidth": 92,
-            "headWidthDelta": 8,
-            "visibleFaceWidth": 53,
-            "visibleFaceHeight": 53,
-            "visibleFaceArea": 1146,
-            "visibleFaceTop": 52,
-            "visibleFaceBottom": 104,
-            "visibleFaceCenterYRatio": 0.7738095238095238,
-            "visibleFaceBottomYRatio": 1.0833333333333333,
+            "headWidth": 105,
+            "expectedHeadWidth": 105,
+            "headWidthDelta": 0,
+            "visibleFaceWidth": 54,
+            "visibleFaceHeight": 55,
+            "visibleFaceArea": 1239,
+            "visibleFaceTop": 53,
+            "visibleFaceBottom": 107,
+            "visibleFaceCenterYRatio": 0.7976190476190477,
+            "visibleFaceBottomYRatio": 1.119047619047619,
             "sourceHeadHeight": 73,
             "sourceMeasuredHeadHeight": 83,
             "opticalHeadCompensation": 10,
             "estimatedOpticalHeadHeight": 95.5068493150685,
-            "upperBodyBandSha256": "3a77d3b07da4e71d4320393f7ef4f658e3fd0fc3e0faed52ec0e98788369dbd4",
+            "upperBodyBandSha256": "38c36ae2504bff7aa8a32d9730158b684c3ccd182bb1f3f0b9f39a0cbe9c573a",
+            "headBandSha256": "0d30407e07ce9438ba59967c9369c9a072a16324aa94227b4119969b94fffb1d",
             "sourceDetectionMethod": "face-safe-three-head-rig",
             "sourceFaceBottom": 95,
-            "frameSha256": "03e5246ad0ab63c26ea7736752b4ecce5fffb751fc1d918fe396dfde3840b1db",
+            "frameSha256": "906b26046be89fb5ec5b167013e4562c81c6448dd762cb39bb05d68c5b3f99af",
             "rigHashMatches": true
           },
           {
-            "left": 45,
+            "left": 44,
             "top": 13,
-            "right": 147,
+            "right": 148,
             "bottom": 264,
-            "characterWidth": 103,
+            "characterWidth": 105,
             "characterHeight": 252,
             "characterCenterX": 96,
             "measuredHeadHeight": 84,
             "measuredBodyHeight": 168,
             "measuredBodyToHeadRatio": 2,
             "headHeightDelta": 0,
-            "headWidth": 103,
-            "expectedHeadWidth": 92,
-            "headWidthDelta": 11,
-            "visibleFaceWidth": 53,
+            "headWidth": 105,
+            "expectedHeadWidth": 105,
+            "headWidthDelta": 0,
+            "visibleFaceWidth": 54,
             "visibleFaceHeight": 55,
-            "visibleFaceArea": 1215,
+            "visibleFaceArea": 1239,
             "visibleFaceTop": 53,
             "visibleFaceBottom": 107,
             "visibleFaceCenterYRatio": 0.7976190476190477,
@@ -1428,10 +1505,11 @@
             "sourceMeasuredHeadHeight": 81,
             "opticalHeadCompensation": 10,
             "estimatedOpticalHeadHeight": 95.83098591549296,
-            "upperBodyBandSha256": "54006843a241a11b099a26d6156ba8ba47b32a519ca710812a553ea5a8a3507e",
+            "upperBodyBandSha256": "54b054f7f04004b3d7811cb134572656a3f0a55333176657e490cc92682178b9",
+            "headBandSha256": "0d30407e07ce9438ba59967c9369c9a072a16324aa94227b4119969b94fffb1d",
             "sourceDetectionMethod": "face-safe-three-head-rig",
             "sourceFaceBottom": 93,
-            "frameSha256": "1f4772ca25e1c5c7ecd553bbeb0f835f393667a2e63f51010f20e379180027df",
+            "frameSha256": "9a78e6e25e9ad70f9c8ee128102b21e98312066d0f3cf4fc5fb5f2a0b7c7337e",
             "rigHashMatches": true
           },
           {
@@ -1446,24 +1524,25 @@
             "measuredBodyHeight": 168,
             "measuredBodyToHeadRatio": 2,
             "headHeightDelta": 0,
-            "headWidth": 102,
-            "expectedHeadWidth": 92,
-            "headWidthDelta": 10,
-            "visibleFaceWidth": 53,
-            "visibleFaceHeight": 54,
-            "visibleFaceArea": 1181,
+            "headWidth": 105,
+            "expectedHeadWidth": 105,
+            "headWidthDelta": 0,
+            "visibleFaceWidth": 54,
+            "visibleFaceHeight": 55,
+            "visibleFaceArea": 1239,
             "visibleFaceTop": 53,
-            "visibleFaceBottom": 106,
-            "visibleFaceCenterYRatio": 0.7916666666666666,
-            "visibleFaceBottomYRatio": 1.1071428571428572,
+            "visibleFaceBottom": 107,
+            "visibleFaceCenterYRatio": 0.7976190476190477,
+            "visibleFaceBottomYRatio": 1.119047619047619,
             "sourceHeadHeight": 71,
             "sourceMeasuredHeadHeight": 81,
             "opticalHeadCompensation": 10,
             "estimatedOpticalHeadHeight": 95.83098591549296,
-            "upperBodyBandSha256": "b74ec2fa8b36233037b413f8ca204a9079258dcf722f112c95436d751bd0298e",
+            "upperBodyBandSha256": "8e1f74967de3aebec0778100d481453d1d3a5297e5990b9f399b0ced16551f45",
+            "headBandSha256": "0d30407e07ce9438ba59967c9369c9a072a16324aa94227b4119969b94fffb1d",
             "sourceDetectionMethod": "face-safe-three-head-rig",
             "sourceFaceBottom": 93,
-            "frameSha256": "c44bf1284ea2fd4abf8b54c77add7751bd0cd6a52e11b5f3819e4bd007a61111",
+            "frameSha256": "9da75567f4a00deb2e41da84a8e80f90f992a4b2000a7a2a1e4154f0d1789bbb",
             "rigHashMatches": true
           }
         ],
@@ -1480,8 +1559,8 @@
             "measuredBodyHeight": 168,
             "measuredBodyToHeadRatio": 2,
             "headHeightDelta": 0,
-            "headWidth": 92,
-            "expectedHeadWidth": 92,
+            "headWidth": 96,
+            "expectedHeadWidth": 96,
             "headWidthDelta": 0,
             "visibleFaceWidth": null,
             "visibleFaceHeight": null,
@@ -1494,27 +1573,28 @@
             "sourceMeasuredHeadHeight": 83,
             "opticalHeadCompensation": 10,
             "estimatedOpticalHeadHeight": 95.5068493150685,
-            "upperBodyBandSha256": "9c07f01339cf6c554f6a676ef210468d934057e1159018f26b281f13b6847882",
+            "upperBodyBandSha256": "575271a73dc6b597375db97f5b1a8512108638e9978b1abbed1a77e1fd0255dc",
+            "headBandSha256": "31a787ec70bd1500853da995736a306618628671043c8ff38d88c59f5a361163",
             "sourceDetectionMethod": "face-safe-three-head-rig",
             "sourceFaceBottom": null,
-            "frameSha256": "cdfb56e5f4eb7b83c702077f0d7b4b97264527a2ebe3ad8e4952722186f7fe84",
+            "frameSha256": "7519569d1adbab6a24ac559edb284b1f50418056092045c68440538a31b2ee44",
             "rigHashMatches": true
           },
           {
-            "left": 51,
+            "left": 48,
             "top": 13,
-            "right": 140,
+            "right": 143,
             "bottom": 264,
-            "characterWidth": 90,
+            "characterWidth": 96,
             "characterHeight": 252,
             "characterCenterX": 95.5,
             "measuredHeadHeight": 84,
             "measuredBodyHeight": 168,
             "measuredBodyToHeadRatio": 2,
             "headHeightDelta": 0,
-            "headWidth": 90,
-            "expectedHeadWidth": 92,
-            "headWidthDelta": -2,
+            "headWidth": 96,
+            "expectedHeadWidth": 96,
+            "headWidthDelta": 0,
             "visibleFaceWidth": null,
             "visibleFaceHeight": null,
             "visibleFaceArea": null,
@@ -1526,10 +1606,11 @@
             "sourceMeasuredHeadHeight": 83,
             "opticalHeadCompensation": 10,
             "estimatedOpticalHeadHeight": 95.5068493150685,
-            "upperBodyBandSha256": "061fae43c29e34606fe5fc11b4786548838fc6e1f0ecb9cda64f3a5d8e4ddf7a",
+            "upperBodyBandSha256": "09edfb2699b9bdeb6ce289eeb908837b46c04236f913c84bc4932ebe720c5a67",
+            "headBandSha256": "31a787ec70bd1500853da995736a306618628671043c8ff38d88c59f5a361163",
             "sourceDetectionMethod": "face-safe-three-head-rig",
             "sourceFaceBottom": null,
-            "frameSha256": "fe2f60184bd619f3e5000c6d8400afd5d20c012c557baa70284c44b399bef3ed",
+            "frameSha256": "234ead169a9b0843a3f73b73a1a8e8ef54038989aaafbfe641c0a71334763bd3",
             "rigHashMatches": true
           },
           {
@@ -1544,9 +1625,9 @@
             "measuredBodyHeight": 168,
             "measuredBodyToHeadRatio": 2,
             "headHeightDelta": 0,
-            "headWidth": 90,
-            "expectedHeadWidth": 92,
-            "headWidthDelta": -2,
+            "headWidth": 96,
+            "expectedHeadWidth": 96,
+            "headWidthDelta": 0,
             "visibleFaceWidth": null,
             "visibleFaceHeight": null,
             "visibleFaceArea": null,
@@ -1558,10 +1639,11 @@
             "sourceMeasuredHeadHeight": 83,
             "opticalHeadCompensation": 10,
             "estimatedOpticalHeadHeight": 95.5068493150685,
-            "upperBodyBandSha256": "ceff9bf37ece33178a8cc33b8698028a0885ed7197b8d3d70c9dc95c1c25385d",
+            "upperBodyBandSha256": "c38b67de0ceab65b595ea8ddb5f4f5c7ac187d161f71c6091ead237482929e63",
+            "headBandSha256": "31a787ec70bd1500853da995736a306618628671043c8ff38d88c59f5a361163",
             "sourceDetectionMethod": "face-safe-three-head-rig",
             "sourceFaceBottom": null,
-            "frameSha256": "9324c506a96fb88c94f5911275ed5b086b500eeace3d0a83529322c86614907c",
+            "frameSha256": "a1a8bc5b4d15e7bd79adacd703caf9012b07b00a9c0e8276e43dab7a93a8fede",
             "rigHashMatches": true
           }
         ]
@@ -5580,7 +5662,8 @@
       "displayScale": 0.5
     },
     "summary": {
-      "maximumMeasuredCoreCenterDriftDisplayPx": 0.24816560059670323,
+      "maximumMeasuredCoreCenterDriftDisplayPx": 0.4398265798359873,
+      "guest03ProportionStable": true,
       "passed": true
     },
     "presets": [
@@ -5668,38 +5751,63 @@
         "directions": {
           "down": {
             "coreCenters": [
-              47.82113821138211,
+              47.839930655879805,
               47.684179281685964,
-              47.36438269655826
+              47.422472576341534
             ],
-            "maximumCoreCenterDriftDisplayPx": 0.15989829256385235
+            "maximumCoreCenterDriftDisplayPx": 0.1308533526722151,
+            "proportionHashes": [
+              "610badd4fe55654eec3893394a102aceb46f026cf614962a18cef0346dd71e5d",
+              "610badd4fe55654eec3893394a102aceb46f026cf614962a18cef0346dd71e5d",
+              "610badd4fe55654eec3893394a102aceb46f026cf614962a18cef0346dd71e5d"
+            ],
+            "proportionStable": true
           },
           "left": {
             "coreCenters": [
-              47.456671664167914,
-              47.19336268201829,
-              47.08024874148653
+              48.56931982633864,
+              47.68966666666667,
+              48.05436046511628
             ],
-            "maximumCoreCenterDriftDisplayPx": 0.13165449107481209
+            "maximumCoreCenterDriftDisplayPx": 0.4398265798359873,
+            "proportionHashes": [
+              "5f7006bd9fb58476d748191ef0b555a267c11fd0f3ac4b38e52a9437f9f2898d",
+              "5f7006bd9fb58476d748191ef0b555a267c11fd0f3ac4b38e52a9437f9f2898d",
+              "5f7006bd9fb58476d748191ef0b555a267c11fd0f3ac4b38e52a9437f9f2898d"
+            ],
+            "proportionStable": true
           },
           "right": {
             "coreCenters": [
-              48.06798442647499,
-              48.18618821936357,
-              48.39147172046195
+              47.84253341080767,
+              48.7219805955169,
+              48.36522753792299
             ],
-            "maximumCoreCenterDriftDisplayPx": 0.10264175054918923
+            "maximumCoreCenterDriftDisplayPx": 0.4397235923546141,
+            "proportionHashes": [
+              "6f3ad6bf9678ee428c87f77af2d6c18bec05b30169050becce27cc2d0f3f35de",
+              "6f3ad6bf9678ee428c87f77af2d6c18bec05b30169050becce27cc2d0f3f35de",
+              "6f3ad6bf9678ee428c87f77af2d6c18bec05b30169050becce27cc2d0f3f35de"
+            ],
+            "proportionStable": true
           },
           "up": {
             "coreCenters": [
-              47.65584795321637,
-              48.02682926829268,
-              48.209720176730485
+              47.73744292237443,
+              47.48982558139535,
+              47.69092465753425
             ],
-            "maximumCoreCenterDriftDisplayPx": 0.18549065753815341
+            "maximumCoreCenterDriftDisplayPx": 0.12380867048953803,
+            "proportionHashes": [
+              "4442b3c7c789c140487014fe152c62729af232cb85eeba88d30117b8cab5a628",
+              "4442b3c7c789c140487014fe152c62729af232cb85eeba88d30117b8cab5a628",
+              "4442b3c7c789c140487014fe152c62729af232cb85eeba88d30117b8cab5a628"
+            ],
+            "proportionStable": true
           }
         },
-        "maximumCoreCenterDriftDisplayPx": 0.18549065753815341
+        "maximumCoreCenterDriftDisplayPx": 0.4398265798359873,
+        "proportionStable": true
       },
       {
         "id": "masculine-charcoal-blazer",

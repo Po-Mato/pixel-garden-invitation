@@ -1,6 +1,6 @@
 export const defaultGuestAssetRevision = "guest-alpha-safe-face-rig-v11";
 export const guest01AssetRevision = "guest01-true-three-head-fixed-bag-v13";
-export const guest03AssetRevision = "guest03-optical-three-head-v12";
+export const guest03AssetRevision = "guest03-walk-proportion-lock-v13";
 
 export const guestAssetRevisions: Readonly<Partial<Record<string, string>>> = {
   "feminine-long-wave-dress": guest01AssetRevision,
