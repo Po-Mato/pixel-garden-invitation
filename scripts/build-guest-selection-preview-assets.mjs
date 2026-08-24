@@ -64,6 +64,10 @@ const safeUnifiedDetectionMethod = "face-safe-three-head-rig";
 // geometric guide. Scale the complete head mass further before compressing the
 // body so the final sprite reads as three-head-tall at its actual UI size.
 const guest01OpticalHeadCompensation = 20;
+// The tailored suit keeps a long, uninterrupted torso line at mobile size.
+// Enlarge guest-03's complete head mass enough to preserve a visible three-head
+// silhouette without changing the canonical transparent source artwork.
+const guest03OpticalHeadCompensation = 10;
 const guest01AccessoryAnchorStep = Object.freeze({
   down: 1,
   left: 1,
@@ -1148,11 +1152,13 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
   const minimumSafeFrontToProfileFaceWidthRatio = 1;
   const maximumSafeFrontToProfileFaceWidthRatio = 1.6;
   const maximumSafeFrontToProfileFaceWidthRatioByGuest = Object.freeze({
-    "guest-01": 1.35
+    "guest-01": 1.35,
+    "guest-03": 1.58
   });
   const maximumSafeFrontToProfileFaceAreaRatio = 2.25;
   const maximumSafeFrontToProfileFaceAreaRatioByGuest = Object.freeze({
-    "guest-01": 1.65
+    "guest-01": 1.65,
+    "guest-03": 1.7
   });
   const minimumSafeFrontToProfileHeadWidthRatio = 0.8;
   const maximumSafeFrontToProfileHeadWidthRatio = 1.24;
@@ -1510,6 +1516,7 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
       opticalLandmarkRule: "median visible face center and chin anchors by visible direction",
       motionRule: "symmetric first and third steps, matched side stride, stable center and baseline",
       guest01OpticalHeadCompensation,
+      guest03OpticalHeadCompensation,
       guest01LowerBodyStrideOffsets,
       guest01AccessoryRule:
         "the complete upper body and handbag band is pixel-locked within each direction"
@@ -1851,9 +1858,15 @@ export async function buildGuestSelectionPreviewAssets({
         const sourceMeasuredHeadHeight = usesUnifiedRig
           ? baseFrame.landmark?.headHeight ?? upSourceHeadHeightConsensus
           : baseFrame.landmark?.headHeight ?? upSourceHeadHeightConsensus;
-        let sourceHeadHeight = guest === "guest-01"
-          ? Math.max(2, sourceMeasuredHeadHeight - guest01OpticalHeadCompensation)
-          : sourceMeasuredHeadHeight;
+        const opticalHeadCompensation = guest === "guest-01"
+          ? guest01OpticalHeadCompensation
+          : guest === "guest-03"
+            ? guest03OpticalHeadCompensation
+            : 0;
+        let sourceHeadHeight = Math.max(
+          2,
+          sourceMeasuredHeadHeight - opticalHeadCompensation
+        );
         const renderCandidate = async (candidateHeadHeight) => {
           const rigged = await normalizeVerticalRig(
             baseFrame.normalized,

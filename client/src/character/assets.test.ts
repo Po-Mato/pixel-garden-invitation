@@ -68,3 +68,18 @@ it("통일 광학 리그 에셋은 기존 서비스 워커 캐시와 다른 URL�
     "./characters/generated/guests/preview/feminine-champagne-navy-skirt__idle.png?v=guest-alpha-safe-face-rig-v11"
   );
 });
+
+it("3번 캐릭터는 전용 광학 3등신 자산 버전을 사용한다", () => {
+  const layer = resolveCharacterLayers(
+    { presetId: "masculine-navy-suit" },
+    "./",
+    "preview"
+  )[0];
+
+  expect(layer.walkUrl).toBe(
+    "./characters/generated/guests/preview/masculine-navy-suit__walk.png?v=guest03-optical-three-head-v12"
+  );
+  expect(layer.idleUrl).toBe(
+    "./characters/generated/guests/preview/masculine-navy-suit__idle.png?v=guest03-optical-three-head-v12"
+  );
+});

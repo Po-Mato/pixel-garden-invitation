@@ -183,6 +183,47 @@ test("1번 캐릭터는 광학 3등신 보정과 방향별 고정 가방 리그�
   }
 });
 
+test("3번 캐릭터는 수트의 긴 세로선을 상쇄하는 광학 3등신을 유지한다", async () => {
+  const report = await auditGuestSelectionPreviewAssets({ catalog });
+  const guest03 = report.presets.find((preset) => preset.guest === "guest-03");
+
+  assert.ok(guest03, "guest-03 감사 결과가 필요합니다.");
+  assert.equal(report.policy.guest03OpticalHeadCompensation, 10);
+  assert.ok(
+    guest03.opticalHead.frontToProfileHeadWidthRatio >= 0.9
+      && guest03.opticalHead.frontToProfileHeadWidthRatio <= 1.1,
+    "guest-03 정면과 측면의 전체 머리 부피가 같은 크기로 읽혀야 합니다."
+  );
+  assert.ok(
+    guest03.opticalFace.frontToProfileFaceWidthRatio
+      <= report.policy.maximumSafeFrontToProfileFaceWidthRatioByGuest["guest-03"],
+    "guest-03 정면 얼굴 폭은 측면 대비 강화 기준을 넘으면 안 됩니다."
+  );
+  assert.ok(
+    guest03.opticalFace.frontToProfileFaceAreaRatio
+      <= report.policy.maximumSafeFrontToProfileFaceAreaRatioByGuest["guest-03"],
+    "guest-03 정면 얼굴 면적은 측면 대비 강화 기준을 넘으면 안 됩니다."
+  );
+  assert.ok(
+    guest03.motion.maximumCenterDrift <= report.policy.maximumStrideCenterDrift,
+    "guest-03의 확대된 머리 리그에서도 보행 중심이 안정돼야 합니다."
+  );
+
+  const frames = Object.values(guest03.directions).flat();
+  assert.equal(
+    frames.every((frame) => frame.opticalHeadCompensation === 10),
+    true,
+    "guest-03의 12컷은 같은 광학 머리 보정량을 사용해야 합니다."
+  );
+  assert.equal(
+    frames.every((frame) => (
+      frame.estimatedOpticalHeadHeight >= report.policy.contentHeight * 0.37
+    )),
+    true,
+    "guest-03 머리 실루엣은 수트의 4등신 착시를 상쇄하도록 충분히 확대돼야 합니다."
+  );
+});
+
 test("v10 원화는 실제 투명 배경과 정확한 좌우 반전 방향을 보장한다", async () => {
   const sourceRoot = join(root, "character-assets/reference/guest-unified-rig-sources/v10");
   const integrity = JSON.parse(await readFile(
