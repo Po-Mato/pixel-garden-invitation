@@ -1,16 +1,15 @@
-# Guest 03 four-step walk source
+# Archived guest 03 high-knee experiment
 
-The 4x4 source uses the generated navy-suit character sheet as its base. The
-fourth side-facing passing pose is prepared from the left-facing forward-knee
-edit, with its connected checkerboard background removed and the right-facing
-pose mirrored deterministically.
+This generated 4x4 experiment is retained only for visual provenance. It is not
+used by the selection-preview or runtime asset builder because its second and
+fourth frames lift the knee instead of returning to the shared neutral pose.
 
-Frame order per direction:
+The active builder uses the reviewed v10 three-frame source and expands it as:
 
 1. right-foot contact
-2. left-foot passing
+2. neutral
 3. left-foot contact
-4. right-foot passing
+4. mirrored neutral
 
-The selection-preview builder re-locks head, chin, shoulders, three-head-tall
-height, center, and foot baseline before promotion to runtime assets.
+The builder re-locks head, chin, shoulders, three-head-tall height, center, and
+foot baseline before promotion to runtime assets.

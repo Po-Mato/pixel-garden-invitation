@@ -13,10 +13,23 @@ const catalog = JSON.parse(
   await readFile(join(root, "character-assets/guest-character-presets.json"), "utf8")
 );
 
+function opaqueSpanInRows(data, info, firstRow) {
+  let left = info.width;
+  let right = -1;
+  for (let y = firstRow; y < info.height; y += 1) {
+    for (let x = 0; x < info.width; x += 1) {
+      if (data[(y * info.width + x) * info.channels + 3] <= 12) continue;
+      left = Math.min(left, x);
+      right = Math.max(right, x);
+    }
+  }
+  return right >= left ? right - left + 1 : 0;
+}
+
 test("선택 화면의 12명 192프레임은 2배 해상도와 동일한 3등신 기준을 지킨다", async () => {
   const report = await auditGuestSelectionPreviewAssets({ catalog });
 
-  assert.equal(report.version, 10);
+  assert.equal(report.version, 11);
   assert.deepEqual(report.policy.source, { width: 192, height: 288 });
   assert.equal(report.summary.presetCount, 12);
   assert.equal(report.summary.frameCount, 192);
@@ -75,13 +88,11 @@ test("각 캐릭터의 상하좌우 보행 4컷은 하나의 고정 리그에 �
   }
 });
 
-test("12명 모두 공통 3등신·2.5D 리그와 3번 전용 4단계 원화를 사용한다", async () => {
+test("12명 모두 공통 3등신·2.5D 리그의 중립 분리 보행을 사용한다", async () => {
   const report = await auditGuestSelectionPreviewAssets({ catalog });
 
   for (const preset of report.presets) {
-    assert.equal(preset.sourceSet, preset.guest === "guest-03"
-      ? "v1-generated-four-step-rig"
-      : "v10-alpha-safe-unified-rig");
+    assert.equal(preset.sourceSet, "v10-alpha-safe-unified-rig");
   }
 
   const unifiedSourceRoot = join(
@@ -92,10 +103,6 @@ test("12명 모두 공통 3등신·2.5D 리그와 3번 전용 4단계 원화를 
     unifiedSourceRoot,
     `${preset.reference.walkSourceGuest}-walk-sheet.png`
   ))));
-  await access(join(
-    root,
-    "character-assets/reference/guest-four-step-walk-sources/v1/guest-03-walk-sheet.png"
-  ));
 });
 
 test("얼굴 보존 리그의 정면·측면 머리와 좌우 얼굴은 안전 허용 범위 안에 있다", async () => {
@@ -226,7 +233,7 @@ test("3번 캐릭터는 수트의 긴 세로선을 상쇄하는 광학 3등신�
       down: [96, 96, 96, 96],
       left: [105, 105, 105, 105],
       right: [105, 105, 105, 105],
-      up: [97, 97, 97, 97]
+      up: [96, 96, 96, 96]
     },
     "guest-03의 방향·보행 프레임이 바뀌어도 머리 폭은 같아야 합니다."
   );
@@ -387,7 +394,7 @@ test("통일 광학 리그 보행 리듬과 최종 프레임 중심·발 기준�
     );
     assert.equal(preset.motion.fourStepGaitPassed, true);
     for (const direction of Object.values(preset.motion.directions)) {
-      assert.equal(direction.oppositePassingPoseDistinct, true);
+      assert.equal(direction.neutralPairMirrored, true);
     }
   }
 });
@@ -405,7 +412,7 @@ test("실제 48×72 표시 크기에서도 보행 상체 중심은 1px 안에서
   }
 });
 
-test("통일 광학 리그 12종은 방향별 네 개의 서로 다른 양발 보행 포즈로 이어진다", async () => {
+test("통일 광학 리그 12종은 반대 발 착지 사이에 2·4번 중립 포즈를 둔다", async () => {
   const policy = catalog.frame.selectionPreview;
   const sourceRoot = join(root, "character-assets/reference/guest-unified-rig-sources/v10");
   const previewRoot = join(root, "character-assets/source/guests-preview");
@@ -437,9 +444,44 @@ test("통일 광학 리그 12종은 방향별 네 개의 서로 다른 양발 �
         alphaDifference(frames[1], frames[2]) >= 0.001,
         `${guest} ${catalog.frame.walk.rows[row]} 오른발 포즈가 중립 포즈와 구분되어야 합니다.`
       );
+    }
+  }
+});
+
+test("3번 캐릭터의 네 방향 2·4컷은 무릎을 들지 않는 중립 자세다", async () => {
+  const policy = catalog.frame.selectionPreview;
+  const walkPath = join(
+    root,
+    "character-assets/source/guests-preview/masculine-navy-suit__walk.png"
+  );
+  const footBandTop = Math.floor(policy.source.height * 0.82);
+
+  for (let row = 0; row < 4; row += 1) {
+    const spans = [];
+    for (let column = 0; column < 4; column += 1) {
+      const { data, info } = await sharp(walkPath)
+        .extract({
+          left: column * policy.source.width,
+          top: row * policy.source.height,
+          width: policy.source.width,
+          height: policy.source.height
+        })
+        .ensureAlpha()
+        .raw()
+        .toBuffer({ resolveWithObject: true });
+      spans.push(opaqueSpanInRows(data, info, footBandTop));
+    }
+
+    assert.equal(spans[1], spans[3], `guest-03 ${catalog.frame.walk.rows[row]} 중립 발 폭`);
+    if (row === 1 || row === 2) {
       assert.ok(
-        alphaDifference(frames[1], frames[3]) >= 0.001,
-        `${guest} ${catalog.frame.walk.rows[row]} 2번과 4번 컷은 서로 다른 발을 들어야 합니다.`
+        spans[1] <= Math.min(spans[0], spans[2]) * 0.6,
+        `guest-03 ${catalog.frame.walk.rows[row]} 2·4컷은 옆모습 발을 모아야 합니다: ${spans.join(", ")}`
+      );
+    } else {
+      assert.ok(
+        spans[1] >= Math.max(spans[0], spans[2]),
+        `guest-03 ${catalog.frame.walk.rows[row]} 2·4컷은 두 발이 바닥에 보여야 합니다: ${spans.join(", ")}`
       );
     }
   }

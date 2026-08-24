@@ -1,24 +1,24 @@
 {
   "version": 2,
-  "approvedAt": "2026-08-24T22:18:13.042Z",
-  "reason": "12 guest sprites now use four distinct alternating-foot walk frames; guest-03 artwork was intentionally redrawn",
-  "sha256": "18a16bae85ab0c6052e5647b626d59037fc0be459e432d844dfbf2b2f64f6444",
+  "approvedAt": "2026-08-24T23:17:50.829Z",
+  "reason": "guest-03 frames 2 and 4 now use neutral passing poses matching the other guests",
+  "sha256": "b777556fb68d3f70f04838909bc298270ede39e4a4de9b055474c42f0387a651",
   "provenance": {
     "schemaVersion": 1,
     "subjectKind": "capture-set",
     "sourceKind": "local",
     "runId": null,
     "runAttempt": null,
-    "commitSha": "040badd0b64973239c9195344aead1abc4019584",
+    "commitSha": "d83eb7e0d41655c75a42baac9942e8319a2dfe5c",
     "runUrl": null,
     "checksumAlgorithm": "sha256",
     "artifactChecksumScope": "sorted-capture-set-manifest",
-    "artifactSha256": "5fc0d470b399f467d8344cd0a76f4cb4a940272cc27a16589d1462c0ff025364",
+    "artifactSha256": "661f85eb0d299cd99b8f193b02ab2bb2227455fbd03b560a4e72fc187e07149a",
     "files": [
       {
         "logicalPath": "mobile-game-current",
-        "size": 4625371,
-        "sha256": "8b281367600c01453066ecbcac689b2e13c2cb2de5ac9f8e95fb301a2f501ce8"
+        "size": 4623954,
+        "sha256": "9b22da2191c74b393e301747cdb5d23167ccd7cdd484fe56362026edee5ca0b8"
       }
     ]
   },
