@@ -1,5 +1,5 @@
 {
-  "version": 19,
+  "version": 20,
   "thresholds": {
     "maxLuminanceDelta": 0.03,
     "minDynamicRange": 0.16,
@@ -24,7 +24,7 @@
       "characterEdgeContrast": 2.51,
       "characterPresetCount": 12,
       "characterEdgeContrasts": {
-        "feminine-long-wave-dress": 3.01,
+        "feminine-long-wave-dress": 2.964,
         "feminine-formal-hanbok": 2.998,
         "masculine-navy-suit": 3.086,
         "masculine-charcoal-blazer": 3.123,
@@ -41,9 +41,9 @@
       "movementFrameCount": 3,
       "characterMovementEdgeContrasts": {
         "feminine-long-wave-dress": {
-          "down-0": 3.042,
-          "down-1": 3.01,
-          "down-2": 3.042
+          "down-0": 3.056,
+          "down-1": 2.964,
+          "down-2": 3.053
         },
         "feminine-formal-hanbok": {
           "down-0": 2.996,
@@ -51,9 +51,9 @@
           "down-2": 2.946
         },
         "masculine-navy-suit": {
-          "down-0": 3.086,
+          "down-0": 3.061,
           "down-1": 3.086,
-          "down-2": 3.086
+          "down-2": 3.089
         },
         "masculine-charcoal-blazer": {
           "down-0": 3.089,
@@ -112,9 +112,9 @@
       "characterEdgeContrast": 2.09,
       "characterPresetCount": 12,
       "characterEdgeContrasts": {
-        "feminine-long-wave-dress": 2.115,
+        "feminine-long-wave-dress": 2.1,
         "feminine-formal-hanbok": 2.098,
-        "masculine-navy-suit": 2.125,
+        "masculine-navy-suit": 2.133,
         "masculine-charcoal-blazer": 2.147,
         "feminine-sage-bolero-dress": 2.115,
         "feminine-champagne-navy-skirt": 2.09,
@@ -129,9 +129,9 @@
       "movementFrameCount": 3,
       "characterMovementEdgeContrasts": {
         "feminine-long-wave-dress": {
-          "down-0": 2.123,
-          "down-1": 2.115,
-          "down-2": 2.123
+          "down-0": 2.1,
+          "down-1": 2.1,
+          "down-2": 2.1
         },
         "feminine-formal-hanbok": {
           "down-0": 2.092,
@@ -140,8 +140,8 @@
         },
         "masculine-navy-suit": {
           "down-0": 2.125,
-          "down-1": 2.125,
-          "down-2": 2.115
+          "down-1": 2.133,
+          "down-2": 2.133
         },
         "masculine-charcoal-blazer": {
           "down-0": 2.125,
@@ -200,7 +200,7 @@
       "characterEdgeContrast": 2.54,
       "characterPresetCount": 12,
       "characterEdgeContrasts": {
-        "feminine-long-wave-dress": 3.144,
+        "feminine-long-wave-dress": 3.051,
         "feminine-formal-hanbok": 3.156,
         "masculine-navy-suit": 3.247,
         "masculine-charcoal-blazer": 3.281,
@@ -217,8 +217,8 @@
       "movementFrameCount": 3,
       "characterMovementEdgeContrasts": {
         "feminine-long-wave-dress": {
-          "down-0": 3.188,
-          "down-1": 3.144,
+          "down-0": 3.164,
+          "down-1": 3.051,
           "down-2": 3.194
         },
         "feminine-formal-hanbok": {
@@ -229,7 +229,7 @@
         "masculine-navy-suit": {
           "down-0": 3.247,
           "down-1": 3.247,
-          "down-2": 3.247
+          "down-2": 3.281
         },
         "masculine-charcoal-blazer": {
           "down-0": 3.281,
@@ -284,13 +284,13 @@
       "p90Luminance": 0.408,
       "sceneAverageLuminance": 0.263,
       "sceneP10Luminance": 0.068,
-      "sceneP90Luminance": 0.407,
+      "sceneP90Luminance": 0.408,
       "characterEdgeContrast": 1.909,
       "characterPresetCount": 12,
       "characterEdgeContrasts": {
-        "feminine-long-wave-dress": 2.376,
+        "feminine-long-wave-dress": 2.377,
         "feminine-formal-hanbok": 2.193,
-        "masculine-navy-suit": 2.558,
+        "masculine-navy-suit": 2.62,
         "masculine-charcoal-blazer": 2.673,
         "feminine-sage-bolero-dress": 2.483,
         "feminine-champagne-navy-skirt": 2.411,
@@ -305,9 +305,9 @@
       "movementFrameCount": 3,
       "characterMovementEdgeContrasts": {
         "feminine-long-wave-dress": {
-          "down-0": 2.4,
-          "down-1": 2.376,
-          "down-2": 2.435
+          "down-0": 2.412,
+          "down-1": 2.377,
+          "down-2": 2.446
         },
         "feminine-formal-hanbok": {
           "down-0": 2.138,
@@ -315,9 +315,9 @@
           "down-2": 2.343
         },
         "masculine-navy-suit": {
-          "down-0": 2.658,
-          "down-1": 2.558,
-          "down-2": 2.633
+          "down-0": 2.558,
+          "down-1": 2.62,
+          "down-2": 2.624
         },
         "masculine-charcoal-blazer": {
           "down-0": 2.636,
@@ -376,9 +376,9 @@
       "characterEdgeContrast": 2.648,
       "characterPresetCount": 12,
       "characterEdgeContrasts": {
-        "feminine-long-wave-dress": 2.713,
+        "feminine-long-wave-dress": 2.715,
         "feminine-formal-hanbok": 2.666,
-        "masculine-navy-suit": 2.758,
+        "masculine-navy-suit": 2.787,
         "masculine-charcoal-blazer": 2.792,
         "feminine-sage-bolero-dress": 2.727,
         "feminine-champagne-navy-skirt": 2.675,
@@ -393,9 +393,9 @@
       "movementFrameCount": 3,
       "characterMovementEdgeContrasts": {
         "feminine-long-wave-dress": {
-          "down-0": 2.715,
-          "down-1": 2.713,
-          "down-2": 2.715
+          "down-0": 2.72,
+          "down-1": 2.715,
+          "down-2": 2.72
         },
         "feminine-formal-hanbok": {
           "down-0": 2.657,
@@ -403,9 +403,9 @@
           "down-2": 2.666
         },
         "masculine-navy-suit": {
-          "down-0": 2.749,
-          "down-1": 2.758,
-          "down-2": 2.746
+          "down-0": 2.777,
+          "down-1": 2.787,
+          "down-2": 2.79
         },
         "masculine-charcoal-blazer": {
           "down-0": 2.777,
@@ -464,9 +464,9 @@
       "characterEdgeContrast": 1.508,
       "characterPresetCount": 12,
       "characterEdgeContrasts": {
-        "feminine-long-wave-dress": 1.676,
+        "feminine-long-wave-dress": 1.601,
         "feminine-formal-hanbok": 2.106,
-        "masculine-navy-suit": 1.918,
+        "masculine-navy-suit": 2.177,
         "masculine-charcoal-blazer": 2.245,
         "feminine-sage-bolero-dress": 1.801,
         "feminine-champagne-navy-skirt": 1.842,
@@ -481,9 +481,9 @@
       "movementFrameCount": 3,
       "characterMovementEdgeContrasts": {
         "feminine-long-wave-dress": {
-          "down-0": 1.691,
-          "down-1": 1.676,
-          "down-2": 1.736
+          "down-0": 1.624,
+          "down-1": 1.601,
+          "down-2": 1.65
         },
         "feminine-formal-hanbok": {
           "down-0": 1.901,
@@ -491,9 +491,9 @@
           "down-2": 2.015
         },
         "masculine-navy-suit": {
-          "down-0": 2.177,
-          "down-1": 1.918,
-          "down-2": 2.106
+          "down-0": 1.983,
+          "down-1": 2.177,
+          "down-2": 2.177
         },
         "masculine-charcoal-blazer": {
           "down-0": 2.106,
@@ -552,9 +552,9 @@
       "characterEdgeContrast": 2.458,
       "characterPresetCount": 12,
       "characterEdgeContrasts": {
-        "feminine-long-wave-dress": 2.834,
+        "feminine-long-wave-dress": 2.838,
         "feminine-formal-hanbok": 3.041,
-        "masculine-navy-suit": 3.274,
+        "masculine-navy-suit": 3.257,
         "masculine-charcoal-blazer": 3.264,
         "feminine-sage-bolero-dress": 2.945,
         "feminine-champagne-navy-skirt": 2.915,
@@ -569,9 +569,9 @@
       "movementFrameCount": 3,
       "characterMovementEdgeContrasts": {
         "feminine-long-wave-dress": {
-          "down-0": 3.041,
-          "down-1": 2.834,
-          "down-2": 3.041
+          "down-0": 3.084,
+          "down-1": 2.838,
+          "down-2": 3.05
         },
         "feminine-formal-hanbok": {
           "down-0": 2.954,
@@ -579,9 +579,9 @@
           "down-2": 2.876
         },
         "masculine-navy-suit": {
-          "down-0": 3.257,
-          "down-1": 3.274,
-          "down-2": 3.178
+          "down-0": 3.185,
+          "down-1": 3.257,
+          "down-2": 3.274
         },
         "masculine-charcoal-blazer": {
           "down-0": 3.257,
@@ -640,9 +640,9 @@
       "characterEdgeContrast": 2.258,
       "characterPresetCount": 12,
       "characterEdgeContrasts": {
-        "feminine-long-wave-dress": 2.356,
+        "feminine-long-wave-dress": 2.382,
         "feminine-formal-hanbok": 2.313,
-        "masculine-navy-suit": 2.458,
+        "masculine-navy-suit": 2.501,
         "masculine-charcoal-blazer": 2.572,
         "feminine-sage-bolero-dress": 2.359,
         "feminine-champagne-navy-skirt": 2.321,
@@ -657,9 +657,9 @@
       "movementFrameCount": 3,
       "characterMovementEdgeContrasts": {
         "feminine-long-wave-dress": {
-          "down-0": 2.356,
-          "down-1": 2.356,
-          "down-2": 2.359
+          "down-0": 2.359,
+          "down-1": 2.382,
+          "down-2": 2.43
         },
         "feminine-formal-hanbok": {
           "down-0": 2.278,
@@ -667,9 +667,9 @@
           "down-2": 2.313
         },
         "masculine-navy-suit": {
-          "down-0": 2.569,
-          "down-1": 2.458,
-          "down-2": 2.506
+          "down-0": 2.496,
+          "down-1": 2.501,
+          "down-2": 2.503
         },
         "masculine-charcoal-blazer": {
           "down-0": 2.466,
@@ -728,9 +728,9 @@
       "characterEdgeContrast": 1.763,
       "characterPresetCount": 12,
       "characterEdgeContrasts": {
-        "feminine-long-wave-dress": 1.818,
+        "feminine-long-wave-dress": 1.867,
         "feminine-formal-hanbok": 1.763,
-        "masculine-navy-suit": 1.82,
+        "masculine-navy-suit": 1.893,
         "masculine-charcoal-blazer": 1.884,
         "feminine-sage-bolero-dress": 1.816,
         "feminine-champagne-navy-skirt": 1.765,
@@ -745,9 +745,9 @@
       "movementFrameCount": 3,
       "characterMovementEdgeContrasts": {
         "feminine-long-wave-dress": {
-          "down-0": 1.818,
-          "down-1": 1.818,
-          "down-2": 1.818
+          "down-0": 1.816,
+          "down-1": 1.867,
+          "down-2": 1.842
         },
         "feminine-formal-hanbok": {
           "down-0": 1.763,
@@ -755,9 +755,9 @@
           "down-2": 1.763
         },
         "masculine-navy-suit": {
-          "down-0": 1.846,
-          "down-1": 1.82,
-          "down-2": 1.846
+          "down-0": 1.931,
+          "down-1": 1.893,
+          "down-2": 1.879
         },
         "masculine-charcoal-blazer": {
           "down-0": 1.842,
@@ -816,9 +816,9 @@
       "characterEdgeContrast": 2.444,
       "characterPresetCount": 12,
       "characterEdgeContrasts": {
-        "feminine-long-wave-dress": 2.766,
+        "feminine-long-wave-dress": 2.724,
         "feminine-formal-hanbok": 2.676,
-        "masculine-navy-suit": 2.817,
+        "masculine-navy-suit": 2.918,
         "masculine-charcoal-blazer": 2.904,
         "feminine-sage-bolero-dress": 2.767,
         "feminine-champagne-navy-skirt": 2.613,
@@ -833,9 +833,9 @@
       "movementFrameCount": 3,
       "characterMovementEdgeContrasts": {
         "feminine-long-wave-dress": {
-          "down-0": 2.803,
-          "down-1": 2.766,
-          "down-2": 2.803
+          "down-0": 2.76,
+          "down-1": 2.724,
+          "down-2": 2.801
         },
         "feminine-formal-hanbok": {
           "down-0": 2.689,
@@ -843,9 +843,9 @@
           "down-2": 2.647
         },
         "masculine-navy-suit": {
-          "down-0": 2.88,
-          "down-1": 2.817,
-          "down-2": 2.857
+          "down-0": 2.845,
+          "down-1": 2.918,
+          "down-2": 2.901
         },
         "masculine-charcoal-blazer": {
           "down-0": 2.918,
