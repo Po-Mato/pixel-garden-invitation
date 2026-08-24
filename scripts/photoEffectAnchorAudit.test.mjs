@@ -18,13 +18,13 @@ test("audits the exact twelve generated game portraits", async () => {
     { length: 12 },
     (_, index) => `guest-${String(index + 1).padStart(2, "0")}`
   ));
-  assert.equal(reports.flatMap(({ walk }) => walk.frames).length, 144);
+  assert.equal(reports.flatMap(({ walk }) => walk.frames).length, 192);
   reports.forEach(({ walk }) => {
     assert.deepEqual(walk.frames.map(({ direction, step }) => `${direction}-${step}`), [
-      "down-1", "down-2", "down-3",
-      "left-1", "left-2", "left-3",
-      "right-1", "right-2", "right-3",
-      "up-1", "up-2", "up-3"
+      "down-1", "down-2", "down-3", "down-4",
+      "left-1", "left-2", "left-3", "left-4",
+      "right-1", "right-2", "right-3", "right-4",
+      "up-1", "up-2", "up-3", "up-4"
     ]);
   });
 });

@@ -19,7 +19,7 @@ export function getWalkFrameStyle(
   stepFrame: number,
   frameSize: SpriteFrameSize = defaultFrameSize
 ) {
-  const frame = ((stepFrame % 3) + 3) % 3;
+  const frame = ((stepFrame % 4) + 4) % 4;
   const row = directionRow[direction];
   return {
     x: frame === 0 ? 0 : frame * -frameSize.width,

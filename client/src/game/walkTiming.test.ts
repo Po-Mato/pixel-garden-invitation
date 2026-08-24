@@ -35,10 +35,10 @@ describe("walk timing audit", () => {
       .toEqual(["right", null, "left", null]);
   });
 
-  it("cycles right foot, neutral, left foot, neutral without skipping", () => {
+  it("cycles right contact, left pass, left contact, right pass without skipping", () => {
     expect(Array.from({ length: 9 }, (_, phase) => walkFrameForPhase(phase)))
-      .toEqual([0, 1, 2, 1, 0, 1, 2, 1, 0]);
-    expect(walkFrameForPhase(-1)).toBe(neutralWalkFrame);
+      .toEqual([0, 1, 2, 3, 0, 1, 2, 3, 0]);
+    expect(walkFrameForPhase(-1)).toBe(3);
     expect(advanceWalkPhase(2)).toEqual({ frame: 2, nextPhase: 3 });
   });
 

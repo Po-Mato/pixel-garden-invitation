@@ -13,13 +13,13 @@ const catalog = JSON.parse(
   await readFile(join(root, "character-assets/guest-character-presets.json"), "utf8")
 );
 
-test("선택 화면의 12명 144프레임은 2배 해상도와 동일한 3등신 기준을 지킨다", async () => {
+test("선택 화면의 12명 192프레임은 2배 해상도와 동일한 3등신 기준을 지킨다", async () => {
   const report = await auditGuestSelectionPreviewAssets({ catalog });
 
   assert.equal(report.version, 10);
   assert.deepEqual(report.policy.source, { width: 192, height: 288 });
   assert.equal(report.summary.presetCount, 12);
-  assert.equal(report.summary.frameCount, 144);
+  assert.equal(report.summary.frameCount, 192);
   assert.equal(report.summary.rigBodyToHeadRatio, 2);
   assert.equal(report.summary.measuredHeadHeightWithinTolerance, true);
   assert.ok(report.summary.minimumMeasuredHeadHeight >= report.policy.headHeight - 1);
@@ -34,7 +34,7 @@ test("선택 화면의 12명 144프레임은 2배 해상도와 동일한 3등신
   assert.equal(report.summary.opticalHeadWidthWithinTolerance, true);
   assert.equal(report.summary.landmarkFrameCount, 0);
   assert.equal(report.summary.consensusFrameCount, 0);
-  assert.equal(report.summary.faceSafeRigFrameCount, 144);
+  assert.equal(report.summary.faceSafeRigFrameCount, 192);
   assert.equal(report.summary.rigHashesMatch, true);
   assert.equal(report.summary.opticalFaceWidthWithinTolerance, true);
   assert.equal(report.summary.opticalLandmarksWithinTolerance, true);
@@ -47,6 +47,7 @@ test("선택 화면의 12명 144프레임은 2배 해상도와 동일한 3등신
       <= report.policy.maximumStepBaselineSpread
   );
   assert.equal(report.summary.motionWithinTolerance, true);
+  assert.equal(report.summary.fourStepGaitPassed, true);
   assert.ok(
     report.summary.maximumRuntimeCoreCenterDriftDisplayPx
       <= report.runtimeMotion.policy.maximumCoreCenterDriftDisplayPx
@@ -55,7 +56,7 @@ test("선택 화면의 12명 144프레임은 2배 해상도와 동일한 3등신
   assert.equal(report.summary.passed, true);
 });
 
-test("각 캐릭터의 상하좌우 보행 3컷은 하나의 고정 리그에 고정된다", async () => {
+test("각 캐릭터의 상하좌우 보행 4컷은 하나의 고정 리그에 고정된다", async () => {
   const report = await auditGuestSelectionPreviewAssets({ catalog });
 
   for (const preset of report.presets) {
@@ -69,20 +70,18 @@ test("각 캐릭터의 상하좌우 보행 3컷은 하나의 고정 리그에 �
     assert.equal(
       frames.every((frame) => frame.sourceDetectionMethod === "face-safe-three-head-rig"),
       true,
-      `${preset.guest} 12컷은 모두 동일한 고정 광학 리그를 사용해야 합니다.`
+      `${preset.guest} 16컷은 모두 동일한 고정 광학 리그를 사용해야 합니다.`
     );
   }
 });
 
-test("12명 모두 공통 3등신·2.5D 원화 시트를 사용한다", async () => {
+test("12명 모두 공통 3등신·2.5D 리그와 3번 전용 4단계 원화를 사용한다", async () => {
   const report = await auditGuestSelectionPreviewAssets({ catalog });
 
   for (const preset of report.presets) {
-    assert.equal(
-      preset.sourceSet,
-      "v10-alpha-safe-unified-rig",
-      `${preset.guest} 원화는 통일 광학 리그에서 생성돼야 합니다.`
-    );
+    assert.equal(preset.sourceSet, preset.guest === "guest-03"
+      ? "v1-generated-four-step-rig"
+      : "v10-alpha-safe-unified-rig");
   }
 
   const unifiedSourceRoot = join(
@@ -93,6 +92,10 @@ test("12명 모두 공통 3등신·2.5D 원화 시트를 사용한다", async ()
     unifiedSourceRoot,
     `${preset.reference.walkSourceGuest}-walk-sheet.png`
   ))));
+  await access(join(
+    root,
+    "character-assets/reference/guest-four-step-walk-sources/v1/guest-03-walk-sheet.png"
+  ));
 });
 
 test("얼굴 보존 리그의 정면·측면 머리와 좌우 얼굴은 안전 허용 범위 안에 있다", async () => {
@@ -154,10 +157,10 @@ test("1번 캐릭터는 광학 3등신 보정과 방향별 고정 가방 리그�
     up: 0
   });
   assert.deepEqual(report.policy.guest01LowerBodyStrideOffsets, {
-    down: [0, 0, 0],
-    left: [0, 0, 2],
-    right: [0, 0, -2],
-    up: [0, 0, 0]
+    down: [0, 0, 0, 0],
+    left: [0, 0, 2, 0],
+    right: [0, 0, -2, 0],
+    up: [0, 0, 0, 0]
   });
   assert.ok(
     guest01.motion.maximumCenterDrift <= report.policy.maximumStrideCenterDrift,
@@ -168,7 +171,7 @@ test("1번 캐릭터는 광학 3등신 보정과 방향별 고정 가방 리그�
   assert.equal(
     frames.every((frame) => frame.opticalHeadCompensation === 20),
     true,
-    "guest-01의 12컷은 같은 광학 머리 보정량을 사용해야 합니다."
+    "guest-01의 16컷은 같은 광학 머리 보정량을 사용해야 합니다."
   );
   assert.equal(
     frames.every((frame) => (
@@ -220,10 +223,10 @@ test("3번 캐릭터는 수트의 긴 세로선을 상쇄하는 광학 3등신�
   assert.deepEqual(
     guest03.opticalHead.headWidthsByDirection,
     {
-      down: [96, 96, 96],
-      left: [105, 105, 105],
-      right: [105, 105, 105],
-      up: [96, 96, 96]
+      down: [96, 96, 96, 96],
+      left: [105, 105, 105, 105],
+      right: [105, 105, 105, 105],
+      up: [97, 97, 97, 97]
     },
     "guest-03의 방향·보행 프레임이 바뀌어도 머리 폭은 같아야 합니다."
   );
@@ -240,7 +243,7 @@ test("3번 캐릭터는 수트의 긴 세로선을 상쇄하는 광학 3등신�
       && frame.bottom === report.policy.footBaseline
     )),
     true,
-    "guest-03의 12컷은 머리·몸·전체 높이와 발 기준선이 모두 같아야 합니다."
+    "guest-03의 16컷은 머리·몸·전체 높이와 발 기준선이 모두 같아야 합니다."
   );
   assert.equal(guest03.proportionStability.passed, true);
   assert.equal(guest03.proportionStability.bandBottom, 110);
@@ -268,7 +271,7 @@ test("3번 캐릭터는 수트의 긴 세로선을 상쇄하는 광학 3등신�
   assert.equal(
     frames.every((frame) => frame.opticalHeadCompensation === 10),
     true,
-    "guest-03의 12컷은 같은 광학 머리 보정량을 사용해야 합니다."
+    "guest-03의 16컷은 같은 광학 머리 보정량을 사용해야 합니다."
   );
   assert.equal(
     frames.every((frame) => (
@@ -382,6 +385,10 @@ test("통일 광학 리그 보행 리듬과 최종 프레임 중심·발 기준�
       preset.motion.maximumStepBaselineSpread <= report.policy.maximumStepBaselineSpread,
       `${preset.guest} 보행 중 발 기준선이 흔들리면 안 됩니다.`
     );
+    assert.equal(preset.motion.fourStepGaitPassed, true);
+    for (const direction of Object.values(preset.motion.directions)) {
+      assert.equal(direction.oppositePassingPoseDistinct, true);
+    }
   }
 });
 
@@ -398,7 +405,7 @@ test("실제 48×72 표시 크기에서도 보행 상체 중심은 1px 안에서
   }
 });
 
-test("통일 광학 리그 12종은 선택 화면과 게임의 실제 보행 포즈로 이어진다", async () => {
+test("통일 광학 리그 12종은 방향별 네 개의 서로 다른 양발 보행 포즈로 이어진다", async () => {
   const policy = catalog.frame.selectionPreview;
   const sourceRoot = join(root, "character-assets/reference/guest-unified-rig-sources/v10");
   const previewRoot = join(root, "character-assets/source/guests-preview");
@@ -409,7 +416,7 @@ test("통일 광학 리그 12종은 선택 화면과 게임의 실제 보행 포
     const walkPath = join(previewRoot, `${preset.id}__walk.png`);
     for (let row = 0; row < 4; row += 1) {
       const frames = [];
-      for (let column = 0; column < 3; column += 1) {
+      for (let column = 0; column < 4; column += 1) {
         const { data } = await sharp(walkPath)
           .extract({
             left: column * policy.source.width,
@@ -429,6 +436,10 @@ test("통일 광학 리그 12종은 선택 화면과 게임의 실제 보행 포
       assert.ok(
         alphaDifference(frames[1], frames[2]) >= 0.001,
         `${guest} ${catalog.frame.walk.rows[row]} 오른발 포즈가 중립 포즈와 구분되어야 합니다.`
+      );
+      assert.ok(
+        alphaDifference(frames[1], frames[3]) >= 0.001,
+        `${guest} ${catalog.frame.walk.rows[row]} 2번과 4번 컷은 서로 다른 발을 들어야 합니다.`
       );
     }
   }

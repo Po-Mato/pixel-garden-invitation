@@ -2,7 +2,8 @@ export const walkTileSizePx = 30;
 export const walkInputInitialDelayMs = 300;
 export const walkStepIntervalMs = 240;
 export const neutralWalkFrame = 1;
-export const walkFrameSequence = [0, 1, 2, 1] as const;
+export const walkFrameSequence = [0, 1, 2, 3] as const;
+export const walkPassingFrames = [1, 3] as const;
 export const walkLandingFrames = [0, 2] as const;
 export type WalkLandingFoot = "right" | "left";
 
@@ -71,11 +72,11 @@ export function auditWalkTiming(config: WalkTimingConfig = defaultWalkTiming): W
   const initialDelayRatio = stepIntervalMs > 0 ? initialDelayMs / stepIntervalMs : Number.POSITIVE_INFINITY;
   const neutralBetweenOppositeFeet = frameSequence.length === 4
     && frameSequence[0] === 0
-    && frameSequence[1] === neutralWalkFrame
+    && frameSequence[1] === walkPassingFrames[0]
     && frameSequence[2] === 2
-    && frameSequence[3] === neutralWalkFrame;
+    && frameSequence[3] === walkPassingFrames[1];
   const startsOnStrideFrame = frameSequence[0] === 0 || frameSequence[0] === 2;
-  const returnsToNeutralBeforeLoop = frameSequence.at(-1) === neutralWalkFrame;
+  const returnsToNeutralBeforeLoop = frameSequence.at(-1) === walkPassingFrames[1];
   const landingPhaseIndexes = frameSequence
     .map((frame, index) => isWalkLandingFrame(frame) ? index : -1)
     .filter((index) => index >= 0);

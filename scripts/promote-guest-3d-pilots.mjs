@@ -34,6 +34,56 @@ async function assertDimensions(filePath, expected, label) {
   }
 }
 
+async function promoteWalkSheet(source, destination, frame, rows, targetDimensions) {
+  const metadata = await sharp(source).metadata();
+  if (!metadata.hasAlpha || metadata.height !== targetDimensions.height) {
+    throw new Error(
+      `walk 원본 규격 오류: ${metadata.width}x${metadata.height}, alpha=${Boolean(metadata.hasAlpha)}`
+    );
+  }
+  if (metadata.width === targetDimensions.width) {
+    await copyFile(source, destination);
+    return;
+  }
+
+  const legacyColumns = 3;
+  const legacyWidth = frame.width * legacyColumns;
+  if (metadata.width !== legacyWidth || targetDimensions.width !== frame.width * 4) {
+    throw new Error(
+      `walk 원본 규격 오류: ${metadata.width}x${metadata.height}, alpha=${Boolean(metadata.hasAlpha)}`
+    );
+  }
+
+  const { data, info } = await sharp(source)
+    .ensureAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  const output = Buffer.alloc(targetDimensions.width * targetDimensions.height * 4);
+  const firstLegRow = Math.round(frame.height * 0.7);
+  for (let row = 0; row < rows; row += 1) {
+    for (let column = 0; column < 4; column += 1) {
+      for (let y = 0; y < frame.height; y += 1) {
+        for (let x = 0; x < frame.width; x += 1) {
+          const sourceColumn = column === 3 ? 1 : column;
+          const sourceXWithinFrame = column === 3 && y >= firstLegRow
+            ? frame.width - 1 - x
+            : x;
+          const sourceX = sourceColumn * frame.width + sourceXWithinFrame;
+          const sourceY = row * frame.height + y;
+          const targetX = column * frame.width + x;
+          const targetY = sourceY;
+          const sourceOffset = (sourceY * info.width + sourceX) * 4;
+          const targetOffset = (targetY * targetDimensions.width + targetX) * 4;
+          data.copy(output, targetOffset, sourceOffset, sourceOffset + 4);
+        }
+      }
+    }
+  }
+  await sharp(output, {
+    raw: { width: targetDimensions.width, height: targetDimensions.height, channels: 4 }
+  }).png({ compressionLevel: 9 }).toFile(destination);
+}
+
 function clampByte(value) {
   return Math.max(0, Math.min(255, Math.round(value)));
 }
@@ -180,8 +230,19 @@ export async function promoteGuest3dPilots({
     ];
 
     for (const file of files) {
-      await assertDimensions(file.source, file.dimensions, `${guestId} ${file.kind}`);
-      await copyFile(file.source, file.destination);
+      if (file.kind === "walk") {
+        await promoteWalkSheet(
+          file.source,
+          file.destination,
+          catalog.frame.source,
+          catalog.frame.walk.rows.length,
+          file.dimensions
+        );
+      } else {
+        await assertDimensions(file.source, file.dimensions, `${guestId} ${file.kind}`);
+        await copyFile(file.source, file.destination);
+      }
+      await assertDimensions(file.destination, file.dimensions, `${guestId} ${file.kind}`);
       await applyUniformDepthGrade(
         file.destination,
         catalog.frame.source,

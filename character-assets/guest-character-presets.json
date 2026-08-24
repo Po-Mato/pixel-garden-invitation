@@ -12,7 +12,7 @@
       },
       "walk": {
         "sheet": {
-          "width": 576,
+          "width": 768,
           "height": 1152
         }
       },
@@ -47,10 +47,10 @@
     },
     "walk": {
       "sheet": {
-        "width": 288,
+        "width": 384,
         "height": 576
       },
-      "columns": 3,
+      "columns": 4,
       "rows": [
         "down",
         "left",

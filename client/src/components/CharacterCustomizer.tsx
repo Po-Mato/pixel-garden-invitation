@@ -25,7 +25,7 @@ const previewDirectionLabels: Record<Direction, string> = {
   up: "뒷면",
   left: "왼쪽"
 };
-const previewWalkFrames = [0, 1, 2, 1] as const;
+const previewWalkFrames = [0, 1, 2, 3] as const;
 export const characterPreviewHintStorageKey = "wedding-garden:character-preview-hint-seen:v1";
 
 function shouldShowPreviewHint(): boolean {

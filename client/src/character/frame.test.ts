@@ -6,15 +6,17 @@ describe("getWalkFrameStyle", () => {
     expect(getWalkFrameStyle("down", 0)).toEqual({ x: 0, y: 0 });
     expect(getWalkFrameStyle("left", 1)).toEqual({ x: -48, y: -72 });
     expect(getWalkFrameStyle("right", 2)).toEqual({ x: -96, y: -144 });
-    expect(getWalkFrameStyle("up", 1)).toEqual({ x: -48, y: -216 });
+    expect(getWalkFrameStyle("up", 3)).toEqual({ x: -144, y: -216 });
   });
 
   it("normalizes arbitrary step values", () => {
-    expect(getWalkFrameStyle("down", 4)).toEqual({ x: -48, y: 0 });
+    expect(getWalkFrameStyle("down", 4)).toEqual({ x: 0, y: 0 });
+    expect(getWalkFrameStyle("down", -1)).toEqual({ x: -144, y: 0 });
   });
 
   it("maps offsets with a custom high-density frame size", () => {
     expect(getWalkFrameStyle("left", 1, { width: 96, height: 144 })).toEqual({ x: -96, y: -144 });
     expect(getWalkFrameStyle("right", 2, { width: 96, height: 144 })).toEqual({ x: -192, y: -288 });
+    expect(getWalkFrameStyle("up", 3, { width: 96, height: 144 })).toEqual({ x: -288, y: -432 });
   });
 });

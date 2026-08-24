@@ -58,6 +58,8 @@ it("네 방향 회전과 보행 재생·정지 상태를 미리 볼 수 있다",
 
   act(() => vi.advanceTimersByTime(480));
   expect(preview).toHaveAttribute("data-walk-frame", "2");
+  act(() => vi.advanceTimersByTime(240));
+  expect(preview).toHaveAttribute("data-walk-frame", "3");
 
   fireEvent.click(screen.getByRole("button", { name: "보행 애니메이션 정지" }));
   expect(preview).toHaveAttribute("data-moving", "false");

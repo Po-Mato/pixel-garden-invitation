@@ -668,7 +668,7 @@ test("generator emits 48x72 high-density world sheets for every guest preset", a
       await assert.doesNotReject(() =>
         validateDimensions(
           join(outputRoot, `guests/world/${preset.id}__walk.png`),
-          { width: 144, height: 288 }
+          { width: 192, height: 288 }
         )
       );
       await assert.doesNotReject(() =>
@@ -686,7 +686,7 @@ test("generator emits 48x72 high-density world sheets for every guest preset", a
       await assert.doesNotReject(() =>
         validateDimensions(
           join(outputRoot, `guests/preview/${preset.id}__walk.png`),
-          { width: 576, height: 1152 }
+          { width: 768, height: 1152 }
         )
       );
       await assert.doesNotReject(() =>
@@ -814,7 +814,7 @@ test("generator rejects invalid guest preset sources before replacing existing o
     const { generateCharacterAssets } = await import("./generate-character-assets.mjs");
     await assert.rejects(
       () => generateCharacterAssets({ sourceRoot, outputRoot }),
-      /feminine-long-wave-dress__walk\.png must be 288x576; received 144x288/
+      /feminine-long-wave-dress__walk\.png must be 384x576; received 144x288/
     );
     assert.equal(await readFile(marker, "utf8"), "keep existing output");
   } finally {
@@ -1009,12 +1009,12 @@ test("guest preset samples defer frame decoding instead of retaining image buffe
   }
 });
 
-test("high-density guest review includes all 144 walk frames", async () => {
+test("high-density guest review includes all 192 walk frames", async () => {
   const { guestPresetWalkSamples } = await import("./render-character-contact-sheet.mjs");
   const samples = await guestPresetWalkSamples();
 
   assert.equal(samples.length, 48);
-  assert.equal(samples.reduce((total, sample) => total + sample.frames.length, 0), 144);
+  assert.equal(samples.reduce((total, sample) => total + sample.frames.length, 0), 192);
   assert.deepEqual(
     samples.flatMap((sample) => sample.frames.map((frame) => ({
       presetId: sample.presetId,
@@ -1026,7 +1026,7 @@ test("high-density guest review includes all 144 walk frames", async () => {
     }))),
     guestPresetCatalog.presets.flatMap((preset) =>
       guestDirections.flatMap((direction, row) =>
-        [0, 1, 2].map((column) => ({
+        [0, 1, 2, 3].map((column) => ({
           presetId: preset.id,
           direction,
           relative: preset.generated.walk,
@@ -1213,7 +1213,7 @@ test("guest walk review renders 48 direction rows", async () => {
     assert.match(stdout, /Rendered 48 guest-walk-review samples/);
     assert.deepEqual(
       { width: metadata.width, height: metadata.height },
-      { width: 1356, height: 3168 }
+      { width: 1800, height: 3168 }
     );
   } finally {
     await rm(dir, { recursive: true, force: true });

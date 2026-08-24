@@ -70,7 +70,7 @@ test("audit CLI rejects invalid guest preset source sheets", async () => {
       (error) => {
         assert.match(
           error.stderr,
-          /guests\/feminine-long-wave-dress__walk\.png: .*(must be 288x576|divisible by 96x144)/
+          /guests\/feminine-long-wave-dress__walk\.png: .*(must be 384x576|divisible by 96x144)/
         );
         return true;
       }
@@ -439,7 +439,7 @@ test("frame rules keep maximum height 128 and minimum top 5 as inclusive boundar
   );
 });
 
-test("all guest walk sheets contain 144 approved high-density frames", async () => {
+test("all guest walk sheets contain 192 approved high-density frames", async () => {
   let frameCount = 0;
   const walkPaths = guestPresetCatalog.presets.map((preset) => preset.source.walk);
 
@@ -455,7 +455,7 @@ test("all guest walk sheets contain 144 approved high-density frames", async () 
 
     assert.equal(inspection.width, guestPresetCatalog.frame.walk.sheet.width, preset.id);
     assert.equal(inspection.height, guestPresetCatalog.frame.walk.sheet.height, preset.id);
-    assert.equal(inspection.frames.length, 12, preset.id);
+    assert.equal(inspection.frames.length, 16, preset.id);
     for (const frame of inspection.frames) {
       assert.ok(frame.bounds, preset.id);
       assert.equal(frame.bounds.top, 7, preset.id);
@@ -465,7 +465,7 @@ test("all guest walk sheets contain 144 approved high-density frames", async () 
     frameCount += inspection.frames.length;
   }
 
-  assert.equal(frameCount, 144);
+  assert.equal(frameCount, 192);
 });
 
 test("region rule failures reject front hair covering the face guard", async () => {
