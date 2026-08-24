@@ -1,10 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { guest01AssetRevision } from "../character/assetRevisions";
+import { guest01AssetRevision, guest03AssetRevision } from "../character/assetRevisions";
 import {
   createPwaServiceWorkerSource,
   pwaCorePrecachePaths,
   pwaDefaultGuestAssetRevision,
   pwaDefaultGuestSelectionIdlePath,
+  pwaGuest03AssetRevision,
+  pwaGuest03SelectionIdlePath,
   resolvePwaFeaturePrecachePaths,
   resolvePwaPrecachePaths
 } from "./serviceWorkerSource";
@@ -12,6 +14,7 @@ import {
 describe("PWA service worker source", () => {
   it("pre-caches the same revision used by the default guest preset", () => {
     expect(pwaDefaultGuestAssetRevision).toBe(guest01AssetRevision);
+    expect(pwaGuest03AssetRevision).toBe(guest03AssetRevision);
   });
 
   it("combines required offline assets with generated scripts and styles once", () => {
@@ -51,11 +54,20 @@ describe("PWA service worker source", () => {
     expect(paths).toContain(pwaDefaultGuestSelectionIdlePath);
     expect(paths.filter((path) => path === pwaDefaultGuestSelectionIdlePath)).toHaveLength(1);
     expect(pwaDefaultGuestSelectionIdlePath.endsWith(`?v=${pwaDefaultGuestAssetRevision}`)).toBe(true);
+    expect(paths).toContain(pwaGuest03SelectionIdlePath);
+    expect(paths.filter((path) => path === pwaGuest03SelectionIdlePath)).toHaveLength(1);
+    expect(pwaGuest03SelectionIdlePath.endsWith(`?v=${pwaGuest03AssetRevision}`)).toBe(true);
     expect(paths).toContain(
       `./characters/generated/guests/feminine-long-wave-dress__idle.png?v=${pwaDefaultGuestAssetRevision}`
     );
     expect(paths).toContain(
       `./characters/generated/guests/feminine-long-wave-dress__walk.png?v=${pwaDefaultGuestAssetRevision}`
+    );
+    expect(paths).toContain(
+      `./characters/generated/guests/masculine-navy-suit__idle.png?v=${pwaGuest03AssetRevision}`
+    );
+    expect(paths).toContain(
+      `./characters/generated/guests/masculine-navy-suit__walk.png?v=${pwaGuest03AssetRevision}`
     );
     expect(paths).toContain("./assets/gowun-dodum-critical-hash.woff2");
     expect(paths).toContain("./assets/noto-sans-kr-119-wght-normal-hash.woff2");
