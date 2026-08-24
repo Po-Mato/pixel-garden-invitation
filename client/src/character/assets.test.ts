@@ -77,9 +77,9 @@ it("3번 캐릭터는 전용 광학 3등신 자산 버전을 사용한다", () =
   )[0];
 
   expect(layer.walkUrl).toBe(
-    "./characters/generated/guests/preview/masculine-navy-suit__walk.png?v=guest03-opposite-foot-four-step-v14"
+    "./characters/generated/guests/preview/masculine-navy-suit__walk.png?v=guest03-neutral-passing-v15"
   );
   expect(layer.idleUrl).toBe(
-    "./characters/generated/guests/preview/masculine-navy-suit__idle.png?v=guest03-opposite-foot-four-step-v14"
+    "./characters/generated/guests/preview/masculine-navy-suit__idle.png?v=guest03-neutral-passing-v15"
   );
 });

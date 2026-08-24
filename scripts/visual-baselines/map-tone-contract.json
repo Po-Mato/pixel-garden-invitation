@@ -1,5 +1,5 @@
 {
-  "version": 22,
+  "version": 23,
   "thresholds": {
     "maxLuminanceDelta": 0.03,
     "minDynamicRange": 0.16,
@@ -53,10 +53,10 @@
           "down-3": 2.999
         },
         "masculine-navy-suit": {
-          "down-0": 3.086,
+          "down-0": 3.045,
           "down-1": 3.086,
-          "down-2": 3.109,
-          "down-3": 3.086
+          "down-2": 3.086,
+          "down-3": 3.1
         },
         "masculine-charcoal-blazer": {
           "down-0": 3.089,
@@ -126,7 +126,7 @@
       "characterEdgeContrasts": {
         "feminine-long-wave-dress": 2.1,
         "feminine-formal-hanbok": 2.098,
-        "masculine-navy-suit": 2.125,
+        "masculine-navy-suit": 2.133,
         "masculine-charcoal-blazer": 2.147,
         "feminine-sage-bolero-dress": 2.115,
         "feminine-champagne-navy-skirt": 2.09,
@@ -154,7 +154,7 @@
         },
         "masculine-navy-suit": {
           "down-0": 2.125,
-          "down-1": 2.125,
+          "down-1": 2.133,
           "down-2": 2.125,
           "down-3": 2.125
         },
@@ -226,7 +226,7 @@
       "characterEdgeContrasts": {
         "feminine-long-wave-dress": 3.051,
         "feminine-formal-hanbok": 3.156,
-        "masculine-navy-suit": 3.283,
+        "masculine-navy-suit": 3.247,
         "masculine-charcoal-blazer": 3.281,
         "feminine-sage-bolero-dress": 3.156,
         "feminine-champagne-navy-skirt": 3.062,
@@ -254,9 +254,9 @@
         },
         "masculine-navy-suit": {
           "down-0": 3.247,
-          "down-1": 3.283,
-          "down-2": 3.286,
-          "down-3": 3.281
+          "down-1": 3.247,
+          "down-2": 3.247,
+          "down-3": 3.247
         },
         "masculine-charcoal-blazer": {
           "down-0": 3.281,
@@ -326,7 +326,7 @@
       "characterEdgeContrasts": {
         "feminine-long-wave-dress": 2.377,
         "feminine-formal-hanbok": 2.193,
-        "masculine-navy-suit": 2.645,
+        "masculine-navy-suit": 2.62,
         "masculine-charcoal-blazer": 2.673,
         "feminine-sage-bolero-dress": 2.483,
         "feminine-champagne-navy-skirt": 2.411,
@@ -353,10 +353,10 @@
           "down-3": 2.307
         },
         "masculine-navy-suit": {
-          "down-0": 2.646,
-          "down-1": 2.645,
-          "down-2": 2.633,
-          "down-3": 2.608
+          "down-0": 2.608,
+          "down-1": 2.62,
+          "down-2": 2.645,
+          "down-3": 2.646
         },
         "masculine-charcoal-blazer": {
           "down-0": 2.636,
@@ -426,7 +426,7 @@
       "characterEdgeContrasts": {
         "feminine-long-wave-dress": 2.715,
         "feminine-formal-hanbok": 2.666,
-        "masculine-navy-suit": 2.799,
+        "masculine-navy-suit": 2.787,
         "masculine-charcoal-blazer": 2.792,
         "feminine-sage-bolero-dress": 2.727,
         "feminine-champagne-navy-skirt": 2.675,
@@ -454,7 +454,7 @@
         },
         "masculine-navy-suit": {
           "down-0": 2.787,
-          "down-1": 2.799,
+          "down-1": 2.787,
           "down-2": 2.787,
           "down-3": 2.787
         },
@@ -555,8 +555,8 @@
         "masculine-navy-suit": {
           "down-0": 2.177,
           "down-1": 2.177,
-          "down-2": 2.177,
-          "down-3": 2.106
+          "down-2": 1.927,
+          "down-3": 2.175
         },
         "masculine-charcoal-blazer": {
           "down-0": 2.106,
@@ -626,7 +626,7 @@
       "characterEdgeContrasts": {
         "feminine-long-wave-dress": 2.838,
         "feminine-formal-hanbok": 3.041,
-        "masculine-navy-suit": 3.247,
+        "masculine-navy-suit": 3.257,
         "masculine-charcoal-blazer": 3.264,
         "feminine-sage-bolero-dress": 2.945,
         "feminine-champagne-navy-skirt": 2.915,
@@ -653,10 +653,10 @@
           "down-3": 3.041
         },
         "masculine-navy-suit": {
-          "down-0": 3.237,
-          "down-1": 3.247,
-          "down-2": 3.26,
-          "down-3": 3.237
+          "down-0": 3.189,
+          "down-1": 3.257,
+          "down-2": 3.257,
+          "down-3": 3.247
         },
         "masculine-charcoal-blazer": {
           "down-0": 3.257,
@@ -726,7 +726,7 @@
       "characterEdgeContrasts": {
         "feminine-long-wave-dress": 2.382,
         "feminine-formal-hanbok": 2.313,
-        "masculine-navy-suit": 2.572,
+        "masculine-navy-suit": 2.501,
         "masculine-charcoal-blazer": 2.572,
         "feminine-sage-bolero-dress": 2.359,
         "feminine-champagne-navy-skirt": 2.321,
@@ -753,10 +753,10 @@
           "down-3": 2.313
         },
         "masculine-navy-suit": {
-          "down-0": 2.541,
-          "down-1": 2.572,
-          "down-2": 2.534,
-          "down-3": 2.455
+          "down-0": 2.448,
+          "down-1": 2.501,
+          "down-2": 2.486,
+          "down-3": 2.501
         },
         "masculine-charcoal-blazer": {
           "down-0": 2.466,
@@ -826,7 +826,7 @@
       "characterEdgeContrasts": {
         "feminine-long-wave-dress": 1.867,
         "feminine-formal-hanbok": 1.763,
-        "masculine-navy-suit": 1.909,
+        "masculine-navy-suit": 1.893,
         "masculine-charcoal-blazer": 1.884,
         "feminine-sage-bolero-dress": 1.816,
         "feminine-champagne-navy-skirt": 1.765,
@@ -853,10 +853,10 @@
           "down-3": 1.789
         },
         "masculine-navy-suit": {
-          "down-0": 1.878,
-          "down-1": 1.909,
-          "down-2": 1.88,
-          "down-3": 1.873
+          "down-0": 1.931,
+          "down-1": 1.893,
+          "down-2": 1.879,
+          "down-3": 1.901
         },
         "masculine-charcoal-blazer": {
           "down-0": 1.842,
@@ -926,7 +926,7 @@
       "characterEdgeContrasts": {
         "feminine-long-wave-dress": 2.724,
         "feminine-formal-hanbok": 2.676,
-        "masculine-navy-suit": 2.885,
+        "masculine-navy-suit": 2.918,
         "masculine-charcoal-blazer": 2.904,
         "feminine-sage-bolero-dress": 2.767,
         "feminine-champagne-navy-skirt": 2.613,
@@ -953,10 +953,10 @@
           "down-3": 2.653
         },
         "masculine-navy-suit": {
-          "down-0": 2.921,
-          "down-1": 2.885,
-          "down-2": 2.946,
-          "down-3": 2.857
+          "down-0": 2.868,
+          "down-1": 2.918,
+          "down-2": 2.901,
+          "down-3": 2.904
         },
         "masculine-charcoal-blazer": {
           "down-0": 2.918,

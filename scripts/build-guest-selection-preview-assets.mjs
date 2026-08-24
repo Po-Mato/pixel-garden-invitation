@@ -47,10 +47,6 @@ const defaultUnifiedRigSourceRoot = path.join(
   root,
   "character-assets/reference/guest-unified-rig-sources/v10"
 );
-const defaultFourStepWalkSourceRoot = path.join(
-  root,
-  "character-assets/reference/guest-four-step-walk-sources/v1"
-);
 const defaultFrameReviewRoot = path.join(
   root,
   ".superpowers/character-review/guest-unified-rig-v10-frames"
@@ -63,11 +59,8 @@ const defaultReviewPath = path.join(
 );
 const directions = ["down", "left", "right", "up"];
 const safeUnifiedSourceSet = "v10-alpha-safe-unified-rig";
-const guest03FourStepSourceSet = "v1-generated-four-step-rig";
 const safeUnifiedDetectionMethod = "face-safe-three-head-rig";
-const usesFaceSafeRig = (sourceSet) => (
-  sourceSet === safeUnifiedSourceSet || sourceSet === guest03FourStepSourceSet
-);
+const usesFaceSafeRig = (sourceSet) => sourceSet === safeUnifiedSourceSet;
 // The long hair and ankle-length dress make guest-01 read taller than the
 // geometric guide. Scale the complete head mass further before compressing the
 // body so the final sprite reads as three-head-tall at its actual UI size.
@@ -910,18 +903,6 @@ async function replaceUpperBandWithMirroredReference(target, reference, policy) 
   return sharp(output, { raw: info }).png({ compressionLevel: 9 }).toBuffer();
 }
 
-async function replaceBodyWithMirroredReference(target, reference, policy) {
-  const [{ data: targetData, info }, { data: mirroredData }] = await Promise.all([
-    sharp(target).ensureAlpha().raw().toBuffer({ resolveWithObject: true }),
-    sharp(reference).flop().ensureAlpha().raw().toBuffer({ resolveWithObject: true })
-  ]);
-  const output = Buffer.from(targetData);
-  const firstBodyRow = guest03ProportionBandBottom(policy) + 1;
-  const offset = firstBodyRow * info.width * info.channels;
-  mirroredData.copy(output, offset, offset);
-  return sharp(output, { raw: info }).png({ compressionLevel: 9 }).toBuffer();
-}
-
 async function replaceLowerStrideWithMirroredReference(target, reference, policy) {
   const [{ data: targetData, info }, { data: mirroredData }] = await Promise.all([
     sharp(target).ensureAlpha().raw().toBuffer({ resolveWithObject: true }),
@@ -1099,6 +1080,37 @@ async function lowerStrideBandSha256(input, policy) {
   return createHash("sha256").update(silhouette).digest("hex");
 }
 
+async function mirroredLowerStrideBandSha256(input, policy) {
+  return lowerStrideBandSha256(await sharp(input).flop().png().toBuffer(), policy);
+}
+
+function neutralFootBandTop(policy) {
+  const characterTop = policy.footBaseline - policy.contentHeight + 1;
+  const bodyHeight = policy.contentHeight - policy.headHeight;
+  return characterTop + policy.headHeight + Math.round(bodyHeight * 0.82);
+}
+
+async function neutralFootBandSha256(input, policy) {
+  const top = neutralFootBandTop(policy);
+  const { data, info } = await sharp(input)
+    .ensureAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  const silhouette = Buffer.alloc((info.height - top) * info.width);
+  let target = 0;
+  for (let y = top; y < info.height; y += 1) {
+    for (let x = 0; x < info.width; x += 1) {
+      silhouette[target] = data[(y * info.width + x) * info.channels + 3] > 12 ? 1 : 0;
+      target += 1;
+    }
+  }
+  return createHash("sha256").update(silhouette).digest("hex");
+}
+
+async function mirroredNeutralFootBandSha256(input, policy) {
+  return neutralFootBandSha256(await sharp(input).flop().png().toBuffer(), policy);
+}
+
 function guest03ProportionBandBottom(policy) {
   const targetTop = policy.footBaseline - policy.contentHeight + 1;
   return Math.min(
@@ -1261,6 +1273,9 @@ async function inspectFrame(input, policy, { direction, guest, rigFrame, sourceS
     sourceDetectionMethod: rigFrame.sourceDetectionMethod,
     sourceFaceBottom: rigFrame.sourceFaceBottom,
     lowerStrideBandSha256: await lowerStrideBandSha256(input, policy),
+    mirroredLowerStrideBandSha256: await mirroredLowerStrideBandSha256(input, policy),
+    neutralFootBandSha256: await neutralFootBandSha256(input, policy),
+    mirroredNeutralFootBandSha256: await mirroredNeutralFootBandSha256(input, policy),
     frameSha256: checksum,
     rigHashMatches: !rigFrame.frameSha256 || rigFrame.frameSha256 === checksum
   };
@@ -1432,7 +1447,7 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
     const bottomYValues = Object.values(facialLandmarkBottomYRatios);
     const directionMotion = Object.fromEntries(
       directions.map((direction) => {
-        const [firstStep, neutralStep, thirdStep, oppositePassingStep] = directionMetrics[direction];
+        const [firstStep, neutralStep, thirdStep, oppositeNeutralStep] = directionMetrics[direction];
         const averageStepWidth = (firstStep.characterWidth + thirdStep.characterWidth) / 2;
         return [direction, {
           firstStepWidth: firstStep.characterWidth,
@@ -1449,15 +1464,16 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
             firstStep.bottom,
             neutralStep.bottom,
             thirdStep.bottom,
-            oppositePassingStep.bottom
+            oppositeNeutralStep.bottom
           ) - Math.min(
             firstStep.bottom,
             neutralStep.bottom,
             thirdStep.bottom,
-            oppositePassingStep.bottom
+            oppositeNeutralStep.bottom
           ),
-          oppositePassingPoseDistinct:
-            neutralStep.lowerStrideBandSha256 !== oppositePassingStep.lowerStrideBandSha256
+          neutralPairMirrored:
+            neutralStep.mirroredNeutralFootBandSha256
+              === oppositeNeutralStep.neutralFootBandSha256
         }];
       })
     );
@@ -1553,7 +1569,7 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
           ...Object.values(directionMotion).map((direction) => direction.baselineSpread)
         ),
         fourStepGaitPassed: Object.values(directionMotion)
-          .every((direction) => direction.oppositePassingPoseDistinct)
+          .every((direction) => direction.neutralPairMirrored)
       },
       accessoryStability,
       ...(proportionStability ? { proportionStability } : {}),
@@ -1690,7 +1706,7 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
     (frame) => frame.sourceDetectionMethod === safeUnifiedDetectionMethod
   ).length;
   const report = {
-    version: 10,
+    version: 11,
     policy: {
       source: policy.source,
       contentHeight: policy.contentHeight,
@@ -1734,7 +1750,7 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
       opticalLandmarkRule: "median visible face center and chin anchors by visible direction",
       motionRule: "symmetric first and third steps, matched side stride, stable center and baseline",
       fourStepGaitRule:
-        "the lower-body silhouettes of passing frames 2 and 4 must differ in every direction",
+        "frames 1 and 3 are opposite landing poses; frames 2 and 4 are mirrored neutral poses",
       guest01OpticalHeadCompensation,
       guest03OpticalHeadCompensation,
       guest03MaximumHeadWidthDelta,
@@ -1948,7 +1964,7 @@ export async function auditGuestSelectionPreviewAssets({
   const storedReport = JSON.parse(
     await readFile(path.join(outputRoot, "selection-preview-audit.json"), "utf8")
   );
-  if (storedReport.version !== 10) {
+  if (storedReport.version !== 11) {
     throw new Error("방향별 얼굴 폭·면적·실게임 보행 중심 기반 3등신 감사 보고서를 다시 생성해야 합니다.");
   }
   const sourceRig = Object.fromEntries(storedReport.presets.map((preset) => [
@@ -1991,7 +2007,6 @@ export async function buildGuestSelectionPreviewAssets({
   walkSourceDepthOverrideRoot = defaultWalkSourceDepthOverrideRoot,
   coupleDepthMasterSourceRoot = defaultCoupleDepthMasterSourceRoot,
   unifiedRigSourceRoot = defaultUnifiedRigSourceRoot,
-  fourStepWalkSourceRoot = defaultFourStepWalkSourceRoot,
   frameReviewRoot = defaultFrameReviewRoot,
   reviewPath = defaultReviewPath
 } = {}) {
@@ -2007,26 +2022,10 @@ export async function buildGuestSelectionPreviewAssets({
   for (const preset of catalog.presets) {
     const guest = preset.reference.walkSourceGuest;
     const unifiedRigSource = path.join(unifiedRigSourceRoot, `${guest}-walk-sheet.png`);
-    const fourStepWalkSource = path.join(fourStepWalkSourceRoot, `${guest}-walk-sheet.png`);
-    const oppositePassingPoseByDirection = guest === "guest-03"
-      ? {
-          left: path.join(fourStepWalkSourceRoot, "guest-03-left-forward-pass.png"),
-          right: path.join(fourStepWalkSourceRoot, "guest-03-right-forward-pass.png")
-        }
-      : {};
     let sourceSet = safeUnifiedSourceSet;
     let sourceGrid = null;
     let coupleDepthMasterFrames = null;
     let sourceColumnCount = 3;
-    let hasFourStepWalkSource = false;
-    if (guest === "guest-03") {
-      try {
-        await access(fourStepWalkSource);
-        hasFourStepWalkSource = true;
-      } catch {
-        // Custom fixtures may intentionally exercise the legacy three-frame source.
-      }
-    }
     let hasUnifiedRigSource = false;
     try {
       await access(unifiedRigSource);
@@ -2034,11 +2033,7 @@ export async function buildGuestSelectionPreviewAssets({
     } catch {
       // Custom fixtures and incremental authoring may intentionally omit v10.
     }
-    if (hasFourStepWalkSource) {
-      sourceSet = guest03FourStepSourceSet;
-      sourceColumnCount = 4;
-      sourceGrid = await loadWalkSheetGrid(fourStepWalkSource, sourceColumnCount);
-    } else if (hasUnifiedRigSource) {
+    if (hasUnifiedRigSource) {
       sourceGrid = await loadWalkSheetGrid(unifiedRigSource);
     } else {
       coupleDepthMasterFrames = await loadCoupleDepthMasterFrames(
@@ -2067,17 +2062,9 @@ export async function buildGuestSelectionPreviewAssets({
       const direction = directions[row];
       baseFramesByDirection[direction] = [];
       for (let column = 0; column < sourceColumnCount; column += 1) {
-        let extracted = coupleDepthMasterFrames
+        const extracted = coupleDepthMasterFrames
           ? coupleDepthMasterFrames[direction][column]
           : await extractWalkCell(sourceGrid, row, column);
-        if (column === 3 && oppositePassingPoseByDirection[direction]) {
-          try {
-            await access(oppositePassingPoseByDirection[direction]);
-            extracted = oppositePassingPoseByDirection[direction];
-          } catch {
-            // Custom fixtures may intentionally omit the generated opposite-foot pose.
-          }
-        }
         const normalized = await normalizeSelectionPreviewBaseFrame(extracted, policy);
         let landmark = null;
         if (direction !== "up") {
@@ -2223,16 +2210,6 @@ export async function buildGuestSelectionPreviewAssets({
       await stabilizeGuest01LowerBodyStride(framesByDirection, policy);
     } else if (guest === "guest-03") {
       await lockGuest03HeadBand(framesByDirection, policy);
-      // Front and rear views are nearly symmetric. Mirroring the body of the
-      // first passing pose makes frame 4 move the other arm and leg while the
-      // locked head/chin/shoulder band keeps the character perfectly stable.
-      for (const direction of ["down", "up"]) {
-        framesByDirection[direction][3] = await replaceBodyWithMirroredReference(
-          framesByDirection[direction][3],
-          framesByDirection[direction][1],
-          policy
-        );
-      }
     }
     for (const direction of directions) {
       for (let column = 0; column < catalog.frame.walk.columns; column += 1) {
@@ -2359,8 +2336,7 @@ export async function buildGuestSelectionPreviewAssets({
     walkSourceOpticalOverrideRoot,
     walkSourceDepthOverrideRoot,
     coupleDepthMasterSourceRoot,
-    unifiedRigSourceRoot,
-    fourStepWalkSourceRoot
+    unifiedRigSourceRoot
   };
 }
 
