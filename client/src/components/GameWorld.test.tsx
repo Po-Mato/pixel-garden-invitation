@@ -388,7 +388,7 @@ describe("GameWorld", () => {
 
     advanceAnimation(780);
     expect(player).toHaveStyle({ left: "165px", top: "375px" });
-    expect(sprite).toHaveAttribute("data-walk-frame", "1");
+    expect(sprite).toHaveAttribute("data-walk-frame", "3");
 
     fireEvent.keyUp(joystick, { key: "ArrowLeft" });
     finishJoystickRelease();
@@ -2927,6 +2927,13 @@ describe("GameWorld", () => {
       position: { x: 225, y: 405, direction: "right", moving: true, seq: 3, zoneId: "home" }
     }));
     expect(sprite).toHaveAttribute("data-walk-frame", "2");
+
+    act(() => socket.emitJson({
+      type: "guest_moved",
+      guestId: "guest_remote",
+      position: { x: 255, y: 405, direction: "right", moving: true, seq: 4, zoneId: "home" }
+    }));
+    expect(sprite).toHaveAttribute("data-walk-frame", "3");
   });
 
   it("sends a local reaction without interrupting joystick movement", () => {

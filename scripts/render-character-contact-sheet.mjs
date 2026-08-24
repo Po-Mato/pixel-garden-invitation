@@ -145,7 +145,7 @@ export async function guestPresetWalkSamples() {
       label: `${preset.id} / ${preset.label} / ${direction.id}`,
       presetId: preset.id,
       direction: direction.id,
-      frames: [0, 1, 2].map((column) => ({
+      frames: Array.from({ length: guestPresetCatalog.frame.walk.columns }, (_, column) => ({
         step: `step-${String(column + 1).padStart(2, "0")}`,
         relative: preset.generated.walk,
         column,
@@ -348,7 +348,7 @@ async function renderCatalog(samples, output) {
 }
 
 async function renderGuestWalkReviewTile(sample, output, sourceChecker, actualChecker) {
-  const tileWidth = 452;
+  const tileWidth = 600;
   const tileHeight = 198;
   const ratioGuide = Buffer.from(
     `<svg width="96" height="144" xmlns="http://www.w3.org/2000/svg">` +
@@ -395,7 +395,7 @@ async function renderGuestWalkReviewTile(sample, output, sourceChecker, actualCh
 }
 
 async function renderGuestWalkReview(samples, output) {
-  const tileWidth = 452;
+  const tileWidth = 600;
   const tileHeight = 198;
   const columns = 3;
   const rows = Math.ceil(samples.length / columns);

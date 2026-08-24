@@ -32,16 +32,16 @@
       "sourceSha256": "b68bde1968637cc554b673fc02ce7dac8a7dbaee18578eb0a94746398b878ca4"
     },
     "masculine-navy-suit": {
-      "centerX": 48,
+      "centerX": 48.5,
       "centerY": 70,
       "feetY": 133,
       "bounds": {
         "left": 24,
         "top": 7,
-        "width": 48,
+        "width": 49,
         "height": 126
       },
-      "sourceSha256": "70d98ccc3da36815670debe249b44bedc5651b64db2a5b4ef37358765c158cfc"
+      "sourceSha256": "960fbf4faffb875f710dc75011d7b6c6ac8ea2d7affefa6bbf3143b452859677"
     },
     "masculine-charcoal-blazer": {
       "centerX": 48.5,

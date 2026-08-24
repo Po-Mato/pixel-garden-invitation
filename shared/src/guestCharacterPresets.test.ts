@@ -64,7 +64,7 @@ describe("하객 완성 캐릭터 프리셋", () => {
   it("월드와 선택 화면은 용도에 맞는 고밀도 프레임을 사용한다", () => {
     expect(guestPresetFrame.source).toEqual({ width: 96, height: 144 });
     expect(guestPresetFrame.selectionPreview.source).toEqual({ width: 192, height: 288 });
-    expect(guestPresetFrame.selectionPreview.walk.sheet).toEqual({ width: 576, height: 1152 });
+    expect(guestPresetFrame.selectionPreview.walk.sheet).toEqual({ width: 768, height: 1152 });
     expect(guestPresetFrame.selectionPreview.idle.sheet).toEqual({ width: 384, height: 288 });
     expect(guestPresetFrame.selectionPreview).toMatchObject({
       contentHeight: 252,
@@ -73,7 +73,8 @@ describe("하객 완성 캐릭터 프리셋", () => {
       footBaseline: 264
     });
     expect(guestPresetFrame.worldSource).toEqual({ width: 48, height: 72 });
-    expect(guestPresetFrame.walk.sheet).toEqual({ width: 288, height: 576 });
+    expect(guestPresetFrame.walk.sheet).toEqual({ width: 384, height: 576 });
+    expect(guestPresetFrame.walk.columns).toBe(4);
     expect(guestPresetFrame.idle.sheet).toEqual({ width: 192, height: 144 });
     expect(guestPresetFrame.display.world).toEqual({ width: 48, height: 72 });
     expect(guestPresetFrame.display.thumbnail).toEqual({ width: 48, height: 72 });

@@ -34,7 +34,7 @@ export function CharacterSprite({
   const layers = resolveCharacterLayers(safeAppearance, import.meta.env.BASE_URL, displayMode);
   const sourceSize = layers[0].sourceSize;
   const displaySize = layers[0].displaySize[displayMode];
-  const renderedStepFrame = moving ? ((stepFrame % 3) + 3) % 3 : 1;
+  const renderedStepFrame = moving ? ((stepFrame % 4) + 4) % 4 : 1;
   const frame = getWalkFrameStyle(direction, renderedStepFrame, sourceSize);
   const renderedLayers = layers.flatMap((layer) => {
     const preferredUrl = useFrontIdle && layer.idleUrl ? layer.idleUrl : layer.walkUrl;

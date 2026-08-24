@@ -75,6 +75,21 @@ it("월드에서 96x144 프레임을 동일 비율로 48x72에 렌더링한다",
   expect(baseLayer).toHaveStyle({ backgroundPosition: "-192px -288px" });
 });
 
+it("네 번째 보행 컷을 세 번째 컷과 다른 위치에서 렌더링한다", () => {
+  render(
+    <CharacterSprite
+      appearance={defaultCharacterAppearance}
+      direction="left"
+      moving={true}
+      stepFrame={3}
+      label="반대발 하객"
+    />
+  );
+
+  const layer = screen.getByLabelText("반대발 하객").querySelector('[data-character-layer="base"]');
+  expect(layer).toHaveStyle({ backgroundPosition: "-288px -144px" });
+});
+
 it("미리보기에서는 192x288 전용 프레임을 절반 크기로 선명하게 표시한다", () => {
   render(
     <CharacterSprite

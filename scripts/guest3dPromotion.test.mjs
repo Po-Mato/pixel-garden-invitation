@@ -25,7 +25,7 @@ test("검증된 12명 3D 시트를 게임 원본 규격으로 승격한다", asy
 
     for (const item of promoted) {
       const metadata = await sharp(item.destination).metadata();
-      const expected = item.kind === "walk" ? { width: 288, height: 576 } : { width: 192, height: 144 };
+      const expected = item.kind === "walk" ? { width: 384, height: 576 } : { width: 192, height: 144 };
       assert.equal(metadata.width, expected.width, item.destination);
       assert.equal(metadata.height, expected.height, item.destination);
       assert.equal(metadata.hasAlpha, true, item.destination);
@@ -39,16 +39,40 @@ test("검증된 12명 3D 시트를 게임 원본 규격으로 승격한다", asy
     const sourceRaw = await sharp(source).ensureAlpha().raw().toBuffer();
     const promotedRaw = await sharp(first.destination).ensureAlpha().raw().toBuffer();
     let changedColorChannels = 0;
-    for (let offset = 0; offset < sourceRaw.length; offset += 4) {
-      assert.equal(promotedRaw[offset + 3], sourceRaw[offset + 3], `alpha offset ${offset}`);
-      if (promotedRaw[offset + 3] === 0) {
-        assert.deepEqual([...promotedRaw.subarray(offset, offset + 3)], [0, 0, 0]);
-      }
-      for (let channel = 0; channel < 3; channel += 1) {
-        if (promotedRaw[offset + channel] !== sourceRaw[offset + channel]) changedColorChannels += 1;
+    for (let row = 0; row < 4; row += 1) {
+      for (let column = 0; column < 3; column += 1) {
+        for (let y = 0; y < 144; y += 1) {
+          for (let x = 0; x < 96; x += 1) {
+            const sourceOffset = ((row * 144 + y) * 288 + column * 96 + x) * 4;
+            const promotedOffset = ((row * 144 + y) * 384 + column * 96 + x) * 4;
+            assert.equal(promotedRaw[promotedOffset + 3], sourceRaw[sourceOffset + 3]);
+            if (promotedRaw[promotedOffset + 3] === 0) {
+              assert.deepEqual([...promotedRaw.subarray(promotedOffset, promotedOffset + 3)], [0, 0, 0]);
+            }
+            for (let channel = 0; channel < 3; channel += 1) {
+              if (promotedRaw[promotedOffset + channel] !== sourceRaw[sourceOffset + channel]) {
+                changedColorChannels += 1;
+              }
+            }
+          }
+        }
       }
     }
     assert.ok(changedColorChannels > 10_000, "공통 입체 명암이 충분한 픽셀에 적용돼야 합니다.");
+
+    for (let row = 0; row < 4; row += 1) {
+      const second = await sharp(first.destination)
+        .extract({ left: 96, top: row * 144 + 101, width: 96, height: 43 })
+        .ensureAlpha()
+        .raw()
+        .toBuffer();
+      const fourth = await sharp(first.destination)
+        .extract({ left: 288, top: row * 144 + 101, width: 96, height: 43 })
+        .ensureAlpha()
+        .raw()
+        .toBuffer();
+      assert.notDeepEqual(fourth, second, `row ${row} 네 번째 컷은 반대발이어야 합니다.`);
+    }
   } finally {
     await rm(outputDir, { recursive: true, force: true });
     await rm(comparisonDir, { recursive: true, force: true });

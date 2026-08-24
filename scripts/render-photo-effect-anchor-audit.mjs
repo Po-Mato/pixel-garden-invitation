@@ -11,6 +11,7 @@ const photoZoneBackgroundPath = path.join(projectRoot, "client/public/assets/map
 const walkDirections = ["down", "left", "right", "up"];
 const walkFrameWidth = 48;
 const walkFrameHeight = 72;
+const walkFrameColumns = 4;
 export const defaultPhotoEffectAuditPath = path.join(
   projectRoot,
   ".superpowers/character-review/photo-effect-anchor-audit.png"
@@ -58,12 +59,12 @@ export async function auditPhotoEffectPortrait(filePath, guestId, presetId) {
 
 export async function auditPhotoEffectWalkSheet(filePath, guestId) {
   const metadata = await sharp(filePath).metadata();
-  if (metadata.width !== walkFrameWidth * 3 || metadata.height !== walkFrameHeight * 4) {
-    throw new Error(`${guestId}: walk sheet must be 144x288`);
+  if (metadata.width !== walkFrameWidth * walkFrameColumns || metadata.height !== walkFrameHeight * 4) {
+    throw new Error(`${guestId}: walk sheet must be 192x288`);
   }
   const frames = [];
   for (let row = 0; row < walkDirections.length; row += 1) {
-    for (let column = 0; column < 3; column += 1) {
+    for (let column = 0; column < walkFrameColumns; column += 1) {
       const { data, info } = await sharp(filePath)
         .extract({ left: column * walkFrameWidth, top: row * walkFrameHeight, width: walkFrameWidth, height: walkFrameHeight })
         .ensureAlpha()
@@ -105,7 +106,7 @@ async function renderCard(report, cardWidth, cardHeight) {
     .modulate({ brightness: 0.98, saturation: 0.92 })
     .toBuffer();
   const portrait = await sharp(report.filePath).resize(144, 216, { fit: "fill" }).toBuffer();
-  const walkSheet = await sharp(walk.filePath).resize(288, 576, { kernel: "nearest" }).toBuffer();
+  const walkSheet = await sharp(walk.filePath).resize(384, 576, { kernel: "nearest" }).toBuffer();
   const walkGuides = walk.frames.map((frame) => {
     const frameX = walkX + frame.column * walkFrameWidth * walkScale;
     const frameY = walkY + frame.row * walkFrameHeight * walkScale;
@@ -126,10 +127,10 @@ async function renderCard(report, cardWidth, cardHeight) {
     <circle cx="${portraitX + anchors.chest.x * portraitScale}" cy="${portraitY + anchors.chest.y * portraitScale}" r="7" fill="#4778c4" stroke="#fff" stroke-width="2"/>
     <circle cx="${portraitX + anchors.feet.x * portraitScale}" cy="${portraitY + anchors.feet.y * portraitScale}" r="7" fill="#47895c" stroke="#fff" stroke-width="2"/>
     <text x="22" y="430" font-family="sans-serif" font-size="9" fill="#6d625c">portrait visible ${bounds.width}×${bounds.height} · effect anchors</text>
-    <text x="310" y="50" font-family="sans-serif" font-size="9" font-weight="700" fill="#725e63">12-FRAME WALK SOURCE AUDIT</text>
+    <text x="310" y="50" font-family="sans-serif" font-size="9" font-weight="700" fill="#725e63">16-FRAME WALK SOURCE AUDIT</text>
     ${walkDirections.map((direction, row) => `<text x="282" y="${walkY + row * 144 + 76}" font-family="sans-serif" font-size="8" font-weight="700" fill="#66555a">${direction}</text>`).join("\n")}
     ${walkGuides}
-    <text x="18" y="${cardHeight - 20}" font-family="sans-serif" font-size="10" fill="#6d625c">12 walk frames · head/feet guides · photo effect composite</text>
+    <text x="18" y="${cardHeight - 20}" font-family="sans-serif" font-size="10" fill="#6d625c">16 walk frames · head/feet guides · photo effect composite</text>
   </svg>`);
   return sharp({ create: { width: cardWidth, height: cardHeight, channels: 4, background: "#fffdf8" } })
     .composite([
@@ -157,7 +158,7 @@ export async function collectPhotoEffectAuditReports() {
 
 export async function renderPhotoEffectAnchorAudit(outputPath = defaultPhotoEffectAuditPath) {
   const reports = await collectPhotoEffectAuditReports();
-  const cardWidth = 620;
+  const cardWidth = 720;
   const cardHeight = 670;
   const columns = 2;
   const cards = await Promise.all(reports.map((report) => renderCard(report, cardWidth, cardHeight)));
