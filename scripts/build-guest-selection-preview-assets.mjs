@@ -68,6 +68,17 @@ const guest01OpticalHeadCompensation = 20;
 // Enlarge guest-03's complete head mass enough to preserve a visible three-head
 // silhouette without changing the canonical transparent source artwork.
 const guest03OpticalHeadCompensation = 10;
+// The v10 guest-03 source has a 15px head-width swing between walk frames.
+// Normalize every rendered head to its direction's shared silhouette width so
+// changing gait never changes the perceived body ratio. Profiles keep the
+// small natural hair-depth allowance needed to match the visible front face.
+const guest03MaximumHeadWidthDelta = 1;
+const guest03HeadWidthsByDirection = Object.freeze({
+  down: 96,
+  left: 105,
+  right: 105,
+  up: 96
+});
 const guest01AccessoryAnchorStep = Object.freeze({
   down: 1,
   left: 1,
@@ -498,11 +509,17 @@ async function headBandWidth(input, policy, threshold = 12) {
   return right - left + 1;
 }
 
-async function normalizeHeadWidth(input, policy, expectedWidth = policy.headWidth) {
+async function normalizeHeadWidth(
+  input,
+  policy,
+  expectedWidth = policy.headWidth,
+  tolerance = 1,
+  maximumIterations = 3
+) {
   let current = input;
-  for (let iteration = 0; iteration < 3; iteration += 1) {
+  for (let iteration = 0; iteration < maximumIterations; iteration += 1) {
     const measured = await headBandWidth(current, policy);
-    if (Math.abs(measured - expectedWidth) <= 1) break;
+    if (Math.abs(measured - expectedWidth) <= tolerance) break;
     const scale = clamp(expectedWidth / measured, 0.8, 1.25);
     const bounds = await alphaBounds(current);
     const { data, info } = await sharp(current).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
@@ -802,6 +819,7 @@ async function inspectRuntimeMotion({ catalog, runtimeOutputRoot }) {
     const directionMetrics = {};
     for (let row = 0; row < directions.length; row += 1) {
       const centers = [];
+      const proportionHashes = [];
       for (let column = 0; column < 3; column += 1) {
         const frame = await sharp(walkPath)
           .extract({
@@ -813,15 +831,27 @@ async function inspectRuntimeMotion({ catalog, runtimeOutputRoot }) {
           .png()
           .toBuffer();
         centers.push(await runtimeCoreCenterX(frame, runtimePolicy));
+        if (preset.reference.walkSourceGuest === "guest-03") {
+          proportionHashes.push(await headBandSha256(frame, runtimePolicy));
+        }
       }
       directionMetrics[directions[row]] = {
         coreCenters: centers,
         maximumCoreCenterDriftDisplayPx: Math.max(
           Math.abs(centers[0] - centers[1]),
           Math.abs(centers[2] - centers[1])
-        ) * displayScale
+        ) * displayScale,
+        ...(proportionHashes.length > 0
+          ? {
+              proportionHashes,
+              proportionStable: new Set(proportionHashes).size === 1
+            }
+          : {})
       };
     }
+    const proportionStable = preset.reference.walkSourceGuest === "guest-03"
+      ? Object.values(directionMetrics).every((direction) => direction.proportionStable)
+      : null;
     presets.push({
       id: preset.id,
       guest: preset.reference.walkSourceGuest,
@@ -830,12 +860,15 @@ async function inspectRuntimeMotion({ catalog, runtimeOutputRoot }) {
         ...Object.values(directionMetrics).map((direction) =>
           direction.maximumCoreCenterDriftDisplayPx
         )
-      )
+      ),
+      ...(proportionStable === null ? {} : { proportionStable })
     });
   }
   const maximumMeasuredCoreCenterDriftDisplayPx = Math.max(
     ...presets.map((preset) => preset.maximumCoreCenterDriftDisplayPx)
   );
+  const guest03Preset = presets.find((preset) => preset.guest === "guest-03");
+  const guest03ProportionStable = !guest03Preset || guest03Preset.proportionStable === true;
   return {
     policy: {
       maximumCoreCenterDriftDisplayPx,
@@ -844,7 +877,9 @@ async function inspectRuntimeMotion({ catalog, runtimeOutputRoot }) {
     },
     summary: {
       maximumMeasuredCoreCenterDriftDisplayPx,
+      guest03ProportionStable,
       passed: maximumMeasuredCoreCenterDriftDisplayPx <= maximumCoreCenterDriftDisplayPx
+        && guest03ProportionStable
     },
     presets
   };
@@ -1008,6 +1043,53 @@ async function upperBodyBandSha256(input, policy) {
     .digest("hex");
 }
 
+function guest03ProportionBandBottom(policy) {
+  const targetTop = policy.footBaseline - policy.contentHeight + 1;
+  return Math.min(
+    policy.source.height - 1,
+    targetTop + Math.round(policy.headHeight * 1.15)
+  );
+}
+
+async function headBandSha256(input, policy) {
+  const headBandBottom = guest03ProportionBandBottom(policy);
+  const { data, info } = await sharp(input)
+    .ensureAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  return createHash("sha256")
+    .update(data.subarray(0, (headBandBottom + 1) * info.width * info.channels))
+    .digest("hex");
+}
+
+async function lockGuest03HeadBand(framesByDirection, policy) {
+  for (const direction of directions) {
+    framesByDirection[direction] = await lockProportionBandAcrossFrames(
+      framesByDirection[direction],
+      policy
+    );
+  }
+}
+
+async function lockProportionBandAcrossFrames(frames, policy) {
+  const headBandBottom = guest03ProportionBandBottom(policy);
+  const { data: referenceData, info } = await sharp(frames[1])
+    .ensureAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  const byteLength = (headBandBottom + 1) * info.width * info.channels;
+  return Promise.all(frames.map(async (frame) => {
+    const { data: targetData } = await sharp(frame)
+      .ensureAlpha()
+      .raw()
+      .toBuffer({ resolveWithObject: true });
+    referenceData.copy(targetData, 0, 0, byteLength);
+    return sharp(targetData, { raw: info })
+      .png({ compressionLevel: 9 })
+      .toBuffer();
+  }));
+}
+
 async function lockGuest01UpperBodyAndBag(framesByDirection, policy) {
   const bottom = guest01UpperBodyBandBottom(policy);
   for (const direction of directions) {
@@ -1063,7 +1145,7 @@ async function stabilizeGuest01LowerBodyStride(framesByDirection, policy) {
   }
 }
 
-async function inspectFrame(input, policy, { direction, rigFrame, sourceSet }) {
+async function inspectFrame(input, policy, { direction, guest, rigFrame, sourceSet }) {
   const bounds = await alphaBounds(input);
   const measuredHeadWidth = await headBandWidth(input, policy);
   const landmark = direction === "up"
@@ -1075,7 +1157,9 @@ async function inspectFrame(input, policy, { direction, rigFrame, sourceSet }) {
           : undefined
       });
   const measuredHeadHeight = landmark?.headHeight ?? policy.headHeight;
-  const expectedHeadWidth = policy.headWidth;
+  const expectedHeadWidth = guest === "guest-03"
+    ? guest03HeadWidthsByDirection[direction]
+    : policy.headWidth;
   const measuredBodyHeight = bounds.height - measuredHeadHeight;
   const checksum = frameSha256(input);
   const opticalHeadCompensation = rigFrame.sourceMeasuredHeadHeight - rigFrame.sourceHeadHeight;
@@ -1114,6 +1198,9 @@ async function inspectFrame(input, policy, { direction, rigFrame, sourceSet }) {
             policy.headHeight * rigFrame.sourceMeasuredHeadHeight / rigFrame.sourceHeadHeight,
           upperBodyBandSha256: await upperBodyBandSha256(input, policy)
         }
+      : {}),
+    ...(guest === "guest-03"
+      ? { headBandSha256: await headBandSha256(input, policy) }
       : {}),
     sourceDetectionMethod: rigFrame.sourceDetectionMethod,
     sourceFaceBottom: rigFrame.sourceFaceBottom,
@@ -1201,6 +1288,7 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
         }
         directionMetrics[direction].push(await inspectFrame(frame, policy, {
           direction,
+          guest: preset.reference.walkSourceGuest,
           rigFrame,
           sourceSet: presetRig.sourceSet
         }));
@@ -1237,6 +1325,19 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
       directionMetrics.right.map((frame) => frame.headWidth)
     );
     const profileMedianHeadWidth = (leftMedianHeadWidth + rightMedianHeadWidth) / 2;
+    const headWidthsByDirection = Object.fromEntries(
+      directions.map((direction) => [
+        direction,
+        directionMetrics[direction].map((frame) => frame.headWidth)
+      ])
+    );
+    const maximumStepHeadWidthSpreadRatio = Math.max(...directions.map((direction) => {
+      const widths = headWidthsByDirection[direction];
+      return (Math.max(...widths) - Math.min(...widths)) / median(widths);
+    }));
+    const allHeadWidths = Object.values(headWidthsByDirection).flat();
+    const maximumAllFrameHeadWidthSpreadRatio =
+      (Math.max(...allHeadWidths) - Math.min(...allHeadWidths)) / median(allHeadWidths);
     const maximumStepFaceWidthSpreadRatio = Math.max(...["down", "left", "right"].map(
       (direction) => {
         const widths = directionMetrics[direction].map((frame) => frame.visibleFaceWidth);
@@ -1293,8 +1394,24 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
           }))
         }
       : null;
+    const proportionStability = preset.reference.walkSourceGuest === "guest-03"
+      ? {
+          bandBottom: guest03ProportionBandBottom(policy),
+          directions: Object.fromEntries(directions.map((direction) => {
+            const hashes = directionMetrics[direction].map((frame) => frame.headBandSha256);
+            return [direction, {
+              hashes,
+              stable: new Set(hashes).size === 1
+            }];
+          }))
+        }
+      : null;
     if (accessoryStability) {
       accessoryStability.passed = Object.values(accessoryStability.directions)
+        .every((direction) => direction.stable);
+    }
+    if (proportionStability) {
+      proportionStability.passed = Object.values(proportionStability.directions)
         .every((direction) => direction.stable);
     }
     presets.push({
@@ -1324,7 +1441,14 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
         profileMedianHeadWidth,
         frontToProfileHeadWidthRatio: downMedianHeadWidth / profileMedianHeadWidth,
         leftRightHeadWidthDifferenceRatio:
-          Math.abs(leftMedianHeadWidth - rightMedianHeadWidth) / profileMedianHeadWidth
+          Math.abs(leftMedianHeadWidth - rightMedianHeadWidth) / profileMedianHeadWidth,
+        ...(preset.reference.walkSourceGuest === "guest-03"
+          ? {
+              headWidthsByDirection,
+              maximumStepHeadWidthSpreadRatio,
+              maximumAllFrameHeadWidthSpreadRatio
+            }
+          : {})
       },
       opticalLandmarks: {
         centerYRatios: facialLandmarkCenterYRatios,
@@ -1350,6 +1474,7 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
         )
       },
       accessoryStability,
+      ...(proportionStability ? { proportionStability } : {}),
       directions: directionMetrics
     });
   }
@@ -1415,7 +1540,14 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
         || preset.opticalHead.frontToProfileHeadWidthRatio
           > maximumSafeFrontToProfileHeadWidthRatio
         || preset.opticalHead.leftRightHeadWidthDifferenceRatio
-          > maximumSafeLeftRightHeadWidthDifferenceRatio;
+          > maximumSafeLeftRightHeadWidthDifferenceRatio
+        || (preset.guest === "guest-03" && (
+          preset.opticalHead.maximumStepHeadWidthSpreadRatio
+              > guest03MaximumHeadWidthDelta * 2 / policy.headWidth
+          || Object.values(preset.directions).flat().some((frame) =>
+            Math.abs(frame.headWidthDelta) > guest03MaximumHeadWidthDelta
+          )
+        ));
     }
     return preset.opticalHead.frontToProfileHeadWidthRatio < minimumFrontToProfileHeadWidthRatio
       || preset.opticalHead.frontToProfileHeadWidthRatio > maximumFrontToProfileHeadWidthRatio
@@ -1453,6 +1585,9 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
   ));
   const accessoryFailures = presets.filter((preset) => (
     preset.guest === "guest-01" && !preset.accessoryStability?.passed
+  ));
+  const proportionFailures = presets.filter((preset) => (
+    preset.guest === "guest-03" && !preset.proportionStability?.passed
   ));
   const headWidths = frames.map((frame) => frame.headWidth);
   const headHeights = frames.map((frame) => frame.measuredHeadHeight);
@@ -1517,9 +1652,13 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
       motionRule: "symmetric first and third steps, matched side stride, stable center and baseline",
       guest01OpticalHeadCompensation,
       guest03OpticalHeadCompensation,
+      guest03MaximumHeadWidthDelta,
+      guest03HeadWidthsByDirection,
       guest01LowerBodyStrideOffsets,
       guest01AccessoryRule:
-        "the complete upper body and handbag band is pixel-locked within each direction"
+        "the complete upper body and handbag band is pixel-locked within each direction",
+      guest03ProportionRule:
+        "the complete head, chin, and shoulder band is pixel-locked across all three walk frames within each direction"
     },
     summary: {
       presetCount: presets.length,
@@ -1589,6 +1728,7 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
         && opticalLandmarkFailures.length === 0
         && motionFailures.length === 0
         && accessoryFailures.length === 0
+        && proportionFailures.length === 0
     },
     presets
   };
@@ -1634,7 +1774,8 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
       + `${opticalFaceFailures.length}명 얼굴 폭, `
       + `${opticalLandmarkFailures.length}명 얼굴 기준선, `
       + `${motionFailures.length}명 보행, `
-      + `${accessoryFailures.length}명 가방 고정 (${rigDetails || "리그 통과"}; `
+      + `${accessoryFailures.length}명 가방 고정, `
+      + `${proportionFailures.length}명 머리 고정 (${rigDetails || "리그 통과"}; `
       + `${opticalHeadDetails || "머리 실루엣 통과"}; `
       + `${opticalFaceDetails || "얼굴 폭 통과"}; `
       + `${opticalLandmarkDetails || "얼굴 기준선 통과"}; `
@@ -1883,13 +2024,24 @@ export async function buildGuestSelectionPreviewAssets({
             : policy.headHeight;
           return { candidate, candidateHeadHeight, measuredHeadHeight };
         };
+        const faceSafeCandidate = usesUnifiedRig
+          ? await normalizeFaceSafeThreeHeadRig(
+              baseFrame.normalized,
+              policy,
+              sourceHeadHeight
+            )
+          : null;
         let best = usesUnifiedRig
           ? {
-              candidate: await normalizeFaceSafeThreeHeadRig(
-                baseFrame.normalized,
-                policy,
-                sourceHeadHeight
-              ),
+              candidate: guest === "guest-03"
+                ? await normalizeHeadWidth(
+                    faceSafeCandidate,
+                    policy,
+                    guest03HeadWidthsByDirection[direction],
+                    0,
+                    6
+                  )
+                : faceSafeCandidate,
               candidateHeadHeight: sourceHeadHeight,
               measuredHeadHeight: policy.headHeight
             }
@@ -1940,6 +2092,8 @@ export async function buildGuestSelectionPreviewAssets({
     if (guest === "guest-01") {
       await lockGuest01UpperBodyAndBag(framesByDirection, policy);
       await stabilizeGuest01LowerBodyStride(framesByDirection, policy);
+    } else if (guest === "guest-03") {
+      await lockGuest03HeadBand(framesByDirection, policy);
     }
     for (const direction of directions) {
       for (let column = 0; column < 3; column += 1) {
@@ -1982,6 +2136,17 @@ export async function buildGuestSelectionPreviewAssets({
           ? 12
           : 2
       );
+      if (guest === "guest-03") {
+        runtimeFramesByDirection[direction] = await lockProportionBandAcrossFrames(
+          runtimeFramesByDirection[direction],
+          {
+            source: runtimePolicy,
+            contentHeight: policy.contentHeight / 2,
+            headHeight: policy.headHeight / 2,
+            footBaseline: policy.footBaseline / 2
+          }
+        );
+      }
     }
     const runtimeWalkComposites = directions.flatMap((direction, row) =>
       runtimeFramesByDirection[direction].map((runtimeFrame, column) => ({
@@ -2029,6 +2194,9 @@ export async function buildGuestSelectionPreviewAssets({
   report.summary.runtimeMotionWithinTolerance = runtimeMotion.summary.passed;
   report.summary.passed = report.summary.passed && runtimeMotion.summary.passed;
   if (!runtimeMotion.summary.passed) {
+    if (!runtimeMotion.summary.guest03ProportionStable) {
+      throw new Error("3번 캐릭터 실게임 보행 머리·턱·어깨 비율 고정이 풀렸습니다.");
+    }
     throw new Error(
       `실게임 보행 상체 중심 흔들림 ${runtimeMotion.summary.maximumMeasuredCoreCenterDriftDisplayPx.toFixed(2)}px가 `
       + `${runtimeMotion.policy.maximumCoreCenterDriftDisplayPx.toFixed(2)}px를 넘었습니다.`

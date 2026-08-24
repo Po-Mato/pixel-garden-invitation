@@ -1,24 +1,24 @@
 {
   "version": 2,
-  "approvedAt": "2026-08-24T01:15:35.322Z",
-  "reason": "3번 캐릭터 광학 3등신 보정 및 방향별 머리 비율 안정화",
-  "sha256": "f7afc663b63036c328b82cc3c32102e9981941efe93a6c57b7ff27c482a2b4fd",
+  "approvedAt": "2026-08-24T08:38:19.239Z",
+  "reason": "3번 캐릭터 방향별 보행 머리·턱·어깨 비율 고정",
+  "sha256": "b777556fb68d3f70f04838909bc298270ede39e4a4de9b055474c42f0387a651",
   "provenance": {
     "schemaVersion": 1,
     "subjectKind": "capture-set",
     "sourceKind": "local",
     "runId": null,
     "runAttempt": null,
-    "commitSha": "1ec88b14abf54408fa9f974b1a7f89c59ffc1b62",
+    "commitSha": "3febf34ad5911b1fde143cf59277afd1c4c735e0",
     "runUrl": null,
     "checksumAlgorithm": "sha256",
     "artifactChecksumScope": "sorted-capture-set-manifest",
-    "artifactSha256": "c46f62e1dd038c93373cfefd3864fe435de923ed1994e2c05daca652a3059fdd",
+    "artifactSha256": "661f85eb0d299cd99b8f193b02ab2bb2227455fbd03b560a4e72fc187e07149a",
     "files": [
       {
         "logicalPath": "mobile-game-current",
-        "size": 4623792,
-        "sha256": "b35a0c5c8401e1087b9e6e1dbc636486af112fa2993cea68c32e483d5e71c65d"
+        "size": 4623954,
+        "sha256": "9b22da2191c74b393e301747cdb5d23167ccd7cdd484fe56362026edee5ca0b8"
       }
     ]
   },

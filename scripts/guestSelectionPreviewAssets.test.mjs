@@ -189,6 +189,13 @@ test("3번 캐릭터는 수트의 긴 세로선을 상쇄하는 광학 3등신�
 
   assert.ok(guest03, "guest-03 감사 결과가 필요합니다.");
   assert.equal(report.policy.guest03OpticalHeadCompensation, 10);
+  assert.equal(report.policy.guest03MaximumHeadWidthDelta, 1);
+  assert.deepEqual(report.policy.guest03HeadWidthsByDirection, {
+    down: 96,
+    left: 105,
+    right: 105,
+    up: 96
+  });
   assert.ok(
     guest03.opticalHead.frontToProfileHeadWidthRatio >= 0.9
       && guest03.opticalHead.frontToProfileHeadWidthRatio <= 1.1,
@@ -210,6 +217,54 @@ test("3번 캐릭터는 수트의 긴 세로선을 상쇄하는 광학 3등신�
   );
 
   const frames = Object.values(guest03.directions).flat();
+  assert.deepEqual(
+    guest03.opticalHead.headWidthsByDirection,
+    {
+      down: [96, 96, 96],
+      left: [105, 105, 105],
+      right: [105, 105, 105],
+      up: [96, 96, 96]
+    },
+    "guest-03의 방향·보행 프레임이 바뀌어도 머리 폭은 같아야 합니다."
+  );
+  assert.equal(guest03.opticalHead.maximumStepHeadWidthSpreadRatio, 0);
+  assert.ok(
+    guest03.opticalHead.maximumAllFrameHeadWidthSpreadRatio <= 0.094,
+    "정면·후면과 측면의 자연스러운 모량 차이만 허용합니다."
+  );
+  assert.equal(
+    frames.every((frame) => (
+      frame.measuredHeadHeight === report.policy.headHeight
+      && frame.measuredBodyHeight === report.policy.bodyHeight
+      && frame.characterHeight === report.policy.contentHeight
+      && frame.bottom === report.policy.footBaseline
+    )),
+    true,
+    "guest-03의 12컷은 머리·몸·전체 높이와 발 기준선이 모두 같아야 합니다."
+  );
+  assert.equal(guest03.proportionStability.passed, true);
+  assert.equal(guest03.proportionStability.bandBottom, 110);
+  for (const direction of Object.values(guest03.proportionStability.directions)) {
+    assert.equal(direction.stable, true);
+    assert.equal(new Set(direction.hashes).size, 1);
+  }
+  for (const direction of ["down", "left", "right"]) {
+    const directionFrames = guest03.directions[direction];
+    assert.equal(new Set(directionFrames.map((frame) => frame.visibleFaceWidth)).size, 1);
+    assert.equal(new Set(directionFrames.map((frame) => frame.visibleFaceHeight)).size, 1);
+    assert.equal(new Set(directionFrames.map((frame) => frame.visibleFaceArea)).size, 1);
+    assert.equal(new Set(directionFrames.map((frame) => frame.visibleFaceCenterYRatio)).size, 1);
+  }
+  const runtimeGuest03 = report.runtimeMotion.presets.find(
+    (preset) => preset.guest === "guest-03"
+  );
+  assert.ok(runtimeGuest03);
+  assert.equal(report.runtimeMotion.summary.guest03ProportionStable, true);
+  assert.equal(runtimeGuest03.proportionStable, true);
+  for (const direction of Object.values(runtimeGuest03.directions)) {
+    assert.equal(direction.proportionStable, true);
+    assert.equal(new Set(direction.proportionHashes).size, 1);
+  }
   assert.equal(
     frames.every((frame) => frame.opticalHeadCompensation === 10),
     true,
