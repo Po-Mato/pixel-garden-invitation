@@ -1,5 +1,5 @@
 export const defaultGuestAssetRevision = "guest-opposite-foot-four-step-v14";
-export const guest01AssetRevision = "guest01-four-step-fixed-bag-v14";
+export const guest01AssetRevision = "guest01-stable-feet-v17";
 export const guest03AssetRevision = "guest03-two-foot-clean-suit-v16";
 
 export const guestAssetRevisions: Readonly<Partial<Record<string, string>>> = {
