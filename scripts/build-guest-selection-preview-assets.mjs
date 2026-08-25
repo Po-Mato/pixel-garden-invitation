@@ -1084,6 +1084,42 @@ async function mirroredLowerStrideBandSha256(input, policy) {
   return lowerStrideBandSha256(await sharp(input).flop().png().toBuffer(), policy);
 }
 
+async function lowerStrideDifference(first, second, policy) {
+  const top = lowerStrideBandTop(policy);
+  const [firstRaw, secondRaw] = await Promise.all([
+    sharp(first).ensureAlpha().raw().toBuffer({ resolveWithObject: true }),
+    sharp(second).ensureAlpha().raw().toBuffer({ resolveWithObject: true })
+  ]);
+  if (
+    firstRaw.info.width !== secondRaw.info.width
+    || firstRaw.info.height !== secondRaw.info.height
+  ) {
+    throw new Error("반대 발 보행 프레임 규격이 일치하지 않습니다.");
+  }
+  let unionPixels = 0;
+  let alphaDifferencePixels = 0;
+  let rgbaDifference = 0;
+  for (let y = top; y < firstRaw.info.height; y += 1) {
+    for (let x = 0; x < firstRaw.info.width; x += 1) {
+      const offset = (y * firstRaw.info.width + x) * firstRaw.info.channels;
+      const firstOpaque = firstRaw.data[offset + 3] > 12;
+      const secondOpaque = secondRaw.data[offset + 3] > 12;
+      if (!firstOpaque && !secondOpaque) continue;
+      unionPixels += 1;
+      if (firstOpaque !== secondOpaque) alphaDifferencePixels += 1;
+      for (let channel = 0; channel < 4; channel += 1) {
+        rgbaDifference += Math.abs(
+          firstRaw.data[offset + channel] - secondRaw.data[offset + channel]
+        );
+      }
+    }
+  }
+  return {
+    alpha: unionPixels === 0 ? 0 : alphaDifferencePixels / unionPixels,
+    rgba: unionPixels === 0 ? 0 : rgbaDifference / (unionPixels * 4 * 255)
+  };
+}
+
 function neutralFootBandTop(policy) {
   const characterTop = policy.footBaseline - policy.contentHeight + 1;
   const bodyHeight = policy.contentHeight - policy.headHeight;
@@ -1107,6 +1143,24 @@ async function neutralFootBandSha256(input, policy) {
   return createHash("sha256").update(silhouette).digest("hex");
 }
 
+async function neutralFootSpan(input, policy) {
+  const top = neutralFootBandTop(policy);
+  const { data, info } = await sharp(input)
+    .ensureAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  let left = info.width;
+  let right = -1;
+  for (let y = top; y < info.height; y += 1) {
+    for (let x = 0; x < info.width; x += 1) {
+      if (data[(y * info.width + x) * info.channels + 3] <= 12) continue;
+      left = Math.min(left, x);
+      right = Math.max(right, x);
+    }
+  }
+  return right >= left ? right - left + 1 : 0;
+}
+
 async function mirroredNeutralFootBandSha256(input, policy) {
   return neutralFootBandSha256(await sharp(input).flop().png().toBuffer(), policy);
 }
@@ -1117,6 +1171,84 @@ function guest03ProportionBandBottom(policy) {
     policy.source.height - 1,
     targetTop + Math.round(policy.headHeight * 1.15)
   );
+}
+
+function guest03LegPhaseBandTop(policy) {
+  const characterTop = policy.footBaseline - policy.contentHeight + 1;
+  const bodyHeight = policy.contentHeight - policy.headHeight;
+  return characterTop + policy.headHeight + Math.round(bodyHeight * 0.46);
+}
+
+async function guest03UpperSuitSha256(input, policy) {
+  const bottom = guest03LegPhaseBandTop(policy) - 1;
+  const { data, info } = await sharp(input)
+    .ensureAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  return createHash("sha256")
+    .update(data.subarray(0, (bottom + 1) * info.width * info.channels))
+    .digest("hex");
+}
+
+async function emphasizeGuest03LegPhase(input, policy, direction, phase) {
+  const beforeSuit = await guest03UpperSuitSha256(input, policy);
+  const { data, info } = await sharp(input)
+    .ensureAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  const top = guest03LegPhaseBandTop(policy);
+  const centerX = (info.width - 1) / 2;
+  const transitionRows = 14;
+  const mirroredDirection = direction === "right" || direction === "up";
+  const phaseDirection = (phase < 2 ? -1 : 1) * (mirroredDirection ? -1 : 1);
+  for (let y = top; y < info.height; y += 1) {
+    const verticalStrength = clamp((y - top + 1) / transitionRows, 0, 1);
+    for (let x = 0; x < info.width; x += 1) {
+      const offset = (y * info.width + x) * info.channels;
+      const red = data[offset];
+      const green = data[offset + 1];
+      const blue = data[offset + 2];
+      const alpha = data[offset + 3];
+      const isCoolSuitPixel = alpha > 12
+        && red < 120
+        && green < 135
+        && blue < 155
+        && blue >= red * 0.72;
+      if (!isCoolSuitPixel) continue;
+      const horizontalDivisor = direction === "up" ? 12 : 32;
+      const horizontal = clamp((x - centerX) / horizontalDivisor, -1, 1);
+      const phaseContrast = direction === "up"
+        ? 0.32
+        : direction === "left" || direction === "right"
+          ? 0.34
+          : 0.24;
+      const factor = 0.94 + phaseDirection * horizontal * phaseContrast * verticalStrength;
+      data[offset] = clamp(Math.round(red * factor), 0, 255);
+      data[offset + 1] = clamp(Math.round(green * factor), 0, 255);
+      data[offset + 2] = clamp(Math.round(blue * factor), 0, 255);
+    }
+  }
+  const adjusted = await sharp(data, { raw: info })
+    .png({ compressionLevel: 9 })
+    .toBuffer();
+  const afterSuit = await guest03UpperSuitSha256(adjusted, policy);
+  if (beforeSuit !== afterSuit) {
+    throw new Error(`guest-03/${direction}/step-${phase + 1} 정장 상단이 변경됐습니다.`);
+  }
+  return adjusted;
+}
+
+async function emphasizeGuest03LegPhases(framesByDirection, policy) {
+  for (const direction of directions) {
+    for (let phase = 0; phase < framesByDirection[direction].length; phase += 1) {
+      framesByDirection[direction][phase] = await emphasizeGuest03LegPhase(
+        framesByDirection[direction][phase],
+        policy,
+        direction,
+        phase
+      );
+    }
+  }
 }
 
 async function headBandSha256(input, policy) {
@@ -1276,6 +1408,7 @@ async function inspectFrame(input, policy, { direction, guest, rigFrame, sourceS
     mirroredLowerStrideBandSha256: await mirroredLowerStrideBandSha256(input, policy),
     neutralFootBandSha256: await neutralFootBandSha256(input, policy),
     mirroredNeutralFootBandSha256: await mirroredNeutralFootBandSha256(input, policy),
+    neutralFootSpan: await neutralFootSpan(input, policy),
     frameSha256: checksum,
     rigHashMatches: !rigFrame.frameSha256 || rigFrame.frameSha256 === checksum
   };
@@ -1305,6 +1438,8 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
   const maximumLeftRightStrideExpansionDifferenceRatio = 0.09;
   const maximumStrideCenterDrift = 4;
   const maximumStepBaselineSpread = 1;
+  const minimumGuest03OppositeFootAlphaDifference = 0.02;
+  const minimumGuest03OppositeFootRgbaDifference = 0.055;
   const minimumSafeBodyToHeadRatio = 1.75;
   const maximumSafeBodyToHeadRatio = 2.25;
   const maximumSafeStepFaceWidthSpreadRatio = 0.16;
@@ -1339,11 +1474,13 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
       throw new Error(`${preset.id} 선택 화면 고해상도 시트 규격이 잘못됐습니다.`);
     }
     const directionMetrics = {};
+    const frameBuffersByDirection = {};
     const presetRig = sourceRig[preset.id];
     if (!presetRig) throw new Error(`${preset.id} 방향별 3등신 리그 정보가 없습니다.`);
     for (let row = 0; row < directions.length; row += 1) {
       const direction = directions[row];
       directionMetrics[direction] = [];
+      frameBuffersByDirection[direction] = [];
       for (let column = 0; column < catalog.frame.walk.columns; column += 1) {
         const frame = await sharp(walkPath)
           .extract({
@@ -1364,6 +1501,7 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
           rigFrame,
           sourceSet: presetRig.sourceSet
         }));
+        frameBuffersByDirection[direction].push(frame);
         frameCount += 1;
       }
     }
@@ -1445,11 +1583,46 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
     );
     const centerYValues = Object.values(facialLandmarkCenterYRatios);
     const bottomYValues = Object.values(facialLandmarkBottomYRatios);
-    const directionMotion = Object.fromEntries(
-      directions.map((direction) => {
-        const [firstStep, neutralStep, thirdStep, oppositeNeutralStep] = directionMetrics[direction];
-        const averageStepWidth = (firstStep.characterWidth + thirdStep.characterWidth) / 2;
-        return [direction, {
+    const directionMotion = {};
+    for (const direction of directions) {
+      const [firstStep, neutralStep, thirdStep, oppositeNeutralStep] = directionMetrics[direction];
+      const averageStepWidth = (firstStep.characterWidth + thirdStep.characterWidth) / 2;
+      const oppositeFootDifference = await lowerStrideDifference(
+        frameBuffersByDirection[direction][0],
+        frameBuffersByDirection[direction][2],
+        policy
+      );
+      const sideDirection = direction === "left" || direction === "right";
+      const neutralWidthLimit = Math.min(
+        firstStep.neutralFootSpan,
+        thirdStep.neutralFootSpan
+      ) * 0.65;
+      const guest03NeutralPoses = sideDirection
+        ? neutralStep.neutralFootSpan <= neutralWidthLimit
+          && oppositeNeutralStep.neutralFootSpan <= neutralWidthLimit
+        : neutralStep.neutralFootSpan >= Math.max(
+            firstStep.neutralFootSpan,
+            thirdStep.neutralFootSpan
+          )
+          && oppositeNeutralStep.neutralFootSpan >= Math.max(
+            firstStep.neutralFootSpan,
+            thirdStep.neutralFootSpan
+          );
+      const neutralPairMirrored =
+        neutralStep.mirroredNeutralFootBandSha256
+          === oppositeNeutralStep.neutralFootBandSha256;
+      const neutralPairDistinct =
+        neutralStep.frameSha256 !== oppositeNeutralStep.frameSha256;
+      const guest03 = preset.reference.walkSourceGuest === "guest-03";
+      const neutralPairPassed = guest03
+        ? guest03NeutralPoses && neutralPairDistinct
+        : neutralPairMirrored;
+      const oppositeFootPassed = !guest03
+        || (
+          oppositeFootDifference.alpha >= minimumGuest03OppositeFootAlphaDifference
+          && oppositeFootDifference.rgba >= minimumGuest03OppositeFootRgbaDifference
+        );
+      directionMotion[direction] = {
           firstStepWidth: firstStep.characterWidth,
           neutralStepWidth: neutralStep.characterWidth,
           thirdStepWidth: thirdStep.characterWidth,
@@ -1471,12 +1644,19 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
             thirdStep.bottom,
             oppositeNeutralStep.bottom
           ),
-          neutralPairMirrored:
-            neutralStep.mirroredNeutralFootBandSha256
-              === oppositeNeutralStep.neutralFootBandSha256
-        }];
-      })
-    );
+          neutralFootSpans: [
+            firstStep.neutralFootSpan,
+            neutralStep.neutralFootSpan,
+            thirdStep.neutralFootSpan,
+            oppositeNeutralStep.neutralFootSpan
+          ],
+          neutralPairMirrored,
+          neutralPairDistinct,
+          neutralPairPassed,
+          oppositeFootDifference,
+          oppositeFootPassed
+      };
+    }
     const accessoryStability = preset.reference.walkSourceGuest === "guest-01"
       ? {
           upperBodyBandBottom: guest01UpperBodyBandBottom(policy),
@@ -1569,7 +1749,7 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
           ...Object.values(directionMotion).map((direction) => direction.baselineSpread)
         ),
         fourStepGaitPassed: Object.values(directionMotion)
-          .every((direction) => direction.neutralPairMirrored)
+          .every((direction) => direction.neutralPairPassed && direction.oppositeFootPassed)
       },
       accessoryStability,
       ...(proportionStability ? { proportionStability } : {}),
@@ -1706,7 +1886,7 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
     (frame) => frame.sourceDetectionMethod === safeUnifiedDetectionMethod
   ).length;
   const report = {
-    version: 11,
+    version: 12,
     policy: {
       source: policy.source,
       contentHeight: policy.contentHeight,
@@ -1732,6 +1912,8 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
       maximumLeftRightStrideExpansionDifferenceRatio,
       maximumStrideCenterDrift,
       maximumStepBaselineSpread,
+      minimumGuest03OppositeFootAlphaDifference,
+      minimumGuest03OppositeFootRgbaDifference,
       minimumSafeBodyToHeadRatio,
       maximumSafeBodyToHeadRatio,
       maximumSafeStepFaceWidthSpreadRatio,
@@ -1750,7 +1932,7 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
       opticalLandmarkRule: "median visible face center and chin anchors by visible direction",
       motionRule: "symmetric first and third steps, matched side stride, stable center and baseline",
       fourStepGaitRule:
-        "frames 1 and 3 are opposite landing poses; frames 2 and 4 are mirrored neutral poses",
+        "frames 1 and 3 visibly alternate feet; frames 2 and 4 are distinct neutral load-transfer poses",
       guest01OpticalHeadCompensation,
       guest03OpticalHeadCompensation,
       guest03MaximumHeadWidthDelta,
@@ -1759,7 +1941,9 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
       guest01AccessoryRule:
         "the complete upper body and handbag band is pixel-locked within each direction",
       guest03ProportionRule:
-        "the complete head, chin, and shoulder band is pixel-locked across all four walk frames within each direction"
+        "the complete head, chin, and shoulder band is pixel-locked across all four walk frames within each direction",
+      guest03SuitIntegrityRule:
+        "leg phase emphasis starts below the intact jacket and alternates trouser shading without mirroring shoes"
     },
     summary: {
       presetCount: presets.length,
@@ -1964,7 +2148,7 @@ export async function auditGuestSelectionPreviewAssets({
   const storedReport = JSON.parse(
     await readFile(path.join(outputRoot, "selection-preview-audit.json"), "utf8")
   );
-  if (storedReport.version !== 11) {
+  if (storedReport.version !== 12) {
     throw new Error("방향별 얼굴 폭·면적·실게임 보행 중심 기반 3등신 감사 보고서를 다시 생성해야 합니다.");
   }
   const sourceRig = Object.fromEntries(storedReport.presets.map((preset) => [
@@ -2185,11 +2369,13 @@ export async function buildGuestSelectionPreviewAssets({
         sourceRig[preset.id].directions[direction].push({
           ...sourceRig[preset.id].directions[direction][1]
         });
-        framesByDirection[direction][3] = await replaceLowerStrideWithMirroredReference(
-          framesByDirection[direction][3],
-          framesByDirection[direction][1],
-          policy
-        );
+        if (guest !== "guest-03") {
+          framesByDirection[direction][3] = await replaceLowerStrideWithMirroredReference(
+            framesByDirection[direction][3],
+            framesByDirection[direction][1],
+            policy
+          );
+        }
       }
     }
     if (usesFaceSafeRig(sourceSet)) {
@@ -2210,6 +2396,7 @@ export async function buildGuestSelectionPreviewAssets({
       await stabilizeGuest01LowerBodyStride(framesByDirection, policy);
     } else if (guest === "guest-03") {
       await lockGuest03HeadBand(framesByDirection, policy);
+      await emphasizeGuest03LegPhases(framesByDirection, policy);
     }
     for (const direction of directions) {
       for (let column = 0; column < catalog.frame.walk.columns; column += 1) {

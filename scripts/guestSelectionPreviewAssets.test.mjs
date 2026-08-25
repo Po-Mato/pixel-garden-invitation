@@ -29,7 +29,7 @@ function opaqueSpanInRows(data, info, firstRow) {
 test("선택 화면의 12명 192프레임은 2배 해상도와 동일한 3등신 기준을 지킨다", async () => {
   const report = await auditGuestSelectionPreviewAssets({ catalog });
 
-  assert.equal(report.version, 11);
+  assert.equal(report.version, 12);
   assert.deepEqual(report.policy.source, { width: 192, height: 288 });
   assert.equal(report.summary.presetCount, 12);
   assert.equal(report.summary.frameCount, 192);
@@ -394,7 +394,8 @@ test("통일 광학 리그 보행 리듬과 최종 프레임 중심·발 기준�
     );
     assert.equal(preset.motion.fourStepGaitPassed, true);
     for (const direction of Object.values(preset.motion.directions)) {
-      assert.equal(direction.neutralPairMirrored, true);
+      assert.equal(direction.neutralPairPassed, true);
+      assert.equal(direction.oppositeFootPassed, true);
     }
   }
 });
@@ -450,11 +451,29 @@ test("통일 광학 리그 12종은 반대 발 착지 사이에 2·4번 중립 �
 
 test("3번 캐릭터의 네 방향 2·4컷은 무릎을 들지 않는 중립 자세다", async () => {
   const policy = catalog.frame.selectionPreview;
+  const report = await auditGuestSelectionPreviewAssets({ catalog });
+  const guest03 = report.presets.find((preset) => preset.guest === "guest-03");
   const walkPath = join(
     root,
     "character-assets/source/guests-preview/masculine-navy-suit__walk.png"
   );
   const footBandTop = Math.floor(policy.source.height * 0.82);
+
+  assert.ok(guest03);
+  for (const [direction, motion] of Object.entries(guest03.motion.directions)) {
+    assert.equal(motion.neutralPairPassed, true, `guest-03 ${direction} 2·4컷 중립`);
+    assert.equal(motion.neutralPairDistinct, true, `guest-03 ${direction} 2·4컷 발 하중 교대`);
+    assert.ok(
+      motion.oppositeFootDifference.alpha
+        >= report.policy.minimumGuest03OppositeFootAlphaDifference,
+      `guest-03 ${direction} 1·3컷은 실제 반대 발 실루엣 차이가 있어야 합니다.`
+    );
+    assert.ok(
+      motion.oppositeFootDifference.rgba
+        >= report.policy.minimumGuest03OppositeFootRgbaDifference,
+      `guest-03 ${direction} 1·3컷은 앞·뒤 다리 명암이 반대로 보여야 합니다.`
+    );
+  }
 
   for (let row = 0; row < 4; row += 1) {
     const spans = [];
