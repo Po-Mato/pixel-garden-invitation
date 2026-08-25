@@ -29,7 +29,7 @@ function opaqueSpanInRows(data, info, firstRow) {
 test("선택 화면의 12명 192프레임은 2배 해상도와 동일한 3등신 기준을 지킨다", async () => {
   const report = await auditGuestSelectionPreviewAssets({ catalog });
 
-  assert.equal(report.version, 12);
+  assert.equal(report.version, 13);
   assert.deepEqual(report.policy.source, { width: 192, height: 288 });
   assert.equal(report.summary.presetCount, 12);
   assert.equal(report.summary.frameCount, 192);
@@ -149,7 +149,7 @@ test("1번 캐릭터 정면 얼굴은 측면 대비 별도 강화 기준을 지�
   );
 });
 
-test("1번 캐릭터는 광학 3등신 보정과 방향별 고정 가방 리그를 유지한다", async () => {
+test("1번 캐릭터는 광학 3등신·고정 가방과 꺾이지 않는 측면 발 리그를 유지한다", async () => {
   const report = await auditGuestSelectionPreviewAssets({ catalog });
   const guest01 = report.presets.find((preset) => preset.guest === "guest-01");
 
@@ -165,10 +165,29 @@ test("1번 캐릭터는 광학 3등신 보정과 방향별 고정 가방 리그�
   });
   assert.deepEqual(report.policy.guest01LowerBodyStrideOffsets, {
     down: [0, 0, 0, 0],
-    left: [0, 0, 2, 0],
-    right: [0, 0, -2, 0],
+    left: [0, 0, 0, 0],
+    right: [0, 0, 0, 0],
     up: [0, 0, 0, 0]
   });
+  assert.deepEqual(report.policy.guest01StableSideFootReferenceStep, {
+    left: 0,
+    right: 0
+  });
+  for (const direction of ["left", "right"]) {
+    const motion = guest01.motion.directions[direction];
+    assert.equal(motion.sideFootGeometryStable, true, `guest-01 ${direction} 발 실루엣 고정`);
+    assert.equal(motion.neutralPairSameSilhouette, true, `guest-01 ${direction} 2·4컷 중립 발 고정`);
+    assert.ok(
+      motion.oppositeFootDifference.alpha
+        <= report.policy.maximumGuest01SideOppositeFootAlphaDifference,
+      `guest-01 ${direction} 1·3컷에서 발목 형태가 꺾이면 안 됩니다.`
+    );
+    assert.ok(
+      motion.oppositeFootDifference.rgba
+        >= report.policy.minimumGuest01OppositeFootRgbaDifference,
+      `guest-01 ${direction} 1·3컷은 앞·뒤 다리 명암이 교대돼야 합니다.`
+    );
+  }
   assert.ok(
     guest01.motion.maximumCenterDrift <= report.policy.maximumStrideCenterDrift,
     "guest-01의 확대된 3등신 리그에서도 보행 중심이 안정돼야 합니다."

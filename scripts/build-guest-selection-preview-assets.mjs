@@ -86,11 +86,18 @@ const guest01AccessoryAnchorStep = Object.freeze({
   right: 1,
   up: 0
 });
+// Moving only the pixels below the dress hem disconnected the ankle from the
+// calf and made the high heel visibly kink between frames. Keep the lower body
+// centered and reuse one intact landing silhouette for both side-view feet.
 const guest01LowerBodyStrideOffsets = Object.freeze({
   down: [0, 0, 0, 0],
-  left: [0, 0, 2, 0],
-  right: [0, 0, -2, 0],
+  left: [0, 0, 0, 0],
+  right: [0, 0, 0, 0],
   up: [0, 0, 0, 0]
+});
+const guest01StableSideFootReferenceStep = Object.freeze({
+  left: 0,
+  right: 0
 });
 
 function clamp(value, minimum, maximum) {
@@ -1312,34 +1319,67 @@ async function lockGuest01UpperBodyAndBag(framesByDirection, policy) {
   }
 }
 
-async function shiftLowerBody(input, policy, offsetX) {
-  if (offsetX === 0) return input;
+async function replaceGuest01FootBand(target, reference, policy) {
+  const lowerBodyTop = guest01UpperBodyBandBottom(policy) + 1;
+  const [{ data: targetData, info }, { data: referenceData }] = await Promise.all([
+    sharp(target).ensureAlpha().raw().toBuffer({ resolveWithObject: true }),
+    sharp(reference).ensureAlpha().raw().toBuffer({ resolveWithObject: true })
+  ]);
+  const offset = lowerBodyTop * info.width * info.channels;
+  referenceData.copy(targetData, offset, offset);
+  return sharp(targetData, { raw: info }).png({ compressionLevel: 9 }).toBuffer();
+}
+
+async function emphasizeGuest01FootPhase(input, policy, direction, phase) {
+  const beforeUpperBody = await upperBodyBandSha256(input, policy);
   const lowerBodyTop = guest01UpperBodyBandBottom(policy) + 1;
   const { data, info } = await sharp(input)
     .ensureAlpha()
     .raw()
     .toBuffer({ resolveWithObject: true });
-  const output = Buffer.from(data);
-  output.fill(0, lowerBodyTop * info.width * info.channels);
+  const centerX = (info.width - 1) / 2;
+  const mirroredDirection = direction === "right" || direction === "up";
+  const phaseDirection = (phase < 2 ? -1 : 1) * (mirroredDirection ? -1 : 1);
+  const phaseContrast = direction === "left" || direction === "right" ? 0.16 : 0.1;
   for (let y = lowerBodyTop; y < info.height; y += 1) {
+    const verticalStrength = clamp((y - lowerBodyTop + 1) / 10, 0, 1);
     for (let x = 0; x < info.width; x += 1) {
-      const targetX = x + offsetX;
-      if (targetX < 0 || targetX >= info.width) continue;
-      const sourceOffset = (y * info.width + x) * info.channels;
-      const targetOffset = (y * info.width + targetX) * info.channels;
-      data.copy(output, targetOffset, sourceOffset, sourceOffset + info.channels);
+      const offset = (y * info.width + x) * info.channels;
+      if (data[offset + 3] <= 12) continue;
+      const horizontal = clamp((x - centerX) / 34, -1, 1);
+      const factor = 0.97 + phaseDirection * horizontal * phaseContrast * verticalStrength;
+      data[offset] = clamp(Math.round(data[offset] * factor), 0, 255);
+      data[offset + 1] = clamp(Math.round(data[offset + 1] * factor), 0, 255);
+      data[offset + 2] = clamp(Math.round(data[offset + 2] * factor), 0, 255);
     }
   }
-  return sharp(output, { raw: info }).png({ compressionLevel: 9 }).toBuffer();
+  const adjusted = await sharp(data, { raw: info })
+    .png({ compressionLevel: 9 })
+    .toBuffer();
+  if (beforeUpperBody !== await upperBodyBandSha256(adjusted, policy)) {
+    throw new Error(`guest-01/${direction}/step-${phase + 1} 상체·원피스·가방이 변경됐습니다.`);
+  }
+  return adjusted;
 }
 
-async function stabilizeGuest01LowerBodyStride(framesByDirection, policy) {
+async function stabilizeGuest01FootGeometry(framesByDirection, policy) {
+  for (const direction of ["left", "right"]) {
+    const reference = framesByDirection[direction][guest01StableSideFootReferenceStep[direction]];
+    for (const phase of [0, 2]) {
+      framesByDirection[direction][phase] = await replaceGuest01FootBand(
+        framesByDirection[direction][phase],
+        reference,
+        policy
+      );
+    }
+  }
   for (const direction of directions) {
-    for (let column = 0; column < framesByDirection[direction].length; column += 1) {
-      framesByDirection[direction][column] = await shiftLowerBody(
-        framesByDirection[direction][column],
+    for (let phase = 0; phase < framesByDirection[direction].length; phase += 1) {
+      framesByDirection[direction][phase] = await emphasizeGuest01FootPhase(
+        framesByDirection[direction][phase],
         policy,
-        guest01LowerBodyStrideOffsets[direction][column]
+        direction,
+        phase
       );
     }
   }
@@ -1438,6 +1478,8 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
   const maximumLeftRightStrideExpansionDifferenceRatio = 0.09;
   const maximumStrideCenterDrift = 4;
   const maximumStepBaselineSpread = 1;
+  const maximumGuest01SideOppositeFootAlphaDifference = 0.005;
+  const minimumGuest01OppositeFootRgbaDifference = 0.012;
   const minimumGuest03OppositeFootAlphaDifference = 0.02;
   const minimumGuest03OppositeFootRgbaDifference = 0.055;
   const minimumSafeBodyToHeadRatio = 1.75;
@@ -1613,12 +1655,24 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
           === oppositeNeutralStep.neutralFootBandSha256;
       const neutralPairDistinct =
         neutralStep.frameSha256 !== oppositeNeutralStep.frameSha256;
+      const guest01 = preset.reference.walkSourceGuest === "guest-01";
       const guest03 = preset.reference.walkSourceGuest === "guest-03";
-      const neutralPairPassed = guest03
-        ? guest03NeutralPoses && neutralPairDistinct
-        : neutralPairMirrored;
-      const oppositeFootPassed = !guest03
-        || (
+      const neutralPairSameSilhouette =
+        neutralStep.neutralFootBandSha256 === oppositeNeutralStep.neutralFootBandSha256;
+      const sideFootGeometryStable = !sideDirection
+        || firstStep.lowerStrideBandSha256 === thirdStep.lowerStrideBandSha256;
+      const neutralPairPassed = guest01
+        ? neutralPairSameSilhouette && neutralPairDistinct
+        : guest03
+          ? guest03NeutralPoses && neutralPairDistinct
+          : neutralPairMirrored;
+      const oppositeFootPassed = guest01
+        ? oppositeFootDifference.rgba >= minimumGuest01OppositeFootRgbaDifference
+          && (!sideDirection || (
+            sideFootGeometryStable
+            && oppositeFootDifference.alpha <= maximumGuest01SideOppositeFootAlphaDifference
+          ))
+        : !guest03 || (
           oppositeFootDifference.alpha >= minimumGuest03OppositeFootAlphaDifference
           && oppositeFootDifference.rgba >= minimumGuest03OppositeFootRgbaDifference
         );
@@ -1651,8 +1705,10 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
             oppositeNeutralStep.neutralFootSpan
           ],
           neutralPairMirrored,
+          neutralPairSameSilhouette,
           neutralPairDistinct,
           neutralPairPassed,
+          sideFootGeometryStable,
           oppositeFootDifference,
           oppositeFootPassed
       };
@@ -1886,7 +1942,7 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
     (frame) => frame.sourceDetectionMethod === safeUnifiedDetectionMethod
   ).length;
   const report = {
-    version: 12,
+    version: 13,
     policy: {
       source: policy.source,
       contentHeight: policy.contentHeight,
@@ -1912,6 +1968,8 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
       maximumLeftRightStrideExpansionDifferenceRatio,
       maximumStrideCenterDrift,
       maximumStepBaselineSpread,
+      maximumGuest01SideOppositeFootAlphaDifference,
+      minimumGuest01OppositeFootRgbaDifference,
       minimumGuest03OppositeFootAlphaDifference,
       minimumGuest03OppositeFootRgbaDifference,
       minimumSafeBodyToHeadRatio,
@@ -1938,8 +1996,11 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
       guest03MaximumHeadWidthDelta,
       guest03HeadWidthsByDirection,
       guest01LowerBodyStrideOffsets,
+      guest01StableSideFootReferenceStep,
       guest01AccessoryRule:
         "the complete upper body and handbag band is pixel-locked within each direction",
+      guest01FootGeometryRule:
+        "profile landing frames share one natural shoe silhouette and alternate leg depth without bending or mirroring the shoes",
       guest03ProportionRule:
         "the complete head, chin, and shoulder band is pixel-locked across all four walk frames within each direction",
       guest03SuitIntegrityRule:
@@ -2148,7 +2209,7 @@ export async function auditGuestSelectionPreviewAssets({
   const storedReport = JSON.parse(
     await readFile(path.join(outputRoot, "selection-preview-audit.json"), "utf8")
   );
-  if (storedReport.version !== 12) {
+  if (storedReport.version !== 13) {
     throw new Error("방향별 얼굴 폭·면적·실게임 보행 중심 기반 3등신 감사 보고서를 다시 생성해야 합니다.");
   }
   const sourceRig = Object.fromEntries(storedReport.presets.map((preset) => [
@@ -2369,7 +2430,7 @@ export async function buildGuestSelectionPreviewAssets({
         sourceRig[preset.id].directions[direction].push({
           ...sourceRig[preset.id].directions[direction][1]
         });
-        if (guest !== "guest-03") {
+        if (guest !== "guest-01" && guest !== "guest-03") {
           framesByDirection[direction][3] = await replaceLowerStrideWithMirroredReference(
             framesByDirection[direction][3],
             framesByDirection[direction][1],
@@ -2393,7 +2454,7 @@ export async function buildGuestSelectionPreviewAssets({
     }
     if (guest === "guest-01") {
       await lockGuest01UpperBodyAndBag(framesByDirection, policy);
-      await stabilizeGuest01LowerBodyStride(framesByDirection, policy);
+      await stabilizeGuest01FootGeometry(framesByDirection, policy);
     } else if (guest === "guest-03") {
       await lockGuest03HeadBand(framesByDirection, policy);
       await emphasizeGuest03LegPhases(framesByDirection, policy);

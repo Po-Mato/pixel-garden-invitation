@@ -1,5 +1,5 @@
 {
-  "version": 12,
+  "version": 13,
   "policy": {
     "source": {
       "width": 192,
@@ -30,6 +30,8 @@
     "maximumLeftRightStrideExpansionDifferenceRatio": 0.09,
     "maximumStrideCenterDrift": 4,
     "maximumStepBaselineSpread": 1,
+    "maximumGuest01SideOppositeFootAlphaDifference": 0.005,
+    "minimumGuest01OppositeFootRgbaDifference": 0.012,
     "minimumGuest03OppositeFootAlphaDifference": 0.02,
     "minimumGuest03OppositeFootRgbaDifference": 0.055,
     "minimumSafeBodyToHeadRatio": 1.75,
@@ -75,13 +77,13 @@
       "left": [
         0,
         0,
-        2,
+        0,
         0
       ],
       "right": [
         0,
         0,
-        -2,
+        0,
         0
       ],
       "up": [
@@ -91,7 +93,12 @@
         0
       ]
     },
+    "guest01StableSideFootReferenceStep": {
+      "left": 0,
+      "right": 0
+    },
     "guest01AccessoryRule": "the complete upper body and handbag band is pixel-locked within each direction",
+    "guest01FootGeometryRule": "profile landing frames share one natural shoe silhouette and alternate leg depth without bending or mirroring the shoes",
     "guest03ProportionRule": "the complete head, chin, and shoulder band is pixel-locked across all four walk frames within each direction",
     "guest03SuitIntegrityRule": "leg phase emphasis starts below the intact jacket and alternates trouser shading without mirroring shoes"
   },
@@ -124,7 +131,7 @@
     "opticalLandmarksWithinTolerance": true,
     "maximumMeasuredStrideSilhouetteSymmetryRatio": 0.11764705882352941,
     "maximumMeasuredLeftRightStrideExpansionDifferenceRatio": 0.006666666666666599,
-    "maximumMeasuredStrideCenterDrift": 4,
+    "maximumMeasuredStrideCenterDrift": 3,
     "maximumMeasuredStepBaselineSpread": 0,
     "motionWithinTolerance": true,
     "fourStepGaitPassed": true,
@@ -191,58 +198,64 @@
               36,
               33
             ],
-            "neutralPairMirrored": true,
+            "neutralPairMirrored": false,
+            "neutralPairSameSilhouette": true,
             "neutralPairDistinct": true,
             "neutralPairPassed": true,
+            "sideFootGeometryStable": true,
             "oppositeFootDifference": {
               "alpha": 0.15987124463519314,
-              "rgba": 0.13942028528149458
+              "rgba": 0.13355239628040058
             },
             "oppositeFootPassed": true
           },
           "left": {
             "firstStepWidth": 106,
             "neutralStepWidth": 100,
-            "thirdStepWidth": 108,
-            "strideExpansionRatio": 1.07,
-            "strideSilhouetteSymmetryRatio": 0.018691588785046728,
-            "maximumCenterDrift": 4,
+            "thirdStepWidth": 106,
+            "strideExpansionRatio": 1.06,
+            "strideSilhouetteSymmetryRatio": 0,
+            "maximumCenterDrift": 3,
             "baselineSpread": 0,
             "neutralFootSpans": [
               95,
               37,
-              103,
+              95,
               37
             ],
-            "neutralPairMirrored": true,
+            "neutralPairMirrored": false,
+            "neutralPairSameSilhouette": true,
             "neutralPairDistinct": true,
             "neutralPairPassed": true,
+            "sideFootGeometryStable": true,
             "oppositeFootDifference": {
-              "alpha": 0.16998060135790494,
-              "rgba": 0.12920018637911032
+              "alpha": 0,
+              "rgba": 0.041040391740560345
             },
             "oppositeFootPassed": true
           },
           "right": {
             "firstStepWidth": 106,
             "neutralStepWidth": 100,
-            "thirdStepWidth": 108,
-            "strideExpansionRatio": 1.07,
-            "strideSilhouetteSymmetryRatio": 0.018691588785046728,
-            "maximumCenterDrift": 4,
+            "thirdStepWidth": 106,
+            "strideExpansionRatio": 1.06,
+            "strideSilhouetteSymmetryRatio": 0,
+            "maximumCenterDrift": 3,
             "baselineSpread": 0,
             "neutralFootSpans": [
               94,
               37,
-              102,
+              94,
               37
             ],
-            "neutralPairMirrored": true,
+            "neutralPairMirrored": false,
+            "neutralPairSameSilhouette": true,
             "neutralPairDistinct": true,
             "neutralPairPassed": true,
+            "sideFootGeometryStable": true,
             "oppositeFootDifference": {
-              "alpha": 0.16897305171158047,
-              "rgba": 0.12888527102999492
+              "alpha": 0,
+              "rgba": 0.0407789509855987
             },
             "oppositeFootPassed": true
           },
@@ -260,19 +273,21 @@
               22,
               34
             ],
-            "neutralPairMirrored": true,
+            "neutralPairMirrored": false,
+            "neutralPairSameSilhouette": true,
             "neutralPairDistinct": true,
             "neutralPairPassed": true,
+            "sideFootGeometryStable": true,
             "oppositeFootDifference": {
               "alpha": 0.12138052062006435,
-              "rgba": 0.08629486892738962
+              "rgba": 0.08391055749588516
             },
             "oppositeFootPassed": true
           }
         },
-        "maximumStrideSilhouetteSymmetryRatio": 0.018691588785046728,
+        "maximumStrideSilhouetteSymmetryRatio": 0,
         "leftRightStrideExpansionDifferenceRatio": 0,
-        "maximumCenterDrift": 4,
+        "maximumCenterDrift": 3,
         "maximumStepBaselineSpread": 0,
         "fourStepGaitPassed": true
       },
@@ -360,7 +375,7 @@
             "neutralFootBandSha256": "e1dbc61cf9b5ae2f286cabdabbc8d4852d797fe14217e93ad0946045922881e1",
             "mirroredNeutralFootBandSha256": "77b007bea35b78ffa5edb6502faf4fe87108238ed07acda725af189c77ae178a",
             "neutralFootSpan": 35,
-            "frameSha256": "6e6138997c2e600748b77b7cb91f12dfc1af259f96854ea654a69ab7cc3456f1",
+            "frameSha256": "ea2135b515f5d6de80663a5c826255987f3baf5e805e698b381c9a9b894c7e4f",
             "rigHashMatches": true
           },
           {
@@ -397,7 +412,7 @@
             "neutralFootBandSha256": "9d0a811f5a148b3a86e8b19eb60d4231b55d0f28a6b445ce9fe7e008fd7d854d",
             "mirroredNeutralFootBandSha256": "2be2b12e0bd17bb439570bab060d00c096e47c567639a3c61915276ec2ca120d",
             "neutralFootSpan": 33,
-            "frameSha256": "dce4921f398ac322d6ac56f7cf7e692c28ca936ee1bd82d1ba56128ac501d05e",
+            "frameSha256": "3ddf7b655c9c3cce789a23ba8d86e5603ac2bcd4a83e2d58f9340c450eb43470",
             "rigHashMatches": true
           },
           {
@@ -434,7 +449,7 @@
             "neutralFootBandSha256": "ef57faefa77245b0d1e21c4dde0a99b10bf7ccabba0b83e22c0fefbd98eb257a",
             "mirroredNeutralFootBandSha256": "e28deebe8f9ccea4e48ed3de8b5a80601922eab04965428516d30225b169f663",
             "neutralFootSpan": 36,
-            "frameSha256": "1c32815746d97d9a2efe00ce4dad07cbaf7c3f986b49d3fa5bbda3405dd20ab9",
+            "frameSha256": "19d701f2e53d870fa32ac6bc9a2a05cd32903719a15c7ed92fee58b8a487507d",
             "rigHashMatches": true
           },
           {
@@ -466,12 +481,12 @@
             "upperBodyBandSha256": "d7281b000fa4c91d7eddfe156c737b7c3790ba4628ec76189e2331edcf7eba36",
             "sourceDetectionMethod": "face-safe-three-head-rig",
             "sourceFaceBottom": 110,
-            "lowerStrideBandSha256": "651183de22a62ccfe045381b80f0d7f1aecf6e38366cacec1a7d7e14dab5e3f4",
-            "mirroredLowerStrideBandSha256": "b436849f9bf51c0a9b2014aaed0cc2885388bd5e0036d0de4c85960cdaa8060b",
-            "neutralFootBandSha256": "2be2b12e0bd17bb439570bab060d00c096e47c567639a3c61915276ec2ca120d",
-            "mirroredNeutralFootBandSha256": "9d0a811f5a148b3a86e8b19eb60d4231b55d0f28a6b445ce9fe7e008fd7d854d",
+            "lowerStrideBandSha256": "98ea3c561971844605cd3e98b62d2ae6e153bb0069824c19a020ad6f90332d24",
+            "mirroredLowerStrideBandSha256": "b162c7208484d14f85d994b406cca65c8c061ec06558f86c567136dc927d7bb3",
+            "neutralFootBandSha256": "9d0a811f5a148b3a86e8b19eb60d4231b55d0f28a6b445ce9fe7e008fd7d854d",
+            "mirroredNeutralFootBandSha256": "2be2b12e0bd17bb439570bab060d00c096e47c567639a3c61915276ec2ca120d",
             "neutralFootSpan": 33,
-            "frameSha256": "71409d0efac324e455a2b71617213b50ed36e222f4a61cb957139ab88d37b4a5",
+            "frameSha256": "f26959fc5f8baf2114ddf985647bca69003de020a2112b73ee1c6b0d8fcae403",
             "rigHashMatches": true
           }
         ],
@@ -510,7 +525,7 @@
             "neutralFootBandSha256": "d4395e02e2e0e45723ea577427465019412c46eab4c65ca17320c90fb37f58a9",
             "mirroredNeutralFootBandSha256": "05d8150d36ea28faef8ac2e08bef979d10040201c19679b8d827e9d37a52854d",
             "neutralFootSpan": 95,
-            "frameSha256": "e9c072232a49d55a3973d7587f56500208ee8b3208e3b4dc19daa31cafcc29ed",
+            "frameSha256": "ad4077d219621111a4530aa76ea757b2cd21f09a5457c3bc10c7bcdbc987de1e",
             "rigHashMatches": true
           },
           {
@@ -547,17 +562,17 @@
             "neutralFootBandSha256": "bd98d7f0ba2515bec4f2dd81f7d3da190d0c7ce0661452994d315a1b76ea8d37",
             "mirroredNeutralFootBandSha256": "757a916ebd94444e2a05b06348826c0d008694304d96ab899c446b50c7b24315",
             "neutralFootSpan": 37,
-            "frameSha256": "02271d3f3cdc2f141923b23e1eb66da5980430882f5f96a329bb1e4faece71cc",
+            "frameSha256": "5b88f6d214ade94349bbed5a67b001052c1c9fe2f3f69a1b776fe0a2626b26be",
             "rigHashMatches": true
           },
           {
-            "left": 38,
+            "left": 40,
             "top": 13,
             "right": 145,
             "bottom": 264,
-            "characterWidth": 108,
+            "characterWidth": 106,
             "characterHeight": 252,
-            "characterCenterX": 91.5,
+            "characterCenterX": 92.5,
             "measuredHeadHeight": 84,
             "measuredBodyHeight": 168,
             "measuredBodyToHeadRatio": 2,
@@ -579,12 +594,12 @@
             "upperBodyBandSha256": "2cb3a0ed26435b5f26e3547764132d52c2eeefbf0c16d1a951e49647184a306c",
             "sourceDetectionMethod": "face-safe-three-head-rig",
             "sourceFaceBottom": 110,
-            "lowerStrideBandSha256": "ed519406085f3fdc818aab232283b00d5c8cbaf938065e431994c5232455e85c",
-            "mirroredLowerStrideBandSha256": "c5c6c0a4ef49c079aecaa0da33a0d800c63a827670ec6160b9261ad3c31585f6",
-            "neutralFootBandSha256": "8c52ae5b83d290e4d5e7d8f2b8a59c615516d3ff65999d291b3fb22071a29ce0",
-            "mirroredNeutralFootBandSha256": "871a999603417d2aae3d5fbc71e36f905dd42fd22df790643d5368c274944111",
-            "neutralFootSpan": 103,
-            "frameSha256": "ec82f238e35088bf7cbc79e12a201a950c8bb8aef24d5e8867aa8453223cf02c",
+            "lowerStrideBandSha256": "0176fb3b2efb1063b1acabba17d1cadd0a16e523815a87336ec39e90b4c93a59",
+            "mirroredLowerStrideBandSha256": "539ab491d88992159afa42abb7b351f99fee1eadc2da68448a818f4e8e8f5df5",
+            "neutralFootBandSha256": "d4395e02e2e0e45723ea577427465019412c46eab4c65ca17320c90fb37f58a9",
+            "mirroredNeutralFootBandSha256": "05d8150d36ea28faef8ac2e08bef979d10040201c19679b8d827e9d37a52854d",
+            "neutralFootSpan": 95,
+            "frameSha256": "880cfeccc0d114dcab57059f90210a57ccadb534d6f986b7d4ea091dc6a84e11",
             "rigHashMatches": true
           },
           {
@@ -616,12 +631,12 @@
             "upperBodyBandSha256": "2cb3a0ed26435b5f26e3547764132d52c2eeefbf0c16d1a951e49647184a306c",
             "sourceDetectionMethod": "face-safe-three-head-rig",
             "sourceFaceBottom": 110,
-            "lowerStrideBandSha256": "7e0585d02972db1a0c6c9c077e45c4cf9080b9bcb2de4c7dc00a0def65214f20",
-            "mirroredLowerStrideBandSha256": "db7b0b4637fa35bb4e47d84e530e915a9a3cc81fbaec245abb0418244f8451fa",
-            "neutralFootBandSha256": "757a916ebd94444e2a05b06348826c0d008694304d96ab899c446b50c7b24315",
-            "mirroredNeutralFootBandSha256": "bd98d7f0ba2515bec4f2dd81f7d3da190d0c7ce0661452994d315a1b76ea8d37",
+            "lowerStrideBandSha256": "fd42917af246e12919d4531a5eb32aba70a587dfc5913463582b821f0cf025b9",
+            "mirroredLowerStrideBandSha256": "4737b3f826c99f8123c09824c8df585cec39fcdf5d031d263d1f00071fdc4503",
+            "neutralFootBandSha256": "bd98d7f0ba2515bec4f2dd81f7d3da190d0c7ce0661452994d315a1b76ea8d37",
+            "mirroredNeutralFootBandSha256": "757a916ebd94444e2a05b06348826c0d008694304d96ab899c446b50c7b24315",
             "neutralFootSpan": 37,
-            "frameSha256": "8c940629c1d4dbc9b8c207cd775ff71c4613c623ca3e8dec771f2d099038800b",
+            "frameSha256": "736c77697042ade5f8dfabbfad0fcc4a6238510c83d7f078f7db20a8aaa2f3d8",
             "rigHashMatches": true
           }
         ],
@@ -660,7 +675,7 @@
             "neutralFootBandSha256": "87877f569aef01b7300085fe9d1059d7e074b3ca2c7ca7449ea3bd77a1fd4cc3",
             "mirroredNeutralFootBandSha256": "7e505f3cbb024cb7f6b96e8b75dbf109fc1dacc33110de4c6bb62a862c5b7472",
             "neutralFootSpan": 94,
-            "frameSha256": "9dc56c05a554775acff5786734227e84761fc419dbf695e22f78870b6eb33a20",
+            "frameSha256": "7b5c05946589edbbae725f9d4d5fb434dfc6ae27713c11dbade9d7ec858caae9",
             "rigHashMatches": true
           },
           {
@@ -697,17 +712,17 @@
             "neutralFootBandSha256": "4cb8cc56b9ddcbe89f6f72cd826045594afb02b7d47d24ef4c3f3ade4ff679d9",
             "mirroredNeutralFootBandSha256": "0cd55bc8aa2856ea240be6de16563f47cc1b71ce33852b84fccaa0aa2f27803b",
             "neutralFootSpan": 37,
-            "frameSha256": "82af40ff8fd4c29d11cb9cfd875e4719656d57cbbb1c5cef69fb2b0f465457f0",
+            "frameSha256": "7dbb849c2e0ba388d1eb4fc518afb4e03111cc63c742acb52eb219198402579a",
             "rigHashMatches": true
           },
           {
             "left": 46,
             "top": 13,
-            "right": 153,
+            "right": 151,
             "bottom": 264,
-            "characterWidth": 108,
+            "characterWidth": 106,
             "characterHeight": 252,
-            "characterCenterX": 99.5,
+            "characterCenterX": 98.5,
             "measuredHeadHeight": 84,
             "measuredBodyHeight": 168,
             "measuredBodyToHeadRatio": 2,
@@ -729,12 +744,12 @@
             "upperBodyBandSha256": "f89708a64a6c2fe25a696a8ef85711f1abb06727ddb1dd36ffc5357c8453971d",
             "sourceDetectionMethod": "face-safe-three-head-rig",
             "sourceFaceBottom": 110,
-            "lowerStrideBandSha256": "eed3dfc4be50ad8e2c01a04c555fac43cb804dc78e506842b242585ee8321009",
-            "mirroredLowerStrideBandSha256": "e4f6b86f0c3dd71678d066b51ea311d1f2474779d08a60a1971428f442f09516",
-            "neutralFootBandSha256": "98c5c30a1d78a1c674daacb19283d91f0efc441e8ce4e68b40cb4b33fcb2faa4",
-            "mirroredNeutralFootBandSha256": "b6bc568b8195d9ad6d2c77bf939d19e06ffc05237a7de3ecb78b1f89d320922a",
-            "neutralFootSpan": 102,
-            "frameSha256": "e8fb3155d91ab452a52f3e63debc6aba3ad332f5ae9f27143a4890fbf7e41bb6",
+            "lowerStrideBandSha256": "0e57119077751d6c7d94aec645c31fd1f1980f0418acd88c7522a63f3418bbf9",
+            "mirroredLowerStrideBandSha256": "5671ef64e822bc19e410289675210d8898456f064bbb3d2287e41c1551f84daf",
+            "neutralFootBandSha256": "87877f569aef01b7300085fe9d1059d7e074b3ca2c7ca7449ea3bd77a1fd4cc3",
+            "mirroredNeutralFootBandSha256": "7e505f3cbb024cb7f6b96e8b75dbf109fc1dacc33110de4c6bb62a862c5b7472",
+            "neutralFootSpan": 94,
+            "frameSha256": "bbcd12314335a7c454ce8850055e011e5a12c0b71c4bac1e1f19108e2436334c",
             "rigHashMatches": true
           },
           {
@@ -766,12 +781,12 @@
             "upperBodyBandSha256": "f89708a64a6c2fe25a696a8ef85711f1abb06727ddb1dd36ffc5357c8453971d",
             "sourceDetectionMethod": "face-safe-three-head-rig",
             "sourceFaceBottom": 110,
-            "lowerStrideBandSha256": "b9d87e477c679726bcf0d352611b39011446368a7d9e9daa1a03fcdae334ef96",
-            "mirroredLowerStrideBandSha256": "687f646258349a0bf10b069992e935bfbd4a8217aaffcf460d2089e3cc653098",
-            "neutralFootBandSha256": "0cd55bc8aa2856ea240be6de16563f47cc1b71ce33852b84fccaa0aa2f27803b",
-            "mirroredNeutralFootBandSha256": "4cb8cc56b9ddcbe89f6f72cd826045594afb02b7d47d24ef4c3f3ade4ff679d9",
+            "lowerStrideBandSha256": "a26df216f71f4dfe85d58faef18c418fa903db1901c69a2f9547a2b86bd0d89c",
+            "mirroredLowerStrideBandSha256": "18e0a61ca30b362bffc384e06d7f62f8d3ec5c2cff72130862ecf9cc194c806c",
+            "neutralFootBandSha256": "4cb8cc56b9ddcbe89f6f72cd826045594afb02b7d47d24ef4c3f3ade4ff679d9",
+            "mirroredNeutralFootBandSha256": "0cd55bc8aa2856ea240be6de16563f47cc1b71ce33852b84fccaa0aa2f27803b",
             "neutralFootSpan": 37,
-            "frameSha256": "82cbb731abbdf2629e4b702e2158fe325b9be50fcf1fe92074c669f7975b9785",
+            "frameSha256": "9dd24ce4047613d7d427733fa26dbcad9b622875b83f5c29b84458459b85b1ff",
             "rigHashMatches": true
           }
         ],
@@ -810,7 +825,7 @@
             "neutralFootBandSha256": "8eef8d5d0c100ed46a3c31c111a601acbaf603de11e0dfd1bed000ce28a660aa",
             "mirroredNeutralFootBandSha256": "ebbb827ab5b795da216a72e81031c92a0fd093dee51451e8f73b4738de85cbed",
             "neutralFootSpan": 32,
-            "frameSha256": "8730d353f68d51f79fec6a296be5b16703edcc55f8ee46999737312dfbd17900",
+            "frameSha256": "52e755693a23a0cf4e4542b3c8fef51d5b7f1b7ac9bab12f117817cf7f7499a4",
             "rigHashMatches": true
           },
           {
@@ -847,7 +862,7 @@
             "neutralFootBandSha256": "b787b1367c7b14109d563b0ca145149a34d4ee4db5d823964df06fe406aca8fe",
             "mirroredNeutralFootBandSha256": "927d2e5bc623133087a2a39aa4fe5da5cc8fb313113c8c59405fd6d8d4ba34d2",
             "neutralFootSpan": 34,
-            "frameSha256": "06fa708b85e22bd4775f1a3de32e2b54fe529d535975aae836901ade9cd3d0df",
+            "frameSha256": "4731901e80e29ffe97b3f286a1ced444d6386f6fdf5c8a29a39df899ac62934a",
             "rigHashMatches": true
           },
           {
@@ -884,7 +899,7 @@
             "neutralFootBandSha256": "397f5b75b17a358f6a4a41d545abca0c714e6e786d726a632481abb526037c80",
             "mirroredNeutralFootBandSha256": "81fc47d10745df51c348fd7dc0fb6b46e4838ba1a7db5870828dc9f2b891a6f8",
             "neutralFootSpan": 22,
-            "frameSha256": "11c0779bdc0200c60d97f0c4de0abf70ca8f6f78a50ed72b4f964e9df9f511e6",
+            "frameSha256": "647f9b0d70602d0634e42b6c36e9a7ee7e65d7bd85e6bfee60d1f3003030fef2",
             "rigHashMatches": true
           },
           {
@@ -916,12 +931,12 @@
             "upperBodyBandSha256": "d6d4dba3b468b6f308720eb5fc2f305d8c1227fa41d7d7b5546bd2b9349c8739",
             "sourceDetectionMethod": "face-safe-three-head-rig",
             "sourceFaceBottom": null,
-            "lowerStrideBandSha256": "61f81f2dfc70a3804f70cd8dbdcbb04aa4723f8633cec140bc90eab5f7dbdbec",
-            "mirroredLowerStrideBandSha256": "b42d2425f9687f36b377711b9b27824074d99135595bd7f9477fc093214da196",
-            "neutralFootBandSha256": "927d2e5bc623133087a2a39aa4fe5da5cc8fb313113c8c59405fd6d8d4ba34d2",
-            "mirroredNeutralFootBandSha256": "b787b1367c7b14109d563b0ca145149a34d4ee4db5d823964df06fe406aca8fe",
+            "lowerStrideBandSha256": "2e63f7397026ed5d471e409d651f48fc47b499a333cefa99f73d2390a8325dd1",
+            "mirroredLowerStrideBandSha256": "e1ff9d46a61fc2036fea83d92886ca87e4f722fa23d8ef0d98f53dc15cfd79e6",
+            "neutralFootBandSha256": "b787b1367c7b14109d563b0ca145149a34d4ee4db5d823964df06fe406aca8fe",
+            "mirroredNeutralFootBandSha256": "927d2e5bc623133087a2a39aa4fe5da5cc8fb313113c8c59405fd6d8d4ba34d2",
             "neutralFootSpan": 34,
-            "frameSha256": "9fbb888d63ae741cdfc83b8b3c8284db90ac961f13d85c3402ec125ee5ced455",
+            "frameSha256": "46afcff95166355cc8c1ce4e9021b2480376412894b6ff51e0c87e59105dbedf",
             "rigHashMatches": true
           }
         ]
@@ -985,8 +1000,10 @@
               97
             ],
             "neutralPairMirrored": true,
+            "neutralPairSameSilhouette": false,
             "neutralPairDistinct": true,
             "neutralPairPassed": true,
+            "sideFootGeometryStable": true,
             "oppositeFootDifference": {
               "alpha": 0.20089086859688196,
               "rgba": 0.18889121795711603
@@ -1008,8 +1025,10 @@
               81
             ],
             "neutralPairMirrored": true,
+            "neutralPairSameSilhouette": false,
             "neutralPairDistinct": true,
             "neutralPairPassed": true,
+            "sideFootGeometryStable": false,
             "oppositeFootDifference": {
               "alpha": 0.1119051769217361,
               "rgba": 0.11404351526212717
@@ -1031,8 +1050,10 @@
               81
             ],
             "neutralPairMirrored": true,
+            "neutralPairSameSilhouette": false,
             "neutralPairDistinct": true,
             "neutralPairPassed": true,
+            "sideFootGeometryStable": false,
             "oppositeFootDifference": {
               "alpha": 0.11113049546406141,
               "rgba": 0.11390251494875689
@@ -1054,8 +1075,10 @@
               93
             ],
             "neutralPairMirrored": true,
+            "neutralPairSameSilhouette": false,
             "neutralPairDistinct": true,
             "neutralPairPassed": true,
+            "sideFootGeometryStable": true,
             "oppositeFootDifference": {
               "alpha": 0.18363317244405442,
               "rgba": 0.15338491254334116
@@ -1711,8 +1734,10 @@
               56
             ],
             "neutralPairMirrored": false,
+            "neutralPairSameSilhouette": true,
             "neutralPairDistinct": true,
             "neutralPairPassed": true,
+            "sideFootGeometryStable": true,
             "oppositeFootDifference": {
               "alpha": 0.19209250279746362,
               "rgba": 0.09557964177838237
@@ -1734,8 +1759,10 @@
               47
             ],
             "neutralPairMirrored": false,
+            "neutralPairSameSilhouette": true,
             "neutralPairDistinct": true,
             "neutralPairPassed": true,
+            "sideFootGeometryStable": false,
             "oppositeFootDifference": {
               "alpha": 0.27232558139534885,
               "rgba": 0.12522001823985407
@@ -1757,8 +1784,10 @@
               47
             ],
             "neutralPairMirrored": false,
+            "neutralPairSameSilhouette": true,
             "neutralPairDistinct": true,
             "neutralPairPassed": true,
+            "sideFootGeometryStable": false,
             "oppositeFootDifference": {
               "alpha": 0.2662155856276248,
               "rgba": 0.12349670152708773
@@ -1780,8 +1809,10 @@
               52
             ],
             "neutralPairMirrored": false,
+            "neutralPairSameSilhouette": true,
             "neutralPairDistinct": true,
             "neutralPairPassed": true,
+            "sideFootGeometryStable": true,
             "oppositeFootDifference": {
               "alpha": 0.0625,
               "rgba": 0.059536915324789136
@@ -2515,8 +2546,10 @@
               50
             ],
             "neutralPairMirrored": true,
+            "neutralPairSameSilhouette": false,
             "neutralPairDistinct": true,
             "neutralPairPassed": true,
+            "sideFootGeometryStable": true,
             "oppositeFootDifference": {
               "alpha": 0.05281090289608177,
               "rgba": 0.034686174299361994
@@ -2538,8 +2571,10 @@
               42
             ],
             "neutralPairMirrored": true,
+            "neutralPairSameSilhouette": false,
             "neutralPairDistinct": true,
             "neutralPairPassed": true,
+            "sideFootGeometryStable": false,
             "oppositeFootDifference": {
               "alpha": 0.5523415977961432,
               "rgba": 0.2061092205477232
@@ -2561,8 +2596,10 @@
               42
             ],
             "neutralPairMirrored": true,
+            "neutralPairSameSilhouette": false,
             "neutralPairDistinct": true,
             "neutralPairPassed": true,
+            "sideFootGeometryStable": false,
             "oppositeFootDifference": {
               "alpha": 0.5844185002245172,
               "rgba": 0.2157628745256522
@@ -2584,8 +2621,10 @@
               49
             ],
             "neutralPairMirrored": true,
+            "neutralPairSameSilhouette": false,
             "neutralPairDistinct": true,
             "neutralPairPassed": true,
+            "sideFootGeometryStable": true,
             "oppositeFootDifference": {
               "alpha": 0.0702842377260982,
               "rgba": 0.039609363125095
@@ -3213,8 +3252,10 @@
               30
             ],
             "neutralPairMirrored": true,
+            "neutralPairSameSilhouette": false,
             "neutralPairDistinct": true,
             "neutralPairPassed": true,
+            "sideFootGeometryStable": true,
             "oppositeFootDifference": {
               "alpha": 0.15535193669304456,
               "rgba": 0.1333423165184441
@@ -3236,8 +3277,10 @@
               36
             ],
             "neutralPairMirrored": true,
+            "neutralPairSameSilhouette": false,
             "neutralPairDistinct": true,
             "neutralPairPassed": true,
+            "sideFootGeometryStable": false,
             "oppositeFootDifference": {
               "alpha": 0.17102876392847888,
               "rgba": 0.14862709530560086
@@ -3259,8 +3302,10 @@
               36
             ],
             "neutralPairMirrored": true,
+            "neutralPairSameSilhouette": false,
             "neutralPairDistinct": true,
             "neutralPairPassed": true,
+            "sideFootGeometryStable": false,
             "oppositeFootDifference": {
               "alpha": 0.17102876392847888,
               "rgba": 0.1485310631119512
@@ -3282,8 +3327,10 @@
               32
             ],
             "neutralPairMirrored": true,
+            "neutralPairSameSilhouette": false,
             "neutralPairDistinct": true,
             "neutralPairPassed": true,
+            "sideFootGeometryStable": true,
             "oppositeFootDifference": {
               "alpha": 0.09483368719037509,
               "rgba": 0.09953478206569252
@@ -3911,8 +3958,10 @@
               35
             ],
             "neutralPairMirrored": true,
+            "neutralPairSameSilhouette": false,
             "neutralPairDistinct": true,
             "neutralPairPassed": true,
+            "sideFootGeometryStable": true,
             "oppositeFootDifference": {
               "alpha": 0.038752362948960305,
               "rgba": 0.042393620964453836
@@ -3934,8 +3983,10 @@
               34
             ],
             "neutralPairMirrored": true,
+            "neutralPairSameSilhouette": false,
             "neutralPairDistinct": true,
             "neutralPairPassed": true,
+            "sideFootGeometryStable": false,
             "oppositeFootDifference": {
               "alpha": 0.26302605210420843,
               "rgba": 0.21692699123737672
@@ -3957,8 +4008,10 @@
               34
             ],
             "neutralPairMirrored": true,
+            "neutralPairSameSilhouette": false,
             "neutralPairDistinct": true,
             "neutralPairPassed": true,
+            "sideFootGeometryStable": false,
             "oppositeFootDifference": {
               "alpha": 0.24353775975671565,
               "rgba": 0.20536830545700288
@@ -3980,8 +4033,10 @@
               36
             ],
             "neutralPairMirrored": true,
+            "neutralPairSameSilhouette": false,
             "neutralPairDistinct": true,
             "neutralPairPassed": true,
+            "sideFootGeometryStable": true,
             "oppositeFootDifference": {
               "alpha": 0.20236638106895144,
               "rgba": 0.17964016287869697
@@ -4609,8 +4664,10 @@
               58
             ],
             "neutralPairMirrored": true,
+            "neutralPairSameSilhouette": false,
             "neutralPairDistinct": true,
             "neutralPairPassed": true,
+            "sideFootGeometryStable": true,
             "oppositeFootDifference": {
               "alpha": 0.21504369538077403,
               "rgba": 0.20686672296883798
@@ -4632,8 +4689,10 @@
               46
             ],
             "neutralPairMirrored": true,
+            "neutralPairSameSilhouette": false,
             "neutralPairDistinct": true,
             "neutralPairPassed": true,
+            "sideFootGeometryStable": false,
             "oppositeFootDifference": {
               "alpha": 0.19494869771112866,
               "rgba": 0.17138704468896215
@@ -4655,8 +4714,10 @@
               46
             ],
             "neutralPairMirrored": true,
+            "neutralPairSameSilhouette": false,
             "neutralPairDistinct": true,
             "neutralPairPassed": true,
+            "sideFootGeometryStable": false,
             "oppositeFootDifference": {
               "alpha": 0.19658344283837056,
               "rgba": 0.1721728375975883
@@ -4678,8 +4739,10 @@
               63
             ],
             "neutralPairMirrored": true,
+            "neutralPairSameSilhouette": false,
             "neutralPairDistinct": true,
             "neutralPairPassed": true,
+            "sideFootGeometryStable": true,
             "oppositeFootDifference": {
               "alpha": 0.10857726344452008,
               "rgba": 0.11613309040430331
@@ -5307,8 +5370,10 @@
               67
             ],
             "neutralPairMirrored": true,
+            "neutralPairSameSilhouette": false,
             "neutralPairDistinct": true,
             "neutralPairPassed": true,
+            "sideFootGeometryStable": true,
             "oppositeFootDifference": {
               "alpha": 0.09043531575720416,
               "rgba": 0.11275171012611053
@@ -5330,8 +5395,10 @@
               55
             ],
             "neutralPairMirrored": true,
+            "neutralPairSameSilhouette": false,
             "neutralPairDistinct": true,
             "neutralPairPassed": true,
+            "sideFootGeometryStable": false,
             "oppositeFootDifference": {
               "alpha": 0.12139423076923077,
               "rgba": 0.11465851244343891
@@ -5353,8 +5420,10 @@
               55
             ],
             "neutralPairMirrored": true,
+            "neutralPairSameSilhouette": false,
             "neutralPairDistinct": true,
             "neutralPairPassed": true,
+            "sideFootGeometryStable": false,
             "oppositeFootDifference": {
               "alpha": 0.15204540080397258,
               "rgba": 0.1327690688476857
@@ -5376,8 +5445,10 @@
               75
             ],
             "neutralPairMirrored": true,
+            "neutralPairSameSilhouette": false,
             "neutralPairDistinct": true,
             "neutralPairPassed": true,
+            "sideFootGeometryStable": true,
             "oppositeFootDifference": {
               "alpha": 0.0830188679245283,
               "rgba": 0.09453285523207831
@@ -6005,8 +6076,10 @@
               45
             ],
             "neutralPairMirrored": true,
+            "neutralPairSameSilhouette": false,
             "neutralPairDistinct": true,
             "neutralPairPassed": true,
+            "sideFootGeometryStable": true,
             "oppositeFootDifference": {
               "alpha": 0.029764762361977917,
               "rgba": 0.0349538279065827
@@ -6028,8 +6101,10 @@
               36
             ],
             "neutralPairMirrored": true,
+            "neutralPairSameSilhouette": false,
             "neutralPairDistinct": true,
             "neutralPairPassed": true,
+            "sideFootGeometryStable": false,
             "oppositeFootDifference": {
               "alpha": 0.4537833190025795,
               "rgba": 0.3843116180264023
@@ -6051,8 +6126,10 @@
               36
             ],
             "neutralPairMirrored": true,
+            "neutralPairSameSilhouette": false,
             "neutralPairDistinct": true,
             "neutralPairPassed": true,
+            "sideFootGeometryStable": false,
             "oppositeFootDifference": {
               "alpha": 0.45368579411132604,
               "rgba": 0.3842564147945875
@@ -6074,8 +6151,10 @@
               42
             ],
             "neutralPairMirrored": true,
+            "neutralPairSameSilhouette": false,
             "neutralPairDistinct": true,
             "neutralPairPassed": true,
+            "sideFootGeometryStable": true,
             "oppositeFootDifference": {
               "alpha": 0.06410930110352075,
               "rgba": 0.055145642071857646
@@ -6703,8 +6782,10 @@
               47
             ],
             "neutralPairMirrored": true,
+            "neutralPairSameSilhouette": false,
             "neutralPairDistinct": true,
             "neutralPairPassed": true,
+            "sideFootGeometryStable": true,
             "oppositeFootDifference": {
               "alpha": 0.050017012589316096,
               "rgba": 0.07630780110615189
@@ -6726,8 +6807,10 @@
               74
             ],
             "neutralPairMirrored": true,
+            "neutralPairSameSilhouette": false,
             "neutralPairDistinct": true,
             "neutralPairPassed": true,
+            "sideFootGeometryStable": false,
             "oppositeFootDifference": {
               "alpha": 0.11193568336425479,
               "rgba": 0.09682782203790608
@@ -6749,8 +6832,10 @@
               73
             ],
             "neutralPairMirrored": true,
+            "neutralPairSameSilhouette": false,
             "neutralPairDistinct": true,
             "neutralPairPassed": true,
+            "sideFootGeometryStable": false,
             "oppositeFootDifference": {
               "alpha": 0.11193568336425479,
               "rgba": 0.09682782203790608
@@ -6772,8 +6857,10 @@
               56
             ],
             "neutralPairMirrored": true,
+            "neutralPairSameSilhouette": false,
             "neutralPairDistinct": true,
             "neutralPairPassed": true,
+            "sideFootGeometryStable": true,
             "oppositeFootDifference": {
               "alpha": 0.05712511642347097,
               "rgba": 0.05334599533697366
@@ -7401,8 +7488,10 @@
               47
             ],
             "neutralPairMirrored": true,
+            "neutralPairSameSilhouette": false,
             "neutralPairDistinct": true,
             "neutralPairPassed": true,
+            "sideFootGeometryStable": true,
             "oppositeFootDifference": {
               "alpha": 0.18131592164741336,
               "rgba": 0.16460099861139835
@@ -7424,8 +7513,10 @@
               43
             ],
             "neutralPairMirrored": true,
+            "neutralPairSameSilhouette": false,
             "neutralPairDistinct": true,
             "neutralPairPassed": true,
+            "sideFootGeometryStable": false,
             "oppositeFootDifference": {
               "alpha": 0.4954025566270464,
               "rgba": 0.41548179711445016
@@ -7447,8 +7538,10 @@
               43
             ],
             "neutralPairMirrored": true,
+            "neutralPairSameSilhouette": false,
             "neutralPairDistinct": true,
             "neutralPairPassed": true,
+            "sideFootGeometryStable": false,
             "oppositeFootDifference": {
               "alpha": 0.5285087719298246,
               "rgba": 0.438937263501892
@@ -7470,8 +7563,10 @@
               46
             ],
             "neutralPairMirrored": true,
+            "neutralPairSameSilhouette": false,
             "neutralPairDistinct": true,
             "neutralPairPassed": true,
+            "sideFootGeometryStable": true,
             "oppositeFootDifference": {
               "alpha": 0.22002032520325204,
               "rgba": 0.1567825402518731
@@ -8099,8 +8194,10 @@
               52
             ],
             "neutralPairMirrored": true,
+            "neutralPairSameSilhouette": false,
             "neutralPairDistinct": true,
             "neutralPairPassed": true,
+            "sideFootGeometryStable": true,
             "oppositeFootDifference": {
               "alpha": 0.03677028051554208,
               "rgba": 0.07980050246027144
@@ -8122,8 +8219,10 @@
               45
             ],
             "neutralPairMirrored": true,
+            "neutralPairSameSilhouette": false,
             "neutralPairDistinct": true,
             "neutralPairPassed": true,
+            "sideFootGeometryStable": false,
             "oppositeFootDifference": {
               "alpha": 0.574888354517348,
               "rgba": 0.30473474515192545
@@ -8145,8 +8244,10 @@
               45
             ],
             "neutralPairMirrored": true,
+            "neutralPairSameSilhouette": false,
             "neutralPairDistinct": true,
             "neutralPairPassed": true,
+            "sideFootGeometryStable": false,
             "oppositeFootDifference": {
               "alpha": 0.55530395401498,
               "rgba": 0.29866713799262956
@@ -8168,8 +8269,10 @@
               53
             ],
             "neutralPairMirrored": true,
+            "neutralPairSameSilhouette": false,
             "neutralPairDistinct": true,
             "neutralPairPassed": true,
+            "sideFootGeometryStable": true,
             "oppositeFootDifference": {
               "alpha": 0.030878859857482184,
               "rgba": 0.041271171968391474
