@@ -1,5 +1,5 @@
 {
-  "version": 11,
+  "version": 12,
   "policy": {
     "source": {
       "width": 192,
@@ -30,6 +30,8 @@
     "maximumLeftRightStrideExpansionDifferenceRatio": 0.09,
     "maximumStrideCenterDrift": 4,
     "maximumStepBaselineSpread": 1,
+    "minimumGuest03OppositeFootAlphaDifference": 0.02,
+    "minimumGuest03OppositeFootRgbaDifference": 0.055,
     "minimumSafeBodyToHeadRatio": 1.75,
     "maximumSafeBodyToHeadRatio": 2.25,
     "maximumSafeStepFaceWidthSpreadRatio": 0.16,
@@ -53,7 +55,7 @@
     "opticalHeadRule": "fixed head silhouette width and front/profile median ratio",
     "opticalLandmarkRule": "median visible face center and chin anchors by visible direction",
     "motionRule": "symmetric first and third steps, matched side stride, stable center and baseline",
-    "fourStepGaitRule": "frames 1 and 3 are opposite landing poses; frames 2 and 4 are mirrored neutral poses",
+    "fourStepGaitRule": "frames 1 and 3 visibly alternate feet; frames 2 and 4 are distinct neutral load-transfer poses",
     "guest01OpticalHeadCompensation": 20,
     "guest03OpticalHeadCompensation": 10,
     "guest03MaximumHeadWidthDelta": 1,
@@ -90,7 +92,8 @@
       ]
     },
     "guest01AccessoryRule": "the complete upper body and handbag band is pixel-locked within each direction",
-    "guest03ProportionRule": "the complete head, chin, and shoulder band is pixel-locked across all four walk frames within each direction"
+    "guest03ProportionRule": "the complete head, chin, and shoulder band is pixel-locked across all four walk frames within each direction",
+    "guest03SuitIntegrityRule": "leg phase emphasis starts below the intact jacket and alternates trouser shading without mirroring shoes"
   },
   "summary": {
     "presetCount": 12,
@@ -182,7 +185,20 @@
             "strideSilhouetteSymmetryRatio": 0,
             "maximumCenterDrift": 0,
             "baselineSpread": 0,
-            "neutralPairMirrored": true
+            "neutralFootSpans": [
+              35,
+              33,
+              36,
+              33
+            ],
+            "neutralPairMirrored": true,
+            "neutralPairDistinct": true,
+            "neutralPairPassed": true,
+            "oppositeFootDifference": {
+              "alpha": 0.15987124463519314,
+              "rgba": 0.13942028528149458
+            },
+            "oppositeFootPassed": true
           },
           "left": {
             "firstStepWidth": 106,
@@ -192,7 +208,20 @@
             "strideSilhouetteSymmetryRatio": 0.018691588785046728,
             "maximumCenterDrift": 4,
             "baselineSpread": 0,
-            "neutralPairMirrored": true
+            "neutralFootSpans": [
+              95,
+              37,
+              103,
+              37
+            ],
+            "neutralPairMirrored": true,
+            "neutralPairDistinct": true,
+            "neutralPairPassed": true,
+            "oppositeFootDifference": {
+              "alpha": 0.16998060135790494,
+              "rgba": 0.12920018637911032
+            },
+            "oppositeFootPassed": true
           },
           "right": {
             "firstStepWidth": 106,
@@ -202,7 +231,20 @@
             "strideSilhouetteSymmetryRatio": 0.018691588785046728,
             "maximumCenterDrift": 4,
             "baselineSpread": 0,
-            "neutralPairMirrored": true
+            "neutralFootSpans": [
+              94,
+              37,
+              102,
+              37
+            ],
+            "neutralPairMirrored": true,
+            "neutralPairDistinct": true,
+            "neutralPairPassed": true,
+            "oppositeFootDifference": {
+              "alpha": 0.16897305171158047,
+              "rgba": 0.12888527102999492
+            },
+            "oppositeFootPassed": true
           },
           "up": {
             "firstStepWidth": 101,
@@ -212,7 +254,20 @@
             "strideSilhouetteSymmetryRatio": 0,
             "maximumCenterDrift": 0,
             "baselineSpread": 0,
-            "neutralPairMirrored": true
+            "neutralFootSpans": [
+              32,
+              34,
+              22,
+              34
+            ],
+            "neutralPairMirrored": true,
+            "neutralPairDistinct": true,
+            "neutralPairPassed": true,
+            "oppositeFootDifference": {
+              "alpha": 0.12138052062006435,
+              "rgba": 0.08629486892738962
+            },
+            "oppositeFootPassed": true
           }
         },
         "maximumStrideSilhouetteSymmetryRatio": 0.018691588785046728,
@@ -304,6 +359,7 @@
             "mirroredLowerStrideBandSha256": "bd2b778420d3679be2eabefde77484413737acd22dc3a0e6b70aba38275d10dd",
             "neutralFootBandSha256": "e1dbc61cf9b5ae2f286cabdabbc8d4852d797fe14217e93ad0946045922881e1",
             "mirroredNeutralFootBandSha256": "77b007bea35b78ffa5edb6502faf4fe87108238ed07acda725af189c77ae178a",
+            "neutralFootSpan": 35,
             "frameSha256": "6e6138997c2e600748b77b7cb91f12dfc1af259f96854ea654a69ab7cc3456f1",
             "rigHashMatches": true
           },
@@ -340,6 +396,7 @@
             "mirroredLowerStrideBandSha256": "b162c7208484d14f85d994b406cca65c8c061ec06558f86c567136dc927d7bb3",
             "neutralFootBandSha256": "9d0a811f5a148b3a86e8b19eb60d4231b55d0f28a6b445ce9fe7e008fd7d854d",
             "mirroredNeutralFootBandSha256": "2be2b12e0bd17bb439570bab060d00c096e47c567639a3c61915276ec2ca120d",
+            "neutralFootSpan": 33,
             "frameSha256": "dce4921f398ac322d6ac56f7cf7e692c28ca936ee1bd82d1ba56128ac501d05e",
             "rigHashMatches": true
           },
@@ -376,6 +433,7 @@
             "mirroredLowerStrideBandSha256": "10d2dc2873a2e5eb7c99534949c6d31185ae532e94020cadaa941b6f63849638",
             "neutralFootBandSha256": "ef57faefa77245b0d1e21c4dde0a99b10bf7ccabba0b83e22c0fefbd98eb257a",
             "mirroredNeutralFootBandSha256": "e28deebe8f9ccea4e48ed3de8b5a80601922eab04965428516d30225b169f663",
+            "neutralFootSpan": 36,
             "frameSha256": "1c32815746d97d9a2efe00ce4dad07cbaf7c3f986b49d3fa5bbda3405dd20ab9",
             "rigHashMatches": true
           },
@@ -412,6 +470,7 @@
             "mirroredLowerStrideBandSha256": "b436849f9bf51c0a9b2014aaed0cc2885388bd5e0036d0de4c85960cdaa8060b",
             "neutralFootBandSha256": "2be2b12e0bd17bb439570bab060d00c096e47c567639a3c61915276ec2ca120d",
             "mirroredNeutralFootBandSha256": "9d0a811f5a148b3a86e8b19eb60d4231b55d0f28a6b445ce9fe7e008fd7d854d",
+            "neutralFootSpan": 33,
             "frameSha256": "71409d0efac324e455a2b71617213b50ed36e222f4a61cb957139ab88d37b4a5",
             "rigHashMatches": true
           }
@@ -450,6 +509,7 @@
             "mirroredLowerStrideBandSha256": "539ab491d88992159afa42abb7b351f99fee1eadc2da68448a818f4e8e8f5df5",
             "neutralFootBandSha256": "d4395e02e2e0e45723ea577427465019412c46eab4c65ca17320c90fb37f58a9",
             "mirroredNeutralFootBandSha256": "05d8150d36ea28faef8ac2e08bef979d10040201c19679b8d827e9d37a52854d",
+            "neutralFootSpan": 95,
             "frameSha256": "e9c072232a49d55a3973d7587f56500208ee8b3208e3b4dc19daa31cafcc29ed",
             "rigHashMatches": true
           },
@@ -486,6 +546,7 @@
             "mirroredLowerStrideBandSha256": "4737b3f826c99f8123c09824c8df585cec39fcdf5d031d263d1f00071fdc4503",
             "neutralFootBandSha256": "bd98d7f0ba2515bec4f2dd81f7d3da190d0c7ce0661452994d315a1b76ea8d37",
             "mirroredNeutralFootBandSha256": "757a916ebd94444e2a05b06348826c0d008694304d96ab899c446b50c7b24315",
+            "neutralFootSpan": 37,
             "frameSha256": "02271d3f3cdc2f141923b23e1eb66da5980430882f5f96a329bb1e4faece71cc",
             "rigHashMatches": true
           },
@@ -522,6 +583,7 @@
             "mirroredLowerStrideBandSha256": "c5c6c0a4ef49c079aecaa0da33a0d800c63a827670ec6160b9261ad3c31585f6",
             "neutralFootBandSha256": "8c52ae5b83d290e4d5e7d8f2b8a59c615516d3ff65999d291b3fb22071a29ce0",
             "mirroredNeutralFootBandSha256": "871a999603417d2aae3d5fbc71e36f905dd42fd22df790643d5368c274944111",
+            "neutralFootSpan": 103,
             "frameSha256": "ec82f238e35088bf7cbc79e12a201a950c8bb8aef24d5e8867aa8453223cf02c",
             "rigHashMatches": true
           },
@@ -558,6 +620,7 @@
             "mirroredLowerStrideBandSha256": "db7b0b4637fa35bb4e47d84e530e915a9a3cc81fbaec245abb0418244f8451fa",
             "neutralFootBandSha256": "757a916ebd94444e2a05b06348826c0d008694304d96ab899c446b50c7b24315",
             "mirroredNeutralFootBandSha256": "bd98d7f0ba2515bec4f2dd81f7d3da190d0c7ce0661452994d315a1b76ea8d37",
+            "neutralFootSpan": 37,
             "frameSha256": "8c940629c1d4dbc9b8c207cd775ff71c4613c623ca3e8dec771f2d099038800b",
             "rigHashMatches": true
           }
@@ -596,6 +659,7 @@
             "mirroredLowerStrideBandSha256": "5671ef64e822bc19e410289675210d8898456f064bbb3d2287e41c1551f84daf",
             "neutralFootBandSha256": "87877f569aef01b7300085fe9d1059d7e074b3ca2c7ca7449ea3bd77a1fd4cc3",
             "mirroredNeutralFootBandSha256": "7e505f3cbb024cb7f6b96e8b75dbf109fc1dacc33110de4c6bb62a862c5b7472",
+            "neutralFootSpan": 94,
             "frameSha256": "9dc56c05a554775acff5786734227e84761fc419dbf695e22f78870b6eb33a20",
             "rigHashMatches": true
           },
@@ -632,6 +696,7 @@
             "mirroredLowerStrideBandSha256": "18e0a61ca30b362bffc384e06d7f62f8d3ec5c2cff72130862ecf9cc194c806c",
             "neutralFootBandSha256": "4cb8cc56b9ddcbe89f6f72cd826045594afb02b7d47d24ef4c3f3ade4ff679d9",
             "mirroredNeutralFootBandSha256": "0cd55bc8aa2856ea240be6de16563f47cc1b71ce33852b84fccaa0aa2f27803b",
+            "neutralFootSpan": 37,
             "frameSha256": "82af40ff8fd4c29d11cb9cfd875e4719656d57cbbb1c5cef69fb2b0f465457f0",
             "rigHashMatches": true
           },
@@ -668,6 +733,7 @@
             "mirroredLowerStrideBandSha256": "e4f6b86f0c3dd71678d066b51ea311d1f2474779d08a60a1971428f442f09516",
             "neutralFootBandSha256": "98c5c30a1d78a1c674daacb19283d91f0efc441e8ce4e68b40cb4b33fcb2faa4",
             "mirroredNeutralFootBandSha256": "b6bc568b8195d9ad6d2c77bf939d19e06ffc05237a7de3ecb78b1f89d320922a",
+            "neutralFootSpan": 102,
             "frameSha256": "e8fb3155d91ab452a52f3e63debc6aba3ad332f5ae9f27143a4890fbf7e41bb6",
             "rigHashMatches": true
           },
@@ -704,6 +770,7 @@
             "mirroredLowerStrideBandSha256": "687f646258349a0bf10b069992e935bfbd4a8217aaffcf460d2089e3cc653098",
             "neutralFootBandSha256": "0cd55bc8aa2856ea240be6de16563f47cc1b71ce33852b84fccaa0aa2f27803b",
             "mirroredNeutralFootBandSha256": "4cb8cc56b9ddcbe89f6f72cd826045594afb02b7d47d24ef4c3f3ade4ff679d9",
+            "neutralFootSpan": 37,
             "frameSha256": "82cbb731abbdf2629e4b702e2158fe325b9be50fcf1fe92074c669f7975b9785",
             "rigHashMatches": true
           }
@@ -742,6 +809,7 @@
             "mirroredLowerStrideBandSha256": "2a96963698bf857e41038ba9b350b7f8666da7b22542d05b34a3b9fb548fa7be",
             "neutralFootBandSha256": "8eef8d5d0c100ed46a3c31c111a601acbaf603de11e0dfd1bed000ce28a660aa",
             "mirroredNeutralFootBandSha256": "ebbb827ab5b795da216a72e81031c92a0fd093dee51451e8f73b4738de85cbed",
+            "neutralFootSpan": 32,
             "frameSha256": "8730d353f68d51f79fec6a296be5b16703edcc55f8ee46999737312dfbd17900",
             "rigHashMatches": true
           },
@@ -778,6 +846,7 @@
             "mirroredLowerStrideBandSha256": "e1ff9d46a61fc2036fea83d92886ca87e4f722fa23d8ef0d98f53dc15cfd79e6",
             "neutralFootBandSha256": "b787b1367c7b14109d563b0ca145149a34d4ee4db5d823964df06fe406aca8fe",
             "mirroredNeutralFootBandSha256": "927d2e5bc623133087a2a39aa4fe5da5cc8fb313113c8c59405fd6d8d4ba34d2",
+            "neutralFootSpan": 34,
             "frameSha256": "06fa708b85e22bd4775f1a3de32e2b54fe529d535975aae836901ade9cd3d0df",
             "rigHashMatches": true
           },
@@ -814,6 +883,7 @@
             "mirroredLowerStrideBandSha256": "43bdbae71dae8e63725256b59808aed2e21116e9394fe1785b57da8cdd8ebec0",
             "neutralFootBandSha256": "397f5b75b17a358f6a4a41d545abca0c714e6e786d726a632481abb526037c80",
             "mirroredNeutralFootBandSha256": "81fc47d10745df51c348fd7dc0fb6b46e4838ba1a7db5870828dc9f2b891a6f8",
+            "neutralFootSpan": 22,
             "frameSha256": "11c0779bdc0200c60d97f0c4de0abf70ca8f6f78a50ed72b4f964e9df9f511e6",
             "rigHashMatches": true
           },
@@ -850,6 +920,7 @@
             "mirroredLowerStrideBandSha256": "b42d2425f9687f36b377711b9b27824074d99135595bd7f9477fc093214da196",
             "neutralFootBandSha256": "927d2e5bc623133087a2a39aa4fe5da5cc8fb313113c8c59405fd6d8d4ba34d2",
             "mirroredNeutralFootBandSha256": "b787b1367c7b14109d563b0ca145149a34d4ee4db5d823964df06fe406aca8fe",
+            "neutralFootSpan": 34,
             "frameSha256": "9fbb888d63ae741cdfc83b8b3c8284db90ac961f13d85c3402ec125ee5ced455",
             "rigHashMatches": true
           }
@@ -907,7 +978,20 @@
             "strideSilhouetteSymmetryRatio": 0.009389671361502348,
             "maximumCenterDrift": 0.5,
             "baselineSpread": 0,
-            "neutralPairMirrored": true
+            "neutralFootSpans": [
+              58,
+              97,
+              69,
+              97
+            ],
+            "neutralPairMirrored": true,
+            "neutralPairDistinct": true,
+            "neutralPairPassed": true,
+            "oppositeFootDifference": {
+              "alpha": 0.20089086859688196,
+              "rgba": 0.18889121795711603
+            },
+            "oppositeFootPassed": true
           },
           "left": {
             "firstStepWidth": 124,
@@ -917,7 +1001,20 @@
             "strideSilhouetteSymmetryRatio": 0.016260162601626018,
             "maximumCenterDrift": 0.5,
             "baselineSpread": 0,
-            "neutralPairMirrored": true
+            "neutralFootSpans": [
+              107,
+              81,
+              104,
+              81
+            ],
+            "neutralPairMirrored": true,
+            "neutralPairDistinct": true,
+            "neutralPairPassed": true,
+            "oppositeFootDifference": {
+              "alpha": 0.1119051769217361,
+              "rgba": 0.11404351526212717
+            },
+            "oppositeFootPassed": true
           },
           "right": {
             "firstStepWidth": 124,
@@ -927,7 +1024,20 @@
             "strideSilhouetteSymmetryRatio": 0.016260162601626018,
             "maximumCenterDrift": 0.5,
             "baselineSpread": 0,
-            "neutralPairMirrored": true
+            "neutralFootSpans": [
+              106,
+              81,
+              103,
+              81
+            ],
+            "neutralPairMirrored": true,
+            "neutralPairDistinct": true,
+            "neutralPairPassed": true,
+            "oppositeFootDifference": {
+              "alpha": 0.11113049546406141,
+              "rgba": 0.11390251494875689
+            },
+            "oppositeFootPassed": true
           },
           "up": {
             "firstStepWidth": 108,
@@ -937,7 +1047,20 @@
             "strideSilhouetteSymmetryRatio": 0,
             "maximumCenterDrift": 0.5,
             "baselineSpread": 0,
-            "neutralPairMirrored": true
+            "neutralFootSpans": [
+              61,
+              93,
+              61,
+              93
+            ],
+            "neutralPairMirrored": true,
+            "neutralPairDistinct": true,
+            "neutralPairPassed": true,
+            "oppositeFootDifference": {
+              "alpha": 0.18363317244405442,
+              "rgba": 0.15338491254334116
+            },
+            "oppositeFootPassed": true
           }
         },
         "maximumStrideSilhouetteSymmetryRatio": 0.016260162601626018,
@@ -979,6 +1102,7 @@
             "mirroredLowerStrideBandSha256": "271670d2303c3797ebcfe0872f2fd1cb5759fee2907c28c88926674bf412ad00",
             "neutralFootBandSha256": "d6e6fb649c632af8e3dbc6b4432a7ac036892bddf8e34df35c06b9910ee1a38e",
             "mirroredNeutralFootBandSha256": "21494217068ae6ef408c367f771714e47503420635a0f4b0220bbbb183383aad",
+            "neutralFootSpan": 58,
             "frameSha256": "32d8c7c90789e9aef2cbbafa0cd8ef428d921b4c415d3a4277f941140fd0b220",
             "rigHashMatches": true
           },
@@ -1012,6 +1136,7 @@
             "mirroredLowerStrideBandSha256": "68c32d36723a07c33ec55847091b8f6d89b8f7096b04df093341d88e83236727",
             "neutralFootBandSha256": "96ab25f8ee1db567ac3f2102e15eea1f1aff8f51a9414b447077f7305a49d5f7",
             "mirroredNeutralFootBandSha256": "5c11bec293880b27d2aed20f0fce92f5d0d9579fd9e19118c04c764d73d4cac8",
+            "neutralFootSpan": 97,
             "frameSha256": "b17c30d18b885ed7b3913d333686ef09fa89780dcbb856292f12a3ce7f291144",
             "rigHashMatches": true
           },
@@ -1045,6 +1170,7 @@
             "mirroredLowerStrideBandSha256": "0d50cb70d91c995de75ed8a0b1e14cc66fc2c810f588e409a45a83528881c1c4",
             "neutralFootBandSha256": "abdab711df3ec8892b75f0c793ffb48d798ff9b743c69da06f95c5aff0321de1",
             "mirroredNeutralFootBandSha256": "e1b54019fbed51fdb0b2f8d8b0102c2a8bba2bae3fa398d0b978b7b608f443b7",
+            "neutralFootSpan": 69,
             "frameSha256": "aa1479ea42457a2a5e58002901598a29231c852121e2e84e559f00a29ca72f50",
             "rigHashMatches": true
           },
@@ -1078,6 +1204,7 @@
             "mirroredLowerStrideBandSha256": "334149c51bafbdce026715e2d1db4be8a0edc481cdfe30eda555e9546ad3a486",
             "neutralFootBandSha256": "5c11bec293880b27d2aed20f0fce92f5d0d9579fd9e19118c04c764d73d4cac8",
             "mirroredNeutralFootBandSha256": "96ab25f8ee1db567ac3f2102e15eea1f1aff8f51a9414b447077f7305a49d5f7",
+            "neutralFootSpan": 97,
             "frameSha256": "a5828bb37e4c8cf2ab47cbb1afa4e395b9a2925c13e2069e9ff63a20415bb820",
             "rigHashMatches": true
           }
@@ -1113,6 +1240,7 @@
             "mirroredLowerStrideBandSha256": "a46feb473aa1b6bf8e7c9e83072641d191499558cee2e575c14fed9fda6271ca",
             "neutralFootBandSha256": "83a7aa02009ea9d4fb4820dd26bd514d900b08fc03976ba13bd45917e89685aa",
             "mirroredNeutralFootBandSha256": "896bedab3b9f40b9a8afabaaacef559f4c735f3a32e74f64bb1d4b4accd39603",
+            "neutralFootSpan": 107,
             "frameSha256": "87434b9dfec22c7bd84a2151b191dfe9aa70efce1e25a26c3697d1ee3578dece",
             "rigHashMatches": true
           },
@@ -1146,6 +1274,7 @@
             "mirroredLowerStrideBandSha256": "e713fd8cf9fac2cd826e41bea53eb957c43ff2d00fa5d0fe5591b0c165002ef3",
             "neutralFootBandSha256": "52ea4128955399f783f55109e30d2e7b48d1241ecf6455628d69c752ff7fd03c",
             "mirroredNeutralFootBandSha256": "2dbc9a24fdaf82f997e6968482ede49f7e8ae4b2d8b0223e206d70085aae608e",
+            "neutralFootSpan": 81,
             "frameSha256": "d5420581304dc749ce0d3fc32874ddbfb0dd3b46f761dc7e7509c0b59f57ae80",
             "rigHashMatches": true
           },
@@ -1179,6 +1308,7 @@
             "mirroredLowerStrideBandSha256": "2565fd6caa6faeeed6d47daaa538b6db13ab132433c72a8290441d5066489ccd",
             "neutralFootBandSha256": "a4b5f42e314a4dbd054cb16fdd4d60564db5413e09824152a38051c08d62ad25",
             "mirroredNeutralFootBandSha256": "0cf45a80f780d00fc494a28735b48367e471f4149f0a566dc41717608d224c7d",
+            "neutralFootSpan": 104,
             "frameSha256": "e5d3418419f1ed8b207c1261c0b9ce44f02ad1ce23887831815c8e1e220e42ed",
             "rigHashMatches": true
           },
@@ -1212,6 +1342,7 @@
             "mirroredLowerStrideBandSha256": "92bd909be48a4b069ea46778abacc3a0b2907b287a698853091d9bbdc1cf8a33",
             "neutralFootBandSha256": "2dbc9a24fdaf82f997e6968482ede49f7e8ae4b2d8b0223e206d70085aae608e",
             "mirroredNeutralFootBandSha256": "52ea4128955399f783f55109e30d2e7b48d1241ecf6455628d69c752ff7fd03c",
+            "neutralFootSpan": 81,
             "frameSha256": "0dc6efa031f81f734e903a21dbe61996c15cd346dd233a5a379c423a25d2bd9d",
             "rigHashMatches": true
           }
@@ -1247,6 +1378,7 @@
             "mirroredLowerStrideBandSha256": "9c8a5fd41764de7f5fac61cc5813d492dd3f3a131159351f4e03a70ea286d11f",
             "neutralFootBandSha256": "ce3749c3715741b123e64abf8350905dd82b09bc3db04c408f98a29281e858e3",
             "mirroredNeutralFootBandSha256": "ba10ea0f1baf398de41cdc333ddb95ff6d2ffc33bbbefc14312838536abc356a",
+            "neutralFootSpan": 106,
             "frameSha256": "62b57e7c026f842fc720efad032fb0eeb04b3c8b994dcd63333457a277c4856f",
             "rigHashMatches": true
           },
@@ -1280,6 +1412,7 @@
             "mirroredLowerStrideBandSha256": "53ab1805478ad5c9f1acf6e0b0da2f528aa80540d70d8da1d443af67a1113eb1",
             "neutralFootBandSha256": "1b214a53324cf558aec1eded15fa372ea52578167daa419dc25dafeef51c32ee",
             "mirroredNeutralFootBandSha256": "fe0c731304a3bdcae6df99b06230c6ade71ed846e599d8c2721a350d448538c2",
+            "neutralFootSpan": 81,
             "frameSha256": "a4ca7c3eb1afcafa7ea82b87cd66a0ba43b3c5d7e76117687c1b14518e946f91",
             "rigHashMatches": true
           },
@@ -1313,6 +1446,7 @@
             "mirroredLowerStrideBandSha256": "2d0a15953a3ec1b55f55a73c6f9f4e4e96f354deb78a21bf5ea7076d7c93b1b2",
             "neutralFootBandSha256": "f5bd66655f4c9ab84beb0d4012662fa0853e6ed55f1e123f0f7a05f31946ea32",
             "mirroredNeutralFootBandSha256": "c92ef2473ec01c922365eafde8762edcb53d323c760a88be329038d24ea5df89",
+            "neutralFootSpan": 103,
             "frameSha256": "bc1bf338fec8efaf51812f1b3e110a90b1495be5fc77c61498da445deaeca552",
             "rigHashMatches": true
           },
@@ -1346,6 +1480,7 @@
             "mirroredLowerStrideBandSha256": "c3d66f47c5f65cd6ba730f183cfd852a4c3e4b7c5339c4365ebea434c4fafbc9",
             "neutralFootBandSha256": "fe0c731304a3bdcae6df99b06230c6ade71ed846e599d8c2721a350d448538c2",
             "mirroredNeutralFootBandSha256": "1b214a53324cf558aec1eded15fa372ea52578167daa419dc25dafeef51c32ee",
+            "neutralFootSpan": 81,
             "frameSha256": "3a440eb8e56c5b83a0f03c19c5d3a5f944deac029de80033aeb10c54cebe9bbe",
             "rigHashMatches": true
           }
@@ -1381,6 +1516,7 @@
             "mirroredLowerStrideBandSha256": "66fa4a8c78c09810d3b953eb1a0b571f0cf40d8954130cb508563331c9517d09",
             "neutralFootBandSha256": "46170375f2443dfd8151cddd50f38bca186e3ab1a4e527671099332a67f911ef",
             "mirroredNeutralFootBandSha256": "3c9409e77d9a7caca3250d0aa9548efd2b829e587454f61bc11223a1db4c8047",
+            "neutralFootSpan": 61,
             "frameSha256": "9f86f079a4df829a9c08236b314bc7cbdcde7262f721816cb50e2fb435ec5eeb",
             "rigHashMatches": true
           },
@@ -1414,6 +1550,7 @@
             "mirroredLowerStrideBandSha256": "8fc88360059d556282f493a685409994343f28e3f361a61765a01c352098cd0a",
             "neutralFootBandSha256": "6a4b1f4169a8803f525493fde8890aa14caca88b883e4f9cb3caa6944c4d89b1",
             "mirroredNeutralFootBandSha256": "8b144cb6f74b661cd28bbf3f17a58581d972c7a72995894563c2402d8b4f11fa",
+            "neutralFootSpan": 93,
             "frameSha256": "94a080d56354d048ec2533c73f6734c57087df26eeaebd8ecbc11a91e89aa663",
             "rigHashMatches": true
           },
@@ -1447,6 +1584,7 @@
             "mirroredLowerStrideBandSha256": "6017934e618d3160b959afabc0b7e8b2bc71fd9c42f114df86b0fc87b7ad62df",
             "neutralFootBandSha256": "1f6bcffeb623245c8df8316d3adf8870827db6149e9452c2ff7e17a7c794037c",
             "mirroredNeutralFootBandSha256": "c2c9638c9cebb601bdecd90ca1171dd427276e87df007c95cf8f17072e047e32",
+            "neutralFootSpan": 61,
             "frameSha256": "baa0ab7e0e9ab64725f11d834c7134c2e237c2fff45f5a876651ece5427c2cf5",
             "rigHashMatches": true
           },
@@ -1480,6 +1618,7 @@
             "mirroredLowerStrideBandSha256": "9da1c9ca106c9c0be1c24a900f89c8b7bff7200a75e1a1cd9c92f517d3cf1659",
             "neutralFootBandSha256": "8b144cb6f74b661cd28bbf3f17a58581d972c7a72995894563c2402d8b4f11fa",
             "mirroredNeutralFootBandSha256": "6a4b1f4169a8803f525493fde8890aa14caca88b883e4f9cb3caa6944c4d89b1",
+            "neutralFootSpan": 93,
             "frameSha256": "540b987142c0f38b4a973e1ec50c2a1e6a60f16b272db9cfa4c6d4d85e79062e",
             "rigHashMatches": true
           }
@@ -1565,7 +1704,20 @@
             "strideSilhouetteSymmetryRatio": 0.020618556701030927,
             "maximumCenterDrift": 1,
             "baselineSpread": 0,
-            "neutralPairMirrored": true
+            "neutralFootSpans": [
+              43,
+              56,
+              36,
+              56
+            ],
+            "neutralPairMirrored": false,
+            "neutralPairDistinct": true,
+            "neutralPairPassed": true,
+            "oppositeFootDifference": {
+              "alpha": 0.19209250279746362,
+              "rgba": 0.09557964177838237
+            },
+            "oppositeFootPassed": true
           },
           "left": {
             "firstStepWidth": 123,
@@ -1575,7 +1727,20 @@
             "strideSilhouetteSymmetryRatio": 0.11494252873563218,
             "maximumCenterDrift": 0.5,
             "baselineSpread": 0,
-            "neutralPairMirrored": true
+            "neutralFootSpans": [
+              123,
+              47,
+              138,
+              47
+            ],
+            "neutralPairMirrored": false,
+            "neutralPairDistinct": true,
+            "neutralPairPassed": true,
+            "oppositeFootDifference": {
+              "alpha": 0.27232558139534885,
+              "rgba": 0.12522001823985407
+            },
+            "oppositeFootPassed": true
           },
           "right": {
             "firstStepWidth": 123,
@@ -1585,7 +1750,20 @@
             "strideSilhouetteSymmetryRatio": 0.11494252873563218,
             "maximumCenterDrift": 0.5,
             "baselineSpread": 0,
-            "neutralPairMirrored": true
+            "neutralFootSpans": [
+              123,
+              47,
+              138,
+              47
+            ],
+            "neutralPairMirrored": false,
+            "neutralPairDistinct": true,
+            "neutralPairPassed": true,
+            "oppositeFootDifference": {
+              "alpha": 0.2662155856276248,
+              "rgba": 0.12349670152708773
+            },
+            "oppositeFootPassed": true
           },
           "up": {
             "firstStepWidth": 100,
@@ -1595,7 +1773,20 @@
             "strideSilhouetteSymmetryRatio": 0,
             "maximumCenterDrift": 0,
             "baselineSpread": 0,
-            "neutralPairMirrored": true
+            "neutralFootSpans": [
+              46,
+              52,
+              46,
+              52
+            ],
+            "neutralPairMirrored": false,
+            "neutralPairDistinct": true,
+            "neutralPairPassed": true,
+            "oppositeFootDifference": {
+              "alpha": 0.0625,
+              "rgba": 0.059536915324789136
+            },
+            "oppositeFootPassed": true
           }
         },
         "maximumStrideSilhouetteSymmetryRatio": 0.11494252873563218,
@@ -1675,7 +1866,7 @@
             "sourceMeasuredHeadHeight": 84,
             "opticalHeadCompensation": 10,
             "estimatedOpticalHeadHeight": 95.35135135135135,
-            "upperBodyBandSha256": "274b068e14ad72fb14bbc00c0e1a16fd0c1ddc1518381d8923abf2e629b10ddf",
+            "upperBodyBandSha256": "ffae70bcf826ecf99f8a452ef10ea7a136d29d2c1ec411fc43861a2bea906e37",
             "headBandSha256": "9c8fb27764d3d7b820129c0a67bbfc0c2775b6da0ff6ffb68fa4e080395f7a0d",
             "sourceDetectionMethod": "face-safe-three-head-rig",
             "sourceFaceBottom": 96,
@@ -1683,7 +1874,8 @@
             "mirroredLowerStrideBandSha256": "fe689cbee2cafa0a72430e274d2b8963cd46dc226590694a78aae98c48d39794",
             "neutralFootBandSha256": "5a42fb90a96277bd8817d1a555c6c0eee772e7853da4143782801f5ede2c5d4e",
             "mirroredNeutralFootBandSha256": "39f2cb53348a9b6bb52db61a89ee6ec504960d95425cccd540b4b4d7b49100c0",
-            "frameSha256": "c3dcdd290b0051d948552ebebb0171b22937a5c690789e27a7fee10685912a62",
+            "neutralFootSpan": 43,
+            "frameSha256": "d7969af5ab077e5d1650bcad0700fdf1177ec3d06178d10900c9857d56291401",
             "rigHashMatches": true
           },
           {
@@ -1712,7 +1904,7 @@
             "sourceMeasuredHeadHeight": 85,
             "opticalHeadCompensation": 10,
             "estimatedOpticalHeadHeight": 95.2,
-            "upperBodyBandSha256": "a3eb1a27f7b1a183e72e8f5f211d248a3e6bf67facd64116f573d1ac78e1aaf5",
+            "upperBodyBandSha256": "a09cbc91af2343c62baeb5c8c9194df1f90ca31f45b589822bd8b2de888bc8b8",
             "headBandSha256": "9c8fb27764d3d7b820129c0a67bbfc0c2775b6da0ff6ffb68fa4e080395f7a0d",
             "sourceDetectionMethod": "face-safe-three-head-rig",
             "sourceFaceBottom": 97,
@@ -1720,7 +1912,8 @@
             "mirroredLowerStrideBandSha256": "49141cb3ad3b746c950fad78d34df076f0fc5cc2013000b5381eaf15c66ae0c6",
             "neutralFootBandSha256": "7ce1d2fbccaeae5cd40e02193865223e6c7cd07b84d8dcbbdffddde314ddfe14",
             "mirroredNeutralFootBandSha256": "6738c8826342553aecb2f5c2f43d3c872f7faa6ee5293f6de1677b09bad5777c",
-            "frameSha256": "e41a7308c7efe7ca90529bf3b1b36f83e63d943ba3f1e08a083416fb39bc1e30",
+            "neutralFootSpan": 56,
+            "frameSha256": "1e4eaeec03b3fa8f4dc45819883f161728984d0bfaa96390a04d3556f17d7e37",
             "rigHashMatches": true
           },
           {
@@ -1749,7 +1942,7 @@
             "sourceMeasuredHeadHeight": 93,
             "opticalHeadCompensation": 10,
             "estimatedOpticalHeadHeight": 94.12048192771084,
-            "upperBodyBandSha256": "17b029580300a313949f72c7b4bac06d331eaf1b41cbd11a5705269d87438223",
+            "upperBodyBandSha256": "c1936b190a67f1981e3aa91b0c1ab0a3d9b10ecf5fa99ecd88f90c6c1c57e22f",
             "headBandSha256": "9c8fb27764d3d7b820129c0a67bbfc0c2775b6da0ff6ffb68fa4e080395f7a0d",
             "sourceDetectionMethod": "face-safe-three-head-rig",
             "sourceFaceBottom": 105,
@@ -1757,7 +1950,8 @@
             "mirroredLowerStrideBandSha256": "429c532a60316c209bb3c05613ec24088e3b6bf987602fcd6268545f9fcd1329",
             "neutralFootBandSha256": "4cc24396369656e75b9672bc69c8c4458cf4c3b5956f122dd6f520501fe3e20c",
             "mirroredNeutralFootBandSha256": "c113cba3b203152fd0622e1c130d96893a654570cdf0c1e263c320ad0fec7f50",
-            "frameSha256": "00740cf8513bd987f3ca97f75d84e509a545fc31f2ea95aad58ee9ec55b42691",
+            "neutralFootSpan": 36,
+            "frameSha256": "6125c30a3df26c261579a691586b321e17aada04192524a640e1826d11fc974e",
             "rigHashMatches": true
           },
           {
@@ -1786,15 +1980,16 @@
             "sourceMeasuredHeadHeight": 85,
             "opticalHeadCompensation": 10,
             "estimatedOpticalHeadHeight": 95.2,
-            "upperBodyBandSha256": "f7960ca6a192770565e4edda4e66c9f13c58093d918090a23fad6e268917fcd3",
+            "upperBodyBandSha256": "1ad990241e222d0554826f66558a2f752f24fb176f8120b14fa2a41476c011b6",
             "headBandSha256": "9c8fb27764d3d7b820129c0a67bbfc0c2775b6da0ff6ffb68fa4e080395f7a0d",
             "sourceDetectionMethod": "face-safe-three-head-rig",
             "sourceFaceBottom": 97,
-            "lowerStrideBandSha256": "49141cb3ad3b746c950fad78d34df076f0fc5cc2013000b5381eaf15c66ae0c6",
-            "mirroredLowerStrideBandSha256": "d08da037b1892c8fb262cbc6c9fa67928e4b075a009ab910c2dca253042589d1",
-            "neutralFootBandSha256": "6738c8826342553aecb2f5c2f43d3c872f7faa6ee5293f6de1677b09bad5777c",
-            "mirroredNeutralFootBandSha256": "7ce1d2fbccaeae5cd40e02193865223e6c7cd07b84d8dcbbdffddde314ddfe14",
-            "frameSha256": "539ea20f14efc8ae61083c6e2990c2a7ef51d924ca24bfd6a74335e9eb484d93",
+            "lowerStrideBandSha256": "d08da037b1892c8fb262cbc6c9fa67928e4b075a009ab910c2dca253042589d1",
+            "mirroredLowerStrideBandSha256": "49141cb3ad3b746c950fad78d34df076f0fc5cc2013000b5381eaf15c66ae0c6",
+            "neutralFootBandSha256": "7ce1d2fbccaeae5cd40e02193865223e6c7cd07b84d8dcbbdffddde314ddfe14",
+            "mirroredNeutralFootBandSha256": "6738c8826342553aecb2f5c2f43d3c872f7faa6ee5293f6de1677b09bad5777c",
+            "neutralFootSpan": 56,
+            "frameSha256": "9718f83449cda614dc4475003d813925885c0a78e8d362dc521e3cbd3552113f",
             "rigHashMatches": true
           }
         ],
@@ -1825,7 +2020,7 @@
             "sourceMeasuredHeadHeight": 83,
             "opticalHeadCompensation": 10,
             "estimatedOpticalHeadHeight": 95.5068493150685,
-            "upperBodyBandSha256": "08def8a8418e1e06a79df485464105c4cd0808a8ac7e309e7f388f1dc2ee272e",
+            "upperBodyBandSha256": "815235c76dc834f7a6d4c7709075997d7fe82916cbc696dcf54ecda3a023bcf8",
             "headBandSha256": "24208a63b9f9597b963869f2d21eff8b7a73cabd26ed9f309eaff10df992437d",
             "sourceDetectionMethod": "face-safe-three-head-rig",
             "sourceFaceBottom": 95,
@@ -1833,7 +2028,8 @@
             "mirroredLowerStrideBandSha256": "7ec684ed3378d570fbdce5129c82b7b76c71f4c262fce2bc35083e95071c8914",
             "neutralFootBandSha256": "16804beb4253858faab70cfaf57a12eb87ebeba6807ec8ccb90095fbda04c3cb",
             "mirroredNeutralFootBandSha256": "a9fb8744d60e471468b9ac4837f4520813c3fc5a1433457b0c162cee71a6ecd1",
-            "frameSha256": "b1a03884cfd578fd88ae815652ee4b184bd4920da58dfb2b0f9c00e5be02e729",
+            "neutralFootSpan": 123,
+            "frameSha256": "ccdcef1e070752b2afe7f23972e278e9fd8c986baf62f1d43089cca7bd603058",
             "rigHashMatches": true
           },
           {
@@ -1862,7 +2058,7 @@
             "sourceMeasuredHeadHeight": 81,
             "opticalHeadCompensation": 10,
             "estimatedOpticalHeadHeight": 95.83098591549296,
-            "upperBodyBandSha256": "3180a79cd50d748ec6e3bcdaf6bf54690db872f352f6fdf2d14a2fe08b118d96",
+            "upperBodyBandSha256": "718e6112ab2581205c9ec0044188ccbb922f8c3e67c8e9a47aa56d80e63b9dd9",
             "headBandSha256": "24208a63b9f9597b963869f2d21eff8b7a73cabd26ed9f309eaff10df992437d",
             "sourceDetectionMethod": "face-safe-three-head-rig",
             "sourceFaceBottom": 93,
@@ -1870,7 +2066,8 @@
             "mirroredLowerStrideBandSha256": "916e2aa320bb5e80e466fc5426018e35d07b541a7b6b6d5185218fe3de02afae",
             "neutralFootBandSha256": "efd025f61a869da04a33705fcf24e033ba4895a32580311db12dc5ac5bfeb6bc",
             "mirroredNeutralFootBandSha256": "f34059d3cf7035f364ed7341370eab5f4a3541ba2caaca0c38edd699ff15838b",
-            "frameSha256": "608ef1423c92bfc3d70aa22eee6dff30f0235eed239833109c98f8d68365c571",
+            "neutralFootSpan": 47,
+            "frameSha256": "1893f5e384ee4f343f0b72f42152cd50eaedb56f10e9d0b09c1f93d076003f6b",
             "rigHashMatches": true
           },
           {
@@ -1899,7 +2096,7 @@
             "sourceMeasuredHeadHeight": 81,
             "opticalHeadCompensation": 10,
             "estimatedOpticalHeadHeight": 95.83098591549296,
-            "upperBodyBandSha256": "8858bdc43e95700e4254fd2a724679d03c577374ef534275f94b76a7c1492830",
+            "upperBodyBandSha256": "e3b98dc6c223d13936678a03be9d0d09aa653807888412c1e3886d8d2e891452",
             "headBandSha256": "24208a63b9f9597b963869f2d21eff8b7a73cabd26ed9f309eaff10df992437d",
             "sourceDetectionMethod": "face-safe-three-head-rig",
             "sourceFaceBottom": 93,
@@ -1907,7 +2104,8 @@
             "mirroredLowerStrideBandSha256": "4ff0387ce73215f79d34acf700e6cf7302a157a21f9d561ae0581b967d84228c",
             "neutralFootBandSha256": "d52e728da033c288eff7afbf82102d3fb68c812f27effc3129b246888b223dd7",
             "mirroredNeutralFootBandSha256": "a86ee8ee50dc42ee0e259b1959c2b21e4089fb7b826e171131744f2ff67cf427",
-            "frameSha256": "bfff620cc15967035cb256b2f71cb6ec851806a006b438fd33b5bd530795b914",
+            "neutralFootSpan": 138,
+            "frameSha256": "9cd38ab5e3febbca6bd76b90a0935474d5a4100eed7f6a3a80d73d6c557d7177",
             "rigHashMatches": true
           },
           {
@@ -1936,15 +2134,16 @@
             "sourceMeasuredHeadHeight": 81,
             "opticalHeadCompensation": 10,
             "estimatedOpticalHeadHeight": 95.83098591549296,
-            "upperBodyBandSha256": "8b7027ace78b5781168d3fab3352dac915d481c0b6219502733816f2bcf0bbbb",
+            "upperBodyBandSha256": "ba273cd5fa36a0b4180a69f5f470a3a027299f01aa2a05f49851bf478909b886",
             "headBandSha256": "24208a63b9f9597b963869f2d21eff8b7a73cabd26ed9f309eaff10df992437d",
             "sourceDetectionMethod": "face-safe-three-head-rig",
             "sourceFaceBottom": 93,
-            "lowerStrideBandSha256": "916e2aa320bb5e80e466fc5426018e35d07b541a7b6b6d5185218fe3de02afae",
-            "mirroredLowerStrideBandSha256": "9067f2e59739a4f543a43cd9e514645e6643caa73ef8f76901066d0bbd7f94a5",
-            "neutralFootBandSha256": "f34059d3cf7035f364ed7341370eab5f4a3541ba2caaca0c38edd699ff15838b",
-            "mirroredNeutralFootBandSha256": "efd025f61a869da04a33705fcf24e033ba4895a32580311db12dc5ac5bfeb6bc",
-            "frameSha256": "04590d922fa816acc74f5466f6e041ffa56bb8083c412aab10de8a4996d35c30",
+            "lowerStrideBandSha256": "9067f2e59739a4f543a43cd9e514645e6643caa73ef8f76901066d0bbd7f94a5",
+            "mirroredLowerStrideBandSha256": "916e2aa320bb5e80e466fc5426018e35d07b541a7b6b6d5185218fe3de02afae",
+            "neutralFootBandSha256": "efd025f61a869da04a33705fcf24e033ba4895a32580311db12dc5ac5bfeb6bc",
+            "mirroredNeutralFootBandSha256": "f34059d3cf7035f364ed7341370eab5f4a3541ba2caaca0c38edd699ff15838b",
+            "neutralFootSpan": 47,
+            "frameSha256": "98bfc64fa4f86b516a6fc3080b967dd7f6d2ff59e7aaf3011d75b49d17549f55",
             "rigHashMatches": true
           }
         ],
@@ -1975,7 +2174,7 @@
             "sourceMeasuredHeadHeight": 83,
             "opticalHeadCompensation": 10,
             "estimatedOpticalHeadHeight": 95.5068493150685,
-            "upperBodyBandSha256": "38c36ae2504bff7aa8a32d9730158b684c3ccd182bb1f3f0b9f39a0cbe9c573a",
+            "upperBodyBandSha256": "42afb69cef773ff251295092d5bd07023e8ac8149790d4e34043f2280a168b1c",
             "headBandSha256": "0d30407e07ce9438ba59967c9369c9a072a16324aa94227b4119969b94fffb1d",
             "sourceDetectionMethod": "face-safe-three-head-rig",
             "sourceFaceBottom": 95,
@@ -1983,7 +2182,8 @@
             "mirroredLowerStrideBandSha256": "b8d88a24b708d1055e69b888573cf3caf5d20252bd12c005355a60bb279ca9cd",
             "neutralFootBandSha256": "04399c2c045841972c02d911d6ad987a96236ed8258fae3f448131f2163fd489",
             "mirroredNeutralFootBandSha256": "d84af0e44a51b3735e8a3bc4f115e5cc888bcd2f60f3f09e227f96c50dd9198a",
-            "frameSha256": "906b26046be89fb5ec5b167013e4562c81c6448dd762cb39bb05d68c5b3f99af",
+            "neutralFootSpan": 123,
+            "frameSha256": "88c9603d384aa8989c6f334bf89d0c84dc054cdb58b2f7a868675f3b1657f8b7",
             "rigHashMatches": true
           },
           {
@@ -2012,7 +2212,7 @@
             "sourceMeasuredHeadHeight": 81,
             "opticalHeadCompensation": 10,
             "estimatedOpticalHeadHeight": 95.83098591549296,
-            "upperBodyBandSha256": "54b054f7f04004b3d7811cb134572656a3f0a55333176657e490cc92682178b9",
+            "upperBodyBandSha256": "18a7d7a2ed24fe4621e00bd6d4a4f95395da2d9e8afb2b2d40f4a806dad1b1b6",
             "headBandSha256": "0d30407e07ce9438ba59967c9369c9a072a16324aa94227b4119969b94fffb1d",
             "sourceDetectionMethod": "face-safe-three-head-rig",
             "sourceFaceBottom": 93,
@@ -2020,7 +2220,8 @@
             "mirroredLowerStrideBandSha256": "e5db02612e95b80cc2fde1e72eaccb19eba3350c159abbb6ff2f2e334d95ffca",
             "neutralFootBandSha256": "e919f8d9ffbbff4bc3a347a4663d09b0d5d6e0eabf0a5b1aa4432f4c93357a46",
             "mirroredNeutralFootBandSha256": "b23931de028d2f6162d55071fa3c3642f8743e69f8ec5debf560155e65fbfc8f",
-            "frameSha256": "9a78e6e25e9ad70f9c8ee128102b21e98312066d0f3cf4fc5fb5f2a0b7c7337e",
+            "neutralFootSpan": 47,
+            "frameSha256": "d8b50c291a0ecb98493b0442dec08cf3387e64b4376e04ca7854684ff6ca184f",
             "rigHashMatches": true
           },
           {
@@ -2049,7 +2250,7 @@
             "sourceMeasuredHeadHeight": 81,
             "opticalHeadCompensation": 10,
             "estimatedOpticalHeadHeight": 95.83098591549296,
-            "upperBodyBandSha256": "8e1f74967de3aebec0778100d481453d1d3a5297e5990b9f399b0ced16551f45",
+            "upperBodyBandSha256": "5c256a6192cc949ccd55192e0a1e72ac04943bf829bdcc2108d79373d2607c91",
             "headBandSha256": "0d30407e07ce9438ba59967c9369c9a072a16324aa94227b4119969b94fffb1d",
             "sourceDetectionMethod": "face-safe-three-head-rig",
             "sourceFaceBottom": 93,
@@ -2057,7 +2258,8 @@
             "mirroredLowerStrideBandSha256": "3db8b90da6a126150ec60ac36b2420feb7f603a4b635a429bc4cb0b0043c39eb",
             "neutralFootBandSha256": "bc2e8b21338d067afedba8b27098681cc1f6a9e78a1419a39d70e6697a4457b6",
             "mirroredNeutralFootBandSha256": "e66b79b6fd80848b431fbbd1c11efeeabd09929ec58e64b51d979404d10a6b4a",
-            "frameSha256": "9da75567f4a00deb2e41da84a8e80f90f992a4b2000a7a2a1e4154f0d1789bbb",
+            "neutralFootSpan": 138,
+            "frameSha256": "ed64f255fba4f9013c16d83666e8f7466c71a17ed1af282526863137d58c4f18",
             "rigHashMatches": true
           },
           {
@@ -2086,15 +2288,16 @@
             "sourceMeasuredHeadHeight": 81,
             "opticalHeadCompensation": 10,
             "estimatedOpticalHeadHeight": 95.83098591549296,
-            "upperBodyBandSha256": "b0e504841a1262d4299fc908fe7d87f741532ea2ddf0543f680fe54873435759",
+            "upperBodyBandSha256": "f57d7c5ae575be99c4c49ad4a4e44f6c5a15cba6196ea4b3917f68f161141adb",
             "headBandSha256": "0d30407e07ce9438ba59967c9369c9a072a16324aa94227b4119969b94fffb1d",
             "sourceDetectionMethod": "face-safe-three-head-rig",
             "sourceFaceBottom": 93,
-            "lowerStrideBandSha256": "e5db02612e95b80cc2fde1e72eaccb19eba3350c159abbb6ff2f2e334d95ffca",
-            "mirroredLowerStrideBandSha256": "3890bc28843702ec596cd9bda8321d5d54c7431eee6357e43ec1dc1912121038",
-            "neutralFootBandSha256": "b23931de028d2f6162d55071fa3c3642f8743e69f8ec5debf560155e65fbfc8f",
-            "mirroredNeutralFootBandSha256": "e919f8d9ffbbff4bc3a347a4663d09b0d5d6e0eabf0a5b1aa4432f4c93357a46",
-            "frameSha256": "4525f8133ebbc20cb874dc6e0547e89b64c1b2d03332e4d14af23a328d238961",
+            "lowerStrideBandSha256": "3890bc28843702ec596cd9bda8321d5d54c7431eee6357e43ec1dc1912121038",
+            "mirroredLowerStrideBandSha256": "e5db02612e95b80cc2fde1e72eaccb19eba3350c159abbb6ff2f2e334d95ffca",
+            "neutralFootBandSha256": "e919f8d9ffbbff4bc3a347a4663d09b0d5d6e0eabf0a5b1aa4432f4c93357a46",
+            "mirroredNeutralFootBandSha256": "b23931de028d2f6162d55071fa3c3642f8743e69f8ec5debf560155e65fbfc8f",
+            "neutralFootSpan": 47,
+            "frameSha256": "77e996b80f97663566262dad276f53cc834f43801c3562cd48a57effd7a9f17d",
             "rigHashMatches": true
           }
         ],
@@ -2125,7 +2328,7 @@
             "sourceMeasuredHeadHeight": 83,
             "opticalHeadCompensation": 10,
             "estimatedOpticalHeadHeight": 95.5068493150685,
-            "upperBodyBandSha256": "575271a73dc6b597375db97f5b1a8512108638e9978b1abbed1a77e1fd0255dc",
+            "upperBodyBandSha256": "2f0323ae828dde08cde3c7d9d56d8d297eb0be107003e6c023b09fd51c8cb8c8",
             "headBandSha256": "31a787ec70bd1500853da995736a306618628671043c8ff38d88c59f5a361163",
             "sourceDetectionMethod": "face-safe-three-head-rig",
             "sourceFaceBottom": null,
@@ -2133,7 +2336,8 @@
             "mirroredLowerStrideBandSha256": "f6446c082b0ee3ec5de443c464d5cbacff6b4678d95a1147ab83de6a8349bd70",
             "neutralFootBandSha256": "5120eeb44a134dacdbb2a58da76e6170593165256e282eb579ab17d9cf7b132d",
             "mirroredNeutralFootBandSha256": "af65063cdf2237140cd110eb0d79b5521a0ec1fe5fc4d8ce0b304d254dc4e053",
-            "frameSha256": "7519569d1adbab6a24ac559edb284b1f50418056092045c68440538a31b2ee44",
+            "neutralFootSpan": 46,
+            "frameSha256": "8a0c50428ee544a4090d39e8e5d76ac78b45c59ee017781c9195162eba3b3f8f",
             "rigHashMatches": true
           },
           {
@@ -2162,7 +2366,7 @@
             "sourceMeasuredHeadHeight": 83,
             "opticalHeadCompensation": 10,
             "estimatedOpticalHeadHeight": 95.5068493150685,
-            "upperBodyBandSha256": "09edfb2699b9bdeb6ce289eeb908837b46c04236f913c84bc4932ebe720c5a67",
+            "upperBodyBandSha256": "1b7ba543473cd4e699d36ead8ac36f6bf9425df57a65748dcdb3cc13c2474598",
             "headBandSha256": "31a787ec70bd1500853da995736a306618628671043c8ff38d88c59f5a361163",
             "sourceDetectionMethod": "face-safe-three-head-rig",
             "sourceFaceBottom": null,
@@ -2170,7 +2374,8 @@
             "mirroredLowerStrideBandSha256": "44c30654db442f55197f50847102da6845d9f16be34df8c27e5310a5a850d231",
             "neutralFootBandSha256": "ae59c59526a197a2b071128c15a2da5f2b1ee647280fdd8eda396975133f87c6",
             "mirroredNeutralFootBandSha256": "2581298833a9f1a002f4d2fe87611df12b075fa14420b9cd64922e52d290ff83",
-            "frameSha256": "234ead169a9b0843a3f73b73a1a8e8ef54038989aaafbfe641c0a71334763bd3",
+            "neutralFootSpan": 52,
+            "frameSha256": "ffc7ee2524b9157655e58141aa95cd021c0d0e64c5b1b74f6aff89dedd4afc34",
             "rigHashMatches": true
           },
           {
@@ -2199,7 +2404,7 @@
             "sourceMeasuredHeadHeight": 83,
             "opticalHeadCompensation": 10,
             "estimatedOpticalHeadHeight": 95.5068493150685,
-            "upperBodyBandSha256": "c38b67de0ceab65b595ea8ddb5f4f5c7ac187d161f71c6091ead237482929e63",
+            "upperBodyBandSha256": "67343a1b7ff5e35e6fafc75eeef42c35398d659e8695cb20d8ea8f494f732f62",
             "headBandSha256": "31a787ec70bd1500853da995736a306618628671043c8ff38d88c59f5a361163",
             "sourceDetectionMethod": "face-safe-three-head-rig",
             "sourceFaceBottom": null,
@@ -2207,7 +2412,8 @@
             "mirroredLowerStrideBandSha256": "6df5e6cfd75b6a2ecb5dca1dbbdfcbfe8432d7d29514d4ddd2ed217ff8debffb",
             "neutralFootBandSha256": "15185c02a1a20a4611c0583336ee6d2c4c3d9619725831e9715cdfb58add65dc",
             "mirroredNeutralFootBandSha256": "f7b0620a5c824ee1d8efa2c20a35822120034e95108f143e0e2fad4c2715a109",
-            "frameSha256": "a1a8bc5b4d15e7bd79adacd703caf9012b07b00a9c0e8276e43dab7a93a8fede",
+            "neutralFootSpan": 46,
+            "frameSha256": "87f1ee3ca3f239d740a7e7aa4b033d827b1971ec514b23f96b392189b5a7eb45",
             "rigHashMatches": true
           },
           {
@@ -2236,15 +2442,16 @@
             "sourceMeasuredHeadHeight": 83,
             "opticalHeadCompensation": 10,
             "estimatedOpticalHeadHeight": 95.5068493150685,
-            "upperBodyBandSha256": "9dc884723d91309b28837dde44dac1a457f8de0e756429f6cd9c1ac0f1318f68",
+            "upperBodyBandSha256": "144e7576a3ee918a6ee9d108ab810e33de5883408801741197094e066764aee3",
             "headBandSha256": "31a787ec70bd1500853da995736a306618628671043c8ff38d88c59f5a361163",
             "sourceDetectionMethod": "face-safe-three-head-rig",
             "sourceFaceBottom": null,
-            "lowerStrideBandSha256": "44c30654db442f55197f50847102da6845d9f16be34df8c27e5310a5a850d231",
-            "mirroredLowerStrideBandSha256": "9aced85c544db90cebac3b77052f802ec0bc8fe35f1608de49bc27a1e4589a7a",
-            "neutralFootBandSha256": "2581298833a9f1a002f4d2fe87611df12b075fa14420b9cd64922e52d290ff83",
-            "mirroredNeutralFootBandSha256": "ae59c59526a197a2b071128c15a2da5f2b1ee647280fdd8eda396975133f87c6",
-            "frameSha256": "fd322c5d751b14204b2f0eb4a678f6fbb8ff9b190761a959d53be173d405e004",
+            "lowerStrideBandSha256": "9aced85c544db90cebac3b77052f802ec0bc8fe35f1608de49bc27a1e4589a7a",
+            "mirroredLowerStrideBandSha256": "44c30654db442f55197f50847102da6845d9f16be34df8c27e5310a5a850d231",
+            "neutralFootBandSha256": "ae59c59526a197a2b071128c15a2da5f2b1ee647280fdd8eda396975133f87c6",
+            "mirroredNeutralFootBandSha256": "2581298833a9f1a002f4d2fe87611df12b075fa14420b9cd64922e52d290ff83",
+            "neutralFootSpan": 52,
+            "frameSha256": "3afc4b5c7d7aa6416ac5442f122b3efe3596684564f12982661cfbec2024d557",
             "rigHashMatches": true
           }
         ]
@@ -2301,7 +2508,20 @@
             "strideSilhouetteSymmetryRatio": 0.021739130434782608,
             "maximumCenterDrift": 0,
             "baselineSpread": 0,
-            "neutralPairMirrored": true
+            "neutralFootSpans": [
+              29,
+              50,
+              28,
+              50
+            ],
+            "neutralPairMirrored": true,
+            "neutralPairDistinct": true,
+            "neutralPairPassed": true,
+            "oppositeFootDifference": {
+              "alpha": 0.05281090289608177,
+              "rgba": 0.034686174299361994
+            },
+            "oppositeFootPassed": true
           },
           "left": {
             "firstStepWidth": 104,
@@ -2311,7 +2531,20 @@
             "strideSilhouetteSymmetryRatio": 0.11764705882352941,
             "maximumCenterDrift": 0.5,
             "baselineSpread": 0,
-            "neutralPairMirrored": true
+            "neutralFootSpans": [
+              104,
+              42,
+              117,
+              42
+            ],
+            "neutralPairMirrored": true,
+            "neutralPairDistinct": true,
+            "neutralPairPassed": true,
+            "oppositeFootDifference": {
+              "alpha": 0.5523415977961432,
+              "rgba": 0.2061092205477232
+            },
+            "oppositeFootPassed": true
           },
           "right": {
             "firstStepWidth": 104,
@@ -2321,7 +2554,20 @@
             "strideSilhouetteSymmetryRatio": 0.11764705882352941,
             "maximumCenterDrift": 0.5,
             "baselineSpread": 0,
-            "neutralPairMirrored": true
+            "neutralFootSpans": [
+              104,
+              42,
+              117,
+              42
+            ],
+            "neutralPairMirrored": true,
+            "neutralPairDistinct": true,
+            "neutralPairPassed": true,
+            "oppositeFootDifference": {
+              "alpha": 0.5844185002245172,
+              "rgba": 0.2157628745256522
+            },
+            "oppositeFootPassed": true
           },
           "up": {
             "firstStepWidth": 90,
@@ -2331,7 +2577,20 @@
             "strideSilhouetteSymmetryRatio": 0,
             "maximumCenterDrift": 0.5,
             "baselineSpread": 0,
-            "neutralPairMirrored": true
+            "neutralFootSpans": [
+              31,
+              49,
+              29,
+              49
+            ],
+            "neutralPairMirrored": true,
+            "neutralPairDistinct": true,
+            "neutralPairPassed": true,
+            "oppositeFootDifference": {
+              "alpha": 0.0702842377260982,
+              "rgba": 0.039609363125095
+            },
+            "oppositeFootPassed": true
           }
         },
         "maximumStrideSilhouetteSymmetryRatio": 0.11764705882352941,
@@ -2373,6 +2632,7 @@
             "mirroredLowerStrideBandSha256": "b5bb9a87dda5e60cb590208fb433d8c3c3b29ff54b30b4dc3f8faff359204749",
             "neutralFootBandSha256": "fd3ceb4d849bbe93c75592aa16e5584a58e42edbf8127bf3fb9e0c88cc5bbabe",
             "mirroredNeutralFootBandSha256": "fec922d99ef7ed0cc34f0eb0f1888ff7c6e47ece895c66b7ec00d5e19e867a32",
+            "neutralFootSpan": 29,
             "frameSha256": "e85746476061b48d88df1802fb8fa8ddd8d4f27ffd6e436a9f4d6ba257caaf29",
             "rigHashMatches": true
           },
@@ -2406,6 +2666,7 @@
             "mirroredLowerStrideBandSha256": "85d5d4643055a55c9205d3f9b70395c67a3711f5a6db2dab4bb994e73b4a55d0",
             "neutralFootBandSha256": "0655591e771cead2cbcdd8d579d141ff8fdf10934d22d573d1efb6b522b5ec18",
             "mirroredNeutralFootBandSha256": "331ba2c2aa4a9221e96345d6df969b6aa50fbfdb7fdec34d7d5fc15b0f075985",
+            "neutralFootSpan": 50,
             "frameSha256": "aec0719842c80f32d0fd5ac8db04935b9a5dbbbecb340500ea5246873ec1bd15",
             "rigHashMatches": true
           },
@@ -2439,6 +2700,7 @@
             "mirroredLowerStrideBandSha256": "8e0c55cc5042153a5178858173c23353498f462175f4dbbf3a2d4365acc64e52",
             "neutralFootBandSha256": "71d4e1a498997b46ecca7ab3487beddfcea99cc243498058f4f09f6c9e591fe3",
             "mirroredNeutralFootBandSha256": "b251be2964a499a5133e943f22c96c82c3d109a0a9e9bb171158b51b1780f336",
+            "neutralFootSpan": 28,
             "frameSha256": "c267d786af4e8aa1a6a93af7ac0ac87ec799bf8633c0226f1dc1cf19fcda0db4",
             "rigHashMatches": true
           },
@@ -2472,6 +2734,7 @@
             "mirroredLowerStrideBandSha256": "268ef2b7b7ee1f4068196fd929f1b67141f03eec4cba2eb6c82c7debcafe4995",
             "neutralFootBandSha256": "331ba2c2aa4a9221e96345d6df969b6aa50fbfdb7fdec34d7d5fc15b0f075985",
             "mirroredNeutralFootBandSha256": "0655591e771cead2cbcdd8d579d141ff8fdf10934d22d573d1efb6b522b5ec18",
+            "neutralFootSpan": 50,
             "frameSha256": "44e4fb078985698abc430f1bedbf43955c6f1fdcd79fc5d4a117168bf85071d9",
             "rigHashMatches": true
           }
@@ -2507,6 +2770,7 @@
             "mirroredLowerStrideBandSha256": "c9bbb5c4ef5b82e6d66c4070c5c56cc635d1e2f0231689d2a527b4f12225da39",
             "neutralFootBandSha256": "832f3a87689db67328e2c19bb6031c2e77cf52b21fb874962554cd98b1ae939c",
             "mirroredNeutralFootBandSha256": "3af37b8768c3a47b45a87a3c1d4ac0bb1b3b44699146524a7532b7c9683c2116",
+            "neutralFootSpan": 104,
             "frameSha256": "58aff0df23b784d9c20fbc6b5b7d9fb2a738152e5d50cbbeab2dfb61fadf8642",
             "rigHashMatches": true
           },
@@ -2540,6 +2804,7 @@
             "mirroredLowerStrideBandSha256": "83fad1505a6715267f830bc9127831a9ede53882d22202c7d09f6e3638fdb3df",
             "neutralFootBandSha256": "1a7e2513a9f3e1c967f03e8e2160a0af56c8618fde932072ef97d00c11e3d455",
             "mirroredNeutralFootBandSha256": "2bd1a178eeaf47a19d6468dc6882802325b8bd3d6470516673424e30374c9c5c",
+            "neutralFootSpan": 42,
             "frameSha256": "d564827e43511defd92df507993f3d68999995873fb7ef440fbbd7c0e3f28a45",
             "rigHashMatches": true
           },
@@ -2573,6 +2838,7 @@
             "mirroredLowerStrideBandSha256": "c201aa989457413cee73633612ff19d96a31fb7260e2c6f8d30121d8f88cf097",
             "neutralFootBandSha256": "50c6e1ca125b8b848077174f90103a7f53d26a5930b2597d5b9ce289e600fc7a",
             "mirroredNeutralFootBandSha256": "642f0055d9bc443f6238f93cc808682e126a0becfacf176867da45368e444af6",
+            "neutralFootSpan": 117,
             "frameSha256": "12047938efb81291af855d45ed6625cecadd10b631c218abf6bd7d3d906edae6",
             "rigHashMatches": true
           },
@@ -2606,6 +2872,7 @@
             "mirroredLowerStrideBandSha256": "7bdc1e42d3745779b33312170dc95eb42d58b6a5e244dbf995dcc529be2c01e2",
             "neutralFootBandSha256": "2bd1a178eeaf47a19d6468dc6882802325b8bd3d6470516673424e30374c9c5c",
             "mirroredNeutralFootBandSha256": "1a7e2513a9f3e1c967f03e8e2160a0af56c8618fde932072ef97d00c11e3d455",
+            "neutralFootSpan": 42,
             "frameSha256": "805eed082035094cc68df2881a6cfe26408eb35034cd2699c23be309cd6f0482",
             "rigHashMatches": true
           }
@@ -2641,6 +2908,7 @@
             "mirroredLowerStrideBandSha256": "663a208ce1e9669448079e4f758324f6a40cb4947f61b816d466bb563fe75479",
             "neutralFootBandSha256": "95455040fd91a44761ceebd68aad645f2ab2e12ad6629fc2e74d95b0b3de5c6b",
             "mirroredNeutralFootBandSha256": "00b78eaf56080f009de59342d1b7a020454e9af005e1b741ecb6ec7954af76b9",
+            "neutralFootSpan": 104,
             "frameSha256": "9566628189e63eca04662cbb11d60c554f1596b9766e00c4c2f2bc93efffa6d7",
             "rigHashMatches": true
           },
@@ -2674,6 +2942,7 @@
             "mirroredLowerStrideBandSha256": "b9b19f4a94ffc70c3b12c48630bb929ffe9870881b260a3e18acf14fba52f404",
             "neutralFootBandSha256": "6f2d0fc4a6b99fa8068bff391e5af42c23e6d3d74ae842bbd6cf410cd10d03e5",
             "mirroredNeutralFootBandSha256": "41608b0f3ca453f8a38cf05511eb08cb6f0f3b060477c0ae0a23b317dbddc706",
+            "neutralFootSpan": 42,
             "frameSha256": "3f73222718d20c89be3ea7e6fcd3358946bd3dea8e4d61d9fad4855de7deae7b",
             "rigHashMatches": true
           },
@@ -2707,6 +2976,7 @@
             "mirroredLowerStrideBandSha256": "2bb53a88687f4215e1551bbe0294304ef27237d1892b50a7335559e0b5eb30b6",
             "neutralFootBandSha256": "c2cf9ced4d2177b02270a20094508812d854e21c79f5e2d4ffc5d512cc861cb5",
             "mirroredNeutralFootBandSha256": "de586ee1f45e940efd5632340570de2b6a79ca872070f8815ea93e12c1cba52b",
+            "neutralFootSpan": 117,
             "frameSha256": "c15d5c4b7a89dff6d8da2127ca60607c14b88f556ce26f2d866761b6b28207f1",
             "rigHashMatches": true
           },
@@ -2740,6 +3010,7 @@
             "mirroredLowerStrideBandSha256": "e13d86e234d8da2662f02511b6b5d9cf0266bb76a3b82097bfcb1a82275ec5d4",
             "neutralFootBandSha256": "41608b0f3ca453f8a38cf05511eb08cb6f0f3b060477c0ae0a23b317dbddc706",
             "mirroredNeutralFootBandSha256": "6f2d0fc4a6b99fa8068bff391e5af42c23e6d3d74ae842bbd6cf410cd10d03e5",
+            "neutralFootSpan": 42,
             "frameSha256": "bdd1fb2802b2f4e137edbff69d86a1feb1887ba6561b9baed826aecce154d24a",
             "rigHashMatches": true
           }
@@ -2775,6 +3046,7 @@
             "mirroredLowerStrideBandSha256": "232e62705ffb7a7702d8e1be8b19dc454e2a4ae8965103042159e85fd55e580d",
             "neutralFootBandSha256": "0044afbc4cc4c0c74f7d316ddfb6ad113526c1f6ab5cc36ff8528d2293d20707",
             "mirroredNeutralFootBandSha256": "4683f4702b6550e80a3f13eb9d9237a2f5e05eb37dc6771883687f676b250353",
+            "neutralFootSpan": 31,
             "frameSha256": "2169c5487e28181e7113bf4ee5bab24913c8d1be13402541110aada51806426d",
             "rigHashMatches": true
           },
@@ -2808,6 +3080,7 @@
             "mirroredLowerStrideBandSha256": "aa5673662da12ef7b4ef869853b727126884a5d8556d598b1fd82bc395957114",
             "neutralFootBandSha256": "b282a316521d5b5bf83eb3ce27878cb9da920fa2fed725ef866ffe07896121ad",
             "mirroredNeutralFootBandSha256": "65395590653b0099b144c3d25edb826daf3643f8fb9c44eaa7ec5a3702e3ab62",
+            "neutralFootSpan": 49,
             "frameSha256": "76f2610887132564598672113ff2cae2fb665b9cc71225f1e1b1f6acbb91fa8b",
             "rigHashMatches": true
           },
@@ -2841,6 +3114,7 @@
             "mirroredLowerStrideBandSha256": "4cf26c520834ca9ee57d949b2947efb117788ec3cbd2d397ebac729b8cc56b4a",
             "neutralFootBandSha256": "f8b4b3f70e1bf017f9502188009c713a32a7e75853060f580122e1f517b7036c",
             "mirroredNeutralFootBandSha256": "4bd93cb258a44af33d0ba189412de611895c74b0e16aa72d5b4bafd317b6dad0",
+            "neutralFootSpan": 29,
             "frameSha256": "f932b9d7c6935086ebe683a74dc68b09fa0c6ead69b96e914a308fcb95888b35",
             "rigHashMatches": true
           },
@@ -2874,6 +3148,7 @@
             "mirroredLowerStrideBandSha256": "3fc738c670dca868a6378c0b5e0b2bad55d7579bb1f6d1be5f254bc51f263721",
             "neutralFootBandSha256": "65395590653b0099b144c3d25edb826daf3643f8fb9c44eaa7ec5a3702e3ab62",
             "mirroredNeutralFootBandSha256": "b282a316521d5b5bf83eb3ce27878cb9da920fa2fed725ef866ffe07896121ad",
+            "neutralFootSpan": 49,
             "frameSha256": "0072d5591ee157f1aa1e252a68a4706b206c3300f606da2f63ee0fb35992f5d0",
             "rigHashMatches": true
           }
@@ -2931,7 +3206,20 @@
             "strideSilhouetteSymmetryRatio": 0.03389830508474576,
             "maximumCenterDrift": 0.5,
             "baselineSpread": 0,
-            "neutralPairMirrored": true
+            "neutralFootSpans": [
+              25,
+              30,
+              27,
+              30
+            ],
+            "neutralPairMirrored": true,
+            "neutralPairDistinct": true,
+            "neutralPairPassed": true,
+            "oppositeFootDifference": {
+              "alpha": 0.15535193669304456,
+              "rgba": 0.1333423165184441
+            },
+            "oppositeFootPassed": true
           },
           "left": {
             "firstStepWidth": 106,
@@ -2941,7 +3229,20 @@
             "strideSilhouetteSymmetryRatio": 0,
             "maximumCenterDrift": 0,
             "baselineSpread": 0,
-            "neutralPairMirrored": true
+            "neutralFootSpans": [
+              104,
+              36,
+              101,
+              36
+            ],
+            "neutralPairMirrored": true,
+            "neutralPairDistinct": true,
+            "neutralPairPassed": true,
+            "oppositeFootDifference": {
+              "alpha": 0.17102876392847888,
+              "rgba": 0.14862709530560086
+            },
+            "oppositeFootPassed": true
           },
           "right": {
             "firstStepWidth": 106,
@@ -2951,7 +3252,20 @@
             "strideSilhouetteSymmetryRatio": 0,
             "maximumCenterDrift": 0,
             "baselineSpread": 0,
-            "neutralPairMirrored": true
+            "neutralFootSpans": [
+              103,
+              36,
+              100,
+              36
+            ],
+            "neutralPairMirrored": true,
+            "neutralPairDistinct": true,
+            "neutralPairPassed": true,
+            "oppositeFootDifference": {
+              "alpha": 0.17102876392847888,
+              "rgba": 0.1485310631119512
+            },
+            "oppositeFootPassed": true
           },
           "up": {
             "firstStepWidth": 96,
@@ -2961,7 +3275,20 @@
             "strideSilhouetteSymmetryRatio": 0,
             "maximumCenterDrift": 0.5,
             "baselineSpread": 0,
-            "neutralPairMirrored": true
+            "neutralFootSpans": [
+              23,
+              32,
+              27,
+              32
+            ],
+            "neutralPairMirrored": true,
+            "neutralPairDistinct": true,
+            "neutralPairPassed": true,
+            "oppositeFootDifference": {
+              "alpha": 0.09483368719037509,
+              "rgba": 0.09953478206569252
+            },
+            "oppositeFootPassed": true
           }
         },
         "maximumStrideSilhouetteSymmetryRatio": 0.03389830508474576,
@@ -3003,6 +3330,7 @@
             "mirroredLowerStrideBandSha256": "0bc406e2b8216a218e186c3b5897cad12ae37ebde8d19993fa2b7e8bcd755ee0",
             "neutralFootBandSha256": "c006b784e6b94ee354698c56190cd78361d1bc854a364b7d2d7efffd467e20a7",
             "mirroredNeutralFootBandSha256": "9bb36593655e9b6e7fb3845bad8da02c4ed6b2b8db254a894b7ad1c7a1ddacdd",
+            "neutralFootSpan": 25,
             "frameSha256": "9ba3f5d3d25ad1796765058c2b5097636ef03118edf49c509eb0381874d6da89",
             "rigHashMatches": true
           },
@@ -3036,6 +3364,7 @@
             "mirroredLowerStrideBandSha256": "46399a84b224fa2c4f2280690569a56fb24c207b287c8b626d8c2aeaf2af75b9",
             "neutralFootBandSha256": "d47310473993e9f06b9827b202e4d36551542dd2148a7ad450ace6000e17979c",
             "mirroredNeutralFootBandSha256": "93d2ce1266664dd4da8598e2d969a1798912f7f819abf27f019566905cad672e",
+            "neutralFootSpan": 30,
             "frameSha256": "259bbc9898429b32745fa6935ce7784a99a9d174c91028f8cb8d4198056b5f80",
             "rigHashMatches": true
           },
@@ -3069,6 +3398,7 @@
             "mirroredLowerStrideBandSha256": "2cb048b2ff16aa731c103086408af41a7e8530e2e21c51e6402ddf33525cac1b",
             "neutralFootBandSha256": "56ef27aebb92a7884185a414d800db8993c4b941e97e45efd23483472f5301bc",
             "mirroredNeutralFootBandSha256": "4129fc1e0ff555856eefff1c228b367c2be3fd70cf866b8ab42d33b6bae62ca8",
+            "neutralFootSpan": 27,
             "frameSha256": "65fcba81686983b2a902ce920c8b98cfd8de1aab3efd2607645016ad77364b0d",
             "rigHashMatches": true
           },
@@ -3102,6 +3432,7 @@
             "mirroredLowerStrideBandSha256": "246e643c750d167bf5df885abd96eba4994a8c19432d9041726d8facdf94dffb",
             "neutralFootBandSha256": "93d2ce1266664dd4da8598e2d969a1798912f7f819abf27f019566905cad672e",
             "mirroredNeutralFootBandSha256": "d47310473993e9f06b9827b202e4d36551542dd2148a7ad450ace6000e17979c",
+            "neutralFootSpan": 30,
             "frameSha256": "b32481e1f689f6ee1b3ae9e610999943b5e46f3b7bab2bb5c05a0ae2fd01e613",
             "rigHashMatches": true
           }
@@ -3137,6 +3468,7 @@
             "mirroredLowerStrideBandSha256": "3e15dba6897e9c16f332d79cc7b207a8771df579eec43f327681babff08638ff",
             "neutralFootBandSha256": "776b1423a68238a310b23da9b97fdb645f8989771c5a4b981159102e040d90e0",
             "mirroredNeutralFootBandSha256": "7048d141b2518e4f99d6a56e9591065d1484c7e280bdc28e9d71229a31b0e9cf",
+            "neutralFootSpan": 104,
             "frameSha256": "0f3d67968a94a785568a1d16bb03f1d49201f953605039899301a4c1f87a712b",
             "rigHashMatches": true
           },
@@ -3170,6 +3502,7 @@
             "mirroredLowerStrideBandSha256": "a374218447418b07050cbcb23f978d7afe0a46e9023cab216dd76f3526a331b3",
             "neutralFootBandSha256": "49753f5a7b481cf0180c910527d7fae7cec0d133f1572298fce0121ed952b6c3",
             "mirroredNeutralFootBandSha256": "61ca3d75ceb296442dccc44bbf7067518fd89940ca4b07748126762ca0675c4e",
+            "neutralFootSpan": 36,
             "frameSha256": "5dbd0b71990feb45f5deea55953ce259c6fd5f7c95438c2c65c04ee71ef35be1",
             "rigHashMatches": true
           },
@@ -3203,6 +3536,7 @@
             "mirroredLowerStrideBandSha256": "36c3520b101c4a3d8d535b940b832da1488e469aa7ce0c92d3249657deecefb6",
             "neutralFootBandSha256": "fff2596ce2df4e0614e237d8050bb6f0e052bee17106b7d13b0360fb47670eb0",
             "mirroredNeutralFootBandSha256": "166ec11c7590d01ba90b66a934373831eb483fb71596a5c38629f157c46e58e9",
+            "neutralFootSpan": 101,
             "frameSha256": "9f3a50198e09557573d04f3985743e9716b78aedc34a9c37f5a244f4029483ef",
             "rigHashMatches": true
           },
@@ -3236,6 +3570,7 @@
             "mirroredLowerStrideBandSha256": "0743d958911db4dc4dbcb5919dfbcf1f303158eec4d6f2dd3d18a450ecf7ca86",
             "neutralFootBandSha256": "61ca3d75ceb296442dccc44bbf7067518fd89940ca4b07748126762ca0675c4e",
             "mirroredNeutralFootBandSha256": "49753f5a7b481cf0180c910527d7fae7cec0d133f1572298fce0121ed952b6c3",
+            "neutralFootSpan": 36,
             "frameSha256": "4a671bf43ac0f302e048466c175727143746e2fadcd46f4e56f74ed51cb2e5f6",
             "rigHashMatches": true
           }
@@ -3271,6 +3606,7 @@
             "mirroredLowerStrideBandSha256": "2330fd901b6759cde8deab4d58caba9c589e4b784a9859fb1b38fdec09e271eb",
             "neutralFootBandSha256": "46b754710db2a16cb19631ddee3d65ef4cdebd40f5ffafe381aab4c64f3e90ba",
             "mirroredNeutralFootBandSha256": "0dca70965bfdb02ee95f7166247175e80ddbcaa5d3d8682b1da6bbef29b0f94f",
+            "neutralFootSpan": 103,
             "frameSha256": "0642fda0c33e91bd0666da19c6293a3e5bef5ea01769a34bff3592bb19d673ca",
             "rigHashMatches": true
           },
@@ -3304,6 +3640,7 @@
             "mirroredLowerStrideBandSha256": "0ee0776393178b68e5f9f4be56a92905c6b9c7e6b189da4cc6a8d5f845f7b9a1",
             "neutralFootBandSha256": "37b373dcdd16e6824e74d2472e58d3fa99bef0e1b077002ef596a7892b237b8b",
             "mirroredNeutralFootBandSha256": "4c6258373b462b03507d444ccc5f86ed0e3d2ad4a568a898f9af35b84f5a4bd7",
+            "neutralFootSpan": 36,
             "frameSha256": "4a1a3bf46758b5f53cc39bb86f0331ad8a328b888080ab68f62149c3c13686e4",
             "rigHashMatches": true
           },
@@ -3337,6 +3674,7 @@
             "mirroredLowerStrideBandSha256": "52ee064f543c254354f99085ad0589f95ac9adfeee67521b2896be1cb984ae9e",
             "neutralFootBandSha256": "675056af70f8e6f7aad060f923e8cd148ce8a27978399dc3ddfbc3e94ed58c84",
             "mirroredNeutralFootBandSha256": "a72167b6586988c2c59278c1c41e5f408c4dbe9ded4024cdda65f4c0c68b57cb",
+            "neutralFootSpan": 100,
             "frameSha256": "3da30159532b51d755a1c4d7764f0f517fb76b4519a8aeb24f538bec677822f1",
             "rigHashMatches": true
           },
@@ -3370,6 +3708,7 @@
             "mirroredLowerStrideBandSha256": "e81a49ed2ac7a8f1a34439cc586795a740be6a0f3fe1c4c3e87a88b516ab9cf2",
             "neutralFootBandSha256": "4c6258373b462b03507d444ccc5f86ed0e3d2ad4a568a898f9af35b84f5a4bd7",
             "mirroredNeutralFootBandSha256": "37b373dcdd16e6824e74d2472e58d3fa99bef0e1b077002ef596a7892b237b8b",
+            "neutralFootSpan": 36,
             "frameSha256": "13535cb3b3358b45279da5c315f3ebcc6cf3b175b84d366ae2f30d1973bc0769",
             "rigHashMatches": true
           }
@@ -3405,6 +3744,7 @@
             "mirroredLowerStrideBandSha256": "1459d17bfe7dc21e9be4e6548266166b1821d4a3fc88054efddaba6c8215300c",
             "neutralFootBandSha256": "7b6cb3bdb734db9a9e374913f9804f458f1d6fe6e03b0d53bd8274bf70684777",
             "mirroredNeutralFootBandSha256": "fe1a3dab21caa6bbe1a7360d7aaa5f587978d34673692f629c0217a81cdab322",
+            "neutralFootSpan": 23,
             "frameSha256": "c75a7cddb0390495cb5dcb75393751e8e1bc3ea7204a2eebfcebe65b75799e09",
             "rigHashMatches": true
           },
@@ -3438,6 +3778,7 @@
             "mirroredLowerStrideBandSha256": "604467dec35ed6ae395be4594de7abb2ba19398400d3a462655ade2b8beea566",
             "neutralFootBandSha256": "ada233aa482fcaa5f57498ca39ed79632f3b6a25046335709973c1f0a75b8ce5",
             "mirroredNeutralFootBandSha256": "49d5984f33fb820293d8101394d41a75fcc558b1918b1ad28601cfbb122c80c7",
+            "neutralFootSpan": 32,
             "frameSha256": "88bacd4f18076009b3b5b087d36334c10873a74d4ff9ccd94344425e7525caa2",
             "rigHashMatches": true
           },
@@ -3471,6 +3812,7 @@
             "mirroredLowerStrideBandSha256": "ad1ce58545bd33e21d90637d81ac18f5268147a965df268161f1e9ac76cb2f9b",
             "neutralFootBandSha256": "a633e6cfc73c4bb38f7572120a01ee8ab8631faef979a387481a0fd817124b69",
             "mirroredNeutralFootBandSha256": "0805bb3337c21578be0b87f2663ce715d11b16fc250dcaf3b008691a35028f20",
+            "neutralFootSpan": 27,
             "frameSha256": "5026ca1b1b537a47019a9b6b92d71ec5515bc31b4d750985b97169e09c497792",
             "rigHashMatches": true
           },
@@ -3504,6 +3846,7 @@
             "mirroredLowerStrideBandSha256": "61db0eb0ac07b30882f86600aeb2602fdc743d819de93c90526d2ff800c739ec",
             "neutralFootBandSha256": "49d5984f33fb820293d8101394d41a75fcc558b1918b1ad28601cfbb122c80c7",
             "mirroredNeutralFootBandSha256": "ada233aa482fcaa5f57498ca39ed79632f3b6a25046335709973c1f0a75b8ce5",
+            "neutralFootSpan": 32,
             "frameSha256": "8b836b7df84da95b49e6a9b22ffd587c4ca16ec669512fd67b79908563335d39",
             "rigHashMatches": true
           }
@@ -3561,7 +3904,20 @@
             "strideSilhouetteSymmetryRatio": 0.017391304347826087,
             "maximumCenterDrift": 0.5,
             "baselineSpread": 0,
-            "neutralPairMirrored": true
+            "neutralFootSpans": [
+              23,
+              35,
+              21,
+              35
+            ],
+            "neutralPairMirrored": true,
+            "neutralPairDistinct": true,
+            "neutralPairPassed": true,
+            "oppositeFootDifference": {
+              "alpha": 0.038752362948960305,
+              "rgba": 0.042393620964453836
+            },
+            "oppositeFootPassed": true
           },
           "left": {
             "firstStepWidth": 116,
@@ -3571,7 +3927,20 @@
             "strideSilhouetteSymmetryRatio": 0.02553191489361702,
             "maximumCenterDrift": 0.5,
             "baselineSpread": 0,
-            "neutralPairMirrored": true
+            "neutralFootSpans": [
+              105,
+              34,
+              115,
+              34
+            ],
+            "neutralPairMirrored": true,
+            "neutralPairDistinct": true,
+            "neutralPairPassed": true,
+            "oppositeFootDifference": {
+              "alpha": 0.26302605210420843,
+              "rgba": 0.21692699123737672
+            },
+            "oppositeFootPassed": true
           },
           "right": {
             "firstStepWidth": 116,
@@ -3581,7 +3950,20 @@
             "strideSilhouetteSymmetryRatio": 0.02553191489361702,
             "maximumCenterDrift": 0.5,
             "baselineSpread": 0,
-            "neutralPairMirrored": true
+            "neutralFootSpans": [
+              105,
+              34,
+              114,
+              34
+            ],
+            "neutralPairMirrored": true,
+            "neutralPairDistinct": true,
+            "neutralPairPassed": true,
+            "oppositeFootDifference": {
+              "alpha": 0.24353775975671565,
+              "rgba": 0.20536830545700288
+            },
+            "oppositeFootPassed": true
           },
           "up": {
             "firstStepWidth": 120,
@@ -3591,7 +3973,20 @@
             "strideSilhouetteSymmetryRatio": 0.02531645569620253,
             "maximumCenterDrift": 0.5,
             "baselineSpread": 0,
-            "neutralPairMirrored": true
+            "neutralFootSpans": [
+              27,
+              36,
+              28,
+              36
+            ],
+            "neutralPairMirrored": true,
+            "neutralPairDistinct": true,
+            "neutralPairPassed": true,
+            "oppositeFootDifference": {
+              "alpha": 0.20236638106895144,
+              "rgba": 0.17964016287869697
+            },
+            "oppositeFootPassed": true
           }
         },
         "maximumStrideSilhouetteSymmetryRatio": 0.02553191489361702,
@@ -3633,6 +4028,7 @@
             "mirroredLowerStrideBandSha256": "07454bccaeff91900bda9dd573c8971c73ba4c2471fd485f1d4f2cc3e2740baa",
             "neutralFootBandSha256": "0df24239c7e881e8a643014602dd741b2d5a82397d226e5ea2b4420d9e7e19e8",
             "mirroredNeutralFootBandSha256": "5fad356e5339f5253870e3c35d820371b1f402277b7fd3c6cc15e4ef5864027c",
+            "neutralFootSpan": 23,
             "frameSha256": "d92092da4b103cdba8c62bd2f97545fdde027f3572f51668761c8528cf468e04",
             "rigHashMatches": true
           },
@@ -3666,6 +4062,7 @@
             "mirroredLowerStrideBandSha256": "92ebb6fd7af8571e57b1505ad84b4f8db0f9b1358321140c587938209397d60b",
             "neutralFootBandSha256": "18a87a2f23bc93abbf637a226d3a6dc2850376b46db34657b5e88d28375869b0",
             "mirroredNeutralFootBandSha256": "651a3cbc7b5d1d7bd34ab63867527aedc4f21c427d7031a93957dc1d8f589db2",
+            "neutralFootSpan": 35,
             "frameSha256": "e3a85843f8c32ee40fc29d9005f24a61933232ab3995269eb61858fbd44bd5dc",
             "rigHashMatches": true
           },
@@ -3699,6 +4096,7 @@
             "mirroredLowerStrideBandSha256": "7339702de07018b63a33a8a1322bbb007b4070a74c166f970bbb40083674e465",
             "neutralFootBandSha256": "ba2d373ff9a5447f34b050e486a0ce363d1fcda4c592df7c19e09d5780bf8105",
             "mirroredNeutralFootBandSha256": "cd154690cd3a1c9099eda6176a0c117d582ef74c4b9db80dccb1db472131bae3",
+            "neutralFootSpan": 21,
             "frameSha256": "372b762cb78002e86529b01f3657e59fb7187f072d6bf307315b17dd11d53cda",
             "rigHashMatches": true
           },
@@ -3732,6 +4130,7 @@
             "mirroredLowerStrideBandSha256": "9d45eeba498bc6e398e0216c4ca64e0fba609e01971e51ff036c77337c059001",
             "neutralFootBandSha256": "651a3cbc7b5d1d7bd34ab63867527aedc4f21c427d7031a93957dc1d8f589db2",
             "mirroredNeutralFootBandSha256": "18a87a2f23bc93abbf637a226d3a6dc2850376b46db34657b5e88d28375869b0",
+            "neutralFootSpan": 35,
             "frameSha256": "83d8517a7aad9f6a20d8667ce1ba1213137052908fcdfdf09dd74445d7b9ef74",
             "rigHashMatches": true
           }
@@ -3767,6 +4166,7 @@
             "mirroredLowerStrideBandSha256": "dba379aa23adcc3629791428df25d7d945bb1327a4cf1e7ff920737937ca3775",
             "neutralFootBandSha256": "494b6e1b8dcab4e7e550fd8648e1fc9a22d073d6f6941e964b6cc0e114f448db",
             "mirroredNeutralFootBandSha256": "23a8b61dc1ad1bf9f9775898bd90dfa66dc31cc8a1ebf787fd218c001a58cfe4",
+            "neutralFootSpan": 105,
             "frameSha256": "2ed92abbe7fe46a51f89b0ccf1310eb46a3b14e4c1856bf535776ebbc2cade28",
             "rigHashMatches": true
           },
@@ -3800,6 +4200,7 @@
             "mirroredLowerStrideBandSha256": "3590ce483045a03f47f40262e080a8824bacb809aaa2f8f1b0bbb8a7160de6d3",
             "neutralFootBandSha256": "f3c6258026849874eeb83c722b953af1684649227d34a5c404333d1f2732671d",
             "mirroredNeutralFootBandSha256": "a4620921ac578eeaa51d51d85c562dd63caa256cd04197006697b0e786a3efcc",
+            "neutralFootSpan": 34,
             "frameSha256": "7432a7678acfe065d0db334affabc6543e95cf56be61a5860e22dba0ec21925b",
             "rigHashMatches": true
           },
@@ -3833,6 +4234,7 @@
             "mirroredLowerStrideBandSha256": "6e6225ac4f540743567dddcb10ebc9a92513224ff8a2ab2f9dc417d5d3a7eb40",
             "neutralFootBandSha256": "aa0b4eb8e05d3be9cd33c08ded8d9523dc3bb9e6b4a19145e1c0b52f1a92ffc3",
             "mirroredNeutralFootBandSha256": "846a17ddf4a73fa520429a1d9e3f6fbd345a516d1105a6d98f6c1ec2989fe19e",
+            "neutralFootSpan": 115,
             "frameSha256": "f1ea2857dff2749f14e5a574b3806e7ae5020a11c14cf48e91de21270f34a2da",
             "rigHashMatches": true
           },
@@ -3866,6 +4268,7 @@
             "mirroredLowerStrideBandSha256": "890c124a1e15de58d1d017247a230e74d419f9e5fab696a7cf4edb13b5c385f4",
             "neutralFootBandSha256": "a4620921ac578eeaa51d51d85c562dd63caa256cd04197006697b0e786a3efcc",
             "mirroredNeutralFootBandSha256": "f3c6258026849874eeb83c722b953af1684649227d34a5c404333d1f2732671d",
+            "neutralFootSpan": 34,
             "frameSha256": "07dd9b19dd28a38c90784123e4a705b2cc01870cfc7983256f281c3618b44ab0",
             "rigHashMatches": true
           }
@@ -3901,6 +4304,7 @@
             "mirroredLowerStrideBandSha256": "9c58ce82058301336dbfe75b51e6fd806d0265dc7609a6cf031582c4a20dbf55",
             "neutralFootBandSha256": "23a8b61dc1ad1bf9f9775898bd90dfa66dc31cc8a1ebf787fd218c001a58cfe4",
             "mirroredNeutralFootBandSha256": "494b6e1b8dcab4e7e550fd8648e1fc9a22d073d6f6941e964b6cc0e114f448db",
+            "neutralFootSpan": 105,
             "frameSha256": "faa43856d129f86f021c6bfcd80ef2bebcfdb68ade5b4d783d1dd3cce0936ab3",
             "rigHashMatches": true
           },
@@ -3934,6 +4338,7 @@
             "mirroredLowerStrideBandSha256": "777da60ff74ab5c8964c470c77589920433f0a2c6b27861988058556096a1cbf",
             "neutralFootBandSha256": "39d1e1f1152c704f8c7a2aba0504e300352fae6aef76f369e865c0ad9431caf9",
             "mirroredNeutralFootBandSha256": "4c86c452dfde786d61a7aae02fadf88b34af3815848a24a0fd383d0630ca3d28",
+            "neutralFootSpan": 34,
             "frameSha256": "dd0ac78ff5b4070b5944892969180d385dc37df5f576ac0f6bd94930f2223a9e",
             "rigHashMatches": true
           },
@@ -3967,6 +4372,7 @@
             "mirroredLowerStrideBandSha256": "1c86895cb971e5609bbe589bdcfa9811b37044b5053a367c362616fb8220f37d",
             "neutralFootBandSha256": "5f0d0f4fde8908fd753ddfa73a7a66e1e6399a275211393973be7513de79b585",
             "mirroredNeutralFootBandSha256": "e43a53bc46b9025d655c9821f001f6b2e5e5b867fbb685221b55ea5cf407e199",
+            "neutralFootSpan": 114,
             "frameSha256": "86eec226784c17bf246d7357b0836ee93cd5c781ddb781a4c9af79e055be7082",
             "rigHashMatches": true
           },
@@ -4000,6 +4406,7 @@
             "mirroredLowerStrideBandSha256": "6b3c9f6e67ae2c855e223a5a24761d29e3f8b0a7c7569c9478eab30e49884881",
             "neutralFootBandSha256": "4c86c452dfde786d61a7aae02fadf88b34af3815848a24a0fd383d0630ca3d28",
             "mirroredNeutralFootBandSha256": "39d1e1f1152c704f8c7a2aba0504e300352fae6aef76f369e865c0ad9431caf9",
+            "neutralFootSpan": 34,
             "frameSha256": "618b554fee7f41a3269d770b9d660e7804f554e3dc520f3432eab34272ff6190",
             "rigHashMatches": true
           }
@@ -4035,6 +4442,7 @@
             "mirroredLowerStrideBandSha256": "8fe33fef96b49e7dea36203098ae6495e8b586b7776462a00ff03310ce7a58c4",
             "neutralFootBandSha256": "52ad67afd618bb15e8234f206559e679ff212588f61ad4d1afde29642b486833",
             "mirroredNeutralFootBandSha256": "5e1d1642f19079af9de399f4b0becf119757db2d29d12347db11479699c6454b",
+            "neutralFootSpan": 27,
             "frameSha256": "ad9aec371564889930ad39d9cb47df69091c6406bd8c4dbd1ddce544331419f2",
             "rigHashMatches": true
           },
@@ -4068,6 +4476,7 @@
             "mirroredLowerStrideBandSha256": "a84a47e567c8671197d583b43de55d2726b2cf9bc04ad60554b5cac06425cac6",
             "neutralFootBandSha256": "df4df99d0284982ee6a77e868e4c8eae7b2f17d417163ec9dcb15439c9c143b7",
             "mirroredNeutralFootBandSha256": "c2f824bc5feb6db51c1e486315224a978400e3caed08623737e90ec9f187b1b9",
+            "neutralFootSpan": 36,
             "frameSha256": "4b0efca153fc6d1d3740d78b500b2b4a4eb9789a9c751202b69dcceea72428d1",
             "rigHashMatches": true
           },
@@ -4101,6 +4510,7 @@
             "mirroredLowerStrideBandSha256": "b23ff58ca0d16065d91e4e5d4f5f63c869fd97e52e57f201854984c037cd6000",
             "neutralFootBandSha256": "c717ef6abcfde5e3ba56c62e53e1204b979fafdf76e2f85a80141c0d3d9f90d3",
             "mirroredNeutralFootBandSha256": "35c3a3c8a301d28fb53c50453cca9abfaaf71f0bdcbf1c88d19e5da26fce66e4",
+            "neutralFootSpan": 28,
             "frameSha256": "4a7ed8438679cb160b7bd34deb5c8c9c0484c10c070cd95a1d816e07d04bfd5a",
             "rigHashMatches": true
           },
@@ -4134,6 +4544,7 @@
             "mirroredLowerStrideBandSha256": "020f44989c8e315685ab57e3c9679e8823d49caafe90de159812d5762a58bcfc",
             "neutralFootBandSha256": "c2f824bc5feb6db51c1e486315224a978400e3caed08623737e90ec9f187b1b9",
             "mirroredNeutralFootBandSha256": "df4df99d0284982ee6a77e868e4c8eae7b2f17d417163ec9dcb15439c9c143b7",
+            "neutralFootSpan": 36,
             "frameSha256": "9583052c1b4ac8ac4f5c53edbc11fde24a91b7f110f853440b715f97a67e7828",
             "rigHashMatches": true
           }
@@ -4191,7 +4602,20 @@
             "strideSilhouetteSymmetryRatio": 0.06369426751592357,
             "maximumCenterDrift": 0.5,
             "baselineSpread": 0,
-            "neutralPairMirrored": true
+            "neutralFootSpans": [
+              42,
+              58,
+              37,
+              58
+            ],
+            "neutralPairMirrored": true,
+            "neutralPairDistinct": true,
+            "neutralPairPassed": true,
+            "oppositeFootDifference": {
+              "alpha": 0.21504369538077403,
+              "rgba": 0.20686672296883798
+            },
+            "oppositeFootPassed": true
           },
           "left": {
             "firstStepWidth": 90,
@@ -4201,7 +4625,20 @@
             "strideSilhouetteSymmetryRatio": 0.03278688524590164,
             "maximumCenterDrift": 0.5,
             "baselineSpread": 0,
-            "neutralPairMirrored": true
+            "neutralFootSpans": [
+              87,
+              46,
+              93,
+              46
+            ],
+            "neutralPairMirrored": true,
+            "neutralPairDistinct": true,
+            "neutralPairPassed": true,
+            "oppositeFootDifference": {
+              "alpha": 0.19494869771112866,
+              "rgba": 0.17138704468896215
+            },
+            "oppositeFootPassed": true
           },
           "right": {
             "firstStepWidth": 90,
@@ -4211,7 +4648,20 @@
             "strideSilhouetteSymmetryRatio": 0.043478260869565216,
             "maximumCenterDrift": 0.5,
             "baselineSpread": 0,
-            "neutralPairMirrored": true
+            "neutralFootSpans": [
+              86,
+              46,
+              94,
+              46
+            ],
+            "neutralPairMirrored": true,
+            "neutralPairDistinct": true,
+            "neutralPairPassed": true,
+            "oppositeFootDifference": {
+              "alpha": 0.19658344283837056,
+              "rgba": 0.1721728375975883
+            },
+            "oppositeFootPassed": true
           },
           "up": {
             "firstStepWidth": 74,
@@ -4221,7 +4671,20 @@
             "strideSilhouetteSymmetryRatio": 0.039735099337748346,
             "maximumCenterDrift": 0.5,
             "baselineSpread": 0,
-            "neutralPairMirrored": true
+            "neutralFootSpans": [
+              24,
+              63,
+              27,
+              63
+            ],
+            "neutralPairMirrored": true,
+            "neutralPairDistinct": true,
+            "neutralPairPassed": true,
+            "oppositeFootDifference": {
+              "alpha": 0.10857726344452008,
+              "rgba": 0.11613309040430331
+            },
+            "oppositeFootPassed": true
           }
         },
         "maximumStrideSilhouetteSymmetryRatio": 0.06369426751592357,
@@ -4263,6 +4726,7 @@
             "mirroredLowerStrideBandSha256": "8b139b07554892fbc19c25819aabc48d9ab7f8620bad6802aee40e3beab38df4",
             "neutralFootBandSha256": "09860d7ba779c8c6bd4f8e0b4ebcc58e9c277af9943a6fc4debe6581d53730e5",
             "mirroredNeutralFootBandSha256": "53492aa8ca98ea5b9c6dc6f8f328c27e558e522578dd0950b213a8095c3e2b1d",
+            "neutralFootSpan": 42,
             "frameSha256": "80099aec1a6cbbebbb96a3dbbcc84f78223510d59da1340d8fadf30e21ca1089",
             "rigHashMatches": true
           },
@@ -4296,6 +4760,7 @@
             "mirroredLowerStrideBandSha256": "5558a43933d271a809a3300e42028c006f643b931e06a06ee23588c9fe217c28",
             "neutralFootBandSha256": "c4d4d9184af830b7bb1cf423d8aed7d793f0fcd594192230b97173c8fce3fa8f",
             "mirroredNeutralFootBandSha256": "22c993c7382d84d150a0ce4b07e318e0451b6274ada347c3ab00147b6fe59402",
+            "neutralFootSpan": 58,
             "frameSha256": "7c3ceae764526fa6f68a4ec50b509a6f3b72dfd87a8049d90bb1dd199a0413ed",
             "rigHashMatches": true
           },
@@ -4329,6 +4794,7 @@
             "mirroredLowerStrideBandSha256": "b0986a5ffec649042795e27fdcdd3e9018eff8239b81814b38b30afd80775197",
             "neutralFootBandSha256": "5ffb99a6320b295329c307cab231e490e9bfe574106bd5afd6a96efa6345d021",
             "mirroredNeutralFootBandSha256": "b46e68cfc5a06fca435af1f59e1b7fe8c64aeeca5482d9f537cfa93395e79c6f",
+            "neutralFootSpan": 37,
             "frameSha256": "470e4038ebe6950ce3b29bd51a8b784985d2119c2f70638a4da83d24d2ff0b3c",
             "rigHashMatches": true
           },
@@ -4362,6 +4828,7 @@
             "mirroredLowerStrideBandSha256": "96de2776e063c887c04d2f730c58ad6a000c45e565b276f9b42050a2095a67ee",
             "neutralFootBandSha256": "22c993c7382d84d150a0ce4b07e318e0451b6274ada347c3ab00147b6fe59402",
             "mirroredNeutralFootBandSha256": "c4d4d9184af830b7bb1cf423d8aed7d793f0fcd594192230b97173c8fce3fa8f",
+            "neutralFootSpan": 58,
             "frameSha256": "aaf081f6268bf945363c605d57ed2bc04839be40e875db8e59d6f50aafd33600",
             "rigHashMatches": true
           }
@@ -4397,6 +4864,7 @@
             "mirroredLowerStrideBandSha256": "b0f6fd9e2006df1c8326503379e9af8010b96bad4626b1f817f8073abd46840e",
             "neutralFootBandSha256": "77c00d03191a5fa9967777070f9584c712eadbea6403a9980b92e02311d93951",
             "mirroredNeutralFootBandSha256": "49c0c3d8ad60fd89696a2b903ad852a23d21448e77b897ca92581e5ee651841c",
+            "neutralFootSpan": 87,
             "frameSha256": "9e2ca239b9afd4133cf050c90ee963c8bca1db9a898608f2c5e49e1c71d85ed0",
             "rigHashMatches": true
           },
@@ -4430,6 +4898,7 @@
             "mirroredLowerStrideBandSha256": "c1edccf6922bebf64ce3a3a8ca83f9a095e927db374d21a7e6f47578e64da395",
             "neutralFootBandSha256": "6a10bb3f676434579ff19593916caccf4b832bccd3e8daa04a3c7427e639cb56",
             "mirroredNeutralFootBandSha256": "1235690a5000dce92a257f4c6718ece9adf0fe16270ed988ef5a4246ce7d6c8e",
+            "neutralFootSpan": 46,
             "frameSha256": "4a85aebe10a09e513b374ef44d174b988269d8249c7314b09f1146e1e89fa7ce",
             "rigHashMatches": true
           },
@@ -4463,6 +4932,7 @@
             "mirroredLowerStrideBandSha256": "be2236aee38e9163253dce4fa848b48e0f4c722c24c72c640b18c73e162ca2d4",
             "neutralFootBandSha256": "8a0ff1e7cea529bfe3ce90b66f02a749b1ea08fb4adca93583bb5cbc1226bf34",
             "mirroredNeutralFootBandSha256": "294da1e92980de0e44077b669219f1edaeb2a9fff05b6119810ace11772f5ceb",
+            "neutralFootSpan": 93,
             "frameSha256": "ecf762eead38adf6be34f10f365af84b32af6355379873c32dbabd01b194f398",
             "rigHashMatches": true
           },
@@ -4496,6 +4966,7 @@
             "mirroredLowerStrideBandSha256": "c17cc5145fa02e0c5777102d1df87584fdced45c05688298391d68c6010c4ca8",
             "neutralFootBandSha256": "1235690a5000dce92a257f4c6718ece9adf0fe16270ed988ef5a4246ce7d6c8e",
             "mirroredNeutralFootBandSha256": "6a10bb3f676434579ff19593916caccf4b832bccd3e8daa04a3c7427e639cb56",
+            "neutralFootSpan": 46,
             "frameSha256": "b72fb8811ce8a5934c7b7bdf7f124863c1c94cde80b5e9c452a1d19eca57c790",
             "rigHashMatches": true
           }
@@ -4531,6 +5002,7 @@
             "mirroredLowerStrideBandSha256": "8fcc5350b26dca643e83aba690b32a646e34e39feffc3be37efedb0520d62bc3",
             "neutralFootBandSha256": "1bb2fa6967c6ac03cbe3e33266aa5b70eda58e534415389bbab84ef9b765b173",
             "mirroredNeutralFootBandSha256": "093eb0beb9abaf84d39e44eb1c1de9318cb0be5bff3559842881d36d357be8e7",
+            "neutralFootSpan": 86,
             "frameSha256": "6e05708172557e73cb7b1cb35563975bdf570c0404ef9736a87194df522bd827",
             "rigHashMatches": true
           },
@@ -4564,6 +5036,7 @@
             "mirroredLowerStrideBandSha256": "ea6c3b29350ba70770b4553954b7974b290645ed8d7336b21f608bb64b5b2ae8",
             "neutralFootBandSha256": "e571d030f6c84d4dffa085d4282c71b7a6a2829dfdf0ee8a3d674fe6a810d513",
             "mirroredNeutralFootBandSha256": "687692cc68119d007962fe2406f56c4f7225a0f21d904a31dc1ee23c4e3a1bce",
+            "neutralFootSpan": 46,
             "frameSha256": "aff110a915b7656507516c42a56d8f888e66a3521986cdc9a42e02693344fa67",
             "rigHashMatches": true
           },
@@ -4597,6 +5070,7 @@
             "mirroredLowerStrideBandSha256": "91094c7a807c32e0319e80f6046af4e0981624bd893e2e47f170d20eaea29a92",
             "neutralFootBandSha256": "a7a9159b03ea4dc0b849d09b6ee9d3cf14a471de1a4fbaa9ad3e7f15aca149ff",
             "mirroredNeutralFootBandSha256": "82d9acf787dca4200717b892cad2506847c7c1ee9d0d410131b4c33276f70908",
+            "neutralFootSpan": 94,
             "frameSha256": "34dac6651b50ee72ff6910c36a5df7abc915e3cb41afef38b2bf75dcccb882ac",
             "rigHashMatches": true
           },
@@ -4630,6 +5104,7 @@
             "mirroredLowerStrideBandSha256": "7756d4ba2dac1c8c9d6082f1a3da44f6505459f590126ee91c6ecd68eadcab45",
             "neutralFootBandSha256": "687692cc68119d007962fe2406f56c4f7225a0f21d904a31dc1ee23c4e3a1bce",
             "mirroredNeutralFootBandSha256": "e571d030f6c84d4dffa085d4282c71b7a6a2829dfdf0ee8a3d674fe6a810d513",
+            "neutralFootSpan": 46,
             "frameSha256": "7f96d045ba89527eb99efca445eb99942549f35d5fafcc89629f7fb2e3acb4ac",
             "rigHashMatches": true
           }
@@ -4665,6 +5140,7 @@
             "mirroredLowerStrideBandSha256": "11c3082195893a16a5190bea2342248f4ed7731e7a2f51ccfc5388581491593e",
             "neutralFootBandSha256": "1523a0fd6885819bcd0643c2a4568f3c8f99c75e54077f6c053043c26da5ba7b",
             "mirroredNeutralFootBandSha256": "6e28055727c9181b00275035d3993f56f661aa7ab27dfe91f9c5ba5174d31bb5",
+            "neutralFootSpan": 24,
             "frameSha256": "b2dd8d62488f1fac29873c427ca69d1e6a3731f44adee908a405bfbf727670f0",
             "rigHashMatches": true
           },
@@ -4698,6 +5174,7 @@
             "mirroredLowerStrideBandSha256": "a60b3e8fc53814d275d6845be2990ce8a5cb6c7a43114e24600bbc950401be19",
             "neutralFootBandSha256": "61b9969146babdd07cd82a401f6d033cf36e596790631fff8b265539f0f18cb5",
             "mirroredNeutralFootBandSha256": "06c862aaefca612e3a8f5a4de0e2eb59c00ceca98f38060600fbbd2cca0b5a5a",
+            "neutralFootSpan": 63,
             "frameSha256": "fc215a1b25693f60b274e651685e95c58fe8bdf3612542c7686bc8fda58c8135",
             "rigHashMatches": true
           },
@@ -4731,6 +5208,7 @@
             "mirroredLowerStrideBandSha256": "09542a38f4afda8f00bfc5e01df7e8aead16c9eac1679f4a1c49edc972b3aa9b",
             "neutralFootBandSha256": "a0df04c004dfaf9297b113599b8399cfc13b4d00d28fdb23b972fd765766d6b0",
             "mirroredNeutralFootBandSha256": "fdac6a1074377ad5fd4472b9520efa6fb8f08f197014fcff5d123022bf2f87e1",
+            "neutralFootSpan": 27,
             "frameSha256": "ca12a2122ca64cdbb5b6b31b4360ab7838c8704c1ddd891628c918df5e75b898",
             "rigHashMatches": true
           },
@@ -4764,6 +5242,7 @@
             "mirroredLowerStrideBandSha256": "a0df2329d49cc4b5dda50773b001afa2e18f3884f067216fe0fc451aeb130e75",
             "neutralFootBandSha256": "06c862aaefca612e3a8f5a4de0e2eb59c00ceca98f38060600fbbd2cca0b5a5a",
             "mirroredNeutralFootBandSha256": "61b9969146babdd07cd82a401f6d033cf36e596790631fff8b265539f0f18cb5",
+            "neutralFootSpan": 63,
             "frameSha256": "d60e16f6a2c1c89b92ed88ddcb443956a62c1755c705d70abf28a268aa7b04bb",
             "rigHashMatches": true
           }
@@ -4821,7 +5300,20 @@
             "strideSilhouetteSymmetryRatio": 0.0273972602739726,
             "maximumCenterDrift": 0.5,
             "baselineSpread": 0,
-            "neutralPairMirrored": true
+            "neutralFootSpans": [
+              59,
+              67,
+              38,
+              67
+            ],
+            "neutralPairMirrored": true,
+            "neutralPairDistinct": true,
+            "neutralPairPassed": true,
+            "oppositeFootDifference": {
+              "alpha": 0.09043531575720416,
+              "rgba": 0.11275171012611053
+            },
+            "oppositeFootPassed": true
           },
           "left": {
             "firstStepWidth": 109,
@@ -4831,7 +5323,20 @@
             "strideSilhouetteSymmetryRatio": 0.046948356807511735,
             "maximumCenterDrift": 0.5,
             "baselineSpread": 0,
-            "neutralPairMirrored": true
+            "neutralFootSpans": [
+              107,
+              55,
+              104,
+              55
+            ],
+            "neutralPairMirrored": true,
+            "neutralPairDistinct": true,
+            "neutralPairPassed": true,
+            "oppositeFootDifference": {
+              "alpha": 0.12139423076923077,
+              "rgba": 0.11465851244343891
+            },
+            "oppositeFootPassed": true
           },
           "right": {
             "firstStepWidth": 109,
@@ -4841,7 +5346,20 @@
             "strideSilhouetteSymmetryRatio": 0.046948356807511735,
             "maximumCenterDrift": 0.5,
             "baselineSpread": 0,
-            "neutralPairMirrored": true
+            "neutralFootSpans": [
+              106,
+              55,
+              104,
+              55
+            ],
+            "neutralPairMirrored": true,
+            "neutralPairDistinct": true,
+            "neutralPairPassed": true,
+            "oppositeFootDifference": {
+              "alpha": 0.15204540080397258,
+              "rgba": 0.1327690688476857
+            },
+            "oppositeFootPassed": true
           },
           "up": {
             "firstStepWidth": 99,
@@ -4851,7 +5369,20 @@
             "strideSilhouetteSymmetryRatio": 0.02040816326530612,
             "maximumCenterDrift": 0.5,
             "baselineSpread": 0,
-            "neutralPairMirrored": true
+            "neutralFootSpans": [
+              67,
+              75,
+              69,
+              75
+            ],
+            "neutralPairMirrored": true,
+            "neutralPairDistinct": true,
+            "neutralPairPassed": true,
+            "oppositeFootDifference": {
+              "alpha": 0.0830188679245283,
+              "rgba": 0.09453285523207831
+            },
+            "oppositeFootPassed": true
           }
         },
         "maximumStrideSilhouetteSymmetryRatio": 0.046948356807511735,
@@ -4893,6 +5424,7 @@
             "mirroredLowerStrideBandSha256": "71d9d364a788168688e9f42033c9482a1e8bf0c13c74035ce6f7cde3cf201f97",
             "neutralFootBandSha256": "64b1ff7a7bfa5770d49031554d29df30fbd07113efe654de34c355810ebf6b29",
             "mirroredNeutralFootBandSha256": "d5f285eca2656f1bfd350f9a9c5383f83b5b00d63a7556bdfe7d7755f0aef20b",
+            "neutralFootSpan": 59,
             "frameSha256": "c3349603422264a4643c39a2a140fdebb860716387afcfefacb93540f7fe3c8e",
             "rigHashMatches": true
           },
@@ -4926,6 +5458,7 @@
             "mirroredLowerStrideBandSha256": "40e6777a7e8be495dcb34ba19287baba9f767a659a217ff6a97dbcf8418d3f3e",
             "neutralFootBandSha256": "ca932135563e6e12b310f4965779feb4664b765a7f63504eed4147b943b9a93b",
             "mirroredNeutralFootBandSha256": "2b8971829f7ef72691286a94b400c6347a3011239ddfa550b807e9aa23fb7faf",
+            "neutralFootSpan": 67,
             "frameSha256": "3596ef14835d8bf7e9a81df421fd256e5473e6453786c6c1a1ee0959278a2d89",
             "rigHashMatches": true
           },
@@ -4959,6 +5492,7 @@
             "mirroredLowerStrideBandSha256": "8b6faa12422f0f7b2745f21a652fb01937002be7a6461f429d09f6a85e6e8da6",
             "neutralFootBandSha256": "fbbb8b883a166f5ca82ebb2dc075aa69e9dac32c32dc91536765bcd8235d02bb",
             "mirroredNeutralFootBandSha256": "0b6e691da5d7a55a73ce587ef987b42cd744b3c5de78663ceca501c0de11e051",
+            "neutralFootSpan": 38,
             "frameSha256": "90fbf5e1531db61a3d0f88fcab4b452f56b67662e489042dd901a1b9747aeeee",
             "rigHashMatches": true
           },
@@ -4992,6 +5526,7 @@
             "mirroredLowerStrideBandSha256": "0dd74c633e9f540066f6ff41b104fb171a8d147f1c2f0e6d01e693a179e9b5cf",
             "neutralFootBandSha256": "2b8971829f7ef72691286a94b400c6347a3011239ddfa550b807e9aa23fb7faf",
             "mirroredNeutralFootBandSha256": "ca932135563e6e12b310f4965779feb4664b765a7f63504eed4147b943b9a93b",
+            "neutralFootSpan": 67,
             "frameSha256": "00516cf7965379435f18dcea98cfaca67f6726c30a45795b32abe365ac16e980",
             "rigHashMatches": true
           }
@@ -5027,6 +5562,7 @@
             "mirroredLowerStrideBandSha256": "c9ae317d47d0ac7433924713a5b36d974de478b50cd166a8b5f7e8069cb34c12",
             "neutralFootBandSha256": "e2b7f7aa43a9de815635ea9e7276dcf26827229c77e203cf3941af61c60751a1",
             "mirroredNeutralFootBandSha256": "3a279fa79165fd26f0100307e4e16d240a95b0d39338266de2a4c70da1eebc9a",
+            "neutralFootSpan": 107,
             "frameSha256": "c8b9c16e143cd8d6fde280da69af86b92b5fb25bed44b34aa950f620b33ef8d6",
             "rigHashMatches": true
           },
@@ -5060,6 +5596,7 @@
             "mirroredLowerStrideBandSha256": "f1e9979ac7fffe90d72366eceddb65254701f815b25898e6ec827707154ab438",
             "neutralFootBandSha256": "8ee954bd45211ceba96136290a9a917b25a480cb2886fc027b9f306d169920f1",
             "mirroredNeutralFootBandSha256": "16de3bca12806bebc0597d82df461088d332cef236be07a2e645f2bee2d1c23d",
+            "neutralFootSpan": 55,
             "frameSha256": "6a6b22ad191dc58494244b551fdec144d30d6de6f5a808abb3041551c0edb931",
             "rigHashMatches": true
           },
@@ -5093,6 +5630,7 @@
             "mirroredLowerStrideBandSha256": "1c93a543092dd75c17c55fab5c3ae3b62e31fb98a6daad1f2665d47f1cbb32f9",
             "neutralFootBandSha256": "cf84eb34859751216e71de2fd169192bcab5df92dca96bd007d4a99892966a94",
             "mirroredNeutralFootBandSha256": "4da051e26b2c4a1212badc6f8016d60ea3e729d5e0fc458cf85a701a8d0b2acb",
+            "neutralFootSpan": 104,
             "frameSha256": "8da6a30fddf710351a11ede13ea1e57ae5f26d9ba6305495497a19215e00bd46",
             "rigHashMatches": true
           },
@@ -5126,6 +5664,7 @@
             "mirroredLowerStrideBandSha256": "4b41a5a44c5a18f97c421e43609b93b8e028202355ea615990d57a7005cd346a",
             "neutralFootBandSha256": "16de3bca12806bebc0597d82df461088d332cef236be07a2e645f2bee2d1c23d",
             "mirroredNeutralFootBandSha256": "8ee954bd45211ceba96136290a9a917b25a480cb2886fc027b9f306d169920f1",
+            "neutralFootSpan": 55,
             "frameSha256": "f9078e585a088c527dc2ddc911ccdde193a7c5f77868454b8055ed93be82a625",
             "rigHashMatches": true
           }
@@ -5161,6 +5700,7 @@
             "mirroredLowerStrideBandSha256": "fb58dd36f80055717562bd8f7f6abdc27029e5f8a3cbc2100eb4986da86ab76d",
             "neutralFootBandSha256": "3e18861d999bbbeaf7c4d13b5beaa06049a56b1331f48d5f884586559f35d045",
             "mirroredNeutralFootBandSha256": "5b06310d312df5857f487175b30b218d5ee8c182c7a3b6c42ab6a41e913025e1",
+            "neutralFootSpan": 106,
             "frameSha256": "10ffab89ba47f73de02de38774052d43a454355f39ab4d1a9650af42376681f3",
             "rigHashMatches": true
           },
@@ -5194,6 +5734,7 @@
             "mirroredLowerStrideBandSha256": "c6314e0c9ed475aa52027db074ce8d3cae5c79ca6ee6c6a502bd38f677be8217",
             "neutralFootBandSha256": "ff61b77135f53b65328a1ae35ced4a208d998e2de1113cc3786617dff5f9f728",
             "mirroredNeutralFootBandSha256": "c7a0b272cc2f71b6950aa16b99dbacff5a711e0329a6f3c7fcd264b54431e8c3",
+            "neutralFootSpan": 55,
             "frameSha256": "8c5913cbc6f510301ac33dee92e99cc292e0bf69666f4df04042f47ea8907c4b",
             "rigHashMatches": true
           },
@@ -5227,6 +5768,7 @@
             "mirroredLowerStrideBandSha256": "389237940796728b8ffccf24f2a882190c106cd51d5b56881952388ea71f3cb7",
             "neutralFootBandSha256": "36f6a3d0e20adbf082476c0fb8c540bda3c21aed5b7e996fab2317b61c5e5ea3",
             "mirroredNeutralFootBandSha256": "6757cd8908b2b36796df0658528ff424a30b8f8fb367d656b5724a9bb857d4e0",
+            "neutralFootSpan": 104,
             "frameSha256": "4bff93b4ee8572d90cafb7f96df59c4873f95faf74bcdda242e2231c190d7ecc",
             "rigHashMatches": true
           },
@@ -5260,6 +5802,7 @@
             "mirroredLowerStrideBandSha256": "4aba5e944e82366ffb002e6d5545e504ef7573d58ce2c661649e3a4bc6e5d8d1",
             "neutralFootBandSha256": "c7a0b272cc2f71b6950aa16b99dbacff5a711e0329a6f3c7fcd264b54431e8c3",
             "mirroredNeutralFootBandSha256": "ff61b77135f53b65328a1ae35ced4a208d998e2de1113cc3786617dff5f9f728",
+            "neutralFootSpan": 55,
             "frameSha256": "90f523709acf53d6b464137a0c693630a663606ba42117c37e7284811e565309",
             "rigHashMatches": true
           }
@@ -5295,6 +5838,7 @@
             "mirroredLowerStrideBandSha256": "566bfdcad66ffded08e555253ae34a7de7e871a0049975ea95945beb9c02da2d",
             "neutralFootBandSha256": "1099e0adc46d3058e5c8d9d6fe51bce6f911317c00a7d762f2d8462a58d1bbe8",
             "mirroredNeutralFootBandSha256": "ae3bca40b10a7505d6823f6a2a36962ae46eb0418aa305e32ed4cba9738b41f5",
+            "neutralFootSpan": 67,
             "frameSha256": "3260c328b3d7536e34118fb3274f564e56492e3e707d6b8a60cd7cc96309f981",
             "rigHashMatches": true
           },
@@ -5328,6 +5872,7 @@
             "mirroredLowerStrideBandSha256": "e3ba3494081037d9e8515113013c259903d8af8fa0870250cb9d8260299696da",
             "neutralFootBandSha256": "e0d6a4b75f715519188a2c2606601b0f3c645bee507ebb8198a588d865f669be",
             "mirroredNeutralFootBandSha256": "29d8552c74503ca2f30fca7aba894a9310d104d93157c34b463bf0fe9dc6fab1",
+            "neutralFootSpan": 75,
             "frameSha256": "919d6e9307e66deeeec7ef53dfcd591765ca198fc29a4579b7e19ee098f4239a",
             "rigHashMatches": true
           },
@@ -5361,6 +5906,7 @@
             "mirroredLowerStrideBandSha256": "38b67bae2f963c62c7f41bf8267936479867a5616d7f90fb1cd9ac3557f24c8a",
             "neutralFootBandSha256": "3e729b640d08f61c9c70e71e630756b0ae334698b3435e50a310ca6eae52c659",
             "mirroredNeutralFootBandSha256": "b5c36347cf45b7869edc9403a9032939c0f8da09e157e5e40e485c81b57db82c",
+            "neutralFootSpan": 69,
             "frameSha256": "3ef0c55d884b1e6c708dbbf37c7606184e2eac2c85ed619fc6db131e2591e949",
             "rigHashMatches": true
           },
@@ -5394,6 +5940,7 @@
             "mirroredLowerStrideBandSha256": "90d2647c989bab05f80aff4b33b823890e1806947998fe54b97c65b1d2444688",
             "neutralFootBandSha256": "29d8552c74503ca2f30fca7aba894a9310d104d93157c34b463bf0fe9dc6fab1",
             "mirroredNeutralFootBandSha256": "e0d6a4b75f715519188a2c2606601b0f3c645bee507ebb8198a588d865f669be",
+            "neutralFootSpan": 75,
             "frameSha256": "39e7f4229ce80068eee3e6ab439ba57893707b19c5faa612f9d8ba83b4277cb4",
             "rigHashMatches": true
           }
@@ -5451,7 +5998,20 @@
             "strideSilhouetteSymmetryRatio": 0.043010752688172046,
             "maximumCenterDrift": 0.5,
             "baselineSpread": 0,
-            "neutralPairMirrored": true
+            "neutralFootSpans": [
+              31,
+              45,
+              32,
+              45
+            ],
+            "neutralPairMirrored": true,
+            "neutralPairDistinct": true,
+            "neutralPairPassed": true,
+            "oppositeFootDifference": {
+              "alpha": 0.029764762361977917,
+              "rgba": 0.0349538279065827
+            },
+            "oppositeFootPassed": true
           },
           "left": {
             "firstStepWidth": 114,
@@ -5461,7 +6021,20 @@
             "strideSilhouetteSymmetryRatio": 0,
             "maximumCenterDrift": 0.5,
             "baselineSpread": 0,
-            "neutralPairMirrored": true
+            "neutralFootSpans": [
+              114,
+              36,
+              114,
+              36
+            ],
+            "neutralPairMirrored": true,
+            "neutralPairDistinct": true,
+            "neutralPairPassed": true,
+            "oppositeFootDifference": {
+              "alpha": 0.4537833190025795,
+              "rgba": 0.3843116180264023
+            },
+            "oppositeFootPassed": true
           },
           "right": {
             "firstStepWidth": 114,
@@ -5471,7 +6044,20 @@
             "strideSilhouetteSymmetryRatio": 0,
             "maximumCenterDrift": 0.5,
             "baselineSpread": 0,
-            "neutralPairMirrored": true
+            "neutralFootSpans": [
+              114,
+              36,
+              114,
+              36
+            ],
+            "neutralPairMirrored": true,
+            "neutralPairDistinct": true,
+            "neutralPairPassed": true,
+            "oppositeFootDifference": {
+              "alpha": 0.45368579411132604,
+              "rgba": 0.3842564147945875
+            },
+            "oppositeFootPassed": true
           },
           "up": {
             "firstStepWidth": 90,
@@ -5481,7 +6067,20 @@
             "strideSilhouetteSymmetryRatio": 0.0111731843575419,
             "maximumCenterDrift": 0.5,
             "baselineSpread": 0,
-            "neutralPairMirrored": true
+            "neutralFootSpans": [
+              29,
+              42,
+              29,
+              42
+            ],
+            "neutralPairMirrored": true,
+            "neutralPairDistinct": true,
+            "neutralPairPassed": true,
+            "oppositeFootDifference": {
+              "alpha": 0.06410930110352075,
+              "rgba": 0.055145642071857646
+            },
+            "oppositeFootPassed": true
           }
         },
         "maximumStrideSilhouetteSymmetryRatio": 0.043010752688172046,
@@ -5523,6 +6122,7 @@
             "mirroredLowerStrideBandSha256": "bbc7f4ff1b2c6c95e666ed0e5e60679bb18b92eb61c341bec92ca54b031ddddd",
             "neutralFootBandSha256": "989a92baa8331cbc1e7d727a9c0a0f5e4d63818cd10569ee779bef1e842b9b6b",
             "mirroredNeutralFootBandSha256": "f564205080d28e38fefe454554dd9e7b1439f3473a4c07b07a2c6496116aebfd",
+            "neutralFootSpan": 31,
             "frameSha256": "e3d6dacb8b7539a4557038d82fea54743f7b24924ed417b3384537c7473fce8b",
             "rigHashMatches": true
           },
@@ -5556,6 +6156,7 @@
             "mirroredLowerStrideBandSha256": "4ea4736f8e0af27e1a8f78f404a0d96f71fef6ac7da135e3e026e16d2716defa",
             "neutralFootBandSha256": "a2ab211e2c997dd736f17e64e6d5b9b2889cc60019cc6e3e647efb26b68c2422",
             "mirroredNeutralFootBandSha256": "761ec7db2052a0313a34848211cb79f0813470cc4b292fadf00085c705fe7179",
+            "neutralFootSpan": 45,
             "frameSha256": "dc34da839363e5527fa3a807a40749d0bfd7733581e86332faa622f7183292d9",
             "rigHashMatches": true
           },
@@ -5589,6 +6190,7 @@
             "mirroredLowerStrideBandSha256": "a2420c92157bb5aebcf29b8d807f13f90c013c0d87522d1cb4d415b9f182b1fd",
             "neutralFootBandSha256": "fb295a1cd4b628219a016af232341cc900a2093011ad6284a1ccddfa997e58bb",
             "mirroredNeutralFootBandSha256": "96ea9713fb62c34e179839dff7cb6c058720b934a19ee8e743b652b43d170a85",
+            "neutralFootSpan": 32,
             "frameSha256": "cc9aa9aa9be12cb8754e9abfbe28c125315396be5197aaf00974438954cb8a3d",
             "rigHashMatches": true
           },
@@ -5622,6 +6224,7 @@
             "mirroredLowerStrideBandSha256": "98394c5a773c96f6ce8274439b1b7dfbe6d69898378bbc69eb68a14ffb0b3665",
             "neutralFootBandSha256": "761ec7db2052a0313a34848211cb79f0813470cc4b292fadf00085c705fe7179",
             "mirroredNeutralFootBandSha256": "a2ab211e2c997dd736f17e64e6d5b9b2889cc60019cc6e3e647efb26b68c2422",
+            "neutralFootSpan": 45,
             "frameSha256": "d694a4547d0995d6cca510dc3473cc239cec86e99ee04cc320948d0082205a5c",
             "rigHashMatches": true
           }
@@ -5657,6 +6260,7 @@
             "mirroredLowerStrideBandSha256": "18faa56e6bfedb9648e9dc30bc8990dfb5116002b4c5fd4e48a205109a2e471a",
             "neutralFootBandSha256": "8a2dac73e231bcc04dbb7b80d96ad95ae231523a71f2c955d7483d334d7e3bc7",
             "mirroredNeutralFootBandSha256": "aa3f435a42ba677241940b809df7687039def293d506009ceacabd38f0309713",
+            "neutralFootSpan": 114,
             "frameSha256": "56b69e1aea3d2db359924842cb27b46edb7aa67899a3cba4bafbf09752fdef80",
             "rigHashMatches": true
           },
@@ -5690,6 +6294,7 @@
             "mirroredLowerStrideBandSha256": "7e2599c93a2b2cb753bae40e1716761048bd8383314d7872e48cf2918c35dcb8",
             "neutralFootBandSha256": "876acc89b95b1de09af59d77a860b363cb6b4f93313e90712a96d0370dd15fe7",
             "mirroredNeutralFootBandSha256": "43b34839509691697d1c70049c4b9ec00bcbc3895451136e557f020eba02443b",
+            "neutralFootSpan": 36,
             "frameSha256": "e8a08d2210a4c34eb8ab061ecb8a759de04711e835d4dab6f5ada35d9973df48",
             "rigHashMatches": true
           },
@@ -5723,6 +6328,7 @@
             "mirroredLowerStrideBandSha256": "0ed826b67ca81d922c07ae94fcafb0b9bcaeeb6e1e68f363a819e92ce258d523",
             "neutralFootBandSha256": "b4b7ec407018c8001e51b62a364f8d64dc40e13c60dea77712eb914fdcb11cd6",
             "mirroredNeutralFootBandSha256": "f196422393ec80ea12f04f5a0311f1b421d202480ebe32dd43669119f7713707",
+            "neutralFootSpan": 114,
             "frameSha256": "d87d4369fd80d61dc0b4acbfc16c1b974986c6af04ca6ead5dfdc2d33c0832a9",
             "rigHashMatches": true
           },
@@ -5756,6 +6362,7 @@
             "mirroredLowerStrideBandSha256": "ca120a5bebbd72150345c552fa3f2a145cbbf57ebf63beb0f074a68ad1d9c6df",
             "neutralFootBandSha256": "43b34839509691697d1c70049c4b9ec00bcbc3895451136e557f020eba02443b",
             "mirroredNeutralFootBandSha256": "876acc89b95b1de09af59d77a860b363cb6b4f93313e90712a96d0370dd15fe7",
+            "neutralFootSpan": 36,
             "frameSha256": "ea4b0b5df0dfdba646f2b158fb9e1426cafe02353cc910f438be3f0b94f797bd",
             "rigHashMatches": true
           }
@@ -5791,6 +6398,7 @@
             "mirroredLowerStrideBandSha256": "197aee1e80f13f0cd9b7abefcedeee20f5bf53aa8d1ba8eaa8e59b755367dba1",
             "neutralFootBandSha256": "dc86197f2722f589909f7dceffc9a283ed5be936f0f8a1d784002390ef8b1dd2",
             "mirroredNeutralFootBandSha256": "a25f8576a0a1fe47469841b4e0d0a001d60bed46740aa3aa5dc114c77ada2d85",
+            "neutralFootSpan": 114,
             "frameSha256": "1b7d9b4fd32cb1a6181d7a2b22605f3cc128dd98f71f24cfff7c1f0cdca9e667",
             "rigHashMatches": true
           },
@@ -5824,6 +6432,7 @@
             "mirroredLowerStrideBandSha256": "79fb4cc25ccce49dfae0db4b747f731b0e8050bd84a98fc8ee039550c45d7526",
             "neutralFootBandSha256": "79c6330e15dc586b5d72831a0bdd77cefed41d2666599d3691d4bcc0e9da54f9",
             "mirroredNeutralFootBandSha256": "694ff111f0e72deed34d3b3798c668091c6f0bf505e941f068ca5aaec6722515",
+            "neutralFootSpan": 36,
             "frameSha256": "7e697990649ce093a619159b5a793d1405f5c75218a749307bc16dc36d2a9a21",
             "rigHashMatches": true
           },
@@ -5857,6 +6466,7 @@
             "mirroredLowerStrideBandSha256": "bb8fdb325dd8a8dd97d3979412cb0cf5e4155306e47d165c91fae506f4c8c14a",
             "neutralFootBandSha256": "6d3ba78876b805e91f036cf4692d23f2fd88718e0da4641dc30b5a7186681246",
             "mirroredNeutralFootBandSha256": "9dc9cc9a452fa7f0c8b87545325415180dc94d4159bffaf37b4033708d5e91ec",
+            "neutralFootSpan": 114,
             "frameSha256": "4a24e6a082dba25a7cb2a349666b189fa3d2649a4ed1793f4d02aaeae483567e",
             "rigHashMatches": true
           },
@@ -5890,6 +6500,7 @@
             "mirroredLowerStrideBandSha256": "53e8c01032661ce3666312ee0e5b59860ba8aac99ea1268becdb6cb190de9d6a",
             "neutralFootBandSha256": "694ff111f0e72deed34d3b3798c668091c6f0bf505e941f068ca5aaec6722515",
             "mirroredNeutralFootBandSha256": "79c6330e15dc586b5d72831a0bdd77cefed41d2666599d3691d4bcc0e9da54f9",
+            "neutralFootSpan": 36,
             "frameSha256": "ef4b1275bb98d45c04ed7f87999cf6f9f7bbd10cb2da847f2d9a5f243131ac06",
             "rigHashMatches": true
           }
@@ -5925,6 +6536,7 @@
             "mirroredLowerStrideBandSha256": "10511464da0439203ebbd9e80091a4e33a903d75c7c702aae836e0e6cffc6fbc",
             "neutralFootBandSha256": "d45000cf81549e557907a659a7b863687d78b8fa999d9bd7cd49bf4cb120b2d0",
             "mirroredNeutralFootBandSha256": "30881ce1a2ed95577cc4cc95f168bbbfd8a53dc514aaa778173e8e31bb7a88f3",
+            "neutralFootSpan": 29,
             "frameSha256": "d486e6738d9edae410476d69bb49a8b2d626f327ae6d5a63fa2a6373062f5da0",
             "rigHashMatches": true
           },
@@ -5958,6 +6570,7 @@
             "mirroredLowerStrideBandSha256": "1b2a0c7ce131c3797a229023447968573e50a0120b5a7326ef53562fed8f85e6",
             "neutralFootBandSha256": "ad45057c6df429b7a2746707e58f108c103b2ffbbf37b446da6374675d9b84a0",
             "mirroredNeutralFootBandSha256": "1ff7f6adb653abc16b5a84ac8184a05735f697cb8a0b9f1f23b485c1cd2c1eee",
+            "neutralFootSpan": 42,
             "frameSha256": "fc21cd501f46ae8de07d310f7414fdc074149848981134602332b1c40a1b95d1",
             "rigHashMatches": true
           },
@@ -5991,6 +6604,7 @@
             "mirroredLowerStrideBandSha256": "a135417483d6cb65f4e13bce95475cd8b69bac55e8386eebb94002d3953a1996",
             "neutralFootBandSha256": "497f5fee8946a22537f02d9fe8a6a059e30491356efa6084251b68ff04261fdb",
             "mirroredNeutralFootBandSha256": "9a9fc4a12464b9812cb267cf5d46b99950778572ecbb3073de71b54688f2a970",
+            "neutralFootSpan": 29,
             "frameSha256": "1b17afddfe5067a1b3fd19cd8391d8bfc81e024a6e92b684389bddf697ebbf22",
             "rigHashMatches": true
           },
@@ -6024,6 +6638,7 @@
             "mirroredLowerStrideBandSha256": "0e752806c10aeda7ba6005914b26c2993d2c538b64737aa142b361935b8b1fb5",
             "neutralFootBandSha256": "1ff7f6adb653abc16b5a84ac8184a05735f697cb8a0b9f1f23b485c1cd2c1eee",
             "mirroredNeutralFootBandSha256": "ad45057c6df429b7a2746707e58f108c103b2ffbbf37b446da6374675d9b84a0",
+            "neutralFootSpan": 42,
             "frameSha256": "b62eb2acd1d03a3df9972b103fad28f8ed81f480aa62929324ea4337c4f30f1c",
             "rigHashMatches": true
           }
@@ -6081,7 +6696,20 @@
             "strideSilhouetteSymmetryRatio": 0,
             "maximumCenterDrift": 0,
             "baselineSpread": 0,
-            "neutralPairMirrored": true
+            "neutralFootSpans": [
+              53,
+              47,
+              53,
+              47
+            ],
+            "neutralPairMirrored": true,
+            "neutralPairDistinct": true,
+            "neutralPairPassed": true,
+            "oppositeFootDifference": {
+              "alpha": 0.050017012589316096,
+              "rgba": 0.07630780110615189
+            },
+            "oppositeFootPassed": true
           },
           "left": {
             "firstStepWidth": 87,
@@ -6091,7 +6719,20 @@
             "strideSilhouetteSymmetryRatio": 0,
             "maximumCenterDrift": 0,
             "baselineSpread": 0,
-            "neutralPairMirrored": true
+            "neutralFootSpans": [
+              72,
+              74,
+              73,
+              74
+            ],
+            "neutralPairMirrored": true,
+            "neutralPairDistinct": true,
+            "neutralPairPassed": true,
+            "oppositeFootDifference": {
+              "alpha": 0.11193568336425479,
+              "rgba": 0.09682782203790608
+            },
+            "oppositeFootPassed": true
           },
           "right": {
             "firstStepWidth": 87,
@@ -6101,7 +6742,20 @@
             "strideSilhouetteSymmetryRatio": 0,
             "maximumCenterDrift": 0,
             "baselineSpread": 0,
-            "neutralPairMirrored": true
+            "neutralFootSpans": [
+              72,
+              73,
+              73,
+              73
+            ],
+            "neutralPairMirrored": true,
+            "neutralPairDistinct": true,
+            "neutralPairPassed": true,
+            "oppositeFootDifference": {
+              "alpha": 0.11193568336425479,
+              "rgba": 0.09682782203790608
+            },
+            "oppositeFootPassed": true
           },
           "up": {
             "firstStepWidth": 94,
@@ -6111,7 +6765,20 @@
             "strideSilhouetteSymmetryRatio": 0,
             "maximumCenterDrift": 0,
             "baselineSpread": 0,
-            "neutralPairMirrored": true
+            "neutralFootSpans": [
+              56,
+              56,
+              58,
+              56
+            ],
+            "neutralPairMirrored": true,
+            "neutralPairDistinct": true,
+            "neutralPairPassed": true,
+            "oppositeFootDifference": {
+              "alpha": 0.05712511642347097,
+              "rgba": 0.05334599533697366
+            },
+            "oppositeFootPassed": true
           }
         },
         "maximumStrideSilhouetteSymmetryRatio": 0,
@@ -6153,6 +6820,7 @@
             "mirroredLowerStrideBandSha256": "73dc96a6c9e3855cd74d26e5a6ba5f4af4ec655f211c2f9f2d9c3c3722791323",
             "neutralFootBandSha256": "a7ab59f2d1a45edc15ab0d891f4c56792ddf1df95a4fbf43d1aa61547fe78500",
             "mirroredNeutralFootBandSha256": "aae81dcb9edbbcbf55e7c880198ec86af62fb9ef46b2cbae28299245d052793b",
+            "neutralFootSpan": 53,
             "frameSha256": "42589146ab4c6db9b06ed299bce590f76aeb38493feafaa24039a6c9a92ae2a4",
             "rigHashMatches": true
           },
@@ -6186,6 +6854,7 @@
             "mirroredLowerStrideBandSha256": "7a6c358cce1e6ab0093158710a6023d767b33c485be4f1f7ff31ec887e7be614",
             "neutralFootBandSha256": "d4a5396d122ede2dfcc62e26f1862f78255dd3f38f50f43feb32b041ee844c8c",
             "mirroredNeutralFootBandSha256": "8279563bd6c9e25f5b79ab332c1008b673992b3c49f2a366e34fde8a27b24af0",
+            "neutralFootSpan": 47,
             "frameSha256": "5ce1b2360f019b29597c04807c80d48a1429e42a2daec1a3ef3b6f55711b3f82",
             "rigHashMatches": true
           },
@@ -6219,6 +6888,7 @@
             "mirroredLowerStrideBandSha256": "51e0da92f73edd184d886dc76863579560debe127effc96149fa6201ed79f1e9",
             "neutralFootBandSha256": "35626ace3901d2f5ecfe907f00f028a8cda34e24a135a3ec909f5afe2adb9bd8",
             "mirroredNeutralFootBandSha256": "3f97aaed71cfb97a0ad56d2f0de3e32470d4e43819471c146da43c2bc203bde2",
+            "neutralFootSpan": 53,
             "frameSha256": "7b7c6b9ae8ef634f9e1beb3510521257da8b8c0b1073594b60e8b789502713bd",
             "rigHashMatches": true
           },
@@ -6252,6 +6922,7 @@
             "mirroredLowerStrideBandSha256": "15242e1cbbc82983b88d59d6d6d6856414cbf5806d6c424361e59e46c045e2dd",
             "neutralFootBandSha256": "8279563bd6c9e25f5b79ab332c1008b673992b3c49f2a366e34fde8a27b24af0",
             "mirroredNeutralFootBandSha256": "d4a5396d122ede2dfcc62e26f1862f78255dd3f38f50f43feb32b041ee844c8c",
+            "neutralFootSpan": 47,
             "frameSha256": "78f77a19b1deda869733566f6368abf11f624b9d7d6aebee53240cdf84b9cab3",
             "rigHashMatches": true
           }
@@ -6287,6 +6958,7 @@
             "mirroredLowerStrideBandSha256": "11e34b9ef4c3d017934f7e0fcbbedc86c6001c2e6896dc03d1b946f4ff25b273",
             "neutralFootBandSha256": "6fcafc62a9f0721b5eeb0706e785c095a3ab1ec10b678c41801cc9da3178dcf7",
             "mirroredNeutralFootBandSha256": "5216cbda3c43d2e9bc6e8208b11ecd0afae6e0a3929559f84e41209d39d811ac",
+            "neutralFootSpan": 72,
             "frameSha256": "32a6119772626f107b29faf79c57f0c991134c75e3f7f443bf04b4d7c0218311",
             "rigHashMatches": true
           },
@@ -6320,6 +6992,7 @@
             "mirroredLowerStrideBandSha256": "7c9cf79dae13b1ef287ab403c1637755f8aef2210489a1b60ef51245a4b3d01e",
             "neutralFootBandSha256": "77893ee70aa26e5405b456fb24f5218c1b89d1aa6250c2301794525ef4b678a8",
             "mirroredNeutralFootBandSha256": "efb4eceba1667af517cba2642756fbc4408c8a2cbc7b7c2604df53df863b8434",
+            "neutralFootSpan": 74,
             "frameSha256": "e99cc9d30b96e476ae7f52713fa16369323c6116255ca6d9ac7a74446114dfca",
             "rigHashMatches": true
           },
@@ -6353,6 +7026,7 @@
             "mirroredLowerStrideBandSha256": "16e191aaa34395387a3d8539541e091f0514e389bd3a7c4968156c974c5052bd",
             "neutralFootBandSha256": "eec59a283a5d7cba6a91bba26973a18930270d2e364685833775a6159439118f",
             "mirroredNeutralFootBandSha256": "824403d86d1ed2bbc26bb563fade1f8a86554b34fa5f6199e6f97d007d000ad0",
+            "neutralFootSpan": 73,
             "frameSha256": "3f58fca00b7862ee0ac59c2b2d9dd531dcb31a4aff9c0891eda16001a799cf17",
             "rigHashMatches": true
           },
@@ -6386,6 +7060,7 @@
             "mirroredLowerStrideBandSha256": "cccf45eb61b9fb9e890bd5e6ee591c9037738746942b1a7529e84566194b964b",
             "neutralFootBandSha256": "efb4eceba1667af517cba2642756fbc4408c8a2cbc7b7c2604df53df863b8434",
             "mirroredNeutralFootBandSha256": "77893ee70aa26e5405b456fb24f5218c1b89d1aa6250c2301794525ef4b678a8",
+            "neutralFootSpan": 74,
             "frameSha256": "08be1f50d102fe39df0a597067d8901bb41719ca25044592e5a9ea209a6fed44",
             "rigHashMatches": true
           }
@@ -6421,6 +7096,7 @@
             "mirroredLowerStrideBandSha256": "1750a408855166893cf03553a82f0bb9c37499eae4f6067470ae96c10de3bf58",
             "neutralFootBandSha256": "30d3450acb9a0062955eca22718901187dccc00977ab8407eb43bc31ddd60c79",
             "mirroredNeutralFootBandSha256": "bb3aa28529b44da9a01aba710f48a2d81448697f100d6cc415f5d063fd40b4bb",
+            "neutralFootSpan": 72,
             "frameSha256": "1c8c5d7a8160e2272ff700b0b7e88692b0de85fa64b150b93fc3c383d349db35",
             "rigHashMatches": true
           },
@@ -6454,6 +7130,7 @@
             "mirroredLowerStrideBandSha256": "62fa9fb6cddce01ff7909f7d91ddec5d94d5dc2007fc427f8f4e27549a212832",
             "neutralFootBandSha256": "0af827d25859afdc0573d5f95d912c04af217d08c9b614217205fe2f87589992",
             "mirroredNeutralFootBandSha256": "909af07560bfb5d443e3d3ad220caed82ab95821a25d06725eb4f19fa4baf63b",
+            "neutralFootSpan": 73,
             "frameSha256": "c352318d9916af6322ea7254da593818e11dc1b4cafab8d83bb664a1a59de5df",
             "rigHashMatches": true
           },
@@ -6487,6 +7164,7 @@
             "mirroredLowerStrideBandSha256": "28c891172c8c7953ade641046371379e027c8a04bce11f794955198845be26a5",
             "neutralFootBandSha256": "ea6f281f07a26e1b628e55992d7a95b360d2a1bbe7fe416b3ff7580e5515c324",
             "mirroredNeutralFootBandSha256": "c8cc148da1146ed4f1a52c3e5ae81c57570b87d8f52d8b90ef1eea2478473c7b",
+            "neutralFootSpan": 73,
             "frameSha256": "9bd2318de2adf66db44b8e35d63ae22972646b2e70a5d2d2e0d6008a05797480",
             "rigHashMatches": true
           },
@@ -6520,6 +7198,7 @@
             "mirroredLowerStrideBandSha256": "61a9abbbfbbc7ef3256089b7367854752fc9bbecf97ef2b3df722751ccc7cbaf",
             "neutralFootBandSha256": "909af07560bfb5d443e3d3ad220caed82ab95821a25d06725eb4f19fa4baf63b",
             "mirroredNeutralFootBandSha256": "0af827d25859afdc0573d5f95d912c04af217d08c9b614217205fe2f87589992",
+            "neutralFootSpan": 73,
             "frameSha256": "9a36f6f853c0fd6ad3f26fa02a1aac3da5493a0a283cfd26716710fb1359ecfa",
             "rigHashMatches": true
           }
@@ -6555,6 +7234,7 @@
             "mirroredLowerStrideBandSha256": "59ba486a089dcfbdc5148dbca1abf162ec709ce07840ab27e2e7dc2bbf8f1a9d",
             "neutralFootBandSha256": "fecb762db3130595ea7050ae92f2712902ca2baecf5143eb09fa8e9ab5c86ea3",
             "mirroredNeutralFootBandSha256": "d616d2175d3af620fa5b8f5d1d921a02c36633d61881cc89afd0323163eb7443",
+            "neutralFootSpan": 56,
             "frameSha256": "a05498956d98aa3c9f25c4a786c8e00f395809df467b86f62609cf4d32f54667",
             "rigHashMatches": true
           },
@@ -6588,6 +7268,7 @@
             "mirroredLowerStrideBandSha256": "74a95afa431c75638db26503a3018f60a115e91013bacb6b8b73c7aa3fe2aca4",
             "neutralFootBandSha256": "33fc1c6310b260eea44c341ed419cdf99285f8ff6ae706ee547d032dc8caec23",
             "mirroredNeutralFootBandSha256": "aec467d9fe3a7e2b9eebdad395890ed8eaf240e4c8318cfa1169e6c59acf10e4",
+            "neutralFootSpan": 56,
             "frameSha256": "87b1490a88ec8f94979836abb56cac35af5dac4fbcabae1a7cc76d43c7ba2534",
             "rigHashMatches": true
           },
@@ -6621,6 +7302,7 @@
             "mirroredLowerStrideBandSha256": "27de90e3adcef6676d8c4792ba915f1fe1feb01fa7795f5f4aff78365386a2a2",
             "neutralFootBandSha256": "8ec3c9a9e3c7915b3b0e3c965410266be69fa4e6dff6dced6902b81f00b12528",
             "mirroredNeutralFootBandSha256": "c0832f01128233a1a0231bfba78393de511ced35b996dfc4bb376b0c038f96eb",
+            "neutralFootSpan": 58,
             "frameSha256": "0089bbbf9064dde053ad7db82ba507315707b2a597678b40e1b0ade43c09da0d",
             "rigHashMatches": true
           },
@@ -6654,6 +7336,7 @@
             "mirroredLowerStrideBandSha256": "a75dd310b99b547df96d931a5e181f87e9355ea08681154e31067cb8d71ae531",
             "neutralFootBandSha256": "aec467d9fe3a7e2b9eebdad395890ed8eaf240e4c8318cfa1169e6c59acf10e4",
             "mirroredNeutralFootBandSha256": "33fc1c6310b260eea44c341ed419cdf99285f8ff6ae706ee547d032dc8caec23",
+            "neutralFootSpan": 56,
             "frameSha256": "48823f68e0b0d6ce6b086863d126fa8c0cd72894a08d0ea847f50940627f7137",
             "rigHashMatches": true
           }
@@ -6711,7 +7394,20 @@
             "strideSilhouetteSymmetryRatio": 0.011834319526627219,
             "maximumCenterDrift": 0.5,
             "baselineSpread": 0,
-            "neutralPairMirrored": true
+            "neutralFootSpans": [
+              31,
+              47,
+              28,
+              47
+            ],
+            "neutralPairMirrored": true,
+            "neutralPairDistinct": true,
+            "neutralPairPassed": true,
+            "oppositeFootDifference": {
+              "alpha": 0.18131592164741336,
+              "rgba": 0.16460099861139835
+            },
+            "oppositeFootPassed": true
           },
           "left": {
             "firstStepWidth": 116,
@@ -6721,7 +7417,20 @@
             "strideSilhouetteSymmetryRatio": 0.008583690987124463,
             "maximumCenterDrift": 0.5,
             "baselineSpread": 0,
-            "neutralPairMirrored": true
+            "neutralFootSpans": [
+              116,
+              43,
+              117,
+              43
+            ],
+            "neutralPairMirrored": true,
+            "neutralPairDistinct": true,
+            "neutralPairPassed": true,
+            "oppositeFootDifference": {
+              "alpha": 0.4954025566270464,
+              "rgba": 0.41548179711445016
+            },
+            "oppositeFootPassed": true
           },
           "right": {
             "firstStepWidth": 116,
@@ -6731,7 +7440,20 @@
             "strideSilhouetteSymmetryRatio": 0.008583690987124463,
             "maximumCenterDrift": 0.5,
             "baselineSpread": 0,
-            "neutralPairMirrored": true
+            "neutralFootSpans": [
+              116,
+              43,
+              117,
+              43
+            ],
+            "neutralPairMirrored": true,
+            "neutralPairDistinct": true,
+            "neutralPairPassed": true,
+            "oppositeFootDifference": {
+              "alpha": 0.5285087719298246,
+              "rgba": 0.438937263501892
+            },
+            "oppositeFootPassed": true
           },
           "up": {
             "firstStepWidth": 89,
@@ -6741,7 +7463,20 @@
             "strideSilhouetteSymmetryRatio": 0,
             "maximumCenterDrift": 0.5,
             "baselineSpread": 0,
-            "neutralPairMirrored": true
+            "neutralFootSpans": [
+              27,
+              46,
+              26,
+              46
+            ],
+            "neutralPairMirrored": true,
+            "neutralPairDistinct": true,
+            "neutralPairPassed": true,
+            "oppositeFootDifference": {
+              "alpha": 0.22002032520325204,
+              "rgba": 0.1567825402518731
+            },
+            "oppositeFootPassed": true
           }
         },
         "maximumStrideSilhouetteSymmetryRatio": 0.011834319526627219,
@@ -6783,6 +7518,7 @@
             "mirroredLowerStrideBandSha256": "224c23069867225097d727145085cdd78f7dab0d696f6adf6cb751dce7da5bd5",
             "neutralFootBandSha256": "6ae8342123cfc5ce5178870ea38a9c97f9bf1e384eddf53daebd11eaff60dc26",
             "mirroredNeutralFootBandSha256": "24d23862ebc1bb1ad86654fd6d7eecc93522a25475bcca6c113bbaf9644bf0f5",
+            "neutralFootSpan": 31,
             "frameSha256": "3a3432b96beb1bc799b12da31dda70e73315e4dee9af918efc14e69333b30d81",
             "rigHashMatches": true
           },
@@ -6816,6 +7552,7 @@
             "mirroredLowerStrideBandSha256": "ee697e787df00cd99e84b9e73ec47fefae84802eada7ec32007646f43c37166d",
             "neutralFootBandSha256": "d519b653604a041395a9038f08b645fcba56a5e9e85d9057f8b990500376eb8e",
             "mirroredNeutralFootBandSha256": "4c5bc4502bcd62634c2259b69d4bde4f2ca8930930e4019ce0c91a393307cdd0",
+            "neutralFootSpan": 47,
             "frameSha256": "969286e5b37743d48ee9446fd45e123bb2d0c7b6073cf66ba48c6b7160a49405",
             "rigHashMatches": true
           },
@@ -6849,6 +7586,7 @@
             "mirroredLowerStrideBandSha256": "ea71107652722ca716175fb0b7e4de270c754052453fc54a2c1ff71d0fac4c22",
             "neutralFootBandSha256": "df9a3c0f7ac9b79894f5290f63a1b9e1cff07c1f2a6349c0610c42ffb6e8188c",
             "mirroredNeutralFootBandSha256": "7005443349c2dd0ea6cbae6940e8fb72903b8dc223bb52af21deafccaa67bb04",
+            "neutralFootSpan": 28,
             "frameSha256": "dd45f76af91694bfde9e580463901c0e748c0497f565c637e22579969da1c10c",
             "rigHashMatches": true
           },
@@ -6882,6 +7620,7 @@
             "mirroredLowerStrideBandSha256": "fb1cd293f67edb500440f154a93a8f48d0b0ff641965243ac62eecf6516cd273",
             "neutralFootBandSha256": "4c5bc4502bcd62634c2259b69d4bde4f2ca8930930e4019ce0c91a393307cdd0",
             "mirroredNeutralFootBandSha256": "d519b653604a041395a9038f08b645fcba56a5e9e85d9057f8b990500376eb8e",
+            "neutralFootSpan": 47,
             "frameSha256": "ba81951beb14e5921cf8ed3be96964d8b3de6f61077e3ca8513e0fd5e4cf9d5e",
             "rigHashMatches": true
           }
@@ -6917,6 +7656,7 @@
             "mirroredLowerStrideBandSha256": "76e593b3908cf67ea36a0e2482b62cb24f7ea975b3de36fdcdc31cf7a291eef0",
             "neutralFootBandSha256": "7a0a35697f180abf3705268ced5f6d146994c2efc9bd701627952b5fc547c44b",
             "mirroredNeutralFootBandSha256": "da344d15011f65510ff96fe4c3279e4f80b6e1eff01c8627905b2779dce069e8",
+            "neutralFootSpan": 116,
             "frameSha256": "0d30550d5cd084a53171326ebc775d1be78802fc8c1866992604e1b009984cb1",
             "rigHashMatches": true
           },
@@ -6950,6 +7690,7 @@
             "mirroredLowerStrideBandSha256": "8d8c002ae5e6c48efcd043524dd1fee68a5a245a917279219dde7a5621d3d2a1",
             "neutralFootBandSha256": "4bc0ddf312fd049edaf682e8c7f6077641acc1da16ee8fe18e7a1770e0b77094",
             "mirroredNeutralFootBandSha256": "ae6330d1e2e14fa44987e0b6edb9614f840597ced9ace21224684b8e9787372d",
+            "neutralFootSpan": 43,
             "frameSha256": "9904754cade8e92d6f32fbd546389083f710dd3eb678a1415e1d5bea04d7f845",
             "rigHashMatches": true
           },
@@ -6983,6 +7724,7 @@
             "mirroredLowerStrideBandSha256": "b880c3513361e723a3962dd92f2bdc814eca030ca9bd1ba656dae4b38019562e",
             "neutralFootBandSha256": "804180003b9bd9aa13b6a25c097d80faa88385d2392e2818c537179f7a674f37",
             "mirroredNeutralFootBandSha256": "94d208cbf4d00fe0b7b98153b0bbb30d1405e7c64da30d291611176eae338ebe",
+            "neutralFootSpan": 117,
             "frameSha256": "cd925dccc7657f5d22aebc53217b9fe29fc39334c5b8f206e38d8a1dfdae2281",
             "rigHashMatches": true
           },
@@ -7016,6 +7758,7 @@
             "mirroredLowerStrideBandSha256": "ba649dbba218c248454d2a278f54f78220dda6c21d27ff3f243d06a7d6a0ec0d",
             "neutralFootBandSha256": "ae6330d1e2e14fa44987e0b6edb9614f840597ced9ace21224684b8e9787372d",
             "mirroredNeutralFootBandSha256": "4bc0ddf312fd049edaf682e8c7f6077641acc1da16ee8fe18e7a1770e0b77094",
+            "neutralFootSpan": 43,
             "frameSha256": "379f669195b09fc73930007479b37e7401311486b33846f70ab2d6536c344222",
             "rigHashMatches": true
           }
@@ -7051,6 +7794,7 @@
             "mirroredLowerStrideBandSha256": "1bf0013dd0b57b59d416577ec4e3de92f0d27605a63c7150a4b9b0fa94878646",
             "neutralFootBandSha256": "ffc3a6846d5f765b5bf2c43c65bebdcdc231c2d7118d162605f64f2966b2c2c5",
             "mirroredNeutralFootBandSha256": "2216f4b7e9b853fcaf8abd8a91726fbf048d23d50f5ed4f9ea066460767df190",
+            "neutralFootSpan": 116,
             "frameSha256": "4454d41c1a30ca5da180b730cf3063ae6b9d55f9999d6b3a627ff1da26fd2abe",
             "rigHashMatches": true
           },
@@ -7084,6 +7828,7 @@
             "mirroredLowerStrideBandSha256": "7e7413229ddfd4f6fdd4e5d0d6ca50a84344da442dac1fb720cab07d6097c668",
             "neutralFootBandSha256": "6d912ec3783e835700f1b7d698907ae1903d4411ddf49f08141cdb57c92899e5",
             "mirroredNeutralFootBandSha256": "3b1a19ac758a7d3d458734a566edf9671647d231be77fd1dfa957f815d91dbf3",
+            "neutralFootSpan": 43,
             "frameSha256": "03deab65fa596bfdc8d2a6852630d92c087c0445e7247352f7a01a707cfc5a38",
             "rigHashMatches": true
           },
@@ -7117,6 +7862,7 @@
             "mirroredLowerStrideBandSha256": "edd7a1301929647e4bb3443ae8834ff376d38b62475409f74a2b052a446ba518",
             "neutralFootBandSha256": "a5a5287d575e587081b5cdf22e4b4e0a5d4c539b481a0eb67a5061841f258850",
             "mirroredNeutralFootBandSha256": "fcc6c9fde397b78dea1633d8bb384b713f1c122716c2f3983d3be49b04d027c4",
+            "neutralFootSpan": 117,
             "frameSha256": "d60caeed5e0545f012bd3e7cca757cd0d471e2e7fcd1c228d6b01f244190d1a3",
             "rigHashMatches": true
           },
@@ -7150,6 +7896,7 @@
             "mirroredLowerStrideBandSha256": "d050ec67f975b3e50fdf3870d15dec0426f223a0ef76e721567d7289c8d51729",
             "neutralFootBandSha256": "3b1a19ac758a7d3d458734a566edf9671647d231be77fd1dfa957f815d91dbf3",
             "mirroredNeutralFootBandSha256": "6d912ec3783e835700f1b7d698907ae1903d4411ddf49f08141cdb57c92899e5",
+            "neutralFootSpan": 43,
             "frameSha256": "fb5cadddb4fb30d136bc984496f8dd6027db3359b26db9924cdfc845761e900a",
             "rigHashMatches": true
           }
@@ -7185,6 +7932,7 @@
             "mirroredLowerStrideBandSha256": "e808b65403904c873aa46393ec88a208642fdaa16344d5c45cbcec5324e200ab",
             "neutralFootBandSha256": "4558985615d39f4be15667b276a001c9b0218f4f1449b4cf4f9e175574ec5dac",
             "mirroredNeutralFootBandSha256": "0f0c1eae7f3cd9db6ac50d4faa50ca41511dee5e0bbae21a6294ab386db18514",
+            "neutralFootSpan": 27,
             "frameSha256": "3a1532f543b792bb1cc495516802f6694f5b1289f55283f9118290018098d06f",
             "rigHashMatches": true
           },
@@ -7218,6 +7966,7 @@
             "mirroredLowerStrideBandSha256": "722ba46c354c2527bec59aa2afa4f1b78ffd5538f2d13e4e87d4bab013f9b8df",
             "neutralFootBandSha256": "375efbc0bd4a3ec1abb543af1e7b0567b293cb45034bc2a4d437b18d814b8ecc",
             "mirroredNeutralFootBandSha256": "14462dbb4917587117337dad560f5f8ebe6ae47687a386befcb7d86bc9c04ef0",
+            "neutralFootSpan": 46,
             "frameSha256": "b1e707c653acd898ef7a0c4dfcb68e23bd1112dae2661cdef7a0a32feda1a34b",
             "rigHashMatches": true
           },
@@ -7251,6 +8000,7 @@
             "mirroredLowerStrideBandSha256": "3e8336289ffa21e8419ae2f151d955c36655345cf91887ac29662d388dbdfbe5",
             "neutralFootBandSha256": "48c5c94ffa306985c5612105c1b62072dfd4d3fc2ddbe1fd709ba323e301afa5",
             "mirroredNeutralFootBandSha256": "f5a454fb7ba3c2d9399bd86f911091b9b6c5c9f092884e5958a6f864ebc3ddb9",
+            "neutralFootSpan": 26,
             "frameSha256": "4b9493792c2e2514a1673e13f43bd556f4dee65b655714c04c18c912fa6b36f8",
             "rigHashMatches": true
           },
@@ -7284,6 +8034,7 @@
             "mirroredLowerStrideBandSha256": "c0957a915c3b5d3de363b1207f7a408cf58ddb148b6162f92eab009b51356c50",
             "neutralFootBandSha256": "14462dbb4917587117337dad560f5f8ebe6ae47687a386befcb7d86bc9c04ef0",
             "mirroredNeutralFootBandSha256": "375efbc0bd4a3ec1abb543af1e7b0567b293cb45034bc2a4d437b18d814b8ecc",
+            "neutralFootSpan": 46,
             "frameSha256": "c5ee49de7a2b29f482258faf628ddb347975d0ae6af3a8552f510d0ced52f830",
             "rigHashMatches": true
           }
@@ -7341,7 +8092,20 @@
             "strideSilhouetteSymmetryRatio": 0,
             "maximumCenterDrift": 0.5,
             "baselineSpread": 0,
-            "neutralPairMirrored": true
+            "neutralFootSpans": [
+              38,
+              52,
+              40,
+              52
+            ],
+            "neutralPairMirrored": true,
+            "neutralPairDistinct": true,
+            "neutralPairPassed": true,
+            "oppositeFootDifference": {
+              "alpha": 0.03677028051554208,
+              "rgba": 0.07980050246027144
+            },
+            "oppositeFootPassed": true
           },
           "left": {
             "firstStepWidth": 123,
@@ -7351,7 +8115,20 @@
             "strideSilhouetteSymmetryRatio": 0.08560311284046693,
             "maximumCenterDrift": 0.5,
             "baselineSpread": 0,
-            "neutralPairMirrored": true
+            "neutralFootSpans": [
+              117,
+              45,
+              130,
+              45
+            ],
+            "neutralPairMirrored": true,
+            "neutralPairDistinct": true,
+            "neutralPairPassed": true,
+            "oppositeFootDifference": {
+              "alpha": 0.574888354517348,
+              "rgba": 0.30473474515192545
+            },
+            "oppositeFootPassed": true
           },
           "right": {
             "firstStepWidth": 123,
@@ -7361,7 +8138,20 @@
             "strideSilhouetteSymmetryRatio": 0.08560311284046693,
             "maximumCenterDrift": 0.5,
             "baselineSpread": 0,
-            "neutralPairMirrored": true
+            "neutralFootSpans": [
+              118,
+              45,
+              129,
+              45
+            ],
+            "neutralPairMirrored": true,
+            "neutralPairDistinct": true,
+            "neutralPairPassed": true,
+            "oppositeFootDifference": {
+              "alpha": 0.55530395401498,
+              "rgba": 0.29866713799262956
+            },
+            "oppositeFootPassed": true
           },
           "up": {
             "firstStepWidth": 95,
@@ -7371,7 +8161,20 @@
             "strideSilhouetteSymmetryRatio": 0,
             "maximumCenterDrift": 0,
             "baselineSpread": 0,
-            "neutralPairMirrored": true
+            "neutralFootSpans": [
+              38,
+              53,
+              36,
+              53
+            ],
+            "neutralPairMirrored": true,
+            "neutralPairDistinct": true,
+            "neutralPairPassed": true,
+            "oppositeFootDifference": {
+              "alpha": 0.030878859857482184,
+              "rgba": 0.041271171968391474
+            },
+            "oppositeFootPassed": true
           }
         },
         "maximumStrideSilhouetteSymmetryRatio": 0.08560311284046693,
@@ -7413,6 +8216,7 @@
             "mirroredLowerStrideBandSha256": "b7d1611b0d514aa74adaa8feb5aa07366d908d200f66c3f5a10c54bdc34da76f",
             "neutralFootBandSha256": "8b10a30bdb53959605d2ae495520835908fcc294938c0f1978adcc7fdd787e69",
             "mirroredNeutralFootBandSha256": "b369446fad67101b238a26d2023d6a8478c01d5334006eec4f7fdc59304c006f",
+            "neutralFootSpan": 38,
             "frameSha256": "c1071f80a9c2d78daa2332b62321c2e1319a140ac2820a16d238d7aec6386a06",
             "rigHashMatches": true
           },
@@ -7446,6 +8250,7 @@
             "mirroredLowerStrideBandSha256": "429e808fb7ee5041fc9df1498f4d5f3ab8cc5f1708d69d8026929b9bb07a7f3d",
             "neutralFootBandSha256": "07c50c549b3eafdfe9aee0ba08bdb5a09f3584278bb26aea49ba518e8c5e67a2",
             "mirroredNeutralFootBandSha256": "e906daca15ad19f86314f01da8e13bee7b859049d6951257477883d671765ddd",
+            "neutralFootSpan": 52,
             "frameSha256": "df75f16896b9209874934ba1c4cb7ae9c3b548039e73c0773eb361874005083b",
             "rigHashMatches": true
           },
@@ -7479,6 +8284,7 @@
             "mirroredLowerStrideBandSha256": "69dc4009216f2524aa3f1ef317130c1f75fd91eb69c548317ea89cbd6edf91e6",
             "neutralFootBandSha256": "6d1f9ee67402af42235bed66b7f4c9b51907a20205da55416db32720f1fb1dac",
             "mirroredNeutralFootBandSha256": "4d5d60650d77ebd804eca0ecc15ad0ae8f3c73eda12379b8b53e91cd63d834ed",
+            "neutralFootSpan": 40,
             "frameSha256": "b07d211ef1bdb3c1826c9c6ae52fef7ec95c43fe9fe2210d035fd2301b0d9483",
             "rigHashMatches": true
           },
@@ -7512,6 +8318,7 @@
             "mirroredLowerStrideBandSha256": "63fb19c159c8ac51ad8876317aed3f7b1399e43cd52b473144439b8536f77c95",
             "neutralFootBandSha256": "e906daca15ad19f86314f01da8e13bee7b859049d6951257477883d671765ddd",
             "mirroredNeutralFootBandSha256": "07c50c549b3eafdfe9aee0ba08bdb5a09f3584278bb26aea49ba518e8c5e67a2",
+            "neutralFootSpan": 52,
             "frameSha256": "7cc3ebdf9b729c7d121f0b25288ca15fd6a5d8395036b9f6f80978d82c4303d3",
             "rigHashMatches": true
           }
@@ -7547,6 +8354,7 @@
             "mirroredLowerStrideBandSha256": "3d7a4acbee9be7de618e348b9c5fd4381a7a899dcef8a1676e306aee7c140cd9",
             "neutralFootBandSha256": "81e0bfbf749524185758e99f9fd7399de83a5d267c79d52dab17d2d98c11208b",
             "mirroredNeutralFootBandSha256": "dc783941f88a6d5cf7a555351dd2b5fe325543aad54aec3b5c37855484986129",
+            "neutralFootSpan": 117,
             "frameSha256": "816818c0252e3bf4072a3e0a056d52f7bd393cc30d874547ba8c5f2c7224e917",
             "rigHashMatches": true
           },
@@ -7580,6 +8388,7 @@
             "mirroredLowerStrideBandSha256": "c7c53edfa59295a5c04bff0ed9eeb78d55f57f46f486f04184d3d8e87030d4c8",
             "neutralFootBandSha256": "9e8d7ea6a30104470a7c593ffeb7fcac440a864779d8b6c734bbc0107b91a701",
             "mirroredNeutralFootBandSha256": "42223b3ee37542f7b42f490bc71d4e204091cc5c53efcc7350b56b11082645fb",
+            "neutralFootSpan": 45,
             "frameSha256": "1abcf0eba0b991d1950c3222d530cd1a3b66f1bc94b891cb90358de7f08cfba4",
             "rigHashMatches": true
           },
@@ -7613,6 +8422,7 @@
             "mirroredLowerStrideBandSha256": "470851cc3b4f92d315c2faafa4432e6c69b316e86c99365c192f695fbe3e38c8",
             "neutralFootBandSha256": "1df3f3940ef63b932745bc2a703089d1c16fbd2eef2f5c360c2a3183fa5577d1",
             "mirroredNeutralFootBandSha256": "0bd5bf1c787dfec0a2637ad3c7f04994b83df0abc1809998a4e5ff3031f8167f",
+            "neutralFootSpan": 130,
             "frameSha256": "c48a490a9fa154c6905de78fbe45dae67e767867e3a1ff5a95ee244d6284fafb",
             "rigHashMatches": true
           },
@@ -7646,6 +8456,7 @@
             "mirroredLowerStrideBandSha256": "d078644e46e52d7b4ddaec135a24b8996a54e6cb1a5f4a2b3148cae9d0d87d48",
             "neutralFootBandSha256": "42223b3ee37542f7b42f490bc71d4e204091cc5c53efcc7350b56b11082645fb",
             "mirroredNeutralFootBandSha256": "9e8d7ea6a30104470a7c593ffeb7fcac440a864779d8b6c734bbc0107b91a701",
+            "neutralFootSpan": 45,
             "frameSha256": "d8f9c2b529476334f10bb10a4b3d4a7377bb8002aa8ac4e4b426f5679097b5de",
             "rigHashMatches": true
           }
@@ -7681,6 +8492,7 @@
             "mirroredLowerStrideBandSha256": "2e12b49f7f197a9b349ae8a9b4ddcc4c1fda3a7e186300b6da561f3ba38c1b56",
             "neutralFootBandSha256": "905ccd3ac25288dbca01e44c436c366055cfdf2f1d2c26a408feb799e9e675eb",
             "mirroredNeutralFootBandSha256": "64b39b0c85a504cf8cd171e53bdc4dc5a27f0122e5a3f82ac7c3a21160384f6d",
+            "neutralFootSpan": 118,
             "frameSha256": "dd1cfa42b34f6f590e405c6c15456a923142d63f1f9e4f2b0b188ec118efdade",
             "rigHashMatches": true
           },
@@ -7714,6 +8526,7 @@
             "mirroredLowerStrideBandSha256": "d078644e46e52d7b4ddaec135a24b8996a54e6cb1a5f4a2b3148cae9d0d87d48",
             "neutralFootBandSha256": "42223b3ee37542f7b42f490bc71d4e204091cc5c53efcc7350b56b11082645fb",
             "mirroredNeutralFootBandSha256": "9e8d7ea6a30104470a7c593ffeb7fcac440a864779d8b6c734bbc0107b91a701",
+            "neutralFootSpan": 45,
             "frameSha256": "02598f3e84544cba90f9966bd36b8e8c439f28fa22370f8b6c8f2a82c1013745",
             "rigHashMatches": true
           },
@@ -7747,6 +8560,7 @@
             "mirroredLowerStrideBandSha256": "dfc27370df9913c8855d76709c4933b3b0a924a545eccd996e9d21e73b0f3c1a",
             "neutralFootBandSha256": "57493b5a84e479cdf42ec48e0dd828d3dd92eadc05e0cff9c1af6fac33212e28",
             "mirroredNeutralFootBandSha256": "fefa42b4e05d7048f55e2436eb9036e4ba84a2b0ed94b3629f2bf045db46da45",
+            "neutralFootSpan": 129,
             "frameSha256": "b11cd2b01aa69c488f857aac140d346eee8c959a75d39841321fb1ceeb23fb00",
             "rigHashMatches": true
           },
@@ -7780,6 +8594,7 @@
             "mirroredLowerStrideBandSha256": "c7c53edfa59295a5c04bff0ed9eeb78d55f57f46f486f04184d3d8e87030d4c8",
             "neutralFootBandSha256": "9e8d7ea6a30104470a7c593ffeb7fcac440a864779d8b6c734bbc0107b91a701",
             "mirroredNeutralFootBandSha256": "42223b3ee37542f7b42f490bc71d4e204091cc5c53efcc7350b56b11082645fb",
+            "neutralFootSpan": 45,
             "frameSha256": "0772103047de7f29d807949cc6a3073fe80d84090d14377dfdee7100cf1026f3",
             "rigHashMatches": true
           }
@@ -7815,6 +8630,7 @@
             "mirroredLowerStrideBandSha256": "93de4e747d772134f85fe27096886c57213d20a43b3157317dbb2a2a422957f9",
             "neutralFootBandSha256": "955473bfc4c9f123a6392907d83e42fd6b08a78f17be493d6fbe425348144e71",
             "mirroredNeutralFootBandSha256": "558c3cab7ed379fe235b51231b1821f80619f64e46416b9fc002e947d6d6a191",
+            "neutralFootSpan": 38,
             "frameSha256": "366203a5805201a88351966eb59970cb314591b791c06b7b3cd46643a6f57f6a",
             "rigHashMatches": true
           },
@@ -7848,6 +8664,7 @@
             "mirroredLowerStrideBandSha256": "d6464cca22790ea0ffe1b688bd99ce14dca21f12ee2a21255d8d55582d8bbb92",
             "neutralFootBandSha256": "05aa2e84c75577ce506cfa2fc4984dc3582b26b0da6c06c3a6df7a3248ba2b74",
             "mirroredNeutralFootBandSha256": "6507adf2ef9f0626e514691af8a8bd2b1d5454d693cde44bd44142500c0ea273",
+            "neutralFootSpan": 53,
             "frameSha256": "86d7c165a2be71b95263c8224dde83cd6e758e56691718d0dad12fffa056debc",
             "rigHashMatches": true
           },
@@ -7881,6 +8698,7 @@
             "mirroredLowerStrideBandSha256": "461f08db724b172bcec43e6c057c808086803a5b4313ce77ab3c6b7454742394",
             "neutralFootBandSha256": "3ab5236e88099fe32cf5c20eb46eda0625a82f7df5ac55ce89bf62807bc646ea",
             "mirroredNeutralFootBandSha256": "f482accf3e5f005b6d4d24b28f62ef61f4e05f42b261b4d1d91f2468444af561",
+            "neutralFootSpan": 36,
             "frameSha256": "cd25081181b4e0e1cf509d9b29afd42efeacb8c89ae5d538396b90e602f908c1",
             "rigHashMatches": true
           },
@@ -7914,6 +8732,7 @@
             "mirroredLowerStrideBandSha256": "10083d8144ec24be40c05602bbb4b04113463a31d80c6a25b4dcc275e48d1f1d",
             "neutralFootBandSha256": "6507adf2ef9f0626e514691af8a8bd2b1d5454d693cde44bd44142500c0ea273",
             "mirroredNeutralFootBandSha256": "05aa2e84c75577ce506cfa2fc4984dc3582b26b0da6c06c3a6df7a3248ba2b74",
+            "neutralFootSpan": 53,
             "frameSha256": "5846476501ad6049ad18a2c0e9a3a1fd8659f87ec5bdc14a84db619ec73b361c",
             "rigHashMatches": true
           }
