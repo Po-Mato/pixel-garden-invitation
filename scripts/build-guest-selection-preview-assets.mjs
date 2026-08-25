@@ -910,20 +910,6 @@ async function replaceUpperBandWithMirroredReference(target, reference, policy) 
   return sharp(output, { raw: info }).png({ compressionLevel: 9 }).toBuffer();
 }
 
-async function replaceLowerStrideWithMirroredReference(target, reference, policy) {
-  const [{ data: targetData, info }, { data: mirroredData }] = await Promise.all([
-    sharp(target).ensureAlpha().raw().toBuffer({ resolveWithObject: true }),
-    sharp(reference).flop().ensureAlpha().raw().toBuffer({ resolveWithObject: true })
-  ]);
-  const characterTop = policy.footBaseline - policy.contentHeight + 1;
-  const bodyHeight = policy.contentHeight - policy.headHeight;
-  const firstLegRow = characterTop + policy.headHeight + Math.round(bodyHeight * 0.62);
-  const output = Buffer.from(targetData);
-  const offset = firstLegRow * info.width * info.channels;
-  mirroredData.copy(output, offset, offset);
-  return sharp(output, { raw: info }).png({ compressionLevel: 9 }).toBuffer();
-}
-
 async function harmonizeProfileHeads(framesByDirection, policy) {
   for (let column = 0; column < framesByDirection.left.length; column += 1) {
     const left = framesByDirection.left[column];
@@ -1091,8 +1077,7 @@ async function mirroredLowerStrideBandSha256(input, policy) {
   return lowerStrideBandSha256(await sharp(input).flop().png().toBuffer(), policy);
 }
 
-async function lowerStrideDifference(first, second, policy) {
-  const top = lowerStrideBandTop(policy);
+async function frameDifferenceFromRow(first, second, top) {
   const [firstRaw, secondRaw] = await Promise.all([
     sharp(first).ensureAlpha().raw().toBuffer({ resolveWithObject: true }),
     sharp(second).ensureAlpha().raw().toBuffer({ resolveWithObject: true })
@@ -1125,6 +1110,18 @@ async function lowerStrideDifference(first, second, policy) {
     alpha: unionPixels === 0 ? 0 : alphaDifferencePixels / unionPixels,
     rgba: unionPixels === 0 ? 0 : rgbaDifference / (unionPixels * 4 * 255)
   };
+}
+
+async function lowerStrideDifference(first, second, policy) {
+  return frameDifferenceFromRow(first, second, lowerStrideBandTop(policy));
+}
+
+async function neutralFootDifference(first, second, policy) {
+  return frameDifferenceFromRow(first, second, neutralFootBandTop(policy));
+}
+
+async function fullFrameDifference(first, second) {
+  return frameDifferenceFromRow(first, second, 0);
 }
 
 function neutralFootBandTop(policy) {
@@ -1170,6 +1167,40 @@ async function neutralFootSpan(input, policy) {
 
 async function mirroredNeutralFootBandSha256(input, policy) {
   return neutralFootBandSha256(await sharp(input).flop().png().toBuffer(), policy);
+}
+
+async function alphaSilhouetteSha256(input) {
+  const { data, info } = await sharp(input)
+    .ensureAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  const silhouette = Buffer.alloc(info.width * info.height);
+  for (let pixel = 0; pixel < silhouette.length; pixel += 1) {
+    silhouette[pixel] = data[pixel * info.channels + 3] > 12 ? 1 : 0;
+  }
+  return createHash("sha256").update(silhouette).digest("hex");
+}
+
+async function rgbaRowsSha256(input, endRowExclusive) {
+  const { data, info } = await sharp(input)
+    .ensureAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  return createHash("sha256")
+    .update(data.subarray(0, endRowExclusive * info.width * info.channels))
+    .digest("hex");
+}
+
+function stabilizeNeutralPose(framesByDirection) {
+  for (const direction of directions) {
+    framesByDirection[direction][3] = framesByDirection[direction][1];
+  }
+}
+
+async function canonicalizeRightDirection(framesByDirection) {
+  framesByDirection.right = await Promise.all(
+    framesByDirection.left.map((frame) => sharp(frame).flop().png({ compressionLevel: 9 }).toBuffer())
+  );
 }
 
 function guest03ProportionBandBottom(policy) {
@@ -1449,6 +1480,8 @@ async function inspectFrame(input, policy, { direction, guest, rigFrame, sourceS
     neutralFootBandSha256: await neutralFootBandSha256(input, policy),
     mirroredNeutralFootBandSha256: await mirroredNeutralFootBandSha256(input, policy),
     neutralFootSpan: await neutralFootSpan(input, policy),
+    alphaSilhouetteSha256: await alphaSilhouetteSha256(input),
+    neutralUpperBodyBandSha256: await rgbaRowsSha256(input, neutralFootBandTop(policy)),
     frameSha256: checksum,
     rigHashMatches: !rigFrame.frameSha256 || rigFrame.frameSha256 === checksum
   };
@@ -1482,6 +1515,11 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
   const minimumGuest01OppositeFootRgbaDifference = 0.012;
   const minimumGuest03OppositeFootAlphaDifference = 0.02;
   const minimumGuest03OppositeFootRgbaDifference = 0.055;
+  const minimumGenericSideOppositeFootAlphaDifference = 0.1;
+  const minimumGenericSideOppositeFootRgbaDifference = 0.09;
+  const minimumGenericFrontBackOppositeFootAlphaDifference = 0.025;
+  const minimumGenericFrontBackOppositeFootRgbaDifference = 0.03;
+  const maximumCanonicalDirectionDifference = 0;
   const minimumSafeBodyToHeadRatio = 1.75;
   const maximumSafeBodyToHeadRatio = 2.25;
   const maximumSafeStepFaceWidthSpreadRatio = 0.16;
@@ -1547,6 +1585,33 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
         frameCount += 1;
       }
     }
+    const directionStepDifferences = [];
+    for (let column = 0; column < catalog.frame.walk.columns; column += 1) {
+      const mirroredRight = await sharp(frameBuffersByDirection.right[column])
+        .flop()
+        .png({ compressionLevel: 9 })
+        .toBuffer();
+      directionStepDifferences.push(await fullFrameDifference(
+        frameBuffersByDirection.left[column],
+        mirroredRight
+      ));
+    }
+    const maximumDirectionAlphaDifference = Math.max(
+      ...directionStepDifferences.map((difference) => difference.alpha)
+    );
+    const maximumDirectionRgbaDifference = Math.max(
+      ...directionStepDifferences.map((difference) => difference.rgba)
+    );
+    const directionConsistency = {
+      stepDifferences: directionStepDifferences,
+      maximumAlphaDifference: maximumDirectionAlphaDifference,
+      maximumRgbaDifference: maximumDirectionRgbaDifference,
+      required: preset.reference.walkSourceGuest !== "guest-01",
+      passed: preset.reference.walkSourceGuest === "guest-01" || (
+        maximumDirectionAlphaDifference <= maximumCanonicalDirectionDifference
+        && maximumDirectionRgbaDifference <= maximumCanonicalDirectionDifference
+      )
+    };
     const opticalFrames = Object.fromEntries(directions.map((direction) => {
       const seen = new Set();
       return [direction, directionMetrics[direction].filter((frame) => {
@@ -1655,27 +1720,53 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
           === oppositeNeutralStep.neutralFootBandSha256;
       const neutralPairDistinct =
         neutralStep.frameSha256 !== oppositeNeutralStep.frameSha256;
+      const neutralPairExact =
+        neutralStep.frameSha256 === oppositeNeutralStep.frameSha256;
       const guest01 = preset.reference.walkSourceGuest === "guest-01";
       const guest03 = preset.reference.walkSourceGuest === "guest-03";
       const neutralPairSameSilhouette =
-        neutralStep.neutralFootBandSha256 === oppositeNeutralStep.neutralFootBandSha256;
+        neutralStep.alphaSilhouetteSha256 === oppositeNeutralStep.alphaSilhouetteSha256;
+      const neutralProtectedBandTop = guest01
+        ? guest01UpperBodyBandBottom(policy) + 1
+        : guest03
+          ? guest03LegPhaseBandTop(policy)
+          : neutralFootBandTop(policy);
+      const neutralUpperBodyStable = await rgbaRowsSha256(
+        frameBuffersByDirection[direction][1],
+        neutralProtectedBandTop
+      ) === await rgbaRowsSha256(
+        frameBuffersByDirection[direction][3],
+        neutralProtectedBandTop
+      );
+      const neutralLoadTransferDifference = await neutralFootDifference(
+        frameBuffersByDirection[direction][1],
+        frameBuffersByDirection[direction][3],
+        policy
+      );
       const sideFootGeometryStable = !sideDirection
         || firstStep.lowerStrideBandSha256 === thirdStep.lowerStrideBandSha256;
-      const neutralPairPassed = guest01
-        ? neutralPairSameSilhouette && neutralPairDistinct
-        : guest03
-          ? guest03NeutralPoses && neutralPairDistinct
-          : neutralPairMirrored;
+      const neutralPairPassed = neutralPairSameSilhouette
+        && neutralUpperBodyStable
+        && (guest01 || guest03 ? neutralPairDistinct : neutralPairExact)
+        && (!guest03 || guest03NeutralPoses);
       const oppositeFootPassed = guest01
         ? oppositeFootDifference.rgba >= minimumGuest01OppositeFootRgbaDifference
           && (!sideDirection || (
             sideFootGeometryStable
             && oppositeFootDifference.alpha <= maximumGuest01SideOppositeFootAlphaDifference
           ))
-        : !guest03 || (
-          oppositeFootDifference.alpha >= minimumGuest03OppositeFootAlphaDifference
-          && oppositeFootDifference.rgba >= minimumGuest03OppositeFootRgbaDifference
-        );
+        : guest03
+          ? oppositeFootDifference.alpha >= minimumGuest03OppositeFootAlphaDifference
+            && oppositeFootDifference.rgba >= minimumGuest03OppositeFootRgbaDifference
+          : oppositeFootDifference.alpha >= (
+            sideDirection
+              ? minimumGenericSideOppositeFootAlphaDifference
+              : minimumGenericFrontBackOppositeFootAlphaDifference
+          ) && oppositeFootDifference.rgba >= (
+            sideDirection
+              ? minimumGenericSideOppositeFootRgbaDifference
+              : minimumGenericFrontBackOppositeFootRgbaDifference
+          );
       directionMotion[direction] = {
           firstStepWidth: firstStep.characterWidth,
           neutralStepWidth: neutralStep.characterWidth,
@@ -1706,7 +1797,11 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
           ],
           neutralPairMirrored,
           neutralPairSameSilhouette,
+          neutralUpperBodyStable,
+          neutralProtectedBandTop,
           neutralPairDistinct,
+          neutralPairExact,
+          neutralLoadTransferDifference,
           neutralPairPassed,
           sideFootGeometryStable,
           oppositeFootDifference,
@@ -1807,6 +1902,7 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
         fourStepGaitPassed: Object.values(directionMotion)
           .every((direction) => direction.neutralPairPassed && direction.oppositeFootPassed)
       },
+      directionConsistency,
       accessoryStability,
       ...(proportionStability ? { proportionStability } : {}),
       directions: directionMetrics
@@ -1924,6 +2020,9 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
   const proportionFailures = presets.filter((preset) => (
     preset.guest === "guest-03" && !preset.proportionStability?.passed
   ));
+  const directionConsistencyFailures = presets.filter((preset) => (
+    preset.directionConsistency.required && !preset.directionConsistency.passed
+  ));
   const headWidths = frames.map((frame) => frame.headWidth);
   const headHeights = frames.map((frame) => frame.measuredHeadHeight);
   const directionHeadHeightSpreads = presets.map((preset) => {
@@ -1942,7 +2041,7 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
     (frame) => frame.sourceDetectionMethod === safeUnifiedDetectionMethod
   ).length;
   const report = {
-    version: 13,
+    version: 14,
     policy: {
       source: policy.source,
       contentHeight: policy.contentHeight,
@@ -1972,6 +2071,11 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
       minimumGuest01OppositeFootRgbaDifference,
       minimumGuest03OppositeFootAlphaDifference,
       minimumGuest03OppositeFootRgbaDifference,
+      minimumGenericSideOppositeFootAlphaDifference,
+      minimumGenericSideOppositeFootRgbaDifference,
+      minimumGenericFrontBackOppositeFootAlphaDifference,
+      minimumGenericFrontBackOppositeFootRgbaDifference,
+      maximumCanonicalDirectionDifference,
       minimumSafeBodyToHeadRatio,
       maximumSafeBodyToHeadRatio,
       maximumSafeStepFaceWidthSpreadRatio,
@@ -1990,7 +2094,11 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
       opticalLandmarkRule: "median visible face center and chin anchors by visible direction",
       motionRule: "symmetric first and third steps, matched side stride, stable center and baseline",
       fourStepGaitRule:
-        "frames 1 and 3 visibly alternate feet; frames 2 and 4 are distinct neutral load-transfer poses",
+        "frames 1 and 3 visibly alternate feet; generic frames 2 and 4 repeat one intact neutral pose without cutting the outfit",
+      directionConsistencyRule:
+        "guest 02 through 12 right-facing frames are exact final-pixel mirrors of left-facing frames",
+      neutralIntegrityRule:
+        "generic neutral frame 4 exactly repeats frame 2; guest 01 and 03 preserve the complete silhouette and protected upper outfit",
       guest01OpticalHeadCompensation,
       guest03OpticalHeadCompensation,
       guest03MaximumHeadWidthDelta,
@@ -2068,6 +2176,15 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
       ),
       motionWithinTolerance: motionFailures.length === 0,
       fourStepGaitPassed: presets.every((preset) => preset.motion.fourStepGaitPassed),
+      directionConsistencyPassed: directionConsistencyFailures.length === 0,
+      maximumCanonicalDirectionAlphaDifference: Math.max(
+        ...presets.filter((preset) => preset.directionConsistency.required)
+          .map((preset) => preset.directionConsistency.maximumAlphaDifference)
+      ),
+      maximumCanonicalDirectionRgbaDifference: Math.max(
+        ...presets.filter((preset) => preset.directionConsistency.required)
+          .map((preset) => preset.directionConsistency.maximumRgbaDifference)
+      ),
       guest01AccessoryStable: accessoryFailures.length === 0,
       passed: rigFailures.length === 0
         && opticalHeadFailures.length === 0
@@ -2076,6 +2193,7 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
         && motionFailures.length === 0
         && accessoryFailures.length === 0
         && proportionFailures.length === 0
+        && directionConsistencyFailures.length === 0
     },
     presets
   };
@@ -2115,6 +2233,12 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
         + `baseline=${preset.motion.maximumStepBaselineSpread}`
       )
       .join("; ");
+    const directionConsistencyDetails = directionConsistencyFailures
+      .map((preset) =>
+        `${preset.guest}: alpha=${preset.directionConsistency.maximumAlphaDifference.toFixed(6)}, `
+        + `rgba=${preset.directionConsistency.maximumRgbaDifference.toFixed(6)}`
+      )
+      .join("; ");
     throw new Error(
       `선택 화면 3등신·얼굴·보행 감사 실패: ${rigFailures.length}개 프레임, `
       + `${opticalHeadFailures.length}명 머리 실루엣, `
@@ -2122,11 +2246,13 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
       + `${opticalLandmarkFailures.length}명 얼굴 기준선, `
       + `${motionFailures.length}명 보행, `
       + `${accessoryFailures.length}명 가방 고정, `
-      + `${proportionFailures.length}명 머리 고정 (${rigDetails || "리그 통과"}; `
+      + `${proportionFailures.length}명 머리 고정, `
+      + `${directionConsistencyFailures.length}명 좌우 방향 (${rigDetails || "리그 통과"}; `
       + `${opticalHeadDetails || "머리 실루엣 통과"}; `
       + `${opticalFaceDetails || "얼굴 폭 통과"}; `
       + `${opticalLandmarkDetails || "얼굴 기준선 통과"}; `
       + `${motionDetails || "보행 통과"}; `
+      + `${directionConsistencyDetails || "좌우 방향 통과"}; `
       + `${accessoryFailures.length === 0 ? "가방 고정 통과" : "guest-01 가방 고정 실패"})`
     );
   }
@@ -2209,7 +2335,7 @@ export async function auditGuestSelectionPreviewAssets({
   const storedReport = JSON.parse(
     await readFile(path.join(outputRoot, "selection-preview-audit.json"), "utf8")
   );
-  if (storedReport.version !== 13) {
+  if (storedReport.version !== 14) {
     throw new Error("방향별 얼굴 폭·면적·실게임 보행 중심 기반 3등신 감사 보고서를 다시 생성해야 합니다.");
   }
   const sourceRig = Object.fromEntries(storedReport.presets.map((preset) => [
@@ -2430,13 +2556,6 @@ export async function buildGuestSelectionPreviewAssets({
         sourceRig[preset.id].directions[direction].push({
           ...sourceRig[preset.id].directions[direction][1]
         });
-        if (guest !== "guest-01" && guest !== "guest-03") {
-          framesByDirection[direction][3] = await replaceLowerStrideWithMirroredReference(
-            framesByDirection[direction][3],
-            framesByDirection[direction][1],
-            policy
-          );
-        }
       }
     }
     if (usesFaceSafeRig(sourceSet)) {
@@ -2458,6 +2577,11 @@ export async function buildGuestSelectionPreviewAssets({
     } else if (guest === "guest-03") {
       await lockGuest03HeadBand(framesByDirection, policy);
       await emphasizeGuest03LegPhases(framesByDirection, policy);
+    } else {
+      stabilizeNeutralPose(framesByDirection);
+    }
+    if (guest !== "guest-01") {
+      await canonicalizeRightDirection(framesByDirection);
     }
     for (const direction of directions) {
       for (let column = 0; column < catalog.frame.walk.columns; column += 1) {

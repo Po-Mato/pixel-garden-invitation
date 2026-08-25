@@ -29,7 +29,7 @@ function opaqueSpanInRows(data, info, firstRow) {
 test("선택 화면의 12명 192프레임은 2배 해상도와 동일한 3등신 기준을 지킨다", async () => {
   const report = await auditGuestSelectionPreviewAssets({ catalog });
 
-  assert.equal(report.version, 13);
+  assert.equal(report.version, 14);
   assert.deepEqual(report.policy.source, { width: 192, height: 288 });
   assert.equal(report.summary.presetCount, 12);
   assert.equal(report.summary.frameCount, 192);
@@ -61,6 +61,9 @@ test("선택 화면의 12명 192프레임은 2배 해상도와 동일한 3등신
   );
   assert.equal(report.summary.motionWithinTolerance, true);
   assert.equal(report.summary.fourStepGaitPassed, true);
+  assert.equal(report.summary.directionConsistencyPassed, true);
+  assert.equal(report.summary.maximumCanonicalDirectionAlphaDifference, 0);
+  assert.equal(report.summary.maximumCanonicalDirectionRgbaDifference, 0);
   assert.ok(
     report.summary.maximumRuntimeCoreCenterDriftDisplayPx
       <= report.runtimeMotion.policy.maximumCoreCenterDriftDisplayPx
@@ -129,6 +132,18 @@ test("얼굴 보존 리그의 정면·측면 머리와 좌우 얼굴은 안전 �
         <= report.policy.maximumSafeLeftRightFaceWidthDifferenceRatio,
       `${preset.guest} 좌우 얼굴 폭은 같은 비율이어야 합니다.`
     );
+  }
+});
+
+test("2번부터 12번까지 최종 좌·우 4컷은 픽셀 단위의 정확한 반전이다", async () => {
+  const report = await auditGuestSelectionPreviewAssets({ catalog });
+
+  for (const preset of report.presets.filter((item) => item.guest !== "guest-01")) {
+    assert.equal(preset.directionConsistency.required, true);
+    assert.equal(preset.directionConsistency.passed, true, `${preset.guest} 좌우 방향 일치`);
+    assert.equal(preset.directionConsistency.stepDifferences.length, 4);
+    assert.equal(preset.directionConsistency.maximumAlphaDifference, 0);
+    assert.equal(preset.directionConsistency.maximumRgbaDifference, 0);
   }
 });
 
@@ -412,8 +427,31 @@ test("통일 광학 리그 보행 리듬과 최종 프레임 중심·발 기준�
       `${preset.guest} 보행 중 발 기준선이 흔들리면 안 됩니다.`
     );
     assert.equal(preset.motion.fourStepGaitPassed, true);
-    for (const direction of Object.values(preset.motion.directions)) {
+    for (const [directionName, direction] of Object.entries(preset.motion.directions)) {
       assert.equal(direction.neutralPairPassed, true);
+      assert.equal(
+        direction.neutralPairSameSilhouette,
+        true,
+        `${preset.guest} ${directionName} 2·4컷 전체 실루엣 고정`
+      );
+      assert.equal(
+        direction.neutralUpperBodyStable,
+        true,
+        `${preset.guest} ${directionName} 2·4컷 상체·의상 고정`
+      );
+      if (preset.guest === "guest-01" || preset.guest === "guest-03") {
+        assert.equal(
+          direction.neutralPairDistinct,
+          true,
+          `${preset.guest} ${directionName} 특수 중립 하중 교대`
+        );
+      } else {
+        assert.equal(
+          direction.neutralPairExact,
+          true,
+          `${preset.guest} ${directionName} 2·4컷 완전 동일 중립 자세`
+        );
+      }
       assert.equal(direction.oppositeFootPassed, true);
     }
   }
