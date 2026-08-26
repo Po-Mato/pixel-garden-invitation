@@ -44,16 +44,16 @@
       "sourceSha256": "9fb1eb452bd07bfa4fdbda32fbb225d47aae33f7d24b227df50f403f99ac0f5a"
     },
     "masculine-charcoal-blazer": {
-      "centerX": 48.5,
+      "centerX": 48,
       "centerY": 70,
       "feetY": 133,
       "bounds": {
-        "left": 25,
+        "left": 24,
         "top": 7,
-        "width": 47,
+        "width": 48,
         "height": 126
       },
-      "sourceSha256": "83880796ceea9fbb776b58c526b97675c69fa4fced93af35fb72852983a2bec1"
+      "sourceSha256": "2515523a7f8b2c7b89c1860ec0c662b6748d3976a55855dc434575309e3eec7a"
     },
     "feminine-sage-bolero-dress": {
       "centerX": 48,
@@ -68,54 +68,42 @@
       "sourceSha256": "eda4e30f2996728ce0cf733e9e9a13dbd57dd91310a67acdb3234d30c82301de"
     },
     "feminine-champagne-navy-skirt": {
-      "centerX": 48,
+      "centerX": 48.5,
       "centerY": 70,
       "feetY": 133,
       "bounds": {
         "left": 19,
         "top": 7,
-        "width": 58,
+        "width": 59,
         "height": 126
       },
-      "sourceSha256": "a07083745681c8b3ad756b5d2b5b41702a52139dbf44b26bd8eca477a9a1d630"
+      "sourceSha256": "410214f97eb28bc300efdd0c0ce7dda37138dd87151a9745d02b7cc3034e508d"
     },
     "feminine-lavender-jacket-dress": {
       "centerX": 48.5,
       "centerY": 70,
       "feetY": 133,
       "bounds": {
-        "left": 29,
+        "left": 23,
         "top": 7,
-        "width": 39,
+        "width": 51,
         "height": 126
       },
-      "sourceSha256": "38233f5c93eb4520c6849f7be0106539425c72a6315ba25b409636b8756adc6c"
+      "sourceSha256": "02c8e58aa6f62a800a29493bb9d0eb28eca515a98d9bb31db3ab001d8959efa5"
     },
     "feminine-teal-modern-hanbok": {
-      "centerX": 48,
+      "centerX": 48.5,
       "centerY": 70,
       "feetY": 133,
       "bounds": {
         "left": 20,
         "top": 7,
-        "width": 56,
+        "width": 57,
         "height": 126
       },
-      "sourceSha256": "663de21f6e4c1f5d0a7f8398637bf1abef8c77af819637a3c1ef3c563f5fb399"
+      "sourceSha256": "9977d20441ad6a127f8cfe7690099943f90e8d264336ba3721815ab9f5adb276"
     },
     "masculine-beige-summer-suit": {
-      "centerX": 48.5,
-      "centerY": 70,
-      "feetY": 133,
-      "bounds": {
-        "left": 25,
-        "top": 7,
-        "width": 47,
-        "height": 126
-      },
-      "sourceSha256": "af247555f40e5cbe0ec0b08bf77d5a2077f84e7234621b251bcc7267f0d4da37"
-    },
-    "masculine-charcoal-burgundy-tie": {
       "centerX": 48,
       "centerY": 70,
       "feetY": 133,
@@ -125,31 +113,43 @@
         "width": 48,
         "height": 126
       },
-      "sourceSha256": "6273eeadce30e32c7b962e017c9fc548a78a982a6c0f6481e3c41f47360dfb67"
+      "sourceSha256": "3d2ae17722360ee7b2d0c2f182231c98085be92eba7abff45f662d1f02a4a556"
     },
-    "masculine-green-blazer-cream-pants": {
+    "masculine-charcoal-burgundy-tie": {
       "centerX": 48.5,
       "centerY": 70,
       "feetY": 133,
       "bounds": {
-        "left": 27,
+        "left": 24,
         "top": 7,
-        "width": 43,
+        "width": 49,
         "height": 126
       },
-      "sourceSha256": "579c057ea7958b166bda57b43ef9faafebb7a0f350639f5f00b5a9537ac9e4a1"
+      "sourceSha256": "a2d3dbfe5b0e42f8874f1917862df2c0286b6b30a9402debe7af2743475472e6"
     },
-    "masculine-blue-modern-hanbok": {
-      "centerX": 48.5,
+    "masculine-green-blazer-cream-pants": {
+      "centerX": 48,
       "centerY": 70,
       "feetY": 133,
       "bounds": {
         "left": 26,
         "top": 7,
-        "width": 45,
+        "width": 44,
         "height": 126
       },
-      "sourceSha256": "20c4c6de0f4962125a15c8732e5b1627d18f6a4f2be79c1bf901e04be999278b"
+      "sourceSha256": "4df3c3be3d567082f6cc21846c26a4b7d335cbc8f259e5f9e38103fc45ce1161"
+    },
+    "masculine-blue-modern-hanbok": {
+      "centerX": 48,
+      "centerY": 70,
+      "feetY": 133,
+      "bounds": {
+        "left": 25,
+        "top": 7,
+        "width": 46,
+        "height": 126
+      },
+      "sourceSha256": "8aacd703342e5dc7c3ebebf60f4a9d530679043c57d9165eb6894235497a6f2c"
     }
   }
 }
