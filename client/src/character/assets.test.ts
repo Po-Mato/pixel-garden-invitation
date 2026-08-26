@@ -62,10 +62,10 @@ it("통일 광학 리그 에셋은 기존 서비스 워커 캐시와 다른 URL�
   )[0];
 
   expect(layer.walkUrl).toBe(
-    "./characters/generated/guests/preview/feminine-champagne-navy-skirt__walk.png?v=guest02-12-neutral-integrity-v18"
+    "./characters/generated/guests/preview/feminine-champagne-navy-skirt__walk.png?v=guest04-12-optical-direction-rig-v19"
   );
   expect(layer.idleUrl).toBe(
-    "./characters/generated/guests/preview/feminine-champagne-navy-skirt__idle.png?v=guest02-12-neutral-integrity-v18"
+    "./characters/generated/guests/preview/feminine-champagne-navy-skirt__idle.png?v=guest04-12-optical-direction-rig-v19"
   );
 });
 

@@ -29,7 +29,7 @@ function opaqueSpanInRows(data, info, firstRow) {
 test("선택 화면의 12명 192프레임은 2배 해상도와 동일한 3등신 기준을 지킨다", async () => {
   const report = await auditGuestSelectionPreviewAssets({ catalog });
 
-  assert.equal(report.version, 14);
+  assert.equal(report.version, 15);
   assert.deepEqual(report.policy.source, { width: 192, height: 288 });
   assert.equal(report.summary.presetCount, 12);
   assert.equal(report.summary.frameCount, 192);
@@ -70,6 +70,42 @@ test("선택 화면의 12명 192프레임은 2배 해상도와 동일한 3등신
   );
   assert.equal(report.summary.runtimeMotionWithinTolerance, true);
   assert.equal(report.summary.passed, true);
+});
+
+test("4·6·7·8·9·10·11·12번은 실제 턱선 84px과 보행 방향을 16컷 모두 고정한다", async () => {
+  const report = await auditGuestSelectionPreviewAssets({ catalog });
+  const strictGuests = new Set([
+    "guest-04",
+    "guest-06",
+    "guest-07",
+    "guest-08",
+    "guest-09",
+    "guest-10",
+    "guest-11",
+    "guest-12"
+  ]);
+
+  assert.equal(report.summary.directionFacingPassed, true);
+  for (const preset of report.presets.filter((entry) => strictGuests.has(entry.guest))) {
+    const frames = Object.values(preset.directions).flat();
+    assert.equal(
+      frames.every((frame) => frame.measuredHeadHeight === report.policy.headHeight),
+      true,
+      `${preset.guest} 16컷의 실제 턱선 머리 높이는 모두 84px이어야 합니다.`
+    );
+    assert.equal(preset.proportionStability.passed, true);
+    assert.equal(preset.directionFacing.passed, true);
+    assert.equal(
+      preset.directions.left.every((frame) => frame.profileFacingOffset < -4),
+      true,
+      `${preset.guest} 좌향 4컷은 모두 왼쪽을 보아야 합니다.`
+    );
+    assert.equal(
+      preset.directions.right.every((frame) => frame.profileFacingOffset > 4),
+      true,
+      `${preset.guest} 우향 4컷은 모두 오른쪽을 보아야 합니다.`
+    );
+  }
 });
 
 test("각 캐릭터의 상하좌우 보행 4컷은 하나의 고정 리그에 고정된다", async () => {
