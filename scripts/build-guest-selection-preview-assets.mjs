@@ -71,9 +71,14 @@ const strictVisualRigGuests = new Set([
   "guest-11",
   "guest-12"
 ]);
+const shoulderRedrawGuests = new Set([
+  "guest-03",
+  ...strictVisualRigGuests
+]);
 const correctedProfileGaitGuests = new Set([
   "guest-04",
   "guest-09",
+  "guest-10",
   "guest-11",
   "guest-12"
 ]);
@@ -734,6 +739,37 @@ async function normalizeFaceSafeThreeHeadRig(input, policy, sourceHeadHeight) {
   ]);
 }
 
+async function normalizeFreshShoulderFrameGeometry(input, policy, guest, direction) {
+  const targetTop = policy.footBaseline - policy.contentHeight + 1;
+  let current = input;
+  for (let iteration = 0; iteration < 4; iteration += 1) {
+    const bounds = await alphaBounds(current);
+    const measuredHeadHeight = strictVisualRigGuests.has(guest) && direction !== "up"
+      ? (await detectOpticalHeadLandmark(current, policy)).headHeight
+      : policy.headHeight;
+    const geometryMatches = bounds.top === targetTop
+      && bounds.bottom === policy.footBaseline
+      && bounds.height === policy.contentHeight
+      && measuredHeadHeight === policy.headHeight;
+    if (geometryMatches) return current;
+    current = await normalizeFaceSafeThreeHeadRig(
+      current,
+      policy,
+      measuredHeadHeight
+    );
+    if (guest === "guest-03") {
+      current = await normalizeHeadWidth(
+        current,
+        policy,
+        guest03HeadWidthsByDirection[direction],
+        0,
+        6
+      );
+    }
+  }
+  return current;
+}
+
 async function normalizeVerticalRig(input, policy, sourceHeadHeight) {
   const bounds = await alphaBounds(input);
   const sourceBodyHeight = bounds.height - sourceHeadHeight;
@@ -952,7 +988,8 @@ async function inspectRuntimeMotion({ catalog, runtimeOutputRoot }) {
     const directionMetrics = {};
     for (let row = 0; row < directions.length; row += 1) {
       const centers = [];
-      const proportionHashes = [];
+      const proportionGeometry = [];
+      const shoulderBandHashes = [];
       for (let column = 0; column < catalog.frame.walk.columns; column += 1) {
         const frame = await sharp(walkPath)
           .extract({
@@ -964,25 +1001,51 @@ async function inspectRuntimeMotion({ catalog, runtimeOutputRoot }) {
           .png()
           .toBuffer();
         centers.push(await runtimeCoreCenterX(frame, runtimePolicy));
-        if (preset.reference.walkSourceGuest === "guest-03") {
-          proportionHashes.push(await headBandSha256(frame, runtimePolicy));
+        if (shoulderRedrawGuests.has(preset.reference.walkSourceGuest)) {
+          const bounds = await alphaBounds(frame);
+          proportionGeometry.push({
+            top: bounds.top,
+            bottom: bounds.bottom,
+            height: bounds.height
+          });
+          shoulderBandHashes.push(await shoulderBandSha256(frame, runtimePolicy));
         }
       }
+      const proportionStable = proportionGeometry.length === 0 || (
+        new Set(proportionGeometry.map((item) => item.top)).size === 1
+        && new Set(proportionGeometry.map((item) => item.bottom)).size === 1
+        && new Set(proportionGeometry.map((item) => item.height)).size === 1
+      );
+      const shoulderFramesIndependent = shoulderBandHashes.length === 0 || (
+        shoulderBandHashes[0] !== shoulderBandHashes[1]
+        && shoulderBandHashes[2] !== shoulderBandHashes[1]
+        && shoulderBandHashes[0] !== shoulderBandHashes[2]
+        && shoulderBandHashes[1] === shoulderBandHashes[3]
+      );
       directionMetrics[directions[row]] = {
         coreCenters: centers,
         maximumCoreCenterDriftDisplayPx: Math.max(
           ...centers.map((center) => Math.abs(center - centers[1]))
         ) * displayScale,
-        ...(proportionHashes.length > 0
+        ...(proportionGeometry.length > 0
           ? {
-              proportionHashes,
-              proportionStable: new Set(proportionHashes).size === 1
+              proportionGeometry,
+              proportionStable,
+              shoulderBandHashes,
+              shoulderFramesIndependent
             }
           : {})
       };
     }
-    const proportionStable = preset.reference.walkSourceGuest === "guest-03"
+    const proportionStable = shoulderRedrawGuests.has(preset.reference.walkSourceGuest)
       ? Object.values(directionMetrics).every((direction) => direction.proportionStable)
+      : null;
+    const shoulderFramesIndependent = shoulderRedrawGuests.has(
+      preset.reference.walkSourceGuest
+    )
+      ? Object.values(directionMetrics).every((direction) =>
+          direction.shoulderFramesIndependent
+        )
       : null;
     presets.push({
       id: preset.id,
@@ -993,14 +1056,20 @@ async function inspectRuntimeMotion({ catalog, runtimeOutputRoot }) {
           direction.maximumCoreCenterDriftDisplayPx
         )
       ),
-      ...(proportionStable === null ? {} : { proportionStable })
+      ...(proportionStable === null
+        ? {}
+        : { proportionStable, shoulderFramesIndependent })
     });
   }
   const maximumMeasuredCoreCenterDriftDisplayPx = Math.max(
     ...presets.map((preset) => preset.maximumCoreCenterDriftDisplayPx)
   );
-  const guest03Preset = presets.find((preset) => preset.guest === "guest-03");
-  const guest03ProportionStable = !guest03Preset || guest03Preset.proportionStable === true;
+  const shoulderRedrawPresets = presets.filter((preset) =>
+    shoulderRedrawGuests.has(preset.guest)
+  );
+  const shoulderRedrawPassed = shoulderRedrawPresets.every((preset) =>
+    preset.proportionStable && preset.shoulderFramesIndependent
+  );
   return {
     policy: {
       maximumCoreCenterDriftDisplayPx,
@@ -1009,9 +1078,11 @@ async function inspectRuntimeMotion({ catalog, runtimeOutputRoot }) {
     },
     summary: {
       maximumMeasuredCoreCenterDriftDisplayPx,
-      guest03ProportionStable,
+      guest03ProportionStable: presets.find((preset) => preset.guest === "guest-03")
+        ?.proportionStable === true,
+      shoulderRedrawPassed,
       passed: maximumMeasuredCoreCenterDriftDisplayPx <= maximumCoreCenterDriftDisplayPx
-        && guest03ProportionStable
+        && shoulderRedrawPassed
     },
     presets
   };
@@ -1494,32 +1565,24 @@ async function headBandSha256(input, policy) {
     .digest("hex");
 }
 
-async function lockGuest03HeadBand(framesByDirection, policy) {
-  for (const direction of directions) {
-    framesByDirection[direction] = await lockProportionBandAcrossFrames(
-      framesByDirection[direction],
-      policy
-    );
-  }
+function shoulderRedrawBandBottom(policy) {
+  const characterTop = policy.footBaseline - policy.contentHeight + 1;
+  const bodyHeight = policy.contentHeight - policy.headHeight;
+  return Math.min(
+    policy.source.height - 1,
+    characterTop + policy.headHeight + Math.round(bodyHeight * 0.32) - 1
+  );
 }
 
-async function lockProportionBandAcrossFrames(frames, policy) {
-  const headBandBottom = guest03ProportionBandBottom(policy);
-  const { data: referenceData, info } = await sharp(frames[1])
+async function shoulderBandSha256(input, policy) {
+  const bottom = shoulderRedrawBandBottom(policy);
+  const { data, info } = await sharp(input)
     .ensureAlpha()
     .raw()
     .toBuffer({ resolveWithObject: true });
-  const byteLength = (headBandBottom + 1) * info.width * info.channels;
-  return Promise.all(frames.map(async (frame) => {
-    const { data: targetData } = await sharp(frame)
-      .ensureAlpha()
-      .raw()
-      .toBuffer({ resolveWithObject: true });
-    referenceData.copy(targetData, 0, 0, byteLength);
-    return sharp(targetData, { raw: info })
-      .png({ compressionLevel: 9 })
-      .toBuffer();
-  }));
+  return createHash("sha256")
+    .update(data.subarray(0, (bottom + 1) * info.width * info.channels))
+    .digest("hex");
 }
 
 async function lockGuest01UpperBodyAndBag(framesByDirection, policy) {
@@ -1616,6 +1679,10 @@ async function inspectFrame(input, policy, { direction, guest, rigFrame, sourceS
   const opticalHeadLandmark = strictVisualRigGuests.has(guest) && direction !== "up"
     ? await detectOpticalHeadLandmark(input, policy)
     : null;
+  const profileFacingLandmark = shoulderRedrawGuests.has(guest)
+    && (direction === "left" || direction === "right")
+    ? opticalHeadLandmark ?? await detectOpticalHeadLandmark(input, policy)
+    : opticalHeadLandmark;
   const landmark = direction === "up"
     ? null
     : await detectFaceLandmark(input, policy, {
@@ -1660,11 +1727,11 @@ async function inspectFrame(input, policy, { direction, guest, rigFrame, sourceS
       ? (landmark.faceBottom - bounds.top) / policy.headHeight
       : null,
     opticalChinRow: opticalHeadLandmark?.chinRow ?? null,
-    profileFacingOffset: opticalHeadLandmark?.profileFacingOffset ?? null,
+    profileFacingOffset: profileFacingLandmark?.profileFacingOffset ?? null,
     profileFacingPassed: direction === "left"
-      ? opticalHeadLandmark?.profileFacingOffset < -4
+      ? profileFacingLandmark?.profileFacingOffset < -4
       : direction === "right"
-        ? opticalHeadLandmark?.profileFacingOffset > 4
+        ? profileFacingLandmark?.profileFacingOffset > 4
         : true,
     sourceHeadHeight: rigFrame.sourceHeadHeight,
     sourceMeasuredHeadHeight: rigFrame.sourceMeasuredHeadHeight,
@@ -1678,8 +1745,11 @@ async function inspectFrame(input, policy, { direction, guest, rigFrame, sourceS
           upperBodyBandSha256: await upperBodyBandSha256(input, policy)
         }
       : {}),
-    ...(guest === "guest-03" || strictVisualRigGuests.has(guest)
-      ? { headBandSha256: await headBandSha256(input, policy) }
+    ...(shoulderRedrawGuests.has(guest)
+      ? {
+          headBandSha256: await headBandSha256(input, policy),
+          shoulderBandSha256: await shoulderBandSha256(input, policy)
+        }
       : {}),
     sourceDetectionMethod: rigFrame.sourceDetectionMethod,
     sourceFaceBottom: rigFrame.sourceFaceBottom,
@@ -2031,15 +2101,46 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
           }))
         }
       : null;
-    const proportionStability = preset.reference.walkSourceGuest === "guest-03"
-        || strictVisualRigGuests.has(preset.reference.walkSourceGuest)
+    const proportionStability = shoulderRedrawGuests.has(
+      preset.reference.walkSourceGuest
+    )
       ? {
           bandBottom: guest03ProportionBandBottom(policy),
           directions: Object.fromEntries(directions.map((direction) => {
-            const hashes = directionMetrics[direction].map((frame) => frame.headBandSha256);
+            const frames = directionMetrics[direction];
+            const headHeights = frames.map((frame) => frame.measuredHeadHeight);
+            const bodyHeights = frames.map((frame) => frame.measuredBodyHeight);
+            const characterHeights = frames.map((frame) => frame.characterHeight);
+            const tops = frames.map((frame) => frame.top);
+            const bottoms = frames.map((frame) => frame.bottom);
+            return [direction, {
+              headHeights,
+              bodyHeights,
+              characterHeights,
+              tops,
+              bottoms,
+              stable: new Set(headHeights).size === 1
+                && new Set(bodyHeights).size === 1
+                && new Set(characterHeights).size === 1
+                && new Set(tops).size === 1
+                && new Set(bottoms).size === 1
+            }];
+          }))
+        }
+      : null;
+    const shoulderRedraw = shoulderRedrawGuests.has(preset.reference.walkSourceGuest)
+      ? {
+          bandBottom: shoulderRedrawBandBottom(policy),
+          directions: Object.fromEntries(directions.map((direction) => {
+            const hashes = directionMetrics[direction].map(
+              (frame) => frame.shoulderBandSha256
+            );
             return [direction, {
               hashes,
-              stable: new Set(hashes).size === 1
+              firstPassDistinct: hashes[0] !== hashes[1],
+              oppositePassDistinct: hashes[2] !== hashes[1],
+              oppositePassesDistinct: hashes[0] !== hashes[2],
+              neutralPairExact: hashes[1] === hashes[3]
             }];
           }))
         }
@@ -2052,8 +2153,17 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
       proportionStability.passed = Object.values(proportionStability.directions)
         .every((direction) => direction.stable);
     }
+    if (shoulderRedraw) {
+      shoulderRedraw.passed = Object.values(shoulderRedraw.directions)
+        .every((direction) => (
+          direction.firstPassDistinct
+          && direction.oppositePassDistinct
+          && direction.oppositePassesDistinct
+          && direction.neutralPairExact
+        ));
+    }
     const directionFacing = {
-      required: strictVisualRigGuests.has(preset.reference.walkSourceGuest),
+      required: shoulderRedrawGuests.has(preset.reference.walkSourceGuest),
       directions: {
         left: directionMetrics.left.map((frame) => frame.profileFacingOffset),
         right: directionMetrics.right.map((frame) => frame.profileFacingOffset)
@@ -2127,6 +2237,7 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
       directionFacing,
       accessoryStability,
       ...(proportionStability ? { proportionStability } : {}),
+      ...(shoulderRedraw ? { shoulderRedraw } : {}),
       directions: directionMetrics
     });
   }
@@ -2248,6 +2359,9 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
   const proportionFailures = presets.filter((preset) => (
     preset.proportionStability && !preset.proportionStability.passed
   ));
+  const shoulderRedrawFailures = presets.filter((preset) => (
+    preset.shoulderRedraw && !preset.shoulderRedraw.passed
+  ));
   const directionConsistencyFailures = presets.filter((preset) => (
     preset.directionConsistency.required && !preset.directionConsistency.passed
   ));
@@ -2272,7 +2386,7 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
     (frame) => frame.sourceDetectionMethod === safeUnifiedDetectionMethod
   ).length;
   const report = {
-    version: 15,
+    version: 16,
     policy: {
       source: policy.source,
       contentHeight: policy.contentHeight,
@@ -2320,6 +2434,7 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
       maximumSafeLeftRightHeadWidthDifferenceRatio,
       maximumSafeLeftRightFaceWidthDifferenceRatio,
       strictVisualRigGuests: [...strictVisualRigGuests],
+      shoulderRedrawGuests: [...shoulderRedrawGuests],
       faceLandmarkRule: "alpha top to detected chin skin boundary",
       strictOpticalHeadRule:
         "target guests use the face-width drop before the neck as an independently measured 84px optical head",
@@ -2346,7 +2461,9 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
       guest01FootGeometryRule:
         "profile landing frames share one natural shoe silhouette and alternate leg depth without bending or mirroring the shoes",
       guest03ProportionRule:
-        "the complete head, chin, and shoulder band is pixel-locked across all four walk frames within each direction",
+        "every requested frame keeps the same 84px head and 168px body geometry without copying a neutral shoulder strip",
+      shoulderRedrawRule:
+        "frames 1, 2, and 3 preserve independently authored head-to-upper-torso pixels; frame 4 repeats the intact neutral frame 2",
       guest03SuitIntegrityRule:
         "leg phase emphasis starts below the intact jacket and alternates trouser shading without mirroring shoes"
     },
@@ -2419,6 +2536,7 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
       fourStepGaitPassed: presets.every((preset) => preset.motion.fourStepGaitPassed),
       directionConsistencyPassed: directionConsistencyFailures.length === 0,
       directionFacingPassed: directionFacingFailures.length === 0,
+      shoulderRedrawPassed: shoulderRedrawFailures.length === 0,
       maximumCanonicalDirectionAlphaDifference: Math.max(
         ...presets.filter((preset) => preset.directionConsistency.required)
           .map((preset) => preset.directionConsistency.maximumAlphaDifference)
@@ -2435,6 +2553,7 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
         && motionFailures.length === 0
         && accessoryFailures.length === 0
         && proportionFailures.length === 0
+        && shoulderRedrawFailures.length === 0
         && directionConsistencyFailures.length === 0
         && directionFacingFailures.length === 0
     },
@@ -2491,6 +2610,13 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
         + `right=${preset.directionFacing.directions.right.join(",")}`
       )
       .join("; ");
+    const proportionDetails = proportionFailures
+      .map((preset) => `${preset.guest}: ${Object.entries(
+        preset.proportionStability.directions
+      ).filter(([, value]) => !value.stable).map(([direction, value]) =>
+        `${direction}(head=${value.headHeights.join(",")},body=${value.bodyHeights.join(",")},top=${value.tops.join(",")},bottom=${value.bottoms.join(",")})`
+      ).join("/")}`)
+      .join("; ");
     throw new Error(
       `선택 화면 3등신·얼굴·보행 감사 실패: ${rigFailures.length}개 프레임, `
       + `${opticalHeadFailures.length}명 머리 실루엣, `
@@ -2498,7 +2624,8 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
       + `${opticalLandmarkFailures.length}명 얼굴 기준선, `
       + `${motionFailures.length}명 보행, `
       + `${accessoryFailures.length}명 가방 고정, `
-      + `${proportionFailures.length}명 머리 고정, `
+      + `${proportionFailures.length}명 3등신 고정, `
+      + `${shoulderRedrawFailures.length}명 어깨 연속성, `
       + `${directionConsistencyFailures.length}명 좌우 대칭, `
       + `${directionFacingFailures.length}명 보행 방향 (${rigDetails || "리그 통과"}; `
       + `${opticalHeadDetails || "머리 실루엣 통과"}; `
@@ -2507,6 +2634,7 @@ async function inspectPreviewSheets({ catalog, outputRoot, sourceRig }) {
       + `${motionDetails || "보행 통과"}; `
       + `${directionConsistencyDetails || "좌우 대칭 통과"}; `
       + `${directionFacingDetails || "보행 방향 통과"}; `
+      + `${proportionDetails || "3등신 비율 통과"}; `
       + `${accessoryFailures.length === 0 ? "가방 고정 통과" : "guest-01 가방 고정 실패"})`
     );
   }
@@ -2589,8 +2717,8 @@ export async function auditGuestSelectionPreviewAssets({
   const storedReport = JSON.parse(
     await readFile(path.join(outputRoot, "selection-preview-audit.json"), "utf8")
   );
-  if (storedReport.version !== 15) {
-    throw new Error("실제 턱선·보행컷 내부 방향 기반 3등신 감사 보고서를 다시 생성해야 합니다.");
+  if (storedReport.version !== 16) {
+    throw new Error("독립 어깨 작화·실제 턱선·보행컷 방향 기반 3등신 감사 보고서를 다시 생성해야 합니다.");
   }
   const sourceRig = Object.fromEntries(storedReport.presets.map((preset) => [
     preset.id,
@@ -2886,7 +3014,6 @@ export async function buildGuestSelectionPreviewAssets({
       await lockGuest01UpperBodyAndBag(framesByDirection, policy);
       await stabilizeGuest01FootGeometry(framesByDirection, policy);
     } else if (guest === "guest-03") {
-      await lockGuest03HeadBand(framesByDirection, policy);
       await emphasizeGuest03LegPhases(framesByDirection, policy);
     } else {
       stabilizeNeutralPose(framesByDirection);
@@ -2897,16 +3024,17 @@ export async function buildGuestSelectionPreviewAssets({
     if (correctedProfileGaitGuests.has(guest)) {
       await repairCorrectedProfileFootPhases(framesByDirection, policy);
     }
-    if (guest !== "guest-01") {
-      await canonicalizeRightDirection(framesByDirection);
-    }
-    if (strictVisualRigGuests.has(guest)) {
-      for (const direction of directions) {
-        framesByDirection[direction] = await lockProportionBandAcrossFrames(
-          framesByDirection[direction],
-          policy
+    if (shoulderRedrawGuests.has(guest)) {
+      for (const direction of ["down", "left", "up"]) {
+        framesByDirection[direction] = await Promise.all(
+          framesByDirection[direction].map((frame) =>
+            normalizeFreshShoulderFrameGeometry(frame, policy, guest, direction)
+          )
         );
       }
+    }
+    if (guest !== "guest-01") {
+      await canonicalizeRightDirection(framesByDirection);
     }
     for (const direction of directions) {
       for (let column = 0; column < catalog.frame.walk.columns; column += 1) {
@@ -2949,17 +3077,6 @@ export async function buildGuestSelectionPreviewAssets({
           ? 12
           : 2
       );
-      if (guest === "guest-03") {
-        runtimeFramesByDirection[direction] = await lockProportionBandAcrossFrames(
-          runtimeFramesByDirection[direction],
-          {
-            source: runtimePolicy,
-            contentHeight: policy.contentHeight / 2,
-            headHeight: policy.headHeight / 2,
-            footBaseline: policy.footBaseline / 2
-          }
-        );
-      }
     }
     const runtimeWalkComposites = directions.flatMap((direction, row) =>
       runtimeFramesByDirection[direction].map((runtimeFrame, column) => ({

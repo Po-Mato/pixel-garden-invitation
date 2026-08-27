@@ -54,7 +54,7 @@ it("선택 화면과 포토존은 192x288 전용 초상 경로를 사용한다",
     .toBe("./characters/generated/guests/portraits/feminine-long-wave-dress.png?v=guest01-stable-feet-v17");
 });
 
-it("통일 광학 리그 에셋은 기존 서비스 워커 캐시와 다른 URL을 사용한다", () => {
+it("어깨 연속 보행 에셋은 기존 서비스 워커 캐시와 다른 URL을 사용한다", () => {
   const layer = resolveCharacterLayers(
     { presetId: "feminine-champagne-navy-skirt" },
     "./",
@@ -62,14 +62,14 @@ it("통일 광학 리그 에셋은 기존 서비스 워커 캐시와 다른 URL�
   )[0];
 
   expect(layer.walkUrl).toBe(
-    "./characters/generated/guests/preview/feminine-champagne-navy-skirt__walk.png?v=guest04-12-optical-direction-rig-v19"
+    "./characters/generated/guests/preview/feminine-champagne-navy-skirt__walk.png?v=guest03-12-continuous-shoulder-v20"
   );
   expect(layer.idleUrl).toBe(
-    "./characters/generated/guests/preview/feminine-champagne-navy-skirt__idle.png?v=guest04-12-optical-direction-rig-v19"
+    "./characters/generated/guests/preview/feminine-champagne-navy-skirt__idle.png?v=guest03-12-continuous-shoulder-v20"
   );
 });
 
-it("3번 캐릭터는 전용 광학 3등신 자산 버전을 사용한다", () => {
+it("3번 캐릭터도 어깨 연속 보행 자산 버전을 사용한다", () => {
   const layer = resolveCharacterLayers(
     { presetId: "masculine-navy-suit" },
     "./",
@@ -77,9 +77,9 @@ it("3번 캐릭터는 전용 광학 3등신 자산 버전을 사용한다", () =
   )[0];
 
   expect(layer.walkUrl).toBe(
-    "./characters/generated/guests/preview/masculine-navy-suit__walk.png?v=guest02-12-neutral-integrity-v18"
+    "./characters/generated/guests/preview/masculine-navy-suit__walk.png?v=guest03-12-continuous-shoulder-v20"
   );
   expect(layer.idleUrl).toBe(
-    "./characters/generated/guests/preview/masculine-navy-suit__idle.png?v=guest02-12-neutral-integrity-v18"
+    "./characters/generated/guests/preview/masculine-navy-suit__idle.png?v=guest03-12-continuous-shoulder-v20"
   );
 });
