@@ -29,7 +29,7 @@ function opaqueSpanInRows(data, info, firstRow) {
 test("선택 화면의 12명 192프레임은 2배 해상도와 동일한 3등신 기준을 지킨다", async () => {
   const report = await auditGuestSelectionPreviewAssets({ catalog });
 
-  assert.equal(report.version, 15);
+  assert.equal(report.version, 16);
   assert.deepEqual(report.policy.source, { width: 192, height: 288 });
   assert.equal(report.summary.presetCount, 12);
   assert.equal(report.summary.frameCount, 192);
@@ -62,6 +62,7 @@ test("선택 화면의 12명 192프레임은 2배 해상도와 동일한 3등신
   assert.equal(report.summary.motionWithinTolerance, true);
   assert.equal(report.summary.fourStepGaitPassed, true);
   assert.equal(report.summary.directionConsistencyPassed, true);
+  assert.equal(report.summary.shoulderRedrawPassed, true);
   assert.equal(report.summary.maximumCanonicalDirectionAlphaDifference, 0);
   assert.equal(report.summary.maximumCanonicalDirectionRgbaDifference, 0);
   assert.ok(
@@ -72,9 +73,10 @@ test("선택 화면의 12명 192프레임은 2배 해상도와 동일한 3등신
   assert.equal(report.summary.passed, true);
 });
 
-test("4·6·7·8·9·10·11·12번은 실제 턱선 84px과 보행 방향을 16컷 모두 고정한다", async () => {
+test("3·4·6·7·8·9·10·11·12번은 3등신·방향·독립 어깨 작화를 16컷 모두 유지한다", async () => {
   const report = await auditGuestSelectionPreviewAssets({ catalog });
-  const strictGuests = new Set([
+  const shoulderRedrawGuests = new Set([
+    "guest-03",
     "guest-04",
     "guest-06",
     "guest-07",
@@ -86,7 +88,13 @@ test("4·6·7·8·9·10·11·12번은 실제 턱선 84px과 보행 방향을 16�
   ]);
 
   assert.equal(report.summary.directionFacingPassed, true);
-  for (const preset of report.presets.filter((entry) => strictGuests.has(entry.guest))) {
+  assert.deepEqual(
+    new Set(report.policy.shoulderRedrawGuests),
+    shoulderRedrawGuests
+  );
+  for (const preset of report.presets.filter((entry) =>
+    shoulderRedrawGuests.has(entry.guest)
+  )) {
     const frames = Object.values(preset.directions).flat();
     assert.equal(
       frames.every((frame) => frame.measuredHeadHeight === report.policy.headHeight),
@@ -94,6 +102,16 @@ test("4·6·7·8·9·10·11·12번은 실제 턱선 84px과 보행 방향을 16�
       `${preset.guest} 16컷의 실제 턱선 머리 높이는 모두 84px이어야 합니다.`
     );
     assert.equal(preset.proportionStability.passed, true);
+    assert.equal(preset.shoulderRedraw.passed, true);
+    assert.equal(preset.shoulderRedraw.bandBottom, 150);
+    for (const direction of Object.values(preset.shoulderRedraw.directions)) {
+      assert.equal(direction.firstPassDistinct, true);
+      assert.equal(direction.oppositePassDistinct, true);
+      assert.equal(direction.oppositePassesDistinct, true);
+      assert.equal(direction.neutralPairExact, true);
+      assert.equal(new Set(direction.hashes.slice(0, 3)).size, 3);
+      assert.equal(direction.hashes[1], direction.hashes[3]);
+    }
     assert.equal(preset.directionFacing.passed, true);
     assert.equal(
       preset.directions.left.every((frame) => frame.profileFacingOffset < -4),
@@ -326,24 +344,44 @@ test("3번 캐릭터는 수트의 긴 세로선을 상쇄하는 광학 3등신�
   assert.equal(guest03.proportionStability.bandBottom, 110);
   for (const direction of Object.values(guest03.proportionStability.directions)) {
     assert.equal(direction.stable, true);
-    assert.equal(new Set(direction.hashes).size, 1);
+    assert.equal(new Set(direction.headHeights).size, 1);
+    assert.equal(new Set(direction.bodyHeights).size, 1);
+    assert.equal(new Set(direction.characterHeights).size, 1);
+    assert.equal(new Set(direction.tops).size, 1);
+    assert.equal(new Set(direction.bottoms).size, 1);
   }
+  assert.ok(
+    guest03.opticalFace.maximumStepFaceWidthSpreadRatio
+      <= report.policy.maximumSafeStepFaceWidthSpreadRatio,
+    "guest-03은 컷마다 얼굴을 새로 유지하되 얼굴 너비 변화는 안전 범위여야 합니다."
+  );
   for (const direction of ["down", "left", "right"]) {
     const directionFrames = guest03.directions[direction];
-    assert.equal(new Set(directionFrames.map((frame) => frame.visibleFaceWidth)).size, 1);
-    assert.equal(new Set(directionFrames.map((frame) => frame.visibleFaceHeight)).size, 1);
-    assert.equal(new Set(directionFrames.map((frame) => frame.visibleFaceArea)).size, 1);
-    assert.equal(new Set(directionFrames.map((frame) => frame.visibleFaceCenterYRatio)).size, 1);
+    const faceHeights = directionFrames.map((frame) => frame.visibleFaceHeight);
+    const faceAreas = directionFrames.map((frame) => frame.visibleFaceArea);
+    const faceCenterRatios = directionFrames.map((frame) => frame.visibleFaceCenterYRatio);
+    assert.ok(Math.max(...faceHeights) - Math.min(...faceHeights) <= 4);
+    assert.ok(
+      (Math.max(...faceAreas) - Math.min(...faceAreas)) / Math.max(...faceAreas) <= 0.08
+    );
+    assert.ok(Math.max(...faceCenterRatios) - Math.min(...faceCenterRatios) <= 0.08);
   }
   const runtimeGuest03 = report.runtimeMotion.presets.find(
     (preset) => preset.guest === "guest-03"
   );
   assert.ok(runtimeGuest03);
   assert.equal(report.runtimeMotion.summary.guest03ProportionStable, true);
+  assert.equal(report.runtimeMotion.summary.shoulderRedrawPassed, true);
   assert.equal(runtimeGuest03.proportionStable, true);
+  assert.equal(runtimeGuest03.shoulderFramesIndependent, true);
   for (const direction of Object.values(runtimeGuest03.directions)) {
     assert.equal(direction.proportionStable, true);
-    assert.equal(new Set(direction.proportionHashes).size, 1);
+    assert.equal(direction.shoulderFramesIndependent, true);
+    assert.equal(new Set(direction.proportionGeometry.map((item) => item.top)).size, 1);
+    assert.equal(new Set(direction.proportionGeometry.map((item) => item.bottom)).size, 1);
+    assert.equal(new Set(direction.proportionGeometry.map((item) => item.height)).size, 1);
+    assert.equal(new Set(direction.shoulderBandHashes.slice(0, 3)).size, 3);
+    assert.equal(direction.shoulderBandHashes[1], direction.shoulderBandHashes[3]);
   }
   assert.equal(
     frames.every((frame) => frame.opticalHeadCompensation === 10),
