@@ -139,11 +139,11 @@
     },
     {
       "id": "guest-03",
-      "sha256": "756b0a2a046dc0de02304f5695b29ee84668d14b890317a75c6b8778a8f5352a"
+      "sha256": "b8359954438e92b358711178d025cb1d61838e4c20f27ba05757ca49168deb7c"
     },
     {
       "id": "guest-04",
-      "sha256": "83c2c6188e27d914df8354fdb4933190f6b8b9c30fcdc3ef0bd52256c2068231"
+      "sha256": "3c80abf674531c95628bbf32b074d41206d76af4aaf03886557bee1cf194f6e0"
     },
     {
       "id": "guest-05",
@@ -163,7 +163,7 @@
     },
     {
       "id": "guest-09",
-      "sha256": "6f84579a3931d85c275ff559433cc05cdc155cd1247a65dea71f9b612f5b1dbe"
+      "sha256": "24d37a6b676e4282b06c1a48b9be85cc793fdb70a9857b84ad58b54bc514dfc1"
     },
     {
       "id": "guest-10",
@@ -664,14 +664,14 @@
       "id": "guest-03",
       "direction": 0,
       "frame": 0,
-      "edgeContrast": 2.918492470440498,
+      "edgeContrast": 2.9035325965390766,
       "displayEdgeContrasts": {
-        "oled": 3.2783801210067374,
-        "lcd": 2.3126189202245286,
-        "oled-low-brightness": 2.8213444583144907,
-        "oled-outdoor-p3": 2.476489106318869,
-        "lcd-low-brightness": 2.2051557939709525,
-        "lcd-outdoor-srgb": 2.027927624980906
+        "oled": 3.2680857894676296,
+        "lcd": 2.2650485037055703,
+        "oled-low-brightness": 2.8061233295469163,
+        "oled-outdoor-p3": 2.458158892544368,
+        "lcd-low-brightness": 2.185387191440408,
+        "lcd-outdoor-srgb": 2.0084738129474924
       }
     },
     {
@@ -679,14 +679,14 @@
       "id": "guest-03",
       "direction": 0,
       "frame": 1,
-      "edgeContrast": 2.9301248387147383,
+      "edgeContrast": 2.8825176742622607,
       "displayEdgeContrasts": {
-        "oled": 3.297411741483514,
-        "lcd": 2.2815195221180984,
-        "oled-low-brightness": 2.784526372462746,
-        "oled-outdoor-p3": 2.476489106318869,
-        "lcd-low-brightness": 2.183019775512959,
-        "lcd-outdoor-srgb": 2.0000737056881728
+        "oled": 3.2680857894676296,
+        "lcd": 2.253015235570424,
+        "oled-low-brightness": 2.719220429173561,
+        "oled-outdoor-p3": 2.443695018161528,
+        "lcd-low-brightness": 2.1597236363311083,
+        "lcd-outdoor-srgb": 1.9613244490668504
       }
     },
     {
@@ -694,14 +694,14 @@
       "id": "guest-03",
       "direction": 0,
       "frame": 2,
-      "edgeContrast": 2.799768995925319,
+      "edgeContrast": 2.702830669787885,
       "displayEdgeContrasts": {
-        "oled": 3.2060134189397624,
-        "lcd": 2.255298712942833,
-        "oled-low-brightness": 2.7143059524769617,
-        "oled-outdoor-p3": 2.462787842196281,
-        "lcd-low-brightness": 2.183019775512959,
-        "lcd-outdoor-srgb": 2.0000737056881728
+        "oled": 3.1296748939597325,
+        "lcd": 2.2328474417752058,
+        "oled-low-brightness": 2.670372337424547,
+        "oled-outdoor-p3": 2.392489580792322,
+        "lcd-low-brightness": 2.1574376116625906,
+        "lcd-outdoor-srgb": 1.9758234982425635
       }
     },
     {
@@ -709,14 +709,14 @@
       "id": "guest-03",
       "direction": 0,
       "frame": 3,
-      "edgeContrast": 2.9301248387147383,
+      "edgeContrast": 2.8825176742622607,
       "displayEdgeContrasts": {
-        "oled": 3.297411741483514,
-        "lcd": 2.2815195221180984,
-        "oled-low-brightness": 2.784526372462746,
-        "oled-outdoor-p3": 2.476489106318869,
-        "lcd-low-brightness": 2.183019775512959,
-        "lcd-outdoor-srgb": 2.0000737056881728
+        "oled": 3.2680857894676296,
+        "lcd": 2.253015235570424,
+        "oled-low-brightness": 2.719220429173561,
+        "oled-outdoor-p3": 2.443695018161528,
+        "lcd-low-brightness": 2.1597236363311083,
+        "lcd-outdoor-srgb": 1.9613244490668504
       }
     },
     {
@@ -1086,12 +1086,12 @@
       "frame": 0,
       "edgeContrast": 2.0488106147146334,
       "displayEdgeContrasts": {
-        "oled": 2.254950823917726,
-        "lcd": 1.7127219284978408,
+        "oled": 2.2824525203612183,
+        "lcd": 1.7140641363507836,
         "oled-low-brightness": 1.9241545459320781,
         "oled-outdoor-p3": 1.8469493573223073,
-        "lcd-low-brightness": 1.6539698350145107,
-        "lcd-outdoor-srgb": 1.5436232907947973
+        "lcd-low-brightness": 1.657658886897914,
+        "lcd-outdoor-srgb": 1.5464333720206518
       }
     },
     {
@@ -1102,11 +1102,11 @@
       "edgeContrast": 1.9076848664134785,
       "displayEdgeContrasts": {
         "oled": 1.9114752837211322,
-        "lcd": 1.5905814514507897,
+        "lcd": 1.5863059560217652,
         "oled-low-brightness": 1.7475382201655805,
         "oled-outdoor-p3": 1.7100908419674232,
-        "lcd-low-brightness": 1.5421998994403843,
-        "lcd-outdoor-srgb": 1.4535052161314803
+        "lcd-low-brightness": 1.5376118102942022,
+        "lcd-outdoor-srgb": 1.4521517938457522
       }
     },
     {
@@ -1117,11 +1117,11 @@
       "edgeContrast": 1.9063537639116874,
       "displayEdgeContrasts": {
         "oled": 2.067176178710853,
-        "lcd": 1.6344047113865703,
+        "lcd": 1.6125220068781918,
         "oled-low-brightness": 1.791970737594867,
         "oled-outdoor-p3": 1.7163535041407811,
-        "lcd-low-brightness": 1.5968629618800425,
-        "lcd-outdoor-srgb": 1.5010186101002183
+        "lcd-low-brightness": 1.5672328147040786,
+        "lcd-outdoor-srgb": 1.4843979146412278
       }
     },
     {
@@ -1132,11 +1132,11 @@
       "edgeContrast": 1.9076848664134785,
       "displayEdgeContrasts": {
         "oled": 1.9114752837211322,
-        "lcd": 1.5905814514507897,
+        "lcd": 1.5863059560217652,
         "oled-low-brightness": 1.7475382201655805,
         "oled-outdoor-p3": 1.7100908419674232,
-        "lcd-low-brightness": 1.5421998994403843,
-        "lcd-outdoor-srgb": 1.4535052161314803
+        "lcd-low-brightness": 1.5376118102942022,
+        "lcd-outdoor-srgb": 1.4521517938457522
       }
     },
     {
@@ -2299,7 +2299,7 @@
       "id": "guest-09",
       "direction": 3,
       "frame": 1,
-      "edgeContrast": 1.1948586171882325,
+      "edgeContrast": 1.1936589528126065,
       "displayEdgeContrasts": {
         "oled": 1.1783572876358734,
         "lcd": 1.164138141895588,
@@ -2314,14 +2314,14 @@
       "id": "guest-09",
       "direction": 3,
       "frame": 2,
-      "edgeContrast": 1.2120265673698964,
+      "edgeContrast": 1.2280397409015744,
       "displayEdgeContrasts": {
-        "oled": 1.199110581090836,
-        "lcd": 1.1890276509741922,
-        "oled-low-brightness": 1.217910017776702,
-        "oled-outdoor-p3": 1.1968874873420428,
-        "lcd-low-brightness": 1.185022553068524,
-        "lcd-outdoor-srgb": 1.1761141988201473
+        "oled": 1.2193991765548708,
+        "lcd": 1.19810215391709,
+        "oled-low-brightness": 1.2214484546546724,
+        "oled-outdoor-p3": 1.1980198535178284,
+        "lcd-low-brightness": 1.1929416869560014,
+        "lcd-outdoor-srgb": 1.1776717467359217
       }
     },
     {
@@ -2329,7 +2329,7 @@
       "id": "guest-09",
       "direction": 3,
       "frame": 3,
-      "edgeContrast": 1.1948586171882325,
+      "edgeContrast": 1.1936589528126065,
       "displayEdgeContrasts": {
         "oled": 1.1783572876358734,
         "lcd": 1.164138141895588,
@@ -3547,7 +3547,7 @@
       "edgeContrast": 2.095659547143767,
       "displayEdgeContrasts": {
         "oled": 1.9695329161241675,
-        "lcd": 1.770618278221146,
+        "lcd": 1.7648399617029467,
         "oled-low-brightness": 1.8211464874571615,
         "oled-outdoor-p3": 1.8620553458545426,
         "lcd-low-brightness": 1.703968344263927,
@@ -3562,7 +3562,7 @@
       "edgeContrast": 2.082829340789749,
       "displayEdgeContrasts": {
         "oled": 1.9887904287921119,
-        "lcd": 1.7720576094187974,
+        "lcd": 1.7648399617029467,
         "oled-low-brightness": 1.8808515238431296,
         "oled-outdoor-p3": 1.8671539766807919,
         "lcd-low-brightness": 1.703968344263927,
@@ -3577,11 +3577,11 @@
       "edgeContrast": 2.095659547143767,
       "displayEdgeContrasts": {
         "oled": 1.9309065986642082,
-        "lcd": 1.7745310434526227,
+        "lcd": 1.7733209088637227,
         "oled-low-brightness": 1.92350234444716,
         "oled-outdoor-p3": 1.898002462730207,
-        "lcd-low-brightness": 1.7144382626451178,
-        "lcd-outdoor-srgb": 1.602787212784118
+        "lcd-low-brightness": 1.7051068277324806,
+        "lcd-outdoor-srgb": 1.5943001620555444
       }
     },
     {
@@ -3592,7 +3592,7 @@
       "edgeContrast": 2.082829340789749,
       "displayEdgeContrasts": {
         "oled": 1.9887904287921119,
-        "lcd": 1.7720576094187974,
+        "lcd": 1.7648399617029467,
         "oled-low-brightness": 1.8808515238431296,
         "oled-outdoor-p3": 1.8671539766807919,
         "lcd-low-brightness": 1.703968344263927,
@@ -3964,14 +3964,14 @@
       "id": "guest-04",
       "direction": 3,
       "frame": 0,
-      "edgeContrast": 1.8861095118500593,
+      "edgeContrast": 1.8765527265082185,
       "displayEdgeContrasts": {
         "oled": 1.8208046344732984,
-        "lcd": 1.7251959984916931,
-        "oled-low-brightness": 1.8904883605841323,
-        "oled-outdoor-p3": 1.7746502174008147,
-        "lcd-low-brightness": 1.7012717979692609,
-        "lcd-outdoor-srgb": 1.6018585532139584
+        "lcd": 1.6929791347524437,
+        "oled-low-brightness": 1.802265101492041,
+        "oled-outdoor-p3": 1.748095878959564,
+        "lcd-low-brightness": 1.6486652624561602,
+        "lcd-outdoor-srgb": 1.5854061356767748
       }
     },
     {
@@ -3982,11 +3982,11 @@
       "edgeContrast": 1.9467026662781977,
       "displayEdgeContrasts": {
         "oled": 2.2106455884951988,
-        "lcd": 1.8210243761511606,
+        "lcd": 1.8065117352463893,
         "oled-low-brightness": 1.9757862242941222,
         "oled-outdoor-p3": 1.8639674733257248,
-        "lcd-low-brightness": 1.758056309871294,
-        "lcd-outdoor-srgb": 1.643090646631943
+        "lcd-low-brightness": 1.7502295979492797,
+        "lcd-outdoor-srgb": 1.6310140440204703
       }
     },
     {
@@ -3997,11 +3997,11 @@
       "edgeContrast": 2.141902251494686,
       "displayEdgeContrasts": {
         "oled": 2.2998364050401086,
-        "lcd": 1.8210243761511606,
+        "lcd": 1.8065117352463893,
         "oled-low-brightness": 2.129948578086434,
         "oled-outdoor-p3": 1.9183220564946941,
-        "lcd-low-brightness": 1.758056309871294,
-        "lcd-outdoor-srgb": 1.643090646631943
+        "lcd-low-brightness": 1.7502295979492797,
+        "lcd-outdoor-srgb": 1.6310140440204703
       }
     },
     {
@@ -4012,11 +4012,11 @@
       "edgeContrast": 1.9467026662781977,
       "displayEdgeContrasts": {
         "oled": 2.2106455884951988,
-        "lcd": 1.8210243761511606,
+        "lcd": 1.8065117352463893,
         "oled-low-brightness": 1.9757862242941222,
         "oled-outdoor-p3": 1.8639674733257248,
-        "lcd-low-brightness": 1.758056309871294,
-        "lcd-outdoor-srgb": 1.643090646631943
+        "lcd-low-brightness": 1.7502295979492797,
+        "lcd-outdoor-srgb": 1.6310140440204703
       }
     },
     {
@@ -6424,14 +6424,14 @@
       "id": "guest-03",
       "direction": 0,
       "frame": 0,
-      "edgeContrast": 3.0313001684174785,
+      "edgeContrast": 3.030035843753571,
       "displayEdgeContrasts": {
-        "oled": 3.422645257933406,
-        "lcd": 2.3249654391839636,
-        "oled-low-brightness": 2.8230127325842638,
-        "oled-outdoor-p3": 2.567786594680706,
-        "lcd-low-brightness": 2.213760975785767,
-        "lcd-outdoor-srgb": 2.0136657991319367
+        "oled": 3.420646386666719,
+        "lcd": 2.3231669844035747,
+        "oled-low-brightness": 2.816520244526206,
+        "oled-outdoor-p3": 2.5578844689641596,
+        "lcd-low-brightness": 2.2118862808890523,
+        "lcd-outdoor-srgb": 2.0091025004157825
       }
     },
     {
@@ -6439,14 +6439,14 @@
       "id": "guest-03",
       "direction": 0,
       "frame": 1,
-      "edgeContrast": 2.9746151059016084,
+      "edgeContrast": 2.9551133099501783,
       "displayEdgeContrasts": {
-        "oled": 3.3669716307758857,
-        "lcd": 2.301549208149096,
-        "oled-low-brightness": 2.792357921022469,
-        "oled-outdoor-p3": 2.537734623148797,
-        "lcd-low-brightness": 2.1921564985365527,
-        "lcd-outdoor-srgb": 1.9929244118565455
+        "oled": 3.347230381264007,
+        "lcd": 2.298780215148391,
+        "oled-low-brightness": 2.7876529866651123,
+        "oled-outdoor-p3": 2.5149021759662866,
+        "lcd-low-brightness": 2.1886771193723256,
+        "lcd-outdoor-srgb": 1.992312624034124
       }
     },
     {
@@ -6454,14 +6454,14 @@
       "id": "guest-03",
       "direction": 0,
       "frame": 2,
-      "edgeContrast": 2.9278462201121926,
+      "edgeContrast": 2.8769841842422035,
       "displayEdgeContrasts": {
-        "oled": 3.2560904382779428,
-        "lcd": 2.277081519963874,
-        "oled-low-brightness": 2.767248741385628,
-        "oled-outdoor-p3": 2.509071409287694,
-        "lcd-low-brightness": 2.1731634247663423,
-        "lcd-outdoor-srgb": 1.9823333746548368
+        "oled": 3.186212420304037,
+        "lcd": 2.2563954922999647,
+        "oled-low-brightness": 2.7338196263878998,
+        "oled-outdoor-p3": 2.5054809853676514,
+        "lcd-low-brightness": 2.1495947848500228,
+        "lcd-outdoor-srgb": 1.9611206498079423
       }
     },
     {
@@ -6469,14 +6469,14 @@
       "id": "guest-03",
       "direction": 0,
       "frame": 3,
-      "edgeContrast": 2.9746151059016084,
+      "edgeContrast": 2.9551133099501783,
       "displayEdgeContrasts": {
-        "oled": 3.3669716307758857,
-        "lcd": 2.301549208149096,
-        "oled-low-brightness": 2.792357921022469,
-        "oled-outdoor-p3": 2.537734623148797,
-        "lcd-low-brightness": 2.1921564985365527,
-        "lcd-outdoor-srgb": 1.9929244118565455
+        "oled": 3.347230381264007,
+        "lcd": 2.298780215148391,
+        "oled-low-brightness": 2.7876529866651123,
+        "oled-outdoor-p3": 2.5149021759662866,
+        "lcd-low-brightness": 2.1886771193723256,
+        "lcd-outdoor-srgb": 1.992312624034124
       }
     },
     {
@@ -6862,10 +6862,10 @@
       "edgeContrast": 1.8697623713309663,
       "displayEdgeContrasts": {
         "oled": 1.8584900835163063,
-        "lcd": 1.6028927844283716,
+        "lcd": 1.594111422285335,
         "oled-low-brightness": 1.6701515345977842,
-        "oled-outdoor-p3": 1.7165079537522259,
-        "lcd-low-brightness": 1.5539797164283455,
+        "oled-outdoor-p3": 1.70437060491791,
+        "lcd-low-brightness": 1.5506413773894474,
         "lcd-outdoor-srgb": 1.4687595344824635
       }
     },
@@ -6892,10 +6892,10 @@
       "edgeContrast": 1.8697623713309663,
       "displayEdgeContrasts": {
         "oled": 1.8584900835163063,
-        "lcd": 1.6028927844283716,
+        "lcd": 1.594111422285335,
         "oled-low-brightness": 1.6701515345977842,
-        "oled-outdoor-p3": 1.7165079537522259,
-        "lcd-low-brightness": 1.5539797164283455,
+        "oled-outdoor-p3": 1.70437060491791,
+        "lcd-low-brightness": 1.5506413773894474,
         "lcd-outdoor-srgb": 1.4687595344824635
       }
     },
@@ -8044,9 +8044,9 @@
       "id": "guest-09",
       "direction": 3,
       "frame": 0,
-      "edgeContrast": 1.3161840465317582,
+      "edgeContrast": 1.340797831831147,
       "displayEdgeContrasts": {
-        "oled": 1.296312903967542,
+        "oled": 1.3031853853270206,
         "lcd": 1.2404644800142768,
         "oled-low-brightness": 1.265275417101829,
         "oled-outdoor-p3": 1.2763107600966512,
@@ -8059,11 +8059,11 @@
       "id": "guest-09",
       "direction": 3,
       "frame": 1,
-      "edgeContrast": 1.340797831831147,
+      "edgeContrast": 1.3421404295270873,
       "displayEdgeContrasts": {
-        "oled": 1.3412555059922846,
+        "oled": 1.3965314002221363,
         "lcd": 1.2497624469389566,
-        "oled-low-brightness": 1.3250874295073518,
+        "oled-low-brightness": 1.3553177690155565,
         "oled-outdoor-p3": 1.2781816975903948,
         "lcd-low-brightness": 1.236026588558274,
         "lcd-outdoor-srgb": 1.218126190337833
@@ -8074,14 +8074,14 @@
       "id": "guest-09",
       "direction": 3,
       "frame": 2,
-      "edgeContrast": 1.3161840465317582,
+      "edgeContrast": 1.340797831831147,
       "displayEdgeContrasts": {
-        "oled": 1.2961099320225853,
-        "lcd": 1.2435935297045986,
-        "oled-low-brightness": 1.3011744919364074,
-        "oled-outdoor-p3": 1.2763107600966512,
-        "lcd-low-brightness": 1.232044629391383,
-        "lcd-outdoor-srgb": 1.2097053884838058
+        "oled": 1.3236944937232835,
+        "lcd": 1.2573277993978014,
+        "oled-low-brightness": 1.3039944458755632,
+        "oled-outdoor-p3": 1.2781816975903948,
+        "lcd-low-brightness": 1.2476156310626658,
+        "lcd-outdoor-srgb": 1.2271485991916247
       }
     },
     {
@@ -8089,11 +8089,11 @@
       "id": "guest-09",
       "direction": 3,
       "frame": 3,
-      "edgeContrast": 1.340797831831147,
+      "edgeContrast": 1.3421404295270873,
       "displayEdgeContrasts": {
-        "oled": 1.3412555059922846,
+        "oled": 1.3965314002221363,
         "lcd": 1.2497624469389566,
-        "oled-low-brightness": 1.3250874295073518,
+        "oled-low-brightness": 1.3553177690155565,
         "oled-outdoor-p3": 1.2781816975903948,
         "lcd-low-brightness": 1.236026588558274,
         "lcd-outdoor-srgb": 1.218126190337833
@@ -9304,14 +9304,14 @@
       "id": "guest-03",
       "direction": 0,
       "frame": 0,
-      "edgeContrast": 2.1987438300083593,
+      "edgeContrast": 2.180436243302827,
       "displayEdgeContrasts": {
-        "oled": 2.205744496465718,
-        "lcd": 1.7789491173570637,
-        "oled-low-brightness": 1.9064624187524364,
-        "oled-outdoor-p3": 1.9380457387460803,
-        "lcd-low-brightness": 1.7118299586293484,
-        "lcd-outdoor-srgb": 1.596776071830644
+        "oled": 2.1737079022961456,
+        "lcd": 1.7694234247836131,
+        "oled-low-brightness": 1.900614090463411,
+        "oled-outdoor-p3": 1.918361336476545,
+        "lcd-low-brightness": 1.7070430968002048,
+        "lcd-outdoor-srgb": 1.592385689695297
       }
     },
     {
@@ -9319,14 +9319,14 @@
       "id": "guest-03",
       "direction": 0,
       "frame": 1,
-      "edgeContrast": 2.234782570179422,
+      "edgeContrast": 2.18785475386581,
       "displayEdgeContrasts": {
         "oled": 2.0353239486868535,
-        "lcd": 1.7789580408481456,
-        "oled-low-brightness": 1.8350406699998771,
-        "oled-outdoor-p3": 1.9526148492455684,
-        "lcd-low-brightness": 1.7118299586293484,
-        "lcd-outdoor-srgb": 1.6017786400337877
+        "lcd": 1.7789491173570637,
+        "oled-low-brightness": 1.832747432454571,
+        "oled-outdoor-p3": 1.9351231298616,
+        "lcd-low-brightness": 1.710852441085207,
+        "lcd-outdoor-srgb": 1.592385689695297
       }
     },
     {
@@ -9334,14 +9334,14 @@
       "id": "guest-03",
       "direction": 0,
       "frame": 2,
-      "edgeContrast": 2.246535342652776,
+      "edgeContrast": 2.209078941491293,
       "displayEdgeContrasts": {
-        "oled": 2.15543664519052,
-        "lcd": 1.7789580408481456,
-        "oled-low-brightness": 1.8763121615209961,
-        "oled-outdoor-p3": 1.9592115917154802,
-        "lcd-low-brightness": 1.710852441085207,
-        "lcd-outdoor-srgb": 1.6036208461472057
+        "oled": 2.099673115678256,
+        "lcd": 1.7737803173562752,
+        "oled-low-brightness": 1.8646402558542916,
+        "oled-outdoor-p3": 1.9351231298616,
+        "lcd-low-brightness": 1.704982583151411,
+        "lcd-outdoor-srgb": 1.5880988057788563
       }
     },
     {
@@ -9349,14 +9349,14 @@
       "id": "guest-03",
       "direction": 0,
       "frame": 3,
-      "edgeContrast": 2.234782570179422,
+      "edgeContrast": 2.18785475386581,
       "displayEdgeContrasts": {
         "oled": 2.0353239486868535,
-        "lcd": 1.7789580408481456,
-        "oled-low-brightness": 1.8350406699998771,
-        "oled-outdoor-p3": 1.9526148492455684,
-        "lcd-low-brightness": 1.7118299586293484,
-        "lcd-outdoor-srgb": 1.6017786400337877
+        "lcd": 1.7789491173570637,
+        "oled-low-brightness": 1.832747432454571,
+        "oled-outdoor-p3": 1.9351231298616,
+        "lcd-low-brightness": 1.710852441085207,
+        "lcd-outdoor-srgb": 1.592385689695297
       }
     },
     {
@@ -10924,12 +10924,12 @@
       "id": "guest-09",
       "direction": 3,
       "frame": 0,
-      "edgeContrast": 1.294331112228047,
+      "edgeContrast": 1.2733758301894984,
       "displayEdgeContrasts": {
-        "oled": 1.2879430764759512,
-        "lcd": 1.2372866257188408,
-        "oled-low-brightness": 1.270622293183028,
-        "oled-outdoor-p3": 1.260241590642734,
+        "oled": 1.2825204654246314,
+        "lcd": 1.236672315953242,
+        "oled-low-brightness": 1.2656597339904483,
+        "oled-outdoor-p3": 1.2463620499360761,
         "lcd-low-brightness": 1.2194701247906539,
         "lcd-outdoor-srgb": 1.1918672305089804
       }
@@ -10939,12 +10939,12 @@
       "id": "guest-09",
       "direction": 3,
       "frame": 1,
-      "edgeContrast": 1.2930011493060631,
+      "edgeContrast": 1.2733758301894984,
       "displayEdgeContrasts": {
-        "oled": 1.2819418198189703,
-        "lcd": 1.2372866257188408,
-        "oled-low-brightness": 1.2656597339904483,
-        "oled-outdoor-p3": 1.2581748820701135,
+        "oled": 1.278435302051946,
+        "lcd": 1.236672315953242,
+        "oled-low-brightness": 1.2645077349290446,
+        "oled-outdoor-p3": 1.2463620499360761,
         "lcd-low-brightness": 1.2194701247906539,
         "lcd-outdoor-srgb": 1.191779575495926
       }
@@ -10957,10 +10957,10 @@
       "edgeContrast": 1.294331112228047,
       "displayEdgeContrasts": {
         "oled": 1.2825204654246314,
-        "lcd": 1.2262745342459036,
-        "oled-low-brightness": 1.2631368696163912,
-        "oled-outdoor-p3": 1.257032657049384,
-        "lcd-low-brightness": 1.2133985147104034,
+        "lcd": 1.236672315953242,
+        "oled-low-brightness": 1.2645077349290446,
+        "oled-outdoor-p3": 1.2579317233174307,
+        "lcd-low-brightness": 1.2194701247906539,
         "lcd-outdoor-srgb": 1.187742574084473
       }
     },
@@ -10969,12 +10969,12 @@
       "id": "guest-09",
       "direction": 3,
       "frame": 3,
-      "edgeContrast": 1.2930011493060631,
+      "edgeContrast": 1.2733758301894984,
       "displayEdgeContrasts": {
-        "oled": 1.2819418198189703,
-        "lcd": 1.2372866257188408,
-        "oled-low-brightness": 1.2656597339904483,
-        "oled-outdoor-p3": 1.2581748820701135,
+        "oled": 1.278435302051946,
+        "lcd": 1.236672315953242,
+        "oled-low-brightness": 1.2645077349290446,
+        "oled-outdoor-p3": 1.2463620499360761,
         "lcd-low-brightness": 1.2194701247906539,
         "lcd-outdoor-srgb": 1.191779575495926
       }
@@ -12184,14 +12184,14 @@
       "id": "guest-03",
       "direction": 0,
       "frame": 0,
-      "edgeContrast": 3.3587688166891145,
+      "edgeContrast": 3.2827278886480906,
       "displayEdgeContrasts": {
-        "oled": 3.7089904948230332,
-        "lcd": 2.604735905754062,
-        "oled-low-brightness": 3.18014238089442,
-        "oled-outdoor-p3": 2.8141743979246576,
-        "lcd-low-brightness": 2.467803604824581,
-        "lcd-outdoor-srgb": 2.2418419853682408
+        "oled": 3.7049382127491057,
+        "lcd": 2.557964679608908,
+        "oled-low-brightness": 3.1516737807713016,
+        "oled-outdoor-p3": 2.7778257026561666,
+        "lcd-low-brightness": 2.428357902397872,
+        "lcd-outdoor-srgb": 2.2275148006922665
       }
     },
     {
@@ -12199,14 +12199,14 @@
       "id": "guest-03",
       "direction": 0,
       "frame": 1,
-      "edgeContrast": 3.2827278886480906,
+      "edgeContrast": 3.2266494388611644,
       "displayEdgeContrasts": {
-        "oled": 3.7089904948230332,
-        "lcd": 2.6072578063579326,
-        "oled-low-brightness": 3.1875713951182387,
-        "oled-outdoor-p3": 2.8141743979246576,
-        "lcd-low-brightness": 2.469988866074793,
-        "lcd-outdoor-srgb": 2.237555303050445
+        "oled": 3.6243627594314396,
+        "lcd": 2.5669083946730913,
+        "oled-low-brightness": 3.1516737807713016,
+        "oled-outdoor-p3": 2.7483104358587758,
+        "lcd-low-brightness": 2.441121638734372,
+        "lcd-outdoor-srgb": 2.226115369170326
       }
     },
     {
@@ -12214,14 +12214,14 @@
       "id": "guest-03",
       "direction": 0,
       "frame": 2,
-      "edgeContrast": 3.161915915010407,
+      "edgeContrast": 3.132598400317089,
       "displayEdgeContrasts": {
-        "oled": 3.6243627594314396,
-        "lcd": 2.4946990831169042,
-        "oled-low-brightness": 3.0446592394046594,
-        "oled-outdoor-p3": 2.7021536608577312,
-        "lcd-low-brightness": 2.4044523168249525,
-        "lcd-outdoor-srgb": 2.2097367858253145
+        "oled": 3.6008421243970092,
+        "lcd": 2.472175493894735,
+        "oled-low-brightness": 3.0232363964300633,
+        "oled-outdoor-p3": 2.686257012645492,
+        "lcd-low-brightness": 2.3739735794252557,
+        "lcd-outdoor-srgb": 2.1935346068351724
       }
     },
     {
@@ -12229,14 +12229,14 @@
       "id": "guest-03",
       "direction": 0,
       "frame": 3,
-      "edgeContrast": 3.2827278886480906,
+      "edgeContrast": 3.2266494388611644,
       "displayEdgeContrasts": {
-        "oled": 3.7089904948230332,
-        "lcd": 2.6072578063579326,
-        "oled-low-brightness": 3.1875713951182387,
-        "oled-outdoor-p3": 2.8141743979246576,
-        "lcd-low-brightness": 2.469988866074793,
-        "lcd-outdoor-srgb": 2.237555303050445
+        "oled": 3.6243627594314396,
+        "lcd": 2.5669083946730913,
+        "oled-low-brightness": 3.1516737807713016,
+        "oled-outdoor-p3": 2.7483104358587758,
+        "lcd-low-brightness": 2.441121638734372,
+        "lcd-outdoor-srgb": 2.226115369170326
       }
     },
     {
@@ -12607,10 +12607,10 @@
       "edgeContrast": 2.473355560299014,
       "displayEdgeContrasts": {
         "oled": 2.926233557323366,
-        "lcd": 2.0615592426732117,
+        "lcd": 2.0687093680693143,
         "oled-low-brightness": 2.5400291776440933,
-        "oled-outdoor-p3": 2.193149492508661,
-        "lcd-low-brightness": 1.9928773782301197,
+        "oled-outdoor-p3": 2.193496347644377,
+        "lcd-low-brightness": 1.9986545943606442,
         "lcd-outdoor-srgb": 1.8635201925274583
       }
     },
@@ -12619,14 +12619,14 @@
       "id": "guest-04",
       "direction": 3,
       "frame": 1,
-      "edgeContrast": 2.2040525393365433,
+      "edgeContrast": 2.2143765810401375,
       "displayEdgeContrasts": {
-        "oled": 2.549960801985546,
-        "lcd": 1.803817376975384,
-        "oled-low-brightness": 2.1220871929457457,
+        "oled": 2.554600873941909,
+        "lcd": 1.8126781874429139,
+        "oled-low-brightness": 2.133614019834054,
         "oled-outdoor-p3": 1.9582474004113941,
-        "lcd-low-brightness": 1.7464765023248798,
-        "lcd-outdoor-srgb": 1.6258075471343423
+        "lcd-low-brightness": 1.749196763849244,
+        "lcd-outdoor-srgb": 1.6314423790157626
       }
     },
     {
@@ -12634,12 +12634,12 @@
       "id": "guest-04",
       "direction": 3,
       "frame": 2,
-      "edgeContrast": 2.273710292841911,
+      "edgeContrast": 2.333191454272954,
       "displayEdgeContrasts": {
-        "oled": 2.6928489788492245,
+        "oled": 2.726452031298175,
         "lcd": 1.9791874346515441,
-        "oled-low-brightness": 2.2749882935823513,
-        "oled-outdoor-p3": 2.019215693324821,
+        "oled-low-brightness": 2.4132058941789127,
+        "oled-outdoor-p3": 2.087321278568146,
         "lcd-low-brightness": 1.9169950509657476,
         "lcd-outdoor-srgb": 1.7962580184729156
       }
@@ -12649,14 +12649,14 @@
       "id": "guest-04",
       "direction": 3,
       "frame": 3,
-      "edgeContrast": 2.2040525393365433,
+      "edgeContrast": 2.2143765810401375,
       "displayEdgeContrasts": {
-        "oled": 2.549960801985546,
-        "lcd": 1.803817376975384,
-        "oled-low-brightness": 2.1220871929457457,
+        "oled": 2.554600873941909,
+        "lcd": 1.8126781874429139,
+        "oled-low-brightness": 2.133614019834054,
         "oled-outdoor-p3": 1.9582474004113941,
-        "lcd-low-brightness": 1.7464765023248798,
-        "lcd-outdoor-srgb": 1.6258075471343423
+        "lcd-low-brightness": 1.749196763849244,
+        "lcd-outdoor-srgb": 1.6314423790157626
       }
     },
     {
@@ -13806,7 +13806,7 @@
       "frame": 0,
       "edgeContrast": 1.4731670594340105,
       "displayEdgeContrasts": {
-        "oled": 1.462962272005849,
+        "oled": 1.5192230890670604,
         "lcd": 1.353445685301246,
         "oled-low-brightness": 1.492306922610065,
         "oled-outdoor-p3": 1.3883274082086239,
@@ -13834,14 +13834,14 @@
       "id": "guest-09",
       "direction": 3,
       "frame": 2,
-      "edgeContrast": 1.4119679178204931,
+      "edgeContrast": 1.4194929144656157,
       "displayEdgeContrasts": {
-        "oled": 1.390725956945576,
-        "lcd": 1.3246085046969045,
-        "oled-low-brightness": 1.3698248072497403,
-        "oled-outdoor-p3": 1.366253461101536,
-        "lcd-low-brightness": 1.309103801685001,
-        "lcd-outdoor-srgb": 1.2794519591735487
+        "oled": 1.3915910875259585,
+        "lcd": 1.349859075668081,
+        "oled-low-brightness": 1.3862832721245641,
+        "oled-outdoor-p3": 1.3700269761733441,
+        "lcd-low-brightness": 1.3263737036195549,
+        "lcd-outdoor-srgb": 1.3000391353846399
       }
     },
     {
@@ -15064,14 +15064,14 @@
       "id": "guest-03",
       "direction": 0,
       "frame": 0,
-      "edgeContrast": 3.3207304192560856,
+      "edgeContrast": 3.2415445206399185,
       "displayEdgeContrasts": {
-        "oled": 3.6551482944177636,
+        "oled": 3.6441908193906594,
         "lcd": 2.5136173078944135,
-        "oled-low-brightness": 3.0965877458127493,
+        "oled-low-brightness": 3.0902634413352317,
         "oled-outdoor-p3": 2.798890928432968,
         "lcd-low-brightness": 2.3866855380956453,
-        "lcd-outdoor-srgb": 2.1656767513241433
+        "lcd-outdoor-srgb": 2.1553762845984523
       }
     },
     {
@@ -15079,14 +15079,14 @@
       "id": "guest-03",
       "direction": 0,
       "frame": 1,
-      "edgeContrast": 3.313623962428923,
+      "edgeContrast": 3.2162733141096513,
       "displayEdgeContrasts": {
-        "oled": 3.7310012022770884,
+        "oled": 3.621202282257449,
         "lcd": 2.5136173078944135,
-        "oled-low-brightness": 3.098383855493503,
+        "oled-low-brightness": 3.0965877458127493,
         "oled-outdoor-p3": 2.798890928432968,
         "lcd-low-brightness": 2.3866855380956453,
-        "lcd-outdoor-srgb": 2.1656767513241433
+        "lcd-outdoor-srgb": 2.159222417391289
       }
     },
     {
@@ -15094,14 +15094,14 @@
       "id": "guest-03",
       "direction": 0,
       "frame": 2,
-      "edgeContrast": 3.2133741369186506,
+      "edgeContrast": 3.1944425280289908,
       "displayEdgeContrasts": {
-        "oled": 3.5994595895859898,
+        "oled": 3.543250356644862,
         "lcd": 2.489723243165129,
-        "oled-low-brightness": 3.067579244998652,
-        "oled-outdoor-p3": 2.7558579675787955,
-        "lcd-low-brightness": 2.37280161709108,
-        "lcd-outdoor-srgb": 2.1504509668454537
+        "oled-low-brightness": 3.014157127730438,
+        "oled-outdoor-p3": 2.694304252042048,
+        "lcd-low-brightness": 2.3665502455740888,
+        "lcd-outdoor-srgb": 2.150366818082843
       }
     },
     {
@@ -15109,14 +15109,14 @@
       "id": "guest-03",
       "direction": 0,
       "frame": 3,
-      "edgeContrast": 3.313623962428923,
+      "edgeContrast": 3.2162733141096513,
       "displayEdgeContrasts": {
-        "oled": 3.7310012022770884,
+        "oled": 3.621202282257449,
         "lcd": 2.5136173078944135,
-        "oled-low-brightness": 3.098383855493503,
+        "oled-low-brightness": 3.0965877458127493,
         "oled-outdoor-p3": 2.798890928432968,
         "lcd-low-brightness": 2.3866855380956453,
-        "lcd-outdoor-srgb": 2.1656767513241433
+        "lcd-outdoor-srgb": 2.159222417391289
       }
     },
     {
@@ -15484,12 +15484,12 @@
       "id": "guest-04",
       "direction": 3,
       "frame": 0,
-      "edgeContrast": 2.577730970785569,
+      "edgeContrast": 2.580451867876214,
       "displayEdgeContrasts": {
         "oled": 2.8503136334330486,
         "lcd": 2.115844696969392,
-        "oled-low-brightness": 2.4957262081815026,
-        "oled-outdoor-p3": 2.240911164127477,
+        "oled-low-brightness": 2.5899974250548765,
+        "oled-outdoor-p3": 2.2624023007891325,
         "lcd-low-brightness": 2.038212330227491,
         "lcd-outdoor-srgb": 1.8870971957152933
       }
@@ -15499,12 +15499,12 @@
       "id": "guest-04",
       "direction": 3,
       "frame": 1,
-      "edgeContrast": 2.1455041220823925,
+      "edgeContrast": 2.1915235068030574,
       "displayEdgeContrasts": {
-        "oled": 2.488303134518779,
-        "lcd": 1.7787927024055947,
+        "oled": 2.5155566074881723,
+        "lcd": 1.7899441113461443,
         "oled-low-brightness": 2.0922867232538724,
-        "oled-outdoor-p3": 1.930072567236999,
+        "oled-outdoor-p3": 1.9302634464301625,
         "lcd-low-brightness": 1.726329515359534,
         "lcd-outdoor-srgb": 1.6092069526762451
       }
@@ -15529,12 +15529,12 @@
       "id": "guest-04",
       "direction": 3,
       "frame": 3,
-      "edgeContrast": 2.1455041220823925,
+      "edgeContrast": 2.1915235068030574,
       "displayEdgeContrasts": {
-        "oled": 2.488303134518779,
-        "lcd": 1.7787927024055947,
+        "oled": 2.5155566074881723,
+        "lcd": 1.7899441113461443,
         "oled-low-brightness": 2.0922867232538724,
-        "oled-outdoor-p3": 1.930072567236999,
+        "oled-outdoor-p3": 1.9302634464301625,
         "lcd-low-brightness": 1.726329515359534,
         "lcd-outdoor-srgb": 1.6092069526762451
       }
@@ -16714,14 +16714,14 @@
       "id": "guest-09",
       "direction": 3,
       "frame": 2,
-      "edgeContrast": 1.3901990290671846,
+      "edgeContrast": 1.3902101897506842,
       "displayEdgeContrasts": {
-        "oled": 1.3715333882059688,
-        "lcd": 1.3082211702957927,
-        "oled-low-brightness": 1.3460760830016234,
-        "oled-outdoor-p3": 1.3371012290704722,
-        "lcd-low-brightness": 1.2965555558128072,
-        "lcd-outdoor-srgb": 1.2594995615615432
+        "oled": 1.3759185407039538,
+        "lcd": 1.3164115099908427,
+        "oled-low-brightness": 1.3557897893667843,
+        "oled-outdoor-p3": 1.347202188562567,
+        "lcd-low-brightness": 1.3018311392237627,
+        "lcd-outdoor-srgb": 1.2671829235713943
       }
     },
     {
@@ -17944,14 +17944,14 @@
       "id": "guest-03",
       "direction": 0,
       "frame": 0,
-      "edgeContrast": 2.6210844749894764,
+      "edgeContrast": 2.603301606335134,
       "displayEdgeContrasts": {
-        "oled": 2.970309196534281,
-        "lcd": 2.041959122387966,
-        "oled-low-brightness": 2.431633957719776,
-        "oled-outdoor-p3": 2.2519451112158557,
-        "lcd-low-brightness": 1.954410888782081,
-        "lcd-outdoor-srgb": 1.79555059652157
+        "oled": 2.92846625886787,
+        "lcd": 2.033034285579564,
+        "oled-low-brightness": 2.4204691061090595,
+        "oled-outdoor-p3": 2.237253985280968,
+        "lcd-low-brightness": 1.947000686774687,
+        "lcd-outdoor-srgb": 1.7899414251874788
       }
     },
     {
@@ -17959,14 +17959,14 @@
       "id": "guest-03",
       "direction": 0,
       "frame": 1,
-      "edgeContrast": 2.5825712927362288,
+      "edgeContrast": 2.5490287740094537,
       "displayEdgeContrasts": {
-        "oled": 2.92846625886787,
-        "lcd": 2.0225736659834843,
-        "oled-low-brightness": 2.4028495839715007,
-        "oled-outdoor-p3": 2.2227805895686688,
-        "lcd-low-brightness": 1.9378131199478363,
-        "lcd-outdoor-srgb": 1.7804788995392755
+        "oled": 2.874888401858484,
+        "lcd": 1.9925353256790588,
+        "oled-low-brightness": 2.365800242095941,
+        "oled-outdoor-p3": 2.194157961536534,
+        "lcd-low-brightness": 1.9091146390216533,
+        "lcd-outdoor-srgb": 1.760331679567274
       }
     },
     {
@@ -17974,14 +17974,14 @@
       "id": "guest-03",
       "direction": 0,
       "frame": 2,
-      "edgeContrast": 2.5675413539069005,
+      "edgeContrast": 2.5430902103321573,
       "displayEdgeContrasts": {
-        "oled": 2.9006623401303284,
-        "lcd": 2.0225736659834843,
-        "oled-low-brightness": 2.397144223308747,
-        "oled-outdoor-p3": 2.2128243469833615,
-        "lcd-low-brightness": 1.9378131199478363,
-        "lcd-outdoor-srgb": 1.7792281319649788
+        "oled": 2.8875412387902397,
+        "lcd": 2.0024860634008816,
+        "oled-low-brightness": 2.3734585724892323,
+        "oled-outdoor-p3": 2.194157961536534,
+        "lcd-low-brightness": 1.9201480637257073,
+        "lcd-outdoor-srgb": 1.7693019547899453
       }
     },
     {
@@ -17989,14 +17989,14 @@
       "id": "guest-03",
       "direction": 0,
       "frame": 3,
-      "edgeContrast": 2.5825712927362288,
+      "edgeContrast": 2.5490287740094537,
       "displayEdgeContrasts": {
-        "oled": 2.92846625886787,
-        "lcd": 2.0225736659834843,
-        "oled-low-brightness": 2.4028495839715007,
-        "oled-outdoor-p3": 2.2227805895686688,
-        "lcd-low-brightness": 1.9378131199478363,
-        "lcd-outdoor-srgb": 1.7804788995392755
+        "oled": 2.874888401858484,
+        "lcd": 1.9925353256790588,
+        "oled-low-brightness": 2.365800242095941,
+        "oled-outdoor-p3": 2.194157961536534,
+        "lcd-low-brightness": 1.9091146390216533,
+        "lcd-outdoor-srgb": 1.760331679567274
       }
     },
     {
@@ -19594,14 +19594,14 @@
       "id": "guest-09",
       "direction": 3,
       "frame": 2,
-      "edgeContrast": 1.3971607857480168,
+      "edgeContrast": 1.4140790513728838,
       "displayEdgeContrasts": {
-        "oled": 1.3529859313917905,
-        "lcd": 1.273240437262064,
-        "oled-low-brightness": 1.312445452554487,
-        "oled-outdoor-p3": 1.3271953128560017,
-        "lcd-low-brightness": 1.2544571728628886,
-        "lcd-outdoor-srgb": 1.2114534267854038
+        "oled": 1.3532722298044042,
+        "lcd": 1.2787306332665969,
+        "oled-low-brightness": 1.3235719087219304,
+        "oled-outdoor-p3": 1.3327979950785875,
+        "lcd-low-brightness": 1.2550566485204389,
+        "lcd-outdoor-srgb": 1.2159695531256105
       }
     },
     {
@@ -20824,14 +20824,14 @@
       "id": "guest-03",
       "direction": 0,
       "frame": 0,
-      "edgeContrast": 3.8179614573469074,
+      "edgeContrast": 3.8082357884105624,
       "displayEdgeContrasts": {
-        "oled": 4.249090335754838,
-        "lcd": 2.9219362222971323,
-        "oled-low-brightness": 3.5837331982333787,
-        "oled-outdoor-p3": 3.1666246617263707,
-        "lcd-low-brightness": 2.7669480271063596,
-        "lcd-outdoor-srgb": 2.5113579453987995
+        "oled": 4.215367323857828,
+        "lcd": 2.8481808484420705,
+        "oled-low-brightness": 3.5803319144158983,
+        "oled-outdoor-p3": 3.1478086746441543,
+        "lcd-low-brightness": 2.697419357865142,
+        "lcd-outdoor-srgb": 2.5013682363876284
       }
     },
     {
@@ -20839,14 +20839,14 @@
       "id": "guest-03",
       "direction": 0,
       "frame": 1,
-      "edgeContrast": 3.8334757428023756,
+      "edgeContrast": 3.694026050983363,
       "displayEdgeContrasts": {
         "oled": 4.153839282903426,
-        "lcd": 2.90773854626127,
-        "oled-low-brightness": 3.5837331982333787,
-        "oled-outdoor-p3": 3.1666246617263707,
-        "lcd-low-brightness": 2.7536083264049953,
-        "lcd-outdoor-srgb": 2.5013682363876284
+        "lcd": 2.8481808484420705,
+        "oled-low-brightness": 3.527225086947626,
+        "oled-outdoor-p3": 3.0814499414085588,
+        "lcd-low-brightness": 2.697419357865142,
+        "lcd-outdoor-srgb": 2.481693066500637
       }
     },
     {
@@ -20861,7 +20861,7 @@
         "oled-low-brightness": 3.4648324001405064,
         "oled-outdoor-p3": 3.038860353981039,
         "lcd-low-brightness": 2.6462406702669,
-        "lcd-outdoor-srgb": 2.4617657033768867
+        "lcd-outdoor-srgb": 2.3969168281201028
       }
     },
     {
@@ -20869,14 +20869,14 @@
       "id": "guest-03",
       "direction": 0,
       "frame": 3,
-      "edgeContrast": 3.8334757428023756,
+      "edgeContrast": 3.694026050983363,
       "displayEdgeContrasts": {
         "oled": 4.153839282903426,
-        "lcd": 2.90773854626127,
-        "oled-low-brightness": 3.5837331982333787,
-        "oled-outdoor-p3": 3.1666246617263707,
-        "lcd-low-brightness": 2.7536083264049953,
-        "lcd-outdoor-srgb": 2.5013682363876284
+        "lcd": 2.8481808484420705,
+        "oled-low-brightness": 3.527225086947626,
+        "oled-outdoor-p3": 3.0814499414085588,
+        "lcd-low-brightness": 2.697419357865142,
+        "lcd-outdoor-srgb": 2.481693066500637
       }
     },
     {
@@ -21262,10 +21262,10 @@
       "edgeContrast": 2.40767808213009,
       "displayEdgeContrasts": {
         "oled": 2.813827322651093,
-        "lcd": 1.9606071284732096,
+        "lcd": 1.9610659060277282,
         "oled-low-brightness": 2.340501784850001,
         "oled-outdoor-p3": 2.1124100075117536,
-        "lcd-low-brightness": 1.8854788013840178,
+        "lcd-low-brightness": 1.8885296524272728,
         "lcd-outdoor-srgb": 1.753546615026733
       }
     },
@@ -21292,10 +21292,10 @@
       "edgeContrast": 2.40767808213009,
       "displayEdgeContrasts": {
         "oled": 2.813827322651093,
-        "lcd": 1.9606071284732096,
+        "lcd": 1.9610659060277282,
         "oled-low-brightness": 2.340501784850001,
         "oled-outdoor-p3": 2.1124100075117536,
-        "lcd-low-brightness": 1.8854788013840178,
+        "lcd-low-brightness": 1.8885296524272728,
         "lcd-outdoor-srgb": 1.753546615026733
       }
     },
@@ -22474,14 +22474,14 @@
       "id": "guest-09",
       "direction": 3,
       "frame": 2,
-      "edgeContrast": 1.4435912391414538,
+      "edgeContrast": 1.4802066941208991,
       "displayEdgeContrasts": {
-        "oled": 1.4258589358078466,
-        "lcd": 1.3750191766397728,
-        "oled-low-brightness": 1.4385238268394145,
-        "oled-outdoor-p3": 1.388601407683122,
-        "lcd-low-brightness": 1.363814407390252,
-        "lcd-outdoor-srgb": 1.3395917451326123
+        "oled": 1.4569870085124164,
+        "lcd": 1.4020504543618817,
+        "oled-low-brightness": 1.4578845650233987,
+        "oled-outdoor-p3": 1.420471806590692,
+        "lcd-low-brightness": 1.3860039040387608,
+        "lcd-outdoor-srgb": 1.3437853541512104
       }
     },
     {
@@ -23704,14 +23704,14 @@
       "id": "guest-03",
       "direction": 0,
       "frame": 0,
-      "edgeContrast": 3.6432966459158416,
+      "edgeContrast": 3.5760797699907925,
       "displayEdgeContrasts": {
-        "oled": 4.007108966112163,
-        "lcd": 2.7458295479283246,
-        "oled-low-brightness": 3.3825760190544627,
-        "oled-outdoor-p3": 3.007488180389811,
-        "lcd-low-brightness": 2.612251326183832,
-        "lcd-outdoor-srgb": 2.343483953259658
+        "oled": 3.9600025807828394,
+        "lcd": 2.729439964794748,
+        "oled-low-brightness": 3.3537578251294287,
+        "oled-outdoor-p3": 2.985383488763349,
+        "lcd-low-brightness": 2.608922701903802,
+        "lcd-outdoor-srgb": 2.34284079086747
       }
     },
     {
@@ -23719,14 +23719,14 @@
       "id": "guest-03",
       "direction": 0,
       "frame": 1,
-      "edgeContrast": 3.6279770182804447,
+      "edgeContrast": 3.509844122932158,
       "displayEdgeContrasts": {
-        "oled": 3.9486382638048005,
-        "lcd": 2.733260471338462,
-        "oled-low-brightness": 3.407569100315822,
-        "oled-outdoor-p3": 3.025131427646004,
-        "lcd-low-brightness": 2.608922701903802,
-        "lcd-outdoor-srgb": 2.343483953259658
+        "oled": 3.9237613560185367,
+        "lcd": 2.7299253957859424,
+        "oled-low-brightness": 3.3920659762790635,
+        "oled-outdoor-p3": 3.020286273289603,
+        "lcd-low-brightness": 2.5910521187700795,
+        "lcd-outdoor-srgb": 2.3351683956828144
       }
     },
     {
@@ -23734,14 +23734,14 @@
       "id": "guest-03",
       "direction": 0,
       "frame": 2,
-      "edgeContrast": 3.495684580224117,
+      "edgeContrast": 3.4218336485427625,
       "displayEdgeContrasts": {
         "oled": 3.7921358107671757,
-        "lcd": 2.669886559925853,
-        "oled-low-brightness": 3.3246953368156698,
-        "oled-outdoor-p3": 2.929506072257922,
-        "lcd-low-brightness": 2.5645992471059382,
-        "lcd-outdoor-srgb": 2.3149762237346985
+        "lcd": 2.6674647720803537,
+        "oled-low-brightness": 3.2802839365384027,
+        "oled-outdoor-p3": 2.8790101627837945,
+        "lcd-low-brightness": 2.532055825674291,
+        "lcd-outdoor-srgb": 2.2889053695233006
       }
     },
     {
@@ -23749,14 +23749,14 @@
       "id": "guest-03",
       "direction": 0,
       "frame": 3,
-      "edgeContrast": 3.6279770182804447,
+      "edgeContrast": 3.509844122932158,
       "displayEdgeContrasts": {
-        "oled": 3.9486382638048005,
-        "lcd": 2.733260471338462,
-        "oled-low-brightness": 3.407569100315822,
-        "oled-outdoor-p3": 3.025131427646004,
-        "lcd-low-brightness": 2.608922701903802,
-        "lcd-outdoor-srgb": 2.343483953259658
+        "oled": 3.9237613560185367,
+        "lcd": 2.7299253957859424,
+        "oled-low-brightness": 3.3920659762790635,
+        "oled-outdoor-p3": 3.020286273289603,
+        "lcd-low-brightness": 2.5910521187700795,
+        "lcd-outdoor-srgb": 2.3351683956828144
       }
     },
     {
@@ -24131,7 +24131,7 @@
         "oled-low-brightness": 2.651677811310617,
         "oled-outdoor-p3": 2.421010722389941,
         "lcd-low-brightness": 2.1799528098316143,
-        "lcd-outdoor-srgb": 2.0000492100543172
+        "lcd-outdoor-srgb": 2.0328219159167227
       }
     },
     {
@@ -24141,12 +24141,12 @@
       "frame": 1,
       "edgeContrast": 2.2555240829605037,
       "displayEdgeContrasts": {
-        "oled": 2.621949006881718,
+        "oled": 2.6116787700062907,
         "lcd": 1.8670839346874233,
-        "oled-low-brightness": 2.181751331476933,
-        "oled-outdoor-p3": 1.9957093872356095,
+        "oled-low-brightness": 2.2033845073451745,
+        "oled-outdoor-p3": 2.0086580232659137,
         "lcd-low-brightness": 1.7980618746087225,
-        "lcd-outdoor-srgb": 1.6692121648059621
+        "lcd-outdoor-srgb": 1.670618413032244
       }
     },
     {
@@ -24157,10 +24157,10 @@
       "edgeContrast": 2.4179323809197197,
       "displayEdgeContrasts": {
         "oled": 2.914334749898926,
-        "lcd": 2.044397902768889,
+        "lcd": 2.046163424676953,
         "oled-low-brightness": 2.524873621564858,
-        "oled-outdoor-p3": 2.1554646075932795,
-        "lcd-low-brightness": 1.9788988431247785,
+        "oled-outdoor-p3": 2.157578699322462,
+        "lcd-low-brightness": 1.9805005372491271,
         "lcd-outdoor-srgb": 1.8527257595023907
       }
     },
@@ -24171,12 +24171,12 @@
       "frame": 3,
       "edgeContrast": 2.2555240829605037,
       "displayEdgeContrasts": {
-        "oled": 2.621949006881718,
+        "oled": 2.6116787700062907,
         "lcd": 1.8670839346874233,
-        "oled-low-brightness": 2.181751331476933,
-        "oled-outdoor-p3": 1.9957093872356095,
+        "oled-low-brightness": 2.2033845073451745,
+        "oled-outdoor-p3": 2.0086580232659137,
         "lcd-low-brightness": 1.7980618746087225,
-        "lcd-outdoor-srgb": 1.6692121648059621
+        "lcd-outdoor-srgb": 1.670618413032244
       }
     },
     {
@@ -25354,14 +25354,14 @@
       "id": "guest-09",
       "direction": 3,
       "frame": 2,
-      "edgeContrast": 1.4412886315625544,
+      "edgeContrast": 1.4553980717179655,
       "displayEdgeContrasts": {
-        "oled": 1.4119774524603002,
-        "lcd": 1.3394918002237657,
-        "oled-low-brightness": 1.3805242370737911,
-        "oled-outdoor-p3": 1.395173578273981,
-        "lcd-low-brightness": 1.3266789016821756,
-        "lcd-outdoor-srgb": 1.3008103735897052
+        "oled": 1.4178296804916901,
+        "lcd": 1.3749704925955326,
+        "oled-low-brightness": 1.40037828394071,
+        "oled-outdoor-p3": 1.395785878566581,
+        "lcd-low-brightness": 1.3547312908012705,
+        "lcd-outdoor-srgb": 1.3090177247201786
       }
     },
     {
@@ -26591,7 +26591,7 @@
         "oled-low-brightness": 3.2318226540329427,
         "oled-outdoor-p3": 2.919293590124507,
         "lcd-low-brightness": 2.5267462950816757,
-        "lcd-outdoor-srgb": 2.359186281252344
+        "lcd-outdoor-srgb": 2.3301529058312376
       }
     },
     {
@@ -27019,14 +27019,14 @@
       "id": "guest-04",
       "direction": 3,
       "frame": 1,
-      "edgeContrast": 2.3324866417251595,
+      "edgeContrast": 2.325142778186179,
       "displayEdgeContrasts": {
-        "oled": 2.7447948859220306,
-        "lcd": 1.9197277097890153,
-        "oled-low-brightness": 2.2876357993968726,
-        "oled-outdoor-p3": 2.061961531594803,
-        "lcd-low-brightness": 1.848929510233805,
-        "lcd-outdoor-srgb": 1.7171396531900354
+        "oled": 2.6854799612522813,
+        "lcd": 1.9207615103336697,
+        "oled-low-brightness": 2.2071774212966284,
+        "oled-outdoor-p3": 2.05160591951812,
+        "lcd-low-brightness": 1.8528134260013982,
+        "lcd-outdoor-srgb": 1.7250733147174313
       }
     },
     {
@@ -27040,8 +27040,8 @@
         "lcd": 2.0255556259765775,
         "oled-low-brightness": 2.464247046037974,
         "oled-outdoor-p3": 2.1613700802619285,
-        "lcd-low-brightness": 1.953422142410634,
-        "lcd-outdoor-srgb": 1.816344543963485
+        "lcd-low-brightness": 1.9561528737531928,
+        "lcd-outdoor-srgb": 1.8543224803810154
       }
     },
     {
@@ -27049,14 +27049,14 @@
       "id": "guest-04",
       "direction": 3,
       "frame": 3,
-      "edgeContrast": 2.3324866417251595,
+      "edgeContrast": 2.325142778186179,
       "displayEdgeContrasts": {
-        "oled": 2.7447948859220306,
-        "lcd": 1.9197277097890153,
-        "oled-low-brightness": 2.2876357993968726,
-        "oled-outdoor-p3": 2.061961531594803,
-        "lcd-low-brightness": 1.848929510233805,
-        "lcd-outdoor-srgb": 1.7171396531900354
+        "oled": 2.6854799612522813,
+        "lcd": 1.9207615103336697,
+        "oled-low-brightness": 2.2071774212966284,
+        "oled-outdoor-p3": 2.05160591951812,
+        "lcd-low-brightness": 1.8528134260013982,
+        "lcd-outdoor-srgb": 1.7250733147174313
       }
     },
     {
@@ -28987,7 +28987,7 @@
       "zone": "home",
       "direction": 0,
       "file": "map-browser-home-front.png",
-      "sha256": "f774634f45fe813637c49dff200ed5dc17b69b5aa1615c907949c5dc8b3ccda3"
+      "sha256": "8745db3878ae384e59655a1e685587780d99054be92310ac79fe3f9e0b0c71a9"
     },
     {
       "zone": "home",
@@ -29005,13 +29005,13 @@
       "zone": "home",
       "direction": 3,
       "file": "map-browser-home-back.png",
-      "sha256": "94706f282387da1676a74ce435551dcc5b52706a7bd7080d656c3145c9eed6e8"
+      "sha256": "fb598ac88e59864360e52c60651404a96ee62ce4513bd798054842645a8637c5"
     },
     {
       "zone": "neighborhood",
       "direction": 0,
       "file": "map-browser-neighborhood-front.png",
-      "sha256": "0509d74d00ea4071e560cf6f3fbf083a02041f0407c1b5cf3d3706c557c62704"
+      "sha256": "aff6050270ae6bf5de4ea168dad230045cbb3475486ea3f1fcd9bc92c127df5d"
     },
     {
       "zone": "neighborhood",
@@ -29029,13 +29029,13 @@
       "zone": "neighborhood",
       "direction": 3,
       "file": "map-browser-neighborhood-back.png",
-      "sha256": "42f3da250417932c98b78898c60ca00e6283621f8fab616abe8760d7c8073e32"
+      "sha256": "aa51e31b75180da9386c9e92c8ac80643bb02eab644b1767db4be2a3a65f8faf"
     },
     {
       "zone": "subway-station",
       "direction": 0,
       "file": "map-browser-subway-station-front.png",
-      "sha256": "61c59be6c32c4c12371fe74655dd51262c0224dbbd21fe776a3f3e67ddc3e1d0"
+      "sha256": "5d3df3b26fab11ac66660f24ec8690b84821aefe7a4f68cb05dd64e3798771b7"
     },
     {
       "zone": "subway-station",
@@ -29053,13 +29053,13 @@
       "zone": "subway-station",
       "direction": 3,
       "file": "map-browser-subway-station-back.png",
-      "sha256": "aba8025d099ff711e7a103748b49b298a468bb7ba008305a69bc181837b574f4"
+      "sha256": "231056ae9ab02a81674aa8c98d9c89a199d596c33b7e94999d70a483ea9b0eaf"
     },
     {
       "zone": "subway-train",
       "direction": 0,
       "file": "map-browser-subway-train-front.png",
-      "sha256": "029bdd035fc0c4584ac47b138467dc95c1a974c3ea2fb0ac83ddebf87d1c5dfb"
+      "sha256": "09d4c71e5163e6dcce43a055a456fdb0a28b441b27bd09fc8cbc1615ce0efb18"
     },
     {
       "zone": "subway-train",
@@ -29077,13 +29077,13 @@
       "zone": "subway-train",
       "direction": 3,
       "file": "map-browser-subway-train-back.png",
-      "sha256": "b48439e8e042634da45beaff582fab7f2d6c913e6b13b7d89838f0f82c786aab"
+      "sha256": "45e7425cc8b0bf8e4e1fc3b27219187538d8dbbd22c2a28e1037721b8989370e"
     },
     {
       "zone": "venue-exterior",
       "direction": 0,
       "file": "map-browser-venue-exterior-front.png",
-      "sha256": "410b09fc469d6d115e8584dfaf5d526a246e43ef3048fbb44a0edd2df40c07e4"
+      "sha256": "33da6e2d61d254081b1dabd2ee78873358adb800e757d0b2cfcb11152ac5eb1e"
     },
     {
       "zone": "venue-exterior",
@@ -29101,13 +29101,13 @@
       "zone": "venue-exterior",
       "direction": 3,
       "file": "map-browser-venue-exterior-back.png",
-      "sha256": "9a86e7fca368a453031487857a7170d21ca2849efcfd3fc300e4a39319db045e"
+      "sha256": "14e3001bbf2b0015b3c0765901906c992b653e730239f465c177c5ac6113c9d7"
     },
     {
       "zone": "lobby",
       "direction": 0,
       "file": "map-browser-lobby-front.png",
-      "sha256": "8df372ecd63833727033c04c2d711e039af03148ee2c8d85c6be1d5ecdcad38a"
+      "sha256": "cc357d0a5db3679078faa635550a93bfb515eb25a4d5571f6a0d8f89df3254c7"
     },
     {
       "zone": "lobby",
@@ -29125,13 +29125,13 @@
       "zone": "lobby",
       "direction": 3,
       "file": "map-browser-lobby-back.png",
-      "sha256": "88eda3dbd294db08d1c679a8b0d614b3fcff0264a0a171201396159706ccab4a"
+      "sha256": "83af70c19253458179d7d4153a013d8b60e455cf94bee02e9d5acd1dc420c6f2"
     },
     {
       "zone": "bridal-room",
       "direction": 0,
       "file": "map-browser-bridal-room-front.png",
-      "sha256": "33ae7564eb96995d7c16d85d302956ff6c62801a4e2017c1e42cd50c403d0c8b"
+      "sha256": "b148e995d506756cc4eb657849d73a29cfa4b7c6f9124f09dd43b17115c10162"
     },
     {
       "zone": "bridal-room",
@@ -29149,13 +29149,13 @@
       "zone": "bridal-room",
       "direction": 3,
       "file": "map-browser-bridal-room-back.png",
-      "sha256": "b6858cfa2637e226aa36b370869411811359d29442e433bcb954761595b0f8fc"
+      "sha256": "a90da039280dce0b89f520e5fb5ea3caac6155a54601b0a3a4991e7a6dcd0229"
     },
     {
       "zone": "ceremony-hall",
       "direction": 0,
       "file": "map-browser-ceremony-hall-front.png",
-      "sha256": "4644735ee887f3c7879cff99c6498b3e3a9c9a81ccda823a18722cc1f0a90cc3"
+      "sha256": "3360f71ee0e13124d22cc9feab2e39cdafdf9ef851d20abf644106ab525074d0"
     },
     {
       "zone": "ceremony-hall",
@@ -29173,13 +29173,13 @@
       "zone": "ceremony-hall",
       "direction": 3,
       "file": "map-browser-ceremony-hall-back.png",
-      "sha256": "5fb3c462ca01d6ca05d2356e8c8e87acb138f5e73156c3c41fe9cba4b2066a73"
+      "sha256": "e22ccae5a47ef329d4590c20429a8c0cf7bb931212fa641d7587d6caba846f2f"
     },
     {
       "zone": "banquet",
       "direction": 0,
       "file": "map-browser-banquet-front.png",
-      "sha256": "ac260646c129211bcb870f29913be3b81e1f041b4b0250eb56861330dc16f41e"
+      "sha256": "7d4ad06c779901d9f52ad4c88996d98064e158f5f3254e838e3d3cfac2d50d8f"
     },
     {
       "zone": "banquet",
@@ -29197,13 +29197,13 @@
       "zone": "banquet",
       "direction": 3,
       "file": "map-browser-banquet-back.png",
-      "sha256": "0460faff1ebd34e825b435af92cabb8d4981c3e3be3afe1dcaaabd1568e4bb1c"
+      "sha256": "dfde2b432f9c77fc7bfcff2f1051efba5201a1765d2f4639243152b87b7fa32e"
     },
     {
       "zone": "restroom",
       "direction": 0,
       "file": "map-browser-restroom-front.png",
-      "sha256": "de3677ed88364f63e1d042761dd4faf1950a269ee5fdb18b17789c52b87721f2"
+      "sha256": "431cca93e3d6eabd06a9ed4f34abfb698bb92b8ebc721549462cc97581b847cd"
     },
     {
       "zone": "restroom",
@@ -29221,7 +29221,7 @@
       "zone": "restroom",
       "direction": 3,
       "file": "map-browser-restroom-back.png",
-      "sha256": "0cb656efd4d307c1baaac3801313420e738e4ea107adc28b82c97632275d674e"
+      "sha256": "2b8944b9d60a27a078eb19f7d9bf220f5c502ddc512596ad540b8bb8bb3a6823"
     }
   ],
   "visualReview": "Separate browser composite fixture; each screenshot still needs human visual inspection. Not actual game navigation or production evidence."

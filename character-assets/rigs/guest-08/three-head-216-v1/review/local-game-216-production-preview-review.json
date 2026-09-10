@@ -37,7 +37,7 @@
             375
           ],
           "sheetPosition": "0px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__idle.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__idle.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -52,7 +52,7 @@
             375
           ],
           "sheetPosition": "0px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -67,7 +67,7 @@
             375
           ],
           "sheetPosition": "0px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -82,7 +82,7 @@
             375
           ],
           "sheetPosition": "0px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -97,7 +97,7 @@
             375
           ],
           "sheetPosition": "-96px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -112,7 +112,7 @@
             375
           ],
           "sheetPosition": "-96px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -127,7 +127,7 @@
             375
           ],
           "sheetPosition": "-96px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -142,7 +142,7 @@
             375
           ],
           "sheetPosition": "-192px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -157,7 +157,7 @@
             375
           ],
           "sheetPosition": "-192px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -172,7 +172,22 @@
             375
           ],
           "sheetPosition": "-192px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911\")"
+        },
+        {
+          "direction": "left",
+          "moving": "true",
+          "frame": 2,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            195,
+            375
+          ],
+          "sheetPosition": "-192px -144px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -187,7 +202,7 @@
             375
           ],
           "sheetPosition": "-288px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -202,7 +217,7 @@
             375
           ],
           "sheetPosition": "-288px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -217,7 +232,7 @@
             375
           ],
           "sheetPosition": "-288px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -232,7 +247,7 @@
             375
           ],
           "sheetPosition": "0px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -247,22 +262,7 @@
             375
           ],
           "sheetPosition": "0px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
-        },
-        {
-          "direction": "left",
-          "moving": "true",
-          "frame": 0,
-          "size": [
-            48,
-            72
-          ],
-          "position": [
-            135,
-            375
-          ],
-          "sheetPosition": "0px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         }
       ],
       "stopped": {
@@ -283,11 +283,11 @@
             72
           ],
           "position": [
-            105,
+            135,
             375
           ],
           "sheetPosition": "-96px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "right",
@@ -298,11 +298,11 @@
             72
           ],
           "position": [
-            135,
+            165,
             375
           ],
           "sheetPosition": "0px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "right",
@@ -313,11 +313,11 @@
             72
           ],
           "position": [
-            135,
+            165,
             375
           ],
           "sheetPosition": "0px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "right",
@@ -328,11 +328,11 @@
             72
           ],
           "position": [
-            135,
+            165,
             375
           ],
           "sheetPosition": "0px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "right",
@@ -343,11 +343,11 @@
             72
           ],
           "position": [
-            135,
+            165,
             375
           ],
           "sheetPosition": "0px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "right",
@@ -358,11 +358,11 @@
             72
           ],
           "position": [
-            165,
+            195,
             375
           ],
           "sheetPosition": "-96px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "right",
@@ -373,11 +373,11 @@
             72
           ],
           "position": [
-            165,
+            195,
             375
           ],
           "sheetPosition": "-96px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "right",
@@ -388,11 +388,11 @@
             72
           ],
           "position": [
-            165,
+            195,
             375
           ],
           "sheetPosition": "-96px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "right",
@@ -403,11 +403,11 @@
             72
           ],
           "position": [
-            195,
+            225,
             375
           ],
           "sheetPosition": "-192px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "right",
@@ -418,11 +418,11 @@
             72
           ],
           "position": [
-            195,
+            225,
             375
           ],
           "sheetPosition": "-192px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "right",
@@ -433,61 +433,16 @@
             72
           ],
           "position": [
-            195,
+            225,
             375
           ],
           "sheetPosition": "-192px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "right",
           "moving": "true",
           "frame": 3,
-          "size": [
-            48,
-            72
-          ],
-          "position": [
-            225,
-            375
-          ],
-          "sheetPosition": "-288px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
-        },
-        {
-          "direction": "right",
-          "moving": "true",
-          "frame": 3,
-          "size": [
-            48,
-            72
-          ],
-          "position": [
-            225,
-            375
-          ],
-          "sheetPosition": "-288px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
-        },
-        {
-          "direction": "right",
-          "moving": "true",
-          "frame": 3,
-          "size": [
-            48,
-            72
-          ],
-          "position": [
-            225,
-            375
-          ],
-          "sheetPosition": "-288px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
-        },
-        {
-          "direction": "right",
-          "moving": "true",
-          "frame": 0,
           "size": [
             48,
             72
@@ -496,8 +451,38 @@
             255,
             375
           ],
-          "sheetPosition": "0px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "sheetPosition": "-288px -288px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 3,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            375
+          ],
+          "sheetPosition": "-288px -288px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 3,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            375
+          ],
+          "sheetPosition": "-288px -288px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "right",
@@ -508,11 +493,26 @@
             72
           ],
           "position": [
-            255,
+            285,
             375
           ],
           "sheetPosition": "0px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            285,
+            375
+          ],
+          "sheetPosition": "0px -288px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         }
       ],
       "stopped": {
@@ -533,11 +533,11 @@
             72
           ],
           "position": [
-            255,
+            285,
             375
           ],
           "sheetPosition": "-96px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -548,11 +548,11 @@
             72
           ],
           "position": [
-            255,
+            285,
             345
           ],
           "sheetPosition": "0px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -563,11 +563,11 @@
             72
           ],
           "position": [
-            255,
+            285,
             345
           ],
           "sheetPosition": "0px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -578,11 +578,26 @@
             72
           ],
           "position": [
-            255,
+            285,
             345
           ],
           "sheetPosition": "0px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911\")"
+        },
+        {
+          "direction": "up",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            285,
+            345
+          ],
+          "sheetPosition": "0px -432px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -593,11 +608,11 @@
             72
           ],
           "position": [
-            255,
+            285,
             315
           ],
           "sheetPosition": "-96px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -608,11 +623,11 @@
             72
           ],
           "position": [
-            255,
+            285,
             315
           ],
           "sheetPosition": "-96px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -623,11 +638,11 @@
             72
           ],
           "position": [
-            255,
+            285,
             315
           ],
           "sheetPosition": "-96px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -638,11 +653,11 @@
             72
           ],
           "position": [
-            255,
+            285,
             285
           ],
           "sheetPosition": "-192px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -653,11 +668,11 @@
             72
           ],
           "position": [
-            255,
+            285,
             285
           ],
           "sheetPosition": "-192px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -668,11 +683,11 @@
             72
           ],
           "position": [
-            255,
+            285,
             285
           ],
           "sheetPosition": "-192px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -683,11 +698,11 @@
             72
           ],
           "position": [
-            255,
+            285,
             255
           ],
           "sheetPosition": "-288px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -698,11 +713,11 @@
             72
           ],
           "position": [
-            255,
+            285,
             255
           ],
           "sheetPosition": "-288px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -713,11 +728,11 @@
             72
           ],
           "position": [
-            255,
+            285,
             255
           ],
           "sheetPosition": "-288px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -728,11 +743,11 @@
             72
           ],
           "position": [
-            255,
+            285,
             225
           ],
           "sheetPosition": "0px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -743,26 +758,11 @@
             72
           ],
           "position": [
-            255,
+            285,
             225
           ],
           "sheetPosition": "0px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
-        },
-        {
-          "direction": "up",
-          "moving": "true",
-          "frame": 0,
-          "size": [
-            48,
-            72
-          ],
-          "position": [
-            255,
-            225
-          ],
-          "sheetPosition": "0px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         }
       ],
       "stopped": {
@@ -783,11 +783,11 @@
             72
           ],
           "position": [
-            255,
-            195
+            285,
+            225
           ],
           "sheetPosition": "-96px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -798,11 +798,11 @@
             72
           ],
           "position": [
-            255,
-            225
+            285,
+            255
           ],
           "sheetPosition": "0px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -813,11 +813,11 @@
             72
           ],
           "position": [
-            255,
-            225
+            285,
+            255
           ],
           "sheetPosition": "0px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -828,11 +828,11 @@
             72
           ],
           "position": [
-            255,
-            225
+            285,
+            255
           ],
           "sheetPosition": "0px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -843,11 +843,11 @@
             72
           ],
           "position": [
-            255,
-            225
+            285,
+            255
           ],
           "sheetPosition": "0px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -858,11 +858,11 @@
             72
           ],
           "position": [
-            255,
-            255
+            285,
+            285
           ],
           "sheetPosition": "-96px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -873,11 +873,11 @@
             72
           ],
           "position": [
-            255,
-            255
+            285,
+            285
           ],
           "sheetPosition": "-96px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -888,11 +888,11 @@
             72
           ],
           "position": [
-            255,
-            255
+            285,
+            285
           ],
           "sheetPosition": "-96px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -903,11 +903,11 @@
             72
           ],
           "position": [
-            255,
-            285
+            285,
+            315
           ],
           "sheetPosition": "-192px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -918,11 +918,11 @@
             72
           ],
           "position": [
-            255,
-            285
+            285,
+            315
           ],
           "sheetPosition": "-192px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -933,26 +933,11 @@
             72
           ],
           "position": [
-            255,
-            285
+            285,
+            315
           ],
           "sheetPosition": "-192px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
-        },
-        {
-          "direction": "down",
-          "moving": "true",
-          "frame": 2,
-          "size": [
-            48,
-            72
-          ],
-          "position": [
-            255,
-            285
-          ],
-          "sheetPosition": "-192px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -963,11 +948,11 @@
             72
           ],
           "position": [
-            255,
-            315
+            285,
+            345
           ],
           "sheetPosition": "-288px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -978,11 +963,26 @@
             72
           ],
           "position": [
-            255,
-            315
+            285,
+            345
           ],
           "sheetPosition": "-288px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911\")"
+        },
+        {
+          "direction": "down",
+          "moving": "true",
+          "frame": 3,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            285,
+            345
+          ],
+          "sheetPosition": "-288px 0px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -993,11 +993,11 @@
             72
           ],
           "position": [
-            255,
-            345
+            285,
+            375
           ],
           "sheetPosition": "0px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -1008,11 +1008,11 @@
             72
           ],
           "position": [
-            255,
-            345
+            285,
+            375
           ],
           "sheetPosition": "0px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-teal-modern-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         }
       ],
       "stopped": {
@@ -1025,19 +1025,19 @@
   "screenshots": [
     {
       "file": "local-game-216-production-preview-left.png",
-      "sha256": "cd08c7698ed4be51fa13e13ec050607812a00113a88a820a3b90bd8152df6383"
+      "sha256": "2b6548a1211a53cb85035de1d9cb1e62942075816828c30c8786ff9b42c2b347"
     },
     {
       "file": "local-game-216-production-preview-right.png",
-      "sha256": "07c64cf4d239907cfb83275a5d47f0de3452976516041d082d2906ff9e842a6b"
+      "sha256": "ff3ee713e40ec64ed7593f0d17b2f995c5f627dcf74fdf9105d921e68e4d7d6e"
     },
     {
       "file": "local-game-216-production-preview-up.png",
-      "sha256": "cbde30d33f532676a8c03ea4b4664a19531778d78c874a9b0a4b6ab44174b8d3"
+      "sha256": "dbdfe657713dcdf1d64da8e54f9e95d87f849c4a2861d518c16c6478b980fefd"
     },
     {
       "file": "local-game-216-production-preview-down.png",
-      "sha256": "aef0ad6d6fc3ab9c0872769831720af9b7d8854bded0c4b84a983d6a6f27b467"
+      "sha256": "8f5918c7546da44831c969b499ecb99ac7895f33a10f81664e9a7780e16b97c2"
     }
   ],
   "visualReview": "Captured real joystick movement; screenshots require separate visual inspection."

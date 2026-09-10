@@ -1,0 +1,413 @@
+{
+  "commit": "4c19619f76f138f5f98976a4289340e9dded4435",
+  "directions": {
+    "front": {
+      "headSha256": "33af411d7f42a202f2ecba4be2e2152070d7de05d25e7a949c37ab11e247afdc",
+      "skeleton": "../../common-three-head-216-v1/skeleton.json",
+      "frames": [
+        {
+          "forward": "Left",
+          "depth": {
+            "Left": 0,
+            "Right": -8
+          },
+          "rotations": {
+            "thighRight": -2,
+            "calfRight": 6,
+            "shoeRight": -4,
+            "forearmLeft": 2,
+            "handLeft": -2,
+            "forearmRight": 2,
+            "handRight": -2
+          }
+        },
+        {
+          "forward": null,
+          "depth": {},
+          "rotations": {}
+        },
+        {
+          "forward": "Right",
+          "depth": {
+            "Left": -8,
+            "Right": 0
+          },
+          "rotations": {
+            "thighLeft": 2,
+            "calfLeft": -6,
+            "shoeLeft": 4,
+            "forearmLeft": -2,
+            "handLeft": 2,
+            "forearmRight": -2,
+            "handRight": 2
+          }
+        },
+        {
+          "forward": null,
+          "depth": {},
+          "rotations": {}
+        }
+      ],
+      "parts": {
+        "shadow": {
+          "pivot": [
+            96,
+            270
+          ],
+          "height": 12
+        },
+        "backHair": {
+          "pivot": [
+            96,
+            126
+          ],
+          "height": 67
+        },
+        "face": {
+          "pivot": [
+            96,
+            126
+          ],
+          "height": 60
+        },
+        "frontHair": {
+          "pivot": [
+            96,
+            126
+          ],
+          "height": 52
+        },
+        "neckCollar": {
+          "pivot": [
+            96,
+            126
+          ],
+          "height": 10.883721
+        },
+        "neckSkin": {
+          "pivot": [
+            96,
+            126
+          ],
+          "height": 9.209302
+        },
+        "torsoShell": {
+          "pivot": [
+            96,
+            176.232558
+          ],
+          "height": 73.674419
+        },
+        "armLeftSkin": {
+          "pivot": [
+            119,
+            136.883721
+          ],
+          "height": 60.27907
+        },
+        "armRightSkin": {
+          "pivot": [
+            73,
+            136.883721
+          ],
+          "height": 60.27907
+        },
+        "legLeftSkin": {
+          "pivot": [
+            106,
+            192.139535
+          ],
+          "height": 79.534884
+        },
+        "legRightSkin": {
+          "pivot": [
+            86,
+            192.139535
+          ],
+          "height": 79.534884
+        }
+      }
+    },
+    "left": {
+      "headSha256": "f173e19abba69c5f158234fed0719eadd6ae92a285590fb086735827137e4a23",
+      "skeleton": "../../common-three-head-216-v1/skeleton.json",
+      "frames": [
+        {
+          "forward": "Right",
+          "root": [
+            0,
+            0
+          ],
+          "upperArmRight": -3,
+          "forearmRight": 1,
+          "handRight": 2,
+          "thighRight": 8,
+          "calfRight": -8,
+          "shoeRight": 0,
+          "thighLeft": -8,
+          "calfLeft": -8,
+          "shoeLeft": 16,
+          "ground": {
+            "Right": 0.65,
+            "Left": -0.837209
+          }
+        },
+        {
+          "root": [
+            0,
+            0
+          ],
+          "ground": {}
+        },
+        {
+          "forward": "Left",
+          "root": [
+            0,
+            0
+          ],
+          "upperArmRight": 3,
+          "forearmRight": -1,
+          "handRight": -2,
+          "thighLeft": 8,
+          "calfLeft": -8,
+          "shoeLeft": 0,
+          "thighRight": -8,
+          "calfRight": -8,
+          "shoeRight": 16,
+          "ground": {
+            "Left": 0.309767,
+            "Right": -0.837209
+          }
+        },
+        {
+          "root": [
+            0,
+            0
+          ],
+          "ground": {}
+        }
+      ],
+      "parts": {
+        "neck": {
+          "pivot": [
+            96,
+            126
+          ],
+          "height": 11.72093
+        },
+        "torsoShell": {
+          "pivot": [
+            96,
+            176.232558
+          ],
+          "height": 73.674419
+        },
+        "legLeftSkin": {
+          "pivot": [
+            94,
+            192.139535
+          ],
+          "height": 79.534884
+        },
+        "legRightSkin": {
+          "pivot": [
+            98,
+            192.139535
+          ],
+          "height": 79.534884
+        }
+      }
+    },
+    "right": {
+      "headSha256": "70bd3b8f0feb494aa1fbd87348b9d8a8e4017025a863375928b760353a2139e5",
+      "skeleton": "../../common-three-head-216-v1/skeleton.json",
+      "frames": [
+        {
+          "forward": "Left",
+          "root": [
+            0,
+            0
+          ],
+          "upperArmLeft": 3,
+          "forearmLeft": -1,
+          "handLeft": -2,
+          "thighLeft": -8,
+          "calfLeft": 8,
+          "shoeLeft": 0,
+          "thighRight": 8,
+          "calfRight": 8,
+          "shoeRight": -16,
+          "ground": {
+            "Left": 1.146977,
+            "Right": 0
+          }
+        },
+        {
+          "root": [
+            0,
+            0
+          ],
+          "ground": {
+            "Left": 0.837209,
+            "Right": 0.837209
+          }
+        },
+        {
+          "forward": "Right",
+          "root": [
+            0,
+            0
+          ],
+          "upperArmLeft": -3,
+          "forearmLeft": 1,
+          "handLeft": 2,
+          "thighRight": -8,
+          "calfRight": 8,
+          "shoeRight": 0,
+          "thighLeft": 8,
+          "calfLeft": 8,
+          "shoeLeft": -16,
+          "ground": {
+            "Right": 1.146977,
+            "Left": 0
+          }
+        },
+        {
+          "root": [
+            0,
+            0
+          ],
+          "ground": {
+            "Left": 0.837209,
+            "Right": 0.837209
+          }
+        }
+      ],
+      "parts": {
+        "neck": {
+          "pivot": [
+            96,
+            126
+          ],
+          "height": 11.72093
+        },
+        "torsoShell": {
+          "pivot": [
+            96,
+            176.232558
+          ],
+          "height": 73.674419
+        },
+        "legLeftSkin": {
+          "pivot": [
+            94,
+            192.139535
+          ],
+          "height": 79.534884
+        },
+        "legRightSkin": {
+          "pivot": [
+            98,
+            192.139535
+          ],
+          "height": 79.534884
+        }
+      }
+    },
+    "back": {
+      "headSha256": "3865fe2c97f167b36ebda4c822b58bef4f5d37f2e2a9b8cae620b647e321eda7",
+      "skeleton": "../../common-three-head-216-v1/skeleton.json",
+      "frames": [
+        {
+          "label": "left-foot-forward",
+          "upperArmLeft": 2,
+          "forearmLeft": -1,
+          "handLeft": -1,
+          "upperArmRight": 2,
+          "forearmRight": -1,
+          "handRight": -1,
+          "forward": "Left",
+          "legs": {
+            "Left": {
+              "depthY": -8,
+              "thigh": 2,
+              "calf": -4,
+              "shoe": 2
+            },
+            "Right": {
+              "depthY": 0
+            }
+          }
+        },
+        {
+          "label": "neutral",
+          "forward": null,
+          "legs": {
+            "Left": {
+              "depthY": 0
+            },
+            "Right": {
+              "depthY": 0
+            }
+          }
+        },
+        {
+          "label": "right-foot-forward",
+          "upperArmLeft": -2,
+          "forearmLeft": 1,
+          "handLeft": 1,
+          "upperArmRight": -2,
+          "forearmRight": 1,
+          "handRight": 1,
+          "forward": "Right",
+          "legs": {
+            "Left": {
+              "depthY": 0
+            },
+            "Right": {
+              "depthY": -8,
+              "thigh": -2,
+              "calf": 4,
+              "shoe": -2
+            }
+          }
+        },
+        {
+          "label": "neutral",
+          "forward": null,
+          "legs": {
+            "Left": {
+              "depthY": 0
+            },
+            "Right": {
+              "depthY": 0
+            }
+          }
+        }
+      ],
+      "parts": {
+        "neck": {
+          "pivot": [
+            96,
+            126
+          ],
+          "height": 11.72093
+        },
+        "legLeftSkin": {
+          "pivot": [
+            86,
+            192.139535
+          ],
+          "height": 79.534884
+        },
+        "legRightSkin": {
+          "pivot": [
+            106,
+            192.139535
+          ],
+          "height": 79.534884
+        }
+      }
+    }
+  }
+}

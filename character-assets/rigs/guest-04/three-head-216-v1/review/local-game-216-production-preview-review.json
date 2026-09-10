@@ -13,11 +13,11 @@
     390,
     844
   ],
-  "sheetSha256": "73ce6cc4998d8d2a6e0c99ecd3a8cd11207fe9f081c9f5bfa0aae166d6c41096",
-  "sourceSheetSha256": "83c2c6188e27d914df8354fdb4933190f6b8b9c30fcdc3ef0bd52256c2068231",
+  "sheetSha256": "220e068fb70a16b35383c2eac3629b415063b3affe3b1a72469fff0e0f32e9cd",
+  "sourceSheetSha256": "3c80abf674531c95628bbf32b074d41206d76af4aaf03886557bee1cf194f6e0",
   "response": {
     "status": 200,
-    "sha256": "73ce6cc4998d8d2a6e0c99ecd3a8cd11207fe9f081c9f5bfa0aae166d6c41096",
+    "sha256": "220e068fb70a16b35383c2eac3629b415063b3affe3b1a72469fff0e0f32e9cd",
     "controller": "http://127.0.0.1:5198/service-worker.js"
   },
   "rows": [
@@ -25,7 +25,7 @@
       "direction": "left",
       "samples": [
         {
-          "direction": "left",
+          "direction": "down",
           "moving": "false",
           "frame": 1,
           "size": [
@@ -36,8 +36,8 @@
             285,
             375
           ],
-          "sheetPosition": "-96px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "sheetPosition": "0px 0px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__idle.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -52,7 +52,7 @@
             375
           ],
           "sheetPosition": "0px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -67,7 +67,7 @@
             375
           ],
           "sheetPosition": "0px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -82,22 +82,7 @@
             375
           ],
           "sheetPosition": "0px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-three-head-216-v1-20260910\")"
-        },
-        {
-          "direction": "left",
-          "moving": "true",
-          "frame": 0,
-          "size": [
-            48,
-            72
-          ],
-          "position": [
-            255,
-            375
-          ],
-          "sheetPosition": "0px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -112,7 +97,7 @@
             375
           ],
           "sheetPosition": "-96px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -127,7 +112,7 @@
             375
           ],
           "sheetPosition": "-96px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -142,7 +127,7 @@
             375
           ],
           "sheetPosition": "-96px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -157,7 +142,7 @@
             375
           ],
           "sheetPosition": "-192px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -172,7 +157,7 @@
             375
           ],
           "sheetPosition": "-192px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -187,7 +172,7 @@
             375
           ],
           "sheetPosition": "-192px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -202,7 +187,7 @@
             375
           ],
           "sheetPosition": "-288px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -217,7 +202,7 @@
             375
           ],
           "sheetPosition": "-288px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -232,7 +217,7 @@
             375
           ],
           "sheetPosition": "-288px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -247,7 +232,7 @@
             375
           ],
           "sheetPosition": "0px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -262,7 +247,22 @@
             375
           ],
           "sheetPosition": "0px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-soft-tailoring-v1-20260911\")"
+        },
+        {
+          "direction": "left",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            135,
+            375
+          ],
+          "sheetPosition": "0px -144px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         }
       ],
       "stopped": {
@@ -283,11 +283,11 @@
             72
           ],
           "position": [
-            135,
+            105,
             375
           ],
           "sheetPosition": "-96px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "right",
@@ -298,11 +298,11 @@
             72
           ],
           "position": [
-            165,
+            135,
             375
           ],
           "sheetPosition": "0px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "right",
@@ -313,11 +313,11 @@
             72
           ],
           "position": [
-            165,
+            135,
             375
           ],
           "sheetPosition": "0px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "right",
@@ -328,26 +328,11 @@
             72
           ],
           "position": [
-            165,
+            135,
             375
           ],
           "sheetPosition": "0px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-three-head-216-v1-20260910\")"
-        },
-        {
-          "direction": "right",
-          "moving": "true",
-          "frame": 0,
-          "size": [
-            48,
-            72
-          ],
-          "position": [
-            165,
-            375
-          ],
-          "sheetPosition": "0px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "right",
@@ -358,11 +343,11 @@
             72
           ],
           "position": [
-            195,
+            165,
             375
           ],
           "sheetPosition": "-96px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "right",
@@ -373,11 +358,11 @@
             72
           ],
           "position": [
-            195,
+            165,
             375
           ],
           "sheetPosition": "-96px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "right",
@@ -388,11 +373,26 @@
             72
           ],
           "position": [
-            195,
+            165,
             375
           ],
           "sheetPosition": "-96px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-soft-tailoring-v1-20260911\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            165,
+            375
+          ],
+          "sheetPosition": "-96px -288px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "right",
@@ -403,11 +403,11 @@
             72
           ],
           "position": [
-            225,
+            195,
             375
           ],
           "sheetPosition": "-192px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "right",
@@ -418,11 +418,11 @@
             72
           ],
           "position": [
-            225,
+            195,
             375
           ],
           "sheetPosition": "-192px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "right",
@@ -433,11 +433,11 @@
             72
           ],
           "position": [
-            225,
+            195,
             375
           ],
           "sheetPosition": "-192px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "right",
@@ -448,11 +448,11 @@
             72
           ],
           "position": [
-            255,
+            225,
             375
           ],
           "sheetPosition": "-288px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "right",
@@ -463,11 +463,26 @@
             72
           ],
           "position": [
-            255,
+            225,
             375
           ],
           "sheetPosition": "-288px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-soft-tailoring-v1-20260911\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 3,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            225,
+            375
+          ],
+          "sheetPosition": "-288px -288px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "right",
@@ -478,11 +493,11 @@
             72
           ],
           "position": [
-            285,
+            255,
             375
           ],
           "sheetPosition": "0px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "right",
@@ -493,26 +508,11 @@
             72
           ],
           "position": [
-            285,
+            255,
             375
           ],
           "sheetPosition": "0px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-three-head-216-v1-20260910\")"
-        },
-        {
-          "direction": "right",
-          "moving": "true",
-          "frame": 0,
-          "size": [
-            48,
-            72
-          ],
-          "position": [
-            285,
-            375
-          ],
-          "sheetPosition": "0px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         }
       ],
       "stopped": {
@@ -533,11 +533,11 @@
             72
           ],
           "position": [
-            285,
+            255,
             375
           ],
           "sheetPosition": "-96px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -548,11 +548,11 @@
             72
           ],
           "position": [
-            285,
+            255,
             345
           ],
           "sheetPosition": "0px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -563,11 +563,11 @@
             72
           ],
           "position": [
-            285,
+            255,
             345
           ],
           "sheetPosition": "0px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -578,11 +578,11 @@
             72
           ],
           "position": [
-            285,
+            255,
             345
           ],
           "sheetPosition": "0px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -593,11 +593,11 @@
             72
           ],
           "position": [
-            285,
+            255,
             345
           ],
           "sheetPosition": "0px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -608,11 +608,11 @@
             72
           ],
           "position": [
-            285,
+            255,
             315
           ],
           "sheetPosition": "-96px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -623,11 +623,11 @@
             72
           ],
           "position": [
-            285,
+            255,
             315
           ],
           "sheetPosition": "-96px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -638,11 +638,11 @@
             72
           ],
           "position": [
-            285,
+            255,
             315
           ],
           "sheetPosition": "-96px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -653,11 +653,11 @@
             72
           ],
           "position": [
-            285,
+            255,
             285
           ],
           "sheetPosition": "-192px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -668,11 +668,11 @@
             72
           ],
           "position": [
-            285,
+            255,
             285
           ],
           "sheetPosition": "-192px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -683,11 +683,11 @@
             72
           ],
           "position": [
-            285,
+            255,
             285
           ],
           "sheetPosition": "-192px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -698,11 +698,11 @@
             72
           ],
           "position": [
-            285,
+            255,
             255
           ],
           "sheetPosition": "-288px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -713,11 +713,11 @@
             72
           ],
           "position": [
-            285,
+            255,
             255
           ],
           "sheetPosition": "-288px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -728,11 +728,11 @@
             72
           ],
           "position": [
-            285,
+            255,
             255
           ],
           "sheetPosition": "-288px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -743,11 +743,11 @@
             72
           ],
           "position": [
-            285,
+            255,
             225
           ],
           "sheetPosition": "0px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -758,11 +758,11 @@
             72
           ],
           "position": [
-            285,
+            255,
             225
           ],
           "sheetPosition": "0px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         }
       ],
       "stopped": {
@@ -783,11 +783,11 @@
             72
           ],
           "position": [
-            285,
+            255,
             225
           ],
           "sheetPosition": "-96px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -798,11 +798,11 @@
             72
           ],
           "position": [
-            285,
+            255,
             255
           ],
           "sheetPosition": "0px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -813,11 +813,11 @@
             72
           ],
           "position": [
-            285,
+            255,
             255
           ],
           "sheetPosition": "0px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -828,11 +828,11 @@
             72
           ],
           "position": [
-            285,
+            255,
             255
           ],
           "sheetPosition": "0px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -843,11 +843,11 @@
             72
           ],
           "position": [
-            285,
+            255,
             255
           ],
           "sheetPosition": "0px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -858,11 +858,11 @@
             72
           ],
           "position": [
-            285,
+            255,
             285
           ],
           "sheetPosition": "-96px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -873,11 +873,11 @@
             72
           ],
           "position": [
-            285,
+            255,
             285
           ],
           "sheetPosition": "-96px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -888,11 +888,11 @@
             72
           ],
           "position": [
-            285,
+            255,
             285
           ],
           "sheetPosition": "-96px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -903,11 +903,11 @@
             72
           ],
           "position": [
-            285,
+            255,
             315
           ],
           "sheetPosition": "-192px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -918,11 +918,11 @@
             72
           ],
           "position": [
-            285,
+            255,
             315
           ],
           "sheetPosition": "-192px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -933,11 +933,26 @@
             72
           ],
           "position": [
-            285,
+            255,
             315
           ],
           "sheetPosition": "-192px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-soft-tailoring-v1-20260911\")"
+        },
+        {
+          "direction": "down",
+          "moving": "true",
+          "frame": 2,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            315
+          ],
+          "sheetPosition": "-192px 0px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -948,11 +963,11 @@
             72
           ],
           "position": [
-            285,
+            255,
             345
           ],
           "sheetPosition": "-288px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -963,11 +978,11 @@
             72
           ],
           "position": [
-            285,
+            255,
             345
           ],
           "sheetPosition": "-288px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -978,11 +993,11 @@
             72
           ],
           "position": [
-            285,
+            255,
             345
           ],
           "sheetPosition": "-288px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -993,26 +1008,11 @@
             72
           ],
           "position": [
-            285,
+            255,
             375
           ],
           "sheetPosition": "0px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-three-head-216-v1-20260910\")"
-        },
-        {
-          "direction": "down",
-          "moving": "true",
-          "frame": 0,
-          "size": [
-            48,
-            72
-          ],
-          "position": [
-            285,
-            375
-          ],
-          "sheetPosition": "0px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-blazer__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         }
       ],
       "stopped": {
@@ -1025,19 +1025,19 @@
   "screenshots": [
     {
       "file": "local-game-216-production-preview-left.png",
-      "sha256": "ec57a6871b50a9b588476ad6c88a08e7805f897513fe988307280d71ae307c3f"
+      "sha256": "e8de69f53336b9dacdcc247be999e575b843a14fe8b3be6b5fe1e30e90f27513"
     },
     {
       "file": "local-game-216-production-preview-right.png",
-      "sha256": "c5c1c797cb693e7d9c5f5714bc789504353cc3977354073fe56af8308375c97d"
+      "sha256": "bd26d6e456799f5db0533f0ab044916347df96805ed4994b5f551c009ec7493d"
     },
     {
       "file": "local-game-216-production-preview-up.png",
-      "sha256": "abf493d984c9dd7b3cc91c4036c8a59a418795b87602c10e5973bd91c1aceb0e"
+      "sha256": "9dc3ca59faec59e3863b06e3faef249232ed81cb37a2065ac18bf8b795524051"
     },
     {
       "file": "local-game-216-production-preview-down.png",
-      "sha256": "34a18ea6028615bb6cbbd6a831a8d4622a51980b32749df913a1193282f04d1a"
+      "sha256": "c7ee7040062d0669eef8767de5283c12af6212a7f86d58e3ddbb3f8e30d57202"
     }
   ],
   "visualReview": "Captured real joystick movement; screenshots require separate visual inspection."

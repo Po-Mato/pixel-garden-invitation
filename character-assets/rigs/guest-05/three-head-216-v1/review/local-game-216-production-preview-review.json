@@ -37,7 +37,7 @@
             375
           ],
           "sheetPosition": "0px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__idle.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__idle.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -52,7 +52,7 @@
             375
           ],
           "sheetPosition": "0px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -67,7 +67,7 @@
             375
           ],
           "sheetPosition": "0px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -82,7 +82,22 @@
             375
           ],
           "sheetPosition": "0px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-soft-tailoring-v1-20260911\")"
+        },
+        {
+          "direction": "left",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            375
+          ],
+          "sheetPosition": "0px -144px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -97,7 +112,7 @@
             375
           ],
           "sheetPosition": "-96px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -112,7 +127,7 @@
             375
           ],
           "sheetPosition": "-96px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -127,7 +142,7 @@
             375
           ],
           "sheetPosition": "-96px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -142,7 +157,7 @@
             375
           ],
           "sheetPosition": "-192px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -157,7 +172,7 @@
             375
           ],
           "sheetPosition": "-192px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -172,7 +187,7 @@
             375
           ],
           "sheetPosition": "-192px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -187,7 +202,7 @@
             375
           ],
           "sheetPosition": "-288px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -202,7 +217,7 @@
             375
           ],
           "sheetPosition": "-288px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -217,7 +232,7 @@
             375
           ],
           "sheetPosition": "-288px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -232,7 +247,7 @@
             375
           ],
           "sheetPosition": "0px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -247,22 +262,7 @@
             375
           ],
           "sheetPosition": "0px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
-        },
-        {
-          "direction": "left",
-          "moving": "true",
-          "frame": 0,
-          "size": [
-            48,
-            72
-          ],
-          "position": [
-            135,
-            375
-          ],
-          "sheetPosition": "0px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         }
       ],
       "stopped": {
@@ -283,11 +283,11 @@
             72
           ],
           "position": [
-            105,
+            135,
             375
           ],
           "sheetPosition": "-96px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "right",
@@ -298,11 +298,11 @@
             72
           ],
           "position": [
-            135,
+            165,
             375
           ],
           "sheetPosition": "0px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "right",
@@ -313,11 +313,11 @@
             72
           ],
           "position": [
-            135,
+            165,
             375
           ],
           "sheetPosition": "0px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "right",
@@ -328,11 +328,26 @@
             72
           ],
           "position": [
-            135,
+            165,
             375
           ],
           "sheetPosition": "0px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-soft-tailoring-v1-20260911\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            165,
+            375
+          ],
+          "sheetPosition": "0px -288px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "right",
@@ -343,11 +358,11 @@
             72
           ],
           "position": [
-            165,
+            195,
             375
           ],
           "sheetPosition": "-96px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "right",
@@ -358,11 +373,11 @@
             72
           ],
           "position": [
-            165,
+            195,
             375
           ],
           "sheetPosition": "-96px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "right",
@@ -373,11 +388,11 @@
             72
           ],
           "position": [
-            165,
+            195,
             375
           ],
           "sheetPosition": "-96px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "right",
@@ -388,11 +403,11 @@
             72
           ],
           "position": [
-            195,
+            225,
             375
           ],
           "sheetPosition": "-192px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "right",
@@ -403,11 +418,11 @@
             72
           ],
           "position": [
-            195,
+            225,
             375
           ],
           "sheetPosition": "-192px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "right",
@@ -418,11 +433,11 @@
             72
           ],
           "position": [
-            195,
+            225,
             375
           ],
           "sheetPosition": "-192px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "right",
@@ -433,11 +448,11 @@
             72
           ],
           "position": [
-            225,
+            255,
             375
           ],
           "sheetPosition": "-288px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "right",
@@ -448,11 +463,11 @@
             72
           ],
           "position": [
-            225,
+            255,
             375
           ],
           "sheetPosition": "-288px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "right",
@@ -463,11 +478,11 @@
             72
           ],
           "position": [
-            225,
+            255,
             375
           ],
           "sheetPosition": "-288px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "right",
@@ -478,11 +493,11 @@
             72
           ],
           "position": [
-            255,
+            285,
             375
           ],
           "sheetPosition": "0px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "right",
@@ -493,26 +508,11 @@
             72
           ],
           "position": [
-            255,
+            285,
             375
           ],
           "sheetPosition": "0px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
-        },
-        {
-          "direction": "right",
-          "moving": "true",
-          "frame": 0,
-          "size": [
-            48,
-            72
-          ],
-          "position": [
-            255,
-            375
-          ],
-          "sheetPosition": "0px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         }
       ],
       "stopped": {
@@ -537,7 +537,7 @@
             375
           ],
           "sheetPosition": "-96px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -552,7 +552,7 @@
             345
           ],
           "sheetPosition": "0px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -567,7 +567,7 @@
             345
           ],
           "sheetPosition": "0px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -582,7 +582,7 @@
             345
           ],
           "sheetPosition": "0px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -597,7 +597,7 @@
             345
           ],
           "sheetPosition": "0px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -612,7 +612,7 @@
             315
           ],
           "sheetPosition": "-96px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -627,7 +627,7 @@
             315
           ],
           "sheetPosition": "-96px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -642,7 +642,7 @@
             315
           ],
           "sheetPosition": "-96px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -657,7 +657,7 @@
             285
           ],
           "sheetPosition": "-192px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -672,7 +672,7 @@
             285
           ],
           "sheetPosition": "-192px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -687,7 +687,7 @@
             285
           ],
           "sheetPosition": "-192px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -702,7 +702,7 @@
             255
           ],
           "sheetPosition": "-288px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -717,7 +717,7 @@
             255
           ],
           "sheetPosition": "-288px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -732,7 +732,7 @@
             255
           ],
           "sheetPosition": "-288px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -747,7 +747,7 @@
             225
           ],
           "sheetPosition": "0px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -762,7 +762,7 @@
             225
           ],
           "sheetPosition": "0px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         }
       ],
       "stopped": {
@@ -787,7 +787,7 @@
             225
           ],
           "sheetPosition": "-96px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -802,7 +802,7 @@
             255
           ],
           "sheetPosition": "0px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -817,7 +817,7 @@
             255
           ],
           "sheetPosition": "0px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -832,7 +832,7 @@
             255
           ],
           "sheetPosition": "0px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -847,7 +847,7 @@
             255
           ],
           "sheetPosition": "0px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -862,7 +862,7 @@
             285
           ],
           "sheetPosition": "-96px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -877,7 +877,7 @@
             285
           ],
           "sheetPosition": "-96px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -892,7 +892,7 @@
             285
           ],
           "sheetPosition": "-96px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -907,7 +907,7 @@
             315
           ],
           "sheetPosition": "-192px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -922,7 +922,7 @@
             315
           ],
           "sheetPosition": "-192px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -937,7 +937,7 @@
             315
           ],
           "sheetPosition": "-192px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -952,7 +952,7 @@
             345
           ],
           "sheetPosition": "-288px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -967,7 +967,7 @@
             345
           ],
           "sheetPosition": "-288px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -982,7 +982,7 @@
             345
           ],
           "sheetPosition": "-288px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -997,7 +997,7 @@
             375
           ],
           "sheetPosition": "0px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -1012,7 +1012,7 @@
             375
           ],
           "sheetPosition": "0px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-sage-bolero-dress__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         }
       ],
       "stopped": {
@@ -1025,19 +1025,19 @@
   "screenshots": [
     {
       "file": "local-game-216-production-preview-left.png",
-      "sha256": "411cb52bc2cb3dc9e617da9c6443b1a9e0ad4aa7c57c32820ac0440abcbb198f"
+      "sha256": "84f1cbc1d839aeab9ceaadf4d0f3ef7a2d18038afe9ccb66a7f8589d9e73eb82"
     },
     {
       "file": "local-game-216-production-preview-right.png",
-      "sha256": "970aae8b6262a0f7061ad86341958391b20252c439f10be1ec44a01b1cb43b9c"
+      "sha256": "0228671669eaa951b640ea34bee684ea7b8e09f68dddbcab8f9370677972e57d"
     },
     {
       "file": "local-game-216-production-preview-up.png",
-      "sha256": "9a1408c31af53ac06458b50645146dafb5ff865285c9d79f3a85a28e9ad25fc4"
+      "sha256": "63e6e4da7e9bf0065440bf41dc4788d5b947636d263fc29309a6eb3ced27fd99"
     },
     {
       "file": "local-game-216-production-preview-down.png",
-      "sha256": "13b1edfe6f899553ae5ee15eab5cd8099f0bfb49c3ec6376b914e0fd0e4e3bdf"
+      "sha256": "0f5ce9bbad78fb16ee02bb42f3a5f93ebd698b9a615dcbcd160ab768918c626a"
     }
   ],
   "visualReview": "Captured real joystick movement; screenshots require separate visual inspection."

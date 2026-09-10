@@ -3,7 +3,9 @@ import{createHash}from'node:crypto';
 import assert from'node:assert/strict';
 import sharp from'sharp';
 const id=process.argv[2]||'guest-03';assert.match(id,/^guest-(0[1-9]|1[0-2])$/);const characterNumber=Number(id.slice(-2));
-const base=new URL(`../character-assets/rigs/${id}/three-head-216-v1/`,import.meta.url),out=new URL('review/',base);
+const variant=process.argv[3]||'three-head-216-v1';
+assert.match(variant,/^three-head-[a-z0-9-]+$/);
+const base=new URL(`../character-assets/rigs/${id}/${variant}/`,import.meta.url),out=new URL('review/',base);
 await mkdir(out,{recursive:true});
 const directions=['front','left','right','back'],pixels=Buffer.alloc(768*1152*4),sources=[];
 for(const[row,d]of directions.entries())for(let frame=1;frame<=4;frame++){

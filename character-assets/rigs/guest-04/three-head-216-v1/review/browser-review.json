@@ -28,7 +28,7 @@
     4,
     1,
     1,
-    2,
+    1,
     2,
     2,
     3,
@@ -43,51 +43,51 @@
   "screenshots": [
     {
       "file": "mobile-front-neutral.png",
-      "sha256": "338764404ad527289d9d79f08fde35ad1fa85b9f6d2f4281d6d5ca8cfd5b4197"
+      "sha256": "d98824054544cc1ab1b9803ea4875c306c03fb21aea2a9b4ac7fd3ef5761dc67"
     },
     {
       "file": "mobile-front-step1-dark.png",
-      "sha256": "10c677c97ce4264ed8bb3f45fb3bdb143ab967de2085f83d6832fb20bd4571b3"
+      "sha256": "81821d485de65e5bdb367392b7ffbee4a814765d0566813af3f8f76586a30b39"
     },
     {
       "file": "mobile-front-step3-dark.png",
-      "sha256": "013f8ad4d13eafd480d8b661d949911eb86415b61e6b5305f00d99358521ce31"
+      "sha256": "c8aec88b674ec96e397afc122418cb7c164349daf592ed29d5d3973082466db7"
     },
     {
       "file": "mobile-left-neutral.png",
-      "sha256": "6799cb2cd41748f8abe95a67f26aa9aa1efd2d88d66af5bcfcde88c5eb935833"
+      "sha256": "6f99f82ec30880fcbcc50878e6c283589bc67724b511123af9a87ce3ba22861b"
     },
     {
       "file": "mobile-left-step1-dark.png",
-      "sha256": "014e13752f75a34e57673d4fbfc4e3df240783cc9cf784dd06b9ce2c5b4b72c1"
+      "sha256": "9a6394cc3ea035a94d983070b424f976f5cb4e023e04fd2c4e110c0881a2a82a"
     },
     {
       "file": "mobile-left-step3-dark.png",
-      "sha256": "71fed7e5393cdd86ce21171d0364bc81cc381b524902a14b66f89087e0c589fd"
+      "sha256": "4a01f2c9fab79f160ca48a07ada2277ede01c7fe505f9d4ac0948bb7725479ce"
     },
     {
       "file": "mobile-right-neutral.png",
-      "sha256": "99645e90e4cc161018444529348d186696528c2e60a6d8ed8f72d8fbe6863fcc"
+      "sha256": "8afe830a6077155ec21fb56abdfff1357cc78a2473bb2c019e696cb7d2d1b4b9"
     },
     {
       "file": "mobile-right-step1-dark.png",
-      "sha256": "b230afb78020b8f726e556f30bd9b8538ac17bf19aae52a8fd5322c532e9c4a1"
+      "sha256": "f3374095b7cc29a8658954bfbb64ac2b2cc67198bbcf2f69fc0f8ab633c72813"
     },
     {
       "file": "mobile-right-step3-dark.png",
-      "sha256": "1b04dfec246617fd4df98b3997a7103440ac0d6468e5131b1cb07584f07a50a6"
+      "sha256": "622299e11e114864a472c4c0691177a4c82e2a4b8ce6650b8c5e8376e028bbd4"
     },
     {
       "file": "mobile-back-neutral.png",
-      "sha256": "d54119a818e81642999b8b79cc467493f0aff6134ad9835cd98954af0cb42fd6"
+      "sha256": "010c3a7c87800c21fa7114701144916c49d20968b0f12a446f6753096f822564"
     },
     {
       "file": "mobile-back-step1-dark.png",
-      "sha256": "e8f97ea4e293753f9d6a11d62f7f04edec7dd57aafa49dacd8f7404817e0e437"
+      "sha256": "105b9cde3c5b284e718a3fd19036622326d8d624734e73c9f9e1569db1792774"
     },
     {
       "file": "mobile-back-step3-dark.png",
-      "sha256": "4a1d8104081041e227467a2dd5e72355a7519e36633d8263af89a73db9c252fe"
+      "sha256": "c5476d577ce24fc7ff2c0cd5769998966877e825270b429ee56c2dbc23523db7"
     }
   ],
   "frameSources": [
@@ -154,25 +154,25 @@
     {
       "direction": "back",
       "frame": 1,
-      "sha256": "637a0ac64dd4aa9d1f62f932f1b63dd55f9600520899dbf727c273bb526d2621"
+      "sha256": "5165c07e57ffd94311d1a1fb928f49de0001bfef115797081a40c5216b350696"
     },
     {
       "direction": "back",
       "frame": 2,
-      "sha256": "08af57ac67fb89060bd57b3954cb2a473f43febb7a5666ad28330d670730dc22"
+      "sha256": "8c2fe0dd3956ada6f0bae9a865792733bccd0d9cab8f706954ba1c6a88658f08"
     },
     {
       "direction": "back",
       "frame": 3,
-      "sha256": "1fa9ad1924515c0312ea98f086c3a32f9db96eebc34a22aa5ed5720deca4aa53"
+      "sha256": "bb1cbb244a32a086ed8cb98955b9fcf419d7e25edd827517a8b704a53643ef8a"
     },
     {
       "direction": "back",
       "frame": 4,
-      "sha256": "08af57ac67fb89060bd57b3954cb2a473f43febb7a5666ad28330d670730dc22"
+      "sha256": "8c2fe0dd3956ada6f0bae9a865792733bccd0d9cab8f706954ba1c6a88658f08"
     }
   ],
-  "sheetSha256": "83c2c6188e27d914df8354fdb4933190f6b8b9c30fcdc3ef0bd52256c2068231",
+  "sheetSha256": "3c80abf674531c95628bbf32b074d41206d76af4aaf03886557bee1cf194f6e0",
   "runtimeIntegrated": false,
   "visualReview": "Captured browser evidence; human-like visual inspection is a separate pending gate, not inferred from these assertions."
 }

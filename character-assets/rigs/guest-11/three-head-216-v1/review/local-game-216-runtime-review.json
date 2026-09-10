@@ -1,7 +1,9 @@
 {
   "id": "guest-11",
   "developmentOnly": true,
+  "productionPreview": false,
   "productionIntegrated": false,
+  "remoteProductionVerified": false,
   "stagedRuntime": true,
   "sourceFrameSize": [
     96,
@@ -18,7 +20,7 @@
       "direction": "left",
       "samples": [
         {
-          "direction": "down",
+          "direction": "right",
           "moving": "false",
           "frame": 1,
           "size": [
@@ -29,7 +31,22 @@
             285,
             375
           ],
-          "sheetPosition": "-96px 0px",
+          "sheetPosition": "-96px -288px",
+          "url": "url(\"http://127.0.0.1:5197/__guest216-pilot/guest-11-runtime.png?v=three-head-216-v1\")"
+        },
+        {
+          "direction": "left",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            375
+          ],
+          "sheetPosition": "0px -144px",
           "url": "url(\"http://127.0.0.1:5197/__guest216-pilot/guest-11-runtime.png?v=three-head-216-v1\")"
         },
         {
@@ -210,21 +227,6 @@
             375
           ],
           "sheetPosition": "-288px -144px",
-          "url": "url(\"http://127.0.0.1:5197/__guest216-pilot/guest-11-runtime.png?v=three-head-216-v1\")"
-        },
-        {
-          "direction": "left",
-          "moving": "true",
-          "frame": 0,
-          "size": [
-            48,
-            72
-          ],
-          "position": [
-            135,
-            375
-          ],
-          "sheetPosition": "0px -144px",
           "url": "url(\"http://127.0.0.1:5197/__guest216-pilot/guest-11-runtime.png?v=three-head-216-v1\")"
         },
         {
@@ -276,7 +278,7 @@
             72
           ],
           "position": [
-            105,
+            135,
             375
           ],
           "sheetPosition": "-96px -144px",
@@ -291,7 +293,7 @@
             72
           ],
           "position": [
-            135,
+            165,
             375
           ],
           "sheetPosition": "0px -288px",
@@ -306,7 +308,7 @@
             72
           ],
           "position": [
-            135,
+            165,
             375
           ],
           "sheetPosition": "0px -288px",
@@ -321,7 +323,7 @@
             72
           ],
           "position": [
-            135,
+            165,
             375
           ],
           "sheetPosition": "0px -288px",
@@ -336,7 +338,7 @@
             72
           ],
           "position": [
-            135,
+            165,
             375
           ],
           "sheetPosition": "0px -288px",
@@ -351,7 +353,7 @@
             72
           ],
           "position": [
-            165,
+            195,
             375
           ],
           "sheetPosition": "-96px -288px",
@@ -366,7 +368,7 @@
             72
           ],
           "position": [
-            165,
+            195,
             375
           ],
           "sheetPosition": "-96px -288px",
@@ -381,7 +383,7 @@
             72
           ],
           "position": [
-            165,
+            195,
             375
           ],
           "sheetPosition": "-96px -288px",
@@ -396,7 +398,7 @@
             72
           ],
           "position": [
-            195,
+            225,
             375
           ],
           "sheetPosition": "-192px -288px",
@@ -411,7 +413,7 @@
             72
           ],
           "position": [
-            195,
+            225,
             375
           ],
           "sheetPosition": "-192px -288px",
@@ -426,22 +428,7 @@
             72
           ],
           "position": [
-            195,
-            375
-          ],
-          "sheetPosition": "-192px -288px",
-          "url": "url(\"http://127.0.0.1:5197/__guest216-pilot/guest-11-runtime.png?v=three-head-216-v1\")"
-        },
-        {
-          "direction": "right",
-          "moving": "true",
-          "frame": 2,
-          "size": [
-            48,
-            72
-          ],
-          "position": [
-            195,
+            225,
             375
           ],
           "sheetPosition": "-192px -288px",
@@ -456,7 +443,7 @@
             72
           ],
           "position": [
-            225,
+            255,
             375
           ],
           "sheetPosition": "-288px -288px",
@@ -471,7 +458,22 @@
             72
           ],
           "position": [
-            225,
+            255,
+            375
+          ],
+          "sheetPosition": "-288px -288px",
+          "url": "url(\"http://127.0.0.1:5197/__guest216-pilot/guest-11-runtime.png?v=three-head-216-v1\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 3,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
             375
           ],
           "sheetPosition": "-288px -288px",
@@ -486,7 +488,7 @@
             72
           ],
           "position": [
-            255,
+            285,
             375
           ],
           "sheetPosition": "0px -288px",
@@ -501,7 +503,7 @@
             72
           ],
           "position": [
-            255,
+            285,
             375
           ],
           "sheetPosition": "0px -288px",
@@ -526,7 +528,7 @@
             72
           ],
           "position": [
-            255,
+            285,
             375
           ],
           "sheetPosition": "-96px -288px",
@@ -541,7 +543,7 @@
             72
           ],
           "position": [
-            255,
+            285,
             345
           ],
           "sheetPosition": "0px -432px",
@@ -556,7 +558,7 @@
             72
           ],
           "position": [
-            255,
+            285,
             345
           ],
           "sheetPosition": "0px -432px",
@@ -571,7 +573,22 @@
             72
           ],
           "position": [
-            255,
+            285,
+            345
+          ],
+          "sheetPosition": "0px -432px",
+          "url": "url(\"http://127.0.0.1:5197/__guest216-pilot/guest-11-runtime.png?v=three-head-216-v1\")"
+        },
+        {
+          "direction": "up",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            285,
             345
           ],
           "sheetPosition": "0px -432px",
@@ -586,7 +603,7 @@
             72
           ],
           "position": [
-            255,
+            285,
             315
           ],
           "sheetPosition": "-96px -432px",
@@ -601,7 +618,7 @@
             72
           ],
           "position": [
-            255,
+            285,
             315
           ],
           "sheetPosition": "-96px -432px",
@@ -616,22 +633,7 @@
             72
           ],
           "position": [
-            255,
-            315
-          ],
-          "sheetPosition": "-96px -432px",
-          "url": "url(\"http://127.0.0.1:5197/__guest216-pilot/guest-11-runtime.png?v=three-head-216-v1\")"
-        },
-        {
-          "direction": "up",
-          "moving": "true",
-          "frame": 1,
-          "size": [
-            48,
-            72
-          ],
-          "position": [
-            255,
+            285,
             315
           ],
           "sheetPosition": "-96px -432px",
@@ -646,7 +648,7 @@
             72
           ],
           "position": [
-            255,
+            285,
             285
           ],
           "sheetPosition": "-192px -432px",
@@ -661,7 +663,7 @@
             72
           ],
           "position": [
-            255,
+            285,
             285
           ],
           "sheetPosition": "-192px -432px",
@@ -676,7 +678,7 @@
             72
           ],
           "position": [
-            255,
+            285,
             285
           ],
           "sheetPosition": "-192px -432px",
@@ -691,7 +693,7 @@
             72
           ],
           "position": [
-            255,
+            285,
             255
           ],
           "sheetPosition": "-288px -432px",
@@ -706,7 +708,7 @@
             72
           ],
           "position": [
-            255,
+            285,
             255
           ],
           "sheetPosition": "-288px -432px",
@@ -721,7 +723,7 @@
             72
           ],
           "position": [
-            255,
+            285,
             255
           ],
           "sheetPosition": "-288px -432px",
@@ -736,7 +738,7 @@
             72
           ],
           "position": [
-            255,
+            285,
             225
           ],
           "sheetPosition": "0px -432px",
@@ -751,7 +753,7 @@
             72
           ],
           "position": [
-            255,
+            285,
             225
           ],
           "sheetPosition": "0px -432px",
@@ -776,7 +778,7 @@
             72
           ],
           "position": [
-            255,
+            285,
             225
           ],
           "sheetPosition": "-96px -432px",
@@ -791,7 +793,7 @@
             72
           ],
           "position": [
-            255,
+            285,
             255
           ],
           "sheetPosition": "0px 0px",
@@ -806,7 +808,7 @@
             72
           ],
           "position": [
-            255,
+            285,
             255
           ],
           "sheetPosition": "0px 0px",
@@ -821,7 +823,7 @@
             72
           ],
           "position": [
-            255,
+            285,
             255
           ],
           "sheetPosition": "0px 0px",
@@ -836,7 +838,7 @@
             72
           ],
           "position": [
-            255,
+            285,
             285
           ],
           "sheetPosition": "-96px 0px",
@@ -851,7 +853,7 @@
             72
           ],
           "position": [
-            255,
+            285,
             285
           ],
           "sheetPosition": "-96px 0px",
@@ -866,7 +868,7 @@
             72
           ],
           "position": [
-            255,
+            285,
             285
           ],
           "sheetPosition": "-96px 0px",
@@ -881,7 +883,7 @@
             72
           ],
           "position": [
-            255,
+            285,
             285
           ],
           "sheetPosition": "-96px 0px",
@@ -896,7 +898,7 @@
             72
           ],
           "position": [
-            255,
+            285,
             315
           ],
           "sheetPosition": "-192px 0px",
@@ -911,7 +913,7 @@
             72
           ],
           "position": [
-            255,
+            285,
             315
           ],
           "sheetPosition": "-192px 0px",
@@ -926,7 +928,7 @@
             72
           ],
           "position": [
-            255,
+            285,
             315
           ],
           "sheetPosition": "-192px 0px",
@@ -941,7 +943,7 @@
             72
           ],
           "position": [
-            255,
+            285,
             345
           ],
           "sheetPosition": "-288px 0px",
@@ -956,7 +958,7 @@
             72
           ],
           "position": [
-            255,
+            285,
             345
           ],
           "sheetPosition": "-288px 0px",
@@ -971,7 +973,7 @@
             72
           ],
           "position": [
-            255,
+            285,
             345
           ],
           "sheetPosition": "-288px 0px",
@@ -986,7 +988,7 @@
             72
           ],
           "position": [
-            255,
+            285,
             375
           ],
           "sheetPosition": "0px 0px",
@@ -1001,7 +1003,7 @@
             72
           ],
           "position": [
-            255,
+            285,
             375
           ],
           "sheetPosition": "0px 0px",
@@ -1018,19 +1020,19 @@
   "screenshots": [
     {
       "file": "local-game-216-runtime-left.png",
-      "sha256": "468bff0c75ee8483be8e94b4c45033e89a480f7922805d71c2dfd4a99b321bfa"
+      "sha256": "2cf38d80576ee77b9cc8767d2086e5d21e9ad92af5ed3d33f63f9bbab47f62a1"
     },
     {
       "file": "local-game-216-runtime-right.png",
-      "sha256": "95317cbbc59fed82c20feefba13397ae21f2108d7bb56c119a805f09a50e9d44"
+      "sha256": "6b0b6e7d9da050947caf62e1597222ecb69f8c6df15385f0218d39d6645fb608"
     },
     {
       "file": "local-game-216-runtime-up.png",
-      "sha256": "c09087dd1256961522b1ca93c1c5746e89bbebb3fcfe3dbb8cb004d751abb4ac"
+      "sha256": "2dd8c7189beb367b32b6d94cea809949d88bc279cc8f58efe9922a2501abec35"
     },
     {
       "file": "local-game-216-runtime-down.png",
-      "sha256": "d16877bbbee05326b17bd3c206a0a0fa6254010ab56f61cbbf9843a5d5abe3fe"
+      "sha256": "211a03b17e40cd2ba382d04ad59e44ca45d0036a6ef01483930fbd84ffe90fd6"
     }
   ],
   "visualReview": "Captured real joystick movement; screenshots require separate visual inspection."

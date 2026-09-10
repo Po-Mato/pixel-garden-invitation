@@ -31,7 +31,7 @@ for(let i=1;i<=12;i++)test(`guest-${i} actual selection/game evidence matches cu
  const selection=(await json(new URL('common-three-head-216-v1/local-selection-review.json',root))).guests.find(g=>g.id===id);
  assert.ok(selection);assert.equal(selection.response.sha256,sheetHash);assert.equal(selection.response.header,sheetHash);assert.equal(selection.response.cache,'no-store');
  assert.deepEqual([...new Set(selection.observed)].sort(),[0,1,2,3]);assert.deepEqual(selection.stopped,{moving:'false',frame:1});
- for(const s of selection.rows){assert.deepEqual(s.state.size,[96,144]);assert.equal(hash(await readFile(new URL(s.file,base))),s.sha256);}
+ for(const s of selection.rows){assert.deepEqual(s.state.size,[160,240]);assert.equal(hash(await readFile(new URL(s.file,base))),s.sha256);}
  const game=await json(new URL('local-game-216-review.json',base));
  assert.equal(game.developmentOnly,true);assert.equal(game.productionIntegrated,false);assert.equal(game.sheetSha256,sheetHash);assert.deepEqual(game.viewport,[390,844]);
  assert.deepEqual(game.rows.map(r=>r.direction),['left','right','up','down']);

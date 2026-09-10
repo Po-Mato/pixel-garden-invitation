@@ -13,11 +13,11 @@
     390,
     844
   ],
-  "sheetSha256": "85d4bf0e67c626edc32aabe1886f766b5dffd1ee6b03b5ec5e5718694868732a",
-  "sourceSheetSha256": "756b0a2a046dc0de02304f5695b29ee84668d14b890317a75c6b8778a8f5352a",
+  "sheetSha256": "4b2b86206434ef24ff6d7d9b116e6b14fe8536c8d22a1530fa2f72c891563874",
+  "sourceSheetSha256": "b8359954438e92b358711178d025cb1d61838e4c20f27ba05757ca49168deb7c",
   "response": {
     "status": 200,
-    "sha256": "85d4bf0e67c626edc32aabe1886f766b5dffd1ee6b03b5ec5e5718694868732a",
+    "sha256": "4b2b86206434ef24ff6d7d9b116e6b14fe8536c8d22a1530fa2f72c891563874",
     "controller": "http://127.0.0.1:5198/service-worker.js"
   },
   "rows": [
@@ -25,7 +25,7 @@
       "direction": "left",
       "samples": [
         {
-          "direction": "right",
+          "direction": "down",
           "moving": "false",
           "frame": 1,
           "size": [
@@ -36,8 +36,8 @@
             285,
             375
           ],
-          "sheetPosition": "-96px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "sheetPosition": "0px 0px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__idle.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -52,7 +52,7 @@
             375
           ],
           "sheetPosition": "0px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -67,7 +67,7 @@
             375
           ],
           "sheetPosition": "0px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -82,22 +82,7 @@
             375
           ],
           "sheetPosition": "0px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
-        },
-        {
-          "direction": "left",
-          "moving": "true",
-          "frame": 0,
-          "size": [
-            48,
-            72
-          ],
-          "position": [
-            255,
-            375
-          ],
-          "sheetPosition": "0px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -112,7 +97,7 @@
             375
           ],
           "sheetPosition": "-96px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -127,7 +112,7 @@
             375
           ],
           "sheetPosition": "-96px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -142,7 +127,7 @@
             375
           ],
           "sheetPosition": "-96px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -157,7 +142,7 @@
             375
           ],
           "sheetPosition": "-192px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -172,7 +157,7 @@
             375
           ],
           "sheetPosition": "-192px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -187,7 +172,7 @@
             375
           ],
           "sheetPosition": "-192px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -202,7 +187,7 @@
             375
           ],
           "sheetPosition": "-288px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -217,7 +202,7 @@
             375
           ],
           "sheetPosition": "-288px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -232,7 +217,7 @@
             375
           ],
           "sheetPosition": "-288px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -247,7 +232,7 @@
             375
           ],
           "sheetPosition": "0px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -262,7 +247,22 @@
             375
           ],
           "sheetPosition": "0px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
+        },
+        {
+          "direction": "left",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            135,
+            375
+          ],
+          "sheetPosition": "0px -144px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         }
       ],
       "stopped": {
@@ -283,11 +283,11 @@
             72
           ],
           "position": [
-            135,
+            105,
             375
           ],
           "sheetPosition": "-96px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "right",
@@ -298,11 +298,11 @@
             72
           ],
           "position": [
-            165,
+            135,
             375
           ],
           "sheetPosition": "0px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "right",
@@ -313,11 +313,11 @@
             72
           ],
           "position": [
-            165,
+            135,
             375
           ],
           "sheetPosition": "0px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "right",
@@ -328,11 +328,11 @@
             72
           ],
           "position": [
-            165,
+            135,
             375
           ],
           "sheetPosition": "0px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "right",
@@ -343,11 +343,11 @@
             72
           ],
           "position": [
-            195,
+            165,
             375
           ],
           "sheetPosition": "-96px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "right",
@@ -358,11 +358,11 @@
             72
           ],
           "position": [
-            195,
+            165,
             375
           ],
           "sheetPosition": "-96px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "right",
@@ -373,11 +373,11 @@
             72
           ],
           "position": [
-            195,
+            165,
             375
           ],
           "sheetPosition": "-96px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "right",
@@ -388,11 +388,11 @@
             72
           ],
           "position": [
-            225,
+            195,
             375
           ],
           "sheetPosition": "-192px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "right",
@@ -403,11 +403,11 @@
             72
           ],
           "position": [
-            225,
+            195,
             375
           ],
           "sheetPosition": "-192px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "right",
@@ -418,11 +418,11 @@
             72
           ],
           "position": [
-            225,
+            195,
             375
           ],
           "sheetPosition": "-192px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "right",
@@ -433,11 +433,11 @@
             72
           ],
           "position": [
-            255,
+            225,
             375
           ],
           "sheetPosition": "-288px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "right",
@@ -448,11 +448,11 @@
             72
           ],
           "position": [
-            255,
+            225,
             375
           ],
           "sheetPosition": "-288px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "right",
@@ -463,11 +463,11 @@
             72
           ],
           "position": [
-            255,
+            225,
             375
           ],
           "sheetPosition": "-288px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "right",
@@ -478,11 +478,11 @@
             72
           ],
           "position": [
-            285,
+            255,
             375
           ],
           "sheetPosition": "0px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "right",
@@ -493,11 +493,11 @@
             72
           ],
           "position": [
-            285,
+            255,
             375
           ],
           "sheetPosition": "0px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "right",
@@ -508,11 +508,11 @@
             72
           ],
           "position": [
-            285,
+            255,
             375
           ],
           "sheetPosition": "0px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         }
       ],
       "stopped": {
@@ -533,11 +533,11 @@
             72
           ],
           "position": [
-            315,
+            285,
             375
           ],
           "sheetPosition": "-96px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -548,11 +548,11 @@
             72
           ],
           "position": [
-            315,
+            285,
             345
           ],
           "sheetPosition": "0px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -563,11 +563,11 @@
             72
           ],
           "position": [
-            315,
+            285,
             345
           ],
           "sheetPosition": "0px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -578,11 +578,11 @@
             72
           ],
           "position": [
-            315,
+            285,
             345
           ],
           "sheetPosition": "0px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -593,11 +593,11 @@
             72
           ],
           "position": [
-            315,
+            285,
             345
           ],
           "sheetPosition": "0px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -608,11 +608,11 @@
             72
           ],
           "position": [
-            315,
+            285,
             315
           ],
           "sheetPosition": "-96px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -623,11 +623,11 @@
             72
           ],
           "position": [
-            315,
+            285,
             315
           ],
           "sheetPosition": "-96px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -638,11 +638,11 @@
             72
           ],
           "position": [
-            315,
+            285,
             315
           ],
           "sheetPosition": "-96px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -653,11 +653,11 @@
             72
           ],
           "position": [
-            315,
+            285,
             285
           ],
           "sheetPosition": "-192px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -668,11 +668,11 @@
             72
           ],
           "position": [
-            315,
+            285,
             285
           ],
           "sheetPosition": "-192px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -683,11 +683,11 @@
             72
           ],
           "position": [
-            315,
+            285,
             285
           ],
           "sheetPosition": "-192px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -698,11 +698,11 @@
             72
           ],
           "position": [
-            315,
+            285,
             255
           ],
           "sheetPosition": "-288px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -713,11 +713,11 @@
             72
           ],
           "position": [
-            315,
+            285,
             255
           ],
           "sheetPosition": "-288px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -728,11 +728,11 @@
             72
           ],
           "position": [
-            315,
+            285,
             255
           ],
           "sheetPosition": "-288px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -743,11 +743,11 @@
             72
           ],
           "position": [
-            315,
+            285,
             225
           ],
           "sheetPosition": "0px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -758,11 +758,11 @@
             72
           ],
           "position": [
-            315,
+            285,
             225
           ],
           "sheetPosition": "0px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         }
       ],
       "stopped": {
@@ -783,11 +783,11 @@
             72
           ],
           "position": [
-            315,
+            285,
             225
           ],
           "sheetPosition": "-96px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -798,11 +798,11 @@
             72
           ],
           "position": [
-            315,
+            285,
             255
           ],
           "sheetPosition": "0px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -813,11 +813,11 @@
             72
           ],
           "position": [
-            315,
+            285,
             255
           ],
           "sheetPosition": "0px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -828,11 +828,11 @@
             72
           ],
           "position": [
-            315,
+            285,
             255
           ],
           "sheetPosition": "0px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -843,11 +843,11 @@
             72
           ],
           "position": [
-            315,
+            285,
             255
           ],
           "sheetPosition": "0px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -858,11 +858,11 @@
             72
           ],
           "position": [
-            315,
+            285,
             285
           ],
           "sheetPosition": "-96px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -873,11 +873,11 @@
             72
           ],
           "position": [
-            315,
+            285,
             285
           ],
           "sheetPosition": "-96px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -888,11 +888,11 @@
             72
           ],
           "position": [
-            315,
+            285,
             285
           ],
           "sheetPosition": "-96px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -903,11 +903,11 @@
             72
           ],
           "position": [
-            315,
+            285,
             315
           ],
           "sheetPosition": "-192px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -918,11 +918,11 @@
             72
           ],
           "position": [
-            315,
+            285,
             315
           ],
           "sheetPosition": "-192px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -933,11 +933,11 @@
             72
           ],
           "position": [
-            315,
+            285,
             315
           ],
           "sheetPosition": "-192px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -948,11 +948,11 @@
             72
           ],
           "position": [
-            315,
+            285,
             345
           ],
           "sheetPosition": "-288px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -963,11 +963,11 @@
             72
           ],
           "position": [
-            315,
+            285,
             345
           ],
           "sheetPosition": "-288px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -978,11 +978,11 @@
             72
           ],
           "position": [
-            315,
+            285,
             345
           ],
           "sheetPosition": "-288px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -993,11 +993,11 @@
             72
           ],
           "position": [
-            315,
+            285,
             375
           ],
           "sheetPosition": "0px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -1008,11 +1008,11 @@
             72
           ],
           "position": [
-            315,
+            285,
             375
           ],
           "sheetPosition": "0px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-navy-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         }
       ],
       "stopped": {
@@ -1025,19 +1025,19 @@
   "screenshots": [
     {
       "file": "local-game-216-production-preview-left.png",
-      "sha256": "6b75c1d546e9a77e34d06ba9424f5d5b71cb27b309f1d7ed2763dfb3eda72bb1"
+      "sha256": "8d8071e549aa762cc07e24d00d0c656d1ef97bf39e6ac22797aed67e1da11553"
     },
     {
       "file": "local-game-216-production-preview-right.png",
-      "sha256": "9f2774fbdc074047ab962b4c36f5fc1e045d2a715d8329d316b7d7fb61801434"
+      "sha256": "f04625a6b3d7b60240537935f06cffb7d508cd2b21998eb23c62b2d93eb91c1e"
     },
     {
       "file": "local-game-216-production-preview-up.png",
-      "sha256": "1da229907c95c9f1f2e654b8b2ceddc6774962fc2f0db2b7380ca790a266db0d"
+      "sha256": "48d948b0f202463badb8be6dcc6c338ec3247602d9bdd772021a132a98847377"
     },
     {
       "file": "local-game-216-production-preview-down.png",
-      "sha256": "77105349befccc632b584b96e32c1ada06c9df0f0cc805647e910f8409c09c06"
+      "sha256": "4853e0122112c8f89426fe22d33c9b22c463d80e8d327d41123aadf7e70f99e4"
     }
   ],
   "visualReview": "Captured real joystick movement; screenshots require separate visual inspection."

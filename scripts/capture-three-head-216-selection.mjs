@@ -15,14 +15,15 @@ if(ev('JSON.stringify(Array.from(document.querySelectorAll("button")).some(e=>e.
 for(const[i,label]of labels.entries()){
  const id='guest-'+String(i+1).padStart(2,'0'),base=new URL(`character-assets/rigs/${id}/three-head-216-v1/review/`,root);
  const preset=catalog.characters.find(c=>c.characterId===id).presetId;
- const expectedUrl=productionPreview?`/characters/generated/guests/preview/${preset}__walk.png?v=guest-three-head-216-v1-20260910`:`/__guest216-pilot/${id}.png`;
+ const expectedUrl=productionPreview?`/characters/generated/guests/preview/${preset}__walk.png?v=guest-soft-tailoring-v1-20260911`:`/__guest216-pilot/${id}.png`;
  b('find','role','button','click','--name',label,'--exact');
  const rows=[];
  for(const[name,direction,row]of [['정면 보기','down',0],['왼쪽 보기','left',1],['오른쪽 보기','right',2],['뒷면 보기','up',3]]){
   b('find','role','button','click','--name',name,'--exact');
   const state=ev('JSON.stringify((()=>{const e=document.querySelector(".character-sprite--preview"),r=e.getBoundingClientRect(),l=e.querySelector(".character-layer");return{...e.dataset,size:[r.width,r.height],url:l.style.backgroundImage,position:l.style.backgroundPosition}})())');
   assert.equal(state.direction,direction);
-  const expectedSize=productionPreview?[160,240]:[96,144];
+  // The entry modal uses the same approved visual scale in both build modes.
+  const expectedSize=[160,240];
   state.size.forEach((value,index)=>assert.ok(Math.abs(value-expectedSize[index])<0.01));
   // Normal front idle uses its dedicated two-column neutral sheet. The pilot
   // routes deliberately used the walk atlas for every pose.

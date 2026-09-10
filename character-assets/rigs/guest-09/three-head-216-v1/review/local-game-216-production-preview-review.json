@@ -13,11 +13,11 @@
     390,
     844
   ],
-  "sheetSha256": "52089bd922eb799ff1d578b2958c031961eb2e839ba37bf07f6e104d829a0220",
-  "sourceSheetSha256": "6f84579a3931d85c275ff559433cc05cdc155cd1247a65dea71f9b612f5b1dbe",
+  "sheetSha256": "34dd6b0316aa2ddbab8d77a6ae5120a6dc59d7841436898b4fc04a77a8003df1",
+  "sourceSheetSha256": "24d37a6b676e4282b06c1a48b9be85cc793fdb70a9857b84ad58b54bc514dfc1",
   "response": {
     "status": 200,
-    "sha256": "52089bd922eb799ff1d578b2958c031961eb2e839ba37bf07f6e104d829a0220",
+    "sha256": "34dd6b0316aa2ddbab8d77a6ae5120a6dc59d7841436898b4fc04a77a8003df1",
     "controller": "http://127.0.0.1:5198/service-worker.js"
   },
   "rows": [
@@ -25,7 +25,7 @@
       "direction": "left",
       "samples": [
         {
-          "direction": "down",
+          "direction": "right",
           "moving": "false",
           "frame": 1,
           "size": [
@@ -36,8 +36,8 @@
             285,
             375
           ],
-          "sheetPosition": "0px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__idle.png?v=guest-three-head-216-v1-20260910\")"
+          "sheetPosition": "-96px -288px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -52,7 +52,7 @@
             375
           ],
           "sheetPosition": "0px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -67,7 +67,7 @@
             375
           ],
           "sheetPosition": "0px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -82,7 +82,22 @@
             375
           ],
           "sheetPosition": "0px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
+        },
+        {
+          "direction": "left",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            375
+          ],
+          "sheetPosition": "0px -144px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -97,7 +112,7 @@
             375
           ],
           "sheetPosition": "-96px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -112,7 +127,7 @@
             375
           ],
           "sheetPosition": "-96px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -127,7 +142,7 @@
             375
           ],
           "sheetPosition": "-96px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -142,7 +157,7 @@
             375
           ],
           "sheetPosition": "-192px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -157,7 +172,7 @@
             375
           ],
           "sheetPosition": "-192px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -172,7 +187,7 @@
             375
           ],
           "sheetPosition": "-192px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -187,7 +202,7 @@
             375
           ],
           "sheetPosition": "-288px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -202,7 +217,7 @@
             375
           ],
           "sheetPosition": "-288px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -217,22 +232,7 @@
             375
           ],
           "sheetPosition": "-288px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
-        },
-        {
-          "direction": "left",
-          "moving": "true",
-          "frame": 3,
-          "size": [
-            48,
-            72
-          ],
-          "position": [
-            165,
-            375
-          ],
-          "sheetPosition": "-288px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -247,7 +247,7 @@
             375
           ],
           "sheetPosition": "0px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -262,7 +262,7 @@
             375
           ],
           "sheetPosition": "0px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         }
       ],
       "stopped": {
@@ -287,7 +287,7 @@
             375
           ],
           "sheetPosition": "-96px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "right",
@@ -302,7 +302,7 @@
             375
           ],
           "sheetPosition": "0px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "right",
@@ -317,7 +317,7 @@
             375
           ],
           "sheetPosition": "0px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "right",
@@ -332,7 +332,7 @@
             375
           ],
           "sheetPosition": "0px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "right",
@@ -347,7 +347,7 @@
             375
           ],
           "sheetPosition": "0px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "right",
@@ -362,7 +362,7 @@
             375
           ],
           "sheetPosition": "-96px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "right",
@@ -377,7 +377,7 @@
             375
           ],
           "sheetPosition": "-96px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "right",
@@ -392,7 +392,7 @@
             375
           ],
           "sheetPosition": "-96px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "right",
@@ -407,7 +407,7 @@
             375
           ],
           "sheetPosition": "-192px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "right",
@@ -422,7 +422,7 @@
             375
           ],
           "sheetPosition": "-192px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "right",
@@ -437,7 +437,7 @@
             375
           ],
           "sheetPosition": "-192px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "right",
@@ -452,7 +452,7 @@
             375
           ],
           "sheetPosition": "-288px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "right",
@@ -467,7 +467,7 @@
             375
           ],
           "sheetPosition": "-288px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "right",
@@ -482,7 +482,7 @@
             375
           ],
           "sheetPosition": "-288px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "right",
@@ -497,7 +497,7 @@
             375
           ],
           "sheetPosition": "0px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "right",
@@ -512,7 +512,7 @@
             375
           ],
           "sheetPosition": "0px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         }
       ],
       "stopped": {
@@ -537,7 +537,7 @@
             375
           ],
           "sheetPosition": "-96px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -552,7 +552,7 @@
             345
           ],
           "sheetPosition": "0px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -567,7 +567,7 @@
             345
           ],
           "sheetPosition": "0px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -582,7 +582,7 @@
             345
           ],
           "sheetPosition": "0px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -597,7 +597,7 @@
             315
           ],
           "sheetPosition": "-96px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -612,7 +612,7 @@
             315
           ],
           "sheetPosition": "-96px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -627,7 +627,7 @@
             315
           ],
           "sheetPosition": "-96px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -642,7 +642,7 @@
             315
           ],
           "sheetPosition": "-96px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -657,7 +657,7 @@
             285
           ],
           "sheetPosition": "-192px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -672,7 +672,7 @@
             285
           ],
           "sheetPosition": "-192px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -687,7 +687,7 @@
             285
           ],
           "sheetPosition": "-192px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -702,7 +702,7 @@
             255
           ],
           "sheetPosition": "-288px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -717,7 +717,7 @@
             255
           ],
           "sheetPosition": "-288px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -732,7 +732,7 @@
             255
           ],
           "sheetPosition": "-288px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -747,7 +747,7 @@
             225
           ],
           "sheetPosition": "0px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -762,7 +762,7 @@
             225
           ],
           "sheetPosition": "0px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         }
       ],
       "stopped": {
@@ -787,7 +787,7 @@
             225
           ],
           "sheetPosition": "-96px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -802,7 +802,7 @@
             255
           ],
           "sheetPosition": "0px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -817,7 +817,7 @@
             255
           ],
           "sheetPosition": "0px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -832,7 +832,7 @@
             255
           ],
           "sheetPosition": "0px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -847,7 +847,7 @@
             255
           ],
           "sheetPosition": "0px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -862,7 +862,7 @@
             285
           ],
           "sheetPosition": "-96px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -877,7 +877,7 @@
             285
           ],
           "sheetPosition": "-96px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -892,7 +892,7 @@
             285
           ],
           "sheetPosition": "-96px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -907,7 +907,7 @@
             315
           ],
           "sheetPosition": "-192px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -922,7 +922,7 @@
             315
           ],
           "sheetPosition": "-192px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -937,7 +937,7 @@
             315
           ],
           "sheetPosition": "-192px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -952,7 +952,7 @@
             345
           ],
           "sheetPosition": "-288px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -967,7 +967,7 @@
             345
           ],
           "sheetPosition": "-288px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -982,7 +982,7 @@
             345
           ],
           "sheetPosition": "-288px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -997,7 +997,7 @@
             375
           ],
           "sheetPosition": "0px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -1012,7 +1012,7 @@
             375
           ],
           "sheetPosition": "0px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-beige-summer-suit__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         }
       ],
       "stopped": {
@@ -1025,19 +1025,19 @@
   "screenshots": [
     {
       "file": "local-game-216-production-preview-left.png",
-      "sha256": "e5e8c8b69dfcdb4eaaef039bc7ea1e9ea975d32c89d52966a9c707ade51c672b"
+      "sha256": "1de1c6d3afb9d459cb0d78f35a2e03e8846f7b553677eeb1a21a115095240c1b"
     },
     {
       "file": "local-game-216-production-preview-right.png",
-      "sha256": "e85aee0205833498da6f2c2cb2cf6333972aa8f32375b81620b12a5d020144fa"
+      "sha256": "0f85254a4a92eec7d3d5ab31c42679efbe75a2b48738e3a7f9cfe9b0fd0451e1"
     },
     {
       "file": "local-game-216-production-preview-up.png",
-      "sha256": "5cf0cdce3ed4688db4b4a7b960031a3c97b829448652170713d92909294691e0"
+      "sha256": "a81977ad1927d9fe6a83dea846ee67d0b6d84b9196d6cd9ce73c5e1641aaffd0"
     },
     {
       "file": "local-game-216-production-preview-down.png",
-      "sha256": "3dc7a9337e22473d3598e64b8212b84e89042d97c10bbc765c35cc0b26921a4b"
+      "sha256": "1dcba29d82b41261ab9025d5849d3577f44d836f4e10bcec426ee64fe625234a"
     }
   ],
   "visualReview": "Captured real joystick movement; screenshots require separate visual inspection."

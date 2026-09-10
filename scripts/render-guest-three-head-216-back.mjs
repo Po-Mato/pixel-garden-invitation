@@ -2,7 +2,10 @@ import{readFile}from'node:fs/promises';
 import{createHash}from'node:crypto';
 import assert from'node:assert/strict';
 import{svg216,write216Review}from'./lib/guest216Review.mjs';
-const base=new URL('../character-assets/rigs/guest-03/three-head-216-v1/',import.meta.url);
+import{renderRigMaterial}from'./lib/guestRigMaterial.mjs';
+const variant=process.argv[2]||'three-head-216-v1';
+assert.match(variant,/^three-head-[a-z0-9-]+$/);
+const base=new URL(`../character-assets/rigs/guest-03/${variant}/`,import.meta.url);
 const rig=JSON.parse(await readFile(new URL('back-rig.json',base))),skeleton=JSON.parse(await readFile(new URL(rig.skeleton,base))),sources=[];
 rig.bones=skeleton.projections[rig.skeletonProjection].bones;
 async function load(file){assert.ok(!/\/(generated|review)\//.test(file));const b=await readFile(new URL(file,base));sources.push({file,sha256:createHash('sha256').update(b).digest('hex')});return`data:image/png;base64,${b.toString('base64')}`;}
@@ -10,7 +13,7 @@ async function mapped(p){const[x,y,w,h]=p.rect,uv=p.sourceViewport,uri=await loa
 const head=await mapped(rig.head),hidden=await mapped(rig.hiddenTorso),parts={};
 for(const[n,p]of Object.entries(rig.parts))parts[n]=await mapped(p);
 const source=rig.sourceBody,uri=await load(source.file),m=rig.sourceGeometryMapping;
-const art=`<image href="${uri}" width="${source.size[0]}" height="${source.size[1]}"/>`,transform=`translate(${m.translate.join(' ')}) scale(${m.scale.join(' ')})`;
+const art=renderRigMaterial(`<image href="${uri}" width="${source.size[0]}" height="${source.size[1]}"/>`,source.material,'rearCloth'),transform=`translate(${m.translate.join(' ')}) scale(${m.scale.join(' ')})`;
 const masks=`<defs><mask id="body" maskUnits="userSpaceOnUse" x="0" y="0" width="1536" height="1024"><rect width="1536" height="1024" fill="white"/>${Object.values(source.armMasks).map(d=>`<path d="${d}" fill="black"/>`).join('')}</mask><filter id="alpha-white"><feColorMatrix type="matrix" values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0"/></filter><mask id="silhouette" maskUnits="userSpaceOnUse" x="0" y="0" width="192" height="288"><g transform="${transform}" filter="url(#alpha-white)">${art}</g></mask></defs>`;
 const shell=`<g transform="${transform}"><g mask="url(#body)">${art}</g></g>`;
 function chain(n,p){const b=rig.bones[n];return(b.parent?chain(b.parent,p):'')+` rotate(${p[n]||0} ${b.pivot.join(' ')})`;}
