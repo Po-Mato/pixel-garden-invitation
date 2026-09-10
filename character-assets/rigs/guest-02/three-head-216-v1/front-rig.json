@@ -1,0 +1,387 @@
+{
+  "id": "guest-02-three-head-216-v1-front",
+  "characterId": "guest-02",
+  "direction": "front",
+  "skeleton": "../../common-three-head-216-v1/skeleton.json",
+  "skeletonProjection": null,
+  "runtimeEnabled": false,
+  "template": "femaleHanbok",
+  "parts": {
+    "bodice": {
+      "file": "parts/front/bodice-v1.png",
+      "sha256": "6436a436a26e08472d8583437adad63306e3558eeda7dbf7a5923d8e7089bdd6",
+      "sourceViewport": [
+        94,
+        142,
+        1024,
+        1014
+      ],
+      "rect": [
+        71,
+        126,
+        50,
+        42
+      ],
+      "parent": "spine",
+      "pivot": [
+        96,
+        176.232558
+      ],
+      "mirrored": false
+    },
+    "chestSkin": {
+      "file": "../../guests-style-lock-v1/guest-05/parts/front/chestSkin-v1.svg",
+      "rect": [
+        83,
+        125.162791,
+        26,
+        24.27907
+      ],
+      "parent": "neck",
+      "pivot": [
+        96,
+        126
+      ],
+      "mirrored": false
+    },
+    "skirt": {
+      "file": "../../guests-style-lock-v1/guest-05/parts/front/skirt-v1.png",
+      "sha256": "4592d36c26f3943e84c9ee060094c57f94390998e46deaaf4b92d146b8754c00",
+      "sourceViewport": [
+        67,
+        62,
+        989,
+        1280
+      ],
+      "rect": [
+        46,
+        160,
+        100,
+        99
+      ],
+      "parent": "pelvis",
+      "pivot": [
+        96,
+        191.302326
+      ],
+      "mirrored": false,
+      "material": {
+        "type": "gradient-map",
+        "colors": [
+          "#36272b",
+          "#885963",
+          "#bf8992",
+          "#e4b7bd",
+          "#f7e3e6"
+        ]
+      }
+    },
+    "backHair": {
+      "file": "../../guests-style-lock-v1/guest-05/parts/front/backHair-v1.png",
+      "sha256": "4ef5e4e7266189b48ce3632732f1624191ad7c6a297f60de3bbcdadbdbc73083",
+      "sourceViewport": [
+        238,
+        166,
+        807,
+        862
+      ],
+      "rect": [
+        61,
+        54,
+        70,
+        72
+      ],
+      "parent": "head",
+      "pivot": [
+        96,
+        126
+      ],
+      "mirrored": false,
+      "material": {
+        "type": "gradient-map",
+        "colors": [
+          "#171319",
+          "#30232a",
+          "#49313a",
+          "#805b64",
+          "#b49398"
+        ]
+      }
+    },
+    "face": {
+      "file": "../../guests-style-lock-v1/guest-05/parts/front/face-v1.png",
+      "sha256": "3e18ad74f408b7f849f1957ee8d5fcc42d5009dec0f0a5edc2d753ec92dddd90",
+      "sourceViewport": [
+        8,
+        6,
+        1253,
+        1215
+      ],
+      "rect": [
+        68,
+        66,
+        56,
+        60
+      ],
+      "parent": "head",
+      "pivot": [
+        96,
+        126
+      ],
+      "mirrored": false
+    },
+    "frontHair": {
+      "file": "../../guests-style-lock-v1/guest-05/parts/front/frontHair-v1.png",
+      "sha256": "4db2594cfc6a968c0f64a34f10cdccaf9a58ad71c9a0b437c5644a3b54e4ad29",
+      "sourceViewport": [
+        217,
+        53,
+        1136,
+        846
+      ],
+      "rect": [
+        61,
+        57,
+        70,
+        52
+      ],
+      "parent": "head",
+      "pivot": [
+        96,
+        126
+      ],
+      "mirrored": false,
+      "material": {
+        "type": "gradient-map",
+        "colors": [
+          "#171319",
+          "#30232a",
+          "#49313a",
+          "#805b64",
+          "#b49398"
+        ]
+      }
+    },
+    "neckSkin": {
+      "file": "../../guests-style-lock-v1/guest-05/../../guest-03/style-lock-cutout-v1/parts/front/neck.svg",
+      "rect": [
+        89,
+        122.651163,
+        14,
+        9.209302
+      ],
+      "parent": "neck",
+      "pivot": [
+        96,
+        126
+      ],
+      "mirrored": false
+    },
+    "armLeftSkin": {
+      "file": "../../guests-style-lock-v1/guest-05/parts/front/armLeftSkin-v1.png",
+      "sha256": "80c5aab8cfd5b9e4f635884d3d17af0d8086088406eeebdb29dd33e7580aa3b4",
+      "sourceViewport": [
+        142,
+        6,
+        440,
+        2136
+      ],
+      "rect": [
+        116,
+        134.372093,
+        20,
+        60.27907
+      ],
+      "parent": "upperArmLeft",
+      "pivot": [
+        119,
+        136.883721
+      ],
+      "mirrored": false
+    },
+    "armRightSkin": {
+      "file": "../../guests-style-lock-v1/guest-05/parts/front/armRightSkin-v1.png",
+      "sha256": "9c65eb0b1bcb135e30bb7bb198b69c2df185d6a5136d888aef1d3de5596d6ba6",
+      "sourceViewport": [
+        138,
+        3,
+        462,
+        2137
+      ],
+      "rect": [
+        56,
+        134.372093,
+        20,
+        60.27907
+      ],
+      "parent": "upperArmRight",
+      "pivot": [
+        73,
+        136.883721
+      ],
+      "mirrored": false
+    },
+    "legLeftSkin": {
+      "file": "../../guests-style-lock-v1/guest-05/parts/front/legLeftSkin-v1.png",
+      "sha256": "c88c0b461b0d2dc32fe033ffe132df3d1e870f44f7216295e58b21ca688669c4",
+      "sourceViewport": [
+        127,
+        21,
+        536,
+        2102
+      ],
+      "rect": [
+        96,
+        190.465116,
+        28,
+        79.534884
+      ],
+      "parent": "thighLeft",
+      "pivot": [
+        106,
+        192.139535
+      ],
+      "mirrored": false
+    },
+    "legRightSkin": {
+      "file": "../../guests-style-lock-v1/guest-05/parts/front/legRightSkin-v1.png",
+      "sha256": "bd3e1b6406eda2e3b3285aa8374e836750d94a6d4ca1c1f0f5b31e46338d2ac2",
+      "sourceViewport": [
+        104,
+        5,
+        540,
+        2111
+      ],
+      "rect": [
+        68,
+        190.465116,
+        28,
+        79.534884
+      ],
+      "parent": "thighRight",
+      "pivot": [
+        86,
+        192.139535
+      ],
+      "mirrored": false
+    },
+    "shadow": {
+      "file": "../../guests-style-lock-v1/guest-05/../../guest-03/style-lock-cutout-v1/parts/front/shadow.svg",
+      "rect": [
+        64,
+        260,
+        64,
+        12
+      ],
+      "parent": "root",
+      "pivot": [
+        96,
+        270
+      ],
+      "mirrored": false
+    },
+    "norigae": {
+      "file": "parts/norigae.svg",
+      "parent": "spine",
+      "pivot": [
+        96,
+        176.232558
+      ],
+      "rect": [
+        111,
+        164,
+        10,
+        32
+      ],
+      "mirrored": false
+    }
+  },
+  "drawOrder": [
+    "shadow",
+    "backHair",
+    "legRightSkin",
+    "legLeftSkin",
+    "skirt",
+    "armRightSkin",
+    "armLeftSkin",
+    "chestSkin",
+    "bodice",
+    "norigae",
+    "neckSkin",
+    "face",
+    "frontHair"
+  ],
+  "garmentAnimation": {
+    "parent": "pelvis",
+    "pivot": [
+      96,
+      161
+    ],
+    "frames": [
+      {
+        "rotate": -0.6
+      },
+      {
+        "rotate": 0
+      },
+      {
+        "rotate": 0.6
+      },
+      {
+        "rotate": 0
+      }
+    ],
+    "mode": "whole-original-rigid-rotation",
+    "upperWaistOccludedByBodice": true
+  },
+  "clothingAttachments": [
+    {
+      "part": "norigae",
+      "parent": "spine",
+      "pivot": [
+        116,
+        164
+      ],
+      "frames": [
+        {
+          "rotate": -1.5
+        },
+        {
+          "rotate": 0
+        },
+        {
+          "rotate": 1.5
+        },
+        {
+          "rotate": 0
+        }
+      ]
+    }
+  ],
+  "asymmetry": {
+    "mirroringAllowed": false,
+    "norigae": "wearer-left; image-right in front, image-left in back; far-side before near arm in left",
+    "goreum": "independent directional originals, not mirrored"
+  },
+  "limitations": [
+    "Candidate; numeric and mobile visual review pending. Common limbs are not yet hanbok-specific wide sleeves; source edge and directional wardrobe review required."
+  ],
+  "animation": "../../common-three-head-216-v1/animations/femaleHanbok-front.json",
+  "sourceReuse": {
+    "policy": "Explicit shared original library, never rendered frames",
+    "head": "guest-05 updo originals via guest-08 palette",
+    "limbs": "guest-05 cream sleeve and leg originals",
+    "skirt": "guest-05 directional original with authored rose material and hanbok silhouette placement",
+    "torso": "guest-02 independently generated directional jeogori",
+    "accessory": "editable original norigae.svg"
+  },
+  "originalGeneration": {
+    "tool": "image_gen",
+    "referenceDisplayed": true,
+    "pixelsUnmodified": true,
+    "sha256": "6436a436a26e08472d8583437adad63306e3558eeda7dbf7a5923d8e7089bdd6",
+    "direction": "front",
+    "source": "exec-0f2386bd-73b9-4e63-9e0f-c24ff3437926.png",
+    "prompt": "Guest 2 directional cream jeogori torso only, crossed white collar, quiet painted game shading, transparent background. No sleeves, arms, head or skirt."
+  }
+}

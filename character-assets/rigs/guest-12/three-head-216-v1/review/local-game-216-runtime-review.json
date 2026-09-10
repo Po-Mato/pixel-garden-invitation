@@ -1,0 +1,1037 @@
+{
+  "id": "guest-12",
+  "developmentOnly": true,
+  "productionIntegrated": false,
+  "stagedRuntime": true,
+  "sourceFrameSize": [
+    96,
+    144
+  ],
+  "viewport": [
+    390,
+    844
+  ],
+  "sheetSha256": "99da09e983362cc59a8b389bf0e3332cb11fcbf2e0bedb1761f66cc02e90e647",
+  "sourceSheetSha256": "7f0f9d1b532adac9aee89d4d910b764571dfb421f0634375cd55c7781fc4905b",
+  "rows": [
+    {
+      "direction": "left",
+      "samples": [
+        {
+          "direction": "right",
+          "moving": "false",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            285,
+            375
+          ],
+          "sheetPosition": "-96px -288px",
+          "url": "url(\"http://127.0.0.1:5197/__guest216-pilot/guest-12-runtime.png?v=three-head-216-v1\")"
+        },
+        {
+          "direction": "left",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            375
+          ],
+          "sheetPosition": "0px -144px",
+          "url": "url(\"http://127.0.0.1:5197/__guest216-pilot/guest-12-runtime.png?v=three-head-216-v1\")"
+        },
+        {
+          "direction": "left",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            375
+          ],
+          "sheetPosition": "0px -144px",
+          "url": "url(\"http://127.0.0.1:5197/__guest216-pilot/guest-12-runtime.png?v=three-head-216-v1\")"
+        },
+        {
+          "direction": "left",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            375
+          ],
+          "sheetPosition": "0px -144px",
+          "url": "url(\"http://127.0.0.1:5197/__guest216-pilot/guest-12-runtime.png?v=three-head-216-v1\")"
+        },
+        {
+          "direction": "left",
+          "moving": "true",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            225,
+            375
+          ],
+          "sheetPosition": "-96px -144px",
+          "url": "url(\"http://127.0.0.1:5197/__guest216-pilot/guest-12-runtime.png?v=three-head-216-v1\")"
+        },
+        {
+          "direction": "left",
+          "moving": "true",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            225,
+            375
+          ],
+          "sheetPosition": "-96px -144px",
+          "url": "url(\"http://127.0.0.1:5197/__guest216-pilot/guest-12-runtime.png?v=three-head-216-v1\")"
+        },
+        {
+          "direction": "left",
+          "moving": "true",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            225,
+            375
+          ],
+          "sheetPosition": "-96px -144px",
+          "url": "url(\"http://127.0.0.1:5197/__guest216-pilot/guest-12-runtime.png?v=three-head-216-v1\")"
+        },
+        {
+          "direction": "left",
+          "moving": "true",
+          "frame": 2,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            195,
+            375
+          ],
+          "sheetPosition": "-192px -144px",
+          "url": "url(\"http://127.0.0.1:5197/__guest216-pilot/guest-12-runtime.png?v=three-head-216-v1\")"
+        },
+        {
+          "direction": "left",
+          "moving": "true",
+          "frame": 2,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            195,
+            375
+          ],
+          "sheetPosition": "-192px -144px",
+          "url": "url(\"http://127.0.0.1:5197/__guest216-pilot/guest-12-runtime.png?v=three-head-216-v1\")"
+        },
+        {
+          "direction": "left",
+          "moving": "true",
+          "frame": 2,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            195,
+            375
+          ],
+          "sheetPosition": "-192px -144px",
+          "url": "url(\"http://127.0.0.1:5197/__guest216-pilot/guest-12-runtime.png?v=three-head-216-v1\")"
+        },
+        {
+          "direction": "left",
+          "moving": "true",
+          "frame": 3,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            165,
+            375
+          ],
+          "sheetPosition": "-288px -144px",
+          "url": "url(\"http://127.0.0.1:5197/__guest216-pilot/guest-12-runtime.png?v=three-head-216-v1\")"
+        },
+        {
+          "direction": "left",
+          "moving": "true",
+          "frame": 3,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            165,
+            375
+          ],
+          "sheetPosition": "-288px -144px",
+          "url": "url(\"http://127.0.0.1:5197/__guest216-pilot/guest-12-runtime.png?v=three-head-216-v1\")"
+        },
+        {
+          "direction": "left",
+          "moving": "true",
+          "frame": 3,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            165,
+            375
+          ],
+          "sheetPosition": "-288px -144px",
+          "url": "url(\"http://127.0.0.1:5197/__guest216-pilot/guest-12-runtime.png?v=three-head-216-v1\")"
+        },
+        {
+          "direction": "left",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            135,
+            375
+          ],
+          "sheetPosition": "0px -144px",
+          "url": "url(\"http://127.0.0.1:5197/__guest216-pilot/guest-12-runtime.png?v=three-head-216-v1\")"
+        },
+        {
+          "direction": "left",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            135,
+            375
+          ],
+          "sheetPosition": "0px -144px",
+          "url": "url(\"http://127.0.0.1:5197/__guest216-pilot/guest-12-runtime.png?v=three-head-216-v1\")"
+        },
+        {
+          "direction": "left",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            135,
+            375
+          ],
+          "sheetPosition": "0px -144px",
+          "url": "url(\"http://127.0.0.1:5197/__guest216-pilot/guest-12-runtime.png?v=three-head-216-v1\")"
+        }
+      ],
+      "stopped": {
+        "direction": "left",
+        "moving": "false",
+        "frame": 1
+      }
+    },
+    {
+      "direction": "right",
+      "samples": [
+        {
+          "direction": "left",
+          "moving": "false",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            105,
+            375
+          ],
+          "sheetPosition": "-96px -144px",
+          "url": "url(\"http://127.0.0.1:5197/__guest216-pilot/guest-12-runtime.png?v=three-head-216-v1\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            135,
+            375
+          ],
+          "sheetPosition": "0px -288px",
+          "url": "url(\"http://127.0.0.1:5197/__guest216-pilot/guest-12-runtime.png?v=three-head-216-v1\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            135,
+            375
+          ],
+          "sheetPosition": "0px -288px",
+          "url": "url(\"http://127.0.0.1:5197/__guest216-pilot/guest-12-runtime.png?v=three-head-216-v1\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            135,
+            375
+          ],
+          "sheetPosition": "0px -288px",
+          "url": "url(\"http://127.0.0.1:5197/__guest216-pilot/guest-12-runtime.png?v=three-head-216-v1\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            165,
+            375
+          ],
+          "sheetPosition": "-96px -288px",
+          "url": "url(\"http://127.0.0.1:5197/__guest216-pilot/guest-12-runtime.png?v=three-head-216-v1\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            165,
+            375
+          ],
+          "sheetPosition": "-96px -288px",
+          "url": "url(\"http://127.0.0.1:5197/__guest216-pilot/guest-12-runtime.png?v=three-head-216-v1\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            165,
+            375
+          ],
+          "sheetPosition": "-96px -288px",
+          "url": "url(\"http://127.0.0.1:5197/__guest216-pilot/guest-12-runtime.png?v=three-head-216-v1\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            165,
+            375
+          ],
+          "sheetPosition": "-96px -288px",
+          "url": "url(\"http://127.0.0.1:5197/__guest216-pilot/guest-12-runtime.png?v=three-head-216-v1\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 2,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            195,
+            375
+          ],
+          "sheetPosition": "-192px -288px",
+          "url": "url(\"http://127.0.0.1:5197/__guest216-pilot/guest-12-runtime.png?v=three-head-216-v1\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 2,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            195,
+            375
+          ],
+          "sheetPosition": "-192px -288px",
+          "url": "url(\"http://127.0.0.1:5197/__guest216-pilot/guest-12-runtime.png?v=three-head-216-v1\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 2,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            195,
+            375
+          ],
+          "sheetPosition": "-192px -288px",
+          "url": "url(\"http://127.0.0.1:5197/__guest216-pilot/guest-12-runtime.png?v=three-head-216-v1\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 3,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            225,
+            375
+          ],
+          "sheetPosition": "-288px -288px",
+          "url": "url(\"http://127.0.0.1:5197/__guest216-pilot/guest-12-runtime.png?v=three-head-216-v1\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 3,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            225,
+            375
+          ],
+          "sheetPosition": "-288px -288px",
+          "url": "url(\"http://127.0.0.1:5197/__guest216-pilot/guest-12-runtime.png?v=three-head-216-v1\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 3,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            225,
+            375
+          ],
+          "sheetPosition": "-288px -288px",
+          "url": "url(\"http://127.0.0.1:5197/__guest216-pilot/guest-12-runtime.png?v=three-head-216-v1\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            375
+          ],
+          "sheetPosition": "0px -288px",
+          "url": "url(\"http://127.0.0.1:5197/__guest216-pilot/guest-12-runtime.png?v=three-head-216-v1\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            375
+          ],
+          "sheetPosition": "0px -288px",
+          "url": "url(\"http://127.0.0.1:5197/__guest216-pilot/guest-12-runtime.png?v=three-head-216-v1\")"
+        }
+      ],
+      "stopped": {
+        "direction": "right",
+        "moving": "false",
+        "frame": 1
+      }
+    },
+    {
+      "direction": "up",
+      "samples": [
+        {
+          "direction": "right",
+          "moving": "false",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            375
+          ],
+          "sheetPosition": "-96px -288px",
+          "url": "url(\"http://127.0.0.1:5197/__guest216-pilot/guest-12-runtime.png?v=three-head-216-v1\")"
+        },
+        {
+          "direction": "up",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            345
+          ],
+          "sheetPosition": "0px -432px",
+          "url": "url(\"http://127.0.0.1:5197/__guest216-pilot/guest-12-runtime.png?v=three-head-216-v1\")"
+        },
+        {
+          "direction": "up",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            345
+          ],
+          "sheetPosition": "0px -432px",
+          "url": "url(\"http://127.0.0.1:5197/__guest216-pilot/guest-12-runtime.png?v=three-head-216-v1\")"
+        },
+        {
+          "direction": "up",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            345
+          ],
+          "sheetPosition": "0px -432px",
+          "url": "url(\"http://127.0.0.1:5197/__guest216-pilot/guest-12-runtime.png?v=three-head-216-v1\")"
+        },
+        {
+          "direction": "up",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            345
+          ],
+          "sheetPosition": "0px -432px",
+          "url": "url(\"http://127.0.0.1:5197/__guest216-pilot/guest-12-runtime.png?v=three-head-216-v1\")"
+        },
+        {
+          "direction": "up",
+          "moving": "true",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            315
+          ],
+          "sheetPosition": "-96px -432px",
+          "url": "url(\"http://127.0.0.1:5197/__guest216-pilot/guest-12-runtime.png?v=three-head-216-v1\")"
+        },
+        {
+          "direction": "up",
+          "moving": "true",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            315
+          ],
+          "sheetPosition": "-96px -432px",
+          "url": "url(\"http://127.0.0.1:5197/__guest216-pilot/guest-12-runtime.png?v=three-head-216-v1\")"
+        },
+        {
+          "direction": "up",
+          "moving": "true",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            315
+          ],
+          "sheetPosition": "-96px -432px",
+          "url": "url(\"http://127.0.0.1:5197/__guest216-pilot/guest-12-runtime.png?v=three-head-216-v1\")"
+        },
+        {
+          "direction": "up",
+          "moving": "true",
+          "frame": 2,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            285
+          ],
+          "sheetPosition": "-192px -432px",
+          "url": "url(\"http://127.0.0.1:5197/__guest216-pilot/guest-12-runtime.png?v=three-head-216-v1\")"
+        },
+        {
+          "direction": "up",
+          "moving": "true",
+          "frame": 2,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            285
+          ],
+          "sheetPosition": "-192px -432px",
+          "url": "url(\"http://127.0.0.1:5197/__guest216-pilot/guest-12-runtime.png?v=three-head-216-v1\")"
+        },
+        {
+          "direction": "up",
+          "moving": "true",
+          "frame": 2,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            285
+          ],
+          "sheetPosition": "-192px -432px",
+          "url": "url(\"http://127.0.0.1:5197/__guest216-pilot/guest-12-runtime.png?v=three-head-216-v1\")"
+        },
+        {
+          "direction": "up",
+          "moving": "true",
+          "frame": 3,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            255
+          ],
+          "sheetPosition": "-288px -432px",
+          "url": "url(\"http://127.0.0.1:5197/__guest216-pilot/guest-12-runtime.png?v=three-head-216-v1\")"
+        },
+        {
+          "direction": "up",
+          "moving": "true",
+          "frame": 3,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            255
+          ],
+          "sheetPosition": "-288px -432px",
+          "url": "url(\"http://127.0.0.1:5197/__guest216-pilot/guest-12-runtime.png?v=three-head-216-v1\")"
+        },
+        {
+          "direction": "up",
+          "moving": "true",
+          "frame": 3,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            255
+          ],
+          "sheetPosition": "-288px -432px",
+          "url": "url(\"http://127.0.0.1:5197/__guest216-pilot/guest-12-runtime.png?v=three-head-216-v1\")"
+        },
+        {
+          "direction": "up",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            225
+          ],
+          "sheetPosition": "0px -432px",
+          "url": "url(\"http://127.0.0.1:5197/__guest216-pilot/guest-12-runtime.png?v=three-head-216-v1\")"
+        },
+        {
+          "direction": "up",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            225
+          ],
+          "sheetPosition": "0px -432px",
+          "url": "url(\"http://127.0.0.1:5197/__guest216-pilot/guest-12-runtime.png?v=three-head-216-v1\")"
+        }
+      ],
+      "stopped": {
+        "direction": "up",
+        "moving": "false",
+        "frame": 1
+      }
+    },
+    {
+      "direction": "down",
+      "samples": [
+        {
+          "direction": "up",
+          "moving": "false",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            225
+          ],
+          "sheetPosition": "-96px -432px",
+          "url": "url(\"http://127.0.0.1:5197/__guest216-pilot/guest-12-runtime.png?v=three-head-216-v1\")"
+        },
+        {
+          "direction": "down",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            255
+          ],
+          "sheetPosition": "0px 0px",
+          "url": "url(\"http://127.0.0.1:5197/__guest216-pilot/guest-12-runtime.png?v=three-head-216-v1\")"
+        },
+        {
+          "direction": "down",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            255
+          ],
+          "sheetPosition": "0px 0px",
+          "url": "url(\"http://127.0.0.1:5197/__guest216-pilot/guest-12-runtime.png?v=three-head-216-v1\")"
+        },
+        {
+          "direction": "down",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            255
+          ],
+          "sheetPosition": "0px 0px",
+          "url": "url(\"http://127.0.0.1:5197/__guest216-pilot/guest-12-runtime.png?v=three-head-216-v1\")"
+        },
+        {
+          "direction": "down",
+          "moving": "true",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            285
+          ],
+          "sheetPosition": "-96px 0px",
+          "url": "url(\"http://127.0.0.1:5197/__guest216-pilot/guest-12-runtime.png?v=three-head-216-v1\")"
+        },
+        {
+          "direction": "down",
+          "moving": "true",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            285
+          ],
+          "sheetPosition": "-96px 0px",
+          "url": "url(\"http://127.0.0.1:5197/__guest216-pilot/guest-12-runtime.png?v=three-head-216-v1\")"
+        },
+        {
+          "direction": "down",
+          "moving": "true",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            285
+          ],
+          "sheetPosition": "-96px 0px",
+          "url": "url(\"http://127.0.0.1:5197/__guest216-pilot/guest-12-runtime.png?v=three-head-216-v1\")"
+        },
+        {
+          "direction": "down",
+          "moving": "true",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            285
+          ],
+          "sheetPosition": "-96px 0px",
+          "url": "url(\"http://127.0.0.1:5197/__guest216-pilot/guest-12-runtime.png?v=three-head-216-v1\")"
+        },
+        {
+          "direction": "down",
+          "moving": "true",
+          "frame": 2,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            315
+          ],
+          "sheetPosition": "-192px 0px",
+          "url": "url(\"http://127.0.0.1:5197/__guest216-pilot/guest-12-runtime.png?v=three-head-216-v1\")"
+        },
+        {
+          "direction": "down",
+          "moving": "true",
+          "frame": 2,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            315
+          ],
+          "sheetPosition": "-192px 0px",
+          "url": "url(\"http://127.0.0.1:5197/__guest216-pilot/guest-12-runtime.png?v=three-head-216-v1\")"
+        },
+        {
+          "direction": "down",
+          "moving": "true",
+          "frame": 2,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            315
+          ],
+          "sheetPosition": "-192px 0px",
+          "url": "url(\"http://127.0.0.1:5197/__guest216-pilot/guest-12-runtime.png?v=three-head-216-v1\")"
+        },
+        {
+          "direction": "down",
+          "moving": "true",
+          "frame": 3,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            345
+          ],
+          "sheetPosition": "-288px 0px",
+          "url": "url(\"http://127.0.0.1:5197/__guest216-pilot/guest-12-runtime.png?v=three-head-216-v1\")"
+        },
+        {
+          "direction": "down",
+          "moving": "true",
+          "frame": 3,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            345
+          ],
+          "sheetPosition": "-288px 0px",
+          "url": "url(\"http://127.0.0.1:5197/__guest216-pilot/guest-12-runtime.png?v=three-head-216-v1\")"
+        },
+        {
+          "direction": "down",
+          "moving": "true",
+          "frame": 3,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            345
+          ],
+          "sheetPosition": "-288px 0px",
+          "url": "url(\"http://127.0.0.1:5197/__guest216-pilot/guest-12-runtime.png?v=three-head-216-v1\")"
+        },
+        {
+          "direction": "down",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            375
+          ],
+          "sheetPosition": "0px 0px",
+          "url": "url(\"http://127.0.0.1:5197/__guest216-pilot/guest-12-runtime.png?v=three-head-216-v1\")"
+        },
+        {
+          "direction": "down",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            375
+          ],
+          "sheetPosition": "0px 0px",
+          "url": "url(\"http://127.0.0.1:5197/__guest216-pilot/guest-12-runtime.png?v=three-head-216-v1\")"
+        }
+      ],
+      "stopped": {
+        "direction": "down",
+        "moving": "false",
+        "frame": 1
+      }
+    }
+  ],
+  "screenshots": [
+    {
+      "file": "local-game-216-runtime-left.png",
+      "sha256": "39d71a1cf35873d840bff8b564b551928fb78affa4574ced2920f97042337156"
+    },
+    {
+      "file": "local-game-216-runtime-right.png",
+      "sha256": "03210d2c6ab8848f813b12d19be61fc6cce2b014ed3e009f5b9a2950f5eaae12"
+    },
+    {
+      "file": "local-game-216-runtime-up.png",
+      "sha256": "0c59c09334611198f09abc7f8c9b5bab53f45036ba19e02fdd1a1f2fe456768f"
+    },
+    {
+      "file": "local-game-216-runtime-down.png",
+      "sha256": "379e9df642636eb84a74e474ab3eb9902105b0ae4b1e0c8f840d04b54f77b983"
+    }
+  ],
+  "visualReview": "Captured real joystick movement; screenshots require separate visual inspection."
+}

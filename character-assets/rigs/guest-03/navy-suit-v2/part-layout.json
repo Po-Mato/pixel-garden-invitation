@@ -1,0 +1,549 @@
+{
+  "version": 1,
+  "canvas": {
+    "width": 192,
+    "height": 288
+  },
+  "directions": {
+    "down": {
+      "backHair": {
+        "file": "parts/down/backHair.png",
+        "x": 55,
+        "y": 13,
+        "width": 82,
+        "height": 84
+      },
+      "face": {
+        "file": "parts/down/face.png",
+        "x": 61,
+        "y": 27,
+        "width": 70,
+        "height": 70
+      },
+      "frontHair": {
+        "file": "parts/down/frontHair.png",
+        "x": 56,
+        "y": 13,
+        "width": 82,
+        "height": 69
+      },
+      "neck": {
+        "file": "parts/down/neck.png",
+        "x": 82,
+        "y": 90,
+        "width": 28,
+        "height": 23
+      },
+      "shirtTie": {
+        "file": "parts/down/shirtTie.png",
+        "x": 76,
+        "y": 99,
+        "width": 40,
+        "height": 73
+      },
+      "jacket": {
+        "file": "parts/down/jacket.png",
+        "x": 65,
+        "y": 99,
+        "width": 62,
+        "height": 80
+      },
+      "upperArmLeft": {
+        "file": "parts/down/upperArmLeft.png",
+        "x": 56,
+        "y": 109,
+        "width": 22,
+        "height": 48
+      },
+      "lowerArmLeft": {
+        "file": "parts/down/lowerArmLeft.png",
+        "x": 58,
+        "y": 147,
+        "width": 20,
+        "height": 41
+      },
+      "handLeft": {
+        "file": "parts/down/handLeft.png",
+        "x": 59,
+        "y": 181,
+        "width": 18,
+        "height": 22
+      },
+      "upperArmRight": {
+        "file": "parts/down/upperArmRight.png",
+        "x": 114,
+        "y": 109,
+        "width": 22,
+        "height": 48
+      },
+      "lowerArmRight": {
+        "file": "parts/down/lowerArmRight.png",
+        "x": 114,
+        "y": 147,
+        "width": 20,
+        "height": 41
+      },
+      "handRight": {
+        "file": "parts/down/handRight.png",
+        "x": 115,
+        "y": 181,
+        "width": 18,
+        "height": 22
+      },
+      "pelvis": {
+        "file": "parts/down/pelvis.png",
+        "x": 76,
+        "y": 164,
+        "width": 40,
+        "height": 31
+      },
+      "thighLeft": {
+        "file": "parts/down/thighLeft.png",
+        "x": 77,
+        "y": 174,
+        "width": 20,
+        "height": 47
+      },
+      "calfLeft": {
+        "file": "parts/down/calfLeft.png",
+        "x": 78,
+        "y": 213,
+        "width": 18,
+        "height": 43
+      },
+      "shoeLeft": {
+        "file": "parts/down/shoeLeft.png",
+        "x": 72,
+        "y": 247,
+        "width": 26,
+        "height": 18
+      },
+      "thighRight": {
+        "file": "parts/down/thighRight.png",
+        "x": 95,
+        "y": 174,
+        "width": 20,
+        "height": 47
+      },
+      "calfRight": {
+        "file": "parts/down/calfRight.png",
+        "x": 97,
+        "y": 213,
+        "width": 18,
+        "height": 43
+      },
+      "shoeRight": {
+        "file": "parts/down/shoeRight.png",
+        "x": 95,
+        "y": 247,
+        "width": 26,
+        "height": 18
+      },
+      "pocketSquare": {
+        "file": "parts/down/pocketSquare.png",
+        "x": 110,
+        "y": 118,
+        "width": 14,
+        "height": 9
+      }
+    },
+    "left": {
+      "backHair": {
+        "file": "parts/left/backHair.png",
+        "x": 61,
+        "y": 13,
+        "width": 78,
+        "height": 84
+      },
+      "face": {
+        "file": "parts/left/face.png",
+        "x": 59,
+        "y": 25,
+        "width": 68,
+        "height": 72
+      },
+      "frontHair": {
+        "file": "parts/left/frontHair.png",
+        "x": 60,
+        "y": 13,
+        "width": 75,
+        "height": 72
+      },
+      "neck": {
+        "file": "parts/left/neck.png",
+        "x": 84,
+        "y": 89,
+        "width": 25,
+        "height": 24
+      },
+      "shirtTie": {
+        "file": "parts/left/shirtTie.png",
+        "x": 78,
+        "y": 99,
+        "width": 38,
+        "height": 77
+      },
+      "jacket": {
+        "file": "parts/left/jacket.png",
+        "x": 80,
+        "y": 99,
+        "width": 41,
+        "height": 81
+      },
+      "upperArmLeft": {
+        "file": "parts/left/upperArmLeft.png",
+        "x": 101,
+        "y": 109,
+        "width": 20,
+        "height": 47
+      },
+      "lowerArmLeft": {
+        "file": "parts/left/lowerArmLeft.png",
+        "x": 101,
+        "y": 147,
+        "width": 20,
+        "height": 42
+      },
+      "handLeft": {
+        "file": "parts/left/handLeft.png",
+        "x": 101,
+        "y": 181,
+        "width": 18,
+        "height": 23
+      },
+      "upperArmRight": {
+        "file": "parts/left/upperArmRight.png",
+        "x": 76,
+        "y": 109,
+        "width": 20,
+        "height": 47
+      },
+      "lowerArmRight": {
+        "file": "parts/left/lowerArmRight.png",
+        "x": 76,
+        "y": 147,
+        "width": 20,
+        "height": 42
+      },
+      "handRight": {
+        "file": "parts/left/handRight.png",
+        "x": 77,
+        "y": 181,
+        "width": 17,
+        "height": 23
+      },
+      "pelvis": {
+        "file": "parts/left/pelvis.png",
+        "x": 83,
+        "y": 164,
+        "width": 30,
+        "height": 31
+      },
+      "thighLeft": {
+        "file": "parts/left/thighLeft.png",
+        "x": 90,
+        "y": 174,
+        "width": 17,
+        "height": 47
+      },
+      "calfLeft": {
+        "file": "parts/left/calfLeft.png",
+        "x": 89,
+        "y": 213,
+        "width": 18,
+        "height": 43
+      },
+      "shoeLeft": {
+        "file": "parts/left/shoeLeft.png",
+        "x": 72,
+        "y": 248,
+        "width": 34,
+        "height": 17
+      },
+      "thighRight": {
+        "file": "parts/left/thighRight.png",
+        "x": 99,
+        "y": 174,
+        "width": 16,
+        "height": 47
+      },
+      "calfRight": {
+        "file": "parts/left/calfRight.png",
+        "x": 98,
+        "y": 213,
+        "width": 17,
+        "height": 43
+      },
+      "shoeRight": {
+        "file": "parts/left/shoeRight.png",
+        "x": 81,
+        "y": 248,
+        "width": 34,
+        "height": 17
+      },
+      "pocketSquare": {
+        "file": "parts/left/pocketSquare.png",
+        "x": 80,
+        "y": 118,
+        "width": 13,
+        "height": 8
+      }
+    },
+    "right": {
+      "backHair": {
+        "file": "parts/right/backHair.png",
+        "x": 54,
+        "y": 13,
+        "width": 78,
+        "height": 84
+      },
+      "face": {
+        "file": "parts/right/face.png",
+        "x": 66,
+        "y": 25,
+        "width": 68,
+        "height": 72
+      },
+      "frontHair": {
+        "file": "parts/right/frontHair.png",
+        "x": 62,
+        "y": 13,
+        "width": 73,
+        "height": 72
+      },
+      "neck": {
+        "file": "parts/right/neck.png",
+        "x": 84,
+        "y": 90,
+        "width": 25,
+        "height": 23
+      },
+      "shirtTie": {
+        "file": "parts/right/shirtTie.png",
+        "x": 76,
+        "y": 99,
+        "width": 39,
+        "height": 77
+      },
+      "jacket": {
+        "file": "parts/right/jacket.png",
+        "x": 73,
+        "y": 99,
+        "width": 42,
+        "height": 81
+      },
+      "upperArmLeft": {
+        "file": "parts/right/upperArmLeft.png",
+        "x": 73,
+        "y": 109,
+        "width": 20,
+        "height": 47
+      },
+      "lowerArmLeft": {
+        "file": "parts/right/lowerArmLeft.png",
+        "x": 73,
+        "y": 147,
+        "width": 20,
+        "height": 42
+      },
+      "handLeft": {
+        "file": "parts/right/handLeft.png",
+        "x": 74,
+        "y": 181,
+        "width": 18,
+        "height": 23
+      },
+      "upperArmRight": {
+        "file": "parts/right/upperArmRight.png",
+        "x": 102,
+        "y": 109,
+        "width": 20,
+        "height": 47
+      },
+      "lowerArmRight": {
+        "file": "parts/right/lowerArmRight.png",
+        "x": 102,
+        "y": 147,
+        "width": 20,
+        "height": 42
+      },
+      "handRight": {
+        "file": "parts/right/handRight.png",
+        "x": 103,
+        "y": 181,
+        "width": 18,
+        "height": 23
+      },
+      "pelvis": {
+        "file": "parts/right/pelvis.png",
+        "x": 82,
+        "y": 164,
+        "width": 31,
+        "height": 31
+      },
+      "thighLeft": {
+        "file": "parts/right/thighLeft.png",
+        "x": 79,
+        "y": 174,
+        "width": 16,
+        "height": 47
+      },
+      "calfLeft": {
+        "file": "parts/right/calfLeft.png",
+        "x": 80,
+        "y": 213,
+        "width": 16,
+        "height": 43
+      },
+      "shoeLeft": {
+        "file": "parts/right/shoeLeft.png",
+        "x": 86,
+        "y": 248,
+        "width": 34,
+        "height": 17
+      },
+      "thighRight": {
+        "file": "parts/right/thighRight.png",
+        "x": 91,
+        "y": 174,
+        "width": 16,
+        "height": 47
+      },
+      "calfRight": {
+        "file": "parts/right/calfRight.png",
+        "x": 92,
+        "y": 213,
+        "width": 16,
+        "height": 43
+      },
+      "shoeRight": {
+        "file": "parts/right/shoeRight.png",
+        "x": 96,
+        "y": 248,
+        "width": 34,
+        "height": 17
+      },
+      "pocketSquare": {
+        "file": "parts/right/pocketSquare.png",
+        "x": 105,
+        "y": 118,
+        "width": 12,
+        "height": 8
+      }
+    },
+    "up": {
+      "backHair": {
+        "file": "parts/up/backHair.png",
+        "x": 58,
+        "y": 13,
+        "width": 76,
+        "height": 84
+      },
+      "neck": {
+        "file": "parts/up/neck.png",
+        "x": 83,
+        "y": 90,
+        "width": 26,
+        "height": 21
+      },
+      "jacket": {
+        "file": "parts/up/jacket.png",
+        "x": 66,
+        "y": 99,
+        "width": 60,
+        "height": 80
+      },
+      "upperArmLeft": {
+        "file": "parts/up/upperArmLeft.png",
+        "x": 56,
+        "y": 109,
+        "width": 22,
+        "height": 47
+      },
+      "lowerArmLeft": {
+        "file": "parts/up/lowerArmLeft.png",
+        "x": 58,
+        "y": 147,
+        "width": 20,
+        "height": 42
+      },
+      "handLeft": {
+        "file": "parts/up/handLeft.png",
+        "x": 59,
+        "y": 181,
+        "width": 18,
+        "height": 23
+      },
+      "upperArmRight": {
+        "file": "parts/up/upperArmRight.png",
+        "x": 114,
+        "y": 109,
+        "width": 22,
+        "height": 47
+      },
+      "lowerArmRight": {
+        "file": "parts/up/lowerArmRight.png",
+        "x": 114,
+        "y": 147,
+        "width": 20,
+        "height": 42
+      },
+      "handRight": {
+        "file": "parts/up/handRight.png",
+        "x": 115,
+        "y": 181,
+        "width": 18,
+        "height": 23
+      },
+      "pelvis": {
+        "file": "parts/up/pelvis.png",
+        "x": 75,
+        "y": 164,
+        "width": 42,
+        "height": 31
+      },
+      "thighLeft": {
+        "file": "parts/up/thighLeft.png",
+        "x": 77,
+        "y": 174,
+        "width": 20,
+        "height": 47
+      },
+      "calfLeft": {
+        "file": "parts/up/calfLeft.png",
+        "x": 78,
+        "y": 213,
+        "width": 18,
+        "height": 43
+      },
+      "shoeLeft": {
+        "file": "parts/up/shoeLeft.png",
+        "x": 72,
+        "y": 248,
+        "width": 26,
+        "height": 17
+      },
+      "thighRight": {
+        "file": "parts/up/thighRight.png",
+        "x": 95,
+        "y": 174,
+        "width": 20,
+        "height": 47
+      },
+      "calfRight": {
+        "file": "parts/up/calfRight.png",
+        "x": 97,
+        "y": 213,
+        "width": 18,
+        "height": 43
+      },
+      "shoeRight": {
+        "file": "parts/up/shoeRight.png",
+        "x": 95,
+        "y": 248,
+        "width": 26,
+        "height": 17
+      }
+    }
+  }
+}

@@ -19,9 +19,19 @@ describe("entry screen wedding artwork", () => {
     expect(styles).toContain("guest-character-preview-lounge.webp");
   });
 
-  it("anchors the selected character lower together with its floor shadow", () => {
-    expect(styles).toMatch(/\.entry-character-picker \.character-customizer__sprite\s*\{[^}]*top:\s*calc\(50% \+ 30px\);/s);
-    expect(styles).toMatch(/\.entry-character-picker \.character-customizer__halo\s*\{[^}]*top:\s*calc\(50% \+ 102px\);/s);
+  it("anchors the 216px silhouette to a shared foot line and matching canvas width", () => {
+    expect(styles).toMatch(/\.entry-character-picker \.character-customizer__sprite\s*\{[^}]*width: 160px;[^}]*height: 240px;[^}]*transform: translateX\(-50%\);/s);
+    expect(styles).toContain("bottom: 61px;");
+    expect(styles).toMatch(/\.entry-character-picker \.character-customizer__halo\s*\{[^}]*bottom: 70px;/s);
+    expect(styles).toContain("transform: scale(var(--preview-scale));");
+    const animation = styles.match(/@keyframes character-preview-opacity\s*\{([\s\S]*?)\n\}/)?.[1];
+    expect(animation).toContain("opacity");
+    expect(animation).not.toContain("transform");
+  });
+
+  it("keeps short-screen previews legible and allows scrolling instead of clipping", () => {
+    expect(styles).toContain("grid-template-rows: minmax(320px, 1fr) 44px auto;");
+    expect(styles).toMatch(/max-height: 800px[\s\S]*overflow-y: auto;/);
   });
 
   it("keeps the greenhouse crop and primary controls composed on short portrait phones", () => {

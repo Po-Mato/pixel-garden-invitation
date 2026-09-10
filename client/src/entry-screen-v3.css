@@ -272,18 +272,37 @@
 }
 
 .entry-character-picker .character-customizer__sprite {
-  top: calc(50% + 30px);
+  --preview-scale: 1.6666666667;
+  top: auto;
+  bottom: 61px;
+  width: 160px;
+  height: 240px;
+  transform: translateX(-50%);
+}
+
+/* Keep the frame's x=96 centre fixed; its y=270 foot line sits 15px
+   above the 240px display canvas bottom. Never re-centre individual frames. */
+.entry-character-picker .character-customizer__sprite > .character-sprite--preview {
+  transform: scale(var(--preview-scale));
+  transform-origin: left top;
+  animation-name: character-preview-opacity;
+}
+
+@keyframes character-preview-opacity {
+  from { opacity: 0.58; }
+  to { opacity: 1; }
 }
 
 .entry-character-picker .character-customizer__halo {
-  top: calc(50% + 102px);
-  width: 120px;
-  height: 18px;
+  top: auto;
+  bottom: 70px;
+  width: 76px;
+  height: 12px;
   border: 0;
   background: rgba(72, 61, 52, 0.2);
   box-shadow: none;
   filter: blur(3px);
-  transform: translateX(-50%) scaleY(0.55);
+  transform: translateX(-50%);
 }
 
 @media (min-height: 760px) {
@@ -324,16 +343,33 @@
     width: min(228px, 58vw);
   }
 
-  .entry-character-picker .character-customizer__sprite {
-    top: calc(50% + 18px);
-  }
-
-  .entry-character-picker .character-customizer__halo {
-    top: calc(50% + 90px);
-  }
-
   .entry-screen__actions {
     gap: 7px;
+  }
+}
+
+@media (max-height: 800px) {
+  /* Scroll the picker on short screens rather than overlap the face, direction
+     controls and feet. Game sprites and roster thumbnails are unaffected. */
+  .entry-character-sheet .bottom-sheet__body {
+    overflow-y: auto;
+  }
+
+  .entry-character-picker {
+    height: auto;
+    min-height: 100%;
+    grid-template-rows: auto auto;
+  }
+
+  .entry-character-sheet .entry-character-picker .character-customizer {
+    grid-template-rows: minmax(320px, 1fr) 44px auto;
+  }
+
+  .entry-character-picker .character-customizer__sprite {
+    --preview-scale: 1.3333333333;
+    bottom: 64px;
+    width: 128px;
+    height: 192px;
   }
 }
 

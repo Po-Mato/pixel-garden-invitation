@@ -1,0 +1,243 @@
+{
+  "id": "guest-03-three-head-216-v1-right",
+  "direction": "right",
+  "canvas": [
+    192,
+    288
+  ],
+  "skeleton": "../../common-three-head-216-v1/skeleton.json",
+  "runtimeEnabled": false,
+  "sourceGeometryMapping": {
+    "scale": [
+      0.11181702668360864,
+      0.09361425489790491
+    ],
+    "translate": [
+      22.92757306226175,
+      117.481103
+    ]
+  },
+  "sourceBody": {
+    "file": "../style-lock-cutout-v1/concepts/upperbody-v6/side-straight-source.png",
+    "size": [
+      1536,
+      1024
+    ],
+    "clip": [
+      440,
+      0,
+      410,
+      1024
+    ],
+    "armMask": "M587 212 Q652 213 656 318 L656 503 Q650 596 689 718 L682 746 L704 803 L718 878 L591 878 L591 817 L580 765 L565 744 L519 505 L508 325 Q505 227 563 215 Z",
+    "armRegions": {
+      "upperArm": [
+        0,
+        510
+      ],
+      "forearm": [
+        494,
+        254
+      ],
+      "hand": [
+        730,
+        294
+      ]
+    }
+  },
+  "head": {
+    "file": "../style-lock-cutout-v1/concepts/profile-head-v2/left-right-head-concept.png",
+    "size": [
+      1536,
+      1024
+    ],
+    "sourceBounds": [
+      808,
+      149,
+      673,
+      627
+    ],
+    "sourceClip": [
+      768,
+      0,
+      768,
+      1024
+    ],
+    "position": [
+      58,
+      54
+    ],
+    "height": 72,
+    "mirrored": false,
+    "parent": "head",
+    "pivot": [
+      96,
+      126
+    ]
+  },
+  "nearSide": "Left",
+  "parts": {
+    "neck": {
+      "file": "../style-lock-cutout-v1/parts/right/neck.png",
+      "rect": [
+        89,
+        121.813953,
+        14,
+        11.72093
+      ],
+      "mirrored": false,
+      "parent": "neck",
+      "pivot": [
+        96,
+        126
+      ]
+    },
+    "torsoShell": {
+      "file": "../style-lock-cutout-v1/parts/right/torsoShell.png",
+      "rect": [
+        77,
+        126,
+        36,
+        73.674419
+      ],
+      "mirrored": false,
+      "parent": "spine",
+      "pivot": [
+        96,
+        176.232558
+      ]
+    },
+    "legLeftSkin": {
+      "file": "../style-lock-cutout-v1/parts/right/legLeftSkin.png",
+      "rect": [
+        82,
+        190.465116,
+        36,
+        79.534884
+      ],
+      "mirrored": false,
+      "parent": "thighLeft",
+      "pivot": [
+        94,
+        192.139535
+      ]
+    },
+    "legRightSkin": {
+      "file": "../style-lock-cutout-v1/parts/right/legRightSkin.png",
+      "rect": [
+        84,
+        190.465116,
+        36,
+        79.534884
+      ],
+      "mirrored": false,
+      "parent": "thighRight",
+      "pivot": [
+        98,
+        192.139535
+      ]
+    }
+  },
+  "legRegions": {
+    "thigh": [
+      190.465116,
+      36.837209
+    ],
+    "calf": [
+      220.604651,
+      36
+    ],
+    "shoe": [
+      251.581395,
+      19.255814
+    ]
+  },
+  "hiddenShoulder": {
+    "parent": "spine",
+    "pivot": [
+      96,
+      176.232558
+    ],
+    "path": "M78 110 Q94 110 94 132 L94 174 L78 174 Z",
+    "topColor": "#162d5f",
+    "bottomColor": "#11234d",
+    "legacyPathMapping": {
+      "scale": [
+        1,
+        0.8372093023255814
+      ],
+      "translate": [
+        0,
+        43.95348837209302
+      ]
+    }
+  },
+  "frames": [
+    {
+      "forward": "Left",
+      "root": [
+        0,
+        0
+      ],
+      "upperArmLeft": 3,
+      "forearmLeft": -1,
+      "handLeft": -2,
+      "thighLeft": -8,
+      "calfLeft": 8,
+      "shoeLeft": 0,
+      "thighRight": 8,
+      "calfRight": 8,
+      "shoeRight": -16,
+      "ground": {
+        "Left": 1.146977,
+        "Right": 0
+      }
+    },
+    {
+      "root": [
+        0,
+        0
+      ],
+      "ground": {
+        "Left": 0.837209,
+        "Right": 0.837209
+      }
+    },
+    {
+      "forward": "Right",
+      "root": [
+        0,
+        0
+      ],
+      "upperArmLeft": -3,
+      "forearmLeft": 1,
+      "handLeft": 2,
+      "thighRight": -8,
+      "calfRight": 8,
+      "shoeRight": 0,
+      "thighLeft": 8,
+      "calfLeft": 8,
+      "shoeLeft": -16,
+      "ground": {
+        "Right": 1.146977,
+        "Left": 0
+      }
+    },
+    {
+      "root": [
+        0,
+        0
+      ],
+      "ground": {
+        "Left": 0.837209,
+        "Right": 0.837209
+      }
+    }
+  ],
+  "limitations": [
+    "Distinct directional original atlas regions, no mirroring.",
+    "Head and body rebound to authored 72/144 geometry; no rendered-frame input.",
+    "Source atlas semantic arm masks remain editable; hidden far arm stays occluded."
+  ],
+  "skeletonProjection": "right"
+}

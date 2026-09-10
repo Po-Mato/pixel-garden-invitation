@@ -1,0 +1,92 @@
+{
+  "id": "dress-right-216-v1",
+  "type": "dress",
+  "direction": "right",
+  "policy": "Common dress motion. Fixed skeleton lengths; no character-specific walking cycle.",
+  "regions": {
+    "thigh": [
+      190.465116,
+      36.837209
+    ],
+    "calf": [
+      220.604651,
+      36
+    ],
+    "shoe": [
+      251.581395,
+      19.255814
+    ],
+    "upperArm": [
+      117.481103,
+      47.74327
+    ],
+    "forearm": [
+      163.726545,
+      23.778021
+    ],
+    "hand": [
+      185.819509,
+      27.522591
+    ]
+  },
+  "frames": [
+    {
+      "forward": "Left",
+      "rotations": {
+        "upperArmLeft": 3,
+        "forearmLeft": -1,
+        "handLeft": -2,
+        "thighLeft": -8,
+        "calfLeft": 8,
+        "shoeLeft": 0,
+        "thighRight": 8,
+        "calfRight": 8,
+        "shoeRight": -16,
+        "upperArmRight": -3,
+        "forearmRight": 1,
+        "handRight": 2
+      },
+      "depth": {
+        "Left": 1.146977,
+        "Right": 0
+      }
+    },
+    {
+      "forward": null,
+      "rotations": {},
+      "depth": {
+        "Left": 0.837209,
+        "Right": 0.837209
+      }
+    },
+    {
+      "forward": "Right",
+      "rotations": {
+        "upperArmLeft": -3,
+        "forearmLeft": 1,
+        "handLeft": 2,
+        "thighRight": -8,
+        "calfRight": 8,
+        "shoeRight": 0,
+        "thighLeft": 8,
+        "calfLeft": 8,
+        "shoeLeft": -16,
+        "upperArmRight": 3,
+        "forearmRight": -1,
+        "handRight": -2
+      },
+      "depth": {
+        "Right": 1.146977,
+        "Left": 0
+      }
+    },
+    {
+      "forward": null,
+      "rotations": {},
+      "depth": {
+        "Left": 0.837209,
+        "Right": 0.837209
+      }
+    }
+  ]
+}

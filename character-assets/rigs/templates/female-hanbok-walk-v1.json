@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "id": "female-hanbok-walk-v1",
+  "baseRig": "../guest-03/navy-suit-v1/rig.json",
+  "garmentMotion": {
+    "down": [{ "rotate": -0.5 }, {}, { "rotate": 0.5 }, {}],
+    "left": [{ "rotate": -0.8 }, {}, { "rotate": 0.6 }, {}],
+    "right": [{ "rotate": 0.6 }, {}, { "rotate": -0.8 }, {}],
+    "up": [{ "rotate": 0.4 }, {}, { "rotate": -0.4 }, {}]
+  },
+  "accessoryMotion": {
+    "down": [{ "rotate": 2.5 }, {}, { "rotate": -2.5 }, {}],
+    "left": [{ "rotate": -3 }, {}, { "rotate": 2 }, {}],
+    "right": [{ "rotate": 2 }, {}, { "rotate": -3 }, {}],
+    "up": [{}, {}, {}, {}]
+  }
+}

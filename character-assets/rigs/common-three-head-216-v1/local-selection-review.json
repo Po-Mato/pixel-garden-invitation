@@ -1,0 +1,1311 @@
+{
+  "developmentOnly": true,
+  "productionIntegrated": false,
+  "viewport": [
+    390,
+    844
+  ],
+  "guests": [
+    {
+      "id": "guest-01",
+      "label": "크림 롱 웨이브 원피스",
+      "rows": [
+        {
+          "state": {
+            "direction": "down",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "feminine-long-wave-dress",
+            "motionProfile": "flowing",
+            "size": [
+              96,
+              144
+            ],
+            "url": "url(\"http://127.0.0.1:5196/__guest216-pilot/guest-01.png?v=three-head-216-v1\")",
+            "position": "-192px 0px"
+          },
+          "file": "local-selection-216-down.png",
+          "sha256": "5be87be4b3f3036ba350216675d2b9c9ef070ae36b73880f3423f9d7652619ae"
+        },
+        {
+          "state": {
+            "direction": "left",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "feminine-long-wave-dress",
+            "motionProfile": "flowing",
+            "size": [
+              96,
+              144
+            ],
+            "url": "url(\"http://127.0.0.1:5196/__guest216-pilot/guest-01.png?v=three-head-216-v1\")",
+            "position": "-192px -288px"
+          },
+          "file": "local-selection-216-left.png",
+          "sha256": "22e23569e492868093655fcd70a08c99749e106c40528d25cf3b45a72b349429"
+        },
+        {
+          "state": {
+            "direction": "right",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "feminine-long-wave-dress",
+            "motionProfile": "flowing",
+            "size": [
+              96,
+              144
+            ],
+            "url": "url(\"http://127.0.0.1:5196/__guest216-pilot/guest-01.png?v=three-head-216-v1\")",
+            "position": "-192px -576px"
+          },
+          "file": "local-selection-216-right.png",
+          "sha256": "6764ac561f20d23bc255ac7566bc602354c2a48774bb5db478b4d3a2d42a60d2"
+        },
+        {
+          "state": {
+            "direction": "up",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "feminine-long-wave-dress",
+            "motionProfile": "flowing",
+            "size": [
+              96,
+              144
+            ],
+            "url": "url(\"http://127.0.0.1:5196/__guest216-pilot/guest-01.png?v=three-head-216-v1\")",
+            "position": "-192px -864px"
+          },
+          "file": "local-selection-216-up.png",
+          "sha256": "ca7db356ad4b18486346ed743343bec378b0fbf2c5d9447562e01e9628a12cf0"
+        }
+      ],
+      "observed": [
+        0,
+        1,
+        1,
+        1,
+        2,
+        2,
+        2,
+        3,
+        3,
+        3,
+        0,
+        0,
+        1,
+        1,
+        1,
+        2,
+        2,
+        2,
+        3,
+        3,
+        3,
+        0
+      ],
+      "stopped": {
+        "moving": "false",
+        "frame": 1
+      },
+      "response": {
+        "status": 200,
+        "cache": "no-store",
+        "header": "d3f81dca24dcb76763f3a9ab779b7bf390ea78a868bcd01d1ad54eae3b6bc04c",
+        "sha256": "d3f81dca24dcb76763f3a9ab779b7bf390ea78a868bcd01d1ad54eae3b6bc04c"
+      }
+    },
+    {
+      "id": "guest-02",
+      "label": "로즈 여성 한복",
+      "rows": [
+        {
+          "state": {
+            "direction": "down",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "feminine-formal-hanbok",
+            "motionProfile": "hanbok",
+            "size": [
+              96,
+              144
+            ],
+            "url": "url(\"http://127.0.0.1:5196/__guest216-pilot/guest-02.png?v=three-head-216-v1\")",
+            "position": "-192px 0px"
+          },
+          "file": "local-selection-216-down.png",
+          "sha256": "eb81214ddc7a79f2a5d63492696d4484d0adfb36f610ae06e2d353339e53fda9"
+        },
+        {
+          "state": {
+            "direction": "left",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "feminine-formal-hanbok",
+            "motionProfile": "hanbok",
+            "size": [
+              96,
+              144
+            ],
+            "url": "url(\"http://127.0.0.1:5196/__guest216-pilot/guest-02.png?v=three-head-216-v1\")",
+            "position": "-192px -288px"
+          },
+          "file": "local-selection-216-left.png",
+          "sha256": "67b4dfc4152d258b54563c47dc645e4ec96fab66ac1423ed3a0c22b48cf6d2b2"
+        },
+        {
+          "state": {
+            "direction": "right",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "feminine-formal-hanbok",
+            "motionProfile": "hanbok",
+            "size": [
+              96,
+              144
+            ],
+            "url": "url(\"http://127.0.0.1:5196/__guest216-pilot/guest-02.png?v=three-head-216-v1\")",
+            "position": "-192px -576px"
+          },
+          "file": "local-selection-216-right.png",
+          "sha256": "c9a829a195fd0a6dca75cca5712f18f5d110d8f680161db8ba4f5364626a77ed"
+        },
+        {
+          "state": {
+            "direction": "up",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "feminine-formal-hanbok",
+            "motionProfile": "hanbok",
+            "size": [
+              96,
+              144
+            ],
+            "url": "url(\"http://127.0.0.1:5196/__guest216-pilot/guest-02.png?v=three-head-216-v1\")",
+            "position": "-192px -864px"
+          },
+          "file": "local-selection-216-up.png",
+          "sha256": "6e09b20b1007d83402ac0b385b7ca5974029148dea344667a1b5aed3ce848372"
+        }
+      ],
+      "observed": [
+        0,
+        1,
+        1,
+        1,
+        2,
+        2,
+        2,
+        3,
+        3,
+        3,
+        0,
+        0,
+        0,
+        1,
+        1,
+        1,
+        2,
+        2,
+        3,
+        3,
+        3,
+        0
+      ],
+      "stopped": {
+        "moving": "false",
+        "frame": 1
+      },
+      "response": {
+        "status": 200,
+        "cache": "no-store",
+        "header": "7434fc845c9bc082c0d4319276cbb4ef2aff989c4d0e9f928ae340d1ced7a2e3",
+        "sha256": "7434fc845c9bc082c0d4319276cbb4ef2aff989c4d0e9f928ae340d1ced7a2e3"
+      }
+    },
+    {
+      "id": "guest-03",
+      "label": "네이비 클래식 수트",
+      "rows": [
+        {
+          "state": {
+            "direction": "down",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "masculine-navy-suit",
+            "motionProfile": "tailored",
+            "size": [
+              96,
+              144
+            ],
+            "url": "url(\"http://127.0.0.1:5196/__guest216-pilot/guest-03.png?v=three-head-216-v1\")",
+            "position": "-192px 0px"
+          },
+          "file": "local-selection-216-down.png",
+          "sha256": "e18ca0813b9e2ec59d7d750271d594c1836483a7b9b3f44e0b9b65c3ad9a1938"
+        },
+        {
+          "state": {
+            "direction": "left",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "masculine-navy-suit",
+            "motionProfile": "tailored",
+            "size": [
+              96,
+              144
+            ],
+            "url": "url(\"http://127.0.0.1:5196/__guest216-pilot/guest-03.png?v=three-head-216-v1\")",
+            "position": "-192px -288px"
+          },
+          "file": "local-selection-216-left.png",
+          "sha256": "b107c6cf617f612dc6764e4b29ca2210c0a52f607e2e6d5845703a52ecfa4b02"
+        },
+        {
+          "state": {
+            "direction": "right",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "masculine-navy-suit",
+            "motionProfile": "tailored",
+            "size": [
+              96,
+              144
+            ],
+            "url": "url(\"http://127.0.0.1:5196/__guest216-pilot/guest-03.png?v=three-head-216-v1\")",
+            "position": "-192px -576px"
+          },
+          "file": "local-selection-216-right.png",
+          "sha256": "7dc14014e87dcc1effd20e89e163f28082e23c8c5fcfd7df1220c05716b9a122"
+        },
+        {
+          "state": {
+            "direction": "up",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "masculine-navy-suit",
+            "motionProfile": "tailored",
+            "size": [
+              96,
+              144
+            ],
+            "url": "url(\"http://127.0.0.1:5196/__guest216-pilot/guest-03.png?v=three-head-216-v1\")",
+            "position": "-192px -864px"
+          },
+          "file": "local-selection-216-up.png",
+          "sha256": "609adb2c1977d0cb743d669568558c227ee4547e441ff5664b3b800035461497"
+        }
+      ],
+      "observed": [
+        0,
+        1,
+        1,
+        1,
+        2,
+        2,
+        2,
+        3,
+        3,
+        3,
+        0,
+        0,
+        0,
+        1,
+        1,
+        2,
+        2,
+        2,
+        3,
+        3,
+        3,
+        0
+      ],
+      "stopped": {
+        "moving": "false",
+        "frame": 1
+      },
+      "response": {
+        "status": 200,
+        "cache": "no-store",
+        "header": "756b0a2a046dc0de02304f5695b29ee84668d14b890317a75c6b8778a8f5352a",
+        "sha256": "756b0a2a046dc0de02304f5695b29ee84668d14b890317a75c6b8778a8f5352a"
+      }
+    },
+    {
+      "id": "guest-04",
+      "label": "차콜 클래식 수트",
+      "rows": [
+        {
+          "state": {
+            "direction": "down",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "masculine-charcoal-blazer",
+            "motionProfile": "tailored",
+            "size": [
+              96,
+              144
+            ],
+            "url": "url(\"http://127.0.0.1:5196/__guest216-pilot/guest-04.png?v=three-head-216-v1\")",
+            "position": "-192px 0px"
+          },
+          "file": "local-selection-216-down.png",
+          "sha256": "0752f86bb50858cf9d391e8f9f042cc637b398ac9fbd9d6a2d13b107d7911e5e"
+        },
+        {
+          "state": {
+            "direction": "left",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "masculine-charcoal-blazer",
+            "motionProfile": "tailored",
+            "size": [
+              96,
+              144
+            ],
+            "url": "url(\"http://127.0.0.1:5196/__guest216-pilot/guest-04.png?v=three-head-216-v1\")",
+            "position": "-192px -288px"
+          },
+          "file": "local-selection-216-left.png",
+          "sha256": "62471eeef19578415e6d00ea612026cd92ee0ac844b5c3d2bb1a67f740113a8b"
+        },
+        {
+          "state": {
+            "direction": "right",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "masculine-charcoal-blazer",
+            "motionProfile": "tailored",
+            "size": [
+              96,
+              144
+            ],
+            "url": "url(\"http://127.0.0.1:5196/__guest216-pilot/guest-04.png?v=three-head-216-v1\")",
+            "position": "-192px -576px"
+          },
+          "file": "local-selection-216-right.png",
+          "sha256": "cf9e03570263319e674bb6e380335fe2a606686dc527a179ac7fd38e149f004b"
+        },
+        {
+          "state": {
+            "direction": "up",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "masculine-charcoal-blazer",
+            "motionProfile": "tailored",
+            "size": [
+              96,
+              144
+            ],
+            "url": "url(\"http://127.0.0.1:5196/__guest216-pilot/guest-04.png?v=three-head-216-v1\")",
+            "position": "-192px -864px"
+          },
+          "file": "local-selection-216-up.png",
+          "sha256": "1228bbaf1ce4a06c83276a76f03076931c237aea9adc511dbe7d4df37f61176a"
+        }
+      ],
+      "observed": [
+        0,
+        1,
+        1,
+        1,
+        2,
+        2,
+        2,
+        3,
+        3,
+        3,
+        0,
+        0,
+        0,
+        1,
+        1,
+        2,
+        2,
+        2,
+        3,
+        3,
+        3,
+        0
+      ],
+      "stopped": {
+        "moving": "false",
+        "frame": 1
+      },
+      "response": {
+        "status": 200,
+        "cache": "no-store",
+        "header": "83c2c6188e27d914df8354fdb4933190f6b8b9c30fcdc3ef0bd52256c2068231",
+        "sha256": "83c2c6188e27d914df8354fdb4933190f6b8b9c30fcdc3ef0bd52256c2068231"
+      }
+    },
+    {
+      "id": "guest-05",
+      "label": "세이지 리본 원피스",
+      "rows": [
+        {
+          "state": {
+            "direction": "down",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "feminine-sage-bolero-dress",
+            "motionProfile": "skirt",
+            "size": [
+              96,
+              144
+            ],
+            "url": "url(\"http://127.0.0.1:5196/__guest216-pilot/guest-05.png?v=three-head-216-v1\")",
+            "position": "-192px 0px"
+          },
+          "file": "local-selection-216-down.png",
+          "sha256": "919da721f3255e59a5acb8f1e5fa22ad355142dbdf6bae4b3d7cdc652fc19274"
+        },
+        {
+          "state": {
+            "direction": "left",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "feminine-sage-bolero-dress",
+            "motionProfile": "skirt",
+            "size": [
+              96,
+              144
+            ],
+            "url": "url(\"http://127.0.0.1:5196/__guest216-pilot/guest-05.png?v=three-head-216-v1\")",
+            "position": "-192px -288px"
+          },
+          "file": "local-selection-216-left.png",
+          "sha256": "4e8478d7a9c533ed0d10079a6b9e92954ba18f8e3d626694f1e29557a7c51194"
+        },
+        {
+          "state": {
+            "direction": "right",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "feminine-sage-bolero-dress",
+            "motionProfile": "skirt",
+            "size": [
+              96,
+              144
+            ],
+            "url": "url(\"http://127.0.0.1:5196/__guest216-pilot/guest-05.png?v=three-head-216-v1\")",
+            "position": "-192px -576px"
+          },
+          "file": "local-selection-216-right.png",
+          "sha256": "2752173ffb68c11df77c4563ebe23f18c02573e246fe960940f2fd2b46b467dd"
+        },
+        {
+          "state": {
+            "direction": "up",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "feminine-sage-bolero-dress",
+            "motionProfile": "skirt",
+            "size": [
+              96,
+              144
+            ],
+            "url": "url(\"http://127.0.0.1:5196/__guest216-pilot/guest-05.png?v=three-head-216-v1\")",
+            "position": "-192px -864px"
+          },
+          "file": "local-selection-216-up.png",
+          "sha256": "10614d396ba6de643602fc01aedc277d78d996d2b38d8e62b731700678e49e52"
+        }
+      ],
+      "observed": [
+        0,
+        1,
+        1,
+        1,
+        2,
+        2,
+        2,
+        3,
+        3,
+        3,
+        0,
+        0,
+        0,
+        1,
+        1,
+        1,
+        2,
+        2,
+        3,
+        3,
+        3,
+        0
+      ],
+      "stopped": {
+        "moving": "false",
+        "frame": 1
+      },
+      "response": {
+        "status": 200,
+        "cache": "no-store",
+        "header": "06ce119c6d2fdef901e82658374143b6a14007b5393010ab1e0ca8f154262268",
+        "sha256": "06ce119c6d2fdef901e82658374143b6a14007b5393010ab1e0ca8f154262268"
+      }
+    },
+    {
+      "id": "guest-06",
+      "label": "샴페인 블라우스 스커트",
+      "rows": [
+        {
+          "state": {
+            "direction": "down",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "feminine-champagne-navy-skirt",
+            "motionProfile": "skirt",
+            "size": [
+              96,
+              144
+            ],
+            "url": "url(\"http://127.0.0.1:5196/__guest216-pilot/guest-06.png?v=three-head-216-v1\")",
+            "position": "-192px 0px"
+          },
+          "file": "local-selection-216-down.png",
+          "sha256": "a7e550d50e220ea343211471ff488420ed8d1d780ec427ca88bb204794fce43b"
+        },
+        {
+          "state": {
+            "direction": "left",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "feminine-champagne-navy-skirt",
+            "motionProfile": "skirt",
+            "size": [
+              96,
+              144
+            ],
+            "url": "url(\"http://127.0.0.1:5196/__guest216-pilot/guest-06.png?v=three-head-216-v1\")",
+            "position": "-192px -288px"
+          },
+          "file": "local-selection-216-left.png",
+          "sha256": "596f713e8712f8474ceec2bc03c4dca52df3b94b536cbca131ae0b6833c9e407"
+        },
+        {
+          "state": {
+            "direction": "right",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "feminine-champagne-navy-skirt",
+            "motionProfile": "skirt",
+            "size": [
+              96,
+              144
+            ],
+            "url": "url(\"http://127.0.0.1:5196/__guest216-pilot/guest-06.png?v=three-head-216-v1\")",
+            "position": "-192px -576px"
+          },
+          "file": "local-selection-216-right.png",
+          "sha256": "edc37b8017538e381ef558c2c1cf695ba36dd6e1b686c46e3b04adecadfe00af"
+        },
+        {
+          "state": {
+            "direction": "up",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "feminine-champagne-navy-skirt",
+            "motionProfile": "skirt",
+            "size": [
+              96,
+              144
+            ],
+            "url": "url(\"http://127.0.0.1:5196/__guest216-pilot/guest-06.png?v=three-head-216-v1\")",
+            "position": "-192px -864px"
+          },
+          "file": "local-selection-216-up.png",
+          "sha256": "17666b31ec29363bba2ba8c4f3b65af21879c85b24daa81d76d6fbb6a9c4b1df"
+        }
+      ],
+      "observed": [
+        0,
+        1,
+        1,
+        1,
+        2,
+        2,
+        2,
+        3,
+        3,
+        3,
+        0,
+        0,
+        0,
+        1,
+        1,
+        2,
+        2,
+        2,
+        3,
+        3,
+        3,
+        0
+      ],
+      "stopped": {
+        "moving": "false",
+        "frame": 1
+      },
+      "response": {
+        "status": 200,
+        "cache": "no-store",
+        "header": "4048d20918ebb0ca7dc949a3c35fe8e94bdcdd45639dea13f91c787880cd3db6",
+        "sha256": "4048d20918ebb0ca7dc949a3c35fe8e94bdcdd45639dea13f91c787880cd3db6"
+      }
+    },
+    {
+      "id": "guest-07",
+      "label": "라벤더 쉬폰 원피스",
+      "rows": [
+        {
+          "state": {
+            "direction": "down",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "feminine-lavender-jacket-dress",
+            "motionProfile": "flowing",
+            "size": [
+              96,
+              144
+            ],
+            "url": "url(\"http://127.0.0.1:5196/__guest216-pilot/guest-07.png?v=three-head-216-v1\")",
+            "position": "-192px 0px"
+          },
+          "file": "local-selection-216-down.png",
+          "sha256": "8f24a1a0941952bfae851bcf948c021cd6dcdc1bd6a85d56d4965c522ee49c43"
+        },
+        {
+          "state": {
+            "direction": "left",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "feminine-lavender-jacket-dress",
+            "motionProfile": "flowing",
+            "size": [
+              96,
+              144
+            ],
+            "url": "url(\"http://127.0.0.1:5196/__guest216-pilot/guest-07.png?v=three-head-216-v1\")",
+            "position": "-192px -288px"
+          },
+          "file": "local-selection-216-left.png",
+          "sha256": "f785f46a3b0ac8a5bc2f01d74ad77512437c67e647a4b9c05c7d72b2d9ba54b4"
+        },
+        {
+          "state": {
+            "direction": "right",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "feminine-lavender-jacket-dress",
+            "motionProfile": "flowing",
+            "size": [
+              96,
+              144
+            ],
+            "url": "url(\"http://127.0.0.1:5196/__guest216-pilot/guest-07.png?v=three-head-216-v1\")",
+            "position": "-192px -576px"
+          },
+          "file": "local-selection-216-right.png",
+          "sha256": "0f79272a284c7312c234bf61ce3be202722ea63d8fcc94ee69f56841f73502d1"
+        },
+        {
+          "state": {
+            "direction": "up",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "feminine-lavender-jacket-dress",
+            "motionProfile": "flowing",
+            "size": [
+              96,
+              144
+            ],
+            "url": "url(\"http://127.0.0.1:5196/__guest216-pilot/guest-07.png?v=three-head-216-v1\")",
+            "position": "-192px -864px"
+          },
+          "file": "local-selection-216-up.png",
+          "sha256": "0bcc5b451832408307ac47023f6a353c20f82289ff3e9c6a9326590ed62dbf00"
+        }
+      ],
+      "observed": [
+        0,
+        1,
+        1,
+        1,
+        2,
+        2,
+        2,
+        3,
+        3,
+        3,
+        0,
+        0,
+        0,
+        1,
+        1,
+        2,
+        2,
+        2,
+        3,
+        3,
+        3,
+        0
+      ],
+      "stopped": {
+        "moving": "false",
+        "frame": 1
+      },
+      "response": {
+        "status": 200,
+        "cache": "no-store",
+        "header": "c8c8471f86697d9ad32d4acad19007d4236b65d00db7364c4b4300be34451484",
+        "sha256": "c8c8471f86697d9ad32d4acad19007d4236b65d00db7364c4b4300be34451484"
+      }
+    },
+    {
+      "id": "guest-08",
+      "label": "더스티 로즈 원피스",
+      "rows": [
+        {
+          "state": {
+            "direction": "down",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "feminine-teal-modern-hanbok",
+            "motionProfile": "hanbok",
+            "size": [
+              96,
+              144
+            ],
+            "url": "url(\"http://127.0.0.1:5196/__guest216-pilot/guest-08.png?v=three-head-216-v1\")",
+            "position": "-192px 0px"
+          },
+          "file": "local-selection-216-down.png",
+          "sha256": "dee03775c22602cef00f47f06f686605e17f4e78fd2a3888f6c82574312dd677"
+        },
+        {
+          "state": {
+            "direction": "left",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "feminine-teal-modern-hanbok",
+            "motionProfile": "hanbok",
+            "size": [
+              96,
+              144
+            ],
+            "url": "url(\"http://127.0.0.1:5196/__guest216-pilot/guest-08.png?v=three-head-216-v1\")",
+            "position": "-192px -288px"
+          },
+          "file": "local-selection-216-left.png",
+          "sha256": "f92182905b6e53bc03af3592ddcc6bd101593a5c62c5abb289c2283bb8c2ec19"
+        },
+        {
+          "state": {
+            "direction": "right",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "feminine-teal-modern-hanbok",
+            "motionProfile": "hanbok",
+            "size": [
+              96,
+              144
+            ],
+            "url": "url(\"http://127.0.0.1:5196/__guest216-pilot/guest-08.png?v=three-head-216-v1\")",
+            "position": "-192px -576px"
+          },
+          "file": "local-selection-216-right.png",
+          "sha256": "74ef9b0380f0e67f076e89b483ed5f51a44fe1b525bc8ae58c3eb9424ef9a510"
+        },
+        {
+          "state": {
+            "direction": "up",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "feminine-teal-modern-hanbok",
+            "motionProfile": "hanbok",
+            "size": [
+              96,
+              144
+            ],
+            "url": "url(\"http://127.0.0.1:5196/__guest216-pilot/guest-08.png?v=three-head-216-v1\")",
+            "position": "-192px -864px"
+          },
+          "file": "local-selection-216-up.png",
+          "sha256": "9c8d97149164f7f0cb289ec3b72f41cf768dbafc40f806c31fda4e603bf8995a"
+        }
+      ],
+      "observed": [
+        0,
+        1,
+        1,
+        1,
+        2,
+        2,
+        2,
+        3,
+        3,
+        3,
+        0,
+        0,
+        0,
+        1,
+        1,
+        2,
+        2,
+        2,
+        3,
+        3,
+        3,
+        0
+      ],
+      "stopped": {
+        "moving": "false",
+        "frame": 1
+      },
+      "response": {
+        "status": 200,
+        "cache": "no-store",
+        "header": "15de8df34af49502c49ef31b0a476fd70452f450c43dcc1cca991fc7bb6580a6",
+        "sha256": "15de8df34af49502c49ef31b0a476fd70452f450c43dcc1cca991fc7bb6580a6"
+      }
+    },
+    {
+      "id": "guest-09",
+      "label": "베이지 썸머 수트",
+      "rows": [
+        {
+          "state": {
+            "direction": "down",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "masculine-beige-summer-suit",
+            "motionProfile": "tailored",
+            "size": [
+              96,
+              144
+            ],
+            "url": "url(\"http://127.0.0.1:5196/__guest216-pilot/guest-09.png?v=three-head-216-v1\")",
+            "position": "-192px 0px"
+          },
+          "file": "local-selection-216-down.png",
+          "sha256": "f81d3b21e5fc1dc4a84a3aab097250edb384092bf5556a9cb3f4c6bf7202df84"
+        },
+        {
+          "state": {
+            "direction": "left",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "masculine-beige-summer-suit",
+            "motionProfile": "tailored",
+            "size": [
+              96,
+              144
+            ],
+            "url": "url(\"http://127.0.0.1:5196/__guest216-pilot/guest-09.png?v=three-head-216-v1\")",
+            "position": "-192px -288px"
+          },
+          "file": "local-selection-216-left.png",
+          "sha256": "100a2ce16122a28050b47e584ae8d4e03f16a321af37662afcbbc03f7c81902e"
+        },
+        {
+          "state": {
+            "direction": "right",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "masculine-beige-summer-suit",
+            "motionProfile": "tailored",
+            "size": [
+              96,
+              144
+            ],
+            "url": "url(\"http://127.0.0.1:5196/__guest216-pilot/guest-09.png?v=three-head-216-v1\")",
+            "position": "-192px -576px"
+          },
+          "file": "local-selection-216-right.png",
+          "sha256": "248731b9a849623165b0443483bdb55849d1f1d1c1e470786397b705ba9f35d3"
+        },
+        {
+          "state": {
+            "direction": "up",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "masculine-beige-summer-suit",
+            "motionProfile": "tailored",
+            "size": [
+              96,
+              144
+            ],
+            "url": "url(\"http://127.0.0.1:5196/__guest216-pilot/guest-09.png?v=three-head-216-v1\")",
+            "position": "-192px -864px"
+          },
+          "file": "local-selection-216-up.png",
+          "sha256": "c7ddefa4a3aade68c4f43831f7ef01b8a120b1bc69f307b5195e036bc4ada61b"
+        }
+      ],
+      "observed": [
+        0,
+        1,
+        1,
+        1,
+        2,
+        2,
+        2,
+        3,
+        3,
+        3,
+        0,
+        0,
+        1,
+        1,
+        1,
+        2,
+        2,
+        2,
+        3,
+        3,
+        3,
+        0
+      ],
+      "stopped": {
+        "moving": "false",
+        "frame": 1
+      },
+      "response": {
+        "status": 200,
+        "cache": "no-store",
+        "header": "6f84579a3931d85c275ff559433cc05cdc155cd1247a65dea71f9b612f5b1dbe",
+        "sha256": "6f84579a3931d85c275ff559433cc05cdc155cd1247a65dea71f9b612f5b1dbe"
+      }
+    },
+    {
+      "id": "guest-10",
+      "label": "네이비 포멀 원피스",
+      "rows": [
+        {
+          "state": {
+            "direction": "down",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "masculine-charcoal-burgundy-tie",
+            "motionProfile": "skirt",
+            "size": [
+              96,
+              144
+            ],
+            "url": "url(\"http://127.0.0.1:5196/__guest216-pilot/guest-10.png?v=three-head-216-v1\")",
+            "position": "-192px 0px"
+          },
+          "file": "local-selection-216-down.png",
+          "sha256": "0b4c5d1f266d0ced5e52ce6090db4926195b516e8c3c470ade5f5d468869ed7c"
+        },
+        {
+          "state": {
+            "direction": "left",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "masculine-charcoal-burgundy-tie",
+            "motionProfile": "skirt",
+            "size": [
+              96,
+              144
+            ],
+            "url": "url(\"http://127.0.0.1:5196/__guest216-pilot/guest-10.png?v=three-head-216-v1\")",
+            "position": "-192px -288px"
+          },
+          "file": "local-selection-216-left.png",
+          "sha256": "ac8a19e19b42cfa2cb17b98409f16412a55df1c4811e28ca4e18b57ba4932eca"
+        },
+        {
+          "state": {
+            "direction": "right",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "masculine-charcoal-burgundy-tie",
+            "motionProfile": "skirt",
+            "size": [
+              96,
+              144
+            ],
+            "url": "url(\"http://127.0.0.1:5196/__guest216-pilot/guest-10.png?v=three-head-216-v1\")",
+            "position": "-192px -576px"
+          },
+          "file": "local-selection-216-right.png",
+          "sha256": "d6623d48dce42ec161b134f912033b7445f51859ba039c0c6d2cc1ceded494ac"
+        },
+        {
+          "state": {
+            "direction": "up",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "masculine-charcoal-burgundy-tie",
+            "motionProfile": "skirt",
+            "size": [
+              96,
+              144
+            ],
+            "url": "url(\"http://127.0.0.1:5196/__guest216-pilot/guest-10.png?v=three-head-216-v1\")",
+            "position": "-192px -864px"
+          },
+          "file": "local-selection-216-up.png",
+          "sha256": "3e887e8af4ede10c9aad0bbc8bf31cf5263e3db554efaccd36f88768442aea2c"
+        }
+      ],
+      "observed": [
+        0,
+        1,
+        1,
+        1,
+        2,
+        2,
+        2,
+        3,
+        3,
+        3,
+        0,
+        0,
+        1,
+        1,
+        1,
+        2,
+        2,
+        2,
+        3,
+        3,
+        3,
+        0
+      ],
+      "stopped": {
+        "moving": "false",
+        "frame": 1
+      },
+      "response": {
+        "status": 200,
+        "cache": "no-store",
+        "header": "9eb028440f3449d12dd71b81f65d19c7b10138bebfc4475f96bc0aa50e73d79d",
+        "sha256": "9eb028440f3449d12dd71b81f65d19c7b10138bebfc4475f96bc0aa50e73d79d"
+      }
+    },
+    {
+      "id": "guest-11",
+      "label": "그린 블레이저 크림 팬츠",
+      "rows": [
+        {
+          "state": {
+            "direction": "down",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "masculine-green-blazer-cream-pants",
+            "motionProfile": "tailored",
+            "size": [
+              96,
+              144
+            ],
+            "url": "url(\"http://127.0.0.1:5196/__guest216-pilot/guest-11.png?v=three-head-216-v1\")",
+            "position": "-192px 0px"
+          },
+          "file": "local-selection-216-down.png",
+          "sha256": "c139a9107f3c4b2b4de1e39da33867622abf09da3fcc3dbc941744a8fcc1a759"
+        },
+        {
+          "state": {
+            "direction": "left",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "masculine-green-blazer-cream-pants",
+            "motionProfile": "tailored",
+            "size": [
+              96,
+              144
+            ],
+            "url": "url(\"http://127.0.0.1:5196/__guest216-pilot/guest-11.png?v=three-head-216-v1\")",
+            "position": "-192px -288px"
+          },
+          "file": "local-selection-216-left.png",
+          "sha256": "877aa3cb002d40499ed44ecfbb4d660cce9395991edf6008340e6a8a143613a2"
+        },
+        {
+          "state": {
+            "direction": "right",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "masculine-green-blazer-cream-pants",
+            "motionProfile": "tailored",
+            "size": [
+              96,
+              144
+            ],
+            "url": "url(\"http://127.0.0.1:5196/__guest216-pilot/guest-11.png?v=three-head-216-v1\")",
+            "position": "-192px -576px"
+          },
+          "file": "local-selection-216-right.png",
+          "sha256": "5e6a9c1b6c8da67b95b39f671e30c820219288ecabdd80b2d2088c9bcd1e3b56"
+        },
+        {
+          "state": {
+            "direction": "up",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "masculine-green-blazer-cream-pants",
+            "motionProfile": "tailored",
+            "size": [
+              96,
+              144
+            ],
+            "url": "url(\"http://127.0.0.1:5196/__guest216-pilot/guest-11.png?v=three-head-216-v1\")",
+            "position": "-192px -864px"
+          },
+          "file": "local-selection-216-up.png",
+          "sha256": "8f85d2b7887aafa5e1d26635951218ed93eaf08a1d318ea195224af091ac10b3"
+        }
+      ],
+      "observed": [
+        0,
+        1,
+        1,
+        1,
+        2,
+        2,
+        2,
+        3,
+        3,
+        3,
+        0,
+        0,
+        0,
+        1,
+        1,
+        2,
+        2,
+        2,
+        3,
+        3,
+        3,
+        0
+      ],
+      "stopped": {
+        "moving": "false",
+        "frame": 1
+      },
+      "response": {
+        "status": 200,
+        "cache": "no-store",
+        "header": "b6b83b4d257980500271092bd67b5711b6fdfac61c3f883e8861901d8c0f891d",
+        "sha256": "b6b83b4d257980500271092bd67b5711b6fdfac61c3f883e8861901d8c0f891d"
+      }
+    },
+    {
+      "id": "guest-12",
+      "label": "블루 모던 한복",
+      "rows": [
+        {
+          "state": {
+            "direction": "down",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "masculine-blue-modern-hanbok",
+            "motionProfile": "hanbok",
+            "size": [
+              96,
+              144
+            ],
+            "url": "url(\"http://127.0.0.1:5196/__guest216-pilot/guest-12.png?v=three-head-216-v1\")",
+            "position": "-192px 0px"
+          },
+          "file": "local-selection-216-down.png",
+          "sha256": "36db1d8655b06d90e282558651c23380efa6542a0c97059e0fae3597d0bea2d1"
+        },
+        {
+          "state": {
+            "direction": "left",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "masculine-blue-modern-hanbok",
+            "motionProfile": "hanbok",
+            "size": [
+              96,
+              144
+            ],
+            "url": "url(\"http://127.0.0.1:5196/__guest216-pilot/guest-12.png?v=three-head-216-v1\")",
+            "position": "-192px -288px"
+          },
+          "file": "local-selection-216-left.png",
+          "sha256": "4b60e46c632671f3f0e44075358610ac92ce06b5110fa9b4e355c692d62f2aaf"
+        },
+        {
+          "state": {
+            "direction": "right",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "masculine-blue-modern-hanbok",
+            "motionProfile": "hanbok",
+            "size": [
+              96,
+              144
+            ],
+            "url": "url(\"http://127.0.0.1:5196/__guest216-pilot/guest-12.png?v=three-head-216-v1\")",
+            "position": "-192px -576px"
+          },
+          "file": "local-selection-216-right.png",
+          "sha256": "19f7fc479a33301c1f93f8c23ecf65df785156572c52c57e48494467dd5a8206"
+        },
+        {
+          "state": {
+            "direction": "up",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "masculine-blue-modern-hanbok",
+            "motionProfile": "hanbok",
+            "size": [
+              96,
+              144
+            ],
+            "url": "url(\"http://127.0.0.1:5196/__guest216-pilot/guest-12.png?v=three-head-216-v1\")",
+            "position": "-192px -864px"
+          },
+          "file": "local-selection-216-up.png",
+          "sha256": "ec4a464b2fef342c1308666f8777b96cdcfd672d5f9c8318b655e0d708d244ee"
+        }
+      ],
+      "observed": [
+        0,
+        1,
+        1,
+        1,
+        2,
+        2,
+        2,
+        3,
+        3,
+        0,
+        0,
+        0,
+        1,
+        1,
+        1,
+        2,
+        2,
+        2,
+        3,
+        3,
+        3,
+        0
+      ],
+      "stopped": {
+        "moving": "false",
+        "frame": 1
+      },
+      "response": {
+        "status": 200,
+        "cache": "no-store",
+        "header": "7f0f9d1b532adac9aee89d4d910b764571dfb421f0634375cd55c7781fc4905b",
+        "sha256": "7f0f9d1b532adac9aee89d4d910b764571dfb421f0634375cd55c7781fc4905b"
+      }
+    }
+  ],
+  "sw": {
+    "controller": false,
+    "registrations": 0
+  },
+  "visualReview": "Screenshots captured; separate visual inspection required."
+}

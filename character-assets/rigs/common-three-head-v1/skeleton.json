@@ -1,0 +1,108 @@
+{
+  "version": 1,
+  "id": "common-three-head-v1",
+  "canvas": {
+    "width": 192,
+    "height": 288
+  },
+  "proportions": {
+    "characterTop": 13,
+    "headHeight": 84,
+    "bodyHeight": 168,
+    "characterHeight": 252,
+    "neckLine": 97,
+    "footBaseline": 264
+  },
+  "display": {
+    "selection": {
+      "width": 96,
+      "height": 144
+    },
+    "world": {
+      "width": 48,
+      "height": 72
+    }
+  },
+  "bones": {
+    "root": {
+      "parent": null,
+      "pivot": { "x": 96, "y": 264 }
+    },
+    "shadow": {
+      "parent": "root",
+      "pivot": { "x": 96, "y": 264 }
+    },
+    "pelvis": {
+      "parent": "root",
+      "pivot": { "x": 96, "y": 171 }
+    },
+    "garment": {
+      "parent": "pelvis",
+      "pivot": { "x": 96, "y": 164 }
+    },
+    "torso": {
+      "parent": "pelvis",
+      "pivot": { "x": 96, "y": 171 }
+    },
+    "neck": {
+      "parent": "torso",
+      "pivot": { "x": 96, "y": 101 }
+    },
+    "head": {
+      "parent": "neck",
+      "pivot": { "x": 96, "y": 97 }
+    },
+    "upperArmLeft": {
+      "parent": "torso",
+      "pivot": { "x": 72, "y": 116 }
+    },
+    "lowerArmLeft": {
+      "parent": "upperArmLeft",
+      "pivot": { "x": 66, "y": 153 }
+    },
+    "handLeft": {
+      "parent": "lowerArmLeft",
+      "pivot": { "x": 64, "y": 187 }
+    },
+    "upperArmRight": {
+      "parent": "torso",
+      "pivot": { "x": 120, "y": 116 }
+    },
+    "lowerArmRight": {
+      "parent": "upperArmRight",
+      "pivot": { "x": 126, "y": 153 }
+    },
+    "handRight": {
+      "parent": "lowerArmRight",
+      "pivot": { "x": 128, "y": 187 }
+    },
+    "thighLeft": {
+      "parent": "pelvis",
+      "pivot": { "x": 86, "y": 174 }
+    },
+    "calfLeft": {
+      "parent": "thighLeft",
+      "pivot": { "x": 84, "y": 216 }
+    },
+    "shoeLeft": {
+      "parent": "calfLeft",
+      "pivot": { "x": 82, "y": 253 }
+    },
+    "thighRight": {
+      "parent": "pelvis",
+      "pivot": { "x": 106, "y": 174 }
+    },
+    "calfRight": {
+      "parent": "thighRight",
+      "pivot": { "x": 108, "y": 216 }
+    },
+    "shoeRight": {
+      "parent": "calfRight",
+      "pivot": { "x": 110, "y": 253 }
+    },
+    "accessory": {
+      "parent": "torso",
+      "pivot": { "x": 113, "y": 121 }
+    }
+  }
+}

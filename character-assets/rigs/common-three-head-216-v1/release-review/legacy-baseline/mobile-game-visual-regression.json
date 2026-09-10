@@ -1,0 +1,54 @@
+{
+  "version": 2,
+  "approvedAt": "2026-08-26T22:16:57.617Z",
+  "reason": "4,6,7,8,9,10,11,12번 하객의 3등신 비율과 방향별 보행 리그 교정",
+  "sha256": "9a4f3a001672f41fc0de2cca54a82112ba0c3bee1c88eae1a471b6382c1810fc",
+  "provenance": {
+    "schemaVersion": 1,
+    "subjectKind": "capture-set",
+    "sourceKind": "local",
+    "runId": null,
+    "runAttempt": null,
+    "commitSha": "31ed4f0bb70d66ae018b53a180b031465f0d0ea8",
+    "runUrl": null,
+    "checksumAlgorithm": "sha256",
+    "artifactChecksumScope": "sorted-capture-set-manifest",
+    "artifactSha256": "4f9192222029c7d4d95e5922b5e2312dcbc2174dd41e67bd8508bd4d5a170b0d",
+    "files": [
+      {
+        "logicalPath": "mobile-game-current",
+        "size": 4633021,
+        "sha256": "14d429cbce3cb97a448e6d8b5e8acbd32c7be5ec4f148b8f3f05dfdb1a56b17c"
+      }
+    ]
+  },
+  "width": 780,
+  "height": 3458,
+  "mapZoneIds": [
+    "home",
+    "neighborhood",
+    "subway-station",
+    "subway-train",
+    "venue-exterior",
+    "lobby",
+    "bridal-room",
+    "ceremony-hall",
+    "banquet",
+    "restroom"
+  ],
+  "characterPresetIds": [
+    "feminine-long-wave-dress",
+    "feminine-formal-hanbok",
+    "masculine-navy-suit",
+    "masculine-charcoal-blazer",
+    "feminine-sage-bolero-dress",
+    "feminine-champagne-navy-skirt",
+    "feminine-lavender-jacket-dress",
+    "feminine-teal-modern-hanbok",
+    "masculine-beige-summer-suit",
+    "masculine-charcoal-burgundy-tie",
+    "masculine-green-blazer-cream-pants",
+    "masculine-blue-modern-hanbok"
+  ],
+  "directionSampleCount": 48
+}

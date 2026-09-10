@@ -1,0 +1,96 @@
+{
+  "sheetSha256": "76c5b8e9f0751222e75cc33d4930c4aa0b361c8cb02a190de0910524b79af3c5",
+  "screenshots": [
+    {
+      "file": "local-entry.png",
+      "sha256": "93b56e4c4fd556c7d76f520304383c4c98355fc13a36432eef11ed8a72cf3562"
+    },
+    {
+      "file": "local-game-back.png",
+      "sha256": "26dfc350ed93cff7992c1fa5b8c12699f7b5af3af11b809a847c87db98f8110e"
+    },
+    {
+      "file": "local-game-front.png",
+      "sha256": "53723a4d584f6cb937189995ae9155a3c02d6447b52e0e5d56e1dc72c7520fb2"
+    },
+    {
+      "file": "local-game-idle.png",
+      "sha256": "d6bce87998309ab2e3c0d20d21c6cfa71c2f2428141f3d026aa815918c221a43"
+    },
+    {
+      "file": "local-game-left.png",
+      "sha256": "0a70f196fdf4621cd4326fbd78a32746e4f2a5a9a079d4acc4bd239ed84419f0"
+    },
+    {
+      "file": "local-game-right.png",
+      "sha256": "62bd97a42826d9cbc8415216f1bafe99e4e7614880bad35f8928db407975e0d6"
+    },
+    {
+      "file": "local-selection-back.png",
+      "sha256": "3541f2cec68b2cb0307b8c1ef56a389a17cc59b0b9bdd842b7ad9ad1b634dbf3"
+    },
+    {
+      "file": "local-selection-left.png",
+      "sha256": "1f2a34107cb6f16e10b2a1061c18f0ee0e490e19b2956604e31b607c887a7acd"
+    },
+    {
+      "file": "local-selection-right.png",
+      "sha256": "13f94771d533bc836ae9a0821f7448276d632fac68fa859eef55b971f0eb947e"
+    },
+    {
+      "file": "local-selection.png",
+      "sha256": "d3c379c740570d0330a581e3b1cc630dba302350ad6eba9c06ecb3bede7c342c"
+    }
+  ],
+  "viewport": [
+    390,
+    844
+  ],
+  "developmentOnly": true,
+  "productionIntegrated": false,
+  "selectionSize": [
+    96,
+    144
+  ],
+  "gameSize": [
+    48,
+    72
+  ],
+  "directionRows": {
+    "down": 0,
+    "left": 1,
+    "right": 2,
+    "up": 3
+  },
+  "input": "Actual virtual joystick keyboard events, no player-state injection",
+  "observedGameFramesZeroBased": [
+    0,
+    0,
+    0,
+    1,
+    1,
+    1,
+    1,
+    2,
+    2,
+    2,
+    3,
+    3
+  ],
+  "stoppedState": {
+    "direction": "down",
+    "moving": false,
+    "frame": 1
+  },
+  "response": {
+    "sha256": "76c5b8e9f0751222e75cc33d4930c4aa0b361c8cb02a190de0910524b79af3c5",
+    "cacheControl": "no-store",
+    "swController": false,
+    "swRegistrations": 0
+  },
+  "limitations": [
+    "Other eleven selection assets unchanged",
+    "Only home map inspected; full map contrast not complete",
+    "No production SW upgrade or live release verification"
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "id": "male-hanbok-walk-v1",
+  "baseRig": "../guest-03/navy-suit-v1/rig.json",
+  "garmentMotion": {
+    "down": [{ "rotate": -0.35 }, {}, { "rotate": 0.35 }, {}],
+    "left": [{ "rotate": -0.55 }, {}, { "rotate": 0.4 }, {}],
+    "right": [{ "rotate": 0.4 }, {}, { "rotate": -0.55 }, {}],
+    "up": [{ "rotate": 0.3 }, {}, { "rotate": -0.3 }, {}]
+  },
+  "accessoryMotion": {
+    "down": [{ "rotate": 2 }, {}, { "rotate": -2 }, {}],
+    "left": [{ "rotate": -2.5 }, {}, { "rotate": 1.5 }, {}],
+    "right": [{ "rotate": 1.5 }, {}, { "rotate": -2.5 }, {}],
+    "up": [{}, {}, {}, {}]
+  }
+}

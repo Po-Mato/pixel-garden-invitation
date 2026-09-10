@@ -20,6 +20,7 @@ test("audits the exact twelve generated game portraits", async () => {
   ));
   assert.equal(reports.flatMap(({ walk }) => walk.frames).length, 192);
   reports.forEach(({ walk }) => {
+    assert.ok(walk.frames.every(({ bounds }) => bounds.height === 54), "216px originals retain exact quarter-scale height");
     assert.deepEqual(walk.frames.map(({ direction, step }) => `${direction}-${step}`), [
       "down-1", "down-2", "down-3", "down-4",
       "left-1", "left-2", "left-3", "left-4",

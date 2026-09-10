@@ -1,0 +1,258 @@
+{
+  "id": "guest-03-three-head-216-v1-front",
+  "direction": "front",
+  "skeleton": "../../common-three-head-216-v1/skeleton.json",
+  "status": "source-rig-under-verification",
+  "runtimeEnabled": false,
+  "parts": {
+    "shadow": {
+      "parent": "root",
+      "file": "../style-lock-cutout-v1/parts/front/shadow.svg",
+      "rect": [
+        64,
+        260,
+        64,
+        12
+      ],
+      "pivot": [
+        96,
+        270
+      ],
+      "mirrored": false
+    },
+    "backHair": {
+      "parent": "head",
+      "file": "../style-lock-cutout-v1/parts/front/backHair.png",
+      "rect": [
+        61,
+        54,
+        70,
+        67
+      ],
+      "pivot": [
+        96,
+        126
+      ],
+      "mirrored": false
+    },
+    "face": {
+      "parent": "head",
+      "file": "../style-lock-cutout-v1/parts/front/faceV3.png",
+      "rect": [
+        68,
+        66,
+        56,
+        60
+      ],
+      "pivot": [
+        96,
+        126
+      ],
+      "mirrored": false
+    },
+    "frontHair": {
+      "parent": "head",
+      "file": "../style-lock-cutout-v1/parts/front/frontHair.png",
+      "rect": [
+        61,
+        57,
+        70,
+        52
+      ],
+      "pivot": [
+        96,
+        126
+      ],
+      "mirrored": false
+    },
+    "neckCollar": {
+      "parent": "neck",
+      "file": "../style-lock-cutout-v1/parts/front/neckCollar.png",
+      "rect": [
+        87,
+        122.651163,
+        18,
+        10.883721
+      ],
+      "pivot": [
+        96,
+        126
+      ],
+      "mirrored": false
+    },
+    "neckSkin": {
+      "parent": "neck",
+      "file": "../style-lock-cutout-v1/parts/front/neck.svg",
+      "rect": [
+        89,
+        122.651163,
+        14,
+        9.209302
+      ],
+      "pivot": [
+        96,
+        126
+      ],
+      "mirrored": false
+    },
+    "torsoShell": {
+      "parent": "spine",
+      "file": "../style-lock-cutout-v1/parts/front/torsoShell.png",
+      "rect": [
+        71,
+        126,
+        50,
+        73.674419
+      ],
+      "fadeBottom": [
+        68.651163,
+        4.186047
+      ],
+      "overlapMode": "feather-bottom",
+      "pivot": [
+        96,
+        176.232558
+      ],
+      "mirrored": false
+    },
+    "armLeftSkin": {
+      "parent": "upperArmLeft",
+      "file": "../style-lock-cutout-v1/parts/front/wholeArmLeft.png",
+      "rect": [
+        116,
+        134.372093,
+        20,
+        60.27907
+      ],
+      "pivot": [
+        119,
+        136.883721
+      ],
+      "mirrored": false
+    },
+    "armRightSkin": {
+      "parent": "upperArmRight",
+      "file": "../style-lock-cutout-v1/parts/front/wholeArmRight.png",
+      "rect": [
+        56,
+        134.372093,
+        20,
+        60.27907
+      ],
+      "pivot": [
+        73,
+        136.883721
+      ],
+      "mirrored": false
+    },
+    "legLeftSkin": {
+      "parent": "thighLeft",
+      "file": "../style-lock-cutout-v1/parts/front/wholeLegLeft.png",
+      "rect": [
+        96,
+        190.465116,
+        28,
+        79.534884
+      ],
+      "pivot": [
+        106,
+        192.139535
+      ],
+      "mirrored": false
+    },
+    "legRightSkin": {
+      "parent": "thighRight",
+      "file": "../style-lock-cutout-v1/parts/front/wholeLegRight.png",
+      "rect": [
+        68,
+        190.465116,
+        28,
+        79.534884
+      ],
+      "pivot": [
+        86,
+        192.139535
+      ],
+      "mirrored": false
+    }
+  },
+  "regions": {
+    "upperArm": [
+      134.372093,
+      30.139535
+    ],
+    "forearm": [
+      160.325581,
+      22.604651
+    ],
+    "hand": [
+      177.906977,
+      16.744186
+    ],
+    "thigh": [
+      190.465116,
+      36.837209
+    ],
+    "calf": [
+      220.604651,
+      35.162791
+    ],
+    "shoe": [
+      251.581395,
+      18.418605
+    ]
+  },
+  "legOcclusion": {
+    "top": 190.465116,
+    "bottom": 288
+  },
+  "frames": [
+    {
+      "forward": "Left",
+      "depth": {
+        "Left": 0,
+        "Right": -8
+      },
+      "rotations": {
+        "thighRight": -2,
+        "calfRight": 6,
+        "shoeRight": -4,
+        "forearmLeft": 2,
+        "handLeft": -2,
+        "forearmRight": 2,
+        "handRight": -2
+      }
+    },
+    {
+      "forward": null,
+      "depth": {},
+      "rotations": {}
+    },
+    {
+      "forward": "Right",
+      "depth": {
+        "Left": -8,
+        "Right": 0
+      },
+      "rotations": {
+        "thighLeft": 2,
+        "calfLeft": -6,
+        "shoeLeft": 4,
+        "forearmLeft": -2,
+        "handLeft": 2,
+        "forearmRight": -2,
+        "handRight": 2
+      }
+    },
+    {
+      "forward": null,
+      "depth": {},
+      "rotations": {}
+    }
+  ],
+  "limitations": [
+    "Front-only verification stage. Other directions and runtime are not migrated.",
+    "Existing original art is rebound, never a completed walk frame.",
+    "Shortened geometry and seam continuity require new visual and alpha review."
+  ]
+}

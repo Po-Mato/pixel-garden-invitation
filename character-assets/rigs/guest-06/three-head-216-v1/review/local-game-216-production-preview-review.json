@@ -1,0 +1,1044 @@
+{
+  "id": "guest-06",
+  "developmentOnly": false,
+  "productionPreview": true,
+  "productionIntegrated": true,
+  "remoteProductionVerified": false,
+  "stagedRuntime": false,
+  "sourceFrameSize": [
+    96,
+    144
+  ],
+  "viewport": [
+    390,
+    844
+  ],
+  "sheetSha256": "5dc105db4a1aab309103d50ca6527228481aa195246e8997df2843116ba60ccd",
+  "sourceSheetSha256": "4048d20918ebb0ca7dc949a3c35fe8e94bdcdd45639dea13f91c787880cd3db6",
+  "response": {
+    "status": 200,
+    "sha256": "5dc105db4a1aab309103d50ca6527228481aa195246e8997df2843116ba60ccd",
+    "controller": "http://127.0.0.1:5198/service-worker.js"
+  },
+  "rows": [
+    {
+      "direction": "left",
+      "samples": [
+        {
+          "direction": "down",
+          "moving": "false",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            285,
+            375
+          ],
+          "sheetPosition": "0px 0px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-champagne-navy-skirt__idle.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "left",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            375
+          ],
+          "sheetPosition": "0px -144px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-champagne-navy-skirt__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "left",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            375
+          ],
+          "sheetPosition": "0px -144px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-champagne-navy-skirt__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "left",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            375
+          ],
+          "sheetPosition": "0px -144px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-champagne-navy-skirt__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "left",
+          "moving": "true",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            225,
+            375
+          ],
+          "sheetPosition": "-96px -144px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-champagne-navy-skirt__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "left",
+          "moving": "true",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            225,
+            375
+          ],
+          "sheetPosition": "-96px -144px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-champagne-navy-skirt__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "left",
+          "moving": "true",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            225,
+            375
+          ],
+          "sheetPosition": "-96px -144px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-champagne-navy-skirt__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "left",
+          "moving": "true",
+          "frame": 2,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            195,
+            375
+          ],
+          "sheetPosition": "-192px -144px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-champagne-navy-skirt__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "left",
+          "moving": "true",
+          "frame": 2,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            195,
+            375
+          ],
+          "sheetPosition": "-192px -144px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-champagne-navy-skirt__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "left",
+          "moving": "true",
+          "frame": 2,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            195,
+            375
+          ],
+          "sheetPosition": "-192px -144px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-champagne-navy-skirt__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "left",
+          "moving": "true",
+          "frame": 3,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            165,
+            375
+          ],
+          "sheetPosition": "-288px -144px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-champagne-navy-skirt__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "left",
+          "moving": "true",
+          "frame": 3,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            165,
+            375
+          ],
+          "sheetPosition": "-288px -144px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-champagne-navy-skirt__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "left",
+          "moving": "true",
+          "frame": 3,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            165,
+            375
+          ],
+          "sheetPosition": "-288px -144px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-champagne-navy-skirt__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "left",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            135,
+            375
+          ],
+          "sheetPosition": "0px -144px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-champagne-navy-skirt__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "left",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            135,
+            375
+          ],
+          "sheetPosition": "0px -144px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-champagne-navy-skirt__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "left",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            135,
+            375
+          ],
+          "sheetPosition": "0px -144px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-champagne-navy-skirt__walk.png?v=guest-three-head-216-v1-20260910\")"
+        }
+      ],
+      "stopped": {
+        "direction": "left",
+        "moving": "false",
+        "frame": 1
+      }
+    },
+    {
+      "direction": "right",
+      "samples": [
+        {
+          "direction": "left",
+          "moving": "false",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            105,
+            375
+          ],
+          "sheetPosition": "-96px -144px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-champagne-navy-skirt__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            135,
+            375
+          ],
+          "sheetPosition": "0px -288px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-champagne-navy-skirt__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            135,
+            375
+          ],
+          "sheetPosition": "0px -288px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-champagne-navy-skirt__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            135,
+            375
+          ],
+          "sheetPosition": "0px -288px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-champagne-navy-skirt__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            165,
+            375
+          ],
+          "sheetPosition": "-96px -288px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-champagne-navy-skirt__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            165,
+            375
+          ],
+          "sheetPosition": "-96px -288px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-champagne-navy-skirt__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            165,
+            375
+          ],
+          "sheetPosition": "-96px -288px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-champagne-navy-skirt__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            165,
+            375
+          ],
+          "sheetPosition": "-96px -288px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-champagne-navy-skirt__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 2,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            195,
+            375
+          ],
+          "sheetPosition": "-192px -288px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-champagne-navy-skirt__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 2,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            195,
+            375
+          ],
+          "sheetPosition": "-192px -288px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-champagne-navy-skirt__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 2,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            195,
+            375
+          ],
+          "sheetPosition": "-192px -288px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-champagne-navy-skirt__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 3,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            225,
+            375
+          ],
+          "sheetPosition": "-288px -288px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-champagne-navy-skirt__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 3,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            225,
+            375
+          ],
+          "sheetPosition": "-288px -288px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-champagne-navy-skirt__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 3,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            225,
+            375
+          ],
+          "sheetPosition": "-288px -288px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-champagne-navy-skirt__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            375
+          ],
+          "sheetPosition": "0px -288px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-champagne-navy-skirt__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            375
+          ],
+          "sheetPosition": "0px -288px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-champagne-navy-skirt__walk.png?v=guest-three-head-216-v1-20260910\")"
+        }
+      ],
+      "stopped": {
+        "direction": "right",
+        "moving": "false",
+        "frame": 1
+      }
+    },
+    {
+      "direction": "up",
+      "samples": [
+        {
+          "direction": "right",
+          "moving": "false",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            375
+          ],
+          "sheetPosition": "-96px -288px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-champagne-navy-skirt__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "up",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            345
+          ],
+          "sheetPosition": "0px -432px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-champagne-navy-skirt__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "up",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            345
+          ],
+          "sheetPosition": "0px -432px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-champagne-navy-skirt__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "up",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            345
+          ],
+          "sheetPosition": "0px -432px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-champagne-navy-skirt__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "up",
+          "moving": "true",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            315
+          ],
+          "sheetPosition": "-96px -432px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-champagne-navy-skirt__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "up",
+          "moving": "true",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            315
+          ],
+          "sheetPosition": "-96px -432px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-champagne-navy-skirt__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "up",
+          "moving": "true",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            315
+          ],
+          "sheetPosition": "-96px -432px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-champagne-navy-skirt__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "up",
+          "moving": "true",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            315
+          ],
+          "sheetPosition": "-96px -432px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-champagne-navy-skirt__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "up",
+          "moving": "true",
+          "frame": 2,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            285
+          ],
+          "sheetPosition": "-192px -432px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-champagne-navy-skirt__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "up",
+          "moving": "true",
+          "frame": 2,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            285
+          ],
+          "sheetPosition": "-192px -432px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-champagne-navy-skirt__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "up",
+          "moving": "true",
+          "frame": 2,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            285
+          ],
+          "sheetPosition": "-192px -432px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-champagne-navy-skirt__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "up",
+          "moving": "true",
+          "frame": 3,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            255
+          ],
+          "sheetPosition": "-288px -432px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-champagne-navy-skirt__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "up",
+          "moving": "true",
+          "frame": 3,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            255
+          ],
+          "sheetPosition": "-288px -432px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-champagne-navy-skirt__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "up",
+          "moving": "true",
+          "frame": 3,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            255
+          ],
+          "sheetPosition": "-288px -432px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-champagne-navy-skirt__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "up",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            225
+          ],
+          "sheetPosition": "0px -432px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-champagne-navy-skirt__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "up",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            225
+          ],
+          "sheetPosition": "0px -432px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-champagne-navy-skirt__walk.png?v=guest-three-head-216-v1-20260910\")"
+        }
+      ],
+      "stopped": {
+        "direction": "up",
+        "moving": "false",
+        "frame": 1
+      }
+    },
+    {
+      "direction": "down",
+      "samples": [
+        {
+          "direction": "up",
+          "moving": "false",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            225
+          ],
+          "sheetPosition": "-96px -432px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-champagne-navy-skirt__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "down",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            255
+          ],
+          "sheetPosition": "0px 0px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-champagne-navy-skirt__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "down",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            255
+          ],
+          "sheetPosition": "0px 0px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-champagne-navy-skirt__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "down",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            255
+          ],
+          "sheetPosition": "0px 0px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-champagne-navy-skirt__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "down",
+          "moving": "true",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            285
+          ],
+          "sheetPosition": "-96px 0px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-champagne-navy-skirt__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "down",
+          "moving": "true",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            285
+          ],
+          "sheetPosition": "-96px 0px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-champagne-navy-skirt__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "down",
+          "moving": "true",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            285
+          ],
+          "sheetPosition": "-96px 0px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-champagne-navy-skirt__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "down",
+          "moving": "true",
+          "frame": 2,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            315
+          ],
+          "sheetPosition": "-192px 0px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-champagne-navy-skirt__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "down",
+          "moving": "true",
+          "frame": 2,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            315
+          ],
+          "sheetPosition": "-192px 0px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-champagne-navy-skirt__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "down",
+          "moving": "true",
+          "frame": 2,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            315
+          ],
+          "sheetPosition": "-192px 0px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-champagne-navy-skirt__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "down",
+          "moving": "true",
+          "frame": 3,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            345
+          ],
+          "sheetPosition": "-288px 0px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-champagne-navy-skirt__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "down",
+          "moving": "true",
+          "frame": 3,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            345
+          ],
+          "sheetPosition": "-288px 0px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-champagne-navy-skirt__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "down",
+          "moving": "true",
+          "frame": 3,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            345
+          ],
+          "sheetPosition": "-288px 0px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-champagne-navy-skirt__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "down",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            375
+          ],
+          "sheetPosition": "0px 0px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-champagne-navy-skirt__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "down",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            375
+          ],
+          "sheetPosition": "0px 0px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-champagne-navy-skirt__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "down",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            375
+          ],
+          "sheetPosition": "0px 0px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-champagne-navy-skirt__walk.png?v=guest-three-head-216-v1-20260910\")"
+        }
+      ],
+      "stopped": {
+        "direction": "down",
+        "moving": "false",
+        "frame": 1
+      }
+    }
+  ],
+  "screenshots": [
+    {
+      "file": "local-game-216-production-preview-left.png",
+      "sha256": "940774d292944e79263b81c2166d0c3c84eb1a660c58742c3b7e2998f58d8652"
+    },
+    {
+      "file": "local-game-216-production-preview-right.png",
+      "sha256": "259298e3ff90a88c5d9da055186716d0c4295dd316d70aa7dba10288632519b8"
+    },
+    {
+      "file": "local-game-216-production-preview-up.png",
+      "sha256": "72b6b58896c3fed22d8c4c6c0a47d2d6bcf20bf9335c379bbb282bccd9cfcf7b"
+    },
+    {
+      "file": "local-game-216-production-preview-down.png",
+      "sha256": "6fdf6388975f07e4dd235b51dd4228a3bb1154ee02dceb42b40c1c4d2d95c0b9"
+    }
+  ],
+  "visualReview": "Captured real joystick movement; screenshots require separate visual inspection."
+}

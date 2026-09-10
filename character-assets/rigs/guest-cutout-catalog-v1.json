@@ -1,0 +1,134 @@
+{
+  "version": 1,
+  "skeleton": "common-three-head-v1/skeleton.json",
+  "templates": {
+    "tailored": "templates/tailored-walk-v1.json",
+    "dress": "templates/dress-walk-v1.json",
+    "skirt": "templates/skirt-walk-v1.json",
+    "femaleHanbok": "templates/female-hanbok-walk-v1.json",
+    "maleHanbok": "templates/male-hanbok-walk-v1.json"
+  },
+  "characters": [
+    {
+      "characterId": "guest-01",
+      "presetId": "feminine-long-wave-dress",
+      "label": "크림 롱 웨이브 원피스",
+      "template": "dress",
+      "hair": { "style": "longWave", "part": "wearer-left", "color": "#493126", "highlight": "#7a5844" },
+      "skin": { "light": "#ffe1c8", "mid": "#f2b99a", "shade": "#c97d69" },
+      "outfit": { "kind": "dress", "primary": "#f4e5cf", "secondary": "#fff8ea", "shade": "#cdb99e", "accent": "#b78f77", "shoe": "#e8d8c2" },
+      "accessory": { "type": "handbag", "side": "wearer-left", "color": "#b88a63", "accent": "#7f5b43" }
+    },
+    {
+      "characterId": "guest-02",
+      "presetId": "feminine-formal-hanbok",
+      "label": "로즈 여성 한복",
+      "template": "femaleHanbok",
+      "hair": { "style": "updo", "part": "wearer-right", "color": "#3b2a23", "highlight": "#715344", "ornament": "#e8c0ae" },
+      "skin": { "light": "#ffe0c6", "mid": "#efb596", "shade": "#c97f6b" },
+      "outfit": { "kind": "femaleHanbok", "primary": "#c98289", "secondary": "#fff2df", "shade": "#9f5f69", "accent": "#76424f", "shoe": "#463a3b" },
+      "accessory": { "type": "norigae", "side": "wearer-left", "color": "#d6a04f", "accent": "#8d5d30" }
+    },
+    {
+      "characterId": "guest-03",
+      "presetId": "masculine-navy-suit",
+      "label": "네이비 클래식 수트",
+      "template": "tailored",
+      "artworkMode": "approvedPilot",
+      "hair": { "style": "shortPart", "part": "wearer-left", "color": "#171a25", "highlight": "#555969" },
+      "skin": { "light": "#ffe0c5", "mid": "#f6c5a8", "shade": "#d9987d" },
+      "outfit": { "kind": "tailored", "primary": "#172c52", "secondary": "#fffdf5", "shade": "#0c1c39", "accent": "#294a78", "shoe": "#151823" },
+      "accessory": { "type": "pocketSquare", "side": "wearer-left", "color": "#fffdf4", "accent": "#6d7482" }
+    },
+    {
+      "characterId": "guest-04",
+      "presetId": "masculine-charcoal-blazer",
+      "label": "차콜 클래식 수트",
+      "template": "tailored",
+      "hair": { "style": "shortPart", "part": "wearer-right", "color": "#17181d", "highlight": "#55555d" },
+      "skin": { "light": "#ffe0c6", "mid": "#efb495", "shade": "#c77965" },
+      "outfit": { "kind": "tailored", "primary": "#34363b", "secondary": "#fffaf0", "shade": "#1d1f24", "accent": "#852f3e", "shoe": "#18191d" },
+      "accessory": { "type": "pocketSquare", "side": "wearer-left", "color": "#ece8df", "accent": "#8c8a86" }
+    },
+    {
+      "characterId": "guest-05",
+      "presetId": "feminine-sage-bolero-dress",
+      "label": "세이지 리본 원피스",
+      "template": "dress",
+      "hair": { "style": "updo", "part": "wearer-left", "color": "#493126", "highlight": "#815f4b" },
+      "skin": { "light": "#ffe2c9", "mid": "#efb899", "shade": "#c87f69" },
+      "outfit": { "kind": "dress", "primary": "#aab59e", "secondary": "#dce1d4", "shade": "#76836d", "accent": "#66745f", "shoe": "#dfd5c4" },
+      "accessory": { "type": "handbag", "side": "wearer-left", "color": "#e7d9bf", "accent": "#ad8b68" }
+    },
+    {
+      "characterId": "guest-06",
+      "presetId": "feminine-champagne-navy-skirt",
+      "label": "샴페인 블라우스 스커트",
+      "template": "skirt",
+      "hair": { "style": "mediumPart", "part": "wearer-right", "color": "#4b3329", "highlight": "#84624e" },
+      "skin": { "light": "#ffe0c6", "mid": "#efb496", "shade": "#c87e69" },
+      "outfit": { "kind": "skirt", "primary": "#a79588", "secondary": "#fff0d9", "shade": "#74645d", "accent": "#9d745f", "shoe": "#efe2cf" },
+      "accessory": { "type": "handbag", "side": "wearer-left", "color": "#25242a", "accent": "#b18c51" }
+    },
+    {
+      "characterId": "guest-07",
+      "presetId": "feminine-lavender-jacket-dress",
+      "label": "라벤더 쉬폰 원피스",
+      "template": "dress",
+      "hair": { "style": "longWave", "part": "wearer-left", "color": "#51362b", "highlight": "#8a6450" },
+      "skin": { "light": "#ffe1c8", "mid": "#f1b799", "shade": "#c77b68" },
+      "outfit": { "kind": "dress", "primary": "#b6a6c9", "secondary": "#ded3e8", "shade": "#817293", "accent": "#776987", "shoe": "#9283a2" },
+      "accessory": { "type": "clutch", "side": "wearer-left", "color": "#e9d9bd", "accent": "#b38c63" }
+    },
+    {
+      "characterId": "guest-08",
+      "presetId": "feminine-teal-modern-hanbok",
+      "label": "더스티 로즈 원피스",
+      "template": "dress",
+      "hair": { "style": "longWave", "part": "wearer-right", "color": "#4c3228", "highlight": "#83604d" },
+      "skin": { "light": "#ffe0c7", "mid": "#efb596", "shade": "#c67b67" },
+      "outfit": { "kind": "wrapDress", "primary": "#bd7d83", "secondary": "#d7a1a3", "shade": "#8d555d", "accent": "#7b4851", "shoe": "#b67378" },
+      "accessory": { "type": "earrings", "side": "wearer-right", "color": "#e5d1ad", "accent": "#98754a" }
+    },
+    {
+      "characterId": "guest-09",
+      "presetId": "masculine-beige-summer-suit",
+      "label": "베이지 썸머 수트",
+      "template": "tailored",
+      "hair": { "style": "shortPart", "part": "wearer-right", "color": "#4b3024", "highlight": "#875e45" },
+      "skin": { "light": "#ffe0c6", "mid": "#efb493", "shade": "#c97c65" },
+      "outfit": { "kind": "tailored", "primary": "#bca48d", "secondary": "#fff8e9", "shade": "#8a705d", "accent": "#5b362a", "shoe": "#4b2c1b" },
+      "accessory": { "type": "pocketSquare", "side": "wearer-left", "color": "#fff5df", "accent": "#a47d59" }
+    },
+    {
+      "characterId": "guest-10",
+      "presetId": "masculine-charcoal-burgundy-tie",
+      "label": "네이비 포멀 원피스",
+      "template": "dress",
+      "hair": { "style": "bob", "part": "wearer-left", "color": "#20232c", "highlight": "#555b68" },
+      "skin": { "light": "#ffe1c8", "mid": "#efb596", "shade": "#c87c68" },
+      "outfit": { "kind": "wrapDress", "primary": "#172b4a", "secondary": "#314662", "shade": "#0d1c33", "accent": "#9b7d72", "shoe": "#1c3457" },
+      "accessory": { "type": "clutch", "side": "wearer-left", "color": "#dccab0", "accent": "#9b7654" }
+    },
+    {
+      "characterId": "guest-11",
+      "presetId": "masculine-green-blazer-cream-pants",
+      "label": "그린 블레이저 크림 팬츠",
+      "template": "tailored",
+      "hair": { "style": "shortPart", "part": "wearer-left", "color": "#181b22", "highlight": "#555a66" },
+      "skin": { "light": "#ffe0c5", "mid": "#efb393", "shade": "#c67963" },
+      "outfit": { "kind": "blazerPants", "primary": "#27432f", "secondary": "#f0e3ca", "shade": "#14291d", "accent": "#1e3c2a", "shoe": "#4a2d1d" },
+      "accessory": { "type": "pocketSquare", "side": "wearer-left", "color": "#e8ddc9", "accent": "#9b8b75" }
+    },
+    {
+      "characterId": "guest-12",
+      "presetId": "masculine-blue-modern-hanbok",
+      "label": "블루 모던 한복",
+      "template": "maleHanbok",
+      "hair": { "style": "shortPart", "part": "wearer-right", "color": "#171b23", "highlight": "#515968" },
+      "skin": { "light": "#ffe0c6", "mid": "#efb494", "shade": "#c87b65" },
+      "outfit": { "kind": "maleHanbok", "primary": "#46637b", "secondary": "#f4ead7", "shade": "#29465e", "accent": "#233b50", "shoe": "#292527" },
+      "accessory": { "type": "norigae", "side": "wearer-left", "color": "#c99a4a", "accent": "#76502b" }
+    }
+  ]
+}

@@ -1,0 +1,1044 @@
+{
+  "id": "guest-10",
+  "developmentOnly": false,
+  "productionPreview": true,
+  "productionIntegrated": true,
+  "remoteProductionVerified": false,
+  "stagedRuntime": false,
+  "sourceFrameSize": [
+    96,
+    144
+  ],
+  "viewport": [
+    390,
+    844
+  ],
+  "sheetSha256": "899c5114ca6affcf08fc15455dff7387413574513e17a6132b91060cb4b105b7",
+  "sourceSheetSha256": "9eb028440f3449d12dd71b81f65d19c7b10138bebfc4475f96bc0aa50e73d79d",
+  "response": {
+    "status": 200,
+    "sha256": "899c5114ca6affcf08fc15455dff7387413574513e17a6132b91060cb4b105b7",
+    "controller": "http://127.0.0.1:5198/service-worker.js"
+  },
+  "rows": [
+    {
+      "direction": "left",
+      "samples": [
+        {
+          "direction": "down",
+          "moving": "false",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            285,
+            375
+          ],
+          "sheetPosition": "0px 0px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__idle.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "left",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            375
+          ],
+          "sheetPosition": "0px -144px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "left",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            375
+          ],
+          "sheetPosition": "0px -144px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "left",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            375
+          ],
+          "sheetPosition": "0px -144px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "left",
+          "moving": "true",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            225,
+            375
+          ],
+          "sheetPosition": "-96px -144px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "left",
+          "moving": "true",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            225,
+            375
+          ],
+          "sheetPosition": "-96px -144px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "left",
+          "moving": "true",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            225,
+            375
+          ],
+          "sheetPosition": "-96px -144px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "left",
+          "moving": "true",
+          "frame": 2,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            195,
+            375
+          ],
+          "sheetPosition": "-192px -144px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "left",
+          "moving": "true",
+          "frame": 2,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            195,
+            375
+          ],
+          "sheetPosition": "-192px -144px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "left",
+          "moving": "true",
+          "frame": 2,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            195,
+            375
+          ],
+          "sheetPosition": "-192px -144px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "left",
+          "moving": "true",
+          "frame": 3,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            165,
+            375
+          ],
+          "sheetPosition": "-288px -144px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "left",
+          "moving": "true",
+          "frame": 3,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            165,
+            375
+          ],
+          "sheetPosition": "-288px -144px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "left",
+          "moving": "true",
+          "frame": 3,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            165,
+            375
+          ],
+          "sheetPosition": "-288px -144px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "left",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            135,
+            375
+          ],
+          "sheetPosition": "0px -144px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "left",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            135,
+            375
+          ],
+          "sheetPosition": "0px -144px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "left",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            135,
+            375
+          ],
+          "sheetPosition": "0px -144px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+        }
+      ],
+      "stopped": {
+        "direction": "left",
+        "moving": "false",
+        "frame": 1
+      }
+    },
+    {
+      "direction": "right",
+      "samples": [
+        {
+          "direction": "left",
+          "moving": "false",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            105,
+            375
+          ],
+          "sheetPosition": "-96px -144px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            135,
+            375
+          ],
+          "sheetPosition": "0px -288px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            135,
+            375
+          ],
+          "sheetPosition": "0px -288px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            135,
+            375
+          ],
+          "sheetPosition": "0px -288px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            135,
+            375
+          ],
+          "sheetPosition": "0px -288px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            165,
+            375
+          ],
+          "sheetPosition": "-96px -288px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            165,
+            375
+          ],
+          "sheetPosition": "-96px -288px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            165,
+            375
+          ],
+          "sheetPosition": "-96px -288px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 2,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            195,
+            375
+          ],
+          "sheetPosition": "-192px -288px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 2,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            195,
+            375
+          ],
+          "sheetPosition": "-192px -288px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 2,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            195,
+            375
+          ],
+          "sheetPosition": "-192px -288px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 3,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            225,
+            375
+          ],
+          "sheetPosition": "-288px -288px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 3,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            225,
+            375
+          ],
+          "sheetPosition": "-288px -288px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 3,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            225,
+            375
+          ],
+          "sheetPosition": "-288px -288px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            375
+          ],
+          "sheetPosition": "0px -288px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            375
+          ],
+          "sheetPosition": "0px -288px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+        }
+      ],
+      "stopped": {
+        "direction": "right",
+        "moving": "false",
+        "frame": 1
+      }
+    },
+    {
+      "direction": "up",
+      "samples": [
+        {
+          "direction": "right",
+          "moving": "false",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            375
+          ],
+          "sheetPosition": "-96px -288px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "up",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            345
+          ],
+          "sheetPosition": "0px -432px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "up",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            345
+          ],
+          "sheetPosition": "0px -432px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "up",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            345
+          ],
+          "sheetPosition": "0px -432px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "up",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            345
+          ],
+          "sheetPosition": "0px -432px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "up",
+          "moving": "true",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            315
+          ],
+          "sheetPosition": "-96px -432px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "up",
+          "moving": "true",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            315
+          ],
+          "sheetPosition": "-96px -432px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "up",
+          "moving": "true",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            315
+          ],
+          "sheetPosition": "-96px -432px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "up",
+          "moving": "true",
+          "frame": 2,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            285
+          ],
+          "sheetPosition": "-192px -432px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "up",
+          "moving": "true",
+          "frame": 2,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            285
+          ],
+          "sheetPosition": "-192px -432px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "up",
+          "moving": "true",
+          "frame": 2,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            285
+          ],
+          "sheetPosition": "-192px -432px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "up",
+          "moving": "true",
+          "frame": 2,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            285
+          ],
+          "sheetPosition": "-192px -432px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "up",
+          "moving": "true",
+          "frame": 3,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            255
+          ],
+          "sheetPosition": "-288px -432px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "up",
+          "moving": "true",
+          "frame": 3,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            255
+          ],
+          "sheetPosition": "-288px -432px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "up",
+          "moving": "true",
+          "frame": 3,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            255
+          ],
+          "sheetPosition": "-288px -432px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "up",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            225
+          ],
+          "sheetPosition": "0px -432px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+        }
+      ],
+      "stopped": {
+        "direction": "up",
+        "moving": "false",
+        "frame": 1
+      }
+    },
+    {
+      "direction": "down",
+      "samples": [
+        {
+          "direction": "up",
+          "moving": "false",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            225
+          ],
+          "sheetPosition": "-96px -432px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "down",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            255
+          ],
+          "sheetPosition": "0px 0px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "down",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            255
+          ],
+          "sheetPosition": "0px 0px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "down",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            255
+          ],
+          "sheetPosition": "0px 0px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "down",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            255
+          ],
+          "sheetPosition": "0px 0px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "down",
+          "moving": "true",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            285
+          ],
+          "sheetPosition": "-96px 0px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "down",
+          "moving": "true",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            285
+          ],
+          "sheetPosition": "-96px 0px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "down",
+          "moving": "true",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            285
+          ],
+          "sheetPosition": "-96px 0px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "down",
+          "moving": "true",
+          "frame": 2,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            315
+          ],
+          "sheetPosition": "-192px 0px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "down",
+          "moving": "true",
+          "frame": 2,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            315
+          ],
+          "sheetPosition": "-192px 0px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "down",
+          "moving": "true",
+          "frame": 2,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            315
+          ],
+          "sheetPosition": "-192px 0px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "down",
+          "moving": "true",
+          "frame": 3,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            345
+          ],
+          "sheetPosition": "-288px 0px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "down",
+          "moving": "true",
+          "frame": 3,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            345
+          ],
+          "sheetPosition": "-288px 0px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "down",
+          "moving": "true",
+          "frame": 3,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            345
+          ],
+          "sheetPosition": "-288px 0px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "down",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            375
+          ],
+          "sheetPosition": "0px 0px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "down",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            375
+          ],
+          "sheetPosition": "0px 0px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+        }
+      ],
+      "stopped": {
+        "direction": "down",
+        "moving": "false",
+        "frame": 1
+      }
+    }
+  ],
+  "screenshots": [
+    {
+      "file": "local-game-216-production-preview-left.png",
+      "sha256": "eb4e093cf40f10d52bc5c5ddbd9f38aaefc5c3a9467c1f40053f65005228509b"
+    },
+    {
+      "file": "local-game-216-production-preview-right.png",
+      "sha256": "d56e762bde04fb2ae82609f1712386715094e29cc01e5ce0361a8615d6dcf55a"
+    },
+    {
+      "file": "local-game-216-production-preview-up.png",
+      "sha256": "ccc508207747cf04bab51547a38666ca0ecb05281d2854e78b15154a602f7108"
+    },
+    {
+      "file": "local-game-216-production-preview-down.png",
+      "sha256": "44f6867c4c6ee4e9115256753c9cc9c864d9889e479b062df4470545dce2f2ab"
+    }
+  ],
+  "visualReview": "Captured real joystick movement; screenshots require separate visual inspection."
+}

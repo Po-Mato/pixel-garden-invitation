@@ -1,0 +1,76 @@
+{
+  "id": "dress-front-216-v1",
+  "type": "dress",
+  "direction": "front",
+  "policy": "Common dress motion. Fixed skeleton lengths; no character-specific walking cycle.",
+  "regions": {
+    "upperArm": [
+      134.372093,
+      30.139535
+    ],
+    "forearm": [
+      160.325581,
+      22.604651
+    ],
+    "hand": [
+      177.906977,
+      16.744186
+    ],
+    "thigh": [
+      190.465116,
+      36.837209
+    ],
+    "calf": [
+      220.604651,
+      35.162791
+    ],
+    "shoe": [
+      251.581395,
+      18.418605
+    ]
+  },
+  "frames": [
+    {
+      "forward": "Left",
+      "depth": {
+        "Left": 0,
+        "Right": -8
+      },
+      "rotations": {
+        "thighRight": -2,
+        "calfRight": 6,
+        "shoeRight": -4,
+        "forearmLeft": 2,
+        "handLeft": -2,
+        "forearmRight": 2,
+        "handRight": -2
+      }
+    },
+    {
+      "forward": null,
+      "depth": {},
+      "rotations": {}
+    },
+    {
+      "forward": "Right",
+      "depth": {
+        "Left": -8,
+        "Right": 0
+      },
+      "rotations": {
+        "thighLeft": 2,
+        "calfLeft": -6,
+        "shoeLeft": 4,
+        "forearmLeft": -2,
+        "handLeft": 2,
+        "forearmRight": -2,
+        "handRight": 2
+      }
+    },
+    {
+      "forward": null,
+      "depth": {},
+      "rotations": {}
+    }
+  ]
+}

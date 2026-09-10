@@ -1,0 +1,166 @@
+{
+  "comparedPixels": 2291520,
+  "changedPixels": 69410,
+  "changedRatio": 0.030289938556067587,
+  "channelThreshold": 32,
+  "maxChangedRatio": 0.005,
+  "maxRegionChangedRatio": 0.02,
+  "regionResults": [
+    {
+      "id": "home",
+      "kind": "map",
+      "comparedPixels": 202800,
+      "changedPixels": 0,
+      "changedRatio": 0
+    },
+    {
+      "id": "neighborhood",
+      "kind": "map",
+      "comparedPixels": 202800,
+      "changedPixels": 0,
+      "changedRatio": 0
+    },
+    {
+      "id": "subway-station",
+      "kind": "map",
+      "comparedPixels": 202800,
+      "changedPixels": 0,
+      "changedRatio": 0
+    },
+    {
+      "id": "subway-train",
+      "kind": "map",
+      "comparedPixels": 202800,
+      "changedPixels": 0,
+      "changedRatio": 0
+    },
+    {
+      "id": "venue-exterior",
+      "kind": "map",
+      "comparedPixels": 202800,
+      "changedPixels": 0,
+      "changedRatio": 0
+    },
+    {
+      "id": "lobby",
+      "kind": "map",
+      "comparedPixels": 202800,
+      "changedPixels": 0,
+      "changedRatio": 0
+    },
+    {
+      "id": "bridal-room",
+      "kind": "map",
+      "comparedPixels": 202800,
+      "changedPixels": 0,
+      "changedRatio": 0
+    },
+    {
+      "id": "ceremony-hall",
+      "kind": "map",
+      "comparedPixels": 202800,
+      "changedPixels": 0,
+      "changedRatio": 0
+    },
+    {
+      "id": "banquet",
+      "kind": "map",
+      "comparedPixels": 202800,
+      "changedPixels": 0,
+      "changedRatio": 0
+    },
+    {
+      "id": "restroom",
+      "kind": "map",
+      "comparedPixels": 202800,
+      "changedPixels": 0,
+      "changedRatio": 0
+    },
+    {
+      "id": "feminine-long-wave-dress",
+      "kind": "character",
+      "comparedPixels": 21960,
+      "changedPixels": 6227,
+      "changedRatio": 0.28356102003642986
+    },
+    {
+      "id": "feminine-formal-hanbok",
+      "kind": "character",
+      "comparedPixels": 21960,
+      "changedPixels": 6259,
+      "changedRatio": 0.28501821493624774
+    },
+    {
+      "id": "masculine-navy-suit",
+      "kind": "character",
+      "comparedPixels": 21960,
+      "changedPixels": 5018,
+      "changedRatio": 0.22850637522768671
+    },
+    {
+      "id": "masculine-charcoal-blazer",
+      "kind": "character",
+      "comparedPixels": 21960,
+      "changedPixels": 4979,
+      "changedRatio": 0.22673041894353368
+    },
+    {
+      "id": "feminine-sage-bolero-dress",
+      "kind": "character",
+      "comparedPixels": 21960,
+      "changedPixels": 5661,
+      "changedRatio": 0.25778688524590165
+    },
+    {
+      "id": "feminine-champagne-navy-skirt",
+      "kind": "character",
+      "comparedPixels": 21960,
+      "changedPixels": 6658,
+      "changedRatio": 0.3031876138433515
+    },
+    {
+      "id": "feminine-lavender-jacket-dress",
+      "kind": "character",
+      "comparedPixels": 21960,
+      "changedPixels": 5692,
+      "changedRatio": 0.2591985428051002
+    },
+    {
+      "id": "feminine-teal-modern-hanbok",
+      "kind": "character",
+      "comparedPixels": 21960,
+      "changedPixels": 7176,
+      "changedRatio": 0.326775956284153
+    },
+    {
+      "id": "masculine-beige-summer-suit",
+      "kind": "character",
+      "comparedPixels": 21960,
+      "changedPixels": 5672,
+      "changedRatio": 0.258287795992714
+    },
+    {
+      "id": "masculine-charcoal-burgundy-tie",
+      "kind": "character",
+      "comparedPixels": 21960,
+      "changedPixels": 6044,
+      "changedRatio": 0.27522768670309655
+    },
+    {
+      "id": "masculine-green-blazer-cream-pants",
+      "kind": "character",
+      "comparedPixels": 21960,
+      "changedPixels": 4435,
+      "changedRatio": 0.20195810564663025
+    },
+    {
+      "id": "masculine-blue-modern-hanbok",
+      "kind": "character",
+      "comparedPixels": 21960,
+      "changedPixels": 5589,
+      "changedRatio": 0.2545081967213115
+    }
+  ],
+  "diffPath": "/Users/sjlee/Documents/모바일 청첩장/project/.superpowers/visual-regression/mobile-game-diff.png",
+  "reportPath": "/Users/sjlee/Documents/모바일 청첩장/project/.superpowers/visual-regression/mobile-game-regions.json"
+}

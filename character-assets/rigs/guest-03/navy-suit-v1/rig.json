@@ -1,0 +1,272 @@
+{
+  "version": 1,
+  "id": "guest-03-navy-suit-cutout-v1",
+  "characterId": "guest-03",
+  "presetId": "masculine-navy-suit",
+  "skeleton": "../../common-three-head-v1/skeleton.json",
+  "artwork": "artwork.svg",
+  "sourcePolicy": {
+    "kind": "editable-vector-cutout",
+    "frameAiGeneration": false,
+    "pixelBandCopy": false,
+    "pixelRegionReplacement": false,
+    "bodyPartScaling": false,
+    "directionMirroring": false
+  },
+  "parts": [
+    { "id": "shadow", "bone": "shadow" },
+    { "id": "backHair", "bone": "head" },
+    { "id": "neck", "bone": "neck" },
+    { "id": "pelvis", "bone": "pelvis", "role": "pelvisOrSkirt" },
+    { "id": "thighLeft", "bone": "thighLeft" },
+    { "id": "calfLeft", "bone": "calfLeft" },
+    { "id": "shoeLeft", "bone": "shoeLeft" },
+    { "id": "thighRight", "bone": "thighRight" },
+    { "id": "calfRight", "bone": "calfRight" },
+    { "id": "shoeRight", "bone": "shoeRight" },
+    { "id": "torso", "bone": "torso" },
+    { "id": "shirtTie", "bone": "torso" },
+    { "id": "jacket", "bone": "torso", "role": "jacketOrTop" },
+    { "id": "upperArmLeft", "bone": "upperArmLeft" },
+    { "id": "lowerArmLeft", "bone": "lowerArmLeft" },
+    { "id": "handLeft", "bone": "handLeft" },
+    { "id": "upperArmRight", "bone": "upperArmRight" },
+    { "id": "lowerArmRight", "bone": "lowerArmRight" },
+    { "id": "handRight", "bone": "handRight" },
+    { "id": "face", "bone": "head" },
+    { "id": "frontHair", "bone": "head" },
+    { "id": "pocketSquare", "bone": "accessory", "role": "outfitDetail" },
+    { "id": "accessory", "bone": "accessory", "role": "bagOrAccessory" }
+  ],
+  "directions": {
+    "down": {
+      "row": 0,
+      "meaning": "front",
+      "continuityProbe": { "left": 86, "right": 106, "top": 92, "bottom": 116 },
+      "drawOrder": [
+        "shadow", "backHair", "thighRight", "calfRight", "shoeRight",
+        "pelvis", "thighLeft", "calfLeft", "shoeLeft", "neck", "torso",
+        "shirtTie", "jacket", "upperArmLeft", "lowerArmLeft", "handLeft",
+        "upperArmRight", "lowerArmRight", "handRight", "face", "frontHair",
+        "pocketSquare", "accessory"
+      ],
+      "asymmetry": {
+        "hairPart": "wearer-left",
+        "pocketSquare": "wearer-left-viewer-right"
+      }
+    },
+    "left": {
+      "row": 1,
+      "meaning": "profile-facing-left",
+      "continuityProbe": { "left": 87, "right": 103, "top": 92, "bottom": 116 },
+      "pivotOffsets": {
+        "upperArmLeft": { "x": 18, "y": 0 },
+        "lowerArmLeft": { "x": 24, "y": 0 },
+        "handLeft": { "x": 26, "y": 0 },
+        "upperArmRight": { "x": -18, "y": 0 },
+        "lowerArmRight": { "x": -24, "y": 0 },
+        "handRight": { "x": -26, "y": 0 },
+        "thighLeft": { "x": 6, "y": 0 },
+        "calfLeft": { "x": 8, "y": 0 },
+        "shoeLeft": { "x": 10, "y": 0 },
+        "thighRight": { "x": -6, "y": 0 },
+        "calfRight": { "x": -8, "y": 0 },
+        "shoeRight": { "x": -10, "y": 0 }
+      },
+      "drawOrder": [
+        "shadow", "backHair", "thighRight", "calfRight", "shoeRight",
+        "upperArmRight", "lowerArmRight", "handRight", "pelvis", "thighLeft",
+        "calfLeft", "shoeLeft", "neck", "torso", "shirtTie", "jacket",
+        "upperArmLeft", "lowerArmLeft", "handLeft", "face", "frontHair",
+        "pocketSquare", "accessory"
+      ],
+      "asymmetry": {
+        "hairPart": "wearer-left-near-side",
+        "pocketSquare": "visible-on-near-left-chest"
+      }
+    },
+    "right": {
+      "row": 2,
+      "meaning": "profile-facing-right",
+      "continuityProbe": { "left": 89, "right": 105, "top": 92, "bottom": 116 },
+      "pivotOffsets": {
+        "upperArmLeft": { "x": 18, "y": 0 },
+        "lowerArmLeft": { "x": 24, "y": 0 },
+        "handLeft": { "x": 26, "y": 0 },
+        "upperArmRight": { "x": -18, "y": 0 },
+        "lowerArmRight": { "x": -24, "y": 0 },
+        "handRight": { "x": -26, "y": 0 },
+        "thighLeft": { "x": 6, "y": 0 },
+        "calfLeft": { "x": 8, "y": 0 },
+        "shoeLeft": { "x": 10, "y": 0 },
+        "thighRight": { "x": -6, "y": 0 },
+        "calfRight": { "x": -8, "y": 0 },
+        "shoeRight": { "x": -10, "y": 0 }
+      },
+      "drawOrder": [
+        "shadow", "backHair", "thighLeft", "calfLeft", "shoeLeft",
+        "upperArmLeft", "lowerArmLeft", "handLeft", "pelvis", "thighRight",
+        "calfRight", "shoeRight", "neck", "torso", "shirtTie", "jacket",
+        "upperArmRight", "lowerArmRight", "handRight", "face", "frontHair",
+        "pocketSquare", "accessory"
+      ],
+      "asymmetry": {
+        "hairPart": "wearer-left-far-side",
+        "pocketSquare": "hidden-on-far-left-chest"
+      }
+    },
+    "up": {
+      "row": 3,
+      "meaning": "back",
+      "continuityProbe": { "left": 86, "right": 106, "top": 92, "bottom": 116 },
+      "drawOrder": [
+        "shadow", "thighLeft", "calfLeft", "shoeLeft", "thighRight",
+        "calfRight", "shoeRight", "pelvis", "neck", "torso", "shirtTie",
+        "jacket", "upperArmLeft", "lowerArmLeft", "handLeft", "upperArmRight",
+        "lowerArmRight", "handRight", "face", "backHair", "frontHair",
+        "pocketSquare", "accessory"
+      ],
+      "asymmetry": {
+        "hairPart": "wearer-left-crown-flow",
+        "pocketSquare": "not-visible-from-back"
+      }
+    }
+  },
+  "animation": {
+    "frameLabels": ["left-foot-forward", "neutral", "right-foot-forward", "neutral"],
+    "frames": {
+      "down": [
+        {
+          "forwardFoot": "left",
+          "bones": {
+            "upperArmLeft": { "rotate": -6 },
+            "lowerArmLeft": { "rotate": 2 },
+            "upperArmRight": { "rotate": 6 },
+            "lowerArmRight": { "rotate": -2 },
+            "thighLeft": { "rotate": 5, "translateX": -3 },
+            "calfLeft": { "rotate": -3, "translateX": -1 },
+            "shoeLeft": { "translateX": -2 },
+            "thighRight": { "rotate": -4, "translateX": 3, "translateY": -3 },
+            "calfRight": { "rotate": 2, "translateX": 1 },
+            "shoeRight": { "translateX": 2, "translateY": -2 }
+          }
+        },
+        { "forwardFoot": null, "bones": {} },
+        {
+          "forwardFoot": "right",
+          "bones": {
+            "upperArmLeft": { "rotate": 6 },
+            "lowerArmLeft": { "rotate": -2 },
+            "upperArmRight": { "rotate": -6 },
+            "lowerArmRight": { "rotate": 2 },
+            "thighLeft": { "rotate": -4, "translateX": -3, "translateY": -3 },
+            "calfLeft": { "rotate": 2, "translateX": -1 },
+            "shoeLeft": { "translateX": -2, "translateY": -2 },
+            "thighRight": { "rotate": 5, "translateX": 3, "translateY": -1 },
+            "calfRight": { "rotate": -3, "translateX": 1 },
+            "shoeRight": { "translateX": 2 }
+          }
+        },
+        { "forwardFoot": null, "bones": {} }
+      ],
+      "left": [
+        {
+          "forwardFoot": "left",
+          "bones": {
+            "upperArmLeft": { "rotate": -11 },
+            "lowerArmLeft": { "rotate": 4 },
+            "upperArmRight": { "rotate": 9 },
+            "lowerArmRight": { "rotate": -3 },
+            "thighLeft": { "rotate": 14, "translateY": 1 },
+            "calfLeft": { "rotate": -7 },
+            "shoeLeft": { "rotate": -5, "translateX": -2, "translateY": 1 },
+            "thighRight": { "rotate": -11, "translateY": 1 },
+            "calfRight": { "rotate": 7 },
+            "shoeRight": { "rotate": 4, "translateX": 1, "translateY": -2 }
+          }
+        },
+        { "forwardFoot": null, "bones": {} },
+        {
+          "forwardFoot": "right",
+          "bones": {
+            "upperArmLeft": { "rotate": 9 },
+            "lowerArmLeft": { "rotate": -3 },
+            "upperArmRight": { "rotate": -11 },
+            "lowerArmRight": { "rotate": 4 },
+            "thighLeft": { "rotate": -11, "translateY": 1 },
+            "calfLeft": { "rotate": 7 },
+            "shoeLeft": { "rotate": 4, "translateX": 1, "translateY": -2 },
+            "thighRight": { "rotate": 14, "translateY": 1 },
+            "calfRight": { "rotate": -7 },
+            "shoeRight": { "rotate": -5, "translateX": -2, "translateY": 1 }
+          }
+        },
+        { "forwardFoot": null, "bones": {} }
+      ],
+      "right": [
+        {
+          "forwardFoot": "left",
+          "bones": {
+            "upperArmLeft": { "rotate": 11 },
+            "lowerArmLeft": { "rotate": -4 },
+            "upperArmRight": { "rotate": -9 },
+            "lowerArmRight": { "rotate": 3 },
+            "thighLeft": { "rotate": -14, "translateY": 1 },
+            "calfLeft": { "rotate": 7 },
+            "shoeLeft": { "rotate": 5, "translateX": 2, "translateY": 1 },
+            "thighRight": { "rotate": 11, "translateY": 1 },
+            "calfRight": { "rotate": -7 },
+            "shoeRight": { "rotate": -4, "translateX": -1, "translateY": -2 }
+          }
+        },
+        { "forwardFoot": null, "bones": {} },
+        {
+          "forwardFoot": "right",
+          "bones": {
+            "upperArmLeft": { "rotate": -9 },
+            "lowerArmLeft": { "rotate": 3 },
+            "upperArmRight": { "rotate": 11 },
+            "lowerArmRight": { "rotate": -4 },
+            "thighLeft": { "rotate": 11, "translateY": 1 },
+            "calfLeft": { "rotate": -7 },
+            "shoeLeft": { "rotate": -4, "translateX": -1, "translateY": -2 },
+            "thighRight": { "rotate": -14, "translateY": 1 },
+            "calfRight": { "rotate": 7 },
+            "shoeRight": { "rotate": 5, "translateX": 2, "translateY": 1 }
+          }
+        },
+        { "forwardFoot": null, "bones": {} }
+      ],
+      "up": [
+        {
+          "forwardFoot": "left",
+          "bones": {
+            "upperArmLeft": { "rotate": 6 },
+            "upperArmRight": { "rotate": -6 },
+            "thighLeft": { "rotate": -5, "translateX": -3 },
+            "calfLeft": { "rotate": 3 },
+            "shoeLeft": { "translateX": -2 },
+            "thighRight": { "rotate": 4, "translateX": 3, "translateY": -3 },
+            "calfRight": { "rotate": -2 },
+            "shoeRight": { "translateX": 2, "translateY": -2 }
+          }
+        },
+        { "forwardFoot": null, "bones": {} },
+        {
+          "forwardFoot": "right",
+          "bones": {
+            "upperArmLeft": { "rotate": -6 },
+            "upperArmRight": { "rotate": 6 },
+            "thighLeft": { "rotate": 4, "translateX": -3, "translateY": -3 },
+            "calfLeft": { "rotate": -2 },
+            "shoeLeft": { "translateX": -2, "translateY": -2 },
+            "thighRight": { "rotate": -5, "translateX": 3 },
+            "calfRight": { "rotate": 3 },
+            "shoeRight": { "translateX": 2 }
+          }
+        },
+        { "forwardFoot": null, "bones": {} }
+      ]
+    }
+  }
+}

@@ -12,6 +12,8 @@ const root = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
 const source = process.env.CHARACTER_ASSET_SOURCE_ROOT
   ? path.resolve(process.env.CHARACTER_ASSET_SOURCE_ROOT)
   : path.join(root, "character-assets/source");
+const usesCustomSource = Boolean(process.env.CHARACTER_ASSET_SOURCE_ROOT);
+const cutoutRoot = path.join(root, "character-assets/generated/three-head-216-v1");
 const catalog = JSON.parse(
   await readFile(path.join(root, "shared/character-catalog.json"), "utf8")
 );
@@ -258,8 +260,14 @@ if (wants("couple")) {
 if (wants("guest-presets")) {
   groupLine("guest-presets");
   for (const preset of guestPresetCatalog.presets) {
+    const walk = usesCustomSource
+      ? sourcePath(source, preset.source.walk)
+      : path.join(cutoutRoot, preset.id, `${preset.id}__walk-runtime.png`);
+    const idle = usesCustomSource
+      ? sourcePath(source, preset.source.idle)
+      : path.join(cutoutRoot, preset.id, `${preset.id}__idle-runtime.png`);
     await auditSheet(
-      sourcePath(source, preset.source.walk),
+      walk,
       guestWalkDimensions,
       rules.guestPreset,
       {
@@ -270,7 +278,7 @@ if (wants("guest-presets")) {
       }
     );
     await auditSheet(
-      sourcePath(source, preset.source.idle),
+      idle,
       guestIdleDimensions,
       rules.guestPreset,
       { requireEveryFrame: true, frameDimensions: guestFrame }

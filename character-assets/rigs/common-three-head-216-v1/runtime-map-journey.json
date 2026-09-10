@@ -1,0 +1,214 @@
+{
+  "developmentOnly": true,
+  "productionIntegrated": false,
+  "characterId": "guest-12",
+  "sheetSha256": "99da09e983362cc59a8b389bf0e3332cb11fcbf2e0bedb1761f66cc02e90e647",
+  "viewport": [
+    390,
+    844
+  ],
+  "method": "Accessible portal button activation and in-game pathfinding; no game state or position injection",
+  "complete": true,
+  "rows": [
+    {
+      "zone": "subway-station",
+      "preset": "masculine-blue-modern-hanbok",
+      "direction": "down",
+      "moving": "false",
+      "frame": "1",
+      "size": [
+        48,
+        72
+      ],
+      "sourceWidth": "96px",
+      "url": "url(\"http://127.0.0.1:5197/__guest216-pilot/guest-12-runtime.png?v=three-head-216-v1\")",
+      "filter": "contrast(1.06) saturate(0.97) drop-shadow(rgba(24, 37, 42, 0.63) 0px 1px 0px) drop-shadow(rgba(24, 37, 42, 0.63) 1px 2px 0px)",
+      "position": [
+        135,
+        435
+      ],
+      "file": "runtime-map-subway-station.png",
+      "sha256": "4cf06664a7558371ae3273ddbcf17b39dcf75be1938cbf7a8993f5b24d0e15b4"
+    },
+    {
+      "zone": "neighborhood",
+      "preset": "masculine-blue-modern-hanbok",
+      "direction": "down",
+      "moving": "false",
+      "frame": "1",
+      "size": [
+        48,
+        72
+      ],
+      "sourceWidth": "96px",
+      "url": "url(\"http://127.0.0.1:5197/__guest216-pilot/guest-12-runtime.png?v=three-head-216-v1\")",
+      "filter": "contrast(1.08) saturate(0.94) brightness(1.02) drop-shadow(rgba(247, 242, 219, 0.78) 0px 1px 0px) drop-shadow(rgba(247, 242, 219, 0.78) 1px 2px 0px)",
+      "position": [
+        135,
+        375
+      ],
+      "file": "runtime-map-neighborhood.png",
+      "sha256": "62b4d513b8d58d1b04697fe6f34a5943fe1861b381b84dd1def37d2487699bdf"
+    },
+    {
+      "zone": "home",
+      "preset": "masculine-blue-modern-hanbok",
+      "direction": "down",
+      "moving": "false",
+      "frame": "1",
+      "size": [
+        48,
+        72
+      ],
+      "sourceWidth": "96px",
+      "url": "url(\"http://127.0.0.1:5197/__guest216-pilot/guest-12-runtime.png?v=three-head-216-v1\")",
+      "filter": "contrast(1.04) saturate(0.98) drop-shadow(rgba(48, 31, 27, 0.48) 0px 1px 0px) drop-shadow(rgba(48, 31, 27, 0.48) 1px 2px 0px)",
+      "position": [
+        285,
+        135
+      ],
+      "file": "runtime-map-home.png",
+      "sha256": "17a085cdb3b823c01b078e893d8c4be516681702cececa0a0e010822a87ac2ba"
+    },
+    {
+      "zone": "subway-train",
+      "preset": "masculine-blue-modern-hanbok",
+      "direction": "down",
+      "moving": "false",
+      "frame": "1",
+      "size": [
+        48,
+        72
+      ],
+      "sourceWidth": "96px",
+      "url": "url(\"http://127.0.0.1:5197/__guest216-pilot/guest-12-runtime.png?v=three-head-216-v1\")",
+      "filter": "contrast(1.07) saturate(0.96) drop-shadow(rgba(25, 42, 48, 0.52) 0px 1px 0px) drop-shadow(rgba(25, 42, 48, 0.52) 1px 2px 0px)",
+      "position": [
+        135,
+        285
+      ],
+      "file": "runtime-map-subway-train.png",
+      "sha256": "ef5651e0c473486edea9eed7ad123696fdc19f5a845394c80de8baaf48dd63ff"
+    },
+    {
+      "zone": "venue-exterior",
+      "preset": "masculine-blue-modern-hanbok",
+      "direction": "down",
+      "moving": "false",
+      "frame": "1",
+      "size": [
+        48,
+        72
+      ],
+      "sourceWidth": "96px",
+      "url": "url(\"http://127.0.0.1:5197/__guest216-pilot/guest-12-runtime.png?v=three-head-216-v1\")",
+      "filter": "contrast(1.07) saturate(0.96) brightness(1.01) drop-shadow(rgba(27, 37, 26, 0.62) 0px 1px 0px) drop-shadow(rgba(27, 37, 26, 0.62) 1px 2px 0px)",
+      "position": [
+        465,
+        765
+      ],
+      "file": "runtime-map-venue-exterior.png",
+      "sha256": "701ed27aefa56a4ffb903d7d7fa561af0f1079d7d9fd6e653a722ad8eb1fe3fc"
+    },
+    {
+      "zone": "lobby",
+      "preset": "masculine-blue-modern-hanbok",
+      "direction": "down",
+      "moving": "false",
+      "frame": "1",
+      "size": [
+        48,
+        72
+      ],
+      "sourceWidth": "96px",
+      "url": "url(\"http://127.0.0.1:5197/__guest216-pilot/guest-12-runtime.png?v=three-head-216-v1\")",
+      "filter": "contrast(1.09) saturate(0.95) brightness(0.99) drop-shadow(rgba(43, 36, 34, 0.64) 0px 1px 0px) drop-shadow(rgba(43, 36, 34, 0.64) 1px 2px 0px)",
+      "position": [
+        525,
+        135
+      ],
+      "file": "runtime-map-lobby.png",
+      "sha256": "ffa2e4827f8377d44cd8dede510c60107e99330a38bbfba4f6cdf1f1a30cc5f8"
+    },
+    {
+      "zone": "bridal-room",
+      "preset": "masculine-blue-modern-hanbok",
+      "direction": "down",
+      "moving": "false",
+      "frame": "1",
+      "size": [
+        48,
+        72
+      ],
+      "sourceWidth": "96px",
+      "url": "url(\"http://127.0.0.1:5197/__guest216-pilot/guest-12-runtime.png?v=three-head-216-v1\")",
+      "filter": "contrast(1.06) saturate(0.97) drop-shadow(rgba(39, 23, 31, 0.68) 0px 1px 0px) drop-shadow(rgba(39, 23, 31, 0.68) 1px 2px 0px)",
+      "position": [
+        345,
+        525
+      ],
+      "file": "runtime-map-bridal-room.png",
+      "sha256": "96ed1890ab7a1c04584afa252b5b383faf9e194e4ee0734b73f7c943e4e00469"
+    },
+    {
+      "zone": "ceremony-hall",
+      "preset": "masculine-blue-modern-hanbok",
+      "direction": "up",
+      "moving": "false",
+      "frame": "1",
+      "size": [
+        48,
+        72
+      ],
+      "sourceWidth": "96px",
+      "url": "url(\"http://127.0.0.1:5197/__guest216-pilot/guest-12-runtime.png?v=three-head-216-v1\")",
+      "filter": "contrast(1.08) saturate(0.95) brightness(1.01) drop-shadow(rgba(27, 35, 25, 0.56) 0px 1px 0px) drop-shadow(rgba(27, 35, 25, 0.56) 1px 2px 0px)",
+      "position": [
+        375,
+        1665
+      ],
+      "file": "runtime-map-ceremony-hall.png",
+      "sha256": "ddbf81be158b41432f4c1aff2abda1f81df2ebe68ad5b888d34d2fe4521b8c2c"
+    },
+    {
+      "zone": "banquet",
+      "preset": "masculine-blue-modern-hanbok",
+      "direction": "down",
+      "moving": "false",
+      "frame": "1",
+      "size": [
+        48,
+        72
+      ],
+      "sourceWidth": "96px",
+      "url": "url(\"http://127.0.0.1:5197/__guest216-pilot/guest-12-runtime.png?v=three-head-216-v1\")",
+      "filter": "contrast(1.07) saturate(0.96) drop-shadow(rgba(46, 27, 24, 0.58) 0px 1px 0px) drop-shadow(rgba(46, 27, 24, 0.58) 1px 2px 0px)",
+      "position": [
+        135,
+        465
+      ],
+      "file": "runtime-map-banquet.png",
+      "sha256": "f11dc3a2c00eec9306c0a28c4a023e9832fa248cee931b9f0fb6a01942d27337"
+    },
+    {
+      "zone": "restroom",
+      "preset": "masculine-blue-modern-hanbok",
+      "direction": "down",
+      "moving": "false",
+      "frame": "1",
+      "size": [
+        48,
+        72
+      ],
+      "sourceWidth": "96px",
+      "url": "url(\"http://127.0.0.1:5197/__guest216-pilot/guest-12-runtime.png?v=three-head-216-v1\")",
+      "filter": "contrast(1.06) saturate(0.97) drop-shadow(rgba(26, 39, 42, 0.57) 0px 1px 0px) drop-shadow(rgba(26, 39, 42, 0.57) 1px 2px 0px)",
+      "position": [
+        135,
+        345
+      ],
+      "file": "runtime-map-restroom.png",
+      "sha256": "6709b7dfda2224fc3c2ae60be39b7a72f9e40e37e71bc2124c9fbafd1747ba2c"
+    }
+  ]
+}

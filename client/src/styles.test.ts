@@ -652,14 +652,11 @@ describe("pixel wedding festival map", () => {
     expect(mapVisualEnhancementStyles).toContain('.world-player[data-moving="true"]');
   });
 
-  it("adds restrained hair and garment follow-through without replacing approved artwork", () => {
-    expect(styles).toContain('[data-motion-profile="flowing"] .character-layer--base::before');
-    expect(styles).toContain('[data-motion-profile="hanbok"] .character-layer--base::after');
-    expect(styles).toContain('[data-motion-profile="skirt"] .character-layer--base::after');
-    expect(styles).toContain('[data-motion-profile="tailored"] .character-layer--base::after');
-    expect(styles).toContain("--character-layer-image");
-    expect(styles).toContain("translateX(-2px)");
-    expect(styles).toContain('html[data-reduce-motion="true"] .character-layer--base::before');
+  it("renders authored cutout frames without clipped runtime pixel copies", () => {
+    expect(styles).not.toContain(".character-layer--base::before");
+    expect(styles).not.toContain(".character-layer--base::after");
+    expect(styles).not.toContain("--character-layer-image");
+    expect(styles).not.toContain("--character-frame-position");
   });
 
   it("uses a short elegant selection transition and honors reduced motion", () => {

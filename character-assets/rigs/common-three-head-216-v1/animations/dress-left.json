@@ -1,0 +1,87 @@
+{
+  "id": "dress-left-216-v1",
+  "type": "dress",
+  "direction": "left",
+  "policy": "Common dress motion. Fixed skeleton lengths; no character-specific walking cycle.",
+  "regions": {
+    "thigh": [
+      191.302326,
+      36
+    ],
+    "calf": [
+      220.604651,
+      36
+    ],
+    "shoe": [
+      251.581395,
+      19.255814
+    ],
+    "upperArm": [
+      117.448505,
+      47.925961
+    ],
+    "forearm": [
+      163.870907,
+      23.869008
+    ],
+    "hand": [
+      186.04841,
+      27.627907
+    ]
+  },
+  "frames": [
+    {
+      "forward": "Right",
+      "rotations": {
+        "upperArmRight": -3,
+        "forearmRight": 1,
+        "handRight": 2,
+        "thighRight": 8,
+        "calfRight": -8,
+        "shoeRight": 0,
+        "thighLeft": -8,
+        "calfLeft": -8,
+        "shoeLeft": 16,
+        "upperArmLeft": 3,
+        "forearmLeft": -1,
+        "handLeft": -2
+      },
+      "depth": {
+        "Right": 1.15,
+        "Left": -0.837209
+      }
+    },
+    {
+      "forward": null,
+      "rotations": {},
+      "depth": {}
+    },
+    {
+      "forward": "Left",
+      "rotations": {
+        "upperArmRight": 3,
+        "forearmRight": -1,
+        "handRight": -2,
+        "thighLeft": 8,
+        "calfLeft": -8,
+        "shoeLeft": 0,
+        "thighRight": -8,
+        "calfRight": -8,
+        "shoeRight": 16,
+        "upperArmLeft": -3,
+        "forearmLeft": 1,
+        "handLeft": 2
+      },
+      "depth": {
+        "Left": 0.309767,
+        "Right": -0.837209
+      }
+    },
+    {
+      "forward": null,
+      "rotations": {},
+      "depth": {}
+    }
+  ],
+  "contactNote": "Dress shoe support key uses its clothing-family contact pose, independently verified against the original skin. Tailored pilot keys remain unchanged."
+}

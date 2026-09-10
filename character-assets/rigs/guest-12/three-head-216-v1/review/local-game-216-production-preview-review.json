@@ -1,0 +1,1044 @@
+{
+  "id": "guest-12",
+  "developmentOnly": false,
+  "productionPreview": true,
+  "productionIntegrated": true,
+  "remoteProductionVerified": false,
+  "stagedRuntime": false,
+  "sourceFrameSize": [
+    96,
+    144
+  ],
+  "viewport": [
+    390,
+    844
+  ],
+  "sheetSha256": "99da09e983362cc59a8b389bf0e3332cb11fcbf2e0bedb1761f66cc02e90e647",
+  "sourceSheetSha256": "7f0f9d1b532adac9aee89d4d910b764571dfb421f0634375cd55c7781fc4905b",
+  "response": {
+    "status": 200,
+    "sha256": "99da09e983362cc59a8b389bf0e3332cb11fcbf2e0bedb1761f66cc02e90e647",
+    "controller": "http://127.0.0.1:5198/service-worker.js"
+  },
+  "rows": [
+    {
+      "direction": "left",
+      "samples": [
+        {
+          "direction": "down",
+          "moving": "false",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            285,
+            375
+          ],
+          "sheetPosition": "0px 0px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-blue-modern-hanbok__idle.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "left",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            375
+          ],
+          "sheetPosition": "0px -144px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-blue-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "left",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            375
+          ],
+          "sheetPosition": "0px -144px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-blue-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "left",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            375
+          ],
+          "sheetPosition": "0px -144px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-blue-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "left",
+          "moving": "true",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            225,
+            375
+          ],
+          "sheetPosition": "-96px -144px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-blue-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "left",
+          "moving": "true",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            225,
+            375
+          ],
+          "sheetPosition": "-96px -144px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-blue-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "left",
+          "moving": "true",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            225,
+            375
+          ],
+          "sheetPosition": "-96px -144px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-blue-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "left",
+          "moving": "true",
+          "frame": 2,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            195,
+            375
+          ],
+          "sheetPosition": "-192px -144px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-blue-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "left",
+          "moving": "true",
+          "frame": 2,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            195,
+            375
+          ],
+          "sheetPosition": "-192px -144px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-blue-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "left",
+          "moving": "true",
+          "frame": 2,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            195,
+            375
+          ],
+          "sheetPosition": "-192px -144px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-blue-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "left",
+          "moving": "true",
+          "frame": 3,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            165,
+            375
+          ],
+          "sheetPosition": "-288px -144px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-blue-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "left",
+          "moving": "true",
+          "frame": 3,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            165,
+            375
+          ],
+          "sheetPosition": "-288px -144px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-blue-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "left",
+          "moving": "true",
+          "frame": 3,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            165,
+            375
+          ],
+          "sheetPosition": "-288px -144px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-blue-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "left",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            135,
+            375
+          ],
+          "sheetPosition": "0px -144px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-blue-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "left",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            135,
+            375
+          ],
+          "sheetPosition": "0px -144px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-blue-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "left",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            135,
+            375
+          ],
+          "sheetPosition": "0px -144px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-blue-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+        }
+      ],
+      "stopped": {
+        "direction": "left",
+        "moving": "false",
+        "frame": 1
+      }
+    },
+    {
+      "direction": "right",
+      "samples": [
+        {
+          "direction": "left",
+          "moving": "false",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            135,
+            375
+          ],
+          "sheetPosition": "-96px -144px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-blue-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            165,
+            375
+          ],
+          "sheetPosition": "0px -288px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-blue-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            165,
+            375
+          ],
+          "sheetPosition": "0px -288px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-blue-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            165,
+            375
+          ],
+          "sheetPosition": "0px -288px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-blue-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            195,
+            375
+          ],
+          "sheetPosition": "-96px -288px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-blue-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            195,
+            375
+          ],
+          "sheetPosition": "-96px -288px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-blue-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            195,
+            375
+          ],
+          "sheetPosition": "-96px -288px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-blue-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            195,
+            375
+          ],
+          "sheetPosition": "-96px -288px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-blue-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 2,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            225,
+            375
+          ],
+          "sheetPosition": "-192px -288px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-blue-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 2,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            225,
+            375
+          ],
+          "sheetPosition": "-192px -288px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-blue-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 2,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            225,
+            375
+          ],
+          "sheetPosition": "-192px -288px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-blue-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 3,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            375
+          ],
+          "sheetPosition": "-288px -288px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-blue-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 3,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            375
+          ],
+          "sheetPosition": "-288px -288px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-blue-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 3,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            375
+          ],
+          "sheetPosition": "-288px -288px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-blue-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            285,
+            375
+          ],
+          "sheetPosition": "0px -288px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-blue-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            285,
+            375
+          ],
+          "sheetPosition": "0px -288px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-blue-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+        }
+      ],
+      "stopped": {
+        "direction": "right",
+        "moving": "false",
+        "frame": 1
+      }
+    },
+    {
+      "direction": "up",
+      "samples": [
+        {
+          "direction": "right",
+          "moving": "false",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            285,
+            375
+          ],
+          "sheetPosition": "-96px -288px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-blue-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "up",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            285,
+            345
+          ],
+          "sheetPosition": "0px -432px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-blue-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "up",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            285,
+            345
+          ],
+          "sheetPosition": "0px -432px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-blue-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "up",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            285,
+            345
+          ],
+          "sheetPosition": "0px -432px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-blue-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "up",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            285,
+            345
+          ],
+          "sheetPosition": "0px -432px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-blue-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "up",
+          "moving": "true",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            285,
+            315
+          ],
+          "sheetPosition": "-96px -432px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-blue-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "up",
+          "moving": "true",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            285,
+            315
+          ],
+          "sheetPosition": "-96px -432px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-blue-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "up",
+          "moving": "true",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            285,
+            315
+          ],
+          "sheetPosition": "-96px -432px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-blue-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "up",
+          "moving": "true",
+          "frame": 2,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            285,
+            285
+          ],
+          "sheetPosition": "-192px -432px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-blue-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "up",
+          "moving": "true",
+          "frame": 2,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            285,
+            285
+          ],
+          "sheetPosition": "-192px -432px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-blue-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "up",
+          "moving": "true",
+          "frame": 2,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            285,
+            285
+          ],
+          "sheetPosition": "-192px -432px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-blue-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "up",
+          "moving": "true",
+          "frame": 3,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            285,
+            255
+          ],
+          "sheetPosition": "-288px -432px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-blue-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "up",
+          "moving": "true",
+          "frame": 3,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            285,
+            255
+          ],
+          "sheetPosition": "-288px -432px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-blue-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "up",
+          "moving": "true",
+          "frame": 3,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            285,
+            255
+          ],
+          "sheetPosition": "-288px -432px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-blue-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "up",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            285,
+            225
+          ],
+          "sheetPosition": "0px -432px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-blue-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "up",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            285,
+            225
+          ],
+          "sheetPosition": "0px -432px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-blue-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+        }
+      ],
+      "stopped": {
+        "direction": "up",
+        "moving": "false",
+        "frame": 1
+      }
+    },
+    {
+      "direction": "down",
+      "samples": [
+        {
+          "direction": "up",
+          "moving": "false",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            285,
+            225
+          ],
+          "sheetPosition": "-96px -432px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-blue-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "down",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            285,
+            255
+          ],
+          "sheetPosition": "0px 0px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-blue-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "down",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            285,
+            255
+          ],
+          "sheetPosition": "0px 0px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-blue-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "down",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            285,
+            255
+          ],
+          "sheetPosition": "0px 0px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-blue-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "down",
+          "moving": "true",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            285,
+            285
+          ],
+          "sheetPosition": "-96px 0px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-blue-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "down",
+          "moving": "true",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            285,
+            285
+          ],
+          "sheetPosition": "-96px 0px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-blue-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "down",
+          "moving": "true",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            285,
+            285
+          ],
+          "sheetPosition": "-96px 0px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-blue-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "down",
+          "moving": "true",
+          "frame": 2,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            285,
+            315
+          ],
+          "sheetPosition": "-192px 0px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-blue-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "down",
+          "moving": "true",
+          "frame": 2,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            285,
+            315
+          ],
+          "sheetPosition": "-192px 0px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-blue-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "down",
+          "moving": "true",
+          "frame": 2,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            285,
+            315
+          ],
+          "sheetPosition": "-192px 0px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-blue-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "down",
+          "moving": "true",
+          "frame": 2,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            285,
+            315
+          ],
+          "sheetPosition": "-192px 0px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-blue-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "down",
+          "moving": "true",
+          "frame": 3,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            285,
+            345
+          ],
+          "sheetPosition": "-288px 0px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-blue-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "down",
+          "moving": "true",
+          "frame": 3,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            285,
+            345
+          ],
+          "sheetPosition": "-288px 0px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-blue-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "down",
+          "moving": "true",
+          "frame": 3,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            285,
+            345
+          ],
+          "sheetPosition": "-288px 0px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-blue-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "down",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            285,
+            375
+          ],
+          "sheetPosition": "0px 0px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-blue-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "down",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            285,
+            375
+          ],
+          "sheetPosition": "0px 0px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-blue-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")"
+        }
+      ],
+      "stopped": {
+        "direction": "down",
+        "moving": "false",
+        "frame": 1
+      }
+    }
+  ],
+  "screenshots": [
+    {
+      "file": "local-game-216-production-preview-left.png",
+      "sha256": "95c0cb943ce4f58b4cfae494e879c881493a04d4f4ad1a7772cd50fd31303413"
+    },
+    {
+      "file": "local-game-216-production-preview-right.png",
+      "sha256": "b032c9d9b90a7bebcf472408ccfa3057c44c30724864ed576e5e602908f02532"
+    },
+    {
+      "file": "local-game-216-production-preview-up.png",
+      "sha256": "e52f946f2d990b795c54ef694aa35cb368af45a4c7733eb59b2730800657aee3"
+    },
+    {
+      "file": "local-game-216-production-preview-down.png",
+      "sha256": "2f28ab3c1a1b792d723809bc076e9992c0ff784d955dba96f6b1df2b531a7032"
+    }
+  ],
+  "visualReview": "Captured real joystick movement; screenshots require separate visual inspection."
+}

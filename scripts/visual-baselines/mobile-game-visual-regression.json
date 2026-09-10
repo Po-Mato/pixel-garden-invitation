@@ -1,24 +1,24 @@
 {
   "version": 2,
-  "approvedAt": "2026-08-26T22:16:57.617Z",
-  "reason": "4,6,7,8,9,10,11,12번 하객의 3등신 비율과 방향별 보행 리그 교정",
-  "sha256": "9a4f3a001672f41fc0de2cca54a82112ba0c3bee1c88eae1a471b6382c1810fc",
+  "approvedAt": "2026-09-10T09:18:20.922Z",
+  "reason": "사용자 위임에 따른 Codex 시각 검수: 72/144/216 공용 원본 리그 전환. 12명 4방향 실제 선택 화면 48장, 기존 전체 보행·맵 검수와 비교하여 의도한 원화 변경 승인. 지도 10영역 변화 없음. 종전 기준과 실패 비교는 common-three-head-216-v1/release-review/legacy-baseline에 보존. 허용치 변경 없음. 아직 운영 배포 승인을 증명하는 자료는 아님.",
+  "sha256": "285a14f30443eea3f0736604e79848157a8d8db1d4571700b7730651ea83b58e",
   "provenance": {
     "schemaVersion": 1,
     "subjectKind": "capture-set",
     "sourceKind": "local",
     "runId": null,
     "runAttempt": null,
-    "commitSha": "31ed4f0bb70d66ae018b53a180b031465f0d0ea8",
+    "commitSha": "4bb8451b0fac11d269389d2c9444dc37eb9f4db6",
     "runUrl": null,
     "checksumAlgorithm": "sha256",
     "artifactChecksumScope": "sorted-capture-set-manifest",
-    "artifactSha256": "4f9192222029c7d4d95e5922b5e2312dcbc2174dd41e67bd8508bd4d5a170b0d",
+    "artifactSha256": "9ccfcccb8e0d3cf3f650c674a128778f5ce934f899d17e30b9c4ab4ae349812e",
     "files": [
       {
         "logicalPath": "mobile-game-current",
-        "size": 4633021,
-        "sha256": "14d429cbce3cb97a448e6d8b5e8acbd32c7be5ec4f148b8f3f05dfdb1a56b17c"
+        "size": 4561294,
+        "sha256": "8c98d804df278f2117ddb12a6146d546d6f6f2106873ed9842b0eb654208bd84"
       }
     ]
   },

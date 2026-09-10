@@ -1,0 +1,1314 @@
+{
+  "developmentOnly": false,
+  "productionPreview": true,
+  "productionIntegrated": true,
+  "remoteProductionVerified": false,
+  "previewCssSha256": "985e893de83ae7a7c37b8b2061a73da1666f273cc18ec5f8a2b36323dcc363a0",
+  "viewport": [
+    390,
+    844
+  ],
+  "guests": [
+    {
+      "id": "guest-01",
+      "label": "크림 롱 웨이브 원피스",
+      "rows": [
+        {
+          "state": {
+            "direction": "down",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "feminine-long-wave-dress",
+            "motionProfile": "flowing",
+            "size": [
+              160.00030517578125,
+              240.00048828125
+            ],
+            "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/preview/feminine-long-wave-dress__idle.png?v=guest-three-head-216-v1-20260910\")",
+            "position": "0px 0px"
+          },
+          "file": "local-selection-216-production-preview-down.png",
+          "sha256": "e0a2ec54210dc95a1b6a7d1205ba560cfbee6671f990a4bfb97b04b240e88898"
+        },
+        {
+          "state": {
+            "direction": "left",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "feminine-long-wave-dress",
+            "motionProfile": "flowing",
+            "size": [
+              160.00030517578125,
+              240.00048828125
+            ],
+            "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/preview/feminine-long-wave-dress__walk.png?v=guest-three-head-216-v1-20260910\")",
+            "position": "-192px -288px"
+          },
+          "file": "local-selection-216-production-preview-left.png",
+          "sha256": "65380313657596be76d830f2b5c9255b0fd44f38b8909148d5ab9222763d7165"
+        },
+        {
+          "state": {
+            "direction": "right",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "feminine-long-wave-dress",
+            "motionProfile": "flowing",
+            "size": [
+              160.00030517578125,
+              240.00048828125
+            ],
+            "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/preview/feminine-long-wave-dress__walk.png?v=guest-three-head-216-v1-20260910\")",
+            "position": "-192px -576px"
+          },
+          "file": "local-selection-216-production-preview-right.png",
+          "sha256": "4e75253633ae82193c749f62d46aa05d79edb6560c8d81c74a417512808779f3"
+        },
+        {
+          "state": {
+            "direction": "up",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "feminine-long-wave-dress",
+            "motionProfile": "flowing",
+            "size": [
+              160.00030517578125,
+              240.00048828125
+            ],
+            "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/preview/feminine-long-wave-dress__walk.png?v=guest-three-head-216-v1-20260910\")",
+            "position": "-192px -864px"
+          },
+          "file": "local-selection-216-production-preview-up.png",
+          "sha256": "d5d823f9c5c3b3aef1cf397a3d400b80d2148031cf74899a7c87a547310eecbc"
+        }
+      ],
+      "observed": [
+        1,
+        1,
+        1,
+        2,
+        2,
+        2,
+        3,
+        3,
+        3,
+        0,
+        0,
+        0,
+        1,
+        1,
+        1,
+        2,
+        2,
+        2,
+        3,
+        3,
+        3,
+        0
+      ],
+      "stopped": {
+        "moving": "false",
+        "frame": 1
+      },
+      "response": {
+        "status": 200,
+        "cache": "no-cache",
+        "header": null,
+        "sha256": "d3f81dca24dcb76763f3a9ab779b7bf390ea78a868bcd01d1ad54eae3b6bc04c"
+      }
+    },
+    {
+      "id": "guest-02",
+      "label": "로즈 여성 한복",
+      "rows": [
+        {
+          "state": {
+            "direction": "down",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "feminine-formal-hanbok",
+            "motionProfile": "hanbok",
+            "size": [
+              160.00030517578125,
+              240.00048828125
+            ],
+            "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/preview/feminine-formal-hanbok__idle.png?v=guest-three-head-216-v1-20260910\")",
+            "position": "0px 0px"
+          },
+          "file": "local-selection-216-production-preview-down.png",
+          "sha256": "02f27764297defb0cbb97f36d2e92a7341c55d3ea1604084c1a41d70c81d3cc1"
+        },
+        {
+          "state": {
+            "direction": "left",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "feminine-formal-hanbok",
+            "motionProfile": "hanbok",
+            "size": [
+              160.00030517578125,
+              240.00048828125
+            ],
+            "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/preview/feminine-formal-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")",
+            "position": "-192px -288px"
+          },
+          "file": "local-selection-216-production-preview-left.png",
+          "sha256": "ae64477fc25d58208e12201a3feaf9221f5f4b22d66d21e2bd6dacb0e2940d68"
+        },
+        {
+          "state": {
+            "direction": "right",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "feminine-formal-hanbok",
+            "motionProfile": "hanbok",
+            "size": [
+              160.00030517578125,
+              240.00048828125
+            ],
+            "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/preview/feminine-formal-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")",
+            "position": "-192px -576px"
+          },
+          "file": "local-selection-216-production-preview-right.png",
+          "sha256": "6b8e63a1d017f2942f25ab033547be508678702773c0d135c0eedfc8fc40293e"
+        },
+        {
+          "state": {
+            "direction": "up",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "feminine-formal-hanbok",
+            "motionProfile": "hanbok",
+            "size": [
+              160.00030517578125,
+              240.00048828125
+            ],
+            "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/preview/feminine-formal-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")",
+            "position": "-192px -864px"
+          },
+          "file": "local-selection-216-production-preview-up.png",
+          "sha256": "a8f2af6cc711c5ddfb84f269b89ea5183b82c2c6db987344d159e8db02165296"
+        }
+      ],
+      "observed": [
+        1,
+        1,
+        1,
+        2,
+        2,
+        2,
+        3,
+        3,
+        3,
+        0,
+        0,
+        0,
+        1,
+        1,
+        1,
+        2,
+        2,
+        2,
+        3,
+        3,
+        3,
+        0
+      ],
+      "stopped": {
+        "moving": "false",
+        "frame": 1
+      },
+      "response": {
+        "status": 200,
+        "cache": "no-cache",
+        "header": null,
+        "sha256": "7434fc845c9bc082c0d4319276cbb4ef2aff989c4d0e9f928ae340d1ced7a2e3"
+      }
+    },
+    {
+      "id": "guest-03",
+      "label": "네이비 클래식 수트",
+      "rows": [
+        {
+          "state": {
+            "direction": "down",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "masculine-navy-suit",
+            "motionProfile": "tailored",
+            "size": [
+              160.00030517578125,
+              240.00048828125
+            ],
+            "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/preview/masculine-navy-suit__idle.png?v=guest-three-head-216-v1-20260910\")",
+            "position": "0px 0px"
+          },
+          "file": "local-selection-216-production-preview-down.png",
+          "sha256": "c191f3010ef92a12fe2710d7f0d0244ca3778a33e0a425e569561dc5bfd1c9f3"
+        },
+        {
+          "state": {
+            "direction": "left",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "masculine-navy-suit",
+            "motionProfile": "tailored",
+            "size": [
+              160.00030517578125,
+              240.00048828125
+            ],
+            "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/preview/masculine-navy-suit__walk.png?v=guest-three-head-216-v1-20260910\")",
+            "position": "-192px -288px"
+          },
+          "file": "local-selection-216-production-preview-left.png",
+          "sha256": "3ac15787e2c5a364587fffc0bfac31b08526f1bced70c6c001175eab3e260fb4"
+        },
+        {
+          "state": {
+            "direction": "right",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "masculine-navy-suit",
+            "motionProfile": "tailored",
+            "size": [
+              160.00030517578125,
+              240.00048828125
+            ],
+            "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/preview/masculine-navy-suit__walk.png?v=guest-three-head-216-v1-20260910\")",
+            "position": "-192px -576px"
+          },
+          "file": "local-selection-216-production-preview-right.png",
+          "sha256": "86de740ef78459dbbfe95bb1952c92e99bafa635090c80c703e3e9ce82e06024"
+        },
+        {
+          "state": {
+            "direction": "up",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "masculine-navy-suit",
+            "motionProfile": "tailored",
+            "size": [
+              160.00030517578125,
+              240.00048828125
+            ],
+            "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/preview/masculine-navy-suit__walk.png?v=guest-three-head-216-v1-20260910\")",
+            "position": "-192px -864px"
+          },
+          "file": "local-selection-216-production-preview-up.png",
+          "sha256": "e7b000912dd99216c89948a6d9a397ce77d340af550d0a673cf641df31a701e1"
+        }
+      ],
+      "observed": [
+        1,
+        1,
+        1,
+        2,
+        2,
+        2,
+        3,
+        3,
+        3,
+        0,
+        0,
+        0,
+        1,
+        1,
+        1,
+        2,
+        2,
+        2,
+        3,
+        3,
+        3,
+        0
+      ],
+      "stopped": {
+        "moving": "false",
+        "frame": 1
+      },
+      "response": {
+        "status": 200,
+        "cache": "no-cache",
+        "header": null,
+        "sha256": "756b0a2a046dc0de02304f5695b29ee84668d14b890317a75c6b8778a8f5352a"
+      }
+    },
+    {
+      "id": "guest-04",
+      "label": "차콜 클래식 수트",
+      "rows": [
+        {
+          "state": {
+            "direction": "down",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "masculine-charcoal-blazer",
+            "motionProfile": "tailored",
+            "size": [
+              160.00030517578125,
+              240.00048828125
+            ],
+            "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/preview/masculine-charcoal-blazer__idle.png?v=guest-three-head-216-v1-20260910\")",
+            "position": "0px 0px"
+          },
+          "file": "local-selection-216-production-preview-down.png",
+          "sha256": "8d547716f5d96f0025fac23e5ef845dfd36289f155d98b1233b2a2e3e905638a"
+        },
+        {
+          "state": {
+            "direction": "left",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "masculine-charcoal-blazer",
+            "motionProfile": "tailored",
+            "size": [
+              160.00030517578125,
+              240.00048828125
+            ],
+            "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/preview/masculine-charcoal-blazer__walk.png?v=guest-three-head-216-v1-20260910\")",
+            "position": "-192px -288px"
+          },
+          "file": "local-selection-216-production-preview-left.png",
+          "sha256": "ec97bd495d02867170f07af47f5641dbe3bd96226ff28f032e9af8501be064e6"
+        },
+        {
+          "state": {
+            "direction": "right",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "masculine-charcoal-blazer",
+            "motionProfile": "tailored",
+            "size": [
+              160.00030517578125,
+              240.00048828125
+            ],
+            "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/preview/masculine-charcoal-blazer__walk.png?v=guest-three-head-216-v1-20260910\")",
+            "position": "-192px -576px"
+          },
+          "file": "local-selection-216-production-preview-right.png",
+          "sha256": "ccab000b7134f139cf7087aaa58eda64c8adcb9c2a007bf411dcaba8796e0c11"
+        },
+        {
+          "state": {
+            "direction": "up",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "masculine-charcoal-blazer",
+            "motionProfile": "tailored",
+            "size": [
+              160.00030517578125,
+              240.00048828125
+            ],
+            "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/preview/masculine-charcoal-blazer__walk.png?v=guest-three-head-216-v1-20260910\")",
+            "position": "-192px -864px"
+          },
+          "file": "local-selection-216-production-preview-up.png",
+          "sha256": "44c3d12f677339b213178fdada12453c09ab188beb205e7df6166eba5471cb79"
+        }
+      ],
+      "observed": [
+        1,
+        1,
+        1,
+        2,
+        2,
+        2,
+        3,
+        3,
+        3,
+        0,
+        0,
+        0,
+        1,
+        1,
+        1,
+        2,
+        2,
+        2,
+        3,
+        3,
+        3,
+        0
+      ],
+      "stopped": {
+        "moving": "false",
+        "frame": 1
+      },
+      "response": {
+        "status": 200,
+        "cache": "no-cache",
+        "header": null,
+        "sha256": "83c2c6188e27d914df8354fdb4933190f6b8b9c30fcdc3ef0bd52256c2068231"
+      }
+    },
+    {
+      "id": "guest-05",
+      "label": "세이지 리본 원피스",
+      "rows": [
+        {
+          "state": {
+            "direction": "down",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "feminine-sage-bolero-dress",
+            "motionProfile": "skirt",
+            "size": [
+              160.00030517578125,
+              240.00048828125
+            ],
+            "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/preview/feminine-sage-bolero-dress__idle.png?v=guest-three-head-216-v1-20260910\")",
+            "position": "0px 0px"
+          },
+          "file": "local-selection-216-production-preview-down.png",
+          "sha256": "ffb3967d7239ce2322653284ca3c30c3f7b5131e0f14245e9544ea905c93af11"
+        },
+        {
+          "state": {
+            "direction": "left",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "feminine-sage-bolero-dress",
+            "motionProfile": "skirt",
+            "size": [
+              160.00030517578125,
+              240.00048828125
+            ],
+            "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/preview/feminine-sage-bolero-dress__walk.png?v=guest-three-head-216-v1-20260910\")",
+            "position": "-192px -288px"
+          },
+          "file": "local-selection-216-production-preview-left.png",
+          "sha256": "12920f402bf9e234351f54717f9c5a4cd9dca35d395042e16cd30938251109f2"
+        },
+        {
+          "state": {
+            "direction": "right",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "feminine-sage-bolero-dress",
+            "motionProfile": "skirt",
+            "size": [
+              160.00030517578125,
+              240.00048828125
+            ],
+            "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/preview/feminine-sage-bolero-dress__walk.png?v=guest-three-head-216-v1-20260910\")",
+            "position": "-192px -576px"
+          },
+          "file": "local-selection-216-production-preview-right.png",
+          "sha256": "f6894431acd51f01b731877e97c330387277ff506a2152191e92d0dc1932bac1"
+        },
+        {
+          "state": {
+            "direction": "up",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "feminine-sage-bolero-dress",
+            "motionProfile": "skirt",
+            "size": [
+              160.00030517578125,
+              240.00048828125
+            ],
+            "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/preview/feminine-sage-bolero-dress__walk.png?v=guest-three-head-216-v1-20260910\")",
+            "position": "-192px -864px"
+          },
+          "file": "local-selection-216-production-preview-up.png",
+          "sha256": "204cf7b0a5d7870747409bf3e1ad23e425ec8deb67df5e40edd3e818e460f996"
+        }
+      ],
+      "observed": [
+        0,
+        1,
+        1,
+        1,
+        2,
+        2,
+        3,
+        3,
+        3,
+        0,
+        0,
+        0,
+        1,
+        1,
+        1,
+        2,
+        2,
+        2,
+        3,
+        3,
+        3,
+        0
+      ],
+      "stopped": {
+        "moving": "false",
+        "frame": 1
+      },
+      "response": {
+        "status": 200,
+        "cache": "no-cache",
+        "header": null,
+        "sha256": "06ce119c6d2fdef901e82658374143b6a14007b5393010ab1e0ca8f154262268"
+      }
+    },
+    {
+      "id": "guest-06",
+      "label": "샴페인 블라우스 스커트",
+      "rows": [
+        {
+          "state": {
+            "direction": "down",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "feminine-champagne-navy-skirt",
+            "motionProfile": "skirt",
+            "size": [
+              160.00030517578125,
+              240.00048828125
+            ],
+            "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/preview/feminine-champagne-navy-skirt__idle.png?v=guest-three-head-216-v1-20260910\")",
+            "position": "0px 0px"
+          },
+          "file": "local-selection-216-production-preview-down.png",
+          "sha256": "db0cd56c260d26db51a47d258185e9bf81e5b84a15fd06d49dd95d75385742c9"
+        },
+        {
+          "state": {
+            "direction": "left",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "feminine-champagne-navy-skirt",
+            "motionProfile": "skirt",
+            "size": [
+              160.00030517578125,
+              240.00048828125
+            ],
+            "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/preview/feminine-champagne-navy-skirt__walk.png?v=guest-three-head-216-v1-20260910\")",
+            "position": "-192px -288px"
+          },
+          "file": "local-selection-216-production-preview-left.png",
+          "sha256": "1415c71a7cf8e135f46f9833df66df7ad26e6f20b7af3cb5caee1abe0b14111c"
+        },
+        {
+          "state": {
+            "direction": "right",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "feminine-champagne-navy-skirt",
+            "motionProfile": "skirt",
+            "size": [
+              160.00030517578125,
+              240.00048828125
+            ],
+            "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/preview/feminine-champagne-navy-skirt__walk.png?v=guest-three-head-216-v1-20260910\")",
+            "position": "-192px -576px"
+          },
+          "file": "local-selection-216-production-preview-right.png",
+          "sha256": "df2f6b5d39cc1662850a4bddf5352333bac320ad3140986cd7dcd64f51b01ffb"
+        },
+        {
+          "state": {
+            "direction": "up",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "feminine-champagne-navy-skirt",
+            "motionProfile": "skirt",
+            "size": [
+              160.00030517578125,
+              240.00048828125
+            ],
+            "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/preview/feminine-champagne-navy-skirt__walk.png?v=guest-three-head-216-v1-20260910\")",
+            "position": "-192px -864px"
+          },
+          "file": "local-selection-216-production-preview-up.png",
+          "sha256": "167f732fddbbee3d20e50fb079752d9af231291b51b0bd6185359c9b1cc33fa8"
+        }
+      ],
+      "observed": [
+        1,
+        1,
+        1,
+        2,
+        2,
+        2,
+        3,
+        3,
+        3,
+        0,
+        0,
+        0,
+        1,
+        1,
+        1,
+        2,
+        2,
+        2,
+        3,
+        3,
+        3,
+        0
+      ],
+      "stopped": {
+        "moving": "false",
+        "frame": 1
+      },
+      "response": {
+        "status": 200,
+        "cache": "no-cache",
+        "header": null,
+        "sha256": "4048d20918ebb0ca7dc949a3c35fe8e94bdcdd45639dea13f91c787880cd3db6"
+      }
+    },
+    {
+      "id": "guest-07",
+      "label": "라벤더 쉬폰 원피스",
+      "rows": [
+        {
+          "state": {
+            "direction": "down",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "feminine-lavender-jacket-dress",
+            "motionProfile": "flowing",
+            "size": [
+              160.00030517578125,
+              240.00048828125
+            ],
+            "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/preview/feminine-lavender-jacket-dress__idle.png?v=guest-three-head-216-v1-20260910\")",
+            "position": "0px 0px"
+          },
+          "file": "local-selection-216-production-preview-down.png",
+          "sha256": "e6af53687d9e8911df93e9243c15d74ed5d6458c55a6fe2b1b88c0d0c90199c3"
+        },
+        {
+          "state": {
+            "direction": "left",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "feminine-lavender-jacket-dress",
+            "motionProfile": "flowing",
+            "size": [
+              160.00030517578125,
+              240.00048828125
+            ],
+            "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/preview/feminine-lavender-jacket-dress__walk.png?v=guest-three-head-216-v1-20260910\")",
+            "position": "-192px -288px"
+          },
+          "file": "local-selection-216-production-preview-left.png",
+          "sha256": "261ef4ed4497b9b8b84c22e7cd715e346a5cb621572d42ad86f8933717fd1f36"
+        },
+        {
+          "state": {
+            "direction": "right",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "feminine-lavender-jacket-dress",
+            "motionProfile": "flowing",
+            "size": [
+              160.00030517578125,
+              240.00048828125
+            ],
+            "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/preview/feminine-lavender-jacket-dress__walk.png?v=guest-three-head-216-v1-20260910\")",
+            "position": "-192px -576px"
+          },
+          "file": "local-selection-216-production-preview-right.png",
+          "sha256": "49b37463ad49e1f86f204edda8ba2670f1753fa37174dd2a1885c7d6c6a9dfad"
+        },
+        {
+          "state": {
+            "direction": "up",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "feminine-lavender-jacket-dress",
+            "motionProfile": "flowing",
+            "size": [
+              160.00030517578125,
+              240.00048828125
+            ],
+            "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/preview/feminine-lavender-jacket-dress__walk.png?v=guest-three-head-216-v1-20260910\")",
+            "position": "-192px -864px"
+          },
+          "file": "local-selection-216-production-preview-up.png",
+          "sha256": "d91ce339cc2cf3da291ae51884d293d0d5072ad96fa3bb02e0d6ed96892ed1e9"
+        }
+      ],
+      "observed": [
+        1,
+        1,
+        1,
+        2,
+        2,
+        2,
+        3,
+        3,
+        3,
+        0,
+        0,
+        0,
+        1,
+        1,
+        1,
+        2,
+        2,
+        2,
+        3,
+        3,
+        3,
+        0
+      ],
+      "stopped": {
+        "moving": "false",
+        "frame": 1
+      },
+      "response": {
+        "status": 200,
+        "cache": "no-cache",
+        "header": null,
+        "sha256": "c8c8471f86697d9ad32d4acad19007d4236b65d00db7364c4b4300be34451484"
+      }
+    },
+    {
+      "id": "guest-08",
+      "label": "더스티 로즈 원피스",
+      "rows": [
+        {
+          "state": {
+            "direction": "down",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "feminine-teal-modern-hanbok",
+            "motionProfile": "hanbok",
+            "size": [
+              160.00030517578125,
+              240.00048828125
+            ],
+            "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/preview/feminine-teal-modern-hanbok__idle.png?v=guest-three-head-216-v1-20260910\")",
+            "position": "0px 0px"
+          },
+          "file": "local-selection-216-production-preview-down.png",
+          "sha256": "1e288ec95f428273c45bfcad1589ea6bcc4a86fa09c177b02d4fd19a850e165d"
+        },
+        {
+          "state": {
+            "direction": "left",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "feminine-teal-modern-hanbok",
+            "motionProfile": "hanbok",
+            "size": [
+              160.00030517578125,
+              240.00048828125
+            ],
+            "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/preview/feminine-teal-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")",
+            "position": "-192px -288px"
+          },
+          "file": "local-selection-216-production-preview-left.png",
+          "sha256": "c6aedb0ead6a1108269734a887269e2e0cacafc1913c4f974db4d39e47e7db46"
+        },
+        {
+          "state": {
+            "direction": "right",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "feminine-teal-modern-hanbok",
+            "motionProfile": "hanbok",
+            "size": [
+              160.00030517578125,
+              240.00048828125
+            ],
+            "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/preview/feminine-teal-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")",
+            "position": "-192px -576px"
+          },
+          "file": "local-selection-216-production-preview-right.png",
+          "sha256": "af7d4d801b9445076fb87776eaeca09e7516dcace9ed8f854bff8506efbdfbdf"
+        },
+        {
+          "state": {
+            "direction": "up",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "feminine-teal-modern-hanbok",
+            "motionProfile": "hanbok",
+            "size": [
+              160.00030517578125,
+              240.00048828125
+            ],
+            "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/preview/feminine-teal-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")",
+            "position": "-192px -864px"
+          },
+          "file": "local-selection-216-production-preview-up.png",
+          "sha256": "c378c033034499b9d4024ba186fdcd42e90df42316f5ab966371c089820ac4f0"
+        }
+      ],
+      "observed": [
+        1,
+        1,
+        1,
+        2,
+        2,
+        2,
+        3,
+        3,
+        3,
+        0,
+        0,
+        0,
+        1,
+        1,
+        1,
+        2,
+        2,
+        2,
+        3,
+        3,
+        3,
+        0
+      ],
+      "stopped": {
+        "moving": "false",
+        "frame": 1
+      },
+      "response": {
+        "status": 200,
+        "cache": "no-cache",
+        "header": null,
+        "sha256": "15de8df34af49502c49ef31b0a476fd70452f450c43dcc1cca991fc7bb6580a6"
+      }
+    },
+    {
+      "id": "guest-09",
+      "label": "베이지 썸머 수트",
+      "rows": [
+        {
+          "state": {
+            "direction": "down",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "masculine-beige-summer-suit",
+            "motionProfile": "tailored",
+            "size": [
+              160.00030517578125,
+              240.00048828125
+            ],
+            "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/preview/masculine-beige-summer-suit__idle.png?v=guest-three-head-216-v1-20260910\")",
+            "position": "0px 0px"
+          },
+          "file": "local-selection-216-production-preview-down.png",
+          "sha256": "2814e8a798688ddec366898e2aacbf8068932df6d61a11bc5298d3261c7646f1"
+        },
+        {
+          "state": {
+            "direction": "left",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "masculine-beige-summer-suit",
+            "motionProfile": "tailored",
+            "size": [
+              160.00030517578125,
+              240.00048828125
+            ],
+            "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/preview/masculine-beige-summer-suit__walk.png?v=guest-three-head-216-v1-20260910\")",
+            "position": "-192px -288px"
+          },
+          "file": "local-selection-216-production-preview-left.png",
+          "sha256": "dee4deba2ff836d48b68b7a25cf6fe81c199020e37ee39eb0583c45cf58bc7fe"
+        },
+        {
+          "state": {
+            "direction": "right",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "masculine-beige-summer-suit",
+            "motionProfile": "tailored",
+            "size": [
+              160.00030517578125,
+              240.00048828125
+            ],
+            "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/preview/masculine-beige-summer-suit__walk.png?v=guest-three-head-216-v1-20260910\")",
+            "position": "-192px -576px"
+          },
+          "file": "local-selection-216-production-preview-right.png",
+          "sha256": "3e81451eea482f9e32669c4e7b4419fc5bf3893d5e73297234dbe7e40993532a"
+        },
+        {
+          "state": {
+            "direction": "up",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "masculine-beige-summer-suit",
+            "motionProfile": "tailored",
+            "size": [
+              160.00030517578125,
+              240.00048828125
+            ],
+            "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/preview/masculine-beige-summer-suit__walk.png?v=guest-three-head-216-v1-20260910\")",
+            "position": "-192px -864px"
+          },
+          "file": "local-selection-216-production-preview-up.png",
+          "sha256": "d5f19eed7270048bdf5a58130446440fc7cdb060ef7e36b908a00ac92beb93a0"
+        }
+      ],
+      "observed": [
+        0,
+        1,
+        1,
+        1,
+        2,
+        2,
+        2,
+        3,
+        3,
+        0,
+        0,
+        0,
+        1,
+        1,
+        1,
+        2,
+        2,
+        2,
+        3,
+        3,
+        3,
+        0
+      ],
+      "stopped": {
+        "moving": "false",
+        "frame": 1
+      },
+      "response": {
+        "status": 200,
+        "cache": "no-cache",
+        "header": null,
+        "sha256": "6f84579a3931d85c275ff559433cc05cdc155cd1247a65dea71f9b612f5b1dbe"
+      }
+    },
+    {
+      "id": "guest-10",
+      "label": "네이비 포멀 원피스",
+      "rows": [
+        {
+          "state": {
+            "direction": "down",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "masculine-charcoal-burgundy-tie",
+            "motionProfile": "skirt",
+            "size": [
+              160.00030517578125,
+              240.00048828125
+            ],
+            "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/preview/masculine-charcoal-burgundy-tie__idle.png?v=guest-three-head-216-v1-20260910\")",
+            "position": "0px 0px"
+          },
+          "file": "local-selection-216-production-preview-down.png",
+          "sha256": "ca6ec35aa80fe4f08f21b80b05a23fc37ca838e643a59b11ee7240a43b143c7c"
+        },
+        {
+          "state": {
+            "direction": "left",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "masculine-charcoal-burgundy-tie",
+            "motionProfile": "skirt",
+            "size": [
+              160.00030517578125,
+              240.00048828125
+            ],
+            "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/preview/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")",
+            "position": "-192px -288px"
+          },
+          "file": "local-selection-216-production-preview-left.png",
+          "sha256": "29b4b05654ed2c492723db65dc5894180cbed709d4b4a6e41b34e78123eb5aa4"
+        },
+        {
+          "state": {
+            "direction": "right",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "masculine-charcoal-burgundy-tie",
+            "motionProfile": "skirt",
+            "size": [
+              160.00030517578125,
+              240.00048828125
+            ],
+            "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/preview/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")",
+            "position": "-192px -576px"
+          },
+          "file": "local-selection-216-production-preview-right.png",
+          "sha256": "4e6c53a4ad9725fa6f388e0bf64c9d9d50da3d9834b89255b4d23c608a28494f"
+        },
+        {
+          "state": {
+            "direction": "up",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "masculine-charcoal-burgundy-tie",
+            "motionProfile": "skirt",
+            "size": [
+              160.00030517578125,
+              240.00048828125
+            ],
+            "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/preview/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")",
+            "position": "-192px -864px"
+          },
+          "file": "local-selection-216-production-preview-up.png",
+          "sha256": "677a20b1d27a781e76994323ea195fe9456f8c71e459e65420e5448571a8332b"
+        }
+      ],
+      "observed": [
+        0,
+        1,
+        1,
+        1,
+        2,
+        2,
+        2,
+        3,
+        3,
+        0,
+        0,
+        0,
+        1,
+        1,
+        1,
+        2,
+        2,
+        2,
+        3,
+        3,
+        3,
+        0
+      ],
+      "stopped": {
+        "moving": "false",
+        "frame": 1
+      },
+      "response": {
+        "status": 200,
+        "cache": "no-cache",
+        "header": null,
+        "sha256": "9eb028440f3449d12dd71b81f65d19c7b10138bebfc4475f96bc0aa50e73d79d"
+      }
+    },
+    {
+      "id": "guest-11",
+      "label": "그린 블레이저 크림 팬츠",
+      "rows": [
+        {
+          "state": {
+            "direction": "down",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "masculine-green-blazer-cream-pants",
+            "motionProfile": "tailored",
+            "size": [
+              160.00030517578125,
+              240.00048828125
+            ],
+            "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/preview/masculine-green-blazer-cream-pants__idle.png?v=guest-three-head-216-v1-20260910\")",
+            "position": "0px 0px"
+          },
+          "file": "local-selection-216-production-preview-down.png",
+          "sha256": "27744d99c9700217b8df61388656ecde99b7d38e87c07d12f44c89b8ac5b1afb"
+        },
+        {
+          "state": {
+            "direction": "left",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "masculine-green-blazer-cream-pants",
+            "motionProfile": "tailored",
+            "size": [
+              160.00030517578125,
+              240.00048828125
+            ],
+            "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/preview/masculine-green-blazer-cream-pants__walk.png?v=guest-three-head-216-v1-20260910\")",
+            "position": "-192px -288px"
+          },
+          "file": "local-selection-216-production-preview-left.png",
+          "sha256": "d505fa4c85de09b00a724db3dc18bbb79a5db678669b3b0929d360e16cec57bf"
+        },
+        {
+          "state": {
+            "direction": "right",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "masculine-green-blazer-cream-pants",
+            "motionProfile": "tailored",
+            "size": [
+              160.00030517578125,
+              240.00048828125
+            ],
+            "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/preview/masculine-green-blazer-cream-pants__walk.png?v=guest-three-head-216-v1-20260910\")",
+            "position": "-192px -576px"
+          },
+          "file": "local-selection-216-production-preview-right.png",
+          "sha256": "247f6cf643720a3bc0a2e9b3dfdcb4fee2094e403754f35e0537493ed27709b5"
+        },
+        {
+          "state": {
+            "direction": "up",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "masculine-green-blazer-cream-pants",
+            "motionProfile": "tailored",
+            "size": [
+              160.00030517578125,
+              240.00048828125
+            ],
+            "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/preview/masculine-green-blazer-cream-pants__walk.png?v=guest-three-head-216-v1-20260910\")",
+            "position": "-192px -864px"
+          },
+          "file": "local-selection-216-production-preview-up.png",
+          "sha256": "499be32f103fe54cdb3c8dd071c53d0dcaec09c34f9dd1d4aa459eb1ca1d2d2c"
+        }
+      ],
+      "observed": [
+        1,
+        1,
+        1,
+        2,
+        2,
+        2,
+        3,
+        3,
+        3,
+        0,
+        0,
+        0,
+        1,
+        1,
+        1,
+        2,
+        2,
+        2,
+        3,
+        3,
+        3,
+        0
+      ],
+      "stopped": {
+        "moving": "false",
+        "frame": 1
+      },
+      "response": {
+        "status": 200,
+        "cache": "no-cache",
+        "header": null,
+        "sha256": "b6b83b4d257980500271092bd67b5711b6fdfac61c3f883e8861901d8c0f891d"
+      }
+    },
+    {
+      "id": "guest-12",
+      "label": "블루 모던 한복",
+      "rows": [
+        {
+          "state": {
+            "direction": "down",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "masculine-blue-modern-hanbok",
+            "motionProfile": "hanbok",
+            "size": [
+              160.00030517578125,
+              240.00048828125
+            ],
+            "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/preview/masculine-blue-modern-hanbok__idle.png?v=guest-three-head-216-v1-20260910\")",
+            "position": "0px 0px"
+          },
+          "file": "local-selection-216-production-preview-down.png",
+          "sha256": "ff797dc553a9261f535f36bd9032c0d77724755959cc840d27aecf1216636fa5"
+        },
+        {
+          "state": {
+            "direction": "left",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "masculine-blue-modern-hanbok",
+            "motionProfile": "hanbok",
+            "size": [
+              160.00030517578125,
+              240.00048828125
+            ],
+            "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/preview/masculine-blue-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")",
+            "position": "-192px -288px"
+          },
+          "file": "local-selection-216-production-preview-left.png",
+          "sha256": "f4d2105d3b06c2c24a6590bebe6f25fe4efa95797a0f695b1c8c73b752a3d219"
+        },
+        {
+          "state": {
+            "direction": "right",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "masculine-blue-modern-hanbok",
+            "motionProfile": "hanbok",
+            "size": [
+              160.00030517578125,
+              240.00048828125
+            ],
+            "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/preview/masculine-blue-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")",
+            "position": "-192px -576px"
+          },
+          "file": "local-selection-216-production-preview-right.png",
+          "sha256": "6ab704676f1f85d41a0a2c6c21d1a82b8d7d793935f113fa2ff7f70a3a42536e"
+        },
+        {
+          "state": {
+            "direction": "up",
+            "moving": "false",
+            "walkFrame": "1",
+            "characterPreset": "masculine-blue-modern-hanbok",
+            "motionProfile": "hanbok",
+            "size": [
+              160.00030517578125,
+              240.00048828125
+            ],
+            "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/preview/masculine-blue-modern-hanbok__walk.png?v=guest-three-head-216-v1-20260910\")",
+            "position": "-192px -864px"
+          },
+          "file": "local-selection-216-production-preview-up.png",
+          "sha256": "611b6d59caae3cb034a8322e871236ac11b5ba436c3dfce60462581e800d2575"
+        }
+      ],
+      "observed": [
+        0,
+        1,
+        1,
+        1,
+        2,
+        2,
+        2,
+        3,
+        3,
+        3,
+        0,
+        0,
+        0,
+        1,
+        1,
+        2,
+        2,
+        2,
+        3,
+        3,
+        3,
+        0
+      ],
+      "stopped": {
+        "moving": "false",
+        "frame": 1
+      },
+      "response": {
+        "status": 200,
+        "cache": "no-cache",
+        "header": null,
+        "sha256": "7f0f9d1b532adac9aee89d4d910b764571dfb421f0634375cd55c7781fc4905b"
+      }
+    }
+  ],
+  "sw": {
+    "controller": true,
+    "registrations": 1
+  },
+  "visualReview": "Screenshots captured; separate visual inspection required."
+}

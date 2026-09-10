@@ -1,0 +1,1044 @@
+{
+  "id": "guest-07",
+  "developmentOnly": false,
+  "productionPreview": true,
+  "productionIntegrated": true,
+  "remoteProductionVerified": false,
+  "stagedRuntime": false,
+  "sourceFrameSize": [
+    96,
+    144
+  ],
+  "viewport": [
+    390,
+    844
+  ],
+  "sheetSha256": "b832df5bcb9965ce4e4a5f86815eb36152863aa0ca9116aea9adeafe80da2a59",
+  "sourceSheetSha256": "c8c8471f86697d9ad32d4acad19007d4236b65d00db7364c4b4300be34451484",
+  "response": {
+    "status": 200,
+    "sha256": "b832df5bcb9965ce4e4a5f86815eb36152863aa0ca9116aea9adeafe80da2a59",
+    "controller": "http://127.0.0.1:5198/service-worker.js"
+  },
+  "rows": [
+    {
+      "direction": "left",
+      "samples": [
+        {
+          "direction": "up",
+          "moving": "false",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            285,
+            375
+          ],
+          "sheetPosition": "-96px -432px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-lavender-jacket-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "left",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            375
+          ],
+          "sheetPosition": "0px -144px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-lavender-jacket-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "left",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            375
+          ],
+          "sheetPosition": "0px -144px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-lavender-jacket-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "left",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            375
+          ],
+          "sheetPosition": "0px -144px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-lavender-jacket-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "left",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            375
+          ],
+          "sheetPosition": "0px -144px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-lavender-jacket-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "left",
+          "moving": "true",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            225,
+            375
+          ],
+          "sheetPosition": "-96px -144px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-lavender-jacket-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "left",
+          "moving": "true",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            225,
+            375
+          ],
+          "sheetPosition": "-96px -144px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-lavender-jacket-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "left",
+          "moving": "true",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            225,
+            375
+          ],
+          "sheetPosition": "-96px -144px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-lavender-jacket-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "left",
+          "moving": "true",
+          "frame": 2,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            195,
+            375
+          ],
+          "sheetPosition": "-192px -144px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-lavender-jacket-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "left",
+          "moving": "true",
+          "frame": 2,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            195,
+            375
+          ],
+          "sheetPosition": "-192px -144px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-lavender-jacket-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "left",
+          "moving": "true",
+          "frame": 2,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            195,
+            375
+          ],
+          "sheetPosition": "-192px -144px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-lavender-jacket-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "left",
+          "moving": "true",
+          "frame": 3,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            165,
+            375
+          ],
+          "sheetPosition": "-288px -144px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-lavender-jacket-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "left",
+          "moving": "true",
+          "frame": 3,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            165,
+            375
+          ],
+          "sheetPosition": "-288px -144px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-lavender-jacket-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "left",
+          "moving": "true",
+          "frame": 3,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            165,
+            375
+          ],
+          "sheetPosition": "-288px -144px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-lavender-jacket-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "left",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            135,
+            375
+          ],
+          "sheetPosition": "0px -144px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-lavender-jacket-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "left",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            135,
+            375
+          ],
+          "sheetPosition": "0px -144px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-lavender-jacket-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+        }
+      ],
+      "stopped": {
+        "direction": "left",
+        "moving": "false",
+        "frame": 1
+      }
+    },
+    {
+      "direction": "right",
+      "samples": [
+        {
+          "direction": "left",
+          "moving": "false",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            135,
+            375
+          ],
+          "sheetPosition": "-96px -144px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-lavender-jacket-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            165,
+            375
+          ],
+          "sheetPosition": "0px -288px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-lavender-jacket-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            165,
+            375
+          ],
+          "sheetPosition": "0px -288px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-lavender-jacket-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            165,
+            375
+          ],
+          "sheetPosition": "0px -288px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-lavender-jacket-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            165,
+            375
+          ],
+          "sheetPosition": "0px -288px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-lavender-jacket-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            195,
+            375
+          ],
+          "sheetPosition": "-96px -288px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-lavender-jacket-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            195,
+            375
+          ],
+          "sheetPosition": "-96px -288px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-lavender-jacket-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            195,
+            375
+          ],
+          "sheetPosition": "-96px -288px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-lavender-jacket-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 2,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            225,
+            375
+          ],
+          "sheetPosition": "-192px -288px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-lavender-jacket-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 2,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            225,
+            375
+          ],
+          "sheetPosition": "-192px -288px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-lavender-jacket-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 2,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            225,
+            375
+          ],
+          "sheetPosition": "-192px -288px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-lavender-jacket-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 3,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            375
+          ],
+          "sheetPosition": "-288px -288px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-lavender-jacket-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 3,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            375
+          ],
+          "sheetPosition": "-288px -288px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-lavender-jacket-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 3,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            375
+          ],
+          "sheetPosition": "-288px -288px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-lavender-jacket-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            285,
+            375
+          ],
+          "sheetPosition": "0px -288px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-lavender-jacket-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            285,
+            375
+          ],
+          "sheetPosition": "0px -288px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-lavender-jacket-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+        }
+      ],
+      "stopped": {
+        "direction": "right",
+        "moving": "false",
+        "frame": 1
+      }
+    },
+    {
+      "direction": "up",
+      "samples": [
+        {
+          "direction": "right",
+          "moving": "false",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            285,
+            375
+          ],
+          "sheetPosition": "-96px -288px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-lavender-jacket-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "up",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            285,
+            345
+          ],
+          "sheetPosition": "0px -432px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-lavender-jacket-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "up",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            285,
+            345
+          ],
+          "sheetPosition": "0px -432px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-lavender-jacket-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "up",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            285,
+            345
+          ],
+          "sheetPosition": "0px -432px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-lavender-jacket-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "up",
+          "moving": "true",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            285,
+            315
+          ],
+          "sheetPosition": "-96px -432px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-lavender-jacket-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "up",
+          "moving": "true",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            285,
+            315
+          ],
+          "sheetPosition": "-96px -432px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-lavender-jacket-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "up",
+          "moving": "true",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            285,
+            315
+          ],
+          "sheetPosition": "-96px -432px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-lavender-jacket-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "up",
+          "moving": "true",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            285,
+            315
+          ],
+          "sheetPosition": "-96px -432px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-lavender-jacket-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "up",
+          "moving": "true",
+          "frame": 2,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            285,
+            285
+          ],
+          "sheetPosition": "-192px -432px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-lavender-jacket-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "up",
+          "moving": "true",
+          "frame": 2,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            285,
+            285
+          ],
+          "sheetPosition": "-192px -432px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-lavender-jacket-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "up",
+          "moving": "true",
+          "frame": 2,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            285,
+            285
+          ],
+          "sheetPosition": "-192px -432px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-lavender-jacket-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "up",
+          "moving": "true",
+          "frame": 3,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            285,
+            255
+          ],
+          "sheetPosition": "-288px -432px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-lavender-jacket-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "up",
+          "moving": "true",
+          "frame": 3,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            285,
+            255
+          ],
+          "sheetPosition": "-288px -432px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-lavender-jacket-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "up",
+          "moving": "true",
+          "frame": 3,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            285,
+            255
+          ],
+          "sheetPosition": "-288px -432px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-lavender-jacket-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "up",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            285,
+            225
+          ],
+          "sheetPosition": "0px -432px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-lavender-jacket-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "up",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            285,
+            225
+          ],
+          "sheetPosition": "0px -432px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-lavender-jacket-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+        }
+      ],
+      "stopped": {
+        "direction": "up",
+        "moving": "false",
+        "frame": 1
+      }
+    },
+    {
+      "direction": "down",
+      "samples": [
+        {
+          "direction": "up",
+          "moving": "false",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            285,
+            225
+          ],
+          "sheetPosition": "-96px -432px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-lavender-jacket-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "down",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            285,
+            255
+          ],
+          "sheetPosition": "0px 0px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-lavender-jacket-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "down",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            285,
+            255
+          ],
+          "sheetPosition": "0px 0px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-lavender-jacket-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "down",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            285,
+            255
+          ],
+          "sheetPosition": "0px 0px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-lavender-jacket-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "down",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            285,
+            255
+          ],
+          "sheetPosition": "0px 0px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-lavender-jacket-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "down",
+          "moving": "true",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            285,
+            285
+          ],
+          "sheetPosition": "-96px 0px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-lavender-jacket-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "down",
+          "moving": "true",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            285,
+            285
+          ],
+          "sheetPosition": "-96px 0px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-lavender-jacket-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "down",
+          "moving": "true",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            285,
+            285
+          ],
+          "sheetPosition": "-96px 0px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-lavender-jacket-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "down",
+          "moving": "true",
+          "frame": 2,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            285,
+            315
+          ],
+          "sheetPosition": "-192px 0px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-lavender-jacket-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "down",
+          "moving": "true",
+          "frame": 2,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            285,
+            315
+          ],
+          "sheetPosition": "-192px 0px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-lavender-jacket-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "down",
+          "moving": "true",
+          "frame": 2,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            285,
+            315
+          ],
+          "sheetPosition": "-192px 0px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-lavender-jacket-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "down",
+          "moving": "true",
+          "frame": 3,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            285,
+            345
+          ],
+          "sheetPosition": "-288px 0px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-lavender-jacket-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "down",
+          "moving": "true",
+          "frame": 3,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            285,
+            345
+          ],
+          "sheetPosition": "-288px 0px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-lavender-jacket-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "down",
+          "moving": "true",
+          "frame": 3,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            285,
+            345
+          ],
+          "sheetPosition": "-288px 0px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-lavender-jacket-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "down",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            285,
+            375
+          ],
+          "sheetPosition": "0px 0px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-lavender-jacket-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+        },
+        {
+          "direction": "down",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            285,
+            375
+          ],
+          "sheetPosition": "0px 0px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/feminine-lavender-jacket-dress__walk.png?v=guest-three-head-216-v1-20260910\")"
+        }
+      ],
+      "stopped": {
+        "direction": "down",
+        "moving": "false",
+        "frame": 1
+      }
+    }
+  ],
+  "screenshots": [
+    {
+      "file": "local-game-216-production-preview-left.png",
+      "sha256": "9dd7f53946c4dd09be8b83a08076a252682a3fc07224b43070900d51c073be4f"
+    },
+    {
+      "file": "local-game-216-production-preview-right.png",
+      "sha256": "99a19c36ed40f0aeaff2b55a275372e91bb17a73898dceb554cac6cdef4eec7c"
+    },
+    {
+      "file": "local-game-216-production-preview-up.png",
+      "sha256": "93cc4cfd109cc99a241b5976be17316f7de1e3c797b54e0a9209b96007223c17"
+    },
+    {
+      "file": "local-game-216-production-preview-down.png",
+      "sha256": "5a342f1749291e346e42bac31c96e740b9f54368bbd1f2b5d7870f167b2e04f7"
+    }
+  ],
+  "visualReview": "Captured real joystick movement; screenshots require separate visual inspection."
+}

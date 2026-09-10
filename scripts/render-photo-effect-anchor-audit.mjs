@@ -72,8 +72,10 @@ export async function auditPhotoEffectWalkSheet(filePath, guestId) {
         .toBuffer({ resolveWithObject: true });
       const bounds = opaqueBounds(data, info.width, info.height);
       if (!bounds) throw new Error(`${guestId}/${walkDirections[row]}/step-${column + 1}: frame is transparent`);
-      if (bounds.height < 60 || bounds.height > 66) {
-        throw new Error(`${guestId}/${walkDirections[row]}/step-${column + 1}: visible height ${bounds.height} is outside 60..66`);
+      // Authorized 216px skeleton at the 48x72 display scale: 216 / 4 = 54.
+      // This is an exact geometry contract, not a wider tolerance around the old art.
+      if (bounds.height !== 54) {
+        throw new Error(`${guestId}/${walkDirections[row]}/step-${column + 1}: visible height ${bounds.height} must be 54 (216px / 4)`);
       }
       frames.push({
         direction: walkDirections[row],
