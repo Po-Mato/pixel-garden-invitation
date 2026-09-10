@@ -26,7 +26,7 @@ for (const c of catalog.characters) test(`${c.characterId}: normal production-pr
     assert.deepEqual([...new Set(moving.map(sample => sample.frame))].sort(), [0,1,2,3]);
     for (const sample of moving) {
       assert.deepEqual(sample.size, [48,72]);
-      assert.ok(sample.url.includes(`characters/generated/guests/${c.presetId}__walk.png?v=guest-three-head-216-v1-20260910`));
+      assert.ok(sample.url.includes(`characters/generated/guests/${c.presetId}__walk.png?v=guest-soft-tailoring-v1-20260911`));
       assert.ok(!sample.url.includes('__guest216-pilot'));
     }
     assert.deepEqual(row.stopped, {direction:row.direction,moving:'false',frame:1});
@@ -45,7 +45,7 @@ for (const c of catalog.characters) test(`${c.characterId}: normal production-pr
   for (const item of selection.rows) {
     item.state.size.forEach((value,index)=>assert.ok(Math.abs(value-[160,240][index])<0.01));
     const kind=item.state.direction==='down'?'idle':'walk';
-    assert.ok(item.state.url.includes(`characters/generated/guests/preview/${c.presetId}__${kind}.png?v=guest-three-head-216-v1-20260910`));
+    assert.ok(item.state.url.includes(`characters/generated/guests/preview/${c.presetId}__${kind}.png?v=guest-soft-tailoring-v1-20260911`));
     assert.equal(item.sha256,hash(await readFile(new URL(base+item.file,root))));
   }
 });

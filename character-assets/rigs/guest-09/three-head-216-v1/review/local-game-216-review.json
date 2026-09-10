@@ -1,18 +1,26 @@
 {
   "id": "guest-09",
   "developmentOnly": true,
+  "productionPreview": false,
   "productionIntegrated": false,
+  "remoteProductionVerified": false,
+  "stagedRuntime": false,
+  "sourceFrameSize": [
+    192,
+    288
+  ],
   "viewport": [
     390,
     844
   ],
-  "sheetSha256": "6f84579a3931d85c275ff559433cc05cdc155cd1247a65dea71f9b612f5b1dbe",
+  "sheetSha256": "24d37a6b676e4282b06c1a48b9be85cc793fdb70a9857b84ad58b54bc514dfc1",
+  "sourceSheetSha256": "24d37a6b676e4282b06c1a48b9be85cc793fdb70a9857b84ad58b54bc514dfc1",
   "rows": [
     {
       "direction": "left",
       "samples": [
         {
-          "direction": "right",
+          "direction": "down",
           "moving": "false",
           "frame": 1,
           "size": [
@@ -23,7 +31,7 @@
             285,
             375
           ],
-          "sheetPosition": "-192px -576px",
+          "sheetPosition": "-192px 0px",
           "url": "url(\"http://127.0.0.1:5196/__guest216-pilot/guest-09.png?v=three-head-216-v1\")"
         },
         {
@@ -324,16 +332,16 @@
         {
           "direction": "right",
           "moving": "true",
-          "frame": 1,
+          "frame": 0,
           "size": [
             48,
             72
           ],
           "position": [
-            195,
+            165,
             375
           ],
-          "sheetPosition": "-192px -576px",
+          "sheetPosition": "0px -576px",
           "url": "url(\"http://127.0.0.1:5196/__guest216-pilot/guest-09.png?v=three-head-216-v1\")"
         },
         {
@@ -574,16 +582,16 @@
         {
           "direction": "up",
           "moving": "true",
-          "frame": 1,
+          "frame": 0,
           "size": [
             48,
             72
           ],
           "position": [
             285,
-            315
+            345
           ],
-          "sheetPosition": "-192px -864px",
+          "sheetPosition": "0px -864px",
           "url": "url(\"http://127.0.0.1:5196/__guest216-pilot/guest-09.png?v=three-head-216-v1\")"
         },
         {
@@ -619,16 +627,16 @@
         {
           "direction": "up",
           "moving": "true",
-          "frame": 2,
+          "frame": 1,
           "size": [
             48,
             72
           ],
           "position": [
             285,
-            285
+            315
           ],
-          "sheetPosition": "-384px -864px",
+          "sheetPosition": "-192px -864px",
           "url": "url(\"http://127.0.0.1:5196/__guest216-pilot/guest-09.png?v=three-head-216-v1\")"
         },
         {
@@ -824,16 +832,16 @@
         {
           "direction": "down",
           "moving": "true",
-          "frame": 0,
+          "frame": 1,
           "size": [
             48,
             72
           ],
           "position": [
             285,
-            255
+            285
           ],
-          "sheetPosition": "0px 0px",
+          "sheetPosition": "-192px 0px",
           "url": "url(\"http://127.0.0.1:5196/__guest216-pilot/guest-09.png?v=three-head-216-v1\")"
         },
         {
@@ -1012,19 +1020,19 @@
   "screenshots": [
     {
       "file": "local-game-216-left.png",
-      "sha256": "f34c3bea67843d291f081cd4d6426bdfe51c169c1109ffe2424a829ad7589030"
+      "sha256": "1dab1561800b06b05bc424c6042a3d7a8a8fe218ec5fc3482dcba056c4ecdd61"
     },
     {
       "file": "local-game-216-right.png",
-      "sha256": "c6164cec4abd23d60c0baee3d6c35ca5769db9a6b4e2b2e02ada8356662bfecf"
+      "sha256": "ad7b7250ccea18fcda2a1ec09965a34af2c5d1914fc77d76cc4e4a9a8af7a4aa"
     },
     {
       "file": "local-game-216-up.png",
-      "sha256": "ef195e057dc9cc0f82665391d1e26f07e930e665ce92755aae8e28316cf63286"
+      "sha256": "7a7eb9e66712f1509ee44c93521c42e3cd77d35a7ebf767453b536a4f7e8a72d"
     },
     {
       "file": "local-game-216-down.png",
-      "sha256": "a89fe4bd0e41645acaf9f578c9a95f4b9a6c5b2f430c418261d167d81609ea5a"
+      "sha256": "1eb6513ec267106841949e87337d52b32cae78c1e9ddfd08475fc4414575a700"
     }
   ],
   "visualReview": "Captured real joystick movement; screenshots require separate visual inspection."

@@ -3,6 +3,24 @@ import assert from 'node:assert/strict';
 // An authored part material, evaluated before joint transforms. Never reads or edits output PNGs.
 export function renderRigMaterial(texture, material, name) {
  if(!material)return texture;
+ if(material.type==='soft-fabric'){
+  assert.match(name,/^[a-zA-Z][a-zA-Z0-9]*$/);
+  assert.ok(Number.isFinite(material.blur)&&material.blur>0);
+  assert.ok(Number.isFinite(material.feather)&&material.feather>0);
+  assert.ok(material.opacity>0&&material.opacity<=1);
+  assert.ok(Array.isArray(material.regions)&&material.regions.length>0);
+  for(const r of material.regions)assert.ok(r.length===4&&r.every(Number.isFinite)&&r[2]>0&&r[3]>0);
+  for(const r of material.protectedRegions||[])assert.ok(r.length===4&&r.every(Number.isFinite)&&r[2]>0&&r[3]>0);
+  if(material.bounds)assert.ok(material.bounds.length===4&&material.bounds.every(Number.isFinite)&&material.bounds[2]>0&&material.bounds[3]>0);
+  const bounds=material.bounds?`x="${material.bounds[0]}" y="${material.bounds[1]}" width="${material.bounds[2]}" height="${material.bounds[3]}"`:'';
+  const id='fabric-'+name;
+  // An authored non-destructive fabric material on the original part, before
+  // joints move. The region intentionally excludes collar, seams and silhouette.
+  const regions=material.regions.map(([x,y,w,h])=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="white"/>`).join('');
+  const protectedRegions=(material.protectedRegions||[]).map(([x,y,w,h])=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="black"/>`).join('');
+  const alpha=`<filter id="${id}-alpha" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0"/></filter><filter id="${id}-opaque" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 0 1"/></filter><mask id="${id}-original-alpha"><g filter="url(#${id}-alpha)">${texture}</g></mask>`;
+  return `<defs>${alpha}<filter id="${id}-blur" color-interpolation-filters="sRGB"><feGaussianBlur stdDeviation="${material.blur}"/></filter><filter id="${id}-feather"><feGaussianBlur stdDeviation="${material.feather}"/></filter><mask id="${id}-mask" maskUnits="userSpaceOnUse" ${bounds}>${regions.replaceAll('fill="white"',`fill="white" filter="url(#${id}-feather)"`)}${protectedRegions}</mask></defs><g mask="url(#${id}-original-alpha)"><g filter="url(#${id}-opaque)">${texture}<g mask="url(#${id}-mask)" opacity="${material.opacity}"><g filter="url(#${id}-blur)">${texture}</g></g></g></g>`;
+ }
  if(material.type==='inner-edge-shading'){
   assert.match(name,/^[a-zA-Z][a-zA-Z0-9]*$/);
   assert.match(material.color,/^#[0-9a-fA-F]{6}$/);

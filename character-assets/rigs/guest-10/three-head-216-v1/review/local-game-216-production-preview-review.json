@@ -25,7 +25,7 @@
       "direction": "left",
       "samples": [
         {
-          "direction": "down",
+          "direction": "up",
           "moving": "false",
           "frame": 1,
           "size": [
@@ -36,8 +36,8 @@
             285,
             375
           ],
-          "sheetPosition": "0px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__idle.png?v=guest-three-head-216-v1-20260910\")"
+          "sheetPosition": "-96px -432px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -52,7 +52,7 @@
             375
           ],
           "sheetPosition": "0px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -67,7 +67,7 @@
             375
           ],
           "sheetPosition": "0px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -82,7 +82,7 @@
             375
           ],
           "sheetPosition": "0px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -97,7 +97,7 @@
             375
           ],
           "sheetPosition": "-96px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -112,7 +112,7 @@
             375
           ],
           "sheetPosition": "-96px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -127,7 +127,7 @@
             375
           ],
           "sheetPosition": "-96px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -142,7 +142,7 @@
             375
           ],
           "sheetPosition": "-192px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -157,7 +157,7 @@
             375
           ],
           "sheetPosition": "-192px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -172,7 +172,7 @@
             375
           ],
           "sheetPosition": "-192px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -187,7 +187,7 @@
             375
           ],
           "sheetPosition": "-288px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -202,7 +202,7 @@
             375
           ],
           "sheetPosition": "-288px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -217,7 +217,22 @@
             375
           ],
           "sheetPosition": "-288px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-soft-tailoring-v1-20260911\")"
+        },
+        {
+          "direction": "left",
+          "moving": "true",
+          "frame": 3,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            165,
+            375
+          ],
+          "sheetPosition": "-288px -144px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -232,7 +247,7 @@
             375
           ],
           "sheetPosition": "0px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "left",
@@ -247,22 +262,7 @@
             375
           ],
           "sheetPosition": "0px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
-        },
-        {
-          "direction": "left",
-          "moving": "true",
-          "frame": 0,
-          "size": [
-            48,
-            72
-          ],
-          "position": [
-            135,
-            375
-          ],
-          "sheetPosition": "0px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         }
       ],
       "stopped": {
@@ -283,11 +283,11 @@
             72
           ],
           "position": [
-            105,
+            135,
             375
           ],
           "sheetPosition": "-96px -144px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "right",
@@ -298,11 +298,11 @@
             72
           ],
           "position": [
-            135,
+            165,
             375
           ],
           "sheetPosition": "0px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "right",
@@ -313,11 +313,11 @@
             72
           ],
           "position": [
-            135,
+            165,
             375
           ],
           "sheetPosition": "0px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "right",
@@ -328,11 +328,11 @@
             72
           ],
           "position": [
-            135,
+            165,
             375
           ],
           "sheetPosition": "0px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "right",
@@ -343,11 +343,11 @@
             72
           ],
           "position": [
-            135,
+            165,
             375
           ],
           "sheetPosition": "0px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "right",
@@ -358,11 +358,11 @@
             72
           ],
           "position": [
-            165,
+            195,
             375
           ],
           "sheetPosition": "-96px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "right",
@@ -373,11 +373,11 @@
             72
           ],
           "position": [
-            165,
+            195,
             375
           ],
           "sheetPosition": "-96px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "right",
@@ -388,11 +388,11 @@
             72
           ],
           "position": [
-            165,
+            195,
             375
           ],
           "sheetPosition": "-96px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "right",
@@ -403,11 +403,11 @@
             72
           ],
           "position": [
-            195,
+            225,
             375
           ],
           "sheetPosition": "-192px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "right",
@@ -418,11 +418,11 @@
             72
           ],
           "position": [
-            195,
+            225,
             375
           ],
           "sheetPosition": "-192px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "right",
@@ -433,61 +433,16 @@
             72
           ],
           "position": [
-            195,
+            225,
             375
           ],
           "sheetPosition": "-192px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "right",
           "moving": "true",
           "frame": 3,
-          "size": [
-            48,
-            72
-          ],
-          "position": [
-            225,
-            375
-          ],
-          "sheetPosition": "-288px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
-        },
-        {
-          "direction": "right",
-          "moving": "true",
-          "frame": 3,
-          "size": [
-            48,
-            72
-          ],
-          "position": [
-            225,
-            375
-          ],
-          "sheetPosition": "-288px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
-        },
-        {
-          "direction": "right",
-          "moving": "true",
-          "frame": 3,
-          "size": [
-            48,
-            72
-          ],
-          "position": [
-            225,
-            375
-          ],
-          "sheetPosition": "-288px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
-        },
-        {
-          "direction": "right",
-          "moving": "true",
-          "frame": 0,
           "size": [
             48,
             72
@@ -496,8 +451,38 @@
             255,
             375
           ],
-          "sheetPosition": "0px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "sheetPosition": "-288px -288px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-soft-tailoring-v1-20260911\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 3,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            375
+          ],
+          "sheetPosition": "-288px -288px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-soft-tailoring-v1-20260911\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 3,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            255,
+            375
+          ],
+          "sheetPosition": "-288px -288px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "right",
@@ -508,11 +493,26 @@
             72
           ],
           "position": [
-            255,
+            285,
             375
           ],
           "sheetPosition": "0px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-soft-tailoring-v1-20260911\")"
+        },
+        {
+          "direction": "right",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            285,
+            375
+          ],
+          "sheetPosition": "0px -288px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         }
       ],
       "stopped": {
@@ -533,11 +533,11 @@
             72
           ],
           "position": [
-            255,
+            285,
             375
           ],
           "sheetPosition": "-96px -288px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -548,11 +548,11 @@
             72
           ],
           "position": [
-            255,
+            285,
             345
           ],
           "sheetPosition": "0px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -563,11 +563,11 @@
             72
           ],
           "position": [
-            255,
+            285,
             345
           ],
           "sheetPosition": "0px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -578,11 +578,11 @@
             72
           ],
           "position": [
-            255,
+            285,
             345
           ],
           "sheetPosition": "0px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -593,11 +593,11 @@
             72
           ],
           "position": [
-            255,
+            285,
             345
           ],
           "sheetPosition": "0px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -608,11 +608,11 @@
             72
           ],
           "position": [
-            255,
+            285,
             315
           ],
           "sheetPosition": "-96px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -623,11 +623,11 @@
             72
           ],
           "position": [
-            255,
+            285,
             315
           ],
           "sheetPosition": "-96px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -638,11 +638,11 @@
             72
           ],
           "position": [
-            255,
+            285,
             315
           ],
           "sheetPosition": "-96px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -653,11 +653,11 @@
             72
           ],
           "position": [
-            255,
+            285,
             285
           ],
           "sheetPosition": "-192px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -668,11 +668,11 @@
             72
           ],
           "position": [
-            255,
+            285,
             285
           ],
           "sheetPosition": "-192px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -683,26 +683,11 @@
             72
           ],
           "position": [
-            255,
+            285,
             285
           ],
           "sheetPosition": "-192px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
-        },
-        {
-          "direction": "up",
-          "moving": "true",
-          "frame": 2,
-          "size": [
-            48,
-            72
-          ],
-          "position": [
-            255,
-            285
-          ],
-          "sheetPosition": "-192px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -713,11 +698,11 @@
             72
           ],
           "position": [
-            255,
+            285,
             255
           ],
           "sheetPosition": "-288px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -728,11 +713,11 @@
             72
           ],
           "position": [
-            255,
+            285,
             255
           ],
           "sheetPosition": "-288px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -743,11 +728,11 @@
             72
           ],
           "position": [
-            255,
+            285,
             255
           ],
           "sheetPosition": "-288px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "up",
@@ -758,11 +743,26 @@
             72
           ],
           "position": [
-            255,
+            285,
             225
           ],
           "sheetPosition": "0px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-soft-tailoring-v1-20260911\")"
+        },
+        {
+          "direction": "up",
+          "moving": "true",
+          "frame": 0,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            285,
+            225
+          ],
+          "sheetPosition": "0px -432px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         }
       ],
       "stopped": {
@@ -783,11 +783,11 @@
             72
           ],
           "position": [
-            255,
+            285,
             225
           ],
           "sheetPosition": "-96px -432px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -798,11 +798,11 @@
             72
           ],
           "position": [
-            255,
+            285,
             255
           ],
           "sheetPosition": "0px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -813,11 +813,11 @@
             72
           ],
           "position": [
-            255,
+            285,
             255
           ],
           "sheetPosition": "0px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -828,26 +828,11 @@
             72
           ],
           "position": [
-            255,
+            285,
             255
           ],
           "sheetPosition": "0px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
-        },
-        {
-          "direction": "down",
-          "moving": "true",
-          "frame": 0,
-          "size": [
-            48,
-            72
-          ],
-          "position": [
-            255,
-            255
-          ],
-          "sheetPosition": "0px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -858,11 +843,11 @@
             72
           ],
           "position": [
-            255,
+            285,
             285
           ],
           "sheetPosition": "-96px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -873,11 +858,11 @@
             72
           ],
           "position": [
-            255,
+            285,
             285
           ],
           "sheetPosition": "-96px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -888,11 +873,26 @@
             72
           ],
           "position": [
-            255,
+            285,
             285
           ],
           "sheetPosition": "-96px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-soft-tailoring-v1-20260911\")"
+        },
+        {
+          "direction": "down",
+          "moving": "true",
+          "frame": 1,
+          "size": [
+            48,
+            72
+          ],
+          "position": [
+            285,
+            285
+          ],
+          "sheetPosition": "-96px 0px",
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -903,11 +903,11 @@
             72
           ],
           "position": [
-            255,
+            285,
             315
           ],
           "sheetPosition": "-192px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -918,11 +918,11 @@
             72
           ],
           "position": [
-            255,
+            285,
             315
           ],
           "sheetPosition": "-192px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -933,11 +933,11 @@
             72
           ],
           "position": [
-            255,
+            285,
             315
           ],
           "sheetPosition": "-192px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -948,11 +948,11 @@
             72
           ],
           "position": [
-            255,
+            285,
             345
           ],
           "sheetPosition": "-288px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -963,11 +963,11 @@
             72
           ],
           "position": [
-            255,
+            285,
             345
           ],
           "sheetPosition": "-288px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -978,11 +978,11 @@
             72
           ],
           "position": [
-            255,
+            285,
             345
           ],
           "sheetPosition": "-288px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -993,11 +993,11 @@
             72
           ],
           "position": [
-            255,
+            285,
             375
           ],
           "sheetPosition": "0px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         },
         {
           "direction": "down",
@@ -1008,11 +1008,11 @@
             72
           ],
           "position": [
-            255,
+            285,
             375
           ],
           "sheetPosition": "0px 0px",
-          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-three-head-216-v1-20260910\")"
+          "url": "url(\"http://127.0.0.1:5198/characters/generated/guests/masculine-charcoal-burgundy-tie__walk.png?v=guest-soft-tailoring-v1-20260911\")"
         }
       ],
       "stopped": {
@@ -1025,19 +1025,19 @@
   "screenshots": [
     {
       "file": "local-game-216-production-preview-left.png",
-      "sha256": "eb4e093cf40f10d52bc5c5ddbd9f38aaefc5c3a9467c1f40053f65005228509b"
+      "sha256": "f4cc6863f7f3d5427933d4579b2cbc871a1db8deede0ffa0477116a883d92d08"
     },
     {
       "file": "local-game-216-production-preview-right.png",
-      "sha256": "d56e762bde04fb2ae82609f1712386715094e29cc01e5ce0361a8615d6dcf55a"
+      "sha256": "83facf5bfe323448fabf815e5fecf0e303e4cbb6b666cd18f3492fedd8c3d5d0"
     },
     {
       "file": "local-game-216-production-preview-up.png",
-      "sha256": "ccc508207747cf04bab51547a38666ca0ecb05281d2854e78b15154a602f7108"
+      "sha256": "ef386f39eec6f7b11e6bbe1c5593d932a452ae30a7b45fcbf3d9927162357558"
     },
     {
       "file": "local-game-216-production-preview-down.png",
-      "sha256": "44f6867c4c6ee4e9115256753c9cc9c864d9889e479b062df4470545dce2f2ab"
+      "sha256": "9f973036d173283cf679fddc3f53d25752d46b6d49bdf419649986ce8b55707d"
     }
   ],
   "visualReview": "Captured real joystick movement; screenshots require separate visual inspection."

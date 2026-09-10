@@ -26,6 +26,35 @@
         "sourceY": 790,
         "sourceHeight": 234
       }
+    },
+    "material": {
+      "type": "soft-fabric",
+      "bounds": [0, 0, 1536, 1024],
+      "blur": 70,
+      "feather": 28,
+      "opacity": 0.95,
+      "regions": [
+        [
+          515,
+          405,
+          235,
+          275
+        ],
+        [
+          770,
+          405,
+          250,
+          275
+        ]
+      ],
+      "protectedRegions": [
+        [
+          749,
+          0,
+          24,
+          1024
+        ]
+      ]
     }
   },
   "sourceGeometryMapping": {

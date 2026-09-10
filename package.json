@@ -19,7 +19,7 @@
     "characters:build-selection-previews": "node scripts/build-active-guest-assets.mjs",
     "characters:build-cutouts": "node scripts/build-active-guest-assets.mjs",
     "characters:sync-cutout-sources": "node scripts/sync-guest-cutout-sources.mjs",
-    "characters:audit-cutouts": "node --test scripts/guestThreeHead216.test.mjs scripts/guestRigMaterial.test.mjs scripts/guestThreeHead216RuntimeExport.test.mjs",
+    "characters:audit-cutouts": "node --test scripts/guestThreeHead216.test.mjs scripts/guestRigMaterial.test.mjs scripts/guestThreeHead216RuntimeExport.test.mjs scripts/guestSoftTailoring.test.mjs",
     "characters:build-cutout-pilot": "node scripts/build-guest-cutout-pilot.mjs",
     "characters:audit-cutout-pilot": "node scripts/audit-guest-cutout-pilot.mjs",
     "characters:build-couple-puppets": "node scripts/build-couple-puppet-assets.mjs",

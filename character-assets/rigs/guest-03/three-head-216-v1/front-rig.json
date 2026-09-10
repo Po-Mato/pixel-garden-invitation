@@ -97,7 +97,7 @@
     },
     "torsoShell": {
       "parent": "spine",
-      "file": "../style-lock-cutout-v1/parts/front/torsoShell.png",
+      "file": "../three-head-soft-tailoring-v1/parts/front/torso.png",
       "rect": [
         71,
         126,
@@ -128,7 +128,27 @@
         119,
         136.883721
       ],
-      "mirrored": false
+      "mirrored": false,
+      "material": {
+        "type": "soft-fabric",
+        "bounds": [
+          0,
+          0,
+          192,
+          288
+        ],
+        "blur": 1.5,
+        "feather": 1.2,
+        "opacity": 0.9,
+        "regions": [
+          [
+            120,
+            153,
+            10,
+            21
+          ]
+        ]
+      }
     },
     "armRightSkin": {
       "parent": "upperArmRight",
@@ -143,7 +163,27 @@
         73,
         136.883721
       ],
-      "mirrored": false
+      "mirrored": false,
+      "material": {
+        "type": "soft-fabric",
+        "bounds": [
+          0,
+          0,
+          192,
+          288
+        ],
+        "blur": 1.5,
+        "feather": 1.2,
+        "opacity": 0.9,
+        "regions": [
+          [
+            60,
+            153,
+            10,
+            21
+          ]
+        ]
+      }
     },
     "legLeftSkin": {
       "parent": "thighLeft",

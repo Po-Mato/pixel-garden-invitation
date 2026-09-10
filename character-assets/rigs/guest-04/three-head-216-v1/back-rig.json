@@ -125,8 +125,7 @@
       "mirrored": false
     },
     "torsoShell": {
-      "file": "../../guests-style-lock-v1/guest-04/parts/back/torsoShell-v1.png",
-      "sha256": "c51c55352f6d714f4d06497920bb0ce7691535153516eb65ecde0f48fce15403",
+      "file": "../three-head-soft-tailoring-v1/parts/back/torso.png",
       "sourceViewport": [
         198,
         16,

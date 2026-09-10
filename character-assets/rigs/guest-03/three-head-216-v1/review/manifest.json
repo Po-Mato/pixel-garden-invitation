@@ -28,22 +28,22 @@
     {
       "direction": "front",
       "frame": 1,
-      "sha256": "49405eae61779befb587399c39940e1a1406d26c878c1fcbd52f88f18ee54c46"
+      "sha256": "b31035476b1ef474b1a37d6b55ea01f9b255e5064b80997d62d04928f6516e19"
     },
     {
       "direction": "front",
       "frame": 2,
-      "sha256": "991ff9a4f7941917d731a6cdbdc31ebf5a713ac553d7614b3127d1275c499a29"
+      "sha256": "ff5b7d5d7fbfe1bfa616c797a05b56676b2c477f1ae8bf7e5ad65a21bd6ee740"
     },
     {
       "direction": "front",
       "frame": 3,
-      "sha256": "72acdd85d3cf7725cf1cb638d35613db4e884c01c9ef7c60dd44e35e660c665d"
+      "sha256": "9956f817df2923426626b9412745e3a649ae213382782eea6c95b76440c54089"
     },
     {
       "direction": "front",
       "frame": 4,
-      "sha256": "991ff9a4f7941917d731a6cdbdc31ebf5a713ac553d7614b3127d1275c499a29"
+      "sha256": "ff5b7d5d7fbfe1bfa616c797a05b56676b2c477f1ae8bf7e5ad65a21bd6ee740"
     },
     {
       "direction": "left",
@@ -88,23 +88,23 @@
     {
       "direction": "back",
       "frame": 1,
-      "sha256": "1f0062d3890d30c71e1df8edcc855a868ddef0e0637887b05267655cf91c3480"
+      "sha256": "e14b1622319f1517a9862a3682ef231e587a2350567df27887f5aa2ff3ba6c16"
     },
     {
       "direction": "back",
       "frame": 2,
-      "sha256": "8135304d8f418c4173bf356f74ec82edc008480cb94d116fe64be42279c80787"
+      "sha256": "2fae49e541a4d378c0ce05096875e0850ba0a045b3ee00f041f25ce193781138"
     },
     {
       "direction": "back",
       "frame": 3,
-      "sha256": "764dcbac1edf47856bfa094fbf6b12edb49e1d7010250b25935abe462f819aab"
+      "sha256": "3dc2cdd762dca73d27f622d4bd0edeb30b05b34d354e0c3413fb7ebd59b97470"
     },
     {
       "direction": "back",
       "frame": 4,
-      "sha256": "8135304d8f418c4173bf356f74ec82edc008480cb94d116fe64be42279c80787"
+      "sha256": "2fae49e541a4d378c0ce05096875e0850ba0a045b3ee00f041f25ce193781138"
     }
   ],
-  "sheetSha256": "756b0a2a046dc0de02304f5695b29ee84668d14b890317a75c6b8778a8f5352a"
+  "sheetSha256": "b8359954438e92b358711178d025cb1d61838e4c20f27ba05757ca49168deb7c"
 }

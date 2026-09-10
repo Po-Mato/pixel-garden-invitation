@@ -4,8 +4,12 @@ import {fileURLToPath} from 'node:url';
 import assert from 'node:assert/strict';
 import sharp from 'sharp';
 import {alphaBounds216} from './lib/guest216Review.mjs';
+import {originalViewport} from './lib/guestOriginalViewport.mjs';
+import {renderRigMaterial} from './lib/guestRigMaterial.mjs';
 
-const base=new URL('../character-assets/rigs/guest-03/three-head-216-v1/',import.meta.url);
+const variant=process.argv[2]||'three-head-216-v1';
+assert.match(variant,/^three-head-[a-z0-9-]+$/);
+const base=new URL(`../character-assets/rigs/guest-03/${variant}/`,import.meta.url);
 const rig=JSON.parse(await readFile(new URL('front-rig.json',base)));
 const skeleton=JSON.parse(await readFile(new URL(rig.skeleton,base)));
 const hash=b=>createHash('sha256').update(b).digest('hex');
@@ -20,8 +24,13 @@ for(const [name,p] of Object.entries(rig.parts)){
   const bytes=await readFile(new URL(p.file,base)),meta=await sharp(bytes).metadata();
   assert.equal(meta.hasAlpha,true);
   const [x,y,w,h]=p.rect;
-  textures[name]=`<image href="data:${p.file.endsWith('.svg')?'image/svg+xml':'image/png'};base64,${bytes.toString('base64')}" x="${x}" y="${y}" width="${w}" height="${h}" preserveAspectRatio="none"${p.fadeBottom?' mask="url(#torso-fade)"':''}/>`;
-  sources.push({name,file:p.file,sha256:hash(bytes),parent:p.parent,pivot:p.pivot,rect:p.rect});
+  const uri=`data:${p.file.endsWith('.svg')?'image/svg+xml':'image/png'};base64,${bytes.toString('base64')}`;
+  textures[name]=p.sourceViewport
+    ? `<svg x="${x}" y="${y}" width="${w}" height="${h}" viewBox="${originalViewport(p,meta).viewport.join(' ')}" preserveAspectRatio="none"><image href="${uri}" width="${meta.width}" height="${meta.height}"/></svg>`
+    : `<image href="${uri}" x="${x}" y="${y}" width="${w}" height="${h}" preserveAspectRatio="none"${p.fadeBottom?' mask="url(#torso-fade)"':''}/>`;
+  if(p.sourceViewport&&p.fadeBottom)textures[name]=`<g mask="url(#torso-fade)">${textures[name]}</g>`;
+  textures[name]=renderRigMaterial(textures[name],p.material,name);
+  sources.push({name,file:p.file,sha256:hash(bytes),parent:p.parent,pivot:p.pivot,rect:p.rect,...(p.material?{material:p.material}:{}),...(p.sourceViewport?{sourceViewport:p.sourceViewport}:{})});
 }
 const [tx,ty,tw]=rig.parts.torsoShell.rect,[visible,fade]=rig.parts.torsoShell.fadeBottom;
 const defs=`<defs><linearGradient id="fade" gradientUnits="userSpaceOnUse" x1="0" y1="${ty+visible-fade}" x2="0" y2="${ty+visible}"><stop stop-color="white"/><stop offset="1" stop-color="black"/></linearGradient><mask id="torso-fade" maskUnits="userSpaceOnUse" x="${tx}" y="${ty}" width="${tw}" height="${visible}"><rect x="${tx}" y="${ty}" width="${tw}" height="${visible}" fill="url(#fade)"/></mask></defs>`;

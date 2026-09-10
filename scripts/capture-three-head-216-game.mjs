@@ -21,7 +21,7 @@ for(const[i,label]of labels.entries()){
  if(requested.length&&!requested.includes(id))continue;
  const preset=catalog.characters.find(c=>c.characterId===id).presetId;
  const sheetFile=productionPreview?new URL(`client/dist/characters/generated/guests/${preset}__walk.png`,root):stagedRuntime?new URL(`character-assets/generated/three-head-216-v1/${preset}/${preset}__walk-runtime.png`,root):new URL('walk-sheet.png',base);
- const expectedUrl=productionPreview?`characters/generated/guests/${preset}__walk.png?v=guest-three-head-216-v1-20260910`:'/__guest216-pilot/'+id+(stagedRuntime?'-runtime':'')+'.png';
+ const expectedUrl=productionPreview?`characters/generated/guests/${preset}__walk.png?v=guest-soft-tailoring-v1-20260911`:'/__guest216-pilot/'+id+(stagedRuntime?'-runtime':'')+'.png';
  const outputPrefix=productionPreview?'production-preview-':stagedRuntime?'runtime-':'';
  const initialSheetSha256=hash(await readFile(sheetFile));
  const frameWidth=stagedRuntime||productionPreview?96:192,frameHeight=stagedRuntime||productionPreview?144:288;
