@@ -1,0 +1,20 @@
+{
+  "extends": "../navy-suit-v2/rig.json",
+  "version": 3,
+  "id": "guest-03-navy-suit-cutout-v3",
+  "label": "3번 네이비 정장 하객 사람형 파일럿",
+  "characterId": "guest-03",
+  "outputName": "guest-03",
+  "artwork": "../navy-suit-v2/artwork.svg",
+  "rasterParts": "part-layout.json",
+  "sourcePolicy": {
+    "kind": "editable-human-proportion-raster-cutout",
+    "frameAiGeneration": false,
+    "sourcePartAiGeneration": true,
+    "pixelBandCopy": false,
+    "pixelRegionReplacement": false,
+    "bodyPartScaling": false,
+    "directionMirroring": false,
+    "finalPngEditing": false
+  }
+}

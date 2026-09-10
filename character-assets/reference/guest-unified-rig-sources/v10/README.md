@@ -1,4 +1,8 @@
-# 하객 캐릭터 v10 알파 안전·얼굴 보존 리그
+# 하객 캐릭터 v10 알파 안전·얼굴 보존 리그 (보관본)
+
+이 디렉터리는 이전 PNG 프레임 파이프라인을 재현하기 위한 참고 자료다. 현재 하객 제작과
+런타임 생성에는 사용하지 않는다. 권위 원본과 실행 명령은
+`docs/guest-cutout-rig-pipeline.md` 및 `character-assets/rigs/`에 있다.
 
 v9의 얼굴과 복장을 다시 그리지 않고 보존하면서, 배경·방향·비율 오류가 다시 생기지 않도록 원화와 출력 규칙을 분리한다.
 
@@ -8,7 +12,7 @@ v9의 얼굴과 복장을 다시 그리지 않고 보존하면서, 배경·방�
 - 열: 보행 A / 정지 / 보행 B
 - 행: 정면 / 좌향 / 우향 / 후면
 - 배경: 실제 투명 알파 60% 이상, 시트 외곽 불투명 픽셀 0개
-- 방향: 우향 3컷은 검수된 좌향 3컷의 정확한 좌우 반전
+- 방향: 당시에는 우향 3컷을 좌향 3컷에서 반전했다. 비대칭 요소가 깨지는 이 규칙은 폐기됐다.
 - 흰 복장: 색상 키 제거 금지, 검수된 인물 알파 마스크로 보호
 
 ## 3등신 출력 규칙
@@ -23,12 +27,10 @@ v9의 얼굴과 복장을 다시 그리지 않고 보존하면서, 배경·방�
 - 헤어스타일에 따른 정면·측면 머리 실루엣 차이는 보존하되, 좌우 얼굴과 머리는 2% 이내로 일치해야 한다.
 - `guest-01` 정면 얼굴 폭과 면적에는 전체 기준보다 강한 별도 상한을 적용한다.
 
-## 재생성과 감사
+## 폐기된 재생성 경로
 
-```sh
-node scripts/build-guest-safe-source-sheets.mjs
-pnpm characters:build-selection-previews
-node --test scripts/guestSelectionPreviewAssets.test.mjs
-```
+이 보관본을 현재 자산으로 재생성하지 않는다. 제거된
+`scripts/guestSelectionPreviewAssets.test.mjs`와 PNG 픽셀 보정 경로 대신
+`pnpm characters:build-cutouts` 및 `pnpm characters:audit-cutouts`를 사용한다.
 
-`source-integrity-audit.json`은 12종의 실제 투명 배경, 외곽 잔여 배경 0개, 좌우 반전 차이 0을 기록한다. 선택 화면 감사는 144프레임의 84/168 리그, 얼굴 폭·면적, 방향별 기준선과 보행 중심을 추가로 검사한다.
+`source-integrity-audit.json`은 당시 산출물의 기록이며 새 컷아웃 리그의 승인 근거가 아니다.

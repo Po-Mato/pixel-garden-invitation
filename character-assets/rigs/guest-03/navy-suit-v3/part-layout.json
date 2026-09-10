@@ -1,0 +1,549 @@
+{
+  "version": 1,
+  "canvas": {
+    "width": 192,
+    "height": 288
+  },
+  "directions": {
+    "down": {
+      "backHair": {
+        "file": "heads/parts/down/backHair.png",
+        "x": 61,
+        "y": 13,
+        "width": 70,
+        "height": 82
+      },
+      "face": {
+        "file": "heads/parts/down/face.png",
+        "x": 64,
+        "y": 27,
+        "width": 64,
+        "height": 70
+      },
+      "frontHair": {
+        "file": "heads/parts/down/frontHair.png",
+        "x": 62,
+        "y": 13,
+        "width": 68,
+        "height": 58
+      },
+      "neck": {
+        "file": "heads/parts/down/neck.png",
+        "x": 80,
+        "y": 89,
+        "width": 32,
+        "height": 24
+      },
+      "shirtTie": {
+        "file": "../navy-suit-v2/parts/down/shirtTie.png",
+        "x": 76,
+        "y": 99,
+        "width": 40,
+        "height": 73
+      },
+      "jacket": {
+        "file": "../navy-suit-v2/parts/down/jacket.png",
+        "x": 65,
+        "y": 99,
+        "width": 62,
+        "height": 80
+      },
+      "upperArmLeft": {
+        "file": "../navy-suit-v2/parts/down/upperArmLeft.png",
+        "x": 56,
+        "y": 109,
+        "width": 22,
+        "height": 48
+      },
+      "lowerArmLeft": {
+        "file": "../navy-suit-v2/parts/down/lowerArmLeft.png",
+        "x": 58,
+        "y": 147,
+        "width": 20,
+        "height": 41
+      },
+      "handLeft": {
+        "file": "../navy-suit-v2/parts/down/handLeft.png",
+        "x": 59,
+        "y": 181,
+        "width": 18,
+        "height": 22
+      },
+      "upperArmRight": {
+        "file": "../navy-suit-v2/parts/down/upperArmRight.png",
+        "x": 114,
+        "y": 109,
+        "width": 22,
+        "height": 48
+      },
+      "lowerArmRight": {
+        "file": "../navy-suit-v2/parts/down/lowerArmRight.png",
+        "x": 114,
+        "y": 147,
+        "width": 20,
+        "height": 41
+      },
+      "handRight": {
+        "file": "../navy-suit-v2/parts/down/handRight.png",
+        "x": 115,
+        "y": 181,
+        "width": 18,
+        "height": 22
+      },
+      "pelvis": {
+        "file": "../navy-suit-v2/parts/down/pelvis.png",
+        "x": 76,
+        "y": 164,
+        "width": 40,
+        "height": 31
+      },
+      "thighLeft": {
+        "file": "../navy-suit-v2/parts/down/thighLeft.png",
+        "x": 77,
+        "y": 174,
+        "width": 20,
+        "height": 47
+      },
+      "calfLeft": {
+        "file": "../navy-suit-v2/parts/down/calfLeft.png",
+        "x": 78,
+        "y": 213,
+        "width": 18,
+        "height": 43
+      },
+      "shoeLeft": {
+        "file": "../navy-suit-v2/parts/down/shoeLeft.png",
+        "x": 72,
+        "y": 247,
+        "width": 26,
+        "height": 18
+      },
+      "thighRight": {
+        "file": "../navy-suit-v2/parts/down/thighRight.png",
+        "x": 95,
+        "y": 174,
+        "width": 20,
+        "height": 47
+      },
+      "calfRight": {
+        "file": "../navy-suit-v2/parts/down/calfRight.png",
+        "x": 97,
+        "y": 213,
+        "width": 18,
+        "height": 43
+      },
+      "shoeRight": {
+        "file": "../navy-suit-v2/parts/down/shoeRight.png",
+        "x": 95,
+        "y": 247,
+        "width": 26,
+        "height": 18
+      },
+      "pocketSquare": {
+        "file": "../navy-suit-v2/parts/down/pocketSquare.png",
+        "x": 110,
+        "y": 118,
+        "width": 14,
+        "height": 9
+      }
+    },
+    "left": {
+      "backHair": {
+        "file": "heads/parts/left/backHair.png",
+        "x": 62,
+        "y": 12,
+        "width": 70,
+        "height": 80
+      },
+      "face": {
+        "file": "heads/parts/left/face.png",
+        "x": 61,
+        "y": 27,
+        "width": 65,
+        "height": 70
+      },
+      "frontHair": {
+        "file": "heads/parts/left/frontHair.png",
+        "x": 67,
+        "y": 12,
+        "width": 64,
+        "height": 42
+      },
+      "neck": {
+        "file": "heads/parts/left/neck.png",
+        "x": 80,
+        "y": 89,
+        "width": 31,
+        "height": 24
+      },
+      "shirtTie": {
+        "file": "../navy-suit-v2/parts/left/shirtTie.png",
+        "x": 78,
+        "y": 99,
+        "width": 38,
+        "height": 77
+      },
+      "jacket": {
+        "file": "../navy-suit-v2/parts/left/jacket.png",
+        "x": 80,
+        "y": 99,
+        "width": 41,
+        "height": 81
+      },
+      "upperArmLeft": {
+        "file": "../navy-suit-v2/parts/left/upperArmLeft.png",
+        "x": 101,
+        "y": 109,
+        "width": 20,
+        "height": 47
+      },
+      "lowerArmLeft": {
+        "file": "../navy-suit-v2/parts/left/lowerArmLeft.png",
+        "x": 101,
+        "y": 147,
+        "width": 20,
+        "height": 42
+      },
+      "handLeft": {
+        "file": "../navy-suit-v2/parts/left/handLeft.png",
+        "x": 101,
+        "y": 181,
+        "width": 18,
+        "height": 23
+      },
+      "upperArmRight": {
+        "file": "../navy-suit-v2/parts/left/upperArmRight.png",
+        "x": 76,
+        "y": 109,
+        "width": 20,
+        "height": 47
+      },
+      "lowerArmRight": {
+        "file": "../navy-suit-v2/parts/left/lowerArmRight.png",
+        "x": 76,
+        "y": 147,
+        "width": 20,
+        "height": 42
+      },
+      "handRight": {
+        "file": "../navy-suit-v2/parts/left/handRight.png",
+        "x": 77,
+        "y": 181,
+        "width": 17,
+        "height": 23
+      },
+      "pelvis": {
+        "file": "../navy-suit-v2/parts/left/pelvis.png",
+        "x": 83,
+        "y": 164,
+        "width": 30,
+        "height": 31
+      },
+      "thighLeft": {
+        "file": "../navy-suit-v2/parts/left/thighLeft.png",
+        "x": 90,
+        "y": 174,
+        "width": 17,
+        "height": 47
+      },
+      "calfLeft": {
+        "file": "../navy-suit-v2/parts/left/calfLeft.png",
+        "x": 89,
+        "y": 213,
+        "width": 18,
+        "height": 43
+      },
+      "shoeLeft": {
+        "file": "../navy-suit-v2/parts/left/shoeLeft.png",
+        "x": 72,
+        "y": 248,
+        "width": 34,
+        "height": 17
+      },
+      "thighRight": {
+        "file": "../navy-suit-v2/parts/left/thighRight.png",
+        "x": 99,
+        "y": 174,
+        "width": 16,
+        "height": 47
+      },
+      "calfRight": {
+        "file": "../navy-suit-v2/parts/left/calfRight.png",
+        "x": 98,
+        "y": 213,
+        "width": 17,
+        "height": 43
+      },
+      "shoeRight": {
+        "file": "../navy-suit-v2/parts/left/shoeRight.png",
+        "x": 81,
+        "y": 248,
+        "width": 34,
+        "height": 17
+      },
+      "pocketSquare": {
+        "file": "../navy-suit-v2/parts/left/pocketSquare.png",
+        "x": 80,
+        "y": 118,
+        "width": 13,
+        "height": 8
+      }
+    },
+    "right": {
+      "backHair": {
+        "file": "heads/parts/right/backHair.png",
+        "x": 61,
+        "y": 13,
+        "width": 71,
+        "height": 80
+      },
+      "face": {
+        "file": "heads/parts/right/face.png",
+        "x": 66,
+        "y": 27,
+        "width": 65,
+        "height": 70
+      },
+      "frontHair": {
+        "file": "heads/parts/right/frontHair.png",
+        "x": 61,
+        "y": 13,
+        "width": 71,
+        "height": 60
+      },
+      "neck": {
+        "file": "heads/parts/right/neck.png",
+        "x": 81,
+        "y": 89,
+        "width": 31,
+        "height": 24
+      },
+      "shirtTie": {
+        "file": "../navy-suit-v2/parts/right/shirtTie.png",
+        "x": 76,
+        "y": 99,
+        "width": 39,
+        "height": 77
+      },
+      "jacket": {
+        "file": "../navy-suit-v2/parts/right/jacket.png",
+        "x": 73,
+        "y": 99,
+        "width": 42,
+        "height": 81
+      },
+      "upperArmLeft": {
+        "file": "../navy-suit-v2/parts/right/upperArmLeft.png",
+        "x": 73,
+        "y": 109,
+        "width": 20,
+        "height": 47
+      },
+      "lowerArmLeft": {
+        "file": "../navy-suit-v2/parts/right/lowerArmLeft.png",
+        "x": 73,
+        "y": 147,
+        "width": 20,
+        "height": 42
+      },
+      "handLeft": {
+        "file": "../navy-suit-v2/parts/right/handLeft.png",
+        "x": 74,
+        "y": 181,
+        "width": 18,
+        "height": 23
+      },
+      "upperArmRight": {
+        "file": "../navy-suit-v2/parts/right/upperArmRight.png",
+        "x": 102,
+        "y": 109,
+        "width": 20,
+        "height": 47
+      },
+      "lowerArmRight": {
+        "file": "../navy-suit-v2/parts/right/lowerArmRight.png",
+        "x": 102,
+        "y": 147,
+        "width": 20,
+        "height": 42
+      },
+      "handRight": {
+        "file": "../navy-suit-v2/parts/right/handRight.png",
+        "x": 103,
+        "y": 181,
+        "width": 18,
+        "height": 23
+      },
+      "pelvis": {
+        "file": "../navy-suit-v2/parts/right/pelvis.png",
+        "x": 82,
+        "y": 164,
+        "width": 31,
+        "height": 31
+      },
+      "thighLeft": {
+        "file": "../navy-suit-v2/parts/right/thighLeft.png",
+        "x": 79,
+        "y": 174,
+        "width": 16,
+        "height": 47
+      },
+      "calfLeft": {
+        "file": "../navy-suit-v2/parts/right/calfLeft.png",
+        "x": 80,
+        "y": 213,
+        "width": 16,
+        "height": 43
+      },
+      "shoeLeft": {
+        "file": "../navy-suit-v2/parts/right/shoeLeft.png",
+        "x": 86,
+        "y": 248,
+        "width": 34,
+        "height": 17
+      },
+      "thighRight": {
+        "file": "../navy-suit-v2/parts/right/thighRight.png",
+        "x": 91,
+        "y": 174,
+        "width": 16,
+        "height": 47
+      },
+      "calfRight": {
+        "file": "../navy-suit-v2/parts/right/calfRight.png",
+        "x": 92,
+        "y": 213,
+        "width": 16,
+        "height": 43
+      },
+      "shoeRight": {
+        "file": "../navy-suit-v2/parts/right/shoeRight.png",
+        "x": 96,
+        "y": 248,
+        "width": 34,
+        "height": 17
+      },
+      "pocketSquare": {
+        "file": "../navy-suit-v2/parts/right/pocketSquare.png",
+        "x": 105,
+        "y": 118,
+        "width": 12,
+        "height": 8
+      }
+    },
+    "up": {
+      "backHair": {
+        "file": "heads/parts/up/backHair.png",
+        "x": 61,
+        "y": 13,
+        "width": 70,
+        "height": 78
+      },
+      "neck": {
+        "file": "heads/parts/up/neck.png",
+        "x": 81,
+        "y": 89,
+        "width": 30,
+        "height": 23
+      },
+      "jacket": {
+        "file": "../navy-suit-v2/parts/up/jacket.png",
+        "x": 66,
+        "y": 99,
+        "width": 60,
+        "height": 80
+      },
+      "upperArmLeft": {
+        "file": "../navy-suit-v2/parts/up/upperArmLeft.png",
+        "x": 56,
+        "y": 109,
+        "width": 22,
+        "height": 47
+      },
+      "lowerArmLeft": {
+        "file": "../navy-suit-v2/parts/up/lowerArmLeft.png",
+        "x": 58,
+        "y": 147,
+        "width": 20,
+        "height": 42
+      },
+      "handLeft": {
+        "file": "../navy-suit-v2/parts/up/handLeft.png",
+        "x": 59,
+        "y": 181,
+        "width": 18,
+        "height": 23
+      },
+      "upperArmRight": {
+        "file": "../navy-suit-v2/parts/up/upperArmRight.png",
+        "x": 114,
+        "y": 109,
+        "width": 22,
+        "height": 47
+      },
+      "lowerArmRight": {
+        "file": "../navy-suit-v2/parts/up/lowerArmRight.png",
+        "x": 114,
+        "y": 147,
+        "width": 20,
+        "height": 42
+      },
+      "handRight": {
+        "file": "../navy-suit-v2/parts/up/handRight.png",
+        "x": 115,
+        "y": 181,
+        "width": 18,
+        "height": 23
+      },
+      "pelvis": {
+        "file": "../navy-suit-v2/parts/up/pelvis.png",
+        "x": 75,
+        "y": 164,
+        "width": 42,
+        "height": 31
+      },
+      "thighLeft": {
+        "file": "../navy-suit-v2/parts/up/thighLeft.png",
+        "x": 77,
+        "y": 174,
+        "width": 20,
+        "height": 47
+      },
+      "calfLeft": {
+        "file": "../navy-suit-v2/parts/up/calfLeft.png",
+        "x": 78,
+        "y": 213,
+        "width": 18,
+        "height": 43
+      },
+      "shoeLeft": {
+        "file": "../navy-suit-v2/parts/up/shoeLeft.png",
+        "x": 72,
+        "y": 248,
+        "width": 26,
+        "height": 17
+      },
+      "thighRight": {
+        "file": "../navy-suit-v2/parts/up/thighRight.png",
+        "x": 95,
+        "y": 174,
+        "width": 20,
+        "height": 47
+      },
+      "calfRight": {
+        "file": "../navy-suit-v2/parts/up/calfRight.png",
+        "x": 97,
+        "y": 213,
+        "width": 18,
+        "height": 43
+      },
+      "shoeRight": {
+        "file": "../navy-suit-v2/parts/up/shoeRight.png",
+        "x": 95,
+        "y": 248,
+        "width": 26,
+        "height": 17
+      }
+    }
+  }
+}

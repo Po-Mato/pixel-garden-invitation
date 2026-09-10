@@ -349,6 +349,7 @@ import { WorldDecorationLayer, WorldPathLayer } from "./WorldStaticMapLayers";
 import { WorldInteractiveProp, WorldPropMoment } from "./WorldInteractiveProp";
 import { WorldMiniMap } from "./WorldMiniMap";
 import { WorldLocalPlayer } from "./WorldLocalPlayer";
+import { createGuest03VisualMotion } from "../game/guest03VisualMotion";
 import { WorldSecretProgress } from "./WorldSecretProgress";
 import { WorldSecretCollectionBook } from "./WorldSecretCollectionBook";
 import { WorldTravelTimeline } from "./WorldTravelTimeline";
@@ -762,6 +763,26 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     motionStoreRef.current = createWorldMotionStore({ position, direction, moving, stepFrame });
   }
   const motionStore = motionStoreRef.current;
+  const pilotVisualMotion = useMemo(() => {
+    if (import.meta.env.DEV && import.meta.env.VITE_GUEST03_PILOT === "true"
+      && profile.appearance.presetId === "masculine-navy-suit") {
+      return createGuest03VisualMotion(motionStore);
+    }
+    return null;
+  }, [motionStore, profile.appearance.presetId, activeZoneId]);
+  const displayMotionStore = pilotVisualMotion?.store ?? motionStore;
+  useLayoutEffect(() => {
+    if (!pilotVisualMotion) return;
+    pilotVisualMotion.reset();
+    const unsubscribe = motionStore.subscribe(pilotVisualMotion.receive);
+    let frame = 0;
+    const animate = (time: number) => {
+      pilotVisualMotion.tick(time);
+      frame = requestAnimationFrame(animate);
+    };
+    frame = requestAnimationFrame(animate);
+    return () => { unsubscribe(); cancelAnimationFrame(frame); };
+  }, [motionStore, pilotVisualMotion]);
   const [activeSpotId, setActiveSpotId] = useState<SpotId | null>(null);
   const [activePhotoSpotId, setActivePhotoSpotId] = useState<WorldPhotoSpotId | null>(null);
   const [photoAlbum, setPhotoAlbum] = useState(loadWeddingPhotoAlbum);
@@ -1273,7 +1294,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
       const stage = mapStageRef.current;
       if (!stage) return;
       const nextCamera = computeCameraTransform({
-        player: motionStore.getSnapshot().position,
+        player: displayMotionStore.getSnapshot().position,
         viewport,
         bounds: activeZone.bounds,
         zoom: 1
@@ -1287,8 +1308,8 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
       }
     };
     updateCamera();
-    return motionStore.subscribe(updateCamera);
-  }, [activeZone.bounds.height, activeZone.bounds.width, motionStore, viewport.height, viewport.width]);
+    return displayMotionStore.subscribe(updateCamera);
+  }, [activeZone.bounds.height, activeZone.bounds.width, displayMotionStore, viewport.height, viewport.width]);
 
   const resetWalkCycle = useCallback(() => {
     walkPhaseRef.current = 0;
@@ -5704,7 +5725,7 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
             <WorldLocalPlayer
               appearance={profile.appearance}
               nickname={profile.nickname}
-              motionStore={motionStore}
+              motionStore={displayMotionStore}
               activeZoneId={activeZone.id}
               reaction={localReaction}
             />

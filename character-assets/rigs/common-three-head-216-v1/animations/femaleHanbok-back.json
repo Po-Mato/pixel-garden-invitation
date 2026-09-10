@@ -1,0 +1,130 @@
+{
+  "id": "femaleHanbok-back-216-v1",
+  "type": "dress",
+  "direction": "back",
+  "policy": "Common dress-family bones, independently authored hanbok garment movement; no guest-specific walk.",
+  "regions": {
+    "thigh": [
+      191.302326,
+      36
+    ],
+    "calf": [
+      220.604651,
+      36
+    ],
+    "shoe": [
+      251.581395,
+      19.255814
+    ],
+    "upperArm": [
+      134.372093,
+      30.976744
+    ],
+    "forearm": [
+      161.162791,
+      21.767442
+    ],
+    "hand": [
+      179.581395,
+      15.906977
+    ]
+  },
+  "frames": [
+    {
+      "forward": "Left",
+      "rotations": {
+        "upperArmLeft": 2,
+        "forearmLeft": -1,
+        "handLeft": -1,
+        "upperArmRight": 2,
+        "forearmRight": -1,
+        "handRight": -1,
+        "thighLeft": 2,
+        "calfLeft": -4,
+        "shoeLeft": 2,
+        "thighRight": 0,
+        "calfRight": 0,
+        "shoeRight": 0
+      },
+      "depth": {
+        "Left": -8,
+        "Right": 0
+      }
+    },
+    {
+      "forward": null,
+      "rotations": {
+        "thighLeft": 0,
+        "calfLeft": 0,
+        "shoeLeft": 0,
+        "thighRight": 0,
+        "calfRight": 0,
+        "shoeRight": 0
+      },
+      "depth": {
+        "Left": 0,
+        "Right": 0
+      }
+    },
+    {
+      "forward": "Right",
+      "rotations": {
+        "upperArmLeft": -2,
+        "forearmLeft": 1,
+        "handLeft": 1,
+        "upperArmRight": -2,
+        "forearmRight": 1,
+        "handRight": 1,
+        "thighLeft": 0,
+        "calfLeft": 0,
+        "shoeLeft": 0,
+        "thighRight": -2,
+        "calfRight": 4,
+        "shoeRight": -2
+      },
+      "depth": {
+        "Left": 0,
+        "Right": -8
+      }
+    },
+    {
+      "forward": null,
+      "rotations": {
+        "thighLeft": 0,
+        "calfLeft": 0,
+        "shoeLeft": 0,
+        "thighRight": 0,
+        "calfRight": 0,
+        "shoeRight": 0
+      },
+      "depth": {
+        "Left": 0,
+        "Right": 0
+      }
+    }
+  ],
+  "garmentAnimation": {
+    "parent": "pelvis",
+    "pivot": [
+      96,
+      161
+    ],
+    "frames": [
+      {
+        "rotate": 0.6
+      },
+      {
+        "rotate": 0
+      },
+      {
+        "rotate": -0.6
+      },
+      {
+        "rotate": 0
+      }
+    ],
+    "mode": "whole-original-rigid-rotation",
+    "upperWaistOccludedByBodice": true
+  },
+  "template": "femaleHanbok"
+}

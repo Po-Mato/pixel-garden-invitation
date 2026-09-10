@@ -1,0 +1,178 @@
+{
+  "viewport": [
+    390,
+    844
+  ],
+  "horizontalOverflow": false,
+  "displaySizes": [
+    [
+      192,
+      288
+    ],
+    [
+      96,
+      144
+    ],
+    [
+      48,
+      72
+    ]
+  ],
+  "observedFrames": [
+    2,
+    3,
+    3,
+    3,
+    4,
+    4,
+    4,
+    1,
+    1,
+    1,
+    2,
+    2,
+    2,
+    3,
+    3,
+    4
+  ],
+  "stopBeforeAfter400ms": [
+    2,
+    2
+  ],
+  "screenshots": [
+    {
+      "file": "mobile-front-neutral.png",
+      "sha256": "556c3bc3aa2912e4dfbe6e2a1cdfe2d9552d06edcad1f07a2e42906e08753293"
+    },
+    {
+      "file": "mobile-front-step1-dark.png",
+      "sha256": "88e3b0721277e3a1d35f38ba25a394fb810cc7c8a8c7ee8baaed59d8313fc27d"
+    },
+    {
+      "file": "mobile-front-step3-dark.png",
+      "sha256": "72e87b19f9fb5b44133486b9c8d08de3298a60dec528350e6938cc5ce2caf079"
+    },
+    {
+      "file": "mobile-left-neutral.png",
+      "sha256": "600ab875f1205431f286f55f6c934ce6d5efd53272f942fc6ccb7393b5fa87cf"
+    },
+    {
+      "file": "mobile-left-step1-dark.png",
+      "sha256": "7fea7eebc0df9d550cd02ced0f1ae32499b11d132b6806f87e6da94e4975922b"
+    },
+    {
+      "file": "mobile-left-step3-dark.png",
+      "sha256": "ff6f3ac9da22c68a64220ff9d449784a291f2531a4ce387d80ddbc7e086eef27"
+    },
+    {
+      "file": "mobile-right-neutral.png",
+      "sha256": "c49507e86527e879f5e9a881b6d93702fec63e48fada9083998dad6b9a60ec01"
+    },
+    {
+      "file": "mobile-right-step1-dark.png",
+      "sha256": "f18888e9b7861eaa2b0f4181c1e5642b5f9c8b202fdc19788e6dada09ed01c81"
+    },
+    {
+      "file": "mobile-right-step3-dark.png",
+      "sha256": "7a89fa63f8c03b9269598eb159b97c91a70246fd84814f4c262b5aaa3bfd0c8a"
+    },
+    {
+      "file": "mobile-back-neutral.png",
+      "sha256": "f3f195daa24cc7e12226db52df8260e67aacd0372ec4558a6d3c2cf870562cd2"
+    },
+    {
+      "file": "mobile-back-step1-dark.png",
+      "sha256": "50fe190c3f5badf1eb362d2c02a5020fee2221135d4d90264e94500bb5ce648c"
+    },
+    {
+      "file": "mobile-back-step3-dark.png",
+      "sha256": "2cb931d80629507fb63767937301d4f86910de05cc28e808ca2c7931260be395"
+    }
+  ],
+  "frameSources": [
+    {
+      "direction": "front",
+      "frame": 1,
+      "sha256": "283be837855b813573b374142442d57056824097249f34b8ff2ddfc40aea9e85"
+    },
+    {
+      "direction": "front",
+      "frame": 2,
+      "sha256": "826b69e65994c3fc0e24b91e089b9520203a1bce3b602e3b6dcc6deaf45e160d"
+    },
+    {
+      "direction": "front",
+      "frame": 3,
+      "sha256": "c03a83187863134eec4bdbe9b982a6a06eceb0f3e5d99194b5c1e188d8a90044"
+    },
+    {
+      "direction": "front",
+      "frame": 4,
+      "sha256": "826b69e65994c3fc0e24b91e089b9520203a1bce3b602e3b6dcc6deaf45e160d"
+    },
+    {
+      "direction": "left",
+      "frame": 1,
+      "sha256": "6a4bd90a8326c3203888ee260ff71897dfdb4661cd3d8dd8d4711865f0ab6918"
+    },
+    {
+      "direction": "left",
+      "frame": 2,
+      "sha256": "51c99003a466552b2516d098e025056b6f2a3987e58e47c607e6f790d855557f"
+    },
+    {
+      "direction": "left",
+      "frame": 3,
+      "sha256": "d6ba7725210aec1d0ca2d73e54d0b09b1f3756a888aad54740060512a00e244c"
+    },
+    {
+      "direction": "left",
+      "frame": 4,
+      "sha256": "51c99003a466552b2516d098e025056b6f2a3987e58e47c607e6f790d855557f"
+    },
+    {
+      "direction": "right",
+      "frame": 1,
+      "sha256": "b6516949b0ecebf30ab59c7bdea443972307a207afdc7827a468ec562210c7c4"
+    },
+    {
+      "direction": "right",
+      "frame": 2,
+      "sha256": "9708065abfcd76f4c1d11824b5d5e3a2d59cf8efd7aba2cafddc05803ac19147"
+    },
+    {
+      "direction": "right",
+      "frame": 3,
+      "sha256": "d24150ee46f99853c5b8dea3153b4741ce1b95ed10d0b3d0f665ac1f5fe07565"
+    },
+    {
+      "direction": "right",
+      "frame": 4,
+      "sha256": "9708065abfcd76f4c1d11824b5d5e3a2d59cf8efd7aba2cafddc05803ac19147"
+    },
+    {
+      "direction": "back",
+      "frame": 1,
+      "sha256": "897b73539241234f2cbc95d3686ca7c3e2c8c093e700379c94f86510e2ba415c"
+    },
+    {
+      "direction": "back",
+      "frame": 2,
+      "sha256": "d261fde10c3fb918c0745820ad603cb5b8565a5bf4b3bd9de07318851abbb143"
+    },
+    {
+      "direction": "back",
+      "frame": 3,
+      "sha256": "f5c78aa0e69e30c156b0fd1882810801738b9ee7dc632fc18922bf1f48ca72bf"
+    },
+    {
+      "direction": "back",
+      "frame": 4,
+      "sha256": "d261fde10c3fb918c0745820ad603cb5b8565a5bf4b3bd9de07318851abbb143"
+    }
+  ],
+  "sheetSha256": "4048d20918ebb0ca7dc949a3c35fe8e94bdcdd45639dea13f91c787880cd3db6",
+  "runtimeIntegrated": false,
+  "visualReview": "Captured browser evidence; human-like visual inspection is a separate pending gate, not inferred from these assertions."
+}

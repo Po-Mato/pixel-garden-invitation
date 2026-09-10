@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { guest01AssetRevision } from "../character/assetRevisions";
+import { guestCutoutAssetRevision } from "../character/assetRevisions";
 import {
   createPwaServiceWorkerSource,
   pwaCorePrecachePaths,
@@ -11,7 +11,7 @@ import {
 
 describe("PWA service worker source", () => {
   it("pre-caches the same revision used by the default guest preset", () => {
-    expect(pwaDefaultGuestAssetRevision).toBe(guest01AssetRevision);
+    expect(pwaDefaultGuestAssetRevision).toBe(guestCutoutAssetRevision);
   });
 
   it("combines required offline assets with generated scripts and styles once", () => {

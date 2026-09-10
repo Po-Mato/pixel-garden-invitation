@@ -1,0 +1,30 @@
+{
+  "tool": "built-in image_gen",
+  "characterId": "guest-12",
+  "direction": "front",
+  "purpose": "hanbok sleeve original part only",
+  "applied": false,
+  "existingRigAndSheetsPreserved": true,
+  "attempts": [
+    {
+      "file": "exec-be49dadb-df04-4d40-bba0-a3d5860d765e.png",
+      "reason": "RGB, painted checkerboard, no alpha",
+      "prompt": "Edit target image 1: guest 12 FRONT anatomical LEFT arm cutout only. Replace green suit sleeve with softly rounded ivory Korean hanbok sleeve, plain cuff, no buttons or suit seams. Keep hand, pose, length and shoulder connection. Image 2 is clothing style reference only. Elegant painted 2.5D game shading, not 3D. Genuine transparent background, no torso or extra parts."
+    },
+    {
+      "file": "exec-abec8d17-3d2d-4c8d-9117-482f17819bb9.png",
+      "reason": "RGBA but realistic long hand and slanted pose do not match chibi source rig",
+      "prompt": "Style reference only. Create guest 12 FRONT LEFT arm original: a single relaxed arm hanging vertically, rounded ivory hanbok sleeve with plain cuff and small natural hand, thumb toward viewer left. Elegant painted 2.5D game art. No buttons, suit seam, torso, text or background pattern. Export genuine transparent RGBA background, never painted checkerboard."
+    },
+    {
+      "file": "exec-eb853acb-fabe-41b8-aee0-dd9259a7d817.png",
+      "reason": "RGB, painted checkerboard, no alpha",
+      "prompt": "12번 귀여운 3등신 게임 캐릭터의 정면 왼팔 파츠만. 어깨부터 손까지 일자로 수직으로 내린 짧은 팔로 수정. 아이보리 한복 소매, 단추 없음. 손은 둥글고 작은 치비 손, 긴 실사 손가락 금지. 우아한 2D 손그림 명암, 실사/3D 금지. 실제 투명 알파 배경, 체크무늬 금지."
+    },
+    {
+      "file": "exec-862a93ed-99b4-46ec-96be-64f20190d40d.png",
+      "reason": "RGBA but conspicuous soft halo; not acceptable original",
+      "prompt": "Transparent PNG cutout original part for a cute three-head-tall wedding RPG character: FRONT VIEW LEFT ARM ONLY, hanging straight down, ivory Korean hanbok sleeve with rounded fabric folds and plain cuff, small rounded chibi hand below cuff, thumb pointing left. Elegant hand-painted 2D game shading. Full sleeve from shoulder to fingers. No body, face, buttons, suit lapel, realism, 3D, shadow or text. True alpha background, not checkerboard."
+    }
+  ]
+}

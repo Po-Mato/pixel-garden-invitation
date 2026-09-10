@@ -1,0 +1,104 @@
+{
+  "extends": "../navy-suit-v1/rig.json",
+  "version": 2,
+  "id": "guest-03-navy-suit-cutout-v2",
+  "label": "3번 네이비 정장 하객 고정밀 파일럿",
+  "characterId": "guest-03",
+  "outputName": "guest-03",
+  "artwork": "artwork.svg",
+  "rasterParts": "part-layout.json",
+  "animationOverrides": {
+    "frames": {
+      "down": [
+        {
+          "bones": {
+            "upperArmLeft": { "rotate": -4 },
+            "upperArmRight": { "rotate": 4 },
+            "thighLeft": { "rotate": 3, "translateX": -2 },
+            "thighRight": { "rotate": -2, "translateX": 2, "translateY": -1 }
+          }
+        },
+        null,
+        {
+          "bones": {
+            "upperArmLeft": { "rotate": 4 },
+            "upperArmRight": { "rotate": -4 },
+            "thighLeft": { "rotate": -2, "translateX": -2, "translateY": -1 },
+            "thighRight": { "rotate": 3, "translateX": 2 }
+          }
+        },
+        null
+      ],
+      "left": [
+        {
+          "bones": {
+            "upperArmLeft": { "rotate": -6 },
+            "upperArmRight": { "rotate": 5 },
+            "thighLeft": { "translateX": -4 },
+            "thighRight": { "translateX": 3, "translateY": -1 }
+          }
+        },
+        null,
+        {
+          "bones": {
+            "upperArmLeft": { "rotate": 5 },
+            "upperArmRight": { "rotate": -6 },
+            "thighLeft": { "translateX": 3, "translateY": -1 },
+            "thighRight": { "translateX": -4 }
+          }
+        },
+        null
+      ],
+      "right": [
+        {
+          "bones": {
+            "upperArmLeft": { "rotate": 6 },
+            "upperArmRight": { "rotate": -5 },
+            "thighLeft": { "translateX": 4 },
+            "thighRight": { "translateX": -3, "translateY": -1 }
+          }
+        },
+        null,
+        {
+          "bones": {
+            "upperArmLeft": { "rotate": -5 },
+            "upperArmRight": { "rotate": 6 },
+            "thighLeft": { "translateX": -3, "translateY": -1 },
+            "thighRight": { "translateX": 4 }
+          }
+        },
+        null
+      ],
+      "up": [
+        {
+          "bones": {
+            "upperArmLeft": { "rotate": 4 },
+            "upperArmRight": { "rotate": -4 },
+            "thighLeft": { "rotate": -3, "translateX": -2 },
+            "thighRight": { "rotate": 2, "translateX": 2, "translateY": -1 }
+          }
+        },
+        null,
+        {
+          "bones": {
+            "upperArmLeft": { "rotate": -4 },
+            "upperArmRight": { "rotate": 4 },
+            "thighLeft": { "rotate": 2, "translateX": -2, "translateY": -1 },
+            "thighRight": { "rotate": -3, "translateX": 2 }
+          }
+        },
+        null
+      ]
+    }
+  },
+  "sourcePolicy": {
+    "kind": "editable-high-detail-raster-cutout",
+    "frameAiGeneration": false,
+    "sourcePartAiGeneration": true,
+    "pixelBandCopy": false,
+    "pixelRegionReplacement": false,
+    "bodyPartScaling": false,
+    "directionMirroring": false,
+    "finalPngEditing": false
+  }
+}

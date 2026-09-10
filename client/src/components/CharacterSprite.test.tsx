@@ -30,10 +30,10 @@ it("완성 프리셋 단일 레이어만 렌더링한다", () => {
   expect([...sprite.querySelectorAll("[data-character-layer]")].map((node) => node.getAttribute("data-character-layer")))
     .toEqual(["base"]);
   expect(sprite.querySelector('[data-character-layer="base"]')).toHaveStyle({
-    "--character-frame-position": "-192px -288px"
+    backgroundPosition: "-192px -288px"
   });
   const materialLayerImage = (sprite.querySelector('[data-character-layer="base"]') as HTMLElement)
-    .style.getPropertyValue("--character-layer-image");
+    .style.backgroundImage;
   expect(materialLayerImage).toMatch(/^url\("https?:\/\//);
   expect(materialLayerImage).toContain("/characters/generated/guests/feminine-long-wave-dress__walk.png");
   expect(materialLayerImage).not.toContain("/assets/characters/");

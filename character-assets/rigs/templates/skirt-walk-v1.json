@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "id": "skirt-walk-v1",
+  "baseRig": "../guest-03/navy-suit-v1/rig.json",
+  "garmentMotion": {
+    "down": [{ "rotate": -0.8 }, {}, { "rotate": 0.8 }, {}],
+    "left": [{ "rotate": -1.2 }, {}, { "rotate": 0.8 }, {}],
+    "right": [{ "rotate": 0.8 }, {}, { "rotate": -1.2 }, {}],
+    "up": [{ "rotate": 0.7 }, {}, { "rotate": -0.7 }, {}]
+  },
+  "accessoryMotion": {
+    "down": [{ "rotate": 1.5 }, {}, { "rotate": -1.5 }, {}],
+    "left": [{ "rotate": -2 }, {}, { "rotate": 1.5 }, {}],
+    "right": [{ "rotate": 1.5 }, {}, { "rotate": -2 }, {}],
+    "up": [{}, {}, {}, {}]
+  }
+}

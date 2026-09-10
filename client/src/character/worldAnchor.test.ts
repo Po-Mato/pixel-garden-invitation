@@ -14,8 +14,10 @@ describe("월드 캐릭터 시각 중심", () => {
       expect(anchor.presetId).toBe(preset.id);
       expect(anchor.centerOffsetX).toBeGreaterThanOrEqual(0);
       expect(anchor.centerOffsetX).toBeLessThanOrEqual(0.25);
-      expect(anchor.centerY).toBe(35);
-      expect(anchor.feetY).toBe(66.5);
+      // Authored HD silhouette y54..270: centre y162 and feet y270,
+      // displayed at one quarter size in the unchanged 48x72 game frame.
+      expect(anchor.centerY).toBe(40.5);
+      expect(anchor.feetY).toBe(67.5);
     }
   });
 
@@ -33,12 +35,12 @@ describe("월드 캐릭터 시각 중심", () => {
     expect(resolveWorldCharacterAnchor({ presetId: "missing" }, Number.NaN)).toEqual({
       presetId: "feminine-long-wave-dress",
       centerOffsetX: 0,
-      centerY: 35,
-      feetY: 67
+      centerY: 41,
+      feetY: 68
     });
     expect(worldCharacterAnchorStyle({ presetId: "missing" }, 2)).toEqual({
       "--character-world-anchor-offset-x": "0px",
-      "--character-world-anchor-y": "35px"
+      "--character-world-anchor-y": "40.5px"
     });
   });
 });

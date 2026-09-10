@@ -1,0 +1,265 @@
+{
+  "id": "guest-04-three-head-216-v1-back",
+  "characterId": "guest-04",
+  "direction": "back",
+  "skeleton": "../../common-three-head-216-v1/skeleton.json",
+  "skeletonProjection": "back",
+  "animation": "../../common-three-head-216-v1/animations/tailored-back.json",
+  "template": "tailored",
+  "runtimeEnabled": false,
+  "parts": {
+    "backHair": {
+      "file": "../../guests-style-lock-v1/guest-04/parts/back/backHair-v1.png",
+      "sha256": "d4da5bf6cc7fe9a405d439979762d004c26a70975bce45a06b56b71d96770a7a",
+      "sourceViewport": [
+        66,
+        36,
+        1176,
+        1063
+      ],
+      "parent": "head",
+      "pivot": [
+        96,
+        126
+      ],
+      "rect": [
+        60,
+        54,
+        72,
+        72
+      ],
+      "mirrored": false
+    },
+    "legLeftSkin": {
+      "file": "../../guests-style-lock-v1/guest-04/parts/back/legLeftSkin-v1.png",
+      "sha256": "3debeb246d8c108bc4990562d040685841448eea02a2db58585965ee2ab3e18a",
+      "sourceViewport": [
+        141,
+        9,
+        448,
+        2088
+      ],
+      "parent": "thighLeft",
+      "pivot": [
+        86,
+        192.139535
+      ],
+      "rect": [
+        68,
+        191.302326,
+        28,
+        78.697674
+      ],
+      "mirrored": false
+    },
+    "legRightSkin": {
+      "file": "../../guests-style-lock-v1/guest-04/parts/back/legRightSkin-v1.png",
+      "sha256": "532453f08012993ff4fbd4d3b61541592a77791c38f191071643b7cb77658ae5",
+      "sourceViewport": [
+        176,
+        2,
+        416,
+        2085
+      ],
+      "parent": "thighRight",
+      "pivot": [
+        106,
+        192.139535
+      ],
+      "rect": [
+        96,
+        191.302326,
+        28,
+        78.697674
+      ],
+      "mirrored": false
+    },
+    "armRightSkin": {
+      "file": "parts/back/armRightSkin-v4.png",
+      "sha256": "f9ccf542e5dd5364183f9712da4c62e20a7b644803ef252a66c9f61e316899d2",
+      "sourceViewport": [
+        348,
+        44,
+        361,
+        1399
+      ],
+      "parent": "upperArmRight",
+      "pivot": [
+        119,
+        136.883721
+      ],
+      "rect": [
+        116,
+        134.372093,
+        20,
+        60.27907
+      ],
+      "mirrored": false,
+      "generationId": "4cdec0d1-9921-4dd0-ba14-2eff29e7d9f8",
+      "generationTool": "built-in image_gen",
+      "generationPrompt": "Smooth only the bulge and deep crease near the top of this charcoal rear-right sleeve. Straight relaxed outer edge, gently sloped shoulder attachment. Preserve its charcoal color, bronze buttons, ivory cuff, hand and proportions. One isolated arm game part on transparent background.",
+      "transparentPixels": 1188678,
+      "referenceDisplayedBeforeGeneration": true,
+      "sourcePixelsUnmodified": true
+    },
+    "armLeftSkin": {
+      "file": "../../guests-style-lock-v1/guest-04/parts/back/armLeftSkin-v2.png",
+      "sha256": "e835816c0a736af018508d70973ac79b14034cd3b76488fce24b42e6124ddfd1",
+      "sourceViewport": [
+        356,
+        62,
+        311,
+        1394
+      ],
+      "parent": "upperArmLeft",
+      "pivot": [
+        73,
+        136.883721
+      ],
+      "rect": [
+        56,
+        134.372093,
+        20,
+        60.27907
+      ],
+      "mirrored": false
+    },
+    "torsoShell": {
+      "file": "../../guests-style-lock-v1/guest-04/parts/back/torsoShell-v1.png",
+      "sha256": "c51c55352f6d714f4d06497920bb0ce7691535153516eb65ecde0f48fce15403",
+      "sourceViewport": [
+        198,
+        16,
+        913,
+        1158
+      ],
+      "parent": "spine",
+      "pivot": [
+        96,
+        176.232558
+      ],
+      "rect": [
+        71,
+        126,
+        50,
+        60.27907
+      ],
+      "mirrored": false
+    },
+    "shadow": {
+      "file": "../../guests-style-lock-v1/guest-04/../../guest-03/style-lock-cutout-v1/parts/front/shadow.svg",
+      "parent": "root",
+      "pivot": [
+        96,
+        270
+      ],
+      "rect": [
+        64,
+        260,
+        64,
+        12
+      ],
+      "mirrored": false
+    },
+    "neck": {
+      "file": "../../guests-style-lock-v1/guest-04/../../guest-03/style-lock-cutout-v1/parts/front/neck.svg",
+      "parent": "neck",
+      "pivot": [
+        96,
+        126
+      ],
+      "rect": [
+        89,
+        121.813953,
+        14,
+        11.72093
+      ],
+      "mirrored": false
+    },
+    "pelvis": {
+      "file": "../../guests-style-lock-v1/guest-04/parts/back/pelvis-v1.svg",
+      "parent": "pelvis",
+      "pivot": [
+        96,
+        191.302326
+      ],
+      "rect": [
+        72,
+        179.581395,
+        48,
+        20.093023
+      ],
+      "mirrored": false
+    }
+  },
+  "drawOrder": [
+    "shadow",
+    "legLeftSkin",
+    "legRightSkin",
+    "pelvis",
+    "neck",
+    "armLeftSkin",
+    "armRightSkin",
+    "torsoShell",
+    "backHair"
+  ],
+  "clothingAttachments": [],
+  "asymmetry": {
+    "mirroringAllowed": false,
+    "policy": "Independent directional hair, pocket square and costume originals; no reflection."
+  },
+  "limitations": [
+    "New 216px rig candidate, requires per-character source and visual validation.",
+    "Old sources retained, no rendered-frame input or body pixel patches."
+  ],
+  "previousArmRight": {
+    "file": "../../guests-style-lock-v1/guest-04/parts/back/armRightSkin-v3.png",
+    "sha256": "ca2d8a2039a4df4afafcb654294182c6969cf8f255ac0390899653ddb93403d6",
+    "sourceViewport": [
+      350,
+      46,
+      360,
+      1396
+    ],
+    "parent": "upperArmRight",
+    "pivot": [
+      119,
+      136.883721
+    ],
+    "rect": [
+      112,
+      134.372093,
+      24,
+      60.27907
+    ],
+    "mirrored": false
+  },
+  "rejectedGenerationAttempts": [
+    {
+      "id": "6ea61038-bf57-4d63-95cd-529f8b04f537",
+      "reason": "RGB checkerboard, no alpha; not copied to project or applied"
+    },
+    {
+      "id": "e7545dde-8e1f-4594-b2d6-748e98447fa1",
+      "reason": "RGB checkerboard, no alpha; not copied to project or applied"
+    }
+  ],
+  "shoulderRegistration": {
+    "reason": "Match front sleeve width 20px while preserving common shoulder pivots and outer arm span. Original part pixels remain unchanged.",
+    "previousWidths": [
+      24,
+      24
+    ],
+    "currentWidths": [
+      20,
+      20
+    ],
+    "appliesOnlyTo": "guest-04-back"
+  },
+  "headWidthRegistration": {
+    "reason": "guest-04 back original hair artboard placement: remove undersized perceived crown relative to authored profiles, without changing face, height, skeleton or frames independently",
+    "hairSlotWidth": 72,
+    "headHeight": 72,
+    "pixelCorrection": false
+  }
+}

@@ -1,0 +1,185 @@
+{
+  "screenshots": [
+    {
+      "file": "mobile-back-neutral.png",
+      "sha256": "350af452f89fbddcb8d63fe93fafae53e00e6efd52da811b8147f902a9b9b18c"
+    },
+    {
+      "file": "mobile-back-step1-dark.png",
+      "sha256": "8c70e9efed988ee3771878eea12804b1578ea9e99c7b3313498ddb1d5e68026e"
+    },
+    {
+      "file": "mobile-back-step3-dark.png",
+      "sha256": "2f731b17efe83cc971111fdaeb670a39679687f8b2896dccfa8ef04f966e19d9"
+    },
+    {
+      "file": "mobile-front-neutral.png",
+      "sha256": "31d4182a5ae58b910266a065d1131b95383d4b50c8a7801fdd7c7072a310571c"
+    },
+    {
+      "file": "mobile-front-step1-dark.png",
+      "sha256": "5e59fc4d0affddb102c58895fd89504b8bd2d5680540a6cbd15f2fafd2602cdb"
+    },
+    {
+      "file": "mobile-front-step3-dark.png",
+      "sha256": "2222790a969ccd550bd1d4d79eaf244d5e325b96595789d0efa733a2377a617b"
+    },
+    {
+      "file": "mobile-left-neutral.png",
+      "sha256": "82979c6b059c7684bb843c29b661a3bc361ac209fda1d03f14508f279e54b09c"
+    },
+    {
+      "file": "mobile-left-step1-dark.png",
+      "sha256": "d6670137c11d96405c6b9f7ea9e02ba9f782615d0808eb49e13051113e81bb87"
+    },
+    {
+      "file": "mobile-left-step3-dark.png",
+      "sha256": "571fa07d83ad8628db63157fad910bca26ee87d948cb4d1711ea8f0466ca05fa"
+    },
+    {
+      "file": "mobile-right-neutral.png",
+      "sha256": "4c74fccdcf2647eef7598e1ccb3810b9d72f0ef0b32a8b62b067099079c735c7"
+    },
+    {
+      "file": "mobile-right-step1-dark.png",
+      "sha256": "ba92f115d866e25a8df95c569fb3a8f6b59d1d588d9ca03c1827df66cb2b2146"
+    },
+    {
+      "file": "mobile-right-step3-dark.png",
+      "sha256": "25cdfea17031d9d2eb976bdd8807b1117f606e4313492f4bb1d2732730929a8e"
+    }
+  ],
+  "frameSources": [
+    {
+      "direction": "front",
+      "frame": 1,
+      "sha256": "d69fdece6a58eb911ea6b68653804b899c4110b6084a33c98f3bb173b856c379"
+    },
+    {
+      "direction": "front",
+      "frame": 2,
+      "sha256": "79ef939ee12039f830ec09f3ca43c993cd62a626ab4323327d75c90e80b990d4"
+    },
+    {
+      "direction": "front",
+      "frame": 3,
+      "sha256": "d8b0824d93830e22362dfa6531e60bcba5a5753265cd79faff771f4d2c82666a"
+    },
+    {
+      "direction": "front",
+      "frame": 4,
+      "sha256": "79ef939ee12039f830ec09f3ca43c993cd62a626ab4323327d75c90e80b990d4"
+    },
+    {
+      "direction": "left",
+      "frame": 1,
+      "sha256": "8f130f281857878b90c3aa470e3f6ed5d51b45a7cf16c19a0788e5ec4aa15e3c"
+    },
+    {
+      "direction": "left",
+      "frame": 2,
+      "sha256": "7c3600dae94c9548290bb3b6a2f92984902699a5bc2a52461f9e1a082995b9eb"
+    },
+    {
+      "direction": "left",
+      "frame": 3,
+      "sha256": "6b2b869d0ada25b7934605a8f1065f2d05a2b67c7cb7770892673faaea1f6db6"
+    },
+    {
+      "direction": "left",
+      "frame": 4,
+      "sha256": "7c3600dae94c9548290bb3b6a2f92984902699a5bc2a52461f9e1a082995b9eb"
+    },
+    {
+      "direction": "right",
+      "frame": 1,
+      "sha256": "a196b5e1f5db17b0dabde476643dc09776bead048a383ff0e26dd53e02d7b70e"
+    },
+    {
+      "direction": "right",
+      "frame": 2,
+      "sha256": "867f0722620391f5bbad5e32c4480687718d342eca312b8623236368d59f2534"
+    },
+    {
+      "direction": "right",
+      "frame": 3,
+      "sha256": "1b33b298d90111807dcc11b3f56b091c70548d4b1feee0b5fc59796b34146647"
+    },
+    {
+      "direction": "right",
+      "frame": 4,
+      "sha256": "867f0722620391f5bbad5e32c4480687718d342eca312b8623236368d59f2534"
+    },
+    {
+      "direction": "back",
+      "frame": 1,
+      "sha256": "928693871092bbc4ad481e7f297768ea1cbbee90475910ef79996e724c7e042c"
+    },
+    {
+      "direction": "back",
+      "frame": 2,
+      "sha256": "c8bf1af8e99ac8c2c1e9af73544f2f1651fd601e3f474712da559e8872e1583d"
+    },
+    {
+      "direction": "back",
+      "frame": 3,
+      "sha256": "b9456772d6413652f23179826fcc79793b0abf91acca6472bd5363ef82ed7ef6"
+    },
+    {
+      "direction": "back",
+      "frame": 4,
+      "sha256": "c8bf1af8e99ac8c2c1e9af73544f2f1651fd601e3f474712da559e8872e1583d"
+    }
+  ],
+  "sheetSha256": "06ce119c6d2fdef901e82658374143b6a14007b5393010ab1e0ca8f154262268",
+  "viewport": [
+    390,
+    844
+  ],
+  "horizontalOverflow": false,
+  "displaySizes": [
+    [
+      192,
+      288
+    ],
+    [
+      96,
+      144
+    ],
+    [
+      48,
+      72
+    ]
+  ],
+  "observedFrames": [
+    3,
+    3,
+    4,
+    4,
+    4,
+    1,
+    1,
+    1,
+    2,
+    2,
+    3,
+    3,
+    3,
+    4,
+    4,
+    4
+  ],
+  "stopBeforeAfter400ms": [
+    2,
+    2
+  ],
+  "directionsVisited": [
+    "front",
+    "left",
+    "right",
+    "back"
+  ],
+  "runtimeIntegrated": false,
+  "status": "local-review-browser-checked-not-runtime-deployed",
+  "visualReview": "All four directions inspected at neutral and opposing steps on dark background. Cream fabric and neck visible, original clutch and wearer-left ribbon remain attached, head stable. Actual map contrast/game integration and remaining guests still pending."
+}

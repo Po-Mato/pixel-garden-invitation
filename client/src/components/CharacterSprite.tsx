@@ -75,7 +75,7 @@ export function CharacterSprite({
 
   return (
     <span
-      className={`character-sprite character-sprite--${displayMode} ${useFrontIdle ? "character-sprite--idle-front" : ""}`}
+      className={`character-sprite character-sprite--${displayMode} ${useFrontIdle && layers[0].idleUrl ? "character-sprite--idle-front" : ""}`}
       role={label ? "img" : undefined}
       aria-label={label}
       data-direction={direction}
@@ -98,9 +98,7 @@ export function CharacterSprite({
             className={`character-layer character-layer--${layer.slot}`}
             style={{
               backgroundImage: `url("${layerImageUrl}")`,
-              backgroundPosition: useFrontIdle && layer.idleUrl ? "0 0" : `${frame.x}px ${frame.y}px`,
-              "--character-layer-image": `url("${layerImageUrl}")`,
-              "--character-frame-position": useFrontIdle && layer.idleUrl ? "0 0" : `${frame.x}px ${frame.y}px`
+              backgroundPosition: useFrontIdle && layer.idleUrl ? "0 0" : `${frame.x}px ${frame.y}px`
             } as CSSProperties}
           >
             <img

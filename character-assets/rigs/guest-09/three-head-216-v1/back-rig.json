@@ -1,0 +1,216 @@
+{
+  "id": "guest-09-three-head-216-v1-back",
+  "characterId": "guest-09",
+  "direction": "back",
+  "skeleton": "../../common-three-head-216-v1/skeleton.json",
+  "skeletonProjection": "back",
+  "animation": "../../common-three-head-216-v1/animations/tailored-back.json",
+  "template": "tailored",
+  "runtimeEnabled": false,
+  "parts": {
+    "backHair": {
+      "file": "../../guests-style-lock-v1/guest-09/parts/back/backHair-v2.png",
+      "sha256": "110cabe41769418489f2d901b2a10959d1ae32578bb9d98046d799ee027bf378",
+      "sourceViewport": [
+        99,
+        48,
+        1060,
+        1087
+      ],
+      "parent": "head",
+      "pivot": [
+        96,
+        126
+      ],
+      "rect": [
+        61,
+        54,
+        70,
+        72
+      ],
+      "mirrored": false
+    },
+    "legLeftSkin": {
+      "file": "../../guests-style-lock-v1/guest-09/parts/back/legLeftSkin-v1.png",
+      "sha256": "a58ad22a57a9371fa551d74f3535248760aacfdbe71b0d8b6710e87079bcb5d1",
+      "sourceViewport": [
+        142,
+        8,
+        441,
+        2067
+      ],
+      "parent": "thighLeft",
+      "pivot": [
+        86,
+        192.139535
+      ],
+      "rect": [
+        68,
+        191.302326,
+        28,
+        78.697674
+      ],
+      "mirrored": false
+    },
+    "legRightSkin": {
+      "file": "../../guests-style-lock-v1/guest-09/parts/back/legRightSkin-v1.png",
+      "sha256": "8bef28d978ac1c5593561afee7894e6e6017436880035e510dd9d3672efca86d",
+      "sourceViewport": [
+        172,
+        2,
+        409,
+        2022
+      ],
+      "parent": "thighRight",
+      "pivot": [
+        106,
+        192.139535
+      ],
+      "rect": [
+        96,
+        191.302326,
+        28,
+        78.697674
+      ],
+      "mirrored": false
+    },
+    "armRightSkin": {
+      "file": "../../guests-style-lock-v1/guest-09/parts/back/armRightSkin-v1.png",
+      "sha256": "30af96fe98cc029ee0993255d3ce26d7036ca45eb82df3c541d94c8c7db676c6",
+      "sourceViewport": [
+        343,
+        41,
+        329,
+        1406
+      ],
+      "parent": "upperArmRight",
+      "pivot": [
+        119,
+        136.883721
+      ],
+      "rect": [
+        116,
+        134.372093,
+        20,
+        60.27907
+      ],
+      "mirrored": false
+    },
+    "armLeftSkin": {
+      "file": "../../guests-style-lock-v1/guest-09/parts/back/armLeftSkin-v1.png",
+      "sha256": "673bc4fde51b72d1f653b75c19f3dca3b5c5b0af6cb945c598d877d8ee5deab8",
+      "sourceViewport": [
+        358,
+        24,
+        329,
+        1402
+      ],
+      "parent": "upperArmLeft",
+      "pivot": [
+        73,
+        136.883721
+      ],
+      "rect": [
+        56,
+        134.372093,
+        20,
+        60.27907
+      ],
+      "mirrored": false
+    },
+    "torsoShell": {
+      "file": "../../guests-style-lock-v1/guest-09/parts/back/torsoShell-v1.png",
+      "sha256": "4800d5b8d27adb09d7e5209a62b15f3a0fa70c16b76900482e1a14e15d299657",
+      "sourceViewport": [
+        197,
+        15,
+        914,
+        1158
+      ],
+      "parent": "spine",
+      "pivot": [
+        96,
+        176.232558
+      ],
+      "rect": [
+        71,
+        126,
+        50,
+        60.27907
+      ],
+      "mirrored": false
+    },
+    "shadow": {
+      "file": "../../guests-style-lock-v1/guest-09/../../guest-03/style-lock-cutout-v1/parts/front/shadow.svg",
+      "parent": "root",
+      "pivot": [
+        96,
+        270
+      ],
+      "rect": [
+        64,
+        260,
+        64,
+        12
+      ],
+      "mirrored": false
+    },
+    "neck": {
+      "file": "../../guests-style-lock-v1/guest-09/../../guest-03/style-lock-cutout-v1/parts/front/neck.svg",
+      "parent": "neck",
+      "pivot": [
+        96,
+        126
+      ],
+      "rect": [
+        89,
+        121.813953,
+        14,
+        11.72093
+      ],
+      "mirrored": false
+    },
+    "pelvis": {
+      "file": "../../guests-style-lock-v1/guest-09/parts/back/pelvis-v1.svg",
+      "parent": "pelvis",
+      "pivot": [
+        96,
+        191.302326
+      ],
+      "rect": [
+        72,
+        179.581395,
+        48,
+        20.093023
+      ],
+      "mirrored": false
+    }
+  },
+  "drawOrder": [
+    "shadow",
+    "legLeftSkin",
+    "legRightSkin",
+    "pelvis",
+    "neck",
+    "armLeftSkin",
+    "armRightSkin",
+    "torsoShell",
+    "backHair"
+  ],
+  "clothingAttachments": [],
+  "asymmetry": {
+    "mirroringAllowed": false,
+    "policy": "Guest-09 directional originals only; hair part and pocket square remain wearer-relative."
+  },
+  "limitations": [
+    "New geometry candidate. Per-character alpha and visual verification pending.",
+    "Does not inherit guest-04 UV fixes or regenerated sleeve art."
+  ],
+  "shoulderRegistration": {
+    "reason": "Guest-09 rear original has a broad cap and epaulet-like fold; register its sleeve width to the 20px front clothing slot without moving shoulder bones.",
+    "originalWidth": 24,
+    "authoredWidth": 20,
+    "bonePivotsUnchanged": true,
+    "otherCharactersUnchanged": true
+  }
+}

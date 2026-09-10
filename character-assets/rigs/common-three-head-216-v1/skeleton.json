@@ -1,0 +1,515 @@
+{
+  "id": "common-three-head-216-v1",
+  "version": 1,
+  "status": "source-rig-under-verification",
+  "units": "pixels",
+  "canvas": [
+    192,
+    288
+  ],
+  "geometry": {
+    "headHeight": 72,
+    "bodyHeight": 144,
+    "characterHeight": 216,
+    "headTop": 54,
+    "headBottom": 126,
+    "baselineY": 270,
+    "centerX": 96
+  },
+  "policy": "User authorized 72/144/216 skeleton on 2026-09-10. Fixed authored skeleton; no per-character image-bound fitting and no per-frame resizing. Head, body and full silhouette measurements must be audited separately.",
+  "bones": {
+    "root": {
+      "parent": null,
+      "pivot": [
+        96,
+        270
+      ]
+    },
+    "pelvis": {
+      "parent": "root",
+      "pivot": [
+        96,
+        191.302326
+      ]
+    },
+    "spine": {
+      "parent": "pelvis",
+      "pivot": [
+        96,
+        176.232558
+      ]
+    },
+    "neck": {
+      "parent": "spine",
+      "pivot": [
+        96,
+        126
+      ]
+    },
+    "head": {
+      "parent": "neck",
+      "pivot": [
+        96,
+        126
+      ]
+    },
+    "upperArmLeft": {
+      "parent": "spine",
+      "pivot": [
+        119,
+        136.883721
+      ]
+    },
+    "forearmLeft": {
+      "parent": "upperArmLeft",
+      "pivot": [
+        126,
+        162
+      ]
+    },
+    "handLeft": {
+      "parent": "forearmLeft",
+      "pivot": [
+        127,
+        180.418605
+      ]
+    },
+    "upperArmRight": {
+      "parent": "spine",
+      "pivot": [
+        73,
+        136.883721
+      ]
+    },
+    "forearmRight": {
+      "parent": "upperArmRight",
+      "pivot": [
+        66,
+        162
+      ]
+    },
+    "handRight": {
+      "parent": "forearmRight",
+      "pivot": [
+        65,
+        180.418605
+      ]
+    },
+    "thighLeft": {
+      "parent": "pelvis",
+      "pivot": [
+        106,
+        192.139535
+      ]
+    },
+    "calfLeft": {
+      "parent": "thighLeft",
+      "pivot": [
+        106,
+        223.953488
+      ]
+    },
+    "shoeLeft": {
+      "parent": "calfLeft",
+      "pivot": [
+        106,
+        251.581395
+      ]
+    },
+    "thighRight": {
+      "parent": "pelvis",
+      "pivot": [
+        86,
+        192.139535
+      ]
+    },
+    "calfRight": {
+      "parent": "thighRight",
+      "pivot": [
+        86,
+        223.953488
+      ]
+    },
+    "shoeRight": {
+      "parent": "calfRight",
+      "pivot": [
+        86,
+        251.581395
+      ]
+    }
+  },
+  "projections": {
+    "left": {
+      "bones": {
+        "root": {
+          "parent": null,
+          "pivot": [
+            96,
+            270
+          ]
+        },
+        "pelvis": {
+          "parent": "root",
+          "pivot": [
+            96,
+            191.302326
+          ]
+        },
+        "spine": {
+          "parent": "pelvis",
+          "pivot": [
+            96,
+            176.232558
+          ]
+        },
+        "neck": {
+          "parent": "spine",
+          "pivot": [
+            96,
+            126
+          ]
+        },
+        "head": {
+          "parent": "neck",
+          "pivot": [
+            96,
+            126
+          ]
+        },
+        "upperArmLeft": {
+          "parent": "spine",
+          "pivot": [
+            90,
+            136.883721
+          ]
+        },
+        "forearmLeft": {
+          "parent": "upperArmLeft",
+          "pivot": [
+            90,
+            162
+          ]
+        },
+        "handLeft": {
+          "parent": "forearmLeft",
+          "pivot": [
+            90,
+            180.418605
+          ]
+        },
+        "upperArmRight": {
+          "parent": "spine",
+          "pivot": [
+            102,
+            136.883721
+          ]
+        },
+        "forearmRight": {
+          "parent": "upperArmRight",
+          "pivot": [
+            102,
+            162
+          ]
+        },
+        "handRight": {
+          "parent": "forearmRight",
+          "pivot": [
+            102,
+            180.418605
+          ]
+        },
+        "thighLeft": {
+          "parent": "pelvis",
+          "pivot": [
+            94,
+            192.139535
+          ]
+        },
+        "calfLeft": {
+          "parent": "thighLeft",
+          "pivot": [
+            94,
+            223.953488
+          ]
+        },
+        "shoeLeft": {
+          "parent": "calfLeft",
+          "pivot": [
+            94,
+            251.581395
+          ]
+        },
+        "thighRight": {
+          "parent": "pelvis",
+          "pivot": [
+            98,
+            192.139535
+          ]
+        },
+        "calfRight": {
+          "parent": "thighRight",
+          "pivot": [
+            98,
+            223.953488
+          ]
+        },
+        "shoeRight": {
+          "parent": "calfRight",
+          "pivot": [
+            98,
+            251.581395
+          ]
+        }
+      },
+      "policy": "Fixed directional projection of the common 72/144/216 skeleton. No per-character adjustment."
+    },
+    "right": {
+      "bones": {
+        "root": {
+          "parent": null,
+          "pivot": [
+            96,
+            270
+          ]
+        },
+        "pelvis": {
+          "parent": "root",
+          "pivot": [
+            96,
+            191.302326
+          ]
+        },
+        "spine": {
+          "parent": "pelvis",
+          "pivot": [
+            96,
+            176.232558
+          ]
+        },
+        "neck": {
+          "parent": "spine",
+          "pivot": [
+            96,
+            126
+          ]
+        },
+        "head": {
+          "parent": "neck",
+          "pivot": [
+            96,
+            126
+          ]
+        },
+        "upperArmLeft": {
+          "parent": "spine",
+          "pivot": [
+            90,
+            136.883721
+          ]
+        },
+        "forearmLeft": {
+          "parent": "upperArmLeft",
+          "pivot": [
+            90,
+            162
+          ]
+        },
+        "handLeft": {
+          "parent": "forearmLeft",
+          "pivot": [
+            90,
+            180.418605
+          ]
+        },
+        "upperArmRight": {
+          "parent": "spine",
+          "pivot": [
+            102,
+            136.883721
+          ]
+        },
+        "forearmRight": {
+          "parent": "upperArmRight",
+          "pivot": [
+            102,
+            162
+          ]
+        },
+        "handRight": {
+          "parent": "forearmRight",
+          "pivot": [
+            102,
+            180.418605
+          ]
+        },
+        "thighLeft": {
+          "parent": "pelvis",
+          "pivot": [
+            94,
+            192.139535
+          ]
+        },
+        "calfLeft": {
+          "parent": "thighLeft",
+          "pivot": [
+            94,
+            223.953488
+          ]
+        },
+        "shoeLeft": {
+          "parent": "calfLeft",
+          "pivot": [
+            94,
+            251.581395
+          ]
+        },
+        "thighRight": {
+          "parent": "pelvis",
+          "pivot": [
+            98,
+            192.139535
+          ]
+        },
+        "calfRight": {
+          "parent": "thighRight",
+          "pivot": [
+            98,
+            223.953488
+          ]
+        },
+        "shoeRight": {
+          "parent": "calfRight",
+          "pivot": [
+            98,
+            251.581395
+          ]
+        }
+      },
+      "policy": "Fixed directional projection of the common 72/144/216 skeleton. No per-character adjustment."
+    },
+    "back": {
+      "bones": {
+        "root": {
+          "parent": null,
+          "pivot": [
+            96,
+            270
+          ]
+        },
+        "pelvis": {
+          "parent": "root",
+          "pivot": [
+            96,
+            191.302326
+          ]
+        },
+        "spine": {
+          "parent": "pelvis",
+          "pivot": [
+            96,
+            176.232558
+          ]
+        },
+        "neck": {
+          "parent": "spine",
+          "pivot": [
+            96,
+            126
+          ]
+        },
+        "head": {
+          "parent": "neck",
+          "pivot": [
+            96,
+            126
+          ]
+        },
+        "upperArmLeft": {
+          "parent": "spine",
+          "pivot": [
+            73,
+            136.883721
+          ]
+        },
+        "forearmLeft": {
+          "parent": "upperArmLeft",
+          "pivot": [
+            73,
+            162
+          ]
+        },
+        "handLeft": {
+          "parent": "forearmLeft",
+          "pivot": [
+            73,
+            180.418605
+          ]
+        },
+        "upperArmRight": {
+          "parent": "spine",
+          "pivot": [
+            119,
+            136.883721
+          ]
+        },
+        "forearmRight": {
+          "parent": "upperArmRight",
+          "pivot": [
+            119,
+            162
+          ]
+        },
+        "handRight": {
+          "parent": "forearmRight",
+          "pivot": [
+            119,
+            180.418605
+          ]
+        },
+        "thighLeft": {
+          "parent": "pelvis",
+          "pivot": [
+            86,
+            192.139535
+          ]
+        },
+        "calfLeft": {
+          "parent": "thighLeft",
+          "pivot": [
+            86,
+            223.953488
+          ]
+        },
+        "shoeLeft": {
+          "parent": "calfLeft",
+          "pivot": [
+            86,
+            251.581395
+          ]
+        },
+        "thighRight": {
+          "parent": "pelvis",
+          "pivot": [
+            106,
+            192.139535
+          ]
+        },
+        "calfRight": {
+          "parent": "thighRight",
+          "pivot": [
+            106,
+            223.953488
+          ]
+        },
+        "shoeRight": {
+          "parent": "calfRight",
+          "pivot": [
+            106,
+            251.581395
+          ]
+        }
+      },
+      "policy": "Fixed directional projection of the common 72/144/216 skeleton. No per-character adjustment."
+    }
+  }
+}

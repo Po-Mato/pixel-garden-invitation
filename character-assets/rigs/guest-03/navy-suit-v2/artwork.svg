@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="192" height="288" viewBox="0 0 192 288">
+  <title>3번 네이비 정장 하객 고정밀 컷아웃 보조 파츠</title>
+  <desc>방향별 고정밀 래스터 파츠는 part-layout.json과 parts 디렉터리에 있다. 이 파일은 그림자와 방향상 보이지 않는 빈 파츠만 정의한다.</desc>
+  <defs>
+    <g id="down-shadow"><ellipse cx="96" cy="262" rx="32" ry="6" fill="#342e39" opacity="0.16"/></g>
+    <g id="left-shadow"><ellipse cx="95" cy="262" rx="31" ry="5.7" fill="#342e39" opacity="0.16"/></g>
+    <g id="right-shadow"><ellipse cx="97" cy="262" rx="31" ry="5.7" fill="#342e39" opacity="0.16"/></g>
+    <g id="up-shadow"><ellipse cx="96" cy="262" rx="32" ry="6" fill="#342e39" opacity="0.16"/></g>
+
+    <g id="down-torso"><path d="M0 0" fill="none" data-hidden-reason="shirt-and-jacket-own-the-torso-paint"/></g>
+    <g id="left-torso"><path d="M0 0" fill="none" data-hidden-reason="shirt-and-jacket-own-the-torso-paint"/></g>
+    <g id="right-torso"><path d="M0 0" fill="none" data-hidden-reason="shirt-and-jacket-own-the-torso-paint"/></g>
+    <g id="up-torso"><path d="M0 0" fill="none" data-hidden-reason="back-jacket-owns-the-torso-paint"/></g>
+    <g id="up-shirtTie"><path d="M0 0" fill="none" data-hidden-reason="not-visible-from-back"/></g>
+    <g id="up-face"><path d="M0 0" fill="none" data-hidden-reason="not-visible-from-back"/></g>
+    <g id="up-frontHair"><path d="M0 0" fill="none" data-hidden-reason="back-hair-is-the-visible-hair-part"/></g>
+
+    <g id="up-pocketSquare"><path d="M0 0" fill="none" data-hidden-reason="not-visible-from-back"/></g>
+    <g id="down-accessory"><path d="M0 0" fill="none" data-hidden-reason="no-extra-accessory"/></g>
+    <g id="left-accessory"><path d="M0 0" fill="none" data-hidden-reason="no-extra-accessory"/></g>
+    <g id="right-accessory"><path d="M0 0" fill="none" data-hidden-reason="no-extra-accessory"/></g>
+    <g id="up-accessory"><path d="M0 0" fill="none" data-hidden-reason="no-extra-accessory"/></g>
+  </defs>
+</svg>

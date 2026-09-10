@@ -1,19 +1,16 @@
-export const defaultGuestAssetRevision = "guest02-12-neutral-integrity-v18";
-export const guest01AssetRevision = "guest01-stable-feet-v17";
-export const shoulderContinuousGuestAssetRevision =
-  "guest03-12-continuous-shoulder-v20";
+export const guestCutoutAssetRevision = "guest-three-head-216-v1-20260910";
 
 export const guestAssetRevisions: Readonly<Partial<Record<string, string>>> = {
-  "feminine-long-wave-dress": guest01AssetRevision,
-  "feminine-formal-hanbok": defaultGuestAssetRevision,
-  "masculine-navy-suit": shoulderContinuousGuestAssetRevision,
-  "masculine-charcoal-blazer": shoulderContinuousGuestAssetRevision,
-  "feminine-sage-bolero-dress": defaultGuestAssetRevision,
-  "feminine-champagne-navy-skirt": shoulderContinuousGuestAssetRevision,
-  "feminine-lavender-jacket-dress": shoulderContinuousGuestAssetRevision,
-  "feminine-teal-modern-hanbok": shoulderContinuousGuestAssetRevision,
-  "masculine-beige-summer-suit": shoulderContinuousGuestAssetRevision,
-  "masculine-charcoal-burgundy-tie": shoulderContinuousGuestAssetRevision,
-  "masculine-green-blazer-cream-pants": shoulderContinuousGuestAssetRevision,
-  "masculine-blue-modern-hanbok": shoulderContinuousGuestAssetRevision,
+  "feminine-long-wave-dress": guestCutoutAssetRevision,
+  "feminine-formal-hanbok": guestCutoutAssetRevision,
+  "masculine-navy-suit": guestCutoutAssetRevision,
+  "masculine-charcoal-blazer": guestCutoutAssetRevision,
+  "feminine-sage-bolero-dress": guestCutoutAssetRevision,
+  "feminine-champagne-navy-skirt": guestCutoutAssetRevision,
+  "feminine-lavender-jacket-dress": guestCutoutAssetRevision,
+  "feminine-teal-modern-hanbok": guestCutoutAssetRevision,
+  "masculine-beige-summer-suit": guestCutoutAssetRevision,
+  "masculine-charcoal-burgundy-tie": guestCutoutAssetRevision,
+  "masculine-green-blazer-cream-pants": guestCutoutAssetRevision,
+  "masculine-blue-modern-hanbok": guestCutoutAssetRevision
 };

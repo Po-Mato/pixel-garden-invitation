@@ -1,0 +1,110 @@
+{
+  "status": "review-only-not-runtime",
+  "runtimeEnabled": false,
+  "geometry": [
+    72,
+    144,
+    216
+  ],
+  "frame": [
+    192,
+    288
+  ],
+  "sheet": [
+    768,
+    1152
+  ],
+  "gameFrame": [
+    48,
+    72
+  ],
+  "directions": [
+    "front",
+    "left",
+    "right",
+    "back"
+  ],
+  "sources": [
+    {
+      "direction": "front",
+      "frame": 1,
+      "sha256": "4d3b5d347d148e0dcaecf6917afe00c882f0c6be02e857d79330ae24f6d24a4a"
+    },
+    {
+      "direction": "front",
+      "frame": 2,
+      "sha256": "843cdba60c7f6c7e3d6784dbacafc71feb7c8ed27e0e06d232c3ba1f81b86e07"
+    },
+    {
+      "direction": "front",
+      "frame": 3,
+      "sha256": "3097cbd8ead87c5f2f098b2c483f1a66ce9507d2e29311388ca9b2ee1c1385a0"
+    },
+    {
+      "direction": "front",
+      "frame": 4,
+      "sha256": "843cdba60c7f6c7e3d6784dbacafc71feb7c8ed27e0e06d232c3ba1f81b86e07"
+    },
+    {
+      "direction": "left",
+      "frame": 1,
+      "sha256": "6677660414f203152554cf8a32000619aebe32be4902984301d98983fe782173"
+    },
+    {
+      "direction": "left",
+      "frame": 2,
+      "sha256": "60f352ebc823cd5770213c931d699734d20f4bf5e317838a749a0665514580b5"
+    },
+    {
+      "direction": "left",
+      "frame": 3,
+      "sha256": "b24ed4671b43a7c3b104522dcee9ef74bdf72e21c5f3dae5500c312f0120ab7a"
+    },
+    {
+      "direction": "left",
+      "frame": 4,
+      "sha256": "60f352ebc823cd5770213c931d699734d20f4bf5e317838a749a0665514580b5"
+    },
+    {
+      "direction": "right",
+      "frame": 1,
+      "sha256": "086da8c4697a90d4c3929dfc4d418f1f44df8fe2f3672f4d28f4bb8d46ca108b"
+    },
+    {
+      "direction": "right",
+      "frame": 2,
+      "sha256": "37dd412bd19bf87aa8ced974fc89d7624d28b997b31dab91d53093d627393b30"
+    },
+    {
+      "direction": "right",
+      "frame": 3,
+      "sha256": "189089724095564127caa061e11fc134e881f7e4ae4923aaa87a740878a95f09"
+    },
+    {
+      "direction": "right",
+      "frame": 4,
+      "sha256": "37dd412bd19bf87aa8ced974fc89d7624d28b997b31dab91d53093d627393b30"
+    },
+    {
+      "direction": "back",
+      "frame": 1,
+      "sha256": "5ad8db1937f6db652feb4896b8ce0990bcda91542158f983ad9b5e7c5210c3c7"
+    },
+    {
+      "direction": "back",
+      "frame": 2,
+      "sha256": "35fc1db131a87e090d7f30b3faeba567110c4c3bb907e188487e96986401c01f"
+    },
+    {
+      "direction": "back",
+      "frame": 3,
+      "sha256": "e7eec778fc63437361a91b1849f512df2f993c9b56413ada4354e67a6b197d9f"
+    },
+    {
+      "direction": "back",
+      "frame": 4,
+      "sha256": "35fc1db131a87e090d7f30b3faeba567110c4c3bb907e188487e96986401c01f"
+    }
+  ],
+  "sheetSha256": "d3f81dca24dcb76763f3a9ab779b7bf390ea78a868bcd01d1ad54eae3b6bc04c"
+}

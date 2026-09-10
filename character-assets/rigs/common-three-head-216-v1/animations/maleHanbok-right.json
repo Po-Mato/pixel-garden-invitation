@@ -1,0 +1,92 @@
+{
+  "id": "maleHanbok-right-216-v1",
+  "type": "tailored",
+  "direction": "right",
+  "regions": {
+    "thigh": [
+      190.465116,
+      36.837209
+    ],
+    "calf": [
+      220.604651,
+      36
+    ],
+    "shoe": [
+      251.581395,
+      19.255814
+    ],
+    "upperArm": [
+      117.481103,
+      47.74327
+    ],
+    "forearm": [
+      163.726545,
+      23.778021
+    ],
+    "hand": [
+      185.819509,
+      27.522591
+    ]
+  },
+  "frames": [
+    {
+      "forward": "Left",
+      "rotations": {
+        "upperArmLeft": 3,
+        "forearmLeft": -1,
+        "handLeft": -2,
+        "thighLeft": -8,
+        "calfLeft": 8,
+        "shoeLeft": 0,
+        "thighRight": 8,
+        "calfRight": 8,
+        "shoeRight": -16
+      },
+      "depth": {
+        "Left": 1.146977,
+        "Right": 0
+      }
+    },
+    {
+      "forward": null,
+      "rotations": {},
+      "depth": {
+        "Left": 0.837209,
+        "Right": 0.837209
+      }
+    },
+    {
+      "forward": "Right",
+      "rotations": {
+        "upperArmLeft": -3,
+        "forearmLeft": 1,
+        "handLeft": 2,
+        "thighRight": -8,
+        "calfRight": 8,
+        "shoeRight": 0,
+        "thighLeft": 8,
+        "calfLeft": 8,
+        "shoeLeft": -16
+      },
+      "depth": {
+        "Right": 1.146977,
+        "Left": 0
+      }
+    },
+    {
+      "forward": null,
+      "rotations": {},
+      "depth": {
+        "Left": 0.837209,
+        "Right": 0.837209
+      }
+    }
+  ],
+  "policy": "Shared tailored clothing animation derived from 216px pilot skeleton, not a character-specific walk.",
+  "template": "maleHanbok",
+  "clothingPolicy": {
+    "upperVest": "rigid with torso",
+    "trousers": "follow shared leg joints",
+    "norigae": "separate spine-attached motion, no body sway"
+  }
+}

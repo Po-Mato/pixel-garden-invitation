@@ -1,0 +1,244 @@
+{
+  "id": "guest-04-three-head-216-v1-front",
+  "characterId": "guest-04",
+  "direction": "front",
+  "skeleton": "../../common-three-head-216-v1/skeleton.json",
+  "skeletonProjection": null,
+  "animation": "../../common-three-head-216-v1/animations/tailored-front.json",
+  "template": "tailored",
+  "runtimeEnabled": false,
+  "parts": {
+    "torsoShell": {
+      "file": "../../guests-style-lock-v1/guest-04/parts/front/torsoShell-v1.png",
+      "sourceViewport": [
+        0,
+        0,
+        827,
+        1902
+      ],
+      "parent": "spine",
+      "pivot": [
+        96,
+        176.232558
+      ],
+      "rect": [
+        71,
+        126,
+        50,
+        73.674419
+      ],
+      "mirrored": false,
+      "fadeBottom": [
+        68.651163,
+        4.186047
+      ]
+    },
+    "armLeftSkin": {
+      "file": "../../guests-style-lock-v1/guest-04/parts/front/armLeftSkin-v2.png",
+      "sourceViewport": [
+        136,
+        0,
+        432,
+        2038
+      ],
+      "parent": "upperArmLeft",
+      "pivot": [
+        119,
+        136.883721
+      ],
+      "rect": [
+        116,
+        134.372093,
+        20,
+        60.27907
+      ],
+      "mirrored": false
+    },
+    "armRightSkin": {
+      "file": "../../guests-style-lock-v1/guest-04/parts/front/armRightSkin-v2.png",
+      "sourceViewport": [
+        140,
+        0,
+        446,
+        2005
+      ],
+      "parent": "upperArmRight",
+      "pivot": [
+        73,
+        136.883721
+      ],
+      "rect": [
+        56,
+        134.372093,
+        20,
+        60.27907
+      ],
+      "mirrored": false
+    },
+    "legLeftSkin": {
+      "file": "../../guests-style-lock-v1/guest-04/parts/front/legLeftSkin-v2.png",
+      "sourceViewport": [
+        88,
+        0,
+        547,
+        2089
+      ],
+      "parent": "thighLeft",
+      "pivot": [
+        106,
+        192.139535
+      ],
+      "rect": [
+        96,
+        190.465116,
+        28,
+        79.534884
+      ],
+      "mirrored": false
+    },
+    "legRightSkin": {
+      "file": "../../guests-style-lock-v1/guest-04/parts/front/legRightSkin-v2.png",
+      "sourceViewport": [
+        83,
+        0,
+        559,
+        2049
+      ],
+      "parent": "thighRight",
+      "pivot": [
+        86,
+        192.139535
+      ],
+      "rect": [
+        68,
+        190.465116,
+        28,
+        79.534884
+      ],
+      "mirrored": false
+    },
+    "face": {
+      "file": "../../guests-style-lock-v1/guest-04/parts/front/face-v1.png",
+      "sourceViewport": [
+        0,
+        0,
+        1271,
+        1220
+      ],
+      "parent": "head",
+      "pivot": [
+        96,
+        126
+      ],
+      "rect": [
+        68,
+        66,
+        56,
+        60
+      ],
+      "mirrored": false,
+      "registrationNote": "Remove only bottom artboard padding from original UV: opaque chin ends y1216, viewport ends y1219. Fixed face slot and skeleton unchanged; source pixels untouched."
+    },
+    "frontHair": {
+      "file": "../../guests-style-lock-v1/guest-04/parts/front/frontHair-v1.png",
+      "sourceViewport": [
+        0,
+        0,
+        1384,
+        1136
+      ],
+      "parent": "head",
+      "pivot": [
+        96,
+        126
+      ],
+      "rect": [
+        60,
+        57,
+        72,
+        52
+      ],
+      "mirrored": false
+    },
+    "backHair": {
+      "file": "../../guests-style-lock-v1/guest-04/parts/front/backHair-v4.png",
+      "sourceViewport": [
+        0,
+        8,
+        1254,
+        1232
+      ],
+      "parent": "head",
+      "pivot": [
+        96,
+        126
+      ],
+      "rect": [
+        60,
+        54,
+        72,
+        67
+      ],
+      "mirrored": false,
+      "registrationNote": "Explicit vertical registration of existing original transparent margins. Opaque source bounds y12..1235 retained within y8..1239. Fixed head slot and skeleton unchanged; source pixels untouched."
+    },
+    "neckSkin": {
+      "file": "../../guests-style-lock-v1/guest-04/../../guest-03/style-lock-cutout-v1/parts/front/neck.svg",
+      "parent": "neck",
+      "pivot": [
+        96,
+        126
+      ],
+      "rect": [
+        89,
+        122.651163,
+        14,
+        9.209302
+      ],
+      "mirrored": false
+    },
+    "shadow": {
+      "file": "../../guests-style-lock-v1/guest-04/../../guest-03/style-lock-cutout-v1/parts/front/shadow.svg",
+      "parent": "root",
+      "pivot": [
+        96,
+        270
+      ],
+      "rect": [
+        64,
+        260,
+        64,
+        12
+      ],
+      "mirrored": false
+    }
+  },
+  "drawOrder": [
+    "shadow",
+    "backHair",
+    "legRightSkin",
+    "legLeftSkin",
+    "armRightSkin",
+    "armLeftSkin",
+    "torsoShell",
+    "neckSkin",
+    "face",
+    "frontHair"
+  ],
+  "clothingAttachments": [],
+  "asymmetry": {
+    "mirroringAllowed": false,
+    "policy": "Independent directional hair, pocket square and costume originals; no reflection."
+  },
+  "legOcclusionTop": 190.465116,
+  "limitations": [
+    "New 216px rig candidate, requires per-character source and visual validation.",
+    "Old sources retained, no rendered-frame input or body pixel patches."
+  ],
+  "headWidthRegistration": {
+    "reason": "guest-04 front original hair artboard placement: remove undersized perceived crown relative to authored profiles, without changing face, height, skeleton or frames independently",
+    "hairSlotWidth": 72,
+    "headHeight": 72,
+    "pixelCorrection": false
+  }
+}

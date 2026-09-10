@@ -30,7 +30,7 @@ test("quality CI dashboard aggregates cache, reuse, size, and saved time", () =>
     sample("mobile", "production"),
     sample("android", "device", false),
     sample("ios", "device")
-  ]);
+  ], undefined, { generatedAt: "2026-08-10T12:00:00.000Z" });
   assert.equal(summary.status, "passed");
   assert.equal(summary.metrics.dependencyCacheHitRate, 0.75);
   assert.equal(summary.metrics.sharedBuildRestoreRate, 1);

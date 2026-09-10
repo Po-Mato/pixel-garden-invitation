@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="14" height="11" viewBox="0 0 14 11">
+  <defs>
+    <linearGradient id="skin" x1="0" y1="0" x2="0.8" y2="1">
+      <stop offset="0" stop-color="#d69b7e"/>
+      <stop offset="0.45" stop-color="#f2c2a3"/>
+      <stop offset="1" stop-color="#e6ac8a"/>
+    </linearGradient>
+  </defs>
+  <path d="M1 0H13L12 5Q10 8 7 10Q4 8 2 5Z" fill="url(#skin)"/>
+</svg>

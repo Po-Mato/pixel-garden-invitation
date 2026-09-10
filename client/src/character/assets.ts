@@ -5,6 +5,8 @@ import {
   resolveGuestPreset
 } from "@wedding-game/shared";
 import { guestAssetRevisions } from "./assetRevisions";
+import { resolveGuest03PilotLayer } from "./guest03Pilot";
+import { resolveGuest216PilotLayer } from "./guest216Pilot";
 
 export type CharacterDisplayMode = "world" | "thumbnail" | "preview";
 
@@ -39,6 +41,14 @@ export function resolveCharacterLayers(
   displayMode: CharacterDisplayMode = "world"
 ): ResolvedCharacterLayer[] {
   const preset = resolveGuestPreset(appearance);
+  if (import.meta.env.DEV && import.meta.env.VITE_GUEST03_PILOT === "true") {
+    const pilot = resolveGuest03PilotLayer(preset.id, true);
+    if (pilot) return [pilot];
+  }
+  if (import.meta.env.DEV && import.meta.env.VITE_GUEST216_PILOT === "true") {
+    const pilot = resolveGuest216PilotLayer(preset.id, true, displayMode, import.meta.env.VITE_GUEST216_RUNTIME_PILOT === "true");
+    if (pilot) return [pilot];
+  }
   const fallbackPreset = resolveGuestPreset(defaultCharacterAppearance);
   const usesSelectionPreview = displayMode === "preview" || displayMode === "thumbnail";
   const selectedRevision = guestAssetRevisions[preset.id];

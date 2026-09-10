@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="27" height="24" viewBox="0 0 27 24">
+  <defs>
+    <linearGradient id="cloth"><stop stop-color="#2b2d32"/><stop offset=".45" stop-color="#3b3d42"/><stop offset="1" stop-color="#282a2f"/></linearGradient>
+  </defs>
+  <path d="M2 1 Q13 0 25 1 L26 22 Q14 24 1 22 Z" fill="url(#cloth)" stroke="#202126" stroke-width=".65"/>
+  <path d="M22 2 Q23 11 22 21" fill="none" stroke="#26282d" stroke-width=".5"/>
+</svg>

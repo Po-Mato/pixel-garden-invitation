@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "id": "tailored-walk-v1",
+  "baseRig": "../guest-03/navy-suit-v1/rig.json",
+  "garmentMotion": {
+    "down": [{}, {}, {}, {}],
+    "left": [{}, {}, {}, {}],
+    "right": [{}, {}, {}, {}],
+    "up": [{}, {}, {}, {}]
+  },
+  "accessoryMotion": {
+    "down": [{}, {}, {}, {}],
+    "left": [{}, {}, {}, {}],
+    "right": [{}, {}, {}, {}],
+    "up": [{}, {}, {}, {}]
+  }
+}

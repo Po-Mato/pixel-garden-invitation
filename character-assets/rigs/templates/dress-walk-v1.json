@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "id": "dress-walk-v1",
+  "baseRig": "../guest-03/navy-suit-v1/rig.json",
+  "garmentMotion": {
+    "down": [{ "rotate": -1.2 }, {}, { "rotate": 1.2 }, {}],
+    "left": [{ "rotate": -1.6, "translateX": -1 }, {}, { "rotate": 1.1, "translateX": 1 }, {}],
+    "right": [{ "rotate": 1.1, "translateX": -1 }, {}, { "rotate": -1.6, "translateX": 1 }, {}],
+    "up": [{ "rotate": 1 }, {}, { "rotate": -1 }, {}]
+  },
+  "accessoryMotion": {
+    "down": [{ "rotate": 2 }, {}, { "rotate": -2 }, {}],
+    "left": [{ "rotate": -3 }, {}, { "rotate": 2 }, {}],
+    "right": [{ "rotate": 2 }, {}, { "rotate": -3 }, {}],
+    "up": [{}, {}, {}, {}]
+  }
+}

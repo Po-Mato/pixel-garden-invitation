@@ -1,0 +1,232 @@
+{
+  "id": "guest-03-three-head-216-v1-back",
+  "direction": "back",
+  "skeleton": "../../common-three-head-216-v1/skeleton.json",
+  "runtimeEnabled": false,
+  "sourceBody": {
+    "file": "../style-lock-cutout-v1/concepts/upperbody-v7/back-close-arms-source.png",
+    "size": [
+      1536,
+      1024
+    ],
+    "armMasks": {
+      "Left": "M0 0 H407 V128 C408 260 448 360 493 460 C503 560 472 710 458 810 L450 1024 H0 Z",
+      "Right": "M1128 0 H1536 V1024 H1070 V800 Q1030 700 1030 450 Q1120 320 1128 128 Z"
+    },
+    "armRegions": {
+      "upperArm": {
+        "sourceY": 0,
+        "sourceHeight": 520
+      },
+      "forearm": {
+        "sourceY": 490,
+        "sourceHeight": 325
+      },
+      "hand": {
+        "sourceY": 790,
+        "sourceHeight": 234
+      }
+    }
+  },
+  "sourceGeometryMapping": {
+    "translate": [
+      28.34834834834835,
+      126
+    ],
+    "scale": [
+      0.08808808808808809,
+      0.07374816677142258
+    ]
+  },
+  "head": {
+    "file": "../style-lock-cutout-v1/concepts/hair-style-v4/back-hair-rounded.png",
+    "size": [
+      1312,
+      1199
+    ],
+    "sourceViewport": [
+      58,
+      15,
+      1172,
+      1068
+    ],
+    "rect": [
+      60,
+      54,
+      72,
+      72
+    ],
+    "parent": "head",
+    "pivot": [
+      96,
+      126
+    ],
+    "mirrored": false
+  },
+  "hiddenTorso": {
+    "file": "../style-lock-cutout-v1/animation/back-v1/source/hidden-torso.png",
+    "size": [
+      1536,
+      1024
+    ],
+    "sourceViewport": [
+      407,
+      0,
+      719,
+      1004
+    ],
+    "rect": [
+      62,
+      126,
+      68,
+      73.674419
+    ],
+    "parent": "spine",
+    "pivot": [
+      96,
+      176.232558
+    ]
+  },
+  "parts": {
+    "neck": {
+      "file": "../style-lock-cutout-v1/parts/back/neck.png",
+      "rect": [
+        89,
+        121.813953,
+        14,
+        11.72093
+      ],
+      "mirrored": false,
+      "parent": "neck",
+      "pivot": [
+        96,
+        126
+      ]
+    },
+    "legLeftSkin": {
+      "file": "../style-lock-cutout-v1/parts/back/legLeftSkin.png",
+      "rect": [
+        68,
+        191.302326,
+        28,
+        79.534884
+      ],
+      "mirrored": false,
+      "parent": "thighLeft",
+      "pivot": [
+        86,
+        192.139535
+      ]
+    },
+    "legRightSkin": {
+      "file": "../style-lock-cutout-v1/parts/back/legRightSkin.png",
+      "rect": [
+        96,
+        191.302326,
+        28,
+        79.534884
+      ],
+      "mirrored": false,
+      "parent": "thighRight",
+      "pivot": [
+        106,
+        192.139535
+      ]
+    }
+  },
+  "legRegions": {
+    "thigh": [
+      191.302326,
+      36
+    ],
+    "calf": [
+      220.604651,
+      36
+    ],
+    "shoe": [
+      251.581395,
+      19.255814
+    ]
+  },
+  "legOcclusionTop": 191.302326,
+  "frames": [
+    {
+      "label": "left-foot-forward",
+      "upperArmLeft": 2,
+      "forearmLeft": -1,
+      "handLeft": -1,
+      "upperArmRight": 2,
+      "forearmRight": -1,
+      "handRight": -1,
+      "forward": "Left",
+      "legs": {
+        "Left": {
+          "depthY": -8,
+          "thigh": 2,
+          "calf": -4,
+          "shoe": 2
+        },
+        "Right": {
+          "depthY": 0
+        }
+      }
+    },
+    {
+      "label": "neutral",
+      "forward": null,
+      "legs": {
+        "Left": {
+          "depthY": 0
+        },
+        "Right": {
+          "depthY": 0
+        }
+      }
+    },
+    {
+      "label": "right-foot-forward",
+      "upperArmLeft": -2,
+      "forearmLeft": 1,
+      "handLeft": 1,
+      "upperArmRight": -2,
+      "forearmRight": 1,
+      "handRight": 1,
+      "forward": "Right",
+      "legs": {
+        "Left": {
+          "depthY": 0
+        },
+        "Right": {
+          "depthY": -8,
+          "thigh": -2,
+          "calf": 4,
+          "shoe": -2
+        }
+      }
+    },
+    {
+      "label": "neutral",
+      "forward": null,
+      "legs": {
+        "Left": {
+          "depthY": 0
+        },
+        "Right": {
+          "depthY": 0
+        }
+      }
+    }
+  ],
+  "limitations": [
+    "Rounded rear hair original rebound to common skull envelope, not cropped from a walking frame.",
+    "Fixed original UV registration; no runtime alpha trim.",
+    "Rear limb and neck seams require fresh visual review."
+  ],
+  "skeletonProjection": "back",
+  "headWidthRegistration": {
+    "reason": "guest-03 back original hair artboard placement: remove undersized perceived crown relative to authored profiles, without changing face, height, skeleton or frames independently",
+    "hairSlotWidth": 72,
+    "headHeight": 72,
+    "pixelCorrection": false
+  }
+}

@@ -1,0 +1,363 @@
+{
+  "id": "guest-12-three-head-216-v1-right",
+  "characterId": "guest-12",
+  "direction": "right",
+  "skeleton": "../../common-three-head-216-v1/skeleton.json",
+  "skeletonProjection": "right",
+  "animation": "../../common-three-head-216-v1/animations/maleHanbok-right.json",
+  "template": "maleHanbok",
+  "runtimeEnabled": false,
+  "parts": {
+    "shadow": {
+      "file": "../../guests-style-lock-v1/guest-11/../../guest-03/style-lock-cutout-v1/parts/front/shadow.svg",
+      "parent": "root",
+      "pivot": [
+        96,
+        270
+      ],
+      "rect": [
+        64,
+        260,
+        64,
+        12
+      ],
+      "mirrored": false
+    },
+    "legRightSkin": {
+      "file": "../../guests-style-lock-v1/guest-11/parts/right/legRightSkin-v1.png",
+      "sha256": "a11d88472af1b9788c1b5a6dc22cfc05b2946c567d593609e38c0b983f1adfb6",
+      "sourceViewport": [
+        24,
+        12,
+        775,
+        1897
+      ],
+      "parent": "thighRight",
+      "pivot": [
+        98,
+        192.139535
+      ],
+      "rect": [
+        84,
+        190.465116,
+        36,
+        79.534884
+      ],
+      "mirrored": false,
+      "material": {
+        "type": "gradient-map",
+        "colors": [
+          "#141821",
+          "#282d3b",
+          "#444b5f",
+          "#657084",
+          "#939bad"
+        ]
+      }
+    },
+    "legLeftSkin": {
+      "file": "../../guests-style-lock-v1/guest-11/parts/right/legLeftSkin-v1.png",
+      "sha256": "ec4726fde62f33b7d82eed2453013863f2976c80015d9714c7c754d4382d1cc6",
+      "sourceViewport": [
+        7,
+        5,
+        801,
+        1941
+      ],
+      "parent": "thighLeft",
+      "pivot": [
+        94,
+        192.139535
+      ],
+      "rect": [
+        82,
+        190.465116,
+        36,
+        79.534884
+      ],
+      "mirrored": false,
+      "registrationCanvas": [
+        814,
+        1946
+      ],
+      "material": {
+        "type": "gradient-map",
+        "colors": [
+          "#141821",
+          "#282d3b",
+          "#444b5f",
+          "#657084",
+          "#939bad"
+        ]
+      }
+    },
+    "pelvis": {
+      "file": "../../guests-style-lock-v1/guest-11/parts/right/pelvis-v1.svg",
+      "parent": "pelvis",
+      "pivot": [
+        96,
+        191.302326
+      ],
+      "rect": [
+        81,
+        181.255814,
+        27,
+        20.093023
+      ],
+      "mirrored": false,
+      "material": {
+        "type": "gradient-map",
+        "colors": [
+          "#141821",
+          "#282d3b",
+          "#444b5f",
+          "#657084",
+          "#939bad"
+        ]
+      }
+    },
+    "torsoShell": {
+      "file": "parts/right/torso-v1.png",
+      "sha256": "c022a4abb07dac3bf223a4e8e86a096cbaa118f5aa73d2e120439da4ac97bda8",
+      "sourceViewport": [
+        320,
+        36,
+        550,
+        1302
+      ],
+      "parent": "spine",
+      "pivot": [
+        96,
+        176.232558
+      ],
+      "rect": [
+        77,
+        126,
+        38,
+        78
+      ],
+      "mirrored": false
+    },
+    "armLeftSkin": {
+      "file": "../../guests-style-lock-v1/guest-05/parts/right/armLeftSkin-v1.png",
+      "sha256": "664c3960ad9e4cf6ce831a4d268c433db27d589ce85f5118cfe72d107d256c4a",
+      "sourceViewport": [
+        103,
+        47,
+        513,
+        2072
+      ],
+      "parent": "upperArmLeft",
+      "pivot": [
+        90,
+        136.883721
+      ],
+      "rect": [
+        79.730623,
+        137.327325,
+        23.481576,
+        62.347094
+      ],
+      "mirrored": false,
+      "material": {
+        "type": "inner-edge-shading",
+        "color": "#68605a",
+        "radius": 1.2,
+        "opacity": 0.35
+      }
+    },
+    "neckSkin": {
+      "file": "../../guests-style-lock-v1/guest-11/../../guest-03/style-lock-cutout-v1/parts/front/neck.svg",
+      "parent": "neck",
+      "pivot": [
+        96,
+        126
+      ],
+      "rect": [
+        89,
+        122.651163,
+        14,
+        9.209302
+      ],
+      "mirrored": false
+    },
+    "backHair": {
+      "file": "../../guests-style-lock-v1/guest-11/parts/right/backHair-v1.png",
+      "sha256": "e1d1bd32d4f72936dc91be044a43af64a8fd0a8ef4106b8b4b4890d6e2528afd",
+      "sourceViewport": [
+        34,
+        74,
+        1170,
+        1068
+      ],
+      "parent": "head",
+      "pivot": [
+        96,
+        126
+      ],
+      "rect": [
+        64.171429,
+        61.2,
+        37.028571,
+        60.685714
+      ],
+      "mirrored": false
+    },
+    "face": {
+      "file": "../../guests-style-lock-v1/guest-11/parts/right/face-v1.png",
+      "sha256": "a2685eebcb6a33f9236b91f10ff3849c72fafbec1b47c68971659c48e463d743",
+      "sourceViewport": [
+        5,
+        9,
+        1216,
+        1223
+      ],
+      "parent": "head",
+      "pivot": [
+        96,
+        126
+      ],
+      "rect": [
+        70.342857,
+        63.257143,
+        55.542857,
+        62.742857
+      ],
+      "mirrored": false
+    },
+    "frontHair": {
+      "file": "../../guests-style-lock-v1/guest-11/parts/right/frontHair-v1.png",
+      "sha256": "c92ef609d31a383c7ca3439cb05131a1041c26d7123e4b7fdf833db888421602",
+      "sourceViewport": [
+        22,
+        38,
+        1285,
+        1070
+      ],
+      "parent": "head",
+      "pivot": [
+        96,
+        126
+      ],
+      "rect": [
+        58,
+        54,
+        77.410286,
+        62.742857
+      ],
+      "mirrored": false
+    },
+    "underJeogori": {
+      "file": "parts/underJeogori.svg",
+      "parent": "spine",
+      "pivot": [
+        96,
+        176.232558
+      ],
+      "rect": [
+        80,
+        127,
+        32,
+        72
+      ],
+      "mirrored": false
+    },
+    "norigae": {
+      "file": "../../guest-02/three-head-216-v1/parts/norigae.svg",
+      "parent": "spine",
+      "pivot": [
+        96,
+        176.232558
+      ],
+      "rect": [
+        106,
+        165,
+        7,
+        30
+      ],
+      "mirrored": false,
+      "material": {
+        "type": "gradient-map",
+        "colors": [
+          "#424550",
+          "#7e8490",
+          "#b6bdc6",
+          "#e1e3e8",
+          "#fafafa"
+        ]
+      }
+    }
+  },
+  "drawOrder": [
+    "shadow",
+    "legRightSkin",
+    "legLeftSkin",
+    "pelvis",
+    "underJeogori",
+    "torsoShell",
+    "norigae",
+    "armLeftSkin",
+    "neckSkin",
+    "backHair",
+    "face",
+    "frontHair"
+  ],
+  "clothingAttachments": [
+    {
+      "part": "norigae",
+      "parent": "spine",
+      "pivot": [
+        109.5,
+        165
+      ],
+      "frames": [
+        {
+          "rotate": -2
+        },
+        {
+          "rotate": 0
+        },
+        {
+          "rotate": 2
+        },
+        {
+          "rotate": 0
+        }
+      ]
+    }
+  ],
+  "asymmetry": {
+    "mirroringAllowed": false,
+    "norigae": "wearer-right to match authored front bow at image-left; side projections explicit, hidden behind torso in back",
+    "collar": "directional originals, never reflected"
+  },
+  "limitations": [
+    "Modern hanbok candidate with library cream sleeves and straight trousers; not bespoke traditional wide-sleeve/baji artwork."
+  ],
+  "sourceReuse": {
+    "head": "guest-11 original short-part face/hair library",
+    "limbs": "guest-05 directional buttonless cream sleeve originals; guest-11 slate-material trouser originals; common bones and pivots unchanged",
+    "vest": "guest-12 independent directional source",
+    "underlayer": "editable cream jeogori beneath vest; intentionally covers normal vest armhole",
+    "accessory": "shared editable original norigae with silver material"
+  },
+  "originalGeneration": {
+    "tool": "image_gen",
+    "referenceDisplayed": true,
+    "pixelsUnmodified": true,
+    "source": "exec-c441eedd-564b-4200-872a-8cbcdf68ea78.png",
+    "sha256": "c022a4abb07dac3bf223a4e8e86a096cbaa118f5aa73d2e120439da4ac97bda8",
+    "prompt": "Guest 12 directional blue hanbok vest torso original, white collar, quiet painted game shading, transparent background; no sleeves, head or trousers."
+  },
+  "sleeveRegistration": {
+    "reason": "Individually reviewed buttonless cream original parts for guest-12; replaces green suit texture, not an output frame repair",
+    "library": "guest-05 directional cream sleeve originals",
+    "skeletonAndPivotsUnchanged": true,
+    "otherCharactersUnchanged": true
+  },
+  "mapReadabilityMaterial": {
+    "reason": "Cream sleeve boundary blends with light venue/lobby surfaces",
+    "scope": "Individually authored inner cloth shading before animation; original alpha, pivots and cream interior preserved",
+    "otherCharactersChanged": false
+  }
+}

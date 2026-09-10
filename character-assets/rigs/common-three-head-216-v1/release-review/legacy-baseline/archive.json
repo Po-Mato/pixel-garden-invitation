@@ -1,0 +1,31 @@
+{
+  "archivedAt": "2026-09-10T09:18:20.704Z",
+  "reason": "Preserve old artwork baseline and failed comparison before reviewed 72/144/216 cutout migration. Thresholds unchanged.",
+  "files": [
+    {
+      "source": "scripts/visual-baselines/mobile-game-visual-regression.webp",
+      "file": "mobile-game-visual-regression.webp",
+      "sha256": "9a4f3a001672f41fc0de2cca54a82112ba0c3bee1c88eae1a471b6382c1810fc"
+    },
+    {
+      "source": "scripts/visual-baselines/mobile-game-visual-regression.json",
+      "file": "mobile-game-visual-regression.json",
+      "sha256": "84dfedd532735ab9966c34cfd8ad6aa8241829d57b964632eee810c03c2459a4"
+    },
+    {
+      "source": ".superpowers/visual-regression/mobile-game-current.png",
+      "file": "mobile-game-current.png",
+      "sha256": "8c98d804df278f2117ddb12a6146d546d6f6f2106873ed9842b0eb654208bd84"
+    },
+    {
+      "source": ".superpowers/visual-regression/mobile-game-diff.png",
+      "file": "mobile-game-diff.png",
+      "sha256": "808a4342a1ab289dc705f661c96d2ccdde02fd6acf4d145cbdb51a7fa34ac2d6"
+    },
+    {
+      "source": ".superpowers/visual-regression/mobile-game-regions.json",
+      "file": "mobile-game-regions.json",
+      "sha256": "ce5df57efd1bf2c5d13468ed8dacf2f508b7f6b0eba893addf75c1392ece70ae"
+    }
+  ]
+}

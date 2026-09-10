@@ -84,7 +84,13 @@ test("audit CLI validates finished guest preset source sheets", async () => {
   const { stdout } = await execFileAsync(
     process.execPath,
     [join(root, "scripts/audit-character-assets.mjs"), "--scope=guest-presets"],
-    { cwd: root }
+    {
+      cwd: root,
+      env: {
+        ...process.env,
+        CHARACTER_ASSET_SOURCE_ROOT: join(root, "character-assets/source")
+      }
+    }
   );
 
   assert.match(stdout, /guest-presets/);
