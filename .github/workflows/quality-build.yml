@@ -121,3 +121,12 @@ jobs:
           path: .quality-ci-intentional-cold/quality-ci-efficiency-cold-sample.json
           if-no-files-found: error
           retention-days: 120
+      - name: Preserve failed character render reproducibility evidence
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: storybook-render-diagnostic-${{ github.sha }}
+          path: character-assets/generated/storybook-runtime-staging-v1/
+          if-no-files-found: warn
+          compression-level: 1
+          retention-days: 3
