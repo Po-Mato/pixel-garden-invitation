@@ -26,6 +26,7 @@ on:
       - ".github/workflows/map-patch-automation-e2e.yml"
       - ".github/workflows/visual-regression.yml"
       - "client/src/components/GameWorld.tsx"
+      - "client/src/components/CharacterSprite*"
       - "client/src/components/PortalDestinationPreview.tsx"
       - "client/src/components/Npc*.tsx"
       - "client/src/components/GamePerformanceStatus.tsx"
@@ -61,6 +62,7 @@ on:
       - ".github/workflows/map-patch-automation-e2e.yml"
       - ".github/workflows/visual-regression.yml"
       - "client/src/components/GameWorld.tsx"
+      - "client/src/components/CharacterSprite*"
       - "client/src/components/PortalDestinationPreview.tsx"
       - "client/src/components/Npc*.tsx"
       - "client/src/components/GamePerformanceStatus.tsx"
@@ -287,6 +289,25 @@ jobs:
       - name: Audit live mobile HUD screenshots
         if: env.MAP_EVIDENCE_ONLY != 'true'
         run: pnpm visual:hud-browser
+      - name: Verify first-step visibility while the walking sheet downloads
+        if: env.MAP_EVIDENCE_ONLY != 'true'
+        run: |
+          pnpm --filter @wedding-game/client exec vite preview --host 127.0.0.1 --port 4185 > /tmp/character-first-step-preview.log 2>&1 &
+          CHARACTER_PREVIEW_PID=$!
+          trap 'kill "$CHARACTER_PREVIEW_PID" 2>/dev/null || true' EXIT
+          for attempt in {1..30}; do
+            if curl -fsS http://127.0.0.1:4185/ > /dev/null; then break; fi
+            sleep 1
+          done
+          node scripts/check-character-first-step-visibility.mjs http://127.0.0.1:4185/
+      - name: Preserve first-step visibility evidence
+        if: always() && env.MAP_EVIDENCE_ONLY != 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          name: character-first-step-${{ github.sha }}
+          path: .superpowers/visual-regression/character-first-step
+          include-hidden-files: true
+          retention-days: 7
       - name: Audit real two-client movement and UI collisions
         if: env.MAP_EVIDENCE_ONLY != 'true'
         run: pnpm visual:two-client

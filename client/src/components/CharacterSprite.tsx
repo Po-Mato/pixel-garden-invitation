@@ -28,6 +28,7 @@ export function CharacterSprite({
   displayMode = "world"
 }: Props) {
   const [failedUrls, setFailedUrls] = useState<Set<string>>(() => new Set());
+  const [loadedUrls, setLoadedUrls] = useState<Set<string>>(() => new Set());
   const safeAppearance = parseCharacterAppearance(appearance) ?? defaultCharacterAppearance;
   const motionProfile = resolveCharacterMotionProfile(safeAppearance);
   const useFrontIdle = !moving && direction === "down";
@@ -43,9 +44,20 @@ export function CharacterSprite({
       : layer.fallbackWalkUrl;
     const preferredFailed = failedUrls.has(preferredUrl);
     const url = preferredFailed ? fallbackUrl : preferredUrl;
+    const idleUrl = preferredFailed ? layer.fallbackIdleUrl : layer.idleUrl;
+    const walkUrl = preferredFailed ? layer.fallbackWalkUrl : layer.walkUrl;
+    const alternateUrl = useFrontIdle ? walkUrl : idleUrl;
+    // Keep a decoded pose visible until the requested sheet has loaded.
+    // Changing a CSS background immediately can expose a blank first step,
+    // even while the requested <img> exists and the movement state is valid.
+    const displayUrl = !loadedUrls.has(url) && alternateUrl && loadedUrls.has(alternateUrl)
+      ? alternateUrl
+      : url;
     return failedUrls.has(url) ? [] : [{
       layer,
       url,
+      displayUrl,
+      idle: displayUrl === idleUrl,
       fallback: preferredFailed,
       fallbackAvailable: preferredUrl !== fallbackUrl
     }];
@@ -75,7 +87,7 @@ export function CharacterSprite({
 
   return (
     <span
-      className={`character-sprite character-sprite--${displayMode} ${useFrontIdle && layers[0].idleUrl ? "character-sprite--idle-front" : ""}`}
+      className={`character-sprite character-sprite--${displayMode} ${renderedLayers[0]?.idle ? "character-sprite--idle-front" : ""}`}
       role={label ? "img" : undefined}
       aria-label={label}
       data-direction={direction}
@@ -86,10 +98,10 @@ export function CharacterSprite({
       data-character-fallback={renderedLayers.some(({ fallback }) => fallback) || undefined}
       style={spriteStyle}
     >
-      {renderedLayers.map(({ layer, url, fallback, fallbackAvailable }) => {
+      {renderedLayers.map(({ layer, url, displayUrl, idle, fallback, fallbackAvailable }) => {
         const layerImageUrl = typeof document === "undefined"
-          ? url
-          : new URL(url, document.baseURI).href;
+          ? displayUrl
+          : new URL(displayUrl, document.baseURI).href;
         return (
           <span
             key={`${layer.slot}:${layer.walkUrl}`}
@@ -98,7 +110,7 @@ export function CharacterSprite({
             className={`character-layer character-layer--${layer.slot}`}
             style={{
               backgroundImage: `url("${layerImageUrl}")`,
-              backgroundPosition: useFrontIdle && layer.idleUrl ? "0 0" : `${frame.x}px ${frame.y}px`
+              backgroundPosition: idle ? "0 0" : `${frame.x}px ${frame.y}px`
             } as CSSProperties}
           >
             <img
@@ -106,6 +118,7 @@ export function CharacterSprite({
               src={url}
               alt=""
               aria-hidden="true"
+              onLoad={() => setLoadedUrls((current) => current.has(url) ? current : new Set([...current, url]))}
               onError={() => markFailed(url, !fallback && fallbackAvailable)}
             />
           </span>

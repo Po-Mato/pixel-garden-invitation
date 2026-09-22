@@ -49,6 +49,33 @@ it("uses the two-frame idle class only when facing down and stopped", () => {
   expect(screen.getByLabelText("캐릭터")).not.toHaveClass("character-sprite--idle-front");
 });
 
+it("keeps the loaded idle pose visible until the first walking sheet loads", () => {
+  const { rerender } = render(<CharacterSprite appearance={defaultCharacterAppearance} direction="down" moving={false} label="첫걸음" />);
+  const sprite = screen.getByLabelText("첫걸음");
+  const image = sprite.querySelector("img") as HTMLImageElement;
+  fireEvent.load(image);
+  rerender(<CharacterSprite appearance={defaultCharacterAppearance} direction="down" moving={true} stepFrame={0} label="첫걸음" />);
+  expect(image.src).toContain("__walk.png");
+  expect((sprite.querySelector("[data-character-layer]") as HTMLElement).style.backgroundImage).toContain("__idle.png");
+  expect(sprite).toHaveClass("character-sprite--idle-front");
+  fireEvent.load(image);
+  expect((sprite.querySelector("[data-character-layer]") as HTMLElement).style.backgroundImage).toContain("__walk.png");
+  expect(sprite).not.toHaveClass("character-sprite--idle-front");
+});
+
+it("keeps a loaded walking neutral visible while an idle sheet loads", () => {
+  const { rerender } = render(<CharacterSprite appearance={defaultCharacterAppearance} direction="left" moving={true} label="정지" />);
+  const sprite = screen.getByLabelText("정지");
+  const image = sprite.querySelector("img") as HTMLImageElement;
+  fireEvent.load(image);
+  rerender(<CharacterSprite appearance={defaultCharacterAppearance} direction="down" moving={false} label="정지" />);
+  expect(image.src).toContain("__idle.png");
+  expect((sprite.querySelector("[data-character-layer]") as HTMLElement).style.backgroundImage).toContain("__walk.png");
+  expect(sprite).not.toHaveClass("character-sprite--idle-front");
+  fireEvent.load(image);
+  expect(sprite).toHaveClass("character-sprite--idle-front");
+});
+
 it("월드에서 96x144 프레임을 동일 비율로 48x72에 렌더링한다", () => {
   render(
     <CharacterSprite
