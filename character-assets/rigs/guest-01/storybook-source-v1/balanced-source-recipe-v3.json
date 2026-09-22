@@ -1,0 +1,138 @@
+{
+  "status": "approved-shape-source-shading-study",
+  "runtimeEligible": false,
+  "visualApproved": false,
+  "headSourceOverlays": {"front": ["overlays/head-front-outer-lock-v3.svg"]},
+  "directions": [
+    "front",
+    "left",
+    "right",
+    "back"
+  ],
+  "costumeSourceVolume": {
+    "front": {
+      "torso": 1.12,
+      "skirt": 1.18
+    }
+  },
+  "parts": [
+    {
+      "id": "armLeft-front",
+      "source": "sources/armLeft-front-balanced-v2.png",
+      "sourcePivot": [
+        400,
+        190
+      ],
+      "sourceEnd": [
+        650,
+        1110
+      ]
+    },
+    {
+      "id": "armRight-front",
+      "source": "sources/armRight-front-balanced-v2.png",
+      "sourcePivot": [
+        430,
+        190
+      ],
+      "sourceEnd": [
+        635,
+        1110
+      ]
+    },
+    {
+      "id": "armLeft-left",
+      "source": "sources/armLeft-left-balanced-v2.png",
+      "sourcePivot": [
+        560,
+        150
+      ],
+      "sourceEnd": [
+        520,
+        1135
+      ]
+    },
+    {
+      "id": "armRight-left",
+      "source": "sources/armRight-left-balanced-v2.png",
+      "sourcePivot": [
+        450,
+        180
+      ],
+      "sourceEnd": [
+        610,
+        1110
+      ]
+    },
+    {
+      "id": "armLeft-right",
+      "source": "sources/armLeft-right-balanced-v2.png",
+      "sourcePivot": [
+        450,
+        180
+      ],
+      "sourceEnd": [
+        625,
+        1120
+      ]
+    },
+    {
+      "id": "armRight-right",
+      "source": "sources/armRight-right-balanced-v2.png",
+      "sourcePivot": [
+        460,
+        170
+      ],
+      "sourceEnd": [
+        595,
+        1135
+      ]
+    },
+    {
+      "id": "armLeft-back",
+      "source": "sources/armLeft-back-balanced-v2.png",
+      "sourcePivot": [
+        420,
+        170
+      ],
+      "sourceEnd": [
+        655,
+        1135
+      ]
+    },
+    {
+      "id": "armRight-back",
+      "source": "sources/armRight-back-balanced-v2.png",
+      "sourcePivot": [
+        430,
+        170
+      ],
+      "sourceEnd": [
+        625,
+        1115
+      ]
+    }
+  ],
+  "sourceOverlays": {
+    "legLeft-front": ["overlays/shoe-front-left-shading-v3.svg"],
+    "legRight-front": ["overlays/shoe-front-right-shading-v3.svg"],
+    "legLeft-left": ["overlays/shoe-left-shading-v3.svg"],
+    "legRight-left": ["overlays/shoe-left-shading-v3.svg"],
+    "legLeft-right": ["overlays/shoe-right-shading-v3.svg"],
+    "legRight-right": ["overlays/shoe-right-shading-v3.svg"],
+    "legLeft-back": ["overlays/shoe-back-shading-v3.svg"],
+    "legRight-back": ["overlays/shoe-back-shading-v3.svg"],
+    "skirt-front": [
+      "overlays/skirt-front-contour-v3.svg"
+    ],
+    "skirt-left": [
+      "overlays/skirt-left-contour-v3.svg"
+    ],
+    "skirt-right": [
+      "overlays/skirt-right-contour-v3.svg"
+    ],
+    "skirt-back": [
+      "overlays/skirt-back-contour-v3.svg"
+    ]
+  }
+}

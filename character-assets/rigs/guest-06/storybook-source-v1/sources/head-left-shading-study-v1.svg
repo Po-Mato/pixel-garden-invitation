@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1327" height="1186" viewBox="0 0 1327 1186">
+  <!-- Individually authored left-view upper hair edge material. Source alpha,
+       forehead, face, ear, earring, crown and lower locks are untouched. -->
+  <defs><clipPath id="locks"><rect x="0" y="180" width="280" height="350"/><rect x="900" y="140" width="427" height="450"/></clipPath></defs>
+  <path d="M195 526Q155 453 181 382Q212 290 283 216 M941 154Q1027 249 1054 393Q1071 480 1073 582" fill="none" stroke="#211712" stroke-width="40" opacity="0.75" stroke-linecap="round" clip-path="url(#locks)"/>
+</svg>

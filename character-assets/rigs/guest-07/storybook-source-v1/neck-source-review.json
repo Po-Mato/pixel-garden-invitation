@@ -1,0 +1,40 @@
+{
+  "date": "2026-09-14",
+  "status": "source-material-study-not-release-ready",
+  "source": "sources/neck-right-shading-v1.svg",
+  "part": "neck-right",
+  "sourceOnly": true,
+  "finalPngEdited": false,
+  "geometryChanged": false,
+  "otherDirectionsChanged": false,
+  "sheetSha256": "dddbac27df39de74b2ec7b9f69ac1dbdc5841c28cc4f37aa9115a9a06bc543ae",
+  "tests": { "sourceStudyPassed": 15, "structurePassed": 48 },
+  "contrast": {
+    "samples": 1920,
+    "standardFailures": 60,
+    "displayFailures": 6,
+    "newDisplayFailures": [],
+    "passed": false,
+    "rightFrame3NeighborhoodPoints": [
+      { "x": 25, "y": 32, "before": 1.091393689, "after": 1.3508692486528453 },
+      { "x": 26, "y": 33, "before": 1.09858218, "after": 1.6580666814096836 }
+    ]
+  },
+  "selection": {
+    "currentAssetVerificationValid": false,
+    "supersededReason": "The isolated client QA copy was later found stale. This historical screenshot and motion sample do not verify the source revision recorded here. Source renders and map-fixture evidence are separate; repeat actual-client visual QA after rebuilding its copies.",
+    "viewport": [390, 844],
+    "direction": "right",
+    "observedFrames": [0, 1, 2, 3],
+    "movingTrueSamples": 20,
+    "allSampleRectsEqual": true,
+    "rect": { "x": 115, "y": 215.203125, "width": 160, "height": 240 },
+    "stoppedScreenshot": "generated/client-right-neck-shading-v2.png",
+    "visuallyInspected": true,
+    "observation": "Neck remains visible and joins the dress without a transparent break in the stopped right view. Motion geometry stayed fixed across the sampled cycle; this does not approve every joint in motion."
+  },
+  "actualGameMovementChecked": false,
+  "visualApproved": false,
+  "runtimeEligible": false,
+  "note": "edge-part-diagnosis.json predates this source material change. Remaining map contrast failures are not waived."
+}

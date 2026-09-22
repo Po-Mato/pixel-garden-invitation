@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="735" height="2139" viewBox="0 0 735 2139">
+  <!-- This direction's shared trouser material: both anatomical legs use the
+       same non-mirrored cloth source. No changes to the shoe or leg geometry. -->
+  <g fill="none" stroke="#493a30" stroke-width="36" stroke-opacity="0.85" stroke-linecap="round">
+    <path d="M 72 67 C 62 230 96 463 141 690 C 160 755 114 784 131 832 C 152 885 99 951 95 1031 C 70 1223 88 1511 102 1680 C 113 1722 61 1739 74 1789 L 81 1907"/>
+    <path d="M 423 36 C 451 315 430 540 389 814 C 379 889 351 965 347 1024 L 326 1738 C 350 1787 355 1834 382 1887"/>
+  </g>
+</svg>

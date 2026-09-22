@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1230" height="1278" viewBox="0 0 1230 1278">
+  <!-- Guest08 independently drawn outer waved locks. Face, ear, earring,
+       forehead, crown, central highlights and lower curls stay untouched. -->
+  <defs><clipPath id="outerLocks"><rect x="0" y="160" width="400" height="420"/></clipPath></defs>
+  <path d="M244 398Q221 337 258 286Q314 210 407 139 M243 400Q173 475 190 525Q197 548 219 550 M219 550Q166 590 198 626" fill="none" stroke="#211712" stroke-width="48" opacity="0.8" stroke-linecap="round" clip-path="url(#outerLocks)"/>
+</svg>

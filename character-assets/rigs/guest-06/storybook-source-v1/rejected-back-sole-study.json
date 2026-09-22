@@ -1,0 +1,12 @@
+{
+  "status": "rejected-ineffective-source-study",
+  "parts": ["legLeft-back", "legRight-back"],
+  "source": "sources/sole-back-study-v1.svg",
+  "registered": false,
+  "method": "Private original-coordinate source-atop SVG sole shade before registration; shared donor artwork untouched",
+  "baselineAndCandidate": {"samples":1920,"standardFailures":51,"displayFailures":0},
+  "reason": "All four failing guest-06 contrast values remained exactly unchanged. Do not repeatedly darken footwear when the limiting percentile is controlled by other boundaries.",
+  "nextInvestigation": "Original back hair and skirt edges, retaining approved silhouette and cross-direction material consistency",
+  "thresholdsChanged": false,
+  "visualApproved": false
+}

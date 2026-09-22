@@ -1,0 +1,271 @@
+{
+  "id": "guest-05-storybook-front-v1",
+  "status": "neutral-source-prototype-not-runtime",
+  "direction": "front",
+  "source": "front-art.svg",
+  "skeleton": "../../common-three-head-216-v1/skeleton.json",
+  "concept": "../storybook-concept-v1/front-concept.png",
+  "geometry": {
+    "headHeight": 72,
+    "bodyHeight": 144,
+    "characterHeight": 216,
+    "headTop": 54,
+    "headBottom": 126,
+    "baselineY": 270,
+    "centerX": 96
+  },
+  "parts": [
+    {
+      "id": "shadow",
+      "sourceLayer": "shadow",
+      "parent": "root",
+      "pivot": [
+        96,
+        270
+      ],
+      "mirrored": false
+    },
+    {
+      "id": "backHair",
+      "sourceLayer": "backHair",
+      "parent": "head",
+      "pivot": [
+        96,
+        126
+      ],
+      "mirrored": false
+    },
+    {
+      "id": "thighRight",
+      "sourceLayer": "thighRight",
+      "parent": "thighRight",
+      "pivot": [
+        86,
+        192.139535
+      ],
+      "mirrored": false
+    },
+    {
+      "id": "thighLeft",
+      "sourceLayer": "thighLeft",
+      "parent": "thighLeft",
+      "pivot": [
+        106,
+        192.139535
+      ],
+      "mirrored": false
+    },
+    {
+      "id": "calfRight",
+      "sourceLayer": "calfRight",
+      "parent": "calfRight",
+      "pivot": [
+        86,
+        223.953488
+      ],
+      "mirrored": false
+    },
+    {
+      "id": "calfLeft",
+      "sourceLayer": "calfLeft",
+      "parent": "calfLeft",
+      "pivot": [
+        106,
+        223.953488
+      ],
+      "mirrored": false
+    },
+    {
+      "id": "shoeRight",
+      "sourceLayer": "shoeRight",
+      "parent": "shoeRight",
+      "pivot": [
+        86,
+        251.581395
+      ],
+      "mirrored": false
+    },
+    {
+      "id": "shoeLeft",
+      "sourceLayer": "shoeLeft",
+      "parent": "shoeLeft",
+      "pivot": [
+        106,
+        251.581395
+      ],
+      "mirrored": false
+    },
+    {
+      "id": "pelvis",
+      "sourceLayer": "pelvis",
+      "parent": "pelvis",
+      "pivot": [
+        96,
+        191.302326
+      ],
+      "mirrored": false
+    },
+    {
+      "id": "upperArmRight",
+      "sourceLayer": "upperArmRight",
+      "parent": "upperArmRight",
+      "pivot": [
+        73,
+        136.883721
+      ],
+      "mirrored": false
+    },
+    {
+      "id": "upperArmLeft",
+      "sourceLayer": "upperArmLeft",
+      "parent": "upperArmLeft",
+      "pivot": [
+        119,
+        136.883721
+      ],
+      "mirrored": false
+    },
+    {
+      "id": "forearmRight",
+      "sourceLayer": "forearmRight",
+      "parent": "forearmRight",
+      "pivot": [
+        66,
+        162
+      ],
+      "mirrored": false
+    },
+    {
+      "id": "forearmLeft",
+      "sourceLayer": "forearmLeft",
+      "parent": "forearmLeft",
+      "pivot": [
+        126,
+        162
+      ],
+      "mirrored": false
+    },
+    {
+      "id": "neck",
+      "sourceLayer": "neck",
+      "parent": "neck",
+      "pivot": [
+        96,
+        126
+      ],
+      "mirrored": false
+    },
+    {
+      "id": "torso",
+      "sourceLayer": "torso",
+      "parent": "spine",
+      "pivot": [
+        96,
+        176.232558
+      ],
+      "mirrored": false
+    },
+    {
+      "id": "jacket",
+      "sourceLayer": "jacket",
+      "parent": "spine",
+      "pivot": [
+        96,
+        176.232558
+      ],
+      "mirrored": false
+    },
+    {
+      "id": "skirt",
+      "sourceLayer": "skirt",
+      "parent": "pelvis",
+      "pivot": [
+        96,
+        191.302326
+      ],
+      "mirrored": false
+    },
+    {
+      "id": "ribbon",
+      "sourceLayer": "ribbon",
+      "parent": "spine",
+      "pivot": [
+        96,
+        176.232558
+      ],
+      "mirrored": false
+    },
+    {
+      "id": "handbag",
+      "sourceLayer": "handbag",
+      "parent": "handLeft",
+      "pivot": [
+        127,
+        180.418605
+      ],
+      "mirrored": false
+    },
+    {
+      "id": "handRight",
+      "sourceLayer": "handRight",
+      "parent": "handRight",
+      "pivot": [
+        65,
+        180.418605
+      ],
+      "mirrored": false
+    },
+    {
+      "id": "handLeft",
+      "sourceLayer": "handLeft",
+      "parent": "handLeft",
+      "pivot": [
+        127,
+        180.418605
+      ],
+      "mirrored": false
+    },
+    {
+      "id": "face",
+      "sourceLayer": "face",
+      "parent": "head",
+      "pivot": [
+        96,
+        126
+      ],
+      "mirrored": false
+    },
+    {
+      "id": "frontHair",
+      "sourceLayer": "frontHair",
+      "parent": "head",
+      "pivot": [
+        96,
+        126
+      ],
+      "mirrored": false
+    }
+  ],
+  "pose": {
+    "name": "neutral",
+    "rotations": {}
+  },
+  "asymmetry": {
+    "hairPart": "wearer-left",
+    "handbag": "wearer-left",
+    "ribbon": "wearer-left",
+    "mirroringAllowed": false
+  },
+  "measurement": {
+    "cranialRegion": [
+      0,
+      54,
+      192,
+      72
+    ],
+    "exclude": [
+      "shadow"
+    ],
+    "note": "Hanging bun is excluded from cranial region, as in the common rig."
+  }
+}

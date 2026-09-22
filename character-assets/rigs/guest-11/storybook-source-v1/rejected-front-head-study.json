@@ -1,0 +1,8 @@
+{
+  "registered": false,
+  "source": "sources/head-front-shading-study-v1.svg",
+  "reason": "None of the four failing front-frame percentile values improved. Do not accumulate ineffective source changes.",
+  "catalogFailuresBeforeAndAfter": 42,
+  "thresholdsChanged": false,
+  "visualApproved": false
+}

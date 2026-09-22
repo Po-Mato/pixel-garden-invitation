@@ -1,0 +1,15 @@
+{
+  "characters": 12,
+  "selectionFrames": 192,
+  "homeGameFrames": 192,
+  "zone": "home",
+  "currentAssetsVerified": 24,
+  "viewport": [
+    390,
+    844
+  ],
+  "passed": true,
+  "visualApproved": false,
+  "productionServiceWorkerChecked": false,
+  "scope": "Capture coverage, stable frames, actual home direction and translation, screenshot dimensions and current staging hash chain. Does not establish visual quality or other map readability."
+}

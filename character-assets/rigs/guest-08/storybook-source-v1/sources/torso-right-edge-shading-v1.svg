@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1215" height="1295" viewBox="0 0 1215 1295">
+  <!-- Right bodice only: keep the wrap seam, belt knot and ribbon unchanged. -->
+  <g fill="none" stroke="#63363c" stroke-width="48" stroke-opacity="0.85" stroke-linecap="round">
+    <path d="M530 108 C487 181 438 267 438 349 C433 464 465 601 497 694"/>
+    <path d="M510 801 C468 857 430 914 405 968"/>
+    <path d="M637 183 C730 287 827 420 861 514 C873 575 866 655 859 710"/>
+  </g>
+</svg>

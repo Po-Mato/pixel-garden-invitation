@@ -1,0 +1,99 @@
+{
+  "status": "visible-source-ownership-study",
+  "runtimeEligible": false,
+  "independentMotionAllowed": false,
+  "directions": {
+    "front": {
+      "sourcePivot": [
+        620,
+        900
+      ],
+      "behindBody": [],
+      "layers": [
+        {
+          "id": "face",
+          "parent": "head",
+          "path": "M700 372Q791 356 819 449L851 571L872 652L886 730Q856 840 734 877L620 900Q480 881 408 808L370 728L385 659Q511 600 588 509L646 426Z M340 658Q289 656 296 710Q300 760 366 793L410 803L395 720Z M878 655Q943 638 951 693Q959 751 895 788L857 795L849 727Z M341 762H403V839H341Z M839 761H900V839H839Z"
+        },
+        {
+          "id": "frontHair",
+          "parent": "head",
+          "path": "M0 0H1240V610H0Z"
+        },
+        {
+          "id": "backHair",
+          "parent": "head"
+        }
+      ]
+    },
+    "left": {
+      "sourcePivot": [
+        650,
+        858
+      ],
+      "behindBody": [],
+      "layers": [
+        {
+          "id": "face",
+          "parent": "head",
+          "path": "M399 329Q484 320 493 418L519 542L579 614L610 696L620 752Q563 830 388 858Q347 869 329 817L313 785L299 764L294 737L278 710Q262 691 292 679L322 659Q338 641 325 598L310 508Q294 419 339 363Z M620 630Q670 610 716 641Q750 677 709 720L658 745L619 727Z M644 726H697V802H644Z"
+        },
+        {
+          "id": "frontHair",
+          "parent": "head",
+          "path": "M0 0H1240V600H0Z"
+        },
+        {
+          "id": "backHair",
+          "parent": "head"
+        }
+      ]
+    },
+    "right": {
+      "sourcePivot": [
+        620,
+        875
+      ],
+      "behindBody": [],
+      "layers": [
+        {
+          "id": "face",
+          "parent": "head",
+          "path": "M887 315Q955 307 972 390L980 480L963 601Q950 651 992 687Q1028 698 1001 725L981 746L980 777L955 801L929 850Q915 879 878 875L744 849L713 856L670 816L640 766L641 704L681 640L762 555Q848 463 862 357Z M564 601Q497 584 493 639Q483 690 542 725L571 742L619 714L636 675Z M559 716H610V799H559Z"
+        },
+        {
+          "id": "frontHair",
+          "parent": "head",
+          "path": "M0 0H1240V575H0Z"
+        },
+        {
+          "id": "backHair",
+          "parent": "head"
+        }
+      ]
+    },
+    "back": {
+      "sourcePivot": [
+        620,
+        870
+      ],
+      "behindBody": [],
+      "layers": [
+        {
+          "id": "face",
+          "parent": "head",
+          "occluded": true
+        },
+        {
+          "id": "frontHair",
+          "parent": "head",
+          "occluded": true
+        },
+        {
+          "id": "backHair",
+          "parent": "head"
+        }
+      ]
+    }
+  }
+}

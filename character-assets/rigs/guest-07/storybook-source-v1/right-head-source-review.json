@@ -1,0 +1,23 @@
+{
+  "supersededBy": "left-hem-source-review.json",
+  "status": "partial-reviewed-source-material-not-release-ready",
+  "source": "sources/head-right-shading-study-v1.svg",
+  "method": "Private soft rear-lock shading in original right head coordinates before matte and registration",
+  "preserved": ["face", "ear and earring", "crown", "central hair", "lower curls", "original alpha", "head scale and pivot", "dress and bag", "other directions"],
+  "hdSha256": "a00fb3080ea53b146a05526bcbe28f876dba58a5b7ad13dc91efd1fc930a906f",
+  "runtimeSha256": "c7827ae080692244ad76572719481884ed109afb163998d89b0034d6b8b9c70e",
+  "rightNeighborhoodFramesZeroBased": [1,2,3],
+  "contrastBefore": [1.144917417135104,1.1162726743447653,1.144917417135104],
+  "contrastAfter": [1.1772235842109722,1.11661604894602,1.1772235842109722],
+  "catalogFailuresBefore": 34,
+  "catalogFailuresAfter": 32,
+  "newFailures": 0,
+  "displayFailures": 0,
+  "sourceTestsPassed": 15,
+  "structureTestsPassed": 74,
+  "visualReview": "Selection, home, neighborhood, station and train sixteen-frame sheets re-inspected. Face, head size, lavender garment and bag remain intact; outer-lock material remains subtle. All four live-map hash audits pass with the current asset.",
+  "jointAuditCharactersPassed": 12,
+  "runtimeEligible": false,
+  "visualApproved": false,
+  "thresholdsChanged": false
+}

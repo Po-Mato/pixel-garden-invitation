@@ -1,0 +1,28 @@
+{
+  "status":"visible-source-ownership-study",
+  "runtimeEligible":false,
+  "independentMotionAllowed":false,
+  "policy":"Individually authored guest 06 visible face, front-hair and back-hair ownership. All follow the fixed head joint. Hidden scalp and forehead are not yet interchangeable assets.",
+  "directions":{
+    "front":{"sourcePivot":[585,1058],"behindBody":["backHair"],"layers":[
+      {"id":"face","parent":"head","path":"M622 400Q520 380 440 590Q418 650 354 701L330 716Q285 716 293 776Q310 890 353 950Q470 1035 585 1058Q640 1060 750 1003Q850 946 882 836L891 765L878 725Q847 730 827 705Q784 656 774 591Q749 426 651 407Z M241 738Q209 738 199 767Q187 810 224 845L236 861L255 787Z M277 858L335 893L321 940L283 945Z M910 742Q950 700 971 761Q997 820 934 860L927 807Z M845 866L912 853L907 933L853 943Z"},
+      {"id":"frontHair","parent":"head","path":"M0 0H1164V740H0Z M255 725L302 720Q260 850 287 948L323 1038Q244 1002 238 879Z M875 716L910 730Q934 881 909 994L871 1043Q924 932 886 814Z"},
+      {"id":"backHair","parent":"head"}
+    ]},
+    "left":{"sourcePivot":[650,910],"behindBody":["backHair"],"layers":[
+      {"id":"face","parent":"head","path":"M399 294Q429 297 453 340Q470 418 480 483Q510 575 594 623L600 746Q607 790 646 817Q552 878 399 908Q351 915 330 893Q297 854 279 812L260 795L250 764Q243 738 245 722Q270 700 292 694Q310 683 309 658L303 617Q281 589 291 509Q319 346 366 309Z M669 648Q728 630 771 641Q816 652 826 685Q846 752 792 781L727 803L681 807Z M682 803L726 796L730 846L685 856Z"},
+      {"id":"frontHair","parent":"head","path":"M0 0H876V640L663 677L648 822L674 957Q595 1020 595 781L570 641H0Z"},
+      {"id":"backHair","parent":"head"}
+    ]},
+    "right":{"sourcePivot":[670,1018],"behindBody":["backHair"],"layers":[
+      {"id":"face","parent":"head","path":"M987 330Q1079 297 1116 430Q1154 503 1112 624L1099 690L1100 740Q1110 770 1152 773Q1178 784 1158 819L1141 861Q1118 971 1040 1004Q1008 1022 981 1018Q823 1000 741 937Q692 909 679 872L670 810Q713 779 730 743L744 695Q831 663 887 584Q935 485 953 396Z M546 690Q579 677 619 694L650 719L641 823L628 864Q553 858 526 804Q498 744 527 704Z M603 864L649 861L654 927L611 935Z"},
+      {"id":"frontHair","parent":"head","path":"M350 0H1214V706H747L740 782Q725 902 693 953L673 906Q695 795 651 739L630 686H350Z"},
+      {"id":"backHair","parent":"head"}
+    ]},
+    "back":{"sourcePivot":[650,950],"behindBody":[],"faceVisibility":"ears and earrings only","layers":[
+      {"id":"face","parent":"head","path":"M268 630Q287 613 309 625L341 706L331 727L334 779L290 792L292 737Q265 703 268 630Z M999 629Q1023 619 1039 629Q1055 660 1021 704L1004 734L1006 776L967 788L958 735Z"},
+      {"id":"frontHair","parent":"head","occluded":true},
+      {"id":"backHair","parent":"head"}
+    ]}
+  }
+}

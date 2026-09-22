@@ -1,0 +1,23 @@
+{
+  "supersededBy": "review/COMPACT-SIDE-REVIEW.md; hashes and captures below are the previous volume-study snapshot",
+  "status": "fuller-body-visual-candidate-not-release-ready",
+  "source": "body-registration.json#sourceVolume",
+  "widthMultipliers": {"torso":1.34,"skirt":1.28,"arm":1.4,"leg":1.32},
+  "method": "Explicit source-part width binding about its fixed attachment axis before joint masking and animation; no finished frame pixels are input",
+  "preserved": ["head and face", "72/144/216 height", "all vertical coordinates", "shoulder and wrist attachment points", "common skeleton", "walk keyframes", "bag source and body side", "original source PNGs and mattes"],
+  "hdSha256": "024fddc58d72ddbca367663f31660debcfcbce08cf3c8b4c76d51ccc2de61661",
+  "runtimeSha256": "ed22a431839bdc38d3bc2948ad21718383118b77c27320a018b85cc6cb898dfe",
+  "otherCharacterRuntimeHashesUnchanged": 11,
+  "sourceTestsPassed":15,
+  "structureTestsPassed":83,
+  "volumeRegressionTestsIncluded":4,
+  "jointAudit":{"characters":12,"frames":192,"disconnected":0,"unobserved":0},
+  "selectionStopVerified":{"viewport":[390,844],"direction":"down","moving":false,"walkFrame":1},
+  "visualInspection":["four-direction static source review","16-frame high-resolution walk sheet","390x844 selection contact sheet","home 48x72 movement","neighborhood 48x72 movement","subway-station 48x72 movement","subway-train 48x72 movement"],
+  "currentAssetLiveMapAuditsPassed":4,
+  "visualNotes":"Fuller sleeves, torso, skirt and feet are visible without enlarging the head. This is a silhouette-volume study, not redrawn rounded-hand artwork or a declaration that the target style is finally approved.",
+  "contrast":{"standardFailuresBefore":30,"standardFailuresAfter":31,"displayFailuresBefore":3,"displayFailuresAfter":1,"thresholdsChanged":false,"passed":false},
+  "runtimeEligible":false,
+  "visualApproved":false,
+  "productionAssetsChanged":false
+}

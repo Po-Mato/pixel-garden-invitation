@@ -1,0 +1,12 @@
+{
+  "status":"painted-style-source-study",
+  "runtimeEligible":false,
+  "layerDefinition":"head-layers.json",
+  "skeleton":"../../common-three-head-216-v1/skeleton.json",
+  "heads":[
+    {"direction":"front","source":"sources/head-front-v1.png","matte":"masks/head-front-v1.svg","parent":"head","pivot":[725,1040],"crownY":100,"chinY":1040,"mirrored":false},
+    {"direction":"left","source":"sources/head-left-v1.png","matte":"masks/head-left-v1.svg","parent":"head","pivot":[740,1008],"crownY":70,"chinY":1008,"mirrored":false},
+    {"direction":"right","source":"sources/head-right-v1.png","matte":"masks/head-right-v1.svg","parent":"head","pivot":[725,1037],"crownY":65,"chinY":1037,"mirrored":false},
+    {"direction":"back","source":"sources/head-back-v1.png","matte":"masks/head-back-v1.svg","parent":"head","pivot":[700,1040],"crownY":94,"chinY":1040,"chinPlane":"hidden-jaw-plane-not-hair-bottom","mirrored":false}
+  ]
+}

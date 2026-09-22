@@ -1,0 +1,59 @@
+{
+  "date": "2026-09-14",
+  "tool": "built-in imagegen",
+  "separatelyPaidApi": false,
+  "status": "source-underpainting-study-not-independent-layer-approved",
+  "runtimeEligible": false,
+  "visualApproved": false,
+  "preservedWalkSheetSha256": "e0ed45dac135bdbcc5f8dde81b9b5ea09c468b790610032a15eacec1a2a3ab73",
+  "sources": [
+    {
+      "file": "sources/hidden-skin-front-v1.png",
+      "generationId": "2566ee12-fc65-4990-9254-4ab2eee5e40e",
+      "prompt": "This is a hidden SKIN BASE source for the same game head. Remove the eyes, eyebrows, nose and mouth, painting smooth continuous skin in their place. Preserve the scalp outline, ears, soft peach shading, canvas size and placement exactly. No hair or facial features, no body or text. Genuinely transparent background.",
+      "referenceGenerationId": "39af4f9b-7128-41e0-8cd5-3c4e9313713f"
+    },
+    {
+      "file": "sources/hidden-skin-left-v1.png",
+      "generationId": "e128fbdc-302b-4606-9b3a-32cf355aecc6",
+      "prompt": "Create the hidden skin-base source for this exact LEFT-profile game head. Remove hair to expose the rounded scalp and forehead; replace eye, eyebrow and smile with continuous softly shaded peach skin. Preserve the profile nose, jaw, ear, skin palette, canvas size and placement. One featureless head skin part, no hair, body or text, genuinely transparent background.",
+      "superseded": true
+    },
+    {
+      "file": "sources/hidden-skin-right-v1.png",
+      "generationId": "9847dd4e-b572-4a09-baa2-70a750537cce",
+      "prompt": "Hidden SKIN BASE for this exact RIGHT-profile game head. Remove hair, eye, eyebrow, smile and internal ear details, replacing them with smooth peach skin shading. Reveal the rounded scalp and forehead beneath the hair. Preserve profile silhouette, nose, jaw, skin palette, original canvas size and placement. One plain head-skin source part, no body or text, genuinely transparent background.",
+      "superseded": true
+    },
+    {
+      "file": "sources/hidden-skin-left-v2.png",
+      "generationId": "5509dbb9-3926-4c75-b1a3-caaf4f3efa9e",
+      "prompt": "Remove the entire ear drawing, including its dark contour and all ear shading. Inpaint that area with smooth peach skin continuous with the surrounding head. Keep the outer head silhouette, nose, jaw, canvas placement and all other shading unchanged. This is a plain hidden skin material; no ear, eye, eyebrow, mouth, hair or text. Transparent background.",
+      "reference": "sources/hidden-skin-left-v1.png"
+    },
+    {
+      "file": "sources/hidden-skin-right-v2.png",
+      "generationId": "30953556-9658-4442-9fad-408076141bdf",
+      "prompt": "Remove the entire ear drawing, including its dark contour and all ear shading. Inpaint that area with smooth peach skin continuous with the surrounding head. Keep the outer head silhouette, nose, jaw, canvas placement and all other shading unchanged. This is a plain hidden skin material; no ear, eye, eyebrow, mouth, hair or text. Transparent background.",
+      "reference": "sources/hidden-skin-right-v1.png"
+    }
+  ],
+  "validation": {
+    "sourceStudyTestsPassed": 15,
+    "hiddenSkinTestsPassed": 7,
+    "assembledRgbaUnchanged": true,
+    "walkSheetHashUnchanged": true,
+    "isolatedPartsVisuallyReviewed": [
+      "front",
+      "left",
+      "right"
+    ],
+    "remaining": [
+      "Skin color seams and tiny hair boundary remnants on isolated face layers",
+      "Back hidden skin source",
+      "Independent hair source completeness",
+      "Final actual selection and game QA",
+      "Map contrast failures and release gates"
+    ]
+  }
+}

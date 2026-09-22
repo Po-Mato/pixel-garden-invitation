@@ -1,0 +1,14 @@
+{
+  "id":"painted-tailored-contact-v1",
+  "status":"source-family-contact-under-verification",
+  "policy":"Shared painted tailored family contact for neutral sole at y=270 on both sides. Preserve tailored rotations and timing; remove legacy source-specific right-view vertical offset. No frame raster correction or character-specific gait.",
+  "directions":{
+    "left":{"0":{"Right":0.309767}},
+    "right":{
+      "0":{"Left":0.309768,"Right":-0.837209},
+      "1":{"Left":0,"Right":0},
+      "2":{"Right":0.309768,"Left":-0.837209},
+      "3":{"Left":0,"Right":0}
+    }
+  }
+}

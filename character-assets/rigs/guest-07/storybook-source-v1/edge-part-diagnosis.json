@@ -1,0 +1,409 @@
+{
+  "status": "diagnostic-not-acceptance",
+  "context": "20 selected weak edge locations from neighborhood/right/frame3 browser review. Subset, not complete contrast coverage.",
+  "counts": {
+    "torso-right": 4,
+    "skirt-right": 5,
+    "shoeLeft": 2,
+    "head-above-body": 5,
+    "shoeRight": 1,
+    "neck-right": 2,
+    "bag-right": 1
+  },
+  "direction": "right",
+  "frameNumber": 3,
+  "sourceFrameRgbaSha256": "ccd19339cf2aac95e54dac1c27c886f0b4207533664d248c9fe74a921a897072",
+  "exactFrameReconstruction": true,
+  "display": [
+    48,
+    72
+  ],
+  "limitation": "Part attribution uses two-stage Sharp resampling, not browser color/contrast measurement. Mixed antialiased edges remain approximate; this grants no visual acceptance.",
+  "ownership": [
+    {
+      "x": 26,
+      "y": 40,
+      "dominant": "torso-right",
+      "contributors": [
+        {
+          "id": "torso-right",
+          "sourcePart": "torso-right",
+          "visibleAlpha": 0.7019607843137254
+        },
+        {
+          "id": "upperArmRight",
+          "sourcePart": "armRight-right",
+          "visibleAlpha": 0.0011687812379853903
+        }
+      ]
+    },
+    {
+      "x": 23,
+      "y": 63,
+      "dominant": "skirt-right",
+      "contributors": [
+        {
+          "id": "skirt-right",
+          "sourcePart": "skirt-right",
+          "visibleAlpha": 0.8901960784313725
+        },
+        {
+          "id": "shoeLeft",
+          "sourcePart": "legLeft-right",
+          "visibleAlpha": 0.0034448289119569414
+        },
+        {
+          "id": "calfLeft",
+          "sourcePart": "legLeft-right",
+          "visibleAlpha": 0.0008341889620131025
+        }
+      ]
+    },
+    {
+      "x": 21,
+      "y": 64,
+      "dominant": "shoeLeft",
+      "contributors": [
+        {
+          "id": "shoeLeft",
+          "sourcePart": "legLeft-right",
+          "visibleAlpha": 0.7450980392156863
+        }
+      ]
+    },
+    {
+      "x": 21,
+      "y": 40,
+      "dominant": "torso-right",
+      "contributors": [
+        {
+          "id": "torso-right",
+          "sourcePart": "torso-right",
+          "visibleAlpha": 0.34168939548137595
+        },
+        {
+          "id": "forearmLeft",
+          "sourcePart": "armLeft-right",
+          "visibleAlpha": 0.2823529411764706
+        },
+        {
+          "id": "upperArmLeft",
+          "sourcePart": "armLeft-right",
+          "visibleAlpha": 0.2110726643598616
+        },
+        {
+          "id": "forearmRight",
+          "sourcePart": "armRight-right",
+          "visibleAlpha": 0.0019398235174387277
+        },
+        {
+          "id": "upperArmRight",
+          "sourcePart": "armRight-right",
+          "visibleAlpha": 0.00191700206429239
+        },
+        {
+          "id": "head-behind-body",
+          "sourcePart": null,
+          "visibleAlpha": 0.0006314830329433756
+        }
+      ]
+    },
+    {
+      "x": 26,
+      "y": 30,
+      "dominant": "head-above-body",
+      "contributors": [
+        {
+          "id": "head-above-body",
+          "sourcePart": null,
+          "visibleAlpha": 0.9411764705882353
+        },
+        {
+          "id": "head-behind-body",
+          "sourcePart": null,
+          "visibleAlpha": 0.03183391003460208
+        }
+      ]
+    },
+    {
+      "x": 22,
+      "y": 65,
+      "dominant": "shoeLeft",
+      "contributors": [
+        {
+          "id": "shoeLeft",
+          "sourcePart": "legLeft-right",
+          "visibleAlpha": 0.7836276545220164
+        },
+        {
+          "id": "shoeRight",
+          "sourcePart": "legRight-right",
+          "visibleAlpha": 0.011718569780853517
+        },
+        {
+          "id": "skirt-right",
+          "sourcePart": "skirt-right",
+          "visibleAlpha": 0.00392156862745098
+        },
+        {
+          "id": "shadow-right",
+          "sourcePart": "shadow-right",
+          "visibleAlpha": 0.002361555377290343
+        }
+      ]
+    },
+    {
+      "x": 26,
+      "y": 45,
+      "dominant": "skirt-right",
+      "contributors": [
+        {
+          "id": "skirt-right",
+          "sourcePart": "skirt-right",
+          "visibleAlpha": 0.3607843137254902
+        },
+        {
+          "id": "torso-right",
+          "sourcePart": "torso-right",
+          "visibleAlpha": 0.1453902345251826
+        }
+      ]
+    },
+    {
+      "x": 19,
+      "y": 52,
+      "dominant": "skirt-right",
+      "contributors": [
+        {
+          "id": "skirt-right",
+          "sourcePart": "skirt-right",
+          "visibleAlpha": 0.43529411764705883
+        },
+        {
+          "id": "thighLeft",
+          "sourcePart": "legLeft-right",
+          "visibleAlpha": 0.008858131487889272
+        }
+      ]
+    },
+    {
+      "x": 27,
+      "y": 58,
+      "dominant": "skirt-right",
+      "contributors": [
+        {
+          "id": "skirt-right",
+          "sourcePart": "skirt-right",
+          "visibleAlpha": 0.8392156862745098
+        },
+        {
+          "id": "calfRight",
+          "sourcePart": "legRight-right",
+          "visibleAlpha": 0.001891580161476355
+        }
+      ]
+    },
+    {
+      "x": 15,
+      "y": 20,
+      "dominant": "head-above-body",
+      "contributors": [
+        {
+          "id": "head-above-body",
+          "sourcePart": null,
+          "visibleAlpha": 0.7607843137254902
+        }
+      ]
+    },
+    {
+      "x": 29,
+      "y": 31,
+      "dominant": "head-above-body",
+      "contributors": [
+        {
+          "id": "head-above-body",
+          "sourcePart": null,
+          "visibleAlpha": 0.44313725490196076
+        },
+        {
+          "id": "head-behind-body",
+          "sourcePart": null,
+          "visibleAlpha": 0.10263744713571704
+        }
+      ]
+    },
+    {
+      "x": 26,
+      "y": 41,
+      "dominant": "torso-right",
+      "contributors": [
+        {
+          "id": "torso-right",
+          "sourcePart": "torso-right",
+          "visibleAlpha": 0.6406151480199924
+        },
+        {
+          "id": "forearmLeft",
+          "sourcePart": "armLeft-right",
+          "visibleAlpha": 0.00392156862745098
+        },
+        {
+          "id": "forearmRight",
+          "sourcePart": "armRight-right",
+          "visibleAlpha": 0.0013939736602061046
+        }
+      ]
+    },
+    {
+      "x": 28,
+      "y": 66,
+      "dominant": "shoeRight",
+      "contributors": [
+        {
+          "id": "shoeRight",
+          "sourcePart": "legRight-right",
+          "visibleAlpha": 0.9294117647058824
+        },
+        {
+          "id": "shadow-right",
+          "sourcePart": "shadow-right",
+          "visibleAlpha": 0.008304498269896191
+        }
+      ]
+    },
+    {
+      "x": 30,
+      "y": 30,
+      "dominant": "head-above-body",
+      "contributors": [
+        {
+          "id": "head-above-body",
+          "sourcePart": null,
+          "visibleAlpha": 0.5725490196078431
+        },
+        {
+          "id": "head-behind-body",
+          "sourcePart": null,
+          "visibleAlpha": 0.055317185697808545
+        }
+      ]
+    },
+    {
+      "x": 25,
+      "y": 32,
+      "dominant": "neck-right",
+      "contributors": [
+        {
+          "id": "neck-right",
+          "sourcePart": "neck-right",
+          "visibleAlpha": 0.39686274509803926
+        },
+        {
+          "id": "head-behind-body",
+          "sourcePart": null,
+          "visibleAlpha": 0.1354002306805075
+        },
+        {
+          "id": "head-above-body",
+          "sourcePart": null,
+          "visibleAlpha": 0.00784313725490196
+        }
+      ]
+    },
+    {
+      "x": 28,
+      "y": 31,
+      "dominant": "head-above-body",
+      "contributors": [
+        {
+          "id": "head-above-body",
+          "sourcePart": null,
+          "visibleAlpha": 0.4392156862745098
+        },
+        {
+          "id": "head-behind-body",
+          "sourcePart": null,
+          "visibleAlpha": 0.26609765474817376
+        }
+      ]
+    },
+    {
+      "x": 26,
+      "y": 33,
+      "dominant": "neck-right",
+      "contributors": [
+        {
+          "id": "neck-right",
+          "sourcePart": "neck-right",
+          "visibleAlpha": 0.48046136101499426
+        },
+        {
+          "id": "head-above-body",
+          "sourcePart": null,
+          "visibleAlpha": 0.00392156862745098
+        }
+      ]
+    },
+    {
+      "x": 27,
+      "y": 54,
+      "dominant": "skirt-right",
+      "contributors": [
+        {
+          "id": "skirt-right",
+          "sourcePart": "skirt-right",
+          "visibleAlpha": 0.396078431372549
+        },
+        {
+          "id": "thighRight",
+          "sourcePart": "legRight-right",
+          "visibleAlpha": 0.02321882232323918
+        },
+        {
+          "id": "calfRight",
+          "sourcePart": "legRight-right",
+          "visibleAlpha": 0.011841599384851981
+        }
+      ]
+    },
+    {
+      "x": 20,
+      "y": 47,
+      "dominant": "bag-right",
+      "contributors": [
+        {
+          "id": "bag-right",
+          "sourcePart": "bag-right",
+          "visibleAlpha": 0.36470588235294116
+        },
+        {
+          "id": "skirt-right",
+          "sourcePart": "skirt-right",
+          "visibleAlpha": 0.24166089965397922
+        }
+      ]
+    },
+    {
+      "x": 26,
+      "y": 42,
+      "dominant": "torso-right",
+      "contributors": [
+        {
+          "id": "torso-right",
+          "sourcePart": "torso-right",
+          "visibleAlpha": 0.45389926951172627
+        },
+        {
+          "id": "skirt-right",
+          "sourcePart": "skirt-right",
+          "visibleAlpha": 0.023437139561707034
+        },
+        {
+          "id": "forearmLeft",
+          "sourcePart": "armLeft-right",
+          "visibleAlpha": 0.00392156862745098
+        }
+      ]
+    }
+  ]
+}

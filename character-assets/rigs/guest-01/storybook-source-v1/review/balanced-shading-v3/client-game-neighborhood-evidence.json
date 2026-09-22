@@ -1,0 +1,345 @@
+{
+  "viewport": [
+    390,
+    844
+  ],
+  "scope": "isolated candidate actual client neighborhood map",
+  "captureComplete": true,
+  "serviceWorkers": "blocked in this local QA context only",
+  "productionChanged": false,
+  "visualApproved": false,
+  "rows": [
+    {
+      "direction": "down",
+      "before": {
+        "frame": "2",
+        "moving": "true",
+        "direction": "right",
+        "position": [
+          225,
+          255
+        ],
+        "size": [
+          "48px",
+          "72px"
+        ],
+        "rect": {
+          "x": 171,
+          "y": 398,
+          "width": 48,
+          "height": 72,
+          "top": 398,
+          "right": 219,
+          "bottom": 470,
+          "left": 171
+        },
+        "url": "http://127.0.0.1:4202/characters/generated/guests/feminine-long-wave-dress__walk.png?v=guest-soft-tailoring-v1-20260911"
+      },
+      "moving": {
+        "frame": "2",
+        "moving": "true",
+        "direction": "down",
+        "position": [
+          225,
+          375
+        ],
+        "size": [
+          "48px",
+          "72px"
+        ],
+        "rect": {
+          "x": 171,
+          "y": 430,
+          "width": 48,
+          "height": 72,
+          "top": 430,
+          "right": 219,
+          "bottom": 502,
+          "left": 171
+        },
+        "url": "http://127.0.0.1:4202/characters/generated/guests/feminine-long-wave-dress__walk.png?v=guest-soft-tailoring-v1-20260911"
+      },
+      "stopped": {
+        "frame": "1",
+        "moving": "false",
+        "direction": "down",
+        "position": [
+          225,
+          375
+        ],
+        "size": [
+          "48px",
+          "72px"
+        ],
+        "rect": {
+          "x": 171,
+          "y": 430,
+          "width": 48,
+          "height": 72,
+          "top": 430,
+          "right": 219,
+          "bottom": 502,
+          "left": 171
+        },
+        "url": "http://127.0.0.1:4202/characters/generated/guests/feminine-long-wave-dress__idle.png?v=guest-soft-tailoring-v1-20260911"
+      },
+      "frames": [
+        "3",
+        "0",
+        "1",
+        "2"
+      ],
+      "delta": 120,
+      "sha256": "23e89453937ae3c00fe552d428ab08d1649f9c3db154f1633077a254426fc4ee"
+    },
+    {
+      "direction": "left",
+      "before": {
+        "frame": "1",
+        "moving": "true",
+        "direction": "right",
+        "position": [
+          195,
+          255
+        ],
+        "size": [
+          "48px",
+          "72px"
+        ],
+        "rect": {
+          "x": 171,
+          "y": 398,
+          "width": 48,
+          "height": 72,
+          "top": 398,
+          "right": 219,
+          "bottom": 470,
+          "left": 171
+        },
+        "url": "http://127.0.0.1:4202/characters/generated/guests/feminine-long-wave-dress__walk.png?v=guest-soft-tailoring-v1-20260911"
+      },
+      "moving": {
+        "frame": "1",
+        "moving": "true",
+        "direction": "left",
+        "position": [
+          75,
+          255
+        ],
+        "size": [
+          "48px",
+          "72px"
+        ],
+        "rect": {
+          "x": 51,
+          "y": 398,
+          "width": 48,
+          "height": 72,
+          "top": 398,
+          "right": 99,
+          "bottom": 470,
+          "left": 51
+        },
+        "url": "http://127.0.0.1:4202/characters/generated/guests/feminine-long-wave-dress__walk.png?v=guest-soft-tailoring-v1-20260911"
+      },
+      "stopped": {
+        "frame": "1",
+        "moving": "false",
+        "direction": "left",
+        "position": [
+          75,
+          255
+        ],
+        "size": [
+          "48px",
+          "72px"
+        ],
+        "rect": {
+          "x": 51,
+          "y": 398,
+          "width": 48,
+          "height": 72,
+          "top": 398,
+          "right": 99,
+          "bottom": 470,
+          "left": 51
+        },
+        "url": "http://127.0.0.1:4202/characters/generated/guests/feminine-long-wave-dress__walk.png?v=guest-soft-tailoring-v1-20260911"
+      },
+      "frames": [
+        "2",
+        "3",
+        "0",
+        "1"
+      ],
+      "delta": -120,
+      "sha256": "23e89453937ae3c00fe552d428ab08d1649f9c3db154f1633077a254426fc4ee"
+    },
+    {
+      "direction": "right",
+      "before": {
+        "frame": "2",
+        "moving": "true",
+        "direction": "right",
+        "position": [
+          225,
+          255
+        ],
+        "size": [
+          "48px",
+          "72px"
+        ],
+        "rect": {
+          "x": 171,
+          "y": 398,
+          "width": 48,
+          "height": 72,
+          "top": 398,
+          "right": 219,
+          "bottom": 470,
+          "left": 171
+        },
+        "url": "http://127.0.0.1:4202/characters/generated/guests/feminine-long-wave-dress__walk.png?v=guest-soft-tailoring-v1-20260911"
+      },
+      "moving": {
+        "frame": "2",
+        "moving": "true",
+        "direction": "right",
+        "position": [
+          345,
+          255
+        ],
+        "size": [
+          "48px",
+          "72px"
+        ],
+        "rect": {
+          "x": 171,
+          "y": 398,
+          "width": 48,
+          "height": 72,
+          "top": 398,
+          "right": 219,
+          "bottom": 470,
+          "left": 171
+        },
+        "url": "http://127.0.0.1:4202/characters/generated/guests/feminine-long-wave-dress__walk.png?v=guest-soft-tailoring-v1-20260911"
+      },
+      "stopped": {
+        "frame": "1",
+        "moving": "false",
+        "direction": "right",
+        "position": [
+          345,
+          255
+        ],
+        "size": [
+          "48px",
+          "72px"
+        ],
+        "rect": {
+          "x": 171,
+          "y": 398,
+          "width": 48,
+          "height": 72,
+          "top": 398,
+          "right": 219,
+          "bottom": 470,
+          "left": 171
+        },
+        "url": "http://127.0.0.1:4202/characters/generated/guests/feminine-long-wave-dress__walk.png?v=guest-soft-tailoring-v1-20260911"
+      },
+      "frames": [
+        "3",
+        "0",
+        "1",
+        "2"
+      ],
+      "delta": 120,
+      "sha256": "23e89453937ae3c00fe552d428ab08d1649f9c3db154f1633077a254426fc4ee"
+    },
+    {
+      "direction": "up",
+      "before": {
+        "frame": "2",
+        "moving": "true",
+        "direction": "down",
+        "position": [
+          225,
+          375
+        ],
+        "size": [
+          "48px",
+          "72px"
+        ],
+        "rect": {
+          "x": 171,
+          "y": 430,
+          "width": 48,
+          "height": 72,
+          "top": 430,
+          "right": 219,
+          "bottom": 502,
+          "left": 171
+        },
+        "url": "http://127.0.0.1:4202/characters/generated/guests/feminine-long-wave-dress__walk.png?v=guest-soft-tailoring-v1-20260911"
+      },
+      "moving": {
+        "frame": "2",
+        "moving": "true",
+        "direction": "up",
+        "position": [
+          225,
+          255
+        ],
+        "size": [
+          "48px",
+          "72px"
+        ],
+        "rect": {
+          "x": 171,
+          "y": 398,
+          "width": 48,
+          "height": 72,
+          "top": 398,
+          "right": 219,
+          "bottom": 470,
+          "left": 171
+        },
+        "url": "http://127.0.0.1:4202/characters/generated/guests/feminine-long-wave-dress__walk.png?v=guest-soft-tailoring-v1-20260911"
+      },
+      "stopped": {
+        "frame": "1",
+        "moving": "false",
+        "direction": "up",
+        "position": [
+          225,
+          255
+        ],
+        "size": [
+          "48px",
+          "72px"
+        ],
+        "rect": {
+          "x": 171,
+          "y": 398,
+          "width": 48,
+          "height": 72,
+          "top": 398,
+          "right": 219,
+          "bottom": 470,
+          "left": 171
+        },
+        "url": "http://127.0.0.1:4202/characters/generated/guests/feminine-long-wave-dress__walk.png?v=guest-soft-tailoring-v1-20260911"
+      },
+      "frames": [
+        "3",
+        "0",
+        "1",
+        "2"
+      ],
+      "delta": -120,
+      "sha256": "23e89453937ae3c00fe552d428ab08d1649f9c3db154f1633077a254426fc4ee"
+    }
+  ]
+}

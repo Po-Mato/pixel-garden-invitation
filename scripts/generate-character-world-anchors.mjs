@@ -3,6 +3,7 @@ import { readFile, writeFile } from "node:fs/promises";
 import path, { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import sharp from "sharp";
+import assert from "node:assert/strict";
 import {
   characterVisualAnchorAlphaThreshold,
   measureAlphaVisualAnchor
@@ -18,7 +19,7 @@ function stableManifest(value) {
   return `${JSON.stringify(value, null, 2)}\n`;
 }
 
-async function derivePresetAnchor(preset, frame) {
+async function derivePresetAnchor(preset, frame, skeleton) {
   const idlePath = path.join(generatedRoot, preset.generated.idle);
   const source = await readFile(idlePath);
   const extracted = await sharp(source)
@@ -32,9 +33,11 @@ async function derivePresetAnchor(preset, frame) {
     channels: extracted.info.channels
   });
   return {
-    centerX: measured.centerX,
-    centerY: measured.centerY,
-    feetY: measured.feetY,
+    // Clothing, hair, bags and resampling fringes must not re-center the rig.
+    // Alpha bounds are useful diagnostics, never the source of body geometry.
+    centerX: skeleton.geometry.centerX * frame.source.width / skeleton.canvas[0],
+    centerY: (skeleton.geometry.headTop + skeleton.geometry.baselineY) / 2 * frame.source.height / skeleton.canvas[1],
+    feetY: skeleton.geometry.baselineY * frame.source.height / skeleton.canvas[1],
     bounds: measured.bounds,
     sourceSha256: createHash("sha256").update(source).digest("hex")
   };
@@ -42,13 +45,16 @@ async function derivePresetAnchor(preset, frame) {
 
 export async function buildCharacterWorldAnchorManifest() {
   const catalog = JSON.parse(await readFile(catalogPath, "utf8"));
+  const skeleton = JSON.parse(await readFile(path.join(rootDir, "character-assets/rigs/common-three-head-216-v1/skeleton.json"), "utf8"));
+  assert.deepEqual(skeleton.canvas, [192, 288]);
+  assert.deepEqual([skeleton.geometry.headHeight, skeleton.geometry.bodyHeight, skeleton.geometry.characterHeight], [72, 144, 216]);
   const entries = await Promise.all(catalog.presets.map(async (preset) => [
     preset.id,
-    await derivePresetAnchor(preset, catalog.frame)
+    await derivePresetAnchor(preset, catalog.frame, skeleton)
   ]));
   return {
-    version: 1,
-    source: "generated idle open-frame alpha bounds",
+    version: 2,
+    source: "common-three-head-216-v1 authored skeleton; alpha bounds are diagnostic only",
     alphaThreshold: characterVisualAnchorAlphaThreshold,
     sourceSize: catalog.frame.source,
     presets: Object.fromEntries(entries)

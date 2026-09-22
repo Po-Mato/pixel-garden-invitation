@@ -1,0 +1,213 @@
+{
+  "viewport": [
+    390,
+    844
+  ],
+  "captureComplete": true,
+  "productionChanged": false,
+  "visualApproved": false,
+  "rows": [
+    {
+      "direction": "down",
+      "url": "http://127.0.0.1:4202/characters/generated/guests/preview/feminine-long-wave-dress__walk.png?v=guest-soft-tailoring-v1-20260911",
+      "rect": {
+        "x": 115,
+        "y": 215.203125,
+        "width": 160,
+        "height": 240,
+        "top": 215.203125,
+        "right": 275,
+        "bottom": 455.203125,
+        "left": 115
+      },
+      "width": "96px",
+      "height": "144px",
+      "serviceWorkerControlled": false,
+      "frames": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "sha256": "e870c8a9d9574cfe17449a1c11d8992dc09c3f03a53da661e1d1acf361d0cbff",
+      "header": "guest01-balanced-candidate"
+    },
+    {
+      "direction": "left",
+      "url": "http://127.0.0.1:4202/characters/generated/guests/preview/feminine-long-wave-dress__walk.png?v=guest-soft-tailoring-v1-20260911",
+      "rect": {
+        "x": 115,
+        "y": 215.203125,
+        "width": 160,
+        "height": 240,
+        "top": 215.203125,
+        "right": 275,
+        "bottom": 455.203125,
+        "left": 115
+      },
+      "width": "96px",
+      "height": "144px",
+      "serviceWorkerControlled": false,
+      "frames": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "sha256": "e870c8a9d9574cfe17449a1c11d8992dc09c3f03a53da661e1d1acf361d0cbff",
+      "header": "guest01-balanced-candidate"
+    },
+    {
+      "direction": "right",
+      "url": "http://127.0.0.1:4202/characters/generated/guests/preview/feminine-long-wave-dress__walk.png?v=guest-soft-tailoring-v1-20260911",
+      "rect": {
+        "x": 115,
+        "y": 215.203125,
+        "width": 160,
+        "height": 240,
+        "top": 215.203125,
+        "right": 275,
+        "bottom": 455.203125,
+        "left": 115
+      },
+      "width": "96px",
+      "height": "144px",
+      "serviceWorkerControlled": false,
+      "frames": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "sha256": "e870c8a9d9574cfe17449a1c11d8992dc09c3f03a53da661e1d1acf361d0cbff",
+      "header": "guest01-balanced-candidate"
+    },
+    {
+      "direction": "up",
+      "url": "http://127.0.0.1:4202/characters/generated/guests/preview/feminine-long-wave-dress__walk.png?v=guest-soft-tailoring-v1-20260911",
+      "rect": {
+        "x": 115,
+        "y": 215.203125,
+        "width": 160,
+        "height": 240,
+        "top": 215.203125,
+        "right": 275,
+        "bottom": 455.203125,
+        "left": 115
+      },
+      "width": "96px",
+      "height": "144px",
+      "serviceWorkerControlled": false,
+      "frames": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "sha256": "e870c8a9d9574cfe17449a1c11d8992dc09c3f03a53da661e1d1acf361d0cbff",
+      "header": "guest01-balanced-candidate"
+    }
+  ],
+  "switched": [
+    {
+      "label": "크림 롱 웨이브 원피스",
+      "preset": "feminine-long-wave-dress",
+      "fallback": false,
+      "url": "http://127.0.0.1:4202/characters/generated/guests/preview/feminine-long-wave-dress__walk.png?v=guest-soft-tailoring-v1-20260911",
+      "sha256": "e870c8a9d9574cfe17449a1c11d8992dc09c3f03a53da661e1d1acf361d0cbff",
+      "header": "guest01-balanced-candidate"
+    },
+    {
+      "label": "로즈 여성 한복",
+      "preset": "feminine-formal-hanbok",
+      "fallback": false,
+      "url": "http://127.0.0.1:4202/characters/generated/guests/preview/feminine-formal-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911",
+      "sha256": "157e86e9f2d42f4bae1a68912a3a44e40e4f3da0d48b19a5f14793153ad18ca9",
+      "header": "existing-staging"
+    },
+    {
+      "label": "네이비 클래식 수트",
+      "preset": "masculine-navy-suit",
+      "fallback": false,
+      "url": "http://127.0.0.1:4202/characters/generated/guests/preview/masculine-navy-suit__walk.png?v=guest-soft-tailoring-v1-20260911",
+      "sha256": "e0ed45dac135bdbcc5f8dde81b9b5ea09c468b790610032a15eacec1a2a3ab73",
+      "header": "existing-staging"
+    },
+    {
+      "label": "차콜 클래식 수트",
+      "preset": "masculine-charcoal-blazer",
+      "fallback": false,
+      "url": "http://127.0.0.1:4202/characters/generated/guests/preview/masculine-charcoal-blazer__walk.png?v=guest-soft-tailoring-v1-20260911",
+      "sha256": "fc83ff6370baa7d71d9f68f419843365f47594788566948dc3a8ebb47e13a2a5",
+      "header": "existing-staging"
+    },
+    {
+      "label": "세이지 리본 원피스",
+      "preset": "feminine-sage-bolero-dress",
+      "fallback": false,
+      "url": "http://127.0.0.1:4202/characters/generated/guests/preview/feminine-sage-bolero-dress__walk.png?v=guest-soft-tailoring-v1-20260911",
+      "sha256": "6c4dcfd8d002a24b83f859bb4b437fea68e2842dccfc6a227a87920a7ec7b3b2",
+      "header": "existing-staging"
+    },
+    {
+      "label": "샴페인 블라우스 스커트",
+      "preset": "feminine-champagne-navy-skirt",
+      "fallback": false,
+      "url": "http://127.0.0.1:4202/characters/generated/guests/preview/feminine-champagne-navy-skirt__walk.png?v=guest-soft-tailoring-v1-20260911",
+      "sha256": "0149b495712c4615d7d986732f438ddbca425f02f7c3b6c13e734034b58e30b4",
+      "header": "existing-staging"
+    },
+    {
+      "label": "라벤더 쉬폰 원피스",
+      "preset": "feminine-lavender-jacket-dress",
+      "fallback": false,
+      "url": "http://127.0.0.1:4202/characters/generated/guests/preview/feminine-lavender-jacket-dress__walk.png?v=guest-soft-tailoring-v1-20260911",
+      "sha256": "c564e8d017977bfd08d9dada8b20a6c0021c855e71ddafe4b40788f874fed65a",
+      "header": "existing-staging"
+    },
+    {
+      "label": "더스티 로즈 원피스",
+      "preset": "feminine-teal-modern-hanbok",
+      "fallback": false,
+      "url": "http://127.0.0.1:4202/characters/generated/guests/preview/feminine-teal-modern-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911",
+      "sha256": "05f8b66417536c0b21de62f890b50a26beb259af0277a5d30779f5d716ee1f6c",
+      "header": "existing-staging"
+    },
+    {
+      "label": "베이지 썸머 수트",
+      "preset": "masculine-beige-summer-suit",
+      "fallback": false,
+      "url": "http://127.0.0.1:4202/characters/generated/guests/preview/masculine-beige-summer-suit__walk.png?v=guest-soft-tailoring-v1-20260911",
+      "sha256": "8ad5b22ee4352a31d49f3d2d95cec015de99ee5b5d587d0f6338166073e2a89a",
+      "header": "existing-staging"
+    },
+    {
+      "label": "네이비 포멀 원피스",
+      "preset": "masculine-charcoal-burgundy-tie",
+      "fallback": false,
+      "url": "http://127.0.0.1:4202/characters/generated/guests/preview/masculine-charcoal-burgundy-tie__walk.png?v=guest-soft-tailoring-v1-20260911",
+      "sha256": "e19c31d5204d1c64f7524e725d3714ee45f1c0f0ccc139483d114c1fe97a001f",
+      "header": "existing-staging"
+    },
+    {
+      "label": "그린 블레이저 크림 팬츠",
+      "preset": "masculine-green-blazer-cream-pants",
+      "fallback": false,
+      "url": "http://127.0.0.1:4202/characters/generated/guests/preview/masculine-green-blazer-cream-pants__walk.png?v=guest-soft-tailoring-v1-20260911",
+      "sha256": "dc2c39ae55fb292397b8677d79d56600cb73491fbdb79ef156104311c2050fc9",
+      "header": "existing-staging"
+    },
+    {
+      "label": "블루 모던 한복",
+      "preset": "masculine-blue-modern-hanbok",
+      "fallback": false,
+      "url": "http://127.0.0.1:4202/characters/generated/guests/preview/masculine-blue-modern-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911",
+      "sha256": "7e91965defd71227ced6673710d0aec7661e3ac004f16994810b88fcf71f31d4",
+      "header": "existing-staging"
+    }
+  ],
+  "stop": {
+    "moving": false,
+    "frame": "1"
+  }
+}

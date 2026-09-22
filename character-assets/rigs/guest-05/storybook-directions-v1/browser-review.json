@@ -1,0 +1,20 @@
+{
+  "scope":"local source-rig research page, not production selection or game",
+  "viewport":[390,844],
+  "horizontalOverflow":false,
+  "displaySizes":[[192,288],[96,144],[48,72]],
+  "allDisplayedImagesLoaded":true,
+  "directionButtonsChecked":["front","left","right","back"],
+  "playbackAdvancedFromFrame2To4":true,
+  "frameSelectionStoppedPlayback":true,
+  "darkBackgroundChecked":true,
+  "screenshots":["generated/mobile-right-dark.png","generated/mobile-back-dark.png"],
+  "visualNotes":[
+    "Right shoulder source registration was corrected after a visible sleeve opening was found on dark background.",
+    "Painted faces, cream clothing and slim sleeves are readable in the research page.",
+    "Back bag is largely occluded by skirt; left view accessory occlusion still needs an explicit source binding.",
+    "Directional head layer separation, anatomical far-side hand detail, independent map contrast and actual runtime verification remain."
+  ],
+  "runtimeEligible":false,
+  "visualApproved":false
+}

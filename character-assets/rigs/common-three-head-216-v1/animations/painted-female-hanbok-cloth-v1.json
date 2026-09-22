@@ -1,0 +1,14 @@
+{
+  "id":"painted-female-hanbok-cloth-v1",
+  "family":"femaleHanbok",
+  "policy":"Explicit painted garment registration of the existing shared femaleHanbok directional garment keys. High waist underlaps jeogori. No guest-specific gait or raster repairs.",
+  "sourceAnimations":["femaleHanbok-front.json","femaleHanbok-left.json","femaleHanbok-right.json","femaleHanbok-back.json"],
+  "parent":"pelvis",
+  "pivot":[96,161],
+  "directions":{
+    "front":[-0.6,0,0.6,0],
+    "left":[-0.6,0,0.6,0],
+    "right":[0.6,0,-0.6,0],
+    "back":[0.6,0,-0.6,0]
+  }
+}

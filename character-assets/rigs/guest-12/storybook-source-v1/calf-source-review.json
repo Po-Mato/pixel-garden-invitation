@@ -1,0 +1,35 @@
+{
+  "date": "2026-09-14",
+  "source": "sources/calf-back-shading-study-v1.svg",
+  "direction": "back",
+  "parts": ["legLeft-back", "legRight-back"],
+  "sourceMethod": "Guest-12-only source shading follows the original shared contour below the robe; donor guest-11 artwork and registrations are unchanged",
+  "previousRuntimeSha256": "296aa5a6c94d3c7d87df3a0033d5c32ef9972e0e9f5677227e2b5e8987144038",
+  "sheetSha256": "7e91965defd71227ced6673710d0aec7661e3ac004f16994810b88fcf71f31d4",
+  "runtimeSha256": "b596e863dd408ec0ab5cbf3dd309b494777b3dab9b1a5d2a9b47f0fa5885ea9d",
+  "sourceAlphaUnchanged": true,
+  "creamCentersCuffAndShoesUnpainted": true,
+  "unpaintedOpaqueSourceColorsPreserved": true,
+  "geometryPivotsAndBodySidesUnchanged": true,
+  "otherDirectionsUnchanged": true,
+  "otherCharactersUnchanged": true,
+  "pngRepaired": false,
+  "trial": {"initialStrokeWidth":32,"initialOpacity":0.75,"initialNeutralContrast":1.1673612004543374,"decision":"Insufficient; current source uses 48px width and 0.85 opacity inside the same original silhouette."},
+  "failedSamplesResolved": [
+    {"zone":"neighborhood","direction":"back","frame":1,"before":1.168283506634969,"after":1.1808637294713393},
+    {"zone":"neighborhood","direction":"back","frame":3,"before":1.168283506634969,"after":1.1808637294713393}
+  ],
+  "characterContrast": {"fixtureSamples":160,"standardFailures":0,"displayFailures":0},
+  "catalogContrast": {"samples":1920,"standardFailuresBefore":57,"standardFailures":55,"displayFailures":0,"newFailures":0,"thresholdsUnchanged":true},
+  "visualReview": {
+    "highResolutionBackNeutralInspected": true,
+    "latestSelection16FramesInspected": true,
+    "latestHomeGame16FramesInspected": true,
+    "observation": "Cream trousers remain pale beneath the hanbok robe. The calf edge is better defined without a conspicuous dark band, changing leg width, or hiding the shoes. Head, shoulders and costume remain stable across the inspected frames."
+  },
+  "tests": {"sourceOverlayTests":10,"catalogSourceTests":165,"structureTests":60,"catalogTotal":225,"jointCatalogCharacters":12,"disconnected":0,"unobserved":0},
+  "visualApproved": false,
+  "runtimeEligible": false,
+  "productionChanged": false,
+  "remaining": "Other characters retain basic contrast failures; this fixture result is not an overall release approval."
+}

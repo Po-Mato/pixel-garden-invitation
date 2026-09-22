@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1536" viewBox="0 0 1024 1536">
+  <!-- Independently authored right-view beige jacket edge shading.
+       Applied inside the source silhouette, before shoulder registration. -->
+  <g fill="none" stroke="#493a30" stroke-width="36" stroke-opacity="0.85" stroke-linecap="round">
+    <path d="M 252 410 C 248 671 250 1023 252 1354"/>
+    <path d="M 827 763 C 826 957 828 1165 828 1352"/>
+    <path d="M 253 1355 C 367 1392 710 1411 827 1357"/>
+  </g>
+</svg>

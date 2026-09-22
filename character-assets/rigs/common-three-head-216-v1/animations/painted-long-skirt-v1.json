@@ -1,0 +1,13 @@
+{
+  "id":"painted-long-skirt-v1",
+  "family":"long-skirt",
+  "policy":"Shared subtle rigid cloth sway about waistband. Body skeleton and gait remain unchanged. Source transforms only; never edit output pixels.",
+  "parent":"pelvis",
+  "pivot":[96,171],
+  "directions":{
+    "front":[0.65,0,-0.65,0],
+    "left":[0.4,0,-0.4,0],
+    "right":[-0.4,0,0.4,0],
+    "back":[-0.65,0,0.65,0]
+  }
+}

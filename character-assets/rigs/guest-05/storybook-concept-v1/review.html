@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>5번 · 동화풍 디자인 비교</title>
+<style>
+*{box-sizing:border-box}body{font:14px system-ui;margin:16px;color:#344239;background:#f4f2eb}h1{font-size:21px}p{line-height:1.65;max-width:650px}.row{display:flex;gap:12px;align-items:start;flex-wrap:wrap}figure{margin:0;background:white;padding:10px;border-radius:12px}figcaption{font-size:12px;margin-bottom:8px}.frame{position:relative;width:var(--w);height:calc(var(--w)*1.5);overflow:hidden;background:white}.scene{width:192px;height:288px;position:absolute;transform-origin:top left;transform:scale(var(--scale))}.old{width:192px;height:288px}.concept{position:absolute;width:205.944px;height:308.916px;max-width:none;left:-6.369px;top:9.553px}h2{font-size:15px;margin:20px 0 8px}.note{padding:12px;border-left:3px solid #859e82;background:#e9eee6}.muted{color:#617064}
+</style>
+<h1>5번 · 우아한 동화풍 하객</h1>
+<p>왼쪽: 기존 리그 / 오른쪽: 새 디자인 참고안<br>둥근 볼, 간결한 머리 덩어리, 작은 손과 둥근 구두, 큰 명암 위주로 정리했습니다.</p>
+<div class="note">정면 디자인 검토용입니다. 새 원화는 약 2.8등신이며, 정확한 72·144·216px 리그 검증은 아직 하지 않았습니다. 흰 배경 원화를 잘라 운영 파츠로 쓰지 않습니다.</div>
+<main id="sizes"></main>
+<p class="muted">전체 캐릭터 높이를 같게 표시했습니다. 원화의 신체 영역은 변형하지 않고 흰 여백을 화면 밖으로 배치합니다. 실제 게임 합성·보행·맵 대비 검수 자료가 아닙니다.</p>
+<script>
+for(const [w,label]of [[96,'96×144 디자인 비교'],[48,'48×72 게임 크기 참고'],[192,'192×288 확대 검토']]){
+ const section=document.createElement('section');section.innerHTML='<h2>'+label+'</h2><div class="row">'+['old','concept'].map(k=>'<figure><figcaption>'+(k==='old'?'기존':'동화풍 참고안')+'</figcaption><div class="frame" style="--w:'+w+'px;--scale:'+(w/192)+'"><div class="scene"><img class="'+k+'" alt="'+(k==='old'?'기존 5번 캐릭터':'새 동화풍 디자인 참고안')+'" src="'+(k==='old'?'../three-head-216-v1/generated/front/frame-2.png':'front-concept.png')+'"></div></div></figure>').join('')+'</div>';document.getElementById('sizes').append(section);
+}
+</script></html>

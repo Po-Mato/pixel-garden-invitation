@@ -1,0 +1,1 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="192" height="288"><defs><linearGradient id="cloth"><stop stop-color="#cbb499"/><stop offset="1" stop-color="#b69c80"/></linearGradient></defs><!-- Pelvis underlap ends beneath jacket hem; thighs start at the fixed 192.139535 joint. --><path fill="url(#cloth)" d="M78 182H114V194H78Z"/></svg>

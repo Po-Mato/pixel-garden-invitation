@@ -1,0 +1,28 @@
+{
+  "date": "2026-09-14",
+  "status": "rejected-source-material-study",
+  "part": "skirt-front",
+  "source": "sources/skirt-front-edge-shading-v1.svg",
+  "method": "Editable source silhouette path stroked inside original alpha with source-atop before registration and animation. No completed frame edited.",
+  "baseline": { "samples": 1920, "standardFailures": 60, "displayFailures": 6 },
+  "trials": [
+    { "color": "#947b60", "width": 22, "opacity": 0.65, "standardFailures": 60, "displayFailures": 6, "observation": "Restroom improvement introduces neighborhood neutral failures." },
+    { "color": "#6f543f", "width": 42, "opacity": 0.8, "standardFailures": 59, "displayFailures": 6, "observation": "Neighborhood stride 1 improves, but neutral remains worse than baseline." },
+    { "color": "#87694d", "width": 64, "opacity": 0.9, "standardFailures": 58, "displayFailures": 6, "observation": "Front skirt has a conspicuously heavy brown border unlike the other directions and approved painted material; rejected despite lower failure count." }
+  ],
+  "visualReview": "Viewed directional body review at each candidate. Cream interior remains, but the final candidate makes the front skirt look outlined rather than softly painted.",
+  "registered": false,
+  "restoration": {
+    "sourceRigRestored": true,
+    "regeneratedFromSource": true,
+    "sheetSha256": "52f81aed94a5ade81714edf12ed0c4fcdaa2534a02c3dba351efd2229ffec7c0",
+    "structureTestsPassed": 53,
+    "contrastEvidenceMatchesRestoredAssets": true,
+    "standardFailures": 60,
+    "displayFailures": 6
+  },
+  "runtimeEligible": false,
+  "visualApproved": false,
+  "thresholdsChanged": false,
+  "nextAction": "Do not thicken the complete costume boundary again. Revisit weak head/accessory/skin edges individually and preserve cross-direction material consistency."
+}

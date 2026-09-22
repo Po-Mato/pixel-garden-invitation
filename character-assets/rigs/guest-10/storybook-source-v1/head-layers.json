@@ -1,0 +1,39 @@
+{
+  "status":"visible-source-ownership-study",
+  "runtimeEligible":false,
+  "independentMotionAllowed":false,
+  "directions":{
+    "back":{
+      "sourcePivot":[620,1075],"behindBody":[],
+      "layers":[
+        {"id":"face","parent":"head","occluded":true},
+        {"id":"frontHair","parent":"head","occluded":true},
+        {"id":"backHair","parent":"head"}
+      ]
+    },
+    "front":{
+      "sourcePivot":[630,1075],"behindBody":[],
+      "layers":[
+        {"id":"face","parent":"head","path":"M667 413Q781 394 838 451L903 584L940 745L982 780L1005 853L956 963Q815 1070 630 1075Q427 1046 343 937L294 880L281 790Q469 741 557 620L617 488Z M278 751Q199 752 210 825Q225 875 294 898L345 927L340 832Z M983 748Q1060 733 1053 812Q1045 873 980 892L938 917L922 825Z M313 906H370V1007H313Z M893 931H950V1018H893Z"},
+        {"id":"frontHair","parent":"head","path":"M0 0H1240V710H0Z"},
+        {"id":"backHair","parent":"head"}
+      ]
+    },
+    "right":{
+      "sourcePivot":[620,1111],"behindBody":[],
+      "layers":[
+        {"id":"face","parent":"head","path":"M1043 389Q1101 394 1110 497L1110 646L1095 774L1095 817Q1100 844 1140 856Q1164 865 1141 900L1124 930L1120 955L1090 972L1083 1040Q1069 1108 1025 1111Q826 1106 705 1041L669 1004L668 902L724 807L791 733Q958 617 1012 482Z M637 763Q559 720 505 759Q449 786 474 862Q493 925 582 956L630 940L674 867Z M552 915H609V1031H552Z"},
+        {"id":"frontHair","parent":"head","path":"M0 0H1240V650H0Z"},
+        {"id":"backHair","parent":"head"}
+      ]
+    },
+    "left":{
+      "sourcePivot":[630,1040],"behindBody":[],
+      "layers":[
+        {"id":"face","parent":"head","path":"M353 402Q449 363 517 413L553 532L593 673L644 770L662 884L649 960Q552 1025 360 1040Q321 1046 312 1009L280 949L255 920L251 873L226 842Q208 820 251 800L281 776L283 620Q276 484 353 402Z M660 746Q732 681 789 710Q859 735 846 807Q837 881 733 908L673 932Z M697 868H757V978H697Z"},
+        {"id":"frontHair","parent":"head","path":"M0 0H1240V560H0Z"},
+        {"id":"backHair","parent":"head"}
+      ]
+    }
+  }
+}

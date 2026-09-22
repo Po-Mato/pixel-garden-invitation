@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "renderer": "guest01-balanced-source-v3",
+  "registration": "balanced-source-recipe-v3.json",
+  "generatedDirectory": "generated/balanced-v3",
+  "baselineRegistration": "body-registration.json",
+  "scope": "staging-only",
+  "runtimeEligible": false,
+  "productionApproved": false
+}

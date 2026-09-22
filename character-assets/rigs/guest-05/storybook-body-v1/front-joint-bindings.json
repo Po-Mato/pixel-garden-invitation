@@ -1,0 +1,20 @@
+{
+  "status":"editable-joint-partition-study-not-motion-approved",
+  "coordinateSpace":"registered-source-frame",
+  "overlapPixels":3,
+  "policy":"Each region samples the original source painting through its editable matte and fixed registration. No final frame is an input. Regions meet at shared joints; hidden overlap material must be authored before motion approval.",
+  "parts":[
+    {"id":"upperArmRight","source":"arm-right","parent":"spine","pivot":[73,136.883721],"region":[0,0,192,162]},
+    {"id":"forearmRight","source":"arm-right","parent":"upperArmRight","pivot":[66,162],"region":[0,162,192,17]},
+    {"id":"handRight","source":"arm-right","parent":"forearmRight","pivot":[65,180.418605],"region":[0,179,192,109]},
+    {"id":"upperArmLeft","source":"arm-left","parent":"spine","pivot":[119,136.883721],"region":[0,0,192,162]},
+    {"id":"forearmLeft","source":"arm-left","parent":"upperArmLeft","pivot":[126,162],"region":[0,162,192,17]},
+    {"id":"handLeft","source":"arm-left","parent":"forearmLeft","pivot":[127,180.418605],"region":[0,179,192,109]},
+    {"id":"thighRight","source":"leg-right","parent":"pelvis","pivot":[86,192.139535],"region":[0,0,192,223]},
+    {"id":"calfRight","source":"leg-right","parent":"thighRight","pivot":[86,223.953488],"region":[0,223,192,31]},
+    {"id":"shoeRight","source":"leg-right","parent":"calfRight","pivot":[86,251.581395],"region":[0,254,192,34]},
+    {"id":"thighLeft","source":"leg-left","parent":"pelvis","pivot":[106,192.139535],"region":[0,0,192,223]},
+    {"id":"calfLeft","source":"leg-left","parent":"thighLeft","pivot":[106,223.953488],"region":[0,223,192,31]},
+    {"id":"shoeLeft","source":"leg-left","parent":"calfLeft","pivot":[106,251.581395],"region":[0,254,192,34]}
+  ]
+}

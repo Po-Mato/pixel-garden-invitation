@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1241" height="1268" viewBox="0 0 1241 1268">
+  <!-- Private rear jeogori edge-fold shading, not a silhouette or frame edit. -->
+  <defs>
+    <clipPath id="sides"><rect x="0" y="285" width="430" height="755"/><rect x="820" y="285" width="421" height="755"/></clipPath>
+    <filter id="soft" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="10"/></filter>
+  </defs>
+  <g clip-path="url(#sides)" stroke="#9b7860" stroke-width="48" stroke-opacity="0.6" fill="none" filter="url(#soft)">
+    <path d="M 427 286 Q 381 324 177 385 Q 147 416 178 537 Q 197 616 232 666 L 248 744 Q 234 810 256 898 Q 273 952 261 1030"/>
+    <path d="M 819 286 Q 866 327 1064 382 Q 1094 409 1065 535 Q 1042 617 1010 663 L 995 740 Q 1011 801 984 901 Q 970 956 981 1030"/>
+  </g>
+</svg>

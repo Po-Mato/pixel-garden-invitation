@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1305" height="1205" viewBox="0 0 1305 1205">
+  <!-- Private guest06 source hair shadow. Upper side locks only; no ear,
+       earring, crown-height, central parting or lower-hair silhouette edits. -->
+  <defs><clipPath id="upperLocks"><rect x="0" y="100" width="520" height="500"/><rect x="781" y="100" width="524" height="500"/></clipPath></defs>
+  <path d="M213 572C188 495 242 316 350 194Q425 113 510 74 M1074 568C1095 462 1048 294 950 186Q877 111 790 78" fill="none" stroke="#211712" stroke-width="48" opacity="0.8" stroke-linecap="round" clip-path="url(#upperLocks)"/>
+</svg>

@@ -1,0 +1,44 @@
+{
+  "date": "2026-09-14",
+  "status": "source-material-study-not-release-ready",
+  "source": "sources/leg-right-edge-shading-v1.svg",
+  "parts": ["legLeft-right", "legRight-right"],
+  "sourceOnly": true,
+  "finalPngEdited": false,
+  "sharedOriginalChanged": false,
+  "geometryChanged": false,
+  "otherCharactersChanged": false,
+  "otherDirectionsChanged": false,
+  "sheetSha256": "11776d2b0da9dc02a05983ea5c18ebb033516b9ee661cc6db93a3db7133187fc",
+  "protected": ["exact original alpha", "upper leg", "cream shoe interior", "unpainted opaque source RGB", "shared pivots and animation"],
+  "tests": { "sourceStudyPassed": 15, "structurePassed": 49 },
+  "contrast": {
+    "samples": 1920,
+    "standardFailures": 60,
+    "displayFailures": 6,
+    "passed": false,
+    "rightNeighborhood": {
+      "before": [1.1513072263374593, 1.1162726743447653, 1.0896314791728643, 1.1162726743447653],
+      "after": [1.1522381659336354, 1.1114205046763, 1.112763161390686, 1.1114205046763],
+      "note": "Worst stride improves; neutral contrast decreases slightly and still fails. No threshold was changed. All 1920 browser rows were refreshed together, including floating-point differences in unchanged source rows."
+    }
+  },
+  "selection": {
+    "currentAssetVerificationValid": false,
+    "supersededReason": "The isolated client QA copy was later found stale. This historical screenshot and motion sample do not verify the source revision recorded here. Source renders and map-fixture evidence are separate; repeat actual-client visual QA after rebuilding its copies.",
+    "viewport": [390, 844],
+    "direction": "right",
+    "observedFrames": [0, 1, 2, 3],
+    "movingTrueSamples": 20,
+    "allSampleRectsEqual": true,
+    "rect": { "x": 115, "y": 215.203125, "width": 160, "height": 240 },
+    "stoppedScreenshot": "generated/client-right-ankle-shading-v1.png",
+    "visuallyInspected": true,
+    "observation": "Cream flat-shoe interior and ankle silhouette remain intact in the stopped right view. All four high-resolution right poses retain original shape and alternating foot contact."
+  },
+  "mapFixtureScreenshot": "generated/map-right-ankle-shading-v1.png",
+  "actualGameMovementChecked": false,
+  "visualApproved": false,
+  "runtimeEligible": false,
+  "note": "neck-source-review.json is the immediately preceding material checkpoint; its screenshot/hash intentionally describe the pre-ankle output."
+}

@@ -1,0 +1,14 @@
+{
+  "status": "rejected-source-study",
+  "part": "skirt-left",
+  "registered": false,
+  "baselineContrast": 1.1646513244853194,
+  "trials": [
+    {"stroke":"#62554c","width":32,"opacity":0.7,"contrast":1.1422225185918624},
+    {"stroke":"#d8c9b9","width":32,"opacity":0.7,"contrast":1.1644528683566768}
+  ],
+  "reason": "Neither shadow nor reflected-light contour improves the current failing left stride. Retain approved source rather than accumulating ineffective material changes.",
+  "restoration": "Remove only left skirt overlay registration and rerender. Retain separately verified back skirt material.",
+  "thresholdsChanged": false,
+  "visualApproved": false
+}

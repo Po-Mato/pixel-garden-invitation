@@ -1,0 +1,16 @@
+{
+  "source": "sources/torso-front-round-candidate-v2.png",
+  "sourcePivot": [
+    610,
+    947
+  ],
+  "pivot": [
+    96,
+    172
+  ],
+  "scale": 0.053763440860215055,
+  "alphaPreserved": true,
+  "scope": "front-only source assembly; not registered in runtime rig",
+  "runtimeEligible": false,
+  "visualApproved": false
+}

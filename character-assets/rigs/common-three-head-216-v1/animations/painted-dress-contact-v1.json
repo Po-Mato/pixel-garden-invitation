@@ -1,0 +1,14 @@
+{
+  "id":"painted-dress-contact-v1",
+  "status":"source-family-contact-under-verification",
+  "policy":"Shared contact keys for the painted dress family with identical registered leg material on both anatomical sides. Reuse existing dress rotations and timing. Keep old material-specific contact keys untouched. No frame raster corrections or character-specific gait.",
+  "directions":{
+    "left":{"0":{"Right":0.309767}},
+    "right":{
+      "0":{"Left":0.309768,"Right":-0.837209},
+      "1":{"Left":0,"Right":0},
+      "2":{"Right":0.309768,"Left":-0.837209},
+      "3":{"Left":0,"Right":0}
+    }
+  }
+}

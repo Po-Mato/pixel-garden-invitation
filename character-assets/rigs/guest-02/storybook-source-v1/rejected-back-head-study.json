@@ -1,0 +1,13 @@
+{
+  "status": "rejected-unregistered-source-study",
+  "source": "sources/head-back-shading-study-v1.svg",
+  "reason": "Two localized hair-shadow trials improved rear contrast but resolved neither failing neutral pose. Do not keep darkening hair to chase the threshold; inspect garment and skin contributors instead.",
+  "neutralContrastBefore": 1.1633351093977837,
+  "trials": [
+    {"width": 64, "blur": 8, "opacity": 0.8, "neutralContrast": 1.1652454647669703},
+    {"width": 80, "blur": 12, "opacity": 0.8, "neutralContrast": 1.1680635770175867}
+  ],
+  "registered": false,
+  "thresholdsChanged": false,
+  "productionChanged": false
+}

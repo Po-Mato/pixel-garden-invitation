@@ -1,0 +1,67 @@
+{
+  "tool": "built-in image_gen",
+  "separatePaidApiUsed": false,
+  "character": "guest-06",
+  "runtimeEligible": false,
+  "visualApproved": false,
+  "session": "01a054aa-c737-7ec3-9535-c8a8f6768a91",
+  "note": "Original direction shown before each generation. Right profile first candidate did not match requested palm: registered only as near arm after viewing, corrected palm is separate far arm.",
+  "parts": [
+    {
+      "file": "sources/armLeft-left-painted-v1.png",
+      "matte": "masks/armLeft-left-painted-v1.svg",
+      "generationId": "644764a8-fe04-4691-93be-3f091bd3cd39",
+      "registeredPart": "armRight-left",
+      "prompt": "One costume source part for a cute painted game character: slender cream blouse sleeve and small relaxed hand, exact LEFT-facing profile, thumb toward image-left. Match image 1's soft painted cream fabric and gentle folds. Image 2 is only the old part being replaced: avoid its tube shape, orange skin and clenched fist. Neutral nearly straight shoulder-to-hand pose, subtle cuff, no muscles. One arm only, no torso, head, text or other parts. Genuinely transparent background."
+    },
+    {
+      "file": "sources/armLeft-left-palm-v1.png",
+      "matte": "masks/armLeft-left-palm-v1.svg",
+      "generationId": "f16e16c5-9de7-43f2-80ea-35d60a23a55a",
+      "registeredPart": "armLeft-left",
+      "prompt": "Change ONLY this costume hand to the PALM side of a relaxed hand. Thumb stays on image-left. Show gentle palm creases, thumb pad and finger pads, NO fingernails or back-of-hand knuckles. Preserve this entire cream blouse sleeve, cuff, painted shading, pose and canvas placement. One left-facing costume arm source, no other parts or text, genuinely transparent background."
+    },
+    {
+      "file": "sources/armLeft-right-painted-v1.png",
+      "matte": "masks/armLeft-right-painted-v1.svg",
+      "generationId": "3943d356-8091-406f-b698-e1167c511b0d",
+      "registeredPart": "armLeft-right",
+      "prompt": "One cream blouse sleeve and small relaxed hand, exact RIGHT-facing profile, for the same cute painted game woman. Image 1 gives costume color; image 2 is the old far-side arm to replace; image 3 gives the new soft painted fabric and skin style. Draw the opposite arm independently, thumb toward image-right, palm-side detail appropriate to this far arm. Slender nearly straight neutral shoulder-to-hand pose, gentle folds and subtle cuff. No tube arm, fist, muscles, torso, head or text. One source part, genuinely transparent background."
+    },
+    {
+      "file": "sources/armRight-right-palm-v1.png",
+      "matte": "masks/armRight-right-palm-v1.svg",
+      "generationId": "78116b2b-cb56-47fb-acbe-912bf1815010",
+      "registeredPart": "armRight-right",
+      "prompt": "Edit image 1: change ONLY the hand to its PALM view, like the palm orientation in image 2. Thumb stays on image-right. Show soft palm creases and finger pads, NO fingernails or knuckles. Keep the small relaxed fingers pointing down and keep image 1's entire cream sleeve, cuff, soft painted shading, proportions and placement unchanged. One costume arm source only, transparent background."
+    },
+    {
+      "file": "sources/armLeft-back-painted-v1.png",
+      "matte": "masks/armLeft-back-painted-v1.svg",
+      "generationId": "b8adb142-6e21-4222-b4db-87da158794b6",
+      "registeredPart": "armLeft-back",
+      "prompt": "One rear-view LEFT costume arm for a cute painted game woman. Image 1 is the old rear arm being replaced; image 2 is the new cream blouse fabric and skin reference. Soft slender sleeve, subtle gathered cuff, small relaxed fingers pointing down, thumb on image-right, back of hand visible. Nearly straight neutral shoulder-to-hand pose. No fist, muscles, torso, head or text. Genuinely transparent background."
+    },
+    {
+      "file": "sources/armRight-back-painted-v1.png",
+      "matte": "masks/armRight-back-painted-v1.svg",
+      "generationId": "d29625e5-48ec-4ef5-8bb8-d6599b591db1",
+      "registeredPart": "armRight-back",
+      "prompt": "One rear-view RIGHT costume arm for the same cute painted game woman. Image 1 is the old rear arm to replace; image 2 gives the new cream sleeve and gentle skin style. Draw this opposite arm independently, thumb on image-left, back of hand visible, small relaxed fingers downward. Slender soft sleeve and gathered cuff, nearly straight neutral pose. No fist, muscles, torso, head or text. Genuinely transparent background."
+    },
+    {
+      "file": "sources/armLeft-front-painted-v1.png",
+      "matte": "masks/armLeft-front-painted-v1.svg",
+      "generationId": "d3254359-7818-4027-be6b-f94293eaf4cb",
+      "registeredPart": "armLeft-front",
+      "prompt": "One FRONT-view wearer's LEFT costume arm for a cute painted game woman. Image 1 is the old front arm to replace; image 2 gives the new cream blouse fabric and soft skin style. Slender gently gathered sleeve and subtle cuff, small naturally relaxed hand, thumb on image-left toward her body. Nearly straight neutral pose, no clenched fist or muscles. One arm only, no torso, head or text, genuinely transparent background."
+    },
+    {
+      "file": "sources/armRight-front-painted-v1.png",
+      "matte": "masks/armRight-front-painted-v1.svg",
+      "generationId": "b3bfd411-d70c-410d-b9ff-f83a051b08ef",
+      "registeredPart": "armRight-front",
+      "prompt": "One FRONT-view wearer's RIGHT costume arm for the same cute painted game woman. Image 1 is the old front arm to replace; image 2 gives the new cream blouse fabric and soft skin. Draw independently: thumb on image-right toward her body, small relaxed fingers pointing down. Slender gently gathered sleeve and subtle cuff, nearly straight neutral pose. No fist, muscles, torso, head or text. Genuinely transparent background."
+    }
+  ]
+}

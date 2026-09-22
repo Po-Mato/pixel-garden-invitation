@@ -1,0 +1,115 @@
+{
+  "status": "four-direction-review-only",
+  "runtimeEligible": false,
+  "visualApproved": false,
+  "directions": [
+    "front",
+    "left",
+    "right",
+    "back"
+  ],
+  "costumeSourceVolume": {
+    "front": {
+      "torso": 1.12,
+      "skirt": 1.18
+    }
+  },
+  "parts": [
+    {
+      "id": "armLeft-front",
+      "source": "sources/armLeft-front-balanced-v2.png",
+      "sourcePivot": [
+        400,
+        190
+      ],
+      "sourceEnd": [
+        650,
+        1110
+      ]
+    },
+    {
+      "id": "armRight-front",
+      "source": "sources/armRight-front-balanced-v2.png",
+      "sourcePivot": [
+        430,
+        190
+      ],
+      "sourceEnd": [
+        635,
+        1110
+      ]
+    },
+    {
+      "id": "armLeft-left",
+      "source": "sources/armLeft-left-balanced-v2.png",
+      "sourcePivot": [
+        560,
+        150
+      ],
+      "sourceEnd": [
+        520,
+        1135
+      ]
+    },
+    {
+      "id": "armRight-left",
+      "source": "sources/armRight-left-balanced-v2.png",
+      "sourcePivot": [
+        450,
+        180
+      ],
+      "sourceEnd": [
+        610,
+        1110
+      ]
+    },
+    {
+      "id": "armLeft-right",
+      "source": "sources/armLeft-right-balanced-v2.png",
+      "sourcePivot": [
+        450,
+        180
+      ],
+      "sourceEnd": [
+        625,
+        1120
+      ]
+    },
+    {
+      "id": "armRight-right",
+      "source": "sources/armRight-right-balanced-v2.png",
+      "sourcePivot": [
+        460,
+        170
+      ],
+      "sourceEnd": [
+        595,
+        1135
+      ]
+    },
+    {
+      "id": "armLeft-back",
+      "source": "sources/armLeft-back-balanced-v2.png",
+      "sourcePivot": [
+        420,
+        170
+      ],
+      "sourceEnd": [
+        655,
+        1135
+      ]
+    },
+    {
+      "id": "armRight-back",
+      "source": "sources/armRight-back-balanced-v2.png",
+      "sourcePivot": [
+        430,
+        170
+      ],
+      "sourceEnd": [
+        625,
+        1115
+      ]
+    }
+  ]
+}

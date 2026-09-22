@@ -1,0 +1,27 @@
+{
+  "status":"visible-source-ownership-study",
+  "runtimeEligible":false,
+  "independentMotionAllowed":false,
+  "directions":{
+    "front":{"sourcePivot":[677,856],"behindBody":[],"layers":[
+      {"id":"face","parent":"head","path":"M745 309Q829 307 859 363L903 479L928 567L945 652Q930 763 817 820Q737 857 677 856Q587 848 498 791Q426 745 410 658L438 568Q525 543 558 469L607 382Q660 325 745 309Z M389 623Q348 617 349 659Q350 714 405 744L447 759L454 691Z M948 612Q989 585 1017 622Q1054 674 975 731L929 751L916 680Z M402 715L460 715L464 774L405 777Z M891 702L949 705L951 767L894 770Z"},
+      {"id":"frontHair","parent":"head","path":"M0 0H1240V604H0Z"},
+      {"id":"backHair","parent":"head"}
+    ]},
+    "left":{"sourcePivot":[640,810],"behindBody":[],"layers":[
+      {"id":"face","parent":"head","path":"M425 278Q488 283 511 370L529 490L581 540L620 621L645 715L593 763Q505 791 409 811Q369 818 359 790L341 741L319 718L313 688L297 663Q290 649 313 635L337 608Q357 577 340 536Q318 480 320 411Q321 317 376 289Z M678 575Q727 555 767 587Q800 612 773 651Q743 695 687 711L650 753L604 749L603 700L652 676Z M659 677L716 676L719 731L660 734Z"},
+      {"id":"frontHair","parent":"head","path":"M0 0H1240V557H0Z"},
+      {"id":"backHair","parent":"head"}
+    ]},
+    "right":{"sourcePivot":[660,885],"behindBody":["backHair"],"layers":[
+      {"id":"face","parent":"head","path":"M945 296Q1000 299 1017 366Q1040 436 1018 496L1001 548Q991 621 1020 661L1045 690Q1056 705 1036 727L1021 763L1000 792L960 860Q949 886 910 885Q795 878 719 840L677 812L659 769L655 720L667 664Q718 612 755 549L806 446Q865 341 904 309Z M546 582Q491 575 495 628Q493 696 555 730L591 747L645 751L652 699L619 666Q600 622 583 598Z M573 713L628 713L630 769L574 770Z"},
+      {"id":"frontHair","parent":"head","path":"M0 0H1240V562H0Z"},
+      {"id":"backHair","parent":"head"}
+    ]},
+    "back":{"sourcePivot":[615,810],"behindBody":[],"layers":[
+      {"id":"face","parent":"head","occluded":true},
+      {"id":"frontHair","parent":"head","occluded":true},
+      {"id":"backHair","parent":"head"}
+    ]}
+  }
+}

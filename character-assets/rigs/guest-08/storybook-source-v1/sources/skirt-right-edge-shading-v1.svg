@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="977" height="1609" viewBox="0 0 977 1609">
+  <!-- Individually drawn right-profile cloth shading in original coordinates.
+       Source-atop preserves the existing wrap-dress silhouette and hem. -->
+  <g fill="none" stroke="#63363c" stroke-width="48" stroke-opacity="0.85" stroke-linecap="round">
+    <path d="M385 94 C301 242 289 413 262 567 C216 885 163 1275 126 1499"/>
+    <path d="M657 96 C712 284 720 468 740 666 C768 999 802 1335 829 1533"/>
+  </g>
+</svg>

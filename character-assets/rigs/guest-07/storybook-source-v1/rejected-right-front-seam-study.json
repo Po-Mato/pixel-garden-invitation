@@ -1,0 +1,11 @@
+{
+  "date": "2026-09-14",
+  "source": "sources/torso-right-front-seam-study-v1.svg",
+  "registered": false,
+  "reason": "The narrow front seam raises neighborhood right-view contrast slightly but creates a new home-map failure, without resolving any of the three remaining display-profile failures.",
+  "newFailure": {"zone":"home","direction":"right","frame":2,"standardContrast":1.1665143479756015},
+  "candidateCounts": {"standardFailures":60,"displayFailures":3},
+  "decision": "Restore the original torso material and regenerate; retain only the separately checked front bag seam.",
+  "thresholdsUnchanged": true,
+  "pngRepaired": false
+}

@@ -1,0 +1,23 @@
+{
+  "supersededBy": "arm-source-review.json",
+  "status": "reviewed-source-material-not-release-ready",
+  "liveMotionReview": {"locations": ["selection", "home", "neighborhood", "subway-station", "subway-train"], "guestFramesInspectedPerLocation": 16, "currentAssetHashAuditsPassed": 4, "captureFailureRetriedWithoutRelaxation": true, "productionServiceWorkerChecked": false},
+  "source": "sources/skirt-front-hem-study-v1.svg",
+  "method": "Front-only lace edge shading in original source coordinates, clipped below y=1300 and composited source-atop before rig registration",
+  "hdSha256": "57dc13adfbcdcb0934d1b8efb52c4e1267ea8728a98a42d935435e6f244b28ba",
+  "runtimeSha256": "1c62936ce67c529d9ccc035b8b45f0088cdb8e0317e1800d6635bf4fd9947abd",
+  "preserved": ["original alpha", "waistband and upper pleats", "face and hair", "arms and bag", "source pivot and pelvis binding", "other directions"],
+  "frontNeighborhoodBefore": [1.1427065401008178, 1.1577587079832758, 1.1427065401008178, 1.1577587079832758],
+  "frontNeighborhoodAfter": [1.1577587079832758, 1.1807279622215683, 1.1625980062933958, 1.1807279622215683],
+  "catalogFailuresBefore": 30,
+  "catalogFailuresAfter": 28,
+  "newFailures": 0,
+  "displayFailures": 0,
+  "sourceTestsPassed": 15,
+  "structureTestsPassed": 76,
+  "jointAudit": {"characters": 12, "frames": 192, "connectionsInspected": 2112, "disconnected": 0, "rigidHeadDirections": 48},
+  "visualReview": "Current dark-background 16-frame sheet, live selection contact sheet, full 390x844 selection screenshot and all four live-map contact sheets inspected. Lace remains subtle and continuous, central light pleats and cream shoes preserved. No new detached fragment observed. Capture and hash verification do not establish final catalog approval.",
+  "runtimeEligible": false,
+  "visualApproved": false,
+  "thresholdsChanged": false
+}

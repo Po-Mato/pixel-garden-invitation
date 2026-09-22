@@ -1,0 +1,528 @@
+{
+  "version": 1,
+  "date": "2026-09-22",
+  "scope": "local-rendered-candidate",
+  "reviewer": "assistant visual inspection under user-delegated design judgment",
+  "visualInspectionPassed": true,
+  "productionIntegrated": false,
+  "productionServiceWorkerChecked": false,
+  "deployed": false,
+  "geometry": {
+    "head": 72,
+    "body": 144,
+    "total": 216,
+    "frame": [
+      192,
+      288
+    ]
+  },
+  "observations": [
+    "All twelve selection contact sheets and all twelve home movement contact sheets inspected at their actual screenshot scale; no conspicuous face distortion, detached shoulders/wrists/ankles or accessory jumps observed.",
+    "Changed guests 01, 02, 05 and 07 additionally inspected in neighborhood, subway station and subway train movement contact sheets.",
+    "Approved silhouettes and shared 72/144/216 geometry retained. Cream garment centers remain visible; source contours provide readable separation without changing alpha.",
+    "Long dresses conceal upper legs; visible foot alternation is complemented by source-joint and shared-animation tests, not inferred from a static image alone."
+  ],
+  "gates": {
+    "sourceTests": 165,
+    "structureTests": 112,
+    "mapTests": 82,
+    "mapCompositeSamples": 1920,
+    "standardContrastFailures": 0,
+    "displayContrastFailures": 0,
+    "selectionFrames": 192,
+    "gameFramesPerZone": 192,
+    "gameZones": [
+      "home",
+      "neighborhood",
+      "subway-station",
+      "subway-train"
+    ],
+    "selectionPauseDirections": 48
+  },
+  "characters": [
+    {
+      "characterId": "guest-01",
+      "presetId": "feminine-long-wave-dress",
+      "source": "character-assets/rigs/guest-01/storybook-source-v1/generated/balanced-v3/walk.png",
+      "sourceSheetSha256": "e870c8a9d9574cfe17449a1c11d8992dc09c3f03a53da661e1d1acf361d0cbff",
+      "outputs": [
+        {
+          "file": "feminine-long-wave-dress__walk-hd.png",
+          "sha256": "e870c8a9d9574cfe17449a1c11d8992dc09c3f03a53da661e1d1acf361d0cbff"
+        },
+        {
+          "file": "feminine-long-wave-dress__idle-hd.png",
+          "sha256": "d79ab082b5b1ef537117d6c77d8ed914b859a9219b3c393f359f49974044a82e"
+        },
+        {
+          "file": "feminine-long-wave-dress__walk-runtime.png",
+          "sha256": "23e89453937ae3c00fe552d428ab08d1649f9c3db154f1633077a254426fc4ee"
+        },
+        {
+          "file": "feminine-long-wave-dress__idle-runtime.png",
+          "sha256": "a0d05c4868d976f9db44546ac58610d88b12b12b8ec3861b3cd4142b09e01a85"
+        }
+      ]
+    },
+    {
+      "characterId": "guest-02",
+      "presetId": "feminine-formal-hanbok",
+      "source": "character-assets/rigs/guest-02/storybook-source-v1/generated/walk-study.png",
+      "sourceSheetSha256": "73c41d8f2f10cbc5a853649b6d71c4eecc0c256e8413808988e0527034becd53",
+      "outputs": [
+        {
+          "file": "feminine-formal-hanbok__walk-hd.png",
+          "sha256": "73c41d8f2f10cbc5a853649b6d71c4eecc0c256e8413808988e0527034becd53"
+        },
+        {
+          "file": "feminine-formal-hanbok__idle-hd.png",
+          "sha256": "e5200ef4a08d87eefc31e45e458f69169673e2bf630623679d9bc0767027324e"
+        },
+        {
+          "file": "feminine-formal-hanbok__walk-runtime.png",
+          "sha256": "a79a141fc2ba29e68cfc7e4e835ae86c80fd5daeb6bc8267b0a63fa7954feff7"
+        },
+        {
+          "file": "feminine-formal-hanbok__idle-runtime.png",
+          "sha256": "6c78798f486fb6b9b97570db6abad53b5e3f475dd1964fc606c1a0c5c9706a44"
+        }
+      ]
+    },
+    {
+      "characterId": "guest-03",
+      "presetId": "masculine-navy-suit",
+      "source": "character-assets/rigs/guest-03/storybook-source-v1/generated/walk-study.png",
+      "sourceSheetSha256": "e0ed45dac135bdbcc5f8dde81b9b5ea09c468b790610032a15eacec1a2a3ab73",
+      "outputs": [
+        {
+          "file": "masculine-navy-suit__walk-hd.png",
+          "sha256": "e0ed45dac135bdbcc5f8dde81b9b5ea09c468b790610032a15eacec1a2a3ab73"
+        },
+        {
+          "file": "masculine-navy-suit__idle-hd.png",
+          "sha256": "59e24044176d6f80a3844dda66824300c164a0d4c94efc314417dda51bab54b3"
+        },
+        {
+          "file": "masculine-navy-suit__walk-runtime.png",
+          "sha256": "cf7c481e1febbed2de88087021c9be7f06cfb42b03ad23e2bdd0190fd6689e86"
+        },
+        {
+          "file": "masculine-navy-suit__idle-runtime.png",
+          "sha256": "f6fc095bdf6a7026b8110b60e5b1188f3115249d807b2e1d921ca7865de0d32a"
+        }
+      ]
+    },
+    {
+      "characterId": "guest-04",
+      "presetId": "masculine-charcoal-blazer",
+      "source": "character-assets/rigs/guest-04/storybook-source-v1/generated/walk-study.png",
+      "sourceSheetSha256": "fc83ff6370baa7d71d9f68f419843365f47594788566948dc3a8ebb47e13a2a5",
+      "outputs": [
+        {
+          "file": "masculine-charcoal-blazer__walk-hd.png",
+          "sha256": "fc83ff6370baa7d71d9f68f419843365f47594788566948dc3a8ebb47e13a2a5"
+        },
+        {
+          "file": "masculine-charcoal-blazer__idle-hd.png",
+          "sha256": "88704290208d9a483b4556f3049b911a9f59fcfc15cec451a2d13b652b4449df"
+        },
+        {
+          "file": "masculine-charcoal-blazer__walk-runtime.png",
+          "sha256": "11e270069d7252e11ca7e6e4acc18c5a91612d195085e6960fc9d2b5b0c91cd7"
+        },
+        {
+          "file": "masculine-charcoal-blazer__idle-runtime.png",
+          "sha256": "3f4490e31e0e37fd2124f2bcd079a57ea9524ac36db5da1a3f229e30de7f204a"
+        }
+      ]
+    },
+    {
+      "characterId": "guest-05",
+      "presetId": "feminine-sage-bolero-dress",
+      "source": "character-assets/rigs/guest-05/storybook-directions-v1/generated/guest05-walk-study.png",
+      "sourceSheetSha256": "b9d4cf67d42bd774c6902e8af88d8d0c03f22686dbfa0ecb17963471724a4020",
+      "outputs": [
+        {
+          "file": "feminine-sage-bolero-dress__walk-hd.png",
+          "sha256": "b9d4cf67d42bd774c6902e8af88d8d0c03f22686dbfa0ecb17963471724a4020"
+        },
+        {
+          "file": "feminine-sage-bolero-dress__idle-hd.png",
+          "sha256": "dcc49402e35d46be5ca69195d748ecf81d2b0547eb450bbc58215a0c0260fe28"
+        },
+        {
+          "file": "feminine-sage-bolero-dress__walk-runtime.png",
+          "sha256": "3e0d7de2357cbf5b32f526f619456388d26d441a7372d6cd71888c54b7b7c3f5"
+        },
+        {
+          "file": "feminine-sage-bolero-dress__idle-runtime.png",
+          "sha256": "b7efa52709eaee118e0ac647a4e636b8c1e820915dc8252df14c3cf6ef54b269"
+        }
+      ]
+    },
+    {
+      "characterId": "guest-06",
+      "presetId": "feminine-champagne-navy-skirt",
+      "source": "character-assets/rigs/guest-06/storybook-source-v1/generated/walk-study.png",
+      "sourceSheetSha256": "0149b495712c4615d7d986732f438ddbca425f02f7c3b6c13e734034b58e30b4",
+      "outputs": [
+        {
+          "file": "feminine-champagne-navy-skirt__walk-hd.png",
+          "sha256": "0149b495712c4615d7d986732f438ddbca425f02f7c3b6c13e734034b58e30b4"
+        },
+        {
+          "file": "feminine-champagne-navy-skirt__idle-hd.png",
+          "sha256": "182aad7002835942548b9fbbe3e449e4c6504f9000fdd80ae91362b1c9619439"
+        },
+        {
+          "file": "feminine-champagne-navy-skirt__walk-runtime.png",
+          "sha256": "0fe4551a5f0410d0e3379b71d6e17b5db1e290063fc7cd542dfbe00de7c3c005"
+        },
+        {
+          "file": "feminine-champagne-navy-skirt__idle-runtime.png",
+          "sha256": "26c7485606746211727002841e1364566c70fc4b82a2b3da23a7895a0fdfdfc4"
+        }
+      ]
+    },
+    {
+      "characterId": "guest-07",
+      "presetId": "feminine-lavender-jacket-dress",
+      "source": "character-assets/rigs/guest-07/storybook-source-v1/generated/walk-study.png",
+      "sourceSheetSha256": "740872892db5d0cd65d966af601ce85658e4491a7281253d6a9dd58e9245a31f",
+      "outputs": [
+        {
+          "file": "feminine-lavender-jacket-dress__walk-hd.png",
+          "sha256": "740872892db5d0cd65d966af601ce85658e4491a7281253d6a9dd58e9245a31f"
+        },
+        {
+          "file": "feminine-lavender-jacket-dress__idle-hd.png",
+          "sha256": "c2384e29d855b14aca732d7d322b594b5bff757344e4cea9ae763852707e75ac"
+        },
+        {
+          "file": "feminine-lavender-jacket-dress__walk-runtime.png",
+          "sha256": "7bee17f3c0df0cc6a6cb6c49e40b5b2db9422184a590f3f379cbf71c1977683d"
+        },
+        {
+          "file": "feminine-lavender-jacket-dress__idle-runtime.png",
+          "sha256": "9850a8bcc30f2cba5776600a7d3938f6818747ca8e6ab666c195b4d170c4dc39"
+        }
+      ]
+    },
+    {
+      "characterId": "guest-08",
+      "presetId": "feminine-teal-modern-hanbok",
+      "source": "character-assets/rigs/guest-08/storybook-source-v1/generated/walk-study.png",
+      "sourceSheetSha256": "05f8b66417536c0b21de62f890b50a26beb259af0277a5d30779f5d716ee1f6c",
+      "outputs": [
+        {
+          "file": "feminine-teal-modern-hanbok__walk-hd.png",
+          "sha256": "05f8b66417536c0b21de62f890b50a26beb259af0277a5d30779f5d716ee1f6c"
+        },
+        {
+          "file": "feminine-teal-modern-hanbok__idle-hd.png",
+          "sha256": "7825631cb1583b7347d1c5695808088d01b86274fec74f9437b21834bdd48e7c"
+        },
+        {
+          "file": "feminine-teal-modern-hanbok__walk-runtime.png",
+          "sha256": "9b20de7447d5eb51088fa955ff733a1b52b6798d007a7964932aefd273ea9840"
+        },
+        {
+          "file": "feminine-teal-modern-hanbok__idle-runtime.png",
+          "sha256": "a793e578507de887199be903ff2e782268df7c6733bc6532c0b2a7323712084b"
+        }
+      ]
+    },
+    {
+      "characterId": "guest-09",
+      "presetId": "masculine-beige-summer-suit",
+      "source": "character-assets/rigs/guest-09/storybook-source-v1/generated/walk-study.png",
+      "sourceSheetSha256": "8ad5b22ee4352a31d49f3d2d95cec015de99ee5b5d587d0f6338166073e2a89a",
+      "outputs": [
+        {
+          "file": "masculine-beige-summer-suit__walk-hd.png",
+          "sha256": "8ad5b22ee4352a31d49f3d2d95cec015de99ee5b5d587d0f6338166073e2a89a"
+        },
+        {
+          "file": "masculine-beige-summer-suit__idle-hd.png",
+          "sha256": "3eb931b0aef9f084a86d6ce0b39b788197b1e9a1c8121fa874f0cd96dac3ca28"
+        },
+        {
+          "file": "masculine-beige-summer-suit__walk-runtime.png",
+          "sha256": "a26ea3598927a2ca0f1bcb0dd7c202932706b672e19d9f010a2693c2b51f0d70"
+        },
+        {
+          "file": "masculine-beige-summer-suit__idle-runtime.png",
+          "sha256": "9a2f9240e5e3c5c805be40ac2c2863e6df9fe3fdecc911d5a8292fed32be7c53"
+        }
+      ]
+    },
+    {
+      "characterId": "guest-10",
+      "presetId": "masculine-charcoal-burgundy-tie",
+      "source": "character-assets/rigs/guest-10/storybook-source-v1/generated/walk-study.png",
+      "sourceSheetSha256": "e19c31d5204d1c64f7524e725d3714ee45f1c0f0ccc139483d114c1fe97a001f",
+      "outputs": [
+        {
+          "file": "masculine-charcoal-burgundy-tie__walk-hd.png",
+          "sha256": "e19c31d5204d1c64f7524e725d3714ee45f1c0f0ccc139483d114c1fe97a001f"
+        },
+        {
+          "file": "masculine-charcoal-burgundy-tie__idle-hd.png",
+          "sha256": "e7bed67ed3393d7eb4a9ca6865d278fa7449436f87609bc1711c33bfca80081a"
+        },
+        {
+          "file": "masculine-charcoal-burgundy-tie__walk-runtime.png",
+          "sha256": "6e94f1f70660a8f565ed36fcb32b08fa2b3b0bf9715bd9b2d667b84af7471106"
+        },
+        {
+          "file": "masculine-charcoal-burgundy-tie__idle-runtime.png",
+          "sha256": "2f761e3986d236469be764a924576ac2a2c04d2ba210727a3a68afd3d3c6cf23"
+        }
+      ]
+    },
+    {
+      "characterId": "guest-11",
+      "presetId": "masculine-green-blazer-cream-pants",
+      "source": "character-assets/rigs/guest-11/storybook-source-v1/generated/walk-study.png",
+      "sourceSheetSha256": "dc2c39ae55fb292397b8677d79d56600cb73491fbdb79ef156104311c2050fc9",
+      "outputs": [
+        {
+          "file": "masculine-green-blazer-cream-pants__walk-hd.png",
+          "sha256": "dc2c39ae55fb292397b8677d79d56600cb73491fbdb79ef156104311c2050fc9"
+        },
+        {
+          "file": "masculine-green-blazer-cream-pants__idle-hd.png",
+          "sha256": "96ec1f2089bc080d9667e14db02d9401d72828f7551c1dc3740ca8853db74a5f"
+        },
+        {
+          "file": "masculine-green-blazer-cream-pants__walk-runtime.png",
+          "sha256": "dd1de1d445eb97419b4702098fd33b87bdb0ff739ab73b293e62c1df98f31845"
+        },
+        {
+          "file": "masculine-green-blazer-cream-pants__idle-runtime.png",
+          "sha256": "d8b51315660b7ed4ae060be1adeb41cc23520878e1394a8fcffabced400b7249"
+        }
+      ]
+    },
+    {
+      "characterId": "guest-12",
+      "presetId": "masculine-blue-modern-hanbok",
+      "source": "character-assets/rigs/guest-12/storybook-source-v1/generated/walk-study.png",
+      "sourceSheetSha256": "7e91965defd71227ced6673710d0aec7661e3ac004f16994810b88fcf71f31d4",
+      "outputs": [
+        {
+          "file": "masculine-blue-modern-hanbok__walk-hd.png",
+          "sha256": "7e91965defd71227ced6673710d0aec7661e3ac004f16994810b88fcf71f31d4"
+        },
+        {
+          "file": "masculine-blue-modern-hanbok__idle-hd.png",
+          "sha256": "3a430e3a5fd543f06e44c1624a5f817841a855fd486344996361c54a0ba49279"
+        },
+        {
+          "file": "masculine-blue-modern-hanbok__walk-runtime.png",
+          "sha256": "b596e863dd408ec0ab5cbf3dd309b494777b3dab9b1a5d2a9b47f0fa5885ea9d"
+        },
+        {
+          "file": "masculine-blue-modern-hanbok__idle-runtime.png",
+          "sha256": "dbb6cf88dfc7356fa5ef4e636514d2e5d4e358ab38fd687bc7f84bb7f47da738"
+        }
+      ]
+    }
+  ],
+  "inspectedContactSheets": [
+    {
+      "file": "character-assets/rigs/storybook-expansion-v1/client-selection-motion-v1/guest-01-contact.png",
+      "sha256": "99f259c2b632c81fd84792d3a812dbf832f1bc8647e6df6316a1e6d478dd9442"
+    },
+    {
+      "file": "character-assets/rigs/storybook-expansion-v1/client-game-motion-v1/guest-01-contact.png",
+      "sha256": "103621108d16af8c7388006cd68591e163ca52175901cbc838580165b0eac27d"
+    },
+    {
+      "file": "character-assets/rigs/storybook-expansion-v1/client-selection-motion-v1/guest-02-contact.png",
+      "sha256": "ec3f2602d2449464b13fde45ea73c39b55d114063a471d56a79ed05b2a26c02d"
+    },
+    {
+      "file": "character-assets/rigs/storybook-expansion-v1/client-game-motion-v1/guest-02-contact.png",
+      "sha256": "9251931fa93b71a446124f874f1ed10dabf0f8b914cc089dbec3aaff0127fe9c"
+    },
+    {
+      "file": "character-assets/rigs/storybook-expansion-v1/client-selection-motion-v1/guest-03-contact.png",
+      "sha256": "e837a3666647d4e1c00d5bc551eca80ed6d96f9fa57afe2759b251870c46a527"
+    },
+    {
+      "file": "character-assets/rigs/storybook-expansion-v1/client-game-motion-v1/guest-03-contact.png",
+      "sha256": "f1cbbc7bd65ed61487576d0d2a3ddc39540bc18035e821b5f9ec09b4f928c29a"
+    },
+    {
+      "file": "character-assets/rigs/storybook-expansion-v1/client-selection-motion-v1/guest-04-contact.png",
+      "sha256": "7bac02cd0b0729a53f2b345908fa82c71c150bf2f26e2f878f6d4661922ad315"
+    },
+    {
+      "file": "character-assets/rigs/storybook-expansion-v1/client-game-motion-v1/guest-04-contact.png",
+      "sha256": "db1ec29cee4c13ca7b520f0f3db7dffff9941cce8768d64cfc9ca39e0bc86b26"
+    },
+    {
+      "file": "character-assets/rigs/storybook-expansion-v1/client-selection-motion-v1/guest-05-contact.png",
+      "sha256": "e753f5031a178f34d11ce8f104cd6fe3a1cb02301fecdd16bef60911306442cb"
+    },
+    {
+      "file": "character-assets/rigs/storybook-expansion-v1/client-game-motion-v1/guest-05-contact.png",
+      "sha256": "2a1fff301346f891ace3fe50dd7b7bc61f23a211dbf468dc47a90c2e3d4c481c"
+    },
+    {
+      "file": "character-assets/rigs/storybook-expansion-v1/client-selection-motion-v1/guest-06-contact.png",
+      "sha256": "2d86e20b7f8e537c85e12eb3d56cb1c8c8202e547f0304ce138e5a15eccb16f4"
+    },
+    {
+      "file": "character-assets/rigs/storybook-expansion-v1/client-game-motion-v1/guest-06-contact.png",
+      "sha256": "8fc5418403831ce4014a53c1ce6e7e5370df8e658bf4d0c3dc79c94dffc1be42"
+    },
+    {
+      "file": "character-assets/rigs/storybook-expansion-v1/client-selection-motion-v1/guest-07-contact.png",
+      "sha256": "3c6a60f44e1d663900dcc988802384df398f05de1501ec172020a65389098251"
+    },
+    {
+      "file": "character-assets/rigs/storybook-expansion-v1/client-game-motion-v1/guest-07-contact.png",
+      "sha256": "c88f249714050d76019cc6a11f2bd8f1dfeef13c3e036723eab0abadeb0fbf9f"
+    },
+    {
+      "file": "character-assets/rigs/storybook-expansion-v1/client-selection-motion-v1/guest-08-contact.png",
+      "sha256": "a21e2aac4c7ea3d2fda76463a56bb222c0eec3c7a2b335ec173d8fc1c6ae1719"
+    },
+    {
+      "file": "character-assets/rigs/storybook-expansion-v1/client-game-motion-v1/guest-08-contact.png",
+      "sha256": "c2665555ddec67d3cfb9eb2cdfeab0f63cc787b8549a8441d7bc15c2d590fd26"
+    },
+    {
+      "file": "character-assets/rigs/storybook-expansion-v1/client-selection-motion-v1/guest-09-contact.png",
+      "sha256": "d28d457e4a6862020d8a4b6d27b9d1be5db5891d1c4be26cb7f6e42e6418075b"
+    },
+    {
+      "file": "character-assets/rigs/storybook-expansion-v1/client-game-motion-v1/guest-09-contact.png",
+      "sha256": "f67176ba2ac33ee0fc05084464d242936280fac358425da0479f72a48872cf2e"
+    },
+    {
+      "file": "character-assets/rigs/storybook-expansion-v1/client-selection-motion-v1/guest-10-contact.png",
+      "sha256": "73a032b08d6ee792dbd75c2b0201fe30bf013f89094b9e05eff252ebd593d525"
+    },
+    {
+      "file": "character-assets/rigs/storybook-expansion-v1/client-game-motion-v1/guest-10-contact.png",
+      "sha256": "37d0e0e465bb364b6ad118b2479ee77b338ddf3d2bb6d0693b5181dcabaf4594"
+    },
+    {
+      "file": "character-assets/rigs/storybook-expansion-v1/client-selection-motion-v1/guest-11-contact.png",
+      "sha256": "10955ac76504dc5a148e46021702e9fb525419930d4f53f0b319dc82f0fa832b"
+    },
+    {
+      "file": "character-assets/rigs/storybook-expansion-v1/client-game-motion-v1/guest-11-contact.png",
+      "sha256": "a3bf01b419508495b44c2b36163be756928e1eb004e2e5b1a4a757aab320fda4"
+    },
+    {
+      "file": "character-assets/rigs/storybook-expansion-v1/client-selection-motion-v1/guest-12-contact.png",
+      "sha256": "1ec00696a9a63a886fd86fb99d1e083fbd36c71c443ed6a3d0e3475f7cd0a7fb"
+    },
+    {
+      "file": "character-assets/rigs/storybook-expansion-v1/client-game-motion-v1/guest-12-contact.png",
+      "sha256": "2894b5a3f0720d8ec978eba0b409a9b039886f7962c589824f1a92565b961152"
+    },
+    {
+      "file": "character-assets/rigs/storybook-expansion-v1/client-game-neighborhood-motion-v1/guest-01-contact.png",
+      "sha256": "0fa55c726ea4070238798aed8bd4359a587248d449c71bcfd76a029319865295"
+    },
+    {
+      "file": "character-assets/rigs/storybook-expansion-v1/client-game-neighborhood-motion-v1/guest-02-contact.png",
+      "sha256": "3181c9b91e1057ac6e65fe8f5324fb4bb8c05c7d680fc066a019d0731e55fea9"
+    },
+    {
+      "file": "character-assets/rigs/storybook-expansion-v1/client-game-neighborhood-motion-v1/guest-05-contact.png",
+      "sha256": "819dd9e3ae1c7c416363463471ad0584657ce2150adc6879c133dae977781370"
+    },
+    {
+      "file": "character-assets/rigs/storybook-expansion-v1/client-game-neighborhood-motion-v1/guest-07-contact.png",
+      "sha256": "bf19deb9f95c00b1cbcd2a5bc5fa0f9e374e8c5b08d52bfa7f9321fa28c56e6f"
+    },
+    {
+      "file": "character-assets/rigs/storybook-expansion-v1/client-game-subway-station-motion-v1/guest-01-contact.png",
+      "sha256": "c404b3a5bc383a59bfaca732efe11ffaed39cd5ee5944db941b98bd8f32287f5"
+    },
+    {
+      "file": "character-assets/rigs/storybook-expansion-v1/client-game-subway-station-motion-v1/guest-02-contact.png",
+      "sha256": "007e911c180401cf60976b4b87e9da634c4dd79a47475693aea24f574ec679a0"
+    },
+    {
+      "file": "character-assets/rigs/storybook-expansion-v1/client-game-subway-station-motion-v1/guest-05-contact.png",
+      "sha256": "718414f657386af7241aa96254c535891dfd593858acec8375a513b5c37831a0"
+    },
+    {
+      "file": "character-assets/rigs/storybook-expansion-v1/client-game-subway-station-motion-v1/guest-07-contact.png",
+      "sha256": "ce311fc95074b5929e80ad3914c67bd35203ba57f53165e812d44f6eca14abc8"
+    },
+    {
+      "file": "character-assets/rigs/storybook-expansion-v1/client-game-subway-train-motion-v1/guest-01-contact.png",
+      "sha256": "70ae94516283871b20fa3a768df23a1484ba3a70fd6ce5e265db5cf38e1eac36"
+    },
+    {
+      "file": "character-assets/rigs/storybook-expansion-v1/client-game-subway-train-motion-v1/guest-02-contact.png",
+      "sha256": "052ac38df8da212f60c200f35288159156241004d1f38a48eedb9f2342d4f473"
+    },
+    {
+      "file": "character-assets/rigs/storybook-expansion-v1/client-game-subway-train-motion-v1/guest-05-contact.png",
+      "sha256": "d4aacc11f12a713a5e2a98e7d8b8ff0b365223feb1364feb2d8ea4c56d4367dc"
+    },
+    {
+      "file": "character-assets/rigs/storybook-expansion-v1/client-game-subway-train-motion-v1/guest-07-contact.png",
+      "sha256": "722430b1735b4b93414453d0d1b5bede10b5180d8f4bb469f10f7637a2d08f77"
+    }
+  ],
+  "evidence": [
+    {
+      "file": "character-assets/rigs/storybook-expansion-v1/map-browser-evidence.json",
+      "sha256": "754534e30a183658bd1de83960b02b67053062e35f3f5803fd21a1f918161af7"
+    },
+    {
+      "file": "character-assets/rigs/storybook-expansion-v1/joint-connection-evidence.json",
+      "sha256": "fe546b94486d7dbefac1716ada3636fb623de205ccd1dad14833a569ee540709"
+    },
+    {
+      "file": "character-assets/rigs/storybook-expansion-v1/client-motion-audit.json",
+      "sha256": "f8e0e7545b98693dd113de8278d6e1d92a070dfe82288f90cb544ccc6ce6fbc1"
+    },
+    {
+      "file": "character-assets/rigs/storybook-expansion-v1/client-neighborhood-motion-audit.json",
+      "sha256": "47850a7a1b31f105fc1080b1b9913121e14d080fef7fc36814e42cfb5e1edab3"
+    },
+    {
+      "file": "character-assets/rigs/storybook-expansion-v1/client-subway-station-motion-audit.json",
+      "sha256": "68aeec8e9d000bdf556c8d806e96e712244aa61e2a7b718af5b1c753928191fa"
+    },
+    {
+      "file": "character-assets/rigs/storybook-expansion-v1/client-subway-train-motion-audit.json",
+      "sha256": "bd6ed4aa2d993ff43d17a0fc6ceb8580d6d20a35d63a33dd27d36f657191e013"
+    },
+    {
+      "file": "character-assets/rigs/storybook-expansion-v1/client-selection-controls-v1/evidence.json",
+      "sha256": "e763f51b8389e57ac78d28132eab5017f28f5c679a8995b7f0474de832abab9e"
+    },
+    {
+      "file": "character-assets/rigs/storybook-expansion-v1/client-selection-motion-v1/evidence.json",
+      "sha256": "4293b3af4a58728d5c94c6526b05955f67344c154a1c5c0b0be6b09894c16ae5"
+    },
+    {
+      "file": "character-assets/rigs/storybook-expansion-v1/client-game-motion-v1/evidence.json",
+      "sha256": "bb1f31315de5fd10949e2b824b24c07f276cae2a42f79daf17abc1f849f57ad4"
+    },
+    {
+      "file": "character-assets/rigs/storybook-expansion-v1/client-game-neighborhood-motion-v1/evidence.json",
+      "sha256": "15d2fea2279a1b6d3dfccb827470ee847415e6bab308ef76a1d4645942e10f1c"
+    },
+    {
+      "file": "character-assets/rigs/storybook-expansion-v1/client-game-subway-station-motion-v1/evidence.json",
+      "sha256": "7562bdd2d23f2cf491eceff859005b6e37b2e090c30814f6db86f6b2d5ca29b1"
+    },
+    {
+      "file": "character-assets/rigs/storybook-expansion-v1/client-game-subway-train-motion-v1/evidence.json",
+      "sha256": "eaf9656d496325088cdd8a7b0828ad8186efcf77ec88424c89562477ad0308ec"
+    }
+  ]
+}

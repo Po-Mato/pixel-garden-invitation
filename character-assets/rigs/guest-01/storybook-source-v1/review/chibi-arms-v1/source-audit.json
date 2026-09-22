@@ -1,0 +1,66 @@
+{
+  "scope": "front neutral and four walk frames only",
+  "frame": [
+    192,
+    288
+  ],
+  "sourceAudit": [
+    {
+      "id": "armLeft-front",
+      "source": "sources/armLeft-front-chibi-v1.png",
+      "sourcePivot": [
+        400,
+        190
+      ],
+      "sourceEnd": [
+        630,
+        1080
+      ],
+      "pivot": [
+        119,
+        136.883721
+      ],
+      "targetEnd": [
+        127,
+        180.418605
+      ],
+      "scale": 0.04815269259976685,
+      "angle": 4.077217483577057,
+      "sha256": "78ae0f7c4785d5ea0bb970170b2b35c0d92e6df08e0f05b695927089f9d1e6c6",
+      "alphaPreserved": true,
+      "mirrored": false
+    },
+    {
+      "id": "armRight-front",
+      "source": "sources/armRight-front-chibi-v1.png",
+      "sourcePivot": [
+        430,
+        190
+      ],
+      "sourceEnd": [
+        625,
+        1110
+      ],
+      "pivot": [
+        73,
+        136.883721
+      ],
+      "targetEnd": [
+        65,
+        180.418605
+      ],
+      "scale": 0.047067206848031694,
+      "angle": 22.37964748689236,
+      "sha256": "c7713cb3b07341b7484856cd6b1210eaed6dcf8a4f2a5f221ff6e32ef00c0cd2",
+      "alphaPreserved": true,
+      "mirrored": false
+    }
+  ],
+  "checks": {
+    "neutralFramesIdentical": true,
+    "oppositeFramesDifferent": true,
+    "frameDimensions": true
+  },
+  "runtimeEligible": false,
+  "visualApproved": false
+}

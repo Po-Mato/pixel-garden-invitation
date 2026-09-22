@@ -1,0 +1,12 @@
+{
+  "status": "front-source-art-proposal-not-runtime",
+  "parts": [
+    {"id":"armLeft-front","source":"sources/armLeft-front-balanced-v2.png","sourcePivot":[400,190],"sourceEnd":[650,1110]},
+    {"id":"armRight-front","source":"sources/armRight-front-balanced-v2.png","sourcePivot":[430,190],"sourceEnd":[635,1110]}
+  ],
+  "preserveGeneratedAlpha": true,
+  "costumeSourceVolume": {"torso":1.12,"skirt":1.18},
+  "armSourceWidthAdjustment": false,
+  "runtimeEligible": false,
+  "visualApproved": false
+}

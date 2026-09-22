@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="192" height="288" viewBox="0 0 192 288">
+<!-- Costume visibility, not anatomy: the four long skirts cover thighs and calves.
+     The plane is 4+ px inside their hems, leaving feet/ankles visible. Full leg
+     artwork and all common joints remain intact behind this editable mask. -->
+<path fill="white" d="M0 248H192V288H0Z"/>
+</svg>

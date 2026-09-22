@@ -1,0 +1,32 @@
+{
+  "date": "2026-09-14",
+  "source": "sources/skirt-right-seam-study-v1.svg",
+  "direction": "right",
+  "part": "skirt-right",
+  "sourceMethod": "Source-coordinate contour shading limited to the mid-lower skirt, before registration; waistband, central pleats and hem are unpainted",
+  "previousSheetSha256": "518e93380f2d52ce9b283e59850c035023692ed777aa563ab32eb3cef6cc0b53",
+  "sheetSha256": "e19c31d5204d1c64f7524e725d3714ee45f1c0f0ccc139483d114c1fe97a001f",
+  "runtimeSha256": "6e94f1f70660a8f565ed36fcb32b08fa2b3b0bf9715bd9b2d667b84af7471106",
+  "sourceAlphaUnchanged": true,
+  "waistbandCentralPleatsAndHemUnpainted": true,
+  "creamAccessoriesUnchanged": true,
+  "unpaintedOpaqueSourceColorsPreserved": true,
+  "geometryPivotsAndBodySidesUnchanged": true,
+  "otherDirectionsUnchanged": true,
+  "otherCharactersUnchanged": true,
+  "pngRepaired": false,
+  "neighborhoodRightStandardContrasts": [1.1848549049205168,1.2172161303764615,1.1824660791797783,1.2172161303764615],
+  "characterContrast": {"fixtureSamples":160,"standardFailures":0,"displayFailures":0},
+  "catalogContrast": {"samples":1920,"standardFailuresBefore":55,"standardFailures":51,"displayFailures":0,"newFailures":0,"thresholdsUnchanged":true},
+  "visualReview": {
+    "highResolutionRightStrideInspected": true,
+    "latestSelection16FramesInspected": true,
+    "latestHomeGame16FramesInspected": true,
+    "observation": "The navy garment retains its painted color and central pleats without a conspicuous dark strip. Cream belt and handbag, neck, face and shoes remain intact across the inspected frames."
+  },
+  "tests": {"source":15,"structure":61,"jointCatalogCharacters":12,"disconnected":0,"unobserved":0},
+  "visualApproved": false,
+  "runtimeEligible": false,
+  "productionChanged": false,
+  "remaining": "Other characters retain basic contrast failures; this fixture result is not an overall release approval."
+}

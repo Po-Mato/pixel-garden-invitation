@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1536" viewBox="0 0 1024 1536">
+  <!-- Authored sole and welt shading in original source coordinates. White upper stays unpainted. -->
+  <path d="M355 1244 C339 1278 410 1302 487 1293 C551 1286 627 1296 656 1274 L663 1248" fill="none" stroke="#38281f" stroke-opacity="0.85" stroke-width="48" stroke-linecap="round"/>
+  <path d="M418 1214 Q347 1218 352 1256 Q345 1302 473 1292 Q544 1286 636 1288 Q685 1280 647 1170" fill="none" stroke="#38281f" stroke-opacity=".75" stroke-width="24" stroke-linecap="round"/>
+</svg>

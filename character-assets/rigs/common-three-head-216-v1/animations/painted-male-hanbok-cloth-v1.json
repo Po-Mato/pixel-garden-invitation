@@ -1,0 +1,36 @@
+{
+  "id": "painted-male-hanbok-cloth-v1",
+  "family": "maleHanbok",
+  "policy": "Shared long male hanbok outer robe: small opposing cloth swing under rigid vest; limb gait stays shared.",
+  "parent": "pelvis",
+  "pivot": [
+    96,
+    161
+  ],
+  "directions": {
+    "front": [
+      -0.4,
+      0,
+      0.4,
+      0
+    ],
+    "left": [
+      -0.4,
+      0,
+      0.4,
+      0
+    ],
+    "right": [
+      0.4,
+      0,
+      -0.4,
+      0
+    ],
+    "back": [
+      0.4,
+      0,
+      -0.4,
+      0
+    ]
+  }
+}

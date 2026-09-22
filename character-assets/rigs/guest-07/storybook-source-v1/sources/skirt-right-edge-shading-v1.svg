@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="992" height="1585" viewBox="0 0 992 1585">
+  <!-- Right-profile costume-source contour shading. Independent path tracing,
+       not a mirrored front overlay. Source-atop keeps the original silhouette. -->
+  <g fill="none" stroke="#78618d" stroke-width="48" stroke-opacity="0.72" stroke-linecap="round">
+    <path d="M 421 105 C 330 247 315 442 273 639 C 226 876 159 1161 92 1325"/>
+    <path d="M 687 108 C 733 288 740 563 781 847 C 809 1101 842 1366 881 1462"/>
+  </g>
+</svg>

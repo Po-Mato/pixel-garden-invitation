@@ -1,0 +1,23 @@
+{
+  "status": "reviewed-local-source-material-not-release-ready",
+  "direction": "left",
+  "source": "sources/head-left-shading-study-v1.svg",
+  "method": "Independent upper hair-lock source material before alpha, partition and registration; not a mirrored back-view overlay",
+  "preserved": ["source alpha", "head geometry and pivot", "forehead and face", "crown", "ear and earring", "central and lower hair"],
+  "hdSha256": "0149b495712c4615d7d986732f438ddbca425f02f7c3b6c13e734034b58e30b4",
+  "runtimeSha256": "0fe4551a5f0410d0e3379b71d6e17b5db1e290063fc7cd542dfbe00de7c3c005",
+  "leftNeighborhoodStrideContrastBefore": 1.1646513244853194,
+  "leftNeighborhoodStrideContrastAfter": 1.1752648015367197,
+  "characterFixtureSamplesPassed": 160,
+  "catalogFailuresBefore": 48,
+  "catalogFailuresAfter": 47,
+  "newFailures": 0,
+  "displayFailures": 0,
+  "sourceTestsPassed": 15,
+  "structureTestsPassed": 67,
+  "jointAuditCharactersPassed": 12,
+  "visualReview": "Four-direction head review and current selection/home-game sixteen-frame contact sheets inspected. No conspicuous heavy contour, changed face or hair size, or detached joints. Current whole-catalog capture hashes verified.",
+  "thresholdsChanged": false,
+  "runtimeEligible": false,
+  "visualApproved": false
+}

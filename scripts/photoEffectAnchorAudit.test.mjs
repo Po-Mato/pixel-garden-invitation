@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { collectPhotoEffectAuditReports, opaqueBounds, photoEffectAnchors } from "./render-photo-effect-anchor-audit.mjs";
+import { collectPhotoEffectAuditReports, auditPhotoEffectWalkSheet, opaqueBounds, photoEffectAnchors } from "./render-photo-effect-anchor-audit.mjs";
+import sharp from "sharp";
 
 test("detects visible bounds and ordered cosmetic anchors", () => {
   const raw = new Uint8Array(4 * 4 * 4);
@@ -9,6 +10,11 @@ test("detects visible bounds and ordered cosmetic anchors", () => {
   assert.deepEqual(bounds, { left: 1, top: 1, right: 3, bottom: 4, width: 2, height: 3 });
   const anchors = photoEffectAnchors(bounds);
   assert.ok(anchors.head.y < anchors.chest.y && anchors.chest.y < anchors.feet.y);
+});
+
+test("correct canvas size cannot substitute for the reviewed source export", async () => {
+  const synthetic = await sharp({create:{width:192,height:288,channels:4,background:'#00000000'}}).png().toBuffer();
+  await assert.rejects(auditPhotoEffectWalkSheet(synthetic, "guest-01"), /world frames differ from the whole-sheet source export/);
 });
 
 test("audits the exact twelve generated game portraits", async () => {
@@ -20,7 +26,7 @@ test("audits the exact twelve generated game portraits", async () => {
   ));
   assert.equal(reports.flatMap(({ walk }) => walk.frames).length, 192);
   reports.forEach(({ walk }) => {
-    assert.ok(walk.frames.every(({ bounds }) => bounds.height === 54), "216px originals retain exact quarter-scale height");
+    assert.ok(walk.frames.every(({ rigBounds, anchors }) => rigBounds.height === 54 && rigBounds.top === 13.5 && rigBounds.bottom === 67.5 && anchors.feet.y === 67.5 && anchors.feet.x === 24), "216px source planes retain exact quarter-scale geometry and fixed anchors");
     assert.deepEqual(walk.frames.map(({ direction, step }) => `${direction}-${step}`), [
       "down-1", "down-2", "down-3", "down-4",
       "left-1", "left-2", "left-3", "left-4",

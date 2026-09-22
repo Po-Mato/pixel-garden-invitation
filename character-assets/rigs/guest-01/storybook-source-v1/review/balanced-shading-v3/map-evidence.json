@@ -1,0 +1,5240 @@
+{
+  "fixtureOnly": true,
+  "actualGame": false,
+  "thresholds": {
+    "maxLuminanceDelta": 0.03,
+    "minDynamicRange": 0.16,
+    "minTextContrast": 4.5,
+    "minCharacterEdgeContrast": 1.17,
+    "minDisplayCharacterEdgeContrast": 1.1,
+    "maxCharacterEdgeContrastDelta": 0.15
+  },
+  "inputs": [
+    {
+      "file": "scripts/templates/storybook-map-review.js",
+      "sha256": "42d2274be664fc45ba97b1a375aaff541632abc65af65eb43f764bc618ff2ac2"
+    },
+    {
+      "file": "scripts/visual-baselines/map-tone-contract.json",
+      "sha256": "db80bfca6ad4454243790f6ec958545c7a943261aec37016066eb5aaaf648889"
+    },
+    {
+      "file": "scripts/audit-guest01-balanced-maps.mjs",
+      "sha256": "1d02ad11f39688809c7bb21d1ea73a6a318ca4a70f5ddb47bf73103658143947"
+    },
+    {
+      "file": "client/public/assets/maps/v2/home/background.webp",
+      "sha256": "f5b440c72f37737166d7e2b84cf9909c7dc6c7e5d7ec78f17690ba0219ac5bc5"
+    },
+    {
+      "file": "client/public/assets/maps/v2/home/topiary-foreground.png",
+      "sha256": "7cc639c9666303dc1b6b8e1dd2c89c51c01a1d7a1fd32eb5ad5ec8afef2874a0"
+    },
+    {
+      "file": "client/public/assets/maps/v2/neighborhood/background.webp",
+      "sha256": "b3b608362df79f4f30edd8099a42ec88622f06f09719e908e8a84aebfd757195"
+    },
+    {
+      "file": "client/public/assets/maps/v2/neighborhood/tree-canopy.png",
+      "sha256": "78373cc09849c8c631fae54889d8222e20fe99e181a734b74d3cdd910253c233"
+    },
+    {
+      "file": "client/public/assets/maps/v2/neighborhood/tree-canopy.png",
+      "sha256": "78373cc09849c8c631fae54889d8222e20fe99e181a734b74d3cdd910253c233"
+    },
+    {
+      "file": "client/public/assets/maps/v2/neighborhood/tree-canopy.png",
+      "sha256": "78373cc09849c8c631fae54889d8222e20fe99e181a734b74d3cdd910253c233"
+    },
+    {
+      "file": "client/public/assets/maps/v2/subway-station/background.webp",
+      "sha256": "df69f29a42f43a46c133a4d51a448c5d2e7a20322a6c7d39b15a400db0e5e465"
+    },
+    {
+      "file": "client/public/assets/maps/v2/subway-train/background.webp",
+      "sha256": "ab6cfc512629f690a4fac8999b1335630943e1639f4a1dfad39b6f132c168d94"
+    },
+    {
+      "file": "client/public/assets/maps/v2/subway-train/strap-row-foreground.png",
+      "sha256": "7c7de5917874893cc84567c79c5d7664e4ea39164d5381fb3b1e6d8245fc1660"
+    },
+    {
+      "file": "client/public/assets/maps/v2/venue-exterior/background.webp",
+      "sha256": "08711c3627594e414abaa2c01abb8a59101a36c8d34dff0ee319aaf7c87fae49"
+    },
+    {
+      "file": "client/public/assets/maps/v2/venue-exterior/flower-arch-front.png",
+      "sha256": "088ed298aa4873a058643b4fb37965cc250ffdc1cb392a6da2d7f5053b1d291f"
+    },
+    {
+      "file": "client/public/assets/maps/v2/lobby/background.webp",
+      "sha256": "9253fa9e91d0fd849cdb344c57071167497ae4072eaca5b7ee96b98bb0f8a51b"
+    },
+    {
+      "file": "client/public/assets/maps/v2/lobby/reception-desk-front.png",
+      "sha256": "e92e7429bbdb34188d085f76f55285683efb653d4823e7e11e8d883766ec4f0b"
+    },
+    {
+      "file": "client/public/assets/maps/v2/bridal-room/background.webp",
+      "sha256": "9a147b3f505243bd3269de41d21d9a775e7e00e74824764f51ded5078c4b67ad"
+    },
+    {
+      "file": "client/public/assets/maps/v2/bridal-room/flower-arrangement-front.png",
+      "sha256": "dab1e054655ea1579a27128480ac5a58f9d519b47adda9799ece3c848348a117"
+    },
+    {
+      "file": "client/public/assets/maps/v2/ceremony-hall/background.webp",
+      "sha256": "ef7c65e365316c0c0b21dcfb4d547060de17f980fd7ac835b0cc375d7cdcb217"
+    },
+    {
+      "file": "client/public/assets/maps/v2/ceremony-hall/ceremony-arch-front.png",
+      "sha256": "3e41882e1efb8a04e1d8e401a096931d472cba84d176b82e7ac43c09815b15dc"
+    },
+    {
+      "file": "client/public/assets/maps/v2/ceremony-hall/altar-table-front.png",
+      "sha256": "6fb450ddf841453c106a6ccf0d24175dafd6cec98440602b8600ab5d80c9364a"
+    },
+    {
+      "file": "client/public/assets/maps/v2/ceremony-hall/aisle-bouquet-front.png",
+      "sha256": "9ab12da860ab343df888d9d16b0cd66e2c57da039622ac603aa23c40ba91bc22"
+    },
+    {
+      "file": "client/public/assets/maps/v2/ceremony-hall/aisle-bouquet-front.png",
+      "sha256": "9ab12da860ab343df888d9d16b0cd66e2c57da039622ac603aa23c40ba91bc22"
+    },
+    {
+      "file": "client/public/assets/maps/v2/ceremony-hall/aisle-bouquet-front.png",
+      "sha256": "9ab12da860ab343df888d9d16b0cd66e2c57da039622ac603aa23c40ba91bc22"
+    },
+    {
+      "file": "client/public/assets/maps/v2/ceremony-hall/aisle-bouquet-front.png",
+      "sha256": "9ab12da860ab343df888d9d16b0cd66e2c57da039622ac603aa23c40ba91bc22"
+    },
+    {
+      "file": "client/public/assets/maps/v2/banquet/background.webp",
+      "sha256": "c59ae3baccc923d4fbd8967522a940fa847a12413f652b626814df52db47a171"
+    },
+    {
+      "file": "client/public/assets/maps/v2/banquet/table-floral.png",
+      "sha256": "792831da723b137f8422ef7bb2a6d6eae117393b98bd89b16bcd71ef1267f409"
+    },
+    {
+      "file": "client/public/assets/maps/v2/banquet/table-dining.png",
+      "sha256": "e2a0b447755d2d53b2b6f3d14a5688ed0fd856acf8e2b3f7d8a16cad21c7a628"
+    },
+    {
+      "file": "client/public/assets/maps/v2/banquet/table-dining.png",
+      "sha256": "e2a0b447755d2d53b2b6f3d14a5688ed0fd856acf8e2b3f7d8a16cad21c7a628"
+    },
+    {
+      "file": "client/public/assets/maps/v2/banquet/table-floral.png",
+      "sha256": "792831da723b137f8422ef7bb2a6d6eae117393b98bd89b16bcd71ef1267f409"
+    },
+    {
+      "file": "client/public/assets/maps/v2/restroom/background.webp",
+      "sha256": "f83d85925ff9b76043ba4356a1703835b810dc50cc9fc7082fb5702b7305aaa4"
+    }
+  ],
+  "cssSha256": "0f0b6070ae52ce640de637626a54fffd38381a210cb4ca44183f6cd1d5dd0e46",
+  "sourceHashes": [
+    {
+      "id": "guest01-baseline",
+      "sha256": "7c4edf224f1d0a4a2500b2fc4537a10e554aec80723ef649da3dde82e2c5c058"
+    },
+    {
+      "id": "guest01-approved",
+      "sha256": "23e89453937ae3c00fe552d428ab08d1649f9c3db154f1633077a254426fc4ee"
+    }
+  ],
+  "rows": [
+    {
+      "zone": "home",
+      "id": "guest01-baseline",
+      "direction": 0,
+      "frame": 0,
+      "edgeContrast": 1.3946364813073324,
+      "displayEdgeContrasts": {
+        "oled": 1.4419051489598664,
+        "lcd": 1.3229899797547084,
+        "oled-low-brightness": 1.4909671036671084,
+        "oled-outdoor-p3": 1.3383276680231944,
+        "lcd-low-brightness": 1.3160571472380123,
+        "lcd-outdoor-srgb": 1.300650811845376
+      }
+    },
+    {
+      "zone": "home",
+      "id": "guest01-baseline",
+      "direction": 0,
+      "frame": 1,
+      "edgeContrast": 1.3946364813073324,
+      "displayEdgeContrasts": {
+        "oled": 1.3796901695961383,
+        "lcd": 1.3146861885569066,
+        "oled-low-brightness": 1.4078718850243503,
+        "oled-outdoor-p3": 1.3383276680231944,
+        "lcd-low-brightness": 1.2992035793685568,
+        "lcd-outdoor-srgb": 1.2822545242378445
+      }
+    },
+    {
+      "zone": "home",
+      "id": "guest01-baseline",
+      "direction": 0,
+      "frame": 2,
+      "edgeContrast": 1.5363977129919208,
+      "displayEdgeContrasts": {
+        "oled": 1.501415152613736,
+        "lcd": 1.456368879128066,
+        "oled-low-brightness": 1.550559558177027,
+        "oled-outdoor-p3": 1.4767283046066524,
+        "lcd-low-brightness": 1.4288919500649795,
+        "lcd-outdoor-srgb": 1.4039112084470418
+      }
+    },
+    {
+      "zone": "home",
+      "id": "guest01-baseline",
+      "direction": 0,
+      "frame": 3,
+      "edgeContrast": 1.3946364813073324,
+      "displayEdgeContrasts": {
+        "oled": 1.3796901695961383,
+        "lcd": 1.3146861885569066,
+        "oled-low-brightness": 1.4078718850243503,
+        "oled-outdoor-p3": 1.3383276680231944,
+        "lcd-low-brightness": 1.2992035793685568,
+        "lcd-outdoor-srgb": 1.2822545242378445
+      }
+    },
+    {
+      "zone": "home",
+      "id": "guest01-baseline",
+      "direction": 1,
+      "frame": 0,
+      "edgeContrast": 1.4581476876702009,
+      "displayEdgeContrasts": {
+        "oled": 1.472285566491917,
+        "lcd": 1.371831272588339,
+        "oled-low-brightness": 1.502984516555441,
+        "oled-outdoor-p3": 1.3960794994124879,
+        "lcd-low-brightness": 1.3639374801516506,
+        "lcd-outdoor-srgb": 1.3463820884552387
+      }
+    },
+    {
+      "zone": "home",
+      "id": "guest01-baseline",
+      "direction": 1,
+      "frame": 1,
+      "edgeContrast": 1.44923875591184,
+      "displayEdgeContrasts": {
+        "oled": 1.4394983199997755,
+        "lcd": 1.3488680508954523,
+        "oled-low-brightness": 1.4782720163312217,
+        "oled-outdoor-p3": 1.3888994183298506,
+        "lcd-low-brightness": 1.3276444997599952,
+        "lcd-outdoor-srgb": 1.286093610778012
+      }
+    },
+    {
+      "zone": "home",
+      "id": "guest01-baseline",
+      "direction": 1,
+      "frame": 2,
+      "edgeContrast": 1.4581476876702009,
+      "displayEdgeContrasts": {
+        "oled": 1.5237930587420188,
+        "lcd": 1.3488680508954523,
+        "oled-low-brightness": 1.5091501468660427,
+        "oled-outdoor-p3": 1.3888994183298506,
+        "lcd-low-brightness": 1.3276444997599952,
+        "lcd-outdoor-srgb": 1.297373523890333
+      }
+    },
+    {
+      "zone": "home",
+      "id": "guest01-baseline",
+      "direction": 1,
+      "frame": 3,
+      "edgeContrast": 1.44923875591184,
+      "displayEdgeContrasts": {
+        "oled": 1.4394983199997755,
+        "lcd": 1.3488680508954523,
+        "oled-low-brightness": 1.4782720163312217,
+        "oled-outdoor-p3": 1.3888994183298506,
+        "lcd-low-brightness": 1.3276444997599952,
+        "lcd-outdoor-srgb": 1.286093610778012
+      }
+    },
+    {
+      "zone": "home",
+      "id": "guest01-baseline",
+      "direction": 2,
+      "frame": 0,
+      "edgeContrast": 1.3984835870889036,
+      "displayEdgeContrasts": {
+        "oled": 1.3735425909086163,
+        "lcd": 1.365777730036426,
+        "oled-low-brightness": 1.4056619923569915,
+        "oled-outdoor-p3": 1.3656350157295578,
+        "lcd-low-brightness": 1.3582670967259487,
+        "lcd-outdoor-srgb": 1.3180150991187067
+      }
+    },
+    {
+      "zone": "home",
+      "id": "guest01-baseline",
+      "direction": 2,
+      "frame": 1,
+      "edgeContrast": 1.4637006342589118,
+      "displayEdgeContrasts": {
+        "oled": 1.4385324673717124,
+        "lcd": 1.3959077567873857,
+        "oled-low-brightness": 1.4395687767436458,
+        "oled-outdoor-p3": 1.4155362979381008,
+        "lcd-low-brightness": 1.37964919872287,
+        "lcd-outdoor-srgb": 1.3310377889228204
+      }
+    },
+    {
+      "zone": "home",
+      "id": "guest01-baseline",
+      "direction": 2,
+      "frame": 2,
+      "edgeContrast": 1.43669288421158,
+      "displayEdgeContrasts": {
+        "oled": 1.4088211711701473,
+        "lcd": 1.3846425989595657,
+        "oled-low-brightness": 1.4267305120139173,
+        "oled-outdoor-p3": 1.4008144373466307,
+        "lcd-low-brightness": 1.3776678580976414,
+        "lcd-outdoor-srgb": 1.3324353682782932
+      }
+    },
+    {
+      "zone": "home",
+      "id": "guest01-baseline",
+      "direction": 2,
+      "frame": 3,
+      "edgeContrast": 1.4637006342589118,
+      "displayEdgeContrasts": {
+        "oled": 1.4385324673717124,
+        "lcd": 1.3959077567873857,
+        "oled-low-brightness": 1.4395687767436458,
+        "oled-outdoor-p3": 1.4155362979381008,
+        "lcd-low-brightness": 1.37964919872287,
+        "lcd-outdoor-srgb": 1.3310377889228204
+      }
+    },
+    {
+      "zone": "home",
+      "id": "guest01-baseline",
+      "direction": 3,
+      "frame": 0,
+      "edgeContrast": 1.6184825403756269,
+      "displayEdgeContrasts": {
+        "oled": 1.67479703848721,
+        "lcd": 1.5223815967370689,
+        "oled-low-brightness": 1.621032644217112,
+        "oled-outdoor-p3": 1.5318599227969096,
+        "lcd-low-brightness": 1.5017141812700834,
+        "lcd-outdoor-srgb": 1.4796220350580875
+      }
+    },
+    {
+      "zone": "home",
+      "id": "guest01-baseline",
+      "direction": 3,
+      "frame": 1,
+      "edgeContrast": 1.5079228881687725,
+      "displayEdgeContrasts": {
+        "oled": 1.5264528978090306,
+        "lcd": 1.4134479411205474,
+        "oled-low-brightness": 1.5320123566653823,
+        "oled-outdoor-p3": 1.428261256446071,
+        "lcd-low-brightness": 1.4040670126320023,
+        "lcd-outdoor-srgb": 1.3725957501256598
+      }
+    },
+    {
+      "zone": "home",
+      "id": "guest01-baseline",
+      "direction": 3,
+      "frame": 2,
+      "edgeContrast": 1.5944524614473818,
+      "displayEdgeContrasts": {
+        "oled": 1.6784010211760494,
+        "lcd": 1.4825062074061108,
+        "oled-low-brightness": 1.6167088381896777,
+        "oled-outdoor-p3": 1.521503297760471,
+        "lcd-low-brightness": 1.4648734155642258,
+        "lcd-outdoor-srgb": 1.4157939115637816
+      }
+    },
+    {
+      "zone": "home",
+      "id": "guest01-baseline",
+      "direction": 3,
+      "frame": 3,
+      "edgeContrast": 1.5079228881687725,
+      "displayEdgeContrasts": {
+        "oled": 1.5264528978090306,
+        "lcd": 1.4134479411205474,
+        "oled-low-brightness": 1.5320123566653823,
+        "oled-outdoor-p3": 1.428261256446071,
+        "lcd-low-brightness": 1.4040670126320023,
+        "lcd-outdoor-srgb": 1.3725957501256598
+      }
+    },
+    {
+      "zone": "home",
+      "id": "guest01-approved",
+      "direction": 0,
+      "frame": 0,
+      "edgeContrast": 1.2866308022314403,
+      "displayEdgeContrasts": {
+        "oled": 1.2881993199040722,
+        "lcd": 1.237163425569236,
+        "oled-low-brightness": 1.3176031012902065,
+        "oled-outdoor-p3": 1.256275254491052,
+        "lcd-low-brightness": 1.2252341289541804,
+        "lcd-outdoor-srgb": 1.2024050588818527
+      }
+    },
+    {
+      "zone": "home",
+      "id": "guest01-approved",
+      "direction": 0,
+      "frame": 1,
+      "edgeContrast": 1.296563380410213,
+      "displayEdgeContrasts": {
+        "oled": 1.3192288697613892,
+        "lcd": 1.227542081956377,
+        "oled-low-brightness": 1.317068029982864,
+        "oled-outdoor-p3": 1.2503826854414306,
+        "lcd-low-brightness": 1.222807404709885,
+        "lcd-outdoor-srgb": 1.2014654344989795
+      }
+    },
+    {
+      "zone": "home",
+      "id": "guest01-approved",
+      "direction": 0,
+      "frame": 2,
+      "edgeContrast": 1.3068167138376257,
+      "displayEdgeContrasts": {
+        "oled": 1.389056476022316,
+        "lcd": 1.2585448598850173,
+        "oled-low-brightness": 1.3659167757961008,
+        "oled-outdoor-p3": 1.2688148722556043,
+        "lcd-low-brightness": 1.2490687016688422,
+        "lcd-outdoor-srgb": 1.234986355988838
+      }
+    },
+    {
+      "zone": "home",
+      "id": "guest01-approved",
+      "direction": 0,
+      "frame": 3,
+      "edgeContrast": 1.296563380410213,
+      "displayEdgeContrasts": {
+        "oled": 1.3192288697613892,
+        "lcd": 1.227542081956377,
+        "oled-low-brightness": 1.317068029982864,
+        "oled-outdoor-p3": 1.2503826854414306,
+        "lcd-low-brightness": 1.222807404709885,
+        "lcd-outdoor-srgb": 1.2014654344989795
+      }
+    },
+    {
+      "zone": "home",
+      "id": "guest01-approved",
+      "direction": 1,
+      "frame": 0,
+      "edgeContrast": 1.4674050878708977,
+      "displayEdgeContrasts": {
+        "oled": 1.622168478784714,
+        "lcd": 1.3488680508954523,
+        "oled-low-brightness": 1.5165150029765624,
+        "oled-outdoor-p3": 1.3888994183298506,
+        "lcd-low-brightness": 1.3276444997599952,
+        "lcd-outdoor-srgb": 1.286093610778012
+      }
+    },
+    {
+      "zone": "home",
+      "id": "guest01-approved",
+      "direction": 1,
+      "frame": 1,
+      "edgeContrast": 1.3810547071575212,
+      "displayEdgeContrasts": {
+        "oled": 1.4753971816283966,
+        "lcd": 1.3050926490309656,
+        "oled-low-brightness": 1.3799442286486125,
+        "oled-outdoor-p3": 1.3312010237063872,
+        "lcd-low-brightness": 1.2903108530837575,
+        "lcd-outdoor-srgb": 1.256726111946536
+      }
+    },
+    {
+      "zone": "home",
+      "id": "guest01-approved",
+      "direction": 1,
+      "frame": 2,
+      "edgeContrast": 1.4466728065885,
+      "displayEdgeContrasts": {
+        "oled": 1.5203907573042819,
+        "lcd": 1.3493698634441227,
+        "oled-low-brightness": 1.4618799503451132,
+        "oled-outdoor-p3": 1.382066063088156,
+        "lcd-low-brightness": 1.334764415225722,
+        "lcd-outdoor-srgb": 1.297373523890333
+      }
+    },
+    {
+      "zone": "home",
+      "id": "guest01-approved",
+      "direction": 1,
+      "frame": 3,
+      "edgeContrast": 1.3810547071575212,
+      "displayEdgeContrasts": {
+        "oled": 1.4753971816283966,
+        "lcd": 1.3050926490309656,
+        "oled-low-brightness": 1.3799442286486125,
+        "oled-outdoor-p3": 1.3312010237063872,
+        "lcd-low-brightness": 1.2903108530837575,
+        "lcd-outdoor-srgb": 1.256726111946536
+      }
+    },
+    {
+      "zone": "home",
+      "id": "guest01-approved",
+      "direction": 2,
+      "frame": 0,
+      "edgeContrast": 1.4870684140067472,
+      "displayEdgeContrasts": {
+        "oled": 1.4850343087196403,
+        "lcd": 1.3838950969119028,
+        "oled-low-brightness": 1.4873581034575611,
+        "oled-outdoor-p3": 1.4264231651056696,
+        "lcd-low-brightness": 1.3649206020971256,
+        "lcd-outdoor-srgb": 1.3309178853092274
+      }
+    },
+    {
+      "zone": "home",
+      "id": "guest01-approved",
+      "direction": 2,
+      "frame": 1,
+      "edgeContrast": 1.3862097465219956,
+      "displayEdgeContrasts": {
+        "oled": 1.431046432407748,
+        "lcd": 1.3397564272541864,
+        "oled-low-brightness": 1.3903418622193568,
+        "oled-outdoor-p3": 1.3478830364515058,
+        "lcd-low-brightness": 1.3296295804943101,
+        "lcd-outdoor-srgb": 1.2946184363520845
+      }
+    },
+    {
+      "zone": "home",
+      "id": "guest01-approved",
+      "direction": 2,
+      "frame": 2,
+      "edgeContrast": 1.4351465559545378,
+      "displayEdgeContrasts": {
+        "oled": 1.4520485604609947,
+        "lcd": 1.3596559522936507,
+        "oled-low-brightness": 1.4418476046448374,
+        "oled-outdoor-p3": 1.3933043191889014,
+        "lcd-low-brightness": 1.3384479721357605,
+        "lcd-outdoor-srgb": 1.2946184363520845
+      }
+    },
+    {
+      "zone": "home",
+      "id": "guest01-approved",
+      "direction": 2,
+      "frame": 3,
+      "edgeContrast": 1.3862097465219956,
+      "displayEdgeContrasts": {
+        "oled": 1.431046432407748,
+        "lcd": 1.3397564272541864,
+        "oled-low-brightness": 1.3903418622193568,
+        "oled-outdoor-p3": 1.3478830364515058,
+        "lcd-low-brightness": 1.3296295804943101,
+        "lcd-outdoor-srgb": 1.2946184363520845
+      }
+    },
+    {
+      "zone": "home",
+      "id": "guest01-approved",
+      "direction": 3,
+      "frame": 0,
+      "edgeContrast": 1.3150120484452,
+      "displayEdgeContrasts": {
+        "oled": 1.4155425196824964,
+        "lcd": 1.250734906616243,
+        "oled-low-brightness": 1.377882725669297,
+        "oled-outdoor-p3": 1.2724689316412963,
+        "lcd-low-brightness": 1.2376358177706188,
+        "lcd-outdoor-srgb": 1.2112841279726148
+      }
+    },
+    {
+      "zone": "home",
+      "id": "guest01-approved",
+      "direction": 3,
+      "frame": 1,
+      "edgeContrast": 1.2946906053214862,
+      "displayEdgeContrasts": {
+        "oled": 1.446784287507851,
+        "lcd": 1.2350829646354982,
+        "oled-low-brightness": 1.4091194396139521,
+        "oled-outdoor-p3": 1.2530652724874114,
+        "lcd-low-brightness": 1.2233470582722572,
+        "lcd-outdoor-srgb": 1.20621639119023
+      }
+    },
+    {
+      "zone": "home",
+      "id": "guest01-approved",
+      "direction": 3,
+      "frame": 2,
+      "edgeContrast": 1.3573380280727603,
+      "displayEdgeContrasts": {
+        "oled": 1.5264528978090306,
+        "lcd": 1.2942364924225298,
+        "oled-low-brightness": 1.406022857473961,
+        "oled-outdoor-p3": 1.3160949952753134,
+        "lcd-low-brightness": 1.2837345522196737,
+        "lcd-outdoor-srgb": 1.2648165784039425
+      }
+    },
+    {
+      "zone": "home",
+      "id": "guest01-approved",
+      "direction": 3,
+      "frame": 3,
+      "edgeContrast": 1.2946906053214862,
+      "displayEdgeContrasts": {
+        "oled": 1.446784287507851,
+        "lcd": 1.2350829646354982,
+        "oled-low-brightness": 1.4091194396139521,
+        "oled-outdoor-p3": 1.2530652724874114,
+        "lcd-low-brightness": 1.2233470582722572,
+        "lcd-outdoor-srgb": 1.20621639119023
+      }
+    },
+    {
+      "zone": "neighborhood",
+      "id": "guest01-baseline",
+      "direction": 0,
+      "frame": 0,
+      "edgeContrast": 1.126087615444778,
+      "displayEdgeContrasts": {
+        "oled": 1.1209200917304682,
+        "lcd": 1.1073089523028041,
+        "oled-low-brightness": 1.122543607323055,
+        "oled-outdoor-p3": 1.1100472101924255,
+        "lcd-low-brightness": 1.104404498018963,
+        "lcd-outdoor-srgb": 1.0980676996779086
+      }
+    },
+    {
+      "zone": "neighborhood",
+      "id": "guest01-baseline",
+      "direction": 0,
+      "frame": 1,
+      "edgeContrast": 1.1643202310553369,
+      "displayEdgeContrasts": {
+        "oled": 1.153996971167613,
+        "lcd": 1.156835921944556,
+        "oled-low-brightness": 1.1698191170604806,
+        "oled-outdoor-p3": 1.1544750775895263,
+        "lcd-low-brightness": 1.1550323332635777,
+        "lcd-outdoor-srgb": 1.150889789359157
+      }
+    },
+    {
+      "zone": "neighborhood",
+      "id": "guest01-baseline",
+      "direction": 0,
+      "frame": 2,
+      "edgeContrast": 1.153065055458743,
+      "displayEdgeContrasts": {
+        "oled": 1.143421934204654,
+        "lcd": 1.1466565454427828,
+        "oled-low-brightness": 1.158323152666909,
+        "oled-outdoor-p3": 1.1442277005496462,
+        "lcd-low-brightness": 1.1451048111245483,
+        "lcd-outdoor-srgb": 1.1415297862097897
+      }
+    },
+    {
+      "zone": "neighborhood",
+      "id": "guest01-baseline",
+      "direction": 0,
+      "frame": 3,
+      "edgeContrast": 1.1643202310553369,
+      "displayEdgeContrasts": {
+        "oled": 1.153996971167613,
+        "lcd": 1.156835921944556,
+        "oled-low-brightness": 1.1698191170604806,
+        "oled-outdoor-p3": 1.1544750775895263,
+        "lcd-low-brightness": 1.1550323332635777,
+        "lcd-outdoor-srgb": 1.150889789359157
+      }
+    },
+    {
+      "zone": "neighborhood",
+      "id": "guest01-baseline",
+      "direction": 1,
+      "frame": 0,
+      "edgeContrast": 1.2586021870548139,
+      "displayEdgeContrasts": {
+        "oled": 1.251415690445128,
+        "lcd": 1.2333753722285519,
+        "oled-low-brightness": 1.2773037875814879,
+        "oled-outdoor-p3": 1.24224656243373,
+        "lcd-low-brightness": 1.2294205863847016,
+        "lcd-outdoor-srgb": 1.220500030683695
+      }
+    },
+    {
+      "zone": "neighborhood",
+      "id": "guest01-baseline",
+      "direction": 1,
+      "frame": 1,
+      "edgeContrast": 1.2603587542997448,
+      "displayEdgeContrasts": {
+        "oled": 1.251415690445128,
+        "lcd": 1.2246973435469108,
+        "oled-low-brightness": 1.2773037875814879,
+        "oled-outdoor-p3": 1.24224656243373,
+        "lcd-low-brightness": 1.2135886590560818,
+        "lcd-outdoor-srgb": 1.1910407619894836
+      }
+    },
+    {
+      "zone": "neighborhood",
+      "id": "guest01-baseline",
+      "direction": 1,
+      "frame": 2,
+      "edgeContrast": 1.2686361682768705,
+      "displayEdgeContrasts": {
+        "oled": 1.2723893668194566,
+        "lcd": 1.2536730002288206,
+        "oled-low-brightness": 1.30117203071941,
+        "oled-outdoor-p3": 1.2506870024098615,
+        "lcd-low-brightness": 1.2501146173042506,
+        "lcd-outdoor-srgb": 1.2420100985335698
+      }
+    },
+    {
+      "zone": "neighborhood",
+      "id": "guest01-baseline",
+      "direction": 1,
+      "frame": 3,
+      "edgeContrast": 1.2603587542997448,
+      "displayEdgeContrasts": {
+        "oled": 1.251415690445128,
+        "lcd": 1.2246973435469108,
+        "oled-low-brightness": 1.2773037875814879,
+        "oled-outdoor-p3": 1.24224656243373,
+        "lcd-low-brightness": 1.2135886590560818,
+        "lcd-outdoor-srgb": 1.1910407619894836
+      }
+    },
+    {
+      "zone": "neighborhood",
+      "id": "guest01-baseline",
+      "direction": 2,
+      "frame": 0,
+      "edgeContrast": 1.2104670463210565,
+      "displayEdgeContrasts": {
+        "oled": 1.196842676192058,
+        "lcd": 1.1918449458265685,
+        "oled-low-brightness": 1.2180389290533697,
+        "oled-outdoor-p3": 1.1979906515397538,
+        "lcd-low-brightness": 1.1854729686008643,
+        "lcd-outdoor-srgb": 1.1718466008165158
+      }
+    },
+    {
+      "zone": "neighborhood",
+      "id": "guest01-baseline",
+      "direction": 2,
+      "frame": 1,
+      "edgeContrast": 1.1609860285234848,
+      "displayEdgeContrasts": {
+        "oled": 1.1514570135345148,
+        "lcd": 1.1485766251374907,
+        "oled-low-brightness": 1.1599190886550925,
+        "oled-outdoor-p3": 1.149463134479192,
+        "lcd-low-brightness": 1.1471517017832105,
+        "lcd-outdoor-srgb": 1.141881969135052
+      }
+    },
+    {
+      "zone": "neighborhood",
+      "id": "guest01-baseline",
+      "direction": 2,
+      "frame": 2,
+      "edgeContrast": 1.148063420881067,
+      "displayEdgeContrasts": {
+        "oled": 1.1387026825082716,
+        "lcd": 1.141046305065839,
+        "oled-low-brightness": 1.1454885912562358,
+        "oled-outdoor-p3": 1.1397645935508784,
+        "lcd-low-brightness": 1.1332011404881812,
+        "lcd-outdoor-srgb": 1.1272985101100286
+      }
+    },
+    {
+      "zone": "neighborhood",
+      "id": "guest01-baseline",
+      "direction": 2,
+      "frame": 3,
+      "edgeContrast": 1.1609860285234848,
+      "displayEdgeContrasts": {
+        "oled": 1.1514570135345148,
+        "lcd": 1.1485766251374907,
+        "oled-low-brightness": 1.1599190886550925,
+        "oled-outdoor-p3": 1.149463134479192,
+        "lcd-low-brightness": 1.1471517017832105,
+        "lcd-outdoor-srgb": 1.141881969135052
+      }
+    },
+    {
+      "zone": "neighborhood",
+      "id": "guest01-baseline",
+      "direction": 3,
+      "frame": 0,
+      "edgeContrast": 1.1607607391962171,
+      "displayEdgeContrasts": {
+        "oled": 1.1471189548717482,
+        "lcd": 1.1453966191631164,
+        "oled-low-brightness": 1.1534245346901177,
+        "oled-outdoor-p3": 1.1482441456252586,
+        "lcd-low-brightness": 1.1381895560621975,
+        "lcd-outdoor-srgb": 1.1334263422343245
+      }
+    },
+    {
+      "zone": "neighborhood",
+      "id": "guest01-baseline",
+      "direction": 3,
+      "frame": 1,
+      "edgeContrast": 1.165453950035466,
+      "displayEdgeContrasts": {
+        "oled": 1.145180137206961,
+        "lcd": 1.135965892350471,
+        "oled-low-brightness": 1.1463267672734327,
+        "oled-outdoor-p3": 1.1393754161395317,
+        "lcd-low-brightness": 1.1346563844741107,
+        "lcd-outdoor-srgb": 1.1287301489636286
+      }
+    },
+    {
+      "zone": "neighborhood",
+      "id": "guest01-baseline",
+      "direction": 3,
+      "frame": 2,
+      "edgeContrast": 1.1386100544708933,
+      "displayEdgeContrasts": {
+        "oled": 1.131503844498043,
+        "lcd": 1.1223960422663803,
+        "oled-low-brightness": 1.1294127174204258,
+        "oled-outdoor-p3": 1.125197160501585,
+        "lcd-low-brightness": 1.1179291023523235,
+        "lcd-outdoor-srgb": 1.11114718781149
+      }
+    },
+    {
+      "zone": "neighborhood",
+      "id": "guest01-baseline",
+      "direction": 3,
+      "frame": 3,
+      "edgeContrast": 1.165453950035466,
+      "displayEdgeContrasts": {
+        "oled": 1.145180137206961,
+        "lcd": 1.135965892350471,
+        "oled-low-brightness": 1.1463267672734327,
+        "oled-outdoor-p3": 1.1393754161395317,
+        "lcd-low-brightness": 1.1346563844741107,
+        "lcd-outdoor-srgb": 1.1287301489636286
+      }
+    },
+    {
+      "zone": "neighborhood",
+      "id": "guest01-approved",
+      "direction": 0,
+      "frame": 0,
+      "edgeContrast": 1.2072925335548041,
+      "displayEdgeContrasts": {
+        "oled": 1.2026871851465673,
+        "lcd": 1.1682294736180727,
+        "oled-low-brightness": 1.2110100017177248,
+        "oled-outdoor-p3": 1.1784120819767188,
+        "lcd-low-brightness": 1.165515439151717,
+        "lcd-outdoor-srgb": 1.159377050725757
+      }
+    },
+    {
+      "zone": "neighborhood",
+      "id": "guest01-approved",
+      "direction": 0,
+      "frame": 1,
+      "edgeContrast": 1.2159378835846644,
+      "displayEdgeContrasts": {
+        "oled": 1.2101322049255445,
+        "lcd": 1.1961803370914128,
+        "oled-low-brightness": 1.2231483403657053,
+        "oled-outdoor-p3": 1.1999629516779613,
+        "lcd-low-brightness": 1.1905334268155423,
+        "lcd-outdoor-srgb": 1.1653114052897735
+      }
+    },
+    {
+      "zone": "neighborhood",
+      "id": "guest01-approved",
+      "direction": 0,
+      "frame": 2,
+      "edgeContrast": 1.2777942920944403,
+      "displayEdgeContrasts": {
+        "oled": 1.239746527073209,
+        "lcd": 1.2040849599123609,
+        "oled-low-brightness": 1.226630126034038,
+        "oled-outdoor-p3": 1.2303615059180566,
+        "lcd-low-brightness": 1.2018625979064994,
+        "lcd-outdoor-srgb": 1.1890620074079739
+      }
+    },
+    {
+      "zone": "neighborhood",
+      "id": "guest01-approved",
+      "direction": 0,
+      "frame": 3,
+      "edgeContrast": 1.2159378835846644,
+      "displayEdgeContrasts": {
+        "oled": 1.2101322049255445,
+        "lcd": 1.1961803370914128,
+        "oled-low-brightness": 1.2231483403657053,
+        "oled-outdoor-p3": 1.1999629516779613,
+        "lcd-low-brightness": 1.1905334268155423,
+        "lcd-outdoor-srgb": 1.1653114052897735
+      }
+    },
+    {
+      "zone": "neighborhood",
+      "id": "guest01-approved",
+      "direction": 1,
+      "frame": 0,
+      "edgeContrast": 1.2732714171522812,
+      "displayEdgeContrasts": {
+        "oled": 1.2723893668194566,
+        "lcd": 1.255571243496572,
+        "oled-low-brightness": 1.30117203071941,
+        "oled-outdoor-p3": 1.2536686475876335,
+        "lcd-low-brightness": 1.2514119103703178,
+        "lcd-outdoor-srgb": 1.242009078206986
+      }
+    },
+    {
+      "zone": "neighborhood",
+      "id": "guest01-approved",
+      "direction": 1,
+      "frame": 1,
+      "edgeContrast": 1.3537179459339421,
+      "displayEdgeContrasts": {
+        "oled": 1.3916267485161982,
+        "lcd": 1.2885678019099913,
+        "oled-low-brightness": 1.3472726541621318,
+        "oled-outdoor-p3": 1.304022721770886,
+        "lcd-low-brightness": 1.2792237547772713,
+        "lcd-outdoor-srgb": 1.263944953693149
+      }
+    },
+    {
+      "zone": "neighborhood",
+      "id": "guest01-approved",
+      "direction": 1,
+      "frame": 2,
+      "edgeContrast": 1.2831911821357473,
+      "displayEdgeContrasts": {
+        "oled": 1.2947327308366041,
+        "lcd": 1.2679945633457848,
+        "oled-low-brightness": 1.3198463888741288,
+        "oled-outdoor-p3": 1.2645285834229798,
+        "lcd-low-brightness": 1.2643710021614065,
+        "lcd-outdoor-srgb": 1.2561041247788658
+      }
+    },
+    {
+      "zone": "neighborhood",
+      "id": "guest01-approved",
+      "direction": 1,
+      "frame": 3,
+      "edgeContrast": 1.3537179459339421,
+      "displayEdgeContrasts": {
+        "oled": 1.3916267485161982,
+        "lcd": 1.2885678019099913,
+        "oled-low-brightness": 1.3472726541621318,
+        "oled-outdoor-p3": 1.304022721770886,
+        "lcd-low-brightness": 1.2792237547772713,
+        "lcd-outdoor-srgb": 1.263944953693149
+      }
+    },
+    {
+      "zone": "neighborhood",
+      "id": "guest01-approved",
+      "direction": 2,
+      "frame": 0,
+      "edgeContrast": 1.1833173707004845,
+      "displayEdgeContrasts": {
+        "oled": 1.162173743909319,
+        "lcd": 1.1493861585411347,
+        "oled-low-brightness": 1.1618068407009088,
+        "oled-outdoor-p3": 1.1553938051114894,
+        "lcd-low-brightness": 1.1476441573643368,
+        "lcd-outdoor-srgb": 1.1436452202746483
+      }
+    },
+    {
+      "zone": "neighborhood",
+      "id": "guest01-approved",
+      "direction": 2,
+      "frame": 1,
+      "edgeContrast": 1.2216592686080736,
+      "displayEdgeContrasts": {
+        "oled": 1.2096838695730794,
+        "lcd": 1.1918449458265685,
+        "oled-low-brightness": 1.2213580051952606,
+        "oled-outdoor-p3": 1.1979906515397538,
+        "lcd-low-brightness": 1.1854729686008643,
+        "lcd-outdoor-srgb": 1.1718466008165158
+      }
+    },
+    {
+      "zone": "neighborhood",
+      "id": "guest01-approved",
+      "direction": 2,
+      "frame": 2,
+      "edgeContrast": 1.1709358952075657,
+      "displayEdgeContrasts": {
+        "oled": 1.1604044613289293,
+        "lcd": 1.1522095873732006,
+        "oled-low-brightness": 1.1649265573514649,
+        "oled-outdoor-p3": 1.1553938051114894,
+        "lcd-low-brightness": 1.1504187311335012,
+        "lcd-outdoor-srgb": 1.1463090768087945
+      }
+    },
+    {
+      "zone": "neighborhood",
+      "id": "guest01-approved",
+      "direction": 2,
+      "frame": 3,
+      "edgeContrast": 1.2216592686080736,
+      "displayEdgeContrasts": {
+        "oled": 1.2096838695730794,
+        "lcd": 1.1918449458265685,
+        "oled-low-brightness": 1.2213580051952606,
+        "oled-outdoor-p3": 1.1979906515397538,
+        "lcd-low-brightness": 1.1854729686008643,
+        "lcd-outdoor-srgb": 1.1718466008165158
+      }
+    },
+    {
+      "zone": "neighborhood",
+      "id": "guest01-approved",
+      "direction": 3,
+      "frame": 0,
+      "edgeContrast": 1.2657700103266671,
+      "displayEdgeContrasts": {
+        "oled": 1.2554109878708828,
+        "lcd": 1.2382101668222254,
+        "oled-low-brightness": 1.2776318973151002,
+        "oled-outdoor-p3": 1.2380039713627642,
+        "lcd-low-brightness": 1.2352415106934673,
+        "lcd-outdoor-srgb": 1.2191658118317896
+      }
+    },
+    {
+      "zone": "neighborhood",
+      "id": "guest01-approved",
+      "direction": 3,
+      "frame": 1,
+      "edgeContrast": 1.2316703977888221,
+      "displayEdgeContrasts": {
+        "oled": 1.2424798224519575,
+        "lcd": 1.207974147708568,
+        "oled-low-brightness": 1.268368552117754,
+        "oled-outdoor-p3": 1.2108944349408388,
+        "lcd-low-brightness": 1.2054347820784685,
+        "lcd-outdoor-srgb": 1.1996160722797782
+      }
+    },
+    {
+      "zone": "neighborhood",
+      "id": "guest01-approved",
+      "direction": 3,
+      "frame": 2,
+      "edgeContrast": 1.208025484635631,
+      "displayEdgeContrasts": {
+        "oled": 1.197331739427279,
+        "lcd": 1.1902249012626906,
+        "oled-low-brightness": 1.2137028107296324,
+        "oled-outdoor-p3": 1.1915653627376417,
+        "lcd-low-brightness": 1.1856991867286504,
+        "lcd-outdoor-srgb": 1.179553037607051
+      }
+    },
+    {
+      "zone": "neighborhood",
+      "id": "guest01-approved",
+      "direction": 3,
+      "frame": 3,
+      "edgeContrast": 1.2316703977888221,
+      "displayEdgeContrasts": {
+        "oled": 1.2424798224519575,
+        "lcd": 1.207974147708568,
+        "oled-low-brightness": 1.268368552117754,
+        "oled-outdoor-p3": 1.2108944349408388,
+        "lcd-low-brightness": 1.2054347820784685,
+        "lcd-outdoor-srgb": 1.1996160722797782
+      }
+    },
+    {
+      "zone": "subway-station",
+      "id": "guest01-baseline",
+      "direction": 0,
+      "frame": 0,
+      "edgeContrast": 1.2290531964576623,
+      "displayEdgeContrasts": {
+        "oled": 1.2212947805068195,
+        "lcd": 1.1921150523253385,
+        "oled-low-brightness": 1.2255770819387282,
+        "oled-outdoor-p3": 1.2015434167289163,
+        "lcd-low-brightness": 1.1882346503299752,
+        "lcd-outdoor-srgb": 1.1812586585979183
+      }
+    },
+    {
+      "zone": "subway-station",
+      "id": "guest01-baseline",
+      "direction": 0,
+      "frame": 1,
+      "edgeContrast": 1.210361890179734,
+      "displayEdgeContrasts": {
+        "oled": 1.1992194618387741,
+        "lcd": 1.1861993141602258,
+        "oled-low-brightness": 1.2163051129211608,
+        "oled-outdoor-p3": 1.195516521083691,
+        "lcd-low-brightness": 1.1769091078552583,
+        "lcd-outdoor-srgb": 1.1580796213676714
+      }
+    },
+    {
+      "zone": "subway-station",
+      "id": "guest01-baseline",
+      "direction": 0,
+      "frame": 2,
+      "edgeContrast": 1.22022049836132,
+      "displayEdgeContrasts": {
+        "oled": 1.2067152481524408,
+        "lcd": 1.1924379770914366,
+        "oled-low-brightness": 1.2264476475151083,
+        "oled-outdoor-p3": 1.2012073693529493,
+        "lcd-low-brightness": 1.189802079599422,
+        "lcd-outdoor-srgb": 1.1837920077521293
+      }
+    },
+    {
+      "zone": "subway-station",
+      "id": "guest01-baseline",
+      "direction": 0,
+      "frame": 3,
+      "edgeContrast": 1.210361890179734,
+      "displayEdgeContrasts": {
+        "oled": 1.1992194618387741,
+        "lcd": 1.1861993141602258,
+        "oled-low-brightness": 1.2163051129211608,
+        "oled-outdoor-p3": 1.195516521083691,
+        "lcd-low-brightness": 1.1769091078552583,
+        "lcd-outdoor-srgb": 1.1580796213676714
+      }
+    },
+    {
+      "zone": "subway-station",
+      "id": "guest01-baseline",
+      "direction": 1,
+      "frame": 0,
+      "edgeContrast": 1.328094874820933,
+      "displayEdgeContrasts": {
+        "oled": 1.3284877327434892,
+        "lcd": 1.2911911577092638,
+        "oled-low-brightness": 1.325355193920142,
+        "oled-outdoor-p3": 1.2935065900981269,
+        "lcd-low-brightness": 1.2857484801835506,
+        "lcd-outdoor-srgb": 1.2735424494336747
+      }
+    },
+    {
+      "zone": "subway-station",
+      "id": "guest01-baseline",
+      "direction": 1,
+      "frame": 1,
+      "edgeContrast": 1.2983240791429635,
+      "displayEdgeContrasts": {
+        "oled": 1.2805604087588416,
+        "lcd": 1.2585962050191506,
+        "oled-low-brightness": 1.3077240545506656,
+        "oled-outdoor-p3": 1.2694641999311798,
+        "lcd-low-brightness": 1.255522126628578,
+        "lcd-outdoor-srgb": 1.2430001656644616
+      }
+    },
+    {
+      "zone": "subway-station",
+      "id": "guest01-baseline",
+      "direction": 1,
+      "frame": 2,
+      "edgeContrast": 1.3563076259100266,
+      "displayEdgeContrasts": {
+        "oled": 1.3381011620621188,
+        "lcd": 1.334211051384324,
+        "oled-low-brightness": 1.3516035872880086,
+        "oled-outdoor-p3": 1.3308982249898198,
+        "lcd-low-brightness": 1.3168652800160197,
+        "lcd-outdoor-srgb": 1.294006573077596
+      }
+    },
+    {
+      "zone": "subway-station",
+      "id": "guest01-baseline",
+      "direction": 1,
+      "frame": 3,
+      "edgeContrast": 1.2983240791429635,
+      "displayEdgeContrasts": {
+        "oled": 1.2805604087588416,
+        "lcd": 1.2585962050191506,
+        "oled-low-brightness": 1.3077240545506656,
+        "oled-outdoor-p3": 1.2694641999311798,
+        "lcd-low-brightness": 1.255522126628578,
+        "lcd-outdoor-srgb": 1.2430001656644616
+      }
+    },
+    {
+      "zone": "subway-station",
+      "id": "guest01-baseline",
+      "direction": 2,
+      "frame": 0,
+      "edgeContrast": 1.3102881373417008,
+      "displayEdgeContrasts": {
+        "oled": 1.2899285948759966,
+        "lcd": 1.262199376592847,
+        "oled-low-brightness": 1.286746690091,
+        "oled-outdoor-p3": 1.2898926483043125,
+        "lcd-low-brightness": 1.2584986619064886,
+        "lcd-outdoor-srgb": 1.2500723987797346
+      }
+    },
+    {
+      "zone": "subway-station",
+      "id": "guest01-baseline",
+      "direction": 2,
+      "frame": 1,
+      "edgeContrast": 1.3357142303867076,
+      "displayEdgeContrasts": {
+        "oled": 1.319017220256531,
+        "lcd": 1.293504165936703,
+        "oled-low-brightness": 1.3374941468454968,
+        "oled-outdoor-p3": 1.3008014558982617,
+        "lcd-low-brightness": 1.2843717180008123,
+        "lcd-outdoor-srgb": 1.2703305132425646
+      }
+    },
+    {
+      "zone": "subway-station",
+      "id": "guest01-baseline",
+      "direction": 2,
+      "frame": 2,
+      "edgeContrast": 1.2966951647139773,
+      "displayEdgeContrasts": {
+        "oled": 1.286478419248748,
+        "lcd": 1.2459999468613678,
+        "oled-low-brightness": 1.298295546429698,
+        "oled-outdoor-p3": 1.266279512020963,
+        "lcd-low-brightness": 1.2422663840731767,
+        "lcd-outdoor-srgb": 1.2304831536841314
+      }
+    },
+    {
+      "zone": "subway-station",
+      "id": "guest01-baseline",
+      "direction": 2,
+      "frame": 3,
+      "edgeContrast": 1.3357142303867076,
+      "displayEdgeContrasts": {
+        "oled": 1.319017220256531,
+        "lcd": 1.293504165936703,
+        "oled-low-brightness": 1.3374941468454968,
+        "oled-outdoor-p3": 1.3008014558982617,
+        "lcd-low-brightness": 1.2843717180008123,
+        "lcd-outdoor-srgb": 1.2703305132425646
+      }
+    },
+    {
+      "zone": "subway-station",
+      "id": "guest01-baseline",
+      "direction": 3,
+      "frame": 0,
+      "edgeContrast": 1.3336347459605968,
+      "displayEdgeContrasts": {
+        "oled": 1.363535042482053,
+        "lcd": 1.3093046373914718,
+        "oled-low-brightness": 1.3354917361322052,
+        "oled-outdoor-p3": 1.3109938324045411,
+        "lcd-low-brightness": 1.289762732236419,
+        "lcd-outdoor-srgb": 1.2517852581220426
+      }
+    },
+    {
+      "zone": "subway-station",
+      "id": "guest01-baseline",
+      "direction": 3,
+      "frame": 1,
+      "edgeContrast": 1.2659602748321623,
+      "displayEdgeContrasts": {
+        "oled": 1.2613400601614095,
+        "lcd": 1.2360121807609632,
+        "oled-low-brightness": 1.2747389498812125,
+        "oled-outdoor-p3": 1.2485477445368718,
+        "lcd-low-brightness": 1.2208471116138153,
+        "lcd-outdoor-srgb": 1.191474871394867
+      }
+    },
+    {
+      "zone": "subway-station",
+      "id": "guest01-baseline",
+      "direction": 3,
+      "frame": 2,
+      "edgeContrast": 1.3227925887101142,
+      "displayEdgeContrasts": {
+        "oled": 1.3050600873727283,
+        "lcd": 1.2568570776288508,
+        "oled-low-brightness": 1.3027479315269481,
+        "oled-outdoor-p3": 1.2696462032926448,
+        "lcd-low-brightness": 1.246503401206598,
+        "lcd-outdoor-srgb": 1.2248643158185637
+      }
+    },
+    {
+      "zone": "subway-station",
+      "id": "guest01-baseline",
+      "direction": 3,
+      "frame": 3,
+      "edgeContrast": 1.2659602748321623,
+      "displayEdgeContrasts": {
+        "oled": 1.2613400601614095,
+        "lcd": 1.2360121807609632,
+        "oled-low-brightness": 1.2747389498812125,
+        "oled-outdoor-p3": 1.2485477445368718,
+        "lcd-low-brightness": 1.2208471116138153,
+        "lcd-outdoor-srgb": 1.191474871394867
+      }
+    },
+    {
+      "zone": "subway-station",
+      "id": "guest01-approved",
+      "direction": 0,
+      "frame": 0,
+      "edgeContrast": 1.381221898895331,
+      "displayEdgeContrasts": {
+        "oled": 1.422549687223019,
+        "lcd": 1.3268874104399493,
+        "oled-low-brightness": 1.4071985491409196,
+        "oled-outdoor-p3": 1.3381338992444023,
+        "lcd-low-brightness": 1.3145544484771368,
+        "lcd-outdoor-srgb": 1.279741465834207
+      }
+    },
+    {
+      "zone": "subway-station",
+      "id": "guest01-approved",
+      "direction": 0,
+      "frame": 1,
+      "edgeContrast": 1.3445941508568284,
+      "displayEdgeContrasts": {
+        "oled": 1.3535834366206148,
+        "lcd": 1.285681058440644,
+        "oled-low-brightness": 1.3383935459961849,
+        "oled-outdoor-p3": 1.2992751880875157,
+        "lcd-low-brightness": 1.273728035903716,
+        "lcd-outdoor-srgb": 1.2488690977823838
+      }
+    },
+    {
+      "zone": "subway-station",
+      "id": "guest01-approved",
+      "direction": 0,
+      "frame": 2,
+      "edgeContrast": 1.33883288510397,
+      "displayEdgeContrasts": {
+        "oled": 1.3734838388133763,
+        "lcd": 1.2749141629830114,
+        "oled-low-brightness": 1.3346320895328339,
+        "oled-outdoor-p3": 1.293931162496123,
+        "lcd-low-brightness": 1.2639243409891303,
+        "lcd-outdoor-srgb": 1.2409310263485702
+      }
+    },
+    {
+      "zone": "subway-station",
+      "id": "guest01-approved",
+      "direction": 0,
+      "frame": 3,
+      "edgeContrast": 1.3445941508568284,
+      "displayEdgeContrasts": {
+        "oled": 1.3535834366206148,
+        "lcd": 1.285681058440644,
+        "oled-low-brightness": 1.3383935459961849,
+        "oled-outdoor-p3": 1.2992751880875157,
+        "lcd-low-brightness": 1.273728035903716,
+        "lcd-outdoor-srgb": 1.2488690977823838
+      }
+    },
+    {
+      "zone": "subway-station",
+      "id": "guest01-approved",
+      "direction": 1,
+      "frame": 0,
+      "edgeContrast": 1.5346396960783337,
+      "displayEdgeContrasts": {
+        "oled": 1.4973855164680234,
+        "lcd": 1.384950715601222,
+        "oled-low-brightness": 1.3997717582921418,
+        "oled-outdoor-p3": 1.4378120429073855,
+        "lcd-low-brightness": 1.3592591259494735,
+        "lcd-outdoor-srgb": 1.3098847756806253
+      }
+    },
+    {
+      "zone": "subway-station",
+      "id": "guest01-approved",
+      "direction": 1,
+      "frame": 1,
+      "edgeContrast": 1.4658508319802712,
+      "displayEdgeContrasts": {
+        "oled": 1.487197206210618,
+        "lcd": 1.3403067962343105,
+        "oled-low-brightness": 1.4038679613223528,
+        "oled-outdoor-p3": 1.3835986310737132,
+        "lcd-low-brightness": 1.318772369964371,
+        "lcd-outdoor-srgb": 1.2769357145215439
+      }
+    },
+    {
+      "zone": "subway-station",
+      "id": "guest01-approved",
+      "direction": 1,
+      "frame": 2,
+      "edgeContrast": 1.4745352788928148,
+      "displayEdgeContrasts": {
+        "oled": 1.4180907518885386,
+        "lcd": 1.3436921416254772,
+        "oled-low-brightness": 1.3617432951980049,
+        "oled-outdoor-p3": 1.3899841702339981,
+        "lcd-low-brightness": 1.3210795846199748,
+        "lcd-outdoor-srgb": 1.2806918042168605
+      }
+    },
+    {
+      "zone": "subway-station",
+      "id": "guest01-approved",
+      "direction": 1,
+      "frame": 3,
+      "edgeContrast": 1.4658508319802712,
+      "displayEdgeContrasts": {
+        "oled": 1.487197206210618,
+        "lcd": 1.3403067962343105,
+        "oled-low-brightness": 1.4038679613223528,
+        "oled-outdoor-p3": 1.3835986310737132,
+        "lcd-low-brightness": 1.318772369964371,
+        "lcd-outdoor-srgb": 1.2769357145215439
+      }
+    },
+    {
+      "zone": "subway-station",
+      "id": "guest01-approved",
+      "direction": 2,
+      "frame": 0,
+      "edgeContrast": 1.607017492391788,
+      "displayEdgeContrasts": {
+        "oled": 1.8112607834917231,
+        "lcd": 1.4859327108228901,
+        "oled-low-brightness": 1.6067135370577903,
+        "oled-outdoor-p3": 1.5045457176255528,
+        "lcd-low-brightness": 1.4772466986938255,
+        "lcd-outdoor-srgb": 1.4492489440806786
+      }
+    },
+    {
+      "zone": "subway-station",
+      "id": "guest01-approved",
+      "direction": 2,
+      "frame": 1,
+      "edgeContrast": 1.6082950285478474,
+      "displayEdgeContrasts": {
+        "oled": 1.6759451797212284,
+        "lcd": 1.49479243743093,
+        "oled-low-brightness": 1.6067135370577903,
+        "oled-outdoor-p3": 1.5045457176255528,
+        "lcd-low-brightness": 1.4865434271508362,
+        "lcd-outdoor-srgb": 1.4507809016327502
+      }
+    },
+    {
+      "zone": "subway-station",
+      "id": "guest01-approved",
+      "direction": 2,
+      "frame": 2,
+      "edgeContrast": 1.6115220599768005,
+      "displayEdgeContrasts": {
+        "oled": 1.7557465989277223,
+        "lcd": 1.551561571708253,
+        "oled-low-brightness": 1.6862804333150796,
+        "oled-outdoor-p3": 1.552051041640392,
+        "lcd-low-brightness": 1.5392260575103804,
+        "lcd-outdoor-srgb": 1.5118948197944424
+      }
+    },
+    {
+      "zone": "subway-station",
+      "id": "guest01-approved",
+      "direction": 2,
+      "frame": 3,
+      "edgeContrast": 1.6082950285478474,
+      "displayEdgeContrasts": {
+        "oled": 1.6759451797212284,
+        "lcd": 1.49479243743093,
+        "oled-low-brightness": 1.6067135370577903,
+        "oled-outdoor-p3": 1.5045457176255528,
+        "lcd-low-brightness": 1.4865434271508362,
+        "lcd-outdoor-srgb": 1.4507809016327502
+      }
+    },
+    {
+      "zone": "subway-station",
+      "id": "guest01-approved",
+      "direction": 3,
+      "frame": 0,
+      "edgeContrast": 1.3707217893828674,
+      "displayEdgeContrasts": {
+        "oled": 1.4483494495721287,
+        "lcd": 1.2894769704330156,
+        "oled-low-brightness": 1.3753548439325918,
+        "oled-outdoor-p3": 1.317328166021632,
+        "lcd-low-brightness": 1.2734641766789498,
+        "lcd-outdoor-srgb": 1.2595971583238574
+      }
+    },
+    {
+      "zone": "subway-station",
+      "id": "guest01-approved",
+      "direction": 3,
+      "frame": 1,
+      "edgeContrast": 1.3455435295452716,
+      "displayEdgeContrasts": {
+        "oled": 1.5347153911115619,
+        "lcd": 1.2655496249939562,
+        "oled-low-brightness": 1.4475966302272572,
+        "oled-outdoor-p3": 1.2917565690731982,
+        "lcd-low-brightness": 1.2507242718290748,
+        "lcd-outdoor-srgb": 1.2212371299747604
+      }
+    },
+    {
+      "zone": "subway-station",
+      "id": "guest01-approved",
+      "direction": 3,
+      "frame": 2,
+      "edgeContrast": 1.4041868804542816,
+      "displayEdgeContrasts": {
+        "oled": 1.4511664939090585,
+        "lcd": 1.319537294671972,
+        "oled-low-brightness": 1.461589539030273,
+        "oled-outdoor-p3": 1.3458685541757318,
+        "lcd-low-brightness": 1.3027166246985897,
+        "lcd-outdoor-srgb": 1.2689209113271993
+      }
+    },
+    {
+      "zone": "subway-station",
+      "id": "guest01-approved",
+      "direction": 3,
+      "frame": 3,
+      "edgeContrast": 1.3455435295452716,
+      "displayEdgeContrasts": {
+        "oled": 1.5347153911115619,
+        "lcd": 1.2655496249939562,
+        "oled-low-brightness": 1.4475966302272572,
+        "oled-outdoor-p3": 1.2917565690731982,
+        "lcd-low-brightness": 1.2507242718290748,
+        "lcd-outdoor-srgb": 1.2212371299747604
+      }
+    },
+    {
+      "zone": "subway-train",
+      "id": "guest01-baseline",
+      "direction": 0,
+      "frame": 0,
+      "edgeContrast": 1.5547233346464189,
+      "displayEdgeContrasts": {
+        "oled": 1.5746132214157795,
+        "lcd": 1.4427710789817791,
+        "oled-low-brightness": 1.5616150118946885,
+        "oled-outdoor-p3": 1.4671006165193368,
+        "lcd-low-brightness": 1.4192822775241423,
+        "lcd-outdoor-srgb": 1.365617831244637
+      }
+    },
+    {
+      "zone": "subway-train",
+      "id": "guest01-baseline",
+      "direction": 0,
+      "frame": 1,
+      "edgeContrast": 1.5660341289555564,
+      "displayEdgeContrasts": {
+        "oled": 1.6083693793530673,
+        "lcd": 1.446749048936946,
+        "oled-low-brightness": 1.6114584562281584,
+        "oled-outdoor-p3": 1.4775652361093063,
+        "lcd-low-brightness": 1.4192822775241423,
+        "lcd-outdoor-srgb": 1.3769245074260343
+      }
+    },
+    {
+      "zone": "subway-train",
+      "id": "guest01-baseline",
+      "direction": 0,
+      "frame": 2,
+      "edgeContrast": 1.559755947879901,
+      "displayEdgeContrasts": {
+        "oled": 1.6605682828635653,
+        "lcd": 1.4184368358874264,
+        "oled-low-brightness": 1.5757283973454077,
+        "oled-outdoor-p3": 1.4671006165193368,
+        "lcd-low-brightness": 1.4073526488958585,
+        "lcd-outdoor-srgb": 1.3615193684949587
+      }
+    },
+    {
+      "zone": "subway-train",
+      "id": "guest01-baseline",
+      "direction": 0,
+      "frame": 3,
+      "edgeContrast": 1.5660341289555564,
+      "displayEdgeContrasts": {
+        "oled": 1.6083693793530673,
+        "lcd": 1.446749048936946,
+        "oled-low-brightness": 1.6114584562281584,
+        "oled-outdoor-p3": 1.4775652361093063,
+        "lcd-low-brightness": 1.4192822775241423,
+        "lcd-outdoor-srgb": 1.3769245074260343
+      }
+    },
+    {
+      "zone": "subway-train",
+      "id": "guest01-baseline",
+      "direction": 1,
+      "frame": 0,
+      "edgeContrast": 1.3589367985074798,
+      "displayEdgeContrasts": {
+        "oled": 1.4326347860587654,
+        "lcd": 1.3096415697226222,
+        "oled-low-brightness": 1.3792110682606173,
+        "oled-outdoor-p3": 1.3226887948668808,
+        "lcd-low-brightness": 1.2915955145501916,
+        "lcd-outdoor-srgb": 1.2624682510173064
+      }
+    },
+    {
+      "zone": "subway-train",
+      "id": "guest01-baseline",
+      "direction": 1,
+      "frame": 1,
+      "edgeContrast": 1.3589367985074798,
+      "displayEdgeContrasts": {
+        "oled": 1.4326347860587654,
+        "lcd": 1.3096415697226222,
+        "oled-low-brightness": 1.3792110682606173,
+        "oled-outdoor-p3": 1.3226887948668808,
+        "lcd-low-brightness": 1.29775723275795,
+        "lcd-outdoor-srgb": 1.2819404505033936
+      }
+    },
+    {
+      "zone": "subway-train",
+      "id": "guest01-baseline",
+      "direction": 1,
+      "frame": 2,
+      "edgeContrast": 1.433898503924683,
+      "displayEdgeContrasts": {
+        "oled": 1.4326347860587654,
+        "lcd": 1.329466636815586,
+        "oled-low-brightness": 1.3925268837068596,
+        "oled-outdoor-p3": 1.3638662704284674,
+        "lcd-low-brightness": 1.3207357165553757,
+        "lcd-outdoor-srgb": 1.295153213626307
+      }
+    },
+    {
+      "zone": "subway-train",
+      "id": "guest01-baseline",
+      "direction": 1,
+      "frame": 3,
+      "edgeContrast": 1.3589367985074798,
+      "displayEdgeContrasts": {
+        "oled": 1.4326347860587654,
+        "lcd": 1.3096415697226222,
+        "oled-low-brightness": 1.3792110682606173,
+        "oled-outdoor-p3": 1.3226887948668808,
+        "lcd-low-brightness": 1.29775723275795,
+        "lcd-outdoor-srgb": 1.2819404505033936
+      }
+    },
+    {
+      "zone": "subway-train",
+      "id": "guest01-baseline",
+      "direction": 2,
+      "frame": 0,
+      "edgeContrast": 1.4918652556916627,
+      "displayEdgeContrasts": {
+        "oled": 1.5703828558602952,
+        "lcd": 1.404961333754702,
+        "oled-low-brightness": 1.5528188939068837,
+        "oled-outdoor-p3": 1.4127379975565275,
+        "lcd-low-brightness": 1.3904838626139933,
+        "lcd-outdoor-srgb": 1.368525910105474
+      }
+    },
+    {
+      "zone": "subway-train",
+      "id": "guest01-baseline",
+      "direction": 2,
+      "frame": 1,
+      "edgeContrast": 1.5562125703408654,
+      "displayEdgeContrasts": {
+        "oled": 1.5703828558602952,
+        "lcd": 1.4570748975851255,
+        "oled-low-brightness": 1.5960677095627953,
+        "oled-outdoor-p3": 1.4822212315063434,
+        "lcd-low-brightness": 1.436730623666369,
+        "lcd-outdoor-srgb": 1.378972290521908
+      }
+    },
+    {
+      "zone": "subway-train",
+      "id": "guest01-baseline",
+      "direction": 2,
+      "frame": 2,
+      "edgeContrast": 1.5237963760597606,
+      "displayEdgeContrasts": {
+        "oled": 1.663824725778025,
+        "lcd": 1.4260852811856304,
+        "oled-low-brightness": 1.5529964277200028,
+        "oled-outdoor-p3": 1.4521975717201092,
+        "lcd-low-brightness": 1.406706901067857,
+        "lcd-outdoor-srgb": 1.3668730697487006
+      }
+    },
+    {
+      "zone": "subway-train",
+      "id": "guest01-baseline",
+      "direction": 2,
+      "frame": 3,
+      "edgeContrast": 1.5562125703408654,
+      "displayEdgeContrasts": {
+        "oled": 1.5703828558602952,
+        "lcd": 1.4570748975851255,
+        "oled-low-brightness": 1.5960677095627953,
+        "oled-outdoor-p3": 1.4822212315063434,
+        "lcd-low-brightness": 1.436730623666369,
+        "lcd-outdoor-srgb": 1.378972290521908
+      }
+    },
+    {
+      "zone": "subway-train",
+      "id": "guest01-baseline",
+      "direction": 3,
+      "frame": 0,
+      "edgeContrast": 1.7392048275276293,
+      "displayEdgeContrasts": {
+        "oled": 1.792146982174789,
+        "lcd": 1.5788748938619221,
+        "oled-low-brightness": 1.7534234441916052,
+        "oled-outdoor-p3": 1.6018451127404867,
+        "lcd-low-brightness": 1.5484764371267694,
+        "lcd-outdoor-srgb": 1.4763877551789772
+      }
+    },
+    {
+      "zone": "subway-train",
+      "id": "guest01-baseline",
+      "direction": 3,
+      "frame": 1,
+      "edgeContrast": 1.6263288893413985,
+      "displayEdgeContrasts": {
+        "oled": 1.7924247495927665,
+        "lcd": 1.4850930544190255,
+        "oled-low-brightness": 1.691276595615048,
+        "oled-outdoor-p3": 1.5224565533162793,
+        "lcd-low-brightness": 1.4687515855187685,
+        "lcd-outdoor-srgb": 1.421248259988132
+      }
+    },
+    {
+      "zone": "subway-train",
+      "id": "guest01-baseline",
+      "direction": 3,
+      "frame": 2,
+      "edgeContrast": 1.5977360399304448,
+      "displayEdgeContrasts": {
+        "oled": 1.7228369487049493,
+        "lcd": 1.4672888309764336,
+        "oled-low-brightness": 1.674479756694184,
+        "oled-outdoor-p3": 1.5187117836467225,
+        "lcd-low-brightness": 1.4432606692622632,
+        "lcd-outdoor-srgb": 1.4051248606142992
+      }
+    },
+    {
+      "zone": "subway-train",
+      "id": "guest01-baseline",
+      "direction": 3,
+      "frame": 3,
+      "edgeContrast": 1.6263288893413985,
+      "displayEdgeContrasts": {
+        "oled": 1.7924247495927665,
+        "lcd": 1.4850930544190255,
+        "oled-low-brightness": 1.691276595615048,
+        "oled-outdoor-p3": 1.5224565533162793,
+        "lcd-low-brightness": 1.4687515855187685,
+        "lcd-outdoor-srgb": 1.421248259988132
+      }
+    },
+    {
+      "zone": "subway-train",
+      "id": "guest01-approved",
+      "direction": 0,
+      "frame": 0,
+      "edgeContrast": 1.3381145497768832,
+      "displayEdgeContrasts": {
+        "oled": 1.469304950131079,
+        "lcd": 1.247577057708802,
+        "oled-low-brightness": 1.376732624481031,
+        "oled-outdoor-p3": 1.2796563584147749,
+        "lcd-low-brightness": 1.2365238529930809,
+        "lcd-outdoor-srgb": 1.210849320515858
+      }
+    },
+    {
+      "zone": "subway-train",
+      "id": "guest01-approved",
+      "direction": 0,
+      "frame": 1,
+      "edgeContrast": 1.3381145497768832,
+      "displayEdgeContrasts": {
+        "oled": 1.3142191789328443,
+        "lcd": 1.247577057708802,
+        "oled-low-brightness": 1.257314824479594,
+        "oled-outdoor-p3": 1.2841804480609211,
+        "lcd-low-brightness": 1.2310992499943785,
+        "lcd-outdoor-srgb": 1.2003059188605028
+      }
+    },
+    {
+      "zone": "subway-train",
+      "id": "guest01-approved",
+      "direction": 0,
+      "frame": 2,
+      "edgeContrast": 1.3811449341372308,
+      "displayEdgeContrasts": {
+        "oled": 1.3688570745310515,
+        "lcd": 1.318379510732989,
+        "oled-low-brightness": 1.376732624481031,
+        "oled-outdoor-p3": 1.3344869498320482,
+        "lcd-low-brightness": 1.304894517898301,
+        "lcd-outdoor-srgb": 1.268162491811965
+      }
+    },
+    {
+      "zone": "subway-train",
+      "id": "guest01-approved",
+      "direction": 0,
+      "frame": 3,
+      "edgeContrast": 1.3381145497768832,
+      "displayEdgeContrasts": {
+        "oled": 1.3142191789328443,
+        "lcd": 1.247577057708802,
+        "oled-low-brightness": 1.257314824479594,
+        "oled-outdoor-p3": 1.2841804480609211,
+        "lcd-low-brightness": 1.2310992499943785,
+        "lcd-outdoor-srgb": 1.2003059188605028
+      }
+    },
+    {
+      "zone": "subway-train",
+      "id": "guest01-approved",
+      "direction": 1,
+      "frame": 0,
+      "edgeContrast": 1.3589367985074798,
+      "displayEdgeContrasts": {
+        "oled": 1.3124419798935218,
+        "lcd": 1.2612709229263912,
+        "oled-low-brightness": 1.2748291081120484,
+        "oled-outdoor-p3": 1.3012074257055928,
+        "lcd-low-brightness": 1.2466832325190305,
+        "lcd-outdoor-srgb": 1.212471469318302
+      }
+    },
+    {
+      "zone": "subway-train",
+      "id": "guest01-approved",
+      "direction": 1,
+      "frame": 1,
+      "edgeContrast": 1.3302683795001338,
+      "displayEdgeContrasts": {
+        "oled": 1.30150294969836,
+        "lcd": 1.257709980552775,
+        "oled-low-brightness": 1.2814197222826025,
+        "oled-outdoor-p3": 1.2754469042929906,
+        "lcd-low-brightness": 1.241446409693438,
+        "lcd-outdoor-srgb": 1.2153747712035448
+      }
+    },
+    {
+      "zone": "subway-train",
+      "id": "guest01-approved",
+      "direction": 1,
+      "frame": 2,
+      "edgeContrast": 1.3188044531163843,
+      "displayEdgeContrasts": {
+        "oled": 1.2812875643360153,
+        "lcd": 1.2353665764265727,
+        "oled-low-brightness": 1.247389635829918,
+        "oled-outdoor-p3": 1.2710262218650286,
+        "lcd-low-brightness": 1.2209657945005932,
+        "lcd-outdoor-srgb": 1.1915219637376455
+      }
+    },
+    {
+      "zone": "subway-train",
+      "id": "guest01-approved",
+      "direction": 1,
+      "frame": 3,
+      "edgeContrast": 1.3302683795001338,
+      "displayEdgeContrasts": {
+        "oled": 1.30150294969836,
+        "lcd": 1.257709980552775,
+        "oled-low-brightness": 1.2814197222826025,
+        "oled-outdoor-p3": 1.2754469042929906,
+        "lcd-low-brightness": 1.241446409693438,
+        "lcd-outdoor-srgb": 1.2153747712035448
+      }
+    },
+    {
+      "zone": "subway-train",
+      "id": "guest01-approved",
+      "direction": 2,
+      "frame": 0,
+      "edgeContrast": 1.3654107820968313,
+      "displayEdgeContrasts": {
+        "oled": 1.3452493340443146,
+        "lcd": 1.2776984977424546,
+        "oled-low-brightness": 1.3515633735149193,
+        "oled-outdoor-p3": 1.3125265443773089,
+        "lcd-low-brightness": 1.2596774347619564,
+        "lcd-outdoor-srgb": 1.2327844082004829
+      }
+    },
+    {
+      "zone": "subway-train",
+      "id": "guest01-approved",
+      "direction": 2,
+      "frame": 1,
+      "edgeContrast": 1.2806633609650486,
+      "displayEdgeContrasts": {
+        "oled": 1.2908177544434014,
+        "lcd": 1.237805581487281,
+        "oled-low-brightness": 1.27460070092998,
+        "oled-outdoor-p3": 1.2451289489308603,
+        "lcd-low-brightness": 1.221970996880221,
+        "lcd-outdoor-srgb": 1.2027831750322353
+      }
+    },
+    {
+      "zone": "subway-train",
+      "id": "guest01-approved",
+      "direction": 2,
+      "frame": 2,
+      "edgeContrast": 1.338019104504532,
+      "displayEdgeContrasts": {
+        "oled": 1.3279998272193143,
+        "lcd": 1.2618380386063128,
+        "oled-low-brightness": 1.311034771720367,
+        "oled-outdoor-p3": 1.2818012296903025,
+        "lcd-low-brightness": 1.2460356733835019,
+        "lcd-outdoor-srgb": 1.2184068415639406
+      }
+    },
+    {
+      "zone": "subway-train",
+      "id": "guest01-approved",
+      "direction": 2,
+      "frame": 3,
+      "edgeContrast": 1.2806633609650486,
+      "displayEdgeContrasts": {
+        "oled": 1.2908177544434014,
+        "lcd": 1.237805581487281,
+        "oled-low-brightness": 1.27460070092998,
+        "oled-outdoor-p3": 1.2451289489308603,
+        "lcd-low-brightness": 1.221970996880221,
+        "lcd-outdoor-srgb": 1.2027831750322353
+      }
+    },
+    {
+      "zone": "subway-train",
+      "id": "guest01-approved",
+      "direction": 3,
+      "frame": 0,
+      "edgeContrast": 1.3469189466964935,
+      "displayEdgeContrasts": {
+        "oled": 1.4028933566661668,
+        "lcd": 1.271995272142935,
+        "oled-low-brightness": 1.4182510515746352,
+        "oled-outdoor-p3": 1.2917395032205983,
+        "lcd-low-brightness": 1.2560528258969754,
+        "lcd-outdoor-srgb": 1.231566556774064
+      }
+    },
+    {
+      "zone": "subway-train",
+      "id": "guest01-approved",
+      "direction": 3,
+      "frame": 1,
+      "edgeContrast": 1.250276248109583,
+      "displayEdgeContrasts": {
+        "oled": 1.2381679755193062,
+        "lcd": 1.2077887965571308,
+        "oled-low-brightness": 1.2317613869428072,
+        "oled-outdoor-p3": 1.2214224902445276,
+        "lcd-low-brightness": 1.197534687402281,
+        "lcd-outdoor-srgb": 1.1718824793121596
+      }
+    },
+    {
+      "zone": "subway-train",
+      "id": "guest01-approved",
+      "direction": 3,
+      "frame": 2,
+      "edgeContrast": 1.2914139470512773,
+      "displayEdgeContrasts": {
+        "oled": 1.2629008650037403,
+        "lcd": 1.23045447118207,
+        "oled-low-brightness": 1.2561863685091068,
+        "oled-outdoor-p3": 1.250450463860343,
+        "lcd-low-brightness": 1.215861281495814,
+        "lcd-outdoor-srgb": 1.1875138481187142
+      }
+    },
+    {
+      "zone": "subway-train",
+      "id": "guest01-approved",
+      "direction": 3,
+      "frame": 3,
+      "edgeContrast": 1.250276248109583,
+      "displayEdgeContrasts": {
+        "oled": 1.2381679755193062,
+        "lcd": 1.2077887965571308,
+        "oled-low-brightness": 1.2317613869428072,
+        "oled-outdoor-p3": 1.2214224902445276,
+        "lcd-low-brightness": 1.197534687402281,
+        "lcd-outdoor-srgb": 1.1718824793121596
+      }
+    },
+    {
+      "zone": "venue-exterior",
+      "id": "guest01-baseline",
+      "direction": 0,
+      "frame": 0,
+      "edgeContrast": 1.2296654645165912,
+      "displayEdgeContrasts": {
+        "oled": 1.214753309246458,
+        "lcd": 1.2167198231302307,
+        "oled-low-brightness": 1.2378446780769072,
+        "oled-outdoor-p3": 1.2160685190713565,
+        "lcd-low-brightness": 1.2121230715273639,
+        "lcd-outdoor-srgb": 1.2051836060160148
+      }
+    },
+    {
+      "zone": "venue-exterior",
+      "id": "guest01-baseline",
+      "direction": 0,
+      "frame": 1,
+      "edgeContrast": 1.163611871653362,
+      "displayEdgeContrasts": {
+        "oled": 1.1533987067046108,
+        "lcd": 1.149932582732756,
+        "oled-low-brightness": 1.1689452828663054,
+        "oled-outdoor-p3": 1.153565458721502,
+        "lcd-low-brightness": 1.1482255935126138,
+        "lcd-outdoor-srgb": 1.1437361644610342
+      }
+    },
+    {
+      "zone": "venue-exterior",
+      "id": "guest01-baseline",
+      "direction": 0,
+      "frame": 2,
+      "edgeContrast": 1.2309888998568483,
+      "displayEdgeContrasts": {
+        "oled": 1.2163700033048204,
+        "lcd": 1.206111663849271,
+        "oled-low-brightness": 1.2383564884976364,
+        "oled-outdoor-p3": 1.215803324970694,
+        "lcd-low-brightness": 1.2037747198069924,
+        "lcd-outdoor-srgb": 1.198404253086378
+      }
+    },
+    {
+      "zone": "venue-exterior",
+      "id": "guest01-baseline",
+      "direction": 0,
+      "frame": 3,
+      "edgeContrast": 1.163611871653362,
+      "displayEdgeContrasts": {
+        "oled": 1.1533987067046108,
+        "lcd": 1.149932582732756,
+        "oled-low-brightness": 1.1689452828663054,
+        "oled-outdoor-p3": 1.153565458721502,
+        "lcd-low-brightness": 1.1482255935126138,
+        "lcd-outdoor-srgb": 1.1437361644610342
+      }
+    },
+    {
+      "zone": "venue-exterior",
+      "id": "guest01-baseline",
+      "direction": 1,
+      "frame": 0,
+      "edgeContrast": 1.4370897172408843,
+      "displayEdgeContrasts": {
+        "oled": 1.3889731516783759,
+        "lcd": 1.3515386441150548,
+        "oled-low-brightness": 1.3845531970230132,
+        "oled-outdoor-p3": 1.369619508382848,
+        "lcd-low-brightness": 1.3379760529511628,
+        "lcd-outdoor-srgb": 1.294731604537031
+      }
+    },
+    {
+      "zone": "venue-exterior",
+      "id": "guest01-baseline",
+      "direction": 1,
+      "frame": 1,
+      "edgeContrast": 1.419245480945537,
+      "displayEdgeContrasts": {
+        "oled": 1.3889731516783759,
+        "lcd": 1.3353759046500135,
+        "oled-low-brightness": 1.3677584361315314,
+        "oled-outdoor-p3": 1.3618826248102034,
+        "lcd-low-brightness": 1.3185887663987312,
+        "lcd-outdoor-srgb": 1.2815174926580533
+      }
+    },
+    {
+      "zone": "venue-exterior",
+      "id": "guest01-baseline",
+      "direction": 1,
+      "frame": 2,
+      "edgeContrast": 1.4347135041110906,
+      "displayEdgeContrasts": {
+        "oled": 1.3889731516783759,
+        "lcd": 1.3466513076361772,
+        "oled-low-brightness": 1.4143627466933923,
+        "oled-outdoor-p3": 1.3742163005913495,
+        "lcd-low-brightness": 1.3321611475800477,
+        "lcd-outdoor-srgb": 1.3105549783259955
+      }
+    },
+    {
+      "zone": "venue-exterior",
+      "id": "guest01-baseline",
+      "direction": 1,
+      "frame": 3,
+      "edgeContrast": 1.419245480945537,
+      "displayEdgeContrasts": {
+        "oled": 1.3889731516783759,
+        "lcd": 1.3353759046500135,
+        "oled-low-brightness": 1.3677584361315314,
+        "oled-outdoor-p3": 1.3618826248102034,
+        "lcd-low-brightness": 1.3185887663987312,
+        "lcd-outdoor-srgb": 1.2815174926580533
+      }
+    },
+    {
+      "zone": "venue-exterior",
+      "id": "guest01-baseline",
+      "direction": 2,
+      "frame": 0,
+      "edgeContrast": 1.3647416534857675,
+      "displayEdgeContrasts": {
+        "oled": 1.3411892969639845,
+        "lcd": 1.3385478503675434,
+        "oled-low-brightness": 1.3594302248768682,
+        "oled-outdoor-p3": 1.3364037522207672,
+        "lcd-low-brightness": 1.3132755048566211,
+        "lcd-outdoor-srgb": 1.2658902509951295
+      }
+    },
+    {
+      "zone": "venue-exterior",
+      "id": "guest01-baseline",
+      "direction": 2,
+      "frame": 1,
+      "edgeContrast": 1.392354881413525,
+      "displayEdgeContrasts": {
+        "oled": 1.3754927747693886,
+        "lcd": 1.3204268573354967,
+        "oled-low-brightness": 1.3564074451510602,
+        "oled-outdoor-p3": 1.3400500460718328,
+        "lcd-low-brightness": 1.2994129465880857,
+        "lcd-outdoor-srgb": 1.2765612229772585
+      }
+    },
+    {
+      "zone": "venue-exterior",
+      "id": "guest01-baseline",
+      "direction": 2,
+      "frame": 2,
+      "edgeContrast": 1.2173465437329696,
+      "displayEdgeContrasts": {
+        "oled": 1.2035512509993902,
+        "lcd": 1.2062575270140223,
+        "oled-low-brightness": 1.2244746638338355,
+        "oled-outdoor-p3": 1.2035205509038573,
+        "lcd-low-brightness": 1.2036042555300588,
+        "lcd-outdoor-srgb": 1.1975377676740289
+      }
+    },
+    {
+      "zone": "venue-exterior",
+      "id": "guest01-baseline",
+      "direction": 2,
+      "frame": 3,
+      "edgeContrast": 1.392354881413525,
+      "displayEdgeContrasts": {
+        "oled": 1.3754927747693886,
+        "lcd": 1.3204268573354967,
+        "oled-low-brightness": 1.3564074451510602,
+        "oled-outdoor-p3": 1.3400500460718328,
+        "lcd-low-brightness": 1.2994129465880857,
+        "lcd-outdoor-srgb": 1.2765612229772585
+      }
+    },
+    {
+      "zone": "venue-exterior",
+      "id": "guest01-baseline",
+      "direction": 3,
+      "frame": 0,
+      "edgeContrast": 1.3842707050401437,
+      "displayEdgeContrasts": {
+        "oled": 1.3549128116360496,
+        "lcd": 1.361403334445225,
+        "oled-low-brightness": 1.394356870394387,
+        "oled-outdoor-p3": 1.355751439499182,
+        "lcd-low-brightness": 1.3521097114857779,
+        "lcd-outdoor-srgb": 1.3227410261257577
+      }
+    },
+    {
+      "zone": "venue-exterior",
+      "id": "guest01-baseline",
+      "direction": 3,
+      "frame": 1,
+      "edgeContrast": 1.3091508989252028,
+      "displayEdgeContrasts": {
+        "oled": 1.2898524212291924,
+        "lcd": 1.2680516144070448,
+        "oled-low-brightness": 1.313588867294506,
+        "oled-outdoor-p3": 1.2857350066722124,
+        "lcd-low-brightness": 1.263948197302438,
+        "lcd-outdoor-srgb": 1.2566580593268961
+      }
+    },
+    {
+      "zone": "venue-exterior",
+      "id": "guest01-baseline",
+      "direction": 3,
+      "frame": 2,
+      "edgeContrast": 1.2950318940612169,
+      "displayEdgeContrasts": {
+        "oled": 1.2754871970697936,
+        "lcd": 1.2680516144070448,
+        "oled-low-brightness": 1.3010266547498222,
+        "oled-outdoor-p3": 1.2768760026741062,
+        "lcd-low-brightness": 1.2543269818877618,
+        "lcd-outdoor-srgb": 1.2266253079682352
+      }
+    },
+    {
+      "zone": "venue-exterior",
+      "id": "guest01-baseline",
+      "direction": 3,
+      "frame": 3,
+      "edgeContrast": 1.3091508989252028,
+      "displayEdgeContrasts": {
+        "oled": 1.2898524212291924,
+        "lcd": 1.2680516144070448,
+        "oled-low-brightness": 1.313588867294506,
+        "oled-outdoor-p3": 1.2857350066722124,
+        "lcd-low-brightness": 1.263948197302438,
+        "lcd-outdoor-srgb": 1.2566580593268961
+      }
+    },
+    {
+      "zone": "venue-exterior",
+      "id": "guest01-approved",
+      "direction": 0,
+      "frame": 0,
+      "edgeContrast": 1.4551975731227516,
+      "displayEdgeContrasts": {
+        "oled": 1.495319267538995,
+        "lcd": 1.341194981451372,
+        "oled-low-brightness": 1.5340665934593944,
+        "oled-outdoor-p3": 1.3794992177827785,
+        "lcd-low-brightness": 1.3233907675963452,
+        "lcd-outdoor-srgb": 1.309160287886162
+      }
+    },
+    {
+      "zone": "venue-exterior",
+      "id": "guest01-approved",
+      "direction": 0,
+      "frame": 1,
+      "edgeContrast": 1.3644496582920476,
+      "displayEdgeContrasts": {
+        "oled": 1.4920480426026754,
+        "lcd": 1.3385270539091692,
+        "oled-low-brightness": 1.4361424039525672,
+        "oled-outdoor-p3": 1.3366566248841987,
+        "lcd-low-brightness": 1.320681328705637,
+        "lcd-outdoor-srgb": 1.2855229598962519
+      }
+    },
+    {
+      "zone": "venue-exterior",
+      "id": "guest01-approved",
+      "direction": 0,
+      "frame": 2,
+      "edgeContrast": 1.3661305147854204,
+      "displayEdgeContrasts": {
+        "oled": 1.5619174861979142,
+        "lcd": 1.2852610246794398,
+        "oled-low-brightness": 1.3714866188569488,
+        "oled-outdoor-p3": 1.3117900205856177,
+        "lcd-low-brightness": 1.2697535012330605,
+        "lcd-outdoor-srgb": 1.2387659214872973
+      }
+    },
+    {
+      "zone": "venue-exterior",
+      "id": "guest01-approved",
+      "direction": 0,
+      "frame": 3,
+      "edgeContrast": 1.3644496582920476,
+      "displayEdgeContrasts": {
+        "oled": 1.4920480426026754,
+        "lcd": 1.3385270539091692,
+        "oled-low-brightness": 1.4361424039525672,
+        "oled-outdoor-p3": 1.3366566248841987,
+        "lcd-low-brightness": 1.320681328705637,
+        "lcd-outdoor-srgb": 1.2855229598962519
+      }
+    },
+    {
+      "zone": "venue-exterior",
+      "id": "guest01-approved",
+      "direction": 1,
+      "frame": 0,
+      "edgeContrast": 1.6873491285571016,
+      "displayEdgeContrasts": {
+        "oled": 1.8257249556686599,
+        "lcd": 1.5441721512100541,
+        "oled-low-brightness": 1.753801077580812,
+        "oled-outdoor-p3": 1.5686142164860133,
+        "lcd-low-brightness": 1.5133320754856068,
+        "lcd-outdoor-srgb": 1.4521558614891503
+      }
+    },
+    {
+      "zone": "venue-exterior",
+      "id": "guest01-approved",
+      "direction": 1,
+      "frame": 1,
+      "edgeContrast": 1.609228393672168,
+      "displayEdgeContrasts": {
+        "oled": 1.7944487083832164,
+        "lcd": 1.4806134789249121,
+        "oled-low-brightness": 1.6634010233334602,
+        "oled-outdoor-p3": 1.504558928095939,
+        "lcd-low-brightness": 1.4618202135006093,
+        "lcd-outdoor-srgb": 1.4179668919004753
+      }
+    },
+    {
+      "zone": "venue-exterior",
+      "id": "guest01-approved",
+      "direction": 1,
+      "frame": 2,
+      "edgeContrast": 1.6873491285571016,
+      "displayEdgeContrasts": {
+        "oled": 1.7831253180287645,
+        "lcd": 1.5177790765156158,
+        "oled-low-brightness": 1.7017945312786624,
+        "oled-outdoor-p3": 1.5829403729805114,
+        "lcd-low-brightness": 1.4841793650132205,
+        "lcd-outdoor-srgb": 1.4562911986258769
+      }
+    },
+    {
+      "zone": "venue-exterior",
+      "id": "guest01-approved",
+      "direction": 1,
+      "frame": 3,
+      "edgeContrast": 1.609228393672168,
+      "displayEdgeContrasts": {
+        "oled": 1.7944487083832164,
+        "lcd": 1.4806134789249121,
+        "oled-low-brightness": 1.6634010233334602,
+        "oled-outdoor-p3": 1.504558928095939,
+        "lcd-low-brightness": 1.4618202135006093,
+        "lcd-outdoor-srgb": 1.4179668919004753
+      }
+    },
+    {
+      "zone": "venue-exterior",
+      "id": "guest01-approved",
+      "direction": 2,
+      "frame": 0,
+      "edgeContrast": 1.7391891478633659,
+      "displayEdgeContrasts": {
+        "oled": 1.7997972154562645,
+        "lcd": 1.5450326178957459,
+        "oled-low-brightness": 1.8092599314371116,
+        "oled-outdoor-p3": 1.6089363759953723,
+        "lcd-low-brightness": 1.510765874591839,
+        "lcd-outdoor-srgb": 1.4441076290127988
+      }
+    },
+    {
+      "zone": "venue-exterior",
+      "id": "guest01-approved",
+      "direction": 2,
+      "frame": 1,
+      "edgeContrast": 1.7536578512058099,
+      "displayEdgeContrasts": {
+        "oled": 1.9137619240615429,
+        "lcd": 1.5459225699765422,
+        "oled-low-brightness": 1.8381320296928922,
+        "oled-outdoor-p3": 1.613338191831671,
+        "lcd-low-brightness": 1.522979448463022,
+        "lcd-outdoor-srgb": 1.4617305451306113
+      }
+    },
+    {
+      "zone": "venue-exterior",
+      "id": "guest01-approved",
+      "direction": 2,
+      "frame": 2,
+      "edgeContrast": 1.9869930143029786,
+      "displayEdgeContrasts": {
+        "oled": 1.9347229677063342,
+        "lcd": 1.7645508551477325,
+        "oled-low-brightness": 2.0237678389689346,
+        "oled-outdoor-p3": 1.8448569266791592,
+        "lcd-low-brightness": 1.7179814784110057,
+        "lcd-outdoor-srgb": 1.6268308407704986
+      }
+    },
+    {
+      "zone": "venue-exterior",
+      "id": "guest01-approved",
+      "direction": 2,
+      "frame": 3,
+      "edgeContrast": 1.7536578512058099,
+      "displayEdgeContrasts": {
+        "oled": 1.9137619240615429,
+        "lcd": 1.5459225699765422,
+        "oled-low-brightness": 1.8381320296928922,
+        "oled-outdoor-p3": 1.613338191831671,
+        "lcd-low-brightness": 1.522979448463022,
+        "lcd-outdoor-srgb": 1.4617305451306113
+      }
+    },
+    {
+      "zone": "venue-exterior",
+      "id": "guest01-approved",
+      "direction": 3,
+      "frame": 0,
+      "edgeContrast": 1.4089048836205307,
+      "displayEdgeContrasts": {
+        "oled": 1.453726132874896,
+        "lcd": 1.3283718189068394,
+        "oled-low-brightness": 1.4481904264294232,
+        "oled-outdoor-p3": 1.3579963886565969,
+        "lcd-low-brightness": 1.3106789763072855,
+        "lcd-outdoor-srgb": 1.277595175703087
+      }
+    },
+    {
+      "zone": "venue-exterior",
+      "id": "guest01-approved",
+      "direction": 3,
+      "frame": 1,
+      "edgeContrast": 1.4012731602801045,
+      "displayEdgeContrasts": {
+        "oled": 1.4564724746437725,
+        "lcd": 1.3283718189068394,
+        "oled-low-brightness": 1.4205448483869305,
+        "oled-outdoor-p3": 1.3561236706063033,
+        "lcd-low-brightness": 1.3106789763072855,
+        "lcd-outdoor-srgb": 1.2752705378381044
+      }
+    },
+    {
+      "zone": "venue-exterior",
+      "id": "guest01-approved",
+      "direction": 3,
+      "frame": 2,
+      "edgeContrast": 1.5206197284104348,
+      "displayEdgeContrasts": {
+        "oled": 1.6601083175665277,
+        "lcd": 1.3922390426558686,
+        "oled-low-brightness": 1.6292355558357925,
+        "oled-outdoor-p3": 1.4344453233536796,
+        "lcd-low-brightness": 1.3689978986573197,
+        "lcd-outdoor-srgb": 1.3295727092481753
+      }
+    },
+    {
+      "zone": "venue-exterior",
+      "id": "guest01-approved",
+      "direction": 3,
+      "frame": 3,
+      "edgeContrast": 1.4012731602801045,
+      "displayEdgeContrasts": {
+        "oled": 1.4564724746437725,
+        "lcd": 1.3283718189068394,
+        "oled-low-brightness": 1.4205448483869305,
+        "oled-outdoor-p3": 1.3561236706063033,
+        "lcd-low-brightness": 1.3106789763072855,
+        "lcd-outdoor-srgb": 1.2752705378381044
+      }
+    },
+    {
+      "zone": "lobby",
+      "id": "guest01-baseline",
+      "direction": 0,
+      "frame": 0,
+      "edgeContrast": 1.2201331434031972,
+      "displayEdgeContrasts": {
+        "oled": 1.2150252679043552,
+        "lcd": 1.2027652059806064,
+        "oled-low-brightness": 1.2194481523003355,
+        "oled-outdoor-p3": 1.199408745440225,
+        "lcd-low-brightness": 1.200525944941552,
+        "lcd-outdoor-srgb": 1.1953748996734503
+      }
+    },
+    {
+      "zone": "lobby",
+      "id": "guest01-baseline",
+      "direction": 0,
+      "frame": 1,
+      "edgeContrast": 1.1698780748086341,
+      "displayEdgeContrasts": {
+        "oled": 1.1613806133997864,
+        "lcd": 1.1601970591036324,
+        "oled-low-brightness": 1.1730122103261933,
+        "oled-outdoor-p3": 1.1575250267363242,
+        "lcd-low-brightness": 1.158494666843341,
+        "lcd-outdoor-srgb": 1.1545731466746123
+      }
+    },
+    {
+      "zone": "lobby",
+      "id": "guest01-baseline",
+      "direction": 0,
+      "frame": 2,
+      "edgeContrast": 1.2139074018170235,
+      "displayEdgeContrasts": {
+        "oled": 1.2021714095806806,
+        "lcd": 1.1937298965958005,
+        "oled-low-brightness": 1.2174918380168969,
+        "oled-outdoor-p3": 1.195432840554554,
+        "lcd-low-brightness": 1.1891721170153107,
+        "lcd-outdoor-srgb": 1.1791121396958606
+      }
+    },
+    {
+      "zone": "lobby",
+      "id": "guest01-baseline",
+      "direction": 0,
+      "frame": 3,
+      "edgeContrast": 1.1698780748086341,
+      "displayEdgeContrasts": {
+        "oled": 1.1613806133997864,
+        "lcd": 1.1601970591036324,
+        "oled-low-brightness": 1.1730122103261933,
+        "oled-outdoor-p3": 1.1575250267363242,
+        "lcd-low-brightness": 1.158494666843341,
+        "lcd-outdoor-srgb": 1.1545731466746123
+      }
+    },
+    {
+      "zone": "lobby",
+      "id": "guest01-baseline",
+      "direction": 1,
+      "frame": 0,
+      "edgeContrast": 1.493575787551284,
+      "displayEdgeContrasts": {
+        "oled": 1.4588709067248766,
+        "lcd": 1.3815978003704996,
+        "oled-low-brightness": 1.485647898506935,
+        "oled-outdoor-p3": 1.4313287634292844,
+        "lcd-low-brightness": 1.3765173664245187,
+        "lcd-outdoor-srgb": 1.352889895928694
+      }
+    },
+    {
+      "zone": "lobby",
+      "id": "guest01-baseline",
+      "direction": 1,
+      "frame": 1,
+      "edgeContrast": 1.413133066059704,
+      "displayEdgeContrasts": {
+        "oled": 1.386780807884619,
+        "lcd": 1.3439228762605537,
+        "oled-low-brightness": 1.3889112723320989,
+        "oled-outdoor-p3": 1.3549242600601947,
+        "lcd-low-brightness": 1.3298105326045844,
+        "lcd-outdoor-srgb": 1.30038454970702
+      }
+    },
+    {
+      "zone": "lobby",
+      "id": "guest01-baseline",
+      "direction": 1,
+      "frame": 2,
+      "edgeContrast": 1.5139922122566816,
+      "displayEdgeContrasts": {
+        "oled": 1.4970046598721725,
+        "lcd": 1.4126987246196412,
+        "oled-low-brightness": 1.4546558962420684,
+        "oled-outdoor-p3": 1.4204937138211693,
+        "lcd-low-brightness": 1.4003465745047516,
+        "lcd-outdoor-srgb": 1.3615215855080192
+      }
+    },
+    {
+      "zone": "lobby",
+      "id": "guest01-baseline",
+      "direction": 1,
+      "frame": 3,
+      "edgeContrast": 1.413133066059704,
+      "displayEdgeContrasts": {
+        "oled": 1.386780807884619,
+        "lcd": 1.3439228762605537,
+        "oled-low-brightness": 1.3889112723320989,
+        "oled-outdoor-p3": 1.3549242600601947,
+        "lcd-low-brightness": 1.3298105326045844,
+        "lcd-outdoor-srgb": 1.30038454970702
+      }
+    },
+    {
+      "zone": "lobby",
+      "id": "guest01-baseline",
+      "direction": 2,
+      "frame": 0,
+      "edgeContrast": 1.3767219302922664,
+      "displayEdgeContrasts": {
+        "oled": 1.3512146952085307,
+        "lcd": 1.3400001240245167,
+        "oled-low-brightness": 1.384438044237721,
+        "oled-outdoor-p3": 1.3470805691286736,
+        "lcd-low-brightness": 1.3144250010149419,
+        "lcd-outdoor-srgb": 1.303320273327159
+      }
+    },
+    {
+      "zone": "lobby",
+      "id": "guest01-baseline",
+      "direction": 2,
+      "frame": 1,
+      "edgeContrast": 1.3611707849246129,
+      "displayEdgeContrasts": {
+        "oled": 1.3397495598295377,
+        "lcd": 1.3252130247160108,
+        "oled-low-brightness": 1.3657496199082841,
+        "oled-outdoor-p3": 1.3359715072915501,
+        "lcd-low-brightness": 1.3207067843892815,
+        "lcd-outdoor-srgb": 1.3117284638469897
+      }
+    },
+    {
+      "zone": "lobby",
+      "id": "guest01-baseline",
+      "direction": 2,
+      "frame": 2,
+      "edgeContrast": 1.2446607085279322,
+      "displayEdgeContrasts": {
+        "oled": 1.2286765666264714,
+        "lcd": 1.2342511244632384,
+        "oled-low-brightness": 1.2534531963785127,
+        "oled-outdoor-p3": 1.2301454728809156,
+        "lcd-low-brightness": 1.2317328028037045,
+        "lcd-outdoor-srgb": 1.225934155234347
+      }
+    },
+    {
+      "zone": "lobby",
+      "id": "guest01-baseline",
+      "direction": 2,
+      "frame": 3,
+      "edgeContrast": 1.3611707849246129,
+      "displayEdgeContrasts": {
+        "oled": 1.3397495598295377,
+        "lcd": 1.3252130247160108,
+        "oled-low-brightness": 1.3657496199082841,
+        "oled-outdoor-p3": 1.3359715072915501,
+        "lcd-low-brightness": 1.3207067843892815,
+        "lcd-outdoor-srgb": 1.3117284638469897
+      }
+    },
+    {
+      "zone": "lobby",
+      "id": "guest01-baseline",
+      "direction": 3,
+      "frame": 0,
+      "edgeContrast": 1.4124597494584672,
+      "displayEdgeContrasts": {
+        "oled": 1.3864349393063722,
+        "lcd": 1.3834302639147429,
+        "oled-low-brightness": 1.42995545577556,
+        "oled-outdoor-p3": 1.385412835536743,
+        "lcd-low-brightness": 1.3586259638611233,
+        "lcd-outdoor-srgb": 1.3415326954464801
+      }
+    },
+    {
+      "zone": "lobby",
+      "id": "guest01-baseline",
+      "direction": 3,
+      "frame": 1,
+      "edgeContrast": 1.3177607486496927,
+      "displayEdgeContrasts": {
+        "oled": 1.2965965706504092,
+        "lcd": 1.2687012412529022,
+        "oled-low-brightness": 1.3291894938653288,
+        "oled-outdoor-p3": 1.272198276841586,
+        "lcd-low-brightness": 1.265823079401174,
+        "lcd-outdoor-srgb": 1.2591950034989183
+      }
+    },
+    {
+      "zone": "lobby",
+      "id": "guest01-baseline",
+      "direction": 3,
+      "frame": 2,
+      "edgeContrast": 1.3034829680055324,
+      "displayEdgeContrasts": {
+        "oled": 1.2833729970845795,
+        "lcd": 1.2690006238115874,
+        "oled-low-brightness": 1.3143281328330527,
+        "oled-outdoor-p3": 1.272198276841586,
+        "lcd-low-brightness": 1.265771131629072,
+        "lcd-outdoor-srgb": 1.2583660192747836
+      }
+    },
+    {
+      "zone": "lobby",
+      "id": "guest01-baseline",
+      "direction": 3,
+      "frame": 3,
+      "edgeContrast": 1.3177607486496927,
+      "displayEdgeContrasts": {
+        "oled": 1.2965965706504092,
+        "lcd": 1.2687012412529022,
+        "oled-low-brightness": 1.3291894938653288,
+        "oled-outdoor-p3": 1.272198276841586,
+        "lcd-low-brightness": 1.265823079401174,
+        "lcd-outdoor-srgb": 1.2591950034989183
+      }
+    },
+    {
+      "zone": "lobby",
+      "id": "guest01-approved",
+      "direction": 0,
+      "frame": 0,
+      "edgeContrast": 1.464893949532618,
+      "displayEdgeContrasts": {
+        "oled": 1.505412846075656,
+        "lcd": 1.3824288776571791,
+        "oled-low-brightness": 1.5147181894084014,
+        "oled-outdoor-p3": 1.393044796545979,
+        "lcd-low-brightness": 1.364489888790647,
+        "lcd-outdoor-srgb": 1.318916624566655
+      }
+    },
+    {
+      "zone": "lobby",
+      "id": "guest01-approved",
+      "direction": 0,
+      "frame": 1,
+      "edgeContrast": 1.4509535112127547,
+      "displayEdgeContrasts": {
+        "oled": 1.5457516826426718,
+        "lcd": 1.3524971665289234,
+        "oled-low-brightness": 1.5484755863192532,
+        "oled-outdoor-p3": 1.3862727207551209,
+        "lcd-low-brightness": 1.3317688232341152,
+        "lcd-outdoor-srgb": 1.3060608215123004
+      }
+    },
+    {
+      "zone": "lobby",
+      "id": "guest01-approved",
+      "direction": 0,
+      "frame": 2,
+      "edgeContrast": 1.3237322209573388,
+      "displayEdgeContrasts": {
+        "oled": 1.4484906365762351,
+        "lcd": 1.2866821857236859,
+        "oled-low-brightness": 1.4369138681075129,
+        "oled-outdoor-p3": 1.284413543264694,
+        "lcd-low-brightness": 1.2833656453682412,
+        "lcd-outdoor-srgb": 1.2538121279312595
+      }
+    },
+    {
+      "zone": "lobby",
+      "id": "guest01-approved",
+      "direction": 0,
+      "frame": 3,
+      "edgeContrast": 1.4509535112127547,
+      "displayEdgeContrasts": {
+        "oled": 1.5457516826426718,
+        "lcd": 1.3524971665289234,
+        "oled-low-brightness": 1.5484755863192532,
+        "oled-outdoor-p3": 1.3862727207551209,
+        "lcd-low-brightness": 1.3317688232341152,
+        "lcd-outdoor-srgb": 1.3060608215123004
+      }
+    },
+    {
+      "zone": "lobby",
+      "id": "guest01-approved",
+      "direction": 1,
+      "frame": 0,
+      "edgeContrast": 1.673528735998814,
+      "displayEdgeContrasts": {
+        "oled": 1.8937412534716527,
+        "lcd": 1.4985346264035238,
+        "oled-low-brightness": 1.7340470307765192,
+        "oled-outdoor-p3": 1.5514284757808152,
+        "lcd-low-brightness": 1.4664307178032308,
+        "lcd-outdoor-srgb": 1.4119841121461738
+      }
+    },
+    {
+      "zone": "lobby",
+      "id": "guest01-approved",
+      "direction": 1,
+      "frame": 1,
+      "edgeContrast": 1.6397270223006946,
+      "displayEdgeContrasts": {
+        "oled": 1.834897516792177,
+        "lcd": 1.4684560507882165,
+        "oled-low-brightness": 1.6898729752802726,
+        "oled-outdoor-p3": 1.526390586256636,
+        "lcd-low-brightness": 1.4384723124757106,
+        "lcd-outdoor-srgb": 1.3803531611592208
+      }
+    },
+    {
+      "zone": "lobby",
+      "id": "guest01-approved",
+      "direction": 1,
+      "frame": 2,
+      "edgeContrast": 1.673528735998814,
+      "displayEdgeContrasts": {
+        "oled": 1.7383530022518012,
+        "lcd": 1.5174394536477283,
+        "oled-low-brightness": 1.7035965853303432,
+        "oled-outdoor-p3": 1.5843229766654554,
+        "lcd-low-brightness": 1.4834233200676539,
+        "lcd-outdoor-srgb": 1.4178455691656757
+      }
+    },
+    {
+      "zone": "lobby",
+      "id": "guest01-approved",
+      "direction": 1,
+      "frame": 3,
+      "edgeContrast": 1.6397270223006946,
+      "displayEdgeContrasts": {
+        "oled": 1.834897516792177,
+        "lcd": 1.4684560507882165,
+        "oled-low-brightness": 1.6898729752802726,
+        "oled-outdoor-p3": 1.526390586256636,
+        "lcd-low-brightness": 1.4384723124757106,
+        "lcd-outdoor-srgb": 1.3803531611592208
+      }
+    },
+    {
+      "zone": "lobby",
+      "id": "guest01-approved",
+      "direction": 2,
+      "frame": 0,
+      "edgeContrast": 1.7117903491808102,
+      "displayEdgeContrasts": {
+        "oled": 1.8740726978160622,
+        "lcd": 1.616279684517093,
+        "oled-low-brightness": 1.7726409555184115,
+        "oled-outdoor-p3": 1.6269707511134472,
+        "lcd-low-brightness": 1.5977283708242667,
+        "lcd-outdoor-srgb": 1.5468826237704285
+      }
+    },
+    {
+      "zone": "lobby",
+      "id": "guest01-approved",
+      "direction": 2,
+      "frame": 1,
+      "edgeContrast": 1.7589900277721098,
+      "displayEdgeContrasts": {
+        "oled": 1.964613869552495,
+        "lcd": 1.6478184469593986,
+        "oled-low-brightness": 1.7979141877811378,
+        "oled-outdoor-p3": 1.6382417159426885,
+        "lcd-low-brightness": 1.6264466112988085,
+        "lcd-outdoor-srgb": 1.5468826237704285
+      }
+    },
+    {
+      "zone": "lobby",
+      "id": "guest01-approved",
+      "direction": 2,
+      "frame": 2,
+      "edgeContrast": 1.8943243238954557,
+      "displayEdgeContrasts": {
+        "oled": 2.011643824691193,
+        "lcd": 1.7217667351989376,
+        "oled-low-brightness": 2.003278599716134,
+        "oled-outdoor-p3": 1.753401666664901,
+        "lcd-low-brightness": 1.68049190175681,
+        "lcd-outdoor-srgb": 1.6108428995400557
+      }
+    },
+    {
+      "zone": "lobby",
+      "id": "guest01-approved",
+      "direction": 2,
+      "frame": 3,
+      "edgeContrast": 1.7589900277721098,
+      "displayEdgeContrasts": {
+        "oled": 1.964613869552495,
+        "lcd": 1.6478184469593986,
+        "oled-low-brightness": 1.7979141877811378,
+        "oled-outdoor-p3": 1.6382417159426885,
+        "lcd-low-brightness": 1.6264466112988085,
+        "lcd-outdoor-srgb": 1.5468826237704285
+      }
+    },
+    {
+      "zone": "lobby",
+      "id": "guest01-approved",
+      "direction": 3,
+      "frame": 0,
+      "edgeContrast": 1.4375839455796433,
+      "displayEdgeContrasts": {
+        "oled": 1.5210966463883575,
+        "lcd": 1.3663740130699373,
+        "oled-low-brightness": 1.4409748631232269,
+        "oled-outdoor-p3": 1.3889379130078412,
+        "lcd-low-brightness": 1.346063750832119,
+        "lcd-outdoor-srgb": 1.310492470852731
+      }
+    },
+    {
+      "zone": "lobby",
+      "id": "guest01-approved",
+      "direction": 3,
+      "frame": 1,
+      "edgeContrast": 1.4473390811815265,
+      "displayEdgeContrasts": {
+        "oled": 1.5155175149927356,
+        "lcd": 1.3663740130699373,
+        "oled-low-brightness": 1.4858454611766658,
+        "oled-outdoor-p3": 1.4010372649977731,
+        "lcd-low-brightness": 1.3489588846140879,
+        "lcd-outdoor-srgb": 1.3081990069465663
+      }
+    },
+    {
+      "zone": "lobby",
+      "id": "guest01-approved",
+      "direction": 3,
+      "frame": 2,
+      "edgeContrast": 1.525815110461225,
+      "displayEdgeContrasts": {
+        "oled": 1.7102041185916388,
+        "lcd": 1.3910423653783484,
+        "oled-low-brightness": 1.6142551875419642,
+        "oled-outdoor-p3": 1.4338261145048457,
+        "lcd-low-brightness": 1.3837543754806154,
+        "lcd-outdoor-srgb": 1.3453715345608392
+      }
+    },
+    {
+      "zone": "lobby",
+      "id": "guest01-approved",
+      "direction": 3,
+      "frame": 3,
+      "edgeContrast": 1.4473390811815265,
+      "displayEdgeContrasts": {
+        "oled": 1.5155175149927356,
+        "lcd": 1.3663740130699373,
+        "oled-low-brightness": 1.4858454611766658,
+        "oled-outdoor-p3": 1.4010372649977731,
+        "lcd-low-brightness": 1.3489588846140879,
+        "lcd-outdoor-srgb": 1.3081990069465663
+      }
+    },
+    {
+      "zone": "bridal-room",
+      "id": "guest01-baseline",
+      "direction": 0,
+      "frame": 0,
+      "edgeContrast": 1.3204642726555362,
+      "displayEdgeContrasts": {
+        "oled": 1.3001506646214385,
+        "lcd": 1.2586835926040512,
+        "oled-low-brightness": 1.2904264955997664,
+        "oled-outdoor-p3": 1.295017479498024,
+        "lcd-low-brightness": 1.239307638053109,
+        "lcd-outdoor-srgb": 1.2245752670229877
+      }
+    },
+    {
+      "zone": "bridal-room",
+      "id": "guest01-baseline",
+      "direction": 0,
+      "frame": 1,
+      "edgeContrast": 1.2243083275340332,
+      "displayEdgeContrasts": {
+        "oled": 1.2103613245040385,
+        "lcd": 1.2107658348075647,
+        "oled-low-brightness": 1.2310009069877792,
+        "oled-outdoor-p3": 1.2088882678715243,
+        "lcd-low-brightness": 1.2075650100521425,
+        "lcd-outdoor-srgb": 1.1937309822825952
+      }
+    },
+    {
+      "zone": "bridal-room",
+      "id": "guest01-baseline",
+      "direction": 0,
+      "frame": 2,
+      "edgeContrast": 1.2344625258860618,
+      "displayEdgeContrasts": {
+        "oled": 1.219839197404556,
+        "lcd": 1.2186909923213296,
+        "oled-low-brightness": 1.2414670729953046,
+        "oled-outdoor-p3": 1.2182538550718356,
+        "lcd-low-brightness": 1.212024691900939,
+        "lcd-outdoor-srgb": 1.1961056467658975
+      }
+    },
+    {
+      "zone": "bridal-room",
+      "id": "guest01-baseline",
+      "direction": 0,
+      "frame": 3,
+      "edgeContrast": 1.2243083275340332,
+      "displayEdgeContrasts": {
+        "oled": 1.2103613245040385,
+        "lcd": 1.2107658348075647,
+        "oled-low-brightness": 1.2310009069877792,
+        "oled-outdoor-p3": 1.2088882678715243,
+        "lcd-low-brightness": 1.2075650100521425,
+        "lcd-outdoor-srgb": 1.1937309822825952
+      }
+    },
+    {
+      "zone": "bridal-room",
+      "id": "guest01-baseline",
+      "direction": 1,
+      "frame": 0,
+      "edgeContrast": 1.3825897067755246,
+      "displayEdgeContrasts": {
+        "oled": 1.3569141562626246,
+        "lcd": 1.3168711907728645,
+        "oled-low-brightness": 1.3552494401757162,
+        "oled-outdoor-p3": 1.339000476661486,
+        "lcd-low-brightness": 1.297996334213359,
+        "lcd-outdoor-srgb": 1.28726109600258
+      }
+    },
+    {
+      "zone": "bridal-room",
+      "id": "guest01-baseline",
+      "direction": 1,
+      "frame": 1,
+      "edgeContrast": 1.3039747084385191,
+      "displayEdgeContrasts": {
+        "oled": 1.2876155423159825,
+        "lcd": 1.260792961161081,
+        "oled-low-brightness": 1.2962246530449033,
+        "oled-outdoor-p3": 1.2778147468726633,
+        "lcd-low-brightness": 1.2575268324390891,
+        "lcd-outdoor-srgb": 1.2291921595900064
+      }
+    },
+    {
+      "zone": "bridal-room",
+      "id": "guest01-baseline",
+      "direction": 1,
+      "frame": 2,
+      "edgeContrast": 1.3958098191973718,
+      "displayEdgeContrasts": {
+        "oled": 1.3691215418877667,
+        "lcd": 1.3416411977387637,
+        "oled-low-brightness": 1.3552494401757162,
+        "oled-outdoor-p3": 1.362314584882683,
+        "lcd-low-brightness": 1.3181342832113867,
+        "lcd-outdoor-srgb": 1.273249416176991
+      }
+    },
+    {
+      "zone": "bridal-room",
+      "id": "guest01-baseline",
+      "direction": 1,
+      "frame": 3,
+      "edgeContrast": 1.3039747084385191,
+      "displayEdgeContrasts": {
+        "oled": 1.2876155423159825,
+        "lcd": 1.260792961161081,
+        "oled-low-brightness": 1.2962246530449033,
+        "oled-outdoor-p3": 1.2778147468726633,
+        "lcd-low-brightness": 1.2575268324390891,
+        "lcd-outdoor-srgb": 1.2291921595900064
+      }
+    },
+    {
+      "zone": "bridal-room",
+      "id": "guest01-baseline",
+      "direction": 2,
+      "frame": 0,
+      "edgeContrast": 1.358294383536927,
+      "displayEdgeContrasts": {
+        "oled": 1.3347836734847287,
+        "lcd": 1.3214207926189543,
+        "oled-low-brightness": 1.3694005206426907,
+        "oled-outdoor-p3": 1.3173987973288133,
+        "lcd-low-brightness": 1.3168751976501745,
+        "lcd-outdoor-srgb": 1.3065261679874582
+      }
+    },
+    {
+      "zone": "bridal-room",
+      "id": "guest01-baseline",
+      "direction": 2,
+      "frame": 1,
+      "edgeContrast": 1.3745437100447906,
+      "displayEdgeContrasts": {
+        "oled": 1.3594431675894798,
+        "lcd": 1.3386551737558505,
+        "oled-low-brightness": 1.3746275673861343,
+        "oled-outdoor-p3": 1.3344505072488644,
+        "lcd-low-brightness": 1.3338058258555388,
+        "lcd-outdoor-srgb": 1.3227717380397341
+      }
+    },
+    {
+      "zone": "bridal-room",
+      "id": "guest01-baseline",
+      "direction": 2,
+      "frame": 2,
+      "edgeContrast": 1.2897363581121881,
+      "displayEdgeContrasts": {
+        "oled": 1.284467228639269,
+        "lcd": 1.2518877677668885,
+        "oled-low-brightness": 1.2806908524455005,
+        "oled-outdoor-p3": 1.250435842690035,
+        "lcd-low-brightness": 1.2439388383343728,
+        "lcd-outdoor-srgb": 1.2139270280472436
+      }
+    },
+    {
+      "zone": "bridal-room",
+      "id": "guest01-baseline",
+      "direction": 2,
+      "frame": 3,
+      "edgeContrast": 1.3745437100447906,
+      "displayEdgeContrasts": {
+        "oled": 1.3594431675894798,
+        "lcd": 1.3386551737558505,
+        "oled-low-brightness": 1.3746275673861343,
+        "oled-outdoor-p3": 1.3344505072488644,
+        "lcd-low-brightness": 1.3338058258555388,
+        "lcd-outdoor-srgb": 1.3227717380397341
+      }
+    },
+    {
+      "zone": "bridal-room",
+      "id": "guest01-baseline",
+      "direction": 3,
+      "frame": 0,
+      "edgeContrast": 1.3885494571132944,
+      "displayEdgeContrasts": {
+        "oled": 1.3739814731069202,
+        "lcd": 1.3479933312949364,
+        "oled-low-brightness": 1.415112823028237,
+        "oled-outdoor-p3": 1.3510167232298007,
+        "lcd-low-brightness": 1.3433819452494402,
+        "lcd-outdoor-srgb": 1.3305527498669751
+      }
+    },
+    {
+      "zone": "bridal-room",
+      "id": "guest01-baseline",
+      "direction": 3,
+      "frame": 1,
+      "edgeContrast": 1.326666760443495,
+      "displayEdgeContrasts": {
+        "oled": 1.3149208297497117,
+        "lcd": 1.3086308346520923,
+        "oled-low-brightness": 1.3491179199948138,
+        "oled-outdoor-p3": 1.3046339445533897,
+        "lcd-low-brightness": 1.3043389740775626,
+        "lcd-outdoor-srgb": 1.2945599547613638
+      }
+    },
+    {
+      "zone": "bridal-room",
+      "id": "guest01-baseline",
+      "direction": 3,
+      "frame": 2,
+      "edgeContrast": 1.2572651445527523,
+      "displayEdgeContrasts": {
+        "oled": 1.2442059986458323,
+        "lcd": 1.2248671655382704,
+        "oled-low-brightness": 1.255531726675965,
+        "oled-outdoor-p3": 1.2280348098044591,
+        "lcd-low-brightness": 1.2221742464935779,
+        "lcd-outdoor-srgb": 1.2107509110907995
+      }
+    },
+    {
+      "zone": "bridal-room",
+      "id": "guest01-baseline",
+      "direction": 3,
+      "frame": 3,
+      "edgeContrast": 1.326666760443495,
+      "displayEdgeContrasts": {
+        "oled": 1.3149208297497117,
+        "lcd": 1.3086308346520923,
+        "oled-low-brightness": 1.3491179199948138,
+        "oled-outdoor-p3": 1.3046339445533897,
+        "lcd-low-brightness": 1.3043389740775626,
+        "lcd-outdoor-srgb": 1.2945599547613638
+      }
+    },
+    {
+      "zone": "bridal-room",
+      "id": "guest01-approved",
+      "direction": 0,
+      "frame": 0,
+      "edgeContrast": 1.366960903987093,
+      "displayEdgeContrasts": {
+        "oled": 1.4715746592487662,
+        "lcd": 1.3060255801551843,
+        "oled-low-brightness": 1.400895443495745,
+        "oled-outdoor-p3": 1.3249861971055292,
+        "lcd-low-brightness": 1.2919302778229302,
+        "lcd-outdoor-srgb": 1.2630098935678962
+      }
+    },
+    {
+      "zone": "bridal-room",
+      "id": "guest01-approved",
+      "direction": 0,
+      "frame": 1,
+      "edgeContrast": 1.32079246484705,
+      "displayEdgeContrasts": {
+        "oled": 1.3664134171722442,
+        "lcd": 1.2597596469121686,
+        "oled-low-brightness": 1.3067981525679064,
+        "oled-outdoor-p3": 1.2732090528360371,
+        "lcd-low-brightness": 1.2444315026822106,
+        "lcd-outdoor-srgb": 1.2101387167732238
+      }
+    },
+    {
+      "zone": "bridal-room",
+      "id": "guest01-approved",
+      "direction": 0,
+      "frame": 2,
+      "edgeContrast": 1.3120312309670326,
+      "displayEdgeContrasts": {
+        "oled": 1.3431954342475376,
+        "lcd": 1.2597596469121686,
+        "oled-low-brightness": 1.3465701269037806,
+        "oled-outdoor-p3": 1.2653282229529925,
+        "lcd-low-brightness": 1.2491011051811933,
+        "lcd-outdoor-srgb": 1.226876645804428
+      }
+    },
+    {
+      "zone": "bridal-room",
+      "id": "guest01-approved",
+      "direction": 0,
+      "frame": 3,
+      "edgeContrast": 1.32079246484705,
+      "displayEdgeContrasts": {
+        "oled": 1.3664134171722442,
+        "lcd": 1.2597596469121686,
+        "oled-low-brightness": 1.3067981525679064,
+        "oled-outdoor-p3": 1.2732090528360371,
+        "lcd-low-brightness": 1.2444315026822106,
+        "lcd-outdoor-srgb": 1.2101387167732238
+      }
+    },
+    {
+      "zone": "bridal-room",
+      "id": "guest01-approved",
+      "direction": 1,
+      "frame": 0,
+      "edgeContrast": 1.4807028178956125,
+      "displayEdgeContrasts": {
+        "oled": 1.4083879740539997,
+        "lcd": 1.3692892895412707,
+        "oled-low-brightness": 1.4042232194147488,
+        "oled-outdoor-p3": 1.3921118690365744,
+        "lcd-low-brightness": 1.3642148585526361,
+        "lcd-outdoor-srgb": 1.3526464024215266
+      }
+    },
+    {
+      "zone": "bridal-room",
+      "id": "guest01-approved",
+      "direction": 1,
+      "frame": 1,
+      "edgeContrast": 1.442524870622766,
+      "displayEdgeContrasts": {
+        "oled": 1.3774172709316055,
+        "lcd": 1.3168711907728645,
+        "oled-low-brightness": 1.3292506652200422,
+        "oled-outdoor-p3": 1.362314584882683,
+        "lcd-low-brightness": 1.2954439077727262,
+        "lcd-outdoor-srgb": 1.254378180862564
+      }
+    },
+    {
+      "zone": "bridal-room",
+      "id": "guest01-approved",
+      "direction": 1,
+      "frame": 2,
+      "edgeContrast": 1.4807028178956125,
+      "displayEdgeContrasts": {
+        "oled": 1.4083879740539997,
+        "lcd": 1.3416411977387637,
+        "oled-low-brightness": 1.3552494401757162,
+        "oled-outdoor-p3": 1.3921118690365744,
+        "lcd-low-brightness": 1.3181342832113867,
+        "lcd-outdoor-srgb": 1.273249416176991
+      }
+    },
+    {
+      "zone": "bridal-room",
+      "id": "guest01-approved",
+      "direction": 1,
+      "frame": 3,
+      "edgeContrast": 1.442524870622766,
+      "displayEdgeContrasts": {
+        "oled": 1.3774172709316055,
+        "lcd": 1.3168711907728645,
+        "oled-low-brightness": 1.3292506652200422,
+        "oled-outdoor-p3": 1.362314584882683,
+        "lcd-low-brightness": 1.2954439077727262,
+        "lcd-outdoor-srgb": 1.254378180862564
+      }
+    },
+    {
+      "zone": "bridal-room",
+      "id": "guest01-approved",
+      "direction": 2,
+      "frame": 0,
+      "edgeContrast": 1.6870647658916231,
+      "displayEdgeContrasts": {
+        "oled": 1.85920513623952,
+        "lcd": 1.5001030340482049,
+        "oled-low-brightness": 1.7540595602593634,
+        "oled-outdoor-p3": 1.5634691038899082,
+        "lcd-low-brightness": 1.4676027861535468,
+        "lcd-outdoor-srgb": 1.4266683772458062
+      }
+    },
+    {
+      "zone": "bridal-room",
+      "id": "guest01-approved",
+      "direction": 2,
+      "frame": 1,
+      "edgeContrast": 1.754981058361076,
+      "displayEdgeContrasts": {
+        "oled": 1.7440463823710117,
+        "lcd": 1.615997492658531,
+        "oled-low-brightness": 1.7605529845675973,
+        "oled-outdoor-p3": 1.6505506186474763,
+        "lcd-low-brightness": 1.6005898335069852,
+        "lcd-outdoor-srgb": 1.5720590102590393
+      }
+    },
+    {
+      "zone": "bridal-room",
+      "id": "guest01-approved",
+      "direction": 2,
+      "frame": 2,
+      "edgeContrast": 1.8649902205134905,
+      "displayEdgeContrasts": {
+        "oled": 1.8168047591647312,
+        "lcd": 1.6898488193021046,
+        "oled-low-brightness": 1.8912988198072072,
+        "oled-outdoor-p3": 1.756083730716235,
+        "lcd-low-brightness": 1.6754260833092771,
+        "lcd-outdoor-srgb": 1.6433165663964462
+      }
+    },
+    {
+      "zone": "bridal-room",
+      "id": "guest01-approved",
+      "direction": 2,
+      "frame": 3,
+      "edgeContrast": 1.754981058361076,
+      "displayEdgeContrasts": {
+        "oled": 1.7440463823710117,
+        "lcd": 1.615997492658531,
+        "oled-low-brightness": 1.7605529845675973,
+        "oled-outdoor-p3": 1.6505506186474763,
+        "lcd-low-brightness": 1.6005898335069852,
+        "lcd-outdoor-srgb": 1.5720590102590393
+      }
+    },
+    {
+      "zone": "bridal-room",
+      "id": "guest01-approved",
+      "direction": 3,
+      "frame": 0,
+      "edgeContrast": 1.4554737136066942,
+      "displayEdgeContrasts": {
+        "oled": 1.4617006519102476,
+        "lcd": 1.3536835804472698,
+        "oled-low-brightness": 1.405313396777716,
+        "oled-outdoor-p3": 1.3853363809274846,
+        "lcd-low-brightness": 1.3432665321704262,
+        "lcd-outdoor-srgb": 1.313628345181771
+      }
+    },
+    {
+      "zone": "bridal-room",
+      "id": "guest01-approved",
+      "direction": 3,
+      "frame": 1,
+      "edgeContrast": 1.326666760443495,
+      "displayEdgeContrasts": {
+        "oled": 1.305220891619359,
+        "lcd": 1.3086308346520923,
+        "oled-low-brightness": 1.3376147831664682,
+        "oled-outdoor-p3": 1.304686213191363,
+        "lcd-low-brightness": 1.3043389740775626,
+        "lcd-outdoor-srgb": 1.2820105368983727
+      }
+    },
+    {
+      "zone": "bridal-room",
+      "id": "guest01-approved",
+      "direction": 3,
+      "frame": 2,
+      "edgeContrast": 1.3804774669563693,
+      "displayEdgeContrasts": {
+        "oled": 1.3992752078431945,
+        "lcd": 1.3241551315091038,
+        "oled-low-brightness": 1.3786396173188096,
+        "oled-outdoor-p3": 1.336433977261707,
+        "lcd-low-brightness": 1.3123453648347883,
+        "lcd-outdoor-srgb": 1.2820105368983727
+      }
+    },
+    {
+      "zone": "bridal-room",
+      "id": "guest01-approved",
+      "direction": 3,
+      "frame": 3,
+      "edgeContrast": 1.326666760443495,
+      "displayEdgeContrasts": {
+        "oled": 1.305220891619359,
+        "lcd": 1.3086308346520923,
+        "oled-low-brightness": 1.3376147831664682,
+        "oled-outdoor-p3": 1.304686213191363,
+        "lcd-low-brightness": 1.3043389740775626,
+        "lcd-outdoor-srgb": 1.2820105368983727
+      }
+    },
+    {
+      "zone": "ceremony-hall",
+      "id": "guest01-baseline",
+      "direction": 0,
+      "frame": 0,
+      "edgeContrast": 1.2119330098832732,
+      "displayEdgeContrasts": {
+        "oled": 1.1994546925311675,
+        "lcd": 1.1947436926057862,
+        "oled-low-brightness": 1.216599792127437,
+        "oled-outdoor-p3": 1.1950829882689902,
+        "lcd-low-brightness": 1.1907911836492713,
+        "lcd-outdoor-srgb": 1.1810490320390896
+      }
+    },
+    {
+      "zone": "ceremony-hall",
+      "id": "guest01-baseline",
+      "direction": 0,
+      "frame": 1,
+      "edgeContrast": 1.133394064420732,
+      "displayEdgeContrasts": {
+        "oled": 1.1263463139818626,
+        "lcd": 1.1256155350724852,
+        "oled-low-brightness": 1.1369139610472592,
+        "oled-outdoor-p3": 1.1240640164723803,
+        "lcd-low-brightness": 1.1243179558528007,
+        "lcd-outdoor-srgb": 1.1213259695055457
+      }
+    },
+    {
+      "zone": "ceremony-hall",
+      "id": "guest01-baseline",
+      "direction": 0,
+      "frame": 2,
+      "edgeContrast": 1.1506594286754896,
+      "displayEdgeContrasts": {
+        "oled": 1.1421407095149723,
+        "lcd": 1.141485088390473,
+        "oled-low-brightness": 1.1552431290457827,
+        "oled-outdoor-p3": 1.1406190666826213,
+        "lcd-low-brightness": 1.1392134488935912,
+        "lcd-outdoor-srgb": 1.1340743183907926
+      }
+    },
+    {
+      "zone": "ceremony-hall",
+      "id": "guest01-baseline",
+      "direction": 0,
+      "frame": 3,
+      "edgeContrast": 1.133394064420732,
+      "displayEdgeContrasts": {
+        "oled": 1.1263463139818626,
+        "lcd": 1.1256155350724852,
+        "oled-low-brightness": 1.1369139610472592,
+        "oled-outdoor-p3": 1.1240640164723803,
+        "lcd-low-brightness": 1.1243179558528007,
+        "lcd-outdoor-srgb": 1.1213259695055457
+      }
+    },
+    {
+      "zone": "ceremony-hall",
+      "id": "guest01-baseline",
+      "direction": 1,
+      "frame": 0,
+      "edgeContrast": 1.4015454206155402,
+      "displayEdgeContrasts": {
+        "oled": 1.3801188043387074,
+        "lcd": 1.3564605057526122,
+        "oled-low-brightness": 1.420748323472537,
+        "oled-outdoor-p3": 1.352169533668302,
+        "lcd-low-brightness": 1.3520029282869457,
+        "lcd-outdoor-srgb": 1.3360759893367424
+      }
+    },
+    {
+      "zone": "ceremony-hall",
+      "id": "guest01-baseline",
+      "direction": 1,
+      "frame": 1,
+      "edgeContrast": 1.3546174306347365,
+      "displayEdgeContrasts": {
+        "oled": 1.3512103457331361,
+        "lcd": 1.300878808918547,
+        "oled-low-brightness": 1.3902267695393589,
+        "oled-outdoor-p3": 1.3130750925626424,
+        "lcd-low-brightness": 1.2896668926970076,
+        "lcd-outdoor-srgb": 1.2732089795507961
+      }
+    },
+    {
+      "zone": "ceremony-hall",
+      "id": "guest01-baseline",
+      "direction": 1,
+      "frame": 2,
+      "edgeContrast": 1.4552867419098585,
+      "displayEdgeContrasts": {
+        "oled": 1.4379843119552302,
+        "lcd": 1.4061624854284247,
+        "oled-low-brightness": 1.4672632537699488,
+        "oled-outdoor-p3": 1.4147955934673353,
+        "lcd-low-brightness": 1.3917553672752918,
+        "lcd-outdoor-srgb": 1.3715426879086081
+      }
+    },
+    {
+      "zone": "ceremony-hall",
+      "id": "guest01-baseline",
+      "direction": 1,
+      "frame": 3,
+      "edgeContrast": 1.3546174306347365,
+      "displayEdgeContrasts": {
+        "oled": 1.3512103457331361,
+        "lcd": 1.300878808918547,
+        "oled-low-brightness": 1.3902267695393589,
+        "oled-outdoor-p3": 1.3130750925626424,
+        "lcd-low-brightness": 1.2896668926970076,
+        "lcd-outdoor-srgb": 1.2732089795507961
+      }
+    },
+    {
+      "zone": "ceremony-hall",
+      "id": "guest01-baseline",
+      "direction": 2,
+      "frame": 0,
+      "edgeContrast": 1.2999698124543,
+      "displayEdgeContrasts": {
+        "oled": 1.2879992703562768,
+        "lcd": 1.2544774695451226,
+        "oled-low-brightness": 1.2974456515646902,
+        "oled-outdoor-p3": 1.2650436300682588,
+        "lcd-low-brightness": 1.244987617838429,
+        "lcd-outdoor-srgb": 1.2249599405550788
+      }
+    },
+    {
+      "zone": "ceremony-hall",
+      "id": "guest01-baseline",
+      "direction": 2,
+      "frame": 1,
+      "edgeContrast": 1.3524180530071732,
+      "displayEdgeContrasts": {
+        "oled": 1.329363445565399,
+        "lcd": 1.331016786952166,
+        "oled-low-brightness": 1.363747846041503,
+        "oled-outdoor-p3": 1.3275461572708092,
+        "lcd-low-brightness": 1.325960854021505,
+        "lcd-outdoor-srgb": 1.314493116669874
+      }
+    },
+    {
+      "zone": "ceremony-hall",
+      "id": "guest01-baseline",
+      "direction": 2,
+      "frame": 2,
+      "edgeContrast": 1.230150017452868,
+      "displayEdgeContrasts": {
+        "oled": 1.2151716677508826,
+        "lcd": 1.2205869606181405,
+        "oled-low-brightness": 1.2384251469852543,
+        "oled-outdoor-p3": 1.2166657904466514,
+        "lcd-low-brightness": 1.2182704451867559,
+        "lcd-outdoor-srgb": 1.2129320382044066
+      }
+    },
+    {
+      "zone": "ceremony-hall",
+      "id": "guest01-baseline",
+      "direction": 2,
+      "frame": 3,
+      "edgeContrast": 1.3524180530071732,
+      "displayEdgeContrasts": {
+        "oled": 1.329363445565399,
+        "lcd": 1.331016786952166,
+        "oled-low-brightness": 1.363747846041503,
+        "oled-outdoor-p3": 1.3275461572708092,
+        "lcd-low-brightness": 1.325960854021505,
+        "lcd-outdoor-srgb": 1.314493116669874
+      }
+    },
+    {
+      "zone": "ceremony-hall",
+      "id": "guest01-baseline",
+      "direction": 3,
+      "frame": 0,
+      "edgeContrast": 1.3108010555730245,
+      "displayEdgeContrasts": {
+        "oled": 1.2914495438487235,
+        "lcd": 1.2746220745684351,
+        "oled-low-brightness": 1.3176472193582611,
+        "oled-outdoor-p3": 1.2848707951728404,
+        "lcd-low-brightness": 1.27121714131036,
+        "lcd-outdoor-srgb": 1.2634199684735112
+      }
+    },
+    {
+      "zone": "ceremony-hall",
+      "id": "guest01-baseline",
+      "direction": 3,
+      "frame": 1,
+      "edgeContrast": 1.2580877011163263,
+      "displayEdgeContrasts": {
+        "oled": 1.2413318050606168,
+        "lcd": 1.2352088119103148,
+        "oled-low-brightness": 1.2669773104828745,
+        "oled-outdoor-p3": 1.2412405813200353,
+        "lcd-low-brightness": 1.232817957118208,
+        "lcd-outdoor-srgb": 1.2273020335348968
+      }
+    },
+    {
+      "zone": "ceremony-hall",
+      "id": "guest01-baseline",
+      "direction": 3,
+      "frame": 2,
+      "edgeContrast": 1.23362517352351,
+      "displayEdgeContrasts": {
+        "oled": 1.2185901423323842,
+        "lcd": 1.222453396991459,
+        "oled-low-brightness": 1.2415968910165318,
+        "oled-outdoor-p3": 1.2191210478460495,
+        "lcd-low-brightness": 1.219769141481301,
+        "lcd-outdoor-srgb": 1.2136154904836518
+      }
+    },
+    {
+      "zone": "ceremony-hall",
+      "id": "guest01-baseline",
+      "direction": 3,
+      "frame": 3,
+      "edgeContrast": 1.2580877011163263,
+      "displayEdgeContrasts": {
+        "oled": 1.2413318050606168,
+        "lcd": 1.2352088119103148,
+        "oled-low-brightness": 1.2669773104828745,
+        "oled-outdoor-p3": 1.2412405813200353,
+        "lcd-low-brightness": 1.232817957118208,
+        "lcd-outdoor-srgb": 1.2273020335348968
+      }
+    },
+    {
+      "zone": "ceremony-hall",
+      "id": "guest01-approved",
+      "direction": 0,
+      "frame": 0,
+      "edgeContrast": 1.4618755133653747,
+      "displayEdgeContrasts": {
+        "oled": 1.458627689739817,
+        "lcd": 1.408700051103739,
+        "oled-low-brightness": 1.468882896886649,
+        "oled-outdoor-p3": 1.4155727567814196,
+        "lcd-low-brightness": 1.397025001609483,
+        "lcd-outdoor-srgb": 1.3651048212946824
+      }
+    },
+    {
+      "zone": "ceremony-hall",
+      "id": "guest01-approved",
+      "direction": 0,
+      "frame": 1,
+      "edgeContrast": 1.4306740321480387,
+      "displayEdgeContrasts": {
+        "oled": 1.4509639898941242,
+        "lcd": 1.3982072010883495,
+        "oled-low-brightness": 1.4562163491453686,
+        "oled-outdoor-p3": 1.401570371745268,
+        "lcd-low-brightness": 1.3909772991310683,
+        "lcd-outdoor-srgb": 1.3651048212946824
+      }
+    },
+    {
+      "zone": "ceremony-hall",
+      "id": "guest01-approved",
+      "direction": 0,
+      "frame": 2,
+      "edgeContrast": 1.4166249510595623,
+      "displayEdgeContrasts": {
+        "oled": 1.4855218778198604,
+        "lcd": 1.327917910138107,
+        "oled-low-brightness": 1.4667647387148766,
+        "oled-outdoor-p3": 1.3549746114567185,
+        "lcd-low-brightness": 1.3110043948063101,
+        "lcd-outdoor-srgb": 1.276907224527891
+      }
+    },
+    {
+      "zone": "ceremony-hall",
+      "id": "guest01-approved",
+      "direction": 0,
+      "frame": 3,
+      "edgeContrast": 1.4306740321480387,
+      "displayEdgeContrasts": {
+        "oled": 1.4509639898941242,
+        "lcd": 1.3982072010883495,
+        "oled-low-brightness": 1.4562163491453686,
+        "oled-outdoor-p3": 1.401570371745268,
+        "lcd-low-brightness": 1.3909772991310683,
+        "lcd-outdoor-srgb": 1.3651048212946824
+      }
+    },
+    {
+      "zone": "ceremony-hall",
+      "id": "guest01-approved",
+      "direction": 1,
+      "frame": 0,
+      "edgeContrast": 1.6905066174547554,
+      "displayEdgeContrasts": {
+        "oled": 1.901632726376697,
+        "lcd": 1.5671371869775597,
+        "oled-low-brightness": 1.7666177239055854,
+        "oled-outdoor-p3": 1.5884041395656694,
+        "lcd-low-brightness": 1.5484750538517356,
+        "lcd-outdoor-srgb": 1.4902417262089729
+      }
+    },
+    {
+      "zone": "ceremony-hall",
+      "id": "guest01-approved",
+      "direction": 1,
+      "frame": 1,
+      "edgeContrast": 1.7129604954042719,
+      "displayEdgeContrasts": {
+        "oled": 1.8788080639123241,
+        "lcd": 1.5652392514901035,
+        "oled-low-brightness": 1.8293003459846089,
+        "oled-outdoor-p3": 1.60326170635924,
+        "lcd-low-brightness": 1.5307200464937012,
+        "lcd-outdoor-srgb": 1.4681295619675572
+      }
+    },
+    {
+      "zone": "ceremony-hall",
+      "id": "guest01-approved",
+      "direction": 1,
+      "frame": 2,
+      "edgeContrast": 1.7059465786058254,
+      "displayEdgeContrasts": {
+        "oled": 1.8834265285354785,
+        "lcd": 1.5671371869775597,
+        "oled-low-brightness": 1.8139226443707386,
+        "oled-outdoor-p3": 1.5954329311542357,
+        "lcd-low-brightness": 1.5484750538517356,
+        "lcd-outdoor-srgb": 1.5009263311741232
+      }
+    },
+    {
+      "zone": "ceremony-hall",
+      "id": "guest01-approved",
+      "direction": 1,
+      "frame": 3,
+      "edgeContrast": 1.7129604954042719,
+      "displayEdgeContrasts": {
+        "oled": 1.8788080639123241,
+        "lcd": 1.5652392514901035,
+        "oled-low-brightness": 1.8293003459846089,
+        "oled-outdoor-p3": 1.60326170635924,
+        "lcd-low-brightness": 1.5307200464937012,
+        "lcd-outdoor-srgb": 1.4681295619675572
+      }
+    },
+    {
+      "zone": "ceremony-hall",
+      "id": "guest01-approved",
+      "direction": 2,
+      "frame": 0,
+      "edgeContrast": 1.768297513882853,
+      "displayEdgeContrasts": {
+        "oled": 1.8239991233742177,
+        "lcd": 1.608730325666332,
+        "oled-low-brightness": 1.8924224116009287,
+        "oled-outdoor-p3": 1.667533410192007,
+        "lcd-low-brightness": 1.5890439244384371,
+        "lcd-outdoor-srgb": 1.5278263611183507
+      }
+    },
+    {
+      "zone": "ceremony-hall",
+      "id": "guest01-approved",
+      "direction": 2,
+      "frame": 1,
+      "edgeContrast": 1.7794201144673765,
+      "displayEdgeContrasts": {
+        "oled": 1.9095650569197682,
+        "lcd": 1.6777819505065066,
+        "oled-low-brightness": 1.8012099672747228,
+        "oled-outdoor-p3": 1.7033837051454697,
+        "lcd-low-brightness": 1.6331095195385772,
+        "lcd-outdoor-srgb": 1.5532344959781395
+      }
+    },
+    {
+      "zone": "ceremony-hall",
+      "id": "guest01-approved",
+      "direction": 2,
+      "frame": 2,
+      "edgeContrast": 1.9021988405868775,
+      "displayEdgeContrasts": {
+        "oled": 2.035277273919186,
+        "lcd": 1.7360642357522045,
+        "oled-low-brightness": 2.015313719012506,
+        "oled-outdoor-p3": 1.780990370472398,
+        "lcd-low-brightness": 1.6946319757097865,
+        "lcd-outdoor-srgb": 1.6123444504583675
+      }
+    },
+    {
+      "zone": "ceremony-hall",
+      "id": "guest01-approved",
+      "direction": 2,
+      "frame": 3,
+      "edgeContrast": 1.7794201144673765,
+      "displayEdgeContrasts": {
+        "oled": 1.9095650569197682,
+        "lcd": 1.6777819505065066,
+        "oled-low-brightness": 1.8012099672747228,
+        "oled-outdoor-p3": 1.7033837051454697,
+        "lcd-low-brightness": 1.6331095195385772,
+        "lcd-outdoor-srgb": 1.5532344959781395
+      }
+    },
+    {
+      "zone": "ceremony-hall",
+      "id": "guest01-approved",
+      "direction": 3,
+      "frame": 0,
+      "edgeContrast": 1.3633304574111942,
+      "displayEdgeContrasts": {
+        "oled": 1.3621040835329803,
+        "lcd": 1.3170848922359308,
+        "oled-low-brightness": 1.3982325183401727,
+        "oled-outdoor-p3": 1.3251279210258586,
+        "lcd-low-brightness": 1.3071009071460649,
+        "lcd-outdoor-srgb": 1.2856301330035305
+      }
+    },
+    {
+      "zone": "ceremony-hall",
+      "id": "guest01-approved",
+      "direction": 3,
+      "frame": 1,
+      "edgeContrast": 1.4148048459429259,
+      "displayEdgeContrasts": {
+        "oled": 1.3869941715865624,
+        "lcd": 1.3651186159147044,
+        "oled-low-brightness": 1.4287024153326575,
+        "oled-outdoor-p3": 1.3853688735260878,
+        "lcd-low-brightness": 1.346182823102729,
+        "lcd-outdoor-srgb": 1.3080431958024858
+      }
+    },
+    {
+      "zone": "ceremony-hall",
+      "id": "guest01-approved",
+      "direction": 3,
+      "frame": 2,
+      "edgeContrast": 1.6026819724486958,
+      "displayEdgeContrasts": {
+        "oled": 1.593775945764108,
+        "lcd": 1.463329164730089,
+        "oled-low-brightness": 1.664144074776633,
+        "oled-outdoor-p3": 1.5087410898841596,
+        "lcd-low-brightness": 1.436878317536022,
+        "lcd-outdoor-srgb": 1.3999255945328302
+      }
+    },
+    {
+      "zone": "ceremony-hall",
+      "id": "guest01-approved",
+      "direction": 3,
+      "frame": 3,
+      "edgeContrast": 1.4148048459429259,
+      "displayEdgeContrasts": {
+        "oled": 1.3869941715865624,
+        "lcd": 1.3651186159147044,
+        "oled-low-brightness": 1.4287024153326575,
+        "oled-outdoor-p3": 1.3853688735260878,
+        "lcd-low-brightness": 1.346182823102729,
+        "lcd-outdoor-srgb": 1.3080431958024858
+      }
+    },
+    {
+      "zone": "banquet",
+      "id": "guest01-baseline",
+      "direction": 0,
+      "frame": 0,
+      "edgeContrast": 1.2236037048606887,
+      "displayEdgeContrasts": {
+        "oled": 1.2092876353080375,
+        "lcd": 1.2025394629907329,
+        "oled-low-brightness": 1.2294221032101538,
+        "oled-outdoor-p3": 1.205083118567879,
+        "lcd-low-brightness": 1.1969919116759173,
+        "lcd-outdoor-srgb": 1.1849013346599406
+      }
+    },
+    {
+      "zone": "banquet",
+      "id": "guest01-baseline",
+      "direction": 0,
+      "frame": 1,
+      "edgeContrast": 1.1767090873717203,
+      "displayEdgeContrasts": {
+        "oled": 1.1675615771579357,
+        "lcd": 1.15864832456432,
+        "oled-low-brightness": 1.1789417241699334,
+        "oled-outdoor-p3": 1.1608289788485728,
+        "lcd-low-brightness": 1.1556347280794144,
+        "lcd-outdoor-srgb": 1.1516292976774785
+      }
+    },
+    {
+      "zone": "banquet",
+      "id": "guest01-baseline",
+      "direction": 0,
+      "frame": 2,
+      "edgeContrast": 1.202886224686169,
+      "displayEdgeContrasts": {
+        "oled": 1.1915360318956218,
+        "lcd": 1.1849383684292445,
+        "oled-low-brightness": 1.2067261180392725,
+        "oled-outdoor-p3": 1.1860074982986857,
+        "lcd-low-brightness": 1.1808519967240614,
+        "lcd-outdoor-srgb": 1.1717899973585848
+      }
+    },
+    {
+      "zone": "banquet",
+      "id": "guest01-baseline",
+      "direction": 0,
+      "frame": 3,
+      "edgeContrast": 1.1767090873717203,
+      "displayEdgeContrasts": {
+        "oled": 1.1675615771579357,
+        "lcd": 1.15864832456432,
+        "oled-low-brightness": 1.1789417241699334,
+        "oled-outdoor-p3": 1.1608289788485728,
+        "lcd-low-brightness": 1.1556347280794144,
+        "lcd-outdoor-srgb": 1.1516292976774785
+      }
+    },
+    {
+      "zone": "banquet",
+      "id": "guest01-baseline",
+      "direction": 1,
+      "frame": 0,
+      "edgeContrast": 1.4297453549889008,
+      "displayEdgeContrasts": {
+        "oled": 1.414402493053034,
+        "lcd": 1.3846501996306446,
+        "oled-low-brightness": 1.4446961776120923,
+        "oled-outdoor-p3": 1.400109350942414,
+        "lcd-low-brightness": 1.3747076636089224,
+        "lcd-outdoor-srgb": 1.3470533660728474
+      }
+    },
+    {
+      "zone": "banquet",
+      "id": "guest01-baseline",
+      "direction": 1,
+      "frame": 1,
+      "edgeContrast": 1.391868940166219,
+      "displayEdgeContrasts": {
+        "oled": 1.3883831985613735,
+        "lcd": 1.329934197974273,
+        "oled-low-brightness": 1.3879993523436212,
+        "oled-outdoor-p3": 1.34449788920041,
+        "lcd-low-brightness": 1.3171318991850343,
+        "lcd-outdoor-srgb": 1.291261388298225
+      }
+    },
+    {
+      "zone": "banquet",
+      "id": "guest01-baseline",
+      "direction": 1,
+      "frame": 2,
+      "edgeContrast": 1.4691759492889502,
+      "displayEdgeContrasts": {
+        "oled": 1.4785722713149003,
+        "lcd": 1.401256407796615,
+        "oled-low-brightness": 1.4865132356531574,
+        "oled-outdoor-p3": 1.4082069563348818,
+        "lcd-low-brightness": 1.3892694522953206,
+        "lcd-outdoor-srgb": 1.3625135479423394
+      }
+    },
+    {
+      "zone": "banquet",
+      "id": "guest01-baseline",
+      "direction": 1,
+      "frame": 3,
+      "edgeContrast": 1.391868940166219,
+      "displayEdgeContrasts": {
+        "oled": 1.3883831985613735,
+        "lcd": 1.329934197974273,
+        "oled-low-brightness": 1.3879993523436212,
+        "oled-outdoor-p3": 1.34449788920041,
+        "lcd-low-brightness": 1.3171318991850343,
+        "lcd-outdoor-srgb": 1.291261388298225
+      }
+    },
+    {
+      "zone": "banquet",
+      "id": "guest01-baseline",
+      "direction": 2,
+      "frame": 0,
+      "edgeContrast": 1.3170074830429688,
+      "displayEdgeContrasts": {
+        "oled": 1.3050646350042787,
+        "lcd": 1.2740167223649137,
+        "oled-low-brightness": 1.313225625415479,
+        "oled-outdoor-p3": 1.278882176648058,
+        "lcd-low-brightness": 1.2707623490606792,
+        "lcd-outdoor-srgb": 1.2632969765801438
+      }
+    },
+    {
+      "zone": "banquet",
+      "id": "guest01-baseline",
+      "direction": 2,
+      "frame": 1,
+      "edgeContrast": 1.3588098409966574,
+      "displayEdgeContrasts": {
+        "oled": 1.3346323149051573,
+        "lcd": 1.3413542717709903,
+        "oled-low-brightness": 1.3717965483422847,
+        "oled-outdoor-p3": 1.3358053278975295,
+        "lcd-low-brightness": 1.3371647317006108,
+        "lcd-outdoor-srgb": 1.306413190849459
+      }
+    },
+    {
+      "zone": "banquet",
+      "id": "guest01-baseline",
+      "direction": 2,
+      "frame": 2,
+      "edgeContrast": 1.2325983338500153,
+      "displayEdgeContrasts": {
+        "oled": 1.2175242098996226,
+        "lcd": 1.2223091966110753,
+        "oled-low-brightness": 1.2407860723330237,
+        "oled-outdoor-p3": 1.218618396208169,
+        "lcd-low-brightness": 1.2198254636713441,
+        "lcd-outdoor-srgb": 1.2141145069525932
+      }
+    },
+    {
+      "zone": "banquet",
+      "id": "guest01-baseline",
+      "direction": 2,
+      "frame": 3,
+      "edgeContrast": 1.3588098409966574,
+      "displayEdgeContrasts": {
+        "oled": 1.3346323149051573,
+        "lcd": 1.3413542717709903,
+        "oled-low-brightness": 1.3717965483422847,
+        "oled-outdoor-p3": 1.3358053278975295,
+        "lcd-low-brightness": 1.3371647317006108,
+        "lcd-outdoor-srgb": 1.306413190849459
+      }
+    },
+    {
+      "zone": "banquet",
+      "id": "guest01-baseline",
+      "direction": 3,
+      "frame": 0,
+      "edgeContrast": 1.345477353227641,
+      "displayEdgeContrasts": {
+        "oled": 1.3236257522554116,
+        "lcd": 1.3144148080784306,
+        "oled-low-brightness": 1.3495031470822005,
+        "oled-outdoor-p3": 1.3159049073960862,
+        "lcd-low-brightness": 1.3073167743411886,
+        "lcd-outdoor-srgb": 1.292754976711191
+      }
+    },
+    {
+      "zone": "banquet",
+      "id": "guest01-baseline",
+      "direction": 3,
+      "frame": 1,
+      "edgeContrast": 1.314108643495767,
+      "displayEdgeContrasts": {
+        "oled": 1.2932065442459253,
+        "lcd": 1.252926506319827,
+        "oled-low-brightness": 1.278273857793399,
+        "oled-outdoor-p3": 1.2874624815232696,
+        "lcd-low-brightness": 1.2363640816848653,
+        "lcd-outdoor-srgb": 1.208032385951318
+      }
+    },
+    {
+      "zone": "banquet",
+      "id": "guest01-baseline",
+      "direction": 3,
+      "frame": 2,
+      "edgeContrast": 1.2906152055952442,
+      "displayEdgeContrasts": {
+        "oled": 1.2714304463453923,
+        "lcd": 1.2771538829079272,
+        "oled-low-brightness": 1.3009796117302213,
+        "oled-outdoor-p3": 1.2725990604444004,
+        "lcd-low-brightness": 1.2691371179910715,
+        "lcd-outdoor-srgb": 1.2507673499060912
+      }
+    },
+    {
+      "zone": "banquet",
+      "id": "guest01-baseline",
+      "direction": 3,
+      "frame": 3,
+      "edgeContrast": 1.314108643495767,
+      "displayEdgeContrasts": {
+        "oled": 1.2932065442459253,
+        "lcd": 1.252926506319827,
+        "oled-low-brightness": 1.278273857793399,
+        "oled-outdoor-p3": 1.2874624815232696,
+        "lcd-low-brightness": 1.2363640816848653,
+        "lcd-outdoor-srgb": 1.208032385951318
+      }
+    },
+    {
+      "zone": "banquet",
+      "id": "guest01-approved",
+      "direction": 0,
+      "frame": 0,
+      "edgeContrast": 1.494004848605295,
+      "displayEdgeContrasts": {
+        "oled": 1.4664431768403416,
+        "lcd": 1.434898983121666,
+        "oled-low-brightness": 1.4995280334946024,
+        "oled-outdoor-p3": 1.4431520898042185,
+        "lcd-low-brightness": 1.4145503739774963,
+        "lcd-outdoor-srgb": 1.3637686093021453
+      }
+    },
+    {
+      "zone": "banquet",
+      "id": "guest01-approved",
+      "direction": 0,
+      "frame": 1,
+      "edgeContrast": 1.4460603332333886,
+      "displayEdgeContrasts": {
+        "oled": 1.501970640911151,
+        "lcd": 1.382702923607744,
+        "oled-low-brightness": 1.4975571935329597,
+        "oled-outdoor-p3": 1.4157717132854957,
+        "lcd-low-brightness": 1.3647056410395912,
+        "lcd-outdoor-srgb": 1.3536875419734218
+      }
+    },
+    {
+      "zone": "banquet",
+      "id": "guest01-approved",
+      "direction": 0,
+      "frame": 2,
+      "edgeContrast": 1.4239759853723446,
+      "displayEdgeContrasts": {
+        "oled": 1.5092310327184297,
+        "lcd": 1.3296292092939286,
+        "oled-low-brightness": 1.4442859566206043,
+        "oled-outdoor-p3": 1.3592452586842299,
+        "lcd-low-brightness": 1.3119012996575128,
+        "lcd-outdoor-srgb": 1.276411521110199
+      }
+    },
+    {
+      "zone": "banquet",
+      "id": "guest01-approved",
+      "direction": 0,
+      "frame": 3,
+      "edgeContrast": 1.4460603332333886,
+      "displayEdgeContrasts": {
+        "oled": 1.501970640911151,
+        "lcd": 1.382702923607744,
+        "oled-low-brightness": 1.4975571935329597,
+        "oled-outdoor-p3": 1.4157717132854957,
+        "lcd-low-brightness": 1.3647056410395912,
+        "lcd-outdoor-srgb": 1.3536875419734218
+      }
+    },
+    {
+      "zone": "banquet",
+      "id": "guest01-approved",
+      "direction": 1,
+      "frame": 0,
+      "edgeContrast": 1.6816361895321918,
+      "displayEdgeContrasts": {
+        "oled": 1.9103156251563875,
+        "lcd": 1.5593009004906997,
+        "oled-low-brightness": 1.718902847465926,
+        "oled-outdoor-p3": 1.5688383034669513,
+        "lcd-low-brightness": 1.5236669108006973,
+        "lcd-outdoor-srgb": 1.4811484179148757
+      }
+    },
+    {
+      "zone": "banquet",
+      "id": "guest01-approved",
+      "direction": 1,
+      "frame": 1,
+      "edgeContrast": 1.6943498150902268,
+      "displayEdgeContrasts": {
+        "oled": 1.8804218011345726,
+        "lcd": 1.5337935145186883,
+        "oled-low-brightness": 1.7549932302221938,
+        "oled-outdoor-p3": 1.5748977559478763,
+        "lcd-low-brightness": 1.499904536428617,
+        "lcd-outdoor-srgb": 1.4358044715070195
+      }
+    },
+    {
+      "zone": "banquet",
+      "id": "guest01-approved",
+      "direction": 1,
+      "frame": 2,
+      "edgeContrast": 1.6943498150902268,
+      "displayEdgeContrasts": {
+        "oled": 1.9103156251563875,
+        "lcd": 1.5656190904616478,
+        "oled-low-brightness": 1.7899029547627843,
+        "oled-outdoor-p3": 1.5772509726117059,
+        "lcd-low-brightness": 1.5480019674574632,
+        "lcd-outdoor-srgb": 1.4823699828004004
+      }
+    },
+    {
+      "zone": "banquet",
+      "id": "guest01-approved",
+      "direction": 1,
+      "frame": 3,
+      "edgeContrast": 1.6943498150902268,
+      "displayEdgeContrasts": {
+        "oled": 1.8804218011345726,
+        "lcd": 1.5337935145186883,
+        "oled-low-brightness": 1.7549932302221938,
+        "oled-outdoor-p3": 1.5748977559478763,
+        "lcd-low-brightness": 1.499904536428617,
+        "lcd-outdoor-srgb": 1.4358044715070195
+      }
+    },
+    {
+      "zone": "banquet",
+      "id": "guest01-approved",
+      "direction": 2,
+      "frame": 0,
+      "edgeContrast": 1.7805190895244398,
+      "displayEdgeContrasts": {
+        "oled": 1.7652797392367234,
+        "lcd": 1.5962851828256823,
+        "oled-low-brightness": 1.8034690691016741,
+        "oled-outdoor-p3": 1.646591113315146,
+        "lcd-low-brightness": 1.5788143613504086,
+        "lcd-outdoor-srgb": 1.5086936982256602
+      }
+    },
+    {
+      "zone": "banquet",
+      "id": "guest01-approved",
+      "direction": 2,
+      "frame": 1,
+      "edgeContrast": 1.8195954718507177,
+      "displayEdgeContrasts": {
+        "oled": 1.9507966782801198,
+        "lcd": 1.625018055052623,
+        "oled-low-brightness": 1.8749132721230783,
+        "oled-outdoor-p3": 1.6979664560964156,
+        "lcd-low-brightness": 1.5937126291819819,
+        "lcd-outdoor-srgb": 1.5734488048822837
+      }
+    },
+    {
+      "zone": "banquet",
+      "id": "guest01-approved",
+      "direction": 2,
+      "frame": 2,
+      "edgeContrast": 1.8925607686911057,
+      "displayEdgeContrasts": {
+        "oled": 2.0378290405677295,
+        "lcd": 1.7383838703591836,
+        "oled-low-brightness": 2.0350681402135242,
+        "oled-outdoor-p3": 1.8059771610180497,
+        "lcd-low-brightness": 1.696357883285601,
+        "lcd-outdoor-srgb": 1.6260235479705578
+      }
+    },
+    {
+      "zone": "banquet",
+      "id": "guest01-approved",
+      "direction": 2,
+      "frame": 3,
+      "edgeContrast": 1.8195954718507177,
+      "displayEdgeContrasts": {
+        "oled": 1.9507966782801198,
+        "lcd": 1.625018055052623,
+        "oled-low-brightness": 1.8749132721230783,
+        "oled-outdoor-p3": 1.6979664560964156,
+        "lcd-low-brightness": 1.5937126291819819,
+        "lcd-outdoor-srgb": 1.5734488048822837
+      }
+    },
+    {
+      "zone": "banquet",
+      "id": "guest01-approved",
+      "direction": 3,
+      "frame": 0,
+      "edgeContrast": 1.3665495956798674,
+      "displayEdgeContrasts": {
+        "oled": 1.4578910436017511,
+        "lcd": 1.3205303309863865,
+        "oled-low-brightness": 1.4296497963550587,
+        "oled-outdoor-p3": 1.3258589683776707,
+        "lcd-low-brightness": 1.3103125875073216,
+        "lcd-outdoor-srgb": 1.2901522951881483
+      }
+    },
+    {
+      "zone": "banquet",
+      "id": "guest01-approved",
+      "direction": 3,
+      "frame": 1,
+      "edgeContrast": 1.4509945831019035,
+      "displayEdgeContrasts": {
+        "oled": 1.4346080823909155,
+        "lcd": 1.3537700293108172,
+        "oled-low-brightness": 1.4654186242963618,
+        "oled-outdoor-p3": 1.383191964840164,
+        "lcd-low-brightness": 1.3438755548851165,
+        "lcd-outdoor-srgb": 1.3223518435497708
+      }
+    },
+    {
+      "zone": "banquet",
+      "id": "guest01-approved",
+      "direction": 3,
+      "frame": 2,
+      "edgeContrast": 1.546146108000883,
+      "displayEdgeContrasts": {
+        "oled": 1.6686101975747492,
+        "lcd": 1.4383307710531612,
+        "oled-low-brightness": 1.6656191664450348,
+        "oled-outdoor-p3": 1.4704482973177557,
+        "lcd-low-brightness": 1.4149419063311681,
+        "lcd-outdoor-srgb": 1.371504187657055
+      }
+    },
+    {
+      "zone": "banquet",
+      "id": "guest01-approved",
+      "direction": 3,
+      "frame": 3,
+      "edgeContrast": 1.4509945831019035,
+      "displayEdgeContrasts": {
+        "oled": 1.4346080823909155,
+        "lcd": 1.3537700293108172,
+        "oled-low-brightness": 1.4654186242963618,
+        "oled-outdoor-p3": 1.383191964840164,
+        "lcd-low-brightness": 1.3438755548851165,
+        "lcd-outdoor-srgb": 1.3223518435497708
+      }
+    },
+    {
+      "zone": "restroom",
+      "id": "guest01-baseline",
+      "direction": 0,
+      "frame": 0,
+      "edgeContrast": 1.194151258311403,
+      "displayEdgeContrasts": {
+        "oled": 1.1817410262450188,
+        "lcd": 1.185744535818611,
+        "oled-low-brightness": 1.2008956459909954,
+        "oled-outdoor-p3": 1.1826806193223347,
+        "lcd-low-brightness": 1.183712738829766,
+        "lcd-outdoor-srgb": 1.1790372925095067
+      }
+    },
+    {
+      "zone": "restroom",
+      "id": "guest01-baseline",
+      "direction": 0,
+      "frame": 1,
+      "edgeContrast": 1.1347675784421862,
+      "displayEdgeContrasts": {
+        "oled": 1.127443667168509,
+        "lcd": 1.1249882636435913,
+        "oled-low-brightness": 1.134964372052275,
+        "oled-outdoor-p3": 1.123009902343895,
+        "lcd-low-brightness": 1.1236374258815633,
+        "lcd-outdoor-srgb": 1.1205276020888315
+      }
+    },
+    {
+      "zone": "restroom",
+      "id": "guest01-baseline",
+      "direction": 0,
+      "frame": 2,
+      "edgeContrast": 1.17514518181093,
+      "displayEdgeContrasts": {
+        "oled": 1.1640902346317454,
+        "lcd": 1.1620926301239827,
+        "oled-low-brightness": 1.1806649450965983,
+        "oled-outdoor-p3": 1.162801691704405,
+        "lcd-low-brightness": 1.1586446757579976,
+        "lcd-outdoor-srgb": 1.1509776619826433
+      }
+    },
+    {
+      "zone": "restroom",
+      "id": "guest01-baseline",
+      "direction": 0,
+      "frame": 3,
+      "edgeContrast": 1.1347675784421862,
+      "displayEdgeContrasts": {
+        "oled": 1.127443667168509,
+        "lcd": 1.1249882636435913,
+        "oled-low-brightness": 1.134964372052275,
+        "oled-outdoor-p3": 1.123009902343895,
+        "lcd-low-brightness": 1.1236374258815633,
+        "lcd-outdoor-srgb": 1.1205276020888315
+      }
+    },
+    {
+      "zone": "restroom",
+      "id": "guest01-baseline",
+      "direction": 1,
+      "frame": 0,
+      "edgeContrast": 1.3429469029590255,
+      "displayEdgeContrasts": {
+        "oled": 1.3826046324203671,
+        "lcd": 1.3215979234090105,
+        "oled-low-brightness": 1.4081007782051587,
+        "oled-outdoor-p3": 1.3185036508430286,
+        "lcd-low-brightness": 1.316564459831617,
+        "lcd-outdoor-srgb": 1.3051619771214042
+      }
+    },
+    {
+      "zone": "restroom",
+      "id": "guest01-baseline",
+      "direction": 1,
+      "frame": 1,
+      "edgeContrast": 1.268432887026929,
+      "displayEdgeContrasts": {
+        "oled": 1.2508362811186742,
+        "lcd": 1.2488337611656006,
+        "oled-low-brightness": 1.2779561748236674,
+        "oled-outdoor-p3": 1.251978004494297,
+        "lcd-low-brightness": 1.2453106839108619,
+        "lcd-outdoor-srgb": 1.222940662514658
+      }
+    },
+    {
+      "zone": "restroom",
+      "id": "guest01-baseline",
+      "direction": 1,
+      "frame": 2,
+      "edgeContrast": 1.350856125152479,
+      "displayEdgeContrasts": {
+        "oled": 1.359119197729203,
+        "lcd": 1.3291303165586184,
+        "oled-low-brightness": 1.3998640111639922,
+        "oled-outdoor-p3": 1.3258765815163571,
+        "lcd-low-brightness": 1.3240057847979112,
+        "lcd-outdoor-srgb": 1.314104524747619
+      }
+    },
+    {
+      "zone": "restroom",
+      "id": "guest01-baseline",
+      "direction": 1,
+      "frame": 3,
+      "edgeContrast": 1.268432887026929,
+      "displayEdgeContrasts": {
+        "oled": 1.2508362811186742,
+        "lcd": 1.2488337611656006,
+        "oled-low-brightness": 1.2779561748236674,
+        "oled-outdoor-p3": 1.251978004494297,
+        "lcd-low-brightness": 1.2453106839108619,
+        "lcd-outdoor-srgb": 1.222940662514658
+      }
+    },
+    {
+      "zone": "restroom",
+      "id": "guest01-baseline",
+      "direction": 2,
+      "frame": 0,
+      "edgeContrast": 1.346959946682495,
+      "displayEdgeContrasts": {
+        "oled": 1.3240267227124571,
+        "lcd": 1.3276768556328895,
+        "oled-low-brightness": 1.358675825559121,
+        "oled-outdoor-p3": 1.3234582622868594,
+        "lcd-low-brightness": 1.3230904134804014,
+        "lcd-outdoor-srgb": 1.3126433401660595
+      }
+    },
+    {
+      "zone": "restroom",
+      "id": "guest01-baseline",
+      "direction": 2,
+      "frame": 1,
+      "edgeContrast": 1.3634938594091428,
+      "displayEdgeContrasts": {
+        "oled": 1.3397030515119464,
+        "lcd": 1.3376605461413498,
+        "oled-low-brightness": 1.37507199648136,
+        "oled-outdoor-p3": 1.3375060149391145,
+        "lcd-low-brightness": 1.3231028300097738,
+        "lcd-outdoor-srgb": 1.2929503991727578
+      }
+    },
+    {
+      "zone": "restroom",
+      "id": "guest01-baseline",
+      "direction": 2,
+      "frame": 2,
+      "edgeContrast": 1.2374555604386408,
+      "displayEdgeContrasts": {
+        "oled": 1.2219798653812672,
+        "lcd": 1.22740287501022,
+        "oled-low-brightness": 1.2459714774160757,
+        "oled-outdoor-p3": 1.2234177720478403,
+        "lcd-low-brightness": 1.2249702266650695,
+        "lcd-outdoor-srgb": 1.219367857993275
+      }
+    },
+    {
+      "zone": "restroom",
+      "id": "guest01-baseline",
+      "direction": 2,
+      "frame": 3,
+      "edgeContrast": 1.3634938594091428,
+      "displayEdgeContrasts": {
+        "oled": 1.3397030515119464,
+        "lcd": 1.3376605461413498,
+        "oled-low-brightness": 1.37507199648136,
+        "oled-outdoor-p3": 1.3375060149391145,
+        "lcd-low-brightness": 1.3231028300097738,
+        "lcd-outdoor-srgb": 1.2929503991727578
+      }
+    },
+    {
+      "zone": "restroom",
+      "id": "guest01-baseline",
+      "direction": 3,
+      "frame": 0,
+      "edgeContrast": 1.3290538712264888,
+      "displayEdgeContrasts": {
+        "oled": 1.3074186263560206,
+        "lcd": 1.2929009289136137,
+        "oled-low-brightness": 1.327031044920068,
+        "oled-outdoor-p3": 1.3022586148831894,
+        "lcd-low-brightness": 1.2828085713940687,
+        "lcd-outdoor-srgb": 1.2680758544033308
+      }
+    },
+    {
+      "zone": "restroom",
+      "id": "guest01-baseline",
+      "direction": 3,
+      "frame": 1,
+      "edgeContrast": 1.3178806460021977,
+      "displayEdgeContrasts": {
+        "oled": 1.2993841384415548,
+        "lcd": 1.2853768763369282,
+        "oled-low-brightness": 1.329644605962369,
+        "oled-outdoor-p3": 1.2914330792919884,
+        "lcd-low-brightness": 1.2821789448688883,
+        "lcd-outdoor-srgb": 1.2667348179000366
+      }
+    },
+    {
+      "zone": "restroom",
+      "id": "guest01-baseline",
+      "direction": 3,
+      "frame": 2,
+      "edgeContrast": 1.3240030352093901,
+      "displayEdgeContrasts": {
+        "oled": 1.3023101387751796,
+        "lcd": 1.3042275812674466,
+        "oled-low-brightness": 1.335841105201927,
+        "oled-outdoor-p3": 1.2992980656882398,
+        "lcd-low-brightness": 1.3005690788491786,
+        "lcd-outdoor-srgb": 1.292180820947459
+      }
+    },
+    {
+      "zone": "restroom",
+      "id": "guest01-baseline",
+      "direction": 3,
+      "frame": 3,
+      "edgeContrast": 1.3178806460021977,
+      "displayEdgeContrasts": {
+        "oled": 1.2993841384415548,
+        "lcd": 1.2853768763369282,
+        "oled-low-brightness": 1.329644605962369,
+        "oled-outdoor-p3": 1.2914330792919884,
+        "lcd-low-brightness": 1.2821789448688883,
+        "lcd-outdoor-srgb": 1.2667348179000366
+      }
+    },
+    {
+      "zone": "restroom",
+      "id": "guest01-approved",
+      "direction": 0,
+      "frame": 0,
+      "edgeContrast": 1.4488474850118087,
+      "displayEdgeContrasts": {
+        "oled": 1.4896682399214847,
+        "lcd": 1.3837905447134953,
+        "oled-low-brightness": 1.4652768371517981,
+        "oled-outdoor-p3": 1.3891633894484106,
+        "lcd-low-brightness": 1.3733555059811124,
+        "lcd-outdoor-srgb": 1.3505980063476377
+      }
+    },
+    {
+      "zone": "restroom",
+      "id": "guest01-approved",
+      "direction": 0,
+      "frame": 1,
+      "edgeContrast": 1.3912025899233647,
+      "displayEdgeContrasts": {
+        "oled": 1.4405352405383942,
+        "lcd": 1.335873628426842,
+        "oled-low-brightness": 1.4710719757285797,
+        "oled-outdoor-p3": 1.345789362606701,
+        "lcd-low-brightness": 1.331579513048004,
+        "lcd-outdoor-srgb": 1.3103787337202835
+      }
+    },
+    {
+      "zone": "restroom",
+      "id": "guest01-approved",
+      "direction": 0,
+      "frame": 2,
+      "edgeContrast": 1.393298104571317,
+      "displayEdgeContrasts": {
+        "oled": 1.47826355576596,
+        "lcd": 1.337534816350285,
+        "oled-low-brightness": 1.4730466964779982,
+        "oled-outdoor-p3": 1.341667007344867,
+        "lcd-low-brightness": 1.3198367045219344,
+        "lcd-outdoor-srgb": 1.284254633738161
+      }
+    },
+    {
+      "zone": "restroom",
+      "id": "guest01-approved",
+      "direction": 0,
+      "frame": 3,
+      "edgeContrast": 1.3912025899233647,
+      "displayEdgeContrasts": {
+        "oled": 1.4405352405383942,
+        "lcd": 1.335873628426842,
+        "oled-low-brightness": 1.4710719757285797,
+        "oled-outdoor-p3": 1.345789362606701,
+        "lcd-low-brightness": 1.331579513048004,
+        "lcd-outdoor-srgb": 1.3103787337202835
+      }
+    },
+    {
+      "zone": "restroom",
+      "id": "guest01-approved",
+      "direction": 1,
+      "frame": 0,
+      "edgeContrast": 1.6121110698447023,
+      "displayEdgeContrasts": {
+        "oled": 1.868764061119177,
+        "lcd": 1.4688185311014499,
+        "oled-low-brightness": 1.694179268698773,
+        "oled-outdoor-p3": 1.5154796259553946,
+        "lcd-low-brightness": 1.4615407542759709,
+        "lcd-outdoor-srgb": 1.426607866178483
+      }
+    },
+    {
+      "zone": "restroom",
+      "id": "guest01-approved",
+      "direction": 1,
+      "frame": 1,
+      "edgeContrast": 1.6636922116683692,
+      "displayEdgeContrasts": {
+        "oled": 1.8414645055282808,
+        "lcd": 1.5036346298987697,
+        "oled-low-brightness": 1.7500969520731418,
+        "oled-outdoor-p3": 1.5576619296267806,
+        "lcd-low-brightness": 1.4736622855453263,
+        "lcd-outdoor-srgb": 1.425030325856678
+      }
+    },
+    {
+      "zone": "restroom",
+      "id": "guest01-approved",
+      "direction": 1,
+      "frame": 2,
+      "edgeContrast": 1.6711754430289554,
+      "displayEdgeContrasts": {
+        "oled": 1.868764061119177,
+        "lcd": 1.5175426503009803,
+        "oled-low-brightness": 1.7401025952040785,
+        "oled-outdoor-p3": 1.5609768599223868,
+        "lcd-low-brightness": 1.484126356827411,
+        "lcd-outdoor-srgb": 1.4196970732641858
+      }
+    },
+    {
+      "zone": "restroom",
+      "id": "guest01-approved",
+      "direction": 1,
+      "frame": 3,
+      "edgeContrast": 1.6636922116683692,
+      "displayEdgeContrasts": {
+        "oled": 1.8414645055282808,
+        "lcd": 1.5036346298987697,
+        "oled-low-brightness": 1.7500969520731418,
+        "oled-outdoor-p3": 1.5576619296267806,
+        "lcd-low-brightness": 1.4736622855453263,
+        "lcd-outdoor-srgb": 1.425030325856678
+      }
+    },
+    {
+      "zone": "restroom",
+      "id": "guest01-approved",
+      "direction": 2,
+      "frame": 0,
+      "edgeContrast": 1.6937118769595367,
+      "displayEdgeContrasts": {
+        "oled": 1.7746431085819239,
+        "lcd": 1.5657364066542732,
+        "oled-low-brightness": 1.8228412951706425,
+        "oled-outdoor-p3": 1.5826122352878016,
+        "lcd-low-brightness": 1.547352659338963,
+        "lcd-outdoor-srgb": 1.498588809893499
+      }
+    },
+    {
+      "zone": "restroom",
+      "id": "guest01-approved",
+      "direction": 2,
+      "frame": 1,
+      "edgeContrast": 1.7463575380438758,
+      "displayEdgeContrasts": {
+        "oled": 1.889946593390569,
+        "lcd": 1.6169624579567685,
+        "oled-low-brightness": 1.8866035531508456,
+        "oled-outdoor-p3": 1.6361197786423138,
+        "lcd-low-brightness": 1.5763809306836645,
+        "lcd-outdoor-srgb": 1.5097520941887967
+      }
+    },
+    {
+      "zone": "restroom",
+      "id": "guest01-approved",
+      "direction": 2,
+      "frame": 2,
+      "edgeContrast": 1.7965797047656993,
+      "displayEdgeContrasts": {
+        "oled": 2.017106767390973,
+        "lcd": 1.623498405915435,
+        "oled-low-brightness": 1.9256939820955297,
+        "oled-outdoor-p3": 1.6929183509743833,
+        "lcd-low-brightness": 1.591248741816866,
+        "lcd-outdoor-srgb": 1.5411545522840786
+      }
+    },
+    {
+      "zone": "restroom",
+      "id": "guest01-approved",
+      "direction": 2,
+      "frame": 3,
+      "edgeContrast": 1.7463575380438758,
+      "displayEdgeContrasts": {
+        "oled": 1.889946593390569,
+        "lcd": 1.6169624579567685,
+        "oled-low-brightness": 1.8866035531508456,
+        "oled-outdoor-p3": 1.6361197786423138,
+        "lcd-low-brightness": 1.5763809306836645,
+        "lcd-outdoor-srgb": 1.5097520941887967
+      }
+    },
+    {
+      "zone": "restroom",
+      "id": "guest01-approved",
+      "direction": 3,
+      "frame": 0,
+      "edgeContrast": 1.3428594820969064,
+      "displayEdgeContrasts": {
+        "oled": 1.3341203571666904,
+        "lcd": 1.281693226432814,
+        "oled-low-brightness": 1.3546073408534653,
+        "oled-outdoor-p3": 1.3184340532190375,
+        "lcd-low-brightness": 1.270830088868929,
+        "lcd-outdoor-srgb": 1.2524299024188903
+      }
+    },
+    {
+      "zone": "restroom",
+      "id": "guest01-approved",
+      "direction": 3,
+      "frame": 1,
+      "edgeContrast": 1.3859288910710104,
+      "displayEdgeContrasts": {
+        "oled": 1.3964938205821837,
+        "lcd": 1.3459537178826937,
+        "oled-low-brightness": 1.4257749237924273,
+        "oled-outdoor-p3": 1.3414815353363887,
+        "lcd-low-brightness": 1.3358225284648901,
+        "lcd-outdoor-srgb": 1.297869690237334
+      }
+    },
+    {
+      "zone": "restroom",
+      "id": "guest01-approved",
+      "direction": 3,
+      "frame": 2,
+      "edgeContrast": 1.563511002168742,
+      "displayEdgeContrasts": {
+        "oled": 1.5948032143164317,
+        "lcd": 1.453983471842081,
+        "oled-low-brightness": 1.6653852526059798,
+        "oled-outdoor-p3": 1.4761043906379954,
+        "lcd-low-brightness": 1.4304659226122272,
+        "lcd-outdoor-srgb": 1.397828298789587
+      }
+    },
+    {
+      "zone": "restroom",
+      "id": "guest01-approved",
+      "direction": 3,
+      "frame": 3,
+      "edgeContrast": 1.3859288910710104,
+      "displayEdgeContrasts": {
+        "oled": 1.3964938205821837,
+        "lcd": 1.3459537178826937,
+        "oled-low-brightness": 1.4257749237924273,
+        "oled-outdoor-p3": 1.3414815353363887,
+        "lcd-low-brightness": 1.3358225284648901,
+        "lcd-outdoor-srgb": 1.297869690237334
+      }
+    }
+  ],
+  "belowStandardThreshold": [
+    {
+      "zone": "neighborhood",
+      "id": "guest01-baseline",
+      "direction": 0,
+      "frame": 0,
+      "edgeContrast": 1.126087615444778,
+      "displayEdgeContrasts": {
+        "oled": 1.1209200917304682,
+        "lcd": 1.1073089523028041,
+        "oled-low-brightness": 1.122543607323055,
+        "oled-outdoor-p3": 1.1100472101924255,
+        "lcd-low-brightness": 1.104404498018963,
+        "lcd-outdoor-srgb": 1.0980676996779086
+      }
+    },
+    {
+      "zone": "neighborhood",
+      "id": "guest01-baseline",
+      "direction": 0,
+      "frame": 1,
+      "edgeContrast": 1.1643202310553369,
+      "displayEdgeContrasts": {
+        "oled": 1.153996971167613,
+        "lcd": 1.156835921944556,
+        "oled-low-brightness": 1.1698191170604806,
+        "oled-outdoor-p3": 1.1544750775895263,
+        "lcd-low-brightness": 1.1550323332635777,
+        "lcd-outdoor-srgb": 1.150889789359157
+      }
+    },
+    {
+      "zone": "neighborhood",
+      "id": "guest01-baseline",
+      "direction": 0,
+      "frame": 2,
+      "edgeContrast": 1.153065055458743,
+      "displayEdgeContrasts": {
+        "oled": 1.143421934204654,
+        "lcd": 1.1466565454427828,
+        "oled-low-brightness": 1.158323152666909,
+        "oled-outdoor-p3": 1.1442277005496462,
+        "lcd-low-brightness": 1.1451048111245483,
+        "lcd-outdoor-srgb": 1.1415297862097897
+      }
+    },
+    {
+      "zone": "neighborhood",
+      "id": "guest01-baseline",
+      "direction": 0,
+      "frame": 3,
+      "edgeContrast": 1.1643202310553369,
+      "displayEdgeContrasts": {
+        "oled": 1.153996971167613,
+        "lcd": 1.156835921944556,
+        "oled-low-brightness": 1.1698191170604806,
+        "oled-outdoor-p3": 1.1544750775895263,
+        "lcd-low-brightness": 1.1550323332635777,
+        "lcd-outdoor-srgb": 1.150889789359157
+      }
+    },
+    {
+      "zone": "neighborhood",
+      "id": "guest01-baseline",
+      "direction": 2,
+      "frame": 1,
+      "edgeContrast": 1.1609860285234848,
+      "displayEdgeContrasts": {
+        "oled": 1.1514570135345148,
+        "lcd": 1.1485766251374907,
+        "oled-low-brightness": 1.1599190886550925,
+        "oled-outdoor-p3": 1.149463134479192,
+        "lcd-low-brightness": 1.1471517017832105,
+        "lcd-outdoor-srgb": 1.141881969135052
+      }
+    },
+    {
+      "zone": "neighborhood",
+      "id": "guest01-baseline",
+      "direction": 2,
+      "frame": 2,
+      "edgeContrast": 1.148063420881067,
+      "displayEdgeContrasts": {
+        "oled": 1.1387026825082716,
+        "lcd": 1.141046305065839,
+        "oled-low-brightness": 1.1454885912562358,
+        "oled-outdoor-p3": 1.1397645935508784,
+        "lcd-low-brightness": 1.1332011404881812,
+        "lcd-outdoor-srgb": 1.1272985101100286
+      }
+    },
+    {
+      "zone": "neighborhood",
+      "id": "guest01-baseline",
+      "direction": 2,
+      "frame": 3,
+      "edgeContrast": 1.1609860285234848,
+      "displayEdgeContrasts": {
+        "oled": 1.1514570135345148,
+        "lcd": 1.1485766251374907,
+        "oled-low-brightness": 1.1599190886550925,
+        "oled-outdoor-p3": 1.149463134479192,
+        "lcd-low-brightness": 1.1471517017832105,
+        "lcd-outdoor-srgb": 1.141881969135052
+      }
+    },
+    {
+      "zone": "neighborhood",
+      "id": "guest01-baseline",
+      "direction": 3,
+      "frame": 0,
+      "edgeContrast": 1.1607607391962171,
+      "displayEdgeContrasts": {
+        "oled": 1.1471189548717482,
+        "lcd": 1.1453966191631164,
+        "oled-low-brightness": 1.1534245346901177,
+        "oled-outdoor-p3": 1.1482441456252586,
+        "lcd-low-brightness": 1.1381895560621975,
+        "lcd-outdoor-srgb": 1.1334263422343245
+      }
+    },
+    {
+      "zone": "neighborhood",
+      "id": "guest01-baseline",
+      "direction": 3,
+      "frame": 1,
+      "edgeContrast": 1.165453950035466,
+      "displayEdgeContrasts": {
+        "oled": 1.145180137206961,
+        "lcd": 1.135965892350471,
+        "oled-low-brightness": 1.1463267672734327,
+        "oled-outdoor-p3": 1.1393754161395317,
+        "lcd-low-brightness": 1.1346563844741107,
+        "lcd-outdoor-srgb": 1.1287301489636286
+      }
+    },
+    {
+      "zone": "neighborhood",
+      "id": "guest01-baseline",
+      "direction": 3,
+      "frame": 2,
+      "edgeContrast": 1.1386100544708933,
+      "displayEdgeContrasts": {
+        "oled": 1.131503844498043,
+        "lcd": 1.1223960422663803,
+        "oled-low-brightness": 1.1294127174204258,
+        "oled-outdoor-p3": 1.125197160501585,
+        "lcd-low-brightness": 1.1179291023523235,
+        "lcd-outdoor-srgb": 1.11114718781149
+      }
+    },
+    {
+      "zone": "neighborhood",
+      "id": "guest01-baseline",
+      "direction": 3,
+      "frame": 3,
+      "edgeContrast": 1.165453950035466,
+      "displayEdgeContrasts": {
+        "oled": 1.145180137206961,
+        "lcd": 1.135965892350471,
+        "oled-low-brightness": 1.1463267672734327,
+        "oled-outdoor-p3": 1.1393754161395317,
+        "lcd-low-brightness": 1.1346563844741107,
+        "lcd-outdoor-srgb": 1.1287301489636286
+      }
+    },
+    {
+      "zone": "venue-exterior",
+      "id": "guest01-baseline",
+      "direction": 0,
+      "frame": 1,
+      "edgeContrast": 1.163611871653362,
+      "displayEdgeContrasts": {
+        "oled": 1.1533987067046108,
+        "lcd": 1.149932582732756,
+        "oled-low-brightness": 1.1689452828663054,
+        "oled-outdoor-p3": 1.153565458721502,
+        "lcd-low-brightness": 1.1482255935126138,
+        "lcd-outdoor-srgb": 1.1437361644610342
+      }
+    },
+    {
+      "zone": "venue-exterior",
+      "id": "guest01-baseline",
+      "direction": 0,
+      "frame": 3,
+      "edgeContrast": 1.163611871653362,
+      "displayEdgeContrasts": {
+        "oled": 1.1533987067046108,
+        "lcd": 1.149932582732756,
+        "oled-low-brightness": 1.1689452828663054,
+        "oled-outdoor-p3": 1.153565458721502,
+        "lcd-low-brightness": 1.1482255935126138,
+        "lcd-outdoor-srgb": 1.1437361644610342
+      }
+    },
+    {
+      "zone": "ceremony-hall",
+      "id": "guest01-baseline",
+      "direction": 0,
+      "frame": 1,
+      "edgeContrast": 1.133394064420732,
+      "displayEdgeContrasts": {
+        "oled": 1.1263463139818626,
+        "lcd": 1.1256155350724852,
+        "oled-low-brightness": 1.1369139610472592,
+        "oled-outdoor-p3": 1.1240640164723803,
+        "lcd-low-brightness": 1.1243179558528007,
+        "lcd-outdoor-srgb": 1.1213259695055457
+      }
+    },
+    {
+      "zone": "ceremony-hall",
+      "id": "guest01-baseline",
+      "direction": 0,
+      "frame": 2,
+      "edgeContrast": 1.1506594286754896,
+      "displayEdgeContrasts": {
+        "oled": 1.1421407095149723,
+        "lcd": 1.141485088390473,
+        "oled-low-brightness": 1.1552431290457827,
+        "oled-outdoor-p3": 1.1406190666826213,
+        "lcd-low-brightness": 1.1392134488935912,
+        "lcd-outdoor-srgb": 1.1340743183907926
+      }
+    },
+    {
+      "zone": "ceremony-hall",
+      "id": "guest01-baseline",
+      "direction": 0,
+      "frame": 3,
+      "edgeContrast": 1.133394064420732,
+      "displayEdgeContrasts": {
+        "oled": 1.1263463139818626,
+        "lcd": 1.1256155350724852,
+        "oled-low-brightness": 1.1369139610472592,
+        "oled-outdoor-p3": 1.1240640164723803,
+        "lcd-low-brightness": 1.1243179558528007,
+        "lcd-outdoor-srgb": 1.1213259695055457
+      }
+    },
+    {
+      "zone": "restroom",
+      "id": "guest01-baseline",
+      "direction": 0,
+      "frame": 1,
+      "edgeContrast": 1.1347675784421862,
+      "displayEdgeContrasts": {
+        "oled": 1.127443667168509,
+        "lcd": 1.1249882636435913,
+        "oled-low-brightness": 1.134964372052275,
+        "oled-outdoor-p3": 1.123009902343895,
+        "lcd-low-brightness": 1.1236374258815633,
+        "lcd-outdoor-srgb": 1.1205276020888315
+      }
+    },
+    {
+      "zone": "restroom",
+      "id": "guest01-baseline",
+      "direction": 0,
+      "frame": 3,
+      "edgeContrast": 1.1347675784421862,
+      "displayEdgeContrasts": {
+        "oled": 1.127443667168509,
+        "lcd": 1.1249882636435913,
+        "oled-low-brightness": 1.134964372052275,
+        "oled-outdoor-p3": 1.123009902343895,
+        "lcd-low-brightness": 1.1236374258815633,
+        "lcd-outdoor-srgb": 1.1205276020888315
+      }
+    }
+  ],
+  "belowDisplayThreshold": [
+    {
+      "zone": "neighborhood",
+      "id": "guest01-baseline",
+      "direction": 0,
+      "frame": 0,
+      "edgeContrast": 1.126087615444778,
+      "displayEdgeContrasts": {
+        "oled": 1.1209200917304682,
+        "lcd": 1.1073089523028041,
+        "oled-low-brightness": 1.122543607323055,
+        "oled-outdoor-p3": 1.1100472101924255,
+        "lcd-low-brightness": 1.104404498018963,
+        "lcd-outdoor-srgb": 1.0980676996779086
+      }
+    }
+  ]
+}

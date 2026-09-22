@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1240" height="1269" viewBox="0 0 1240 1269">
+  <!-- Private right-view rear-lock shading; face, ear and lower curls are untouched. -->
+  <defs>
+    <clipPath id="rear-locks"><rect x="0" y="200" width="310" height="370"/></clipPath>
+    <filter id="soft" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="8"/></filter>
+  </defs>
+  <g clip-path="url(#rear-locks)" stroke="#211712" stroke-width="48" stroke-opacity="0.8" fill="none" filter="url(#soft)">
+    <path d="M 382 145 Q 248 275 241 345 Q 226 377 249 401 Q 176 477 198 536 Q 208 564 240 576"/>
+  </g>
+</svg>

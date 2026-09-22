@@ -1,0 +1,30 @@
+{
+  "status": "visible-surface-layers-only",
+  "parent": "head",
+  "sourcePivot": [735, 1009],
+  "independentMotionAllowed": false,
+  "hiddenSurfaceReconstruction": "forehead-painted-back-hair-pending",
+  "layers": [
+    {
+      "id": "face",
+      "parent": "head",
+      "pivot": [735, 1009],
+      "path": "M 806 465 C 834 449 855 453 879 466 C 931 465 972 503 996 561 C 1021 625 1028 703 1016 759 C 1051 701 1103 716 1120 757 C 1160 833 1091 900 1020 893 L 980 886 C 940 945 870 973 810 987 C 762 1011 733 1017 698 1005 C 594 979 524 951 486 896 C 455 905 427 890 410 869 C 372 873 344 833 347 794 C 347 762 365 743 393 738 L 477 749 C 555 725 616 697 686 657 C 749 615 794 545 806 465 Z",
+      "exclude": "M 426 735 C 398 782 367 868 391 914 C 410 947 451 964 488 945 C 449 945 422 906 416 871 C 413 828 441 768 458 724 Z"
+    },
+    {
+      "id": "backHair",
+      "parent": "head",
+      "pivot": [735, 1009],
+      "path": "M 795 878 L 1065 868 L 1075 1030 L 790 1030 Z",
+      "exclude": null
+    },
+    {
+      "id": "frontHair",
+      "parent": "head",
+      "pivot": [735, 1009],
+      "path": null,
+      "exclude": null
+    }
+  ]
+}

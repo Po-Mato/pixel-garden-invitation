@@ -1,0 +1,280 @@
+{
+  "characters": [
+    {
+      "characterId": "guest-01",
+      "presetId": "feminine-long-wave-dress",
+      "sourceSheetSha256": "e870c8a9d9574cfe17449a1c11d8992dc09c3f03a53da661e1d1acf361d0cbff",
+      "outputs": [
+        {
+          "file": "feminine-long-wave-dress__walk-hd.png",
+          "sha256": "e870c8a9d9574cfe17449a1c11d8992dc09c3f03a53da661e1d1acf361d0cbff"
+        },
+        {
+          "file": "feminine-long-wave-dress__idle-hd.png",
+          "sha256": "d79ab082b5b1ef537117d6c77d8ed914b859a9219b3c393f359f49974044a82e"
+        },
+        {
+          "file": "feminine-long-wave-dress__walk-runtime.png",
+          "sha256": "23e89453937ae3c00fe552d428ab08d1649f9c3db154f1633077a254426fc4ee"
+        },
+        {
+          "file": "feminine-long-wave-dress__idle-runtime.png",
+          "sha256": "a0d05c4868d976f9db44546ac58610d88b12b12b8ec3861b3cd4142b09e01a85"
+        }
+      ]
+    },
+    {
+      "characterId": "guest-02",
+      "presetId": "feminine-formal-hanbok",
+      "sourceSheetSha256": "157e86e9f2d42f4bae1a68912a3a44e40e4f3da0d48b19a5f14793153ad18ca9",
+      "outputs": [
+        {
+          "file": "feminine-formal-hanbok__walk-hd.png",
+          "sha256": "157e86e9f2d42f4bae1a68912a3a44e40e4f3da0d48b19a5f14793153ad18ca9"
+        },
+        {
+          "file": "feminine-formal-hanbok__idle-hd.png",
+          "sha256": "1e66373dd3b09ef1437b37ddd4bfb413040cccc622b5128e13ccbd8e66bf6f9d"
+        },
+        {
+          "file": "feminine-formal-hanbok__walk-runtime.png",
+          "sha256": "c29cf289e605920f9b8cbaf76f2610a940e5440cc10d86ca8e53b66a02abb360"
+        },
+        {
+          "file": "feminine-formal-hanbok__idle-runtime.png",
+          "sha256": "5fe3f7f934084b85fefad6e670b027d726ba70a57614d4783d6f82b9eba33f5e"
+        }
+      ]
+    },
+    {
+      "characterId": "guest-03",
+      "presetId": "masculine-navy-suit",
+      "sourceSheetSha256": "e0ed45dac135bdbcc5f8dde81b9b5ea09c468b790610032a15eacec1a2a3ab73",
+      "outputs": [
+        {
+          "file": "masculine-navy-suit__walk-hd.png",
+          "sha256": "e0ed45dac135bdbcc5f8dde81b9b5ea09c468b790610032a15eacec1a2a3ab73"
+        },
+        {
+          "file": "masculine-navy-suit__idle-hd.png",
+          "sha256": "59e24044176d6f80a3844dda66824300c164a0d4c94efc314417dda51bab54b3"
+        },
+        {
+          "file": "masculine-navy-suit__walk-runtime.png",
+          "sha256": "cf7c481e1febbed2de88087021c9be7f06cfb42b03ad23e2bdd0190fd6689e86"
+        },
+        {
+          "file": "masculine-navy-suit__idle-runtime.png",
+          "sha256": "f6fc095bdf6a7026b8110b60e5b1188f3115249d807b2e1d921ca7865de0d32a"
+        }
+      ]
+    },
+    {
+      "characterId": "guest-04",
+      "presetId": "masculine-charcoal-blazer",
+      "sourceSheetSha256": "fc83ff6370baa7d71d9f68f419843365f47594788566948dc3a8ebb47e13a2a5",
+      "outputs": [
+        {
+          "file": "masculine-charcoal-blazer__walk-hd.png",
+          "sha256": "fc83ff6370baa7d71d9f68f419843365f47594788566948dc3a8ebb47e13a2a5"
+        },
+        {
+          "file": "masculine-charcoal-blazer__idle-hd.png",
+          "sha256": "88704290208d9a483b4556f3049b911a9f59fcfc15cec451a2d13b652b4449df"
+        },
+        {
+          "file": "masculine-charcoal-blazer__walk-runtime.png",
+          "sha256": "11e270069d7252e11ca7e6e4acc18c5a91612d195085e6960fc9d2b5b0c91cd7"
+        },
+        {
+          "file": "masculine-charcoal-blazer__idle-runtime.png",
+          "sha256": "3f4490e31e0e37fd2124f2bcd079a57ea9524ac36db5da1a3f229e30de7f204a"
+        }
+      ]
+    },
+    {
+      "characterId": "guest-05",
+      "presetId": "feminine-sage-bolero-dress",
+      "sourceSheetSha256": "6c4dcfd8d002a24b83f859bb4b437fea68e2842dccfc6a227a87920a7ec7b3b2",
+      "outputs": [
+        {
+          "file": "feminine-sage-bolero-dress__walk-hd.png",
+          "sha256": "6c4dcfd8d002a24b83f859bb4b437fea68e2842dccfc6a227a87920a7ec7b3b2"
+        },
+        {
+          "file": "feminine-sage-bolero-dress__idle-hd.png",
+          "sha256": "dcc49402e35d46be5ca69195d748ecf81d2b0547eb450bbc58215a0c0260fe28"
+        },
+        {
+          "file": "feminine-sage-bolero-dress__walk-runtime.png",
+          "sha256": "af8a63d99a04ad73168a7a30c5fe6ce08d88c99ac201651fa9bff8c7066d0f96"
+        },
+        {
+          "file": "feminine-sage-bolero-dress__idle-runtime.png",
+          "sha256": "b7efa52709eaee118e0ac647a4e636b8c1e820915dc8252df14c3cf6ef54b269"
+        }
+      ]
+    },
+    {
+      "characterId": "guest-06",
+      "presetId": "feminine-champagne-navy-skirt",
+      "sourceSheetSha256": "0149b495712c4615d7d986732f438ddbca425f02f7c3b6c13e734034b58e30b4",
+      "outputs": [
+        {
+          "file": "feminine-champagne-navy-skirt__walk-hd.png",
+          "sha256": "0149b495712c4615d7d986732f438ddbca425f02f7c3b6c13e734034b58e30b4"
+        },
+        {
+          "file": "feminine-champagne-navy-skirt__idle-hd.png",
+          "sha256": "182aad7002835942548b9fbbe3e449e4c6504f9000fdd80ae91362b1c9619439"
+        },
+        {
+          "file": "feminine-champagne-navy-skirt__walk-runtime.png",
+          "sha256": "0fe4551a5f0410d0e3379b71d6e17b5db1e290063fc7cd542dfbe00de7c3c005"
+        },
+        {
+          "file": "feminine-champagne-navy-skirt__idle-runtime.png",
+          "sha256": "26c7485606746211727002841e1364566c70fc4b82a2b3da23a7895a0fdfdfc4"
+        }
+      ]
+    },
+    {
+      "characterId": "guest-07",
+      "presetId": "feminine-lavender-jacket-dress",
+      "sourceSheetSha256": "c564e8d017977bfd08d9dada8b20a6c0021c855e71ddafe4b40788f874fed65a",
+      "outputs": [
+        {
+          "file": "feminine-lavender-jacket-dress__walk-hd.png",
+          "sha256": "c564e8d017977bfd08d9dada8b20a6c0021c855e71ddafe4b40788f874fed65a"
+        },
+        {
+          "file": "feminine-lavender-jacket-dress__idle-hd.png",
+          "sha256": "c2384e29d855b14aca732d7d322b594b5bff757344e4cea9ae763852707e75ac"
+        },
+        {
+          "file": "feminine-lavender-jacket-dress__walk-runtime.png",
+          "sha256": "f39ccdfceebbd0c5086402ddf0c69e47a60bb2556f651394a87af275047d162b"
+        },
+        {
+          "file": "feminine-lavender-jacket-dress__idle-runtime.png",
+          "sha256": "9850a8bcc30f2cba5776600a7d3938f6818747ca8e6ab666c195b4d170c4dc39"
+        }
+      ]
+    },
+    {
+      "characterId": "guest-08",
+      "presetId": "feminine-teal-modern-hanbok",
+      "sourceSheetSha256": "05f8b66417536c0b21de62f890b50a26beb259af0277a5d30779f5d716ee1f6c",
+      "outputs": [
+        {
+          "file": "feminine-teal-modern-hanbok__walk-hd.png",
+          "sha256": "05f8b66417536c0b21de62f890b50a26beb259af0277a5d30779f5d716ee1f6c"
+        },
+        {
+          "file": "feminine-teal-modern-hanbok__idle-hd.png",
+          "sha256": "7825631cb1583b7347d1c5695808088d01b86274fec74f9437b21834bdd48e7c"
+        },
+        {
+          "file": "feminine-teal-modern-hanbok__walk-runtime.png",
+          "sha256": "9b20de7447d5eb51088fa955ff733a1b52b6798d007a7964932aefd273ea9840"
+        },
+        {
+          "file": "feminine-teal-modern-hanbok__idle-runtime.png",
+          "sha256": "a793e578507de887199be903ff2e782268df7c6733bc6532c0b2a7323712084b"
+        }
+      ]
+    },
+    {
+      "characterId": "guest-09",
+      "presetId": "masculine-beige-summer-suit",
+      "sourceSheetSha256": "8ad5b22ee4352a31d49f3d2d95cec015de99ee5b5d587d0f6338166073e2a89a",
+      "outputs": [
+        {
+          "file": "masculine-beige-summer-suit__walk-hd.png",
+          "sha256": "8ad5b22ee4352a31d49f3d2d95cec015de99ee5b5d587d0f6338166073e2a89a"
+        },
+        {
+          "file": "masculine-beige-summer-suit__idle-hd.png",
+          "sha256": "3eb931b0aef9f084a86d6ce0b39b788197b1e9a1c8121fa874f0cd96dac3ca28"
+        },
+        {
+          "file": "masculine-beige-summer-suit__walk-runtime.png",
+          "sha256": "a26ea3598927a2ca0f1bcb0dd7c202932706b672e19d9f010a2693c2b51f0d70"
+        },
+        {
+          "file": "masculine-beige-summer-suit__idle-runtime.png",
+          "sha256": "9a2f9240e5e3c5c805be40ac2c2863e6df9fe3fdecc911d5a8292fed32be7c53"
+        }
+      ]
+    },
+    {
+      "characterId": "guest-10",
+      "presetId": "masculine-charcoal-burgundy-tie",
+      "sourceSheetSha256": "e19c31d5204d1c64f7524e725d3714ee45f1c0f0ccc139483d114c1fe97a001f",
+      "outputs": [
+        {
+          "file": "masculine-charcoal-burgundy-tie__walk-hd.png",
+          "sha256": "e19c31d5204d1c64f7524e725d3714ee45f1c0f0ccc139483d114c1fe97a001f"
+        },
+        {
+          "file": "masculine-charcoal-burgundy-tie__idle-hd.png",
+          "sha256": "e7bed67ed3393d7eb4a9ca6865d278fa7449436f87609bc1711c33bfca80081a"
+        },
+        {
+          "file": "masculine-charcoal-burgundy-tie__walk-runtime.png",
+          "sha256": "6e94f1f70660a8f565ed36fcb32b08fa2b3b0bf9715bd9b2d667b84af7471106"
+        },
+        {
+          "file": "masculine-charcoal-burgundy-tie__idle-runtime.png",
+          "sha256": "2f761e3986d236469be764a924576ac2a2c04d2ba210727a3a68afd3d3c6cf23"
+        }
+      ]
+    },
+    {
+      "characterId": "guest-11",
+      "presetId": "masculine-green-blazer-cream-pants",
+      "sourceSheetSha256": "dc2c39ae55fb292397b8677d79d56600cb73491fbdb79ef156104311c2050fc9",
+      "outputs": [
+        {
+          "file": "masculine-green-blazer-cream-pants__walk-hd.png",
+          "sha256": "dc2c39ae55fb292397b8677d79d56600cb73491fbdb79ef156104311c2050fc9"
+        },
+        {
+          "file": "masculine-green-blazer-cream-pants__idle-hd.png",
+          "sha256": "96ec1f2089bc080d9667e14db02d9401d72828f7551c1dc3740ca8853db74a5f"
+        },
+        {
+          "file": "masculine-green-blazer-cream-pants__walk-runtime.png",
+          "sha256": "dd1de1d445eb97419b4702098fd33b87bdb0ff739ab73b293e62c1df98f31845"
+        },
+        {
+          "file": "masculine-green-blazer-cream-pants__idle-runtime.png",
+          "sha256": "d8b51315660b7ed4ae060be1adeb41cc23520878e1394a8fcffabced400b7249"
+        }
+      ]
+    },
+    {
+      "characterId": "guest-12",
+      "presetId": "masculine-blue-modern-hanbok",
+      "sourceSheetSha256": "7e91965defd71227ced6673710d0aec7661e3ac004f16994810b88fcf71f31d4",
+      "outputs": [
+        {
+          "file": "masculine-blue-modern-hanbok__walk-hd.png",
+          "sha256": "7e91965defd71227ced6673710d0aec7661e3ac004f16994810b88fcf71f31d4"
+        },
+        {
+          "file": "masculine-blue-modern-hanbok__idle-hd.png",
+          "sha256": "3a430e3a5fd543f06e44c1624a5f817841a855fd486344996361c54a0ba49279"
+        },
+        {
+          "file": "masculine-blue-modern-hanbok__walk-runtime.png",
+          "sha256": "b596e863dd408ec0ab5cbf3dd309b494777b3dab9b1a5d2a9b47f0fa5885ea9d"
+        },
+        {
+          "file": "masculine-blue-modern-hanbok__idle-runtime.png",
+          "sha256": "dbb6cf88dfc7356fa5ef4e636514d2e5d4e358ab38fd687bc7f84bb7f47da738"
+        }
+      ]
+    }
+  ]
+}

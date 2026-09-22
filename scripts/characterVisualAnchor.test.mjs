@@ -22,4 +22,7 @@ test("tracked world anchors match every generated guest PNG", async () => {
   const tracked = JSON.parse(await readFile("client/src/character/worldAnchors.generated.json", "utf8"));
   assert.deepEqual(tracked, await buildCharacterWorldAnchorManifest());
   assert.equal(Object.keys(tracked.presets).length, 12);
+  for (const anchor of Object.values(tracked.presets)) {
+    assert.deepEqual([anchor.centerX, anchor.centerY, anchor.feetY], [48, 81, 135], "Asymmetric art and alpha fringes must not move the authored skeleton");
+  }
 });

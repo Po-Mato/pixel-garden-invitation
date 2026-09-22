@@ -1,0 +1,32 @@
+import assert from 'node:assert/strict';
+import {readFile,readdir,mkdir,writeFile} from 'node:fs/promises';
+import path from 'node:path';
+import {fileURLToPath} from 'node:url';
+import {createHash} from 'node:crypto';
+import {verifyStorybookCandidate} from './lib/storybookReleaseCandidate.mjs';
+const root=fileURLToPath(new URL('../',import.meta.url));
+const expectedSha=process.argv[2];
+assert.match(expectedSha??'',/^[a-f0-9]{40}$/,'Pass the merged release commit SHA');
+const base='https://po-mato.github.io/pixel-garden-invitation/';
+await verifyStorybookCandidate(root);
+const get=async relative=>{
+  const response=await fetch(new URL(relative,base),{cache:'no-store',signal:AbortSignal.timeout(30000)});
+  assert.equal(response.status,200,relative);return Buffer.from(await response.arrayBuffer());
+};
+const worker=(await get('service-worker.js')).toString();
+assert.equal(worker.match(/const VERSION = "([^"]+)"/)[1],expectedSha.slice(0,12));
+const revision=(await readFile(path.join(root,'client/src/character/assetRevisions.ts'),'utf8')).match(/guestCutoutAssetRevision = "([^"]+)"/)[1];
+assert.ok(worker.includes(`?v=${revision}`),'Published worker uses stale character revision');
+const directory=path.join(root,'client/public/characters/generated');
+const files=(await readdir(directory,{recursive:true})).filter(f=>f.endsWith('.png')).sort();
+assert.equal(files.length,88,'Verify the complete generated asset set');
+const sha=b=>createHash('sha256').update(b).digest('hex'),results=[];
+for(let i=0;i<files.length;i+=4)results.push(...await Promise.all(files.slice(i,i+4).map(async file=>{
+  const local=sha(await readFile(path.join(directory,file))),published=sha(await get('characters/generated/'+file));
+  assert.equal(published,local,`Published bytes differ: ${file}`);return {file,sha256:local};
+})));
+const output=path.join(root,'.superpowers/visual-regression/storybook-deployment');
+await mkdir(output,{recursive:true});
+const report={passed:true,url:base,commit:expectedSha,revision,serviceWorkerVersion:expectedSha.slice(0,12),assets:results,scope:'HTTP bytes and published version. Browser cache update and visual inspection are separate gates.'};
+await writeFile(path.join(output,'report.json'),JSON.stringify(report,null,2)+'\n');
+console.log(JSON.stringify({passed:true,matchedAssets:results.length,commit:expectedSha,revision,report:path.join(output,'report.json')}));

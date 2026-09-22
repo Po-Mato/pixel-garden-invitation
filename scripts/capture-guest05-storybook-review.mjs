@@ -1,0 +1,28 @@
+import {execFileSync} from 'node:child_process';
+import {readFile,writeFile} from 'node:fs/promises';
+import {fileURLToPath} from 'node:url';
+import {createHash} from 'node:crypto';
+import assert from 'node:assert/strict';
+import {storybookBase} from './render-guest05-storybook.mjs';
+const session='storybookrig05';
+// Installed agent-browser 0.13 has no batch; keep ordered calls in a named session.
+const browser=(...args)=>execFileSync('agent-browser',['--session',session,...args],{encoding:'utf8',timeout:30000}).trim();
+const ev=code=>JSON.parse(JSON.parse(browser('eval',`JSON.stringify(${code})`)));
+const out=new URL('generated/',storybookBase);
+browser('--allow-file-access','open',new URL('review.html',out).href);
+browser('set','viewport','390','844');
+const initial=ev('({viewport:[innerWidth,innerHeight],overflow:document.documentElement.scrollWidth>innerWidth,loaded:Array.from(document.images).every(i=>i.complete&&i.naturalWidth>0),parts:document.querySelectorAll("[data-part]").length,sizes:Array.from(document.querySelectorAll(".frame")).map(e=>{const r=e.getBoundingClientRect();return[r.width,r.height]})})');
+assert.deepEqual(initial.viewport,[390,844]);assert.equal(initial.overflow,false);assert.equal(initial.loaded,true);assert.equal(initial.parts,23);
+assert.deepEqual(initial.sizes,[[192,288],[192,288],[96,144],[96,144],[48,72],[48,72]]);
+browser('snapshot','-i');
+browser('uncheck','[data-part="face"]');
+assert.equal(ev('document.querySelector("#art #face").style.display'),'none');
+browser('click','#bones');assert.equal(ev('document.getElementById("joints").style.display'),'block');
+browser('click','#background');assert.equal(ev('document.getElementById("art").classList.contains("dark")'),true);
+browser('click','#reset');assert.equal(ev('Array.from(document.querySelectorAll("[data-part]")).every(e=>e.checked)'),true);
+assert.equal(ev('document.querySelector("#art #face").style.display'),'');
+assert.equal(ev('document.getElementById("joints").style.display'),'none');
+const screenshot='comparison-mobile.png';browser('screenshot',fileURLToPath(new URL(screenshot,out)),'--full');
+const manifest=JSON.parse(await readFile(new URL('manifest.json',out)));
+await writeFile(new URL('browser-review.json',out),JSON.stringify({initial,layerToggle:true,boneToggle:true,backgroundToggle:true,reset:true,sourceSha256:manifest.sourceSha256,pngSha256:manifest.pngSha256,screenshot,screenshotSha256:createHash('sha256').update(await readFile(new URL(screenshot,out))).digest('hex'),scope:'Local neutral review UI only, not actual game or production. Visual judgment is separate.'},null,2)+'\n');
+console.log('390x844: six display frames, 23 layers, visibility/joints/background/reset passed.');
