@@ -81,7 +81,10 @@ for(const [id,name] of characters) {
         await page.waitForTimeout(100);
       }
     }
-    const read=()=>page.evaluate(selector=>{const e=document.querySelector(selector),p=e.parentElement,r=e.getBoundingClientRect();return {frame:Number(e.dataset.walkFrame),moving:e.dataset.moving,direction:e.dataset.direction,preset:e.dataset.characterPreset,position:[parseFloat(p.style.left),parseFloat(p.style.top)],rect:r.toJSON(),logicalSize:[getComputedStyle(e).getPropertyValue('--character-display-width'),getComputedStyle(e).getPropertyValue('--character-display-height')],url:e.querySelector('img').src,fallback:!!e.dataset.characterFallback,changes:window.__gameFrameChanges??0,zone:document.querySelector('.world-map__stage').dataset.zone};},selector);
+    const read=()=>page.evaluate(selector=>{
+      const e=document.querySelector(selector),p=e.parentElement,r=e.getBoundingClientRect(),i=e.querySelector('img');
+      return {frame:Number(e.dataset.walkFrame),moving:e.dataset.moving,direction:e.dataset.direction,preset:e.dataset.characterPreset,position:[parseFloat(p.style.left),parseFloat(p.style.top)],rect:r.toJSON(),logicalSize:[getComputedStyle(e).getPropertyValue('--character-display-width'),getComputedStyle(e).getPropertyValue('--character-display-height')],url:i.src,imageReady:i.complete&&i.naturalWidth>0,displayedUrl:e.querySelector('[data-character-layer]').style.backgroundImage,fallback:!!e.dataset.characterFallback,changes:window.__gameFrameChanges??0,zone:document.querySelector('.world-map__stage').dataset.zone};
+    },selector);
     await page.getByRole('application',{name:'가상 조이스틱'}).focus();
     // Walk away from the adjacent furniture using the same public controls.
     // Never teleport or change collision/state data for the capture.
@@ -101,10 +104,10 @@ for(const [id,name] of characters) {
     const deadline=Date.now()+2500;
     while(Date.now()<deadline&&captures.size<4){
       const before=await read();
-      if(before.moving!=='true'||before.direction!==direction||captures.has(before.frame)){await page.waitForTimeout(12);continue;}
+      if(before.moving!=='true'||before.direction!==direction||captures.has(before.frame)||!before.imageReady||!before.displayedUrl.includes(before.url)){await page.waitForTimeout(12);continue;}
       const image=await cdp.send('Page.captureScreenshot',{format:'png',fromSurface:true});
       const after=await read();
-      if(before.frame!==after.frame||before.changes!==after.changes||after.moving!=='true'||after.direction!==direction||after.fallback)continue;
+      if(before.frame!==after.frame||before.changes!==after.changes||after.moving!=='true'||after.direction!==direction||after.fallback||!after.imageReady||!after.displayedUrl.includes(after.url))continue;
       const filename=`guest-${id}-${direction}-${before.frame}.png`;
       await writeFile(path.join(output,filename),Buffer.from(image.data,'base64'));
       captures.set(before.frame,{frame:before.frame,filename,before,after});

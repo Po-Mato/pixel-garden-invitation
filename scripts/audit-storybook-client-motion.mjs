@@ -71,6 +71,7 @@ for(const c of catalog)for(const direction of directions){
     for(const state of [f.before,f.after]){
       assert.equal(state.frame,f.frame);assert.equal(state.direction,direction);assert.equal(state.moving,'true');
       assert.equal(state.preset,c.presetId);assert.equal(state.fallback,false);assert.equal(state.zone,zone);
+      if(live){assert.equal(state.imageReady,true);assert.ok(state.displayedUrl.includes(state.url),'Requested walk image was not painted');}
       assert.deepEqual(state.logicalSize.map(s=>s.trim()),['48px','72px']);
     }
     assert.equal(f.before.changes,f.after.changes);
