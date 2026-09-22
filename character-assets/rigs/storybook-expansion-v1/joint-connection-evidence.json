@@ -18,22 +18,22 @@
     {
       "id": "guest-01",
       "file": "character-assets/rigs/guest-01/storybook-source-v1/generated/walk-render-receipt.json",
-      "sha256": "545400e00d0a6d351c90051eb9c5d7d8d17342cafd7fe2b1e87d7d3c11930f0b"
+      "sha256": "b5959bcd6f517d4eff0192128c2877a385dde305aa4f7e95cd98d621ed435518"
     },
     {
       "id": "guest-02",
       "file": "character-assets/rigs/guest-02/storybook-source-v1/generated/walk-render-receipt.json",
-      "sha256": "090de224f168063a1dbb922aae2ce0528b07633c470cab1f2811287941d4ea69"
+      "sha256": "a02532fd4095268af1e8fdbd7d66cfb87c9934df228634eefd540ef398473765"
     },
     {
       "id": "guest-03",
       "file": "character-assets/rigs/guest-03/storybook-source-v1/generated/walk-render-receipt.json",
-      "sha256": "8c7544a1f4593828bbc7949e0ccf719416f41544285a666c90c8019b9ce2494b"
+      "sha256": "ffb31e89cf27b3c8e09ecfafbe994a9153e4f824f70f614c7876d73f119f87e8"
     },
     {
       "id": "guest-04",
       "file": "character-assets/rigs/guest-04/storybook-source-v1/generated/walk-render-receipt.json",
-      "sha256": "1027a72d5587b9a7f971b6c31b1b3af12794df99401d6f7797327b87f6460abe"
+      "sha256": "e505f31a019ca3f96834c8fe1a3084a79c3d1c92b3a022ee5ce776918b565b82"
     },
     {
       "id": "guest-05",
@@ -43,37 +43,37 @@
     {
       "id": "guest-06",
       "file": "character-assets/rigs/guest-06/storybook-source-v1/generated/walk-render-receipt.json",
-      "sha256": "034e96d3303417a65e4495b2b29fd2e1e2f16c792cb479220628c98b0b8b0b4d"
+      "sha256": "aadfc7f17b2450c71b9141469356161d6c05bf0e24fe6806a25745b70187154d"
     },
     {
       "id": "guest-07",
       "file": "character-assets/rigs/guest-07/storybook-source-v1/generated/walk-render-receipt.json",
-      "sha256": "4bbf40a892a6b9114cc54b490ae9acef6c3ff0eca72e387f36468f091b630100"
+      "sha256": "6a2f4534ccac45c25012a7213ebf6e7195ca50788db304360e026bd3d65eb947"
     },
     {
       "id": "guest-08",
       "file": "character-assets/rigs/guest-08/storybook-source-v1/generated/walk-render-receipt.json",
-      "sha256": "f4eab8ea58d21fe294679171f2c4f91d2c05908d3e25e5060bc4a3a72fcfa14e"
+      "sha256": "d5fa8fd6cf3a6bbe09c13abe89dc19f92dfb10a51961cdc701b16dd997cb699e"
     },
     {
       "id": "guest-09",
       "file": "character-assets/rigs/guest-09/storybook-source-v1/generated/walk-render-receipt.json",
-      "sha256": "3e555f42f6b3e26d84b4f8d686ef8eed391bb623ae6f89f765ab6b91246b76bd"
+      "sha256": "7905460ed25d508c153cc992e4acc91249625694d456a37db37fc11f1ba9e1f0"
     },
     {
       "id": "guest-10",
       "file": "character-assets/rigs/guest-10/storybook-source-v1/generated/walk-render-receipt.json",
-      "sha256": "eacbe02a8efe30d3a0f1ca61bcb5ee32fdaeff61c4dd3dae0f19bdf535868168"
+      "sha256": "be55b1aaa6f5a6949f1bbc9bb29ff6a71a5e9b7dc69823acba7ebf3d33e0fa0d"
     },
     {
       "id": "guest-11",
       "file": "character-assets/rigs/guest-11/storybook-source-v1/generated/walk-render-receipt.json",
-      "sha256": "bbc4d3ddc7783a7631eb85475cad7bcc86a8c01fc616eef4fa380d6b485f4116"
+      "sha256": "0351d59c0971c233b157f76d194662dd609d0b820e5254343ca4614a22de9334"
     },
     {
       "id": "guest-12",
       "file": "character-assets/rigs/guest-12/storybook-source-v1/generated/walk-render-receipt.json",
-      "sha256": "c6a4faa880b4c45cb05ba665607c96d3c118c8485bec41412a9c0073b70e9eec"
+      "sha256": "b5aa65ab75b4d56979fdb932ed905cba1c3ebe8261475085279625dffebbbcd2"
     }
   ],
   "activeSourceOverrides": [
@@ -85,7 +85,7 @@
       "connections": 112,
       "disconnected": 0,
       "receipt": "character-assets/rigs/guest-01/storybook-source-v1/generated/balanced-v3/source-render-receipt.json",
-      "receiptSha256": "b46d8879270756f5a87f375302600164bc9dd5b09df11692d37ececd46820b8a",
+      "receiptSha256": "19913089e5d10efe11f72df85df0a880a6bd4f6c2ff5086b67bfbeee75dd5c67",
       "scope": "Active neck and arm connections; unchanged concealed leg geometry is audited through the base recipe above."
     }
   ],
