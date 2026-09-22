@@ -4,7 +4,7 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {createHash} from 'node:crypto';
 import assert from 'node:assert/strict';
-import sharp from 'sharp';
+import sharp from './lib/deterministicSharp.mjs';
 import {sourceVolumeBinding} from './lib/storybookSourceVolume.mjs';
 import {packCharacterFrames} from './lib/packCharacterFrames.mjs';
 import {alphaConnection} from './lib/storybookJointConnections.mjs';

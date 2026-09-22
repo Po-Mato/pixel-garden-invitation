@@ -29,7 +29,7 @@ export async function verifyPaintedRenderReceipt(root, file, ancestors = new Set
 export async function beginPaintedRender(root, inputs, dependencies = []) {
   const names = dependencies.map(file => relative(root, file));
   for (const file of names) await verifyPaintedRenderReceipt(root, file);
-  return {version: 1, inputs: await snapshot(root, [...inputs, ...dependencies]), dependencies: names};
+  return {version: 1, inputs: await snapshot(root, [...inputs, ...dependencies, 'scripts/lib/deterministicSharp.mjs']), dependencies: names};
 }
 export async function finishPaintedRender(root, file, receipt, outputs) {
   await verifyEntries(root, receipt.inputs);

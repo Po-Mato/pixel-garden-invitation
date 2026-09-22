@@ -1,4 +1,4 @@
-import sharp from 'sharp';
+import sharp from './deterministicSharp.mjs';
 import assert from 'node:assert/strict';
 
 // Lossless placement of complete, non-overlapping RGBA frames into an atlas.

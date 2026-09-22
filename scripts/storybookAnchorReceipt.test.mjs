@@ -26,7 +26,7 @@ test('anchor rebuild inputs include hidden materials, mattes, bindings and all s
 });
 test('anchor receipt verifies current editable sources and all sixteen freshly rendered frames',async()=>{
   const receipt=await verifyPaintedRenderReceipt(root,base+'storybook-directions-v1/generated/walk-render-receipt.json');
-  assert.deepEqual(receipt.inputs.map(i=>i.file),(await anchorInputs()).map(f=>path.relative(root,f)).sort());
+  assert.deepEqual(receipt.inputs.map(i=>i.file),[...(await anchorInputs()).map(f=>path.relative(root,f)),'scripts/lib/deterministicSharp.mjs'].sort());
   const files=new Set(receipt.outputs.map(o=>o.file));
   for(const d of ['front','left','right','back'])for(let n=1;n<=4;n++)assert.ok(files.has(base+(d==='front'?'storybook-body-v1':'storybook-directions-v1')+`/generated/${d}-walk-${n}.png`));
   assert.ok(files.has(base+'storybook-directions-v1/generated/guest05-walk-study.png'));

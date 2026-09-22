@@ -2,7 +2,7 @@ import {readFile} from 'node:fs/promises';
 import path from 'node:path';
 import {createHash} from 'node:crypto';
 import assert from 'node:assert/strict';
-import sharp from 'sharp';
+import sharp from './deterministicSharp.mjs';
 import {assertPaintedSourceOverlay} from './paintedSourceOverlay.mjs';
 
 // Editable material in the ORIGINAL artwork coordinates, before head layer
