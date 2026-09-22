@@ -1,0 +1,14 @@
+{
+  "status":"painted-style-source-study",
+  "runtimeEligible":false,
+  "layerDefinition":"head-layers.json",
+  "splitBodyOcclusion":true,
+  "bodyOcclusionUnderlapSourcePixels":24,
+  "skeleton":"../../common-three-head-216-v1/skeleton.json",
+  "heads":[
+    {"direction":"front","source":"sources/head-front-v1.png","matte":"masks/head-front-v1.svg","parent":"head","pivot":[585,1058],"crownY":92,"chinY":1058,"mirrored":false,"note":"Shoulder-length hair extends below anatomical chin; hair tips are not the head-height plane."},
+    {"direction":"left","source":"sources/head-left-v2.png","matte":"masks/head-left-v2.svg","sourceOverlays":["sources/head-left-shading-study-v1.svg"],"parent":"head","pivot":[650,910],"crownY":50,"chinY":910,"mirrored":false},
+    {"direction":"right","source":"sources/head-right-v2.png","matte":"masks/head-right-v2.svg","parent":"head","pivot":[670,1018],"crownY":45,"chinY":1018,"mirrored":false},
+    {"direction":"back","source":"sources/head-back-v1.png","matte":"masks/head-back-v1.svg","sourceOverlays":["sources/head-back-shading-study-v1.svg"],"parent":"head","pivot":[650,950],"crownY":40,"chinY":950,"mirrored":false,"chinPlane":"manually-reviewed-hidden-jaw-plane-not-hair-bottom","note":"The prior hidden jaw estimate 1008 registered the rear skull smaller than front. Reviewed crown, skull width and hair tips against front: corrected source landmark 950, with the common 72px anatomical head unchanged. No frame-dependent transform."}
+  ]
+}

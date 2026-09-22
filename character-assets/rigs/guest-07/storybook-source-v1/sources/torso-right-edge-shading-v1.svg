@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1215" height="1295" viewBox="0 0 1215 1295">
+  <!-- REJECTED STUDY: not registered. Broad contour shading worsened some map
+       display profiles. Retained for comparison; do not apply without new QA.
+       Right bodice only; upper pearl trim intentionally unpainted. -->
+  <g fill="none" stroke="#4e3a5d" stroke-width="44" stroke-opacity="0.85" stroke-linecap="round">
+    <path d="M322 200 C298 253 334 388 355 485 C376 636 399 704 423 805 Q444 863 438 891"/>
+    <path d="M893 536 C897 669 887 806 868 914"/>
+    <path d="M447 1003 Q391 1070 369 1118"/>
+    <path d="M862 1017 Q903 1090 918 1127"/>
+  </g>
+</svg>

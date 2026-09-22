@@ -1,0 +1,29 @@
+{
+  "supersededBy": "volume-source-review.json",
+  "status": "arm-rig-review-not-release-ready",
+  "scope": "guest-07 only, eight independent directional sleeve sources",
+  "changes": ["shoulder attachment inside the sleeve cap", "source wrist bound to the fixed hand joint instead of palm coordinates", "24 editable curved upper-arm, forearm and hand masks replace horizontal bands for this guest"],
+  "unchanged": ["72/144/216 skeleton", "walk keyframes", "original sleeve and hand PNG artwork", "source alpha mattes", "head and face", "torso and skirt sources", "bag source and body-side ownership"],
+  "hdSha256": "007dca9e45f7b73ad6f81ac61feeab5a634fca61804ad0cb24ed5767326eaf55",
+  "runtimeSha256": "a97a576ad2d8ab1ec1df4a4039d06f469155468a81f74c39dbac5331b93819f4",
+  "otherCharacterRuntimeHashesUnchanged": 11,
+  "sourceTestsPassed": 15,
+  "structureTestsPassed": 79,
+  "armRegressionTestsIncluded": 3,
+  "jointAuditCharactersPassed": 12,
+  "visualInspection": ["four-direction high-resolution sheet", "390x844 selection", "home 48x72 movement", "neighborhood 48x72 movement", "subway-station 48x72 movement", "subway-train 48x72 movement"],
+  "currentAssetMotionAuditsPassed": 4,
+  "observations": "Sleeves now attach higher into the shoulder and extend to the actual wrist. Cuff and hand segmentation appears less abrupt in the observed frames. This is a reviewed candidate, not final visual approval.",
+  "contrast": {
+    "basicFailuresBefore": 28,
+    "basicFailuresAfter": 30,
+    "displayFailuresBefore": 0,
+    "displayFailuresAfter": 3,
+    "regression": "guest-07 back neighborhood frames 1, 2, 3 (zero-based) fail one or more display profiles",
+    "thresholdsChanged": false,
+    "passed": false
+  },
+  "runtimeEligible": false,
+  "visualApproved": false,
+  "productionAssetsChanged": false
+}

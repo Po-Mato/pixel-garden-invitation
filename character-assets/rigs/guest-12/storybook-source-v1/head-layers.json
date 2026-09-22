@@ -1,0 +1,99 @@
+{
+  "status": "visible-source-ownership-study",
+  "runtimeEligible": false,
+  "independentMotionAllowed": false,
+  "directions": {
+    "front": {
+      "sourcePivot": [
+        670,
+        1050
+      ],
+      "behindBody": [],
+      "layers": [
+        {
+          "id": "face",
+          "parent": "head",
+          "path": "M630 432Q721 405 821 438L851 566L910 676L975 724L963 850Q931 976 803 1022L674 1050Q528 1021 443 949L402 875L365 776L399 713Q551 647 592 570Z M348 722Q286 710 272 760Q253 823 302 872Q366 927 417 905L377 830Z M1001 725Q1065 706 1080 756Q1098 824 1046 875Q995 923 933 906L968 822Z"
+        },
+        {
+          "id": "frontHair",
+          "parent": "head",
+          "path": "M0 0H1400V640H0Z"
+        },
+        {
+          "id": "backHair",
+          "parent": "head"
+        }
+      ]
+    },
+    "left": {
+      "sourcePivot": [
+        700,
+        1035
+      ],
+      "behindBody": [],
+      "layers": [
+        {
+          "id": "face",
+          "parent": "head",
+          "path": "M460 408L535 412L553 582L621 669L686 730L697 840L769 737Q879 675 916 753Q943 822 895 885Q851 958 735 947Q642 1020 431 1035Q377 1031 351 967L315 897L300 830Q295 800 350 776L360 688L356 545Z"
+        },
+        {
+          "id": "frontHair",
+          "parent": "head",
+          "path": "M0 0H720V640H0Z"
+        },
+        {
+          "id": "backHair",
+          "parent": "head"
+        }
+      ]
+    },
+    "right": {
+      "sourcePivot": [
+        660,
+        1045
+      ],
+      "behindBody": [],
+      "layers": [
+        {
+          "id": "face",
+          "parent": "head",
+          "path": "M935 417Q1033 425 1047 566L1048 688L1033 744L1034 781Q1106 795 1098 834L1060 907Q1042 981 981 1039Q883 1067 710 993L593 960L590 909Q507 903 464 828Q422 748 489 701Q564 676 612 736L674 835L704 714L857 630Z"
+        },
+        {
+          "id": "frontHair",
+          "parent": "head",
+          "path": "M550 0H1400V650H550Z"
+        },
+        {
+          "id": "backHair",
+          "parent": "head"
+        }
+      ]
+    },
+    "back": {
+      "sourcePivot": [
+        680,
+        1046
+      ],
+      "behindBody": [],
+      "layers": [
+        {
+          "id": "face",
+          "parent": "head",
+          "path": "M286 714Q251 737 259 797Q271 866 336 899L414 906Q434 970 560 1011L681 1046Q831 1022 911 966L944 901Q1024 918 1072 842Q1111 777 1085 735L1049 713L958 785L816 908L667 981L514 905L399 811Z"
+        },
+        {
+          "id": "frontHair",
+          "parent": "head",
+          "path": "M0 0H1400V290H0Z"
+        },
+        {
+          "id": "backHair",
+          "parent": "head"
+        }
+      ]
+    }
+  }
+}

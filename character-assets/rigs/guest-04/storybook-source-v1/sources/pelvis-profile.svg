@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="192" height="288">
+<defs><linearGradient id="cloth"><stop stop-color="#404247"/><stop offset="1" stop-color="#37393e"/></linearGradient></defs>
+<path fill="url(#cloth)" d="M87 182H105V194H87Z"/>
+</svg>

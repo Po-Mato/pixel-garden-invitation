@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="992" height="1586" viewBox="0 0 992 1586">
+  <!-- Editable costume-source shading, in original source coordinates.
+       Clipped by source alpha using source-atop before rig registration.
+       No silhouette growth, frame-specific repair, or global recoloring. -->
+  <g fill="none" stroke="#78618d" stroke-width="48" stroke-opacity="0.72" stroke-linecap="round">
+    <path d="M 281 108 C 228 214 192 429 151 638 C 103 881 57 1128 13 1359"/>
+    <path d="M 718 107 C 773 214 809 429 850 638 C 898 881 944 1128 982 1359"/>
+  </g>
+</svg>

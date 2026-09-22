@@ -1,0 +1,14 @@
+{
+  "id":"guest-02-painted-head-source-study",
+  "runtimeEligible":false,
+  "layerDefinition":"head-layers.json",
+  "splitBodyOcclusion":true,
+  "bodyOcclusionUnderlapSourcePixels":24,
+  "skeleton":"../../common-three-head-216-v1/skeleton.json",
+  "heads":[
+    {"direction":"front","source":"sources/head-front-v1.png","matte":"masks/head-front-v1.svg","parent":"head","pivot":[615,1085],"crownY":129,"chinY":1085,"mirrored":false},
+    {"direction":"left","source":"sources/head-left-v1.png","sourceOverlays":["sources/head-left-shading-study-v1.svg"],"matte":"masks/head-left-v1.svg","parent":"head","pivot":[640,1055],"crownY":121,"chinY":1055,"mirrored":false},
+    {"direction":"right","source":"sources/head-right-v1.png","matte":"masks/head-right-v1.svg","parent":"head","pivot":[620,1095],"crownY":123,"chinY":1095,"mirrored":false},
+    {"direction":"back","source":"sources/head-back-v1.png","matte":"masks/head-back-v1.svg","parent":"head","pivot":[620,1095],"crownY":124,"chinY":1095,"mirrored":false}
+  ]
+}

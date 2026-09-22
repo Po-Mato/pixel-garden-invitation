@@ -1,0 +1,19 @@
+{
+  "supersededBy": "front-hem-source-review.json",
+  "status": "reviewed-source-material-not-release-ready",
+  "catalogVerificationOnResume": {"sourceStudyTestsPassed": 165, "structureTestsPassed": 75, "jointAuditCharactersPassed": 12, "command": "node scripts/test-storybook-catalog.mjs", "exitCode": 0},
+  "source": "sources/skirt-left-hem-study-v1.svg",
+  "method": "Private left lace hem material in original source coordinates using its own editable matte contour; composited before registration",
+  "preserved": ["original alpha", "waistband", "upper pleats", "head and face", "pivots", "skeleton", "other directions"],
+  "hdSha256": "74897c5671d29c733a64485128669c66a5fed196391416766adbf39c723b76a8",
+  "runtimeSha256": "58bde816383dfbacc3f460dd38e906584d828b96a54113e7e18cad69da67f027",
+  "leftNeutralNeighborhoodBefore": 1.151709183263884,
+  "leftNeighborhoodAfter": [1.259700099272677, 1.1870731077448897, 1.2210203229009047, 1.1870731077448897],
+  "catalogFailuresBefore": 32,
+  "catalogFailuresAfter": 30,
+  "displayFailures": 0,
+  "visualReview": "All sixteen frames inspected in selection, home, neighborhood, station and train contact sheets. Lavender pleats, lace edge, face and bag remain recognizable; no new detached hem fragment observed. All four current staging asset hash audits passed on resume.",
+  "runtimeEligible": false,
+  "visualApproved": false,
+  "thresholdsChanged": false
+}

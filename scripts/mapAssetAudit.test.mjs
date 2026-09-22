@@ -538,7 +538,7 @@ test("wires font, gallery, map, character, photo-effect, and mobile visual audit
 
   assert.equal(
     packageJson.scripts["maps:audit"],
-    "node scripts/audit-map-assets.mjs && node scripts/audit-map-foreground-placements.mjs && node scripts/audit-map-tone.mjs && node scripts/audit-guest216-map-regression.mjs"
+    "node scripts/audit-map-assets.mjs && node scripts/audit-map-foreground-placements.mjs && node scripts/audit-map-tone.mjs && node scripts/audit-active-guest-map.mjs"
   );
   assert.equal(
     packageJson.scripts.build,

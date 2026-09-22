@@ -1,0 +1,232 @@
+{
+  "date": "2026-09-14",
+  "currentClientAssetVerificationValid": false,
+  "clientEvidenceSupersededReason": "The isolated client QA copy was later found stale. Historical selection evidence does not verify this source revision; repeat actual-client visual QA with current copies.",
+  "character": "guest-09",
+  "sourceSheetSha256": "07eff0801234508606bc325478fae6e69570e9e45e6cb0ac4ec4306e4bde63c1",
+  "sourceOnly": true,
+  "runtimeEligible": false,
+  "visualApproved": false,
+  "separatelyPaidApi": false,
+  "changes": [
+    "Right jacket and trouser source contour shading",
+    "Right sleeve shading clipped above original cuff at source y1670"
+  ],
+  "invariants": [
+    "Source alpha unchanged for all five registered parts",
+    "Unpainted opaque source RGB unchanged",
+    "White cuff, hand and shoe shading regions excluded",
+    "Common skeleton and all animation keys unchanged"
+  ],
+  "trials": [
+    {
+      "stroke": "#80654f",
+      "opacity": 0.7,
+      "width": 28,
+      "result": {
+        "standardFailures": 73,
+        "displayFailures": 11
+      },
+      "accepted": false
+    },
+    {
+      "stroke": "#493a30",
+      "opacity": 0.85,
+      "jacketAndLegWidth": 36,
+      "result": {
+        "standardFailures": 70,
+        "displayFailures": 9
+      },
+      "accepted": false,
+      "note": "Intermediate step before sleeve source completion"
+    },
+    {
+      "stroke": "#493a30",
+      "opacity": 0.85,
+      "jacketAndLegWidth": 36,
+      "sleeveWidth": 48,
+      "result": {
+        "standardFailures": 67,
+        "displayFailures": 9
+      },
+      "acceptedAsResearchSource": true
+    }
+  ],
+  "baseline": {
+    "standardFailures": 70,
+    "displayFailures": 11
+  },
+  "contrastThresholdsRelaxed": false,
+  "tests": {
+    "sourceStudyPassed": 15,
+    "catalogAndOverlayAndEvidenceSuitePassed": 21
+  },
+  "browser": {
+    "viewport": [
+      390,
+      844
+    ],
+    "actualSelection": true,
+    "actualGame": false,
+    "selectionSamples": [
+      {
+        "frame": "1",
+        "moving": "true",
+        "direction": "right",
+        "width": 160,
+        "height": 240,
+        "x": 115,
+        "y": 215.203125
+      },
+      {
+        "frame": "1",
+        "moving": "true",
+        "direction": "right",
+        "width": 160,
+        "height": 240,
+        "x": 115,
+        "y": 215.203125
+      },
+      {
+        "frame": "1",
+        "moving": "true",
+        "direction": "right",
+        "width": 160,
+        "height": 240,
+        "x": 115,
+        "y": 215.203125
+      },
+      {
+        "frame": "2",
+        "moving": "true",
+        "direction": "right",
+        "width": 160,
+        "height": 240,
+        "x": 115,
+        "y": 215.203125
+      },
+      {
+        "frame": "2",
+        "moving": "true",
+        "direction": "right",
+        "width": 160,
+        "height": 240,
+        "x": 115,
+        "y": 215.203125
+      },
+      {
+        "frame": "2",
+        "moving": "true",
+        "direction": "right",
+        "width": 160,
+        "height": 240,
+        "x": 115,
+        "y": 215.203125
+      },
+      {
+        "frame": "3",
+        "moving": "true",
+        "direction": "right",
+        "width": 160,
+        "height": 240,
+        "x": 115,
+        "y": 215.203125
+      },
+      {
+        "frame": "3",
+        "moving": "true",
+        "direction": "right",
+        "width": 160,
+        "height": 240,
+        "x": 115,
+        "y": 215.203125
+      },
+      {
+        "frame": "3",
+        "moving": "true",
+        "direction": "right",
+        "width": 160,
+        "height": 240,
+        "x": 115,
+        "y": 215.203125
+      },
+      {
+        "frame": "0",
+        "moving": "true",
+        "direction": "right",
+        "width": 160,
+        "height": 240,
+        "x": 115,
+        "y": 215.203125
+      },
+      {
+        "frame": "0",
+        "moving": "true",
+        "direction": "right",
+        "width": 160,
+        "height": 240,
+        "x": 115,
+        "y": 215.203125
+      },
+      {
+        "frame": "0",
+        "moving": "true",
+        "direction": "right",
+        "width": 160,
+        "height": 240,
+        "x": 115,
+        "y": 215.203125
+      },
+      {
+        "frame": "1",
+        "moving": "true",
+        "direction": "right",
+        "width": 160,
+        "height": 240,
+        "x": 115,
+        "y": 215.203125
+      },
+      {
+        "frame": "1",
+        "moving": "true",
+        "direction": "right",
+        "width": 160,
+        "height": 240,
+        "x": 115,
+        "y": 215.203125
+      },
+      {
+        "frame": "1",
+        "moving": "true",
+        "direction": "right",
+        "width": 160,
+        "height": 240,
+        "x": 115,
+        "y": 215.203125
+      },
+      {
+        "frame": "2",
+        "moving": "true",
+        "direction": "right",
+        "width": 160,
+        "height": 240,
+        "x": 115,
+        "y": 215.203125
+      }
+    ],
+    "stop": {
+      "frame": 1,
+      "moving": false
+    },
+    "screenshots": [
+      "generated/client-right-edge-moving-v1.png",
+      "generated/client-right-edge-stopped-v1.png",
+      "generated/map-home-right-edge-v2.png"
+    ]
+  },
+  "remaining": [
+    "All-map contrast acceptance",
+    "Actual game full-cycle visual review",
+    "Hidden original parts and final release gates"
+  ]
+}

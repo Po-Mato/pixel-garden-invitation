@@ -1,24 +1,24 @@
 {
   "version": 2,
-  "approvedAt": "2026-09-10T09:18:20.922Z",
-  "reason": "사용자 위임에 따른 Codex 시각 검수: 72/144/216 공용 원본 리그 전환. 12명 4방향 실제 선택 화면 48장, 기존 전체 보행·맵 검수와 비교하여 의도한 원화 변경 승인. 지도 10영역 변화 없음. 종전 기준과 실패 비교는 common-three-head-216-v1/release-review/legacy-baseline에 보존. 허용치 변경 없음. 아직 운영 배포 승인을 증명하는 자료는 아님.",
-  "sha256": "285a14f30443eea3f0736604e79848157a8d8db1d4571700b7730651ea83b58e",
+  "approvedAt": "2026-09-22T06:21:41.722Z",
+  "reason": "사용자 위임에 따른 12명 페인팅 컷아웃 리그 전환. 원본 165·구조 112 검사, 실제 선택/이동 프레임과 1920 맵 대비 검수 완료. 차이 1.491%는 하객 교체 영역이며 10개 맵 차이 0%; 허용치 변경 없음. release-candidate-v1.json 참조.",
+  "sha256": "69a127e4e87ad42cfdaa98f9d4ff08e7eac23ec3d94a6492d6ef6bd5d7843740",
   "provenance": {
     "schemaVersion": 1,
     "subjectKind": "capture-set",
     "sourceKind": "local",
     "runId": null,
     "runAttempt": null,
-    "commitSha": "4bb8451b0fac11d269389d2c9444dc37eb9f4db6",
+    "commitSha": "6b5f149067a4a3f4224dc7d2f59c9f440c8660e9",
     "runUrl": null,
     "checksumAlgorithm": "sha256",
     "artifactChecksumScope": "sorted-capture-set-manifest",
-    "artifactSha256": "9ccfcccb8e0d3cf3f650c674a128778f5ce934f899d17e30b9c4ab4ae349812e",
+    "artifactSha256": "d4e76bab4684fb319d43eeb41f0dda6193b1a16858fbe5e2e84a31c013ac8ae6",
     "files": [
       {
         "logicalPath": "mobile-game-current",
-        "size": 4561294,
-        "sha256": "8c98d804df278f2117ddb12a6146d546d6f6f2106873ed9842b0eb654208bd84"
+        "size": 4581629,
+        "sha256": "da7e503fc61ec21cb811ac8815e8d9f0e90770f3966bf6ae94dd2833408ef05d"
       }
     ]
   },

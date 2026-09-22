@@ -1,0 +1,30 @@
+{
+  "date": "2026-09-14",
+  "source": "sources/skirt-right-hem-study-v1.svg",
+  "part": "skirt-right",
+  "direction": "right",
+  "sourceMethod": "Editable original matte contour, clipped to the lower lace hem and shaded before rig registration; no output-PNG edits",
+  "previousSheetSha256": "5dbf8bb1ab1165ef7ab26e6060058f89812beeee9c9de338d1c5f88ff67c876f",
+  "sheetSha256": "77cd014208067e98457dfe2355881bf41b6aee40960e6d9b21dd13756db533b8",
+  "runtimeSha256": "bc93b688ddf7b302d3edb81621fdc54ddf04288521f02f389d9fbdc3c204d489",
+  "sourceAlphaUnchanged": true,
+  "upperSkirtUnpaintedAboveSourceY": 1300,
+  "unpaintedOpaqueSourceColorsPreserved": true,
+  "geometryPivotAndBodySideUnchanged": true,
+  "otherDirectionsUnchanged": true,
+  "otherCharactersUnchanged": true,
+  "pngRepaired": false,
+  "catalogContrast": {"samples":1920,"standardFailuresBefore":60,"standardFailures":59,"displayFailuresBefore":3,"displayFailures":0,"newFailures":0,"thresholdsUnchanged":true},
+  "neighborhoodRightMinimumDisplayByFrame": [1.1517928770044572,1.1291575272286607,1.1001382925634633,1.1291575272286607],
+  "visualReview": {
+    "highResolutionOppositeStridesInspected": true,
+    "latestSelection16FramesInspected": true,
+    "latestHomeGame16FramesInspected": true,
+    "observation": "The lace hem boundary is slightly more defined without growing the skirt, obscuring the shoes, changing the face, or adding a conspicuous dark band."
+  },
+  "tests": {"source":15,"structure":58,"jointCatalogCharacters":12,"disconnected":0,"unobserved":0},
+  "visualApproved": false,
+  "runtimeEligible": false,
+  "productionChanged": false,
+  "remaining": "Basic map contrast still fails in 59 samples; display-profile passing does not grant release approval."
+}

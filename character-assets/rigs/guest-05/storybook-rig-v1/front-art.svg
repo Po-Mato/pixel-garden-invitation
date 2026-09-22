@@ -1,0 +1,94 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" width="192" height="288" viewBox="0 0 192 288">
+<title>Guest 05 — editable storybook front artwork</title>
+<desc>Authored vector layers. No embedded raster, traced output pixels, frame-dependent scaling or white background. Geometry: crown 54, chin 126, soles 270.</desc>
+<defs>
+ <linearGradient id="skin" x1="0" y1="0" x2=".8" y2="1"><stop stop-color="#ffe6cd"/><stop offset=".6" stop-color="#ffdbbb"/><stop offset="1" stop-color="#efb090"/></linearGradient>
+ <radialGradient id="faceSkin" cx=".42" cy=".33" r=".8"><stop stop-color="#ffe8d3"/><stop offset=".75" stop-color="#ffdbc0"/><stop offset="1" stop-color="#f1b99b"/></radialGradient>
+ <radialGradient id="blush"><stop stop-color="#ef9b85" stop-opacity=".5"/><stop offset="1" stop-color="#ef9b85" stop-opacity="0"/></radialGradient>
+ <linearGradient id="hair" x1=".15" y1="0" x2=".8" y2="1"><stop stop-color="#986e4f"/><stop offset=".45" stop-color="#80583f"/><stop offset="1" stop-color="#5c3e2e"/></linearGradient>
+ <linearGradient id="hairLight" x1="0" y1="0" x2=".7" y2="1"><stop stop-color="#af8360"/><stop offset="1" stop-color="#865d42"/></linearGradient>
+ <linearGradient id="cream" x1="0" y1="0" x2="1" y2=".3"><stop stop-color="#efe2cb"/><stop offset=".42" stop-color="#fff7e7"/><stop offset="1" stop-color="#edddc3"/></linearGradient>
+ <linearGradient id="sage" x1="0" y1="0" x2="1" y2=".5"><stop stop-color="#98a78a"/><stop offset=".5" stop-color="#b8c4a4"/><stop offset="1" stop-color="#899b7d"/></linearGradient>
+ <linearGradient id="iris" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#3f2b20"/><stop offset=".55" stop-color="#795033"/><stop offset="1" stop-color="#bb8950"/></linearGradient>
+ <linearGradient id="sole" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#c8b38e"/><stop offset="1" stop-color="#a28a63"/></linearGradient>
+</defs>
+<!-- part:shadow -->
+<g id="shadow"><ellipse cx="96" cy="268" rx="29" ry="4" fill="#4b5145" opacity=".13"/></g>
+<!-- /part -->
+<!-- part:backHair -->
+<g id="backHair" stroke="#62432f" stroke-width=".85" stroke-linejoin="round"><path d="M110 104C124 101 131 111 126 119C131 125 123 132 115 128C108 130 105 121 109 117Z" fill="url(#hair)"/><path d="M113 110Q127 109 123 118Q127 122 119 126M110 118Q117 116 120 122" fill="none" stroke="#99704f" stroke-width="1.8" opacity=".65"/><path d="M69 91Q57 105 64 118Q70 125 74 119Q64 119 68 109" fill="url(#hair)"/></g>
+<!-- /part -->
+<!-- part:thighRight -->
+<g id="thighRight"><path d="M78 188Q85 185 94 190L94 224Q90 230 81 225Z" fill="url(#skin)" stroke="#bd8365" stroke-width=".8"/></g>
+<!-- /part -->
+<!-- part:thighLeft -->
+<g id="thighLeft"><path d="M98 190Q108 185 115 189L111 226Q103 230 98 224Z" fill="url(#skin)" stroke="#bd8365" stroke-width=".8"/></g>
+<!-- /part -->
+<!-- part:calfRight -->
+<g id="calfRight"><path d="M80 219Q86 216 94 220Q95 231 91 241L92 258Q87 264 79 259L80 243Q78 232 80 219Z" fill="url(#skin)" stroke="#bd8365" stroke-width=".8"/><path d="M82 223Q88 224 92 221L89 237Q84 235 82 231Z" fill="#efa987" opacity=".36"/></g>
+<!-- /part -->
+<!-- part:calfLeft -->
+<g id="calfLeft"><path d="M99 220Q106 216 113 220Q115 232 111 242L113 259Q106 265 100 258L101 242Q97 232 99 220Z" fill="url(#skin)" stroke="#bd8365" stroke-width=".8"/><path d="M100 222Q108 224 112 221L109 238Q104 237 102 231Z" fill="#efa987" opacity=".32"/></g>
+<!-- /part -->
+<!-- part:shoeRight -->
+<g id="shoeRight" stroke-linejoin="round"><path d="M78 251Q83 257 92 251L95 261Q96 269.6 85 269.6Q74 269.6 75.3 262Z" fill="url(#sole)" stroke="#715638" stroke-width=".8"/><path d="M78 249Q81 256 91 251Q94 255 94 262Q90 267 82 266Q75 265 76 260Z" fill="url(#cream)" stroke="#a78a68" stroke-width=".75"/><path d="M79 261Q86 264 91 261" fill="none" stroke="#fffdf5" stroke-width="1.6" stroke-linecap="round"/></g>
+<!-- /part -->
+<!-- part:shoeLeft -->
+<g id="shoeLeft" stroke-linejoin="round"><path d="M100 251Q107 257 113 251L117 262Q118 269.6 107 269.6Q97 269.6 97 262Z" fill="url(#sole)" stroke="#715638" stroke-width=".8"/><path d="M101 251Q110 256 113 249L116 260Q117 266 110 267Q101 267 98 262Q98 256 101 251Z" fill="url(#cream)" stroke="#a78a68" stroke-width=".75"/><path d="M101 261Q108 264 113 261" fill="none" stroke="#fffdf5" stroke-width="1.6" stroke-linecap="round"/></g>
+<!-- /part -->
+<!-- part:pelvis -->
+<g id="pelvis"><path d="M80 177H112L117 198H75Z" fill="#9dad90"/></g>
+<!-- /part -->
+<!-- part:upperArmRight -->
+<g id="upperArmRight" stroke-linejoin="round"><path d="M75 132Q69 133 67 141L61.5 163Q65 168 72.5 165L80 142Z" fill="url(#cream)" stroke="#96836b" stroke-width=".8"/><path d="M76 140L72 158L66 162Q71 144 70 138Z" fill="#dfccb0" opacity=".55"/></g>
+<!-- /part -->
+<!-- part:upperArmLeft -->
+<g id="upperArmLeft" stroke-linejoin="round"><path d="M116 132Q123 132 125 141L130.5 163Q127 168 119 165L112 142Z" fill="url(#cream)" stroke="#96836b" stroke-width=".8"/><path d="M118 140L121 158L127 162Q122 145 123 138Z" fill="#dfccb0" opacity=".5"/></g>
+<!-- /part -->
+<!-- part:forearmRight -->
+<g id="forearmRight"><path d="M62.1 159Q67 157 73 161L70 182Q64 184 58 181Z" fill="url(#cream)"/><path d="M62.1 159L58 181Q64 184 70 182L73 162" fill="none" stroke="#96836b" stroke-width=".8" stroke-linejoin="round"/><path d="M64 161Q67 162 70 161L68 164Z" fill="#ddc9ab" opacity=".6"/><path d="M59 179Q65 181 70 180" fill="none" stroke="#e3d2b6" stroke-width=".7"/></g>
+<!-- /part -->
+<!-- part:forearmLeft -->
+<g id="forearmLeft"><path d="M119 161Q124 157 130 159L134 181Q128 184 122 182Z" fill="url(#cream)"/><path d="M119 162L122 182Q128 184 134 181L130 159" fill="none" stroke="#96836b" stroke-width=".8" stroke-linejoin="round"/><path d="M122 162L128 161L124 165Z" fill="#ddc9ab" opacity=".56"/><path d="M123 180Q128 181 133 179" fill="none" stroke="#e3d2b6" stroke-width=".7"/></g>
+<!-- /part -->
+<!-- part:neck -->
+<g id="neck"><path d="M90 121H103L103 129Q106 131 110 132L101 145H92L82 132Q89 130 90 127Z" fill="url(#skin)" stroke="#c08768" stroke-width=".7"/><path d="M90 123H103V129Q97 132 90 128Z" fill="#eca380" opacity=".48"/></g>
+<!-- /part -->
+<!-- part:torso -->
+<g id="torso"><path d="M83 132L96 146L108 132L116 145L111 178Q96 183 80 178L76 146Z" fill="url(#sage)" stroke="#6e8165" stroke-width=".85" stroke-linejoin="round"/><path d="M84 133L105 174L96 177L81 148Z" fill="#d0d8bb" opacity=".65"/><path d="M108 135L91 163L99 175L111 145Z" fill="#879a7c" opacity=".55"/><path d="M84 138L102 169" fill="none" stroke="#d2dbbd" stroke-width="1.2" opacity=".75"/></g>
+<!-- /part -->
+<!-- part:jacket -->
+<g id="jacket" stroke="#96836b" stroke-width=".8" stroke-linejoin="round"><path d="M88 130Q81 130 73 134Q73 146 76 155L73 174Q81 175 85 165Q89 151 88 130Z" fill="url(#cream)"/><path d="M104 130Q112 130 120 134Q119 145 116 156L119 174Q112 175 108 165Q103 149 104 130Z" fill="url(#cream)"/><path d="M77 141Q79 151 76 161L82 157Z" fill="#e6d4b8" stroke="none" opacity=".6"/><path d="M116 140L111 156L117 163Z" fill="#e6d4b8" stroke="none" opacity=".5"/></g>
+<!-- /part -->
+<!-- part:skirt -->
+<g id="skirt" stroke-linejoin="round"><path d="M80 177Q96 173 112 177Q119 198 132 221Q126 226 120 226Q115 231 105 230Q95 234 84 231Q72 231 68 227Q60 226 56 222Q72 197 80 177Z" fill="url(#sage)" stroke="#6e8165" stroke-width=".95"/><path d="M82 179L68 225L74 228L89 181Z" fill="#7e9474" opacity=".55"/><path d="M92 180L84 230Q90 232 96 231L97 179Z" fill="#cfdbb7" opacity=".66"/><path d="M107 181L116 228L123 224L112 180Z" fill="#738969" opacity=".48"/><path d="M99 182L104 229L110 229L105 181Z" fill="#c0ceab" opacity=".65"/><path d="M80 177Q96 181 112 177" fill="none" stroke="#708464" stroke-width="1"/></g>
+<!-- /part -->
+<!-- part:ribbon -->
+<g id="ribbon" stroke="#718563" stroke-width=".8" stroke-linejoin="round"><path d="M80 175Q94 176 108 172L113 176Q95 182 80 180Z" fill="#aabb9c"/><path d="M107 176Q120 173 121 183Q116 186 108 181Z" fill="#c2d0ae"/><path d="M107 177Q99 171 98 179Q100 182 108 180Z" fill="#a3b595"/><path d="M109 179Q114 190 119 202L112 198L108 203L104 181Z" fill="#b5c6a3"/><path d="M108 180L115 194" fill="none" stroke="#879b76"/><ellipse cx="108" cy="178" rx="2.8" ry="2.4" fill="#9dad8b"/></g>
+<!-- /part -->
+<!-- part:handbag -->
+<g id="handbag" stroke-linejoin="round"><path d="M126 187Q127 180 132 181Q137 181 137 187" fill="none" stroke="#a88e68" stroke-width="1"/><path d="M123 185L139 184Q141 184 141 187L142 198Q142 200 139 200L125 201Q122 201 122 198L121 188Q121 186 123 185Z" fill="url(#cream)" stroke="#a28c6b" stroke-width="1"/><path d="M125 188L138 187L139 198L125 199Z" fill="#fffaf0"/><path d="M125 190L138 189" fill="none" stroke="#e4d6bf" stroke-width=".7"/></g>
+<!-- /part -->
+<!-- part:handRight -->
+<g id="handRight"><path d="M60 181Q65 182 69 182L68 187Q71 190 69 192L67 191Q66 197 61 194Q56 191 59 185Z" fill="url(#skin)" stroke="#c28869" stroke-width=".8" stroke-linejoin="round"/><path d="M62 187Q60 190 63 192M66 190L65 193" fill="none" stroke="#d39876" stroke-width=".55" stroke-linecap="round"/></g>
+<!-- /part -->
+<!-- part:handLeft -->
+<g id="handLeft"><path d="M123 182Q127 183 132 181L134 186Q136 191 132 194Q129 197 127 192Q124 194 123 191L124 187Z" fill="url(#skin)" stroke="#c28869" stroke-width=".8" stroke-linejoin="round"/><path d="M130 187Q132 190 130 192M127 188L127 192" fill="none" stroke="#d39876" stroke-width=".55" stroke-linecap="round"/></g>
+<!-- /part -->
+<!-- part:face -->
+<g id="face"><path d="M70 89Q72 77 95 77Q119 77 122 91L123 103Q129 99 128 108Q127 115 120 114Q116 122 98 125.6Q85 125.8 73 116Q66 116 64 110Q62 101 68 103Z" fill="url(#faceSkin)" stroke="#ba8062" stroke-width=".8" stroke-linejoin="round"/><path d="M67 106Q65 110 70 112M124 105Q127 107 123 111" fill="none" stroke="#eaaa88" stroke-width="1.1" stroke-linecap="round"/><ellipse cx="78" cy="116" rx="8" ry="5.5" fill="url(#blush)"/><ellipse cx="114" cy="116" rx="8" ry="5.5" fill="url(#blush)"/>
+ <path d="M76 104Q82 99.8 89 104.5Q90 117.5 82.5 117.2Q75 117 76 104Z" fill="#fffaf1"/><path d="M104 104.5Q110.5 99.8 117 104Q118 117 110.5 117.2Q103 117.5 104 104.5Z" fill="#fffaf1"/>
+ <ellipse cx="82.7" cy="109.6" rx="5.2" ry="7" fill="url(#iris)"/><ellipse cx="110.3" cy="109.6" rx="5.2" ry="7" fill="url(#iris)"/><ellipse cx="82.5" cy="107.8" rx="2.8" ry="4.5" fill="#38251e"/><ellipse cx="110.1" cy="107.8" rx="2.8" ry="4.5" fill="#38251e"/><ellipse cx="80.8" cy="104.8" rx="1.9" ry="2.2" fill="#fffef8"/><ellipse cx="108.5" cy="104.8" rx="1.9" ry="2.2" fill="#fffef8"/><circle cx="84.5" cy="113.5" r=".85" fill="#eecf93"/><circle cx="112.5" cy="113.5" r=".85" fill="#eecf93"/>
+ <path d="M75.5 104.5Q81 99.5 88.5 104.5M104 104.5Q110.5 99.5 117.5 104.5" fill="none" stroke="#63432f" stroke-width="1.15" stroke-linecap="round"/><path d="M76 104L74.5 102.8M117 104L118.6 102.6" fill="none" stroke="#63432f" stroke-width=".85" stroke-linecap="round"/><path d="M77.5 97.8Q82.7 95.5 87.5 97.5M104 97.5Q109.5 95 115 97.8" fill="none" stroke="#987052" stroke-width="1.3" stroke-linecap="round"/>
+ <ellipse cx="96" cy="115" rx="1.05" ry=".85" fill="#eaa184"/><path d="M91 120Q96 123.8 101 120" fill="none" stroke="#c98464" stroke-width=".8" stroke-linecap="round"/><path d="M94 123.4Q96 124 98 123.4" fill="none" stroke="#fff0d8" stroke-width=".7" stroke-linecap="round"/>
+</g>
+<!-- /part -->
+<!-- part:frontHair -->
+<g id="frontHair" stroke-linejoin="round"><path d="M63 96Q54 90 60 77Q61 69 75 59Q85 52.8 97 54.6Q105 54.4 110 58Q120 54 126 66Q137 75 134 88Q137 96 126 103L122 108Q119 102 119 95Q120 85 109 78Q102 78 98 85Q86 101 70 102Q63 104 63 96Z" fill="url(#hair)" stroke="#61422f" stroke-width=".9"/>
+ <path d="M61 84Q62 70 80 61Q94 55 104 59Q83 60 75 71Q67 79 61 84Z" fill="url(#hairLight)"/><path d="M62 90Q76 84 89 70Q97 61 105 62Q92 75 88 83Q76 97 64 95Z" fill="#a07854" opacity=".78"/><path d="M68 97Q82 91 94 78Q101 66 109 66Q102 70 99 80Q86 101 70 102Z" fill="#654630" opacity=".7"/>
+ <path d="M65 79Q78 62 99 60M63 90Q79 82 91 68M67 99Q85 94 98 74" fill="none" stroke="#654731" stroke-width="1.2" stroke-linecap="round" opacity=".7"/>
+ <path d="M110 60Q122 57 129 76Q123 68 113 67Z" fill="#a27854" opacity=".78"/><path d="M113 71Q129 71 132 87Q125 80 116 78Z" fill="#a37955" opacity=".7"/><path d="M119 84Q130 87 131 94L125 100Q121 96 122 91Z" fill="#8e6447"/><path d="M113 69Q126 70 130 80M117 78Q129 82 132 90M122 96Q125 99 130 97" fill="none" stroke="#63422f" stroke-width="1.2" stroke-linecap="round" opacity=".75"/>
+ <path d="M67 101Q66 113 71 116Q64 116 65 106Z" fill="#80563c" stroke="#62412e" stroke-width=".6"/>
+</g>
+<!-- /part -->
+</svg>

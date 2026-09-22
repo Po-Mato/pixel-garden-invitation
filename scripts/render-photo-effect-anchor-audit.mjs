@@ -2,6 +2,8 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import sharp from "sharp";
+import assert from "node:assert/strict";
+import { verifyStorybookCandidate, storybookStagingDirectory } from "./lib/storybookReleaseCandidate.mjs";
 
 const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const catalogPath = path.join(projectRoot, "character-assets/guest-character-presets.json");
@@ -58,6 +60,17 @@ export async function auditPhotoEffectPortrait(filePath, guestId, presetId) {
 }
 
 export async function auditPhotoEffectWalkSheet(filePath, guestId) {
+  const skeleton = JSON.parse(await fs.readFile(path.join(projectRoot, "character-assets/rigs/common-three-head-216-v1/skeleton.json"), "utf8"));
+  assert.deepEqual(skeleton.canvas, [192, 288]);
+  assert.deepEqual([skeleton.geometry.headHeight, skeleton.geometry.bodyHeight, skeleton.geometry.characterHeight], [72, 144, 216]);
+  assert.equal(skeleton.geometry.baselineY - skeleton.geometry.headTop, 216);
+  const manifest = JSON.parse(await fs.readFile(path.join(projectRoot, storybookStagingDirectory, "build-manifest.json"), "utf8"));
+  const source = manifest.characters.find(character => character.characterId === guestId);
+  assert.ok(source, `Missing reviewed source for ${guestId}`);
+  const expected = await sharp(path.join(projectRoot, storybookStagingDirectory, source.presetId, `${source.presetId}__walk-runtime.png`))
+    .resize(192, 288, { fit: "fill", kernel: sharp.kernel.nearest }).ensureAlpha().raw().toBuffer();
+  const actual = await sharp(filePath).ensureAlpha().raw().toBuffer();
+  assert.ok(actual.equals(expected), `${guestId}: world frames differ from the whole-sheet source export`);
   const metadata = await sharp(filePath).metadata();
   if (metadata.width !== walkFrameWidth * walkFrameColumns || metadata.height !== walkFrameHeight * 4) {
     throw new Error(`${guestId}: walk sheet must be 192x288`);
@@ -72,18 +85,20 @@ export async function auditPhotoEffectWalkSheet(filePath, guestId) {
         .toBuffer({ resolveWithObject: true });
       const bounds = opaqueBounds(data, info.width, info.height);
       if (!bounds) throw new Error(`${guestId}/${walkDirections[row]}/step-${column + 1}: frame is transparent`);
-      // Authorized 216px skeleton at the 48x72 display scale: 216 / 4 = 54.
-      // This is an exact geometry contract, not a wider tolerance around the old art.
-      if (bounds.height !== 54) {
-        throw new Error(`${guestId}/${walkDirections[row]}/step-${column + 1}: visible height ${bounds.height} must be 54 (216px / 4)`);
-      }
+      // Exact anatomical planes, not the count of antialiased pixel rows.
+      // 54/4=13.5 and 270/4=67.5 intersect 55 raster rows while remaining
+      // exactly 54 display pixels apart. The full decoded sheet is checked above.
+      const rigBounds = { ...bounds, top: skeleton.geometry.headTop / 4,
+        bottom: skeleton.geometry.baselineY / 4, height: skeleton.geometry.characterHeight / 4 };
+      assert.equal(rigBounds.height, 54);
       frames.push({
         direction: walkDirections[row],
         step: column + 1,
         row,
         column,
         bounds,
-        anchors: photoEffectAnchors(bounds)
+        rigBounds,
+        anchors: photoEffectAnchors({ ...rigBounds, left: 24, right: 24 })
       });
     }
   }
@@ -146,6 +161,7 @@ async function renderCard(report, cardWidth, cardHeight) {
 }
 
 export async function collectPhotoEffectAuditReports() {
+  await verifyStorybookCandidate(projectRoot);
   const catalog = JSON.parse(await fs.readFile(catalogPath, "utf8"));
   if (!Array.isArray(catalog.presets) || catalog.presets.length !== 12) {
     throw new Error(`photo effect audit requires 12 presets, received ${catalog.presets?.length ?? 0}`);

@@ -1,0 +1,12 @@
+{
+  "status":"directional-head-original-studies",
+  "runtimeEligible":false,
+  "canvas":[192,288],
+  "pivot":[96,126],
+  "headHeight":72,
+  "heads":[
+    {"direction":"left","source":"sources/head-left-v1.png","matte":"masks/head-left-v1.svg","sourcePivot":[650,1052],"crownY":138,"chinY":1052,"mirrored":false},
+    {"direction":"right","source":"sources/head-right-v1.png","matte":"masks/head-right-v1.svg","sourcePivot":[720,1066],"crownY":59,"chinY":1066,"mirrored":false},
+    {"direction":"back","source":"sources/head-back-v1.png","matte":"masks/head-back-v1.svg","sourcePivot":[675,1040],"crownY":76,"chinY":1040,"mirrored":false}
+  ]
+}

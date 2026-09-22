@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="192" height="288" viewBox="0 0 192 288">
+<defs><linearGradient id="skin" x1="0" y1="0" x2="0.8" y2="1"><stop stop-color="#efb596"/><stop offset="0.45" stop-color="#ffe1c8"/><stop offset="1" stop-color="#f2b99a"/></linearGradient></defs>
+<!-- Authored source beneath collar; pivot neck (96,126), not a PNG repair. -->
+<path d="M91 122H101L102 132Q108 135 111 138L105 153H87L81 138Q86 135 90 132Z" fill="url(#skin)"/>
+</svg>

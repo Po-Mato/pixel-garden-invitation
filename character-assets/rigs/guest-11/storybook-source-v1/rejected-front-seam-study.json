@@ -1,0 +1,24 @@
+{
+  "date": "2026-09-14",
+  "status": "rejected-source-material-study",
+  "parts": ["legLeft-front", "legRight-front"],
+  "registered": false,
+  "candidate": {"standardFailures": 47, "displayFailures": 0},
+  "baseline": {"standardFailures": 51, "displayFailures": 0},
+  "visualReview": "Inspected actual selection and home-game 16-frame contact sheets. The front trousers have conspicuously darker contours than side and back views, particularly at selection size. Reject despite improved contrast metrics.",
+  "restoration": "Remove only these two source overlay registrations and regenerate; original painted PNGs and source mattes remain unchanged.",
+  "restorationVerified": {
+    "hdSha256": "301d1f75b8e0d0df145f4b68f31c9b92fa6e95103a78a062f70db15d2a32d0dd",
+    "runtimeSha256": "ef88aa7b2565b5167a74bbdbcb4f87b1016a7656328274bca99fef7e52612d32",
+    "selectionFramesVisuallyInspected": 16,
+    "homeGameFramesVisuallyInspected": 16,
+    "mapSamples": 1920,
+    "standardFailures": 51,
+    "displayFailures": 0,
+    "catalogUnitTestsPassed": 227,
+    "jointAuditCharactersPassed": 12
+  },
+  "thresholdsChanged": false,
+  "runtimeEligible": false,
+  "visualApproved": false
+}

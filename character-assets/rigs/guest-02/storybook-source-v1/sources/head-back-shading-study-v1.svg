@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1230" height="1278" viewBox="0 0 1230 1278">
+  <!-- Independent rear hair shadow; flower, crown, ears and bun are protected. -->
+  <defs>
+    <clipPath id="locks"><rect x="0" y="260" width="250" height="260"/><rect x="860" y="240" width="370" height="470"/></clipPath>
+    <filter id="soft" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="12"/></filter>
+  </defs>
+  <g clip-path="url(#locks)" fill="none" stroke="#211712" stroke-width="80" stroke-opacity="0.8" filter="url(#soft)">
+    <path d="M 290 295 Q 187 397 168 485 Q 159 530 179 555"/>
+    <path d="M 853 228 Q 988 330 1042 492 Q 1066 547 1052 584 Q 1113 645 1080 695"/>
+  </g>
+</svg>

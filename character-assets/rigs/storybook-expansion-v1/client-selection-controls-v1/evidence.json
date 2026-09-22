@@ -1,0 +1,1921 @@
+{
+  "viewport": [
+    390,
+    844
+  ],
+  "characters": 12,
+  "pausedDirections": 48,
+  "rows": [
+    {
+      "id": "guest-01",
+      "stopped": [
+        {
+          "direction": "down",
+          "before": {
+            "preset": "feminine-long-wave-dress",
+            "direction": "down",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/feminine-long-wave-dress__idle.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          },
+          "after": {
+            "preset": "feminine-long-wave-dress",
+            "direction": "down",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/feminine-long-wave-dress__idle.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          }
+        },
+        {
+          "direction": "left",
+          "before": {
+            "preset": "feminine-long-wave-dress",
+            "direction": "left",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/feminine-long-wave-dress__walk.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          },
+          "after": {
+            "preset": "feminine-long-wave-dress",
+            "direction": "left",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/feminine-long-wave-dress__walk.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          }
+        },
+        {
+          "direction": "right",
+          "before": {
+            "preset": "feminine-long-wave-dress",
+            "direction": "right",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/feminine-long-wave-dress__walk.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          },
+          "after": {
+            "preset": "feminine-long-wave-dress",
+            "direction": "right",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/feminine-long-wave-dress__walk.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          }
+        },
+        {
+          "direction": "up",
+          "before": {
+            "preset": "feminine-long-wave-dress",
+            "direction": "up",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/feminine-long-wave-dress__walk.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          },
+          "after": {
+            "preset": "feminine-long-wave-dress",
+            "direction": "up",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/feminine-long-wave-dress__walk.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          }
+        }
+      ],
+      "resumedFrames": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ]
+    },
+    {
+      "id": "guest-02",
+      "stopped": [
+        {
+          "direction": "down",
+          "before": {
+            "preset": "feminine-formal-hanbok",
+            "direction": "down",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/feminine-formal-hanbok__idle.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          },
+          "after": {
+            "preset": "feminine-formal-hanbok",
+            "direction": "down",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/feminine-formal-hanbok__idle.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          }
+        },
+        {
+          "direction": "left",
+          "before": {
+            "preset": "feminine-formal-hanbok",
+            "direction": "left",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/feminine-formal-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          },
+          "after": {
+            "preset": "feminine-formal-hanbok",
+            "direction": "left",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/feminine-formal-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          }
+        },
+        {
+          "direction": "right",
+          "before": {
+            "preset": "feminine-formal-hanbok",
+            "direction": "right",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/feminine-formal-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          },
+          "after": {
+            "preset": "feminine-formal-hanbok",
+            "direction": "right",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/feminine-formal-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          }
+        },
+        {
+          "direction": "up",
+          "before": {
+            "preset": "feminine-formal-hanbok",
+            "direction": "up",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/feminine-formal-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          },
+          "after": {
+            "preset": "feminine-formal-hanbok",
+            "direction": "up",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/feminine-formal-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          }
+        }
+      ],
+      "resumedFrames": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ]
+    },
+    {
+      "id": "guest-03",
+      "stopped": [
+        {
+          "direction": "down",
+          "before": {
+            "preset": "masculine-navy-suit",
+            "direction": "down",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/masculine-navy-suit__idle.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          },
+          "after": {
+            "preset": "masculine-navy-suit",
+            "direction": "down",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/masculine-navy-suit__idle.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          }
+        },
+        {
+          "direction": "left",
+          "before": {
+            "preset": "masculine-navy-suit",
+            "direction": "left",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/masculine-navy-suit__walk.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          },
+          "after": {
+            "preset": "masculine-navy-suit",
+            "direction": "left",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/masculine-navy-suit__walk.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          }
+        },
+        {
+          "direction": "right",
+          "before": {
+            "preset": "masculine-navy-suit",
+            "direction": "right",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/masculine-navy-suit__walk.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          },
+          "after": {
+            "preset": "masculine-navy-suit",
+            "direction": "right",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/masculine-navy-suit__walk.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          }
+        },
+        {
+          "direction": "up",
+          "before": {
+            "preset": "masculine-navy-suit",
+            "direction": "up",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/masculine-navy-suit__walk.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          },
+          "after": {
+            "preset": "masculine-navy-suit",
+            "direction": "up",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/masculine-navy-suit__walk.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          }
+        }
+      ],
+      "resumedFrames": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ]
+    },
+    {
+      "id": "guest-04",
+      "stopped": [
+        {
+          "direction": "down",
+          "before": {
+            "preset": "masculine-charcoal-blazer",
+            "direction": "down",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/masculine-charcoal-blazer__idle.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          },
+          "after": {
+            "preset": "masculine-charcoal-blazer",
+            "direction": "down",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/masculine-charcoal-blazer__idle.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          }
+        },
+        {
+          "direction": "left",
+          "before": {
+            "preset": "masculine-charcoal-blazer",
+            "direction": "left",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/masculine-charcoal-blazer__walk.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          },
+          "after": {
+            "preset": "masculine-charcoal-blazer",
+            "direction": "left",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/masculine-charcoal-blazer__walk.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          }
+        },
+        {
+          "direction": "right",
+          "before": {
+            "preset": "masculine-charcoal-blazer",
+            "direction": "right",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/masculine-charcoal-blazer__walk.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          },
+          "after": {
+            "preset": "masculine-charcoal-blazer",
+            "direction": "right",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/masculine-charcoal-blazer__walk.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          }
+        },
+        {
+          "direction": "up",
+          "before": {
+            "preset": "masculine-charcoal-blazer",
+            "direction": "up",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/masculine-charcoal-blazer__walk.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          },
+          "after": {
+            "preset": "masculine-charcoal-blazer",
+            "direction": "up",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/masculine-charcoal-blazer__walk.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          }
+        }
+      ],
+      "resumedFrames": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ]
+    },
+    {
+      "id": "guest-05",
+      "stopped": [
+        {
+          "direction": "down",
+          "before": {
+            "preset": "feminine-sage-bolero-dress",
+            "direction": "down",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/feminine-sage-bolero-dress__idle.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          },
+          "after": {
+            "preset": "feminine-sage-bolero-dress",
+            "direction": "down",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/feminine-sage-bolero-dress__idle.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          }
+        },
+        {
+          "direction": "left",
+          "before": {
+            "preset": "feminine-sage-bolero-dress",
+            "direction": "left",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/feminine-sage-bolero-dress__walk.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          },
+          "after": {
+            "preset": "feminine-sage-bolero-dress",
+            "direction": "left",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/feminine-sage-bolero-dress__walk.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          }
+        },
+        {
+          "direction": "right",
+          "before": {
+            "preset": "feminine-sage-bolero-dress",
+            "direction": "right",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/feminine-sage-bolero-dress__walk.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          },
+          "after": {
+            "preset": "feminine-sage-bolero-dress",
+            "direction": "right",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/feminine-sage-bolero-dress__walk.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          }
+        },
+        {
+          "direction": "up",
+          "before": {
+            "preset": "feminine-sage-bolero-dress",
+            "direction": "up",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/feminine-sage-bolero-dress__walk.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          },
+          "after": {
+            "preset": "feminine-sage-bolero-dress",
+            "direction": "up",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/feminine-sage-bolero-dress__walk.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          }
+        }
+      ],
+      "resumedFrames": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ]
+    },
+    {
+      "id": "guest-06",
+      "stopped": [
+        {
+          "direction": "down",
+          "before": {
+            "preset": "feminine-champagne-navy-skirt",
+            "direction": "down",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/feminine-champagne-navy-skirt__idle.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          },
+          "after": {
+            "preset": "feminine-champagne-navy-skirt",
+            "direction": "down",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/feminine-champagne-navy-skirt__idle.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          }
+        },
+        {
+          "direction": "left",
+          "before": {
+            "preset": "feminine-champagne-navy-skirt",
+            "direction": "left",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/feminine-champagne-navy-skirt__walk.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          },
+          "after": {
+            "preset": "feminine-champagne-navy-skirt",
+            "direction": "left",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/feminine-champagne-navy-skirt__walk.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          }
+        },
+        {
+          "direction": "right",
+          "before": {
+            "preset": "feminine-champagne-navy-skirt",
+            "direction": "right",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/feminine-champagne-navy-skirt__walk.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          },
+          "after": {
+            "preset": "feminine-champagne-navy-skirt",
+            "direction": "right",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/feminine-champagne-navy-skirt__walk.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          }
+        },
+        {
+          "direction": "up",
+          "before": {
+            "preset": "feminine-champagne-navy-skirt",
+            "direction": "up",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/feminine-champagne-navy-skirt__walk.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          },
+          "after": {
+            "preset": "feminine-champagne-navy-skirt",
+            "direction": "up",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/feminine-champagne-navy-skirt__walk.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          }
+        }
+      ],
+      "resumedFrames": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ]
+    },
+    {
+      "id": "guest-07",
+      "stopped": [
+        {
+          "direction": "down",
+          "before": {
+            "preset": "feminine-lavender-jacket-dress",
+            "direction": "down",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/feminine-lavender-jacket-dress__idle.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          },
+          "after": {
+            "preset": "feminine-lavender-jacket-dress",
+            "direction": "down",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/feminine-lavender-jacket-dress__idle.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          }
+        },
+        {
+          "direction": "left",
+          "before": {
+            "preset": "feminine-lavender-jacket-dress",
+            "direction": "left",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/feminine-lavender-jacket-dress__walk.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          },
+          "after": {
+            "preset": "feminine-lavender-jacket-dress",
+            "direction": "left",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/feminine-lavender-jacket-dress__walk.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          }
+        },
+        {
+          "direction": "right",
+          "before": {
+            "preset": "feminine-lavender-jacket-dress",
+            "direction": "right",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/feminine-lavender-jacket-dress__walk.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          },
+          "after": {
+            "preset": "feminine-lavender-jacket-dress",
+            "direction": "right",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/feminine-lavender-jacket-dress__walk.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          }
+        },
+        {
+          "direction": "up",
+          "before": {
+            "preset": "feminine-lavender-jacket-dress",
+            "direction": "up",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/feminine-lavender-jacket-dress__walk.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          },
+          "after": {
+            "preset": "feminine-lavender-jacket-dress",
+            "direction": "up",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/feminine-lavender-jacket-dress__walk.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          }
+        }
+      ],
+      "resumedFrames": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ]
+    },
+    {
+      "id": "guest-08",
+      "stopped": [
+        {
+          "direction": "down",
+          "before": {
+            "preset": "feminine-teal-modern-hanbok",
+            "direction": "down",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/feminine-teal-modern-hanbok__idle.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          },
+          "after": {
+            "preset": "feminine-teal-modern-hanbok",
+            "direction": "down",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/feminine-teal-modern-hanbok__idle.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          }
+        },
+        {
+          "direction": "left",
+          "before": {
+            "preset": "feminine-teal-modern-hanbok",
+            "direction": "left",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/feminine-teal-modern-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          },
+          "after": {
+            "preset": "feminine-teal-modern-hanbok",
+            "direction": "left",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/feminine-teal-modern-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          }
+        },
+        {
+          "direction": "right",
+          "before": {
+            "preset": "feminine-teal-modern-hanbok",
+            "direction": "right",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/feminine-teal-modern-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          },
+          "after": {
+            "preset": "feminine-teal-modern-hanbok",
+            "direction": "right",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/feminine-teal-modern-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          }
+        },
+        {
+          "direction": "up",
+          "before": {
+            "preset": "feminine-teal-modern-hanbok",
+            "direction": "up",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/feminine-teal-modern-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          },
+          "after": {
+            "preset": "feminine-teal-modern-hanbok",
+            "direction": "up",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/feminine-teal-modern-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          }
+        }
+      ],
+      "resumedFrames": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ]
+    },
+    {
+      "id": "guest-09",
+      "stopped": [
+        {
+          "direction": "down",
+          "before": {
+            "preset": "masculine-beige-summer-suit",
+            "direction": "down",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/masculine-beige-summer-suit__idle.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          },
+          "after": {
+            "preset": "masculine-beige-summer-suit",
+            "direction": "down",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/masculine-beige-summer-suit__idle.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          }
+        },
+        {
+          "direction": "left",
+          "before": {
+            "preset": "masculine-beige-summer-suit",
+            "direction": "left",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/masculine-beige-summer-suit__walk.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          },
+          "after": {
+            "preset": "masculine-beige-summer-suit",
+            "direction": "left",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/masculine-beige-summer-suit__walk.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          }
+        },
+        {
+          "direction": "right",
+          "before": {
+            "preset": "masculine-beige-summer-suit",
+            "direction": "right",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/masculine-beige-summer-suit__walk.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          },
+          "after": {
+            "preset": "masculine-beige-summer-suit",
+            "direction": "right",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/masculine-beige-summer-suit__walk.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          }
+        },
+        {
+          "direction": "up",
+          "before": {
+            "preset": "masculine-beige-summer-suit",
+            "direction": "up",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/masculine-beige-summer-suit__walk.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          },
+          "after": {
+            "preset": "masculine-beige-summer-suit",
+            "direction": "up",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/masculine-beige-summer-suit__walk.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          }
+        }
+      ],
+      "resumedFrames": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ]
+    },
+    {
+      "id": "guest-10",
+      "stopped": [
+        {
+          "direction": "down",
+          "before": {
+            "preset": "masculine-charcoal-burgundy-tie",
+            "direction": "down",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/masculine-charcoal-burgundy-tie__idle.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          },
+          "after": {
+            "preset": "masculine-charcoal-burgundy-tie",
+            "direction": "down",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/masculine-charcoal-burgundy-tie__idle.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          }
+        },
+        {
+          "direction": "left",
+          "before": {
+            "preset": "masculine-charcoal-burgundy-tie",
+            "direction": "left",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/masculine-charcoal-burgundy-tie__walk.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          },
+          "after": {
+            "preset": "masculine-charcoal-burgundy-tie",
+            "direction": "left",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/masculine-charcoal-burgundy-tie__walk.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          }
+        },
+        {
+          "direction": "right",
+          "before": {
+            "preset": "masculine-charcoal-burgundy-tie",
+            "direction": "right",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/masculine-charcoal-burgundy-tie__walk.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          },
+          "after": {
+            "preset": "masculine-charcoal-burgundy-tie",
+            "direction": "right",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/masculine-charcoal-burgundy-tie__walk.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          }
+        },
+        {
+          "direction": "up",
+          "before": {
+            "preset": "masculine-charcoal-burgundy-tie",
+            "direction": "up",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/masculine-charcoal-burgundy-tie__walk.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          },
+          "after": {
+            "preset": "masculine-charcoal-burgundy-tie",
+            "direction": "up",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/masculine-charcoal-burgundy-tie__walk.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          }
+        }
+      ],
+      "resumedFrames": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ]
+    },
+    {
+      "id": "guest-11",
+      "stopped": [
+        {
+          "direction": "down",
+          "before": {
+            "preset": "masculine-green-blazer-cream-pants",
+            "direction": "down",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/masculine-green-blazer-cream-pants__idle.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          },
+          "after": {
+            "preset": "masculine-green-blazer-cream-pants",
+            "direction": "down",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/masculine-green-blazer-cream-pants__idle.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          }
+        },
+        {
+          "direction": "left",
+          "before": {
+            "preset": "masculine-green-blazer-cream-pants",
+            "direction": "left",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/masculine-green-blazer-cream-pants__walk.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          },
+          "after": {
+            "preset": "masculine-green-blazer-cream-pants",
+            "direction": "left",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/masculine-green-blazer-cream-pants__walk.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          }
+        },
+        {
+          "direction": "right",
+          "before": {
+            "preset": "masculine-green-blazer-cream-pants",
+            "direction": "right",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/masculine-green-blazer-cream-pants__walk.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          },
+          "after": {
+            "preset": "masculine-green-blazer-cream-pants",
+            "direction": "right",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/masculine-green-blazer-cream-pants__walk.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          }
+        },
+        {
+          "direction": "up",
+          "before": {
+            "preset": "masculine-green-blazer-cream-pants",
+            "direction": "up",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/masculine-green-blazer-cream-pants__walk.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          },
+          "after": {
+            "preset": "masculine-green-blazer-cream-pants",
+            "direction": "up",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/masculine-green-blazer-cream-pants__walk.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          }
+        }
+      ],
+      "resumedFrames": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ]
+    },
+    {
+      "id": "guest-12",
+      "stopped": [
+        {
+          "direction": "down",
+          "before": {
+            "preset": "masculine-blue-modern-hanbok",
+            "direction": "down",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/masculine-blue-modern-hanbok__idle.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          },
+          "after": {
+            "preset": "masculine-blue-modern-hanbok",
+            "direction": "down",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/masculine-blue-modern-hanbok__idle.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          }
+        },
+        {
+          "direction": "left",
+          "before": {
+            "preset": "masculine-blue-modern-hanbok",
+            "direction": "left",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/masculine-blue-modern-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          },
+          "after": {
+            "preset": "masculine-blue-modern-hanbok",
+            "direction": "left",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/masculine-blue-modern-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          }
+        },
+        {
+          "direction": "right",
+          "before": {
+            "preset": "masculine-blue-modern-hanbok",
+            "direction": "right",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/masculine-blue-modern-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          },
+          "after": {
+            "preset": "masculine-blue-modern-hanbok",
+            "direction": "right",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/masculine-blue-modern-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          }
+        },
+        {
+          "direction": "up",
+          "before": {
+            "preset": "masculine-blue-modern-hanbok",
+            "direction": "up",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/masculine-blue-modern-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          },
+          "after": {
+            "preset": "masculine-blue-modern-hanbok",
+            "direction": "up",
+            "moving": "false",
+            "frame": "1",
+            "url": "http://127.0.0.1:4197/characters/generated/guests/preview/masculine-blue-modern-hanbok__walk.png?v=guest-soft-tailoring-v1-20260911",
+            "rect": {
+              "x": 115,
+              "y": 215.203125,
+              "width": 160,
+              "height": 240,
+              "top": 215.203125,
+              "right": 275,
+              "bottom": 455.203125,
+              "left": 115
+            }
+          }
+        }
+      ],
+      "resumedFrames": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ]
+    }
+  ],
+  "passed": true,
+  "visualApproved": false,
+  "productionServiceWorkerChecked": false
+}

@@ -1,0 +1,62 @@
+{
+  "id": "guest-12-painted-head-source-study",
+  "runtimeEligible": false,
+  "layerDefinition": "head-layers.json",
+  "splitBodyOcclusion": true,
+  "bodyOcclusionUnderlapSourcePixels": 24,
+  "skeleton": "../../common-three-head-216-v1/skeleton.json",
+  "heads": [
+    {
+      "direction": "front",
+      "source": "sources/head-front-v1.png",
+      "matte": "masks/head-front-v1.svg",
+      "parent": "head",
+      "pivot": [
+        670,
+        1050
+      ],
+      "crownY": 96,
+      "chinY": 1050,
+      "mirrored": false
+    },
+    {
+      "direction": "left",
+      "source": "sources/head-left-v1.png",
+      "matte": "masks/head-left-v1.svg",
+      "parent": "head",
+      "pivot": [
+        700,
+        1035
+      ],
+      "crownY": 94,
+      "chinY": 1035,
+      "mirrored": false
+    },
+    {
+      "direction": "right",
+      "source": "sources/head-right-v1.png",
+      "matte": "masks/head-right-v1.svg",
+      "parent": "head",
+      "pivot": [
+        660,
+        1045
+      ],
+      "crownY": 96,
+      "chinY": 1045,
+      "mirrored": false
+    },
+    {
+      "direction": "back",
+      "source": "sources/head-back-v1.png",
+      "matte": "masks/head-back-v1.svg",
+      "parent": "head",
+      "pivot": [
+        680,
+        1046
+      ],
+      "crownY": 96,
+      "chinY": 1046,
+      "mirrored": false
+    }
+  ]
+}

@@ -7,13 +7,12 @@ import {
 } from "./worldAnchor";
 
 describe("월드 캐릭터 시각 중심", () => {
-  it("12개 프리셋 모두 닉네임 높이와 무관한 실측 중심을 사용한다", () => {
+  it("12개 프리셋 모두 닉네임과 비대칭 의상에 무관한 공용 골격 중심을 사용한다", () => {
     expect(guestCharacterPresets).toHaveLength(12);
     for (const preset of guestCharacterPresets) {
       const anchor = resolveWorldCharacterAnchor({ presetId: preset.id }, 4);
       expect(anchor.presetId).toBe(preset.id);
-      expect(anchor.centerOffsetX).toBeGreaterThanOrEqual(0);
-      expect(anchor.centerOffsetX).toBeLessThanOrEqual(0.25);
+      expect(anchor.centerOffsetX).toBe(0);
       // Authored HD silhouette y54..270: centre y162 and feet y270,
       // displayed at one quarter size in the unchanged 48x72 game frame.
       expect(anchor.centerY).toBe(40.5);

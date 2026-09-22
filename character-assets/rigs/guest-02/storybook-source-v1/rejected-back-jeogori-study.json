@@ -1,0 +1,13 @@
+{
+  "status": "rejected-unregistered-source-study",
+  "source": "sources/torso-back-soft-seam-study-v1.svg",
+  "reason": "Soft tan edge-fold shading reduces rear jeogori separation from neighborhood background and introduces a new failing stride. Do not darken the white garment to address this contrast gate.",
+  "backNeighborhoodContrastBefore": [1.2179761582727537,1.1633351093977837,1.176394826297028,1.1633351093977837],
+  "backNeighborhoodContrastCandidate": [1.1891673855587568,1.161792620321605,1.1648611925708616,1.161792620321605],
+  "catalogFailuresBefore": 34,
+  "catalogFailuresCandidate": 35,
+  "newFailures": 1,
+  "registered": false,
+  "thresholdsChanged": false,
+  "productionChanged": false
+}

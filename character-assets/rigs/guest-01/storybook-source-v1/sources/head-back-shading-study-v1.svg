@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1230" height="1278" viewBox="0 0 1230 1278">
+  <!-- Rear-view hair material follows this character's own outer locks. -->
+  <defs>
+    <clipPath id="locks"><rect x="0" y="150" width="410" height="450"/><rect x="820" y="150" width="410" height="450"/></clipPath>
+    <filter id="soft" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="8"/></filter>
+  </defs>
+  <g clip-path="url(#locks)" fill="none" stroke="#211712" stroke-width="48" stroke-opacity="0.8" filter="url(#soft)">
+    <path d="M 437 130 Q 286 251 287 389 Q 218 452 248 503 Q 256 520 274 525 Q 234 567 256 588"/>
+    <path d="M 810 150 Q 931 249 943 376 Q 1009 440 983 498 Q 978 515 956 525 Q 991 567 967 591"/>
+  </g>
+</svg>

@@ -1,0 +1,12 @@
+import fs from 'node:fs/promises';
+import sharp from 'sharp';
+import {fileURLToPath} from 'node:url';
+const base=new URL('../character-assets/rigs/guest-01/storybook-source-v1/',import.meta.url);
+const revision=process.argv[2]||'soft-limbs-v1';
+if(!['soft-limbs-v1','arm-binding-v2'].includes(revision))throw Error('Unknown review revision');
+const before=await fs.readFile(new URL(`review/${revision}/before.png`,base));
+const after=await fs.readFile(new URL('generated/body-review.png',base));
+const label=revision==='arm-binding-v2'?'AFTER — shoulder/wrist source landmarks; curved elbow/wrist masks':'AFTER — front unchanged; side/back sleeves +18%; side leg/shoe width -14%';
+const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="768" height="640"><rect width="768" height="640" fill="#d6dfca"/><g fill="#304036" font-family="sans-serif" font-size="16"><text x="12" y="24">BEFORE</text><text x="12" y="344">${label}</text></g><image y="32" width="768" height="288" href="data:image/png;base64,${before.toString('base64')}"/><image y="352" width="768" height="288" href="data:image/png;base64,${after.toString('base64')}"/></svg>`;
+await sharp(Buffer.from(svg)).png().toFile(fileURLToPath(new URL(`review/${revision}/comparison.png`,base)));
+console.log('Guest01 source-bound limb comparison generated; no frame edits.');

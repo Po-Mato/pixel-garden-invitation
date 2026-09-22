@@ -1,0 +1,33 @@
+{
+  "status":"visible-layer-ownership-study",
+  "independentMotionAllowed":false,
+  "runtimeEligible":false,
+  "policy":"Editable visible-surface ownership. Hidden forehead and hair surfaces are not yet complete; do not move layers independently or claim arbitrary hairstyle replacement.",
+  "directions":{
+    "left":{
+      "sourcePivot":[650,1052],
+      "layers":[
+        {"id":"face","parent":"head","path":"M282 620 Q347 529 394 436 Q426 407 470 419 Q526 435 544 563 Q550 681 597 739 L624 753 Q601 793 598 873 Q613 806 660 773 Q711 739 756 775 Q806 812 788 879 Q771 935 700 956 L661 962 Q625 1003 532 1029 Q432 1062 362 1050 Q306 1032 277 971 L251 899 Q239 855 255 837 Q293 828 301 794 Q310 742 282 620Z"},
+        {"id":"frontHair","parent":"head","path":"M0 0H1223V748H645L595 877L575 755H310L248 875L161 885L113 683H0Z"},
+        {"id":"backHair","parent":"head"}
+      ]
+    },
+    "right":{
+      "sourcePivot":[720,1066],
+      "layers":[
+        {"id":"face","parent":"head","path":"M981 399 Q1009 375 1037 390 Q1098 440 1115 536 Q1131 640 1107 746 Q1091 793 1135 814 L1159 822 Q1176 839 1158 875 Q1142 964 1086 1020 Q1042 1062 987 1067 Q852 1074 733 1013 Q724 982 743 932 Q775 868 773 771 Q884 728 944 561 Q969 476 981 399Z M560 779 Q613 769 674 790 L717 796 Q730 864 701 932 L688 970 Q625 980 578 938 Q541 905 538 855 Q535 811 560 779Z"},
+        {"id":"frontHair","parent":"head","path":"M0 0H1354V773H775Q785 865 748 940Q710 1023 800 1061L764 1084Q672 1050 683 970L717 795H0Z"},
+        {"id":"backHair","parent":"head"}
+      ]
+    },
+    "back":{
+      "sourcePivot":[675,1040],
+      "faceVisibility":"ears-only; face occluded",
+      "layers":[
+        {"id":"face","parent":"head","path":"M274 752 Q296 754 327 752 Q312 811 346 849 L337 881 Q278 860 263 812 Q255 782 274 752Z M1037 766L1080 754Q1110 792 1087 829Q1064 879 986 891L979 883Q1015 824 1037 766Z"},
+        {"id":"frontHair","parent":"head","occluded":true},
+        {"id":"backHair","parent":"head"}
+      ]
+    }
+  }
+}

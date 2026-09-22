@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1422" height="1106" viewBox="0 0 1422 1106">
+  <!-- Private front outer-lock source shadow. Skin, ears, eyes, forehead,
+       crown and central parting remain untouched. No geometry adjustment. -->
+  <defs><clipPath id="outerLock"><rect x="0" y="300" width="260" height="390"/></clipPath></defs>
+  <path d="M182 654Q147 615 163 559Q154 519 168 478Q147 437 183 375L250 302" fill="none" stroke="#0e0d0d" stroke-width="48" opacity="0.8" stroke-linecap="round" clip-path="url(#outerLock)"/>
+</svg>

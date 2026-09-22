@@ -1,0 +1,20 @@
+{
+  "date": "2026-09-14",
+  "status": "rejected-and-source-registration-restored",
+  "scope": "guest-07 right torso, near sleeve and skirt source shading",
+  "baseline": {"standardFailures": 60, "displayFailures": 6},
+  "trials": [
+    {"color": "#635073", "opacity": 0.8, "upperWidth": 44, "skirtWidth": 48, "standardFailures": 61, "displayFailures": 5},
+    {"color": "#4e3a5d", "opacity": 0.85, "upperWidth": 44, "skirtWidth": 48, "standardFailures": 60, "displayFailures": 7}
+  ],
+  "samplesPerTrial": 1920,
+  "decision": "Neither trial improves both criteria; do not accept broad darkening merely because one failure count improves.",
+  "restored": ["body-registration.json", "sources/skirt-right-edge-shading-v1.svg"],
+  "unregisteredRejectedSources": ["sources/torso-right-edge-shading-v1.svg", "sources/armLeft-right-edge-shading-v1.svg"],
+  "nextAction": "Inspect remaining weak edge locations by individual part. Separate skin, hair, shoe and costume boundaries before another source edit; avoid further whole-costume darkening.",
+  "thresholdsChanged": false,
+  "finalPngEdited": false,
+  "visualApproved": false,
+  "runtimeEligible": false,
+  "deployed": false
+}

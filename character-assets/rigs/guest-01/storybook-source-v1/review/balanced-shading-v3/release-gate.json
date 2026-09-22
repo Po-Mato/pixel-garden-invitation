@@ -1,0 +1,38 @@
+{
+  "scope": "guest01-approved-only",
+  "shapeApprovedByUser": true,
+  "releaseEligible": true,
+  "summary": [
+    {
+      "id": "guest01-baseline",
+      "samples": 160,
+      "standardFailures": 18,
+      "displayFailures": 1
+    },
+    {
+      "id": "guest01-approved",
+      "samples": 160,
+      "standardFailures": 0,
+      "displayFailures": 0
+    }
+  ],
+  "thresholds": {
+    "maxLuminanceDelta": 0.03,
+    "minDynamicRange": 0.16,
+    "minTextContrast": 4.5,
+    "minCharacterEdgeContrast": 1.17,
+    "minDisplayCharacterEdgeContrast": 1.1,
+    "maxCharacterEdgeContrastDelta": 0.15
+  },
+  "sourceHashes": [
+    {
+      "id": "guest01-baseline",
+      "sha256": "7c4edf224f1d0a4a2500b2fc4537a10e554aec80723ef649da3dde82e2c5c058"
+    },
+    {
+      "id": "guest01-approved",
+      "sha256": "23e89453937ae3c00fe552d428ab08d1649f9c3db154f1633077a254426fc4ee"
+    }
+  ],
+  "productionChanged": false
+}

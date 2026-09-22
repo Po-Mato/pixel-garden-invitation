@@ -1,0 +1,296 @@
+{
+  "date": "2026-09-14",
+  "status": "source-shading-study-not-release-ready",
+  "parts": [
+    "skirt-right",
+    "torso-right",
+    "armLeft-right"
+  ],
+  "sourceOnly": true,
+  "finalPngEdited": false,
+  "shading": {
+    "color": "#101e36",
+    "opacity": 0.8,
+    "torsoSkirtWidth": 44,
+    "sleeveWidth": 36
+  },
+  "protected": [
+    "original source alpha",
+    "cream belt",
+    "bare forearm and hand",
+    "unpainted opaque source colors"
+  ],
+  "sourceTestsPassed": 15,
+  "structureTestsPassed": 44,
+  "sha256": "d841a0bab48b20196ac15a4058bd2e217a4b9ae33096d499a5162f4b206adba9",
+  "contrast": {
+    "samples": 1920,
+    "standardFailures": 60,
+    "displayFailures": 6,
+    "guest10DisplayFailures": 2,
+    "remaining": "neighborhood right neutral frames 2 and 4; weak edge samples include head/skin/shoes as well as costume",
+    "passed": false
+  },
+  "selection": {
+    "currentAssetVerificationValid": false,
+    "supersededReason": "The isolated client QA copy was later found stale. This historical screenshot and motion sample do not verify the source revision recorded here. Repeat actual-client visual QA after rebuilding its copies.",
+    "viewport": [
+      390,
+      844
+    ],
+    "motionSamples": [
+      {
+        "frame": "1",
+        "moving": "true",
+        "direction": "right",
+        "rect": {
+          "x": 115,
+          "y": 215.203125,
+          "width": 160,
+          "height": 240,
+          "top": 215.203125,
+          "right": 275,
+          "bottom": 455.203125,
+          "left": 115
+        }
+      },
+      {
+        "frame": "1",
+        "moving": "true",
+        "direction": "right",
+        "rect": {
+          "x": 115,
+          "y": 215.203125,
+          "width": 160,
+          "height": 240,
+          "top": 215.203125,
+          "right": 275,
+          "bottom": 455.203125,
+          "left": 115
+        }
+      },
+      {
+        "frame": "1",
+        "moving": "true",
+        "direction": "right",
+        "rect": {
+          "x": 115,
+          "y": 215.203125,
+          "width": 160,
+          "height": 240,
+          "top": 215.203125,
+          "right": 275,
+          "bottom": 455.203125,
+          "left": 115
+        }
+      },
+      {
+        "frame": "2",
+        "moving": "true",
+        "direction": "right",
+        "rect": {
+          "x": 115,
+          "y": 215.203125,
+          "width": 160,
+          "height": 240,
+          "top": 215.203125,
+          "right": 275,
+          "bottom": 455.203125,
+          "left": 115
+        }
+      },
+      {
+        "frame": "2",
+        "moving": "true",
+        "direction": "right",
+        "rect": {
+          "x": 115,
+          "y": 215.203125,
+          "width": 160,
+          "height": 240,
+          "top": 215.203125,
+          "right": 275,
+          "bottom": 455.203125,
+          "left": 115
+        }
+      },
+      {
+        "frame": "2",
+        "moving": "true",
+        "direction": "right",
+        "rect": {
+          "x": 115,
+          "y": 215.203125,
+          "width": 160,
+          "height": 240,
+          "top": 215.203125,
+          "right": 275,
+          "bottom": 455.203125,
+          "left": 115
+        }
+      },
+      {
+        "frame": "3",
+        "moving": "true",
+        "direction": "right",
+        "rect": {
+          "x": 115,
+          "y": 215.203125,
+          "width": 160,
+          "height": 240,
+          "top": 215.203125,
+          "right": 275,
+          "bottom": 455.203125,
+          "left": 115
+        }
+      },
+      {
+        "frame": "3",
+        "moving": "true",
+        "direction": "right",
+        "rect": {
+          "x": 115,
+          "y": 215.203125,
+          "width": 160,
+          "height": 240,
+          "top": 215.203125,
+          "right": 275,
+          "bottom": 455.203125,
+          "left": 115
+        }
+      },
+      {
+        "frame": "3",
+        "moving": "true",
+        "direction": "right",
+        "rect": {
+          "x": 115,
+          "y": 215.203125,
+          "width": 160,
+          "height": 240,
+          "top": 215.203125,
+          "right": 275,
+          "bottom": 455.203125,
+          "left": 115
+        }
+      },
+      {
+        "frame": "0",
+        "moving": "true",
+        "direction": "right",
+        "rect": {
+          "x": 115,
+          "y": 215.203125,
+          "width": 160,
+          "height": 240,
+          "top": 215.203125,
+          "right": 275,
+          "bottom": 455.203125,
+          "left": 115
+        }
+      },
+      {
+        "frame": "0",
+        "moving": "true",
+        "direction": "right",
+        "rect": {
+          "x": 115,
+          "y": 215.203125,
+          "width": 160,
+          "height": 240,
+          "top": 215.203125,
+          "right": 275,
+          "bottom": 455.203125,
+          "left": 115
+        }
+      },
+      {
+        "frame": "0",
+        "moving": "true",
+        "direction": "right",
+        "rect": {
+          "x": 115,
+          "y": 215.203125,
+          "width": 160,
+          "height": 240,
+          "top": 215.203125,
+          "right": 275,
+          "bottom": 455.203125,
+          "left": 115
+        }
+      },
+      {
+        "frame": "1",
+        "moving": "true",
+        "direction": "right",
+        "rect": {
+          "x": 115,
+          "y": 215.203125,
+          "width": 160,
+          "height": 240,
+          "top": 215.203125,
+          "right": 275,
+          "bottom": 455.203125,
+          "left": 115
+        }
+      },
+      {
+        "frame": "1",
+        "moving": "true",
+        "direction": "right",
+        "rect": {
+          "x": 115,
+          "y": 215.203125,
+          "width": 160,
+          "height": 240,
+          "top": 215.203125,
+          "right": 275,
+          "bottom": 455.203125,
+          "left": 115
+        }
+      },
+      {
+        "frame": "1",
+        "moving": "true",
+        "direction": "right",
+        "rect": {
+          "x": 115,
+          "y": 215.203125,
+          "width": 160,
+          "height": 240,
+          "top": 215.203125,
+          "right": 275,
+          "bottom": 455.203125,
+          "left": 115
+        }
+      },
+      {
+        "frame": "2",
+        "moving": "true",
+        "direction": "right",
+        "rect": {
+          "x": 115,
+          "y": 215.203125,
+          "width": 160,
+          "height": 240,
+          "top": 215.203125,
+          "right": 275,
+          "bottom": 455.203125,
+          "left": 115
+        }
+      }
+    ],
+    "stopped": {
+      "direction": "right",
+      "frame": 1,
+      "moving": false
+    },
+    "screenshot": "generated/client-right-edge-stopped-v1.png"
+  },
+  "mapFixtureScreenshot": "generated/map-neighborhood-right-edge-v1.png",
+  "actualGameMovementChecked": false,
+  "ownedBrowserClosed": true,
+  "runtimeEligible": false,
+  "visualApproved": false,
+  "deployed": false
+}

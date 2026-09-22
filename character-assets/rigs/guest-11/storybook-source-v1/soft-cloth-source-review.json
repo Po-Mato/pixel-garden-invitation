@@ -1,0 +1,26 @@
+{
+  "status": "reviewed-local-source-material-not-release-ready",
+  "parts": ["legLeft-front", "legRight-front"],
+  "sources": ["sources/legLeft-front-soft-cloth-study-v1.svg", "sources/legRight-front-soft-cloth-study-v1.svg"],
+  "method": "Independent editable source contours with soft taupe side-plane material before registration. No completed frame repair or hard dark outline.",
+  "preserved": ["original source alpha", "cream centers", "cuffs", "shoes", "skeleton and pivots", "original heads", "other directional artwork"],
+  "hdSha256": "dc2c39ae55fb292397b8677d79d56600cb73491fbdb79ef156104311c2050fc9",
+  "runtimeSha256": "dd1de1d445eb97419b4702098fd33b87bdb0ff739ab73b293e62c1df98f31845",
+  "trials": [
+    {"opacity":0.8,"catalogFailures":38,"note":"Passed, but stronger front material than necessary"},
+    {"opacity":0.65,"catalogFailures":39,"note":"One character sample remained below unchanged threshold"},
+    {"opacity":0.7,"catalogFailures":38,"note":"Retained after latest UI recheck"}
+  ],
+  "frontNeighborhoodContrast": [1.240771874598196,1.1970187940940433,1.195409136763744,1.1970187940940433],
+  "characterFixtureSamplesPassed": 160,
+  "catalogFailuresBefore": 42,
+  "catalogFailuresAfter": 38,
+  "newFailures": 0,
+  "displayFailures": 0,
+  "sourceOverlayTestsPassed": 14,
+  "jointAuditCharactersPassed": 12,
+  "visualReview": "Current selection and home-game sixteen-frame contact sheets inspected. Softer taupe side shading retains cream trouser centers and shoe details; no black outlined appearance from the rejected earlier seam study, no detached joints or changed head size. Directional material remains recognizable as the same cream trousers.",
+  "thresholdsChanged": false,
+  "runtimeEligible": false,
+  "visualApproved": false
+}

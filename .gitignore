@@ -22,3 +22,4 @@ __pycache__/
 # Reproducible 216px renders (editable rigs/parts and reviewed evidence are tracked).
 character-assets/rigs/guest-*/three-head-216-v1/generated/
 character-assets/rigs/guest-*/three-head-soft-tailoring-v1/generated/
+character-assets/rigs/guest-*/storybook*/generated/

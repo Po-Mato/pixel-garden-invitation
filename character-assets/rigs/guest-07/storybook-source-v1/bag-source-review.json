@@ -1,0 +1,38 @@
+{
+  "date": "2026-09-14",
+  "checkpointSupersededBy": "hem-source-review.json",
+  "source": "sources/bag-front-seam-study-v1.svg",
+  "part": "bag-front",
+  "direction": "front",
+  "bodySide": "left",
+  "parent": "handLeft",
+  "previousSheetSha256": "11776d2b0da9dc02a05983ea5c18ebb033516b9ee661cc6db93a3db7133187fc",
+  "sheetSha256": "5dbf8bb1ab1165ef7ab26e6060058f89812beeee9c9de338d1c5f88ff67c876f",
+  "runtimeSha256": "869d1ddb5d456a4e5f1c4dcb47d4bf490fc58fe52b0c1f8867ffe2c58ced9d68",
+  "sourceAlphaUnchanged": true,
+  "creamInnerPanelUnpainted": true,
+  "allUnpaintedOpaqueColorsPreserved": true,
+  "geometryPivotAndBodySideUnchanged": true,
+  "otherDirectionsUnchanged": true,
+  "otherCharactersUnchanged": true,
+  "pngRepaired": false,
+  "neighborhoodFrontFirstStride": {
+    "standardBefore": 1.0989036727677353,
+    "standardAfter": 1.1427065401008178,
+    "minimumDisplayBefore": 1.0911855088149036,
+    "minimumDisplayAfter": 1.1251009273193977
+  },
+  "catalogContrast": {"samples":1920,"standardFailures":60,"displayFailures":3,"newFailures":0,"thresholdsUnchanged":true},
+  "catalogTests": {"sourceTests":165,"structureTests":57,"total":222,"jointAuditCharacters":12,"disconnected":0,"unobserved":0},
+  "visualReview": {
+    "highResolutionFrontStrideInspected": true,
+    "latestSelection16FramesInspected": true,
+    "latestHomeGame16FramesInspected": true,
+    "currentSourceCopyHashesRechecked": true,
+    "observation": "The warm clasp border is slightly clearer while the cream center remains pale. Bag size and attachment do not change across frames; no conspicuous limb or neck separation is visible."
+  },
+  "rejectedAlternative": "rejected-right-front-seam-study.json",
+  "visualApproved": false,
+  "runtimeEligible": false,
+  "productionChanged": false
+}

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1536" viewBox="0 0 1024 1536">
+  <!-- REJECTED STUDY: not registered. Broad contour shading worsened some map
+       display profiles. Retained for comparison; do not apply without new QA.
+       Independent near sleeve; cuff and hand below y1050 excluded. -->
+  <g fill="none" stroke="#4e3a5d" stroke-width="44" stroke-opacity="0.85" stroke-linecap="round">
+    <path d="M425 141 C385 243 405 341 427 386 C418 486 427 571 438 648 C431 743 402 865 417 959 Q428 1006 463 1027"/>
+    <path d="M565 130 C600 244 592 341 590 406 C609 501 621 590 598 647 C620 742 626 865 649 950 Q660 1001 612 1025"/>
+  </g>
+</svg>

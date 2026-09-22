@@ -1,0 +1,62 @@
+[
+  {
+    "id": "armLeft-left",
+    "mode": "built-in imagegen",
+    "inputs": [
+      "generated/armLeft-left.png",
+      "sources/armLeft-front-balanced-v2.png"
+    ],
+    "generated": "/Users/sjlee/.codex/generated_images/01a054aa-c737-7ec3-9535-c8a8f6768a91/exec-ee117709-21fb-446f-ac83-6ba71075ac94.png",
+    "prompt": "첫 이미지 왼쪽 측면의 왼팔 파츠만 편집. 둘째는 정면 팔의 굵기와 색상 참고, 반전 복사 금지. 귀여운 3등신 성인 하객: 아래팔을 약간 채우되 아기팔·근육·볼록한 알통 금지, 손목으로 완만하게 좁아지게. 절제된 크림 퍼프소매, 자연스러운 작은 손. 첫 이미지 방향·손바닥/손등·엄지·어깨와 손목 위치·길이 그대로. 크림색·살구 피부·손그림 2.5D를 둘째와 통일. 팔 하나만, 진짜 투명 알파, 후광·번짐 금지."
+  },
+  {
+    "id": "armRight-left",
+    "mode": "built-in imagegen",
+    "inputs": [
+      "generated/armRight-left.png",
+      "sources/armRight-front-balanced-v2.png"
+    ],
+    "generated": "/Users/sjlee/.codex/generated_images/01a054aa-c737-7ec3-9535-c8a8f6768a91/exec-f23a5d16-9ba5-46e4-9c09-15f2d9ebb43c.png",
+    "prompt": "첫 이미지 왼쪽 측면의 오른팔 파츠만 편집. 둘째는 정면 팔의 굵기와 색상 참고, 반전 복사 금지. 귀여운 3등신 성인 하객: 아래팔을 약간 채우되 아기팔·근육·볼록한 알통 금지, 손목으로 완만하게 좁아지게. 절제된 크림 퍼프소매, 자연스러운 작은 손. 첫 이미지 방향·손바닥/손등·엄지·어깨와 손목 위치·길이 그대로. 크림색·살구 피부·손그림 2.5D를 둘째와 통일. 팔 하나만, 진짜 투명 알파, 후광·번짐 금지."
+  },
+  {
+    "id": "armLeft-right",
+    "mode": "built-in imagegen",
+    "inputs": [
+      "generated/armLeft-right.png",
+      "sources/armLeft-front-balanced-v2.png"
+    ],
+    "generated": "/Users/sjlee/.codex/generated_images/01a054aa-c737-7ec3-9535-c8a8f6768a91/exec-2a456def-386d-4bc5-a8f6-2e7ca44246a6.png",
+    "prompt": "첫 이미지 오른쪽 측면 왼팔 파츠 편집. 둘째 정면은 굵기·색상 참고만, 반전 금지. 크림색 드레스의 3등신 성인 하객용 팔: 가는 아래팔을 조금 채우고 손목으로 자연스럽게 좁아지게. 아기팔·볼록한 근육 금지. 소매 부피 절제, 작은 자연스러운 손. 첫 이미지 어깨·손목 위치와 길이, 옆모습·손등·엄지 방향 보존. 둘째와 같은 크림색·피부색·2.5D 명암. 팔 하나만, 투명 알파, 후광 금지."
+  },
+  {
+    "id": "armRight-right",
+    "mode": "built-in imagegen",
+    "inputs": [
+      "generated/armRight-right.png",
+      "sources/armRight-front-balanced-v2.png"
+    ],
+    "generated": "/Users/sjlee/.codex/generated_images/01a054aa-c737-7ec3-9535-c8a8f6768a91/exec-68ddd649-ed37-4bc5-8693-1de7699f2700.png",
+    "prompt": "첫 이미지 오른쪽 측면 오른팔 파츠 편집. 둘째 정면은 굵기·색상 참고만, 반전 금지. 크림색 드레스의 3등신 성인 하객용 팔: 가는 아래팔을 조금 채우고 손목으로 자연스럽게 좁아지게. 아기팔·볼록한 근육 금지. 소매 부피 절제, 작은 자연스러운 손. 첫 이미지 어깨·손목 위치와 길이, 옆모습·손바닥·엄지 방향 보존. 둘째와 같은 크림색·피부색·2.5D 명암. 팔 하나만, 투명 알파, 후광 금지."
+  },
+  {
+    "id": "armLeft-back",
+    "mode": "built-in imagegen",
+    "inputs": [
+      "generated/armLeft-back.png",
+      "sources/armLeft-front-balanced-v2.png"
+    ],
+    "generated": "/Users/sjlee/.codex/generated_images/01a054aa-c737-7ec3-9535-c8a8f6768a91/exec-dfda60bb-959c-4a65-bb5a-d197dc39917e.png",
+    "prompt": "첫 이미지 후면 왼팔 원화 파츠 편집. 둘째 정면은 굵기·색상 기준, 반전 복사 금지. 3등신 성인 하객의 크림 소매와 팔: 조금 더 부드러운 중간 굵기, 손목으로 완만히 좁아지는 선, 작은 자연스러운 손. 통통한 아기팔·근육 금지. 첫 이미지 후면 관찰각도와 손등·엄지 방향, 어깨·손목 위치와 길이 유지. 둘째의 크림색·피부색·손그림 2.5D 명암과 통일. 팔 파츠 하나만, 실제 투명 알파, 후광·번짐 금지."
+  },
+  {
+    "id": "armRight-back",
+    "mode": "built-in imagegen",
+    "inputs": [
+      "generated/armRight-back.png",
+      "sources/armRight-front-balanced-v2.png"
+    ],
+    "generated": "/Users/sjlee/.codex/generated_images/01a054aa-c737-7ec3-9535-c8a8f6768a91/exec-53284932-b4f0-4d99-bbf7-8f541ad93ed0.png",
+    "prompt": "첫 이미지 후면 오른팔 원화 파츠 편집. 둘째 정면은 굵기·색상 기준, 반전 복사 금지. 3등신 성인 하객의 크림 소매와 팔: 조금 더 부드러운 중간 굵기, 손목으로 완만히 좁아지는 선, 작은 자연스러운 손. 통통한 아기팔·근육 금지. 첫 이미지 후면 관찰각도와 손등·엄지 방향, 어깨·손목 위치와 길이 유지. 둘째의 크림색·피부색·손그림 2.5D 명암과 통일. 팔 파츠 하나만, 실제 투명 알파, 후광·번짐 금지."
+  }
+]

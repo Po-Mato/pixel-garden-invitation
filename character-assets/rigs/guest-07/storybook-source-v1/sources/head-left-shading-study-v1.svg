@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1240" height="1269" viewBox="0 0 1240 1269">
+  <!-- Independent left forelock material, excluding forehead, face and crown. -->
+  <defs>
+    <clipPath id="forelock"><rect x="0" y="240" width="260" height="200"/></clipPath>
+    <filter id="soft" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="8"/></filter>
+  </defs>
+  <path clip-path="url(#forelock)" d="M 282 215 Q 195 323 197 381 Q 195 417 212 435" fill="none" stroke="#211712" stroke-width="40" stroke-opacity="0.8" filter="url(#soft)"/>
+</svg>

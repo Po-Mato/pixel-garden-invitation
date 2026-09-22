@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="725" height="2168" viewBox="0 0 725 2168">
+  <!-- Right-facing beige sleeve only. End above the white cuff and skin;
+       independent source-coordinate paths, no body or joint resizing. -->
+  <defs><clipPath id="sleeve-cloth-only"><rect width="725" height="1670"/></clipPath></defs>
+  <g clip-path="url(#sleeve-cloth-only)" fill="none" stroke="#493a30" stroke-width="48" stroke-opacity="0.85" stroke-linecap="round">
+    <path d="M 319 130 C 252 266 211 578 183 946 C 162 989 165 1005 182 1047 C 157 1218 158 1497 168 1690"/>
+    <path d="M 490 70 C 567 190 613 529 568 681 C 543 828 530 939 506 1069 C 525 1116 503 1148 504 1178 L 488 1680"/>
+  </g>
+</svg>

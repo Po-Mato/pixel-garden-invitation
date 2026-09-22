@@ -1,0 +1,742 @@
+{
+  "scope": "complete-twelve-character-catalog",
+  "characters": [
+    "guest-01",
+    "guest-02",
+    "guest-03",
+    "guest-04",
+    "guest-05",
+    "guest-06",
+    "guest-07",
+    "guest-08",
+    "guest-09",
+    "guest-10",
+    "guest-11",
+    "guest-12"
+  ],
+  "renderReceipts": [
+    {
+      "id": "guest-01",
+      "file": "character-assets/rigs/guest-01/storybook-source-v1/generated/walk-render-receipt.json",
+      "sha256": "4bf5493ac8ef0586a09674b70149b6d18c29122b16dcea05af6e006df90fcd16"
+    },
+    {
+      "id": "guest-02",
+      "file": "character-assets/rigs/guest-02/storybook-source-v1/generated/walk-render-receipt.json",
+      "sha256": "2c5383be86182930f62ec2ae1e5ab5512b0d799bb8c702440297aa1f78b6e303"
+    },
+    {
+      "id": "guest-03",
+      "file": "character-assets/rigs/guest-03/storybook-source-v1/generated/walk-render-receipt.json",
+      "sha256": "e2dde47b05abea3103358a01b901311d3174234244340fdf2965e2866299ed34"
+    },
+    {
+      "id": "guest-04",
+      "file": "character-assets/rigs/guest-04/storybook-source-v1/generated/walk-render-receipt.json",
+      "sha256": "048e1731d80820836cd6a83cbe56636f516dc0dcf1f3b32fc38690bd9504ef7c"
+    },
+    {
+      "id": "guest-05",
+      "file": "character-assets/rigs/guest-05/storybook-directions-v1/generated/walk-render-receipt.json",
+      "sha256": "11f40ec8bd7ea8ff040e0ea18b19e61450840be0ef5b8025778e0d9035c8977b"
+    },
+    {
+      "id": "guest-06",
+      "file": "character-assets/rigs/guest-06/storybook-source-v1/generated/walk-render-receipt.json",
+      "sha256": "9ae26fca2cff8ffc7d0a2f66571a0cb26e79c186a801ca3453195e8907190911"
+    },
+    {
+      "id": "guest-07",
+      "file": "character-assets/rigs/guest-07/storybook-source-v1/generated/walk-render-receipt.json",
+      "sha256": "19236164a3fbc86ee1d5c47d55cf1eacfb1704dae6bbfe0eb2491dabcb63558a"
+    },
+    {
+      "id": "guest-08",
+      "file": "character-assets/rigs/guest-08/storybook-source-v1/generated/walk-render-receipt.json",
+      "sha256": "4481cc17b007bd85f9e0138b27d2a48c6d695c57d2d29a50bf871d12cfdbea1b"
+    },
+    {
+      "id": "guest-09",
+      "file": "character-assets/rigs/guest-09/storybook-source-v1/generated/walk-render-receipt.json",
+      "sha256": "d842d87fac245cb26d6f7007a23e4866171e0bf1cf2f7a801d2bb7f99a74b7f1"
+    },
+    {
+      "id": "guest-10",
+      "file": "character-assets/rigs/guest-10/storybook-source-v1/generated/walk-render-receipt.json",
+      "sha256": "5bba92be04ce3dffb563ef80c46baf20f0fe2da130462cf32c198f3869cb0712"
+    },
+    {
+      "id": "guest-11",
+      "file": "character-assets/rigs/guest-11/storybook-source-v1/generated/walk-render-receipt.json",
+      "sha256": "fa63ee523f8917acf58a4dce7fe93621ef8678e8728b2e8c32adf3ccc180b9a8"
+    },
+    {
+      "id": "guest-12",
+      "file": "character-assets/rigs/guest-12/storybook-source-v1/generated/walk-render-receipt.json",
+      "sha256": "4242d50068fddfa37985b48deef44843d3ca59cf20ee6fd13506a561bdb5b02f"
+    }
+  ],
+  "activeSourceOverrides": [
+    {
+      "id": "guest-01",
+      "renderer": "guest01-balanced-source-v3",
+      "frames": 16,
+      "rigidHeadDirections": 4,
+      "connections": 112,
+      "disconnected": 0,
+      "receipt": "character-assets/rigs/guest-01/storybook-source-v1/generated/balanced-v3/source-render-receipt.json",
+      "receiptSha256": "17c6efa00a82ce7d7c1f5e45d809446165483e1065544f3d81bb7259252fd2a0",
+      "scope": "Active neck and arm connections; unchanged concealed leg geometry is audited through the base recipe above."
+    }
+  ],
+  "rigidHeadDirections": 48,
+  "frames": 192,
+  "connections": 2112,
+  "connected": 2080,
+  "concealed": [
+    {
+      "id": "guest-06",
+      "direction": "front",
+      "frame": 1,
+      "a": "thighLeft",
+      "b": "calfLeft",
+      "pixelsA": 0,
+      "pixelsB": 66,
+      "overlap": 0,
+      "adjacent": 0,
+      "connected": false,
+      "sourceConnection": {
+        "pixelsA": 404,
+        "pixelsB": 372,
+        "overlap": 64,
+        "adjacent": 10,
+        "connected": true
+      },
+      "status": "connected-under-garment"
+    },
+    {
+      "id": "guest-06",
+      "direction": "front",
+      "frame": 1,
+      "a": "thighRight",
+      "b": "calfRight",
+      "pixelsA": 0,
+      "pixelsB": 10,
+      "overlap": 0,
+      "adjacent": 0,
+      "connected": false,
+      "sourceConnection": {
+        "pixelsA": 423,
+        "pixelsB": 412,
+        "overlap": 71,
+        "adjacent": 11,
+        "connected": true
+      },
+      "status": "connected-under-garment"
+    },
+    {
+      "id": "guest-06",
+      "direction": "front",
+      "frame": 2,
+      "a": "thighLeft",
+      "b": "calfLeft",
+      "pixelsA": 0,
+      "pixelsB": 66,
+      "overlap": 0,
+      "adjacent": 0,
+      "connected": false,
+      "sourceConnection": {
+        "pixelsA": 404,
+        "pixelsB": 372,
+        "overlap": 64,
+        "adjacent": 10,
+        "connected": true
+      },
+      "status": "connected-under-garment"
+    },
+    {
+      "id": "guest-06",
+      "direction": "front",
+      "frame": 2,
+      "a": "thighRight",
+      "b": "calfRight",
+      "pixelsA": 0,
+      "pixelsB": 78,
+      "overlap": 0,
+      "adjacent": 0,
+      "connected": false,
+      "sourceConnection": {
+        "pixelsA": 428,
+        "pixelsB": 410,
+        "overlap": 72,
+        "adjacent": 11,
+        "connected": true
+      },
+      "status": "connected-under-garment"
+    },
+    {
+      "id": "guest-06",
+      "direction": "front",
+      "frame": 3,
+      "a": "thighLeft",
+      "b": "calfLeft",
+      "pixelsA": 0,
+      "pixelsB": 8,
+      "overlap": 0,
+      "adjacent": 0,
+      "connected": false,
+      "sourceConnection": {
+        "pixelsA": 401,
+        "pixelsB": 373,
+        "overlap": 62,
+        "adjacent": 11,
+        "connected": true
+      },
+      "status": "connected-under-garment"
+    },
+    {
+      "id": "guest-06",
+      "direction": "front",
+      "frame": 3,
+      "a": "thighRight",
+      "b": "calfRight",
+      "pixelsA": 0,
+      "pixelsB": 78,
+      "overlap": 0,
+      "adjacent": 0,
+      "connected": false,
+      "sourceConnection": {
+        "pixelsA": 428,
+        "pixelsB": 410,
+        "overlap": 72,
+        "adjacent": 11,
+        "connected": true
+      },
+      "status": "connected-under-garment"
+    },
+    {
+      "id": "guest-06",
+      "direction": "front",
+      "frame": 4,
+      "a": "thighLeft",
+      "b": "calfLeft",
+      "pixelsA": 0,
+      "pixelsB": 66,
+      "overlap": 0,
+      "adjacent": 0,
+      "connected": false,
+      "sourceConnection": {
+        "pixelsA": 404,
+        "pixelsB": 372,
+        "overlap": 64,
+        "adjacent": 10,
+        "connected": true
+      },
+      "status": "connected-under-garment"
+    },
+    {
+      "id": "guest-06",
+      "direction": "front",
+      "frame": 4,
+      "a": "thighRight",
+      "b": "calfRight",
+      "pixelsA": 0,
+      "pixelsB": 78,
+      "overlap": 0,
+      "adjacent": 0,
+      "connected": false,
+      "sourceConnection": {
+        "pixelsA": 428,
+        "pixelsB": 410,
+        "overlap": 72,
+        "adjacent": 11,
+        "connected": true
+      },
+      "status": "connected-under-garment"
+    },
+    {
+      "id": "guest-06",
+      "direction": "left",
+      "frame": 1,
+      "a": "thighLeft",
+      "b": "calfLeft",
+      "pixelsA": 0,
+      "pixelsB": 47,
+      "overlap": 0,
+      "adjacent": 0,
+      "connected": false,
+      "sourceConnection": {
+        "pixelsA": 404,
+        "pixelsB": 352,
+        "overlap": 56,
+        "adjacent": 11,
+        "connected": true
+      },
+      "status": "connected-under-garment"
+    },
+    {
+      "id": "guest-06",
+      "direction": "left",
+      "frame": 1,
+      "a": "thighRight",
+      "b": "calfRight",
+      "pixelsA": 0,
+      "pixelsB": 59,
+      "overlap": 0,
+      "adjacent": 0,
+      "connected": false,
+      "sourceConnection": {
+        "pixelsA": 404,
+        "pixelsB": 351,
+        "overlap": 56,
+        "adjacent": 11,
+        "connected": true
+      },
+      "status": "connected-under-garment"
+    },
+    {
+      "id": "guest-06",
+      "direction": "left",
+      "frame": 2,
+      "a": "thighLeft",
+      "b": "calfLeft",
+      "pixelsA": 0,
+      "pixelsB": 63,
+      "overlap": 0,
+      "adjacent": 0,
+      "connected": false,
+      "sourceConnection": {
+        "pixelsA": 403,
+        "pixelsB": 355,
+        "overlap": 61,
+        "adjacent": 10,
+        "connected": true
+      },
+      "status": "connected-under-garment"
+    },
+    {
+      "id": "guest-06",
+      "direction": "left",
+      "frame": 2,
+      "a": "thighRight",
+      "b": "calfRight",
+      "pixelsA": 0,
+      "pixelsB": 63,
+      "overlap": 0,
+      "adjacent": 0,
+      "connected": false,
+      "sourceConnection": {
+        "pixelsA": 403,
+        "pixelsB": 355,
+        "overlap": 61,
+        "adjacent": 10,
+        "connected": true
+      },
+      "status": "connected-under-garment"
+    },
+    {
+      "id": "guest-06",
+      "direction": "left",
+      "frame": 3,
+      "a": "thighLeft",
+      "b": "calfLeft",
+      "pixelsA": 0,
+      "pixelsB": 59,
+      "overlap": 0,
+      "adjacent": 0,
+      "connected": false,
+      "sourceConnection": {
+        "pixelsA": 404,
+        "pixelsB": 351,
+        "overlap": 56,
+        "adjacent": 11,
+        "connected": true
+      },
+      "status": "connected-under-garment"
+    },
+    {
+      "id": "guest-06",
+      "direction": "left",
+      "frame": 3,
+      "a": "thighRight",
+      "b": "calfRight",
+      "pixelsA": 0,
+      "pixelsB": 47,
+      "overlap": 0,
+      "adjacent": 0,
+      "connected": false,
+      "sourceConnection": {
+        "pixelsA": 404,
+        "pixelsB": 352,
+        "overlap": 56,
+        "adjacent": 11,
+        "connected": true
+      },
+      "status": "connected-under-garment"
+    },
+    {
+      "id": "guest-06",
+      "direction": "left",
+      "frame": 4,
+      "a": "thighLeft",
+      "b": "calfLeft",
+      "pixelsA": 0,
+      "pixelsB": 63,
+      "overlap": 0,
+      "adjacent": 0,
+      "connected": false,
+      "sourceConnection": {
+        "pixelsA": 403,
+        "pixelsB": 355,
+        "overlap": 61,
+        "adjacent": 10,
+        "connected": true
+      },
+      "status": "connected-under-garment"
+    },
+    {
+      "id": "guest-06",
+      "direction": "left",
+      "frame": 4,
+      "a": "thighRight",
+      "b": "calfRight",
+      "pixelsA": 0,
+      "pixelsB": 63,
+      "overlap": 0,
+      "adjacent": 0,
+      "connected": false,
+      "sourceConnection": {
+        "pixelsA": 403,
+        "pixelsB": 355,
+        "overlap": 61,
+        "adjacent": 10,
+        "connected": true
+      },
+      "status": "connected-under-garment"
+    },
+    {
+      "id": "guest-06",
+      "direction": "right",
+      "frame": 1,
+      "a": "thighLeft",
+      "b": "calfLeft",
+      "pixelsA": 0,
+      "pixelsB": 65,
+      "overlap": 0,
+      "adjacent": 0,
+      "connected": false,
+      "sourceConnection": {
+        "pixelsA": 397,
+        "pixelsB": 362,
+        "overlap": 58,
+        "adjacent": 10,
+        "connected": true
+      },
+      "status": "connected-under-garment"
+    },
+    {
+      "id": "guest-06",
+      "direction": "right",
+      "frame": 1,
+      "a": "thighRight",
+      "b": "calfRight",
+      "pixelsA": 0,
+      "pixelsB": 47,
+      "overlap": 0,
+      "adjacent": 0,
+      "connected": false,
+      "sourceConnection": {
+        "pixelsA": 395,
+        "pixelsB": 358,
+        "overlap": 57,
+        "adjacent": 10,
+        "connected": true
+      },
+      "status": "connected-under-garment"
+    },
+    {
+      "id": "guest-06",
+      "direction": "right",
+      "frame": 2,
+      "a": "thighLeft",
+      "b": "calfLeft",
+      "pixelsA": 0,
+      "pixelsB": 62,
+      "overlap": 0,
+      "adjacent": 0,
+      "connected": false,
+      "sourceConnection": {
+        "pixelsA": 403,
+        "pixelsB": 359,
+        "overlap": 59,
+        "adjacent": 10,
+        "connected": true
+      },
+      "status": "connected-under-garment"
+    },
+    {
+      "id": "guest-06",
+      "direction": "right",
+      "frame": 2,
+      "a": "thighRight",
+      "b": "calfRight",
+      "pixelsA": 0,
+      "pixelsB": 62,
+      "overlap": 0,
+      "adjacent": 0,
+      "connected": false,
+      "sourceConnection": {
+        "pixelsA": 403,
+        "pixelsB": 359,
+        "overlap": 59,
+        "adjacent": 10,
+        "connected": true
+      },
+      "status": "connected-under-garment"
+    },
+    {
+      "id": "guest-06",
+      "direction": "right",
+      "frame": 3,
+      "a": "thighLeft",
+      "b": "calfLeft",
+      "pixelsA": 0,
+      "pixelsB": 47,
+      "overlap": 0,
+      "adjacent": 0,
+      "connected": false,
+      "sourceConnection": {
+        "pixelsA": 395,
+        "pixelsB": 358,
+        "overlap": 57,
+        "adjacent": 10,
+        "connected": true
+      },
+      "status": "connected-under-garment"
+    },
+    {
+      "id": "guest-06",
+      "direction": "right",
+      "frame": 3,
+      "a": "thighRight",
+      "b": "calfRight",
+      "pixelsA": 0,
+      "pixelsB": 65,
+      "overlap": 0,
+      "adjacent": 0,
+      "connected": false,
+      "sourceConnection": {
+        "pixelsA": 397,
+        "pixelsB": 362,
+        "overlap": 58,
+        "adjacent": 10,
+        "connected": true
+      },
+      "status": "connected-under-garment"
+    },
+    {
+      "id": "guest-06",
+      "direction": "right",
+      "frame": 4,
+      "a": "thighLeft",
+      "b": "calfLeft",
+      "pixelsA": 0,
+      "pixelsB": 62,
+      "overlap": 0,
+      "adjacent": 0,
+      "connected": false,
+      "sourceConnection": {
+        "pixelsA": 403,
+        "pixelsB": 359,
+        "overlap": 59,
+        "adjacent": 10,
+        "connected": true
+      },
+      "status": "connected-under-garment"
+    },
+    {
+      "id": "guest-06",
+      "direction": "right",
+      "frame": 4,
+      "a": "thighRight",
+      "b": "calfRight",
+      "pixelsA": 0,
+      "pixelsB": 62,
+      "overlap": 0,
+      "adjacent": 0,
+      "connected": false,
+      "sourceConnection": {
+        "pixelsA": 403,
+        "pixelsB": 359,
+        "overlap": 59,
+        "adjacent": 10,
+        "connected": true
+      },
+      "status": "connected-under-garment"
+    },
+    {
+      "id": "guest-06",
+      "direction": "back",
+      "frame": 1,
+      "a": "thighLeft",
+      "b": "calfLeft",
+      "pixelsA": 0,
+      "pixelsB": 8,
+      "overlap": 0,
+      "adjacent": 0,
+      "connected": false,
+      "sourceConnection": {
+        "pixelsA": 390,
+        "pixelsB": 376,
+        "overlap": 61,
+        "adjacent": 10,
+        "connected": true
+      },
+      "status": "connected-under-garment"
+    },
+    {
+      "id": "guest-06",
+      "direction": "back",
+      "frame": 1,
+      "a": "thighRight",
+      "b": "calfRight",
+      "pixelsA": 0,
+      "pixelsB": 65,
+      "overlap": 0,
+      "adjacent": 0,
+      "connected": false,
+      "sourceConnection": {
+        "pixelsA": 394,
+        "pixelsB": 374,
+        "overlap": 61,
+        "adjacent": 10,
+        "connected": true
+      },
+      "status": "connected-under-garment"
+    },
+    {
+      "id": "guest-06",
+      "direction": "back",
+      "frame": 2,
+      "a": "thighLeft",
+      "b": "calfLeft",
+      "pixelsA": 0,
+      "pixelsB": 65,
+      "overlap": 0,
+      "adjacent": 0,
+      "connected": false,
+      "sourceConnection": {
+        "pixelsA": 394,
+        "pixelsB": 374,
+        "overlap": 61,
+        "adjacent": 10,
+        "connected": true
+      },
+      "status": "connected-under-garment"
+    },
+    {
+      "id": "guest-06",
+      "direction": "back",
+      "frame": 2,
+      "a": "thighRight",
+      "b": "calfRight",
+      "pixelsA": 0,
+      "pixelsB": 65,
+      "overlap": 0,
+      "adjacent": 0,
+      "connected": false,
+      "sourceConnection": {
+        "pixelsA": 394,
+        "pixelsB": 374,
+        "overlap": 61,
+        "adjacent": 10,
+        "connected": true
+      },
+      "status": "connected-under-garment"
+    },
+    {
+      "id": "guest-06",
+      "direction": "back",
+      "frame": 3,
+      "a": "thighLeft",
+      "b": "calfLeft",
+      "pixelsA": 0,
+      "pixelsB": 65,
+      "overlap": 0,
+      "adjacent": 0,
+      "connected": false,
+      "sourceConnection": {
+        "pixelsA": 394,
+        "pixelsB": 374,
+        "overlap": 61,
+        "adjacent": 10,
+        "connected": true
+      },
+      "status": "connected-under-garment"
+    },
+    {
+      "id": "guest-06",
+      "direction": "back",
+      "frame": 3,
+      "a": "thighRight",
+      "b": "calfRight",
+      "pixelsA": 0,
+      "pixelsB": 8,
+      "overlap": 0,
+      "adjacent": 0,
+      "connected": false,
+      "sourceConnection": {
+        "pixelsA": 390,
+        "pixelsB": 372,
+        "overlap": 59,
+        "adjacent": 10,
+        "connected": true
+      },
+      "status": "connected-under-garment"
+    },
+    {
+      "id": "guest-06",
+      "direction": "back",
+      "frame": 4,
+      "a": "thighLeft",
+      "b": "calfLeft",
+      "pixelsA": 0,
+      "pixelsB": 65,
+      "overlap": 0,
+      "adjacent": 0,
+      "connected": false,
+      "sourceConnection": {
+        "pixelsA": 394,
+        "pixelsB": 374,
+        "overlap": 61,
+        "adjacent": 10,
+        "connected": true
+      },
+      "status": "connected-under-garment"
+    },
+    {
+      "id": "guest-06",
+      "direction": "back",
+      "frame": 4,
+      "a": "thighRight",
+      "b": "calfRight",
+      "pixelsA": 0,
+      "pixelsB": 65,
+      "overlap": 0,
+      "adjacent": 0,
+      "connected": false,
+      "sourceConnection": {
+        "pixelsA": 394,
+        "pixelsB": 374,
+        "overlap": 61,
+        "adjacent": 10,
+        "connected": true
+      },
+      "status": "connected-under-garment"
+    }
+  ],
+  "unobserved": [],
+  "disconnected": [],
+  "visualApproved": false,
+  "limitation": "Actual frame source layers, transforms and masks are retained, including the separate guest-05 anchor renderer. Connectivity does not prove natural anatomy, ownership, pleasing seams or visible occlusion."
+}

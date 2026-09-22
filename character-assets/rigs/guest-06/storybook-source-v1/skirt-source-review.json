@@ -1,0 +1,26 @@
+{
+  "status": "partial-source-material-improvement-not-release-ready",
+  "part": "skirt-back",
+  "source": "sources/skirt-back-seam-study-v1.svg",
+  "method": "Original editable matte contour, private source-atop material before registration; no finished PNG edits",
+  "preserved": ["source alpha", "waistband", "central pleats", "skeleton and pivots", "all head sources", "skin and cream footwear"],
+  "hdSha256": "4942f463a602c3410909b5ed5cfad7600cf0b13f1bc95b793712710dffc234f8",
+  "runtimeSha256": "5e9deb76426f555d136dbf7852fb6bc76e76765c8c59298943bc93f91ce8a57d",
+  "backNeighborhoodContrast": {
+    "neutralBefore": 1.1420566838851862,
+    "neutralAfter": 1.146746650764886,
+    "oppositeStrideBefore": 1.151270114388994,
+    "oppositeStrideAfter": 1.1519994020062638
+  },
+  "catalogStandardFailures": 51,
+  "catalogDisplayFailures": 0,
+  "newStandardFailures": 0,
+  "selectionFramesVisuallyRechecked": 16,
+  "homeGameFramesVisuallyRechecked": 16,
+  "visualObservation": "Subtle lower contour is compatible with existing taupe folds at selection size; no conspicuous heavy border, disconnected joints or lost cream shoes in the latest captures. This does not solve map contrast.",
+  "sourceTestsPassed": 15,
+  "structureTestsPassed": 64,
+  "thresholdsChanged": false,
+  "runtimeEligible": false,
+  "visualApproved": false
+}

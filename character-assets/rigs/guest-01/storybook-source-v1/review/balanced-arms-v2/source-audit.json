@@ -1,0 +1,66 @@
+{
+  "scope": "front neutral and four walk frames only",
+  "frame": [
+    192,
+    288
+  ],
+  "sourceAudit": [
+    {
+      "id": "armLeft-front",
+      "source": "sources/armLeft-front-balanced-v2.png",
+      "sourcePivot": [
+        400,
+        190
+      ],
+      "sourceEnd": [
+        650,
+        1110
+      ],
+      "pivot": [
+        119,
+        136.883721
+      ],
+      "targetEnd": [
+        127,
+        180.418605
+      ],
+      "scale": 0.046429165699402634,
+      "angle": 4.789863598868753,
+      "sha256": "2814b50f0fe4ec0034bbb2c60fe6cbfd7a7794d01c25aa5d12d86f78448d35c8",
+      "alphaPreserved": true,
+      "mirrored": false
+    },
+    {
+      "id": "armRight-front",
+      "source": "sources/armRight-front-balanced-v2.png",
+      "sourcePivot": [
+        430,
+        190
+      ],
+      "sourceEnd": [
+        635,
+        1110
+      ],
+      "pivot": [
+        73,
+        136.883721
+      ],
+      "targetEnd": [
+        65,
+        180.418605
+      ],
+      "scale": 0.0469611308040128,
+      "angle": 22.97431931726696,
+      "sha256": "85f8b3b6657b6313dcf018d4fdfcc2888be3017748592f90bc8a4f6f0b623564",
+      "alphaPreserved": true,
+      "mirrored": false
+    }
+  ],
+  "checks": {
+    "neutralFramesIdentical": true,
+    "oppositeFramesDifferent": true,
+    "frameDimensions": true
+  },
+  "runtimeEligible": false,
+  "visualApproved": false
+}

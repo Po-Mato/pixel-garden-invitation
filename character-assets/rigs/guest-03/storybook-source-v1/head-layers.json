@@ -1,0 +1,28 @@
+{
+  "status":"visible-layer-ownership-study",
+  "runtimeEligible":false,
+  "independentMotionAllowed":false,
+  "policy":"Editable source-region ownership only. Face, front hair and back hair share one head pivot; hidden scalp/forehead is not complete. No independent hair motion or arbitrary style replacement is approved.",
+  "directions":{
+    "front":{"sourcePivot":[725,1040],"hiddenSurfaces":[{"id":"foreheadSkin","target":"face","occludedBy":["frontHair","backHair"],"source":"sources/hidden-skin-front-v1.png","matte":"masks/forehead-skin-front-v1.svg"}],"layers":[
+      {"id":"face","parent":"head","path":"M437 704Q480 688 516 658Q481 699 468 715Q570 674 628 566Q627 665 699 700L740 711Q674 676 704 602L756 486Q805 461 848 482L866 482Q928 488 947 535L963 630Q984 696 1029 742L1031 701L1037 749L1018 818Q1052 788 1067 745Q1117 736 1139 778Q1178 857 1080 906L989 940Q928 1010 769 1043Q636 1042 527 986L465 918Q404 937 348 890Q303 853 312 793Q320 730 386 741L399 758Q411 799 453 825Q429 775 437 704Z"},
+      {"id":"frontHair","parent":"head","path":"M0 0H1422V730H1080L1010 835H405L307 749H0Z"},
+{"id":"backHair","parent":"head"}
+    ]},
+    "left":{"sourcePivot":[740,1008],"hiddenSurfaces":[{"id":"foreheadSkin","target":"face","occludedBy":["frontHair","backHair"],"source":"sources/hidden-skin-left-v2.png","matte":"masks/hidden-skin-left-v2.svg"}],"layers":[
+{"id":"face","parent":"head","path":"M481 442Q533 421 578 441Q615 442 633 486L641 587Q663 664 725 695L698 641L722 663Q739 753 714 815L757 789Q816 700 875 706Q951 711 959 781Q974 854 880 905Q802 945 760 896Q743 924 784 928L798 938Q760.8 953.6 718.29 966.23Q600 1010 491 1024Q418 1023 398 991Q365 943 340 867Q300 831 324 787Q385 775 385 747L383 680L415 691Q377 665 397 600L426 525Q424 604 459 646Q435 602 452 547Z"},
+      {"id":"frontHair","parent":"head","path":"M0 0H750V835H710L673 754H0Z"},
+      {"id":"backHair","parent":"head"}
+    ]},
+    "right":{"sourcePivot":[725,1037],"hiddenSurfaces":[{"id":"foreheadSkin","target":"face","occludedBy":["frontHair","backHair"],"source":"sources/hidden-skin-right-v2.png","matte":"masks/hidden-skin-right-v2.svg"}],"layers":[
+      {"id":"face","parent":"head","path":"M1010 438L1040 448L1057 444L1049 458Q1082 463 1092 515Q1118 586 1100 685Q1054 777 1094 815L1123 834Q1123 852 1091 917Q1071 929 1049 971Q1013 1034 976 1039Q803 1035 661 957L627 914Q664 918 679 893Q650 929 579 900Q511 870 504 796Q499 726 551 707Q610 688 642 718Q661 789 724 837L711 801L750 810Q730 778 739 723L744 691L773 684Q828 653 818 650L771 704Q837 681 888 613L928 530L946 592Q986 644 1067 655Q993 619 1006 528Z"},
+      {"id":"frontHair","parent":"head","path":"M0 0H1422V820H748L724 848L643 750H0Z"},
+      {"id":"backHair","parent":"head"}
+    ]},
+    "back":{"sourcePivot":[700,1040],"faceVisibility":"ears-only; face occluded","layers":[
+      {"id":"face","parent":"head","path":"M313 720L349 746Q378 812 422 864L426 897Q350 902 307 840Q278 795 298 748Z M1084 730Q1120 771 1100 823Q1062 890 978 898L976 879Q1010 799 1056 751Z"},
+      {"id":"frontHair","parent":"head","occluded":true},
+      {"id":"backHair","parent":"head"}
+    ]}
+  }
+}

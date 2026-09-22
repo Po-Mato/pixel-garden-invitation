@@ -1,0 +1,34 @@
+{
+  "date": "2026-09-14",
+  "checkpointSupersededBy": "skirt-seam-source-review.json",
+  "source": "sources/neck-right-shading-study-v1.svg",
+  "direction": "right",
+  "previousSheetSha256": "d841a0bab48b20196ac15a4058bd2e217a4b9ae33096d499a5162f4b206adba9",
+  "sheetSha256": "518e93380f2d52ce9b283e59850c035023692ed777aa563ab32eb3cef6cc0b53",
+  "diagnosis": "Two right-view neck edge samples merge with the neighborhood crosswalk; nape and collar shading was studied specifically for guest 10.",
+  "sourceAlphaIdentical": true,
+  "changedOpaqueOrAntialiasedSourcePixels": 406,
+  "geometryAndPivotUnchanged": true,
+  "otherDirectionsUnchanged": true,
+  "otherCharactersUnchanged": true,
+  "pngRepaired": false,
+  "neighborhoodRightNeutral": {
+    "standardBefore": 1.1171782951513445,
+    "standardAfter": 1.1630291774831858,
+    "minimumDisplayBefore": 1.0893228452668808,
+    "minimumDisplayAfter": 1.1310796346430663
+  },
+  "catalogContrast": {"samples":1920,"standardFailures":60,"displayFailures":4,"newFailures":0,"thresholdsUnchanged":true},
+  "tests": {"source":15,"structure":56,"jointCatalogCharacters":12},
+  "visualReview": {
+    "highResolutionRightNeutralInspected": true,
+    "latestSelection16FramesInspected": true,
+    "latestHomeGame16FramesInspected": true,
+    "selectionEvidence": "../../storybook-expansion-v1/client-selection-motion-v1/evidence.json",
+    "gameEvidence": "../../storybook-expansion-v1/client-game-motion-v1/evidence.json",
+    "observation": "Nape/collar shading remains localized. Face size, neck silhouette, costume color and cream accessories remain stable in the latest contact sheets."
+  },
+  "visualApproved": false,
+  "runtimeEligible": false,
+  "productionChanged": false
+}

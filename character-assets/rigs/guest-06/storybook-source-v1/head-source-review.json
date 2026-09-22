@@ -1,0 +1,23 @@
+{
+  "status": "reviewed-local-source-material-not-release-ready",
+  "checkpointSupersededBy": "left-head-source-review.json",
+  "direction": "back",
+  "source": "sources/head-back-shading-study-v1.svg",
+  "method": "Private upper side-lock source RGB material, before unchanged head partitions, alpha and registration",
+  "preserved": ["72px anatomical head height", "original alpha", "central parting", "crown", "ears and earrings", "lower hair", "other directions"],
+  "hdSha256": "6885ee4d0fe433bdff6f3fb278a2ee0c0ae305fd49cf585f50e2f8bc6e4ec8f3",
+  "runtimeSha256": "3432aca736eece4de3763ee11ea4056065113278583d34d7ddb323544a35ee97",
+  "neighborhoodBackContrast": [1.2169743217179585,1.1808012728427706,1.2179519716631366,1.1808012728427706],
+  "catalogFailuresBefore": 51,
+  "catalogFailuresAfter": 48,
+  "newFailures": 0,
+  "displayFailures": 0,
+  "remainingCharacterFailures": ["neighborhood left frame 0"],
+  "correction": "Initial source stroke touched central protected region; source clip corrected instead of loosening preservation test",
+  "sourceTestsPassed": 15,
+  "structureTestsPassed": 66,
+  "visualReview": "Directional head review and current actual selection/home-game sixteen-frame contact sheets inspected. No conspicuous extra hair volume, heavy outline, changed facial appearance or disconnected joints. This does not approve remaining map failures.",
+  "thresholdsChanged": false,
+  "runtimeEligible": false,
+  "visualApproved": false
+}

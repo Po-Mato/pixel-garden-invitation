@@ -1,0 +1,391 @@
+{
+  "status": "directional-torso-registration-study",
+  "runtimeEligible": false,
+  "skeleton": "../../common-three-head-216-v1/skeleton.json",
+  "shadow": {
+    "parent": "root",
+    "pivot": [
+      96,
+      270
+    ],
+    "source": "../../common-three-head-216-v1/painted-shadow.svg"
+  },
+  "parts": [
+    {
+      "id": "legLeft-left",
+      "source": "leg-left",
+      "direction": "left",
+      "parent": "thighLeft",
+      "pivot": [
+        94,
+        192.139535
+      ],
+      "sourcePivot": [
+        590,
+        169
+      ],
+      "scale": 0.0689640965
+    },
+    {
+      "id": "legRight-left",
+      "source": "leg-left",
+      "direction": "left",
+      "parent": "thighRight",
+      "pivot": [
+        98,
+        192.139535
+      ],
+      "sourcePivot": [
+        590,
+        169
+      ],
+      "scale": 0.0689640965
+    },
+    {
+      "id": "legRight-right",
+      "source": "leg-right",
+      "direction": "right",
+      "parent": "thighRight",
+      "pivot": [
+        98,
+        192.139535
+      ],
+      "sourcePivot": [
+        520,
+        124
+      ],
+      "scale": 0.063611491
+    },
+    {
+      "id": "legLeft-right",
+      "source": "leg-right",
+      "direction": "right",
+      "parent": "thighLeft",
+      "pivot": [
+        94,
+        192.139535
+      ],
+      "sourcePivot": [
+        520,
+        124
+      ],
+      "scale": 0.063611491
+    },
+    {
+      "id": "legLeft-back",
+      "source": "leg-back",
+      "direction": "back",
+      "parent": "thighLeft",
+      "pivot": [
+        86,
+        192.139535
+      ],
+      "sourcePivot": [
+        530,
+        127
+      ],
+      "scale": 0.0642413078,
+      "sourceOverlays": [
+        "sources/calf-back-contour-v4.svg"
+      ]
+    },
+    {
+      "id": "legRight-back",
+      "source": "leg-back",
+      "direction": "back",
+      "parent": "thighRight",
+      "pivot": [
+        106,
+        192.139535
+      ],
+      "sourcePivot": [
+        530,
+        127
+      ],
+      "scale": 0.0642413078,
+      "sourceOverlays": [
+        "sources/calf-back-contour-v4.svg"
+      ]
+    },
+    {
+      "id": "armLeft-left",
+      "source": "arm-left",
+      "direction": "left",
+      "parent": "upperArmLeft",
+      "layer": "farArm",
+      "pivot": [
+        90,
+        136.883721
+      ],
+      "sourcePivot": [
+        640,
+        150
+      ],
+      "sourceEnd": [
+        400,
+        1430
+      ],
+      "targetEnd": [
+        90,
+        180.418605
+      ]
+    },
+    {
+      "id": "armRight-right",
+      "source": "arm-right",
+      "direction": "right",
+      "parent": "upperArmRight",
+      "layer": "farArm",
+      "pivot": [
+        102,
+        136.883721
+      ],
+      "sourcePivot": [
+        470,
+        300
+      ],
+      "sourceEnd": [
+        635,
+        1300
+      ],
+      "targetEnd": [
+        102,
+        180.418605
+      ]
+    },
+    {
+      "id": "bag-left",
+      "source": "bag-back",
+      "direction": "left",
+      "parent": "handLeft",
+      "bodySide": "left",
+      "pivot": [
+        90,
+        180.418605
+      ],
+      "sourcePivot": [
+        610,
+        300
+      ],
+      "scale": 0.022,
+      "visibility": "fully-occluded-by-skirt",
+      "materialSharing": "hidden undecorated clutch edge; no mirrored decoration"
+    },
+    {
+      "id": "bag-back",
+      "direction": "back",
+      "parent": "handLeft",
+      "bodySide": "left",
+      "pivot": [
+        73,
+        180.418605
+      ],
+      "sourcePivot": [
+        610,
+        300
+      ],
+      "scale": 0.022
+    },
+    {
+      "id": "armLeft-back",
+      "direction": "back",
+      "parent": "upperArmLeft",
+      "pivot": [
+        73,
+        136.883721
+      ],
+      "sourcePivot": [
+        400,
+        175
+      ],
+      "sourceEnd": [
+        690,
+        1345
+      ],
+      "targetEnd": [
+        73,
+        180.418605
+      ],
+      "sourceOverlays": [
+        "sources/armLeft-back-contour-v4.svg"
+      ]
+    },
+    {
+      "id": "armRight-back",
+      "direction": "back",
+      "parent": "upperArmRight",
+      "pivot": [
+        119,
+        136.883721
+      ],
+      "sourcePivot": [
+        620,
+        180
+      ],
+      "sourceEnd": [
+        360,
+        1400
+      ],
+      "targetEnd": [
+        119,
+        180.418605
+      ],
+      "sourceOverlays": [
+        "sources/armRight-back-contour-v4.svg"
+      ]
+    },
+    {
+      "id": "skirt-left",
+      "direction": "left",
+      "parent": "pelvis",
+      "pivot": [
+        96,
+        163
+      ],
+      "sourcePivot": [
+        668,
+        184
+      ],
+      "scale": 0.074725
+    },
+    {
+      "id": "skirt-right",
+      "direction": "right",
+      "parent": "pelvis",
+      "pivot": [
+        96,
+        163
+      ],
+      "sourcePivot": [
+        655,
+        120
+      ],
+      "scale": 0.067327,
+      "sourceOverlays": [
+        "sources/skirt-right-contour-v4.svg"
+      ]
+    },
+    {
+      "id": "skirt-back",
+      "direction": "back",
+      "parent": "pelvis",
+      "pivot": [
+        96,
+        163
+      ],
+      "sourcePivot": [
+        615,
+        192
+      ],
+      "scale": 0.075,
+      "sourceOverlays": [
+        "sources/skirt-back-contour-v4.svg"
+      ]
+    },
+    {
+      "id": "armRight-left",
+      "source": "arm-left",
+      "direction": "left",
+      "parent": "upperArmRight",
+      "layer": "nearArm",
+      "pivot": [
+        102,
+        136.883721
+      ],
+      "sourcePivot": [
+        640,
+        150
+      ],
+      "sourceEnd": [
+        400,
+        1430
+      ],
+      "targetEnd": [
+        102,
+        180.418605
+      ]
+    },
+    {
+      "id": "bag-right",
+      "direction": "right",
+      "parent": "handLeft",
+      "bodySide": "left",
+      "layer": "nearArm",
+      "pivot": [
+        90,
+        180.418605
+      ],
+      "sourcePivot": [
+        615,
+        320
+      ],
+      "scale": 0.022
+    },
+    {
+      "id": "armLeft-right",
+      "source": "arm-right",
+      "direction": "right",
+      "parent": "upperArmLeft",
+      "layer": "nearArm",
+      "pivot": [
+        90,
+        136.883721
+      ],
+      "sourcePivot": [
+        470,
+        300
+      ],
+      "sourceEnd": [
+        635,
+        1300
+      ],
+      "targetEnd": [
+        90,
+        180.418605
+      ]
+    },
+    {
+      "id": "torso-left",
+      "direction": "left",
+      "parent": "spine",
+      "pivot": [
+        96,
+        169
+      ],
+      "sourcePivot": [
+        750,
+        1140
+      ],
+      "scale": 0.03881
+    },
+    {
+      "id": "torso-right",
+      "direction": "right",
+      "parent": "spine",
+      "pivot": [
+        96,
+        169
+      ],
+      "sourcePivot": [
+        600,
+        1096
+      ],
+      "scale": 0.042786
+    },
+    {
+      "id": "torso-back",
+      "direction": "back",
+      "parent": "spine",
+      "pivot": [
+        96,
+        169
+      ],
+      "sourcePivot": [
+        675,
+        940
+      ],
+      "scale": 0.051375
+    }
+  ],
+  "mirrored": false
+}

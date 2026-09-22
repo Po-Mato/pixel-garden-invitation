@@ -1,0 +1,20 @@
+{
+  "status": "partial-reviewed-source-material-not-release-ready",
+  "source": "sources/head-back-shading-study-v1.svg",
+  "method": "Independent soft upper outer-lock shading in original head coordinates, before matte and registration",
+  "preserved": ["crown", "central parting", "lower hair", "original alpha", "head scale and pivot", "all other directions", "cream dress and bag"],
+  "hdSha256": "06142bfb0f0572be7ef9bd46ebf81366f8bb14c2fad614d08b551c4cb84c118d",
+  "runtimeSha256": "74f5dbb21835895e2072051ea00af80fc888e612420f2f8da04e279046cf6cff",
+  "backNeighborhoodContrastBefore": [1.124053720928762,1.126629075226889,1.1386100544708933,1.126629075226889],
+  "backNeighborhoodContrastAfter": [1.1570847707856426,1.1317874665446357,1.1627377030111428,1.1317874665446357],
+  "catalogStandardFailures": 34,
+  "displayFailures": 0,
+  "remainingCharacterFailures": 11,
+  "rejectedRefinements": ["64px stroke gives no additional contrast benefit", "lower-lock extension does not resolve a failure; removed to preserve lower artwork"],
+  "sourceTestsPassed": 15,
+  "structureTestsPassed": 72,
+  "visualReview": "Actual selection and home-game sixteen-frame contact sheets inspected. Cream dress and bag remain intact; head silhouette is stable and upper shading does not form a conspicuously heavy outline. Contrast is improved but all four back neighborhood samples still fail.",
+  "runtimeEligible": false,
+  "visualApproved": false,
+  "thresholdsChanged": false
+}

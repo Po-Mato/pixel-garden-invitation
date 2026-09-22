@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="192" height="288" viewBox="0 0 192 288">
+<defs><linearGradient id="skin" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#a66a50"/><stop offset=".28" stop-color="#d69a7c"/><stop offset=".52" stop-color="#ffddbe"/><stop offset=".76" stop-color="#b57859"/><stop offset="1" stop-color="#b57859"/></linearGradient></defs>
+<!-- Guest 10 right-view material study: nape and collar shadow, fixed original neck geometry. -->
+<path fill="url(#skin)" d="M91 122H101V130Q103 133 107 133L102 146L96 151L90 146L85 133Q89 133 91 130Z"/>
+</svg>

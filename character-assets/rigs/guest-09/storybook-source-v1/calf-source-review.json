@@ -1,0 +1,34 @@
+{
+  "date": "2026-09-14",
+  "source": "sources/calf-right-seam-study-v1.svg",
+  "direction": "right",
+  "parts": ["legLeft-right", "legRight-right"],
+  "sourceMethod": "Shared right-view trouser material, separately bound to the two anatomical legs without mirroring; source seam shading before rig registration",
+  "previousSheetSha256": "07eff0801234508606bc325478fae6e69570e9e45e6cb0ac4ec4306e4bde63c1",
+  "sheetSha256": "8ad5b22ee4352a31d49f3d2d95cec015de99ee5b5d587d0f6338166073e2a89a",
+  "runtimeSha256": "a26ea3598927a2ca0f1bcb0dd7c202932706b672e19d9f010a2693c2b51f0d70",
+  "sourceAlphaUnchanged": true,
+  "thighCuffAndShoesUnpainted": true,
+  "unpaintedOpaqueSourceColorsPreserved": true,
+  "geometryPivotsAndBodySidesUnchanged": true,
+  "otherDirectionsUnchanged": true,
+  "otherCharactersUnchanged": true,
+  "pngRepaired": false,
+  "failedSamplesResolved": [
+    {"zone":"neighborhood","direction":"right","frame":2,"before":1.1500031315195987,"after":1.1756655907376894},
+    {"zone":"subway-train","direction":"right","frame":2,"before":1.1688301320187058,"after":1.177155681473289}
+  ],
+  "characterContrast": {"fixtureSamples":160,"standardFailures":0,"displayFailures":0},
+  "catalogContrast": {"samples":1920,"standardFailuresBefore":59,"standardFailures":57,"displayFailures":0,"newFailures":0,"thresholdsUnchanged":true},
+  "visualReview": {
+    "highResolutionRightStrideInspected": true,
+    "latestSelection16FramesInspected": true,
+    "latestHomeGame16FramesInspected": true,
+    "observation": "The narrow calf seam remains compatible with the beige suit shading; neither leg width nor ankle pose changes. Face, jacket, cuffs and shoes remain stable in the inspected live frame captures."
+  },
+  "tests": {"source":15,"structure":59,"jointCatalogCharacters":12,"disconnected":0,"unobserved":0},
+  "visualApproved": false,
+  "runtimeEligible": false,
+  "productionChanged": false,
+  "remaining": "Other characters retain basic contrast failures; this fixture result is not an overall release approval."
+}

@@ -1,0 +1,63 @@
+{
+  "id": "guest-08-painted-head-source-study",
+  "runtimeEligible": false,
+  "layerDefinition": "head-layers.json",
+  "splitBodyOcclusion": true,
+  "bodyOcclusionUnderlapSourcePixels": 24,
+  "skeleton": "../../common-three-head-216-v1/skeleton.json",
+  "heads": [
+    {
+      "direction": "front",
+      "source": "sources/head-front-v1.png",
+      "matte": "masks/head-front-v1.svg",
+      "parent": "head",
+      "pivot": [
+        620,
+        900
+      ],
+      "crownY": 106,
+      "chinY": 900,
+      "mirrored": false
+    },
+    {
+      "direction": "left",
+      "source": "sources/head-left-v1.png",
+      "matte": "masks/head-left-v1.svg",
+      "parent": "head",
+      "pivot": [
+        650,
+        858
+      ],
+      "crownY": 108,
+      "chinY": 858,
+      "mirrored": false
+    },
+    {
+      "direction": "right",
+      "source": "sources/head-right-v1.png",
+      "sourceOverlays": ["sources/head-right-shading-study-v1.svg"],
+      "matte": "masks/head-right-v1.svg",
+      "parent": "head",
+      "pivot": [
+        620,
+        875
+      ],
+      "crownY": 55,
+      "chinY": 875,
+      "mirrored": false
+    },
+    {
+      "direction": "back",
+      "source": "sources/head-back-v1.png",
+      "matte": "masks/head-back-v1.svg",
+      "parent": "head",
+      "pivot": [
+        620,
+        870
+      ],
+      "crownY": 78,
+      "chinY": 870,
+      "mirrored": false
+    }
+  ]
+}

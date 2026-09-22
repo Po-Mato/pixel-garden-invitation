@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="992" height="1586" viewBox="0 0 992 1586">
+  <!-- Rear costume-source contour shading follows this rear source's seams.
+       Source-atop: no background removal, silhouette growth or frame repair. -->
+  <g fill="none" stroke="#78618d" stroke-width="48" stroke-opacity="0.72" stroke-linecap="round">
+    <path d="M 278 104 C 207 273 183 497 142 710 C 99 959 55 1201 14 1357"/>
+    <path d="M 713 105 C 775 279 803 497 847 714 C 887 948 939 1207 977 1352"/>
+  </g>
+</svg>

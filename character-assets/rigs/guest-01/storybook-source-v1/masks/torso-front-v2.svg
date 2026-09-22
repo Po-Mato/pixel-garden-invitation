@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1239" height="1269" viewBox="0 0 1239 1269">
+<!-- Manually authored garment silhouette: pale outline is not a closed dark flood wall.
+     Includes all cream cloth; excludes painted exterior checker by geometry, never by color. -->
+<defs><mask id="cloth" maskUnits="userSpaceOnUse" x="0" y="0" width="1239" height="1269"><path fill="white" stroke="black" stroke-width="16" d="M439 104Q447 109 448 129Q453 212 516 284Q565 339 620 358Q695 292 747 208Q784 151 794 106Q798 100 805 105L918 142L946 155L945 207Q945 215 937 219L922 224L923 378Q928 421 938 460Q945 496 932 540L899 681Q892 718 872 732L870 774L900 833Q878 849 850 857L876 968L918 1145L819 1197L801 1073L714 1018L725 889Q489 898 387 860L344 834L372 773L372 739Q352 732 345 711Q330 668 323 618L301 515Q294 476 303 421L311 223L298 219Q291 217 292 202L292 154Z"/><path fill="black" d="M789 810L803 898L805 1041L794 982Z"/></mask></defs><rect width="1239" height="1269" fill="white" mask="url(#cloth)"/>
+</svg>

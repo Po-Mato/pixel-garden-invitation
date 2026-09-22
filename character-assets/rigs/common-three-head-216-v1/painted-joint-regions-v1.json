@@ -1,0 +1,7 @@
+{
+  "id":"painted-joint-regions-v1",
+  "overlap":3,
+  "policy":"Editable source-material regions on the fixed 192x288 registration canvas. No completed frame is an input. Hidden overlap extends source ownership, never copies one walking frame into another.",
+  "leg":[["thigh",0,223],["calf",223,254],["shoe",254,288]],
+  "arm":[["upperArm",0,162],["forearm",162,179],["hand",179,288]]
+}

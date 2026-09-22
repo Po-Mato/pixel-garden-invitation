@@ -1,0 +1,22 @@
+{
+  "status": "front-neutral-source-registration-study",
+  "runtimeEligible": false,
+  "skeleton": "../../common-three-head-216-v1/skeleton.json",
+  "canvas": [192, 288],
+  "headHeight": 72,
+  "bodyHeight": 144,
+  "baseline": 270,
+  "shadow":{"parent":"root","pivot":[96,270],"source":"../../common-three-head-216-v1/painted-shadow.svg"},
+  "parts": [
+    {"id":"leg-right", "version":"v2", "parent":"thighRight", "pivot":[86,192.139535], "sourcePivot":[505,201], "scale":0.070084},
+    {"id":"leg-left", "version":"v2", "parent":"thighLeft", "pivot":[106,192.139535], "sourcePivot":[515,129], "scale":0.063394},
+    {"id":"skirt", "version":"v2", "parent":"pelvis", "pivot":[96,163], "sourcePivot":[610,192], "scale":0.075},
+    {"id":"bag", "parent":"handLeft", "pivot":[127,180.418605], "sourcePivot":[430,450], "scale":0.022, "bodySide":"left"},
+    {"id":"arm-right", "parent":"upperArmRight", "pivot":[73,136.883721], "sourcePivot":[700,300], "sourceEnd":[300,1250], "targetEnd":[65,180.418605]},
+    {"id":"arm-left", "parent":"upperArmLeft", "pivot":[119,136.883721], "sourcePivot":[480,310], "sourceEnd":[680,1140], "targetEnd":[127,180.418605]},
+    {"id":"torso", "parent":"spine", "pivot":[96,169], "sourcePivot":[686,945], "scale":0.061}
+  ],
+  "limitations": ["Front neutral only", "Combined limb source paintings still require joint partitions and hidden overlap surfaces", "Four-direction walking not yet implemented"],
+  "mirrored": false,
+  "scaleMode": "uniform-source-registration"
+}

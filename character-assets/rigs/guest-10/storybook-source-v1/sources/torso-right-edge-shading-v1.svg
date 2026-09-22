@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1215" height="1295" viewBox="0 0 1215 1295">
+  <!-- Separate upper/lower contours leave the cream belt untouched. -->
+  <g fill="none" stroke="#101e36" stroke-width="44" stroke-opacity="0.8" stroke-linecap="round">
+    <path d="M489 184 C407 299 427 464 458 588 L496 711"/>
+    <path d="M638 184 C723 267 825 411 871 521 Q884 564 864 718"/>
+    <path d="M489 831 Q425 919 397 984"/>
+    <path d="M872 837 Q911 954 936 1040"/>
+  </g>
+</svg>

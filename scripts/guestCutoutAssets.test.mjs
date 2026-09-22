@@ -5,9 +5,9 @@ import sharp from 'sharp';
 const root = new URL('../', import.meta.url);
 const json = async file => JSON.parse(await readFile(new URL(file, root)));
 const catalog = await json('character-assets/rigs/guest-cutout-catalog-v1.json');
-const generatedRoot = 'character-assets/generated/three-head-216-v1/';
+const generatedRoot = 'character-assets/generated/storybook-runtime-staging-v1/';
 
-test('active twelve guests use the 72/144/216 original skeleton and directional rigs', async () => {
+test('the retained twelve-guest skeleton contract is exactly 72/144/216', async () => {
   assert.equal(catalog.characters.length, 12);
   assert.deepEqual([...new Set(catalog.characters.map(c => c.template))].sort(), ['dress','femaleHanbok','maleHanbok','skirt','tailored']);
   const skeleton = await json('character-assets/rigs/common-three-head-216-v1/skeleton.json');
@@ -25,11 +25,12 @@ test('active twelve guests use the 72/144/216 original skeleton and directional 
 
 test('active export has twelve guests, 192 frames and unchanged output sizes', async () => {
   const manifest = await json(generatedRoot + 'build-manifest.json');
-  assert.equal(manifest.pipeline, 'editable-three-head-216-v1');
+  assert.equal(manifest.pipeline, 'painted-storybook-runtime-staging-v1');
   assert.equal(manifest.characters.length, 12);
   for (const c of catalog.characters) {
-    const review = await json(`character-assets/rigs/${c.characterId}/three-head-216-v1/review/manifest.json`);
-    assert.equal(review.sources.length, 16);
+    const entry = manifest.characters.find(e => e.characterId === c.characterId);
+    assert.equal(entry.sourceReceiptVerified, true);
+    assert.equal(entry.frameHashes.length, 16);
     for (const [name,width,height] of [['walk-hd',768,1152],['walk-runtime',384,576]]) {
       const meta = await sharp(await readFile(new URL(`${generatedRoot}${c.presetId}/${c.presetId}__${name}.png`,root))).metadata();
       assert.deepEqual([meta.width,meta.height], [width,height]);

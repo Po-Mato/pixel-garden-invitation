@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1278" height="1230" viewBox="0 0 1278 1230">
+  <!-- Private left-view hair material; registration and silhouette remain owned by the original rig/matte. -->
+  <defs>
+    <clipPath id="outer-locks"><rect x="0" y="240" width="280" height="400"/><rect x="940" y="220" width="338" height="490"/></clipPath>
+    <filter id="soft" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="8"/></filter>
+  </defs>
+  <g clip-path="url(#outer-locks)" fill="none" stroke="#211712" stroke-width="64" stroke-opacity="0.8" filter="url(#soft)">
+    <path d="M 306 250 Q 169 337 149 465 Q 91 552 117 605 Q 127 625 146 629"/>
+    <path d="M 940 195 Q 1091 286 1145 422 Q 1181 490 1169 545 Q 1216 615 1187 665"/>
+  </g>
+</svg>

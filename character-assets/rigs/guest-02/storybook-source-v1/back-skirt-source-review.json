@@ -1,0 +1,23 @@
+{
+  "status": "partial-reviewed-source-material-not-release-ready",
+  "supersededBy": "left-head-source-review.json",
+  "part": "skirt-back",
+  "source": "sources/skirt-back-shading-study-v1.svg",
+  "method": "Private soft source-coordinate contour material from original editable matte; unchanged alpha and skeleton",
+  "preserved": ["cream waistband", "central patterned panel", "original alpha", "other garments and directions", "all head sources and joints"],
+  "hdSha256": "9588e0c24c89142d5ae7559aaa355a2892ac77f661e0be3b9e6e2bbed0f709e3",
+  "runtimeSha256": "f36a8063df05c17d5c6232b0d12bae391f20dd0cc43029466837665a4000bdea",
+  "backNeighborhoodContrast": [1.2179761582727537,1.1633351093977837,1.176394826297028,1.1633351093977837],
+  "catalogFailuresBefore": 38,
+  "catalogFailuresAfter": 36,
+  "newFailures": 0,
+  "displayFailures": 0,
+  "remainingCharacterFailureCount": 7,
+  "correction": "Soft shading leaked minimally into protected central pattern. Source clip was corrected; test tolerance was not changed.",
+  "sourceTestsPassed": 15,
+  "structureTestsPassed": 69,
+  "visualReview": "Latest selection and home-game sixteen-frame contact sheets inspected. Cream jeogori and waistband remain present; rose skirt and garment connections remain coherent, with no conspicuous detached limbs or changed face. Neutral back poses still fail map contrast.",
+  "thresholdsChanged": false,
+  "runtimeEligible": false,
+  "visualApproved": false
+}

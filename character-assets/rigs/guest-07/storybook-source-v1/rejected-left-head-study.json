@@ -1,0 +1,12 @@
+{
+  "status": "rejected-unregistered-source-study",
+  "source": "sources/head-left-shading-study-v1.svg",
+  "reason": "Left forelock source shading did not improve either failing neutral pose. Do not expand or darken the facial-adjacent region to chase the threshold. Inspect skirt and shoe contributions next.",
+  "neutralContrastBefore": 1.151709183263884,
+  "neutralContrastCandidate": 1.151709183263884,
+  "catalogStandardFailuresBefore": 32,
+  "catalogStandardFailuresCandidate": 32,
+  "registered": false,
+  "thresholdsChanged": false,
+  "productionChanged": false
+}

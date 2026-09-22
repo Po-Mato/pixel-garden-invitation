@@ -1,0 +1,14 @@
+{
+  "status": "head-only-registration-not-complete-character",
+  "source": "../storybook-head-study-v1/front-head-candidate.png",
+  "matte": "head-matte-refined.svg",
+  "canvas": [192, 288],
+  "parent": "neck",
+  "pivot": [96, 126],
+  "sourcePivot": [735, 1009],
+  "sourceCrownY": 110,
+  "cranialHeight": 72,
+  "mirrored": false,
+  "scaleMode": "uniform",
+  "note": "얼굴+머리 통합 원본 파츠의 등록 시험. 분리 파츠 및 몸/보행 미구현."
+}

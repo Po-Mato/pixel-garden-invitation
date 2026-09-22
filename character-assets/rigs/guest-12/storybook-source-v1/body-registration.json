@@ -1,0 +1,741 @@
+{
+  "status": "incomplete-painted-male-hanbok-source-registration-study",
+  "runtimeEligible": false,
+  "family": "maleHanbok",
+  "sourceSamplesPerOutputPixel": 2,
+  "walkDirections": [
+    "front",
+    "left",
+    "right",
+    "back"
+  ],
+  "skeleton": "../../common-three-head-216-v1/skeleton.json",
+  "contactAnimation": "animations/painted-tailored-contact-v1.json",
+  "parts": [
+    {
+      "id": "shadow-front",
+      "direction": "front",
+      "parent": "root",
+      "vector": "../../common-three-head-216-v1/painted-shadow.svg",
+      "pivot": [
+        96,
+        270
+      ],
+      "mirrored": false
+    },
+    {
+      "id": "shadow-left",
+      "direction": "left",
+      "parent": "root",
+      "vector": "../../common-three-head-216-v1/painted-shadow.svg",
+      "pivot": [
+        96,
+        270
+      ],
+      "mirrored": false
+    },
+    {
+      "id": "shadow-right",
+      "direction": "right",
+      "parent": "root",
+      "vector": "../../common-three-head-216-v1/painted-shadow.svg",
+      "pivot": [
+        96,
+        270
+      ],
+      "mirrored": false
+    },
+    {
+      "id": "shadow-back",
+      "direction": "back",
+      "parent": "root",
+      "vector": "../../common-three-head-216-v1/painted-shadow.svg",
+      "pivot": [
+        96,
+        270
+      ],
+      "mirrored": false
+    },
+    {
+      "id": "armRight-right",
+      "direction": "right",
+      "parent": "upperArmRight",
+      "layer": "farArm",
+      "source": "../../guest-02/storybook-source-v1/sources/armRight-right-v1.png",
+      "matte": "../../guest-02/storybook-source-v1/masks/armRight-right-v1.svg",
+      "sourcePivot": [
+        475,
+        170
+      ],
+      "sourceEnd": [
+        425,
+        1320
+      ],
+      "pivot": [
+        102,
+        136.883721
+      ],
+      "targetEnd": [
+        102,
+        180.418605
+      ],
+      "mirrored": false,
+      "materialReuse": {
+        "donor": "guest-02",
+        "policy": "Shared source material; independently review guest-12 assembly. No frame pixels copied."
+      }
+    },
+    {
+      "id": "armLeft-left",
+      "direction": "left",
+      "parent": "upperArmLeft",
+      "layer": "farArm",
+      "source": "../../guest-02/storybook-source-v1/sources/armLeft-left-v1.png",
+      "matte": "../../guest-02/storybook-source-v1/masks/armLeft-left-v1.svg",
+      "sourcePivot": [
+        505,
+        170
+      ],
+      "sourceEnd": [
+        560,
+        1350
+      ],
+      "pivot": [
+        90,
+        136.883721
+      ],
+      "targetEnd": [
+        90,
+        180.418605
+      ],
+      "mirrored": false,
+      "materialReuse": {
+        "donor": "guest-02",
+        "policy": "Shared source material; independently review guest-12 assembly. No frame pixels copied."
+      }
+    },
+    {
+      "id": "legLeft-front",
+      "direction": "front",
+      "parent": "thighLeft",
+      "source": "../../guest-11/storybook-source-v1/sources/legLeft-front-v1.png",
+      "matte": "../../guest-11/storybook-source-v1/masks/legLeft-front-v1.svg",
+      "sourcePivot": [
+        355,
+        3
+      ],
+      "pivot": [
+        106,
+        192.139535
+      ],
+      "scale": 0.036349423436041084,
+      "mirrored": false,
+      "materialReuse": {
+        "donor": "guest-11",
+        "policy": "Shared source material; independently review guest-12 assembly. No frame pixels copied."
+      }
+    },
+    {
+      "id": "legRight-front",
+      "direction": "front",
+      "parent": "thighRight",
+      "source": "../../guest-11/storybook-source-v1/sources/legRight-front-v1.png",
+      "matte": "../../guest-11/storybook-source-v1/masks/legRight-front-v1.svg",
+      "sourcePivot": [
+        400,
+        2
+      ],
+      "pivot": [
+        86,
+        192.139535
+      ],
+      "scale": 0.0364686018735363,
+      "mirrored": false,
+      "materialReuse": {
+        "donor": "guest-11",
+        "policy": "Shared source material; independently review guest-12 assembly. No frame pixels copied."
+      }
+    },
+    {
+      "id": "legLeft-left",
+      "direction": "left",
+      "parent": "thighLeft",
+      "source": "../../guest-11/storybook-source-v1/sources/leg-left-v1.png",
+      "matte": "../../guest-11/storybook-source-v1/masks/leg-left-v1.svg",
+      "sourcePivot": [
+        550,
+        11
+      ],
+      "pivot": [
+        94,
+        192.139535
+      ],
+      "scale": 0.04181550214822771,
+      "mirrored": false,
+      "materialReuse": {
+        "donor": "guest-11",
+        "policy": "Shared source material; independently review guest-12 assembly. No frame pixels copied."
+      }
+    },
+    {
+      "id": "legRight-left",
+      "direction": "left",
+      "parent": "thighRight",
+      "source": "../../guest-11/storybook-source-v1/sources/leg-left-v1.png",
+      "matte": "../../guest-11/storybook-source-v1/masks/leg-left-v1.svg",
+      "sourcePivot": [
+        550,
+        11
+      ],
+      "pivot": [
+        98,
+        192.139535
+      ],
+      "scale": 0.04181550214822771,
+      "mirrored": false,
+      "materialReuse": {
+        "donor": "guest-11",
+        "policy": "Shared source material; independently review guest-12 assembly. No frame pixels copied."
+      }
+    },
+    {
+      "id": "legLeft-right",
+      "direction": "right",
+      "parent": "thighLeft",
+      "source": "../../guest-11/storybook-source-v1/sources/leg-right-v1.png",
+      "matte": "../../guest-11/storybook-source-v1/masks/leg-right-v1.svg",
+      "sourcePivot": [
+        250,
+        6
+      ],
+      "pivot": [
+        94,
+        192.139535
+      ],
+      "scale": 0.04268665844298246,
+      "mirrored": false,
+      "materialReuse": {
+        "donor": "guest-11",
+        "policy": "Shared source material; independently review guest-12 assembly. No frame pixels copied."
+      }
+    },
+    {
+      "id": "legRight-right",
+      "direction": "right",
+      "parent": "thighRight",
+      "source": "../../guest-11/storybook-source-v1/sources/leg-right-v1.png",
+      "matte": "../../guest-11/storybook-source-v1/masks/leg-right-v1.svg",
+      "sourcePivot": [
+        250,
+        6
+      ],
+      "pivot": [
+        98,
+        192.139535
+      ],
+      "scale": 0.04268665844298246,
+      "mirrored": false,
+      "materialReuse": {
+        "donor": "guest-11",
+        "policy": "Shared source material; independently review guest-12 assembly. No frame pixels copied."
+      }
+    },
+    {
+      "id": "legLeft-back",
+      "direction": "back",
+      "parent": "thighLeft",
+      "source": "../../guest-11/storybook-source-v1/sources/leg-back-v1.png",
+      "matte": "../../guest-11/storybook-source-v1/masks/leg-back-v1.svg",
+      "sourceOverlays": ["sources/calf-back-shading-study-v1.svg"],
+      "sourcePivot": [
+        355,
+        3
+      ],
+      "pivot": [
+        86,
+        192.139535
+      ],
+      "scale": 0.03755931741437531,
+      "mirrored": false,
+      "materialReuse": {
+        "donor": "guest-11",
+        "policy": "Shared source material; independently review guest-12 assembly. No frame pixels copied."
+      }
+    },
+    {
+      "id": "legRight-back",
+      "direction": "back",
+      "parent": "thighRight",
+      "source": "../../guest-11/storybook-source-v1/sources/leg-back-v1.png",
+      "matte": "../../guest-11/storybook-source-v1/masks/leg-back-v1.svg",
+      "sourceOverlays": ["sources/calf-back-shading-study-v1.svg"],
+      "sourcePivot": [
+        355,
+        3
+      ],
+      "pivot": [
+        106,
+        192.139535
+      ],
+      "scale": 0.03755931741437531,
+      "mirrored": false,
+      "materialReuse": {
+        "donor": "guest-11",
+        "policy": "Shared source material; independently review guest-12 assembly. No frame pixels copied."
+      }
+    },
+    {
+      "id": "skirt-front",
+      "direction": "front",
+      "parent": "pelvis",
+      "source": "sources/skirt-front-v1.png",
+      "matte": "masks/skirt-front-v1.svg",
+      "sourcePivot": [
+        512,
+        215
+      ],
+      "pivot": [
+        96,
+        161
+      ],
+      "scale": 0.065,
+      "mirrored": false
+    },
+    {
+      "id": "skirt-left",
+      "direction": "left",
+      "parent": "pelvis",
+      "source": "sources/skirt-left-v1.png",
+      "matte": "masks/skirt-left-v1.svg",
+      "sourcePivot": [
+        550,
+        42
+      ],
+      "pivot": [
+        96,
+        161
+      ],
+      "scale": 0.059,
+      "mirrored": false
+    },
+    {
+      "id": "skirt-right",
+      "direction": "right",
+      "parent": "pelvis",
+      "source": "sources/skirt-right-v1.png",
+      "matte": "masks/skirt-right-v1.svg",
+      "sourcePivot": [
+        550,
+        42
+      ],
+      "pivot": [
+        96,
+        161
+      ],
+      "scale": 0.059,
+      "mirrored": false
+    },
+    {
+      "id": "skirt-back",
+      "direction": "back",
+      "parent": "pelvis",
+      "source": "sources/skirt-back-v1.png",
+      "matte": "masks/skirt-back-v1.svg",
+      "sourcePivot": [
+        512,
+        172
+      ],
+      "pivot": [
+        96,
+        161
+      ],
+      "scale": 0.065,
+      "mirrored": false
+    },
+    {
+      "id": "neck-front",
+      "direction": "front",
+      "parent": "neck",
+      "vector": "../../guest-01/storybook-source-v1/sources/neck-front.svg",
+      "pivot": [
+        96,
+        126
+      ],
+      "mirrored": false
+    },
+    {
+      "id": "neck-left",
+      "direction": "left",
+      "parent": "neck",
+      "vector": "../../guest-01/storybook-source-v1/sources/neck-front.svg",
+      "pivot": [
+        96,
+        126
+      ],
+      "mirrored": false
+    },
+    {
+      "id": "neck-right",
+      "direction": "right",
+      "parent": "neck",
+      "vector": "../../guest-01/storybook-source-v1/sources/neck-front.svg",
+      "pivot": [
+        96,
+        126
+      ],
+      "mirrored": false
+    },
+    {
+      "id": "neck-back",
+      "direction": "back",
+      "parent": "neck",
+      "vector": "../../guest-01/storybook-source-v1/sources/neck-front.svg",
+      "pivot": [
+        96,
+        126
+      ],
+      "mirrored": false
+    },
+    {
+      "id": "goreum-front",
+      "direction": "front",
+      "parent": "spine",
+      "source": "sources/goreum-front-v1.png",
+      "matte": "masks/goreum-front-v1.svg",
+      "sourcePivot": [
+        512,
+        49
+      ],
+      "pivot": [
+        81,
+        160
+      ],
+      "scale": 0.048,
+      "bodySide": "right",
+      "mirrored": false
+    },
+    {
+      "id": "goreum-left",
+      "direction": "left",
+      "parent": "spine",
+      "source": "sources/goreum-front-v1.png",
+      "matte": "masks/goreum-front-v1.svg",
+      "sourcePivot": [
+        512,
+        49
+      ],
+      "pivot": [
+        86,
+        160
+      ],
+      "scale": 0.048,
+      "bodySide": "right",
+      "mirrored": false
+    },
+    {
+      "id": "torso-front",
+      "direction": "front",
+      "parent": "spine",
+      "source": "sources/torso-front-v1.png",
+      "matte": "masks/torso-front-v1.svg",
+      "sourcePivot": [
+        585,
+        950
+      ],
+      "pivot": [
+        96,
+        172
+      ],
+      "scale": 0.057,
+      "mirrored": false
+    },
+    {
+      "id": "torso-left",
+      "direction": "left",
+      "parent": "spine",
+      "source": "sources/torso-left-v1.png",
+      "matte": "masks/torso-left-v1.svg",
+      "sourcePivot": [
+        595,
+        950
+      ],
+      "pivot": [
+        96,
+        172
+      ],
+      "scale": 0.057,
+      "mirrored": false
+    },
+    {
+      "id": "torso-right",
+      "direction": "right",
+      "parent": "spine",
+      "source": "sources/torso-right-v1.png",
+      "matte": "masks/torso-right-v1.svg",
+      "sourcePivot": [
+        590,
+        950
+      ],
+      "pivot": [
+        96,
+        172
+      ],
+      "scale": 0.057,
+      "mirrored": false
+    },
+    {
+      "id": "torso-back",
+      "direction": "back",
+      "parent": "spine",
+      "source": "sources/torso-back-v1.png",
+      "matte": "masks/torso-back-v1.svg",
+      "sourcePivot": [
+        583,
+        950
+      ],
+      "pivot": [
+        96,
+        172
+      ],
+      "scale": 0.057,
+      "mirrored": false
+    },
+    {
+      "id": "armLeft-front",
+      "direction": "front",
+      "parent": "upperArmLeft",
+      "layer": "nearArm",
+      "source": "../../guest-02/storybook-source-v1/sources/armLeft-front-v1.png",
+      "matte": "../../guest-02/storybook-source-v1/masks/armLeft-front-v1.svg",
+      "sourcePivot": [
+        530,
+        180
+      ],
+      "sourceEnd": [
+        420,
+        1390
+      ],
+      "pivot": [
+        119,
+        136.883721
+      ],
+      "targetEnd": [
+        127,
+        180.418605
+      ],
+      "mirrored": false,
+      "materialReuse": {
+        "donor": "guest-02",
+        "policy": "Shared source material; independently review guest-12 assembly. No frame pixels copied."
+      }
+    },
+    {
+      "id": "armRight-front",
+      "direction": "front",
+      "parent": "upperArmRight",
+      "layer": "nearArm",
+      "source": "../../guest-02/storybook-source-v1/sources/armRight-front-v1.png",
+      "matte": "../../guest-02/storybook-source-v1/masks/armRight-front-v1.svg",
+      "sourcePivot": [
+        460,
+        180
+      ],
+      "sourceEnd": [
+        560,
+        1380
+      ],
+      "pivot": [
+        73,
+        136.883721
+      ],
+      "targetEnd": [
+        65,
+        180.418605
+      ],
+      "mirrored": false,
+      "materialReuse": {
+        "donor": "guest-02",
+        "policy": "Shared source material; independently review guest-12 assembly. No frame pixels copied."
+      }
+    },
+    {
+      "id": "armRight-left",
+      "direction": "left",
+      "parent": "upperArmRight",
+      "layer": "nearArm",
+      "source": "../../guest-02/storybook-source-v1/sources/armRight-left-v1.png",
+      "matte": "../../guest-02/storybook-source-v1/masks/armRight-left-v1.svg",
+      "sourcePivot": [
+        510,
+        180
+      ],
+      "sourceEnd": [
+        430,
+        1380
+      ],
+      "pivot": [
+        102,
+        136.883721
+      ],
+      "targetEnd": [
+        102,
+        180.418605
+      ],
+      "mirrored": false,
+      "materialReuse": {
+        "donor": "guest-02",
+        "policy": "Shared source material; independently review guest-12 assembly. No frame pixels copied."
+      }
+    },
+    {
+      "id": "armLeft-right",
+      "direction": "right",
+      "parent": "upperArmLeft",
+      "layer": "nearArm",
+      "source": "../../guest-02/storybook-source-v1/sources/armLeft-right-v1.png",
+      "matte": "../../guest-02/storybook-source-v1/masks/armLeft-right-v1.svg",
+      "sourcePivot": [
+        490,
+        180
+      ],
+      "sourceEnd": [
+        600,
+        1350
+      ],
+      "pivot": [
+        90,
+        136.883721
+      ],
+      "targetEnd": [
+        90,
+        180.418605
+      ],
+      "mirrored": false,
+      "materialReuse": {
+        "donor": "guest-02",
+        "policy": "Shared source material; independently review guest-12 assembly. No frame pixels copied."
+      }
+    },
+    {
+      "id": "armLeft-back",
+      "direction": "back",
+      "parent": "upperArmLeft",
+      "layer": "nearArm",
+      "source": "../../guest-02/storybook-source-v1/sources/armLeft-back-v1.png",
+      "matte": "../../guest-02/storybook-source-v1/masks/armLeft-back-v1.svg",
+      "sourcePivot": [
+        430,
+        180
+      ],
+      "sourceEnd": [
+        600,
+        1390
+      ],
+      "pivot": [
+        73,
+        136.883721
+      ],
+      "targetEnd": [
+        73,
+        180.418605
+      ],
+      "mirrored": false,
+      "materialReuse": {
+        "donor": "guest-02",
+        "policy": "Shared source material; independently review guest-12 assembly. No frame pixels copied."
+      }
+    },
+    {
+      "id": "armRight-back",
+      "direction": "back",
+      "parent": "upperArmRight",
+      "layer": "nearArm",
+      "source": "../../guest-02/storybook-source-v1/sources/armRight-back-v1.png",
+      "matte": "../../guest-02/storybook-source-v1/masks/armRight-back-v1.svg",
+      "sourcePivot": [
+        530,
+        180
+      ],
+      "sourceEnd": [
+        420,
+        1380
+      ],
+      "pivot": [
+        119,
+        136.883721
+      ],
+      "targetEnd": [
+        119,
+        180.418605
+      ],
+      "mirrored": false,
+      "materialReuse": {
+        "donor": "guest-02",
+        "policy": "Shared source material; independently review guest-12 assembly. No frame pixels copied."
+      }
+    },
+    {
+      "id": "norigae-front",
+      "direction": "front",
+      "parent": "spine",
+      "source": "sources/norigae-front-v1.png",
+      "matte": "masks/norigae-front-v1.svg",
+      "sourcePivot": [
+        512,
+        122
+      ],
+      "pivot": [
+        110,
+        163
+      ],
+      "scale": 0.027,
+      "bodySide": "left",
+      "mirrored": false
+    },
+    {
+      "id": "norigae-right",
+      "direction": "right",
+      "parent": "spine",
+      "source": "sources/norigae-right-v1.png",
+      "matte": "masks/norigae-right-v1.svg",
+      "sourcePivot": [
+        512,
+        59
+      ],
+      "pivot": [
+        103,
+        163
+      ],
+      "scale": 0.027,
+      "bodySide": "left",
+      "mirrored": false
+    }
+  ],
+  "clothAnimation": "animations/painted-male-hanbok-cloth-v1.json",
+  "accessoryOcclusion": {
+    "norigae": {
+      "bodySide": "left",
+      "visible": [
+        "front",
+        "right"
+      ],
+      "hidden": [
+        "left",
+        "back"
+      ],
+      "reason": "Opposite side or back is occluded by robe."
+    },
+    "goreum": {
+      "bodySide": "right",
+      "visible": [
+        "front",
+        "left"
+      ],
+      "hidden": [
+        "right",
+        "back"
+      ],
+      "reason": "Front ribbon occluded by body from opposite profile and rear."
+    }
+  }
+}
