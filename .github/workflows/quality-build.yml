@@ -63,6 +63,8 @@ jobs:
           VITE_WORKER_URL: ${{ vars.VITE_WORKER_URL || 'https://example.invalid' }}
           VITE_INVITATION_ID: ${{ vars.VITE_INVITATION_ID || 'sample-garden' }}
           VITE_TURNSTILE_SITE_KEY: ${{ vars.VITE_TURNSTILE_SITE_KEY }}
+      - name: Verify original source and intermediate study contracts on Linux
+        run: pnpm characters:storybook:test-structure
       - name: Preserve production client and generated runtime assets
         run: |
           echo "QUALITY_PRODUCTION_BUILD_DURATION_MS=$(node -p 'Math.max(0, Date.now() - Number(process.env.QUALITY_PRODUCTION_BUILD_STARTED_AT_MS))')" >> "$GITHUB_ENV"

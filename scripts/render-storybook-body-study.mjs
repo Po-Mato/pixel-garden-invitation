@@ -8,6 +8,7 @@ import {assertSourceMatteCoverage} from './storybook-source-matte-contract.mjs';
 import {assertPaintedSourceOverlay,paintOriginalSourcePng} from './lib/paintedSourceOverlay.mjs';
 import {sourceVolumeBinding} from './lib/storybookSourceVolume.mjs';
 import {beginPaintedRender,finishPaintedRender} from './lib/paintedRenderReceipt.mjs';
+import {compositeStudyPng} from './lib/paintedStudyComposite.mjs';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const id=process.argv[2];assert.match(id||'',/^guest-\d{2}$/);
 const base=path.join(root,'character-assets/rigs',id,'storybook-source-v1');
@@ -15,6 +16,7 @@ const rig=JSON.parse(await fs.readFile(path.join(base,'body-registration.json'))
 const headRig=JSON.parse(await fs.readFile(path.join(base,'head-registration.json')));
 const receipt=await beginPaintedRender(root,[
   'scripts/render-storybook-body-study.mjs','scripts/lib/paintedSourceOverlay.mjs',
+  'scripts/lib/paintedStudyComposite.mjs',
   'scripts/lib/storybookSourceVolume.mjs',
   'scripts/storybook-source-matte-contract.mjs','scripts/lib/paintedRenderReceipt.mjs','pnpm-lock.yaml',
   path.join(base,'body-registration.json'),path.join(base,'head-registration.json'),path.resolve(base,rig.skeleton),
@@ -84,7 +86,7 @@ for(const direction of ['front','left','right','back'].filter(d=>groups.has(d)))
   const layers=groups.get(direction);
   const head=await fs.readFile(path.join(out,headRig.splitBodyOcclusion?`head-${direction}-above-body.png`:`head-${direction}-192x288.png`));
   const behind=headRig.splitBodyOcclusion?[{input:await fs.readFile(path.join(out,`head-${direction}-behind-body.png`))}]:[];
-  const png=await sharp({create:{width:192,height:288,channels:4,background:'#00000000'}}).composite([...behind,...layers,{input:head}]).png().toBuffer();
+  const png=await compositeStudyPng([...behind,...layers,{input:head}].map(layer=>layer.input),192,288);
   await fs.writeFile(path.join(out,`${direction}-body-study.png`),png);tiles.push({input:png,left:tiles.length*192,top:0});
 }
 await sharp({create:{width:192*tiles.length,height:288,channels:4,background:'#d6dfca'}}).composite(tiles).png().toFile(path.join(out,'body-review.png'));
