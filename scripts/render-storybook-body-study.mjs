@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import crypto from 'node:crypto';
 import {fileURLToPath} from 'node:url';
 import {assertSourceMatteCoverage} from './storybook-source-matte-contract.mjs';
-import {assertPaintedSourceOverlay} from './lib/paintedSourceOverlay.mjs';
+import {assertPaintedSourceOverlay,paintOriginalSourcePng} from './lib/paintedSourceOverlay.mjs';
 import {sourceVolumeBinding} from './lib/storybookSourceVolume.mjs';
 import {beginPaintedRender,finishPaintedRender} from './lib/paintedRenderReceipt.mjs';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
@@ -55,7 +55,7 @@ for(const p of orderedParts){
     assertPaintedSourceOverlay(file,bytes,metadata,info);
     // Editable source art layers, before registration and shared animation.
     // Source-atop preserves the original silhouette and transparent background.
-    clean=await sharp(clean).composite([{input:bytes,blend:'atop'}]).png().toBuffer();
+    clean=await paintOriginalSourcePng(clean,bytes);
     sourceOverlays.push({file,sha256:hash(bytes),blend:'source-atop'});
   }
   await fs.writeFile(path.join(out,`${p.id}.png`),clean);

@@ -3,7 +3,7 @@ import path from 'node:path';
 import sharp from './lib/deterministicSharp.mjs';
 import assert from 'node:assert/strict';
 import {fileURLToPath} from 'node:url';
-import {assertPaintedSourceOverlay} from './lib/paintedSourceOverlay.mjs';
+import {assertPaintedSourceOverlay,paintOriginalSourcePng} from './lib/paintedSourceOverlay.mjs';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const base=path.join(root,'character-assets/rigs/guest-05/storybook-directions-v1');
 const out=path.join(base,'generated');await fs.mkdir(out,{recursive:true});
@@ -27,7 +27,7 @@ for(const [index,p] of rig.parts.entries()){
   const {data:a,info:m}=await sharp(path.join(base,`masks/${source}-v1.svg`)).ensureAlpha().extractChannel(3).raw().toBuffer({resolveWithObject:true});assert.equal(info.width,m.width);assert.equal(info.height,m.height);
   const rgba=Buffer.alloc(a.length*4);for(let i=0;i<a.length;i++)if(a[i]){rgb.copy(rgba,i*4,i*3,i*3+3);rgba[i*4+3]=a[i];}
   let clean=await sharp(rgba,{raw:{width:info.width,height:info.height,channels:4}}).png().toBuffer();
-  for(const file of p.sourceOverlays||[]){const bytes=await fs.readFile(path.resolve(base,file));assertPaintedSourceOverlay(file,bytes,await sharp(bytes).metadata(),info);clean=await sharp(clean).composite([{input:bytes,blend:'atop'}]).png().toBuffer();}
+  for(const file of p.sourceOverlays||[]){const bytes=await fs.readFile(path.resolve(base,file));assertPaintedSourceOverlay(file,bytes,await sharp(bytes).metadata(),info);clean=await paintOriginalSourcePng(clean,bytes);}
   assert.deepEqual(await sharp(clean).extractChannel(3).raw().toBuffer(),a,'Source material must retain original silhouette');
   await fs.writeFile(path.join(out,`${p.id}.png`),clean);
   const placed=`<g transform="translate(${p.pivot}) rotate(${angle}) scale(${scale}) translate(${-p.sourcePivot[0]} ${-p.sourcePivot[1]})"><image width="${info.width}" height="${info.height}" href="data:image/png;base64,${clean.toString('base64')}"/></g>`;

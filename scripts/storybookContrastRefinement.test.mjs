@@ -6,6 +6,7 @@ import {fileURLToPath} from 'node:url';
 import {createHash} from 'node:crypto';
 import sharp from 'sharp';
 import {readPaintedHeadMaterial} from './lib/paintedHeadMaterial.mjs';
+import {paintOriginalSourcePng} from './lib/paintedSourceOverlay.mjs';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const review=path.join(root,'character-assets/rigs/storybook-expansion-v1/review/contrast-v4');
 const json=async f=>JSON.parse(await fs.readFile(f));
@@ -51,7 +52,7 @@ for(const id of changed){
    const alpha=await sharp(path.resolve(base,matte)).ensureAlpha().extractChannel(3).raw().toBuffer();
    const rgba=Buffer.alloc(alpha.length*4);for(let i=0;i<alpha.length;i++)if(alpha[i]){rgb.copy(rgba,i*4,i*3,i*3+3);rgba[i*4+3]=alpha[i];}
    let prior=await sharp(rgba,{raw:{width:info.width,height:info.height,channels:4}}).png().toBuffer();
-   for(const f of old.sourceOverlays||[])prior=await sharp(prior).composite([{input:await fs.readFile(path.resolve(base,f)),blend:'atop'}]).png().toBuffer();
+   for(const f of old.sourceOverlays||[])prior=await paintOriginalSourcePng(prior,await fs.readFile(path.resolve(base,f)));
    const a=await sharp(prior).ensureAlpha().raw().toBuffer(),b=await sharp(path.join(base,'generated',p.id+'.png')).ensureAlpha().raw().toBuffer();
    const layers=await Promise.all(files.map(f=>sharp(path.resolve(base,f)).ensureAlpha().extractChannel(3).raw().toBuffer()));
    let preserved=0;for(let i=0;i<alpha.length;i++){assert.equal(b[i*4+3],alpha[i]);if(alpha[i]===255&&layers.every(l=>l[i]===0)){assert.ok(a.subarray(i*4,i*4+3).equals(b.subarray(i*4,i*4+3)),p.id+': unpainted RGB');preserved++;}}

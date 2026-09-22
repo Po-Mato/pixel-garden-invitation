@@ -5,6 +5,23 @@ import os from 'node:os';
 import path from 'node:path';
 import sharp from 'sharp';
 import {readPaintedHeadMaterial} from './lib/paintedHeadMaterial.mjs';
+import {blendPaintedSourcePixels} from './lib/paintedSourceOverlay.mjs';
+test('source blend pins the fused float32 boundary instead of host compiler arithmetic',()=>{
+  const source=Buffer.from([5,5,5]),paint=Buffer.from([39,26,21,30]);
+  assert.deepEqual([...blendPaintedSourcePixels(source,paint,3)],[9,7,6]);
+  assert.deepEqual([...source],[5,5,5]);
+});
+test('source blending preserves cream RGB without paint and retains every original matte alpha',()=>{
+  for(const alpha of [0,1,127,128,254,255]){
+    const source=Buffer.from([230,225,215,alpha]);
+    assert.deepEqual([...blendPaintedSourcePixels(source,Buffer.from([39,26,21,0]),4)],alpha?[230,225,215,alpha]:[0,0,0,0]);
+    assert.equal(blendPaintedSourcePixels(source,Buffer.from([39,26,21,30]),4)[3],alpha);
+  }
+});
+test('source blending rejects incompatible material buffers',()=>{
+  assert.throws(()=>blendPaintedSourcePixels(Buffer.from([1,2,3]),Buffer.alloc(8),3));
+  assert.throws(()=>blendPaintedSourcePixels(Buffer.alloc(2),Buffer.alloc(4),2));
+});
 test('guest07 right rear-lock material preserves face, crown, ear, lower curls and alpha',async()=>{
   const base=new URL('../character-assets/rigs/guest-07/storybook-source-v1/',import.meta.url);
   const rig=JSON.parse(await readFile(new URL('head-registration.json',base)));

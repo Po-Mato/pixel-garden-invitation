@@ -3,7 +3,10 @@ import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 import sharp from 'sharp';
-import {assertPaintedSourceOverlay} from './lib/paintedSourceOverlay.mjs';
+import {assertPaintedSourceOverlay,blendPaintedSourcePixels} from './lib/paintedSourceOverlay.mjs';
+async function sourcePrior(rgba,overlay){
+  return blendPaintedSourcePixels(rgba,await sharp(overlay).ensureAlpha().raw().toBuffer(),4);
+}
 const base = new URL('../character-assets/rigs/guest-07/storybook-source-v1/', import.meta.url);
 async function combinedSourceOverlays(base,files,info){
   const inputs=await Promise.all(files.map(async file=>{const bytes=await readFile(new URL(file,base));assertPaintedSourceOverlay(file,bytes,await sharp(bytes).metadata(),info);return {input:bytes};}));
@@ -181,7 +184,7 @@ test('guest09 calf seam preserves the thigh, cuff and shoe colors with fixed sou
   const mask=await sharp(await readFile(new URL(p.matte,beige))).ensureAlpha().extractChannel(3).raw().toBuffer();
   const rgba=Buffer.alloc(mask.length*4);
   for(let i=0;i<mask.length;i++)if(mask[i]){source.data.copy(rgba,i*4,i*3,i*3+3);rgba[i*4+3]=mask[i];}
-  const prior=await sharp(rgba,{raw:{width:source.info.width,height:source.info.height,channels:4}}).composite([{input:await readFile(new URL(p.sourceOverlays[0],beige)),blend:'atop'}]).ensureAlpha().raw().toBuffer();
+  const prior=await sourcePrior(rgba,await readFile(new URL(p.sourceOverlays[0],beige)));
   const overlay=await sharp(await readFile(new URL('sources/calf-right-seam-study-v1.svg',beige))).ensureAlpha().raw().toBuffer();
   for(const part of parts){
     assert.equal(part.direction,'right');assert.equal(part.mirrored,false);
@@ -250,7 +253,7 @@ test('guest10 localized skirt seam preserves its waistband, central pleats, hem 
   const mask=await sharp(await readFile(new URL(p.matte,navy))).ensureAlpha().extractChannel(3).raw().toBuffer();
   const rgba=Buffer.alloc(mask.length*4);
   for(let i=0;i<mask.length;i++)if(mask[i]){source.data.copy(rgba,i*4,i*3,i*3+3);rgba[i*4+3]=mask[i];}
-  const prior=await sharp(rgba,{raw:{width:source.info.width,height:source.info.height,channels:4}}).composite([{input:await readFile(new URL(p.sourceOverlays[0],navy)),blend:'atop'}]).ensureAlpha().raw().toBuffer();
+  const prior=await sourcePrior(rgba,await readFile(new URL(p.sourceOverlays[0],navy)));
   const overlay=await sharp(await readFile(new URL(p.sourceOverlays[1],navy))).ensureAlpha().raw().toBuffer();
   const rendered=await sharp(await readFile(new URL('generated/skirt-right.png',navy))).ensureAlpha().raw().toBuffer();
   for(let i=0;i<mask.length;i++){
@@ -270,7 +273,7 @@ test('guest07 front lace material preserves its independent source alpha, waistb
   const mask=await sharp(await readFile(new URL(p.matte,base))).ensureAlpha().extractChannel(3).raw().toBuffer();
   const rgba=Buffer.alloc(mask.length*4);
   for(let i=0;i<mask.length;i++)if(mask[i]){source.data.copy(rgba,i*4,i*3,i*3+3);rgba[i*4+3]=mask[i];}
-  const prior=await sharp(rgba,{raw:{width:source.info.width,height:source.info.height,channels:4}}).composite([{input:await readFile(new URL(p.sourceOverlays[0],base)),blend:'atop'}]).ensureAlpha().raw().toBuffer();
+  const prior=await sourcePrior(rgba,await readFile(new URL(p.sourceOverlays[0],base)));
   const bytes=await readFile(new URL(p.sourceOverlays[1],base));
   assertPaintedSourceOverlay(p.sourceOverlays[1],bytes,await sharp(bytes).metadata(),source.info);
   const matte=await readFile(new URL(p.matte,base),'utf8');
@@ -320,7 +323,7 @@ test('guest07 right lace hem shading retains the source contour and never paints
   const mask=await sharp(await readFile(new URL(p.matte,base))).ensureAlpha().extractChannel(3).raw().toBuffer();
   const rgba=Buffer.alloc(mask.length*4);
   for(let i=0;i<mask.length;i++)if(mask[i]){source.data.copy(rgba,i*4,i*3,i*3+3);rgba[i*4+3]=mask[i];}
-  const original=await sharp(rgba,{raw:{width:source.info.width,height:source.info.height,channels:4}}).composite([{input:await readFile(new URL(p.sourceOverlays[0],base)),blend:'atop'}]).ensureAlpha().raw().toBuffer();
+  const original=await sourcePrior(rgba,await readFile(new URL(p.sourceOverlays[0],base)));
   const rendered=await sharp(await readFile(new URL('generated/skirt-right.png',base))).ensureAlpha().raw().toBuffer();
   const bytes=await readFile(new URL(p.sourceOverlays[1],base));
   assertPaintedSourceOverlay(p.sourceOverlays[1],bytes,await sharp(bytes).metadata(),source.info);

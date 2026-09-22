@@ -18,62 +18,62 @@
     {
       "id": "guest-01",
       "file": "character-assets/rigs/guest-01/storybook-source-v1/generated/walk-render-receipt.json",
-      "sha256": "1d29664bd1190f35581af02556c721b3496b1589efe06ae6931a7998b516bc6b"
+      "sha256": "545400e00d0a6d351c90051eb9c5d7d8d17342cafd7fe2b1e87d7d3c11930f0b"
     },
     {
       "id": "guest-02",
       "file": "character-assets/rigs/guest-02/storybook-source-v1/generated/walk-render-receipt.json",
-      "sha256": "79f34abc37009ac03926972ef3cdf651fe8eb80c4fdd3bbb30ed9ce3004c5ae6"
+      "sha256": "090de224f168063a1dbb922aae2ce0528b07633c470cab1f2811287941d4ea69"
     },
     {
       "id": "guest-03",
       "file": "character-assets/rigs/guest-03/storybook-source-v1/generated/walk-render-receipt.json",
-      "sha256": "4248996130fc5c7204a3f2af2e90f4a9ba674664feba2ebf8c7ae6d2b2144ec8"
+      "sha256": "8c7544a1f4593828bbc7949e0ccf719416f41544285a666c90c8019b9ce2494b"
     },
     {
       "id": "guest-04",
       "file": "character-assets/rigs/guest-04/storybook-source-v1/generated/walk-render-receipt.json",
-      "sha256": "e912b17f5356a7781444051c640a54c5bbed2d9f9951c1c824c0ee1cd3d1eb5c"
+      "sha256": "1027a72d5587b9a7f971b6c31b1b3af12794df99401d6f7797327b87f6460abe"
     },
     {
       "id": "guest-05",
       "file": "character-assets/rigs/guest-05/storybook-directions-v1/generated/walk-render-receipt.json",
-      "sha256": "114d191c5061ab6258bf0bf302b5e467344fd9e1b3f2e10df7b1c4d84c82774e"
+      "sha256": "29c8fa3f9497788fa633d1ff87c8bf17770c4d2ae7dd0c007eebfeca281c294a"
     },
     {
       "id": "guest-06",
       "file": "character-assets/rigs/guest-06/storybook-source-v1/generated/walk-render-receipt.json",
-      "sha256": "dd39190f201edaa82b33ba4c679cf389831e3ec6489115d8f036dd779dc436fe"
+      "sha256": "034e96d3303417a65e4495b2b29fd2e1e2f16c792cb479220628c98b0b8b0b4d"
     },
     {
       "id": "guest-07",
       "file": "character-assets/rigs/guest-07/storybook-source-v1/generated/walk-render-receipt.json",
-      "sha256": "c31d011606f1b65d4618d98b9d4de558d079eb50931ea4a71da723471f74432f"
+      "sha256": "4bbf40a892a6b9114cc54b490ae9acef6c3ff0eca72e387f36468f091b630100"
     },
     {
       "id": "guest-08",
       "file": "character-assets/rigs/guest-08/storybook-source-v1/generated/walk-render-receipt.json",
-      "sha256": "4de4979d396be8d6fce938a05e7f21504e2537fdb05cafb1d2a31b210fb8d60a"
+      "sha256": "f4eab8ea58d21fe294679171f2c4f91d2c05908d3e25e5060bc4a3a72fcfa14e"
     },
     {
       "id": "guest-09",
       "file": "character-assets/rigs/guest-09/storybook-source-v1/generated/walk-render-receipt.json",
-      "sha256": "9361c27b40790ba720fe4d2d58216e4e5efbd5f7273d5df7882abe20169da29d"
+      "sha256": "3e555f42f6b3e26d84b4f8d686ef8eed391bb623ae6f89f765ab6b91246b76bd"
     },
     {
       "id": "guest-10",
       "file": "character-assets/rigs/guest-10/storybook-source-v1/generated/walk-render-receipt.json",
-      "sha256": "416afb848697117c55863a0f99fd1e8b04dc49b9e746b598ba24a4cb5a119a3e"
+      "sha256": "eacbe02a8efe30d3a0f1ca61bcb5ee32fdaeff61c4dd3dae0f19bdf535868168"
     },
     {
       "id": "guest-11",
       "file": "character-assets/rigs/guest-11/storybook-source-v1/generated/walk-render-receipt.json",
-      "sha256": "af1ed676895618dcb043972103acc1878b7c7b5169bcd150d59c5d9489f63a3f"
+      "sha256": "bbc4d3ddc7783a7631eb85475cad7bcc86a8c01fc616eef4fa380d6b485f4116"
     },
     {
       "id": "guest-12",
       "file": "character-assets/rigs/guest-12/storybook-source-v1/generated/walk-render-receipt.json",
-      "sha256": "71b667a7684af13fa62c517b533001f6121ec2ec1fc799312670832cdacf0b45"
+      "sha256": "c6a4faa880b4c45cb05ba665607c96d3c118c8485bec41412a9c0073b70e9eec"
     }
   ],
   "activeSourceOverrides": [
@@ -85,7 +85,7 @@
       "connections": 112,
       "disconnected": 0,
       "receipt": "character-assets/rigs/guest-01/storybook-source-v1/generated/balanced-v3/source-render-receipt.json",
-      "receiptSha256": "39b01ef13eaeaa1e5febd9420fe9373655ed25b596dc580e606fdfbe02f22df2",
+      "receiptSha256": "b46d8879270756f5a87f375302600164bc9dd5b09df11692d37ececd46820b8a",
       "scope": "Active neck and arm connections; unchanged concealed leg geometry is audited through the base recipe above."
     }
   ],

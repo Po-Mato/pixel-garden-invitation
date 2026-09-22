@@ -8,7 +8,7 @@ import sharp from './lib/deterministicSharp.mjs';
 import {sourceVolumeBinding} from './lib/storybookSourceVolume.mjs';
 import {packCharacterFrames} from './lib/packCharacterFrames.mjs';
 import {alphaConnection} from './lib/storybookJointConnections.mjs';
-import {assertPaintedSourceOverlay} from './lib/paintedSourceOverlay.mjs';
+import {assertPaintedSourceOverlay,paintOriginalSourcePng} from './lib/paintedSourceOverlay.mjs';
 import {renderGuest01HeadSourceStudy} from './lib/guest01HeadSourceStudy.mjs';
 import {beginPaintedRender,finishPaintedRender} from './lib/paintedRenderReceipt.mjs';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
@@ -95,7 +95,7 @@ for(const [row,direction] of proposal.directions.entries()){
         let clean=await sharp(rgba,{raw:{width:info.width,height:info.height,channels:4}}).png().toBuffer();
         for(const file of proposal.sourceOverlays[p.id]){
           const bytes=await fs.readFile(path.join(base,file));assertPaintedSourceOverlay(file,bytes,await sharp(bytes).metadata(),info);
-          clean=await sharp(clean).composite([{input:bytes,blend:'atop'}]).png().toBuffer();
+          clean=await paintOriginalSourcePng(clean,bytes);
           sourceOverlayAudit.push({part:p.id,file,sha256:hash(bytes),source:p.source,sourceSha256:hash(source),matte:p.matte,matteSha256:hash(await fs.readFile(path.join(base,p.matte))),blend:'atop',alphaPreserved:true});
         }
         assert.deepEqual(await sharp(clean).extractChannel(3).raw().toBuffer(),alpha,'Source shading must preserve silhouette');

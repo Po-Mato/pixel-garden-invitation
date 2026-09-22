@@ -3,7 +3,7 @@ import path from 'node:path';
 import {createHash} from 'node:crypto';
 import assert from 'node:assert/strict';
 import sharp from './deterministicSharp.mjs';
-import {assertPaintedSourceOverlay} from './paintedSourceOverlay.mjs';
+import {assertPaintedSourceOverlay,blendPaintedSourcePixels} from './paintedSourceOverlay.mjs';
 
 // Editable material in the ORIGINAL artwork coordinates, before head layer
 // ownership, alpha masking, registration or animation. Never reads a frame.
@@ -18,7 +18,8 @@ export async function readPaintedHeadMaterial(base,part){
     assertPaintedSourceOverlay(file,bytes,await sharp(bytes).metadata(),original.info);
     // The independent source matte remains authoritative for alpha. Painting
     // opaque source RGB prevents repeated premultiplication of its edge alpha.
-    data=await sharp(data,{raw:original.info}).composite([{input:bytes}]).removeAlpha().raw().toBuffer();
+    const paint=await sharp(bytes).ensureAlpha().raw().toBuffer();
+    data=blendPaintedSourcePixels(data,paint,3);
     overlays.push({file,sha256:createHash('sha256').update(bytes).digest('hex')});
   }
   return {data,info:original.info,overlays};
