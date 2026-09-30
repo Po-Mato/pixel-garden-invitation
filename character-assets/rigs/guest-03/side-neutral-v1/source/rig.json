@@ -1,0 +1,55 @@
+{
+  "status": "side-neutral-review-only",
+  "runtimeEligible": false,
+  "canvas": [
+    192,
+    288
+  ],
+  "geometry": {
+    "headTop": 54,
+    "headBottom": 126,
+    "headHeight": 72,
+    "bodyHeight": 144,
+    "totalHeight": 216,
+    "footBaseline": 270
+  },
+  "directions": {
+    "left": {
+      "body": "left.svg",
+      "head": "../../storybook-source-v1/generated/head-left-registered.svg",
+      "nearSide": "Left",
+      "pocketSquareVisible": true,
+      "mirrored": false
+    },
+    "right": {
+      "body": "right.svg",
+      "head": "../../storybook-source-v1/generated/head-right-registered.svg",
+      "nearSide": "Right",
+      "pocketSquareVisible": false,
+      "mirrored": false
+    }
+  },
+  "headPivot": [
+    96,
+    126
+  ],
+  "root": [
+    96,
+    270
+  ],
+  "notes": [
+    "Each SVG group declares its anatomical parent and pivot in shared canvas coordinates.",
+    "Distinct existing head sources, no head rescaling or mirroring.",
+    "Front palette reused without a side-wide brightness multiplier.",
+    "Only static left and right views. No walking or runtime approval."
+  ],
+  "shadow": {
+    "source": "../../../shared-tailored-216-v1/shadow.svg",
+    "parent": "root",
+    "pivot": [
+      96,
+      270
+    ],
+    "bakedIntoSheet": true
+  }
+}

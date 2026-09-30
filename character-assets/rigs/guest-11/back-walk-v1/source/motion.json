@@ -1,0 +1,5 @@
+{
+  "extends": "../../../shared-tailored-216-v1/back-motion.json",
+  "bodySource": "../../back-neutral-v1/source/body.svg",
+  "rigSource": "../../back-neutral-v1/source/rig.json"
+}

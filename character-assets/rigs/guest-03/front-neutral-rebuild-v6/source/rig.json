@@ -1,0 +1,103 @@
+{
+  "status": "front-neutral-proportion-study-not-animation-ready",
+  "runtimeEligible": false,
+  "canvas": [
+    192,
+    288
+  ],
+  "geometry": {
+    "headTop": 54,
+    "headBottom": 126,
+    "footBaseline": 270,
+    "headHeight": 72,
+    "bodyHeight": 144,
+    "totalHeight": 216
+  },
+  "root": [
+    96,
+    270
+  ],
+  "head": {
+    "source": "../../storybook-source-v1/generated/head-front-registered.svg",
+    "parent": "neck",
+    "pivot": [
+      96,
+      126
+    ],
+    "scale": 1
+  },
+  "body": "body.svg",
+  "joints": {
+    "spine": [
+      96,
+      171
+    ],
+    "pelvis": [
+      96,
+      207
+    ],
+    "upperArmRight": [
+      74,
+      140
+    ],
+    "upperArmLeft": [
+      118,
+      140
+    ],
+    "forearmRight": [
+      63,
+      170
+    ],
+    "forearmLeft": [
+      129,
+      170
+    ],
+    "handRight": [
+      60,
+      195
+    ],
+    "handLeft": [
+      132,
+      195
+    ],
+    "thighRight": [
+      83,
+      207
+    ],
+    "thighLeft": [
+      109,
+      207
+    ],
+    "calfRight": [
+      84,
+      236
+    ],
+    "calfLeft": [
+      108,
+      236
+    ],
+    "shoeRight": [
+      84,
+      260
+    ],
+    "shoeLeft": [
+      108,
+      260
+    ]
+  },
+  "notes": [
+    "Head unchanged. Reauthored shorter legs and fuller tailored body, not rescaled PNG regions.",
+    "Shirt collar drawn above both lapels to remain visible at 96x144.",
+    "Only guest-03 front neutral. Not a shared skeleton migration or walking rig.",
+    "Shoulder roots moved inward/up to align to the collar-to-sleeve curve. Forearm pivots and widths unchanged. Static neutral study only."
+  ],
+  "shadow": {
+    "source": "../../../shared-tailored-216-v1/shadow.svg",
+    "parent": "root",
+    "pivot": [
+      96,
+      270
+    ],
+    "bakedIntoSheet": true
+  }
+}

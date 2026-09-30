@@ -1,0 +1,42 @@
+{
+  "status": "guest09-tailored-review-only",
+  "runtimeEligible": false,
+  "canvas": [
+    192,
+    288
+  ],
+  "geometry": {
+    "headHeight": 72,
+    "bodyHeight": 144,
+    "totalHeight": 216,
+    "headTop": 54,
+    "headBottom": 126,
+    "footBaseline": 270
+  },
+  "body": "body.svg",
+  "head": "../../storybook-source-v1/generated/head-back-registered.svg",
+  "root": [
+    96,
+    270
+  ],
+  "headPivot": [
+    96,
+    126
+  ],
+  "anatomicalSides": {
+    "screenLeft": "Left",
+    "screenRight": "Right"
+  },
+  "notes": [
+    "Guest-09: own painted directional heads, beige source materials, brown tie and shoes; shared 72/144/216 tailored joints. No output pixel edits."
+  ],
+  "shadow": {
+    "source": "../../../shared-tailored-216-v1/shadow.svg",
+    "parent": "root",
+    "pivot": [
+      96,
+      270
+    ],
+    "bakedIntoSheet": true
+  }
+}

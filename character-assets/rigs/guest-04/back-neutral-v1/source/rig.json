@@ -1,0 +1,42 @@
+{
+  "status": "guest04-tailored-review-only",
+  "runtimeEligible": false,
+  "canvas": [
+    192,
+    288
+  ],
+  "geometry": {
+    "headHeight": 72,
+    "bodyHeight": 144,
+    "totalHeight": 216,
+    "headTop": 54,
+    "headBottom": 126,
+    "footBaseline": 270
+  },
+  "body": "body.svg",
+  "head": "../../storybook-source-v1/generated/head-back-registered.svg",
+  "root": [
+    96,
+    270
+  ],
+  "headPivot": [
+    96,
+    126
+  ],
+  "anatomicalSides": {
+    "screenLeft": "Left",
+    "screenRight": "Right"
+  },
+  "notes": [
+    "Guest-04 charcoal suit: separately authored material palette, own four directional head sources, shared tailored skeleton. No final PNG repairs or mirrored heads."
+  ],
+  "shadow": {
+    "source": "../../../shared-tailored-216-v1/shadow.svg",
+    "parent": "root",
+    "pivot": [
+      96,
+      270
+    ],
+    "bakedIntoSheet": true
+  }
+}

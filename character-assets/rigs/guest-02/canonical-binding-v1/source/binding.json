@@ -1,0 +1,10 @@
+{
+  "characterId": "guest-02",
+  "sleeveArtwork": {"front":{"upperArmLeft":"hanbok-sleeves-v5/front-left.svg","upperArmRight":"hanbok-sleeves-v5/front-right.svg"},"left":{"upperArmLeft":"hanbok-sleeves-v5/left-left.svg","upperArmRight":"hanbok-sleeves-v5/left-right.svg"},"right":{"upperArmLeft":"hanbok-sleeves-v5/right-left.svg","upperArmRight":"hanbok-sleeves-v5/right-right.svg"},"back":{"upperArmLeft":"hanbok-sleeves-v5/back-left.svg","upperArmRight":"hanbok-sleeves-v5/back-right.svg"}},
+  "backArmDepth": "behind-torso",
+  "backRestPose": {"upperArmLeft":-6,"upperArmRight":6,"forearmLeft":2,"forearmRight":-2},
+  "armContinuity": {"reason":"Individually reviewed guest-02: continuous shoulder-wrist source registration; original near profile sleeve belongs on the canonical near arm. No reflection.","breadth":{"front":1,"left":1.2,"right":1.2,"back":1},"sourceBones":{"left":{"upperArmLeft":"upperArmRight","upperArmRight":"upperArmLeft"},"right":{"upperArmLeft":"upperArmRight","upperArmRight":"upperArmLeft"}}},
+  "sourceDirectory": "../../storybook-source-v1",
+  "targetSkeleton": "../../../shared-tailored-216-v1/skeleton.json",
+  "policy": "Retarget original source parts to the fixed common bones; preserve original perpendicular width and individual direction artwork. Never read completed frame PNGs."
+}

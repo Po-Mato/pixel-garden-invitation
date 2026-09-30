@@ -80,7 +80,8 @@
         102,
         180.418605
       ],
-      "mirrored": false
+      "mirrored": false,
+      "sourceWidth": 1.65
     },
     {
       "id": "armLeft-left",
@@ -108,7 +109,8 @@
       "mirrored": false,
       "sourceOverlays": [
         "sources/armLeft-left-contour-v4.svg"
-      ]
+      ],
+      "sourceWidth": 1.65
     },
     {
       "id": "legLeft-front",
@@ -474,7 +476,8 @@
         127,
         180.418605
       ],
-      "mirrored": false
+      "mirrored": false,
+      "sourceWidth": 1.8
     },
     {
       "id": "armRight-front",
@@ -499,7 +502,8 @@
         65,
         180.418605
       ],
-      "mirrored": false
+      "mirrored": false,
+      "sourceWidth": 1.8
     },
     {
       "id": "armRight-left",
@@ -527,7 +531,8 @@
       "mirrored": false,
       "sourceOverlays": [
         "sources/armRight-left-contour-v4.svg"
-      ]
+      ],
+      "sourceWidth": 1.65
     },
     {
       "id": "armLeft-right",
@@ -552,7 +557,8 @@
         90,
         180.418605
       ],
-      "mirrored": false
+      "mirrored": false,
+      "sourceWidth": 1.65
     },
     {
       "id": "armLeft-back",
@@ -577,7 +583,8 @@
         73,
         180.418605
       ],
-      "mirrored": false
+      "mirrored": false,
+      "sourceWidth": 1.7
     },
     {
       "id": "armRight-back",
@@ -602,7 +609,8 @@
         119,
         180.418605
       ],
-      "mirrored": false
+      "mirrored": false,
+      "sourceWidth": 1.7
     },
     {
       "id": "norigae-front",

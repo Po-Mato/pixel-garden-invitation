@@ -1,0 +1,285 @@
+{
+  "method": "Integer horizontal translation per 96x144 frame; retained alpha and visible RGB pixels verified against pre-change locked Git source; edge clipping explicitly counted per frame; no resampling or recoloring.",
+  "records": [
+    {
+      "file": "character-assets/source/npc/groom-idle.png",
+      "beforeSha256": "57804432d1f79d86041ee18331703e0387faf05b4b46fa34040f8e211511e7a6",
+      "afterSha256": "dcfa68ee9cb9091acac0f22633d49c34ce31985d187d2d53e98ca395a709ae67",
+      "frames": [
+        {
+          "column": 0,
+          "row": 0,
+          "translationX": 2,
+          "translationY": 0,
+          "retainedVisibleRgbaPreserved": true,
+          "droppedPixels": 0,
+          "maxDroppedAlpha": 0
+        },
+        {
+          "column": 1,
+          "row": 0,
+          "translationX": 2,
+          "translationY": 0,
+          "retainedVisibleRgbaPreserved": true,
+          "droppedPixels": 0,
+          "maxDroppedAlpha": 0
+        }
+      ]
+    },
+    {
+      "file": "character-assets/source/npc/groom-walk.png",
+      "beforeSha256": "7a7c3105fe147b71a636b981187e5bda3890be22670d428a4a4ef0ed3b22e0bb",
+      "afterSha256": "ed74fbc27591d5357429fdbd1c70df261a09ecff72846865b93d334f3accab81",
+      "frames": [
+        {
+          "column": 0,
+          "row": 0,
+          "translationX": -11,
+          "translationY": 0,
+          "retainedVisibleRgbaPreserved": true,
+          "droppedPixels": 0,
+          "maxDroppedAlpha": 0
+        },
+        {
+          "column": 1,
+          "row": 0,
+          "translationX": 2,
+          "translationY": 0,
+          "retainedVisibleRgbaPreserved": true,
+          "droppedPixels": 0,
+          "maxDroppedAlpha": 0
+        },
+        {
+          "column": 2,
+          "row": 0,
+          "translationX": 13,
+          "translationY": 0,
+          "retainedVisibleRgbaPreserved": true,
+          "droppedPixels": 0,
+          "maxDroppedAlpha": 0
+        },
+        {
+          "column": 0,
+          "row": 1,
+          "translationX": -18,
+          "translationY": 0,
+          "retainedVisibleRgbaPreserved": true,
+          "droppedPixels": 0,
+          "maxDroppedAlpha": 0
+        },
+        {
+          "column": 1,
+          "row": 1,
+          "translationX": 10,
+          "translationY": 0,
+          "retainedVisibleRgbaPreserved": true,
+          "droppedPixels": 0,
+          "maxDroppedAlpha": 0
+        },
+        {
+          "column": 2,
+          "row": 1,
+          "translationX": 15,
+          "translationY": 0,
+          "retainedVisibleRgbaPreserved": true,
+          "droppedPixels": 0,
+          "maxDroppedAlpha": 0
+        },
+        {
+          "column": 0,
+          "row": 2,
+          "translationX": -13,
+          "translationY": 0,
+          "retainedVisibleRgbaPreserved": true,
+          "droppedPixels": 0,
+          "maxDroppedAlpha": 0
+        },
+        {
+          "column": 1,
+          "row": 2,
+          "translationX": 2,
+          "translationY": 0,
+          "retainedVisibleRgbaPreserved": true,
+          "droppedPixels": 0,
+          "maxDroppedAlpha": 0
+        },
+        {
+          "column": 2,
+          "row": 2,
+          "translationX": 18,
+          "translationY": 0,
+          "retainedVisibleRgbaPreserved": true,
+          "droppedPixels": 0,
+          "maxDroppedAlpha": 0
+        },
+        {
+          "column": 0,
+          "row": 3,
+          "translationX": -8,
+          "translationY": 0,
+          "retainedVisibleRgbaPreserved": true,
+          "droppedPixels": 0,
+          "maxDroppedAlpha": 0
+        },
+        {
+          "column": 1,
+          "row": 3,
+          "translationX": 2,
+          "translationY": 0,
+          "retainedVisibleRgbaPreserved": true,
+          "droppedPixels": 0,
+          "maxDroppedAlpha": 0
+        },
+        {
+          "column": 2,
+          "row": 3,
+          "translationX": 11,
+          "translationY": 0,
+          "retainedVisibleRgbaPreserved": true,
+          "droppedPixels": 0,
+          "maxDroppedAlpha": 0
+        }
+      ]
+    },
+    {
+      "file": "character-assets/source/npc/bride-idle.png",
+      "beforeSha256": "ab3f7444bb1c10224e4c47b4d0fbdd9e420f676a1a587e983053b6c81927a872",
+      "afterSha256": "0acff7b1f5aca6a092fdf1eab5c17db3477af9ba6c6db6c4594504e15a25bf58",
+      "frames": [
+        {
+          "column": 0,
+          "row": 0,
+          "translationX": 1,
+          "translationY": 0,
+          "retainedVisibleRgbaPreserved": true,
+          "droppedPixels": 0,
+          "maxDroppedAlpha": 0
+        },
+        {
+          "column": 1,
+          "row": 0,
+          "translationX": 1,
+          "translationY": 0,
+          "retainedVisibleRgbaPreserved": true,
+          "droppedPixels": 0,
+          "maxDroppedAlpha": 0
+        }
+      ]
+    },
+    {
+      "file": "character-assets/source/npc/bride-walk.png",
+      "beforeSha256": "2f977b0f5100f6de0987f6373343a7abfc9add72de349a85a98e9073ef8f105e",
+      "afterSha256": "13681ff5f8d26756ddfe733a93306938c8860ac7ab87690d3d56455a5bd89188",
+      "frames": [
+        {
+          "column": 0,
+          "row": 0,
+          "translationX": -16,
+          "translationY": 0,
+          "retainedVisibleRgbaPreserved": true,
+          "droppedPixels": 0,
+          "maxDroppedAlpha": 0
+        },
+        {
+          "column": 1,
+          "row": 0,
+          "translationX": 1,
+          "translationY": 0,
+          "retainedVisibleRgbaPreserved": true,
+          "droppedPixels": 0,
+          "maxDroppedAlpha": 0
+        },
+        {
+          "column": 2,
+          "row": 0,
+          "translationX": 16,
+          "translationY": 0,
+          "retainedVisibleRgbaPreserved": true,
+          "droppedPixels": 0,
+          "maxDroppedAlpha": 0
+        },
+        {
+          "column": 0,
+          "row": 1,
+          "translationX": -15,
+          "translationY": 0,
+          "retainedVisibleRgbaPreserved": true,
+          "droppedPixels": 0,
+          "maxDroppedAlpha": 0
+        },
+        {
+          "column": 1,
+          "row": 1,
+          "translationX": 8,
+          "translationY": 0,
+          "retainedVisibleRgbaPreserved": true,
+          "droppedPixels": 1,
+          "maxDroppedAlpha": 9
+        },
+        {
+          "column": 2,
+          "row": 1,
+          "translationX": 12,
+          "translationY": 0,
+          "retainedVisibleRgbaPreserved": true,
+          "droppedPixels": 0,
+          "maxDroppedAlpha": 0
+        },
+        {
+          "column": 0,
+          "row": 2,
+          "translationX": -13,
+          "translationY": 0,
+          "retainedVisibleRgbaPreserved": true,
+          "droppedPixels": 0,
+          "maxDroppedAlpha": 0
+        },
+        {
+          "column": 1,
+          "row": 2,
+          "translationX": 7,
+          "translationY": 0,
+          "retainedVisibleRgbaPreserved": true,
+          "droppedPixels": 0,
+          "maxDroppedAlpha": 0
+        },
+        {
+          "column": 2,
+          "row": 2,
+          "translationX": 14,
+          "translationY": 0,
+          "retainedVisibleRgbaPreserved": true,
+          "droppedPixels": 0,
+          "maxDroppedAlpha": 0
+        },
+        {
+          "column": 0,
+          "row": 3,
+          "translationX": -15,
+          "translationY": 0,
+          "retainedVisibleRgbaPreserved": true,
+          "droppedPixels": 0,
+          "maxDroppedAlpha": 0
+        },
+        {
+          "column": 1,
+          "row": 3,
+          "translationX": 1,
+          "translationY": 0,
+          "retainedVisibleRgbaPreserved": true,
+          "droppedPixels": 0,
+          "maxDroppedAlpha": 0
+        },
+        {
+          "column": 2,
+          "row": 3,
+          "translationX": 16,
+          "translationY": 0,
+          "retainedVisibleRgbaPreserved": true,
+          "droppedPixels": 0,
+          "maxDroppedAlpha": 0
+        }
+      ]
+    }
+  ]
+}

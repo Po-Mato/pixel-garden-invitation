@@ -123,6 +123,7 @@ async function buildFrame(sheet, metadata, character, direction, column) {
   headLeft += shift;
   bodyLeft += shift;
 
+
   const head = await sharp(sheet)
     .extract(headBounds)
     .resize(headWidth, headHeight, { fit: "fill", kernel: sharp.kernel.nearest })
@@ -147,7 +148,23 @@ async function buildFrame(sheet, metadata, character, direction, column) {
     ])
     .png()
     .toBuffer();
-  const frame = await keepLargestAlphaComponent(composedFrame);
+  const cleaned = await keepLargestAlphaComponent(composedFrame);
+  const pixels = await sharp(cleaned).ensureAlpha().raw().toBuffer();
+  const headPixels = alphaBounds(pixels, frameWidth, { left: 0, top: contentTop, width: frameWidth, height: headHeight });
+  // Translate the finished artwork, preserving every visible source pixel.
+  // Source sheet cell placement is unrelated to the character's world anchor.
+  const anchorShift = Math.round((frameWidth - headPixels.width) / 2) - headPixels.left;
+  const anchored = Buffer.alloc(pixels.length);
+  for (let y = 0; y < frameHeight; y += 1) for (let x = 0; x < frameWidth; x += 1) {
+    const source = (y * frameWidth + x) * 4;
+    const targetX = x + anchorShift;
+    if (targetX < 0 || targetX >= frameWidth) {
+      if (pixels[source + 3] > 24) throw new Error(`${character} ${direction} ${column}: anchored artwork clips`);
+      continue;
+    }
+    pixels.copy(anchored, (y * frameWidth + targetX) * 4, source, source + 4);
+  }
+  const frame = await sharp(anchored, { raw: { width: frameWidth, height: frameHeight, channels: 4 } }).png().toBuffer();
 
   return {
     frame,

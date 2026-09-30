@@ -1,0 +1,86 @@
+{
+  "status": "side-walk-review-only",
+  "runtimeEligible": false,
+  "frameDurationMs": 180,
+  "frontStride": 7,
+  "rearStride": 8,
+  "frontFootPitch": -10,
+  "rearFootPitch": 2,
+  "footContacts": {
+    "left": {
+      "Left": [
+        75,
+        270
+      ],
+      "Right": [
+        79,
+        270
+      ]
+    },
+    "right": {
+      "Right": [
+        117,
+        270
+      ],
+      "Left": [
+        113,
+        270
+      ]
+    }
+  },
+  "trouserContours": {
+    "left": {
+      "Left": "M84 201H108L104 261H86Z",
+      "Right": "M94 202H113L109 261H94Z"
+    },
+    "right": {
+      "Right": "M84 201H108L106 261H88Z",
+      "Left": "M79 202H98V261H83Z"
+    }
+  },
+  "frames": [
+    {
+      "frontFoot": "Right"
+    },
+    {
+      "frontFoot": null
+    },
+    {
+      "frontFoot": "Left"
+    },
+    {
+      "frontFoot": null
+    }
+  ],
+  "notes": [
+    "Contact poses: front heel and rear toe both at ground y270.",
+    "Fixed thigh/calf lengths; knee flexion capped at 25 degrees; no pixel alignment correction.",
+    "Unchanged upper-body animation and original 2/4 neutral art.",
+    "Original source parts and authored contours, no raster copying or mirroring."
+  ],
+  "heelContacts": {
+    "left": {
+      "Left": [
+        101,
+        270
+      ],
+      "Right": [
+        106,
+        270
+      ]
+    },
+    "right": {
+      "Right": [
+        91,
+        270
+      ],
+      "Left": [
+        86,
+        270
+      ]
+    }
+  },
+  "maxKneeBendDegrees": 25,
+  "skeleton": "skeleton.json",
+  "template": "tailored-216-v1"
+}

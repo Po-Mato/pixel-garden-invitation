@@ -1,0 +1,14 @@
+{
+  "reason": "Legacy map-tone audit read inactive raw guest sources, nearest resampling, omitted CSS tone filter, and rendered only one shadow. Updated to verified active full-review sources, Canvas-style bilinear sampling, and complete runtime filter chain.",
+  "baselineVersion": 27,
+  "thresholdsUnchanged": true,
+  "baselineMeasurementsRefreshedForReviewedArtwork": true,
+  "mapsAuditPassed": true,
+  "mapsTests": {
+    "passed": 82,
+    "failed": 0
+  },
+  "sourceArtworkUnmodified": true,
+  "fullReviewSampleCount": 1920,
+  "fullReviewFailures": 0
+}

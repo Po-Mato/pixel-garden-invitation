@@ -1,0 +1,12 @@
+{
+  "characterId": "guest-01",
+  "backArmDepth": "behind-torso",
+  "backRestPose": {"upperArmLeft":-6,"upperArmRight":6,"forearmLeft":2,"forearmRight":-2},
+  "armContinuity": {"reason":"Individually reviewed guest-01: continuous shoulder-wrist source registration; original near profile sleeve belongs on the canonical near arm. No reflection.","breadth":{"front":1,"left":1.25,"right":1.25,"back":1},"sourceBones":{"left":{"upperArmLeft":"upperArmRight","upperArmRight":"upperArmLeft"},"right":{"upperArmLeft":"upperArmRight","upperArmRight":"upperArmLeft"}}},
+  "sourceDirectory": "../../storybook-source-v1",
+  "materialDirectory": "generated/balanced-v3",
+  "sourceReceipt": "source-render-receipt.json",
+  "headDirectories": {"front": "generated/balanced-v3"},
+  "targetSkeleton": "../../../shared-tailored-216-v1/skeleton.json",
+  "policy": "Keep the individually approved balanced arm originals, costume width and shading, and front hair overlay. Retarget registered ORIGINAL parts to fixed canonical bones; never use a completed walking frame as material."
+}

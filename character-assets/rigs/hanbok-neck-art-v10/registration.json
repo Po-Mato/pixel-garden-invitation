@@ -1,0 +1,13 @@
+{
+  "characters": {
+    "guest-02": {
+      "source": "../hanbok-neck-art-v9/sources/guest-02-front-upperbody.png",
+      "scale": 0.085,
+      "translation": [
+        30.72,
+        114.735
+      ]
+    }
+  },
+  "policy": "User-approved A local neck/collar donor applied to registered original material before part splitting; existing v9 preserved; no face/limb edits."
+}

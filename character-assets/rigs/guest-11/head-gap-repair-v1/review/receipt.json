@@ -1,0 +1,93 @@
+{
+  "runtimeEligible": false,
+  "status": "layered-head-source-repair",
+  "inputs": {
+    "scripts/render-guest11-head-gap-repair.mjs": "f9f963106e4cbe89f6fe3420eea14b88a8ded0e0a17a0e9508fdf48ed9df4447",
+    "character-assets/rigs/guest-11/storybook-source-v1/head-layers.json": "e2f2189af69c48d627cc66e4319e9d9633e516b9cf891ef00b46298b4e9445f1",
+    "character-assets/rigs/guest-11/storybook-source-v1/sources/head-left-v1.png": "6c8ef064ad8817288f33d3132f8eae0612c8905358b1b554637dc3664acea79f",
+    "character-assets/rigs/guest-11/storybook-source-v1/masks/head-left-v1.svg": "b832c8adc9b7e9d34255c7f199d3d426b25a95fa0695407e24e576f9bfaa4a76",
+    "character-assets/rigs/guest-11/head-gap-repair-v1/source/hair-gaps-left.svg": "f6ce4b3421548ac876f08685385a476188e052864d4d5258fde64a963a813062",
+    "character-assets/rigs/guest-11/storybook-source-v1/head-registration.json": "4b88da2d22cad4320996d4331b8c6f5437a2b7e7d6e76fea364466115559292e",
+    "character-assets/rigs/guest-11/storybook-source-v1/generated/head-left-registered.svg": "2a77dd6ca52e639cc6804e6cb094075504e6a7db02cde84209a954f9a982d996",
+    "character-assets/rigs/guest-11/storybook-source-v1/sources/head-right-v1.png": "1755ddd0efb67c020a27870aea1433d422669b7678a97783cbac5d07b0b71e24",
+    "character-assets/rigs/guest-11/storybook-source-v1/masks/head-right-v1.svg": "1511b2eead71335a8b4ed4a7be43669c3ffcb4840fa3c794a369c3cce5975107",
+    "character-assets/rigs/guest-11/head-gap-repair-v1/source/hair-gaps-right.svg": "6455d84092972fc28f3f436d3dd7e8ccbeb76cdffc1978b67656d4497c291a7f",
+    "character-assets/rigs/guest-11/storybook-source-v1/generated/head-right-registered.svg": "f8e87d246958d50becba1c38faec510d166dd694488a57d5e52d3b11cbff4667"
+  },
+  "outputs": {
+    "character-assets/rigs/guest-11/head-gap-repair-v1/review/head-left-registered.svg": "50958a187114ee75941901b5921a347c7b7207a685acc8f327cdfe740fb3e4c4",
+    "character-assets/rigs/guest-11/head-gap-repair-v1/review/head-right-registered.svg": "415176d0a6d57d17073599701013dc921f3f80005e16927ee9ebbd534d0a3bc8"
+  },
+  "layersByDirection": {
+    "left": [
+      {
+        "id": "face",
+        "parent": "head",
+        "pivot": [
+          710,
+          1058
+        ],
+        "file": "character-assets/rigs/guest-11/head-gap-repair-v1/generated/left/face.png",
+        "sha256": "356b19cae080ae347b2083cedffa6ad36f539982bcec82c00716dddce5232105"
+      },
+      {
+        "id": "frontHair",
+        "parent": "head",
+        "pivot": [
+          710,
+          1058
+        ],
+        "file": "character-assets/rigs/guest-11/head-gap-repair-v1/generated/left/frontHair.png",
+        "sha256": "74e337a6c9700390421d36b188761fb3f655bacc23912afe0ad7b7bd4028fba7"
+      },
+      {
+        "id": "backHair",
+        "parent": "head",
+        "pivot": [
+          710,
+          1058
+        ],
+        "file": "character-assets/rigs/guest-11/head-gap-repair-v1/generated/left/backHair.png",
+        "sha256": "caf3fae9959961342c7e3803660b70bdedf99a0d735e204d5eb3774985762bc6"
+      }
+    ],
+    "right": [
+      {
+        "id": "face",
+        "parent": "head",
+        "pivot": [
+          710,
+          1053
+        ],
+        "file": "character-assets/rigs/guest-11/head-gap-repair-v1/generated/right/face.png",
+        "sha256": "0437b331aa1f9eacc4aa6185a8aa01af8318a2b687f2839e13a520d993cd6642"
+      },
+      {
+        "id": "frontHair",
+        "parent": "head",
+        "pivot": [
+          710,
+          1053
+        ],
+        "file": "character-assets/rigs/guest-11/head-gap-repair-v1/generated/right/frontHair.png",
+        "sha256": "270dc8960c6832e78d79209d69d4c3fd801b6da200b77140dd36da219caea305"
+      },
+      {
+        "id": "backHair",
+        "parent": "head",
+        "pivot": [
+          710,
+          1053
+        ],
+        "file": "character-assets/rigs/guest-11/head-gap-repair-v1/generated/right/backHair.png",
+        "sha256": "b41ed5e7ab6240e0d4d0240b85ba52728c5964cbea4da06ac6568cc8e79af637"
+      }
+    ]
+  },
+  "order": [
+    "left-before",
+    "left-after",
+    "right-before",
+    "right-after"
+  ]
+}

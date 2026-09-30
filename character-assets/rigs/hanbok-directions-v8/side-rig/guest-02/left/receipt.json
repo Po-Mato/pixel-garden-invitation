@@ -1,0 +1,190 @@
+{
+  "version": 1,
+  "inputs": [
+    {
+      "file": "character-assets/rigs/common-three-head-216-v1/animations/dress-left.json",
+      "sha256": "8f51ec1460b1d9614084d34a92bc5fdbee7225d0d782f78a68c61563d211f5fd"
+    },
+    {
+      "file": "character-assets/rigs/guest-02/canonical-binding-v1/generated/registered/left-calfLeft.svg",
+      "sha256": "b677e6e91fbaca2c389ee9297a432b976fe972f4fc3793b086770070e2f8b891"
+    },
+    {
+      "file": "character-assets/rigs/guest-02/canonical-binding-v1/generated/registered/left-calfRight.svg",
+      "sha256": "25042fd0ce62a4ca02fe77c7449baf8113d9ba66fc391566d1cd84b401cb12a5"
+    },
+    {
+      "file": "character-assets/rigs/guest-02/canonical-binding-v1/generated/registered/left-forearmRight.svg",
+      "sha256": "17f144fafe9093e08b6aea6a1074533eefd139f172b55236326976fa8d63d6fb"
+    },
+    {
+      "file": "character-assets/rigs/guest-02/canonical-binding-v1/generated/registered/left-handRight.svg",
+      "sha256": "ae2fc71af5c7a682bca4aa72993549c2a02ba28f3174d74e463c6ba90d89bf50"
+    },
+    {
+      "file": "character-assets/rigs/guest-02/canonical-binding-v1/generated/registered/left-headAbove.svg",
+      "sha256": "0f82ae1f77a5adc81eec08eda0c03788b679627a51cf5555628fccd313f8cf36"
+    },
+    {
+      "file": "character-assets/rigs/guest-02/canonical-binding-v1/generated/registered/left-headBehind.svg",
+      "sha256": "3cc3a2353b2be2da86f6fd6894de1c64e53efb139f97d92ad6f36d3a0fdf412a"
+    },
+    {
+      "file": "character-assets/rigs/guest-02/canonical-binding-v1/generated/registered/left-shadow-left.svg",
+      "sha256": "4bebac935b52766712306887261a9be208a3180e8ada51e9f7e7d23ed8b6f71f"
+    },
+    {
+      "file": "character-assets/rigs/guest-02/canonical-binding-v1/generated/registered/left-shoeLeft.svg",
+      "sha256": "4c0f20df7f0726c84f51d97842456b0bd8203428da81072819fc765163b62c8d"
+    },
+    {
+      "file": "character-assets/rigs/guest-02/canonical-binding-v1/generated/registered/left-shoeRight.svg",
+      "sha256": "f5ac5810cc9f8852e1db525df240ef1873367ccee8b2750012fe78cb6136f35b"
+    },
+    {
+      "file": "character-assets/rigs/guest-02/canonical-binding-v1/generated/registered/left-skirt-left.svg",
+      "sha256": "38f66d3b0ee458317881136b562e960db3ce037358a2af8f4624916f45f77f74"
+    },
+    {
+      "file": "character-assets/rigs/guest-02/canonical-binding-v1/generated/registered/left-thighLeft.svg",
+      "sha256": "2403429f93362e006e3c6a114410eaaa22599b297feaebd845731f476f9c0c6e"
+    },
+    {
+      "file": "character-assets/rigs/guest-02/canonical-binding-v1/generated/registered/left-thighRight.svg",
+      "sha256": "2c6e10d2583fc8e77f0af1196254c48d89d336f101cba6a7b6eb7632d280bac0"
+    },
+    {
+      "file": "character-assets/rigs/guest-02/canonical-binding-v1/generated/registered/left-upperArmRight.svg",
+      "sha256": "770f907cfa935b70fcce47a203f97618cb39123c74fc7629f65a105e398ec9ad"
+    },
+    {
+      "file": "character-assets/rigs/guest-02/canonical-binding-v1/review/audit.json",
+      "sha256": "b225018f1d7ee906e3d6f2d0b9e2123d78a5bc7e5bd3802f0bd2ea7e20f2408f"
+    },
+    {
+      "file": "character-assets/rigs/guest-02/canonical-binding-v1/review/source-render-receipt.json",
+      "sha256": "b7e7039407ae526a9b8c76779e24ebdc067dc754b7233f6b0d7e830af652ad0d"
+    },
+    {
+      "file": "character-assets/rigs/hanbok-directions-v8/collar-layers.json",
+      "sha256": "3d34d2e15d8f36b2fed58fd87d7e68226201e2101f8fd16386c3555a2866750d"
+    },
+    {
+      "file": "character-assets/rigs/hanbok-directions-v8/neck-source.json",
+      "sha256": "6964bfb005b4834584bde4b933aa01943ef0ace9745a7dd21a9b7b66ed5b67d9"
+    },
+    {
+      "file": "character-assets/rigs/hanbok-directions-v8/side-parts.json",
+      "sha256": "269c74a9832cd808b1ef09c08a997bc6c815379fa4c750882d49df5441e8c32b"
+    },
+    {
+      "file": "character-assets/rigs/hanbok-directions-v8/side-registration.json",
+      "sha256": "890ae1e551344c9d79d51fcbe4eeccbffd49a9b1c2b99c590f586762df0a6d66"
+    },
+    {
+      "file": "character-assets/rigs/hanbok-directions-v8/sources/guest-02-left-upperbody.png",
+      "sha256": "0c8608265c947e71d946bafa13d0ff1017ffa7c1b2909259faaad4c697f20259"
+    },
+    {
+      "file": "character-assets/rigs/shared-tailored-216-v1/painted-walk-binding.json",
+      "sha256": "b1209f1de614ac8a8e0783eec66c80f7ff289790a2da12bc59c925caf32bd304"
+    },
+    {
+      "file": "character-assets/rigs/shared-tailored-216-v1/skeleton.json",
+      "sha256": "bb584444cc8dd8fef93757512706b4eff83f47f53c730811ff9b9b67c31fd615"
+    },
+    {
+      "file": "scripts/lib/canonicalCutoutBinding.mjs",
+      "sha256": "aac95827b6682632ff1d6687cbef7098a468e805840cba8ba43c5b2005828770"
+    },
+    {
+      "file": "scripts/lib/deterministicSharp.mjs",
+      "sha256": "098d5d05f78bdf66ff839dda9ae59effb39287983b23a64bc33fb4cbbacccce5"
+    },
+    {
+      "file": "scripts/lib/hanbokCollarLayers.mjs",
+      "sha256": "5ad26126d1913bf4a2163281a2e9ba47cacf4da0b4ddbb9a46a24dcbbc04fe50"
+    },
+    {
+      "file": "scripts/lib/hanbokNeckSource.mjs",
+      "sha256": "82d7d6030d30560b2c752a575fb5f82b6eabe18d31ade9a1fd66da4b7b9ddde5"
+    },
+    {
+      "file": "scripts/lib/packCharacterFrames.mjs",
+      "sha256": "9140fecac5b79183210f7e4b626a49f90a0b273c7b6009d24118a0e67940f132"
+    },
+    {
+      "file": "scripts/lib/paintedArmPose.mjs",
+      "sha256": "f4f1d3b452b76768520c5b303660591b6e3f7b318240a9a425f2c19142688c72"
+    },
+    {
+      "file": "scripts/lib/storybookJointConnections.mjs",
+      "sha256": "b874340de5f16e2418c9e247507c52d7e2da8bcdbe50662b92e00453ae28498a"
+    },
+    {
+      "file": "scripts/render-hanbok-side-rig-v8.mjs",
+      "sha256": "c5addd582ffc3709a3f5fd4284fc1f386adaa8d78cc1579e8a3a4ca62c589a6d"
+    }
+  ],
+  "dependencies": [
+    "character-assets/rigs/guest-02/canonical-binding-v1/review/source-render-receipt.json"
+  ],
+  "outputs": [
+    {
+      "file": "character-assets/rigs/hanbok-directions-v8/side-rig/guest-02/left/audit.json",
+      "sha256": "feb449105d79ad1323c9d54b24233061c0ff613bfd0ba41418aa2a9a8a72e36f"
+    },
+    {
+      "file": "character-assets/rigs/hanbok-directions-v8/side-rig/guest-02/left/forearmLeft.svg",
+      "sha256": "d6514eaa6bcb4b1887fd0ae92abf60d807367ebf73221c09a9cda6eb87f9d56d"
+    },
+    {
+      "file": "character-assets/rigs/hanbok-directions-v8/side-rig/guest-02/left/handLeft.svg",
+      "sha256": "592c79340afc5fcb8c3f088d194cd75d168c61c3e3dd7e01920efdbadd9ba117"
+    },
+    {
+      "file": "character-assets/rigs/hanbok-directions-v8/side-rig/guest-02/left/left-1.png",
+      "sha256": "18db67f652e029b9f3c7deffd993af3860fa90505f6cb90514458cabd1aa1fa1"
+    },
+    {
+      "file": "character-assets/rigs/hanbok-directions-v8/side-rig/guest-02/left/left-1.svg",
+      "sha256": "9c43ff69637ddf675be5030399f25c0032d5d8b3525606c4fb8a76692b4bd0bb"
+    },
+    {
+      "file": "character-assets/rigs/hanbok-directions-v8/side-rig/guest-02/left/left-2.png",
+      "sha256": "bc0118b665de63c645f71179660ae2fa3103c6b33a76d9dc40920abb62a6b13d"
+    },
+    {
+      "file": "character-assets/rigs/hanbok-directions-v8/side-rig/guest-02/left/left-2.svg",
+      "sha256": "225ab310a93d764cc4978853cfedac7e2f838930783d4b88ce97cc5014bb6ee4"
+    },
+    {
+      "file": "character-assets/rigs/hanbok-directions-v8/side-rig/guest-02/left/left-3.png",
+      "sha256": "e7057fce91e40160d2c4d1b62b9303c56ca1abac7cbb8ea998394ff12978c62f"
+    },
+    {
+      "file": "character-assets/rigs/hanbok-directions-v8/side-rig/guest-02/left/left-3.svg",
+      "sha256": "fb0bfae6569ebde9343639424ee66c18d174681fae8da49b2e9526594740f01f"
+    },
+    {
+      "file": "character-assets/rigs/hanbok-directions-v8/side-rig/guest-02/left/left-4.png",
+      "sha256": "bc0118b665de63c645f71179660ae2fa3103c6b33a76d9dc40920abb62a6b13d"
+    },
+    {
+      "file": "character-assets/rigs/hanbok-directions-v8/side-rig/guest-02/left/left-4.svg",
+      "sha256": "225ab310a93d764cc4978853cfedac7e2f838930783d4b88ce97cc5014bb6ee4"
+    },
+    {
+      "file": "character-assets/rigs/hanbok-directions-v8/side-rig/guest-02/left/torso-left.svg",
+      "sha256": "a7f97e7606cf311ad4b4f459cc8f6fdcdc612c976c8e6a55fba5ca74bb89671d"
+    },
+    {
+      "file": "character-assets/rigs/hanbok-directions-v8/side-rig/guest-02/left/upperArmLeft.svg",
+      "sha256": "be6dd031c47adec759f6ee4b9d07e876a3a10057f5784c950d7285148398ee4d"
+    },
+    {
+      "file": "character-assets/rigs/hanbok-directions-v8/side-rig/guest-02/left/walk.png",
+      "sha256": "ff909c69b5bb53fbcb2cfeaff705f53ec9e2e6acac09673cfc6c973f31740acc"
+    }
+  ]
+}

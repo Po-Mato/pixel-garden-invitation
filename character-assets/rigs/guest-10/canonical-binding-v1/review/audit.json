@@ -1,0 +1,3577 @@
+{
+  "status": "canonical-neutral-candidate",
+  "runtimeEligible": false,
+  "visualApproved": false,
+  "inputs": {
+    "scripts/render-canonical-painted-neutral.mjs": "5c2bcbecbc78a050c1903b537258c2ad431c0064a17b5ba6573222ca9a8affb7",
+    "scripts/lib/canonicalCutoutBinding.mjs": "aac95827b6682632ff1d6687cbef7098a468e805840cba8ba43c5b2005828770",
+    "scripts/lib/paintedArmPose.mjs": "f4f1d3b452b76768520c5b303660591b6e3f7b318240a9a425f2c19142688c72",
+    "character-assets/rigs/guest-10/canonical-binding-v1/source/binding.json": "3e932eb7f3770c18673cb17aa420e3d5e1753606812377f6b9f14f7d883a9941",
+    "character-assets/rigs/guest-10/storybook-source-v1/generated/walk-render-receipt.json": "34d0b4d36f486a74f7d226d6be9944b6d53d22342d5d8451aa1ca42f3c424580",
+    "character-assets/rigs/guest-10/storybook-source-v1/body-registration.json": "7ca6535f8cc177280f6ca533a28f569bb3577a5070ada6a2bc0f0b1d8e71752b",
+    "character-assets/rigs/guest-10/storybook-source-v1/head-registration.json": "c01488f462ce3d08c6bcca8be68a946402233e18353fdac5f4b2f7cb59498ef4",
+    "character-assets/rigs/common-three-head-216-v1/skeleton.json": "d320d258397253ee3919381ea062187c2e587c9ec57a7761966a7e07b4dc479b",
+    "character-assets/rigs/shared-tailored-216-v1/skeleton.json": "bb584444cc8dd8fef93757512706b4eff83f47f53c730811ff9b9b67c31fd615",
+    "character-assets/rigs/shared-tailored-216-v1/painted-walk-binding.json": "b1209f1de614ac8a8e0783eec66c80f7ff289790a2da12bc59c925caf32bd304",
+    "character-assets/rigs/guest-10/storybook-source-v1/generated/head-front-behind-body.svg": "51fe71e4c7406e5a9f03b6035e74fc61d90b145ea6669376b85da7f46a6cba20",
+    "character-assets/rigs/guest-10/storybook-source-v1/generated/shadow-front-registered.svg": "c548274392b35a132039b4a2124a407fab0a50173a60a38c1c2e44a6f05f8eaa",
+    "character-assets/rigs/guest-10/storybook-source-v1/generated/neck-front-registered.svg": "551c990208dc0e23483f20eb4bcfe3e563271a90146c801aa05ea46945fc7da1",
+    "character-assets/rigs/guest-10/storybook-source-v1/generated/bag-front-registered.svg": "764309cb3f45f16d268cbfd818fae22f83333a632cd134acd1d62bee40ae7b9b",
+    "character-assets/rigs/guest-10/storybook-source-v1/generated/front-thighLeft-source.svg": "a28292fe348b445f8f74899bbb379ea03a90ec9c899659eb6b9a7cc1569f30ed",
+    "character-assets/rigs/guest-10/storybook-source-v1/generated/front-calfLeft-source.svg": "26890b77c4022be11ac1dfbfe4bbeeb71eee757a2b6d896c1faef71b91e17cbd",
+    "character-assets/rigs/guest-10/storybook-source-v1/generated/front-shoeLeft-source.svg": "56c01d807e23d29d38e1b45bc48933f76830d493e950672e86944ebf53c4d7f3",
+    "character-assets/rigs/guest-10/storybook-source-v1/generated/front-thighRight-source.svg": "519215c64b30df7682a118cfe7e30f4c947d6787c2dff88dcde31b2824001817",
+    "character-assets/rigs/guest-10/storybook-source-v1/generated/front-calfRight-source.svg": "5cc36f1ebea7d9fe76740630f6aca94bdc3316b00d015f286f75e2bf6efcb333",
+    "character-assets/rigs/guest-10/storybook-source-v1/generated/front-shoeRight-source.svg": "8685242031251873994fd40edce1b08608fce287e1f858f7e340e9cdaeb56a0c",
+    "character-assets/rigs/guest-10/storybook-source-v1/generated/skirt-front-registered.svg": "c02ec530fa24196a78311b61ec0978073df30b3f2d2aff7e3bd220bdd7a682c6",
+    "character-assets/rigs/guest-10/storybook-source-v1/generated/torso-front-registered.svg": "29fc2bccb062070d6af17b64dd3666cbc2a4c5f967b6009199f1cfdd6b666c0f",
+    "character-assets/rigs/guest-10/storybook-source-v1/generated/armLeft-front-registered.svg": "dd3d30bb06f41124b5e9118f33ce86524f66001d45a3e08347054bcd136e733c",
+    "character-assets/rigs/guest-10/storybook-source-v1/generated/armRight-front-registered.svg": "d467189760af1eb8a90eda2420af972306b1217801f9ae4061fa89aed97e8c67",
+    "character-assets/rigs/guest-10/storybook-source-v1/generated/head-front-above-body.svg": "64a681f7ec19f0afe6eda2032fcc6ad15cc479ef22c11496f9f97616075e5205",
+    "character-assets/rigs/guest-10/storybook-source-v1/generated/head-left-behind-body.svg": "52c3cd5055143dc5dd92874748666551d6c649fba0b9f94151451c5a7e1b2fc6",
+    "character-assets/rigs/guest-10/storybook-source-v1/generated/shadow-left-registered.svg": "c548274392b35a132039b4a2124a407fab0a50173a60a38c1c2e44a6f05f8eaa",
+    "character-assets/rigs/guest-10/storybook-source-v1/generated/armRight-left-registered.svg": "3d71d563e5fa1e54d474d8a89e40af5e6b429610a3b8d38d48f0be7dfdc38ba7",
+    "character-assets/rigs/guest-10/storybook-source-v1/generated/neck-left-registered.svg": "551c990208dc0e23483f20eb4bcfe3e563271a90146c801aa05ea46945fc7da1",
+    "character-assets/rigs/guest-10/storybook-source-v1/generated/bag-left-registered.svg": "3ba3778b82b71d395af93767857fbfbdfa43560d82eb68c01d63c12666018707",
+    "character-assets/rigs/guest-10/storybook-source-v1/generated/left-thighLeft-source.svg": "9fae7b7d96c381347a3c7c75064e5ef7ef2509766d22319e215d0e99d4d38076",
+    "character-assets/rigs/guest-10/storybook-source-v1/generated/left-calfLeft-source.svg": "9eccd26f586e881c6eae53b5c413f5a728f068ed98a42648411c6c27da191a73",
+    "character-assets/rigs/guest-10/storybook-source-v1/generated/left-shoeLeft-source.svg": "577cd002ed034d1f2c1197b7209ea07ca0b2fb794c216f22e294b591863e067a",
+    "character-assets/rigs/guest-10/storybook-source-v1/generated/left-thighRight-source.svg": "8231ecc1fc10c61742414fbb21c7f4dd887d71d6a745ec6358efd285e62d7592",
+    "character-assets/rigs/guest-10/storybook-source-v1/generated/left-calfRight-source.svg": "f1fae9c4d5932c233ff6c1f602790d4d8cc41631603137537a9bbe4fdced7638",
+    "character-assets/rigs/guest-10/storybook-source-v1/generated/left-shoeRight-source.svg": "7f8d294207edf069d31e2f12b8628e1199598ab7dfb54bf75a2de0f82c6ab6e9",
+    "character-assets/rigs/guest-10/storybook-source-v1/generated/skirt-left-registered.svg": "43260afaf7e9bd7db077d0640e2213ba6d06039f01c02fe0e388a05f5d7488b5",
+    "character-assets/rigs/guest-10/storybook-source-v1/generated/torso-left-registered.svg": "f372f3334ec76682ccd43504d69dd3237b62ce8fa4c193ef57260ef91e83c7ae",
+    "character-assets/rigs/guest-10/storybook-source-v1/generated/armLeft-left-registered.svg": "e80e28370491bf36c05793bfd342e2ee0fdcc4b98bd72aacafd49ea8fae9001d",
+    "character-assets/rigs/guest-10/storybook-source-v1/generated/head-left-above-body.svg": "d881573e53d21bb15ed19a95a7528466404d15a5f020a2423ca8fbcb6ae21d76",
+    "character-assets/rigs/guest-10/storybook-source-v1/generated/head-right-behind-body.svg": "eb3073dbd2c5bb2ee4c0f30adf78a1a91587149065134499640cc3d7217b1c12",
+    "character-assets/rigs/guest-10/storybook-source-v1/generated/shadow-right-registered.svg": "c548274392b35a132039b4a2124a407fab0a50173a60a38c1c2e44a6f05f8eaa",
+    "character-assets/rigs/guest-10/storybook-source-v1/generated/armLeft-right-registered.svg": "c0b19c51f26ea9ecf786520e0a38c51a9341eda4b13088022aaecff92c35aa5c",
+    "character-assets/rigs/guest-10/storybook-source-v1/generated/neck-right-registered.svg": "271b57e8386b1c6e45ad7e613a478708bbe37c0c22093441f94f5d7197b75bfa",
+    "character-assets/rigs/guest-10/storybook-source-v1/generated/right-thighLeft-source.svg": "083bdbe9182757d4de5fc674e38eb87f2b04ed1732ab071584b4a58c3304b044",
+    "character-assets/rigs/guest-10/storybook-source-v1/generated/right-calfLeft-source.svg": "b6a45d7bb1a6682d2778d97acbe8ef417ffdb8d8f9f127861b9cc67ed6ad4caf",
+    "character-assets/rigs/guest-10/storybook-source-v1/generated/right-shoeLeft-source.svg": "fb9efca42abf228b8902c41d419a79c97e4ff30287c5d2634f4f506c7236c3b0",
+    "character-assets/rigs/guest-10/storybook-source-v1/generated/right-thighRight-source.svg": "ae81a60df027c0c87cfc709517c1c02f2ccd50ad6b6826f3083b593f282787d5",
+    "character-assets/rigs/guest-10/storybook-source-v1/generated/right-calfRight-source.svg": "4c71cb5d2d6bd001858f77acdb86bc583fe44e86ad4547ec638b3cf374b47fb4",
+    "character-assets/rigs/guest-10/storybook-source-v1/generated/right-shoeRight-source.svg": "c21866f3383665f26dd3ff6955a67cd3e07ae7d744d73aa1f96c3153b3863fb2",
+    "character-assets/rigs/guest-10/storybook-source-v1/generated/skirt-right-registered.svg": "6e99ae4e19e6625409521d5a5e7bcdd77590c4c66ac34e8ddd1a775242284ab9",
+    "character-assets/rigs/guest-10/storybook-source-v1/generated/torso-right-registered.svg": "5709d18688928f956ba0a7b9e698c1fc73f4254f6d51a01ef83e86b0db37c53f",
+    "character-assets/rigs/guest-10/storybook-source-v1/generated/bag-right-registered.svg": "4814629ee4ffac6393d8344e7eeee17578511ef58491f07364b537107653e97b",
+    "character-assets/rigs/guest-10/storybook-source-v1/generated/armRight-right-registered.svg": "20ef24687d42b905de61cf1b7e4f7163d0be490c77cb6b0ed8a966f30b13582b",
+    "character-assets/rigs/guest-10/storybook-source-v1/generated/head-right-above-body.svg": "c498aa3618b6baa4299eb0bb7fe98840c71d967845c7ec3a351960ffdbefd21b",
+    "character-assets/rigs/guest-10/storybook-source-v1/generated/head-back-behind-body.svg": "793045bd39d9177730baa6a3fd3ee562632f8f11a425809a82d45066aa63d931",
+    "character-assets/rigs/guest-10/storybook-source-v1/generated/shadow-back-registered.svg": "c548274392b35a132039b4a2124a407fab0a50173a60a38c1c2e44a6f05f8eaa",
+    "character-assets/rigs/guest-10/storybook-source-v1/generated/neck-back-registered.svg": "551c990208dc0e23483f20eb4bcfe3e563271a90146c801aa05ea46945fc7da1",
+    "character-assets/rigs/guest-10/storybook-source-v1/generated/bag-back-registered.svg": "19a7eb1c974d587343e0dbad1fb2a324b60b5bb17a828b581ffdd4f7344c26a4",
+    "character-assets/rigs/guest-10/storybook-source-v1/generated/back-thighLeft-source.svg": "88a8f5d984f3e10f6989b801683f7d089ffc52025a859608974bb60bbe064df5",
+    "character-assets/rigs/guest-10/storybook-source-v1/generated/back-calfLeft-source.svg": "3c4008e048fc0a192694b96275425ccfb3f33f4453e68d1e4e2ad474d1c68f9e",
+    "character-assets/rigs/guest-10/storybook-source-v1/generated/back-shoeLeft-source.svg": "15dc1d00efc3e3c84b7de89ec8c31ebb7d63b22a605d1bbd8835f4a652b09ccc",
+    "character-assets/rigs/guest-10/storybook-source-v1/generated/back-thighRight-source.svg": "63d472d13f758a3560c0482b85927ea481c2aff5129841922ff514d57b3239c4",
+    "character-assets/rigs/guest-10/storybook-source-v1/generated/back-calfRight-source.svg": "29358441a0dcb46987e60554449c44ec81b6105ae42497e17d88fa5a7aa635d5",
+    "character-assets/rigs/guest-10/storybook-source-v1/generated/back-shoeRight-source.svg": "8575777faba363cdbbd54eb0f72995a915a7b20d4fec23859931f25cbe42ccd0",
+    "character-assets/rigs/guest-10/storybook-source-v1/generated/skirt-back-registered.svg": "596ba0c68c18ef688bace0b3c19909cfb48440be3777b373ed1b5ac0a8149028",
+    "character-assets/rigs/guest-10/storybook-source-v1/generated/torso-back-registered.svg": "ced9b4fb56cf123a47a622e20f9efad2b71c1e6bbd70ef641e9ef07b6593e1bc",
+    "character-assets/rigs/guest-10/storybook-source-v1/generated/armLeft-back-registered.svg": "8513e05f0537a6d3ca19c2b95a8a7d6398cce4e74fb08c655639011e7ee55519",
+    "character-assets/rigs/guest-10/storybook-source-v1/generated/armRight-back-registered.svg": "26d1fa5e2acecca09e4207bb9533a107ea01008bccb11c33c897af0cb788eeca",
+    "character-assets/rigs/guest-10/storybook-source-v1/generated/head-back-above-body.svg": "eabec77ea815432d7fb5e20b15f0799738d753ebbe0d3390c8a03668aae08584"
+  },
+  "directions": [
+    {
+      "direction": "front",
+      "bones": {
+        "root": {
+          "parent": null,
+          "pivot": [
+            96,
+            270
+          ]
+        },
+        "spine": {
+          "parent": "root",
+          "pivot": [
+            96,
+            171
+          ]
+        },
+        "pelvis": {
+          "pivot": [
+            96,
+            207
+          ],
+          "parent": "spine"
+        },
+        "neck": {
+          "pivot": [
+            96,
+            126
+          ],
+          "parent": "spine"
+        },
+        "head": {
+          "parent": "neck",
+          "pivot": [
+            96,
+            126
+          ]
+        },
+        "upperArmLeft": {
+          "pivot": [
+            118,
+            140
+          ],
+          "parent": "spine"
+        },
+        "forearmLeft": {
+          "pivot": [
+            129,
+            170
+          ],
+          "parent": "upperArmLeft"
+        },
+        "handLeft": {
+          "pivot": [
+            132,
+            195
+          ],
+          "parent": "forearmLeft"
+        },
+        "upperArmRight": {
+          "pivot": [
+            74,
+            140
+          ],
+          "parent": "spine"
+        },
+        "forearmRight": {
+          "pivot": [
+            63,
+            170
+          ],
+          "parent": "upperArmRight"
+        },
+        "handRight": {
+          "pivot": [
+            60,
+            195
+          ],
+          "parent": "forearmRight"
+        },
+        "thighLeft": {
+          "pivot": [
+            109,
+            207
+          ],
+          "parent": "pelvis"
+        },
+        "calfLeft": {
+          "pivot": [
+            108,
+            236
+          ],
+          "parent": "thighLeft"
+        },
+        "shoeLeft": {
+          "pivot": [
+            108,
+            260
+          ],
+          "parent": "calfLeft"
+        },
+        "thighRight": {
+          "pivot": [
+            83,
+            207
+          ],
+          "parent": "pelvis"
+        },
+        "calfRight": {
+          "pivot": [
+            84,
+            236
+          ],
+          "parent": "thighRight"
+        },
+        "shoeRight": {
+          "pivot": [
+            84,
+            260
+          ],
+          "parent": "calfRight"
+        }
+      },
+      "restPose": {
+        "rotations": {}
+      },
+      "bindings": [
+        {
+          "name": "headBehind",
+          "source": "character-assets/rigs/guest-10/storybook-source-v1/generated/head-front-behind-body.svg",
+          "registeredSource": "character-assets/rigs/guest-10/canonical-binding-v1/generated/registered/front-headBehind.svg",
+          "priority": 1,
+          "parent": "head",
+          "pivot": [
+            96,
+            126
+          ],
+          "mirrored": false
+        },
+        {
+          "name": "shadow-front",
+          "source": "character-assets/rigs/guest-10/storybook-source-v1/generated/shadow-front-registered.svg",
+          "registeredSource": "character-assets/rigs/guest-10/canonical-binding-v1/generated/registered/front-shadow-front.svg",
+          "priority": 0,
+          "parent": "root",
+          "pivot": [
+            96,
+            270
+          ],
+          "mirrored": false
+        },
+        {
+          "name": "neck-front",
+          "source": "character-assets/rigs/guest-10/storybook-source-v1/generated/neck-front-registered.svg",
+          "registeredSource": "character-assets/rigs/guest-10/canonical-binding-v1/generated/registered/front-neck-front.svg",
+          "priority": 4,
+          "parent": "neck",
+          "pivot": [
+            96,
+            126
+          ],
+          "mirrored": false
+        },
+        {
+          "name": "bag-front",
+          "source": "character-assets/rigs/guest-10/storybook-source-v1/generated/bag-front-registered.svg",
+          "registeredSource": "character-assets/rigs/guest-10/canonical-binding-v1/generated/registered/front-bag-front.svg",
+          "priority": 7,
+          "parent": "handLeft",
+          "pivot": [
+            132,
+            195
+          ],
+          "registration": {
+            "matrix": [
+              1,
+              0,
+              0,
+              1,
+              5,
+              14.581394999999986
+            ],
+            "sourcePivot": [
+              127,
+              180.418605
+            ],
+            "pivot": [
+              132,
+              195
+            ],
+            "sourceEnd": [
+              127,
+              192.418605
+            ],
+            "targetEnd": [
+              132,
+              207
+            ],
+            "sourceLength": 12,
+            "targetLength": 12,
+            "parent": "forearmLeft"
+          },
+          "mirrored": false
+        },
+        {
+          "name": "thighLeft",
+          "source": "character-assets/rigs/guest-10/storybook-source-v1/generated/front-thighLeft-source.svg",
+          "registeredSource": "character-assets/rigs/guest-10/canonical-binding-v1/generated/registered/front-thighLeft.svg",
+          "priority": 3,
+          "parent": "thighLeft",
+          "pivot": [
+            109,
+            207
+          ],
+          "registration": {
+            "matrix": [
+              0.9994059993535875,
+              0.03446227583977888,
+              -0.03143274902053197,
+              0.911549721595427,
+              9.102437849096436,
+              28.20225912425863
+            ],
+            "sourcePivot": [
+              106,
+              192.139535
+            ],
+            "pivot": [
+              109,
+              207
+            ],
+            "sourceEnd": [
+              106,
+              223.953488
+            ],
+            "targetEnd": [
+              108,
+              236
+            ],
+            "sourceLength": 31.813952999999998,
+            "targetLength": 29.017236257093817,
+            "parent": "pelvis"
+          },
+          "mirrored": false
+        },
+        {
+          "name": "calfLeft",
+          "source": "character-assets/rigs/guest-10/storybook-source-v1/generated/front-calfLeft-source.svg",
+          "registeredSource": "character-assets/rigs/guest-10/canonical-binding-v1/generated/registered/front-calfLeft.svg",
+          "priority": 3,
+          "parent": "calfLeft",
+          "pivot": [
+            108,
+            236
+          ],
+          "registration": {
+            "matrix": [
+              1,
+              0,
+              0,
+              0.868686867955651,
+              2,
+              41.45454594153654
+            ],
+            "sourcePivot": [
+              106,
+              223.953488
+            ],
+            "pivot": [
+              108,
+              236
+            ],
+            "sourceEnd": [
+              106,
+              251.581395
+            ],
+            "targetEnd": [
+              108,
+              260
+            ],
+            "sourceLength": 27.627906999999993,
+            "targetLength": 24,
+            "parent": "thighLeft"
+          },
+          "mirrored": false
+        },
+        {
+          "name": "shoeLeft",
+          "source": "character-assets/rigs/guest-10/storybook-source-v1/generated/front-shoeLeft-source.svg",
+          "registeredSource": "character-assets/rigs/guest-10/canonical-binding-v1/generated/registered/front-shoeLeft.svg",
+          "priority": 3,
+          "parent": "shoeLeft",
+          "pivot": [
+            108,
+            260
+          ],
+          "registration": {
+            "matrix": [
+              1,
+              0,
+              0,
+              0.542929282646541,
+              2,
+              123.40909368543393
+            ],
+            "sourcePivot": [
+              106,
+              251.581395
+            ],
+            "pivot": [
+              108,
+              260
+            ],
+            "sourceEnd": [
+              106,
+              270
+            ],
+            "targetEnd": [
+              108,
+              270
+            ],
+            "sourceLength": 18.418605000000014,
+            "targetLength": 10,
+            "parent": "calfLeft"
+          },
+          "mirrored": false
+        },
+        {
+          "name": "thighRight",
+          "source": "character-assets/rigs/guest-10/storybook-source-v1/generated/front-thighRight-source.svg",
+          "registeredSource": "character-assets/rigs/guest-10/canonical-binding-v1/generated/registered/front-thighRight.svg",
+          "priority": 3,
+          "parent": "thighRight",
+          "pivot": [
+            83,
+            207
+          ],
+          "registration": {
+            "matrix": [
+              0.9994059993535875,
+              -0.03446227583977888,
+              0.03143274902053197,
+              0.911549721595427,
+              -8.988389724985243,
+              34.81901608549617
+            ],
+            "sourcePivot": [
+              86,
+              192.139535
+            ],
+            "pivot": [
+              83,
+              207
+            ],
+            "sourceEnd": [
+              86,
+              223.953488
+            ],
+            "targetEnd": [
+              84,
+              236
+            ],
+            "sourceLength": 31.813952999999998,
+            "targetLength": 29.017236257093817,
+            "parent": "pelvis"
+          },
+          "mirrored": false
+        },
+        {
+          "name": "calfRight",
+          "source": "character-assets/rigs/guest-10/storybook-source-v1/generated/front-calfRight-source.svg",
+          "registeredSource": "character-assets/rigs/guest-10/canonical-binding-v1/generated/registered/front-calfRight.svg",
+          "priority": 3,
+          "parent": "calfRight",
+          "pivot": [
+            84,
+            236
+          ],
+          "registration": {
+            "matrix": [
+              1,
+              0,
+              0,
+              0.868686867955651,
+              -2,
+              41.45454594153654
+            ],
+            "sourcePivot": [
+              86,
+              223.953488
+            ],
+            "pivot": [
+              84,
+              236
+            ],
+            "sourceEnd": [
+              86,
+              251.581395
+            ],
+            "targetEnd": [
+              84,
+              260
+            ],
+            "sourceLength": 27.627906999999993,
+            "targetLength": 24,
+            "parent": "thighRight"
+          },
+          "mirrored": false
+        },
+        {
+          "name": "shoeRight",
+          "source": "character-assets/rigs/guest-10/storybook-source-v1/generated/front-shoeRight-source.svg",
+          "registeredSource": "character-assets/rigs/guest-10/canonical-binding-v1/generated/registered/front-shoeRight.svg",
+          "priority": 3,
+          "parent": "shoeRight",
+          "pivot": [
+            84,
+            260
+          ],
+          "registration": {
+            "matrix": [
+              1,
+              0,
+              0,
+              0.542929282646541,
+              -2,
+              123.40909368543393
+            ],
+            "sourcePivot": [
+              86,
+              251.581395
+            ],
+            "pivot": [
+              84,
+              260
+            ],
+            "sourceEnd": [
+              86,
+              270
+            ],
+            "targetEnd": [
+              84,
+              270
+            ],
+            "sourceLength": 18.418605000000014,
+            "targetLength": 10,
+            "parent": "calfRight"
+          },
+          "mirrored": false
+        },
+        {
+          "name": "skirt-front",
+          "source": "character-assets/rigs/guest-10/storybook-source-v1/generated/skirt-front-registered.svg",
+          "registeredSource": "character-assets/rigs/guest-10/canonical-binding-v1/generated/registered/front-skirt-front.svg",
+          "priority": 5,
+          "parent": "pelvis",
+          "pivot": [
+            96,
+            207
+          ],
+          "mirrored": false
+        },
+        {
+          "name": "torso-front",
+          "source": "character-assets/rigs/guest-10/storybook-source-v1/generated/torso-front-registered.svg",
+          "registeredSource": "character-assets/rigs/guest-10/canonical-binding-v1/generated/registered/front-torso-front.svg",
+          "priority": 6,
+          "parent": "spine",
+          "pivot": [
+            96,
+            171
+          ],
+          "mirrored": false
+        },
+        {
+          "name": "upperArmLeft",
+          "source": "character-assets/rigs/guest-10/storybook-source-v1/generated/armLeft-front-registered.svg",
+          "registeredSource": "character-assets/rigs/guest-10/canonical-binding-v1/generated/registered/front-upperArmLeft.svg",
+          "priority": 8,
+          "parent": "upperArmLeft",
+          "pivot": [
+            118,
+            140
+          ],
+          "registration": {
+            "matrix": [
+              1.0103016834285123,
+              -0.01804535715576272,
+              0.1359274675584732,
+              1.2666707199046652,
+              -20.832157873503572,
+              -31.2392039207636
+            ],
+            "sourcePivot": [
+              119,
+              136.883721
+            ],
+            "pivot": [
+              118,
+              140
+            ],
+            "sourceEnd": [
+              127,
+              180.418605
+            ],
+            "targetEnd": [
+              132,
+              195
+            ],
+            "sourceLength": 44.26382411059235,
+            "targetLength": 56.753854494650845,
+            "breadth": 1,
+            "sourceClip": [
+              0,
+              172
+            ],
+            "sourceBone": "upperArmLeft",
+            "continuousArm": true
+          },
+          "mirrored": false
+        },
+        {
+          "name": "forearmLeft",
+          "source": "character-assets/rigs/guest-10/storybook-source-v1/generated/armLeft-front-registered.svg",
+          "registeredSource": "character-assets/rigs/guest-10/canonical-binding-v1/generated/registered/front-forearmLeft.svg",
+          "priority": 8,
+          "parent": "forearmLeft",
+          "pivot": [
+            129,
+            170
+          ],
+          "registration": {
+            "matrix": [
+              1.0103016834285123,
+              -0.01804535715576272,
+              0.1359274675584732,
+              1.2666707199046652,
+              -20.832157873503572,
+              -31.2392039207636
+            ],
+            "sourcePivot": [
+              119,
+              136.883721
+            ],
+            "pivot": [
+              118,
+              140
+            ],
+            "sourceEnd": [
+              127,
+              180.418605
+            ],
+            "targetEnd": [
+              132,
+              195
+            ],
+            "sourceLength": 44.26382411059235,
+            "targetLength": 56.753854494650845,
+            "breadth": 1,
+            "sourceClip": [
+              168,
+              29
+            ],
+            "sourceBone": "upperArmLeft",
+            "continuousArm": true
+          },
+          "mirrored": false
+        },
+        {
+          "name": "handLeft",
+          "source": "character-assets/rigs/guest-10/storybook-source-v1/generated/armLeft-front-registered.svg",
+          "registeredSource": "character-assets/rigs/guest-10/canonical-binding-v1/generated/registered/front-handLeft.svg",
+          "priority": 8,
+          "parent": "handLeft",
+          "pivot": [
+            132,
+            195
+          ],
+          "registration": {
+            "matrix": [
+              1.0103016834285123,
+              -0.01804535715576272,
+              0.1359274675584732,
+              1.2666707199046652,
+              -20.832157873503572,
+              -31.2392039207636
+            ],
+            "sourcePivot": [
+              119,
+              136.883721
+            ],
+            "pivot": [
+              118,
+              140
+            ],
+            "sourceEnd": [
+              127,
+              180.418605
+            ],
+            "targetEnd": [
+              132,
+              195
+            ],
+            "sourceLength": 44.26382411059235,
+            "targetLength": 56.753854494650845,
+            "breadth": 1,
+            "sourceClip": [
+              193,
+              95
+            ],
+            "sourceBone": "upperArmLeft",
+            "continuousArm": true
+          },
+          "mirrored": false
+        },
+        {
+          "name": "upperArmRight",
+          "source": "character-assets/rigs/guest-10/storybook-source-v1/generated/armRight-front-registered.svg",
+          "registeredSource": "character-assets/rigs/guest-10/canonical-binding-v1/generated/registered/front-upperArmRight.svg",
+          "priority": 8,
+          "parent": "upperArmRight",
+          "pivot": [
+            74,
+            140
+          ],
+          "registration": {
+            "matrix": [
+              1.0103016834285123,
+              0.01804535715576272,
+              -0.1359274675584732,
+              1.2666707199046652,
+              18.854234655229202,
+              -34.70391249467002
+            ],
+            "sourcePivot": [
+              73,
+              136.883721
+            ],
+            "pivot": [
+              74,
+              140
+            ],
+            "sourceEnd": [
+              65,
+              180.418605
+            ],
+            "targetEnd": [
+              60,
+              195
+            ],
+            "sourceLength": 44.26382411059235,
+            "targetLength": 56.753854494650845,
+            "breadth": 1,
+            "sourceClip": [
+              0,
+              172
+            ],
+            "sourceBone": "upperArmRight",
+            "continuousArm": true
+          },
+          "mirrored": false
+        },
+        {
+          "name": "forearmRight",
+          "source": "character-assets/rigs/guest-10/storybook-source-v1/generated/armRight-front-registered.svg",
+          "registeredSource": "character-assets/rigs/guest-10/canonical-binding-v1/generated/registered/front-forearmRight.svg",
+          "priority": 8,
+          "parent": "forearmRight",
+          "pivot": [
+            63,
+            170
+          ],
+          "registration": {
+            "matrix": [
+              1.0103016834285123,
+              0.01804535715576272,
+              -0.1359274675584732,
+              1.2666707199046652,
+              18.854234655229202,
+              -34.70391249467002
+            ],
+            "sourcePivot": [
+              73,
+              136.883721
+            ],
+            "pivot": [
+              74,
+              140
+            ],
+            "sourceEnd": [
+              65,
+              180.418605
+            ],
+            "targetEnd": [
+              60,
+              195
+            ],
+            "sourceLength": 44.26382411059235,
+            "targetLength": 56.753854494650845,
+            "breadth": 1,
+            "sourceClip": [
+              168,
+              29
+            ],
+            "sourceBone": "upperArmRight",
+            "continuousArm": true
+          },
+          "mirrored": false
+        },
+        {
+          "name": "handRight",
+          "source": "character-assets/rigs/guest-10/storybook-source-v1/generated/armRight-front-registered.svg",
+          "registeredSource": "character-assets/rigs/guest-10/canonical-binding-v1/generated/registered/front-handRight.svg",
+          "priority": 8,
+          "parent": "handRight",
+          "pivot": [
+            60,
+            195
+          ],
+          "registration": {
+            "matrix": [
+              1.0103016834285123,
+              0.01804535715576272,
+              -0.1359274675584732,
+              1.2666707199046652,
+              18.854234655229202,
+              -34.70391249467002
+            ],
+            "sourcePivot": [
+              73,
+              136.883721
+            ],
+            "pivot": [
+              74,
+              140
+            ],
+            "sourceEnd": [
+              65,
+              180.418605
+            ],
+            "targetEnd": [
+              60,
+              195
+            ],
+            "sourceLength": 44.26382411059235,
+            "targetLength": 56.753854494650845,
+            "breadth": 1,
+            "sourceClip": [
+              193,
+              95
+            ],
+            "sourceBone": "upperArmRight",
+            "continuousArm": true
+          },
+          "mirrored": false
+        },
+        {
+          "name": "headAbove",
+          "source": "character-assets/rigs/guest-10/storybook-source-v1/generated/head-front-above-body.svg",
+          "registeredSource": "character-assets/rigs/guest-10/canonical-binding-v1/generated/registered/front-headAbove.svg",
+          "priority": 9,
+          "parent": "head",
+          "pivot": [
+            96,
+            126
+          ],
+          "mirrored": false
+        }
+      ],
+      "connections": [
+        {
+          "a": "neck-front",
+          "b": "torso-front",
+          "pixelsA": 369,
+          "pixelsB": 2221,
+          "overlap": 231,
+          "adjacent": 16,
+          "connected": true
+        },
+        {
+          "a": "torso-front",
+          "b": "upperArmLeft",
+          "pixelsA": 2221,
+          "pixelsB": 313,
+          "overlap": 45,
+          "adjacent": 17,
+          "connected": true
+        },
+        {
+          "a": "upperArmLeft",
+          "b": "forearmLeft",
+          "pixelsA": 313,
+          "pixelsB": 211,
+          "overlap": 36,
+          "adjacent": 10,
+          "connected": true
+        },
+        {
+          "a": "forearmLeft",
+          "b": "handLeft",
+          "pixelsA": 211,
+          "pixelsB": 52,
+          "overlap": 37,
+          "adjacent": 9,
+          "connected": true
+        },
+        {
+          "a": "thighLeft",
+          "b": "calfLeft",
+          "pixelsA": 369,
+          "pixelsB": 318,
+          "overlap": 54,
+          "adjacent": 11,
+          "connected": true
+        },
+        {
+          "a": "calfLeft",
+          "b": "shoeLeft",
+          "pixelsA": 318,
+          "pixelsB": 98,
+          "overlap": 39,
+          "adjacent": 7,
+          "connected": true
+        },
+        {
+          "a": "torso-front",
+          "b": "upperArmRight",
+          "pixelsA": 2221,
+          "pixelsB": 347,
+          "overlap": 60,
+          "adjacent": 19,
+          "connected": true
+        },
+        {
+          "a": "upperArmRight",
+          "b": "forearmRight",
+          "pixelsA": 347,
+          "pixelsB": 237,
+          "overlap": 39,
+          "adjacent": 9,
+          "connected": true
+        },
+        {
+          "a": "forearmRight",
+          "b": "handRight",
+          "pixelsA": 237,
+          "pixelsB": 63,
+          "overlap": 40,
+          "adjacent": 10,
+          "connected": true
+        },
+        {
+          "a": "thighRight",
+          "b": "calfRight",
+          "pixelsA": 395,
+          "pixelsB": 358,
+          "overlap": 60,
+          "adjacent": 11,
+          "connected": true
+        },
+        {
+          "a": "calfRight",
+          "b": "shoeRight",
+          "pixelsA": 358,
+          "pixelsB": 115,
+          "overlap": 45,
+          "adjacent": 9,
+          "connected": true
+        }
+      ],
+      "nearSide": null,
+      "accessoryRule": "Body-side ownership sets depth order; no direction image is mirrored."
+    },
+    {
+      "direction": "left",
+      "bones": {
+        "root": {
+          "parent": null,
+          "pivot": [
+            96,
+            270
+          ]
+        },
+        "spine": {
+          "parent": "root",
+          "pivot": [
+            96,
+            171
+          ]
+        },
+        "pelvis": {
+          "pivot": [
+            96,
+            207
+          ],
+          "parent": "spine"
+        },
+        "neck": {
+          "pivot": [
+            96,
+            126
+          ],
+          "parent": "spine"
+        },
+        "head": {
+          "parent": "neck",
+          "pivot": [
+            96,
+            126
+          ]
+        },
+        "upperArmLeft": {
+          "pivot": [
+            103,
+            140
+          ],
+          "parent": "spine"
+        },
+        "forearmLeft": {
+          "pivot": [
+            106,
+            170
+          ],
+          "parent": "upperArmLeft"
+        },
+        "handLeft": {
+          "pivot": [
+            106,
+            195
+          ],
+          "parent": "forearmLeft"
+        },
+        "upperArmRight": {
+          "pivot": [
+            88,
+            140
+          ],
+          "parent": "spine"
+        },
+        "forearmRight": {
+          "pivot": [
+            88,
+            170
+          ],
+          "parent": "upperArmRight"
+        },
+        "handRight": {
+          "pivot": [
+            87,
+            195
+          ],
+          "parent": "forearmRight"
+        },
+        "thighLeft": {
+          "pivot": [
+            95,
+            207
+          ],
+          "parent": "pelvis"
+        },
+        "calfLeft": {
+          "pivot": [
+            95,
+            236
+          ],
+          "parent": "thighLeft"
+        },
+        "shoeLeft": {
+          "pivot": [
+            95,
+            260
+          ],
+          "parent": "calfLeft"
+        },
+        "thighRight": {
+          "pivot": [
+            102,
+            207
+          ],
+          "parent": "pelvis"
+        },
+        "calfRight": {
+          "pivot": [
+            102,
+            236
+          ],
+          "parent": "thighRight"
+        },
+        "shoeRight": {
+          "pivot": [
+            102,
+            260
+          ],
+          "parent": "calfRight"
+        }
+      },
+      "restPose": {
+        "rotations": {}
+      },
+      "bindings": [
+        {
+          "name": "headBehind",
+          "source": "character-assets/rigs/guest-10/storybook-source-v1/generated/head-left-behind-body.svg",
+          "registeredSource": "character-assets/rigs/guest-10/canonical-binding-v1/generated/registered/left-headBehind.svg",
+          "priority": 1,
+          "parent": "head",
+          "pivot": [
+            96,
+            126
+          ],
+          "mirrored": false
+        },
+        {
+          "name": "shadow-left",
+          "source": "character-assets/rigs/guest-10/storybook-source-v1/generated/shadow-left-registered.svg",
+          "registeredSource": "character-assets/rigs/guest-10/canonical-binding-v1/generated/registered/left-shadow-left.svg",
+          "priority": 0,
+          "parent": "root",
+          "pivot": [
+            96,
+            270
+          ],
+          "mirrored": false
+        },
+        {
+          "name": "upperArmLeft",
+          "source": "character-assets/rigs/guest-10/storybook-source-v1/generated/armRight-left-registered.svg",
+          "registeredSource": "character-assets/rigs/guest-10/canonical-binding-v1/generated/registered/left-upperArmLeft.svg",
+          "priority": 8,
+          "parent": "upperArmLeft",
+          "pivot": [
+            103,
+            140
+          ],
+          "registration": {
+            "matrix": [
+              1.647550918086061,
+              -0.08986641371378515,
+              0.06891025596852399,
+              1.263354692756273,
+              -74.48288589681226,
+              -23.76631708848435
+            ],
+            "sourcePivot": [
+              102,
+              136.883721
+            ],
+            "pivot": [
+              103,
+              140
+            ],
+            "sourceEnd": [
+              102,
+              180.418605
+            ],
+            "targetEnd": [
+              106,
+              195
+            ],
+            "sourceLength": 43.534884000000005,
+            "targetLength": 55.08175741568164,
+            "breadth": 1.65,
+            "sourceClip": [
+              0,
+              172
+            ],
+            "sourceBone": "upperArmRight",
+            "continuousArm": true
+          },
+          "mirrored": false
+        },
+        {
+          "name": "forearmLeft",
+          "source": "character-assets/rigs/guest-10/storybook-source-v1/generated/armRight-left-registered.svg",
+          "registeredSource": "character-assets/rigs/guest-10/canonical-binding-v1/generated/registered/left-forearmLeft.svg",
+          "priority": 8,
+          "parent": "forearmLeft",
+          "pivot": [
+            106,
+            170
+          ],
+          "registration": {
+            "matrix": [
+              1.647550918086061,
+              -0.08986641371378515,
+              0.06891025596852399,
+              1.263354692756273,
+              -74.48288589681226,
+              -23.76631708848435
+            ],
+            "sourcePivot": [
+              102,
+              136.883721
+            ],
+            "pivot": [
+              103,
+              140
+            ],
+            "sourceEnd": [
+              102,
+              180.418605
+            ],
+            "targetEnd": [
+              106,
+              195
+            ],
+            "sourceLength": 43.534884000000005,
+            "targetLength": 55.08175741568164,
+            "breadth": 1.65,
+            "sourceClip": [
+              168,
+              29
+            ],
+            "sourceBone": "upperArmRight",
+            "continuousArm": true
+          },
+          "mirrored": false
+        },
+        {
+          "name": "handLeft",
+          "source": "character-assets/rigs/guest-10/storybook-source-v1/generated/armRight-left-registered.svg",
+          "registeredSource": "character-assets/rigs/guest-10/canonical-binding-v1/generated/registered/left-handLeft.svg",
+          "priority": 8,
+          "parent": "handLeft",
+          "pivot": [
+            106,
+            195
+          ],
+          "registration": {
+            "matrix": [
+              1.647550918086061,
+              -0.08986641371378515,
+              0.06891025596852399,
+              1.263354692756273,
+              -74.48288589681226,
+              -23.76631708848435
+            ],
+            "sourcePivot": [
+              102,
+              136.883721
+            ],
+            "pivot": [
+              103,
+              140
+            ],
+            "sourceEnd": [
+              102,
+              180.418605
+            ],
+            "targetEnd": [
+              106,
+              195
+            ],
+            "sourceLength": 43.534884000000005,
+            "targetLength": 55.08175741568164,
+            "breadth": 1.65,
+            "sourceClip": [
+              193,
+              95
+            ],
+            "sourceBone": "upperArmRight",
+            "continuousArm": true
+          },
+          "mirrored": false
+        },
+        {
+          "name": "neck-left",
+          "source": "character-assets/rigs/guest-10/storybook-source-v1/generated/neck-left-registered.svg",
+          "registeredSource": "character-assets/rigs/guest-10/canonical-binding-v1/generated/registered/left-neck-left.svg",
+          "priority": 4,
+          "parent": "neck",
+          "pivot": [
+            96,
+            126
+          ],
+          "mirrored": false
+        },
+        {
+          "name": "bag-left",
+          "source": "character-assets/rigs/guest-10/storybook-source-v1/generated/bag-left-registered.svg",
+          "registeredSource": "character-assets/rigs/guest-10/canonical-binding-v1/generated/registered/left-bag-left.svg",
+          "priority": 7,
+          "parent": "handLeft",
+          "pivot": [
+            106,
+            195
+          ],
+          "registration": {
+            "matrix": [
+              1,
+              0,
+              0,
+              1,
+              16,
+              14.581394999999986
+            ],
+            "sourcePivot": [
+              90,
+              180.418605
+            ],
+            "pivot": [
+              106,
+              195
+            ],
+            "sourceEnd": [
+              90,
+              192.418605
+            ],
+            "targetEnd": [
+              106,
+              207
+            ],
+            "sourceLength": 12,
+            "targetLength": 12,
+            "parent": "forearmLeft"
+          },
+          "mirrored": false
+        },
+        {
+          "name": "thighLeft",
+          "source": "character-assets/rigs/guest-10/storybook-source-v1/generated/left-thighLeft-source.svg",
+          "registeredSource": "character-assets/rigs/guest-10/canonical-binding-v1/generated/registered/left-thighLeft.svg",
+          "priority": 3,
+          "parent": "thighLeft",
+          "pivot": [
+            95,
+            207
+          ],
+          "registration": {
+            "matrix": [
+              1,
+              0,
+              0,
+              0.911549721595427,
+              1,
+              31.855260363275193
+            ],
+            "sourcePivot": [
+              94,
+              192.139535
+            ],
+            "pivot": [
+              95,
+              207
+            ],
+            "sourceEnd": [
+              94,
+              223.953488
+            ],
+            "targetEnd": [
+              95,
+              236
+            ],
+            "sourceLength": 31.813952999999998,
+            "targetLength": 29,
+            "parent": "pelvis"
+          },
+          "mirrored": false
+        },
+        {
+          "name": "calfLeft",
+          "source": "character-assets/rigs/guest-10/storybook-source-v1/generated/left-calfLeft-source.svg",
+          "registeredSource": "character-assets/rigs/guest-10/canonical-binding-v1/generated/registered/left-calfLeft.svg",
+          "priority": 3,
+          "parent": "calfLeft",
+          "pivot": [
+            95,
+            236
+          ],
+          "registration": {
+            "matrix": [
+              1,
+              0,
+              0,
+              0.868686867955651,
+              1,
+              41.45454594153654
+            ],
+            "sourcePivot": [
+              94,
+              223.953488
+            ],
+            "pivot": [
+              95,
+              236
+            ],
+            "sourceEnd": [
+              94,
+              251.581395
+            ],
+            "targetEnd": [
+              95,
+              260
+            ],
+            "sourceLength": 27.627906999999993,
+            "targetLength": 24,
+            "parent": "thighLeft"
+          },
+          "mirrored": false
+        },
+        {
+          "name": "shoeLeft",
+          "source": "character-assets/rigs/guest-10/storybook-source-v1/generated/left-shoeLeft-source.svg",
+          "registeredSource": "character-assets/rigs/guest-10/canonical-binding-v1/generated/registered/left-shoeLeft.svg",
+          "priority": 3,
+          "parent": "shoeLeft",
+          "pivot": [
+            95,
+            260
+          ],
+          "registration": {
+            "matrix": [
+              1,
+              0,
+              0,
+              0.542929282646541,
+              1,
+              123.40909368543393
+            ],
+            "sourcePivot": [
+              94,
+              251.581395
+            ],
+            "pivot": [
+              95,
+              260
+            ],
+            "sourceEnd": [
+              94,
+              270
+            ],
+            "targetEnd": [
+              95,
+              270
+            ],
+            "sourceLength": 18.418605000000014,
+            "targetLength": 10,
+            "parent": "calfLeft"
+          },
+          "mirrored": false
+        },
+        {
+          "name": "thighRight",
+          "source": "character-assets/rigs/guest-10/storybook-source-v1/generated/left-thighRight-source.svg",
+          "registeredSource": "character-assets/rigs/guest-10/canonical-binding-v1/generated/registered/left-thighRight.svg",
+          "priority": 3,
+          "parent": "thighRight",
+          "pivot": [
+            102,
+            207
+          ],
+          "registration": {
+            "matrix": [
+              1,
+              0,
+              0,
+              0.911549721595427,
+              4,
+              31.855260363275193
+            ],
+            "sourcePivot": [
+              98,
+              192.139535
+            ],
+            "pivot": [
+              102,
+              207
+            ],
+            "sourceEnd": [
+              98,
+              223.953488
+            ],
+            "targetEnd": [
+              102,
+              236
+            ],
+            "sourceLength": 31.813952999999998,
+            "targetLength": 29,
+            "parent": "pelvis"
+          },
+          "mirrored": false
+        },
+        {
+          "name": "calfRight",
+          "source": "character-assets/rigs/guest-10/storybook-source-v1/generated/left-calfRight-source.svg",
+          "registeredSource": "character-assets/rigs/guest-10/canonical-binding-v1/generated/registered/left-calfRight.svg",
+          "priority": 3,
+          "parent": "calfRight",
+          "pivot": [
+            102,
+            236
+          ],
+          "registration": {
+            "matrix": [
+              1,
+              0,
+              0,
+              0.868686867955651,
+              4,
+              41.45454594153654
+            ],
+            "sourcePivot": [
+              98,
+              223.953488
+            ],
+            "pivot": [
+              102,
+              236
+            ],
+            "sourceEnd": [
+              98,
+              251.581395
+            ],
+            "targetEnd": [
+              102,
+              260
+            ],
+            "sourceLength": 27.627906999999993,
+            "targetLength": 24,
+            "parent": "thighRight"
+          },
+          "mirrored": false
+        },
+        {
+          "name": "shoeRight",
+          "source": "character-assets/rigs/guest-10/storybook-source-v1/generated/left-shoeRight-source.svg",
+          "registeredSource": "character-assets/rigs/guest-10/canonical-binding-v1/generated/registered/left-shoeRight.svg",
+          "priority": 3,
+          "parent": "shoeRight",
+          "pivot": [
+            102,
+            260
+          ],
+          "registration": {
+            "matrix": [
+              1,
+              0,
+              0,
+              0.542929282646541,
+              4,
+              123.40909368543393
+            ],
+            "sourcePivot": [
+              98,
+              251.581395
+            ],
+            "pivot": [
+              102,
+              260
+            ],
+            "sourceEnd": [
+              98,
+              270
+            ],
+            "targetEnd": [
+              102,
+              270
+            ],
+            "sourceLength": 18.418605000000014,
+            "targetLength": 10,
+            "parent": "calfRight"
+          },
+          "mirrored": false
+        },
+        {
+          "name": "skirt-left",
+          "source": "character-assets/rigs/guest-10/storybook-source-v1/generated/skirt-left-registered.svg",
+          "registeredSource": "character-assets/rigs/guest-10/canonical-binding-v1/generated/registered/left-skirt-left.svg",
+          "priority": 5,
+          "parent": "pelvis",
+          "pivot": [
+            96,
+            207
+          ],
+          "mirrored": false
+        },
+        {
+          "name": "torso-left",
+          "source": "character-assets/rigs/guest-10/storybook-source-v1/generated/torso-left-registered.svg",
+          "registeredSource": "character-assets/rigs/guest-10/canonical-binding-v1/generated/registered/left-torso-left.svg",
+          "priority": 6,
+          "parent": "spine",
+          "pivot": [
+            96,
+            171
+          ],
+          "mirrored": false
+        },
+        {
+          "name": "upperArmRight",
+          "source": "character-assets/rigs/guest-10/storybook-source-v1/generated/armLeft-left-registered.svg",
+          "registeredSource": "character-assets/rigs/guest-10/canonical-binding-v1/generated/registered/left-upperArmRight.svg",
+          "priority": 2,
+          "parent": "upperArmRight",
+          "pivot": [
+            88,
+            140
+          ],
+          "registration": {
+            "matrix": [
+              1.6497273403269823,
+              0.029995042551399682,
+              -0.02297008532284133,
+              1.2633546927562733,
+              -57.331229878750406,
+              -35.632245116916415
+            ],
+            "sourcePivot": [
+              90,
+              136.883721
+            ],
+            "pivot": [
+              88,
+              140
+            ],
+            "sourceEnd": [
+              90,
+              180.418605
+            ],
+            "targetEnd": [
+              87,
+              195
+            ],
+            "sourceLength": 43.534884000000005,
+            "targetLength": 55.00909015790027,
+            "breadth": 1.65,
+            "sourceClip": [
+              0,
+              172
+            ],
+            "sourceBone": "upperArmLeft",
+            "continuousArm": true
+          },
+          "mirrored": false
+        },
+        {
+          "name": "forearmRight",
+          "source": "character-assets/rigs/guest-10/storybook-source-v1/generated/armLeft-left-registered.svg",
+          "registeredSource": "character-assets/rigs/guest-10/canonical-binding-v1/generated/registered/left-forearmRight.svg",
+          "priority": 2,
+          "parent": "forearmRight",
+          "pivot": [
+            88,
+            170
+          ],
+          "registration": {
+            "matrix": [
+              1.6497273403269823,
+              0.029995042551399682,
+              -0.02297008532284133,
+              1.2633546927562733,
+              -57.331229878750406,
+              -35.632245116916415
+            ],
+            "sourcePivot": [
+              90,
+              136.883721
+            ],
+            "pivot": [
+              88,
+              140
+            ],
+            "sourceEnd": [
+              90,
+              180.418605
+            ],
+            "targetEnd": [
+              87,
+              195
+            ],
+            "sourceLength": 43.534884000000005,
+            "targetLength": 55.00909015790027,
+            "breadth": 1.65,
+            "sourceClip": [
+              168,
+              29
+            ],
+            "sourceBone": "upperArmLeft",
+            "continuousArm": true
+          },
+          "mirrored": false
+        },
+        {
+          "name": "handRight",
+          "source": "character-assets/rigs/guest-10/storybook-source-v1/generated/armLeft-left-registered.svg",
+          "registeredSource": "character-assets/rigs/guest-10/canonical-binding-v1/generated/registered/left-handRight.svg",
+          "priority": 2,
+          "parent": "handRight",
+          "pivot": [
+            87,
+            195
+          ],
+          "registration": {
+            "matrix": [
+              1.6497273403269823,
+              0.029995042551399682,
+              -0.02297008532284133,
+              1.2633546927562733,
+              -57.331229878750406,
+              -35.632245116916415
+            ],
+            "sourcePivot": [
+              90,
+              136.883721
+            ],
+            "pivot": [
+              88,
+              140
+            ],
+            "sourceEnd": [
+              90,
+              180.418605
+            ],
+            "targetEnd": [
+              87,
+              195
+            ],
+            "sourceLength": 43.534884000000005,
+            "targetLength": 55.00909015790027,
+            "breadth": 1.65,
+            "sourceClip": [
+              193,
+              95
+            ],
+            "sourceBone": "upperArmLeft",
+            "continuousArm": true
+          },
+          "mirrored": false
+        },
+        {
+          "name": "headAbove",
+          "source": "character-assets/rigs/guest-10/storybook-source-v1/generated/head-left-above-body.svg",
+          "registeredSource": "character-assets/rigs/guest-10/canonical-binding-v1/generated/registered/left-headAbove.svg",
+          "priority": 9,
+          "parent": "head",
+          "pivot": [
+            96,
+            126
+          ],
+          "mirrored": false
+        }
+      ],
+      "connections": [
+        {
+          "a": "neck-left",
+          "b": "torso-left",
+          "pixelsA": 369,
+          "pixelsB": 1298,
+          "overlap": 187,
+          "adjacent": 14,
+          "connected": true
+        },
+        {
+          "a": "torso-left",
+          "b": "upperArmLeft",
+          "pixelsA": 1298,
+          "pixelsB": 400,
+          "overlap": 283,
+          "adjacent": 50,
+          "connected": true
+        },
+        {
+          "a": "upperArmLeft",
+          "b": "forearmLeft",
+          "pixelsA": 400,
+          "pixelsB": 248,
+          "overlap": 42,
+          "adjacent": 12,
+          "connected": true
+        },
+        {
+          "a": "forearmLeft",
+          "b": "handLeft",
+          "pixelsA": 248,
+          "pixelsB": 49,
+          "overlap": 35,
+          "adjacent": 9,
+          "connected": true
+        },
+        {
+          "a": "thighLeft",
+          "b": "calfLeft",
+          "pixelsA": 374,
+          "pixelsB": 302,
+          "overlap": 52,
+          "adjacent": 11,
+          "connected": true
+        },
+        {
+          "a": "calfLeft",
+          "b": "shoeLeft",
+          "pixelsA": 302,
+          "pixelsB": 122,
+          "overlap": 30,
+          "adjacent": 6,
+          "connected": true
+        },
+        {
+          "a": "torso-left",
+          "b": "upperArmRight",
+          "pixelsA": 1298,
+          "pixelsB": 422,
+          "overlap": 290,
+          "adjacent": 41,
+          "connected": true
+        },
+        {
+          "a": "upperArmRight",
+          "b": "forearmRight",
+          "pixelsA": 422,
+          "pixelsB": 266,
+          "overlap": 43,
+          "adjacent": 10,
+          "connected": true
+        },
+        {
+          "a": "forearmRight",
+          "b": "handRight",
+          "pixelsA": 266,
+          "pixelsB": 90,
+          "overlap": 43,
+          "adjacent": 10,
+          "connected": true
+        },
+        {
+          "a": "thighRight",
+          "b": "calfRight",
+          "pixelsA": 374,
+          "pixelsB": 302,
+          "overlap": 52,
+          "adjacent": 11,
+          "connected": true
+        },
+        {
+          "a": "calfRight",
+          "b": "shoeRight",
+          "pixelsA": 302,
+          "pixelsB": 122,
+          "overlap": 30,
+          "adjacent": 6,
+          "connected": true
+        }
+      ],
+      "nearSide": "Left",
+      "accessoryRule": "Body-side ownership sets depth order; no direction image is mirrored."
+    },
+    {
+      "direction": "right",
+      "bones": {
+        "root": {
+          "parent": null,
+          "pivot": [
+            96,
+            270
+          ]
+        },
+        "spine": {
+          "parent": "root",
+          "pivot": [
+            96,
+            171
+          ]
+        },
+        "pelvis": {
+          "pivot": [
+            96,
+            207
+          ],
+          "parent": "spine"
+        },
+        "neck": {
+          "pivot": [
+            96,
+            126
+          ],
+          "parent": "spine"
+        },
+        "head": {
+          "parent": "neck",
+          "pivot": [
+            96,
+            126
+          ]
+        },
+        "upperArmLeft": {
+          "pivot": [
+            104,
+            140
+          ],
+          "parent": "spine"
+        },
+        "forearmLeft": {
+          "pivot": [
+            104,
+            170
+          ],
+          "parent": "upperArmLeft"
+        },
+        "handLeft": {
+          "pivot": [
+            105,
+            195
+          ],
+          "parent": "forearmLeft"
+        },
+        "upperArmRight": {
+          "pivot": [
+            89,
+            140
+          ],
+          "parent": "spine"
+        },
+        "forearmRight": {
+          "pivot": [
+            86,
+            170
+          ],
+          "parent": "upperArmRight"
+        },
+        "handRight": {
+          "pivot": [
+            86,
+            195
+          ],
+          "parent": "forearmRight"
+        },
+        "thighLeft": {
+          "pivot": [
+            90,
+            207
+          ],
+          "parent": "pelvis"
+        },
+        "calfLeft": {
+          "pivot": [
+            90,
+            236
+          ],
+          "parent": "thighLeft"
+        },
+        "shoeLeft": {
+          "pivot": [
+            90,
+            260
+          ],
+          "parent": "calfLeft"
+        },
+        "thighRight": {
+          "pivot": [
+            97,
+            207
+          ],
+          "parent": "pelvis"
+        },
+        "calfRight": {
+          "pivot": [
+            97,
+            236
+          ],
+          "parent": "thighRight"
+        },
+        "shoeRight": {
+          "pivot": [
+            97,
+            260
+          ],
+          "parent": "calfRight"
+        }
+      },
+      "restPose": {
+        "rotations": {}
+      },
+      "bindings": [
+        {
+          "name": "headBehind",
+          "source": "character-assets/rigs/guest-10/storybook-source-v1/generated/head-right-behind-body.svg",
+          "registeredSource": "character-assets/rigs/guest-10/canonical-binding-v1/generated/registered/right-headBehind.svg",
+          "priority": 1,
+          "parent": "head",
+          "pivot": [
+            96,
+            126
+          ],
+          "mirrored": false
+        },
+        {
+          "name": "shadow-right",
+          "source": "character-assets/rigs/guest-10/storybook-source-v1/generated/shadow-right-registered.svg",
+          "registeredSource": "character-assets/rigs/guest-10/canonical-binding-v1/generated/registered/right-shadow-right.svg",
+          "priority": 0,
+          "parent": "root",
+          "pivot": [
+            96,
+            270
+          ],
+          "mirrored": false
+        },
+        {
+          "name": "upperArmRight",
+          "source": "character-assets/rigs/guest-10/storybook-source-v1/generated/armLeft-right-registered.svg",
+          "registeredSource": "character-assets/rigs/guest-10/canonical-binding-v1/generated/registered/right-upperArmRight.svg",
+          "priority": 8,
+          "parent": "upperArmRight",
+          "pivot": [
+            89,
+            140
+          ],
+          "registration": {
+            "matrix": [
+              1.647550918086061,
+              0.08986641371378515,
+              -0.06891025596852399,
+              1.263354692756273,
+              -49.84689037571147,
+              -41.02066852153108
+            ],
+            "sourcePivot": [
+              90,
+              136.883721
+            ],
+            "pivot": [
+              89,
+              140
+            ],
+            "sourceEnd": [
+              90,
+              180.418605
+            ],
+            "targetEnd": [
+              86,
+              195
+            ],
+            "sourceLength": 43.534884000000005,
+            "targetLength": 55.08175741568164,
+            "breadth": 1.65,
+            "sourceClip": [
+              0,
+              172
+            ],
+            "sourceBone": "upperArmLeft",
+            "continuousArm": true
+          },
+          "mirrored": false
+        },
+        {
+          "name": "forearmRight",
+          "source": "character-assets/rigs/guest-10/storybook-source-v1/generated/armLeft-right-registered.svg",
+          "registeredSource": "character-assets/rigs/guest-10/canonical-binding-v1/generated/registered/right-forearmRight.svg",
+          "priority": 8,
+          "parent": "forearmRight",
+          "pivot": [
+            86,
+            170
+          ],
+          "registration": {
+            "matrix": [
+              1.647550918086061,
+              0.08986641371378515,
+              -0.06891025596852399,
+              1.263354692756273,
+              -49.84689037571147,
+              -41.02066852153108
+            ],
+            "sourcePivot": [
+              90,
+              136.883721
+            ],
+            "pivot": [
+              89,
+              140
+            ],
+            "sourceEnd": [
+              90,
+              180.418605
+            ],
+            "targetEnd": [
+              86,
+              195
+            ],
+            "sourceLength": 43.534884000000005,
+            "targetLength": 55.08175741568164,
+            "breadth": 1.65,
+            "sourceClip": [
+              168,
+              29
+            ],
+            "sourceBone": "upperArmLeft",
+            "continuousArm": true
+          },
+          "mirrored": false
+        },
+        {
+          "name": "handRight",
+          "source": "character-assets/rigs/guest-10/storybook-source-v1/generated/armLeft-right-registered.svg",
+          "registeredSource": "character-assets/rigs/guest-10/canonical-binding-v1/generated/registered/right-handRight.svg",
+          "priority": 8,
+          "parent": "handRight",
+          "pivot": [
+            86,
+            195
+          ],
+          "registration": {
+            "matrix": [
+              1.647550918086061,
+              0.08986641371378515,
+              -0.06891025596852399,
+              1.263354692756273,
+              -49.84689037571147,
+              -41.02066852153108
+            ],
+            "sourcePivot": [
+              90,
+              136.883721
+            ],
+            "pivot": [
+              89,
+              140
+            ],
+            "sourceEnd": [
+              90,
+              180.418605
+            ],
+            "targetEnd": [
+              86,
+              195
+            ],
+            "sourceLength": 43.534884000000005,
+            "targetLength": 55.08175741568164,
+            "breadth": 1.65,
+            "sourceClip": [
+              193,
+              95
+            ],
+            "sourceBone": "upperArmLeft",
+            "continuousArm": true
+          },
+          "mirrored": false
+        },
+        {
+          "name": "neck-right",
+          "source": "character-assets/rigs/guest-10/storybook-source-v1/generated/neck-right-registered.svg",
+          "registeredSource": "character-assets/rigs/guest-10/canonical-binding-v1/generated/registered/right-neck-right.svg",
+          "priority": 4,
+          "parent": "neck",
+          "pivot": [
+            96,
+            126
+          ],
+          "mirrored": false
+        },
+        {
+          "name": "thighLeft",
+          "source": "character-assets/rigs/guest-10/storybook-source-v1/generated/right-thighLeft-source.svg",
+          "registeredSource": "character-assets/rigs/guest-10/canonical-binding-v1/generated/registered/right-thighLeft.svg",
+          "priority": 3,
+          "parent": "thighLeft",
+          "pivot": [
+            90,
+            207
+          ],
+          "registration": {
+            "matrix": [
+              1,
+              0,
+              0,
+              0.911549721595427,
+              -4,
+              31.855260363275193
+            ],
+            "sourcePivot": [
+              94,
+              192.139535
+            ],
+            "pivot": [
+              90,
+              207
+            ],
+            "sourceEnd": [
+              94,
+              223.953488
+            ],
+            "targetEnd": [
+              90,
+              236
+            ],
+            "sourceLength": 31.813952999999998,
+            "targetLength": 29,
+            "parent": "pelvis"
+          },
+          "mirrored": false
+        },
+        {
+          "name": "calfLeft",
+          "source": "character-assets/rigs/guest-10/storybook-source-v1/generated/right-calfLeft-source.svg",
+          "registeredSource": "character-assets/rigs/guest-10/canonical-binding-v1/generated/registered/right-calfLeft.svg",
+          "priority": 3,
+          "parent": "calfLeft",
+          "pivot": [
+            90,
+            236
+          ],
+          "registration": {
+            "matrix": [
+              1,
+              0,
+              0,
+              0.868686867955651,
+              -4,
+              41.45454594153654
+            ],
+            "sourcePivot": [
+              94,
+              223.953488
+            ],
+            "pivot": [
+              90,
+              236
+            ],
+            "sourceEnd": [
+              94,
+              251.581395
+            ],
+            "targetEnd": [
+              90,
+              260
+            ],
+            "sourceLength": 27.627906999999993,
+            "targetLength": 24,
+            "parent": "thighLeft"
+          },
+          "mirrored": false
+        },
+        {
+          "name": "shoeLeft",
+          "source": "character-assets/rigs/guest-10/storybook-source-v1/generated/right-shoeLeft-source.svg",
+          "registeredSource": "character-assets/rigs/guest-10/canonical-binding-v1/generated/registered/right-shoeLeft.svg",
+          "priority": 3,
+          "parent": "shoeLeft",
+          "pivot": [
+            90,
+            260
+          ],
+          "registration": {
+            "matrix": [
+              1,
+              0,
+              0,
+              0.542929282646541,
+              -4,
+              123.40909368543393
+            ],
+            "sourcePivot": [
+              94,
+              251.581395
+            ],
+            "pivot": [
+              90,
+              260
+            ],
+            "sourceEnd": [
+              94,
+              270
+            ],
+            "targetEnd": [
+              90,
+              270
+            ],
+            "sourceLength": 18.418605000000014,
+            "targetLength": 10,
+            "parent": "calfLeft"
+          },
+          "mirrored": false
+        },
+        {
+          "name": "thighRight",
+          "source": "character-assets/rigs/guest-10/storybook-source-v1/generated/right-thighRight-source.svg",
+          "registeredSource": "character-assets/rigs/guest-10/canonical-binding-v1/generated/registered/right-thighRight.svg",
+          "priority": 3,
+          "parent": "thighRight",
+          "pivot": [
+            97,
+            207
+          ],
+          "registration": {
+            "matrix": [
+              1,
+              0,
+              0,
+              0.911549721595427,
+              -1,
+              31.855260363275193
+            ],
+            "sourcePivot": [
+              98,
+              192.139535
+            ],
+            "pivot": [
+              97,
+              207
+            ],
+            "sourceEnd": [
+              98,
+              223.953488
+            ],
+            "targetEnd": [
+              97,
+              236
+            ],
+            "sourceLength": 31.813952999999998,
+            "targetLength": 29,
+            "parent": "pelvis"
+          },
+          "mirrored": false
+        },
+        {
+          "name": "calfRight",
+          "source": "character-assets/rigs/guest-10/storybook-source-v1/generated/right-calfRight-source.svg",
+          "registeredSource": "character-assets/rigs/guest-10/canonical-binding-v1/generated/registered/right-calfRight.svg",
+          "priority": 3,
+          "parent": "calfRight",
+          "pivot": [
+            97,
+            236
+          ],
+          "registration": {
+            "matrix": [
+              1,
+              0,
+              0,
+              0.868686867955651,
+              -1,
+              41.45454594153654
+            ],
+            "sourcePivot": [
+              98,
+              223.953488
+            ],
+            "pivot": [
+              97,
+              236
+            ],
+            "sourceEnd": [
+              98,
+              251.581395
+            ],
+            "targetEnd": [
+              97,
+              260
+            ],
+            "sourceLength": 27.627906999999993,
+            "targetLength": 24,
+            "parent": "thighRight"
+          },
+          "mirrored": false
+        },
+        {
+          "name": "shoeRight",
+          "source": "character-assets/rigs/guest-10/storybook-source-v1/generated/right-shoeRight-source.svg",
+          "registeredSource": "character-assets/rigs/guest-10/canonical-binding-v1/generated/registered/right-shoeRight.svg",
+          "priority": 3,
+          "parent": "shoeRight",
+          "pivot": [
+            97,
+            260
+          ],
+          "registration": {
+            "matrix": [
+              1,
+              0,
+              0,
+              0.542929282646541,
+              -1,
+              123.40909368543393
+            ],
+            "sourcePivot": [
+              98,
+              251.581395
+            ],
+            "pivot": [
+              97,
+              260
+            ],
+            "sourceEnd": [
+              98,
+              270
+            ],
+            "targetEnd": [
+              97,
+              270
+            ],
+            "sourceLength": 18.418605000000014,
+            "targetLength": 10,
+            "parent": "calfRight"
+          },
+          "mirrored": false
+        },
+        {
+          "name": "skirt-right",
+          "source": "character-assets/rigs/guest-10/storybook-source-v1/generated/skirt-right-registered.svg",
+          "registeredSource": "character-assets/rigs/guest-10/canonical-binding-v1/generated/registered/right-skirt-right.svg",
+          "priority": 5,
+          "parent": "pelvis",
+          "pivot": [
+            96,
+            207
+          ],
+          "mirrored": false
+        },
+        {
+          "name": "torso-right",
+          "source": "character-assets/rigs/guest-10/storybook-source-v1/generated/torso-right-registered.svg",
+          "registeredSource": "character-assets/rigs/guest-10/canonical-binding-v1/generated/registered/right-torso-right.svg",
+          "priority": 6,
+          "parent": "spine",
+          "pivot": [
+            96,
+            171
+          ],
+          "mirrored": false
+        },
+        {
+          "name": "bag-right",
+          "source": "character-assets/rigs/guest-10/storybook-source-v1/generated/bag-right-registered.svg",
+          "registeredSource": "character-assets/rigs/guest-10/canonical-binding-v1/generated/registered/right-bag-right.svg",
+          "priority": 4,
+          "parent": "handLeft",
+          "pivot": [
+            105,
+            195
+          ],
+          "registration": {
+            "matrix": [
+              1,
+              0,
+              0,
+              1,
+              15,
+              14.581394999999986
+            ],
+            "sourcePivot": [
+              90,
+              180.418605
+            ],
+            "pivot": [
+              105,
+              195
+            ],
+            "sourceEnd": [
+              90,
+              192.418605
+            ],
+            "targetEnd": [
+              105,
+              207
+            ],
+            "sourceLength": 12,
+            "targetLength": 12,
+            "parent": "forearmLeft"
+          },
+          "mirrored": false
+        },
+        {
+          "name": "upperArmLeft",
+          "source": "character-assets/rigs/guest-10/storybook-source-v1/generated/armRight-right-registered.svg",
+          "registeredSource": "character-assets/rigs/guest-10/canonical-binding-v1/generated/registered/right-upperArmLeft.svg",
+          "priority": 2,
+          "parent": "upperArmLeft",
+          "pivot": [
+            104,
+            140
+          ],
+          "registration": {
+            "matrix": [
+              1.6497273403269823,
+              -0.029995042551399682,
+              0.02297008532284133,
+              1.2633546927562733,
+              -67.4164194640302,
+              -29.87319694704768
+            ],
+            "sourcePivot": [
+              102,
+              136.883721
+            ],
+            "pivot": [
+              104,
+              140
+            ],
+            "sourceEnd": [
+              102,
+              180.418605
+            ],
+            "targetEnd": [
+              105,
+              195
+            ],
+            "sourceLength": 43.534884000000005,
+            "targetLength": 55.00909015790027,
+            "breadth": 1.65,
+            "sourceClip": [
+              0,
+              172
+            ],
+            "sourceBone": "upperArmRight",
+            "continuousArm": true
+          },
+          "mirrored": false
+        },
+        {
+          "name": "forearmLeft",
+          "source": "character-assets/rigs/guest-10/storybook-source-v1/generated/armRight-right-registered.svg",
+          "registeredSource": "character-assets/rigs/guest-10/canonical-binding-v1/generated/registered/right-forearmLeft.svg",
+          "priority": 2,
+          "parent": "forearmLeft",
+          "pivot": [
+            104,
+            170
+          ],
+          "registration": {
+            "matrix": [
+              1.6497273403269823,
+              -0.029995042551399682,
+              0.02297008532284133,
+              1.2633546927562733,
+              -67.4164194640302,
+              -29.87319694704768
+            ],
+            "sourcePivot": [
+              102,
+              136.883721
+            ],
+            "pivot": [
+              104,
+              140
+            ],
+            "sourceEnd": [
+              102,
+              180.418605
+            ],
+            "targetEnd": [
+              105,
+              195
+            ],
+            "sourceLength": 43.534884000000005,
+            "targetLength": 55.00909015790027,
+            "breadth": 1.65,
+            "sourceClip": [
+              168,
+              29
+            ],
+            "sourceBone": "upperArmRight",
+            "continuousArm": true
+          },
+          "mirrored": false
+        },
+        {
+          "name": "handLeft",
+          "source": "character-assets/rigs/guest-10/storybook-source-v1/generated/armRight-right-registered.svg",
+          "registeredSource": "character-assets/rigs/guest-10/canonical-binding-v1/generated/registered/right-handLeft.svg",
+          "priority": 2,
+          "parent": "handLeft",
+          "pivot": [
+            105,
+            195
+          ],
+          "registration": {
+            "matrix": [
+              1.6497273403269823,
+              -0.029995042551399682,
+              0.02297008532284133,
+              1.2633546927562733,
+              -67.4164194640302,
+              -29.87319694704768
+            ],
+            "sourcePivot": [
+              102,
+              136.883721
+            ],
+            "pivot": [
+              104,
+              140
+            ],
+            "sourceEnd": [
+              102,
+              180.418605
+            ],
+            "targetEnd": [
+              105,
+              195
+            ],
+            "sourceLength": 43.534884000000005,
+            "targetLength": 55.00909015790027,
+            "breadth": 1.65,
+            "sourceClip": [
+              193,
+              95
+            ],
+            "sourceBone": "upperArmRight",
+            "continuousArm": true
+          },
+          "mirrored": false
+        },
+        {
+          "name": "headAbove",
+          "source": "character-assets/rigs/guest-10/storybook-source-v1/generated/head-right-above-body.svg",
+          "registeredSource": "character-assets/rigs/guest-10/canonical-binding-v1/generated/registered/right-headAbove.svg",
+          "priority": 9,
+          "parent": "head",
+          "pivot": [
+            96,
+            126
+          ],
+          "mirrored": false
+        }
+      ],
+      "connections": [
+        {
+          "a": "neck-right",
+          "b": "torso-right",
+          "pixelsA": 369,
+          "pixelsB": 1259,
+          "overlap": 153,
+          "adjacent": 15,
+          "connected": true
+        },
+        {
+          "a": "torso-right",
+          "b": "upperArmLeft",
+          "pixelsA": 1259,
+          "pixelsB": 418,
+          "overlap": 211,
+          "adjacent": 36,
+          "connected": true
+        },
+        {
+          "a": "upperArmLeft",
+          "b": "forearmLeft",
+          "pixelsA": 418,
+          "pixelsB": 310,
+          "overlap": 51,
+          "adjacent": 14,
+          "connected": true
+        },
+        {
+          "a": "forearmLeft",
+          "b": "handLeft",
+          "pixelsA": 310,
+          "pixelsB": 103,
+          "overlap": 52,
+          "adjacent": 13,
+          "connected": true
+        },
+        {
+          "a": "thighLeft",
+          "b": "calfLeft",
+          "pixelsA": 371,
+          "pixelsB": 308,
+          "overlap": 48,
+          "adjacent": 10,
+          "connected": true
+        },
+        {
+          "a": "calfLeft",
+          "b": "shoeLeft",
+          "pixelsA": 308,
+          "pixelsB": 120,
+          "overlap": 33,
+          "adjacent": 7,
+          "connected": true
+        },
+        {
+          "a": "torso-right",
+          "b": "upperArmRight",
+          "pixelsA": 1259,
+          "pixelsB": 432,
+          "overlap": 349,
+          "adjacent": 48,
+          "connected": true
+        },
+        {
+          "a": "upperArmRight",
+          "b": "forearmRight",
+          "pixelsA": 432,
+          "pixelsB": 280,
+          "overlap": 42,
+          "adjacent": 11,
+          "connected": true
+        },
+        {
+          "a": "forearmRight",
+          "b": "handRight",
+          "pixelsA": 280,
+          "pixelsB": 58,
+          "overlap": 39,
+          "adjacent": 12,
+          "connected": true
+        },
+        {
+          "a": "thighRight",
+          "b": "calfRight",
+          "pixelsA": 371,
+          "pixelsB": 308,
+          "overlap": 48,
+          "adjacent": 10,
+          "connected": true
+        },
+        {
+          "a": "calfRight",
+          "b": "shoeRight",
+          "pixelsA": 308,
+          "pixelsB": 120,
+          "overlap": 33,
+          "adjacent": 7,
+          "connected": true
+        }
+      ],
+      "nearSide": "Right",
+      "accessoryRule": "Body-side ownership sets depth order; no direction image is mirrored."
+    },
+    {
+      "direction": "back",
+      "bones": {
+        "root": {
+          "parent": null,
+          "pivot": [
+            96,
+            270
+          ]
+        },
+        "spine": {
+          "parent": "root",
+          "pivot": [
+            96,
+            171
+          ]
+        },
+        "pelvis": {
+          "pivot": [
+            96,
+            207
+          ],
+          "parent": "spine"
+        },
+        "neck": {
+          "pivot": [
+            96,
+            126
+          ],
+          "parent": "spine"
+        },
+        "head": {
+          "parent": "neck",
+          "pivot": [
+            96,
+            126
+          ]
+        },
+        "upperArmLeft": {
+          "pivot": [
+            74,
+            140
+          ],
+          "parent": "spine"
+        },
+        "forearmLeft": {
+          "pivot": [
+            63,
+            170
+          ],
+          "parent": "upperArmLeft"
+        },
+        "handLeft": {
+          "pivot": [
+            60,
+            195
+          ],
+          "parent": "forearmLeft"
+        },
+        "upperArmRight": {
+          "pivot": [
+            118,
+            140
+          ],
+          "parent": "spine"
+        },
+        "forearmRight": {
+          "pivot": [
+            129,
+            170
+          ],
+          "parent": "upperArmRight"
+        },
+        "handRight": {
+          "pivot": [
+            132,
+            195
+          ],
+          "parent": "forearmRight"
+        },
+        "thighLeft": {
+          "pivot": [
+            83,
+            207
+          ],
+          "parent": "pelvis"
+        },
+        "calfLeft": {
+          "pivot": [
+            84,
+            236
+          ],
+          "parent": "thighLeft"
+        },
+        "shoeLeft": {
+          "pivot": [
+            84,
+            260
+          ],
+          "parent": "calfLeft"
+        },
+        "thighRight": {
+          "pivot": [
+            109,
+            207
+          ],
+          "parent": "pelvis"
+        },
+        "calfRight": {
+          "pivot": [
+            108,
+            236
+          ],
+          "parent": "thighRight"
+        },
+        "shoeRight": {
+          "pivot": [
+            108,
+            260
+          ],
+          "parent": "calfRight"
+        }
+      },
+      "restPose": {
+        "rotations": {
+          "upperArmLeft": -6,
+          "upperArmRight": 6,
+          "forearmLeft": 2,
+          "forearmRight": -2
+        }
+      },
+      "bindings": [
+        {
+          "name": "headBehind",
+          "source": "character-assets/rigs/guest-10/storybook-source-v1/generated/head-back-behind-body.svg",
+          "registeredSource": "character-assets/rigs/guest-10/canonical-binding-v1/generated/registered/back-headBehind.svg",
+          "priority": 1,
+          "parent": "head",
+          "pivot": [
+            96,
+            126
+          ],
+          "mirrored": false
+        },
+        {
+          "name": "shadow-back",
+          "source": "character-assets/rigs/guest-10/storybook-source-v1/generated/shadow-back-registered.svg",
+          "registeredSource": "character-assets/rigs/guest-10/canonical-binding-v1/generated/registered/back-shadow-back.svg",
+          "priority": 0,
+          "parent": "root",
+          "pivot": [
+            96,
+            270
+          ],
+          "mirrored": false
+        },
+        {
+          "name": "neck-back",
+          "source": "character-assets/rigs/guest-10/storybook-source-v1/generated/neck-back-registered.svg",
+          "registeredSource": "character-assets/rigs/guest-10/canonical-binding-v1/generated/registered/back-neck-back.svg",
+          "priority": 4,
+          "parent": "neck",
+          "pivot": [
+            96,
+            126
+          ],
+          "mirrored": false
+        },
+        {
+          "name": "bag-back",
+          "source": "character-assets/rigs/guest-10/storybook-source-v1/generated/bag-back-registered.svg",
+          "registeredSource": "character-assets/rigs/guest-10/canonical-binding-v1/generated/registered/back-bag-back.svg",
+          "priority": 7,
+          "parent": "handLeft",
+          "pivot": [
+            60,
+            195
+          ],
+          "registration": {
+            "matrix": [
+              1,
+              0,
+              0,
+              1,
+              -13,
+              14.581394999999986
+            ],
+            "sourcePivot": [
+              73,
+              180.418605
+            ],
+            "pivot": [
+              60,
+              195
+            ],
+            "sourceEnd": [
+              73,
+              192.418605
+            ],
+            "targetEnd": [
+              60,
+              207
+            ],
+            "sourceLength": 12,
+            "targetLength": 12,
+            "parent": "forearmLeft"
+          },
+          "mirrored": false
+        },
+        {
+          "name": "thighLeft",
+          "source": "character-assets/rigs/guest-10/storybook-source-v1/generated/back-thighLeft-source.svg",
+          "registeredSource": "character-assets/rigs/guest-10/canonical-binding-v1/generated/registered/back-thighLeft.svg",
+          "priority": 3,
+          "parent": "thighLeft",
+          "pivot": [
+            83,
+            207
+          ],
+          "registration": {
+            "matrix": [
+              0.9994059993535875,
+              -0.03446227583977888,
+              0.03143274902053197,
+              0.911549721595427,
+              -8.988389724985243,
+              34.81901608549617
+            ],
+            "sourcePivot": [
+              86,
+              192.139535
+            ],
+            "pivot": [
+              83,
+              207
+            ],
+            "sourceEnd": [
+              86,
+              223.953488
+            ],
+            "targetEnd": [
+              84,
+              236
+            ],
+            "sourceLength": 31.813952999999998,
+            "targetLength": 29.017236257093817,
+            "parent": "pelvis"
+          },
+          "mirrored": false
+        },
+        {
+          "name": "calfLeft",
+          "source": "character-assets/rigs/guest-10/storybook-source-v1/generated/back-calfLeft-source.svg",
+          "registeredSource": "character-assets/rigs/guest-10/canonical-binding-v1/generated/registered/back-calfLeft.svg",
+          "priority": 3,
+          "parent": "calfLeft",
+          "pivot": [
+            84,
+            236
+          ],
+          "registration": {
+            "matrix": [
+              1,
+              0,
+              0,
+              0.868686867955651,
+              -2,
+              41.45454594153654
+            ],
+            "sourcePivot": [
+              86,
+              223.953488
+            ],
+            "pivot": [
+              84,
+              236
+            ],
+            "sourceEnd": [
+              86,
+              251.581395
+            ],
+            "targetEnd": [
+              84,
+              260
+            ],
+            "sourceLength": 27.627906999999993,
+            "targetLength": 24,
+            "parent": "thighLeft"
+          },
+          "mirrored": false
+        },
+        {
+          "name": "shoeLeft",
+          "source": "character-assets/rigs/guest-10/storybook-source-v1/generated/back-shoeLeft-source.svg",
+          "registeredSource": "character-assets/rigs/guest-10/canonical-binding-v1/generated/registered/back-shoeLeft.svg",
+          "priority": 3,
+          "parent": "shoeLeft",
+          "pivot": [
+            84,
+            260
+          ],
+          "registration": {
+            "matrix": [
+              1,
+              0,
+              0,
+              0.542929282646541,
+              -2,
+              123.40909368543393
+            ],
+            "sourcePivot": [
+              86,
+              251.581395
+            ],
+            "pivot": [
+              84,
+              260
+            ],
+            "sourceEnd": [
+              86,
+              270
+            ],
+            "targetEnd": [
+              84,
+              270
+            ],
+            "sourceLength": 18.418605000000014,
+            "targetLength": 10,
+            "parent": "calfLeft"
+          },
+          "mirrored": false
+        },
+        {
+          "name": "thighRight",
+          "source": "character-assets/rigs/guest-10/storybook-source-v1/generated/back-thighRight-source.svg",
+          "registeredSource": "character-assets/rigs/guest-10/canonical-binding-v1/generated/registered/back-thighRight.svg",
+          "priority": 3,
+          "parent": "thighRight",
+          "pivot": [
+            109,
+            207
+          ],
+          "registration": {
+            "matrix": [
+              0.9994059993535875,
+              0.03446227583977888,
+              -0.03143274902053197,
+              0.911549721595427,
+              9.102437849096436,
+              28.20225912425863
+            ],
+            "sourcePivot": [
+              106,
+              192.139535
+            ],
+            "pivot": [
+              109,
+              207
+            ],
+            "sourceEnd": [
+              106,
+              223.953488
+            ],
+            "targetEnd": [
+              108,
+              236
+            ],
+            "sourceLength": 31.813952999999998,
+            "targetLength": 29.017236257093817,
+            "parent": "pelvis"
+          },
+          "mirrored": false
+        },
+        {
+          "name": "calfRight",
+          "source": "character-assets/rigs/guest-10/storybook-source-v1/generated/back-calfRight-source.svg",
+          "registeredSource": "character-assets/rigs/guest-10/canonical-binding-v1/generated/registered/back-calfRight.svg",
+          "priority": 3,
+          "parent": "calfRight",
+          "pivot": [
+            108,
+            236
+          ],
+          "registration": {
+            "matrix": [
+              1,
+              0,
+              0,
+              0.868686867955651,
+              2,
+              41.45454594153654
+            ],
+            "sourcePivot": [
+              106,
+              223.953488
+            ],
+            "pivot": [
+              108,
+              236
+            ],
+            "sourceEnd": [
+              106,
+              251.581395
+            ],
+            "targetEnd": [
+              108,
+              260
+            ],
+            "sourceLength": 27.627906999999993,
+            "targetLength": 24,
+            "parent": "thighRight"
+          },
+          "mirrored": false
+        },
+        {
+          "name": "shoeRight",
+          "source": "character-assets/rigs/guest-10/storybook-source-v1/generated/back-shoeRight-source.svg",
+          "registeredSource": "character-assets/rigs/guest-10/canonical-binding-v1/generated/registered/back-shoeRight.svg",
+          "priority": 3,
+          "parent": "shoeRight",
+          "pivot": [
+            108,
+            260
+          ],
+          "registration": {
+            "matrix": [
+              1,
+              0,
+              0,
+              0.542929282646541,
+              2,
+              123.40909368543393
+            ],
+            "sourcePivot": [
+              106,
+              251.581395
+            ],
+            "pivot": [
+              108,
+              260
+            ],
+            "sourceEnd": [
+              106,
+              270
+            ],
+            "targetEnd": [
+              108,
+              270
+            ],
+            "sourceLength": 18.418605000000014,
+            "targetLength": 10,
+            "parent": "calfRight"
+          },
+          "mirrored": false
+        },
+        {
+          "name": "skirt-back",
+          "source": "character-assets/rigs/guest-10/storybook-source-v1/generated/skirt-back-registered.svg",
+          "registeredSource": "character-assets/rigs/guest-10/canonical-binding-v1/generated/registered/back-skirt-back.svg",
+          "priority": 5,
+          "parent": "pelvis",
+          "pivot": [
+            96,
+            207
+          ],
+          "mirrored": false
+        },
+        {
+          "name": "torso-back",
+          "source": "character-assets/rigs/guest-10/storybook-source-v1/generated/torso-back-registered.svg",
+          "registeredSource": "character-assets/rigs/guest-10/canonical-binding-v1/generated/registered/back-torso-back.svg",
+          "priority": 6,
+          "parent": "spine",
+          "pivot": [
+            96,
+            171
+          ],
+          "mirrored": false
+        },
+        {
+          "name": "upperArmLeft",
+          "source": "character-assets/rigs/guest-10/storybook-source-v1/generated/armLeft-back-registered.svg",
+          "registeredSource": "character-assets/rigs/guest-10/canonical-binding-v1/generated/registered/back-upperArmLeft.svg",
+          "priority": 5.5,
+          "parent": "upperArmLeft",
+          "pivot": [
+            74,
+            140
+          ],
+          "registration": {
+            "matrix": [
+              1.0175520326190892,
+              0.25901324466667724,
+              -0.3215811945197786,
+              1.2633546927562733,
+              43.737932128298596,
+              -51.84065814795788
+            ],
+            "sourcePivot": [
+              73,
+              136.883721
+            ],
+            "pivot": [
+              74,
+              140
+            ],
+            "sourceEnd": [
+              73,
+              180.418605
+            ],
+            "targetEnd": [
+              60,
+              195
+            ],
+            "sourceLength": 43.534884000000005,
+            "targetLength": 56.753854494650845,
+            "breadth": 1.05,
+            "sourceClip": [
+              0,
+              172
+            ],
+            "sourceBone": "upperArmLeft",
+            "continuousArm": true
+          },
+          "mirrored": false
+        },
+        {
+          "name": "forearmLeft",
+          "source": "character-assets/rigs/guest-10/storybook-source-v1/generated/armLeft-back-registered.svg",
+          "registeredSource": "character-assets/rigs/guest-10/canonical-binding-v1/generated/registered/back-forearmLeft.svg",
+          "priority": 8,
+          "parent": "forearmLeft",
+          "pivot": [
+            63,
+            170
+          ],
+          "registration": {
+            "matrix": [
+              1.0175520326190892,
+              0.25901324466667724,
+              -0.3215811945197786,
+              1.2633546927562733,
+              43.737932128298596,
+              -51.84065814795788
+            ],
+            "sourcePivot": [
+              73,
+              136.883721
+            ],
+            "pivot": [
+              74,
+              140
+            ],
+            "sourceEnd": [
+              73,
+              180.418605
+            ],
+            "targetEnd": [
+              60,
+              195
+            ],
+            "sourceLength": 43.534884000000005,
+            "targetLength": 56.753854494650845,
+            "breadth": 1.05,
+            "sourceClip": [
+              168,
+              29
+            ],
+            "sourceBone": "upperArmLeft",
+            "continuousArm": true
+          },
+          "mirrored": false
+        },
+        {
+          "name": "handLeft",
+          "source": "character-assets/rigs/guest-10/storybook-source-v1/generated/armLeft-back-registered.svg",
+          "registeredSource": "character-assets/rigs/guest-10/canonical-binding-v1/generated/registered/back-handLeft.svg",
+          "priority": 8,
+          "parent": "handLeft",
+          "pivot": [
+            60,
+            195
+          ],
+          "registration": {
+            "matrix": [
+              1.0175520326190892,
+              0.25901324466667724,
+              -0.3215811945197786,
+              1.2633546927562733,
+              43.737932128298596,
+              -51.84065814795788
+            ],
+            "sourcePivot": [
+              73,
+              136.883721
+            ],
+            "pivot": [
+              74,
+              140
+            ],
+            "sourceEnd": [
+              73,
+              180.418605
+            ],
+            "targetEnd": [
+              60,
+              195
+            ],
+            "sourceLength": 43.534884000000005,
+            "targetLength": 56.753854494650845,
+            "breadth": 1.05,
+            "sourceClip": [
+              193,
+              95
+            ],
+            "sourceBone": "upperArmLeft",
+            "continuousArm": true
+          },
+          "mirrored": false
+        },
+        {
+          "name": "upperArmRight",
+          "source": "character-assets/rigs/guest-10/storybook-source-v1/generated/armRight-back-registered.svg",
+          "registeredSource": "character-assets/rigs/guest-10/canonical-binding-v1/generated/registered/back-upperArmRight.svg",
+          "priority": 5.5,
+          "parent": "upperArmRight",
+          "pivot": [
+            118,
+            140
+          ],
+          "registration": {
+            "matrix": [
+              1.0175520326190892,
+              -0.25901324466667724,
+              0.3215811945197786,
+              1.2633546927562733,
+              -47.10792239116374,
+              -2.110115171955849
+            ],
+            "sourcePivot": [
+              119,
+              136.883721
+            ],
+            "pivot": [
+              118,
+              140
+            ],
+            "sourceEnd": [
+              119,
+              180.418605
+            ],
+            "targetEnd": [
+              132,
+              195
+            ],
+            "sourceLength": 43.534884000000005,
+            "targetLength": 56.753854494650845,
+            "breadth": 1.05,
+            "sourceClip": [
+              0,
+              172
+            ],
+            "sourceBone": "upperArmRight",
+            "continuousArm": true
+          },
+          "mirrored": false
+        },
+        {
+          "name": "forearmRight",
+          "source": "character-assets/rigs/guest-10/storybook-source-v1/generated/armRight-back-registered.svg",
+          "registeredSource": "character-assets/rigs/guest-10/canonical-binding-v1/generated/registered/back-forearmRight.svg",
+          "priority": 8,
+          "parent": "forearmRight",
+          "pivot": [
+            129,
+            170
+          ],
+          "registration": {
+            "matrix": [
+              1.0175520326190892,
+              -0.25901324466667724,
+              0.3215811945197786,
+              1.2633546927562733,
+              -47.10792239116374,
+              -2.110115171955849
+            ],
+            "sourcePivot": [
+              119,
+              136.883721
+            ],
+            "pivot": [
+              118,
+              140
+            ],
+            "sourceEnd": [
+              119,
+              180.418605
+            ],
+            "targetEnd": [
+              132,
+              195
+            ],
+            "sourceLength": 43.534884000000005,
+            "targetLength": 56.753854494650845,
+            "breadth": 1.05,
+            "sourceClip": [
+              168,
+              29
+            ],
+            "sourceBone": "upperArmRight",
+            "continuousArm": true
+          },
+          "mirrored": false
+        },
+        {
+          "name": "handRight",
+          "source": "character-assets/rigs/guest-10/storybook-source-v1/generated/armRight-back-registered.svg",
+          "registeredSource": "character-assets/rigs/guest-10/canonical-binding-v1/generated/registered/back-handRight.svg",
+          "priority": 8,
+          "parent": "handRight",
+          "pivot": [
+            132,
+            195
+          ],
+          "registration": {
+            "matrix": [
+              1.0175520326190892,
+              -0.25901324466667724,
+              0.3215811945197786,
+              1.2633546927562733,
+              -47.10792239116374,
+              -2.110115171955849
+            ],
+            "sourcePivot": [
+              119,
+              136.883721
+            ],
+            "pivot": [
+              118,
+              140
+            ],
+            "sourceEnd": [
+              119,
+              180.418605
+            ],
+            "targetEnd": [
+              132,
+              195
+            ],
+            "sourceLength": 43.534884000000005,
+            "targetLength": 56.753854494650845,
+            "breadth": 1.05,
+            "sourceClip": [
+              193,
+              95
+            ],
+            "sourceBone": "upperArmRight",
+            "continuousArm": true
+          },
+          "mirrored": false
+        },
+        {
+          "name": "headAbove",
+          "source": "character-assets/rigs/guest-10/storybook-source-v1/generated/head-back-above-body.svg",
+          "registeredSource": "character-assets/rigs/guest-10/canonical-binding-v1/generated/registered/back-headAbove.svg",
+          "priority": 9,
+          "parent": "head",
+          "pivot": [
+            96,
+            126
+          ],
+          "mirrored": false
+        }
+      ],
+      "connections": [
+        {
+          "a": "neck-back",
+          "b": "torso-back",
+          "pixelsA": 369,
+          "pixelsB": 2358,
+          "overlap": 208,
+          "adjacent": 18,
+          "connected": true
+        },
+        {
+          "a": "torso-back",
+          "b": "upperArmLeft",
+          "pixelsA": 2358,
+          "pixelsB": 274,
+          "overlap": 50,
+          "adjacent": 21,
+          "connected": true
+        },
+        {
+          "a": "upperArmLeft",
+          "b": "forearmLeft",
+          "pixelsA": 274,
+          "pixelsB": 204,
+          "overlap": 29,
+          "adjacent": 7,
+          "connected": true
+        },
+        {
+          "a": "forearmLeft",
+          "b": "handLeft",
+          "pixelsA": 204,
+          "pixelsB": 61,
+          "overlap": 36,
+          "adjacent": 9,
+          "connected": true
+        },
+        {
+          "a": "thighLeft",
+          "b": "calfLeft",
+          "pixelsA": 368,
+          "pixelsB": 321,
+          "overlap": 51,
+          "adjacent": 10,
+          "connected": true
+        },
+        {
+          "a": "calfLeft",
+          "b": "shoeLeft",
+          "pixelsA": 321,
+          "pixelsB": 91,
+          "overlap": 37,
+          "adjacent": 7,
+          "connected": true
+        },
+        {
+          "a": "torso-back",
+          "b": "upperArmRight",
+          "pixelsA": 2358,
+          "pixelsB": 303,
+          "overlap": 76,
+          "adjacent": 22,
+          "connected": true
+        },
+        {
+          "a": "upperArmRight",
+          "b": "forearmRight",
+          "pixelsA": 303,
+          "pixelsB": 211,
+          "overlap": 28,
+          "adjacent": 8,
+          "connected": true
+        },
+        {
+          "a": "forearmRight",
+          "b": "handRight",
+          "pixelsA": 211,
+          "pixelsB": 65,
+          "overlap": 38,
+          "adjacent": 11,
+          "connected": true
+        },
+        {
+          "a": "thighRight",
+          "b": "calfRight",
+          "pixelsA": 364,
+          "pixelsB": 321,
+          "overlap": 50,
+          "adjacent": 10,
+          "connected": true
+        },
+        {
+          "a": "calfRight",
+          "b": "shoeRight",
+          "pixelsA": 321,
+          "pixelsB": 91,
+          "overlap": 37,
+          "adjacent": 7,
+          "connected": true
+        }
+      ],
+      "nearSide": null,
+      "accessoryRule": "Body-side ownership sets depth order; no direction image is mirrored."
+    }
+  ],
+  "disconnected": []
+}

@@ -1,0 +1,16 @@
+{
+  "characterId": "guest-10",
+  "backArmDepth": "behind-torso",
+  "backRestPose": {"upperArmLeft":-6,"upperArmRight":6,"forearmLeft":2,"forearmRight":-2},
+  "armContinuity": {
+    "breadth": {"front":1,"left":1.65,"right":1.65,"back":1.05},
+    "reason": "Profile exposed the original far-arm artwork; bind the actual direction-specific near sleeve to the near joint. Use one source registration across elbow and wrist.",
+    "sourceBones": {
+      "left": {"upperArmLeft":"upperArmRight","upperArmRight":"upperArmLeft"},
+      "right": {"upperArmLeft":"upperArmRight","upperArmRight":"upperArmLeft"}
+    }
+  },
+  "sourceDirectory": "../../storybook-source-v1",
+  "targetSkeleton": "../../../shared-tailored-216-v1/skeleton.json",
+  "policy": "Retarget original source parts to the fixed common bones; preserve original perpendicular width and individual direction artwork. Never read completed frame PNGs."
+}

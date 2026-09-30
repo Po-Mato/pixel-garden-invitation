@@ -1,0 +1,9 @@
+{
+  "status":"front-straight-sleeve-study-not-production",
+  "geometry":{"canvas":[192,288],"headHeight":72,"bodyHeight":144,"footBaseline":270},
+  "characters":{
+    "guest-02":{"source":"sources/guest-02-front-upperbody.png","scale":0.085,"translation":[30.72,116.735]},
+    "guest-12":{"source":"../hanbok-reference-study-v6/sources/guest-12-front-upperbody.png","scale":0.092,"translation":[25.344,112.384]}
+  },
+  "policy":"Female straight sleeve original-art edit only. Male original and registration unchanged. Uniform source placement only; shared skeleton unchanged. No finished frame patches."
+}

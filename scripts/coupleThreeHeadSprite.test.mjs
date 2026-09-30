@@ -75,3 +75,28 @@ test("couple walk sheets keep every frame on the shared baseline", async () => {
     }
   }
 });
+
+
+test("couple walk heads stay centered and idle matches the front neutral pose", async () => {
+  for (const character of ["bride", "groom"]) {
+    const walk = sharp(join(root, `character-assets/source/npc/${character}-walk.png`));
+    for (let row = 0; row < 4; row += 1) {
+      for (let column = 0; column < 3; column += 1) {
+        const pixels = await walk.clone().extract({ left: column * 96, top: row * 144, width: 96, height: 49 }).ensureAlpha().raw().toBuffer();
+        let left = 96, right = -1;
+        for (let y = 7; y < 49; y += 1) for (let x = 0; x < 96; x += 1) {
+          if (pixels[(y * 96 + x) * 4 + 3] > 24) { left = Math.min(left, x); right = Math.max(right, x); }
+        }
+        assert.ok(Math.abs((left + right) / 2 - 47.5) <= 0.5, `${character} row ${row} frame ${column}: head drifts`);
+      }
+    }
+    const neutral = await walk.clone().extract({ left: 96, top: 0, width: 96, height: 144 }).ensureAlpha().raw().toBuffer();
+    for (const column of [0, 1]) {
+      const idle = await sharp(join(root, `character-assets/source/npc/${character}-idle.png`)).extract({ left: column * 96, top: 0, width: 96, height: 144 }).ensureAlpha().raw().toBuffer();
+      assert.deepEqual(idle, neutral);
+    }
+    for (const motion of ["idle", "walk"]) {
+      assert.deepEqual(await readFile(join(root, `character-assets/source/npc/${character}-${motion}.png`)), await readFile(join(root, `client/public/characters/generated/npc/${character}__${motion}.png`)));
+    }
+  }
+});

@@ -1,7 +1,7 @@
 import { readFile, readdir } from "node:fs/promises";
 import path from "node:path";
 import sharp from "sharp";
-import { cleanGuestHairSheet, waveHairPresetIds } from "./guestHairBackground.mjs";
+import { fullReviewDirectory, verifyFullReviewProductionSources } from "./fullReviewProductionSources.mjs";
 import { DEFAULT_FOREGROUND_PLACEMENTS } from "./mapForegroundAuditRenderer.mjs";
 
 export const mapToneCharacterPositions = Object.freeze({
@@ -275,37 +275,15 @@ async function loadToneCharacters(rootDir) {
   if (!manifest.presets.some(({ id }) => id === manifest.defaultPresetId)) {
     throw new Error("Default tone-audit character preset is missing");
   }
-  const source = manifest.frame.source;
-  const display = manifest.frame.display.world;
-  const characters = await Promise.all(manifest.presets.map(async (preset) => {
-    const idleInput = path.join(rootDir, preset.source.idle);
-    const walkInput = path.join(rootDir, preset.source.walk);
-    const [renderIdleInput, renderWalkInput] = waveHairPresetIds.has(preset.id)
-      ? await Promise.all([
-        cleanGuestHairSheet(idleInput, source),
-        cleanGuestHairSheet(walkInput, source)
-      ])
-      : [idleInput, walkInput];
-    const buffer = await sharp(renderIdleInput)
-      .extract({ left: 0, top: 0, width: source.width, height: source.height })
-      .resize(display.width, display.height, { kernel: sharp.kernel.nearest })
-      .png()
-      .toBuffer();
-    const movementFrames = await Promise.all(Array.from({ length: manifest.frame.walk.columns }, async (_, index) => ({
+  const active = await verifyFullReviewProductionSources(rootDir);
+  const { halfSizeSprite } = await import("./canonicalMapComposite.mjs");
+  const characters = await Promise.all(active.characters.map(async (character) => {
+    const sheet = await readFile(path.join(rootDir, fullReviewDirectory, character.presetId, `${character.presetId}__walk-runtime.png`));
+    const movementFrames = await Promise.all(Array.from({length: 4}, async (_, index) => ({
       frameId: `down-${index}`,
-      buffer: await sharp(renderWalkInput)
-        .extract({ left: index * source.width, top: 0, width: source.width, height: source.height })
-        .resize(display.width, display.height, { kernel: sharp.kernel.nearest })
-        .png()
-        .toBuffer()
+      buffer: await halfSizeSprite(await sharp(sheet).extract({left: index * 96, top: 0, width: 96, height: 144}).png().toBuffer())
     })));
-    return {
-      buffer,
-      movementFrames,
-      width: display.width,
-      height: display.height,
-      presetId: preset.id
-    };
+    return {buffer: movementFrames[1].buffer, movementFrames, width: 48, height: 72, presetId: character.presetId};
   }));
   return { characters, defaultPresetId: manifest.defaultPresetId };
 }
@@ -370,7 +348,7 @@ async function measureCharacterEdgeContrasts(sceneBuffer, characterBuffer, left,
   }));
 }
 
-export async function measureCompositedMapTone({ rootDir, zone, characters, defaultPresetId, edgeShadow }) {
+export async function measureCompositedMapTone({ rootDir, zone, characters, defaultPresetId, edgeShadow, renderStyle }) {
   const mapRoot = path.join(rootDir, "client/public/assets/maps/v2", zone.id);
   const placements = DEFAULT_FOREGROUND_PLACEMENTS[zone.id] ?? [];
   const position = mapToneCharacterPositions[zone.id];
@@ -383,41 +361,43 @@ export async function measureCompositedMapTone({ rootDir, zone, characters, defa
     })))
     .png()
     .toBuffer();
+  const localBackground = await sharp(foregroundScene).extract({left: position.x - 42, top: position.y - 52, width: 84, height: 104}).png().toBuffer();
   const characterReports = [];
   const movementReports = [];
   for (const character of characters) {
     const characterLeft = Math.round(position.x - character.width / 2);
     const characterTop = Math.round(position.y - character.height / 2);
-    const shadow = await characterShadow(character.buffer, edgeShadow);
-    const scene = await sharp(foregroundScene).composite([
-      { input: shadow, left: characterLeft + 1, top: characterTop + 2 },
-      { input: character.buffer, left: characterLeft, top: characterTop }
-    ]).png().toBuffer();
+    const { characterSceneLayer } = await import("./canonicalMapComposite.mjs");
+    const color = `rgba(${edgeShadow.red}, ${edgeShadow.green}, ${edgeShadow.blue}, ${edgeShadow.alpha})`;
+    const style = renderStyle ?? {tone: "contrast(1)", shadow: color, secondary: color};
+    const compositeFrame = async buffer => sharp(localBackground).composite([{
+      input: await characterSceneLayer(buffer, style.tone, style.shadow, style.secondary, style.outline),
+      left: 0, top: 0
+    }]).png().toBuffer();
+    const scene = await compositeFrame(character.buffer);
     const edgeContrasts = await measureCharacterEdgeContrasts(
       scene,
       character.buffer,
-      characterLeft,
-      characterTop,
+      18,
+      16,
       character.width,
       character.height
     );
     characterReports.push({
       presetId: character.presetId,
-      scene,
+      scene: character.presetId === defaultPresetId
+        ? await sharp(foregroundScene).composite([{input: scene, left: position.x - 42, top: position.y - 52}]).png().toBuffer()
+        : scene,
       edgeContrast: edgeContrasts.standard,
       displayEdgeContrasts: edgeContrasts
     });
     for (const frame of character.movementFrames) {
-      const frameShadow = await characterShadow(frame.buffer, edgeShadow);
-      const frameScene = await sharp(foregroundScene).composite([
-        { input: frameShadow, left: characterLeft + 1, top: characterTop + 2 },
-        { input: frame.buffer, left: characterLeft, top: characterTop }
-      ]).png().toBuffer();
+      const frameScene = await compositeFrame(frame.buffer);
       const edgeContrasts = await measureCharacterEdgeContrasts(
         frameScene,
         frame.buffer,
-        characterLeft,
-        characterTop,
+        18,
+        16,
         character.width,
         character.height
       );
@@ -506,8 +486,9 @@ export async function auditMapTones({ rootDir, contractPath = path.join(rootDir,
 
   const reports = [];
   const { characters, defaultPresetId } = await loadToneCharacters(rootDir);
+  const runtimeCss = await readFile(path.join(rootDir, "client/src/map-visual-enhancements.css"), "utf8");
   const edgeShadows = characterEdgeShadowsFromCss(
-    await readFile(path.join(rootDir, "client/src/map-visual-enhancements.css"), "utf8"),
+    runtimeCss,
     expectedZoneIds
   );
   const typographyCss = await readFile(path.join(rootDir, "client/src/game-refined-theme.css"), "utf8");
@@ -522,11 +503,16 @@ export async function auditMapTones({ rootDir, contractPath = path.join(rootDir,
       continue;
     }
     const backgroundTone = await measureMapTone(path.join(mapRoot, zoneId, zone.background.output));
+    const block = runtimeCss.match(new RegExp(`\\.world-map__stage\\[data-zone="${zoneId}"\\]\\s*\\{([^}]+)`))?.[1];
+    const cssValue = name => block?.match(new RegExp(`--${name}:\\s*([^;]+)`))?.[1];
+    const renderStyle = {tone: cssValue("character-tone-filter"), shadow: cssValue("character-edge-shadow"), secondary: cssValue("character-secondary-edge-shadow") ?? cssValue("character-edge-shadow"), outline: cssValue("character-outline-shadow")};
+    if (!renderStyle.tone || !renderStyle.shadow) throw new Error(`Missing runtime character style for ${zoneId}`);
     const compositeTone = await measureCompositedMapTone({
       rootDir,
       zone,
       characters,
       defaultPresetId,
+      renderStyle,
       edgeShadow: edgeShadows[zoneId]
     });
     const { sceneBuffer: _sceneBuffer, ...sceneMetrics } = compositeTone;

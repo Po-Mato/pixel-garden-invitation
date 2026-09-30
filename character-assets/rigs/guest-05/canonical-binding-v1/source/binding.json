@@ -1,0 +1,10 @@
+{
+  "characterId": "guest-05",
+  "backArmDepth": "behind-torso",
+  "backRestPose": {"upperArmLeft":-6,"upperArmRight":6,"forearmLeft":2,"forearmRight":-2},
+  "armContinuity": {"reason":"Individually reviewed guest-05: continuous shoulder-wrist source registration; original near profile sleeve belongs on the canonical near arm. No reflection.","breadth":{"front":1.05,"left":1.5,"right":1.5,"back":1.1},"sourceBones":{"left":{"upperArmLeft":"upperArmRight","upperArmRight":"upperArmLeft"},"right":{"upperArmLeft":"upperArmRight","upperArmRight":"upperArmLeft"}}},
+  "sourceDirectory": "../../storybook-directions-v1",
+  "targetSkeleton": "../../../shared-tailored-216-v1/skeleton.json",
+  "clothAnimation": "../../../common-three-head-216-v1/animations/painted-long-skirt-v1.json",
+  "policy": "Use the distinct original front anchor and three directional source rigs. Preserve own head, sage dress, cream sleeves and wearer-left clutch; retarget only original part registrations to the common joints. Never read a completed frame as material."
+}

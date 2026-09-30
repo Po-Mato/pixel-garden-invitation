@@ -1,0 +1,242 @@
+{
+  "version": 1,
+  "inputs": [
+    {
+      "file": "character-assets/rigs/common-three-head-216-v1/animations/dress-front.json",
+      "sha256": "0b40a953275b0dad4f4912431a11a10ef4f2d65cba40e4ff8bcc7758f3c28a60"
+    },
+    {
+      "file": "character-assets/rigs/guest-02/canonical-binding-v1/generated/registered/front-calfLeft.svg",
+      "sha256": "b6a7d659989bebbff6afcbb3a39b375d8ad604b6ad77f25dd732e6fa91d77abf"
+    },
+    {
+      "file": "character-assets/rigs/guest-02/canonical-binding-v1/generated/registered/front-calfRight.svg",
+      "sha256": "79dccc03096e1c5fb94b9cb62928b2b2a39c4ba1abf92de5c0f711118d727956"
+    },
+    {
+      "file": "character-assets/rigs/guest-02/canonical-binding-v1/generated/registered/front-headAbove.svg",
+      "sha256": "6016067ab3e29ced056e215643c6610c8a980a15780f012a52e8d728e1291f84"
+    },
+    {
+      "file": "character-assets/rigs/guest-02/canonical-binding-v1/generated/registered/front-headBehind.svg",
+      "sha256": "74762162c7e0af28de9318adc1a49ed975f03b3791aa775a177096c7fb437747"
+    },
+    {
+      "file": "character-assets/rigs/guest-02/canonical-binding-v1/generated/registered/front-norigae-front.svg",
+      "sha256": "5948041f8b3aabc4913af32466a734eb43b327bf57dd4dc88135f962cadf7da5"
+    },
+    {
+      "file": "character-assets/rigs/guest-02/canonical-binding-v1/generated/registered/front-shadow-front.svg",
+      "sha256": "4bebac935b52766712306887261a9be208a3180e8ada51e9f7e7d23ed8b6f71f"
+    },
+    {
+      "file": "character-assets/rigs/guest-02/canonical-binding-v1/generated/registered/front-shoeLeft.svg",
+      "sha256": "53f7ff48c7a92354358c5622e750b06fb6d56a1751c151107deca7500b804bf7"
+    },
+    {
+      "file": "character-assets/rigs/guest-02/canonical-binding-v1/generated/registered/front-shoeRight.svg",
+      "sha256": "d058d406631080cc59570205bfb6f8cb5c7382fd3b8ba85f4980c59c4bdffa9b"
+    },
+    {
+      "file": "character-assets/rigs/guest-02/canonical-binding-v1/generated/registered/front-skirt-front.svg",
+      "sha256": "c62de3f2da659c615656df7ae9b62ef4227a5c0bd2b5c5e4d1f039278ae45232"
+    },
+    {
+      "file": "character-assets/rigs/guest-02/canonical-binding-v1/generated/registered/front-thighLeft.svg",
+      "sha256": "45634190e5bea5c2c063c670553f5c33590e73896ef2825a08f4d85eb0232f4f"
+    },
+    {
+      "file": "character-assets/rigs/guest-02/canonical-binding-v1/generated/registered/front-thighRight.svg",
+      "sha256": "4f9ce2f110388b140e0e30d83a9df1e3edd16b46c0cb7805fcc4d2ed00d7841f"
+    },
+    {
+      "file": "character-assets/rigs/guest-02/canonical-binding-v1/review/audit.json",
+      "sha256": "b225018f1d7ee906e3d6f2d0b9e2123d78a5bc7e5bd3802f0bd2ea7e20f2408f"
+    },
+    {
+      "file": "character-assets/rigs/guest-12/canonical-binding-v1/generated/registered/front-calfLeft.svg",
+      "sha256": "e9a017bf066b74f70cab863f2043f6c5325ea312e885e0b3ff535ce539d3ab18"
+    },
+    {
+      "file": "character-assets/rigs/guest-12/canonical-binding-v1/generated/registered/front-calfRight.svg",
+      "sha256": "4608b369e0b05161fbc88e3570e12ae876872de0f6e4c58cf18dfb4aa4d7f18f"
+    },
+    {
+      "file": "character-assets/rigs/guest-12/canonical-binding-v1/generated/registered/front-goreum-front.svg",
+      "sha256": "f9214a451d38853d888da486a51ae6ff4e1df50541fc4ed25b31b4d034346dab"
+    },
+    {
+      "file": "character-assets/rigs/guest-12/canonical-binding-v1/generated/registered/front-headAbove.svg",
+      "sha256": "c8c994f79aafa1c1fb7b635f7ca6b5d7c0cd46a1a5e66394f6e4f9809cb542da"
+    },
+    {
+      "file": "character-assets/rigs/guest-12/canonical-binding-v1/generated/registered/front-headBehind.svg",
+      "sha256": "19f96ac57f87d51759dca3a4860596732f0db6d56826f95636b0773618d600a5"
+    },
+    {
+      "file": "character-assets/rigs/guest-12/canonical-binding-v1/generated/registered/front-norigae-front.svg",
+      "sha256": "04f6ceeb9e1ae325f58a74cdbb5e0a5ec41ed13b182fed66d14761bb6a6809bf"
+    },
+    {
+      "file": "character-assets/rigs/guest-12/canonical-binding-v1/generated/registered/front-shadow-front.svg",
+      "sha256": "4bebac935b52766712306887261a9be208a3180e8ada51e9f7e7d23ed8b6f71f"
+    },
+    {
+      "file": "character-assets/rigs/guest-12/canonical-binding-v1/generated/registered/front-shoeLeft.svg",
+      "sha256": "1bbcb8bb18639b915c7b407e570d3e9d22dfcfbf6d5f7590768d3d2cbc21c77a"
+    },
+    {
+      "file": "character-assets/rigs/guest-12/canonical-binding-v1/generated/registered/front-shoeRight.svg",
+      "sha256": "c3f480e02b56d02097646c48eb3f5ebb36368927d28d0bbdc5241596a58685a7"
+    },
+    {
+      "file": "character-assets/rigs/guest-12/canonical-binding-v1/generated/registered/front-skirt-front.svg",
+      "sha256": "066d9954fdf7226b97651babc088b1c73b09464fa250d95271c0bda9b72aa277"
+    },
+    {
+      "file": "character-assets/rigs/guest-12/canonical-binding-v1/generated/registered/front-thighLeft.svg",
+      "sha256": "242888277a4cec4047b263e2d00f3f9abc1f445a69eac65434a6ebabbb2cec16"
+    },
+    {
+      "file": "character-assets/rigs/guest-12/canonical-binding-v1/generated/registered/front-thighRight.svg",
+      "sha256": "3db7f5b273caadeed8ecc3409d086526601ae9ac2d340fdb5d5d9834aa5d1af7"
+    },
+    {
+      "file": "character-assets/rigs/guest-12/canonical-binding-v1/review/audit.json",
+      "sha256": "a9207c6eb2f5aa60a0eea4aa00de3efd6e1435a18ae2bd7605452f1233e36929"
+    },
+    {
+      "file": "character-assets/rigs/guest-12/canonical-binding-v1/review/source-render-receipt.json",
+      "sha256": "063a1b8462f3faa281902dbde196969812c225b2724f2e8ff6bca89cd64e035c"
+    },
+    {
+      "file": "character-assets/rigs/hanbok-directions-v8/collar-layers.json",
+      "sha256": "3d34d2e15d8f36b2fed58fd87d7e68226201e2101f8fd16386c3555a2866750d"
+    },
+    {
+      "file": "character-assets/rigs/hanbok-directions-v8/neck-source.json",
+      "sha256": "6964bfb005b4834584bde4b933aa01943ef0ace9745a7dd21a9b7b66ed5b67d9"
+    },
+    {
+      "file": "character-assets/rigs/hanbok-reference-study-v6/sources/guest-12-front-upperbody.png",
+      "sha256": "039fab9425c447810b3b3769e7275143bbf750b977295b2b89e607312f076f58"
+    },
+    {
+      "file": "character-assets/rigs/hanbok-straight-sleeves-v7/front-rig/source/parts.json",
+      "sha256": "75e5b574aab953be51ab9b090d9d685afb46ef9717fb1a961933e3968654a0a1"
+    },
+    {
+      "file": "character-assets/rigs/hanbok-straight-sleeves-v7/registration.json",
+      "sha256": "de8080937e1db97b9bdcf1d6dfe7d8b5a01b876231d814780dc9b2cf69a02884"
+    },
+    {
+      "file": "character-assets/rigs/hanbok-straight-sleeves-v7/sources/guest-02-front-upperbody.png",
+      "sha256": "e7428a29ad22e94883c2cc8a4b1bf7dd386639ab1f161d08a9a78fd1957b8938"
+    },
+    {
+      "file": "character-assets/rigs/shared-tailored-216-v1/painted-walk-binding.json",
+      "sha256": "b1209f1de614ac8a8e0783eec66c80f7ff289790a2da12bc59c925caf32bd304"
+    },
+    {
+      "file": "character-assets/rigs/shared-tailored-216-v1/skeleton.json",
+      "sha256": "bb584444cc8dd8fef93757512706b4eff83f47f53c730811ff9b9b67c31fd615"
+    },
+    {
+      "file": "scripts/lib/canonicalCutoutBinding.mjs",
+      "sha256": "aac95827b6682632ff1d6687cbef7098a468e805840cba8ba43c5b2005828770"
+    },
+    {
+      "file": "scripts/lib/deterministicSharp.mjs",
+      "sha256": "098d5d05f78bdf66ff839dda9ae59effb39287983b23a64bc33fb4cbbacccce5"
+    },
+    {
+      "file": "scripts/lib/hanbokCollarLayers.mjs",
+      "sha256": "5ad26126d1913bf4a2163281a2e9ba47cacf4da0b4ddbb9a46a24dcbbc04fe50"
+    },
+    {
+      "file": "scripts/lib/hanbokNeckSource.mjs",
+      "sha256": "82d7d6030d30560b2c752a575fb5f82b6eabe18d31ade9a1fd66da4b7b9ddde5"
+    },
+    {
+      "file": "scripts/lib/paintedArmPose.mjs",
+      "sha256": "f4f1d3b452b76768520c5b303660591b6e3f7b318240a9a425f2c19142688c72"
+    },
+    {
+      "file": "scripts/render-hanbok-front-rig-v6.mjs",
+      "sha256": "5351762974fc5d7c316c2ca8d5cce148b4fcd01612b574455eb4c49fa40eadee"
+    }
+  ],
+  "dependencies": [
+    "character-assets/rigs/guest-12/canonical-binding-v1/review/source-render-receipt.json"
+  ],
+  "outputs": [
+    {
+      "file": "character-assets/rigs/hanbok-straight-sleeves-v7/front-rig/guest-12/audit.json",
+      "sha256": "9f4379170f07cdb26fdc11737913567491c5635a4e334a6ea20713a141cea9b3"
+    },
+    {
+      "file": "character-assets/rigs/hanbok-straight-sleeves-v7/front-rig/guest-12/forearmLeft.svg",
+      "sha256": "87d6251d14e852fb7b99ca657428ba7a3f71191c3caa06c4ef67acba3f70b796"
+    },
+    {
+      "file": "character-assets/rigs/hanbok-straight-sleeves-v7/front-rig/guest-12/forearmRight.svg",
+      "sha256": "acf0a50b9abf55b5b6dd060f4b4a61b108fef25bd2c26703a0b8afbc39884beb"
+    },
+    {
+      "file": "character-assets/rigs/hanbok-straight-sleeves-v7/front-rig/guest-12/front-1.png",
+      "sha256": "d37b6cfbd05b9ab833236690acda01be6ee16acf419da941a833e0690a35ee19"
+    },
+    {
+      "file": "character-assets/rigs/hanbok-straight-sleeves-v7/front-rig/guest-12/front-1.svg",
+      "sha256": "a13689195d937f695598b61a25ab1cc848ad23980297b55037828daaeb3df544"
+    },
+    {
+      "file": "character-assets/rigs/hanbok-straight-sleeves-v7/front-rig/guest-12/front-2.png",
+      "sha256": "f20d8b3326e16e7a38af0e0925e0b348945c4c6dec67b1fb45164318e1a7d272"
+    },
+    {
+      "file": "character-assets/rigs/hanbok-straight-sleeves-v7/front-rig/guest-12/front-2.svg",
+      "sha256": "4db3902870888754dd27edc86731bd959595826ffa486e84c53d29f7f87b0665"
+    },
+    {
+      "file": "character-assets/rigs/hanbok-straight-sleeves-v7/front-rig/guest-12/front-3.png",
+      "sha256": "c72b40489c4d59107db4b7807e08c1366e07110535a829a6fdb89a97c79e307b"
+    },
+    {
+      "file": "character-assets/rigs/hanbok-straight-sleeves-v7/front-rig/guest-12/front-3.svg",
+      "sha256": "07896121ebe9d6b1cb6893e6acb6943586239ce3cb91c1a3751f6f4e81de02fb"
+    },
+    {
+      "file": "character-assets/rigs/hanbok-straight-sleeves-v7/front-rig/guest-12/front-4.png",
+      "sha256": "f20d8b3326e16e7a38af0e0925e0b348945c4c6dec67b1fb45164318e1a7d272"
+    },
+    {
+      "file": "character-assets/rigs/hanbok-straight-sleeves-v7/front-rig/guest-12/front-4.svg",
+      "sha256": "4db3902870888754dd27edc86731bd959595826ffa486e84c53d29f7f87b0665"
+    },
+    {
+      "file": "character-assets/rigs/hanbok-straight-sleeves-v7/front-rig/guest-12/front-walk.png",
+      "sha256": "40c463897f721268fcaa90c43a4a989c1dc7618712b8e9c1d542da45f22393fe"
+    },
+    {
+      "file": "character-assets/rigs/hanbok-straight-sleeves-v7/front-rig/guest-12/handLeft.svg",
+      "sha256": "2061994f7c756a1e90a8200d8e883ccf72335a686117f519e79003682cca2d9b"
+    },
+    {
+      "file": "character-assets/rigs/hanbok-straight-sleeves-v7/front-rig/guest-12/handRight.svg",
+      "sha256": "425e4b7603ed6d66b86d0bad9677501d5955c5e1571d1a109b81227917e495e3"
+    },
+    {
+      "file": "character-assets/rigs/hanbok-straight-sleeves-v7/front-rig/guest-12/torso-front.svg",
+      "sha256": "2402868bc27c843d692e7e0762afe2dbe36893f54fb167ad8f30219ab064aae8"
+    },
+    {
+      "file": "character-assets/rigs/hanbok-straight-sleeves-v7/front-rig/guest-12/upperArmLeft.svg",
+      "sha256": "fe788b9d2ca0bcc3927931ae81a899f0ba96a3deca0686b5edbb3640c8bf2c55"
+    },
+    {
+      "file": "character-assets/rigs/hanbok-straight-sleeves-v7/front-rig/guest-12/upperArmRight.svg",
+      "sha256": "6802acf4b36801b8f0de8cfe9a71d4814910101a7412d5d77596e1da9c9c35e4"
+    }
+  ]
+}

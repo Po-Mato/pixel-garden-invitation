@@ -1,0 +1,407 @@
+{
+  "id": "guest-02",
+  "dir": "right",
+  "productionApproved": false,
+  "near": "Right",
+  "far": "Left",
+  "farMaterial": "retained original registered source",
+  "bones": {
+    "root": {
+      "parent": null,
+      "pivot": [
+        96,
+        270
+      ]
+    },
+    "spine": {
+      "parent": "root",
+      "pivot": [
+        96,
+        171
+      ]
+    },
+    "pelvis": {
+      "pivot": [
+        96,
+        207
+      ],
+      "parent": "spine"
+    },
+    "neck": {
+      "pivot": [
+        96,
+        126
+      ],
+      "parent": "spine"
+    },
+    "head": {
+      "parent": "neck",
+      "pivot": [
+        96,
+        126
+      ]
+    },
+    "upperArmLeft": {
+      "pivot": [
+        104,
+        140
+      ],
+      "parent": "spine"
+    },
+    "forearmLeft": {
+      "pivot": [
+        104,
+        170
+      ],
+      "parent": "upperArmLeft"
+    },
+    "handLeft": {
+      "pivot": [
+        105,
+        195
+      ],
+      "parent": "forearmLeft"
+    },
+    "upperArmRight": {
+      "pivot": [
+        89,
+        140
+      ],
+      "parent": "spine"
+    },
+    "forearmRight": {
+      "pivot": [
+        86,
+        170
+      ],
+      "parent": "upperArmRight"
+    },
+    "handRight": {
+      "pivot": [
+        86,
+        195
+      ],
+      "parent": "forearmRight"
+    },
+    "thighLeft": {
+      "pivot": [
+        90,
+        207
+      ],
+      "parent": "pelvis"
+    },
+    "calfLeft": {
+      "pivot": [
+        90,
+        236
+      ],
+      "parent": "thighLeft"
+    },
+    "shoeLeft": {
+      "pivot": [
+        90,
+        260
+      ],
+      "parent": "calfLeft"
+    },
+    "thighRight": {
+      "pivot": [
+        97,
+        207
+      ],
+      "parent": "pelvis"
+    },
+    "calfRight": {
+      "pivot": [
+        97,
+        236
+      ],
+      "parent": "thighRight"
+    },
+    "shoeRight": {
+      "pivot": [
+        97,
+        260
+      ],
+      "parent": "calfRight"
+    }
+  },
+  "parts": [
+    {
+      "name": "torso-right",
+      "parent": "spine",
+      "pivot": [
+        96,
+        171
+      ],
+      "priority": 6,
+      "mask": "M 92 133 L 95 149 L 95 169 L 99 188 L 101 206 L 192 206 L 192 120 L 92 120 Z",
+      "y": 0,
+      "height": 288
+    },
+    {
+      "name": "upperArmRight",
+      "parent": "upperArmRight",
+      "pivot": [
+        89,
+        140
+      ],
+      "priority": 7,
+      "mask": "M 92 133 L 95 149 L 95 169 L 99 188 L 101 206 L 0 206 L 0 126 L 92 126 Z",
+      "y": 0,
+      "height": 172
+    },
+    {
+      "name": "forearmRight",
+      "parent": "forearmRight",
+      "pivot": [
+        86,
+        170
+      ],
+      "priority": 8,
+      "mask": "M 92 133 L 95 149 L 95 169 L 99 188 L 101 206 L 0 206 L 0 126 L 92 126 Z",
+      "y": 168,
+      "height": 25
+    },
+    {
+      "name": "handRight",
+      "parent": "handRight",
+      "pivot": [
+        86,
+        195
+      ],
+      "priority": 8,
+      "mask": "M 92 133 L 95 149 L 95 169 L 99 188 L 101 206 L 0 206 L 0 126 L 92 126 Z",
+      "y": 189,
+      "height": 99
+    }
+  ],
+  "frames": [
+    {
+      "frame": 1,
+      "forward": "Left",
+      "pose": {
+        "forward": "Left",
+        "rotations": {
+          "upperArmLeft": 3,
+          "forearmLeft": -1,
+          "handLeft": -2,
+          "thighLeft": -8,
+          "calfLeft": 8,
+          "shoeLeft": 0,
+          "thighRight": 8,
+          "calfRight": 8,
+          "shoeRight": -16,
+          "upperArmRight": -3,
+          "forearmRight": 1,
+          "handRight": 2
+        },
+        "depth": {
+          "Left": 0.2822260064944544,
+          "Right": 1.211945303974801
+        }
+      },
+      "connections": [
+        {
+          "a": "neck-right",
+          "b": "torso-right",
+          "pixelsA": 130,
+          "pixelsB": 433,
+          "overlap": 0,
+          "adjacent": 5,
+          "connected": true
+        },
+        {
+          "a": "torso-right",
+          "b": "upperArmRight",
+          "pixelsA": 433,
+          "pixelsB": 611,
+          "overlap": 8,
+          "adjacent": 39,
+          "connected": true
+        },
+        {
+          "a": "upperArmRight",
+          "b": "forearmRight",
+          "pixelsA": 611,
+          "pixelsB": 323,
+          "overlap": 47,
+          "adjacent": 14,
+          "connected": true
+        },
+        {
+          "a": "forearmRight",
+          "b": "handRight",
+          "pixelsA": 323,
+          "pixelsB": 74,
+          "overlap": 40,
+          "adjacent": 11,
+          "connected": true
+        }
+      ]
+    },
+    {
+      "frame": 2,
+      "forward": null,
+      "pose": {
+        "forward": null,
+        "rotations": {},
+        "depth": {
+          "Left": 0,
+          "Right": 0
+        }
+      },
+      "connections": [
+        {
+          "a": "neck-right",
+          "b": "torso-right",
+          "pixelsA": 130,
+          "pixelsB": 433,
+          "overlap": 0,
+          "adjacent": 5,
+          "connected": true
+        },
+        {
+          "a": "torso-right",
+          "b": "upperArmRight",
+          "pixelsA": 433,
+          "pixelsB": 612,
+          "overlap": 0,
+          "adjacent": 42,
+          "connected": true
+        },
+        {
+          "a": "upperArmRight",
+          "b": "forearmRight",
+          "pixelsA": 612,
+          "pixelsB": 323,
+          "overlap": 53,
+          "adjacent": 13,
+          "connected": true
+        },
+        {
+          "a": "forearmRight",
+          "b": "handRight",
+          "pixelsA": 323,
+          "pixelsB": 72,
+          "overlap": 42,
+          "adjacent": 11,
+          "connected": true
+        }
+      ]
+    },
+    {
+      "frame": 3,
+      "forward": "Right",
+      "pose": {
+        "forward": "Right",
+        "rotations": {
+          "upperArmLeft": -3,
+          "forearmLeft": 1,
+          "handLeft": 2,
+          "thighRight": -8,
+          "calfRight": 8,
+          "shoeRight": 0,
+          "thighLeft": 8,
+          "calfLeft": 8,
+          "shoeLeft": -16,
+          "upperArmRight": 3,
+          "forearmRight": -1,
+          "handRight": -2
+        },
+        "depth": {
+          "Left": 1.211945303974801,
+          "Right": 0.2822260064944544
+        }
+      },
+      "connections": [
+        {
+          "a": "neck-right",
+          "b": "torso-right",
+          "pixelsA": 130,
+          "pixelsB": 433,
+          "overlap": 0,
+          "adjacent": 5,
+          "connected": true
+        },
+        {
+          "a": "torso-right",
+          "b": "upperArmRight",
+          "pixelsA": 433,
+          "pixelsB": 615,
+          "overlap": 0,
+          "adjacent": 35,
+          "connected": true
+        },
+        {
+          "a": "upperArmRight",
+          "b": "forearmRight",
+          "pixelsA": 615,
+          "pixelsB": 316,
+          "overlap": 52,
+          "adjacent": 15,
+          "connected": true
+        },
+        {
+          "a": "forearmRight",
+          "b": "handRight",
+          "pixelsA": 316,
+          "pixelsB": 71,
+          "overlap": 41,
+          "adjacent": 11,
+          "connected": true
+        }
+      ]
+    },
+    {
+      "frame": 4,
+      "forward": null,
+      "pose": {
+        "forward": null,
+        "rotations": {},
+        "depth": {
+          "Left": 0,
+          "Right": 0
+        }
+      },
+      "connections": [
+        {
+          "a": "neck-right",
+          "b": "torso-right",
+          "pixelsA": 130,
+          "pixelsB": 433,
+          "overlap": 0,
+          "adjacent": 5,
+          "connected": true
+        },
+        {
+          "a": "torso-right",
+          "b": "upperArmRight",
+          "pixelsA": 433,
+          "pixelsB": 612,
+          "overlap": 0,
+          "adjacent": 42,
+          "connected": true
+        },
+        {
+          "a": "upperArmRight",
+          "b": "forearmRight",
+          "pixelsA": 612,
+          "pixelsB": 323,
+          "overlap": 53,
+          "adjacent": 13,
+          "connected": true
+        },
+        {
+          "a": "forearmRight",
+          "b": "handRight",
+          "pixelsA": 323,
+          "pixelsB": 72,
+          "overlap": 42,
+          "adjacent": 11,
+          "connected": true
+        }
+      ]
+    }
+  ]
+}

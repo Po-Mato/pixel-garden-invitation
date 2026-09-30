@@ -3,7 +3,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import sharp from "sharp";
 import assert from "node:assert/strict";
-import { verifyStorybookCandidate, storybookStagingDirectory } from "./lib/storybookReleaseCandidate.mjs";
+import { verifyFullReviewProductionSources, fullReviewDirectory } from "./lib/fullReviewProductionSources.mjs";
 
 const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const catalogPath = path.join(projectRoot, "character-assets/guest-character-presets.json");
@@ -64,10 +64,10 @@ export async function auditPhotoEffectWalkSheet(filePath, guestId) {
   assert.deepEqual(skeleton.canvas, [192, 288]);
   assert.deepEqual([skeleton.geometry.headHeight, skeleton.geometry.bodyHeight, skeleton.geometry.characterHeight], [72, 144, 216]);
   assert.equal(skeleton.geometry.baselineY - skeleton.geometry.headTop, 216);
-  const manifest = JSON.parse(await fs.readFile(path.join(projectRoot, storybookStagingDirectory, "build-manifest.json"), "utf8"));
+  const manifest = JSON.parse(await fs.readFile(path.join(projectRoot, fullReviewDirectory, "build-manifest.json"), "utf8"));
   const source = manifest.characters.find(character => character.characterId === guestId);
   assert.ok(source, `Missing reviewed source for ${guestId}`);
-  const expected = await sharp(path.join(projectRoot, storybookStagingDirectory, source.presetId, `${source.presetId}__walk-runtime.png`))
+  const expected = await sharp(path.join(projectRoot, fullReviewDirectory, source.presetId, `${source.presetId}__walk-runtime.png`))
     .resize(192, 288, { fit: "fill", kernel: sharp.kernel.nearest }).ensureAlpha().raw().toBuffer();
   const actual = await sharp(filePath).ensureAlpha().raw().toBuffer();
   assert.ok(actual.equals(expected), `${guestId}: world frames differ from the whole-sheet source export`);
@@ -161,7 +161,7 @@ async function renderCard(report, cardWidth, cardHeight) {
 }
 
 export async function collectPhotoEffectAuditReports() {
-  await verifyStorybookCandidate(projectRoot);
+  await verifyFullReviewProductionSources(projectRoot);
   const catalog = JSON.parse(await fs.readFile(catalogPath, "utf8"));
   if (!Array.isArray(catalog.presets) || catalog.presets.length !== 12) {
     throw new Error(`photo effect audit requires 12 presets, received ${catalog.presets?.length ?? 0}`);

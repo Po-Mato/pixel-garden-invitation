@@ -1,0 +1,31 @@
+{
+  "allTenContactSheetsDirectlyInspected": true,
+  "passed": true,
+  "scope": "offline production CSS/background model, not live browser or physical device",
+  "observations": [
+    "Home and subway-train gain only a 25%-opacity opposite-edge 1px shadow; original two shadows and artwork pixels remain unchanged.",
+    "Neighborhood uses separate dark inner and light outer edge shadows at the original offsets, preserving outline extent and character proportions.",
+    "No excessive outline thickness or facial/garment detail loss visible at48×72 on10 contact sheets.",
+    "Seven unaffected zone outputs are byte-identical to baseline."
+  ],
+  "thresholdsUnmodified": true,
+  "sourceArtworkUnmodified": true,
+  "stylesTest": {
+    "passed": 82,
+    "failed": 0
+  },
+  "samples": 1920,
+  "standardFailures": 0,
+  "displayFailures": 0,
+  "standardMinimum": 1.175074889587502,
+  "displayMinimum": 1.1238800543692302,
+  "unchangedZoneOutputs": [
+    "subway-station.png",
+    "venue-exterior.png",
+    "lobby.png",
+    "bridal-room.png",
+    "ceremony-hall.png",
+    "banquet.png",
+    "restroom.png"
+  ]
+}
