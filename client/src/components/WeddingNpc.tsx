@@ -1,3 +1,4 @@
+import { coupleSpriteAssetRevision } from "../character/assetRevisions";
 import type { Direction } from "@wedding-game/shared";
 import type { CSSProperties, MouseEvent } from "react";
 import type { NpcReaction } from "../game/npcMotion";
@@ -38,7 +39,7 @@ export function WeddingNpc({
     "--npc-display-height": "72px",
     "--npc-sheet-display-width": useWalkSheet ? "144px" : "96px",
     "--npc-sheet-display-height": useWalkSheet ? "288px" : "72px",
-    backgroundImage: `url("${import.meta.env.BASE_URL}characters/generated/npc/${id}__${useWalkSheet ? "walk" : "idle"}.png")`,
+    backgroundImage: `url("${import.meta.env.BASE_URL}characters/generated/npc/${id}__${useWalkSheet ? "walk" : "idle"}.png?v=${coupleSpriteAssetRevision}")`,
     backgroundPosition: useWalkSheet
       ? `${renderedFrame * -48}px ${directionRow[direction] * -72}px`
       : "0 0"

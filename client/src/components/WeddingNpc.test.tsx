@@ -13,6 +13,7 @@ it("renders an accessible exclusive npc button", () => {
   expect(onSelect).toHaveBeenCalledTimes(1);
   expect(screen.getByText(label)).toBeInTheDocument();
   const sprite = container.querySelector(".wedding-npc__sprite");
+  expect(sprite?.getAttribute("style")).toContain("bride__idle.png?v=couple-aligned-v1-20260930");
   expect(sprite).toHaveStyle({
     "--npc-frame-width": "96px",
     "--npc-frame-height": "144px"
@@ -32,6 +33,7 @@ it("보행 방향과 인사 반응을 실제 스프라이트에 반영한다", (
     />
   );
 
+  expect(container.querySelector(".wedding-npc__sprite")?.getAttribute("style")).toContain("groom__walk.png?v=couple-aligned-v1-20260930");
   expect(screen.getByText("어서 오세요")).toBeInTheDocument();
   expect(screen.getByRole("button", { name: "신랑와 대화하기" })).toHaveAttribute("data-moving", "true");
   expect(container.querySelector(".wedding-npc__sprite")).toHaveStyle({

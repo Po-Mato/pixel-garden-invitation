@@ -1,3 +1,4 @@
+import { coupleSpriteAssetRevision } from "../character/assetRevisions";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Camera, Check, Download, Images, MessageCircleHeart, Route, Send, Share2, Sparkles, X } from "lucide-react";
 import type { CharacterAppearance } from "@wedding-game/shared";
@@ -175,14 +176,14 @@ export function JourneyCompletion({
           <div className="journey-completion__cast" aria-hidden="true">
             <span
               className="journey-completion__npc journey-completion__npc--bride"
-              style={{ backgroundImage: `url("${import.meta.env.BASE_URL}characters/generated/npc/bride__idle.png")` }}
+              style={{ backgroundImage: `url("${import.meta.env.BASE_URL}characters/generated/npc/bride__idle.png?v=${coupleSpriteAssetRevision}")` }}
             />
             <span className="journey-completion__guest">
               <CharacterSprite appearance={appearance} direction="down" moving={false} displayMode="world" />
             </span>
             <span
               className="journey-completion__npc journey-completion__npc--groom"
-              style={{ backgroundImage: `url("${import.meta.env.BASE_URL}characters/generated/npc/groom__idle.png")` }}
+              style={{ backgroundImage: `url("${import.meta.env.BASE_URL}characters/generated/npc/groom__idle.png?v=${coupleSpriteAssetRevision}")` }}
             />
           </div>
           <div className="journey-completion__sparkles" aria-hidden="true">

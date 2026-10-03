@@ -1,3 +1,4 @@
+import { coupleSpriteAssetRevision } from "../character/assetRevisions";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Camera, Download, Flower2, Hand, Heart, Palette, Ribbon, RotateCcw, Send, Sparkles, X } from "lucide-react";
 import type { CharacterAppearance } from "@wedding-game/shared";
@@ -256,7 +257,7 @@ export function WeddingPhotoBooth({
                   backgroundPosition: "0 0",
                   backgroundSize: "96px 144px"
                 } : {
-                  backgroundImage: `url("${import.meta.env.BASE_URL}characters/generated/npc/bride__walk.png")`,
+                  backgroundImage: `url("${import.meta.env.BASE_URL}characters/generated/npc/bride__walk.png?v=${coupleSpriteAssetRevision}")`,
                   backgroundPosition: "-96px 0",
                   backgroundSize: "288px 576px"
                 }}

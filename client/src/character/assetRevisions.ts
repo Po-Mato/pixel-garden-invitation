@@ -1,3 +1,4 @@
+export const coupleSpriteAssetRevision = "couple-aligned-v1-20260930";
 export const guestCutoutAssetRevision = "guest-full-review-v1-20260930";
 
 export const guestAssetRevisions: Readonly<Partial<Record<string, string>>> = {

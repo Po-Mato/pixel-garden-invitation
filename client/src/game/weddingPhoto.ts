@@ -1,3 +1,4 @@
+import { coupleSpriteAssetRevision } from "../character/assetRevisions";
 import {
   type CharacterAppearance
 } from "@wedding-game/shared";
@@ -389,7 +390,7 @@ async function loadWeddingPhotoNpcSprite(
     }
 
     const frame = weddingPhotoNpcFrames[kind];
-    const image = await loadImage(`${baseUrl}characters/generated/npc/${frame.file}`);
+    const image = await loadImage(`${baseUrl}characters/generated/npc/${frame.file}?v=${coupleSpriteAssetRevision}`);
     if (!image) return null;
 
     const canvas = document.createElement("canvas");
