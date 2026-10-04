@@ -229,7 +229,7 @@ describe("connectRealtime", () => {
     messages.forEach((message, index) => expect(onMessage).toHaveBeenNthCalledWith(index + 1, message));
   });
 
-  it("normalizes room guests with invalid appearances to the default preset", () => {
+  it("normalizes room guests with invalid appearances and decomposed nicknames", () => {
     const onMessage = vi.fn();
     connectRealtime("wss://worker.example.com/rooms/sample-garden", joinMessage, {
       onOpen: vi.fn(),
@@ -246,7 +246,7 @@ describe("connectRealtime", () => {
           guestId: "guest_self",
           guests: [{
             guestId: "guest_remote",
-            nickname: "하객2",
+            nickname: "하객2".normalize("NFD"),
             appearance: { family: "bad" },
             x: 39,
             y: 72,
@@ -265,6 +265,7 @@ describe("connectRealtime", () => {
       guestId: "guest_self",
       guests: [expect.objectContaining({
         guestId: "guest_remote",
+        nickname: "하객2",
         appearance: defaultCharacterAppearance,
         zoneId: "lobby"
       })]

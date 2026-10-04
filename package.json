@@ -102,11 +102,13 @@
     "gallery:audit": "node scripts/audit-wedding-gallery-assets.mjs",
     "gallery:test": "node --test scripts/weddingGalleryAssets.test.mjs",
     "build": "pnpm gallery:audit && pnpm maps:audit && pnpm characters:audit && pnpm characters:generate && pnpm photo-effects:audit && pnpm characters:build-couple-puppets && pnpm --filter @wedding-game/shared build && pnpm --filter @wedding-game/client build && pnpm --filter @wedding-game/worker build",
-    "test": "pnpm fonts:check-critical-display && pnpm gallery:audit && pnpm gallery:test && pnpm maps:audit && pnpm maps:test && pnpm characters:audit && pnpm characters:test && pnpm photo-effects:audit && pnpm photo-effects:test && pnpm visual:test && pnpm --filter @wedding-game/shared test && pnpm --filter @wedding-game/client test && pnpm --filter @wedding-game/worker test",
+    "test": "pnpm fonts:check-critical-game-ui && pnpm fonts:check-critical-display && pnpm gallery:audit && pnpm gallery:test && pnpm maps:audit && pnpm maps:test && pnpm characters:audit && pnpm characters:test && pnpm photo-effects:audit && pnpm photo-effects:test && pnpm visual:test && pnpm --filter @wedding-game/shared test && pnpm --filter @wedding-game/client test && pnpm --filter @wedding-game/worker test",
     "typecheck": "pnpm --filter @wedding-game/shared typecheck && pnpm --filter @wedding-game/client typecheck && pnpm --filter @wedding-game/worker typecheck",
     "characters:review:test-structure": "node --test scripts/fullCharacterReview.test.mjs scripts/fullReviewProductionSources.test.mjs scripts/fullReviewProductionPreview.test.mjs scripts/referenceAsset.test.mjs scripts/coupleThreeHeadSprite.test.mjs scripts/coupleStyleProductionSources.test.mjs scripts/coupleStyleMotion.test.mjs",
     "characters:build-couple-style": "node scripts/normalize-couple-style-sources.mjs && node scripts/build-couple-style-pilot.mjs",
-    "dev:couple-style": "pnpm characters:build-couple-style && pnpm --filter @wedding-game/client exec vite --host 127.0.0.1 --port 4173"
+    "dev:couple-style": "pnpm characters:build-couple-style && pnpm --filter @wedding-game/client exec vite --host 127.0.0.1 --port 4173",
+    "fonts:build-critical-game-ui": "node scripts/build-critical-game-ui-font.mjs",
+    "fonts:check-critical-game-ui": "node --test scripts/criticalGameTypography.test.mjs"
   },
   "devDependencies": {
     "@types/node": "^20.14.0",

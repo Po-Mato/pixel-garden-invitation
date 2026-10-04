@@ -10,6 +10,12 @@ import {
   usePublishedInvitationContent
 } from "./PublishedInvitationContentContext";
 
+const typography = vi.hoisted(() => ({ load: vi.fn(() => Promise.resolve(true)) }));
+vi.mock("../game/gameTypography", async (original) => ({
+  ...await original<typeof import("../game/gameTypography")>(),
+  loadExtendedGameTypography: typography.load
+}));
+
 const api = vi.hoisted(() => ({
   fetchPublishedInvitationRelease: vi.fn(),
   invitationGalleryMediaUrl: vi.fn((assetId: string, width: number) => `https://worker.test/media/${assetId}-${width}.webp`)
@@ -57,6 +63,7 @@ describe("PublishedInvitationContentProvider", () => {
     expect(screen.getByText("content:static")).toBeInTheDocument();
     expect(screen.getByText(invitationContent.content.coupleMessage)).toBeInTheDocument();
     await waitFor(() => expect(api.fetchPublishedInvitationRelease).toHaveBeenCalled());
+    expect(typography.load).not.toHaveBeenCalled();
   });
 
   it("검증된 공개본을 소개·연락처·공유 문구에 함께 적용한다", async () => {
@@ -79,6 +86,17 @@ describe("PublishedInvitationContentProvider", () => {
     expect(screen.getByText("공개된 공동 인사말")).toBeInTheDocument();
     expect(screen.getByText("010-1234-5678")).toBeInTheDocument();
     expect(screen.getByText("공개된 공유 설명")).toBeInTheDocument();
+  });
+
+  it("loads extended fonts for previously unknown published text and retries on reconnect", async () => {
+    const content = buildDefaultEditableInvitationContent(invitationContent.event, invitationContent.content);
+    content.coupleIntroduction.together = "힣";
+    api.fetchPublishedInvitationRelease.mockResolvedValue({ content, gallery: null, releaseNumber: 1, contentRevision: 1, galleryRevision: null, publishedAt: null });
+    render(<PublishedInvitationContentProvider><Consumer /></PublishedInvitationContentProvider>);
+    await screen.findByText("힣");
+    await waitFor(() => expect(typography.load).toHaveBeenCalledTimes(1));
+    window.dispatchEvent(new Event("online"));
+    expect(typography.load).toHaveBeenCalledTimes(2);
   });
 
   it("공개본 요청 실패 시 정적 콘텐츠를 유지한다", async () => {

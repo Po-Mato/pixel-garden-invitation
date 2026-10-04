@@ -99,7 +99,7 @@ function normalizeRoomGuest(value: unknown): RoomGuest | null {
 
   return {
     guestId: value.guestId,
-    nickname: value.nickname,
+    nickname: value.nickname.normalize("NFC"),
     appearance,
     x: value.x as number,
     y: value.y as number,

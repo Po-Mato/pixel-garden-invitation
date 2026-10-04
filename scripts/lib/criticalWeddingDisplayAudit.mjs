@@ -2,6 +2,8 @@ import { createHash } from "node:crypto";
 import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import ts from "typescript";
+import { collectFixedGameHangul } from "./criticalGameTypographyAudit.mjs";
+import { cmap } from "./woff2Cmap.mjs";
 
 export const criticalWeddingDisplaySourceCommit = "73fc2ff52147e34a74804b500cf89ca219eac55d";
 
@@ -125,6 +127,9 @@ export async function collectCriticalWeddingDisplaySources(rootDir) {
     const sourceText = await readFile(path.join(rootDir, relativePath), "utf8");
     return { relativePath, text: extractCriticalWeddingDisplayText(sourceText, relativePath) };
   }));
+  const fixed = await collectFixedGameHangul(rootDir);
+  const included = new Set(sourceEntries.map(entry=>entry.relativePath));
+  sourceEntries.push(...fixed.sourceEntries.filter(entry=>!included.has(entry.relativePath)));
   const requiredCodePoints = normalizeCriticalCodePoints(sourceEntries.map(({ text }) => text).join("\n"));
   return { sourceEntries, requiredCodePoints, requiredTextSha256: sha256(requiredCodePoints) };
 }
@@ -143,17 +148,21 @@ export function createCriticalWeddingDisplayManifest({ corpus, font, requiredCod
   };
 }
 
-export function auditCriticalWeddingDisplay({ corpus, font, manifest, requiredCodePoints }) {
+export function auditCriticalWeddingDisplay({ corpus, font, manifest, requiredCodePoints, fontCodePoints, sourceEntries }) {
   const issues = [];
   const normalizedCorpus = normalizeCriticalCodePoints(corpus);
   const corpusSet = new Set(normalizedCorpus);
   const missingCodePoints = [...requiredCodePoints].filter((character) => !corpusSet.has(character));
   if (missingCodePoints.length > 0) issues.push(`디스플레이 글꼴 코퍼스 누락: ${missingCodePoints.join("")}`);
+  if (fontCodePoints) {
+    const missingActual = [...requiredCodePoints].filter(c=>!fontCodePoints.has(c.codePointAt(0)));
+    if (missingActual.length) issues.push(`디스플레이 실제 글리프 누락: ${missingActual.join("")}`);
+  }
   const expected = createCriticalWeddingDisplayManifest({
     corpus,
     font,
     requiredCodePoints,
-    sourceFileCount: criticalWeddingDisplaySourceFiles.length
+    sourceFileCount: sourceEntries?.length ?? criticalWeddingDisplaySourceFiles.length
   });
   if (manifest.version !== expected.version) issues.push("디스플레이 글꼴 매니페스트 버전 불일치");
   if (manifest.sourceCommit !== expected.sourceCommit) issues.push("디스플레이 글꼴 원본 커밋 불일치");
@@ -174,7 +183,7 @@ export async function readCriticalWeddingDisplayAuditInputs(rootDir) {
     readFile(path.join(fontDir, "gowun-dodum-critical.manifest.json"), "utf8"),
     collectCriticalWeddingDisplaySources(rootDir)
   ]);
-  return { corpus, font, manifest: JSON.parse(manifestText), ...sources };
+  return { corpus, font, manifest: JSON.parse(manifestText), fontCodePoints: cmap(path.join(fontDir, "gowun-dodum-critical.woff2")), ...sources };
 }
 
 export async function writeCriticalWeddingDisplayManifest(rootDir) {

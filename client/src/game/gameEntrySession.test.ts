@@ -20,6 +20,16 @@ describe("gameEntrySession", () => {
     });
   });
 
+  it("normalizes decomposed nicknames in new and legacy sessions", () => {
+    const storage = memoryStorage();
+    const nickname = "한하객".normalize("NFD");
+    const updatedAt = "2026-07-28T10:00:00.000Z";
+    saveGameEntrySession({ nickname, appearance: defaultCharacterAppearance }, storage, updatedAt);
+    expect(JSON.parse(storage.getItem()!).nickname).toBe("한하객");
+    storage.setItem("legacy", JSON.stringify({ version: 1, nickname, appearance: defaultCharacterAppearance, updatedAt }));
+    expect(loadGameEntrySession(storage, Date.parse(updatedAt))?.nickname).toBe("한하객");
+  });
+
   it("does not auto-resume a stale profile", () => {
     const storage = memoryStorage();
     saveGameEntrySession({ nickname: "검증하객", appearance: defaultCharacterAppearance }, storage, "2026-05-01T10:00:00.000Z");

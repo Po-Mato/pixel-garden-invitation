@@ -123,12 +123,12 @@ describe("EntryScreen", () => {
     expect(onEnter).not.toHaveBeenCalled();
   });
 
-  it("submits trimmed nickname", () => {
+  it("submits a trimmed, NFC-normalized nickname", () => {
     const onEnter = vi.fn();
     render(<EntryScreen onEnter={onEnter} />);
     openCharacterPicker();
 
-    fireEvent.change(screen.getByLabelText("닉네임"), { target: { value: "  하객2  " } });
+    fireEvent.change(screen.getByLabelText("닉네임"), { target: { value: "  하객2  ".normalize("NFD") } });
     fireEvent.click(screen.getByRole("button", { name: "정원 입장" }));
 
     expect(onEnter).toHaveBeenCalledWith({

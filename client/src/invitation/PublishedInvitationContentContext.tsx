@@ -21,6 +21,7 @@ import {
 import {
   invitationGalleryMediaUrl
 } from "../api/invitationGalleryApi";
+import { loadExtendedGameTypography, requiresExtendedGameTypography } from "../game/gameTypography";
 import { fetchPublishedInvitationRelease } from "../api/invitationReleaseApi";
 
 export type PublishedInvitationContent = {
@@ -157,6 +158,16 @@ export function PublishedInvitationContentProvider({ children }: { children: Rea
     }).catch(() => undefined);
     return () => controller.abort();
   }, []);
+
+  useEffect(() => {
+    // Published descriptions and captions are not known when the static font is built.
+    const text = JSON.stringify([published?.editable, publishedGallery?.gallery]);
+    if (!requiresExtendedGameTypography([text])) return;
+    const ensurePublishedTypography = () => { void loadExtendedGameTypography(); };
+    ensurePublishedTypography();
+    window.addEventListener("online", ensurePublishedTypography);
+    return () => window.removeEventListener("online", ensurePublishedTypography);
+  }, [published, publishedGallery]);
 
   const value = useMemo<PublishedInvitationContent>(() => {
     const editable = published?.editable ?? defaultEditable;
