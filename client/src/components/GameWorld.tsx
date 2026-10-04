@@ -4615,12 +4615,17 @@ export function GameWorld({ profile, weddingDayPreview = false, onOpenQuickView 
     remoteGuestNameplateObstacles
   );
   useEffect(() => {
-    if (requiresExtendedGameTypography([
-      profile.nickname,
-      ...visibleRemoteGuests.map(({ nickname }) => nickname)
-    ])) {
-      void loadExtendedGameTypography();
-    }
+    const ensureNicknameTypography = () => {
+      if (requiresExtendedGameTypography([
+        profile.nickname,
+        ...visibleRemoteGuests.map(({ nickname }) => nickname)
+      ])) {
+        void loadExtendedGameTypography();
+      }
+    };
+    ensureNicknameTypography();
+    window.addEventListener("online", ensureNicknameTypography);
+    return () => window.removeEventListener("online", ensureNicknameTypography);
   }, [profile.nickname, visibleRemoteGuests]);
   const activeJourneyMarkers = journeyCheckpoints
     .filter((checkpoint) => checkpoint.zoneId === activeZone.id)
