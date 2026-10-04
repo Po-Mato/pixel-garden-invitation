@@ -4,6 +4,7 @@ import {
   guestPresetFrame,
   resolveGuestPreset
 } from "@wedding-game/shared";
+import { resolveCoupleStyleLayer, resolveCoupleStylePortraitUrl } from "./coupleStyleAssets";
 import { guestAssetRevisions } from "./assetRevisions";
 import { resolveGuest03PilotLayer } from "./guest03Pilot";
 import { resolveGuest216PilotLayer } from "./guest216Pilot";
@@ -28,6 +29,8 @@ export function resolveCharacterPortraitUrl(
   baseUrl = import.meta.env.BASE_URL
 ) {
   const preset = resolveGuestPreset(appearance);
+  const reviewedPortrait = resolveCoupleStylePortraitUrl(preset.id, baseUrl);
+  if (reviewedPortrait) return reviewedPortrait;
   return assetUrl(
     baseUrl,
     `guests/portraits/${preset.id}.png`,
@@ -41,6 +44,8 @@ export function resolveCharacterLayers(
   displayMode: CharacterDisplayMode = "world"
 ): ResolvedCharacterLayer[] {
   const preset = resolveGuestPreset(appearance);
+  const reviewedLayer = resolveCoupleStyleLayer(preset.id, baseUrl, displayMode);
+  if (reviewedLayer) return [reviewedLayer];
   if (import.meta.env.DEV && import.meta.env.VITE_GUEST03_PILOT === "true") {
     const pilot = resolveGuest03PilotLayer(preset.id, true);
     if (pilot) return [pilot];

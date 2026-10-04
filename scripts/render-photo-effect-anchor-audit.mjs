@@ -3,12 +3,14 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import sharp from "sharp";
 import assert from "node:assert/strict";
-import { verifyFullReviewProductionSources, fullReviewDirectory } from "./lib/fullReviewProductionSources.mjs";
+import { verifyCoupleStyleProductionSources } from "./lib/coupleStyleProductionSources.mjs";
+import { renderCoupleStyleWorldFrame } from "./lib/coupleStyleMapComposite.mjs";
+const coupleStyleDirectory="character-assets/generated/couple-style-v1";
 
 const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const catalogPath = path.join(projectRoot, "character-assets/guest-character-presets.json");
-const portraitRoot = path.join(projectRoot, "client/public/characters/generated/guests/portraits");
-const walkRoot = path.join(projectRoot, "client/public/characters/generated/guests/world");
+const portraitRoot = path.join(projectRoot, "client/public/characters/generated/couple-style-v1/portraits");
+const walkRoot = path.join(projectRoot, "client/public/characters/generated/couple-style-v1");
 const photoZoneBackgroundPath = path.join(projectRoot, "client/public/assets/maps/v2/ceremony-hall/background.webp");
 const walkDirections = ["down", "left", "right", "up"];
 const walkFrameWidth = 48;
@@ -64,33 +66,32 @@ export async function auditPhotoEffectWalkSheet(filePath, guestId) {
   assert.deepEqual(skeleton.canvas, [192, 288]);
   assert.deepEqual([skeleton.geometry.headHeight, skeleton.geometry.bodyHeight, skeleton.geometry.characterHeight], [72, 144, 216]);
   assert.equal(skeleton.geometry.baselineY - skeleton.geometry.headTop, 216);
-  const manifest = JSON.parse(await fs.readFile(path.join(projectRoot, fullReviewDirectory, "build-manifest.json"), "utf8"));
+  const manifest = JSON.parse(await fs.readFile(path.join(projectRoot, coupleStyleDirectory, "build-manifest.json"), "utf8"));
   const source = manifest.characters.find(character => character.characterId === guestId);
   assert.ok(source, `Missing reviewed source for ${guestId}`);
-  const expected = await sharp(path.join(projectRoot, fullReviewDirectory, source.presetId, `${source.presetId}__walk-runtime.png`))
-    .resize(192, 288, { fit: "fill", kernel: sharp.kernel.nearest }).ensureAlpha().raw().toBuffer();
+  const expected = await sharp(path.join(projectRoot, coupleStyleDirectory, `${source.presetId}__walk.png`))
+    .ensureAlpha().raw().toBuffer();
   const actual = await sharp(filePath).ensureAlpha().raw().toBuffer();
   assert.ok(actual.equals(expected), `${guestId}: world frames differ from the whole-sheet source export`);
   const metadata = await sharp(filePath).metadata();
-  if (metadata.width !== walkFrameWidth * walkFrameColumns || metadata.height !== walkFrameHeight * 4) {
-    throw new Error(`${guestId}: walk sheet must be 192x288`);
+  if (metadata.width !== 384 || metadata.height !== 576) {
+    throw new Error(`${guestId}: runtime walk sheet must be 384x576`);
   }
   const frames = [];
+  const displayedFrames=[];
   for (let row = 0; row < walkDirections.length; row += 1) {
     for (let column = 0; column < walkFrameColumns; column += 1) {
-      const { data, info } = await sharp(filePath)
-        .extract({ left: column * walkFrameWidth, top: row * walkFrameHeight, width: walkFrameWidth, height: walkFrameHeight })
-        .ensureAlpha()
-        .raw()
-        .toBuffer({ resolveWithObject: true });
+      const transformed=await renderCoupleStyleWorldFrame(await sharp(filePath).extract({left:column*96,top:row*144,width:96,height:144}).png().toBuffer());
+      const displayed=await sharp(transformed).extract({left:18,top:16,width:48,height:72}).png().toBuffer();
+      displayedFrames.push({input:displayed,left:column*48,top:row*72});
+      const {data,info}=await sharp(displayed).ensureAlpha().raw().toBuffer({resolveWithObject:true});
       const bounds = opaqueBounds(data, info.width, info.height);
       if (!bounds) throw new Error(`${guestId}/${walkDirections[row]}/step-${column + 1}: frame is transparent`);
-      // Exact anatomical planes, not the count of antialiased pixel rows.
-      // 54/4=13.5 and 270/4=67.5 intersect 55 raster rows while remaining
-      // exactly 54 display pixels apart. The full decoded sheet is checked above.
-      const rigBounds = { ...bounds, top: skeleton.geometry.headTop / 4,
-        bottom: skeleton.geometry.baselineY / 4, height: skeleton.geometry.characterHeight / 4 };
-      assert.equal(rigBounds.height, 54);
+      // Same authored planes transformed by the world-only 7/6 CSS scale.
+      // The foot anchor stays at 67.5; the visible design height becomes 63.
+      const rigBounds = { ...bounds, top: skeleton.geometry.headTop / 4 * 7/6 - 11.25,
+        bottom: skeleton.geometry.baselineY / 4, height: skeleton.geometry.characterHeight / 4 * 7/6 };
+      assert.equal(rigBounds.height, 63);
       frames.push({
         direction: walkDirections[row],
         step: column + 1,
@@ -102,7 +103,8 @@ export async function auditPhotoEffectWalkSheet(filePath, guestId) {
       });
     }
   }
-  return { filePath, width: metadata.width, height: metadata.height, frames };
+  const displayBuffer=await sharp({create:{width:192,height:288,channels:4,background:"#00000000"}}).composite(displayedFrames).png().toBuffer();
+  return { filePath, width: metadata.width, height: metadata.height, frames, displayBuffer };
 }
 
 function escapeXml(value) {
@@ -123,7 +125,7 @@ async function renderCard(report, cardWidth, cardHeight) {
     .modulate({ brightness: 0.98, saturation: 0.92 })
     .toBuffer();
   const portrait = await sharp(report.filePath).resize(144, 216, { fit: "fill" }).toBuffer();
-  const walkSheet = await sharp(walk.filePath).resize(384, 576, { kernel: "nearest" }).toBuffer();
+  const walkSheet = await sharp(walk.displayBuffer).resize(384, 576, { kernel: "nearest" }).toBuffer();
   const walkGuides = walk.frames.map((frame) => {
     const frameX = walkX + frame.column * walkFrameWidth * walkScale;
     const frameY = walkY + frame.row * walkFrameHeight * walkScale;
@@ -161,7 +163,7 @@ async function renderCard(report, cardWidth, cardHeight) {
 }
 
 export async function collectPhotoEffectAuditReports() {
-  await verifyFullReviewProductionSources(projectRoot);
+  await verifyCoupleStyleProductionSources(projectRoot);
   const catalog = JSON.parse(await fs.readFile(catalogPath, "utf8"));
   if (!Array.isArray(catalog.presets) || catalog.presets.length !== 12) {
     throw new Error(`photo effect audit requires 12 presets, received ${catalog.presets?.length ?? 0}`);
@@ -190,7 +192,7 @@ export async function renderPhotoEffectAnchorAudit(outputPath = defaultPhotoEffe
   }))).png().toFile(outputPath);
   await fs.writeFile(outputPath.replace(/\.png$/, ".json"), `${JSON.stringify(reports.map(({ filePath, walk, ...report }) => ({
     ...report,
-    walk: { ...walk, filePath: undefined }
+    walk: { ...walk, filePath: undefined, displayBuffer: undefined }
   })), null, 2)}\n`);
   return reports;
 }

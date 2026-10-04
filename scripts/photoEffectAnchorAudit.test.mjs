@@ -26,7 +26,7 @@ test("audits the exact twelve generated game portraits", async () => {
   ));
   assert.equal(reports.flatMap(({ walk }) => walk.frames).length, 192);
   reports.forEach(({ walk }) => {
-    assert.ok(walk.frames.every(({ rigBounds, anchors }) => rigBounds.height === 54 && rigBounds.top === 13.5 && rigBounds.bottom === 67.5 && anchors.feet.y === 67.5 && anchors.feet.x === 24), "216px source planes retain exact quarter-scale geometry and fixed anchors");
+    assert.ok(walk.frames.every(({ rigBounds, anchors }) => rigBounds.height === 63 && rigBounds.top === 4.5 && rigBounds.bottom === 67.5 && anchors.feet.y === 67.5 && anchors.feet.x === 24), "216px source planes use the world 7/6 scale with fixed foot anchors");
     assert.deepEqual(walk.frames.map(({ direction, step }) => `${direction}-${step}`), [
       "down-1", "down-2", "down-3", "down-4",
       "left-1", "left-2", "left-3", "left-4",

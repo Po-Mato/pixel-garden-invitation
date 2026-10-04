@@ -1,0 +1,1013 @@
+{
+  "complete": true,
+  "localDevPilot": true,
+  "rows": [
+    {
+      "id": "guest-01",
+      "direction": "down",
+      "file": "guest-01-down.png",
+      "url": "http://127.0.0.1:4173/characters/generated/couple-style-v1/preview/feminine-long-wave-dress__walk.png?v=couple-style-v1-20261004",
+      "sha256": "3cc49f53295d82adf7d51e7431318cbbd84a061a2fe494bd83dfc893ff1eb97e",
+      "status": 200,
+      "frames": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "preset": "feminine-long-wave-dress",
+      "fallback": false,
+      "size": [
+        96,
+        144
+      ]
+    },
+    {
+      "id": "guest-01",
+      "direction": "left",
+      "file": "guest-01-left.png",
+      "url": "http://127.0.0.1:4173/characters/generated/couple-style-v1/preview/feminine-long-wave-dress__walk.png?v=couple-style-v1-20261004",
+      "sha256": "3cc49f53295d82adf7d51e7431318cbbd84a061a2fe494bd83dfc893ff1eb97e",
+      "status": 200,
+      "frames": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "preset": "feminine-long-wave-dress",
+      "fallback": false,
+      "size": [
+        96,
+        144
+      ]
+    },
+    {
+      "id": "guest-01",
+      "direction": "right",
+      "file": "guest-01-right.png",
+      "url": "http://127.0.0.1:4173/characters/generated/couple-style-v1/preview/feminine-long-wave-dress__walk.png?v=couple-style-v1-20261004",
+      "sha256": "3cc49f53295d82adf7d51e7431318cbbd84a061a2fe494bd83dfc893ff1eb97e",
+      "status": 200,
+      "frames": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "preset": "feminine-long-wave-dress",
+      "fallback": false,
+      "size": [
+        96,
+        144
+      ]
+    },
+    {
+      "id": "guest-01",
+      "direction": "up",
+      "file": "guest-01-up.png",
+      "url": "http://127.0.0.1:4173/characters/generated/couple-style-v1/preview/feminine-long-wave-dress__walk.png?v=couple-style-v1-20261004",
+      "sha256": "3cc49f53295d82adf7d51e7431318cbbd84a061a2fe494bd83dfc893ff1eb97e",
+      "status": 200,
+      "frames": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "preset": "feminine-long-wave-dress",
+      "fallback": false,
+      "size": [
+        96,
+        144
+      ]
+    },
+    {
+      "id": "guest-02",
+      "direction": "down",
+      "file": "guest-02-down.png",
+      "url": "http://127.0.0.1:4173/characters/generated/couple-style-v1/preview/feminine-formal-hanbok__walk.png?v=couple-style-v1-20261004",
+      "sha256": "0ad15a75d00a8324907b28346a4ed20b3c5062dabc02b6586414bbebe9056b16",
+      "status": 200,
+      "frames": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "preset": "feminine-formal-hanbok",
+      "fallback": false,
+      "size": [
+        96,
+        144
+      ]
+    },
+    {
+      "id": "guest-02",
+      "direction": "left",
+      "file": "guest-02-left.png",
+      "url": "http://127.0.0.1:4173/characters/generated/couple-style-v1/preview/feminine-formal-hanbok__walk.png?v=couple-style-v1-20261004",
+      "sha256": "0ad15a75d00a8324907b28346a4ed20b3c5062dabc02b6586414bbebe9056b16",
+      "status": 200,
+      "frames": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "preset": "feminine-formal-hanbok",
+      "fallback": false,
+      "size": [
+        96,
+        144
+      ]
+    },
+    {
+      "id": "guest-02",
+      "direction": "right",
+      "file": "guest-02-right.png",
+      "url": "http://127.0.0.1:4173/characters/generated/couple-style-v1/preview/feminine-formal-hanbok__walk.png?v=couple-style-v1-20261004",
+      "sha256": "0ad15a75d00a8324907b28346a4ed20b3c5062dabc02b6586414bbebe9056b16",
+      "status": 200,
+      "frames": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "preset": "feminine-formal-hanbok",
+      "fallback": false,
+      "size": [
+        96,
+        144
+      ]
+    },
+    {
+      "id": "guest-02",
+      "direction": "up",
+      "file": "guest-02-up.png",
+      "url": "http://127.0.0.1:4173/characters/generated/couple-style-v1/preview/feminine-formal-hanbok__walk.png?v=couple-style-v1-20261004",
+      "sha256": "0ad15a75d00a8324907b28346a4ed20b3c5062dabc02b6586414bbebe9056b16",
+      "status": 200,
+      "frames": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "preset": "feminine-formal-hanbok",
+      "fallback": false,
+      "size": [
+        96,
+        144
+      ]
+    },
+    {
+      "id": "guest-03",
+      "direction": "down",
+      "file": "guest-03-down.png",
+      "url": "http://127.0.0.1:4173/characters/generated/couple-style-v1/preview/masculine-navy-suit__walk.png?v=couple-style-v1-20261004",
+      "sha256": "37beb839a29839c0f8888282ff08901f3bee2bdf19d9ed6488181623931ddda2",
+      "status": 200,
+      "frames": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "preset": "masculine-navy-suit",
+      "fallback": false,
+      "size": [
+        96,
+        144
+      ]
+    },
+    {
+      "id": "guest-03",
+      "direction": "left",
+      "file": "guest-03-left.png",
+      "url": "http://127.0.0.1:4173/characters/generated/couple-style-v1/preview/masculine-navy-suit__walk.png?v=couple-style-v1-20261004",
+      "sha256": "37beb839a29839c0f8888282ff08901f3bee2bdf19d9ed6488181623931ddda2",
+      "status": 200,
+      "frames": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "preset": "masculine-navy-suit",
+      "fallback": false,
+      "size": [
+        96,
+        144
+      ]
+    },
+    {
+      "id": "guest-03",
+      "direction": "right",
+      "file": "guest-03-right.png",
+      "url": "http://127.0.0.1:4173/characters/generated/couple-style-v1/preview/masculine-navy-suit__walk.png?v=couple-style-v1-20261004",
+      "sha256": "37beb839a29839c0f8888282ff08901f3bee2bdf19d9ed6488181623931ddda2",
+      "status": 200,
+      "frames": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "preset": "masculine-navy-suit",
+      "fallback": false,
+      "size": [
+        96,
+        144
+      ]
+    },
+    {
+      "id": "guest-03",
+      "direction": "up",
+      "file": "guest-03-up.png",
+      "url": "http://127.0.0.1:4173/characters/generated/couple-style-v1/preview/masculine-navy-suit__walk.png?v=couple-style-v1-20261004",
+      "sha256": "37beb839a29839c0f8888282ff08901f3bee2bdf19d9ed6488181623931ddda2",
+      "status": 200,
+      "frames": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "preset": "masculine-navy-suit",
+      "fallback": false,
+      "size": [
+        96,
+        144
+      ]
+    },
+    {
+      "id": "guest-04",
+      "direction": "down",
+      "file": "guest-04-down.png",
+      "url": "http://127.0.0.1:4173/characters/generated/couple-style-v1/preview/masculine-charcoal-blazer__walk.png?v=couple-style-v1-20261004",
+      "sha256": "59b34c54a43d1283e92ec6e82641dfbe0115c53bebf899020898e48ffbac2a37",
+      "status": 200,
+      "frames": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "preset": "masculine-charcoal-blazer",
+      "fallback": false,
+      "size": [
+        96,
+        144
+      ]
+    },
+    {
+      "id": "guest-04",
+      "direction": "left",
+      "file": "guest-04-left.png",
+      "url": "http://127.0.0.1:4173/characters/generated/couple-style-v1/preview/masculine-charcoal-blazer__walk.png?v=couple-style-v1-20261004",
+      "sha256": "59b34c54a43d1283e92ec6e82641dfbe0115c53bebf899020898e48ffbac2a37",
+      "status": 200,
+      "frames": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "preset": "masculine-charcoal-blazer",
+      "fallback": false,
+      "size": [
+        96,
+        144
+      ]
+    },
+    {
+      "id": "guest-04",
+      "direction": "right",
+      "file": "guest-04-right.png",
+      "url": "http://127.0.0.1:4173/characters/generated/couple-style-v1/preview/masculine-charcoal-blazer__walk.png?v=couple-style-v1-20261004",
+      "sha256": "59b34c54a43d1283e92ec6e82641dfbe0115c53bebf899020898e48ffbac2a37",
+      "status": 200,
+      "frames": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "preset": "masculine-charcoal-blazer",
+      "fallback": false,
+      "size": [
+        96,
+        144
+      ]
+    },
+    {
+      "id": "guest-04",
+      "direction": "up",
+      "file": "guest-04-up.png",
+      "url": "http://127.0.0.1:4173/characters/generated/couple-style-v1/preview/masculine-charcoal-blazer__walk.png?v=couple-style-v1-20261004",
+      "sha256": "59b34c54a43d1283e92ec6e82641dfbe0115c53bebf899020898e48ffbac2a37",
+      "status": 200,
+      "frames": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "preset": "masculine-charcoal-blazer",
+      "fallback": false,
+      "size": [
+        96,
+        144
+      ]
+    },
+    {
+      "id": "guest-05",
+      "direction": "down",
+      "file": "guest-05-down.png",
+      "url": "http://127.0.0.1:4173/characters/generated/couple-style-v1/preview/feminine-sage-bolero-dress__walk.png?v=couple-style-v1-20261004",
+      "sha256": "b3c3d0cb46376ead468482e7ef4ac1872534a2f211cc4bbc9f359954f99fa836",
+      "status": 200,
+      "frames": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "preset": "feminine-sage-bolero-dress",
+      "fallback": false,
+      "size": [
+        96,
+        144
+      ]
+    },
+    {
+      "id": "guest-05",
+      "direction": "left",
+      "file": "guest-05-left.png",
+      "url": "http://127.0.0.1:4173/characters/generated/couple-style-v1/preview/feminine-sage-bolero-dress__walk.png?v=couple-style-v1-20261004",
+      "sha256": "b3c3d0cb46376ead468482e7ef4ac1872534a2f211cc4bbc9f359954f99fa836",
+      "status": 200,
+      "frames": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "preset": "feminine-sage-bolero-dress",
+      "fallback": false,
+      "size": [
+        96,
+        144
+      ]
+    },
+    {
+      "id": "guest-05",
+      "direction": "right",
+      "file": "guest-05-right.png",
+      "url": "http://127.0.0.1:4173/characters/generated/couple-style-v1/preview/feminine-sage-bolero-dress__walk.png?v=couple-style-v1-20261004",
+      "sha256": "b3c3d0cb46376ead468482e7ef4ac1872534a2f211cc4bbc9f359954f99fa836",
+      "status": 200,
+      "frames": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "preset": "feminine-sage-bolero-dress",
+      "fallback": false,
+      "size": [
+        96,
+        144
+      ]
+    },
+    {
+      "id": "guest-05",
+      "direction": "up",
+      "file": "guest-05-up.png",
+      "url": "http://127.0.0.1:4173/characters/generated/couple-style-v1/preview/feminine-sage-bolero-dress__walk.png?v=couple-style-v1-20261004",
+      "sha256": "b3c3d0cb46376ead468482e7ef4ac1872534a2f211cc4bbc9f359954f99fa836",
+      "status": 200,
+      "frames": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "preset": "feminine-sage-bolero-dress",
+      "fallback": false,
+      "size": [
+        96,
+        144
+      ]
+    },
+    {
+      "id": "guest-06",
+      "direction": "down",
+      "file": "guest-06-down.png",
+      "url": "http://127.0.0.1:4173/characters/generated/couple-style-v1/preview/feminine-champagne-navy-skirt__walk.png?v=couple-style-v1-20261004",
+      "sha256": "bc810264ba233bf29ae881ef4e4978dde018c93bf474489249739212a3956181",
+      "status": 200,
+      "frames": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "preset": "feminine-champagne-navy-skirt",
+      "fallback": false,
+      "size": [
+        96,
+        144
+      ]
+    },
+    {
+      "id": "guest-06",
+      "direction": "left",
+      "file": "guest-06-left.png",
+      "url": "http://127.0.0.1:4173/characters/generated/couple-style-v1/preview/feminine-champagne-navy-skirt__walk.png?v=couple-style-v1-20261004",
+      "sha256": "bc810264ba233bf29ae881ef4e4978dde018c93bf474489249739212a3956181",
+      "status": 200,
+      "frames": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "preset": "feminine-champagne-navy-skirt",
+      "fallback": false,
+      "size": [
+        96,
+        144
+      ]
+    },
+    {
+      "id": "guest-06",
+      "direction": "right",
+      "file": "guest-06-right.png",
+      "url": "http://127.0.0.1:4173/characters/generated/couple-style-v1/preview/feminine-champagne-navy-skirt__walk.png?v=couple-style-v1-20261004",
+      "sha256": "bc810264ba233bf29ae881ef4e4978dde018c93bf474489249739212a3956181",
+      "status": 200,
+      "frames": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "preset": "feminine-champagne-navy-skirt",
+      "fallback": false,
+      "size": [
+        96,
+        144
+      ]
+    },
+    {
+      "id": "guest-06",
+      "direction": "up",
+      "file": "guest-06-up.png",
+      "url": "http://127.0.0.1:4173/characters/generated/couple-style-v1/preview/feminine-champagne-navy-skirt__walk.png?v=couple-style-v1-20261004",
+      "sha256": "bc810264ba233bf29ae881ef4e4978dde018c93bf474489249739212a3956181",
+      "status": 200,
+      "frames": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "preset": "feminine-champagne-navy-skirt",
+      "fallback": false,
+      "size": [
+        96,
+        144
+      ]
+    },
+    {
+      "id": "guest-07",
+      "direction": "down",
+      "file": "guest-07-down.png",
+      "url": "http://127.0.0.1:4173/characters/generated/couple-style-v1/preview/feminine-lavender-jacket-dress__walk.png?v=couple-style-v1-20261004",
+      "sha256": "d5945aea0a08349e8fa0a4cbccf46309f35ff83411d296bdf4e3997901f7a2c6",
+      "status": 200,
+      "frames": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "preset": "feminine-lavender-jacket-dress",
+      "fallback": false,
+      "size": [
+        96,
+        144
+      ]
+    },
+    {
+      "id": "guest-07",
+      "direction": "left",
+      "file": "guest-07-left.png",
+      "url": "http://127.0.0.1:4173/characters/generated/couple-style-v1/preview/feminine-lavender-jacket-dress__walk.png?v=couple-style-v1-20261004",
+      "sha256": "d5945aea0a08349e8fa0a4cbccf46309f35ff83411d296bdf4e3997901f7a2c6",
+      "status": 200,
+      "frames": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "preset": "feminine-lavender-jacket-dress",
+      "fallback": false,
+      "size": [
+        96,
+        144
+      ]
+    },
+    {
+      "id": "guest-07",
+      "direction": "right",
+      "file": "guest-07-right.png",
+      "url": "http://127.0.0.1:4173/characters/generated/couple-style-v1/preview/feminine-lavender-jacket-dress__walk.png?v=couple-style-v1-20261004",
+      "sha256": "d5945aea0a08349e8fa0a4cbccf46309f35ff83411d296bdf4e3997901f7a2c6",
+      "status": 200,
+      "frames": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "preset": "feminine-lavender-jacket-dress",
+      "fallback": false,
+      "size": [
+        96,
+        144
+      ]
+    },
+    {
+      "id": "guest-07",
+      "direction": "up",
+      "file": "guest-07-up.png",
+      "url": "http://127.0.0.1:4173/characters/generated/couple-style-v1/preview/feminine-lavender-jacket-dress__walk.png?v=couple-style-v1-20261004",
+      "sha256": "d5945aea0a08349e8fa0a4cbccf46309f35ff83411d296bdf4e3997901f7a2c6",
+      "status": 200,
+      "frames": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "preset": "feminine-lavender-jacket-dress",
+      "fallback": false,
+      "size": [
+        96,
+        144
+      ]
+    },
+    {
+      "id": "guest-08",
+      "direction": "down",
+      "file": "guest-08-down.png",
+      "url": "http://127.0.0.1:4173/characters/generated/couple-style-v1/preview/feminine-teal-modern-hanbok__walk.png?v=couple-style-v1-20261004",
+      "sha256": "20f9f0a4ca54bc694829373e725be7902219b07d9a98665fc5a3f348e7616a5a",
+      "status": 200,
+      "frames": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "preset": "feminine-teal-modern-hanbok",
+      "fallback": false,
+      "size": [
+        96,
+        144
+      ]
+    },
+    {
+      "id": "guest-08",
+      "direction": "left",
+      "file": "guest-08-left.png",
+      "url": "http://127.0.0.1:4173/characters/generated/couple-style-v1/preview/feminine-teal-modern-hanbok__walk.png?v=couple-style-v1-20261004",
+      "sha256": "20f9f0a4ca54bc694829373e725be7902219b07d9a98665fc5a3f348e7616a5a",
+      "status": 200,
+      "frames": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "preset": "feminine-teal-modern-hanbok",
+      "fallback": false,
+      "size": [
+        96,
+        144
+      ]
+    },
+    {
+      "id": "guest-08",
+      "direction": "right",
+      "file": "guest-08-right.png",
+      "url": "http://127.0.0.1:4173/characters/generated/couple-style-v1/preview/feminine-teal-modern-hanbok__walk.png?v=couple-style-v1-20261004",
+      "sha256": "20f9f0a4ca54bc694829373e725be7902219b07d9a98665fc5a3f348e7616a5a",
+      "status": 200,
+      "frames": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "preset": "feminine-teal-modern-hanbok",
+      "fallback": false,
+      "size": [
+        96,
+        144
+      ]
+    },
+    {
+      "id": "guest-08",
+      "direction": "up",
+      "file": "guest-08-up.png",
+      "url": "http://127.0.0.1:4173/characters/generated/couple-style-v1/preview/feminine-teal-modern-hanbok__walk.png?v=couple-style-v1-20261004",
+      "sha256": "20f9f0a4ca54bc694829373e725be7902219b07d9a98665fc5a3f348e7616a5a",
+      "status": 200,
+      "frames": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "preset": "feminine-teal-modern-hanbok",
+      "fallback": false,
+      "size": [
+        96,
+        144
+      ]
+    },
+    {
+      "id": "guest-09",
+      "direction": "down",
+      "file": "guest-09-down.png",
+      "url": "http://127.0.0.1:4173/characters/generated/couple-style-v1/preview/masculine-beige-summer-suit__walk.png?v=couple-style-v1-20261004",
+      "sha256": "340c0f2b586f509dff74c9e28ee2cfe8157951859f8fda628fe8d0fd2def5897",
+      "status": 200,
+      "frames": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "preset": "masculine-beige-summer-suit",
+      "fallback": false,
+      "size": [
+        96,
+        144
+      ]
+    },
+    {
+      "id": "guest-09",
+      "direction": "left",
+      "file": "guest-09-left.png",
+      "url": "http://127.0.0.1:4173/characters/generated/couple-style-v1/preview/masculine-beige-summer-suit__walk.png?v=couple-style-v1-20261004",
+      "sha256": "340c0f2b586f509dff74c9e28ee2cfe8157951859f8fda628fe8d0fd2def5897",
+      "status": 200,
+      "frames": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "preset": "masculine-beige-summer-suit",
+      "fallback": false,
+      "size": [
+        96,
+        144
+      ]
+    },
+    {
+      "id": "guest-09",
+      "direction": "right",
+      "file": "guest-09-right.png",
+      "url": "http://127.0.0.1:4173/characters/generated/couple-style-v1/preview/masculine-beige-summer-suit__walk.png?v=couple-style-v1-20261004",
+      "sha256": "340c0f2b586f509dff74c9e28ee2cfe8157951859f8fda628fe8d0fd2def5897",
+      "status": 200,
+      "frames": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "preset": "masculine-beige-summer-suit",
+      "fallback": false,
+      "size": [
+        96,
+        144
+      ]
+    },
+    {
+      "id": "guest-09",
+      "direction": "up",
+      "file": "guest-09-up.png",
+      "url": "http://127.0.0.1:4173/characters/generated/couple-style-v1/preview/masculine-beige-summer-suit__walk.png?v=couple-style-v1-20261004",
+      "sha256": "340c0f2b586f509dff74c9e28ee2cfe8157951859f8fda628fe8d0fd2def5897",
+      "status": 200,
+      "frames": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "preset": "masculine-beige-summer-suit",
+      "fallback": false,
+      "size": [
+        96,
+        144
+      ]
+    },
+    {
+      "id": "guest-10",
+      "direction": "down",
+      "file": "guest-10-down.png",
+      "url": "http://127.0.0.1:4173/characters/generated/couple-style-v1/preview/masculine-charcoal-burgundy-tie__walk.png?v=couple-style-v1-20261004",
+      "sha256": "040ba219e87b1b1a46d089d4d6e4d211fb17c9b048054428745bf7104e0eaea2",
+      "status": 200,
+      "frames": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "preset": "masculine-charcoal-burgundy-tie",
+      "fallback": false,
+      "size": [
+        96,
+        144
+      ]
+    },
+    {
+      "id": "guest-10",
+      "direction": "left",
+      "file": "guest-10-left.png",
+      "url": "http://127.0.0.1:4173/characters/generated/couple-style-v1/preview/masculine-charcoal-burgundy-tie__walk.png?v=couple-style-v1-20261004",
+      "sha256": "040ba219e87b1b1a46d089d4d6e4d211fb17c9b048054428745bf7104e0eaea2",
+      "status": 200,
+      "frames": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "preset": "masculine-charcoal-burgundy-tie",
+      "fallback": false,
+      "size": [
+        96,
+        144
+      ]
+    },
+    {
+      "id": "guest-10",
+      "direction": "right",
+      "file": "guest-10-right.png",
+      "url": "http://127.0.0.1:4173/characters/generated/couple-style-v1/preview/masculine-charcoal-burgundy-tie__walk.png?v=couple-style-v1-20261004",
+      "sha256": "040ba219e87b1b1a46d089d4d6e4d211fb17c9b048054428745bf7104e0eaea2",
+      "status": 200,
+      "frames": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "preset": "masculine-charcoal-burgundy-tie",
+      "fallback": false,
+      "size": [
+        96,
+        144
+      ]
+    },
+    {
+      "id": "guest-10",
+      "direction": "up",
+      "file": "guest-10-up.png",
+      "url": "http://127.0.0.1:4173/characters/generated/couple-style-v1/preview/masculine-charcoal-burgundy-tie__walk.png?v=couple-style-v1-20261004",
+      "sha256": "040ba219e87b1b1a46d089d4d6e4d211fb17c9b048054428745bf7104e0eaea2",
+      "status": 200,
+      "frames": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "preset": "masculine-charcoal-burgundy-tie",
+      "fallback": false,
+      "size": [
+        96,
+        144
+      ]
+    },
+    {
+      "id": "guest-11",
+      "direction": "down",
+      "file": "guest-11-down.png",
+      "url": "http://127.0.0.1:4173/characters/generated/couple-style-v1/preview/masculine-green-blazer-cream-pants__walk.png?v=couple-style-v1-20261004",
+      "sha256": "3a78473639082d8513475a71728285b2587826bf84b41c79762307ea3f97dc46",
+      "status": 200,
+      "frames": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "preset": "masculine-green-blazer-cream-pants",
+      "fallback": false,
+      "size": [
+        96,
+        144
+      ]
+    },
+    {
+      "id": "guest-11",
+      "direction": "left",
+      "file": "guest-11-left.png",
+      "url": "http://127.0.0.1:4173/characters/generated/couple-style-v1/preview/masculine-green-blazer-cream-pants__walk.png?v=couple-style-v1-20261004",
+      "sha256": "3a78473639082d8513475a71728285b2587826bf84b41c79762307ea3f97dc46",
+      "status": 200,
+      "frames": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "preset": "masculine-green-blazer-cream-pants",
+      "fallback": false,
+      "size": [
+        96,
+        144
+      ]
+    },
+    {
+      "id": "guest-11",
+      "direction": "right",
+      "file": "guest-11-right.png",
+      "url": "http://127.0.0.1:4173/characters/generated/couple-style-v1/preview/masculine-green-blazer-cream-pants__walk.png?v=couple-style-v1-20261004",
+      "sha256": "3a78473639082d8513475a71728285b2587826bf84b41c79762307ea3f97dc46",
+      "status": 200,
+      "frames": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "preset": "masculine-green-blazer-cream-pants",
+      "fallback": false,
+      "size": [
+        96,
+        144
+      ]
+    },
+    {
+      "id": "guest-11",
+      "direction": "up",
+      "file": "guest-11-up.png",
+      "url": "http://127.0.0.1:4173/characters/generated/couple-style-v1/preview/masculine-green-blazer-cream-pants__walk.png?v=couple-style-v1-20261004",
+      "sha256": "3a78473639082d8513475a71728285b2587826bf84b41c79762307ea3f97dc46",
+      "status": 200,
+      "frames": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "preset": "masculine-green-blazer-cream-pants",
+      "fallback": false,
+      "size": [
+        96,
+        144
+      ]
+    },
+    {
+      "id": "guest-12",
+      "direction": "down",
+      "file": "guest-12-down.png",
+      "url": "http://127.0.0.1:4173/characters/generated/couple-style-v1/preview/masculine-blue-modern-hanbok__walk.png?v=couple-style-v1-20261004",
+      "sha256": "38593406258e89ad6d8d0b398bdb1532133cc54b178e9803111141a1ced988cf",
+      "status": 200,
+      "frames": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "preset": "masculine-blue-modern-hanbok",
+      "fallback": false,
+      "size": [
+        96,
+        144
+      ]
+    },
+    {
+      "id": "guest-12",
+      "direction": "left",
+      "file": "guest-12-left.png",
+      "url": "http://127.0.0.1:4173/characters/generated/couple-style-v1/preview/masculine-blue-modern-hanbok__walk.png?v=couple-style-v1-20261004",
+      "sha256": "38593406258e89ad6d8d0b398bdb1532133cc54b178e9803111141a1ced988cf",
+      "status": 200,
+      "frames": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "preset": "masculine-blue-modern-hanbok",
+      "fallback": false,
+      "size": [
+        96,
+        144
+      ]
+    },
+    {
+      "id": "guest-12",
+      "direction": "right",
+      "file": "guest-12-right.png",
+      "url": "http://127.0.0.1:4173/characters/generated/couple-style-v1/preview/masculine-blue-modern-hanbok__walk.png?v=couple-style-v1-20261004",
+      "sha256": "38593406258e89ad6d8d0b398bdb1532133cc54b178e9803111141a1ced988cf",
+      "status": 200,
+      "frames": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "preset": "masculine-blue-modern-hanbok",
+      "fallback": false,
+      "size": [
+        96,
+        144
+      ]
+    },
+    {
+      "id": "guest-12",
+      "direction": "up",
+      "file": "guest-12-up.png",
+      "url": "http://127.0.0.1:4173/characters/generated/couple-style-v1/preview/masculine-blue-modern-hanbok__walk.png?v=couple-style-v1-20261004",
+      "sha256": "38593406258e89ad6d8d0b398bdb1532133cc54b178e9803111141a1ced988cf",
+      "status": 200,
+      "frames": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "preset": "masculine-blue-modern-hanbok",
+      "fallback": false,
+      "size": [
+        96,
+        144
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "location": {
+        "url": "http://127.0.0.1:4173/api/invitations/sample-garden/performance-config",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "location": {
+        "url": "http://127.0.0.1:4173/api/invitations/sample-garden/performance-config",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "location": {
+        "url": "http://127.0.0.1:4173/api/invitations/sample-garden/analytics/events",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    }
+  ],
+  "failedResponses": [
+    {
+      "url": "http://127.0.0.1:4173/api/invitations/sample-garden/performance-config",
+      "status": 404
+    },
+    {
+      "url": "http://127.0.0.1:4173/api/invitations/sample-garden/performance-config",
+      "status": 404
+    },
+    {
+      "url": "http://127.0.0.1:4173/api/invitations/sample-garden/analytics/events",
+      "status": 404
+    }
+  ],
+  "manifestSha256": "83d5ab7dbd7ee57ac8bf25206ffd1bc76cb4607ef52f606aff9f9d03d4e64a2f"
+}

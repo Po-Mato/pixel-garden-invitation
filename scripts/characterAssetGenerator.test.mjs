@@ -570,7 +570,7 @@ test("generator emits idle and four-direction walk sheets for every npc", async 
       )
     );
   }
-  assert.match(stdout, /Generated 88 character assets/);
+  assert.match(stdout, /Generated 148 character assets/);
 });
 
 test("generator emits 48x72 high-density world sheets for every guest preset", async () => {

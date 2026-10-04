@@ -1,0 +1,305 @@
+{
+  "version": 1,
+  "pipeline": "couple-style-v1",
+  "authorization": "user-requested-production-deployment",
+  "userInstruction": "좋아. 배포",
+  "visualInspection": {
+    "passed": true,
+    "characters": 12,
+    "directions": 48,
+    "frames": 192
+  },
+  "manifestSha256": "3aead716fc46b1ef8eb41285b4ecfc883e7ddac8542f05a9373be8427db3870c",
+  "sourceIntegrity": [
+    {
+      "file": "character-assets/rigs/couple-style-v1/neutral/guest-01/back.png",
+      "sha256": "37ecf14e64396afa8d3bdc7e5e391b2fe0576471878a983e8c5d58b59e8182f1"
+    },
+    {
+      "file": "character-assets/rigs/couple-style-v1/neutral/guest-01/front.png",
+      "sha256": "d72d04d4b658a930394e43d73a84be5eacc496d982cd47753e55aae44c33055f"
+    },
+    {
+      "file": "character-assets/rigs/couple-style-v1/neutral/guest-01/left.png",
+      "sha256": "89745e48928482e0f5c2a90a4be6a1e758c5a51c95d41c2bede24838441a8cde"
+    },
+    {
+      "file": "character-assets/rigs/couple-style-v1/neutral/guest-01/right.png",
+      "sha256": "56e15e84b4f7523db867ce6dec3e503c7e8a7a8809eaff1406d4188a851a710c"
+    },
+    {
+      "file": "character-assets/rigs/couple-style-v1/neutral/guest-02/back.png",
+      "sha256": "1909525bb6788231c052718e4f66bf7a5a646fa9d671b6008c72bbc01949657e"
+    },
+    {
+      "file": "character-assets/rigs/couple-style-v1/neutral/guest-02/front.png",
+      "sha256": "7603c878d53aaa945f8c558fe60ec64495fed6f7d2328ac96dbbfa49eee9df35"
+    },
+    {
+      "file": "character-assets/rigs/couple-style-v1/neutral/guest-02/left.png",
+      "sha256": "8934b4f4dbf6b0eae8cd60ade89d4f59445aa40185b152f3a2cc11a128d06280"
+    },
+    {
+      "file": "character-assets/rigs/couple-style-v1/neutral/guest-02/right.png",
+      "sha256": "ac5e4580e973997f952fde2ebd7f998ee2ae214e4736c355c4eb127823a97e4e"
+    },
+    {
+      "file": "character-assets/rigs/couple-style-v1/neutral/guest-03/back.png",
+      "sha256": "3b710340b52a895bb424fc1efd3137eec8e398224385e037cb263e0d4c023767"
+    },
+    {
+      "file": "character-assets/rigs/couple-style-v1/neutral/guest-03/front.png",
+      "sha256": "df1aa0138cdaf006355919b6cb69da239d1ac78acf4926e027d53ea232533464"
+    },
+    {
+      "file": "character-assets/rigs/couple-style-v1/neutral/guest-03/left.png",
+      "sha256": "cdd3d9f239b233f5fed72dbcaca15bc9349546fd061f4df649f040c3a740ca4b"
+    },
+    {
+      "file": "character-assets/rigs/couple-style-v1/neutral/guest-03/right.png",
+      "sha256": "0626d1cc8b69de60d9fc5e1458f6788df369dfff7e44c2370ae56fd6fd8d07ed"
+    },
+    {
+      "file": "character-assets/rigs/couple-style-v1/neutral/guest-04/back.png",
+      "sha256": "c2c77c9786489ccf5216b6101c25d694085271f04892adbf4b0c729f6a78a99b"
+    },
+    {
+      "file": "character-assets/rigs/couple-style-v1/neutral/guest-04/front.png",
+      "sha256": "6aa7ac48e1dce4d2939dcb7627d869b4c4907b2eae3ffb26aed7dc564092d4ea"
+    },
+    {
+      "file": "character-assets/rigs/couple-style-v1/neutral/guest-04/left.png",
+      "sha256": "8de34ef1335e00f3791747ba10f143d86bb8ebca545a5e8952be1d6a6ed56244"
+    },
+    {
+      "file": "character-assets/rigs/couple-style-v1/neutral/guest-04/right.png",
+      "sha256": "a50019c90a4a6081183b2445137b1303d3633851cae9ed4ba733e94aced231e1"
+    },
+    {
+      "file": "character-assets/rigs/couple-style-v1/neutral/guest-05/back.png",
+      "sha256": "67f6b1809c4723f24ee735916d4400c02498e09a58daac332d35eb1d55b31873"
+    },
+    {
+      "file": "character-assets/rigs/couple-style-v1/neutral/guest-05/front.png",
+      "sha256": "572e3ebb993ac245f3bc1a378fb95a2cab593533c431f00e9a20837794ab6cc3"
+    },
+    {
+      "file": "character-assets/rigs/couple-style-v1/neutral/guest-05/left.png",
+      "sha256": "a85436c93a624be91c252e585c12c297ed9da129d05927bfa6d8f2893912d965"
+    },
+    {
+      "file": "character-assets/rigs/couple-style-v1/neutral/guest-05/right.png",
+      "sha256": "fffc2ab7c456c97e17f61f03c67a9accba863a14ed38f76820c04e71eb079072"
+    },
+    {
+      "file": "character-assets/rigs/couple-style-v1/neutral/guest-06/back.png",
+      "sha256": "0b3023438409535a041108e469c50572d7bfb39c9a3f63b68ecccf13215ba36a"
+    },
+    {
+      "file": "character-assets/rigs/couple-style-v1/neutral/guest-06/front.png",
+      "sha256": "ebe27d64e123d75c4d09486b0796f00fe8ec22c211d281945cd673e464b0ffa6"
+    },
+    {
+      "file": "character-assets/rigs/couple-style-v1/neutral/guest-06/left.png",
+      "sha256": "c0f61fc82602a7a507a8ccff7f005aa103d9b21467ca61ef9b4c47517da8135f"
+    },
+    {
+      "file": "character-assets/rigs/couple-style-v1/neutral/guest-06/right.png",
+      "sha256": "978c9a24f5d51972b03b34b49ede1e1b5adf928ec7e0793a24d13c4e8b92d11d"
+    },
+    {
+      "file": "character-assets/rigs/couple-style-v1/neutral/guest-07/back.png",
+      "sha256": "7464b1962affa9c96a5c0bdc3577c436c2a8e662385ca451c1349f606fb80fc5"
+    },
+    {
+      "file": "character-assets/rigs/couple-style-v1/neutral/guest-07/front.png",
+      "sha256": "47902df604c70659029bc526d387332327f7f62137bfa5831a90f0032084b11d"
+    },
+    {
+      "file": "character-assets/rigs/couple-style-v1/neutral/guest-07/left.png",
+      "sha256": "2c07760811767eeebfd86da2c8b3c901a2145bf7853a49bcedd32f05d0b19a59"
+    },
+    {
+      "file": "character-assets/rigs/couple-style-v1/neutral/guest-07/right.png",
+      "sha256": "4cf762d8a342f89c86a84d5d82033b4dd9005a846362ce479dc53991aa33a511"
+    },
+    {
+      "file": "character-assets/rigs/couple-style-v1/neutral/guest-08/back.png",
+      "sha256": "9dec37768d940dae5f3c7c99d1199488080322d208982eb504c612103228ab0f"
+    },
+    {
+      "file": "character-assets/rigs/couple-style-v1/neutral/guest-08/front.png",
+      "sha256": "9a7622fbfba7b7ddca9e0b6d83ef2a831f538966b1b8f832f924912dd92d2e55"
+    },
+    {
+      "file": "character-assets/rigs/couple-style-v1/neutral/guest-08/left.png",
+      "sha256": "90764a015404309273e28762ac07931753433816ceb11193d23f0649f8b6439c"
+    },
+    {
+      "file": "character-assets/rigs/couple-style-v1/neutral/guest-08/right.png",
+      "sha256": "3fb31c35af38c32b7a91161b1393a2782bbb0fd5c17bd9dc6210b3c2eb88cdda"
+    },
+    {
+      "file": "character-assets/rigs/couple-style-v1/neutral/guest-09/back.png",
+      "sha256": "424d9577f7824fef789a40039fa4223e1ae384d666147d08fd36ff0ba365739d"
+    },
+    {
+      "file": "character-assets/rigs/couple-style-v1/neutral/guest-09/front.png",
+      "sha256": "097c1963335786de7f00baec8cb4b27645d9dcdd0e892c2f5e77cc0fb9009f63"
+    },
+    {
+      "file": "character-assets/rigs/couple-style-v1/neutral/guest-09/left.png",
+      "sha256": "39a80608b3915f68e6c0b20a5b8cd9e5df63bfc9064408cdfaac61c103cd6333"
+    },
+    {
+      "file": "character-assets/rigs/couple-style-v1/neutral/guest-09/right.png",
+      "sha256": "2ee949195f0512d484a76d6fc4bf4163d44108c9a3e3fecc754316973721c1b4"
+    },
+    {
+      "file": "character-assets/rigs/couple-style-v1/neutral/guest-10/back.png",
+      "sha256": "338aae05e8cd1cedb94d817376d79ea7a8024798d34acdf9d4f1bc564745f70e"
+    },
+    {
+      "file": "character-assets/rigs/couple-style-v1/neutral/guest-10/front.png",
+      "sha256": "ad9099e6fea945ad11e432f53a5002ee6cbc1b48e14dce8a887e72eaeda0c952"
+    },
+    {
+      "file": "character-assets/rigs/couple-style-v1/neutral/guest-10/left.png",
+      "sha256": "6771b55e3584640e2c0061aef5c9885f5effdea0a4563fe4610621f595bee5a2"
+    },
+    {
+      "file": "character-assets/rigs/couple-style-v1/neutral/guest-10/right.png",
+      "sha256": "40c8f27b8a4b7d697482f77b467821836ed2772fcf90ef5f6915a97a53bfd5e3"
+    },
+    {
+      "file": "character-assets/rigs/couple-style-v1/neutral/guest-11/back.png",
+      "sha256": "d0b6e5070ec9b1ccfc3a40785dd344411f6cb9c47ee39f79e35507dc63713158"
+    },
+    {
+      "file": "character-assets/rigs/couple-style-v1/neutral/guest-11/front.png",
+      "sha256": "8df3a6e1e13fcb5c8e10fb23f05e7c944b17efd2349bc08472b46addc74d3e3e"
+    },
+    {
+      "file": "character-assets/rigs/couple-style-v1/neutral/guest-11/left.png",
+      "sha256": "9740b409f8e5f4a9afdb1130d7d2740d0ac454d53f69c6031fac8479b7631b1e"
+    },
+    {
+      "file": "character-assets/rigs/couple-style-v1/neutral/guest-11/right.png",
+      "sha256": "8c37f8ceb2fb1a006695ce7cf8933a23890503471e495a16441f7ff64358573d"
+    },
+    {
+      "file": "character-assets/rigs/couple-style-v1/neutral/guest-12/back.png",
+      "sha256": "70d9cd586fc00dc34348c751160b09528f035b1c43d771c1a41ca163b98d43d9"
+    },
+    {
+      "file": "character-assets/rigs/couple-style-v1/neutral/guest-12/front.png",
+      "sha256": "c59f9973a5a593233003973cbd6ae4090d261d1f9b73e7b83ddbc7f8374ee5ba"
+    },
+    {
+      "file": "character-assets/rigs/couple-style-v1/neutral/guest-12/left.png",
+      "sha256": "bc2c08a3a0edbabff6d3d1a57b2d754cc29c61b515a31879724316474e764397"
+    },
+    {
+      "file": "character-assets/rigs/couple-style-v1/neutral/guest-12/right.png",
+      "sha256": "3aed941d4688bec80d42f1a59ded9b59a5c3ac10afc8f2826e681ff3b6968de8"
+    },
+    {
+      "file": "character-assets/rigs/couple-style-v1/registration.json",
+      "sha256": "c3cbfa6df1e488aef72775ae92543fc73a458a41451f1dc67aabf9655746be79"
+    },
+    {
+      "file": "character-assets/rigs/couple-style-v1/source-map.json",
+      "sha256": "621c785d959c9f87af6f934ab7465d58cfbf3efb7401f884f96336b588e7d3b4"
+    },
+    {
+      "file": "character-assets/rigs/couple-style-v1/sources/guest-01.png",
+      "sha256": "7d01d4f3e0a42625b1a681793ecc8d9df16cfe0244c0e174f0996b74b83ac3b9"
+    },
+    {
+      "file": "character-assets/rigs/couple-style-v1/sources/guest-02.png",
+      "sha256": "5c00826951ce52cf95a872d4f8d52dbb31c2da7c845e4a62d1e8fde26ff415ba"
+    },
+    {
+      "file": "character-assets/rigs/couple-style-v1/sources/guest-03.png",
+      "sha256": "b437b6708e2792ea0a36482fd3c8f712d8db7d98fb2e43e2b0e49cc5e39d3721"
+    },
+    {
+      "file": "character-assets/rigs/couple-style-v1/sources/guest-04.png",
+      "sha256": "d88165b0abeb8b852dd536ebec62e60c828bd5caa74db642b8c8fac6ceeac4db"
+    },
+    {
+      "file": "character-assets/rigs/couple-style-v1/sources/guest-05.png",
+      "sha256": "e2353426b781a3f3dadff8eb6c3d7e2ac604754d7027c77a78e80768105ee286"
+    },
+    {
+      "file": "character-assets/rigs/couple-style-v1/sources/guest-06.png",
+      "sha256": "2896113855ebade1c6cf8132fb46a5356f879ec6a97237ada2658dec6cbabd4a"
+    },
+    {
+      "file": "character-assets/rigs/couple-style-v1/sources/guest-07.png",
+      "sha256": "5db24bfaa7ab2fbfbd77df5a297f6b631c87ccccfa05e00c88672bd0ee04f8fe"
+    },
+    {
+      "file": "character-assets/rigs/couple-style-v1/sources/guest-08.png",
+      "sha256": "89d7a8e1ebf1b8e8f6947fdb004e207f4275a6d095c05eb0277b587a05e46ca9"
+    },
+    {
+      "file": "character-assets/rigs/couple-style-v1/sources/guest-09.png",
+      "sha256": "416b0729cea3196e7aab5bf3f2e80c26599628741d4bf657137e198abcb0638b"
+    },
+    {
+      "file": "character-assets/rigs/couple-style-v1/sources/guest-10.png",
+      "sha256": "f3c3008f46f501604f7d8656486fb5aa18a7f3faa086c2bd11e9fa812f12f778"
+    },
+    {
+      "file": "character-assets/rigs/couple-style-v1/sources/guest-11.png",
+      "sha256": "e4b55c7329adb963f2ea1241e759de88f6bb2a8f23d54b273261bf6aec937dfd"
+    },
+    {
+      "file": "character-assets/rigs/couple-style-v1/sources/guest-12.png",
+      "sha256": "8ceaf6383907863b29f4717f032fbe3f339495ba8fda2342f1f25d4babc8c070"
+    },
+    {
+      "file": "character-assets/rigs/guest-cutout-catalog-v1.json",
+      "sha256": "67e1905554e2960eb5ed8e3f7322c3c3eb427b576a3eaaf4b022904971d27eda"
+    },
+    {
+      "file": "scripts/build-couple-style-pilot.mjs",
+      "sha256": "3a15c3b6aac0a94916c4f9ea3bb8a4caa1d88823e387310a8af3c3d05abdd92f"
+    },
+    {
+      "file": "scripts/lib/coupleStyleMotion.mjs",
+      "sha256": "bd82d62b1124a6a94f4ad4893033ca430212669968c8e2212d984d0701b4e477"
+    },
+    {
+      "file": "scripts/lib/deterministicSharp.mjs",
+      "sha256": "098d5d05f78bdf66ff839dda9ae59effb39287983b23a64bc33fb4cbbacccce5"
+    },
+    {
+      "file": "scripts/normalize-couple-style-sources.mjs",
+      "sha256": "cb8182e56236f220892b87819f68b239a62bdebe057ee8586d0ed95c60a97a99"
+    }
+  ],
+  "evidence": [
+    {
+      "file": "character-assets/rigs/couple-style-v1/evidence/all-directions.png",
+      "sha256": "d44dc29b9df0a15ed96461ce01889a357a614b34da57b85cdb2f676139c8b512"
+    },
+    {
+      "file": "character-assets/rigs/couple-style-v1/evidence/before-after.png",
+      "sha256": "b41485a25ffa14bfef3a6a119897cb9908f30de7520530bdbd0700a87fccd6ed"
+    },
+    {
+      "file": "character-assets/rigs/couple-style-v1/evidence/local-browser.json",
+      "sha256": "63f73d848d1b1e2c696a608450cffcac37091b92abf8649d4c2569872ff14feb"
+    },
+    {
+      "file": "character-assets/rigs/couple-style-v1/evidence/pixel-verification.json",
+      "sha256": "24e2597e619d41114e3dc2db01f716a1b5fae41423a462903d7f32f408659097"
+    },
+    {
+      "file": "character-assets/rigs/couple-style-v1/evidence/visual-review.json",
+      "sha256": "2d3e39038b1ac0fe0f008b35af8cff0693388bcd44e15d671b98625144a99e52"
+    }
+  ]
+}

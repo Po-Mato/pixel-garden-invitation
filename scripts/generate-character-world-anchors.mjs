@@ -20,7 +20,7 @@ function stableManifest(value) {
 }
 
 async function derivePresetAnchor(preset, frame, skeleton) {
-  const idlePath = path.join(generatedRoot, preset.generated.idle);
+  const idlePath = path.join(generatedRoot, "couple-style-v1", `${preset.id}__idle.png`);
   const source = await readFile(idlePath);
   const extracted = await sharp(source)
     .extract({ left: 0, top: 0, width: frame.source.width, height: frame.source.height })

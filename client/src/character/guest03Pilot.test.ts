@@ -8,11 +8,11 @@ import { CharacterSprite } from '../components/CharacterSprite';
 
 afterEach(() => { cleanup(); vi.unstubAllEnvs(); });
 describe('guest03 local pilot isolation', () => {
-  it('stays on neutral without the legacy idle-sheet blink animation', () => {
+  it('uses the approved idle sheet even with a historical pilot flag', () => {
     vi.stubEnv('DEV',true);vi.stubEnv('VITE_GUEST03_PILOT','true');
     const {container} = render(createElement(CharacterSprite, {appearance:{presetId:'masculine-navy-suit'},direction:'down',moving:false}));
-    expect(container.querySelector('.character-sprite--idle-front')).toBeNull();
-    expect(container.querySelector('.character-layer')).toHaveStyle({backgroundPosition:'-192px 0px'});
+    expect(container.querySelector('.character-sprite--idle-front')).not.toBeNull();
+    expect(container.querySelector('img')?.getAttribute('src')).toContain('/couple-style-v1/masculine-navy-suit__idle.png');
   });
   it('requires opt-in and the exact preset', () => {
     expect(resolveGuest03PilotLayer('masculine-navy-suit', false)).toBeUndefined();
@@ -29,11 +29,11 @@ describe('guest03 local pilot isolation', () => {
   });
   it('cannot activate in production even with an environment flag', () => {
     vi.stubEnv('DEV', false);vi.stubEnv('VITE_GUEST03_PILOT','true');
-    expect(resolveCharacterLayers({presetId:'masculine-navy-suit'})[0].walkUrl).not.toContain('__guest03-pilot');
+    expect(resolveCharacterLayers({presetId:'masculine-navy-suit'})[0].walkUrl).toContain('/couple-style-v1/');
   });
-  it('only overrides guest 03 in the opt-in development server', () => {
+  it('does not override the approved package in development', () => {
     vi.stubEnv('DEV',true);vi.stubEnv('VITE_GUEST03_PILOT','true');
-    expect(resolveCharacterLayers({presetId:'masculine-navy-suit'})[0].walkUrl).toContain('__guest03-pilot');
-    expect(resolveCharacterLayers({presetId:'feminine-long-wave-dress'})[0].walkUrl).not.toContain('__guest03-pilot');
+    expect(resolveCharacterLayers({presetId:'masculine-navy-suit'})[0].walkUrl).toContain('/couple-style-v1/');
+    expect(resolveCharacterLayers({presetId:'feminine-long-wave-dress'})[0].walkUrl).toContain('/couple-style-v1/');
   });
 });

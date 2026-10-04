@@ -1343,6 +1343,12 @@ select,
 
 .character-sprite--world .character-layer {
   image-rendering: auto;
+  /* The guest's authored 216px silhouette occupies a 288px canvas.
+     Match the couple's 63px silhouette while keeping the 48x72 world
+     frame, collision centre and authored foot point (24, 67.5) fixed. */
+  transform: translate(-4px, -11.25px)
+    scale(calc(var(--character-display-scale-x, 0.5) * 1.166666667), calc(var(--character-display-scale-y, 0.5) * 1.166666667));
+  filter: contrast(1.08) saturate(0.92);
 }
 
 .character-layer {
