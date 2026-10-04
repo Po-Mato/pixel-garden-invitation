@@ -3,8 +3,10 @@ import {fileURLToPath} from 'node:url';
 import {verifyCoupleStyleProductionSources} from './lib/coupleStyleProductionSources.mjs';
 import {verifyFullReviewProductionSources} from './lib/fullReviewProductionSources.mjs';
 const root=fileURLToPath(new URL('../',import.meta.url));
-// Rebuild approved sources, then bind fresh outputs to immutable review evidence.
-for(const script of ['render-hanbok-front-rig-v10.mjs','build-full-character-review.mjs','normalize-couple-style-sources.mjs','build-couple-style-pilot.mjs']){
+// Render the committed, reviewed neutral PNGs directly. Source registration is an
+// authoring step: repeating libvips resize on another platform can move samples.
+// Bind all fresh runtime outputs and immutable neutral sources to review evidence.
+for(const script of ['render-hanbok-front-rig-v10.mjs','build-full-character-review.mjs','build-couple-style-pilot.mjs']){
  const result=spawnSync(process.execPath,['scripts/'+script],{cwd:root,stdio:'inherit'});
  if(result.error)throw result.error;
  if(result.status!==0)process.exit(result.status||1);
