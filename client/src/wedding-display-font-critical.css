@@ -1,8 +1,18 @@
-/* Locally hosted, invitation-only Gowun Dodum subset. */
+/* Locally hosted critical face covers bundled UI and imported text data. */
 @font-face {
   font-family: "Gowun Dodum Critical";
   font-style: normal;
   font-display: swap;
   font-weight: 400;
   src: url("./assets/fonts/gowun-dodum-critical.woff2") format("woff2");
+}
+
+/* Published content and future names may contain other supported glyphs.
+   Download this same-font fallback only when the critical face lacks them. */
+@font-face {
+  font-family: "Gowun Dodum";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400;
+  src: url("./assets/fonts/gowun-dodum-extended.woff2") format("woff2");
 }

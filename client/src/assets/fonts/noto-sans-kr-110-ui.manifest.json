@@ -1,10 +1,11 @@
 {
   "sourceUrl": "https://raw.githubusercontent.com/google/fonts/73fc2ff52147e34a74804b500cf89ca219eac55d/ofl/notosanskr/NotoSansKR%5Bwght%5D.ttf",
   "sourceSha256": "194018e6b2b293a7964f037b25c0249ce1418bc9ab3c971060a03aa57861e252",
-  "fontSha256": "dd026986d1a89bf4e52a3206f9b0916ce40e9d485326970cdfefa876c320a844",
+  "fontSha256": "c1f0ea48e58f19739f84316861a68194dd60151369a5f1bfde98d8d2c5806206",
   "fontVersion": "2.004-H2",
-  "addedGlyphs": "갱걷겹곁곽괄굵긋깁껏껐꿨뀌뀝냅넨넸눠눴닿듭딕렘렷릅맙멈묶볍쁨삽샴숫쉼쌓옮잎짙챙췄켰큽탬탭탰턱펫햅횡휠",
+  "addedGlyphs": "갱걷겹곁곽괄굵긋깁껏껐꿨뀌뀝냅넨넸눠눴닿듭딕딥렘렷릅맙멈묶볍쁨삽샴숄숫쉼쌓엣옮잎짙챙췄켰큽킷탬탭탰턱펫햅햇횡휠흰",
   "sourceFiles": [
+    "character-assets/guest-character-presets.json",
     "client/src/App.tsx",
     "client/src/accessibility/destinationVoiceNoiseCheck.ts",
     "client/src/accessibility/destinationVoicePreferences.ts",
@@ -176,9 +177,11 @@
     "client/src/performance/deviceRuntimeDiagnostics.ts",
     "client/src/pwa/offlineAssetMeasurement.ts",
     "client/src/pwa/serviceWorkerSource.ts",
+    "shared/character-catalog.json",
     "shared/src/content.ts",
     "shared/src/editableInvitationContent.ts",
-    "shared/src/weddingContent.ts"
+    "shared/src/weddingContent.ts",
+    "shared/src/weddingGalleryAssets.json"
   ],
   "subsetCodePoints": [
     215,
@@ -238,6 +241,7 @@
     46316,
     46317,
     46357,
+    46373,
     46609,
     46944,
     47128,
@@ -272,6 +276,7 @@
     49341,
     49368,
     49396,
+    49668,
     49707,
     49714,
     49788,
@@ -285,6 +290,7 @@
     50536,
     50584,
     50633,
+    50659,
     50715,
     50734,
     50745,
@@ -312,6 +318,7 @@
     53272,
     53300,
     53373,
+    53431,
     53484,
     53485,
     53488,
@@ -325,11 +332,13 @@
     54187,
     54196,
     54661,
+    54663,
     54800,
     54943,
     54945,
     55036,
     55072,
-    55128
+    55128,
+    55152
   ]
 }
