@@ -240,3 +240,21 @@ test("OLED와 LCD의 저휘도·야외·P3 보정 모델에서도 밝기 순서�
     assert.ok(Math.min(...Object.values(contrasts)) >= 4.5);
   }
 });
+
+test('active release baseline pointer is hash-bound and cannot escape its directory', async () => {
+  const fs=await import('node:fs/promises'),os=await import('node:os'),path=await import('node:path'),{createHash}=await import('node:crypto');
+  const {resolveActiveMapToneContract}=await import('./lib/mapToneAudit.mjs');
+  const root=await fs.mkdtemp(path.join(os.tmpdir(),'map-tone-pointer-'));
+  try {
+    const directory=path.join(root,'scripts/visual-baselines');await fs.mkdir(directory,{recursive:true});
+    const file='map-tone-contract-v28-couple-style-v1.json',bytes=Buffer.from('{"version":28}');
+    await fs.writeFile(path.join(directory,file),bytes);
+    const pointer=path.join(directory,'map-tone-active.json');
+    await fs.writeFile(pointer,JSON.stringify({file,sha256:createHash('sha256').update(bytes).digest('hex')}));
+    assert.equal(await resolveActiveMapToneContract(root),path.join(directory,file));
+    await fs.writeFile(path.join(directory,file),'{}');
+    await assert.rejects(resolveActiveMapToneContract(root),/hash mismatch/);
+    await fs.writeFile(pointer,JSON.stringify({file:'../../outside.json'}));
+    await assert.rejects(resolveActiveMapToneContract(root),/Invalid/);
+  } finally { await fs.rm(root,{recursive:true,force:true}); }
+});

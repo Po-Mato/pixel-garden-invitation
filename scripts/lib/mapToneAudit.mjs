@@ -1,7 +1,9 @@
 import { readFile, readdir } from "node:fs/promises";
 import path from "node:path";
+import { createHash } from "node:crypto";
 import sharp from "sharp";
-import { fullReviewDirectory, verifyFullReviewProductionSources } from "./fullReviewProductionSources.mjs";
+import { verifyCoupleStyleProductionSources } from "./coupleStyleProductionSources.mjs";
+const coupleStyleDirectory="character-assets/generated/couple-style-v1";
 import { DEFAULT_FOREGROUND_PLACEMENTS } from "./mapForegroundAuditRenderer.mjs";
 
 export const mapToneCharacterPositions = Object.freeze({
@@ -275,15 +277,16 @@ async function loadToneCharacters(rootDir) {
   if (!manifest.presets.some(({ id }) => id === manifest.defaultPresetId)) {
     throw new Error("Default tone-audit character preset is missing");
   }
-  const active = await verifyFullReviewProductionSources(rootDir);
-  const { halfSizeSprite } = await import("./canonicalMapComposite.mjs");
+  const active = await verifyCoupleStyleProductionSources(rootDir);
+  const { renderCoupleStyleWorldFrame, assertCoupleStyleWorldCss } = await import("./coupleStyleMapComposite.mjs");
+  assertCoupleStyleWorldCss(await readFile(path.join(rootDir,"client/src/styles.css"),"utf8"));
   const characters = await Promise.all(active.characters.map(async (character) => {
-    const sheet = await readFile(path.join(rootDir, fullReviewDirectory, character.presetId, `${character.presetId}__walk-runtime.png`));
+    const sheet = await readFile(path.join(rootDir, coupleStyleDirectory, `${character.presetId}__walk.png`));
     const movementFrames = await Promise.all(Array.from({length: 4}, async (_, index) => ({
       frameId: `down-${index}`,
-      buffer: await halfSizeSprite(await sharp(sheet).extract({left: index * 96, top: 0, width: 96, height: 144}).png().toBuffer())
+      buffer: await renderCoupleStyleWorldFrame(await sharp(sheet).extract({left: index * 96, top: 0, width: 96, height: 144}).png().toBuffer())
     })));
-    return {buffer: movementFrames[1].buffer, movementFrames, width: 48, height: 72, presetId: character.presetId};
+    return {buffer: movementFrames[1].buffer, movementFrames, width: 84, height: 104, presetId: character.presetId};
   }));
   return { characters, defaultPresetId: manifest.defaultPresetId };
 }
@@ -367,7 +370,7 @@ export async function measureCompositedMapTone({ rootDir, zone, characters, defa
   for (const character of characters) {
     const characterLeft = Math.round(position.x - character.width / 2);
     const characterTop = Math.round(position.y - character.height / 2);
-    const { characterSceneLayer } = await import("./canonicalMapComposite.mjs");
+    const { characterSceneLayer } = await import("./coupleStyleMapComposite.mjs");
     const color = `rgba(${edgeShadow.red}, ${edgeShadow.green}, ${edgeShadow.blue}, ${edgeShadow.alpha})`;
     const style = renderStyle ?? {tone: "contrast(1)", shadow: color, secondary: color};
     const compositeFrame = async buffer => sharp(localBackground).composite([{
@@ -378,8 +381,8 @@ export async function measureCompositedMapTone({ rootDir, zone, characters, defa
     const edgeContrasts = await measureCharacterEdgeContrasts(
       scene,
       character.buffer,
-      18,
-      16,
+      0,
+      0,
       character.width,
       character.height
     );
@@ -396,8 +399,8 @@ export async function measureCompositedMapTone({ rootDir, zone, characters, defa
       const edgeContrasts = await measureCharacterEdgeContrasts(
         frameScene,
         frame.buffer,
-        18,
-        16,
+        0,
+        0,
         character.width,
         character.height
       );
@@ -472,7 +475,19 @@ export async function measureCompositedMapTone({ rootDir, zone, characters, defa
   };
 }
 
-export async function auditMapTones({ rootDir, contractPath = path.join(rootDir, "scripts/visual-baselines/map-tone-contract.json") }) {
+export async function resolveActiveMapToneContract(rootDir) {
+  const directory=path.join(rootDir,"scripts/visual-baselines");
+  let pointer;
+  try { pointer=JSON.parse(await readFile(path.join(directory,"map-tone-active.json"),"utf8")); }
+  catch(error) { if(error.code==='ENOENT') return path.join(directory,"map-tone-contract.json"); throw error; }
+  if(!/^map-tone-contract-v\d+-[a-z0-9-]+\.json$/.test(pointer.file)) throw new Error("Invalid map tone baseline pointer");
+  const target=path.join(directory,pointer.file),bytes=await readFile(target);
+  if(createHash('sha256').update(bytes).digest('hex')!==pointer.sha256) throw new Error("Active map tone baseline hash mismatch");
+  return target;
+}
+
+export async function auditMapTones({ rootDir, contractPath }) {
+  contractPath ??= await resolveActiveMapToneContract(rootDir);
   const contract = JSON.parse(await readFile(contractPath, "utf8"));
   const mapRoot = path.join(rootDir, "client/public/assets/maps/v2");
   const manifest = JSON.parse(await readFile(path.join(rootDir, "map-assets/reference/v2/manifest.json"), "utf8"));

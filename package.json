@@ -36,7 +36,7 @@
     "photo-effects:audit": "node scripts/render-photo-effect-anchor-audit.mjs",
     "photo-effects:test": "node --test scripts/photoEffectAnchorAudit.test.mjs",
     "characters:editor": "node scripts/serve-character-editor.mjs",
-    "characters:test": "pnpm characters:generate && pnpm characters:audit-cutouts && node --test scripts/characterAssetGenerator.test.mjs && node --test scripts/referenceAsset.test.mjs scripts/characterAssetAudit.test.mjs scripts/characterVisualAnchor.test.mjs scripts/guest3dPromotion.test.mjs scripts/guestCutoutAssets.test.mjs scripts/flatThreeHeadPilot.test.mjs scripts/coupleThreeHeadSprite.test.mjs scripts/couplePuppetAssets.test.mjs scripts/guestCutoutPilot.test.mjs tools/character-pixel-editor/editor-core.test.mjs",
+    "characters:test": "pnpm characters:generate && pnpm characters:audit-cutouts && node --test scripts/characterAssetGenerator.test.mjs && node --test scripts/referenceAsset.test.mjs scripts/characterAssetAudit.test.mjs scripts/characterVisualAnchor.test.mjs scripts/guest3dPromotion.test.mjs scripts/guestCutoutAssets.test.mjs scripts/flatThreeHeadPilot.test.mjs scripts/coupleThreeHeadSprite.test.mjs scripts/couplePuppetAssets.test.mjs scripts/guestCutoutPilot.test.mjs tools/character-pixel-editor/editor-core.test.mjs scripts/coupleStyleProductionSources.test.mjs scripts/coupleStyleMotion.test.mjs",
     "fonts:build-critical-display": "node scripts/build-critical-wedding-display.mjs",
     "fonts:check-critical-display": "node scripts/check-critical-wedding-display.mjs",
     "maps:build": "node scripts/build-map-assets.mjs",
@@ -59,7 +59,7 @@
     "maps:diagnostics-provenance-summary": "node scripts/summarize-map-diagnostics-provenance.mjs",
     "maps:diagnostics-evidence-pack": "node scripts/build-map-diagnostics-evidence-pack.mjs",
     "maps:diagnostics-evidence-pack-verify": "node scripts/verify-map-diagnostics-evidence-pack.mjs",
-    "maps:test": "node --test scripts/mapAssetAudit.test.mjs scripts/mapToneAudit.test.mjs scripts/mapForegroundAuditRenderer.test.mjs scripts/mapForegroundPlacementSuggestions.test.mjs scripts/mapForegroundContractWrite.test.mjs scripts/reviewedForegroundPatch.test.mjs scripts/mapForegroundPrSummary.test.mjs scripts/mapForegroundDepthTrend.test.mjs scripts/mapForegroundPatchAutomation.test.mjs scripts/mapPatchAutomationWorkflow.test.mjs scripts/worldGeometryPolicyTrend.test.mjs scripts/worldGeometryPolicyGovernance.test.mjs scripts/worldGeometryPolicyIssue.test.mjs scripts/worldGeometryPolicyPrSummary.test.mjs scripts/mapDiagnosticsProvenance.test.mjs scripts/mapDiagnosticsEvidencePack.test.mjs scripts/mapDiagnosticDeltaSchema.test.mjs scripts/mapDiagnosticBundleViewer.test.mjs",
+    "maps:test": "node --test scripts/mapAssetAudit.test.mjs scripts/mapToneAudit.test.mjs scripts/mapForegroundAuditRenderer.test.mjs scripts/mapForegroundPlacementSuggestions.test.mjs scripts/mapForegroundContractWrite.test.mjs scripts/reviewedForegroundPatch.test.mjs scripts/mapForegroundPrSummary.test.mjs scripts/mapForegroundDepthTrend.test.mjs scripts/mapForegroundPatchAutomation.test.mjs scripts/mapPatchAutomationWorkflow.test.mjs scripts/worldGeometryPolicyTrend.test.mjs scripts/worldGeometryPolicyGovernance.test.mjs scripts/worldGeometryPolicyIssue.test.mjs scripts/worldGeometryPolicyPrSummary.test.mjs scripts/mapDiagnosticsProvenance.test.mjs scripts/mapDiagnosticsEvidencePack.test.mjs scripts/mapDiagnosticDeltaSchema.test.mjs scripts/mapDiagnosticBundleViewer.test.mjs scripts/coupleStyleMapComposite.test.mjs",
     "visual:mobile-audit": "node scripts/render-mobile-game-visual-audit.mjs",
     "visual:provenance:verify": "node scripts/verify-visual-baseline-provenance.mjs",
     "visual:provenance:migrate": "node scripts/migrate-visual-baseline-provenance.mjs",
@@ -104,7 +104,9 @@
     "build": "pnpm gallery:audit && pnpm maps:audit && pnpm characters:audit && pnpm characters:generate && pnpm photo-effects:audit && pnpm characters:build-couple-puppets && pnpm --filter @wedding-game/shared build && pnpm --filter @wedding-game/client build && pnpm --filter @wedding-game/worker build",
     "test": "pnpm fonts:check-critical-display && pnpm gallery:audit && pnpm gallery:test && pnpm maps:audit && pnpm maps:test && pnpm characters:audit && pnpm characters:test && pnpm photo-effects:audit && pnpm photo-effects:test && pnpm visual:test && pnpm --filter @wedding-game/shared test && pnpm --filter @wedding-game/client test && pnpm --filter @wedding-game/worker test",
     "typecheck": "pnpm --filter @wedding-game/shared typecheck && pnpm --filter @wedding-game/client typecheck && pnpm --filter @wedding-game/worker typecheck",
-    "characters:review:test-structure": "node --test scripts/fullCharacterReview.test.mjs scripts/fullReviewProductionSources.test.mjs scripts/fullReviewProductionPreview.test.mjs scripts/referenceAsset.test.mjs scripts/coupleThreeHeadSprite.test.mjs"
+    "characters:review:test-structure": "node --test scripts/fullCharacterReview.test.mjs scripts/fullReviewProductionSources.test.mjs scripts/fullReviewProductionPreview.test.mjs scripts/referenceAsset.test.mjs scripts/coupleThreeHeadSprite.test.mjs scripts/coupleStyleProductionSources.test.mjs scripts/coupleStyleMotion.test.mjs",
+    "characters:build-couple-style": "node scripts/normalize-couple-style-sources.mjs && node scripts/build-couple-style-pilot.mjs",
+    "dev:couple-style": "pnpm characters:build-couple-style && pnpm --filter @wedding-game/client exec vite --host 127.0.0.1 --port 4173"
   },
   "devDependencies": {
     "@types/node": "^20.14.0",

@@ -12,7 +12,7 @@ const page=await context.newPage();
 let release,intercepted=false;
 const gate=new Promise(resolve=>{release=resolve;});
 // Delay only the first runtime walk download; game state and controls are real.
-await page.route('**/characters/generated/guests/feminine-sage-bolero-dress__walk.png?*',async route=>{intercepted=true;await gate;await route.continue();});
+await page.route('**/characters/generated/couple-style-v1/feminine-sage-bolero-dress__walk.png?*',async route=>{intercepted=true;await gate;await route.continue();});
 const selector='.world-player:not(.player--remote) .character-sprite--world';
 const read=()=>page.locator(selector).evaluate(e=>({
   background:e.querySelector('[data-character-layer]').style.backgroundImage,

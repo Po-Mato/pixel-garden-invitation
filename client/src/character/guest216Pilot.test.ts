@@ -34,12 +34,12 @@ describe('216px twelve-character local candidate pilot', () => {
     expect(resolveGuest216PilotLayer('masculine-navy-suit',false)).toBeUndefined();
     expect(resolveGuest216PilotLayer('constructor',true)).toBeUndefined();
   });
-  it('integrates only in explicitly enabled development', () => {
+  it('keeps the approved package ahead of historical development flags', () => {
     vi.stubEnv('DEV',true);vi.stubEnv('VITE_GUEST216_PILOT','true');vi.stubEnv('VITE_GUEST03_PILOT','false');
-    expect(resolveCharacterLayers(defaultCharacterAppearance)[0].walkUrl).toContain('/__guest216-pilot/');
+    expect(resolveCharacterLayers(defaultCharacterAppearance)[0].walkUrl).toContain('/couple-style-v1/');
   });
   it('cannot enable candidates in production even with a stale flag', () => {
     vi.stubEnv('DEV',false);vi.stubEnv('VITE_GUEST216_PILOT','true');vi.stubEnv('VITE_GUEST216_RUNTIME_PILOT','true');
-    expect(resolveCharacterLayers(defaultCharacterAppearance)[0].walkUrl).not.toContain('/__guest216-pilot/');
+    expect(resolveCharacterLayers(defaultCharacterAppearance)[0].walkUrl).toContain('/couple-style-v1/');
   });
 });

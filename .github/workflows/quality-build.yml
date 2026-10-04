@@ -128,7 +128,11 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: storybook-render-diagnostic-${{ github.sha }}
-          path: character-assets/generated/full-review-v1/
+          path: |
+            character-assets/generated/full-review-v1/
+            character-assets/generated/couple-style-v1/
+            character-assets/rigs/couple-style-v1/production-review.json
+            character-assets/rigs/couple-style-v1/registration.json
           if-no-files-found: warn
           compression-level: 1
           retention-days: 3

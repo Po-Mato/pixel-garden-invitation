@@ -5,6 +5,8 @@ import sharp from "sharp";
 import { validateDimensions } from "./lib/characterAssetGenerator.mjs";
 import { fullReviewDirectory, verifyFullReviewProductionSources } from "./lib/fullReviewProductionSources.mjs";
 
+import { coupleStyleDirectory, verifyCoupleStyleProductionSources } from "./lib/coupleStyleProductionSources.mjs";
+
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const catalog = JSON.parse(await readFile(join(root, "shared/character-catalog.json"), "utf8"));
 const guestPresetCatalog = JSON.parse(await readFile(join(root, "character-assets/guest-character-presets.json"), "utf8"));
@@ -91,6 +93,7 @@ export async function generateCharacterAssets(options = {}) {
   if (useCutoutGuests && resolve(outputRoot) === resolve(defaultOutputRoot)) {
     if (resolve(cutoutRoot) !== resolve(defaultCutoutRoot)) throw new Error("Unreviewed guest pipeline cannot replace public assets");
     await verifyFullReviewProductionSources(root);
+    await verifyCoupleStyleProductionSources(root);
   }
   await prevalidateSources(sourceRoot, cutoutRoot, useCutoutGuests);
 
@@ -189,6 +192,16 @@ export async function generateCharacterAssets(options = {}) {
     await copyFixed(join(sourceRoot, "npc", `${npc.id}-walk.png`), `npc/${npc.id}__walk.png`);
   }
 
+  // The legacy generator clears this directory. Copy the reviewed current
+  // package afterwards so production builds cannot silently remove it.
+  if (useCutoutGuests && resolve(outputRoot) === resolve(defaultOutputRoot)) {
+    const current = await verifyCoupleStyleProductionSources(root);
+    for (const character of current.characters) {
+      for (const output of character.outputs) {
+        await copyFixed(join(root, coupleStyleDirectory, output.file), `couple-style-v1/${output.file}`);
+      }
+    }
+  }
   return outputs.size;
 }
 

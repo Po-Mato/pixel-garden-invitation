@@ -35,7 +35,7 @@ it("완성 프리셋 단일 레이어만 렌더링한다", () => {
   const materialLayerImage = (sprite.querySelector('[data-character-layer="base"]') as HTMLElement)
     .style.backgroundImage;
   expect(materialLayerImage).toMatch(/^url\("https?:\/\//);
-  expect(materialLayerImage).toContain("/characters/generated/guests/feminine-long-wave-dress__walk.png");
+  expect(materialLayerImage).toContain("/characters/generated/couple-style-v1/feminine-long-wave-dress__walk.png");
   expect(materialLayerImage).not.toContain("/assets/characters/");
 });
 
@@ -140,7 +140,7 @@ it("미리보기에서는 192x288 전용 프레임을 절반 크기로 선명하
   });
   expect(sprite.querySelector("img")).toHaveAttribute(
     "src",
-    expect.stringContaining("/guests/preview/feminine-long-wave-dress__idle.png")
+    expect.stringContaining("/couple-style-v1/preview/feminine-long-wave-dress__idle.png")
   );
 });
 
@@ -167,7 +167,7 @@ it("선택 목록 썸네일은 고해상도 원본을 48x72로 표시한다", ()
   });
   expect(sprite.querySelector("img")).toHaveAttribute(
     "src",
-    expect.stringContaining("/guests/preview/feminine-long-wave-dress__idle.png")
+    expect.stringContaining("/couple-style-v1/preview/feminine-long-wave-dress__idle.png")
   );
 });
 

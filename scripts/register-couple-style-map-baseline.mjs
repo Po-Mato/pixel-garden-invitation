@@ -1,0 +1,24 @@
+// Explicit release registration: historical contract remains byte-for-byte intact.
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import assert from 'node:assert/strict';
+import {createHash} from 'node:crypto';
+import {auditMapTones} from './lib/mapToneAudit.mjs';
+const root=path.resolve(import.meta.dirname,'..'),dir=path.join(root,'scripts/visual-baselines');
+const oldPath=path.join(dir,'map-tone-contract.json'),oldBytes=await fs.readFile(oldPath),old=JSON.parse(oldBytes);
+const result=await auditMapTones({rootDir:root,contractPath:oldPath});
+assert.ok(result.issues.every(issue=>issue.includes('가장자리 대비 기준선 이탈')),'Non-baseline QA failure prevents registration');
+const absolute=JSON.parse(await fs.readFile(path.join(root,'character-assets/rigs/couple-style-release-v1/map-review/audit.json')));
+assert.equal(absolute.rows.length,1920);assert.equal(absolute.belowStandardThreshold.length,0);assert.equal(absolute.belowDisplayThreshold.length,0);
+assert.deepEqual(absolute.thresholds,old.thresholds);
+const next=structuredClone(old),rounded=v=>typeof v==='number'?Number(v.toFixed(3)):Object.fromEntries(Object.entries(v).map(([k,n])=>[k,rounded(n)]));
+const keys=['averageLuminance','p10Luminance','p90Luminance','sceneAverageLuminance','sceneP10Luminance','sceneP90Luminance','characterEdgeContrast','characterPresetCount','characterEdgeContrasts','foregroundAssetCount','movementFrameCount','characterMovementEdgeContrasts'];
+for(const r of result.reports)for(const k of keys)next.zones[r.zoneId][k]=rounded(r[k]);
+next.version=old.version+1;
+next.release={package:'couple-style-v1',previousBaseline:'map-tone-contract.json',previousSha256:createHash('sha256').update(oldBytes).digest('hex'),reason:'Approved new character artwork and world-only 7/6 scale with contrast(1.08) saturate(0.92); all 1920 absolute contrast samples pass unchanged thresholds.'};
+assert.deepEqual(next.thresholds,old.thresholds);
+const file=`map-tone-contract-v${next.version}-couple-style-v1.json`,bytes=Buffer.from(JSON.stringify(next,null,2)+'\n');
+await fs.writeFile(path.join(dir,file),bytes,{flag:'wx'});
+await fs.writeFile(path.join(dir,'map-tone-active.json'),JSON.stringify({file,sha256:createHash('sha256').update(bytes).digest('hex')},null,2)+'\n');
+assert.ok((await fs.readFile(oldPath)).equals(oldBytes));
+console.log(`Registered ${file}; historical v${old.version} preserved; ${result.issues.length} prior-baseline deltas reviewed.`);

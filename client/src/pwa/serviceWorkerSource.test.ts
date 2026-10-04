@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { guestCutoutAssetRevision } from "../character/assetRevisions";
+import { defaultCharacterAppearance, resolveGuestPreset } from "@wedding-game/shared";
+import { coupleStyleRevision, resolveCoupleStyleLayer } from "../character/coupleStyleAssets";
 import {
   createPwaServiceWorkerSource,
   pwaCorePrecachePaths,
@@ -11,7 +12,18 @@ import {
 
 describe("PWA service worker source", () => {
   it("pre-caches the same revision used by the default guest preset", () => {
-    expect(pwaDefaultGuestAssetRevision).toBe(guestCutoutAssetRevision);
+    expect(pwaDefaultGuestAssetRevision).toBe(coupleStyleRevision);
+  });
+
+  it("pre-caches exactly the new default world pair and selection idle without legacy duplicates", () => {
+    const presetId = resolveGuestPreset(defaultCharacterAppearance).id;
+    const world = resolveCoupleStyleLayer(presetId, "./", "world")!;
+    const preview = resolveCoupleStyleLayer(presetId, "./", "preview")!;
+    const sprites = pwaCorePrecachePaths.filter(path => path.includes("/characters/generated/"));
+    expect(sprites).toEqual([world.idleUrl, world.walkUrl, preview.idleUrl]);
+    expect(new Set(sprites).size).toBe(3);
+    expect(sprites.every(path => path.includes("/couple-style-v1/"))).toBe(true);
+    expect(sprites.some(path => path.includes("/guests/"))).toBe(false);
   });
 
   it("combines required offline assets with generated scripts and styles once", () => {
@@ -52,10 +64,10 @@ describe("PWA service worker source", () => {
     expect(paths.filter((path) => path === pwaDefaultGuestSelectionIdlePath)).toHaveLength(1);
     expect(pwaDefaultGuestSelectionIdlePath.endsWith(`?v=${pwaDefaultGuestAssetRevision}`)).toBe(true);
     expect(paths).toContain(
-      `./characters/generated/guests/feminine-long-wave-dress__idle.png?v=${pwaDefaultGuestAssetRevision}`
+      `./characters/generated/couple-style-v1/feminine-long-wave-dress__idle.png?v=${pwaDefaultGuestAssetRevision}`
     );
     expect(paths).toContain(
-      `./characters/generated/guests/feminine-long-wave-dress__walk.png?v=${pwaDefaultGuestAssetRevision}`
+      `./characters/generated/couple-style-v1/feminine-long-wave-dress__walk.png?v=${pwaDefaultGuestAssetRevision}`
     );
     expect(paths).toContain("./assets/gowun-dodum-critical-hash.woff2");
     expect(paths).toContain("./assets/noto-sans-kr-119-wght-normal-hash.woff2");

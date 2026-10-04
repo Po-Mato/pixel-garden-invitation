@@ -1,0 +1,81 @@
+{
+  "renderer": "couple-style-inverse-nearest-v2",
+  "characters": 12,
+  "directions": 48,
+  "frames": 192,
+  "allCharacterContactSheetsDirectlyInspected": true,
+  "displaySizes": [
+    {
+      "width": 96,
+      "height": 144
+    },
+    {
+      "width": 48,
+      "height": 72
+    }
+  ],
+  "unitTestsPassed": 4,
+  "newColors": 0,
+  "fixedHeadFailures": 0,
+  "newDisconnectedComponents": 0,
+  "newInteriorHoles": 0,
+  "maxWorldCenterDrift": 0.75,
+  "armStaticFallback": [
+    {
+      "id": "guest-04",
+      "direction": "front"
+    },
+    {
+      "id": "guest-04",
+      "direction": "back"
+    },
+    {
+      "id": "guest-06",
+      "direction": "back"
+    },
+    {
+      "id": "guest-07",
+      "direction": "front"
+    },
+    {
+      "id": "guest-10",
+      "direction": "front"
+    },
+    {
+      "id": "guest-10",
+      "direction": "back"
+    }
+  ],
+  "footLift": [
+    {
+      "id": "guest-03",
+      "direction": "front",
+      "sourcePixels": 2
+    },
+    {
+      "id": "guest-04",
+      "direction": "front",
+      "sourcePixels": 2
+    },
+    {
+      "id": "guest-09",
+      "direction": "front",
+      "sourcePixels": 2
+    },
+    {
+      "id": "guest-11",
+      "direction": "front",
+      "sourcePixels": 2
+    }
+  ],
+  "limitations": [
+    "Only front tailored characters with two grounded visible soles use alternating 2px foot lift.",
+    "Other directions remain restrained source-preserving visible-surface movement, not a newly painted full gait.",
+    "GIFs contain four240ms frames; static contact sheets were directly inspected."
+  ],
+  "files": {
+    "worldFootLiftGif": "tailored-footlift-world-1x.gif",
+    "footLiftComparison": "tailored-footlift-before-after.png",
+    "allContact": "all-guests-1x-contact.png"
+  }
+}

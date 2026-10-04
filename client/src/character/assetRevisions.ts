@@ -1,3 +1,4 @@
+export const coupleStyleRevision = "couple-style-v1-20261004";
 export const coupleSpriteAssetRevision = "couple-aligned-v1-20260930";
 export const guestCutoutAssetRevision = "guest-full-review-v1-20260930";
 

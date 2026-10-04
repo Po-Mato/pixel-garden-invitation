@@ -1,13 +1,13 @@
-import { guestCutoutAssetRevision } from "../character/assetRevisions";
+import { coupleStyleRevision } from "../character/assetRevisions";
 
-export const pwaDefaultGuestAssetRevision = guestCutoutAssetRevision;
+export const pwaDefaultGuestAssetRevision = coupleStyleRevision;
 
 function versionedDefaultGuestPath(path: string): string {
   return `${path}?v=${pwaDefaultGuestAssetRevision}`;
 }
 
 export const pwaDefaultGuestSelectionIdlePath = versionedDefaultGuestPath(
-  "./characters/generated/guests/preview/feminine-long-wave-dress__idle.png"
+  "./characters/generated/couple-style-v1/preview/feminine-long-wave-dress__idle.png"
 );
 
 export const pwaCorePrecachePaths = [
@@ -22,8 +22,8 @@ export const pwaCorePrecachePaths = [
   "./assets/maps/v2/home/topiary-foreground.png",
   "./assets/ui/joystick-wedding-compass-base.png",
   "./assets/ui/joystick-wedding-compass-thumb.png",
-  versionedDefaultGuestPath("./characters/generated/guests/feminine-long-wave-dress__idle.png"),
-  versionedDefaultGuestPath("./characters/generated/guests/feminine-long-wave-dress__walk.png"),
+  versionedDefaultGuestPath("./characters/generated/couple-style-v1/feminine-long-wave-dress__idle.png"),
+  versionedDefaultGuestPath("./characters/generated/couple-style-v1/feminine-long-wave-dress__walk.png"),
   pwaDefaultGuestSelectionIdlePath,
   "./characters/puppets/bride/rig.json",
   "./characters/puppets/bride/body.webp",
