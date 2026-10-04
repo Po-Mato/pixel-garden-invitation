@@ -8,7 +8,7 @@ export const pagesRuntimeContractPolicy = Object.freeze({
     "./assets/maps/v2/home/background.webp",
     "./characters/generated/npc/bride__walk.png",
     "./characters/generated/npc/groom__walk.png",
-    "./characters/generated/guests/feminine-long-wave-dress__idle.png"
+    "./characters/generated/couple-style-v1/feminine-long-wave-dress__idle.png"
   ]
 });
 
