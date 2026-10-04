@@ -130,7 +130,7 @@ export function EntryScreen({
   };
   const enterGarden = () => {
     saveAppearance(appearance);
-    onEnter({ nickname: nickname.trim(), appearance });
+    onEnter({ nickname: nickname.trim().normalize("NFC"), appearance });
   };
 
   return (

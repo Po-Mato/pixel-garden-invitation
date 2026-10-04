@@ -34,7 +34,7 @@ export function loadGameEntrySession(
     if (!Number.isFinite(updatedAt) || now - updatedAt > sessionMaxAgeMs) return null;
     return {
       version: 1,
-      nickname: parsed.nickname.trim().slice(0, 20),
+      nickname: parsed.nickname.trim().normalize("NFC").slice(0, 20),
       appearance: parseCharacterAppearance(parsed.appearance),
       updatedAt: parsed.updatedAt
     };
@@ -52,7 +52,7 @@ export function saveGameEntrySession(
   try {
     storage.setItem(gameEntrySessionStorageKey, JSON.stringify({
       version: 1,
-      nickname: profile.nickname.trim().slice(0, 20),
+      nickname: profile.nickname.trim().normalize("NFC").slice(0, 20),
       appearance: parseCharacterAppearance(profile.appearance),
       updatedAt
     }));
