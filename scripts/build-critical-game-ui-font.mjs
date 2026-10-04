@@ -45,7 +45,11 @@ try {
   const korean = [...new Set(fontFaces(next).flatMap(f=>[...f.codePoints]))].filter(cp=>(cp>=0x1100&&cp<=0x11ff)||(cp>=0x3130&&cp<=0x318f)||(cp>=0x3400&&cp<=0x9fff)||(cp>=0xac00&&cp<=0xd7a3)||(cp>=0xf900&&cp<=0xfaff)).sort((a,b)=>a-b);
   // Include non-Korean characters supported by the full font (for example
   // accented Latin, Greek, Cyrillic and Kana) without loading it for emoji.
-  const criticalCoverage = new Set(fontFaces(next).flatMap(f=>[...f.codePoints]));
+  const criticalCoverage = new Set();
+  for (const face of fontFaces(next)) {
+    const actual = cmap(path.resolve(root, 'client/src', face.url));
+    for (const cp of face.codePoints) if (actual.has(cp)) criticalCoverage.add(cp);
+  }
   const extra = new Set();
   const fontsourceDir = path.join(root, 'client/node_modules/@fontsource-variable/noto-sans-kr');
   for (const face of fontFaces(originalCss)) {

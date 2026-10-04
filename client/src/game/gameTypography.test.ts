@@ -16,7 +16,7 @@ describe("requiresExtendedGameTypography", () => {
   });
 
   it("loads supported non-Korean nickname glyphs while retaining native emoji fallback", () => {
-    for (const name of ["Ālex", "Ω", "Ж", "あき", "ㄱ", "金", "힣"]) {
+    for (const name of ["Ālex", "Ω", "Ж", "あき", "ㄱ", "金", "힣", "Nick‥", "―†‡‰‼⁂"]) {
       expect(requiresExtendedGameTypography([name]), name).toBe(true);
     }
     expect(requiresExtendedGameTypography(["하객😀"])).toBe(false);
