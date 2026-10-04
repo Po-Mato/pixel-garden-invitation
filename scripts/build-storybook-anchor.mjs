@@ -66,7 +66,13 @@ export async function buildAnchor(){
   const receipt=await beginPaintedRender(root,await anchorInputs());
   for(const script of scripts)execFileSync(process.execPath,[path.join(root,'scripts',script)],{cwd:root,stdio:'pipe'});
   const out=path.join(directions,'generated');
+  const frontRig=await json(path.join(body,'front-registration.json')),profileRig=await json(path.join(directions,'body-registration.json'));
+  const limbNames=['Left','Right'].flatMap(s=>['upperArm','forearm','hand','thigh','calf','shoe'].map(n=>n+s));
   await finishPaintedRender(root,path.join(out,'walk-render-receipt.json'),receipt,[
+    ...[...frontRig.parts.map(p=>p.id),'head'].map(id=>path.join(body,'generated',`${id}-registered.svg`)),
+    ...limbNames.map(id=>path.join(body,'generated/joint-parts',`${id}.svg`)),
+    ...profileRig.parts.map(p=>path.join(out,`${p.id}-registered.svg`)),
+    ...['left','right','back'].flatMap(d=>[path.join(out,`head-${d}-registered.svg`),...limbNames.map(id=>path.join(out,`${d}-${id}-source.svg`))]),
     path.join(out,'guest05-walk-study.png'),path.join(out,'guest05-walk-study-game.png'),
     ...['front','left','right','back'].flatMap(d=>[1,2,3,4].map(f=>path.join(d==='front'?path.join(body,'generated'):out,`${d}-walk-${f}.png`)))
   ]);

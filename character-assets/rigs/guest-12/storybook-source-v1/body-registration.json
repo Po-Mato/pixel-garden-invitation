@@ -83,7 +83,8 @@
       "materialReuse": {
         "donor": "guest-02",
         "policy": "Shared source material; independently review guest-12 assembly. No frame pixels copied."
-      }
+      },
+      "sourceWidth": 1.65
     },
     {
       "id": "armLeft-left",
@@ -112,7 +113,8 @@
       "materialReuse": {
         "donor": "guest-02",
         "policy": "Shared source material; independently review guest-12 assembly. No frame pixels copied."
-      }
+      },
+      "sourceWidth": 1.65
     },
     {
       "id": "legLeft-front",
@@ -246,7 +248,9 @@
       "parent": "thighLeft",
       "source": "../../guest-11/storybook-source-v1/sources/leg-back-v1.png",
       "matte": "../../guest-11/storybook-source-v1/masks/leg-back-v1.svg",
-      "sourceOverlays": ["sources/calf-back-shading-study-v1.svg"],
+      "sourceOverlays": [
+        "sources/calf-back-shading-study-v1.svg"
+      ],
       "sourcePivot": [
         355,
         3
@@ -268,7 +272,9 @@
       "parent": "thighRight",
       "source": "../../guest-11/storybook-source-v1/sources/leg-back-v1.png",
       "matte": "../../guest-11/storybook-source-v1/masks/leg-back-v1.svg",
-      "sourceOverlays": ["sources/calf-back-shading-study-v1.svg"],
+      "sourceOverlays": [
+        "sources/calf-back-shading-study-v1.svg"
+      ],
       "sourcePivot": [
         355,
         3
@@ -527,7 +533,8 @@
       "materialReuse": {
         "donor": "guest-02",
         "policy": "Shared source material; independently review guest-12 assembly. No frame pixels copied."
-      }
+      },
+      "sourceWidth": 1.8
     },
     {
       "id": "armRight-front",
@@ -556,7 +563,8 @@
       "materialReuse": {
         "donor": "guest-02",
         "policy": "Shared source material; independently review guest-12 assembly. No frame pixels copied."
-      }
+      },
+      "sourceWidth": 1.8
     },
     {
       "id": "armRight-left",
@@ -585,7 +593,8 @@
       "materialReuse": {
         "donor": "guest-02",
         "policy": "Shared source material; independently review guest-12 assembly. No frame pixels copied."
-      }
+      },
+      "sourceWidth": 1.65
     },
     {
       "id": "armLeft-right",
@@ -614,7 +623,8 @@
       "materialReuse": {
         "donor": "guest-02",
         "policy": "Shared source material; independently review guest-12 assembly. No frame pixels copied."
-      }
+      },
+      "sourceWidth": 1.65
     },
     {
       "id": "armLeft-back",
@@ -643,7 +653,8 @@
       "materialReuse": {
         "donor": "guest-02",
         "policy": "Shared source material; independently review guest-12 assembly. No frame pixels copied."
-      }
+      },
+      "sourceWidth": 1.7
     },
     {
       "id": "armRight-back",
@@ -672,7 +683,8 @@
       "materialReuse": {
         "donor": "guest-02",
         "policy": "Shared source material; independently review guest-12 assembly. No frame pixels copied."
-      }
+      },
+      "sourceWidth": 1.7
     },
     {
       "id": "norigae-front",

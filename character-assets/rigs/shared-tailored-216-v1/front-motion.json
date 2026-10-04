@@ -1,0 +1,39 @@
+{
+  "status": "front-walk-review-only",
+  "runtimeEligible": false,
+  "frameDurationMs": 180,
+  "frames": [
+    {
+      "name": "wearer-right-forward",
+      "frontFoot": "Right",
+      "rearFoot": "Left",
+      "rearHipDegrees": -25,
+      "rearCalfDegrees": -50,
+      "forwardArm": "Left"
+    },
+    {
+      "name": "neutral",
+      "frontFoot": null
+    },
+    {
+      "name": "wearer-left-forward",
+      "frontFoot": "Left",
+      "rearFoot": "Right",
+      "rearHipDegrees": -25,
+      "rearCalfDegrees": -50,
+      "forwardArm": "Right"
+    },
+    {
+      "name": "neutral",
+      "frontFoot": null
+    }
+  ],
+  "notes": [
+    "Fixed neutral artwork; only source-vector limb geometry is posed. No final PNG edits.",
+    "Rear thigh/calf rotate in depth; front projection is shortened by cosine, not per-frame image normalization.",
+    "Shoulder source coordinates through y160 are anchored. Rendered band above y145 is tested pixel-identical. Sleeve mesh follows elbow and wrist; no shoulder cap rotation.",
+    "Supporting foot stays on baseline270; opposite foot lifts. Each frame is rendered independently, including both neutral frames."
+  ],
+  "skeleton": "skeleton.json",
+  "template": "tailored-216-v1"
+}

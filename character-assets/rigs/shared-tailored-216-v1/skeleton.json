@@ -1,0 +1,498 @@
+{
+  "version": 1,
+  "canvas": [
+    192,
+    288
+  ],
+  "geometry": {
+    "headTop": 54,
+    "headBottom": 126,
+    "headHeight": 72,
+    "bodyHeight": 144,
+    "totalHeight": 216,
+    "footBaseline": 270
+  },
+  "root": [
+    96,
+    270
+  ],
+  "directions": {
+    "front": {
+      "neck": {
+        "pivot": [
+          96,
+          126
+        ],
+        "parent": "spine"
+      },
+      "thighRight": {
+        "pivot": [
+          83,
+          207
+        ],
+        "parent": "pelvis"
+      },
+      "thighLeft": {
+        "pivot": [
+          109,
+          207
+        ],
+        "parent": "pelvis"
+      },
+      "calfRight": {
+        "pivot": [
+          84,
+          236
+        ],
+        "parent": "thighRight"
+      },
+      "calfLeft": {
+        "pivot": [
+          108,
+          236
+        ],
+        "parent": "thighLeft"
+      },
+      "shoeRight": {
+        "pivot": [
+          84,
+          260
+        ],
+        "parent": "calfRight"
+      },
+      "shoeLeft": {
+        "pivot": [
+          108,
+          260
+        ],
+        "parent": "calfLeft"
+      },
+      "handRight": {
+        "pivot": [
+          60,
+          195
+        ],
+        "parent": "forearmRight"
+      },
+      "handLeft": {
+        "pivot": [
+          132,
+          195
+        ],
+        "parent": "forearmLeft"
+      },
+      "upperArmRight": {
+        "pivot": [
+          74,
+          140
+        ],
+        "parent": "spine"
+      },
+      "upperArmLeft": {
+        "pivot": [
+          118,
+          140
+        ],
+        "parent": "spine"
+      },
+      "forearmRight": {
+        "pivot": [
+          63,
+          170
+        ],
+        "parent": "upperArmRight"
+      },
+      "forearmLeft": {
+        "pivot": [
+          129,
+          170
+        ],
+        "parent": "upperArmLeft"
+      },
+      "pelvis": {
+        "pivot": [
+          96,
+          207
+        ],
+        "parent": "spine"
+      },
+      "jacket": {
+        "pivot": [
+          96,
+          171
+        ],
+        "parent": "root"
+      },
+      "collarRight": {
+        "pivot": [
+          89,
+          130
+        ],
+        "parent": "spine"
+      },
+      "collarLeft": {
+        "pivot": [
+          103,
+          130
+        ],
+        "parent": "spine"
+      },
+      "pocketSquare": {
+        "pivot": [
+          114,
+          159
+        ],
+        "parent": "spine"
+      }
+    },
+    "left": {
+      "neck": {
+        "pivot": [
+          96,
+          126
+        ],
+        "parent": "spine"
+      },
+      "thighRight": {
+        "pivot": [
+          102,
+          207
+        ],
+        "parent": "pelvis"
+      },
+      "calfRight": {
+        "pivot": [
+          102,
+          236
+        ],
+        "parent": "thighRight"
+      },
+      "shoeRight": {
+        "pivot": [
+          102,
+          260
+        ],
+        "parent": "calfRight"
+      },
+      "upperArmRight": {
+        "pivot": [
+          88,
+          140
+        ],
+        "parent": "spine"
+      },
+      "forearmRight": {
+        "pivot": [
+          88,
+          170
+        ],
+        "parent": "upperArmRight"
+      },
+      "handRight": {
+        "pivot": [
+          87,
+          195
+        ],
+        "parent": "forearmRight"
+      },
+      "thighLeft": {
+        "pivot": [
+          95,
+          207
+        ],
+        "parent": "pelvis"
+      },
+      "calfLeft": {
+        "pivot": [
+          95,
+          236
+        ],
+        "parent": "thighLeft"
+      },
+      "shoeLeft": {
+        "pivot": [
+          95,
+          260
+        ],
+        "parent": "calfLeft"
+      },
+      "pelvis": {
+        "pivot": [
+          96,
+          207
+        ],
+        "parent": "spine"
+      },
+      "jacket": {
+        "pivot": [
+          96,
+          171
+        ],
+        "parent": "root"
+      },
+      "pocketSquare": {
+        "pivot": [
+          93,
+          159
+        ],
+        "parent": "spine"
+      },
+      "upperArmLeft": {
+        "pivot": [
+          103,
+          140
+        ],
+        "parent": "spine"
+      },
+      "forearmLeft": {
+        "pivot": [
+          106,
+          170
+        ],
+        "parent": "upperArmLeft"
+      },
+      "handLeft": {
+        "pivot": [
+          106,
+          195
+        ],
+        "parent": "forearmLeft"
+      },
+      "collar": {
+        "pivot": [
+          97,
+          130
+        ],
+        "parent": "spine"
+      }
+    },
+    "right": {
+      "neck": {
+        "pivot": [
+          96,
+          126
+        ],
+        "parent": "spine"
+      },
+      "thighLeft": {
+        "pivot": [
+          90,
+          207
+        ],
+        "parent": "pelvis"
+      },
+      "calfLeft": {
+        "pivot": [
+          90,
+          236
+        ],
+        "parent": "thighLeft"
+      },
+      "shoeLeft": {
+        "pivot": [
+          90,
+          260
+        ],
+        "parent": "calfLeft"
+      },
+      "upperArmLeft": {
+        "pivot": [
+          104,
+          140
+        ],
+        "parent": "spine"
+      },
+      "forearmLeft": {
+        "pivot": [
+          104,
+          170
+        ],
+        "parent": "upperArmLeft"
+      },
+      "handLeft": {
+        "pivot": [
+          105,
+          195
+        ],
+        "parent": "forearmLeft"
+      },
+      "thighRight": {
+        "pivot": [
+          97,
+          207
+        ],
+        "parent": "pelvis"
+      },
+      "calfRight": {
+        "pivot": [
+          97,
+          236
+        ],
+        "parent": "thighRight"
+      },
+      "shoeRight": {
+        "pivot": [
+          97,
+          260
+        ],
+        "parent": "calfRight"
+      },
+      "pelvis": {
+        "pivot": [
+          96,
+          207
+        ],
+        "parent": "spine"
+      },
+      "jacket": {
+        "pivot": [
+          96,
+          171
+        ],
+        "parent": "root"
+      },
+      "upperArmRight": {
+        "pivot": [
+          89,
+          140
+        ],
+        "parent": "spine"
+      },
+      "forearmRight": {
+        "pivot": [
+          86,
+          170
+        ],
+        "parent": "upperArmRight"
+      },
+      "handRight": {
+        "pivot": [
+          86,
+          195
+        ],
+        "parent": "forearmRight"
+      },
+      "collar": {
+        "pivot": [
+          95,
+          130
+        ],
+        "parent": "spine"
+      }
+    },
+    "back": {
+      "neck": {
+        "pivot": [
+          96,
+          126
+        ],
+        "parent": "spine"
+      },
+      "thighLeft": {
+        "pivot": [
+          83,
+          207
+        ],
+        "parent": "pelvis"
+      },
+      "thighRight": {
+        "pivot": [
+          109,
+          207
+        ],
+        "parent": "pelvis"
+      },
+      "calfLeft": {
+        "pivot": [
+          84,
+          236
+        ],
+        "parent": "thighLeft"
+      },
+      "calfRight": {
+        "pivot": [
+          108,
+          236
+        ],
+        "parent": "thighRight"
+      },
+      "shoeLeft": {
+        "pivot": [
+          84,
+          260
+        ],
+        "parent": "calfLeft"
+      },
+      "shoeRight": {
+        "pivot": [
+          108,
+          260
+        ],
+        "parent": "calfRight"
+      },
+      "handLeft": {
+        "pivot": [
+          60,
+          195
+        ],
+        "parent": "forearmLeft"
+      },
+      "handRight": {
+        "pivot": [
+          132,
+          195
+        ],
+        "parent": "forearmRight"
+      },
+      "upperArmLeft": {
+        "pivot": [
+          74,
+          140
+        ],
+        "parent": "spine"
+      },
+      "upperArmRight": {
+        "pivot": [
+          118,
+          140
+        ],
+        "parent": "spine"
+      },
+      "forearmLeft": {
+        "pivot": [
+          63,
+          170
+        ],
+        "parent": "upperArmLeft"
+      },
+      "forearmRight": {
+        "pivot": [
+          129,
+          170
+        ],
+        "parent": "upperArmRight"
+      },
+      "pelvis": {
+        "pivot": [
+          96,
+          207
+        ],
+        "parent": "spine"
+      },
+      "jacket": {
+        "pivot": [
+          96,
+          171
+        ],
+        "parent": "root"
+      },
+      "collarBack": {
+        "pivot": [
+          96,
+          128
+        ],
+        "parent": "spine"
+      }
+    }
+  }
+}

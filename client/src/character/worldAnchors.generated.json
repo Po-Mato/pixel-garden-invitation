@@ -12,48 +12,48 @@
       "centerY": 81,
       "feetY": 135,
       "bounds": {
-        "left": 27,
+        "left": 25,
         "top": 27,
-        "width": 43,
+        "width": 46,
         "height": 109
       },
-      "sourceSha256": "a0d05c4868d976f9db44546ac58610d88b12b12b8ec3861b3cd4142b09e01a85"
+      "sourceSha256": "013df8d5a548ec827304545159db1c5b919ba936ec0d88e10b679447432b5d54"
     },
     "feminine-formal-hanbok": {
       "centerX": 48,
       "centerY": 81,
       "feetY": 135,
       "bounds": {
-        "left": 29,
+        "left": 25,
         "top": 27,
-        "width": 39,
+        "width": 46,
         "height": 109
       },
-      "sourceSha256": "6c78798f486fb6b9b97570db6abad53b5e3f475dd1964fc606c1a0c5c9706a44"
+      "sourceSha256": "78b60c55dcff79e660b766b2985cc5863c2133cdfbb0f17cb350a02f935cb7e6"
     },
     "masculine-navy-suit": {
       "centerX": 48,
       "centerY": 81,
       "feetY": 135,
       "bounds": {
-        "left": 28,
+        "left": 26,
         "top": 27,
-        "width": 40,
+        "width": 44,
         "height": 109
       },
-      "sourceSha256": "f6fc095bdf6a7026b8110b60e5b1188f3115249d807b2e1d921ca7865de0d32a"
+      "sourceSha256": "5e29d416c1da252d61836d2695cec676f74fd36199e8197bcf89d0b9c94ddc39"
     },
     "masculine-charcoal-blazer": {
       "centerX": 48,
       "centerY": 81,
       "feetY": 135,
       "bounds": {
-        "left": 27,
+        "left": 26,
         "top": 27,
-        "width": 43,
+        "width": 44,
         "height": 109
       },
-      "sourceSha256": "3f4490e31e0e37fd2124f2bcd079a57ea9524ac36db5da1a3f229e30de7f204a"
+      "sourceSha256": "8f2c648ce0c940083fd9ff0bac4e78173ff9ae04592666e8f560d6a9415a0279"
     },
     "feminine-sage-bolero-dress": {
       "centerX": 48,
@@ -62,22 +62,22 @@
       "bounds": {
         "left": 27,
         "top": 27,
-        "width": 44,
+        "width": 46,
         "height": 109
       },
-      "sourceSha256": "b7efa52709eaee118e0ac647a4e636b8c1e820915dc8252df14c3cf6ef54b269"
+      "sourceSha256": "f2ecdb697538b767acaf8e6b305bef7e47d2be8ff8f6672a19a22f2ffd3b041a"
     },
     "feminine-champagne-navy-skirt": {
       "centerX": 48,
       "centerY": 81,
       "feetY": 135,
       "bounds": {
-        "left": 29,
+        "left": 28,
         "top": 27,
-        "width": 40,
+        "width": 43,
         "height": 109
       },
-      "sourceSha256": "26c7485606746211727002841e1364566c70fc4b82a2b3da23a7895a0fdfdfc4"
+      "sourceSha256": "f2a1c9f3ca9ec8fb1fc856cf40dd06a17e3baf1aa5adc2f1938d8f8625994686"
     },
     "feminine-lavender-jacket-dress": {
       "centerX": 48,
@@ -86,10 +86,10 @@
       "bounds": {
         "left": 24,
         "top": 27,
-        "width": 47,
+        "width": 49,
         "height": 109
       },
-      "sourceSha256": "9850a8bcc30f2cba5776600a7d3938f6818747ca8e6ab666c195b4d170c4dc39"
+      "sourceSha256": "3856aa191c9982e67e7c533a2391085a3c8c8e5b0873d01ce04388c93686549a"
     },
     "feminine-teal-modern-hanbok": {
       "centerX": 48,
@@ -101,55 +101,55 @@
         "width": 46,
         "height": 109
       },
-      "sourceSha256": "a793e578507de887199be903ff2e782268df7c6733bc6532c0b2a7323712084b"
+      "sourceSha256": "f57053d6924cbe43143c1536a5706ebaa86c8fbd8cf02712980e34405ccfb391"
     },
     "masculine-beige-summer-suit": {
       "centerX": 48,
       "centerY": 81,
       "feetY": 135,
       "bounds": {
-        "left": 28,
+        "left": 26,
         "top": 27,
-        "width": 41,
+        "width": 44,
         "height": 109
       },
-      "sourceSha256": "9a2f9240e5e3c5c805be40ac2c2863e6df9fe3fdecc911d5a8292fed32be7c53"
+      "sourceSha256": "2837580088eb1ec79ca16122f0e55b7479a8505f77f4781a3e0cb251cb4259a3"
     },
     "masculine-charcoal-burgundy-tie": {
       "centerX": 48,
       "centerY": 81,
       "feetY": 135,
       "bounds": {
-        "left": 29,
+        "left": 27,
         "top": 27,
-        "width": 42,
+        "width": 46,
         "height": 109
       },
-      "sourceSha256": "2f761e3986d236469be764a924576ac2a2c04d2ba210727a3a68afd3d3c6cf23"
+      "sourceSha256": "9d96d8a29d746412df36871dce957023d4a5b2a6f199ddaf05e2db6bf228cd73"
     },
     "masculine-green-blazer-cream-pants": {
       "centerX": 48,
       "centerY": 81,
       "feetY": 135,
       "bounds": {
-        "left": 28,
+        "left": 26,
         "top": 27,
-        "width": 41,
+        "width": 44,
         "height": 109
       },
-      "sourceSha256": "d8b51315660b7ed4ae060be1adeb41cc23520878e1394a8fcffabced400b7249"
+      "sourceSha256": "fb20ba25b0a21f1173bd274b7939ef62a9635fa80d010c52e6e0001e99da2eb8"
     },
     "masculine-blue-modern-hanbok": {
       "centerX": 48,
       "centerY": 81,
       "feetY": 135,
       "bounds": {
-        "left": 29,
+        "left": 25,
         "top": 26,
-        "width": 38,
+        "width": 46,
         "height": 110
       },
-      "sourceSha256": "dbb6cf88dfc7356fa5ef4e636514d2e5d4e358ab38fd687bc7f84bb7f47da738"
+      "sourceSha256": "3e2cfc87af35e21f6c48eb2ab44203a1e74082aadfc4c7a19118ff76de1968a4"
     }
   }
 }

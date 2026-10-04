@@ -10,9 +10,16 @@
   "walkPose": "compact gameplay walking pose from the approved lower-row reference",
   "lockPolicy": "Bride and groom source sprites must preserve the approved ornate romantic fashion reference; do not replace with simplified block art.",
   "sourceSha256": {
-    "character-assets/source/npc/groom-idle.png": "57804432d1f79d86041ee18331703e0387faf05b4b46fa34040f8e211511e7a6",
-    "character-assets/source/npc/groom-walk.png": "7a7c3105fe147b71a636b981187e5bda3890be22670d428a4a4ef0ed3b22e0bb",
-    "character-assets/source/npc/bride-idle.png": "ab3f7444bb1c10224e4c47b4d0fbdd9e420f676a1a587e983053b6c81927a872",
-    "character-assets/source/npc/bride-walk.png": "2f977b0f5100f6de0987f6373343a7abfc9add72de349a85a98e9073ef8f105e"
+    "character-assets/source/npc/groom-idle.png": "dcfa68ee9cb9091acac0f22633d49c34ce31985d187d2d53e98ca395a709ae67",
+    "character-assets/source/npc/groom-walk.png": "ed74fbc27591d5357429fdbd1c70df261a09ecff72846865b93d334f3accab81",
+    "character-assets/source/npc/bride-idle.png": "0acff7b1f5aca6a092fdf1eab5c17db3477af9ba6c6db6c4594504e15a25bf58",
+    "character-assets/source/npc/bride-walk.png": "13681ff5f8d26756ddfe733a93306938c8860ac7ab87690d3d56455a5bd89188"
+  },
+  "alignmentRevision": {
+    "date": "2026-09-30",
+    "reason": "Center the approved original heads consistently across idle and directional walk frames.",
+    "audit": "character-assets/rigs/full-review-release-v1/evidence/couple-source-alignment-provenance.json",
+    "auditSha256": "c7b257494b14cddeff5c713d0a3fefc1551979d6a26b64085c58f23128a1927c",
+    "headAnchorAudit": "character-assets/rigs/full-review-release-v1/evidence/couple-head-anchor-audit.json"
   }
 }

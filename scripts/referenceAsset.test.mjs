@@ -73,3 +73,20 @@ test("couple source sprites are locked to the approved art direction", async () 
     assert.equal(actualSha, expectedSha, `${relative} no longer matches the locked couple art source`);
   }
 });
+
+test("couple alignment lock retains hash-bound pixel-preservation evidence", async () => {
+  const lock = JSON.parse(await readFile(sourceLockUrl, "utf8"));
+  const bytes = await readFile(join(root, lock.alignmentRevision.audit));
+  assert.equal(createHash("sha256").update(bytes).digest("hex"), lock.alignmentRevision.auditSha256);
+  const audit = JSON.parse(bytes);
+  assert.equal(audit.records.length, 4);
+  for (const record of audit.records) {
+    assert.equal(record.afterSha256, lock.sourceSha256[record.file]);
+    assert.match(record.beforeSha256, /^[a-f0-9]{64}$/);
+    for (const frame of record.frames) {
+      assert.equal(frame.retainedVisibleRgbaPreserved, true);
+      assert.equal(frame.translationY, 0);
+      assert.ok(Number.isInteger(frame.translationX));
+    }
+  }
+});

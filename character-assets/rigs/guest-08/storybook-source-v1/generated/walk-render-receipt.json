@@ -1,0 +1,155 @@
+{
+  "version": 1,
+  "inputs": [
+    {
+      "file": "character-assets/rigs/common-three-head-216-v1/animations/dress-back.json",
+      "sha256": "32a56db1c9e2e3373001f9ef809b04773e62d69597b7f8331bd1f9467c58a7bb"
+    },
+    {
+      "file": "character-assets/rigs/common-three-head-216-v1/animations/dress-front.json",
+      "sha256": "0b40a953275b0dad4f4912431a11a10ef4f2d65cba40e4ff8bcc7758f3c28a60"
+    },
+    {
+      "file": "character-assets/rigs/common-three-head-216-v1/animations/dress-left.json",
+      "sha256": "8f51ec1460b1d9614084d34a92bc5fdbee7225d0d782f78a68c61563d211f5fd"
+    },
+    {
+      "file": "character-assets/rigs/common-three-head-216-v1/animations/dress-right.json",
+      "sha256": "14f370c7654cdfe00d9c326ca0f18d31d9a65ee13fe23af00b1b715d4df06ddc"
+    },
+    {
+      "file": "character-assets/rigs/common-three-head-216-v1/animations/painted-dress-contact-v1.json",
+      "sha256": "e0170de602833b3be1a028bd8aeecf8154202294922af2c6476138be13cef529"
+    },
+    {
+      "file": "character-assets/rigs/common-three-head-216-v1/animations/painted-long-skirt-v1.json",
+      "sha256": "03945b1d2c252f4cc94f0e44cc0599c5e8816cf8d3c4b0605091963cfe744226"
+    },
+    {
+      "file": "character-assets/rigs/common-three-head-216-v1/painted-joint-regions-v1.json",
+      "sha256": "ad982d2119f8ec698b71f7f11aa2985cfa52368f9c60fb651215d84323a0bc98"
+    },
+    {
+      "file": "character-assets/rigs/common-three-head-216-v1/skeleton.json",
+      "sha256": "d320d258397253ee3919381ea062187c2e587c9ec57a7761966a7e07b4dc479b"
+    },
+    {
+      "file": "character-assets/rigs/guest-08/storybook-source-v1/body-registration.json",
+      "sha256": "1239330a83eba4a38e082f99ae293fcd90cac165ef369bf10c105d687586bfb8"
+    },
+    {
+      "file": "character-assets/rigs/guest-08/storybook-source-v1/generated/body-render-receipt.json",
+      "sha256": "5e5df7c00c2d1a7ce1507a341aa0db20c8fcedffd2d8cdd844438e5925c5639e"
+    },
+    {
+      "file": "character-assets/rigs/guest-08/storybook-source-v1/generated/head-render-receipt.json",
+      "sha256": "10876b7a66aceb4a65061f8e9d2f8bd9643c52a8510395e8f28300d44d25be73"
+    },
+    {
+      "file": "character-assets/rigs/guest-08/storybook-source-v1/head-registration.json",
+      "sha256": "f63e6f764d92c3ca20ac762c55364105bc08724fd578ae892cb3a6089bb005d5"
+    },
+    {
+      "file": "pnpm-lock.yaml",
+      "sha256": "69ce77f7100dbc4fd8a7fc64967988f3e20524878459af6a69cc0057363466de"
+    },
+    {
+      "file": "scripts/lib/deterministicSharp.mjs",
+      "sha256": "098d5d05f78bdf66ff839dda9ae59effb39287983b23a64bc33fb4cbbacccce5"
+    },
+    {
+      "file": "scripts/lib/packCharacterFrames.mjs",
+      "sha256": "9140fecac5b79183210f7e4b626a49f90a0b273c7b6009d24118a0e67940f132"
+    },
+    {
+      "file": "scripts/lib/paintedRenderReceipt.mjs",
+      "sha256": "bf2662283caf8b114b427a9449f62dd10dc4e30c55ca9ed7fc61a14265594eb7"
+    },
+    {
+      "file": "scripts/render-storybook-walk-study.mjs",
+      "sha256": "9c6421080a9f0e2f94ed56871ff24ac827e0eb905ce3c13f0e3a278fd72ffea6"
+    }
+  ],
+  "dependencies": [
+    "character-assets/rigs/guest-08/storybook-source-v1/generated/head-render-receipt.json",
+    "character-assets/rigs/guest-08/storybook-source-v1/generated/body-render-receipt.json"
+  ],
+  "outputs": [
+    {
+      "file": "character-assets/rigs/guest-08/storybook-source-v1/generated/back-walk-1.png",
+      "sha256": "f2fa11964b765ad45ccd333cf639f04d255eb9443552bcdefeb7bd179ee08786"
+    },
+    {
+      "file": "character-assets/rigs/guest-08/storybook-source-v1/generated/back-walk-2.png",
+      "sha256": "e40efd95f2dc2df425e61c32e7eb4d694046f042f3a19dbd60ac7d2700eeb5cd"
+    },
+    {
+      "file": "character-assets/rigs/guest-08/storybook-source-v1/generated/back-walk-3.png",
+      "sha256": "dde37ffc5b392db9705fc9acf0e5f4499c3559f2b92e1fba0269b2fb358ed050"
+    },
+    {
+      "file": "character-assets/rigs/guest-08/storybook-source-v1/generated/back-walk-4.png",
+      "sha256": "e40efd95f2dc2df425e61c32e7eb4d694046f042f3a19dbd60ac7d2700eeb5cd"
+    },
+    {
+      "file": "character-assets/rigs/guest-08/storybook-source-v1/generated/front-walk-1.png",
+      "sha256": "0797a054960ae07b18676169664dae29e2b72f5dea8eb6d5c4a50bf310aa8268"
+    },
+    {
+      "file": "character-assets/rigs/guest-08/storybook-source-v1/generated/front-walk-2.png",
+      "sha256": "592387765bd6db65f8de964ec431641c876cec8b110d095dc7b7d30ae2f2dd1d"
+    },
+    {
+      "file": "character-assets/rigs/guest-08/storybook-source-v1/generated/front-walk-3.png",
+      "sha256": "beb36009c78ddd996b8465c4a38fc9bc2f02e7d846614677740c20823b474949"
+    },
+    {
+      "file": "character-assets/rigs/guest-08/storybook-source-v1/generated/front-walk-4.png",
+      "sha256": "592387765bd6db65f8de964ec431641c876cec8b110d095dc7b7d30ae2f2dd1d"
+    },
+    {
+      "file": "character-assets/rigs/guest-08/storybook-source-v1/generated/left-walk-1.png",
+      "sha256": "c12b98c49ffc3fbd18d91ca4ae4ba712c3abcd70860adea9638fbbac7246890c"
+    },
+    {
+      "file": "character-assets/rigs/guest-08/storybook-source-v1/generated/left-walk-2.png",
+      "sha256": "bdf3777cbcc54dbb223dcffb5aca5b0039013c2daf6df55af7289da661b69b18"
+    },
+    {
+      "file": "character-assets/rigs/guest-08/storybook-source-v1/generated/left-walk-3.png",
+      "sha256": "7fc6172132e2ac6e704cfbad60c42d3848f709f9ac861de7986e330ef5b49303"
+    },
+    {
+      "file": "character-assets/rigs/guest-08/storybook-source-v1/generated/left-walk-4.png",
+      "sha256": "bdf3777cbcc54dbb223dcffb5aca5b0039013c2daf6df55af7289da661b69b18"
+    },
+    {
+      "file": "character-assets/rigs/guest-08/storybook-source-v1/generated/right-walk-1.png",
+      "sha256": "d9e33242aed3474890a0c1ecaa260ae50fa52e3e02c9ca504eb20bffa445fe7f"
+    },
+    {
+      "file": "character-assets/rigs/guest-08/storybook-source-v1/generated/right-walk-2.png",
+      "sha256": "a5ce08f104b015e43f87a2f59aba0f5064200f35fac6285b4a01d77c68531ef1"
+    },
+    {
+      "file": "character-assets/rigs/guest-08/storybook-source-v1/generated/right-walk-3.png",
+      "sha256": "c70d91d877fb1e4d02a833d77168ad6deca83d9ef00186741f5ab1d9e94965bc"
+    },
+    {
+      "file": "character-assets/rigs/guest-08/storybook-source-v1/generated/right-walk-4.png",
+      "sha256": "a5ce08f104b015e43f87a2f59aba0f5064200f35fac6285b4a01d77c68531ef1"
+    },
+    {
+      "file": "character-assets/rigs/guest-08/storybook-source-v1/generated/walk-study-game.png",
+      "sha256": "8e4dc3fc0de81a7ccba2bac39a7ef0c9cb59525558ab3e7c5d12c7fccc3ede33"
+    },
+    {
+      "file": "character-assets/rigs/guest-08/storybook-source-v1/generated/walk-study-selection.png",
+      "sha256": "ba87a05aafa60f0a7b29864ab89f7be6c3c7ad5336d0fbe29e76847599fef1bb"
+    },
+    {
+      "file": "character-assets/rigs/guest-08/storybook-source-v1/generated/walk-study.png",
+      "sha256": "fa644398039a52b707803bd2e7c2e8158818835f81fbb45a918dc9ddd43aa68d"
+    }
+  ]
+}

@@ -1,0 +1,266 @@
+[
+  {
+    "id": "bride",
+    "d": 0,
+    "n": 0,
+    "headBounds": [
+      22,
+      73
+    ],
+    "center": 47.5,
+    "centroid": 48.52028639618138
+  },
+  {
+    "id": "bride",
+    "d": 0,
+    "n": 1,
+    "headBounds": [
+      22,
+      73
+    ],
+    "center": 47.5,
+    "centroid": 48.430787589498806
+  },
+  {
+    "id": "bride",
+    "d": 0,
+    "n": 2,
+    "headBounds": [
+      22,
+      73
+    ],
+    "center": 47.5,
+    "centroid": 48.458682634730536
+  },
+  {
+    "id": "bride",
+    "d": 1,
+    "n": 0,
+    "headBounds": [
+      23,
+      72
+    ],
+    "center": 47.5,
+    "centroid": 46.78016424510423
+  },
+  {
+    "id": "bride",
+    "d": 1,
+    "n": 1,
+    "headBounds": [
+      23,
+      72
+    ],
+    "center": 47.5,
+    "centroid": 46.77954256670902
+  },
+  {
+    "id": "bride",
+    "d": 1,
+    "n": 2,
+    "headBounds": [
+      23,
+      72
+    ],
+    "center": 47.5,
+    "centroid": 46.9709595959596
+  },
+  {
+    "id": "bride",
+    "d": 2,
+    "n": 0,
+    "headBounds": [
+      24,
+      71
+    ],
+    "center": 47.5,
+    "centroid": 48.68644639244774
+  },
+  {
+    "id": "bride",
+    "d": 2,
+    "n": 1,
+    "headBounds": [
+      24,
+      71
+    ],
+    "center": 47.5,
+    "centroid": 48.77557980900409
+  },
+  {
+    "id": "bride",
+    "d": 2,
+    "n": 2,
+    "headBounds": [
+      24,
+      71
+    ],
+    "center": 47.5,
+    "centroid": 48.745405037440435
+  },
+  {
+    "id": "bride",
+    "d": 3,
+    "n": 0,
+    "headBounds": [
+      29,
+      67
+    ],
+    "center": 48,
+    "centroid": 48.510373443983404
+  },
+  {
+    "id": "bride",
+    "d": 3,
+    "n": 1,
+    "headBounds": [
+      29,
+      67
+    ],
+    "center": 48,
+    "centroid": 48.53574363188168
+  },
+  {
+    "id": "bride",
+    "d": 3,
+    "n": 2,
+    "headBounds": [
+      29,
+      67
+    ],
+    "center": 48,
+    "centroid": 47.903065451532726
+  },
+  {
+    "id": "groom",
+    "d": 0,
+    "n": 0,
+    "headBounds": [
+      27,
+      68
+    ],
+    "center": 47.5,
+    "centroid": 47.984779299847794
+  },
+  {
+    "id": "groom",
+    "d": 0,
+    "n": 1,
+    "headBounds": [
+      28,
+      68
+    ],
+    "center": 48,
+    "centroid": 48.46800308404009
+  },
+  {
+    "id": "groom",
+    "d": 0,
+    "n": 2,
+    "headBounds": [
+      27,
+      68
+    ],
+    "center": 47.5,
+    "centroid": 47.880608365019015
+  },
+  {
+    "id": "groom",
+    "d": 1,
+    "n": 0,
+    "headBounds": [
+      27,
+      69
+    ],
+    "center": 48,
+    "centroid": 47.58933933933934
+  },
+  {
+    "id": "groom",
+    "d": 1,
+    "n": 1,
+    "headBounds": [
+      27,
+      69
+    ],
+    "center": 48,
+    "centroid": 47.58705357142857
+  },
+  {
+    "id": "groom",
+    "d": 1,
+    "n": 2,
+    "headBounds": [
+      27,
+      69
+    ],
+    "center": 48,
+    "centroid": 47.80227272727273
+  },
+  {
+    "id": "groom",
+    "d": 2,
+    "n": 0,
+    "headBounds": [
+      27,
+      68
+    ],
+    "center": 47.5,
+    "centroid": 48.246274509803925
+  },
+  {
+    "id": "groom",
+    "d": 2,
+    "n": 1,
+    "headBounds": [
+      27,
+      68
+    ],
+    "center": 47.5,
+    "centroid": 47.978277734678045
+  },
+  {
+    "id": "groom",
+    "d": 2,
+    "n": 2,
+    "headBounds": [
+      27,
+      68
+    ],
+    "center": 47.5,
+    "centroid": 48.081648522550545
+  },
+  {
+    "id": "groom",
+    "d": 3,
+    "n": 0,
+    "headBounds": [
+      28,
+      68
+    ],
+    "center": 48,
+    "centroid": 48.319213313161875
+  },
+  {
+    "id": "groom",
+    "d": 3,
+    "n": 1,
+    "headBounds": [
+      28,
+      68
+    ],
+    "center": 48,
+    "centroid": 48.31842304776346
+  },
+  {
+    "id": "groom",
+    "d": 3,
+    "n": 2,
+    "headBounds": [
+      27,
+      68
+    ],
+    "center": 47.5,
+    "centroid": 47.79338235294118
+  }
+]

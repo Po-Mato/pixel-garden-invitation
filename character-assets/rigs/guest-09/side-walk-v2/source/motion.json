@@ -1,0 +1,4 @@
+{
+  "extends": "../../../shared-tailored-216-v1/profile-motion.json",
+  "rigSource": "../../side-neutral-v1/source/rig.json"
+}

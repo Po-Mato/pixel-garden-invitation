@@ -13,6 +13,7 @@
 }
 
 .world-map__stage[data-zone="home"] {
+  --character-outline-shadow: rgba(35, 30, 25, 0.25);
   --character-ground-shadow: rgba(57, 39, 31, 0.38);
   --character-ground-shadow-width: 33px;
   --character-ground-shadow-height: 8px;
@@ -32,7 +33,8 @@
   --character-ground-shadow-height: 9px;
   --character-ground-shadow-blur: 0.35px;
   --character-ground-shadow-offset-x: 0px;
-  --character-edge-shadow: rgba(247, 242, 219, 0.78);
+  --character-edge-shadow: rgba(30, 30, 25, 0.7);
+  --character-secondary-edge-shadow: rgba(255, 250, 230, 1);
   --character-tone-filter: contrast(1.08) saturate(0.94) brightness(1.02);
   --foreground-ground-shadow: rgba(24, 43, 29, 0.28);
   --zone-highlight: rgba(239, 255, 218, 0.07);
@@ -55,6 +57,7 @@
 }
 
 .world-map__stage[data-zone="subway-train"] {
+  --character-outline-shadow: rgba(35, 30, 25, 0.25);
   --character-ground-shadow: rgba(24, 45, 51, 0.4);
   --character-ground-shadow-width: 30px;
   --character-ground-shadow-height: 7px;
@@ -968,8 +971,9 @@
 .world-npc .wedding-npc__sprite {
   filter:
     var(--character-tone-filter)
+    drop-shadow(-1px -1px 0 var(--character-outline-shadow, rgba(0, 0, 0, 0)))
     drop-shadow(0 1px 0 var(--character-edge-shadow))
-    drop-shadow(1px 2px 0 var(--character-edge-shadow));
+    drop-shadow(1px 2px 0 var(--character-secondary-edge-shadow, var(--character-edge-shadow)));
 }
 
 @media (prefers-reduced-motion: reduce) {

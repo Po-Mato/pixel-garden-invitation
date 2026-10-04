@@ -1,0 +1,19 @@
+{
+ "parent":"neck",
+ "pivot":[96,126],
+ "policy":"Short direction-specific neck originals. Underlap belongs inside the collar; no legacy V-neck chest wedge. Head and costume geometry unchanged.",
+ "characters":{
+  "guest-02":{
+   "front":"M 90 119 Q 96 122 102 119 L 102 132 Q 96 136 90 132 Z",
+   "left":"M 89 122 L 101 118 L 101 133 Q 95 136 89 132 Z",
+   "right":"M 92 118 L 105 122 Q 105 126 101 129 L 96 134 L 92 131 Z",
+   "back":"M 90 119 Q 96 122 102 119 L 103 131 Q 96 134 89 131 Z"
+  },
+  "guest-12":{
+   "front":"M 89 118 Q 96 122 103 118 L 103 132 Q 96 136 89 132 Z",
+   "left":"M 88 122 L 102 117 L 102 132 Q 95 136 88 132 Z",
+   "right":"M 91 117 L 106 122 Q 105 126 101 129 L 96 134 L 91 131 Z",
+   "back":"M 89 118 Q 96 122 103 118 L 104 131 Q 96 134 88 131 Z"
+  }
+ }
+}

@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="192" height="288" viewBox="0 0 192 288">
+<title>guest-02 back Right hanbok sleeve — editable source v5</title>
+<metadata>Parent upperArmRight; shoulder 118,140; elbow 129,170; hand 132,195. Authored shoulder slope and taper, fixed skeleton, independent direction artwork. Original hand retained.</metadata>
+<defs><path id="silhouette" d="M 113.3 135 Q 118 136 122.7 141 C 123.1 150 134.7 161 134.7 169 C 134.7 177 136.5 184 135.7 192 Q 132 192.5 128.3 191 C 128 184 123.8 177 123.8 170 C 123.8 160 114.3 146 113.3 135 Z"/><clipPath id="cloth-mask"><use href="#silhouette"/></clipPath><linearGradient id="cloth"><stop stop-color="#e5d1bd"/><stop offset=".34" stop-color="#fff3e4"/><stop offset=".72" stop-color="#f6e8d8"/><stop offset="1" stop-color="#ddc6b2"/></linearGradient></defs>
+<use href="#silhouette" fill="url(#cloth)" stroke="#b89b82" stroke-opacity=".48" stroke-width=".6" stroke-linejoin="round"/>
+<g clip-path="url(#cloth-mask)">
+<path d="M 113.3 137 Q 123.3 155 133.7 170 Q 129 166 123.3 160 Z" fill="#fffaf0" opacity=".48"/>
+<path d="M 123.3 163 Q 129 167 134.7 166 Q 129 170 123.3 177 Z" fill="#bfa38b" opacity=".14"/>
+<path d="M 123.3 177 Q 132 182 135.7 187 L 128.3 189 Z" fill="#fff9ef" opacity=".45"/>
+<path d="M 134.3 166 Q 130.5 168 125.3 172" fill="none" stroke="#b79b83" stroke-opacity=".25" stroke-width=".6" stroke-linecap="round"/>
+</g>
+<path d="M 127.9 188 Q 132 189 136.1 188.5 L 135.7 192 Q 132 192.5 128.3 191 Z" fill="#fff8ef" stroke="#c4aa92" stroke-opacity=".55" stroke-width=".5"/>
+</svg>

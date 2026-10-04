@@ -1,0 +1,7 @@
+{
+ "characters":{
+  "guest-02":{"source":"sources/guest-02-back-upperbody.png","scale":0.085,"translation":[30.72,116.735]},
+  "guest-12":{"source":"sources/guest-12-back-upperbody.png","scale":0.087,"translation":[29.184,113.8]}
+ },
+ "status":"back-source-rig-study-not-production"
+}

@@ -1,0 +1,65 @@
+{
+  "allTenContactSheetsDirectlyInspected": true,
+  "passed": false,
+  "scope": "offline production CSS/background model, not live browser or physical device",
+  "observations": [
+    "Neighborhood horizontal high-frequency stone/stripe backdrop visibly intersects narrow arm/leg silhouettes, strongest pale clothing readability problem.",
+    "Home beige suit blends slightly with warm wood especially side/back lower body.",
+    "Subway train dusty rose outfit blends mildly with warm grey tile at right/back.",
+    "Remaining seven zones show coherent silhouettes visually and zero measured gate failures."
+  ],
+  "thresholdsUnmodified": true,
+  "styleUnmodified": true,
+  "zones": [
+    {
+      "zone": "home",
+      "standardFailures": 4,
+      "displayFailures": 0
+    },
+    {
+      "zone": "neighborhood",
+      "standardFailures": 45,
+      "displayFailures": 3
+    },
+    {
+      "zone": "subway-station",
+      "standardFailures": 0,
+      "displayFailures": 0
+    },
+    {
+      "zone": "subway-train",
+      "standardFailures": 3,
+      "displayFailures": 0
+    },
+    {
+      "zone": "venue-exterior",
+      "standardFailures": 0,
+      "displayFailures": 0
+    },
+    {
+      "zone": "lobby",
+      "standardFailures": 0,
+      "displayFailures": 0
+    },
+    {
+      "zone": "bridal-room",
+      "standardFailures": 0,
+      "displayFailures": 0
+    },
+    {
+      "zone": "ceremony-hall",
+      "standardFailures": 0,
+      "displayFailures": 0
+    },
+    {
+      "zone": "banquet",
+      "standardFailures": 0,
+      "displayFailures": 0
+    },
+    {
+      "zone": "restroom",
+      "standardFailures": 0,
+      "displayFailures": 0
+    }
+  ]
+}

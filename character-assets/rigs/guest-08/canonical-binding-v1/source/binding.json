@@ -1,0 +1,9 @@
+{
+  "characterId": "guest-08",
+  "backArmDepth": "behind-torso",
+  "backRestPose": {"upperArmLeft":-6,"upperArmRight":6,"forearmLeft":2,"forearmRight":-2},
+  "armContinuity": {"reason":"Individually reviewed guest-08: continuous shoulder-wrist source registration; original near profile sleeve belongs on the canonical near arm. No reflection.","breadth":{"front":1,"left":1.25,"right":1.25,"back":1},"sourceBones":{"left":{"upperArmLeft":"upperArmRight","upperArmRight":"upperArmLeft"},"right":{"upperArmLeft":"upperArmRight","upperArmRight":"upperArmLeft"}}},
+  "sourceDirectory": "../../storybook-source-v1",
+  "targetSkeleton": "../../../shared-tailored-216-v1/skeleton.json",
+  "policy": "Retarget original source parts to the fixed common bones; preserve original perpendicular width and individual direction artwork. Never read completed frame PNGs."
+}

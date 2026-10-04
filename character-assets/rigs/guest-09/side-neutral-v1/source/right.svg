@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="192" height="288" viewBox="0 0 192 288">
+<defs>
+ <linearGradient id="cloth" gradientUnits="userSpaceOnUse" x1="78" y1="130" x2="112" y2="181"><stop stop-color="#dac7b4"/><stop offset=".35" stop-color="#c6ad96"/><stop offset=".72" stop-color="#bba08a"/><stop offset="1" stop-color="#a38770"/></linearGradient>
+ <linearGradient id="sleeve" gradientUnits="userSpaceOnUse" x1="78" x2="98"><stop stop-color="#c6ad96"/><stop offset=".5" stop-color="#bca38e"/><stop offset="1" stop-color="#b29983"/></linearGradient>
+ <linearGradient id="pants" gradientUnits="userSpaceOnUse" x1="84" x2="107"><stop stop-color="#af9681"/><stop offset=".4" stop-color="#c2a994"/><stop offset=".7" stop-color="#bba28d"/><stop offset="1" stop-color="#ae9580"/></linearGradient>
+ <linearGradient id="skin" x1="0" x2="1"><stop stop-color="#edaf92"/><stop offset=".55" stop-color="#ffd9bc"/><stop offset="1" stop-color="#efb696"/></linearGradient>
+ <linearGradient id="cream" x1="0" y1="0" x2=".7" y2="1"><stop stop-color="#fffdf4"/><stop offset=".6" stop-color="#f7eedf"/><stop offset="1" stop-color="#cfc5b9"/></linearGradient>
+ <linearGradient id="shoe" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#79583e"/><stop offset=".5" stop-color="#513522"/><stop offset="1" stop-color="#342217"/></linearGradient>
+</defs>
+<g id="neck" data-parent="spine" data-pivot="96,126"><path d="M88 122L99 121L100 135L88 136Z" fill="url(#skin)"/></g>
+<g id="thighLeft" data-parent="pelvis" data-pivot="90,207"><path d="M79 202H98L98 239H81Z" fill="#b49b86"/></g>
+<g id="calfLeft" data-parent="thighLeft" data-pivot="90,236"><path d="M81 234H98V261H83Z" fill="#b49b86"/></g>
+<g id="shoeLeft" data-parent="calfLeft" data-pivot="90,260"><path d="M83 257H98L100 261L114 265Q118 269 113 270H86Q81 270 81 267Z" fill="url(#shoe)"/></g>
+<g id="upperArmLeft" data-parent="spine" data-pivot="104,140"><path d="M101 133Q107 132 108 141L111 174H98L95 143Z" fill="#b79e88"/></g>
+<g id="forearmLeft" data-parent="upperArmLeft" data-pivot="104,170"><path d="M98 166H111V197H99Z" fill="#b79e88"/><path d="M99 193H111V197H99Z" fill="url(#cream)"/></g>
+<g id="handLeft" data-parent="forearmLeft" data-pivot="105,195"><path d="M100 195H109L110 203Q109 207 105 207Q100 207 99 202Z" fill="url(#skin)"/></g>
+<g id="thighRight" data-parent="pelvis" data-pivot="97,207"><path d="M84 201H108L107 240H87Z" fill="url(#pants)"/></g>
+<g id="calfRight" data-parent="thighRight" data-pivot="97,236"><path d="M87 234H107L106 261H88Z" fill="url(#pants)"/><path d="M99 242L99 252M97 258L104 256" fill="none" stroke="#aa917b" stroke-opacity=".2" stroke-width=".7"/></g>
+<g id="shoeRight" data-parent="calfRight" data-pivot="97,260"><path d="M88 258Q97 260 106 258L108 261L118 265Q121 269 117 270H91Q86 270 86 267Z" fill="url(#shoe)"/><path d="M101 265Q109 263 115 265" fill="none" stroke="#bea084" stroke-opacity=".42" stroke-width="1.3"/></g>
+<g id="pelvis" data-parent="spine" data-pivot="96,207"><path d="M84 197H108L107 216H84Z" fill="url(#pants)"/></g>
+<g id="jacket" data-parent="root" data-pivot="96,171">
+ <path d="M100 129L87 130L80 134Q78 138 79 147L81 176L81 199Q92 204 110 202L110 174L110 143Q110 135 104 132Z" fill="url(#cloth)"/>
+ <path d="M84 144L90 145L91 198L84 200Z" fill="#dec5b0" opacity=".11"/>
+ <path d="M105 141L108 144L108 199L104 198L102 178Z" fill="#a68d78" opacity=".13"/>
+ <path d="M102 130L99 134L106 159L109 151L107 140Z" fill="url(#cream)"/>
+ <path d="M100 133L97 139L102 157L104 173L108 175L106 152Z" fill="#c4ab96" stroke="#b09782" stroke-width=".65"/>
+ <path d="M108 163L109 194" stroke="#ad947e" stroke-opacity=".5" stroke-width=".7"/>
+ <path d="M93 185H104V189H93Z" fill="#b89f89" stroke="#ac937e" stroke-width=".6"/>
+ <circle cx="108" cy="182" r="1.1" fill="#aa895f"/>
+</g>
+<!-- Pocket square is on wearer-left, the far side: not visible in this right-facing view. -->
+<g id="upperArmRight" data-parent="spine" data-pivot="89,140"><path d="M92 132L85 132Q81 133 80 139L79 170L92 175L96 143Q96 137 92 132Z" fill="url(#sleeve)"/><path d="M85 136L88 136Q91 141 91 153" fill="none" stroke="#d1b8a3" stroke-opacity=".16" stroke-width="1.5" stroke-linecap="round"/></g>
+<g id="forearmRight" data-parent="upperArmRight" data-pivot="86,170"><path d="M79 166H92V194Q85 198 79 194Z" fill="url(#sleeve)"/><path d="M79 193Q86 195 92 193L91 197H80Z" fill="url(#cream)"/></g>
+<g id="handRight" data-parent="forearmRight" data-pivot="86,195"><path d="M81 196H90L91 202Q90 207 85 207Q81 207 80 202Z" fill="url(#skin)" stroke="#b17a67" stroke-width=".5"/><path d="M88 199L87 203" fill="none" stroke="#c08b74" stroke-width=".6"/></g>
+<g id="collar" data-parent="spine" data-pivot="95,130"><path d="M99 128L89 129L89 132L97 134L103 141L104 134Z" fill="url(#cream)" stroke="#a8998b" stroke-width=".7"/></g>
+</svg>

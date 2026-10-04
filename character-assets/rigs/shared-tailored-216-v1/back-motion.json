@@ -1,0 +1,39 @@
+{
+  "status": "back-walk-review-only",
+  "runtimeEligible": false,
+  "frameDurationMs": 180,
+  "frames": [
+    {
+      "name": "wearer-right-forward",
+      "frontFoot": "Right",
+      "rearFoot": "Left",
+      "rearHipDegrees": 25,
+      "rearCalfDegrees": 50,
+      "forwardArm": "Left"
+    },
+    {
+      "name": "neutral",
+      "frontFoot": null
+    },
+    {
+      "name": "wearer-left-forward",
+      "frontFoot": "Left",
+      "rearFoot": "Right",
+      "rearHipDegrees": 25,
+      "rearCalfDegrees": 50,
+      "forwardArm": "Right"
+    },
+    {
+      "name": "neutral",
+      "frontFoot": null
+    }
+  ],
+  "notes": [
+    "Back-view anatomical sides: screen-left is wearer-left.",
+    "Forward foot moves away from the camera (positive source depth); rear supporting foot stays at y270.",
+    "Source-vector leg projection preserves bone lengths; neutral rendered independently twice.",
+    "Head, collar, shoulder band fixed. No mirroring or PNG region replacement."
+  ],
+  "skeleton": "skeleton.json",
+  "template": "tailored-216-v1"
+}

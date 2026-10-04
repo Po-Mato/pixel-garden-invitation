@@ -1,0 +1,42 @@
+{
+  "status": "guest11-tailored-review-only",
+  "runtimeEligible": false,
+  "canvas": [
+    192,
+    288
+  ],
+  "geometry": {
+    "headHeight": 72,
+    "bodyHeight": 144,
+    "totalHeight": 216,
+    "headTop": 54,
+    "headBottom": 126,
+    "footBaseline": 270
+  },
+  "body": "body.svg",
+  "head": "../../storybook-source-v1/generated/head-back-registered.svg",
+  "root": [
+    96,
+    270
+  ],
+  "headPivot": [
+    96,
+    126
+  ],
+  "anatomicalSides": {
+    "screenLeft": "Left",
+    "screenRight": "Right"
+  },
+  "notes": [
+    "Guest-11 individually adapted: own directional heads, source-repaired profile hair, green blazer, cream trousers and brown shoes. Shared 72/144/216 joints; no output pixel edits."
+  ],
+  "shadow": {
+    "source": "../../../shared-tailored-216-v1/shadow.svg",
+    "parent": "root",
+    "pivot": [
+      96,
+      270
+    ],
+    "bakedIntoSheet": true
+  }
+}

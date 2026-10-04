@@ -1,0 +1,52 @@
+{
+  "status": "guest11-tailored-review-only",
+  "runtimeEligible": false,
+  "canvas": [
+    192,
+    288
+  ],
+  "geometry": {
+    "headTop": 54,
+    "headBottom": 126,
+    "headHeight": 72,
+    "bodyHeight": 144,
+    "totalHeight": 216,
+    "footBaseline": 270
+  },
+  "directions": {
+    "left": {
+      "body": "left.svg",
+      "head": "../../head-gap-repair-v1/review/head-left-registered.svg",
+      "nearSide": "Left",
+      "pocketSquareVisible": true,
+      "mirrored": false
+    },
+    "right": {
+      "body": "right.svg",
+      "head": "../../head-gap-repair-v1/review/head-right-registered.svg",
+      "nearSide": "Right",
+      "pocketSquareVisible": false,
+      "mirrored": false
+    }
+  },
+  "headPivot": [
+    96,
+    126
+  ],
+  "root": [
+    96,
+    270
+  ],
+  "notes": [
+    "Guest-11 individually adapted: own directional heads, source-repaired profile hair, green blazer, cream trousers and brown shoes. Shared 72/144/216 joints; no output pixel edits."
+  ],
+  "shadow": {
+    "source": "../../../shared-tailored-216-v1/shadow.svg",
+    "parent": "root",
+    "pivot": [
+      96,
+      270
+    ],
+    "bakedIntoSheet": true
+  }
+}

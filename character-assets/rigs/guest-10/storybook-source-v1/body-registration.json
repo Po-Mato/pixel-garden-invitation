@@ -80,7 +80,8 @@
         90,
         180.418605
       ],
-      "mirrored": false
+      "mirrored": false,
+      "sourceWidth": 1.4
     },
     {
       "id": "armRight-right",
@@ -105,7 +106,8 @@
         102,
         180.418605
       ],
-      "mirrored": false
+      "mirrored": false,
+      "sourceWidth": 1.4
     },
     {
       "id": "neck-front",
@@ -432,7 +434,8 @@
         127,
         180.418605
       ],
-      "mirrored": false
+      "mirrored": false,
+      "sourceWidth": 1.65
     },
     {
       "id": "legLeft-right",
@@ -473,7 +476,10 @@
       "direction": "right",
       "parent": "pelvis",
       "source": "sources/skirt-right-v1.png",
-      "sourceOverlays": ["sources/skirt-right-edge-shading-v1.svg", "sources/skirt-right-seam-study-v1.svg"],
+      "sourceOverlays": [
+        "sources/skirt-right-edge-shading-v1.svg",
+        "sources/skirt-right-seam-study-v1.svg"
+      ],
       "matte": "masks/skirt-right-v1.svg",
       "sourcePivot": [
         520,
@@ -491,7 +497,9 @@
       "direction": "right",
       "parent": "spine",
       "source": "sources/torso-right-v2.png",
-      "sourceOverlays": ["sources/torso-right-edge-shading-v1.svg"],
+      "sourceOverlays": [
+        "sources/torso-right-edge-shading-v1.svg"
+      ],
       "matte": "masks/torso-right-v2.svg",
       "sourcePivot": [
         680,
@@ -527,7 +535,8 @@
         65,
         180.418605
       ],
-      "mirrored": false
+      "mirrored": false,
+      "sourceWidth": 1.65
     },
     {
       "id": "armRight-left",
@@ -552,7 +561,8 @@
         102,
         180.418605
       ],
-      "mirrored": false
+      "mirrored": false,
+      "sourceWidth": 1.4
     },
     {
       "id": "bag-right",
@@ -579,7 +589,9 @@
       "parent": "upperArmLeft",
       "layer": "nearArm",
       "source": "sources/armLeft-right-v1.png",
-      "sourceOverlays": ["sources/armLeft-right-edge-shading-v1.svg"],
+      "sourceOverlays": [
+        "sources/armLeft-right-edge-shading-v1.svg"
+      ],
       "matte": "masks/armLeft-right-v1.svg",
       "sourcePivot": [
         500,
@@ -597,7 +609,8 @@
         90,
         180.418605
       ],
-      "mirrored": false
+      "mirrored": false,
+      "sourceWidth": 1.4
     },
     {
       "id": "armLeft-back",
@@ -622,7 +635,8 @@
         73,
         180.418605
       ],
-      "mirrored": false
+      "mirrored": false,
+      "sourceWidth": 1.5
     },
     {
       "id": "armRight-back",
@@ -647,7 +661,8 @@
         119,
         180.418605
       ],
-      "mirrored": false
+      "mirrored": false,
+      "sourceWidth": 1.5
     }
   ]
 }

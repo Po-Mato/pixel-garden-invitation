@@ -1,0 +1,95 @@
+{
+  "status": "integrated-review-only",
+  "runtimeEligible": false,
+  "visualApproved": false,
+  "browserVerified": false,
+  "canvas": [
+    192,
+    288
+  ],
+  "sheet": [
+    768,
+    1152
+  ],
+  "geometry": {
+    "head": 72,
+    "body": 144,
+    "total": 216
+  },
+  "rowOrder": [
+    "front",
+    "left",
+    "right",
+    "back"
+  ],
+  "directions": [
+    {
+      "direction": "front",
+      "frames": 4,
+      "neutralIdentical": true,
+      "oppositePosesDiffer": true,
+      "headShoulderBandFixed": true,
+      "footBaseline": 270,
+      "gameCenterDriftPx": 0
+    },
+    {
+      "direction": "left",
+      "frames": 4,
+      "neutralIdentical": true,
+      "oppositePosesDiffer": true,
+      "headShoulderBandFixed": true,
+      "footBaseline": 270,
+      "gameCenterDriftPx": 0
+    },
+    {
+      "direction": "right",
+      "frames": 4,
+      "neutralIdentical": true,
+      "oppositePosesDiffer": true,
+      "headShoulderBandFixed": true,
+      "footBaseline": 270,
+      "gameCenterDriftPx": 0
+    },
+    {
+      "direction": "back",
+      "frames": 4,
+      "neutralIdentical": true,
+      "oppositePosesDiffer": true,
+      "headShoulderBandFixed": true,
+      "footBaseline": 270,
+      "gameCenterDriftPx": 0
+    }
+  ],
+  "inputs": {
+    "character-assets/rigs/guest-04/front-neutral-v1/review/front-neutral.png": "da077700d737dc74ae027b5a6615f2a1e70eb568d6eefaa3621afd8411883173",
+    "character-assets/rigs/guest-04/front-walk-v1/review/audit.json": "63eb2b946d3fe29392dd27fc84d0d99fd03e1435814d78cf1bbae9a59b759e75",
+    "character-assets/rigs/guest-04/front-walk-v1/review/front-1.png": "df00670dec698b8098714a6a491e90ab25dd288edfaafb231a47a28926aae335",
+    "character-assets/rigs/guest-04/front-walk-v1/review/front-2.png": "da077700d737dc74ae027b5a6615f2a1e70eb568d6eefaa3621afd8411883173",
+    "character-assets/rigs/guest-04/front-walk-v1/review/front-3.png": "a46117dead3bfd44d1eb032e5d7010cb911e8ad54fdb76e06900ad8b3d22e267",
+    "character-assets/rigs/guest-04/front-walk-v1/review/front-4.png": "da077700d737dc74ae027b5a6615f2a1e70eb568d6eefaa3621afd8411883173",
+    "character-assets/rigs/guest-04/side-neutral-v1/review/left.png": "f1d58c4030340dd9b64700ad7d17e05ae045d679594d457306255b5a109b52f5",
+    "character-assets/rigs/guest-04/side-walk-v2/review/audit.json": "0dd85c90c69209afda72699d52d26010501f8cf241148a98b1e087d86143065c",
+    "character-assets/rigs/guest-04/side-walk-v2/review/left-1.png": "c19a5414b65bf78fbacdb5868ca685c59bdac4ef8daaa78005230fb35139add0",
+    "character-assets/rigs/guest-04/side-walk-v2/review/left-2.png": "f1d58c4030340dd9b64700ad7d17e05ae045d679594d457306255b5a109b52f5",
+    "character-assets/rigs/guest-04/side-walk-v2/review/left-3.png": "8447bc45217538b651b17d8bdbab55ba2f459dc0256f97f07703ac5b08990f43",
+    "character-assets/rigs/guest-04/side-walk-v2/review/left-4.png": "f1d58c4030340dd9b64700ad7d17e05ae045d679594d457306255b5a109b52f5",
+    "character-assets/rigs/guest-04/side-neutral-v1/review/right.png": "50dcd9b7e8aecd901f765646ed8a48af4eeb651f31f0cd37a66bedeff9b93d31",
+    "character-assets/rigs/guest-04/side-walk-v2/review/right-1.png": "20ef5eea0a112c43e76c7778f8ce3b8d122be58686ce73cc93a85f40cb59bec9",
+    "character-assets/rigs/guest-04/side-walk-v2/review/right-2.png": "50dcd9b7e8aecd901f765646ed8a48af4eeb651f31f0cd37a66bedeff9b93d31",
+    "character-assets/rigs/guest-04/side-walk-v2/review/right-3.png": "83c21069c51439e31d0ec2c4a051ff02f4a75932505b4b4cc0355e1b99c06ddc",
+    "character-assets/rigs/guest-04/side-walk-v2/review/right-4.png": "50dcd9b7e8aecd901f765646ed8a48af4eeb651f31f0cd37a66bedeff9b93d31",
+    "character-assets/rigs/guest-04/back-neutral-v1/review/back.png": "caed9259dca944279cf0b10b4cfcf42699cc4c2ee9b1f2e71db27c0e3f8506bb",
+    "character-assets/rigs/guest-04/back-walk-v1/review/audit.json": "563933b93d76b19a43e47a378efe96ad75de588c287ea16d63ae89420b09ccc8",
+    "character-assets/rigs/guest-04/back-walk-v1/review/back-1.png": "3cbe897b03ac25379e50822e1de28518341f8a33a522d610dcb32606cd1504e2",
+    "character-assets/rigs/guest-04/back-walk-v1/review/back-2.png": "caed9259dca944279cf0b10b4cfcf42699cc4c2ee9b1f2e71db27c0e3f8506bb",
+    "character-assets/rigs/guest-04/back-walk-v1/review/back-3.png": "b1be3c71a6e15f1fae05fa3a9b603e673dbc67520cf7e9d01b1f6faaefe015a2",
+    "character-assets/rigs/guest-04/back-walk-v1/review/back-4.png": "caed9259dca944279cf0b10b4cfcf42699cc4c2ee9b1f2e71db27c0e3f8506bb"
+  },
+  "outputs": {
+    "walk-sheet.png": "456cc3f79884b96d509f64f5d40a95605e7aab13f291d9dcb9228d00ece24f45",
+    "selection-sheet.png": "e0808161013695b67901d1069eabeefe81dc126e3fd2fe85c9d2c12b4e19f687",
+    "game-sheet.png": "dfc33108ddc0f112555f2aeb82af461ada120873d2bbbd050b59297eaff3039f",
+    "contact.png": "74d2915ee7210fa5ae7aaf39d417cc70e5314ce24dc260bd3a50b5fe72c32db7",
+    "mobile-portable.html": "c1b14d7f4cdfb8145576de5af7e3064f2101fbc3264ac6e2f12034b7902dd525"
+  }
+}

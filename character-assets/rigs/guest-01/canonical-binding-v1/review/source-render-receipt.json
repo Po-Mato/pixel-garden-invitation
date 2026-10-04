@@ -1,0 +1,638 @@
+{
+  "version": 1,
+  "inputs": [
+    {
+      "file": "character-assets/rigs/common-three-head-216-v1/skeleton.json",
+      "sha256": "d320d258397253ee3919381ea062187c2e587c9ec57a7761966a7e07b4dc479b"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/source/binding.json",
+      "sha256": "eaae4486dd3507cda91ddfaafe294b05bdd894e390d9e472a802e168289788b8"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/storybook-source-v1/body-registration.json",
+      "sha256": "297eb0bed4c818ecf049bef6b73f289ed65733614753fce6d6b25f097d06ced8"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/storybook-source-v1/generated/balanced-v3/armLeft-back-registered.svg",
+      "sha256": "8db848f5783a5b15a99655f4114eb4a00b287b9a21b8586f5328423eecd3bfc7"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/storybook-source-v1/generated/balanced-v3/armLeft-front-registered.svg",
+      "sha256": "fdf583780973976c44289557cc13bb3f089c3beb15776ed5ec4a2b094ca9bd57"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/storybook-source-v1/generated/balanced-v3/armLeft-left-registered.svg",
+      "sha256": "06553377698fc5abe69d382da759d0353920b821b2a8066c04c40cb0296b9130"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/storybook-source-v1/generated/balanced-v3/armLeft-right-registered.svg",
+      "sha256": "52ee72249d5b89864c88e6ec59bd86a439d9850af4f1ac401ff19ba2a7bb43d0"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/storybook-source-v1/generated/balanced-v3/armRight-back-registered.svg",
+      "sha256": "82ec94df39f440c5379086233011e85d796c0e7bb03d38b4fd2c009c123c6da4"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/storybook-source-v1/generated/balanced-v3/armRight-front-registered.svg",
+      "sha256": "695d550ca07e68f7b2dbaeeaf42c0fd6dd95409cd020d0e40607d068bb8b42c1"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/storybook-source-v1/generated/balanced-v3/armRight-left-registered.svg",
+      "sha256": "5b8f5e244c16d82faf424c7ecc8f8455ef3d3c0840d80e294b11d5bda079b031"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/storybook-source-v1/generated/balanced-v3/armRight-right-registered.svg",
+      "sha256": "dcd76f5cc13a8c769937cb0e047ee8de0bbff0aef2259b5c25973891c5bffe76"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/storybook-source-v1/generated/balanced-v3/back-calfLeft-source.svg",
+      "sha256": "325224f80264bc41136387e7e60effe7229e36b16e22bcfa1d2dee7682e24541"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/storybook-source-v1/generated/balanced-v3/back-calfRight-source.svg",
+      "sha256": "abe8c1193ee82d59633bcc9282f5403edea81dd4cb261128e756ccb6e9f2fa44"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/storybook-source-v1/generated/balanced-v3/back-shoeLeft-source.svg",
+      "sha256": "a831a412b8f8bb7343b60ab461dd0a3dd77b537a459145db7916655844204e53"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/storybook-source-v1/generated/balanced-v3/back-shoeRight-source.svg",
+      "sha256": "c26b0f10b5b793b03928d584089aadb9f2ad8d4dd24dfe5f9162ec0bce201019"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/storybook-source-v1/generated/balanced-v3/back-thighLeft-source.svg",
+      "sha256": "05e1250d431371c9788cfc1443544fd0da0ca0d376d5c1b5dad8a174d52cf727"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/storybook-source-v1/generated/balanced-v3/back-thighRight-source.svg",
+      "sha256": "f1e9b3f8844f7f32b545b56dc6010d36011ba319e52b71d5a507c22d7dca7519"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/storybook-source-v1/generated/balanced-v3/bag-back-registered.svg",
+      "sha256": "44786cd09d14137f960f86daeaaa285a100b3ac98a9b3557c87103912d591c2d"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/storybook-source-v1/generated/balanced-v3/bag-front-registered.svg",
+      "sha256": "f60e668de43ffa06f65b31b2faf3a08b38708d5366d16e85f7fb7b561ae7cc92"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/storybook-source-v1/generated/balanced-v3/bag-left-registered.svg",
+      "sha256": "680ac3ad3ddd19553abfb16433128df32d769dcd95e0fce235a570c16278c778"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/storybook-source-v1/generated/balanced-v3/bag-right-registered.svg",
+      "sha256": "7ff946c41da28afb865c3bcc46d3e5e160902adc15ece6c6a8eef4ea7e48b7de"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/storybook-source-v1/generated/balanced-v3/front-calfLeft-source.svg",
+      "sha256": "58f222f974e50e178103fd7fa1c403104f4f3b35ea6776ccc69a7ef6d7fa403f"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/storybook-source-v1/generated/balanced-v3/front-calfRight-source.svg",
+      "sha256": "ee62d7b9712048c613af6d19241e3c528e4499604608b4ba77164ee7884b3787"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/storybook-source-v1/generated/balanced-v3/front-shoeLeft-source.svg",
+      "sha256": "0871ab9c59f5d7d97b75fa245b3b481090957c59d395d5fcabcfd3f4c233879b"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/storybook-source-v1/generated/balanced-v3/front-shoeRight-source.svg",
+      "sha256": "5612fb3ef5c771eb0e0a2800f9c78d97c64fd2662f6807526119f951b2b0d187"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/storybook-source-v1/generated/balanced-v3/front-thighLeft-source.svg",
+      "sha256": "10a9969e52ab180fd56e7b6d731e9ed50fe6a909ae46dd86085f19f760b5ac2f"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/storybook-source-v1/generated/balanced-v3/front-thighRight-source.svg",
+      "sha256": "f5afa56f786bf1a787a9bf2ed89e2bb174128f38efb8d8d2a053cf086601ced7"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/storybook-source-v1/generated/balanced-v3/head-front-above-body.svg",
+      "sha256": "d40baacdb1d66fe04086bb566a09e696e17a19e3e652a0eb78688972dc926362"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/storybook-source-v1/generated/balanced-v3/head-front-behind-body.svg",
+      "sha256": "78588f8732c37633650a68d1e2e84ae954d991f0fa369b1c12844e2c85195e0f"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/storybook-source-v1/generated/balanced-v3/left-calfLeft-source.svg",
+      "sha256": "a8dcec1290e08722c52b16758cf6dae325c7b10219bced5c3b1d85df3af4ac37"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/storybook-source-v1/generated/balanced-v3/left-calfRight-source.svg",
+      "sha256": "96b5b3ff23e8e0985ea07d95b3928ed811f7f3a890982cbc4f3ed396bd3f02ce"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/storybook-source-v1/generated/balanced-v3/left-shoeLeft-source.svg",
+      "sha256": "875258e5e68d00225470e06adae8f09671ecc98bb9c53ea9e72653f22e88dca7"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/storybook-source-v1/generated/balanced-v3/left-shoeRight-source.svg",
+      "sha256": "5036ada3c0d7d66d0088169f79c6e19d2f8036a138c68aa2ff525610d0d24a62"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/storybook-source-v1/generated/balanced-v3/left-thighLeft-source.svg",
+      "sha256": "e422e4f7f7337ec3eae66ea4d0090188a5317bc3562ffcf864e972aaf2711475"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/storybook-source-v1/generated/balanced-v3/left-thighRight-source.svg",
+      "sha256": "6143d03833712dd80213e5e791fe87aee97095ef98d8cb502fd7a60b818259b3"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/storybook-source-v1/generated/balanced-v3/neck-back-registered.svg",
+      "sha256": "21e7f0764c12c94d87936eb9e37b611153e187ea29daa0a5c6c976d2947ed805"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/storybook-source-v1/generated/balanced-v3/neck-front-registered.svg",
+      "sha256": "21e7f0764c12c94d87936eb9e37b611153e187ea29daa0a5c6c976d2947ed805"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/storybook-source-v1/generated/balanced-v3/neck-left-registered.svg",
+      "sha256": "21e7f0764c12c94d87936eb9e37b611153e187ea29daa0a5c6c976d2947ed805"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/storybook-source-v1/generated/balanced-v3/neck-right-registered.svg",
+      "sha256": "21e7f0764c12c94d87936eb9e37b611153e187ea29daa0a5c6c976d2947ed805"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/storybook-source-v1/generated/balanced-v3/right-calfLeft-source.svg",
+      "sha256": "1b1eeee803f41ab91b629b0e35b27b9fcc10e8c441a12058ed65e828e3d703fe"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/storybook-source-v1/generated/balanced-v3/right-calfRight-source.svg",
+      "sha256": "03c34e9c31d9a8c5fd1504f3b93e6602cc596b7ec843ba404b3abe59d80eec59"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/storybook-source-v1/generated/balanced-v3/right-shoeLeft-source.svg",
+      "sha256": "307e1be500fcc478218588f871177cea4ec44b3aef6c8c27628a8e682ca2b1dc"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/storybook-source-v1/generated/balanced-v3/right-shoeRight-source.svg",
+      "sha256": "2908c6e7e4393407a66ac06cab11b9efb601856289dd4860c8c9d4bcbd3bd7b5"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/storybook-source-v1/generated/balanced-v3/right-thighLeft-source.svg",
+      "sha256": "fbded71556814d8685eff078f07347aa2894e4d01c6f1de5a5f9ee65b14303a5"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/storybook-source-v1/generated/balanced-v3/right-thighRight-source.svg",
+      "sha256": "c676f46d2c7d54ced06d3e2467811740109f56aac4455943d6e1db9a7177434d"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/storybook-source-v1/generated/balanced-v3/shadow-back-registered.svg",
+      "sha256": "4bebac935b52766712306887261a9be208a3180e8ada51e9f7e7d23ed8b6f71f"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/storybook-source-v1/generated/balanced-v3/shadow-front-registered.svg",
+      "sha256": "4bebac935b52766712306887261a9be208a3180e8ada51e9f7e7d23ed8b6f71f"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/storybook-source-v1/generated/balanced-v3/shadow-left-registered.svg",
+      "sha256": "4bebac935b52766712306887261a9be208a3180e8ada51e9f7e7d23ed8b6f71f"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/storybook-source-v1/generated/balanced-v3/shadow-right-registered.svg",
+      "sha256": "4bebac935b52766712306887261a9be208a3180e8ada51e9f7e7d23ed8b6f71f"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/storybook-source-v1/generated/balanced-v3/skirt-back-registered.svg",
+      "sha256": "8f985441d7270c346d0c0b067e4517a52e3936d46a7e631e519a07b32a5eedc7"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/storybook-source-v1/generated/balanced-v3/skirt-front-registered.svg",
+      "sha256": "3e7a80c1ccb3f7e9564275e2e814e92ba6fa9cfd18df2ae58af4a433f691e8b4"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/storybook-source-v1/generated/balanced-v3/skirt-left-registered.svg",
+      "sha256": "5c430219bf45cc3cf32e8fd317ea81c5a26c1ee272c7e4afbc7c3f04424d3a8d"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/storybook-source-v1/generated/balanced-v3/skirt-right-registered.svg",
+      "sha256": "b348af770234a1ea62a0b72ce38f9b2b39ca3b4be854286e704e4fa3f0e1758d"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/storybook-source-v1/generated/balanced-v3/source-render-receipt.json",
+      "sha256": "55b52bcf74af81a96e8ea46270aee8eb68092fd5b4744feabdc0fa5fa732aa13"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/storybook-source-v1/generated/balanced-v3/torso-back-registered.svg",
+      "sha256": "2dc55b576eb2b3ff6c5c953c4bced2a10d34f08ddedad7904fc98f428969dc8b"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/storybook-source-v1/generated/balanced-v3/torso-front-registered.svg",
+      "sha256": "2b4ab4db61c367af8941fa74685fb48ba7631e334ce00ebff5cc5f7f8d568bd0"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/storybook-source-v1/generated/balanced-v3/torso-left-registered.svg",
+      "sha256": "2877efbca2a015ddf0fb3d0680e6f7b666a024874b4c2b5269ca78b8ba4ce001"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/storybook-source-v1/generated/balanced-v3/torso-right-registered.svg",
+      "sha256": "2d61a8520c1ee3f3d0d6f5ff5de31ef4144c1d682c03070e4309b03a319f0148"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/storybook-source-v1/generated/head-back-above-body.svg",
+      "sha256": "ec3fe8dec832228105d63a692c59683a9afeb00bc15c5dccec59b1c0d75b5173"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/storybook-source-v1/generated/head-back-behind-body.svg",
+      "sha256": "5ee3a58f66806ab1301c1cbe2cb2e3e1daeb3ed2203eef779af511bb7104cd3a"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/storybook-source-v1/generated/head-left-above-body.svg",
+      "sha256": "3c7b4c433677b62fca63ed038f88ff05b88c6759fe3777031270e6ade9d22874"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/storybook-source-v1/generated/head-left-behind-body.svg",
+      "sha256": "b9460088a799c123c7c926e7f3e1cdc319f9ea282edbda224c272659c651f15f"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/storybook-source-v1/generated/head-right-above-body.svg",
+      "sha256": "8f64f769b209c54494d08ab2a7de68b58b7759d641c56edfaa06a3b6b1452fdf"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/storybook-source-v1/generated/head-right-behind-body.svg",
+      "sha256": "d6ae57ade16ec2f959a2bb7bc094350f06a65a3198d0f379785a1ae0d2af8922"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/storybook-source-v1/head-registration.json",
+      "sha256": "d174c8b1c5eae323f106928f216e8bcb5b8b3113ddd9af23cebded88368787bc"
+    },
+    {
+      "file": "character-assets/rigs/shared-tailored-216-v1/painted-walk-binding.json",
+      "sha256": "b1209f1de614ac8a8e0783eec66c80f7ff289790a2da12bc59c925caf32bd304"
+    },
+    {
+      "file": "character-assets/rigs/shared-tailored-216-v1/skeleton.json",
+      "sha256": "bb584444cc8dd8fef93757512706b4eff83f47f53c730811ff9b9b67c31fd615"
+    },
+    {
+      "file": "scripts/lib/canonicalCutoutBinding.mjs",
+      "sha256": "aac95827b6682632ff1d6687cbef7098a468e805840cba8ba43c5b2005828770"
+    },
+    {
+      "file": "scripts/lib/deterministicSharp.mjs",
+      "sha256": "098d5d05f78bdf66ff839dda9ae59effb39287983b23a64bc33fb4cbbacccce5"
+    },
+    {
+      "file": "scripts/lib/paintedArmPose.mjs",
+      "sha256": "f4f1d3b452b76768520c5b303660591b6e3f7b318240a9a425f2c19142688c72"
+    },
+    {
+      "file": "scripts/render-canonical-painted-neutral.mjs",
+      "sha256": "5c2bcbecbc78a050c1903b537258c2ad431c0064a17b5ba6573222ca9a8affb7"
+    }
+  ],
+  "dependencies": [
+    "character-assets/rigs/guest-01/storybook-source-v1/generated/balanced-v3/source-render-receipt.json"
+  ],
+  "outputs": [
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/generated/registered/back-bag-back.svg",
+      "sha256": "249ed4818bc75f72736cb49d431bc58d40bef3165d3dee96d2a554c2740ed595"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/generated/registered/back-calfLeft.svg",
+      "sha256": "fb40b8b17f9d24515c18d27b9ba815eb8434b6fb74f24eed49e846dca2df0e44"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/generated/registered/back-calfRight.svg",
+      "sha256": "6f9c47c14984e8ee393eaf4eab4daa5b852408b931f91592fdec8624955509de"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/generated/registered/back-forearmLeft.svg",
+      "sha256": "4ac3be95237b2d899311f6108eb99b0f705068fd3311aa7f71d11972c73dbd70"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/generated/registered/back-forearmRight.svg",
+      "sha256": "e04a7f253ad03e17ed7f65f0172311a5b42e47626726d81ddd6288d44b639253"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/generated/registered/back-handLeft.svg",
+      "sha256": "5fb8c3f77b96e05bfc638a5dddae48aee04bcf75613acf126943da92fbbb12bf"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/generated/registered/back-handRight.svg",
+      "sha256": "2d19bb19e126a62ad2d83c1ef57172b2eb25c112143d779abff9a1e429689a0e"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/generated/registered/back-headAbove.svg",
+      "sha256": "4303f573dcde7b8874334d78008244bf07afd3999a37331730451d867135055b"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/generated/registered/back-headBehind.svg",
+      "sha256": "06c4a2c79a86e9bb53f36ee8121630ca8dfc6bbaec037a6251f83b055973a834"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/generated/registered/back-neck-back.svg",
+      "sha256": "179d2cf423b7dabb0c17ba68ba81c471959bb3ef0eeb25d2938d424d67ed1eca"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/generated/registered/back-shadow-back.svg",
+      "sha256": "66da55ce57cf396bde458b48e1ca3115e9cd4ebe336a9bb12c73458088e550fa"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/generated/registered/back-shoeLeft.svg",
+      "sha256": "f4f982232fe43758740cc289d87d3107de47cff6ecf5440008d1c2e2e004c346"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/generated/registered/back-shoeRight.svg",
+      "sha256": "cff475a6becd8e5202f0f34b9af4aa8bb85f98315565823416e60fba33687d5c"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/generated/registered/back-skirt-back.svg",
+      "sha256": "887489d86a78a6873cbaf8c12c2dd193230151e9ff979afcef4bcfd346fef2cf"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/generated/registered/back-thighLeft.svg",
+      "sha256": "c94def7e5aeff7c6520794924cb9dc8ffa52500d1d892712961619078099ea20"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/generated/registered/back-thighRight.svg",
+      "sha256": "3f2d1eaa23fbee95d9279fd2f44264732cd8bb869e8e93206823c8221ead799e"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/generated/registered/back-torso-back.svg",
+      "sha256": "4521ac4352a2a95fed1bd82e8f5bbd7b516a033457f7ce38e25a56c4b6c79b42"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/generated/registered/back-upperArmLeft.svg",
+      "sha256": "504294916f2dc0a1a1bc998cf446517da44c4dffc38656ee9b111f3f0a01437f"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/generated/registered/back-upperArmRight.svg",
+      "sha256": "c51325a64ddf156f5f6e59065872350a5119092d18ce2f4c599c8843340af188"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/generated/registered/front-bag-front.svg",
+      "sha256": "e96eec2db0366f7d2de5760d856d9f2c39e4122bc3fcbd4bdef4b41f318f36f2"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/generated/registered/front-calfLeft.svg",
+      "sha256": "bb4c2b3ecb64e40a60c32db31bf36c6e897bd19bf3a81740b5b7745de6d30ca3"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/generated/registered/front-calfRight.svg",
+      "sha256": "83a7b509c197fb90edc31d6636c4bbb88342ba73e23ff5802e484a190d082f85"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/generated/registered/front-forearmLeft.svg",
+      "sha256": "7211e82620b09444918fdd9875bfba272075f6ee1166c4c42f39cc47fb123657"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/generated/registered/front-forearmRight.svg",
+      "sha256": "4c3598043694e15dddf9aa8a155ca36069580b399ca3f17a5ed6000d323834e3"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/generated/registered/front-handLeft.svg",
+      "sha256": "02d41fd8b3f945862176ee1e9dbe1abd619b148829eba2b9bc168d9556d14727"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/generated/registered/front-handRight.svg",
+      "sha256": "22c5fb4d8227243a71ffdbebf3185e5000c49b32665396bcc374fc27d60b6aa2"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/generated/registered/front-headAbove.svg",
+      "sha256": "124483350b6a03cc7d14170c4de7feec3d508ff97eb7604f05edd87b85f02c22"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/generated/registered/front-headBehind.svg",
+      "sha256": "4b56b31023032221bc162d62993a294a14db15aff3fc2d0fbd4f65df24ca42d4"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/generated/registered/front-neck-front.svg",
+      "sha256": "179d2cf423b7dabb0c17ba68ba81c471959bb3ef0eeb25d2938d424d67ed1eca"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/generated/registered/front-shadow-front.svg",
+      "sha256": "66da55ce57cf396bde458b48e1ca3115e9cd4ebe336a9bb12c73458088e550fa"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/generated/registered/front-shoeLeft.svg",
+      "sha256": "a6030507004a6d8d0faf22427b95d8bf718d6de55110793e2ae5b4e04952ed24"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/generated/registered/front-shoeRight.svg",
+      "sha256": "0a442e3b5a07f0f19fa509de34f9612f749067a4e1bf440edb7550ed28518b34"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/generated/registered/front-skirt-front.svg",
+      "sha256": "146b6523d4dc5ae151b82b3f7009c57c69c5e89e0aa54f250d1e343b51790182"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/generated/registered/front-thighLeft.svg",
+      "sha256": "764aefdcef7b47278ce8d510143d73582a25271b84537d7ce331387ed2a89fa0"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/generated/registered/front-thighRight.svg",
+      "sha256": "648fea4a0e769535bb8c037291fbf847d8797a48008aacff1265b4b6c623cd08"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/generated/registered/front-torso-front.svg",
+      "sha256": "cfcf6ab6f70b5bdd1c5575d78a812530c15b1a549aa767ecae28c0df091c5442"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/generated/registered/front-upperArmLeft.svg",
+      "sha256": "d0395b8a52ca555c1388296cd26232b10f85ea341916f7b7bc3e200268e8db43"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/generated/registered/front-upperArmRight.svg",
+      "sha256": "5d2e8549f0b5c6231280cbce50c016ad5a5ae25f5f01b350ba47f41383fb6e98"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/generated/registered/left-bag-left.svg",
+      "sha256": "5868218f9c0c51723c40efd4981829a576591515ebb939187bdce26e1601f682"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/generated/registered/left-calfLeft.svg",
+      "sha256": "7483b9abc46dc8e1c46cf1cbf5ef3b9a6a33fc8cc17fbbab83ba292bee9dc708"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/generated/registered/left-calfRight.svg",
+      "sha256": "8769a4db538e2a99ebcdd8769a809cc113e731d5bba1fdccfa0c5986c70e47eb"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/generated/registered/left-forearmLeft.svg",
+      "sha256": "4edd1f03ab718add145b20198acc0396379d6d320602b99d6841477ba9e49c20"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/generated/registered/left-forearmRight.svg",
+      "sha256": "c9dd142e3dce17694c31592b533dea2f4d5d20edc8936969611590361584edff"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/generated/registered/left-handLeft.svg",
+      "sha256": "90820fe6b3a9be805689c6b006088b10d49910b5aa7d3190ca73445015ef6f40"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/generated/registered/left-handRight.svg",
+      "sha256": "e0640c85dac8237970700857435d18463fe5cbaecb6ffc1eb49a092f9bee9589"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/generated/registered/left-headAbove.svg",
+      "sha256": "a5a3b0b51396752a1c6c6652b1aca41655ca0762e113511a86b95cb7c3027c3a"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/generated/registered/left-headBehind.svg",
+      "sha256": "63b8d80d47855bfa0dd90745e88bf81073b6d49b0b2e2791a329045c309a479f"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/generated/registered/left-neck-left.svg",
+      "sha256": "179d2cf423b7dabb0c17ba68ba81c471959bb3ef0eeb25d2938d424d67ed1eca"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/generated/registered/left-shadow-left.svg",
+      "sha256": "66da55ce57cf396bde458b48e1ca3115e9cd4ebe336a9bb12c73458088e550fa"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/generated/registered/left-shoeLeft.svg",
+      "sha256": "7e2cf25399de518a61ace196f4ca9ef0c3134a433898b0fa1fdf04a893617458"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/generated/registered/left-shoeRight.svg",
+      "sha256": "83b8dd4937282eeb9ec520f620981ba465eb55e9f434795b4956de060b5b3dd4"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/generated/registered/left-skirt-left.svg",
+      "sha256": "fd5b4470f7335f4f76e130c1ae1ec2bd410a8bd0dbe57c16b95abc4321d3dd1d"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/generated/registered/left-thighLeft.svg",
+      "sha256": "0d2fb3431742897ad6a5e676d0890df06aa1178136319602dabef9697dfc9583"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/generated/registered/left-thighRight.svg",
+      "sha256": "157d995722ed6bd2180f714695c5617a1fd6968752044aea86f4cbe068e67b03"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/generated/registered/left-torso-left.svg",
+      "sha256": "7a7bc36440674ac8282b1cea01041ae92af2685d8691614776109d0c21ee667a"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/generated/registered/left-upperArmLeft.svg",
+      "sha256": "bdc8b1c3b531e65c21e17e456dea13c07480681be88ac7db82183c32e6ede905"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/generated/registered/left-upperArmRight.svg",
+      "sha256": "7075cbaf5424f94be655e7da41e75e9c659c31db17e23e4781c8e0fc145da53b"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/generated/registered/right-bag-right.svg",
+      "sha256": "998d4859025c81cbb6387dcd7f7c5525a04945b1ed4c81e54bb5f6b78c46d845"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/generated/registered/right-calfLeft.svg",
+      "sha256": "a2bb063293510a283bf6c369c5d00c5b614faf2eb09610dc9c813cf8624f7d92"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/generated/registered/right-calfRight.svg",
+      "sha256": "a092bbe09d331458130f68ff876e9ca4fbe5061c49f4fcdb0ee8f3459df75f22"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/generated/registered/right-forearmLeft.svg",
+      "sha256": "4d9248818a216b357b1e9287c7a90d93a6bc20cd4664cb0e970579f06a0f1e7f"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/generated/registered/right-forearmRight.svg",
+      "sha256": "a556553ad34e343d2a4eb2daec01f9eb8d0caedb88201fa79a3806920236f178"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/generated/registered/right-handLeft.svg",
+      "sha256": "292ae08df551552520f427cda05bf0e1768ee16e97566f0c53980e45d64a4152"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/generated/registered/right-handRight.svg",
+      "sha256": "0460e74d8cf79a2f5e746f50b9957a70cc836ffe1e53f0fd27b2f84cd5de240c"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/generated/registered/right-headAbove.svg",
+      "sha256": "e5141eb4656995e1415b81895600c10fa5a78a657cb45c0d1ec65cd198b36745"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/generated/registered/right-headBehind.svg",
+      "sha256": "c08e325abc23fbab69968d5e7e54237af5c1e043856f90b852f9545ae1fe2df8"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/generated/registered/right-neck-right.svg",
+      "sha256": "179d2cf423b7dabb0c17ba68ba81c471959bb3ef0eeb25d2938d424d67ed1eca"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/generated/registered/right-shadow-right.svg",
+      "sha256": "66da55ce57cf396bde458b48e1ca3115e9cd4ebe336a9bb12c73458088e550fa"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/generated/registered/right-shoeLeft.svg",
+      "sha256": "cc6ef8e7206d2ed20c69cb39eb8a769a9e8e8926f41abf8c7dda97ba198ee5ae"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/generated/registered/right-shoeRight.svg",
+      "sha256": "5066c7bca1899f2a46e847c94dc6e7c7ed1b437af7654e87a3115f7505771688"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/generated/registered/right-skirt-right.svg",
+      "sha256": "43969568278a044583d6b2bd5ed5b05e22b5ae1b103dc014b0203ea4a8f27b33"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/generated/registered/right-thighLeft.svg",
+      "sha256": "c60dd1a1a49cfb61015319ceffbafe547f1421acba45b7aac89b8ec6eeb9a2c4"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/generated/registered/right-thighRight.svg",
+      "sha256": "3b83cbb679a0d4ccb673721559e23ee9f53ed2f400c9b58462693f8a13809906"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/generated/registered/right-torso-right.svg",
+      "sha256": "07cd3167b258ec85e6a69aeb5e6e7d698a17a64b360a10d37a3c0fa36b528fc9"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/generated/registered/right-upperArmLeft.svg",
+      "sha256": "f76ad5d5004d772c8e842cd4d03b5b0119ef37a09f3c926b4049888233fd5be2"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/generated/registered/right-upperArmRight.svg",
+      "sha256": "baa79f6a9e286b9076d95b34bbe7fc35d69b60475ef60b509ccb6d78801d2992"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/review/audit.json",
+      "sha256": "19c2920eef3556e4bee757f273b105e1e1a33fdcb53d90b10ced35f441bc3f37"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/review/back.png",
+      "sha256": "f4f2f048083edb3048f078d4ebe592991720552b847112e0a9bbaa8da524da3c"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/review/back.svg",
+      "sha256": "e5f03b1f10dc4f8a989ac2a259232fd705a983a25d483bb0184e67bfd40e1b17"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/review/front.png",
+      "sha256": "f4163a0b19e43da17d29aaff600bcf87563960246a5a0f66fbdbbbf12ebde9e5"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/review/front.svg",
+      "sha256": "c843f8ae78318c08f8e116e6bc2c516badb4350713dbcb54b05bc311a72bc1d1"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/review/left.png",
+      "sha256": "69856bbcfce17f58f4bda28d17430bd720098b466c1d55df4a8e5a9dad332e3e"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/review/left.svg",
+      "sha256": "3e978160b7d4bb4cfb3047f3b8239892a5e174d96d57cb30be7a23156d8e92c1"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/review/neutral-contact.png",
+      "sha256": "fd4b5b3699cecc2117bed2746aeb8ca284c8041ad83b414c3bbfb80acdb69a35"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/review/right.png",
+      "sha256": "4bdfa962804e59d2e9116cdd4077dc9cddc324b20d0ca845e694052e7d2a6e5e"
+    },
+    {
+      "file": "character-assets/rigs/guest-01/canonical-binding-v1/review/right.svg",
+      "sha256": "6cc79fa18d9759f0d19368837f38698fb97be9c2770e66084d099317c33bf23f"
+    }
+  ]
+}

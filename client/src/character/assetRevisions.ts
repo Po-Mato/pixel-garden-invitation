@@ -1,4 +1,5 @@
-export const guestCutoutAssetRevision = "guest-storybook-cutout-v1-20260922";
+export const coupleSpriteAssetRevision = "couple-aligned-v1-20260930";
+export const guestCutoutAssetRevision = "guest-full-review-v1-20260930";
 
 export const guestAssetRevisions: Readonly<Partial<Record<string, string>>> = {
   "feminine-long-wave-dress": guestCutoutAssetRevision,

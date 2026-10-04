@@ -1,0 +1,7 @@
+{
+ "status":"neutral-art-study-not-walk-bound",
+ "characters":{
+  "guest-02":{"left":{"scale":0.075,"translation":[38.25,123.75]},"right":{"scale":0.078,"translation":[31,120.93]}},
+  "guest-12":{"left":{"scale":0.075,"translation":[40,122.25]},"right":{"scale":0.077,"translation":[34,121.765]}}
+ }
+}

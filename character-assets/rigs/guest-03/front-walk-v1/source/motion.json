@@ -1,0 +1,5 @@
+{
+  "extends": "../../../shared-tailored-216-v1/front-motion.json",
+  "bodySource": "../../front-neutral-rebuild-v6/source/body.svg",
+  "rigSource": "../../front-neutral-rebuild-v6/source/rig.json"
+}

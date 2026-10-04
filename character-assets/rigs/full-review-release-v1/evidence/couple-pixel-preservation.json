@@ -1,0 +1,218 @@
+[
+  {
+    "id": "bride",
+    "d": 0,
+    "n": 0,
+    "shift": -16,
+    "diff": 0,
+    "dropped": 0,
+    "maxDropAlpha": 0
+  },
+  {
+    "id": "bride",
+    "d": 0,
+    "n": 1,
+    "shift": 1,
+    "diff": 0,
+    "dropped": 0,
+    "maxDropAlpha": 0
+  },
+  {
+    "id": "bride",
+    "d": 0,
+    "n": 2,
+    "shift": 16,
+    "diff": 0,
+    "dropped": 0,
+    "maxDropAlpha": 0
+  },
+  {
+    "id": "bride",
+    "d": 1,
+    "n": 0,
+    "shift": -15,
+    "diff": 0,
+    "dropped": 0,
+    "maxDropAlpha": 0
+  },
+  {
+    "id": "bride",
+    "d": 1,
+    "n": 1,
+    "shift": 8,
+    "diff": 0,
+    "dropped": 1,
+    "maxDropAlpha": 9
+  },
+  {
+    "id": "bride",
+    "d": 1,
+    "n": 2,
+    "shift": 12,
+    "diff": 0,
+    "dropped": 0,
+    "maxDropAlpha": 0
+  },
+  {
+    "id": "bride",
+    "d": 2,
+    "n": 0,
+    "shift": -13,
+    "diff": 0,
+    "dropped": 0,
+    "maxDropAlpha": 0
+  },
+  {
+    "id": "bride",
+    "d": 2,
+    "n": 1,
+    "shift": 7,
+    "diff": 0,
+    "dropped": 0,
+    "maxDropAlpha": 0
+  },
+  {
+    "id": "bride",
+    "d": 2,
+    "n": 2,
+    "shift": 14,
+    "diff": 0,
+    "dropped": 0,
+    "maxDropAlpha": 0
+  },
+  {
+    "id": "bride",
+    "d": 3,
+    "n": 0,
+    "shift": -15,
+    "diff": 0,
+    "dropped": 0,
+    "maxDropAlpha": 0
+  },
+  {
+    "id": "bride",
+    "d": 3,
+    "n": 1,
+    "shift": 1,
+    "diff": 0,
+    "dropped": 0,
+    "maxDropAlpha": 0
+  },
+  {
+    "id": "bride",
+    "d": 3,
+    "n": 2,
+    "shift": 16,
+    "diff": 0,
+    "dropped": 0,
+    "maxDropAlpha": 0
+  },
+  {
+    "id": "groom",
+    "d": 0,
+    "n": 0,
+    "shift": -11,
+    "diff": 0,
+    "dropped": 0,
+    "maxDropAlpha": 0
+  },
+  {
+    "id": "groom",
+    "d": 0,
+    "n": 1,
+    "shift": 2,
+    "diff": 0,
+    "dropped": 0,
+    "maxDropAlpha": 0
+  },
+  {
+    "id": "groom",
+    "d": 0,
+    "n": 2,
+    "shift": 13,
+    "diff": 0,
+    "dropped": 0,
+    "maxDropAlpha": 0
+  },
+  {
+    "id": "groom",
+    "d": 1,
+    "n": 0,
+    "shift": -18,
+    "diff": 0,
+    "dropped": 0,
+    "maxDropAlpha": 0
+  },
+  {
+    "id": "groom",
+    "d": 1,
+    "n": 1,
+    "shift": 10,
+    "diff": 0,
+    "dropped": 0,
+    "maxDropAlpha": 0
+  },
+  {
+    "id": "groom",
+    "d": 1,
+    "n": 2,
+    "shift": 15,
+    "diff": 0,
+    "dropped": 0,
+    "maxDropAlpha": 0
+  },
+  {
+    "id": "groom",
+    "d": 2,
+    "n": 0,
+    "shift": -13,
+    "diff": 0,
+    "dropped": 0,
+    "maxDropAlpha": 0
+  },
+  {
+    "id": "groom",
+    "d": 2,
+    "n": 1,
+    "shift": 2,
+    "diff": 0,
+    "dropped": 0,
+    "maxDropAlpha": 0
+  },
+  {
+    "id": "groom",
+    "d": 2,
+    "n": 2,
+    "shift": 18,
+    "diff": 0,
+    "dropped": 0,
+    "maxDropAlpha": 0
+  },
+  {
+    "id": "groom",
+    "d": 3,
+    "n": 0,
+    "shift": -8,
+    "diff": 0,
+    "dropped": 0,
+    "maxDropAlpha": 0
+  },
+  {
+    "id": "groom",
+    "d": 3,
+    "n": 1,
+    "shift": 2,
+    "diff": 0,
+    "dropped": 0,
+    "maxDropAlpha": 0
+  },
+  {
+    "id": "groom",
+    "d": 3,
+    "n": 2,
+    "shift": 11,
+    "diff": 0,
+    "dropped": 0,
+    "maxDropAlpha": 0
+  }
+]

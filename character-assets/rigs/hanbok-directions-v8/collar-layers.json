@@ -1,0 +1,15 @@
+{
+ "policy":"Native source layer construction: upper-body/back collar, visible neck, original foreground collar, head. Original art sampled only through SVG clips; no output PNG patching.",
+ "characters":{
+  "guest-02":{
+   "front":"M 90 123 L 102 123 L 102 127 L 96 135 L 90 127 Z",
+   "left":"M 89 120 L 101 118 L 101 128 Q 95 130 89 135 Z",
+   "right":"M 92 118 L 105 122 Q 104 127 100 131 L 97 134 L 92 128 Z"
+  },
+  "guest-12":{
+   "front":"M 89 122 L 103 122 L 103 127 L 96 135 L 89 127 Z",
+   "left":"M 88 120 L 102 117 L 102 128 Q 94 131 88 136 Z",
+   "right":"M 91 117 L 106 122 Q 105 127 101 131 L 97 135 L 91 128 Z"
+  }
+ }
+}

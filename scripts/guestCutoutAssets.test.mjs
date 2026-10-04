@@ -5,7 +5,7 @@ import sharp from 'sharp';
 const root = new URL('../', import.meta.url);
 const json = async file => JSON.parse(await readFile(new URL(file, root)));
 const catalog = await json('character-assets/rigs/guest-cutout-catalog-v1.json');
-const generatedRoot = 'character-assets/generated/storybook-runtime-staging-v1/';
+const generatedRoot = 'character-assets/generated/full-review-v1/';
 
 test('the retained twelve-guest skeleton contract is exactly 72/144/216', async () => {
   assert.equal(catalog.characters.length, 12);
@@ -25,12 +25,13 @@ test('the retained twelve-guest skeleton contract is exactly 72/144/216', async 
 
 test('active export has twelve guests, 192 frames and unchanged output sizes', async () => {
   const manifest = await json(generatedRoot + 'build-manifest.json');
-  assert.equal(manifest.pipeline, 'painted-storybook-runtime-staging-v1');
+  assert.equal(manifest.pipeline, 'full-review-v1');
   assert.equal(manifest.characters.length, 12);
   for (const c of catalog.characters) {
     const entry = manifest.characters.find(e => e.characterId === c.characterId);
-    assert.equal(entry.sourceReceiptVerified, true);
-    assert.equal(entry.frameHashes.length, 16);
+    assert.ok(entry.sources.length > 0);
+    assert.equal(entry.checks.length, 16);
+    assert.deepEqual(entry.checks.map(f => `${f.dir}/${f.frame}`).sort(), ['front','left','right','back'].flatMap(d => [1,2,3,4].map(n => `${d}/${n}`)).sort());
     for (const [name,width,height] of [['walk-hd',768,1152],['walk-runtime',384,576]]) {
       const meta = await sharp(await readFile(new URL(`${generatedRoot}${c.presetId}/${c.presetId}__${name}.png`,root))).metadata();
       assert.deepEqual([meta.width,meta.height], [width,height]);
@@ -44,4 +45,11 @@ test('normal selection and game paths contain the exact new whole-frame generate
     const target = new URL(`client/public/characters/generated/${folder}/${c.presetId}__${kind}.png`,root);
     assert.deepEqual(await readFile(target),await readFile(source),`${c.characterId}/${kind}/${suffix}`);
   }
+});
+
+test('portrait paths preserve the exact reviewed neutral source pixels', async () => {
+  for (const c of catalog.characters) assert.deepEqual(
+    await readFile(new URL(`client/public/characters/generated/guests/portraits/${c.presetId}.png`, root)),
+    await readFile(new URL(`${generatedRoot}${c.presetId}/${c.presetId}__portrait.png`, root))
+  );
 });

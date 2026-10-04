@@ -35,3 +35,13 @@ test('source integration does not grant production deployment approval',async()=
  const r=await json(path.join(base,'active-source-recipe.json'));assert.equal(r.scope,'staging-only');assert.equal(r.productionApproved,false);assert.equal(r.runtimeEligible,false);
  const m=await json(path.join(root,'character-assets/generated/storybook-runtime-staging-v1/build-manifest.json'));assert.equal(m.publicAssetsModified,false);assert.equal(m.runtimeEligible,false);
 });
+
+test('current guest-01 public sprites use the separately reviewed canonical package',async()=>{
+ const m=await json(path.join(root,'character-assets/generated/full-review-v1/build-manifest.json'));
+ const c=m.characters.find(c=>c.characterId==='guest-01');
+ assert.ok(c.sources[0].file.endsWith('/canonical-binding-v1/walk-review/walk-sheet.png'));
+ assert.equal(c.sources[0].sha256,hash(await fs.readFile(path.join(root,c.sources[0].file))));
+ for(const [kind,suffix,folder]of [['walk','runtime','guests'],['idle','runtime','guests'],['walk','hd','guests/preview'],['idle','hd','guests/preview']]){
+  assert.deepEqual(await fs.readFile(path.join(root,`client/public/characters/generated/${folder}/${c.presetId}__${kind}.png`)),await fs.readFile(path.join(root,`character-assets/generated/full-review-v1/${c.presetId}/${c.presetId}__${kind}-${suffix}.png`)));
+ }
+});

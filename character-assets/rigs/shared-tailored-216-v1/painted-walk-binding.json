@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "sourceMotionDirectory": "../common-three-head-216-v1/animations",
+  "motionFamily": "dress",
+  "shoulderCapEnd": 160,
+  "shoulderUnderlap": 2,
+  "frameDurationMs": 240,
+  "policy": "All painted costumes use fixed canonical bone lengths. Original shared gait angles are retargeted to the canonical joints; contact offsets are derived from those bones, never measured from output pixels. Costume-specific cloth keys remain separate."
+}

@@ -124,9 +124,13 @@ for(const [row,direction] of proposal.directions.entries()){
             limb=embed(Buffer.from(source));
           }
           segments.push({id:name+side,side,kind:'leg',image:limb});
+          if(!proposal.sourceOverlays?.[p.id])await fs.copyFile(path.join(base,`generated/${direction}-${name}${side}-source.svg`),path.join(out,`${direction}-${name}${side}-source.svg`));
         }
         joints.set(p.id,segments);
       }
+      // Export the registered original material for canonical bone binding.
+      // This is not a crop from a completed character frame.
+      await fs.writeFile(path.join(out,`${p.id}-registered.svg`),svg(material));
     }
   }
   let headStudy;
@@ -183,6 +187,9 @@ await fs.writeFile(path.join(out,'audit.json'),JSON.stringify({scope:'guest01 is
 assert.ok(connections.every(c=>c.connected),'Source joint discontinuity: inspect audit.json and correct source before proceeding');
 await fs.copyFile(path.join(root,'scripts/templates/guest01-balanced-review.html'),path.join(out,'review.html'));
 const receiptOutputs=[
+ ...rig.parts.filter(p=>proposal.directions.includes(p.direction)).map(p=>path.join(out,`${p.id}-registered.svg`)),
+ ...proposal.directions.flatMap(d=>['Left','Right'].flatMap(s=>['upperArm','forearm','hand','thigh','calf','shoe'].map(n=>path.join(out,`${d}-${n}${s}-source.svg`)))),
+ ...Object.keys(proposal.headSourceOverlays||{}).flatMap(d=>['above-body','behind-body'].map(s=>path.join(out,`head-${d}-${s}.svg`))),
  ...['walk.png','walk-runtime.png','walk-game.png','idle.png','idle-runtime.png','audit.json'].map(f=>path.join(out,f)),
  ...proposal.directions.flatMap(d=>[1,2,3,4].map(f=>path.join(out,`${d}-walk-${f}.png`)))
 ];

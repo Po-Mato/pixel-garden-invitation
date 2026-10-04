@@ -1,0 +1,23 @@
+{
+  "version":1,
+  "direction":"front",
+  "skeleton":"../../../shared-tailored-216-v1/skeleton.json",
+  "policy":"Editable masks partition the original upper-body artwork, never finished character frames. Shared canonical pivots/lengths remain fixed. Small overlap is confined to opaque cloth at seams.",
+  "characterMasks": {
+    "guest-12": {
+      "forearmRight":"M 0 168 L 79 168 L 77 187 L 0 187 Z",
+      "handRight":"M 0 183 H 77 V 204 H 0 Z",
+      "forearmLeft":"M 113 168 H 192 V 187 H 115 Z",
+      "handLeft":"M 115 183 H 192 V 204 H 115 Z"
+    }
+  },
+  "parts":[
+    {"name":"torso-front","parent":"spine","pivot":[96,171],"priority":6,"mask":"M 76 120 L 116 120 L 118 142 L 115 156 L 118 212 L 74 212 L 77 156 L 74 142 Z"},
+    {"name":"upperArmRight","parent":"upperArmRight","pivot":[74,140],"priority":7,"mask":"M 0 126 L 76 126 L 80 154 L 79 172 L 0 172 Z"},
+    {"name":"forearmRight","parent":"forearmRight","pivot":[63,170],"priority":7,"mask":"M 0 168 L 79 168 L 77 197 L 0 197 Z"},
+    {"name":"handRight","parent":"handRight","pivot":[60,195],"priority":8,"mask":"M 0 193 H 77 V 218 H 0 Z"},
+    {"name":"upperArmLeft","parent":"upperArmLeft","pivot":[118,140],"priority":7,"mask":"M 116 126 L 192 126 L 192 172 L 113 172 L 112 154 Z"},
+    {"name":"forearmLeft","parent":"forearmLeft","pivot":[129,170],"priority":7,"mask":"M 113 168 H 192 V 197 H 115 Z"},
+    {"name":"handLeft","parent":"handLeft","pivot":[132,195],"priority":8,"mask":"M 115 193 H 192 V 218 H 115 Z"}
+  ]
+}
