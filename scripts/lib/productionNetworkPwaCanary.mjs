@@ -1,3 +1,4 @@
+import { suppressSyntheticAnalytics } from "./syntheticAnalytics.mjs";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { parsePwaFeaturePaths, parsePwaPrecachePaths } from "./gameResourceBudget.mjs";
@@ -427,6 +428,7 @@ export async function prepareProductionNetworkPwaCanary({ url, profileDir, outpu
   });
   try {
     const page = context.pages()[0] ?? await context.newPage();
+    await suppressSyntheticAnalytics(page);
     await page.goto(publicUrl, { waitUntil: "domcontentloaded", timeout: 30_000 });
     await page.locator(".entry-screen").waitFor({ state: "visible", timeout: 20_000 });
     const preparation = await retryProductionPwaPreparation({
@@ -490,6 +492,7 @@ export async function verifyProductionNetworkPwaCanary({ url, expectedSha, profi
   try {
     const context = await browser.newContext({ viewport: { width: 393, height: 852 }, locale: "ko-KR", serviceWorkers: "allow" });
     const page = await context.newPage();
+    await suppressSyntheticAnalytics(page);
     await applySlow4g(context, page);
     freshColdStart = await measureEntry(page, buildProductionNetworkCanaryUrl(url, `fresh-${expectedVersion}`), productionNetworkPwaBudgets.freshEntryMs);
     await page.screenshot({ path: path.join(outputDir, "slow-4g-fresh-cold-start.png"), scale: "css" });
@@ -506,6 +509,7 @@ export async function verifyProductionNetworkPwaCanary({ url, expectedSha, profi
   });
   try {
     const page = context.pages()[0] ?? await context.newPage();
+    await suppressSyntheticAnalytics(page);
     const session = await applySlow4g(context, page);
     await page.goto(buildProductionNetworkCanaryUrl(url, `update-${expectedVersion}`), { waitUntil: "domcontentloaded", timeout: 30_000 });
     await page.locator(".entry-screen").waitFor({ state: "visible", timeout: 20_000 });

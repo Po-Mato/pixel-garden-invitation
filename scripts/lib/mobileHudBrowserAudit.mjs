@@ -1,3 +1,4 @@
+import { suppressSyntheticAnalytics } from "./syntheticAnalytics.mjs";
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { spawn } from "node:child_process";
@@ -800,6 +801,7 @@ async function runWorldLabelZoneSweep({ browser, url, outputDir }) {
       deviceScaleFactor: profile.deviceScaleFactor
     });
     const page = await context.newPage();
+    await suppressSyntheticAnalytics(page);
     await page.addInitScript(() => {
       localStorage.setItem("wedding-game:entry-session:v1", JSON.stringify({
         version: 1,
@@ -879,6 +881,7 @@ async function runRemoteNameplateCrowdAudit({ browser, url, outputDir }) {
     deviceScaleFactor: 3
   });
   const page = await context.newPage();
+    await suppressSyntheticAnalytics(page);
   const reports = [];
   await page.addInitScript(() => {
     localStorage.setItem("wedding-game:entry-session:v1", JSON.stringify({
@@ -1064,6 +1067,7 @@ async function runRealtimeResilienceAudit({ browser, url, outputDir }) {
     deviceScaleFactor: 3
   });
   const page = await context.newPage();
+    await suppressSyntheticAnalytics(page);
   const pageErrors = [];
   page.on("pageerror", (error) => pageErrors.push(error.message));
   await page.addInitScript(() => {
@@ -1223,6 +1227,7 @@ async function runMobileHudCollisionMatrix({ browser, url, outputDir }) {
       deviceScaleFactor: profile.deviceScaleFactor
     });
     const page = await context.newPage();
+    await suppressSyntheticAnalytics(page);
     await page.addInitScript(() => {
       localStorage.setItem("wedding-game:entry-session:v1", JSON.stringify({
         version: 1,
@@ -1315,6 +1320,7 @@ async function runLongVenueAudit({ browser, url }) {
       deviceScaleFactor: 2
     });
     const page = await context.newPage();
+    await suppressSyntheticAnalytics(page);
     await page.addInitScript(() => {
       localStorage.setItem("wedding-game:entry-session:v1", JSON.stringify({
         version: 1,
@@ -1389,6 +1395,7 @@ export async function runLargeTextAccessibilityAudit({ browser, url, outputDir }
       deviceScaleFactor: 2
     });
     const page = await context.newPage();
+    await suppressSyntheticAnalytics(page);
     await page.addInitScript(() => {
       localStorage.setItem("wedding-game:entry-session:v1", JSON.stringify({
         version: 1,
@@ -1501,6 +1508,7 @@ export async function runMobileHudBrowserAudit({ rootDir, outputDir, port = 4178
           deviceScaleFactor: viewport.deviceScaleFactor ?? (viewport.id.startsWith("tablet") ? 1.5 : 2)
         });
         const page = await context.newPage();
+    await suppressSyntheticAnalytics(page);
         await page.addInitScript(() => {
           localStorage.setItem("wedding-game:entry-session:v1", JSON.stringify({
             version: 1,
