@@ -12,11 +12,13 @@ Daily and period totals count received document-open events, not sessions or dis
 
 ## Cost review / deployment gate
 
-2026-10-05: existing OAuth has Workers Scripts/D1 write and Account read. Workers account settings returned `default_usage_model: standard`, which is NOT proof of a free subscription. GET account subscriptions returned HTTP 403. D1 query insights are accessible, but sampled/top-query observations are NOT account-wide remaining quota. Do not claim a verified free plan or deploy until existing account billing/usage evidence is available. Do not create a new token, change a subscription, or broaden permissions to bypass this limitation.
+2026-10-05: the existing authenticated Cloudflare dashboard explicitly shows Workers Free (US$0) as the current plan. The D1 account usage screen shows the existing production database and daily read/write/storage usage well below its displayed Free limits. This was verified through normal Mac screen navigation without changing browser security settings, credentials, permissions or subscriptions. The earlier subscriptions API HTTP 403 was not bypassed; `default_usage_model: standard` and top-query insights were not used as proof of the subscription or remaining quota. Local deployment evidence retains the dated usage screenshots.
+
+The release stays on this existing Free subscription. Free D1 limits return errors when exhausted rather than automatically adding paid overage; this is a capacity limitation, not unlimited traffic. No paid plan, additional service, quota or billing setting is enabled. Recheck account usage if traffic grows or the subscription changes. See the official [D1 pricing](https://developers.cloudflare.com/d1/platform/pricing/) and [Workers pricing](https://developers.cloudflare.com/workers/platform/pricing/) documentation.
 
 Incremental load: each document adds one successful POST (up to three attempts), possible CORS preflight, one receipt insert and one daily upsert. Indexed receipt cleanup runs on the existing cron. A conservative planning allowance is about eight D1 row/index writes per accepted event including later removal, plus read/duplicate overhead; this is an estimate, not a measured invoice. For example, 1,000 events/day would budget approximately 8,000 writes/day, NOT a prediction of real traffic. Current Free published limits are 100,000 D1 row writes/day and 5 million reads/day; all account workload shares limits. Existing paid accounts can incur overage. No quota or spending settings are changed.
 
-## Safe release order (not executed while cost verification is blocked)
+## Safe release order
 
 1. Record current source SHAs, Worker deployment version and fresh D1 Time Travel bookmark. Bookmark lookup was tested read-only; no personal data export is needed.
 2. Review and apply ONLY additive migration `0027_common_pages_analytics.sql` through the existing migration path; never run an unreviewed set of pending migrations. Existing tables are untouched. `enabled_at` is backend readiness, not a fabricated first visit.
