@@ -40,7 +40,8 @@ describe("worker scaffold", () => {
       qualityCalibration: { checkedInvitations: 0, eligibleInvitations: 0, createdNotifications: 0 },
       cleanup: { inviteLinks: 0, rsvps: 0, guestbookMessages: 0, notifications: 0, attempts: 0 }
     });
-    expect(run).toHaveBeenCalledTimes(5);
+    expect(run).toHaveBeenCalledTimes(6);
+    expect(db.prepare).toHaveBeenCalledWith("DELETE FROM pages_analytics_receipts WHERE expires_at <= ?");
     expect(all).toHaveBeenCalledTimes(2);
     expect(info).toHaveBeenCalledWith(JSON.stringify({
       event: "admin_notification_email_queue",
@@ -73,7 +74,8 @@ describe("worker scaffold", () => {
 
   test("runs the email and release queues on the five-minute cron", async () => {
     const all = vi.fn().mockResolvedValue({ results: [] });
-    const prepare = vi.fn(() => ({ bind: vi.fn(() => ({ all })) }));
+    const run = vi.fn().mockResolvedValue({ success: true });
+    const prepare = vi.fn(() => ({ bind: vi.fn(() => ({ all, run })) }));
     const waitUntil = vi.fn();
     const info = vi.spyOn(console, "info").mockImplementation(() => undefined);
 
@@ -92,7 +94,9 @@ describe("worker scaffold", () => {
       qualityCalibration: null,
       cleanup: null
     });
-    expect(prepare).toHaveBeenCalledOnce();
+    expect(prepare).toHaveBeenCalledTimes(2);
+    expect(prepare).toHaveBeenCalledWith("DELETE FROM pages_analytics_receipts WHERE expires_at <= ?");
+    expect(run).toHaveBeenCalledOnce();
     info.mockRestore();
   });
 });
