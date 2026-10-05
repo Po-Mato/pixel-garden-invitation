@@ -454,3 +454,7 @@
   .analytics-performance-admin dl > div:nth-child(odd) { border-left: 0; }
   .analytics-performance-admin dl > div:nth-child(n + 3) { border-top: 1px solid var(--analytics-line); }
 }
+
+.analytics-section[aria-label="전체 Pages 방문 통계"] table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 12px; }
+.analytics-section[aria-label="전체 Pages 방문 통계"] :is(th, td) { padding: 8px 4px; border-bottom: 1px solid var(--analytics-line, #dce5df); text-align: right; }
+.analytics-section[aria-label="전체 Pages 방문 통계"] th:first-child { text-align: left; white-space: nowrap; }

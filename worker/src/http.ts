@@ -1,3 +1,4 @@
+import { handleCommonPages } from "./commonPagesAnalytics";
 import { MemoryRateLimiter } from "./rateLimit";
 import { attemptAdminLogin } from "./adminAuth";
 import {
@@ -808,6 +809,10 @@ async function handleApiRequestWithoutCors(
   if (publicReleaseMatch) {
     return handlePublicInvitationReleaseRequest(request, env, publicReleaseMatch[1]);
   }
+
+  if (url.pathname === "/api/pages/visits") return handleCommonPages(request, env);
+  const commonPagesMatch = url.pathname.match(/^\/api\/invitations\/([^/]+)\/admin\/pages-analytics$/);
+  if (commonPagesMatch) return handleCommonPages(request, env, commonPagesMatch[1]);
 
   const publicAnalyticsMatch = url.pathname.match(/^\/api\/invitations\/([^/]+)\/analytics\/events$/);
   if (publicAnalyticsMatch) {

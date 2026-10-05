@@ -1,3 +1,4 @@
+import { CommonPagesAnalytics } from "./CommonPagesAnalytics";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   AlertTriangle,
@@ -418,6 +419,7 @@ export function AnalyticsAdminPage() {
 
         {analytics ? (
           <>
+            {id === "sample-garden" && session && <CommonPagesAnalytics token={session.token} refreshKey={analytics} from={analytics.range.from} to={analytics.range.to} />}
             <section className="analytics-kpis" aria-label="핵심 지표">
               {metricCards.map((metric) => {
                 const Icon = metric.icon;

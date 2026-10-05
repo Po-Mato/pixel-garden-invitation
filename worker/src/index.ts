@@ -1,3 +1,4 @@
+import { cleanupPagesReceipts } from "./commonPagesAnalytics";
 import { handleApiRequest } from "./http";
 import { cleanupExpiredInvitationData } from "./cleanup";
 import { retryPendingAdminNotificationEmails } from "./adminNotificationService";
@@ -59,6 +60,7 @@ export default {
   scheduled(controller: ScheduledController, env: Env, ctx: ExecutionContext): void {
     const now = new Date(controller.scheduledTime);
     const work = (async () => {
+      await cleanupPagesReceipts(env.DB, now).catch(() => { console.warn("pages_analytics_cleanup_failed"); });
       const emailQueue = await retryPendingAdminNotificationEmails(env, now);
       console.info(JSON.stringify({ event: "admin_notification_email_queue", ...emailQueue }));
 
