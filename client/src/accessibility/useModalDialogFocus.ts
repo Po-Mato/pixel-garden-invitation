@@ -1,5 +1,7 @@
 import { useEffect, useRef, type RefObject } from "react";
-import { isolateAppForModal } from "./modalIsolation";
+import { isolateAppForModal, lockModalBody } from "./modalIsolation";
+
+const modalStack: Array<{ suspended: () => boolean }> = [];
 
 const focusableSelector = [
   "a[href]",
@@ -15,7 +17,7 @@ function focusableElements(container: HTMLElement) {
   return Array.from(container.querySelectorAll<HTMLElement>(focusableSelector)).filter((element) => (
     element.tabIndex >= 0
     && element.getAttribute("aria-hidden") !== "true"
-    && !element.closest("[inert]")
+    && !element.closest("[inert], [hidden]")
   ));
 }
 
@@ -77,17 +79,18 @@ export function useModalDialogFocus({
     if (!open) return;
     const previouslyFocused = returnFocusRef?.current
       ?? (document.activeElement instanceof HTMLElement ? document.activeElement : null);
-    const previousOverflow = document.body.style.overflow;
+    const restoreBody = lockBody ? lockModalBody() : () => undefined;
+    const entry = { suspended: () => suspendedRef.current };
+    modalStack.push(entry);
     const restoreApp = isolateApp ? isolateAppForModal() : () => undefined;
     const restoreSiblings = isolateSiblings && dialogRef.current
       ? isolateDialogSiblings(dialogRef.current)
       : () => undefined;
 
-    if (lockBody) document.body.style.overflow = "hidden";
     (initialFocusRef?.current ?? dialogRef.current)?.focus({ preventScroll: true });
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (suspendedRef.current) return;
+      if (suspendedRef.current || modalStack.filter((item) => !item.suspended()).at(-1) !== entry) return;
       if (event.key === "Escape") {
         event.preventDefault();
         onEscapeRef.current();
@@ -122,7 +125,8 @@ export function useModalDialogFocus({
     document.addEventListener("keydown", handleKeyDown);
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
-      if (lockBody) document.body.style.overflow = previousOverflow;
+      modalStack.splice(modalStack.indexOf(entry), 1);
+      restoreBody();
       restoreSiblings();
       restoreApp();
       const active = document.activeElement;
