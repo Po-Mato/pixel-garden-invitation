@@ -146,19 +146,34 @@ async function installUpdate(page, timeoutMs = 45_000) {
   }, timeoutMs);
 }
 
-async function activateWaitingWorker(page, timeoutMs = 20_000) {
+export async function activateWaitingWorker(page, timeoutMs = 20_000) {
   return page.evaluate(async (timeout) => {
     const registration = await navigator.serviceWorker.getRegistration();
-    const waiting = registration?.waiting;
-    if (!waiting) return false;
+    if (!registration) return false;
     const previous = navigator.serviceWorker.controller;
     return new Promise((resolve) => {
-      const timer = setTimeout(() => resolve(false), timeout);
-      navigator.serviceWorker.addEventListener("controllerchange", () => {
+      let requested = null;
+      const finish = (changed) => {
         clearTimeout(timer);
-        resolve(Boolean(navigator.serviceWorker.controller && navigator.serviceWorker.controller !== previous));
-      }, { once: true });
-      waiting.postMessage({ type: "SKIP_WAITING" });
+        clearInterval(poll);
+        navigator.serviceWorker.removeEventListener("controllerchange", onControllerChange);
+        resolve(changed);
+      };
+      const onControllerChange = () => {
+        if (navigator.serviceWorker.controller && navigator.serviceWorker.controller !== previous) finish(true);
+      };
+      const requestActivation = () => {
+        // An installed state event may precede publication of registration.waiting.
+        const waiting = registration.waiting;
+        if (waiting && waiting !== requested) {
+          requested = waiting;
+          waiting.postMessage({ type: "SKIP_WAITING" });
+        }
+      };
+      const timer = setTimeout(() => finish(false), timeout);
+      const poll = setInterval(requestActivation, 50);
+      navigator.serviceWorker.addEventListener("controllerchange", onControllerChange);
+      requestActivation();
     });
   }, timeoutMs);
 }

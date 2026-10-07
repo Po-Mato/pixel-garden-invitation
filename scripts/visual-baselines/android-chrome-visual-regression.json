@@ -1,7 +1,7 @@
 {
   "version": 3,
-  "approvedAt": "2026-08-14T09:35:33.902Z",
-  "reason": "청첩장 타이포, 버튼 정렬, 카드 깊이 개선에 따른 의도된 오시는 길 화면 변경",
+  "approvedAt": "2026-10-07T10:07:24.330Z",
+  "reason": "User-approved mobile UI spacing and typography release; checksum-verified Android CI 37603559042 captures visually reviewed. Directions changes intentional; game and 85/85 offline cache checks passed. Thresholds unchanged.",
   "profile": {
     "id": "pixel-7-api-35-chrome",
     "deviceName": "Pixel 7",
@@ -9,7 +9,7 @@
     "requiredDirectionsScroll": 0
   },
   "capture": {
-    "generatedAt": "2026-08-14T09:28:30.157Z",
+    "generatedAt": "2026-10-07T10:00:22.621Z",
     "profile": {
       "id": "pixel-7-api-35-chrome",
       "deviceName": "Pixel 7",
@@ -28,10 +28,10 @@
       "width": 412
     },
     "browserVersion": null,
-    "runId": "31787964520",
+    "runId": "37603559042",
     "runAttempt": 1,
-    "sha": "1bad48b2a09357c926ea970f30442481d4e42297",
-    "runUrl": "https://github.com/Po-Mato/pixel-garden-invitation/actions/runs/31787964520",
+    "sha": "0dd21453dc27a0f2ade782dff540dd21fa57c5a3",
+    "runUrl": "https://github.com/Po-Mato/pixel-garden-invitation/actions/runs/37603559042",
     "retry": {
       "attempted": false,
       "reason": null
@@ -44,7 +44,7 @@
           {
             "attempt": 1,
             "outcome": "ready",
-            "durationMs": 4601,
+            "durationMs": 3419,
             "error": null
           }
         ]
@@ -56,7 +56,7 @@
           {
             "attempt": 1,
             "outcome": "ready",
-            "durationMs": 4665,
+            "durationMs": 3093,
             "error": null
           }
         ]
@@ -72,18 +72,18 @@
       "offlineEventDispatched": true,
       "transportProbe": {
         "previewHostReachableAfterStop": false,
-        "browserUrl": "http://127.0.0.1:4188/api/__device_pwa_transport_probe__?nonce=1786699804491",
+        "browserUrl": "http://127.0.0.1:4188/api/__device_pwa_transport_probe__?nonce=1791367291831",
         "browserFetchResolved": false,
         "browserStatus": null,
         "browserError": "Failed to fetch",
         "browserErrorKind": "failed-to-fetch",
-        "durationMs": 36.10000000000582,
+        "durationMs": 13.89999999999418,
         "transportBlocked": true
       },
-      "cachedPaths": 83,
+      "cachedPaths": 85,
       "controlled": true,
-      "expectedPaths": 83,
-      "precacheName": "wedding-garden-precache-1bad48b2a093",
+      "expectedPaths": 85,
+      "precacheName": "wedding-garden-precache-0dd21453dc27",
       "serviceWorkerSupported": true,
       "blockingNoticeVisible": false,
       "brokenImages": [],
@@ -98,7 +98,7 @@
     "scrollStates": {
       "directions": {
         "horizontalOverflow": false,
-        "maxScroll": 99,
+        "maxScroll": 167,
         "reached": true,
         "scrollTop": 0,
         "target": 0
@@ -107,39 +107,39 @@
     "comparisons": [
       {
         "state": "game",
-        "changedPixels": 2519,
-        "changedRatio": 0.0010597035017752873,
-        "meanPixelDifference": 1.0970699345415384,
+        "changedPixels": 30195,
+        "changedRatio": 0.01270255944267757,
+        "meanPixelDifference": 1.426799266326754,
         "pixelCount": 2377080,
         "passed": true,
         "maxChangedRatio": 0.015,
-        "rawChangedRatio": 0.006218133171790601,
-        "rawMeanPixelDifference": 2.3495608056943813,
+        "rawChangedRatio": 0.012646608443973278,
+        "rawMeanPixelDifference": 1.594573594494085,
         "baselinePath": "/home/runner/work/pixel-garden-invitation/pixel-garden-invitation/scripts/visual-baselines/android-chrome-pixel-7-api-35-chrome-game.webp",
         "currentPath": "/home/runner/work/pixel-garden-invitation/pixel-garden-invitation/.superpowers/visual-regression/android-chrome/android-chrome-pixel-7-api-35-chrome-game-current.png",
         "diffPath": "/home/runner/work/pixel-garden-invitation/pixel-garden-invitation/.superpowers/visual-regression/android-chrome/android-chrome-pixel-7-api-35-chrome-game-diff.png",
         "classification": {
-          "id": "renderer-noise",
-          "confidence": "high",
-          "likelyCause": "font-or-antialias-rendering",
-          "review": "not-required",
-          "changedRatio": 0.0010597035017752873,
-          "rawChangedRatio": 0.006218133171790601,
-          "filteredNoiseRatio": 0.005158429670015313,
-          "filteredNoiseShare": 0.8295785129558216,
-          "budgetUsage": 0.07064690011835249
+          "id": "watch-structural",
+          "confidence": "medium",
+          "likelyCause": "meaningful-change-within-budget",
+          "review": "recommended",
+          "changedRatio": 0.01270255944267757,
+          "rawChangedRatio": 0.012646608443973278,
+          "filteredNoiseRatio": 0,
+          "filteredNoiseShare": 0,
+          "budgetUsage": 0.8468372961785047
         }
       },
       {
         "state": "directions",
-        "changedPixels": 134541,
-        "changedRatio": 0.056599273057701044,
-        "meanPixelDifference": 6.765630100795934,
+        "changedPixels": 322028,
+        "changedRatio": 0.13547209181012,
+        "meanPixelDifference": 18.794017029296448,
         "pixelCount": 2377080,
         "passed": false,
         "maxChangedRatio": 0.015,
-        "rawChangedRatio": 0.05218461305467212,
-        "rawMeanPixelDifference": 7.925848940717183,
+        "rawChangedRatio": 0.1184179749945311,
+        "rawMeanPixelDifference": 19.76833215541757,
         "baselinePath": "/home/runner/work/pixel-garden-invitation/pixel-garden-invitation/scripts/visual-baselines/android-chrome-pixel-7-api-35-chrome-directions.webp",
         "currentPath": "/home/runner/work/pixel-garden-invitation/pixel-garden-invitation/.superpowers/visual-regression/android-chrome/android-chrome-pixel-7-api-35-chrome-directions-current.png",
         "diffPath": "/home/runner/work/pixel-garden-invitation/pixel-garden-invitation/.superpowers/visual-regression/android-chrome/android-chrome-pixel-7-api-35-chrome-directions-diff.png",
@@ -148,11 +148,11 @@
           "confidence": "high",
           "likelyCause": "layout-or-content-change",
           "review": "required",
-          "changedRatio": 0.056599273057701044,
-          "rawChangedRatio": 0.05218461305467212,
+          "changedRatio": 0.13547209181012,
+          "rawChangedRatio": 0.1184179749945311,
           "filteredNoiseRatio": 0,
           "filteredNoiseShare": 0,
-          "budgetUsage": 3.773284870513403
+          "budgetUsage": 9.031472787341333
         }
       }
     ],
@@ -160,30 +160,30 @@
       "height": 93.52381134033203,
       "width": 76,
       "x": 168,
-      "y": 405.3333435058594
+      "y": 399.6190490722656
     }
   },
   "provenance": {
     "schemaVersion": 1,
     "subjectKind": "capture-set",
     "sourceKind": "github-actions",
-    "runId": "31787964520",
+    "runId": "37603559042",
     "runAttempt": 1,
-    "commitSha": "1bad48b2a09357c926ea970f30442481d4e42297",
-    "runUrl": "https://github.com/Po-Mato/pixel-garden-invitation/actions/runs/31787964520",
+    "commitSha": "0dd21453dc27a0f2ade782dff540dd21fa57c5a3",
+    "runUrl": "https://github.com/Po-Mato/pixel-garden-invitation/actions/runs/37603559042",
     "checksumAlgorithm": "sha256",
     "artifactChecksumScope": "sorted-capture-set-manifest",
-    "artifactSha256": "8f13d975d1dc350bb94a5c3ed3afa21ae0cdd45766b25f4fd44abade5e11e1cd",
+    "artifactSha256": "e42e23225ba10d1f78dfd1de2ad1652efc281c570d73011d68bd70d256e71410",
     "files": [
       {
         "logicalPath": "pixel-7-api-35-chrome/directions",
-        "size": 494125,
-        "sha256": "8af247a79495022283de4f47ead8c57a9d7a86e4f3e050aec5a84874e073da30"
+        "size": 510584,
+        "sha256": "dd64be59f3a1784f50b8b5a1fef260e8b6c655e9d83cc93d083dc99f5cd5ffbc"
       },
       {
         "logicalPath": "pixel-7-api-35-chrome/game",
-        "size": 1930085,
-        "sha256": "e5fc44ce565762871762938c57e2d1c7b005dca5f0a4edf7f4f472da15dc4582"
+        "size": 1935546,
+        "sha256": "84422489f333bc38059c6c1a03f83accfecdf0244befd699a43ab2112d8bf063"
       }
     ]
   },
@@ -197,13 +197,13 @@
       "state": "game",
       "width": 1080,
       "height": 2201,
-      "sha256": "157a935d5e84f8602bc33fa6088b1764f5e68aed2e8b42c201867da297a78cbb",
+      "sha256": "e93bca4335d454312ddbc30f4960713770bd6719b63bb6228f54420d57f7f919",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "청첩장 타이포, 버튼 정렬, 카드 깊이 개선에 따른 의도된 오시는 길 화면 변경",
+        "approvalReason": "User-approved mobile UI spacing and typography release; checksum-verified Android CI 37603559042 captures visually reviewed. Directions changes intentional; game and 85/85 offline cache checks passed. Thresholds unchanged.",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
@@ -216,13 +216,13 @@
       "state": "directions",
       "width": 1080,
       "height": 2201,
-      "sha256": "3c227b50fc333a7e5b0c2e02390029863c4ddd4fef381b0e6e5edf6aabd9fa54",
+      "sha256": "cdb6866a9f74db1c3261de035ba4aaedbefa638b0251a2607d748368524600dc",
       "classification": {
         "id": "intentional-baseline-update",
         "confidence": "high",
         "likelyCause": "explicit-baseline-approval",
         "review": "approved",
-        "approvalReason": "청첩장 타이포, 버튼 정렬, 카드 깊이 개선에 따른 의도된 오시는 길 화면 변경",
+        "approvalReason": "User-approved mobile UI spacing and typography release; checksum-verified Android CI 37603559042 captures visually reviewed. Directions changes intentional; game and 85/85 offline cache checks passed. Thresholds unchanged.",
         "changedRatio": 0,
         "rawChangedRatio": null,
         "filteredNoiseRatio": null,
