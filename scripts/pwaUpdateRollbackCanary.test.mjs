@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {
+  activateWaitingWorker,
   auditPwaUpdateRollbackCanary,
   createServiceWorkerVariant
 } from "./lib/pwaUpdateRollbackCanary.mjs";
@@ -55,4 +56,43 @@ test("service worker variants replace version and append deliberate canary asset
   const variant = createServiceWorkerVariant(source, "next", ["./missing"]);
   assert.match(variant, /const VERSION = "next";/);
   assert.match(variant, /const PRECACHE_URLS = \["\.\/","\.\/index\.html","\.\/missing"\];/);
+});
+
+test('activation waits for registration.waiting after the installed event', async () => {
+  const previousNavigator = Object.getOwnPropertyDescriptor(globalThis, 'navigator');
+  const serviceWorker = new EventTarget();
+  const previous = {};
+  serviceWorker.controller = previous;
+  const registration = { waiting: null };
+  serviceWorker.getRegistration = async () => registration;
+  Object.defineProperty(globalThis, 'navigator', { configurable: true, value: { serviceWorker } });
+  const publish = setTimeout(() => {
+    registration.waiting = { postMessage(message) {
+      assert.equal(message.type, 'SKIP_WAITING');
+      serviceWorker.controller = {};
+      serviceWorker.dispatchEvent(new Event('controllerchange'));
+    } };
+  }, 20);
+  try {
+    assert.equal(await activateWaitingWorker({ evaluate: (fn, arg) => fn(arg) }, 1000), true);
+    assert.notEqual(serviceWorker.controller, previous);
+  } finally {
+    clearTimeout(publish);
+    if (previousNavigator) Object.defineProperty(globalThis, 'navigator', previousNavigator);
+    else delete globalThis.navigator;
+  }
+});
+
+test("activation still fails when no new controller takes over", async () => {
+  const previousNavigator = Object.getOwnPropertyDescriptor(globalThis, "navigator");
+  const serviceWorker = new EventTarget();
+  serviceWorker.controller = {};
+  serviceWorker.getRegistration = async () => ({ waiting: { postMessage() {} } });
+  Object.defineProperty(globalThis, "navigator", { configurable: true, value: { serviceWorker } });
+  try {
+    assert.equal(await activateWaitingWorker({ evaluate: (fn, arg) => fn(arg) }, 40), false);
+  } finally {
+    if (previousNavigator) Object.defineProperty(globalThis, "navigator", previousNavigator);
+    else delete globalThis.navigator;
+  }
 });
