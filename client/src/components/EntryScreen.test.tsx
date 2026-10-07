@@ -60,6 +60,21 @@ describe("EntryScreen", () => {
     expect(screen.getByRole("dialog", { name: "오시는 길" })).toBeInTheDocument();
   });
 
+  it.each(["환경 설정", "초대장 공유"])("빠른 도구의 %s 창을 닫고 다시 열 수 있다", (name) => {
+    render(<EntryScreen onEnter={vi.fn()} />);
+    const trigger = screen.getByRole("button", { name: "도구 더보기" });
+    for (let cycle = 0; cycle < 2; cycle += 1) {
+      fireEvent.click(trigger);
+      fireEvent.click(screen.getByRole("button", { name }));
+      expect(screen.getByRole("dialog")).toBeInTheDocument();
+      expect(trigger).toHaveAttribute("aria-expanded", "false");
+      fireEvent.click(screen.getByRole("button", { name: "닫기" }));
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+      expect(trigger).toHaveFocus();
+      expect(document.body.style.overflow).not.toBe("hidden");
+    }
+  });
+
   it("신랑 우선 세션에서는 입장 제목도 신랑 이름부터 표시한다", () => {
     render(
       <CoupleOrderProvider initialOrder="groom-first">

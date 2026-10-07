@@ -885,7 +885,7 @@ describe("wedding editorial content", () => {
   it("uses one restrained editorial rhythm for type, controls, and cards", () => {
     expect(invitationUxPolishStyles).toContain("--invitation-title-tracking: -0.035em;");
     expect(invitationUxPolishStyles).toContain("--invitation-copy-leading: 1.72;");
-    expect(invitationUxPolishStyles).toContain("--invitation-control-height: 48px;");
+    expect(invitationUxPolishStyles).toContain("--invitation-control-height: var(--ui-control-height);");
     expect(invitationUxPolishStyles).toContain("--invitation-card-shadow: 0 6px 18px rgba(55, 72, 64, 0.045);");
     expect(invitationUxPolishStyles).toMatch(/\.wedding-event-summary--detail\s*\{[^}]*border-radius:\s*var\(--invitation-card-radius\);[^}]*box-shadow:\s*var\(--invitation-card-shadow\);/s);
     expect(invitationUxPolishStyles).toMatch(/\.quick-core-actions > :is\(button, \.invitation-share-trigger\)\s*\{[^}]*grid-template-rows:\s*20px auto;[^}]*row-gap:\s*2px;/s);

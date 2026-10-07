@@ -69,6 +69,31 @@ export function BottomSheet({
     };
   }, [updateScrollState]);
 
+  useEffect(() => {
+    const viewport = window.visualViewport;
+    const dialog = dialogRef.current;
+    if (!viewport || !dialog) return;
+    const updateViewport = () => {
+      // Ignore pinch zoom; only the keyboard/visible viewport changes sheet placement.
+      const keyboardInset = viewport.scale === 1
+        ? Math.max(0, window.innerHeight - viewport.height - viewport.offsetTop) : 0;
+      if (keyboardInset > 0) {
+        dialog.style.maxHeight = `calc(${viewport.height}px - 24px - env(safe-area-inset-top))`;
+        dialog.style.bottom = `calc(${keyboardInset}px + max(12px, env(safe-area-inset-bottom)))`;
+      } else {
+        dialog.style.removeProperty("max-height");
+        dialog.style.removeProperty("bottom");
+      }
+    };
+    updateViewport();
+    viewport.addEventListener("resize", updateViewport);
+    viewport.addEventListener("scroll", updateViewport);
+    return () => {
+      viewport.removeEventListener("resize", updateViewport);
+      viewport.removeEventListener("scroll", updateViewport);
+    };
+  }, []);
+
   return createPortal(
     <>
       <button

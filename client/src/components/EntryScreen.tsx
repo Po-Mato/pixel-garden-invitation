@@ -154,15 +154,20 @@ export function EntryScreen({
         >
           <Ellipsis aria-hidden="true" />
         </button>
-        {utilitiesOpen ? (
-          <div
+        <div
             ref={utilitiesMenuRef}
             id={utilitiesId}
+            hidden={!utilitiesOpen}
             className="entry-screen__utility-menu"
             role="group"
             aria-label="도움말·공유·설정"
             onKeyDown={handleUtilityMenuKeyDown}
-            onClickCapture={() => setUtilitiesOpen(false)}
+            onClickCapture={(event) => {
+              // Portal events also bubble through this group; only collapse for its own tools.
+              if (!event.currentTarget.contains(event.target as Node)) return;
+              utilitiesButtonRef.current?.focus();
+              setUtilitiesOpen(false);
+            }}
           >
             <button
               className="entry-screen__utility-button entry-screen__utility-button--help"
@@ -176,7 +181,6 @@ export function EntryScreen({
             <InvitationShareAccess variant="icon" />
             <ViewSettingsAccess variant="icon" />
           </div>
-        ) : null}
       </nav>
       <div className="entry-screen__hero">
         <header className="entry-screen__header">
