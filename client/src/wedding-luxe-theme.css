@@ -693,6 +693,12 @@ html[data-reduce-motion="true"] .customizer-option__sprite {
 
 .customizer-option__sprite,
 .entry-character-picker .customizer-option__sprite {
+  /* A 48px sprite exceeds this 40px viewport. Grid's automatic minimum
+     track starts it at the left edge before scaling, shifting every guest.
+     Flex centers the unscaled canvas, preserving its scale and authored foot anchor. */
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 40px;
   height: 56px;
   border-radius: 6px;
@@ -701,6 +707,7 @@ html[data-reduce-motion="true"] .customizer-option__sprite {
 
 .customizer-option__sprite .character-sprite--thumbnail,
 .entry-character-picker .customizer-option__sprite .character-sprite--thumbnail {
+  flex-shrink: 0;
   transform: scale(0.75);
   transform-origin: center;
 }
